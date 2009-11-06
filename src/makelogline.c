@@ -387,9 +387,8 @@ if (contest == 1){
 	strcat (logline4, " ");
 	}
 
-strcat  (logline4, "        " );
-
-logline4[80]='\0';       /* just in case... */
+       /* fill rest of line */
+       strncat (logline4, "        ",  80-strlen(logline4));
 
 return (0);
 }
