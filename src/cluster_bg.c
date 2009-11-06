@@ -463,7 +463,10 @@ attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);                  // display it
 for (j=15; j < 23; j++)
 	mvprintw(j,4, "                           ");
 
-if (cluster == SPOTS) linepos = i - 8;
+if (cluster == SPOTS){
+	linepos = i - 8;
+	if (linepos < 0) linepos = 0;
+}
 else linepos = 0;
 
 
