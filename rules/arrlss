@@ -1,0 +1,57 @@
+################################################
+# The ARRL SWEEPSTAKES contest needs a         #
+# multiplier file containing the sections      #
+# which are used as a multiplier in the        #
+# directory you start tlf from (arrlsections). #
+################################################
+#
+CONTEST=arrl_ss
+LOGFILE=ss.log
+MULT_LIST=arrlsections
+CONTEST_MODE
+#
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CW_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = call		         #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#     (works only with parport   #
+#       interface)               #
+#                                #
+##################################
+#
+F1=CQ CQ DE % % K
+F2=@ DE %
+F3=@ 1 A CT 23
+F4=TU 73
+F5= @
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9= ?
+F10= QRZ?
+F11= PSE K
+F12=++++TEST---- % %
+#
+CW_TU_MSG=TU %
+S&P_TU_MSG=TU UR 1 A CT 23
+#
+ALT_0=message alt 0
+ALT_1=nr is # #
+ALT_2=prec?
+ALT_3=ur section?
+ALT_4=ck is 83 83 
+ALT_5=sec is CT CT
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+####### END #####################

@@ -1,0 +1,76 @@
+##########################
+# ARRL Field day contest #
+#     PA0R  3.10.2003    #
+##########################
+#
+CONTEST=arrlfd
+LOGFILE=fd.log
+CONTEST_MODE
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CW_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = call		                 #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#     (works only with parport   #
+#       interface)               #
+#                                #
+##################################
+#
+F1=CQ CQ FD DE % % K
+F2=@ DE %
+F3=@ 5NN 3ACT
+F4=TU 73
+F5= @
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9= ?
+F10= QRZ?
+F11= PSE K
+F12=++++TEST---- % %
+#
+CW_TU_MSG=TU %
+S&P_TU_MSG=TU 5NN 3ACT
+#
+#ALT_0=
+#ALT_1=
+#ALT_2=
+#ALT_3=
+#ALT_4=
+#ALT_5=
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+#################################
+#                               #
+#  Voice Keyer Files            #
+#    (F1 to F12)                #
+#################################
+#
+#VKM1=cq.wav
+#VKM2=
+#VKM3=
+#VKM4=
+#VKM5=
+#VKM6=
+#VKM7=
+#VKM8=
+#VKM9=
+#VKM10=
+#VKM11=
+#VKM12=
+#VKSPR= (S&P return message)
+#VKCWR=	(CQ mode return message)
+#
+ONEPOINT
+#
+

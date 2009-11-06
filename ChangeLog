@@ -1,0 +1,279 @@
+2007-12-21  rein couperus <rein@couperus.com>
+
+	* changed searchlog.c ('possible calls')
+
+2007-12-18	rein couperus <rein@couperus.com>
+
+	* changed cluster_bg.c to fix possible buffer overflow
+	
+	* changed searchlog.c -> compare now starts at beginning of callsign.
+
+2003-09-10   dimiter (mitko) kroumov <lz3ny@bfra.org>
+        version 0.9.1:
+	
+	* added an autoRXVTdiscovery and a hack XTERM arrows by putting "linux" native driver 
+	as TERMinal in the environment.	
+
+	* Introduced WAZMULT (CQWW like) and ITUMULT switches as contest rule multipliers
+	
+	* logcfg.dat has been split up. added a new "rules/" directory for the contest rules file.
+
+
+2002-11-03   rein couperus <rein@couperus.com>
+
+  	version 0.8.6:
+
+	* bug  fixes: various modules
+
+	* fixed getctydata.c to interpret ctydb properly
+
+	* fixed bug in callinput.c allowing input of too many characters in call field
+
+	* added TIME_OFFSET to allow running PC on local time instaead of UTC
+
+	* added arrl sweepstakes contest with flexible exchange input
+
+2002-10-01   rein couperus <rein@couperus.com>
+
+  	version 0.8.1:
+
+	* various modules: added  frequency data, talk data and serialnr data network distribution
+
+	* added :info and :freq displays
+
+2002-09-07  rein couperus <rein@couperus.com>
+
+  	version 0.8.0:
+
+	* lancode.c, lancode.h: added networking module
+
+	* various modules:   major code changes to interface to the networking module
+		for log data and packet data distribution
+
+
+2002-08-30  rein couperus  <rein@couperus.com>
+
+ 	version 0.7.3:
+
+	* background_process.c:  added cw simulator mode
+
+	* changeparams.c: added command :simulator
+
+	* logit.c, call_input.c:  added simulator code
+
+	* main.c: added various global variables for cw simulator
+
+	* searchlog.c: fixed bug to enable working more than 20 JA's (now 999)
+
+
+2002-08-30  rein couperus  <rein@couperus.com>
+
+ 	version 0.7.2:
+
+	* configure.in : added --enable-hamlib to switch on Hamlib support
+
+	* sendtxinfo.c, main.c: changed the code to support library switch
+
+2002-08-21  rein couperus  <rein@couperus.com>
+
+	version 0.7.1:
+
+	* parse_logcfg.c:  added RIGPORT parameter
+
+	* clusterinfo.c : added ctrl-g support for spot list
+
+2002-08-21  rein couperus  <rein@couperus.com>
+
+	version 0.7.0:
+
+	* sendqrg.c:	added Hamlib support
+
+	* gettxinfo.c:   added Hamlib support
+
+	* parse_logconfig.c: added Hamlib support
+
+	* added rig.h
+
+2002-08-12  rein couperus  <rein@couperus.com>
+
+	version 0.6.1:
+
+	* splitscreen.c:  telnet client does now display correctly when
+		long buffers come in.
+
+	* preliminary fix for bandmap display
+
+	* added FIFO interface to cluster monitor
+
+	* added command to logcfg.dat:
+		FIFO_INTERFACE
+	  this starts a FIFO called clfile in the working directory for
+		added flexibility and backward compatability with previous
+		versions
+
+2002-08-08  rein couperus   <rein@couperus.com>
+
+	version 0.6.0:
+
+	* major rewrite of all routines making disk access. 
+
+	* Removed all system calls.
+
+	* included telnet client and tnc terminal based on splitscreen by
+		Dave Brown, N2RJT. Now fully integrated with tlf.
+
+	* Added commands to logcfg.com:
+		TELNETHOST, TELNETPORT
+		TNCPORT (1 or 2)
+
+
+
+	* callinput.c: ESCAPE now erases call + exchange
+
+	* show_score.c: Color change in header line
+
+	
+2002-07-21  rein couperus   <rein@couperus.com>
+
+	* searchlog.c:		now keeps logdata in ram to speed up dupe check
+					removed sys calls and reference to /tmp/tlf
+
+	* store_to disk.c	copy logdata into ram array
+
+	* delete_qso.c	remove qso from ram array
+
+	* edit_last.c		change qso in ram array
+
+	* readcalls.c		read qso data into ram array
+
+	* main.c                     added global qso array (3000 qso's)
+
+2002-07-21  rein couperus   <rein@couperus.com>
+
+	* searchlog.c: 		changed partials routine to run in RAM
+				added load_partials function
+
+	* main.c:		added load partials from disk
+
+	* time_update.c		removed disk acces to logfile every 5 secs
+
+	* score.c		changed cqww scoring (2 pts within NA)
+
+2002-07-14  Rein Couperus   <rein@couperus.com>
+
+	* edit_last.c:	added instert and delete
+
+	* removed call to tlf_deletelogline
+
+2002-07-13  Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.4.3:
+
+	* main.c:  	added   mixedmode parameter
+
+	* searchlog.c		added mixed mode capability to dupe logic
+
+	* writecabrillo.c	added  wysiwyg multiplier format and mixed capability
+
+	* changeparameters.c	added :CWMODE, :SSBMODE and :DIGIMODE commands
+
+	* show_help.c 	added new mode switch commands
+
+
+2002-07-07  Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.4.2:
+
+	* readcalls.c: fixed logic for wysiwyg multipliers
+
+	* getexchange.c : added "\" command
+
+
+2002-06-09  Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.4.1:  adjustments for bugs in debian floppy version
+		(delete last qso, write cabrillo)
+
+	* deleteqso.c:  killed the system call to script tlf_deletelogline, wrote
+		inline code to do the job.
+
+	*writecabrillo.c: removed system call to 'sed'
+
+2002-05-31 Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.4:
+
+	* tlf.h: added definition of EDITOR_E3
+
+	* various: added support for e3 editor (debian floppy )
+
+	* clusterinfo.c: read cl3file only if read successful
+
+2002-05-26 Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.3:
+
+	* getmessages.c:  don't initialize call and logfile name if present in logcfg.dat
+
+	* getctydata.c: bug fix:  calculate right cty for /P calls
+
+2002-05-26 Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.3:
+
+	*  score.c:  wpx + cqww: added 2 point mode for NA stations
+
+	* searchlog.c:  added red warning signal in case of call lock (check partials)
+
+	* parse_logcfg.c: added generic parameters 2EU3DX_POINTS, COUNTRY_MULT,
+		PORTABLE_MULT2 , SERIAL_EXCHANGE  for
+		use in logcfg.dat (e.g. in Region 1 field day..).
+
+	* added new parameters and logic to various files to enable "universal" contest
+
+	* edit_last.c : added new code to edit last qso ("@" command)
+
+2002-05-24 Rein Couperus   <rein@couperus.com>
+
+	tlf-0.5.2a: bug fixes:
+
+	* deleteqso.c:  fixed  call to tlf_deletelogline
+
+	* writecabrillo.c:  changed version to 0.5.2
+
+	New feature:  allow CW logging without external keyer....
+
+	* tlf.h: added #definition NO_KEYER
+
+	* write_keyer.c: check explicitly for presence of keyer
+
+	* parse_logcfg.c:  make default NO_KEYER
+
+	* main.c: initialize keyerport to NO_KEYER
+
+	* keyer.c: bail out if NO_KEYER
+
+	* sendbuf.c: bail out if NO_KEYER
+
+2002-05-24 Rein Couperus   <rein@couperus.com>
+
+	* tlf-0.5.2: Automatic generation of .paras file in working directory
+
+	* changed tlf_cleanup to automatically generate clfile and wwvfile at startup
+
+	* removed .paras, clfile, wwvfile and logfiles from /examples/xxx/
+
+	* added parameter MANY_CALLS to logcfg.dat
+
+	* added parameters POWERMULT to logcfg.dat (for arrlfd)
+
+	* update of scoring routine for arrlfd
+
+	* added larger partial call window
+
+
+
+2002-05-19  Rein Couperus  <rein@couperus.com>
+
+	* tlf-0.5.1: Initial version with automake and autoconf.
+

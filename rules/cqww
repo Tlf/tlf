@@ -1,0 +1,76 @@
+#################################
+#                               #
+#  CQWW CONTEST                 #
+#                               #
+#################################
+#
+CONTEST=cqww
+LOGFILE=cqww.log
+CONTEST_MODE
+#
+##################################
+#                                #
+#  CW Messages F1= to F12=       #
+#  Message CW_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = call		                 #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#     (works only with parport   #
+#       interface)               #
+#                                #
+##################################
+#
+F1=CQ DE % TEST
+F2=@ DE %
+F3=@ ++5NN--14
+F4=TU 73
+F5= @
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9= ?
+F10= QRZ?
+F11= PSE K
+F12=++++TEST---- % %
+#
+CW_TU_MSG=TU %
+S&P_TU_MSG=TU 5NN 14
+#
+#ALT_0=
+#ALT_1=
+#ALT_2=
+#ALT_3=
+#ALT_4=
+#ALT_5=
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+#################################
+#                               #
+#  Voice Keyer Files            #
+#    (F1 to F12)                #
+#################################
+#
+#VKM1=cq.wav  (examples...)
+#VKM2=
+#VKM3=/home/rein/tlf/rst.wav
+#VKM4=/home/rein/tlf/qsl.wav
+#VKM5=/home/rein/tlf/73.wav
+#VKM6=/home/rein/tlf/call.wav
+#VKM7=
+#VKM8=
+#VKM9=/home/rein/tlf/agn.wav
+#VKM10=/home/rein/tlf/qrz.wav
+#VKM11=/home/rein/tlf/spreturn.wav
+#VKM12=/home/rein/tlf/cq2.wav
+#VKSPR=/home/rein/tlf/spreturn.wav (S&P return message)
+#VKCWR=/home/rein/tlf/qsl.wav	(CQ mode return message)
+#
+####### END #####################

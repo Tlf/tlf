@@ -1,0 +1,12 @@
+#!/bin/sh
+
+while [[ -f /home/rein/.VRlock ]]
+do
+		filename="/home/rein/tlf/soundlogs/"`eval date +%d%H%M`".au"
+		if test -f $filename
+		then
+			sleep 10s
+		else
+			rec -w  -r 8000 -d /dev/dsp1 $filename > /dev/null 2> /dev/null
+		fi
+done

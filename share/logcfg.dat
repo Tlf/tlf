@@ -1,0 +1,183 @@
+RULES=cqww
+#
+#################################
+#                               #
+#   TLF-LOGCFG.DAT v. 0.9.21    #
+#                               #
+#  Uncomment the options you    #
+#  want to enable. See tlf.doc  #
+#  for a description of the     #
+#  options. You can keep diff-  #
+#  erent versions for different #
+#  contests. I keep separate    #
+#  configuration files for      #
+#  each contest. If you enable  #
+#  more than 1 mutually exclu-  #
+#  sive options, the last one   #
+#  will be efective.            #
+#                               #
+#                               #
+#################################
+#
+#CTCOMPATIBLE
+#
+#################################
+#                               #
+#   EDITOR                      #
+#                               #
+#################################
+#
+EDITOR=joe
+#EDITOR=vi
+#EDITOR=e3
+#EDITOR=MC
+#
+#################################
+#                               #
+#  CALL                         #
+#                               #
+#################################
+#
+CALL=NOCALL
+#
+#
+#################################
+#                               #
+#  Time offset from UTC         #
+#                               #
+#################################
+#
+TIME_OFFSET=0
+TIME_MASTER
+#
+#################################
+#                               #
+#  LAN PORT                     #
+#                               #
+#################################
+#  addnode only OTHER nodes !!
+#
+#ADDNODE=10.0.0.115
+#ADDNODE=192.168.1.2
+#
+THISNODE=A
+#
+LAN_DEBUG
+#
+#################################
+#                               #
+#  KEYERPORT                    #
+#                               #
+#################################
+#
+NETKEYER
+#NETKEYERPORT=6789
+#NETKEYERHOST=127.0.0.1
+#
+#################################
+#                               #
+#  KEYERPARAMETERS              #
+#                               #
+#################################
+#---speed (6 ... 60 wpm)
+CWSPEED=30
+#---weight (-5 ... 5 ms)
+WEIGHT=1
+#---cq delay (s)
+CQDELAY=20
+#---txdelay (ms)
+TXDELAY=2
+#---sidetone (200...800, 0 = mute)
+CWTONE=800
+#################################
+#                               #
+#  PACKET INTERFACE             #
+#                               #
+#################################
+# Cluster: PI4TUE (Eindhoven)
+TELNETHOST=131.155.192.179
+TELNETPORT=8000
+#automatic login#################
+#CLUSTERLOGIN=yourcall
+#write log to disk###############
+#CLUSTER_LOG
+#
+#use tnc instead of telnet#######
+#TNCPORT=/dev/ttyS0
+#TNCPORT=/dev/ttyUSB1
+#TNCSPEED=2400
+#
+#get clusterinfo from network####
+#FIFO_INTERFACE
+#
+#################################
+#                               #
+#  RADIO CONTROL                #
+# (comment out if not present)  #
+# Rigmodel = Hamlib index, here #
+#           for ten tec OMNI VI #
+#################################
+#
+#RADIO_CONTROL
+#RIGMODEL=351
+#RIGSPEED=2400
+#RIGPORT=/dev/ttyS0
+#RIGPORT=/dev/ttyUSB2
+#
+#SSBMODE
+#
+#RIT_CLEAR
+#
+#SHOW_FREQUENCY
+#
+#################################
+#                               #
+#  INFORMATION WINDOWS          #
+#                               #
+#################################
+#
+#CLUSTER
+#BANDMAP
+SPOTLIST
+#FILTER
+#
+SCOREWINDOW
+#
+CHECKWINDOW
+#################################
+#                               #
+#  CHECK PARTIAL FUNCTION       #
+#                               #
+#################################
+# 
+PARTIALS                    
+#USEPARTIALS
+#MANY_CALLS
+#
+#################################
+#                               #
+#  CONDX (info for muf calc.)   #
+#                               #
+#################################
+#
+SUNSPOTS=30
+SFI=100
+#
+#################################
+#                               #
+#     Misc commands             #
+#                               #
+#################################
+# No automatic 'qso before msg'
+NOB4
+#
+# No automatic cq
+#NOAUTOCQ
+#
+# Left/right arrows don't change band...
+#NO_BANDSWITCH_ARROWKEYS
+#
+# Marker file for Xplanet
+MARKERS=tlfmarkers
+#
+#############END#################

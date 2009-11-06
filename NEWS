@@ -1,0 +1,127 @@
+tfl-0.9.31-2
+============
+
+Fixed 'possible calls' routine. It now looks into the own 
+log first before checking the callmaster database. Calls 
+can now be up to 12 characters
+
+tlf-0.9.31
+==========
+
+Fix for buffer overflow
+Changed 'worked' window. No search for partials.
+
+tlf-0.8.20
+==========
+
+Added hamlib-1.1.4 compatibility.
+
+tlf-0.8.9
+=======
+
+Added CT compatibility mode.
+
+tlf-0.8.7
+=======
+
+Added time sync protocol to the network.
+
+tlf-0.8.5
+=======
+
+Added time shift parameter to run computer at local time.
+
+tlf-0.8.4
+=======
+
+Added ARRL Sweepstakes for SO and M/S
+
+tlf-0.8.0
+=======
+
+Added full ip network support for M2, M/S or M/M operation of CQWW and WPX
+
+tlf-0.7.4
+=======
+
+Added support for user mode cwdaemon (NETKEYER)
+(now with direct mode !!)
+
+tlf-0.7.3
+=======
+
+Added CW contest simulator for cqww...
+
+tlf-0.7.0
+=======
+
+Added Hamlib-1.1.3 support for rig control of most popular radios
+
+tlf-0.6.1
+=========
+
+Added telnet client and tnc terminal
+Check routines now  completely memory based for lightning speed...
+
+tlf-0.5.4
+========
+
+Added support for e3 editor
+
+tlf-0.5.3
+========
+
+Major changes with respect to version  tlf-0.5.0 are:
+- addition of region 1 fieldday contest
+- complete overhaul of "edit last qso"
+- auto_complete now gives a warning if the call is locked
+- added new parameters for "universal" contest
+- bug fix: added 2-point mode for wpx and cqww for NA stns
+
+It is now possible to create your own contest.
+E.g. for the r1fieldday you can enter the following in logcfg.dat:
+
+#dissable all standard contests
+CONTEST=fieldday
+COUNTRY_MULT 		(dxcc countries = multiplier)
+2EU3DX_POINTS 		(2 points for qso's in own continent, 3 for DX)
+PORTABLE_MULT_2      (x 2 for qso with portable stations)
+
+If you need specific parameters for certain contest, please ask (you never know..).
+
+
+tlf-0.5.2
+========
+
+Major changes with respect to version  tlf-0.5.0 are:
+- Autoconf and automake support
+- New parameter MANY_CALLS gives you 50 partial calls if you need it
+- Call edit now includes INSERT and DELETE  functions (see the manual..)
+- New parameters POWERMULT introduced for the arrlfd contest
+
+tlf-0.5.0
+=========
+
+Major changes with respect to version TLF-0.4.5 are:
+- Globalisation of the directory structure
+- Partial call / auto-complete function (optional)
+- Flush logfile to disk after each qso
+- Some bug fixes.
+- Final check on wpx-cw
+- Added Arrl-fd test version (for hf)
+- Arrl-fd needed a DIG mode
+
+The new directory structure:
+
+/<homedir>/.../<contestdir>	separate directory per contest (r/w)
+<PREFIX>/bin					binaries and scripts
+<PREFIX>/share/tlf			callmaster, ctydb, default templates
+<PREFIX>/share/tlf/doc		documentation
+<PREFIX>/share/tlf/examples	template config files per contest
+<PREFIX>/share/tlf/src		source code
+/tmp/tlf						all temporary files
+
+
+
+See /doc/README and ChangeLog for details
+See the html manual for answers to most of your questions  :-)
