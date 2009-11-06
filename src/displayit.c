@@ -39,7 +39,7 @@ char  term2buf[85] = "";
 		strncat(term2buf, termbuf,  strlen(termbuf) - 1  );
 		strncat(term2buf, backgrnd_str, 81 - strlen(termbuf));   /* fill with blanks */
 
-		strcat(term2buf, "\n");
+		term2buf[80] = '\0';
 		strcpy(terminal1, terminal2);
 		strcpy(terminal2, terminal3);
 		strcpy(terminal3, terminal4);
