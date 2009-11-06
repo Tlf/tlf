@@ -55,7 +55,6 @@ extern struct tm *time_ptr;
 
 char time_buf[80];
 char speedbuf[3] = "  ";
-char month[3] = "01";
 
 strncpy(speedbuf, speedstr  + (2 * speed)  ,2);
 speedbuf[2] =  '\0';
@@ -100,10 +99,7 @@ else if (trxmode == SSBMODE)
  else
 	strftime(time_buf, 60, "DIG %d-%b-%y %H:%M ",  time_ptr);
 
-strncat (month, time_buf + 2, 2);      /* month for muf calc */
-m = atoi ( month);
-if (m == 0)
-	m++;
+	m = time_ptr->tm_mon;		/* month for muf calc */
 	
 mvprintw(12, 3,time_buf);
 
