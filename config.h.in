@@ -1,5 +1,4 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
-#undef PACKAGE_DATA_DIR
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
@@ -78,6 +77,9 @@
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
+
+/* package_data_dir is in prefix */
+#undef PACKAGE_DATA_DIR
 
 /* Define to the full name of this package. */
 #undef PACKAGE_NAME

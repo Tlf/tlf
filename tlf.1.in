@@ -26,7 +26,7 @@
 \fBtlf\fR
 is a console (ncurses) mode general purpose CW keyer, -logging and -contest
 program for hamradio. It supports the CQWW, the WPX, the ARRL-DX , the ARRL-FD,
- the PACC and the EU SPRINT contests as well as a lot more basic contests,
+the PACC and the EU SPRINT contests as well as a lot more basic contests,
 general QSO and DXpedition mode. It interfaces with a morse code generator, a
 number of radios, and with a DX Cluster. Tlf can project DX cluster data into
 the excellent Xplanet program, written by Hari Nair.
@@ -46,7 +46,7 @@ Since tlf-0.9.21 the cwdaemon-0.9 is fully supported, featuring direct mode
 for the keyboard and output to parallel and serial ports and speed and weight
 control from the keyboard, and band info output on the parallel port.
 .P
-For rig control tlf works with Hamlib (v. 1.2.3), you find it at Sourceforge.com.
+For rig control tlf works with Hamlib (v. >=1.2.3), you can find it at Sourceforge.com.
 .P
 Tlf provides full ip networking between tlf nodes,
 syncing/distributing log, packet data, frequency data, local talk, serial
@@ -71,10 +71,10 @@ of a logcfg.dat file you can start in verbose mode, to have a look at the
 startup messages. From version tlf-0.9.3 you can load different config files with
 tlf -f<filename>.
 
-You can stop tlf with the \fB:EXIT\fR command, the \fB:QUIT\fR command or with \fBCtrl-c\fR or \fBAlt-x\fR.
+You can stop tlf with the \fB:EXIT\fR command, the \fB:QUIT\fR command or with \fBCtrl-c\fR, \fBAlt-q\fR or \fBAlt-x\fR.
 
 At restart tlf recalculates the score, which may take some time depending on the
-number of qso's in the logfile and the speed of your system... Tlf takes the
+number of qso's in the logfile and the speed of your system. Tlf takes the
 points as they are in the log, and calculates the multiplier from either
 callsign or exchange field (depending on the contest).
 
@@ -112,7 +112,7 @@ Toggle contest mode on/off
 
 .TR
 .B :CTY, :ZONe, :MULt
-Show country multipliers, zones, multipliers per continent
+Show needed country multipliers, zones, multipliers per continent
 
 .TR
 .B :CWMode, :SSBmode, :DIGimode
@@ -259,7 +259,7 @@ Other contests may work, you have to experiment.
 
 The keymap refers to the linux text console. It may be slightly different on X terminals.
 From the X terminals KDE konsole has been proven to work best if you set keyboard to linux,
-and colour scheme to VIM colours , system colours or linux colours. Moreover on some systems you must set \fB\TERM=linux\fR\ or fB\TERM=rxvt\fR.
+and colour scheme to VIM colours, system colours or linux colours. Moreover on some systems you must set \fB\TERM=linux\fR\ or \fB\TERM=rxvt\fR.
 This also works under vnc.
 
 .TR
@@ -272,7 +272,6 @@ If field not empty and CHANGE_RST is set: change rSt value
 Increase Auto_CQ delay (1 sec).
 Set Aut0_CW delay to message length + pause length. This is because tlf does not
 know when the cwdaemon is ready...
-
 
 .TR
 .B Pg-down 
@@ -427,7 +426,7 @@ CW messages
 
 .TR
 .B Alt-a
-switch cluster window
+Cycle cluster window: NOCLUSTER->CLUSTER->BANDMAP->SPOTS->... 
 
 .TR
 .B Alt-b
@@ -515,7 +514,7 @@ The logcfg.dat file can be edited from within tlf by the \fB:CFG\fR or \fB:SET\f
 You can set your favourite  editor (joe | vi | e3 | MC) in the logcfg.dat file.
 You connect the rules file by using the statement RULES=<contestname> in logcfg.dat.
 Tlf will first look in the working directory for a logcfg.dat file, and if it cannot find
-one it will look in /usr/local/share/tlf. Make sure you edit the logcfg.dat file to
+one it will look in @prefix@/share/@PACKAGE@. Make sure you edit the logcfg.dat file to
 hold your call and your preferred system configuration.
 
 .SH "LOGCFG.DAT statements"
@@ -766,7 +765,7 @@ after a cq...
 .TR
 .B LOGFREQUENCY
 Put frequency (kHZ) into qso number to enable logging of frequency (only qso
-and dxped mode
+and dxped mode)
 
 .TR
 .B IGNOREDUPES
@@ -804,7 +803,7 @@ projection, and center the map on your qth.
 .TR
 The contest rules can be put into separate files. Tlf will first look for a
 directory called "rules/" in the working directory, and a file "<contest_name>".
-If tlf cannot find that it will look into the directory /usr/local/share/tlf/rules.
+If tlf cannot find that it will look into the directory @prefix@/share/@PACKAGE@/rules.
 A rules file contains contest specific content like multipliers, point, messages etc.
 The rules file overrides the logcfg.dat file.
 .B WARNING! It is your own reponsibility to try these rules well BEFORE the contest. The 
@@ -813,7 +812,7 @@ author is contesting (we are in it for the fun, remember...).
 
 .B CONTEST=xxxxx
 Name of the contest (same as the file name).
-Some contests, like cqww and wpx, are pre-programmed. look for the relevant rules file in /usr/local/share/tlf/rules.
+Some contests, like cqww and wpx, are pre-programmed. look for the relevant rules file in @prefix@/share/tlf/rules.
 
 .TR
 .B LOGFILE=<logfilename>
@@ -930,7 +929,7 @@ Three points per QSO
 Points per SSB QSO
 
 .TR
-.B CWPOINTS
+.B CWPOINTS=
 Points per CW QSO
 
 .TR
@@ -1026,7 +1025,7 @@ Multiplier is DXCC country or section from multiplier file.
 Exchange can be recycled, will be filled into exchange field when it is known( see also INITIAL_EXCHANGE)
 
 .TR
-.B INITIAL_EXCHANGE
+.B INITIAL_EXCHANGE=
 Format: INITIAL_EXCHANGE=exchanges.txt
 The file must contain a comma-separated list of exchanges, if e.g. the exchange is the name of the operator:
 PA0R,rein
@@ -1069,7 +1068,7 @@ Check it before the contest and message to tlf-devel@nongnu.org if anything is w
 
 \fB@prefix@/share/@PACKAGE@/cty.dat\fR
 contains a flat ascii data base of info about countries. Tlf-0.9.21 contains a version
-of 15.11.2003. This is the sxame file as used by CT or TRlog.
+of 15.11.2003. This is the same file as used by CT or TRlog.
 
 \fB@prefix@/share/@PACKAGE@/mastercalls\fR
 contains a flat ascii data base of contest callsigns (> 25.000), which is rather old.
@@ -1083,7 +1082,7 @@ MULT_LIST=<sectionfilename> in the rules file.
 .SH "DOCUMENTATION"
 .TR
 An operation manual (mostly not as up-to-date as this man page) is available in html format at the tlf project download page
-(\fBhttp://www.wwns.com/tlf)\fR or online via the tlf web page.
+(\fBhttp://sharon.esrac.ele.tue.nl/pub/linux/ham/tlf/)\fR or online via the tlf web page.
 
 .SH "AUTHORS"
 \fBtlf\fR was written by Rein Couperus
