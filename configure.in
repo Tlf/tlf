@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(src, 1.0.0pre2, rein@couperus.com)
-AM_INIT_AUTOMAKE(tlf, 1.0.0pre2)
+AC_INIT(src, 1.0.0pre3, rein@couperus.com es tb@forth-ev.de)
+AM_INIT_AUTOMAKE(tlf, 1.0.0pre3)
 AM_CONFIG_HEADER(config.h)
 
 # Checks for programs.
