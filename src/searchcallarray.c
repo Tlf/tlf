@@ -17,37 +17,35 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 	/* ------------------------------------------------------------
- 	*      search  call array
- 	*
- 	*--------------------------------------------------------------*/
+	 *      search  call array
+	 *
+	 *--------------------------------------------------------------*/
 
- 	#include "searchcallarray.h"
- 	
- 	int searchcallarray  (char  *hiscall)
- 	{
-// 	extern char hiscall[];
- 	extern int callarray_nr;
- 	extern char callarray[MAX_CALLS][20];
- 	
- 	int found = 0;
- 	int i;
-	static char cbuffer[40] = "";
- 	
- 		
- 		cbuffer[0] = '\0';
- 		strcat(cbuffer,  hiscall);
- 		strcat(cbuffer, "           ");
- 		cbuffer[10] = '\0';
- 	 	 	
- 	 	for (i = 0 ; i  <= callarray_nr ; i++){
- 	 	 	
- 	 		if (strcmp(callarray[i], cbuffer) == 0){
- 	 			found = i;
- 	 			break;
- 	 		}
- 	 		
- 	 	 }
- 	
- 	     return (found);
- 	}
+#include "searchcallarray.h"
 
+int searchcallarray(char *hiscall)
+{
+//      extern char hiscall[];
+    extern int callarray_nr;
+    extern char callarray[MAX_CALLS][20];
+
+    int found = 0;
+    int i;
+    static char cbuffer[40] = "";
+
+    cbuffer[0] = '\0';
+    strcat(cbuffer, hiscall);
+    strcat(cbuffer, "           ");
+    cbuffer[10] = '\0';
+
+    for (i = 0; i <= callarray_nr; i++) {
+
+	if (strcmp(callarray[i], cbuffer) == 0) {
+	    found = i;
+	    break;
+	}
+
+    }
+
+    return (found);
+}

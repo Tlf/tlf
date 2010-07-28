@@ -26,17 +26,17 @@
 
 int get_time(void)
 {
-extern struct tm *time_ptr;
-extern int timeoffset;
-extern long timecorr;
+    extern struct tm *time_ptr;
+    extern int timeoffset;
+    extern long timecorr;
 
-time_t now;
+    time_t now;
 
 //time (&now);
-now = (time(0) + (timeoffset * 3600) + timecorr);
+    now = (time(0) + (timeoffset * 3600) + timecorr);
 
-time_ptr =  gmtime(&now);
+    time_ptr =  gmtime(&now);
 
-return(0);
+    return(0);
 }
 

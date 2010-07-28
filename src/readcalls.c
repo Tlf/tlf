@@ -43,7 +43,7 @@ int readcalls(void)
 	int add_ok;
 	char multbuffer[40];
 	char presentcall[20]; // copy of call..
-	char *tmpptr;
+	char *tmpptr, *rp;
 	int points;
 
 
@@ -76,7 +76,7 @@ int readcalls(void)
 	for (n = 0; n < 6; n++)
 		zonescore[n] = 0;
 
-	for (n = 0 ; n <= NBANDS ; n++)
+	for (n = 0 ; n < NBANDS ; n++)	//F6CFE
 	      	multscore[n]  = 0;
 
  	for (n = 0; n < MAX_MULTS; n++)
@@ -100,11 +100,11 @@ int readcalls(void)
 
 	while(!feof(fp)){
 
-		fgets (inputbuffer, 90,  fp);
+		rp=fgets (inputbuffer, 90,  fp);
 
 
 		r++;
-		
+
 		if (r >= 100){
 		 	r = 0;
 		 	printw("*");
@@ -132,14 +132,14 @@ int readcalls(void)
 
 		strncpy(bndbuf, inputbuffer + 1 , 2);
 		bndbuf[2] = '\0';
-			
-		if (bndbuf[0] == '1' && bndbuf[1] == '0') bandinx = BANDINDEX_10;	
-		if (bndbuf[0] == '1' && bndbuf[1] == '5') bandinx = BANDINDEX_15;	
+
+		if (bndbuf[0] == '1' && bndbuf[1] == '0') bandinx = BANDINDEX_10;
+		if (bndbuf[0] == '1' && bndbuf[1] == '5') bandinx = BANDINDEX_15;
 		if (bndbuf[0] == '2') bandinx = BANDINDEX_20;
 		if (bndbuf[0] == '4') bandinx = BANDINDEX_40;
-		if (bndbuf[0] == '8') bandinx = BANDINDEX_80;	
+		if (bndbuf[0] == '8') bandinx = BANDINDEX_80;
 		if (bndbuf[0] == '6') bandinx = BANDINDEX_160;
-			
+
 		/* get the country number, not known at this point */
 		tmpptr = strchr(presentcall,' ');
 		if (tmpptr) *tmpptr='\0';
@@ -152,16 +152,16 @@ int readcalls(void)
 			points=atoi(tmpbuf);
 			total = total + points;
 			keep = points;
-			
+
 			if (cqww == 1){
 				strncpy(zonebuf, inputbuffer + 54, 2);     /* get the zone */
 				zonebuf[2] = '\0';
 				z = zone_nr(zonebuf);
 			}
-			
+
 			if (wysiwyg_once ==1 ||
 			    wysiwyg_multi == 1 ||
-			    arrlss == 1|| 
+			    arrlss == 1||
 			    serial_section_mult == 1||
 				serial_grid4_mult == 1 ||
 			    sectn_mult == 1 ||
@@ -181,7 +181,7 @@ int readcalls(void)
 					multbuffer[3]='\0';
 
 				} else if (serial_section_mult == 1 )  {
-					
+
 					tt = 0;
 
 					memset (multbuffer, 0, 39);
@@ -195,14 +195,14 @@ int readcalls(void)
 					}
 
 				} else if (serial_grid4_mult == 1) {
-				
+
 					memset (multbuffer, 0, 39);
-					
+
 					for (t = 0; t < 4; t++){
-					
+
 						multbuffer[t] = inputbuffer[t+59];
 					}
-					
+
 				} else {
 
 					strncpy(multbuffer, inputbuffer+54, 10);       // normal case
@@ -267,7 +267,7 @@ int readcalls(void)
 					if (strcmp(mults[ii], multbuffer) == 0) {
 					    	found = 1;
 				    		break;
-				 	} 
+				 	}
 
 				 }
 
@@ -344,14 +344,14 @@ int readcalls(void)
         		checkcall[0] = '\0';
         		strcat(checkcall, callarray[n]);
         		getpx(checkcall);
-	
+
         		prefixes_worked[p][0] = '\0';
-	
+
         		for (q = 0 ; q <= p ; q++){
         	 		if (strcmp(pxstr, prefixes_worked[q]) == 0){
        	 	 	    		found = 1;
         	 			break;
-	
+
         	 		}
         		}
         		if (found != 1){
@@ -359,12 +359,12 @@ int readcalls(void)
         		 	p++;
         		}
         		found = 0;
-	
+
 			nr_of_px = p ;
-	
+
          	}
       	}  /* end wpx */
-	
+
       	if (cqww == 1){
       		for (n = 1 ; n <= 40 ; n++){
       		 	if ((zones[n] & BAND160)!= 0)
@@ -496,7 +496,7 @@ int readcalls(void)
 	        for (i = 0; i <= 5 ; i++)
          		countryscore[i] = 0;
 
-	        for (i = 0; i <= NBANDS ; i++)
+	        for (i = 0; i < NBANDS ; i++)
        			multscore[i] = 0;
 
         	wysiwygmults = 0;
@@ -525,6 +525,7 @@ int synclog(char *synclogfile)
 	extern char logfile[];
 	extern struct tm *time_ptr;
 
+	int rc;
 	char wgetcmd[120] = "wget ftp://";  //user:password@hst/dir/file
 	char date_buf[60];
 
@@ -573,8 +574,8 @@ int synclog(char *synclogfile)
 		exit(1);
 	}
 	sleep(1);
-	system ("rm log1");
-	system ("rm log2");
+	rc=system ("rm log1");
+	rc=system ("rm log2");
 
 	return (0);
 }

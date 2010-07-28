@@ -16,39 +16,38 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-  	/* ------------------------------------------------------------
- 	*        i-to-a function for qso number (4  chars)
- 	*
- 	*--------------------------------------------------------------*/
+	/* ------------------------------------------------------------
+	 *        i-to-a function for qso number (4  chars)
+	 *
+	 *--------------------------------------------------------------*/
 
 #include "qsonr_to_str.h"
 
-int  qsonr_to_str(void)
+int qsonr_to_str(void)
 {
- extern int qsonum;
- extern char qsonrstr[5];
+    extern int qsonum;
+    extern char qsonrstr[5];
 
-static int x;
-static int thousands;
-static int hundreds;
-static int tens;
-static char buffer[5];
+    static int x;
+    static int thousands;
+    static int hundreds;
+    static int tens;
+    static char buffer[5];
 
- x  =  qsonum;
- thousands =  (x /  1000);
- x  =  x  - (thousands  *  1000);
- hundreds  = (x  /  100);
- x  = x - (hundreds * 100);
- tens  = (x  /  10);
- x =  x - (tens * 10);
+    x = qsonum;
+    thousands = (x / 1000);
+    x = x - (thousands * 1000);
+    hundreds = (x / 100);
+    x = x - (hundreds * 100);
+    tens = (x / 10);
+    x = x - (tens * 10);
 
- buffer[0] =  thousands  + 48 ;
- buffer[1] =  hundreds  +  48  ;
- buffer[2] = tens +  48  ;
- buffer[3]  = x + 48  ;
- buffer[4]  =  '\0'  ;
- strncpy (qsonrstr, buffer, 4);
+    buffer[0] = thousands + 48;
+    buffer[1] = hundreds + 48;
+    buffer[2] = tens + 48;
+    buffer[3] = x + 48;
+    buffer[4] = '\0';
+    strncpy(qsonrstr, buffer, 4);
 
- return (0);
+    return (0);
 }
-

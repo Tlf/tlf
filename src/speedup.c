@@ -17,9 +17,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 	/* ------------------------------------------------------------
- 	*        Page-up increases CW speed with 2 wpm
- 	*
- 	*--------------------------------------------------------------*/
+	 *        Page-up increases CW speed with 2 wpm
+	 *
+	 *--------------------------------------------------------------*/
 
 #include "speedup.h"
 #include "tlf.h"
@@ -30,152 +30,108 @@
 int speedup(void)
 {
 
-extern int speed;
-extern char speedstr[];
-extern int trxmode;
-extern int keyerport;
-extern int cfd;
-extern char buffer[];
+    extern int speed;
+    extern char speedstr[];
+    extern int trxmode;
+    extern int keyerport;
+    extern int cfd;
+    extern char buffer[];
 
-int  retval = 0;
-char buff[3];
+    int retval = 0;
+    char buff[3];
 
-		if (trxmode != CWMODE)
-		return (0);
+    if (trxmode != CWMODE)
+	return (0);
 
-if (keyerport == COM1_KEYER) {
-	if (speed < 20)
-	{
-	  speed++;
+    if (keyerport == NET_KEYER) {
 
-		strncpy(buff, speedstr+(speed * 2), 2);
+	if (speed < 20) {
 
-		retval = ioctl(cfd, CWSPEED, atoi(buff));
-		buff[2] = '\0';
-		if	(retval)
-		{
-			mvprintw(24,0, "keyer not active");
-//			trxmode = SSBMODE;
-			sleep(1);
-			clear_display();
-		}
+	    speed++;
+
+	    strncpy(buff, speedstr + (speed * 2), 2);
+	    buff[2] = '\0';
+
+	    retval = netkeyer(K_SPEED, buff);
+
+	    if (retval < 0) {
+		mvprintw(24, 0, "keyer not active");
+//                      trxmode = SSBMODE;
+		sleep(1);
+		clear_display();
+	    }
 
 	}
+    }
+
+    if (keyerport == MFJ1278_KEYER) {
+
+	if (speed < 20) {
+
+	    speed++;
+
+	    strncpy(buff, speedstr + (speed * 2), 2);
+	    buff[2] = '\0';
+
+	    strcpy(buffer, "\\\015");
+	    sendbuf();
+	    usleep(500000);
+	    strcpy(buffer, "MSP ");
+	    strcat(buffer, buff);
+	    strcat(buffer, " \015");
+	    sendbuf();
+	    usleep(500000);
+	    strcpy(buffer, "CONV\015\n");
+	    sendbuf();
+
+	    if (retval < 0) {
+		mvprintw(24, 0, "keyer not active");
+//                      trxmode = SSBMODE;
+		sleep(1);
+		clear_display();
+	    }
+
+	}
+    }
+
+    if (keyerport == ORION_KEYER) {
+
+	if (speed < 20) {
+
+	    speed++;
+
+	    strncpy(buff, speedstr + (speed * 2), 2);
+	    buff[2] = '\0';
+
+	    orion_set_cw_speed(atoi(buff));
+
+	}
+    }
+    return (speed);
 }
 
-if (keyerport == LPT_KEYER) {
+int setweight(int weight)
+{				//  write weight to netkeyer
 
- 	if (speed < 20) {
+    extern int keyerport;
 
- 		speed++;
+    int retval;
+    char buff[4];
 
- 		strncpy(buff, speedstr+(speed * 2), 2);
-		buff[2] = '\0';
+    if (keyerport == NET_KEYER && weight > -51 && weight < 51) {
 
-		retval = ioctl(cfd, CWKEYER_IOCSSPEED, atoi(buff));
+	sprintf(buff, "%d", weight);
 
-		if	(retval)
-		{
-			mvprintw(24,0, "keyer not active");
-//			trxmode = SSBMODE;
-			sleep(1);
-			clear_display();
-		}
+	retval = netkeyer(K_WEIGHT, buff);
 
- 	}
-}
-if (keyerport == NET_KEYER) {
+	if (retval < 0) {
+	    mvprintw(24, 0, "keyer not active ?");
+	    sleep(1);
+	    clear_display();
+	}
 
- 	if (speed < 20) {
+    }
 
- 		speed++;
-
- 		strncpy(buff, speedstr+(speed * 2), 2);
-		buff[2] = '\0';
-
-		retval = netkeyer(K_SPEED, buff);
-
-		if	(retval < 0)
-		{
-			mvprintw(24,0, "keyer not active");
-//			trxmode = SSBMODE;
-			sleep(1);
-			clear_display();
-		}
-
- 	}
-}
-
-if (keyerport == MFJ1278_KEYER) {
-
- 	if (speed < 20) {
-
- 		speed++;
-
- 		strncpy(buff, speedstr+(speed * 2), 2);
-		buff[2] = '\0';
-
-		strcpy (buffer, "\\\015");
-		sendbuf();
-		usleep(500000);
-		strcpy (buffer, "MSP ");
-		strcat (buffer, buff);
-		strcat (buffer, " \015");
-		sendbuf();
-		usleep(500000);
-		strcpy (buffer, "CONV\015\n");
-		sendbuf();
-
-		if	(retval < 0)
-		{
-			mvprintw(24,0, "keyer not active");
-//			trxmode = SSBMODE;
-			sleep(1);
-			clear_display();
-		}
-
- 	}
-}
-
-if (keyerport == ORION_KEYER) {
-
- 	if (speed < 20) {
-
- 		speed++;
-
- 		strncpy(buff, speedstr+(speed * 2), 2);
-		buff[2] = '\0';
-
-		orion_set_cw_speed(atoi(buff));
-
- 	}
-}
-return (speed)	;
-}
-
-int setweight(int weight) {					//  write weight to netkeyer
-
-extern int keyerport;
-
-int retval;
-char buff[4];
-
- 	if (keyerport == NET_KEYER && weight > -51 && weight < 51) {
-
- 		sprintf(buff, "%d", weight);
-
-		retval = netkeyer(K_WEIGHT, buff);
-
-		if	(retval < 0)
-		{
-			mvprintw(24,0, "keyer not active ?");
-			sleep(1);
-			clear_display();
-		}
-
- 	}
-
-return (0)	;
+    return (0);
 
 }
-

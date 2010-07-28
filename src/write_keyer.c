@@ -23,122 +23,97 @@
 #include <curses.h>
 #include "netkeyer.h"
 
-int write_keyer(void) {
+int write_keyer(void)
+{
 
-extern char wkeyerbuffer[];
-extern int trxmode;
-extern int keyerport;
-extern int data_ready;
-extern int cfd;
-extern char controllerport[];
-extern int native_rig_fd;
-extern char speedstr[];
-extern int speed;
-extern char rttyoutput[];
+    extern char wkeyerbuffer[];
+    extern int trxmode;
+    extern int keyerport;
+    extern int data_ready;
+    extern int cfd;
+    extern char controllerport[];
+    extern int native_rig_fd;
+    extern char speedstr[];
+    extern int speed;
+    extern char rttyoutput[];
 
-FILE *bfp = NULL;
-int i;
-char send_orion[3];
-char buff[8];
-int realspeed = 32;
-char outstring[120] = "";
+    FILE *bfp = NULL;
+    int i, rc;
+    char send_orion[3];
+    char buff[8];
+    int realspeed = 32;
+    char outstring[120] = "";
 
-if (trxmode != CWMODE && trxmode != DIGIMODE)
-	return(1);
+    if (trxmode != CWMODE && trxmode != DIGIMODE)
+	return (1);
 
+    if (data_ready == 1) {
 
-if (data_ready == 1 ) {
-
-	if (keyerport == LPT_KEYER) {
-		write( cfd, wkeyerbuffer, strlen(wkeyerbuffer));
-           	wkeyerbuffer[0] = '\0';
-           	data_ready = 0;
-    	}else if (keyerport == COM1_KEYER){
-		
-		if  ( (bfp = fopen("/dev/cwkeyer","a"))  == NULL){
-			mvprintw(24,0,  "cwkeyer not active. Switching to SSB mode.");
-			sleep(1);
-			trxmode = SSBMODE;
-			clear_display();
-
-		}
-		else {
-			fputs(wkeyerbuffer, bfp);
-			wkeyerbuffer[0] = '\0';
-			data_ready = 0;
-
-		fclose(bfp);
-       		}
-  	} else if (keyerport == NET_KEYER){
-		 	netkeyer(K_MESSAGE, wkeyerbuffer);
-			wkeyerbuffer[0]='\0';
-			data_ready = 0;
+	if (keyerport == NET_KEYER) {
+	    netkeyer(K_MESSAGE, wkeyerbuffer);
+	    wkeyerbuffer[0] = '\0';
+	    data_ready = 0;
 
 	} else if (keyerport == MFJ1278_KEYER) {
-		if  ( (bfp = fopen(controllerport,"a"))  == NULL){
-			mvprintw(24,0,  "1278 not active. Switching to SSB mode.");
-			sleep(1);
-			trxmode = SSBMODE;
-			clear_display();
-		}
-		else {
-			fputs(wkeyerbuffer, bfp);
-			wkeyerbuffer[0] = '\0';
-			data_ready = 0;
+	    if ((bfp = fopen(controllerport, "a")) == NULL) {
+		mvprintw(24, 0, "1278 not active. Switching to SSB mode.");
+		sleep(1);
+		trxmode = SSBMODE;
+		clear_display();
+	    } else {
+		fputs(wkeyerbuffer, bfp);
+		wkeyerbuffer[0] = '\0';
+		data_ready = 0;
 
 		fclose(bfp);
-       		}
+	    }
 
-	}else if (keyerport == GMFSK){
-			sprintf (outstring, "echo %c%c%s%c%c",'"','\n',wkeyerbuffer,'\n','"'); 
-			strcat (outstring, " >> ");
-			if (strlen(rttyoutput) < 2) {
-				mvprintw (24, 0, "No modem file specified!");
-			}
-			strcat (outstring, rttyoutput);
-			system (outstring);
-		
-			wkeyerbuffer[0] = '\0';
-			data_ready = 0;			
-	}
-	else if (keyerport == ORION_KEYER && strlen(wkeyerbuffer) > 0) {
-		if  ( native_rig_fd == 0){
-			mvprintw(24,0,  "Orion keyer not open.");
-			sleep(1);
-			clear_display();
+	} else if (keyerport == GMFSK) {
+	    sprintf(outstring, "echo %c%c%s%c%c", '"', '\n', wkeyerbuffer,
+		    '\n', '"');
+	    strcat(outstring, " >> ");
+	    if (strlen(rttyoutput) < 2) {
+		mvprintw(24, 0, "No modem file specified!");
+	    }
+	    strcat(outstring, rttyoutput);
+	    rc = system(outstring);
+
+	    wkeyerbuffer[0] = '\0';
+	    data_ready = 0;
+	} else if (keyerport == ORION_KEYER && strlen(wkeyerbuffer) > 0) {
+	    if (native_rig_fd == 0) {
+		mvprintw(24, 0, "Orion keyer not open.");
+		sleep(1);
+		clear_display();
+	    } else {
+		strncpy(buff, (speedstr + (speed * 2)), 2);
+		buff[2] = '\0';
+		realspeed = atoi(buff);
+
+		for (i = 0; i < strlen(wkeyerbuffer); i++) {
+
+		    if (strlen(wkeyerbuffer) == 0)
+			break;
+		    if (wkeyerbuffer[i] != ' ') {
+			send_orion[0] = '/';
+			send_orion[1] = wkeyerbuffer[i];
+			send_orion[2] = '\015';
+			rc = write(native_rig_fd, send_orion, 3);
+
+			usleep(cw_char_length(send_orion + 1) *
+			       (int) (1200000.0 / realspeed));
+		    } else
+			usleep(6 * (int) (1200000.0 / realspeed));
 		}
-		else {
-			strncpy(buff, (speedstr + (speed * 2)), 2);
-			buff[2] = '\0';
-			realspeed = atoi(buff);
 
-			for (i = 0; i < strlen(wkeyerbuffer) ; i ++) {
+		wkeyerbuffer[0] = '\0';
+		data_ready = 0;
 
-				if (strlen(wkeyerbuffer) == 0)
-					break;
-				if (wkeyerbuffer[i] != ' ') {
-					send_orion[0] = '/';
-					send_orion[1] = wkeyerbuffer[i];
-					send_orion[2] = '\015';
-					write (native_rig_fd, send_orion, 3);
-
-					usleep( cw_char_length( send_orion + 1) * (int)(1200000.0/realspeed));
-				} else
-					usleep(6 * (int)(1200000.0/realspeed));
-			}
-
-			wkeyerbuffer[0] = '\0';
-			data_ready = 0;
-
-       		}
+	    }
 
 	}
-}
+    }
 
-
-
-return(0);
+    return (0);
 
 }
-
-

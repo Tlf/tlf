@@ -17,20 +17,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 	/* ------------------------------------------------------------
- 	*   get zone number
- 	*
- 	*--------------------------------------------------------------*/
- 	
-#include "zone_nr.h" 	
- 	
- 	 int zone_nr(char *comment)
- 	 {
- 	 int z = 0;
- 	
-               if (comment[0] <= 57 && comment[0] >= 48)
-              	z = (comment[0] - 48) * 10;
-              if (comment[1] <= 57 && comment[1] >= 48)
-              	z = (comment[1] - 48) + z;
-     return (z);
-     }
+	 *   get zone number
+	 *
+	 *--------------------------------------------------------------*/
 
+#include "zone_nr.h"
+
+int zone_nr(char *comment)
+{
+    int z = 0;
+
+    if (comment[0] <= 57 && comment[0] >= 48)
+	z = (comment[0] - 48) * 10;
+    if (comment[1] <= 57 && comment[1] >= 48)
+	z = (comment[1] - 48) + z;
+    return (z);
+}

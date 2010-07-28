@@ -330,7 +330,7 @@ int getctydata(char *checkcallptr)
 			checkncall[pp]='\0';
 
 
-			for  (i=0  ;  i  <= MAX_DBLINES  ;  i++){
+			for  (i=0  ;  i  < MAX_DBLINES  ;  i++){
 
 
 				if ((strncmp(checkncall, prefixlines[i] , strlen(prefixlines[i])) == 0)) {

@@ -25,103 +25,105 @@
 #include "globalvars.h"
 #include "log_to_disk.h"
 
-int log_to_disk (void)
+int log_to_disk(void)
 {
-		extern int use_rxvt;
-		extern char hiscall[];
-		extern char comment[];
-		extern char my_rst[];
-		extern char his_rst[];
-		extern char qsonrstr[5];
-		extern char lan_logline[];
-		extern int rit;				
-   		extern int trx_control;
+    extern int use_rxvt;
+    extern char hiscall[];
+    extern char comment[];
+    extern char my_rst[];
+    extern char his_rst[];
+    extern char qsonrstr[5];
+    extern char lan_logline[];
+    extern int rit;
+    extern int trx_control;
 #ifdef HAVE_LIBHAMLIB
-		extern freq_t outfreq;
+    extern freq_t outfreq;
 #else
-		extern int outfreq;
+    extern int outfreq;
 #endif
-		extern int block_part;
-		extern int lan_active;
-		extern char lan_message[];
-		extern char thisnode;
-		extern int lan_mutex;
-		extern int cqwwm2;
+    extern int block_part;
+    extern int lan_active;
+    extern char lan_message[];
+    extern char thisnode;
+    extern int lan_mutex;
+    extern int cqwwm2;
 
-		if (lan_mutex == 1 ) {           // qso from this node
+    if (lan_mutex == 1) {	// qso from this node
 
-				addcall();
+	addcall();
 
-				makelogline();
+	makelogline();
 
-				hiscall[0] = '\0';	/* reset the call  string */
+	hiscall[0] = '\0';	/* reset the call  string */
 
-				comment[0] = '\0';	/* reset the comment  string */
-				comment[30] = '\0';
+	comment[0] = '\0';	/* reset the comment  string */
+	comment[30] = '\0';
 
-				store_qso(logline4);
-		} else {                          // qso from lan
-				
-				if ((lan_mutex == 2) && (lan_message[0] != thisnode) && (lan_active == 1)) {
-					strncpy(lan_logline, lan_message+2, 80);
-					strcat(lan_logline, "                                                                              ");
+	store_qso(logline4);
+    } else {			// qso from lan
 
-					if (cqwwm2 == 1)  {
-						if (lan_logline[0] != thisnode)
-							lan_logline[79]='*';
-					}
+	if ((lan_mutex == 2) && (lan_message[0] != thisnode)
+	    && (lan_active == 1)) {
+	    strncpy(lan_logline, lan_message + 2, 80);
+	    strcat(lan_logline,
+		   "                                                                              ");
 
-					lan_logline[80]='\0';
+	    if (cqwwm2 == 1) {
+		if (lan_logline[0] != thisnode)
+		    lan_logline[79] = '*';
+	    }
 
-					score2();
-					addcall2();
+	    lan_logline[80] = '\0';
 
-					store_qso(lan_logline);
-				}
+	    score2();
+	    addcall2();
 
-		}
+	    store_qso(lan_logline);
+	}
 
+    }
 
-		 // send qso to other nodes......
+    // send qso to other nodes......
 
+    if ((lan_active == 1) && (strlen(lan_message) == 0)) {
 
-				if ((lan_active == 1) && (strlen(lan_message) == 0))  {
+	send_lan_message(LOGENTRY, logline4);
+    }
 
-					send_lan_message(LOGENTRY , logline4);
-				}
+    lan_message[0] = '\0';
 
-				lan_message[0]='\0';
+    scroll_log();
 
-				scroll_log();
+    if (use_rxvt == 0)
+	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);	/* erase comment  field */
+    else
+	attron(COLOR_PAIR(NORMCOLOR));
 
-				if (use_rxvt == 0) attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);    /* erase comment  field */
-				else  attron(COLOR_PAIR(NORMCOLOR));
+    if (lan_mutex != 2)
+	mvprintw(12, 54, "                          ");
 
-				if (lan_mutex != 2) mvprintw(12, 54, "                          ");
-	
-				attron(COLOR_PAIR(7) | A_STANDOUT);
-				if (lan_mutex != 2) {
-					mvprintw(7,  0, logline0);
-					mvprintw(8,  0, logline1);
-					mvprintw(9,  0, logline2);
-				}
-				mvprintw(10,  0, logline3);
-				mvprintw(11,  0, logline4);
-  				refresh();
+    attron(COLOR_PAIR(7) | A_STANDOUT);
+    if (lan_mutex != 2) {
+	mvprintw(7, 0, logline0);
+	mvprintw(8, 0, logline1);
+	mvprintw(9, 0, logline2);
+    }
+    mvprintw(10, 0, logline3);
+    mvprintw(11, 0, logline4);
+    refresh();
 
-    			attron(COLOR_PAIR(COLOR_CYAN));
-    			
-    			mvprintw(12, 23, qsonrstr);
-    			mvprintw(12, 44, his_rst);
-    			mvprintw(12, 49, my_rst);
+    attron(COLOR_PAIR(COLOR_CYAN));
 
-    			sync();
+    mvprintw(12, 23, qsonrstr);
+    mvprintw(12, 44, his_rst);
+    mvprintw(12, 49, my_rst);
 
-    			if ((rit == 1) && (trx_control == 1))
-    				outfreq = RESETRIT;
+    sync();
 
-			block_part = 0;  /* unblock use partials */
+    if ((rit == 1) && (trx_control == 1))
+	outfreq = RESETRIT;
 
- return(0);
+    block_part = 0;		/* unblock use partials */
+
+    return (0);
 }
-

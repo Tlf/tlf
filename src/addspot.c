@@ -17,62 +17,61 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
- 	/* ------------------------------------------------------------
- 	*
- 	*              Add spot to bandmap
- 	*
- 	*
- 	*--------------------------------------------------------------*/
+	/* ------------------------------------------------------------
+	 *
+	 *              Add spot to bandmap
+	 *
+	 *
+	 *--------------------------------------------------------------*/
 #include "addspot.h"
 
 int addspot(void)
 {
- 	extern float freq;
- 	extern char hiscall[];
- 	extern int trx_control;
- 	extern int lanspotflg;
-	extern struct tm *time_ptr;
+    extern float freq;
+    extern char hiscall[];
+    extern int trx_control;
+    extern int lanspotflg;
+    extern struct tm *time_ptr;
 
- 	
- 	char spotline[160];
- 	char frequency[8];
-	char spottime[6];
- 	
- 	if (trx_control == 0) {
- 		
- 		attron(COLOR_PAIR(7) | A_STANDOUT);
- 		
- 		mvprintw(13, 20, "freq.: ");
- 		echo();
- 		getnstr(frequency, 7);
- 		noecho();
- 		freq = atof(frequency);
- 	}
- 		spotline[0] = '\0';
- 	
- 		strcat (spotline, "DX de TLF   :        ");            /* todo: change call here.... */
- 		
- 		if (freq >= 10000.0)
-    		sprintf(spotline+17, "%5.1f" , freq);
-  		else
-  			sprintf(spotline+18, "%5.1f" , freq);
-    	
-    	strcat (spotline, "  ");
-    	strcat (spotline, hiscall);
-    	strcat (spotline, "                                           ");
+    char spotline[160];
+    char frequency[8];
+    char spottime[6];
 
-    	get_time();
-//		strftime(spottime, 80, "%H%MZ", time_ptr);	### bug fix
-		strftime(spottime, sizeof(spottime), "%H%MZ", time_ptr);
- 		strcpy (spotline+70, spottime);
-		 strcat(spotline, "\n\n");
+    if (trx_control == 0) {
 
-    	send_lan_message(TLFSPOT , spotline);
-		lanspotflg = 1;
-		addtext(spotline);
-        lanspotflg = 0;
-        spotline[0] = '\0';
-		hiscall[0]='\0';
+	attron(COLOR_PAIR(7) | A_STANDOUT);
 
-return(0);
+	mvprintw(13, 20, "freq.: ");
+	echo();
+	getnstr(frequency, 7);
+	noecho();
+	freq = atof(frequency);
+    }
+    spotline[0] = '\0';
+
+    strcat(spotline, "DX de TLF   :        ");	/* todo: change call here.... */
+
+    if (freq >= 10000.0)
+	sprintf(spotline + 17, "%5.1f", freq);
+    else
+	sprintf(spotline + 18, "%5.1f", freq);
+
+    strcat(spotline, "  ");
+    strcat(spotline, hiscall);
+    strcat(spotline, "                                           ");
+
+    get_time();
+//              strftime(spottime, 80, "%H%MZ", time_ptr);      ### bug fix
+    strftime(spottime, sizeof(spottime), "%H%MZ", time_ptr);
+    strcpy(spotline + 70, spottime);
+    strcat(spotline, "\n\n");
+
+    send_lan_message(TLFSPOT, spotline);
+    lanspotflg = 1;
+    addtext(spotline);
+    lanspotflg = 0;
+    spotline[0] = '\0';
+    hiscall[0] = '\0';
+
+    return (0);
 }

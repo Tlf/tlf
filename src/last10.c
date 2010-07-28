@@ -16,49 +16,53 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-   	/* ------------------------------------------------------------
- 	*     last 10
- 	*
- 	*--------------------------------------------------------------*/
+	/* ------------------------------------------------------------
+	 *     last 10
+	 *
+	 *--------------------------------------------------------------*/
 
 #include "globalvars.h"
 #include "last10.h"
-	
-	int last10(void){
-	
-	char input[85];
-	char time10[6] = "";
-	char time_buf[20];
 
-	int minsbefore;
-	int minsnow;
-	int span;
-	int counter;
-	int qsocount = 0;
-	int thisband;
+int last10(void)
+{
 
- 	if (nr_qsos < 10)  return(-1) ;
+    char input[85];
+    char time10[6] = "";
+    char time_buf[20];
 
- 	thisband = atoi(band[bandinx]);
- 	
- 	for (counter = nr_qsos; counter >= 0; counter--) {
- 	
- 		if (thisband == (atoi(qsos[counter]))) {
- 			qsocount++;
- 			if (qsocount >= 10) break;
- 		}
- 	}
-	
-	if (counter > 0) strncpy(input,  qsos[counter], 85);
+    int minsbefore;
+    int minsnow;
+    int span;
+    int counter;
+    int qsocount = 0;
+    int thisband;
 
-	strncpy(time10, input + 17, 5) ;
-	time10[5] = '\0';
-	minsbefore = atoi(time10 + 3);
-	time10[2] = '\0';
-	minsbefore += (atoi(time10)  * 60);
-	
-	get_time();
-	strftime(time_buf, 10, "%H:%M",  time_ptr);
+    if (nr_qsos < 10)
+	return (-1);
+
+    thisband = atoi(band[bandinx]);
+
+    for (counter = nr_qsos; counter >= 0; counter--) {
+
+	if (thisband == (atoi(qsos[counter]))) {
+	    qsocount++;
+	    if (qsocount >= 10)
+		break;
+	}
+    }
+
+    if (counter > 0)
+	strncpy(input, qsos[counter], 85);
+
+    strncpy(time10, input + 17, 5);
+    time10[5] = '\0';
+    minsbefore = atoi(time10 + 3);
+    time10[2] = '\0';
+    minsbefore += (atoi(time10) * 60);
+
+    get_time();
+    strftime(time_buf, 10, "%H:%M", time_ptr);
 /*				strncpy (timeptr2, time_buf, 6);
 				current_hour = atoi (time_buf);
 				current_hour += timeoffset;
@@ -69,14 +73,13 @@
 				sprintf(time_buf + 3, "%s", timeptr2 + 3);
 	*/
 
-    minsnow = atoi(time_buf +  3);
+    minsnow = atoi(time_buf + 3);
     time_buf[2] = '\0';
-    minsnow  += (atoi(time_buf)  * 60);
+    minsnow += (atoi(time_buf) * 60);
 
-    if  ((minsnow - minsbefore) <=  0)
-    	minsnow  += 1440;
+    if ((minsnow - minsbefore) <= 0)
+	minsnow += 1440;
     span = minsnow - minsbefore;
-	 	
- return(span);
-}
 
+    return (span);
+}

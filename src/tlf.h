@@ -40,8 +40,8 @@
 
 
 #define NO_KEYER 0
-#define LPT_KEYER 1
-#define COM1_KEYER 2
+#define LPT_KEYER 1 	/* deprecated */
+#define COM1_KEYER 2	/* deprecated */
 #define NET_KEYER 3
 #define MFJ1278_KEYER 4
 #define ORION_KEYER 5
@@ -70,11 +70,11 @@
 #define CQ 1			/* cqmode   on */
 #define S_P 0			/* S&P mode  on  */
 
-#define SEND_DE 1		/* demode on */
-#define CONTEST 1		/*  contest mode on */
+#define SEND_DE 1		/* de_mode on */
+#define CONTEST 1		/* contest mode on */
 
 #define FILTER_ANN 1	/*  filter announcements */
-#define FILTER_DX	 3
+#define FILTER_DX 3
 #define FILTER_ALL 0
 #define FILTER_TALK 2
 
@@ -106,7 +106,7 @@
 #define ISDUPE 1
 #define NODUPE 0
 
-#define  MAX_QSOS 20000           /* internal qso array */
+#define  MAX_QSOS 20000       /* internal qso array */
 #define  MAX_DATALINES 1000   /* from ctydb.dat  */
 #define  MAX_DBLINES 6000    /* exceptioncalls from ctydb.dat  */
 #define  MAX_CALLS 5000      /*  max nr of calls in dupe array */

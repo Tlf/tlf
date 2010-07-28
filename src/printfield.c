@@ -16,31 +16,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-  	/* ------------------------------------------------------------
- 	*     printfield
- 	*
- 	*--------------------------------------------------------------*/
+	/* ------------------------------------------------------------
+	 *     printfield
+	 *
+	 *--------------------------------------------------------------*/
 
-#include "printfield.h" 	
- 	
- 	int printfield(int y, int  x,  int  number){
- 	
- 		attron(COLOR_PAIR(COLOR_CYAN));
- 		
- 		if  (number < 10){
- 			mvprintw(y,x, "    %d", number);
- 		}
- 	
- 		else if  (number < 100){
- 			mvprintw(y,x, "   %d", number);
- 			return(0);
- 		}
- 		else if  (number < 1000)
- 			mvprintw(y,x, "  %d", number);
- 		else
- 			mvprintw(y,x, " %d", number);
- 		
- 			
- 	return(0);
- 	}
+#include "printfield.h"
 
+int printfield(int y, int x, int number)
+{
+
+    attron(COLOR_PAIR(COLOR_CYAN));
+
+    if (number < 10) {
+	mvprintw(y, x, "    %d", number);
+    }
+
+    else if (number < 100) {
+	mvprintw(y, x, "   %d", number);
+	return (0);
+    } else if (number < 1000)
+	mvprintw(y, x, "  %d", number);
+    else
+	mvprintw(y, x, " %d", number);
+
+    return (0);
+}

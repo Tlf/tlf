@@ -19,115 +19,111 @@
 
 #include "changefreq.h"
 
-int (change_freq)(void) {
+int (change_freq) (void) {
 
-extern float freq;
-extern int trx_control;
+    extern float freq;
+    extern int trx_control;
 #ifdef HAVE_LIBHAMLIB
-extern freq_t outfreq;
+    extern freq_t outfreq;
 #else
-extern int outfreq;
+    extern int outfreq;
 #endif
-int brkflg = 0;
-int x;
+    int brkflg = 0;
+    int x;
 
-if (trx_control == 0)
-	return(-1);	
-		
-	while (1)  {
+    if (trx_control == 0)
+	return (-1);
 
-			freq_display();
+    while (1) {
 
-	if(outfreq == 0)   {
-			x = onechar();
+	freq_display();
 
-			switch (x) {
-		 	
-		 		
-		 		case 152 : {                                                                  //up	
-#ifdef HAVE_LIBHAMLIB		 			
-		 			outfreq = (freq_t) (freq * 1000);
-#else
-		 			outfreq = (int) (freq * 1000);
-#endif
-					outfreq += 100;
+	if (outfreq == 0) {
+	    x = onechar();
 
-					break;
-		 		}
-		 		case 153 : {                                                                  //down
-#ifdef HAVE_LIBHAMLIB		 			
-		 			outfreq = (freq_t) (freq * 1000);
-#else
-		 			outfreq = (int) (freq * 1000);
-#endif
-					outfreq -= 100;
+	    switch (x) {
 
-					break;
-		 		}
-		 		case 154 : {                                                                  //right
-#ifdef HAVE_LIBHAMLIB		 			
-		 			outfreq = (freq_t) (freq * 1000);
-#else
-		 			outfreq = (int) (freq * 1000);
-#endif
-					outfreq += 20;
-
-					break;
-		 		}
-		 		case 155 : {                                                                  //left
+	    case 152:{		//up      
 #ifdef HAVE_LIBHAMLIB
-		 			outfreq = (freq_t) (freq * 1000);
+		    outfreq = (freq_t) (freq * 1000);
 #else
-		 			outfreq = (int) (freq * 1000);
+		    outfreq = (int) (freq * 1000);
 #endif
-					outfreq -= 20;
+		    outfreq += 100;
 
-					break;
-		 		}
-		 		case 156 : {                                                                  //left
+		    break;
+		}
+	    case 153:{		//down
 #ifdef HAVE_LIBHAMLIB
-		 			outfreq = (freq_t) (freq * 1000);
+		    outfreq = (freq_t) (freq * 1000);
 #else
-		 			outfreq = (int) (freq * 1000);
+		    outfreq = (int) (freq * 1000);
 #endif
-					outfreq += 500;
+		    outfreq -= 100;
 
-					break;
-		 		}
-		 		case 157 : {                                                                  //left
+		    break;
+		}
+	    case 154:{		//right
 #ifdef HAVE_LIBHAMLIB
-		 			outfreq = (freq_t) (freq * 1000);
+		    outfreq = (freq_t) (freq * 1000);
 #else
-		 			outfreq = (int) (freq * 1000);
+		    outfreq = (int) (freq * 1000);
 #endif
-					outfreq -= 500;
+		    outfreq += 20;
 
-					break;
-		 		}
+		    break;
+		}
+	    case 155:{		//left
+#ifdef HAVE_LIBHAMLIB
+		    outfreq = (freq_t) (freq * 1000);
+#else
+		    outfreq = (int) (freq * 1000);
+#endif
+		    outfreq -= 20;
 
+		    break;
+		}
+	    case 156:{		//left
+#ifdef HAVE_LIBHAMLIB
+		    outfreq = (freq_t) (freq * 1000);
+#else
+		    outfreq = (int) (freq * 1000);
+#endif
+		    outfreq += 500;
 
-		 		default : {
-		 			brkflg = 1;
-		 			break;
-		 		}
-		 		
+		    break;
+		}
+	    case 157:{		//left
+#ifdef HAVE_LIBHAMLIB
+		    outfreq = (freq_t) (freq * 1000);
+#else
+		    outfreq = (int) (freq * 1000);
+#endif
+		    outfreq -= 500;
 
-			}
-	}
+		    break;
+		}
 
+	    default:{
+		    brkflg = 1;
+		    break;
+		}
 
-		if (brkflg ==1) {
-	     	brkflg = 0;
-	     	break;
 	    }
-
-		freq_display();
-		
-		time_update();
-
-		usleep(100000);
-
 	}
 
-return(0);
+	if (brkflg == 1) {
+	    brkflg = 0;
+	    break;
+	}
+
+	freq_display();
+
+	time_update();
+
+	usleep(100000);
+
+    }
+
+    return (0);
 }

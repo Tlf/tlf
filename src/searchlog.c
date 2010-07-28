@@ -29,15 +29,15 @@
 static char searchresult[MAX_CALLS][82];
 static char result[MAX_CALLS][82];
  /* DJ1YFK "worked window"-patch */
- static char band_yfk[4]="";   
- static char testcall_yfk[13]="";
- static char hiscall_yfk[13]="            ";
+ static char band_yfk[5]="";
+ static char testcall_yfk[14]="";
+ static char hiscall_yfk[14]="            ";
  int xx=0;
  int bm[6];
  int bandnr;
  int yy=0;
  /* */
- 
+
 
  	int searchlog(char *searchstring)
 
@@ -72,7 +72,6 @@ static char result[MAX_CALLS][82];
  	extern int countries[MAX_DATALINES];
  	extern int use_part;
 	extern int block_part;
-	extern int bigpartlist;
 	extern int mixedmode;
 	extern int ignoredupe;
 	extern int qso_once;
@@ -99,7 +98,7 @@ char printres[14];
 char * loc;
 static char zonebuffer[3] = "";
 static int z, z1;
-static int i, j, k, l; 
+static int i, j, k, l;
 static long int m;
 static int pxnr;
 static int qso_index = 0;
@@ -124,7 +123,7 @@ char callmaster_location[80];
 	z = 0;
 	s_inputbuffer[0] = '\0';
 	zonebuffer[0] = '\0';
- 	
+
  	if (strlen(hiscall) > 1 && searchflg  == SEARCHWINDOW)
 	{
 
@@ -152,7 +151,7 @@ char callmaster_location[80];
 				(qsos[qso_index][3] == 'S' && trxmode == SSBMODE) ||
 				(qsos[qso_index][3] == 'D' && trxmode == DIGIMODE)) ||
 				mixedmode == 0)
-			{	
+			{
 
 				strncpy(s_inputbuffer, qsos[qso_index], 81);
 
@@ -167,15 +166,15 @@ char callmaster_location[80];
 				}
 				else
 					s_inputbuffer[0] = '\0';
-				
+
 			}
-				
+
 			qso_index++;
 		}
- 		
+
  		s_inputbuffer[0] = '\0';
  //
- 
+
         // initialize array best matching callsigns
         for(xx=0; xx<6; xx++) { bm[xx] = 0; }
 
@@ -183,24 +182,24 @@ char callmaster_location[80];
 
 		 	strncpy (result[r_index], searchresult[r_index], 7);
 			result[r_index][6]='\0';
-			
+
 			if (show_time == 1)	// show qso time
 				strncat (result[r_index], searchresult[r_index]+17, 5);
 			else	// show qso number
 				strncat (result[r_index], searchresult[r_index]+22, 5);
-			
+
 			strncat (result[r_index], searchresult[r_index]+28, 12);
 			strncat (result[r_index], searchresult[r_index]+52, 16);
 		}
-                       
+
         /* DJ1YFK worked-window patch */
         strncpy(band_yfk, searchresult[r_index],3);
         band_yfk[4]= '\0';
         bandnr = atoi(band_yfk);
-        
+
         strncpy(testcall_yfk, searchresult[r_index]+29,12);
         testcall_yfk[13]= '\0';
-        
+
         // Create string with his call + whitespaces
         strcpy(hiscall_yfk,"            ");
         for (xx=0; xx < strlen(hiscall); xx++) {
@@ -208,7 +207,7 @@ char callmaster_location[80];
         }
         // find out how many characters match
         yy=0;
-        for (xx=0; xx < 13; xx++) {     
+        for (xx=0; xx < 13; xx++) {
                 if(hiscall_yfk[xx] == testcall_yfk[xx]) {yy++;}
         }
 
@@ -218,37 +217,37 @@ char callmaster_location[80];
         // overwritten later.
         switch (bandnr) {
             case 160: { if (yy < bm[0]) {
-                    result[r_index][0] = '\0'; 
+                    result[r_index][0] = '\0';
                     }
                     else { bm[0] = yy; }
                     break;
             }
             case 80: { if (yy < bm[1]) {
-                    result[r_index][0] = '\0'; 
+                    result[r_index][0] = '\0';
                     }
                     else { bm[1] = yy; }
                     break;
             }
             case 40: { if (yy < bm[2]) {
-                    result[r_index][0] = '\0'; 
+                    result[r_index][0] = '\0';
                     }
                     else { bm[2] = yy; }
                     break;
             }
             case 20: { if (yy < bm[3]) {
-                    result[r_index][0] = '\0'; 
+                    result[r_index][0] = '\0';
                     }
                     else { bm[3] = yy; }
                     break;
             }
             case 15: { if (yy < bm[4]) {
-                    result[r_index][0] = '\0'; 
+                    result[r_index][0] = '\0';
                     }
                     else { bm[4] = yy; }
                     break;
             }
             case 10: { if (yy < bm[5]) {
-                    result[r_index][0] = '\0'; 
+                    result[r_index][0] = '\0';
                     }
                     else { bm[5] = yy; }
             }
@@ -292,7 +291,7 @@ char callmaster_location[80];
 				if ((strncmp(band[bandinx],  s_inputbuffer,  3) == 0) || (qso_once == 1))
 				{
 					if (ignoredupe == 0) {
-					
+
 						if (mixedmode == 0)
 						{
 							attron(COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
@@ -410,7 +409,7 @@ else
 
 	if (cqww== 1 || contest == 0 || pacc_pa_flg == 1) {
 		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-							
+
 		if ((countries[countrynr] & BAND10) !=  0){
 			mvprintw(2, 77, "C");
 			mvprintw(2, 42, " 10");
@@ -459,225 +458,225 @@ else
 
 	if (pacc_pa_flg == 1)
 	{
-		
+
 		getpx(hiscall);
-		
+
 		pxnr = pxstr[strlen(pxstr)-1] - 48;
-	 		
+
 		if(countrynr == w_cty){
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND160 ) == BAND160)
-	 	 		mvprintw(7, 78, "M");	
-	 	
-		
+	 	 		mvprintw(7, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND80 ) == BAND80)
-	 	 		mvprintw(6, 78, "M");	
-	 	
-	
+	 	 		mvprintw(6, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND40 ) == BAND40)
-	 	 		mvprintw(5, 78, "M");	
-	
+	 	 		mvprintw(5, 78, "M");
+
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND20 ) == BAND20)
-	 	 		mvprintw(4, 78, "M");	
-	 	
+	 	 		mvprintw(4, 78, "M");
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND15 ) == BAND15)
-	 	 		mvprintw(3, 78, "M");	
+	 	 		mvprintw(3, 78, "M");
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND10 ) == BAND10)
-	 	 		mvprintw(2, 78, "M");	
+	 	 		mvprintw(2, 78, "M");
 	 	}
 		if(countrynr == ve_cty){
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND160 ) == BAND160)
-	 	 		mvprintw(7, 78, "M");	
-	 	
-		
+	 	 		mvprintw(7, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND80 ) == BAND80)
-	 	 		mvprintw(6, 78, "M");	
-	 	
-	
+	 	 		mvprintw(6, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND40 ) == BAND40)
-	 	 		mvprintw(5, 78, "M");	
-	
+	 	 		mvprintw(5, 78, "M");
+
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND20 ) == BAND20)
-	 	 		mvprintw(4, 78, "M");	
-	 	
+	 	 		mvprintw(4, 78, "M");
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND15 ) == BAND15)
-	 	 		mvprintw(3, 78, "M");	
+	 	 		mvprintw(3, 78, "M");
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND10 ) == BAND10)
-	 	 		mvprintw(2, 78, "M");	
+	 	 		mvprintw(2, 78, "M");
 	 	}
 		if(countrynr == ja_cty){
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND160 ) == BAND160)
-	 	 		mvprintw(7, 78, "M");	
-	 	
-		
+	 	 		mvprintw(7, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND80 ) == BAND80)
-	 	 		mvprintw(6, 78, "M");	
-	 	
-	
+	 	 		mvprintw(6, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND40 ) == BAND40)
-	 	 		mvprintw(5, 78, "M");	
-	
+	 	 		mvprintw(5, 78, "M");
+
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND20 ) == BAND20)
-	 	 		mvprintw(4, 78, "M");	
-	 	
+	 	 		mvprintw(4, 78, "M");
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND15 ) == BAND15)
-	 	 		mvprintw(3, 78, "M");	
+	 	 		mvprintw(3, 78, "M");
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND10 ) == BAND10)
-	 	 		mvprintw(2, 78, "M");	
+	 	 		mvprintw(2, 78, "M");
 	 	}
 		if(countrynr == py_cty){
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND160 ) == BAND160)
-	 	 		mvprintw(7, 78, "M");	
-	 	
-		
+	 	 		mvprintw(7, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND80 ) == BAND80)
-	 	 		mvprintw(6, 78, "M");	
-	 	
-	
+	 	 		mvprintw(6, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND40 ) == BAND40)
-	 	 		mvprintw(5, 78, "M");	
-	
+	 	 		mvprintw(5, 78, "M");
+
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND20 ) == BAND20)
-	 	 		mvprintw(4, 78, "M");	
-	 	
+	 	 		mvprintw(4, 78, "M");
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND15 ) == BAND15)
-	 	 		mvprintw(3, 78, "M");	
+	 	 		mvprintw(3, 78, "M");
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND10 ) == BAND10)
-	 	 		mvprintw(2, 78, "M");	
+	 	 		mvprintw(2, 78, "M");
 	 	}
 		if(countrynr == lu_cty){
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND160 ) == BAND160)
-	 	 		mvprintw(7, 78, "M");	
-	 	
-		
+	 	 		mvprintw(7, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND80 ) == BAND80)
-	 	 		mvprintw(6, 78, "M");	
-	 	
-	
+	 	 		mvprintw(6, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND40 ) == BAND40)
-	 	 		mvprintw(5, 78, "M");	
-	
+	 	 		mvprintw(5, 78, "M");
+
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND20 ) == BAND20)
-	 	 		mvprintw(4, 78, "M");	
-	 	
+	 	 		mvprintw(4, 78, "M");
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND15 ) == BAND15)
-	 	 		mvprintw(3, 78, "M");	
+	 	 		mvprintw(3, 78, "M");
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND10 ) == BAND10)
-	 	 		mvprintw(2, 78, "M");	
+	 	 		mvprintw(2, 78, "M");
 	 	}
 		if(countrynr == ua9_cty){
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND160 ) == BAND160)
-	 	 		mvprintw(7, 78, "M");	
-	 	
-		
+	 	 		mvprintw(7, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND80 ) == BAND80)
-	 	 		mvprintw(6, 78, "M");	
-	 	
-	
+	 	 		mvprintw(6, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND40 ) == BAND40)
-	 	 		mvprintw(5, 78, "M");	
-	
+	 	 		mvprintw(5, 78, "M");
+
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND20 ) == BAND20)
-	 	 		mvprintw(4, 78, "M");	
-	 	
+	 	 		mvprintw(4, 78, "M");
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND15 ) == BAND15)
-	 	 		mvprintw(3, 78, "M");	
+	 	 		mvprintw(3, 78, "M");
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND10 ) == BAND10)
-	 	 		mvprintw(2, 78, "M");	
+	 	 		mvprintw(2, 78, "M");
 	 	}
 		if(countrynr == zl_cty){
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND160 ) == BAND160)
-	 	 		mvprintw(7, 78, "M");	
-	 	
-		
+	 	 		mvprintw(7, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND80 ) == BAND80)
-	 	 		mvprintw(6, 78, "M");	
-	 	
-	
+	 	 		mvprintw(6, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND40 ) == BAND40)
-	 	 		mvprintw(5, 78, "M");	
-	
+	 	 		mvprintw(5, 78, "M");
+
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND20 ) == BAND20)
-	 	 		mvprintw(4, 78, "M");	
-	 	
+	 	 		mvprintw(4, 78, "M");
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND15 ) == BAND15)
-	 	 		mvprintw(3, 78, "M");	
+	 	 		mvprintw(3, 78, "M");
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND10 ) == BAND10)
-	 	 		mvprintw(2, 78, "M");	
+	 	 		mvprintw(2, 78, "M");
 	 	}
 		if(countrynr == lu_cty){
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND160 ) == BAND160)
-	 	 		mvprintw(7, 78, "M");	
-	 	
-		
+	 	 		mvprintw(7, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND80 ) == BAND80)
-	 	 		mvprintw(6, 78, "M");	
-	 	
-	
+	 	 		mvprintw(6, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND40 ) == BAND40)
-	 	 		mvprintw(5, 78, "M");	
-	
+	 	 		mvprintw(5, 78, "M");
+
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND20 ) == BAND20)
-	 	 		mvprintw(4, 78, "M");	
-	 	
+	 	 		mvprintw(4, 78, "M");
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND15 ) == BAND15)
-	 	 		mvprintw(3, 78, "M");	
+	 	 		mvprintw(3, 78, "M");
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND10 ) == BAND10)
-	 	 		mvprintw(2, 78, "M");	
+	 	 		mvprintw(2, 78, "M");
 	 	}
 		if(countrynr == ce_cty){
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND160 ) == BAND160)
-	 	 		mvprintw(7, 78, "M");	
-	 	
-		
+	 	 		mvprintw(7, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND80 ) == BAND80)
-	 	 		mvprintw(6, 78, "M");	
-	 	
-	
+	 	 		mvprintw(6, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND40 ) == BAND40)
-	 	 		mvprintw(5, 78, "M");	
-	
+	 	 		mvprintw(5, 78, "M");
+
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND20 ) == BAND20)
-	 	 		mvprintw(4, 78, "M");	
-	 	
+	 	 		mvprintw(4, 78, "M");
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND15 ) == BAND15)
-	 	 		mvprintw(3, 78, "M");	
+	 	 		mvprintw(3, 78, "M");
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND10 ) == BAND10)
-	 	 		mvprintw(2, 78, "M");	
+	 	 		mvprintw(2, 78, "M");
 	 	}
 		if(countrynr == vk_cty){
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND160 ) == BAND160)
-	 	 		mvprintw(7, 78, "M");	
-	 	
-		
+	 	 		mvprintw(7, 78, "M");
+
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND80 ) == BAND80)
-	 	 		mvprintw(6, 78, "M");	
+	 	 		mvprintw(6, 78, "M");
 
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND40 ) == BAND40)
-	 	 		mvprintw(5, 78, "M");	
+	 	 		mvprintw(5, 78, "M");
 
 
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND20 ) == BAND20)
-	 	 		mvprintw(4, 78, "M");	
-	 	
+	 	 		mvprintw(4, 78, "M");
+
 	 	 	if ( (pacc_qsos[0][pxnr] & BAND15 ) == BAND15)
 	 	 		mvprintw(3, 78, "M");
 
@@ -704,17 +703,17 @@ else
 
 
 			for (k = 1; k <= 5; k++) {
-				mvprintw(k, 0, "%s", "                                        ");	
+				mvprintw(k, 0, "%s", "                                        ");
 			}
 			attron(COLOR_PAIR(COLOR_MAGENTA) | A_STANDOUT);
 			mvprintw(1,1, "??");
 			attron(COLOR_PAIR(COLOR_WHITE  | A_STANDOUT));
-			
+
 			refresh();
 
 			j = 0;
 			m = 0;
-			
+
 			for (m = 0; m < MAX_CALLS; m++)
 			{
 				if (strlen(hiscall) > 2 && strlen(searchresult[m])> 2) {
@@ -722,26 +721,26 @@ else
 					if (tmpstr != 0) {
 						printres[0] = '\0';
 						strncat (printres, searchresult[m] + 29, 12);
-						
+
 						loc = strchr (printres, ' ');
-						
+
 						int length = (int) (loc - printres);
-						
+
 						strncpy (printres, printres, length);
-						
+
 						printres[length] = '\0';
-						
+
 						if (dupe == ISDUPE) {
 							attron(COLOR_PAIR(COLOR_MAGENTA) | A_STANDOUT);
 						} else {
-							attron(COLOR_PAIR(COLOR_YELLOW | A_BOLD | A_STANDOUT));					
+							attron(COLOR_PAIR(COLOR_YELLOW | A_BOLD | A_STANDOUT));
 						}
 						mvprintw(xwin+l,ywin+j, "%s ", printres);
 						attron(COLOR_PAIR(COLOR_WHITE  | A_STANDOUT));
-						
+
 						refresh();
-						
-					
+
+
 						j += (strlen(printres)+1);
 
 						if(j>=30)
@@ -751,17 +750,17 @@ else
 
 						}
 						if(l > 4)
-							break;							
+							break;
 					}
-				}	
+				}
 			}
-			
+
 			o = m;
 			if (strcmp (hiscall, printres) != 0) {
 
 				for (m = 0; m< max_callmastercalls;  m++)		// now check callmaster database
 				{
-					
+
 				   	if(strlen(callmasterarray[m]) >=2)
 					{
 
@@ -837,16 +836,17 @@ else
 }
 
 // --------------------------------------------load callmaster ------------------
- int load_callmaster(void) {
+ int load_callmaster(void)
+{
+	extern char callmasterarray[MAX_CALLMASTER][14];
+	extern int arrlss;
 
- extern char callmasterarray[MAX_CALLMASTER][14];
- extern int arrlss;
-
- FILE *cfp ;
- char callmaster_location[80];
- char s_inputbuffer[186] =  "";
- long int count = 0;
- int file_ok = 0;
+	char *rp;
+	FILE *cfp = NULL;
+	char callmaster_location[80];
+	char s_inputbuffer[186] =  "";
+	long int count = 0;
+	int file_ok = 0;
 
 		strcpy(callmaster_location, "callmaster");
 		if ( (cfp = fopen(callmaster_location,"r"))  == NULL)
@@ -874,7 +874,7 @@ else
 				while  (!feof(cfp) )
 				{
 					s_inputbuffer[0]='\0';
-					fgets (s_inputbuffer, 85,  cfp);
+					rp=fgets (s_inputbuffer, 85,  cfp);
 
 					if (arrlss == 1)
 					{
@@ -907,6 +907,11 @@ else
 
 				fclose(cfp);
 			}
+            else
+            {
+                if (cfp)
+                    fclose(cfp);
+            }
 
 
   return(count);
@@ -914,52 +919,54 @@ else
 // -------------------------------------------------------------------------------
 //char multsfile[80] = "";		// global... (to be fixed)
 // ----------------------------------------------load mults ------------------------
-int load_multipliers(void) {
+int load_multipliers(void)
+{
+	extern char mults_possible[MAX_MULTS][12];
+	extern char multiplierlist[];
+	extern char multsfile[];
 
-extern char mults_possible[MAX_MULTS][12];
-extern char multiplierlist[];
-extern char multsfile[];
-
- FILE *cfp ;
- char s_inputbuffer[186] =  "";
- int count = 0, i;
+	char *rp;
+	FILE *cfp ;
+	char s_inputbuffer[186] =  "";
+	int count = 0, i;
 
 
-			for (i = 0; i < MAX_MULTS; i++) {
-				mults_possible[i][0] = '\0';
-			}
+	for (i = 0; i < MAX_MULTS; i++) {
+		mults_possible[i][0] = '\0';
+	}
 
-			if (strlen(multiplierlist) != 0)
-				strncpy(multsfile , multiplierlist, strlen(multiplierlist) - 1);
-			else {
-				mvprintw(9,0,  "No multiplier file specified, exiting.. !!\n");
-				refresh();
-				sleep(5);
-				exit(1);
-			}
-
-			if  ( (cfp = fopen(multsfile , "r"))  == NULL){
-				mvprintw(9,0,  "Error opening multiplier file %s.\n", multsfile);
-				refresh();
-				sleep(2);
-			}  else {
-
-				count = 0;
-
-				while  (!feof(cfp) ) {
-					s_inputbuffer[0]='\0';
-					fgets (s_inputbuffer, 85,  cfp);
-					if(strlen(s_inputbuffer)>0)
-						s_inputbuffer[strlen(s_inputbuffer)-1]='\0';
-					s_inputbuffer[9]='\0';
-					strcpy(mults_possible[count], s_inputbuffer) ;
-
-					count++;
-
-				}
-
-				fclose(cfp);
-			}
-
-  return(count);
+	if (strlen(multiplierlist) != 0)
+		strncpy(multsfile , multiplierlist, strlen(multiplierlist) - 1);
+	else {
+		mvprintw(9,0,  "No multiplier file specified, exiting.. !!\n");
+		refresh();
+		sleep(5);
+		exit(1);
+	}
+	
+	if  ( (cfp = fopen(multsfile , "r"))  == NULL){
+		mvprintw(9,0,  "Error opening multiplier file %s.\n", multsfile);
+		refresh();
+		sleep(2);
+	}  else {
+		
+		count = 0;
+		
+		while  (!feof(cfp) ) {
+			s_inputbuffer[0]='\0';
+			rp=fgets (s_inputbuffer, 85,  cfp);
+			if(strlen(s_inputbuffer)>0)
+				s_inputbuffer[strlen(s_inputbuffer)-1]='\0';
+			s_inputbuffer[9]='\0';
+			/* BUG todo: fix strcpy. poss. buffer overun 16jan10 tb */
+			strcpy(mults_possible[count], s_inputbuffer) ;
+			
+			count++;
+			
+		}
+		
+		fclose(cfp);
+	}
+	
+	return(count);
 }

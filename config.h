@@ -1,6 +1,6 @@
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.in by autoheader.  */
-#define PACKAGE_DATA_DIR "/usr/local/share/tlf"
+#define PACKAGE_DATA_DIR "/usr/share/tlf"
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1

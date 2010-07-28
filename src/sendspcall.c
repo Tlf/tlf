@@ -30,27 +30,27 @@ void sendspcall(void){
     extern int demode;
     extern char buffer[];
     extern char call[];
-	extern int trxmode;
-	extern char ph_message[14][80];
+    extern int trxmode;
+    extern char ph_message[14][80];
 
 
-	if (trxmode == CWMODE) {
-    
-		if (demode ==  SEND_DE )
-    		strcat(buffer, "DE ");
- 	
-		strcat(buffer, call);
-		sendbuf();
+    if (trxmode == CWMODE) {
 
-	} else if (trxmode == DIGIMODE) {
+	if (demode ==  SEND_DE )
+	    strcat(buffer, "DE ");
 
-		strcat (buffer, "{ ");
-		strcat (buffer, call);
-		strcat (buffer, "}");
-		sendbuf();
+	strcat(buffer, call);
+	sendbuf();
 
-	} else
-	
-		play_file(ph_message[5]);
+    } else if (trxmode == DIGIMODE) {
+
+	strcat (buffer, "{ ");
+	strcat (buffer, call);
+	strcat (buffer, "}");
+	sendbuf();
+
+    } else
+
+	play_file(ph_message[5]);
 
 }

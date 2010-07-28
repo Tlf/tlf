@@ -18,306 +18,320 @@
  */
 
 	/* ------------------------------------------------------------
- 	*      get trx info  
- 	*
- 	*--------------------------------------------------------------*/
+	 *      get trx info  
+	 *
+	 *--------------------------------------------------------------*/
 
 #include "gettxinfo.h"
 #include <curses.h>
 #include "sendqrg.h"
 
-  int gettxinfo(void)
-  {
+int gettxinfo(void)
+{
 
 #ifdef HAVE_LIBHAMLIB
-  extern RIG *my_rig;
-  extern freq_t rigfreq;
-  extern freq_t outfreq;
-   extern int cw_bandwidth;
-   extern int nobandchange;
+    extern RIG *my_rig;
+    extern freq_t rigfreq;
+    extern freq_t outfreq;
+    extern int cw_bandwidth;
+    extern int nobandchange;
 #else
- extern float rigfreq;
- extern int outfreq;
+    extern float rigfreq;
+    extern int outfreq;
 #endif
-  extern float freq;
-  extern int bandinx;
-  extern float bandfrequency[];
+    extern float freq;
+    extern int bandinx;
+    extern float bandfrequency[];
 
-  extern int rignumber;
-  extern int trx_control;
-  extern int trxmode;
+    extern int rignumber;
+    extern int trx_control;
+    extern int trxmode;
 
-	int retval = 0;
-	int qrg = 0;
-	char qrg_string[8];
-	static int oldbandinx;
+    int retval = 0;
+    int qrg = 0;
+    char qrg_string[8];
+    static int oldbandinx;
 
-void send_bandswitch(int freq);
+    void send_bandswitch(int freq);
 
-  if (trx_control != 1)
-  	return(0);
+    if (trx_control != 1)
+	return (0);
 
+    if (outfreq == 0) {
 
-
- if (outfreq == 0) {
-
-#ifdef HAVE_LIBHAMLIB              // Code for Hamlib interface
+#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	if (rignumber < 2000)
-		retval =  rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
+	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 	else
-		rigfreq = native_rig_get_freq(rignumber);		//ORION
+	    rigfreq = native_rig_get_freq(rignumber);	//ORION
 
 #else
-		rigfreq = (float) native_rig_get_freq(rignumber);		//ORION
+	rigfreq = (float) native_rig_get_freq(rignumber);	//ORION
 #endif
 
 	if (rigfreq > 1800.0) {
-    		freq = rigfreq/1000.0;
-    		qrg = (int) rigfreq/1000;
-    	}
+	    freq = rigfreq / 1000.0;
+	    qrg = (int) rigfreq / 1000;
+	}
 
-    qrg_string[7] = '\0';
+	qrg_string[7] = '\0';
 
-	switch (qrg)
+	switch (qrg) {
+	case 1800 ... 1900:{
+		bandinx = 0;
+		bandfrequency[bandinx] = freq;
+		break;
+	    }
+	case 3500 ... 4000:{
+		bandinx = 1;
+		bandfrequency[bandinx] = freq;
+		break;
+	    }
+	case 7000 ... 7200:{
+		bandinx = 2;
+		bandfrequency[bandinx] = freq;
+		break;
+	    }
+	case 10100 ... 10150:{
+		bandinx = 3;
+		bandfrequency[bandinx] = freq;
+		break;
+	    }
+	case 14000 ... 14350:{
+		bandinx = 4;
+		bandfrequency[bandinx] = freq;
+		break;
+	    }
+	case 18068 ... 18168:{
+		bandinx = 5;
+		bandfrequency[bandinx] = freq;
+		break;
+	    }
+	case 21000 ... 21450:{
+		bandinx = 6;
+		bandfrequency[bandinx] = freq;
+		break;
+	    }
+	case 24890 ... 24990:{
+		bandinx = 7;
+		bandfrequency[bandinx] = freq;
+		break;
+	    }
+	case 28000 ... 29700:{
+		bandinx = 8;
+		bandfrequency[bandinx] = freq;
+		break;
+	    }
+
+	}
+	if (bandinx != oldbandinx)	// band change on trx
 	{
-		case 1800 ... 1900 :{
-	  		bandinx = 0;
-	  		bandfrequency[bandinx] = freq;
-	  		break;
-	 	}
-	  	case 3500 ... 4000 :{
-	  		bandinx = 1;
-	  		bandfrequency[bandinx] = freq;
-	  		break;
-	 	}
-	   	case 7000 ... 7200 : {
-	  		bandinx = 2;
-	  		bandfrequency[bandinx] = freq;
-	  		break;
-	 	}
-	    	case 10100 ... 10150 : {
-	  		bandinx = 3;
-	  		bandfrequency[bandinx] = freq;
-	  		break;
-	 	}
-	    case 14000 ... 14350 : {
-	  		bandinx = 4;
-	  		bandfrequency[bandinx] = freq;
-	  		break;
-	 	}
-	    case 18068 ... 18168 : {
-	  		bandinx = 5;
-	  		bandfrequency[bandinx] = freq;
-	  		break;
-	 	}
-	  	case 21000 ... 21450 : {
-	  		bandinx = 6;
-	  		bandfrequency[bandinx] = freq;
-	  		break;
-	 	}
-	    case 24890 ... 24990 : {
-	  		bandinx = 7;
-	  		bandfrequency[bandinx] = freq;
-	  		break;
-	 	}
-	    	case 28000 ... 29700 : {
-	  		bandinx = 8;
-	  		bandfrequency[bandinx] = freq;
-	  		break;
-	 	}
+	    oldbandinx = bandinx;
+	    send_bandswitch((int) freq);
 
+	    if (rignumber < 2000) {
 
-	}
-	if (bandinx != oldbandinx)  // band change on trx
-	{
-		oldbandinx = bandinx;
-		send_bandswitch((int) freq);
+#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 
-		if (rignumber < 2000) {
+		if (trxmode == SSBMODE) {
+		    if (freq < 14000.0)
+			retval =
+			    rig_set_mode(my_rig, RIG_VFO_CURR,
+					 RIG_MODE_LSB,
+					 RIG_PASSBAND_NORMAL);
+		    else
+			retval =
+			    rig_set_mode(my_rig, RIG_VFO_CURR,
+					 RIG_MODE_USB,
+					 RIG_PASSBAND_NORMAL);
 
-#ifdef HAVE_LIBHAMLIB              // Code for Hamlib interface
+		    if (retval != RIG_OK) {
+			mvprintw(24, 0,
+				 "Problem with rig link: set mode!\n");
+			refresh();
+			sleep(1);
+		    }
+		} else if (trxmode == DIGIMODE) {
+		    retval =
+			rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,
+				     RIG_PASSBAND_NORMAL);
 
-			if (trxmode == SSBMODE) {
-				if (freq < 14000.0 )
-					retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,  RIG_PASSBAND_NORMAL);
-				else
-					retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_USB,  RIG_PASSBAND_NORMAL);
+		    if (retval != RIG_OK) {
+			mvprintw(24, 0,
+				 "Problem with rig link: set mode!\n");
+			refresh();
+			sleep(1);
+		    }
 
-				if (retval != RIG_OK)  {
-					mvprintw(24,0,"Problem with rig link: set mode!\n");
-					refresh();
-					sleep(1);
-				}
-			}else if (trxmode == DIGIMODE) {
-					retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,  RIG_PASSBAND_NORMAL);
-
-				if (retval != RIG_OK)  {
-					mvprintw(24,0,"Problem with rig link: set mode!\n");
-					refresh();
-					sleep(1);
-				}
-
-			}else {
-//					retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  RIG_PASSBAND_NORMAL);
-					if (cw_bandwidth == 0) {
-						if (nobandchange != 1) {
-							retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  RIG_PASSBAND_NORMAL);
-						}
-					}
-					else {
-						if (nobandchange != 1) {
-							retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  cw_bandwidth);
-						}
-					}
-
-				if (retval != RIG_OK)  {
-					mvprintw(24,0,"Problem with rig link: set mode!\n");
-					refresh();
-					sleep(1);
-				}
-
-			}
-#endif
-		} else {			// native rig driver
-			if (trxmode == SSBMODE) {
-				if (freq < 14000.0 )
-					retval =  native_rig_set_mode(rignumber, N_RIGMODE_LSB);
-				else
-					retval =  native_rig_set_mode(rignumber, N_RIGMODE_USB);
-
-				if (retval != 0)  {
-					mvprintw(24,0,"Problem with rig link: set mode!\n");
-					refresh();
-					sleep(1);
-				}
-			}else if (trxmode == DIGIMODE) {
-					retval =  native_rig_set_mode(rignumber, N_RIGMODE_LSB);
-
-				if (retval != 0)  {
-					mvprintw(24,0,"Problem with rig link: set mode!\n");
-					refresh();
-					sleep(1);
-				}
-
-			}else {
-					retval =  native_rig_set_mode(rignumber, N_RIGMODE_CW);
-
-				if (retval != 0)  {
-					mvprintw(24,0,"Problem with rig link: set mode!\n");
-					refresh();
-					sleep(1);
-				}
-
-			}
-
-
-
-		}
-
-	}
-
-   } else if (outfreq == SETCWMODE)  {
-
-	if (rignumber < 2000) {
-#ifdef HAVE_LIBHAMLIB              // Code for Hamlib interface
-		if (cw_bandwidth == 0) {
+		} else {
+//                                      retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  RIG_PASSBAND_NORMAL);
+		    if (cw_bandwidth == 0) {
 			if (nobandchange != 1) {
-				retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  RIG_PASSBAND_NORMAL);
+			    retval =
+				rig_set_mode(my_rig, RIG_VFO_CURR,
+					     RIG_MODE_CW,
+					     RIG_PASSBAND_NORMAL);
 			}
-		}
-		else {
+		    } else {
 			if (nobandchange != 1) {
-				retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  cw_bandwidth);
+			    retval =
+				rig_set_mode(my_rig, RIG_VFO_CURR,
+					     RIG_MODE_CW, cw_bandwidth);
 			}
+		    }
+
+		    if (retval != RIG_OK) {
+			mvprintw(24, 0,
+				 "Problem with rig link: set mode!\n");
+			refresh();
+			sleep(1);
+		    }
+
 		}
 #endif
-	}else {
-		retval =  native_rig_set_mode(rignumber, N_RIGMODE_CW);
+	    } else {		// native rig driver
+		if (trxmode == SSBMODE) {
+		    if (freq < 14000.0)
+			retval =
+			    native_rig_set_mode(rignumber, N_RIGMODE_LSB);
+		    else
+			retval =
+			    native_rig_set_mode(rignumber, N_RIGMODE_USB);
+
+		    if (retval != 0) {
+			mvprintw(24, 0,
+				 "Problem with rig link: set mode!\n");
+			refresh();
+			sleep(1);
+		    }
+		} else if (trxmode == DIGIMODE) {
+		    retval = native_rig_set_mode(rignumber, N_RIGMODE_LSB);
+
+		    if (retval != 0) {
+			mvprintw(24, 0,
+				 "Problem with rig link: set mode!\n");
+			refresh();
+			sleep(1);
+		    }
+
+		} else {
+		    retval = native_rig_set_mode(rignumber, N_RIGMODE_CW);
+
+		    if (retval != 0) {
+			mvprintw(24, 0,
+				 "Problem with rig link: set mode!\n");
+			refresh();
+			sleep(1);
+		    }
+
+		}
+
+	    }
+
 	}
-			if (retval != 0)  {
-				mvprintw(24,0,"Problem with rig link!\n");
-				refresh();
-				sleep(1);
-			}
 
-		outfreq = 0;
+    } else if (outfreq == SETCWMODE) {
 
-
-   } else if (outfreq == SETSSBMODE)  {
 	if (rignumber < 2000) {
-#ifdef HAVE_LIBHAMLIB              // Code for Hamlib interface
-		if (freq > 13999.9)
-			retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_USB,  RIG_PASSBAND_NORMAL);
-		else
-			retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,  RIG_PASSBAND_NORMAL);
-
-		if (retval != RIG_OK)  {
-				mvprintw(24,0,"Problem with rig link!\n");
-				refresh();
-				sleep(1);
+#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
+	    if (cw_bandwidth == 0) {
+		if (nobandchange != 1) {
+		    retval =
+			rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
+				     RIG_PASSBAND_NORMAL);
 		}
-
+	    } else {
+		if (nobandchange != 1) {
+		    retval =
+			rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
+				     cw_bandwidth);
+		}
+	    }
 #endif
-	}else {
-		if (freq > 13999.9)
-			retval =  native_rig_set_mode(rignumber,  N_RIGMODE_USB);
-		else
-			retval =  native_rig_set_mode(rignumber,  N_RIGMODE_LSB);
-
-		if (retval != 0)  {
-				mvprintw(24,0,"Problem with rig link!\n");
-				refresh();
-				sleep(1);
-		}
+	} else {
+	    retval = native_rig_set_mode(rignumber, N_RIGMODE_CW);
 	}
-
-		outfreq = 0;
-
-
-
-
-   }  else if (outfreq == RESETRIT){
-	if (rignumber < 2000) {
-#ifdef HAVE_LIBHAMLIB              // Code for Hamlib interface
-		retval =  rig_set_rit(my_rig, RIG_VFO_CURR, 0);
-
-			if (retval != RIG_OK)  {
-				mvprintw(24,0,"Problem with rig link!\n");
-				refresh();
-				sleep(1);
-			}
-#endif
-	} else
-		native_rig_reset_rit(rignumber);
+	if (retval != 0) {
+	    mvprintw(24, 0, "Problem with rig link!\n");
+	    refresh();
+	    sleep(1);
+	}
 
 	outfreq = 0;
 
-   } else {
+    } else if (outfreq == SETSSBMODE) {
+	if (rignumber < 2000) {
+#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
+	    if (freq > 13999.9)
+		retval =
+		    rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_USB,
+				 RIG_PASSBAND_NORMAL);
+	    else
+		retval =
+		    rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,
+				 RIG_PASSBAND_NORMAL);
 
-		if (rignumber < 2000) {
-#ifdef HAVE_LIBHAMLIB              // Code for Hamlib interface
-			retval = rig_set_freq(my_rig, RIG_VFO_CURR, outfreq);
-
-			if (retval != RIG_OK)  {
-				mvprintw(24,0,"Problem with rig link: set frequency!\n");
-				refresh();
-				sleep(1);
-			}
-
+	    if (retval != RIG_OK) {
+		mvprintw(24, 0, "Problem with rig link!\n");
+		refresh();
+		sleep(1);
+	    }
 #endif
-		} else
-			retval = native_rig_set_freq( rignumber, outfreq);
+	} else {
+	    if (freq > 13999.9)
+		retval = native_rig_set_mode(rignumber, N_RIGMODE_USB);
+	    else
+		retval = native_rig_set_mode(rignumber, N_RIGMODE_LSB);
 
-			if (retval != 0)  {
-				mvprintw(24,0,"Problem with rig link: set frequency!\n");
-				refresh();
-				sleep(1);
-			}
+	    if (retval != 0) {
+		mvprintw(24, 0, "Problem with rig link!\n");
+		refresh();
+		sleep(1);
+	    }
+	}
 
-			outfreq = 0;
+	outfreq = 0;
 
-   }
+    } else if (outfreq == RESETRIT) {
+	if (rignumber < 2000) {
+#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
+	    retval = rig_set_rit(my_rig, RIG_VFO_CURR, 0);
 
-   return(0);
-  }
+	    if (retval != RIG_OK) {
+		mvprintw(24, 0, "Problem with rig link!\n");
+		refresh();
+		sleep(1);
+	    }
+#endif
+	} else
+	    native_rig_reset_rit(rignumber);
 
+	outfreq = 0;
+
+    } else {
+
+	if (rignumber < 2000) {
+#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
+	    retval = rig_set_freq(my_rig, RIG_VFO_CURR, outfreq);
+
+	    if (retval != RIG_OK) {
+		mvprintw(24, 0, "Problem with rig link: set frequency!\n");
+		refresh();
+		sleep(1);
+	    }
+#endif
+	} else
+	    retval = native_rig_set_freq(rignumber, outfreq);
+
+	if (retval != 0) {
+	    mvprintw(24, 0, "Problem with rig link: set frequency!\n");
+	    refresh();
+	    sleep(1);
+	}
+
+	outfreq = 0;
+
+    }
+
+    return (0);
+}

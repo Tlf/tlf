@@ -17,12 +17,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 	/* ------------------------------------------------------------
- 	*      List and set parameters
- 	*
- 	*--------------------------------------------------------------*/
+	 *      List and set parameters
+	 *
+	 *--------------------------------------------------------------*/
 #include "setparameters.h"
 
- int setparameters(void){
+int setparameters(void)
+{
 
     extern int cluster;
     extern int shortqsonr;
@@ -39,142 +40,139 @@
     char callcpy[12] = "";
     char logbuffer[20];
 
+    stop_backgrnd_process = 1;	/* to prevent race condition */
 
-stop_backgrnd_process = 1;         /* to prevent race condition */
+    while ((i == '7') || (i == '8') || (i == '9')) {
 
-while ((i == '7') || (i == '8') || (i == '9')) { 	
- 	
- 	for (i = 14; i<=22; i++)
- 		mvprintw(i,2, "                         ");
- 	
- 	if(cluster == NOCLUSTER)
- 		mvprintw(14, 2, "1: Cluster = OFF");
- 	else if (cluster == MAP)
- 		mvprintw(14, 2, "1: Cluster = BANDMAP");
- 	else if (cluster == SPOTS)
- 		mvprintw(14, 2, "1: Cluster = SPOTS");
- 	else
- 		mvprintw(14, 2, "1: Cluster = Full info");
-		
-	if (shortqsonr == SHORTCW) 	
- 		mvprintw(15, 2, "2: SHORT QSONR");
-    else
-        mvprintw(15, 2, "2: LONG QSONR");
+	for (i = 14; i <= 22; i++)
+	    mvprintw(i, 2, "                         ");
 
-    if(searchflg == SEARCHWINDOW)
-        mvprintw(16, 2, "3: Duping ON");
-    else
-    	mvprintw(16, 2, "3: Duping OFF");
-    	
-     if (contest == CONTEST)
-        mvprintw(17, 2, "4: CONTEST MODE");
-     else
-     	mvprintw(17, 2, "4: QSO MODE");
-     	
-     if  (announcefilter == FILTER_ANN)
-     	mvprintw(18, 2, "5: FILTER ON");
-     else
-     	mvprintw(18, 2, "5: FILTER OFF");
-     	
-     if  (showscore_flag == 0)
-     	mvprintw(19, 2, "6: Score window OFF");
-     else
-        mvprintw(19, 2, "6: Score window ON");
+	if (cluster == NOCLUSTER)
+	    mvprintw(14, 2, "1: Cluster = OFF");
+	else if (cluster == MAP)
+	    mvprintw(14, 2, "1: Cluster = BANDMAP");
+	else if (cluster == SPOTS)
+	    mvprintw(14, 2, "1: Cluster = SPOTS");
+	else
+	    mvprintw(14, 2, "1: Cluster = Full info");
 
-        mvprintw(20, 2, "7: Logfile: %s", logfile);
+	if (shortqsonr == SHORTCW)
+	    mvprintw(15, 2, "2: SHORT QSONR");
+	else
+	    mvprintw(15, 2, "2: LONG QSONR");
 
-        strncpy(callcpy, call, strlen(call)-1);
-        mvprintw(21, 2, "8: Call:    %s", callcpy );
-        mvprintw(22, 2, "9: Contest: %s", whichcontest );
+	if (searchflg == SEARCHWINDOW)
+	    mvprintw(16, 2, "3: Duping ON");
+	else
+	    mvprintw(16, 2, "3: Duping OFF");
 
-        attroff(A_STANDOUT);
-		mvprintw(23, 25,  "Change parameter: 7,8,9, none");
+	if (contest == CONTEST)
+	    mvprintw(17, 2, "4: CONTEST MODE");
+	else
+	    mvprintw(17, 2, "4: QSO MODE");
 
-        refresh();
-		
-		i = onechar();
+	if (announcefilter == FILTER_ANN)
+	    mvprintw(18, 2, "5: FILTER ON");
+	else
+	    mvprintw(18, 2, "5: FILTER OFF");
 
-		if(i == '7'){
-	
-	        mvprintw(20, 14,  "                    ");
-	        mvprintw(20, 14,  "");
-					
-			echo();
-			getnstr(logbuffer, 20);
-			noecho();
-			
-			logfile[0] = '\0';
-			
-//			if (logbuffer[0] != '.')
-//				strcat(logfile, "./");
-			strcat(logfile, logbuffer);
-			logfile[strlen(logfile) - 1] = '\0';
-			
-			writeparas();
+	if (showscore_flag == 0)
+	    mvprintw(19, 2, "6: Score window OFF");
+	else
+	    mvprintw(19, 2, "6: Score window ON");
 
-        clear();		
-		
-		attron(COLOR_PAIR(7)  |  A_STANDOUT);		
-		getmessages();          /* read .paras file */
-		sleep(2);
-		
-		checklogfile();         /* make sure logfile is there */
+	mvprintw(20, 2, "7: Logfile: %s", logfile);
 
-		setcontest();          /* set contest parameters */
-		
-		getwwv();               /* get the latest wwv info from packet */
-		
-		scroll_log(); 			/* read the last 5  log lines and set the qso number */
+	strncpy(callcpy, call, strlen(call) - 1);
+	mvprintw(21, 2, "8: Call:    %s", callcpy);
+	mvprintw(22, 2, "9: Contest: %s", whichcontest);
 
-		readcalls();            /* read the logfile for score and dupe */
+	attroff(A_STANDOUT);
+	mvprintw(23, 25, "Change parameter: 7,8,9, none");
 
-		
-		clear_display();        /* tidy up the display */
-			
-			return(0);	 	
-		}
-		if(i == '8'){
-	
-	        mvprintw(21, 14,  "                    ");
-	        mvprintw(21, 14,  "");
-					
-			echo();
-			getnstr(call, 20);
-			noecho();
-			strcat(call, "\n");	 	
-		}
-		if(i == '9'){
-	
-	        mvprintw(1,2, "cqww      ");
-	        mvprintw(2,2, "wpx       ");
-	        mvprintw(3,2, "arrldx_usa");
-	        mvprintw(4,2, "pacc_pa   ");
-	        mvprintw(5,2, "dxped     ");
-	        mvprintw(6,2, "qso       ");
-	        mvprintw(1,12, "  other     ");
-	        mvprintw(2,12, "            ");
-	        mvprintw(3,12, "  arrldx_dx ");
-	        mvprintw(4,12, "  pacc_dx   ");
-	        mvprintw(5,12, "            ");
-	        mvprintw(6,12, "            ");
-	
-	        mvprintw(22, 14,  "                    ");
-	        mvprintw(22, 14,  "");
-					
-			echo();
-			getnstr(whichcontest, 20);
-			noecho();
-			
-			setcontest();
-	 	
-		}		
-			
-         writeparas();
-         beep();
+	refresh();
+
+	i = onechar();
+
+	if (i == '7') {
+
+	    mvprintw(20, 14, "                    ");
+	    mvprintw(20, 14, "");
+
+	    echo();
+	    getnstr(logbuffer, 20);
+	    noecho();
+
+	    logfile[0] = '\0';
+
+//                      if (logbuffer[0] != '.')
+//                              strcat(logfile, "./");
+	    strcat(logfile, logbuffer);
+	    logfile[strlen(logfile) - 1] = '\0';
+
+	    writeparas();
+
+	    clear();
+
+	    attron(COLOR_PAIR(7) | A_STANDOUT);
+	    getmessages();	/* read .paras file */
+	    sleep(2);
+
+	    checklogfile();	/* make sure logfile is there */
+
+	    setcontest();	/* set contest parameters */
+
+	    getwwv();		/* get the latest wwv info from packet */
+
+	    scroll_log();	/* read the last 5  log lines and set the qso number */
+
+	    readcalls();	/* read the logfile for score and dupe */
+
+	    clear_display();	/* tidy up the display */
+
+	    return (0);
+	}
+	if (i == '8') {
+
+	    mvprintw(21, 14, "                    ");
+	    mvprintw(21, 14, "");
+
+	    echo();
+	    getnstr(call, 20);
+	    noecho();
+	    strcat(call, "\n");
+	}
+	if (i == '9') {
+
+	    mvprintw(1, 2, "cqww      ");
+	    mvprintw(2, 2, "wpx       ");
+	    mvprintw(3, 2, "arrldx_usa");
+	    mvprintw(4, 2, "pacc_pa   ");
+	    mvprintw(5, 2, "dxped     ");
+	    mvprintw(6, 2, "qso       ");
+	    mvprintw(1, 12, "  other     ");
+	    mvprintw(2, 12, "            ");
+	    mvprintw(3, 12, "  arrldx_dx ");
+	    mvprintw(4, 12, "  pacc_dx   ");
+	    mvprintw(5, 12, "            ");
+	    mvprintw(6, 12, "            ");
+
+	    mvprintw(22, 14, "                    ");
+	    mvprintw(22, 14, "");
+
+	    echo();
+	    getnstr(whichcontest, 20);
+	    noecho();
+
+	    setcontest();
+
+	}
+
+	writeparas();
+	beep();
+    }
+
+    stop_backgrnd_process = 0;	/* release backgrnd process */
+
+    return (0);
 }
-
-         stop_backgrnd_process = 0;      /* release backgrnd process */
-
-  return(0);
- }
-

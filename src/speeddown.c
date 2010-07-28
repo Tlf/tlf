@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-  	/* ------------------------------------------------------------
- 	*        Page down,  decrementing the cw speed with  2 wpm
- 	*
- 	*--------------------------------------------------------------*/
+	/* ------------------------------------------------------------
+	 *        Page down,  decrementing the cw speed with  2 wpm
+	 *
+	 *--------------------------------------------------------------*/
 
 #include "speeddown.h"
 #include "tlf.h"
@@ -30,110 +30,70 @@
 int speeddown(void)
 {
 
-extern int speed;
-extern char speedstr[];
-extern int trxmode;
-extern int keyerport;
-extern int cfd;
-extern char buffer[];
+    extern int speed;
+    extern char speedstr[];
+    extern int trxmode;
+    extern int keyerport;
+    extern int cfd;
+    extern char buffer[];
 
-int  retval;
-char buff[3];
+    int retval;
+    char buff[3];
 
-if (trxmode != CWMODE)          /* bail out, this is an SSB contest */
-		return (0);
+    if (trxmode != CWMODE)	/* bail out, this is an SSB contest */
+	return (0);
 
-if (keyerport == COM1_KEYER) {
-
-	if (speed >= 1)
-	{
-		speed--;
-
-		strncpy(buff, speedstr+(speed * 2), 2);
-		buff[2] = '\0';
-		retval = ioctl(cfd, CWSPEED, atoi(buff));
-		if	(retval)
-		{
-			mvprintw(24,0, "keyer not active; switching to SSB");
-			trxmode = SSBMODE;
-			clear_display();
-		}
-	}
-}
-
-if (keyerport == LPT_KEYER) {
-
- 	if (speed >= 1) {
-
- 		speed--;
-
- 		strncpy(buff, speedstr+(speed * 2), 2);
-		buff[2] = '\0';
-
-		retval = ioctl(cfd, CWKEYER_IOCSSPEED, atoi(buff));
-		if	(retval)
-		{
-			mvprintw(24,0, "keyer not active; switching to SSB");
-			trxmode = SSBMODE;
-			clear_display();
-		}
-
- 	}
-}
-
-if (keyerport == NET_KEYER){
+    if (keyerport == NET_KEYER) {
 
 	if (speed >= 1) {
 
- 		speed--;
+	    speed--;
 
- 		strncpy(buff, speedstr+(speed * 2), 2);
-		buff[2] = '\0';
+	    strncpy(buff, speedstr + (speed * 2), 2);
+	    buff[2] = '\0';
 
-		retval = netkeyer (K_SPEED, buff);
-		if	(retval < 0)
-		{
-			mvprintw(24,0, "keyer not active; switching to SSB");
-			trxmode = SSBMODE;
-			clear_display();
-		}
+	    retval = netkeyer(K_SPEED, buff);
+	    if (retval < 0) {
+		mvprintw(24, 0, "keyer not active; switching to SSB");
+		trxmode = SSBMODE;
+		clear_display();
+	    }
 
- 	}
+	}
+    }
+    if (keyerport == MFJ1278_KEYER) {
+
+	if (speed >= 1) {
+
+	    speed--;
+
+	    strncpy(buff, speedstr + (speed * 2), 2);
+	    buff[2] = '\0';
+
+	    strcpy(buffer, "\\\015");
+	    sendbuf();
+	    usleep(500000);
+	    strcpy(buffer, "MSP ");
+	    strcat(buffer, buff);
+	    strcat(buffer, " \015");
+	    sendbuf();
+	    usleep(500000);
+	    strcpy(buffer, "CONV\015\n");
+	    sendbuf();
+	}
+    }
+    if (keyerport == ORION_KEYER) {
+
+	if (speed >= 1) {
+
+	    speed--;
+
+	    strncpy(buff, speedstr + (speed * 2), 2);
+	    buff[2] = '\0';
+
+	    orion_set_cw_speed(atoi(buff));
+
+	}
+    }
+    return (speed);
 }
-if (keyerport == MFJ1278_KEYER) {
-
- 	if (speed >=1) {
-
- 		speed--;
-
- 		strncpy(buff, speedstr+(speed * 2), 2);
-		buff[2] = '\0';
-
-		strcpy (buffer, "\\\015");
-		sendbuf();
-		usleep(500000);
-		strcpy (buffer, "MSP ");
-		strcat (buffer, buff);
-		strcat (buffer, " \015");
-		sendbuf();
-		usleep(500000);
-		strcpy (buffer, "CONV\015\n");
-		sendbuf();
- 	}
-}
-if (keyerport == ORION_KEYER) {
-
- 	if (speed >= 1) {
-
- 		speed--;
-
- 		strncpy(buff, speedstr+(speed * 2), 2);
-		buff[2] = '\0';
-
-		orion_set_cw_speed(atoi(buff));
-
- 	}
-}
-return (speed);	
-}
-

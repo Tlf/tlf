@@ -24,29 +24,29 @@
 #include "logview.h"
 
 int logview(void)
- {
-extern char logfile[];
-extern char backgrnd_str[];
+{
+	extern char logfile[];
+	extern char backgrnd_str[];
 
-char comstr[40]  = "";
-int j;
+	char comstr[40]  = "";
+	int j, rc;
  			
- 			strcat(comstr,  "less  +G ");
-			strcat(comstr,  logfile);
-			system(comstr);
-			attron(COLOR_PAIR(7) | A_STANDOUT);
-			erase();
-			refresh();
-			clear_display();
-			attron(COLOR_PAIR(7)  |  A_STANDOUT);
+	strcat(comstr,  "less  +G ");
+	strcat(comstr,  logfile);
+	rc=system(comstr);
+	attron(COLOR_PAIR(7) | A_STANDOUT);
+	erase();
+	refresh();
+	clear_display();
+	attron(COLOR_PAIR(7)  |  A_STANDOUT);
 
-			for (j = 13 ;  j  <= 23 ; j++){
-	 			mvprintw(j, 0, backgrnd_str);
-				}
+	for (j = 13 ;  j  <= 23 ; j++){
+		mvprintw(j, 0, backgrnd_str);
+	}
+	
+	refresh();
 
-			refresh();
 
-
-  return(0);
- }
+	return(0);
+}
 

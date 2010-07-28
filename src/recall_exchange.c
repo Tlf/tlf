@@ -19,65 +19,66 @@
 #include "recall_exchange.h"
 #include "initial_exchange.h"
 
-int recall_exchange(void) {
+int recall_exchange(void)
+{
 
-extern int callarray_nr;
-extern char callarray[MAX_CALLS][20];
-extern char call_exchange[MAX_CALLS][12];
-extern char hiscall[];
-extern char comment[];
-extern struct ie_list *main_ie_list;
+    extern int callarray_nr;
+    extern char callarray[MAX_CALLS][20];
+    extern char call_exchange[MAX_CALLS][12];
+    extern char hiscall[];
+    extern char comment[];
+    extern struct ie_list *main_ie_list;
 
-int i,index, j;
-char *loc;
-struct ie_list *current_ie;
+    int i, index, j;
+    char *loc;
+    struct ie_list *current_ie;
 
-if (strlen(hiscall) == 0) return (0);
+    if (strlen(hiscall) == 0)
+	return (0);
 
+    for (i = callarray_nr; i >= 0; i--) {
 
+	/* first search call in callarray */
+	if (strstr(callarray[i], hiscall) != NULL) {
+	    strcpy(comment, call_exchange[i]);
 
-for (i = callarray_nr; i >= 0 ; i--) {
+	    for (j = 0; j < strlen(comment); j++)
+		if (comment[j] == ' ') {
+		    comment[j] = '\0';
+		    break;
+		}
+	    loc = strchr(comment, '\0');
+	    if (loc != NULL) {
+		index = (int) (loc - comment);
+		if (index <= strlen(comment))
+		    comment[index] = '\0';
+	    }
+	    mvprintw(12, 54, comment);
+	    break;
+	}
 
- 	if(strstr(callarray[i], hiscall) != NULL){
- 	 	strcpy(comment, call_exchange[i]);
+	/* if no exchange could be found or recycled search initiali
+	 * exchange list */
+	if (strlen(comment) == 0 && main_ie_list != NULL) {
 
-		 for (j = 0; j < strlen(comment) ; j++)
-			if (comment[j] == ' ')   {
-				comment[j] = '\0';
-				break;
-			}
-		loc = strchr(comment, '\0');
- 	 	if (loc != NULL) {
- 	 		index = (int) (loc - comment);
- 	 		if (index <= strlen(comment))
- 	 			comment[index] = '\0';
- 	 	}
- 	 	mvprintw(12, 54,  comment);
- 	 	break;
- 	}
+	    current_ie = main_ie_list;
 
-if (strlen(comment) == 0 && main_ie_list != NULL) {
-
-	current_ie = main_ie_list;
-
-	while(1) {
-		if(strstr(hiscall, current_ie->call) != NULL) {
-			strcpy(comment, current_ie->exchange);
-			mvprintw(12, 54,  comment);
-			refresh();
+	    while (1) {
+		if (strstr(hiscall, current_ie->call) != NULL) {
+		    strcpy(comment, current_ie->exchange);
+		    mvprintw(12, 54, comment);
+		    refresh();
+		    break;
+		} else {
+		    if (current_ie->next != NULL)
+			current_ie = current_ie->next;
+		    else
 			break;
 		}
-		else {
-			if (current_ie->next != NULL )
-				current_ie = current_ie->next;
-			else
-				break;
-		}
+	    }
 	}
-}
 
-}
+    }
 
- return(i);
+    return (i);
 }
-

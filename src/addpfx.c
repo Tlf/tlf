@@ -18,37 +18,37 @@
  */
 
 	/* ------------------------------------------------------------
- 	*     add prefix
- 	*
- 	*--------------------------------------------------------------*/
+	 *     add prefix
+	 *
+	 *--------------------------------------------------------------*/
 
-#include "addpfx.h" 	
- 	
- 	int add_pfx(void)
- 	{
- 	 	
-  	extern char prefixes_worked[MAX_CALLS][6];
+#include "addpfx.h"
+
+int add_pfx(void)
+{
+
+    extern char prefixes_worked[MAX_CALLS][6];
     extern int nr_of_px;
     extern char pxstr[];
 
-    int q=0,  found=0;
-        	
-        	prefixes_worked[nr_of_px][0] = '\0';
-        	
-        	for (q = 0 ; q <= nr_of_px ; q++){
-        	
-        	 	if (strcmp(pxstr, prefixes_worked[q]) == 0){
-        	 	    found = 1;
-        	 		break;
-        	 		
-        	 	}
-        	}
-        	if (found != 1){
-        		strcat(prefixes_worked[nr_of_px], pxstr);
-        		 nr_of_px++;
-        	}
+    int q = 0, found = 0;
 
- 	return(found);
- }
+    prefixes_worked[nr_of_px][0] = '\0';
 
- 	/*--------------------addpx for LAN qso's--------------------------------------*/
+    for (q = 0; q <= nr_of_px; q++) {
+
+	if (strcmp(pxstr, prefixes_worked[q]) == 0) {
+	    found = 1;
+	    break;
+
+	}
+    }
+    if (found != 1) {
+	strcat(prefixes_worked[nr_of_px], pxstr);
+	nr_of_px++;
+    }
+
+    return (found);
+}
+
+	/*--------------------addpx for LAN qso's--------------------------------------*/

@@ -16,36 +16,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-   	/* ------------------------------------------------------------
- 	*      printcall
- 	*
- 	*--------------------------------------------------------------*/
+	/* ------------------------------------------------------------
+	 *      printcall
+	 *
+	 *--------------------------------------------------------------*/
 
-#include "printcall.h"	
-	
-	void printcall(void){
-	
-	extern int use_rxvt;
-	extern char hiscall[];
-	extern int miniterm;
+#include "printcall.h"
 
-	int currentterm = 0;
+void printcall(void)
+{
 
-	if (miniterm == 1) {
-		miniterm = 0;
-		currentterm = 1;
-	}
+    extern int use_rxvt;
+    extern char hiscall[];
+    extern int miniterm;
 
-	if (use_rxvt == 0) attron(COLOR_PAIR(COLOR_BLUE) | A_STANDOUT |  A_BOLD);
-	else attron(COLOR_PAIR(COLOR_BLUE) | A_STANDOUT );
+    int currentterm = 0;
 
-	mvprintw(12, 29, "            ");
-	mvprintw(12, 29, hiscall);
-	refresh();
-
-	if (currentterm == 1)
-		miniterm =1;
+    if (miniterm == 1) {
+	miniterm = 0;
+	currentterm = 1;
     }
 
+    if (use_rxvt == 0)
+	attron(COLOR_PAIR(COLOR_BLUE) | A_STANDOUT | A_BOLD);
+    else
+	attron(COLOR_PAIR(COLOR_BLUE) | A_STANDOUT);
 
+    mvprintw(12, 29, "            ");
+    mvprintw(12, 29, hiscall);
+    refresh();
 
+    if (currentterm == 1)
+	miniterm = 1;
+}

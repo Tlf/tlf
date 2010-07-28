@@ -17,75 +17,74 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 	/* ------------------------------------------------------------
- 	*   show zone map
- 	*
- 	*--------------------------------------------------------------*/
+	 *   show zone map
+	 *
+	 *--------------------------------------------------------------*/
 
 #include "showzones.h"
 
-     int show_zones(int bandinx)
-     {
+int show_zones(int bandinx)
+{
 
-      extern int zonedisplay;
-      extern int bandindex;
-      extern int zones[41];
+    extern int zonedisplay;
+    extern int bandindex;
+    extern int zones[41];
 
-      int i = 0, j = 0;
-      int xloc = 19;
-      int yloc = 15;
+    int i = 0, j = 0;
+    int xloc = 19;
+    int yloc = 15;
 
-      if (zonedisplay != 1)
-      	return(0);
+    if (zonedisplay != 1)
+	return (0);
 
-      switch (bandinx){
-      	case 0:{
-      		bandindex = BAND160;
-      		break;
-      		}
-      	case 1:{
-      		bandindex = BAND80;
-      		break;
-      		}
-      	case 2:{
-      		bandindex = BAND40;
-      		break;
-      		}
-      	case 4:{
-      		bandindex = BAND20;
-      		break;
-      		}
-      	case 6:{
-      		bandindex = BAND15;
-      		break;
-      		}
-      	case 8:
-      		bandindex = BAND10;
-      }
+    switch (bandinx) {
+    case 0:{
+	    bandindex = BAND160;
+	    break;
+	}
+    case 1:{
+	    bandindex = BAND80;
+	    break;
+	}
+    case 2:{
+	    bandindex = BAND40;
+	    break;
+	}
+    case 4:{
+	    bandindex = BAND20;
+	    break;
+	}
+    case 6:{
+	    bandindex = BAND15;
+	    break;
+	}
+    case 8:
+	bandindex = BAND10;
+    }
 
-      attron(COLOR_PAIR(4) | A_STANDOUT);
+    attron(COLOR_PAIR(4) | A_STANDOUT);
 
-      for (i = 0; i <= 7; i++){
+    for (i = 0; i <= 7; i++) {
 
-       		for ( j = 1; j <= 5; j++){
-       	
-       	  		if ((zones[(i*5)+j] & bandindex) == 0 ){
-       	  			
-       	   			if ((i*5)+j < 10)
-       	 				mvprintw(i+yloc ,(j*3)+xloc, " 0%d" , (i*5)+j);
-       				else
-       					mvprintw(i+yloc ,(j*3)+xloc, " %d" , (i*5)+j);
-       	 	
-       	 		}
-       	 		else {
-       	 	
-       	 	 		mvprintw(i+yloc ,(j*3)+xloc, "   " );
-       	 	
-       	 		}
-       		}
-       	
-      }
-	  nicebox(14, 22, 8, 14, "Zones");
+	for (j = 1; j <= 5; j++) {
 
-     return(0);
-     }
+	    if ((zones[(i * 5) + j] & bandindex) == 0) {
 
+		if ((i * 5) + j < 10)
+		    mvprintw(i + yloc, (j * 3) + xloc, " 0%d",
+			     (i * 5) + j);
+		else
+		    mvprintw(i + yloc, (j * 3) + xloc, " %d", (i * 5) + j);
+
+	    } else {
+
+		mvprintw(i + yloc, (j * 3) + xloc, "   ");
+
+	    }
+	}
+
+    }
+    nicebox(14, 22, 8, 14, "Zones");
+
+    return (0);
+}

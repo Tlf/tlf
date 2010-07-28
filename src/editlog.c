@@ -17,140 +17,132 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
- 	/* ------------------------------------------------------------
- 	*        Edit Log
- 	*
- 	*--------------------------------------------------------------*/
+	/* ------------------------------------------------------------
+	 *        Edit Log
+	 *
+	 *--------------------------------------------------------------*/
 
 #include "editlog.h"
-																							  
- int logedit(void)
- {
-extern char logfile[];
-extern char backgrnd_str[];
-extern int editor;
-extern int stop_backgrnd_process;
 
-char comstr[40]  = "";
-int j;
-int lfile;
-int qsobytes;
-int qsolines;
-int errbytes;
-struct stat statbuf;
-FILE *infile;
-FILE *outfile;
-char inputbuffer[800];
+int logedit(void)
+{
+    extern char logfile[];
+    extern char backgrnd_str[];
+    extern int editor;
+    extern int stop_backgrnd_process;
 
+    char comstr[40] = "";
+    int j;
+    int lfile;
+    int qsobytes;
+    int qsolines;
+    int errbytes;
+    int rc;
+    struct stat statbuf;
+    FILE *infile;
+    FILE *outfile;
+    char inputbuffer[800];
+    char *rp;
 
- 			if (editor == EDITOR_JOE)
- 				strcat(comstr,  "joe  ");     /*   my favorite editor   */
- 			else  if (editor == EDITOR_VI)
- 				strcat(comstr,  "vi  ");
-			else
-				strcat(comstr,  "e3  ");
- 				
-			strcat(comstr,  logfile);
-			system(comstr);
-			attron(COLOR_PAIR(7) | A_STANDOUT);
-			erase();
-			refresh();
-			clear_display();
-			attron(COLOR_PAIR(7)  |  A_STANDOUT);
+    if (editor == EDITOR_JOE)
+	strcat(comstr, "joe  ");	/*   my favorite editor   */
+    else if (editor == EDITOR_VI)
+	strcat(comstr, "vi  ");
+    else
+	strcat(comstr, "e3  ");
 
-			for (j = 13 ;  j  <= 23 ; j++){
-	 			mvprintw(j, 0, backgrnd_str);
-				}
+    strcat(comstr, logfile);
+    rc = system(comstr);
+    attron(COLOR_PAIR(7) | A_STANDOUT);
+    erase();
+    refresh();
+    clear_display();
+    attron(COLOR_PAIR(7) | A_STANDOUT);
 
-			if ((lfile = open(logfile, O_RDONLY)) < 0){
+    for (j = 13; j <= 23; j++) {
+	mvprintw(j, 0, backgrnd_str);
+    }
 
-				mvprintw(24,0, "I can not find the logfile...");
-				refresh();
-				sleep(2);
+    if ((lfile = open(logfile, O_RDONLY)) < 0) {
 
-			}  else {
+	mvprintw(24, 0, "I can not find the logfile...");
+	refresh();
+	sleep(2);
 
-				fstat(lfile, &statbuf);
-				qsobytes = statbuf.st_size ;
-				qsolines =   qsobytes / 81;
-				errbytes = qsobytes - (qsolines * 81);
+    } else {
 
-				if (errbytes != 0) {
+	fstat(lfile, &statbuf);
+	qsobytes = statbuf.st_size;
+	qsolines = qsobytes / 81;
+	errbytes = qsobytes - (qsolines * 81);
 
-					close (lfile);
+	if (errbytes != 0) {
 
-					stop_backgrnd_process = 1;
+	    close(lfile);
 
-					if  ( (infile = fopen(logfile,"r"))  == NULL){
-						mvprintw(24,0, "Unable to open logfile...");
-						refresh();
-						sleep(2);
+	    stop_backgrnd_process = 1;
 
-					}  else {
-						if  ( (outfile = fopen("./cpyfile","w"))  == NULL){
-							mvprintw(24,0, "Unable to open cpyfile...");
-							refresh();
-							sleep(2);
-						} else {
+	    if ((infile = fopen(logfile, "r")) == NULL) {
+		mvprintw(24, 0, "Unable to open logfile...");
+		refresh();
+		sleep(2);
 
-							while (! (feof (infile))){
+	    } else {
+		if ((outfile = fopen("./cpyfile", "w")) == NULL) {
+		    mvprintw(24, 0, "Unable to open cpyfile...");
+		    refresh();
+		    sleep(2);
+		} else {
 
-								fgets (inputbuffer, 160, infile);
+		    while (!(feof(infile))) {
 
+			rp = fgets(inputbuffer, 160, infile);
 
-								if (strlen(inputbuffer) != 81){
-									strcat(inputbuffer, backgrnd_str);
-									inputbuffer[81] = '\0';
-								}
-
-								fputs(inputbuffer, outfile);
-							}
-
-       							fclose (infile);
-							fclose (outfile);
-
-						}
-
-						if ((lfile = open("./cpyfile", O_RDWR)) < 0){
-
-							mvprintw(24,0, "I can not find the copy file...");
-							refresh();
-							sleep(2);
-						}  else {
-
-
-							fstat(lfile, &statbuf);
-
-							if(statbuf.st_size >  80) {
-								ftruncate(lfile, statbuf.st_size -  81);
-								fsync(lfile);
-
-						}
-
-
-							close(lfile);
-					}
-
-							rename ("./cpyfile", logfile);
-							remove ("./cpyfile");
-					}
-
-				} else   close (lfile);
-
-
-
-				stop_backgrnd_process = 0;
+			if (strlen(inputbuffer) != 81) {
+			    strcat(inputbuffer, backgrnd_str);
+			    inputbuffer[81] = '\0';
 			}
 
-			close (lfile);
+			fputs(inputbuffer, outfile);
+		    }
 
-			scroll_log();
-			refresh();
+		    fclose(infile);
+		    fclose(outfile);
 
+		}
 
-  return(0);
- }
+		if ((lfile = open("./cpyfile", O_RDWR)) < 0) {
 
+		    mvprintw(24, 0, "I can not find the copy file...");
+		    refresh();
+		    sleep(2);
+		} else {
 
+		    fstat(lfile, &statbuf);
 
+		    if (statbuf.st_size > 80) {
+			rc = ftruncate(lfile, statbuf.st_size - 81);
+			fsync(lfile);
 
+		    }
+
+		    close(lfile);
+		}
+
+		rename("./cpyfile", logfile);
+		remove("./cpyfile");
+	    }
+
+	} else
+	    close(lfile);
+
+	stop_backgrnd_process = 0;
+    }
+
+    close(lfile);
+
+    scroll_log();
+    refresh();
+
+    return (0);
+}

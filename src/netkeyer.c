@@ -52,7 +52,7 @@ int netkeyer_init (void)
 /*
    Initialize socket address structure for Internet Protocols
    The address comes from the datastructure returned by gethostbyname()
-*/ 
+*/
   	bzero(&address, sizeof(address)); /* empty data structure */
   	address.sin_family = AF_INET;
   	memcpy(&address.sin_addr.s_addr, hostbyname->h_addr, sizeof(address.sin_addr.s_addr));
@@ -96,17 +96,17 @@ char buf[80];
 			sprintf(buf+1,"0");                                    // reset
  			break;
 		case K_MESSAGE :
-			sprintf(buf, cwmessage);                     // cw message
+			sprintf(buf, "%s", cwmessage);                     // cw message
  			break;
 		case K_SPEED :
   			buf[0]= 27;
 			sprintf(buf+1,"2");                                   // speed
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);                     // cw message
  			break;
 		case K_TONE :                                               // tone
   			buf[0]= 27;
 			sprintf(buf+1,"3");
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);                     // cw message
  			break;
 		case K_ABORT :                                           // message abort
   			buf[0]= 27;
@@ -123,42 +123,42 @@ char buf[80];
 		case K_WEIGHT  :                              // set weight
   			buf[0]= 27;
 			sprintf(buf+1,"7");
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);                     // cw message
  			break;
 		case K_DEVICE  :                              // set device
   			buf[0]= 27;
 			sprintf(buf+1,"8");
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);                     // cw message
  			break;
 		case K_ADDRESS  :                              // set device
   			buf[0]= 27;
 			sprintf(buf+1,"9");
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);
  			break;
 		case K_PTT  :                              // PTT on/off
   			buf[0]= 27;
 			sprintf(buf+1,"a");
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);
  			break;
 		case K_SET14  :                              // set pin 14 of lp port
   			buf[0]= 27;
 			sprintf(buf+1,"b");
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);
  			break;
 		case K_TUNE  :                              // tune
   			buf[0]= 27;
 			sprintf(buf+1,"c");
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);
  			break;
 		case K_TOD  :                              // set Turn On Delay (TXDELAY)
   			buf[0]= 27;
 			sprintf(buf+1,"d");
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);
  			break;
 		case K_SWITCH  :                              // set band switch output
   			buf[0]= 27;
 			sprintf(buf+1,"e");
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);
  			break;
 		case K_SIDETONE  :                              // set sidetone output to sound card
   			buf[0]= 27;
@@ -168,7 +168,7 @@ char buf[80];
 		case K_STVOLUME  :                              // set sound card output volume
   			buf[0]= 27;
 			sprintf(buf+1,"g");
-			sprintf(buf+2, cwmessage);
+			sprintf(buf+2, "%s", cwmessage);
  			break;
 
 

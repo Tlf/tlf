@@ -18,105 +18,130 @@
  */
 
 	/* ------------------------------------------------------------------------------
- 	*      initial exchange.c
- 	*
-	*  makes list of calls and exchanges from comma separated file
-	*  and retrieves them
-	*
- 	*-------------------------------------------------------------------------------*/
+	 *      initial exchange.c
+	 *
+	 *  makes list of calls and exchanges from comma separated file
+	 *  and retrieves them
+	 *
+	 *-------------------------------------------------------------------------------*/
 
 #include "initial_exchange.h"
 
-struct ie_list *make_ie_list (void) {
+struct ie_list *make_ie_list(void)
+{
 
-extern char exchange_list[];
+    extern char exchange_list[];
 
-FILE *fp;
-char inputbuffer[91];
-char *loc;
+    FILE *fp;
+    char inputbuffer[91];
+    char *loc;
 
-struct ie_list *ie_listhead;
-struct ie_list *ie_current;
-struct ie_list *new;
+    struct ie_list *ie_listhead = NULL;
+    struct ie_list *new;
+    char *token;
 
- 	if  ( (fp = fopen(exchange_list,"r"))  == NULL){
-		showmsg("Cannot find initial exchange file");
-		return(NULL);
-	}else
-		showstring ("Using initial exchange file", exchange_list);
+    if ((fp = fopen(exchange_list, "r")) == NULL) {
+	showmsg("Cannot find initial exchange file");
+	return (NULL);
+    } else
+	showstring("Using initial exchange file", exchange_list);
 
-	ie_listhead = malloc(sizeof (struct ie_list));
+    while (fgets(inputbuffer, 90, fp) != NULL) {
 
-	if (ie_listhead == NULL) {
-		showmsg("Out of memory");
-		return(NULL);
+	/* allow empty and comment lines */
+	if ((inputbuffer[0] == '#') ||
+	    strspn(inputbuffer, " \t") == strlen(inputbuffer)-1)
+	    continue;			
+
+	/* strip trailing newline */ 
+	if ((loc = strchr(inputbuffer, '\n')) != NULL)
+	    *loc = '\0';
+
+	if (strlen(inputbuffer) > 80) {
+	    /* line to long */
+	    free_ie_list(ie_listhead);
+	    fclose(fp);
+	    showmsg("Wrong format, line to long");
+	    return NULL;
 	}
-
-	fgets(inputbuffer, 90, fp);
 
 	loc = strchr(inputbuffer, ',');
 
-	if (loc != NULL) {
-		inputbuffer[loc - inputbuffer] = '\0';
-		strcpy (ie_listhead->call,inputbuffer);
-		strcpy (ie_listhead->exchange, loc+1);
-		ie_listhead->exchange[strlen(ie_listhead->exchange) - 1] = '\0';
-		ie_listhead->next = NULL;
-		ie_current = ie_listhead;
-	}else {
-		showmsg ("Wrong format, no comma found");
-		return(NULL);
+	if (loc != NULL) {	// comma found
+
+	    new = malloc(sizeof(struct ie_list));
+
+	    if (new == NULL) {
+		free_ie_list(ie_listhead);
+		fclose(fp);
+		showmsg("Out of memory");
+		return (NULL);
+	    }
+
+	    *loc = '\0';	/* split the string into call and exchange */
+
+	    token = strtok(inputbuffer, " \t"); 	/* callsign is first
+							   token delimited by
+							   whitespace */
+	    if ((token == NULL) || strtok(NULL, " \t")) {
+		/* 0 or >1 token before comma */
+		free_ie_list(ie_listhead);
+		fclose(fp);
+		showmsg("Wrong format, 0 or more than one token before comma");
+		return (NULL);
+	    }
+
+	    strncpy(new->call, token, MAX_CALL_LENGTH);
+	    new->call[MAX_CALL_LENGTH] = '\0';		/* proper termination */
+
+	    loc += strspn(loc+1, " \t");		/* skip leading space */
+	    strncpy(new->exchange, loc + 1, MAX_IE_LENGTH);
+	    new->exchange[MAX_IE_LENGTH] = '\0';	/* proper termination */
+
+	    /* prepend new entry to existing list */
+	    new->next = ie_listhead;
+	    ie_listhead = new;
+
+	    inputbuffer[0] = '\0';
+
+	} else {
+	    /* no comma found */
+	    free_ie_list(ie_listhead);
+	    fclose(fp);
+	    showmsg("Wrong format, no comma found");
+	    return NULL;			
 	}
+    }
 
-	while(!feof(fp)) {
+    fclose(fp);
 
-		fgets (inputbuffer, 90,  fp);
-		if (strlen(inputbuffer) == 0) break;
-
-		loc = strchr(inputbuffer, ',');
-
-		if (loc != NULL) {	// comma found
-
-			new = malloc(sizeof (struct ie_list));
-
-			if (new == NULL) {
-				showmsg("Out of memory");
-				return(NULL);
-			}
-
-			inputbuffer[loc - inputbuffer] = '\0';		// split the string into call and exchange
-			strncpy (new->call,inputbuffer, MAX_CALL_LENGTH);
-			strncpy (new->exchange, loc+1, MAX_IE_LENGTH);
-			new->exchange[strlen(new->exchange) - 1] = '\0';
-			new->next = NULL;
-			ie_current->next = new;
-			ie_current = new;
-
-			inputbuffer[0] = '\0';
-
-		}else {
-			showmsg ("Wrong format, no comma found");
-			break;
-//			return(NULL);
-		}
-
-	}
-
-return(ie_listhead);
+    return (ie_listhead);
 }
 
-int  test_ie_list (struct ie_list *example_ie_list) {
+void free_ie_list(struct ie_list *head)
+{
+    struct ie_list *next;
 
-	if (example_ie_list == NULL)
-		return(-1);
+    while (head) {
+	next = head->next;
+	free(head);
+	head = next;
+    }
+}
 
-	while (1) {
-		showmsg(example_ie_list->call);
-		showmsg(example_ie_list->exchange);
-		if(example_ie_list->next != NULL)
-			example_ie_list = example_ie_list->next;
-		else
-			break;
-	}
-return(0);
+int test_ie_list(struct ie_list *example_ie_list)
+{
+
+    if (example_ie_list == NULL)
+	return (-1);
+
+    while (1) {
+	showmsg(example_ie_list->call);
+	showmsg(example_ie_list->exchange);
+	if (example_ie_list->next != NULL)
+	    example_ie_list = example_ie_list->next;
+	else
+	    break;
+    }
+    return (0);
 }

@@ -18,29 +18,27 @@
  */
 
 	/* ------------------------------------------------------------
- 	*      Check for .paras file
- 	*
- 	*--------------------------------------------------------------*/
- 	
+	 *      Check for .paras file
+	 *
+	 *--------------------------------------------------------------*/
+
 #include "checkparameters.h"
 
-int checkparameters(void){
+int checkparameters(void)
+{
 
-extern int emptydir;
- 	
- 	FILE *fp;
+    extern int emptydir;
 
- 	if  ( (fp = fopen(".paras","r"))  == NULL)
- 	{
-		writeparas();
-		emptydir = 1;
+    FILE *fp;
 
-	}else {
-	
-		fclose(fp);
-	 }
+    if ((fp = fopen(".paras", "r")) == NULL) {
+	writeparas();
+	emptydir = 1;
 
-	 return(0);
-	}
+    } else {
 
-	
+	fclose(fp);
+    }
+
+    return (0);
+}

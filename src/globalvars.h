@@ -1,20 +1,33 @@
 #include "tlf.h"
 
-extern char qsos[MAX_QSOS][82];		// array of log lines of QSOs so far; note that not every log line needs to be a QSO, it could also be a comment, starting with a semicolon
+extern char qsos[MAX_QSOS][82];		// array of log lines of QSOs so far; 
+					// note that not every log line needs 
+					// to be a QSO, it could also be a 
+					// comment, starting with a semicolon
 extern int nr_qsos;			// number of lines in qsos[]
 
 extern char mults[MAX_MULTS][12];	// array of multipliers worked so far
 extern int multarray_nr;		// number of entries in mults[]
-extern int mult_bands[];		// bitfield indicating on which band(s) the multiplier has been worked; bits assigned according to BAND160..BAND10 defined in tlf.h
-extern int multscore[NBANDS];		// number of multipliers worked per band; index is BANDINDEX_160 ... BANDINDEX_10
-					// note: until 200409111, index was 0...5 for only the non-warc bands!
+extern int mult_bands[];		// bitfield indicating on which band(s) 
+					// the multiplier has been worked; 
+					// bits assigned according to 
+					// BAND160..BAND10 defined in tlf.h
+extern int multscore[NBANDS];		// number of multipliers worked per 
+					// band; index is 
+					// BANDINDEX_160 ... BANDINDEX_10
+					// note: until 200409111, 
+					// index was 0...5 for only 
+					// the non-warc bands!
 
 extern char callarray[MAX_CALLS][20];	// list of all calls worked so far
 extern int callarray_nr;		// number of entries in callarray[]
-extern int call_band[MAX_CALLS];	// for each of them, a bitfield indicating bands
+extern int call_band[MAX_CALLS];	// for each of them, a bitfield 
+					// indicating bands
 extern int call_country[MAX_CALLS];	// for each call, the country
 
-extern int countries[MAX_DATALINES];	// for every country, a bitfield indicating bands on which it has been worked
+extern int countries[MAX_DATALINES];	// for every country, a bitfield 
+					// indicating bands on which it has 
+					// been worked
 
 extern int bandinx;			// band we're currently working on
 
@@ -58,7 +71,7 @@ extern int minute_timer;
 // extern char logline2[81];
 // extern char logline3[81];
 // extern char logline4[];
-extern char logline_edit[5][82];
+extern char logline_edit[5][88];
 #define logline0 logline_edit[0]
 #define logline1 logline_edit[1]
 #define logline2 logline_edit[2]
@@ -69,7 +82,8 @@ extern int stop_backgrnd_process;
 extern char band[9][4];
 extern struct tm *time_ptr;
 
-extern int inxes[9]; //  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10} ;	// from addmult.c
+extern int inxes[9]; //  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10} ;	
+		    // from addmult.c
 
 extern char prefixlines[MAX_DBLINES][17];
 extern char cqzone[];
@@ -83,7 +97,7 @@ extern char zone_export[];
 extern int itumult;
 
 extern int max_multipliers;
-extern char mults_possible[MAX_MULTS][12];
+extern char mults_possible[MAX_MULTS][12];	/* field of possible mults */
 extern char ssexchange[];
 extern int shownewmult;
 extern char comment[];
@@ -118,7 +132,4 @@ extern int three_point;
 extern int dxped;
 extern char pointstring[];
 extern int addzone;
-
-
-
 

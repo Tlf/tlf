@@ -37,8 +37,8 @@
 
 struct ie_list {
 	struct ie_list *next;
-	char call[MAX_CALL_LENGTH];
-	char exchange [MAX_IE_LENGTH];
+	char call[MAX_CALL_LENGTH+1];
+	char exchange [MAX_IE_LENGTH+1];
 };
 
 /*------------------------------------------------------------------------------
@@ -49,6 +49,14 @@ struct ie_list {
 *
 --------------------------------------------------------------------------------*/
 struct ie_list *make_ie_list (void);
+
+/*------------------------------------------------------------------------------
+*
+* 	Free linked list of all alocated entries pointed
+* 	to by 'head'.
+*
+--------------------------------------------------------------------------------*/
+void free_ie_list(struct ie_list *head);
 
 /*------------------------------------------------------------------------------
 *

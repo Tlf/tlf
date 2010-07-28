@@ -25,122 +25,121 @@
 
 void scroll_log(void)
 {
+    char *rp;
+    char inputbuffer[800];
+    static int ii, kk;
+    int mm;
 
+    FILE *fp;
 
-char inputbuffer[800];
-static int ii, kk;
-int mm;
+    if ((fp = fopen(logfile, "r")) == NULL) {
 
- FILE *fp;
+	mvprintw(24, 0, "Error opening logfile.\n");
+    }
+    for (ii = 5; ii >= 1; ii--) {
 
+	inputbuffer[0] = '\0';
 
-if  ( (fp = fopen(logfile,"r"))  == NULL){
+	if (fseek(fp, -1 * ii * 81, SEEK_END) == 0)
+	    rp = fgets(inputbuffer, 90, fp);
+	else
+	    strcpy(inputbuffer,
+		   "                                                                                ");
 
-	mvprintw(24,0,  "Error opening logfile.\n");
+	kk = 5 - ii;
+
+	if (strlen(inputbuffer) <= 10)	/* log repair */
+	    rp = fgets(inputbuffer, 90, fp);
+
+//              if (strlen(inputbuffer) != 81)
+//                      strcat (inputbuffer, backgrnd_str);
+
+	inputbuffer[80] = '\0';
+
+	switch (kk) {
+	case 0:{
+		strncpy(logline0, inputbuffer, 80);
+		logline0[80] = '\0';
+		break;
+	    }
+	case 1:{
+		strncpy(logline1, inputbuffer, 80);
+		logline1[80] = '\0';
+		break;
+	    }
+
+	case 2:{
+		strncpy(logline2, inputbuffer, 80);
+		logline2[80] = '\0';
+		break;
+
+	    }
+	case 3:{
+		strncpy(logline3, inputbuffer, 80);
+		logline3[80] = '\0';
+		break;
+
+	    }
+	case 4:{
+		strncpy(logline4, inputbuffer, 80);
+		logline4[80] = '\0';
+		break;
+	    }
+	}
+
+    }
+
+    fclose(fp);
+
+    mm = qsonum - 1;
+
+    if (logline4[0] != ';') {
+	strncpy(qsonrstr, logline4 + 23, 4);
+	mm = atoi(qsonrstr);
+    }
+    if (logline3[0] != ';') {
+	if (atoi(logline3 + 23) > mm) {
+	    mm = atoi(logline3 + 23);
+	    strncpy(qsonrstr, logline3 + 23, 4);
+	}
+    }
+    if (logline2[0] != ';') {
+	if (atoi(logline2 + 23) > mm) {
+	    mm = atoi(logline2 + 23);
+	    strncpy(qsonrstr, logline2 + 23, 4);
+	}
+    }
+    if (logline1[0] != ';') {
+	if (atoi(logline1 + 23) > mm) {
+	    mm = atoi(logline1 + 23);
+	    strncpy(qsonrstr, logline1 + 23, 4);
+	}
+    }
+
+    if ((lan_active == 1) && (exchange_serial == 1)) {
+
+	if (lan_mutex == 2) {
+
+	    if (atoi(qsonrstr) <= highqsonr) {
+		qsonum = highqsonr;
+	    }
+	} else {
+	    qsonum = atoi(qsonrstr);
+	    if (qsonum < highqsonr)
+		qsonum = highqsonr;
+	    if (highqsonr < qsonum)
+		highqsonr = qsonum;
+	}
+    } else
+	qsonum = atoi(qsonrstr);
+
+    if (logline4[0] != ';')
+	qsonum++;
+    else
+	qsonum = mm + 1;
+
+//              if((qsonum > highqsonr) && (lan_mutex == 2)) highqsonr++;
+
+    qsonr_to_str();
+
 }
-	for (ii = 5; ii >= 1 ; ii--) {
-
-		inputbuffer[0]='\0';
-
-		if (fseek(fp, -1 * ii * 81, SEEK_END) == 0)
-			fgets (inputbuffer, 90,  fp);
-	  	else
-	        		strcpy(inputbuffer, "                                                                                ");
-
-		kk = 5 - ii;
-
-		if (strlen(inputbuffer) <= 10)                      /* log repair */
-			fgets(inputbuffer, 90, fp);
-
-//		if (strlen(inputbuffer) != 81)
-//			strcat (inputbuffer, backgrnd_str);
-
-		inputbuffer[80]='\0';
-
-			switch(kk)
-			{
-		 		case 0:{
-			    	strncpy(logline0, inputbuffer, 80);
-			    	logline0[80] = '\0';
-			     	break;
-		 		}
-			 	case 1:{
-			    	strncpy(logline1, inputbuffer, 80);
-			    	logline1[80] = '\0';
-			    	break;
-			    }
-
-			 	case 2:{
-			    	strncpy(logline2, inputbuffer, 80);
-		    		logline2[80] = '\0';
-		    		break;
-
-			 	}
-			 	case 3:{
-			    	strncpy(logline3, inputbuffer, 80);
-		    		logline3[80] = '\0';
-		    		  break;
-
-			 	}
-			 	case 4:{
-			    	strncpy(logline4, inputbuffer, 80);
-		    		logline4[80] = '\0';
-		        	 break;
-			 	}
-			}
-
-
-	}
-
-	fclose(fp);
-
-	mm = qsonum - 1;
-
-	if (logline4[0] != ';') {
-		strncpy (qsonrstr, logline4 + 23, 4);
-		mm = atoi(qsonrstr);
-	}
-	if (logline3[0] != ';') {
-		if (atoi( logline3 + 23) > mm)   {
-			mm = atoi ( logline3 + 23) ;
-			strncpy (qsonrstr, logline3 + 23, 4);
-		}
-	}
-	if  (logline2[0] != ';') {
-		if (atoi( logline2 + 23) > mm)   {
-			mm = atoi ( logline2 + 23) ;
-			strncpy (qsonrstr, logline2 + 23, 4);
-		}
-	}
-	if  (logline1[0] != ';') {
-		if (atoi( logline1 + 23) > mm)   {
-			mm = atoi ( logline1 + 23) ;
-			strncpy (qsonrstr, logline1 + 23, 4);
-		}
-	}
-
-	if ((lan_active ==1) && (exchange_serial ==1)) {
-
-		if (lan_mutex == 2) {
-
-			if (atoi(qsonrstr) <= highqsonr) {
-				qsonum = highqsonr;
-			}
-		}   else {
-			qsonum = atoi(qsonrstr);
-			if (qsonum < highqsonr) qsonum = highqsonr;
-			if(highqsonr < qsonum) highqsonr = qsonum;
-		}
-	} else qsonum = atoi(qsonrstr);
-
-		if (logline4[0] != ';' )
-			qsonum++;
-		else
-			qsonum = mm + 1;
-
-//		if((qsonum > highqsonr) && (lan_mutex == 2)) highqsonr++;
-		
-		qsonr_to_str();
-
-}
-

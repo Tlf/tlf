@@ -18,106 +18,103 @@
  */
 
 	/* ------------------------------------------------------------
- 	*      add call area to list for one band
- 	*
- 	*--------------------------------------------------------------*/
+	 *      add call area to list for one band
+	 *
+	 *--------------------------------------------------------------*/
 
 #include "globalvars.h"
 #include "addarea.h"
- 	
-int add_callarea( void)
+
+int add_callarea(void)
 {
-extern int callareas[];
-extern char hiscall[];
-extern int manise80;
-extern int bandinx;
-extern int total;
-extern int multscore[];
+    extern int callareas[];
+    extern char hiscall[];
+    extern int manise80;
+    extern int bandinx;
+    extern int total;
+    extern int multscore[];
 
+    int addarea = 0;
+    int found = 0;
 
-int addarea = 0;
-int found = 0;
+    if (manise80 == 1) {
+	if (strncmp(hiscall, "EA1", 3) == 0) {
+	    if (callareas[1] == 0) {
+		callareas[1] = 1;
+		addarea = 1;
+	    }
+	}
+	if (strncmp(hiscall, "EA2", 3) == 0) {
+	    if (callareas[2] == 0) {
+		callareas[2] = 1;
+		addarea = 1;
+	    }
+	}
+	if (strncmp(hiscall, "EA3", 3) == 0) {
+	    if (callareas[3] == 0) {
+		callareas[3] = 1;
+		addarea = 1;
+	    }
+	}
+	if (strncmp(hiscall, "EA4", 3) == 0) {
+	    if (callareas[4] == 0) {
+		callareas[4] = 1;
+		addarea = 1;
+	    }
+	}
+	if (strncmp(hiscall, "EA5", 3) == 0) {
+	    if (callareas[5] == 0) {
+		callareas[5] = 1;
+		addarea = 1;
+	    }
+	    if (strncmp(hiscall, "EA5URW", 6) == 0)
+		total = total + 9;
+	}
+	if (strncmp(hiscall, "EA6", 3) == 0) {
+	    if (callareas[6] == 0) {
+		callareas[6] = 1;
+		addarea = 1;
+	    }
+	}
+	if (strncmp(hiscall, "EA7", 3) == 0) {
+	    if (callareas[7] == 0) {
+		callareas[7] = 1;
+		addarea = 1;
+	    }
+	}
+	if (strncmp(hiscall, "EA8", 3) == 0) {
+	    if (callareas[8] == 0) {
+		callareas[8] = 1;
+		addarea = 1;
+	    }
+	}
+	if (strncmp(hiscall, "EA9", 3) == 0) {
+	    if (callareas[9] == 0) {
+		callareas[9] = 1;
+		addarea = 1;
+	    }
+	}
+	if (strncmp(hiscall, "CT", 2) == 0) {
+	    if (callareas[0] == 0) {
+		callareas[0] = 1;
+		addarea = 1;
+	    }
+	}
+	if (strncmp(hiscall, "C3", 2) == 0) {
+	    if (callareas[10] == 0) {
+		callareas[10] = 1;
+		addarea = 1;
+	    }
+	}
+    }
 
-if (manise80 == 1) {
- 	if (strncmp(hiscall, "EA1", 3) == 0) {
- 	 	if (callareas[1] == 0)  {
- 	 	 	callareas[1] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	}
- 	if (strncmp(hiscall, "EA2", 3) == 0) {
- 	 	if (callareas[2] == 0)  {
- 	 	 	callareas[2] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	}
- 	if (strncmp(hiscall, "EA3", 3) == 0) {
- 	 	if (callareas[3] == 0)  {
- 	 	 	callareas[3] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	}
- 	if (strncmp(hiscall, "EA4", 3) == 0) {
- 	 	if (callareas[4] == 0)  {
- 	 	 	callareas[4] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	}
- 	if (strncmp(hiscall, "EA5", 3) == 0) {
- 	 	if (callareas[5] == 0)  {
- 	 	 	callareas[5] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	if (strncmp(hiscall, "EA5URW", 6) == 0)
- 		total = total + 9;
- 	}
- 	if (strncmp(hiscall, "EA6", 3) == 0) {
- 	 	if (callareas[6] == 0)  {
- 	 	 	callareas[6] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	}
- 	if (strncmp(hiscall, "EA7", 3) == 0) {
- 	 	if (callareas[7] == 0)  {
- 	 	 	callareas[7] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	}
- 	if (strncmp(hiscall, "EA8", 3) == 0) {
- 	 	if (callareas[8] == 0)  {
- 	 	 	callareas[8] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	}
- 	if (strncmp(hiscall, "EA9", 3) == 0) {
- 	 	if (callareas[9] == 0)  {
- 	 	 	callareas[9] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	}
- 	if (strncmp(hiscall, "CT", 2) == 0) {
- 	 	if (callareas[0] == 0)  {
- 	 	 	callareas[0] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	}
- 	if (strncmp(hiscall, "C3", 2) == 0) {
- 	 	if (callareas[10] == 0)  {
- 	 	 	callareas[10] = 1;
- 	 	 	addarea = 1;
- 	 	}
- 	}
-}
-	
-if (addarea == 1) {
-	
+    if (addarea == 1) {
+
 	addarea = 0;
-	
-		multscore[bandinx]++;
 
+	multscore[bandinx]++;
 
-}
+    }
 
-	
- 	   return(found);
+    return (found);
 }

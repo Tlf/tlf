@@ -17,112 +17,110 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-  	/* ------------------------------------------------------------
- 	*    make sure logfile is present
- 	*
- 	*--------------------------------------------------------------*/
+	/* ------------------------------------------------------------
+	 *    make sure logfile is present
+	 *
+	 *--------------------------------------------------------------*/
 
 #include "checklogfile.h"
 
- 	void checklogfile(void)
- 	{
+void checklogfile(void)
+{
 
- 	extern char logfile[26];
-	extern char backgrnd_str[];
+    extern char logfile[26];
+    extern char backgrnd_str[];
 
- 	int lfile;
-	int qsobytes;
-	int qsolines;
-	int errbytes;
-	struct stat statbuf;
-	char inputbuffer[800];
+    int lfile;
+    int qsobytes;
+    int qsolines;
+    int errbytes;
+    int rc;
+    struct stat statbuf;
+    char inputbuffer[800];
+    char *rp;
 
+    FILE *infile;
+    FILE *outfile;
+    FILE *fp;
 
-	FILE *infile;
-	FILE *outfile;
- 	FILE *fp;
+    if ((fp = fopen(logfile, "a")) == NULL) {
+	fprintf(stdout, "Opening logfile not possible.\n");
+	exit(1);
+    }
 
-		if  ( (fp = fopen(logfile,"a"))  == NULL){
-			fprintf(stdout,  "Opening logfile not possible.\n");
-			exit(1);
+    fclose(fp);
+
+    if ((lfile = open(logfile, O_RDWR)) < 0) {
+
+	mvprintw(24, 0, "I can not find the logfile...");
+	refresh();
+	sleep(2);
+	exit(0);
+
+    } else {
+
+	fstat(lfile, &statbuf);
+	qsobytes = statbuf.st_size;
+	qsolines = qsobytes / 81;
+	errbytes = qsobytes - (qsolines * 81);
+
+	if (errbytes != 0) {
+
+	    close(lfile);
+
+	    if ((infile = fopen(logfile, "r")) == NULL) {
+		mvprintw(24, 0, "Unable to open logfile...");
+		refresh();
+		sleep(2);
+
+	    } else {
+		if ((outfile = fopen("./cpyfile", "w")) == NULL) {
+		    mvprintw(24, 0, "Unable to open cpyfile...");
+		    refresh();
+		    sleep(2);
+		} else {
+
+		    while (!(feof(infile))) {
+
+			rp = fgets(inputbuffer, 160, infile);
+
+			if (strlen(inputbuffer) != 81) {
+			    strcat(inputbuffer, backgrnd_str);
+			    inputbuffer[81] = '\0';
+			}
+
+			fputs(inputbuffer, outfile);
+		    }
+
+		    fclose(infile);
+		    fclose(outfile);
+
 		}
 
-		fclose(fp);
+		if ((lfile = open("./cpyfile", O_RDWR)) < 0) {
 
-		if ((lfile = open(logfile, O_RDWR)) < 0){
+		    mvprintw(24, 0, "I can not find the copy file...");
+		    refresh();
+		    sleep(2);
+		} else {
 
-				mvprintw(24,0, "I can not find the logfile...");
-				refresh();
-				sleep(2);
-				exit(0);
+		    fstat(lfile, &statbuf);
 
-		}  else {
+		    if (statbuf.st_size > 80) {
+			rc = ftruncate(lfile, statbuf.st_size - 81);
+			fsync(lfile);
 
-				fstat(lfile, &statbuf);
-				qsobytes = statbuf.st_size ;
-				qsolines =   qsobytes / 81;
-				errbytes = qsobytes - (qsolines * 81);
+		    }
 
-				if (errbytes != 0) {
+		    close(lfile);
+		}
 
-					close (lfile);
+		rename("./cpyfile", logfile);
+		remove("./cpyfile");
+	    }
 
-					if  ( (infile = fopen(logfile,"r"))  == NULL){
-						mvprintw(24,0, "Unable to open logfile...");
-						refresh();
-						sleep(2);
+	} else
+	    close(lfile);
+    }
 
-					}  else {
-						if  ( (outfile = fopen("./cpyfile","w"))  == NULL){
-							mvprintw(24,0, "Unable to open cpyfile...");
-							refresh();
-							sleep(2);
-						} else {
-
-							while (! (feof (infile))){
-
-								fgets (inputbuffer, 160, infile);
-
-
-								if (strlen(inputbuffer) != 81){
-									strcat(inputbuffer, backgrnd_str);
-									inputbuffer[81] = '\0';
-								}
-
-								fputs(inputbuffer, outfile);
-							}
-
-       							fclose (infile);
-							fclose (outfile);
-
-						}
-
-						if ((lfile = open("./cpyfile", O_RDWR)) < 0){
-
-							mvprintw(24,0, "I can not find the copy file...");
-							refresh();
-							sleep(2);
-						}  else {
-
-
-							fstat(lfile, &statbuf);
-
-							if(statbuf.st_size >  80) {
-								ftruncate(lfile, statbuf.st_size -  81);
-								fsync(lfile);
-
-							}
-
-
-							close(lfile);
-						}
-
-							rename ("./cpyfile", logfile);
-							remove ("./cpyfile");
-					}
-
-				} else   close (lfile);
-    		}
-
-	}
-
+}

@@ -17,137 +17,146 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-  	/* ------------------------------------------------------------
- 	*       Clear_display takes  care of status lines  and
- 	*       backgrounds (general repaint of the screen)
- 	*--------------------------------------------------------------*/
+	/* ------------------------------------------------------------
+	 *       Clear_display takes  care of status lines  and
+	 *       backgrounds (general repaint of the screen)
+	 *--------------------------------------------------------------*/
 
 #include "globalvars.h"
 #include "clear_display.h"
 
 void clear_display(void)
 {
-extern int use_rxvt;
-extern char speedstr[];
-extern int speed;
-extern int cury, curx;
-extern char mode[];
-extern int cqdelay;
-extern char headerline[];
-extern char terminal1[];
-extern char terminal2[];
-extern char terminal3[];
-extern char terminal4[];
-extern char backgrnd_str[];
-extern char band[9][4];
-extern int bandinx;
-extern int trxmode;
-extern char my_rst[];
-extern char his_rst[];
-extern char qsonrstr[];
-extern int cqww;
-extern int arrldx_usa;
-extern char comment[];
-extern char hiscall[];
-extern int searchflg;
-extern int m;
-extern struct tm *time_ptr;
+    extern int use_rxvt;
+    extern char speedstr[];
+    extern int speed;
+    extern int cury, curx;
+    extern char mode[];
+    extern int cqdelay;
+    extern char headerline[];
+    extern char terminal1[];
+    extern char terminal2[];
+    extern char terminal3[];
+    extern char terminal4[];
+    extern char backgrnd_str[];
+    extern char band[9][4];
+    extern int bandinx;
+    extern int trxmode;
+    extern char my_rst[];
+    extern char his_rst[];
+    extern char qsonrstr[];
+    extern int cqww;
+    extern int arrldx_usa;
+    extern char comment[];
+    extern char hiscall[];
+    extern int searchflg;
+    extern int m;
+    extern struct tm *time_ptr;
 
-char time_buf[80];
-char speedbuf[3] = "  ";
+    char time_buf[80];
+    char speedbuf[4] = "  ";
 
-strncpy(speedbuf, speedstr  + (2 * speed)  ,2);
-speedbuf[2] =  '\0';
-getyx(stdscr, cury,  curx);
+    strncpy(speedbuf, speedstr + (2 * speed), 2);
+    speedbuf[2] = '\0';
+    getyx(stdscr, cury, curx);
 
-mvprintw(0,0,"");
-attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-mvprintw(0,0,"                             ");
-mvprintw(0,0,"  %s  S=%s D=%i ",mode, speedbuf, cqdelay);
-mvprintw(0,   21, headerline);
+    mvprintw(0, 0, "");
+    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    mvprintw(0, 0, "                             ");
+    mvprintw(0, 0, "  %s  S=%s D=%i ", mode, speedbuf, cqdelay);
+    mvprintw(0, 21, headerline);
 
-if (use_rxvt == 0) attron(COLOR_PAIR(COLOR_WHITE | A_BOLD | A_STANDOUT));
-else   attron(COLOR_PAIR(COLOR_WHITE |  A_STANDOUT));
-	
-	mvaddstr(1,  0, terminal1);
-	mvaddstr(2,  0, terminal2);
-	mvaddstr(3,  0, terminal3);
-	mvaddstr(4,  0, terminal4);
-	mvaddstr(5,  0, backgrnd_str);
-	mvprintw(6, 0,  "");
-mvaddstr(6,0,  "");
-hline(ACS_HLINE, 80);
+    if (use_rxvt == 0)
+	attron(COLOR_PAIR(COLOR_WHITE | A_BOLD | A_STANDOUT));
+    else
+	attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
 
-if (use_rxvt == 0) attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD | A_STANDOUT);
-else  attron(COLOR_PAIR(COLOR_WHITE)  | A_STANDOUT);
+    mvaddstr(1, 0, terminal1);
+    mvaddstr(2, 0, terminal2);
+    mvaddstr(3, 0, terminal3);
+    mvaddstr(4, 0, terminal4);
+    mvaddstr(5, 0, backgrnd_str);
+    mvprintw(6, 0, "");
+    mvaddstr(6, 0, "");
+    hline(ACS_HLINE, 80);
 
-mvaddstr(7, 0, logline0);
-mvaddstr(8, 0, logline1);
-mvaddstr(9, 0, logline2);
-mvaddstr(10, 0, logline3);
-mvaddstr(11, 0, logline4);
-attron(COLOR_PAIR(COLOR_CYAN));
- mvaddstr(12, 0, backgrnd_str);
- mvaddstr(12, 0,  band[bandinx]);
+    if (use_rxvt == 0)
+	attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD | A_STANDOUT);
+    else
+	attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
 
-get_time();
+    mvaddstr(7, 0, logline0);
+    mvaddstr(8, 0, logline1);
+    mvaddstr(9, 0, logline2);
+    mvaddstr(10, 0, logline3);
+    mvaddstr(11, 0, logline4);
+    attron(COLOR_PAIR(COLOR_CYAN));
+    mvaddstr(12, 0, backgrnd_str);
+    mvaddstr(12, 0, band[bandinx]);
 
-if (trxmode == CWMODE)
-	strftime(time_buf, 60, "CW  %d-%b-%y %H:%M ",  time_ptr);
-else if (trxmode == SSBMODE)
-	strftime(time_buf, 60, "SSB %d-%b-%y %H:%M ",  time_ptr);
- else
-	strftime(time_buf, 60, "DIG %d-%b-%y %H:%M ",  time_ptr);
+    get_time();
 
-	m = time_ptr->tm_mon;		/* month for muf calc */
-	
-mvprintw(12, 3,time_buf);
+    if (trxmode == CWMODE)
+	strftime(time_buf, 60, "CW  %d-%b-%y %H:%M ", time_ptr);
+    else if (trxmode == SSBMODE)
+	strftime(time_buf, 60, "SSB %d-%b-%y %H:%M ", time_ptr);
+    else
+	strftime(time_buf, 60, "DIG %d-%b-%y %H:%M ", time_ptr);
 
-qsonr_to_str();
-mvaddstr(12, 23,  qsonrstr);
+    m = time_ptr->tm_mon;	/* month for muf calc */
 
-if (trxmode != SSBMODE) {
+    mvprintw(12, 3, time_buf);
 
-    my_rst[2] = '9';
-    his_rst[2] = '9';
-} else {
-    my_rst[2] = ' ';
-    his_rst[2] = ' ';	
-	
-}	
-	
-mvaddstr(12, 44, his_rst);
-mvaddstr(12, 49, my_rst);
+    qsonr_to_str();
+    mvaddstr(12, 23, qsonrstr);
 
+    if (trxmode != SSBMODE) {
 
-if (cqww==1) {
-    	if (use_rxvt == 0) attron(COLOR_PAIR(NORMCOLOR)  | A_BOLD );
-		else  attron(COLOR_PAIR(NORMCOLOR) );
-	mvaddstr(12,54,comment);
-	}
-	
-if (arrldx_usa ==1) {
-    	if (use_rxvt == 0) attron(COLOR_PAIR(NORMCOLOR)  | A_BOLD );
-		else    attron(COLOR_PAIR(NORMCOLOR) );
-	mvaddstr(12,54,comment);
-	}
+	my_rst[2] = '9';
+	his_rst[2] = '9';
+    } else {
+	my_rst[2] = ' ';
+	his_rst[2] = ' ';
 
-if (searchflg == SEARCHWINDOW)
+    }
+
+    mvaddstr(12, 44, his_rst);
+    mvaddstr(12, 49, my_rst);
+
+    if (cqww == 1) {
+	if (use_rxvt == 0)
+	    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
+	else
+	    attron(COLOR_PAIR(NORMCOLOR));
+	mvaddstr(12, 54, comment);
+    }
+
+    if (arrldx_usa == 1) {
+	if (use_rxvt == 0)
+	    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
+	else
+	    attron(COLOR_PAIR(NORMCOLOR));
+	mvaddstr(12, 54, comment);
+    }
+
+    if (searchflg == SEARCHWINDOW)
 	searchlog(hiscall);
 
-if (use_rxvt == 0) attron(COLOR_PAIR(NORMCOLOR)  | A_BOLD );
-else   attron(COLOR_PAIR(NORMCOLOR)  );
+    if (use_rxvt == 0)
+	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
+    else
+	attron(COLOR_PAIR(NORMCOLOR));
 
- mvaddstr(12, 29, hiscall);
+    mvaddstr(12, 29, hiscall);
 
+    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    mvprintw(24, 0, backgrnd_str);
 
-	attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-	mvprintw(24,0,  backgrnd_str);
+    if (use_rxvt == 0)
+	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
+    else
+	attron(COLOR_PAIR(NORMCOLOR));
 
-	if (use_rxvt == 0) attron(COLOR_PAIR(NORMCOLOR) | A_BOLD  );
-	else   attron(COLOR_PAIR(NORMCOLOR) );
-
-	mvprintw(cury,  curx, "");
-	refresh();
+    mvprintw(cury, curx, "");
+    refresh();
 }
-

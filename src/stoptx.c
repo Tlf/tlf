@@ -27,8 +27,8 @@
 #include "clear_display.h"
 #include "netkeyer.h"
 
-int stoptx(void){
-
+int stoptx(void)
+{
 	extern char hiscall[20];
   	extern char speedstr[];
   	extern int speed;
@@ -45,48 +45,17 @@ int stoptx(void){
  		return(1);
  	}
 
-if (keyerport == COM1_KEYER) {
 
- 	if (strlen(hiscall)  == 0){
- 		strncpy(speedbuf, speedstr  + (2 * speed)  ,2);  /* output to keyer */
-		speedbuf[2] =  '\0';
-		retval = ioctl(cfd, CWTONE, 1);
-		if	(retval)
-		{
+	if (keyerport == NET_KEYER) {
+
+		if (netkeyer (K_ABORT, NULL) < 0) {
+			
 			mvprintw(24,0, "keyer not active; switching to SSB");
 			trxmode = SSBMODE;
 			clear_display();
+			
 		}
-		else
-		{
-			system ("echo '\012' > /dev/cwkeyer");
-		}
-
 	}
-}
-if (keyerport == LPT_KEYER) {
-
-
-		retval = ioctl(cfd, CWKEYER_IOCSFLUSH, NULL);
-		if	(retval)
-		{
-			mvprintw(24,0, "keyer not active; switching to SSB");
-			trxmode = SSBMODE;
-			clear_display();
-		}
-
-
-}
-if (keyerport == NET_KEYER){
-
-		if (netkeyer (K_ABORT, NULL) < 0){
-
-			mvprintw(24,0, "keyer not active; switching to SSB");
-			trxmode = SSBMODE;
-			clear_display();
-
-		}
-}
- 	 return(0);
+	return(0);
 }
 

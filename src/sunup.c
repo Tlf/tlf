@@ -25,48 +25,49 @@
 
 /* Compute sun up and down at destination  */
 
-int sunup (void) {
+int sunup(void)
+{
 
+    extern char C_DEST_Lat[];
+    extern struct tm *time_ptr;
+    extern double sunrise;
+    extern double sundown;
 
-extern char C_DEST_Lat[];
-extern struct tm *time_ptr;
-extern double sunrise;
-extern double sundown;
+    double DEST_Lat;
+    char date_buf[20];
 
-double  DEST_Lat;
-char date_buf[20];
+    char c_day[3];
+    int day;
+    char c_month[3];
+    int month;
+    double total_days;
+    double sunshine;
 
-char c_day[3];
-int day;
-char c_month[3];
-int month;
-double total_days;
-double sunshine;
+    DEST_Lat = atof(C_DEST_Lat);
 
-        DEST_Lat = atof(C_DEST_Lat);
+    DEST_Lat /= RADIAN;
 
-        DEST_Lat   /= RADIAN;
+    get_time();
+    strftime(date_buf, 5, "%d%m", time_ptr);
 
-        get_time();
-        strftime(date_buf, 5, "%d%m", time_ptr);
+    strncpy(c_day, date_buf, 2);
+    day = atoi(c_day);
+    strncpy(c_month, date_buf + 2, 2);
+    month = atoi(c_month);
+    total_days = (month - 1) * 30.4 + day + 10;
 
-        strncpy(c_day, date_buf, 2);
-        day = atoi(c_day);
-        strncpy(c_month, date_buf+2, 2);
-        month = atoi(c_month);
-        total_days = (month - 1) * 30.4 + day + 10;
+    if (total_days >= 365.25)
+	total_days -= 365.25;
+    if (total_days <= 0.0)
+	total_days += 365.25;
 
-        if (total_days >= 365.25)
-        	total_days -= 365.25;
-        if (total_days <= 0.0)
-        	total_days += 365.25;
-        	
-         sunshine = (24.0/180.0) * RADIAN * acos(cos(((360.0  * 32.0) / 365.25)/RADIAN)* tan(DEST_Lat) * tan(23/RADIAN));
+    sunshine =
+	(24.0 / 180.0) * RADIAN *
+	acos(cos(((360.0 * 32.0) / 365.25) / RADIAN) * tan(DEST_Lat) *
+	     tan(23 / RADIAN));
 
-         sunrise = 12.0 - sunshine / 2;
-         sundown = 12.0 + sunshine / 2;
+    sunrise = 12.0 - sunshine / 2;
+    sundown = 12.0 + sunshine / 2;
 
-        return(0);
+    return (0);
 }
-
-

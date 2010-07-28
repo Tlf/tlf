@@ -26,29 +26,27 @@
 
 void displayit(void)
 {
-extern char termbuf[81];
-extern char backgrnd_str[81];
-extern char terminal1[81];
-extern char terminal2[81];
-extern char terminal3[81];
-extern char terminal4[81];
+    extern char termbuf[];
+    extern char backgrnd_str[];
+    extern char terminal1[];
+    extern char terminal2[];
+    extern char terminal3[];
+    extern char terminal4[];
 
-char  term2buf[85] = "";
+    char term2buf[85] = "";
 
+    strncat(term2buf, termbuf, strlen(termbuf) - 1);
+    strncat(term2buf, backgrnd_str, 81 - strlen(termbuf));	/* fill with blanks */
 
-		strncat(term2buf, termbuf,  strlen(termbuf) - 1  );
-		strncat(term2buf, backgrnd_str, 81 - strlen(termbuf));   /* fill with blanks */
+    term2buf[80] = '\0';
+    strcpy(terminal1, terminal2);
+    strcpy(terminal2, terminal3);
+    strcpy(terminal3, terminal4);
+    strcpy(terminal4, term2buf);
+    termbuf[0] = '\0';
+    mvprintw(5, 0, "");
 
-		term2buf[80] = '\0';
-		strcpy(terminal1, terminal2);
-		strcpy(terminal2, terminal3);
-		strcpy(terminal3, terminal4);
-		strcpy(terminal4, term2buf);
-		termbuf[0] = '\0';
-		mvprintw(5, 0, "");
+    clear_display();
 
-		clear_display();
-
-		refresh();
+    refresh();
 }
-

@@ -17,43 +17,44 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-  	/* ------------------------------------------------------------
- 	*        Cleanup call input field
- 	*
- 	*--------------------------------------------------------------*/
+	/* ------------------------------------------------------------
+	 *        Cleanup call input field
+	 *
+	 *--------------------------------------------------------------*/
 
 #include "cleanup.h"
 
- int cleanup(void)
- {
+int cleanup(void)
+{
 
- extern int use_rxvt;
- extern char hiscall[];
- extern char comment[];
- extern int defer_store;
- extern char wkeyerbuffer[];
- 
- int k = 0;
+    extern int use_rxvt;
+    extern char hiscall[];
+    extern char comment[];
+    extern int defer_store;
+    extern char wkeyerbuffer[];
 
-  	if (use_rxvt == 0) attron(COLOR_PAIR(NORMCOLOR) | A_BOLD  );
-	else  attron(COLOR_PAIR(NORMCOLOR) );
+    int k = 0;
 
-	mvprintw(12, 29, "            ");
-	mvprintw(12, 54, "                        ");
-	mvprintw(12, 29, "");
+    if (use_rxvt == 0)
+	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
+    else
+	attron(COLOR_PAIR(NORMCOLOR));
 
-	attron(COLOR_PAIR(COLOR_WHITE  | A_STANDOUT));
+    mvprintw(12, 29, "            ");
+    mvprintw(12, 54, "                        ");
+    mvprintw(12, 29, "");
 
-	for (k = 1; k <= 5; k++) {
-		mvprintw(k, 0, "%s", "                                        ");	
-	}
-	
-	refresh();
-	hiscall[0] = '\0';
-	comment[0]='\0';
-	defer_store = 0;
-	wkeyerbuffer[0] = '\0';		// stop keyer ?? 
-	
-  return(0);
- }
+    attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
 
+    for (k = 1; k <= 5; k++) {
+	mvprintw(k, 0, "%s", "                                        ");
+    }
+
+    refresh();
+    hiscall[0] = '\0';
+    comment[0] = '\0';
+    defer_store = 0;
+    wkeyerbuffer[0] = '\0';	// stop keyer ?? 
+
+    return (0);
+}
