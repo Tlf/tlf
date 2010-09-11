@@ -34,37 +34,29 @@ int sunup(void)
     extern double sundown;
 
     double DEST_Lat;
-    char date_buf[20];
-
-    char c_day[3];
-    int day;
-    char c_month[3];
-    int month;
+    double sun_lat;
     double total_days;
     double sunshine;
 
     DEST_Lat = atof(C_DEST_Lat);
-
     DEST_Lat /= RADIAN;
 
     get_time();
-    strftime(date_buf, 5, "%d%m", time_ptr);
-
-    strncpy(c_day, date_buf, 2);
-    day = atoi(c_day);
-    strncpy(c_month, date_buf + 2, 2);
-    month = atoi(c_month);
-    total_days = (month - 1) * 30.4 + day + 10;
-
+    total_days = time_ptr->tm_yday + 10; /* days after lower culmination
+						   of the sun */
     if (total_days >= 365.25)
 	total_days -= 365.25;
     if (total_days <= 0.0)
 	total_days += 365.25;
 
+    /* calculate todays lattitude of the sun */
+    sun_lat = asin( sin(23.439 / RADIAN) *
+	    sin(((total_days - 90.086) / 365.25) * 360 / RADIAN)) * RADIAN;
+
+    /* sunshine period today at given DEST_Lat */
     sunshine =
 	(24.0 / 180.0) * RADIAN *
-	acos(cos(((360.0 * 32.0) / 365.25) / RADIAN) * tan(DEST_Lat) *
-	     tan(23 / RADIAN));
+	acos(-tan(DEST_Lat) * tan(sun_lat / RADIAN));
 
     sunrise = 12.0 - sunshine / 2;
     sundown = 12.0 + sunshine / 2;
