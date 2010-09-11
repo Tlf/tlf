@@ -1,3 +1,6 @@
+2010-09-11  thomas beierlein <tb@forth-ev.de>
+	* fix calculation of sunrise and sunset times 
+
 2010-01-xx  thomas beierlein <tb@forth-ev.de>
 	* better recognition of hamlib install (tnx F8FCE)
 	* fix a lot of buffer overrun for string handling (as glibc and gcc
