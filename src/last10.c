@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 	/* ------------------------------------------------------------
-	 *     last 10
-	 *
+	 *     last 10 - return time (in mins) for last 10 QSOs on 
+	 *		 actual band
 	 *--------------------------------------------------------------*/
 
 #include "globalvars.h"
@@ -27,9 +27,7 @@
 int last10(void)
 {
 
-    char input[85];
-    char time10[6] = "";
-    char time_buf[20];
+    char input[82];
 
     int minsbefore;
     int minsnow;
@@ -43,39 +41,30 @@ int last10(void)
 
     thisband = atoi(band[bandinx]);
 
+    /* look backwards in actual band for QSOs */
     for (counter = nr_qsos; counter >= 0; counter--) {
 
 	if (thisband == (atoi(qsos[counter]))) {
 	    qsocount++;
-	    if (qsocount >= 10)
+	    if (qsocount >= 10)		/* stop after 10 QSOs found */
 		break;
 	}
     }
 
-    if (counter > 0)
-	strncpy(input, qsos[counter], 85);
+    /* counter points to the first QSO */
+    if (counter < 0)
+	return (-1);			/* not 10 QSOs found */
 
-    strncpy(time10, input + 17, 5);
-    time10[5] = '\0';
-    minsbefore = atoi(time10 + 3);
-    time10[2] = '\0';
-    minsbefore += (atoi(time10) * 60);
+    strncpy(input, qsos[counter], 82);
+
+    input[17 + 5] = '\0';
+    minsbefore = atoi(input + 17 + 3);
+    input[17 + 2] = '\0';
+    minsbefore += (atoi(input + 17) * 60);
 
     get_time();
-    strftime(time_buf, 10, "%H:%M", time_ptr);
-/*				strncpy (timeptr2, time_buf, 6);
-				current_hour = atoi (time_buf);
-				current_hour += timeoffset;
-				if (current_hour < 0) current_hour += 24;
-				if (current_hour > 23) current_hour -= 24;
-				sprintf(time_buf , "00");
-				sprintf(time_buf , "%2d:", current_hour);
-				sprintf(time_buf + 3, "%s", timeptr2 + 3);
-	*/
 
-    minsnow = atoi(time_buf + 3);
-    time_buf[2] = '\0';
-    minsnow += (atoi(time_buf) * 60);
+    minsnow = time_ptr->tm_hour * 60 + time_ptr->tm_min;
 
     if ((minsnow - minsbefore) <= 0)
 	minsnow += 1440;
