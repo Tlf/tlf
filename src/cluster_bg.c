@@ -332,6 +332,7 @@ int loadbandmap(void)
 		spottime[4] = spottime[3];
 		spottime[3] = spottime[2];
 		spottime[2] = ':';
+		spottime[5] = '\0';
 		spotminutes = 60 * atoi(spottime) + atoi(spottime + 3);
 		timediff = (sysminutes - spotminutes) + 5;
 		if (timediff + 30 < 0)
