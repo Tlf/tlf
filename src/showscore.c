@@ -63,7 +63,7 @@ int showscore(void)
     extern int sectn_mult;
     extern int dx_arrlsections;
 
-    int p, q, r, n;
+    int p, q, r, n, l10;
 
     if ((bigpartlist == 1) && (partials == 1) && (strlen(hiscall) > 2))
 	return (1);
@@ -349,8 +349,8 @@ int showscore(void)
 	    else
 		p = 1;
 
-	    if (last10() >= 1)
-		mvprintw(22, 50, "Q/M %d  Rate %d ", p, 600 / last10());
+	    if ((l10 = last10()) >= 1)
+		mvprintw(22, 50, "Q/M %d  Rate %d ", p, (60 * 10) / l10);
 
 	    if (wpx == 1) {
 		if (minute_timer > 0)
