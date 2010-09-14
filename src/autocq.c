@@ -71,6 +71,7 @@ int auto_cq(void)
 
 	if (trxmode == CWMODE) {
 	    strncpy(buff, (speedstr + (speed * 2)), 2);
+	    buff[2] = '\0';
 	    realspeed = atoi(buff);
 	    strncpy(cwmessage, message[11], 79);
 	    cw_message_len = cw_char_length(cwmessage);
