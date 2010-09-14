@@ -1,5 +1,7 @@
 2010-09-11  thomas beierlein <tb@forth-ev.de>
 	* fix calculation of sunrise and sunset times 
+	* fix calculation of QSO Rate
+	* some minor fixes of uninitialized variables
 
 2010-01-xx  thomas beierlein <tb@forth-ev.de>
 	* better recognition of hamlib install (tnx F8FCE)
