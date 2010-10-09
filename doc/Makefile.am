@@ -1,7 +1,8 @@
-EXTRA_DIST = README
+DOC_FILES = README
+
+doc_DATA = $(DOC_FILES)
+
+#EXTRA_DIST = $(DOC_FILES)
 
 CLEANFILES = *~
 
-install-data-local:
-	$(mkinstalldirs) $(pkgdatadir)/doc
-	install -m 0644 README $(pkgdatadir)/doc
