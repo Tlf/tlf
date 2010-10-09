@@ -1,3 +1,6 @@
+2010-10-18  thomas beierlein <tb@forth-ev.de>
+	* fix installation commands for 'make distcheck'
+
 2010-09-11  thomas beierlein <tb@forth-ev.de>
 	* fix calculation of sunrise and sunset times 
 	* fix calculation of QSO Rate
