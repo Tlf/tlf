@@ -1,9 +1,8 @@
-EXTRA_DIST = soundlog
+SCRIPTS_FILES = soundlog
+
+bin_SCRIPTS = $(SCRIPTS_FILES)
+
+EXTRA_DIST = $(SCRIPT_FILES)
 
 CLEANFILES = *~
 
-install-exec-local:
-	install soundlog $(bindir)
-
-uninstall:
-	rm -f $(bindir)/soundlog
