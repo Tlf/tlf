@@ -282,15 +282,13 @@ int loadbandmap(void)
     char *tmp;
     char spotcall[20];
     char spottime[6];
-    char syshour[3];
-    char sysmins[3];
     char spotline[38];
     char tmp1[81];
     char tmp2[81];
     char callcopy[81];
     char cqzonebuffer[3];
     FILE *fp;
-    char marker_out[40];
+    char marker_out[60];
     int lon;
     int lat;
     int yy, zz;
@@ -298,7 +296,7 @@ int loadbandmap(void)
     int iswarc = 0;
     char xplanetmsg[160];
 
-    for (i = 0; i < 200; i++)
+    for (i = 0; i < MAX_SPOTS; i++)
 	bandmap[i] = NULL;
 
     j = 0;
@@ -306,11 +304,7 @@ int loadbandmap(void)
     i = 0;
 
     get_time();
-//strftime(syshour, 80, "%H", time_ptr);        ### bug fix
-//strftime(sysmins, 80, "%M", time_ptr);        ### bug fix
-    strftime(syshour, sizeof(syshour), "%H", time_ptr);
-    strftime(sysmins, sizeof(sysmins), "%M", time_ptr);
-    sysminutes = 60 * atoi(syshour) + atoi(sysmins);
+    sysminutes = 60 * time_ptr->tm_hour + time_ptr->tm_min;
 
     if (loghead) {
 	firstlogline();
@@ -436,7 +430,7 @@ int loadbandmap(void)
 	    }
 	}
     }
-    // ---------------------sort the array ---------------------------------------
+    // ---------------------sort the array -----------------------------------
     changeflg = 1;
 
     while ((changeflg == 1) && (cluster == MAP)) {	//  sort the spots
@@ -475,6 +469,7 @@ int loadbandmap(void)
 
     attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);	// display it
 
+    // clear bandmap field
     for (j = 15; j < 23; j++)
 	mvprintw(j, 4, "                           ");
 
@@ -488,9 +483,10 @@ int loadbandmap(void)
 
     jj = 0;
 
+    /* prune markerfile by opening it for write */
     if (xplanet > 0 && nofile == 0) {
-	if ((fp = fopen(markerfile, "w")) == NULL) {	//start with empty file
-	    nofile = 1;
+	if ((fp = fopen(markerfile, "w")) == NULL) {
+	    nofile = 1;			/* remember: no write possible */
 	    mvprintw(24, 0, "Opening marker file not possible.\n");
 	    refresh();
 	} else
@@ -511,15 +507,15 @@ int loadbandmap(void)
 		if (callcopy[m] == ' ') {
 		    callcopy[m] = '\0';
 		    break;
-		}
+		}	/* use strcspn? */
 	    }
+
 	    yy = countrynr;
 	    strcpy(cqzonebuffer, cqzone);
-
 	    x = getctydata(callcopy);
-
-	    strcpy(cqzone, cqzonebuffer);	// to be fixed: getctydata.c should not change cqzone
-	    countrynr = yy;
+	    strcpy(cqzone, cqzonebuffer);	// to be fixed: 
+	    					// getctydata.c should not 
+	    countrynr = yy; 			// change cqzone and countrynr
 
 	    y = searchcallarray(callcopy);
 
@@ -529,7 +525,7 @@ int loadbandmap(void)
 	    if (cluster == MAP)
 		thisband = bandinx;
 
-	    switch (thisband) {
+	    switch (thisband) {			// INDEX -> BAND via Table
 	    case BANDINDEX_160:
 		if ((countries[x] & BAND160) != 0)
 		    worked = 1;
@@ -577,20 +573,19 @@ int loadbandmap(void)
 		    mvprintw(24, 0, "Opening markerfile not possible.\n");
 		}
 
-		strcpy(marker_out, "                         ");
-
 		lon = atoi(datalines[x] + 40);
 		lat = atoi(datalines[x] + 50) * -1;
 		sprintf(marker_out, "%d   %d", lon, lat);
 
 		marker_out[12] = '\0';
 		strcat(marker_out, "   \"");
+		/* show callsign if MARKERS or MARKERSCALL */
 		if (xplanet == 1 || xplanet == 3)
 		    strcat(marker_out, callcopy);
+
 		if (spot_age[j] > 15 && cluster != SPOTS)
 		    strcat(marker_out, "\"   color=Green\n");
 		else {
-
 		    iswarc = 0;
 		    if (spot_freq[j] >= 10100.0 && spot_freq[j] <= 10150.0)
 			iswarc = 1;
@@ -631,9 +626,7 @@ int loadbandmap(void)
 		    } else {
 //                                              iswarc = 0;
 			strcat(marker_out, "\"   color=Cyan\n");
-
 		    }
-
 		}
 		fputs(marker_out, fp);
 
@@ -675,6 +668,7 @@ int loadbandmap(void)
 
     }
 
+    /* append last dx cluster message to markerfile; will be shown at bottom */
     if (xplanet == 1 && nofile == 0) {
 
 	xplanetmsg[0] = '\0';
@@ -715,7 +709,8 @@ int loadbandmap(void)
 
     refresh();
 
-    return (i);			//---------------------------the end  ------------------
+    return (i);			
+    //--------------------------- the end  ------------------
 }
 
 char *firstlogline(void)
