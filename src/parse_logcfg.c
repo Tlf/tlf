@@ -859,7 +859,7 @@ int parse_logcfg(char *inputbuffer)
 
 		    if (strlen(outputbuff) > 11) {
 			strncpy(markerfile, outputbuff + 11,
-				strlen(outputbuff) - 11);
+				strlen(outputbuff) - 12);
 			xplanet = 2;
 		    }
 		    break;
@@ -871,7 +871,7 @@ int parse_logcfg(char *inputbuffer)
 
 		    if (strlen(outputbuff) > 12) {
 			strncpy(markerfile, outputbuff + 12,
-				strlen(outputbuff) - 12);
+				strlen(outputbuff) - 13);
 			xplanet = 3;
 		    }
 		    break;
