@@ -1,3 +1,8 @@
+2010-11-29  thomas beierlein <tb@forth-ev.de>
+	* fix parsing for MARKERDOTS and MARKERCALL keywords
+	* fix buffer overrun during write of markerfile
+	* add new callmaster file provided by OK1RR
+
 2010-10-18  thomas beierlein <tb@forth-ev.de>
 	* fix installation commands for 'make distcheck'
 
@@ -9,7 +14,7 @@
 2010-01-xx  thomas beierlein <tb@forth-ev.de>
 	* better recognition of hamlib install (tnx F8FCE)
 	* fix a lot of buffer overrun for string handling (as glibc and gcc
-	  us -D_FORTIFY_SOURCE for stricter checking of buffer overuns)
+	  use -D_FORTIFY_SOURCE for stricter checking of buffer overuns)
 	* rewrote handling of initial exchange file. It now allows empty 
 	  and comment lines (#) and spaces around the callsign. Leading 
 	  space before comment gets ignored.
