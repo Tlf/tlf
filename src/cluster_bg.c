@@ -23,7 +23,7 @@ int cluster_bg(int cluster_arg)
     if (cluster_arg == MAP)
 	clustermode = bandinx;
     if (cluster_arg == SPOTS)
-	clustermode = 9;
+	clustermode = NBANDS;
     if (cluster_arg != CLUSTER)
     {
 	announcefilter = FILTER_DX;
@@ -33,7 +33,7 @@ int cluster_bg(int cluster_arg)
 	if (k > (MAX_SPOTS - 2))
 	    k = MAX_SPOTS - 2;
 
-	if (clustermode != 9) {	// map
+	if (clustermode != NBANDS) {	// map
 
 	    if (k < 8)
 		k = 8;
@@ -179,7 +179,6 @@ int getclusterinfo(void)
 	    if (in_map == 1) {
 		spotarray[si] = i;
 		si++;
-
 	    }
 
 	    i++;
@@ -191,6 +190,7 @@ int getclusterinfo(void)
 	    }
 	    strncpy(lastwwv, spot_ptr[i], 82);
 	    i++;
+
 	} else if (strstr(spot_ptr[i], "WWV") != NULL) {
 	    if ((cluster == CLUSTER)) {
 		spotarray[si] = i;
@@ -198,6 +198,7 @@ int getclusterinfo(void)
 	    }
 	    strncpy(lastwwv, spot_ptr[i], 82);
 	    i++;
+
 	} else if (strstr(spot_ptr[i], calldupe) != NULL) {
 	    if ((cluster == CLUSTER) && (announcefilter <= 2)) {
 		spotarray[si] = i;
@@ -210,9 +211,9 @@ int getclusterinfo(void)
 	    if ((cluster == CLUSTER) && (announcefilter <= 1)) {
 		spotarray[si] = i;
 		si++;
-
 	    }
 	    i++;
+
 	} else if ((cluster == CLUSTER) && (announcefilter == 0)
 		   && (strlen(spot_ptr[i]) > 20)) {
 
@@ -240,7 +241,7 @@ int getclusterinfo(void)
 
 char *bandmap[MAX_SPOTS];
 struct tln_logline *temps;
-int allspots = 0;
+int allspots = 0;		/* show all or only needed spots */
 
 /* ----------------------------------------------------*/
 
@@ -306,6 +307,9 @@ int loadbandmap(void)
     get_time();
     sysminutes = 60 * time_ptr->tm_hour + time_ptr->tm_min;
 
+    /* parse log of cluster output and find DX announcements.
+     * Copy them to bandmap array and find spot_age and spot_freq 
+     */
     if (loghead) {
 	firstlogline();
     }
@@ -419,7 +423,7 @@ int loadbandmap(void)
 
 		    }
 
-		    if (done == 0 && in_map == 1 && recent == 1) {
+		    if (done == 0 && in_map == 1) {
 			bandmap[i] = thisline;
 			spot_age[i] = timediff;
 			spot_freq[i] = atof(thisline + 17);
@@ -430,7 +434,8 @@ int loadbandmap(void)
 	    }
 	}
     }
-    // ---------------------sort the array -----------------------------------
+    /* ---------------------sort the arrays ----------------------------------
+     */
     changeflg = 1;
 
     while ((changeflg == 1) && (cluster == MAP)) {	//  sort the spots
@@ -445,6 +450,9 @@ int loadbandmap(void)
 	    if ((tmp1 == NULL) || (tmp2 == NULL))
 		break;
 
+	    /* tb 30nov10 anstatt atof zu nutzen können wir spot_freq Werte 
+	     * vergleichen
+	     */
 	    if ((atof(tmp1 + 16)) > (atof(tmp2 + 16))) {
 		tmp = bandmap[j];
 		timebuff = spot_age[j];
@@ -456,20 +464,18 @@ int loadbandmap(void)
 		spot_age[j + 1] = timebuff;
 		spot_freq[j + 1] = freqbuffer;
 		changeflg = 1;
-
 	    }
-
 	}
 
 	if (changeflg == 0)
 	    break;
-    }				// end while
+    }
 
     //------------------end sort ---------------------------------------------
 
     attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);	// display it
 
-    // clear bandmap field
+    // clear bandmap display
     for (j = 15; j < 23; j++)
 	mvprintw(j, 4, "                           ");
 
@@ -636,6 +642,8 @@ int loadbandmap(void)
 	    if (y == 0)
 		dupe = 1;
 
+	    /* display bandmap and color according to 'worked' 
+	     * and age of spot */
 	    if (worked == 1 && thisband < 10) {
 		if (allspots == 1) {
 		    attron(COLOR_PAIR(COLOR_YELLOW));
