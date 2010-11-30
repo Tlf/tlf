@@ -269,7 +269,6 @@ int loadbandmap(void)
     int spotminutes = 0;
     int sysminutes = 0;
     int timediff = 0;
-    int recent;
     int linepos;
     int worked;
     int thisband = 10;
@@ -336,17 +335,15 @@ int loadbandmap(void)
 		if (timediff + 30 < 0)
 		    timediff += 1440;
 
-		if ((timediff + 30) <= (MAXMINUTES + 30))
-		    recent = 1;
-		else {
-		    recent = 0;
-		    thisline[0] = 'd';
-		}
+		/* is spot recent? */
+		if ((timediff + 30) <= (MAXMINUTES + 30)) {
 
-		if (recent == 1) {
+		    /* yes, so process it */
 
-		    done = 0;	// duplicate ? kill it.
-
+		    done = 0;	
+		    
+		    /* look for duplicates already in bandmap 
+		     * => kill it older one and keep younger entry */
 		    for (k = 0; k <= i - 1; k++) {
 			callcopy[0] = '\0';
 			strncat(callcopy, bandmap[k] + 26, 5);
@@ -430,7 +427,11 @@ int loadbandmap(void)
 			i++;
 		    }
 		    done = 0;
+		} else {
+		    /* no longer recent => hide it for strcmp "DX de" */
+		    thisline[0] = 'd';
 		}
+
 	    }
 	}
     }
@@ -579,15 +580,16 @@ int loadbandmap(void)
 		    mvprintw(24, 0, "Opening markerfile not possible.\n");
 		}
 
+		/* show callsign if MARKERS or MARKERSCALL */
+		if (!(xplanet == 1 || xplanet == 3))
+		    callcopy[0]='\0';
+
 		lon = atoi(datalines[x] + 40);
 		lat = atoi(datalines[x] + 50) * -1;
-		sprintf(marker_out, "%d   %d", lon, lat);
+		sprintf(marker_out, "%4d   %4d   \"%s", lon, lat, callcopy);
 
-		marker_out[12] = '\0';
-		strcat(marker_out, "   \"");
-		/* show callsign if MARKERS or MARKERSCALL */
-		if (xplanet == 1 || xplanet == 3)
-		    strcat(marker_out, callcopy);
+		//if (xplanet == 1 || xplanet == 3)
+		//    strcat(marker_out, callcopy);
 
 		if (spot_age[j] > 15 && cluster != SPOTS)
 		    strcat(marker_out, "\"   color=Green\n");
@@ -680,7 +682,7 @@ int loadbandmap(void)
     if (xplanet == 1 && nofile == 0) {
 
 	xplanetmsg[0] = '\0';
-	strcat(xplanetmsg, "-82 -120 ");
+	strcat(xplanetmsg, " -82 -120 ");
 	strcat(xplanetmsg, "\"");
 	strcat(xplanetmsg, lastmsg);
 
