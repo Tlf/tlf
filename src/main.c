@@ -114,7 +114,7 @@ int qso_once = 0;
 int addcallarea_once = 0;
 int noleadingzeros;
 int ctcomp = 0;
-int isdupe = 0;			//0 if nodupe -- for auto qso b4 (LZ3NY)
+int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
 int nob4 = 0;			// allow auto b4
 int ignoredupe = 0;
 int noautocq = 0;
@@ -145,15 +145,15 @@ int mixedmode = 0;
 char his_rst[4] = "599";
 char my_rst[4] = "599";
 int mults_per_band = 1;		/* mults count per band */
-int shortqsonr = LONGCW;	/*   1  =  short  cw char in exchange              */
-int cluster = NOCLUSTER;	/*   0 = OFF, 1 = FOLLOW     2  = spots  3 = all   */
+int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
+int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
 int clusterlog = 0;		/* clusterlog on/off */
-int searchflg = 0;		/*   1  = display search  window */
+int searchflg = 0;		/* 1  = display search  window */
 int show_time = 0;
 int cqmode = CQ;		/* 1  = CQ  0 = S&P  */
 int demode = 0;			/* 1 =  send DE  before s&p call  */
 int contest = 0;		/* 0 =  General,  1  = contest */
-int announcefilter = FILTER_ANN;	/*  filter cluster  announcements */
+int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 int showscore_flag = 0;		/* show  score window */
 int change_rst = 0;
 char exchange[40];
@@ -383,8 +383,8 @@ double sundown;
 int this_second;
 int stop_backgrnd_process = 1;	/* dont start until we know what we are doing */
 
-int wazmult = 0;		/* to add the abiliti of WAZ zones to be multiplier */
-int itumult = 0;		/* to add the abiliti of ITU zones to be multiplier */
+int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
+int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
 /* ------------------------------------------------------------------------*/
 /*     Main loop of the program			                           */
