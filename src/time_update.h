@@ -34,5 +34,5 @@
 #include "splitscreen.h"
 
 
-int time_update(void);
+void time_update(void);
 

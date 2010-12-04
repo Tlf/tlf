@@ -25,7 +25,7 @@
 #include "globalvars.h"
 #include "time_update.h"
 
-int time_update(void)
+void time_update(void)
 {
     extern struct tm *time_ptr;
     extern int searchflg;
@@ -36,27 +36,22 @@ int time_update(void)
     extern long system_secs;
     extern int miniterm;
 
-    char time_buf[20];
-    int tens = 1;
+    char time_buf[11];
     int j;
     int currentterm = 0;
     static int s = 0;
     static int m = 0;
-    static int oldtens = -1;  	/* trigger immediate update */
+    static int oldsecs = -1;  	/* trigger immediate update */
 
     usleep(1000);
 
     get_time();
-    strftime(time_buf, 10, "%H:%M:%S", time_ptr);
-    tens = time_buf[7];		/* seconds */
-    this_second = tens;
-    system_secs =
-	time_buf[3] * 10 * 60 + time_buf[4] * 60 + time_buf[6] * 10 +
-	time_buf[7];
-    time_buf[5] = '\0';
+    this_second = time_ptr->tm_sec;		/* seconds */
+    system_secs = time_ptr->tm_min * 60 + time_ptr->tm_sec;
 
-    if (tens != oldtens) {	/*  seconds */
-	oldtens = tens;
+    if (this_second != oldsecs) {
+	/* do it every second */
+	oldsecs = this_second;
 
 	if (wpx == 1) {
 	    if (minute_timer > 0)
@@ -65,6 +60,9 @@ int time_update(void)
 
 	s = (s + 1) % 2;
 	if (s > 0) {		/* every 2 seconds */
+
+	    strftime(time_buf, 10, "%H:%M:%S", time_ptr);
+	    time_buf[5] = '\0';
 
 	    if ((time_buf[6] == '1') && (m >= 30)) {
 
@@ -123,6 +121,4 @@ int time_update(void)
 	}
 	miniterm = currentterm;
     }
-
-    return (0);
 }
