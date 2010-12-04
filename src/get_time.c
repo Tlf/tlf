@@ -24,7 +24,7 @@
 
 #include "get_time.h"
 
-int get_time(void)
+void get_time(void)
 {
     extern struct tm *time_ptr;
     extern int timeoffset;
@@ -36,7 +36,5 @@ int get_time(void)
     now = (time(0) + (timeoffset * 3600) + timecorr);
 
     time_ptr =  gmtime(&now);
-
-    return(0);
 }
 

@@ -19,5 +19,5 @@
 
 #include <time.h>
 
-int get_time(void);
+void get_time(void);
 
