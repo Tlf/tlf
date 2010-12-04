@@ -117,13 +117,6 @@ int callinput(void)
     printcall();
 
     for (i = strlen(hiscall); i <= 13; i++) {
-	time_update();
-
-	if (trxmode == DIGIMODE
-	    && (keyerport == GMFSK || keyerport == MFJ1278_KEYER)) {
-	    show_rtty();
-	    printcall();
-	}
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	nodelay(stdscr, TRUE);	/* main loop waiting for input */
