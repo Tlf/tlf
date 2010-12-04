@@ -1031,7 +1031,7 @@ int parse_logcfg(char *inputbuffer)
 			    strncpy(buff, inputbuffer + 8, 3);
 			    cqdelay = atoi(buff);
 			}
-			if ((cqdelay < 8) || (cqdelay >= 120))
+			if ((cqdelay < 3) || (cqdelay > 60))
 			    cqdelay = 20;
 
 			break;
