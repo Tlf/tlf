@@ -269,18 +269,18 @@ If field not empty and CHANGE_RST is set: change rSt value
 
 .TR
 .B Ctrl-Pgup
-Increase Auto_CQ delay (1 sec).
-Set Aut0_CW delay to message length + pause length. This is because tlf does not
+Increase Auto_CQ delay (+1/2 sec).
+Set Auto_CW delay to message length + pause length. This is because tlf does not
 know when the cwdaemon is ready...
 
 .TR
 .B Pg-down 
 Decrease CW speed (from call and exchange fields)
-If field not empty and CHANGE_RST is set: change rSt value.
+If field not empty and CHANGE_RST is set: change RST value.
 
 .TR
 .B Ctrl-Pgdown
-Decrease Auto_CQ delay (1 sec).
+Decrease Auto_CQ delay (-1/2 sec).
 
 .TR
 .B F1-F11
@@ -614,7 +614,7 @@ Use soundcard for sidetone output
 Set soundcard sidetone volume (default=70)
 
 .TR
-.B CQDELAY=<Auto_cq delay in 1/2 seconds> (0...60)
+.B CQDELAY=<Auto_cq delay in 1/2 seconds> (3...60)
 Use a value which is message length + listening time!!
 
 .TR
