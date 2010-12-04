@@ -1,3 +1,6 @@
+2010-12-04  thomas beierlein <tb@forth-ev.de>
+	* add new cty.dat provided by OK1RR
+
 2010-11-29  thomas beierlein <tb@forth-ev.de>
 	* fix parsing for MARKERDOTS and MARKERCALL keywords
 	* fix buffer overrun during write of markerfile
