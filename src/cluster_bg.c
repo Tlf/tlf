@@ -580,19 +580,17 @@ int loadbandmap(void)
 		    mvprintw(24, 0, "Opening markerfile not possible.\n");
 		}
 
-		/* show callsign if MARKERS or MARKERSCALL */
-		if (!(xplanet == 1 || xplanet == 3))
+		/* show no callsign if MARKERDOTS */
+		if (xplanet == 2)
 		    callcopy[0]='\0';
 
 		lon = atoi(datalines[x] + 40);
 		lat = atoi(datalines[x] + 50) * -1;
-		sprintf(marker_out, "%4d   %4d   \"%s", lon, lat, callcopy);
-
-		//if (xplanet == 1 || xplanet == 3)
-		//    strcat(marker_out, callcopy);
+		sprintf(marker_out, "%4d   %4d   \"%s\"   color=", 
+			lon, lat, callcopy);
 
 		if (spot_age[j] > 15 && cluster != SPOTS)
-		    strcat(marker_out, "\"   color=Green\n");
+		    strcat(marker_out, "Green\n");
 		else {
 		    iswarc = 0;
 		    if (spot_freq[j] >= 10100.0 && spot_freq[j] <= 10150.0)
@@ -605,35 +603,35 @@ int loadbandmap(void)
 		    if (iswarc == 0) {
 			if (cluster == MAP) {
 			    if (worked == 1) {
-				strcat(marker_out, "\"   color=Yellow\n");
+				strcat(marker_out, "Yellow\n");
 				worked = 0;
 			    } else
-				strcat(marker_out, "\"   color=White\n");
+				strcat(marker_out, "White\n");
 			} else {
 			    if (spot_freq[j] < 3500.0)
-				strcat(marker_out, "\"   color=Red\n");
+				strcat(marker_out, "Red\n");
 			    if (spot_freq[j] >= 3500.0
 				&& spot_freq[j] <= 4000.0)
-				strcat(marker_out, "\"   color=Magenta\n");
+				strcat(marker_out, "Magenta\n");
 			    if (spot_freq[j] >= 7000.0
 				&& spot_freq[j] <= 7300.0)
-				strcat(marker_out, "\"   color=Yellow\n");
+				strcat(marker_out, "Yellow\n");
 			    if (spot_freq[j] >= 14000.0
 				&& spot_freq[j] <= 14350.0)
-				strcat(marker_out, "\"   color=Blue\n");
+				strcat(marker_out, "Blue\n");
 			    if (spot_freq[j] >= 21000.0
 				&& spot_freq[j] <= 21450.0)
-				strcat(marker_out, "\"   color=White\n");
+				strcat(marker_out, "White\n");
 			    if (spot_freq[j] >= 28000.0
 				&& spot_freq[j] <= 29000.0)
-				strcat(marker_out, "\"   color=Green\n");
+				strcat(marker_out, "Green\n");
 			    if (iswarc == 1)
-				strcat(marker_out, "\"   color=Cyan\n");
+				strcat(marker_out, "Cyan\n");
 
 			}
 		    } else {
 //                                              iswarc = 0;
-			strcat(marker_out, "\"   color=Cyan\n");
+			strcat(marker_out, "Cyan\n");
 		    }
 		}
 		fputs(marker_out, fp);
