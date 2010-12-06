@@ -84,9 +84,7 @@ int searchlog(char *searchstring)
     extern int wazmult;
     extern int itumult;
 
-//char searchresult[MAX_CALLS][82];
     int srch_index = 0;
-//char result[MAX_CALLS][82];
     int r_index = 0;
     int o = 0;
     char s_inputbuffer[82] = "";
@@ -134,7 +132,6 @@ int searchlog(char *searchstring)
 
 	r_index = 0;
 
-//
 
 	while (strlen(qsos[qso_index]) > 4) {
 
@@ -142,6 +139,7 @@ int searchlog(char *searchstring)
 		 (qsos[qso_index][3] == 'S' && trxmode == SSBMODE) ||
 		 (qsos[qso_index][3] == 'D' && trxmode == DIGIMODE)) ||
 		mixedmode == 0) {
+		// ist letzterTest korrekt?
 
 		strncpy(s_inputbuffer, qsos[qso_index], 81);
 
@@ -162,7 +160,6 @@ int searchlog(char *searchstring)
 	}
 
 	s_inputbuffer[0] = '\0';
-	//
 
 	// initialize array best matching callsigns
 	for (xx = 0; xx < 6; xx++) {
