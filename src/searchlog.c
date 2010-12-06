@@ -104,8 +104,6 @@ int searchlog(char *searchstring)
 
     char *tmpstr;
 
-    char callmaster_location[80];
-
 #if 0
     if (strlen(s_inputbuffer) >= 83) {
 	printf
@@ -113,8 +111,6 @@ int searchlog(char *searchstring)
 	exit(1);
     }
 #endif
-    strcpy(callmaster_location, PACKAGE_DATA_DIR);
-    strcat(callmaster_location, "/callmaster ");
 
     l = 0;
     z = 0;
