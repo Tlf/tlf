@@ -56,7 +56,7 @@ int logit(void)
     extern char tonestr[];
     extern int dxped;
 
-    int callreturn = 0;
+    char callreturn = 0;
     int qrg_out = 0;
     int time_out = 0;
 
@@ -233,7 +233,7 @@ int logit(void)
 		/*  end of else */
 	    }
 	    /* end of if */
-	    if ((callreturn == 92) && (strlen(hiscall) > 0)) {
+	    if ((callreturn == 92) && (*hiscall != '\0')) {
 		defer_store = 0;
 
 		while (lan_mutex == 1) {
