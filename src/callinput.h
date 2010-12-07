@@ -60,6 +60,6 @@
 #include "rtty.h"
 
 
-int callinput(void);
+char callinput(void);
 int play_file(char *audiofile);
 

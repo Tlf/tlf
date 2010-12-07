@@ -28,7 +28,8 @@
 
 void send_bandswitch(int freq);
 
-int callinput(void)
+/* returns last character code */
+char callinput(void)
 {
     extern int itumult;
     extern int wazmult;
@@ -139,8 +140,8 @@ int callinput(void)
 
 
 	/* special handling of some keycodes if call field is empty */
-	if (i == 0 || strlen(hiscall) == 0) {
-	    if ((x == '+') && (strlen(hiscall) == 0) && (ctcomp == 0)) {
+	if (i == 0 || *hiscall == '\0') {
+	    if ((x == '+') && (*hiscall == '\0') && (ctcomp == 0)) {
 		if (cqmode == CQ) {
 		    cqmode = S_P;
 		} else
@@ -159,7 +160,7 @@ int callinput(void)
 
 	    }
 
-	    if (x == '\n' && strlen(hiscall) == 0) {
+	    if (x == '\n' && *hiscall == '\0') {
 		if (cqmode == CQ) {
 		    if (noautocq != 1)
 			x = auto_cq();
@@ -174,7 +175,7 @@ int callinput(void)
 		break;
 	    }
 
-	    if (x == '=' && strlen(hiscall) == 0) {
+	    if (x == '=' && *hiscall == '\0') {
 		strcat(buffer, lastcall);
 		strcat(buffer, " OK ");
 		sendbuf();
@@ -200,10 +201,10 @@ int callinput(void)
 			play_file(ph_message[2]);
 
 		    if (((cqww == 1) || (wazmult == 1))
-			&& (strlen(comment) == 0))
+			&& (*comment == '\0'))
 			strcpy(comment, cqzone);
 
-		    if ((itumult == 1) && (strlen(comment) == 0))
+		    if ((itumult == 1) && (*comment == '\0'))
 			strcpy(comment, ituzone);
 		    x = 92;
 
@@ -238,7 +239,7 @@ int callinput(void)
 		    calledit();
 		}
 
-		if (bandinx >= 0 && strlen(hiscall) == 0 && no_arrows == 0) {
+		if (bandinx >= 0 && *hiscall == '\0' && no_arrows == 0) {
 
 		    bandinx--;
 		    if (bandinx == -1)
@@ -275,7 +276,7 @@ int callinput(void)
 		if (no_arrows == 1)	//don't use arrow keys for band change
 		    break;
 
-		if (bandinx <= 8 && strlen(hiscall) == 0) {
+		if (bandinx <= 8 && *hiscall == '\0') {
 		    bandinx++;
 
 		    if (bandinx > 8)
@@ -421,7 +422,7 @@ int callinput(void)
 			printcall();
 		    }
 		} else {	// trlog compatible, band switch
-		    if (bandinx >= 0 && strlen(hiscall) == 0) {
+		    if (bandinx >= 0 && *hiscall == '\0') {
 
 			bandinx--;
 			if (bandinx == -1)
@@ -879,7 +880,7 @@ int callinput(void)
 	case 226:		// alt-b  (band-up for trlog)
 	    {
 		if (ctcomp == 0) {
-		    if (bandinx <= 8 && strlen(hiscall) == 0) {
+		    if (bandinx <= 8 && *hiscall == '\0') {
 			bandinx++;
 
 			if (bandinx > 8)
@@ -1287,7 +1288,7 @@ int play_file(char *audiofile)
     int fd,rc;
     char playcommand[120];
 
-    if (strlen(audiofile) == 0)
+    if (*audiofile == '\0')
 	return (0);
 
     netkeyer(K_PTT, "1");	// ptt on
