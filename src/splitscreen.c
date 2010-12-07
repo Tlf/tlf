@@ -679,7 +679,7 @@ void addtext(char *s)
 		strcpy(s, spotline);
 	    }
 	} else {
-	    for (t = 0; t <= 4; t++)
+	    for (t = 0; t <= 3; t++)
 		strcpy(talkarray[t], talkarray[t + 1]);
 	    if (s[strlen(s) - 1] == '\n')
 		s[strlen(s) - 1] = '\0';	// remove the newline
