@@ -29,17 +29,9 @@
 
 int stoptx(void)
 {
-	extern char hiscall[20];
-  	extern char speedstr[];
-  	extern int speed;
   	extern int trxmode;
   	extern int keyerport;
-  	extern int cfd;
 
- 	char speedbuf[3] = "  ";
- 	int retval;
- 	
-//mvprintf (22, 0, "trxmode=%d\n", trxmode);
  	
  	if (trxmode != CWMODE){
  		return(1);
