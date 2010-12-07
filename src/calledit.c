@@ -101,8 +101,8 @@ void calledit(void)
 	    mvprintw(12, 29, hiscall);
 	    mvprintw(12, 29 + b, "");
 	    refresh();
-	    // right
-	} else if (i == 154) {
+
+	} else if (i == 154) {	// right
 	    if (b < strlen(hiscall) - 1) {
 		b++;
 	    } else

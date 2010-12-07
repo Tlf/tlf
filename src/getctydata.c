@@ -44,7 +44,7 @@ int getctydata(char *checkcallptr)
 
 	portable = '\0';
 
-	if (strstr(checkcall, "/QRP") != NULL)
+	if (strstr(checkcall, "/QRP") != NULL)		/* drop QRP suffix */
 		checkcall[strlen(checkcall)-4] ='\0';
 
 	if (strstr(checkcall, "/AM") != NULL)		// airborne mobile, no country (0), no zone (0)
