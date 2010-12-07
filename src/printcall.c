@@ -30,12 +30,15 @@ void printcall(void)
     extern char hiscall[];
     extern int miniterm;
 
-    int currentterm = 0;
+    int currentterm;
 
-    if (miniterm == 1) {
-	miniterm = 0;
-	currentterm = 1;
-    }
+    currentterm = miniterm;
+    miniterm = 0;
+
+//    if (miniterm == 1) {
+//	miniterm = 0;
+//	currentterm = 1;
+//    }
 
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(COLOR_BLUE) | A_STANDOUT | A_BOLD);
@@ -46,6 +49,5 @@ void printcall(void)
     mvprintw(12, 29, hiscall);
     refresh();
 
-    if (currentterm == 1)
-	miniterm = 1;
+    miniterm = currentterm;
 }
