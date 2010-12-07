@@ -100,13 +100,13 @@ int getexchange(void)
 	retval = recall_exchange();
 
     if (((cqww == 1) || (wazmult == 1) || (itumult == 1))
-	&& (strlen(comment) == 0) && (strlen(hiscall) != 0)) {
+	&& (*comment == '\0') && (strlen(hiscall) != 0)) {
 	if (itumult == 1)
 	    strcpy(comment, ituzone);
 	else
 	    strcpy(comment, cqzone);
     }
-    if ((exc_cont == 1) && (strlen(comment) == 0)
+    if ((exc_cont == 1) && (*comment) == '\0')
 	&& (strlen(hiscall) != 0)) {
 	strcpy(comment, continent);
     }
