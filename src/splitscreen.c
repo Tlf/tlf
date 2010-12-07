@@ -930,7 +930,7 @@ int init_packet(void)
     wprintw(sclwin, "\n Use \":\" to go to tlf !! \n");
     wrefresh(sclwin);
 
-    for (iptr = 0; iptr <= MAX_SPOTS; iptr++)
+    for (iptr = 0; iptr < MAX_SPOTS; iptr++)
 	spot_ptr[iptr][0] = '\0';
 
     return (0);
