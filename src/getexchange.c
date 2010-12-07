@@ -106,7 +106,7 @@ int getexchange(void)
 	else
 	    strcpy(comment, cqzone);
     }
-    if ((exc_cont == 1) && (*comment) == '\0')
+    if ((exc_cont == 1) && (*comment == '\0')
 	&& (strlen(hiscall) != 0)) {
 	strcpy(comment, continent);
     }
