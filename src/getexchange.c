@@ -569,12 +569,9 @@ int checkexchange(int x)
 
 	    hr = getlastpattern(zonepats[ii]);
 
+// logik und Verwendung zone_fix vs zone_export unklar
 	    if ((hr > 1) && (atoi(comment + hr - 1) != 0)) {
-		sprintf(zone, "%2d", atoi(comment + hr - 1));
-
-		if (zone[0] == ' ')
-		    zone[0] = '0';
-
+		sprintf(zone, "%02d", atoi(comment + hr - 1));
 		strcpy(zone_fix, zone);
 	    } else
 		strcpy(zone_export, zone);
