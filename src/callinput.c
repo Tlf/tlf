@@ -101,21 +101,19 @@ char callinput(void)
     extern int miniterm;
 
     int i, j, ii, rc, t, x = 0, y = 0, xx;
-    char instring[2] = { 0, 0 };
+    char instring[2] = { '\0', '\0' };
     char dupecall[17];
     char speedbuf[3] = "";
     char weightbuf[5];
     static int lastwindow;
 
-    instring[1] = '\0';
 
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
     else
 	attron(COLOR_PAIR(NORMCOLOR));
 
-    mvprintw(12, 29, "            ");
-    printcall();
+    printcall();	/* print call input field */
 
     for (i = strlen(hiscall); i <= 13; i++) {
 
@@ -142,11 +140,13 @@ char callinput(void)
 	/* special handling of some keycodes if call field is empty */
 	if (i == 0 || *hiscall == '\0') {
 	    if ((x == '+') && (*hiscall == '\0') && (ctcomp == 0)) {
+		/* switch to other mode */
 		if (cqmode == CQ) {
 		    cqmode = S_P;
 		} else
 		    cqmode = CQ;
 
+		/* and show new mode */
 		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 
 		if (cqmode == CQ) {
@@ -235,7 +235,7 @@ char callinput(void)
 	case 155:		/* left */
 	    {
 
-		if (strlen(hiscall) != 0) {
+		if (*hiscall != '\0') {
 		    calledit();
 		}
 
