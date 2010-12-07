@@ -130,7 +130,7 @@ int background_process(void)
 
 		fclose(fp);
 	    }
-	    if ((strlen(lan_message) > 0)
+	    if ((*lan_message != '\0')
 		&& (lan_message[0] == thisnode)) {
 		mvprintw(24, 0,
 			 "Warning: NODE ID CONFLICT ?! You should use another ID! ");
@@ -138,7 +138,7 @@ int background_process(void)
 		sleep(5);
 	    }
 
-	    if ((strlen(lan_message) > 0)
+	    if ((*lan_message != '\0')
 		&& (lan_message[0] != thisnode)
 		&& (stop_backgrnd_process != 1)) {
 
