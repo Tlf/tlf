@@ -420,7 +420,7 @@ int getexchange(void)
 
 /*  --------------------------------------------------------------------------*/
 
-char cmpattern[] = "                               ";	// global
+char cmpattern[32] = "                               ";	// global
 char ssexchange[30] = "";
 char section[8] = "";
 char callupdate[7];
@@ -452,7 +452,7 @@ int checkexchange(int x)
     char serial[5] = "    ";
     char check[3] = "  ";
     char checksection[30];
-    char zone[] = "  ";
+    char zone[4] = "";
 
     char serpats[8][8] = {
 	"bfb",
