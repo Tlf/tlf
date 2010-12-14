@@ -176,7 +176,7 @@ int background_process(void)
 		    lanspotflg = 0;
 		    break;
 		case TLFMSG:
-		    for (t = 0; t <= 3; t++)
+		    for (t = 0; t < 4; t++)
 			strcpy(talkarray[t], talkarray[t + 1]);
 
 		    talkarray[4][0] = lan_message[0];
