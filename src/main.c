@@ -238,11 +238,10 @@ char modem_mode[8];
 int commentfield = 0;
 
 /*-------------------------------------packet-------------------------------*/
-char spot_ptr[MAX_SPOTS][82];
-int spotarray[MAX_SPOTS];
+char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
+int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
 char spotinfo[MAX_SPOTS][82];
-int ptr;
-int spot_rdr;
+int ptr;				/* Anzahl Lines in ispot_ptr array */
 long int *wwv_ptr;
 int packetinterface = 0;
 int fdSertnc = 0;

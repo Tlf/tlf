@@ -89,13 +89,12 @@ int getclusterinfo(void)
     extern char spot_ptr[MAX_SPOTS][82];
     extern char lastwwv[];
     extern int ptr;
-    extern int spot_rdr;
     extern int spotarray[];
     extern int announcefilter;
     extern char call[];
     extern int bandinx;
 
-    int bg, nd, i;
+    int i;
     int si = 0;
     int in_map = 0;
     char calldupe[12];
@@ -103,8 +102,6 @@ int getclusterinfo(void)
     strcpy(calldupe, call);
     calldupe[strlen(call) - 1] = '\0';
 
-    nd = ptr;
-    bg = spot_rdr;
     i = 0;
     si = 0;
 
