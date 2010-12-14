@@ -1,5 +1,7 @@
 2010-12-04  thomas beierlein <tb@forth-ev.de>
 	* add new cty.dat provided by OK1RR
+	* fix typos in man page and clarify CQDELAY handling
+	* fix CQDELAY handling in parse_cfg
 
 2010-11-29  thomas beierlein <tb@forth-ev.de>
 	* fix parsing for MARKERDOTS and MARKERCALL keywords
