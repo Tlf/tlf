@@ -24,6 +24,7 @@ extern int callarray_nr;		// number of entries in callarray[]
 extern int call_band[MAX_CALLS];	// for each of them, a bitfield 
 					// indicating bands
 extern int call_country[MAX_CALLS];	// for each call, the country
+extern char call_exchange[MAX_CALLS][12]; // for each call, the last exchange
 
 extern int countries[MAX_DATALINES];	// for every country, a bitfield 
 					// indicating bands on which it has 
@@ -42,7 +43,6 @@ extern char hiscall[20];
 extern int total;
 extern int band_score[NBANDS];
 extern int zones[41];
-extern char call_exchange[MAX_CALLS][12];
 extern int wpx;
 extern char prefixes_worked[MAX_CALLS][6];
 extern int arrlss;
