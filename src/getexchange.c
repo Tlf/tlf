@@ -119,34 +119,36 @@ int getexchange(void)
     mvprintw(12, 54, "                          ");
     mvprintw(12, 54, comment);
     commentfield = 1;
-    for (i = strlen(comment); i <= 25; i++) {
+    for (i = strlen(comment); i < 26; i++) {
 	x = onechar();
-
-	if (x == 127 && (strlen(comment) >= 1)) {	/* erase  */
-
-	    getyx(stdscr, cury, curx);
-	    mvprintw(12, curx - 1, " ");
-	    mvprintw(12, curx - 1, "");
-	    comment[strlen(comment) - 1] = '\0';
-	    i -= 2;
-	}
 
 	switch (x) {
 
+	case 127:					/* erase */
+	    {
+		if (strlen(comment) >= 1) {
+		    getyx(stdscr, cury, curx);
+		    mvprintw(12, curx - 1, " ");
+		    mvprintw(12, curx - 1, "");
+		    comment[strlen(comment) - 1] = '\0';
+		    i -= 2;
+		}
+		break;
+	    }
+
 	case 27:
 	    {
-		if (comment[0] != '\0') {
+		if (comment[0] != '\0') {	/* if comment not empty */
 		    comment[0] = '\0';
 		    mvprintw(12, 54, "                          ");
 		    mvprintw(12, 54, "");
 		    stoptx();
 		    i = 0;
-		    break;
 		} else {
 		    hiscall[0] = '\0';
 		    x = 9;
-		    break;
 		}
+		break;
 	    }
 	case 160:		// for CT compatibility
 	    {
@@ -213,9 +215,7 @@ int getexchange(void)
 	    {
 		if (change_rst == 1) {
 		    if (my_rst[1] <= 56) {
-
 			my_rst[1]++;
-
 			mvprintw(12, 49, my_rst);
 			mvprintw(12, 54, comment);
 		    }
@@ -228,7 +228,6 @@ int getexchange(void)
 		    mvprintw(0, 14, "%s", speedbuf);
 		    mvprintw(12, 54, comment);
 		    refresh();
-
 		}
 		break;
 
@@ -239,10 +238,8 @@ int getexchange(void)
 
 		    if (my_rst[1] >= 49) {
 			my_rst[1]--;
-
 			mvprintw(12, 49, my_rst);
 			mvprintw(12, 54, comment);
-
 		    }
 		} else {
 		    keyspeed = speeddown();
@@ -266,12 +263,8 @@ int getexchange(void)
 		break;
 	    }
 	case '\n':
-	    {
-		if (ctcomp == 1)
-		    x = 92;	// enter logs immediately
-		if (trxmode == SSBMODE)
-		    x = 92;
-		if (contest != 1)
+	    {			// enter logs sometimes immediately
+		if ((ctcomp == 1) || (trxmode == SSBMODE) || (contest != 1))
 		    x = 92;
 //                                                      if (dxped == 1) x = 92;
 		break;
@@ -279,11 +272,11 @@ int getexchange(void)
 
 	}			/* end switch */
 
-	if (x >= 97 && x <= 122)
+	if (x >= 'a' && x <= 'z')
 	    x = x - 32;
 
-	if (i < 25) {
-	    if (x >= 32 && x <= 90) {
+	if (i < 25) {		/* normal character -> insert if space left */
+	    if (x >= ' ' && x <= 'Z') {
 		instring[0] = x;
 		addch(x);
 		strcat(comment, instring);
