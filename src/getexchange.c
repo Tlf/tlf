@@ -138,14 +138,15 @@ int getexchange(void)
 
 	case 27:
 	    {
+		stoptx();			/* stop sending CW */
 		if (comment[0] != '\0') {	/* if comment not empty */
+		    /* drop exchange so far */
 		    comment[0] = '\0';
 		    mvprintw(12, 54, "                          ");
 		    mvprintw(12, 54, "");
-		    stoptx();
 		    i = 0;
 		} else {
-		    hiscall[0] = '\0';
+		    /* back to callinput */
 		    x = 9;
 		}
 		break;
