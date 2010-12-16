@@ -256,7 +256,6 @@ int searchlog(char *searchstring)
 	}			/* end of patch */
 
 	dupe = NODUPE;
-	isdupe = 0;		// LZ3NY auto-b4 patch
 	nicebox(1, 41, 6, 37, "Worked");
 	refresh();
 
@@ -778,6 +777,7 @@ int searchlog(char *searchstring)
 	    refresh();
 	    usleep(100000);
 	} else
+	    isdupe = 0;		// LZ3NY auto-b4 patch
 	    printcall();
 
     }
