@@ -264,14 +264,14 @@ int getexchange(void)
 		break;
 	    }
 	case '\n':
-	    {			// enter logs sometimes immediately
+	    {			/* log QSO immediately if CT compatible, 
+				 * doing SSB or not in contest */
 		if ((ctcomp == 1) || (trxmode == SSBMODE) || (contest != 1))
 		    x = 92;
 //                                                      if (dxped == 1) x = 92;
 		break;
 	    }
-
-	}			/* end switch */
+	}
 
 	if (x >= 'a' && x <= 'z')
 	    x = x - 32;
