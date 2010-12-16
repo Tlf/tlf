@@ -28,7 +28,9 @@
 
 void send_bandswitch(int freq);
 
-/* returns last character code */
+/** callsign input loop
+ *
+ * \return code of last typed character */
 char callinput(void)
 {
     extern int itumult;
@@ -803,7 +805,7 @@ char callinput(void)
 		    mvprintw(12, curx - 1, "");
 		    hiscall[strlen(hiscall) - 1] = '\0';
 
-		    if (atoi(hiscall) <= 1800) {	/*  no frequency */
+		    if (atoi(hiscall) < 1800) {	/*  no frequency */
 			strncpy(dupecall, hiscall, 16);
 
 			x = getctydata(dupecall);
@@ -1241,7 +1243,7 @@ char callinput(void)
 
 	    refresh();
 
-	    if (atoi(hiscall) <= 1799) {	/*  no frequency */
+	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
 		strncpy(dupecall, hiscall, 16);
 
