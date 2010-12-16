@@ -235,7 +235,7 @@ int k_ptt;
 char controllerport[80] = "/dev/ttyS0";
 int miniterm = 0;
 char modem_mode[8];
-int commentfield = 0;
+int commentfield = 0;		/* 1 if we are in comment/excahnge input */
 
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
