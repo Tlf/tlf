@@ -230,9 +230,8 @@ char callinput(void)
 		    strcpy(hiscall_sent, hiscall);
 		    printcall();
 		    x = 153;
-		    break;
-		} else
-		    break;
+		} 
+		break;
 	    }
 	case 155:		/* left */
 	    {
@@ -556,15 +555,13 @@ char callinput(void)
 
 		searchlog(hiscall);
 
-		if (isdupe == 0)
-		    break;
-
-		isdupe = 0;
-		strcat(buffer, message[6]);	/* as with F7 */
-		sendbuf();
-		mvprintw(12, 29 + strlen(hiscall), "");
-		cleanup();
-		break;		//switch..case
+		if (isdupe != 0) {
+		    strcat(buffer, message[6]);	/* as with F7 */
+		    sendbuf();
+		    mvprintw(12, 29 + strlen(hiscall), "");
+		    cleanup();
+		}
+		break;
 	    }			//case '\n'
 	    /* insert */
 	case 160:
@@ -651,14 +648,12 @@ char callinput(void)
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
-		    switch (cqmode) {
-		    case 0:{
-			    if (demode == SEND_DE)
-				strcat(buffer, "DE ");
-			    strcat(buffer, call);	/* S&P */
-			    break;
-			}
-		    case 1:
+		    if (cqmode == 0) {
+			if (demode == SEND_DE)
+			    strcat(buffer, "DE ");
+			strcat(buffer, call);		/* S&P */
+		    }
+		    else {
 			strcat(buffer, message[0]);	/* CQ */
 		    }
 
@@ -672,7 +667,7 @@ char callinput(void)
 		    break;
 		} else {
 		    if (cqmode == 0)
-			play_file(ph_message[5]);	// S&P mode
+			play_file(ph_message[5]);	/* S&P */
 		    else
 			play_file(ph_message[0]);
 		}
@@ -799,7 +794,7 @@ char callinput(void)
 	    }
 	case 127:		/* backspace */
 	    {
-		if (strlen(hiscall) >= 1) {
+		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
 		    mvprintw(12, curx - 1, " ");
 		    mvprintw(12, curx - 1, "");
@@ -1220,17 +1215,19 @@ char callinput(void)
 		break;
 	    }
 
-	}
+	}	/* end switch */
 
-	if (x >= 97 && x <= 122)
+	if (x >= 'a' && x <= 'z')
 	    x = x - 32;
-	if (x >= 47 && x <= 90) {
+
+	if (x >= '/' && x <= 'Z') {
 	    if (strlen(hiscall) < 13) {
 		instring[0] = x;
 		instring[1] = '\0';
 		addch(x);
 		strcat(hiscall, instring);
 		if (cwstart != 0 && trxmode == CWMODE && contest == 1) {
+		    /* early start keying after 'cwstart' characters */
 		    if (strlen(hiscall) == cwstart) {
 			strcpy(buffer, hiscall);
 			sending_call = 1;
@@ -1268,7 +1265,7 @@ char callinput(void)
 	    || x == 92)
 	    break;
 
-	time_update();
+	time_update();		// TODO: can be dropped
 
 	if (trxmode == DIGIMODE
 	    && (keyerport == GMFSK || keyerport == MFJ1278_KEYER)) {
