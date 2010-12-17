@@ -712,7 +712,7 @@ int changepars(void)
 	    clear_display();
 	    break;
 	}
-    case 50:			/* CHAR */
+    case 50:			/* CHARS */
 	{
 	    mvprintw(13, 29, "? Characters: (0...4)");
 	    refresh();
