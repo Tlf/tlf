@@ -143,7 +143,8 @@ int cw_char_length(char *message)	// calculate point lenght of cw messages...
     char cwmessage[80];
     int testchar, j;
 
-    strncpy(cwmessage, message, 80);
+    strncpy(cwmessage, message, 79);
+    cwmessage[79] = '\0';
 
     for (i = 0; i < strlen(cwmessage); i++) {
 

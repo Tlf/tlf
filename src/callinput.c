@@ -41,6 +41,7 @@ char callinput(void)
     extern int contest;
     extern int dxped;
     extern int cwstart;
+    extern int early_started;
     extern int sending_call;
     extern char hiscall[];
     extern char hiscall_sent[];
@@ -126,8 +127,7 @@ char callinput(void)
 
 	    time_update();
 
-	    if (trxmode == DIGIMODE
-		&& (keyerport == GMFSK
+	    if (trxmode == DIGIMODE && (keyerport == GMFSK
 		    || keyerport == MFJ1278_KEYER)) {
 		show_rtty();
 		printcall();
@@ -214,16 +214,17 @@ char callinput(void)
 		break;
 	    }
 
-	case 152:		// edit last calls....
+	case 152:		// up - edit last calls....
 	    {
 		edit_last();
 		break;
 	    }
-	case 153:		// start sending call if cw mode
-	case 32:
+	case 153:		// down - start sending call if cw mode
+	case 32:		// space
 	    {
 		if (trxmode == CWMODE && contest == 1) {
 		    strcpy(buffer, hiscall);
+		    early_started = 1;
 		    sending_call = 1;
 		    sendbuf();
 		    sending_call = 0;
@@ -235,7 +236,6 @@ char callinput(void)
 	    }
 	case 155:		/* left */
 	    {
-
 		if (*hiscall != '\0') {
 		    calledit();
 		}
@@ -375,7 +375,6 @@ char callinput(void)
 	    }
 	case 246:		// Alt-v
 	    {
-
 		if (ctcomp == 1) {
 		    while (x != 27)	//escape
 		    {
@@ -478,7 +477,6 @@ char callinput(void)
 		}
 
 		break;
-
 	    }
 	case 412:		/* ctrl-pgup, cqdelay (not for TERM=linux */
 	    {
@@ -527,10 +525,8 @@ char callinput(void)
 
 		}
 		break;
-
 	    }
 	case 413:{		// ctrl-pgdown, cqdelay (not for TERM=linux)
-
 		if (cqdelay >= 4) {
 		    cqdelay--;
 		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
@@ -544,6 +540,8 @@ char callinput(void)
 	    }
 	case '\n':{
 		if (strlen(hiscall) > 2 && ctcomp == 1) {
+		    /* there seems to be a call
+		     * means: log it (in CT mode */
 		    x = 92;
 		    break;
 		}
@@ -551,6 +549,7 @@ char callinput(void)
 		if (strlen(hiscall) < 3 || nob4 == 1)
 		    break;
 
+		/* check b4 QSO if call is long enough and 'nob4' off */
 		isdupe = 0;	// LZ3NY  auto-b4 patch
 
 		searchlog(hiscall);
@@ -562,16 +561,14 @@ char callinput(void)
 		    cleanup();
 		}
 		break;
-	    }			//case '\n'
-	    /* insert */
-	case 160:
+	    }
+	case 160:		/* insert */
 	    {
 		strcat(buffer, message[1]);
 		sendbuf();
 		mvprintw(12, 29 + strlen(hiscall), "");
 		break;
 	    }
-
 	case 58:		/* :   change parameters */
 	    {
 		changepars();
@@ -644,7 +641,6 @@ char callinput(void)
 	    }
 
 	case 129:		/*  F1 */
-//                              case KEY_F(1):
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
@@ -696,7 +692,6 @@ char callinput(void)
 		    play_file(ph_message[2]);
 
 		break;
-
 	    }
 	case 132:
 	    {
@@ -790,7 +785,6 @@ char callinput(void)
 	case 141:		/* F12 */
 	    {
 		x = auto_cq();
-
 	    }
 	case 127:		/* backspace */
 	    {
@@ -817,7 +811,7 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 242:		//alt-R
+	case 242:		// alt-R
 	case 243:		// alt-S
 	    {
 		if (showscore_flag == 0)
@@ -913,7 +907,6 @@ char callinput(void)
 	    }
 	case 234:		// alt-J
 	    {
-
 		if (cluster != FREQWINDOW) {
 		    lastwindow = cluster;
 		    cluster = FREQWINDOW;
@@ -1067,7 +1060,6 @@ char callinput(void)
 
 	case 250:		//Alt-z
 	    {
-
 		if (cqww == 1) {
 		    if (zonedisplay == 0)
 			zonedisplay = 1;
@@ -1104,7 +1096,15 @@ char callinput(void)
 
 	case 27:		// ESC
 	    {
-		cleanup();
+		if (early_started == 0)
+		    /* if CW not started early drop call and start anew */
+		    cleanup();
+		else {
+		    /* otherwise just stop sending */
+		    stoptx();
+		    *hiscall_sent = '\0';
+		    early_started = 0;
+		}
 
 		break;
 	    }
@@ -1132,7 +1132,6 @@ char callinput(void)
 		clear_display();
 
 		break;
-
 	    }
 	case 16:		// ctrl-P
 	    {
@@ -1217,6 +1216,7 @@ char callinput(void)
 
 	}	/* end switch */
 
+	/* convert to upper case */
 	if (x >= 'a' && x <= 'z')
 	    x = x - 32;
 
@@ -1230,6 +1230,7 @@ char callinput(void)
 		    /* early start keying after 'cwstart' characters */
 		    if (strlen(hiscall) == cwstart) {
 			strcpy(buffer, hiscall);
+			early_started = 1;
 			sending_call = 1;
 			sendbuf();
 			sending_call = 0;
@@ -1267,8 +1268,8 @@ char callinput(void)
 
 	time_update();		// TODO: can be dropped
 
-	if (trxmode == DIGIMODE
-	    && (keyerport == GMFSK || keyerport == MFJ1278_KEYER)) {
+	if (trxmode == DIGIMODE && (keyerport == GMFSK 
+		|| keyerport == MFJ1278_KEYER)) {
 	    show_rtty();
 	    mvprintw(12, 54, comment);
 	    refresh();

@@ -174,10 +174,16 @@ char message[25][80] =
 	"", "", "", "", "", "", "", "", ""
 };
 char ph_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names
-char hiscall[20];
-char hiscall_sent[20] = "";
-int cwstart = 0;
+
+char hiscall[20];			/**< call of other station */
+char hiscall_sent[20] = "";		/**< part which was sent during early
+					  start */
+int cwstart = 0;			/**< number characters after which
+					   sending call started automatically,
+					   0 - off */
 int sending_call = 0;
+int early_started = 0;			/**< 1 if sending call started early,
+					   strlen(hiscall)>cwstart or 'space' */
 char lastcall[20];
 char lastcomment[40];
 char qsonrstr[5] = "0001";
@@ -522,7 +528,7 @@ int main(int argc, char *argv[])
 //              if (strlen(synclogfile) > 0)
 //                      synclog(synclogfile);
 
-	if (strlen(call) == 0) {
+	if (*call == '\0') {
 	    showmsg
 		("WARNING: No callsign defined in logcfg.dat! exiting...\n\n\n");
 	    exit(1);
@@ -676,7 +682,7 @@ int main(int argc, char *argv[])
 
 		netkeyer(K_WEIGHT, weightbuf);	// set weight
 
-		if (strlen(keyer_device) > 0)
+		if (*keyer_device != '\0')
 		    netkeyer(K_DEVICE, keyer_device);	// set device
 
 		sprintf(keyerbuff, "%d", txdelay);
@@ -687,12 +693,10 @@ int main(int argc, char *argv[])
 		{
 		    netkeyer(K_SIDETONE, "");
 
-		    if (strlen(sc_volume) > 0)	// set soundcard volume
+		    if (*sc_volume != '\0')	// set soundcard volume
 
 			netkeyer(K_STVOLUME, sc_volume);
-
 		}
-
 	    }
 
 	    if (keyerport != NET_KEYER)

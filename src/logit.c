@@ -24,6 +24,8 @@
 
 #include "logit.h"
 
+void refresh_comment(void);
+
 int logit(void)
 {
     extern int use_rxvt;
@@ -83,22 +85,18 @@ int logit(void)
 		callreturn = 92; 	/* '\' */
 		strcpy(comment, cqzone);
 	    }
+
 	    if ((callreturn == 9 || callreturn == 32)) {
-//              if (trxmode == CWMODE){
-
 		callreturn = getexchange();
-
-//              }
-//              else if (getexchange() == '\n')
-//                      callreturn = 92;
 	    }
 
 	    if (callreturn == '\n' && strlen(hiscall) >= 3) {
-
-		if (!strlen(comment) && contest == CONTEST && !ctcomp
-		    && !dxped)
+		if ((*comment == '\0') && contest == CONTEST 
+			&& !ctcomp && !dxped)
 		    defer_store = 0;
-		if ((cqmode == CQ) && (contest == CONTEST) && (defer_store == 0)) {	/* contest */
+
+		if ((cqmode == CQ) && (contest == CONTEST) 
+			&& (defer_store == 0)) {	/* CQ mode */
 		    if (trxmode == CWMODE || trxmode == DIGIMODE)
 			strcpy(buffer, message[2]);	/*  send F3  on  ENTER  */
 		    else {
@@ -126,24 +124,14 @@ int logit(void)
 				strcpy(comment, cqzone);	/* fill in the CQzone */
 			}
 
-			if (use_rxvt == 0)
-			    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-			else
-			    attron(COLOR_PAIR(NORMCOLOR));
-
-			mvprintw(12, 54, comment);
+			refresh_comment();
 		    }
 
 		    if (recall_mult == 1) {
 			if (recall_exchange() == -1) {	/* get the power */
 			    comment[0] = '\0';
 
-			    if (use_rxvt == 0)
-				attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-			    else
-				attron(COLOR_PAIR(NORMCOLOR));
-
-			    mvprintw(12, 54, comment);
+			    refresh_comment();
 			}
 		    }
 
@@ -152,29 +140,20 @@ int logit(void)
 		    callreturn = 0;
 		}
 
-		if ((cqmode == S_P) && (contest == CONTEST)
-		    && (defer_store == 0)) {
+		if ((cqmode == S_P) && (contest == CONTEST) 
+			&& (defer_store == 0)) {	/* S&P mode */
 
 		    if (cqww == 1) {
 			if (recall_exchange() == -1)
 			    strcpy(comment, cqzone);	/* fill in the zone */
 
-			if (use_rxvt == 0)
-			    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-			else
-			    attron(COLOR_PAIR(NORMCOLOR));
+			refresh_comment();
 
-			mvprintw(12, 54, comment);
 		    } else if (recall_mult == 1) {
 			if (recall_exchange() == -1) {	/* get the mult */
 			    comment[0] = '\0';
 
-			    if (use_rxvt == 0)
-				attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-			    else
-				attron(COLOR_PAIR(NORMCOLOR));
-
-			    mvprintw(12, 54, comment);
+			    refresh_comment();
 			}
 		    }
 
@@ -189,6 +168,7 @@ int logit(void)
 		    callreturn = 0;
 		    defer_store = 1;
 		}
+
 		if (defer_store == 1) {
 		    defer_store++;
 		    callreturn = 0;
@@ -230,9 +210,8 @@ int logit(void)
 		    lan_mutex = 0;
 
 		}
-		/*  end of else */
 	    }
-	    /* end of if */
+
 	    if ((callreturn == 92) && (*hiscall != '\0')) {
 		defer_store = 0;
 
@@ -246,7 +225,6 @@ int logit(void)
 		lan_mutex = 1;
 		log_to_disk();
 		lan_mutex = 0;
-
 	    }
 
 	    if (callreturn == 11 || callreturn == 44 || callreturn == 235) {	/*  CTRL K  */
@@ -255,10 +233,23 @@ int logit(void)
 		keyer();
 		mvprintw(cury, curx, "");
 	    }
-	} else {		/* user entered frequency */
-	    			/* -> clear input field */
-	    hiscall[0] = 0;
+
+	} else {	/* user entered frequency -> clear input field */
+	    hiscall[0] = '\0';
 	}
-    }	/* while(1) */
+    }
     return (1);
+}
+
+/** reprint comment field */
+void refresh_comment(void) {
+    extern char comment[];
+    extern int use_rxvt;
+
+    if (use_rxvt == 0)
+	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
+    else
+	attron(COLOR_PAIR(NORMCOLOR));
+
+    mvprintw(12, 54, comment);
 }

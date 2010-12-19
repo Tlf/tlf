@@ -50,6 +50,7 @@ void sendbuf(void)
     extern int arrlss;
     extern int keyerport;
     extern char hiscall_sent[];
+    extern int early_started;
     extern int sending_call;
 
     static char comstr[80] = "";
@@ -97,6 +98,7 @@ void sendbuf(void)
 	    } else {
 		strcat(comstr, hiscall + strlen(hiscall_sent));
 		hiscall_sent[0] = '\0';
+		early_started = 0;
 //                              sending_call = 0;
 	    }
 	    strcat(comstr, buffer + loc + 1);
@@ -186,7 +188,7 @@ void sendbuf(void)
 	attron(COLOR_PAIR(7) | A_STANDOUT);
 
 	if (simulator == 0)
-	    strncat(printlinebuffer, termbuf, strlen(termbuf) - 1);
+	    strncat(printlinebuffer, termbuf, strlen(termbuf));
 	else
 	    strncat(printlinebuffer, termbuf, strlen(termbuf));
 
@@ -203,7 +205,7 @@ void sendbuf(void)
 	}
 	getyx(stdscr, cury, curx);
 	attron(COLOR_PAIR(COLOR_RED) | A_STANDOUT);
-	mvaddstr(0, 0, " ");
+	mvaddstr(0, 0, "x");
 	attron(COLOR_PAIR(COLOR_WHITE));
 	mvaddstr(cury, curx, "");
 	refresh();
@@ -253,7 +255,7 @@ void sendbuf(void)
 
 	getyx(stdscr, cury, curx);
 	attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-	mvaddstr(0, 0, "   ");
+	mvaddstr(0, 0, " ");
 	attron(COLOR_PAIR(COLOR_WHITE));
 	mvaddstr(cury, curx, "");
 
