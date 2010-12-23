@@ -237,7 +237,7 @@ int getexchange(void)
 	    {
 		if (change_rst == 1) {
 
-		    if (my_rst[1] >= 49) {
+		    if (my_rst[1] > 49) {
 			my_rst[1]--;
 			mvprintw(12, 49, my_rst);
 			mvprintw(12, 54, comment);
@@ -564,6 +564,7 @@ int checkexchange(int x)
 	    hr = getlastpattern(zonepats[ii]);
 
 // logik und Verwendung zone_fix vs zone_export unklar
+// Was passiert, falls zonenummer in comment zu groess ist?
 	    if ((hr > 1) && (atoi(comment + hr - 1) != 0)) {
 		sprintf(zone, "%02d", atoi(comment + hr - 1));
 		strcpy(zone_fix, zone);

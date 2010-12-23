@@ -501,7 +501,7 @@ char callinput(void)
 	    {
 		if ((change_rst == 1) && (strlen(hiscall) != 0)) {
 
-		    if (his_rst[1] >= 49) {
+		    if (his_rst[1] > 49) {
 			his_rst[1]--;
 
 			mvprintw(12, 44, his_rst);
@@ -559,6 +559,7 @@ char callinput(void)
 		    sendbuf();
 		    mvprintw(12, 29 + strlen(hiscall), "");
 		    cleanup();
+		    clear_display();
 		}
 		break;
 	    }
@@ -1096,9 +1097,11 @@ char callinput(void)
 
 	case 27:		// ESC
 	    {
-		if (early_started == 0)
+		if (early_started == 0) {
 		    /* if CW not started early drop call and start anew */
 		    cleanup();
+		    clear_display();
+		}
 		else {
 		    /* otherwise just stop sending */
 		    stoptx();

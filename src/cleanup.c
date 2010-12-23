@@ -30,6 +30,8 @@ int cleanup(void)
     extern int use_rxvt;
     extern char hiscall[];
     extern char comment[];
+    extern char my_rst[];
+    extern char his_rst[];
     extern int defer_store;
     extern char wkeyerbuffer[];
 
@@ -53,6 +55,8 @@ int cleanup(void)
     refresh();
     hiscall[0] = '\0';
     comment[0] = '\0';
+    his_rst[1] = '9';
+    my_rst[1] = '9';
     defer_store = 0;
     wkeyerbuffer[0] = '\0';	// stop keyer ?? 
 
