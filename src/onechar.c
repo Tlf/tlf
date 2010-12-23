@@ -33,6 +33,9 @@ int onechar(void)
 
     x = getch();
 
+    if (x == 8)
+	x = 127;			/* replace Ctrl-H bei Backspace */
+
     if (x == 27) {
 	nodelay(stdscr, TRUE);
 	x = getch();
