@@ -1,7 +1,14 @@
+2010-12-23  thomas beierlein <tb@forth-ev.de>
+	* fix some possible buffer overflow in exchange handling for 
+	  cqww
+	* fix handling of changing RST, especially resetting the values to
+	  59/599
+	* make Backspace and Delete-Keys the same
+
 2010-12-19  thomas beierlein <tb@forth-ev.de>
 	* fix some code problems reported by Stephan F8FCE. Thanks.
 	* changed ESC handling in comemnt and call input field
-	
+
 2010-12-04  thomas beierlein <tb@forth-ev.de>
 	* add new cty.dat provided by OK1RR
 	* fix typos in man page and clarify CQDELAY handling
