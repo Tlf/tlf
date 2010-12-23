@@ -183,7 +183,7 @@ void calledit(void)
 
 	    }
 	} else if (i == 160) {	/* insert */
-	    if (overwrite == 0)
+	    if (insertflg == 0)
 		insertflg = 1;
 	    else
 		insertflg = 0;
