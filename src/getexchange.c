@@ -567,9 +567,12 @@ int checkexchange(int x)
 // Was passiert, falls zonenummer in comment zu groess ist?
 	    if ((hr > 1) && (atoi(comment + hr - 1) != 0)) {
 		sprintf(zone, "%02d", atoi(comment + hr - 1));
-		strcpy(zone_fix, zone);
-	    } else
-		strcpy(zone_export, zone);
+		strncpy(zone_fix, zone, 2);
+		zone_fix[2] = '\0';
+	    } else {
+		strncpy(zone_export, zone, 2);
+		zone_export[2] = '\0';
+	    }
 	}
 
 	if (strlen(hiscall) >= 2)
