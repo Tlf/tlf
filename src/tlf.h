@@ -108,7 +108,7 @@
 
 #define  MAX_QSOS 20000       /* internal qso array */
 #define  MAX_DATALINES 1000   /* from ctydb.dat  */
-#define  MAX_DBLINES 6000    /* exceptioncalls from ctydb.dat  */
+#define  MAX_DBLINES 7000    /* exceptioncalls from ctydb.dat  */
 #define  MAX_CALLS 5000      /*  max nr of calls in dupe array */
 #define  MAX_MULTS 1000        /* max nr of mults in mults array */
 #define	MAX_SPOTS 200		/* max nr. of spots in spotarray */

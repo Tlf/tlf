@@ -91,6 +91,9 @@ int readctydata(void)
 	    if ((loc = strchr(buffer, '\r')))
 		*loc = '\0';
 
+	    if (loc = strchr(buffer, '\n'))
+		*loc = '\0';
+
 //                      buffer[strlen(buffer)-1] = '\0';            // remove     \012
 //                      buffer[strlen(buffer)-1] = '\0';           // remove      \015
 
