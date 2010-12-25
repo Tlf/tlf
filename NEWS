@@ -1,3 +1,27 @@
+tlf-1.0.0
+=========
+
+Major cleanup release. Fixes lot of buffer overruns in string handling, which 
+stopped old version from working with new GCC and GLIBC.
+ * Better recognition of hamlib install (tnx F8FCE) 
+ * Rewrote handling of initial exchange file. It now allows empty 
+   and comment lines (#) and spaces around the callsign. Leading 
+   space before comment gets ignored.
+ * Changed ESC handling in comemnt and call input field:
+   Does no longer wipe out call and exchange field if you started sending.
+ * New callmaster and cty.dat file (tnx OK1RR).
+
+Bugfixes:
+ * Fix input handling of notes.
+ * Fix autocq handling. 
+   - First characters gets no longer swallowed.
+   - CQDELAY from logcfg.dat is now handled correct.
+ * fix calculation of sunrise and sunset times 
+ * fix calculation of QSO Rate
+ * fix parsing for MARKERDOTS and MARKERCALL keywords in logcfg.dat
+ * make Backspace and Delete-Keys the same to allow some more terminal 
+   input encodings
+
 tfl-0.9.31-2
 ============
 

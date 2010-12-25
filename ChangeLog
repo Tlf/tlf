@@ -7,7 +7,7 @@
 
 2010-12-19  thomas beierlein <tb@forth-ev.de>
 	* fix some code problems reported by Stephan F8FCE. Thanks.
-	* changed ESC handling in comemnt and call input field
+	* changed ESC handling in comment and call input field
 
 2010-12-04  thomas beierlein <tb@forth-ev.de>
 	* add new cty.dat provided by OK1RR
