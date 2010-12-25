@@ -83,8 +83,8 @@ NETKEYER
 CWSPEED=30
 #---weight (-5 ... 5 ms)
 WEIGHT=1
-#---cq delay (s)
-CQDELAY=20
+#---cq delay (in 0,5 s)
+CQDELAY=10
 #---txdelay (ms)
 TXDELAY=2
 #---sidetone (200...800, 0 = mute)
