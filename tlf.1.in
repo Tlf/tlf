@@ -35,9 +35,7 @@ Contest operation mimics the popular TR-Log program for DOS, the output file is
 TRlog- as well as CABRILLO compatible.
 .P
 The program was written for console mode on purpose, to make it run also on 
-smaller machines, or remotely via a modem link. TLF is developed under UBUNTU 0.4.1, 
-with a 2.6.8 version kernel,and tested under SuSE 9.0, kernel version 2.4.19. Beta testers
-welcome !!!
+smaller machines, or remotely via a modem link. 
 .P
 There is now also a live CD version based on MORPHIX, which uses a USB memory pen for
 log storage.
@@ -178,7 +176,6 @@ Set parameters in logcfg.dat file
 .TR
 .B :SCAn
 Enter SCAN function (return with ESCAPE)
-
 
 .TR
 .B :SCOre
@@ -1086,9 +1083,12 @@ An operation manual (mostly not as up-to-date as this man page) is available in 
 
 .SH "AUTHORS"
 \fBtlf\fR was written by Rein Couperus
-<pa0r at eudxf.org> aka <rein at couperus.com>.
+<pa0r at eudxf.org> aka <rein at couperus.com>. 
 Lots of valuable contributions from PG4I (Joop PA4TU) , PA3FWM,  LZ3NY, VA3DB, OM4AA and various
 anonymous contributors... Tnx all for improving tlf!!
+
+.P
+Beta testers and feedback are always welcome !!!
 
 .SH "DOCUMENTATION"
 .TR
