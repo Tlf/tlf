@@ -3,7 +3,7 @@
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Public License as published by:q
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
@@ -19,6 +19,13 @@
 #include "recall_exchange.h"
 #include "initial_exchange.h"
 
+/** \brief Recall former exchange or lookup initial exchange file 
+ *
+ * First search 'hiscall' in already worked stations (callarray). If not found 
+ * there lookup 'hiscall' in initial exchange file. If found somewhere copy 
+ * the according exchange into the 'comment' field.
+ *
+ * \return 1 - found, -1 - not found, 0 - call field was empty */
 int recall_exchange(void)
 {
 
@@ -30,6 +37,7 @@ int recall_exchange(void)
     extern struct ie_list *main_ie_list;
 
     int i, index, j;
+    int found = -1;
     char *loc;
     struct ie_list *current_ie;
 
@@ -38,8 +46,9 @@ int recall_exchange(void)
 
     for (i = callarray_nr; i >= 0; i--) {
 
-	/* first search call in callarray */
+	/* first search call in already worked stations */
 	if (strstr(callarray[i], hiscall) != NULL) {
+	    found = 1;
 	    strcpy(comment, call_exchange[i]);
 
 	    for (j = 0; j < strlen(comment); j++)
@@ -56,29 +65,28 @@ int recall_exchange(void)
 	    mvprintw(12, 54, comment);
 	    break;
 	}
+    }
 
-	/* if no exchange could be found or recycled search initiali
-	 * exchange list */
+    if (found == -1) {
+
+	/* if no exchange could be recycled search initial exchange list */
 	if (strlen(comment) == 0 && main_ie_list != NULL) {
 
 	    current_ie = main_ie_list;
 
-	    while (1) {
+	    while (current_ie) {
 		if (strstr(hiscall, current_ie->call) != NULL) {
+		    found = 1;
 		    strcpy(comment, current_ie->exchange);
 		    mvprintw(12, 54, comment);
 		    refresh();
 		    break;
-		} else {
-		    if (current_ie->next != NULL)
-			current_ie = current_ie->next;
-		    else
-			break;
-		}
+		} 
+		current_ie = current_ie->next;
 	    }
 	}
 
     }
 
-    return (i);
+    return found;
 }
