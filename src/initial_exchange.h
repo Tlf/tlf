@@ -23,13 +23,7 @@
 
 
 #include "startmsg.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <ctype.h>
 #include "tlf.h"
-#include "startmsg.h"
 
 
 #define MAX_CALL_LENGTH 13
