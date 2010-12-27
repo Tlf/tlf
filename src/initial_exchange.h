@@ -41,30 +41,25 @@ struct ie_list {
 	char exchange [MAX_IE_LENGTH+1];
 };
 
-/*------------------------------------------------------------------------------
-*
+/**
 *	Make linked list from initial exchange  file.
 *	File must be in CALL,EXCHANGE format.
 *	Returns pointer to the top of the list.
-*
---------------------------------------------------------------------------------*/
+*/
 struct ie_list *make_ie_list (void);
 
-/*------------------------------------------------------------------------------
-*
-* 	Free linked list of all alocated entries pointed
+/**
+* 	Free linked list of all allocated entries pointed
 * 	to by 'head'.
-*
---------------------------------------------------------------------------------*/
+*/
+
 void free_ie_list(struct ie_list *head);
 
-/*------------------------------------------------------------------------------
-*
+/**
 *	Print linked list from initial exchange  file.
 *	File must be in CALL,EXCHANGE format.
 *	Returns 0 if o.k.
-*
---------------------------------------------------------------------------------*/
+*/
 
 int test_ie_list (struct ie_list *example_ie_list);
 
