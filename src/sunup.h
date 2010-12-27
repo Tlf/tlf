@@ -21,5 +21,5 @@
 
 #define RADIAN  (180.0 / M_PI)
 
-int sunup (void);
+int sunup (double DEST_Lat);
 

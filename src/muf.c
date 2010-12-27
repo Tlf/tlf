@@ -273,10 +273,6 @@ int muf(void)
 	}
     }
 
-    xt = atof(C_QTH_Lat);
-    yt = atof(C_QTH_Long);
-    xr = atof(C_DEST_Lat);
-    yr = atof(C_DEST_Long);
 
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
@@ -294,17 +290,14 @@ int muf(void)
     mvprintw(4, 40, "Azim  :   %3ld degrees.", (long) floor(u + 0.5));
     mvprintw(5, 40, "F-hops:    %2.0f", n);
 
-    sunrise = 0.0;
-    sundown = 0.0;
-
-    sunup();
+    sunup(xr);	/* calculate local sunup and down at destination lattitude */
 
     strncpy(timediffstr, datalines[countrynr] + 60, 6);	/* GMT difference */
     timediffstr[6] = '\0';
     td = atof(timediffstr);
 
-    sunrise += (td + 1);
-    sundown += (td + 1);
+    sunrise += td;
+    sundown += td;
 
     if (sunrise >= 24.0)
 	sunrise -= 24.0;
@@ -323,23 +316,7 @@ int muf(void)
     sd_min = (int) ((sundown - sd) * 60);
 
     mvprintw(3, 0, time_buf);
-    mvprintw(7, 40, "sun   : 00:00-00:00 UTC");
-    if (su > 9)
-	mvprintw(7, 48, "%d", su);
-    else
-	mvprintw(7, 49, "%d", su);
-    if (su_min > 9)
-	mvprintw(7, 51, "%d", su_min);
-    else
-	mvprintw(7, 52, "%d", su_min);
-    if (sd > 9)
-	mvprintw(7, 54, "%d", sd);
-    else
-	mvprintw(7, 55, "%d", sd);
-    if (sd_min > 9)
-	mvprintw(7, 57, "%d", sd_min);
-    else
-	mvprintw(7, 58, "%d", sd_min);
+    mvprintw(7, 40, "sun   : %02d:%02d-%02d:%02d UTC", su, su_min, sd, sd_min);
 
     lastwwv[75] = '\0';		/* cut the bell chars */
     if ((strlen(lastwwv) >= 28) && (r != 0))

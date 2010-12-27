@@ -20,26 +20,24 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
 #include <curses.h>
 
-/* Compute sun up and down at destination  */
+/** Compute sun up and down at given lattitude 
+ * \parm lat - Lattitude */
 
-int sunup(void)
+int sunup(double DEST_Lat)
 {
 
-    extern char C_DEST_Lat[];
     extern struct tm *time_ptr;
     extern double sunrise;
     extern double sundown;
 
-    double DEST_Lat;
+    double lat;
     double sun_lat;
     double total_days;
     double sunshine;
 
-    DEST_Lat = atof(C_DEST_Lat);
-    DEST_Lat /= RADIAN;
+    lat = DEST_Lat / RADIAN;
 
     get_time();
     total_days = time_ptr->tm_yday + 10; /* days after lower culmination
@@ -53,10 +51,10 @@ int sunup(void)
     sun_lat = asin( sin(23.439 / RADIAN) *
 	    sin(((total_days - 90.086) / 365.25) * 360 / RADIAN)) * RADIAN;
 
-    /* sunshine period today at given DEST_Lat */
+    /* sunshine period today at given lat */
     sunshine =
 	(24.0 / 180.0) * RADIAN *
-	acos(-tan(DEST_Lat) * tan(sun_lat / RADIAN));
+	acos(-tan(lat) * tan(sun_lat / RADIAN));
 
     sunrise = 12.0 - sunshine / 2;
     sundown = 12.0 + sunshine / 2;
