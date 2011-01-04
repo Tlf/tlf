@@ -198,7 +198,6 @@ char continent[3] = "";
 char mycontinent[3] = "";
 char pxstr[11] = "";
 int bandindex = 0;
-int nr_of_px = 0;
 int totalmults = 0;
 int totalcountries = 0;
 int totalzones = 0;
@@ -309,7 +308,6 @@ char call_exchange[MAX_CALLS][12];
 int call_band[MAX_CALLS];
 int call_country[MAX_CALLS];
 
-char prefixes_worked[MAX_CALLS][6];
 int countries[MAX_DATALINES];
 int zones[41];			/* using 1 - 40, cqzones */
 char mults[MAX_MULTS][12];
