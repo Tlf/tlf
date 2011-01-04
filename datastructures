@@ -21,6 +21,12 @@ z.Zt. als verkettete Liste realisiert.
 
 Enthält call, exchange, band mask and country für alle gearbeiteten Stationen
 
+- z.Zt. mittels folgender Teilfelder realisiert:
+  * callarray  - Das Call
+  * call_band  - Bitfeld mit gearbeiteten Bändern
+  * call_exchange - letzter Exchange 
+  * call_country  - bisher nicht genutzt
+
 - Feld mit Größe MAX_CALLS
 - verwendet für recall_exchange und Suche nach partials, loadbandmap
 
@@ -36,13 +42,13 @@ Enthält call, exchange, band mask and country für alle gearbeiteten Stationen
 
 - Wird nur für WPX contest benutzt
 
-- genutzt von add_pfx und readcalls (ebenso nur add_pfx)
+- genutzt von add_pfx 
 - readcalls liest LOG von disk komplett ein und baut Statistiken auf.
 
 - Feld mit Grösse MAX_CALLS
 - Insert bei add_pfx und readcalls
 - Delete z.Zt. nicht
-- Suche nur ob Prefix schon vorhanden
+- Suche nur ob Prefix schon vorhanden (für makelogline)
 
 
 * callmasterarray
