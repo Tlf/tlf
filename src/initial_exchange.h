@@ -29,10 +29,11 @@
 #define MAX_CALL_LENGTH 13
 #define MAX_IE_LENGTH 30
 
+/** Dataelement for one initial entry item */
 struct ie_list {
-	struct ie_list *next;
-	char call[MAX_CALL_LENGTH+1];
-	char exchange [MAX_IE_LENGTH+1];
+	struct ie_list *next;			/**< pointer to next element */
+	char call[MAX_CALL_LENGTH+1];		/**< call of the station */
+	char exchange [MAX_IE_LENGTH+1];	/**< initial exchange field */
 };
 
 /**
