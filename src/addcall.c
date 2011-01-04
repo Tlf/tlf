@@ -23,6 +23,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "addcall.h"
+#include "addpfx.h"
 
 int addcall(void)
 {
@@ -228,8 +229,6 @@ int addcall2(void)
     extern char lan_logline[];
     extern int band_score[];
     extern int wpx;
-    extern int nr_of_px;
-    extern char prefixes_worked[MAX_CALLS][6];
     extern int wazmult;
     extern int itumult;
     extern char cqzone[];
@@ -418,19 +417,7 @@ int addcall2(void)
 		}
 	    }
 
-	    for (p = 0; p <= nr_of_px; p++) {
-
-		if (strcmp(lancopy, prefixes_worked[p]) == 0) {
-		    found = 1;
-		    break;
-
-		}
-	    }
-	    if (found != 1) {
-		strcpy(prefixes_worked[nr_of_px], lancopy);
-		nr_of_px++;
-	    }
-
+	    add_pfx(lancopy);
 	}
     }
 

@@ -22,6 +22,7 @@
  	*--------------------------------------------------------------*/
 
 #include "readcalls.h"
+#include "addpfx.h"
 #include "get_time.h"
 #include <curses.h>
 #include "tlf.h"
@@ -34,7 +35,7 @@ int readcalls(void)
  	char bndbuf[20];
  	char zonebuf[3];
  	char checkcall[20];
- 	int i = 0, k =  0, l = 0, n = 0, p = 0, q = 0, r = 0, s=0;
+ 	int i = 0, k =  0, l = 0, n = 0, r = 0, s=0;
  	int found = 0;
  	int ii;
  	int m = 0;
@@ -340,30 +341,16 @@ int readcalls(void)
 
 	if (wpx == 1){
 
+		/* build prefixes_worked array from list of worked stations */
+		nr_of_px = 0;
+
         	for (n = 0 ; n <= i ; n++){
-        		checkcall[0] = '\0';
-        		strcat(checkcall, callarray[n]);
+        		strcpy(checkcall, callarray[n]);
         		getpx(checkcall);
-
-        		prefixes_worked[p][0] = '\0';
-
-        		for (q = 0 ; q <= p ; q++){
-        	 		if (strcmp(pxstr, prefixes_worked[q]) == 0){
-       	 	 	    		found = 1;
-        	 			break;
-
-        	 		}
-        		}
-        		if (found != 1){
-        			strcat(prefixes_worked[p], pxstr);
-        		 	p++;
-        		}
-        		found = 0;
-
-			nr_of_px = p ;
-
+			add_pfx(pxstr);
          	}
-      	}  /* end wpx */
+      	}
+
 
       	if (cqww == 1){
       		for (n = 1 ; n <= 40 ; n++){

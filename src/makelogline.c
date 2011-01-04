@@ -161,9 +161,9 @@ int makelogline(void)
     if (contest == 1)
 	logline4[68] = '\0';
 
-/* Include new pfx in log line */
+/* If WPX add prefix to prefixes_worked and include new pfx in log line */
 
-    if ((add_pfx() == 0) && (wpx == 1)) {	/* wpx */
+    if ((add_pfx(pxstr) == 0) && (wpx == 1)) {	/* wpx */
 	strcat(logline4, pxstr);
 	strncat(logline4, fillspaces, (5 - strlen(pxstr)));
     } else

@@ -24,12 +24,11 @@
 
 #include "addpfx.h"
 
-int add_pfx(void)
+int add_pfx(char *pxstr)
 {
 
     extern char prefixes_worked[MAX_CALLS][6];
     extern int nr_of_px;
-    extern char pxstr[];
 
     int q = 0, found = 0;
 
@@ -44,7 +43,7 @@ int add_pfx(void)
 	}
     }
     if (found != 1) {
-	strcat(prefixes_worked[nr_of_px], pxstr);
+	strcpy(prefixes_worked[nr_of_px], pxstr);
 	nr_of_px++;
     }
 

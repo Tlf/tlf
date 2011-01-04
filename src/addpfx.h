@@ -21,5 +21,5 @@
 #include "tlf.h"
 
 
-int add_pfx(void);
+int add_pfx(char *pxstr);
 
