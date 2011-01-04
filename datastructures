@@ -1,0 +1,58 @@
+Folgende Datenstrukturen werden von TLF verwendet:
+
+1. ie_list
+
+Enthält Calls und vordefinierten Exchange aus IE_LIST
+
+z.Zt. als verkettete Liste realisiert.
+
+- add members during start of pgm
+- never delete
+- search call and copy according exchange if found
+
+- z.Zt. Array -> könnte sortiert und binär durchsucht werden
+- besser als binärer Baum oder Hash sinnvoll
+
+- besser als binärer Baum oder Hash sinnvoll
+
+- besser als binärer Baum oder Hash sinnvoll
+
+2. Dupes i.e. already worked stations
+
+Enthält call, exchange, band mask and country für alle gearbeiteten Stationen
+
+- Feld mit Größe MAX_CALLS
+- verwendet für recall_exchange und Suche nach partials, loadbandmap
+
+- recall_exchange könnte sortiertes Array sinnvoll nutzen
+- partials benötigt Zugriff auf alle calls
+
+- Insert bei addcall und readcalls
+- Delete z.Z. gar nicht
+
+
+
+3. prefixes_worked array
+
+- Wird nur für WPX contest benutzt
+
+- genutzt von add_pfx und readcalls (ebenso nur add_pfx)
+- readcalls liest LOG von disk komplett ein und baut Statistiken auf.
+
+- Feld mit Grösse MAX_CALLS
+- Insert bei add_pfx und readcalls
+- Delete z.Zt. nicht
+- Suche nur ob Prefix schon vorhanden
+
+
+* callmasterarray
+
+- Nutzer: CW Simulator, searchlog
+
+* log data
+
+* cluster data
+
+
+* CTY data
+
