@@ -102,14 +102,6 @@ int searchlog(char *searchstring)
 
     char *tmpstr;
 
-#if 0
-    if (strlen(s_inputbuffer) >= 83) {
-	printf
-	    ("WARNING: Input buffer is longer than 82 characters! exiting...");
-	exit(1);
-    }
-#endif
-
     l = 0;
     z = 0;
     s_inputbuffer[0] = '\0';
@@ -786,6 +778,8 @@ int searchlog(char *searchstring)
 }
 
 // --------------------------------------------load callmaster ------------------
+/** loads callmaster database from file
+ * */
 int load_callmaster(void)
 {
     extern char callmasterarray[MAX_CALLMASTER][14];
@@ -860,6 +854,9 @@ int load_callmaster(void)
 // -------------------------------------------------------------------------------
 //char multsfile[80] = "";              // global... (to be fixed)
 // ----------------------------------------------load mults ------------------------
+
+/** loads possible multipliers from external file
+ * */
 int load_multipliers(void)
 {
     extern char mults_possible[MAX_MULTS][12];
