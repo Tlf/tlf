@@ -221,6 +221,7 @@ int scale_values[20] =
     { 40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6,
 4, 2 };
 char sc_device[40] = "/dev/dsp";
+
 /*-------------------------------------keyer------------------------------*/
 int keyerport = NO_KEYER;
 int speed = 10;
@@ -283,15 +284,15 @@ int native_rig_fd = 0;
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;
-/*---------------------------------simulator-------------------------------*/
 
+/*---------------------------------simulator-------------------------------*/
 int simulator = 0;
 int simulator_mode = 0;
 int simulator_seed = 8327;
 long system_secs;
 char tonecpy[5];
 char simulator_tone[5];
-/*---------------------------------end simulator-------------------------------*/
+/*-----------------------------end simulator-------------------------------*/
 
 char qsos[MAX_QSOS][82];
 int nr_qsos = 0;
@@ -300,10 +301,14 @@ char prefixlines[MAX_DBLINES][17];
 char zonearray[MAX_DBLINES][3];
 char ituarray[MAX_DBLINES][3];
 int dataindex[MAX_DBLINES];	/*  index to  datalines */
-char callarray[MAX_CALLS][20];	/*  internal log representation for duping  */
+
+/*------------------------------dupe array---------------------------------*/
+int callarray_nr = 0;		/* number of calls in callarray */
+char callarray[MAX_CALLS][20];	/* internal log representation for dupes  */
 char call_exchange[MAX_CALLS][12];
 int call_band[MAX_CALLS];
 int call_country[MAX_CALLS];
+
 char prefixes_worked[MAX_CALLS][6];
 int countries[MAX_DATALINES];
 int zones[41];			/* using 1 - 40, cqzones */
@@ -322,7 +327,6 @@ struct ie_list *main_ie_list;
 
 int multarray_nr = 0;
 int wysiwygmults = 0;
-int callarray_nr = 0;
 int zonescore[6];
 int countryscore[6];
 int zonedisplay = 0;
@@ -595,6 +599,7 @@ int main(int argc, char *argv[])
 
 	    showmsg("Trying to start rig ctrl");
 
+	    /** \todo fix exclusion of newer hamlib models */
 	    if ((int) myrig_model > 1999)
 		init_native_rig();
 	    else
