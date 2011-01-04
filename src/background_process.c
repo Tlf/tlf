@@ -244,7 +244,7 @@ int background_process(void)
 int cw_simulator(void)
 {
 
-    extern char callmasterarray[28000][9];
+    extern char callmasterarray[MAX_CALLMASTER][9];
     extern int simulator;
     extern int simulator_mode;
     extern char buffer[];
