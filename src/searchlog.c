@@ -107,6 +107,7 @@ int searchlog(char *searchstring)
     s_inputbuffer[0] = '\0';
     zonebuffer[0] = '\0';
 
+    /* show checkwindow and partials */
     if (strlen(hiscall) > 1 && searchflg == SEARCHWINDOW) {
 
 	if (strlen(hiscall) == 2)
@@ -124,7 +125,8 @@ int searchlog(char *searchstring)
 
 	r_index = 0;
 
-
+	/* durchsuche komplettes Log nach 'hiscall' als substring und
+	 * kopiere gefundene QSO's nach 'searchresults' */
 	while (strlen(qsos[qso_index]) > 4) {
 
 	    if (((qsos[qso_index][3] == 'C' && trxmode == CWMODE) ||
@@ -142,10 +144,7 @@ int searchlog(char *searchstring)
 		    if (srch_index++ > MAX_CALLS - 1)
 			break;
 
-		    s_inputbuffer[0] = '\0';
-		} else
-		    s_inputbuffer[0] = '\0';
-
+		}
 	    }
 
 	    qso_index++;
@@ -194,7 +193,7 @@ int searchlog(char *searchstring)
 	}
 
 	// delete QSOs that match worse than anything before
-	// of course still less-good magtching QSOs can be in the array,
+	// of course still less-good matching QSOs can be in the array,
 	// but *before* the better matching one, so they will be
 	// overwritten later.
 	switch (bandnr) {
@@ -269,6 +268,7 @@ int searchlog(char *searchstring)
 
 	k = 0;
 
+	/* print resulting call in line according to band in scheck window */
 	for (r_index = 0; r_index < srch_index; r_index++) {
 	    strcpy(s_inputbuffer, result[r_index]);
 	    s_inputbuffer[37] = '\0';
@@ -342,6 +342,7 @@ int searchlog(char *searchstring)
 	    s_inputbuffer[0] = '\0';
 	}
 
+	/* prepare and print lower line of checkwindow */
 	attroff(A_STANDOUT);
 	strncpy(s_inputbuffer, datalines[countrynr], 28);
 
@@ -382,6 +383,8 @@ int searchlog(char *searchstring)
 	if (wpx == 1) {
 	    mvprintw(8, 47 + i + 5, pxstr);
 	}
+
+	/* print worked zones and countrays for each band in checkwindow */
 	attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 
 	if (cqww == 1 || contest == 0 || pacc_pa_flg == 1) {
@@ -631,9 +634,10 @@ int searchlog(char *searchstring)
 	    }
 
 	}
-//  master.dta code
 
-	if (partials == 1)	// check what we have worked first
+
+	/* print list of partials in upper left region */
+	if (partials == 1)
 	{
 
 	    l = 0;
@@ -656,7 +660,18 @@ int searchlog(char *searchstring)
 
 	    j = 0;
 	    m = 0;
-
+	    
+	    /* check what we have worked first */
+	    /** \todo the method below parses through the array of already 
+	     * looked up search results from the search window. That is quick
+	     * but has the drawback, that we have no band information and
+	     * therefore print some entries more than once.
+	     * Better would be to lookup the aprtial call in the arrayy of 
+	     * worked stations 'callarray' - it is there only once and we can 
+	     * also see from 'call_band' if it is a dupe here.
+	     * be aware of the problem of marking it dupe only for a complete 
+	     * match.
+	     */
 	    for (m = 0; m < MAX_CALLS; m++) {
 		if (strlen(hiscall) > 2 && strlen(searchresult[m]) > 2) {
 		    tmpstr = strstr(searchresult[m], hiscall);
@@ -699,7 +714,8 @@ int searchlog(char *searchstring)
 	    o = m;
 	    if (strcmp(hiscall, printres) != 0) {
 
-		for (m = 0; m < max_callmastercalls; m++)	// now check callmaster database
+		/* and now check callmaster database */
+		for (m = 0; m < max_callmastercalls; m++)
 		{
 
 		    if (strlen(callmasterarray[m]) >= 2) {
@@ -759,6 +775,7 @@ int searchlog(char *searchstring)
 
 	}
 
+	/* show multiplierinfo */
 	if (dupe == NODUPE && arrlss == 1)
 	    r_multiplierinfo();
 
