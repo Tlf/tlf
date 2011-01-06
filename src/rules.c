@@ -60,11 +60,11 @@ int read_rules()
 //      mvprintw(6,0,"reading contest rules file: %s ... \n",contest_conf);
 //      refresh();
 
-	while (!feof(mit_contest_file)) {
-	    rp = fgets(mit_contest_rule, sizeof(mit_contest_rule),
-		       mit_contest_file);
+	while ( fgets(mit_contest_rule, sizeof(mit_contest_rule),
+		       mit_contest_file) != NULL ) {
 
-	    if ((mit_contest_rule[0] != '#') && (mit_contest_rule[0] != ';')) {	/* comments */
+	    /* if not comment interpret line */
+	    if ((mit_contest_rule[0] != '#') && (mit_contest_rule[0] != ';')) {
 		parse_logcfg(mit_contest_rule);
 	    }
 	}
@@ -75,13 +75,14 @@ int read_rules()
     } else if ((mit_contest_file = fopen(basic_contest_conf, "r")) != NULL) {
 
 	showstring("reading contest rules file:", basic_contest_conf);
-//              mvprintw(6,0,"reading contest rules file: %s ... \n",basic_contest_conf);
-//              refresh();
+//      mvprintw(6,0,"reading contest rules file: %s ... \n",basic_contest_conf);
+//      refresh();
 
-	while (!feof(mit_contest_file)) {
-	    rp = fgets(mit_contest_rule, sizeof(mit_contest_rule),
-		       mit_contest_file);
-	    if ((mit_contest_rule[0] != '#') && (mit_contest_rule[0] != ';')) {	/* comments */
+	while ( fgets(mit_contest_rule, sizeof(mit_contest_rule),
+		       mit_contest_file) != NULL ) {
+
+	    /* if not comment interpret line */
+	    if ((mit_contest_rule[0] != '#') && (mit_contest_rule[0] != ';')) {
 		parse_logcfg(mit_contest_rule);
 	    }
 	}
