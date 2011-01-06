@@ -53,7 +53,6 @@ int read_logcfg(void)
     extern char config_file[];
 
     char defltconf[80];
-    char *rp;
 
     contest = 0;
     speed = 14;
@@ -88,9 +87,7 @@ int read_logcfg(void)
     } else
 	showstring("Opening config file", config_file);
 
-    while (!feof(fp)) {
-
-	rp = fgets(inputbuffer, 120, fp);
+    while ( fgets(inputbuffer, 120, fp) != NULL ) {
 
 	if (inputbuffer[0] != '#') {	/* comments */
 	    parse_logcfg(inputbuffer);
@@ -402,7 +399,6 @@ int parse_logcfg(char *inputbuffer)
     int ii, enable;
     char *i;
     char *j;
-    char *rp;
     int jj, hh;
     char *tk_ptr;
 
@@ -444,6 +440,13 @@ int parse_logcfg(char *inputbuffer)
 		    break;	/* end messages */
 		}
 	    case 16:{
+//		    if (strlen(inputbuffer) > 6 + sizeof(call)) {
+		    if (strlen(inputbuffer) > 6 + 20-1) {
+			mvprintw(6,0,
+				"WARNING: Defined call sign too long! exiting...\n");
+			refresh();
+			exit(1);
+		    }
 		    if (strlen(inputbuffer) > 6)
 			strcpy(call, inputbuffer + 5);
 		    else {
@@ -452,6 +455,7 @@ int parse_logcfg(char *inputbuffer)
 			refresh();
 			exit(1);
 		    }
+		    // check that call sign can be found in cty database !!
 		    break;
 		}
 	    case 17:{
@@ -903,10 +907,8 @@ int parse_logcfg(char *inputbuffer)
 			if ((multdatafile =
 			     fopen(mit_multlist, "r")) != NULL) {
 
-			    while (!feof(multdatafile)) {
-				rp = fgets(mit_mult_buf,
-					   sizeof(mit_mult_buf),
-					   multdatafile);
+			    while ( fgets(mit_mult_buf, sizeof(mit_mult_buf),
+					   multdatafile) != NULL ) {
 
 				if (strncasecmp
 				    (mit_mult_buf, whichcontest,
