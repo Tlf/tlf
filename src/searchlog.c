@@ -802,7 +802,6 @@ int load_callmaster(void)
     extern char callmasterarray[MAX_CALLMASTER][14];
     extern int arrlss;
 
-    char *rp;
     FILE *cfp = NULL;
     char callmaster_location[80];
     char s_inputbuffer[186] = "";
@@ -828,9 +827,7 @@ int load_callmaster(void)
 
 	count = 0;
 
-	while (!feof(cfp)) {
-	    s_inputbuffer[0] = '\0';
-	    rp = fgets(s_inputbuffer, 85, cfp);
+	while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
 
 	    if (arrlss == 1) {
 
@@ -880,7 +877,6 @@ int load_multipliers(void)
     extern char multiplierlist[];
     extern char multsfile[];
 
-    char *rp;
     FILE *cfp;
     char s_inputbuffer[186] = "";
     int count = 0, i;
@@ -906,9 +902,8 @@ int load_multipliers(void)
 
 	count = 0;
 
-	while (!feof(cfp)) {
-	    s_inputbuffer[0] = '\0';
-	    rp = fgets(s_inputbuffer, 85, cfp);
+	while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
+
 	    if (strlen(s_inputbuffer) > 0)
 		s_inputbuffer[strlen(s_inputbuffer) - 1] = '\0';
 	    s_inputbuffer[9] = '\0';
