@@ -43,7 +43,6 @@ int write_cabrillo(void)
     extern char whichcontest[];
 
     int rc;
-    char *ret;
     char standardexchange[70] = "";
     char buf[181];
     char buffer[4000] = "";
@@ -79,11 +78,7 @@ int write_cabrillo(void)
 	noecho();
     }
 
-    while (!feof(fp1)) {
-	buf[0] = '\0';
-	buffer[0] = '\0';
-
-	ret = fgets(buf, 180, fp1);
+    while ( fgets(buf, 180, fp1) != NULL ) {
 
 	if (buf[0] != ';' && strlen(buf) > 60) {
 
