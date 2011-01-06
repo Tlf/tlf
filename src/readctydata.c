@@ -115,11 +115,7 @@ int readctydata(void)
 
 		ituloc = strchr(prefixlines[k], '[');	// locate the itu zone
 		if (ituloc != NULL) {
-		    if (atoi(ituloc + 1) > 9)
-			sprintf(ituarray[k], "%d", atoi(ituloc + 1));
-		    else
-			sprintf(ituarray[k], "0%d", atoi(ituloc + 1));
-
+		    sprintf(ituarray[k], "%02d", atoi(ituloc + 1));
 		    ituloc[0] = '\0';	// struncate the string
 		} else
 		    ituarray[k][0] = '\0';
@@ -128,11 +124,7 @@ int readctydata(void)
 
 		cqloc = strchr(prefixlines[k], '(');	// locate the cq zone
 		if (cqloc != NULL) {
-		    if (atoi(cqloc + 1) > 9)
-			sprintf(zonearray[k], "%d", atoi(cqloc + 1));
-		    else
-			sprintf(zonearray[k], "0%d", atoi(cqloc + 1));
-
+		    sprintf(zonearray[k], "%02d", atoi(cqloc + 1));
 		    cqloc[0] = '\0';	// struncate the string
 		} else
 		    zonearray[k][0] = '\0';

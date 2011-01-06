@@ -70,11 +70,7 @@ int show_zones(int bandinx)
 
 	    if ((zones[(i * 5) + j] & bandindex) == 0) {
 
-		if ((i * 5) + j < 10)
-		    mvprintw(i + yloc, (j * 3) + xloc, " 0%d",
-			     (i * 5) + j);
-		else
-		    mvprintw(i + yloc, (j * 3) + xloc, " %d", (i * 5) + j);
+		mvprintw(i + yloc, (j * 3) + xloc, " %02d", (i * 5) + j);
 
 	    } else {
 
