@@ -44,7 +44,7 @@ int readcalls(void)
 	int add_ok;
 	char multbuffer[40];
 	char presentcall[20]; // copy of call..
-	char *tmpptr, *rp;
+	char *tmpptr;
 	int points;
 
 
@@ -99,10 +99,7 @@ int readcalls(void)
 	t = 0;
 
 
-	while(!feof(fp)){
-
-		rp=fgets (inputbuffer, 90,  fp);
-
+	while( fgets (inputbuffer, 90,  fp) != NULL) {
 
 		r++;
 
