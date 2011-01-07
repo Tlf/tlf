@@ -115,13 +115,7 @@ int searchlog(char *searchstring)
 
 	qso_index = 0;
 
-	for (srch_index = 0; srch_index < MAX_CALLS; srch_index++)
-	    searchresult[srch_index][0] = '\0';
-
 	srch_index = 0;
-
-	for (r_index = 0; r_index < MAX_CALLS; r_index++)
-	    result[r_index][0] = '\0';
 
 	r_index = 0;
 
@@ -672,10 +666,9 @@ int searchlog(char *searchstring)
 	     * be aware of the problem of marking it dupe only for a complete 
 	     * match.
 	     */
-	    for (m = 0; m < MAX_CALLS; m++) {
+	    for (m = 0; m < srch_index; m++) {
 		if (strlen(hiscall) > 2 && strlen(searchresult[m]) > 2) {
-		    tmpstr = strstr(searchresult[m], hiscall);
-		    if (tmpstr != 0) {
+		    if ( strstr(searchresult[m], hiscall) != NULL ) {
 			printres[0] = '\0';
 			strncat(printres, searchresult[m] + 29, 12);
 
@@ -720,9 +713,8 @@ int searchlog(char *searchstring)
 
 		    if (strlen(callmasterarray[m]) >= 2) {
 
-			tmpstr = strstr(callmasterarray[m], hiscall);
+			if ( strstr(callmasterarray[m], hiscall) != NULL ) {
 
-			if (tmpstr != NULL) {
 			    if (use_rxvt == 0)
 				attron(COLOR_PAIR
 				       (COLOR_WHITE | A_BOLD |
