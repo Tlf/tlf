@@ -711,36 +711,32 @@ int searchlog(char *searchstring)
 		for (m = 0; m < max_callmastercalls; m++)
 		{
 
-		    if (strlen(callmasterarray[m]) >= 2) {
+		    if ( strstr(callmasterarray[m], hiscall) != NULL ) {
 
-			if ( strstr(callmasterarray[m], hiscall) != NULL ) {
+			if (use_rxvt == 0)
+			    attron(COLOR_PAIR
+				   (COLOR_WHITE | A_BOLD |
+				    A_STANDOUT));
+			else
+			    attron(COLOR_PAIR
+				   (COLOR_WHITE | A_STANDOUT));
 
-			    if (use_rxvt == 0)
-				attron(COLOR_PAIR
-				       (COLOR_WHITE | A_BOLD |
-					A_STANDOUT));
-			    else
-				attron(COLOR_PAIR
-				       (COLOR_WHITE | A_STANDOUT));
+			mvprintw(xwin + l, ywin + j, "%s  ",
+				 callmasterarray[m]);
 
-			    mvprintw(xwin + l, ywin + j, "%s  ",
-				     callmasterarray[m]);
+			if (strlen(s_inputbuffercpy) == 0)
+			    strcpy(s_inputbuffercpy, callmasterarray[m]);
 
-			    if (strlen(s_inputbuffercpy) == 0)
-				strcpy(s_inputbuffercpy,
-				       callmasterarray[m]);
+			j += (strlen(callmasterarray[m])) + 1;
 
-			    j += (strlen(callmasterarray[m])) + 1;
-
-			    if (j >= 30) {
-				l++;
-				j = 0;
-
-			    }
-			    if (l > 4)
-				break;
+			if (j >= 30) {
+			    l++;
+			    j = 0;
 
 			}
+			if (l > 4)
+			    break;
+
 		    }
 		}
 	    }
@@ -820,6 +816,10 @@ int load_callmaster(void)
 	count = 0;
 
 	while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
+
+	    if ( strlen(s_inputbuffer) < 3 )
+		/* calls are at least 3 char long */
+		continue;
 
 	    if (arrlss == 1) {
 
