@@ -291,11 +291,13 @@ int simulator_seed = 8327;
 long system_secs;
 char tonecpy[5];
 char simulator_tone[5];
-/*-----------------------------end simulator-------------------------------*/
 
+/*-------------------------------the log lines-----------------------------*/
 char qsos[MAX_QSOS][82];
 int nr_qsos = 0;
-char datalines[MAX_DATALINES][81];	/* country  database */
+
+/*---------------------------country data base-----------------------------*/
+char datalines[MAX_DATALINES][81];	/* country description */
 char prefixlines[MAX_DBLINES][17];
 char zonearray[MAX_DBLINES][3];
 char ituarray[MAX_DBLINES][3];
@@ -315,9 +317,11 @@ char mults_possible[MAX_MULTS][12];
 int multlist = 0;
 int max_multipliers;
 int mult_bands[MAX_MULTS];
+
 char callmasterarray[MAX_CALLMASTER][14];
+long int nr_callmastercalls;
+
 char callmaster_result[50][9];
-long int max_callmastercalls;
 int callareas[20];
 int multscore[NBANDS];
 
@@ -393,6 +397,7 @@ int stop_backgrnd_process = 1;	/* dont start until we know what we are doing */
 int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
 int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
+
 /* ------------------------------------------------------------------------*/
 /*     Main loop of the program			                           */
 /* ------------------------------------------------------------------------*/
@@ -578,7 +583,7 @@ int main(int argc, char *argv[])
 	attron(COLOR_PAIR(COLOR_BLACK));
 	showmsg("reading callmaster data");
 
-	max_callmastercalls = load_callmaster();
+	nr_callmastercalls = load_callmaster();
 
 	main_ie_list = make_ie_list();	// get initial exchange file
 	if (main_ie_list == NULL)

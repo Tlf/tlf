@@ -74,7 +74,7 @@ int searchlog(char *searchstring)
     extern int ignoredupe;
     extern int qso_once;
     extern int trxmode;
-    extern long int max_callmastercalls;
+    extern long int nr_callmastercalls;
     extern char callmasterarray[MAX_CALLMASTER][14];
     extern char qsos[MAX_QSOS][82];
     extern char hiscall[];
@@ -708,7 +708,7 @@ int searchlog(char *searchstring)
 	    if (strcmp(hiscall, printres) != 0) {
 
 		/* and now check callmaster database */
-		for (m = 0; m < max_callmastercalls; m++)
+		for (m = 0; m < nr_callmastercalls; m++)
 		{
 
 		    if ( strstr(callmasterarray[m], hiscall) != NULL ) {
