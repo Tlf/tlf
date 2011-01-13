@@ -1,4 +1,13 @@
+2011-01-13  thomas beierlein <tb@forth-ev.de>
+	* fix bug in cty.dat and in the routine which reads in the file
+
+2011-01-08  thomas beierlein <tb@forth-ev.de>
+	* fix logfile read error. Last QSO got reead twice.
+	* Optimize searchlog() for speed and also optimize partial call
+	  lookup.
+
 2010-12-23  thomas beierlein <tb@forth-ev.de>
+	version 1.0.0
 	* fix some possible buffer overflow in exchange handling for 
 	  cqww
 	* fix handling of changing RST, especially resetting the values to
