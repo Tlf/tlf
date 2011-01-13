@@ -34,20 +34,18 @@ int readctydata(void)
     extern int dataindex[MAX_DBLINES];
     extern char datalines[MAX_DATALINES][81];
 
-//      char buf[81] = "";      ### bug fix
     char buf[181] = "";
-    char buffer[80];
     char ctydb_location[80];
-    int n = 0, i = 0, j = 0, k = 0, o = 0, m = 0;
+    int i = 0, j = 0, k = 0, o = 0;
     static int nrofpfx = 0;
     char *cqloc;
     char *ituloc;
+    char *loc;
 
     FILE *fp_db;
 
     strcpy(ctydb_location, "cty.dat");
     if ((fp_db = fopen(ctydb_location, "r")) == NULL) {
-	ctydb_location[0] = '\0';
 	strcpy(ctydb_location, PACKAGE_DATA_DIR);
 	strcat(ctydb_location, "/cty.dat");
 
@@ -59,8 +57,8 @@ int readctydata(void)
 	    exit(1);
 	}
     }
-    // set default for empty country
 
+    // set default for empty country
     strcpy(datalines[0],
 	   "Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :\r\n");
 
@@ -73,69 +71,53 @@ int readctydata(void)
 
     while (fgets(buf, sizeof(buf), fp_db) != NULL) {
 
-	if (buf[0] == '\n')
+	/* drop CR and/or NL */
+	if ((loc = strpbrk(buf, "\r\n")))
+	    *loc = '\0';
+	/* else {
+	 * Fehlermeldung 'string too long */
+
+	if (*buf == '\0')	/* ignore empty lines */
 	    continue;
 
 	if (buf[0] != ' ') {	// data line
-	    strncpy(datalines[o], buf, strlen(buf) - 1);
+	    strncpy(datalines[o], buf, sizeof(datalines[0]) - 1);
+	    datalines[o][sizeof(datalines[0]) - 1] = '\0';
 	    o++;
 	} else			// prefix line
 	{
-	    strncpy(buffer, buf, 79);
-	    buffer[79] = 0;
-
-	    char *loc = NULL;	//PG4I, 26Jul2005
-	    if ((loc = strchr(buffer, '\r')))
-		*loc = '\0';
-
-	    if ((loc = strchr(buffer, '\n')))
-		*loc = '\0';
-
-//                      buffer[strlen(buffer)-1] = '\0';            // remove     \012
-//                      buffer[strlen(buffer)-1] = '\0';           // remove      \015
-
-	    n = strlen(buffer);
-
-	    for (i = 0; i < n; i++) {
-		if (buffer[i] == ',' || buffer[i] == ';')
-		    buffer[i] = '\0';
-	    }
-
-/*			if (j < 4)
-				continue;
-*/
-	    j = 4;
-
-	    while (strcmp(buffer + j, "") != 0) {
+	    loc = strtok(buf, " ,;");
+	    while (loc != NULL) {
 		nrofpfx++;
 
-		strcpy(prefixlines[k], buffer + j);
-
-		m = strlen(buffer + j);
+		strcpy(prefixlines[k], loc);
 
 		ituloc = strchr(prefixlines[k], '[');	// locate the itu zone
 		if (ituloc != NULL) {
 		    sprintf(ituarray[k], "%02d", atoi(ituloc + 1));
-		    ituloc[0] = '\0';	// struncate the string
+		    *ituloc = '\0';	// truncate the string
 		} else
 		    ituarray[k][0] = '\0';
-
-		dataindex[k] = o - 1;	// country index
 
 		cqloc = strchr(prefixlines[k], '(');	// locate the cq zone
 		if (cqloc != NULL) {
 		    sprintf(zonearray[k], "%02d", atoi(cqloc + 1));
-		    cqloc[0] = '\0';	// struncate the string
+		    *cqloc = '\0';	// truncate the string
 		} else
 		    zonearray[k][0] = '\0';
 
-		k++;
-		j += m;
-		j++;
-	    }
+		dataindex[k] = o - 1;	// remember country index in pfx
 
+		k++;
+		loc = strtok(NULL, " ,;");
+	    }
 	}
     }
+#ifdef test
+    shownr ("Number of Prefixes read =", nrofpfx);
+    for (n=0; n<nrofpfx; n++)
+	fprintf(stderr,"%s\n",prefixlines[n]);
+#endif
 
     fclose(fp_db);
 
