@@ -292,10 +292,8 @@ int muf(void)
 
     sunup(xr);	/* calculate local sunup and down at destination lattitude */
 
-    strncpy(timediffstr, datalines[countrynr] + 60, 6);	/* GMT difference */
-    timediffstr[6] = '\0';
-    td = atof(timediffstr);
-
+    /* transform to UTC based on longitude from country description */
+    td = (yr * 4) / 60 ; 	/* 4 degree/min */
     sunrise += td;
     sundown += td;
 
