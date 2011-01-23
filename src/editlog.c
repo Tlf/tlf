@@ -53,11 +53,11 @@ int logedit(void)
 
     strcat(comstr, logfile);
     rc = system(comstr);
-    attron(COLOR_PAIR(7) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();
     refreshp();
     clear_display();
-    attron(COLOR_PAIR(7) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     for (j = 13; j <= 23; j++) {
 	mvprintw(j, 0, backgrnd_str);

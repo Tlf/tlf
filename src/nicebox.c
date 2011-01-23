@@ -21,6 +21,7 @@
  	*
  	*--------------------------------------------------------------*/
 
+#include "tlf.h"
 #include "nicebox.h"
 
 void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname)
@@ -31,9 +32,9 @@ void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname)
     width += 1;
 
     if (use_rxvt == 0)
-	wattrset(win, COLOR_PAIR(COLOR_YELLOW) | A_BOLD);
+	wattrset(win, COLOR_PAIR(C_BORDER) | A_BOLD);
     else
-	wattrset(win, COLOR_PAIR(COLOR_YELLOW));
+	wattrset(win, COLOR_PAIR(C_BORDER));
 
     mvwaddch(win, y, x, ACS_ULCORNER);
     whline(win, ACS_HLINE, width);

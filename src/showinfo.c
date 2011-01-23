@@ -92,7 +92,7 @@ int showinfo(int x)
     contstr[2] = '\0';
 
     getyx(stdscr, cury, curx);
-    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
     mvprintw(24, 0, " %s  %s             ", pxstr, countrystr);
 

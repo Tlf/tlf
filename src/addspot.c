@@ -44,7 +44,7 @@ int addspot(void)
 
     if (trx_control == 0) {
 
-	attron(COLOR_PAIR(7) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	mvprintw(13, 20, "freq.: ");
 	echo();

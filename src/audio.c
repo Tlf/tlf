@@ -347,16 +347,16 @@ int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 	    break;
 	case 5:
 	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(COLOR_GREEN) | A_BOLD | A_STANDOUT);
+		attron(COLOR_PAIR(C_HEADER) | A_BOLD | A_STANDOUT);
 	    else
-		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 	    mvprintw(ypos + i, xpos, ">   <");
 
 	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+		attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
 	    else
-		attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 	}
     }
 
@@ -399,9 +399,9 @@ int panscan(void)
     while (1) {
 	key = 0;
 	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
 	else
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	for (j = 0; j <= 24; j++)
 	    mvprintw(j, 0,
@@ -508,9 +508,9 @@ int nbscan(void)
     while (1) {
 	key = 0;
 	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
 	else
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	for (j = 0; j <= 24; j++)	// wipe the screen
 	    mvprintw(j, 0,
@@ -602,9 +602,9 @@ void scanmenu(void)
     int j;
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -679,9 +679,9 @@ void recordmenue(void)
     int j;
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,

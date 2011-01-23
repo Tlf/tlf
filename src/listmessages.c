@@ -38,7 +38,7 @@ int listmessages(void)
 		strncat (printbuffer,  message[i],  strlen(message[i]) -1);
 		strcat  (printbuffer, backgrnd_str);
 		printbuffer[71] = '\0';
-		attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT );
+		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
 		mvprintw (i + 11, 1, " %i     ",  i+1);
 		mvprintw (i  + 11, 6,  ": %s",  printbuffer);
 		refreshp();
@@ -52,7 +52,7 @@ int listmessages(void)
 		strncat (printbuffer,  message[i],  strlen(message[i]) -1);
 		strcat  (printbuffer, backgrnd_str);
 		printbuffer[71] = '\0';
-		attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT );
+		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
 		
 		if (i == 12)
 			mvprintw(i + 9, 1, " SPmg:" );
@@ -70,7 +70,7 @@ int listmessages(void)
 	i = onechar();
 	
 	clear_display();
-	attron(COLOR_PAIR(7)  |  A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
 
 	for (j = 13 ;  j  <= 23 ; j++){
 		 mvprintw(j, 0, backgrnd_str);

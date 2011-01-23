@@ -303,7 +303,7 @@ int talk(void)
     send_lan_message(TLFMSG, talkline);
 
     talkline[0] = '\0';
-    attron(COLOR_PAIR(COLOR_GREEN));
+    attron(COLOR_PAIR(C_HEADER));
     mvprintw(24, 0,
 	     "                                                                               ");
     refreshp();

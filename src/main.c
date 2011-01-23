@@ -542,30 +542,30 @@ int main(int argc, char *argv[])
 	if (use_rxvt == 1) {	// use rxvt colours
 	    init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_RED);
 	    if (use_xterm == 1) {
-		init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_BLUE);
+		init_pair(C_HEADER, COLOR_GREEN, COLOR_BLUE);
 		init_pair(COLOR_RED, COLOR_WHITE, 8);
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_MAGENTA);
-		init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_WHITE);
-		init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_WHITE);
+		init_pair(C_WINDOW, COLOR_CYAN, COLOR_MAGENTA);
+		init_pair(C_DUPE, COLOR_MAGENTA, COLOR_WHITE);
+		init_pair(C_INPUT, COLOR_BLUE, COLOR_WHITE);
 	    } else {
-		init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_YELLOW);
+		init_pair(C_HEADER, COLOR_GREEN, COLOR_YELLOW);
 		init_pair(COLOR_RED, COLOR_WHITE, COLOR_RED);
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_RED);
-		init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_RED);
-		init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_YELLOW);
+		init_pair(C_WINDOW, COLOR_CYAN, COLOR_RED);
+		init_pair(C_DUPE, COLOR_MAGENTA, COLOR_RED);
+		init_pair(C_INPUT, COLOR_BLUE, COLOR_YELLOW);
 	    }
-	    init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
-	    init_pair(COLOR_YELLOW, COLOR_CYAN, COLOR_YELLOW);
+	    init_pair(C_LOG, COLOR_WHITE, COLOR_BLACK);
+	    init_pair(C_BORDER, COLOR_CYAN, COLOR_YELLOW);
 	} else {
 	    // use linux console colours
 	    init_pair(COLOR_BLACK, tlfcolors[0][0], tlfcolors[0][1]); // b/w
-	    init_pair(COLOR_GREEN, tlfcolors[1][0], tlfcolors[1][1]); // Gn/Ye
+	    init_pair(C_HEADER, tlfcolors[1][0], tlfcolors[1][1]);    // Gn/Ye
 	    init_pair(COLOR_RED, tlfcolors[2][0], tlfcolors[2][1]);   // W/R
-	    init_pair(COLOR_CYAN, tlfcolors[3][0], tlfcolors[3][1]);  // Cy/W
-	    init_pair(COLOR_WHITE, tlfcolors[4][0], tlfcolors[4][1]); // W/B
-	    init_pair(COLOR_MAGENTA, tlfcolors[5][0], tlfcolors[5][1]); // Mag/w
-	    init_pair(COLOR_BLUE, tlfcolors[6][0], tlfcolors[6][1]);  // Bl/Y
-	    init_pair(COLOR_YELLOW, tlfcolors[7][0], tlfcolors[7][1]);// W/B
+	    init_pair(C_WINDOW, tlfcolors[3][0], tlfcolors[3][1]);    // Cy/W
+	    init_pair(C_LOG, tlfcolors[4][0], tlfcolors[4][1]);       // W/B
+	    init_pair(C_DUPE, tlfcolors[5][0], tlfcolors[5][1]);      // Mag/w
+	    init_pair(C_INPUT, tlfcolors[6][0], tlfcolors[6][1]);     // Bl/Y
+	    init_pair(C_BORDER, tlfcolors[7][0], tlfcolors[7][1]);    // W/B
 	}
 
 	mults_possible = g_ptr_array_new();
@@ -717,7 +717,7 @@ int main(int argc, char *argv[])
 
 	qrb();
 
-	attron(COLOR_PAIR(7) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	for (j = 13; j <= 23; j++) {	/* wipe lower window */
 	    mvprintw(j, 0, backgrnd_str);

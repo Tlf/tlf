@@ -271,9 +271,9 @@ int muf(void)
 
     wclear(win);
     if (use_rxvt == 0)
-	wattron(win, COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	wattron(win, COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	wattron(win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	wattron(win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     for (i = 0; i < 25; i++)
 	mvwprintw(win, i, 0,

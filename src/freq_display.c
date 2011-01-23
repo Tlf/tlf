@@ -55,7 +55,7 @@ int freq_display(void)
     if (fbuffer[6] != ' ')
 	print_big_number(fbuffer[6] - 48, y_position, x_position, 31);
 
-    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
     if (trxmode == CWMODE)
 	mvprintw(18, 41, "CW");
@@ -261,7 +261,7 @@ int print_big_number(int number, int y_position, int x_position,
 int print_dot(int y, int x)
 {
 
-    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(y, x, " ");
 
     return (0);
@@ -275,9 +275,9 @@ int print_space(int y, int x)
     attroff(A_STANDOUT);
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD);
+	attron(COLOR_PAIR(C_LOG) | A_BOLD);
     else
-	attron(COLOR_PAIR(COLOR_WHITE));
+	attron(COLOR_PAIR(C_LOG));
 
     mvprintw(y, x, "                                   ");
 

@@ -53,7 +53,7 @@ int keyer(void)
 
     strcpy(mode, "Keyboard");
     clear_display();
-    attron(COLOR_PAIR(7) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     if (keyerport == NO_KEYER)	/* no keyer present */
 	return (1);
@@ -144,7 +144,7 @@ int keyer(void)
 			keyerstring[28] = x;
 			keyerstring[29] = '\0';
 
-			attron(COLOR_PAIR(7) | A_STANDOUT);
+			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 			mvprintw(5, 0, "%s", keyerstring);
 			refreshp();
 		    } else if (keyerport == ORION_KEYER) {
@@ -159,7 +159,7 @@ int keyer(void)
 			keyerstring[28] = x;
 			keyerstring[29] = '\0';
 
-			attron(COLOR_PAIR(7) | A_STANDOUT);
+			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 			mvprintw(5, 0, "%s", keyerstring);
 			refreshp();
 
@@ -174,9 +174,9 @@ int keyer(void)
 			buffer[0] = '\0';
 
 		    getyx(stdscr, cury, curx);
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvaddstr(0, 0, "  ");
-		    attron(COLOR_PAIR(7));
+		    attron(COLOR_PAIR(C_LOG));
 		    mvaddstr(cury, curx, "");
 		    refreshp();
 

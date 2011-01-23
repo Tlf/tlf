@@ -64,13 +64,13 @@ int showscore(void)
 
     if (showscore_flag == 1) {
 
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	if ((bandinx != BANDINDEX_30) && (bandinx != BANDINDEX_17)
 	    && (bandinx != BANDINDEX_12)) {
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	    mvprintw(1, 45, "Band   160   80   40   20   15   10");
-	    attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 	    mvprintw(2, 45, "QSO's ");
 
 	    printfield(2, 50, band_score[BANDINDEX_160]);
@@ -80,10 +80,12 @@ int showscore(void)
 	    printfield(2, 70, band_score[BANDINDEX_15]);
 	    printfield(2, 75, band_score[BANDINDEX_10]);
 	} else {
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	    mvprintw(1, 45, "Band   160   80   40   30   17   12");
-	    attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 	    mvprintw(2, 45, "QSO's ");
+	    mvprintw(17, 40, "Band   160   80   40   30   17   12");
+	    mvprintw(18, 40, "QSO's ");
 
 	    printfield(2, 50, band_score[BANDINDEX_160]);
 	    printfield(2, 55, band_score[BANDINDEX_80]);
@@ -351,7 +353,7 @@ int showscore(void)
 	    }
 	}
 
-	attron(COLOR_PAIR(COLOR_MAGENTA) | A_STANDOUT);
+	attron(COLOR_PAIR(C_DUPE) | A_STANDOUT);
 
 	switch (bandinx) {
 	case BANDINDEX_160:

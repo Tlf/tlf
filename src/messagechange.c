@@ -37,7 +37,7 @@ int message_change(int x)
     char printbuf[80];
 
     clear_display();
-    attron(COLOR_PAIR(7) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     for (j = 13; j <= 23; j++) {
 	mvprintw(j, 0, backgrnd_str);
@@ -45,7 +45,7 @@ int message_change(int x)
     if (x == 6) {
 	nicebox(14, 3, 2, 60, "Enter message (F1-12, C, S)");
 
-	attron(COLOR_PAIR(7) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	while (1) {
 	    bufnr = onechar();
@@ -87,7 +87,7 @@ int message_change(int x)
 
 	if (mes_length < 2) {
 	    clear_display();
-	    attron(COLOR_PAIR(7) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	    for (j = 13; j <= 23; j++) {
 		mvprintw(j, 0, backgrnd_str);
@@ -111,7 +111,7 @@ int message_change(int x)
 
 	    nicebox(14, 3, 2, 60, "Edit message");
 
-	    attron(COLOR_PAIR(7) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	    printbuf[0] = '\0';
 	    strncat(printbuf, message[bufnr], strlen(message[bufnr]) - 1);
@@ -131,7 +131,7 @@ int message_change(int x)
 
 	    if (mes_length < 2) {
 		clear_display();
-		attron(COLOR_PAIR(7) | A_STANDOUT);
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		for (j = 13; j <= 23; j++) {
 		    mvprintw(j, 0, backgrnd_str);
@@ -152,7 +152,7 @@ int message_change(int x)
     mvprintw(12, 29, "");
     refreshp();
     clear_display();
-    attron(COLOR_PAIR(7) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     for (j = 13; j <= 23; j++) {
 	mvprintw(j, 0, backgrnd_str);

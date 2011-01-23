@@ -62,7 +62,7 @@ void clear_display(void)
     getyx(stdscr, cury, curx);
 
     mvprintw(0, 0, "");
-    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(0, 0, "                             ");
     mvprintw(0, 0, "  %s  S=%s D=%i ", mode, speedbuf, cqdelay);
     mvprintw(0, 21, headerline);
@@ -87,16 +87,16 @@ void clear_display(void)
     showscore();
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     mvaddstr(7, 0, logline0);
     mvaddstr(8, 0, logline1);
     mvaddstr(9, 0, logline2);
     mvaddstr(10, 0, logline3);
     mvaddstr(11, 0, logline4);
-    attron(COLOR_PAIR(COLOR_CYAN));
+    attron(COLOR_PAIR(C_WINDOW));
     mvaddstr(12, 0, backgrnd_str);
     mvaddstr(12, 0, band[bandinx]);
 
@@ -155,7 +155,7 @@ void clear_display(void)
 
     mvaddstr(12, 29, hiscall);
 
-    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(24, 0, backgrnd_str);
 
     if (use_rxvt == 0)
