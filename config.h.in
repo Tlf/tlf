@@ -33,6 +33,9 @@
 /* Define to 1 if you have the `ncurses' library (-lncurses). */
 #undef HAVE_LIBNCURSES
 
+/* Define to 1 if you have the `panel' library (-lpanel). */
+#undef HAVE_LIBPANEL
+
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
 
