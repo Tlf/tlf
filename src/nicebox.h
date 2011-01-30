@@ -20,5 +20,6 @@
 #include <stdlib.h>
 #include <curses.h>
 
-int nicebox( int Nb_y,  int  Nb_x, int Nb_height,  int Nb_width, char *Nb_boxname);
+void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname);
+void nicebox(int y, int x, int height, int width, char *boxname);
 

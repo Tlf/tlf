@@ -23,34 +23,33 @@
 
 #include "nicebox.h"
 
-int nicebox( int Nb_y,  int  Nb_x, int Nb_height,  int Nb_width, char *Nb_boxname)
+void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname)
 {
- extern int use_rxvt;
+    extern int use_rxvt;
 
- int y, x,  height, width;
- char boxname[21];
+    height += 1;
+    width += 1;
 
- y = Nb_y;
- x = Nb_x;
- height  =  Nb_height + 1;
- width = Nb_width  +  1;
- *boxname =  *Nb_boxname;
+    if (use_rxvt == 0)
+	wattrset(win, COLOR_PAIR(COLOR_YELLOW) | A_BOLD);
+    else
+	wattrset(win, COLOR_PAIR(COLOR_YELLOW));
 
-	attroff(A_STANDOUT);
-	if (use_rxvt == 0) attron(COLOR_PAIR(COLOR_YELLOW) | A_BOLD );
-	else  attron(COLOR_PAIR(COLOR_YELLOW) );
+    mvwaddch(win, y, x, ACS_ULCORNER);
+    whline(win, ACS_HLINE, width);
+    mvwaddch(win, y, x + width, ACS_URCORNER);
+    mvwaddch(win, y + height, x, ACS_LLCORNER);
+    whline(win, ACS_HLINE, width);
+    mvwaddch(win, y + height, x + width, ACS_LRCORNER);
+    mvwvline(win, y + 1, x + width, ACS_VLINE, height - 1);
+    mvwvline(win, y + 1, x, ACS_VLINE, height - 1);
+    mvwprintw(win, y, x + 2, boxname);
 
-	mvaddch(y,x, ACS_ULCORNER);
-	hline(ACS_HLINE, width);
-	mvaddch(y + height ,x, ACS_LLCORNER);
-	hline(ACS_HLINE, width);
-	mvaddch(y, x + width,  ACS_URCORNER);
-	mvvline(y +  1, x + width, ACS_VLINE, height);
-	mvaddch(y  + height, x  + width,  ACS_LRCORNER);
-				
-	mvvline(y + 1, x,  ACS_VLINE, height - 1);
-	mvprintw ( y, x+2,  Nb_boxname);
+    return;
+}
 
-  return(0);
+void nicebox(int y, int x, int height, int width, char *boxname)
+{
+	wnicebox( stdscr, y, x, height, width, boxname);
 }
 
