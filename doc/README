@@ -1,3 +1,9 @@
+tlf-1.0.2
+=========
+maintenance release
+ * fix bug in sendto call in TLF-1.0.0 and 1.0.1. 
+   cwdaemon needs a zero terminated string. 
+
 tlf-1.0.1
 =========
 maintenance release

@@ -1,3 +1,8 @@
+2011-01-31  thomas beierlein <tb@forth-ev.de>
+	version 1.0.2
+	* fix bug in sendto call. cwdaemon needs a zero terminated string. 
+	  Thanks for reporting Andy G4KNO
+
 2011-01-15  thomas beierlein <tb@forth-ev.de>
 	version 1.0.1
 	* fix calculation of sun up and down time based on longitude
