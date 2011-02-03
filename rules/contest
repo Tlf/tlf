@@ -13,14 +13,12 @@ CONTEST_MODE
 #  Message CW_TU_MSG=            #
 #  Message S&P_TU_MSG=           #
 #                                #
-#  % = call		         #
+#  % = call                      #
 #  @ = hiscall                   #
 #  # = serial                    #
 #  [ = RST                       #
 #  + = increase cw speed         #
 #  - = decrease cw speed         #
-#     (works only with parport   #
-#       interface)               #
 #                                #
 ##################################
 #
