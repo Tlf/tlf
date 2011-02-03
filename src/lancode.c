@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "tlf.h"
 #include "lancode.h"
 
 int lan_socket_descriptor;
@@ -239,7 +240,7 @@ int lan_send(char *lanbuffer)
 int send_lan_message(int opcode, char *message)
 {
 
-    char sendbuffer[83];
+    char sendbuffer[84];
 
     sendbuffer[0] = thisnode;
     sendbuffer[1] = opcode;
