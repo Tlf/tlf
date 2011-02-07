@@ -1,3 +1,9 @@
+tlf-1.0.3
+=========
+maintenance release
+ * fix buffer overflow in 'send_lan_message'
+ * fix wrong count of points and qso's for last band entry (tnx OK1RR)
+
 tlf-1.0.2
 =========
 maintenance release
