@@ -37,6 +37,9 @@ int addspot(void)
     char frequency[8];
     char spottime[6];
 
+    if (strlen(hiscall) < 3)
+	return(0);
+
     if (trx_control == 0) {
 
 	attron(COLOR_PAIR(7) | A_STANDOUT);
@@ -47,17 +50,9 @@ int addspot(void)
 	noecho();
 	freq = atof(frequency);
     }
-    spotline[0] = '\0';
 
-    strcat(spotline, "DX de TLF   :        ");	/* todo: change call here.... */
+    sprintf(spotline, "DX de TLF:       %7.1f  %s", freq, hiscall);
 
-    if (freq >= 10000.0)
-	sprintf(spotline + 17, "%5.1f", freq);
-    else
-	sprintf(spotline + 18, "%5.1f", freq);
-
-    strcat(spotline, "  ");
-    strcat(spotline, hiscall);
     strcat(spotline, "                                           ");
 
     get_time();

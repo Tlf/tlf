@@ -123,7 +123,7 @@ char callinput(void)
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	nodelay(stdscr, TRUE);	/* main loop waiting for input */
 	x = -1;
-	while (x <= 1) {
+	while (x < 1) {
 
 	    time_update();
 
