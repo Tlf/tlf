@@ -367,7 +367,7 @@ Get a new shell
 
 .TR
 .B Ctrl-a
-switch cluster window
+add spot to bandmap and broadcast it to local net
 
 .TR
 .B Ctrl-b
