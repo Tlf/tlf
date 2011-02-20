@@ -38,10 +38,7 @@ int freq_display(void)
     nicebox(16, 39, 5, 35, "TRX");
     print_dot(y_position + 4, 28 + x_position + 1);
 
-    if (freq > 7300)
-	sprintf(fbuffer, "%5.1f", freq);
-    else
-	sprintf(fbuffer, " %5.1f", freq);
+    sprintf(fbuffer, "%7.1f", freq);
 
     location = 32;
 

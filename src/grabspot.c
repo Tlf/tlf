@@ -99,10 +99,7 @@ int grabspot(void)
 
 	mem = freq;
 
-	if (freq >= 7300.0)
-	    mvprintw(14, 68, "MEM: %5.1f", mem);
-	else
-	    mvprintw(14, 68, "MEM:  %5.1f", mem);
+	mvprintw(14, 68, "MEM: %7.1f", mem);
 
 	refresh();
 

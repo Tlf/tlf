@@ -597,10 +597,7 @@ char callinput(void)
 		if (mem == 0.0) {
 		    mem = freq;
 
-		    if (freq >= 7300.0)
-			mvprintw(14, 68, "MEM: %5.1f", mem);
-		    else
-			mvprintw(14, 68, "MEM:  %5.1f", mem);
+		    mvprintw(14, 68, "MEM: %7.1f", mem);
 		} else {
 		    freq = mem;
 #ifdef HAVE_LIBHAMLIB

@@ -73,27 +73,13 @@ void clusterinfo(char *timestr)
 	    else
 		attron(COLOR_PAIR(COLOR_WHITE));
 
-	    if (freq > 7300.0) {
-		if ((showfreq == 0) || (showscore_flag == 1))
-		    mvprintw(13, 68, "TRX: %5.1f", freq);
+	    if ((showfreq == 0) || (showscore_flag == 1))
+		mvprintw(13, 68, "TRX: %7.1f", freq);
 
-		if (mem >= 7300.0)
-		    mvprintw(14, 68, "MEM: %5.1f", mem);
-		else if (mem > 0.0)
-		    mvprintw(14, 68, "MEM:  %5.1f", mem);
-		else
-		    mvprintw(14, 68, "            ");
-	    } else {
-		if ((showfreq == 0) || (showscore_flag == 1))
-		    mvprintw(13, 68, "TRX:  %5.1f", freq);
-
-		if (mem > 7300.0)
-		    mvprintw(14, 68, "MEM: %5.1f", mem);
-		else if (mem > 0.0)
-		    mvprintw(14, 68, "MEM:  %5.1f", mem);
-		else
-		    mvprintw(14, 68, "            ");
-	    }
+	    if (mem > 0.0)
+		mvprintw(14, 68, "MEM: %7.1f", mem);
+	    else
+		mvprintw(14, 68, "            ");
 
 	    if ((showfreq == 1) && (showscore_flag == 0)) {
 
