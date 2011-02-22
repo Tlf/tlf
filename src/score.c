@@ -98,7 +98,6 @@ int score()
 
     extern int dupe;
     extern int points;
-    extern char pointstring[];
     extern int one_point;
     extern int two_point;
     extern int three_point;
@@ -140,7 +139,6 @@ int score()
 
     if (dupe == ISDUPE) {
 	points = 0;
-	pointstring[0] = '0';
 	dupe = NODUPE;
 	return (0);
     }
@@ -155,7 +153,6 @@ int score()
 	if (countrynr == mycountrynr) {
 	    points = 1;
 	    total = total + 1;
-	    pointstring[0] = '1';
 
 	    return (0);
 	}
@@ -165,11 +162,9 @@ int score()
 	    if (strstr(mycontinent, "NA") != NULL) {
 		points = 2;
 		total = total + 2;
-		pointstring[0] = '2';
 	    } else {
 		points = 1;
 		total = total + 1;
-		pointstring[0] = '1';
 	    }
 
 	    return (0);
@@ -180,11 +175,9 @@ int score()
 	    if (strstr(mycontinent, "NA") != NULL) {
 		points = 4;
 		total = total + 4;
-		pointstring[0] = '4';
 	    } else {
 		points = 2;
 		total = total + 2;
-		pointstring[0] = '2';
 	    }
 	    return (0);
 	}
@@ -192,7 +185,6 @@ int score()
 	    && (bandinx > BANDINDEX_30)) {
 	    points = 3;
 	    total = total + 3;
-	    pointstring[0] = '3';
 
 	    return (0);
 	}
@@ -200,7 +192,6 @@ int score()
 	    && (bandinx < BANDINDEX_30)) {
 	    points = 6;
 	    total = total + 6;
-	    pointstring[0] = '6';
 
 	    return (0);
 	}
@@ -216,8 +207,6 @@ int score()
 	if ((countrynr == mycountrynr)) {
 	    points = 0;
 	    total = total + 0;
-	    pointstring[0] = '0';
-	    pointstring[1] = '\0';
 	    return (0);
 	}
 
@@ -225,18 +214,15 @@ int score()
 	    if (strstr(mycontinent, "NA") != NULL) {
 		points = 2;
 		total = total + 2;
-		pointstring[0] = '2';
 	    } else {
 		points = 1;
 		total = total + 1;
-		pointstring[0] = '1';
 	    }
 
 	    return (0);
 	} else {
 	    points = 3;
 	    total = total + 3;
-	    pointstring[0] = '3';
 
 	    return (0);
 	}
@@ -249,11 +235,9 @@ int score()
 	if (trxmode == SSBMODE) {
 	    points = 1;
 	    total = total + 1;
-	    pointstring[0] = '1';
 	} else {
 	    points = 2;
 	    total = total + 2;
-	    pointstring[0] = '2';
 
 	}
 	return (0);
@@ -263,20 +247,17 @@ int score()
     if (one_point == 1) {
 	points = 1;
 	total++;
-	pointstring[0] = '1';
 
 	return (0);
     }
     if (two_point == 1) {
 	points = 2;
 	total = total + 2;
-	pointstring[0] = '2';
 	return (0);
     }
     if (three_point == 1) {
 	points = 3;
 	total = total + 3;
-	pointstring[0] = '3';
 
 	return (0);
     }
@@ -285,12 +266,10 @@ int score()
 
 	if ((countrynr == w_cty) || (countrynr == ve_cty)) {
 	    points = 0;
-	    pointstring[0] = '0';
 
 	} else {
 	    points = 3;
 	    total = total + 3;
-	    pointstring[0] = '3';
 	}
 
 	return (0);
@@ -362,7 +341,6 @@ int score()
 
     /* The Result of all ABOVE */
     total = total + points;
-    pointstring[0] = points + 48;
 
     return (0);
 }

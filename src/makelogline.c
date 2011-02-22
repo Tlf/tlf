@@ -32,10 +32,10 @@ int makelogline(void)
     extern int trx_control;
     extern char whichcontest[];
     extern float freq;
+    extern int points;
 
     static char time_buf[80];
     char fillspaces[50] = "                              ";
-    int points = 0;
     static int lastbandinx = 0;
     char grid[7] = "";
     int sr_nr = 0;
@@ -313,17 +313,9 @@ int makelogline(void)
 
     if (contest == 1) {
 	if (dxped != 1) {	/* no points for dxpedition */
-	    if (pointstring[0] > 57) {
-		points = pointstring[0] - 48;
-		sprintf(logline4 + 76, "%d", points);
-	    } else {
-		logline4[77] = '\0';
-		strcat(logline4, pointstring);
-	    }
+	    sprintf(logline4 + 76, "%2d", points);
 	} else {
-	    pointstring[0] = ' ';
-	    pointstring[1] = '\0';
-	    strcat(logline4, pointstring);
+	    sprintf(logline4 + 76, "  ");
 	}
     } else {
 	strcat(logline4, "  ");

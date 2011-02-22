@@ -205,7 +205,6 @@ int secs = 0;
 int countrynr;
 int mycountrynr = 215;
 int points = 0;
-char pointstring[2] = "";
 int total = 0;
 int band_score[9];
 int dupe = 0;
@@ -319,7 +318,7 @@ char callmaster_result[50][9];
 int callareas[20];
 int multscore[NBANDS];
 
-struct ie_list *main_ie_list;
+struct ie_list *main_ie_list;	/* head of initial exchange list */
 
 int multarray_nr = 0;
 int wysiwygmults = 0;
@@ -331,10 +330,10 @@ int addcty = 0;			/* flag for new country */
 int shownewmult = -1;
 int minute_timer = 0;
 
-int bandinx = 2;		/* 40m */
+int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;
 int bufloc = 0;
-int ymax, xmax;
+int ymax, xmax;			/* screen size */
 int cury, curx;			/* to remember cursor position */
 char lastwwv[120] = "";
 int bandmap_pos = 0;
