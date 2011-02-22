@@ -85,14 +85,9 @@ extern struct tm *time_ptr;
 extern int inxes[9]; //  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10} ;	
 		    // from addmult.c
 
-extern char prefixlines[MAX_DBLINES][17];
 extern char cqzone[];
 extern char ituzone[];
-extern char zonearray[MAX_DBLINES][3];
-extern char ituarray[MAX_DBLINES][3];
-extern int dataindex[MAX_DBLINES];
 extern char continent[];
-extern char datalines[MAX_DATALINES][81];
 extern char zone_export[];
 extern int itumult;
 

@@ -51,6 +51,9 @@ int addspot(void)
 	freq = atof(frequency);
     }
 
+//    sprintf(spotline, "DX de TLF:       %9.3f  %s", freq, hiscall);
+//    \todo extend to 3 decimals for own spots
+//    needs to adapt 'grabspot
     sprintf(spotline, "DX de TLF:       %7.1f  %s", freq, hiscall);
 
     strcat(spotline, "                                           ");

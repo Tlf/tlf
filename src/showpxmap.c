@@ -22,11 +22,11 @@
 	 *--------------------------------------------------------------*/
 
 #include "showpxmap.h"
+#include "dxcc.h"
 
 int show_mults(void)
 {
     extern int use_rxvt;
-    extern char datalines[MAX_DATALINES][81];
     extern int countries[MAX_DATALINES];
     extern int bandinx;
     extern int cqww;
@@ -36,7 +36,7 @@ int show_mults(void)
     static char zonecmp[3] = "";
     int ch;
 
-    int iMax = MAX_DATALINES;
+    int iMax = dxcc_count();
 
     if (cqww == 1) {
 
@@ -69,17 +69,20 @@ int show_mults(void)
 
 	    attron(COLOR_PAIR(7) | A_STANDOUT);
 
-	    i = 2;
+	    i = 0;
 
 	    for (k = 1; k <= 5; k++) {
 
 		for (j = 0; j <= 19; j++) {
 
-		    while ((strncmp(datalines[i] + 36, zonecmp, 2)) != 0) {
+		    while ((i < iMax) && 
+			((strncmp(dxcc_by_index(i) -> continent, zonecmp, 2)) 
+				!= 0)) {
 			i++;
-			if (i > iMax)
-			    break;
 		    }
+		    if (i == iMax)
+		  	 break;
+
 		    switch (bandinx) {
 		    case BANDINDEX_160:{
 			    bandmask = BAND160;
@@ -109,18 +112,9 @@ int show_mults(void)
 
 		    if ((countries[i] & bandmask) == 0) {
 			prefix[0] = '\0';
-			strncat(prefix, datalines[i] + 69, 3);
+			strncat(prefix, dxcc_by_index(i)->pfx, 3);
 
-			if (prefix[1] == ':') {
-			    prefix[1] = ' ';
-			    prefix[2] = ' ';
-			}
-
-			if (prefix[2] == ':')
-			    prefix[2] = ' ';
-
-			/* add delimiting space */
-			strcpy(prefix + 3, " ");
+			strncat(prefix, "     ", 4 - strlen(prefix));
 
 			if (use_rxvt == 0)
 			    attron(COLOR_PAIR(4) | A_BOLD);
@@ -139,11 +133,8 @@ int show_mults(void)
 
 		    }
 
-		    if (i > iMax)
-			break;
-
 		}
-		if (i > iMax)
+		if (i == iMax)
 		    break;
 
 	    }

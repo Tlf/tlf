@@ -296,13 +296,6 @@ char simulator_tone[5];
 char qsos[MAX_QSOS][82];
 int nr_qsos = 0;
 
-/*---------------------------country data base-----------------------------*/
-char datalines[MAX_DATALINES][81];	/* country description */
-char prefixlines[MAX_DBLINES][17];
-char zonearray[MAX_DBLINES][3];
-char ituarray[MAX_DBLINES][3];
-int dataindex[MAX_DBLINES];	/*  index to  datalines */
-
 /*------------------------------dupe array---------------------------------*/
 int callarray_nr = 0;		/* number of calls in callarray */
 char callarray[MAX_CALLS][20];	/* internal log representation for dupes  */
@@ -310,8 +303,9 @@ char call_exchange[MAX_CALLS][12];
 int call_band[MAX_CALLS];
 int call_country[MAX_CALLS];
 
-int countries[MAX_DATALINES];
-int zones[41];			/* using 1 - 40, cqzones */
+/*----------------------statisticof worked countries,zones ... -----------*/
+int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */
+int zones[41];			/* same for cqzones; using 1 - 40 */
 char mults[MAX_MULTS][12];
 char mults_possible[MAX_MULTS][12];
 int multlist = 0;

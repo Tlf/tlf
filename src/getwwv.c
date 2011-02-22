@@ -18,11 +18,11 @@
  */
 
 #include "getwwv.h"
+#include "dxcc.h"
 
 int getwwv(void)
 {
 
-    extern char datalines[MAX_DATALINES][81];
     extern char lastwwv[];
     extern char backgrnd_str[];
     extern double r;
@@ -33,7 +33,6 @@ int getwwv(void)
     char *i;
     char r_value[6];
     char sf_value[6];
-    char timediffstr[7] = "-1.0";
     char timebuff[80];
     double sfi, d;
 
@@ -93,9 +92,7 @@ int getwwv(void)
 	    strcpy(lastwwv, printbuffer);
 	    mvprintw(24, 0, lastwwv);	/* print WWV info  */
 
-	    strncpy(timediffstr, datalines[mycountrynr] + 60, 6);	/* GMT difference */
-	    timediffstr[6] = '\0';
-	    d = atof(timediffstr);
+	    d = dxcc_by_index(mycountrynr) -> timezone;
 
 //                      d -= timeoffset;
 

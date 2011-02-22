@@ -24,6 +24,7 @@
 
 #include "globalvars.h"
 #include "getctydata.h"
+#include "dxcc.h"
 
 int getctydata(char *checkcallptr)
 {
@@ -32,7 +33,10 @@ int getctydata(char *checkcallptr)
     char checkcall[17] = "";
     char findcall[17] = "";
 
-    int i = 0, w = 0, x = 0, ii = 0, abnormal_call = 0;
+    prefix_data *pfx;
+    int pfxmax = prefix_count();
+
+    int i = 0, w = 0, x = 0, abnormal_call = 0;
     char portable = '\0';
     int pp = 0;
     size_t loc;
@@ -125,107 +129,71 @@ int getctydata(char *checkcallptr)
 	//      strncpy(checkncall , findcall, pp);
 	strncpy(checkncall, findcall, sizeof(checkncall) - 1);
 
-	for (i = 0; i < MAX_DBLINES; i++) {
-	    if (strcmp(checkncall, prefixlines[i]) == 0) {
+	for (i = 0; i < pfxmax; i++) {
+	    pfx = prefix_by_index(i);
+	    if (strcmp(checkncall, pfx->pfx) == 0) {
 		w = i;
-		x = dataindex[i];
+		x = pfx->dxcc_index;
 		break;
 	    }
 	}
 
     } else {
 	int bestlen = 0;
-	for (i = 0; i < MAX_DBLINES; i++) {
+	for (i = 0; i < pfxmax; i++) {
 	    int l;
-	    if (prefixlines[i][0] != findcall[0])
+	    pfx = prefix_by_index(i);
+	    if (*pfx->pfx != findcall[0])
 		continue;
-	    l = strlen(prefixlines[i]);
+
+	    l = strlen(pfx->pfx);
 	    if (l <= bestlen)
 		continue;
-	    if (strncmp(prefixlines[i], findcall, l) == 0) {
+
+	    if (strncmp(pfx->pfx, findcall, l) == 0) {
 		bestlen = l;
 		w = i;
 	    }
 	}
 	if (w >= 0)
-	    x = dataindex[w];
+	    x = prefix_by_index(w)->dxcc_index;
     }
 
     if (w < 0 && 0 != strcmp(findcall, checkcall)) {
 	// only if not found in prefix full call exception list
 	int bestlen = 0;
-	for (i = 0; i < MAX_DBLINES; i++) {
+	for (i = 0; i < pfxmax; i++) {
 	    int l;
-	    if (prefixlines[i][0] != checkcall[0])
+	    pfx = prefix_by_index(i);
+	    if (*pfx->pfx != checkcall[0])
 		continue;
-	    l = strlen(prefixlines[i]);
+	    l = strlen(pfx->pfx);
 	    if (l <= bestlen)
 		continue;
-	    if (strncmp(prefixlines[i], checkcall, l) == 0) {
+	    if (strncmp(pfx->pfx, checkcall, l) == 0) {
 		bestlen = l;
 		w = i;
 	    }
 	}
 	if (w >= 0)
-	    x = dataindex[w];
+	    x = prefix_by_index(w)->dxcc_index;
     }
-// pa3fwm, 20040113: it seems there is no guarantee that w>=0 when we get here; or is that guarantee implicit by completeness of the prefix list?
-// pa0r, 20040117:   it will be -1 if there is a non-existing prefix in the cty.dat file.
-//                                              so let's use the 'normal' pfx in that case (x defaults to 0).
-//      if (strlen(zonearray[w]) > 0) {
-    if (w > 0 && strlen(zonearray[w]) > 0) {
-	strncpy(cqzone, zonearray[w], 2);
-	strncpy(ituzone, ituarray[w], 2);
-    } else {
-	strncpy(cqzone, datalines[x] + 26, 2);
-	strncpy(ituzone, datalines[x] + 31, 2);
 
-	if (x == w_cty) {
-	    for (ii = 0; ii < strlen(checkcall); ii++) {
-		if (checkcall[ii] == '7' || checkcall[ii] == '6') {
-		    strncpy(cqzone, "03", 2);
-		    break;
-		} else if (checkcall[ii] == '5' || checkcall[ii] == '8'
-			   || checkcall[ii] == '9'
-			   || checkcall[ii] == '0') {
-		    strncpy(cqzone, "04", 2);
-		    break;
-		} else if (checkcall[ii] == '1' || checkcall[ii] == '2'
-			   || checkcall[ii] == '3'
-			   || checkcall[ii] == '4') {
-		    strncpy(cqzone, "05", 2);
-		    break;
-		}
-	    }
-
-	}
-
-	if (x == ve_cty) {
-	    for (ii = 0; ii < strlen(checkcall); ii++) {
-		if (checkcall[ii] == '7') {
-		    strncpy(cqzone, "03", 2);
-		    break;
-		} else if (checkcall[ii] == '3' || checkcall[ii] == '4'
-			   || checkcall[ii] == '5'
-			   || checkcall[ii] == '6') {
-		    strncpy(cqzone, "04", 2);
-		    break;
-		} else
-		    strncpy(cqzone, "05", 2);
-
-	    }
-	}
-    }				// end exception
+    if (w > 0 ) {
+	sprintf(cqzone, "%02d", prefix_by_index(w) -> cq);
+	sprintf(ituzone, "%02d", prefix_by_index(w) -> itu);
+    } 
 
     if (itumult != 1)
 	strcpy(zone_export, cqzone);
     else
 	strcpy(zone_export, ituzone);
 
-    strncpy(ituzone, ituarray[w], 2);
+// w must be >0  tb 17feb2011
+//    strncpy(ituzone, ituarray[w], 2);
 
     countrynr = x;
-    strncpy(continent, datalines[countrynr] + 36, 3);
+    strncpy(continent, dxcc_by_index(countrynr) -> continent , 3);
     continent[2] = '\0';
 
     return (x);
@@ -236,19 +204,16 @@ int getctydata(char *checkcallptr)
 // pa3fwm, 20040113: I didn't "clean" this part yet
 int getctydata2(char *checkcall)
 {
-    extern char prefixlines[MAX_DBLINES][17];
     extern char cqzone[];
-    extern char zonearray[MAX_DBLINES][3];
-    extern int dataindex[MAX_DBLINES];
     extern int countrynr;
-    extern char datalines[MAX_DATALINES][81];
 
     char checkbuffer[17] = "";
     char membuffer[17] = "";
     char checkncall[20];
 
+    prefix_data *pfx;
+    int pfxmax = prefix_count();
     int i = 0, w = 0, x = 0;
-    int exception;
     char portable = '\0';
     int pp = 0;
     size_t loc;
@@ -316,15 +281,16 @@ int getctydata2(char *checkcall)
 	strncpy(checkncall, checkcall, pp);
 	checkncall[pp] = '\0';
 
-	for (i = 0; i < MAX_DBLINES; i++) {
+	for (i = 0; i < pfxmax; i++) {
+		
+	    pfx = prefix_by_index(i);
 
 	    if ((strncmp
-		 (checkncall, prefixlines[i],
-		  strlen(prefixlines[i])) == 0)) {
+		 (checkncall, pfx->pfx, strlen(pfx->pfx)) == 0)) {
 
-		if (strlen(checkncall) == strlen(prefixlines[i])) {
+		if (strlen(checkncall) == strlen(pfx->pfx)) {
 		    w = i;
-		    x = dataindex[i];
+		    x = pfx->dxcc_index;
 		    break;
 		}
 
@@ -332,13 +298,7 @@ int getctydata2(char *checkcall)
 	}
     }
 
-    exception = 0;
-
-    if (strlen(zonearray[w]) > 0) {
-	exception = 1;
-	strncpy(cqzone, zonearray[w], 2);
-    } else
-	strncpy(cqzone, datalines[x] + 26, 2);
+    sprintf(cqzone, "%02d", prefix_by_index(w) -> cq);
 
     countrynr = x;
 

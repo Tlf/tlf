@@ -26,6 +26,7 @@
 #include "globalvars.h"
 #include "getmessages.h"
 #include "qsonr_to_str.h"
+#include "dxcc.h"
 
 int getmessages(void)
 {
@@ -34,7 +35,6 @@ int getmessages(void)
     extern int mycountrynr;
     extern char mycqzone[];
     extern char mycontinent[];
-    extern char datalines[MAX_DATALINES][81];
     extern char logfile[];
     extern int qsonum;
     extern char qsonrstr[];
@@ -45,6 +45,7 @@ int getmessages(void)
 
     FILE *fp;
 
+    dxcc_data *mydx;
     int i, ii;
     char logline[5][82];
     char printcall[12] = "";
@@ -57,15 +58,13 @@ int getmessages(void)
     printw(printcall);
 
     mycountrynr = getctydata(call);	/* whoami? */
+    mydx = dxcc_by_index(mycountrynr);
 
     mycqzone[0] = '\0';
-    strncat(mycqzone, datalines[mycountrynr] + 26, 2);
-    mycontinent[0] = '\0';
-    strncat(mycontinent, datalines[mycountrynr] + 36, 2);
-    strncpy(C_QTH_Lat, datalines[mycountrynr] + 42, 6);	/* whereami? */
-    strncpy(C_QTH_Long, datalines[mycountrynr] + 51, 7);
-    C_QTH_Lat[6] = '\0';
-    C_QTH_Long[7] = '\0';
+    sprintf(mycqzone, "%02d", mydx -> cq);
+    strcpy(mycontinent, mydx->continent);
+    sprintf(C_QTH_Lat, "%6.2f", mydx->lat); /* whereami? */
+    sprintf(C_QTH_Long, "%7.2f", mydx->lon);
 
     printw("     My Zone = ");
     printw(mycqzone);

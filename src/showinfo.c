@@ -19,15 +19,16 @@
 	/* ------------------------------------------------------------
 	 *
 	 *              Make info string for lower status line
+	 *		x - countrynumber
 	 *--------------------------------------------------------------*/
 
 #include "showinfo.h"
+#include "dxcc.h"
 
 int showinfo(int x)
 {
 
     extern int use_rxvt;
-    extern char datalines[MAX_DATALINES][81];
     extern char cqzone[];
     extern char ituzone[];
     extern int cury, curx;
@@ -46,10 +47,9 @@ int showinfo(int x)
     char countrystr[26];
     char zonestr[3];
     char contstr[3] = "";
-    char timediffstr[7];
     char timebuff[80];
 
-    int i;
+    dxcc_data *dx;
     double d;
     time_t now;
     struct tm *ptr1;
@@ -57,67 +57,52 @@ int showinfo(int x)
     bufstr[80] = '\0';
     bufstr[0] = ' ';
 
-    for (i = 69; i < 76; i++) {	/* prefix */
-	pxstr[i - 69] = datalines[x][i];
-	if (datalines[x][i] == ':')
-	    break;
-    }
-    pxstr[i - 68] = '\0';
+    dx = dxcc_by_index(x);
 
-    strncpy(countrystr, datalines[x], 23);	/* country */
-
-    for (i = 1; i <= 22; i++) {
-	if (countrystr[i] == ':') {
-	    countrystr[i] = ' ';
-	    break;
-	}			/* remove colon */
-    }
-    countrystr[22] = '\0';
+    strcpy(pxstr, dx->pfx);
+    strcpy(countrystr, dx->countryname);	/* country */
 
     if (strlen(cqzone) < 2) {
-	strncpy(zonestr, datalines[x] + 26, 2);	/* zone */
-	zonestr[2] = '\0';
-	strncpy(cqzone, zonestr, 3);
+	sprintf(zonestr, "%02d", dx->cq); 	/* cqzone */
+	strcpy(cqzone, zonestr);
     } else {
 	strncpy(zonestr, cqzone, 2);
 	zonestr[2] = '\0';
     }
 
     if (strlen(ituzone) < 2) {
-	strncpy(itustr, datalines[x] + 31, 2);	/* itu zone */
-	itustr[2] = '\0';
+	sprintf(itustr, "%02d", dx->itu);	/* itu zone */
     } else {
 	strncpy(itustr, ituzone, 2);
 	itustr[2] = '\0';
     }
 
-    strncpy(timediffstr, datalines[x] + 60, 6);	/* GMT difference */
-    timediffstr[6] = '\0';
-    d = atof(timediffstr);
+    d = dx->timezone;				/* GMT difference */
 
     now = (time(0) + ((timeoffset - d) * 3600) + timecorr);
     ptr1 = gmtime(&now);
     strftime(timebuff, 80, "%H:%M", ptr1);
 
-    strncpy(C_DEST_Lat, datalines[x] + 41, 6);	/* whereishe? */
-    strncpy(C_DEST_Long, datalines[x] + 50, 7);
-    C_DEST_Lat[6] = '\0';
-    C_DEST_Long[7] = '\0';
+    sprintf(C_DEST_Lat, "%6.2f", dx->lat);	/* where is he? */
+    sprintf(C_DEST_Long, "%7.2f", dx->lon);
 
     if (countrynr != 0 && countrynr != mycountrynr)
 	qrb();
 
-    strncpy(contstr, datalines[x] + 36, 2);	/* continent */
+    strncpy(contstr, dx->continent, 2);	/* continent */
     contstr[2] = '\0';
 
     getyx(stdscr, cury, curx);
     attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+
+    // x == 1 for 1A..., should be 'x==0'
     if (x == 1)
 	mvprintw(24, 0,
 		 "                                                                                        ");
     else {
 	mvprintw(24, 0, " %s  %s             ", pxstr, countrystr);
 
+	// check fo x are overlapping, output is redundant
 	if (x > 0) {
 	    mvprintw(24, 26,
 		     " %s %s                                           ",

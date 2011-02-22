@@ -22,6 +22,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "searchlog.h"
+#include "dxcc.h"
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
 #endif
@@ -51,7 +52,6 @@ int searchlog(char *searchstring)
     extern int cqww;
     extern int pacc_pa_flg;
     extern int pacc_qsos[10][10];
-    extern char datalines[MAX_DATALINES][81];
     extern int countrynr;
     extern int contest;
     extern int wpx;
@@ -91,6 +91,7 @@ int searchlog(char *searchstring)
     char s_inputbuffercpy[82] = "";
     char printres[14] = "";
     char *loc;
+    dxcc_data *dx;
     static char zonebuffer[3] = "";
     static int z, z1;
     static int i, j, k, l;
@@ -99,8 +100,6 @@ int searchlog(char *searchstring)
     static int qso_index = 0;
     static int xwin = 1;
     static int ywin = 1;
-
-    char *tmpstr;
 
     l = 0;
     z = 0;
@@ -338,15 +337,7 @@ int searchlog(char *searchstring)
 
 	/* prepare and print lower line of checkwindow */
 	attroff(A_STANDOUT);
-	strncpy(s_inputbuffer, datalines[countrynr], 28);
-
-	for (i = 0; i <= 27; i++) {
-
-	    if (s_inputbuffer[i] == ':') {
-		s_inputbuffer[i] = ' ';
-		break;
-	    }
-	}
+	dx = dxcc_by_index(countrynr);
 
 	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 
@@ -361,12 +352,11 @@ int searchlog(char *searchstring)
 	    }
 	}
 
-	s_inputbuffer[28] = '\0';
-
 	attron(COLOR_PAIR(COLOR_YELLOW));
 
-	mvprintw(8, 47, s_inputbuffer);
-	mvhline(8, 47 + i, ACS_HLINE, 26 - i);
+	mvprintw(8, 47, dx->countryname);
+	mvprintw(8, 73, "%02d", dx->cq);
+
 	if (itumult != 1)
 	    mvprintw(8, 73, "%s", zonebuffer);
 	else

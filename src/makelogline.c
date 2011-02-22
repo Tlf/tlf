@@ -23,6 +23,7 @@
 
 #include "globalvars.h"
 #include "makelogline.h"
+#include "dxcc.h"
 
 int makelogline(void)
 {
@@ -174,21 +175,9 @@ int makelogline(void)
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strncat(logline4, datalines[addcty] + 69, 4);
-	    if (logline4[69] == ':') {
-		logline4[69] = '\0';
-		strncat(logline4, fillspaces, 2);
-	    }
-	    if (logline4[70] == ':') {
-		logline4[70] = '\0';
-		strncat(logline4, fillspaces, 1);
-	    }
-	    if (logline4[71] == ':') {
-		logline4[71] = '\0';
-	    }
+	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
 
-	    strcat(logline4, " ");
-	    logline4[72] = '\0';
+	    strncat(logline4, fillspaces, 72 - strlen(logline4));
 	    addcty = 0;
 	} else {
 	    strcat(logline4, "    ");
@@ -218,19 +207,10 @@ int makelogline(void)
     } else if (arrldx_usa == 1) {
 	logline4[68] = '\0';
 	if (addcty != 0) {
-	    strncat(logline4, datalines[addcty] + 69, 3);
-	    if (logline4[69] == ':') {
-		logline4[69] = '\0';
-		strncat(logline4, fillspaces, 2);
-	    }
-	    if (logline4[70] == ':') {
-		logline4[70] = '\0';
-		strncat(logline4, fillspaces, 1);
-	    }
-	    strcat(logline4, " ");
+	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
+	    
+	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
-
-	    strcat(logline4, "     ");
 
 	} else
 	    strncat(logline4, fillspaces, 9);
@@ -240,19 +220,10 @@ int makelogline(void)
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strncat(logline4, datalines[addcty] + 69, 3);
-	    if (logline4[69] == ':') {
-		logline4[69] = '\0';
-		strncat(logline4, fillspaces, 2);
-	    }
-	    if (logline4[70] == ':') {
-		logline4[70] = '\0';
-		strncat(logline4, fillspaces, 1);
-	    }
-	    strcat(logline4, " ");
-	    addcty = 0;
+	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
 
-	    strcat(logline4, "     ");
+	    strncat(logline4, fillspaces, 77 - strlen(logline4));
+	    addcty = 0;
 
 	} else {
 	    strncat(logline4, fillspaces, 9);
@@ -292,19 +263,10 @@ int makelogline(void)
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strncat(logline4, datalines[addcty] + 69, 3);
-	    if (logline4[69] == ':') {
-		logline4[69] = '\0';
-		strncat(logline4, fillspaces, 2);
-	    }
-	    if (logline4[70] == ':') {
-		logline4[70] = '\0';
-		strncat(logline4, fillspaces, 1);
-	    }
-	    strcat(logline4, " ");
-	    addcty = 0;
+	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
 
-	    strcat(logline4, "     ");
+	    strncat(logline4, fillspaces, 77 - strlen(logline4));
+	    addcty = 0;
 
 	} else if (addcallarea == 1) {
 
@@ -329,19 +291,10 @@ int makelogline(void)
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strncat(logline4, datalines[addcty] + 69, 3);
-	    if (logline4[69] == ':') {
-		logline4[69] = '\0';
-		strncat(logline4, fillspaces, 2);
-	    }
-	    if (logline4[70] == ':') {
-		logline4[70] = '\0';
-		strncat(logline4, fillspaces, 1);
-	    }
-	    strcat(logline4, " ");
-	    addcty = 0;
+	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
 
-	    strcat(logline4, "     ");
+	    strncat(logline4, fillspaces, 77 - strlen(logline4));
+	    addcty = 0;
 
 	} else
 	    strncat(logline4, fillspaces, 9);

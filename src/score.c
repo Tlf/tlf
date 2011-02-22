@@ -70,13 +70,13 @@ int exist_in_multi_list()
     if (multi_found(prefix) == 1) {
 	return (1);
     } else {
-	if ((prefix[strlen(prefix) - 1] < 58)
+	if ((prefix[strlen(prefix) - 1] < 58)	/* last char '0'..'9' */
 	    && (prefix[strlen(prefix) - 1] > 47)) {
-	    prefix[strlen(prefix) - 1] = '\0';
+	    prefix[strlen(prefix) - 1] = '\0';  /* strip number */
 	    if (multi_found(prefix) == 1) {
 		return 1;
 	    } else {
-		if ((prefix[strlen(prefix) - 1] < 58)
+		if ((prefix[strlen(prefix) - 1] < 58) /* see above */
 		    && (prefix[strlen(prefix) - 1] > 47)) {
 		    prefix[strlen(prefix) - 1] = '\0';
 		    if (multi_found(prefix) == 1)

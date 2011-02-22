@@ -596,7 +596,6 @@ char callinput(void)
 	    {
 		if (mem == 0.0) {
 		    mem = freq;
-
 		    mvprintw(14, 68, "MEM: %7.1f", mem);
 		} else {
 		    freq = mem;

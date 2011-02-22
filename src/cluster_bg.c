@@ -1,4 +1,5 @@
 #include "cluster_bg.h"
+#include "dxcc.h"
 
 extern int cluster;
 extern int announcefilter;
@@ -254,7 +255,6 @@ int loadbandmap(void)
     extern int countries[];
     extern int call_band[];
     extern int allspots;
-    extern char datalines[MAX_DATALINES][81];
     extern int xplanet;
     extern char markerfile[];
     extern int countrynr;
@@ -292,6 +292,7 @@ int loadbandmap(void)
     int nofile = 0;
     int iswarc = 0;
     char xplanetmsg[160];
+    dxcc_data *dx;
 
     for (i = 0; i < MAX_SPOTS; i++)
 	bandmap[i] = NULL;
@@ -500,13 +501,13 @@ int loadbandmap(void)
     for (j = linepos; j < linepos + 8; j++) {
 
 	if (bandmap[j] != NULL) {
-	    strncpy(spotline, bandmap[j] + 17, 22);
+	    strncpy(spotline, bandmap[j] + 17, 22);	// freq and call
 	    spotline[22] = '\0';
-	    strncpy(spottime, bandmap[j] + 70, 5);
+	    strncpy(spottime, bandmap[j] + 70, 5);	// time
 	    spottime[5] = '\0';
 	    strcat(spotline, spottime);
 
-	    strncpy(callcopy, bandmap[j] + 26, 16);
+	    strncpy(callcopy, bandmap[j] + 26, 16);	// call
 	    for (m = 0; m < 16; m++) {
 		if (callcopy[m] == ' ') {
 		    callcopy[m] = '\0';
@@ -581,8 +582,9 @@ int loadbandmap(void)
 		if (xplanet == 2)
 		    callcopy[0]='\0';
 
-		lon = atoi(datalines[x] + 40);
-		lat = atoi(datalines[x] + 50) * -1;
+		dx = dxcc_by_index(x);
+		lon = (int)(dx -> lon);
+		lat = (int)(dx -> lat) * -1;
 		sprintf(marker_out, "%4d   %4d   \"%s\"   color=", 
 			lon, lat, callcopy);
 

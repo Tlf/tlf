@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * 		 2011 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@
 	 *              Read country data  from disk
 	 *--------------------------------------------------------------*/
 
+#include "dxcc.h"
 #include "readctydata.h"
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
@@ -28,18 +30,8 @@
 
 int readctydata(void)
 {
-    extern char prefixlines[MAX_DBLINES][17];
-    extern char zonearray[MAX_DBLINES][3];
-    extern char ituarray[MAX_DBLINES][3];
-    extern int dataindex[MAX_DBLINES];
-    extern char datalines[MAX_DATALINES][81];
-
     char buf[181] = "";
     char ctydb_location[80];
-    int i = 0, j = 0, k = 0, o = 0;
-    static int nrofpfx = 0;
-    char *cqloc;
-    char *ituloc;
     char *loc;
 
     FILE *fp_db;
@@ -58,16 +50,14 @@ int readctydata(void)
 	}
     }
 
+    dxcc_init();
+    prefix_init();
+
     // set default for empty country
-    strcpy(datalines[0],
-	   "Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :\r\n");
+    dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
 /* read  ctydb.dat file ---------------------------------------------------- */
 
-    o = 1;			// data lines
-    k = 0;			// prefix lines
-    i = 0;			// pointer in prefix line
-    j = 0;			// pointer in prefix line
 
     while (fgets(buf, sizeof(buf), fp_db) != NULL) {
 
@@ -81,43 +71,20 @@ int readctydata(void)
 	    continue;
 
 	if (buf[0] != ' ') {	// data line
-	    strncpy(datalines[o], buf, sizeof(datalines[0]) - 1);
-	    datalines[o][sizeof(datalines[0]) - 1] = '\0';
-	    o++;
+
+	    dxcc_add(buf);
+
 	} else			// prefix line
 	{
 	    loc = strtok(buf, " ,;");
 	    while (loc != NULL) {
-		nrofpfx++;
 
-		strcpy(prefixlines[k], loc);
+		prefix_add (loc);
 
-		ituloc = strchr(prefixlines[k], '[');	// locate the itu zone
-		if (ituloc != NULL) {
-		    sprintf(ituarray[k], "%02d", atoi(ituloc + 1));
-		    *ituloc = '\0';	// truncate the string
-		} else
-		    ituarray[k][0] = '\0';
-
-		cqloc = strchr(prefixlines[k], '(');	// locate the cq zone
-		if (cqloc != NULL) {
-		    sprintf(zonearray[k], "%02d", atoi(cqloc + 1));
-		    *cqloc = '\0';	// truncate the string
-		} else
-		    zonearray[k][0] = '\0';
-
-		dataindex[k] = o - 1;	// remember country index in pfx
-
-		k++;
 		loc = strtok(NULL, " ,;");
 	    }
 	}
     }
-#ifdef test
-    shownr ("Number of Prefixes read =", nrofpfx);
-    for (n=0; n<nrofpfx; n++)
-	fprintf(stderr,"%s\n",prefixlines[n]);
-#endif
 
     fclose(fp_db);
 

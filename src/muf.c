@@ -19,6 +19,7 @@
 #include "muf.h"
 #include "tlf.h"
 #include "get_time.h"
+#include "dxcc.h"
 
 extern int use_rxvt;
 extern double yt;
@@ -191,9 +192,9 @@ int muf(void)
 
     extern int mycountrynr;
     extern int countrynr;
-    extern char datalines[MAX_DATALINES][81];
     extern char lastwwv[];
 
+    dxcc_data *dx;
     int row;
     static double x, la, l, mf, lh;
     static long ve, ho;
@@ -256,23 +257,11 @@ int muf(void)
     }
 
     clear();
-    strncpy(mycountry, datalines[mycountrynr], 25);
-    mycountry[25] = '\0';
-    for (i = 2; i <= 25; i++) {
-	if (mycountry[i] == ':') {
-	    mycountry[i] = '\0';
-	    break;
-	}
-    }
-    strncpy(country, datalines[countrynr], 25);
-    country[25] = '\0';
-    for (i = 5; i <= 25; i++) {
-	if (country[i] == ':') {
-	    country[i] = '\0';
-	    break;
-	}
-    }
+    dx = dxcc_by_index(mycountrynr);
+    strncpy(mycountry, dx->countryname, 25);
 
+    dx = dxcc_by_index(countrynr);
+    strncpy(country, dx->countryname, 25);
 
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
