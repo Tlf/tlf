@@ -66,8 +66,7 @@ int addcall(void)
 
     found = searchcallarray(checkcall);
 
-    /* \todo check handling of 'found' 0 means also found in first entry */ 
-    if (found == 0) {
+    if (found == -1) {
 
 	callarray_nr++;
 	i = callarray_nr;
@@ -274,7 +273,7 @@ int addcall2(void)
 
     found = searchcallarray(checkcall);
 
-    if (found == 0) {
+    if (found == -1) {
 
 	callarray_nr++;
 	i = callarray_nr;

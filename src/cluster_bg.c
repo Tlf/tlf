@@ -530,48 +530,21 @@ int loadbandmap(void)
 	    if (cluster == MAP)
 		thisband = bandinx;
 
-	    switch (thisband) {			// INDEX -> BAND via Table
-	    case BANDINDEX_160:
-		if ((countries[x] & BAND160) != 0)
-		    worked = 1;
-		if ((call_band[y] & BAND160) == 0)
-		    dupe = 0;
-		break;
-	    case BANDINDEX_80:
-		if ((countries[x] & BAND80) != 0)
-		    worked = 1;
-		if ((call_band[y] & BAND80) == 0)
-		    dupe = 0;
-		break;
-	    case BANDINDEX_40:
-		if ((countries[x] & BAND40) != 0)
-		    worked = 1;
-		if ((call_band[y] & BAND40) == 0)
-		    dupe = 0;
-		break;
-	    case BANDINDEX_20:
-		if ((countries[x] & BAND20) != 0)
-		    worked = 1;
-		if ((call_band[y] & BAND20) == 0)
-		    dupe = 0;
-		break;
-	    case BANDINDEX_15:
-		if ((countries[x] & BAND15) != 0)
-		    worked = 1;
-		if ((call_band[y] & BAND15) == 0)
-		    dupe = 0;
-		break;
-	    case BANDINDEX_10:
-		if ((countries[x] & BAND10) != 0)
-		    worked = 1;
-		if ((call_band[y] & BAND10) == 0)
-		    dupe = 0;
-		break;
-	    default:
+	    /* check if country was already worked on thiis band */
+	    if ((countries[x] & inxes[thisband]) != 0)
 		worked = 1;
-		dupe = 0;
 
+	    /* check if already worked on these band */
+	    if (y != -1) {	/*  found */
+		if ((call_band[y] & inxes[thisband]) == 0)
+		    dupe = 0;	/* not worked on this band yet */
 	    }
+
+	    if (inxes[thisband] == 0) {	/* WARC band */
+		worked = 1;		/* means, show as not needed */
+		dupe = 0;
+	    }
+
 	    if (x != 0 && xplanet > 0 && nofile == 0) {
 
 		if ((fp = fopen(markerfile, "a")) == NULL) {
@@ -637,9 +610,6 @@ int loadbandmap(void)
 
 		fclose(fp);
 	    }
-
-	    if (y == 0)
-		dupe = 1;
 
 	    /* display bandmap and color according to 'worked' 
 	     * and age of spot */

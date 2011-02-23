@@ -99,6 +99,9 @@
 #define BANDINDEX_12 7
 #define BANDINDEX_10 8
 
+extern int inxes[9];  /*< conversion from BANDINDEX to BAND-mask,
+			see addmult.c */
+
 #define NBANDS 9	// not yet used everywhere, many places have hardcode 9 (or 8, being the maximum band index)
 
 #define DUPECOLOR 5
