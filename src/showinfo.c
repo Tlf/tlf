@@ -39,7 +39,6 @@ int showinfo(int x)
     extern int timeoffset;
     extern int timecorr;
     extern char itustr[];
-    extern int countrynr;
     extern int mycountrynr;
 
     char bufstr[81];
@@ -86,7 +85,7 @@ int showinfo(int x)
     sprintf(C_DEST_Lat, "%6.2f", dx->lat);	/* where is he? */
     sprintf(C_DEST_Long, "%7.2f", dx->lon);
 
-    if (countrynr != 0 && countrynr != mycountrynr)
+    if (x != 0 && x != mycountrynr)
 	qrb();
 
     strncpy(contstr, dx->continent, 2);	/* continent */
@@ -95,33 +94,18 @@ int showinfo(int x)
     getyx(stdscr, cury, curx);
     attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 
-    // x == 1 for 1A..., should be 'x==0'
-    if (x == 1)
-	mvprintw(24, 0,
-		 "                                                                                        ");
-    else {
-	mvprintw(24, 0, " %s  %s             ", pxstr, countrystr);
+    mvprintw(24, 0, " %s  %s             ", pxstr, countrystr);
 
-	// check fo x are overlapping, output is redundant
-	if (x > 0) {
-	    mvprintw(24, 26,
-		     " %s %s                                           ",
-		     contstr, zonestr);
+    mvprintw(24, 26,
+	 " %s %s                                           ",
+	 contstr, zonestr);
 
-	    if (x != 0 && x != mycountrynr)
-		mvprintw(24, 26, " %s %s   %.0f km/%.0f deg ", contstr,
-			 zonestr, range, bearing);
-	    else
-		mvprintw(24, 26, " %s %s                            ",
-			 contstr, zonestr);
+    if (x != 0 && x != mycountrynr)
+	mvprintw(24, 35, "%.0f km/%.0f deg ", range, bearing);
 
-	} else
-	    mvprintw(24, 26, " %s %s                        ", contstr,
-		     zonestr);
-
-	mvprintw(24, 64, "  DX time: %s", timebuff);
-    }
-    if (use_rxvt == 0)
+    mvprintw(24, 64, "  DX time: %s", timebuff);
+ 
+   if (use_rxvt == 0)
 	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
     else
 	attron(COLOR_PAIR(NORMCOLOR));
