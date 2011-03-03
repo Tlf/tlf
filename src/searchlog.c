@@ -354,8 +354,9 @@ int searchlog(char *searchstring)
 
 	attron(COLOR_PAIR(COLOR_YELLOW));
 
-	mvprintw(8, 47, dx->countryname);
+	mvprintw(8, 43, dx->countryname);
 	mvprintw(8, 73, "%02d", dx->cq);
+	i = strlen(dx->countryname);
 
 	if (itumult != 1)
 	    mvprintw(8, 73, "%s", zonebuffer);
@@ -365,7 +366,7 @@ int searchlog(char *searchstring)
 	s_inputbuffer[0] = '\0';
 
 	if (wpx == 1) {
-	    mvprintw(8, 47 + i + 5, pxstr);
+	    mvprintw(8, 43 + i + 3, pxstr);
 	}
 
 	/* print worked zones and countrays for each band in checkwindow */
@@ -889,7 +890,7 @@ int load_multipliers(void)
 	    if (strlen(s_inputbuffer) > 0)
 		s_inputbuffer[strlen(s_inputbuffer) - 1] = '\0';
 	    s_inputbuffer[9] = '\0';
-	    /* BUG todo: fix strcpy. poss. buffer overun 16jan10 tb */
+	    /**  \todo: fix strcpy. poss. buffer overun 16jan10 tb */
 	    strcpy(mults_possible[count], s_inputbuffer);
 
 	    count++;
