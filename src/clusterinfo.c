@@ -83,7 +83,6 @@ void clusterinfo(char *timestr)
 
 	    if ((showfreq == 1) && (showscore_flag == 0)) {
 
-		nicebox(16, 39, 5, 35, "TRX");
 		freq_display();
 	    }
 	}
