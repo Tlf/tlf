@@ -563,8 +563,8 @@ int checkexchange(int x)
 
 	    hr = getlastpattern(zonepats[ii]);
 
-// logik und Verwendung zone_fix vs zone_export unklar
-// Was passiert, falls zonenummer in comment zu groess ist?
+//! \todo  logik und Verwendung zone_fix vs zone_export unklar
+//! Was passiert, falls zonenummer in comment zu groess ist?
 	    if ((hr > 1) && (atoi(comment + hr - 1) != 0)) {
 		sprintf(zone, "%02d", atoi(comment + hr - 1));
 		strncpy(zone_fix, zone, 2);
