@@ -1,6 +1,9 @@
 #include "cluster_bg.h"
 #include "dxcc.h"
 
+// \todo drop
+#include "bandmap.h"
+
 extern int cluster;
 extern int announcefilter;
 extern int bandinx;
@@ -683,6 +686,8 @@ int loadbandmap(void)
 	    mvprintw(23, 17, "v");
 	mvprintw(14, 23, "%d", linepos);
     }
+
+    bandmap_show();
 
     refresh();
 

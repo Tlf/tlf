@@ -20,16 +20,62 @@
 #ifndef _BANDMAP_H
 #define _BANDMAP_H
 
+typedef struct {
+    char 	*call;  
+    int 	freq;	/* freq in Hz */
+    char 	mode;
+    short 	band;
+    int		node;
+    int 	timeout;
+} spot;
+
+#define SPOT_NEW	900
+#define SPOT_NORMAL	(SPOT_NEW * 95) / 100
+#define SPOT_OLD	(SPOT_NEW * 2)  / 3
+
+typedef struct {
+    short allband;
+    short allmode;
+    short showdupes;
+} bm_config_t;
+
+extern bm_config_t bm_config;
+
+enum {
+    CB_DUPE = 8,
+    CB_OLD,
+    CB_NORMAL,
+    CB_NEW,
+    CB_MULTI
+};
+
+void bm_add(char *s);
+
+void bm_menu();
+
+/** check if call is new multi 
+ *
+ * \return true if new multi
+ */
+int bm_ismulti(char *call);
+
+
+/** check if call is a dupe 
+ *
+ * \return true if is dupe
+ */
+int bm_isdupe(char *call);
+
+
 /** add a new spot to bandmap data 
  * \param call  	the call to add
  * \param frequ 	on which frequency heard
- * \param mode		actual mode
  * \param reason	- new cluster spot
  * 			- local announcement (Ctrl-A)
- * 			- cluster announcement (Ctrl-B)
+ * 			- own cluster announcement (Ctrl-B)
  * 			- just worked in S&P
  */
-bandmap_addspot( call, frequ, mode, reason);
+void bandmap_addspot(char *call, unsigned int frequ, char node);
 /*
  * - if call already on that band and mode replace old entry with new one and
  *   set age to 0 otherwise add it to collection
@@ -39,15 +85,15 @@ bandmap_addspot( call, frequ, mode, reason);
  *   but display only rounded to 100 Hz - sort exact
  */
 
-bandmap_age();
+void bandmap_age();
 /*
  * - go through all entries
  *   + increment age
- *   + set state to new, normal, aged or aged_out
- *   + if aged_out drop it from collection
+ *   + set state to new, normal, aged or dead
+ *   + if dead -> drop it from collection
  */
 
-bandmap_show();
+void bandmap_show();
 /*
  * display depending on filter state
  * - all bands on/off
@@ -69,7 +115,7 @@ bandmap_show();
  * (maybee green highlighted)
  * - highligth actual spot if near its frequency 
  *
- * Allow selection of one of the spots
+ * Allow selection of one of the spots (switches to S&P)
  * - Ctrl-G as known
  * - '.' and cursor plus 'Enter'
  *
