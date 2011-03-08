@@ -89,20 +89,23 @@
 #define  BAND15 2
 #define  BAND10 1
 
-#define BANDINDEX_160 0
-#define BANDINDEX_80 1
-#define BANDINDEX_40 2
-#define BANDINDEX_30 3
-#define BANDINDEX_20 4
-#define BANDINDEX_17 5
-#define BANDINDEX_15 6
-#define BANDINDEX_12 7
-#define BANDINDEX_10 8
-
-extern int inxes[9];  /*< conversion from BANDINDEX to BAND-mask,
+enum {
+    BANDINDEX_160 = 0,
+    BANDINDEX_80,
+    BANDINDEX_40,
+    BANDINDEX_30,
+    BANDINDEX_20,
+    BANDINDEX_17,
+    BANDINDEX_15,
+    BANDINDEX_12,
+    BANDINDEX_10,
+    NBANDS 		// not yet used everywhere, 
+};			// many places have hardcode 9 
+			// (or 8, being the maximum band index)
+			//
+extern int inxes[NBANDS];  /*< conversion from BANDINDEX to BAND-mask,
 			see addmult.c */
 
-#define NBANDS 9	// not yet used everywhere, many places have hardcode 9 (or 8, being the maximum band index)
 
 #define DUPECOLOR 5
 #define NORMCOLOR 4
