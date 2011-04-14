@@ -32,6 +32,7 @@ int addcall(void)
     extern int callarray_nr;
     extern char callarray[MAX_CALLS][20];
     extern int call_country[MAX_CALLS];
+    extern int call_band[MAX_CALLS];
     extern char comment[];
     extern char call_exchange[MAX_CALLS][12];
     extern int cqww;
@@ -80,7 +81,7 @@ int addcall(void)
 
     j = getctydata(checkcall);
     call_country[i] = j;
-    if (strlen(comment) >= 1) {
+    if (strlen(comment) >= 1) {		/* remember last exchange */
 	strcpy(call_exchange[i], comment);
 
 	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
@@ -112,6 +113,8 @@ int addcall(void)
 	add_ok = pacc_pa();
 
     if (add_ok == 1) {
+
+	call_band[i] |= inxes[bandinx];		/* worked on this band */
 
 	switch (bandinx) {
 
