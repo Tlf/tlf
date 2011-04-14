@@ -287,6 +287,8 @@ int bm_ismulti( char * call) {
 }
 
 
+/** \todo should check band AND mode if already worked.... */
+
 int bm_isdupe( char *call, int band ) {
     int found = -1;
     
@@ -299,7 +301,7 @@ int bm_isdupe( char *call, int band ) {
     if (found == -1)		/* new call */
 	return 0;
  
-    if (call_band[found] && inxes[band])
+    if (call_band[found] & inxes[band])
 	return 1;
     else
 	return 0;
