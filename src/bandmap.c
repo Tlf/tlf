@@ -346,6 +346,7 @@ void bandmap_show() {
     int curx, cury;
     int bm_x, bm_y;
     int i,j;
+    short dupe;
 
     if (!bm_initialized) {
 	bm_init();
@@ -401,8 +402,12 @@ void bandmap_show() {
 	/* show spot if allband or allmode is set or band or mode matches
 	 * actual one
 	 */
+
+	dupe = bm_isdupe(data->call, data->band);
+
 	if ((bm_config.allband || (data->band == bandinx)) && 
-		(bm_config.allmode || (data->mode == trxmode))) {
+		(bm_config.allmode || (data->mode == trxmode)) &&
+		(bm_config.showdupes || !dupe)) {
 	
 	    attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 	    mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.), 
@@ -420,7 +425,7 @@ void bandmap_show() {
 	    if (bm_ismulti(data->call))
 		attron(A_STANDOUT);
 
-	   if (bm_isdupe(data->call, data->band)) {
+	   if (dupe) {
 	       if (bm_config.showdupes) {
 		   attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 		   attroff(A_STANDOUT);
