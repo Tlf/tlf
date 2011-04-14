@@ -32,6 +32,7 @@ int addspot(void)
     extern int trx_control;
     extern int lanspotflg;
     extern struct tm *time_ptr;
+    extern char thisnode;
 
     char spotline[160];
     char frequency[8];
@@ -54,7 +55,7 @@ int addspot(void)
 //    sprintf(spotline, "DX de TLF:       %9.3f  %s", freq, hiscall);
 //    \todo extend to 3 decimals for own spots
 //    needs to adapt 'grabspot
-    sprintf(spotline, "DX de TLF:       %7.1f  %s", freq, hiscall);
+    sprintf(spotline, "DX de TLF-%c:     %9.3f  %s", thisnode, freq, hiscall);
 
     strcat(spotline, "                                           ");
 
