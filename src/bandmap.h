@@ -64,7 +64,7 @@ int bm_ismulti(char *call);
  *
  * \return true if is dupe
  */
-int bm_isdupe(char *call);
+int bm_isdupe(char *call, int band);
 
 
 /** add a new spot to bandmap data 

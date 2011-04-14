@@ -19,6 +19,7 @@
 
 #include "bandmap.h"
 #include "tlf.h"
+#include "searchcallarray.h"
 #include <math.h>
 #include <glib.h>
 #include <ncurses.h>
@@ -76,6 +77,8 @@ short	bm_initialized = 0;
 extern int bandinx;
 extern int trxmode;
 extern int thisnode;
+
+extern int call_band[];		/** \todo should not be public */
 
 
 /** \brief initialize bandmap
@@ -284,8 +287,22 @@ int bm_ismulti( char * call) {
 }
 
 
-int bm_isdupe( char *call ) {
-    return 0;
+int bm_isdupe( char *call, int band ) {
+    int found = -1;
+    
+    /* spot for warc bands are never dupes */
+    if (!inxes[band])
+	return 0;
+
+    found = searchcallarray(call);
+    
+    if (found == -1)		/* new call */
+	return 0;
+ 
+    if (call_band[found] && inxes[band])
+	return 1;
+    else
+	return 0;
 }
 
 
@@ -403,7 +420,7 @@ void bandmap_show() {
 	    if (bm_ismulti(data->call))
 		attron(A_STANDOUT);
 
-	   if (bm_isdupe(data->call)) {
+	   if (bm_isdupe(data->call, data->band)) {
 	       if (bm_config.showdupes) {
 		   attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 		   attroff(A_STANDOUT);
