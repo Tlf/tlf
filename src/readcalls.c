@@ -299,6 +299,8 @@ int readcalls(void)
 	strncpy(callarray[l], inputbuffer + 29, 13);
 	callarray[l][13] = 0;
 	call_country[l] = countrynr;
+	strncpy(call_exchange[l], inputbuffer + 54, 11);
+	call_exchange[l][11] = '\0';
 
 	add_ok = 1;		/* look if calls are excluded */
 
@@ -328,8 +330,7 @@ int readcalls(void)
 	    countries[countrynr] |= inxes[bandinx];
 
 	}			/* end add_ok */
-	strncpy(call_exchange[l], inputbuffer + 54, 11);
-	call_exchange[l][11] = '\0';
+
 	if (l == i)
 	    i++;
     }
