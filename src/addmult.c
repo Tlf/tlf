@@ -25,7 +25,7 @@
 #include "globalvars.h"
 #include "addmult.h"
 
-int inxes[9] =
+int inxes[NBANDS] =
     { BAND160, BAND80, BAND40, 0, BAND20, 0, BAND15, 0, BAND10 };
 int multcount = 0;
 
