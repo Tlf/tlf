@@ -37,16 +37,10 @@ int searchcallarray(char *hiscall)
 
     int found = -1;
     int i;
-    static char cbuffer[40] = "";
-
-    cbuffer[0] = '\0';
-    strcat(cbuffer, hiscall);
-    strcat(cbuffer, "           ");
-    cbuffer[10] = '\0';
 
     for (i = 0; i <= callarray_nr; i++) {
 
-	if (strcmp(callarray[i], cbuffer) == 0) {
+	if (strcmp(callarray[i], hiscall) == 0) {
 	    found = i;
 	    break;
 	}
