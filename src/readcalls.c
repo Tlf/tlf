@@ -296,8 +296,10 @@ int readcalls(void)
 
 	}
 
-	strncpy(callarray[l], inputbuffer + 29, 13);
-	callarray[l][13] = 0;
+	strncpy(callarray[l], inputbuffer + 29, 19);
+	callarray[l][19] = 0;
+	strtok(callarray[l], " \r");	/* delimit first word */
+
 	call_country[l] = countrynr;
 	strncpy(call_exchange[l], inputbuffer + 54, 11);
 	call_exchange[l][11] = '\0';
@@ -477,6 +479,7 @@ int readcalls(void)
 	wysiwygmults = 0;
 
     }
+    /** \todo check vorherige Verwendugn von i zum Löschend es Feldes */
     callarray_nr = i;
 
     if ((arrlss == 1) && (total == 0))

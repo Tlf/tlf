@@ -68,13 +68,13 @@ int addcall(void)
 
     if (found == -1) {
 
-	callarray_nr++;
 	i = callarray_nr;
 
-	strcat(cbuffer, hiscall);
-	strcat(cbuffer, "           ");
-	cbuffer[10] = '\0';
-	strcpy(callarray[i], cbuffer);
+	strcpy(cbuffer, hiscall);
+	strncpy(callarray[i], cbuffer, 19);
+	callarray[i][19] = 0;
+
+	callarray_nr++;
     } else
 	i = found;
 
@@ -275,13 +275,13 @@ int addcall2(void)
 
     if (found == -1) {
 
-	callarray_nr++;
 	i = callarray_nr;
 
-	strcat(cbuffer, hiscall);
-	strcat(cbuffer, "           ");
-	cbuffer[10] = '\0';
-	strcpy(callarray[i], cbuffer);
+	strcpy(cbuffer, hiscall);
+	strncpy(callarray[i], cbuffer, 19);
+	callarray[i][19] = 0;
+
+	callarray_nr++;
     } else
 	i = found;
 
