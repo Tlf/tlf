@@ -31,18 +31,11 @@
 int set_tone(void)
 {
 
-    extern char speedstr[];
-    extern int speed;
     extern char tonestr[];
     extern int trxmode;
 
-    char speedbuf[3] = "  ";
-
     if (trxmode != CWMODE)
 	return (1);
-
-    strncpy(speedbuf, speedstr + (2 * speed), 2);
-    speedbuf[2] = '\0';
 
     nicebox(4, 40, 1, 6, "Tone");
     mvprintw(5, 42, "");
