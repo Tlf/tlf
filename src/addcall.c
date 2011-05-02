@@ -24,6 +24,7 @@
 
 #include "addcall.h"
 #include "addpfx.h"
+#include <glib.h>
 
 int addcall(void)
 {
@@ -56,30 +57,20 @@ int addcall(void)
 
     static int found = 0;
     static int i, j, z = 0;
-    static char cbuffer[41] = "";
-    static char checkcall[21] = "";
     static int add_ok;
 
-    checkcall[0] = '\0';
-    cbuffer[0] = '\0';
 
-    strncat(checkcall, hiscall, 20);
-
-    found = searchcallarray(checkcall);
+    found = searchcallarray(hiscall);
 
     if (found == -1) {
 
 	i = callarray_nr;
-
-	strcpy(cbuffer, hiscall);
-	strncpy(callarray[i], cbuffer, 19);
-	callarray[i][19] = 0;
-
+	g_strlcpy(callarray[i], hiscall, 20);
 	callarray_nr++;
     } else
 	i = found;
 
-    j = getctydata(checkcall);
+    j = getctydata(hiscall);
     call_country[i] = j;
     if (strlen(comment) >= 1) {		/* remember last exchange */
 	strcpy(call_exchange[i], comment);
@@ -238,8 +229,6 @@ int addcall2(void)
 
     int found = 0;
     int i, j, p, z = 0;
-    char cbuffer[41] = "";
-    char checkcall[21] = "";
     int add_ok;
     char lancopy[6];
     char zonebuffer[4];
@@ -249,12 +238,9 @@ int addcall2(void)
     int bandinx;
     int k;
 
-    checkcall[0] = '\0';
-    cbuffer[0] = '\0';
 
-    strncpy(hiscall, lan_logline + 29, 20);
+    g_strlcpy(hiscall, lan_logline + 29, 20);
 
-    // BUG Wie berechnet man strlen, falls hiscall nicht 0 terminiert ist? 
     for (k = 0; k < strlen(hiscall); k++) {	// terminate string at first space
 	if (hiscall[k] == ' ') {
 	    hiscall[k] = '\0';
@@ -262,9 +248,8 @@ int addcall2(void)
 	}
     }
 
-    strncpy(comment, lan_logline + 54, 30);
+    g_strlcpy(comment, lan_logline + 54, 31);
 
-    // BUG s.o.
     for (k = 0; k < strlen(comment); k++) {	// terminate string at first space
 	if (comment[k] == ' ') {
 	    comment[k] = '\0';
@@ -272,24 +257,18 @@ int addcall2(void)
 	}
     }
 
-    strncat(checkcall, hiscall, 20);
-
-    found = searchcallarray(checkcall);
+    found = searchcallarray(hiscall);
 
     if (found == -1) {
 
 	i = callarray_nr;
-
-	strcpy(cbuffer, hiscall);
-	strncpy(callarray[i], cbuffer, 19);
-	callarray[i][19] = 0;
-
+	g_strlcpy(callarray[i], hiscall, 20);
 	callarray_nr++;
     } else
 	i = found;
 
     strncpy(zonebuffer, cqzone, 3);	//hack: getctydata should not change zone!
-    j = getctydata2(checkcall);
+    j = getctydata2(hiscall);
     strncpy(cqzone, zonebuffer, 3);	//idem....
 
     call_country[i] = j;

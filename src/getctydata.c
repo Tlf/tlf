@@ -41,8 +41,7 @@ int getctydata(char *checkcallptr)
     int pp = 0;
     size_t loc;
 
-    strncpy(checkcall, checkcallptr, 16);
-    checkcall[16] = 0;
+    g_strlcpy(checkcall, checkcallptr, 17);
 
     portable = '\0';
 
