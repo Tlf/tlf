@@ -342,7 +342,7 @@ void bandmap_show() {
  * - 'B', 'D', 'M' switches filtering for band, dupes and mode on or off.
  */
 
-    GList *list = spots;
+    GList *list;
     spot *data;
     int cols = 0;
     int curx, cury;
@@ -397,6 +397,8 @@ void bandmap_show() {
     printw( " dupe");
 
     attroff (A_BOLD|A_STANDOUT);
+
+    list = spots;
 
     while (list) {
 	data = list->data;
