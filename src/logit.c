@@ -49,7 +49,6 @@ int logit(void)
     extern int recall_mult;
     extern int simulator;
     extern int simulator_mode;
-    extern int lan_mutex;
     extern int ctcomp;
     extern int wazmult;
     extern int itumult;
@@ -198,16 +197,8 @@ int logit(void)
 
 			defer_store = 0;
 		    }
-		    while (lan_mutex == 1) {
-			usleep(10000);
-			if (time_out++ > 100) {
-			    time_out = 0;
-			    break;
-			}
-		    }
-		    lan_mutex = 1;
-		    log_to_disk();
-		    lan_mutex = 0;
+
+		    log_to_disk(false);
 
 		}
 	    }
@@ -215,16 +206,7 @@ int logit(void)
 	    if ((callreturn == 92) && (*hiscall != '\0')) {
 		defer_store = 0;
 
-		while (lan_mutex == 1) {
-		    usleep(10000);
-		    if (time_out++ > 100) {
-			time_out = 0;
-			break;
-		    }
-		}
-		lan_mutex = 1;
-		log_to_disk();
-		lan_mutex = 0;
+		log_to_disk(false);
 	    }
 
 	    if (callreturn == 11 || callreturn == 44 || callreturn == 235) {	/*  CTRL K  */

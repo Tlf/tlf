@@ -25,7 +25,14 @@
 #include "globalvars.h"
 #include "log_to_disk.h"
 
-int log_to_disk(void)
+pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+/** \brief logs one record to disk
+ * Logs one record to disk which may come from different soureces
+ *
+ * \param from_lan true - Log lanmessage, false - normal message
+ */
+int log_to_disk(int from_lan)
 {
     extern int use_rxvt;
     extern char hiscall[];
@@ -42,13 +49,14 @@ int log_to_disk(void)
     extern int outfreq;
 #endif
     extern int block_part;
-    extern int lan_active;
     extern char lan_message[];
     extern char thisnode;
     extern int lan_mutex;
     extern int cqwwm2;
 
-    if (lan_mutex == 1) {	// qso from this node
+    pthread_mutex_lock(&disk_mutex);
+
+    if (!from_lan) {		// qso from this node
 
 	addcall();
 
@@ -60,50 +68,48 @@ int log_to_disk(void)
 	comment[30] = '\0';
 
 	store_qso(logline4);
+	
+	// send qso to other nodes......
+	send_lan_message(LOGENTRY, logline4);
     } else {			// qso from lan
 
-	if ((lan_mutex == 2) && (lan_message[0] != thisnode)
-	    && (lan_active == 1)) {
-	    strncpy(lan_logline, lan_message + 2, 80);
-	    strcat(lan_logline,
-		   "                                                                              ");
+	strncpy(lan_logline, lan_message + 2, 80);
+	strcat(lan_logline,
+	       "                                                                              ");
 
-	    if (cqwwm2 == 1) {
-		if (lan_logline[0] != thisnode)
-		    lan_logline[79] = '*';
-	    }
-
-	    lan_logline[80] = '\0';
-
-	    score2();
-	    addcall2();
-
-	    store_qso(lan_logline);
+	if (cqwwm2 == 1) {
+	    if (lan_logline[0] != thisnode)
+		lan_logline[79] = '*';
 	}
 
+	lan_logline[80] = '\0';
+
+	score2();
+	addcall2();
+
+	store_qso(lan_logline);
     }
 
-    // send qso to other nodes......
 
-    if ((lan_active == 1) && (strlen(lan_message) == 0)) {
-
-	send_lan_message(LOGENTRY, logline4);
-    }
-
-    lan_message[0] = '\0';
+    if (from_lan)
+	lan_mutex = 2;
+    else
+	lan_mutex = 1;
 
     scroll_log();
+
+    lan_mutex = 0;
 
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);	/* erase comment  field */
     else
 	attron(COLOR_PAIR(NORMCOLOR));
 
-    if (lan_mutex != 2)
+    if (!from_lan)
 	mvprintw(12, 54, "                          ");
 
     attron(COLOR_PAIR(7) | A_STANDOUT);
-    if (lan_mutex != 2) {
+    if (!from_lan) {
 	mvprintw(7, 0, logline0);
 	mvprintw(8, 0, logline1);
 	mvprintw(9, 0, logline2);
@@ -124,6 +130,8 @@ int log_to_disk(void)
 	outfreq = RESETRIT;
 
     block_part = 0;		/* unblock use partials */
+
+    pthread_mutex_unlock(&disk_mutex);
 
     return (0);
 }

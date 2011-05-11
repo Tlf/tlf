@@ -118,7 +118,7 @@ void scroll_log(void)
 
     if ((lan_active == 1) && (exchange_serial == 1)) {
 
-	if (lan_mutex == 2) {
+	if (lan_mutex == 2) {	/* last mesagge from lan */
 
 	    if (atoi(qsonrstr) <= highqsonr) {
 		qsonum = highqsonr;

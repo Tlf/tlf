@@ -31,7 +31,6 @@ extern char lan_recv_message[];
 extern int recv_error;
 extern char thisnode;
 extern int lanspotflg;
-extern int lan_mutex;
 extern char talkarray[5][62];
 extern float node_frequencies[MAXNODES];
 extern int qsonum;
@@ -130,10 +129,9 @@ int background_process(void)
 
 		fclose(fp);
 	    }
-	    if ((*lan_message != '\0')
-		&& (lan_message[0] == thisnode)) {
+	    if ((*lan_message != '\0') && (lan_message[0] == thisnode)) {
 		mvprintw(24, 0,
-			 "Warning: NODE ID CONFLICT ?! You should use another ID! ");
+		   "Warning: NODE ID CONFLICT ?! You should use another ID! ");
 		refresh();
 		sleep(5);
 	    }
@@ -145,18 +143,10 @@ int background_process(void)
 		switch (lan_message[1]) {
 
 		case LOGENTRY:
-		    while (lan_mutex > 0) {
-			usleep(10000);
-			if (time_out++ > 100) {
-			    time_out = 0;
-			    break;
-			}
-		    }
-		    lan_mutex = 2;
-		    log_to_disk();
-		    lan_mutex = 0;
 
+		    log_to_disk(true);
 		    break;
+
 		case CLUSTERMSG:
 		    strncpy(prmessage, lan_message + 2, 80);
 		    if (strstr(prmessage, call) != NULL)	// alert for cluster messages

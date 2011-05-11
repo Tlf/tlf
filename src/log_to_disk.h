@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <curses.h>
+#include <pthread.h>
 #include "tlf.h"
 #include "scroll_log.h"
 #include "addcall.h"
@@ -33,5 +34,5 @@
 #include "gettxinfo.h"
 #include "lancode.h"
 
-int log_to_disk (void);
+int log_to_disk (int from_lan);
 
