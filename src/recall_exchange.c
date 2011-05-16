@@ -38,7 +38,7 @@ int recall_exchange(void)
 
     int i, index, j;
     int found = -1;
-    char *loc;
+    char *loc, *loc2;
     struct ie_list *current_ie;
 
     if (strlen(hiscall) == 0)
@@ -47,7 +47,8 @@ int recall_exchange(void)
     for (i = callarray_nr; i >= 0; i--) {
 
 	/* first search call in already worked stations */
-	if (strstr(callarray[i], hiscall) != NULL) {
+	/* call has to be exact -> la/dl1jbe/p must be the same again */
+	if (strcasecmp(callarray[i], hiscall) == 0) {
 	    found = 1;
 	    strcpy(comment, call_exchange[i]);
 
@@ -62,30 +63,41 @@ int recall_exchange(void)
 		if (index <= strlen(comment))
 		    comment[index] = '\0';
 	    }
-	    mvprintw(12, 54, comment);
 	    break;
 	}
     }
 
     if (found == -1) {
 
-	/* if no exchange could be recycled search initial exchange list */
+	/* if no exchange could be recycled and no comment available
+	 * search initial exchange list (if available) */
 	if (strlen(comment) == 0 && main_ie_list != NULL) {
 
 	    current_ie = main_ie_list;
 
 	    while (current_ie) {
-		if (strstr(hiscall, current_ie->call) != NULL) {
-		    found = 1;
-		    strcpy(comment, current_ie->exchange);
-		    mvprintw(12, 54, comment);
-		    refresh();
-		    break;
+		/* call from IE_List has to be a substring of hiscall
+		 * but must be delimited on both sides by '/' or eos */
+		if ((loc = strstr(hiscall, current_ie->call)) != NULL) {
+
+		    loc2 = loc + strlen(current_ie->call);
+		    if (((loc == hiscall) || (*(loc-1) == '/')) &&
+			((*loc2 == '\0') || (*loc2 == '/'))) {
+
+			found = 1;
+			strcpy(comment, current_ie->exchange);
+			break;
+		    }
 		} 
 		current_ie = current_ie->next;
 	    }
 	}
 
+    }
+
+    if (found) {
+	    mvprintw(12, 54, comment);
+	    refresh();
     }
 
     return found;
