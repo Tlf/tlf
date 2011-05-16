@@ -210,11 +210,12 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
     }
 
     /* if already in list on that band and mode
-     * 		-> set timeout to SPOT_NEW, and set new freq
+     * 		-> set timeout to SPOT_NEW, and set new freq and reporting node
      *   		if freq has changed sort list anew by freq
      */
     if (found) {
     	((spot*)found->data)->timeout = SPOT_NEW;
+	((spot*)found->data)->node = node;
 	if (abs(((spot*)found->data)->freq - freq) > 50) {
 	    ((spot*)found->data)->freq = freq;
 	    spots = g_list_sort(spots, (GCompareFunc)cmp_freq);
