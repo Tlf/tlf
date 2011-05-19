@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 201-2011       Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by:q
@@ -36,7 +37,7 @@ int recall_exchange(void)
     extern char comment[];
     extern struct ie_list *main_ie_list;
 
-    int i, index, j;
+    int i, l;
     int found = -1;
     char *loc, *loc2;
     struct ie_list *current_ie;
@@ -44,25 +45,16 @@ int recall_exchange(void)
     if (strlen(hiscall) == 0)
 	return (0);
 
+    l = strlen(hiscall);
+
     for (i = callarray_nr; i >= 0; i--) {
 
 	/* first search call in already worked stations */
 	/* call has to be exact -> la/dl1jbe/p must be the same again */
-	if (strcasecmp(callarray[i], hiscall) == 0) {
+	if ((strstr(callarray[i], hiscall) == callarray[i]) &&
+		(*(callarray[i]+l) == '\0' || *(callarray[i]+l) == ' ')) {
 	    found = 1;
 	    strcpy(comment, call_exchange[i]);
-
-	    for (j = 0; j < strlen(comment); j++)
-		if (comment[j] == ' ') {
-		    comment[j] = '\0';
-		    break;
-		}
-	    loc = strchr(comment, '\0');
-	    if (loc != NULL) {
-		index = (int) (loc - comment);
-		if (index <= strlen(comment))
-		    comment[index] = '\0';
-	    }
 	    break;
 	}
     }
