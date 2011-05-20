@@ -261,7 +261,7 @@ int searchlog(char *searchstring)
 
 	k = 0;
 
-	/* print resulting call in line according to band in scheck window */
+	/* print resulting call in line according to band in check window */
 	for (r_index = 0; r_index < srch_index; r_index++) {
 	    strcpy(s_inputbuffer, result[r_index]);
 	    s_inputbuffer[37] = '\0';
@@ -651,7 +651,7 @@ int searchlog(char *searchstring)
 	     * looked up search results from the search window. That is quick
 	     * but has the drawback, that we have no band information and
 	     * therefore print some entries more than once.
-	     * Better would be to lookup the aprtial call in the arrayy of 
+	     * Better would be to lookup the partial call in the array of 
 	     * worked stations 'callarray' - it is there only once and we can 
 	     * also see from 'call_band' if it is a dupe here.
 	     * be aware of the problem of marking it dupe only for a complete 
