@@ -1,3 +1,14 @@
+tlf-1.0.4
+=========
+maintenance release
+ * fix for wrong handling of recalled exchange (tnx OK1RR).
+   New policy is a s follows
+      - All calls from initial exchange file will be recognised even
+	if part of a complex call, e.g. DL1CCL in LA/DL1CCL/p 
+      - All calls from former QSO's have to be exact including any
+	pre- or postcombination
+      - Now complete exchange will be recalled (not only first word)
+
 tlf-1.0.3
 =========
 maintenance release

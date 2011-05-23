@@ -1,3 +1,13 @@
+2011-05-22  thomas beierlein <tb@forth-ev.de>
+	version 1.0.4
+	* fix for wrong handling of recalled exchange - 
+	  Thanks Martin OK1RR for reporting.
+	  - All calls from initial exchange file will be recognised even
+	    if part of a complex call, e.g. DL1CCL in LA/DL1CCL/p 
+	  - All calls from former QSO's have to be exact including any
+	    pre- or postcombination
+	  - Now complete exchange will be recalled (not only first word)
+
 2011-02-07  thomas beierlein <tb@forth-ev.de>
 	version 1.0.3
 	* fix buffer overflow in 'send_lan_message'
