@@ -43,6 +43,7 @@ int log_to_disk(int from_lan)
     extern char lan_logline[];
     extern int rit;
     extern int trx_control;
+    extern int cqmode;
 #ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;
 #else
@@ -58,19 +59,23 @@ int log_to_disk(int from_lan)
 
     if (!from_lan) {		// qso from this node
 
-	addcall();
+	addcall();		/* add call to dupe list */
 
 	makelogline();
-
-	hiscall[0] = '\0';	/* reset the call  string */
-
-	comment[0] = '\0';	/* reset the comment  string */
-	comment[30] = '\0';
 
 	store_qso(logline4);
 	
 	// send qso to other nodes......
 	send_lan_message(LOGENTRY, logline4);
+
+	if (trx_control && (cqmode == S_P)) 	
+	    addspot();		/* add call to bandmap if in S&P and 
+				   no need to ask for frequency */
+
+	hiscall[0] = '\0';	/* reset the call  string */
+	comment[0] = '\0';	/* reset the comment  string */
+	comment[30] = '\0';
+
     } else {			// qso from lan
 
 	strncpy(lan_logline, lan_message + 2, 80);

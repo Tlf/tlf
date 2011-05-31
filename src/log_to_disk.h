@@ -33,6 +33,7 @@
 #endif
 #include "gettxinfo.h"
 #include "lancode.h"
+#include "addspot.h"
 
 int log_to_disk (int from_lan);
 
