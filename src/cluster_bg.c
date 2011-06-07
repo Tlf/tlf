@@ -260,6 +260,7 @@ int loadbandmap(void)
     extern int countrynr;
     extern char lastmsg[];
     extern char cqzone[];
+    extern char pxstr[];
 
     int i = 0, j, jj, changeflg, k, m, x, y, done;
     int in_map;
@@ -284,6 +285,7 @@ int loadbandmap(void)
     char tmp2[81];
     char callcopy[81];
     char cqzonebuffer[3];
+    char pfxbuffer[10];
     FILE *fp;
     char marker_out[60];
     int lon;
@@ -516,7 +518,9 @@ int loadbandmap(void)
 
 	    yy = countrynr;
 	    strcpy(cqzonebuffer, cqzone);
+	    strcpy(pfxbuffer,pxstr);
 	    x = getctydata(callcopy);
+	    strcpy(pxstr,pfxbuffer);
 	    strcpy(cqzone, cqzonebuffer);	// to be fixed: 
 	    					// getctydata.c should not 
 	    countrynr = yy; 			// change cqzone and countrynr
