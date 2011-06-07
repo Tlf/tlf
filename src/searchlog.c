@@ -262,7 +262,7 @@ int searchlog(char *searchstring)
 
 	k = 0;
 
-	/* print resulting call in line according to band in scheck window */
+	/* print resulting call in line according to band in check window */
 	for (r_index = 0; r_index < srch_index; r_index++) {
 	    strcpy(s_inputbuffer, result[r_index]);
 	    s_inputbuffer[37] = '\0';
