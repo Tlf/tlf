@@ -162,6 +162,10 @@ Switch to the packet terminal (switch back to tlf with ":")
 Quit tlf
 
 .TR
+.B :REConnect
+Reopens the connection to the DX cluster in case it got dropped.
+
+.TR
 .B :REScore
 Recalculates the values in the score window.
 

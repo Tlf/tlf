@@ -24,7 +24,7 @@ maintenance release
 tlf-1.0.1
 =========
 maintenance release
- * fix logfile read error. Last QSO got reead twice.
+ * fix logfile read error. Last QSO got read twice.
  * fix bug in cty.dat and in the routine which reads in the file
    Some prefixes from BY were not recognised.
  * fix calculation of sun up and down time in MUF prediction window.
