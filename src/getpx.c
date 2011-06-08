@@ -25,6 +25,24 @@
 #include "globalvars.h"
 #include "getpx.h"
 
+/** \brief Get prefix from call 
+ *
+ * Analyses callsign and extract prefix information like follows:
+ *    - Remember a portable prefix area if present .../8
+ *    - Copy first character (letter or number)
+ *    - Copy all following letters
+ *    - Copy one more character (number or /)
+ *    - If next char is a digit, copy it too
+ *        - else if portable prefix remembered replace last character (number)
+ *    - If last copied character was '/' replace it by '0'
+ *        - else if last character was a letter append '0'
+ *
+ * \param checkcall Call to analyse
+ */
+ 
+/** \todo fix problem: k3a/2 wird nicht als K2 erkannt,
+ *  kl32a/4 wird zu kl34 ???, check andere Implementierungen */
+
 void getpx(char *checkcall)
 {
     char pxbuffer[16] = "";
@@ -35,7 +53,7 @@ void getpx(char *checkcall)
 
     if (len >= 2) {
 
-	if ((checkcall[len - 2] == '/') && (checkcall[len - 1] <= '9') && (checkcall[len - 1] >= '0'))	/*  portable /3 */
+	if ((checkcall[len - 2] == '/') && isdigit(checkcall[len - 1]))	/*  portable /3 */
 	    j = checkcall[len - 1];
     }
 

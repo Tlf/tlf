@@ -22,6 +22,13 @@
 	 *		x - countrynumber
 	 *--------------------------------------------------------------*/
 
+/** Show infos for selected country on bottom of screen
+ *
+ * Prepares info string for the selected country and shows it on the 
+ * bottom line of the screen.
+ *
+ * /param x  Country number
+ */
 #include "showinfo.h"
 #include "dxcc.h"
 
@@ -31,7 +38,6 @@ int showinfo(int x)
     extern int use_rxvt;
     extern char cqzone[];
     extern char ituzone[];
-    extern int cury, curx;
     extern char C_DEST_Lat[];
     extern char C_DEST_Long[];
     extern double bearing;
@@ -41,7 +47,7 @@ int showinfo(int x)
     extern char itustr[];
     extern int mycountrynr;
 
-    char bufstr[81];
+    int cury, curx;
     char pxstr[16];
     char countrystr[26];
     char zonestr[3];
@@ -52,9 +58,6 @@ int showinfo(int x)
     double d;
     time_t now;
     struct tm *ptr1;
-
-    bufstr[80] = '\0';
-    bufstr[0] = ' ';
 
     dx = dxcc_by_index(x);
 
@@ -85,9 +88,6 @@ int showinfo(int x)
     sprintf(C_DEST_Lat, "%6.2f", dx->lat);	/* where is he? */
     sprintf(C_DEST_Long, "%7.2f", dx->lon);
 
-    if (x != 0 && x != mycountrynr)
-	qrb();
-
     strncpy(contstr, dx->continent, 2);	/* continent */
     contstr[2] = '\0';
 
@@ -100,12 +100,14 @@ int showinfo(int x)
 	 " %s %s                                           ",
 	 contstr, zonestr);
 
-    if (x != 0 && x != mycountrynr)
+    if (x != 0 && x != mycountrynr) {
+	qrb();
 	mvprintw(24, 35, "%.0f km/%.0f deg ", range, bearing);
+    }
 
     mvprintw(24, 64, "  DX time: %s", timebuff);
  
-   if (use_rxvt == 0)
+    if (use_rxvt == 0)
 	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
     else
 	attron(COLOR_PAIR(NORMCOLOR));
