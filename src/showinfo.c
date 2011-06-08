@@ -20,7 +20,13 @@
 	 *
 	 *              Make info string for lower status line
 	 *--------------------------------------------------------------*/
-
+/** Show infos for selected country on bottom of screen
+ *
+ * Prepares info string for the selected country and shows it on the 
+ * bottom line of the screen.
+ *
+ * /param x  Country number
+ */
 #include "showinfo.h"
 
 int showinfo(int x)
@@ -30,7 +36,6 @@ int showinfo(int x)
     extern char datalines[MAX_DATALINES][81];
     extern char cqzone[];
     extern char ituzone[];
-    extern int cury, curx;
     extern char C_DEST_Lat[];
     extern char C_DEST_Long[];
     extern double bearing;
@@ -38,10 +43,9 @@ int showinfo(int x)
     extern int timeoffset;
     extern int timecorr;
     extern char itustr[];
-    extern int countrynr;
     extern int mycountrynr;
 
-    char bufstr[81];
+    int cury, curx;
     char pxstr[16];
     char countrystr[26];
     char zonestr[3];
@@ -53,9 +57,6 @@ int showinfo(int x)
     double d;
     time_t now;
     struct tm *ptr1;
-
-    bufstr[80] = '\0';
-    bufstr[0] = ' ';
 
     for (i = 69; i < 76; i++) {	/* prefix */
 	pxstr[i - 69] = datalines[x][i];
@@ -104,7 +105,7 @@ int showinfo(int x)
     C_DEST_Lat[6] = '\0';
     C_DEST_Long[7] = '\0';
 
-    if (countrynr != 0 && countrynr != mycountrynr)
+    if (x != 0 && x != mycountrynr)
 	qrb();
 
     strncpy(contstr, datalines[x] + 36, 2);	/* continent */
