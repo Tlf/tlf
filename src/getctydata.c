@@ -25,6 +25,159 @@
 #include "globalvars.h"
 #include "getctydata.h"
 
+
+int getpfxindex(char *checkcallptr)
+{
+    char checkbuffer[17] = "";
+    char checkncall[17] = "";
+    char checkcall[17] = "";
+    char findcall[17] = "";
+
+    int i = 0, w = 0, abnormal_call = 0;
+    char portable = '\0';
+    int pp = 0;
+    size_t loc;
+
+    strncpy(checkcall, checkcallptr, 16);
+    checkcall[16] = 0;
+
+    portable = '\0';
+
+    if (strstr(checkcall, "/QRP") != NULL)	/* drop QRP suffix */
+	checkcall[strlen(checkcall) - 4] = '\0';
+
+    if (strstr(checkcall, "/AM") != NULL)	// airborne mobile, no country (0), no zone (0)
+	checkcall[0] = '\0';
+
+    if (strstr(checkcall, "/MM") != NULL)	// maritime mobile, no country, no zone
+	checkcall[0] = '\0';
+
+    strncpy(findcall, checkcall, 16);
+
+    loc = strcspn(checkcall, "/");
+
+    if (loc != strlen(checkcall)) {
+	char call1[17];
+	char call2[17];
+
+	strncpy(call1, checkcall, loc);		/* 1st part before '/' */
+	call1[loc] = '\0';
+	strcpy(call2, checkcall + loc + 1);	/* 2nd part after '/' */
+
+	if (strlen(call2) < strlen(call1)
+	    && strlen(call2) > 1) {
+	    sprintf(checkcall, "%s/%s", call2, call1);
+	    abnormal_call = 1;
+	    loc = strcspn(checkcall, "/");
+	}
+
+	if (loc > 3) {
+
+	    strncpy(checkbuffer, (checkcall + loc + 1),
+		    (strlen(checkcall) + 1) - loc);
+
+	    if (strlen(checkbuffer) == 1)
+		checkcall[loc] = '\0';
+	    if (checkbuffer[0] == 'M' && strlen(checkbuffer) <= 3)
+		checkcall[loc] = '\0';
+	    if (checkbuffer[0] == 'Q' && strlen(checkbuffer) == 3)	/* /QRP */
+		checkcall[loc] = '\0';
+	    if (checkbuffer[0] == 'A' && strlen(checkbuffer) <= 3)	/*  /A,  /AM etc */
+		checkcall[loc] = '\0';
+	    if ((strlen(checkbuffer) <= 3) && (checkbuffer[0] <= '9') && (checkbuffer[0] >= '0'))	/*  /3,   etc */
+		portable = checkbuffer[0];
+	    loc = strcspn(checkcall, "/");
+	}
+
+	if (loc != strlen(checkcall)) {
+
+	    if (loc < 5)
+		checkcall[loc] = '\0';	/*  "PA/DJ0LN/P   */
+	    else {		/*  DJ0LN/P       */
+		strncpy(checkcall, checkcall, loc + 1);
+	    }
+	}
+
+	/* ------------------------------------------------------------ */
+
+	if ((strlen(checkbuffer) == 1) && isdigit(checkbuffer[0])) {	/*  /3 */
+	    for (pp = strlen(checkcall) - 1; pp > 0; pp--) {
+		if (isdigit(checkcall[pp])) {
+		    checkcall[pp] = checkbuffer[0];
+		    break;
+		}
+	    }
+	} else if (strlen(checkbuffer) > 1)
+	    strcpy(checkcall, checkbuffer);
+
+    }
+
+    /* -------------check full call exceptions first...--------------------- */
+
+    w = -1;
+    if (abnormal_call == 1) {
+	// pa3fwm 20040111: is pp guaranteed to be properly initialized 
+	// if/when we get here??
+	// pa0r 20040117: It is not. Code changed...
+	//      strncpy(checkncall , findcall, pp);
+	strncpy(checkncall, findcall, sizeof(checkncall) - 1);
+
+	for (i = 0; i < MAX_DBLINES; i++) {
+	    if (strcmp(checkncall, prefixlines[i]) == 0) {
+		w = i;
+		break;
+	    }
+	}
+
+    } else {
+	int bestlen = 0;
+	for (i = 0; i < MAX_DBLINES; i++) {
+	    int l;
+	    if (prefixlines[i][0] != findcall[0])
+		continue;
+	    l = strlen(prefixlines[i]);
+	    if (l <= bestlen)
+		continue;
+	    if (strncmp(prefixlines[i], findcall, l) == 0) {
+		bestlen = l;
+		w = i;
+	    }
+	}
+    }
+
+    if (w < 0 && 0 != strcmp(findcall, checkcall)) {
+	// only if not found in prefix full call exception list
+	int bestlen = 0;
+	for (i = 0; i < MAX_DBLINES; i++) {
+	    int l;
+	    if (prefixlines[i][0] != checkcall[0])
+		continue;
+	    l = strlen(prefixlines[i]);
+	    if (l <= bestlen)
+		continue;
+	    if (strncmp(prefixlines[i], checkcall, l) == 0) {
+		bestlen = l;
+		w = i;
+	    }
+	}
+    }
+
+    return w;
+}
+
+int getctynr(char *checkcall) 
+{
+    int w;
+    
+    w = getpfxindex(checkcall);
+
+    if (w >= 0)
+	return dataindex[w];
+    else
+	return 0;	/* no country found */
+}
+
+
 int getctydata(char *checkcallptr)
 {
     char checkbuffer[17] = "";

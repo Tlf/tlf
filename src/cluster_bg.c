@@ -516,14 +516,7 @@ int loadbandmap(void)
 		}	/* use strcspn? */
 	    }
 
-	    yy = countrynr;
-	    strcpy(cqzonebuffer, cqzone);
-	    strcpy(pfxbuffer,pxstr);
-	    x = getctydata(callcopy);
-	    strcpy(pxstr,pfxbuffer);
-	    strcpy(cqzone, cqzonebuffer);	// to be fixed: 
-	    					// getctydata.c should not 
-	    countrynr = yy; 			// change cqzone and countrynr
+	    x = getctynr(callcopy);
 
 	    y = searchcallarray(callcopy);
 
