@@ -242,7 +242,6 @@ int getclusterinfo(void)
 
 char *bandmap[MAX_SPOTS];
 struct tln_logline *temps;
-int allspots = 0;		/* show all or only needed spots */
 
 /* ----------------------------------------------------*/
 
@@ -257,12 +256,9 @@ int loadbandmap(void)
     extern int bandmap_pos;
     extern int countries[];
     extern int call_band[];
-    extern int allspots;
     extern int xplanet;
     extern char markerfile[];
-    extern int countrynr;
     extern char lastmsg[];
-    extern char cqzone[];
 
     int i = 0, j, jj, changeflg, k, m, x, y, done;
     int in_map;
@@ -286,12 +282,11 @@ int loadbandmap(void)
     char tmp1[81];
     char tmp2[81];
     char callcopy[81];
-    char cqzonebuffer[3];
     FILE *fp;
     char marker_out[60];
     int lon;
     int lat;
-    int yy, zz;
+    int zz;
     int nofile = 0;
     int iswarc = 0;
     char xplanetmsg[160];
@@ -513,14 +508,7 @@ int loadbandmap(void)
 		}	/* use strcspn? */
 	    }
 
-	    yy = countrynr;
-	    strcpy(cqzonebuffer, cqzone);
-
-	    x = getctydata(callcopy);		// CTY of station
-
-	    strcpy(cqzone, cqzonebuffer);	// to be fixed: 
-	    					// getctydata.c should not 
-	    countrynr = yy; 			// change cqzone and countrynr
+	    x = getctynr(callcopy);		// CTY of station
 
 	    y = searchcallarray(callcopy);	// lookup index of call in
 	    					// callarray (if already worked)

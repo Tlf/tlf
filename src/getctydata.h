@@ -21,5 +21,6 @@
 #include "getpx.h"
 #include "tlf.h"
 
+int getctynr(char *checkcall);
 int getctydata(char *checkcall);
 int getctydata2(char *checkcall);
