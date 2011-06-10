@@ -334,7 +334,6 @@ int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;
 int bufloc = 0;
 int ymax, xmax;			/* screen size */
-int cury, curx;			/* to remember cursor position */
 char lastwwv[120] = "";
 int bandmap_pos = 0;
 int nroflines;

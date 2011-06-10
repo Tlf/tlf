@@ -30,7 +30,6 @@ void clear_display(void)
     extern int use_rxvt;
     extern char speedstr[];
     extern int speed;
-    extern int cury, curx;
     extern char mode[];
     extern int cqdelay;
     extern char headerline[];
@@ -55,6 +54,7 @@ void clear_display(void)
 
     char time_buf[80];
     char speedbuf[4] = "  ";
+    int cury, curx;
 
     strncpy(speedbuf, speedstr + (2 * speed), 2);
     speedbuf[2] = '\0';

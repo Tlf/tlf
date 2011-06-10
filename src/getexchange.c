@@ -37,7 +37,6 @@ int getexchange(void)
     extern char my_rst[];
     extern char speedstr[];
     extern int change_rst;
-    extern int cury, curx;
     extern char message[15][80];
     extern char ph_message[14][80];
     extern char hiscall[];
@@ -76,6 +75,7 @@ int getexchange(void)
 
     int i;
     int x = 0;
+    int cury, curx;
     char instring[2];
     char commentbuf[40] = "";
     int retval;
