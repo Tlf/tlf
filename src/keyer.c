@@ -31,7 +31,6 @@ int keyer(void)
 {
 
     extern char mode[20];
-    extern int cury, curx;
     extern int bufloc;
     extern char buffer[];
     extern char termbuf[];
@@ -43,6 +42,7 @@ int keyer(void)
     extern int weight;
 
     int x = 0, i = 0, j = 0;
+    int cury, curx;
     char nkbuffer[2];
     char keyerstring[30] = "                              ";
     char weightbuf[15];

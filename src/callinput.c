@@ -64,7 +64,6 @@ char callinput(void)
     extern char buffer[];
     extern char message[15][80];
     extern char ph_message[14][80];
-    extern int cury, curx;
     extern float freq;
     extern float mem;
 #ifdef HAVE_LIBHAMLIB
@@ -103,6 +102,7 @@ char callinput(void)
     extern int keyerport;
     extern int miniterm;
 
+    int cury, curx;
     int i, j, ii, rc, t, x = 0, y = 0, xx;
     char instring[2] = { '\0', '\0' };
     char dupecall[17];

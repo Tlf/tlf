@@ -36,7 +36,6 @@ void sendbuf(void)
     extern int searchflg;
     extern char termbuf[81];
     extern char backgrnd_str[];
-    extern int cury, curx;
     extern int bufloc;
     extern char wkeyerbuffer[];
     extern int keyerport;
@@ -60,6 +59,7 @@ void sendbuf(void)
     static char qsonroutput[5] = "";
     static char rst_out[4] = "";
 
+    int cury, curx;
     size_t loc;
     int i, nr;
 

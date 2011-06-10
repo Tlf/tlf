@@ -43,7 +43,6 @@ int logit(void)
     extern char itustr[];
     extern char cq_return[];
     extern char sp_return[];
-    extern int cury, curx;
     extern int defer_store;
     extern int stop_backgrnd_process;
     extern int recall_mult;
@@ -59,6 +58,7 @@ int logit(void)
     extern int dxped;
 
     char callreturn = 0;
+    int cury, curx;
     int qrg_out = 0;
     int time_out = 0;
 

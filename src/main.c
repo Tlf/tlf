@@ -310,8 +310,9 @@ char call_exchange[MAX_CALLS][12];
 int call_band[MAX_CALLS];
 int call_country[MAX_CALLS];
 
-int countries[MAX_DATALINES];
-int zones[41];			/* using 1 - 40, cqzones */
+/*----------------------statisticof worked countries,zones ... -----------*/
+int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */
+int zones[41];			/* same for cqzones; using 1 - 40 */
 char mults[MAX_MULTS][12];
 char mults_possible[MAX_MULTS][12];
 int multlist = 0;
@@ -325,7 +326,7 @@ char callmaster_result[50][9];
 int callareas[20];
 int multscore[NBANDS];
 
-struct ie_list *main_ie_list;
+struct ie_list *main_ie_list;	/* head of initial exchange list */
 
 int multarray_nr = 0;
 int wysiwygmults = 0;
@@ -337,11 +338,10 @@ int addcty = 0;			/* flag for new country */
 int shownewmult = -1;
 int minute_timer = 0;
 
-int bandinx = 2;		/* 40m */
+int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;
 int bufloc = 0;
-int ymax, xmax;
-int cury, curx;			/* to remember cursor position */
+int ymax, xmax;			/* screen size */
 char lastwwv[120] = "";
 int bandmap_pos = 0;
 int nroflines;
