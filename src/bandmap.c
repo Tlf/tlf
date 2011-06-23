@@ -23,6 +23,7 @@
 #include <math.h>
 #include <glib.h>
 #include <ncurses.h>
+#include <pthread.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -61,11 +62,12 @@ unsigned int ssbcorner[NBANDS] =
  24930000,
  28300000 };
 
+pthread_mutex_t bm_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-/** \brief sorted list of DX spots
+/** \brief sorted list of DX all recent spots
  *
  * a simple sorted linked list should do for a first start */
-GList *spots = NULL;
+GList *allspots = NULL;
 
 bm_config_t bm_config = {
     1,	/* show all bands */
@@ -86,11 +88,16 @@ extern int call_band[];		/** \todo should not be public */
  * initalize colors and data structures for bandmap operation
  */
 void bm_init() {
+
+    pthread_mutex_lock( &bm_mutex );
+
     init_pair (CB_NEW, COLOR_CYAN, COLOR_WHITE);
     init_pair (CB_NORMAL, COLOR_BLUE, COLOR_WHITE);
     init_pair (CB_DUPE, COLOR_BLACK, COLOR_WHITE);
     init_pair (CB_OLD, COLOR_YELLOW, COLOR_WHITE);
     init_pair (CB_MULTI, COLOR_WHITE, COLOR_BLUE);
+
+    pthread_mutex_unlock( &bm_mutex );
 }
 
 
@@ -125,9 +132,9 @@ int freq2mode(int freq, int band) {
 
 
 
-/** \brief split DX spot message
+/** \brief add DX spot message to bandmap
  *
- * check if cluster message is a dx spot
+ * check if cluster message is a dx spot,
  * if so split it into pieces and insert in spot list */
 void bm_add(char *s) {
     char *line;
@@ -194,10 +201,13 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 
     mode = freq2mode(freq, band);
 
+    /* acquire bandmap mutex */
+    pthread_mutex_lock( &bm_mutex );
+
     /* look if call is already on list in that mode and band */
     /* each call is allowed in every combination of band and mode
      * but only once */
-    found = g_list_find_custom(spots, call, (GCompareFunc)cmp_call);
+    found = g_list_find_custom(allspots, call, (GCompareFunc)cmp_call);
 
     while (found != NULL) {
 
@@ -218,7 +228,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	((spot*)found->data)->node = node;
 	if (abs(((spot*)found->data)->freq - freq) > 50) {
 	    ((spot*)found->data)->freq = freq;
-	    spots = g_list_sort(spots, (GCompareFunc)cmp_freq);
+	    allspots = g_list_sort(allspots, (GCompareFunc)cmp_freq);
 	}
     } 
     else {
@@ -234,9 +244,9 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	entry -> node = node;
 	entry -> timeout = SPOT_NEW;
 
-	spots = g_list_insert_sorted( spots, entry, (GCompareFunc)cmp_freq);
+	allspots = g_list_insert_sorted( allspots, entry, (GCompareFunc)cmp_freq);
 	/* lookup where it is */
-	found = g_list_find(spots, entry);
+	found = g_list_find(allspots, entry);
     }
 
     /* check neighbours */
@@ -245,7 +255,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	spot *olddata;
 //	fprintf(fp, "%8.1f %8.1f\n", ((spot*)(found->prev)->data)->freq , freq);
 	olddata = found->prev->data;
-	spots = g_list_remove_link(spots, found->prev);
+	allspots = g_list_remove_link(allspots, found->prev);
 	g_free (olddata->call);
 	g_free (olddata);
     }
@@ -253,10 +263,12 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	(abs(((spot*)(found->next)->data)->freq - freq) < 50)) {
 	spot *olddata;
 	olddata = found->next->data;
-	spots = g_list_remove_link(spots, found->next);
+	allspots = g_list_remove_link(allspots, found->next);
 	g_free (olddata->call);
 	g_free (olddata);
     }
+
+    pthread_mutex_unlock( &bm_mutex );
 }
 
 
@@ -267,7 +279,10 @@ void bandmap_age() {
  *   + set state to new, normal, aged or dead
  *   + if dead -> drop it from collection
  */
-    GList *list = spots;
+
+    pthread_mutex_lock( &bm_mutex );
+
+    GList *list = allspots;
 
     while (list) {
 	spot *data = list->data;
@@ -276,11 +291,13 @@ void bandmap_age() {
 	if (data->timeout)
 	    data->timeout--;
 	    if (data->timeout == 0) {
-		spots = g_list_remove_link( spots, temp);
+		allspots = g_list_remove_link( allspots, temp);
 		g_free (data->call);
 		g_free (data);
 	    }
     }
+
+    pthread_mutex_unlock( &bm_mutex );
 }
 
 int bm_ismulti( char * call) {
@@ -373,10 +390,13 @@ void bandmap_show() {
 	
     }
 
+    /* acquire mutex for allspots structure */
+    pthread_mutex_lock( &bm_mutex );
+
     attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
     move(14,66);
     vline(ACS_VLINE,10);
-    mvprintw( 17, 68, "Spots: %3d", g_list_length(spots));
+    mvprintw( 17, 68, "Spots: %3d", g_list_length(allspots));
 
     mvprintw (19, 68, "bands: %s", bm_config.allband ? "all" : "own");
     mvprintw (20,68, "modes: %s", bm_config.allmode ? "all" : "own");
@@ -399,7 +419,7 @@ void bandmap_show() {
 
     attroff (A_BOLD|A_STANDOUT);
 
-    list = spots;
+    list = allspots;
 
     while (list) {
 	data = list->data;
@@ -454,6 +474,8 @@ void bandmap_show() {
 	}
 	list = list->next;
     }
+
+    pthread_mutex_unlock( &bm_mutex );
     
     move(cury, curx);			/* reset cursor */
 
