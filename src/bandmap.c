@@ -69,6 +69,11 @@ pthread_mutex_t bm_mutex = PTHREAD_MUTEX_INITIALIZER;
  * a simple sorted linked list should do for a first start */
 GList *allspots = NULL;
 
+/** \brief sorted list of filtered spots
+ */
+GList *spots =NULL;
+
+
 bm_config_t bm_config = {
     1,	/* show all bands */
     1,  /* show all mode */
@@ -352,6 +357,7 @@ void bandmap_show() {
  * Allow selection of one of the spots (switches to S&P)
  * - Ctrl-G as known
  * - '.' and cursor plus 'Enter'
+ * - Test mouseclick...
  *
  * '.' goes into map, shows help line above and supports
  * - cursormovement
@@ -373,7 +379,7 @@ void bandmap_show() {
 	bm_initialized = 1;
     }
 
-    bandmap_age();
+    bandmap_age();			/* age entries in bandmap */
 
     getyx( stdscr, cury, curx);		/* remember cursor */
 
@@ -393,6 +399,7 @@ void bandmap_show() {
     /* acquire mutex for allspots structure */
     pthread_mutex_lock( &bm_mutex );
 
+    /* show info field on the right */
     attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
     move(14,66);
     vline(ACS_VLINE,10);
@@ -418,6 +425,12 @@ void bandmap_show() {
     printw( " dupe");
 
     attroff (A_BOLD|A_STANDOUT);
+
+    /* make list (or array) of spots to display
+     * filter spotlist according to settings */
+
+    /* afterwards display filtered list around own QRG +/- some offest 
+     * (offset gets resest if we change frequency */
 
     list = allspots;
 
