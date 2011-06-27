@@ -71,7 +71,7 @@ GList *allspots = NULL;
 
 /** \brief sorted list of filtered spots
  */
-GList *spots =NULL;
+GPtrArray *spots;
 
 
 bm_config_t bm_config = {
@@ -285,8 +285,6 @@ void bandmap_age() {
  *   + if dead -> drop it from collection
  */
 
-    pthread_mutex_lock( &bm_mutex );
-
     GList *list = allspots;
 
     while (list) {
@@ -301,8 +299,6 @@ void bandmap_age() {
 		g_free (data);
 	    }
     }
-
-    pthread_mutex_unlock( &bm_mutex );
 }
 
 int bm_ismulti( char * call) {
@@ -330,6 +326,42 @@ int bm_isdupe( char *call, int band ) {
 	return 0;
 }
 
+
+void bm_show_info() {
+
+    int curx, cury;
+
+    getyx( stdscr, cury, curx);		/* remember cursor */
+
+    /* show info field on the right */
+    attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
+    move(14,66);
+    vline(ACS_VLINE,10);
+    mvprintw( 17, 68, "Spots: %3d", g_list_length(allspots));
+
+    mvprintw (19, 68, "bands: %s", bm_config.allband ? "all" : "own");
+    mvprintw (20,68, "modes: %s", bm_config.allmode ? "all" : "own");
+    mvprintw (21,68, "dupes: %s", bm_config.showdupes ? "yes" : "no");
+    
+    attrset(COLOR_PAIR(CB_NEW)|A_STANDOUT);
+    mvprintw( 22 ,69, "MULTI");
+
+    attrset(COLOR_PAIR(CB_NEW)|A_BOLD);
+    printw( " NEW");
+
+    attrset(COLOR_PAIR(CB_NORMAL));
+    mvprintw( 23,67, "SPOT");
+
+    attrset(COLOR_PAIR(CB_OLD));
+    printw( " OLD");
+
+    attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
+    printw( " dupe");
+
+    attroff (A_BOLD|A_STANDOUT);
+
+    move(cury, curx);			/* reset cursor */
+}
 
 
 void bandmap_show() {
@@ -379,7 +411,52 @@ void bandmap_show() {
 	bm_initialized = 1;
     }
 
+    /* acquire mutex 
+     * do not add new spots to allspots during
+     * - aging and
+     * - filtering
+     * furthermore do not allow call lookup as long as
+     * filter array is build anew */
+    pthread_mutex_lock( &bm_mutex );
+
     bandmap_age();			/* age entries in bandmap */
+
+    /* make array of spots to display
+     * filter spotlist according to settings */
+
+    if (spots) 
+	g_ptr_array_free( spots, TRUE);		/* free array */
+
+    spots = g_ptr_array_sized_new( 128 );	/* allocate new one */
+
+    list = allspots;
+
+    /** \todo remember dupe info */
+    while (list) {
+	data = list->data;
+
+	/* if spot is allband or allmode is set or band or mode matches
+	 * actual one than add it to the filtered 'spot' array
+	 */
+
+	dupe = bm_isdupe(data->call, data->band);
+
+	if ((bm_config.allband || (data->band == bandinx)) && 
+		(bm_config.allmode || (data->mode == trxmode)) &&
+		(bm_config.showdupes || !dupe)) {
+	
+	    data -> dupe = dupe;
+	    g_ptr_array_add( spots, data );
+	}
+
+	list = list->next;
+    }
+
+    pthread_mutex_unlock( &bm_mutex );
+
+
+    /* afterwards display filtered list around own QRG +/- some offest 
+     * (offset gets resest if we change frequency */
 
     getyx( stdscr, cury, curx);		/* remember cursor */
 
@@ -396,99 +473,52 @@ void bandmap_show() {
 	
     }
 
-    /* acquire mutex for allspots structure */
-    pthread_mutex_lock( &bm_mutex );
+    bm_show_info();
+    /** \fixme Darstellung des # Speichers */
 
-    /* show info field on the right */
-    attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
-    move(14,66);
-    vline(ACS_VLINE,10);
-    mvprintw( 17, 68, "Spots: %3d", g_list_length(allspots));
+    /** \todo Auswahl des Display Bereiches */
+    for (i = 0; i < spots->len; i++) 
+    {
+	data = g_ptr_array_index( spots, i );
 
-    mvprintw (19, 68, "bands: %s", bm_config.allband ? "all" : "own");
-    mvprintw (20,68, "modes: %s", bm_config.allmode ? "all" : "own");
-    mvprintw (21,68, "dupes: %s", bm_config.showdupes ? "yes" : "no");
-    
-    attrset(COLOR_PAIR(CB_NEW)|A_STANDOUT);
-    mvprintw( 22 ,69, "MULTI");
+	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
+	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.), 
+		(data->node == thisnode ? '*' : data->node));
 
-    attrset(COLOR_PAIR(CB_NEW)|A_BOLD);
-    printw( " NEW");
+	if (data -> timeout > SPOT_NORMAL) 
+	    attrset(COLOR_PAIR(CB_NEW)|A_BOLD);
 
-    attrset(COLOR_PAIR(CB_NORMAL));
-    mvprintw( 23,67, "SPOT");
+	else if (data -> timeout > SPOT_OLD)
+	    attrset(COLOR_PAIR(CB_NORMAL));
 
-    attrset(COLOR_PAIR(CB_OLD));
-    printw( " OLD");
+	else
+	    attrset(COLOR_PAIR(CB_OLD));
 
-    attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
-    printw( " dupe");
+	if (bm_ismulti(data->call))
+	    attron(A_STANDOUT);
 
-    attroff (A_BOLD|A_STANDOUT);
-
-    /* make list (or array) of spots to display
-     * filter spotlist according to settings */
-
-    /* afterwards display filtered list around own QRG +/- some offest 
-     * (offset gets resest if we change frequency */
-
-    list = allspots;
-
-    while (list) {
-	data = list->data;
-
-	/* show spot if allband or allmode is set or band or mode matches
-	 * actual one
-	 */
-
-	dupe = bm_isdupe(data->call, data->band);
-
-	if ((bm_config.allband || (data->band == bandinx)) && 
-		(bm_config.allmode || (data->mode == trxmode)) &&
-		(bm_config.showdupes || !dupe)) {
-	
-	    attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
-	    mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.), 
-		    (data->node == thisnode ? '*' : data->node));
-
-	    if (data -> timeout > SPOT_NORMAL) 
-		attrset(COLOR_PAIR(CB_NEW)|A_BOLD);
-
-	    else if (data -> timeout > SPOT_OLD)
-		attrset(COLOR_PAIR(CB_NORMAL));
-
-	    else
-		attrset(COLOR_PAIR(CB_OLD));
-
-	    if (bm_ismulti(data->call))
-		attron(A_STANDOUT);
-
-	   if (dupe) {
-	       if (bm_config.showdupes) {
-		   attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
-		   attroff(A_STANDOUT);
-		   printw ("%-12s", g_ascii_strdown(data->call, -1));
-	       }
-	    }
-	    else {
-		printw ("%-12s", data->call);
-	    }
-
-	    attroff (A_BOLD);
-
-	    bm_y++;
-	    if (bm_y == 24) {
-		bm_y = 14;
-		bm_x += 22;
-		cols++;
-		if (cols > 2)
-		    break;
-	    }
+       if (data->dupe) {
+	   if (bm_config.showdupes) {
+	       attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
+	       attroff(A_STANDOUT);
+	       printw ("%-12s", g_ascii_strdown(data->call, -1));
+	   }
 	}
-	list = list->next;
-    }
+	else {
+	    printw ("%-12s", data->call);
+	}
 
-    pthread_mutex_unlock( &bm_mutex );
+	attroff (A_BOLD);
+
+	bm_y++;
+	if (bm_y == 24) {
+	    bm_y = 14;
+	    bm_x += 22;
+	    cols++;
+	    if (cols > 2)
+		break;
+	}
+    }
     
     move(cury, curx);			/* reset cursor */
 

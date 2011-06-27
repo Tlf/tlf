@@ -27,6 +27,7 @@ typedef struct {
     short 	band;
     int		node;
     int 	timeout;
+    char 	dupe;	/* only used internal in bm_show() */
 } spot;
 
 #define SPOT_NEW	900
