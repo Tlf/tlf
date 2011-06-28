@@ -431,7 +431,6 @@ void bandmap_show() {
 
     list = allspots;
 
-    /** \todo remember dupe info */
     while (list) {
 	data = list->data;
 
@@ -458,6 +457,7 @@ void bandmap_show() {
     /* afterwards display filtered list around own QRG +/- some offest 
      * (offset gets resest if we change frequency */
 
+    /** \todo Auswahl des Display Bereiches */
     getyx( stdscr, cury, curx);		/* remember cursor */
 
     /* start in line 14, column 0 */
@@ -476,7 +476,6 @@ void bandmap_show() {
     bm_show_info();
     /** \fixme Darstellung des # Speichers */
 
-    /** \todo Auswahl des Display Bereiches */
     for (i = 0; i < spots->len; i++) 
     {
 	data = g_ptr_array_index( spots, i );
@@ -561,4 +560,44 @@ void bm_menu()
 
     move (cury, curx);
     refresh();
+}
+
+int bandmap_grabspot(char *call)
+{
+    extern int trx_control;
+    extern char *hiscall;
+
+#ifdef HAVE_LIBHAMLIB
+    extern freq_t outfreq;
+    extern freq_t freq;
+#else
+    extern int outfreq;
+    extern float freq;
+#endif
+
+    if (trx_control == 0)
+	return (0);
+
+    if (*hiscall != '\0')
+    {
+	for (i = 0; i < spots->len; i++) {
+	    spot *data;
+	    data = g_ptr_array_index( spots, i );
+
+	    if strstr(data->call, call) != NULL) {
+
+		outfreq = data->freq;
+		send_bandswitch(outfreq);
+
+		strcpy(hiscall, data->call);
+
+		x = getctynr(data->call);
+		showinfo(x);
+
+		searchlog(hiscall);
+		refresh();
+		break;
+	    }
+	}
+    }
 }

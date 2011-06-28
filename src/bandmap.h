@@ -127,5 +127,6 @@ void bandmap_show();
  * - 'B', 'D', 'M' switches filtering for band, dupes and mode on or off.
  */
 
+int bandmap_grabspot(char *call);
 
 #endif
