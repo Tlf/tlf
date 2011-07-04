@@ -50,6 +50,8 @@ enum {
     CB_MULTI
 };
 
+void bm_init();
+
 void bm_add(char *s);
 
 void bm_menu();
@@ -127,6 +129,6 @@ void bandmap_show();
  * - 'B', 'D', 'M' switches filtering for band, dupes and mode on or off.
  */
 
-int bandmap_grabspot(char *call);
+spot *bandmap_lookup(char *partialcall);
 
 #endif

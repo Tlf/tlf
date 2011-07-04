@@ -18,6 +18,8 @@
  */
 
 #include "grabspot.h"
+#include "bandmap.h"
+#include <glib.h>
 
 int send_bandswitch(int outfreq);
 
@@ -39,43 +41,33 @@ int grabspot(void)
     extern float freq;
 #endif
 
-    int i, j, x;
+    int j, x;
     char bufferstr[81];
     char dupecall[17];
+    spot *data;
 
     if (trx_control == 0)
 	return (0);
 
     if (hiscall[0] != '\0') {
 
-	for (i = 0; i < nroflines; i++) {
+	data = bandmap_lookup( hiscall );
 
-	    strcpy(bufferstr, bandmap[i]);
+	if (data != NULL) {
 
-	    if (strstr(bufferstr + 26, hiscall) != NULL) {
+	    outfreq = data -> freq;
+	    send_bandswitch( outfreq );
 
-		outfreq = (int) (atof(bufferstr + 16) * 1000);
-		send_bandswitch(outfreq);
+	    strcpy( hiscall, data->call );
 
-		strncpy(hiscall, bufferstr + 26, 12);
+	    showinfo( getctynr( hiscall ) );
+	    searchlog( hiscall );
+	    refresh();
 
-		for (j = 0; j <= 12; j++) {
-		    if (hiscall[j] == ' ') {
-			hiscall[j] = '\0';
-			break;
-		    }
-		}
-		strncpy(dupecall, hiscall, 16);
-
-		x = getctydata(dupecall);
-
-		showinfo(x);
-
-		searchlog(hiscall);
-		refresh();
-
-	    }
+	    g_free( data->call );
+	    g_free( data );
 	}
+
     } else if (nroflines > 0) {
 	strcpy(bufferstr, bandmap[nroflines - 1]);
 

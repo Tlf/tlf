@@ -20,6 +20,10 @@
 #include "bandmap.h"
 #include "tlf.h"
 #include "searchcallarray.h"
+#include "getctydata.h"
+#include "showinfo.h"
+#include "searchlog.h"
+
 #include <math.h>
 #include <glib.h>
 #include <ncurses.h>
@@ -28,6 +32,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
+
 
 unsigned int bandcorner[NBANDS][2] =
 {{ 1800000, 2000000 },
@@ -101,6 +110,8 @@ void bm_init() {
     init_pair (CB_DUPE, COLOR_BLACK, COLOR_WHITE);
     init_pair (CB_OLD, COLOR_YELLOW, COLOR_WHITE);
     init_pair (CB_MULTI, COLOR_WHITE, COLOR_BLUE);
+
+    spots = g_ptr_array_sized_new( 128 );
 
     pthread_mutex_unlock( &bm_mutex );
 }
@@ -562,42 +573,49 @@ void bm_menu()
     refresh();
 }
 
-int bandmap_grabspot(char *call)
+
+/** Search partialcall in filtered bandmap
+ *
+ * Lookup given partial call in the list of filtered bandmap spots.
+ * Return a copy of the first entry found (means with teh lowest frequency).
+ *
+ * \param 	partialcall to look up
+ * \return 	spot * structure with a copy of the found spot
+ * 		or NULL if not found (You have to free the structure 
+ * 		after use).
+ */
+spot *bandmap_lookup(char *partialcall)
 {
-    extern int trx_control;
-    extern char *hiscall;
+    spot *result = NULL;
 
-#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-    extern freq_t freq;
-#else
-    extern int outfreq;
-    extern float freq;
-#endif
-
-    if (trx_control == 0)
-	return (0);
-
-    if (*hiscall != '\0')
+    if ((*partialcall != '\0') && (spots->len > 0))
     {
+	int i;
+
+	pthread_mutex_lock( &bm_mutex );
+
 	for (i = 0; i < spots->len; i++) {
 	    spot *data;
 	    data = g_ptr_array_index( spots, i );
 
-	    if strstr(data->call, call) != NULL) {
+	    if (strstr(data->call, partialcall) != NULL) {
 
-		outfreq = data->freq;
-		send_bandswitch(outfreq);
+		/* copy data into a new Spot structure */
+		result = g_new(spot, 1);
+		result -> call = g_strdup(data -> call);
+		result -> freq = data -> freq;
+		result -> mode = data -> mode;
+		result -> band = data -> band;
+		result -> node = data -> node;
+		result -> timeout = data -> timeout;
+		result -> dupe = data -> dupe;
 
-		strcpy(hiscall, data->call);
-
-		x = getctynr(data->call);
-		showinfo(x);
-
-		searchlog(hiscall);
-		refresh();
 		break;
 	    }
 	}
+
+	pthread_mutex_unlock( &bm_mutex );
+
     }
+    return result;
 }
