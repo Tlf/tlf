@@ -27,8 +27,8 @@ int grabspot(void)
 {
 
     extern char hiscall[];
-    extern char *bandmap[];
-    extern int nroflines;
+    extern char mode[];
+    extern int cqmode;
     extern int trx_control;
 
     extern float mem;
@@ -41,9 +41,6 @@ int grabspot(void)
     extern float freq;
 #endif
 
-    int j, x;
-    char bufferstr[81];
-    char dupecall[17];
     spot *data;
 
     if (trx_control == 0)
@@ -62,40 +59,23 @@ int grabspot(void)
 
 	    showinfo( getctynr( hiscall ) );
 	    searchlog( hiscall );
+
+	    /* if in CQ mode switch to S&P and remember QRG */
+	    if (cqmode == CQ) {
+		cqmode = S_P;
+		strcpy(mode, "S&P     ");
+		mem = freq;
+		mvprintw(14, 68, "MEM: %7.1f", mem);
+	    }
+
 	    refresh();
 
 	    g_free( data->call );
 	    g_free( data );
 	}
 
-    } else if (nroflines > 0) {
-	strcpy(bufferstr, bandmap[nroflines - 1]);
+    }
 
-	outfreq = (int) (atof(bufferstr + 16) * 1000);
-
-	strncpy(hiscall, bufferstr + 26, 12);
-
-	for (j = 0; j <= 12; j++) {
-	    if (hiscall[j] == ' ') {
-		hiscall[j] = '\0';
-		break;
-	    }
-	}
-	strncpy(dupecall, hiscall, 16);
-
-	x = getctydata(dupecall);
-
-	showinfo(x);
-
-	searchlog(hiscall);
-
-	mem = freq;
-
-	mvprintw(14, 68, "MEM: %7.1f", mem);
-
-	refresh();
-
-    } else;
-
-    return (0);
+    return 0;
 }
+
