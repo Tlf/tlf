@@ -1098,8 +1098,14 @@ char callinput(void)
 
 		break;
 	    }
-	case '\"':		// "
 	case 231:		// alt-g
+	    {
+		grab_next();
+		clear_display();
+
+		break;
+	    }
+	case '\"':		// "
 	    {
 		if (lan_active != 0)
 		    talk();
