@@ -573,13 +573,28 @@ void bm_menu()
     refresh();
 }
 
+spot *copy_spot(spot *data)
+{
+    spot *result = NULL;
+
+    result = g_new(spot, 1);
+    result -> call = g_strdup(data -> call);
+    result -> freq = data -> freq;
+    result -> mode = data -> mode;
+    result -> band = data -> band;
+    result -> node = data -> node;
+    result -> timeout = data -> timeout;
+    result -> dupe = data -> dupe;
+
+    return result;
+}
 
 /** Search partialcall in filtered bandmap
  *
  * Lookup given partial call in the list of filtered bandmap spots.
  * Return a copy of the first entry found (means with teh lowest frequency).
  *
- * \param 	partialcall to look up
+ * \param 	partialcall - part of call to look up
  * \return 	spot * structure with a copy of the found spot
  * 		or NULL if not found (You have to free the structure 
  * 		after use).
@@ -601,14 +616,7 @@ spot *bandmap_lookup(char *partialcall)
 	    if (strstr(data->call, partialcall) != NULL) {
 
 		/* copy data into a new Spot structure */
-		result = g_new(spot, 1);
-		result -> call = g_strdup(data -> call);
-		result -> freq = data -> freq;
-		result -> mode = data -> mode;
-		result -> band = data -> band;
-		result -> node = data -> node;
-		result -> timeout = data -> timeout;
-		result -> dupe = data -> dupe;
+		result = copy_spot(data);
 
 		break;
 	    }
@@ -619,3 +627,59 @@ spot *bandmap_lookup(char *partialcall)
     }
     return result;
 }
+
+/** Lookup next call in filtered spotlist
+ *
+ * Starting at given frequency lookup the array of filtered spots for
+ * the next call up- or downwards.
+ * Returns a copy of the spot data or NULL if no such entry.
+ *
+ * \param 	upwards - lookup upwards if not 0
+ * \param 	freq - frequency to start from
+ *
+ * \return 	spot * structure with a copy of the found spot
+ * 		or NULL if not found (You have to free the structure 
+ * 		after use).
+ */
+
+spot *bandmap_next(unsigned int upwards, unsigned int freq)
+{
+    spot *result = NULL;
+
+    if (spots->len > 0) {
+	int i;
+
+	pthread_mutex_lock( &bm_mutex );
+
+	if (upwards) {
+
+	    for (i = 0; i < spots->len; i++) {
+		spot *data;
+		data = g_ptr_array_index( spots, i );
+
+		if (data->freq > freq) {
+		    /* copy data into a new Spot structure */
+		    result = copy_spot(data);
+
+		    break;
+		}
+	    }
+	} else {
+	    for (i = spots->len-1; i >= 0; i--) {
+		spot *data;
+		data = g_ptr_array_index( spots, i );
+
+		if (data->freq < freq) {
+		    /* copy data into a new Spot structure */
+		    result = copy_spot(data);
+
+		    break;
+		}
+	    }
+	}
+	pthread_mutex_unlock( &bm_mutex );
+
+    }
+    return result;
+}
+

@@ -25,7 +25,6 @@ int send_bandswitch(int outfreq);
 
 int grabspot(void)
 {
-
     extern char hiscall[];
     extern char mode[];
     extern int cqmode;
@@ -33,13 +32,13 @@ int grabspot(void)
 
     extern float mem;
 
-#ifdef HAVE_LIBHAMLIB
+//#ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;
-    extern freq_t freq;
-#else
-    extern int outfreq;
+//    extern freq_t freq;
+//#else
+//    extern int outfreq;
     extern float freq;
-#endif
+//#endif
 
     spot *data;
 
@@ -79,3 +78,51 @@ int grabspot(void)
     return 0;
 }
 
+void grab_next(void)
+{
+    extern char hiscall[];
+    extern char mode[];
+    extern int cqmode;
+    extern int trx_control;
+
+    extern float mem;
+
+//#ifdef HAVE_LIBHAMLIB
+    extern freq_t outfreq;
+//    extern freq_t freq;
+//#else
+//    extern int outfreq;
+    extern float freq;
+//#endif
+
+    spot *data;
+
+    if (trx_control == 0)
+	return;
+
+    data = bandmap_next( true, (unsigned int)(freq*1000) );
+
+    if (data != NULL) {
+
+	outfreq = data -> freq;
+	send_bandswitch( outfreq );
+
+	strcpy( hiscall, data->call );
+
+	showinfo( getctynr( hiscall ) );
+	searchlog( hiscall );
+
+	/* if in CQ mode switch to S&P and remember QRG */
+	if (cqmode == CQ) {
+	    cqmode = S_P;
+	    strcpy(mode, "S&P     ");
+	    mem = freq;
+	    mvprintw(14, 68, "MEM: %7.1f", mem);
+	}
+
+	refresh();
+
+	g_free( data->call );
+	g_free( data );
+    }
+}
