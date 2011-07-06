@@ -95,12 +95,20 @@ void grab_next(void)
     extern float freq;
 //#endif
 
+    static int dir = 1;		/* start scanning up */
+
     spot *data;
 
     if (trx_control == 0)
 	return;
 
-    data = bandmap_next( true, (unsigned int)(freq*1000) );
+    data = bandmap_next( dir, (unsigned int)(freq*1000) );
+
+    if (data == NULL) {		/* nothing in that direction */
+				/* try other one */
+	dir = 1 - dir;
+	data = bandmap_next( dir, (unsigned int)(freq*1000));
+    }
 
     if (data != NULL) {
 
