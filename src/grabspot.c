@@ -31,14 +31,13 @@ int grabspot(void)
     extern int trx_control;
 
     extern float mem;
-
-//#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-//    extern freq_t freq;
-//#else
-//    extern int outfreq;
     extern float freq;
-//#endif
+
+#ifdef HAVE_LIBHAMLIB
+    extern freq_t outfreq;
+#else
+    extern int outfreq;
+#endif
 
     spot *data;
 
@@ -86,14 +85,13 @@ void grab_next(void)
     extern int trx_control;
 
     extern float mem;
-
-//#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-//    extern freq_t freq;
-//#else
-//    extern int outfreq;
     extern float freq;
-//#endif
+
+#ifdef HAVE_LIBHAMLIB
+    extern freq_t outfreq;
+#else
+    extern int outfreq;
+#endif
 
     static int dir = 1;		/* start scanning up */
 
