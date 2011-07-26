@@ -670,7 +670,6 @@ supports a lot of different rigs..
 .TR
 .B RIGMODEL=<rig number>
 Look at the Hamlib stuff for the NUMBER of your rig...
-Exception: RIGMODEL=ORION.
 
 .TR
 .B RIGSPEED=<Baud rate>
