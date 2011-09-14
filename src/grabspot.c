@@ -18,92 +18,117 @@
  */
 
 #include "grabspot.h"
+#include "bandmap.h"
+#include <glib.h>
 
 int send_bandswitch(int outfreq);
 
 int grabspot(void)
 {
-
     extern char hiscall[];
-    extern char *bandmap[];
-    extern int nroflines;
+    extern char mode[];
+    extern int cqmode;
     extern int trx_control;
 
     extern float mem;
+    extern float freq;
 
 #ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;
-    extern freq_t freq;
 #else
     extern int outfreq;
-    extern float freq;
 #endif
 
-    int i, j, x;
-    char bufferstr[81];
-    char dupecall[17];
+    spot *data;
 
     if (trx_control == 0)
 	return (0);
 
     if (hiscall[0] != '\0') {
 
-	for (i = 0; i < nroflines; i++) {
+	data = bandmap_lookup( hiscall );
 
-	    strcpy(bufferstr, bandmap[i]);
+	if (data != NULL) {
 
-	    if (strstr(bufferstr + 26, hiscall) != NULL) {
+	    outfreq = data -> freq;
+	    send_bandswitch( outfreq );
 
-		outfreq = (int) (atof(bufferstr + 16) * 1000);
-		send_bandswitch(outfreq);
+	    strcpy( hiscall, data->call );
 
-		strncpy(hiscall, bufferstr + 26, 12);
+	    showinfo( getctynr( hiscall ) );
+	    searchlog( hiscall );
 
-		for (j = 0; j <= 12; j++) {
-		    if (hiscall[j] == ' ') {
-			hiscall[j] = '\0';
-			break;
-		    }
-		}
-		strncpy(dupecall, hiscall, 16);
-
-		x = getctydata(dupecall);
-
-		showinfo(x);
-
-		searchlog(hiscall);
-		refresh();
-
+	    /* if in CQ mode switch to S&P and remember QRG */
+	    if (cqmode == CQ) {
+		cqmode = S_P;
+		strcpy(mode, "S&P     ");
+		mem = freq;
+		mvprintw(14, 68, "MEM: %7.1f", mem);
 	    }
+
+	    refresh();
+
+	    g_free( data->call );
+	    g_free( data );
 	}
-    } else if (nroflines > 0) {
-	strcpy(bufferstr, bandmap[nroflines - 1]);
 
-	outfreq = (int) (atof(bufferstr + 16) * 1000);
+    }
 
-	strncpy(hiscall, bufferstr + 26, 12);
+    return 0;
+}
 
-	for (j = 0; j <= 12; j++) {
-	    if (hiscall[j] == ' ') {
-		hiscall[j] = '\0';
-		break;
-	    }
+void grab_next(void)
+{
+    extern char hiscall[];
+    extern char mode[];
+    extern int cqmode;
+    extern int trx_control;
+
+    extern float mem;
+    extern float freq;
+
+#ifdef HAVE_LIBHAMLIB
+    extern freq_t outfreq;
+#else
+    extern int outfreq;
+#endif
+
+    static int dir = 1;		/* start scanning up */
+
+    spot *data;
+
+    if (trx_control == 0)
+	return;
+
+    data = bandmap_next( dir, (unsigned int)(freq*1000) );
+
+    if (data == NULL) {		/* nothing in that direction */
+				/* try other one */
+	dir = 1 - dir;
+	data = bandmap_next( dir, (unsigned int)(freq*1000));
+    }
+
+    if (data != NULL) {
+
+	outfreq = data -> freq;
+	send_bandswitch( outfreq );
+
+	strcpy( hiscall, data->call );
+
+	showinfo( getctynr( hiscall ) );
+	searchlog( hiscall );
+
+	/* if in CQ mode switch to S&P and remember QRG */
+	if (cqmode == CQ) {
+	    cqmode = S_P;
+	    strcpy(mode, "S&P     ");
+	    mem = freq;
+	    mvprintw(14, 68, "MEM: %7.1f", mem);
 	}
-	strncpy(dupecall, hiscall, 16);
-
-	x = getctydata(dupecall);
-
-	showinfo(x);
-
-	searchlog(hiscall);
-
-	mem = freq;
-
-	mvprintw(14, 68, "MEM: %7.1f", mem);
 
 	refresh();
 
-    } else;
-
-    return (0);
+	g_free( data->call );
+	g_free( data );
+    }
 }

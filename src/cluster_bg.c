@@ -1,6 +1,9 @@
 #include "cluster_bg.h"
 #include "dxcc.h"
 
+// \todo drop
+#include "bandmap.h"
+
 extern int cluster;
 extern int announcefilter;
 extern int bandinx;
@@ -239,7 +242,6 @@ int getclusterinfo(void)
 
 char *bandmap[MAX_SPOTS];
 struct tln_logline *temps;
-int allspots = 0;		/* show all or only needed spots */
 
 /* ----------------------------------------------------*/
 
@@ -254,12 +256,9 @@ int loadbandmap(void)
     extern int bandmap_pos;
     extern int countries[];
     extern int call_band[];
-    extern int allspots;
     extern int xplanet;
     extern char markerfile[];
-    extern int countrynr;
     extern char lastmsg[];
-    extern char cqzone[];
 
     int i = 0, j, jj, changeflg, k, m, x, y, done;
     int in_map;
@@ -268,7 +267,7 @@ int loadbandmap(void)
     int timediff = 0;
     int linepos;
     int worked;
-    int thisband = 10;
+    int thisband = 10;		/** \todo should it be NBANDS? */
     int dupe;
     int spot_age[MAX_SPOTS];
     float spot_freq[MAX_SPOTS];
@@ -283,12 +282,11 @@ int loadbandmap(void)
     char tmp1[81];
     char tmp2[81];
     char callcopy[81];
-    char cqzonebuffer[3];
     FILE *fp;
     char marker_out[60];
     int lon;
     int lat;
-    int yy, zz;
+    int zz;
     int nofile = 0;
     int iswarc = 0;
     char xplanetmsg[160];
@@ -472,11 +470,6 @@ int loadbandmap(void)
 
     //------------------end sort ---------------------------------------------
 
-    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);	// display it
-
-    // clear bandmap display
-    for (j = 15; j < 23; j++)
-	mvprintw(j, 4, "                           ");
 
     if (cluster == SPOTS)
 	linepos = (i < 8 ? 0 : i - 8);
@@ -515,14 +508,10 @@ int loadbandmap(void)
 		}	/* use strcspn? */
 	    }
 
-	    yy = countrynr;
-	    strcpy(cqzonebuffer, cqzone);
-	    x = getctydata(callcopy);
-	    strcpy(cqzone, cqzonebuffer);	// to be fixed: 
-	    					// getctydata.c should not 
-	    countrynr = yy; 			// change cqzone and countrynr
+	    x = getctynr(callcopy);		// CTY of station
 
-	    y = searchcallarray(callcopy);
+	    y = searchcallarray(callcopy);	// lookup index of call in
+	    					// callarray (if already worked)
 
 	    worked = 0;
 	    dupe = 1;
@@ -530,9 +519,9 @@ int loadbandmap(void)
 	    if (cluster == MAP)
 		thisband = bandinx;
 
-	    /* check if country was already worked on thiis band */
+	    /* check if country was already worked on this band */
 	    if ((countries[x] & inxes[thisband]) != 0)
-		worked = 1;
+		worked = 1;	/* no new country/multi */
 
 	    /* check if already worked on these band */
 	    if (y != -1) {	/*  found */
@@ -541,8 +530,8 @@ int loadbandmap(void)
 	    }
 
 	    if (inxes[thisband] == 0) {	/* WARC band */
-		worked = 1;		/* means, show as not needed */
-		dupe = 0;
+		worked = 1;		/* show as not needed */
+		dupe = 0;		/* station new, but no country/multi */
 	    }
 
 	    if (x != 0 && xplanet > 0 && nofile == 0) {
@@ -611,38 +600,7 @@ int loadbandmap(void)
 		fclose(fp);
 	    }
 
-	    /* display bandmap and color according to 'worked' 
-	     * and age of spot */
-	    if (worked == 1 && thisband < 10) {
-		if (allspots == 1) {
-		    attron(COLOR_PAIR(COLOR_YELLOW));
-		    mvprintw(15 + jj, 4, "%s", spotline);
-
-		    switch (spot_age[j]) {
-		    case 0 ... 15:
-			attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-			mvprintw(15 + jj, 25, "%s", spotline + 21);
-		    }
-
-		    jj++;
-		    if (jj > 7)
-			break;
-		}
-	    } else {
-		attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
-		mvprintw(15 + jj, 4, "%s", spotline);
-		switch (spot_age[j]) {
-		case 0 ... 15:
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-		    mvprintw(15 + jj, 25, "%s", spotline + 21);
-		}
-		jj++;
-		if (jj > 7)
-		    break;
-
-	    }
 	}
-
     }
 
     /* append last dx cluster message to markerfile; will be shown at bottom */
@@ -669,20 +627,8 @@ int loadbandmap(void)
 	}
     }
 
-    if (cluster == MAP && allspots == 1)
-	nicebox(14, 3, 8, 27, "Bandmap");
-    if (cluster == MAP && allspots == 0)
-	nicebox(14, 3, 8, 27, "Needed");
 
-    if (cluster == SPOTS)
-	nicebox(14, 3, 8, 27, "Spots");
-
-    if (cluster == MAP && linepos > 7) {
-	mvprintw(14, 17, "+");
-	if (cluster == MAP && linepos > 7)
-	    mvprintw(23, 17, "v");
-	mvprintw(14, 23, "%d", linepos);
-    }
+    bandmap_show();
 
     refresh();
 

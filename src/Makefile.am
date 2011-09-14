@@ -5,7 +5,7 @@ bin_PROGRAMS = tlf
 
 tlf_SOURCES = \
 	addarea.c addcall.c addmult.c addpfx.c addspot.c audio.c autocq.c \
-	background_process.c \
+	background_process.c bandmap.c \
 	calledit.c callinput.c changefreq.c changepars.c checklogfile.c \
 	checkparameters.c cleanup.c clear_display.c cluster_bg.c \
 	clusterinfo.c \
@@ -37,7 +37,7 @@ tlf_LDADD = @GLIB_LIBS@
 
 noinst_HEADERS = \
 	addarea.h addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \
-	background_process.h \
+	background_process.h bandmap.h \
 	calledit.h callinput.h changefreq.h changepars.h checklogfile.h \
 	checkparameters.h cleanup.h clear_display.h cluster_bg.h \
 	clusterinfo.h cwkeyer.h \

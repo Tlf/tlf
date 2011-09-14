@@ -719,6 +719,8 @@ int main(int argc, char *argv[])
 	    mvprintw(j, 0, backgrnd_str);
 	}
 
+	bm_init();			/* initialize bandmap */
+
 	/* Create the first thread */
 	ret = pthread_create(&thrd1, NULL, (void *) logit, NULL);
 	if (ret) {

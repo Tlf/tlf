@@ -25,6 +25,7 @@
 #include "callinput.h"
 #include "addspot.h"
 #include "changefreq.h"
+#include "bandmap.h"
 
 void send_bandswitch(int freq);
 
@@ -88,9 +89,6 @@ char callinput(void)
     extern char cqzone[];
     extern char ituzone[];
     extern int ctcomp;
-    extern int nroflines;
-    extern int bandmap_pos;
-    extern int allspots;
     extern int nob4;
     extern int change_rst;
     extern int weight;
@@ -103,7 +101,7 @@ char callinput(void)
     extern int miniterm;
 
     int cury, curx;
-    int i, j, ii, rc, t, x = 0, y = 0, xx;
+    int i, j, ii, rc, t, x = 0, y = 0;
     char instring[2] = { '\0', '\0' };
     char dupecall[17];
     char speedbuf[3] = "";
@@ -926,76 +924,7 @@ char callinput(void)
 	case 172:		// alt-,
 	case 46:		// . (dot)
 	    {
-		attron(COLOR_PAIR(7) | A_STANDOUT);
-
-		for (ii = 14; ii < 24; ii++)
-		    mvprintw(ii, 0, backgrnd_str);
-		refresh();
-
-		cluster = MAP;
-
-		nroflines = loadbandmap();
-		if (allspots == 1)
-		    nicebox(14, 3, 8, 27, "BANDMAP");
-		else
-		    nicebox(14, 3, 8, 27, "NEEDED");
-
-		if (bandmap_pos > 0) {
-		    mvprintw(14, 17, "+");
-		}
-		mvprintw(14, 17, "");
-		refresh();
-
-		xx = -1;
-
-		while (xx != 27) {
-		    xx = onechar();
-		    switch (xx) {
-		    case 152:
-			if (bandmap_pos < (nroflines - 1))
-			    bandmap_pos++;
-			break;
-		    case 153:
-			if (bandmap_pos > 0)
-			    bandmap_pos--;
-			break;
-
-		    case 156:
-			if (bandmap_pos < (nroflines - 8))
-			    bandmap_pos += 8;
-			break;
-		    case 157:
-			if (bandmap_pos > 7)
-			    bandmap_pos -= 8;
-			break;
-		    case '.':
-			if (allspots == 1)
-			    allspots = 0;
-			else
-			    allspots = 1;
-			break;
-		    default:
-			xx = 27;
-
-		    }
-		    nroflines = loadbandmap();
-		    if (allspots == 1)
-			nicebox(14, 3, 8, 27, "BANDMAP");
-		    else
-			nicebox(14, 3, 8, 27, "NEEDED");
-
-		    if (bandmap_pos > 0) {
-			mvprintw(14, 17, "+");
-		    }
-		    mvprintw(14, 17, "");
-		    refresh();
-
-		}
-		if (allspots == 1)
-		    nicebox(14, 3, 8, 27, "Bandmap");
-		else
-		    nicebox(14, 3, 8, 27, "Needed");
-
+		bm_menu();
 		break;
 	    }
 	case 227:		//Alt-C
@@ -1164,13 +1093,19 @@ char callinput(void)
 	    }
 	case 7:		// ctl-g
 	    {
+		grab_next();
+		clear_display();
+
+		break;
+	    }
+	case 231:		// alt-g
+	    {
 		grabspot();
 		clear_display();
 
 		break;
 	    }
 	case '\"':		// "
-	case 231:		// alt-g
 	    {
 		if (lan_active != 0)
 		    talk();

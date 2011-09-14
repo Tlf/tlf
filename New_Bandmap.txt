@@ -1,0 +1,61 @@
+New Bandmap in TLF-1.1 !!!VERY EARLY PREVIEW!!!
+======================
+
+One main poblem in old TLF versions is the very narrow space for cluster
+messages (only 8 entries plus some room in scrolling). Furthermore the code
+for looking up the messages was very inefficient and does not allow good
+filtering of the informations we need.
+
+The new bandmap tries to fix some of the problems. The following principles
+were applied:
+
+- Use the space below the QSO entry line for displaying the spots in the
+  background.
+- For each spot display the frequency (with one decimal) and the call of the
+  spotted station. That allows 3 columns with 10 spots each.
+- There are 3 sources of spots:
+  * dx cluster messages
+  * spots in local LAN (maybe from other stations scanning the band)
+  * finished QSOs while in S&P
+- The frequency is remembered with a resolution of 1 Hz if available
+- You can filter the displayed spots by
+  * band (all bands or only own (momentarily active) band)
+  * mode (all or own)
+  * dupe (show dupes or not)
+- Each spot may have a letter or star between frequency and call denoting the 
+  source of the spot
+  * blank - from cluster
+  * '*' - self spotted or worked in S&P
+  * 'a'..'z' -spotted from station 'a' to 'z' in local network
+- Color of spots signal the age of the spot
+  * bright blue - new spot
+  * blue - older than 45s (at the moment)
+  * brown - older than 5 min 
+- Dupes (already work stations) are show in lower case and grey
+
+USAGE
+===== 
+
+Turn on rig support and connect to a cluster (experiment what happens if one
+or both conditions are not met). Wait some moments until some spots shows up.
+
+- Press '.' to show the filter menu. Next letter switches filtering:
+  * b - toggle band filter
+  * m - toggle mode filter
+  * d - toggle display of dupes
+- Tune in to any interesting station, insert its call into the input field
+  and press 'Ctrl-A'. The heard station gets added to the bandmap and
+  broadcasted to other stations in the local net. See that it gets marked with
+  a '*' as self spotted.
+- Tune in to any contest station in S&P and work it as normal. After the QSO
+  is finished the station is added to the bandmap and shown as dupe.
+- Press 'Ctrl-G' to grab the next displayed spot (starting at your frequency
+  upwards). Each further press of 'Ctrl-G' jumps to the next spot. So you can
+  scan the spotted stations, see if you can work them or jump to the next one.
+  If you reach the last station (highest frequency) the scan switches
+  direction and following key presses goes downward (on lower boundary it
+  switches to upwrds again...).
+- If you grab a spot while in 'Run' mode, TLF switches to S&P and remembers
+  your 'run' frequency in the memory.
+
+

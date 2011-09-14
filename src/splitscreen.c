@@ -89,6 +89,9 @@ void addlog(char *s)
 	}
     }
 
+    // \todo drop it later tb mar11
+    bm_add(s);
+
     if (tln_loglines >= maxtln_loglines) {
 	temp = loghead;
 	loghead = loghead->next;
@@ -576,6 +579,7 @@ void addtext(char *s)
     static char *spotpointer;
 
     int i, l;
+
     l = strlen(tln_input_buffer);
     if (view_state == STATE_EDITING) {
 
