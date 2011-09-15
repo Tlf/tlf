@@ -1,0 +1,17 @@
+Makefile
+Makefile.in
+*.[oa]
+tlf
+tlf.1
+autom4te.cache
+config.guess
+config.h
+config.log
+config.status
+config.sub
+configure
+depcomp
+install-sh
+missing
+src/.deps
+stamp-h1
