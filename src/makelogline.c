@@ -25,7 +25,9 @@
 #include "makelogline.h"
 #include "dxcc.h"
 
-int makelogline(void)
+#include <assert.h>
+
+void makelogline(void)
 {
 
     extern int logfrequency;
@@ -42,6 +44,7 @@ int makelogline(void)
     int i;
     char khz[5] = " 000";
     int fnr = 0;
+    int new_pfx;
 
     logline4[0] = '\0';
     qsonr_to_str();
@@ -157,18 +160,22 @@ int makelogline(void)
     lastcomment[0] = '\0';
     strcat(lastcomment, comment);	/* remember  for edit  */
 
-    strncat(logline4, fillspaces, (80 - strlen(logline4)));
+    strncat(logline4, fillspaces, (77 - strlen(logline4)));
 
     if (contest == 1)
 	logline4[68] = '\0';
 
-/* If WPX add prefix to prefixes_worked and include new pfx in log line */
+    /* If WPX 
+     * -> add prefix to prefixes_worked and include new pfx in log line */
+    new_pfx = (add_pfx(pxstr) == 0);	/* add prefix, remember if new */
 
-    if ((add_pfx(pxstr) == 0) && (wpx == 1)) {	/* wpx */
-	strcat(logline4, pxstr);
-	strncat(logline4, fillspaces, (5 - strlen(pxstr)));
-    } else
-	strncat(logline4, fillspaces, 5);
+    if (wpx ==1) {			/* wpx */
+	if (new_pfx) {
+	    strcat(logline4, pxstr);
+	    strncat(logline4, fillspaces, (5 - strlen(pxstr)));
+	} else
+	    strncat(logline4, fillspaces, 5);
+    }
 
     if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 	/* ------------cqww --------------------- */
@@ -318,10 +325,10 @@ int makelogline(void)
 	    sprintf(logline4 + 76, "  ");
 	}
     } else {
-	strcat(logline4, "  ");
+	sprintf(logline4 + 76, "  ");
     }
 
-    strncat(logline4, fillspaces, 80 - strlen(logline4));
+    assert(strlen(logline4) <= 80);
 
-    return (0);
+    strncat(logline4, fillspaces, 80 - strlen(logline4));
 }
