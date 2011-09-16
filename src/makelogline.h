@@ -27,5 +27,5 @@
 #include "score.h"
 
 
-int makelogline(void);
+void makelogline(void);
 
