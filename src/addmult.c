@@ -24,6 +24,7 @@
 
 #include "globalvars.h"
 #include "addmult.h"
+#include <glib.h>
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
@@ -36,6 +37,10 @@ int addmult(void)
 
     int n, found = 0;
     int i, j, addarea = 0, ismult, multlen = 0;
+    char *stripped_comment;
+
+    stripped_comment = strdup(comment);
+    g_strchomp(stripped_comment);
 
     if (arrlss == 1) {		// mult for all bands   --------------------- arrlss ----------------
 
@@ -204,14 +209,14 @@ int addmult(void)
     if (wysiwyg_once == 1) {	// -----------------------------wysiwyg----------------
 
 	for (n = 0; n <= multarray_nr; n++) {
-	    if (strcmp(mults[n], comment) == 0) {
+	    if (strcmp(mults[n], stripped_comment) == 0) {
 		found = 1;
 		break;
 	    }
 	}
 	if (found == 0) {
 
-	    strcpy(mults[multarray_nr], comment);
+	    strcpy(mults[multarray_nr], stripped_comment);
 	    multarray_nr++;
 	    wysiwygmults++;
 	    addarea = 1;
@@ -222,19 +227,19 @@ int addmult(void)
 	}
 
     }
-    if (wysiwyg_multi == 1 && strlen(comment) > 0) {
+    if (wysiwyg_multi == 1 && strlen(stripped_comment) > 0) {
 
 	found = 0;
 
 	for (n = 0; n <= multarray_nr; n++) {
-	    if ((strcmp(mults[n], comment) == 0) && (strlen(comment) > 0)) {
+	    if ((strcmp(mults[n], stripped_comment) == 0) && (strlen(stripped_comment) > 0)) {
 		found = 1;
 		break;
 	    }
 	}
 
 	if (found == 0) {
-	    strcpy(mults[multarray_nr], comment);
+	    strcpy(mults[multarray_nr], stripped_comment);
 	    mult_bands[multarray_nr] =
 		mult_bands[multarray_nr] | inxes[bandinx];
 	    multarray_nr++;
