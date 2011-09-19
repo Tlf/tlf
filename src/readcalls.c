@@ -54,6 +54,7 @@ int readcalls(void)
     mvprintw(4, 0, "Reading logfile...\n");
     refresh();
 
+    /* reset counter and score anew */
     for (s = 0; s < MAX_QSOS; s++)
 	qsos[s][0] = '\0';
 
@@ -79,7 +80,13 @@ int readcalls(void)
 	multscore[n] = 0;
 
     for (n = 0; n < MAX_MULTS; n++)
+	mults[n][0]='\0';
+
+    for (n = 0; n < MAX_MULTS; n++)
 	mult_bands[n] = 0;
+
+    wysiwygmults = 0;
+    multarray_nr = 0;
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 	mvprintw(5, 0, "Error opening logfile.\n");
@@ -346,7 +353,7 @@ int readcalls(void)
 	/* build prefixes_worked array from list of worked stations */
 	nr_of_px = 0;
 
-	for (n = 0; n <= i; n++) {
+	for (n = 0; n < i; n++) {
 	    strcpy(checkcall, callarray[n]);
 	    getpx(checkcall);
 	    add_pfx(pxstr);
@@ -494,7 +501,7 @@ int readcalls(void)
     } else if (serial_section_mult == 1 && multarray_nr > 1)
 	multarray_nr++;
 
-    return (s);			// nr of qso's
+    return (s);			// nr of lines in log
 }
 
 	//------------------------------------------------------------------------
