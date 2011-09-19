@@ -27,6 +27,7 @@
 #include <curses.h>
 #include "tlf.h"
 #include "globalvars.h"
+#include <glib.h>
 
 int readcalls(void)
 {
@@ -204,12 +205,11 @@ int readcalls(void)
 
 		    multbuffer[10] = '\0';
 
-		    tmpptr = strchr(multbuffer, ' ');
-		    if (tmpptr)
-			memset(tmpptr, '\0', multbuffer + 10 - tmpptr);
+		    g_strchomp(multbuffer);
 
 		}
 
+		/* search multbuffer in mults arry */
 		found = 0;
 		for (ii = 0; ii < multarray_nr; ii++) {
 
@@ -229,14 +229,13 @@ int readcalls(void)
 
 		if (found == 0) {	// add it
 
-		    multarray_nr++;
-
 		    strcpy(mults[multarray_nr], multbuffer);
 
 		    if (strlen(mults[multarray_nr]) > 0)
 			mult_bands[multarray_nr] =
 			    mult_bands[multarray_nr] | inxes[bandinx];
 
+		    multarray_nr++;
 		    multscore[bandinx]++;
 
 		    wysiwygmults++;
@@ -486,6 +485,7 @@ int readcalls(void)
     if ((arrlss == 1) && (total == 0))
 	multcount = 0;
 
+    /* \todo check what the following code is for tb 19sep2011 */
     if (((serial_section_mult == 1)
 //              || (serial_grid4_mult == 1)
 	 || (sectn_mult == 1)) && multarray_nr == 1) {	// correction ......
