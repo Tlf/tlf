@@ -38,7 +38,7 @@ int searchcallarray(char *hiscall)
     int found = -1;
     int i;
 
-    for (i = 0; i <= callarray_nr; i++) {
+    for (i = 0; i < callarray_nr; i++) {
 
 	if (strcmp(callarray[i], hiscall) == 0) {
 	    found = i;

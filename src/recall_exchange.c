@@ -47,7 +47,8 @@ int recall_exchange(void)
 
     l = strlen(hiscall);
 
-    for (i = callarray_nr; i >= 0; i--) {
+    /* search backwards through list of worked stations */
+    for (i = callarray_nr - 1; i >= 0; i--) {
 
 	/* first search call in already worked stations */
 	/* call has to be exact -> la/dl1jbe/p must be the same again */

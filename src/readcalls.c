@@ -339,6 +339,9 @@ int readcalls(void)
 
     fclose(fp);
 
+    /* remember nuber of callarray entries */
+    callarray_nr = i;
+
     if (wpx == 1) {
 
 	/* build prefixes_worked array from list of worked stations */
@@ -479,8 +482,6 @@ int readcalls(void)
 	wysiwygmults = 0;
 
     }
-    /** \todo check vorherige Verwendugn von i zum Löschend es Feldes */
-    callarray_nr = i;
 
     if ((arrlss == 1) && (total == 0))
 	multcount = 0;
