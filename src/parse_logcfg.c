@@ -25,6 +25,7 @@
 #include <curses.h>
 #include <string.h>
 #include "startmsg.h"
+#include <glib.h>
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #include <ctype.h>
@@ -203,7 +204,6 @@ int parse_logcfg(char *inputbuffer)
 
 /* LZ3NY mods */
     extern int mult_side;
-    extern int multiplier_points;
     extern int my_country_points;
     extern int multiplier_only;
     extern int my_cont_points;
@@ -211,10 +211,7 @@ int parse_logcfg(char *inputbuffer)
     extern char multiplier_list[50];
     extern int multiplier_points;
     extern int multiplier_only;
-    char c_multiplier_points[3];
-    char c_my_country_points[3];
-    char c_my_continent_points[10];
-    char c_dx_continent_points[10];
+    char c_temp[11];
     extern int my_cont_points;
     extern int dx_cont_points;
     extern int mult_side;
@@ -954,11 +951,10 @@ int parse_logcfg(char *inputbuffer)
 		}
 
 	    case 96:{		//MULTIPLIER_POINTS       lz3ny
-		    strcpy(c_multiplier_points, inputbuffer + 20);
+		    g_strlcpy(c_temp, inputbuffer + 20, sizeof(c_temp));
 		    if (multiplier_points == -1)
-			multiplier_points = atoi(c_multiplier_points);
+			multiplier_points = atoi(c_temp);
 
-		    c_multiplier_points[0] = '\0';
 		    break;
 		}
 	    case 97:{		//MULTIPLIER_ONLY         lz3ny
@@ -969,24 +965,24 @@ int parse_logcfg(char *inputbuffer)
 		    break;
 		}
 	    case 98:{		//HOW Many points scores my country  lz3ny
-		    strcpy(c_my_country_points, inputbuffer + 18);
+		    g_strlcpy(c_temp, inputbuffer + 18, sizeof(c_temp));
 		    if (my_country_points == -1)
-			my_country_points = atoi(c_my_country_points);
-		    c_my_country_points[0] = '\0';
+			my_country_points = atoi(c_temp);
+
 		    break;
 		}
 	    case 99:{		//MY_CONTINENT_POINTS       lz3ny
-		    strcpy(c_my_continent_points, inputbuffer + 20);
+		    g_strlcpy(c_temp, inputbuffer + 20, sizeof(c_temp));
 		    if (my_cont_points == -1)
-			my_cont_points = atoi(c_my_continent_points);
-		    c_my_continent_points[0] = '\0';
+			my_cont_points = atoi(c_temp);
+
 		    break;
 		}
 	    case 100:{		//DX_CONTINENT_POINTS       lz3ny
-		    strcpy(c_dx_continent_points, inputbuffer + 10);
+		    g_strlcpy(c_temp, inputbuffer + 10, sizeof(c_temp));
 		    if (dx_cont_points == -1)
-			dx_cont_points = atoi(c_dx_continent_points);
-		    c_dx_continent_points[0] = '\0';
+			dx_cont_points = atoi(c_temp);
+
 		    break;
 /* end LZ3NY mod */
 	    case 101:{		// show time in searchlog window
