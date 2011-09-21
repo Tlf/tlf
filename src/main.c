@@ -306,10 +306,13 @@ int call_country[MAX_CALLS];
 int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */
 int zones[41];			/* same for cqzones; using 1 - 40 */
 char mults[MAX_MULTS][12];
-char mults_possible[MAX_MULTS][12];
-int multlist = 0;
-int max_multipliers;
 int mult_bands[MAX_MULTS];
+int multarray_nr = 0;
+
+char mults_possible[MAX_MULTS][12];
+int max_multipliers;
+
+int multlist = 0;
 
 char callmasterarray[MAX_CALLMASTER][14];
 long int nr_callmastercalls;
@@ -320,7 +323,6 @@ int multscore[NBANDS];
 
 struct ie_list *main_ie_list;	/* head of initial exchange list */
 
-int multarray_nr = 0;
 int wysiwygmults = 0;
 int zonescore[6];
 int countryscore[6];

@@ -853,6 +853,8 @@ int load_callmaster(void)
 // ----------------------------------------------load mults ------------------------
 
 /** loads possible multipliers from external file
+ *
+ * \return number of loaded multipliers (nr of entries in mults_possible)
  * */
 int load_multipliers(void)
 {
