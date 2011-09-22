@@ -23,6 +23,7 @@
 
 #include "searchlog.h"
 #include "dxcc.h"
+#include <glib.h>
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
 #endif
@@ -858,17 +859,14 @@ int load_callmaster(void)
  * */
 int load_multipliers(void)
 {
-    extern char mults_possible[MAX_MULTS][12];
+    extern GPtrArray *mults_possible;
     extern char multiplierlist[];
     extern char multsfile[];
 
     FILE *cfp;
     char s_inputbuffer[186] = "";
-    int count = 0, i;
+    int count = 0;
 
-    for (i = 0; i < MAX_MULTS; i++) {
-	mults_possible[i][0] = '\0';
-    }
 
     if (strlen(multiplierlist) != 0)
 	strncpy(multsfile, multiplierlist, strlen(multiplierlist) - 1);
@@ -892,8 +890,8 @@ int load_multipliers(void)
 	    if (strlen(s_inputbuffer) > 0)
 		s_inputbuffer[strlen(s_inputbuffer) - 1] = '\0';
 	    s_inputbuffer[9] = '\0';
-	    /**  \todo: fix strcpy. poss. buffer overun 16jan10 tb */
-	    strcpy(mults_possible[count], s_inputbuffer);
+
+	    g_ptr_array_add(mults_possible, g_strdup(s_inputbuffer));
 
 	    count++;
 

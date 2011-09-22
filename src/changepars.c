@@ -25,6 +25,9 @@
 #include "changepars.h"
 #include "sendbuf.h"
 #include <termios.h>
+#include <glib.h>
+
+#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
 int debug_tty(void);
 
@@ -615,12 +618,14 @@ int changepars(void)
 	    if (strlen(synclogfile) > 0)
 		synclog(synclogfile);
 	    scroll_log();
+	    /** \todo register return value */
 	    readcalls();
 	    clear_display();
 	    break;
 	}
     case 42:			/* RESCORE */
 	{
+	    /** \todo register return value */
 	    readcalls();
 	    clear_display();
 	    break;
@@ -847,7 +852,8 @@ int multiplierinfo(void)
     extern int sectn_mult;
     extern char mults[MAX_MULTS][12];
     extern int mult_bands[MAX_MULTS];
-    extern char mults_possible[MAX_MULTS][12];
+    extern GPtrArray *mults_possible;
+    extern int max_multipliers;
     extern int multcount;
 
     int j, k, key, vert, hor, cnt, found;
@@ -873,13 +879,13 @@ int multiplierinfo(void)
 
 	    for (hor = 5; hor < 15; hor++) {
 		mprint[0] = '\0';
-		strcat(mprint, mults_possible[cnt]);
+		strcat(mprint, MULTS_POSSIBLE(cnt));
 		strcat(mprint, " ");
 		mprint[4] = '\0';
 
 		found = 0;
 		for (j = 0; j < multcount + 1; j++) {
-		    strcpy(chmult, mults_possible[cnt]);
+		    strcpy(chmult, MULTS_POSSIBLE(cnt));
 		    strcpy(ch2mult, mults[j]);
 
 		    if (ch2mult[2] == ' ')
@@ -906,10 +912,10 @@ int multiplierinfo(void)
 
 		cnt++;
 
-		if (cnt >= MAX_MULTS)
+		if (cnt >= max_multipliers)
 		    break;
 	    }
-	    if (cnt >= MAX_MULTS)
+	    if (cnt >= max_multipliers)
 		break;
 	}
     }
@@ -921,7 +927,7 @@ int multiplierinfo(void)
 
 	    for (hor = 0; hor < 7; hor++) {
 		mprint[0] = '\0';
-		strcat(mprint, mults_possible[cnt]);
+		strcat(mprint, MULTS_POSSIBLE(cnt));
 		if (strlen(mprint) == 0)
 		    break;
 		if (strlen(mprint) == 1)
@@ -934,7 +940,7 @@ int multiplierinfo(void)
 		    mprint[4] = '\0';
 
 		for (k = 1; k <= MAX_MULTS; k++) {
-		    if (strstr(mults[k], mults_possible[cnt]) != NULL)
+		    if (strstr(mults[k], MULTS_POSSIBLE(cnt)) != NULL)
 			break;
 		}
 
@@ -968,7 +974,7 @@ int multiplierinfo(void)
 		cnt++;
 
 	    }
-	    if (cnt >= MAX_MULTS)
+	    if (cnt >= max_multipliers)
 		break;
 	}
     }

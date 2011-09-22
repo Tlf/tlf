@@ -25,6 +25,8 @@
 #include "globalvars.h"
 #include "addmult.h"
 
+#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
+
 int inxes[NBANDS] =
     { BAND160, BAND80, BAND40, 0, BAND20, 0, BAND15, 0, BAND10 };
 int multcount = 0;
@@ -40,17 +42,17 @@ int addmult(void)
 	ismult = 0;
 	found = 0;
 
-	for (i = 0; i < max_multipliers - 1; i++) {
+	for (i = 0; i < max_multipliers; i++) {
 
-	    if ((strstr(ssexchange, mults_possible[i]) != NULL)
-		&& (strlen(mults_possible[i]) > 1)
-		&& mults_possible[i][0] != ' ') {
+	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
+		&& (strlen(MULTS_POSSIBLE(i)) > 1)
+		&& MULTS_POSSIBLE(i)[0] != ' ') {
 
 		ismult = 1;
 
-		multlen = strlen(mults_possible[i]);
+		multlen = strlen(MULTS_POSSIBLE(i));
 		break;
-	    } else if (mults_possible[i][0] == '\0') {
+	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
 		ismult = 0;
 		break;
 	    } else
@@ -58,9 +60,9 @@ int addmult(void)
 	}
 	if (ismult != 0) {
 	    for (j = 0; j <= multcount; j++) {
-		if (strncmp
-		    (mults[j], strstr(ssexchange, mults_possible[i]),
-		     multlen) == 0) {
+		if (strncmp (mults[j], 
+			    strstr(ssexchange, MULTS_POSSIBLE(i)), 
+			    multlen) == 0) {
 		    found = 1;
 		    break;
 		}
@@ -69,7 +71,7 @@ int addmult(void)
 	    if (found == 0) {
 		multcount++;
 		strncpy(mults[multcount],
-			strstr(ssexchange, mults_possible[i]), multlen);
+			strstr(ssexchange, MULTS_POSSIBLE(i)), multlen);
 	    }
 
 	}
@@ -83,10 +85,10 @@ int addmult(void)
 	found = 0;
 
 	for (i = 0; i < max_multipliers; i++) {	// check if valid mult....
-	    if (strcmp(ssexchange, mults_possible[i]) == 0) {
+	    if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
 		ismult = 1;
 		break;
-	    } else if (mults_possible[i][0] == '\0') {
+	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
 		ismult = 0;
 		break;
 
@@ -102,8 +104,8 @@ int addmult(void)
 
 	    for (n = 0; n < multarray_nr; n++) {	// did we work it somewhere?
 
-		if ((strcmp(mults[n], mults_possible[i]) == 0)
-		    && (strlen(mults_possible[i]) == strlen(mults[n]))) {
+		if ((strcmp(mults[n], MULTS_POSSIBLE(i)) == 0)
+		    && (strlen(MULTS_POSSIBLE(i)) == strlen(mults[n]))) {
 		    found = 1;
 		    break;
 		}
@@ -112,7 +114,7 @@ int addmult(void)
 	    if (found == 0) {
 
 		// no, store it.
-		strcpy(mults[multarray_nr], mults_possible[i]);
+		strcpy(mults[multarray_nr], MULTS_POSSIBLE(i));
 		mult_bands[multarray_nr] =
 		    mult_bands[multarray_nr] | inxes[bandinx];
 		multarray_nr++;
@@ -144,18 +146,18 @@ int addmult(void)
 
 	for (i = 0; i < max_multipliers; i++) {	// check if valid mult....
 
-	    ptr = strstr(ssexchange, mults_possible[i]);
+	    ptr = strstr(ssexchange, MULTS_POSSIBLE(i));
 
 	    if (ptr != NULL) {
 
 		ismult = 1;
 
-		multlen = strlen(mults_possible[i]);
+		multlen = strlen(MULTS_POSSIBLE(i));
 
-		if (strlen(mults_possible[i]) == strlen(ptr))
+		if (strlen(MULTS_POSSIBLE(i)) == strlen(ptr))
 		    break;
 
-	    } else if (mults_possible[i][0] == '\0') {
+	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
 		ismult = 0;
 		break;
 	    } else
@@ -168,8 +170,8 @@ int addmult(void)
 
 	    for (n = 0; n < multarray_nr; n++) {	// did we work it somewhere?
 
-		if ((strcmp(mults[n], mults_possible[i]) == 0)
-		    && (strlen(mults_possible[i]) == strlen(mults[n]))) {
+		if ((strcmp(mults[n], MULTS_POSSIBLE(i)) == 0)
+		    && (strlen(MULTS_POSSIBLE(i)) == strlen(mults[n]))) {
 		    found = 1;
 		    break;
 		}
@@ -178,7 +180,7 @@ int addmult(void)
 	    if (found == 0) {
 
 		// no, store it.
-		strcpy(mults[multarray_nr], mults_possible[i]);
+		strcpy(mults[multarray_nr], MULTS_POSSIBLE(i));
 		mult_bands[multarray_nr] =
 		    mult_bands[multarray_nr] | inxes[bandinx];
 		multarray_nr++;
@@ -305,15 +307,15 @@ int addmult2(void)
 
 	for (i = 0; i < max_multipliers - 1; i++) {
 
-	    if ((strstr(ssexchange, mults_possible[i]) != NULL)
-		&& (strlen(mults_possible[i]) > 1)
-		&& mults_possible[i][0] != ' ') {
+	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
+		&& (strlen(MULTS_POSSIBLE(i)) > 1)
+		&& MULTS_POSSIBLE(i)[0] != ' ') {
 
 		ismult = 1;
 
-		multlen = strlen(mults_possible[i]);
+		multlen = strlen(MULTS_POSSIBLE(i));
 		break;
-	    } else if (mults_possible[i][0] == '\0') {
+	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
 		ismult = 0;
 		break;
 	    } else
@@ -322,7 +324,7 @@ int addmult2(void)
 	if (ismult != 0) {
 	    for (j = 0; j <= multcount; j++) {
 		if (strncmp
-		    (mults[j], strstr(ssexchange, mults_possible[i]),
+		    (mults[j], strstr(ssexchange, MULTS_POSSIBLE(i)),
 		     multlen) == 0) {
 		    found = 1;
 		    break;
@@ -332,7 +334,7 @@ int addmult2(void)
 	    if (found == 0) {
 		multcount++;
 		strncpy(mults[multcount],
-			strstr(ssexchange, mults_possible[i]), multlen);
+			strstr(ssexchange, MULTS_POSSIBLE(i)), multlen);
 		if (strlen(mults[multcount]) == 2)
 		    strcat(mults[multcount], " ");
 	    }

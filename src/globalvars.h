@@ -1,4 +1,5 @@
 #include "tlf.h"
+#include <glib.h>
 
 extern char qsos[MAX_QSOS][82];		// array of log lines of QSOs so far; 
 					// note that not every log line needs 
@@ -92,7 +93,7 @@ extern char zone_export[];
 extern int itumult;
 
 extern int max_multipliers;
-extern char mults_possible[MAX_MULTS][12];	/* field of possible mults */
+GPtrArray *mults_possible;	/* growing array of possible mutlipliers */
 extern char ssexchange[];
 extern int shownewmult;
 extern char comment[];

@@ -24,6 +24,9 @@
 
 #include "getexchange.h"
 #include "recall_exchange.h"
+#include <glib.h>
+
+#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
 int play_file(char *audiofile);
 
@@ -428,7 +431,7 @@ int checkexchange(int x)
 
     extern char comment[];
     extern char ssexchange[];
-    extern char mults_possible[MAX_MULTS][12];
+    extern GPtrArray *mults_possible;
     extern int cqww;
     extern int arrlss;
     extern char section[];
@@ -746,12 +749,12 @@ int checkexchange(int x)
 
 		for (jj = 0; jj < max_multipliers - 1; jj++) {
 
-		    if ((strlen(mults_possible[jj]) >= 1) &&
-			(strstr(checksection, mults_possible[jj]) != NULL)
+		    if ((strlen(MULTS_POSSIBLE(jj)) >= 1) &&
+			(strstr(checksection, MULTS_POSSIBLE(jj)) != NULL)
 			&& (strlen(checksection) ==
-			    strlen(mults_possible[jj]))) {
+			    strlen(MULTS_POSSIBLE(jj)))) {
 
-			strcpy(section, mults_possible[jj]);
+			strcpy(section, MULTS_POSSIBLE(jj));
 			break;
 		    }
 		}
@@ -826,10 +829,10 @@ int checkexchange(int x)
 
 		    for (jj = 0; jj < MAX_MULTS; jj++) {
 
-			if ((strlen(mults_possible[jj]) >= 1)
-			    && (strcmp(checksection, mults_possible[jj]) ==
+			if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
+			    && (strcmp(checksection, MULTS_POSSIBLE(jj)) ==
 				0)) {
-			    strcpy(section, mults_possible[jj]);
+			    strcpy(section, MULTS_POSSIBLE(jj));
 			    break;	// new
 			}
 		    }
@@ -848,11 +851,11 @@ int checkexchange(int x)
 		checksection[3] = '\0';
 		for (jj = 0; jj < max_multipliers; jj++) {
 
-		    if ((strlen(mults_possible[jj]) >= 1)
-			&& (strstr(checksection, mults_possible[jj]) !=
+		    if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
+			&& (strstr(checksection, MULTS_POSSIBLE(jj)) !=
 			    NULL)) {
 
-			strcpy(section, mults_possible[jj]);
+			strcpy(section, MULTS_POSSIBLE(jj));
 		    }
 		}
 	    }
@@ -871,12 +874,12 @@ int checkexchange(int x)
 
 		for (jj = 0; jj < max_multipliers; jj++) {
 
-		    if ((strlen(mults_possible[jj]) ==
+		    if ((strlen(MULTS_POSSIBLE(jj)) ==
 			 strlen(checksection))
-			&& (strstr(checksection, mults_possible[jj]) !=
+			&& (strstr(checksection, MULTS_POSSIBLE(jj)) !=
 			    NULL)) {
 
-			strcpy(section, mults_possible[jj]);
+			strcpy(section, MULTS_POSSIBLE(jj));
 
 			// if (strlen(section) == strlen(mults_possible[jj])) break;
 		    }

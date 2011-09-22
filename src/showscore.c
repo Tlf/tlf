@@ -24,6 +24,7 @@
 #include "globalvars.h"
 #include "showscore.h"
 #include "freq_display.h"
+#include <glib.h>
 
 int showscore(void)
 {
@@ -424,7 +425,7 @@ int r_multiplierinfo(void)
     extern int use_rxvt;
     extern int arrlss;
     extern char mults[MAX_MULTS][12];
-    extern char mults_possible[MAX_MULTS][12];
+    extern GPtrArray *mults_possible;
     extern int multcount;
 
     int j, vert, hor, cnt, found;
@@ -446,14 +447,13 @@ int r_multiplierinfo(void)
 
 	    for (hor = 11; hor < 20; hor++) {
 
-		mprint[0] = '\0';
-		strcat(mprint, mults_possible[cnt]);
+		strcpy(mprint, g_ptr_array_index(mults_possible, cnt));
 		strcat(mprint, " ");
 		mprint[4] = '\0';
 
 		found = 0;
 		for (j = 0; j < multcount + 1; j++) {
-		    strncpy(chmult, mults_possible[cnt], 4);
+		    strncpy(chmult, g_ptr_array_index(mults_possible, cnt), 4);
 		    if (strlen(chmult) == 2)
 			strcat(chmult, " ");
 
@@ -481,10 +481,10 @@ int r_multiplierinfo(void)
 
 		cnt++;
 
-		if (cnt >= MAX_MULTS)
+		if (cnt >= max_multipliers)
 		    break;
 	    }
-	    if (cnt >= MAX_MULTS)
+	    if (cnt >= max_multipliers)
 		break;
 	}
     }

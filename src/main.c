@@ -22,6 +22,7 @@
 #include "tlf.h"
 #include "globalvars.h"
 #include "main.h"
+#include <glib.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -309,7 +310,7 @@ char mults[MAX_MULTS][12];
 int mult_bands[MAX_MULTS];
 int multarray_nr = 0;
 
-char mults_possible[MAX_MULTS][12];
+GPtrArray *mults_possible;
 int max_multipliers;
 
 int multlist = 0;
@@ -567,6 +568,8 @@ int main(int argc, char *argv[])
 	    init_pair(COLOR_YELLOW, tlfcolors[7][0], tlfcolors[7][1]);
 
 	}
+
+	mults_possible = g_ptr_array_new();
 
 	if (multlist == 1) {
 	    showmsg("reading multiplier data      ");
