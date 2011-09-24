@@ -244,7 +244,7 @@ int parse_logcfg(char *inputbuffer)
 	"F11=",
 	"F12=",
 	"S&P_TU_MSG=",
-	"CW_TU_MSG=",		/* 15 */
+	"CQ_TU_MSG=",		/* 15 */
 	"CALL=",
 	"CONTEST=",
 	"LOGFILE=",
@@ -345,8 +345,8 @@ int parse_logcfg(char *inputbuffer)
 	"VKM10=",
 	"VKM11=",
 	"VKM12=",
-	"VKSPR=",		/* 115 */
-	"VKCWR=",
+	"VKSPM=",		/* 115 */
+	"VKCQM=",
 	"WAZMULT",
 	"ITUMULT",
 	"CQDELAY=",
