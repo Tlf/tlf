@@ -118,7 +118,7 @@ extern int inxes[NBANDS];  /*< conversion from BANDINDEX to BAND-mask,
 #define	MAX_SPOTS 200		/* max nr. of spots in spotarray */
 #define MAX_CALLMASTER 50000 /* max number of calls in callmaster array */
 
-#define  MAX_COMMANDS 155
+#define  MAX_COMMANDS 159
 
 #define EDITOR_JOE 0
 #define EDITOR_VI 1
