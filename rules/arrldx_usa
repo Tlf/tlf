@@ -11,7 +11,7 @@ RECALL_MULTS
 ##################################
 #                                #
 #  Messages F1= to F12=          #
-#  Message CW_TU_MSG=            #
+#  Message CQ_TU_MSG=            #
 #  Message S&P_TU_MSG=           #
 #                                #
 #  % = call                      #
@@ -36,7 +36,7 @@ F10= QRZ?
 F11= PSE K
 F12=++++TEST---- % %
 #
-CW_TU_MSG=TU %
+CQ_TU_MSG=TU %
 S&P_TU_MSG=TU 5NN PA
 #
 #ALT_0=
