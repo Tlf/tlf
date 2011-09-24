@@ -57,7 +57,6 @@ int showscore(void)
     extern int bandinx;
     extern int multscore[];
     extern int partials;
-    extern int bigpartlist;
     extern char hiscall[];
     extern int multlist;
     extern int serial_section_mult;
@@ -66,7 +65,7 @@ int showscore(void)
 
     int p, q, r, n, l10;
 
-    if ((bigpartlist == 1) && (partials == 1) && (strlen(hiscall) > 2))
+    if ((partials == 1) && (strlen(hiscall) > 2))
 	return (1);
 
     if (showscore_flag == 1) {

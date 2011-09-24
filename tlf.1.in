@@ -758,11 +758,6 @@ more hits than misses. Sometimes you must edit the call because it has locked
 on a unique call.... Try it, and switch it off when you don't like it.
 
 .TR
-.B MANY_CALLS
-Some people think 10 calls is not enough. They have time to check 50 calls
-after a cq...
-
-.TR
 .B LOGFREQUENCY
 Put frequency (kHZ) into qso number to enable logging of frequency (only qso
 and dxped mode)

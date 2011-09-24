@@ -212,7 +212,6 @@ int dupe = 0;
 int callfound = 0;
 int partials = 0;
 int use_part = 0;
-int bigpartlist = 0;
 int block_part = 0;
 char para_word[80] = "LODNCFS:3C\n";	/* longcw, cluster, search,  DE, contest, filter,  speed,  delay */
 char lastmsg[1000] = "";

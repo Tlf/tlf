@@ -36,7 +36,6 @@ extern char tonestr[];
 extern int speed, partials;
 extern int use_part;
 extern int contest;
-extern int bigpartlist;
 extern int portnum;
 extern int packetinterface;
 extern int tncport;
@@ -59,7 +58,6 @@ int read_logcfg(void)
     speed = 14;
     partials = 0;
     use_part = 0;
-    bigpartlist = 0;
     keyerport = 0;
     portnum = 0;
     packetinterface = 0;
@@ -140,7 +138,6 @@ int parse_logcfg(char *inputbuffer)
     extern int editor;
     extern int partials;
     extern int use_part;
-    extern int bigpartlist;
     extern int mixedmode;
     extern char pr_hostaddress[];
     extern int portnum;
@@ -667,7 +664,8 @@ int parse_logcfg(char *inputbuffer)
 		    break;
 		}
 	    case 51:{
-		    bigpartlist = 1;
+		    mvprintw(6,0,
+			    "MANY_CALLS not supported anymore...\n");
 		    break;
 		}
 	    case 52:{
