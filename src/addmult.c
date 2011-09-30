@@ -51,19 +51,20 @@ int addmult(void)
     int i, j, addarea = 0, ismult, multlen = 0;
     char *stripped_comment;
 
+    shownewmult = -1;
+
     stripped_comment = strdup(comment);
     g_strchomp(stripped_comment);
 
     if (arrlss == 1) {	// mult for all bands   -------- arrlss --------------
 
 	ismult = 0;
-	found = 0;
 
+	/* is it a possible mult? */
 	for (i = 0; i < max_multipliers; i++) {
 
 	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		&& (strlen(MULTS_POSSIBLE(i)) > 1)
-		&& MULTS_POSSIBLE(i)[0] != ' ') {
+		&& (strlen(MULTS_POSSIBLE(i)) > 1)) {
 
 		ismult = 1;
 
@@ -73,7 +74,10 @@ int addmult(void)
 	}
 
 	if (ismult != 0) {
-	    for (j = 0; j <= multcount; j++) {
+	    found = 0;
+
+	    /* already worked? */
+	    for (j = 0; j < multcount; j++) {
 		if (strncmp (mults[j], 
 			    strstr(ssexchange, MULTS_POSSIBLE(i)), 
 			    multlen) == 0) {
@@ -82,22 +86,21 @@ int addmult(void)
 		}
 	    }
 
-	    if (found == 0) {
+	    if (found == 0) {	/* not -> add it */
 		multcount++;
 		strncpy(mults[multcount],
 			strstr(ssexchange, MULTS_POSSIBLE(i)), multlen);
 	    }
-
 	}
-
     }
+
     // ---------------------------serial + section ---------------------------
 
     if ((serial_section_mult == 1) || (sectn_mult == 1)) {
 
 	ismult = 0;
-	found = 0;
 
+	/* is it a possible mult? */
 	for (i = 0; i < max_multipliers; i++) {	// check if valid mult....
 	    if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
 		ismult = 1;
@@ -109,6 +112,7 @@ int addmult(void)
 
 	    found = 0;
 
+	    /* already worked? */
 	    for (n = 0; n < multarray_nr; n++) {	// did we work it somewhere?
 
 		if ((strcmp(mults[n], MULTS_POSSIBLE(i)) == 0)
@@ -118,9 +122,8 @@ int addmult(void)
 		}
 	    }
 
-	    if (found == 0) {
+	    if (found == 0) {	/* not -> add it */
 
-		// no, store it.
 		strcpy(mults[multarray_nr], MULTS_POSSIBLE(i));
 		mult_bands[multarray_nr] =
 		    mult_bands[multarray_nr] | inxes[bandinx];
@@ -128,19 +131,15 @@ int addmult(void)
 		addarea = 1;
 		shownewmult = multarray_nr - 1;
 
-	    } else if ((found == 1) && ((mult_bands[n] & inxes[bandinx]) == 0)) {	// yes, mark it...
+	    } else if ((found == 1) && ((mult_bands[n] & inxes[bandinx]) == 0))
+	    {	// new on this band -> mark it...
 		mult_bands[n] = mult_bands[n] | inxes[bandinx];
 		addarea = 1;
 		shownewmult = n;
-
-	    } else {
-		addarea = 0;	// don't count it, worked already on this band...
-
 	    }
-
 	}
-
     }
+
     // ------------------------------- section ----------------------------
 
     if ((dx_arrlsections == 1)
@@ -149,8 +148,8 @@ int addmult(void)
 	char *ptr;		// local pointer
 
 	ismult = 0;
-	found = 0;
 
+	/* is it a possible mult? */
 	for (i = 0; i < max_multipliers; i++) {	// check if valid mult....
 
 	    ptr = strstr(ssexchange, MULTS_POSSIBLE(i));
@@ -158,7 +157,6 @@ int addmult(void)
 	    if (ptr != NULL) {
 
 		ismult = 1;
-
 		multlen = strlen(MULTS_POSSIBLE(i));
 
 		if (strlen(MULTS_POSSIBLE(i)) == strlen(ptr))
@@ -171,6 +169,7 @@ int addmult(void)
 
 	    found = 0;
 
+	    /* already worked? */
 	    for (n = 0; n < multarray_nr; n++) {	// did we work it somewhere?
 
 		if ((strcmp(mults[n], MULTS_POSSIBLE(i)) == 0)
@@ -194,19 +193,16 @@ int addmult(void)
 		mult_bands[n] = mult_bands[n] | inxes[bandinx];
 		addarea = 1;
 		shownewmult = n;
-
-	    } else {
-		addarea = 0;	// don't count it, worked already on this band...
-
 	    }
-
 	}
-
     }
 
     if (wysiwyg_once == 1) {	// --------------------wysiwyg----------------
 
-	for (n = 0; n <= multarray_nr; n++) {
+	found = 0;
+
+	/* already worked? */
+	for (n = 0; n < multarray_nr; n++) {
 	    if (strcmp(mults[n], stripped_comment) == 0) {
 		found = 1;
 		break;
@@ -219,18 +215,15 @@ int addmult(void)
 	    wysiwygmults++;
 	    addarea = 1;
 	    shownewmult = n;
-	} else {
-	    shownewmult = 0;
-	    addarea = 0;
 	}
-
     }
 
     if (wysiwyg_multi == 1 && strlen(stripped_comment) > 0) {
 
 	found = 0;
 
-	for (n = 0; n <= multarray_nr; n++) {
+	/* already worked? */
+	for (n = 0; n < multarray_nr; n++) {
 	    if (strcmp(mults[n], stripped_comment) == 0)  {
 		found = 1;
 		break;
@@ -248,10 +241,6 @@ int addmult(void)
 	    mult_bands[n] = mult_bands[n] | inxes[bandinx];
 	    addarea = 1;
 	    shownewmult = n;
-
-	} else {
-	    addarea = 0;
-
 	}
     }
     
@@ -260,7 +249,8 @@ int addmult(void)
 	found = 0;
 	section[4] = '\0';
 
-	for (n = 0; n <= multarray_nr; n++) { /** \todo check loop boundary */
+	/* already worked? */
+	for (n = 0; n < multarray_nr; n++) { /** \todo check loop boundary */
 	    if (strcmp(mults[n], section) == 0) {
 		found = 1;
 		break;
@@ -278,16 +268,10 @@ int addmult(void)
 	    mult_bands[n] = mult_bands[n] | inxes[bandinx];
 	    addarea = 1;
 	    shownewmult = n;
-
-	} else {
-	    addarea = 0;
-
 	}
     }
 
     if (addarea == 1) {
-
-	addarea = 0;
 	multscore[bandinx]++;
     }
 
@@ -304,18 +288,18 @@ int addmult2(void)
     int i, j, ismult, multlen = 0;
     char ssexchange[21];
 
+    shownewmult = -1;
+
     if (arrlss == 1) {		// mult for all bands
 
 	ismult = 0;
-	found = 0;
 
 	strncpy(ssexchange, lan_logline + 54, 20);
 
-	for (i = 0; i < max_multipliers - 1; i++) {
+	for (i = 0; i < max_multipliers; i++) {
 
 	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		&& (strlen(MULTS_POSSIBLE(i)) > 1)
-		&& MULTS_POSSIBLE(i)[0] != ' ') {
+		&& (strlen(MULTS_POSSIBLE(i)) > 1)) {
 
 		ismult = 1;
 
@@ -325,7 +309,8 @@ int addmult2(void)
 	}
 
 	if (ismult != 0) {
-	    for (j = 0; j <= multcount; j++) {
+
+	    for (j = 0; j < multcount; j++) {
 		if (strncmp
 		    (mults[j], strstr(ssexchange, MULTS_POSSIBLE(i)),
 		     multlen) == 0) {
@@ -341,19 +326,18 @@ int addmult2(void)
 		if (strlen(mults[multcount]) == 2)
 		    strcat(mults[multcount], " ");
 	    }
-
 	}
-
     }
 
     if (wysiwyg_once == 1) {
 
-	for (n = 0; n <= multarray_nr; n++) {
+	for (n = 0; n < multarray_nr; n++) {
 	    if (strcmp(mults[n], comment) == 0) {
 		found = 1;
 		break;
 	    }
 	}
+
 	if (found == 0) {
 
 	    strcpy(mults[multarray_nr], comment);
@@ -361,18 +345,12 @@ int addmult2(void)
 	    wysiwygmults++;
 	    addarea = 1;
 	    shownewmult = n;
-	} else {
-	    shownewmult = 0;
-	    addarea = 0;
 	}
-
     }
 
     if ((wysiwyg_multi == 1) && (strlen(comment) > 0)) {
 
-	found = 0;
-
-	for (n = 0; n <= multarray_nr; n++) {
+	for (n = 0; n < multarray_nr; n++) {
 	    if (strcmp(mults[n], comment) == 0) {
 		found = 1;
 		break;
@@ -390,18 +368,11 @@ int addmult2(void)
 	    mult_bands[n] = mult_bands[n] | inxes[bandinx];
 	    addarea = 1;
 	    shownewmult = n;
-
-	} else {
-	    addarea = 0;
-
 	}
     }
 
     if (addarea == 1) {
-
-	addarea = 0;
 	multscore[bandinx]++;
-
     }
 
     return (found);
