@@ -30,7 +30,19 @@
 
 int inxes[NBANDS] =
     { BAND160, BAND80, BAND40, 0, BAND20, 0, BAND15, 0, BAND10 };
-int multcount = 0;
+
+int multcount = 0;	/* counts number of mults for arrlss. Here we do not
+			 * differentiate mults on different bands.
+			 * So it is effectively the same as the number of mults 
+			 * in mults[] array - multarray_nr.
+			 */
+
+// wysiwygmults	
+			/* Same goes for 'wysiwygmults' counter which is only 
+			 * used if we do a wysiwyg_once counting. 
+			 * Variables cn be dropped in bothe cases and replaced 
+			 * by the number of entries in mults[]
+			 */
 
 int addmult(void)
 {
@@ -42,7 +54,7 @@ int addmult(void)
     stripped_comment = strdup(comment);
     g_strchomp(stripped_comment);
 
-    if (arrlss == 1) {		// mult for all bands   --------------------- arrlss ----------------
+    if (arrlss == 1) {	// mult for all bands   -------- arrlss --------------
 
 	ismult = 0;
 	found = 0;
@@ -57,12 +69,9 @@ int addmult(void)
 
 		multlen = strlen(MULTS_POSSIBLE(i));
 		break;
-	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
-		ismult = 0;
-		break;
-	    } else
-		ismult = 0;
+	    }
 	}
+
 	if (ismult != 0) {
 	    for (j = 0; j <= multcount; j++) {
 		if (strncmp (mults[j], 
@@ -82,7 +91,7 @@ int addmult(void)
 	}
 
     }
-    // -------------------------------serial + section ----------------------------
+    // ---------------------------serial + section ---------------------------
 
     if ((serial_section_mult == 1) || (sectn_mult == 1)) {
 
@@ -93,14 +102,7 @@ int addmult(void)
 	    if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
 		ismult = 1;
 		break;
-	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
-		ismult = 0;
-		break;
-
-	    } else {
-		ismult = 0;
 	    }
-
 	}
 
 	if (ismult != 0) {
@@ -162,11 +164,7 @@ int addmult(void)
 		if (strlen(MULTS_POSSIBLE(i)) == strlen(ptr))
 		    break;
 
-	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
-		ismult = 0;
-		break;
-	    } else
-		ismult = 0;
+	    }
 	}
 
 	if (ismult != 0) {
@@ -206,7 +204,7 @@ int addmult(void)
 
     }
 
-    if (wysiwyg_once == 1) {	// -----------------------------wysiwyg----------------
+    if (wysiwyg_once == 1) {	// --------------------wysiwyg----------------
 
 	for (n = 0; n <= multarray_nr; n++) {
 	    if (strcmp(mults[n], stripped_comment) == 0) {
@@ -227,12 +225,13 @@ int addmult(void)
 	}
 
     }
+
     if (wysiwyg_multi == 1 && strlen(stripped_comment) > 0) {
 
 	found = 0;
 
 	for (n = 0; n <= multarray_nr; n++) {
-	    if ((strcmp(mults[n], stripped_comment) == 0) && (strlen(stripped_comment) > 0)) {
+	    if (strcmp(mults[n], stripped_comment) == 0)  {
 		found = 1;
 		break;
 	    }
@@ -255,13 +254,14 @@ int addmult(void)
 
 	}
     }
+    
     if (serial_grid4_mult == 1 && strlen(section) > 0) {
 
 	found = 0;
 	section[4] = '\0';
 
-	for (n = 0; n <= multarray_nr; n++) {
-	    if ((strcmp(mults[n], section) == 0) && (strlen(section) > 0)) {
+	for (n = 0; n <= multarray_nr; n++) { /** \todo check loop boundary */
+	    if (strcmp(mults[n], section) == 0) {
 		found = 1;
 		break;
 	    }
@@ -294,6 +294,7 @@ int addmult(void)
     return (found);
 }
 
+
 /* -------------------------------------------------------------------*/
 
 int addmult2(void)
@@ -320,12 +321,9 @@ int addmult2(void)
 
 		multlen = strlen(MULTS_POSSIBLE(i));
 		break;
-	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
-		ismult = 0;
-		break;
-	    } else
-		ismult = 0;
+	    } 
 	}
+
 	if (ismult != 0) {
 	    for (j = 0; j <= multcount; j++) {
 		if (strncmp
@@ -369,16 +367,18 @@ int addmult2(void)
 	}
 
     }
-    if (wysiwyg_multi == 1) {
+
+    if ((wysiwyg_multi == 1) && (strlen(comment) > 0)) {
 
 	found = 0;
 
 	for (n = 0; n <= multarray_nr; n++) {
-	    if ((strcmp(mults[n], comment) == 0) && (strlen(comment) >= 1)) {
+	    if (strcmp(mults[n], comment) == 0) {
 		found = 1;
 		break;
 	    }
 	}
+
 	if (found == 0) {
 	    strcpy(mults[multarray_nr], comment);
 	    mult_bands[multarray_nr] =
@@ -406,3 +406,4 @@ int addmult2(void)
 
     return (found);
 }
+
