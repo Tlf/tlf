@@ -11,7 +11,7 @@ CONTEST_MODE
 ##################################
 #                                #
 #  CW Messages F1= to F12=       #
-#  Message CQ_TU_MSG=            #
+#  Message CW_TU_MSG=            #
 #  Message S&P_TU_MSG=           #
 #                                #
 #  % = call                      #
@@ -36,7 +36,7 @@ F10= QRZ?
 F11= PSE K
 F12=++++TEST---- % %
 #
-CQ_TU_MSG=TU %
+CW_TU_MSG=TU %
 S&P_TU_MSG=TU 5NN 14
 #
 #ALT_0=
@@ -68,7 +68,7 @@ S&P_TU_MSG=TU 5NN 14
 #VKM10=/home/rein/tlf/qrz.wav
 #VKM11=/home/rein/tlf/spreturn.wav
 #VKM12=/home/rein/tlf/cq2.wav
-#VKSPM=/home/rein/tlf/spreturn.wav (S&P return message)
-#VKCQM=/home/rein/tlf/qsl.wav	(CQ mode return message)
+#VKSPR=/home/rein/tlf/spreturn.wav (S&P return message)
+#VKCWR=/home/rein/tlf/qsl.wav	(CQ mode return message)
 #
 ####### END #####################

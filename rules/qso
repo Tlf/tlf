@@ -9,7 +9,7 @@ LOGFILE=qso.log
 ##################################
 #                                #
 #  Messages F1= to F12=          #
-#  Message CQ_TU_MSG=            #
+#  Message CW_TU_MSG=            #
 #  Message S&P_TU_MSG=           #
 #                                #
 #  % = call                      #
@@ -34,7 +34,7 @@ F10= QRZ?
 F11= PSE K
 F12=CQ CQ DX DE % % K
 #
-CQ_TU_MSG=TU ES 73 %
+CW_TU_MSG=TU ES 73 %
 S&P_TU_MSG=TU 5NN GL
 #
 #ALT_0=

@@ -9,7 +9,7 @@ CONTEST_MODE
 ##################################
 #                                #
 #  Messages F1= to F12=          #
-#  Message CQ_TU_MSG=            #
+#  Message CW_TU_MSG=            #
 #  Message S&P_TU_MSG=           #
 #                                #
 #  % = call v                    #
@@ -34,7 +34,7 @@ F10= QRZ?
 F11= PSE K
 F12=++++TEST---- % %
 #
-CQ_TU_MSG=TU %
+CW_TU_MSG=TU %
 S&P_TU_MSG=TU 5NN 3ACT
 #
 #ALT_0=
@@ -66,8 +66,8 @@ S&P_TU_MSG=TU 5NN 3ACT
 #VKM10=
 #VKM11=
 #VKM12=
-#VKSPM= (S&P return message)
-#VKCQM=	(CQ mode return message)
+#VKSPR= (S&P return message)
+#VKCWR=	(CQ mode return message)
 #
 ONEPOINT
 #

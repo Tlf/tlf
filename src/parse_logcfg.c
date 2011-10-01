@@ -244,7 +244,7 @@ int parse_logcfg(char *inputbuffer)
 	"F11=",
 	"F12=",
 	"S&P_TU_MSG=",
-	"CQ_TU_MSG=",		/* 15 */
+	"CW_TU_MSG=",		/* 15 */
 	"CALL=",
 	"CONTEST=",
 	"LOGFILE=",
@@ -345,8 +345,8 @@ int parse_logcfg(char *inputbuffer)
 	"VKM10=",
 	"VKM11=",
 	"VKM12=",
-	"VKSPM=",		/* 115 */
-	"VKCQM=",
+	"VKSPR=",		/* 115 */
+	"VKCWR=",
 	"WAZMULT",
 	"ITUMULT",
 	"CQDELAY=",
@@ -384,9 +384,6 @@ int parse_logcfg(char *inputbuffer)
 	"DIGIMODEM=",
 	"LOGFREQUENCY",
 	"IGNOREDUPE",
-	"CW_TU_MSG=",
-	"VKCWR=",		/* 155 */
-	"VKSPR=",
 	""
     };
 
@@ -437,6 +434,7 @@ int parse_logcfg(char *inputbuffer)
 		    break;	/* end messages */
 		}
 	    case 16:{
+//		    if (strlen(inputbuffer) > 6 + sizeof(call)) {
 		    if (strlen(inputbuffer) > 6 + 20-1) {
 			mvprintw(6,0,
 				"WARNING: Defined call sign too long! exiting...\n");
@@ -666,7 +664,8 @@ int parse_logcfg(char *inputbuffer)
 		    break;
 		}
 	    case 51:{
-		    showmsg("MANY_CALLS not supported anymore...\n");
+		    mvprintw(6,0,
+			    "MANY_CALLS not supported anymore...\n");
 		    break;
 		}
 	    case 52:{
@@ -983,7 +982,6 @@ int parse_logcfg(char *inputbuffer)
 			dx_cont_points = atoi(c_temp);
 
 		    break;
-		   }
 /* end LZ3NY mod */
 	    case 101:{		// show time in searchlog window
 			show_time = 1;
@@ -1243,17 +1241,8 @@ int parse_logcfg(char *inputbuffer)
 			ignoredupe = 1;
 			break;
 		    }
-	    case 154:
-	    case 155:
-	    case 156:{
-			char msgbuffer[100];
-			sprintf(msgbuffer, 
-			   "Keyword '%s' not supported. See man page and README.\n",
-			   teststring);
-			showmsg(msgbuffer);
-			sleep(1);
-			break;
-		    }
+
+		}
 
 	    }
 

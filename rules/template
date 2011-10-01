@@ -10,7 +10,7 @@ CONTEST_MODE
 ##################################
 #                                #
 #  Messages F1= to F12=          #
-#  Message CQ_TU_MSG=            #
+#  Message CW_TU_MSG=            #
 #  Message S&P_TU_MSG=           #
 #                                #
 #  % = call                      #
@@ -35,7 +35,7 @@ F10= QRZ?
 F11= PSE K
 F12=++++TEST---- % %
 #
-CQ_TU_MSG=TU %
+CW_TU_MSG=TU %
 S&P_TU_MSG=TU 5NN #
 #
 #ALT_0=
