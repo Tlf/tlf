@@ -443,8 +443,12 @@ int r_multiplierinfo(void)
 	    mvprintw(j, 42, "                                     ");
 
 	for (vert = 2; vert < 8; vert++) {
+	    if (cnt >= mults_possible->len)
+		break;
 
 	    for (hor = 11; hor < 20; hor++) {
+		if (cnt >= mults_possible->len)
+		    break;
 
 		strcpy(mprint, g_ptr_array_index(mults_possible, cnt));
 		strcat(mprint, " ");
@@ -480,11 +484,7 @@ int r_multiplierinfo(void)
 
 		cnt++;
 
-		if (cnt >= max_multipliers)
-		    break;
 	    }
-	    if (cnt >= max_multipliers)
-		break;
 	}
     }
 

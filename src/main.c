@@ -310,7 +310,6 @@ int mult_bands[MAX_MULTS];
 int multarray_nr = 0;
 
 GPtrArray *mults_possible;
-int max_multipliers;
 
 int multlist = 0;
 
@@ -572,7 +571,7 @@ int main(int argc, char *argv[])
 
 	if (multlist == 1) {
 	    showmsg("reading multiplier data      ");
-	    max_multipliers = load_multipliers();
+	    load_multipliers();
 
 	}
 

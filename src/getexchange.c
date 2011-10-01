@@ -443,7 +443,6 @@ int checkexchange(int x)
     extern int serial_section_mult;
     extern int sectn_mult;
     extern int dx_arrlsections;
-    extern int max_multipliers;
 
     char precedent[] = " ";
     char serial[5] = "    ";
@@ -747,7 +746,7 @@ int checkexchange(int x)
 		strncpy(checksection, comment + (hr), 3);
 		checksection[3] = '\0';
 
-		for (jj = 0; jj < max_multipliers - 1; jj++) {
+		for (jj = 0; jj < mults_possible->len; jj++) {
 
 		    if ((strlen(MULTS_POSSIBLE(jj)) >= 1) &&
 			(strstr(checksection, MULTS_POSSIBLE(jj)) != NULL)
@@ -849,7 +848,7 @@ int checkexchange(int x)
 
 		strncpy(checksection, comment, 3);
 		checksection[3] = '\0';
-		for (jj = 0; jj < max_multipliers; jj++) {
+		for (jj = 0; jj < mults_possible->len; jj++) {
 
 		    if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
 			&& (strstr(checksection, MULTS_POSSIBLE(jj)) !=
@@ -872,7 +871,7 @@ int checkexchange(int x)
 		strncpy(checksection, comment, 3);
 		checksection[3] = '\0';
 
-		for (jj = 0; jj < max_multipliers; jj++) {
+		for (jj = 0; jj < mults_possible->len; jj++) {
 
 		    if ((strlen(MULTS_POSSIBLE(jj)) ==
 			 strlen(checksection))

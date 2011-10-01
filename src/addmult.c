@@ -42,21 +42,23 @@ int addmult(void)
 	ismult = 0;
 	found = 0;
 
-	for (i = 0; i < max_multipliers; i++) {
+	if (mults_possible->len > 0) {
+	    for (i = 0; i < mults_possible->len; i++) {
 
-	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		&& (strlen(MULTS_POSSIBLE(i)) > 1)
-		&& MULTS_POSSIBLE(i)[0] != ' ') {
+		if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
+		    && (strlen(MULTS_POSSIBLE(i)) > 1)
+		    && MULTS_POSSIBLE(i)[0] != ' ') {
 
-		ismult = 1;
+		    ismult = 1;
 
-		multlen = strlen(MULTS_POSSIBLE(i));
-		break;
-	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
-		ismult = 0;
-		break;
-	    } else
-		ismult = 0;
+		    multlen = strlen(MULTS_POSSIBLE(i));
+		    break;
+		} else if (MULTS_POSSIBLE(i)[0] == '\0') {
+		    ismult = 0;
+		    break;
+		} else
+		    ismult = 0;
+	    }
 	}
 	if (ismult != 0) {
 	    for (j = 0; j <= multcount; j++) {
@@ -84,18 +86,21 @@ int addmult(void)
 	ismult = 0;
 	found = 0;
 
-	for (i = 0; i < max_multipliers; i++) {	// check if valid mult....
-	    if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
-		ismult = 1;
-		break;
-	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
-		ismult = 0;
-		break;
+	if (mults_possible->len > 0) {
+	    for (i = 0; i < mults_possible->len; i++) {	
+		// check if valid mult....
+		if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
+		    ismult = 1;
+		    break;
+		} else if (MULTS_POSSIBLE(i)[0] == '\0') {
+		    ismult = 0;
+		    break;
 
-	    } else {
-		ismult = 0;
+		} else {
+		    ismult = 0;
+		}
+
 	    }
-
 	}
 
 	if (ismult != 0) {
@@ -144,24 +149,26 @@ int addmult(void)
 	ismult = 0;
 	found = 0;
 
-	for (i = 0; i < max_multipliers; i++) {	// check if valid mult....
+	if (mults_possible->len > 0) {
+	    for (i = 0; i < mults_possible->len; i++) {	// check if valid mult.
 
-	    ptr = strstr(ssexchange, MULTS_POSSIBLE(i));
+		ptr = strstr(ssexchange, MULTS_POSSIBLE(i));
 
-	    if (ptr != NULL) {
+		if (ptr != NULL) {
 
-		ismult = 1;
+		    ismult = 1;
 
-		multlen = strlen(MULTS_POSSIBLE(i));
+		    multlen = strlen(MULTS_POSSIBLE(i));
 
-		if (strlen(MULTS_POSSIBLE(i)) == strlen(ptr))
+		    if (strlen(MULTS_POSSIBLE(i)) == strlen(ptr))
+			break;
+
+		} else if (MULTS_POSSIBLE(i)[0] == '\0') {
+		    ismult = 0;
 		    break;
-
-	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
-		ismult = 0;
-		break;
-	    } else
-		ismult = 0;
+		} else
+		    ismult = 0;
+	    }
 	}
 
 	if (ismult != 0) {
@@ -305,22 +312,25 @@ int addmult2(void)
 
 	strncpy(ssexchange, lan_logline + 54, 20);
 
-	for (i = 0; i < max_multipliers - 1; i++) {
+	if (mults_possible->len > 0) {
+	    for (i = 0; i < mults_possible->len; i++) {
 
-	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		&& (strlen(MULTS_POSSIBLE(i)) > 1)
-		&& MULTS_POSSIBLE(i)[0] != ' ') {
+		if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
+		    && (strlen(MULTS_POSSIBLE(i)) > 1)
+		    && MULTS_POSSIBLE(i)[0] != ' ') {
 
-		ismult = 1;
+		    ismult = 1;
 
-		multlen = strlen(MULTS_POSSIBLE(i));
-		break;
-	    } else if (MULTS_POSSIBLE(i)[0] == '\0') {
-		ismult = 0;
-		break;
-	    } else
-		ismult = 0;
+		    multlen = strlen(MULTS_POSSIBLE(i));
+		    break;
+		} else if (MULTS_POSSIBLE(i)[0] == '\0') {
+		    ismult = 0;
+		    break;
+		} else
+		    ismult = 0;
+	    }
 	}
+
 	if (ismult != 0) {
 	    for (j = 0; j <= multcount; j++) {
 		if (strncmp
