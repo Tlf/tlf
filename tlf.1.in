@@ -1000,7 +1000,8 @@ Multiplier is the DXCC entity (per band)
 
 .TR
 .B MULT_LIST=<file name>
-Name of multipliers file (often sections, provinces, states, counties).
+Name of multipliers file (often sections, provinces, states, counties). May
+contain comment lines starting with '#' in first column.
 
 .TR
 .B SECTION_MULT

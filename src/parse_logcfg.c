@@ -171,7 +171,7 @@ int parse_logcfg(char *inputbuffer)
     extern int timeoffset;
     extern int time_master;
     extern int ctcomp;
-    extern char multiplierlist[];
+    extern char multsfile[];
     extern int multlist;
     extern int universal;
     extern int serial_section_mult;
@@ -208,7 +208,6 @@ int parse_logcfg(char *inputbuffer)
     extern int multiplier_only;
     extern int my_cont_points;
     extern int dx_cont_points;
-    extern char multiplier_list[50];
     extern int multiplier_points;
     extern int multiplier_only;
     char c_temp[11];
@@ -822,8 +821,9 @@ int parse_logcfg(char *inputbuffer)
 		    break;
 		}
 	    case 87:{
-		    multiplierlist[0] = '\0';
-		    strncat(multiplierlist, inputbuffer + 10, 79);
+		    multsfile[0] = '\0';
+		    strncat(multsfile, inputbuffer + 10, 79);
+		    g_strchomp(multsfile);
 		    multlist = 1;
 		    universal = 1;
 		    break;
@@ -883,7 +883,7 @@ int parse_logcfg(char *inputbuffer)
 		}
 /* LZ3NY mods */
 	    case 95:{
-		    /* MULTIPLIER_LIST   (in file or listed in logcfg.dat)     LZ3NY
+		    /* COUNTRY_LIST   (in file or listed in logcfg.dat)     LZ3NY
 		       First of all we are checking if inserted data into MULTIPLIER_LIST is a file name(multdatafile).
 		       If it is we are parsing the file. If we got case insensitive contest name,
 		       we copy the multipliers from it into multipliers_list.
@@ -892,6 +892,7 @@ int parse_logcfg(char *inputbuffer)
 		       for future use.
 		     */
 		    int mit_fg = 0;
+		    char multiplier_list[50];
 		    char mit_multlist[255] = "";
 		    char mit_mult_buf[255] = "";
 		    FILE *multdatafile;
