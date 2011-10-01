@@ -853,7 +853,6 @@ int multiplierinfo(void)
     extern char mults[MAX_MULTS][12];
     extern int mult_bands[MAX_MULTS];
     extern GPtrArray *mults_possible;
-    extern int max_multipliers;
     extern int multcount;
 
     int j, k, key, vert, hor, cnt, found;
@@ -877,7 +876,13 @@ int multiplierinfo(void)
 	cnt = 0;
 	for (vert = 9; vert < 18; vert++) {
 
+	    if (cnt >= mults_possible->len)
+		break;
+
 	    for (hor = 5; hor < 15; hor++) {
+		if (cnt >= mults_possible->len)
+		    break;
+
 		mprint[0] = '\0';
 		strcat(mprint, MULTS_POSSIBLE(cnt));
 		strcat(mprint, " ");
@@ -912,11 +917,7 @@ int multiplierinfo(void)
 
 		cnt++;
 
-		if (cnt >= max_multipliers)
-		    break;
 	    }
-	    if (cnt >= max_multipliers)
-		break;
 	}
     }
 
@@ -924,8 +925,13 @@ int multiplierinfo(void)
 	mvprintw(0, 30, "REMAINING SECTIONS");
 	cnt = 0;
 	for (vert = 2; vert < 22; vert++) {
+	    if (cnt >= mults_possible->len)
+		break;
 
 	    for (hor = 0; hor < 7; hor++) {
+		if (cnt >= mults_possible->len)
+		    break;
+
 		mprint[0] = '\0';
 		strcat(mprint, MULTS_POSSIBLE(cnt));
 		if (strlen(mprint) == 0)
@@ -974,8 +980,6 @@ int multiplierinfo(void)
 		cnt++;
 
 	    }
-	    if (cnt >= max_multipliers)
-		break;
 	}
     }
 
