@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * 			   2011 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +47,6 @@ int multcount = 0;	/* counts number of mults for arrlss. Here we do not
 
 int addmult(void)
 {
-
     int n, found = 0;
     int i, j, addarea = 0, ismult, multlen = 0;
     char *stripped_comment;
@@ -68,8 +68,6 @@ int addmult(void)
 		    && (strlen(MULTS_POSSIBLE(i)) > 1)) {
 
 		    ismult = 1;
-
-		    multlen = strlen(MULTS_POSSIBLE(i));
 		    break;
 		} 
 	    }
@@ -77,6 +75,7 @@ int addmult(void)
 
 	if (ismult != 0) {
 	    found = 0;
+	    multlen = strlen(MULTS_POSSIBLE(i));
 
 	    /* already worked? */
 	    for (j = 0; j < multcount; j++) {
@@ -89,9 +88,8 @@ int addmult(void)
 	    }
 
 	    if (found == 0) {	/* not -> add it */
+		strcpy(mults[multcount], MULTS_POSSIBLE(i));
 		multcount++;
-		strncpy(mults[multcount],
-			strstr(ssexchange, MULTS_POSSIBLE(i)), multlen);
 	    }
 	}
     }
@@ -120,8 +118,7 @@ int addmult(void)
 	    /* already worked? */
 	    for (n = 0; n < multarray_nr; n++) {	// did we work it somewhere?
 
-		if ((strcmp(mults[n], MULTS_POSSIBLE(i)) == 0)
-		    && (strlen(MULTS_POSSIBLE(i)) == strlen(mults[n]))) {
+		if (strcmp(mults[n], MULTS_POSSIBLE(i)) == 0) {
 		    found = 1;
 		    break;
 		}
@@ -180,8 +177,7 @@ int addmult(void)
 	    /* already worked? */
 	    for (n = 0; n < multarray_nr; n++) {	// did we work it somewhere?
 
-		if ((strcmp(mults[n], MULTS_POSSIBLE(i)) == 0)
-		    && (strlen(MULTS_POSSIBLE(i)) == strlen(mults[n]))) {
+		if (strcmp(mults[n], MULTS_POSSIBLE(i)) == 0) {
 		    found = 1;
 		    break;
 		}
