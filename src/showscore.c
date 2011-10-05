@@ -40,7 +40,6 @@ int showscore(void)
     extern int country_mult;
     extern int wysiwyg_once;
     extern int wysiwyg_multi;
-    extern int wysiwygmults;
     extern int fixedmult;
     extern int zonescore[6];
     extern int countryscore[6];
@@ -285,10 +284,10 @@ int showscore(void)
 
 	if (wysiwyg_once == 1) {
 
-	    totalmults = wysiwygmults;
+	    totalmults = multarray_nr;
 	    mvprintw(21, 40, "                                   ");
 	    mvprintw(21, 40, "Pts: %d  Mul: %d Score: %d", total,
-		     wysiwygmults, totalmults * total);
+		     totalmults, totalmults * total);
 
 	}
 

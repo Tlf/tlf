@@ -210,7 +210,6 @@ int addmult(void)
 
 	    strcpy(mults[multarray_nr], stripped_comment);
 	    multarray_nr++;
-	    wysiwygmults++;
 	    addarea = 1;
 	    shownewmult = n;
 	}
@@ -342,7 +341,6 @@ int addmult2(void)
 
 	    strcpy(mults[multarray_nr], comment);
 	    multarray_nr++;
-	    wysiwygmults++;
 	    addarea = 1;
 	    shownewmult = n;
 	}

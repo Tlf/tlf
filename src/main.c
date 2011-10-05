@@ -322,7 +322,6 @@ int multscore[NBANDS];
 
 struct ie_list *main_ie_list;	/* head of initial exchange list */
 
-int wysiwygmults = 0;
 int zonescore[6];
 int countryscore[6];
 int zonedisplay = 0;

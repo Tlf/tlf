@@ -85,7 +85,6 @@ int readcalls(void)
     for (n = 0; n < MAX_MULTS; n++)
 	mult_bands[n] = 0;
 
-    wysiwygmults = 0;
     multarray_nr = 0;
 
     if ((fp = fopen(logfile, "r")) == NULL) {
@@ -245,7 +244,6 @@ int readcalls(void)
 		    multarray_nr++;
 		    multscore[bandinx]++;
 
-		    wysiwygmults++;
 
 		}		// end not found
 
@@ -483,8 +481,6 @@ int readcalls(void)
 
 	for (i = 0; i < NBANDS; i++)
 	    multscore[i] = 0;
-
-	wysiwygmults = 0;
 
     }
 
