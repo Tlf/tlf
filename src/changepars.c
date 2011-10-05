@@ -852,8 +852,8 @@ int multiplierinfo(void)
     extern int sectn_mult;
     extern char mults[MAX_MULTS][12];
     extern int mult_bands[MAX_MULTS];
+    extern int multarray_nr;
     extern GPtrArray *mults_possible;
-    extern int multcount;
 
     int j, k, key, vert, hor, cnt, found;
     char mprint[50];
@@ -889,7 +889,7 @@ int multiplierinfo(void)
 		mprint[4] = '\0';
 
 		found = 0;
-		for (j = 0; j < multcount + 1; j++) {
+		for (j = 0; j < multarray_nr; j++) {
 		    strcpy(chmult, MULTS_POSSIBLE(cnt));
 		    strcpy(ch2mult, mults[j]);
 

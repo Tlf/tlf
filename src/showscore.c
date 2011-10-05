@@ -48,7 +48,6 @@ int showscore(void)
     extern int totalcountries;
     extern int totalzones;
     extern int nr_of_px;
-    extern int multcount;
     extern int qsonum;
     extern char whichcontest[];
     extern int total;
@@ -196,8 +195,8 @@ int showscore(void)
 	}
 	if (arrlss == 1) {
 
-	    mvprintw(21, 40, "Sections: %d      Score: %d", multcount,
-		     multcount * total);
+	    mvprintw(21, 40, "Sections: %d      Score: %d", multarray_nr,
+		     multarray_nr * total);
 	}
 
 	if (cqww == 1) {
@@ -426,7 +425,7 @@ int r_multiplierinfo(void)
     extern int arrlss;
     extern char mults[MAX_MULTS][12];
     extern GPtrArray *mults_possible;
-    extern int multcount;
+    extern int ultcount;
 
     int j, vert, hor, cnt, found;
     char mprint[50];
@@ -456,7 +455,7 @@ int r_multiplierinfo(void)
 		mprint[4] = '\0';
 
 		found = 0;
-		for (j = 0; j < multcount + 1; j++) {
+		for (j = 0; j < multarray_nr; j++) {
 		    strncpy(chmult, g_ptr_array_index(mults_possible, cnt), 4);
 		    if (strlen(chmult) == 2)
 			strcat(chmult, " ");

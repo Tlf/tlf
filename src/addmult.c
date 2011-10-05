@@ -32,12 +32,6 @@
 int inxes[NBANDS] =
     { BAND160, BAND80, BAND40, 0, BAND20, 0, BAND15, 0, BAND10 };
 
-int multcount = 0;	/* counts number of mults for arrlss. Here we do not
-			 * differentiate mults on different bands.
-			 * So it is effectively the same as the number of mults 
-			 * in mults[] array - multarray_nr.
-			 */
-
 // wysiwygmults	
 			/* Same goes for 'wysiwygmults' counter which is only 
 			 * used if we do a wysiwyg_once counting. 
@@ -78,7 +72,7 @@ int addmult(void)
 	    multlen = strlen(MULTS_POSSIBLE(i));
 
 	    /* already worked? */
-	    for (j = 0; j < multcount; j++) {
+	    for (j = 0; j < multarray_nr; j++) {
 		if (strncmp (mults[j], 
 			    strstr(ssexchange, MULTS_POSSIBLE(i)), 
 			    multlen) == 0) {
@@ -88,8 +82,8 @@ int addmult(void)
 	    }
 
 	    if (found == 0) {	/* not -> add it */
-		strcpy(mults[multcount], MULTS_POSSIBLE(i));
-		multcount++;
+		strcpy(mults[multarray_nr], MULTS_POSSIBLE(i));
+		multarray_nr++;
 	    }
 	}
     }
@@ -316,7 +310,7 @@ int addmult2(void)
 
 	if (ismult != 0) {
 
-	    for (j = 0; j < multcount; j++) {
+	    for (j = 0; j < multarray_nr; j++) {
 		if (strncmp
 		    (mults[j], strstr(ssexchange, MULTS_POSSIBLE(i)),
 		     multlen) == 0) {
@@ -326,11 +320,11 @@ int addmult2(void)
 	    }
 
 	    if (found == 0) {
-		multcount++;
-		strncpy(mults[multcount],
+		multarray_nr++;
+		strncpy(mults[multarray_nr],
 			strstr(ssexchange, MULTS_POSSIBLE(i)), multlen);
-		if (strlen(mults[multcount]) == 2)
-		    strcat(mults[multcount], " ");
+		if (strlen(mults[multarray_nr]) == 2)
+		    strcat(mults[multarray_nr], " ");
 	    }
 	}
     }

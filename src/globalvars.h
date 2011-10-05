@@ -54,7 +54,6 @@ extern int dx_arrlsections;
 extern int wysiwyg_multi;
 extern int wysiwyg_once;
 extern int wysiwygmults;
-extern int multcount;
 extern char pxstr[];
 extern int nr_of_px;
 extern int zonescore[6];

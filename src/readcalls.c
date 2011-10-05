@@ -246,7 +246,6 @@ int readcalls(void)
 		    multscore[bandinx]++;
 
 		    wysiwygmults++;
-		    multcount++;
 
 		}		// end not found
 
@@ -489,8 +488,6 @@ int readcalls(void)
 
     }
 
-    if ((arrlss == 1) && (total == 0))
-	multcount = 0;
 
     /* \todo check what the following code is for tb 19sep2011 */
     if (((serial_section_mult == 1)
