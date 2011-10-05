@@ -8,7 +8,8 @@ It supports the CQWW, the WPX, the ARRL-DX , the ARRL-FD, the PACC and the
 EU SPRINT contests (single operator) as well as a LOT MORE basic contests, 
 general QSO and DXpedition mode. 
 
-It interfaces with a morse code generator, your sound card, a number of radios, and with a DX Cluster. 
+It interfaces with a morse code generator, your sound card, a number of radios,
+and with a DX Cluster. 
 
 Tlf can project cluster data into the excellent Xplanet program, written by 
 Hari Nair.
@@ -24,3 +25,10 @@ See 'man tlf' for detailed documentation. See also doc/README for details,
 and the INSTALL file for an quick installation guide.
 
 
+Contribution
+------------
+
+* There is a mailing list at tlf-devel@nongnu.org (see 
+  http://lists.nongnu.org/mailman/listinfo/tlf-devel)
+* If you want to contribute clone the repo, make changes and send us a pathc 
+or pull request.
