@@ -102,8 +102,7 @@ int showscore(void)
 	mvprintw(20, 40, "                                   ");
 	mvprintw(21, 40, "                                   ");
 
-	if ((wysiwyg_once == 1)
-	    || (wysiwyg_multi == 1)
+	if ((wysiwyg_multi == 1)
 	    || (serial_section_mult == 1)
 	    || (serial_grid4_mult == 1)
 	    || (sectn_mult == 1)) {
@@ -343,6 +342,7 @@ int showscore(void)
 	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1) || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
 	    if (wpx == 1)
 		totalmults = nr_of_px;
+	    /** \todo fix calculation of Q/M */
 	    if (totalmults >= 2)
 		p = (total / totalmults);
 	    else
@@ -424,7 +424,6 @@ int r_multiplierinfo(void)
     extern int arrlss;
     extern char mults[MAX_MULTS][12];
     extern GPtrArray *mults_possible;
-    extern int ultcount;
 
     int j, vert, hor, cnt, found;
     char mprint[50];
