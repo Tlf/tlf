@@ -32,13 +32,6 @@
 int inxes[NBANDS] =
     { BAND160, BAND80, BAND40, 0, BAND20, 0, BAND15, 0, BAND10 };
 
-// wysiwygmults	
-			/* Same goes for 'wysiwygmults' counter which is only 
-			 * used if we do a wysiwyg_once counting. 
-			 * Variables cn be dropped in bothe cases and replaced 
-			 * by the number of entries in mults[]
-			 */
-
 int addmult(void)
 {
     int n, found = 0;
