@@ -23,4 +23,4 @@
 
 int addmult( void);
 int addmult2( void);
-
+int load_multipliers(void);

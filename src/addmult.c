@@ -369,3 +369,68 @@ int addmult2(void)
     return (found);
 }
 
+
+/** loads possible multipliers from external file
+ *
+ * Read in the file named by 'multiplierlist' and interpret it as list
+ * of possible multis. 
+ *
+ * Lines starting with '#' will be interpreted as comment.
+ *
+ * Each line should contain at max one word. Leading and trailing whitespaces
+ * will be stripped and the remaining string is remembered in 'mults_possible[]'
+ * growing array. Empty lines will be dropped.
+ *
+ * \return number of loaded multipliers (nr of entries in mults_possible)
+ * */
+int load_multipliers(void)
+{
+    extern GPtrArray *mults_possible;
+    extern char multsfile[];
+
+    FILE *cfp;
+    char s_inputbuffer[186] = "";
+    int count = 0;
+
+
+    if (strlen(multsfile) == 0) {
+	mvprintw(9, 0, "No multiplier file specified, exiting.. !!\n");
+	refresh();
+	sleep(5);
+	exit(1);
+    }
+
+    if ((cfp = fopen(multsfile, "r")) == NULL) {
+	mvprintw(9, 0, "Error opening multiplier file %s.\n", multsfile);
+	refresh();
+	sleep(2);
+    } else {
+
+	count = 0;
+
+	while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
+
+	    /* drop comments starting with '#' */
+	    if (*s_inputbuffer == '#')
+		continue;
+
+	    /* strip leading and trailing whitespace */
+	    g_strstrip( s_inputbuffer );
+	    s_inputbuffer[9] = '\0';
+
+	    /* drop empty lines */
+	    if (s_inputbuffer == '\0')
+		continue;
+
+	    g_ptr_array_add(mults_possible, g_strdup(s_inputbuffer));
+
+	    count++;
+	}
+
+	fclose(cfp);
+
+    }
+
+    return (count);
+}
+
