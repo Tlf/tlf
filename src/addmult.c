@@ -34,8 +34,8 @@ int inxes[NBANDS] =
 
 int addmult(void)
 {
-    int n, found = 0;
-    int i, j, addarea = 0, ismult, multlen = 0;
+    int found = 0;
+    int i, j, ismult, multlen = 0;
     char *stripped_comment;
 
     shownewmult = -1;
@@ -100,32 +100,8 @@ int addmult(void)
 
 	if (ismult != 0) {
 
-	    found = 0;
+	    shownewmult = remember_multi( MULTS_POSSIBLE(i), bandinx, 1); 
 
-	    /* already worked? */
-	    for (n = 0; n < multarray_nr; n++) {	// did we work it somewhere?
-
-		if (strcmp(mults[n], MULTS_POSSIBLE(i)) == 0) {
-		    found = 1;
-		    break;
-		}
-	    }
-
-	    if (found == 0) {	/* not -> add it */
-
-		strcpy(mults[multarray_nr], MULTS_POSSIBLE(i));
-		mult_bands[multarray_nr] =
-		    mult_bands[multarray_nr] | inxes[bandinx];
-		multarray_nr++;
-		addarea = 1;
-		shownewmult = multarray_nr - 1;
-
-	    } else if ((found == 1) && ((mult_bands[n] & inxes[bandinx]) == 0))
-	    {	// new on this band -> mark it...
-		mult_bands[n] = mult_bands[n] | inxes[bandinx];
-		addarea = 1;
-		shownewmult = n;
-	    }
 	}
     }
 
@@ -159,110 +135,28 @@ int addmult(void)
 
 	if (ismult != 0) {
 
-	    found = 0;
+	    shownewmult = remember_multi( MULTS_POSSIBLE(i), bandinx, 1); 
 
-	    /* already worked? */
-	    for (n = 0; n < multarray_nr; n++) {	// did we work it somewhere?
-
-		if (strcmp(mults[n], MULTS_POSSIBLE(i)) == 0) {
-		    found = 1;
-		    break;
-		}
-	    }
-
-	    if (found == 0) {
-
-		// no, store it.
-		strcpy(mults[multarray_nr], MULTS_POSSIBLE(i));
-		mult_bands[multarray_nr] =
-		    mult_bands[multarray_nr] | inxes[bandinx];
-		multarray_nr++;
-		addarea = 1;
-		shownewmult = multarray_nr - 1;
-
-	    } else if ((found == 1) && ((mult_bands[n] & inxes[bandinx]) == 0)) {	// yes, mark it...
-		mult_bands[n] = mult_bands[n] | inxes[bandinx];
-		addarea = 1;
-		shownewmult = n;
-	    }
 	}
     }
 
     if (wysiwyg_once == 1) {	// --------------------wysiwyg----------------
 
-	found = 0;
+	shownewmult = remember_multi( stripped_comment, bandinx, 0);
 
-	/* already worked? */
-	for (n = 0; n < multarray_nr; n++) {
-	    if (strcmp(mults[n], stripped_comment) == 0) {
-		found = 1;
-		break;
-	    }
-	}
-	if (found == 0) {
-
-	    strcpy(mults[multarray_nr], stripped_comment);
-	    multarray_nr++;
-	    addarea = 1;
-	    shownewmult = n;
-	}
     }
 
     if (wysiwyg_multi == 1 && strlen(stripped_comment) > 0) {
 
-	found = 0;
+	shownewmult = remember_multi( stripped_comment, bandinx, 1); 
 
-	/* already worked? */
-	for (n = 0; n < multarray_nr; n++) {
-	    if (strcmp(mults[n], stripped_comment) == 0)  {
-		found = 1;
-		break;
-	    }
-	}
-
-	if (found == 0) {
-	    strcpy(mults[multarray_nr], stripped_comment);
-	    mult_bands[multarray_nr] =
-		mult_bands[multarray_nr] | inxes[bandinx];
-	    multarray_nr++;
-	    addarea = 1;
-	    shownewmult = multarray_nr - 1;
-	} else if ((found == 1) && ((mult_bands[n] & inxes[bandinx]) == 0)) {
-	    mult_bands[n] = mult_bands[n] | inxes[bandinx];
-	    addarea = 1;
-	    shownewmult = n;
-	}
     }
     
     if (serial_grid4_mult == 1 && strlen(section) > 0) {
 
-	found = 0;
 	section[4] = '\0';
+	shownewmult = remember_multi( section, bandinx, 1); 
 
-	/* already worked? */
-	for (n = 0; n < multarray_nr; n++) { /** \todo check loop boundary */
-	    if (strcmp(mults[n], section) == 0) {
-		found = 1;
-		break;
-	    }
-	}
-
-	if (found == 0) {
-	    strcpy(mults[multarray_nr], section);
-	    mult_bands[multarray_nr] =
-		mult_bands[multarray_nr] | inxes[bandinx];
-	    multarray_nr++;
-	    addarea = 1;
-	    shownewmult = multarray_nr - 1;
-	} else if ((found == 1) && ((mult_bands[n] & inxes[bandinx]) == 0)) {
-	    mult_bands[n] = mult_bands[n] | inxes[bandinx];
-	    addarea = 1;
-	    shownewmult = n;
-	}
-    }
-
-    if (addarea == 1) {
-	multscore[bandinx]++;
     }
 
     return (found);
@@ -434,3 +328,70 @@ int load_multipliers(void)
     return (count);
 }
 
+
+/** initialize mults scoring
+ *
+ * empties mults[] and mult_bands[] arrays and set the number of
+ * mults to 0.
+ */
+void init_mults()
+{
+    int n;
+
+   for (n = 0; n < MAX_MULTS; n++) {
+    	mults[n][0]='\0';
+	mult_bands[n] = 0;
+   }
+
+   multarray_nr = 0;
+}
+
+/** register wortked multiplier and check if its new
+ *
+ * Check if multiplier is already registered. If not make a new entry in
+ * mults[] array and increment the total mults count 'multarray_nr'.
+ * Mark the mult as worked on the actual band. If it is a new band
+ * increase the bandspecific 'multscore[band]'.
+ * 
+ * \param multiplier  - the multiplier as a string
+ * \param band        - the bandindex we are on
+ * \param show_new_band -  1 -> check also if new band  
+ * \return            - index in mults[] array if new mult or new on band
+ * 			(-1 if multiplier is an empty string or not new)
+ */
+int remember_multi(char *multiplier, int band, int show_new_band)
+{
+    /* search multbuffer in mults arry */
+    int found = 0, i, index = -1;
+
+    if (*multiplier == '\0')
+	return -1;			/* ignore empty string */
+
+    for (i = 0; i < multarray_nr; i++) {
+
+	if (strcmp(mults[i], multiplier) == 0) {	/* already in list? */	
+	    found = 1;
+	    if ((mult_bands[i] & inxes[band]) == 0) {    /* new band? */
+		mult_bands[i] |= inxes[band];
+		multscore[band]++;
+
+		if (show_new_band)	/* if wanted */ 
+		    index = i;		/* show it as new band */
+	    }
+	    break;
+	}
+    }
+
+    if (found == 0) {	/* add new multi */ 	
+
+	index = multarray_nr;		/* return index of new mult */
+
+	strcpy(mults[multarray_nr], multiplier);
+	mult_bands[multarray_nr] |= inxes[band];
+	multscore[band]++;
+	multarray_nr++;
+
+    }
+
+    return index;
+}

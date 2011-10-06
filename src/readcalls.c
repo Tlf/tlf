@@ -23,6 +23,7 @@
 
 #include "readcalls.h"
 #include "addpfx.h"
+#include "addmult.h"
 #include "get_time.h"
 #include <curses.h>
 #include "tlf.h"
@@ -37,8 +38,6 @@ int readcalls(void)
     char zonebuf[3];
     char checkcall[20];
     int i = 0, k = 0, l = 0, n = 0, r = 0, s = 0;
-    int found = 0;
-    int ii;
     int m = 0;
     int t = 0, tt = 0;
     int z = 0;
@@ -79,13 +78,7 @@ int readcalls(void)
     for (n = 0; n < NBANDS; n++)	//F6CFE
 	multscore[n] = 0;
 
-    for (n = 0; n < MAX_MULTS; n++)
-	mults[n][0]='\0';
-
-    for (n = 0; n < MAX_MULTS; n++)
-	mult_bands[n] = 0;
-
-    multarray_nr = 0;
+    init_mults();
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 	mvprintw(5, 0, "Error opening logfile.\n");
@@ -215,75 +208,23 @@ int readcalls(void)
 
 		}
 
-		/* search multbuffer in mults arry */
-		found = 0;
-		for (ii = 0; ii < multarray_nr; ii++) {
-
-		    if (strcmp(mults[ii], multbuffer) == 0) {	// already there
-
-			found = 1;
-
-			if ((mult_bands[ii] & inxes[bandinx]) == 0) {	// this band?
-			    mult_bands[ii] =
-				mult_bands[ii] | inxes[bandinx];
-			    multscore[bandinx]++;
-			}
-			break;	// end if mark
-
-		    }		// end cmp
-		}		// end for loop
-
-		if (found == 0) {	// add it
-
-		    strcpy(mults[multarray_nr], multbuffer);
-
-		    if (strlen(mults[multarray_nr]) > 0)
-			mult_bands[multarray_nr] =
-			    mult_bands[multarray_nr] | inxes[bandinx];
-
-		    multarray_nr++;
-		    multscore[bandinx]++;
-
-
-		}		// end not found
+		remember_multi( multbuffer, bandinx, 0 );
 
 	    }			// end wysiwig
 
 	    if (other_flg == 1) {	/* mult = max 3 characters */
 
-		found = 0;
+		strncpy(multbuffer, inputbuffer + 54, 3);
+		multbuffer[3] = '\0';
 
-		for (ii = 0; ii < multarray_nr; ii++) {
-
-		    strncpy(multbuffer, inputbuffer + 54, 3);
+		if (multbuffer[3] == ' ')
 		    multbuffer[3] = '\0';
+		if (multbuffer[2] == ' ')
+		    multbuffer[2] = '\0';
+		if (multbuffer[1] == ' ')
+		    multbuffer[1] = '\0';
 
-		    if (multbuffer[3] == ' ')
-			multbuffer[3] = '\0';
-		    if (multbuffer[2] == ' ')
-			multbuffer[2] = '\0';
-		    if (multbuffer[1] == ' ')
-			multbuffer[1] = '\0';
-
-		    if (strcmp(mults[ii], multbuffer) == 0) {
-			found = 1;
-			break;
-		    }
-
-		}
-
-		if (found == 0) {
-		    strcpy(mults[multarray_nr], multbuffer);
-		    mult_bands[multarray_nr] =
-			(mult_bands[multarray_nr] | inxes[bandinx]);
-		    multarray_nr++;
-		    multscore[bandinx]++;
-		} else {
-		    if ((mult_bands[ii] & inxes[bandinx]) == 0) {
-			mult_bands[ii] = (mult_bands[ii] | inxes[bandinx]);
-			multscore[bandinx]++;
-		    }
-		}
+		remember_multi( multbuffer, bandinx, 0 );
 	    }
 
 	}
