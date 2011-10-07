@@ -40,7 +40,6 @@ int showscore(void)
     extern int country_mult;
     extern int wysiwyg_once;
     extern int wysiwyg_multi;
-    extern int wysiwygmults;
     extern int fixedmult;
     extern int zonescore[6];
     extern int countryscore[6];
@@ -48,7 +47,6 @@ int showscore(void)
     extern int totalcountries;
     extern int totalzones;
     extern int nr_of_px;
-    extern int multcount;
     extern int qsonum;
     extern char whichcontest[];
     extern int total;
@@ -103,8 +101,7 @@ int showscore(void)
 	mvprintw(20, 40, "                                   ");
 	mvprintw(21, 40, "                                   ");
 
-	if ((wysiwyg_once == 1)
-	    || (wysiwyg_multi == 1)
+	if ((wysiwyg_multi == 1)
 	    || (serial_section_mult == 1)
 	    || (serial_grid4_mult == 1)
 	    || (sectn_mult == 1)) {
@@ -195,8 +192,8 @@ int showscore(void)
 	}
 	if (arrlss == 1) {
 
-	    mvprintw(21, 40, "Sections: %d      Score: %d", multcount,
-		     multcount * total);
+	    mvprintw(21, 40, "Sections: %d      Score: %d", multarray_nr,
+		     multarray_nr * total);
 	}
 
 	if (cqww == 1) {
@@ -285,10 +282,10 @@ int showscore(void)
 
 	if (wysiwyg_once == 1) {
 
-	    totalmults = wysiwygmults;
+	    totalmults = multarray_nr;
 	    mvprintw(21, 40, "                                   ");
 	    mvprintw(21, 40, "Pts: %d  Mul: %d Score: %d", total,
-		     wysiwygmults, totalmults * total);
+		     totalmults, totalmults * total);
 
 	}
 
@@ -344,6 +341,7 @@ int showscore(void)
 	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1) || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
 	    if (wpx == 1)
 		totalmults = nr_of_px;
+	    /** \todo fix calculation of Q/M */
 	    if (totalmults >= 2)
 		p = (total / totalmults);
 	    else
@@ -425,7 +423,6 @@ int r_multiplierinfo(void)
     extern int arrlss;
     extern char mults[MAX_MULTS][12];
     extern GPtrArray *mults_possible;
-    extern int multcount;
 
     int j, vert, hor, cnt, found;
     char mprint[50];
@@ -455,7 +452,7 @@ int r_multiplierinfo(void)
 		mprint[4] = '\0';
 
 		found = 0;
-		for (j = 0; j < multcount + 1; j++) {
+		for (j = 0; j < multarray_nr; j++) {
 		    strncpy(chmult, g_ptr_array_index(mults_possible, cnt), 4);
 		    if (strlen(chmult) == 2)
 			strcat(chmult, " ");

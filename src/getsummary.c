@@ -34,9 +34,9 @@ extern int cqww;
 extern int arrldx_usa;
 extern int totalmults;
 extern char exchange[];
-extern int multcount;
 extern int arrlss;
 extern int serial_section_mult;
+extern int multarray_nr;
 
 int getsummary(void)
 {
@@ -155,7 +155,7 @@ int getsummary(void)
     if (arrldx_usa == 1)
 	sprintf(buffer, "%d\n", total * totalmults);
     if (arrlss == 1)
-	sprintf(buffer, "%d\n", multcount * total);
+	sprintf(buffer, "%d\n", multarray_nr * total);
     if (serial_section_mult == 1)
 	sprintf(buffer, "%d\n", totalmults * total);
 

@@ -26,4 +26,3 @@
 
 int searchlog(char *searchstring);
 int load_callmaster(void);
-int load_multipliers(void);

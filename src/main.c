@@ -93,7 +93,6 @@ int my_country_points = -1;
 int my_cont_points = -1;
 int dx_cont_points = -1;
 char mit_multiplier_list[255][6];
-char multiplier_list[50];
 int multiplier_only = 0;
 int mult_side = 0;
 char *mit_mult_array;
@@ -136,8 +135,8 @@ int ua9_cty;
 
 char tlfversion[80] = "";
 char testbuffer[120] = "";
-char multiplierlist[80] = "";
-char multsfile[80] = "";
+char multsfile[80] = "";	/* name of file with a list of allowed 
+				   multipliers */
 char exchange_list[40] = "";
 int timeoffset = 0;
 int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
@@ -322,7 +321,6 @@ int multscore[NBANDS];
 
 struct ie_list *main_ie_list;	/* head of initial exchange list */
 
-int wysiwygmults = 0;
 int zonescore[6];
 int countryscore[6];
 int zonedisplay = 0;

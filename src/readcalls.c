@@ -23,10 +23,12 @@
 
 #include "readcalls.h"
 #include "addpfx.h"
+#include "addmult.h"
 #include "get_time.h"
 #include <curses.h>
 #include "tlf.h"
 #include "globalvars.h"
+#include <glib.h>
 
 int readcalls(void)
 {
@@ -36,8 +38,6 @@ int readcalls(void)
     char zonebuf[3];
     char checkcall[20];
     int i = 0, k = 0, l = 0, n = 0, r = 0, s = 0;
-    int found = 0;
-    int ii;
     int m = 0;
     int t = 0, tt = 0;
     int z = 0;
@@ -53,6 +53,7 @@ int readcalls(void)
     mvprintw(4, 0, "Reading logfile...\n");
     refresh();
 
+    /* reset counter and score anew */
     for (s = 0; s < MAX_QSOS; s++)
 	qsos[s][0] = '\0';
 
@@ -77,8 +78,7 @@ int readcalls(void)
     for (n = 0; n < NBANDS; n++)	//F6CFE
 	multscore[n] = 0;
 
-    for (n = 0; n < MAX_MULTS; n++)
-	mult_bands[n] = 0;
+    init_mults();
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 	mvprintw(5, 0, "Error opening logfile.\n");
@@ -204,83 +204,27 @@ int readcalls(void)
 
 		    multbuffer[10] = '\0';
 
-		    tmpptr = strchr(multbuffer, ' ');
-		    if (tmpptr)
-			memset(tmpptr, '\0', multbuffer + 10 - tmpptr);
+		    g_strchomp(multbuffer);
 
 		}
 
-		found = 0;
-		for (ii = 0; ii < multarray_nr; ii++) {
-
-		    if (strcmp(mults[ii], multbuffer) == 0) {	// already there
-
-			found = 1;
-
-			if ((mult_bands[ii] & inxes[bandinx]) == 0) {	// this band?
-			    mult_bands[ii] =
-				mult_bands[ii] | inxes[bandinx];
-			    multscore[bandinx]++;
-			}
-			break;	// end if mark
-
-		    }		// end cmp
-		}		// end for loop
-
-		if (found == 0) {	// add it
-
-		    multarray_nr++;
-
-		    strcpy(mults[multarray_nr], multbuffer);
-
-		    if (strlen(mults[multarray_nr]) > 0)
-			mult_bands[multarray_nr] =
-			    mult_bands[multarray_nr] | inxes[bandinx];
-
-		    multscore[bandinx]++;
-
-		    wysiwygmults++;
-		    multcount++;
-
-		}		// end not found
+		remember_multi( multbuffer, bandinx, 0 );
 
 	    }			// end wysiwig
 
 	    if (other_flg == 1) {	/* mult = max 3 characters */
 
-		found = 0;
+		strncpy(multbuffer, inputbuffer + 54, 3);
+		multbuffer[3] = '\0';
 
-		for (ii = 0; ii < multarray_nr; ii++) {
-
-		    strncpy(multbuffer, inputbuffer + 54, 3);
+		if (multbuffer[3] == ' ')
 		    multbuffer[3] = '\0';
+		if (multbuffer[2] == ' ')
+		    multbuffer[2] = '\0';
+		if (multbuffer[1] == ' ')
+		    multbuffer[1] = '\0';
 
-		    if (multbuffer[3] == ' ')
-			multbuffer[3] = '\0';
-		    if (multbuffer[2] == ' ')
-			multbuffer[2] = '\0';
-		    if (multbuffer[1] == ' ')
-			multbuffer[1] = '\0';
-
-		    if (strcmp(mults[ii], multbuffer) == 0) {
-			found = 1;
-			break;
-		    }
-
-		}
-
-		if (found == 0) {
-		    strcpy(mults[multarray_nr], multbuffer);
-		    mult_bands[multarray_nr] =
-			(mult_bands[multarray_nr] | inxes[bandinx]);
-		    multarray_nr++;
-		    multscore[bandinx]++;
-		} else {
-		    if ((mult_bands[ii] & inxes[bandinx]) == 0) {
-			mult_bands[ii] = (mult_bands[ii] | inxes[bandinx]);
-			multscore[bandinx]++;
-		    }
-		}
+		remember_multi( multbuffer, bandinx, 0 );
 	    }
 
 	}
@@ -347,7 +291,7 @@ int readcalls(void)
 	/* build prefixes_worked array from list of worked stations */
 	nr_of_px = 0;
 
-	for (n = 0; n <= i; n++) {
+	for (n = 0; n < i; n++) {
 	    strcpy(checkcall, callarray[n]);
 	    getpx(checkcall);
 	    add_pfx(pxstr);
@@ -479,13 +423,10 @@ int readcalls(void)
 	for (i = 0; i < NBANDS; i++)
 	    multscore[i] = 0;
 
-	wysiwygmults = 0;
-
     }
 
-    if ((arrlss == 1) && (total == 0))
-	multcount = 0;
 
+    /* \todo check what the following code is for tb 19sep2011 */
     if (((serial_section_mult == 1)
 //              || (serial_grid4_mult == 1)
 	 || (sectn_mult == 1)) && multarray_nr == 1) {	// correction ......
@@ -494,7 +435,7 @@ int readcalls(void)
     } else if (serial_section_mult == 1 && multarray_nr > 1)
 	multarray_nr++;
 
-    return (s);			// nr of qso's
+    return (s);			// nr of lines in log
 }
 
 	//------------------------------------------------------------------------

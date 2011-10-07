@@ -849,56 +849,5 @@ int load_callmaster(void)
     return (count);
 }
 
-// -------------------------------------------------------------------------------
-//char multsfile[80] = "";              // global... (to be fixed)
-// ----------------------------------------------load mults ------------------------
-
-/** loads possible multipliers from external file
- *
- * \return number of loaded multipliers (nr of entries in mults_possible)
- * */
-int load_multipliers(void)
-{
-    extern GPtrArray *mults_possible;
-    extern char multiplierlist[];
-    extern char multsfile[];
-
-    FILE *cfp;
-    char s_inputbuffer[186] = "";
-    int count = 0;
 
 
-    if (strlen(multiplierlist) != 0)
-	strncpy(multsfile, multiplierlist, strlen(multiplierlist) - 1);
-    else {
-	mvprintw(9, 0, "No multiplier file specified, exiting.. !!\n");
-	refresh();
-	sleep(5);
-	exit(1);
-    }
-
-    if ((cfp = fopen(multsfile, "r")) == NULL) {
-	mvprintw(9, 0, "Error opening multiplier file %s.\n", multsfile);
-	refresh();
-	sleep(2);
-    } else {
-
-	count = 0;
-
-	while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
-
-	    if (strlen(s_inputbuffer) > 0)
-		s_inputbuffer[strlen(s_inputbuffer) - 1] = '\0';
-	    s_inputbuffer[9] = '\0';
-
-	    g_ptr_array_add(mults_possible, g_strdup(s_inputbuffer));
-
-	    count++;
-
-	}
-
-	fclose(cfp);
-    }
-
-    return (count);
-}

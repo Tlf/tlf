@@ -53,8 +53,6 @@ extern int sectn_mult;
 extern int dx_arrlsections;
 extern int wysiwyg_multi;
 extern int wysiwyg_once;
-extern int wysiwygmults;
-extern int multcount;
 extern char pxstr[];
 extern int nr_of_px;
 extern int zonescore[6];
@@ -83,7 +81,7 @@ extern int stop_backgrnd_process;
 extern char band[9][4];
 extern struct tm *time_ptr;
 
-extern int inxes[9]; //  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10} ;	
+extern int inxes[NBANDS]; //  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10} ;	
 		    // from addmult.c
 
 extern char cqzone[];
