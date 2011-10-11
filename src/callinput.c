@@ -81,7 +81,6 @@ char callinput(void)
     extern char talkarray[5][62];
     extern int lan_active;
     extern int cluster;
-    extern int announcefilter;
     extern int zonedisplay;
     extern int showscore_flag;
     extern int searchflg;

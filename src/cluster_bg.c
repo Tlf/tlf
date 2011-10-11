@@ -11,77 +11,18 @@ extern int bandinx;
 int cluster_bg(int cluster_arg)
 {
 
-    extern char spot_ptr[MAX_SPOTS][82];
-    extern int spotarray[MAX_SPOTS];
-    extern char spotinfo[32][82];
     extern int announcefilter;
-    extern int bandinx;
-
-    static int clustermode = 0;
-    int k, l;
-    char textbuffer[82];
 
     if (cluster_arg == NOCLUSTER)
 	return (1);
 
-    if (cluster_arg == MAP)
-	clustermode = bandinx;
-    if (cluster_arg == SPOTS)
-	clustermode = NBANDS;
     if (cluster_arg != CLUSTER)
     {
 	announcefilter = FILTER_DX;
 
-	k = getclusterinfo();
-
-	if (k > (MAX_SPOTS - 2))
-	    k = MAX_SPOTS - 2;
-
-	if (clustermode != NBANDS) {	// map
-
-	    if (k < 8)
-		k = 8;
-
-	    for (l = k - 8; l <= k; l++) {
-
-		strncpy(textbuffer, spot_ptr[spotarray[l]], 82);
-		spotinfo[l][0] = '\0';
-
-		if (strlen(textbuffer) > 40) {
-		    strncpy(spotinfo[l], textbuffer + 17, 21);
-		    strncat(spotinfo[l], textbuffer + 69, 8);
-		    spotinfo[l][29] = '\0';
-		}
-	    }
-
-	} else {
-
-	    if (k < 8)
-		k = 8;
-
-	    for (l = k - 8; l <= k; l++) {
-
-		strncpy(textbuffer, spot_ptr[spotarray[l]], 82);
-		spotinfo[l][0] = '\0';
-
-		if (strlen(textbuffer) > 40) {
-		    strncpy(spotinfo[l], textbuffer + 17, 21);
-		    strncat(spotinfo[l], textbuffer + 69, 8);
-		    spotinfo[l][29] = '\0';
-		}
-	    }
-
-	}
     }
 
-    if (cluster_arg == CLUSTER) {	/* all cluster info  */
-
-	k = getclusterinfo();
-
-	if (k > (MAX_SPOTS - 2))
-	    k = MAX_SPOTS - 2;
-
-    }
+    getclusterinfo();
 
     return (0);
 
