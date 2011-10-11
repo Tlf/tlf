@@ -45,9 +45,9 @@ char tln_input_buffer[2 * BUFFERSIZE];
 
 void addlog(char *s)
 {
+    extern char lastwwv[];
     extern struct tln_logline *loghead;
     extern struct tln_logline *logtail;
-    extern struct tln_logline *temp;
     extern struct tln_logline *viewing;
     extern char spot_ptr[MAX_SPOTS][82];
     extern char lastmsg[];
@@ -56,6 +56,7 @@ void addlog(char *s)
 
     int len;
     FILE *fp;
+    struct tln_logline *temp;
 
     for (len = 0; len < strlen(s); len += 80) {
 
@@ -92,6 +93,9 @@ void addlog(char *s)
     // \todo drop it later tb mar11
     bm_add(s);
 
+    if ((strncmp( s, "WWV", 3) == 0) || strncmp ( s, "WCY", 3) == 0)
+	strncpy (lastwwv, s, 82);
+
     if (tln_loglines >= maxtln_loglines) {
 	temp = loghead;
 	loghead = loghead->next;
@@ -102,8 +106,8 @@ void addlog(char *s)
 	free(temp->text);
     } else {
 	temp = (struct tln_logline *) malloc(sizeof(struct tln_logline));
+	tln_loglines++;
     }
-    tln_loglines++;
     temp->next = NULL;
     temp->text = strdup(s);
     temp->attr = curattr;

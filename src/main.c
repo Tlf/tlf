@@ -40,7 +40,6 @@ int portnum = 0;
 struct tln_logline *loghead = NULL;
 struct tln_logline *logtail = NULL;
 struct tln_logline *viewing = NULL;
-struct tln_logline *temp = NULL;
 
 int use_rxvt = 0;
 int use_xterm = 0;

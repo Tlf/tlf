@@ -183,23 +183,6 @@ int getclusterinfo(void)
 	    }
 
 	    i++;
-
-	} else if (strstr(spot_ptr[i], "WCY") != NULL) {
-	    if ((cluster == CLUSTER)) {
-		spotarray[si] = i;
-		si++;
-	    }
-	    strncpy(lastwwv, spot_ptr[i], 82);
-	    i++;
-
-	} else if (strstr(spot_ptr[i], "WWV") != NULL) {
-	    if ((cluster == CLUSTER)) {
-		spotarray[si] = i;
-		si++;
-	    }
-	    strncpy(lastwwv, spot_ptr[i], 82);
-	    i++;
-
 	} else if (strstr(spot_ptr[i], calldupe) != NULL) {
 	    if ((cluster == CLUSTER) && (announcefilter <= 2)) {
 		spotarray[si] = i;
