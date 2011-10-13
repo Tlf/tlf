@@ -32,7 +32,6 @@ int getclusterinfo(void)
 {
 
     extern char spot_ptr[MAX_SPOTS][82];
-    extern char lastwwv[];
     extern int ptr;
     extern int spotarray[];
     extern int announcefilter;
@@ -165,7 +164,6 @@ int getclusterinfo(void)
 ------------------------------------------------------*/
 
 char *bandmap[MAX_SPOTS];
-struct tln_logline *temps;
 
 /* ----------------------------------------------------*/
 
@@ -174,8 +172,6 @@ int loadbandmap(void)
 
     extern int cluster;
     extern char *bandmap[MAX_SPOTS];
-    extern struct tln_logline *loghead;
-    extern struct tln_logline *temps;
     extern struct tm *time_ptr;
     extern int bandmap_pos;
     extern int countries[];
@@ -183,6 +179,9 @@ int loadbandmap(void)
     extern int xplanet;
     extern char markerfile[];
     extern char lastmsg[];
+    extern char spot_ptr[MAX_SPOTS][82];
+    extern int ptr;
+
 
     int i = 0, j, jj, changeflg, k, m, x, y, done;
     int in_map;
@@ -198,7 +197,7 @@ int loadbandmap(void)
     float freqbuffer;
     int timebuff;
 
-    char *thisline;
+    char thisline[83];
     char *tmp;
     char spotcall[20];
     char spottime[6];
@@ -229,130 +228,119 @@ int loadbandmap(void)
     /* parse log of cluster output and find DX announcements.
      * Copy them to bandmap array and find spot_age and spot_freq 
      */
-    if (loghead) {
-	firstlogline();
-    }
 
-    while (temps != NULL) {
+    for (j = 0; j < ptr; j++) {
 
-	thisline = nextlogline();
+	strncpy ( thisline, spot_ptr[j], 82);
+	if (strncmp(thisline, "DX de ", 6) == 0) {
 
-	if (thisline == NULL)
-	    break;
-	else {
-	    if (strncmp(thisline, "DX de ", 6) == 0) {
+	    strncpy(spotcall, thisline + 26, 5);
+	    spotcall[5] = '\0';
 
-		strncpy(spotcall, thisline + 26, 5);
-		spotcall[5] = '\0';
+	    strncpy(spottime, thisline + 70, 4);	// how old?
+	    spottime[4] = spottime[3];
+	    spottime[3] = spottime[2];
+	    spottime[2] = ':';
+	    spottime[5] = '\0';
+	    spotminutes = 60 * atoi(spottime) + atoi(spottime + 3);
+	    timediff = (sysminutes - spotminutes) + 5;
+	    if (timediff + 30 < 0)
+		timediff += 1440;
 
-		strncpy(spottime, thisline + 70, 4);	// how old?
-		spottime[4] = spottime[3];
-		spottime[3] = spottime[2];
-		spottime[2] = ':';
-		spottime[5] = '\0';
-		spotminutes = 60 * atoi(spottime) + atoi(spottime + 3);
-		timediff = (sysminutes - spotminutes) + 5;
-		if (timediff + 30 < 0)
-		    timediff += 1440;
+	    /* is spot recent? */
+	    if ((timediff + 30) <= (MAXMINUTES + 30)) {
 
-		/* is spot recent? */
-		if ((timediff + 30) <= (MAXMINUTES + 30)) {
+		/* yes, so process it */
 
-		    /* yes, so process it */
-
-		    done = 0;	
+		done = 0;	
 		    
-		    /* look for duplicates already in bandmap 
-		     * => kill it older one and keep younger entry */
-		    for (k = 0; k <= i - 1; k++) {
-			callcopy[0] = '\0';
-			strncat(callcopy, bandmap[k] + 26, 5);
+		/* look for duplicates already in bandmap 
+		 * => kill it older one and keep younger entry */
+		for (k = 0; k <= i - 1; k++) {
+		    callcopy[0] = '\0';
+		    strncat(callcopy, bandmap[k] + 26, 5);
 
-			if (strncmp(callcopy, spotcall, 4) == 0) {
-			    bandmap[k][0] = 'd';
-			    break;
-			}
+		    if (strncmp(callcopy, spotcall, 4) == 0) {
+			bandmap[k][0] = 'd';
+			break;
 		    }
-
-		    if (cluster == MAP)
-			in_map = 0;
-		    else
-			in_map = 1;
-
-		    thisband = 10;
-
-		    switch (atoi(thisline + 17))	// right freq?
-		    {
-		    case 1800 ... 1850:
-			if (bandinx == 0)
-			    in_map = 1;
-			thisband = BANDINDEX_160;
-			break;
-
-		    case 3500 ... 4000:
-			if (bandinx == 1)
-			    in_map = 1;
-			thisband = BANDINDEX_80;
-			break;
-
-		    case 7000 ... 7200:
-			if (bandinx == 2)
-			    in_map = 1;
-			thisband = BANDINDEX_40;
-			break;
-
-		    case 10100 ... 10150:
-			if (bandinx == 3)
-			    in_map = 1;
-			break;
-
-		    case 14000 ... 14350:
-			if (bandinx == 4)
-			    in_map = 1;
-			thisband = BANDINDEX_20;
-			break;
-
-		    case 18068 ... 18168:
-			if (bandinx == 5)
-			    in_map = 1;
-			break;
-
-		    case 21000 ... 21450:
-			if (bandinx == 6)
-			    in_map = 1;
-			thisband = BANDINDEX_15;
-			break;
-
-		    case 24890 ... 24990:
-			if (bandinx == 7)
-			    in_map = 1;
-			break;
-
-		    case 28000 ... 29600:
-			if (bandinx == 8)
-			    in_map = 1;
-			thisband = BANDINDEX_10;
-			break;
-
-		    default:
-			in_map = 0;
-			thisband = BANDINDEX_160;
-
-		    }
-
-		    if (done == 0 && in_map == 1) {
-			bandmap[i] = thisline;
-			spot_age[i] = timediff;
-			spot_freq[i] = atof(thisline + 17);
-			i++;
-		    }
-		    done = 0;
-		} else {
-		    /* no longer recent => hide it for strcmp "DX de" */
-		    thisline[0] = 'd';
 		}
 
+		if (cluster == MAP)
+		    in_map = 0;
+		else
+		    in_map = 1;
+
+		thisband = 10;
+
+		switch (atoi(thisline + 17))	// right freq?
+		{
+		case 1800 ... 1850:
+		    if (bandinx == 0)
+			in_map = 1;
+		    thisband = BANDINDEX_160;
+		    break;
+
+		case 3500 ... 4000:
+		    if (bandinx == 1)
+			in_map = 1;
+		    thisband = BANDINDEX_80;
+		    break;
+
+		case 7000 ... 7200:
+		    if (bandinx == 2)
+			in_map = 1;
+		    thisband = BANDINDEX_40;
+		    break;
+
+		case 10100 ... 10150:
+		    if (bandinx == 3)
+			in_map = 1;
+		    break;
+
+		case 14000 ... 14350:
+		    if (bandinx == 4)
+			in_map = 1;
+		    thisband = BANDINDEX_20;
+		    break;
+
+		case 18068 ... 18168:
+		    if (bandinx == 5)
+			in_map = 1;
+		    break;
+
+		case 21000 ... 21450:
+		    if (bandinx == 6)
+			in_map = 1;
+		    thisband = BANDINDEX_15;
+		    break;
+
+		case 24890 ... 24990:
+		    if (bandinx == 7)
+			in_map = 1;
+		    break;
+
+		case 28000 ... 29600:
+		    if (bandinx == 8)
+			in_map = 1;
+		    thisband = BANDINDEX_10;
+		    break;
+
+		default:
+		    in_map = 0;
+		    thisband = BANDINDEX_160;
+
+		}
+
+		if (done == 0 && in_map == 1) {
+		    bandmap[i] = thisline;
+		    spot_age[i] = timediff;
+		    spot_freq[i] = atof(thisline + 17);
+		    i++;
+		}
+		done = 0;
 	    }
+
 	}
     }
     /* ---------------------sort the arrays ----------------------------------
@@ -560,23 +548,3 @@ int loadbandmap(void)
     //--------------------------- the end  ------------------
 }
 
-char *firstlogline(void)
-{
-    extern struct tln_logline *loghead;
-    extern struct tln_logline *temps;
-
-    temps = loghead;
-    return temps->text;
-}
-
-char *nextlogline(void)
-{
-    extern struct tln_logline *temps;
-
-    if (temps->next != NULL) {
-	temps = temps->next;
-	return temps->text;
-    } else
-	return (NULL);
-
-}
