@@ -7,8 +7,7 @@ tlf_SOURCES = \
 	addarea.c addcall.c addmult.c addpfx.c addspot.c audio.c autocq.c \
 	background_process.c bandmap.c \
 	calledit.c callinput.c changefreq.c changepars.c checklogfile.c \
-	checkparameters.c cleanup.c clear_display.c cluster_bg.c \
-	clusterinfo.c \
+	checkparameters.c cleanup.c clear_display.c clusterinfo.c \
 	dxcc.c \
 	deleteqso.c displayit.c \
 	edit_last.c editlog.c \
@@ -39,8 +38,7 @@ noinst_HEADERS = \
 	addarea.h addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \
 	background_process.h bandmap.h \
 	calledit.h callinput.h changefreq.h changepars.h checklogfile.h \
-	checkparameters.h cleanup.h clear_display.h cluster_bg.h \
-	clusterinfo.h cwkeyer.h \
+	checkparameters.h cleanup.h clear_display.h clusterinfo.h cwkeyer.h \
 	dxcc.h \
 	deleteqso.h displayit.h \
 	edit_last.h editlog.h \
