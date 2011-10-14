@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *                         2011 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,11 +52,8 @@ int background_process(void)
     extern int landebug;
     extern struct tm *time_ptr;
 
-    static int last_second;
     static int i, t;
-    static int j = 0;
     static char prmessage[256];
-    static int time_out;
     static int lantimesync = 0;
 
     int n;
@@ -81,20 +79,6 @@ int background_process(void)
 	if (trxmode == DIGIMODE
 	    && (keyerport == MFJ1278_KEYER || keyerport == GMFSK))
 	    rx_rtty();
-
-	if (this_second != last_second) {	/* once per second */
-	    last_second = this_second;
-
-	    j++;
-
-	    if (j >= 2) {	/* 2 seconds  */
-		j = 0;
-
-		cluster_bg(cluster);
-
-	    }
-
-	}
 
 	if (stop_backgrnd_process == 0) {
 	    write_keyer();

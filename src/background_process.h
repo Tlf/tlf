@@ -19,7 +19,6 @@
 
 #include "time_update.h"
 #include "write_keyer.h"
-#include "cluster_bg.h"
 #include "sendbuf.h"
 #include "tlf.h"
 #include "set_tone.h"
