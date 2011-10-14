@@ -27,8 +27,11 @@
 #include "nicebox.h"
 #include "freq_display.h"
 #include "lancode.h"
-#include "cluster_bg.h"
 #include "get_time.h"
+#include "searchcallarray.h"
+#include "getctydata.h"
+
+#define MAXMINUTES 30
 
 void  clusterinfo(char *timestr);
 

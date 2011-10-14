@@ -20,16 +20,8 @@
 #include <stdlib.h>
 #include "tlf.h"
 #include "get_time.h"
-#include "searchcallarray.h"
-#include "getctydata.h"
 #include "nicebox.h"
-
-
-#define MAXMINUTES 30
 
 
 int cluster_bg(int cluster);
 int getclusterinfo();
-char *firstlogline(void);
-char *nextlogline(void);
-int loadbandmap(void) ;
