@@ -137,8 +137,7 @@ TELNETPORT=8000
 #################################
 #
 #CLUSTER
-#BANDMAP
-SPOTLIST
+BANDMAP
 #FILTER
 #
 SCOREWINDOW

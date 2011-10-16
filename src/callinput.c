@@ -850,14 +850,7 @@ char callinput(void)
 			mvprintw(ii, 0, backgrnd_str);
 		    refresh();
 
-		    cluster = SPOTS;
-		} else {
 		    cluster = NOCLUSTER;
-		    attron(COLOR_PAIR(7) | A_STANDOUT);
-
-		    for (ii = 14; ii < 24; ii++)
-			mvprintw(ii, 0, backgrnd_str);
-		    refresh();
 		}
 
 		break;

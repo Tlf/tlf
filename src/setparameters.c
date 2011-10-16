@@ -51,8 +51,6 @@ int setparameters(void)
 	    mvprintw(14, 2, "1: Cluster = OFF");
 	else if (cluster == MAP)
 	    mvprintw(14, 2, "1: Cluster = BANDMAP");
-	else if (cluster == SPOTS)
-	    mvprintw(14, 2, "1: Cluster = SPOTS");
 	else
 	    mvprintw(14, 2, "1: Cluster = Full info");
 

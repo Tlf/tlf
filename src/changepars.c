@@ -157,7 +157,9 @@ int changepars(void)
     switch (i) {
     case 0:			/* SPOTS) */
 	{
-	    cluster = SPOTS;
+	    /* SPOTS not supported anymore 
+	     * - default to MAP*/
+	    cluster = MAP;
 	    break;
 	}
     case 1:			/* BANDMAP */

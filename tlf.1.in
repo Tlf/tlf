@@ -101,8 +101,8 @@ Change cqdelay (in 1/2 seconds, with up/down arrow)
 No cluster info (non-assisted contest operation)
 
 .TR
-.B :CLUster, :MAP, :SPOts
-Show cluster window or bandmap or last 8 spots
+.B :CLUster, :MAP
+Show cluster window or bandmap
 
 .TR
 .B :CONtest
@@ -427,7 +427,7 @@ CW messages
 
 .TR
 .B Alt-a
-Cycle cluster window: NOCLUSTER->CLUSTER->BANDMAP->SPOTS->... 
+Cycle cluster window: NOCLUSTER->CLUSTER->BANDMAP->... 
 
 .TR
 .B Alt-b
@@ -730,12 +730,8 @@ Automatic login for the telnet client.
 Write clusterlog to disk.
 
 .TR
-.B SPOTLIST
-Show only cluster spots, allow Grab.
-
-.TR
 .B BANDMAP
-Shows only spots for this band.
+Shows cluster bandmap, allow Grab. Use '.' to acces bandmap filter.
 
 .TR
 .B SCOREWINDOW

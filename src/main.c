@@ -332,7 +332,6 @@ int qsonum = 1;
 int bufloc = 0;
 int ymax, xmax;			/* screen size */
 char lastwwv[120] = "";
-int bandmap_pos = 0;
 int nroflines;
 
 pid_t pid;

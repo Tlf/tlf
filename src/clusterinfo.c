@@ -26,7 +26,7 @@
 #include "clusterinfo.h"
 #include "dxcc.h"
 #include "bandmap.h"
-
+#include <glib.h>
 extern int bandinx;
 
 char *bandmap[MAX_SPOTS];
@@ -118,7 +118,7 @@ void clusterinfo(char *timestr)
 
     mvprintw(12, 0, "");
 
-    if (cluster == MAP || cluster == SPOTS) {
+    if (cluster == MAP) {
 
 	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
 
@@ -225,7 +225,6 @@ int loadbandmap(void)
     extern int cluster;
     extern char *bandmap[MAX_SPOTS];
     extern struct tm *time_ptr;
-    extern int bandmap_pos;
     extern int countries[];
     extern int call_band[];
     extern int xplanet;
@@ -235,8 +234,7 @@ int loadbandmap(void)
     extern int ptr;
 
 
-    int i = 0, j, jj, changeflg, k, m, x, y, done;
-    int in_map;
+    int i = 0, j, jj, k, m, x, y;
     int spotminutes = 0;
     int sysminutes = 0;
     int timediff = 0;
@@ -246,19 +244,15 @@ int loadbandmap(void)
     int dupe;
     int spot_age[MAX_SPOTS];
     float spot_freq[MAX_SPOTS];
-    float freqbuffer;
-    int timebuff;
 
     char thisline[83];
-    char *tmp;
     char spotcall[20];
     char spottime[6];
     char spotline[38];
-    char tmp1[81];
-    char tmp2[81];
     char callcopy[81];
     FILE *fp;
     char marker_out[60];
+    char color[20];
     int lon;
     int lat;
     int zz;
@@ -267,8 +261,12 @@ int loadbandmap(void)
     char xplanetmsg[160];
     dxcc_data *dx;
 
-    for (i = 0; i < MAX_SPOTS; i++)
-	bandmap[i] = NULL;
+    for (i = 0; i < MAX_SPOTS; i++) {
+	if (bandmap[i] != NULL) {
+	    g_free(bandmap[i]);
+	    bandmap[i] = NULL;
+	}
+    }
 
     j = 0;
 
@@ -302,12 +300,8 @@ int loadbandmap(void)
 	    /* is spot recent? */
 	    if ((timediff + 30) <= (MAXMINUTES + 30)) {
 
-		/* yes, so process it */
-
-		done = 0;	
-		    
 		/* look for duplicates already in bandmap 
-		 * => kill it older one and keep younger entry */
+		 * => kill older one and keep younger entry */
 		for (k = 0; k <= i - 1; k++) {
 		    callcopy[0] = '\0';
 		    strncat(callcopy, bandmap[k] + 26, 5);
@@ -318,130 +312,16 @@ int loadbandmap(void)
 		    }
 		}
 
-		if (cluster == MAP)
-		    in_map = 0;
-		else
-		    in_map = 1;
-
-		thisband = 10;
-
-		switch (atoi(thisline + 17))	// right freq?
-		{
-		case 1800 ... 1850:
-		    if (bandinx == 0)
-			in_map = 1;
-		    thisband = BANDINDEX_160;
-		    break;
-
-		case 3500 ... 4000:
-		    if (bandinx == 1)
-			in_map = 1;
-		    thisband = BANDINDEX_80;
-		    break;
-
-		case 7000 ... 7200:
-		    if (bandinx == 2)
-			in_map = 1;
-		    thisband = BANDINDEX_40;
-		    break;
-
-		case 10100 ... 10150:
-		    if (bandinx == 3)
-			in_map = 1;
-		    break;
-
-		case 14000 ... 14350:
-		    if (bandinx == 4)
-			in_map = 1;
-		    thisband = BANDINDEX_20;
-		    break;
-
-		case 18068 ... 18168:
-		    if (bandinx == 5)
-			in_map = 1;
-		    break;
-
-		case 21000 ... 21450:
-		    if (bandinx == 6)
-			in_map = 1;
-		    thisband = BANDINDEX_15;
-		    break;
-
-		case 24890 ... 24990:
-		    if (bandinx == 7)
-			in_map = 1;
-		    break;
-
-		case 28000 ... 29600:
-		    if (bandinx == 8)
-			in_map = 1;
-		    thisband = BANDINDEX_10;
-		    break;
-
-		default:
-		    in_map = 0;
-		    thisband = BANDINDEX_160;
-
-		}
-
-		if (done == 0 && in_map == 1) {
-		    bandmap[i] = thisline;
-		    spot_age[i] = timediff;
-		    spot_freq[i] = atof(thisline + 17);
-		    i++;
-		}
-		done = 0;
-	    }
-
-	}
-    }
-    /* ---------------------sort the arrays ----------------------------------
-     */
-    changeflg = 1;
-
-    while ((changeflg == 1) && (cluster == MAP)) {	//  sort the spots
-
-	changeflg = 0;
-
-	for (j = 0; j < i - 1; j++) {
-
-	    strcpy(tmp1, bandmap[j]);
-	    strcpy(tmp2, bandmap[j + 1]);
-
-	    if ((tmp1 == NULL) || (tmp2 == NULL))
-		break;
-
-	    /* tb 30nov10 anstatt atof zu nutzen können wir spot_freq Werte 
-	     * vergleichen
-	     */
-	    if ((atof(tmp1 + 16)) > (atof(tmp2 + 16))) {
-		tmp = bandmap[j];
-		timebuff = spot_age[j];
-		freqbuffer = spot_freq[j];
-		bandmap[j] = bandmap[j + 1];
-		spot_age[j] = spot_age[j + 1];
-		spot_freq[j] = spot_freq[j + 1];
-		bandmap[j + 1] = tmp;
-		spot_age[j + 1] = timebuff;
-		spot_freq[j + 1] = freqbuffer;
-		changeflg = 1;
+		bandmap[i] = g_strdup(thisline);
+		spot_age[i] = timediff;
+		spot_freq[i] = atof(thisline + 17);
+		i++;
 	    }
 	}
-
-	if (changeflg == 0)
-	    break;
     }
 
-    //------------------end sort ---------------------------------------------
 
-
-    if (cluster == SPOTS)
-	linepos = (i < 8 ? 0 : i - 8);
-    else
-	linepos = 0;
-
-    if (cluster == MAP)
-	linepos = bandmap_pos;
+    linepos = (i < 8 ? 0 : i - 8);
 
     jj = 0;
 
@@ -480,8 +360,7 @@ int loadbandmap(void)
 	    worked = 0;
 	    dupe = 1;
 
-	    if (cluster == MAP)
-		thisband = bandinx;
+	    thisband = bandinx;
 
 	    /* check if country was already worked on this band */
 	    if ((countries[x] & inxes[thisband]) != 0)
@@ -509,13 +388,13 @@ int loadbandmap(void)
 		    callcopy[0]='\0';
 
 		dx = dxcc_by_index(x);
-		lon = (int)(dx -> lon);
-		lat = (int)(dx -> lat) * -1;
-		sprintf(marker_out, "%4d   %4d   \"%s\"   color=", 
-			lon, lat, callcopy);
+		lon = (int)(dx -> lon) * -1;
+		lat = (int)(dx -> lat);
 
-		if (spot_age[j] > 15 && cluster != SPOTS)
-		    strcat(marker_out, "Green\n");
+		*color = '\0';
+
+		if (spot_age[j] > 15)
+		    strcat(color, "Green");
 		else {
 		    iswarc = 0;
 		    if (spot_freq[j] >= 10100.0 && spot_freq[j] <= 10150.0)
@@ -526,39 +405,34 @@ int loadbandmap(void)
 			iswarc = 1;
 
 		    if (iswarc == 0) {
-			if (cluster == MAP) {
-			    if (worked == 1) {
-				strcat(marker_out, "Yellow\n");
-				worked = 0;
-			    } else
-				strcat(marker_out, "White\n");
-			} else {
-			    if (spot_freq[j] < 3500.0)
-				strcat(marker_out, "Red\n");
-			    if (spot_freq[j] >= 3500.0
-				&& spot_freq[j] <= 4000.0)
-				strcat(marker_out, "Magenta\n");
-			    if (spot_freq[j] >= 7000.0
-				&& spot_freq[j] <= 7300.0)
-				strcat(marker_out, "Yellow\n");
-			    if (spot_freq[j] >= 14000.0
-				&& spot_freq[j] <= 14350.0)
-				strcat(marker_out, "Blue\n");
-			    if (spot_freq[j] >= 21000.0
-				&& spot_freq[j] <= 21450.0)
-				strcat(marker_out, "White\n");
-			    if (spot_freq[j] >= 28000.0
-				&& spot_freq[j] <= 29000.0)
-				strcat(marker_out, "Green\n");
-			    if (iswarc == 1)
-				strcat(marker_out, "Cyan\n");
+			if (spot_freq[j] < 3500.0)
+			    strcat(color, "Red");
+			if (spot_freq[j] >= 3500.0
+			    && spot_freq[j] <= 4000.0)
+			    strcat(color, "Magenta");
+			if (spot_freq[j] >= 7000.0
+			    && spot_freq[j] <= 7300.0)
+			    strcat(color, "Yellow");
+			if (spot_freq[j] >= 14000.0
+			    && spot_freq[j] <= 14350.0)
+			    strcat(color, "Blue");
+			if (spot_freq[j] >= 21000.0
+			    && spot_freq[j] <= 21450.0)
+			    strcat(color, "White");
+			if (spot_freq[j] >= 28000.0
+			    && spot_freq[j] <= 29700.0)
+			    strcat(color, "Green");
 
-			}
 		    } else {
-//                                              iswarc = 0;
-			strcat(marker_out, "Cyan\n");
+			strcat(color, "Cyan");
 		    }
 		}
+
+		if (*color != '\0') {
+		    sprintf(marker_out, "%4d   %4d   \"%s\"   color=%s\n", 
+			lat, lon, callcopy, color);
+		}
+
 		fputs(marker_out, fp);
 
 		fclose(fp);
@@ -615,7 +489,6 @@ int getclusterinfo(void)
 
     int i;
     int si = 0;
-    int in_map = 0;
     char calldupe[12];
 
     strcpy(calldupe, call);
@@ -632,74 +505,12 @@ int getclusterinfo(void)
 
 	if (strstr(spot_ptr[i], "DX de") != NULL) {
 
-	    in_map = 1;
-
-	    if (cluster == MAP) {
-
-		in_map = 0;
-
-		switch (atoi(spot_ptr[i] + 17)) {
-		case 1800 ... 1850:
-		    if (bandinx == 0)
-			in_map = 1;
-		    break;
-
-		case 3500 ... 4000:
-		    if (bandinx == 1)
-			in_map = 1;
-		    break;
-
-		case 7000 ... 7200:
-		    if (bandinx == 2)
-			in_map = 1;
-		    break;
-
-		case 10100 ... 10150:
-		    if (bandinx == 3)
-			in_map = 1;
-		    break;
-
-		case 14000 ... 14350:
-		    if (bandinx == 4)
-			in_map = 1;
-		    break;
-
-		case 18068 ... 18168:
-		    if (bandinx == 5)
-			in_map = 1;
-		    break;
-
-		case 21000 ... 21450:
-		    if (bandinx == 6)
-			in_map = 1;
-		    break;
-
-		case 24900 ... 24950:
-		    if (bandinx == 7)
-			in_map = 1;
-		    break;
-
-		case 28000 ... 29600:
-		    if (bandinx == 8)
-			in_map = 1;
-		    break;
-
-		default:
-		    in_map = 0;
-		}
-
-	    } else {
-		in_map = 1;	//always 1 if not in MAP mode
-	    }
-
-	    if (in_map == 1) {
-		spotarray[si] = i;
-		si++;
-	    }
-
+	    spotarray[si] = i;
+	    si++;
 	    i++;
+
 	} else if (strstr(spot_ptr[i], calldupe) != NULL) {
-	    if ((cluster == CLUSTER) && (announcefilter <= 2)) {
+	    if ((announcefilter <= 2)) {
 		spotarray[si] = i;
 		si++;
 		i++;
@@ -707,13 +518,13 @@ int getclusterinfo(void)
 		i++;
 
 	} else if (strstr(spot_ptr[i], "To ALL") != NULL) {
-	    if ((cluster == CLUSTER) && (announcefilter <= 1)) {
+	    if ((announcefilter <= 1)) {
 		spotarray[si] = i;
 		si++;
 	    }
 	    i++;
 
-	} else if ((cluster == CLUSTER) && (announcefilter == 0)
+	} else if ((announcefilter == 0)
 		   && (strlen(spot_ptr[i]) > 20)) {
 
 	    spotarray[si] = i;

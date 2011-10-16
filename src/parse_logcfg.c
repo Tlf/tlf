@@ -534,15 +534,16 @@ int parse_logcfg(char *inputbuffer)
 		    break;
 		}
 	    case 31:{
-		    cluster = 3;
+		    cluster = CLUSTER;
 		    break;
 		}
 	    case 32:{
-		    cluster = 1;
+		    cluster = MAP;
 		    break;
 		}
 	    case 33:{
-		    cluster = 2;
+		    mvprintw(6,0,
+			    "SPOTLIST not supported anymore...\n");
 		    break;
 		}
 	    case 34:{

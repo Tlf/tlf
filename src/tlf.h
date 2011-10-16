@@ -57,8 +57,7 @@
 #define FIFO_INTERFACE 4
 
 #define NOCLUSTER 0     /*  no cluster info  */
-#define MAP 1           /*  filter follows  band */
-#define SPOTS 2         /*  all spots */
+#define MAP 1           /*  show spots */
 #define CLUSTER 3 		/*  full cluster info  */
 #define FREQWINDOW 4    /* M/M frequencies */
 
