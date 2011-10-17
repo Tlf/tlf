@@ -27,7 +27,10 @@
 #include "dxcc.h"
 #include "bandmap.h"
 #include <glib.h>
+#include <pthread.h>
+
 extern int bandinx;
+extern pthread_mutex_t spot_ptr_mutex;
 
 char *bandmap[MAX_SPOTS];
 
@@ -155,6 +158,9 @@ void clusterinfo(char *timestr)
 
 	inputbuffer[0] = '\0';
 
+	/** \todo minimize lock time */
+	pthread_mutex_lock (&spot_ptr_mutex);
+
 	getclusterinfo();
 
 	k = 0;
@@ -206,6 +212,8 @@ void clusterinfo(char *timestr)
 	    }
 
 	}
+
+	pthread_mutex_unlock (&spot_ptr_mutex);
 
 	nicebox(14, 0, 8, 78, "Cluster");
 	refresh();
@@ -279,6 +287,8 @@ int loadbandmap(void)
      * Copy them to bandmap array and find spot_age and spot_freq 
      */
 
+    pthread_mutex_lock (&spot_ptr_mutex);
+
     for (j = 0; j < ptr; j++) {
 
 	strncpy ( thisline, spot_ptr[j], 82);
@@ -320,6 +330,8 @@ int loadbandmap(void)
 	}
     }
 
+
+    pthread_mutex_unlock (&spot_ptr_mutex);
 
     linepos = (i < 8 ? 0 : i - 8);
 

@@ -26,6 +26,9 @@
 
 #include "splitscreen.h"
 #include "get_time.h"
+#include <pthread.h>
+
+pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int currow;
 int curcol;
@@ -58,6 +61,8 @@ void addlog(char *s)
     FILE *fp;
     struct tln_logline *temp;
 
+    pthread_mutex_lock (&spot_ptr_mutex);
+
     for (len = 0; len < strlen(s); len += 80) {
 
 	strncpy(spot_ptr[ptr], s + len, 82);
@@ -89,6 +94,8 @@ void addlog(char *s)
 	    ptr = MAX_SPOTS - 10;
 	}
     }
+
+    pthread_mutex_unlock (&spot_ptr_mutex);
 
     // \todo drop it later tb mar11
     bm_add(s);
@@ -938,8 +945,10 @@ int init_packet(void)
     wprintw(sclwin, "\n Use \":\" to go to tlf !! \n");
     wrefresh(sclwin);
 
+    pthread_mutex_lock (&spot_ptr_mutex);
     for (iptr = 0; iptr < MAX_SPOTS; iptr++)
 	spot_ptr[iptr][0] = '\0';
+    pthread_mutex_unlock (&spot_ptr_mutex);
 
     return (0);
 }
