@@ -324,24 +324,24 @@ char callinput(void)
 		else
 		    mvprintw(3, 2, "weight: %d  ", weight);
 		mvprintw(3, 10, "");
-		refresh();
+		refreshp();
 		x = onechar();
 
 		if (x == '-') {
 		    mvprintw(3, 9, "%c", '-');
-		    refresh();
+		    refreshp();
 		    weightbuf[0] = x;
 		    x = onechar();
 		    if (x != 27) {
 			mvprintw(3, 10, "%c", (char) x);
-			refresh();
+			refreshp();
 			weightbuf[1] = x;
 			weightbuf[2] = '\0';
 			x = onechar();
 		    }
 		    if (x != 27) {
 			mvprintw(3, 11, "%c", (char) x);
-			refresh();
+			refreshp();
 			weightbuf[2] = x;
 			weightbuf[3] = '\0';
 		    }
@@ -349,7 +349,7 @@ char callinput(void)
 		    weightbuf[0] = x;
 		    weightbuf[1] = '\0';
 		    mvprintw(3, 10, "%c", (char) x);
-		    refresh();
+		    refreshp();
 		    x = onechar();
 		    if (x != 27) {
 			weightbuf[1] = x;
@@ -382,7 +382,7 @@ char callinput(void)
 			mvprintw(2, 2, "Speed: %s", speedbuf);
 			mvprintw(3, 2, "Weight: %d", weight);
 			printcall();
-			refresh();
+			refreshp();
 
 			x = onechar();
 			if (x == 152) {
@@ -586,7 +586,7 @@ char callinput(void)
 
 		mvprintw(12, 29, "            ");
 		mvprintw(12, 29, "");
-		refresh();
+		refreshp();
 		break;
 	    }
 	case 35:		/*  #  memory */
@@ -607,7 +607,7 @@ char callinput(void)
 		}
 		mvprintw(29, 12, " ");
 		mvprintw(29, 12, "");
-		refresh();
+		refreshp();
 		break;
 	    }
 	case 45:		/* - delete qso */
@@ -796,7 +796,7 @@ char callinput(void)
 			showinfo(x);
 
 			searchlog(hiscall);
-			refresh();
+			refreshp();
 		    }
 
 		    i--;
@@ -815,7 +815,7 @@ char callinput(void)
 		    attron(COLOR_PAIR(7) | A_STANDOUT);
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
-		    refresh();
+		    refreshp();
 		}
 		break;
 	    }
@@ -840,7 +840,7 @@ char callinput(void)
 
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
-		    refresh();
+		    refreshp();
 
 		    cluster = MAP;
 		} else if (cluster == MAP) {
@@ -848,7 +848,7 @@ char callinput(void)
 
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
-		    refresh();
+		    refreshp();
 
 		    cluster = NOCLUSTER;
 		}
@@ -931,7 +931,7 @@ char callinput(void)
 	case 237:		// alt-M
 	    {
 		show_mults();
-		refresh();
+		refreshp();
 		break;
 	    }
 	case 240:		// Alt-p (toggle ptt)
@@ -941,14 +941,14 @@ char callinput(void)
 		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 		    mvprintw(0, 2, "PTT on   ");
 		    mvprintw(12, 29, "");
-		    refresh();
+		    refreshp();
 		    netkeyer(K_PTT, "1");	// ptt on
 		    x = onechar();	// any character to stop tuning
 		    if (x == 240)
 			netkeyer(K_PTT, "0");	// ptt off
 		    k_ptt = 0;
 		    mvprintw(0, 2, "%s", mode);
-		    refresh();
+		    refreshp();
 		} else
 		    netkeyer(K_PTT, "0");	// ptt off in any case.
 
@@ -961,7 +961,7 @@ char callinput(void)
 		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 		    mvprintw(0, 2, "Tune     ");
 		    mvprintw(12, 29, "");
-		    refresh();
+		    refreshp();
 		    if (tune_val == 0) {
 			netkeyer(K_TUNE, "1");	// cw on
 			onechar();	// any character to stop tuning
@@ -969,7 +969,7 @@ char callinput(void)
 		    }
 		    k_tune = 0;
 		    mvprintw(0, 2, "%s", mode);
-		    refresh();
+		    refreshp();
 		} else
 		    netkeyer(K_TUNE, "0");	// cw off in any case.
 
@@ -1128,7 +1128,7 @@ char callinput(void)
 			mvprintw(15 + t, 1, talkarray[t]);
 		    nicebox(14, 0, 5, 59, "Messages");
 
-		    refresh();
+		    refreshp();
 		    getchar();
 		    attron(COLOR_PAIR(7) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
@@ -1165,7 +1165,7 @@ char callinput(void)
 		}
 	    }
 
-	    refresh();
+	    refreshp();
 
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
@@ -1177,7 +1177,7 @@ char callinput(void)
 
 		searchlog(hiscall);
 
-		refresh();
+		refreshp();
 
 	    } else {
 		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
@@ -1198,7 +1198,7 @@ char callinput(void)
 		|| keyerport == MFJ1278_KEYER)) {
 	    show_rtty();
 	    mvprintw(12, 54, comment);
-	    refresh();
+	    refreshp();
 	}
 
     }

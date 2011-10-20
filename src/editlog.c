@@ -55,7 +55,7 @@ int logedit(void)
     rc = system(comstr);
     attron(COLOR_PAIR(7) | A_STANDOUT);
     erase();
-    refresh();
+    refreshp();
     clear_display();
     attron(COLOR_PAIR(7) | A_STANDOUT);
 
@@ -66,7 +66,7 @@ int logedit(void)
     if ((lfile = open(logfile, O_RDONLY)) < 0) {
 
 	mvprintw(24, 0, "I can not find the logfile...");
-	refresh();
+	refreshp();
 	sleep(2);
 
     } else {
@@ -84,13 +84,13 @@ int logedit(void)
 
 	    if ((infile = fopen(logfile, "r")) == NULL) {
 		mvprintw(24, 0, "Unable to open logfile...");
-		refresh();
+		refreshp();
 		sleep(2);
 
 	    } else {
 		if ((outfile = fopen("./cpyfile", "w")) == NULL) {
 		    mvprintw(24, 0, "Unable to open cpyfile...");
-		    refresh();
+		    refreshp();
 		    sleep(2);
 		} else {
 
@@ -114,7 +114,7 @@ int logedit(void)
 		if ((lfile = open("./cpyfile", O_RDWR)) < 0) {
 
 		    mvprintw(24, 0, "I can not find the copy file...");
-		    refresh();
+		    refreshp();
 		    sleep(2);
 		} else {
 
@@ -142,7 +142,7 @@ int logedit(void)
     close(lfile);
 
     scroll_log();
-    refresh();
+    refreshp();
 
     return (0);
 }

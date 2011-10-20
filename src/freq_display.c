@@ -64,7 +64,7 @@ int freq_display(void)
     else
 	mvprintw(19, 41, "DIG");
 
-    refresh();
+    refreshp();
 
     return (0);
 }
@@ -253,7 +253,7 @@ int print_big_number(int number, int y_position, int x_position,
 	}
 
     }
-    refresh();
+    refreshp();
 
     return (0);
 }

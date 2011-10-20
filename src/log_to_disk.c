@@ -121,7 +121,7 @@ int log_to_disk(int from_lan)
     }
     mvprintw(10, 0, logline3);
     mvprintw(11, 0, logline4);
-    refresh();
+    refreshp();
 
     attron(COLOR_PAIR(COLOR_CYAN));
 

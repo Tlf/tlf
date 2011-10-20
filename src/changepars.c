@@ -135,11 +135,11 @@ int changepars(void)
     attroff(A_STANDOUT);
     attron(COLOR_PAIR(COLOR_GREEN));
     mvprintw(12, 29, "PARAMETER?  ");
-    refresh();
+    refreshp();
 
     mvprintw(12, 29, "            ");
     mvprintw(12, 29, "");
-    refresh();
+    refreshp();
 
     echo();
     getstr(parameterstring);
@@ -242,7 +242,7 @@ int changepars(void)
 	    else
 		demode = SEND_DE;
 	    mvprintw(13, 29, "DE-mode is %d", demode);
-	    refresh();
+	    refreshp();
 	    sleep(1);
 
 	    break;
@@ -256,7 +256,7 @@ int changepars(void)
 		searchflg = SEARCHWINDOW;
 	    }
 	    mvprintw(13, 29, "CONTEST-mode is %d", contest);
-	    refresh();
+	    refreshp();
 	    sleep(1);
 
 	    break;
@@ -267,7 +267,7 @@ int changepars(void)
 	    if (announcefilter > 3)
 		announcefilter = 0;
 	    mvprintw(13, 29, "FILTER-mode is %d", announcefilter);
-	    refresh();
+	    refreshp();
 	    sleep(1);
 
 	    break;
@@ -281,7 +281,7 @@ int changepars(void)
 
 	    }
 	    mvprintw(13, 29, "Show score-mode is %d", showscore_flag);
-	    refresh();
+	    refreshp();
 	    sleep(1);
 
 	    break;
@@ -291,7 +291,7 @@ int changepars(void)
 	    write_cabrillo();
 
 	    mvprintw(13, 29, "writing  cabrillo file");
-	    refresh();
+	    refreshp();
 	    sleep(1);
 
 	    break;
@@ -323,7 +323,7 @@ int changepars(void)
     case 22:			/* COUNTRIES */
 	{
 	    show_mults();
-	    refresh();
+	    refreshp();
 	    sleep(1);
 
 	    break;
@@ -343,7 +343,7 @@ int changepars(void)
 		mvprintw(13, 29, "TRXMODE = SSB");
 	    else
 		mvprintw(13, 29, "TRXMODE = DIG");
-	    refresh();
+	    refreshp();
 	    sleep(1);
 
 	    break;
@@ -372,7 +372,7 @@ int changepars(void)
 	    read_logcfg();
 	    writeparas();
 	    mvprintw(24, 0, "Logcfg.dat loaded, parameters written..");
-	    refresh();
+	    refreshp();
 	    clear_display();
 	    break;
 	}
@@ -401,7 +401,7 @@ int changepars(void)
 	    } else {
 		mvprintw(13, 29, "RIT clear off");
 	    }
-	    refresh();
+	    refreshp();
 	    sleep(1);
 
 	    break;
@@ -419,7 +419,7 @@ int changepars(void)
 	    } else {
 		mvprintw(13, 29, "TRX control off");
 	    }
-	    refresh();
+	    refreshp();
 	    sleep(1);
 
 	    break;
@@ -447,7 +447,7 @@ int changepars(void)
 	    read_logcfg();
 	    writeparas();
 	    mvprintw(24, 0, "Logcfg.dat loaded, parameters written..");
-	    refresh();
+	    refreshp();
 	    clear_display();
 	    break;
 	}
@@ -496,7 +496,7 @@ int changepars(void)
 		} else
 		    mvprintw(13, 29, "Simulator on");
 
-		refresh();
+		refreshp();
 
 		if (keyerport == NET_KEYER) {
 
@@ -510,7 +510,7 @@ int changepars(void)
 	    } else {
 		simulator = 0;
 		mvprintw(13, 29, "Simulator off");
-		refresh();
+		refreshp();
 
 		if (keyerport == NET_KEYER) {
 
@@ -563,7 +563,7 @@ int changepars(void)
     case 39:			/* CQDELAY */
 	{
 	    mvprintw(12, 29, "CQD: pgup/dwn", cqdelay);
-	    refresh();
+	    refreshp();
 
 	    x = 1;
 	    while (x) {
@@ -610,7 +610,7 @@ int changepars(void)
 	{
 	    write_adif();
 	    mvprintw(13, 29, "writing adif file");
-	    refresh();
+	    refreshp();
 	    sleep(1);
 
 	    break;
@@ -722,7 +722,7 @@ int changepars(void)
     case 50:			/* CHARS */
 	{
 	    mvprintw(13, 29, "? Characters: (0...4)");
-	    refresh();
+	    refreshp();
 	    x = onechar();
 	    if ((x - 48) < 5 && (x - 48) >= 0)
 		cwstart = x - 48;
@@ -744,7 +744,7 @@ int changepars(void)
 	    packet();
     }
 
-    refresh();
+    refreshp();
 
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
@@ -753,7 +753,7 @@ int changepars(void)
 
     mvprintw(12, 29, "            ");
     mvprintw(12, 29, "");
-    refresh();
+    refreshp();
     hiscall[0] = '\0';
 
     return (0);
@@ -822,10 +822,10 @@ int networkinfo(void)
     else
 	mvprintw(12 + inode, 10, "Band output: off");
 
-    refresh();
+    refreshp();
 
     mvprintw(23, 22, " --- Press a key to continue --- ");
-    refresh();
+    refreshp();
 
     key = getch();
 
@@ -992,7 +992,7 @@ int multiplierinfo(void)
 
     mvprintw(23, 22, " --- Press a key to continue --- ");
 
-    refresh();
+    refreshp();
 
     key = getch();
 
@@ -1032,18 +1032,18 @@ int debug_tty(void)
     for (i = 0; i < 24; i++)
 	mvprintw(i, 0,
 		 "                                                                                ");
-    refresh();
+    refreshp();
 
     if (rigportname[strlen(rigportname) - 1] == '\n')
 	rigportname[strlen(rigportname) - 1] = '\0';	// remove \n
 
     mvprintw(4, 0, "Trying to open %s ", rigportname);
-    refresh();
+    refreshp();
 
     if (tncport == 1) {
 	if ((fdSertnc = open("/dev/ttyS2", O_RDWR | O_NONBLOCK)) < 0) {
 	    mvprintw(5, 0, "open of /dev/ttyS2 failed!!!");
-	    refresh();
+	    refreshp();
 	    sleep(2);
 	    return (-1);
 	}
@@ -1051,14 +1051,14 @@ int debug_tty(void)
 
 	if ((fdSertnc = open("/dev/ttyS1", O_RDWR | O_NONBLOCK)) < 0) {
 	    mvprintw(5, 0, "open of /dev/ttyS1 failed!!!");
-	    refresh();
+	    refreshp();
 	    sleep(2);
 	    return (-1);
 	}
     } else {
 	if ((fdSertnc = open(rigportname, O_RDWR | O_NONBLOCK)) < 0) {
 	    mvprintw(5, 0, "open of %s failed!!!", rigportname);
-	    refresh();
+	    refreshp();
 	    sleep(2);
 	    return (-1);
 	}
@@ -1116,10 +1116,10 @@ int debug_tty(void)
     tcsetattr(fdSertnc, TCSANOW, &termattribs);	/* Set the serial port */
 
     mvprintw(6, 0, "%s opened...", rigportname);
-    refresh();
+    refreshp();
 
     mvprintw(13, 0, "Input command: ");
-    refresh();
+    refreshp();
     echo();
     getnstr(line, 12);
     noecho();
@@ -1128,12 +1128,12 @@ int debug_tty(void)
 /* send message */
     mvprintw(7, 0, "sending message to trx: %s", line);
     mvprintw(7, 40, "Length = %d characters", strlen(line));
-    refresh();
+    refreshp();
 
     rc = write(fdSertnc, line, strlen(line));
 
     mvprintw(8, 0, "receiving message from trx");
-    refresh();
+    refreshp();
     usleep(30000);
 
     if (fdSertnc > 0) {
@@ -1148,7 +1148,7 @@ int debug_tty(void)
 		mvprintw(10, j * 10, "%#x", (char) inputline[j]);
 		mvprintw(11, j, "%c", (char) inputline[j]);
 		mvprintw(12, j * 10, "%d", (char) inputline[j] & 0xff);
-		refresh();
+		refreshp();
 	    }
 	}
 	mvprintw(8, 40, "Length = %d characters", i);
@@ -1160,12 +1160,12 @@ int debug_tty(void)
 		     (inputline[5] & 0xff));
 	}
 
-	refresh();
+	refreshp();
 	sleep(1);
     }
 
     mvprintw(23, 0, "done");
-    refresh();
+    refreshp();
     i = getch();
 
 /* close the tty */

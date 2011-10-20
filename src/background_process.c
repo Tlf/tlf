@@ -116,7 +116,7 @@ int background_process(void)
 	    if ((*lan_message != '\0') && (lan_message[0] == thisnode)) {
 		mvprintw(24, 0,
 		   "Warning: NODE ID CONFLICT ?! You should use another ID! ");
-		refresh();
+		refreshp();
 		sleep(5);
 	    }
 
@@ -138,7 +138,7 @@ int background_process(void)
 			mvprintw(24, 0,
 				 "                                                                           ");
 			mvprintw(24, 0, "%s", prmessage);
-			refresh();
+			refreshp();
 		    }
 
 		    addtext(prmessage);
@@ -160,7 +160,7 @@ int background_process(void)
 		    mvprintw(24, 0,
 			     "                                                                           ");
 		    mvprintw(24, 0, " MSG from %s", talkarray[4]);
-		    refresh();
+		    refreshp();
 		    break;
 		case FREQMSG:
 		    if ((lan_message[0] >= 'A')
@@ -241,7 +241,7 @@ int cw_simulator(void)
 
 	attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 	mvprintw(0, 3, "Sim");
-	refresh();
+	refreshp();
 
 	strcpy(tonecpy, tonestr);
 

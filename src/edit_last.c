@@ -42,6 +42,7 @@ int edit_last(void)
 
     attron(COLOR_PAIR(COLOR_GREEN));
     mvprintw(7 + editline, 0, logline_edit[editline]);
+    refreshp();
 
     b = 29;
     mvprintw(7 + editline, b, "");
@@ -55,13 +56,13 @@ int edit_last(void)
 	    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 	} else if (j == 5) {	// ctrl E, end of line
 	    b = 77;
 	    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 	} else if (j == 9) {	// TAB, next field
 	    if (b == 1)
 		b = 17;
@@ -79,7 +80,7 @@ int edit_last(void)
 	    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if (j == 152) {	// up
 	    if (editline > (6 - nr_qsos) && (editline > 0)) {
@@ -90,7 +91,7 @@ int edit_last(void)
 		mvprintw(7 + editline, 0, logline_edit[editline]);
 		mvprintw(7 + editline, b, "");
 
-		refresh();
+		refreshp();
 	    } else {
 		logview();
 		j = 27;
@@ -106,7 +107,7 @@ int edit_last(void)
 		mvprintw(7 + editline, 0, logline_edit[editline]);
 		mvprintw(7 + editline, b, "");
 
-		refresh();
+		refreshp();
 	    } else
 		j = 27;		/* escape */
 
@@ -117,7 +118,7 @@ int edit_last(void)
 
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if (j == 154) {
 	    if (b < 79) {
@@ -125,7 +126,7 @@ int edit_last(void)
 	    }
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if ((j == 160) && (b >= 0) && (b < 28)) {	// insert
 
@@ -134,7 +135,7 @@ int edit_last(void)
 	    logline_edit[editline][b] = ' ';
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if ((j == 160) && (b >= 29) && (b < 39)) {	// insert  call
 	    for (k = 39; k > b; k--)
@@ -142,7 +143,7 @@ int edit_last(void)
 	    logline_edit[editline][b] = ' ';
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if ((j == 160) && (b >= 54) && (b < 64)) {	// insert
 
@@ -151,7 +152,7 @@ int edit_last(void)
 	    logline_edit[editline][b] = ' ';
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if ((j == 160) && (b >= 68) && (b < 76)) {	// insert
 
@@ -160,7 +161,7 @@ int edit_last(void)
 	    logline_edit[editline][b] = ' ';
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if ((j == 161) && (b >= 1) && (b < 28)) {	// delete
 
@@ -169,7 +170,7 @@ int edit_last(void)
 
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if ((j == 161) && (b >= 29) && (b < 39)) {	// delete
 
@@ -178,7 +179,7 @@ int edit_last(void)
 
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if ((j == 161) && (b >= 68) && (b < 76)) {	// delete
 
@@ -187,7 +188,7 @@ int edit_last(void)
 
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if ((j == 161) && (b >= 54) && (b < 64)) {	// delete
 
@@ -196,7 +197,7 @@ int edit_last(void)
 
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
-	    refresh();
+	    refreshp();
 
 	} else if (j != 27) {
 
@@ -216,12 +217,12 @@ int edit_last(void)
     attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
 
     mvprintw(7 + editline, 0, logline_edit[editline]);
-    refresh();
+    refreshp();
 
     if ((lfile = open(logfile, O_RDWR)) < 0) {
 
 	mvprintw(24, 0, "I can not find the logfile...");
-	refresh();
+	refreshp();
 	sleep(2);
     } else {
 

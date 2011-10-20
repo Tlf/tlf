@@ -242,7 +242,7 @@ int searchlog(char *searchstring)
 
 	dupe = NODUPE;
 	nicebox(1, 41, 6, 37, "Worked");
-	refresh();
+	refreshp();
 
 	attron(COLOR_PAIR(7) | A_STANDOUT);
 
@@ -642,7 +642,7 @@ int searchlog(char *searchstring)
 	    mvprintw(1, 1, "??");
 	    attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
 
-	    refresh();
+	    refreshp();
 
 	    j = 0;
 	    m = 0;
@@ -681,7 +681,7 @@ int searchlog(char *searchstring)
 			mvprintw(xwin + l, ywin + j, "%s ", printres);
 			attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
 
-			refresh();
+			refreshp();
 
 			j += (strlen(printres) + 1);
 
@@ -751,7 +751,7 @@ int searchlog(char *searchstring)
 		beep();
 
 	    }
-	    refresh();
+	    refreshp();
 
 	}
 
@@ -763,7 +763,7 @@ int searchlog(char *searchstring)
 	    isdupe = 1;		// LZ3NY auto-b4 patch
 	    attron(COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
 	    mvprintw(12, 29, hiscall);
-	    refresh();
+	    refreshp();
 	    usleep(100000);
 	} else
 	    isdupe = 0;		// LZ3NY auto-b4 patch
@@ -796,7 +796,7 @@ int load_callmaster(void)
 
 	if ((cfp = fopen(callmaster_location, "r")) == NULL) {
 	    mvprintw(24, 0, "Error opening callmaster file.\n");
-	    refresh();
+	    refreshp();
 	    sleep(2);
 	} else
 	    file_ok = 1;

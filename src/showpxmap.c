@@ -42,7 +42,7 @@ int show_mults(void)
 
 	mvprintw(12, 29, "E,A,F,N,S,O");
 
-	refresh();
+	refreshp();
 
 	ch = getchar();
 
@@ -122,13 +122,13 @@ int show_mults(void)
 			    attron(COLOR_PAIR(4));
 
 			mvprintw(k + 1, j * 4, prefix);
-			refresh();
+			refreshp();
 			i++;
 
 		    } else {
 
 			mvprintw(k + 1, j * 4, "    ");
-			refresh();
+			refreshp();
 			i++;
 
 		    }

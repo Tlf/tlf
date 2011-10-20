@@ -199,7 +199,7 @@ float get_audio_sample(void)
     mvprintw(23, 5, "               ");
 
     mvprintw(23, 5, "%4.0f", retval);
-    refresh();
+    refreshp();
 
     retval = rescale(retval);
 
@@ -227,7 +227,7 @@ int make_bar(int xpos, int ypos, int yheight, unsigned int value,
     } else
 	mvprintw(21 - value, xpos, "@");
 
-    refresh();
+    refreshp();
 
     return (0);
 }
@@ -373,7 +373,7 @@ int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 
     make_bar(7, 20, 20, (int) testvalue, S_BAR);
 
-    refresh();
+    refreshp();
 
     return (0);
 }
@@ -411,18 +411,18 @@ int panscan(void)
 
 	mvprintw(1, 60, "- PANORAMIC SCAN -");
 	mvprintw(5, 60, "Frequency: ");
-	refresh();
+	refreshp();
 	echo();
 	rc = scanf("%f", &FromFrequency);
 	noecho();
 	mvprintw(5, 72, "%5.1f", FromFrequency);
 	mvprintw(22, 1, "%5.1f", FromFrequency);
-	refresh();
+	refreshp();
 	mvprintw(7, 60, "Step (kHz): ");
-	refresh();
+	refreshp();
 	rc = scanf("%f", &FrequencyStep);
 	mvprintw(7, 72, "%5.1f", FrequencyStep);
-	refresh();
+	refreshp();
 
 	for (j = 0; j < 51; j++) {
 	    frequencies[j] = FromFrequency + j * FrequencyStep;
@@ -439,7 +439,7 @@ int panscan(void)
 	    }
 
 	}
-	refresh();
+	refreshp();
 
 	/* ------------- scan --------------------- */
 
@@ -520,16 +520,16 @@ int nbscan(void)
 
 	mvprintw(1, 60, "- NOISE BRIDGE -");	// get the parameters
 	mvprintw(5, 60, "Frequency: ");
-	refresh();
+	refreshp();
 	rc = scanf("%f", &FromFrequency);
 	mvprintw(5, 72, "%5.1f", FromFrequency);
 	mvprintw(22, 1, "%5.1f", FromFrequency);
-	refresh();
+	refreshp();
 	mvprintw(7, 60, "Step (kHz): ");
-	refresh();
+	refreshp();
 	rc = scanf("%f", &FrequencyStep);
 	mvprintw(7, 72, "%5.1f", FrequencyStep);
-	refresh();
+	refreshp();
 
 	for (j = 0; j < 51; j++) {	// draw the X scale
 	    frequencies[j] = FromFrequency + j * FrequencyStep;
@@ -546,7 +546,7 @@ int nbscan(void)
 	    }
 
 	}
-	refresh();
+	refreshp();
 
 	/* ------------- scan --------------------- */
 
@@ -619,7 +619,7 @@ void scanmenu(void)
     mvprintw(11, 20, "ESC: Exit scan function");
 
     mvprintw(23, 20, " --- Press a key to continue --- ");
-    refresh();
+    refreshp();
 
 }
 
@@ -695,7 +695,7 @@ void recordmenue(void)
     mvprintw(11, 20, "3.: Play back file");
     mvprintw(13, 20, "ESC: Exit sound recorder function");
 
-    refresh();
+    refreshp();
 
 }
 
@@ -726,7 +726,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[0]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[0]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -745,7 +745,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[1]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[1]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -764,7 +764,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[2]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[2]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -783,7 +783,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[3]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[3]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -802,7 +802,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[4]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[4]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -821,7 +821,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[5]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[5]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -840,7 +840,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[6]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[6]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -859,7 +859,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[7]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[7]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -878,7 +878,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[8]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[8]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -897,7 +897,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[9]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[9]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -916,7 +916,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[10]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[10]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -935,7 +935,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[11]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[11]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -955,7 +955,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[12]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[12]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -975,7 +975,7 @@ void record(void)
 	    mvprintw(15, 20, "recording %s", ph_message[13]);
 	    mvprintw(16, 20, "ESC to exit");
 	    mvprintw(17, 20, "");
-	    refresh();
+	    refreshp();
 	    strcpy(commands, "rec -r 8000 ");	//G4KNO
 	    strcat(commands, ph_message[13]);
 	    strcat(commands, " -q &");	//G4KNO
@@ -997,13 +997,13 @@ void record(void)
 		("cd ~/tlf/soundlogs; ./soundlog  > /dev/null 2> /dev/null &");
 
 	    mvprintw(15, 20, "Contest recording enabled...");
-	    refresh();
+	    refreshp();
 	    sleep(1);
 	    runnit = 0;
 	    break;
 	case '2':
 	    mvprintw(15, 20, "Contest recording disabled...");
-	    refresh();
+	    refreshp();
 	    sleep(1);
 	    rc = system("rm ~/.VRlock");
 	    rc = system("pkill -f soundlogs > /dev/null 2> /dev/null ");
@@ -1033,7 +1033,7 @@ void record(void)
 			}
 			strncpy(printname, soundfilename->d_name, 6);
 			mvprintw(j, i, "%s", printname);
-			refresh();
+			refreshp();
 
 		    } else if (i >= 10)
 			i -= 10;
@@ -1044,7 +1044,7 @@ void record(void)
 	case '4':
 
 	    mvprintw(15, 20, "Play back file (ddhhmmxx): ");
-	    refresh();
+	    refreshp();
 
 	    echo();
 	    getnstr(playbackfile, 8);
@@ -1065,7 +1065,7 @@ void record(void)
 	    }
 	    mvprintw(16, 20, "Use Ctrl-c to stop and return to tlf");
 	    mvprintw(18, 20, "");
-	    refresh();
+	    refreshp();
 	    rc = system(commands);
 	    runnit = 0;
 	    break;

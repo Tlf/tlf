@@ -651,7 +651,7 @@ void addtext(char *s)
 	    mvprintw(24, 0, dxtext);
 	    mvprintw(12, 29, hiscall);
 	}
-	refresh();
+	refreshp();
 
 	spotpointer = strchr(dxtext, ':');
 
@@ -1259,7 +1259,7 @@ int send_cluster(void)
     mvprintw(24, 0,
 	     "                                                                           ");
     mvprintw(24, 0, ">");
-    refresh();
+    refreshp();
     echo();
     getnstr(line, MAX_CMD_LEN);
     noecho();
@@ -1282,7 +1282,7 @@ int send_cluster(void)
 
     mvprintw(24, 0,
 	     "                                                                           ");
-    refresh();
+    refreshp();
     line[0] = '\0';	/* not needed */
 
     return (0);

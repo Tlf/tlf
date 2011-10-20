@@ -51,7 +51,7 @@ int readcalls(void)
 
     clear();
     mvprintw(4, 0, "Reading logfile...\n");
-    refresh();
+    refreshp();
 
     /* reset counter and score anew */
     for (s = 0; s < MAX_QSOS; s++)
@@ -82,7 +82,7 @@ int readcalls(void)
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 	mvprintw(5, 0, "Error opening logfile.\n");
-	refresh();
+	refreshp();
 	sleep(2);
     }
     i = 0;
@@ -99,7 +99,7 @@ int readcalls(void)
 	if (r >= 100) {
 	    r = 0;
 	    printw("*");
-	    refresh();
+	    refreshp();
 	}
 
 	strcat(inputbuffer, "                                                  ");	/* repair the logfile */

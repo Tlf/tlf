@@ -41,7 +41,7 @@ int listmessages(void)
 		attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT );
 		mvprintw (i + 11, 1, " %i     ",  i+1);
 		mvprintw (i  + 11, 6,  ": %s",  printbuffer);
-		refresh();
+		refreshp();
 	}
 	attroff(A_STANDOUT);
 	mvprintw(23, 30,  "Press any key");
@@ -62,7 +62,7 @@ int listmessages(void)
 			mvprintw (i + 9, 1, " %i     ",  i+1);
 		
 		mvprintw (i  + 9, 6,  ": %s",  printbuffer);
-		refresh();
+		refreshp();
 		
 	}
 	attroff(A_STANDOUT);

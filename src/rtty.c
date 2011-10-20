@@ -88,7 +88,7 @@ int ry_addtext(char *line)
 
     if ((ry_fp = fopen("RTTYlog", "a")) == NULL) {
 	mvprintw(24, 0, "cannot open RTTYlog");
-	refresh();
+	refreshp();
 	return (-1);
     } else {
 	fputs(line, ry_fp);
@@ -179,7 +179,7 @@ int show_rtty(void)
     } else {
 	mvprintw(12, 54, comment);
     }
-    refresh();
+    refreshp();
     attron(A_STANDOUT);
 
     return (0);

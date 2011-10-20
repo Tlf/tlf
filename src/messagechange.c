@@ -73,7 +73,7 @@ int message_change(int x)
 	printbuf[0] = '\0';
 	strncat(printbuf, message[bufnr], strlen(message[bufnr]) - 1);
 	mvprintw(15, 4, "%s", printbuf);
-	refresh();
+	refreshp();
 
 	mvprintw(16, 4, "");
 	message[bufnr][0] = '\0';
@@ -117,7 +117,7 @@ int message_change(int x)
 	    strncat(printbuf, message[bufnr], strlen(message[bufnr]) - 1);
 
 	    mvprintw(15, 4, "%s", printbuf);
-	    refresh();
+	    refreshp();
 
 	    mvprintw(16, 4, "");
 	    message[bufnr][0] = '\0';
@@ -150,7 +150,7 @@ int message_change(int x)
 
     }
     mvprintw(12, 29, "");
-    refresh();
+    refreshp();
     clear_display();
     attron(COLOR_PAIR(7) | A_STANDOUT);
 

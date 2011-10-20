@@ -112,7 +112,7 @@ void clusterinfo(char *timestr)
 	}
     }
 
-    refresh();
+    refreshp();
 
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
@@ -216,7 +216,7 @@ void clusterinfo(char *timestr)
 	pthread_mutex_unlock (&spot_ptr_mutex);
 
 	nicebox(14, 0, 8, 78, "Cluster");
-	refresh();
+	refreshp();
     }
 
     printcall();
@@ -342,7 +342,7 @@ int loadbandmap(void)
 	if ((fp = fopen(markerfile, "w")) == NULL) {
 	    nofile = 1;			/* remember: no write possible */
 	    mvprintw(24, 0, "Opening marker file not possible.\n");
-	    refresh();
+	    refreshp();
 	} else
 	    fclose(fp);
     }
@@ -480,7 +480,7 @@ int loadbandmap(void)
 
     bandmap_show();
 
-    refresh();
+    refreshp();
 
     return (i);			
     //--------------------------- the end  ------------------

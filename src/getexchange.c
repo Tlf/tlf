@@ -231,7 +231,7 @@ int getexchange(void)
 
 		    mvprintw(0, 14, "%s", speedbuf);
 		    mvprintw(12, 54, comment);
-		    refresh();
+		    refreshp();
 		}
 		break;
 
@@ -252,7 +252,7 @@ int getexchange(void)
 		    //                                              attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 		    mvprintw(0, 14, "%s", speedbuf);
 		    mvprintw(12, 54, comment);
-		    refresh();
+		    refreshp();
 		}
 		break;
 
@@ -288,7 +288,7 @@ int getexchange(void)
 		    show_rtty();
 		    mvprintw(12, 54, comment);
 		}
-		refresh();
+		refreshp();
 	    }
 	} else
 	    i--;
@@ -388,7 +388,7 @@ int getexchange(void)
 		       && ((x != 9) && (strlen(section) < 1))) {
 		mvprintw(13, 54, "section?");
 		mvprintw(12, 54, comment);
-		refresh();
+		refreshp();
 
 		// x = 0;		//##debug 17jan10 tb
 		break;
@@ -396,7 +396,7 @@ int getexchange(void)
 	    } else if (serial_grid4_mult == 1) {
 		//      mvprintw(13,54, "section?");
 		mvprintw(12, 54, comment);
-		refresh();
+		refreshp();
 		gridmult = getgrid(comment);
 		strcpy(section, gridmult);
 		section[4] = '\0';
@@ -777,7 +777,7 @@ int checkexchange(int x)
 	strcat(ssexchange, section);
 
 	mvprintw(12, 54, comment);
-	refresh();
+	refreshp();
 
 	return (x);		// end arrlss
     }
@@ -952,7 +952,7 @@ int checkexchange(int x)
 
     // ---------------------------end mults --------------------------
     mvprintw(12, 54, comment);
-    refresh();
+    refreshp();
 
     return (x);
 }

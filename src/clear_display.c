@@ -158,5 +158,5 @@ void clear_display(void)
 	attron(COLOR_PAIR(NORMCOLOR));
 
     mvprintw(cury, curx, "");
-    refresh();
+    refreshp();
 }

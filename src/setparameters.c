@@ -88,7 +88,7 @@ int setparameters(void)
 	attroff(A_STANDOUT);
 	mvprintw(23, 25, "Change parameter: 7,8,9, none");
 
-	refresh();
+	refreshp();
 
 	i = onechar();
 

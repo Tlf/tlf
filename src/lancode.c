@@ -221,7 +221,7 @@ int lan_send(char *lanbuffer)
 	if (bc_sendto_rc == -1) {
 	    if (send_error[node] >= (send_error_limit[node] + 10)) {
 		mvprintw(24, 0, "LAN: send problem...!");
-		refresh();
+		refreshp();
 		send_error_limit[node] += 10;
 	    } else
 		send_error[node]++;
@@ -293,7 +293,7 @@ int talk(void)
     mvprintw(24, 0,
 	     "                                                                           ");
     mvprintw(24, 0, "T>");
-    refresh();
+    refreshp();
     echo();
     getnstr(talkline, 60);
     noecho();
@@ -306,7 +306,7 @@ int talk(void)
     attron(COLOR_PAIR(COLOR_GREEN));
     mvprintw(24, 0,
 	     "                                                                               ");
-    refresh();
+    refreshp();
 
     return (0);
 }

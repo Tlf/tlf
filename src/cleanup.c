@@ -52,7 +52,7 @@ int cleanup(void)
 	mvprintw(k, 0, "%s", "                                        ");
     }
 
-    refresh();
+    refreshp();
     hiscall[0] = '\0';
     comment[0] = '\0';
     his_rst[1] = '9';

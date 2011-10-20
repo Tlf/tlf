@@ -52,14 +52,14 @@ int writeparas(void)
 
     if (strlen(call) <= 3) {
 	mvprintw(24, 0, "Cannot write parameters file: data corrupt... ");
-	refresh();
+	refreshp();
 	sleep(1);
 	return (-1);
     }
 
     if ((fp = fopen(".paras", "w")) == NULL) {
 	mvprintw(24, 0, "writeparas.c: Error opening file.\n");
-	refresh();
+	refreshp();
 	sleep(1);
 	endwin();
 	exit(1);

@@ -148,7 +148,7 @@ int gettxinfo(void)
 		    if (retval != RIG_OK) {
 			mvprintw(24, 0,
 				 "Problem with rig link: set mode!\n");
-			refresh();
+			refreshp();
 			sleep(1);
 		    }
 		} else if (trxmode == DIGIMODE) {
@@ -159,7 +159,7 @@ int gettxinfo(void)
 		    if (retval != RIG_OK) {
 			mvprintw(24, 0,
 				 "Problem with rig link: set mode!\n");
-			refresh();
+			refreshp();
 			sleep(1);
 		    }
 
@@ -183,7 +183,7 @@ int gettxinfo(void)
 		    if (retval != RIG_OK) {
 			mvprintw(24, 0,
 				 "Problem with rig link: set mode!\n");
-			refresh();
+			refreshp();
 			sleep(1);
 		    }
 
@@ -201,7 +201,7 @@ int gettxinfo(void)
 		    if (retval != 0) {
 			mvprintw(24, 0,
 				 "Problem with rig link: set mode!\n");
-			refresh();
+			refreshp();
 			sleep(1);
 		    }
 		} else if (trxmode == DIGIMODE) {
@@ -210,7 +210,7 @@ int gettxinfo(void)
 		    if (retval != 0) {
 			mvprintw(24, 0,
 				 "Problem with rig link: set mode!\n");
-			refresh();
+			refreshp();
 			sleep(1);
 		    }
 
@@ -220,7 +220,7 @@ int gettxinfo(void)
 		    if (retval != 0) {
 			mvprintw(24, 0,
 				 "Problem with rig link: set mode!\n");
-			refresh();
+			refreshp();
 			sleep(1);
 		    }
 
@@ -253,7 +253,7 @@ int gettxinfo(void)
 	}
 	if (retval != 0) {
 	    mvprintw(24, 0, "Problem with rig link!\n");
-	    refresh();
+	    refreshp();
 	    sleep(1);
 	}
 
@@ -273,7 +273,7 @@ int gettxinfo(void)
 
 	    if (retval != RIG_OK) {
 		mvprintw(24, 0, "Problem with rig link!\n");
-		refresh();
+		refreshp();
 		sleep(1);
 	    }
 #endif
@@ -285,7 +285,7 @@ int gettxinfo(void)
 
 	    if (retval != 0) {
 		mvprintw(24, 0, "Problem with rig link!\n");
-		refresh();
+		refreshp();
 		sleep(1);
 	    }
 	}
@@ -299,7 +299,7 @@ int gettxinfo(void)
 
 	    if (retval != RIG_OK) {
 		mvprintw(24, 0, "Problem with rig link!\n");
-		refresh();
+		refreshp();
 		sleep(1);
 	    }
 #endif
@@ -316,7 +316,7 @@ int gettxinfo(void)
 
 	    if (retval != RIG_OK) {
 		mvprintw(24, 0, "Problem with rig link: set frequency!\n");
-		refresh();
+		refreshp();
 		sleep(1);
 	    }
 #endif
@@ -325,7 +325,7 @@ int gettxinfo(void)
 
 	if (retval != 0) {
 	    mvprintw(24, 0, "Problem with rig link: set frequency!\n");
-	    refresh();
+	    refreshp();
 	    sleep(1);
 	}
 

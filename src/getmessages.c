@@ -73,13 +73,13 @@ int getmessages(void)
     printw(mycontinent);
 
     printw("\n\n");
-    refresh();
+    refreshp();
 
     checklogfile();
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 	printw("\nError opening logfile.\nExiting...\n");
-	refresh();
+	refreshp();
 	sleep(5);
 	exit(1);
     }
@@ -137,7 +137,7 @@ int getmessages(void)
     else
 	strcpy(logline4, backgrnd_str);
 
-    refresh();
+    refreshp();
 
     fclose(fp);
 
@@ -166,7 +166,7 @@ int getmessages(void)
 	    (" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. �See the");
 	printw(" GNU General Public License for more details.\n");
 
-	refresh();
+	refreshp();
 
 	sleep(5);
     }

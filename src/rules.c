@@ -58,7 +58,7 @@ int read_rules()
 
 	showstring("reading contest rules file:", contest_conf);
 //      mvprintw(6,0,"reading contest rules file: %s ... \n",contest_conf);
-//      refresh();
+//      refreshp();
 
 	while ( fgets(mit_contest_rule, sizeof(mit_contest_rule),
 		       mit_contest_file) != NULL ) {
@@ -71,12 +71,12 @@ int read_rules()
 	fclose(mit_contest_file);
 	showstring("Using contest rules file: ", contest_conf);
 //       mvprintw(7,0,"\nUsing contest rules file: %s\n",contest_conf);
-//       refresh();
+//       refreshp();
     } else if ((mit_contest_file = fopen(basic_contest_conf, "r")) != NULL) {
 
 	showstring("reading contest rules file:", basic_contest_conf);
 //      mvprintw(6,0,"reading contest rules file: %s ... \n",basic_contest_conf);
-//      refresh();
+//      refreshp();
 
 	while ( fgets(mit_contest_rule, sizeof(mit_contest_rule),
 		       mit_contest_file) != NULL ) {
@@ -89,7 +89,7 @@ int read_rules()
 	fclose(mit_contest_file);
 	showstring("Using contest rules file:", basic_contest_conf);
 //       mvprintw(7,0,"\nUsing contest rules file: %s\n",basic_contest_conf);
-//       refresh();
+//       refreshp();
     }
 
     else {
@@ -99,7 +99,7 @@ int read_rules()
 	strcpy(whichcontest, "qso");	// default use general qso mode... (PA0R, 24 Sept. 2003)
 	setcontest();
 	strcpy(logfile, "qso.log");
-	refresh();
+	refreshp();
     }
     return (0);
 }

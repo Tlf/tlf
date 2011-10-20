@@ -185,7 +185,7 @@ int netkeyer(int cw_op, char *cwmessage)
 
     if (sendto_rc == -1) {
 	mvprintw(24, 0, "Keyer send failed...!");
-	refresh();
+	refreshp();
 	sleep(2);
 	return (-1);
     }

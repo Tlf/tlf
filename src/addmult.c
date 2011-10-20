@@ -289,14 +289,14 @@ int load_multipliers(void)
 
     if (strlen(multsfile) == 0) {
 	mvprintw(9, 0, "No multiplier file specified, exiting.. !!\n");
-	refresh();
+	refreshp();
 	sleep(5);
 	exit(1);
     }
 
     if ((cfp = fopen(multsfile, "r")) == NULL) {
 	mvprintw(9, 0, "Error opening multiplier file %s.\n", multsfile);
-	refresh();
+	refreshp();
 	sleep(2);
     } else {
 

@@ -102,7 +102,7 @@ int logit(void)
 			play_file(ph_message[2]);
 			if (exchange_serial == 1)
 			    mvprintw(13, 29, "Serial number: %d", qsonum);
-			refresh();
+			refreshp();
 		    }
 
 		    if (simulator != 0) {
@@ -162,7 +162,7 @@ int logit(void)
 			play_file(ph_message[5]);
 			if (exchange_serial == 1)
 			    mvprintw(13, 29, "Serial number: %d", qsonum);
-			refresh();
+			refreshp();
 		    }
 		    callreturn = 0;
 		    defer_store = 1;

@@ -48,5 +48,5 @@ void displayit(void)
 
     clear_display();
 
-    refresh();
+    refreshp();
 }

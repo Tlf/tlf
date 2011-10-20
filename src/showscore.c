@@ -486,8 +486,8 @@ int r_multiplierinfo(void)
     }
 
     nicebox(1, 41, 6, 37, "Sections");
-    refresh();
-    refresh();
+    refreshp();
+    refreshp();
 
     return (0);
 

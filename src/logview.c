@@ -36,7 +36,7 @@ int logview(void)
 	rc=system(comstr);
 	attron(COLOR_PAIR(7) | A_STANDOUT);
 	erase();
-	refresh();
+	refreshp();
 	clear_display();
 	attron(COLOR_PAIR(7)  |  A_STANDOUT);
 
@@ -44,7 +44,7 @@ int logview(void)
 		mvprintw(j, 0, backgrnd_str);
 	}
 	
-	refresh();
+	refreshp();
 
 
 	return(0);

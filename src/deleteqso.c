@@ -40,7 +40,7 @@ int delete_qso(void)
 	if ((lfile = open(logfile, O_RDWR)) < 0) {
 
 	    mvprintw(24, 0, "I can not find the logfile...");
-	    refresh();
+	    refreshp();
 	    sleep(2);
 	} else {
 

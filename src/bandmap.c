@@ -536,7 +536,7 @@ void bandmap_show() {
     
     move(cury, curx);			/* reset cursor */
 
-    refresh();
+    refreshp();
 }
 
 /** allow control of bandmap features 
@@ -574,7 +574,7 @@ void bm_menu()
 	addch (' ');
 
     move (cury, curx);
-    refresh();
+    refreshp();
 }
 
 spot *copy_spot(spot *data)

@@ -437,7 +437,7 @@ int parse_logcfg(char *inputbuffer)
 		    if (strlen(inputbuffer) > 6 + 20-1) {
 			mvprintw(6,0,
 				"WARNING: Defined call sign too long! exiting...\n");
-			refresh();
+			refreshp();
 			exit(1);
 		    }
 		    if (strlen(inputbuffer) > 6)
@@ -445,7 +445,7 @@ int parse_logcfg(char *inputbuffer)
 		    else {
 			mvprintw(6, 0,
 				 "WARNING: No callsign defined in logcfg.dat! exiting...\n");
-			refresh();
+			refreshp();
 			exit(1);
 		    }
 		    // check that call sign can be found in cty database !!
@@ -998,7 +998,7 @@ int parse_logcfg(char *inputbuffer)
 			ph_message[ii - 103][strlen(ph_message[ii - 103]) -
 					     1] = '\0';
 			mvprintw(15, 5, "A: Phone message #%d is %s", ii - 103, ph_message[ii - 103]);	// (W9WI)
-			refresh();
+			refreshp();
 			//                             system ("sleep 2");
 			if (strlen(ph_message[ii - 103]) > 0)
 			    use_vk = 1;
@@ -1009,7 +1009,7 @@ int parse_logcfg(char *inputbuffer)
 			ph_message[ii - 103][strlen(ph_message[ii - 103]) -
 					     1] = '\0';
 			mvprintw(15, 5, "B: Phone message #%d is %s", ii - 103, ph_message[ii - 103]);	// (W9WI)
-			refresh();
+			refreshp();
 			//                             system ("sleep 2");
 			if (strlen(ph_message[ii - 103]) > 0)
 			    use_vk = 1;

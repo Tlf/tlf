@@ -93,7 +93,7 @@ int auto_cq(void)
 	for (delayval = cqdelay; delayval > 0; delayval--) {
 	    if (inchar < 0) {
 		mvprintw(12, 29, "Auto cq  %d  ", delayval - 1);
-		refresh();
+		refreshp();
 	    } else {
 		break;
 	    }
@@ -108,7 +108,7 @@ int auto_cq(void)
 	}
 	mvprintw(12, 29, "            ");
 	mvprintw(12, 29, "");
-	refresh();
+	refreshp();
     }
     if (cqmode == CQ)
 	strcpy(mode, "Log     ");

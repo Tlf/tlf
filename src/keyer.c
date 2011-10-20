@@ -96,18 +96,18 @@ int keyer(void)
 
 	if (x >= 32 && x <= 125) {	// display              space ... }
 	    addch(x);
-	    refresh();
+	    refreshp();
 	    i++;
 	    if ((i >= 40)) {
 		i = 0;
 		mvprintw(4, 0, "                            ");
 		mvprintw(4, 0, "");
-		refresh();
+		refreshp();
 		displayit();
 
 	    }
 
-	    refresh();
+	    refreshp();
 	}
 
 	if (x == 127 && (strlen(buffer) >= 1)) {	/* erase  */
@@ -128,7 +128,7 @@ int keyer(void)
 	    {
 		bufloc = 38;
 		printw("\nBuffer overflow !, bufloc = %d\n", bufloc);
-		refresh();
+		refreshp();
 	    } else {
 		if (x > 31 || x == 10) {
 		    if (keyerport == MFJ1278_KEYER) {
@@ -146,7 +146,7 @@ int keyer(void)
 
 			attron(COLOR_PAIR(7) | A_STANDOUT);
 			mvprintw(5, 0, "%s", keyerstring);
-			refresh();
+			refreshp();
 		    } else if (keyerport == ORION_KEYER) {
 			nkbuffer[0] = x;
 			nkbuffer[1] = '\0';
@@ -161,7 +161,7 @@ int keyer(void)
 
 			attron(COLOR_PAIR(7) | A_STANDOUT);
 			mvprintw(5, 0, "%s", keyerstring);
-			refresh();
+			refreshp();
 
 		    }
 		} else		// control char...
@@ -178,19 +178,19 @@ int keyer(void)
 		    mvaddstr(0, 0, "  ");
 		    attron(COLOR_PAIR(7));
 		    mvaddstr(cury, curx, "");
-		    refresh();
+		    refreshp();
 
 		    strcat(termbuf, buffer);
 		    strcat(termbuf, " ");
 		    mvprintw(5, 0, termbuf);
-		    refresh();
+		    refreshp();
 
 		    if ((strlen(buffer) + strlen(termbuf) > 39)
 			|| x == '=') {
 			i = 0;
 			mvprintw(5, 0, "                         ");
 			mvprintw(5, 0, "");
-			refresh();
+			refreshp();
 			displayit();
 		    }
 
@@ -259,7 +259,7 @@ int keyer(void)
 		{
 		    mvprintw(1, 0, "Weight=   ");
 		    mvprintw(1, 7, "");
-		    refresh();
+		    refreshp();
 		    echo();
 		    getnstr(weightbuf, 2);
 		    noecho();

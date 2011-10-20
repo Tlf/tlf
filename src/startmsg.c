@@ -31,7 +31,7 @@ extern int verbose;
  if (linectr == 24) linectr = 1;
 
  mvprintw(linectr, 0, message);
- refresh();
+ refreshp();
  if (verbose == 1) sleep(1);
  linectr++;
  }
@@ -44,7 +44,7 @@ extern int verbose;
  if (linectr == 24) linectr = 1;
 
  mvprintw(linectr, 0, "%s %d", message, nr);
- refresh();
+ refreshp();
  if (verbose == 1) sleep(1);
  linectr++;
  }
@@ -57,7 +57,7 @@ extern int verbose;
  if (linectr == 24) linectr = 1;
 
  mvprintw(linectr, 0, "%s %s", message1, message2);
- refresh();
+ refreshp();
  if (verbose == 1) sleep(1);
  linectr++;
  }

@@ -41,7 +41,7 @@ void calledit(void)
     attron(COLOR_PAIR(COLOR_GREEN));
 
     mvprintw(12, 29, hiscall);
-    refresh();
+    refreshp();
     l = strlen(hiscall);
     b = l - 1;
 
@@ -51,7 +51,7 @@ void calledit(void)
 	attron(COLOR_PAIR(COLOR_GREEN));
 
 	mvprintw(12, 29 + b, "");
-	refresh();
+	refreshp();
 
 	i = onechar();
 
@@ -75,7 +75,7 @@ void calledit(void)
 
 	    mvprintw(12, 29, hiscall);
 	    mvprintw(12, 29 + b, "");
-	    refresh();
+	    refreshp();
 	    x = 0;
 	}
 	if (i == 5)		// ctrl-E, End
@@ -86,7 +86,7 @@ void calledit(void)
 
 	    mvprintw(12, 29, hiscall);
 	    mvprintw(12, 29 + b, "");
-	    refresh();
+	    refreshp();
 	    x = 0;
 	}
 
@@ -100,7 +100,7 @@ void calledit(void)
 
 	    mvprintw(12, 29, hiscall);
 	    mvprintw(12, 29 + b, "");
-	    refresh();
+	    refreshp();
 
 	} else if (i == 154) {	// right
 	    if (b < strlen(hiscall) - 1) {
@@ -113,7 +113,7 @@ void calledit(void)
 
 	    mvprintw(12, 29, hiscall);
 	    mvprintw(12, 29 + b, "");
-	    refresh();
+	    refreshp();
 
 	} else if (i == 158) {	// home
 	    attroff(A_STANDOUT);
@@ -121,7 +121,7 @@ void calledit(void)
 	    b = 1;
 	    mvprintw(12, 29, hiscall);
 	    mvprintw(12, 29 + b, "");
-	    refresh();
+	    refreshp();
 
 	} else if (i == 152) {	// end
 	    attroff(A_STANDOUT);
@@ -129,7 +129,7 @@ void calledit(void)
 	    b = strlen(hiscall) - 2;
 	    mvprintw(12, 29, hiscall);
 	    mvprintw(12, 29 + b, "");
-	    refresh();
+	    refreshp();
 
 	} else if (i == 161) {	/* delete */
 
@@ -252,7 +252,7 @@ void calledit(void)
     attron(COLOR_PAIR(COLOR_GREEN));
 
     mvprintw(12, 29, hiscall);
-    refresh();
+    refreshp();
 }
 
 int insert_char(int curposition)
@@ -309,7 +309,7 @@ int insert_char(int curposition)
 	mvprintw(12, 29, hiscall);
 	curposition++;
 	mvprintw(12, 29 + curposition, "");
-	refresh();
+	refreshp();
 
     }
     ichr = 27;

@@ -66,7 +66,7 @@ int grabspot(void)
 		mvprintw(14, 68, "MEM: %7.1f", mem);
 	    }
 
-	    refresh();
+	    refreshp();
 
 	    g_free( data->call );
 	    g_free( data );
@@ -126,7 +126,7 @@ void grab_next(void)
 	    mvprintw(14, 68, "MEM: %7.1f", mem);
 	}
 
-	refresh();
+	refreshp();
 
 	g_free( data->call );
 	g_free( data );

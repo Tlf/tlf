@@ -53,7 +53,7 @@
 	}
 	mvvline  (14, 27, ACS_VLINE, 9);
 	mvvline  (14, 54, ACS_VLINE, 9);
-	refresh();
+	refreshp();
 
 	attroff(A_STANDOUT);
 	mvprintw(23, 30,  "Press any key for more");
@@ -83,7 +83,7 @@
 	
 	mvvline  (14, 27, ACS_VLINE, 9);
 	mvvline  (14, 54, ACS_VLINE, 9);
-	refresh();
+	refreshp();
 	
 	attroff(A_STANDOUT);
 	mvprintw(23, 30,  "Press any key for more");
@@ -111,7 +111,7 @@
 	}
 	mvvline  (14, 27, ACS_VLINE, 9);
 	mvvline  (14, 54, ACS_VLINE, 9);
-	refresh();
+	refreshp();
 
 	attroff(A_STANDOUT);
 	mvprintw(23, 30,  "Press any key to return to tlf");
@@ -123,7 +123,7 @@
 	for (j = 13 ;  j  <= 23 ; j++){
 		 mvprintw(j, 0, backgrnd_str);
 		}
-	refresh();
+	refreshp();
 
   return(0);
  }

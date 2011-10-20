@@ -323,7 +323,7 @@ int muf(void)
     mvprintw(20, 0, "---------------------------");	/* 27 dashes */
     mvprintw(21, 0, " 0 2 4 6 8 10  14  18  22 H (UTC)");
     mvprintw(4, 30, "MHz");
-    refresh();
+    refreshp();
     for (t = 1; t <= 24; t++) {
 	ab = 0.0;
 	k = 0.5;
@@ -344,7 +344,7 @@ int muf(void)
 	if (ve < 4)
 	    ve = 4;
 	mvprintw((int) ve, (int) ho, "+");
-	refresh();
+	refreshp();
 	while (k <= n - 0.25) {
 	    interlat();
 	    e_layer();
@@ -358,10 +358,10 @@ int muf(void)
 	    ve = 20;
 
 	mvprintw((int) ve, (int) ho, "-");
-	refresh();
+	refreshp();
     }
     mvprintw(23, 0, " --- Press a key to continue --- ");
-    refresh();
+    refreshp();
 
     key = getch();
 

@@ -151,7 +151,7 @@ int init_tlf_rig(void)
 	if (rigconf[i] == ',' || i + 1 == rigconf_len) {
 	    if (cnfval <= cnfparm) {
 		showstring("Missing parm value in RIGCONF: ", rigconf);
-		refresh();
+		refreshp();
 		sleep(2);
 		return (-1);
 	    }
@@ -162,7 +162,7 @@ int init_tlf_rig(void)
 			     cnfval);
 	    if (retcode != RIG_OK) {
 		showmsg("rig_set_conf: error  ");
-		refresh();
+		refreshp();
 		sleep(5);
 		return (-1);
 	    }
@@ -177,7 +177,7 @@ int init_tlf_rig(void)
     if (retcode != RIG_OK) {
 	showmsg("rig_open: error ");
 	//              mvprintw(7,0,"rig_open: error = %s \n", rigerror(retcode));
-	refresh();
+	refreshp();
 	sleep(2);
 	return (-1);
     }
@@ -292,12 +292,12 @@ int native_rig_get_mode(rignumber)
 		else
 		    trxmode = CWMODE;
 		mvprintw(23, 30, "%s", inputline);
-		refresh();
+		refreshp();
 		sleep(1);
 	    }
 	} else {
 	    mvprintw(24, 0, "Rig communication error");
-	    refresh();
+	    refreshp();
 	    sleep(2);
 	}
     }
@@ -325,7 +325,7 @@ int init_native_rig(void)
 
     if ((native_rig_fd = open(rigportname, O_RDWR | O_NONBLOCK)) < 0) {
 	mvprintw(5, 0, "open of %s failed!!!", rigportname);
-	refresh();
+	refreshp();
 	sleep(2);
 	return (-1);
     }
@@ -397,11 +397,11 @@ int init_native_rig(void)
 	if (strncmp(inputline, "Z!", 2) != 0) {
 	    rignumber = 2000;	// ORION
 	    mvprintw(23, 0, "%s", inputline);
-	    refresh();
+	    refreshp();
 	    sleep(1);
 	} else {
 	    mvprintw(23, 0, "Rig communication not initialized");
-	    refresh();
+	    refreshp();
 	    sleep(2);
 	}
     }
@@ -460,7 +460,7 @@ float native_rig_get_freq(int rignumber)	// ORION only
 	    }
 	} else {
 	    mvprintw(24, 0, "Rig communication error");
-	    refresh();
+	    refreshp();
 	}
 	inputline[0] = '\0';
     }

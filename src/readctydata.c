@@ -43,7 +43,7 @@ int readctydata(void)
 
 	if ((fp_db = fopen(ctydb_location, "r")) == NULL) {
 	    mvprintw(4, 0, "Error opening cty.dat  file.\n");
-	    refresh();
+	    refreshp();
 	    sleep(5);
 	    endwin();
 	    exit(1);

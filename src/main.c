@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0r@eudxf.org>
+ *                    2010-2011 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +24,8 @@
 #include "globalvars.h"
 #include "main.h"
 #include <glib.h>
+#include <panel.h>
+#include <pthread.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -386,6 +389,17 @@ int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
 int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
 
+
+pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+/** fake old refresh code to use update logic for panels */
+void refreshp() {
+    pthread_mutex_lock( &panel_mutex );
+    update_panels();
+    doupdate();
+    pthread_mutex_unlock( &panel_mutex );
+}
+
 /* ------------------------------------------------------------------------*/
 /*     Main loop of the program			                           */
 /* ------------------------------------------------------------------------*/
@@ -483,7 +497,7 @@ int main(int argc, char *argv[])
     strcpy(sp_return, message[12]);
     strcpy(cq_return, message[13]);
 
-    refresh();
+    refreshp();
 
     if (has_colors()) {
 	if (start_color() == ERR) {
@@ -641,7 +655,7 @@ int main(int argc, char *argv[])
 	strcat(tlfversion, VERSION);
 	strcat(tlfversion, " by PA0R!!\n\n");
 	mvprintw(0, 0, tlfversion);
-	refresh();
+	refreshp();
 	getmessages();		/* read .paras file */
 
 	if (nopacket == 1)
@@ -649,7 +663,7 @@ int main(int argc, char *argv[])
 
 	set_term(mainscreen);
 
-	refresh();
+	refreshp();
 
 	if (packetinterface != 0) {
 
@@ -663,7 +677,7 @@ int main(int argc, char *argv[])
 	if (keyerport == NET_KEYER) {
 	    if (netkeyer_init() < 0) {
 		mvprintw(24, 0, "Cannot open NET keyer daemon ");
-		refresh();
+		refreshp();
 		sleep(1);
 
 	    } else {
@@ -745,7 +759,7 @@ int main(int argc, char *argv[])
     } else {
 	printf("Terminal does not support color\n");
 	printf("\nTry TERM=linux  or use a text console !!\n");
-	refresh();
+	refreshp();
 	sleep(2);
     }
     cleanup_telnet();

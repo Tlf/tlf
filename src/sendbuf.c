@@ -201,14 +201,14 @@ void sendbuf(void)
 
 	if ((simulator_mode == 0)) {
 	    mvprintw(5, 0, printlinebuffer);
-	    refresh();
+	    refreshp();
 	}
 	getyx(stdscr, cury, curx);
 	attron(COLOR_PAIR(COLOR_RED) | A_STANDOUT);
 	mvaddstr(0, 0, "x");
 	attron(COLOR_PAIR(COLOR_WHITE));
 	mvaddstr(cury, curx, "");
-	refresh();
+	refreshp();
 
 	if (trxmode == DIGIMODE) {
 
@@ -262,7 +262,7 @@ void sendbuf(void)
 	if (simulator == 0) {
 	    if (sending_call == 0)
 		displayit();
-	    refresh();
+	    refreshp();
 	}
 
 	buffer[0] = '\0';

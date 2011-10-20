@@ -47,7 +47,7 @@ void printcall(void)
 
     mvprintw(12, 29, "            ");
     mvprintw(12, 29, hiscall);
-    refresh();
+    refreshp();
 
     miniterm = currentterm;
 }
