@@ -479,7 +479,7 @@ void bandmap_show() {
     attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 
     move(bm_y,0);			/* do not overwrite # frequency */
-    for (j = 0; j < 66; j++)
+    for (j = 0; j < 67; j++)
 	addch(' ');
 
     for (i = bm_y + 1; i < bm_y + 10; i++) {
