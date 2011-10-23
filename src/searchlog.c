@@ -23,10 +23,21 @@
 
 #include "searchlog.h"
 #include "dxcc.h"
+#include <panel.h>
 #include <glib.h>
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
 #endif
+
+PANEL *search_panel;
+WINDOW *search_win;
+
+void InitSearchPanel()
+{
+    search_win = newwin( 8, 39, 1, 41 );
+    search_panel = new_panel( search_win );
+    hide_panel( search_panel );
+}
 
 static char searchresult[MAX_CALLS][82];
 static char result[MAX_CALLS][82];
@@ -34,17 +45,12 @@ static char result[MAX_CALLS][82];
 static char band_yfk[5] = "";
 static char testcall_yfk[14] = "";
 static char hiscall_yfk[14] = "            ";
-int xx = 0;
-int bm[6];
-int bandnr;
-int yy = 0;
  /* */
 
-int searchlog(char *searchstring)
+void searchlog(char *searchstring)
 {
     extern int use_rxvt;
     extern int isdupe;		// LZ3NY auto-b4 patch
-    extern char hiscall[];
     extern int searchflg;
     extern int dupe;
     extern char band[9][4];
@@ -68,6 +74,7 @@ int searchlog(char *searchstring)
     extern int lu_cty;
     extern int py_cty;
     extern int ce_cty;
+    extern int zs_cty;
     extern int countries[MAX_DATALINES];
     extern int use_part;
     extern int block_part;
@@ -87,7 +94,10 @@ int searchlog(char *searchstring)
 
     int srch_index = 0;
     int r_index = 0;
-    int o = 0;
+    int xx;
+    int yy;
+    int bandnr;
+    int bm[6];
     char s_inputbuffer[82] = "";
     char s_inputbuffercpy[82] = "";
     char printres[14] = "";
@@ -102,6 +112,13 @@ int searchlog(char *searchstring)
     static int xwin = 1;
     static int ywin = 1;
 
+    static int initialized = 0;
+
+    if (!initialized) {
+	InitSearchPanel();
+	initialized = 1;
+    }
+
     l = 0;
     z = 0;
     s_inputbuffer[0] = '\0';
@@ -109,6 +126,9 @@ int searchlog(char *searchstring)
 
     /* show checkwindow and partials */
     if (strlen(hiscall) > 1 && searchflg == SEARCHWINDOW) {
+
+	show_panel( search_panel );
+	top_panel( search_panel );
 
 	if (strlen(hiscall) == 2)
 	    z1 = 0;
@@ -144,8 +164,6 @@ int searchlog(char *searchstring)
 	    qso_index++;
 	}
 
-	s_inputbuffer[0] = '\0';
-
 	// initialize array best matching callsigns
 	for (xx = 0; xx < 6; xx++) {
 	    bm[xx] = 0;
@@ -153,7 +171,7 @@ int searchlog(char *searchstring)
 
 	for (r_index = 0; r_index < srch_index; r_index++) {
 
-	    strncpy(result[r_index], searchresult[r_index], 7);
+	    strncpy(result[r_index], searchresult[r_index], 7);	/* band + mode */
 	    result[r_index][6] = '\0';
 
 	    if (show_time == 1)	// show qso time
@@ -161,13 +179,13 @@ int searchlog(char *searchstring)
 	    else		// show qso number
 		strncat(result[r_index], searchresult[r_index] + 22, 5);
 
-	    strncat(result[r_index], searchresult[r_index] + 28, 12);
-	    strncat(result[r_index], searchresult[r_index] + 52, 16);
+	    strncat(result[r_index], searchresult[r_index] + 28, 12);	/* call */
+	    strncat(result[r_index], searchresult[r_index] + 52, 16);	/* exch */
 	}
 
 	/* DJ1YFK worked-window patch */
 	strncpy(band_yfk, searchresult[r_index], 3);
-	band_yfk[4] = '\0';
+	band_yfk[3] = '\0';
 	bandnr = atoi(band_yfk);
 
 	strncpy(testcall_yfk, searchresult[r_index] + 29, 12);
@@ -241,24 +259,27 @@ int searchlog(char *searchstring)
 	}			/* end of patch */
 
 	dupe = NODUPE;
-	nicebox(1, 41, 6, 37, "Worked");
+
+	wbkgd( search_win, (chtype)(' ' | COLOR_PAIR(7)) );
+	werase( search_win );
+
+	wnicebox(search_win, 0, 0, 6, 37, "Worked");
+
+	wattrset(search_win, COLOR_PAIR(7) | A_STANDOUT );
+	for (i = 0; i < 6; i++)
+	    mvwprintw(search_win, i + 1, 1, 
+		    "                                     ");
+
+	mvwprintw(search_win, 1, 1, " 10");
+	mvwprintw(search_win, 2, 1, " 15");
+	mvwprintw(search_win, 3, 1, " 20");
+	mvwprintw(search_win, 4, 1, " 40");
+	mvwprintw(search_win, 5, 1, " 80");
+	mvwprintw(search_win, 6, 1, "160");
+
 	refreshp();
 
-	attron(COLOR_PAIR(7) | A_STANDOUT);
-
-	for (j = 2; j <= 7; j++) {
-	    mvprintw(j, 42, "                                     ");
-	}
-	mvprintw(2, 42, " 10");
-	mvprintw(3, 42, " 15");
-	mvprintw(4, 42, " 20");
-	mvprintw(5, 42, " 40");
-	mvprintw(6, 42, " 80");
-	mvprintw(7, 42, "160");
-
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
-
-	s_inputbuffer[0] = '\0';
+	wattrset(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
 
 	k = 0;
 
@@ -275,7 +296,8 @@ int searchlog(char *searchstring)
 		    if (ignoredupe == 0) {
 
 			if (mixedmode == 0) {
-			    attron(COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
+			    wattron(search_win, 
+				    COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
 			    dupe = ISDUPE;
 			    beep();
 			} else {
@@ -283,7 +305,8 @@ int searchlog(char *searchstring)
 				 (trxmode == CWMODE)) ||
 				((s_inputbuffer[3] == 'S')
 				 && (trxmode == SSBMODE))) {
-				attron(COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
+				wattron(search_win, 
+					COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
 				dupe = ISDUPE;
 				beep();
 			    }
@@ -293,20 +316,20 @@ int searchlog(char *searchstring)
 		}
 	    }
 	    if (s_inputbuffer[1] == '1')
-		j = 2;
+		j = 1;
 	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '5')
-		j = 3;
+		j = 2;
 	    if (s_inputbuffer[1] == '2')
-		j = 4;
+		j = 3;
 	    if (s_inputbuffer[1] == '4')
-		j = 5;
+		j = 4;
 	    if (s_inputbuffer[1] == '8')
-		j = 6;
+		j = 5;
 	    if (s_inputbuffer[1] == '6')
-		j = 7;
+		j = 6;
 
 	    if (j != 8) {
-		mvprintw(j, 42, "%s", s_inputbuffer);
+		mvwprintw(search_win, j, 1, "%s", s_inputbuffer);
 	    }
 
 	    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
@@ -322,7 +345,7 @@ int searchlog(char *searchstring)
 		    z = z1;
 	    }
 
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	    wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
 
 	    if ((partials == 1) && (strlen(hiscall) >= 2)) {
 		if (strlen(s_inputbuffer) != 0)
@@ -337,7 +360,7 @@ int searchlog(char *searchstring)
 	}
 
 	/* prepare and print lower line of checkwindow */
-	attroff(A_STANDOUT);
+	wattroff(search_win, A_STANDOUT);
 	dx = dxcc_by_index(countrynr);
 
 	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
@@ -353,72 +376,71 @@ int searchlog(char *searchstring)
 	    }
 	}
 
-	attron(COLOR_PAIR(COLOR_YELLOW));
+	wattron(search_win, COLOR_PAIR(COLOR_YELLOW));
 
-	mvprintw(8, 43, dx->countryname);
-	mvprintw(8, 73, "%02d", dx->cq);
+	mvwprintw(search_win, 7, 2, dx->countryname);
+	mvwprintw(search_win, 7, 32, "%02d", dx->cq);
 	i = strlen(dx->countryname);
 
 	if (itumult != 1)
-	    mvprintw(8, 73, "%s", zonebuffer);
+	    mvwprintw(search_win, 7, 32, "%s", zonebuffer);
 	else
-	    mvprintw(8, 69, "ITU:%s", zonebuffer);
+	    mvwprintw(search_win, 7, 28, "ITU:%s", zonebuffer);
 
 	s_inputbuffer[0] = '\0';
 
 	if (wpx == 1) {
-	    mvprintw(8, 43 + i + 3, pxstr);
+	    mvwprintw(search_win, 7, 2 + i + 3, pxstr);
 	}
 
-	/* print worked zones and countrays for each band in checkwindow */
-	attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+	/* print worked zones and countrys for each band in checkwindow */
+	wattron(search_win, COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 
 	if (cqww == 1 || contest == 0 || pacc_pa_flg == 1) {
-	    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 
 	    if ((countries[countrynr] & BAND10) != 0) {
-		mvprintw(2, 77, "C");
-		mvprintw(2, 42, " 10");
+		mvwprintw(search_win, 1, 36, "C");
+		mvwprintw(search_win, 1, 1, " 10");
 	    }
 	    if ((countries[countrynr] & BAND15) != 0) {
-		mvprintw(3, 77, "C");
-		mvprintw(3, 42, " 15");
+		mvwprintw(search_win, 2, 36, "C");
+		mvwprintw(search_win, 2, 1, " 15");
 	    }
 	    if ((countries[countrynr] & BAND20) != 0) {
-		mvprintw(4, 77, "C");
-		mvprintw(4, 42, " 20");
+		mvwprintw(search_win, 3, 36, "C");
+		mvwprintw(search_win, 3, 1, " 20");
 	    }
 	    if ((countries[countrynr] & BAND40) != 0) {
-		mvprintw(5, 77, "C");
-		mvprintw(5, 42, " 40");
+		mvwprintw(search_win, 4, 36, "C");
+		mvwprintw(search_win, 4, 1, " 40");
 	    }
 	    if ((countries[countrynr] & BAND80) != 0) {
-		mvprintw(6, 77, "C");
-		mvprintw(6, 42, " 80");
+		mvwprintw(search_win, 5, 36, "C");
+		mvwprintw(search_win, 5, 1, " 80");
 	    }
 	    if ((countries[countrynr] & BAND160) != 0) {
-		mvprintw(7, 42, "160");
-		mvprintw(7, 77, "C");
+		mvwprintw(search_win, 6, 1, "160");
+		mvwprintw(search_win, 6, 36, "C");
 	    }
 	}
 	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 	    if ((zones[z] & BAND10) != 0) {
-		mvprintw(2, 78, "Z");
+		mvwprintw( search_win, 1, 37, "Z");
 	    }
 	    if ((zones[z] & BAND15) != 0) {
-		mvprintw(3, 78, "Z");
+		mvwprintw( search_win, 2, 37, "Z");
 	    }
 	    if ((zones[z] & BAND20) != 0) {
-		mvprintw(4, 78, "Z");
+		mvwprintw( search_win, 3, 37, "Z");
 	    }
 	    if ((zones[z] & BAND40) != 0) {
-		mvprintw(5, 78, "Z");
+		mvwprintw( search_win, 4, 37, "Z");
 	    }
 	    if ((zones[z] & BAND80) != 0) {
-		mvprintw(6, 78, "Z");
+		mvwprintw( search_win, 5, 37, "Z");
 	    }
 	    if ((zones[z] & BAND160) != 0) {
-		mvprintw(7, 78, "Z");
+		mvwprintw( search_win, 6, 37, "Z");
 	    }
 	}
 
@@ -428,204 +450,43 @@ int searchlog(char *searchstring)
 
 	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
 
-	    if (countrynr == w_cty) {
+	    if ((countrynr == w_cty) ||
+		    (countrynr == ve_cty) ||
+		    (countrynr == ja_cty ) ||
+		    (countrynr == py_cty ) ||
+		    (countrynr == lu_cty ) ||
+		    (countrynr == ua9_cty ) ||
+		    (countrynr == zl_cty ) ||
+		    (countrynr == ce_cty ) ||
+		    (countrynr == zs_cty ) ||
+		    (countrynr == vk_cty ))
+	    {
 		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvprintw(7, 78, "M");
+		    mvwprintw(search_win, 6, 37, "M");
 
 		if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvprintw(6, 78, "M");
+		    mvwprintw(search_win, 5, 37, "M");
 
 		if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		    mvprintw(5, 78, "M");
+		    mvwprintw(search_win, 4, 37, "M");
 
 		if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvprintw(4, 78, "M");
+		    mvwprintw(search_win, 3, 37, "M");
 
 		if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvprintw(3, 78, "M");
+		    mvwprintw(search_win, 2, 37, "M");
 
 		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvprintw(2, 78, "M");
+		    mvwprintw(search_win, 1, 37, "M");
+
 	    }
-	    if (countrynr == ve_cty) {
-		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvprintw(7, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvprintw(6, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		    mvprintw(5, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvprintw(4, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvprintw(3, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvprintw(2, 78, "M");
-	    }
-	    if (countrynr == ja_cty) {
-		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvprintw(7, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvprintw(6, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		    mvprintw(5, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvprintw(4, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvprintw(3, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvprintw(2, 78, "M");
-	    }
-	    if (countrynr == py_cty) {
-		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvprintw(7, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvprintw(6, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		    mvprintw(5, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvprintw(4, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvprintw(3, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvprintw(2, 78, "M");
-	    }
-	    if (countrynr == lu_cty) {
-		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvprintw(7, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvprintw(6, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		    mvprintw(5, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvprintw(4, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvprintw(3, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvprintw(2, 78, "M");
-	    }
-	    if (countrynr == ua9_cty) {
-		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvprintw(7, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvprintw(6, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		    mvprintw(5, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvprintw(4, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvprintw(3, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvprintw(2, 78, "M");
-	    }
-	    if (countrynr == zl_cty) {
-		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvprintw(7, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvprintw(6, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		    mvprintw(5, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvprintw(4, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvprintw(3, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvprintw(2, 78, "M");
-	    }
-	    if (countrynr == lu_cty) {
-		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvprintw(7, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvprintw(6, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		    mvprintw(5, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvprintw(4, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvprintw(3, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvprintw(2, 78, "M");
-	    }
-	    if (countrynr == ce_cty) {
-		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvprintw(7, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvprintw(6, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		    mvprintw(5, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvprintw(4, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvprintw(3, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvprintw(2, 78, "M");
-	    }
-	    if (countrynr == vk_cty) {
-		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvprintw(7, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvprintw(6, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		    mvprintw(5, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvprintw(4, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvprintw(3, 78, "M");
-
-		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvprintw(2, 78, "M");
-	    }
-
 	}
+	refreshp();
 
 
 	/* print list of partials in upper left region */
 	if (partials == 1)
 	{
-
 	    l = 0;
 	    j = 0;
 
@@ -696,7 +557,6 @@ int searchlog(char *searchstring)
 		}
 	    }
 
-	    o = m;
 	    if (strcmp(hiscall, printres) != 0) {
 
 		/* and now check callmaster database */
@@ -733,26 +593,22 @@ int searchlog(char *searchstring)
 		}
 	    }
 
-	    if ((j <= 13) && (l == 0) && (use_part == 1)
-		&& (block_part == 0)) {
+	    if ((j <= 13) && (l == 0) && (use_part == 1) && (block_part == 0)) {
+
 		if (use_rxvt == 0)
 		    attron(COLOR_PAIR(COLOR_GREEN | A_BOLD | A_STANDOUT));
 		else
 		    attron(COLOR_PAIR(COLOR_GREEN | A_STANDOUT));
 
 		mvprintw(13, 0, s_inputbuffercpy);
+		if (strlen(s_inputbuffercpy) > strlen(hiscall)) {
+
+		    strcpy(hiscall, s_inputbuffercpy);
+		    beep();
+		}
 	    }
 
-	    if ((block_part == 0) && (use_part == 1) && (j <= 13)
-		&& (l == 0)
-		&& (strlen(s_inputbuffercpy) > strlen(hiscall))) {
-
-		strcpy(hiscall, s_inputbuffercpy);
-		beep();
-
-	    }
 	    refreshp();
-
 	}
 
 	/* show multiplierinfo */
@@ -770,8 +626,9 @@ int searchlog(char *searchstring)
 	    printcall();
 
     }
-
-    return (0);
+    else {
+	hide_panel( search_panel );
+    }
 }
 
 // --------------------------------------------load callmaster ------------------

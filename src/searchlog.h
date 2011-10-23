@@ -24,5 +24,5 @@
 #include "showscore.h"
 
 
-int searchlog(char *searchstring);
+void searchlog(char *searchstring);
 int load_callmaster(void);

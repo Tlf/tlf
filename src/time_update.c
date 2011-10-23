@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *                         2011 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +29,6 @@
 void time_update(void)
 {
     extern struct tm *time_ptr;
-    extern int searchflg;
-    extern char hiscall[];
     extern char qsonrstr[];
     extern int bandinx;
     extern int this_second;
@@ -37,7 +36,6 @@ void time_update(void)
     extern int miniterm;
 
     char time_buf[11];
-    int j;
     int currentterm = 0;
     static int s = 0;
     static int m = 0;
@@ -80,15 +78,13 @@ void time_update(void)
 
 	    attron(COLOR_PAIR(7) | A_STANDOUT);
 
-	    if ((strlen(hiscall) <= 1) || (searchflg == 0)) {
-		mvprintw(7, 0, logline0);
-		mvprintw(8, 0, logline1);
-		mvprintw(13, 0,
-			 "                                                              ");
-	    }
+	    mvprintw(7, 0, logline0);
+	    mvprintw(8, 0, logline1);
 	    mvprintw(9, 0, logline2);
 	    mvprintw(10, 0, logline3);
 	    mvprintw(11, 0, logline4);
+	    mvprintw(13, 0, 
+		    "                                                                    ");
 	    attron(COLOR_PAIR(COLOR_CYAN));
 	    mvprintw(12, 23, qsonrstr);
 	    printcall();
@@ -97,28 +93,5 @@ void time_update(void)
 	    show_zones(bandinx);
 	    miniterm = currentterm;
 	}
-
-	currentterm = miniterm;
-	miniterm = 0;
-
-	if (searchflg == SEARCHWINDOW) {	/*    check routine erase  */
-
-	    attron(COLOR_PAIR(7) | A_STANDOUT);
-
-	    if (strlen(hiscall) < 2) {
-		for (j = 1; j <= 8; j++) {
-		    if (j == 6) {
-			attron(A_STANDOUT);
-			mvhline(j, 41, ACS_HLINE, 39);
-		    } else
-			mvprintw(j, 41,
-				 "                                       ");
-		}
-		mvprintw(7, 0, logline0);
-		mvprintw(8, 0, logline1);
-	    }
-	    printcall();
-	}
-	miniterm = currentterm;
     }
 }
