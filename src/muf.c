@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *                    2010-2011 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +21,7 @@
 #include "tlf.h"
 #include "get_time.h"
 #include "dxcc.h"
+#include <panel.h>
 
 extern int use_rxvt;
 extern double yt;
@@ -206,7 +208,12 @@ int muf(void)
     char time_buf[25];
     int su, sd, su_min, sd_min, iv;
     double td;
-    char timediffstr[7];
+
+    PANEL *pan;
+    WINDOW *win;
+
+    win = newwin( 25, 80, 0, 0);
+    pan = new_panel(win);
 
     rd = PI / 180;
     d = 180 / PI;
@@ -256,28 +263,28 @@ int muf(void)
 		  6367.0 / (h + 6367.0)) / sin(0.5 * lm * rd)) * d;
     }
 
-    clear();
     dx = dxcc_by_index(mycountrynr);
     strncpy(mycountry, dx->countryname, 25);
 
     dx = dxcc_by_index(countrynr);
     strncpy(country, dx->countryname, 25);
 
+    wclear(win);
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	wattron(win, COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	wattron(win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
 
-    for (i = 0; i <= 24; i++)
-	mvprintw(i, 0,
+    for (i = 0; i < 25; i++)
+	mvwprintw(win, i, 0,
 		 "                                                                                ");
 
-    mvprintw(1, 40, "%s", country);
-    mvprintw(1, 0, "        SSN: %3.0f ", r);
-    mvprintw(3, 40, "Dist  : %5ld KM", (long) floor(l + 0.5));
+    mvwprintw(win, 1, 40, "%s", country);
+    mvwprintw(win, 1, 0, "        SSN: %3.0f ", r);
+    mvwprintw(win, 3, 40, "Dist  : %5ld KM", (long) floor(l + 0.5));
 
-    mvprintw(4, 40, "Azim  :   %3ld degrees.", (long) floor(u + 0.5));
-    mvprintw(5, 40, "F-hops:    %2.0f", n);
+    mvwprintw(win, 4, 40, "Azim  :   %3ld degrees.", (long) floor(u + 0.5));
+    mvwprintw(win, 5, 40, "F-hops:    %2.0f", n);
 
     sunup(xr);	/* calculate local sunup and down at destination lattitude */
 
@@ -302,27 +309,27 @@ int muf(void)
     su_min = (int) ((sunrise - su) * 60);
     sd_min = (int) ((sundown - sd) * 60);
 
-    mvprintw(3, 0, time_buf);
-    mvprintw(7, 40, "sun   : %02d:%02d-%02d:%02d UTC", su, su_min, sd, sd_min);
+    mvwprintw(win, 3, 0, time_buf);
+    mvwprintw(win, 7, 40, "sun   : %02d:%02d-%02d:%02d UTC", su, su_min, sd, sd_min);
 
     lastwwv[75] = '\0';		/* cut the bell chars */
     if ((strlen(lastwwv) >= 28) && (r != 0))
-	mvprintw(10, 40, "Condx: %s", lastwwv + 26);	/* print WWV info  */
+	mvwprintw(win, 10, 40, "Condx: %s", lastwwv + 26);	/* print WWV info  */
 
     q = 34.0;
     row = 4;
     while (q >= 2.0) {
 	if ((row == 7) || (row == 10) || (row == 14) || (row == 17)) {
-	    mvprintw(row, 0, "|_________________________|%2.0f", q);
+	    mvwprintw(win, row, 0, "|_________________________|%2.0f", q);
 
 	} else
-	    mvprintw(row, 0, "|                         |%2.0f", q);	/* 25 spaces */
+	    mvwprintw(win, row, 0, "|                         |%2.0f", q);	/* 25 spaces */
 	q -= 2.0;
 	row++;
     }
-    mvprintw(20, 0, "---------------------------");	/* 27 dashes */
-    mvprintw(21, 0, " 0 2 4 6 8 10  14  18  22 H (UTC)");
-    mvprintw(4, 30, "MHz");
+    mvwprintw(win, 20, 0, "---------------------------");	/* 27 dashes */
+    mvwprintw(win, 21, 0, " 0 2 4 6 8 10  14  18  22 H (UTC)");
+    mvwprintw(win, 4, 30, "MHz");
     refreshp();
     for (t = 1; t <= 24; t++) {
 	ab = 0.0;
@@ -343,8 +350,8 @@ int muf(void)
 	ho = t + 1;
 	if (ve < 4)
 	    ve = 4;
-	mvprintw((int) ve, (int) ho, "+");
-	refreshp();
+	mvwprintw(win, (int) ve, (int) ho, "+");
+
 	while (k <= n - 0.25) {
 	    interlat();
 	    e_layer();
@@ -357,21 +364,16 @@ int muf(void)
 	if (ve > 20)
 	    ve = 20;
 
-	mvprintw((int) ve, (int) ho, "-");
-	refreshp();
+	mvwprintw(win, (int) ve, (int) ho, "-");
     }
-    mvprintw(23, 0, " --- Press a key to continue --- ");
+    mvwprintw(win, 23, 0, " --- Press a key to continue --- ");
     refreshp();
 
     key = getch();
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
-    for (i = 0; i <= 24; i++)
-	mvprintw(i, 0,
-		 "                                                                                ");
+    hide_panel(pan);
+    del_panel(pan);
+    delwin(win);
 
     return (0);
 }
