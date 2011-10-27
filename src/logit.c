@@ -199,6 +199,7 @@ int logit(void)
 		    }
 
 		    log_to_disk(false);
+		    HideSearchPanel();
 
 		}
 	    }
@@ -207,6 +208,7 @@ int logit(void)
 		defer_store = 0;
 
 		log_to_disk(false);
+		HideSearchPanel();
 	    }
 
 	    if (callreturn == 11 || callreturn == 44 || callreturn == 235) {	/*  CTRL K  */
@@ -218,6 +220,7 @@ int logit(void)
 
 	} else {	/* user entered frequency -> clear input field */
 	    hiscall[0] = '\0';
+	    HideSearchPanel();
 	}
     }
     return (1);

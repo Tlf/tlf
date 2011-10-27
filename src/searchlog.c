@@ -31,12 +31,29 @@
 
 PANEL *search_panel;
 WINDOW *search_win;
+int initialized = 0;
+
 
 void InitSearchPanel()
 {
     search_win = newwin( 8, 39, 1, 41 );
     search_panel = new_panel( search_win );
     hide_panel( search_panel );
+}
+
+void ShowSearchPanel(void)
+{
+    if (!initialized) {
+	InitSearchPanel();
+	initialized = 1;
+    }
+    show_panel( search_panel );
+    top_panel( search_panel );
+}
+
+void HideSearchPanel(void)
+{
+    hide_panel(search_panel);
 }
 
 static char searchresult[MAX_CALLS][82];
@@ -112,8 +129,6 @@ void searchlog(char *searchstring)
     static int xwin = 1;
     static int ywin = 1;
 
-    static int initialized = 0;
-
     if (!initialized) {
 	InitSearchPanel();
 	initialized = 1;
@@ -127,8 +142,7 @@ void searchlog(char *searchstring)
     /* show checkwindow and partials */
     if (strlen(hiscall) > 1 && searchflg == SEARCHWINDOW) {
 
-	show_panel( search_panel );
-	top_panel( search_panel );
+	ShowSearchPanel();
 
 	if (strlen(hiscall) == 2)
 	    z1 = 0;
@@ -627,7 +641,7 @@ void searchlog(char *searchstring)
 
     }
     else {
-	hide_panel( search_panel );
+	HideSearchPanel();
     }
 }
 

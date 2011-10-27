@@ -23,6 +23,7 @@
 #include "getpx.h"
 #include "showscore.h"
 
-
+void ShowSearchPanel(void);
+void HideSearchPanel(void);
 void searchlog(char *searchstring);
 int load_callmaster(void);
