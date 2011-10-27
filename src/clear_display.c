@@ -78,7 +78,11 @@ void clear_display(void)
     mvaddstr(5, 0, backgrnd_str);
     mvprintw(6, 0, "");
     mvaddstr(6, 0, "");
-    hline(ACS_HLINE, 80);
+    attron(COLOR_PAIR(COLOR_GREEN));
+//    hline(ACS_HLINE, 80);
+    mvaddstr(6, 0, backgrnd_str);
+
+    showscore();
 
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD | A_STANDOUT);

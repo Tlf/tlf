@@ -26,7 +26,7 @@
 int printfield(int y, int x, int number)
 {
 
-    attron(COLOR_PAIR(COLOR_CYAN));
+    attron(COLOR_PAIR(COLOR_WHITE));
 
     if (number < 10) {
 	mvprintw(y, x, "    %d", number);
