@@ -77,7 +77,7 @@ int gettxinfo(void)
 	qrg_string[7] = '\0';
 
 	switch (qrg) {
-	case 1800 ... 1900:{
+	case 1800 ... 2000:{
 		bandinx = 0;
 		bandfrequency[bandinx] = freq;
 		break;
@@ -87,7 +87,7 @@ int gettxinfo(void)
 		bandfrequency[bandinx] = freq;
 		break;
 	    }
-	case 7000 ... 7200:{
+	case 7000 ... 7300:{
 		bandinx = 2;
 		bandfrequency[bandinx] = freq;
 		break;
