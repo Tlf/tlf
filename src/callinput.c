@@ -180,6 +180,7 @@ char callinput(void)
 		sendbuf();
 		break;
 	    } else if (x == '=' && strlen(hiscall) != 0) {
+		/** \todo check if unreachabel code */
 		strcat(buffer, lastcall);
 		strcat(buffer, " OK ");
 		sendbuf();
@@ -190,7 +191,7 @@ char callinput(void)
 	switch (x) {
 	case '+':
 	    {
-		if (strlen(hiscall) > 2) {
+		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			strcat(buffer, message[2]);	/* F3 */
 			sendbuf();
@@ -562,9 +563,11 @@ char callinput(void)
 	    }
 	case 160:		/* insert */
 	    {
-		strcat(buffer, message[1]);
-		sendbuf();
-		mvprintw(12, 29 + strlen(hiscall), "");
+		if (ctcomp != 0) {
+		    strcat(buffer, message[1]);
+		    sendbuf();
+		    mvprintw(12, 29 + strlen(hiscall), "");
+		}
 		break;
 	    }
 	case 58:		/* :   change parameters */
@@ -812,6 +815,7 @@ char callinput(void)
 		    showscore_flag = 1;
 		else {
 		    showscore_flag = 0;
+		    /** \todo drop display of scrore */
 		    attron(COLOR_PAIR(7) | A_STANDOUT);
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
