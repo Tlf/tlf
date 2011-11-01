@@ -156,18 +156,20 @@ int getexchange(void)
 	    }
 	case 160:		// for CT compatibility
 	    {
-		if (trxmode == CWMODE) {
-		    strcat(buffer, message[1]);
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[1]);
+		if (ctcomp != 0) {
+		    if (trxmode == CWMODE) {
+			strcat(buffer, message[1]);
+			sendbuf();
+			mvprintw(12, 29 + strlen(hiscall), "");
+		    } else
+			play_file(ph_message[1]);
 
+		}
 		break;
 	    }
 	case '+':		// for CT compatibility
 	    {
-		if (strlen(hiscall) > 2) {
+		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
 		    if (trxmode == CWMODE) {
 			strcat(buffer, message[2]);	/* F3 */
 			sendbuf();
