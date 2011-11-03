@@ -269,9 +269,9 @@ int getexchange(void)
 		break;
 	    }
 	case '\n':
-	    {			/* log QSO immediately if CT compatible, 
-				 * doing SSB or not in contest */
-		if ((ctcomp == 1) || (trxmode == SSBMODE) || (contest != 1))
+	    {			/* log QSO immediately if CT compatible 
+				 * or not in contest */
+		if ((ctcomp == 1) || (contest != 1))
 		    x = 92;
 //                                                      if (dxped == 1) x = 92;
 		break;
@@ -295,16 +295,14 @@ int getexchange(void)
 	} else
 	    i--;
 
-	if (serial_section_mult == 1)
+	if ((serial_section_mult == 1) ||
+	    (dx_arrlsections == 1) ||
+	    (sectn_mult == 1) ||
+	    (arrlss == 1) ||
+	    (cqww == 1)) {
+
 	    x = checkexchange(x);
-	if (dx_arrlsections == 1)
-	    x = checkexchange(x);
-	if (sectn_mult == 1)
-	    x = checkexchange(x);
-	if (arrlss == 1)
-	    x = checkexchange(x);
-	if (cqww == 1)
-	    x = checkexchange(x);
+	}
 
 	if (x == '\n' || x == 9 || x == 11 || x == 92) {
 
