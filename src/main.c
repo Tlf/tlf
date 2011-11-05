@@ -23,6 +23,7 @@
 #include "tlf.h"
 #include "globalvars.h"
 #include "main.h"
+#include "searchlog.h"
 #include <glib.h>
 #include <panel.h>
 #include <pthread.h>
@@ -489,6 +490,9 @@ int main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
     }
 //keypad(stdscr,TRUE);
+
+    InitSearchPanel();	/* at least one panel has to be defined
+				   for refreshp() to work */
 
     getmaxyx(stdscr, ymax, xmax);
     noecho();

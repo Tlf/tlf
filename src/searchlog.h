@@ -23,6 +23,7 @@
 #include "getpx.h"
 #include "showscore.h"
 
+void InitSearchPanel(void);
 void ShowSearchPanel(void);
 void HideSearchPanel(void);
 void searchlog(char *searchstring);
