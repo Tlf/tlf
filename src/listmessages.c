@@ -57,7 +57,7 @@ int listmessages(void)
 		if (i == 12)
 			mvprintw(i + 9, 1, " SPmg:" );
 		else if ( i== 13)
-			mvprintw(i + 9, 1, " CWmg:" );
+			mvprintw(i + 9, 1, " CQmg:" );
 		else
 			mvprintw (i + 9, 1, " %i     ",  i+1);
 		
