@@ -51,7 +51,6 @@ void calledit(void)
 	attron(COLOR_PAIR(COLOR_GREEN));
 
 	mvprintw(12, 29 + b, "");
-	refreshp();
 
 	i = onechar();
 

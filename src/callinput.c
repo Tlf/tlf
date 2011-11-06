@@ -130,6 +130,10 @@ char callinput(void)
 		printcall();
 	    }
 
+
+	    /* make sure that the wrefresh() inside getch() shows the cursor
+	     * in the input field */
+	    wmove(stdscr, 12, 29 + strlen(hiscall));
 	    x = onechar();
 
 	}
@@ -1188,6 +1192,7 @@ char callinput(void)
 		mvprintw(24, 0,
 			 "                                                           ");
 		mvprintw(12, 29 + strlen(hiscall), "");
+		refreshp();
 	    }
 
 	}

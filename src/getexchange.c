@@ -123,6 +123,7 @@ int getexchange(void)
     mvprintw(12, 54, comment);
     commentfield = 1;
     for (i = strlen(comment); i < 26; i++) {
+	wmove(stdscr, 12, 54 + strlen(comment));
 	x = onechar();
 
 	switch (x) {
