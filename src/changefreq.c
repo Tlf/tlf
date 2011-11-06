@@ -19,7 +19,7 @@
 
 #include "changefreq.h"
 
-int (change_freq) (void) {
+void change_freq (void) {
 
     extern float freq;
     extern int trx_control;
@@ -32,7 +32,9 @@ int (change_freq) (void) {
     int x;
 
     if (trx_control == 0)
-	return (-1);
+	return;
+
+    curs_set(0);
 
     while (1) {
 
@@ -124,6 +126,5 @@ int (change_freq) (void) {
 	usleep(100000);
 
     }
-
-    return (0);
+    curs_set(1);
 }

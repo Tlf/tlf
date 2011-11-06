@@ -26,6 +26,6 @@
 #include <hamlib/rig.h>
 #endif
 
-int (change_freq)(void);
+void change_freq(void);
 
 
