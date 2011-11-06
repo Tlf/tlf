@@ -216,11 +216,6 @@ char callinput(void)
 		break;
 	    }
 
-	case 152:		// up - edit last calls....
-	    {
-		edit_last();
-		break;
-	    }
 	case 153:		// down - start sending call if cw mode
 	case 32:		// space
 	    {
