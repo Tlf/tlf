@@ -32,4 +32,4 @@
 
 
 int logit(void);
-
+void refresh_comment(void);

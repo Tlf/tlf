@@ -114,6 +114,7 @@ char callinput(void)
 	attron(COLOR_PAIR(NORMCOLOR));
 
     printcall();	/* print call input field */
+    searchlog(hiscall);
 
     for (i = strlen(hiscall); i <= 13; i++) {
 
@@ -1068,6 +1069,7 @@ char callinput(void)
 	case 1:		// ctl-A
 	    {
 		addspot();
+		HideSearchPanel();
 
 		break;
 	    }
@@ -1180,15 +1182,14 @@ char callinput(void)
 
 		searchlog(hiscall);
 
-		refreshp();
 
 	    } else {
 		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 		mvprintw(24, 0,
 			 "                                                           ");
 		mvprintw(12, 29 + strlen(hiscall), "");
-		refreshp();
 	    }
+	    refreshp();
 
 	}
 

@@ -236,5 +236,6 @@ void refresh_comment(void) {
     else
 	attron(COLOR_PAIR(NORMCOLOR));
 
+    mvprintw(12, 54, "                          ");
     mvprintw(12, 54, comment);
 }

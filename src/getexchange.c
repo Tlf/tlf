@@ -24,6 +24,8 @@
 
 #include "getexchange.h"
 #include "recall_exchange.h"
+#include "addspot.h"
+#include "logit.h"
 #include <glib.h>
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
@@ -33,7 +35,6 @@ int play_file(char *audiofile);
 int getexchange(void)
 {
     extern int contest;
-    extern int use_rxvt;
     extern char comment[];
     extern char cqzone[];
     extern char ituzone[];
@@ -114,19 +115,22 @@ int getexchange(void)
 	strcpy(comment, continent);
     }
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
+    refresh_comment();
 
-    mvprintw(12, 54, "                          ");
-    mvprintw(12, 54, comment);
     commentfield = 1;
     for (i = strlen(comment); i < 26; i++) {
 	wmove(stdscr, 12, 54 + strlen(comment));
 	x = onechar();
 
 	switch (x) {
+
+	case 1:						/* ctrl-a */
+	    {
+		addspot();
+		*comment = '\0';
+		x = 9;
+		break;
+	    }
 
 	case 127:					/* erase */
 	    {
@@ -146,8 +150,7 @@ int getexchange(void)
 		if (comment[0] != '\0') {	/* if comment not empty */
 		    /* drop exchange so far */
 		    comment[0] = '\0';
-		    mvprintw(12, 54, "                          ");
-		    mvprintw(12, 54, "");
+		    refresh_comment();
 		    i = 0;
 		} else {
 		    /* back to callinput */
@@ -155,6 +158,7 @@ int getexchange(void)
 		}
 		break;
 	    }
+
 	case 160:		// for CT compatibility
 	    {
 		if (ctcomp != 0) {
@@ -168,6 +172,7 @@ int getexchange(void)
 		}
 		break;
 	    }
+
 	case '+':		// for CT compatibility
 	    {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
@@ -411,6 +416,8 @@ int getexchange(void)
 	}
 
     }
+    refresh_comment();
+
     commentfield = 0;
 
     return (x);
