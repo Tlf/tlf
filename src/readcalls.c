@@ -245,8 +245,8 @@ int readcalls(void)
 	strtok(callarray[l], " \r");	/* delimit first word */
 
 	call_country[l] = countrynr;
-	strncpy(call_exchange[l], inputbuffer + 54, 11);
-	call_exchange[l][11] = '\0';
+	g_strlcpy(call_exchange[l], inputbuffer + 54, 12);
+	g_strchomp(call_exchange[l]);	/* strip trailing spaces */
 
 	add_ok = 1;		/* look if calls are excluded */
 
