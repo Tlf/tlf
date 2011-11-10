@@ -27,7 +27,7 @@ CONTEST_MODE
 #
 F1=CQ CQ DE % % K
 F2=@ DE %
-F3=@ 1 A CT 23
+F3=@ # A CT 83
 F4=TU 73
 F5= @
 F6=%
@@ -39,7 +39,7 @@ F11= PSE K
 F12=++++TEST---- % %
 #
 CQ_TU_MSG=TU %
-S&P_TU_MSG=TU UR 1 A CT 23
+S&P_TU_MSG=TU UR # A CT 83
 #
 ALT_0=message alt 0
 ALT_1=nr is # #
