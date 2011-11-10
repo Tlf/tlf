@@ -458,6 +458,16 @@ int checkexchange(int x)
     char checksection[30];
     char zone[4] = "";
 
+/* field of allowed pattern sequences 
+ *
+ * The chearacters have the following meaning:
+ * u - undefined (left or right delimiter)
+ * b - blank character
+ * a - ascii character
+ * f - a figure / digit
+ *
+ * e.g. faf means a character between two digits 
+ */
     char serpats[8][8] = {
 	"bfb",
 	"afb",
@@ -659,13 +669,15 @@ int checkexchange(int x)
 	     || (comment[0] == 'B')
 	     || (comment[0] == 'M')
 	     || (comment[0] == 'Q')
-	     || (comment[0] == 'S'))
+	     || (comment[0] == 'S')
+	     || (comment[0] == 'U'))
 	    && ((comment[1] == ' ') || (cmpattern[2] == 'f'))) {
 
 	    precedent[0] = comment[0];
 	}
 
 	hr = 0;
+	/* look for a single letter */
 	for (ii = 0; ii < 8; ii++) {
 
 	    hr = getlastpattern(precpats[ii]);
@@ -968,6 +980,12 @@ int checkexchange(int x)
 
 /*  --------------------------------------------------------------------------*/
 
+/** search checkstring in cmpattern
+ *
+ * find first occurence of checkstring in cmpattern
+ * \parm checkstring - the pattern to be found
+ * \return offset of checkstring in cmpattern (or 0 if not found)
+ */
 int getlastpattern(char *checkstring)
 {
 
