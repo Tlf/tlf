@@ -33,6 +33,7 @@ PANEL *search_panel;
 WINDOW *search_win;
 int initialized = 0;
 
+void show_needed_sections(void);
 
 void InitSearchPanel()
 {
@@ -625,9 +626,9 @@ void searchlog(char *searchstring)
 	    refreshp();
 	}
 
-	/* show multiplierinfo */
+	/* show needed sections for ARRL_Sweep Stake*/
 	if (dupe == NODUPE && arrlss == 1)
-	    r_multiplierinfo();
+	    show_needed_sections();
 
 	if (dupe == ISDUPE) {
 	    isdupe = 1;		// LZ3NY auto-b4 patch
@@ -645,9 +646,8 @@ void searchlog(char *searchstring)
     }
 }
 
-// --------------------------------------------load callmaster ------------------
 /** loads callmaster database from file
- * */
+ */
 int load_callmaster(void)
 {
     extern char callmasterarray[MAX_CALLMASTER][14];
@@ -721,4 +721,75 @@ int load_callmaster(void)
 }
 
 
+/*  --------------------------------------------------------------  */
+void show_needed_sections(void)
+{
 
+    extern int use_rxvt;
+    extern int arrlss;
+    extern int multarray_nr;
+    extern char mults[MAX_MULTS][12];
+    extern GPtrArray *mults_possible;
+
+    int j, vert, hor, cnt, found;
+    char mprint[50];
+    char chmult[4];
+
+    if (arrlss == 1) {
+	cnt = 0;
+
+	if (use_rxvt == 0)
+	    wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	else
+	    wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+
+	for (j = 1; j < 7; j++)
+	    mvwprintw(search_win, j, 1, "                                     ");
+
+	for (vert = 1; vert < 7; vert++) {
+	    if (cnt >= mults_possible->len)
+		break;
+
+	    for (hor = 0; hor < 9; hor++) {
+		if (cnt >= mults_possible->len)
+		    break;
+
+		strcpy(mprint, g_ptr_array_index(mults_possible, cnt));
+
+		found = 0;
+		for (j = 0; j < multarray_nr; j++) {
+		    strncpy(chmult, g_ptr_array_index(mults_possible, cnt), 4);
+		    if (strlen(chmult) == 2)
+			strcat(chmult, " ");
+
+		    if (strcmp(mults[j], chmult) == 0) {
+			found = 1;
+			mprint[0] = '\0';
+		    }
+		}
+
+		if (found != 1) {
+		    mprint[3] = '\0';
+
+		    if (use_rxvt == 0)
+			wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_BOLD |
+			       A_STANDOUT);
+		    else
+			wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+
+		    if (strlen(mprint) > 1)
+			mvwprintw(search_win, vert, (hor * 4) + 2, "%s ", mprint);
+
+		} else
+		    hor--;
+
+		cnt++;
+
+	    }
+	}
+    }
+
+    wnicebox(search_win, 0, 0, 6, 37, "Needed Sections");
+    refreshp();
+
+}

@@ -24,4 +24,3 @@
 #include "printcall.h"
 
 int  showscore(void);
-int r_multiplierinfo(void);
