@@ -764,7 +764,7 @@ void show_needed_sections(void)
 
 		    if (strcmp(mults[j], chmult) == 0) {
 			found = 1;
-			mprint[0] = '\0';
+			break;
 		    }
 		}
 
