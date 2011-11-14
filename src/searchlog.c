@@ -788,3 +788,8 @@ void show_needed_sections(void)
     refreshp();
 
 }
+
+void OnLowerSearchPanel(int x, char *str)
+{
+    mvwprintw(search_win, 7, x, str);
+}

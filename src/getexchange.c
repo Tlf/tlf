@@ -596,7 +596,7 @@ int checkexchange(int x)
 	}
 
 	if (strlen(hiscall) >= 2)
-	    mvprintw(8, 73, "%s", zone_export);
+	    OnLowerSearchPanel(34, zone_export);
 
 	hr = 0;
 
@@ -781,11 +781,14 @@ int checkexchange(int x)
 	}
 	hr = 0;
 
-//	callupdate[0] = '\0';  /* not needed tb 09jan10 */
-
-	mvprintw(8, 47, "                            ");
-	mvprintw(8, 47, "       %s %s %s %s        ", serial, precedent,
+	{
+	    char buf[40];
+	    sprintf(buf, " %4s %1s %2s %2s ", serial, precedent,
 		 check, section);
+	    OnLowerSearchPanel(8, buf);
+	}
+
+	/* \todo use sprintf */
 	ssexchange[0] = '\0';
 
 	strcat(ssexchange, serial);
@@ -958,8 +961,8 @@ int checkexchange(int x)
 	}
 
     }
-    mvprintw(8, 73, "   ");
-    mvprintw(8, 73, "%s", section);	/* show section on lower frame of 
+    OnLowerSearchPanel(34, "   ");
+    OnLowerSearchPanel(34, section);	/* show section on lower frame of 
 					   Worked window */
     ssexchange[0] = '\0';
 

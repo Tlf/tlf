@@ -28,3 +28,6 @@ void ShowSearchPanel(void);
 void HideSearchPanel(void);
 void searchlog(char *searchstring);
 int load_callmaster(void);
+void show_needed_sections(void);
+void OnLowerSearchPanel(int x, char *str);
+
