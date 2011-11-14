@@ -51,6 +51,7 @@ void clear_display(void)
     extern int searchflg;
     extern int m;
     extern struct tm *time_ptr;
+    extern char whichcontest[];
 
     char time_buf[80];
     char speedbuf[4] = "  ";
@@ -81,6 +82,7 @@ void clear_display(void)
     attron(COLOR_PAIR(COLOR_GREEN));
 //    hline(ACS_HLINE, 80);
     mvaddstr(6, 0, backgrnd_str);
+    mvprintw(6, (80 - strlen(whichcontest))/2 - 4, " == %s == ", whichcontest);
 
     showscore();
 
