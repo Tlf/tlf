@@ -733,7 +733,6 @@ void show_needed_sections(void)
 
     int j, vert, hor, cnt, found;
     char mprint[50];
-    char chmult[4];
 
     if (arrlss == 1) {
 	cnt = 0;
@@ -758,11 +757,7 @@ void show_needed_sections(void)
 
 		found = 0;
 		for (j = 0; j < multarray_nr; j++) {
-		    strncpy(chmult, g_ptr_array_index(mults_possible, cnt), 4);
-		    if (strlen(chmult) == 2)
-			strcat(chmult, " ");
-
-		    if (strcmp(mults[j], chmult) == 0) {
+		    if (strncmp(mults[j], mprint, strlen(mprint)) == 0) {
 			found = 1;
 			break;
 		    }
