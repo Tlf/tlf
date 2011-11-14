@@ -647,18 +647,19 @@ int checkexchange(int x)
 	s = atoi(comment);
 
 	if (s != 0)
-	    sprintf(serial, "%4d", atoi(comment));
+	    snprintf(serial, sizeof(serial), "%4d", s);
 
 	for (ii = 0; ii < 8; ii++) {
 
 	    hr = getlastpattern(serpats[ii]);
 
 	    if (hr > 0)
-		sprintf(serial, "%4d", atoi(comment + hr - 1));
+			snprintf(serial, sizeof(serial), "%4d", 
+				atoi(comment + hr - 1));
 
 	    if (ii == 5 && hr > 0) {
-		sprintf(serial, "%4d", atoi(comment + hr - 1));
-		sprintf(check, "%2d", atoi(comment + hr + 2));
+		snprintf(serial, sizeof(serial), "%4d", atoi(comment + hr - 1));
+		snprintf(check, sizeof(check), "%2d", atoi(comment + hr + 2));
 	    }
 
 	}
@@ -743,17 +744,12 @@ int checkexchange(int x)
 	    hr = getlastpattern(checkpats[ii]);
 
 	    if (hr > 0) {
-		if ((atoi(comment + hr) <= 100)
-		    || ((atoi(comment + hr) <= 9)
-			&& (comment[hr] == '0'))) {
-		    check[0] = comment[hr];
-		    check[1] = comment[hr + 1];
-		    check[2] = '\0';
-		}
-
+		check[0] = comment[hr];
+		check[1] = comment[hr + 1];
+		check[2] = '\0';
 	    }
-
 	}
+
 	// get section
 	hr = 0;
 
