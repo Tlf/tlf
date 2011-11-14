@@ -742,7 +742,6 @@ int checkexchange(int x)
 	for (ii = 0; ii < 6; ii++) {
 
 	    hr = getlastpattern(checkpats[ii]);
-
 	    if (hr > 0) {
 		check[0] = comment[hr];
 		check[1] = comment[hr + 1];
@@ -752,6 +751,7 @@ int checkexchange(int x)
 
 	// get section
 	hr = 0;
+	*section = '\0';
 
 	for (ii = 0; ii < 10; ii++) {
 
@@ -759,19 +759,21 @@ int checkexchange(int x)
 
 	    if (hr > 0) {
 
-		strncpy(checksection, comment + (hr), 3);
-		checksection[3] = '\0';
+		g_strlcpy(checksection, comment + hr, 4);
+		g_strchomp(checksection);
 
 		for (jj = 0; jj < mults_possible->len; jj++) {
 
-		    if ((strlen(MULTS_POSSIBLE(jj)) >= 1) &&
-			(strstr(checksection, MULTS_POSSIBLE(jj)) != NULL)
-			&& (strlen(checksection) ==
-			    strlen(MULTS_POSSIBLE(jj)))) {
+		    char *multi = g_strdup(MULTS_POSSIBLE(jj));
+		    g_strchomp(multi);
 
-			strcpy(section, MULTS_POSSIBLE(jj));
+		    if ((strlen(multi) >= 1) &&
+			(strcmp(checksection, multi) == 0)) {
+
+			strcpy(section, multi);
 			break;
 		    }
+		    g_free(multi);
 		}
 	    }
 	}
