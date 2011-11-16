@@ -7,7 +7,7 @@ Easiest way to install tlf is by typing:
 make
 make install
 
-If you want to compile tlf from the svn repo, please do a 
+If you want to compile tlf from the repo, please do a 
 
 autoreconf --install
 
