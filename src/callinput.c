@@ -1211,6 +1211,39 @@ char callinput(void)
     return (x);
 }
 
+#define new_play
+#ifdef new_play
+int play_file(char *audiofile)
+{
+
+    extern int txdelay;
+
+    int fd,rc;
+    char playcommand[120];
+
+    if (*audiofile == '\0')
+	return (0);
+
+    if ((fd = open(audiofile, O_RDONLY, 0664)) < 0) {
+	mvprintw(24, 0, "cannot open sound file %s!", audiofile);
+    } else {
+	close(fd);
+	if (access("./play_vk", X_OK) == 0 ) {
+	   sprintf( playcommand, "./play_vk %s", audiofile); 
+	}
+	else {
+	   sprintf( playcommand, "play_vk %s", audiofile);
+	}
+	netkeyer(K_PTT, "1");	// ptt on
+	usleep(txdelay * 1000);
+	rc=system(playcommand);
+	printcall();
+	netkeyer(K_PTT, "0");	// ptt off
+    }
+
+    return (0);
+}
+#else
 int play_file(char *audiofile)
 {
 
@@ -1245,6 +1278,7 @@ int play_file(char *audiofile)
 
     return (0);
 }
+#endif
 
 void send_bandswitch(int freq)
 {

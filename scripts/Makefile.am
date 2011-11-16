@@ -1,4 +1,4 @@
-SCRIPT_FILES = soundlog
+SCRIPT_FILES = soundlog play_vk
 
 bin_SCRIPTS = $(SCRIPT_FILES)
 
