@@ -1091,14 +1091,12 @@ char callinput(void)
 	case 7:		// ctl-g
 	    {
 		grab_next();
-		clear_display();
 
 		break;
 	    }
 	case 231:		// alt-g
 	    {
 		grabspot();
-		clear_display();
 
 		break;
 	    }

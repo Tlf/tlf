@@ -55,7 +55,7 @@ int grabspot(void)
 
 	    strcpy( hiscall, data->call );
 
-	    showinfo( getctynr( hiscall ) );
+	    showinfo( getctydata( hiscall ) );
 	    searchlog( hiscall );
 
 	    /* if in CQ mode switch to S&P and remember QRG */
@@ -115,7 +115,7 @@ void grab_next(void)
 
 	strcpy( hiscall, data->call );
 
-	showinfo( getctynr( hiscall ) );
+	showinfo( getctydata( hiscall ) );
 	searchlog( hiscall );
 
 	/* if in CQ mode switch to S&P and remember QRG */
