@@ -28,5 +28,6 @@
 #include <hamlib/rig.h>
 #endif
 
-int grabspot (void);
+void grabspot (void);
+void grab_next (void);
 
