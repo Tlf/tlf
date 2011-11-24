@@ -527,10 +527,10 @@ int changepars(void)
 	}
     case 35:			/* INFO  */
 	{
-
+	    int currentterm = miniterm;
 	    miniterm = 0;
 	    networkinfo();
-	    miniterm = 1;
+	    miniterm = currentterm;
 
 	    if (currentmode == DIGIMODE)
 		trxmode = DIGIMODE;
@@ -680,10 +680,11 @@ int changepars(void)
 	}
     case 44:			/* SCAN */
 	{
+	    int currentterm = miniterm;
 	    miniterm = 0;
 	    testaudio();
 	    clear_display();
-	    miniterm = 1;
+	    miniterm = currentterm;
 	    break;
 	}
     case 45:			/* DEBUG */

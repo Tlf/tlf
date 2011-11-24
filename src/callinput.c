@@ -1059,9 +1059,10 @@ char callinput(void)
 	    }
 	case 16:		// ctrl-P
 	    {
+		int currentterm = miniterm;
 		miniterm = 0;
 		muf();
-		miniterm = 1;
+		miniterm = currentterm;
 		clear_display();
 
 		break;
