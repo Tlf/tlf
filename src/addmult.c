@@ -313,7 +313,7 @@ int load_multipliers(void)
 	    s_inputbuffer[9] = '\0';
 
 	    /* drop empty lines */
-	    if (s_inputbuffer == '\0')
+	    if (*s_inputbuffer == '\0')
 		continue;
 
 	    g_ptr_array_add(mults_possible, g_strdup(s_inputbuffer));

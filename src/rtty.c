@@ -37,10 +37,9 @@
 static int fdcont;		// global for this file: tty file descriptor
 static char ry_term[5][50] = { "", "", "", "", "" };
 
-/* ------------------------------------- initialize  controller --------------------------------- */
+/* ----------------------- initialize  controller ------------------------ */
 int init_controller()
 {
-
     extern char controllerport[];
 
     struct termios termattribs;
@@ -71,12 +70,10 @@ int init_controller()
     return (fdcont);		// return file descriptor
 }
 
-/* -------------------------------------  add text to terminal ------------------------------------------- */
+/* ------------------------  add text to terminal ------------------------ */
 
 int ry_addtext(char *line)
 {
-
-//extern char ry_term[][];      ### bug fix
 
     int k, m, j;
     char *ptr;
@@ -142,13 +139,12 @@ int ry_addtext(char *line)
     return (0);
 }
 
-/* -------------------------------------  display rtty ------------------------------------------- */
+/* ----------------------  display rtty ---------------------------------- */
 
 int show_rtty(void)
 {
 
     extern int use_rxvt;
-//extern char ry_term[][];              ### bug fix
     extern int trxmode;
 //extern char hiscall[];
     extern int miniterm;
@@ -185,19 +181,16 @@ int show_rtty(void)
     return (0);
 }
 
-/* -------------------------------------  receive rtty ------------------------------------------- */
+/* ---------------------  receive rtty ----------------------------------- */
 
 int rx_rtty()
 {
 
     extern char hiscall[];
     extern int miniterm;
-
-//extern char ry_term[][];              ### bug fix
-
     int i = 0;
     char line[40];
-    static int miniterm_status = 0;
+    static int miniterm_status = 0;	/* for one time initialization */
 
     if (fdcont > 0) {
 

@@ -23,7 +23,7 @@
 
 int send_bandswitch(int outfreq);
 
-int grabspot(void)
+void grabspot(void)
 {
     extern char hiscall[];
     extern char mode[];
@@ -42,7 +42,7 @@ int grabspot(void)
     spot *data;
 
     if (trx_control == 0)
-	return (0);
+	return;
 
     if (hiscall[0] != '\0') {
 
@@ -55,7 +55,7 @@ int grabspot(void)
 
 	    strcpy( hiscall, data->call );
 
-	    showinfo( getctynr( hiscall ) );
+	    showinfo( getctydata( hiscall ) );
 	    searchlog( hiscall );
 
 	    /* if in CQ mode switch to S&P and remember QRG */
@@ -73,8 +73,6 @@ int grabspot(void)
 	}
 
     }
-
-    return 0;
 }
 
 void grab_next(void)
@@ -115,7 +113,7 @@ void grab_next(void)
 
 	strcpy( hiscall, data->call );
 
-	showinfo( getctynr( hiscall ) );
+	showinfo( getctydata( hiscall ) );
 	searchlog( hiscall );
 
 	/* if in CQ mode switch to S&P and remember QRG */
