@@ -35,11 +35,6 @@ void printcall(void)
     currentterm = miniterm;
     miniterm = 0;
 
-//    if (miniterm == 1) {
-//	miniterm = 0;
-//	currentterm = 1;
-//    }
-
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(COLOR_BLUE) | A_STANDOUT | A_BOLD);
     else
