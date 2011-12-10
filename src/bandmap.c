@@ -86,7 +86,9 @@ GPtrArray *spots;
 bm_config_t bm_config = {
     1,	/* show all bands */
     1,  /* show all mode */
-    1   /* show dupes */
+    1,  /* show dupes */
+    1,	/* skip dupes during grab */
+    900	/* default livetime */
 };
 short	bm_initialized = 0;
 
@@ -661,7 +663,8 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
 		spot *data;
 		data = g_ptr_array_index( spots, i );
 
-		if (data->freq > freq) {
+		if ((data->freq > freq) && 
+			(!bm_config.skipdupes || data->dupe == 0)) {
 		    /* copy data into a new Spot structure */
 		    result = copy_spot(data);
 
@@ -673,7 +676,8 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
 		spot *data;
 		data = g_ptr_array_index( spots, i );
 
-		if (data->freq < freq) {
+		if ((data->freq < freq) &&
+			(!bm_config.skipdupes || data->dupe == 0)) {
 		    /* copy data into a new Spot structure */
 		    result = copy_spot(data);
 
