@@ -30,7 +30,7 @@ typedef struct {
     char 	dupe;	/* only used internal in bm_show() */
 } spot;
 
-#define SPOT_NEW	900
+#define SPOT_NEW	(bm_config.livetime)
 #define SPOT_NORMAL	(SPOT_NEW * 95) / 100
 #define SPOT_OLD	(SPOT_NEW * 2)  / 3
 
@@ -38,6 +38,8 @@ typedef struct {
     short allband;
     short allmode;
     short showdupes;
+    short skipdupes;
+    short livetime;
 } bm_config_t;
 
 extern bm_config_t bm_config;
