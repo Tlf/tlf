@@ -22,4 +22,4 @@
 #include "lancode.h"
 
 int read_logcfg(void);
-int parse_logcfg(char *inputbuffer);
+void parse_logcfg(char *inputbuffer);

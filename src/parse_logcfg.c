@@ -46,6 +46,8 @@ int exist_in_multi_list();
 char inputbuffer[160];
 FILE *fp;
 
+void KeywordNotSupported(char *keyword);
+
 int read_logcfg(void)
 {
     extern int nodes;
@@ -98,7 +100,7 @@ int read_logcfg(void)
     return (0);
 }
 
-int parse_logcfg(char *inputbuffer)
+void parse_logcfg(char *inputbuffer)
 {
     extern int use_rxvt;
     extern char message[15][80];
@@ -127,7 +129,6 @@ int parse_logcfg(char *inputbuffer)
     extern int clusterlog;
     extern int showscore_flag;
     extern int searchflg;
-    extern int announcefilter;
     extern int demode;
     extern int contest;
     extern int speed;
@@ -228,8 +229,8 @@ int parse_logcfg(char *inputbuffer)
     extern int ignoredupe;
 
     char commands[MAX_COMMANDS][30] = {
-	"enable",		/* 0 */
-	"disable",
+	"enable",		/* 0 */		/* deprecated */
+	"disable",				/* deprecated */
 	"F1=",
 	"F2=",
 	"F3=",
@@ -261,10 +262,10 @@ int parse_logcfg(char *inputbuffer)
 	"CONTEST_MODE",		/* 30 */
 	"CLUSTER",
 	"BANDMAP",
-	"SPOTLIST",
+	"SPOTLIST",				/* deprecated */
 	"SCOREWINDOW",
 	"CHECKWINDOW",		/* 35 */
-	"FILTER",
+	"FILTER",				/* deprecated */
 	"SEND_DE",
 	"CWSPEED",
 	"CWTONE",
@@ -279,7 +280,7 @@ int parse_logcfg(char *inputbuffer)
 	"POWERMULT_5",
 	"POWERMULT_2",
 	"POWERMULT_1",		/* 50 */
-	"MANY_CALLS",
+	"MANY_CALLS",				/* deprecated */
 	"SERIAL_EXCHANGE",
 	"COUNTRY_MULT",
 	"2EU3DX_POINTS",
@@ -383,17 +384,16 @@ int parse_logcfg(char *inputbuffer)
 	"DIGIMODEM=",
 	"LOGFREQUENCY",
 	"IGNOREDUPE",
-	"CW_TU_MSG=",
-	"VKCWR=",		/* 155 */
-	"VKSPR=",
+	"CW_TU_MSG=",				/* deprecated */
+	"VKCWR=",		/* 155 */	/* deprecated */
+	"VKSPR=",				/* deprecated */
 	""
     };
 
     char teststring[80];
     char buff[40];
     char outputbuff[80];
-    int ii, enable;
-    char *i;
+    int ii;
     char *j;
     int jj, hh;
     char *tk_ptr;
@@ -403,18 +403,16 @@ int parse_logcfg(char *inputbuffer)
 	teststring[0] = '\0';
 	strncat(teststring, commands[ii], 79);
 
-	i = strstr(inputbuffer, teststring);
-
-	if (i != NULL) {
+	if (strstr(inputbuffer, teststring) != NULL) {
 
 	    switch (ii) {
 
 	    case 0:{
-		    enable = 1;
+		    KeywordNotSupported(teststring);
 		    break;
 		}
 	    case 1:{
-		    enable = 0;
+		    KeywordNotSupported(teststring);
 		    break;
 		}
 	    case 2 ... 10:{	/* messages */
@@ -544,8 +542,7 @@ int parse_logcfg(char *inputbuffer)
 		    break;
 		}
 	    case 33:{
-		    mvprintw(6,0,
-			    "SPOTLIST not supported anymore...\n");
+		    KeywordNotSupported(teststring);
 		    break;
 		}
 	    case 34:{
@@ -557,7 +554,7 @@ int parse_logcfg(char *inputbuffer)
 		    break;
 		}
 	    case 36:{
-		    announcefilter = 1;
+		    KeywordNotSupported(teststring);
 		    break;
 		}
 	    case 37:{
@@ -666,7 +663,7 @@ int parse_logcfg(char *inputbuffer)
 		    break;
 		}
 	    case 51:{
-		    showmsg("MANY_CALLS not supported anymore...\n");
+		    KeywordNotSupported(teststring);
 		    break;
 		}
 	    case 52:{
@@ -1247,13 +1244,9 @@ int parse_logcfg(char *inputbuffer)
 		    }
 	    case 154:
 	    case 155:
-	    case 156:{
-			char msgbuffer[100];
-			sprintf(msgbuffer, 
-			   "Keyword '%s' not supported. See man page and README.\n",
-			   teststring);
-			showmsg(msgbuffer);
-			sleep(1);
+	    case 156:
+	    default: {
+			KeywordNotSupported(teststring);
 			break;
 		    }
 
@@ -1262,8 +1255,6 @@ int parse_logcfg(char *inputbuffer)
 	}
 
     }
-
-    return (0);
 }
 
 int speed_conversion(int cwspeed)
@@ -1356,4 +1347,17 @@ int speed_conversion(int cwspeed)
     }
 
     return (x);
+}
+
+/** Complain about not supported keyword */
+void KeywordNotSupported(char *keyword) {
+    char msgbuffer[100];
+    sprintf(msgbuffer,
+	    "Keyword '%s' not supported. See man page and README.\n",
+	    keyword);
+    attron(A_STANDOUT);
+    showmsg(msgbuffer);
+    attroff(A_STANDOUT);
+    beep();
+    sleep(2);
 }
