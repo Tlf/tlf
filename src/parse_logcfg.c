@@ -48,6 +48,9 @@ FILE *fp;
 
 void KeywordNotSupported(char *keyword);
 
+#define  MAX_COMMANDS 157	/* commands in list */
+
+
 int read_logcfg(void)
 {
     extern int nodes;
@@ -386,8 +389,7 @@ void parse_logcfg(char *inputbuffer)
 	"IGNOREDUPE",
 	"CW_TU_MSG=",				/* deprecated */
 	"VKCWR=",		/* 155 */	/* deprecated */
-	"VKSPR=",				/* deprecated */
-	""
+	"VKSPR="				/* deprecated */
     };
 
     char teststring[80];
@@ -403,7 +405,7 @@ void parse_logcfg(char *inputbuffer)
 	teststring[0] = '\0';
 	strncat(teststring, commands[ii], 79);
 
-	if (strstr(inputbuffer, teststring) != NULL) {
+	if (strncmp(inputbuffer, teststring, strlen(teststring)) == 0) {
 
 	    switch (ii) {
 
