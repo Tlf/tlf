@@ -29,6 +29,7 @@
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #include <ctype.h>
+#include "bandmap.h"
 #endif
 
 extern int keyerport;
@@ -540,7 +541,56 @@ void parse_logcfg(char *inputbuffer)
 		    break;
 		}
 	    case 32:{
+		    int len;
+		    
 		    cluster = MAP;
+
+		    /* init bandmap filtering */
+		    bm_config.allband = 1;
+		    bm_config.allmode = 1;
+		    bm_config.showdupes = 1;
+		    bm_config.skipdupes = 0;
+		    bm_config.livetime = 900;
+
+		    /* Allow configuration of bandmap display if keyword
+		     * is followed by a '='
+		     * Parameter format is BANDMAP=<xxx>,<number>
+		     * <xxx> - string parsed for the letters B, M, D and S
+		     * <number> - spot livetime in seconds (>=300)
+		     */
+		    len = strlen(teststring);
+		    if (inputbuffer[len] == '=') {
+			char **fields;
+			fields = g_strsplit(inputbuffer+len+1, ",", 2);
+			if (fields[0] != NULL) {
+			    char *ptr = fields[0];
+			    while (*ptr != '\0') {
+				switch (*ptr++) {
+				    case 'B': bm_config.allband = 0;
+					      break;
+				    case 'M': bm_config.allmode = 0;
+					      break;
+				    case 'D': bm_config.showdupes = 0;
+					      break;
+			            case 'S': bm_config.skipdupes = 1;
+					      break;
+				    default:
+					      break;
+				}
+			    }
+			}
+
+			if (fields[1] != NULL) {
+			    int livetime;
+			    g_strstrip(fields[1]);
+			    livetime = atoi(fields[1]);
+			    if (livetime >= 300)
+				bm_config.livetime = livetime;
+			}
+
+
+			g_strfreev(fields);
+		    }
 		    break;
 		}
 	    case 33:{
