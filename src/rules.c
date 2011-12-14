@@ -26,7 +26,6 @@ extern char logfile[];
 
 int read_rules()
 {
-    char *rp;
     char mit_contest_rule[80];
     char contest_conf[80] = "";	// contest_conf needs room for contest name... (PA0R)
     char basic_contest_conf[75] = PACKAGE_DATA_DIR;

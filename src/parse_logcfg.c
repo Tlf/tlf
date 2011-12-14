@@ -1076,7 +1076,7 @@ void parse_logcfg(char *inputbuffer)
 			break;
 		    }
 	    case 119:{		// CQ Delay (sec)
-			char buff[4];
+			buff[0] = '\0';
 			if (strlen(inputbuffer) >= 9) {
 			    strncpy(buff, inputbuffer + 8, 3);
 			    cqdelay = atoi(buff);
