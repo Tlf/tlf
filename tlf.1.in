@@ -960,9 +960,8 @@ File with list of prefixes.
 Multiply points x2 for portable stations (e.g. R1 field day)
 
 .TR
-.B LOWBANDS_DOUBLE
-Double points for lowband qso (40-80-160) (this is the last operation of the score
-module, and can be combined with any other value).
+.B LOWBAND_DOUBLE
+Double all points for lowband qso (40-80-160) (can be combined with any other value).
 
 .TR
 .B WYSIWYG_MULTIBAND
