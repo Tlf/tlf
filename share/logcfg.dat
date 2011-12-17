@@ -2,7 +2,7 @@ RULES=cqww
 #
 #################################
 #                               #
-#   TLF-LOGCFG.DAT v. 0.9.21    #
+#   TLF-LOGCFG.DAT v. 1.1.0     #
 #                               #
 #  Uncomment the options you    #
 #  want to enable. See tlf.doc  #
@@ -95,19 +95,19 @@ CWTONE=800
 #                               #
 #################################
 # Cluster: PI4TUE (Eindhoven)
-TELNETHOST=131.155.192.179
-TELNETPORT=8000
-#automatic login#################
+#TELNETHOST=131.155.192.179
+#TELNETPORT=8000
+# automatic login ###############
 #CLUSTERLOGIN=yourcall
-#write log to disk###############
+# write log to disk #############
 #CLUSTER_LOG
 #
-#use tnc instead of telnet#######
+# use tnc instead of telnet #####
 #TNCPORT=/dev/ttyS0
 #TNCPORT=/dev/ttyUSB1
 #TNCSPEED=2400
 #
-#get clusterinfo from network####
+# get clusterinfo from network ##
 #FIFO_INTERFACE
 #
 #################################
@@ -137,7 +137,7 @@ TELNETPORT=8000
 #################################
 #
 #CLUSTER
-BANDMAP
+BANDMAP=S,900  # skipdupes, 900s livetime
 #FILTER
 #
 SCOREWINDOW
@@ -149,7 +149,7 @@ CHECKWINDOW
 #                               #
 #################################
 # 
-PARTIALS                    
+PARTIALS
 #USEPARTIALS
 #
 #################################

@@ -1,4 +1,4 @@
-New Bandmap in TLF-1.1 !!!VERY EARLY PREVIEW!!!
+New Bandmap in TLF-1.1
 ======================
 
 One main poblem in old TLF versions is the very narrow space for cluster
@@ -64,5 +64,16 @@ or both conditions are not met). Wait some moments until some spots shows up.
   your 'run' frequency in the memory.
   You can switch back to your old running frequency by '+' (back to Run mode) 
   and '#' (back to old frequency)
+
+You can also configure bandmap filtering and spot livetime from logcfg.dat 
+
+- BANDMAP -> use default values (no filtering, livetime = 900 s)
+- BANDMAP=<xyz>,<number>
+  <xyz> string parsed for
+  'B' - only own band
+  'M' - only own mode
+  'D' - do not show dupes
+  'S' - skip dupes during grab_next (ctrl-g)
+  <number> livetime for new spots in second (number >=300)
 
 
