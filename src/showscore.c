@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * 		 2010, 2011 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,14 +49,11 @@ int showscore(void)
     extern int totalzones;
     extern int nr_of_px;
     extern int qsonum;
-    extern char whichcontest[];
     extern int total;
     extern int wpx;
     extern int sprint;
     extern int bandinx;
     extern int multscore[];
-    extern int partials;
-    extern char hiscall[];
     extern int multlist;
     extern int serial_section_mult;
     extern int sectn_mult;
@@ -332,8 +330,6 @@ int showscore(void)
 	    }
 	}
 
-//	nicebox(16, 39, 5, 35, "QSO's");
-//	mvprintw(16, 60, "%s", whichcontest);
 
 	attron(COLOR_PAIR(COLOR_GREEN));
 	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1) || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */

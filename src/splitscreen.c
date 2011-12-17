@@ -25,6 +25,7 @@
 #define VERSIONSPLIT "V1.4.1 5/18/96 - N2RJT"
 
 #include "splitscreen.h"
+#include "bandmap.h"
 #include "get_time.h"
 #include <pthread.h>
 

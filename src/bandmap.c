@@ -23,6 +23,7 @@
 #include "getctydata.h"
 #include "showinfo.h"
 #include "searchlog.h"
+#include "onechar.h"
 
 #include <math.h>
 #include <glib.h>
