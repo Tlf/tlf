@@ -28,9 +28,9 @@
 #include <glib.h>
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
+#endif
 #include <ctype.h>
 #include "bandmap.h"
-#endif
 
 extern int keyerport;
 extern char tonestr[];
