@@ -29,9 +29,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-#if defined (TLF_H)
-/* do nothing, already defined */
-#else
+#ifndef TLF_H
 #define TLF_H
 
 #ifdef HAVE_CONFIG_H
@@ -124,7 +122,6 @@ extern int inxes[NBANDS];  /*< conversion from BANDINDEX to BAND-mask,
 #define EDITOR_MC 3
 
 #define  CW_SPEEDS	"06121416182022242628303234363840424446485060"
-#endif
 
 #if defined (TLN_LOGLINE)
 /* do nothing, already defined */
@@ -137,4 +134,8 @@ struct tln_logline {
     int attr;
 } ;
 #endif
+
+void refreshp();
+
+#endif /* TLF_H */
 

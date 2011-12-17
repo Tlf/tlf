@@ -20,14 +20,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-
-
-#if defined (TLF_H)
-/* do nothing, already defined */
-#else
-#define TLF_H
 #include "tlf.h"
-#endif
 
 void checklogfile(void);
 

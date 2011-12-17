@@ -27,6 +27,7 @@
 #include <errno.h>
 #include <curses.h>
 #include "netkeyer.h"
+#include "tlf.h"
 
 int netkeyer_port = 6789;
 char netkeyer_hostaddress[16] = "127.0.0.1";
