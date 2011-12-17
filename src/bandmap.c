@@ -38,6 +38,7 @@
 #include <hamlib/rig.h>
 #endif
 
+#define TOLERANCE 50
 
 unsigned int bandcorner[NBANDS][2] =
 {{ 1800000, 2000000 },
@@ -191,16 +192,13 @@ gint	cmp_freq(spot *a, spot *b) {
 /** add a new spot to bandmap data 
  * \param call  	the call to add
  * \param freq 		on which frequency heard
- * \param reason	- new cluster spot
- * 			- local announcement (Ctrl-A)
- * 			- own cluster announcement (Ctrl-B)
- * 			- just worked in S&P
+ * \param node		reporting node
  */
 void bandmap_addspot( char *call, unsigned int freq, char node) {
 /* - if a spot on that band and mode is already in list replace old entry 
  *   with new one and set timeout to SPOT_NEW,
  *   otherwise add it to the list as new
- * - if other call on same frequency (with some tolerance) replace it and set
+ * - if other call on same frequency (with some TOLERANCE) replace it and set
  *   timeout to SPOT_NEW
  * - all frequencies from cluster are rounded to 100 Hz, 
  *   remember all other frequencies exactly
@@ -240,21 +238,19 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 
     /* if already in list on that band and mode
      * 		-> set timeout to SPOT_NEW, and set new freq and reporting node
-     *   		if freq has changed sort list anew by freq
+     *   		if freq has changed enough sort list anew by freq
      */
     if (found) {
     	((spot*)found->data)->timeout = SPOT_NEW;
 	((spot*)found->data)->node = node;
-	if (abs(((spot*)found->data)->freq - freq) > 50) {
+	if (abs(((spot*)found->data)->freq - freq) > TOLERANCE) {
 	    ((spot*)found->data)->freq = freq;
 	    allspots = g_list_sort(allspots, (GCompareFunc)cmp_freq);
 	}
     } 
     else {
-    /* if not -> prepare new entry and insert in list at correct freq 
-     *   check that it is unique on freq +/- 50Hz, drop other entries if 
-     *   needed 
-     */
+    /* if not in list already -> prepare new entry and 
+     * insert in list at correct freq */
 	spot *entry = g_new(spot, 1);
 	entry -> call = g_strdup(call);
 	entry -> freq = freq;
@@ -268,18 +264,18 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	found = g_list_find(allspots, entry);
     }
 
-    /* check neighbours */
+    /* check that spot is unique on freq +/- TOLERANCE Hz, 
+     * drop other entries if needed */
     if (found->prev && 
-	(abs(((spot*)(found->prev)->data)->freq - freq) < 50)) {
+	(abs(((spot*)(found->prev)->data)->freq - freq) < TOLERANCE)) {
 	spot *olddata;
-//	fprintf(fp, "%8.1f %8.1f\n", ((spot*)(found->prev)->data)->freq , freq);
 	olddata = found->prev->data;
 	allspots = g_list_remove_link(allspots, found->prev);
 	g_free (olddata->call);
 	g_free (olddata);
     }
     if (found->next && 
-	(abs(((spot*)(found->next)->data)->freq - freq) < 50)) {
+	(abs(((spot*)(found->next)->data)->freq - freq) < TOLERANCE)) {
 	spot *olddata;
 	olddata = found->next->data;
 	allspots = g_list_remove_link(allspots, found->next);
@@ -639,6 +635,8 @@ spot *bandmap_lookup(char *partialcall)
  *
  * Starting at given frequency lookup the array of filtered spots for
  * the next call up- or downwards.
+ * Apply some headroom for frequency comparison (see problem with ORION rig
+ * (Dec2011).
  * Returns a copy of the spot data or NULL if no such entry.
  *
  * \param 	upwards - lookup upwards if not 0
@@ -664,7 +662,7 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
 		spot *data;
 		data = g_ptr_array_index( spots, i );
 
-		if ((data->freq > freq) && 
+		if ((data->freq > freq + TOLERANCE/2) && 
 			(!bm_config.skipdupes || data->dupe == 0)) {
 		    /* copy data into a new Spot structure */
 		    result = copy_spot(data);
@@ -677,7 +675,7 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
 		spot *data;
 		data = g_ptr_array_index( spots, i );
 
-		if ((data->freq < freq) &&
+		if ((data->freq < freq - TOLERANCE/2) &&
 			(!bm_config.skipdupes || data->dupe == 0)) {
 		    /* copy data into a new Spot structure */
 		    result = copy_spot(data);
