@@ -1,3 +1,78 @@
+tlf-1.1.0
+=========
+
+Major release. Besides a lot of fixed bugs it provides some new features and 
+internal improvements.
+Thanks to all of you for pointing out bugs, submitting ideas and testing.
+To name some without any order of ranks: Ben NJ8J, Martin OK1RR, Fred DM3MF,i
+Andy G4KNO, Rob N6ROB and Graham VE3GTC. 
+
+New features:
+    - move tlf sources to public github repository (http://github.com/TLF/tlf)
+
+    - implement a new bandmap function (see New_Bandmap.txt for details)
+      * move score display in upper right corner of display to make room for 
+        the bandmap
+      * Ctrl-A adds an observed station as spot to the bandmap and 
+        broadcasts it to other stations in the LAN
+      * Drop old SPOTLIST display (superseded by new bandmap)
+
+    - changes in logcfg.dat handling !Fix your contest rules!
+      * allow >9 points for any point scoring 
+      * drop old unneeded keywords (MANY_CALLS, SPOTLIST, FILTER)
+      * keywords for CQ_TU_MSG, VKCQM and VKSPM are now correctly recognized.
+      * fixed keywords for CQ_TU_MSG, VKCQM and VKSPM according to manual
+      * BANDMAP=<xxx>,<nn> allows configuration of the new bandmap display 
+        (see man page)
+
+    - Send VKCQM and VKSPM voice messages after end of QSO in SSB. 
+    - Use external user adaptable script 'play_vk' for playing of 
+      SSB voice key messages
+
+    - add list of 'usa_canada' states and general 'contest' rules file 
+      to installation files
+
+    - drop special handling for TenTec ORION (correctly handled by hamlib in 
+      meantime)
+
+    - changed handling of comments for WYSIWYG_ONCE and _MULTI
+      Old code stopped multi recognition at first space in comment string. 
+      Changed to strip only trailing spaces. Was so back before tlf-0.9.21
+
+    - Better handling of lines from external multiplier file
+      * Allow comment lines (starting with '#')
+      * strip leading and trailing whitespace
+      * drop empty lines
+         
+    - New actual cty.dat file (December 2011). Thanks Martin OK1RR.
+
+Fixed bugs:
+    - segfaults due to a racing condition if heavy load on cluster
+    - '+' and 'INSERT' keys in call and exchange input field respects
+      CTCOMPATIBLE mode now
+    - Allow edit of old QSO's only if call field is empty
+    - Fix display of section in ARRL_SS and recognition of 'U' precedent
+    - Fix upper boundaries for 160 and 40 meters.
+    - Correct rescoring for WYSIWYG_* methods
+    - keywords in logcfg.dat needs to start at column 0
+    - correction of spelling errors and drop of old infos from man page
+    - a lot of fixes of old problems:
+      * proper locking to prevent racing conditions 
+      * fix bad scoring of multis
+      * correct position of pfx display in bottom line of check window
+      * correct display of 1A stations in info line
+      * wrong false return value from searchcallarray
+      * wrong handling of corner cases for some internal array scans
+
+Reworked internal structure:
+    - did some modernisation of configure.ac
+    - start to use ncurses panel functions for overlapping windows and
+      glib-2 for effective handling of large data collections
+    - switch cty data handling and mults_possible to growing arrays and
+      therefore allowing unlimited number of entries
+    - simplify and drop unneeded code
+
+
 tlf-1.0.0
 =========
 
