@@ -1,3 +1,11 @@
+tlf-1.0.5
+=========
+maintenance release
+    * fixes some nasty racing condition between bandmap code and 
+      checkwindow. In result prefix in lower line of checkwindow
+      got displayed wrong, but country was right.
+      Thansk Martin OK1RR for reporting.
+
 tlf-1.0.4
 =========
 maintenance release
