@@ -1,3 +1,10 @@
+2011-06-09  thomas beierlein <tb@forth-ev.de>
+	version 1.0.5
+	* fixes some nasty racing condition between bandmap code and 
+	  checkwindow. In result prefix in lower line of checkwindow
+	  got displayed wrong, but country was right.
+	  Thanks Martin OK1RR for reporting.
+
 2011-05-22  thomas beierlein <tb@forth-ev.de>
 	version 1.0.4
 	* fix for wrong handling of recalled exchange - 
