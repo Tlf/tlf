@@ -10,7 +10,7 @@ Andy G4KNO, Rob N6ROB and Graham VE3GTC.
 New features:
     - move tlf sources to public github repository (http://github.com/TLF/tlf)
 
-    - implement a new bandmap function (see New_Bandmap.txt for details)
+    - implement a new bandmap function (see doc/New_Bandmap.txt for details)
       * move score display in upper right corner of display to make room for 
         the bandmap
       * Ctrl-A adds an observed station as spot to the bandmap and 
