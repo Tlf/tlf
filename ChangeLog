@@ -1,3 +1,574 @@
+2011-12-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * NEWS, doc/README: move tlf's history of changess to NEWS file
+  * tlf.1.in: adapt man page to new features
+
+2011-12-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * Makefile.am, NEWS, New_Bandmap.txt, doc/Makefile.am, doc/New_Bandmap.txt:
+  Move New_Bandmap.txt to doc/
+
+  * NEWS: summarize changes made between tlf-1.0.5 and tlf-1.1.0
+
+  * share/cty.dat: new cty.dat from OK1RR. Thanks
+
+2011-12-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * New_Bandmap.txt, share/logcfg.dat: document configuration of bandmap
+  filtering
+
+  * src/parse_logcfg.c: fix location of #endif line
+
+  * src/bandmap.c: leave some headroom for grabbing next frequency
+
+  * src/bandmap.c, src/checklogfile.h, src/logit.c, src/netkeyer.c,
+  src/printcall.c, src/showscore.c, src/splitscreen.c, src/startmsg.c,
+  src/tlf.h: further cleanup  - fix implicit declaration warnings - drop unused
+  variables
+
+2011-12-14  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/parse_logcfg.c, src/rules.c: cleanup  - drop unused variable - fix
+  wrong initialisation of 'buff'
+
+2011-12-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * tlf.1.in: Fix description of LOWBAND_DOUBLE keyword in man page.
+
+2011-12-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: divide livetime by 2 as aging is done every two seconds
+
+  * src/parse_logcfg.c: allow configuration of bandmap filtering in logcfg.dat 
+
+2011-12-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/tlf.h: fix recognition of keywords
+  - keywords with parameters did not work if keyword was not in first column
+
+2011-12-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/bandmap.h: dupes will be skipped during ctrl-g 
+  - make that feature configurable via bm_config.skipdupes
+
+2011-12-11  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/parse_logcfg.h: better report of unsupported config
+  keywords  
+
+2011-11-24  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/dxcc.c, src/grabspot.c, src/grabspot.h: fix prototypes  - fix missing
+  '#include <string.h>' - add missing prototype for 'grab_next' - change
+  prototype of grabspot to return void
+
+  * src/addmult.c: fix wrong check for empty string in multiplier file
+
+  * src/callinput.c, src/changepars.c, src/main.c, src/printcall.c, src/rtty.c:
+  Fix use of 'miniterm' variable  - clean old code - add comments - save and
+  restore variable if temporary disabled
+
+  * New_Bandmap.txt: Add some additional informations describing the new
+  bandmap functions.
+
+  * src/callinput.c, src/grabspot.c: Fix calculation of zone and prefix for
+  grabspot()  - Zone and prefix was not calculated correctly during grab of a
+  station from bandmap. It was needed to call 'getctydata()' instead of
+  'getctynr()' - Drop clear_display after grab. Now the info line is displayed
+  properly.  Thanks Fred DM3F for reporting.
+
+2011-11-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * INSTALL, configure.in: prepare for TLF-1.1pre3 release
+
+  * scripts/Makefile.am, scripts/play_vk, src/callinput.c: Use external script
+  'play_vk' for playing of SSB voice key messages
+
+  * share/Makefile.am: add list of usa_canada_states to installation files  -
+  in distribution since 0.9.11 but forgotten in Makefile.am
+
+2011-11-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: change parsing of section for ARRL SS  - trailing spaces
+  in mults_possible[] and cut out section string deleted - compare only pure
+  non-space strings
+
+  * src/getexchange.c: Fix possible segfaults  - old code segfaults if serial
+  number >9999 was entered - simplify reading of check value
+
+  * src/getexchange.c, src/searchlog.c, src/searchlog.h: Display parsing
+  results for ARRL SS  - displayed on lower line of Search panel again
+
+  * src/searchlog.c: fix display of needed sections  - readcalls cuts always 3
+  char to worked mults[] fro some contests - ignore possible trailing spaces in
+  compare
+
+  * src/clear_display.c: display contest name on info line
+
+2011-11-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/Makefile.am: add forgotten general 'contest' rule file to installable
+  files
+
+  * rules/arrlss: Better defaults for CW messages  - exchange has to use serial
+  number instead of a fixed '1' - make check consistent between messages
+
+  * src/getexchange.c: Fix recognition of 'U' precedent  - got introduced late
+  and was not recognized properly - add some comments to the meaning of the
+  searchpatterns
+
+  * src/searchlog.c: some minor optimization  - drop unneeded statement - break
+  out of loop as soon as possible
+
+  * src/searchlog.c, src/showscore.c, src/showscore.h: Fix display of section
+  in ARRL_SS  - moved display code to searchlog.c - use SearchPanel for display
+  - thanks for reporting to Ben NJ8J
+
+2011-11-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c, src/logit.c, src/logit.h: make Ctrl-A
+  also work in exchange field  - calls addspot() to add the actual call to the
+  bandmap - correct hide of searchlog
+
+
+2011-11-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: strip trailing spaces on comments from log file
+
+2011-11-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changefreq.c, src/changefreq.h: hide cursor during frequnecy change
+
+  * src/callinput.c: Allow edit of old QSO's only if call field is empty
+
+  * src/calledit.c, src/callinput.c, src/getexchange.c: correct display of
+  cursor if searchwindow is shown  
+
+2011-11-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/searchlog.h: fix display of startup messages
+
+2011-11-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/listmessages.c: correct displayed message name for CQmsg
+
+2011-09-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/tlf.h: Report unsupported config keywords during
+  startup
+
+  * rules/arrldx_dx, rules/arrldx_usa, rules/arrlfd, rules/arrlss,
+  rules/contest, rules/cqww, rules/dxped, rules/eusprint, rules/lzdx,
+  rules/pacc_dx, rules/pacc_pa, rules/qso, rules/spdx_dx, rules/spdx_sp,
+  rules/ssa_mt, rules/template, rules/wpx, src/parse_logcfg.c: change keywords
+  in parse_logcfg.c to correspond to man page  The keywords for CQ_TU_MSG,
+  VKCQM and VKSPM were not recognized correctly. Fixed.  Adapt contest rules to
+  changed keywords.
+
+2011-11-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: Send VKCQM and VKSPM voice messages after end of QSO  -
+  Drop a change made by Rein in tlf-0.9.22 to not send these messages if in SSB
+  mode 
+
+2011-11-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: '+' and 'INSERT' respect CTCOMPATIBLE mode also during
+  getexchange()
+
+2011-10-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: '+' and 'INSERT' respect CTCOMPATIBLE mode now  - if
+  callfield not empty both keys are working now only if CTCOMPATIBLE is set in
+  logcfg.dat
+
+2011-10-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/gettxinfo.c: Fix upper boundaries for 160 and 40 meters.  - Thanks Ben
+  NJ8J for reporting
+
+2011-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * aclocal.m4, configure.in: prepare for prerelease 2 of tlf-1.1  - fix
+  aclocal.m4
+
+  * src/clear_display.c, src/printfield.c, src/showscore.c: move score display
+  in upper right corner of display
+
+  * src/logit.c, src/searchlog.c, src/searchlog.h: Hide searchlog panel at more
+  points
+
+2011-10-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/muf.c: propagation display uses panel code now
+
+  * src/searchlog.c, src/searchlog.h, src/time_update.c: Use panel code for
+  show and hide of searchlog
+
+2011-01-30  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/nicebox.c, src/nicebox.h: factorisation to support nicebox for given
+  window 
+
+2011-10-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/audio.c, src/autocq.c, src/background_process.c,
+  src/bandmap.c, src/calledit.c, src/callinput.c, src/changepars.c,
+  src/checklogfile.c, src/cleanup.c, src/clear_display.c, src/clusterinfo.c,
+  src/deleteqso.c, src/displayit.c, src/edit_last.c, src/editlog.c,
+  src/freq_display.c, src/getexchange.c, src/getmessages.c, src/gettxinfo.c,
+  src/grabspot.c, src/keyer.c, src/lancode.c, src/listmessages.c,
+  src/log_to_disk.c, src/logit.c, src/logview.c, src/main.c,
+  src/messagechange.c, src/muf.c, src/netkeyer.c, src/parse_logcfg.c,
+  src/printcall.c, src/readcalls.c, src/readctydata.c, src/recall_exchange.c,
+  src/rtty.c, src/rules.c, src/searchlog.c, src/sendbuf.c, src/sendqrg.c,
+  src/setparameters.c, src/show_help.c, src/showpxmap.c, src/showscore.c,
+  src/splitscreen.c, src/startmsg.c, src/writeparas.c: switch all refresh()
+  calls for use of curses panels  - add a fake refreshp() function which
+  replaces the old refresh() and calls 'update_panels()' followed by
+  'doupdate'. - serialize refreshp() calls from different threads
+
+2011-10-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: fix delete of first line in bandmap (was one char to short)
+
+2011-01-28  Thomas Beierlein <tb@forth-ev.de>
+
+  * config.h.in, configure.in: Prepare usage curses panel library
+
+2011-10-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/clusterinfo.c, src/splitscreen.c: proper locking for spot_ptr[] array 
+
+2011-10-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/logcfg.dat, src/callinput.c, src/changepars.c, src/clusterinfo.c,
+  src/main.c, src/parse_logcfg.c, src/setparameters.c, src/tlf.h, tlf.1.in:
+  Drop old SPOTLIST display 
+  - ALT-a now switches between Nocluster->Cluster->Bandmap-> 
+  - 'cluster == MAP' displays the new bandmap and writes the last 8 spots to
+  Xplanet's marker file.
+
+2011-10-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/Makefile.am, src/cluster_bg.c, src/cluster_bg.h: Delete unneeded
+  cluster_bg.[ch] files  - functionality is now in clusterinfo.c
+
+  * src/background_process.c, src/background_process.h, src/cluster_bg.c,
+  src/clusterinfo.c: Move 'getclusterinfo()' to clusterinfo.c  
+
+  * src/cluster_bg.c, src/cluster_bg.h, src/clusterinfo.c, src/clusterinfo.h:
+  Move 'loadbandmap()' to clusterinfo.c
+
+2011-10-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/cluster_bg.c: change source of data for loadbandmap()
+
+2011-10-11  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/cluster_bg.c, src/main.c: cleanup unneeded code  -
+  drop double extern declarations - drop handling of spotinfo filed as nobody
+  uses that information
+
+  * src/cluster_bg.c, src/main.c, src/splitscreen.c: on the fly recognition of
+  WWV/WCY announcements 
+
+2011-10-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: keep display of frequency memory (#) 
+
+2011-10-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/addmult.h, src/globalvars.h, src/readcalls.c: refactor
+  registration of worked multiplier and multi initialisation 
+
+  * src/addmult.c, src/addmult.h, src/searchlog.c, src/searchlog.h: move
+  'load_multipliers()' to addmult.c
+
+  * src/addmult.c: drop old comment regarding 'wysiwymultsg' variable
+
+2011-10-05  Thomas Beierlein <tb@forth-ev.de>
+
+  * README: Edited README
+
+2011-10-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * .gitignore, src/showscore.c: Do not show mults per band in WYSIWYG_ONCE
+  mode. 
+
+2011-10-05  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addmult.c, src/globalvars.h, src/main.c, src/readcalls.c,
+  src/showscore.c: Remove 'wysiwygmults' variable 
+
+  * src/addmult.c, src/changepars.c, src/getsummary.c, src/globalvars.h,
+  src/readcalls.c, src/showscore.c: Remove 'multcount' variable
+
+2011-10-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Further simplifications 
+
+2011-10-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/changepars.c, src/getexchange.c, src/globalvars.h,
+  src/main.c, src/showscore.c: Complete new handling of mults_possible[] length
+
+2011-09-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Prepare factorization of addmult() and addmult2()  Prepare
+  factorization of lookup of possible mults and worked mults
+
+2011-09-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/tlf.h: Report unsupported config keywords during
+  startup
+
+  * rules/arrldx_dx, rules/arrldx_usa, rules/arrlfd, rules/arrlss,
+  rules/contest, rules/cqww, rules/dxped, rules/eusprint, rules/lzdx,
+  rules/pacc_dx, rules/pacc_pa, rules/qso, rules/spdx_dx, rules/spdx_sp,
+  rules/ssa_mt, rules/template, rules/wpx, src/parse_logcfg.c: change keywords
+  in parse_logcfg.c to correspond to man page  The keywords for CQ_TU_MSG,
+  VKCQM and VKSPM were not recognized correctly. Fixed.  Adapt contest rules to
+  changed keywords.
+
+2011-10-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/changepars.c, src/getexchange.c, src/globalvars.h,
+  src/main.c, src/showscore.c: Complete new handling of mults_possible[] length
+
+2011-09-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: first steps to a rework multi scoring 
+
+2011-10-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, src/searchlog.c, tlf.1.in: Better handling
+  of lines from external multiplier file  - Allow comment lines (starting with
+  '#') - strip leading and trailing whitespace - drop empty lines  Furthermore
+  drop unneeded string variables and make global ones local.
+
+2011-02-03  Thomas Beierlein <tb@forth-ev.de>
+
+  * rules/arrldx_dx, rules/arrldx_usa, rules/arrlfd, rules/arrlss,
+  rules/contest, rules/cqww, rules/dxped, rules/eusprint, rules/lzdx,
+  rules/pacc_dx, rules/pacc_pa, rules/qso, rules/spdx_dx, rules/spdx_sp,
+  rules/ssa_mt, rules/template, rules/wpx: fix format and drop false comment in
+  rule files
+
+2011-09-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/logcfg.dat, src/main.c, src/parse_logcfg.c, src/showscore.c,
+  tlf.1.in: drop MANY_CALLS config statement
+
+  * datastructures: commented use of 'mults_possible' array
+
+2011-09-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: Correct rescoring for WYSIWYG_* methods
+
+  * src/addmult.c: strip trailing spaces from comment for WYSIWYG_... handling 
+
+  * src/readcalls.c: Fixed handling of comments for WYSIWYG_ONCE and _MULTI  -
+  Old code dropped multi at first space in comment string. Changed to strip
+  only trailing spaces. Was so back before tlf-0.9.21
+
+  * src/readcalls.c, src/recall_exchange.c, src/searchcallarray.c: Fix wrong
+  use of callarray_nr
+
+2011-09-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/changepars.c, src/getexchange.c, src/globalvars.h,
+  src/main.c, src/searchlog.c, src/showscore.c: Switch mults_possible[] to a
+  growing array.
+
+2011-09-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/searchlog.c: add comments and rearrange variable
+  definitions
+
+2011-09-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: Logcfg.dat now allows >9 points for scoring  Fix
+  possible overflows if there are point declaration above 9 points. 
+
+2011-09-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * README: Add a summary description to README.  The summary was copied from
+  the TLF page on Savannah. It gives a short intro which is shown on GitHubs
+  TLF repo page.
+
+2011-07-26  Thomas Beierlein <tb@forth-ev.de>
+
+  * tlf.1.in: Drop ORION exception from RIGMODEL explanation
+
+2011-06-10  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c, src/clear_display.c, src/getexchange.c, src/keyer.c,
+  src/logit.c, src/main.c, src/sendbuf.c: make curx and cury local variables
+
+2011-06-08  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/getpx.c, src/showinfo.c: Adding comments, small improvements, cleanup
+
+2011-05-31  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/log_to_disk.c, src/log_to_disk.h: add spot to bandmap for stations
+  worked in S&P
+
+2011-05-29  Thomas Beierlein <tb@forth-ev.de>
+
+  * config.h.in, configure.in: some modernisation
+
+2011-05-11  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/background_process.c, src/log_to_disk.c, src/log_to_disk.h,
+  src/logit.c, src/scroll_log.c: fixed handling of exclusive access to
+  log_to_disk
+
+2011-05-02  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/getctydata.c: simplify
+
+  * src/set_tone.c: drop unneeded calculation of speedstr
+
+2011-04-29  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/readcalls.c, src/searchcallarray.c: Fixed handling of
+  callarray entries
+
+2011-04-14  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addmult.c: use #define instead of fixed value for number of bands
+
+  * src/addspot.c: spot broadcasts to other stations contains the identifier of
+  the sending station now
+
+  * src/addcall.c: add_call() remembers worked band now
+
+  * src/readcalls.c: regroup code fragment
+
+2011-03-03  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/searchlog.c: correct position of pfx in bottom line of check window
+
+2011-07-21  Thomas Beierlein <tb@forth-ev.de>
+
+  * Makefile.am, New_Bandmap.txt: add New_Bandmap.txt to EXTRA_DIST  File
+  contains description of new bandmap features.
+
+2011-07-23  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/grabspot.c: fix compilation without hamlib
+
+2011-07-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c, src/grabspot.c: implemented scanning up and down in
+  grab_next()  switch keys: ctrl-g is for scanning now as Alt-g gets grabbed
+  from the terminal emulator
+
+2011-07-05  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c: change meaning of Alt-G to jump to next spot
+
+  * src/bandmap.c, src/bandmap.h, src/grabspot.c: extended 'grab' function to
+  switch to next spot up- or downwards
+
+2011-07-04  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/grabspot.c: Grabspot switches to S&P if in run mode and remembers QRG
+
+  * src/bandmap.c, src/bandmap.h, src/grabspot.c, src/main.c, src/main.h:
+  started new grabspot implementation
+
+2011-06-28  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.c, src/bandmap.h: First work on grabspot
+
+2011-06-27  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.c, src/bandmap.h: restructure filtering
+
+2011-06-23  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.c: add some comments
+
+  * src/bandmap.c: - rename 'spots' structure to 'allspots' - add mutex to
+  protect 'allspots' data structure
+
+2011-06-10  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/cluster_bg.c, src/getctydata.c, src/getctydata.h: implement getctynr
+  which does not change any global strings like pfstr, ituzone, countrynr,
+  continent and so on ... (port from tlf-1.0.5)
+
+2011-05-16  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addspot.c, src/bandmap.c: fix display of reporting node
+
+2011-05-02  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.c: Fix bandmap_show crashes
+
+2011-04-29  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/readcalls.c, src/searchcallarray.c: Fixed handling of
+  callarray entries
+
+2011-04-14  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.c: bm_isdupe() respects worked band now
+
+  * src/bandmap.c: fix display of dupes in bandmap
+
+  * src/addspot.c: spot broadcasts to other stations contains the identifier of
+  the sending station now
+
+  * src/callinput.c: '.' calls new bm_menu() now
+
+  * src/bandmap.c, src/bandmap.h: bm_is_dupe() check implemented
+
+  * src/readcalls.c: regroup code fragment
+
+2011-03-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/cluster_bg.c: - drop display of old bandmap - call bm_show() to display
+  the new one
+
+2011-03-08  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/tlf.h: new definition of BANDINDEX_xx
+
+2011-03-07  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/Makefile.am, src/bandmap.c, src/bandmap.h, src/cluster_bg.c,
+  src/splitscreen.c: First work for new bandmap  - add bandmap.[ch] - call
+  according functions - bandmap stores freq in Hz as integers
+
+2011-02-24  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/showinfo.c: - correct display of 1A stations - simplify
+
+2011-02-25  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/bandmap.h: First steps to define the behaviour of the new bandmap
+
+2011-02-23  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/cluster_bg.c, src/searchcallarray.c, src/tlf.h: - fix
+  wrong false return value from searchcallarray - simplify
+
+2011-02-22  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/makelogline.c, src/score.c: simplify handling of score
+  points
+
+  * configure.in, src/Makefile.am, src/addcall.c, src/addspot.c,
+  src/callinput.c, src/cluster_bg.c, src/dxcc.c, src/dxcc.h, src/getctydata.c,
+  src/getmessages.c, src/getwwv.c, src/globalvars.h, src/main.c,
+  src/makelogline.c, src/muf.c, src/readctydata.c, src/score.c,
+  src/searchlog.c, src/showinfo.c, src/showpxmap.c, src/tlf.h: switch cty data
+  handling to growing arrays  needs GLib, so also add a check to configure.in
+
 2011-06-09  thomas beierlein <tb@forth-ev.de>
 	version 1.0.5
 	* fixes some nasty racing condition between bandmap code and 
