@@ -1,5 +1,5 @@
 .\"
-.TH "tlf" "1" "version @VERSION@" "Rein Couperus" "Hamradio"
+.TH "tlf" "1" "version @VERSION@" "Rein Couperus es Thomas Beierlein" "Hamradio"
 .SH "NAME"
 .B tlf \fP
 - Contest keyer/logging program for Ham Radio
@@ -28,17 +28,14 @@ is a console (ncurses) mode general purpose CW keyer, -logging and -contest
 program for hamradio. It supports the CQWW, the WPX, the ARRL-DX , the ARRL-FD,
 the PACC and the EU SPRINT contests as well as a lot more basic contests,
 general QSO and DXpedition mode. It interfaces with a morse code generator, a
-number of radios, and with a DX Cluster. Tlf can project DX cluster data into
+number of radios via the hamlib library, and with a DX Cluster. Tlf can project DX cluster data into
 the excellent Xplanet program, written by Hari Nair.
 .P
 Contest operation mimics the popular TR-Log program for DOS, the output file is 
-TRlog- as well as CABRILLO compatible.
+TRlog-compatible. The log can be exported in ADIF or cabrillo format.
 .P
 The program was written for console mode on purpose, to make it run also on 
-smaller machines, or remotely via a modem link. 
-.P
-There is now also a live CD version based on MORPHIX, which uses a USB memory pen for
-log storage.
+smaller machines, or remotely via ssh or a modem link. 
 .P
 Since tlf-0.9.21 the cwdaemon-0.9 is fully supported, featuring direct mode
 for the keyboard and output to parallel and serial ports and speed and weight
@@ -60,14 +57,16 @@ an X linux console. An Xterm will give unreadable colours, you will have to set
 different colours in the logcfg.dat file. Also F1 does not work in Xterm, which is
 not compatible with linux consoles. Other keys (sometimes F4 and F5) may not work
 in your xterm, YMMV.
-There are excellent results with the latest KDE and GNOME konsoles (I prefer vi colours).
+There are excellent results with the latest KDE and GNOME consoles (I prefer vi colours).
 As tlf uses ncurses to format its display you must use a proper font. (The Linux font
 works o.k. ). If you have problems, try the linux text console first and work from there...
 
 Normally you start or restart tlf in fast mode with \fBtlf\fR. During debugging
 of a logcfg.dat file you can start in verbose mode, to have a look at the
 startup messages. From version tlf-0.9.3 you can load different config files with
-tlf -f<filename>.
+\fBtlf -f<filename>\fR.
+
+If you have the packet cluster enabled you will first see the packet screen. Log in with your callsign and switch to tlf with \fB:<enter>\fR. You can come back to the packet screen later with the same command from the call input field.
 
 You can stop tlf with the \fB:EXIT\fR command, the \fB:QUIT\fR command or with \fBCtrl-c\fR, \fBAlt-q\fR or \fBAlt-x\fR.
 
@@ -110,7 +109,7 @@ Toggle contest mode on/off
 
 .TR
 .B :CTY, :ZONe, :MULt
-Show needed country multipliers, zones, multipliers per continent
+Show needed country multipliers, zones, multipliers per continent (depends on contest)
 
 .TR
 .B :CWMode, :SSBmode, :DIGimode
@@ -134,13 +133,13 @@ Filter cluster info (announce, dx-spots, all)
 
 .TR
 .B :FREq
-Show frequency or band/score info...
+Show frequency or band/score info of your other stations...
 
 .TR
 .B :HELp
-show online help. :Help dsplays a file
+Show online help (displays a file
 .B help.txt
-in the working directory.
+in the working directory).
 
 .TR
 .B :INFo
@@ -167,15 +166,15 @@ Reopens the connection to the DX cluster in case it got dropped.
 
 .TR
 .B :REScore
-Recalculates the values in the score window.
+Recalculates the values in the score window (needed e.g. after deleting or editing QSOs).
 
 .TR
 .B :RITclear
-rit reset on/off
+toggle rit reset after QSO on/off
 
 .TR
 .B :SET, :CFG
-Set parameters in logcfg.dat file
+Edit parameters in logcfg.dat file and reload it.
 
 .TR
 .B :SCAn
@@ -258,15 +257,14 @@ Other contests may work, you have to experiment.
 
 .SH "KEYS"
 
-The keymap refers to the linux text console. It may be slightly different on X terminals.
-From the X terminals KDE konsole has been proven to work best if you set keyboard to linux,
-and colour scheme to VIM colours, system colours or linux colours. Moreover on some systems you must set \fB\TERM=linux\fR\ or \fB\TERM=rxvt\fR.
+The keymap refers to the linux text console. It may be slightly different on X terminals. Turn off any key recognition by the terminal for its own purposes (menu access, help display, ....). Pay special attention to the Fx- and Alt- keys.
+Moreover on some systems you must set \fB\TERM=linux\fR\ or \fB\TERM=rxvt\fR.
 This also works under vnc.
 
 .TR
 .B Pgup
 Increase CW speed (from call and exchange fields).
-If field not empty and CHANGE_RST is set: change rSt value
+If field not empty and CHANGE_RST is set: change RST value
 
 .TR
 .B Ctrl-Pgup
@@ -313,7 +311,7 @@ Smart key for contest mode: Calls cq, Calls station, Sends exchange, Logs the qs
 
 .TR
 .B Backslash
-log qso w/o CW;
+log qso w/o CW output;
 
 .TR
 .B ;
@@ -333,7 +331,7 @@ Send talk message to other tlf nodes
 
 .TR
 .B - (minus)
-Delete last qso
+Delete last qso (Use :res(core) to correct scoring number afterward).
 
 .TR
 .B Up-arrow
@@ -366,8 +364,15 @@ In RTTY (DIGIMODE), keyboard mode switch controller to command mode
 trx qrg -> mem, mem -> trx qrg
 
 .TR
-.B ! -
-Get a new shell
+.B !
+- Get a new shell. Come back with 'exit'.
+
+.TR
+.B .
+- Change bandmap filter configuration. You can filter to show spots from all 
+or own band only, from all/own mode only and if you want to see dupes or not 
+(see the according help display).
+
 
 .TR
 .B Ctrl-a
@@ -375,11 +380,11 @@ add spot to bandmap and broadcast it to local net
 
 .TR
 .B Ctrl-b
-send info to cluster 
+send info to cluster. 
 
 .TR
 .B Ctrl-c
-Quit (Linux cmd)
+Quit tlf
 
 .TR
 .B Ctrl-d
@@ -387,11 +392,11 @@ Stop tlf
 
 .TR
 .B Ctrl-f
-Set frequency 
+Set frequency. Use UP/DOWN-Arrow for 100hz steps and PgUP/PgDwn for 500hz steps. Back with ESC.
 
 .TR
 .B Ctrl-g
-grab dx spot 
+grab next dx spot from bandmap
 
 .TR
 .B Ctrl-k
@@ -423,7 +428,7 @@ Stop tlf
 
 .TR
 .B Alt-0 ... Alt-9
-CW messages
+send CW messages
 
 .TR
 .B Alt-a
@@ -435,7 +440,7 @@ Band up
 
 .TR
 .B Alt-c
-Countries display
+Toggle display of checkwindow
 
 .TR
 .B Alt-e
@@ -443,11 +448,11 @@ Enter qso edit mode
 
 .TR
 .B Alt-g
-gab (talk)
+Grab first spot from bandmap which has the characters in the call input field in its call. Allow to selectively grab a special call.
 
 .TR
 .B Alt-h
-help
+Show help
 
 .TR
 .B Alt-i
@@ -455,7 +460,7 @@ Show talk messages
 
 .TR
 .B Alt-j
-Show stn frequencies
+Show other local stations frequencies
 
 .TR
 .B Alt-k
@@ -467,11 +472,11 @@ Show multipliers
 
 .TR
 .B Alt-n
-Note in log 
+Add Note to log 
 
 .TR
 .B Alt-p
-Toggle PTT (cwdaemon)
+Toggle PTT (via cwdaemon)
 
 .TR
 .B Alt-q
@@ -487,7 +492,7 @@ Toggle score window
 
 .TR
 .B Alt-t
-Tune 
+Tune (via cwdaemon) 
 
 .TR
 .B Alt-v
@@ -495,7 +500,7 @@ Band down (Change speed in CT compatibility mode)
 
 .TR
 .B Alt-w
-CW weight
+Set CW weight
 
 .TR
 .B Alt-x
@@ -523,7 +528,7 @@ hold your call and your preferred system configuration.
 .TR
 .B RULES=<contest rules file>
 Name of the rules file to load. It helps if you name the rules file according to the
-contest you what to describe.
+contest you want to describe.
 
 .TR
 .B SYNCFILE=user:password@host/dir/syncfile (wget syntax).
@@ -537,16 +542,18 @@ and just ENTER to call and log the qso.
 
 .TR
 .B TLFCOLORx=
-Defaults: 	TLFCOLOR1=23	(Header and footer)
-	TLFCOLOR2=67	(Pop up windows)
-	TLFCOLOR3=70	(Log window)
-	TLFCOLOR4=57	(Markers/dupe colour)
-	TLFCOLOR5=43	(Input fields)
-	TLFCOLOR6=63	(Window frames)
+Defaults:
+   TLFCOLOR1=23	(Header and footer)
+   TLFCOLOR2=67	(Pop up windows)
+   TLFCOLOR3=70	(Log window)
+   TLFCOLOR4=57	(Markers/dupe colour)
+   TLFCOLOR5=43	(Input fields)
+   TLFCOLOR6=63	(Window frames)
+
 The numbers in octal, fg/bg or bg/fg (you have to try it).
 You should only specify these if you don't agree with the standard colours of tlf.
-In a GNOME Terminal you can set a special profile for tlf with your own colours...
-Gnome sets TERM=xterm automatically. See the tlf-devel mail archive for the colours.
+In some Terminals you can set a special profile for tlf with your own colours...
+Another way is to define the colors is via the .Xdefault file.
 
 .TR
 .B EDITOR=<joe | vi | e3 | mc>
@@ -719,7 +726,7 @@ Tell tlf where to send the macros
 
 .TR
 .B CLUSTER
-Show cluster window.
+Show cluster window at startup.
 
 .TR
 .B CLUSTERLOGIN=yourcall
@@ -731,7 +738,17 @@ Write clusterlog to disk.
 
 .TR
 .B BANDMAP
-Shows cluster bandmap, allow Grab. Use '.' to acces bandmap filter.
+Shows cluster bandmap on startup. Use '.' to change bandmap filtering.
+
+.TR
+.B BANDMAP=<xyz>,<number>
+Show cluster bandmap on startup and set start values for filtering.
+  <xyz> string parsed for
+  'B' - only own band
+  'M' - only own mode
+  'D' - do not show dupes
+  'S' - skip dupes during grab_next (ctrl-g)
+  <number> livetime for new spots in second (number >=300)
 
 .TR
 .B SCOREWINDOW
@@ -1058,8 +1075,9 @@ for your favourite contest making use of the various multiplier and points capab
 Check it before the contest and message to tlf-devel@nongnu.org if anything is wrong.
 
 \fB@prefix@/share/@PACKAGE@/cty.dat\fR
-contains a flat ascii data base of info about countries. Tlf-0.9.21 contains a version
-of 15.11.2003. This is the same file as used by CT or TRlog.
+contains a flat ascii data base of info about countries. Tlf-1.1.0 contains an
+actual version from december 2011 (tnx Martin OK1RR). This is the same file 
+as used by CT or TRlog.
 
 \fB@prefix@/share/@PACKAGE@/mastercalls\fR
 contains a flat ascii data base of contest callsigns (> 25.000), which is rather old.
@@ -1072,13 +1090,13 @@ MULT_LIST=<sectionfilename> in the rules file.
 
 .SH "DOCUMENTATION"
 .TR
-An operation manual (mostly not as up-to-date as this man page) is available in html format at the tlf project download page
-(\fBhttp://sharon.esrac.ele.tue.nl/pub/linux/ham/tlf/)\fR or online via the tlf web page.
+An operation manual (a little bit outdated) is available in html format at the tlf old project page (\fBhttp://sharon.esrac.ele.tue.nl/pub/linux/ham/tlf/)\fR. 
+
 
 .SH "AUTHORS"
 \fBtlf\fR was written by Rein Couperus
-<pa0r at eudxf.org> aka <rein at couperus.com>. 
-Lots of valuable contributions from PG4I (Joop PA4TU) , PA3FWM,  LZ3NY, VA3DB, OM4AA and various
+<pa0r at eudxf.org> aka <rein at couperus.com> but maintained from 2009 on by Thomas Beierlein <tb at forth-ev.de>.
+Lots of valuable contributions from PG4I (Joop PA4TU) , PA3FWM,  LZ3NY, VA3DB, OM4AA, OK1RR, DH5FS, G4KNO and various
 anonymous contributors... Tnx all for improving tlf!!
 
 .P
