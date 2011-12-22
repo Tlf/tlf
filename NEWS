@@ -72,6 +72,47 @@ Reworked internal structure:
       therefore allowing unlimited number of entries
     - simplify and drop unneeded code
 
+tlf-1.0.5
+=========
+maintenance release
+    * fixes some nasty racing condition between bandmap code and 
+      checkwindow. In result prefix in lower line of checkwindow
+      got displayed wrong, but country was right.
+      Thansk Martin OK1RR for reporting.
+
+tlf-1.0.4
+=========
+maintenance release
+ * fix for wrong handling of recalled exchange (tnx OK1RR).
+   New policy is a s follows
+      - All calls from initial exchange file will be recognised even
+	if part of a complex call, e.g. DL1CCL in LA/DL1CCL/p 
+      - All calls from former QSO's have to be exact including any
+	pre- or postcombination
+      - Now complete exchange will be recalled (not only first word)
+
+tlf-1.0.3
+=========
+maintenance release
+ * fix buffer overflow in 'send_lan_message'
+ * fix wrong count of points and qso's for last band entry (tnx OK1RR)
+
+tlf-1.0.2
+=========
+maintenance release
+ * fix bug in sendto call in TLF-1.0.0 and 1.0.1. 
+   cwdaemon needs a zero terminated string. 
+
+tlf-1.0.1
+=========
+maintenance release
+ * fix logfile read error. Last QSO got read twice.
+ * fix bug in cty.dat and in the routine which reads in the file
+   Some prefixes from BY were not recognised.
+ * fix calculation of sun up and down time in MUF prediction window.
+   It is now based on longitude from country description in cty.dat 
+   instead of the former timezone difference. That should be more
+   accurate now.
 
 tlf-1.0.0
 =========
@@ -100,72 +141,1071 @@ Bugfixes:
 tfl-0.9.31-2
 ============
 
-Fixed 'possible calls' routine. It now looks into the own 
-log first before checking the callmaster database. Calls 
-can now be up to 12 characters
+'Possible calls' are now in top left corner, and share the space with 
+the keyer. The 'possible calls' routine first checks the own log 
+and then the callmasterdatabase.
+Calls can now be up to 12 characters
 
 tlf-0.9.31
 ==========
 
-Fix for buffer overflow
-Changed 'worked' window. No search for partials.
+Fix for buffer overflow. 'Worked' window now searches from start of callsign.
+
+tlf-0.9.30
+==========
+Bug fixes:
+- exchange needed at least 1 character in dxped mode
+
+RTTY miniterm changed to display line feeds (reading formatted texst is easier)
+RTTY now sends linefeeds before and after the macro.
+
+tlf-0.9.29
+==========
+Bug fixes:
+- Date display error
+- Spurious character error
+- Malloc free error in socket.c
+I also included Fabian's patch to searchlog.c for testing...I like it.
+
+tlf-0.9.28
+==========
+Bug fixes (country indication did not work, wrong mults file for arrldx_dx).
+Added interface to gMFSK to enable RTTY contesting.
+Added new parameters for the logcfg.dat file:
+	GMFSK (use gMFSK as an output device)
+	RTTYMODE (start tlf in RTTY mode)
+	DIGIMODEM=/home/youruser/gmfsk_autofile
+
+You need the special version of gMFSK which is used for pskmail (http://pskmail.wikispaces.com).
+Information on how to install this hacked version of gMFSK-0.6 is on the pskmail wiki.
+Tlf takes care of all contest related stuff, exactly as you are used to in CW mode... 
+Yyou can use keyboard mode (Alt-K in CW mode) by switching to the gMFSK send field 
+with "Alt-TAB". This toggles between tlf and gMFSK.
+This will be necessary until I have time to redo the gMFSK interface (a socket interface is 
+on the todo list).
+
+tlf-0.9.27
+==========
+Bug fixes (segfault at startup at some systems)
+
+tlf-0.9.26
+==========
+Bug fix (segfault using the voice keyer).
+
+tlf-0.9.25
+==========
+
+Bug fix for non-hamlib compilation
+
+tlf-0.9.24
+==========
+
+- Code adaptation to compile with gcc-4.0 without warnings and segfaults (will compile on UBUNTU-5.10, FC4 etc..).
+
+tlf-0.9.23
+==========
+
+- New function: start cw before call is complete. In contest mode, you can 
+  start sending the call from the call window with 'space' or with 'down-arrow'.
+- New command: :CHAR asks for number of characters the call must have 
+  before sending starts. Default: 0 = OFF. If CHARS is 3, tlf starts sending 
+  as soon as you have input the first 3 letters of the call. If you are on 
+  slow speed you then have time to complete the call (including backspacing) 
+  before sending the first 3 letters is finished. This is of limited use when 
+  running above 40 wpm :)
+- incorporated patch from W9WI fixing a bug in the voice keyer.
+- changed cw speed control: now default active in call and exchange fields, 
+  even if field is not empty
+- changed qso save logic: RETURN now always logs the qso in SSB and in general 
+  qso mode.
+- New parameter: CHANGE_RST. If set in logcfg.dat, Pg-up and Pg-down will 
+  change RST instead of CW speed if field is not empty. Default: off.
+- fixed nasty bug which caused CQDELAY to start at 0 instead of the default 
+  in logcfg.dat
+- manpage updated for version 0.9.23
+
+tlf-0.9.22
+==========
+
+This release fixes a bug to make it compatible with gcc-4.0 / AMD64
+
+- The (local swedish) ssa_mt contest has changed its exchange format into 
+  serial number + 4-character grid field. This made it necessary to make 
+  a new parameter called SERIAL+GRID4. Tlf extracts the first 4 characters 
+  for the multiplier. Input format:
+  e.g. 001 JO21QI, the mult will be JO21. The rules file has also been updated.
+- Man page updated for version 0.9.22.
+
+tlf-0.9.21
+==========
+
+This release includes all the patches I received over the last 6 month. 
+Besides making the code more stable, it will enable compilation with gcc 3.4. 
+Further it should be compatible with cwdaemon-0.9 (weighting -50...50). 
+I also got a patch to cure a problem with the qso logic, 2x escape will 
+now reset the qso logic as soon as the call field is empty again.
+TNX PG4I, VA3DB, OM4AA. 
+Also the anonymous contributions I got through the bugtracker are very welcome!!
+
+- Changes: 
+- the cw sidetone setting (TONE) in logcfg.dat has become CWTONE=...
+- a new parameter LOWBANDS_DOUBLE has been introduced (points x 2 for 40-80-160)
+- a new parameter CLUSTER_LOG has been introduced. When set the cluster 
+  messages are writteni to a 'clusterlog' file... this can be tailed to a 
+  terminal window (tail -f clusterlog)
+- the initial exchange function now also recognises embedded calls (PA/OK1RR/P)
+- The logcfg.dat template has been updated to version 0.9.21.
+- The manpage has been updated to version 0.9.21.
+
+tlf-0.9.20
+==========
+
+- Bug fixed: In cw keyboard, ENTER produced a newline
+- Bug fixed: In cw keyboard PgUp and PgDwn did not change the cw speed
+- Bug fixed: The ';' was missing in "note-in-log" if the LAN was not active
+- Bug fixed: Added <unistd.h>  to startmsg.c
+- Bugs fixed: Buffer size handling in various places (tnx for the patch !!)
+- Added OPEN BSD support to audio.c/h (tnx for the patch!)
+
+- Added test version of CWBANDWIDTH=xxx to set bandwidth from Hamlib when 
+  mode is switched:
+	A value of 0 to switch off automatic mode switching
+	A value of x for setting the bandwidth
+	If the parameter is not there, PASSBAND_NORMAL is used (default)
+This test version works for cw only.
+
+
+tlf-0.9.19
+==========
+
+- Added INITIAL_EXCHANGE facility.
+  Format: INITIAL_EXCHANGE=names.txt
+  The file must contain a comma-separated list of exchanges, if e.g. the 
+  exchange is the name of the operator:
+  PA0R,rein
+  PG4I,joop
+  OK1RR,martin
+  The file can be any length.
+  If RECALL_MULTS is set, tlf will look in this list for the exchange and 
+  fill it in for you.  There are various contests which have a standard 
+  exchange, like e.g. the FOC Marathon.
+- Doubled the arrays for the cty.dat list, to enable larger-than-standard 
+  custom lists. Also set the max. number of mults to 500 per band (these 
+  values can be set in tlf.h at compile time).
+- The "note in log" (';') function will not indicate "Node 'X' , qsonumber" 
+  if the LAN is not active. 
+
+tlf-0.9.18
+==========
+
+Version 0.9.18 only adds native support for the ten tec ORION, to bridge 
+the time until Hamlib has an approriate driver.
+Use RIGMODEL=ORION if you have one. This works with or without Hamlib installed.
+Set RIGSPEED=57600.
+The driver uses the internal keyer of the ORION, so you don't need cwdaemon i
+either (unless you use the tlf voice keyer which uses cwdaemon's PTT output, 
+or an automatic antenna switch controlled by tlf).
+- I also added a :debug_tty command to test rig links.
+
+tlf-0.9.17
+==========
+
+- New sound record feature"
+	New command :SOUnd
+	F1 ... F12, s, c will record the voice keyer message for that key
+	1:	Start contest recording to ddhhmm.au
+	2:	Stop contest recording
+	3:	Play back contest recording ddhh[mm][xx]
+		xx is the offset from the start of the file e.g.:
+		2110 will start from beginning of the day 21 hr 10:00 file.
+		21100013:00 will start from day 21, hh 10, mm 00, + 13 minutes: 0 seconds
+	To make sure you get a new file every hour make a cron job to run i
+	every hour with:
+		/usr/bin/pkill -f sox > /dev/null 2> /dev/null
+	Once started the recorder will run until the lock file ~/.VRlock is 
+	removed.
+
+- Bug fixes from the EA RTTY test:
+	Rtty miniterminal improved... wrote to :info, :packet and :help screens
+	S&P mode sent no call with F1
+- Added new command :RTTY. This one will switch the MFJ1278B controller 
+  into RTTY mode.
+-- Fixes from the WPX-SSB contest (PI4TUE):
+	Operator got into log view (LESS) and could not get out:
+		tlf will not go from edit into log view anymore (use :VIEW)
+	Operator gives out wrong serial number after the run stn updates the i
+	number:
+		the serial number to be given is now printed prominently 
+		below the call field.
+- Added new parameter: CLUSTERLOGIN=pi4tue-1
+	if this parameter is present tlf will automatically login a 
+	telnet cluster using the call mentioned. This makes it easier for 
+	non-linux users to start the program.
+
+- :HELP will show a file 'help.txt' instead of the man page. This file can 
+  be contest/operator specific. Make your own....
+- Autocq: Tlf will stop sending as soon as a call is written into the call field
+- Tlf will now send LSB or USB to the rig, depending on band. In RTTY mode 
+  the rig stays in LSB, no matter which band.
+
+
+tlf-0.9.15
+==========
+
+- Added support for MFJ1278B multi-mode controller.
+	You can now use your MFJ1278B as a CW  output
+	device with the same controls as for the software keyers
+	(ctrl-k for keyboard mode, escape to leave keyboard mode, pgup
+	for speed-up and pg-down for speed-down).
+
+	The RTTY mode enables the RTTY contests with the same user
+	interface as with the CW contests, also AMTOR is supported.
+
+	New parameter for logcfg.dat: MFJ1278_KEYER=,
+	e.g. MFJ1278_KEYER=/dev/ttyS0
+	New characters for RTTY keyboard mode:
+	'{' TX
+	'}' RX
+	'\' Enter Command Mode
+	'K' <ENTER> Leave command mode.
+	',' (comma) or Ctrl-k to go into keyboard mode
+	ESCAPE to leave keyboard mode.
+	The '{' and '}' characters can also be embedded in the Contest messages
+	e.g. F1={RYRY TEST DE % % PSE K} will transmit the message and switch back to RX.
+
+	New command ':MINiterm' to toggle a 5 x 40 char terminal window on/off.
+	This will only work in DIG mode.
+
+- Added experimental :SCAnner function (an idea of OK1RR)
+	The SCAnner funtion combines the Frequency Control function of Hamlib
+	with a rudimentary Audio S-Meter/plotter via the sound card. Just 
+	connect the rx output to the soundcard input and you are o.k.
+	Two functions are supported by version 0.9.15:
+
+	Band Scan Function - can be used as a 'second hand' to scan a band 
+	for activity with a separate receiver + computer.
+	You give a Start frequency and a step frequency, and the "S-Meter" 
+	values are plotted.
+
+	SWR scan function - with a simple noise bridge and a computer 
+	controlled rx as a frequenzy-stepped detector you can plot antenna 
+	swr or filter transfer characteristic.
+
+	New parameters for logcfg.dat:
+	SC_DEVICE= Sound card device, e.g. SC_DEVICE=/dev/dsp0
+	S_METER=  Calibration curve for the Audio S-Meter. As the audio 
+	  volume depends on the transfer characteristic of your rx (incl. AGC) 
+	  you have to calibrate the S-Meter. With this parameter you can 
+	  create a curve with 20 points e.g.:
+		S_METER=20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1
+	  would create a linear curve with a max. value of 20. (Of course 
+	  you will need	something logarithmic).
+		Maximum value = 255 (8 bits).
+	ESCAPE to go back to the previous level.
+
+- Bug fixes by PA3FWM
+
+
+
+tlf-0.9.11
+==========
+
+- Added support for Cwdaemon-0.8
+	New parameters for logcfg.dat:
+	- SOUNDCARD set sidetone output device to soundcard.
+	- SIDETONE_VOLUME=<0 ... 99>  set sidetone volume on soundcard
+- Changed auto-cq delay to 1/2 second increments.
+- updated cty.dat file (11/15 version)
+- added usa_canada_states file
+
+tlf-0.9.10
+==========
+
+- Added SSBPOINTS= to set points per SSB qso
+
+- Added CWPOINTS= to set points per CW qso
+
+- Extended pr_hostaddress string to hold 47 characters (for long host names)
+	(try TELNETHOST=claudia.esrac.ele.tue.nl
+	TELNETPORT=8000)
+
+
+tlf-0.9.9
+=========
+
+- Tlf now uses the original cty.dat file, not necessary to convert to ctydb.dat.
+
+- Bug fix: KH2/KK2H and KK2H/KH2 now both in GUAM.
+
+- Included the changes Bob N7XY made to cty.dat. Also added TO0O (in Martinique)
+
+tlf-0.9.8
+=========
+
+- Changed time-to-live default for DX spots to 30 minutes. This can be changed 
+  at compile time with the MAXMINUTES constant in cluster_bg.h
+
+- Added station ID to log line when logging from differentl nodes in the 
+  network.
+  This enables post-contest analysis and log massage after the contest.
+  CQWW_M2 must be set in logcfg.dat for this.
+
+- Added qso number and NODE ID to note in log for post contest analysis.
+
+- Added code to prevent double node id's in the network. If tlf hears it's 
+  own node id on the network, it will ask for another one.
+
+- Added :SYNc command, which will resync the logfile and recalculate the score
+  without restarting the program. The automatic resync at program restart has
+  been disabled, as it was generating too many problems. So the only way to
+  resync the log is using the :SYNC command.
+
+- Added :REScore command, which will recalculate the score without having to
+  restart the program.
+
+- Bug fix: /MM and /AM stations now have no country (no country multiplier
+  value for cqww, only the zone), but do count for points. Tlf tries to
+  calculate the continent from the zone. This is necessary to calculate the
+  points.
+
+tlf-0.9.7
+=========
+
+- Added new parameter for logcfg.dat:
+	SYNCFILE=user:password@host/dir/syncfile (wget syntax).
+
+  When you start tlf with this parameter in logcfg.dat tlf will wget the
+  logfile from the relevant node, make a dated backup of your local logfile,
+  and merge the 2 files. WARNING: this contains the password of the remote
+  machine so I also:
+
+- Added a new startup option for tlf: -s<remote file name> : 
+    tlf -suser:password@host/dir/syncfile 
+  will sync the local logfile at startup.
+
+- Added parameter to change colors (defaults remain as usual):
+	TLFCOLOR1=23		(Header and footer)
+	TLFCOLOR2=67		(Pop up windows)
+	TLFCOLOR3=70		(Log window)
+	TLFCOLOR4=57		(Markers/dupe colour)
+	TLFCOLOR5=43		(Input fields)
+	TLFCOLOR6=70		(Window frames)
+	The numbers in octal, fg/bg or bg/fg (you have to try it).
+  You should only specify these if you don't agree with the standard colours 
+  of tlf.
+
+- Call edit mode is now default INSERT mode (log edit remains OVERWRITE mode).
+
+- Bug fix: CE0Y/SP9DTP was wrongly located in Poland (also works for VP2E now :-)
+
+tlf-0.9.6
+=========
+
+- 2 x escape in the exchange field will return to call field and clear it.
+
+- Patch for configure.in to enable build under BSD (warning: tlf segfaults
+  under BSD, the cause is being investigated). Tnx Joop PG4I
+
+- Changed cabrillo for serial + section multiplier (e.g. ssa mt contest)
+
+- Patch from LU4HKN to change version automatically in cabrillo file
+
+- Patch from Stephane F8CFE to add new parameter for rig control:
+	RIGCONF=civaddr=0x40,retry=3,rig_pathname=/dev/ttyS0
+	which will send rig configuration info to Hamlib.
+
+- Added new parameter for logcfg.dat:
+	SYNCFILE=user:password@host/dir/syncfile (wget syntax).
+
+  When you start tlf with this parameter in logcfg.dat tlf will wget the
+  logfile from the relevant node, make a dated backup of your local logfile,
+  and merge the 2 files. WARNING: this contains the password of the remote
+  machine so I also:
+
+- Added a new startup option for tlf: -s<remote file name> :
+	tlf -suser:password@host/dir/syncfile will sync the local logfile at startup.
+
+- Added parameter to change colors (defaults remain as usual):
+	TLFCOLOR1=23		(Header and footer)
+	TLFCOLOR2=67		(Pop up windows)
+	TLFCOLOR3=70		(Log window)
+	TLFCOLOR4=57		(Markers/dupe colour)
+	TLFCOLOR5=43		(Input fields)
+	TLFCOLOR6=63		(Window frames)
+	The numbers in octal, fg/bg or bg/fg (you have to try it).
+	You should only specify these if you don't agree with the standard colours of tlf.
+
+- Call edit mode is now default INSERT mode (log edit remains OVERWRITE mode).
+
+- Bug fix: CE0Y/SP9DTP was wrongly located in Poland (also works for VP2E now :-)
+
+
+
+tlf-0.9.5
+=========
+
+- added SSA_MT contest (beta...)
+
+- added capital 'Y' to exit check.
+
+- added new parameter: NO_BANDSWITCH_ARROWKEYS
+	this will prevent unwanted band switching when you are not using
+	rig control. Band up=alt-b, band down = alt-v (Trlog compatible).
+	
+- bug fix: qso number was increased on "notes" line
+
+- bug fix: zone number was overwritten by the network
+
+- bug fix: table overrun in packet modules when too many spots/h came in
+	caused segfault.
+
+tlf-0.9.4
+=========
+
+- added band output routine for cwdaemon-0.7.
+	New parameter: BANDOUTPUT to switch it on.
+	Cwdaemon-0.7 will output band info on pins 2, 7,8 and 9 of the
+	parallel port. 160m = 1, 80m = 2 .... 10m = 9. This is compatible with 
+	commercial band decoders. 	
+	You can also use different coding:
+	BANDOUTPUT=12484848 will put pin 9 high to switch your 3-bander etc... 
+	no need for a decoder, a few relays will do... unless you also want 
+	to switch your bandfilters.
+	
+- known bugs: 
+	tlf seg faults when switching from the NEEDED band map to the 
+	spot list with very large band maps (the 10m bandmap had 150 entries 
+	during cqwwssb sunday afternoon)
+	ce0y/sp9spt shows up as Poland instad of Easter Island...
+
+tlf-0.9.3
+=========
+
+- Bug fix: Speed setting from logcfg.dat erratic. Changed parameter to
+	CWSPEED=xx (was SPEED=xx).
+	
+- Bug fix: The auto cq function could not be stopped with ESCAPE
+
+- Changed parameter input for TNCPORT and RIGPORT. The parameters now
+  accept direct path entry: e.g. RIGPORT=/dev/ttyS0 or TNCPORT=/dev/ttyUSB1.
+  Tnx ZL2BSJ for the help. This adds USB capability to tlf...
+
+- Added parameter NOAUTOCQ which switches off the auto_cq function
+
+- Added parameter SSBMODE to start tlf in ssb mode (does not switch the rig).
+
+- Added possibility to have several logcfg.dat files:
+  Start tlf with tlf -f<filename>. You can now have different configurations
+  per operator. e.g. tlf -fPA0RCT, tlf -fHB9FBL etc...
+  Tlf first looks at the -f parameter, and expects the file in the
+  working directory (e.g. /home/yourcall/contest/2003/cqwwcw/logcfg.dat).
+  The default filename is logcfg.dat. If there is no config file in the
+  working directory tlf opens PACKAGE_DATA_DIR/logcfg.dat, READ ONLY (often
+  needs root privileges).
+  You will need to change the call and other parameters on that one.
+	
+- :HELp now displays the manpage.
+
+- :INFo now also displays the relevant filenames, addresses, and ports.
+
+
+tlf-0.9.2
+=========
+
+- Added Adif export capability. The command :ADIf will write the logfile i
+  properly (I hope) formatted to a file with a .adif suffix.
+
+- Fixed bug in cqww contest: when a new spot arrived the cq zone would be
+  changed.
+
+- Added new method to handle contest rules (by LZ3NY): 
+
+  You can put general parameters, which are the same for all contests (call,
+  keyer speed, window handling etc.) into logcfg.dat.  Put
+  CONTEST=<contest_name> into logcfdg.dat.
+
+  Tlf now first looks if there is a directory "rules/" in the working
+  directory, e.g. /home/yourcall/tlf/2003/cqwwcw. It then loads the file
+  <contest_name> 	which contains the 	rules for that contest. If the
+  directory "rules/" is not available there, tlf will look into
+  /usr/local/share/tlf/rules, and try to load the file <contest_name> from
+  there. If not available tlf will set the contest to "qso".
+
+  This will make it easier to publish the rules files for various contests.  If
+  you programmed and tested a new contest, please send the rules file to
+  PA0R@EUDXF.ORG so I can add it to the distribution.
+
+- Added support for MC editor (by LZ3NY)
+
+- Added QUIT command (by LZ3NY)
+
+- Added WAZMULT (by LZ3NY). Uses Cqzone as multiplier.
+
+- Added ITUMULT (by LZ5NY). Uses ITUzone as multiplier
+
+- Added CQDELAY parameter for setting cqdelay in logcfg.dat (by LZ3NY)
+
+- Added PFX_MULT (works like in wpx)
+
+- Added Dynamic check for users terminal type (defaults to rxvt) (by LZ3NY).
+
+- Added experimental support for xterm. Sometimes xterm starts with the wrong
+  keyboard map. This is the case when the arrow keys don't work. Remedy
+  (workaround) is to first switch into the shell (with "!") and back to tlf
+  (with "exit"). The arrow keys as well as the function keys will now work in
+  most cases. Please report irregularities to PA0R@EUDXF.ORG, I don't expect it
+  to work everywhere. Also the color scheme is the best I could do with the
+  standard colours of xterm. I prefer rxvt!
+
+- Changed cw keyer speed control back to pg-up/pg-down. Alt-v will only work in
+  CT compatibility mode.
+
+- Changed cqdelay control to ctrl-pgup/ctrl-pgdown. Ctrl-pgup is not possible
+  with TERM=linux, so I had to add a command :CQDelay which will do the same.
+
+- Added band switch control with Alt-v and Alt-b (to be compatible with TRLog),
+  right/left arrow will work also
+
+- Added Alt-e control to enter edit qso's mode (to be compatible with TRLog),
+  up-arrow will work also.
+
+tlf-0.9.1
+=========
+
+- Added PFX_MULT, wpx-style multiplier.
+
+- Added RXVT parameter (logcfg.dat) which sets the colours for using tlf in an
+  rxvt terminal.
+
+tlf-0.9.0
+==========
+
+- Added experimental voice keyer support for soundcards, based on the sox
+  package.  The voice keyer works as soon as the mode is SSB and you have
+  nominated at least 1 sound file.
+
+- added parameters to logcfg.dat for the voice keyer. They are e.g.:
+
+#################################
+#                               #
+#  Voice Keyer Files            #
+#    (F1 to F12)                #
+#################################
+#
+VKM1=cq.wav
+VKM2=
+VKM3=/home/rein/tlf/rst.wav
+VKM4=/home/rein/tlf/qsl.wav
+VKM5=/home/rein/tlf/73.wav
+VKM6=/home/rein/tlf/call.wav
+VKM7=
+VKM8=
+VKM9=/home/rein/tlf/agn.wav
+VKM10=/home/rein/tlf/qrz.wav
+VKM11=/home/rein/tlf/spreturn.wav
+VKM12=/home/rein/tlf/cq.au
+VKSPR=/home/rein/tlf/spreturn.wav (S&P return message)
+VKCWR=/home/rein/tlf/qsl.wav	(CQ mode return message)
+#
+
+- You have to make your files off line. As tlf uses sox, most audio files can
+  be played.
+
+- You can test the voice keyer capability with "play audiofile.xx".  If that
+  works you are o.k. I have used sox-12.17 for testing.
+
+- The voice keyer uses the same qso logic as TRlog in cw, you only have to say
+  the call and press ENTER twice... (if the exchange is standard, like in the
+  cqww)
+
+- If you want to use the PTT line, the cwdaemon must run as well.
+
+- You have to invent your own hardware interface to the trx (there are numerous
+  examples floating around the net...)
+
+** comments please **
+
+tlf-0.8.23
+==========
+- bug fix: zone could not be changed from default in cqww
+
+
+tlf-0.8.22
+==========
+
+- Added -x option to use rxvt colours and keys.
+
+- Changed sections exchange check routine to accept 1 character mults.
+
+- Updated manpage
+
+tlf-0.8.21
+==========
+
+- Added TXDELAY (Turn On Delay) control for cwdaemon.
+	The value of TOD from logcfg.dat is sent to the keyer at startup.
+	Value range is 0 ... 50 ms (0 switches PTT off completely)
+	
+- Added Alt-t command for TUNE  (stops with any key)
+
+- Added Alt-p command for PTT on|off
+
+- Added Ctrl-r command to switch lp0-pin 14 on|off (SSB mic|SSS Soundcard)
+
+- Some cosmetic changes to the Alt-w (weight) dialogue
+
 
 tlf-0.8.20
 ==========
 
-Added hamlib-1.1.4 compatibility.
+- Made tlf compatible wit hamlib-1.1.4 (new rig.h).
 
-tlf-0.8.9
+- Added fast startup (now default).
+
+- Verbose startup with -v option
+
+- Version output with -V option
+
+- Debug mode with -d option (to check rigctl)
+
+- Added dialogue window for CW speed and weight setting (Alt-v and Alt-w).
+
+- Bug fixes for DX_&_SECTIONS multiplier for ARRL and CQ 160 meter contests
+	(incl. cabrillo output).
+	
+- Added manpage (tlf.1)
+
+tlf-0.8.19
+==========
+
+- Added flexible point parameters for logcfg.dat (tnx for contribution Mitko,
+  LZ3NY):
+
+	COUNTRYLIST=SP_DX:SP	List of countries that have exceptional points.
+			Format e.g. NRAUTEST:OH,OH0,OJ0M,SM,OZ,OY,OX etc...
+  You can also give a file name, and put the country information into a file 
+  (same format).
+		
+	COUNTRY_LIST_POINTS=5	All countries in the list get 5 points
+		
+	USE_COUNTRYLIST_ONLY	Only countries in the list get (5) points,
+				all others 0.
+		
+	MY_COUNTRY_POINTS=1		My own country gets 1 point
+	MY_CONTINENT_POINTS=2		Other countries in my continent get 
+					2 points
+	DX_POINTS=10			DX countries get 10 points
+		
+  The above only takes care of the points, not the multipliers!!
+  You can combine this system with e.g. a WYSIWYG_MULTIBAND  or a COUNTRY_MULT,
+  a MULT_LIST or SECTIONS.
+		
+  Please try this well before the contest, so there is still time to
+  make changes if needed!!
+
+- Added possibility to give > 9 points (e.g. CQWW-160m)
+
+- Added weight control (Alt-w) for netkeyer (-5 ... 5)
+
+- Tlf now sends weight from logcfg.dat to netkeyer at startup
+
+- Tlf now sends speed from logcfg.dat to netkeyer at startup
+
+- Startup works faster at restart
+
+tlf-0.8.18
+==========
+
+- fixed enter key in CTCOMPATIBLE mode
+
+- fixed bug in call entry INSERT mode: tlf would segfault if too many
+  characters were added to a call
+
+- fixed bug: backspace would switch off score window
+
+
+tlf-0.8.17
+==========
+
+- fixed bug in arrl_usa contest: scoring was broken
+
+- fixed bug in arrl_usa contest: network scoring was broken
+
+- fixed bug in arrl_usa contest: cabrillo file showed exchange twice
+
+- fixed bug in getctydata: country of /QRP stations not recognized
+
+tlf-0.8.16
+==========
+
+- fixed the colors for the xplanet markerfile
+
+- introduced "markers only" possibility for small azimuthal xplanet display
+
+- introduced patch from LZ3NY (auto-B4 when hitting ENTER on a dupe).  if you
+  don't want it set NOB4 in logcfg.dat. The b4 message must be in F7.
+
+- fixed bug in searchlog which made P3A a dupe when you worked YP3A.
+
+- changed all pictures in the manual to png format.
+
+tlf-0.8.15
+========
+
+- fixed bug leading to SEGFAULT when using shift_F1...F8
+
+- quick fix for bug leading to segfault when tlf is started on a terminal with
+  COLUMNS > 80
+
+- shift_F1...F8 now starts change message for F1...F8 (shift_function key may
+  not work at some terminals!!)
+
+- MARKERS=<path_to_markerfile> writes a marker file for Xplanet, containing the
+  last 8 entries to the spot list or the bandmap (whichever is active).
+
+
+
+tlf-0.8.14
+========
+
+- added section mult capability (exchange = mult = section from file)
+
+tlf-0.8.13
+========
+
+- reworked bandmap.  Goto bandmap with "." or "Alt_," switch between "all"  and
+  "needed" with "." scroll with up/down and pg-up/pgdown, leave with ESC.
+
+- colour coding for bandmap (only works for contest bands).
+
+- grab spot (ctrl-g) with empty call field takes last one in spot list
+
+- added "SERIAL+SECTION" multiplier capability for nrau (scandinavian) test
+
+- added "MULT_LIST=xxxxxx" capability for nrau test (flat ascii multiplier file
+  (all caps) required  in working directory)
+
+- fixed "TWO_POINTS" capability for nrau test
+
+- fixed ":mult" command to generalize "multipliers worked" display
+
+
+tlf-0.8.10a
+=========
+
+- fixed bug "tlf does not start without a logfile" 
+
+
+tlf-0.8.10
+========
+
+Bug/unwanted feature fixes:
+
+- when adding a note ';', it kills the data in the current QSO field
+
+- when deleting last QSO '-', and the last QSO was a Note,
+  QSO's in SCORE window is wrong (QSO's count decremented while it
+  shouldn't)
+
+- when call field is empty, is TAB suposed to give a zone?
+
+- when editing last QSO '@', if I go right (with -> key) till end of line,
+  I'm stuck on next line. Acutally, If you enter "ggggggggggggggggggggggggg"
+  past the end of line, it will overflow to the next line. And there's no
+  solution to go back (ESC and :edit to fix it though) But the screen looks
+  ugly in the mean time.
+
+- tlf does not handle very well bogus .log text files.
+  mostly FIXED, needs more work
+
+- entering edit last '@', and add an extra 9 to 59 report (I know this is
+  silly in SSB mode), you can replace the char but you cannot suppr the
+  extra 9 (either with del or backspace).
+
+- when editing call field with left key, it gets green on orange.
+  but when I do a replace (overwrite a char), the field looses color
+  back to yellow on blue, but I'm still in edit mode!
+
+- disable "ZONEDISPLAY is 1" message on ":zone" cmd
+
+- allow ENTER key in exchange field
+
+- backspace in edit field mode
+
+tlf-0.8.9   Beta for CT adepts.....
 =======
 
-Added CT compatibility mode.
+- after making some 3000 qso's with CT at CT9L in the cqww I added the most
+important CT commands to tlf. See the new Alt-H command for details...
+
+- The up-arrow will now lead into the qso  editor as requested by CT freaks...
+
+- The CW keyer speed can be adjusted with Alt-V or from within the keyboard routine
+(Alt-K, ctrl-K or ,), with up/down arrow.
+
+- For CT compatibility mode (use Insert and + for running) uncomment the
+CTCOMPATIBLE command in logcfg.dat.  There is NO S&P mode, and Enter will log the qso.
+(But you asked for it...)
+
 
 tlf-0.8.7
 =======
 
-Added time sync protocol to the network.
+- added time sync protocol for networked nodes.
+
+- add TIME_MASTER to logcfg.dat for the master station.
+
+- the "@" command now allows to edit the qso's visible (5 qso's).  During edit
+mode LAN receive is stopped. Leave edit mode with enter, tab or esc.
+
+- changed insert mode for call edit. 
+
+tlf-0.8.6
+=======
+
+-   Bug fixes for CQWW-CW:
+	-    	W/VE zones default according to all area
+	-	Fixed simulator to give right zone for W/VE call areas
+	-       Zone input with 1 or 2 characters now possible
+	-       Zone correction in exchange field (04 3 )
+	- 	Call correction in exchange field (04 W7KJ ) when CALLUPDATE is set in logcfg.dat
+	-	D4B, VP2E, VP2M, VP2V, PY0FF, NP2, WP2 now correctly scored
+	-	R1ANZ is now CE9 in zone 29
+	-	TA1 is correctly placed in zone 20 (EU)
+	-	W2XXX/TI8 now handled correctly
+	-	Fixed segmentation fault when too many input chars in input field
+	-       Right tlf version in cabrillo file
+	-	Edit last qso can now be closed also with enter and tab.
 
 tlf-0.8.5
 =======
 
-Added time shift parameter to run computer at local time.
+- added parameter TIME_OFFSET= to logcfg.dat. It enables you to use the computer
+at local time, while tlf logs in utc. Use any value between -23 ... 23. In PA0 the value is -1 for
+winter time.
 
-tlf-0.8.4
+- in cqww in-country qso's count 0 points also in NA.
+
+
+tlf-0.8.4 beta for arrl sweepstakes
 =======
 
-Added ARRL Sweepstakes for SO and M/S
+- use CONTEST=arrl_ss in logcfg.dat
+
+- exchange input like TR, including call correction (needs spaces on both sides) in exchange field
+
+- if you want to use this "call update" feature, put CALLUPDATE in logcfg.dat.
+
+- put file "arrlsections" file in working directory
+
+- scores o.k.  for single op and M/S
+
+- cabrillo output o.k., answer "A63KS" or whatever you used to "standard exchange" question
+
+- :MULt command gives worked multiplier list
+
+- 10 extra call memories (alt-0 to alt-9)   programmable via logcfg.dat
+
+
+tlf-0.8.3
+=======
+
+- Added M2 category for cqww (cabrillo file + logfile)
+
+- Added CQWW_M2 command for logcfg.dat
+
+- Added LAN_DEBUG command for logcfg.dat (dumps logfile called "debuglog"
+	into working directory, showing all LAN messages received (raw data)
+
+- fixed bug allowing "\" command to log blank qso
+
+
+tlf-0.8.2
+=======
+
+- Changed SSB log routine now mirrors CW routine with ENTER
+
+- fixed bug allowing logging a blank qso in SSB
+
+- updated callmaster and ctydb files
+
+tlf-0.8.1
+=======
+
+- Added serial number handling for  e.g. wpx contest
+
 
 tlf-0.8.0
 =======
 
-Added full ip network support for M2, M/S or M/M operation of CQWW and WPX
+- Added full network support via upd/ip, enabling M/M and M/S operation
+
+- Syncs/distributes log data, packet data, frequency data, local spots, local talk between tlf nodes
 
 tlf-0.7.4
 =======
 
-Added support for user mode cwdaemon (NETKEYER)
-(now with direct mode !!)
+- fixed bug hiding the WARC bands
+
+- Added support for user mode cwdaemon (NETKEYER in logcfg.dat)
+   See new logcfg.dat   ( NETKEYER, NETKEYERPORT, NETKEYERHOST) .
+
 
 tlf-0.7.3
 =======
 
-Added CW contest simulator for cqww...
+- New command: " :simulator" starts a cw simulator for the cqww contest
+	set CONTEST=cqww.
 
-tlf-0.7.0
+- In simulator mode call CQ with F1 to start the run....
+
+- Fixed a nasty bug which showed after working 20 JA stations. You can now go up to MAX_CALLS.
+
+
+tlf-0.7.2
 =======
 
-Added Hamlib-1.1.3 support for rig control of most popular radios
+- It is now possible to compile tlf with or without Hamlib.
 
-tlf-0.6.1
+-  Use  ./configure --enable-hamlib  for Hamlib support.
+
+tlf-0.7.1
+=======
+
+- rig control now on ttyS0 and ttyS1 (logcfg.dat:  RIGPORT=0 or RIGPORT=1)
+
+- grab spot (ctrl-g) now also works in spot mode
+
+
+tlf-0.7.0 beta test version with hamlib-1.1.3 integration
+============================================
+
+- all rig control related functions were changed to work with hamlib-1.1.3
+
+- just compile hamlib-1.1.3 (./configure, make, make install, that's all!!)
+
+- this tlf version needs hamlib-1.1.3 library. You may have to do /sbin/ldconfig ,
+    so tlf can find the lib at startup !!
+
+- tested o.k. for the omni 6 plus. For the rit of the omni and icom rigs you need a patch.
+
+- grab spot (ctrl-G) only works in band map
+
+- add spot (ctrl-A) adds call in call field to bandmap
+
+- frequency conrol (ctrl-F): up/down arrow for 100 Hz, left/right arrow 20 Hz steps.
+	escape goes back to normal mode
+
+ - mode switch :SSB now gives right side band (USB, LSB)
+
+ - I need reports on tlf/rig compatability (see Hamlib on source forge for lists)      !!
+
+
+tlf-0.6.1  beta test version of telnet / tnc support
+====================================================
+
+- fixed bug gobbling up display when long buffers came in
+
+- added FIFO clfile
+
+- preliminary fix for band map display
+
+Use of FIFO input:
+
+- comment out the telnet and tnc interfaces in logcfg.dat
+
+- uncomment FIFO_INTERFACE
+
+- start e.g. call -r <packetinterface> | tee <tlfworkingdirectory>/clfile
+
+
+tlf-0.6.0  beta test version of telnet / tnc support
+====================================================
+
+bugs: band map not ready (work in progress)
+
+- major rewrite to limit disk access in order to speed up various
+	check functions
+- included telnet client and tnc/modem client for testing
+- ioctrl for serial port keyer by PA4TU included
+
+Telnet operation:
+----------------
+
+- provide internet connectivity to DX cluster (e.g. pi4tue)
+- in logcfg.dat uncomment TELNETHOST=131.155.192.179
+- in logcfg.dat uncomment TELNETPORT=8000
+- comment out #TNCPORT=
+
+- if there is connectivity tlf will connect to the cluster. login with your
+call.
+
+- Leave the telnet client with ":" in first column.
+- Open cluster window int tlf with ":CLUSTER"
+- send info to cluster with ctrl-b
+
+TNC operation
+-------------
+
+- #Comment out the telnet options in logcfg.dat
+- Uncomment either TNCPORT=1 or TNCPORT=2
+- Connect a tnc to either ttyS0 or ttyS1
+- Set baud rate of tnc to 2400 Bd (fixed, will be made variable)
+
+Tlf will now startup into the tnc client.
+
+- leave tnc client with ":" in first column
+- open cluster window in tlf with ":CLU"
+- send info to tnc with ctrl-b
+
+Go back to telnet or tnc client with ":PACKET"
+
+you can enter view mode  with up-arrow/down-arrow
+(100 lines max.)
+
+Please report bugs to pa0rct@amsat.org
+
+tlf-0.5.4.5
+===========
+
+- several code changes to speed up dupe check  (see ChangeLog)
+
+
+tlf-0.5.4.4
+===========
+
+- several code changes to speed up check partials
+- changed cqww dx scoring for NA stns (2 pts for own cty)
+
+tlf-0.5.4.3
 =========
 
-Added telnet client and tnc terminal
-Check routines now  completely memory based for lightning speed...
+- Added MIXED capability
+- Added :CWMODE, :SSBMODE, and :DIGIMODE commands
+- Fixed :WRITE command for wysiwig mults (cabrillo output)
+- Wrote "Howto make your own contest" (in /doc)
+
+tlf-0.5.4.2
+===========
+Bug fix:
+- fixed wysiwyg_once and wysiwyg_multi
+- command "\" (log qso without cw) now also works in the exchange field.
+
+tlf-0.5.4.1
+========
+
+Bug fixes for debian floppy version:
+- delete last qso
+- write cabrillo file
+(o.k. in original 0.5.4)
 
 tlf-0.5.4
 ========
 
-Added support for e3 editor
+Major changes with respect to version tlf-0.5.3 are:
+- addition of support for e3 editor (for debian mini distro)
+- bug fix: SEG FAULT when cl3file was not yet present
+- bug fix: when using /P call continent was not calculated (R1 fd)
 
 tlf-0.5.3
 ========
@@ -175,19 +1215,16 @@ Major changes with respect to version  tlf-0.5.0 are:
 - complete overhaul of "edit last qso"
 - auto_complete now gives a warning if the call is locked
 - added new parameters for "universal" contest
-- bug fix: added 2-point mode for wpx and cqww for NA stns
+- bug fix: 2 point mode for wpx and cqww (NA stns)
 
-It is now possible to create your own contest.
-E.g. for the r1fieldday you can enter the following in logcfg.dat:
+It is now possible to create your own contest. E.g. for the r1fieldday you can
+enter the following in logcfg.dat:
 
 #dissable all standard contests
 CONTEST=fieldday
 COUNTRY_MULT 		(dxcc countries = multiplier)
 2EU3DX_POINTS 		(2 points for qso's in own continent, 3 for DX)
-PORTABLE_MULT_2      (x 2 for qso with portable stations)
-
-If you need specific parameters for certain contest, please ask (you never know..).
-
+PORTABLE_MULT_2      (4 or 6 points for qso with portable stations)
 
 tlf-0.5.2
 ========
@@ -213,14 +1250,12 @@ Major changes with respect to version TLF-0.4.5 are:
 The new directory structure:
 
 /<homedir>/.../<contestdir>	separate directory per contest (r/w)
-<PREFIX>/bin					binaries and scripts
-<PREFIX>/share/tlf			callmaster, ctydb, default templates
+<PREFIX>/bin			binaries and scripts
+<PREFIX>/share/tlf		callmaster, ctydb, default templates
 <PREFIX>/share/tlf/doc		documentation
 <PREFIX>/share/tlf/examples	template config files per contest
 <PREFIX>/share/tlf/src		source code
-/tmp/tlf						all temporary files
+/tmp/tlf			all temporary files
 
 
 
-See /doc/README and ChangeLog for details
-See the html manual for answers to most of your questions  :-)
