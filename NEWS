@@ -20,7 +20,6 @@ New features:
     - changes in logcfg.dat handling !Fix your contest rules!
       * allow >9 points for any point scoring 
       * drop old unneeded keywords (MANY_CALLS, SPOTLIST, FILTER)
-      * keywords for CQ_TU_MSG, VKCQM and VKSPM are now correctly recognized.
       * fixed keywords for CQ_TU_MSG, VKCQM and VKSPM according to manual
       * BANDMAP=<xxx>,<nn> allows configuration of the new bandmap display 
         (see man page)
@@ -35,9 +34,10 @@ New features:
     - drop special handling for TenTec ORION (correctly handled by hamlib in 
       meantime)
 
-    - changed handling of comments for WYSIWYG_ONCE and _MULTI
+    - changed handling of comments for WYSIWYG_ONCE and WYSIWYG_MULTI
       Old code stopped multi recognition at first space in comment string. 
-      Changed to strip only trailing spaces. Was so back before tlf-0.9.21
+      Changed to use whole string but strip trailing spaces. Was so back 
+      before tlf-0.9.21
 
     - Better handling of lines from external multiplier file
       * Allow comment lines (starting with '#')
@@ -61,7 +61,7 @@ Fixed bugs:
       * fix bad scoring of multis
       * correct position of pfx display in bottom line of check window
       * correct display of 1A stations in info line
-      * wrong false return value from searchcallarray
+      * wrong return value from searchcallarray
       * wrong handling of corner cases for some internal array scans
 
 Reworked internal structure:
@@ -82,7 +82,7 @@ stopped old version from working with new GCC and GLIBC.
  * Rewrote handling of initial exchange file. It now allows empty 
    and comment lines (#) and spaces around the callsign. Leading 
    space before comment gets ignored.
- * Changed ESC handling in comemnt and call input field:
+ * Changed ESC handling in comment and call input field:
    Does no longer wipe out call and exchange field if you started sending.
  * New callmaster and cty.dat file (tnx OK1RR).
 
