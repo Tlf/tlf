@@ -28,4 +28,4 @@
 play $1 -q 2>/dev/null
 
 #unmute mic
-#amixer -c 0 set Mic un mute -q
+#amixer -c 0 set Mic unmute -q
