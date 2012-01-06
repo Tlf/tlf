@@ -44,12 +44,18 @@ int write_cabrillo(void)
 
     int rc;
     char standardexchange[70] = "";
+    char cabrillo_tmp_name[80];
+    char cmd[80];
     char buf[181];
     char buffer[4000] = "";
 
     FILE *fp1, *fp2;
 
     getsummary();
+
+    strcpy(cabrillo_tmp_name, call);
+    cabrillo_tmp_name[strlen(call)-1] = '\0'; /* drop \n */
+    strcat(cabrillo_tmp_name, ".cbr");
 
     if (strlen(exchange) > 0)
 	strcpy(standardexchange, exchange);
@@ -326,7 +332,8 @@ rprt given
     fclose(fp2);
 
     rc = system("cat cabrillo >> header");
-    rc = system("cp header cabrillo");
+    sprintf(cmd, "cp header %s", cabrillo_tmp_name);
+    rc = system(cmd);
     rc = system("mv header summary.txt");
 
     return (0);
@@ -395,7 +402,7 @@ int write_adif(void)
 	return (1);
     }
     strcpy(adif_tmp_name, whichcontest);
-    strcat(adif_tmp_name, ".adif");
+    strcat(adif_tmp_name, ".adi");
 
     if ((fp2 = fopen(adif_tmp_name, "w")) == NULL) {
 	fprintf(stdout, "Opening ADIF file not possible.\n");
