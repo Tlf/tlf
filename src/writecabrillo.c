@@ -446,7 +446,7 @@ int write_adif(void)
 	    strcat(buffer, "<CALL:");
 	    strncpy(adif_tmp_call, buf + 29, 12);
 	    strcpy(adif_tmp_call, trim(adif_tmp_call));
-	    snprintf(resultat, sizeof(resultat), "%d",
+	    snprintf(resultat, sizeof(resultat), "%zd",
 		     strlen(adif_tmp_call));
 	    strcat(buffer, resultat);
 	    strcat(buffer, ">");
@@ -547,7 +547,7 @@ int write_adif(void)
 		strcat(buffer, "4>");
 		strncat(buffer, buf + 23, 4);
 	    } else {
-		snprintf(resultat, sizeof(resultat), "%d",
+		snprintf(resultat, sizeof(resultat), "%zd",
 			 strlen(standardexchange));
 		strcat(buffer, resultat);
 		strcat(buffer, ">");
@@ -558,7 +558,7 @@ int write_adif(void)
 	    strncpy(adif_tmp_rr, buf + 49, 4);
 	    strcpy(adif_tmp_rr, trim(adif_tmp_rr));
 	    strcat(buffer, "<RST_RCVD:");
-	    snprintf(resultat, sizeof(resultat), "%d",
+	    snprintf(resultat, sizeof(resultat), "%zd",
 		     strlen(adif_tmp_rr));
 	    strcat(buffer, resultat);
 	    strcat(buffer, ">");
@@ -567,7 +567,7 @@ int write_adif(void)
 /* SRX - received contest number */
 	    strncpy(adif_rcvd_num, buf + 54, 14);
 	    strcpy(adif_rcvd_num, trim(adif_rcvd_num));
-	    snprintf(resultat, sizeof(resultat), "%d",
+	    snprintf(resultat, sizeof(resultat), "%zd",
 		     strlen(adif_rcvd_num));
 	    strcat(buffer, "<SRX:");
 	    strcat(buffer, resultat);
