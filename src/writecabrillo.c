@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2012           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +66,7 @@ int write_cabrillo(void)
 	return (1);
     }
     if ((fp2 = fopen("./cabrillo", "w")) == NULL) {
-	fprintf(stdout, "Opening cbr  file not possible.\n");
+	fprintf(stdout, "Opening cbr file not possible.\n");
 	fclose(fp1);		//added by F8CFE
 	return (2);
     }
@@ -362,12 +363,12 @@ char *trim(char *string)
     return (string);
 }
 
+
 /*
     The ADIF function has been written according ADIF v1.00 specifications
-    as shown on http://home.no.net/jlog/adif/adif.html or http://www.adif.org
+    as shown on http://www.adif.org
     LZ3NY
 */
-
 int write_adif(void)
 {
 
@@ -377,7 +378,6 @@ int write_adif(void)
     extern int exchange_serial;
     extern char modem_mode[];
 
-//  char buf[81]="";    ### bug fix
     char buf[181] = "";
     char buffer[181] = "";
     char standardexchange[70] = "";
@@ -407,24 +407,10 @@ int write_adif(void)
     if ((fp2 = fopen(adif_tmp_name, "w")) == NULL) {
 	fprintf(stdout, "Opening ADIF file not possible.\n");
 	return (2);
-    } else {
-	fputs
-	    ("######################################################################################\n",
-	     fp2);
-	fputs
-	    ("#                     ADIF v1.00 data file exported by TLF\n",
-	     fp2);
-	fputs
-	    ("# according to specifications on http://home.no.net/jlog/adif/adif.html\n",
-	     fp2);
-	fputs("#\n", fp2);
-	fputs
-	    ("######################################################################################\n",
-	     fp2);
-	fputs("<adif_ver:4>1.00\n<eoh>\n", fp2);
-    }
+    } 
 
-    /* in case using write_adif() without write_cabrillo() */
+    /* in case using write_adif() without write_cabrillo() 
+     * just ask for the needed information */
     if ((strlen(standardexchange) == 0) && (exchange_serial != 1)) {
 	nicebox(14, 0, 1, 78, "Exchange used:");
 	mvprintw(15, 1,
@@ -436,11 +422,29 @@ int write_adif(void)
 	getnstr(standardexchange, 30);
 	noecho();
     }
-//while  (fgets (buf,  180,  fp1))              ### bug fix
+
+    /* write header */
+    fputs
+	("################################################################################\n",
+	 fp2);
+    fputs
+	("#                     ADIF v1.00 data file exported by TLF\n",
+	 fp2);
+    fputs
+	("#              according to specifications on http://www.adif.org\n",
+	 fp2);
+    fputs("#\n", fp2);
+    fputs
+	("################################################################################\n",
+	 fp2);
+    fputs("<adif_ver:4>1.00\n<eoh>\n", fp2);
+
     while (fgets(buf, sizeof(buf), fp1)) {
+
+	buffer[0] = '\0';
+
 	if ((buf[0] != ';') && ((buf[0] != ' ') || (buf[1] != ' '))
 	    && (buf[0] != '#') && (buf[0] != '\n') && (buf[0] != '\r')) {
-	    buffer[0] = '\0';
 
 /* CALLSIGN */
 	    strcat(buffer, "<CALL:");
@@ -577,12 +581,9 @@ int write_adif(void)
 
 /* <EOR> */
 	    strcat(buffer, "<eor>\n");	//end of ADIF row
-	}
 
-	if (strlen(buffer) > 1)
 	    fputs(buffer, fp2);
-	buffer[0] = '\0';
-
+	}
     }				// end fgets() loop
 
     fclose(fp1);
