@@ -48,6 +48,7 @@ int changepars(void)
     extern int trx_control;
     extern int editor;
     extern int packetinterface;
+    extern int nopacket;
     extern int cqdelay;
     extern int ctcomp;
     extern SCREEN *mainscreen;
@@ -481,7 +482,7 @@ int changepars(void)
 	}
     case 33:			/* PACKET  */
 	{
-	    if (packetinterface > 0)
+	    if ((nopacket == 0) && (packetinterface > 0))
 		packet();
 	    break;
 	}
@@ -544,7 +545,7 @@ int changepars(void)
 
     case 37:			/* RECONNECT  */
 	{
-	    if (packetinterface > 0) {
+	    if ((nopacket == 0) && (packetinterface > 0)) {
 		cleanup_telnet();
 		init_packet();
 		packet();
@@ -741,7 +742,7 @@ int changepars(void)
 	mvprintw(12, 29, "OK !        ");
 	writeparas();
     } else {
-	if (packetinterface > 0)
+	if ((nopacket ==0) && (packetinterface > 0))
 	    packet();
     }
 
