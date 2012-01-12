@@ -389,6 +389,8 @@ int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
 int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
 
+int nopacket = 0;		/* set if tlf is called with '-n' */
+
 
 pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -411,7 +413,6 @@ int main(int argc, char *argv[])
     int ret;
     int retval;
     char keyerbuff[3];
-    int nopacket = 0;
 
     while ((argc > 1) && (argv[1][0] == '-')) {
 	switch (argv[1][1]) {
@@ -668,7 +669,7 @@ int main(int argc, char *argv[])
 
 	refreshp();
 
-	if (packetinterface != 0) {
+	if ((nopacket == 0) && (packetinterface != 0)) {
 
 	    if (init_packet() == 0)
 		packet();
