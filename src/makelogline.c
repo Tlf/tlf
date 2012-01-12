@@ -27,6 +27,58 @@
 
 #include <assert.h>
 
+/** Construct a new line to add to the logfile.
+ *
+ * The structure of a logline entry is as follows:
+ * - each logline contains exactly 80 characters
+ * - it consists of 2 parts
+ *   | fixed part one (54 chars) | contest dependent part 2 (26 chars) |
+ * - fixed part:\n
+ *     \verbatim
+ *     0        1         2         3         4         5
+ *     123456789012345678901234567890123456789012345678901234
+ *     bndmod dd-mmm-yy hh:mm qso.  call.......... rst  rst  
+ *                            nr..                 his  my.\endverbatim
+ *   Alternatively in 'qso' or 'dxped' mode if 'LOGFREQUENCY' is set 
+ *     there is the khz part of the working frequnecy instead of 
+ *     the qso number:
+ *     \verbatim
+ *     0        1         2         3         4         5
+ *     123456789012345678901234567890123456789012345678901234
+ *     bndmod dd-mmm-yy hh:mm  khz  call.......... rst  rst  
+ *                                                 his  my.\endverbatim
+ * - contest dependent part (list may not complete):\n
+ *   - QSO mode
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     comment................\endverbatim
+ *   - wpx
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     serialnr      pfx     pp\endverbatim
+ *     pfx - new prefix, pp -points
+ *   - cqww
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     hiszone       pfx zn  pp\endverbatim
+ *     zn - new zone
+ *   - normal contest
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     exchange      mult    pp\endverbatim
+ *     mult - multi (cty, province, ...)
+ *   - arllss
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     nr.. p cc sctn        pp\endverbatim
+ *     nr - serial exchange, p - precedent, cc - check, sctn - section
+ */
+
 void makelogline(void)
 {
 
@@ -45,6 +97,8 @@ void makelogline(void)
     char khz[5] = " 000";
     int fnr = 0;
     int new_pfx;
+
+    /* first fixed (contest independent) part */
 
     logline4[0] = '\0';
     qsonr_to_str();
@@ -107,7 +161,7 @@ void makelogline(void)
 	my_rst[2] = ' ';
     }
 
-    strcat(logline4, his_rst);	/* 54 */
+    strcat(logline4, his_rst);	/* till 54 */
     strcat(logline4, "  ");
     strcat(logline4, my_rst);
     strcat(logline4, "  ");
@@ -115,6 +169,9 @@ void makelogline(void)
     his_rst[1] = '9';		/* restore RST to 599 */
     my_rst[1] = '9';
 
+
+    /* second (contest dependent part of logline */
+    
     if (arrlss == 1) {		
 	// ----------------------------arrlss----------------
 	strcat(logline4, ssexchange);
