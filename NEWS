@@ -1,3 +1,19 @@
+tlf-1.1.1
+=========
+Minor maintenance release.
+
+New features:
+    - New doc/README.ssb gives some good hints how to use TLF on SSB contest.
+      Thansk Andy, D4KNO for contributing.
+
+Bug fixes:
+    - Fix spelling of unmute command in scripts/play_vk. Tnx G4KNO
+    - Make sure that no packet related functions get called if started 
+      with 'tlf -n'
+    - Fix segfault during build of logline if not in contest mode - esp.
+      'RULES=qso'
+    - Fix display of background for partials when leaving call edit mode
+
 tlf-1.1.0
 =========
 
