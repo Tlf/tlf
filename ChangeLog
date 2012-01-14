@@ -1,6 +1,33 @@
+2012-01-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/calledit.c: simplify calledit()  
+    - drop not working keys for 'home' and 'down' 
+    - factor out display code 
+    - fix display of background for partials when leaving edit mode
+
+2012-01-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c, src/main.c: Make sure that no packet related functions
+  get called if started with 'tlf -n'
+
+2012-01-12  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/makelogline.c, src/makelogline.h: Fix makelogline segfault  if not in 
+  contest mode Logline gets not cut back to 68 characters. Results in a buffer
+  overflow.  Add description of logline format
+
+2012-01-08  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/Makefile.am, doc/README.ssb: Added README.ssb from Andy, G4KNO. Thanks
+  for contributing.
+
+2012-01-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * scripts/play_vk: fix spelling of unmute command. Tnx G4KNO
+
 2011-12-22  Thomas Beierlein <tomjbe@gentoo.org>
 
-  * NEWS, doc/README: move tlf's history of changess to NEWS file
+  * NEWS, doc/README: move tlf's history of changes to NEWS file
   * tlf.1.in: adapt man page to new features
 
 2011-12-21  Thomas Beierlein <tomjbe@gentoo.org>
