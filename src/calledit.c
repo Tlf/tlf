@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2011           Thomas Beierlein <tb@forth-ev.deY
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,24 +38,24 @@ void calledit(void)
     char dupecall[20];
     char call1[30], call2[10];
 
-    attroff(A_STANDOUT);
-    attron(COLOR_PAIR(COLOR_GREEN));
-
-    mvprintw(12, 29, hiscall);
-    refreshp();
     l = strlen(hiscall);
     b = l - 1;
+
 
     while ((i != 27) && (b <= strlen(hiscall))) {
 
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(COLOR_GREEN));
 
+	mvprintw(12, 29, "            ");
+	mvprintw(12, 29, hiscall);
 	mvprintw(12, 29 + b, "");
+	/* no refreshp() here as getch() calls wrefresh() for the 
+	 * panel with last output (whre the cursor should go */
 
 	i = onechar();
 
-	if ((i == 161) || (i == 160))
+	if ((i == 161) || (i == 160))	// Ins / Del
 	    cnt++;
 	else {
 	    if (i != 27)
@@ -69,74 +70,31 @@ void calledit(void)
 	if (i == 1)		// ctrl-A, home
 	{
 	    b = 0;
-	    attroff(A_STANDOUT);
-	    attron(COLOR_PAIR(COLOR_GREEN));
-
-	    mvprintw(12, 29, hiscall);
-	    mvprintw(12, 29 + b, "");
-	    refreshp();
 	    x = 0;
 	}
 	if (i == 5)		// ctrl-E, End
 	{
 	    b = strlen(hiscall) - 1;
-	    attroff(A_STANDOUT);
-	    attron(COLOR_PAIR(COLOR_GREEN));
-
-	    mvprintw(12, 29, hiscall);
-	    mvprintw(12, 29 + b, "");
-	    refreshp();
 	    x = 0;
 	}
 
 	if (i == 155) {		// left
 
-	    if (b >= 1)
+	    if (b > 0)
 		b--;
-
-	    attroff(A_STANDOUT);
-	    attron(COLOR_PAIR(COLOR_GREEN));
-
-	    mvprintw(12, 29, hiscall);
-	    mvprintw(12, 29 + b, "");
-	    refreshp();
 
 	} else if (i == 154) {	// right
 	    if (b < strlen(hiscall) - 1) {
 		b++;
 	    } else
-		break;
-
-	    attroff(A_STANDOUT);
-	    attron(COLOR_PAIR(COLOR_GREEN));
-
-	    mvprintw(12, 29, hiscall);
-	    mvprintw(12, 29 + b, "");
-	    refreshp();
-
-	} else if (i == 158) {	// home
-	    attroff(A_STANDOUT);
-	    attron(COLOR_PAIR(COLOR_GREEN));
-	    b = 1;
-	    mvprintw(12, 29, hiscall);
-	    mvprintw(12, 29 + b, "");
-	    refreshp();
-
-	} else if (i == 152) {	// end
-	    attroff(A_STANDOUT);
-	    attron(COLOR_PAIR(COLOR_GREEN));
-	    b = strlen(hiscall) - 2;
-	    mvprintw(12, 29, hiscall);
-	    mvprintw(12, 29 + b, "");
-	    refreshp();
+		break;		/* stop edit */
 
 	} else if (i == 161) {	/* delete */
 
 	    l = strlen(hiscall);
 
 	    for (j = b; j <= l; j++) {
-		hiscall[j] = hiscall[j + 1];
-
+		hiscall[j] = hiscall[j + 1];	/* move to left incl. \0 */
 	    }
 
 	    strncpy(dupecall, hiscall, 16);	/* update cty info */
@@ -145,13 +103,6 @@ void calledit(void)
 
 	    if (cnt > 1)
 		searchlog(hiscall);
-
-	    attroff(A_STANDOUT);
-	    attron(COLOR_PAIR(COLOR_GREEN));
-
-	    mvprintw(12, 29, hiscall);
-	    mvprintw(12, 29 + strlen(hiscall), " ");
-	    mvprintw(12, 29 + b, "");
 
 	} else if (i == 127) {	/* backspace */
 
@@ -163,7 +114,6 @@ void calledit(void)
 
 		for (j = b; j <= l; j++) {
 		    hiscall[j] = hiscall[j + 1];
-
 		}
 
 		strncpy(dupecall, hiscall, 16);	/* update cty info */
@@ -172,15 +122,8 @@ void calledit(void)
 
 		if (cnt > 1)
 		    searchlog(hiscall);
-
-		attroff(A_STANDOUT);
-		attron(COLOR_PAIR(COLOR_GREEN));
-
-		mvprintw(12, 29, hiscall);
-		mvprintw(12, 29 + strlen(hiscall), " ");
-		mvprintw(12, 29 + b, "");
-
 	    }
+
 	} else if (i == 160) {	/* insert */
 	    if (insertflg == 0)
 		insertflg = 1;
@@ -194,7 +137,6 @@ void calledit(void)
 
 	    if (((i >= 65) && (i <= 90)) || ((i >= 47) && (i <= 57))) {
 
-//                              hiscall[b] = i;
 		if (b <= 12) {
 		    strncpy(call1, hiscall, b);
 		}
@@ -216,10 +158,6 @@ void calledit(void)
 			strcpy(hiscall, call1);
 		    }
 		}
-		attroff(A_STANDOUT);
-		attron(COLOR_PAIR(COLOR_GREEN));
-
-		mvprintw(12, 29, hiscall);
 
 		if ((b < strlen(hiscall) - 1) && (b <= 12))
 		    b++;
@@ -232,11 +170,6 @@ void calledit(void)
 
 		searchlog(hiscall);
 
-		attroff(A_STANDOUT);
-		attron(COLOR_PAIR(COLOR_GREEN));
-
-		mvprintw(12, 29, hiscall);
-		mvprintw(12, 29 + b, "");
 	    } else if (x != 0)
 		i = 27;
 
@@ -245,13 +178,15 @@ void calledit(void)
 
     }
 
-    searchlog(hiscall);
-
     attroff(A_STANDOUT);
     attron(COLOR_PAIR(COLOR_GREEN));
 
     mvprintw(12, 29, hiscall);
+    mvprintw(12, 29, "            ");
     refreshp();
+
+    attron(A_STANDOUT);
+    searchlog(hiscall);
 }
 
 int insert_char(int curposition)
