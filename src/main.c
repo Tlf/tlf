@@ -212,9 +212,10 @@ int total = 0;
 int band_score[9];
 int dupe = 0;
 int callfound = 0;
-int partials = 0;
-int use_part = 0;
-int block_part = 0;
+int partials = 0;	/**< show partial calls */
+int use_part = 0;	/**< if 1 use automatically found partial call */
+int block_part = 0; 	/**< if 1 block the call autocompletion
+			  for these QSO */
 char para_word[80] = "LODNCFS:3C\n";	/* longcw, cluster, search,  DE, contest, filter,  speed,  delay */
 char lastmsg[1000] = "";
 int scale_values[20] =
