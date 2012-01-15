@@ -4,7 +4,7 @@ Minor maintenance release.
 
 New features:
     - New doc/README.ssb gives some good hints how to use TLF on SSB contest.
-      Thansk Andy, D4KNO for contributing.
+      Thansk Andy, G4KNO for contributing.
 
 Bug fixes:
     - Fix spelling of unmute command in scripts/play_vk. Tnx G4KNO
