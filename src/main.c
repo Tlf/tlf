@@ -513,15 +513,6 @@ int main(int argc, char *argv[])
 	    sleep(5);
 	    exit(EXIT_FAILURE);
 	}
-	// use linux console colours
-	init_pair(COLOR_BLACK, tlfcolors[0][0], tlfcolors[0][1]);
-	init_pair(COLOR_GREEN, tlfcolors[1][0], tlfcolors[1][1]);
-	init_pair(COLOR_RED, tlfcolors[2][0], tlfcolors[2][1]);
-	init_pair(COLOR_CYAN, tlfcolors[3][0], tlfcolors[3][1]);
-	init_pair(COLOR_WHITE, tlfcolors[4][0], tlfcolors[4][1]);
-	init_pair(COLOR_MAGENTA, tlfcolors[5][0], tlfcolors[5][1]);
-	init_pair(COLOR_BLUE, tlfcolors[6][0], tlfcolors[6][1]);
-	init_pair(COLOR_YELLOW, tlfcolors[7][0], tlfcolors[7][1]);
 
 	strcpy(tlfversion, "        Welcome to tlf-");
 	strcat(tlfversion, VERSION);
@@ -554,31 +545,27 @@ int main(int argc, char *argv[])
 		init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_BLUE);
 		init_pair(COLOR_RED, COLOR_WHITE, 8);
 		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_MAGENTA);
+		init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_WHITE);
+		init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_WHITE);
 	    } else {
 		init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_YELLOW);
 		init_pair(COLOR_RED, COLOR_WHITE, COLOR_RED);
 		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_RED);
-	    }
-	    init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
-	    if (use_xterm == 1) {
-		init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_WHITE);
-		init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_WHITE);
-	    } else {
 		init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_RED);
 		init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_YELLOW);
 	    }
+	    init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
 	    init_pair(COLOR_YELLOW, COLOR_CYAN, COLOR_YELLOW);
 	} else {
-	    // use linux console colours redefined....
-	    init_pair(COLOR_BLACK, tlfcolors[0][0], tlfcolors[0][1]);
-	    init_pair(COLOR_GREEN, tlfcolors[1][0], tlfcolors[1][1]);
-	    init_pair(COLOR_RED, tlfcolors[2][0], tlfcolors[2][1]);
-	    init_pair(COLOR_CYAN, tlfcolors[3][0], tlfcolors[3][1]);
-	    init_pair(COLOR_WHITE, tlfcolors[4][0], tlfcolors[4][1]);
-	    init_pair(COLOR_MAGENTA, tlfcolors[5][0], tlfcolors[5][1]);
-	    init_pair(COLOR_BLUE, tlfcolors[6][0], tlfcolors[6][1]);
-	    init_pair(COLOR_YELLOW, tlfcolors[7][0], tlfcolors[7][1]);
-
+	    // use linux console colours
+	    init_pair(COLOR_BLACK, tlfcolors[0][0], tlfcolors[0][1]); // b/w
+	    init_pair(COLOR_GREEN, tlfcolors[1][0], tlfcolors[1][1]); // Gn/Ye
+	    init_pair(COLOR_RED, tlfcolors[2][0], tlfcolors[2][1]);   // W/R
+	    init_pair(COLOR_CYAN, tlfcolors[3][0], tlfcolors[3][1]);  // Cy/W
+	    init_pair(COLOR_WHITE, tlfcolors[4][0], tlfcolors[4][1]); // W/B
+	    init_pair(COLOR_MAGENTA, tlfcolors[5][0], tlfcolors[5][1]); // Mag/w
+	    init_pair(COLOR_BLUE, tlfcolors[6][0], tlfcolors[6][1]);  // Bl/Y
+	    init_pair(COLOR_YELLOW, tlfcolors[7][0], tlfcolors[7][1]);// W/B
 	}
 
 	mults_possible = g_ptr_array_new();
