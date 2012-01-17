@@ -20,7 +20,7 @@ tlf_SOURCES = \
 	main.c makelogline.c messagechange.c muf.c \
 	nicebox.c note.c netkeyer.c\
 	onechar.c \
-	paccdx.c parse_logcfg.c prevqso.c printcall.c printfield.c \
+	paccdx.c parse_logcfg.c prevqso.c printcall.c \
 	qrb.c qsonr_to_str.c \
 	readcalls.c readctydata.c recall_exchange.c rules.c \
 	score.c scroll_log.c  searchcallarray.c searchlog.c sendbuf.c \
@@ -51,7 +51,7 @@ noinst_HEADERS = \
 	main.h makelogline.h messagechange.h muf.h multiplierinfo.h \
 	nicebox.h note.h netkeyer.h\
 	onechar.h \
-	paccdx.h parse_logcfg.h prevqso.h printcall.h printfield.h \
+	paccdx.h parse_logcfg.h prevqso.h printcall.h \
 	qrb.h qsonr_to_str.h \
 	readcalls.h readctydata.h recall_exchange.h \
 	rules.h \

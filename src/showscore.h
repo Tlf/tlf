@@ -17,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 #include <curses.h>
-#include "printfield.h"
 #include "tlf.h"
 #include "nicebox.h"
 #include "last10.h"

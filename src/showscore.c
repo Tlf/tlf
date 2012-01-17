@@ -24,8 +24,9 @@
 
 #include "globalvars.h"
 #include "showscore.h"
-#include "freq_display.h"
 #include <glib.h>
+
+void printfield (int x, int y, int number);
 
 int showscore(void)
 {
@@ -407,4 +408,11 @@ int showscore(void)
     return (0);
 }
 
+/** formated print of integer number 0..9999 */
+void printfield (int y, int x, int number)
+{
+    attron(COLOR_PAIR(COLOR_WHITE));
+
+    mvprintw(y, x, " %4d", number);
+}
 
