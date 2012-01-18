@@ -68,9 +68,9 @@ int showscore(void)
 
 	if ((bandinx != BANDINDEX_30) && (bandinx != BANDINDEX_17)
 	    && (bandinx != BANDINDEX_12)) {
-	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	    mvprintw(1, 45, "Band   160   80   40   20   15   10");
 	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	    mvprintw(1, 45, "Band   160   80   40   20   15   10");
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	    mvprintw(2, 45, "QSO's ");
 
 	    printfield(2, 50, band_score[BANDINDEX_160]);
@@ -80,12 +80,10 @@ int showscore(void)
 	    printfield(2, 70, band_score[BANDINDEX_15]);
 	    printfield(2, 75, band_score[BANDINDEX_10]);
 	} else {
-	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	    mvprintw(1, 45, "Band   160   80   40   30   17   12");
 	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	    mvprintw(1, 45, "Band   160   80   40   30   17   12");
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	    mvprintw(2, 45, "QSO's ");
-	    mvprintw(17, 40, "Band   160   80   40   30   17   12");
-	    mvprintw(18, 40, "QSO's ");
 
 	    printfield(2, 50, band_score[BANDINDEX_160]);
 	    printfield(2, 55, band_score[BANDINDEX_80]);
@@ -334,7 +332,7 @@ int showscore(void)
 	}
 
 
-	attron(COLOR_PAIR(COLOR_GREEN));
+	attron(COLOR_PAIR(C_HEADER));
 	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1) || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
 	    if (wpx == 1)
 		totalmults = nr_of_px;
@@ -413,7 +411,7 @@ int showscore(void)
 /** formated print of integer number 0..9999 */
 void printfield (int y, int x, int number)
 {
-    attron(COLOR_PAIR(COLOR_WHITE));
+    attron(COLOR_PAIR(C_LOG));
 
     mvprintw(y, x, " %4d", number);
 }
