@@ -523,9 +523,8 @@ int main(int argc, char *argv[])
 	init_pair(COLOR_BLUE, tlfcolors[6][0], tlfcolors[6][1]);
 	init_pair(COLOR_YELLOW, tlfcolors[7][0], tlfcolors[7][1]);
 
-	strcpy(tlfversion, "        Welcome to tlf-");
-	strcat(tlfversion, VERSION);
-	strcat(tlfversion, " by PA0R!!");
+	sprintf(tlfversion,
+		"        Welcome to tlf-%s by PA0R!!" , VERSION);
 	showmsg(tlfversion);
 	showmsg("");
 
@@ -656,10 +655,7 @@ int main(int argc, char *argv[])
 	checkparameters();	/* check .paras file */
 
 	clear();
-	strcpy(tlfversion, "        Welcome to tlf-");
-	strcat(tlfversion, VERSION);
-	strcat(tlfversion, " by PA0R!!\n\n");
-	mvprintw(0, 0, tlfversion);
+	mvprintw(0, 0, "        Welcome to tlf-%s by PA0R!!\n\n" , VERSION);
 	refreshp();
 	getmessages();		/* read .paras file */
 
