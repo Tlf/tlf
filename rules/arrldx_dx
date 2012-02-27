@@ -11,7 +11,7 @@ COUNTRYLIST=W,VE
 USE_COUNTRYLIST_ONLY
 COUNTRY_LIST_POINTS=3
 SECTION_MULT
-RECALL_EXCHANGE
+RECALL_MULTS
 #
 ##################################
 #                                #
