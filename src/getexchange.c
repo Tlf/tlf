@@ -29,6 +29,7 @@
 #include <glib.h>
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
+#define LEN(array) (sizeof(array) / sizeof(array[0]))
 
 int play_file(char *audiofile);
 
@@ -539,8 +540,7 @@ int checkexchange(int x)
 
     // get the pattern
 
-    if (strlen(comment) < 2)
-	strcpy(cmpattern, "u                    ");
+    strcpy(cmpattern, "u                    ");
 
     if (strlen(comment) > 0) {
 
@@ -579,7 +579,7 @@ int checkexchange(int x)
 
 	hr = 0;
 
-	for (ii = 0; ii < 6; ii++) {
+	for (ii = 0; ii < LEN(zonepats); ii++) {
 
 	    hr = getlastpattern(zonepats[ii]);
 
@@ -600,7 +600,7 @@ int checkexchange(int x)
 
 	hr = 0;
 
-	for (ii = 0; ii < 5; ii++) {
+	for (ii = 0; ii < LEN(callpats); ii++) {
 
 	    hr = getlastpattern(callpats[ii]);	// call update ?
 
@@ -649,7 +649,7 @@ int checkexchange(int x)
 	if (s != 0)
 	    snprintf(serial, sizeof(serial), "%4d", s);
 
-	for (ii = 0; ii < 8; ii++) {
+	for (ii = 0; ii < LEN(serpats); ii++) {
 
 	    hr = getlastpattern(serpats[ii]);
 
@@ -679,7 +679,7 @@ int checkexchange(int x)
 
 	hr = 0;
 	/* look for a single letter */
-	for (ii = 0; ii < 8; ii++) {
+	for (ii = 0; ii < LEN(precpats); ii++) {
 
 	    hr = getlastpattern(precpats[ii]);
 
@@ -696,7 +696,7 @@ int checkexchange(int x)
 	// get call update
 	hr = 0;
 
-	for (ii = 0; ii < 5; ii++) {
+	for (ii = 0; ii < LEN(callpats); ii++) {
 
 	    hr = getlastpattern(callpats[ii]);
 
@@ -739,7 +739,7 @@ int checkexchange(int x)
 	// get check
 	hr = 0;
 
-	for (ii = 0; ii < 6; ii++) {
+	for (ii = 0; ii < LEN(checkpats); ii++) {
 
 	    hr = getlastpattern(checkpats[ii]);
 	    if (hr > 0) {
@@ -753,7 +753,7 @@ int checkexchange(int x)
 	hr = 0;
 	*section = '\0';
 
-	for (ii = 0; ii < 10; ii++) {
+	for (ii = 0; ii < LEN(secpats); ii++) {
 
 	    hr = getlastpattern(secpats[ii]);
 
@@ -817,7 +817,7 @@ int checkexchange(int x)
 	    if (s != 0)
 		sprintf(serial, "%4d", atoi(comment));
 
-	    for (ii = 0; ii < 8; ii++) {
+	    for (ii = 0; ii < LEN(serpats); ii++) {
 
 		hr = getlastpattern(serpats[ii]);
 
@@ -835,7 +835,7 @@ int checkexchange(int x)
 
 	    hr = 0;
 
-	    for (ii = 0; ii < 7; ii++) {
+	    for (ii = 0; ii < LEN(secpats); ii++) {
 
 		hr = getlastpattern(secpats[ii]);
 
@@ -847,7 +847,7 @@ int checkexchange(int x)
 			checksection[strlen(checksection) - 1] = '\0';
 		    }
 
-		    for (jj = 0; jj < MAX_MULTS; jj++) {
+		    for (jj = 0; jj < mults_possible->len; jj++) {
 
 			if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
 			    && (strcmp(checksection, MULTS_POSSIBLE(jj)) ==
@@ -863,7 +863,7 @@ int checkexchange(int x)
 
 	    hr = 0;
 
-	    for (ii = 0; ii < 7; ii++) {
+	    for (ii = 0; ii < LEN(sectionpats); ii++) {
 
 		hr = getlastpattern(sectionpats[ii]);
 
@@ -885,7 +885,7 @@ int checkexchange(int x)
 
 	    hr = 0;
 
-	    for (ii = 0; ii < 7; ii++) {
+	    for (ii = 0; ii < LEN(sectionpats); ii++) {
 
 		hr = getlastpattern(sectionpats[ii]);
 
@@ -919,7 +919,7 @@ int checkexchange(int x)
     // get call update
     hr = 0;
 
-    for (ii = 0; ii < 5; ii++) {
+    for (ii = 0; ii < LEN(callpats); ii++) {
 
 	hr = getlastpattern(callpats[ii]);
 
