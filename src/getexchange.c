@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@eudx.org>
+ *               2011-2012                Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -461,7 +462,7 @@ int checkexchange(int x)
 
 /* field of allowed pattern sequences 
  *
- * The chearacters have the following meaning:
+ * The characters have the following meaning:
  * u - undefined (left or right delimiter)
  * b - blank character
  * a - ascii character
@@ -538,8 +539,7 @@ int checkexchange(int x)
 
     int i, s, hr, ii, pr, jj;
 
-    // get the pattern
-
+    /* get the pattern sequence from comment string */
     strcpy(cmpattern, "u                    ");
 
     if (strlen(comment) > 0) {
@@ -577,8 +577,6 @@ int checkexchange(int x)
 	s = atoi(comment);
 	snprintf( zone, sizeof(zone), "%02d", s);
 
-	hr = 0;
-
 	for (ii = 0; ii < LEN(zonepats); ii++) {
 
 	    hr = getlastpattern(zonepats[ii]);
@@ -598,7 +596,6 @@ int checkexchange(int x)
 	if (strlen(hiscall) >= 2)
 	    OnLowerSearchPanel(34, zone_export);
 
-	hr = 0;
 
 	for (ii = 0; ii < LEN(callpats); ii++) {
 
@@ -619,7 +616,6 @@ int checkexchange(int x)
 		case 4:
 		    strncpy(callupdate, comment + hr, 6);
 		    callupdate[6] = '\0';
-
 		}
 
 		if (strlen(callupdate) > 3) {
@@ -631,7 +627,6 @@ int checkexchange(int x)
 		    mvprintw(12, 29, "%s", hiscall);
 		    mvprintw(12, 54, "%s", comment);
 		}
-
 	    }
 	}
 
@@ -639,8 +634,6 @@ int checkexchange(int x)
 
     // ---------------------------arrls------------------------------
     if (arrlss == 1) {
-
-	serial[4] = '\0';
 
 	// get serial nr.
 
@@ -677,7 +670,7 @@ int checkexchange(int x)
 	    precedent[0] = comment[0];
 	}
 
-	hr = 0;
+
 	/* look for a single letter */
 	for (ii = 0; ii < LEN(precpats); ii++) {
 
@@ -694,7 +687,6 @@ int checkexchange(int x)
 	}
 
 	// get call update
-	hr = 0;
 
 	for (ii = 0; ii < LEN(callpats); ii++) {
 
@@ -737,7 +729,6 @@ int checkexchange(int x)
 	}
 
 	// get check
-	hr = 0;
 
 	for (ii = 0; ii < LEN(checkpats); ii++) {
 
@@ -750,7 +741,6 @@ int checkexchange(int x)
 	}
 
 	// get section
-	hr = 0;
 	*section = '\0';
 
 	for (ii = 0; ii < LEN(secpats); ii++) {
@@ -777,7 +767,6 @@ int checkexchange(int x)
 		}
 	    }
 	}
-	hr = 0;
 
 	{
 	    char buf[40];
@@ -810,30 +799,30 @@ int checkexchange(int x)
 	if (serial_section_mult == 1) {
 
 	    // get serial nr.
-	    serial[4] = '\0';
 
 	    s = atoi(comment);
 
 	    if (s != 0)
-		sprintf(serial, "%4d", atoi(comment));
+		snprintf(serial, sizeof(serial), "%4d", atoi(comment));
 
 	    for (ii = 0; ii < LEN(serpats); ii++) {
 
 		hr = getlastpattern(serpats[ii]);
 
 		if (hr > 0)
-		    sprintf(serial, "%4d", atoi(comment + hr - 1));
+		    snprintf(serial, sizeof(serial), "%4d", 
+			    atoi(comment + hr - 1));
 
 		if (ii == 5 && hr > 0) {
-		    sprintf(serial, "%4d", atoi(comment + hr - 1));
-		    sprintf(check, "%2d", atoi(comment + hr + 2));
+		    snprintf(serial, sizeof(serial), "%4d", 
+			    atoi(comment + hr - 1));
+		    snprintf(check, sizeof(check), "%2d", 
+			    atoi(comment + hr + 2));
 		}
 
 	    }
 
 	    // get section
-
-	    hr = 0;
 
 	    for (ii = 0; ii < LEN(secpats); ii++) {
 
@@ -861,8 +850,6 @@ int checkexchange(int x)
 	}			// end serial_section_mult
 	if (sectn_mult == 1) {
 
-	    hr = 0;
-
 	    for (ii = 0; ii < LEN(sectionpats); ii++) {
 
 		hr = getlastpattern(sectionpats[ii]);
@@ -882,8 +869,6 @@ int checkexchange(int x)
 
 	}			//  end sectn_mult
 	if (dx_arrlsections == 1) {
-
-	    hr = 0;
 
 	    for (ii = 0; ii < LEN(sectionpats); ii++) {
 
@@ -909,15 +894,12 @@ int checkexchange(int x)
 
 	}			// end dx_arrlsections
 
-	hr = 0;
-
 	callupdate[0] = '\0';
 
     }
 
 
     // get call update
-    hr = 0;
 
     for (ii = 0; ii < LEN(callpats); ii++) {
 
@@ -965,7 +947,7 @@ int checkexchange(int x)
     ssexchange[0] = '\0';
 
 /*	if (serial_section_mult == 1) {
-		strcat(ssexchange,serial);
+		strcat (ssexchange,serial);
 		strcat (ssexchange, " ");
 	}
 */
