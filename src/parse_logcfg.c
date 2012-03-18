@@ -938,38 +938,44 @@ void parse_logcfg(char *inputbuffer)
 /* LZ3NY mods */
     case 95:{
 	    /* COUNTRY_LIST   (in file or listed in logcfg.dat)     LZ3NY
-	       First of all we are checking if inserted data into MULTIPLIER_LIST is a file name(multdatafile).
-	       If it is we are parsing the file. If we got case insensitive contest name,
+	       First of all we are checking if inserted data in
+	       COUNTRY_LIST= is a file name.  If it is we start
+	       parsing the file. If we got our case insensitive contest name,
 	       we copy the multipliers from it into multipliers_list.
-	       If input was not a file name we directly copy it into multiplier_list.
-	       The last step is to parse multipliers_list into an array (mit_multiplier_list)
-	       for future use.
+	       If the input was not a file name we directly copy it into
+	       multiplier_list (must not have a preceeding contest name).
+	       The last step is to parse the multipliers_list into an array
+	       (mit_multiplier_list) for future use.
 	     */
+
 	    int mit_fg = 0;
-	    char multiplier_list[50];
+	    static char multiplier_list[50] = ""; 	/* use only first
+							   COUNTRY_LIST
+							   definition */
 	    char mit_multlist[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
 
-	    if (strlen(multiplier_list) == 0) {	/* countries are set in setcontest.c */
-		strncpy(mit_multlist, inputbuffer + 12,
-			strlen(inputbuffer) - 12);
-		mit_multlist[strlen(mit_multlist) - 1] = '\0';
+	    if (strlen(multiplier_list) == 0) {	/* if first definition */
+		g_strlcpy(mit_multlist, inputbuffer + 12, sizeof(mit_multlist));
+		g_strchomp(mit_multlist);	/* drop trailing whitespace */
 
 		if ((fp = fopen(mit_multlist, "r")) != NULL) {
 
 		    while ( fgets(buffer, sizeof(buffer), fp) != NULL ) {
 
+			g_strchomp( buffer ); /* no trailing whitespace*/
+
+			/* accept only a line starting with the contest name
+			 * (CONTEST=) followed by ':' */
 			if (strncasecmp (buffer, whichcontest, 
 				strlen(whichcontest) - 1) == 0) {
 
 			    strncpy(multiplier_list,
 				    buffer + strlen(whichcontest) + 1,
 				    strlen(buffer) - 1);
-			    multiplier_list[strlen(multiplier_list)
-					    - 1] = '\0';
 			}
-		    }	// end while
+		    }
 
 		    fclose(fp);
 		} else {	/* not a file */
@@ -985,8 +991,7 @@ void parse_logcfg(char *inputbuffer)
 
 	    if (mit_mult_array != NULL) {
 		while (mit_mult_array) {
-		    strcpy(mit_multiplier_list[mit_fg],
-			   mit_mult_array);
+		    strcpy(mit_multiplier_list[mit_fg], mit_mult_array);
 		    mit_mult_array = strtok(NULL, ":,.-_\t ");
 		    mit_fg++;
 		}
@@ -995,20 +1000,18 @@ void parse_logcfg(char *inputbuffer)
 	    /* on which multiplier side of the rules we are */
 	    getpx(call);
 	    mult_side = exist_in_multi_list();
-	    mit_multlist[0] = '\0';
-	    multiplier_list[0] = '\0';
 	    setcontest();
 	    break;
 	}
 
-    case 96:{		//MULTIPLIER_POINTS       lz3ny
+    case 96:{		// COUNTRY_LIST_POINTS
 	    g_strlcpy(c_temp, inputbuffer + 20, sizeof(c_temp));
 	    if (countrylist_points == -1)
 		countrylist_points = atoi(c_temp);
 
 	    break;
 	}
-    case 97:{		//MULTIPLIER_ONLY         lz3ny
+    case 97:{		// COUNTRY_LIST_ONLY
 	    countrylist_only = 1;
 	    if (mult_side == 1)
 		countrylist_only = 0;
