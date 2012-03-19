@@ -91,12 +91,12 @@ int sc_sidetone;
 char sc_volume[3] = "";
   /* LZ3NY mods */
 char contest_name[50];
-int multiplier_points = -1;
+int countrylist_points = -1;
 int my_country_points = -1;
 int my_cont_points = -1;
 int dx_cont_points = -1;
 char mit_multiplier_list[255][6];
-int multiplier_only = 0;
+int countrylist_only = 0;
 int mult_side = 0;
 char *mit_mult_array;
 int in_country_list;

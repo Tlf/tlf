@@ -209,11 +209,10 @@ void parse_logcfg(char *inputbuffer)
 /* LZ3NY mods */
     extern int mult_side;
     extern int my_country_points;
-    extern int multiplier_only;
     extern int my_cont_points;
     extern int dx_cont_points;
-    extern int multiplier_points;
-    extern int multiplier_only;
+    extern int countrylist_points;
+    extern int countrylist_only;
     char c_temp[11];
     extern int my_cont_points;
     extern int dx_cont_points;
@@ -949,33 +948,30 @@ void parse_logcfg(char *inputbuffer)
 	    int mit_fg = 0;
 	    char multiplier_list[50];
 	    char mit_multlist[255] = "";
-	    char mit_mult_buf[255] = "";
-	    FILE *multdatafile;
+	    char buffer[255] = "";
+	    FILE *fp;
 
 	    if (strlen(multiplier_list) == 0) {	/* countries are set in setcontest.c */
 		strncpy(mit_multlist, inputbuffer + 12,
 			strlen(inputbuffer) - 12);
 		mit_multlist[strlen(mit_multlist) - 1] = '\0';
 
-		if ((multdatafile =
-		     fopen(mit_multlist, "r")) != NULL) {
+		if ((fp = fopen(mit_multlist, "r")) != NULL) {
 
-		    while ( fgets(mit_mult_buf, sizeof(mit_mult_buf),
-				   multdatafile) != NULL ) {
+		    while ( fgets(buffer, sizeof(buffer), fp) != NULL ) {
 
-			if (strncasecmp
-			    (mit_mult_buf, whichcontest,
-			     strlen(whichcontest) - 1) == 0) {
+			if (strncasecmp (buffer, whichcontest, 
+				strlen(whichcontest) - 1) == 0) {
+
 			    strncpy(multiplier_list,
-				    mit_mult_buf +
-				    strlen(whichcontest) + 1,
-				    strlen(mit_mult_buf) - 1);
+				    buffer + strlen(whichcontest) + 1,
+				    strlen(buffer) - 1);
 			    multiplier_list[strlen(multiplier_list)
 					    - 1] = '\0';
 			}
 		    }	// end while
 
-		    fclose(multdatafile);
+		    fclose(fp);
 		} else {	/* not a file */
 
 		    if (strlen(mit_multlist) > 0)
@@ -1001,22 +997,21 @@ void parse_logcfg(char *inputbuffer)
 	    mult_side = exist_in_multi_list();
 	    mit_multlist[0] = '\0';
 	    multiplier_list[0] = '\0';
-	    mit_mult_buf[0] = '\0';
 	    setcontest();
 	    break;
 	}
 
     case 96:{		//MULTIPLIER_POINTS       lz3ny
 	    g_strlcpy(c_temp, inputbuffer + 20, sizeof(c_temp));
-	    if (multiplier_points == -1)
-		multiplier_points = atoi(c_temp);
+	    if (countrylist_points == -1)
+		countrylist_points = atoi(c_temp);
 
 	    break;
 	}
     case 97:{		//MULTIPLIER_ONLY         lz3ny
-	    multiplier_only = 1;
+	    countrylist_only = 1;
 	    if (mult_side == 1)
-		multiplier_only = 0;
+		countrylist_only = 0;
 
 	    break;
 	}

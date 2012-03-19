@@ -125,11 +125,11 @@ int score()
 
 /* LZ3NY mods */
 
-    extern int multiplier_points;
+    extern int countrylist_points;
     extern int my_cont_points;
     extern int my_country_points;
     extern int dx_cont_points;
-    extern int multiplier_only;
+    extern int countrylist_only;
 
     int is_mult = 0;
 /* end LZ3NY mods */
@@ -278,16 +278,16 @@ int score()
     /* end arrldx_usa */
     /* LZ3NY mods */
     is_mult = exist_in_multi_list();
-    if (multiplier_only == 1) {
-	if (is_mult == 1 && multiplier_points != -1)
-	    points = multiplier_points;
+    if (countrylist_only == 1) {
+	if (is_mult == 1 && countrylist_points != -1)
+	    points = countrylist_points;
 	else
 	    points = 0;
     } else {
 
 	if (is_mult == 1) {
-	    if (multiplier_points != -1)
-		points = multiplier_points;
+	    if (countrylist_points != -1)
+		points = countrylist_points;
 	    else
 		points = 0;
 
