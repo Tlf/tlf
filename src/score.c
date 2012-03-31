@@ -45,13 +45,9 @@ int multi_found(char prefix[])
     if (countrynr == 0)
 	countrynr = getctydata(tmpcall);
 
-    while (mit_multiplier_list) {
-	if (strlen(mit_multiplier_list[mit_fg]) == 0) {
-	    break;
-	}
+    while (strlen(mit_multiplier_list[mit_fg]) != 0) {
 	if (getctydata(mit_multiplier_list[mit_fg]) == getctydata(tmpcall)) {
 	    return 1;
-	    break;
 	}
 	mit_fg++;
     }
