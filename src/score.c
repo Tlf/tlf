@@ -25,8 +25,8 @@
 
 int calc_continent(int zone);
 
-/* LZ3NY - New one for COUNTRIES list in logcfg.dat */
-int multi_found(char prefix[])
+/* LZ3NY - check if call is in COUNTRY_LIST from logcfg.dat */
+int country_found(char prefix[])
 {
 
     extern int countrynr;
@@ -54,7 +54,7 @@ int multi_found(char prefix[])
     return 0;
 }
 
-int exist_in_multi_list()
+int exist_in_country_list()
 {
 //    extern char mit_multiplier_list[][6];
     extern char pxstr[];
@@ -63,19 +63,19 @@ int exist_in_multi_list()
     memset(prefix, '\0', 10);
     strcpy(prefix, pxstr);
 
-    if (multi_found(prefix) == 1) {
+    if (country_found(prefix) == 1) {
 	return (1);
     } else {
 	if ((prefix[strlen(prefix) - 1] < 58)	/* last char '0'..'9' */
 	    && (prefix[strlen(prefix) - 1] > 47)) {
 	    prefix[strlen(prefix) - 1] = '\0';  /* strip number */
-	    if (multi_found(prefix) == 1) {
+	    if (country_found(prefix) == 1) {
 		return 1;
 	    } else {
 		if ((prefix[strlen(prefix) - 1] < 58) /* see above */
 		    && (prefix[strlen(prefix) - 1] > 47)) {
 		    prefix[strlen(prefix) - 1] = '\0';
-		    if (multi_found(prefix) == 1)
+		    if (country_found(prefix) == 1)
 			return (1);
 		    else
 			return (0);
@@ -273,7 +273,7 @@ int score()
 
     /* end arrldx_usa */
     /* LZ3NY mods */
-    is_mult = exist_in_multi_list();
+    is_mult = exist_in_country_list();
     if (countrylist_only == 1) {
 	if (is_mult == 1 && countrylist_points != -1)
 	    points = countrylist_points;

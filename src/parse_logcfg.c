@@ -42,7 +42,7 @@ extern int packetinterface;
 extern int tncport;
 extern int shortqsonr;
 
-int exist_in_multi_list();
+int exist_in_country_list();
 
 char inputbuffer[160];
 FILE *fp;
@@ -999,7 +999,7 @@ void parse_logcfg(char *inputbuffer)
 
 	    /* on which multiplier side of the rules we are */
 	    getpx(call);
-	    mult_side = exist_in_multi_list();
+	    mult_side = exist_in_country_list();
 	    setcontest();
 	    break;
 	}
