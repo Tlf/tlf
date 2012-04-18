@@ -1,5 +1,5 @@
-TLF_FILES = callmaster cty.dat logcfg.dat arrlsections ea_sections paccmults \
-			spdxmults ssamults usa_canada_states
+TLF_FILES = callmaster cty.dat logcfg.dat arrl10m_mults arrldx_mults \
+	    arrlsections ea_sections paccmults spdxmults ssamults
 
 tlfdir = $(pkgdatadir)
 tlf_DATA = $(TLF_FILES)

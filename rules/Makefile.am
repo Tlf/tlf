@@ -1,5 +1,6 @@
-RULES_FILES = arrldx_dx arrldx_usa arrlfd arrlss contest cqww dxped eusprint \
-	lzdx pacc_pa pacc_dx qso spdx_dx spdx_sp ssa_mt template wpx
+RULES_FILES = arrl10m_dx arrldx_dx arrldx_usa arrlfd arrlss contest cqww \
+	dxped eusprint lzdx pacc_pa pacc_dx qso spdx_dx spdx_sp ssa_mt \
+	template wpx
 SUBDIRS =
 
 rulesdir = $(pkgdatadir)/rules
