@@ -1,3 +1,16 @@
+tlf-1.1.2
+=========
+Minor maintenance release.
+
+New features:
+    - Add ARRL 10m Contest rules for DX stations.
+    - Provide more actual multiplier files for arrldx and arrl10m contests.
+    - Add a better recognition of unkown keywords in config file.
+
+Bug fixes:
+    - Fix recongnition of COUNTRY_LIST keyword.
+    - fix a sgfault problem in exchange handling.
+
 tlf-1.1.1
 =========
 Minor maintenance release.

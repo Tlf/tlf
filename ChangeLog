@@ -1,3 +1,67 @@
+2012-04-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/usa_canada_states: remove old 'usa_canada_states' file, use
+  arrldx_mults instead
+  * rules/arrldx_dx, share/arrldx_mults: add actual mults file for ARRLDX
+  contest for DX and adapt path (tnx Fred DH5FS)
+
+2012-03-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/arrl10m_dx, share/arrl10m_mults: add ARRL 10m contest 
+    (tnx Fred DH5FS)
+  * src/parse_logcfg.c, src/score.c: correct naming of functions
+  * src/score.c: simplify loop exit logic
+
+2012-03-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: fix recognition of COUNTRY_LIST= keyword 
+  - multiplier_list was uninitialized. If it was not empty 
+    COUNTRY_LIST definitions would not be recognized 
+  - use glib for better handling of string termination
+
+2012-03-19  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/parse_logcfg.c, src/score.c: simplify COUNTRYLIST handling
+  - renamed 'multiplier_only' to 'countrylist_only' 
+  - renamed 'multiplier_points' to 'countrylist_points' 
+  - simplify naming scheme for local variables
+
+2012-03-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: rework checkexchange handling 
+  - fix out of bounds error resulting in a segfault 
+  - better maintainability by automatic calculation of loop boundaries 
+    for pattern scanning
+
+2012-02-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: better regognition of unknown keywords in logcfg.dat
+  and rules file
+
+2012-02-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/arrldx_dx, rules/pacc_dx, rules/spdx_dx: fix wrong keyword:
+  'RECALL_EXCHANGE' is 'RECALL_MULTS' now
+
+2012-02-19  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/audio.c: Simplify audio recording by factoring out common code
+
+2012-01-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c: simplify string handling
+
+2012-01-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/Makefile.am, src/printfield.c, src/printfield.h, src/showscore.c,
+  src/showscore.h: Merge printfield() into showscore.c  - only used for
+  showscore() - simplify printfield() function. - drop unneeded include file
+  from showscore.c
+
+2012-01-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * NEWS: Fix spelling error for G4KNO
+
 2012-01-14  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/calledit.c: simplify calledit()  
