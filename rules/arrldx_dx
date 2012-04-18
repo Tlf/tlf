@@ -6,7 +6,7 @@ CONTEST=arrldx_dx
 LOGFILE=arrltest.log
 CONTEST_MODE
 #
-MULT_LIST=/usr/local/share/tlf/usa_canada_states
+MULT_LIST=arrldx_mults
 COUNTRYLIST=W,VE
 USE_COUNTRYLIST_ONLY
 COUNTRY_LIST_POINTS=3
