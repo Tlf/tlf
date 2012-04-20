@@ -351,7 +351,7 @@ int showscore(void)
 	    }
 	}
 
-	attron(COLOR_PAIR(C_DUPE) | A_STANDOUT);
+	attrset(COLOR_PAIR(C_DUPE));
 
 	switch (bandinx) {
 	case BANDINDEX_160:

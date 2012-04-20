@@ -68,9 +68,9 @@ void clear_display(void)
     mvprintw(0, 21, headerline);
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_WHITE | A_BOLD | A_STANDOUT));
+	attron(COLOR_PAIR(C_LOG | A_BOLD | A_STANDOUT));
     else
-	attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
+	attron(COLOR_PAIR(C_LOG | A_STANDOUT));
 
     mvaddstr(1, 0, terminal1);
     mvaddstr(2, 0, terminal2);
@@ -79,7 +79,7 @@ void clear_display(void)
     mvaddstr(5, 0, backgrnd_str);
     mvprintw(6, 0, "");
     mvaddstr(6, 0, "");
-    attron(COLOR_PAIR(COLOR_GREEN));
+    attron(COLOR_PAIR(C_HEADER));
 //    hline(ACS_HLINE, 80);
     mvaddstr(6, 0, backgrnd_str);
     mvprintw(6, (80 - strlen(whichcontest))/2 - 4, " == %s == ", whichcontest);

@@ -46,7 +46,7 @@ int cleanup(void)
     mvprintw(12, 54, "                        ");
     mvprintw(12, 29, "");
 
-    attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
+    attron(COLOR_PAIR(C_LOG | A_STANDOUT));
 
     for (k = 1; k <= 5; k++) {
 	mvprintw(k, 0, "%s", "                                        ");

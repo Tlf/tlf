@@ -294,7 +294,7 @@ void searchlog(char *searchstring)
 
 	refreshp();
 
-	wattrset(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	wattrset(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	k = 0;
 
@@ -311,8 +311,8 @@ void searchlog(char *searchstring)
 		    if (ignoredupe == 0) {
 
 			if (mixedmode == 0) {
-			    wattron(search_win, 
-				    COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
+			    wattrset(search_win, 
+				    COLOR_PAIR(C_DUPE));
 			    dupe = ISDUPE;
 			    beep();
 			} else {
@@ -320,8 +320,8 @@ void searchlog(char *searchstring)
 				 (trxmode == CWMODE)) ||
 				((s_inputbuffer[3] == 'S')
 				 && (trxmode == SSBMODE))) {
-				wattron(search_win, 
-					COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
+				wattrset(search_win, 
+					COLOR_PAIR(C_DUPE));
 				dupe = ISDUPE;
 				beep();
 			    }
@@ -514,7 +514,7 @@ void searchlog(char *searchstring)
 		mvprintw(k, 0, "%s",
 			 "                                        ");
 	    }
-	    attron(COLOR_PAIR(C_DUPE) | A_STANDOUT);
+	    attrset(COLOR_PAIR(C_DUPE));
 	    mvprintw(1, 1, "??");
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
@@ -549,7 +549,7 @@ void searchlog(char *searchstring)
 			printres[length] = '\0';
 
 			if (dupe == ISDUPE) {
-			    attron(COLOR_PAIR(C_DUPE) | A_STANDOUT);
+			    attrset(COLOR_PAIR(C_DUPE));
 			} else {
 			    if (use_rxvt == 0) 
 				attron(COLOR_PAIR
@@ -636,7 +636,7 @@ void searchlog(char *searchstring)
 
 	if (dupe == ISDUPE) {
 	    isdupe = 1;		// LZ3NY auto-b4 patch
-	    attron(COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
+	    attrset(COLOR_PAIR(C_DUPE));
 	    mvprintw(12, 29, hiscall);
 	    refreshp();
 	    usleep(100000);
@@ -742,9 +742,9 @@ void show_needed_sections(void)
 	cnt = 0;
 
 	if (use_rxvt == 0)
-	    wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	    wattron(search_win, COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
 	else
-	    wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	    wattron(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	for (j = 1; j < 7; j++)
 	    mvwprintw(search_win, j, 1, "                                     ");
@@ -771,10 +771,10 @@ void show_needed_sections(void)
 		    mprint[3] = '\0';
 
 		    if (use_rxvt == 0)
-			wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_BOLD |
+			wattron(search_win, COLOR_PAIR(C_WINDOW) | A_BOLD |
 			       A_STANDOUT);
 		    else
-			wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+			wattron(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 		    if (strlen(mprint) > 1)
 			mvwprintw(search_win, vert, (hor * 4) + 2, "%s ", mprint);

@@ -53,7 +53,7 @@ int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
 {COLOR_WHITE, COLOR_RED},
 {COLOR_CYAN, COLOR_WHITE},
 {COLOR_WHITE, COLOR_BLACK},
-{COLOR_MAGENTA, COLOR_WHITE},
+{COLOR_WHITE, COLOR_MAGENTA},
 {COLOR_BLUE, COLOR_YELLOW},
 {COLOR_WHITE, COLOR_BLACK}
 };
@@ -545,13 +545,13 @@ int main(int argc, char *argv[])
 		init_pair(C_HEADER, COLOR_GREEN, COLOR_BLUE);
 		init_pair(COLOR_RED, COLOR_WHITE, 8);
 		init_pair(C_WINDOW, COLOR_CYAN, COLOR_MAGENTA);
-		init_pair(C_DUPE, COLOR_MAGENTA, COLOR_WHITE);
+		init_pair(C_DUPE, COLOR_WHITE, COLOR_MAGENTA);
 		init_pair(C_INPUT, COLOR_BLUE, COLOR_WHITE);
 	    } else {
 		init_pair(C_HEADER, COLOR_GREEN, COLOR_YELLOW);
 		init_pair(COLOR_RED, COLOR_WHITE, COLOR_RED);
 		init_pair(C_WINDOW, COLOR_CYAN, COLOR_RED);
-		init_pair(C_DUPE, COLOR_MAGENTA, COLOR_RED);
+		init_pair(C_DUPE, COLOR_RED, COLOR_MAGENTA);
 		init_pair(C_INPUT, COLOR_BLUE, COLOR_YELLOW);
 	    }
 	    init_pair(C_LOG, COLOR_WHITE, COLOR_BLACK);
@@ -563,7 +563,7 @@ int main(int argc, char *argv[])
 	    init_pair(COLOR_RED, tlfcolors[2][0], tlfcolors[2][1]);   // W/R
 	    init_pair(C_WINDOW, tlfcolors[3][0], tlfcolors[3][1]);    // Cy/W
 	    init_pair(C_LOG, tlfcolors[4][0], tlfcolors[4][1]);       // W/B
-	    init_pair(C_DUPE, tlfcolors[5][0], tlfcolors[5][1]);      // Mag/w
+	    init_pair(C_DUPE, tlfcolors[5][0], tlfcolors[5][1]);      // W/Mag
 	    init_pair(C_INPUT, tlfcolors[6][0], tlfcolors[6][1]);     // Bl/Y
 	    init_pair(C_BORDER, tlfcolors[7][0], tlfcolors[7][1]);    // W/B
 	}

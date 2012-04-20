@@ -114,7 +114,6 @@ enum {
     C_LOG 
 };
 
-#define DUPECOLOR C_DUPE
 #define NORMCOLOR C_INPUT
 #define ISDUPE 1
 #define NODUPE 0
