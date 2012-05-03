@@ -76,7 +76,7 @@ int include_note(void)
 
     }
 
-    attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
+    attron(COLOR_PAIR(C_LOG | A_STANDOUT));
 
     for (i = 14; i <= 16; i++)
 	mvprintw(i, 0, backgrnd_str);

@@ -239,7 +239,7 @@ int cw_simulator(void)
 
     if (simulator_mode == 1) {
 
-	attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	mvprintw(0, 3, "Sim");
 	refreshp();
 

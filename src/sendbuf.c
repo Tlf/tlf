@@ -185,7 +185,7 @@ void sendbuf(void)
 //              }
 	}
 
-	attron(COLOR_PAIR(7) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	if (simulator == 0)
 	    strncat(printlinebuffer, termbuf, strlen(termbuf));
@@ -206,7 +206,7 @@ void sendbuf(void)
 	getyx(stdscr, cury, curx);
 	attron(COLOR_PAIR(COLOR_RED) | A_STANDOUT);
 	mvaddstr(0, 0, "x");
-	attron(COLOR_PAIR(COLOR_WHITE));
+	attron(COLOR_PAIR(C_LOG));
 	mvaddstr(cury, curx, "");
 	refreshp();
 
@@ -254,9 +254,9 @@ void sendbuf(void)
 	}
 
 	getyx(stdscr, cury, curx);
-	attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	mvaddstr(0, 0, " ");
-	attron(COLOR_PAIR(COLOR_WHITE));
+	attron(COLOR_PAIR(C_LOG));
 	mvaddstr(cury, curx, "");
 
 	if (simulator == 0) {

@@ -156,9 +156,9 @@ int show_rtty(void)
 
     attroff(A_STANDOUT);
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_GREEN) | A_BOLD);
+	attron(COLOR_PAIR(C_HEADER) | A_BOLD);
     else
-	attron(COLOR_PAIR(COLOR_GREEN));
+	attron(COLOR_PAIR(C_HEADER));
 
     mvprintw(1, 0, "                                         ");
     mvprintw(1, 0, ry_term[0]);

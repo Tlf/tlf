@@ -134,7 +134,7 @@ int changepars(void)
     nopar = 0;
 
     attroff(A_STANDOUT);
-    attron(COLOR_PAIR(COLOR_GREEN));
+    attron(COLOR_PAIR(C_HEADER));
     mvprintw(12, 29, "PARAMETER?  ");
     refreshp();
 
@@ -574,7 +574,7 @@ int changepars(void)
 		case 156:{
 			if (cqdelay <= 60) {
 			    cqdelay++;
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 			    mvprintw(0, 19, "  ");
 			    mvprintw(0, 19, "%i", cqdelay);
 			    break;
@@ -584,7 +584,7 @@ int changepars(void)
 		case 157:{
 			if (cqdelay >= 1) {
 			    cqdelay--;
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 			    mvprintw(0, 19, "  ");
 			    mvprintw(0, 19, "%i", cqdelay);
@@ -649,7 +649,7 @@ int changepars(void)
 		case 156:{
 			if (volumebuffer <= 99) {
 			    volumebuffer += 5;
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 			    mvprintw(12, 34, "  ");
 			    mvprintw(12, 34, "%d", volumebuffer);
 			    break;
@@ -659,7 +659,7 @@ int changepars(void)
 		case 157:{
 			if (volumebuffer >= 6) {
 			    volumebuffer -= 5;
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 			    mvprintw(12, 34, "  ");
 			    mvprintw(12, 34, "%d", volumebuffer);
@@ -787,9 +787,9 @@ int networkinfo(void)
     clear();
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -832,9 +832,9 @@ int networkinfo(void)
     key = getch();
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (i = 0; i <= 24; i++)
 	mvprintw(i, 0,
 		 "                                                                                ");
@@ -867,9 +867,9 @@ int multiplierinfo(void)
     clear();
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -906,15 +906,15 @@ int multiplierinfo(void)
 		if (found == 1)
 
 		    if (use_rxvt == 0)
-			attron(COLOR_PAIR(COLOR_GREEN) | A_BOLD |
+			attron(COLOR_PAIR(C_HEADER) | A_BOLD |
 			       A_STANDOUT);
 		    else
-			attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 		else if (use_rxvt == 0)
-		    attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+		    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
 		else
-		    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 		if ((strlen(mprint) > 1) && (strcmp(mprint, "W ") != 0))
 		    mvprintw(vert, hor * 4, "%s", mprint);
@@ -988,9 +988,9 @@ int multiplierinfo(void)
     }
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     mvprintw(23, 22, " --- Press a key to continue --- ");
 
@@ -999,9 +999,9 @@ int multiplierinfo(void)
     key = getch();
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,

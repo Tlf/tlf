@@ -62,7 +62,7 @@ int show_zones(int bandinx)
 	bandindex = BAND10;
     }
 
-    attron(COLOR_PAIR(4) | A_STANDOUT);
+    attron(COLOR_PAIR(C_INPUT) | A_STANDOUT);
 
     for (i = 0; i <= 7; i++) {
 

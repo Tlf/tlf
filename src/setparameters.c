@@ -112,7 +112,7 @@ int setparameters(void)
 
 	    clear();
 
-	    attron(COLOR_PAIR(7) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	    getmessages();	/* read .paras file */
 	    sleep(2);
 

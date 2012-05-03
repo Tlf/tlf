@@ -237,7 +237,7 @@ int getexchange(void)
 		    keyspeed = speedup();
 		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
 		    speedbuf[2] = '\0';
-//                                                              attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+//                                                              attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 		    mvprintw(0, 14, "%s", speedbuf);
 		    mvprintw(12, 54, comment);
@@ -259,7 +259,7 @@ int getexchange(void)
 		    keyspeed = speeddown();
 		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
 		    speedbuf[2] = '\0';
-		    //                                              attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    //                                              attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 14, "%s", speedbuf);
 		    mvprintw(12, 54, comment);
 		    refreshp();

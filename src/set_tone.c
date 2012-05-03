@@ -39,7 +39,7 @@ int set_tone(void)
 
     nicebox(4, 40, 1, 6, "Tone");
     mvprintw(5, 42, "");
-    attron(COLOR_PAIR(7) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     echo();
     getnstr(tonestr, 3);
     noecho();

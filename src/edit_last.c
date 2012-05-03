@@ -40,7 +40,7 @@ int edit_last(void)
 
     attron(A_STANDOUT);
 
-    attron(COLOR_PAIR(COLOR_GREEN));
+    attron(COLOR_PAIR(C_HEADER));
     mvprintw(7 + editline, 0, logline_edit[editline]);
     refreshp();
 
@@ -53,13 +53,13 @@ int edit_last(void)
 
 	if (j == 1) {		// ctrl A, beginning of line
 	    b = 1;
-	    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
 	    refreshp();
 	} else if (j == 5) {	// ctrl E, end of line
 	    b = 77;
-	    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
 	    refreshp();
@@ -77,17 +77,17 @@ int edit_last(void)
 	    else if (b == 77)
 		b = 1;
 
-	    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	    mvprintw(7 + editline, 0, logline_edit[editline]);
 	    mvprintw(7 + editline, b, "");
 	    refreshp();
 
 	} else if (j == 152) {	// up
 	    if (editline > (6 - nr_qsos) && (editline > 0)) {
-		attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		mvprintw(7 + editline, 0, logline_edit[editline]);
 		editline--;
-		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(7 + editline, 0, logline_edit[editline]);
 		mvprintw(7 + editline, b, "");
 
@@ -100,10 +100,10 @@ int edit_last(void)
 	} else if (j == 153) {	// down
 
 	    if (editline < 4) {
-		attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		mvprintw(7 + editline, 0, logline_edit[editline]);
 		editline++;
-		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(7 + editline, 0, logline_edit[editline]);
 		mvprintw(7 + editline, b, "");
 
@@ -214,7 +214,7 @@ int edit_last(void)
 
     }
 
-    attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     mvprintw(7 + editline, 0, logline_edit[editline]);
     refreshp();

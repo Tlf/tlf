@@ -104,8 +104,17 @@ extern int inxes[NBANDS];  /*< conversion from BANDINDEX to BAND-mask,
 			see addmult.c */
 
 
-#define DUPECOLOR 5
-#define NORMCOLOR 4
+/* display color sets */
+enum {
+    C_HEADER = 2,
+    C_BORDER,
+    C_INPUT,
+    C_DUPE,
+    C_WINDOW,
+    C_LOG 
+};
+
+#define NORMCOLOR C_INPUT
 #define ISDUPE 1
 #define NODUPE 0
 

@@ -72,7 +72,7 @@ int delete_qso(void)
 
     }
 
-    attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     mvprintw(13, 29, "                            ");
 
     printcall();

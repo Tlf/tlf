@@ -48,7 +48,7 @@
 		strncat (printbuffer,  helpinfo[i], 78);
 		strncat  (printbuffer, backgrnd_str, 4);
 		printbuffer[78] = '\0';
-		attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT );
+		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
 		mvprintw (i + 14, 1, "%s",  printbuffer);
 	}
 	mvvline  (14, 27, ACS_VLINE, 9);
@@ -77,7 +77,7 @@
 		strncat (printbuffer,  helpinfo[i], 78);
 		strncat  (printbuffer, backgrnd_str, 4);
 		printbuffer[78] = '\0';
-		attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT );
+		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
 		mvprintw (i + 14, 1, "%s",  printbuffer);
 	}
 	
@@ -106,7 +106,7 @@
 		strncat (printbuffer,  helpinfo[i], 78);
 		strncat  (printbuffer, backgrnd_str, 4);
 		printbuffer[78] = '\0';
-		attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT );
+		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
 		mvprintw (i + 14, 1, "%s",  printbuffer);
 	}
 	mvvline  (14, 27, ACS_VLINE, 9);
@@ -118,7 +118,7 @@
 
 	i = onechar();
 	clear_display();
-	attron(COLOR_PAIR(7)  |  A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
 
 	for (j = 13 ;  j  <= 23 ; j++){
 		 mvprintw(j, 0, backgrnd_str);

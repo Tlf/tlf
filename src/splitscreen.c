@@ -1279,7 +1279,7 @@ int send_cluster(void)
 	    usputs(prsock, line);
     } 
 
-    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
     mvprintw(24, 0,
 	     "                                                                           ");

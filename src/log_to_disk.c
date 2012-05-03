@@ -113,7 +113,7 @@ int log_to_disk(int from_lan)
     if (!from_lan)
 	mvprintw(12, 54, "                          ");
 
-    attron(COLOR_PAIR(7) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     if (!from_lan) {
 	mvprintw(7, 0, logline0);
 	mvprintw(8, 0, logline1);
@@ -123,7 +123,7 @@ int log_to_disk(int from_lan)
     mvprintw(11, 0, logline4);
     refreshp();
 
-    attron(COLOR_PAIR(COLOR_CYAN));
+    attron(COLOR_PAIR(C_WINDOW));
 
     mvprintw(12, 23, qsonrstr);
     mvprintw(12, 44, his_rst);

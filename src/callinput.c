@@ -151,7 +151,7 @@ char callinput(void)
 		    cqmode = CQ;
 
 		/* and show new mode */
-		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 		if (cqmode == CQ) {
 		    mvprintw(0, 2, "Log     ");
@@ -248,7 +248,7 @@ char callinput(void)
 			&& ((bandinx == 3) || (bandinx == 5)
 			    || (bandinx == 7)))
 			bandinx--;
-		    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 		    mvprintw(12, 0, band[bandinx]);
 		    printcall();
 		    i--;
@@ -285,7 +285,7 @@ char callinput(void)
 			&& ((bandinx == 3) || (bandinx == 5)
 			    || (bandinx == 7)))
 			bandinx++;
-		    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 		    mvprintw(12, 0, band[bandinx]);
 		    if (use_rxvt == 0)
 			attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
@@ -318,7 +318,7 @@ char callinput(void)
 		strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
 		speedbuf[2] = '\0';
 		nicebox(1, 1, 2, 11, "Cw");
-		attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		mvprintw(2, 2, "Speed: %s  ", speedbuf);
 		if (weight < 0)
 		    mvprintw(3, 2, "Weight:%d ", weight);
@@ -362,7 +362,7 @@ char callinput(void)
 		if (weight > -51 && weight < 50) {
 		    netkeyer(K_WEIGHT, weightbuf);
 		}
-		attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		mvprintw(1, 1, "             ");
 		mvprintw(2, 1, "             ");
 		mvprintw(3, 1, "             ");
@@ -379,7 +379,7 @@ char callinput(void)
 			strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
 			speedbuf[2] = '\0';
 			nicebox(1, 1, 2, 9, "Cw");
-			attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 			mvprintw(2, 2, "Speed: %s", speedbuf);
 			mvprintw(3, 2, "Weight: %d", weight);
 			printcall();
@@ -391,7 +391,7 @@ char callinput(void)
 			    strncpy(speedbuf, speedstr + (2 * keyspeed),
 				    2);
 			    speedbuf[2] = '\0';
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 			    mvprintw(0, 14, "%s", speedbuf);
 			    printcall();
@@ -400,7 +400,7 @@ char callinput(void)
 			    strncpy(speedbuf, speedstr + (2 * keyspeed),
 				    2);
 			    speedbuf[2] = '\0';
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 			    mvprintw(0, 14, "%s", speedbuf);
 
 			    if (use_rxvt == 0)
@@ -412,7 +412,7 @@ char callinput(void)
 			} else
 			    x = 27;
 
-			attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 			mvprintw(1, 1, "           ");
 			mvprintw(2, 1, "           ");
 			mvprintw(3, 1, "           ");
@@ -430,7 +430,7 @@ char callinput(void)
 			    && ((bandinx == 3) || (bandinx == 5)
 				|| (bandinx == 7)))
 			    bandinx--;
-			attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+			attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 			mvprintw(12, 0, band[bandinx]);
 			printcall();
 			i--;
@@ -467,7 +467,7 @@ char callinput(void)
 		    keyspeed = speedup();
 		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
 		    speedbuf[2] = '\0';
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 		    mvprintw(0, 14, "%s", speedbuf);
 		    printcall();
@@ -480,7 +480,7 @@ char callinput(void)
 	    {
 		if (cqdelay <= 60) {
 		    cqdelay++;
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 19, "  ");
 		    mvprintw(0, 19, "%i", cqdelay);
 
@@ -511,7 +511,7 @@ char callinput(void)
 		    keyspeed = speeddown();
 		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
 		    speedbuf[2] = '\0';
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 14, "%s", speedbuf);
 
 		    if (use_rxvt == 0)
@@ -527,7 +527,7 @@ char callinput(void)
 	case 413:{		// ctrl-pgdown, cqdelay (not for TERM=linux)
 		if (cqdelay >= 4) {
 		    cqdelay--;
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 		    mvprintw(0, 19, "  ");
 		    mvprintw(0, 19, "%i", cqdelay);
@@ -576,7 +576,7 @@ char callinput(void)
 		hiscall[0] = '\0';
 		x = 0;
 		clear_display();
-		attron(COLOR_PAIR(7) | A_STANDOUT);
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		for (j = 13; j <= 23; j++) {
 		    mvprintw(j, 0, backgrnd_str);
@@ -815,8 +815,8 @@ char callinput(void)
 		    showscore_flag = 1;
 		else {
 		    showscore_flag = 0;
-		    /** \todo drop display of scrore */
-		    attron(COLOR_PAIR(7) | A_STANDOUT);
+		    /** \todo drop display of score */
+		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
 		    refreshp();
@@ -840,7 +840,7 @@ char callinput(void)
 		    cluster = CLUSTER;	// alt-A
 		    announcefilter = FILTER_ALL;
 		} else if (cluster == CLUSTER) {
-		    attron(COLOR_PAIR(7) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
@@ -848,7 +848,7 @@ char callinput(void)
 
 		    cluster = MAP;
 		} else if (cluster == MAP) {
-		    attron(COLOR_PAIR(7) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
@@ -872,7 +872,7 @@ char callinput(void)
 			    && ((bandinx == 3) || (bandinx == 5)
 				|| (bandinx == 7)))
 			    bandinx++;
-			attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+			attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 			mvprintw(12, 0, band[bandinx]);
 			if (use_rxvt == 0)
 			    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
@@ -942,7 +942,7 @@ char callinput(void)
 	    {
 		if (k_ptt == 0) {
 		    k_ptt = 1;
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 2, "PTT on   ");
 		    mvprintw(12, 29, "");
 		    refreshp();
@@ -962,7 +962,7 @@ char callinput(void)
 	    {
 		if (k_tune == 0) {
 		    k_tune = 1;
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 2, "Tune     ");
 		    mvprintw(12, 29, "");
 		    refreshp();
@@ -1134,7 +1134,7 @@ char callinput(void)
 
 		    refreshp();
 		    getchar();
-		    attron(COLOR_PAIR(7) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
 			mvprintw(14 + t, 0,
 				 "                                                             ");
@@ -1183,7 +1183,7 @@ char callinput(void)
 
 
 	    } else {
-		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(24, 0,
 			 "                                                           ");
 		mvprintw(12, 29 + strlen(hiscall), "");

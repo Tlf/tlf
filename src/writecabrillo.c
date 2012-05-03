@@ -68,7 +68,7 @@ int write_cabrillo(void)
 	mvprintw(15, 1,
 		 "                                                       ");
 	mvprintw(15, 1, "");
-	attron(COLOR_PAIR(7) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	echo();
 	if (arrlss == 1)
 	    getnstr(standardexchange, 6);
@@ -423,7 +423,7 @@ int write_adif(void)
 	mvprintw(15, 1,
 		 "                                                       ");
 	mvprintw(15, 1, "");
-	attron(COLOR_PAIR(7) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	echo();
 
 	getnstr(standardexchange, 30);

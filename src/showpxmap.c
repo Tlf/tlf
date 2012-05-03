@@ -67,7 +67,7 @@ int show_mults(void)
 	    else
 		strcat(zonecmp, "EU");
 
-	    attron(COLOR_PAIR(7) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	    i = 0;
 
@@ -117,9 +117,9 @@ int show_mults(void)
 			strncat(prefix, "     ", 4 - strlen(prefix));
 
 			if (use_rxvt == 0)
-			    attron(COLOR_PAIR(4) | A_BOLD);
+			    attron(COLOR_PAIR(C_INPUT) | A_BOLD);
 			else
-			    attron(COLOR_PAIR(4));
+			    attron(COLOR_PAIR(C_INPUT));
 
 			mvprintw(k + 1, j * 4, prefix);
 			refreshp();
@@ -141,7 +141,7 @@ int show_mults(void)
 
 	    ch = getchar();
 
-	    attron(COLOR_PAIR(7) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	    for (l = 1; l <= 6; l++)
 		mvprintw(l, 0,

@@ -275,12 +275,12 @@ void searchlog(char *searchstring)
 
 	dupe = NODUPE;
 
-	wbkgd( search_win, (chtype)(' ' | COLOR_PAIR(7)) );
+	wbkgd( search_win, (chtype)(' ' | COLOR_PAIR(C_LOG)) );
 	werase( search_win );
 
 	wnicebox(search_win, 0, 0, 6, 37, "Worked");
 
-	wattrset(search_win, COLOR_PAIR(7) | A_STANDOUT );
+	wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT );
 	for (i = 0; i < 6; i++)
 	    mvwprintw(search_win, i + 1, 1, 
 		    "                                     ");
@@ -294,7 +294,7 @@ void searchlog(char *searchstring)
 
 	refreshp();
 
-	wattrset(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	wattrset(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	k = 0;
 
@@ -311,8 +311,8 @@ void searchlog(char *searchstring)
 		    if (ignoredupe == 0) {
 
 			if (mixedmode == 0) {
-			    wattron(search_win, 
-				    COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
+			    wattrset(search_win, 
+				    COLOR_PAIR(C_DUPE));
 			    dupe = ISDUPE;
 			    beep();
 			} else {
@@ -320,8 +320,8 @@ void searchlog(char *searchstring)
 				 (trxmode == CWMODE)) ||
 				((s_inputbuffer[3] == 'S')
 				 && (trxmode == SSBMODE))) {
-				wattron(search_win, 
-					COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
+				wattrset(search_win, 
+					COLOR_PAIR(C_DUPE));
 				dupe = ISDUPE;
 				beep();
 			    }
@@ -360,7 +360,7 @@ void searchlog(char *searchstring)
 		    z = z1;
 	    }
 
-	    wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	    wattron(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	    if ((partials == 1) && (strlen(hiscall) >= 2)) {
 		if (strlen(s_inputbuffer) != 0)
@@ -391,7 +391,7 @@ void searchlog(char *searchstring)
 	    }
 	}
 
-	wattron(search_win, COLOR_PAIR(COLOR_YELLOW));
+	wattron(search_win, COLOR_PAIR(C_BORDER));
 
 	mvwprintw(search_win, 7, 2, dx->countryname);
 	mvwprintw(search_win, 7, 32, "%02d", dx->cq);
@@ -409,7 +409,7 @@ void searchlog(char *searchstring)
 	}
 
 	/* print worked zones and countrys for each band in checkwindow */
-	wattron(search_win, COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+	wattron(search_win, COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 	if (cqww == 1 || contest == 0 || pacc_pa_flg == 1) {
 
@@ -506,17 +506,17 @@ void searchlog(char *searchstring)
 	    j = 0;
 
 	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(COLOR_WHITE | A_BOLD | A_STANDOUT));
+		attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
 	    else
-		attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	    for (k = 1; k <= 5; k++) {
 		mvprintw(k, 0, "%s",
 			 "                                        ");
 	    }
-	    attron(COLOR_PAIR(COLOR_MAGENTA) | A_STANDOUT);
+	    attrset(COLOR_PAIR(C_DUPE));
 	    mvprintw(1, 1, "??");
-	    attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	    refreshp();
 
@@ -549,13 +549,19 @@ void searchlog(char *searchstring)
 			printres[length] = '\0';
 
 			if (dupe == ISDUPE) {
-			    attron(COLOR_PAIR(COLOR_MAGENTA) | A_STANDOUT);
+			    attrset(COLOR_PAIR(C_DUPE));
 			} else {
-			    attron(COLOR_PAIR
-				   (COLOR_YELLOW | A_BOLD | A_STANDOUT));
+			    if (use_rxvt == 0) 
+				attron(COLOR_PAIR
+				       (C_BORDER) | A_BOLD | A_STANDOUT);
+			    else
+				attron(COLOR_PAIR
+				       (C_BORDER) | A_STANDOUT);
 			}
 			mvprintw(xwin + l, ywin + j, "%s ", printres);
-			attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
+			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+
+			attroff(A_BOLD);
 
 			refreshp();
 
@@ -581,12 +587,10 @@ void searchlog(char *searchstring)
 		    if ( strstr(callmasterarray[m], hiscall) != NULL ) {
 
 			if (use_rxvt == 0)
-			    attron(COLOR_PAIR
-				   (COLOR_WHITE | A_BOLD |
-				    A_STANDOUT));
+			    attron(COLOR_PAIR(C_LOG) | A_BOLD |
+				    A_STANDOUT);
 			else
-			    attron(COLOR_PAIR
-				   (COLOR_WHITE | A_STANDOUT));
+			    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 			mvprintw(xwin + l, ywin + j, "%s  ",
 				 callmasterarray[m]);
@@ -611,9 +615,9 @@ void searchlog(char *searchstring)
 	    if ((j <= 13) && (l == 0) && (use_part == 1) && (block_part == 0)) {
 
 		if (use_rxvt == 0)
-		    attron(COLOR_PAIR(COLOR_GREEN | A_BOLD | A_STANDOUT));
+		    attron(COLOR_PAIR(C_HEADER) | A_BOLD | A_STANDOUT);
 		else
-		    attron(COLOR_PAIR(COLOR_GREEN | A_STANDOUT));
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 		mvprintw(13, 0, s_inputbuffercpy);
 		if (strlen(s_inputbuffercpy) > strlen(hiscall)) {
@@ -632,7 +636,7 @@ void searchlog(char *searchstring)
 
 	if (dupe == ISDUPE) {
 	    isdupe = 1;		// LZ3NY auto-b4 patch
-	    attron(COLOR_PAIR(DUPECOLOR) | A_STANDOUT);
+	    attrset(COLOR_PAIR(C_DUPE));
 	    mvprintw(12, 29, hiscall);
 	    refreshp();
 	    usleep(100000);
@@ -738,9 +742,9 @@ void show_needed_sections(void)
 	cnt = 0;
 
 	if (use_rxvt == 0)
-	    wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	    wattron(search_win, COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
 	else
-	    wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	    wattron(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	for (j = 1; j < 7; j++)
 	    mvwprintw(search_win, j, 1, "                                     ");
@@ -767,10 +771,10 @@ void show_needed_sections(void)
 		    mprint[3] = '\0';
 
 		    if (use_rxvt == 0)
-			wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_BOLD |
+			wattron(search_win, COLOR_PAIR(C_WINDOW) | A_BOLD |
 			       A_STANDOUT);
 		    else
-			wattron(search_win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+			wattron(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 		    if (strlen(mprint) > 1)
 			mvwprintw(search_win, vert, (hor * 4) + 2, "%s ", mprint);

@@ -548,7 +548,7 @@ void bm_menu()
 
     getyx( stdscr, cury, curx);		/* remember cursor */
 
-    attrset( COLOR_PAIR(7) | A_STANDOUT );
+    attrset( COLOR_PAIR(C_LOG) | A_STANDOUT );
     mvprintw( 13, 0, "  Toggle <B>and, <M>ode or <D>upes filter");
     printw(" | any other - leave");
 

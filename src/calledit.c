@@ -45,7 +45,7 @@ void calledit(void)
     while ((i != 27) && (b <= strlen(hiscall))) {
 
 	attroff(A_STANDOUT);
-	attron(COLOR_PAIR(COLOR_GREEN));
+	attron(COLOR_PAIR(C_HEADER));
 
 	mvprintw(12, 29, "            ");
 	mvprintw(12, 29, hiscall);
@@ -179,7 +179,7 @@ void calledit(void)
     }
 
     attroff(A_STANDOUT);
-    attron(COLOR_PAIR(COLOR_GREEN));
+    attron(COLOR_PAIR(C_HEADER));
 
     mvprintw(12, 29, hiscall);
     mvprintw(12, 29, "            ");
@@ -198,7 +198,7 @@ int insert_char(int curposition)
     int ichr = 0;
 
     attroff(A_STANDOUT);
-    attron(COLOR_PAIR(COLOR_GREEN));
+    attron(COLOR_PAIR(C_HEADER));
 
     call1[0] = '\0';
     call2[0] = '\0';
@@ -238,7 +238,7 @@ int insert_char(int curposition)
 	    break;
 
 	attroff(A_STANDOUT);
-	attron(COLOR_PAIR(COLOR_GREEN));
+	attron(COLOR_PAIR(C_HEADER));
 
 	mvprintw(12, 29, hiscall);
 	curposition++;

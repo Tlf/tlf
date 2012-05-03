@@ -39,7 +39,7 @@ int getwwv(void)
     time_t now;
     struct tm *ptr1;
 
-    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(24, 0, backgrnd_str);
 
     if (strlen(lastwwv) >= 2) {

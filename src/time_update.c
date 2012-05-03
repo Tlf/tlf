@@ -76,7 +76,7 @@ void time_update(void)
 
 	    clusterinfo(time_buf);	/* update cluster info (2 seconds) */
 
-	    attron(COLOR_PAIR(7) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	    mvprintw(7, 0, logline0);
 	    mvprintw(8, 0, logline1);
@@ -85,7 +85,7 @@ void time_update(void)
 	    mvprintw(11, 0, logline4);
 	    mvprintw(13, 0, 
 		    "                                                                    ");
-	    attron(COLOR_PAIR(COLOR_CYAN));
+	    attron(COLOR_PAIR(C_WINDOW));
 	    mvprintw(12, 23, qsonrstr);
 	    printcall();
 

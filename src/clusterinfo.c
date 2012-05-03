@@ -64,7 +64,7 @@ void clusterinfo(char *timestr)
     static int frcounter;
     static int daysecs = 0;
 
-    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
     strncpy(time_buf, timestr, 8);
     mvaddstr(12, 0, band[bandinx]);
     mvprintw(12, 17, time_buf);
@@ -82,9 +82,9 @@ void clusterinfo(char *timestr)
 	if (freq != 0.0) {
 
 	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD);
+		attron(COLOR_PAIR(C_LOG) | A_BOLD);
 	    else
-		attron(COLOR_PAIR(COLOR_WHITE));
+		attron(COLOR_PAIR(C_LOG));
 
 	    if ((showfreq == 0) || (showscore_flag == 1))
 		mvprintw(13, 68, "TRX: %7.1f", freq);
@@ -123,7 +123,7 @@ void clusterinfo(char *timestr)
 
     if (cluster == MAP) {
 
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	nroflines = loadbandmap();
 
@@ -147,7 +147,7 @@ void clusterinfo(char *timestr)
 
     if (cluster == CLUSTER) {
 
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	inputbuffer[0] = '\0';
 	strncat(inputbuffer, backgrnd_str, 78);
@@ -175,7 +175,7 @@ void clusterinfo(char *timestr)
 	if (k < 0)
 	    k = -1;
 
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	inputbuffer[0] = '\0';
 	strncat(inputbuffer, backgrnd_str, 78);
