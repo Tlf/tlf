@@ -40,7 +40,7 @@ void scroll_log(void)
 
 	inputbuffer[0] = '\0';
 
-	if (fseek(fp, -1 * ii * 81, SEEK_END) == 0)
+	if (fseek(fp, -1 * ii * LOGLINELEN, SEEK_END) == 0)
 	    rp = fgets(inputbuffer, 90, fp);
 	else
 	    strcpy(inputbuffer,
@@ -51,7 +51,7 @@ void scroll_log(void)
 	if (strlen(inputbuffer) <= 10)	/* log repair */
 	    rp = fgets(inputbuffer, 90, fp);
 
-//              if (strlen(inputbuffer) != 81)
+//              if (strlen(inputbuffer) != LOGLINELEN)
 //                      strcat (inputbuffer, backgrnd_str);
 
 	inputbuffer[80] = '\0';

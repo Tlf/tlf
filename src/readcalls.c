@@ -103,15 +103,14 @@ int readcalls(void)
 	}
 
 	strcat(inputbuffer, "                                                  ");	/* repair the logfile */
-	inputbuffer[79] = ' ';
-	inputbuffer[80] = '\0';
+	inputbuffer[LOGLINELEN-1] = '\0';
 
 	for (t = 0; t <= strlen(inputbuffer); t++) {
 	    if (inputbuffer[t] == '\n')
 		inputbuffer[t] = ' ';
 	}
 
-	strncpy(qsos[s], inputbuffer, 81);
+	strncpy(qsos[s], inputbuffer, LOGLINELEN);
 	s++;
 
 	if (inputbuffer[0] == ';')

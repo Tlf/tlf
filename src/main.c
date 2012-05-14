@@ -294,7 +294,7 @@ char tonecpy[5];
 char simulator_tone[5];
 
 /*-------------------------------the log lines-----------------------------*/
-char qsos[MAX_QSOS][82];
+char qsos[MAX_QSOS][LOGLINELEN+1];
 int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/

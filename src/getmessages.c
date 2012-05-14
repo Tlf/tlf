@@ -88,7 +88,7 @@ int getmessages(void)
 
 	ii = 5 - i;
 
-	if (fseek(fp, -1 * i * 81, SEEK_END) == 0) {
+	if (fseek(fp, -1 * i * LOGLINELEN, SEEK_END) == 0) {
 
 	    rp=fgets(logline[ii], 85, fp);
 	} else {

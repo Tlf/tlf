@@ -50,7 +50,7 @@ int delete_qso(void)
 	    fstat(lfile, &statbuf);
 
 	    if (statbuf.st_size > 80)
-		rc = ftruncate(lfile, statbuf.st_size - 81);
+		rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 
 	    fsync(lfile);
 	    close(lfile);

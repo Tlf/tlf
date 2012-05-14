@@ -132,6 +132,8 @@ enum {
 
 #define  CW_SPEEDS	"06121416182022242628303234363840424446485060"
 
+#define LOGLINELEN (81)		/* Length of logline in logfile
+				   (including linefeed) */
 #if defined (TLN_LOGLINE)
 /* do nothing, already defined */
 #else

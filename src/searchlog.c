@@ -102,7 +102,7 @@ void searchlog(char *searchstring)
     extern int trxmode;
     extern long int nr_callmastercalls;
     extern char callmasterarray[MAX_CALLMASTER][14];
-    extern char qsos[MAX_QSOS][82];
+    extern char qsos[MAX_QSOS][LOGLINELEN+1];
     extern char hiscall[];
     extern char zone_export[];
     extern char zone_fix[];
@@ -116,8 +116,8 @@ void searchlog(char *searchstring)
     int yy;
     int bandnr;
     int bm[6];
-    char s_inputbuffer[82] = "";
-    char s_inputbuffercpy[82] = "";
+    char s_inputbuffer[LOGLINELEN+1] = "";
+    char s_inputbuffercpy[LOGLINELEN+1] = "";
     char printres[14] = "";
     char *loc;
     dxcc_data *dx;
@@ -164,7 +164,7 @@ void searchlog(char *searchstring)
 		mixedmode == 0) {
 		// ist letzterTest korrekt?
 
-		strncpy(s_inputbuffer, qsos[qso_index], 81);
+		strncpy(s_inputbuffer, qsos[qso_index], LOGLINELEN);
 
 		if (strstr(s_inputbuffer, hiscall) != 0) {
 		    strcpy(searchresult[srch_index], s_inputbuffer);

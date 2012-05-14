@@ -61,8 +61,8 @@ void checklogfile(void)
 
 	fstat(lfile, &statbuf);
 	qsobytes = statbuf.st_size;
-	qsolines = qsobytes / 81;
-	errbytes = qsobytes - (qsolines * 81);
+	qsolines = qsobytes / LOGLINELEN;
+	errbytes = qsobytes % LOGLINELEN;
 
 	if (errbytes != 0) {
 
@@ -84,9 +84,9 @@ void checklogfile(void)
 
 			rp = fgets(inputbuffer, 160, infile);
 
-			if (strlen(inputbuffer) != 81) {
+			if (strlen(inputbuffer) != LOGLINELEN) {
 			    strcat(inputbuffer, backgrnd_str);
-			    inputbuffer[81] = '\0';
+			    inputbuffer[LOGLINELEN] = '\0';
 			}
 
 			fputs(inputbuffer, outfile);
@@ -107,7 +107,7 @@ void checklogfile(void)
 		    fstat(lfile, &statbuf);
 
 		    if (statbuf.st_size > 80) {
-			rc = ftruncate(lfile, statbuf.st_size - 81);
+			rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 			fsync(lfile);
 
 		    }

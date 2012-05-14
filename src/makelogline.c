@@ -385,7 +385,7 @@ void makelogline(void)
 	sprintf(logline4 + 76, "  ");
     }
 
-    assert(strlen(logline4) <= 80);
+    assert(strlen(logline4) <= LOGLINELEN-1);
 
-    strncat(logline4, fillspaces, 80 - strlen(logline4));
+    strncat(logline4, fillspaces, LOGLINELEN -1 - strlen(logline4));
 }

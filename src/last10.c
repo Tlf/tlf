@@ -27,7 +27,7 @@
 int last10(void)
 {
 
-    char input[82];
+    char input[LOGLINELEN+1];
 
     int minsbefore;
     int minsnow;
@@ -55,7 +55,7 @@ int last10(void)
     if (counter < 0)
 	return (-1);			/* not 10 QSOs found */
 
-    strncpy(input, qsos[counter], 82);
+    strncpy(input, qsos[counter], LOGLINELEN+1);
 
     input[17 + 5] = '\0';
     minsbefore = atoi(input + 17 + 3);

@@ -26,7 +26,7 @@
 #include "edit_last.h"
 #include "clear_display.h"
 
-char logline_edit[5][88];
+char logline_edit[5][LOGLINELEN+1];
 
 int edit_last(void)
 {
@@ -231,7 +231,7 @@ int edit_last(void)
 	    fstat(lfile, &statbuf);
 
 	    if (statbuf.st_size > 80) {
-		rc = ftruncate(lfile, statbuf.st_size - 81);
+		rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 		nr_qsos--;
 		qsos[nr_qsos][0] = '\0';
 		fsync(lfile);
