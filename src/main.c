@@ -359,6 +359,8 @@ char headerline[81] =
 char backgrnd_str[81] =
     "                                                                                ";
 
+char logline_edit[5][LOGLINELEN+1];
+
 char terminal1[88] = "";
 char terminal2[88] = "";
 char terminal3[88] = "";
