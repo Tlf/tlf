@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2012           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +26,10 @@
 #include "globalvars.h"
 #include "deleteqso.h"
 
-int delete_qso(void)
+void delete_qso(void)
 {
 
-    int x, isnote, rc;
+    int x, rc;
     int lfile;
     struct stat statbuf;
 
@@ -44,28 +45,22 @@ int delete_qso(void)
 	    sleep(2);
 	} else {
 
-	    nr_qsos--;
-	    qsos[nr_qsos][0] = '\0';
-
 	    fstat(lfile, &statbuf);
 
-	    if (statbuf.st_size > 80)
+	    if (statbuf.st_size >= LOGLINELEN)
 		rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 
 	    fsync(lfile);
 	    close(lfile);
 
-	}
+	    if (qsos[nr_qsos][0] != ';') {
+		band_score[bandinx]--;
+		qsonum--;
+		qsonr_to_str();
+	    }
 
-	if (logline4[0] == ';')
-	    isnote = 1;
-	else
-	    isnote = 0;
-
-	if (isnote == 0) {
-	    band_score[bandinx]--;
-	    qsonum--;
-	    qsonr_to_str();
+	    nr_qsos--;
+	    qsos[nr_qsos][0] = '\0';
 	}
 
 	scroll_log();
@@ -78,6 +73,4 @@ int delete_qso(void)
     printcall();
 
     clear_display();
-
-    return (0);
 }
