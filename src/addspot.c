@@ -53,16 +53,12 @@ int addspot(void)
 	freq = atof(frequency);
     }
 
-//!    \todo extend to 3 decimals for own spots, enables coming back
-//!	to that exact frequency
-//    sprintf(spotline, "DX de TLF:       %9.3f  %s", freq, hiscall);
-//    needs to adapt 'grabspot
     sprintf(spotline, "DX de TLF-%c:     %9.3f  %s", thisnode, freq, hiscall);
 
     strcat(spotline, "                                           ");
 
     get_time();
-//              strftime(spottime, 80, "%H%MZ", time_ptr);      ### bug fix
+
     strftime(spottime, sizeof(spottime), "%H%MZ", time_ptr);
     strcpy(spotline + 70, spottime);
     strcat(spotline, "\n\n");
