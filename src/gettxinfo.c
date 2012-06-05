@@ -34,7 +34,6 @@ int gettxinfo(void)
     extern freq_t rigfreq;
     extern freq_t outfreq;
     extern int cw_bandwidth;
-    extern int nobandchange;
 #else
     extern float rigfreq;
     extern int outfreq;
@@ -162,18 +161,14 @@ int gettxinfo(void)
 		} else {
 //                                      retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  RIG_PASSBAND_NORMAL);
 		    if (cw_bandwidth == 0) {
-			if (nobandchange != 1) {
 			    retval =
 				rig_set_mode(my_rig, RIG_VFO_CURR,
 					     RIG_MODE_CW,
 					     RIG_PASSBAND_NORMAL);
-			}
 		    } else {
-			if (nobandchange != 1) {
 			    retval =
 				rig_set_mode(my_rig, RIG_VFO_CURR,
 					     RIG_MODE_CW, cw_bandwidth);
-			}
 		    }
 
 		    if (retval != RIG_OK) {
@@ -231,17 +226,13 @@ int gettxinfo(void)
 	if (rignumber < 2000) {
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	    if (cw_bandwidth == 0) {
-		if (nobandchange != 1) {
-		    retval =
-			rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
+		retval =
+		    rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
 				     RIG_PASSBAND_NORMAL);
-		}
 	    } else {
-		if (nobandchange != 1) {
-		    retval =
-			rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
+		retval =
+		    rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
 				     cw_bandwidth);
-		}
 	    }
 #endif
 	} else {
