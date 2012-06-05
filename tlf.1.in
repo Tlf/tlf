@@ -672,11 +672,11 @@ Anything you dump into this fifo will be displayed by the packet interface.
 .TR
 .B RADIO_CONTROL
 Switches the radio interface on. The rig interface makes use of the Hamlib library which
-supports a lot of different rigs..
+supports a lot of different rigs.
 
 .TR
 .B RIGMODEL=<rig number>
-Look at the Hamlib stuff for the NUMBER of your rig...
+Look at the Hamlib stuff for the NUMBER of your rig.
 
 .TR
 .B RIGSPEED=<Baud rate>

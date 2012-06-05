@@ -342,7 +342,6 @@ int nroflines;
 pid_t pid;
 struct tm *time_ptr;
 
-char qrg_string[8];
 float freq;
 float mem;
 int logfrequency = 0;

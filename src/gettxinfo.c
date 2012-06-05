@@ -48,8 +48,6 @@ int gettxinfo(void)
     extern int trxmode;
 
     int retval = 0;
-    int qrg = 0;
-    char qrg_string[8];
     static int oldbandinx;
 
     void send_bandswitch(int freq);
@@ -70,13 +68,11 @@ int gettxinfo(void)
 #endif
 
 	if (rigfreq > 1800.0) {
-	    freq = rigfreq / 1000.0;
-	    qrg = (int) rigfreq / 1000;
+	    freq = rigfreq / 1000.0;		/* kHz */
 	}
 
-	qrg_string[7] = '\0';
 
-	switch (qrg) {
+	switch ((int)freq) {
 	case 1800 ... 2000:{
 		bandinx = 0;
 		bandfrequency[bandinx] = freq;
