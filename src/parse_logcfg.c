@@ -227,7 +227,6 @@ void parse_logcfg(char *inputbuffer)
     extern char controllerport[80];	// port for multi-mode controller
     extern char clusterlogin[];
     extern int cw_bandwidth;
-    extern int nobandchange;
     extern int change_rst;
     extern char rttyoutput[];
     extern int logfrequency;
@@ -1251,8 +1250,6 @@ void parse_logcfg(char *inputbuffer)
 	    }
     case 144:{
 		cw_bandwidth = atoi(inputbuffer + 12);
-		if (cw_bandwidth == 0)
-		    nobandchange = 1;
 		break;
 	    }
     case 145:{
