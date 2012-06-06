@@ -66,7 +66,7 @@ int gettxinfo(void)
 	rigfreq = (float) native_rig_get_freq(rignumber);	//ORION
 #endif
 
-	if (rigfreq > 1800.0) {
+	if (rigfreq >= 1800000.0) {
 	    freq = rigfreq / 1000.0;		/* kHz */
 	}
 
@@ -74,51 +74,47 @@ int gettxinfo(void)
 	switch ((int)freq) {
 	case 1800 ... 2000:{
 		bandinx = 0;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 3500 ... 4000:{
 		bandinx = 1;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 7000 ... 7300:{
 		bandinx = 2;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 10100 ... 10150:{
 		bandinx = 3;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 14000 ... 14350:{
 		bandinx = 4;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 18068 ... 18168:{
 		bandinx = 5;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 21000 ... 21450:{
 		bandinx = 6;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 24890 ... 24990:{
 		bandinx = 7;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 28000 ... 29700:{
 		bandinx = 8;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
-
+	default:
+		bandinx = NBANDS;	/* out of band */
 	}
+
+	if (bandinx != NBANDS)
+	    bandfrequency[bandinx] = freq;
+
 	if (bandinx != oldbandinx)	// band change on trx
 	{
 	    oldbandinx = bandinx;
