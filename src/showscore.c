@@ -24,7 +24,7 @@
 
 #include "globalvars.h"
 #include "showscore.h"
-#include <glib.h>
+//#include <glib.h>
 
 void printfield (int x, int y, int number);
 
