@@ -95,6 +95,7 @@ void makelogline(void)
     int sr_nr = 0;
     int i;
     char khz[5] = " 000";
+    char freq_buff[10];
     int fnr = 0;
     int new_pfx;
 
@@ -385,7 +386,15 @@ void makelogline(void)
 	sprintf(logline4 + 76, "  ");
     }
 
-    assert(strlen(logline4) <= LOGLINELEN-1);
+    assert(strlen(logline4) <= 80);
+    strncat(logline4, fillspaces, 80 - strlen(logline4));
 
-    strncat(logline4, fillspaces, LOGLINELEN -1 - strlen(logline4));
+    /* add freq to end of logline */
+    if (trx_control == 1) {
+	snprintf(freq_buff, 8, "%7.1f", freq);
+    }
+    else {
+	snprintf(freq_buff, 8, "        ");
+    }
+    strcat(logline4, freq_buff);
 }
