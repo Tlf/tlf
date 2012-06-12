@@ -388,13 +388,12 @@ int write_adif(void)
     char adif_rcvd_num[16] = "";
     char resultat[16];
     char adif_tmp_rr[5] = "";
+    double freq;
+    char freq_buf[16];
 
     int adif_mode_dep = 0;
 
     FILE *fp1, *fp2;
-
-    if (strlen(exchange) > 0)
-	strcpy(standardexchange, exchange);
 
     if ((fp1 = fopen(logfile, "r")) == NULL) {
 	fprintf(stdout, "Opening logfile not possible.\n");
@@ -409,16 +408,18 @@ int write_adif(void)
 	return (2);
     } 
 
+    if (strlen(exchange) > 0)
+	strcpy(standardexchange, exchange);
+
     /* in case using write_adif() without write_cabrillo() 
      * just ask for the needed information */
     if ((strlen(standardexchange) == 0) && (exchange_serial != 1)) {
 	nicebox(14, 0, 1, 78, "Exchange used:");
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
 	mvprintw(15, 1,
-		 "                                                       ");
+		 "                                                                              ");
 	mvprintw(15, 1, "");
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	echo();
-
 	getnstr(standardexchange, 30);
 	noecho();
     }
@@ -473,6 +474,18 @@ int write_adif(void)
 		strcat(buffer, "<BAND:3>17M");
 	    else if (buf[1] == '1' && buf[2] == '0')
 		strcat(buffer, "<BAND:3>10M");
+
+/* FREQ if available */
+	    if (strlen(buf) > 81) {
+		freq = atof(buf+80);
+		freq_buf[0] = '\0';
+		if ((freq > 1799.) && (freq < 10000.)) {
+		    sprintf(freq_buf, "<FREQ:6>%.4f", freq/1000.);
+		} else if (freq >= 10000.) {
+		    sprintf(freq_buf, "<FREQ:7>%.4f", freq/1000.);
+		}
+		strcat(buffer, freq_buf);
+	    }
 
 /* QSO MODE */
 	    if (buf[3] == 'C')
@@ -531,7 +544,7 @@ int write_adif(void)
 	    strncat(buffer, buf + 20, 2);
 
 	    /* RS(T) flag */
-	    if (buf[3] == 'S')
+	    if (buf[3] == 'S')		/* check for SSB */
 		adif_mode_dep = 2;
 	    else
 		adif_mode_dep = 3;
