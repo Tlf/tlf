@@ -22,7 +22,6 @@
 	 *
 	 *--------------------------------------------------------------*/
 #include "writecabrillo.h"
-#include "printcall.h"
 #include "curses.h"
 
 int write_cabrillo(void)
@@ -326,9 +325,7 @@ rprt given
     }				// end while !eof
 
     fclose(fp1);
-    fclose(fp2);
 
-    fp2 = fopen("cabrillo", "a");
     fputs("END-OF-LOG:\n", fp2);
     fclose(fp2);
 
@@ -495,6 +492,7 @@ int write_adif(void)
 	    else if (strcmp(modem_mode, "RTTY") == 0)
 		strcat(buffer, "<MODE:4>RTTY");
 	    else
+		/* \todo DIGI is no allowed mode */
 		strcat(buffer, "<MODE:4>DIGI");
 
 /* QSO_DATE */
