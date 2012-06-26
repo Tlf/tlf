@@ -25,6 +25,62 @@
 #include "curses.h"
 #include <glib.h>
 
+struct qso_t {
+};
+
+struct qso_t *get_next_record (FILE *fp);
+
+int is_comment(char *buffer);
+
+void free_qso(struct qso_t *ptr);
+
+
+/** free qso record */
+void free_qso(struct qso_t *ptr) {
+
+    free(ptr);
+}
+
+
+/** check if logline is only a comment */
+int is_comment(char *buf) {
+
+   if (buf[0] != ';' && strlen(buf) > 60) /** \todo better check */
+	return 0;
+   else
+	return 1;
+}
+
+
+/** get next qso record from log
+ *
+ * Read next line from logfile until it is no comment.
+ * Then parse the logline into a new allocated QSO data structure
+ * and return that structure.
+ *
+ * \return ptr to new qso record (or NULL if eof)
+ */
+struct qso_t *get_next_record (FILE *fp)
+{
+    char buffer[160];
+    struct qso_t *ptr;
+
+    while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
+
+	if (!is_comment(buffer)) {
+		
+	    ptr = malloc (sizeof(struct qso_t));
+
+	    /* split buffer into qso record */
+
+	    return ptr;
+	}
+    }
+
+    return NULL;
+}
+
+
 int write_cabrillo(void)
 {
     extern char backgrnd_str[];
@@ -53,6 +109,7 @@ int write_cabrillo(void)
     char freq_buf[16];
 
     FILE *fp1, *fp2;
+    struct qso_t *qso;
 
     getsummary();
 
@@ -86,7 +143,18 @@ int write_cabrillo(void)
 
 	noecho();
     }
+#ifdef new
+    while (qso = get_next_record(fp1)) {
 
+	prepare_line(qso, buffer);
+
+	if (strlen(buffer) > 11)
+	    fputs(buffer, fp2);
+
+	free_qso(qso);
+    }
+
+#else
     while ( fgets(buf, 180, fp1) != NULL ) {
 
 	if (buf[0] != ';' && strlen(buf) > 60) {
@@ -337,7 +405,7 @@ rprt given
 	}
 
     }				// end while !eof
-
+#endif
     fclose(fp1);
 
     fputs("END-OF-LOG:\n", fp2);
