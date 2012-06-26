@@ -394,7 +394,6 @@ int write_adif(void)
 
     if ((fp1 = fopen(logfile, "r")) == NULL) {
 	fprintf(stdout, "Opening logfile not possible.\n");
-	fclose(fp1);		//added by F8CFE
 	return (1);
     }
     strcpy(adif_tmp_name, whichcontest);
@@ -402,6 +401,7 @@ int write_adif(void)
 
     if ((fp2 = fopen(adif_tmp_name, "w")) == NULL) {
 	fprintf(stdout, "Opening ADIF file not possible.\n");
+	fclose(fp1);		//added by F8CFE
 	return (2);
     } 
 
