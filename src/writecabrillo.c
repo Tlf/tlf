@@ -48,6 +48,8 @@ int write_cabrillo(void)
     char cmd[80];
     char buf[181];
     char buffer[4000] = "";
+    double freq;
+    char freq_buf[16];
 
     FILE *fp1, *fp2;
 
@@ -94,19 +96,30 @@ int write_cabrillo(void)
 /*------------------------------------------------------------------
 frequency
 -------------------------------------------------------------------*/
-	    if (buf[1] == '6')
-		strcat(buffer, " 1800");
-	    else if (buf[1] == '8')
-		strcat(buffer, " 3500");
-	    else if (buf[1] == '4')
-		strcat(buffer, " 7000");
-	    else if (buf[1] == '2')
-		strcat(buffer, "14000");
-	    else if (buf[1] == '1' && buf[2] == '5')
-		strcat(buffer, "21000");
-	    else if (buf[1] == '1' && buf[2] == '0')
-		strcat(buffer, "28000");
+/* use exact FREQ if available */
+	    freq = 0.;
+	    if (strlen(buf) > 81) {
+		freq = atof(buf+80);
+	    }
 
+	    if ((freq > 1799.) && (freq <= 30000.)) {
+		sprintf(freq_buf, "%5d", (int)(freq+0.5));
+		strcat(buffer, freq_buf);
+	    } else {
+		/* otherwise look into band definition */
+		if (buf[1] == '6')
+		    strcat(buffer, " 1800");
+		else if (buf[1] == '8')
+		    strcat(buffer, " 3500");
+		else if (buf[1] == '4')
+		    strcat(buffer, " 7000");
+		else if (buf[1] == '2')
+		    strcat(buffer, "14000");
+		else if (buf[1] == '1' && buf[2] == '5')
+		    strcat(buffer, "21000");
+		else if (buf[1] == '1' && buf[2] == '0')
+		    strcat(buffer, "28000");
+	    }
 /*------------------------------------------------------------------
 mode
 -------------------------------------------------------------------*/
