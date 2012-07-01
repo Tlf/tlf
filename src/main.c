@@ -496,6 +496,20 @@ int main(int argc, char *argv[])
 				   for refreshp() to work */
 
     getmaxyx(stdscr, ymax, xmax);
+    if ((ymax < 25) || (xmax < 80)) {
+	char c;
+
+	showmsg( "!! TLF needs at least 25 lines and 80 columns !!\n" );
+	showmsg( "Continue anyway? Y/(N)" );
+	c = toupper( getch() );
+	if (c != 'Y') {
+	    showmsg( "73 es cuagn" );
+	    sleep(2);
+	    endwin();
+	    exit(1);
+	}
+    }
+
     noecho();
     crmode();
 
