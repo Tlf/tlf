@@ -499,15 +499,16 @@ int main(int argc, char *argv[])
     if ((ymax < 25) || (xmax < 80)) {
 	char c;
 
-	showmsg( "!! TLF needs at least 25 lines and 80 columns !!\n" );
-	showmsg( "Continue anyway? Y/(N)" );
+	showmsg( "!! TLF needs at least 25 lines and 80 columns !!");
+	showmsg( "   Continue anyway? Y/(N)" );
 	c = toupper( getch() );
 	if (c != 'Y') {
 	    showmsg( "73 es cuagn" );
-	    sleep(2);
+	    sleep(1);
 	    endwin();
 	    exit(1);
 	}
+	showmsg("");
     }
 
     noecho();
