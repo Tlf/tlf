@@ -18,11 +18,173 @@
  */
 
 	/* ------------------------------------------------------------
-	 *    make sure logfile is present
+	 *    make sure logfile is present and can be opened for append
+	 *    - create one if it does not exist
+	 *    - check that length of logfile is a integer m^ultiple of
+	 *      the loglinelen
 	 *
 	 *--------------------------------------------------------------*/
-
 #include "checklogfile.h"
+#include "startmsg.h"
+#include <glib.h>
+
+
+/** Repair log file
+ *
+ * Try to repair log file if some limes are too short.
+ * Same is used to convert old logfile format v1 to new v2 
+ *
+ * \return 0 on success
+ */
+int repair_log(char *filename) {
+
+    gchar *backupfile;
+    gchar *cmd;
+    char buffer[200];
+    gchar *fill;
+    int rc;
+    FILE *infp;
+    FILE *outfp;
+
+    /* make a backup of the original file */
+    backupfile = g_strconcat(filename, ".bak", NULL);
+    showstring ( "Backing up original file as: ", backupfile);
+
+    cmd = g_strconcat("cp ", filename, " ", backupfile, NULL);
+    rc = system(cmd);
+    g_free(cmd);
+
+    showmsg( "Converting file to new format");
+    infp = fopen(backupfile, "r");
+    outfp = fopen(filename, "w");
+
+    while (fgets(buffer, sizeof(buffer), infp)) {
+
+	/* strip trailing whitespace (and newline) */
+	g_strchomp(buffer);
+
+	/* append spaces */
+	fill = g_strnfill( (LOGLINELEN-1) - strlen(buffer), ' ' );
+	strcat(buffer, fill);
+	g_free(fill);
+
+	fputs(buffer, outfp);
+	fputs("\n", outfp);
+    }
+
+    fclose(outfp);
+    fclose(infp);
+
+    g_free(backupfile);
+
+    showmsg( "Done" );
+    sleep(2);
+
+    return 0;
+}
+
+
+
+int checklogfile_new(char *filename)
+{
+    int lineno;
+    int tooshort;
+    char buffer[160];
+    FILE *fp;
+
+    /* check if logfile exist and can be opened for read */
+    if ((fp = fopen(filename, "r")) == NULL) {
+
+	if (errno == EACCES) {
+	    showstring( "Can not access log file: ", filename);
+	    return 1;
+	}
+
+	if (errno == ENOENT) {
+	    /* File not found, create new one */
+	    showmsg( "Log file not found, creating new one");
+	    sleep(2);
+	    if ((fp = fopen(filename, "w")) == NULL) {
+		/* cannot create logfile */
+		showmsg( "Creating logfile not possible");
+	        return 1;
+	    }
+	    /* New logfile created */
+	    fclose(fp);
+	    return 0;
+	}
+    }
+
+
+    /* check each line of the logfile of correct format */
+    lineno = 0;
+    tooshort = 0;
+
+    while (fgets(buffer, sizeof(buffer), fp)) {
+	int band, bandok, linelen;
+
+	lineno++;
+
+	/* if no logline -> complain and back */
+	band = atoi(buffer);
+
+	if ((band == 160) ||
+	    (band == 80) ||
+	    (band == 40) ||
+	    (band == 30) ||
+	    (band == 20) ||
+	    (band == 17) ||
+	    (band == 15) ||
+	    (band == 12) ||
+	    (band == 10))
+		bandok = 1;
+
+	if (!((buffer[0] == ';') || bandok)) {
+	    /* msg no valid logline in line #, cannot handle it */
+	    shownr( "No valid log line in line ", lineno);
+	    return 1;
+	}
+
+	linelen = strlen(buffer);
+
+	/* if to long -> complain and back */
+	if (linelen > LOGLINELEN) {
+	    /* msg length of line # to long,
+	     * cannot handle that log file format */
+	    shownr( "Log line to long in line ", lineno);
+	    showmsg( "Can not handle that log format");
+	    return 1;
+	}
+
+	/* if to short -> remember */
+	if (linelen < LOGLINELEN) {
+	    tooshort = 1;
+	}
+    }
+
+    fclose(fp);
+
+    if (tooshort) {
+	char c;
+
+	/* some lines in logfile are too short, maybe old logfile format */
+	showmsg( "Some log lines are too short (maybe an old log format)!" );
+	showmsg( "Shall I try to repair? Y/(N) " );
+	echo();
+	c =toupper( getch() );
+	noecho();
+
+	if (c != 'Y') {
+	    return 1;			/* giving up */
+	}
+
+	/* trying to repair */
+	return repair_log(filename);
+    }
+
+    return 0;
+}
+
 
 void checklogfile(void)
 {
@@ -46,27 +208,17 @@ void checklogfile(void)
     if ((fp = fopen(logfile, "a")) == NULL) {
 	fprintf(stdout, "Opening logfile not possible.\n");
 	exit(1);
-    }
-
-    fclose(fp);
-
-    if ((lfile = open(logfile, O_RDWR)) < 0) {
-
-	mvprintw(24, 0, "I can not find the logfile...");
-	refreshp();
-	sleep(2);
-	exit(0);
 
     } else {
 
-	fstat(lfile, &statbuf);
+	fstat(fileno(fp), &statbuf);
 	qsobytes = statbuf.st_size;
 	qsolines = qsobytes / LOGLINELEN;
 	errbytes = qsobytes % LOGLINELEN;
 
 	if (errbytes != 0) {
 
-	    close(lfile);
+	    fclose(fp);
 
 	    if ((infile = fopen(logfile, "r")) == NULL) {
 		mvprintw(24, 0, "Unable to open logfile...");
@@ -120,7 +272,6 @@ void checklogfile(void)
 	    }
 
 	} else
-	    close(lfile);
+	    fclose(fp);
     }
-
 }

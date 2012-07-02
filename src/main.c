@@ -542,7 +542,13 @@ int main(int argc, char *argv[])
 	read_logcfg();		/* read the configuration file */
 	read_rules();		/* read the additional contest rules in "rules/contestname"  LZ3NY */
 
-	checklogfile();		/* make sure logfile is there */
+	/* make sure logfile is there and has the right format */
+	if (checklogfile_new(logfile) != 0) {
+	    showmsg( "Giving up" );
+	    sleep(2);
+	    endwin();
+	    exit(1);
+	}
 
 //              if (strlen(synclogfile) > 0)
 //                      synclog(synclogfile);

@@ -22,5 +22,6 @@
 #include <sys/stat.h>
 #include "tlf.h"
 
+int checklogfile_new(char *filename);
 void checklogfile(void);
 
