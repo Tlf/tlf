@@ -23,6 +23,7 @@
 	 *--------------------------------------------------------------*/
 #include "writecabrillo.h"
 #include "curses.h"
+#include <glib.h>
 
 int write_cabrillo(void)
 {
@@ -350,28 +351,6 @@ rprt given
     return (0);
 }
 
-/* just >>TRIM<< */
-char *trim(char *string)
-{
-    int runner;
-    size_t strLength = strlen(string);
-
-    for (runner = 0; runner < strLength; runner++) {
-	if (*(string + runner) != ' ' && *(string + runner) != '\t')
-	    break;
-    }
-
-    strcpy(string, string + runner);
-    strLength = strlen(string);
-
-    for (runner = 1; runner < strLength; runner++) {
-	if (*(string + strLength - runner) != ' '
-	    && *(string + strLength - runner) != '\t')
-	    break;
-    }
-    *(string + strLength - runner + 1) = 0;
-    return (string);
-}
 
 
 /*
@@ -460,7 +439,7 @@ int write_adif(void)
 /* CALLSIGN */
 	    strcat(buffer, "<CALL:");
 	    strncpy(adif_tmp_call, buf + 29, 12);
-	    strcpy(adif_tmp_call, trim(adif_tmp_call));
+	    strcpy(adif_tmp_call, g_strstrip(adif_tmp_call));
 	    snprintf(resultat, sizeof(resultat), "%zd",
 		     strlen(adif_tmp_call));
 	    strcat(buffer, resultat);
@@ -579,12 +558,12 @@ int write_adif(void)
 			 strlen(standardexchange));
 		strcat(buffer, resultat);
 		strcat(buffer, ">");
-		strcat(buffer, trim(standardexchange));
+		strcat(buffer, g_strstrip(standardexchange));
 	    }
 
 /* RST_RCVD */
 	    strncpy(adif_tmp_rr, buf + 49, 4);
-	    strcpy(adif_tmp_rr, trim(adif_tmp_rr));
+	    strcpy(adif_tmp_rr, g_strstrip(adif_tmp_rr));
 	    strcat(buffer, "<RST_RCVD:");
 	    snprintf(resultat, sizeof(resultat), "%zd",
 		     strlen(adif_tmp_rr));
@@ -594,7 +573,7 @@ int write_adif(void)
 
 /* SRX - received contest number */
 	    strncpy(adif_rcvd_num, buf + 54, 14);
-	    strcpy(adif_rcvd_num, trim(adif_rcvd_num));
+	    strcpy(adif_rcvd_num, g_strstrip(adif_rcvd_num));
 	    snprintf(resultat, sizeof(resultat), "%zd",
 		     strlen(adif_rcvd_num));
 	    strcat(buffer, "<SRX:");
