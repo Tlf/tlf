@@ -1,3 +1,34 @@
+tlf-1.2.0_pre1
+==============
+Prerelease for new tlf-1.2.0
+
+tlf-1.2.0 will be a major release with some new features and improvements. 
+The prerelease should test some first main features.
+
+New features:
+    - change log file format to make room for recording of actual working
+      frequency (columns 0..79 - old TR-log format, QRG gets added with
+      one decimal after that)
+    - Better check of log file format on startup. Can migrate old logs to
+      new format.
+    - Record actual orking QRG in log if a rig is connected
+    - Write QRG into ADIF and Cabrillo export files
+    - Renamed ADIF and Cabrillo files to <call>.adi and <contest>.cbr as
+      suggested by Martin OK1RR
+    - Check for size of Terminal (at least 25x80 is needed).
+
+Furthermore a lot of cleanup and internal changes are made to simplify future 
+maintenance, e.g.:
+    - A new scheme for color initialisation and naming
+    - Cleanup of unused variables and comments.
+    - Fix configure-script to abort if no ncurses lib is installed.
+
+To be done:
+    - Fix generation of cabrillo files (still broken in this prerelease)
+    - Document log file format
+    - make exchange field editable
+
+
 tlf-1.1.2
 =========
 Minor maintenance release.
@@ -9,7 +40,7 @@ New features:
 
 Bug fixes:
     - Fix recongnition of COUNTRY_LIST keyword.
-    - fix a sgfault problem in exchange handling.
+    - fix a segfault problem in exchange handling.
 
 tlf-1.1.1
 =========

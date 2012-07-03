@@ -1,5 +1,112 @@
+2012-07-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Use g_strstrip instead home made function
+
+  * src/checklogfile.c, src/checklogfile.h, src/main.c: Implement new logfile
+  check and repair operation.
+  - all line have to be 
+  a) a comment line starting with ';' or 
+  b) starts with a valid bandnumber 
+  - The length of each logline has to be LOGLINELEN (including \n) 
+  
+  a) If to long -> cannot handle that file type (possible truncation) 
+  b) If some line to short -> maybe old log format, so ask if it should 
+     try to repair (fill with needed amount of spaces).
+
+2012-07-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c: Add warning if console window is too small for TLF (needs at
+  least 25x80)
+
+2012-06-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Write QRG to cabrillo file if available in log file
+
+2012-06-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Write QRG to ADIF file if available in log file
+
+2012-01-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: renamed adif and cabrillo file according to OK1RR:
+  cabrillo:   <call>.cbr
+  adif:       <contest>.adi
+
+2012-06-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/makelogline.c, src/tlf.h: Record the working QRG in the log  i
+  ATTENTION!
+  New log line format in use! At the moment that is incompatible with old log
+  files. Back them up before experimenting. Code to migrate old log to new
+  format will follow in next days.  
+  - make logline 7 characters longer to accomodate the QRG with one decimal 
+    precision. 
+  - record QRG at end of logline if you have the rig online
+
+  * src/gettxinfo.c: Fix wrong check for lowest band frequency. rig_get_freq()
+  reports frequency in Hz so we have to check against 1800000 Hz for lower
+  border of 160m band.  Furthermore simplify switch logic and add an default
+  case if rig is not in ham band.
+
+2012-06-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * configure.in: Abort configure if ncurses libs not vailable. Tnx Jens DK2AB
+  for pointing it out.
+
+2012-05-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/note.c: fix note input to add it to the internal recorded log lines and
+  to adapt to wider logline length
+
+2012-05-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/deleteqso.c, src/deleteqso.h: Simplify 
+  - Make logic independent of 'logline4'. Use 'qsos' instead. 
+  - check for filesize >= LOGLINELEN
+
+  * src/edit_last.c, src/edit_last.h, src/main.c: New implementation of
+  edit_last() to enable longer loglines and thus make room for record of QRG 
+
+  Needs a new mechanism to get and store editbuffer.  
+  
+  Former use of logline_edit field, which was shared with some other code for
+  displaying the last 5 qsos, was error prone. Use a separate editbuffer
+  instead and get the content from the qsos[] database every time we start to
+  edit a line. Write content of editbuffer back to qsos[] and file after
+  finishing the edit.  
+  
+  Furthermore refactor out common code  
+  - highlight and unhighlite line 
+  - limit len of displayed output line 
+  - make number of lines easier to configure 
+  - correct handling of empty log file 
+  - fix edit of upper line !! Be aware that edit on ';' notes is broken 
+  - better handling of <Tab>  to hop from field to field 
+  - move definition of logline_edit fields into  main.c
+
+2012-05-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/checklogfile.c, src/deleteqso.c, src/edit_last.c, src/editlog.c,
+  src/getmessages.c, src/globalvars.h, src/last10.c, src/main.c,
+  src/makelogline.c, src/readcalls.c, src/scroll_log.c, src/searchlog.c,
+  src/tlf.h: use LOGLINELEN to specify the size of a logline and the needed
+  checks and buffers
+
+2012-04-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/cleanup.c, src/clear_display.c, src/main.c, src/note.c,
+  src/searchlog.c, src/showscore.c, src/tlf.h: Fix some more color settings i
+  - use C_ names wherever possible 
+  - Drop use of 'DUPECOLOR' and use only 'C_DUPE'. 
+  - invert color definition for 'C_DUPE' to avoid the STANDOUT attribute. 
+  - change 'attron' to 'attrset' as old color definition required always an 
+    'standout' attribute which got not reset by attron
+
 2012-04-18  Thomas Beierlein <tomjbe@gentoo.org>
 
+  * rules/Makefile.am, share/Makefile.am: add forgotten files to Makefile.am
+  * ChangeLog, NEWS, configure.in: Prepare TLF-1.1.2 maintenance release (see
+  NEWS for details).
   * share/usa_canada_states: remove old 'usa_canada_states' file, use
   arrldx_mults instead
   * rules/arrldx_dx, share/arrldx_mults: add actual mults file for ARRLDX
