@@ -11,7 +11,7 @@ New features:
       one decimal after that)
     - Better check of log file format on startup. Can migrate old logs to
       new format.
-    - Record actual orking QRG in log if a rig is connected
+    - Record actual working QRG in log if a rig is connected
     - Write QRG into ADIF and Cabrillo export files
     - Renamed ADIF and Cabrillo files to <call>.adi and <contest>.cbr as
       suggested by Martin OK1RR
