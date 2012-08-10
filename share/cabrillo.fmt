@@ -1,4 +1,6 @@
 # cabrillo format description for different contests
 
+# used for other ARRL and CQ contests, RDXC, Oceania DX Contest, AP Sprint
 [wpx]
-QSO=....
+QSO=FREQ,5,5;MODE,11,2;DATE,14,10;TIME,25,4;MYCALL,30,13;RST_S,44,3;EXC_S,48,6;HISCALL,55,13;RST_R,69,3;EXCH,73,6;TX,80,1
+
