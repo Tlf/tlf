@@ -252,8 +252,8 @@ View the log with LESS
 
 .TR
 .B :WRIte 
-Write cabrillo file for selected contests (CQ and ARRL contests).
-Other contests may work, you have to experiment.
+Write cabrillo file according to specified format (see \fB\ CABRILLO=\fR 
+statement).
 
 .SH "KEYS"
 
@@ -825,6 +825,10 @@ Some contests, like cqww and wpx, are pre-programmed. look for the relevant rule
 .TR
 .B LOGFILE=<logfilename>
 Mandatory
+
+.TR 
+.B CABRILLO=<cabrillo_format> 
+Specify the name of the cabrillo format to use (see doc/README.cab).
 
 .TR
 .B CONTEST_MODE
