@@ -28,18 +28,25 @@
 struct qso_t {
 };
 
+
+struct line_item {
+    /* enum type */	/* item type */
+    int pos;		/* item position in line */
+    int len;		/* max. item length */
+};
+
+struct cabrillo_desc {
+    char *name;
+    int item_count;
+    GPtrArray *item_array;
+};
+
+
 struct qso_t *get_next_record (FILE *fp);
 
 int is_comment(char *buffer);
 
 void free_qso(struct qso_t *ptr);
-
-
-/** free qso record */
-void free_qso(struct qso_t *ptr) {
-
-    free(ptr);
-}
 
 
 /** check if logline is only a comment */
@@ -69,7 +76,7 @@ struct qso_t *get_next_record (FILE *fp)
 
 	if (!is_comment(buffer)) {
 		
-	    ptr = malloc (sizeof(struct qso_t));
+	    ptr = g_malloc (sizeof(struct qso_t));
 
 	    /* split buffer into qso record */
 
@@ -80,6 +87,249 @@ struct qso_t *get_next_record (FILE *fp)
     return NULL;
 }
 
+
+/** free qso record pointed to by ptr */
+void free_qso(struct qso_t *ptr) {
+
+    g_free(ptr);
+}
+
+
+void errorbox(char *s)
+{
+    printw("%s\nPress any key\n", s);
+    refreshp();
+    echo();
+    sleep(4);
+    noecho();
+}
+
+
+
+
+#define new
+#ifdef new
+/** free cabrillo format description */
+void free_cabfmt(struct cabrillo_desc *desc) {
+    int i;
+
+    for ( i = 0; i < desc->item_array->len; i++ ) {
+	g_free( g_ptr_array_index(desc->item_array, i) );
+    }
+
+    g_ptr_array_free( desc->item_array, TRUE );
+
+    g_free( desc->name );
+    g_free( desc );
+}
+
+
+/* parse item describing entry 
+ *
+ * has to be in following format: item,position,length
+ *   - item to print (date, time, call, ...)
+ *   - position 
+ *   - max length
+ */
+struct line_item *parse_line_entry(char *line_entry) {
+    struct line_item *item;
+    gchar **parts;
+
+    item = g_malloc( sizeof(line_entry) );
+    parts = g_strsplit(line_entry, ",", 3);
+
+    if ( g_strv_length(parts) == 3 ) {
+	/* lookup item type */
+	item->pos = atoi( parts[1] );
+	item->len = atoi( parts[2] );
+    } 
+    else {
+	/* type is NO_TYPE */
+    }
+
+    return item;
+}
+
+
+/** read cabrillo format description
+ *
+ * Try to read cabrillo format description for given format from
+ * file and return a describing structure.
+ *
+ * \param filename	File to read description from
+ * \param format	Name of the format to read
+ * \return 		Pointer to a structure describing the format
+ * 			(NULL if file or format not found or not readable)
+ */
+struct cabrillo_desc *read_cabrillo_format (char *filename, char *format) 
+{
+    GKeyFile *keyfile;
+    GError *error = NULL;
+    gchar **list;
+    gsize nrstrings;
+    struct cabrillo_desc *cabdesc;
+    int i;
+    
+    keyfile = g_key_file_new();
+
+    if (!g_key_file_load_from_file( keyfile, filename, 
+		G_KEY_FILE_NONE, &error)) {
+	printw( "%s\n", error->message );
+	refreshp();
+	g_error_free( error );
+
+	/* file does not exist or is wrongly formatted */
+	g_key_file_free(keyfile);
+	return NULL;
+    }
+
+    /* check if 'format' defined in file */
+    if( g_key_file_has_group( keyfile, format ) == FALSE ) {
+
+	/* group not found */
+	g_key_file_free( keyfile );
+	return NULL;
+    }
+
+    /* read needed keys */
+    list = g_key_file_get_string_list( keyfile, format, 
+			"QSO", &nrstrings, &error );
+
+    if ( error && error->code == G_KEY_FILE_ERROR_KEY_NOT_FOUND) {
+
+	/* if not found -> stop processing as that key is mandatory */
+	g_error_free( error );
+	g_key_file_free( keyfile );
+	return NULL;
+    }
+
+    /* construct new format descriptor and fill it in */
+    cabdesc = g_new( struct cabrillo_desc, 1 );
+    cabdesc->name = g_strdup(format);
+    cabdesc->item_array = g_ptr_array_new();
+    cabdesc->item_count = nrstrings;
+
+    for (i = 0; i < nrstrings; i++) {
+	struct line_item *item;
+
+	item = parse_line_entry( list[i] );
+	if ( item ) {
+	    /* add only well formatted entries */
+	    g_ptr_array_add( cabdesc->item_array, item );
+	}
+    }
+
+    if ( cabdesc->item_array->len != nrstrings ) {
+	/* not all entries are ok -> stop processing */
+	free_cabfmt( cabdesc );
+	g_strfreev( list );
+	g_key_file_free( keyfile );
+	return NULL;
+    }
+
+    g_strfreev( list );
+
+    /* possible further entries in format specification may contain information 
+     * about allowed items for different categories:
+     * CONTEST, CATEGORY-OPERATOR, CATEGORY_TRANSMITTER, CATEGORY-POWER,
+     * CATEGORY-ASSISTED, CATEGORY-BAND, CATEGORY-MODE, C-STATION, C-TIME. 
+     * C-OVERLAY
+     */
+
+    g_key_file_free( keyfile );
+
+    /* return parsed cabrillo format description */
+    return cabdesc;
+}
+
+
+int write_cabrillo(void)
+{
+    extern char* cabrillo;
+    extern char logfile[];
+    extern char exchange[];
+    extern char call[];
+
+    int rc;
+    char* cab_dfltfile;
+    struct cabrillo_desc *cabdesc;
+    char standardexchange[70] = "";
+    char cabrillo_tmp_name[80];
+    char cmd[80];
+    char buffer[4000] = "";
+
+    FILE *fp1, *fp2;
+    struct qso_t *qso;
+
+    if (cabrillo == NULL) {
+	errorbox("No cabrillo format defined (See doc/README.cabrillo)");
+    	exit(1);
+    }
+
+    /* try to read cabrillo format first from local directory than from 
+     * default data dir
+     */
+    cabdesc = read_cabrillo_format("cabrillo.fmt", cabrillo);
+    if (!cabdesc) {
+	cab_dfltfile = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
+	    "cabrillo.fmt", NULL);
+	cabdesc = read_cabrillo_format(cab_dfltfile, cabrillo);
+	g_free(cab_dfltfile);
+    }
+
+    if (!cabdesc) {
+    	errorbox("Cabrillo format specification not found!");
+	exit(1);
+    }
+
+    /* open logfile and create a cabrillo file */
+    strcpy(cabrillo_tmp_name, call);
+    cabrillo_tmp_name[strlen(call)-1] = '\0'; /* drop \n */
+    strcat(cabrillo_tmp_name, ".cbr");
+
+    if (strlen(exchange) > 0)
+	strcpy(standardexchange, exchange);
+
+    if ((fp1 = fopen(logfile, "r")) == NULL) {
+	fprintf(stdout, "Opening logfile not possible.\n");
+	free_cabfmt( cabdesc );
+	return (1);
+    }
+    if ((fp2 = fopen("./cabrillo", "w")) == NULL) {
+	fprintf(stdout, "Opening cbr file not possible.\n");
+	free_cabfmt( cabdesc );
+	fclose(fp1);		//added by F8CFE
+	return (2);
+    }
+
+//    write_header();
+
+    while ((qso = get_next_record(fp1))) {
+
+//	prepare_line(qso, buffer);
+
+	if (strlen(buffer) > 11)
+	    fputs(buffer, fp2);
+
+	free_qso(qso);
+    }
+
+    fclose(fp1);
+
+    fputs("END-OF-LOG:\n", fp2);
+    fclose(fp2);
+
+    rc = system("cat cabrillo >> header");
+    sprintf(cmd, "cp header %s", cabrillo_tmp_name);
+    rc = system(cmd);
+    rc = system("mv header summary.txt");
+
+    free_cabfmt( cabdesc );
+
+    return 0;
+}
+
+#else
 
 int write_cabrillo(void)
 {
@@ -109,7 +359,6 @@ int write_cabrillo(void)
     char freq_buf[16];
 
     FILE *fp1, *fp2;
-    struct qso_t *qso;
 
     getsummary();
 
@@ -143,18 +392,7 @@ int write_cabrillo(void)
 
 	noecho();
     }
-#ifdef new
-    while (qso = get_next_record(fp1)) {
 
-	prepare_line(qso, buffer);
-
-	if (strlen(buffer) > 11)
-	    fputs(buffer, fp2);
-
-	free_qso(qso);
-    }
-
-#else
     while ( fgets(buf, 180, fp1) != NULL ) {
 
 	if (buf[0] != ';' && strlen(buf) > 60) {
@@ -405,7 +643,6 @@ rprt given
 	}
 
     }				// end while !eof
-#endif
     fclose(fp1);
 
     fputs("END-OF-LOG:\n", fp2);
@@ -419,6 +656,7 @@ rprt given
     return (0);
 }
 
+#endif
 
 
 /*
