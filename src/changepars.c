@@ -52,7 +52,7 @@ int changepars(void)
     extern int cqdelay;
     extern int ctcomp;
     extern SCREEN *mainscreen;
-    extern char config_file[];
+    extern char *config_file;
     extern int miniterm;
     extern char buffer[];
 
@@ -350,25 +350,21 @@ int changepars(void)
 	    break;
 	}
     case 24:			/* SET PARAMETERS */
+    case 29:			/* CFG PARAMETERS */
 	{
 	    clear();
 	    if (editor == EDITOR_JOE) {
 		strcpy(cmdstring, "joe ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
 	    } else if (editor == EDITOR_VI) {
 		strcpy(cmdstring, "vi ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
 	    } else if (editor == EDITOR_MC) {
 		strcpy(cmdstring, "mcedit ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
 	    } else {
 		strcpy(cmdstring, "e3 ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
 	    }
+
+	    strcat(cmdstring, config_file);
+	    rc = system(cmdstring);
 
 	    read_logcfg();
 	    writeparas();
@@ -423,33 +419,6 @@ int changepars(void)
 	    refreshp();
 	    sleep(1);
 
-	    break;
-	}
-    case 29:			/* CFG PARAMETERS */
-	{			/* same as #24 tb */
-	    clear();
-	    if (editor == EDITOR_JOE) {
-		strcpy(cmdstring, "joe ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
-	    } else if (editor == EDITOR_VI) {
-		strcpy(cmdstring, "vi ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
-	    } else if (editor == EDITOR_MC) {
-		strcpy(cmdstring, "mcedit ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
-	    } else {
-		strcpy(cmdstring, "e3 ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
-	    }
-	    read_logcfg();
-	    writeparas();
-	    mvprintw(24, 0, "Logcfg.dat loaded, parameters written..");
-	    refreshp();
-	    clear_display();
 	    break;
 	}
     case 30:			/* CW  */
@@ -775,7 +744,7 @@ int networkinfo(void)
     extern int lan_active;
     extern int nodes;
     extern char bc_hostaddress[MAXNODES][16];
-    extern char config_file[];
+    extern char *config_file;
     extern char whichcontest[];
     extern char pr_hostaddress[];
     extern char tncportname[];
