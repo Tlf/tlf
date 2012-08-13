@@ -121,7 +121,8 @@ int checklogfile_new(char *filename)
     tooshort = 0;
 
     while (fgets(buffer, sizeof(buffer), fp)) {
-	int band, bandok, linelen;
+	int band, linelen;
+	int bandok = 0; 
 
 	lineno++;
 
