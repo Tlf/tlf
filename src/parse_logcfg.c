@@ -56,7 +56,7 @@ int read_logcfg(void)
 {
     extern int nodes;
     extern int node;
-    extern char config_file[];
+    extern char *config_file;
 
     char defltconf[80];
 
@@ -75,8 +75,8 @@ int read_logcfg(void)
     strcpy(defltconf, PACKAGE_DATA_DIR);
     strcat(defltconf, "/logcfg.dat");
 
-    if (strlen(config_file) == 0)
-	strcpy(config_file, "logcfg.dat");
+    if (config_file == NULL)
+	config_file = g_strdup("logcfg.dat");
 
     if ((fp = fopen(config_file, "r")) == NULL) {
 	if ((fp = fopen(defltconf, "r")) == NULL) {

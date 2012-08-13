@@ -39,7 +39,7 @@ extern int lan_active;
 
 int prsock = 0;
 char pr_hostaddress[48] = "131.155.192.179";
-char config_file[80] = "";
+char *config_file = NULL;
 int portnum = 0;
 struct tln_logline *loghead = NULL;
 struct tln_logline *logtail = NULL;
@@ -418,8 +418,16 @@ int main(int argc, char *argv[])
 	switch (argv[1][1]) {
 	    /* verbose option */
 	case 'f':
-	    if (strlen(argv[1] + 2) > 0)
-		strcpy(config_file, argv[1] + 2);
+	    if (strlen(argv[1] + 2) > 0) {
+		if ((*(argv[1] + 2) == '~') && (*(argv[1] + 3) == '/')) {
+		    /* tilde expansion */
+		    config_file = g_strconcat( g_get_home_dir(), 
+			    argv[1] + 3, NULL);
+		}
+	    	else {
+		    config_file = g_strdup(argv[1] + 2);
+		}
+	    }
 	    break;
 	case 's':
 	    if (strlen(argv[1] + 2) > 0)
