@@ -8,7 +8,7 @@
 .SH "OPTIONS"
 .TP
 \fB\-f\fR Start with non-default configuration file (tlf -fPA0R) 
-\fR Defaults to logcfg.dat.
+\fR Defaults to logcfg.dat in actual working directory.
 .TP
 \fB\-h\fR Show summary of options and exit.
 .TP
@@ -695,6 +695,17 @@ Will send rig configuration parameters to Hamlib
 E.g.: RIGCONF=civaddr=0x40,retry=3,rig_pathname=/dev/ttyS0
 
 .TR
+.B RIT_CLEAR
+Clears the RIT after logging the qso. This only works if the rig, and the
+hamlib routine supports it. (It works for the OMNI 6+).
+
+.TR
+.B CWBANDWIDTH=<width>
+Sets the cw bandwidth of your rig when changing bands. If unset or 0 the
+default bandwidth (as determined by hamlib) is used. (You have to use a
+valid bandwidth for your rig!).
+
+.TR
 .B SC_DEVICE=
 Sound card device for scan function (e.g. /dev/dsp0)
 
@@ -702,11 +713,6 @@ Sound card device for scan function (e.g. /dev/dsp0)
 .B S_METER=
 Audio s-meter calibration values for the scan function
 e.g. S_METER=20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1
-
-.TR
-.B RIT_CLEAR
-Clears the RIT after logging the qso. This only works if the rig, and the
-hamlib routine supports it. (It works for the OMNI 6+).
 
 .TR
 .B SSBMODE
