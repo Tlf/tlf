@@ -235,24 +235,24 @@ void parse_logcfg(char *inputbuffer)
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
 	"disable",				/* deprecated */
-	"F1=",
-	"F2=",
-	"F3=",
-	"F4=",			/* 5 */
-	"F5=",
-	"F6=",
-	"F7=",
-	"F8=",
-	"F9=",			/* 10 */
-	"F10=",
-	"F11=",
-	"F12=",
-	"S&P_TU_MSG=",
-	"CQ_TU_MSG=",		/* 15 */
-	"CALL=",
-	"CONTEST=",
-	"LOGFILE=",
-	"KEYER_DEVICE=",
+	"F1",
+	"F2",
+	"F3",
+	"F4",			/* 5 */
+	"F5",
+	"F6",
+	"F7",
+	"F8",
+	"F9",			/* 10 */
+	"F10",
+	"F11",
+	"F12",
+	"S&P_TU_MSG",
+	"CQ_TU_MSG",		/* 15 */
+	"CALL",
+	"CONTEST",
+	"LOGFILE",
+	"KEYER_DEVICE",
 	"BANDOUTPUT",		/* 20 */
 	"RECALL_MULTS",
 	"ONE_POINT",
@@ -290,102 +290,102 @@ void parse_logcfg(char *inputbuffer)
 	"2EU3DX_POINTS",
 	"PORTABLE_MULT_2",	/* 55 */
 	"MIXED",
-	"TELNETHOST=",
-	"TELNETPORT=",
-	"TNCPORT=",
+	"TELNETHOST",
+	"TELNETPORT",
+	"TNCPORT",
 	"FIFO_INTERFACE",	/* 60 */
-	"RIGMODEL=",
-	"RIGSPEED=",
-	"TNCSPEED=",
-	"RIGPORT=",
+	"RIGMODEL",
+	"RIGSPEED",
+	"TNCSPEED",
+	"RIGPORT",
 	"NETKEYER",		/* 65 */
-	"NETKEYERPORT=",
-	"NETKEYERHOST=",
-	"ADDNODE=",
-	"THISNODE=",
+	"NETKEYERPORT",
+	"NETKEYERHOST",
+	"ADDNODE",
+	"THISNODE",
 	"CQWW_M2",		/* 70 */
 	"LAN_DEBUG",
-	"ALT_0=",
-	"ALT_1=",
-	"ALT_2=",
-	"ALT_3=",		/* 75 */
-	"ALT_4=",
-	"ALT_5=",
-	"ALT_6=",
-	"ALT_7=",
-	"ALT_8=",		/* 80 */
-	"ALT_9=",
+	"ALT_0",
+	"ALT_1",
+	"ALT_2",
+	"ALT_3",		/* 75 */
+	"ALT_4",
+	"ALT_5",
+	"ALT_6",
+	"ALT_7",
+	"ALT_8",		/* 80 */
+	"ALT_9",
 	"CALLUPDATE",
-	"TIME_OFFSET=",
+	"TIME_OFFSET",
 	"TIME_MASTER",
 	"CTCOMPATIBLE",		/*  85  */
 	"TWO_POINTS",
-	"MULT_LIST=",
+	"MULT_LIST",
 	"SERIAL+SECTION",
 	"SECTION_MULT",
-	"MARKERS=",		/* 90 */
+	"MARKERS",		/* 90 */
 	"DX_&_SECTIONS",
-	"MARKERDOTS=",
-	"MARKERCALLS=",
+	"MARKERDOTS",
+	"MARKERCALLS",
 	"NOB4",
 	/*LZ3NY */
-	"COUNTRYLIST=",		//by lz3ny      /* 95 */
-	"COUNTRY_LIST_POINTS=",	//by lz3ny
+	"COUNTRYLIST",		//by lz3ny      /* 95 */
+	"COUNTRY_LIST_POINTS",	//by lz3ny
 	"USE_COUNTRYLIST_ONLY",	//by lz3ny
-	"MY_COUNTRY_POINTS=",	//by lz3ny
-	"MY_CONTINENT_POINTS=",	//by lz3ny
-	"DX_POINTS=",		//by lz3ny                 /* 100 */
+	"MY_COUNTRY_POINTS",	//by lz3ny
+	"MY_CONTINENT_POINTS",	//by lz3ny
+	"DX_POINTS",		//by lz3ny                 /* 100 */
 	"SHOW_TIME",
 	"RXVT",
-	"VKM1=",
-	"VKM2=",
-	"VKM3=",		/* 105 */
-	"VKM4=",
-	"VKM5=",
-	"VKM6=",
-	"VKM7=",
-	"VKM8=",		/* 110 */
-	"VKM9=",
-	"VKM10=",
-	"VKM11=",
-	"VKM12=",
-	"VKSPM=",		/* 115 */
-	"VKCQM=",
+	"VKM1",
+	"VKM2",
+	"VKM3",		/* 105 */
+	"VKM4",
+	"VKM5",
+	"VKM6",
+	"VKM7",
+	"VKM8",		/* 110 */
+	"VKM9",
+	"VKM10",
+	"VKM11",
+	"VKM12",
+	"VKSPM",		/* 115 */
+	"VKCQM",
 	"WAZMULT",
 	"ITUMULT",
-	"CQDELAY=",
+	"CQDELAY",
 	"PFX_MULT",		/* 120 */
 	"CONTINENT_EXCHANGE",
-	"RULES=",
+	"RULES",
 	"NOAUTOCQ",
 	"SSBMODE",
 	"NO_BANDSWITCH_ARROWKEYS",	/* 125 */
 	"RIGCONF",
-	"TLFCOLOR1=",
-	"TLFCOLOR2=",
-	"TLFCOLOR3=",
-	"TLFCOLOR4=",		/* 130 */
-	"TLFCOLOR5=",
-	"TLFCOLOR6=",
-	"SYNCFILE=",
-	"SSBPOINTS=",
-	"CWPOINTS=",		/* 135 */
+	"TLFCOLOR1",
+	"TLFCOLOR2",
+	"TLFCOLOR3",
+	"TLFCOLOR4",		/* 130 */
+	"TLFCOLOR5",
+	"TLFCOLOR6",
+	"SYNCFILE",
+	"SSBPOINTS",
+	"CWPOINTS",		/* 135 */
 	"SOUNDCARD",
-	"SIDETONE_VOLUME=",
-	"S_METER=",
-	"SC_DEVICE=",
-	"MFJ1278_KEYER=",	/* 140 */
-	"CLUSTERLOGIN=",
+	"SIDETONE_VOLUME",
+	"S_METER",
+	"SC_DEVICE",
+	"MFJ1278_KEYER",	/* 140 */
+	"CLUSTERLOGIN",
 	"ORION_KEYER",
-	"INITIAL_EXCHANGE=",
-	"CWBANDWIDTH=",
+	"INITIAL_EXCHANGE",
+	"CWBANDWIDTH",
 	"LOWBAND_DOUBLE",	/* 145 */
 	"CLUSTER_LOG",
 	"SERIAL+GRID4",
 	"CHANGE_RST",
-	"GMFSK=",
+	"GMFSK",
 	"RTTYMODE",		/* 150 */
-	"DIGIMODEM=",
+	"DIGIMODEM",
 	"LOGFREQUENCY",
 	"IGNOREDUPE",
 	"CW_TU_MSG=",				/* deprecated */
@@ -393,6 +393,7 @@ void parse_logcfg(char *inputbuffer)
 	"VKSPR="				/* deprecated */
     };
 
+    char **fields;
     char teststring[80];
     char buff[40];
     char outputbuff[80];
@@ -401,12 +402,39 @@ void parse_logcfg(char *inputbuffer)
     int jj, hh;
     char *tk_ptr;
 
+
+    /* split the inputline at '=' to max 2 elements
+     *
+     * leave the components in fields[0] (keyword) and
+     * fields[1] for the parameters
+     *
+     * if only 1 component (no '='), it is only a keyword
+     *    g_strstrip it and test for keywordlist
+     *
+     * if 2 components (there is a '=' in the line)
+     *    g_strstrip first component and test for keywordlist
+     *    g_strchug second component -> strip leading space from parameters
+     *
+     * That allows plain keywords and also keywords with parameters (which
+     * follows a '=' sign
+     */
+    fields = g_strsplit( inputbuffer, "=", 2);
+    g_strstrip( fields[0] );
+
+    if ( *fields[0] == '\0' ) { 	/* only whitespace found? */
+	g_strfreev( fields );
+	return;
+    }
+
+    if (g_strv_length( fields ) == 2) { /* strip leading whitespace */
+	g_strchug( fields[1] );		/* from parameters */
+    }
+    
+    g_strlcpy( teststring, fields[0], sizeof(teststring) );
+
     for (ii = 0; ii < MAX_COMMANDS; ii++) {
 
-	teststring[0] = '\0';
-	strncat(teststring, commands[ii], 79);
-
-	if (strncmp(inputbuffer, teststring, strlen(teststring)) == 0) {
+	if (strcmp(teststring, commands[ii]) == 0) {
 	    break;
 	}
     }
@@ -1308,7 +1336,10 @@ void parse_logcfg(char *inputbuffer)
 	    }
     }
 
+    g_strfreev( fields );
+
 }
+
 
 int speed_conversion(int cwspeed)
 {
