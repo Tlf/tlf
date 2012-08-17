@@ -167,7 +167,7 @@ int defer_store = 0;
 char buffer[162];
 char call[20];
 char logfile[120] = "general.log";
-char *cabrillo;			/*< Name of the cabrillo format definition */
+char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
 char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = 0;

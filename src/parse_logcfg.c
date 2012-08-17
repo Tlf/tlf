@@ -72,7 +72,11 @@ int read_logcfg(void)
     nodes = 0;
     node = 0;
     shortqsonr = 0;
-    cabrillo = NULL;
+    
+    if (cabrillo != NULL) {
+	free(cabrillo);
+	cabrillo = NULL;
+    }
 
     strcpy(defltconf, PACKAGE_DATA_DIR);
     strcat(defltconf, "/logcfg.dat");
@@ -1299,6 +1303,11 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 154:{		/* read name of cabrillo format to use */
+
+		if (cabrillo != NULL) {
+		    free(cabrillo);	/* free old string if already set */
+		    cabrillo = NULL;
+		}
 	    	cabrillo = strdup(g_strchomp(inputbuffer + 9));
     		break;
 	    }
