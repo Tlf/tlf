@@ -1,6 +1,7 @@
 /*
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
+* 		2011-2012           Thomas Beierlein <tb@forth-ev.de>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -49,6 +50,8 @@ char inputbuffer[160];
 FILE *fp;
 
 void KeywordNotSupported(char *keyword);
+void ParameterNeeded(char *keyword);
+void WrongFormat(char *keyword);
 
 #define  MAX_COMMANDS 158	/* commands in list */
 
@@ -111,6 +114,16 @@ int read_logcfg(void)
 
     return (0);
 }
+
+
+#define PARAMETER_NEEDED(x) 			\
+    do {					\
+	if (fields[1] == NULL) { 		\
+	    ParameterNeeded(x); 		\
+    	    g_strfreev( fields );		\
+	    return; 				\
+	}					\
+    } while(0)
 
 void parse_logcfg(char *inputbuffer)
 {
@@ -457,43 +470,48 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 2 ... 10:{	/* messages */
-	    strcpy(message[ii - 2], inputbuffer + 3);
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(message[ii - 2], fields[1]);
 	    break;
 	}
     case 11 ... 13:{
-	    strcpy(message[ii - 2], inputbuffer + 4);
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(message[ii - 2], fields[1]);
 	    break;
 	}
     case 14:{
-	    strcpy(message[ii - 2], inputbuffer + 11);
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(message[12], fields[1]);
 	    strcpy(sp_return, message[12]);
 	    break;
 	}
     case 15:{
-	    strcpy(message[ii - 2], inputbuffer + 10);
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(message[13], fields[1]);
 	    strcpy(cq_return, message[13]);
 	    break;	/* end messages */
 	}
     case 16:{
-	    if (strlen(inputbuffer) > 6 + 20-1) {
+    	    PARAMETER_NEEDED(teststring);
+	    if (strlen(fields[1]) > 20) {
 		mvprintw(6,0,
 			"WARNING: Defined call sign too long! exiting...\n");
 		refreshp();
 		exit(1);
 	    }
-	    if (strlen(inputbuffer) > 6)
-		strcpy(call, inputbuffer + 5);
-	    else {
+	    if (strlen(fields[1]) == 0) {
 		mvprintw(6, 0,
 			 "WARNING: No callsign defined in logcfg.dat! exiting...\n");
 		refreshp();
 		exit(1);
 	    }
+	    strcpy(call, fields[1]);
 	    // check that call sign can be found in cty database !!
 	    break;
 	}
     case 17:{
-	    strcpy(whichcontest, inputbuffer + 8);
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(whichcontest, fields[1]);
 	    whichcontest[strlen(whichcontest) - 1] = '\0';
 	    if (strlen(whichcontest) > 40) {
 		showmsg
@@ -504,30 +522,31 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 18:{
+    	    PARAMETER_NEEDED(teststring);
 	    logfile[0] = '\0';
-	    strcat(logfile, inputbuffer + 8);
+	    strcat(logfile, fields[1]);
 	    logfile[strlen(logfile) - 1] = '\0';
 	    break;
 	}
     case 19:{
-
+    	    PARAMETER_NEEDED(teststring);
 	    keyer_device[0] = '\0';
-	    strncat(keyer_device, inputbuffer + 13, 9);
+	    strncat(keyer_device, fields[1], 9);
 	    keyer_device[strlen(keyer_device) - 1] = '\0';
 	    break;
 	}
     case 20:{		// Use the bandswitch output on parport0
+			/* \todo add message if parameter too short */
 	    use_bandoutput = 1;
-	    if (strlen(inputbuffer) > 12) {
+	    if ((fields[1] != NULL) && (strlen(fields[1]) >= 10)) {
 		for (jj = 0; jj <= 9; jj++)	// 10x
 		{
-		    hh = ((int) (inputbuffer[jj + 10])) - 48;
+		    hh = ((int) (fields[1][jj])) - 48;
 
 		    if (hh >= 0 && hh <= 9)
 			bandindexarray[jj] = hh;
 		    else
 			bandindexarray[jj] = 0;
-
 		}
 	    }
 	    break;
@@ -579,8 +598,6 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 32:{
-	    int len;
-	    
 	    cluster = MAP;
 
 	    /* init bandmap filtering */
@@ -596,12 +613,11 @@ void parse_logcfg(char *inputbuffer)
 	     * <xxx> - string parsed for the letters B, M, D and S
 	     * <number> - spot livetime in seconds (>=300)
 	     */
-	    len = strlen(teststring);
-	    if (inputbuffer[len] == '=') {
-		char **fields;
-		fields = g_strsplit(inputbuffer+len+1, ",", 2);
-		if (fields[0] != NULL) {
-		    char *ptr = fields[0];
+	    if (fields[1] != NULL) {
+		char **bm_fields;
+		bm_fields = g_strsplit(fields[1], ",", 2);
+		if (bm_fields[0] != NULL) {
+		    char *ptr = bm_fields[0];
 		    while (*ptr != '\0') {
 			switch (*ptr++) {
 			    case 'B': bm_config.allband = 0;
@@ -618,17 +634,17 @@ void parse_logcfg(char *inputbuffer)
 		    }
 		}
 
-		if (fields[1] != NULL) {
+		if (bm_fields[1] != NULL) {
 		    int livetime;
-		    g_strstrip(fields[1]);
-		    livetime = atoi(fields[1]);
+		    g_strstrip(bm_fields[1]);
+		    livetime = atoi(bm_fields[1]);
 		    if (livetime >= 300)
 			/* aging called every 2 seconds */
 			bm_config.livetime = livetime/2;
 		}
 
 
-		g_strfreev(fields);
+		g_strfreev(bm_fields);
 	    }
 	    break;
 	}
@@ -653,23 +669,26 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 38:{
+    	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strncat(buff, inputbuffer + 8, 2);
+	    strncat(buff, fields[1], 2);
 	    speed = speed_conversion(atoi(buff));
 	    break;
 	}
     case 39:{
+    	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 5);
+	    strcat(buff, fields[1]);
 	    if ((atoi(buff) > -1) && (atoi(buff) < 1001)) {
 		strncpy(tonestr, buff, 4);
-		tonestr[3] = '\0';
+		tonestr[3] = '\0';	/* \todo fix problem with 1000 Hz */
 	    }
 	    break;
 	}
     case 40:{
+    	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 7);
+	    strcat(buff, fields[1]);
 	    weight = atoi(buff);
 	    if (weight < -50)
 		weight = -50;
@@ -678,8 +697,9 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 41:{
+    	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 8);
+	    strcat(buff, fields[1]);
 	    txdelay = atoi(buff);
 	    if (txdelay > 50)
 		txdelay = 50;
@@ -688,21 +708,21 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 42:{
+    	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 9);
+	    strcat(buff, fields[1]);
 	    outputbuff[0] = '\0';
 	    sprintf(outputbuff, "WWV R=%d\n", atoi(buff));
 	    strcpy(lastwwv, outputbuff);
-
 	    break;
 	}
     case 43:{
+    	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 4);
+	    strcat(buff, fields[1]);
 	    outputbuff[0] = '\0';
 	    sprintf(outputbuff, "WWV SFI=%d\n", atoi(buff));
 	    strcpy(lastwwv, outputbuff);
-
 	    break;
 	}
     case 44:{
@@ -710,20 +730,21 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 45:{
+    	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 4);
+	    strcat(buff, fields[1]);
 	    if ((strncmp(buff, "MC", 2) == 0)
 		|| (strncmp(buff, "mc", 2) == 0)) {
 		editor = EDITOR_MC;
 		break;
 	    }
 
-	    j = strstr(inputbuffer, "joe");
+	    j = strstr(fields[1], "joe");
 	    if (j != NULL) {
 		editor = EDITOR_JOE;
 		break;
 	    }
-	    j = strstr(inputbuffer, "vi");
+	    j = strstr(fields[1], "vi");
 	    if (j != NULL) {
 		editor = EDITOR_VI;
 		break;
@@ -778,20 +799,23 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 57:{
-	    strncpy(pr_hostaddress, inputbuffer + 11, 47);
+	    PARAMETER_NEEDED(teststring);
+	    strncpy(pr_hostaddress, fields[1], 47);
 	    pr_hostaddress[strlen(pr_hostaddress) - 1] = '\0';
 	    break;
 	}
     case 58:{
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strncat(buff, inputbuffer + 11, 5);
+	    strncat(buff, fields[1], 5);
 	    portnum = atoi(buff);
 	    packetinterface = TELNET_INTERFACE;
 	    break;
 	}
     case 59:{
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 8);
+	    strcat(buff, fields[1]);
 	    if (strlen(buff) > 2) {
 		strncpy(tncportname, buff, 39);
 	    } else
@@ -805,8 +829,9 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 61:{
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 9);
+	    strcat(buff, fields[1]);
 
 	    if (strncmp(buff, "ORION", 5) == 0)
 		rignumber = 2000;
@@ -819,20 +844,23 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 62:{
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 9);
+	    strcat(buff, fields[1]);
 	    serial_rate = atoi(buff);
 	    break;
 	}
     case 63:{
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 9);
+	    strcat(buff, fields[1]);
 	    tnc_serial_rate = atoi(buff);
 	    break;
 	}
     case 64:{
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, inputbuffer + 8);
+	    strcat(buff, fields[1]);
 	    if (buff[0] == '0' || buff[0] == '1') {
 		rig_port = atoi(buff);
 	    } else {
@@ -845,18 +873,21 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 66:{
-	    netkeyer_port = atoi(inputbuffer + 13);
+	    PARAMETER_NEEDED(teststring);
+	    netkeyer_port = atoi(fields[1]);
 	    break;
 	}
     case 67:{
-	    strncpy(netkeyer_hostaddress, inputbuffer + 13, 16);
+	    PARAMETER_NEEDED(teststring);
+	    strncpy(netkeyer_hostaddress, fields[1], 16);
 	    netkeyer_hostaddress[strlen(netkeyer_hostaddress) -
 				 1] = '\0';
 	    break;
 	}
     case 68:{
+	    PARAMETER_NEEDED(teststring);
 	    if (node < MAXNODES) {
-		strncpy(bc_hostaddress[node], inputbuffer + 8, 16);
+		strncpy(bc_hostaddress[node], fields[1], 16);
 		bc_hostaddress[node][strlen(bc_hostaddress[node]) -
 				     1] = '\0';
 		if (node++ < MAXNODES)
@@ -866,7 +897,8 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 69:{
-	    thisnode = inputbuffer[9];
+	    PARAMETER_NEEDED(teststring);
+	    thisnode = fields[1][0];
 	    break;
 	}
     case 70:{
@@ -878,7 +910,8 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 72 ... 81:{	/* messages */
-	    strcpy(message[ii - 58], inputbuffer + 6);
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(message[ii - 58], fields[1]);
 	    break;
 	}
     case 82:{
@@ -886,8 +919,9 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 83:{
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strncat(buff, inputbuffer + 12, 3);
+	    strncat(buff, fields[1], 3);
 	    timeoffset = atoi(buff);
 	    if (timeoffset > 23)
 		timeoffset = 23;
@@ -909,8 +943,9 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 87:{
+	    PARAMETER_NEEDED(teststring);
 	    multsfile[0] = '\0';
-	    strncat(multsfile, inputbuffer + 10, 79);
+	    strncat(multsfile, fields[1], 79);
 	    g_strchomp(multsfile);
 	    multlist = 1;
 	    universal = 1;
@@ -925,15 +960,9 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 90:{
-	    markerfile[0] = '\0';
-	    outputbuff[0] = '\0';
-	    strcat(outputbuff, inputbuffer);
-
-	    if (strlen(outputbuff) > 8) {
-		strncpy(markerfile, outputbuff + 8,
-			strlen(outputbuff) - 9);
-		xplanet = 1;
-	    }
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(markerfile, g_strchomp(fields[1]));
+	    xplanet = 1;
 	    break;
 	}
     case 91:{
@@ -942,27 +971,15 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 92:{
-	    markerfile[0] = '\0';
-	    outputbuff[0] = '\0';
-	    strcat(outputbuff, inputbuffer);
-
-	    if (strlen(outputbuff) > 11) {
-		strncpy(markerfile, outputbuff + 11,
-			strlen(outputbuff) - 12);
-		xplanet = 2;
-	    }
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(markerfile, g_strchomp(fields[1]));
+	    xplanet = 2;
 	    break;
 	}
     case 93:{
-	    markerfile[0] = '\0';
-	    outputbuff[0] = '\0';
-	    strcat(outputbuff, inputbuffer);
-
-	    if (strlen(outputbuff) > 12) {
-		strncpy(markerfile, outputbuff + 12,
-			strlen(outputbuff) - 13);
-		xplanet = 3;
-	    }
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(markerfile, g_strchomp(fields[1]));
+	    xplanet = 3;
 	    break;
 	}
     case 94:{
@@ -990,8 +1007,9 @@ void parse_logcfg(char *inputbuffer)
 	    char buffer[255] = "";
 	    FILE *fp;
 
+	    PARAMETER_NEEDED(teststring);
 	    if (strlen(multiplier_list) == 0) {	/* if first definition */
-		g_strlcpy(mit_multlist, inputbuffer + 12, sizeof(mit_multlist));
+		g_strlcpy(mit_multlist, fields[1], sizeof(mit_multlist));
 		g_strchomp(mit_multlist);	/* drop trailing whitespace */
 
 		if ((fp = fopen(mit_multlist, "r")) != NULL) {
@@ -1039,7 +1057,8 @@ void parse_logcfg(char *inputbuffer)
 	}
 
     case 96:{		// COUNTRY_LIST_POINTS
-	    g_strlcpy(c_temp, inputbuffer + 20, sizeof(c_temp));
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (countrylist_points == -1)
 		countrylist_points = atoi(c_temp);
 
@@ -1053,21 +1072,24 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 98:{		//HOW Many points scores my country  lz3ny
-	    g_strlcpy(c_temp, inputbuffer + 18, sizeof(c_temp));
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (my_country_points == -1)
 		my_country_points = atoi(c_temp);
 
 	    break;
 	}
     case 99:{		//MY_CONTINENT_POINTS       lz3ny
-	    g_strlcpy(c_temp, inputbuffer + 20, sizeof(c_temp));
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (my_cont_points == -1)
 		my_cont_points = atoi(c_temp);
 
 	    break;
 	}
     case 100:{		//DX_CONTINENT_POINTS       lz3ny
-	    g_strlcpy(c_temp, inputbuffer + 10, sizeof(c_temp));
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (dx_cont_points == -1)
 		dx_cont_points = atoi(c_temp);
 
@@ -1083,7 +1105,8 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 103 ... 111:{	// get phone messages
-		strncpy(ph_message[ii - 103], inputbuffer + 5, 70);
+	    PARAMETER_NEEDED(teststring);
+		strncpy(ph_message[ii - 103], fields[1], 70);
 		ph_message[ii - 103][strlen(ph_message[ii - 103]) -
 				     1] = '\0';
 		mvprintw(15, 5, "A: Phone message #%d is %s", ii - 103, ph_message[ii - 103]);	// (W9WI)
@@ -1094,7 +1117,8 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 112 ... 116:{	// get phone messages
-		strncpy(ph_message[ii - 103], inputbuffer + 6, 39);
+	    PARAMETER_NEEDED(teststring);
+		strncpy(ph_message[ii - 103], fields[1], 39);
 		ph_message[ii - 103][strlen(ph_message[ii - 103]) -
 				     1] = '\0';
 		mvprintw(15, 5, "B: Phone message #%d is %s", ii - 103, ph_message[ii - 103]);	// (W9WI)
@@ -1113,11 +1137,10 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 119:{		// CQ Delay (sec)
+		PARAMETER_NEEDED(teststring);
 		buff[0] = '\0';
-		if (strlen(inputbuffer) >= 9) {
-		    strncpy(buff, inputbuffer + 8, 3);
-		    cqdelay = atoi(buff);
-		}
+		strncpy(buff, fields[1], 3);
+		cqdelay = atoi(buff);
 		if ((cqdelay < 3) || (cqdelay > 60))
 		    cqdelay = 20;
 
@@ -1133,7 +1156,8 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 122:{
-		strcpy(whichcontest, inputbuffer + 6);	// RULES=
+		PARAMETER_NEEDED(teststring);
+		strcpy(whichcontest, fields[1]);	// RULES=
 		whichcontest[strlen(whichcontest) - 1] = '\0';
 		if (strlen(whichcontest) > 40) {
 		    showmsg
@@ -1157,73 +1181,59 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 126:{		// Hamlib rig conf parameters
-		if (strlen(inputbuffer + 8) >= 80) {
+		PARAMETER_NEEDED(teststring);
+		if (strlen(fields[1]) >= 80) {
 		    showmsg
 			("WARNING: rigconf parameters too long! exiting...");
 		    sleep(5);
 		    exit(1);
 		}
-		strncpy(rigconf, inputbuffer + 8, 79);	// RIGCONF=
+		strncpy(rigconf, fields[1], 79);	// RIGCONF=
 		rigconf[strlen(rigconf) - 1] = '\0';	// chop LF
 		break;
 	    }
     case 127:{		// define color GREEN (header)
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[1][0] = inputbuffer[10] - 48;
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[1][1] = inputbuffer[11] - 48;
+		PARAMETER_NEEDED(teststring);
+		if (strlen(fields[1]) >= 2 && isdigit(fields[1][0]) &&
+			isdigit(fields[1][1])) {
+		    tlfcolors[1][0] = fields[1][0] - 48;
+		    tlfcolors[1][1] = fields[1][1] - 48;
+		} else {
+		    WrongFormat(teststring);
+		}
 		break;
 	    }
-    case 128:{		// define color CYAN (windows)
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[3][0] = inputbuffer[10] - 48;
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[3][1] = inputbuffer[11] - 48;
-		break;
-	    }
-    case 129:{		// define color WHITE (log window)
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[4][0] = inputbuffer[10] - 48;
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[4][1] = inputbuffer[11] - 48;
-		break;
-	    }
-    case 130:{		// define color MAGENTA (Marker / dupes)
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[5][0] = inputbuffer[10] - 48;
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[5][1] = inputbuffer[11] - 48;
-		break;
-	    }
-    case 131:{		// define color BLUE (input fields)
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[6][0] = inputbuffer[10] - 48;
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[6][1] = inputbuffer[11] - 48;
-		break;
-	    }
-    case 132:{		// define color YELLOW (window frames)
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[7][0] = inputbuffer[10] - 48;
-		if (inputbuffer[10] >= 48 && inputbuffer[10] <= 57)
-		    tlfcolors[7][1] = inputbuffer[11] - 48;
+    case 128 ... 132:{		// define color CYAN (windows), WHITE (log win)
+		      		// MAGENTA (Marker / dupes), BLUE (input field)
+				// and YELLOW (Window frames)
+		PARAMETER_NEEDED(teststring);
+		if (strlen(fields[1]) >= 2 && isdigit(fields[1][0]) &&
+			isdigit(fields[1][1])) {
+		    tlfcolors[ii - 128 + 3][0] = fields[1][0] - 48;
+		    tlfcolors[ii - 128 + 3][1] = fields[1][1] - 48;
+		} else {
+		    WrongFormat(teststring);
+		}
 		break;
 	    }
     case 133:{		// define name of synclogfile
+		PARAMETER_NEEDED(teststring);
 		synclogfile[0] = '\0';
-		strcat(synclogfile, inputbuffer + 9);
+		strcat(synclogfile, fields[1]);
 		synclogfile[strlen(synclogfile) - 1] = '\0';
 		break;
 	    }
     case 134:{		//SSBPOINTS=
+		PARAMETER_NEEDED(teststring);
 		buff[0] = '\0';
-		strcat(buff, inputbuffer + 10);
+		strcat(buff, fields[1]);
 		ssbpoints = atoi(buff);
 		break;
 	    }
     case 135:{		//CWPOINTS=
+		PARAMETER_NEEDED(teststring);
 		buff[0] = '\0';
-		strcat(buff, inputbuffer + 9);
+		strcat(buff, fields[1]);
 		cwpoints = atoi(buff);
 		break;
 	    }
@@ -1232,8 +1242,9 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 137:{		// sound card volume (default = 70)
+		PARAMETER_NEEDED(teststring);
 		buff[0] = '\0';
-		strncat(buff, inputbuffer + 16, 2);
+		strncat(buff, fields[1], 2);
 		if (atoi(buff) > -1 && atoi(buff) < 101)
 		    strcpy(sc_volume, buff);
 		else
@@ -1243,7 +1254,8 @@ void parse_logcfg(char *inputbuffer)
     case 138:{
 		int i = 0;
 
-		tk_ptr = strtok(inputbuffer + 8, ":,.-_\t ");
+		PARAMETER_NEEDED(teststring);
+		tk_ptr = strtok(fields[1], ":,.-_\t ");
 
 		if (tk_ptr != NULL) {
 		    while (tk_ptr) {
@@ -1257,20 +1269,23 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 139:{		// dsp for s-meter
-		strncpy(sc_device, inputbuffer + 10,
+		PARAMETER_NEEDED(teststring);
+		strncpy(sc_device, fields[1],
 			sizeof(sc_device) - 1);
 		sc_device[strlen(sc_device) - 1] = '\0';
 		break;
 	    }
     case 140:{
+		PARAMETER_NEEDED(teststring);
 		keyerport = MFJ1278_KEYER;
-		strncpy(controllerport, inputbuffer + 14,
+		strncpy(controllerport, fields[1],
 			sizeof(controllerport) - 1);
 		controllerport[strlen(controllerport) - 1] = '\0';
 		break;
 	    }
     case 141:{
-		strcpy(clusterlogin, inputbuffer + 13);
+		PARAMETER_NEEDED(teststring);
+		strcpy(clusterlogin, fields[1]);
 		break;
 	    }
     case 142:{
@@ -1278,13 +1293,15 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 143:{
-		strncpy(exchange_list, inputbuffer + 17,
+		PARAMETER_NEEDED(teststring);
+		strncpy(exchange_list, fields[1],
 			sizeof(exchange_list) - 1);
 		exchange_list[strlen(exchange_list) - 1] = '\0';
 		break;
 	    }
     case 144:{
-		cw_bandwidth = atoi(inputbuffer + 12);
+		PARAMETER_NEEDED(teststring);
+		cw_bandwidth = atoi(fields[1]);
 		break;
 	    }
     case 145:{
@@ -1304,8 +1321,9 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 149:{
+		PARAMETER_NEEDED(teststring);
 		keyerport = GMFSK;
-		strncpy(controllerport, inputbuffer + 6,
+		strncpy(controllerport, fields[1],
 			sizeof(controllerport) - 1);
 		controllerport[strlen(controllerport) - 1] = '\0';
 		break;
@@ -1317,8 +1335,9 @@ void parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 151:{
+		PARAMETER_NEEDED(teststring);
 		rttyoutput[0] = '\0';
-		strncat(rttyoutput, inputbuffer + 10, 110);
+		strncat(rttyoutput, fields[1], 110);
 		rttyoutput[strlen(rttyoutput) - 1] = '\0';
 		break;
 	    }
@@ -1336,7 +1355,7 @@ void parse_logcfg(char *inputbuffer)
 		    free(cabrillo);	/* free old string if already set */
 		    cabrillo = NULL;
 		}
-	    	cabrillo = strdup(g_strchomp(inputbuffer + 9));
+	    	cabrillo = strdup(g_strchomp(fields[1]));
     		break;
 	    }
     case 155:
@@ -1449,15 +1468,45 @@ int speed_conversion(int cwspeed)
     return (x);
 }
 
+
+/** Complain about problems in configuration 
+ *
+ * Complains in standout mode about some problem. Beep and wait for
+ * 2 seconds 
+ *
+ * \param msg  The reason for the problem to be shown 
+ */
+void Complain(char *msg) {
+    attron(A_STANDOUT);
+    showmsg(msg);
+    attroff(A_STANDOUT);
+    beep();
+    sleep(2);
+}
+
 /** Complain about not supported keyword */
 void KeywordNotSupported(char *keyword) {
     char msgbuffer[100];
     sprintf(msgbuffer,
 	    "Keyword '%s' not supported. See man page and README.\n",
 	    keyword);
-    attron(A_STANDOUT);
-    showmsg(msgbuffer);
-    attroff(A_STANDOUT);
-    beep();
-    sleep(2);
+    Complain(msgbuffer);
+}
+
+/** Complain about missing parameter */
+void ParameterNeeded(char *keyword) {
+    char msgbuffer[100];
+    sprintf(msgbuffer,
+	    "Keyword '%s' must be followed by an parameter ('=....'). See man page.\n",
+	    keyword);
+    Complain(msgbuffer);
+}
+
+/** Complain about wrong parameter format */
+void WrongFormat(char *keyword) {
+    char msgbuffer[100];
+    sprintf(msgbuffer,
+	    "Wrong parameter format for keyword '%s'. See man page.\n",
+	    keyword);
+    Complain(msgbuffer);
 }
