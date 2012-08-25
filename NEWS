@@ -1,3 +1,35 @@
+tlf-1.2.0_pre2
+==============
+Bugfix release.
+
+Old tlf-1.1.2 contained a bug in the parsing logic for logcfg.dat and rules
+files. It failed to recognize some keywords if there was a similar one with
+the same beginning (e.g. CLUSTERLOGIN got not recognized as there is also a
+CLUSTER keyword). i
+Furthermore it complained about empty lines in that files with: 'Keyword '' 
+not supported'.
+Thanks to David N1EA and Marting OK1RR for pointing that out.
+
+New features:
+    - New keyword CABRILLO=<formatname> accepted. specifies the cabrillo format 
+      to be used (not workign yet).
+
+Bug fixes:
+    - Implemented new and much more robust parsing logic for keywords.
+      Reworked and rechecked also all parameter handling to allow a better 
+      failure handling.
+    - tlf no longer complains about empty lines in config files.
+    - Add support for '~' expansion for '-f' command line switch. (Thanks N1EA).
+      Something like 'tlf -f~/mydir/logcfg.dat' is working now.
+    - Add description of reset of CW bandwidth during band switch and 
+      CWBANDWIDTH= keyword to man page.
+
+Furthermore a some cleanup and internal changes are made to simplify future 
+maintenance, e.g.:
+    - Cleanup of unused variables and comments.
+    - Rename 'configure.in' into 'configure.ac' as former will be no longer
+      accepted by automake-1.13
+
 tlf-1.2.0_pre1
 ==============
 Prerelease for new tlf-1.2.0

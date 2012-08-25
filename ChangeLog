@@ -1,3 +1,77 @@
+2012-08-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: Second part of reworked parsing logic  
+  - All keywords which require a parameter after an '=' use the 
+  preparsed fields[1] variable now. 
+  - To catch wrong syntax in the config file the macro PARAMETER_NEEDED
+  tests if needed that there was such a '=' in the config entry.
+
+2012-08-16  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/parse_logcfg.c: Fixes nasty problem in parsing of preferences from
+  logcfg.dat and rules file  
+  - David N1EA and Martin OK1RR reports not working CLUSTERLOGIN. 
+  - Reason was change in parsing logic done between tlf-1.0.5 and
+  tlf-1.1.0. TLF now stopped at keyword CLUSTER mas it was a substring of
+  CLUSTERLOGIN. So CLUSTERLOGIN got never called. Thorough inspection showed
+  that it may affect also other settings.  
+  - New logic starts by splitting the  inputline at a potential '=' sign.
+  First part: the keyword, second part (if available): the parameters. 
+  The keyword gets stripped on both sides, the parameter only from 
+  leading spaces. That allows something like ' CALL =  DL1JBE'. 
+  - All keywords in the keyword list were stripped from a trailing '='
+  sign. If you need to decide if it got called correctly, than look at the
+  second field in the parsed array.
+
+2012-08-23  Thomas Beierlein <tb@forth-ev.de>
+
+  * .gitignore, aclocal.m4: remove unneeded 'aclocal.m4' and add it to
+  .gitignore  
+  - They will be created automatically if you run 'autoreconf' after
+  an checkout. so there is no need to have it in the repository.
+
+2012-08-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c, src/main.c, src/parse_logcfg.c: Add tilde expansion for
+  config file switch (-f)  
+  - -f command line switch allows use of an alternate logfile.
+  Until now it does not recognize '~' as abbreviation for the users
+  HOME directory (Thanks David N1EA for reporting). 
+  - If logfilename starts with ~/ it gets replaced by users home directory. 
+
+  * src/checklogfile.c: fix uninitialized variable
+
+2012-08-13  Thomas Beierlein <tb@forth-ev.de>
+
+  * tlf.1.in: comment CWBANDWIDTH= preference switch  
+  - Normally in CW mode tlf sets the (hamlib defined) default bandwidth 
+    during each switch of bands. 
+  - If you need a different bandwidth you can set it with these switch 
+    in logcfg.dat
+
+2012-08-10  Thomas Beierlein <tb@forth-ev.de>
+
+  * config.h.in, configure.ac, configure.in: Prepare for Automake-1.13 which no
+  longer accepts a configure.in  
+  - move configure.in to configure.ac 
+  - regenerate config.h.in
+
+2012-08-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/Makefile.am, doc/README.cab, share/Makefile.am, share/cabrillo.fmt,
+  tlf.1.in: add rudimental files with description of new cabrillo mechanism and
+  format specification (needs to be completed). Document new CABRILLO=
+  statement for ruls file.
+
+2012-08-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/parse_logcfg.c: add recognition of new keyword CABRILLO= 
+  That keyword has to be used to name the cabrillo format definition to be used
+  when writing cabrillo logs.
+
+2012-06-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: first work for new writecabrillo
 2012-07-02  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/writecabrillo.c: Use g_strstrip instead home made function
