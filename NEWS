@@ -12,7 +12,7 @@ Thanks to David N1EA and Marting OK1RR for pointing that out.
 
 New features:
     - New keyword CABRILLO=<formatname> accepted. specifies the cabrillo format 
-      to be used (not workign yet).
+      to be used (not working yet).
 
 Bug fixes:
     - Implemented new and much more robust parsing logic for keywords.
@@ -24,7 +24,7 @@ Bug fixes:
     - Add description of reset of CW bandwidth during band switch and 
       CWBANDWIDTH= keyword to man page.
 
-Furthermore a some cleanup and internal changes are made to simplify future 
+Furthermore some cleanup and internal changes are made to simplify future 
 maintenance, e.g.:
     - Cleanup of unused variables and comments.
     - Rename 'configure.in' into 'configure.ac' as former will be no longer
