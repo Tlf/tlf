@@ -25,27 +25,52 @@
 #include "curses.h"
 #include <glib.h>
 
-struct qso_t {
+
+/* list of different tags for QSO: line items */
+enum tag_t { NO_ITEM, FREQ, MODE, DATE, TIME, MYCALL, HISCALL, RST_S, RST_R, 
+    EXC_S, EXCH, TX };	
+
+
+/* conversion table between tag name in format file and internal tag */
+struct tag_conv {
+    char 	*item_name;
+    enum tag_t  tag;
+} tag_tbl[] = {
+    { "FREQ",	FREQ 	},
+    { "MODE",	MODE 	},
+    { "DATE",	DATE 	},
+    { "TIME", 	TIME 	},
+    { "MYCALL", MYCALL 	},
+    { "HISCALL",HISCALL },
+    { "RST_S",  RST_S 	},
+    { "RST_R",  RST_R 	},
+    { "EXC_S",  EXC_S 	},
+    { "EXCH",   EXCH 	},
+    { "TX",     TX 	}
 };
 
 
+struct qso_t {
+};
+
+/* describes one item for printing the QSO: line in cabrillo */
 struct line_item {
-    /* enum type */	/* item type */
+    enum tag_t tag;	/* item type */
     int pos;		/* item position in line */
     int len;		/* max. item length */
 };
 
+/* describes the cabrillo format to be used */
 struct cabrillo_desc {
-    char *name;
-    int item_count;
-    GPtrArray *item_array;
+    char *name;			/* name of the cabrillo format in use */
+    int item_count;		/* number items in QSO: line */
+    GPtrArray *item_array;	/* array of items in QSO: line
+    				 * must be from left to right */
 };
 
 
-struct qso_t *get_next_record (FILE *fp);
-
 int is_comment(char *buffer);
-
+struct qso_t *get_next_record (FILE *fp);
 void free_qso(struct qso_t *ptr);
 
 
@@ -105,8 +130,6 @@ void errorbox(char *s)
 }
 
 
-
-
 #define new
 #ifdef new
 /** free cabrillo format description */
@@ -124,7 +147,24 @@ void free_cabfmt(struct cabrillo_desc *desc) {
 }
 
 
-/* parse item describing entry 
+/* translate item name into a tag */
+enum tag_t translate_item_name( char *name ) {
+    int i;
+
+    /* lookup name in tag list */
+    for ( i = 0; i < sizeof(tag_tbl)/sizeof(struct tag_conv); i++) {
+    	if (strcmp( tag_tbl[i].item_name, name ) == 0 ) {
+	    /* and return corresponding tab */
+	    return tag_tbl[i].tag;
+	}
+    }
+
+    /* if not found return NO_ITEM tag */
+    return NO_ITEM;
+}
+
+
+/* parse item describing one entry 
  *
  * has to be in following format: item,position,length
  *   - item to print (date, time, call, ...)
@@ -134,17 +174,20 @@ void free_cabfmt(struct cabrillo_desc *desc) {
 struct line_item *parse_line_entry(char *line_entry) {
     struct line_item *item;
     gchar **parts;
+    enum tag_t tag;
 
     item = g_malloc( sizeof(line_entry) );
     parts = g_strsplit(line_entry, ",", 3);
 
     if ( g_strv_length(parts) == 3 ) {
-	/* lookup item type */
+	tag = translate_item_name( parts[0] );
+	item->tag = tag;
 	item->pos = atoi( parts[1] );
 	item->len = atoi( parts[2] );
     } 
     else {
-	/* type is NO_TYPE */
+	/* type is NO_ITEM */
+	item->tag = NO_ITEM;
     }
 
     return item;
