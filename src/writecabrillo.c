@@ -190,6 +190,8 @@ struct line_item *parse_line_entry(char *line_entry) {
 	item->tag = NO_ITEM;
     }
 
+    g_strfreev( parts );
+
     return item;
 }
 
