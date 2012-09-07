@@ -50,9 +50,6 @@ struct tag_conv {
 };
 
 
-struct qso_t {
-};
-
 /* describes one item for printing the QSO: line in cabrillo */
 struct line_item {
     enum tag_t tag;	/* item type */
@@ -68,6 +65,22 @@ struct cabrillo_desc {
     				 * must be from left to right */
 };
 
+
+/* represents different parts of a qso logline */
+struct qso_t {
+    char * logline;
+    int band;
+    int mode;
+    char date;
+    char month;
+    int year;
+    int time;			/* in hhmm format */
+    int qsonr;
+    char *call;
+    int rst_s;
+    int rst_r;
+    char *comment;
+};
 
 int is_comment(char *buffer);
 struct qso_t *get_next_record (FILE *fp);
@@ -103,6 +116,10 @@ struct qso_t *get_next_record (FILE *fp)
 		
 	    ptr = g_malloc (sizeof(struct qso_t));
 
+	    /* remember whole line */
+	    ptr->logline = strdup( buffer );
+	    ptr->call = NULL;
+
 	    /* split buffer into qso record */
 
 	    return ptr;
@@ -116,7 +133,10 @@ struct qso_t *get_next_record (FILE *fp)
 /** free qso record pointed to by ptr */
 void free_qso(struct qso_t *ptr) {
 
-    g_free(ptr);
+    g_free( ptr->logline );
+    g_free( ptr->call );
+    g_free( ptr );
+
 }
 
 
