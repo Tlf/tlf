@@ -176,7 +176,7 @@ struct line_item *parse_line_entry(char *line_entry) {
     gchar **parts;
     enum tag_t tag;
 
-    item = g_malloc( sizeof(line_entry) );
+    item = g_malloc( sizeof(struct line_item) );
     parts = g_strsplit(line_entry, ",", 3);
 
     if ( g_strv_length(parts) == 3 ) {
