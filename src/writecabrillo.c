@@ -21,9 +21,12 @@
 	 *   write cabrillo  file
 	 *
 	 *--------------------------------------------------------------*/
+#define _XOPEN_SOURCE 500
 #include "writecabrillo.h"
-#include "curses.h"
+#include <curses.h>
+#include <stdio.h>
 #include <glib.h>
+#include <time.h>
 
 
 /* list of different tags for QSO: line items */
@@ -68,18 +71,20 @@ struct cabrillo_desc {
 
 /* represents different parts of a qso logline */
 struct qso_t {
-    char * logline;
+    char *logline;
     int band;
     int mode;
-    char date;
+    char day;
     char month;
     int year;
-    int time;			/* in hhmm format */
-    int qsonr;
+    int hour;
+    int min;
+    int qso_nr;
     char *call;
     int rst_s;
     int rst_r;
     char *comment;
+    float freq;
 };
 
 int is_comment(char *buffer);
@@ -108,19 +113,67 @@ int is_comment(char *buf) {
 struct qso_t *get_next_record (FILE *fp)
 {
     char buffer[160];
+    char *tmp;
     struct qso_t *ptr;
+    struct tm date_n_time;
 
     while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
 
 	if (!is_comment(buffer)) {
 		
-	    ptr = g_malloc (sizeof(struct qso_t));
+	    ptr = g_malloc0 (sizeof(struct qso_t));
 
 	    /* remember whole line */
-	    ptr->logline = strdup( buffer );
-	    ptr->call = NULL;
+	    ptr->logline = g_strdup( buffer );
 
-	    /* split buffer into qso record */
+	    /* split buffer into parts for qso_t record and parse
+	     * them accordingly */
+	    tmp = strtok( buffer, " \t");
+
+	    /* band */
+	    ptr->band = atoi( tmp );
+
+
+	    /* mode */
+	    if ( tmp[3] == 'C')
+		ptr->mode = CWMODE;
+	    else if (tmp[3] == 'S')
+		ptr->mode = SSBMODE;
+	    else
+		ptr->mode = DIGIMODE;
+
+	    /* date & time */
+	    memset( &date_n_time, 0, sizeof(struct tm) );
+
+	    strptime ( strtok( NULL, " \t" ), "%d-%b-%y", &date_n_time);
+	    strptime ( strtok( NULL, " \t" ), "%H:%M", &date_n_time);
+
+	    ptr->year = date_n_time.tm_year + 1900;	/* convert to
+							   1968..2067 */
+	    ptr->month = date_n_time.tm_mon + 1;	/* tm_mon = 0..11 */
+	    ptr->day   = date_n_time.tm_mday;
+
+	    ptr->hour  = date_n_time.tm_hour;
+	    ptr->min   = date_n_time.tm_min;
+
+	    /* qso number */
+	    ptr->qso_nr = atoi( strtok( NULL, " \t" ) );
+
+	    /* his call */
+	    ptr->call = g_strdup( strtok( NULL, " \t" ) );
+
+	    /* RST send and received */
+	    ptr->rst_s = atoi( strtok( NULL, " \t" ) );
+	    ptr->rst_r = atoi( strtok( NULL, " \t" ) );
+
+	    /* comment (exchange) */
+	    ptr->comment = g_strndup( buffer + 54, 13 );
+
+	    /* frequency */
+	    ptr->freq = atof( buffer + 80 );
+	    if ( ( ptr->freq < 1800. ) || ( ptr->freq >= 30000. ) ) {
+		ptr->freq = 0.;
+	    }
 
 	    return ptr;
 	}
@@ -133,6 +186,7 @@ struct qso_t *get_next_record (FILE *fp)
 /** free qso record pointed to by ptr */
 void free_qso(struct qso_t *ptr) {
 
+    g_free( ptr->comment );
     g_free( ptr->logline );
     g_free( ptr->call );
     g_free( ptr );
