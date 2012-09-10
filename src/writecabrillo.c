@@ -22,12 +22,15 @@
 	 *
 	 *--------------------------------------------------------------*/
 #define _XOPEN_SOURCE 500
+#define _GNU_SOURCE
 #include "writecabrillo.h"
 #include <curses.h>
 #include <stdio.h>
+#include <string.h>
 #include <glib.h>
 #include <time.h>
 
+extern char call[];
 
 /* list of different tags for QSO: line items */
 enum tag_t { NO_ITEM, FREQ, MODE, DATE, TIME, MYCALL, HISCALL, RST_S, RST_R, 
@@ -134,9 +137,9 @@ struct qso_t *get_next_record (FILE *fp)
 
 
 	    /* mode */
-	    if ( tmp[3] == 'C')
+	    if ( strcasestr( tmp, "CW"))
 		ptr->mode = CWMODE;
-	    else if (tmp[3] == 'S')
+	    else if (strcasestr( tmp, "SSB" ))
 		ptr->mode = SSBMODE;
 	    else
 		ptr->mode = DIGIMODE;
@@ -358,6 +361,138 @@ struct cabrillo_desc *read_cabrillo_format (char *filename, char *format)
     return cabdesc;
 }
 
+char *to_mode[] = {
+    "CW",
+    "PH",
+    "RY"
+};
+
+/* converts band to frequency of start of band 
+ * !! only for contest bands */
+float band2freq(int band) {
+    float freq;
+
+    switch (band) {
+    	case 160: 
+	    freq = 1800.;
+	    break;
+	case 80:
+	    freq = 3500.;
+	    break;
+	case 40:
+	    freq = 7000.;
+	    break;
+	case 20:
+	    freq = 14000.;
+	    break;
+	case 15:
+	    freq = 21000.;
+	    break;
+	case 10:
+	    freq = 28000.;
+	    break;
+	default:
+	    freq = 0.;
+	    break;
+    }
+
+    return freq;
+}
+
+/* add 'src' to 'dst' with max. 'len' chars left padded */
+void add_lpadded( char *dst, char *src, int len ) {
+    char *field;
+    int l;
+
+    field = g_malloc( len + 1);
+    strcat( dst, " " );
+    memset(field, ' ', len);
+    l = strlen(src);
+    if (l > len) l = len;
+    memcpy(field + len - l, src, l);
+    field[len] = '\0';
+    strcat( dst, field );
+    g_free( field );
+}
+
+/* add 'src' to 'dst' with max. 'len' char right padded */
+void add_rpadded( char *dst, char *src, int len ) {
+    char *field;
+    int l;
+	
+    field = g_malloc( len + 1);
+    strcat( dst, " " );
+    memset(field, ' ', len);
+    l = strlen(src);
+    if (l > len) l = len;
+    memcpy(field, src, l);
+    field[len] = '\0';
+    strcat( dst, field );
+    g_free( field );
+}
+
+
+/* format QSO: line for actual qso according to cabrillo format description
+ * and put it into buffer */
+void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
+
+    int freq;
+    int i;
+    char tmp[80];
+    struct line_item *item;
+
+    freq = (int)qso->freq;
+    if (freq < 1800.)
+	freq = (int)band2freq( qso->band );
+
+    strcpy( buf, "QSO:" );		/* start the line */
+    for  (i = 0; i < desc->item_count; i++) {
+	item = g_ptr_array_index( desc->item_array, i );
+
+	switch (item->tag) {
+	    case FREQ:
+		sprintf( tmp, "%d", freq );
+		add_lpadded( buf, tmp, item->len );
+		break;
+	    case MODE:
+		sprintf( tmp, "%s", to_mode[qso->mode] );
+		add_lpadded( buf, tmp, item->len );
+		break;
+	    case DATE:
+		sprintf( tmp, "%4d-%02d-%02d", 
+			qso->year, qso->month, qso->day);
+		add_lpadded( buf, tmp, item->len );
+		break;
+	    case TIME:
+		sprintf( tmp, "%02d%02d", qso->hour, qso->min );
+		add_lpadded( buf, tmp, item->len );
+		break;
+	    case MYCALL:
+		strcpy(tmp, call);
+		add_rpadded( buf, g_strchomp(tmp), item->len );
+		break;
+	    case HISCALL:
+		add_rpadded( buf, qso->call, item->len );
+		break;
+	    case RST_S:
+		sprintf( tmp, "%d", qso->rst_s );
+		add_rpadded( buf, tmp, item->len );
+		break;
+	    case RST_R:
+		sprintf( tmp, "%d", qso->rst_r );
+		add_rpadded( buf, tmp, item->len );
+		break;
+	    case EXCH:
+		add_rpadded( buf, qso->comment, item->len );
+		break;
+	    case NO_ITEM:
+	    default:
+		tmp[0] = '\0';
+	}
+
+    }
+    strcat( buf, "\n" ); 		/* closing nl */
+}
 
 int write_cabrillo(void)
 {
@@ -422,9 +557,9 @@ int write_cabrillo(void)
 
     while ((qso = get_next_record(fp1))) {
 
-//	prepare_line(qso, buffer);
+	prepare_line(qso, cabdesc, buffer);
 
-	if (strlen(buffer) > 11)
+	if (strlen(buffer) > 5)
 	    fputs(buffer, fp2);
 
 	free_qso(qso);
