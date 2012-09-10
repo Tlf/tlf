@@ -56,7 +56,6 @@ struct tag_conv {
 /* describes one item for printing the QSO: line in cabrillo */
 struct line_item {
     enum tag_t tag;	/* item type */
-    int pos;		/* item position in line */
     int len;		/* max. item length */
 };
 
@@ -240,9 +239,8 @@ enum tag_t translate_item_name( char *name ) {
 
 /* parse item describing one entry 
  *
- * has to be in following format: item,position,length
+ * has to be in following format: item,length
  *   - item to print (date, time, call, ...)
- *   - position 
  *   - max length
  */
 struct line_item *parse_line_entry(char *line_entry) {
@@ -251,13 +249,12 @@ struct line_item *parse_line_entry(char *line_entry) {
     enum tag_t tag;
 
     item = g_malloc( sizeof(struct line_item) );
-    parts = g_strsplit(line_entry, ",", 3);
+    parts = g_strsplit(line_entry, ",", 2);
 
-    if ( g_strv_length(parts) == 3 ) {
+    if ( g_strv_length(parts) == 2 ) {
 	tag = translate_item_name( parts[0] );
 	item->tag = tag;
-	item->pos = atoi( parts[1] );
-	item->len = atoi( parts[2] );
+	item->len = atoi( parts[1] );
     } 
     else {
 	/* type is NO_ITEM */
