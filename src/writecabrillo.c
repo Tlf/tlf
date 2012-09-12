@@ -87,6 +87,7 @@ struct qso_t {
     int rst_r;
     char *comment;
     float freq;
+    int tx;
 };
 
 int is_comment(char *buffer);
@@ -170,6 +171,9 @@ struct qso_t *get_next_record (FILE *fp)
 
 	    /* comment (exchange) */
 	    ptr->comment = g_strndup( buffer + 54, 13 );
+
+	    /* tx */
+	    ptr->tx = (buffer[79] == '*') ? 1 : 0;
 
 	    /* frequency */
 	    ptr->freq = atof( buffer + 80 );
@@ -484,6 +488,10 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 		break;
 	    case EXCH:
 		add_rpadded( buf, qso->comment, item->len );
+		break;
+	    case TX:
+		sprintf( tmp, "%1d", qso->tx );
+		add_rpadded( buf, tmp, item->len );
 		break;
 	    case NO_ITEM:
 	    default:
