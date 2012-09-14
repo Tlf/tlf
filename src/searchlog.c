@@ -540,13 +540,10 @@ void searchlog(char *searchstring)
 			printres[0] = '\0';
 			strncat(printres, searchresult[m] + 29, 12);
 
+			/* cut string just at first space after call */
 			loc = strchr(printres, ' ');
-
-			int length = (int) (loc - printres);
-
-			strncpy(printres, printres, length);
-
-			printres[length] = '\0';
+			if (loc)
+			    *loc = '\0';
 
 			if (dupe == ISDUPE) {
 			    attrset(COLOR_PAIR(C_DUPE));
