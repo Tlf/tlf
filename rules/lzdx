@@ -6,6 +6,7 @@
 CONTEST=lzdx
 LOGFILE=lzdx.log
 CONTEST_MODE
+CABRILLO=UNIVERSAL
 #
 ##################################
 #                                #

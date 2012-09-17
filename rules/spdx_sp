@@ -6,6 +6,7 @@
 CONTEST=spdx_sp
 LOGFILE=spdx.log
 CONTEST_MODE
+CABRILLO=UNIVERSAL
 #################################
 MY_COUNTRY_POINTS=0
 MY_CONTINENT_POINTS=1

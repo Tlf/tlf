@@ -5,6 +5,7 @@
 CONTEST=arrldx_dx
 LOGFILE=arrltest.log
 CONTEST_MODE
+CABRILLO=UNIVERSAL
 #
 MULT_LIST=arrldx_mults
 COUNTRYLIST=W,VE

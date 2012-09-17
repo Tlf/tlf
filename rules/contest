@@ -5,7 +5,7 @@
 CONTEST=contest
 LOGFILE=qso.log
 CONTEST_MODE
-#
+CABRILLO=UNIVERSAL
 #
 ##################################
 #                                #
