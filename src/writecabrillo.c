@@ -440,6 +440,8 @@ void add_rpadded( char *dst, char *src, int len ) {
  * and put it into buffer */
 void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 
+    extern char exchange[];
+
     int freq;
     int i;
     char tmp[80];
@@ -489,6 +491,27 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 	    case EXCH:
 		add_rpadded( buf, qso->comment, item->len );
 		break;
+	    case EXC_S: {
+		int pos;
+		char *start = exchange;
+		tmp[0] = '\0';
+		pos = strcspn( start, "#" );
+		strncat( tmp, start, pos ); /** \todo avoid buffer overflow */
+		while ( pos < strlen(start) ) {
+		    if ( start[pos] == '#' ) {
+			/* format and add serial number */
+			char number[6];
+			sprintf( number, "%04d", qso->qso_nr );
+			strcat( tmp, number );
+		    }
+
+		    start = start + pos + 1; 	/* skip special character */
+		    pos = strcspn( start, "#" );
+		    strncat( tmp, start, pos );
+		}
+		add_rpadded( buf, tmp, item->len );
+		}
+		break;
 	    case TX:
 		sprintf( tmp, "%1d", qso->tx );
 		add_rpadded( buf, tmp, item->len );
@@ -512,7 +535,6 @@ int write_cabrillo(void)
     int rc;
     char* cab_dfltfile;
     struct cabrillo_desc *cabdesc;
-    char standardexchange[70] = "";
     char cabrillo_tmp_name[80];
     char cmd[80];
     char buffer[4000] = "";
@@ -546,9 +568,6 @@ int write_cabrillo(void)
     cabrillo_tmp_name[strlen(call)-1] = '\0'; /* drop \n */
     strcat(cabrillo_tmp_name, ".cbr");
 
-    if (strlen(exchange) > 0)
-	strcpy(standardexchange, exchange);
-
     if ((fp1 = fopen(logfile, "r")) == NULL) {
 	fprintf(stdout, "Opening logfile not possible.\n");
 	free_cabfmt( cabdesc );
@@ -561,6 +580,7 @@ int write_cabrillo(void)
 	return (2);
     }
 
+    getsummary();
 //    write_header();
 
     while ((qso = get_next_record(fp1))) {
