@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2012           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +56,7 @@ int getsummary(void)
 
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78,
 	    "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
     attron(A_STANDOUT);
@@ -67,7 +68,7 @@ int getsummary(void)
 
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78, "ARRL-SECTION:");
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -86,7 +87,7 @@ int getsummary(void)
 
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78,
 	    "Cat.:(SINGLE-OP, SINGLE-OP-ASSISTED,MULTI-ONE,MULTI-TWO,MULTI-MULTI,CHECKLOG)");
     attron(A_STANDOUT);
@@ -99,7 +100,7 @@ int getsummary(void)
     fputs(buffer, fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78, "Bands:(ALL,160M,80M,40M,20M,15M,10M)");
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -111,7 +112,7 @@ int getsummary(void)
     fputs(buffer, fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78, "POWER: (HIGH,LOW,QRP)");
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -123,7 +124,7 @@ int getsummary(void)
     fputs(buffer, fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78, "Mode: (CW,SSB,MIXED)");
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -136,7 +137,7 @@ int getsummary(void)
     fputs("CATEGORY-OVERLAY: ", fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78,
 	    "Overlay: (ROOKIE,BAND-LIMITED,TB-WIRES,OVER-50,HQ)");
     attron(A_STANDOUT);
@@ -164,7 +165,7 @@ int getsummary(void)
     fputs("CLUB: ", fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78, "Club: ");
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -177,7 +178,7 @@ int getsummary(void)
     fputs("CONTEST: ", fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78,
 	    "Contest: (CQ-WW-CW/SSB, CQ-WPX-CW/SSB, ARRL-DX-CW/SSB)");
     attron(A_STANDOUT);
@@ -196,7 +197,7 @@ int getsummary(void)
     // end
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78, "Name: ");
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -209,7 +210,7 @@ int getsummary(void)
     fputs(buffer, fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78, "ADDRESS: ");
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -222,7 +223,7 @@ int getsummary(void)
     fputs(buffer, fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78, "ADDRESS(2): ");
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -235,7 +236,7 @@ int getsummary(void)
     fputs(buffer, fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78, "ADDRESS(3): ");
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -248,7 +249,7 @@ int getsummary(void)
     fputs(buffer, fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78, "Operators: ");
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -261,7 +262,7 @@ int getsummary(void)
     fputs(buffer, fp);
     attron(A_STANDOUT);
     mvprintw(15, 1,
-	     "                                                                                    ");
+	     "                                                                              ");
     nicebox(14, 0, 1, 78,
 	    "SOAPBOX: (use any text editor to include more lines)");
     attron(A_STANDOUT);
