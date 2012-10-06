@@ -1,4 +1,4 @@
-DOC_FILES = New_Bandmap.txt README README.cab README.ssb 
+DOC_FILES = New_Bandmap.txt README README.cabrillo README.ssb 
 
 doc_DATA = $(DOC_FILES)
 

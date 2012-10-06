@@ -34,7 +34,7 @@ extern char call[];
 
 /* list of different tags for QSO: line items */
 enum tag_t { NO_ITEM, FREQ, MODE, DATE, TIME, MYCALL, HISCALL, RST_S, RST_R, 
-    EXC_S, EXCH, TX };	
+    EXC_S, EXCH, EXC1, EXC2, EXC3, EXC4, TX };	
 
 
 /* conversion table between tag name in format file and internal tag */
@@ -52,6 +52,10 @@ struct tag_conv {
     { "RST_R",  RST_R 	},
     { "EXC_S",  EXC_S 	},
     { "EXCH",   EXCH 	},
+    { "EXC1",	EXC1	},
+    { "EXC2",	EXC2	},
+    { "EXC3",	EXC3	},
+    { "EXC4",	EXC4	},
     { "TX",     TX 	}
 };
 
@@ -210,8 +214,6 @@ void errorbox(char *s)
 }
 
 
-#define new
-#ifdef new
 /** free cabrillo format description */
 void free_cabfmt(struct cabrillo_desc *desc) {
     int i;
@@ -435,6 +437,28 @@ void add_rpadded( char *dst, char *src, int len ) {
     g_free( field );
 }
 
+/* get the n-th token of a string, return empty string if no n-th token */
+gchar *get_nth_token( gchar *str, int n) {
+    gchar *string = g_strdup( str );
+    gchar *ptr;
+
+    ptr = strtok( string, " \t" );
+
+    while ( n > 0 && ptr != NULL ) {
+	ptr = strtok( NULL, " \t" );
+	n--;
+    }
+
+    /* if no n-th element in string, return empty string */
+    if ( ptr == NULL )
+	ptr = strdup( "" );
+    else
+	ptr = strdup( ptr );
+
+    g_free( string );
+    return ptr;
+}
+
 
 /* format QSO: line for actual qso according to cabrillo format description
  * and put it into buffer */
@@ -446,6 +470,7 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
     int i;
     char tmp[80];
     struct line_item *item;
+    gchar *token;
 
     freq = (int)qso->freq;
     if (freq < 1800.)
@@ -490,6 +515,26 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 		break;
 	    case EXCH:
 		add_rpadded( buf, qso->comment, item->len );
+		break;
+	    case EXC1:
+		token = get_nth_token( qso->comment, 0);
+		add_rpadded( buf, token, item->len );
+		g_free( token );
+		break;
+	    case EXC2:
+		token = get_nth_token( qso->comment, 1);
+		add_rpadded( buf, token, item->len );
+		g_free( token );
+		break;
+	    case EXC3:
+		token = get_nth_token( qso->comment, 2);
+		add_rpadded( buf, token, item->len );
+		g_free( token );
+		break;
+	    case EXC4:
+		token = get_nth_token( qso->comment, 3);
+		add_rpadded( buf, token, item->len );
+		g_free( token );
 		break;
 	    case EXC_S: {
 		int pos;
@@ -608,334 +653,6 @@ int write_cabrillo(void)
     return 0;
 }
 
-#else
-
-int write_cabrillo(void)
-{
-    extern char backgrnd_str[];
-    extern char logfile[];
-    extern char call[];
-    extern int cqww;
-    extern int arrldx_usa;
-    extern int other_flg;
-    extern int wysiwyg_multi;
-    extern int wysiwyg_once;
-    extern int serial_grid4_mult;
-    extern char mycqzone[];
-    extern char exchange[];
-    extern int cqwwm2;
-    extern int arrlss;
-    extern int wpx;
-    extern char whichcontest[];
-
-    int rc;
-    char standardexchange[70] = "";
-    char cabrillo_tmp_name[80];
-    char cmd[80];
-    char buf[181];
-    char buffer[4000] = "";
-    double freq;
-    char freq_buf[16];
-
-    FILE *fp1, *fp2;
-
-    getsummary();
-
-    strcpy(cabrillo_tmp_name, call);
-    cabrillo_tmp_name[strlen(call)-1] = '\0'; /* drop \n */
-    strcat(cabrillo_tmp_name, ".cbr");
-
-    if (strlen(exchange) > 0)
-	strcpy(standardexchange, exchange);
-
-    if ((fp1 = fopen(logfile, "r")) == NULL) {
-	fprintf(stdout, "Opening logfile not possible.\n");
-	return (1);
-    }
-    if ((fp2 = fopen("./cabrillo", "w")) == NULL) {
-	fprintf(stdout, "Opening cbr file not possible.\n");
-	fclose(fp1);		//added by F8CFE
-	return (2);
-    }
-    if (strlen(standardexchange) == 0) {
-	nicebox(14, 0, 1, 78, "Exchange used:");
-	mvprintw(15, 1,
-		 "                                                       ");
-	mvprintw(15, 1, "");
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-	echo();
-	if (arrlss == 1)
-	    getnstr(standardexchange, 6);
-	else
-	    getnstr(standardexchange, 10);
-
-	noecho();
-    }
-
-    while ( fgets(buf, 180, fp1) != NULL ) {
-
-	if (buf[0] != ';' && strlen(buf) > 60) {
-
-	    buffer[0] = '\0';
-
-	    strcat(buffer, "QSO: ");
-/*------------------------------------------------------------------
-frequency
--------------------------------------------------------------------*/
-/* use exact FREQ if available */
-	    freq = 0.;
-	    if (strlen(buf) > 81) {
-		freq = atof(buf+80);
-	    }
-
-	    if ((freq > 1799.) && (freq <= 30000.)) {
-		sprintf(freq_buf, "%5d", (int)(freq+0.5));
-		strcat(buffer, freq_buf);
-	    } else {
-		/* otherwise look into band definition */
-		if (buf[1] == '6')
-		    strcat(buffer, " 1800");
-		else if (buf[1] == '8')
-		    strcat(buffer, " 3500");
-		else if (buf[1] == '4')
-		    strcat(buffer, " 7000");
-		else if (buf[1] == '2')
-		    strcat(buffer, "14000");
-		else if (buf[1] == '1' && buf[2] == '5')
-		    strcat(buffer, "21000");
-		else if (buf[1] == '1' && buf[2] == '0')
-		    strcat(buffer, "28000");
-	    }
-/*------------------------------------------------------------------
-mode
--------------------------------------------------------------------*/
-
-	    if (buf[3] == 'C')
-		strcat(buffer, " CW 20");
-	    else if (buf[3] == 'S')
-		strcat(buffer, " PH 20");
-	    else
-		strcat(buffer, " RY 20");
-
-/*------------------------------------------------------------------
-date
--------------------------------------------------------------------*/
-
-	    strncat(buffer, buf + 14, 2);	/* year */
-
-	    if (buf[10] == 'J' && buf[11] == 'a')
-		strcat(buffer, "-01-");
-	    if (buf[10] == 'F')
-		strcat(buffer, "-02-");
-	    if (buf[10] == 'M' && buf[12] == 'r')
-		strcat(buffer, "-03-");
-	    if (buf[10] == 'A' && buf[12] == 'r')
-		strcat(buffer, "-04-");
-	    if (buf[10] == 'M' && buf[12] == 'y')
-		strcat(buffer, "-05-");
-	    if (buf[10] == 'J' && buf[11] == 'u' && buf[12] == 'n')
-		strcat(buffer, "-06-");
-	    if (buf[10] == 'J' && buf[12] == 'l')
-		strcat(buffer, "-07-");
-	    if (buf[10] == 'A' && buf[12] == 'g')
-		strcat(buffer, "-08-");
-	    if (buf[10] == 'S')
-		strcat(buffer, "-09-");
-	    if (buf[10] == 'O')
-		strcat(buffer, "-10-");
-	    if (buf[10] == 'N')
-		strcat(buffer, "-11-");
-	    if (buf[10] == 'D')
-		strcat(buffer, "-12-");
-/*------------------------------------------------------------------
-day
--------------------------------------------------------------------*/
-
-	    strncat(buffer, buf + 7, 2);
-/*------------------------------------------------------------------
-time
--------------------------------------------------------------------*/
-
-	    strncat(buffer, buf + 16, 3);
-	    strncat(buffer, buf + 20, 3);
-/*------------------------------------------------------------------
-mycall
--------------------------------------------------------------------*/
-
-	    strncat(buffer, call, strlen(call) - 1);	/* strip the \n */
-	    strncat(buffer, backgrnd_str, 15 - strlen(call));
-/*------------------------------------------------------------------
-exchange given
--------------------------------------------------------------------*/
-
-	    if (arrlss == 1) {
-/*------------------------------------------------------------------
-report given
--------------------------------------------------------------------*/
-
-		sprintf(buffer + 41, "%4d", atoi(buf + 22));
-		strcat(buffer, "                    ");
-/*------------------------------------------------------------------
-exchange given
--------------------------------------------------------------------*/
-		sprintf(buffer + 46, "%c", standardexchange[0]);
-		strcat(buffer, "                    ");
-		sprintf(buffer + 48, "%2d", atoi(standardexchange + 1));
-		strcat(buffer, "                    ");
-		sprintf(buffer + 51, "%s", standardexchange + 3);
-		strcat(buffer, "                    ");
-		sprintf(buffer + 55, "%s", buf + 29);
-		strcat(buffer, "                    ");
-/*------------------------------------------------------------------
-exchange received
--------------------------------------------------------------------*/
-
-		sprintf(buffer + 66, "%4d", atoi(buf + 54));
-		strcat(buffer, "                    ");
-		sprintf(buffer + 71, "%c", buf[59]);
-		strcat(buffer, "                    ");
-		sprintf(buffer + 72, "%s", buf + 60);
-		strcat(buffer, "                    ");
-		sprintf(buffer + 75, "%s", buf + 63);
-		strcat(buffer, "                    ");
-		buffer[79] = '\0';
-		strcat(buffer, "\n");
-
-	    } else		// not arllss
-	    {
-/*------------------------------------------------------------------
-report given
--------------------------------------------------------------------*/
-
-		if (buf[3] == 'S')
-		    strcat(buffer, "59  ");
-		else
-		    strcat(buffer, "599 ");
-/*------------------------------------------------------------------
-exchange given
--------------------------------------------------------------------*/
-
-		if (other_flg == 1 || wysiwyg_multi == 1
-		    || wysiwyg_once == 1) {
-		    strcat(buffer, standardexchange);
-		    strncat(buffer, "            ",
-			    7 - strlen(standardexchange));
-		}
-		/* end other (wysiwyg) */
-		else if ((wpx == 1) || ((standardexchange[0] == '#')
-					&& (strcmp(whichcontest, "ssa_mt")
-					    != 0))) {
-		    strncat(buffer, buf + 23, 4);
-		    strncat(buffer, standardexchange + 1, 7);
-		    strcat(buffer, " ");
-		}
-
-		else if (cqww == 1) {
-		    strcat(buffer, mycqzone);
-		    strcat(buffer, "     ");
-		}
-
-		else if (arrldx_usa == 1) {
-		    strncat(buffer, exchange, 2);
-		    strcat(buffer, "     ");
-
-		} else if (serial_grid4_mult == 1) {
-		    strcat(buffer, "  ");
-		    sprintf(buffer + 49, "%s", buf + 24);
-		    sprintf(buffer + 52, "%s", standardexchange + 1);
-
-		    strcat(buffer, "                ");
-		    sprintf(buffer + 60, "%s          ", buf + 29);
-		    buffer[74] = '\0';
-		} else {
-
-		    strncat(buffer, standardexchange, 10);
-		    strncat(buffer, "     ", strlen(buffer) - 8);
-		}
-
-/*------------------------------------------------------------------
-his call
--------------------------------------------------------------------*/
-
-		if (strcmp(whichcontest, "ssa_mt") != 0)
-		    strncat(buffer, buf + 29, 14);
-
-/*------------------------------------------------------------------
-rprt given
--------------------------------------------------------------------*/
-
-		if (buf[3] == 'S')
-		    strcat(buffer, "59  ");
-		else
-		    strcat(buffer, "599 ");
-
-		if (serial_grid4_mult == 1) {
-		    char ssa_mt_exchange[30];
-		    int i = 0, j = 0, k = 0;
-//                                      strncat(buffer, buf+54, 9);  // tbf for all contests? RC
-		    strcat(buffer, "                      ");
-
-		    sprintf(buffer + 79, "%03d   ", atoi(buf + 54));
-
-		    for (i = 0; i < 12; i++) {
-			if (isalpha(buf[54 + i])) {
-			    for (j = 0; j < (13 - i); j++) {
-				if (isalnum(buf[54 + i + j])) {
-				    ssa_mt_exchange[k] = buf[54 + i + j];
-				    k++;
-				} else {
-				    if (j > 0
-					&& isspace(buf[54 + i + j - 1])) {
-					ssa_mt_exchange[k] = '\0';
-					break;
-				    }
-				}
-			    }
-			    if (j > 0)
-				break;
-			}
-		    }
-
-		    sprintf(buffer + 83, "%s        ", ssa_mt_exchange);
-		    sprintf(buffer + 90, "%s", "0");
-		} else
-		    strncat(buffer, buf + 54, 6);
-
-		strcat(buffer, "  ");
-
-		if ((cqww == 1) && (cqwwm2 == 1)) {	// cqww M2 mode
-		    if (buf[79] == '*') {
-			strcat(buffer, " 1\n");
-		    } else
-			strcat(buffer, " 0\n");
-		} else {
-		    if (strcmp(whichcontest, "ssa_mt") == 1)
-			strcat(buffer, " 0\n");
-		    else
-			strcat(buffer, "\n");
-		}
-	    }			// end else arrlss
-
-	    if (strlen(buffer) > 11)
-		fputs(buffer, fp2);
-
-	}
-
-    }				// end while !eof
-    fclose(fp1);
-
-    fputs("END-OF-LOG:\n", fp2);
-    fclose(fp2);
-
-    rc = system("cat cabrillo >> header");
-    sprintf(cmd, "cp header %s", cabrillo_tmp_name);
-    rc = system(cmd);
-    rc = system("mv header summary.txt");
-
-    return (0);
-}
-
-#endif
 
 
 /*
