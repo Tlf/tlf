@@ -242,8 +242,5 @@ int rx_rtty()
 	}
     }
 
-    if (strlen(hiscall) > 0)
-	show_rtty();
-
     return (0);
 }
