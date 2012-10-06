@@ -118,11 +118,30 @@ int getexchange(void)
     }
 
     refresh_comment();
+    wmove(stdscr, 12, 54 + strlen(comment));
 
     commentfield = 1;
     for (i = strlen(comment); i < 26; i++) {
-	wmove(stdscr, 12, 54 + strlen(comment));
-	x = onechar();
+
+       	/* wait for next char pressed, but update time, cluster and TRX qrg */
+	nodelay(stdscr, TRUE);  /* main loop waiting for input */
+	x = -1;
+	while (x < 1) {
+
+	    time_update();
+
+	    if (trxmode == DIGIMODE && (keyerport == GMFSK
+	           || keyerport == MFJ1278_KEYER)) {
+	        show_rtty();
+	    }
+
+            /* make sure that the wrefresh() inside getch() shows the cursor
+             * in the input field */
+	    wmove(stdscr, 12, 54 + strlen(comment));
+	    x = onechar();
+        }
+        nodelay(stdscr, FALSE);
+
 
 	switch (x) {
 

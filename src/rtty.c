@@ -89,7 +89,7 @@ void ry_addchar(char c)
     }
 
     if ((c & 0x80) != 0)
-	return;			/* drop on ascii characters */
+	return;			/* drop on non ascii characters */
 
     if ((c == '\n') || (c == '\r')) {
 	/* start new line */
@@ -241,9 +241,6 @@ int rx_rtty()
 	    }
 	}
     }
-
-    if (strlen(hiscall) > 0)
-	show_rtty();
 
     return (0);
 }
