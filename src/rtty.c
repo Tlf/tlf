@@ -35,6 +35,7 @@
 #include <fcntl.h>
 #include "tlf.h"
 #include "printcall.h"
+#include <glib.h>
 
 static int fdcont;		// global for this file: tty file descriptor
 static char ry_term[5][50] = { "", "", "", "", "" };
@@ -92,10 +93,10 @@ void ry_addchar(char c)
 
     if ((c == '\n') || (c == '\r')) {
 	/* start new line */
-	strncpy(ry_term[0], ry_term[1], 40);
-	strncpy(ry_term[1], ry_term[2], 40);
-	strncpy(ry_term[2], ry_term[3], 40);
-	strncpy(ry_term[3], ry_term[4], 40);
+	g_strlcpy(ry_term[0], ry_term[1], 41);
+	g_strlcpy(ry_term[1], ry_term[2], 41);
+	g_strlcpy(ry_term[2], ry_term[3], 41);
+	g_strlcpy(ry_term[3], ry_term[4], 41);
 	ry_term[4][0] = '\0';
 	k = 0;
     }
@@ -107,10 +108,10 @@ void ry_addchar(char c)
 
 	if (k >= 40) {
 	    // scroll line
-	    strncpy(ry_term[0], ry_term[1], 40);
-	    strncpy(ry_term[1], ry_term[2], 40);
-	    strncpy(ry_term[2], ry_term[3], 40);
-	    strncpy(ry_term[3], ry_term[4], 40);
+	    g_strlcpy(ry_term[0], ry_term[1], 41);
+	    g_strlcpy(ry_term[1], ry_term[2], 41);
+	    g_strlcpy(ry_term[2], ry_term[3], 41);
+	    g_strlcpy(ry_term[3], ry_term[4], 41);
 	    ry_term[4][0] = '\0';
 	    k = 0;
 	}
@@ -144,15 +145,15 @@ int show_rtty(void)
 	attron(COLOR_PAIR(COLOR_GREEN));
 
     mvprintw(1, 0, "                                        ");
-    mvprintw(1, 0, ry_term[0]);
+    mvprintw(1, 0, "%s", ry_term[0]);
     mvprintw(2, 0, "                                        ");
-    mvprintw(2, 0, ry_term[1]);
+    mvprintw(2, 0, "%s", ry_term[1]);
     mvprintw(3, 0, "                                        ");
-    mvprintw(3, 0, ry_term[2]);
+    mvprintw(3, 0, "%s", ry_term[2]);
     mvprintw(4, 0, "                                        ");
-    mvprintw(4, 0, ry_term[3]);
+    mvprintw(4, 0, "%s", ry_term[3]);
     mvprintw(5, 0, "                                        ");
-    mvprintw(5, 0, ry_term[4]);
+    mvprintw(5, 0, "%s", ry_term[4]);
     if (commentfield == 0) {
 	printcall();
     } else {
