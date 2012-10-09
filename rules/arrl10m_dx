@@ -16,7 +16,7 @@ MULT_LIST=arrl10m_mults
 ##################################
 #                                #
 #  Messages F1= to F12=          #
-#  Message CW_TU_MSG=            #
+#  Message CQ_TU_MSG=            #
 #  Message S&P_TU_MSG=           #
 #                                #
 #  % = call                      #
