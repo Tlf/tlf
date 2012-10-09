@@ -1488,7 +1488,7 @@ void Complain(char *msg) {
 void KeywordNotSupported(char *keyword) {
     char msgbuffer[100];
     sprintf(msgbuffer,
-	    "Keyword '%s' not supported. See man page and README.\n",
+	    "Keyword '%s' not supported. See man page.\n",
 	    keyword);
     Complain(msgbuffer);
 }
