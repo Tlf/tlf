@@ -30,7 +30,6 @@ int write_keyer(void)
     extern int trxmode;
     extern int keyerport;
     extern int data_ready;
-    extern int cfd;
     extern char controllerport[];
     extern int native_rig_fd;
     extern char speedstr[];
@@ -69,17 +68,16 @@ int write_keyer(void)
 	    }
 
 	} else if (keyerport == GMFSK) {
-	    sprintf(outstring, "echo %c%c%s%c%c", '"', '\n', wkeyerbuffer,
-		    '\n', '"');
-	    strcat(outstring, " >> ");
 	    if (strlen(rttyoutput) < 2) {
 		mvprintw(24, 0, "No modem file specified!");
 	    }
-	    strcat(outstring, rttyoutput);
+	    sprintf(outstring, "echo -n \"\n%s\" >> %s", 
+		    wkeyerbuffer, rttyoutput);
 	    rc = system(outstring);
 
 	    wkeyerbuffer[0] = '\0';
 	    data_ready = 0;
+
 	} else if (keyerport == ORION_KEYER && strlen(wkeyerbuffer) > 0) {
 	    if (native_rig_fd == 0) {
 		mvprintw(24, 0, "Orion keyer not open.");
