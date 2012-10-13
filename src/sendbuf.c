@@ -75,7 +75,7 @@ void sendbuf(void)
 
 	loc = strcspn(buffer, "%");	/* mycall */
 
-	while ((strlen(buffer) - loc) > 1) {
+	while (strlen(buffer) > loc) {
 
 	    if (loc != 0)
 		strncat(comstr, buffer, loc);
@@ -89,7 +89,7 @@ void sendbuf(void)
 
 	loc = strcspn(buffer, "@");	/* his call */
 
-	while ((strlen(buffer) - loc) > 1) {
+	while (strlen(buffer) > loc) {
 
 	    if (loc != 0)
 		strncat(comstr, buffer, loc);
@@ -110,7 +110,7 @@ void sendbuf(void)
 
 	loc = strcspn(buffer, "[");	/* his RST */
 
-	while ((strlen(buffer) - loc) > 1) {
+	while (strlen(buffer) > loc) {
 
 	    if (loc != 0)
 		strncat(comstr, buffer, loc);
@@ -144,7 +144,7 @@ void sendbuf(void)
 
 	loc = strcspn(buffer, "#");	/* serial nr */
 
-	while ((strlen(buffer) - loc) > 1) {
+	while (strlen(buffer) > loc) {
 
 	    if (loc != 0)
 		strncat(comstr, buffer, loc);
