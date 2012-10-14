@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2012           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,12 +39,13 @@ int set_tone(void)
 	return (1);
 
     nicebox(4, 40, 1, 6, "Tone");
-    mvprintw(5, 42, "");
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    mvprintw(5, 41, "      ");
+    mvprintw(5, 42, "");
     echo();
     getnstr(tonestr, 3);
     noecho();
-    tonestr[4] = '\0';
+    tonestr[3] = '\0';
 
     write_tone();
 

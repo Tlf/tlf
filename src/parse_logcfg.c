@@ -676,12 +676,13 @@ void parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 39:{
+	    int tone;
     	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
-	    if ((atoi(buff) > -1) && (atoi(buff) < 1001)) {
-		strncpy(tonestr, buff, 4);
-		tonestr[3] = '\0';	/* \todo fix problem with 1000 Hz */
+	    tone = atoi(buff);
+	    if ((tone > -1) && (tone < 1000)) {
+		sprintf(tonestr, "%d", tone);
 	    }
 	    break;
 	}
