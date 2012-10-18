@@ -413,6 +413,7 @@ int main(int argc, char *argv[])
     int ret;
     int retval;
     char keyerbuff[3];
+    int status;
 
     while ((argc > 1) && (argv[1][0] == '-')) {
 	switch (argv[1][1]) {
@@ -540,8 +541,16 @@ int main(int argc, char *argv[])
 
 	showmsg("reading configuration data");
 
-	read_logcfg();		/* read the configuration file */
-	read_rules();		/* read the additional contest rules in "rules/contestname"  LZ3NY */
+	status = read_logcfg(); /* read the configuration file */
+	status |= read_rules();	/* read the additional contest rules in "rules/contestname"  LZ3NY */
+
+	if (status != PARSE_OK) { 
+	    showmsg( "Problems in logcfg.dat or rule file detected! Continue Y/(N)?");
+	    if (toupper( getchar() ) != 'Y') {
+		endwin();
+		exit(1);
+	    }
+	}
 
 	checklogfile();		/* make sure logfile is there */
 

@@ -63,6 +63,8 @@ int read_logcfg(void)
 
     char defltconf[80];
 
+    int status = PARSE_OK;
+
     contest = 0;
     speed = 14;
     partials = 0;
@@ -100,14 +102,17 @@ int read_logcfg(void)
 	if ((inputbuffer[0] != '#') && (strlen(inputbuffer) > 1)) {	
 	    					/* skip comments and 
 						 * empty lines */
-	    parse_logcfg(inputbuffer);
+	    status |= parse_logcfg(inputbuffer);
 	}
     }
 
     fclose(fp);
 
-    return (0);
+    return( status );
 }
+
+
+static int confirmation_needed;
 
 
 #define PARAMETER_NEEDED(x) 			\
@@ -115,11 +120,11 @@ int read_logcfg(void)
 	if (fields[1] == NULL) { 		\
 	    ParameterNeeded(x); 		\
     	    g_strfreev( fields );		\
-	    return; 				\
+	    return( confirmation_needed ); 				\
 	}					\
     } while(0)
 
-void parse_logcfg(char *inputbuffer)
+int parse_logcfg(char *inputbuffer)
 {
     extern int use_rxvt;
     extern char message[15][80];
@@ -431,12 +436,14 @@ void parse_logcfg(char *inputbuffer)
      * That allows plain keywords and also keywords with parameters (which
      * follows a '=' sign
      */
+    confirmation_needed = PARSE_OK;
+
     fields = g_strsplit( inputbuffer, "=", 2);
     g_strstrip( fields[0] );
 
     if ( *fields[0] == '\0' ) { 	/* only whitespace found? */
 	g_strfreev( fields );
-	return;
+	return( PARSE_OK );
     }
 
     if (g_strv_length( fields ) == 2) { /* strip leading whitespace */
@@ -1358,6 +1365,8 @@ void parse_logcfg(char *inputbuffer)
 
     g_strfreev( fields );
 
+    return( confirmation_needed );
+
 }
 
 
@@ -1465,8 +1474,8 @@ void Complain(char *msg) {
     attron(A_STANDOUT);
     showmsg(msg);
     attroff(A_STANDOUT);
+    confirmation_needed = PARSE_CONFIRM;
     beep();
-    sleep(2);
 }
 
 /** Complain about not supported keyword */

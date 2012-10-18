@@ -17,6 +17,7 @@
 #include "rules.h"
 #include "tlf.h"
 #include "startmsg.h"
+#include "parse_logcfg.h"
 
 extern char whichcontest[];
 extern char logfile[];
@@ -31,12 +32,14 @@ int read_rules()
     char basic_contest_conf[75] = PACKAGE_DATA_DIR;
     FILE *mit_contest_file;
 
+    int status = PARSE_OK;
+
 /* If no contest is given, whichcontest is set to default "qso"   (PA0R, Sep 24 2003)*/
     if (strlen(whichcontest) == 0) {
 	showmsg("contest name is empty! Assuming general qso mode!! ");
 //              mvprintw(5,0,"\n contest name is empty!\n Assuming general qso mode!! ");
 	strcpy(whichcontest, "qso");
-	return (1);
+	return (PARSE_ERROR);
     }
 
     if (strlen(whichcontest) >= 40) {
@@ -64,7 +67,7 @@ int read_rules()
 
 	    /* if not comment interpret line */
 	    if ((mit_contest_rule[0] != '#') && (mit_contest_rule[0] != ';')) {
-		parse_logcfg(mit_contest_rule);
+		status |= parse_logcfg(mit_contest_rule);
 	    }
 	}
 	fclose(mit_contest_file);
@@ -82,7 +85,7 @@ int read_rules()
 
 	    /* if not comment interpret line */
 	    if ((mit_contest_rule[0] != '#') && (mit_contest_rule[0] != ';')) {
-		parse_logcfg(mit_contest_rule);
+		status |= parse_logcfg(mit_contest_rule);
 	    }
 	}
 	fclose(mit_contest_file);
@@ -100,5 +103,5 @@ int read_rules()
 	strcpy(logfile, "qso.log");
 	refreshp();
     }
-    return (0);
+    return( status );
 }
