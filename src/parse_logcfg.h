@@ -21,5 +21,16 @@
 #include "setcontest.h"
 #include "lancode.h"
 
+#ifndef PARSE_LOGCFG_H
+#define PARSE_LOGCFG_H
+
+enum{ 
+    PARSE_OK,
+    PARSE_ERROR,
+    PARSE_CONFIRM
+};
+
 int read_logcfg(void);
-void parse_logcfg(char *inputbuffer);
+int parse_logcfg(char *inputbuffer);
+
+#endif // PARSE_LOGCFG_H
