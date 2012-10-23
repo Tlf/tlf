@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
+ * Copyright (C) 2001-2005 Rein Couperus <pa0r@amsat.org>
+ *               2012      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +32,7 @@ void sendspcall(void){
     extern char buffer[];
     extern char call[];
     extern int trxmode;
+    extern int keyerport;
     extern char ph_message[14][80];
 
 
@@ -44,13 +46,18 @@ void sendspcall(void){
 
     } else if (trxmode == DIGIMODE) {
 
-	strcat (buffer, "{ ");
-	strcat (buffer, call);
-	strcat (buffer, "}");
+	if (keyerport == MFJ1278_KEYER) {
+	    strcat (buffer, "{ ");	/* => ctrl-t */
+	    strcat (buffer, call);
+	    strcat (buffer, "}");	/* => ctrl-r */
+	}
+	else {
+	    strcat(buffer, call);
+	}
+
 	sendbuf();
 
     } else
 
 	play_file(ph_message[5]);
-
 }
