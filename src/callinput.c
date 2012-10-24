@@ -123,6 +123,8 @@ char callinput(void)
 	x = -1;
 	while (x < 1) {
 
+	    usleep(10000);
+
 	    time_update();
 
 	    if (trxmode == DIGIMODE && (keyerport == GMFSK
@@ -130,7 +132,6 @@ char callinput(void)
 		show_rtty();
 		printcall();
 	    }
-
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */

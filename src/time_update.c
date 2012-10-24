@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *                         2011 Thomas Beierlein <tb@forth-ev.de>
+ * Copyright (C) 2001-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2011-2012 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@ void time_update(void)
     static int s = 0;
     static int m = 0;
     static int oldsecs = -1;  	/* trigger immediate update */
-
-    usleep(1000);
 
     get_time();
     this_second = time_ptr->tm_sec;		/* seconds */
