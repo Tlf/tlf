@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@eudxf.org>
+ * Copyright (C) 2001-2005 Rein Couperus <pa0r@eudxf.org>
+ *               2009-2012 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +27,9 @@
 #include "addspot.h"
 #include "changefreq.h"
 #include "bandmap.h"
+#include "glib.h"
+
+#define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
 void send_bandswitch(int freq);
 
@@ -91,8 +95,6 @@ char callinput(void)
     extern int nob4;
     extern int change_rst;
     extern int weight;
-    extern int k_tune;
-    extern int tune_val;
     extern int k_pin14;
     extern int k_ptt;
     extern int noautocq;
@@ -961,22 +963,35 @@ char callinput(void)
 	    }
 	case 244:		// Alt-t (tune)
 	    {
-		if (k_tune == 0) {
-		    k_tune = 1;
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-		    mvprintw(0, 2, "Tune     ");
-		    mvprintw(12, 29, "");
-		    refreshp();
-		    if (tune_val == 0) {
-			netkeyer(K_TUNE, "1");	// cw on
-			onechar();	// any character to stop tuning
-			netkeyer(K_TUNE, "0");	// cw off
-		    }
-		    k_tune = 0;
-		    mvprintw(0, 2, "%s", mode);
-		    refreshp();
-		} else
-		    netkeyer(K_TUNE, "0");	// cw off in any case.
+		int count;
+		gchar *buff;
+
+		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		mvprintw(0, 2, "Tune     ");
+		mvprintw(12, 29, "");
+		refreshp();
+
+		buff = g_strdup_printf("%d", TUNE_UP);
+		netkeyer(K_TUNE, buff);	// cw on
+		g_free(buff);
+
+		nodelay (stdscr, TRUE);
+
+		count = TUNE_UP / 0.25;
+
+		while (count != 0) {
+		    usleep( 250000 );
+		    if ((onechar()) != -1)	// any key pressed ?
+			break;
+		    count--;
+		}
+
+		nodelay (stdscr, FALSE);
+
+		netkeyer( K_ABORT, "");	// cw abort
+
+		mvprintw(0, 2, "%s", mode);
+		refreshp();
 
 		break;
 	    }
