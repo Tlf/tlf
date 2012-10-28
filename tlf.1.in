@@ -240,7 +240,7 @@ Synchronize the logfile of this node with the logfile pointed to by parameter SY
 
 .TR
 .B :TONe 
-Set PC sidetone frequency (300 - 900)
+Set PC sidetone frequency (300 - 900, 0 = Off)
 
 .TR
 .B :TRXcontrol
@@ -252,7 +252,7 @@ View the log with LESS
 
 .TR
 .B :WRIte 
-Write cabrillo file according to specified format (see \fB\ CABRILLO=\fR 
+Write cabrillo file according to specified format (see \fBCABRILLO=\fR 
 statement).
 
 .SH "KEYS"
@@ -492,7 +492,8 @@ Toggle score window
 
 .TR
 .B Alt-t
-Tune (via cwdaemon) 
+Tune your rig (via cwdaemon). Activates PTT and Key output for 6 seconds. 
+Stop with any key.
 
 .TR
 .B Alt-v
