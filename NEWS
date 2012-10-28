@@ -1,3 +1,30 @@
+tlf-1.1.4
+=========
+Minor maintenance release.
+
+New features:
+    - ask for confirmation about reported problems in config files to give
+      you time to recognize the problems.
+    - Rework of digimode handling together with fldigi.
+      Fix digimode receiove routine 'rx_rtty()', make miniterm output more
+      robust and update miniterm also while the cursor is in the exchange 
+      field. Drop some unneeded newlines for each function key macro. 
+    - Minor corrections and additions to the man page
+
+Bug fixes:
+    - Old version segfaults in 'searchlog' function if a really long callsign
+      filled the input field.
+    - Parsing logic for special characters in own exchange (# ...) do not rely 
+      anymore on a trailing NL to the exchange macro.
+    - Fix sidetone control. Recognise CWTONE=0 in logcfg.dat, work around a 
+      bug in cwdaemon which does not allow to switch tone back on afterwards.
+    - Stop flickering cursor between input or exchange field and dupe 
+      searchwindow.
+    - fix Alt-t (tune) function to switch tuning on for 6 seconds (can be 
+      stopped early with any key press). !!Be aware that there are some 
+      problems in different cwdaemon versions (no PTT keying, no change to stop
+      tuning early, ...). Working with the maintainer to fix it.
+
 tlf-1.1.3
 =========
 Bugfix release.

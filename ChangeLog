@@ -1,3 +1,106 @@
+2012-10-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * tlf.1.in: minor correction to man page
+
+2012-10-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: fix tune logic.  
+  - adapt to cwdaemons behaviour. It tunes only for a given time and 
+    than automatically stop. 
+  - So request some tuning time (6s) and allow for an early stop with 
+    any key press. 
+  - Change TUNE_UP constant if you want a different time.
+
+2012-10-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c, src/time_update.c: stop flickering
+  cursor while searchlog is shown  
+  - during wait for input in call input or exchange field the searchlog 
+    panel is regularly updated. That makes the cursor switch between 
+    different places and showing a flickering effect. 
+  - New logic dropped the time delay from 'time_update()' (as that 
+    function should not determine the speed of the keyboard polling) 
+    and added the delay into the polling loop so that the cursor is 
+    a long time in the input field.
+
+2012-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: convert file back to Unix LF endings
+
+2012-10-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/set_tone.c: work around bugs in cwdaemon versions  
+  - cwdaemon < 0.9.6 always set volume to 70% at change of tone freq 
+  - cwdaemon >=0.9.6 do not set volume at all after change of freq 
+    resulting in no tone output if you have a freq=0 in between 
+  - So... to be sure we set the volume back to our chosen
+    value or to 70% (like cwdaemon) if no volume got specified
+
+2012-10-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendspcall.c: use '}' and '{' only for MFJ1278 keyer to switch TX on
+  and off
+
+2012-10-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, src/parse_logcfg.h, src/rules.c: ask for
+  confirmation if errors in logcfg.dat or rule file detected  
+  - for some time tlf reports errors in both configuration files but gives 
+    user only 2 seconds time to read the problem. The changes records 
+    that some problems exists and ask the user after processing the files 
+    if we should continue or stop the program and fix the problem. 
+    That gives them time to read the problems and think it over.
+
+2012-10-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/set_tone.c: fix control of sidetone output  
+  - CWTONE drops trailing newline now (was not recognized by cwdaemon 0.9.2 
+    if there was a trailing newline) 
+  - :tone did not initialize box correctly. Old screen contents showed 
+    through the frame.
+
+2012-10-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/parse_logcfg.c: Correct wording for some error message
+
+  * rules/arrl10m_dx: fix typo wrt CQ_TU_MSG
+
+2012-10-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendbuf.c: correct parsing of special characters in sendbuf() function 
+  - old logic assumes that there is always a trailing newline so it checks 
+    only until strlen(text)-1 is reached 
+    - new code checks all characters until string end.
+
+  * src/write_keyer.c: shorten macro output in digimode  
+  - old implementation had 5 empty lines for each macro output. 
+    1 from message eol, 2 from write_keyer routine, 1 from echo, 
+    1 from fldigi
+  - dropped 1 of the lines in output string 
+  - used '-n' switch to force echo to not append a further newline 
+  - simplify command formatting
+
+2012-10-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c, src/rtty.c: update miniterm also while in getexchange()
+
+  * src/rtty.c: make miniterm output more robust  
+  - strncpy may leave non terminated strings, so switch to g_strlcpy 
+  - mvprintw needs a format string to avoid interpretation of '%' signs 
+    in the received text.
+
+  * src/rtty.c: rework digimode receive routine 'rx_rtty()'  
+  - fix buffer overrun in rx_addtext 
+  - better logic to skip start of line info from GMFSK and FlDigi 
+  - do not skip start of line if serial modem (MFJ or siimilar)
+
+2012-09-14  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/searchlog.c: Old code segfaults for really long calls in 'searchlog'  
+  - happens for long call signs which fill the call field 
+  - strchr return NULL if space is not found, so limit string only if 
+    a space is really found
+
 2012-08-23  Thomas Beierlein <tomjbe@gentoo.org>
 
   * configure.ac, ChangeLog, AUTHORS, NEWS: prepare for 1.1.3 maintenance 
