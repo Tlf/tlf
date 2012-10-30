@@ -16,11 +16,11 @@ before the above commands.
 If support for Hamlib (>=1.2.8) is wanted, use ./configure --enable-hamlib
 
 By default, tlf will install into /usr/local/bin, together with the
-shell-scripts in the scripts directory. Data files will install into
+shell-scripts from the scripts directory. Data files will install into
 /usr/local/share/tlf.
 
 If you want to change any of these paths, you can do this with the
-configure script, e.g. './configure --prefix=/usr --datadir=/usr/share'
-will install tlf and scipts into /usr/bin, datafiles into /usr/share/tlf.
+configure script too, e.g. './configure --prefix=/usr --datadir=/usr/share'
+will install tlf and scripts into /usr/bin, datafiles into /usr/share/tlf.
 
 See doc/README for more details.
