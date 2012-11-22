@@ -1250,11 +1250,12 @@ int parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 137:{		// sound card volume (default = 70)
+		int volume;
+
 		PARAMETER_NEEDED(teststring);
-		buff[0] = '\0';
-		strncat(buff, fields[1], 2);
-		if (atoi(buff) > -1 && atoi(buff) < 101)
-		    strcpy(sc_volume, buff);
+		volume = atoi(fields[1]);
+		if (volume > -1 && volume < 101)
+		    sprintf(sc_volume, "%d", volume);
 		else
 		    strcpy(sc_volume, "70");
 		break;
