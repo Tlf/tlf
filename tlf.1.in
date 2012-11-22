@@ -620,7 +620,8 @@ Use soundcard for sidetone output
 
 .TR
 .B SIDETONE_VOLUME=<soundcard volume> (0...99)
-Set soundcard sidetone volume (default=70)
+Set soundcard sidetone volume (default=70). A value of 0 turns off sidetone
+output (even for the console speaker).
 
 .TR
 .B CQDELAY=<Auto_cq delay in 1/2 seconds> (3...60)
@@ -628,7 +629,12 @@ Use a value which is message length + listening time!!
 
 .TR
 .B CWTONE=<pc speaker or soundcard sidetone> (0...999)
-A value of 0 switches the sidetone off.
+A value of 0 switches the sidetone off (!!! Due to a bug in cwdaemon 
+it also turns off the 
+.B Alt-t
+tune function. Use
+.B SIDETONE_VOLUME = 0
+instead).
 
 .TR
 .B BANDOUTPUT

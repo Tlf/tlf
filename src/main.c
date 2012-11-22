@@ -88,7 +88,7 @@ int ssbpoints;
 int cwpoints;
 int lowband_point_mult = 0;
 int sc_sidetone;
-char sc_volume[3] = "";
+char sc_volume[4] = "";
   /* LZ3NY mods */
 char contest_name[50];
 int countrylist_points = -1;
@@ -655,8 +655,6 @@ int main(int argc, char *argv[])
 
 	if (keyerport == NET_KEYER) {
 	    showmsg("Keyer is cwdaemon");
-	    if (verbose == 1)
-		sleep(1);
 	}
 	if (keyerport == MFJ1278_KEYER || keyerport == GMFSK) {
 	    init_controller();
@@ -675,8 +673,6 @@ int main(int argc, char *argv[])
 	    else
 		showmsg("LAN send initialized");
 	}
-	if (verbose == 1)
-	    sleep(1);
 
 	checkparameters();	/* check .paras file */
 
@@ -717,25 +713,21 @@ int main(int argc, char *argv[])
 
 		write_tone();
 
-		netkeyer(K_SPEED, keyerbuff);	// set speed
-
-		netkeyer(K_WEIGHT, weightbuf);	// set weight
+		netkeyer(K_SPEED, keyerbuff);		// set speed
+	
+		netkeyer(K_WEIGHT, weightbuf);		// set weight
 
 		if (*keyer_device != '\0')
 		    netkeyer(K_DEVICE, keyer_device);	// set device
 
 		sprintf(keyerbuff, "%d", txdelay);
+		netkeyer(K_TOD, keyerbuff);		// set TOD
 
-		netkeyer(K_TOD, keyerbuff);	// set TOD
-
-		if (sc_sidetone != 0)	// set soundcard output
-		{
+		if (sc_sidetone != 0)			// set soundcard output
 		    netkeyer(K_SIDETONE, "");
 
-		    if (*sc_volume != '\0')	// set soundcard volume
-
+		if (*sc_volume != '\0')			// set soundcard volume
 			netkeyer(K_STVOLUME, sc_volume);
-		}
 	    }
 
 	    if (keyerport != NET_KEYER)
