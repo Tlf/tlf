@@ -609,11 +609,21 @@ int main(int argc, char *argv[])
 
 	nr_callmastercalls = load_callmaster();
 
-	main_ie_list = make_ie_list();	// get initial exchange file
-	if (main_ie_list == NULL)
-	    showmsg("No initial exchange available");
-//else
-//      test_ie_list(main_ie_list);
+	if (*exchange_list != '\0') {
+	    // read initial exchange file
+	    main_ie_list = make_ie_list(exchange_list);
+	    if (main_ie_list == NULL) {
+		showmsg( "Problems in initial exchange file detected! Continue Y/(N)?");
+		if (toupper( getchar() ) != 'Y') {
+		    endwin();
+		    exit(1);
+		}
+		else {
+		    showmsg( "Initial exchange data not loaded! Continuing ...");
+		    sleep(2);
+		}
+	    }
+	}
 
 #ifdef HAVE_LIBHAMLIB		// Code for hamlib interface
 

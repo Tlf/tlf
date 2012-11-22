@@ -41,7 +41,7 @@ struct ie_list {
 *	File must be in CALL,EXCHANGE format.
 *	Returns pointer to the top of the list.
 */
-struct ie_list *make_ie_list (void);
+struct ie_list *make_ie_list (char *file);
 
 /**
 * 	Free linked list of all allocated entries pointed
