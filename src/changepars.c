@@ -65,7 +65,6 @@ int changepars(void)
     extern int simulator;
     extern int keyerport;
     extern char synclogfile[];
-    extern int sc_sidetone;
     extern char sc_volume[];
     extern int cwstart;
 
@@ -604,11 +603,8 @@ int changepars(void)
 	}
     case 43:			/* SCVOLUME - set soundcard volume */
 	{
-	    if (sc_sidetone == 0)
-		break;
-
-	    mvprintw(12, 29, "Vol: %d", atoi(sc_volume));
 	    volumebuffer = atoi(sc_volume);
+	    mvprintw(12, 29, "Vol: %d", volumebuffer);
 
 	    x = 1;
 	    while (x) {
@@ -616,32 +612,29 @@ int changepars(void)
 
 		switch (x) {
 		case 156:{
-			if (volumebuffer <= 99) {
+			if (volumebuffer < 95)
 			    volumebuffer += 5;
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-			    mvprintw(12, 34, "  ");
-			    mvprintw(12, 34, "%d", volumebuffer);
-			    break;
 
-			}
+			break;
 		    }
 		case 157:{
-			if (volumebuffer >= 6) {
+			if (volumebuffer >= 5)
 			    volumebuffer -= 5;
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 
-			    mvprintw(12, 34, "  ");
-			    mvprintw(12, 34, "%d", volumebuffer);
-			    break;
-
-			}
+			break;
+		    }
 		default:
 			x = 0;
-		    }
-		    if (volumebuffer >= 0 && volumebuffer <= 99)
-			sprintf(sc_volume, "%d", volumebuffer);
 
 		}
+
+		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		mvprintw(12, 34, "  ");
+		mvprintw(12, 34, "%d", volumebuffer);
+
+		if (volumebuffer >= 0 && volumebuffer <= 99)
+		    sprintf(sc_volume, "%d", volumebuffer);
+
 		netkeyer(K_STVOLUME, sc_volume);
 	    }
 
