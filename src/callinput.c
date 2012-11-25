@@ -188,7 +188,7 @@ char callinput(void)
 		sendbuf();
 		break;
 	    } else if (x == '=' && strlen(hiscall) != 0) {
-		/** \todo check if unreachabel code */
+		/** \todo check if unreachable code */
 		strcat(buffer, lastcall);
 		strcat(buffer, " OK ");
 		sendbuf();
@@ -669,108 +669,18 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 130:
+	case 130 ... 138:			/* F2.. F10 */
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[1]);	/* F2 */
+		    strcat(buffer, message[x - 129]);	/* F2 */
 		    sendbuf();
 		    mvprintw(12, 29 + strlen(hiscall), "");
 
 		} else
-		    play_file(ph_message[1]);
+		    play_file(ph_message[x - 129]);
 
 		break;
 	    }
-	case 131:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[2]);	/* F3 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-
-		} else
-		    play_file(ph_message[2]);
-
-		break;
-	    }
-	case 132:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[3]);	/* F4 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[3]);
-
-		break;
-	    }
-	case 133:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[4]);	/* F5 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[4]);
-
-		break;
-	    }
-	case 134:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[5]);	/* F6 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[5]);
-
-		break;
-	    }
-	case 135:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[6]);	/* F7 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[6]);
-
-		break;
-	    }
-	case 136:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[7]);	/* F8 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[7]);
-
-		break;
-	    }
-	case 137:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[8]);	/* F9 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[8]);
-
-		break;
-	    }
-	case 138:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[9]);	/* F10 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[9]);
-
-		break;
-	    }
-
 	case 140:
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
