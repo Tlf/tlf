@@ -120,6 +120,8 @@ char callinput(void)
 
     for (i = strlen(hiscall); i <= 13; i++) {
 
+	printcall();
+
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	nodelay(stdscr, TRUE);	/* main loop waiting for input */
 	x = -1;
@@ -203,7 +205,6 @@ char callinput(void)
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			strcat(buffer, message[2]);	/* F3 */
 			sendbuf();
-			mvprintw(12, 29 + strlen(hiscall), "");
 
 		    } else
 			play_file(ph_message[2]);
@@ -244,6 +245,7 @@ char callinput(void)
 		if (bandinx >= 0 && *hiscall == '\0' && no_arrows == 0) {
 
 		    bandinx--;
+
 		    if (bandinx == -1)
 			bandinx = 8;
 
@@ -251,9 +253,9 @@ char callinput(void)
 			&& ((bandinx == 3) || (bandinx == 5)
 			    || (bandinx == 7)))
 			bandinx--;
+
 		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 		    mvprintw(12, 0, band[bandinx]);
-		    printcall();
 		    i--;
 #ifdef HAVE_LIBHAMLIB
 		    if (trx_control == 1) {
@@ -275,10 +277,8 @@ char callinput(void)
 
 	case 154:		/* right */
 	    {
-		if (no_arrows == 1)	//don't use arrow keys for band change
-		    break;
+		if (bandinx <= 8 && *hiscall == '\0' && no_arrows == 0) {
 
-		if (bandinx <= 8 && *hiscall == '\0') {
 		    bandinx++;
 
 		    if (bandinx > 8)
@@ -288,14 +288,9 @@ char callinput(void)
 			&& ((bandinx == 3) || (bandinx == 5)
 			    || (bandinx == 7)))
 			bandinx++;
+
 		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 		    mvprintw(12, 0, band[bandinx]);
-		    if (use_rxvt == 0)
-			attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-		    else
-			attron(COLOR_PAIR(NORMCOLOR));
-		    attron(A_STANDOUT);
-		    mvprintw(12, 29 + strlen(hiscall), "");
 
 #ifdef HAVE_LIBHAMLIB
 
@@ -397,7 +392,7 @@ char callinput(void)
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 			    mvprintw(0, 14, "%s", speedbuf);
-			    printcall();
+
 			} else if (x == 153) {
 			    keyspeed = speeddown();
 			    strncpy(speedbuf, speedstr + (2 * keyspeed),
@@ -406,12 +401,6 @@ char callinput(void)
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 			    mvprintw(0, 14, "%s", speedbuf);
 
-			    if (use_rxvt == 0)
-				attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-			    else
-				attron(COLOR_PAIR(NORMCOLOR));
-
-			    mvprintw(12, 29 + strlen(hiscall), "");
 			} else
 			    x = 27;
 
@@ -420,12 +409,12 @@ char callinput(void)
 			mvprintw(2, 1, "           ");
 			mvprintw(3, 1, "           ");
 			mvprintw(4, 1, "           ");
-			printcall();
 		    }
 		} else {	// trlog compatible, band switch
 		    if (bandinx >= 0 && *hiscall == '\0') {
 
 			bandinx--;
+
 			if (bandinx == -1)
 			    bandinx = 8;
 
@@ -433,6 +422,7 @@ char callinput(void)
 			    && ((bandinx == 3) || (bandinx == 5)
 				|| (bandinx == 7)))
 			    bandinx--;
+
 			attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 			mvprintw(12, 0, band[bandinx]);
 			printcall();
@@ -468,13 +458,12 @@ char callinput(void)
 
 		} else {	// change cw speed
 		    keyspeed = speedup();
+
 		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
 		    speedbuf[2] = '\0';
+
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-
 		    mvprintw(0, 14, "%s", speedbuf);
-		    printcall();
-
 		}
 
 		break;
@@ -483,16 +472,10 @@ char callinput(void)
 	    {
 		if (cqdelay <= 60) {
 		    cqdelay++;
+
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 19, "  ");
 		    mvprintw(0, 19, "%i", cqdelay);
-
-		    if (use_rxvt == 0)
-			attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-		    else
-			attron(COLOR_PAIR(NORMCOLOR));
-
-		    mvprintw(12, 29 + strlen(hiscall), "");
 		}
 
 		break;
@@ -512,29 +495,21 @@ char callinput(void)
 		} else {
 
 		    keyspeed = speeddown();
+
 		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
 		    speedbuf[2] = '\0';
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 14, "%s", speedbuf);
-
-		    if (use_rxvt == 0)
-			attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-		    else
-			attron(COLOR_PAIR(NORMCOLOR));
-
-		    mvprintw(12, 29 + strlen(hiscall), "");
-
 		}
 		break;
 	    }
 	case 413:{		// ctrl-pgdown, cqdelay (not for TERM=linux)
 		if (cqdelay >= 4) {
 		    cqdelay--;
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 19, "  ");
 		    mvprintw(0, 19, "%i", cqdelay);
-		    printcall();
 		}
 
 		break;
@@ -558,7 +533,6 @@ char callinput(void)
 		if (isdupe != 0) {
 		    strcat(buffer, message[6]);	/* as with F7 */
 		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
 		    cleanup();
 		    clear_display();
 		}
@@ -569,7 +543,6 @@ char callinput(void)
 		if (ctcomp != 0) {
 		    strcat(buffer, message[1]);
 		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
 		}
 		break;
 	    }
@@ -633,9 +606,7 @@ char callinput(void)
 	case 176 ... 186:
 	    {
 		strcat(buffer, message[x - 162]);	/* alt-0 to alt-9 */
-		mvprintw(5, 0, "");
 		sendbuf();
-		mvprintw(12, 54, comment);
 
 		break;
 	    }
@@ -654,7 +625,6 @@ char callinput(void)
 		    }
 
 		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
 
 		    if (simulator != 0) {
 			simulator_mode = 1;
@@ -674,7 +644,6 @@ char callinput(void)
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    strcat(buffer, message[x - 129]);	/* F2 */
 		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
 
 		} else
 		    play_file(ph_message[x - 129]);
@@ -686,7 +655,6 @@ char callinput(void)
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    strcat(buffer, message[10]);	/* F11 */
 		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
 		} else
 		    play_file(ph_message[10]);
 
@@ -785,14 +753,9 @@ char callinput(void)
 			    && ((bandinx == 3) || (bandinx == 5)
 				|| (bandinx == 7)))
 			    bandinx++;
+
 			attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 			mvprintw(12, 0, band[bandinx]);
-			if (use_rxvt == 0)
-			    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-			else
-			    attron(COLOR_PAIR(NORMCOLOR));
-			attron(A_STANDOUT);
-			mvprintw(12, 29 + strlen(hiscall), "");
 
 #ifdef HAVE_LIBHAMLIB
 
@@ -1122,12 +1085,9 @@ char callinput(void)
 	    || x == 92)
 	    break;
 
-	time_update();		// TODO: can be dropped
-
 	if (trxmode == DIGIMODE && (keyerport == GMFSK 
 		|| keyerport == MFJ1278_KEYER)) {
 	    show_rtty();
-	    mvprintw(12, 54, comment);
 	    refreshp();
 	}
 
