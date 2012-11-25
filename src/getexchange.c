@@ -77,11 +77,9 @@ int getexchange(void)
     extern char continent[];
     extern int keyerport;
     extern int commentfield;
-//extern int dxped;
 
     int i;
     int x = 0;
-    int cury, curx;
     char instring[2];
     char commentbuf[40] = "";
     int retval;
@@ -117,11 +115,10 @@ int getexchange(void)
 	strcpy(comment, continent);
     }
 
-    refresh_comment();
-    wmove(stdscr, 12, 54 + strlen(comment));
-
     commentfield = 1;
     for (i = strlen(comment); i < 26; i++) {
+
+	refresh_comment();
 
        	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	nodelay(stdscr, TRUE);  /* main loop waiting for input */
@@ -158,9 +155,6 @@ int getexchange(void)
 	case 127:					/* erase */
 	    {
 		if (strlen(comment) >= 1) {
-		    getyx(stdscr, cury, curx);
-		    mvprintw(12, curx - 1, " ");
-		    mvprintw(12, curx - 1, "");
 		    comment[strlen(comment) - 1] = '\0';
 		    i -= 2;
 		}
@@ -173,7 +167,6 @@ int getexchange(void)
 		if (comment[0] != '\0') {	/* if comment not empty */
 		    /* drop exchange so far */
 		    comment[0] = '\0';
-		    refresh_comment();
 		    i = 0;
 		} else {
 		    /* back to callinput */
@@ -188,7 +181,7 @@ int getexchange(void)
 		    if (trxmode == CWMODE) {
 			strcat(buffer, message[1]);
 			sendbuf();
-			mvprintw(12, 29 + strlen(hiscall), "");
+
 		    } else
 			play_file(ph_message[1]);
 
@@ -202,7 +195,7 @@ int getexchange(void)
 		    if (trxmode == CWMODE) {
 			strcat(buffer, message[2]);	/* F3 */
 			sendbuf();
-			mvprintw(12, 29 + strlen(hiscall), "");
+
 		    } else
 			play_file(ph_message[2]);
 
@@ -215,33 +208,27 @@ int getexchange(void)
 	    {
 		if (trxmode == CWMODE) {
 		    strcat(buffer, call);	/* F1 */
-		    mvprintw(5, 0, "");
 		    sendbuf();
 		} else
 		    play_file(ph_message[5]);	// call
 
-		mvprintw(12, 54, comment);
 		break;
 	    }
 
 	case 130 ... 137:
 	    {
 		if (trxmode == CWMODE) {
-		    strcat(buffer, message[x - 129]);	/* F2 */
-		    mvprintw(5, 0, "");
+		    strcat(buffer, message[x - 129]);	/* F2..F9 */
 		    sendbuf();
 		} else
 		    play_file(ph_message[x - 129]);
 
-		mvprintw(12, 54, comment);
 		break;
 	    }
 	case 176 ... 186:
 	    {
 		strcat(buffer, message[x - 162]);	/* alt-0 to alt-9 */
-		mvprintw(5, 0, "");
 		sendbuf();
-		mvprintw(12, 54, comment);
 
 		break;
 	    }
@@ -252,17 +239,14 @@ int getexchange(void)
 		    if (my_rst[1] <= 56) {
 			my_rst[1]++;
 			mvprintw(12, 49, my_rst);
-			mvprintw(12, 54, comment);
 		    }
 		} else {	/* speed up */
 		    keyspeed = speedup();
 		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
 		    speedbuf[2] = '\0';
-//                                                              attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 
+		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 		    mvprintw(0, 14, "%s", speedbuf);
-		    mvprintw(12, 54, comment);
-		    refreshp();
 		}
 		break;
 
@@ -274,26 +258,22 @@ int getexchange(void)
 		    if (my_rst[1] > 49) {
 			my_rst[1]--;
 			mvprintw(12, 49, my_rst);
-			mvprintw(12, 54, comment);
 		    }
 		} else {
 		    keyspeed = speeddown();
 		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
 		    speedbuf[2] = '\0';
-		    //                                              attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+
+		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 		    mvprintw(0, 14, "%s", speedbuf);
-		    mvprintw(12, 54, comment);
-		    refreshp();
 		}
 		break;
 
 	    }
 	case 44:		// , keyer
 	    {
-		getyx(stdscr, cury, curx);
 		mvprintw(5, 0, "");
 		keyer();
-		mvprintw(cury, curx, "");
 		x = 0;
 		break;
 	    }
@@ -302,7 +282,7 @@ int getexchange(void)
 				 * or not in contest */
 		if ((ctcomp == 1) || (contest != 1))
 		    x = 92;
-//                                                      if (dxped == 1) x = 92;
+//                            if (dxped == 1) x = 92;
 		break;
 	    }
 	}
