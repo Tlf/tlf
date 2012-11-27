@@ -159,6 +159,8 @@ int addmult(void)
 
     }
 
+    free(stripped_comment);
+
     return (found);
 }
 
