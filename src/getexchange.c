@@ -615,7 +615,7 @@ int checkexchange(int x)
 	}
 
 	if (strlen(hiscall) >= 2)
-	    OnLowerSearchPanel(34, zone_export);
+	    OnLowerSearchPanel(32, zone_export);
 
 
 	for (ii = 0; ii < LEN(callpats); ii++) {
@@ -651,6 +651,7 @@ int checkexchange(int x)
 	    }
 	}
 
+	return (x);
     }
 
     // ---------------------------arrls------------------------------
@@ -962,8 +963,8 @@ int checkexchange(int x)
 	}
 
     }
-    OnLowerSearchPanel(34, "   ");
-    OnLowerSearchPanel(34, section);	/* show section on lower frame of 
+    OnLowerSearchPanel(32, "   ");
+    OnLowerSearchPanel(32, section);	/* show section on lower frame of 
 					   Worked window */
     ssexchange[0] = '\0';
 
