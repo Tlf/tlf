@@ -792,5 +792,12 @@ void show_needed_sections(void)
 
 void OnLowerSearchPanel(int x, char *str)
 {
+    extern int use_rxvt;
+
+    if (use_rxvt == 0)
+	wattrset(search_win, COLOR_PAIR(C_BORDER) | A_BOLD);
+    else
+	wattrset(search_win, COLOR_PAIR(C_BORDER));
+
     mvwprintw(search_win, 7, x, str);
 }
