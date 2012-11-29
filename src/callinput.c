@@ -541,8 +541,13 @@ char callinput(void)
 	case 160:		/* insert */
 	    {
 		if (ctcomp != 0) {
-		    strcat(buffer, message[1]);
-		    sendbuf();
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			strcat(buffer, message[1]);
+			sendbuf();
+
+		    } else
+			play_file(ph_message[1]);
+
 		}
 		break;
 	    }

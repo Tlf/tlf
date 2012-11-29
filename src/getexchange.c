@@ -178,7 +178,7 @@ int getexchange(void)
 	case 160:		// for CT compatibility
 	    {
 		if (ctcomp != 0) {
-		    if (trxmode == CWMODE) {
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			strcat(buffer, message[1]);
 			sendbuf();
 
@@ -192,7 +192,7 @@ int getexchange(void)
 	case '+':		// for CT compatibility
 	    {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
-		    if (trxmode == CWMODE) {
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			strcat(buffer, message[2]);	/* F3 */
 			sendbuf();
 
@@ -206,7 +206,7 @@ int getexchange(void)
 
 	case 129:
 	    {
-		if (trxmode == CWMODE) {
+		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    strcat(buffer, call);	/* F1 */
 		    sendbuf();
 		} else
@@ -215,16 +215,26 @@ int getexchange(void)
 		break;
 	    }
 
-	case 130 ... 137:
+	case 130 ... 138:
 	    {
-		if (trxmode == CWMODE) {
-		    strcat(buffer, message[x - 129]);	/* F2..F9 */
+		if (trxmode == CWMODE || trxmode == DIGIMODE) {
+		    strcat(buffer, message[x - 129]);	/* F2..F10 */
 		    sendbuf();
 		} else
 		    play_file(ph_message[x - 129]);
 
 		break;
 	    }
+	case 140:
+            {
+                if (trxmode == CWMODE || trxmode == DIGIMODE) {
+                    strcat(buffer, message[10]);        /* F11 */
+                    sendbuf();
+                } else
+                    play_file(ph_message[10]);
+
+                break;
+            }
 	case 176 ... 186:
 	    {
 		strcat(buffer, message[x - 162]);	/* alt-0 to alt-9 */
