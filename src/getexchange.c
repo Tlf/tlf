@@ -178,7 +178,7 @@ int getexchange(void)
 	case 160:		// for CT compatibility
 	    {
 		if (ctcomp != 0) {
-		    if (trxmode == CWMODE) {
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			strcat(buffer, message[1]);
 			sendbuf();
 
@@ -192,7 +192,7 @@ int getexchange(void)
 	case '+':		// for CT compatibility
 	    {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
-		    if (trxmode == CWMODE) {
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			strcat(buffer, message[2]);	/* F3 */
 			sendbuf();
 
@@ -206,7 +206,7 @@ int getexchange(void)
 
 	case 129:
 	    {
-		if (trxmode == CWMODE) {
+		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    strcat(buffer, call);	/* F1 */
 		    sendbuf();
 		} else
@@ -217,7 +217,7 @@ int getexchange(void)
 
 	case 130 ... 137:
 	    {
-		if (trxmode == CWMODE) {
+		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    strcat(buffer, message[x - 129]);	/* F2..F9 */
 		    sendbuf();
 		} else
