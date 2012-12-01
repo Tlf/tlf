@@ -215,16 +215,26 @@ int getexchange(void)
 		break;
 	    }
 
-	case 130 ... 137:
+	case 130 ... 138:
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[x - 129]);	/* F2..F9 */
+		    strcat(buffer, message[x - 129]);	/* F2..F10 */
 		    sendbuf();
 		} else
 		    play_file(ph_message[x - 129]);
 
 		break;
 	    }
+	case 140:
+            {
+                if (trxmode == CWMODE || trxmode == DIGIMODE) {
+                    strcat(buffer, message[10]);        /* F11 */
+                    sendbuf();
+                } else
+                    play_file(ph_message[10]);
+
+                break;
+            }
 	case 176 ... 186:
 	    {
 		strcat(buffer, message[x - 162]);	/* alt-0 to alt-9 */
