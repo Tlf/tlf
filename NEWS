@@ -1,3 +1,22 @@
+tlf-1.1.5
+=========
+Minor maintenance release.
+
+New features:
+    - Report line number for badly formatted lines in initial exchange file.
+      That makes it easier to find the problem for files with a lot of entries.
+      Thanks Mario DH5YM for reporting the problem.
+    - Allow to set SIDETONE_VOLUME to 0 independent from choosen sidetone
+      device. Due to a bug in cwdaemon-0.9.4 setting SIDETONE to 0 switches
+      off the sidetone but also the keying. So please...
+      !!! Set SIDETONE_VOLUME = 0 to switch off sidetone output !!!
+
+Bug fixes:
+    - Fix display of zone and section in searchlog window
+    - Correct handling of function keys to send messages in digimode.
+      Old code allowed function keys only during call input. New code supports
+      them also in exchange field.
+
 tlf-1.1.4
 =========
 Minor maintenance release.

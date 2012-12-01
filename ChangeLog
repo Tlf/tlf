@@ -1,3 +1,76 @@
+2012-12-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * ChangeLog, NEWS, configure.ac: Prepare for 1.1.5 maintenance release
+
+2012-12-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: Support also F10 and F11 in exchange field
+    during digimode.
+
+2012-11-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c: enable F-keys for digimode also in
+  exchange field
+  - While in digimode the F-keys only worked in the input field.
+    Changed logic so that they will also be accepted in the exchange
+    field.
+  - While using CTCOMPATIBLE 'INS' key always send only a cw message even
+    when in SSB mode. Fixed.
+
+2012-11-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c: simplify
+  - drop unneeded cursor positioning
+  - redraw call and comment input field before waiting for a new character
+  - use printcall() and refresh_comment(), but only if needed
+  - unify handling of band up and down
+  - drop unneeded call to time_update()
+
+2012-11-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c, src/searchlog.c: fix display of zone and section in
+  searchlog window
+
+2012-11-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Fix memory leak
+
+2012-11-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: Drop not needed duplication of code for handling Fx
+  message keys
+
+2012-11-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c: Adapt behaviour of :SCVOLUME command.
+  - Can be set even if sidetone device is console speaker.
+
+2012-11-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, tlf.1.in: Allow setting of SIDETONE_VOLUME
+  even if SOUNDCARD is not set.
+  - To allow to turn off cwdaemons sidetone output it is needed to set
+    the volume of the sidetone to 0. Until now that was only possible if
+    SOUNDCARD was set in logcfg.dat which switches to a soundcard for
+    sidetone output.
+  - Fix recognition of SIDETONE_VOLUME value (drop trailing \n)
+  - Allow volume setting independent of choosen sidetone device.
+  - Add information to man page.
+
+  * src/callinput.c: Cleanup old code
+
+  * src/initial_exchange.c, src/initial_exchange.h, src/main.c: Make errors in
+  initial exchange file more verbose. Thanks Mario DH5YM.
+  - make_ie_list() checks format of initial exchange entries (exactly
+    one call <comma> exchange) and complains about errors. It is difficult
+    to find the problematic line for long exchange files.
+  - New code reports the line number and ask for confirmation to continue
+    without initial exchanges in case of error.
+
+2012-10-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * ChangeLog, NEWS, configure.ac: Prepare for 1.1.4 maintenance release
+
 2012-10-28  Thomas Beierlein <tomjbe@gentoo.org>
 
   * tlf.1.in: minor correction to man page
