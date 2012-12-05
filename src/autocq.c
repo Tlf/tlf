@@ -23,6 +23,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "autocq.h"
+#include "stoptx.h"
 
 int cw_char_length(char *message);
 int getlength(int testchar, int message_length);
@@ -82,10 +83,7 @@ int auto_cq(void)
 		if (inchar > 0)
 		    letter = inchar;
 		if (inchar > 0) {
-		    buffer[0] = 27;
-		    buffer[1] = '4';
-		    buffer[2] = '\0';
-		    sendbuf();
+		    stoptx();
 		    break;
 		}
 	    }
