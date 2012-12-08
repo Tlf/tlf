@@ -121,6 +121,7 @@ struct qso_t *get_next_record (FILE *fp)
 {
     char buffer[160];
     char *tmp;
+    char *sp;
     struct qso_t *ptr;
     struct tm date_n_time;
 
@@ -135,7 +136,7 @@ struct qso_t *get_next_record (FILE *fp)
 
 	    /* split buffer into parts for qso_t record and parse
 	     * them accordingly */
-	    tmp = strtok( buffer, " \t");
+	    tmp = strtok_r( buffer, " \t", &sp);
 
 	    /* band */
 	    ptr->band = atoi( tmp );
@@ -152,8 +153,8 @@ struct qso_t *get_next_record (FILE *fp)
 	    /* date & time */
 	    memset( &date_n_time, 0, sizeof(struct tm) );
 
-	    strptime ( strtok( NULL, " \t" ), "%d-%b-%y", &date_n_time);
-	    strptime ( strtok( NULL, " \t" ), "%H:%M", &date_n_time);
+	    strptime ( strtok_r( NULL, " \t", &sp ), "%d-%b-%y", &date_n_time);
+	    strptime ( strtok_r( NULL, " \t", &sp ), "%H:%M", &date_n_time);
 
 	    ptr->year = date_n_time.tm_year + 1900;	/* convert to
 							   1968..2067 */
@@ -164,14 +165,14 @@ struct qso_t *get_next_record (FILE *fp)
 	    ptr->min   = date_n_time.tm_min;
 
 	    /* qso number */
-	    ptr->qso_nr = atoi( strtok( NULL, " \t" ) );
+	    ptr->qso_nr = atoi( strtok_r( NULL, " \t", &sp ) );
 
 	    /* his call */
-	    ptr->call = g_strdup( strtok( NULL, " \t" ) );
+	    ptr->call = g_strdup( strtok_r( NULL, " \t", &sp ) );
 
 	    /* RST send and received */
-	    ptr->rst_s = atoi( strtok( NULL, " \t" ) );
-	    ptr->rst_r = atoi( strtok( NULL, " \t" ) );
+	    ptr->rst_s = atoi( strtok_r( NULL, " \t", &sp ) );
+	    ptr->rst_r = atoi( strtok_r( NULL, " \t", &sp ) );
 
 	    /* comment (exchange) */
 	    ptr->comment = g_strndup( buffer + 54, 13 );
@@ -204,6 +205,7 @@ void free_qso(struct qso_t *ptr) {
 }
 
 
+/** \todo FIXME */
 void errorbox(char *s)
 {
     printw("%s\nPress any key\n", s);
@@ -441,11 +443,12 @@ void add_rpadded( char *dst, char *src, int len ) {
 gchar *get_nth_token( gchar *str, int n) {
     gchar *string = g_strdup( str );
     gchar *ptr;
+    char *sp;
 
-    ptr = strtok( string, " \t" );
+    ptr = strtok_r( string, " \t", &sp );
 
     while ( n > 0 && ptr != NULL ) {
-	ptr = strtok( NULL, " \t" );
+	ptr = strtok_r( NULL, " \t", &sp );
 	n--;
     }
 
@@ -592,8 +595,8 @@ int write_cabrillo(void)
     	exit(1);
     }
 
-    /* try to read cabrillo format first from local directory than from 
-     * default data dir
+    /* try to read cabrillo format first from local directoryi.
+     * Try also in default data dir if not found.
      */
     cabdesc = read_cabrillo_format("cabrillo.fmt", cabrillo);
     if (!cabdesc) {
