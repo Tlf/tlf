@@ -116,7 +116,10 @@ int getexchange(void)
     }
 
     commentfield = 1;
-    for (i = strlen(comment); i < 26; i++) {
+
+    i = strlen(comment);
+
+    while (1) {
 
 	refresh_comment();
 
@@ -154,9 +157,9 @@ int getexchange(void)
 
 	case 127:					/* erase */
 	    {
-		if (strlen(comment) >= 1) {
+		if (i >= 1) {
 		    comment[strlen(comment) - 1] = '\0';
-		    i -= 2;
+		    i -= 1;
 		}
 		break;
 	    }
@@ -309,10 +312,10 @@ int getexchange(void)
 		    show_rtty();
 		    mvprintw(12, 54, comment);
 		}
+		i++;
 		refreshp();
 	    }
-	} else
-	    i--;
+	}
 
 	if ((serial_section_mult == 1) ||
 	    (dx_arrlsections == 1) ||
