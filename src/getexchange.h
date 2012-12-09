@@ -36,7 +36,4 @@
 #include "rtty.h"
 
 int getexchange(void);
-int checkexchange (int x);
-int getlastpattern (char *checkstring);
-char * getgrid (char *comment);
 

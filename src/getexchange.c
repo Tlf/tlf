@@ -34,6 +34,11 @@
 
 int play_file(char *audiofile);
 
+
+int checkexchange (int x);
+int getlastpattern (char *checkstring);
+char *getgrid (char *comment);
+
 int getexchange(void)
 {
     extern int contest;
@@ -114,6 +119,8 @@ int getexchange(void)
 	&& (strlen(hiscall) != 0)) {
 	strcpy(comment, continent);
     }
+
+    /* parse input and modify exchange field accordingly */
 
     commentfield = 1;
 
@@ -439,7 +446,8 @@ int getexchange(void)
     return (x);
 }
 
-/*  --------------------------------------------------------------------------*/
+
+/* ------------------------------------------------------------------------ */
 
 char cmpattern[32] = "                               ";	// global
 char ssexchange[30] = "";
@@ -448,7 +456,8 @@ char callupdate[7];
 int call_update = 0;
 char zone_export[3] = "  ";
 char zone_fix[3] = "";
-/*  --------------------------------------------------------------------------*/
+
+/* ------------------------------------------------------------------------ */
 
 int checkexchange(int x)
 {
@@ -976,7 +985,7 @@ int checkexchange(int x)
 }
 
 
-/*  --------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------ */
 
 /** search checkstring in cmpattern
  *
@@ -1008,7 +1017,9 @@ int getlastpattern(char *checkstring)
 
 }
 
-/*  --------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------ 
+ * return a pointer to the start of grid locator 
+ */
 
 char *getgrid(char *comment)
 {
@@ -1017,6 +1028,7 @@ char *getgrid(char *comment)
     int multposition = 0;
     int i = 0;
 
+    /* search for first letter, that should be the start of the Grid locator*/
     for (i = 0; i < strlen(comment); i++) {
 	if (comment[i] > 64 && comment[i] < 91) {
 	    multposition = i;
