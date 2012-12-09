@@ -38,6 +38,7 @@ int play_file(char *audiofile);
 int checkexchange (int x);
 int getlastpattern (char *checkstring);
 char *getgrid (char *comment);
+void exchange_edit (void);
 
 int getexchange(void)
 {
@@ -250,6 +251,13 @@ int getexchange(void)
 		strcat(buffer, message[x - 162]);	/* alt-0 to alt-9 */
 		sendbuf();
 
+		break;
+	    }
+
+	case 155:		/* edit exchange field */
+	    {
+		if (*comment != '\0')
+		    exchange_edit();
 		break;
 	    }
 
@@ -1038,4 +1046,95 @@ char *getgrid(char *comment)
     gridmult = comment + multposition;
 
     return (gridmult);
+}
+
+/* ------------------------------------------------------------------------ */
+/** Edit exchange field
+ */
+
+void exchange_edit (void)
+{
+    extern char comment[];
+
+    int l, b;
+    int i = 0, j;
+    char comment2[27];
+
+    l = strlen(comment);
+    b = l - 1;
+
+    while ((i != 27) && (b <= strlen(comment))) {
+	attroff(A_STANDOUT);
+	attron(COLOR_PAIR(C_HEADER));
+
+	mvprintw(12, 54, "                          ");
+	mvprintw(12, 54, comment);
+	mvprintw(12, 54 + b, "");
+
+	i = onechar();
+
+	if (i == 1) {		// ctrl-A, Home
+
+	    b = 0;
+	 
+	} else if (i == 5) {	// ctrl-E, End
+	
+	    b = strlen(comment) - 1;
+
+	} else if (i == 155) {	// left
+
+	    if (b > 0)
+		b--;
+
+	} else if (i == 154) {	// right
+
+	    if (b < strlen(comment) - 1) {
+		b++;
+	    } else
+		break;		/* stop edit */
+
+	} else if (i == 161) {	/* delete */
+
+	    l = strlen(comment);
+
+	    for (j = b; j <= l; j++) {
+		comment[j] = comment[j + 1];	/* move to left incl.\0 */
+	    }
+
+	} else if (i == 127) {	/* backspace */
+
+	    if (b > 0) {
+		b--;
+
+		l = strlen(comment);
+
+		for (j = b; j <= l; j++) {
+		    comment[j] = comment[j + 1];
+		}
+	    }
+	} else if (i != 27) {
+
+	    if ((i >= 'a') && (i <= 'z')) 
+		i = i - 32;
+
+	    if ((i >= ' ') && (i <= 'Z')) {
+
+		if (strlen(comment) <= 24) {
+		    /* copy including trailing \0 */
+		    strncpy(comment2, comment + b, strlen(comment) - (b - 1));
+		
+		    comment[b] = i;
+		    comment[b + 1] = '\0';
+		    strcat(comment, comment2);
+
+		    b++;
+		}
+
+	    } else if (i != 0)
+		i = 27;
+	}
+    }
+
+    attron(A_STANDOUT);
+    refresh_comment();
 }
