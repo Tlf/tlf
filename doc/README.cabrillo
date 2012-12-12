@@ -1,3 +1,95 @@
-# ToDo: description of the new CABRILLO implementation
+New cabrillo handling
+=====================
+
+In last years cabrillo format became the de facto standard to sent in your
+contest results. It showed that the cabrillo implementation in TLF before 1.2.x
+had some severe limitations:
+
+- The old code supported only some fixed cabrillo formats for some selected
+  contests. It was not always possible to use that code to support newer 
+  contests.
+- Only cabrillo v2.0 got supported.
+- There were some bugs in formatting the QSO: line entries (e.g. formatting
+  the qso number).
+ 
+
+The new cabrillo code (in writecabrillo.c) tries to fix the problems. It is
+based on a textual description of the cabrillo format to use, which can be
+easily extended by the user to support newer contests. 
+
+
+WORKING PRINCIPLE
+=================
+
+The format descriptions are contained in a file 'cabrillo.fmt' in the
+/usr(/local)/share directory. It provides cabrillo format descriptions for
+common contests. All descriptions are named and you have to specify which one
+has to be used with a configuration statement in logcfg.dat or (better) in the
+contest rule file with the following syntax:
+
+CABRILLO=<formatname>
+
+You can put your own format file 'cabrillo.fmt' in your actual working 
+directory which gets precedence over the central one. <formatname> will 
+be searched first in your local format file. If it is not found there the
+search continues in the central file provided by TLF itself. If it is not
+found at all TLF will complain with an error message.
+
+CABILLO.FMT
+===========
+
+The format of cabrillo.fmt is as follows: 
+
+* The file contains groups of lines which are interpreted as key-value pairs.
+* Each group describes a possible cabrillo format and has to be started by a
+  line containing the <formatname> in square brackets.
+* At the moment only one key word (QSO=...) is supported.
+* Lines beginning with a '#' are interpreted as comments.
+* The 'QSO=' key has to be followed by a list of string, number pairs
+  separated by semicolons.
+  Each pair specify one item to put into the QSO: line of the cabrillo file. 
+  All items are separated by an additional space character.
+  The following items are supported:
+
+  FREQ    The working frequency.
+  MODE    Mode of operation ('CW', 'PH',...)
+  DATE    Date of the QSO
+  TIME    Logged time of the QSO
+  MYCALL  Own call
+  HISCALL Other sides call
+  RST_S   RST sent
+  RST_R   RST received
+  EXC_S   Exchange sent (May contain a '#' character, which gets replaced by 
+          the QSO number).
+  EXCH    The complete received exchange line
+  EXC1    First space separated word of the received exchange
+  EXC2    Second word of the received exchange
+  EXC3    Third word of the received exchange
+  EXC4    Fourth word of the received exchange
+  TX      Number of the TX (for cqww or other contests).
+
+  The name of the item has to be followed by a comma ',' and a number 
+  specifying the character width of that field in the QSO: line. Items 
+  which are to wide will be limited to that width. 
+
+Example
+=======
+
+The following entry
+
+[cwo]
+QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;EXC_S,14;HISCALL,13;EXC1,4;EXC2,9
+
+will be selected if 
+
+CABRILLO=cwo
+
+is in the rules file for the CW Open contest. All QSO's will then be formatted
+as in the following example:
+
+QSO: 28000 CW 2012-09-23 0815 DL1JBE        0001 Tom       HB9XXX        0023 Joe
+QSO: .....
+
+
 
 
