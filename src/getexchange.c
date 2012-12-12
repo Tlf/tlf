@@ -299,6 +299,7 @@ int getexchange(void)
 
 	    }
 	case 44:		// , keyer
+	case 11:		// ctrl-k
 	    {
 		mvprintw(5, 0, "");
 		keyer();
