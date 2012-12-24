@@ -1,3 +1,70 @@
+tlf-1.2.0_pre3
+==============
+Prerelease and test version
+
+tlf-1.2.0 will be a major release with some new features and improvements.
+tlf-1.2.0_pre3 should test some more of them.
+
+Contains all bug fixes and enhancements from 1.1.4 and 1.1.5.
+
+New features since 1.2.0_pre2:
+    - Major rework how to write of cabrillo logfiles. Old code 
+      contained some errors and was not easily extendable to new contests 
+      with different cabrillo formats.
+      New routine formats cabrillo log according to a textual description
+      (Which can be modified and extended by the user) in 
+      /usr/(local/)share/cabrillo.fmt. See doc/README.cabrillo for details.
+
+
+tlf-1.1.5
+=========
+Minor maintenance release.
+
+New features:
+    - Report line number for badly formatted lines in initial exchange file.
+      That makes it easier to find the problem for files with a lot of entries.
+      Thanks Mario DH5YM for reporting the problem.
+    - Allow to set SIDETONE_VOLUME to 0 independent from choosen sidetone
+      device. Due to a bug in cwdaemon-0.9.4 setting SIDETONE to 0 switches
+      off the sidetone but also the keying. So please...
+      !!! Set SIDETONE_VOLUME = 0 to switch off sidetone output !!!
+
+Bug fixes:
+    - Fix display of zone and section in searchlog window
+    - Correct handling of function keys to send messages in digimode.
+      Old code allowed function keys only during call input. New code supports
+      them also in exchange field.
+
+
+tlf-1.1.4
+=========
+Minor maintenance release.
+
+New features:
+    - ask for confirmation about reported problems in config files to give
+      you time to recognize the problems.
+    - Rework of digimode handling together with fldigi.
+      Fix digimode receive routine 'rx_rtty()', make miniterm output more
+      robust and update miniterm also while the cursor is in the exchange
+      field. Drop some unneeded newlines for each function key macro.
+    - Minor corrections and additions to the man page
+
+Bug fixes:
+    - Old version segfaults in 'searchlog' function if a really long callsign
+      filled the input field.
+    - Parsing logic for special characters in own exchange (# ...) do not rely
+      anymore on a trailing NL to the exchange macro.
+    - Fix sidetone control. Recognize CWTONE=0 in logcfg.dat, work around a
+      bug in cwdaemon which does not allow to switch tone back on afterwards.
+    - Stop flickering cursor between input or exchange field and dupe
+      searchwindow.
+    - Fix Alt-t (tune) function to switch tuning on for 6 seconds (can be
+      stopped early with any key press). !!Be aware that there are some
+      problems in different cwdaemon versions (no PTT keying, no chance to stop
+      tuning early, ...). Working with the maintainer to fix it.
+
+
+tlf-1.1.3
 tlf-1.2.0_pre2
 ==============
 Bugfix release.
@@ -29,6 +96,7 @@ maintenance, e.g.:
     - Cleanup of unused variables and comments.
     - Rename 'configure.in' into 'configure.ac' as former will be no longer
       accepted by automake-1.13
+
 
 tlf-1.2.0_pre1
 ==============

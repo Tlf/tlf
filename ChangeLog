@@ -1,3 +1,273 @@
+2012-12-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * NEWS, configure.ac: prepare for tlf-1.2.0_pre3 prerelease
+
+2012-12-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/README.cabrillo: Add description of new cabrillo handling
+
+2012-12-08  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Make token parsing reentrant.
+
+2012-10-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/Makefile.am, doc/README.cab, doc/README.cabrillo, share/cabrillo.fmt,
+  src/writecabrillo.c: Add some more tokens to cabrillo handling  
+  - Drop old write_cabrillo code  
+  - You can now specify EXC1..EXC4 to address first to fourth space delimited 
+    token from exchange field  
+  - Rename README.cab file and fix spelling errors in cabrillo.fmt
+
+2012-12-05  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/autocq.c: Use stoptx() to stop auto_cq message.  Old code did overwrite
+  the right screen border in case of ESC key to stop sending.
+
+2012-11-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c: enable F-keys for digimode also in
+  exchange field  
+  - While in digimode the F-keys only worked in the input field. Changed 
+    logic so that they will also be accepted in the exchange field.  
+  - Support also F10 and F11 in exchange field.  
+  - While using CTCOMPATIBLE 'INS' key always send only a cw message even 
+    when in SSB mode. Fixed.
+
+2012-11-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c: simplify  
+  - drop unneeded cursor positioning 
+  - redraw call and comment input field before waiting for a new character 
+  - use printcall() and refresh_comment(), but only if needed 
+  - unify handling of band up and down 
+  - drop unneeded call to time_update()
+
+2012-11-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c, src/searchlog.c: fix display of zone and section in
+  searchlog window
+
+2012-11-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Fix memory leak
+
+2012-11-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: Drop not needed duplication of code for handling Fx
+  message keys
+
+2012-11-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c: Adapt behaviour of :SCVOLUME command.  
+  - Can be set even if sidetone device is console speaker.
+
+2012-11-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, tlf.1.in: Allow setting of SIDETONE_VOLUME
+  even if SOUNDCARD is not set.  
+  - To allow to turn off cwdaemons sidetone output it is needed to set 
+    the volume of the sidetone to 0. Until now that was only possible if 
+    SOUNDCARD was se in logcfg.dat which switches to a soundcard for sidetone 
+    output. 
+  - Fix for recognition of SIDETONE_VOLUME value (drop trailing \n) 
+  - Allow volume setting independent of choosen sidetone device. 
+  - Add information to man page.
+
+  * src/callinput.c: Cleanup old code
+
+  * src/initial_exchange.c, src/initial_exchange.h, src/main.c: Make errors in
+  initial exchange file more verbose. Thanks Mario DH5YM.  
+  - make_ie_list() checks format of initial exchange entries (exactly 
+    one call <comma> exchange) and complains about errors. It is difficult 
+    to find the problematic line for long exchange files. 
+  - New code reports the line number and ask for confirmation to continue 
+    without initial exchanges in case of error.
+
+2012-10-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * tlf.1.in: minor correction to man page
+
+2012-10-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: fix tune logic.  
+  - adapt to cwdaemons behaviour. It tunes only for a given time and 
+    than automatically stop. 
+  - So request some tuning time (6s) and allow for an early stop with 
+    any key press. 
+  - Change TUNE_UP constant if you want a different time.
+
+2012-10-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c, src/time_update.c: stop flickering
+  cursor while searchlog is shown  
+  - during wait for input in call input or exchange field the searchlog 
+    panel is regularly updated. That makes the cursor switch between 
+    different places and showing a flickering effect. 
+  - New logic dropped the time delay from 'time_update()' (as that function 
+    should not determine the speed of the keyboard polling) and added 
+    the delay into the polling loop so that the cursor is a long time in 
+    the input field.
+
+2012-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: convert file back to Unix LF endings
+
+2012-10-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/set_tone.c: work around bugs in cwdaemon versions  
+  - cwdaemon < 0.9.6 always set volume to 70% at change of tone freq 
+  - cwdaemon >=0.9.6 do not set volume at all after change of freq 
+    resulting in no tone output if you have a freq=0 in between 
+  - So... to be sure we set the volume back to our chosen
+    value or to 70% (like cwdaemon) if no volume got specified
+
+2012-10-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendspcall.c: use '}' and '{' only for MFJ1278 keyer to switch TX on
+  and off
+
+2012-10-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendbuf.c: correct parsing of special characters in sendbuf() function 
+  - old logic assumes that there is always a trailing newline so it checks 
+    only until strlen(text)-1 is reached 
+  - new code checks all characters until string end.
+
+  * src/write_keyer.c: shorten macro output in digimode  
+  - old implementation had 5 empty lines for each macro output 
+    (1 from message eol, 2 from write_keyer routine, 1 from echo, 
+    1 from fldigi) 
+  - dropped 1 of the lines in output string 
+  - used '-n' switch to force echo to not append a further newline 
+  - simplify command formatting
+
+2012-10-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c, src/rtty.c: update miniterm also while in getexchange()
+
+  * src/rtty.c: make miniterm output more robust  
+  - strncpy may leave non terminated strings, so switch to g_strlcpy i
+  - mvprintw needs a format string to avoid interpretation of '%' signs 
+    in the received text.
+
+  * src/rtty.c: rework digimode receive routine 'rx_rtty()'  
+  - fix buffer overrun in rx_addtext 
+  - better logic to skip start of line info from GMFSK and FlDigi 
+  - do not skip start of line if serial modem (MFJ or similar)
+
+2012-10-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, src/parse_logcfg.h, src/rules.c: ask for
+  confirmation if errors in logcfg.dat or rule file detected  
+  - for some time tlf reports errors in both configuration files but gives 
+    user only 2 seconds time to read the problem. The changes records that 
+    some problems exists and ask the user after processing the files if 
+    we should continue or stop the program and fix the problem. That gives 
+    them time to read the problems and think it over.
+
+2012-10-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/set_tone.c: fix control of sidetone output  
+  - CWTONE drops trailing newline now (was not recognized by cwdaemon 0.9.2 
+    if there was a trailing newline) 
+  - :tone did not initialize box correctly. Old screen contents showed 
+    through the frame.
+
+2012-10-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/parse_logcfg.c: Correct wording for some error message
+
+  * rules/arrl10m_dx: fix typo wrt CQ_TU_MSG
+
+2012-09-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getsummary.c: cut erase strings which are too long for screen width
+
+2012-09-17  Thomas Beierlein <tb@forth-ev.de>
+
+  * rules/arrl10m_dx, rules/arrldx_dx, rules/arrldx_usa, rules/contest,
+  rules/cqww, rules/eusprint, rules/lzdx, rules/pacc_dx, rules/pacc_pa,
+  rules/spdx_dx, rules/spdx_sp, rules/template, rules/wpx, share/cabrillo.fmt:
+  add some more cabrillo format specifications  
+  - rename wpx cabrillo format into UNIVERSAL 
+  - complete rule files with information which format to use 
+  - new format for EU-SPRINT contest
+
+2012-09-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: add handling of EXC_S item containing '#' special
+  character  
+  - use old 'getsummary' to ask for exchange for now
+
+2012-09-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: add handling of TX entry for cqww.m2 and other
+  contests
+
+2012-09-10  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/writecabrillo.c: Basic implemention of 'prepare_line' function  
+  - format entries according to list of items from QSO: line definition 
+  - add entry by entry to linebuffer 
+  - !! atm not complete
+
+2012-09-14  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/searchlog.c: Old code segfaults for really long calls in 'searchlog'  
+  - happens for long call signs which fill the call field 
+  - strchr return NULL if space is not found, so limit string only if 
+    a space is really found
+
+2012-09-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/cabrillo.fmt, src/writecabrillo.c: drop position from cabrillo format
+  definitions  
+  - Each field in the QSO line is separated by one space from the
+    next. 
+  - So knowing the length of each field we can determine the position
+    from that information if we have the field entries defined in order
+
+2012-09-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Parse QSO logline into relevant pieces for
+  writecabrillo
+
+2012-09-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Fill in  qso_t structure and start parsing the qso
+  line
+
+2012-09-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: fix possible segfault due to wrong allocation size
+
+2012-09-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: fix memory leak  The list of split parts of the entry
+  needs to be freed after being used.
+
+2012-09-04  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/writecabrillo.c: Parse each item description for QSO: line  
+  - convert item name to a enumed tag 
+  - parse and convert position and fieldwidth 
+  - add all converted items to an array in the format description
+
+2012-08-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: First steps to new 'write_cabrillo'  
+  - Complete rewrite of main flow for the function. !Not all 
+    functionality implemented. 
+  - 'read_cabrillo_format' lookup file with needed cabrillo format 
+    description in local dir or datadir and parses some keys 
+    (atm only 'QSO:') 
+  - QSO: key is splitted into separate items each describing one entry 
+    in cabrillos QSO: line.
+    Be aware !! Keywords have to be case sensitive
+
+  * share/cabrillo.fmt: First simple definition of a cabrillo format file
+
 2012-08-23  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/parse_logcfg.c: Second part of reworked parsing logic  
