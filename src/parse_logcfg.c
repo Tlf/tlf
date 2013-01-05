@@ -456,7 +456,7 @@ int parse_logcfg(char *inputbuffer)
     if (g_strv_length( fields ) == 2) { /* strip leading whitespace */
 	g_strchug( fields[1] );		/* from parameters */
     }
-    
+
     g_strlcpy( teststring, fields[0], sizeof(teststring) );
 
     for (ii = 0; ii < MAX_COMMANDS; ii++) {
@@ -1144,7 +1144,7 @@ int parse_logcfg(char *inputbuffer)
 		itumult = 1;
 		break;
 	    }
-    case 119:{		// CQ Delay (sec)
+    case 119:{		// CQ Delay (0.5 sec)
 		PARAMETER_NEEDED(teststring);
 		buff[0] = '\0';
 		strncpy(buff, fields[1], 3);
@@ -1332,21 +1332,18 @@ int parse_logcfg(char *inputbuffer)
     case 149:{
 		PARAMETER_NEEDED(teststring);
 		keyerport = GMFSK;
-		strncpy(controllerport, fields[1],
-			sizeof(controllerport) - 1);
-		controllerport[strlen(controllerport) - 1] = '\0';
+		g_strlcpy(controllerport, g_strchomp(fields[1]),
+			sizeof(controllerport));
 		break;
 	    }
     case 150:{		// start in digital mode
 		trxmode = DIGIMODE;
-		modem_mode[0] = '\0';
-		strcat(modem_mode, "RTTY");
+		strcpy(modem_mode, "RTTY");
 		break;
 	    }
     case 151:{
 		PARAMETER_NEEDED(teststring);
-		rttyoutput[0] = '\0';
-		strncat(rttyoutput, fields[1], 110);
+		g_strlcpy(rttyoutput, fields[1], 111);
 		rttyoutput[strlen(rttyoutput) - 1] = '\0';
 		break;
 	    }
