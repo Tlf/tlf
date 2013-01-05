@@ -214,7 +214,7 @@ int parse_logcfg(char *inputbuffer)
     extern int nob4;
     extern int noautocq;
     extern int show_time;
-    extern char keyer_device[];
+    extern char keyer_device[10];
     extern int use_vk;
     extern int wazmult;
     extern int itumult;
@@ -518,8 +518,7 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 17:{
     	    PARAMETER_NEEDED(teststring);
-	    strcpy(whichcontest, fields[1]);
-	    whichcontest[strlen(whichcontest) - 1] = '\0';
+	    strcpy(whichcontest, g_strchomp(fields[1]));
 	    if (strlen(whichcontest) > 40) {
 		showmsg
 		    ("WARNING: contest name is too long! exiting...");
@@ -530,16 +529,13 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 18:{
     	    PARAMETER_NEEDED(teststring);
-	    logfile[0] = '\0';
-	    strcat(logfile, fields[1]);
-	    logfile[strlen(logfile) - 1] = '\0';
+	    strcpy(logfile, g_strchomp(fields[1]));
 	    break;
 	}
     case 19:{
     	    PARAMETER_NEEDED(teststring);
-	    keyer_device[0] = '\0';
-	    strncat(keyer_device, fields[1], 9);
-	    keyer_device[strlen(keyer_device) - 1] = '\0';
+	    g_strlcpy(keyer_device, g_strchomp(fields[1]), 
+		    sizeof(keyer_device));
 	    break;
 	}
     case 20:{		// Use the bandswitch output on parport0
@@ -808,8 +804,7 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 57:{
 	    PARAMETER_NEEDED(teststring);
-	    strncpy(pr_hostaddress, fields[1], 47);
-	    pr_hostaddress[strlen(pr_hostaddress) - 1] = '\0';
+	    g_strlcpy(pr_hostaddress, g_strchomp(fields[1]), 48);
 	    break;
 	}
     case 58:{
@@ -887,17 +882,13 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 67:{
 	    PARAMETER_NEEDED(teststring);
-	    strncpy(netkeyer_hostaddress, fields[1], 16);
-	    netkeyer_hostaddress[strlen(netkeyer_hostaddress) -
-				 1] = '\0';
+	    g_strlcpy(netkeyer_hostaddress, g_strchomp(fields[1]), 16);
 	    break;
 	}
     case 68:{
 	    PARAMETER_NEEDED(teststring);
 	    if (node < MAXNODES) {
-		strncpy(bc_hostaddress[node], fields[1], 16);
-		bc_hostaddress[node][strlen(bc_hostaddress[node]) -
-				     1] = '\0';
+		g_strlcpy(bc_hostaddress[node], g_strchomp(fields[1]), 16);
 		if (node++ < MAXNODES)
 		    nodes++;
 	    }
@@ -952,9 +943,7 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 87:{
 	    PARAMETER_NEEDED(teststring);
-	    multsfile[0] = '\0';
-	    strncat(multsfile, fields[1], 79);
-	    g_strchomp(multsfile);
+	    g_strlcpy(multsfile, g_strchomp(fields[1]), 80);
 	    multlist = 1;
 	    universal = 1;
 	    break;
@@ -1099,10 +1088,10 @@ int parse_logcfg(char *inputbuffer)
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (dx_cont_points == -1)
-		dx_cont_points = atoi(c_temp);
+	    dx_cont_points = atoi(c_temp);
 
 	    break;
-	   }
+       }
 /* end LZ3NY mod */
     case 101:{		// show time in searchlog window
 		show_time = 1;
@@ -1112,30 +1101,16 @@ int parse_logcfg(char *inputbuffer)
 		use_rxvt = 1;
 		break;
 	    }
-    case 103 ... 111:{	// get phone messages
+    case 103 ... 116:{	// get phone messages
 	    PARAMETER_NEEDED(teststring);
-		strncpy(ph_message[ii - 103], fields[1], 70);
-		ph_message[ii - 103][strlen(ph_message[ii - 103]) -
-				     1] = '\0';
-		mvprintw(15, 5, "A: Phone message #%d is %s", ii - 103, ph_message[ii - 103]);	// (W9WI)
-		refreshp();
-		//                             system ("sleep 2");
-		if (strlen(ph_message[ii - 103]) > 0)
-		    use_vk = 1;
-		break;
-	    }
-    case 112 ... 116:{	// get phone messages
-	    PARAMETER_NEEDED(teststring);
-		strncpy(ph_message[ii - 103], fields[1], 39);
-		ph_message[ii - 103][strlen(ph_message[ii - 103]) -
-				     1] = '\0';
-		mvprintw(15, 5, "B: Phone message #%d is %s", ii - 103, ph_message[ii - 103]);	// (W9WI)
-		refreshp();
-		//                             system ("sleep 2");
-		if (strlen(ph_message[ii - 103]) > 0)
-		    use_vk = 1;
-		break;
-	    }
+	    g_strlcpy(ph_message[ii - 103], g_strchomp(fields[1]), 71);
+	    mvprintw(15, 5, "A: Phone message #%d is %s", ii - 103, ph_message[ii - 103]);	// (W9WI)
+	    refreshp();
+	    //                             system ("sleep 2");
+	    if (strlen(ph_message[ii - 103]) > 0)
+		use_vk = 1;
+	    break;
+	}
     case 117:{		// WAZ Zone is a Multiplier
 		wazmult = 1;
 		break;
@@ -1163,10 +1138,9 @@ int parse_logcfg(char *inputbuffer)
 		exc_cont = 1;
 		break;
 	    }
-    case 122:{
+    case 122:{						// RULES=
 		PARAMETER_NEEDED(teststring);
-		strcpy(whichcontest, fields[1]);	// RULES=
-		whichcontest[strlen(whichcontest) - 1] = '\0';
+		strcpy(whichcontest, g_strchomp(fields[1]));
 		if (strlen(whichcontest) > 40) {
 		    showmsg
 			("WARNING: contest name is too long! exiting...");
@@ -1196,8 +1170,7 @@ int parse_logcfg(char *inputbuffer)
 		    sleep(5);
 		    exit(1);
 		}
-		strncpy(rigconf, fields[1], 79);	// RIGCONF=
-		rigconf[strlen(rigconf) - 1] = '\0';	// chop LF
+		g_strlcpy(rigconf, g_strchomp(fields[1]), 80);	// RIGCONF=
 		break;
 	    }
     case 127:{		// define color GREEN (header)
@@ -1226,22 +1199,18 @@ int parse_logcfg(char *inputbuffer)
 	    }
     case 133:{		// define name of synclogfile
 		PARAMETER_NEEDED(teststring);
-		synclogfile[0] = '\0';
-		strcat(synclogfile, fields[1]);
-		synclogfile[strlen(synclogfile) - 1] = '\0';
+		strcpy(synclogfile, g_strchomp(fields[1]));
 		break;
 	    }
     case 134:{		//SSBPOINTS=
 		PARAMETER_NEEDED(teststring);
-		buff[0] = '\0';
-		strcat(buff, fields[1]);
+		strcpy(buff, fields[1]);
 		ssbpoints = atoi(buff);
 		break;
 	    }
     case 135:{		//CWPOINTS=
 		PARAMETER_NEEDED(teststring);
-		buff[0] = '\0';
-		strcat(buff, fields[1]);
+		strcpy(buff, fields[1]);
 		cwpoints = atoi(buff);
 		break;
 	    }
@@ -1279,17 +1248,14 @@ int parse_logcfg(char *inputbuffer)
 	    }
     case 139:{		// dsp for s-meter
 		PARAMETER_NEEDED(teststring);
-		strncpy(sc_device, fields[1],
-			sizeof(sc_device) - 1);
-		sc_device[strlen(sc_device) - 1] = '\0';
+		g_strlcpy(sc_device, g_strchomp(fields[1]), sizeof(sc_device));
 		break;
 	    }
     case 140:{
 		PARAMETER_NEEDED(teststring);
 		keyerport = MFJ1278_KEYER;
-		strncpy(controllerport, fields[1],
-			sizeof(controllerport) - 1);
-		controllerport[strlen(controllerport) - 1] = '\0';
+		g_strlcpy(controllerport, g_strchomp(fields[1]), 
+			sizeof(controllerport));
 		break;
 	    }
     case 141:{
@@ -1303,9 +1269,8 @@ int parse_logcfg(char *inputbuffer)
 	    }
     case 143:{
 		PARAMETER_NEEDED(teststring);
-		strncpy(exchange_list, fields[1],
-			sizeof(exchange_list) - 1);
-		exchange_list[strlen(exchange_list) - 1] = '\0';
+		g_strlcpy(exchange_list, g_strchomp(fields[1]),	
+			sizeof(exchange_list));
 		break;
 	    }
     case 144:{
@@ -1343,8 +1308,7 @@ int parse_logcfg(char *inputbuffer)
 	    }
     case 151:{
 		PARAMETER_NEEDED(teststring);
-		g_strlcpy(rttyoutput, fields[1], 111);
-		rttyoutput[strlen(rttyoutput) - 1] = '\0';
+		g_strlcpy(rttyoutput, g_strchomp(fields[1]), 111);
 		break;
 	    }
     case 152:{
