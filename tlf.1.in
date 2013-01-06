@@ -761,7 +761,7 @@ Show cluster bandmap on startup and set start values for filtering.
   'M' - only own mode
   'D' - do not show dupes
   'S' - skip dupes during grab_next (ctrl-g)
-  <number> livetime for new spots in second (number >=300)
+  <number> livetime for new spots in second (number >=30)
 
 .TR
 .B SCOREWINDOW

@@ -611,7 +611,7 @@ int parse_logcfg(char *inputbuffer)
 	     * is followed by a '='
 	     * Parameter format is BANDMAP=<xxx>,<number>
 	     * <xxx> - string parsed for the letters B, M, D and S
-	     * <number> - spot livetime in seconds (>=300)
+	     * <number> - spot livetime in seconds (>=30)
 	     */
 	    if (fields[1] != NULL) {
 		char **bm_fields;
@@ -638,7 +638,7 @@ int parse_logcfg(char *inputbuffer)
 		    int livetime;
 		    g_strstrip(bm_fields[1]);
 		    livetime = atoi(bm_fields[1]);
-		    if (livetime >= 300)
+		    if (livetime >= 30)
 			/* aging called every 2 seconds */
 			bm_config.livetime = livetime/2;
 		}
