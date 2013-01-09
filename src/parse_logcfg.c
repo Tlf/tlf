@@ -512,7 +512,11 @@ int parse_logcfg(char *inputbuffer)
 		refreshp();
 		exit(1);
 	    }
-	    strcpy(call, fields[1]);
+	    /* strip NL and trailing whitespace */
+	    g_strlcpy( call, g_strchomp(fields[1]), 20 );
+	    /* as other code parts rely on a trailing NL on the call 
+	     * we add back such a NL for now */
+	    strcat( call, "\n");
 	    // check that call sign can be found in cty database !!
 	    break;
 	}
