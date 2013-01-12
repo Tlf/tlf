@@ -9,6 +9,7 @@ CONTEST=arrl_ss
 LOGFILE=ss.log
 MULT_LIST=arrlsections
 CONTEST_MODE
+CABRILLO=ARRL-SS
 #
 ##################################
 #                                #
