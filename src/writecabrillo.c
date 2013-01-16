@@ -595,7 +595,7 @@ int write_cabrillo(void)
     	exit(1);
     }
 
-    /* try to read cabrillo format first from local directoryi.
+    /* Try to read cabrillo format first from local directory.
      * Try also in default data dir if not found.
      */
     cabdesc = read_cabrillo_format("cabrillo.fmt", cabrillo);
@@ -613,7 +613,7 @@ int write_cabrillo(void)
 
     /* open logfile and create a cabrillo file */
     strcpy(cabrillo_tmp_name, call);
-    cabrillo_tmp_name[strlen(call)-1] = '\0'; /* drop \n */
+    g_strstrip(cabrillo_tmp_name); /* drop \n */
     strcat(cabrillo_tmp_name, ".cbr");
 
     if ((fp1 = fopen(logfile, "r")) == NULL) {
@@ -621,15 +621,15 @@ int write_cabrillo(void)
 	free_cabfmt( cabdesc );
 	return (1);
     }
-    if ((fp2 = fopen("./cabrillo", "w")) == NULL) {
+    if ((fp2 = fopen(cabrillo_tmp_name, "w")) == NULL) {
 	fprintf(stdout, "Opening cbr file not possible.\n");
 	free_cabfmt( cabdesc );
 	fclose(fp1);		//added by F8CFE
 	return (2);
     }
 
-    getsummary();
-//    write_header();
+//    write header
+    getsummary( fp2 );
 
     while ((qso = get_next_record(fp1))) {
 
@@ -645,11 +645,6 @@ int write_cabrillo(void)
 
     fputs("END-OF-LOG:\n", fp2);
     fclose(fp2);
-
-    rc = system("cat cabrillo >> header");
-    sprintf(cmd, "cp header %s", cabrillo_tmp_name);
-    rc = system(cmd);
-    rc = system("mv header summary.txt");
 
     free_cabfmt( cabdesc );
 

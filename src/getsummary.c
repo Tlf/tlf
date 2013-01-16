@@ -19,7 +19,7 @@
  */
 
 	/* ------------------------------------------------------------
-	 *   write summary  file
+	 *   write cabrillo header
 	 *
 	 *--------------------------------------------------------------*/
 
@@ -39,18 +39,12 @@ extern int arrlss;
 extern int serial_section_mult;
 extern int multarray_nr;
 
-int getsummary(void)
+int getsummary(FILE *fp)
 {
     char buffer[80];
-    FILE *fp;
 
     cluster = NOCLUSTER;
     showscore_flag = 0;
-
-    if ((fp = fopen("./header", "w")) == NULL) {
-	fprintf(stdout, "Error opening header file.\n");
-	return (1);
-    }
 
     fputs("START-OF-LOG: 2.0\n", fp);
 
@@ -275,6 +269,5 @@ int getsummary(void)
     fputs("SOAPBOX: ", fp);
     fputs(buffer, fp);
 
-    fclose(fp);
     return (0);
 }
