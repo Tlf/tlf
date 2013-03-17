@@ -24,6 +24,7 @@
 
 #include "changepars.h"
 #include "sendbuf.h"
+#include "rules.h"
 #include <termios.h>
 #include <glib.h>
 
@@ -372,6 +373,7 @@ int changepars(void)
 	    rc = system(cmdstring);
 
 	    read_logcfg();
+	    read_rules();	/* also reread rules file */
 	    writeparas();
 	    mvprintw(24, 0, "Logcfg.dat loaded, parameters written..");
 	    refreshp();
