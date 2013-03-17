@@ -580,11 +580,9 @@ int write_cabrillo(void)
     extern char exchange[];
     extern char call[];
 
-    int rc;
     char* cab_dfltfile;
     struct cabrillo_desc *cabdesc;
     char cabrillo_tmp_name[80];
-    char cmd[80];
     char buffer[4000] = "";
 
     FILE *fp1, *fp2;
@@ -628,8 +626,12 @@ int write_cabrillo(void)
 	return (2);
     }
 
-//    write header
+
+    /* ask for exchange and header information */
+    ask(buffer, "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
+    strncpy(exchange, buffer, 10);
     getsummary( fp2 );
+
 
     while ((qso = get_next_record(fp1))) {
 
@@ -700,17 +702,11 @@ int write_adif(void)
     if (strlen(exchange) > 0)
 	strcpy(standardexchange, exchange);
 
-    /* in case using write_adif() without write_cabrillo() 
+    /* in case using write_adif() without write_cabrillo() before
      * just ask for the needed information */
     if ((strlen(standardexchange) == 0) && (exchange_serial != 1)) {
-	nicebox(14, 0, 1, 78, "Exchange used:");
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
-	mvprintw(15, 1,
-		 "                                                                              ");
-	mvprintw(15, 1, "");
-	echo();
-	getnstr(standardexchange, 30);
-	noecho();
+	ask(buffer, "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
+	strncpy(standardexchange, buffer, 10);
     }
 
     /* write header */

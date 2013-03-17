@@ -26,8 +26,6 @@
 #include "getsummary.h"
 #include <glib.h>
 
-extern int cluster;
-extern int showscore_flag;
 extern char call[];
 extern int wpx;
 extern int total;
@@ -35,7 +33,6 @@ extern int nr_of_px;
 extern int cqww;
 extern int arrldx_usa;
 extern int totalmults;
-extern char exchange[];
 extern int arrlss;
 extern int serial_section_mult;
 extern int multarray_nr;
@@ -61,9 +58,6 @@ int getsummary(FILE *fp)
 {
     char buffer[80];
 
-    ask(buffer, "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
-    strncpy(exchange, buffer, 10);
-
     fprintf(fp, "START-OF-LOG: 3.0\n");
     fprintf(fp, "CREATED-BY: tlf-%s\n", VERSION);
 
@@ -87,7 +81,7 @@ int getsummary(FILE *fp)
     ask(buffer, "POWER: (HIGH,LOW,QRP)");
     fprintf(fp, "CATEGORY-POWER: %s\n", buffer);
     
-    ask(buffer, "Category-Station: (FIEXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL");
+    ask(buffer, "Category-Station: (FIXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL");
     if (*buffer != '\0')
 	fprintf(fp, "CATEGORY-STATION: %s\n", buffer);
 

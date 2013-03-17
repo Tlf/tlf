@@ -288,11 +288,17 @@ int changepars(void)
 	}
     case 18:			/*  WRITE CABRILLO FILE   */
 	{
+	    int old_cluster = cluster;
+	    cluster = NOCLUSTER;
+
 	    write_cabrillo();
 
 	    mvprintw(13, 29, "writing  cabrillo file");
 	    refreshp();
 	    sleep(1);
+
+	    cluster = old_cluster;
+
 
 	    break;
 	}
