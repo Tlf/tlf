@@ -25,4 +25,6 @@
 #include "tlf.h"
 
 int getsummary(FILE *fp);
+void ask(char *buffer, char *what);
+
 
