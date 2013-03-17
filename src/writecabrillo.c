@@ -31,6 +31,7 @@
 #include <time.h>
 
 extern char call[];
+extern int use_rxvt;
 
 /* list of different tags for QSO: line items */
 enum tag_t { NO_ITEM, FREQ, MODE, DATE, TIME, MYCALL, HISCALL, RST_S, RST_R, 
@@ -205,14 +206,16 @@ void free_qso(struct qso_t *ptr) {
 }
 
 
-/** \todo FIXME */
-void errorbox(char *s)
+/** write out information */
+void info(char *s)
 {
-    printw("%s\nPress any key\n", s);
+    if (use_rxvt == 0)
+        attron(COLOR_PAIR(C_INPUT) | A_STANDOUT | A_BOLD);
+    else
+        attron(COLOR_PAIR(C_INPUT) | A_STANDOUT);
+
+    mvprintw(13, 29, "%s", s);
     refreshp();
-    echo();
-    sleep(4);
-    noecho();
 }
 
 
@@ -589,8 +592,9 @@ int write_cabrillo(void)
     struct qso_t *qso;
 
     if (cabrillo == NULL) {
-	errorbox("No cabrillo format defined (See doc/README.cabrillo)");
-    	exit(1);
+	info("No cabrillo format defined (See doc/README.cabrillo)");
+	sleep(2);
+    	return(1);
     }
 
     /* Try to read cabrillo format first from local directory.
@@ -605,8 +609,9 @@ int write_cabrillo(void)
     }
 
     if (!cabdesc) {
-    	errorbox("Cabrillo format specification not found!");
-	exit(1);
+    	info("Cabrillo format specification not found!");
+	sleep(2);
+	return(2);
     }
 
     /* open logfile and create a cabrillo file */
@@ -615,12 +620,14 @@ int write_cabrillo(void)
     strcat(cabrillo_tmp_name, ".cbr");
 
     if ((fp1 = fopen(logfile, "r")) == NULL) {
-	fprintf(stdout, "Opening logfile not possible.\n");
+	info("Can't open logfile.");
+	sleep(2);
 	free_cabfmt( cabdesc );
 	return (1);
     }
     if ((fp2 = fopen(cabrillo_tmp_name, "w")) == NULL) {
-	fprintf(stdout, "Opening cbr file not possible.\n");
+	info("Can't create cabrillo file.");
+	sleep(2);
 	free_cabfmt( cabdesc );
 	fclose(fp1);		//added by F8CFE
 	return (2);
@@ -632,6 +639,7 @@ int write_cabrillo(void)
     strncpy(exchange, buffer, 10);
     getsummary( fp2 );
 
+    info("Wrting cabrillo file");
 
     while ((qso = get_next_record(fp1))) {
 
@@ -687,14 +695,16 @@ int write_adif(void)
     FILE *fp1, *fp2;
 
     if ((fp1 = fopen(logfile, "r")) == NULL) {
-	fprintf(stdout, "Opening logfile not possible.\n");
+	info("Opening logfile not possible.");
+	sleep(2);
 	return (1);
     }
     strcpy(adif_tmp_name, whichcontest);
     strcat(adif_tmp_name, ".adi");
 
     if ((fp2 = fopen(adif_tmp_name, "w")) == NULL) {
-	fprintf(stdout, "Opening ADIF file not possible.\n");
+	info("Opening ADIF file not possible.");
+	sleep(2);
 	fclose(fp1);		//added by F8CFE
 	return (2);
     } 
@@ -708,6 +718,8 @@ int write_adif(void)
 	ask(buffer, "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
 	strncpy(standardexchange, buffer, 10);
     }
+
+    info("Writing adif file");
 
     /* write header */
     fputs

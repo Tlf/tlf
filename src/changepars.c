@@ -294,10 +294,6 @@ int changepars(void)
 
 	    write_cabrillo();
 
-	    mvprintw(13, 29, "writing  cabrillo file");
-	    refreshp();
-	    sleep(1);
-
 	    cluster = old_cluster;
 
 
@@ -586,9 +582,6 @@ int changepars(void)
     case 40:			/* ADIF */	
 	{
 	    write_adif();
-	    mvprintw(13, 29, "writing adif file");
-	    refreshp();
-	    sleep(1);
 
 	    break;
 	}
