@@ -19,14 +19,13 @@
  */
 
 	/* ------------------------------------------------------------
-	 *   write summary  file
+	 *   write cabrillo header
 	 *
 	 *--------------------------------------------------------------*/
 
 #include "getsummary.h"
+#include <glib.h>
 
-extern int cluster;
-extern int showscore_flag;
 extern char call[];
 extern int wpx;
 extern int total;
@@ -34,120 +33,70 @@ extern int nr_of_px;
 extern int cqww;
 extern int arrldx_usa;
 extern int totalmults;
-extern char exchange[];
 extern int arrlss;
 extern int serial_section_mult;
 extern int multarray_nr;
 
-int getsummary(void)
+void ask(char *buffer, char *what)
+{
+
+    attron(A_STANDOUT);
+    mvprintw(15, 1,
+	     "                                                                              ");
+    nicebox(14, 0, 1, 78, what);
+    attron(A_STANDOUT);
+    mvprintw(15, 1, "");
+
+    echo();
+    getnstr(buffer, 78);
+    noecho();
+    g_strstrip(buffer);
+}
+
+
+int getsummary(FILE *fp)
 {
     char buffer[80];
-    FILE *fp;
 
-    cluster = NOCLUSTER;
-    showscore_flag = 0;
+    fprintf(fp, "START-OF-LOG: 3.0\n");
+    fprintf(fp, "CREATED-BY: tlf-%s\n", VERSION);
 
-    if ((fp = fopen("./header", "w")) == NULL) {
-	fprintf(stdout, "Error opening header file.\n");
-	return (1);
-    }
+    ask(buffer, "Contest: (CQ-WW-CW/SSB, CQ-WPX-CW/SSB, ARRL-DX-CW/SSB)");
+    fprintf(fp, "CONTEST: %s\n", buffer);
 
-    fputs("START-OF-LOG: 2.0\n", fp);
+    fprintf(fp, "CALLSIGN: %s", call);		/* !!! trailing \n at call */
 
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78,
-	    "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strncpy(exchange, buffer, 10);
+    ask(buffer, "Category-Assisted: (ASSISTED, NON-ASSISTED");
+    fprintf(fp, "CATEGORY-ASSISTED: %s\n", buffer);
 
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "ARRL-SECTION:");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "Bands: (ALL,160M,80M,40M,20M,15M,10M)");
+    fprintf(fp, "CATEGORY-BAND: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    if (strncmp(buffer, "none", 4) != 0) {
-	fputs("ARRL-SECTION: ", fp);
-	fputs(buffer, fp);
-    }
-    fputs("CALLSIGN: ", fp);
-    fputs(call, fp);
-    fputs("CATEGORY: ", fp);
+    ask(buffer, "Mode: (CW,SSB,RTTY,MIXED)");
+    fprintf(fp, "CATEGORY-MODE: %s\n", buffer);
 
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78,
-	    "Cat.:(SINGLE-OP, SINGLE-OP-ASSISTED,MULTI-ONE,MULTI-TWO,MULTI-MULTI,CHECKLOG)");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "Category-Operator:(SINGLE-OP, MULTI-OP, CHECKLOG)");
+    fprintf(fp, "CATEGORY-OPERATOR: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, " ");
-    fputs(buffer, fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "Bands:(ALL,160M,80M,40M,20M,15M,10M)");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "POWER: (HIGH,LOW,QRP)");
+    fprintf(fp, "CATEGORY-POWER: %s\n", buffer);
+    
+    ask(buffer, "Category-Station: (FIXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL");
+    if (*buffer != '\0')
+	fprintf(fp, "CATEGORY-STATION: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, " ");
-    fputs(buffer, fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "POWER: (HIGH,LOW,QRP)");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "Category-Time: (6-HOURS, 12-HOURS, 24-HOURS)");
+    if (*buffer != '\0')
+	fprintf(fp, "CATEGORY-TIME: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, " ");
-    fputs(buffer, fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "Mode: (CW,SSB,MIXED)");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "Transmitter: (ONE, TWO, LIMITED, UNLIMITED, SWL)");
+    if (*buffer != '\0')
+	fprintf(fp, "CATEGORY-TRANSMITTER: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    fputs(buffer, fp);
-    fputs("CATEGORY-OVERLAY: ", fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78,
-	    "Overlay: (ROOKIE,BAND-LIMITED,TB-WIRES,OVER-50,HQ)");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "Category-Overlay: (ROOKIE, TB-WIRES, NOVICE-TECH, OVER-50)");
+    if (*buffer != '\0')
+	fprintf(fp, "CATEGORY-OVERLAY: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    fputs(buffer, fp);
 
     if (wpx == 1)
 	sprintf(buffer, "%d\n", total * (nr_of_px));
@@ -160,121 +109,41 @@ int getsummary(void)
     if (serial_section_mult == 1)
 	sprintf(buffer, "%d\n", totalmults * total);
 
-    fputs("CLAIMED-SCORE: ", fp);
-    fputs(buffer, fp);
-    fputs("CLUB: ", fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "Club: ");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    fprintf(fp, "CLAIMED-SCORE: %s", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    fputs(buffer, fp);
-    fputs("CONTEST: ", fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78,
-	    "Contest: (CQ-WW-CW/SSB, CQ-WPX-CW/SSB, ARRL-DX-CW/SSB)");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "Club: ");
+    if (*buffer != '\0')
+	fprintf(fp, "CLUB: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    fputs(buffer, fp);
-// LU4HKN mod.
-    strcpy(buffer, "CREATED-BY: tlf-");
-    strcat(buffer, VERSION);
-    strcat(buffer, "\n");
-    fputs(buffer, fp);
-    // end
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "Name: ");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "Location: (section, IOTA name, RDA, State/Province, ...)");
+    if (*buffer != '\0')
+	fprintf(fp, "LOCATION: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    fputs("NAME: ", fp);
-    fputs(buffer, fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "ADDRESS: ");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    fputs("ADDRESS: ", fp);
-    fputs(buffer, fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "ADDRESS(2): ");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "Operator name: ");
+    fprintf(fp, "NAME: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    fputs("ADDRESS: ", fp);
-    fputs(buffer, fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "ADDRESS(3): ");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "ADDRESS: ");
+    fprintf(fp, "ADDRESS: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    fputs("ADDRESS: ", fp);
-    fputs(buffer, fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "Operators: ");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "ADDRESS(2): ");
+    if (*buffer != '\0')
+	fprintf(fp, "ADDRESS: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    fputs("OPERATORS: ", fp);
-    fputs(buffer, fp);
-    attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78,
-	    "SOAPBOX: (use any text editor to include more lines)");
-    attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    ask(buffer, "ADDRESS(3): (use any text editor to insert more ADDRESS lines)");
+    if (*buffer != '\0')
+	fprintf(fp, "ADDRESS: %s\n", buffer);
 
-    echo();
-    getnstr(buffer, 78);
-    noecho();
-    strcat(buffer, "\n");
-    fputs("SOAPBOX: ", fp);
-    fputs(buffer, fp);
+    ask(buffer, "List of Operators: (space delimited)");
+    fprintf(fp, "OPERATORS: %s\n", buffer);
 
-    fclose(fp);
+    ask(buffer, "OFFTIME: (yyyy-mm-dd hhmm yyyy-mm-dd hhmm)"); 
+    if (*buffer != '\0')
+	fprintf(fp, "OFFTIME: %s\n", buffer);
+
+    ask(buffer, "SOAPBOX: (use any text editor to include more lines)");
+    if (*buffer != '\0')
+	fprintf(fp, "SOAPBOX: %s\n", buffer);
+
     return (0);
 }

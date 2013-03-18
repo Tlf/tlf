@@ -24,6 +24,7 @@
 
 #include "changepars.h"
 #include "sendbuf.h"
+#include "rules.h"
 #include <termios.h>
 #include <glib.h>
 
@@ -288,11 +289,13 @@ int changepars(void)
 	}
     case 18:			/*  WRITE CABRILLO FILE   */
 	{
+	    int old_cluster = cluster;
+	    cluster = NOCLUSTER;
+
 	    write_cabrillo();
 
-	    mvprintw(13, 29, "writing  cabrillo file");
-	    refreshp();
-	    sleep(1);
+	    cluster = old_cluster;
+
 
 	    break;
 	}
@@ -366,6 +369,7 @@ int changepars(void)
 	    rc = system(cmdstring);
 
 	    read_logcfg();
+	    read_rules();	/* also reread rules file */
 	    writeparas();
 	    mvprintw(24, 0, "Logcfg.dat loaded, parameters written..");
 	    refreshp();
@@ -578,9 +582,6 @@ int changepars(void)
     case 40:			/* ADIF */	
 	{
 	    write_adif();
-	    mvprintw(13, 29, "writing adif file");
-	    refreshp();
-	    sleep(1);
 
 	    break;
 	}

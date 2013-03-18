@@ -1,7 +1,7 @@
 New cabrillo handling
 =====================
 
-In last years cabrillo format became the de facto standard to sent in your
+In last years the cabrillo format became the de facto standard to sent in your
 contest results. It showed that the cabrillo implementation in TLF before 1.2.x
 had some severe limitations:
 
@@ -24,8 +24,8 @@ WORKING PRINCIPLE
 The format descriptions are contained in a file 'cabrillo.fmt' in the
 /usr(/local)/share directory. It provides cabrillo format descriptions for
 common contests. All descriptions are named and you have to specify which one
-has to be used with a configuration statement in logcfg.dat or (better) in the
-contest rule file with the following syntax:
+has to be used with a statement in logcfg.dat or (better) in the contest rule 
+file with the following syntax:
 
 CABRILLO=<formatname>
 
@@ -38,18 +38,21 @@ found at all TLF will complain with an error message.
 CABILLO.FMT
 ===========
 
-The format of cabrillo.fmt is as follows: 
+The format of cabrillo.fmt entries is as follows: 
 
 * The file contains groups of lines which are interpreted as key-value pairs.
 * Each group describes a possible cabrillo format and has to be started by a
   line containing the <formatname> in square brackets.
-* At the moment only one key word (QSO=...) is supported.
+* At the moment only one keyword (QSO=...) is supported.
 * Lines beginning with a '#' are interpreted as comments.
 * The 'QSO=' key has to be followed by a list of string, number pairs
   separated by semicolons.
   Each pair specify one item to put into the QSO: line of the cabrillo file. 
-  All items are separated by an additional space character.
-  The following items are supported:
+  The name of the item has to be followed by a comma ',' and a number 
+  specifying the character width of that field in the QSO: line. Items 
+  which are to wide will be truncated to that width. 
+
+  The following items names are supported:
 
   FREQ    The working frequency.
   MODE    Mode of operation ('CW', 'PH',...)
@@ -68,9 +71,8 @@ The format of cabrillo.fmt is as follows:
   EXC4    Fourth word of the received exchange
   TX      Number of the TX (for cqww or other contests).
 
-  The name of the item has to be followed by a comma ',' and a number 
-  specifying the character width of that field in the QSO: line. Items 
-  which are to wide will be limited to that width. 
+  All items represent one column in the resulting cabrillo log file. All 
+  entries are separated by an additional space character.
 
 Example
 =======

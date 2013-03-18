@@ -24,5 +24,7 @@
 #include "nicebox.h"
 #include "tlf.h"
 
-int getsummary(void);
+int getsummary(FILE *fp);
+void ask(char *buffer, char *what);
+
 
