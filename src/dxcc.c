@@ -36,7 +36,7 @@ int prefix_count(void)
 	return prefix->len;
 }
 
-/* give pointer to dxcc_data struct at 'index' */
+/* give pointer to prefix struct at 'index' */
 prefix_data *prefix_by_index(int index)
 {
 	return (prefix_data *)g_ptr_array_index(prefix, index);

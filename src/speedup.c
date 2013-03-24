@@ -34,7 +34,6 @@ int speedup(void)
     extern char speedstr[];
     extern int trxmode;
     extern int keyerport;
-    extern int cfd;
     extern char buffer[];
 
     int retval = 0;

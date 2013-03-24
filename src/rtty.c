@@ -130,7 +130,6 @@ int show_rtty(void)
 
     extern int use_rxvt;
     extern int trxmode;
-//extern char hiscall[];
     extern int miniterm;
     extern int commentfield;
     extern char comment[];
@@ -169,7 +168,6 @@ int show_rtty(void)
 
 int rx_rtty()
 {
-    extern char hiscall[];
     extern int miniterm;
     extern int keyerport;
 

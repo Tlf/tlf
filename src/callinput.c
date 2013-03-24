@@ -673,8 +673,8 @@ char callinput(void)
 	    {
 		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
-		    mvprintw(12, curx - 1, " ");
-		    mvprintw(12, curx - 1, "");
+		    mvprintw(cury, curx - 1, " ");
+		    mvprintw(cury, curx - 1, "");
 		    hiscall[strlen(hiscall) - 1] = '\0';
 
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */

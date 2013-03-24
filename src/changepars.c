@@ -745,7 +745,7 @@ int networkinfo(void)
     extern char rigportname[];
     extern char logfile[];
 
-    int i, j, inode, key;
+    int i, j, inode;
 
     clear();
 
@@ -792,7 +792,7 @@ int networkinfo(void)
     mvprintw(23, 22, " --- Press a key to continue --- ");
     refreshp();
 
-    key = getch();
+    getch();
 
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
@@ -822,7 +822,7 @@ int multiplierinfo(void)
     extern int multarray_nr;
     extern GPtrArray *mults_possible;
 
-    int j, k, key, vert, hor, cnt, found;
+    int j, k, vert, hor, cnt, found;
     char mprint[50];
     char chmult[4];
     char ch2mult[4];
@@ -959,7 +959,7 @@ int multiplierinfo(void)
 
     refreshp();
 
-    key = getch();
+    getch();
 
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
