@@ -95,10 +95,16 @@ frequency
 		strcat(buffer, " 3500");
 	    else if (buf[1] == '4')
 		strcat(buffer, " 7000");
+	    else if (buf[1] == '3')
+		strcat(buffer, "10100");
 	    else if (buf[1] == '2')
 		strcat(buffer, "14000");
 	    else if (buf[1] == '1' && buf[2] == '5')
 		strcat(buffer, "21000");
+	    else if (buf[1] == '1' && buf[2] == '7')
+		strcat(buffer, "18068");
+	    else if (buf[1] == '1' && buf[2] == '2')
+		strcat(buffer, "24890");
 	    else if (buf[1] == '1' && buf[2] == '0')
 		strcat(buffer, "28000");
 
