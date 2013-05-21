@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2012-2013	Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -460,6 +461,8 @@ int write_adif(void)
 		strcat(buffer, "<BAND:3>15M");
 	    else if (buf[1] == '1' && buf[2] == '7')
 		strcat(buffer, "<BAND:3>17M");
+	    else if (buf[1] == '1' && buf[2] == '2')
+		strcat(buffer, "<BAND:3>12M");
 	    else if (buf[1] == '1' && buf[2] == '0')
 		strcat(buffer, "<BAND:3>10M");
 
