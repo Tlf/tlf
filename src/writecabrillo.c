@@ -393,11 +393,20 @@ float band2freq(int band) {
 	case 40:
 	    freq = 7000.;
 	    break;
+	case 30:
+	    freq = 10100.;
+	    break;
 	case 20:
 	    freq = 14000.;
 	    break;
+	case 17:
+	    freq = 18068;
+	    break;
 	case 15:
 	    freq = 21000.;
+	    break;
+	case 12:
+	    freq = 24890;
 	    break;
 	case 10:
 	    freq = 28000.;
