@@ -234,10 +234,9 @@ void edit_last(void)
 
 	    if ((j >= 32) && (j < 97)) {
 		editbuffer[b] = j;
-		mvprintw(7 + editline, 0, editbuffer);
 		if ((b < strlen(editbuffer) - 2) && (b < 80))
 		    b++;
-		mvprintw(7 + editline, b, "");
+		highlite_line(editline, editbuffer, b);
 	    }
 	}
     }
