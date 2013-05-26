@@ -46,7 +46,7 @@ static void highlite_line(int row, char *line, int column)
 /* reset the highlite state */
 static void unhighlite_line(int row, char *line)
 {
-    char ln[81];
+    char ln[NR_COLS+1];
 
     g_strlcpy (ln, line, NR_COLS+1);
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -102,19 +102,17 @@ void edit_last(void)
 
     /* start with last QSO */
     get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
-    highlite_line(editline, editbuffer, b);
 
     while ((j != 27) && (j != '\n')) {
+	highlite_line(editline, editbuffer, b);
 
 	j = onechar();
 
 	if (j == 1) {		// ctrl A, beginning of line
 	    b = 1;
-	    highlite_line(editline, editbuffer, b);
 
 	} else if (j == 5) {	// ctrl E, end of line
 	    b = 77;
-	    highlite_line(editline, editbuffer, b);
 
 	} else if (j == 9) {	// TAB, next field
 	    if (b < 17)
@@ -130,15 +128,12 @@ void edit_last(void)
 	    else 
 		b = 1;
 
-	    highlite_line(editline, editbuffer, b);
-
 	} else if (j == 152) {	// up
 	    if (editline > (NR_LINES - nr_qsos) && (editline > 0)) {
 		unhighlite_line(editline, editbuffer);
 		putback_qso (nr_qsos - (NR_LINES -editline), editbuffer);
 		editline--;
 		get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
-		highlite_line(editline, editbuffer, b);
 	    } else {
 		logview();
 		j = 27;
@@ -151,81 +146,52 @@ void edit_last(void)
 		putback_qso (nr_qsos - (NR_LINES -editline), editbuffer);
 		editline++;
 		get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
-		highlite_line(editline, editbuffer, b);
 	    } else
 		j = 27;		/* escape */
 
 	} else if (j == 155) {  // left
-
 	    if (b >= 1)
 		b--;
-
-	    highlite_line(editline, editbuffer, b);
 
 	} else if (j == 154) {	// right
 	    if (b < 79)
 		b++;
 
-	    highlite_line(editline, editbuffer, b);
-
 	} else if ((j == 160) && (b >= 0) && (b < 28)) {	// insert
-
 	    for (k = 28; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
-
-	    highlite_line(editline, editbuffer, b);
 
 	} else if ((j == 160) && (b >= 29) && (b < 39)) {	// insert  call
 	    for (k = 39; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	    highlite_line(editline, editbuffer, b);
-
 	} else if ((j == 160) && (b >= 54) && (b < 64)) {	// insert
-
 	    for (k = 64; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	    highlite_line(editline, editbuffer, b);
-
 	} else if ((j == 160) && (b >= 68) && (b < 76)) {	// insert
-
 	    for (k = 76; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	    highlite_line(editline, editbuffer, b);
-
 	} else if ((j == 161) && (b >= 1) && (b < 28)) {	// delete
-
 	    for (k = b; k < 28; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	    highlite_line(editline, editbuffer, b);
-
 	} else if ((j == 161) && (b >= 29) && (b < 39)) {	// delete
-
 	    for (k = b; k < 39; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	    highlite_line(editline, editbuffer, b);
-
 	} else if ((j == 161) && (b >= 68) && (b < 76)) {	// delete
-
 	    for (k = b; k < 76; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	    highlite_line(editline, editbuffer, b);
-
 	} else if ((j == 161) && (b >= 54) && (b < 64)) {	// delete
-
 	    for (k = b; k < 64; k++)
 		editbuffer[k] = editbuffer[k + 1];
-
-	    highlite_line(editline, editbuffer, b);
 
 	} else if (j != 27) {
 
@@ -236,13 +202,12 @@ void edit_last(void)
 		editbuffer[b] = j;
 		if ((b < strlen(editbuffer) - 2) && (b < 80))
 		    b++;
-		highlite_line(editline, editbuffer, b);
 	    }
 	}
     }
 
     unhighlite_line(editline, editbuffer);
-    putback_qso (nr_qsos - (NR_LINES -editline), editbuffer);
+    putback_qso (nr_qsos - (NR_LINES - editline), editbuffer);
 
     scroll_log();
 
