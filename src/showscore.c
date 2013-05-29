@@ -27,6 +27,15 @@
 
 void printfield (int x, int y, int number);
 
+/* show summary line */
+void show_summary( int points, int multi )
+{
+    mvprintw(5, 45, "                                   ");
+    mvprintw(5, 45, "Pts: %d  Mul: %d Score: %d", 
+	points, multi, points * multi);
+}
+
+
 int showscore(void)
 {
 
@@ -63,6 +72,7 @@ int showscore(void)
 
     if (showscore_flag == 1) {
 
+	/* show score per band */
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	if ((bandinx != BANDINDEX_30) && (bandinx != BANDINDEX_17)
@@ -181,10 +191,11 @@ int showscore(void)
 	    printfield(3, 75, countryscore[5]);
 	}
 
+	/* show score summary */
 	if (sprint == 1) {
-
 	    mvprintw(5, 45, "Score: %d", total);
 	}
+
 	if (arrlss == 1) {
 
 	    mvprintw(5, 45, "Sections: %d      Score: %d", multarray_nr,
@@ -202,15 +213,11 @@ int showscore(void)
 	    }
 	    totalmults = totalcountries + totalzones;
 
-	    mvprintw(5, 45, "                                   ");
-	    mvprintw(5, 45, "Pts: %d  Mul: %d Score: %d", total,
-		     totalmults, totalmults * total);
-
+	    show_summary( total, totalmults );
 	}
 
 	if (arrldx_usa == 1) {
 
-	    totalzones = 0;
 	    totalcountries = 0;
 
 	    for (n = 0; n <= 5; n++) {
@@ -218,10 +225,7 @@ int showscore(void)
 	    }
 	    totalmults = totalcountries;
 
-	    mvprintw(5, 45, "                                   ");
-	    mvprintw(5, 45, "Pts: %d  Mul: %d Score: %d", total,
-		     totalmults, totalmults * total);
-
+	    show_summary( total, totalmults );
 	}
 
 	if (arrl_fd == 1) {
@@ -230,14 +234,11 @@ int showscore(void)
 	    } else {
 		totalmults = 1;
 	    }
-	    mvprintw(5, 45, "                                   ");
-	    mvprintw(5, 45, "Pts: %d  Mul: %d Score: %d", total,
-		     totalmults, totalmults * total);
+	    show_summary( total, totalmults );
 	}
 
 	if (universal == 1 && country_mult == 1) {
 
-	    totalzones = 0;
 	    totalcountries = 0;
 
 	    for (n = 0; n <= 5; n++) {
@@ -245,23 +246,17 @@ int showscore(void)
 	    }
 	    totalmults = totalcountries;
 
-	    mvprintw(5, 45, "                                   ");
-	    mvprintw(5, 45, "Pts: %d  Mul: %d Score: %d", total,
-		     totalmults, totalmults * total);
-
+	    show_summary( total, totalmults );
 	}
 
 	if (universal == 1 && multlist == 1 && arrlss != 1) {
 
-	    mvprintw(5, 45, "                                   ");
-	    mvprintw(5, 45, "Total: %d  Mul: %d Score: %d", total,
-		     totalmults, totalmults * total);
-
+	    /* FIXME: Who provides totalmults here? */
+	    show_summary( total, totalmults );
 	}
 
 	if (pacc_pa_flg == 1) {
 
-	    totalzones = 0;
 	    totalcountries = 0;
 
 	    for (n = 0; n <= 5; n++) {
@@ -269,19 +264,14 @@ int showscore(void)
 	    }
 	    totalmults = totalcountries;
 
-	    mvprintw(5, 45, "                                   ");
-	    mvprintw(5, 45, "Pts: %d  Mul: %d Score: %d", total,
-		     totalmults, totalmults * total);
-
+	    show_summary( total, totalmults );
 	}
 
 	if (wysiwyg_once == 1) {
 
 	    totalmults = multarray_nr;
-	    mvprintw(5, 45, "                                   ");
-	    mvprintw(5, 45, "Pts: %d  Mul: %d Score: %d", total,
-		     totalmults, totalmults * total);
 
+	    show_summary( total, totalmults );
 	}
 
 	if ((wysiwyg_multi == 1)
@@ -293,11 +283,10 @@ int showscore(void)
 		multscore[BANDINDEX_160] + multscore[BANDINDEX_80] +
 		multscore[BANDINDEX_40] + multscore[BANDINDEX_20] +
 		multscore[BANDINDEX_15] + multscore[BANDINDEX_10];
-	    mvprintw(5, 45, "                                   ");
-	    mvprintw(5, 45, "Pts: %d  Mul: %d Score: %d", total,
-		     totalmults, totalmults * total);
 
+	    show_summary( total, totalmults );
 	}
+
 	if (dx_arrlsections == 1) {
 	    totalmults =
 		multscore[BANDINDEX_160] + multscore[BANDINDEX_80] +
@@ -307,18 +296,15 @@ int showscore(void)
 		totalmults + countryscore[0] + countryscore[1] +
 		countryscore[2] + countryscore[3] + countryscore[4] +
 		countryscore[5];
-	    mvprintw(5, 45, "                                   ");
-	    mvprintw(5, 45, "Pts: %d  Mul: %d Score: %d", total,
-		     totalmults, totalmults * total);
 
+	    show_summary( total, totalmults );
 	}
 
 	if (wpx == 1) {		/* wpx */
-	    mvprintw(4, 45, "                                   ");
-	    mvprintw(5, 45, "                                   ");
-	    mvprintw(5, 47, "PX:%d  Pts:%d  Score: %d", nr_of_px, total,
-		     (total * (nr_of_px)));
 	    mvhline(3, 45, ACS_HLINE, 35);
+	    mvprintw(4, 45, "                                   ");
+
+	    show_summary( total, nr_of_px );
 
 	    if (nr_of_px >= 2) {
 		p = (qsonum - 1) / (nr_of_px);
@@ -331,6 +317,7 @@ int showscore(void)
 	}
 
 
+	/* show statistics */
 	attron(COLOR_PAIR(C_HEADER));
 	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1) || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
 	    if (wpx == 1)
@@ -350,6 +337,7 @@ int showscore(void)
 	    }
 	}
 
+	/* show active band */
 	attrset(COLOR_PAIR(C_DUPE));
 
 	switch (bandinx) {
