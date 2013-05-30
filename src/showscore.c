@@ -24,6 +24,8 @@
 
 #include "globalvars.h"
 #include "showscore.h"
+#include <assert.h>
+
 
 #define START_COL 45	/* start display in these column */
 
@@ -47,6 +49,7 @@ static int bands[NBANDS] =
 
 void printfield (int x, int y, int number);
 
+
 /* show summary line */
 void show_summary( int points, int multi )
 {
@@ -55,6 +58,7 @@ void show_summary( int points, int multi )
     mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d", 
 	points, multi, points * multi);
 }
+
 
 /* show header with active band and number of QSOs.
  * Use the list of bandindices in 'bi' for that */
@@ -89,6 +93,99 @@ void display_header(int *bi)
 
 
 
+/* get total number of points */
+int get_nr_of_points()
+{
+    return total;
+}
+
+
+/* get total number of multis */
+int get_nr_of_mults()
+{
+    extern int fixedmult;
+    extern int sprint;
+    extern int multlist;
+    extern int multscore[];
+
+    int n;
+    int totalzones;
+    int totalcountries;
+    int totalmults;
+
+    /* precalculate summaries */
+    totalzones = 0;
+    totalcountries = 0;
+    totalmults = 0;
+
+    for (n = 0; n < 6; n++) {
+	totalzones += zonescore[n];
+	totalcountries += countryscore[n];
+	totalmults += multscore[bi_normal[n]];
+    }
+
+    if (sprint == 1) {
+	/* no multis used */
+	return 1;
+    }
+    else if (arrlss == 1) {
+
+	return multarray_nr;
+    }
+    else if (cqww == 1) {
+
+	return totalcountries + totalzones;
+    }
+    else if (arrldx_usa == 1) {
+
+	return totalcountries;
+    }
+    else if (arrl_fd == 1) {
+	if (fixedmult != 0) {
+	    return fixedmult;
+	} else {
+	    return 1;
+	}
+    }
+    else if (universal == 1 && country_mult == 1) {
+
+	return totalcountries;
+    }
+    else if (universal == 1 && multlist == 1 && arrlss != 1) {
+
+	/* FIXME: Who provides totalmults here? */
+	return totalmults ;
+    }
+    else if (pacc_pa_flg == 1) {
+
+	return totalcountries;
+    }
+    else if (wysiwyg_once == 1) {
+
+	return multarray_nr;
+    }
+    else if ((wysiwyg_multi == 1)
+	|| (serial_section_mult == 1)
+	|| (serial_grid4_mult == 1)
+	|| (sectn_mult == 1)) {
+
+	return totalmults;
+    }
+    else if (dx_arrlsections == 1) {
+
+	return totalmults + totalcountries;
+    }
+    else if (wpx == 1) {
+
+	return nr_of_px;
+    }
+    else 
+	/* should never reach that point */
+	assert(1 == 0);
+	return 1;
+}
+
+
 int showscore(void)
 {
 
@@ -103,12 +200,9 @@ int showscore(void)
     extern int country_mult;
     extern int wysiwyg_once;
     extern int wysiwyg_multi;
-    extern int fixedmult;
     extern int zonescore[6];
     extern int countryscore[6];
     extern int totalmults;
-    extern int totalcountries;
-    extern int totalzones;
     extern int nr_of_px;
     extern int qsonum;
     extern int total;
@@ -116,12 +210,11 @@ int showscore(void)
     extern int sprint;
     extern int bandinx;
     extern int multscore[];
-    extern int multlist;
     extern int serial_section_mult;
     extern int sectn_mult;
     extern int dx_arrlsections;
 
-    int i, p, q, r, n, l10;
+    int i, p, q, r, l10;
 
     if (showscore_flag == 1) {
 
@@ -136,7 +229,6 @@ int showscore(void)
 	    display_header(bi_warc);
 
 	}
-
 
 	/* show score per band */
 	if ((wysiwyg_multi == 1)
@@ -203,117 +295,19 @@ int showscore(void)
 
 	/* show score summary */
 	if (sprint == 1) {
-	    mvprintw(5, START_COL, "Score: %d", total);
+
+	    mvprintw(5, START_COL, "Score: %d", get_nr_of_points() );
+	}
+	else {
+
+	    show_summary( get_nr_of_points(), get_nr_of_mults() );
 	}
 
-	if (arrlss == 1) {
-
-	    show_summary( total, multarray_nr );
-	}
-
-	if (cqww == 1) {
-
-	    totalzones = 0;
-	    totalcountries = 0;
-
-	    for (n = 0; n <= 5; n++) {
-		totalzones = totalzones + zonescore[n];
-		totalcountries = totalcountries + countryscore[n];
-	    }
-	    totalmults = totalcountries + totalzones;
-
-	    show_summary( total, totalmults );
-	}
-
-	if (arrldx_usa == 1) {
-
-	    totalcountries = 0;
-
-	    for (n = 0; n <= 5; n++) {
-		totalcountries = totalcountries + countryscore[n];
-	    }
-	    totalmults = totalcountries;
-
-	    show_summary( total, totalmults );
-	}
-
-	if (arrl_fd == 1) {
-	    if (fixedmult != 0) {
-		totalmults = fixedmult;
-	    } else {
-		totalmults = 1;
-	    }
-	    show_summary( total, totalmults );
-	}
-
-	if (universal == 1 && country_mult == 1) {
-
-	    totalcountries = 0;
-
-	    for (n = 0; n <= 5; n++) {
-		totalcountries = totalcountries + countryscore[n];
-	    }
-	    totalmults = totalcountries;
-
-	    show_summary( total, totalmults );
-	}
-
-	if (universal == 1 && multlist == 1 && arrlss != 1) {
-
-	    /* FIXME: Who provides totalmults here? */
-	    show_summary( total, totalmults );
-	}
-
-	if (pacc_pa_flg == 1) {
-
-	    totalcountries = 0;
-
-	    for (n = 0; n <= 5; n++) {
-		totalcountries = totalcountries + countryscore[n];
-	    }
-	    totalmults = totalcountries;
-
-	    show_summary( total, totalmults );
-	}
-
-	if (wysiwyg_once == 1) {
-
-	    totalmults = multarray_nr;
-
-	    show_summary( total, totalmults );
-	}
-
-	if ((wysiwyg_multi == 1)
-	    || (serial_section_mult == 1)
-	    || (serial_grid4_mult == 1)
-	    || (sectn_mult == 1)) {
-
-	    totalmults =
-		multscore[BANDINDEX_160] + multscore[BANDINDEX_80] +
-		multscore[BANDINDEX_40] + multscore[BANDINDEX_20] +
-		multscore[BANDINDEX_15] + multscore[BANDINDEX_10];
-
-	    show_summary( total, totalmults );
-	}
-
-	if (dx_arrlsections == 1) {
-	    totalmults =
-		multscore[BANDINDEX_160] + multscore[BANDINDEX_80] +
-		multscore[BANDINDEX_40] + multscore[BANDINDEX_20] +
-		multscore[BANDINDEX_15] + multscore[BANDINDEX_10];
-	    totalmults =
-		totalmults + countryscore[0] + countryscore[1] +
-		countryscore[2] + countryscore[3] + countryscore[4] +
-		countryscore[5];
-
-	    show_summary( total, totalmults );
-	}
 
 	if (wpx == 1) {		/* wpx */
 	    mvhline(3, START_COL, ACS_HLINE, 35);
 	    mvprintw(4, START_COL, "                                   ");
 
-	    show_summary( total, nr_of_px );
 
 	    if (nr_of_px >= 2) {
 		p = (qsonum - 1) / (nr_of_px);
@@ -329,8 +323,8 @@ int showscore(void)
 	/* show statistics */
 	attron(COLOR_PAIR(C_HEADER));
 	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1) || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
-	    if (wpx == 1)
-		totalmults = nr_of_px;
+
+	    totalmults = get_nr_of_mults();
 	    /** \todo fix calculation of Q/M */
 	    if (totalmults >= 2)
 		p = (total / totalmults);

@@ -22,4 +22,8 @@
 #include "last10.h"
 #include "printcall.h"
 
+/* get total number of points */
+int get_nr_of_points();
+/* get total number of multis */
+int get_nr_of_mults();
 int  showscore(void);
