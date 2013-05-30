@@ -198,8 +198,7 @@ int showscore(void)
 
 	if (arrlss == 1) {
 
-	    mvprintw(5, 45, "Sections: %d      Score: %d", multarray_nr,
-		     multarray_nr * total);
+	    show_summary( total, multarray_nr );
 	}
 
 	if (cqww == 1) {
