@@ -25,13 +25,31 @@
 #include "globalvars.h"
 #include "showscore.h"
 
+#define START_COL 45	/* start display in these column */
+
+/* list of columns to display score for each band */
+static int band_cols[6] =
+	{ 50, 55, 60, 65, 70, 75 };
+
+/* list of BANDINDEX entries to show in each column 
+ * first  - for normal contest bands
+ * second - if in warc band */
+static int bandindex_normal[6] =
+	{ BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
+	  BANDINDEX_20,  BANDINDEX_15, BANDINDEX_10 };
+static int bandindex_warc[6] =
+	{ BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
+	  BANDINDEX_30,  BANDINDEX_17, BANDINDEX_12 };
+
+
 void printfield (int x, int y, int number);
 
 /* show summary line */
 void show_summary( int points, int multi )
 {
-    mvprintw(5, 45, "                                   ");
-    mvprintw(5, 45, "Pts: %d  Mul: %d Score: %d", 
+    mvprintw(5, START_COL, "                                   ");
+    /* TODO: respect field boundaries for large numbers */ 
+    mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d", 
 	points, multi, points * multi);
 }
 
@@ -68,132 +86,105 @@ int showscore(void)
     extern int sectn_mult;
     extern int dx_arrlsections;
 
-    int p, q, r, n, l10;
+    int i, p, q, r, n, l10;
 
     if (showscore_flag == 1) {
 
-	/* show score per band */
+	/* show header and number of QSOs */
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	if ((bandinx != BANDINDEX_30) && (bandinx != BANDINDEX_17)
 	    && (bandinx != BANDINDEX_12)) {
 	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-	    mvprintw(1, 45, "Band   160   80   40   20   15   10");
-	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-	    mvprintw(2, 45, "QSO's ");
+	    mvprintw(1, START_COL, "Band   160   80   40   20   15   10");
 
-	    printfield(2, 50, band_score[BANDINDEX_160]);
-	    printfield(2, 55, band_score[BANDINDEX_80]);
-	    printfield(2, 60, band_score[BANDINDEX_40]);
-	    printfield(2, 65, band_score[BANDINDEX_20]);
-	    printfield(2, 70, band_score[BANDINDEX_15]);
-	    printfield(2, 75, band_score[BANDINDEX_10]);
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+	    mvprintw(2, START_COL, "QSO's ");
+
+	    for (i = 0; i < 6; i++) {
+	    	printfield(2, band_cols[i], band_score[bandindex_normal[i]]);
+	    }
 	} else {
 	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-	    mvprintw(1, 45, "Band   160   80   40   30   17   12");
+	    mvprintw(1, START_COL, "Band   160   80   40   30   17   12");
+
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-	    mvprintw(2, 45, "QSO's ");
+	    mvprintw(2, START_COL, "QSO's ");
 
-	    printfield(2, 50, band_score[BANDINDEX_160]);
-	    printfield(2, 55, band_score[BANDINDEX_80]);
-	    printfield(2, 60, band_score[BANDINDEX_40]);
-	    printfield(2, 65, band_score[BANDINDEX_30]);
-	    printfield(2, 70, band_score[BANDINDEX_17]);
-	    printfield(2, 75, band_score[BANDINDEX_12]);
-
+	    for (i = 0; i < 6; i++) {
+	    	printfield(2, band_cols[i], band_score[bandindex_warc[i]]);
+	    }
 	}
-	mvprintw(3, 45, "                                   ");
-	mvprintw(4, 45, "                                   ");
-	mvprintw(5, 45, "                                   ");
+	mvprintw(3, START_COL, "                                   ");
+	mvprintw(4, START_COL, "                                   ");
+	mvprintw(5, START_COL, "                                   ");
 
+	/* show score per band */
 	if ((wysiwyg_multi == 1)
 	    || (serial_section_mult == 1)
 	    || (serial_grid4_mult == 1)
 	    || (sectn_mult == 1)) {
-	    mvprintw(3, 45, "Mult ");
-	    printfield(3, 50, multscore[BANDINDEX_160]);
-	    printfield(3, 55, multscore[BANDINDEX_80]);
-	    printfield(3, 60, multscore[BANDINDEX_40]);
-	    printfield(3, 65, multscore[BANDINDEX_20]);
-	    printfield(3, 70, multscore[BANDINDEX_15]);
-	    printfield(3, 75, multscore[BANDINDEX_10]);
 
+	    mvprintw(3, START_COL, "Mult ");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(3, band_cols[i], multscore[bandindex_normal[i]]);
+	    }
 	}
-	if (dx_arrlsections == 1) {
-	    mvprintw(3, 45, "Cty  ");
-	    printfield(3, 50, countryscore[0]);
-	    printfield(3, 55, countryscore[1]);
-	    printfield(3, 60, countryscore[2]);
-	    printfield(3, 66, countryscore[3]);
-	    printfield(3, 70, countryscore[4]);
-	    printfield(3, 75, countryscore[5]);
-	    mvprintw(4, 45, "Sect");
-	    printfield(4, 50, multscore[BANDINDEX_160]);
-	    printfield(4, 55, multscore[BANDINDEX_80]);
-	    printfield(4, 60, multscore[BANDINDEX_40]);
-	    printfield(4, 65, multscore[BANDINDEX_20]);
-	    printfield(4, 70, multscore[BANDINDEX_15]);
-	    printfield(4, 75, multscore[BANDINDEX_10]);
 
+	if (dx_arrlsections == 1) {
+
+	    mvprintw(3, START_COL, "Cty  ");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(3, band_cols[i], countryscore[i]);
+	    }
+
+	    mvprintw(4, START_COL, "Sect");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(4, band_cols[i], multscore[bandindex_normal[i]]);
+	    }
 	}
 
 	if (cqww == 1) {
 
-	    mvprintw(3, 45, "Cty  ");
-	    printfield(3, 50, countryscore[0]);
-	    printfield(3, 55, countryscore[1]);
-	    printfield(3, 60, countryscore[2]);
-	    printfield(3, 65, countryscore[3]);
-	    printfield(3, 70, countryscore[4]);
-	    printfield(3, 75, countryscore[5]);
+	    mvprintw(3, START_COL, "Cty  ");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(3, band_cols[i], countryscore[i]);
+	    }
 
-	    mvprintw(4, 45, "Zone ");
-	    printfield(4, 50, zonescore[0]);
-	    printfield(4, 55, zonescore[1]);
-	    printfield(4, 60, zonescore[2]);
-	    printfield(4, 65, zonescore[3]);
-	    printfield(4, 70, zonescore[4]);
-	    printfield(4, 75, zonescore[5]);
-
+	    mvprintw(4, START_COL, "Zone ");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(4, band_cols[i], zonescore[i]);
+	    }
 	}
 
 	if (arrldx_usa == 1) {
 
-	    mvprintw(3, 45, "Cty  ");
-	    printfield(3, 50, countryscore[0]);
-	    printfield(3, 55, countryscore[1]);
-	    printfield(3, 60, countryscore[2]);
-	    printfield(3, 65, countryscore[3]);
-	    printfield(3, 70, countryscore[4]);
-	    printfield(3, 75, countryscore[5]);
+	    mvprintw(3, START_COL, "Cty  ");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(3, band_cols[i], countryscore[i]);
+	    }
 	}
 
-	if (universal == 1) {
-	    if (country_mult == 1) {
-		mvprintw(3, 45, "Cty  ");
-		printfield(3, 50, countryscore[0]);
-		printfield(3, 55, countryscore[1]);
-		printfield(3, 60, countryscore[2]);
-		printfield(3, 65, countryscore[3]);
-		printfield(3, 70, countryscore[4]);
-		printfield(3, 75, countryscore[5]);
+	if (universal == 1 && country_mult == 1) {
+
+	    mvprintw(3, START_COL, "Cty  ");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(3, band_cols[i], countryscore[i]);
 	    }
 	}
 
 	if (pacc_pa_flg == 1) {
 
-	    mvprintw(3, 45, "Cty  ");
-	    printfield(3, 50, countryscore[0]);
-	    printfield(3, 55, countryscore[1]);
-	    printfield(3, 60, countryscore[2]);
-	    printfield(3, 65, countryscore[3]);
-	    printfield(3, 70, countryscore[4]);
-	    printfield(3, 75, countryscore[5]);
+	    mvprintw(3, START_COL, "Cty  ");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(3, band_cols[i], countryscore[i]);
+	    }
 	}
+
 
 	/* show score summary */
 	if (sprint == 1) {
-	    mvprintw(5, 45, "Score: %d", total);
+	    mvprintw(5, START_COL, "Score: %d", total);
 	}
 
 	if (arrlss == 1) {
@@ -300,8 +291,8 @@ int showscore(void)
 	}
 
 	if (wpx == 1) {		/* wpx */
-	    mvhline(3, 45, ACS_HLINE, 35);
-	    mvprintw(4, 45, "                                   ");
+	    mvhline(3, START_COL, ACS_HLINE, 35);
+	    mvprintw(4, START_COL, "                                   ");
 
 	    show_summary( total, nr_of_px );
 
