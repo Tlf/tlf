@@ -34,13 +34,16 @@ static int band_cols[6] =
 /* list of BANDINDEX entries to show in each column 
  * first  - for normal contest bands
  * second - if in warc band */
-static int bandindex_normal[6] =
+static int bi_normal[6] =
 	{ BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
 	  BANDINDEX_20,  BANDINDEX_15, BANDINDEX_10 };
-static int bandindex_warc[6] =
+static int bi_warc[6] =
 	{ BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
 	  BANDINDEX_30,  BANDINDEX_17, BANDINDEX_12 };
 
+/* bands as numbers */
+static int bands[NBANDS] =
+	{ 160, 80, 40, 30, 20, 17, 15, 12, 10 };
 
 void printfield (int x, int y, int number);
 
@@ -95,31 +98,52 @@ int showscore(void)
 
 	if ((bandinx != BANDINDEX_30) && (bandinx != BANDINDEX_17)
 	    && (bandinx != BANDINDEX_12)) {
+
 	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-	    mvprintw(1, START_COL, "Band   160   80   40   20   15   10");
+	    mvprintw(1, START_COL, "Band ");
+	    for (i = 0; i < 6; i++) {
+		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+		addstr("  ");
+		if (bandinx == bi_normal[i]) {
+		    attrset(COLOR_PAIR(C_DUPE));
+		}
+		printw("%3d", bands[bi_normal[i]]);
+	    }
 
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	    mvprintw(2, START_COL, "QSO's ");
-
 	    for (i = 0; i < 6; i++) {
-	    	printfield(2, band_cols[i], band_score[bandindex_normal[i]]);
+	    	printfield(2, band_cols[i], band_score[bi_normal[i]]);
 	    }
+
 	} else {
+
 	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-	    mvprintw(1, START_COL, "Band   160   80   40   30   17   12");
+	    mvprintw(1, START_COL, "Band ");
+	    for (i = 0; i < 6; i++) {
+		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+		addstr("  ");
+		if (bandinx == bi_warc[i]) {
+		    attrset(COLOR_PAIR(C_DUPE));
+		}
+		printw("%3d", bands[bi_warc[i]]);
+	    }
 
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	    mvprintw(2, START_COL, "QSO's ");
-
 	    for (i = 0; i < 6; i++) {
-	    	printfield(2, band_cols[i], band_score[bandindex_warc[i]]);
+	    	printfield(2, band_cols[i], band_score[bi_warc[i]]);
 	    }
+
 	}
+
+
+	/* show score per band */
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	mvprintw(3, START_COL, "                                   ");
 	mvprintw(4, START_COL, "                                   ");
 	mvprintw(5, START_COL, "                                   ");
 
-	/* show score per band */
 	if ((wysiwyg_multi == 1)
 	    || (serial_section_mult == 1)
 	    || (serial_grid4_mult == 1)
@@ -127,7 +151,7 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], multscore[bandindex_normal[i]]);
+	    	printfield(3, band_cols[i], multscore[bi_normal[i]]);
 	    }
 	}
 
@@ -140,7 +164,7 @@ int showscore(void)
 
 	    mvprintw(4, START_COL, "Sect");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(4, band_cols[i], multscore[bandindex_normal[i]]);
+	    	printfield(4, band_cols[i], multscore[bi_normal[i]]);
 	    }
 	}
 
@@ -325,58 +349,6 @@ int showscore(void)
 		if (minute_timer > 0)
 		    mvprintw(6, 75, "%d", minute_timer);
 	    }
-	}
-
-	/* show active band */
-	attrset(COLOR_PAIR(C_DUPE));
-
-	switch (bandinx) {
-	case BANDINDEX_160:
-	    {
-		mvprintw(1, 52, "160");
-		break;
-	    }
-	case BANDINDEX_80:
-	    {
-		mvprintw(1, 57, " 80");
-		break;
-	    }
-	case BANDINDEX_40:
-	    {
-		mvprintw(1, 62, " 40");
-		break;
-	    }
-	case BANDINDEX_30:
-	    {
-		mvprintw(1, 67, " 30");
-		break;
-	    }
-	case BANDINDEX_20:
-	    {
-		mvprintw(1, 67, " 20");
-		break;
-	    }
-	case BANDINDEX_17:
-	    {
-		mvprintw(1, 72, " 17");
-		break;
-	    }
-	case BANDINDEX_15:
-	    {
-		mvprintw(1, 72, " 15");
-		break;
-	    }
-	case BANDINDEX_12:
-	    {
-		mvprintw(1, 77, " 12");
-		break;
-	    }
-	case BANDINDEX_10:
-	    {
-		mvprintw(1, 77, " 10");
-		break;
-	    }
-
 	}
 
 	printcall();
