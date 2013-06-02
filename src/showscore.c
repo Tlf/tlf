@@ -56,6 +56,38 @@ void show_summary( int points, int multi )
 	points, multi, points * multi);
 }
 
+/* show header with active band and number of QSOs.
+ * Use the list of bandindices in 'bi' for that */
+void display_header(int *bi)
+{
+    int i;
+
+    /* prepare header line */
+    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    mvprintw(1, START_COL, "Band ");
+    for (i = 0; i < 6; i++) {
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	addstr("  ");
+	if (bandinx == bi[i]) {		/* highlite active band */
+	    attrset(COLOR_PAIR(C_DUPE));
+	}
+	printw("%3d", bands[bi[i]]);
+    }
+
+    /* show number of QSO */
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    mvprintw(2, START_COL, "QSO's ");
+    for (i = 0; i < 6; i++) {
+	printfield(2, band_cols[i], band_score[bi[i]]);
+    }
+
+    mvprintw(3, START_COL, "                                   ");
+    mvprintw(4, START_COL, "                                   ");
+    mvprintw(5, START_COL, "                                   ");
+
+}
+
+
 
 int showscore(void)
 {
@@ -93,57 +125,20 @@ int showscore(void)
 
     if (showscore_flag == 1) {
 
-	/* show header and number of QSOs */
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-
+	/* show header with active band and number of QSOs */
 	if ((bandinx != BANDINDEX_30) && (bandinx != BANDINDEX_17)
 	    && (bandinx != BANDINDEX_12)) {
 
-	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-	    mvprintw(1, START_COL, "Band ");
-	    for (i = 0; i < 6; i++) {
-		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-		addstr("  ");
-		if (bandinx == bi_normal[i]) {
-		    attrset(COLOR_PAIR(C_DUPE));
-		}
-		printw("%3d", bands[bi_normal[i]]);
-	    }
-
-	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-	    mvprintw(2, START_COL, "QSO's ");
-	    for (i = 0; i < 6; i++) {
-	    	printfield(2, band_cols[i], band_score[bi_normal[i]]);
-	    }
+	    display_header(bi_normal);
 
 	} else {
 
-	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-	    mvprintw(1, START_COL, "Band ");
-	    for (i = 0; i < 6; i++) {
-		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-		addstr("  ");
-		if (bandinx == bi_warc[i]) {
-		    attrset(COLOR_PAIR(C_DUPE));
-		}
-		printw("%3d", bands[bi_warc[i]]);
-	    }
-
-	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-	    mvprintw(2, START_COL, "QSO's ");
-	    for (i = 0; i < 6; i++) {
-	    	printfield(2, band_cols[i], band_score[bi_warc[i]]);
-	    }
+	    display_header(bi_warc);
 
 	}
 
 
 	/* show score per band */
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-	mvprintw(3, START_COL, "                                   ");
-	mvprintw(4, START_COL, "                                   ");
-	mvprintw(5, START_COL, "                                   ");
-
 	if ((wysiwyg_multi == 1)
 	    || (serial_section_mult == 1)
 	    || (serial_grid4_mult == 1)
