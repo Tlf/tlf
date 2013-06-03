@@ -33,7 +33,7 @@ int setcontest(void)
     extern int sprint;
     extern int arrldx_usa;
     extern int dx_arrlsections;
-    extern int arrl_fd;
+    extern int arrlfd;
     extern int arrlss;
     extern int multlist;
     extern int pacc_pa_flg;
@@ -160,13 +160,13 @@ int setcontest(void)
 	searchflg = 1;
     }
 
-    if (strcmp(whichcontest, "arrl_fd") == 0) {
+    if (strcmp(whichcontest, "arrlfd") == 0) {
 //      other_flg = 1;
 	recall_mult = 1;
 	contest = 1;
 	showscore_flag = 1;
 	searchflg = 1;
-	arrl_fd = 1;
+	arrlfd = 1;
     }
 
     if (strcmp(whichcontest, "pacc_pa") == 0) {

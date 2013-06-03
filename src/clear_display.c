@@ -126,8 +126,14 @@ void clear_display(void)
 
     }
 
-    mvaddstr(12, 44, his_rst);
-    mvaddstr(12, 49, my_rst);
+    /* ARRL Field Day does not use signal reports so blank them out. */
+    if (arrlfd == 1) {
+	mvaddstr(12, 44, "   ");
+	mvaddstr(12, 49, "   ");
+    } else {
+	mvaddstr(12, 44, his_rst);
+	mvaddstr(12, 49, my_rst);
+    }
 
     if (cqww == 1) {
 	if (use_rxvt == 0)

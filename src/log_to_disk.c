@@ -64,12 +64,12 @@ int log_to_disk(int from_lan)
 	makelogline();
 
 	store_qso(logline4);
-	
+
 	// send qso to other nodes......
 	send_lan_message(LOGENTRY, logline4);
 
-	if (trx_control && (cqmode == S_P)) 	
-	    addspot();		/* add call to bandmap if in S&P and 
+	if (trx_control && (cqmode == S_P))
+	    addspot();		/* add call to bandmap if in S&P and
 				   no need to ask for frequency */
 
 	hiscall[0] = '\0';	/* reset the call  string */
@@ -126,8 +126,15 @@ int log_to_disk(int from_lan)
     attron(COLOR_PAIR(C_WINDOW));
 
     mvprintw(12, 23, qsonrstr);
-    mvprintw(12, 44, his_rst);
-    mvprintw(12, 49, my_rst);
+
+    /* ARRL Field Day does not use signal reports so blank them out. */
+    if (arrlfd == 1) {
+	mvaddstr(12, 44, "   ");
+	mvaddstr(12, 49, "   ");
+    } else {
+	mvprintw(12, 44, his_rst);
+	mvprintw(12, 49, my_rst);
+    }
 
     sync();
 

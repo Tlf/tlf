@@ -1,34 +1,34 @@
 #include "tlf.h"
 #include <glib.h>
 
-extern char qsos[MAX_QSOS][LOGLINELEN+1];// array of log lines of QSOs so far; 
-					// note that not every log line needs 
-					// to be a QSO, it could also be a 
+extern char qsos[MAX_QSOS][LOGLINELEN+1];// array of log lines of QSOs so far;
+					// note that not every log line needs
+					// to be a QSO, it could also be a
 					// comment, starting with a semicolon
 extern int nr_qsos;			// number of lines in qsos[]
 
 extern char mults[MAX_MULTS][12];	// array of multipliers worked so far
 extern int multarray_nr;		// number of entries in mults[]
-extern int mult_bands[];		// bitfield indicating on which band(s) 
-					// the multiplier has been worked; 
-					// bits assigned according to 
+extern int mult_bands[];		// bitfield indicating on which band(s)
+					// the multiplier has been worked;
+					// bits assigned according to
 					// BAND160..BAND10 defined in tlf.h
-extern int multscore[NBANDS];		// number of multipliers worked per 
-					// band; index is 
+extern int multscore[NBANDS];		// number of multipliers worked per
+					// band; index is
 					// BANDINDEX_160 ... BANDINDEX_10
-					// note: until 200409111, 
-					// index was 0...5 for only 
+					// note: until 200409111,
+					// index was 0...5 for only
 					// the non-warc bands!
 
 extern char callarray[MAX_CALLS][20];	// list of all calls worked so far
 extern int callarray_nr;		// number of entries in callarray[]
-extern int call_band[MAX_CALLS];	// for each of them, a bitfield 
+extern int call_band[MAX_CALLS];	// for each of them, a bitfield
 					// indicating bands
 extern int call_country[MAX_CALLS];	// for each call, the country
 extern char call_exchange[MAX_CALLS][12]; // for each call, the last exchange
 
-extern int countries[MAX_DATALINES];	// for every country, a bitfield 
-					// indicating bands on which it has 
+extern int countries[MAX_DATALINES];	// for every country, a bitfield
+					// indicating bands on which it has
 					// been worked
 
 extern int bandinx;			// band we're currently working on
@@ -81,7 +81,7 @@ extern int stop_backgrnd_process;
 extern char band[9][4];
 extern struct tm *time_ptr;
 
-extern int inxes[NBANDS]; //  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10} ;	
+extern int inxes[NBANDS]; //  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10} ;
 		    // from addmult.c
 
 extern char cqzone[];
@@ -118,7 +118,7 @@ extern int addcallarea;
 extern int addcty;
 extern char zone_fix[];
 extern int universal;
-extern int arrl_fd;
+extern int arrlfd;
 extern int one_point;
 extern int two_point;
 extern int three_point;

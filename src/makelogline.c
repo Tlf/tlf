@@ -37,15 +37,15 @@
  *     \verbatim
  *     0        1         2         3         4         5
  *     123456789012345678901234567890123456789012345678901234
- *     bndmod dd-mmm-yy hh:mm qso.  call.......... rst  rst  
+ *     bndmod dd-mmm-yy hh:mm qso.  call.......... rst  rst
  *                            nr..                 his  my.\endverbatim
- *   Alternatively in 'qso' or 'dxped' mode if 'LOGFREQUENCY' is set 
- *     there is the khz part of the working frequnecy instead of 
+ *   Alternatively in 'qso' or 'dxped' mode if 'LOGFREQUENCY' is set
+ *     there is the khz part of the working frequnecy instead of
  *     the qso number:
  *     \verbatim
  *     0        1         2         3         4         5
  *     123456789012345678901234567890123456789012345678901234
- *     bndmod dd-mmm-yy hh:mm  khz  call.......... rst  rst  
+ *     bndmod dd-mmm-yy hh:mm  khz  call.......... rst  rst
  *                                                 his  my.\endverbatim
  * - contest dependent part (list may not complete):\n
  *   - QSO mode
@@ -71,12 +71,18 @@
  *     56789012345678901234567890
  *     exchange      mult    pp\endverbatim
  *     mult - multi (cty, province, ...)
- *   - arllss
+ *   - arrlss
  *     \verbatim
  *     5    6         7         8
  *     56789012345678901234567890
  *     nr.. p cc sctn        pp\endverbatim
- *     nr - serial exchange, p - precedent, cc - check, sctn - section
+ *     nr - serial exchange, p - precedent, cc - check, sctn - ARRL/RAC section
+ *   - arrlfd
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     class         sctn    pp\endverbatim
+ *     class - TX count + operator class, sctn - ARRL/RAC section
  */
 
 void makelogline(void)
@@ -162,18 +168,23 @@ void makelogline(void)
 	my_rst[2] = ' ';
     }
 
-    strcat(logline4, his_rst);	/* till 54 */
-    strcat(logline4, "  ");
-    strcat(logline4, my_rst);
-    strcat(logline4, "  ");
+    /* ARRL Field Day does not use signal reports so do not log them. */
+    if (arrlfd == 1) {
+	strncat(logline4, fillspaces, 10);
+    } else {
+	strcat(logline4, his_rst);	/* till 54 */
+	strcat(logline4, "  ");
+	strcat(logline4, my_rst);
+	strcat(logline4, "  ");
+    }
 
     his_rst[1] = '9';		/* restore RST to 599 */
     my_rst[1] = '9';
 
 
     /* second (contest dependent part of logline */
-    
-    if (arrlss == 1) {		
+
+    if (arrlss == 1) {
 	// ----------------------------arrlss----------------
 	strcat(logline4, ssexchange);
 	section[0] = '\0';
@@ -223,7 +234,7 @@ void makelogline(void)
     if (contest == 1)
 	logline4[68] = '\0';
 
-    /* If WPX 
+    /* If WPX
      * -> add prefix to prefixes_worked and include new pfx in log line */
     new_pfx = (add_pfx(pxstr) == 0);	/* add prefix, remember if new */
 
@@ -273,7 +284,7 @@ void makelogline(void)
 	logline4[68] = '\0';
 	if (addcty != 0) {
 	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
-	    
+
 	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
 
@@ -366,7 +377,7 @@ void makelogline(void)
 
     } else if (wpx == 1) {
 	strncat(logline4, fillspaces, 4);
-    } else if (arrl_fd == 1) {
+    } else if (arrlfd == 1) {
 	strncat(logline4, fillspaces, 4);
     } else if ((one_point == 1) || (two_point == 1) || (three_point == 1)) {
 	strncat(logline4, fillspaces, 4);
