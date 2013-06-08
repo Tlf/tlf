@@ -96,7 +96,7 @@ int showscore(void)
     extern int band_score[9];
     extern int cqww;
     extern int arrldx_usa;
-    extern int arrl_fd;
+    extern int arrlfd;
     extern int arrlss;
     extern int pacc_pa_flg;
     extern int universal;
@@ -237,7 +237,7 @@ int showscore(void)
 	    show_summary( total, totalmults );
 	}
 
-	if (arrl_fd == 1) {
+	if (arrlfd == 1) {
 	    if (fixedmult != 0) {
 		totalmults = fixedmult;
 	    } else {
@@ -359,4 +359,3 @@ void printfield (int y, int x, int number)
 
     mvprintw(y, x, " %4d", number);
 }
-

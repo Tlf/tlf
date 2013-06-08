@@ -108,7 +108,7 @@ int score()
     extern char mycontinent[];
     extern char comment[];
     extern int cqww;
-    extern int arrl_fd;
+    extern int arrlfd;
     extern int arrldx_usa;
     extern int w_cty;
     extern int ve_cty;
@@ -226,7 +226,7 @@ int score()
     }
 
     /* end cqww */
-    if (arrl_fd == 1) {
+    if (arrlfd == 1) {
 
 	if (trxmode == SSBMODE) {
 	    points = 1;
@@ -238,7 +238,7 @@ int score()
 	}
 	return (0);
 
-    }				// end arrl_fd
+    }				// end arrlfd
 
     if (one_point == 1) {
 	points = 1;

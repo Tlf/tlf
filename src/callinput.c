@@ -89,6 +89,7 @@ char callinput(void)
     extern int showscore_flag;
     extern int searchflg;
     extern int cqww;
+    extern int arrlfd;
     extern char cqzone[];
     extern char ituzone[];
     extern int ctcomp;
@@ -233,7 +234,7 @@ char callinput(void)
 		    strcpy(hiscall_sent, hiscall);
 		    printcall();
 		    x = 153;
-		} 
+		}
 		break;
 	    }
 	case 155:		/* left */
@@ -452,7 +453,12 @@ char callinput(void)
 
 			his_rst[1]++;
 
-			mvprintw(12, 44, his_rst);
+			/* ARRL Field Day does not use signal reports so blank them out. */
+			if (arrlfd == 1)
+			    mvaddstr(12, 44, "   ");
+			else
+			    mvprintw(12, 44, his_rst);
+
 			mvprintw(12, 29, hiscall);
 		    }
 
@@ -488,7 +494,12 @@ char callinput(void)
 		    if (his_rst[1] > 49) {
 			his_rst[1]--;
 
-			mvprintw(12, 44, his_rst);
+			/* ARRL Field Day does not use signal reports so blank them out. */
+			if (arrlfd == 1)
+			    mvaddstr(12, 44, "   ");
+			else
+			    mvprintw(12, 44, his_rst);
+
 			mvprintw(12, 29, hiscall);
 		    }
 
@@ -1090,7 +1101,7 @@ char callinput(void)
 	    || x == 92)
 	    break;
 
-	if (trxmode == DIGIMODE && (keyerport == GMFSK 
+	if (trxmode == DIGIMODE && (keyerport == GMFSK
 		|| keyerport == MFJ1278_KEYER)) {
 	    show_rtty();
 	    refreshp();
@@ -1117,7 +1128,7 @@ int play_file(char *audiofile)
     } else {
 	close(fd);
 	if (access("./play_vk", X_OK) == 0 ) {
-	   sprintf( playcommand, "./play_vk %s", audiofile); 
+	   sprintf( playcommand, "./play_vk %s", audiofile);
 	}
 	else {
 	   sprintf( playcommand, "play_vk %s", audiofile);

@@ -71,7 +71,7 @@ int wpx = 0;
 int dxped = 0;
 int sprint = 0;
 int arrldx_usa = 0;
-int arrl_fd = 0;
+int arrlfd = 0;
 int arrlss = 0;
 int pacc_pa_flg = 0;
 int universal = 0;
@@ -138,7 +138,7 @@ int ua9_cty;
 
 char tlfversion[80] = "";
 char testbuffer[120] = "";
-char multsfile[80] = "";	/* name of file with a list of allowed 
+char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
 char exchange_list[40] = "";
 int timeoffset = 0;
@@ -424,7 +424,7 @@ int main(int argc, char *argv[])
 	    if (strlen(argv[1] + 2) > 0) {
 		if ((*(argv[1] + 2) == '~') && (*(argv[1] + 3) == '/')) {
 		    /* tilde expansion */
-		    config_file = g_strconcat( g_get_home_dir(), 
+		    config_file = g_strconcat( g_get_home_dir(),
 			    argv[1] + 3, NULL);
 		}
 	    	else {
@@ -552,7 +552,7 @@ int main(int argc, char *argv[])
 	status = read_logcfg(); /* read the configuration file */
 	status |= read_rules();	/* read the additional contest rules in "rules/contestname"  LZ3NY */
 
-	if (status != PARSE_OK) { 
+	if (status != PARSE_OK) {
 	    showmsg( "Problems in logcfg.dat or rule file detected! Continue Y/(N)?");
 	    if (toupper( getchar() ) != 'Y') {
 		endwin();
@@ -724,7 +724,7 @@ int main(int argc, char *argv[])
 		write_tone();
 
 		netkeyer(K_SPEED, keyerbuff);		// set speed
-	
+
 		netkeyer(K_WEIGHT, weightbuf);		// set weight
 
 		if (*keyer_device != '\0')
