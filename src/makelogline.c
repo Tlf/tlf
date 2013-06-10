@@ -374,17 +374,19 @@ void makelogline(void)
 	strncat(logline4, fillspaces, 4);
     }
 
+    i = 77 - strlen(logline4);
+    if (i > 0)				/* fill line until column 77 */
+	strncat(logline4, fillspaces, i);
+
+
     score();			/* update qso's per band */
 
-    if (contest == 1) {
-	if (dxped != 1) {	/* no points for dxpedition */
+    if ((contest == 1) && (dxped == 0)) {
 	    sprintf(logline4 + 76, "%2d", points);
-	} else {
-	    sprintf(logline4 + 76, "  ");
-	}
     } else {
-	sprintf(logline4 + 76, "  ");
+	sprintf(logline4 + 76, "  ");	/* no points for dxpedition */
     }
+
 
     assert(strlen(logline4) <= 80);
     strncat(logline4, fillspaces, 80 - strlen(logline4));
@@ -392,8 +394,7 @@ void makelogline(void)
     /* add freq to end of logline */
     if (trx_control == 1) {
 	snprintf(freq_buff, 8, "%7.1f", freq);
-    }
-    else {
+    } else {
 	snprintf(freq_buff, 8, "        ");
     }
     strcat(logline4, freq_buff);
