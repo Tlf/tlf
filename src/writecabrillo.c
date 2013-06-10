@@ -601,7 +601,7 @@ int write_cabrillo(void)
     struct qso_t *qso;
 
     if (cabrillo == NULL) {
-	info("No cabrillo format defined (See doc/README.cabrillo)");
+	info("Missing CABRILLO= keyword (see man page)");
 	sleep(2);
     	return(1);
     }
@@ -648,7 +648,7 @@ int write_cabrillo(void)
     strncpy(exchange, buffer, 10);
     getsummary( fp2 );
 
-    info("Wrting cabrillo file");
+    info("Writing cabrillo file");
 
     while ((qso = get_next_record(fp1))) {
 
@@ -728,7 +728,7 @@ int write_adif(void)
 	strncpy(standardexchange, buffer, 10);
     }
 
-    info("Writing adif file");
+    info("Writing ADIF file");
 
     /* write header */
     fputs

@@ -24,18 +24,10 @@
 	 *--------------------------------------------------------------*/
 
 #include "getsummary.h"
+#include "showscore.h"
 #include <glib.h>
 
 extern char call[];
-extern int wpx;
-extern int total;
-extern int nr_of_px;
-extern int cqww;
-extern int arrldx_usa;
-extern int totalmults;
-extern int arrlss;
-extern int serial_section_mult;
-extern int multarray_nr;
 
 void ask(char *buffer, char *what)
 {
@@ -97,19 +89,7 @@ int getsummary(FILE *fp)
     if (*buffer != '\0')
 	fprintf(fp, "CATEGORY-OVERLAY: %s\n", buffer);
 
-
-    if (wpx == 1)
-	sprintf(buffer, "%d\n", total * (nr_of_px));
-    if (cqww == 1)
-	sprintf(buffer, "%d\n", total * totalmults);
-    if (arrldx_usa == 1)
-	sprintf(buffer, "%d\n", total * totalmults);
-    if (arrlss == 1)
-	sprintf(buffer, "%d\n", multarray_nr * total);
-    if (serial_section_mult == 1)
-	sprintf(buffer, "%d\n", totalmults * total);
-
-    fprintf(fp, "CLAIMED-SCORE: %s", buffer);
+    fprintf(fp, "CLAIMED-SCORE: %d\n", get_nr_of_points() * get_nr_of_mults());
 
     ask(buffer, "Club: ");
     if (*buffer != '\0')
