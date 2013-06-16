@@ -53,7 +53,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 158	/* commands in list */
+#define  MAX_COMMANDS 159	/* commands in list */
 
 
 int read_logcfg(void)
@@ -229,6 +229,7 @@ int parse_logcfg(char *inputbuffer)
     extern int sc_sidetone;
     extern char sc_volume[];
     extern char modem_mode[];
+    extern int no_rst;
 
 /* LZ3NY mods */
     extern int mult_side;
@@ -415,7 +416,8 @@ int parse_logcfg(char *inputbuffer)
 	"CABRILLO",
 	"CW_TU_MSG",		/* 155 */	/* deprecated */
 	"VKCWR",				/* deprecated */
-	"VKSPR"				/* deprecated */
+	"VKSPR",				/* deprecated */
+	"NORST"
     };
 
     char **fields;
@@ -1337,6 +1339,10 @@ int parse_logcfg(char *inputbuffer)
     case 157:{
 		KeywordNotSupported(teststring);
 		break;
+	    }
+    case 158:{
+		 no_rst = 1;
+		 break;
 	    }
 
     default: {
