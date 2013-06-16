@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * 		 2013           Thomas Beierlein <tb@forth-ev.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +53,7 @@ void clear_display(void)
     extern int m;
     extern struct tm *time_ptr;
     extern char whichcontest[];
+    extern int no_rst;
 
     char time_buf[80];
     char speedbuf[4] = "  ";
@@ -98,6 +100,7 @@ void clear_display(void)
     mvaddstr(11, 0, logline4);
     attron(COLOR_PAIR(COLOR_CYAN));
     mvaddstr(12, 0, backgrnd_str);
+
     mvaddstr(12, 0, band[bandinx]);
 
     get_time();
@@ -126,8 +129,13 @@ void clear_display(void)
 
     }
 
-    mvaddstr(12, 44, his_rst);
-    mvaddstr(12, 49, my_rst);
+    if (no_rst) {
+	mvaddstr(12, 44, "---");
+	mvaddstr(12, 49, "---");
+    } else {
+	mvaddstr(12, 44, his_rst);
+	mvaddstr(12, 49, my_rst);
+    }
 
     if (cqww == 1) {
 	if (use_rxvt == 0)

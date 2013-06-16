@@ -52,7 +52,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 157	/* commands in list */
+#define  MAX_COMMANDS 158	/* commands in list */
 
 
 int read_logcfg(void)
@@ -223,6 +223,7 @@ int parse_logcfg(char *inputbuffer)
     extern int sc_sidetone;
     extern char sc_volume[];
     extern char modem_mode[];
+    extern int no_rst;
 
 /* LZ3NY mods */
     extern int mult_side;
@@ -409,6 +410,7 @@ int parse_logcfg(char *inputbuffer)
 	"CW_TU_MSG",				/* deprecated */
 	"VKCWR",		/* 155 */	/* deprecated */
 	"VKSPR"					/* deprecated */
+	"NO_RST"
     };
 
     char **fields;
@@ -1356,6 +1358,10 @@ int parse_logcfg(char *inputbuffer)
     case 156: {
 		KeywordNotSupported(teststring);
 		break;
+	    }
+    case 158:{
+		 no_rst = 1;
+		 break;
 	    }
 
     default: {

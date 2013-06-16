@@ -77,6 +77,7 @@ int getexchange(void)
     extern char continent[];
     extern int keyerport;
     extern int commentfield;
+    extern int no_rst;
 
     int i;
     int x = 0;
@@ -248,7 +249,8 @@ int getexchange(void)
 		if (change_rst == 1) {
 		    if (my_rst[1] <= 56) {
 			my_rst[1]++;
-			mvprintw(12, 49, my_rst);
+
+			no_rst ? : mvprintw(12, 49, my_rst);
 		    }
 		} else {	/* speed up */
 		    keyspeed = speedup();
@@ -267,7 +269,8 @@ int getexchange(void)
 
 		    if (my_rst[1] > 49) {
 			my_rst[1]--;
-			mvprintw(12, 49, my_rst);
+
+			no_rst ? : mvprintw(12, 49, my_rst);
 		    }
 		} else {
 		    keyspeed = speeddown();
