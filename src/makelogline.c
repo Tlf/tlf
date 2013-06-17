@@ -76,7 +76,12 @@
  *     5    6         7         8
  *     56789012345678901234567890
  *     nr.. p cc sctn        pp\endverbatim
- *     nr - serial exchange, p - precedent, cc - check, sctn - section
+ *     nr - serial exchange, p - precedent, cc - check, sctn - ARRL/RAC section
+ *   - arrlfd
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     class         sctn    pp\endverbatim
+ *     class - TX count + operator class, sctn - ARRL/RAC section
  */
 
 void makelogline(void)
@@ -87,6 +92,7 @@ void makelogline(void)
     extern char whichcontest[];
     extern float freq;
     extern int points;
+    extern int no_rst;
 
     static char time_buf[80];
     char fillspaces[50] = "                              ";
@@ -154,25 +160,29 @@ void makelogline(void)
     strcat(lastcall, hiscall);
     strncat(logline4, fillspaces, (15 - strlen(hiscall)));	/*  44 */
 
-    if ((trxmode == CWMODE) || (trxmode == DIGIMODE)) {
-	his_rst[2] = '9';
-	my_rst[2] = '9';
-    } else {
-	his_rst[2] = ' ';
-	my_rst[2] = ' ';
-    }
+    if (!no_rst) {
+	if ((trxmode == CWMODE) || (trxmode == DIGIMODE)) {
+	    his_rst[2] = '9';
+	    my_rst[2] = '9';
+	} else {
+	    his_rst[2] = ' ';
+	    my_rst[2] = ' ';
+	}
 
-    strcat(logline4, his_rst);	/* till 54 */
-    strcat(logline4, "  ");
-    strcat(logline4, my_rst);
-    strcat(logline4, "  ");
+	strcat(logline4, his_rst);	/* till 54 */
+	strcat(logline4, "  ");
+	strcat(logline4, my_rst);
+	strcat(logline4, "  ");
+    } else {
+	strcat(logline4, "---  ---  ");	/* instead of RST */
+    }
 
     his_rst[1] = '9';		/* restore RST to 599 */
     my_rst[1] = '9';
 
 
     /* second (contest dependent part of logline */
-    
+
     if (arrlss == 1) {		
 	// ----------------------------arrlss----------------
 	strcat(logline4, ssexchange);
