@@ -378,8 +378,7 @@ char *to_mode[] = {
     "RY"
 };
 
-/* converts band to frequency of start of band 
- * !! only for contest bands */
+/* converts band to frequency of start of band */
 float band2freq(int band) {
     float freq;
 
