@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2005 Rein Couperus <pa0r@eudxf.org>
- *               2009-2012 Thomas Beierlein <tb@forth-ev.de>
+ *               2009-2013 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,7 @@ char callinput(void)
     extern int noautocq;
     extern int keyerport;
     extern int miniterm;
+    extern int no_rst;
 
     int cury, curx;
     int i, j, ii, rc, t, x = 0, y = 0;
@@ -451,8 +452,8 @@ char callinput(void)
 		    if (his_rst[1] <= 56) {
 
 			his_rst[1]++;
-
-			mvprintw(12, 44, his_rst);
+			
+			no_rst ? : mvprintw(12, 44, his_rst);
 			mvprintw(12, 29, hiscall);
 		    }
 
@@ -488,7 +489,7 @@ char callinput(void)
 		    if (his_rst[1] > 49) {
 			his_rst[1]--;
 
-			mvprintw(12, 44, his_rst);
+			no_rst ? : mvprintw(12, 44, his_rst);
 			mvprintw(12, 29, hiscall);
 		    }
 
