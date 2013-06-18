@@ -177,10 +177,6 @@ void makelogline(void)
 	strcat(logline4, "---  ---  ");	/* instead of RST */
     }
 
-    his_rst[1] = '9';		/* restore RST to 599 */
-    my_rst[1] = '9';
-
-
     /* second (contest dependent part of logline */
 
     if (arrlss == 1) {		

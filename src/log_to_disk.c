@@ -29,7 +29,8 @@
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /** \brief logs one record to disk
- * Logs one record to disk which may come from different soureces
+ * Logs one record to disk which may come from different sources
+ * (direct from tlf or from other instance via LAN)
  *
  * \param from_lan true - Log lanmessage, false - normal message
  */
@@ -76,7 +77,9 @@ int log_to_disk(int from_lan)
 
 	hiscall[0] = '\0';	/* reset the call  string */
 	comment[0] = '\0';	/* reset the comment  string */
-	comment[30] = '\0';
+
+	his_rst[1] = '9';	/* restore RST to 599 */
+	my_rst[1] = '9';
 
     } else {			// qso from lan
 
