@@ -55,6 +55,7 @@ int log_to_disk(int from_lan)
     extern char thisnode;
     extern int lan_mutex;
     extern int cqwwm2;
+    extern int no_rst;
 
     pthread_mutex_lock(&disk_mutex);
 
