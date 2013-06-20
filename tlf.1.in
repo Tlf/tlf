@@ -848,6 +848,10 @@ Specify the name of the cabrillo format to use (see doc/README.cab).
 Sets contest mode. Uncomment for normal qso logging.
 
 .TR
+.B NO_RST
+Do not use RST in contest (e.g. for CW Open or ARRL Field Day). Use '---' as placeholder instead of RST in the logfile and the main display. If you want to write a cabrillo log you have to provide an according format definition without RST values.
+
+.TR
 .B CQWW_M2
 Put the node ID into the logline (just after the qso number) to support Multi/2 operation where the station logging the qso must be in the cabrillo file. This can also be used for M/1 and M/M, to enable post-contest analysis of the nodes.
 
