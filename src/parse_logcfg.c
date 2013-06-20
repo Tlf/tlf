@@ -417,7 +417,7 @@ int parse_logcfg(char *inputbuffer)
 	"CW_TU_MSG",		/* 155 */	/* deprecated */
 	"VKCWR",				/* deprecated */
 	"VKSPR",				/* deprecated */
-	"NORST"
+	"NO_RST"
     };
 
     char **fields;
