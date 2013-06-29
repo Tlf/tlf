@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2011 Thomas Beierlein <tb@forth-ev.de>
+ * Copyright (C) 2011, 2013 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,6 +98,12 @@ void dxcc_add (char * dxcc_line)
 
 	/* split up the line */
 	split = g_strsplit(dxcc_line, ":", 9);
+
+	if (g_strv_length(split) < 8) {	/* wrong syntax, ignore line */
+	    g_strfreev(split);
+	    g_free(new_dxcc);
+	    return;
+	}
 
 	for (item = 0; item < 8; item++)
 	    g_strstrip(split[item]);
