@@ -409,7 +409,7 @@ int parse_logcfg(char *inputbuffer)
 	"IGNOREDUPE",
 	"CW_TU_MSG",				/* deprecated */
 	"VKCWR",		/* 155 */	/* deprecated */
-	"VKSPR"					/* deprecated */
+	"VKSPR",				/* deprecated */
 	"NO_RST"
     };
 
