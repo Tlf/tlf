@@ -1359,7 +1359,7 @@ int parse_logcfg(char *inputbuffer)
 		KeywordNotSupported(teststring);
 		break;
 	    }
-    case 158:{
+    case 157:{
 		 no_rst = 1;
 		 break;
 	    }
