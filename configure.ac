@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(tlf, 1.1.5, rein@couperus.com es tb@forth-ev.de)
+AC_INIT(tlf, 1.1.6, rein@couperus.com es tb@forth-ev.de)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])

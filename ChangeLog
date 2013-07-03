@@ -1,3 +1,57 @@
+2013-06-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/arrlfd, src/callinput.c, src/clear_display.c, src/getexchange.c,
+  src/log_to_disk.c, src/main.c, src/makelogline.c, src/parse_logcfg.c,
+  tlf.1.in: backport of NO_RST switch from tlf-1.2.0 branch  
+  - will be needed for contests which do not record any report 
+    (e.g. ARRLFD or CW Open)  
+  - add new configuration switch NO_RST  
+  - do not add RST into log and do not show RST if NO_RST is set, just 
+    add '---' instead  
+  - suppress redisplay of RST after PgUp/PgDwn if NO_RST is set, as it 
+    does not make sense to change RST if no RST is used.  
+  - document NO_RST in man page and add it to arrlfd rule file
+
+2013-06-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/dxcc.c, src/readctydata.c: make parsing cty.dat more robust  
+  - ignore country lines which do not have the needed components
+
+2013-06-03  Nate Bargmann <n0nb@n0nb.us>
+
+  * rules/arrlfd: rules/arrlfd: Update to current FD rules  
+  - The arrlfd rules file was dated so bring it up to date with 
+    changes in Fd and TLF.  
+  - fix recognition of ARRL Field day rules (rule file asked for 
+    'arrlfd' contest, but parser looked for 'arrl_fd')
+
+2013-05-05  Nate Bargmann <n0nb@n0nb.us>
+
+  * share/arrlsections: arrlsections: Add new Canadian sections  Remove invalid
+  sections.
+
+2013-06-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/makelogline.c: Fix for WYSIWYG_ONCE  
+  - points were not written for WYSIWYG_ONCE
+
+2013-05-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Fix frequency output for WARC bands in cabrillo file 
+  - Original code missed all cases for QSOs in WARC bands. No frequency
+    informaiton for that bands were written to cabrillo file.  
+  - Even if no WARC bands should be used in contests we add the correct 
+    frequency output for these bands
+
+  * src/writecabrillo.c: Fix band output for 12m in ADIF file  
+  - Original code missed the case for QSOs in 12m band. The ADIF file 
+    got no band output for that band. Fixed.
+
+2013-01-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, tlf.1.in: Reduce minimal livetime for bandmap entries
+    to 30s (requested by DH5YM)
+
 2012-12-01  Thomas Beierlein <tomjbe@gentoo.org>
 
   * ChangeLog, NEWS, configure.ac: Prepare for 1.1.5 maintenance release

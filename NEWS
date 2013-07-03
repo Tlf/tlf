@@ -1,3 +1,25 @@
+tlf-1.1.6
+=========
+Minor maintenance and bugfix release.
+
+New features:
+    - Reduce minimal livetime for bandmap entries to 30s (requested by DH5YM)
+    - Update ARRL Field Day rules and arrlsections file. Tnx Nate N0NB.
+    - New NO_RST keyword (backported from from tlf-1.2.0 branch). Use it for
+      contests which do not exchange and record RS/RST (e.g. ARRL Field Day 
+      or CW Open)  
+       * do not add RST into log and do not show RST if NO_RST is set, just 
+         add '---' instead  
+
+Bug fixes:
+    - QSO points were not written for WYSIWYG_ONCE multis.
+    - ADIF and cabrillo files missed QSOs for smoe or all WARC bands. 
+      (Even if no WARC bands should be used in contests we add the correct 
+      frequency output for these bands now)
+    - fix recognition of ARRL Field day rules (changed rule file to name
+      it 'arrl_fd').
+
+
 tlf-1.1.5
 =========
 Minor maintenance release.
