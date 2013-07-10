@@ -334,7 +334,7 @@ int shownewmult = -1;
 int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */
-int qsonum = 1;
+int qsonum = 1;			/* nr of next QSO */
 int bufloc = 0;
 int ymax, xmax;			/* screen size */
 char lastwwv[120] = "";

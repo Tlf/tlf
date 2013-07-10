@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- * 		 2010, 2011 Thomas Beierlein <tb@forth-ev.de>
+ * 		 2010 - 2013 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -214,7 +214,8 @@ int showscore(void)
     extern int sectn_mult;
     extern int dx_arrlsections;
 
-    int i, p, q, r, l10;
+    int i, l10;
+    float p;
 
     if (showscore_flag == 1) {
 
@@ -227,7 +228,6 @@ int showscore(void)
 	} else {
 
 	    display_header(bi_warc);
-
 	}
 
 	/* show score per band */
@@ -304,40 +304,25 @@ int showscore(void)
 	}
 
 
-	if (wpx == 1) {		/* wpx */
-	    mvhline(3, START_COL, ACS_HLINE, 35);
-	    mvprintw(4, START_COL, "                                   ");
-
-
-	    if (nr_of_px >= 2) {
-		p = (qsonum - 1) / (nr_of_px);
-		q = 10 * ((qsonum - 1) - (p * (nr_of_px)));
-		r = q / (nr_of_px);
-	    } else {
-		p = 1;
-		r = 0;
-	    }
-	}
-
-
 	/* show statistics */
 	attron(COLOR_PAIR(C_HEADER));
+	mvprintw(6, 55, "                   ");
+
 	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1) || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
 
 	    totalmults = get_nr_of_mults();
-	    /** \todo fix calculation of Q/M */
-	    if (totalmults >= 2)
-		p = (total / totalmults);
-	    else
-		p = 1;
+	    totalmults = totalmults ? totalmults : 1;	/* at least one */
+	    p = ((qsonum - 1) / (float)totalmults);
 
 	    if ((l10 = last10()) >= 1)
-		mvprintw(6, 55, "Q/M %d  Rate %d ", p, (60 * 10) / l10);
+		mvprintw(6, 55, "Q/M %.1f  Rate %d ", p, (60 * 10) / l10);
+	    else
+		mvprintw(6, 55, "Q/M %.1f ", p);
+	}
 
-	    if (wpx == 1) {
-		if (minute_timer > 0)
-		    mvprintw(6, 75, "%d", minute_timer);
-	    }
+	if (wpx == 1) {
+	    if (minute_timer > 0)
+		mvprintw(6, 75, "%d", minute_timer);
 	}
 
 	printcall();
