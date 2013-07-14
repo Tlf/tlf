@@ -69,9 +69,13 @@ int show_mults(void)
 
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
+	    for (l = 1; l < 6; l++)
+		mvprintw(l, 0,
+			 "                                                                                ");
+
 	    i = 0;
 
-	    for (k = 1; k <= 5; k++) {
+	    for (k = 1; k < 6; k++) {
 
 		for (j = 0; j <= 19; j++) {
 
@@ -121,13 +125,13 @@ int show_mults(void)
 			else
 			    attron(COLOR_PAIR(C_INPUT));
 
-			mvprintw(k + 1, j * 4, prefix);
+			mvprintw(k, j * 4, prefix);
 			refreshp();
 			i++;
 
 		    } else {
 
-			mvprintw(k + 1, j * 4, "    ");
+			mvprintw(k, j * 4, "    ");
 			refreshp();
 			i++;
 
@@ -143,11 +147,12 @@ int show_mults(void)
 
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-	    for (l = 1; l <= 6; l++)
-		mvprintw(l, 0,
-			 "                                                                                ");
 
 	}			// end while
+
+	for (l = 1; l < 6; l++)
+	    mvprintw(l, 0,
+		     "                                                                                ");
     } else
 
 	multiplierinfo();
