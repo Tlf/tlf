@@ -359,15 +359,6 @@ int keyer(void)
 		    break;
 		}
 
-	    case 142 ... 150:	/* CTRL  O */
-
-		{
-		    message_change(x);
-
-		    break;
-
-		}
-
 	    default:
 		x = x;
 	    }

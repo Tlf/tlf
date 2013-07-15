@@ -42,113 +42,66 @@ int message_change(int x)
     for (j = 13; j <= 23; j++) {
 	mvprintw(j, 0, backgrnd_str);
     }
-    if (x == 6) {
-	nicebox(14, 3, 2, 60, "Enter message (F1-12, C, S)");
 
+    nicebox(14, 3, 2, 60, "Enter message (F1-12, C, S)");
+
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+
+    while (1) {
+	bufnr = onechar();
+
+	if ((bufnr == 'C') || (bufnr == 'S'))
+	    break;
+
+	if (bufnr >= 129 && bufnr <= 141)
+	    break;
+    }
+
+    if (bufnr == 'S') {
+	bufnr = 12;
+    } else if (bufnr == 'C') {
+	bufnr = 13;
+    } else {
+
+	if (bufnr <= 138) {
+	    bufnr = bufnr - 129;
+	} else {
+	    bufnr = bufnr - 130;
+	}
+    }
+
+    printbuf[0] = '\0';
+    strncat(printbuf, message[bufnr], strlen(message[bufnr]) - 1);
+    mvprintw(15, 4, "%s", printbuf);
+    refreshp();
+
+    mvprintw(16, 4, "");
+    message[bufnr][0] = '\0';
+
+    echo();
+    getnstr(message[bufnr], 60);
+    noecho();
+
+    strcat(message[bufnr], "\n");
+    mes_length = strlen(message[bufnr]);
+
+    if (mes_length < 2) {
+	clear_display();
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-	while (1) {
-	    bufnr = onechar();
-
-	    if ((bufnr == 'C') || (bufnr == 'S'))
-		break;
-
-	    if (bufnr >= 129 && bufnr <= 141)
-		break;
+	for (j = 13; j <= 23; j++) {
+	    mvprintw(j, 0, backgrnd_str);
 	}
 
-	if (bufnr == 'S') {
-	    bufnr = 12;
-	} else if (bufnr == 'C') {
-	    bufnr = 13;
-	} else {
-
-	    if (bufnr <= 138) {
-		bufnr = bufnr - 129;
-	    } else {
-		bufnr = bufnr - 130;
-	    }
-	}
-
-	printbuf[0] = '\0';
-	strncat(printbuf, message[bufnr], strlen(message[bufnr]) - 1);
-	mvprintw(15, 4, "%s", printbuf);
-	refreshp();
-
-	mvprintw(16, 4, "");
-	message[bufnr][0] = '\0';
-
-	echo();
-	getnstr(message[bufnr], 60);
-	noecho();
-
-	strcat(message[bufnr], "\n");
-	mes_length = strlen(message[bufnr]);
-
-	if (mes_length < 2) {
-	    clear_display();
-	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-	    for (j = 13; j <= 23; j++) {
-		mvprintw(j, 0, backgrnd_str);
-	    }
-
-	    return (1);
-	}
-
-	for (count = 0; count <= mes_length; count++) {
-	    if ((message[bufnr][count] > 96)
-		&& (message[bufnr][count] < 123))
-		message[bufnr][count] = message[bufnr][count] - 32;
-	}
-
-    } else {			// from shift F1 - F8     (x = 142 - 150)
-	if ((x > 141) && (x < 151)) {
-	    bufnr = x - 142;
-
-	    if (bufnr >= 3)
-		bufnr--;
-
-	    nicebox(14, 3, 2, 60, "Edit message");
-
-	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-	    printbuf[0] = '\0';
-	    strncat(printbuf, message[bufnr], strlen(message[bufnr]) - 1);
-
-	    mvprintw(15, 4, "%s", printbuf);
-	    refreshp();
-
-	    mvprintw(16, 4, "");
-	    message[bufnr][0] = '\0';
-
-	    echo();
-	    getnstr(message[bufnr], 60);
-	    noecho();
-
-	    strcat(message[bufnr], "\n");
-	    mes_length = strlen(message[bufnr]);
-
-	    if (mes_length < 2) {
-		clear_display();
-		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-		for (j = 13; j <= 23; j++) {
-		    mvprintw(j, 0, backgrnd_str);
-		}
-
-		return (1);
-	    }
-
-	    for (count = 0; count <= mes_length; count++) {
-		if ((message[bufnr][count] > 96)
-		    && (message[bufnr][count] < 123))
-		    message[bufnr][count] = message[bufnr][count] - 32;
-	    }
-
-	}
-
+	return (1);
     }
+
+    for (count = 0; count <= mes_length; count++) {
+	if ((message[bufnr][count] > 96)
+	    && (message[bufnr][count] < 123))
+	    message[bufnr][count] = message[bufnr][count] - 32;
+    }
+
     mvprintw(12, 29, "");
     refreshp();
     clear_display();

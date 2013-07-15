@@ -710,12 +710,6 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 142 ... 150:
-	    {
-		message_change(x);
-
-		break;
-	    }
 	case 235:
 	    {			//alt-K     == ctrl-K
 		x = 11;
