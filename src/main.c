@@ -649,9 +649,9 @@ int main(int argc, char *argv[])
 
 	    /** \todo fix exclusion of newer hamlib models */
 	    if ((int) myrig_model > 1999)
-		init_native_rig();
+		status = init_native_rig();
 	    else
-		init_tlf_rig();
+		status = init_tlf_rig();
 	}
 #else
 	if (trx_control != 0) {
@@ -659,10 +659,22 @@ int main(int argc, char *argv[])
 	    showmsg("No Hamlib library, using native driver");
 	    shownr("Rignumber is", rignumber);
 	    shownr("Rig speed is", serial_rate);
-	    init_native_rig();
+	    status = init_native_rig();
 	    sleep(1);
 	}
 #endif				// end code for hamlib interface
+
+	if (status  != 0) {
+	    showmsg( "Continue without rig control Y/(N)?");
+	    if (toupper( getchar() ) != 'Y') {
+		endwin();
+		exit(1);
+	    }
+	    trx_control = 0;
+	    showmsg( "Disabling rig control!");
+	    sleep(1);
+	}
+
 
 	if (keyerport == NET_KEYER) {
 	    showmsg("Keyer is cwdaemon");
