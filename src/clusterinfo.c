@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *                         2011 Thomas Beierlein <tb@forth-ev.de>
+ *               2011i,2013     Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@ void clusterinfo(char *timestr)
     static int frcounter;
     static int daysecs = 0;
 
+    /* show band, date and time */
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
     strncpy(time_buf, timestr, 8);
     mvaddstr(12, 0, band[bandinx]);
@@ -78,32 +79,34 @@ void clusterinfo(char *timestr)
 	daysecs++;
     }
 
+    /* show frequency and frequency memory if rig control is active */
     if (trx_control == 1) {
-	if (freq != 0.0) {
 
-	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(C_LOG) | A_BOLD);
-	    else
-		attron(COLOR_PAIR(C_LOG));
+	if (use_rxvt == 0)
+	    attron(COLOR_PAIR(C_LOG) | A_BOLD);
+	else
+	    attron(COLOR_PAIR(C_LOG));
 
-	    if ((showfreq == 0) || (showscore_flag == 1))
-		mvprintw(13, 68, "TRX: %7.1f", freq);
+	if ((showfreq == 0) || (showscore_flag == 1))
+	    mvprintw(13, 68, "TRX: %7.1f", freq);
 
-	    if (mem > 0.0)
-		mvprintw(14, 68, "MEM: %7.1f", mem);
-	    else
-		mvprintw(14, 68, "            ");
+	if (mem > 0.0)
+	    mvprintw(14, 68, "MEM: %7.1f", mem);
+	else
+	    mvprintw(14, 68, "            ");
 
-	    if ((showfreq == 1) && (showscore_flag == 0)) {
+	if ((showfreq == 1) && (showscore_flag == 0)) {
 
-		freq_display();
-	    }
+	    freq_display();
 	}
     }
 
+    refreshp();
+
     frcounter++;
 
-    if (frcounter >= 60) {	// 60 seconds
+    /* broadcast frequency via LAN, act as time master if allowed */
+    if (frcounter >= 60) {	// every 60 seconds
 	frcounter = 0;
 	if (lan_active != 0) {
 	    send_freq(freq);
@@ -112,8 +115,8 @@ void clusterinfo(char *timestr)
 	}
     }
 
-    refreshp();
 
+    /* cluster and bandmap display */
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
     else

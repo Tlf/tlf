@@ -62,9 +62,19 @@ int gettxinfo(void)
 	else
 	    rigfreq = native_rig_get_freq(rignumber);	//ORION
 
+	if (retval != RIG_OK || rigfreq < 0.1) {
+	    freq = 0.0;
+	    return (0);
+	}
 #else
 	rigfreq = (float) native_rig_get_freq(rignumber);	//ORION
+
+	if (rigfreq < 0.1) {
+	    freq = 0.0;
+	    return (0);
+	}
 #endif
+
 
 	if (rigfreq >= 1800000.0) {
 	    freq = rigfreq / 1000.0;		/* kHz */
