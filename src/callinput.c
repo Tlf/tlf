@@ -106,7 +106,6 @@ char callinput(void)
     int i, j, ii, rc, t, x = 0, y = 0;
     char instring[2] = { '\0', '\0' };
     char dupecall[17];
-    char weightbuf[5];
     static int lastwindow;
 
 
@@ -284,56 +283,37 @@ char callinput(void)
 	    }
 	case 247:		// Alt-w set weight
 	    {
-		nicebox(1, 1, 2, 11, "Cw");
-		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-		mvprintw(2, 2, "Speed: %2d  ", GetCWSpeed());
-		if (weight < 0)
-		    mvprintw(3, 2, "Weight:%d ", weight);
-		else
-		    mvprintw(3, 2, "weight: %d  ", weight);
-		mvprintw(3, 10, "");
-		refreshp();
-		x = onechar();
+		char weightbuf[5] = "";
+		char *end;
 
-		if (x == '-') {
-		    mvprintw(3, 9, "%c", '-');
-		    refreshp();
-		    weightbuf[0] = x;
-		    x = onechar();
-		    if (x != 27) {
-			mvprintw(3, 10, "%c", (char) x);
-			refreshp();
-			weightbuf[1] = x;
-			weightbuf[2] = '\0';
-			x = onechar();
-		    }
-		    if (x != 27) {
-			mvprintw(3, 11, "%c", (char) x);
-			refreshp();
-			weightbuf[2] = x;
-			weightbuf[3] = '\0';
-		    }
-		} else {
-		    weightbuf[0] = x;
-		    weightbuf[1] = '\0';
-		    mvprintw(3, 10, "%c", (char) x);
-		    refreshp();
-		    x = onechar();
-		    if (x != 27) {
-			weightbuf[1] = x;
-			weightbuf[2] = '\0';
-		    }
-		}
-		x = -1;
-		weight = atoi(weightbuf);
-		if (weight > -51 && weight < 50) {
-		    netkeyer(K_WEIGHT, weightbuf);
-		}
+		mvprintw(12, 29, "Wght: -50..50");
+
+		nicebox(1, 1, 2, 12, "Cw");
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-		mvprintw(1, 1, "             ");
-		mvprintw(2, 1, "             ");
-		mvprintw(3, 1, "             ");
-		mvprintw(4, 1, "             ");
+		mvprintw(2, 2, "Speed:   %2d ", GetCWSpeed());
+		mvprintw(3, 2, "Weight: %3d ", weight);
+		refreshp();
+
+		usleep(800000);
+		mvprintw(3, 10, "   ");
+
+		echo();
+		mvgetnstr(3, 10, weightbuf, 3);
+		noecho();
+
+		g_strchomp(weightbuf);
+
+		int tmp = strtol(weightbuf, &end, 10);
+
+		if ((weightbuf[0] != '\0') && (*end == '\0')) {
+		    /* successful conversion */
+
+		    if (tmp > -51 && tmp < 51) {
+			weight = tmp;
+			netkeyer(K_WEIGHT, weightbuf);
+		    }
+		}
+		clear_display();
 		printcall();
 
 		break;
@@ -343,10 +323,10 @@ char callinput(void)
 		if (ctcomp == 1) {
 		    while (x != 27)	//escape
 		    {
-			nicebox(1, 1, 2, 9, "Cw");
+			nicebox(1, 1, 2, 12, "Cw");
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-			mvprintw(2, 2, "Speed: %2d", GetCWSpeed());
-			mvprintw(3, 2, "Weight: %d", weight);
+			mvprintw(2, 2, "Speed:   %2d ", GetCWSpeed());
+			mvprintw(3, 2, "Weight: %3d ", weight);
 			printcall();
 			refreshp();
 
@@ -365,11 +345,7 @@ char callinput(void)
 			} else
 			    x = 27;
 
-			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-			mvprintw(1, 1, "           ");
-			mvprintw(2, 1, "           ");
-			mvprintw(3, 1, "           ");
-			mvprintw(4, 1, "           ");
+			clear_display();
 		    }
 		} else {	// trlog compatible, band switch
 		    if (bandinx >= 0 && *hiscall == '\0') {
