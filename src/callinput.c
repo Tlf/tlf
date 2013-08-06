@@ -706,8 +706,8 @@ char callinput(void)
 		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
-		    refreshp();
 		}
+		clear_display();
 		break;
 	    }
 	case 235:
