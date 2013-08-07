@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2011-2013      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -605,6 +606,10 @@ int changepars(void)
     case 43:			/* SCVOLUME - set soundcard volume */
 	{
 	    volumebuffer = atoi(sc_volume);
+	    mvprintw(12, 29, "Vol: pgup/dwn");
+	    refreshp();
+	    usleep(500000);
+	    mvprintw(12, 29, "Vol:         ");
 	    mvprintw(12, 29, "Vol: %d", volumebuffer);
 
 	    x = 1;
