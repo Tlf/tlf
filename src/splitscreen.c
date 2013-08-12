@@ -966,6 +966,7 @@ int cleanup_telnet(void)
 
     extern int prsock;
     extern WINDOW *entwin;
+    extern WINDOW *sclwin;
     extern SCREEN *mainscreen;
     extern int packetinterface;
     extern int fdSertnc;
@@ -978,6 +979,11 @@ int cleanup_telnet(void)
 	wmove(entwin, 1, 0);
 	wrefresh(entwin);
 	vidattr(A_NORMAL);
+	delwin(entwin);
+	wclear(sclwin);
+	wrefresh(sclwin);
+	delwin(sclwin);
+
 	endwin();
 
 	if (prsock > 0)
@@ -997,8 +1003,6 @@ int cleanup_telnet(void)
     }
 
     set_term(mainscreen);
-    clear();
-    clear_display();
 
     return (0);
 }

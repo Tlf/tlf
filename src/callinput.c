@@ -895,6 +895,7 @@ char callinput(void)
 
 		    if (x == 'y' || x == 'Y') {
 			writeparas();
+			cleanup_telnet();
 			endwin();
 
 			puts("\n\nThanks for using TLF.. 73\n");

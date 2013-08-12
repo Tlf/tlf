@@ -304,6 +304,7 @@ int changepars(void)
 	{
 	    writeparas();
 	    clear();
+	    cleanup_telnet();
 	    endwin();
 	    puts("\n\nThanks for using TLF.. 73\n");
 	    exit(0);
@@ -529,6 +530,7 @@ int changepars(void)
     case 38:			/* EXIT=QUIT */
 	{
 	    writeparas();
+	    cleanup_telnet();
 	    endwin();
 	    puts("\n\nThanks for using TLF.. 73\n");
 	    exit(0);
