@@ -267,9 +267,9 @@ int addcall2(void)
     } else
 	i = found;
 
-    strncpy(zonebuffer, cqzone, 3);	//hack: getctydata should not change zone!
+    g_strlcpy(zonebuffer, cqzone, 4);	//hack: getctydata should not change zone!
     j = getctydata2(hiscall);
-    strncpy(cqzone, zonebuffer, 3);	//idem....
+    g_strlcpy(cqzone, zonebuffer, 4);	//idem....
 
     call_country[i] = j;
     if (strlen(comment) >= 1) {

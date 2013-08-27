@@ -348,7 +348,7 @@ void init_mults()
    multarray_nr = 0;
 }
 
-/** register wortked multiplier and check if its new
+/** register worked multiplier and check if its new
  *
  * Check if multiplier is already registered. If not make a new entry in
  * mults[] array and increment the total mults count 'multarray_nr'.

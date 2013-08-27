@@ -91,6 +91,7 @@ int logedit(void)
 		if ((outfile = fopen("./cpyfile", "w")) == NULL) {
 		    mvprintw(24, 0, "Unable to open cpyfile...");
 		    refreshp();
+		    fclose(infile);
 		    sleep(2);
 		} else {
 
