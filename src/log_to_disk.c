@@ -83,16 +83,16 @@ int log_to_disk(int from_lan)
 
     } else {			// qso from lan
 
-	strncpy(lan_logline, lan_message + 2, 80);
+	strncpy(lan_logline, lan_message + 2, 87);
 	strcat(lan_logline,
 	       "                                                                              ");
 
 	if (cqwwm2 == 1) {
 	    if (lan_logline[0] != thisnode)
-		lan_logline[79] = '*';
+		lan_logline[86] = '*';
 	}
 
-	lan_logline[80] = '\0';
+	lan_logline[87] = '\0';
 
 	score2();
 	addcall2();
