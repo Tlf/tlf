@@ -266,6 +266,19 @@ int readcalls(void)
 	    hiscall[0] = '\0';
 	}
 
+	if (waedc_flg == 1) {
+
+	    strcpy(hiscall, presentcall);
+
+	    add_ok = waedc_pa();
+
+	    if (add_ok == 0) {
+		band_score[bandinx]++;
+	    }
+
+	    hiscall[0] = '\0';
+	}
+	
 	if (add_ok == 1) {
 
 	    call_band[l] |= inxes[bandinx];	/* mark band as worked */
@@ -374,7 +387,7 @@ int readcalls(void)
     }
 
     /* end arrldx_usa */
-    if (pacc_pa_flg == 1) {
+    if (pacc_pa_flg == 1 || waedc_flg == 1) {
 
 	for (n = 1; n < MAX_DATALINES; n++) {
 	    if ((countries[n] & BAND160) != 0)

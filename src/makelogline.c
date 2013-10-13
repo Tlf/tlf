@@ -178,7 +178,6 @@ void makelogline(void)
     }
 
     /* second (contest dependent part of logline */
-
     if (arrlss == 1) {		
 	// ----------------------------arrlss----------------
 	strcat(logline4, ssexchange);
@@ -232,7 +231,6 @@ void makelogline(void)
     /* If WPX 
      * -> add prefix to prefixes_worked and include new pfx in log line */
     new_pfx = (add_pfx(pxstr) == 0);	/* add prefix, remember if new */
-
     if (wpx ==1) {			/* wpx */
 	if (new_pfx) {
 	    strcat(logline4, pxstr);
@@ -240,7 +238,6 @@ void makelogline(void)
 	} else
 	    strncat(logline4, fillspaces, 5);
     }
-
     if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 	/* ------------cqww --------------------- */
 	logline4[68] = '\0';
@@ -329,18 +326,14 @@ void makelogline(void)
 	} else
 	    strncat(logline4, fillspaces, 9);
 
-    } else if (pacc_pa_flg == 1) {
-
+    } else if (pacc_pa_flg == 1 || waedc_flg == 1) {
 	logline4[68] = '\0';
-
 	if (addcty != 0) {
 	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
 
 	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
-
 	} else if (addcallarea == 1) {
-
 	    strcat(logline4, pxstr);
 
 	    if (strlen(pxstr) == 2) {
@@ -352,10 +345,9 @@ void makelogline(void)
 	    addcallarea = 0;
 
 	    strcat(logline4, "    ");
-	} else
-
+	} else {
 	    strncat(logline4, fillspaces, 9);
-
+	}
     } else if ((universal == 1)
 	       && ((country_mult == 1) || (dx_arrlsections == 1))) {
 
@@ -379,7 +371,6 @@ void makelogline(void)
     } else {
 	strncat(logline4, fillspaces, 4);
     }
-
     i = 77 - strlen(logline4);
     if (i > 0)				/* fill line until column 77 */
 	strncat(logline4, fillspaces, i);

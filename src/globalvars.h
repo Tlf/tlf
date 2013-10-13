@@ -38,6 +38,7 @@ extern int contest;
 extern int cqww;
 extern int arrldx_usa;
 extern int pacc_pa_flg;
+extern int waedc_flg;
 extern int country_mult;
 extern int other_flg;
 extern char hiscall[20];

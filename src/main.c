@@ -74,6 +74,7 @@ int arrldx_usa = 0;
 int arrl_fd = 0;
 int arrlss = 0;
 int pacc_pa_flg = 0;
+int waedc_flg = 0;
 int universal = 0;
 int addcallarea;
 int pfxmult = 0;
@@ -126,6 +127,7 @@ int verbose = 0;
 int no_rst = 0;			/* 1 - do not use RS/RST */
 
 int pacc_qsos[10][10];
+int waedc_qsos[10][10];
 int ve_cty;
 int w_cty;
 int zl_cty;

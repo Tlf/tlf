@@ -57,6 +57,7 @@ int getexchange(void)
     extern int cqww;
     extern int wpx;
     extern int pacc_pa_flg;
+    extern int waedc_flg;
     extern int arrldx_usa;
     extern int arrl_fd;
     extern int exchange_serial;
@@ -81,6 +82,7 @@ int getexchange(void)
     extern int pfxmult;
     extern int exc_cont;
     extern char continent[];
+    extern char mycontinent[];
     extern int keyerport;
     extern int commentfield;
     extern int no_rst;
@@ -89,7 +91,7 @@ int getexchange(void)
     int x = 0;
     char instring[2];
     char commentbuf[40] = "";
-    int retval;
+    int retval = 0;
     char *gridmult = "";
     int keyspeed = 30;
     char speedbuf[3] = "";
@@ -131,7 +133,7 @@ int getexchange(void)
     while (1) {
 
 	refresh_comment();
-
+	
        	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	nodelay(stdscr, TRUE);  /* main loop waiting for input */
 	x = -1;
@@ -152,7 +154,6 @@ int getexchange(void)
 	    x = onechar();
         }
         nodelay(stdscr, FALSE);
-
 
 	switch (x) {
 
@@ -421,6 +422,30 @@ int getexchange(void)
 
 	    }
 
+	    if (
+	      (waedc_flg == 1) &&
+	      (
+		((trxmode != DIGIMODE) && ((strcmp(mycontinent,"EU")==0 && strcmp(continent,"EU")!=0) || (strcmp(mycontinent,"EU")!=0 && strcmp(continent,"EU")==0)))
+		||
+		(trxmode == DIGIMODE)
+	      )
+	    ) {
+		if (strlen(comment) == 1) {
+		    strcpy(commentbuf, comment);
+		    comment[0] = '\0';
+		    strcat(comment, "00");
+		    strcat(comment, commentbuf);
+		}
+
+		if (strlen(comment) == 2) {
+		    strcpy(commentbuf, comment);
+		    comment[0] = '\0';
+		    strcat(comment, "0");
+		    strcat(comment, commentbuf);
+		}
+
+	    }
+	    
 	    if ((arrlss == 1) && (x != 9) && (strlen(section) < 2)) {
 		mvprintw(13, 54, "section?");
 		mvprintw(12, 54, comment);

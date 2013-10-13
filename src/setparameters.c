@@ -148,12 +148,14 @@ int setparameters(void)
 	    mvprintw(4, 2, "pacc_pa   ");
 	    mvprintw(5, 2, "dxped     ");
 	    mvprintw(6, 2, "qso       ");
+	    mvprintw(7, 2, "waedc     ");
 	    mvprintw(1, 12, "  other     ");
 	    mvprintw(2, 12, "            ");
 	    mvprintw(3, 12, "  arrldx_dx ");
 	    mvprintw(4, 12, "  pacc_dx   ");
 	    mvprintw(5, 12, "            ");
 	    mvprintw(6, 12, "            ");
+	    mvprintw(7, 12, "   waedc    ");
 
 	    mvprintw(22, 14, "                    ");
 	    mvprintw(22, 14, "");

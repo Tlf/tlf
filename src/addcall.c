@@ -47,6 +47,7 @@ int addcall(void)
     extern int countrynr;
     extern int arrldx_usa;
     extern int pacc_pa_flg;
+    extern int waedc_flg;
     extern int universal;
     extern int country_mult;
     extern int w_cty;
@@ -103,6 +104,9 @@ int addcall(void)
     if (pacc_pa_flg == 1)
 	add_ok = pacc_pa();
 
+    if (waedc_flg == 1)
+	add_ok = waedc_pa();
+    
     if (add_ok == 1) {
 
 	call_band[i] |= inxes[bandinx];		/* worked on this band */
@@ -218,6 +222,7 @@ int addcall2(void)
     extern int countryscore[];
     extern int zonescore[];
     extern int pacc_pa_flg;
+    extern int waedc_flg;
     extern int universal;
     extern int country_mult;
     extern char lan_logline[];
@@ -290,6 +295,9 @@ int addcall2(void)
     if (pacc_pa_flg == 1)
 	add_ok = pacc_pa();
 
+    if (waedc_flg == 1)
+	add_ok = waedc_pa();
+    
     if (add_ok == 1) {
 
 	bandinx = get_band(lan_logline);

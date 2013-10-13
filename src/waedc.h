@@ -16,21 +16,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <curses.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <ctype.h>
-#include "getctydata.h"
-#include "zone_nr.h"
-#include "getpx.h"
-#include "paccdx.h"
-#include "waedc.h"
 #include "tlf.h"
-#include "startmsg.h"
+#include "getpx.h"
 
+#define W_CALL 0
+#define VE_CALL 1
+#define ZL_CALL 2
+#define JA_CALL 3
+#define PY_CALL 4
+#define CE_CALL 5
+#define LU_CALL 6
+#define VK_CALL 7
+#define ZS_CALL 8
+#define UA9_CALL 9
 
-int readcalls(void);
-int synclog(char *synclogfile);
+int waedc_pa(void);
 
