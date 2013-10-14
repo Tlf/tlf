@@ -1,6 +1,6 @@
 #########################################
-# WAEDC contest for EU stations         #
-#        HA2OS, 13.10.2013              #
+# WAEDC contest for EU and DX stations  #
+#        HA2OS, 14.10.2013              #
 #########################################
 #
 CONTEST=waedc
@@ -8,10 +8,6 @@ LOGFILE=waedc.log
 CONTEST_MODE
 CABRILLO=UNIVERSAL
 #################################
-ONE_POINT
-RECALL_MULTS
-SERIAL_EXCHANGE
-#SHORT_SERIAL
 #NOB4
 #
 ##################################
@@ -29,7 +25,7 @@ SERIAL_EXCHANGE
 #                                #
 ##################################
 #
-F1=+++CQ RSGB TEST DE--- % ++TEST--
+F1=+++CQ TEST DE--- % ++TEST--
 F2=@ DE %
 F3=CFM UR ++5NN --#
 F4=TU 73
@@ -40,7 +36,7 @@ F8=AGN
 F9= ?
 F10= QRZ?
 F11= PSE K
-F12=++++TEST RSGB---- % %
+F12=++++TEST---- % %
 #
 CQ_TU_MSG=
 S&P_TU_MSG=TU 5NN #
