@@ -16,32 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <stdio.h>
+#include <curses.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-#include "checkparameters.h"
-#include "readctydata.h"
-#include "getmessages.h"
-#include "setcontest.h"
-#include "checklogfile.h"
-#include "checkqtclogfile.h"
-#include "readcalls.h"
-#include "readqtccalls.h"
-#include "clear_display.h"
-#include "logit.h"
-#include "getwwv.h"
-#include "scroll_log.h"
-#include "background_process.h"
-#include "searchlog.h"
-#include "qrb.h"
-#include "cwkeyer.h"
-#include "parse_logcfg.h"
-#include "sendqrg.h"
-#include "netkeyer.h"
-#include "lancode.h"
-#include "rules.h"
-#include "startmsg.h"
-#include "rtty.h"
-#include "initial_exchange.h"
-#include "bandmap.h"
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <ctype.h>
+#include "tlf.h"
+
+int readqtccalls();

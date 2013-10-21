@@ -127,3 +127,9 @@ extern int dxped;
 extern char pointstring[];
 extern int addzone;
 
+extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs for QTC's; 
+					// this is an array of flags, which marks when a QSO sent as QTC
+extern int nr_qsosflags_for_qtc;	// number of lines in qsoflags_for_qtc[]
+extern int next_qtc_qso;		// the next non-sent QSO, which can be send next as QTC
+extern t_qtclist qtclist;		// the QTC list to send
+extern int nr_qtcsent;

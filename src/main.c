@@ -300,6 +300,12 @@ char simulator_tone[5];
 char qsos[MAX_QSOS][LOGLINELEN+1];
 int nr_qsos = 0;
 
+int qsoflags_for_qtc[MAX_QSOS];
+int nr_qsosflags_for_qtc;
+int next_qtc_qso;
+t_qtclist qtclist;
+int nr_qtcsent = 0;
+
 /*------------------------------dupe array---------------------------------*/
 int callarray_nr = 0;		/* number of calls in callarray */
 char callarray[MAX_CALLS][20];	/* internal log representation for dupes  */
@@ -571,6 +577,15 @@ int main(int argc, char *argv[])
 	    exit(1);
 	}
 
+	if (waedc_flg == 1) {
+	    if (checkqtclogfile_new() != 0) {
+		showmsg( "QTC's giving up" );
+		sleep(2);
+		endwin();
+		exit(1);
+	    }
+	}
+
 //              if (strlen(synclogfile) > 0)
 //                      synclog(synclogfile);
 
@@ -764,6 +779,11 @@ int main(int argc, char *argv[])
 	scroll_log();		/* read the last 5  log lines and set the qso number */
 
 	nr_qsos = readcalls();	/* read the logfile for score and dupe */
+
+	if (waedc_flg == 1) {
+	    nr_qsosflags_for_qtc = nr_qsos;
+	    readqtccalls();
+	}
 
 	clear_display();	/* tidy up the display */
 

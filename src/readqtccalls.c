@@ -16,32 +16,44 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-#include "checkparameters.h"
-#include "readctydata.h"
-#include "getmessages.h"
-#include "setcontest.h"
-#include "checklogfile.h"
-#include "checkqtclogfile.h"
-#include "readcalls.h"
+	/* ------------------------------------------------------------
+	 *        Read sent QTC QSO's
+	 *
+	 *--------------------------------------------------------------*/
+
 #include "readqtccalls.h"
-#include "clear_display.h"
-#include "logit.h"
-#include "getwwv.h"
-#include "scroll_log.h"
-#include "background_process.h"
-#include "searchlog.h"
-#include "qrb.h"
-#include "cwkeyer.h"
-#include "parse_logcfg.h"
-#include "sendqrg.h"
-#include "netkeyer.h"
-#include "lancode.h"
-#include "rules.h"
-#include "startmsg.h"
-#include "rtty.h"
-#include "initial_exchange.h"
-#include "bandmap.h"
+#include "get_time.h"
+#include "tlf.h"
+#include "globalvars.h"
+#include <glib.h>
+
+int readqtccalls()
+{
+    int s = 0;
+    char inputbuffer[160];
+    FILE *fp;
+
+    clear();
+    mvprintw(4, 0, "Reading QTC sent logfile...\n");
+    refreshp();
+
+    /* set all flags to 0 */
+    for (s = 0; s < MAX_QSOS; s++) {
+	qsoflags_for_qtc[s] = 0;
+    }
+
+    if ((fp = fopen(QTC_SENT_LOG, "r")) == NULL) {
+	mvprintw(5, 0, "Error opening QTC sent logfile.\n");
+	refreshp();
+	sleep(2);
+	return -1;
+    }
+
+    next_qtc_qso = qsos[0];
+    while (fgets(inputbuffer, 90, fp) != NULL) {
+	s++;
+    }
+    next_qtc_qso = 0;
+    fclose(fp);
+    return s;
+}

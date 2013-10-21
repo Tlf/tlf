@@ -28,9 +28,13 @@
 #include "addspot.h"
 #include "logit.h"
 #include <glib.h>
+#include "qtcsend.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
+
+#include <syslog.h>
+
 
 int play_file(char *audiofile);
 
@@ -86,7 +90,10 @@ int getexchange(void)
     extern int keyerport;
     extern int commentfield;
     extern int no_rst;
+    extern char **qsos;
+    extern int nr_qsos;
 
+   
     int i;
     int x = 0;
     char instring[2];
@@ -157,6 +164,20 @@ int getexchange(void)
 
 	switch (x) {
 
+	case 195:	// ALT
+	    {
+		x = onechar();
+		switch(x) {
+		    case 178:	// ALT+r
+			      // qtc_recv_panel();
+			      break;
+		    case 179:  // ALT+s
+			      x = qtc_send_panel();	// return the last onechar()
+			      syslog(LOG_DEBUG, "%d", x);
+			      x = 155;
+			      continue;
+		}
+	    }
 	case 1:						/* ctrl-a */
 	    {
 		addspot();

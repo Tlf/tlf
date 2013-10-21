@@ -146,6 +146,20 @@ char callinput(void)
 	}
 	nodelay(stdscr, FALSE);
 
+	if (x == 195) {
+	  openlog("tlf", LOG_NDELAY, LOG_SYSLOG);
+	  x = onechar();
+	    if (x == 179) {
+		x = x;		// Alt+S
+		openlog("tlf", LOG_NDELAY, LOG_SYSLOG);
+		syslog(LOG_DEBUG, "ALT+S pressed, call: '%s'", hiscall);
+	    }
+	    if (x == 178) {
+		x = x;		// AltR
+		openlog("tlf", LOG_NDELAY, LOG_SYSLOG);
+		syslog(LOG_DEBUG, "ALT+R pressed, call: '%s'", hiscall);
+	    }
+	}
 
 	/* special handling of some keycodes if call field is empty */
 	if (i == 0 || *hiscall == '\0') {

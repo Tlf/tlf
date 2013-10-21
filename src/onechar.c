@@ -24,6 +24,8 @@
 
 #include "onechar.h"
 
+#include <syslog.h>
+
 int onechar(void)
 {
     extern int use_xterm;
@@ -51,7 +53,7 @@ int onechar(void)
 
 	    case 32 ... 57:	//   alt-space to alt-9,   160 - 186
 	    case 97 ... 122:	//   alt-a to alt-z,     225 -  250
-		x += 128;
+	      x += 128;
 		break;
 	    case 65 ... 78:	//   alt-A to alt-Z,     225 -  250
 	    case 80 ... 90:	//   alt-A to alt-Z,     225 -  250
@@ -69,12 +71,10 @@ int onechar(void)
 	    nodelay(stdscr, FALSE);
 
 	    x = getch();	/* remove '91 */
-
 	    switch (x) {
 	    case 49:
 		{
 		    x = getch();
-
 		    if (x == 126) {
 			x = 158;	/* home */
 			break;
@@ -133,6 +133,7 @@ int onechar(void)
 			    x = x + 256;
 			    trash = getch();
 			    trash = getch();
+			  
 			}
 		    }
 		    break;
@@ -149,6 +150,7 @@ int onechar(void)
 			    x = x + 256;
 			    trash = getch();
 			    trash = getch();
+			  
 			}
 		    }
 		    break;
@@ -185,7 +187,7 @@ int onechar(void)
 		}
 	    default:
 		{
-		    x = x;
+		  x = x;
 
 		}
 	    }			// end switch

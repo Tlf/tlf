@@ -146,6 +146,21 @@ struct tln_logline {
 } ;
 #endif
 
+typedef struct {
+  int qsoline;	// qsos[INDEX]
+  int flag;	// flag to mark for send
+  char qtc[30];
+} t_qtcline;
+
+typedef struct {
+  int serial;	// qtc serial
+  int count;	// nr of qtc in block
+  t_qtcline qtclines[10];
+} t_qtclist;
+
+#define QTC_SENT_LOG	"QTC_sent.log"
+#define QTC_RECV_LOG	"QTC_recv.log"
+
 void refreshp();
 
 #endif /* TLF_H */
