@@ -25,4 +25,4 @@
 #include "tlf.h"
 
 int getsummary(void);
-
+void ask(char *buffer, char *what);

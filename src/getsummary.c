@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2012           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +19,12 @@
  */
 
 	/* ------------------------------------------------------------
-	 *   write summary  file
+	 *   write cabrillo header
 	 *
 	 *--------------------------------------------------------------*/
 
 #include "getsummary.h"
+#include <glib.h>
 
 extern int cluster;
 extern int showscore_flag;
@@ -37,6 +39,24 @@ extern char exchange[];
 extern int arrlss;
 extern int serial_section_mult;
 extern int multarray_nr;
+
+void ask(char *buffer, char *what)
+{
+
+    attron(A_STANDOUT);
+    mvprintw(15, 1,
+	     "                                                                              ");
+    nicebox(14, 0, 1, 78, what);
+    attron(A_STANDOUT);
+    mvprintw(15, 1, "");
+
+    echo();
+    getnstr(buffer, 78);
+    noecho();
+    g_strstrip(buffer);
+}
+
+
 
 int getsummary(void)
 {

@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2012-2013	Thomas Beierlein <tb@forth-ev.de>
+ *               2012-2013           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,22 @@
 	 *
 	 *--------------------------------------------------------------*/
 #include "writecabrillo.h"
-#include "printcall.h"
-#include "curses.h"
+#include <curses.h>
+#include <glib.h>
+
+extern int use_rxvt;
+
+/** write out information */
+void info(char *s)
+{
+    if (use_rxvt == 0)
+        attron(COLOR_PAIR(COLOR_BLUE) | A_STANDOUT | A_BOLD);
+    else
+        attron(COLOR_PAIR(COLOR_BLUE) | A_STANDOUT);
+
+    mvprintw(13, 29, "%s", s);
+    refreshp();
+}
 
 int write_cabrillo(void)
 {
@@ -362,9 +376,11 @@ char *trim(char *string)
     return (string);
 }
 
+
+
 /*
     The ADIF function has been written according ADIF v1.00 specifications
-    as shown on http://home.no.net/jlog/adif/adif.html or http://www.adif.org
+    as shown on http://www.adif.org
     LZ3NY
 */
 
@@ -393,60 +409,61 @@ int write_adif(void)
 
     FILE *fp1, *fp2;
 
-    if (strlen(exchange) > 0)
-	strcpy(standardexchange, exchange);
-
     if ((fp1 = fopen(logfile, "r")) == NULL) {
-	fprintf(stdout, "Opening logfile not possible.\n");
-	fclose(fp1);		//added by F8CFE
+	info("Opening logfile not possible.");
+	sleep(2);
 	return (1);
     }
     strcpy(adif_tmp_name, whichcontest);
-    strcat(adif_tmp_name, ".adif");
+    strcat(adif_tmp_name, ".adi");
 
     if ((fp2 = fopen(adif_tmp_name, "w")) == NULL) {
-	fprintf(stdout, "Opening ADIF file not possible.\n");
+	info("Opening ADIF file not possible.");
+	sleep(2);
+	fclose(fp1);		//added by F8CFE
 	return (2);
-    } else {
-	fputs
-	    ("######################################################################################\n",
-	     fp2);
-	fputs
-	    ("#                     ADIF v1.00 data file exported by TLF\n",
-	     fp2);
-	fputs
-	    ("# according to specifications on http://home.no.net/jlog/adif/adif.html\n",
-	     fp2);
-	fputs("#\n", fp2);
-	fputs
-	    ("######################################################################################\n",
-	     fp2);
-	fputs("<adif_ver:4>1.00\n<eoh>\n", fp2);
-    }
+    } 
 
-    /* in case using write_adif() without write_cabrillo() */
+    if (strlen(exchange) > 0)
+	strcpy(standardexchange, exchange);
+
+    /* in case using write_adif() without write_cabrillo() before
+     * just ask for the needed information */
     if ((strlen(standardexchange) == 0) && (exchange_serial != 1)) {
-	nicebox(14, 0, 1, 78, "Exchange used:");
-	mvprintw(15, 1,
-		 "                                                       ");
-	mvprintw(15, 1, "");
-	attron(COLOR_PAIR(7) | A_STANDOUT);
-	echo();
-
-	getnstr(standardexchange, 30);
-	noecho();
+	ask(buffer, "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
+	strncpy(standardexchange, buffer, 10);
     }
-//while  (fgets (buf,  180,  fp1))              ### bug fix
+
+    info("Writing ADIF file");
+
+    /* write header */
+    fputs
+	("################################################################################\n",
+	 fp2);
+    fputs
+	("#                     ADIF v1.00 data file exported by TLF\n",
+	 fp2);
+    fputs
+	("#              according to specifications on http://www.adif.org\n",
+	 fp2);
+    fputs("#\n", fp2);
+    fputs
+	("################################################################################\n",
+	 fp2);
+    fputs("<adif_ver:4>1.00\n<eoh>\n", fp2);
+
     while (fgets(buf, sizeof(buf), fp1)) {
+
+	buffer[0] = '\0';
+
 	if ((buf[0] != ';') && ((buf[0] != ' ') || (buf[1] != ' '))
 	    && (buf[0] != '#') && (buf[0] != '\n') && (buf[0] != '\r')) {
-	    buffer[0] = '\0';
 
 /* CALLSIGN */
 	    strcat(buffer, "<CALL:");
 	    strncpy(adif_tmp_call, buf + 29, 12);
-	    strcpy(adif_tmp_call, trim(adif_tmp_call));
-	    snprintf(resultat, sizeof(resultat), "%d",
+	    strcpy(adif_tmp_call, g_strstrip(adif_tmp_call));
+	    snprintf(resultat, sizeof(resultat), "%zd",
 		     strlen(adif_tmp_call));
 	    strcat(buffer, resultat);
 	    strcat(buffer, ">");
@@ -480,6 +497,7 @@ int write_adif(void)
 	    else if (strcmp(modem_mode, "RTTY") == 0)
 		strcat(buffer, "<MODE:4>RTTY");
 	    else
+		/* \todo DIGI is no allowed mode */
 		strcat(buffer, "<MODE:4>DIGI");
 
 /* QSO_DATE */
@@ -529,7 +547,7 @@ int write_adif(void)
 	    strncat(buffer, buf + 20, 2);
 
 	    /* RS(T) flag */
-	    if (buf[3] == 'S')
+	    if (buf[3] == 'S')		/* check for SSB */
 		adif_mode_dep = 2;
 	    else
 		adif_mode_dep = 3;
@@ -549,18 +567,18 @@ int write_adif(void)
 		strcat(buffer, "4>");
 		strncat(buffer, buf + 23, 4);
 	    } else {
-		snprintf(resultat, sizeof(resultat), "%d",
+		snprintf(resultat, sizeof(resultat), "%zd",
 			 strlen(standardexchange));
 		strcat(buffer, resultat);
 		strcat(buffer, ">");
-		strcat(buffer, trim(standardexchange));
+		strcat(buffer, g_strstrip(standardexchange));
 	    }
 
 /* RST_RCVD */
 	    strncpy(adif_tmp_rr, buf + 49, 4);
-	    strcpy(adif_tmp_rr, trim(adif_tmp_rr));
+	    strcpy(adif_tmp_rr, g_strstrip(adif_tmp_rr));
 	    strcat(buffer, "<RST_RCVD:");
-	    snprintf(resultat, sizeof(resultat), "%d",
+	    snprintf(resultat, sizeof(resultat), "%zd",
 		     strlen(adif_tmp_rr));
 	    strcat(buffer, resultat);
 	    strcat(buffer, ">");
@@ -568,8 +586,8 @@ int write_adif(void)
 
 /* SRX - received contest number */
 	    strncpy(adif_rcvd_num, buf + 54, 14);
-	    strcpy(adif_rcvd_num, trim(adif_rcvd_num));
-	    snprintf(resultat, sizeof(resultat), "%d",
+	    strcpy(adif_rcvd_num, g_strstrip(adif_rcvd_num));
+	    snprintf(resultat, sizeof(resultat), "%zd",
 		     strlen(adif_rcvd_num));
 	    strcat(buffer, "<SRX:");
 	    strcat(buffer, resultat);
@@ -579,12 +597,9 @@ int write_adif(void)
 
 /* <EOR> */
 	    strcat(buffer, "<eor>\n");	//end of ADIF row
-	}
 
-	if (strlen(buffer) > 1)
 	    fputs(buffer, fp2);
-	buffer[0] = '\0';
-
+	}
     }				// end fgets() loop
 
     fclose(fp1);
