@@ -19,4 +19,5 @@
 #include "tlf.h"
 
 int qtc_send_panel();
+int scroll_down(int i);
 

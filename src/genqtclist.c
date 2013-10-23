@@ -33,8 +33,14 @@ int genqtclist(char * callsign)
 
     qtclistlen = ((nr_qsos - next_qtc_qso) > 10) ? 10 : (nr_qsos - next_qtc_qso);
     qtclist.serial = nr_qtcsent+1;
+    qtclist.marked = 0;
+    qtclist.totalsent = 0;
+    strncpy(qtclist.callsign, callsign, strlen(callsign));
     for(s = 0; s < qtclistlen; s++) {
 	qtclist.qtclines[s].qtc[0] = '\0';
+	qtclist.qtclines[s].flag = 0;
+	qtclist.qtclines[s].saved = 0;
+	qtclist.qtclines[s].sent = 0;
     }
 
     s=next_qtc_qso;
@@ -43,10 +49,12 @@ int genqtclist(char * callsign)
 	  genqtcline(qtclist.qtclines[i].qtc, qsos[s]);
 	  if (trxmode == DIGIMODE) {
 	      qtclist.qtclines[i].flag = 1;
+	      qtclist.marked++;
 	  }
 	  else {
 	      if (i == 0) {
 		  qtclist.qtclines[i].flag = 1;
+		  qtclist.marked++;
 	      }
 	      else {
 		  qtclist.qtclines[i].flag = 0;

@@ -149,12 +149,17 @@ struct tln_logline {
 typedef struct {
   int qsoline;	// qsos[INDEX]
   int flag;	// flag to mark for send
-  char qtc[30];
+  int saved;	// indicates QTC has saved
+  int sent;	// indicates QTC has sent at least once
+  char qtc[25];
 } t_qtcline;
 
 typedef struct {
   int serial;	// qtc serial
-  int count;	// nr of qtc in block
+  int count;	// nr of qtc line in block
+  int marked;	// nr of marked to send
+  int totalsent; // nr of sent qtc's
+  char callsign[15];  // current callsign; helps to detect if QSO has dropped
   t_qtcline qtclines[10];
 } t_qtclist;
 

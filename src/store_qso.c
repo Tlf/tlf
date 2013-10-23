@@ -24,6 +24,10 @@
 #include "globalvars.h"
 #include "store_qso.h"
 
+#include "log_sent_qtc_to_disk.h"
+
+#include <syslog.h>
+
 int store_qso(char *loglineptr)
 {
 	FILE *fp;
@@ -32,6 +36,10 @@ int store_qso(char *loglineptr)
 		fprintf(stdout,  "store_qso.c: Error opening file.\n");
 		endwin();
 		exit(1);
+	}
+
+	if (waedc_flg == 1 && qtclist.totalsent > 0) {
+	    log_sent_qtc_to_disk((nr_qsos+1));
 	}
 	strcpy(qsos[nr_qsos], loglineptr);
 	nr_qsos++;

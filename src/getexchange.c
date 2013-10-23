@@ -172,8 +172,7 @@ int getexchange(void)
 			      // qtc_recv_panel();
 			      break;
 		    case 179:  // ALT+s
-			      x = qtc_send_panel();	// return the last onechar()
-			      syslog(LOG_DEBUG, "%d", x);
+			      qtc_send_panel();
 			      x = 155;
 			      continue;
 		}

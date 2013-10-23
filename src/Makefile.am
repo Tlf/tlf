@@ -17,7 +17,7 @@ tlf_SOURCES = \
 	getsummary.c gettxinfo.c getwwv.c grabspot.c \
 	initial_exchange.c \
 	keyer.c \
-	lancode.c last10.c listmessages.c log_to_disk.c logit.c logview.c \
+	lancode.c last10.c listmessages.c log_to_disk.c log_sent_qtc_to_disk.c logit.c logview.c \
 	main.c makelogline.c messagechange.c muf.c \
 	nicebox.c note.c netkeyer.c\
 	onechar.c \
@@ -49,7 +49,7 @@ noinst_HEADERS = \
 	getsummary.h gettxinfo.h getwwv.h globalvars.h grabspot.h \
 	initial_exchange.h \
 	keyer.h \
-	lancode.h last10.h listmessages.h log_to_disk.h logit.h logview.h \
+	lancode.h last10.h listmessages.h log_to_disk.h log_sent_qtc_to_disk.h logit.h logview.h \
 	main.h makelogline.h messagechange.h muf.h multiplierinfo.h \
 	nicebox.h note.h netkeyer.h\
 	onechar.h \
