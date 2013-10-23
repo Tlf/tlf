@@ -32,6 +32,8 @@ int readqtccalls()
     int s = 0;
     char inputbuffer[160];
     FILE *fp;
+    char temps[30];
+    int tempi;
 
     clear();
     mvprintw(4, 0, "Reading QTC sent logfile...\n");
@@ -49,11 +51,21 @@ int readqtccalls()
 	return -1;
     }
 
-    next_qtc_qso = qsos[0];
     while (fgets(inputbuffer, 90, fp) != NULL) {
 	s++;
+	strncpy(temps, inputbuffer+1, 4);	// serial
+	tempi = atoi(temps);
+	if (tempi > nr_qtcsent) {
+	    nr_qtcsent = tempi;
+	}
+
+	strncpy(temps, inputbuffer+6, 4);	// qso nr in qso list
+	tempi = atoi(temps);
+	qsoflags_for_qtc[tempi] = 1;
+	if (tempi > next_qtc_qso) {
+	    next_qtc_qso = tempi+1;
+	}
     }
-    next_qtc_qso = 0;
     fclose(fp);
     return s;
 }
