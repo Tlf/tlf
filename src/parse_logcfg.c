@@ -42,6 +42,7 @@ extern int portnum;
 extern int packetinterface;
 extern int tncport;
 extern int shortqsonr;
+extern char * cabrillo;
 
 int exist_in_country_list();
 
@@ -52,7 +53,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 158	/* commands in list */
+#define  MAX_COMMANDS 159	/* commands in list */
 
 
 int read_logcfg(void)
@@ -76,6 +77,11 @@ int read_logcfg(void)
     nodes = 0;
     node = 0;
     shortqsonr = 0;
+    
+    if (cabrillo != NULL) {
+	free(cabrillo);
+	cabrillo = NULL;
+    }
 
     strcpy(defltconf, PACKAGE_DATA_DIR);
     strcat(defltconf, "/logcfg.dat");
@@ -407,8 +413,9 @@ int parse_logcfg(char *inputbuffer)
 	"DIGIMODEM",
 	"LOGFREQUENCY",
 	"IGNOREDUPE",
-	"CW_TU_MSG",				/* deprecated */
-	"VKCWR",		/* 155 */	/* deprecated */
+	"CABRILLO",
+	"CW_TU_MSG",		/* 155 */	/* deprecated */
+	"VKCWR",				/* deprecated */
 	"VKSPR",				/* deprecated */
 	"NO_RST"
     };
@@ -1353,13 +1360,22 @@ int parse_logcfg(char *inputbuffer)
 		ignoredupe = 1;
 		break;
 	    }
-    case 154:
+    case 154:{		/* read name of cabrillo format to use */
+
+		if (cabrillo != NULL) {
+		    free(cabrillo);	/* free old string if already set */
+		    cabrillo = NULL;
+		}
+	    	cabrillo = strdup(g_strchomp(fields[1]));
+    		break;
+	    }
     case 155:
-    case 156: {
+    case 156:
+    case 157:{
 		KeywordNotSupported(teststring);
 		break;
 	    }
-    case 157:{
+    case 158:{
 		 no_rst = 1;
 		 break;
 	    }

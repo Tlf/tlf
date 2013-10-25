@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- * 		 2010, 2011 Thomas Beierlein <tb@forth-ev.de>
+ * 		 2010 - 2013 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,113 @@
 #include "globalvars.h"
 #include "showscore.h"
 
+/* list of BANDINDEX entries to show in each column 
+ * first  - for normal contest bands
+ * second - if in warc band */
+static int bi_normal[6] =
+	{ BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
+	  BANDINDEX_20,  BANDINDEX_15, BANDINDEX_10 };
+static int bi_warc[6] =
+	{ BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
+	  BANDINDEX_30,  BANDINDEX_17, BANDINDEX_12 };
+
+
 void printfield (int x, int y, int number);
+
+
+/* get total number of points */
+int get_nr_of_points()
+{
+    return total;
+}
+
+
+/* get total number of multis */
+int get_nr_of_mults()
+{
+    extern int fixedmult;
+    extern int sprint;
+    extern int multlist;
+    extern int multscore[];
+
+    int n;
+    int totalzones;
+    int totalcountries;
+    int totalmults;
+
+    /* precalculate summaries */
+    totalzones = 0;
+    totalcountries = 0;
+    totalmults = 0;
+
+    for (n = 0; n < 6; n++) {
+	totalzones += zonescore[n];
+	totalcountries += countryscore[n];
+	totalmults += multscore[bi_normal[n]];
+    }
+
+    if (sprint == 1) {
+	/* no multis used */
+	return 1;
+    }
+    else if (arrlss == 1) {
+
+	return multarray_nr;
+    }
+    else if (cqww == 1) {
+
+	return totalcountries + totalzones;
+    }
+    else if (arrldx_usa == 1) {
+
+	return totalcountries;
+    }
+    else if (arrl_fd == 1) {
+	if (fixedmult != 0) {
+	    return fixedmult;
+	} else {
+	    return 1;
+	}
+    }
+    else if (universal == 1 && country_mult == 1) {
+
+	return totalcountries;
+    }
+    else if (universal == 1 && multlist == 1 && arrlss != 1) {
+
+	return totalmults ;
+    }
+    else if (pacc_pa_flg == 1) {
+
+	return totalcountries;
+    }
+    else if (wysiwyg_once == 1) {
+
+	return multarray_nr;
+    }
+    else if ((wysiwyg_multi == 1)
+	|| (serial_section_mult == 1)
+	|| (serial_grid4_mult == 1)
+	|| (sectn_mult == 1)) {
+
+	return totalmults;
+    }
+    else if (dx_arrlsections == 1) {
+
+	return totalmults + totalcountries;
+    }
+    else if (wpx == 1) {
+
+	return nr_of_px;
+    }
+    else 
+	/* should never reach that point 
+	 *
+	 * \TODO: so we need some instrument of warning here
+	 */
+	return 1;
+}
+
 
 int showscore(void)
 {
