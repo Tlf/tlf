@@ -5,6 +5,7 @@
 CONTEST=sprint
 LOGFILE=eusprint.log
 CONTEST_MODE
+CABRILLO=EUSPRINT
 #
 ##################################
 #                                #

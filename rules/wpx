@@ -5,6 +5,7 @@
 CONTEST=wpx
 LOGFILE=wpx.log
 CONTEST_MODE
+CABRILLO=UNIVERSAL
 #
 ##################################
 #                                #

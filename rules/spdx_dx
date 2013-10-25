@@ -6,6 +6,7 @@
 CONTEST=spdx_dx
 LOGFILE=spdx.log
 CONTEST_MODE
+CABRILLO=UNIVERSAL
 #################################
 MULT_LIST=spdxmults
 COUNTRYLIST=SP

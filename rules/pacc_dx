@@ -6,6 +6,7 @@
 CONTEST=pacc_dx
 LOGFILE=paccdx.log
 CONTEST_MODE
+CABRILLO=UNIVERSAL
 #################################
 MULT_LIST=paccmults
 COUNTRYLIST=PA

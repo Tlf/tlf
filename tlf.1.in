@@ -252,8 +252,8 @@ View the log with LESS
 
 .TR
 .B :WRIte 
-Write cabrillo file for selected contests (CQ and ARRL contests).
-Other contests may work, you have to experiment.
+Write cabrillo file according to specified format (see \fBCABRILLO=\fR 
+statement).
 
 .SH "KEYS"
 
@@ -679,11 +679,11 @@ Anything you dump into this fifo will be displayed by the packet interface.
 .TR
 .B RADIO_CONTROL
 Switches the radio interface on. The rig interface makes use of the Hamlib library which
-supports a lot of different rigs..
+supports a lot of different rigs.
 
 .TR
 .B RIGMODEL=<rig number>
-Look at the Hamlib stuff for the NUMBER of your rig...
+Look at the Hamlib stuff for the NUMBER of your rig.
 
 .TR
 .B RIGSPEED=<Baud rate>
@@ -838,6 +838,10 @@ Some contests, like cqww and wpx, are pre-programmed. look for the relevant rule
 .TR
 .B LOGFILE=<logfilename>
 Mandatory
+
+.TR 
+.B CABRILLO=<cabrillo_format> 
+Specify the name of the cabrillo format to use (see doc/README.cab).
 
 .TR
 .B CONTEST_MODE
