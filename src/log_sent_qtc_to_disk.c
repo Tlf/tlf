@@ -35,6 +35,8 @@ int log_sent_qtc_to_disk(int qsonr)
 {
     char qtclogline[60], temp[10];
     int qpos = 0, i;
+    int has_empty = 0;
+    int last_qtc = 0;
 
     for(i=0; i<10; i++) {
 
@@ -64,16 +66,36 @@ int log_sent_qtc_to_disk(int qsonr)
 	    
 	    // mark qso as sent as qtc
 	    qsoflags_for_qtc[qtclist.qtclines[i].qsoline] = 1;
+	    if (qtclist.qtclines[i].qsoline > last_qtc) {
+		last_qtc = qtclist.qtclines[i].qsoline;
+	    }
+	    // check if prev qso callsign is the current qtc window,
+	    // and excluded from list; if true, set the next_qtc_qso to that
+	    // else see below, the next qtc window pointer will set to
+	    // next qso after the current window
+	    if (qtclist.qtclines[i].qsoline > 0 && qsoflags_for_qtc[qtclist.qtclines[i].qsoline-1] == 0) {
+		has_empty = 1;
+		next_qtc_qso = qtclist.qtclines[i].qsoline-1;
+	    }
 
 	    qtclist.count = 0;
 	    qtclist.marked = 0;
 	    qtclist.totalsent = 0;
-	    // set next_qtc_qso pointer to next qso line
-	    // TODO: handle the empty line, if that exluded, eg. current
-	    // station callsign
+	    // set next_qtc_qso pointer to next qso line,
+	    // if the list is continous
+	    if (has_empty == 0) {
+		next_qtc_qso = qtclist.qtclines[i].qsoline+1;
+	    }
 	    //next_qtc_qso = qtclist.qtclines[i].qsoline+1;
 	    nr_qtcsent++;
 	    // totalpoints++??
+	    total++;
+	}
+    }
+    for(i=0; i<last_qtc; i++) {
+	if (qsoflags_for_qtc[i] == 0) {
+	    next_qtc_qso = i;
+	    break;
 	}
     }
     for(i=0; i<10; i++) {

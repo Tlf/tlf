@@ -27,6 +27,8 @@
 #include "globalvars.h"
 #include <glib.h>
 
+#include <syslog.h>
+
 int readqtccalls()
 {
     int s = 0;
@@ -34,7 +36,9 @@ int readqtccalls()
     FILE *fp;
     char temps[30];
     int tempi;
-
+    int last_qtc = 0;
+    int i;
+    
     clear();
     mvprintw(4, 0, "Reading QTC sent logfile...\n");
     refreshp();
@@ -62,10 +66,18 @@ int readqtccalls()
 	strncpy(temps, inputbuffer+6, 4);	// qso nr in qso list
 	tempi = atoi(temps);
 	qsoflags_for_qtc[tempi] = 1;
-	if (tempi > next_qtc_qso) {
-	    next_qtc_qso = tempi+1;
+	total++;
+	if (tempi > last_qtc) {
+	    last_qtc = tempi;
 	}
     }
+    for(i=0; i<last_qtc; i++) {
+	if (qsoflags_for_qtc[i] == 0) {
+	    next_qtc_qso = i;
+	    break;
+	}
+    }
+    syslog(LOG_DEBUG, "%d", next_qtc_qso);
     fclose(fp);
     return s;
 }

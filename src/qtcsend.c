@@ -63,8 +63,8 @@ int qtc_send_panel() {
     int line_currnormal = COLOR_PAIR(QTCSENDCURRLINE) | A_NORMAL;
     int line_normal = COLOR_PAIR(QTCSENDLINE) | A_NORMAL;
     
-    //if (qtclist.count == 0 || strcmp(hiscall, qtclist.callsign) != 0) {
-    if (qtclist.count == 0) {
+    if (qtclist.count == 0 || strcmp(hiscall, qtclist.callsign) != 0) {
+    //if (qtclist.count == 0) {
 	j = genqtclist(hiscall);
     }
     else {
@@ -246,6 +246,7 @@ int qtc_send_panel() {
 		    break;
 	  case 130:		// F2
 		    // send QTC serial and nr of QTC
+		    syslog(LOG_DEBUG, "qtclist.count: %d", qtclist.count);
 		    for(j=0; j<qtclist.count; j++) {
 			qtclist.qtclines[j].sent = 1;
 			if (j == i-1) {
@@ -255,6 +256,7 @@ int qtc_send_panel() {
 			    wattrset(qtcsendwin, line_inverted);
 			}
 			mvwprintw(qtcsendwin, j+2, 30, "*");
+			qtclist.totalsent++;
 		    }
 		    break;
 	  case 161:  		// DELETE
@@ -268,6 +270,7 @@ int qtc_send_panel() {
 			    wattrset(qtcsendwin, line_currnormal);
 			}
 			mvwprintw(qtcsendwin, i+1, 30, " ");
+			qtclist.totalsent--;
 		    }
 		    i = scroll_down(i);
 		    break;
@@ -283,6 +286,7 @@ int qtc_send_panel() {
 				wattrset(qtcsendwin, line_inverted);
 			    }
 			    mvwprintw(qtcsendwin, j+2, 30, " ");
+			    qtclist.totalsent--;
 			}
 		    }
 	}

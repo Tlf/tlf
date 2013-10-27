@@ -31,10 +31,12 @@ int genqtclist(char * callsign)
     int qtclistlen;
     int s = 0, i = 0;
 
-    qtclistlen = ((nr_qsos - next_qtc_qso) > 10) ? 10 : (nr_qsos - next_qtc_qso);
+    //qtclistlen = ((nr_qsos - next_qtc_qso) > 10) ? 10 : (nr_qsos - next_qtc_qso);
+    qtclistlen = 10;
     qtclist.serial = nr_qtcsent+1;
     qtclist.marked = 0;
     qtclist.totalsent = 0;
+    qtclist.count = 0;
     strncpy(qtclist.callsign, callsign, strlen(callsign));
     for(s = 0; s < qtclistlen; s++) {
 	qtclist.qtclines[s].qtc[0] = '\0';
@@ -44,37 +46,44 @@ int genqtclist(char * callsign)
     }
 
     s=next_qtc_qso;
-    while(s<qtclistlen) {
+    syslog(LOG_DEBUG, "%d - %d", s, qtclistlen);
+    // while(s<next_qtc_qso+qtclistlen) {
+    while (qtclist.count < qtclistlen && s < nr_qsos) {
 	if (strncmp(qsos[s]+29, callsign, strlen(callsign)) != 0) {	// exclude current callsign
-	  genqtcline(qtclist.qtclines[i].qtc, qsos[s]);
-	  if (trxmode == DIGIMODE) {
-	      qtclist.qtclines[i].flag = 1;
-	      qtclist.marked++;
-	  }
-	  else {
-	      if (i == 0) {
+	  if (qsoflags_for_qtc[s] == 0) {
+	      genqtcline(qtclist.qtclines[i].qtc, qsos[s]);
+	      if (trxmode == DIGIMODE) {
 		  qtclist.qtclines[i].flag = 1;
 		  qtclist.marked++;
 	      }
 	      else {
-		  qtclist.qtclines[i].flag = 0;
+		  if (i == 0) {
+		      qtclist.qtclines[i].flag = 1;
+		      qtclist.marked++;
+		  }
+		  else {
+		      qtclist.qtclines[i].flag = 0;
+		  }
 	      }
+	      qtclist.qtclines[i].qsoline = s;
+	      qtclist.count++;
+	      syslog(LOG_DEBUG, "%d: %s", i, qsos[s]);
+	      i++;
 	  }
-	  qtclist.qtclines[i].qsoline = s;
-	  i++;
 	}
-	else {
+	//else {
 	  // if current callsign is in next 10 qso, it will be skipped
 	  // try to increment the list to 10
-	  if ((nr_qsos - next_qtc_qso) > 11) {
-	    qtclistlen++;
-	  }
-	}
+	  //if ((nr_qsos - next_qtc_qso) > 11) {
+	  //if ((nr_qsos - next_qtc_qso) < 11) {
+	  //  qtclistlen--;
+	  //}
+	//}
 	s++;
     }
-    qtclist.count = i;
+    //qtclist.count = i;
 
-    return i;
+    return qtclist.count;
 }
 
 int genqtcline(char * qtc, char * line) {
