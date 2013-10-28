@@ -22,9 +22,7 @@
 #include <math.h>
 #include "sunup.h"
 
-#define PI              3.14159265
-
-#define I               "INVALID"
+#define RADIAN		(180.0 / M_PI)
 
 int muf(void);
 

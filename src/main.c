@@ -373,10 +373,6 @@ char C_QTH_Long[8] = "-5";
 char C_DEST_Lat[7] = "51";
 char C_DEST_Long[8] = "1";
 
-double yt = -4.9;		/* for muf calculation */
-double xt = 52.4;
-double yr = 5.0;
-double xr = 50.0;
 double r = 50;
 int m = 1;
 char hiscountry[40];
