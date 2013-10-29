@@ -133,3 +133,5 @@ extern int nr_qsosflags_for_qtc;	// number of lines in qsoflags_for_qtc[]
 extern int next_qtc_qso;		// the next non-sent QSO, which can be send next as QTC
 extern t_qtclist qtclist;		// the QTC list to send
 extern int nr_qtcsent;
+extern t_qtcreclist qtcreclist;		// the QTC list which received
+

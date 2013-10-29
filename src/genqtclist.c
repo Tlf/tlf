@@ -31,7 +31,6 @@ int genqtclist(char * callsign)
     int qtclistlen;
     int s = 0, i = 0;
 
-    //qtclistlen = ((nr_qsos - next_qtc_qso) > 10) ? 10 : (nr_qsos - next_qtc_qso);
     qtclistlen = 10;
     qtclist.serial = nr_qtcsent+1;
     qtclist.marked = 0;
@@ -46,8 +45,7 @@ int genqtclist(char * callsign)
     }
 
     s=next_qtc_qso;
-    syslog(LOG_DEBUG, "%d - %d", s, qtclistlen);
-    // while(s<next_qtc_qso+qtclistlen) {
+
     while (qtclist.count < qtclistlen && s < nr_qsos) {
 	if (strncmp(qsos[s]+29, callsign, strlen(callsign)) != 0) {	// exclude current callsign
 	  if (qsoflags_for_qtc[s] == 0) {
@@ -67,21 +65,11 @@ int genqtclist(char * callsign)
 	      }
 	      qtclist.qtclines[i].qsoline = s;
 	      qtclist.count++;
-	      syslog(LOG_DEBUG, "%d: %s", i, qsos[s]);
 	      i++;
 	  }
 	}
-	//else {
-	  // if current callsign is in next 10 qso, it will be skipped
-	  // try to increment the list to 10
-	  //if ((nr_qsos - next_qtc_qso) > 11) {
-	  //if ((nr_qsos - next_qtc_qso) < 11) {
-	  //  qtclistlen--;
-	  //}
-	//}
 	s++;
     }
-    //qtclist.count = i;
 
     return qtclist.count;
 }

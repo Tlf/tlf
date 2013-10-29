@@ -29,6 +29,7 @@
 #include "logit.h"
 #include <glib.h>
 #include "qtcsend.h"
+#include "qtcrecv.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
@@ -169,8 +170,9 @@ int getexchange(void)
 		x = onechar();
 		switch(x) {
 		    case 178:	// ALT+r
-			      // qtc_recv_panel();
-			      break;
+			      qtc_recv_panel();
+			      x = 155;
+			      continue;
 		    case 179:  // ALT+s
 			      qtc_send_panel();
 			      x = 155;

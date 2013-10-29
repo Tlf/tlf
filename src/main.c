@@ -305,6 +305,7 @@ int nr_qsosflags_for_qtc;
 int next_qtc_qso;
 t_qtclist qtclist;
 int nr_qtcsent = 0;
+t_qtcreclist qtcreclist;
 
 /*------------------------------dupe array---------------------------------*/
 int callarray_nr = 0;		/* number of calls in callarray */

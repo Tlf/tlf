@@ -71,13 +71,14 @@ int readqtccalls()
 	    last_qtc = tempi;
 	}
     }
+
+    next_qtc_qso = last_qtc;
     for(i=0; i<last_qtc; i++) {
 	if (qsoflags_for_qtc[i] == 0) {
 	    next_qtc_qso = i;
 	    break;
 	}
     }
-    syslog(LOG_DEBUG, "%d", next_qtc_qso);
     fclose(fp);
     return s;
 }

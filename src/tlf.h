@@ -163,6 +163,19 @@ typedef struct {
   t_qtcline qtclines[10];
 } t_qtclist;
 
+typedef struct {
+  char time[5];	// time of qso
+  char callsign[15]; // callsign
+  char serial[5]; // qso serial
+} t_qtcrecline;
+
+typedef struct {
+  int serial;
+  int count;
+  char callsign[15];
+  t_qtcrecline qtclines[10];
+} t_qtcreclist;
+
 #define QTC_SENT_LOG	"QTC_sent.log"
 #define QTC_RECV_LOG	"QTC_recv.log"
 
