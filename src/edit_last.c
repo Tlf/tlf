@@ -30,8 +30,6 @@
 #define NR_LINES 5
 #define NR_COLS 80
 
-#include <syslog.h>
-
 /* highlite the edit line and set the cursor */
 static void highlite_line(int row, char *line, int column)
 {
@@ -109,18 +107,6 @@ void edit_last(void)
 
 	j = onechar();
 
-	/* if (j == 195) {
-	    j = onechar();
-	    if (j == 179) {
-		j = j;		// Alt+S
-		syslog(LOG_DEBUG, "ALT+S pressed");
-	    }
-	    if (j == 178) {
-		j = j;		// AltR
-		syslog(LOG_DEBUG, "ALT+R pressed");
-	    }
-	} */
-	
 	if (j == 1) {		// ctrl A, beginning of line
 	    b = 1;
 

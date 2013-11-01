@@ -24,8 +24,6 @@
 
 #include "onechar.h"
 
-#include <syslog.h>
-
 int onechar(void)
 {
     extern int use_xterm;

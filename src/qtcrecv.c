@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2013 Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,6 @@
 #include "nicebox.h"
 #include "time_update.h"
 #include <ctype.h>
-/* #include "log_sent_qtc_to_disk.h" */
-
-#include "syslog.h"
 
 extern char hiscall[];
 extern int trxmode;
@@ -49,6 +46,7 @@ int currrecstate;
 WINDOW * qtcrecvwin;
 PANEL * qtcrecv_panel;
 t_qtcfieldset fieldset;
+// array values: hor position, cursor position, field len to fill with spaces
 int pos[5][3] = {{3, 6, 4}, {8, 8, 2}, {3, 3, 4}, {8, 8, 15}, {24, 24, 4}};
 int curpos = 0;
 int curfieldlen = 0;
@@ -123,7 +121,6 @@ int qtc_recv_panel() {
 	usleep(10000);
 	time_update();
 	x = onechar();
-	syslog(LOG_DEBUG, "pressed: %d", x);
 	switch(x) {
 	  case 152:		// up
 		    if (fieldset.active > 1) {	// nr of QTC record field idx
@@ -174,9 +171,6 @@ int qtc_recv_panel() {
 		    break;
 	  case 138:			// SHIFT + Fn
 		    x = onechar();
-		    //syslog(LOG_DEBUG, "pressed: %d", x);
-		    //if (x == 81) {	// shift + F2
-		    //}
 		    break;
 	  case 9:		// TAB
 		    if (fieldset.active == 31) {
@@ -238,7 +232,6 @@ int showfield(int fidx) {
 
 	char fieldval[20], filled[20];
 	int qtcrow, winrow, fi, posidx, i;
-	// array values: hor position, cursor position, field len to fill with spaces
 
 	init_pair(QTCRECVWINBG,   COLOR_BLUE,   COLOR_GREEN);
 	init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);

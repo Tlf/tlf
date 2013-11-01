@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0r@eudxf.org>
  *                    2010-2011 Thomas Beierlein <tb@forth-ev.de>
+ *                    2013      Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

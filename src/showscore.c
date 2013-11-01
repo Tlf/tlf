@@ -1,7 +1,8 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- * 		 2010 - 2013 Thomas Beierlein <tb@forth-ev.de>
+ *               2010 - 2013    Thomas Beierlein <tb@forth-ev.de>
+ *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +26,6 @@
 #include "globalvars.h"
 #include "showscore.h"
 #include <assert.h>
-
-#include <syslog.h>
 
 #define START_COL 45	/* start display in these column */
 
@@ -123,7 +122,6 @@ int get_nr_of_mults()
 	totalzones += zonescore[n];
 	totalcountries += countryscore[n];
 	totalmults += multscore[bi_normal[n]];
-//syslog(LOG_DEBUG, "%d: %d", n, multscore[bi_normal[n]]);
     }
 
     if (sprint == 1) {

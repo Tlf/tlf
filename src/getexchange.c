@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@eudx.org>
  *               2011-2012                Thomas Beierlein <tb@forth-ev.de>
+ *               2013                     Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +34,6 @@
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
-
-#include <syslog.h>
 
 
 int play_file(char *audiofile);

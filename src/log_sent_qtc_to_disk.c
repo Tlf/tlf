@@ -1,7 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2013           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +24,6 @@
 
 #include "globalvars.h"
 #include "log_sent_qtc_to_disk.h"
-
-#include <syslog.h>
 
 pthread_mutex_t qtc_disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 

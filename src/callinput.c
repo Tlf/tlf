@@ -2,7 +2,8 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2005 Rein Couperus <pa0r@eudxf.org>
  *               2009-2013 Thomas Beierlein <tb@forth-ev.de>
- *
+ *               2013      Ervin Hegedüs - HA2OS <airween@gmail.com>
+ * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -152,12 +153,10 @@ char callinput(void)
 	    if (x == 179) {
 		x = x;		// Alt+S
 		openlog("tlf", LOG_NDELAY, LOG_SYSLOG);
-		syslog(LOG_DEBUG, "ALT+S pressed, call: '%s'", hiscall);
 	    }
 	    if (x == 178) {
 		x = x;		// AltR
 		openlog("tlf", LOG_NDELAY, LOG_SYSLOG);
-		syslog(LOG_DEBUG, "ALT+R pressed, call: '%s'", hiscall);
 	    }
 	}
 

@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +26,6 @@
 #include "store_qso.h"
 
 #include "log_sent_qtc_to_disk.h"
-
-#include <syslog.h>
 
 int store_qso(char *loglineptr)
 {
