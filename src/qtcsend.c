@@ -246,7 +246,6 @@ int qtc_send_panel() {
 		    break;
 	  case 130:		// F2
 		    // send QTC serial and nr of QTC
-		    syslog(LOG_DEBUG, "qtclist.count: %d", qtclist.count);
 		    for(j=0; j<qtclist.count; j++) {
 			qtclist.qtclines[j].sent = 1;
 			if (j == i-1) {

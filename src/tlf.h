@@ -164,6 +164,7 @@ typedef struct {
 } t_qtclist;
 
 typedef struct {
+  int status;	// received, failed, nothing
   char time[5];	// time of qso
   char callsign[15]; // callsign
   char serial[5]; // qso serial

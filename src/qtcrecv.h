@@ -18,5 +18,20 @@
  */
 #include "tlf.h"
 
+
+typedef struct {
+  t_qtcreclist qtcreclist;	// received QTC list
+  int active;			// current field index
+} t_qtcfieldset;
+
+
 int qtc_recv_panel();
+int showfield(int fidx);
+int modify_field(int pressed);
+int delete_from_field(int dir);
+int shift_right(char * fieldval);
+int shift_left(char * fieldval, int shift);
+int show_status(int idx);
+int number_fields();
+//int move_cursor(int dir);
 
