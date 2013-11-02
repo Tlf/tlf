@@ -29,6 +29,8 @@
 #include "time_update.h"
 #include <ctype.h>
 
+#include <syslog.h>
+
 extern char hiscall[];
 extern int trxmode;
 extern t_qtcreclist qtcreclist;
@@ -54,6 +56,7 @@ int curfieldlen = 0;
 int qtc_recv_panel() {
     char qtchead[32], temps[16];
     int i, j, x;
+    int currqtc = -1, colidx;
     int nrpos = 0;
 
     init_pair(QTCRECVWINBG,   COLOR_BLUE,   COLOR_GREEN);
@@ -70,6 +73,7 @@ int qtc_recv_panel() {
 	strncpy(qtcreclist.callsign, hiscall, strlen(hiscall));
 	qtcreclist.count = 0;
 	qtcreclist.serial = 0;
+	qtcreclist.confirmed = 0;
 	for(i=0; i<10; i++) {
 	    qtcreclist.qtclines[i].status = 0;
 	    qtcreclist.qtclines[i].time[0] = '\0';
@@ -163,14 +167,80 @@ int qtc_recv_panel() {
 		    }
 		    break;
 	  case 10:  		// ENTER
+		    if (fieldset.active > 1) {
+			currqtc = ((fieldset.active-2)/3)+1;
+			if ((fieldset.active-2)%3 == 2) {
+			    if (qtcreclist.qtclines[currqtc].status == 0) {
+				qtcreclist.qtclines[currqtc].status = 2;
+				show_status(currqtc);
+				qtcreclist.confirmed++;
+				if (currqtc < qtcreclist.count) {
+				    if (trxmode == DIGIMODE) {
+					fieldset.active+=3;	// go to next line exch field
+					showfield(fieldset.active-3);
+				    }
+				    else {
+					// TODO
+					// in CW mode send 'R' to station
+					// TODO
+					fieldset.active++;	// go to next line time field
+					showfield(fieldset.active-1);
+				    }
+				    showfield(fieldset.active);
+				}
+			    }
+			    else if (qtcreclist.qtclines[currqtc].status == 1) {
+				if (trxmode == CWMODE) {
+				    // TODO
+				    // send 'AGN' to station
+				    // TODO
+				}
+			    }
+			    else {
+				if (qtcreclist.confirmed == qtcreclist.count) {
+				    // TODO
+				    // send 'CFM all' to station
+				    // TODO
+				    x = 27;	// close the window
+				}
+			    }
+			}
+		    }
 		    break;
 	  case 130:		// F2
+		    for(j=0; j<qtcreclist.count; j++) {
+		      syslog(LOG_DEBUG, "j: %d", j);
+		      syslog(LOG_DEBUG, "status: %d", qtcreclist.qtclines[j].status);
+		      syslog(LOG_DEBUG, "time: %d", strlen(qtcreclist.qtclines[j].time));
+		      syslog(LOG_DEBUG, "callsign: %d", strlen(qtcreclist.qtclines[j].callsign));
+		      syslog(LOG_DEBUG, "serial: %d", strlen(qtcreclist.qtclines[j].serial));
+			if (qtcreclist.qtclines[j].status == 0 &&
+			    strlen(qtcreclist.qtclines[j].time) == 4 &&
+			    strlen(qtcreclist.qtclines[j].callsign) > 0 &&
+			    strlen(qtcreclist.qtclines[j].serial) > 0
+			) {
+			    qtcreclist.confirmed++;
+			    qtcreclist.qtclines[j].status = 2;
+			    show_status(j);
+			}
+		    }
+		    showfield(fieldset.active);
 		    break;
 	  case 161:  		// DELETE
 		    delete_from_field(0);
 		    break;
 	  case 138:			// SHIFT + Fn
 		    x = onechar();
+		    if (x == 81) {	// shift + F2
+			for(j=0; j<qtcreclist.count; j++) {
+			    if (qtcreclist.qtclines[j].status == 2) {
+				qtcreclist.confirmed--;
+			    }
+			    qtcreclist.qtclines[j].status = 0;
+			    show_status(j);
+			}
+			showfield(fieldset.active);
+		    }
 		    break;
 	  case 9:		// TAB
 		    if (fieldset.active == 31) {
@@ -256,7 +326,7 @@ int showfield(int fidx) {
 	else {
 	    fi = fidx-2;
 	    winrow = (fi/3)+2;
-	    qtcrow = winrow-1;
+	    qtcrow = winrow-2;
 	    switch(fi%3) {
 		case 0:	sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].time);
 			posidx = 2;
@@ -325,7 +395,8 @@ int modify_field(int pressed) {
 	else {
 	    fi = fieldset.active-2;
 	    winrow = (fi/3)+2;
-	    qtcrow = winrow-1;
+	    qtcrow = winrow-2;
+	    syslog(LOG_DEBUG, "qtcrow: %d", qtcrow);
 	    stridx = fi%3;
 	    switch(stridx) {
 		case 0:	sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].time);
@@ -339,6 +410,9 @@ int modify_field(int pressed) {
 			break;
 	    }
 	    if (pressed == '?') {
+		if (qtcreclist.qtclines[qtcrow].status == 2) {
+		    qtcreclist.confirmed--;
+		}
 		qtcreclist.qtclines[qtcrow].status = 1;	// set incomplete the qtc status
 		show_status(qtcrow);
 	    }
@@ -393,7 +467,7 @@ int delete_from_field(int dir) {
 	else {
 	    fi = fieldset.active-2;
 	    winrow = (fi/3)+2;
-	    qtcrow = winrow-1;
+	    qtcrow = winrow-2;
 	    stridx = fi%3;
 	    switch(stridx) {
 		case 0:	sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].time);
@@ -483,6 +557,9 @@ int show_status(int idx) {
 	    }
 	}
 	if (status == 1) {
+	    if (qtcreclist.qtclines[idx].status == 2) {
+		qtcreclist.confirmed--;
+	    }
 	    qtcreclist.qtclines[idx].status = 1;
 	}
 	else if (qtcreclist.qtclines[idx].status != 2) {	// unset incomplete mark if not marked as complete
@@ -498,7 +575,7 @@ int show_status(int idx) {
 			break;
 	}
 	wattrset(qtcrecvwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
-	mvwprintw(qtcrecvwin, idx+1, 30, "%c", flag);
+	mvwprintw(qtcrecvwin, idx+2, 30, "%c", flag);
 	return 0;
 }
 
