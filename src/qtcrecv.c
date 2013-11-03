@@ -29,8 +29,6 @@
 #include "time_update.h"
 #include <ctype.h>
 
-#include <syslog.h>
-
 extern char hiscall[];
 extern int trxmode;
 extern t_qtcreclist qtcreclist;
@@ -168,9 +166,13 @@ int qtc_recv_panel() {
 		    break;
 	  case 10:  		// ENTER
 		    if (fieldset.active > 1) {
-			currqtc = ((fieldset.active-2)/3)+1;
+			currqtc = ((fieldset.active-2)/3);
 			if ((fieldset.active-2)%3 == 2) {
-			    if (qtcreclist.qtclines[currqtc].status == 0) {
+			    if (qtcreclist.qtclines[currqtc].status == 0 &&
+				strlen(qtcreclist.qtclines[currqtc].time) == 4 &&
+				strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
+				strlen(qtcreclist.qtclines[currqtc].serial) > 0
+			    ) {
 				qtcreclist.qtclines[currqtc].status = 2;
 				show_status(currqtc);
 				qtcreclist.confirmed++;
@@ -209,11 +211,6 @@ int qtc_recv_panel() {
 		    break;
 	  case 130:		// F2
 		    for(j=0; j<qtcreclist.count; j++) {
-		      syslog(LOG_DEBUG, "j: %d", j);
-		      syslog(LOG_DEBUG, "status: %d", qtcreclist.qtclines[j].status);
-		      syslog(LOG_DEBUG, "time: %d", strlen(qtcreclist.qtclines[j].time));
-		      syslog(LOG_DEBUG, "callsign: %d", strlen(qtcreclist.qtclines[j].callsign));
-		      syslog(LOG_DEBUG, "serial: %d", strlen(qtcreclist.qtclines[j].serial));
 			if (qtcreclist.qtclines[j].status == 0 &&
 			    strlen(qtcreclist.qtclines[j].time) == 4 &&
 			    strlen(qtcreclist.qtclines[j].callsign) > 0 &&
@@ -396,7 +393,6 @@ int modify_field(int pressed) {
 	    fi = fieldset.active-2;
 	    winrow = (fi/3)+2;
 	    qtcrow = winrow-2;
-	    syslog(LOG_DEBUG, "qtcrow: %d", qtcrow);
 	    stridx = fi%3;
 	    switch(stridx) {
 		case 0:	sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].time);
@@ -481,7 +477,7 @@ int delete_from_field(int dir) {
 			break;
 	    }
 
-	    if (strlen(fieldval) > 1) {
+	    if (strlen(fieldval) > 0) {
 		//fieldval[strlen(fieldval)-2] = '\0';
 		shift_left(fieldval, dir);
 		//strncpy(newfieldval, fieldval, strlen(fieldval)-2);
