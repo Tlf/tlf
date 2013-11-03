@@ -78,5 +78,18 @@ int readqtccalls()
 	}
     }
     fclose(fp);
+
+    if ((fp = fopen(QTC_RECV_LOG, "r")) == NULL) {
+	mvprintw(5, 0, "Error opening QTC received logfile.\n");
+	refreshp();
+	sleep(2);
+	return -1;
+    }
+
+    while (fgets(inputbuffer, 90, fp) != NULL) {
+	total++;
+    }
+
+    fclose(fp);
     return s;
 }

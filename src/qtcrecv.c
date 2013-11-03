@@ -72,6 +72,7 @@ int qtc_recv_panel() {
 	qtcreclist.count = 0;
 	qtcreclist.serial = 0;
 	qtcreclist.confirmed = 0;
+	qtcreclist.sentcfmall = 0;
 	for(i=0; i<10; i++) {
 	    qtcreclist.qtclines[i].status = 0;
 	    qtcreclist.qtclines[i].time[0] = '\0';
@@ -200,9 +201,12 @@ int qtc_recv_panel() {
 			    }
 			    else {
 				if (qtcreclist.confirmed == qtcreclist.count) {
-				    // TODO
-				    // send 'CFM all' to station
-				    // TODO
+				    if (qtcreclist.sentcfmall == 0) {
+					qtcreclist.sentcfmall = 1;
+					// TODO
+					// send 'CFM all' to station
+					// TODO
+				    }
 				    x = 27;	// close the window
 				}
 			    }
