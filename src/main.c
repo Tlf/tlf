@@ -91,7 +91,6 @@ int lowband_point_mult = 0;
 int sc_sidetone;
 char sc_volume[4] = "";
   /* LZ3NY mods */
-char contest_name[50];
 int countrylist_points = -1;
 int my_country_points = -1;
 int my_cont_points = -1;
@@ -138,8 +137,6 @@ int vk_cty;
 int zs_cty;
 int ua9_cty;
 
-char tlfversion[80] = "";
-char testbuffer[120] = "";
 char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
 char exchange_list[40] = "";
@@ -234,6 +231,7 @@ char weightbuf[4];
 char tonestr[5] = "600";
 int cqdelay = 8;
 char wkeyerbuffer[400];
+int bufloc = 0;
 int cfd;			/* cwkeyer file descriptor */
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
@@ -248,8 +246,8 @@ int commentfield = 0;		/* 1 if we are in comment/excahnge input */
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
 int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
+char lastwwv[120] = "";
 int ptr;				/* Anzahl Lines in ispot_ptr array */
-long int *wwv_ptr;
 int packetinterface = 0;
 int fdSertnc = 0;
 int fdFIFO = 0;
@@ -333,9 +331,7 @@ int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;			/* nr of next QSO */
-int bufloc = 0;
 int ymax, xmax;			/* screen size */
-char lastwwv[120] = "";
 int nroflines;
 
 pid_t pid;
@@ -350,7 +346,6 @@ int showfreq = 0;
 float bandfrequency[9] =
     { 1830.0, 3525.0, 7010.0, 10105.0, 14025.0, 18070.0, 21025.0, 24900.0,
 28025.0 };
-char spot_target[8][40];
 
 char headerline[81] =
     "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  \n";
@@ -410,6 +405,7 @@ int main(int argc, char *argv[])
     int ret;
     int retval;
     char keyerbuff[3];
+    char tlfversion[80] = "";
     int status;
 
     while ((argc > 1) && (argv[1][0] == '-')) {
