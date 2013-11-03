@@ -1,3 +1,22 @@
+tlf-1.1.7
+=========
+Minor maintenance and bugfix release.
+
+New features:
+    - Backport new handling of cabrillo logs from 1.2.x branch. See
+      'doc/README.cabrillo' and man page for more information and
+      rule files for examples.
+      Make sure to add a 'CABRILLO=<format>' line into 'logcfg.dat' if
+      you want to use the cabrillos logs.
+    - Cabrillo files are written in the cabrillo v3 format.
+
+Bug fixes:
+    - Changed license boilerplate to conform to GPL (was LGPL before).
+      Thanks Nate Bargmann N0NB for pointing it out.
+    - Fix switching on/off the score window
+    - fix display of worked countries for cqww
+
+
 tlf-1.1.6
 =========
 Minor maintenance and bugfix release.
@@ -13,7 +32,7 @@ New features:
 
 Bug fixes:
     - QSO points were not written for WYSIWYG_ONCE multis.
-    - ADIF and cabrillo files missed QSOs for smoe or all WARC bands. 
+    - ADIF and cabrillo files missed QSOs for some or all WARC bands. 
       (Even if no WARC bands should be used in contests we add the correct 
       frequency output for these bands now)
     - fix recognition of ARRL Field day rules (changed rule file to name

@@ -1,3 +1,43 @@
+2013-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * AUTHORS: update AUTHORS file
+
+2013-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/cqww, share/cabrillo.fmt: fix cabrillo definition
+  - use TX identifier at end of line only for cqww contest
+
+2013-10-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c, src/getsummary.c, src/getsummary.h, src/main.c,
+  src/parse_logcfg.c, src/showscore.c, src/showscore.h, src/writecabrillo.c:
+  backport changes for new CABRILLO handling from 1.2.x branch
+
+  * doc/Makefile.am, doc/README.cabrillo, rules/arrl10m_dx, rules/arrldx_dx,
+  rules/arrldx_usa, rules/arrlss, rules/contest, rules/cqww, rules/eusprint,
+  rules/lzdx, rules/pacc_dx, rules/pacc_pa, rules/spdx_dx, rules/spdx_sp,
+  rules/template, rules/wpx, share/Makefile.am, share/cabrillo.fmt, tlf.1.in:
+  add supporting files for new cabrillo handling
+  - documentation
+  - adapted rule files
+  - cabrillo definitions
+  - man page
+
+2013-10-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getsummary.c, src/getsummary.h, src/writecabrillo.c: Backport changes
+  for writing ADIF files from 1.2.0 branch
+
+2013-08-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c: Fix switching on/off the score window
+
+2013-07-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showpxmap.c: fix display of worked countries for cqww
+  - uses line 1..5 omitting the line with the contest information
+  - clear the lines before und after use
+
 2013-06-16  Thomas Beierlein <tomjbe@gentoo.org>
 
   * rules/arrlfd, src/callinput.c, src/clear_display.c, src/getexchange.c,
