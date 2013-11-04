@@ -174,6 +174,8 @@ typedef struct {
 typedef struct {
   int serial;
   int count;
+  int confirmed;
+  int sentcfmall;
   char callsign[15];
   t_qtcrecline qtclines[10];
 } t_qtcreclist;

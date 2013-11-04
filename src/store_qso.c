@@ -40,6 +40,9 @@ int store_qso(char *loglineptr)
 	if (waedc_flg == 1 && qtclist.totalsent > 0) {
 	    log_sent_qtc_to_disk((nr_qsos+1));
 	}
+	if (waedc_flg == 1 && qtcreclist.count > 0) {
+	    log_recv_qtc_to_disk((nr_qsos+1));
+	}
 	strcpy(qsos[nr_qsos], loglineptr);
 	nr_qsos++;
 	strcat(loglineptr, "\n");	// pa3fwm, 20040113: this looks suspicious, repeated calls to store_qso() could add multiple \n's

@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2013 Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  */
 /*------------------------------------------------------------------------
 
-    Log QSO to disk the QTC line, do all necessary actions to clear qtc store
+    Log QSO to disk the sent QTC line, do all necessary actions to clear qtc store
 
 ------------------------------------------------------------------------*/
 
