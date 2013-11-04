@@ -212,7 +212,6 @@ int qtc_recv_panel() {
 			    }
 			}
 		    }
->>>>>>> 9ac4eb9df139fab1c24309886a6baae2d0f9fb28
 		    break;
 	  case 130:		// F2
 		    for(j=0; j<qtcreclist.count; j++) {
