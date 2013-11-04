@@ -163,6 +163,7 @@ int qtc_recv_panel() {
 		    }
 		    break;
 	  case 10:  		// ENTER
+		    mark_as_complete();
 		    break;
 	  case 130:		// F2
 		    break;
