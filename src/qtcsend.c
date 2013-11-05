@@ -29,10 +29,18 @@
 #include "nicebox.h"
 #include "time_update.h"
 #include "log_sent_qtc_to_disk.h"
+//#include "write_keyer.h"
+#include "sendbuf.h"
+#include <stdlib.h>
 
 extern char hiscall[];
 extern int trxmode;
 extern t_qtclist qtclist;
+
+extern char wkeyerbuffer[];
+extern int data_ready;
+extern char buffer[];
+extern char rttyoutput[];
 
 enum {
   QTCSENDWINBG = 32,
@@ -45,11 +53,15 @@ int qtcpanel = 0;
 int currstate;
 WINDOW * qtcsendwin;
 PANEL * qtcsend_panel;
+char sentqtc_queue[11][30];
+int sentqtc_p;
 
 int qtc_send_panel() {
-    char qtchead[32];
+    char qtchead[32], tempc[40];
     int i, j, x;
-    int nrpos = 0;
+    int nrpos = 0, tsp, tdp;
+    char outstring[1000];
+    char qtcbuffer[1000];
 
     init_pair(QTCSENDWINBG,   COLOR_BLUE,   COLOR_GREEN);
     init_pair(QTCSENDLINE,    COLOR_WHITE,  COLOR_BLUE);
@@ -80,6 +92,9 @@ int qtc_send_panel() {
     currstate = curs_set(0);
     werase(qtcsendwin);
 
+    strcat(buffer, "TX QTC QSL");
+    sendbuf();
+    
     sprintf(qtchead, "QTC #%d send to %s", qtclist.serial, hiscall);
     wnicebox(qtcsendwin, 0, 0, 11, 33, qtchead);
     mvwprintw(qtcsendwin, 12, 2, " QTC - F2: all | ENT: curr ");
@@ -133,7 +148,6 @@ int qtc_send_panel() {
 	usleep(10000);
 	time_update();
 	x = onechar();
-
 	switch(x) {
 	  case 152:		// up
 		    if (i > 1) {
@@ -225,9 +239,9 @@ int qtc_send_panel() {
 		    break; */
 	  case 10:  		// ENTER
 		    if (qtclist.totalsent == 0) {
-			// TODO
-			qtclist.totalsent = 0;	// sending QTC serial and nr of QTC
-			// TODO END
+			sprintf(tempc, "%d/%d\n", qtclist.serial, qtclist.count);
+			strncpy(buffer, tempc, strlen(tempc));
+			sendbuf();
 		    }
 		    if (qtclist.qtclines[i-1].sent == 0) {
 			qtclist.qtclines[i-1].sent = 1;
@@ -238,22 +252,52 @@ int qtc_send_panel() {
 			else {
 			    wattrset(qtcsendwin, line_currnormal);
 			}
+			//data_ready = 1;
+			tempc[0] = '\0';
+			strip_spaces(qtclist.qtclines[i-1].qtc, tempc);
+			strncpy(buffer, tempc, strlen(tempc));
+			buffer[strlen(tempc)] = '\0';
+			sendbuf();
 			mvwprintw(qtcsendwin, i+1, 30, "*");
 		    }
 		    i = scroll_down(i);
 		    break;
 	  case 130:		// F2
 		    // send QTC serial and nr of QTC
-		    for(j=0; j<qtclist.count; j++) {
-			qtclist.qtclines[j].sent = 1;
-			if (j == i-1) {
-			    wattrset(qtcsendwin, line_currinverted);
-			}
-			else {
-			    wattrset(qtcsendwin, line_inverted);
-			}
-			mvwprintw(qtcsendwin, j+2, 30, "*");
-			qtclist.totalsent++;
+		    tdp = 0;
+		    for(j=0; j<1000; j++) {
+			qtcbuffer[j] = '\0';
+		    }
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			sprintf(tempc, "%d/%d\n", qtclist.serial, qtclist.count);
+			strncpy(qtcbuffer, tempc, strlen(tempc));
+			tdp = strlen(tempc);
+
+			for(j=0; j<qtclist.count; j++) {
+				tempc[0] = '\0';
+				qtclist.qtclines[j].sent = 1;
+				if (j == i-1) {
+				    wattrset(qtcsendwin, line_currinverted);
+				}
+				else {
+				    wattrset(qtcsendwin, line_inverted);
+				}
+				mvwprintw(qtcsendwin, j+2, 30, "*");
+				qtclist.totalsent++;
+
+				strip_spaces(qtclist.qtclines[j].qtc, tempc);
+				strncpy(qtcbuffer+tdp, tempc, strlen(tempc));
+				tdp+= strlen(tempc);
+
+				mvwprintw(qtcsendwin, i+1, 30, "*");
+			    }
+		    }
+
+		    qtcbuffer[tdp] = '\0';
+		    if (strlen(qtcbuffer) > 0) {
+			syslog(LOG_DEBUG, "%s", qtcbuffer);
+			sprintf(outstring, "echo -n \"\n%s\" >> %s", qtcbuffer, rttyoutput);
+			system(outstring);
 		    }
 		    break;
 	  case 161:  		// DELETE
@@ -341,4 +385,30 @@ int scroll_down(int i) {
 	}
     }
     return i;
+}
+
+int strip_spaces(char * src, char * tempc) {
+      int tsp, tdp;
+
+      tsp = 0;
+      tdp = 0;
+      while(src[tsp] != '\0') {
+	  if (src[tsp] != ' ') {
+	      tempc[tdp] = src[tsp];
+	      tdp++;
+	  }
+	  else {
+	      tempc[tdp] = ' ';
+	      tdp++;
+	      while(src[tsp+1] == ' ') {
+		  tsp++;
+	      }
+	  }
+	  tsp++;
+      }
+      tempc[tdp] = '\n';
+      tdp++;
+      tempc[tdp] = '\0';
+
+      return 0;
 }

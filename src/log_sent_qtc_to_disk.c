@@ -84,7 +84,7 @@ int log_sent_qtc_to_disk(int qsonr)
 		next_qtc_qso = qtclist.qtclines[i].qsoline+1;
 	    }
 	    //next_qtc_qso = qtclist.qtclines[i].qsoline+1;
-	    nr_qtcsent++;
+	    //nr_qtcsent++;
 	    // totalpoints++??
 	    total++;
 	}
@@ -102,6 +102,7 @@ int log_sent_qtc_to_disk(int qsonr)
 	qtclist.qtclines[i].saved = 0;
 	qtclist.qtclines[i].sent = 0;
     }
+    nr_qtcsent++;
     return (0);
 }
 

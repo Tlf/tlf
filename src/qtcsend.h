@@ -20,4 +20,5 @@
 
 int qtc_send_panel();
 int scroll_down(int i);
+int strip_spaces(char * src, char * dst);
 
