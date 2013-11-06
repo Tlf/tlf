@@ -164,7 +164,19 @@ int getexchange(void)
 
 	switch (x) {
 
-	case 195:	// ALT
+	case 242:	// ALT+r
+	    {
+		qtc_recv_panel();
+		x=155;
+		continue;
+	    }
+	case 243:	// ALT+s
+	    {
+		qtc_send_panel();
+		x=155;
+		continue;
+	    }
+	/* case 195:	// ALT
 	    {
 		x = onechar();
 		switch(x) {
@@ -178,6 +190,7 @@ int getexchange(void)
 			      continue;
 		}
 	    }
+	    break; */
 	case 1:						/* ctrl-a */
 	    {
 		addspot();
