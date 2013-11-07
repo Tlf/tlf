@@ -295,7 +295,6 @@ int qtc_send_panel() {
 
 		    qtcbuffer[tdp] = '\0';
 		    if (strlen(qtcbuffer) > 0) {
-			syslog(LOG_DEBUG, "%s", qtcbuffer);
 			sprintf(outstring, "echo -n \"\n%s\" >> %s", qtcbuffer, rttyoutput);
 			system(outstring);
 		    }

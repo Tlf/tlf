@@ -12,8 +12,8 @@ def linebegin():
     return "RX 1000 : RTTY (%sZ): " % (time.strftime("%Y-%m-%d %H:%M", time.gmtime()))
 
 def genrandqtc(tlf):
-    #nrofline = random.randint(5, 10)
-    nrofline = 10
+    nrofline = random.randint(5, 10)
+    #nrofline = 10
     serial = random.randint(10, 300)
     pos = random.randint(0, len(tlf)-(nrofline+1))
     qtc = ["%d/%d\n" % (serial, nrofline)]
@@ -44,7 +44,9 @@ except:
 
 f = open(gmfsklog, "a")
 
-writelog(f, "--- Logging started at %s UTC ---\n" % (time.strftime("%a, %d %b %H:%M:%S %Y UTC", time.gmtime())))
+#writelog(f, "--- Logging started at %s UTC ---\n" % (time.strftime("%a, %d %b %H:%M:%S %Y UTC", time.gmtime())))
+writelog(f, linebegin())
+writelog(f, "START QTC\n")
 
 for qtc in genrandqtc(tlf):
     writelog(f, linebegin())
@@ -52,5 +54,9 @@ for qtc in genrandqtc(tlf):
 	writelog(f, c)
 	time.sleep(8/45.45)
 
-writelog(f, "--- Logging stopped at %s UTC ---\n" % (time.strftime("%a, %d %b %H:%M:%S %Y UTC", time.gmtime())))
+writelog(f, linebegin())
+writelog(f, "END QTC\n")
+writelog(f, linebegin())
+writelog(f, "\n")
+#writelog(f, "--- Logging stopped at %s UTC ---\n" % (time.strftime("%a, %d %b %H:%M:%S %Y UTC", time.gmtime())))
     
