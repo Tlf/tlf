@@ -28,10 +28,14 @@
 #include "nicebox.h"
 #include "time_update.h"
 #include <ctype.h>
+#include "rtty.h"
+
+#include <syslog.h>
 
 extern char hiscall[];
 extern int trxmode;
 extern t_qtcreclist qtcreclist;
+extern keyerport;
 
 enum {
   QTCRECVWINBG = 32,
@@ -50,6 +54,7 @@ t_qtcfieldset fieldset;
 int pos[5][3] = {{3, 6, 4}, {8, 8, 2}, {3, 3, 4}, {8, 8, 15}, {24, 24, 4}};
 int curpos = 0;
 int curfieldlen = 0;
+static char last_rtty_line[2][50] = {"", ""};	// local copy and store to remain
 
 int qtc_recv_panel() {
     char qtchead[32], temps[16];
@@ -121,9 +126,26 @@ int qtc_recv_panel() {
     x = -1;
     while(x != 27) {
 
-	usleep(10000);
-	time_update();
-	x = onechar();
+syslog(LOG_DEBUG, "trxmode: %d, keyerport: %d, %d, %d, %d", trxmode, keyerport, DIGIMODE, GMFSK, MFJ1278_KEYER);
+	while (x < 1) {
+
+	    usleep(10000);
+	    time_update();
+	    if (trxmode == DIGIMODE && (keyerport == GMFSK
+	           || keyerport == MFJ1278_KEYER)) {
+	        show_rtty();
+	    }
+	    x = onechar();
+        }
+	get_last_rtty_line(last_rtty_line[1]);
+	if (strcmp(last_rtty_line[0], last_rtty_line[1]) != 0) {
+	    strcpy(last_rtty_line[0], last_rtty_line[1]);
+	    syslog(LOG_DEBUG, "last line changed: %s", last_rtty_line[0]);
+	}
+      
+	//usleep(10000);
+	//time_update();
+	//x = onechar();
 	switch(x) {
 	  case 152:		// up
 		    if (fieldset.active > 1) {	// nr of QTC record field idx

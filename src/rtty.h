@@ -26,4 +26,5 @@
 int init_controller() ;
 int rx_rtty () ;
 int show_rtty(void);
+int get_last_rtty_line(char * line);
 
