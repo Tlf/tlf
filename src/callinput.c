@@ -222,21 +222,6 @@ char callinput(void)
 		break;
 	    }
 
-	case 153:		// down - start sending call if cw mode
-	case 32:		// space
-	    {
-		if (trxmode == CWMODE && contest == 1) {
-		    strcpy(buffer, hiscall);
-		    early_started = 1;
-		    sending_call = 1;
-		    sendbuf();
-		    sending_call = 0;
-		    strcpy(hiscall_sent, hiscall);
-		    printcall();
-		    x = 153;
-		} 
-		break;
-	    }
 	case 155:		/* left */
 	    {
 		if (*hiscall != '\0') {
