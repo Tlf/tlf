@@ -397,7 +397,7 @@ int strip_spaces(char * src, char * tempc) {
 	      tdp++;
 	  }
 	  else {
-	      tempc[tdp] = ' ';
+	      tempc[tdp] = '-';
 	      tdp++;
 	      while(src[tsp+1] == ' ') {
 		  tsp++;
