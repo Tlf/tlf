@@ -713,6 +713,11 @@ int readqtcfromfile() {
 		    i++; j++;
 		}
 		temps[i] = '\0';
+		while(i < 3) {
+		    temps[i] = '?';
+		    temps[i+1] = '\0';
+		    i++;
+		}
 		strncpy(qtcreclist.qtclines[linenr-1].serial, temps, i);
 		showfield(2+((linenr-1)*3)+2);
 
