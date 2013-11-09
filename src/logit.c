@@ -172,7 +172,7 @@ int logit(void)
 		    callreturn = 0;
 		} else if (defer_store > 1) {
 		    if ((cqmode == CQ) && (contest == CONTEST)) {
-			if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			if ((trxmode == CWMODE || trxmode == DIGIMODE) && strlen(cq_return) > 0) {
 			    strcat(buffer, cq_return);	/* send cq return */
 			    sendbuf();
 			    if (simulator != 0)
