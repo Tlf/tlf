@@ -33,5 +33,6 @@ int shift_right(char * fieldval);
 int shift_left(char * fieldval, int shift);
 int show_status(int idx);
 int number_fields();
+int readqtcfromfile();
 //int move_cursor(int dir);
 

@@ -59,11 +59,9 @@ int curr_rtty_line = 0;
 int capturing = 0;
 
 int qtc_recv_panel() {
-    char qtchead[32], temps[16];
+    char qtchead[32];
     int i, j, x;
-    int currqtc = -1, colidx;
-    int nrpos = 0, res;
-    int capidx0, capidx1;
+    int currqtc = -1;
 
     capturing = 0;
     last_rtty_line[0][0] = '\0'; last_rtty_line[1][0] = '\0';
@@ -130,7 +128,7 @@ int qtc_recv_panel() {
     curpos = 0;
     i=1;
     wattrset(qtcrecvwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
-    mvwprintw(qtcrecvwin, 1, 19, "CAPTURE OFF");
+    mvwprintw(qtcrecvwin, 1, 11, "ALT-c read QTC file");
     refreshp();
 
     x = -1;
@@ -146,85 +144,6 @@ int qtc_recv_panel() {
 	           || keyerport == MFJ1278_KEYER)) {
 	        show_rtty();
 	    }
-
-	    if (capturing == 1 && curr_rtty_line < 10) {
-		get_last_rtty_line(last_rtty_line[1]);
-		res = strcmp(last_rtty_line[0], last_rtty_line[1]);
-		if (res != 0 && strlen(last_rtty_line[1]) > 12) {
-
-		    strncpy(last_rtty_line[0], last_rtty_line[1], strlen(last_rtty_line[1]));
-		    last_rtty_line[0][strlen(last_rtty_line[1])] = '\0';
-
-		    j=0;
-		    // skip chars until it isn't number
-		    while(! isdigit(last_rtty_line[0][j])) {
-			j++;
-		    }
-		    for(nrpos=j; nrpos<j+4; nrpos++) {
-			qtcreclist.qtclines[curr_rtty_line].time[nrpos-j] = last_rtty_line[0][nrpos];
-			if (! isdigit(last_rtty_line[0][nrpos])) {
-			    qtcreclist.qtclines[curr_rtty_line].status = 1;
-			    qtcreclist.qtclines[curr_rtty_line].time[nrpos-j] = '?';
-			}
-		    }
-		    nrpos++;
-		    qtcreclist.qtclines[curr_rtty_line].time[nrpos-j] = '\0';
-		    j = nrpos;
-		    capidx0 = j;
-		    j=strlen(last_rtty_line[0]);
-		    // skip chars until it isn't number
-		    while(! isdigit(last_rtty_line[0][j])) {
-			j--;
-		    }
-		    while(isdigit(last_rtty_line[0][j])) {
-			j--;
-		    }
-		    j++;	// step back
-		    capidx1 = j;
-		    nrpos = 0;
-
-		    strncpy(qtcreclist.qtclines[curr_rtty_line].serial, "?", 1);
-		    while(isdigit(last_rtty_line[0][j])) {
-			qtcreclist.qtclines[curr_rtty_line].serial[nrpos] = last_rtty_line[0][j];
-			j++;
-			nrpos++;
-		    }
-		    qtcreclist.qtclines[curr_rtty_line].serial[nrpos] = '\0';
-		    if (strcmp(qtcreclist.qtclines[curr_rtty_line].serial, "?") == 0) {
-			qtcreclist.qtclines[curr_rtty_line].status = 1;
-		    }
-		    j = capidx0;
-		    while(last_rtty_line[0][j] == 32 || last_rtty_line[0][j] == 45 || last_rtty_line[0][j] == 47) {
-			j++;
-		    }
-		    nrpos = 0;
-		    while(last_rtty_line[0][j] != 32 && last_rtty_line[0][j] != 45 && last_rtty_line[0][j] != 47) {
-			if (! isalnum(last_rtty_line[0][j]) && last_rtty_line[0][j] != '/') {
-			    qtcreclist.qtclines[curr_rtty_line].callsign[nrpos] = '?';
-			    qtcreclist.qtclines[curr_rtty_line].status = 1;
-			}
-			else {
-			    qtcreclist.qtclines[curr_rtty_line].callsign[nrpos] = last_rtty_line[0][j];
-			}
-			nrpos++;
-			j++;
-		    }
-		    qtcreclist.qtclines[curr_rtty_line].callsign[nrpos] = '\0';
-		    show_status(curr_rtty_line);
-		    showfield(2+(curr_rtty_line*3));
-		    showfield(2+(curr_rtty_line*3)+1);
-		    showfield(2+(curr_rtty_line*3)+2);
-		    currqtc = curr_rtty_line;
-		    curr_rtty_line++;
-		}
-	    }
-
-	    if (qtcreclist.count < curr_rtty_line+1 && qtcreclist.count > 0) {
-		capturing = 0;
-		wattrset(qtcrecvwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
-		mvwprintw(qtcrecvwin, 1, 19, "CAPTURE OFF");
-	    }
-
 	    x = onechar();
 	  
 	}
@@ -233,14 +152,7 @@ int qtc_recv_panel() {
 	switch(x) {
 	  case 227:		// ALT-c
 		    if (trxmode == DIGIMODE) {
-			capturing = 1-capturing;
-			wattrset(qtcrecvwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
-			if (capturing == 1) {
-				mvwprintw(qtcrecvwin, 1, 19, "CAPTURE ON ");
-			}
-			else {
-				mvwprintw(qtcrecvwin, 1, 19, "CAPTURE OFF");
-			}
+			readqtcfromfile();
 		    }
 	  case 152:		// up
 		    if (fieldset.active > 1) {	// nr of QTC record field idx
@@ -723,6 +635,107 @@ int number_fields() {
     for(i=0;i<qtcreclist.count;i++) {
 	mvwprintw(qtcrecvwin, i+2, 1, "%2d", i+1);
     }
+    return 0;
+}
+
+int readqtcfromfile() {
+    FILE *fp;
+    char line[50], temps[20];
+    int linenr, i, j, capidx0, capidx1, capidx2;
+
+    if ((fp = fopen("RTTY.qtc", "r"))) {
+	linenr = 0;
+	while(fgets(line, 50, fp) && linenr < 11) {
+	    if (linenr == 0) {
+		j=0; i=0;
+		temps[0] = '\0';
+		while(! isdigit(line[j])) {
+		    j++;
+		}
+		while(isdigit(line[j])) {
+		    temps[i] = line[j];
+		    i++; j++;
+		}
+		temps[i] = '\0';
+		qtcreclist.serial = atoi(temps);
+		showfield(0);
+		while(! isdigit(line[j])) {
+		    j++;
+		}
+		i=0;
+		while(isdigit(line[j])) {
+		    temps[i] = line[j];
+		    i++; j++;
+		}
+		temps[i] = '\0';
+		qtcreclist.count = atoi(temps);
+		showfield(1);
+	    }
+	    else {
+		j=0;
+		// skip chars until it isn't number
+		while(! isdigit(line[j])) {
+		    j++;
+		}
+		temps[0] = '\0';
+		i=0;
+		// parse time
+		while(isdigit(line[j]) && i<4) {
+		    temps[i]=line[j];
+		    i++; j++;
+		}
+		while(i<4) {
+		    temps[i] = '\?';
+		    i++;
+		}
+		temps[i] = '\0';
+		strncpy(qtcreclist.qtclines[linenr-1].time, temps, i);
+
+		showfield(2+((linenr-1)*3));
+		capidx0 = j;
+
+		// parse serial
+		j=strlen(line)-1;
+		while(! isdigit(line[j])) {
+		    j--;
+		}
+		capidx2=j+1;
+		i=0;
+		while(isdigit(line[j]) && i<4) {
+		    j--;
+		    i++;
+		}
+		capidx1=j;
+		j++;
+		i=0;
+		while(j<capidx2) {
+		    temps[i] = line[j];
+		    i++; j++;
+		}
+		temps[i] = '\0';
+		strncpy(qtcreclist.qtclines[linenr-1].serial, temps, i);
+		showfield(2+((linenr-1)*3)+2);
+
+		// parse callsign
+		j = capidx0;
+		while(! isalnum(line[j])) {
+		    j++;
+		}
+		i=0;
+		while(isalnum(line[j]) || line[j] == '/') {
+		    temps[i] = line[j];
+		    i++; j++;
+		}
+		temps[i] = '\0';
+		strncpy(qtcreclist.qtclines[linenr-1].callsign, temps, i);
+		showfield(2+((linenr-1)*3)+1);
+	      
+	    }
+	    linenr++;
+	}
+	fclose(fp);
+    }
+
     return 0;
 }
 
