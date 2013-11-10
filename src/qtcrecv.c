@@ -727,7 +727,7 @@ int readqtcfromfile() {
 		    j++;
 		}
 		i=0;
-		while(isalnum(line[j]) || line[j] == '/') {
+		while((isalnum(line[j]) || line[j] == '/') && i<15) {
 		    temps[i] = line[j];
 		    i++; j++;
 		}
