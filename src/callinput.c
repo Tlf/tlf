@@ -1044,25 +1044,16 @@ char callinput(void)
 		}
 	    }
 
-	    refreshp();
-
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
 		strncpy(dupecall, hiscall, 16);
 
 		y = getctydata(dupecall);
-
 		showinfo(y);
 
 		searchlog(hiscall);
-
-
-	    } else {
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(24, 0,
-			 "                                                           ");
-		mvprintw(12, 29 + strlen(hiscall), "");
 	    }
+
 	    refreshp();
 
 	}
