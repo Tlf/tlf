@@ -188,7 +188,7 @@ int logit(void)
 		    }
 
 		    if ((cqmode == S_P) && (contest == CONTEST)) {
-			if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			if ((trxmode == CWMODE || trxmode == DIGIMODE) && strlen(sp_return) > 0)  {
 			    strcat(buffer, sp_return);
 			    sendbuf();	/* send S&P return */
 			} else
