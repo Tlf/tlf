@@ -579,7 +579,7 @@ Adds an ip address to which we broadcast stuff.
 
 .TR
 .B THISNODE=<A...H>
-Node designator. If tlf hears it's own node ID on the network it will exit and ask you to pick another one!!
+Node designator (default 'A'). If tlf hears it's own node ID on the network it will exit and ask you to pick another one!!
 
 .TR
 .B LANDEBUG
