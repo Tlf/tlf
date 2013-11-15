@@ -902,8 +902,13 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 69:{
+	    char c;
 	    PARAMETER_NEEDED(teststring);
-	    thisnode = fields[1][0];
+	    c = toupper(fields[1][0]);
+	    if (c >= 'A' && c <= 'H')
+		thisnode = 'A';
+	    else
+		WrongFormat(teststring);
 	    break;
 	}
     case 70:{

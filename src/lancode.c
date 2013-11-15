@@ -45,7 +45,6 @@ int send_error_limit[MAXNODES];
 //--------------------------------------
 int lan_port = 6788;
 int lan_active = 0;
-char thisnode;
 int send_error[MAXNODES];
 int lan_mutex = 0;
 int send_packets[MAXNODES];
@@ -61,6 +60,8 @@ int landebug = 0;
 long lantime;
 long timecorr;
 int time_master;
+char thisnode = 'A'; 		/*  start with 'A' if not defined in 
+				    logcfg.dat */
 
   //---------------------end lan globals --------------
 
