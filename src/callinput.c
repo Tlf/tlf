@@ -1031,7 +1031,8 @@ char callinput(void)
 		instring[1] = '\0';
 		addch(x);
 		strcat(hiscall, instring);
-		if (cwstart != 0 && trxmode == CWMODE && contest == 1) {
+		if (cqmode == CQ && cwstart != 0 && 
+			trxmode == CWMODE && contest == 1) {
 		    /* early start keying after 'cwstart' characters */
 		    if (strlen(hiscall) == cwstart) {
 			x = autostart(x);
