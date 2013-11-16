@@ -32,7 +32,7 @@
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
 void send_bandswitch(int freq);
-int autostart(int x);
+int autosend(void);
 
 /** callsign input loop
  *
@@ -1035,7 +1035,7 @@ char callinput(void)
 			trxmode == CWMODE && contest == 1) {
 		    /* early start keying after 'cwstart' characters */
 		    if (strlen(hiscall) == cwstart) {
-			x = autostart(x);
+			x = autosend();
 		    }
 		}
 	    }
@@ -1069,7 +1069,22 @@ char callinput(void)
     return (x);
 }
 
-int autostart(int x)
+/** autosend function
+ *
+ * autosend allow an operator in RUN mode to just enter the call of the 
+ * other station. TLF will start sending the call and switch automatically
+ * to sending the exchange when typing stops.
+ *  - starts after 2..5 characters
+ *  - shorter calls have to be finished with ENTER key
+ *  - as soon as autosend starts only alfanumerical keys are accepted
+ *  - no edit after input possible
+ *  - switch to sending exchange after 700 ms timeout
+ *
+ *  \return last typed key, ESC or \n
+ *          ESC - transmission has stopped
+ *          \n  - timeout or CR pressed -> send exchange
+ */
+int autosend()
 {
     extern char buffer[];
     extern int early_started;
@@ -1079,6 +1094,7 @@ int autostart(int x)
     extern char wkeyerbuffer[];
 
     GTimer *timeout;
+    int x;
 
     strcpy(buffer, hiscall);
     early_started = 1;
