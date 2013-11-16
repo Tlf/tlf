@@ -693,12 +693,29 @@ int changepars(void)
 	}
     case 50:			/* CHARS */
 	{
-	    mvprintw(13, 29, "? Characters: (0...4)");
+	    mvprintw(13, 29, "Autosend: (0 (off), 2..5 chars) ?");
 	    refreshp();
-	    x = onechar();
-	    if ((x - 48) < 5 && (x - 48) >= 0)
-		cwstart = x - 48;
+	    x = 1;
 
+	    /* wait for correct input or ESC */
+	    while ((x != 0) && ((x < 2) || (x > 5)) ) {
+		x = onechar();
+		if (x == 27)
+		    break;
+		x = x - '0';
+	    }
+
+	    /* remember new setting */
+	    if (x != 27)
+		cwstart = x; 
+
+	    if (cwstart)
+		mvprintw(13,29, "Autosend now: %1d                 ", 
+			cwstart);
+	    else
+		mvprintw(13,29, "Autosend now: OFF                "); 
+
+	    refreshp();
 	    break;
 
 	}

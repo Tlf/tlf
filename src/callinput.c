@@ -32,6 +32,7 @@
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
 void send_bandswitch(int freq);
+int autosend(void);
 
 /** callsign input loop
  *
@@ -47,7 +48,6 @@ char callinput(void)
     extern int dxped;
     extern int cwstart;
     extern int early_started;
-    extern int sending_call;
     extern char hiscall[];
     extern char hiscall_sent[];
     extern char comment[];
@@ -222,21 +222,6 @@ char callinput(void)
 		break;
 	    }
 
-	case 153:		// down - start sending call if cw mode
-	case 32:		// space
-	    {
-		if (trxmode == CWMODE && contest == 1) {
-		    strcpy(buffer, hiscall);
-		    early_started = 1;
-		    sending_call = 1;
-		    sendbuf();
-		    sending_call = 0;
-		    strcpy(hiscall_sent, hiscall);
-		    printcall();
-		    x = 153;
-		} 
-		break;
-	    }
 	case 155:		/* left */
 	    {
 		if (*hiscall != '\0') {
@@ -1046,38 +1031,25 @@ char callinput(void)
 		instring[1] = '\0';
 		addch(x);
 		strcat(hiscall, instring);
-		if (cwstart != 0 && trxmode == CWMODE && contest == 1) {
+		if (cqmode == CQ && cwstart != 0 && 
+			trxmode == CWMODE && contest == 1) {
 		    /* early start keying after 'cwstart' characters */
 		    if (strlen(hiscall) == cwstart) {
-			strcpy(buffer, hiscall);
-			early_started = 1;
-			sending_call = 1;
-			sendbuf();
-			sending_call = 0;
-			strcpy(hiscall_sent, hiscall);
+			x = autosend();
 		    }
 		}
 	    }
-
-	    refreshp();
 
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
 		strncpy(dupecall, hiscall, 16);
 
 		y = getctydata(dupecall);
-
 		showinfo(y);
 
 		searchlog(hiscall);
-
-
-	    } else {
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(24, 0,
-			 "                                                           ");
-		mvprintw(12, 29 + strlen(hiscall), "");
 	    }
+
 	    refreshp();
 
 	}
@@ -1096,6 +1068,105 @@ char callinput(void)
 
     return (x);
 }
+
+/** autosend function
+ *
+ * autosend allow an operator in RUN mode to just enter the call of the 
+ * other station. TLF will start sending the call and switch automatically
+ * to sending the exchange when typing stops.
+ *  - starts after 2..5 characters
+ *  - shorter calls have to be finished with ENTER key
+ *  - as soon as autosend starts only alfanumerical keys are accepted
+ *  - no edit after input possible
+ *  - switch to sending exchange after 700 ms timeout
+ *
+ *  \return last typed key, ESC or \n
+ *          ESC - transmission has stopped
+ *          \n  - timeout or CR pressed -> send exchange
+ */
+int autosend()
+{
+    extern char buffer[];
+    extern int early_started;
+    extern int sending_call;
+    extern char hiscall_sent[];
+    extern char hiscall[];
+    extern char wkeyerbuffer[];
+
+    GTimer *timeout;
+    int x;
+
+    strcpy(buffer, hiscall);
+    early_started = 1;
+    sending_call = 1;
+    sendbuf();
+    sending_call = 0;
+    strcpy(hiscall_sent, hiscall);
+
+    timeout = g_timer_new();
+
+    x = -1;
+    while ((x != 27) && (x != '\n')) {
+	nodelay(stdscr, TRUE);
+	x = -1;
+	while ((x == -1) && (g_timer_elapsed(timeout, NULL) < 0.7)) {
+
+	    usleep(10000);
+
+	    /* make sure that the wrefresh() inside getch() shows the cursor
+	     * in the input field */
+	    wmove(stdscr, 12, 29 + strlen(hiscall));
+	    x = onechar();
+
+	}
+	nodelay(stdscr, FALSE);
+
+	if (x == -1) { 		/* timeout */
+	    x = '\n';
+	    continue;
+	}
+
+	if (x == 27) {
+	    stoptx();
+	    *hiscall_sent = '\0';
+	    early_started = 0;
+	    continue;
+	}
+
+	/* convert to upper case */
+	if (x >= 'a' && x <= 'z')
+	    x = x - 32;
+
+	int len = strlen(hiscall);
+	if (len < 13 && x >= '/' && x <= 'Z') {
+	    char append[2];
+
+	    /* insert into hiscall */
+	    hiscall[len] = x;
+	    hiscall[len+1] = '\0';
+
+	    /* display it  */
+	    addch(x);
+
+	    /* send it to cw */
+	    append[0] = x;
+	    append[1] = '\0';
+	    strcat(wkeyerbuffer, append);
+	    sendbuf();
+
+	    len = strlen(hiscall_sent);
+	    hiscall_sent[len] = x;
+	    hiscall_sent[len+1] = '\0';
+
+	    /* and reset timer */
+	    g_timer_reset(timeout);
+	}
+    }
+
+    g_timer_destroy(timeout);
+    return x;
+}
+
 
 int play_file(char *audiofile)
 {
