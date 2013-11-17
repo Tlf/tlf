@@ -89,7 +89,7 @@ int log_to_disk(int from_lan)
 
 	if (cqwwm2 == 1) {
 	    if (lan_logline[0] != thisnode)
-		lan_logline[79] = '*';
+		lan_logline[86] = '*';
 	}
 
 	lan_logline[87] = '\0';
