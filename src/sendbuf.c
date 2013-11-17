@@ -70,11 +70,13 @@ void sendbuf(void)
     if (arrlss == 1)
 	shortqsonr = 0;
 
+syslog(LOG_DEBUG, "tx: %d, keyer: %d", trxmode, keyerport);
     if ((trxmode == CWMODE || trxmode == DIGIMODE)
 	&& (keyerport != NO_KEYER)) {
 
 	loc = strcspn(buffer, "%");	/* mycall */
 
+syslog(LOG_DEBUG, "buffer: %s", buffer);
 	while (strlen(buffer) > loc) {
 
 	    if (loc != 0)
@@ -178,6 +180,7 @@ void sendbuf(void)
 
 	if ((strlen(buffer) + strlen(termbuf)) < 80) {
 	    if (simulator == 0)
+		syslog(LOG_DEBUG, "ide is bejott");
 		strcat(termbuf, buffer);
 //              if (sending_call == 1) {
 //                      strcat (termbuf, " ");
@@ -198,7 +201,7 @@ void sendbuf(void)
 	else
 	    strncat(printlinebuffer, backgrnd_str,
 		    40 - strlen(printlinebuffer));
-
+syslog(LOG_DEBUG, "printlinebuffer: %s", printlinebuffer);
 	if ((simulator_mode == 0)) {
 	    mvprintw(5, 0, printlinebuffer);
 	    refreshp();
@@ -209,9 +212,9 @@ void sendbuf(void)
 	attron(COLOR_PAIR(C_LOG));
 	mvaddstr(cury, curx, "");
 	refreshp();
-
+syslog(LOG_DEBUG, "trx: %d", trxmode);
 	if (trxmode == DIGIMODE) {
-
+syslog(LOG_DEBUG, "DIGIMODE");
 	    if (data_ready != 1) {
 		if (keyerport == MFJ1278_KEYER) {
 		    int i = 0;
@@ -230,6 +233,8 @@ void sendbuf(void)
 		data_ready = 1;
 	    } else
 		buffer[0] = '\0';
+
+syslog(LOG_DEBUG, "buffer: %s", buffer);
 	}
 
 	if (trxmode == CWMODE) {

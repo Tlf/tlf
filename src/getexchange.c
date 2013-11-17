@@ -162,6 +162,7 @@ int getexchange(void)
         }
         nodelay(stdscr, FALSE);
 
+syslog(LOG_DEBUG, "x: %d", x);
 	switch (x) {
 
 	case 242:	// ALT+r
@@ -265,8 +266,12 @@ int getexchange(void)
 	case 130 ... 138:
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
+syslog(LOG_DEBUG, "esss most");
+syslog(LOG_DEBUG, "%d: %s", x, message[x-129]);
 		    strcat(buffer, message[x - 129]);	/* F2..F10 */
+syslog(LOG_DEBUG, "buffer: %s", buffer);
 		    sendbuf();
+syslog(LOG_DEBUG, "ennyi");
 		} else
 		    play_file(ph_message[x - 129]);
 
@@ -477,7 +482,6 @@ int getexchange(void)
 		    strcat(comment, "0");
 		    strcat(comment, commentbuf);
 		}
-
 	    }
 	    
 	    if ((arrlss == 1) && (x != 9) && (strlen(section) < 2)) {
