@@ -25,11 +25,11 @@
 
 #include "globalvars.h"
 #include "clear_display.h"
+#include "cw_utils.h"
 
 void clear_display(void)
 {
     extern int use_rxvt;
-    extern char speedstr[];
     extern int speed;
     extern char mode[];
     extern int cqdelay;

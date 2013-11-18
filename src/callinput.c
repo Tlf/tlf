@@ -27,7 +27,8 @@
 #include "addspot.h"
 #include "changefreq.h"
 #include "bandmap.h"
-#include "glib.h"
+#include <glib.h>
+#include "cw_utils.h"
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
@@ -58,7 +59,6 @@ char callinput(void)
     extern char lastcall[];
     extern char band[9][4];
     extern int bandinx;
-    extern char speedstr[];
     extern int keyspeed;
     extern int cqdelay;
     extern char his_rst[];
@@ -437,7 +437,7 @@ char callinput(void)
 		    if (his_rst[1] <= 56) {
 
 			his_rst[1]++;
-			
+
 			no_rst ? : mvprintw(12, 44, his_rst);
 			mvprintw(12, 29, hiscall);
 		    }
@@ -1031,7 +1031,7 @@ char callinput(void)
 		instring[1] = '\0';
 		addch(x);
 		strcat(hiscall, instring);
-		if (cqmode == CQ && cwstart != 0 && 
+		if (cqmode == CQ && cwstart != 0 &&
 			trxmode == CWMODE && contest == 1) {
 		    /* early start keying after 'cwstart' characters */
 		    if (strlen(hiscall) == cwstart) {
@@ -1058,7 +1058,7 @@ char callinput(void)
 	    || x == 92)
 	    break;
 
-	if (trxmode == DIGIMODE && (keyerport == GMFSK 
+	if (trxmode == DIGIMODE && (keyerport == GMFSK
 		|| keyerport == MFJ1278_KEYER)) {
 	    show_rtty();
 	    refreshp();
@@ -1071,7 +1071,7 @@ char callinput(void)
 
 /** autosend function
  *
- * autosend allow an operator in RUN mode to just enter the call of the 
+ * autosend allow an operator in RUN mode to just enter the call of the
  * other station. TLF will start sending the call and switch automatically
  * to sending the exchange when typing stops.
  *  - starts after 2..5 characters
@@ -1184,7 +1184,7 @@ int play_file(char *audiofile)
     } else {
 	close(fd);
 	if (access("./play_vk", X_OK) == 0 ) {
-	   sprintf( playcommand, "./play_vk %s", audiofile); 
+	   sprintf( playcommand, "./play_vk %s", audiofile);
 	}
 	else {
 	   sprintf( playcommand, "play_vk %s", audiofile);

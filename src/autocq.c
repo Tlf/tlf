@@ -24,6 +24,7 @@
 
 #include "autocq.h"
 #include "stoptx.h"
+#include "cw_utils.h"
 
 int cw_char_length(char *message);
 int getlength(int testchar, int message_length);
@@ -42,7 +43,6 @@ int auto_cq(void)
     extern int cqmode;
     extern int trxmode;
     extern char hiscall[];
-    extern char speedstr[];
     extern int speed;
     extern int trxmode;
 

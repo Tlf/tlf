@@ -22,6 +22,7 @@
 #include "cwkeyer.h"
 #include <curses.h>
 #include "netkeyer.h"
+#include "cw_utils.h"
 
 int write_keyer(void)
 {
@@ -32,7 +33,6 @@ int write_keyer(void)
     extern int data_ready;
     extern char controllerport[];
     extern int native_rig_fd;
-    extern char speedstr[];
     extern int speed;
     extern char rttyoutput[];
 
@@ -71,7 +71,7 @@ int write_keyer(void)
 	    if (strlen(rttyoutput) < 2) {
 		mvprintw(24, 0, "No modem file specified!");
 	    }
-	    sprintf(outstring, "echo -n \"\n%s\" >> %s", 
+	    sprintf(outstring, "echo -n \"\n%s\" >> %s",
 		    wkeyerbuffer, rttyoutput);
 	    rc = system(outstring);
 

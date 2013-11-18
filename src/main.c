@@ -24,6 +24,7 @@
 #include "globalvars.h"
 #include "main.h"
 #include "searchlog.h"
+#include "cw_utils.h"
 #include <glib.h>
 #include <panel.h>
 #include <pthread.h>
@@ -139,7 +140,7 @@ int ua9_cty;
 
 char tlfversion[80] = "";
 char testbuffer[120] = "";
-char multsfile[80] = "";	/* name of file with a list of allowed 
+char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
 char exchange_list[40] = "";
 int timeoffset = 0;
@@ -231,7 +232,6 @@ int speed = 10;
 int txdelay = 0;
 int weight = 0;
 char weightbuf[4];
-char speedstr[50] = CW_SPEEDS;
 char tonestr[5] = "600";
 int cqdelay = 8;
 char wkeyerbuffer[400];
@@ -421,7 +421,7 @@ int main(int argc, char *argv[])
 	    if (strlen(argv[1] + 2) > 0) {
 		if ((*(argv[1] + 2) == '~') && (*(argv[1] + 3) == '/')) {
 		    /* tilde expansion */
-		    config_file = g_strconcat( g_get_home_dir(), 
+		    config_file = g_strconcat( g_get_home_dir(),
 			    argv[1] + 3, NULL);
 		}
 	    	else {
@@ -549,7 +549,7 @@ int main(int argc, char *argv[])
 	status = read_logcfg(); /* read the configuration file */
 	status |= read_rules();	/* read the additional contest rules in "rules/contestname"  LZ3NY */
 
-	if (status != PARSE_OK) { 
+	if (status != PARSE_OK) {
 	    showmsg( "Problems in logcfg.dat or rule file detected! Continue Y/(N)?");
 	    if (toupper( getchar() ) != 'Y') {
 		endwin();
@@ -733,7 +733,7 @@ int main(int argc, char *argv[])
 		write_tone();
 
 		netkeyer(K_SPEED, keyerbuff);		// set speed
-	
+
 		netkeyer(K_WEIGHT, weightbuf);		// set weight
 
 		if (*keyer_device != '\0')

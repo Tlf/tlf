@@ -26,12 +26,12 @@
 #include "cwkeyer.h"
 #include "clear_display.h"
 #include "netkeyer.h"
+#include "cw_utils.h"
 
 int speeddown(void)
 {
 
     extern int speed;
-    extern char speedstr[];
     extern int trxmode;
     extern int keyerport;
     extern char buffer[];
