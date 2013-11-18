@@ -18,7 +18,6 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "parse_logcfg.h"
-#include "speed_conversion.h"
 #include "tlf.h"
 #include "write_tone.h"
 #include "speedup.h"
@@ -48,6 +47,8 @@ int exist_in_country_list();
 
 char inputbuffer[160];
 FILE *fp;
+
+int speed_conversion(int cwspeed);
 
 void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
