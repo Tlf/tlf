@@ -131,6 +131,7 @@ enum {
 #define EDITOR_MC 3
 
 #define  CW_SPEEDS	"06121416182022242628303234363840424446485060"
+				/*< speed string with 2 chars each (in WPM) */ 
 
 #define LOGLINELEN (88)		/* Length of logline in logfile
 				   (including linefeed) */

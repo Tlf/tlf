@@ -29,6 +29,7 @@ int cw_char_length(char *message);
 int getlength(int testchar, int message_length);
 int play_file(char *audiofile);
 
+/* FIXME: Needs refactorization and cleanup of logic */
 int auto_cq(void)
 {
 
@@ -132,6 +133,7 @@ int auto_cq(void)
 	return (letter);
 }
 
+/* FIXME: move next two functions to new file -> refactoring */
 int cw_char_length(char *message)	// calculate point lenght of cw messages...
 {
     extern char call[];

@@ -1357,7 +1357,9 @@ int parse_logcfg(char *inputbuffer)
 
 }
 
-
+/* converts cw speed in wpm to an numbered index into speedstr table */
+/* FIXME: should go into a separate file (together with get_cw_length, conversion from speed
+ * 	to wpm and others */
 int speed_conversion(int cwspeed)
 {
 
