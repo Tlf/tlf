@@ -79,40 +79,44 @@ int speed_conversion(int cwspeed)
 	    x = 10;
 	    break;
 	}
-    case 31 ... 36:{
+    case 31 ... 32:{
 	    x = 11;
 	    break;
 	}
-    case 37 ... 42:{
+    case 33 ... 34:{
 	    x = 12;
 	    break;
 	}
-    case 43 ... 48:{
+    case 35 ... 36:{
 	    x = 13;
 	    break;
 	}
-    case 49 ... 50:{
+    case 37 ... 38:{
 	    x = 14;
 	    break;
 	}
-    case 51 ... 54:{
+    case 39 ... 40:{
 	    x = 15;
 	    break;
 	}
-    case 55 ... 57:{
+    case 41 ... 42:{
 	    x = 16;
 	    break;
 	}
-    case 58 ... 60:{
+    case 43 ... 44:{
 	    x = 17;
 	    break;
 	}
-    case 61 ... 63:{
+    case 45 ... 46:{
 	    x = 18;
 	    break;
 	}
-    default:{
+    case 47 ... 48:{
 	    x = 19;
+	    break;
+	}
+    default:{
+	    x = 20;
 	    break;
 	}
     }
