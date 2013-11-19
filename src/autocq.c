@@ -43,13 +43,12 @@ int auto_cq(void)
     extern int cqmode;
     extern int trxmode;
     extern char hiscall[];
-    extern int speed;
     extern int trxmode;
 
     int inchar = -1, delayval = 0, cw_message_len = 0, realspeed = 0, j =
 	0;
     long message_time = 0;
-    char cwmessage[80], buff[120];
+    char cwmessage[80];
     int letter = 0;
 
     strcpy(mode, "AUTO_CQ ");
@@ -72,9 +71,7 @@ int auto_cq(void)
 	delayval = cqdelay;
 
 	if (trxmode == CWMODE) {
-	    strncpy(buff, (speedstr + (speed * 2)), 2);
-	    buff[2] = '\0';
-	    realspeed = atoi(buff);
+	    realspeed = GetCWSpeed();
 	    strncpy(cwmessage, message[11], 79);
 	    cw_message_len = cw_char_length(cwmessage);
 	    message_time = (long) (1200.0 / realspeed) * cw_message_len;

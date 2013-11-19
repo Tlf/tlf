@@ -20,6 +20,7 @@
 #include "parse_logcfg.h"
 #include "tlf.h"
 #include "write_tone.h"
+#include "cw_utils.h"
 #include "speedup.h"
 #include "speeddown.h"
 #include <curses.h>
@@ -34,7 +35,7 @@
 
 extern int keyerport;
 extern char tonestr[];
-extern int speed, partials;
+extern int partials;
 extern int use_part;
 extern int contest;
 extern int portnum;
@@ -47,8 +48,6 @@ int exist_in_country_list();
 
 char inputbuffer[160];
 FILE *fp;
-
-int speed_conversion(int cwspeed);
 
 void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
@@ -68,7 +67,6 @@ int read_logcfg(void)
     int status = PARSE_OK;
 
     contest = 0;
-    speed = 14;
     partials = 0;
     use_part = 0;
     keyerport = 0;
@@ -78,7 +76,7 @@ int read_logcfg(void)
     nodes = 0;
     node = 0;
     shortqsonr = 0;
-    
+
     if (cabrillo != NULL) {
 	free(cabrillo);
 	cabrillo = NULL;
@@ -106,8 +104,8 @@ int read_logcfg(void)
 
     while ( fgets(inputbuffer, 120, fp) != NULL ) {
 
-	if ((inputbuffer[0] != '#') && (strlen(inputbuffer) > 1)) {	
-	    					/* skip comments and 
+	if ((inputbuffer[0] != '#') && (strlen(inputbuffer) > 1)) {
+	    					/* skip comments and
 						 * empty lines */
 	    status |= parse_logcfg(inputbuffer);
 	}
@@ -162,7 +160,6 @@ int parse_logcfg(char *inputbuffer)
     extern int searchflg;
     extern int demode;
     extern int contest;
-    extern int speed;
     extern int weight;
     extern int txdelay;
     extern char tonestr[];
@@ -517,7 +514,7 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    /* strip NL and trailing whitespace */
 	    g_strlcpy( call, g_strchomp(fields[1]), 20 );
-	    /* as other code parts rely on a trailing NL on the call 
+	    /* as other code parts rely on a trailing NL on the call
 	     * we add back such a NL for now */
 	    strcat( call, "\n");
 	    // check that call sign can be found in cty database !!
@@ -541,7 +538,7 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 19:{
     	    PARAMETER_NEEDED(teststring);
-	    g_strlcpy(keyer_device, g_strchomp(fields[1]), 
+	    g_strlcpy(keyer_device, g_strchomp(fields[1]),
 		    sizeof(keyer_device));
 	    break;
 	}
@@ -682,7 +679,7 @@ int parse_logcfg(char *inputbuffer)
     	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strncat(buff, fields[1], 2);
-	    speed = speed_conversion(atoi(buff));
+	    SetCWSpeed(atoi(buff));
 	    break;
 	}
     case 39:{
@@ -1024,7 +1021,7 @@ int parse_logcfg(char *inputbuffer)
 
 			/* accept only a line starting with the contest name
 			 * (CONTEST=) followed by ':' */
-			if (strncasecmp (buffer, whichcontest, 
+			if (strncasecmp (buffer, whichcontest,
 				strlen(whichcontest) - 1) == 0) {
 
 			    strncpy(multiplier_list,
@@ -1261,7 +1258,7 @@ int parse_logcfg(char *inputbuffer)
     case 140:{
 		PARAMETER_NEEDED(teststring);
 		keyerport = MFJ1278_KEYER;
-		g_strlcpy(controllerport, g_strchomp(fields[1]), 
+		g_strlcpy(controllerport, g_strchomp(fields[1]),
 			sizeof(controllerport));
 		break;
 	    }
@@ -1276,7 +1273,7 @@ int parse_logcfg(char *inputbuffer)
 	    }
     case 143:{
 		PARAMETER_NEEDED(teststring);
-		g_strlcpy(exchange_list, g_strchomp(fields[1]),	
+		g_strlcpy(exchange_list, g_strchomp(fields[1]),
 			sizeof(exchange_list));
 		break;
 	    }
@@ -1358,108 +1355,13 @@ int parse_logcfg(char *inputbuffer)
 
 }
 
-/* converts cw speed in wpm to an numbered index into speedstr table */
-/* FIXME: should go into a separate file (together with get_cw_length, conversion from speed
- * 	to wpm and others */
-int speed_conversion(int cwspeed)
-{
 
-    int x;
-
-    switch (cwspeed) {
-
-    case 0 ... 6:{
-	    x = 0;
-	    break;
-	}
-    case 7 ... 12:{
-	    x = 1;
-	    break;
-	}
-    case 13 ... 14:{
-	    x = 2;
-	    break;
-	}
-    case 15 ... 16:{
-	    x = 3;
-	    break;
-	}
-    case 17 ... 18:{
-	    x = 4;
-	    break;
-	}
-    case 19 ... 20:{
-	    x = 5;
-	    break;
-	}
-    case 21 ... 22:{
-	    x = 6;
-	    break;
-	}
-    case 23 ... 24:{
-	    x = 7;
-	    break;
-	}
-    case 25 ... 26:{
-	    x = 8;
-	    break;
-	}
-    case 27 ... 28:{
-	    x = 9;
-	    break;
-	}
-    case 29 ... 30:{
-	    x = 10;
-	    break;
-	}
-    case 31 ... 36:{
-	    x = 11;
-	    break;
-	}
-    case 37 ... 42:{
-	    x = 12;
-	    break;
-	}
-    case 43 ... 48:{
-	    x = 13;
-	    break;
-	}
-    case 49 ... 50:{
-	    x = 14;
-	    break;
-	}
-    case 51 ... 54:{
-	    x = 15;
-	    break;
-	}
-    case 55 ... 57:{
-	    x = 16;
-	    break;
-	}
-    case 58 ... 60:{
-	    x = 17;
-	    break;
-	}
-    case 61 ... 63:{
-	    x = 18;
-	    break;
-	}
-    default:{
-	    x = 19;
-	    break;
-	}
-    }
-
-    return (x);
-}
-
-
-/** Complain about problems in configuration 
+/** Complain about problems in configuration
  *
  * Complains in standout mode about some problem. Beep and wait for
- * 2 seconds 
+ * 2 seconds
  *
- * \param msg  The reason for the problem to be shown 
+ * \param msg  The reason for the problem to be shown
  */
 void Complain(char *msg) {
     attron(A_STANDOUT);

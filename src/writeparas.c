@@ -22,6 +22,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "writeparas.h"
+#include "cw_utils.h"
 
 int writeparas(void)
 {
@@ -40,7 +41,6 @@ int writeparas(void)
     extern int announcefilter;
     extern int showscore_flag;
     extern int cqdelay;
-    extern int speed;
     extern int trxmode;
     extern int stop_backgrnd_process;
 

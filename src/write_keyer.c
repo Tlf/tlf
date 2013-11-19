@@ -33,13 +33,11 @@ int write_keyer(void)
     extern int data_ready;
     extern char controllerport[];
     extern int native_rig_fd;
-    extern int speed;
     extern char rttyoutput[];
 
     FILE *bfp = NULL;
     int i, rc;
     char send_orion[3];
-    char buff[8];
     int realspeed = 32;
     char outstring[120] = "";
 
@@ -84,9 +82,7 @@ int write_keyer(void)
 		sleep(1);
 		clear_display();
 	    } else {
-		strncpy(buff, (speedstr + (speed * 2)), 2);
-		buff[2] = '\0';
-		realspeed = atoi(buff);
+		realspeed = GetCWSpeed();
 
 		for (i = 0; i < strlen(wkeyerbuffer); i++) {
 

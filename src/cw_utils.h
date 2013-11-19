@@ -18,3 +18,8 @@
  */
 
 extern char speedstr[];
+extern int speed;
+
+void SetCWSpeed(unsigned int wpm);
+unsigned int  GetCWSpeed();
+

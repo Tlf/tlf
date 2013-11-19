@@ -228,7 +228,6 @@ char sc_device[40] = "/dev/dsp";
 
 /*-------------------------------------keyer------------------------------*/
 int keyerport = NO_KEYER;
-int speed = 10;
 int txdelay = 0;
 int weight = 0;
 char weightbuf[4];
@@ -727,11 +726,9 @@ int main(int argc, char *argv[])
 
 		sprintf(weightbuf, "%d", weight);
 
-		strncpy(keyerbuff, speedstr + (speed * 2), 2);
-		keyerbuff[2] = '\0';
-
 		write_tone();
 
+		snprintf(keyerbuff, 3, "%2d", GetCWSpeed());
 		netkeyer(K_SPEED, keyerbuff);		// set speed
 
 		netkeyer(K_WEIGHT, weightbuf);		// set weight

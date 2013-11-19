@@ -31,7 +31,6 @@
 int speeddown(void)
 {
 
-    extern int speed;
     extern int trxmode;
     extern int keyerport;
     extern char buffer[];

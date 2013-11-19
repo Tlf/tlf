@@ -17,9 +17,129 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
+#include <stdlib.h>
+#include <glib.h>
 
 #define  CW_SPEEDS	"06121416182022242628303234363840424446485060"
 				/*< speed string with 2 chars each (in WPM) */
 
 char speedstr[50] = CW_SPEEDS;
+int speed = 10;
+
+
+/* converts cw speed in wpm to an numbered index into speedstr table */
+int speed_conversion(int cwspeed)
+{
+
+    int x;
+
+    switch (cwspeed) {
+
+    case 0 ... 6:{
+	    x = 0;
+	    break;
+	}
+    case 7 ... 12:{
+	    x = 1;
+	    break;
+	}
+    case 13 ... 14:{
+	    x = 2;
+	    break;
+	}
+    case 15 ... 16:{
+	    x = 3;
+	    break;
+	}
+    case 17 ... 18:{
+	    x = 4;
+	    break;
+	}
+    case 19 ... 20:{
+	    x = 5;
+	    break;
+	}
+    case 21 ... 22:{
+	    x = 6;
+	    break;
+	}
+    case 23 ... 24:{
+	    x = 7;
+	    break;
+	}
+    case 25 ... 26:{
+	    x = 8;
+	    break;
+	}
+    case 27 ... 28:{
+	    x = 9;
+	    break;
+	}
+    case 29 ... 30:{
+	    x = 10;
+	    break;
+	}
+    case 31 ... 36:{
+	    x = 11;
+	    break;
+	}
+    case 37 ... 42:{
+	    x = 12;
+	    break;
+	}
+    case 43 ... 48:{
+	    x = 13;
+	    break;
+	}
+    case 49 ... 50:{
+	    x = 14;
+	    break;
+	}
+    case 51 ... 54:{
+	    x = 15;
+	    break;
+	}
+    case 55 ... 57:{
+	    x = 16;
+	    break;
+	}
+    case 58 ... 60:{
+	    x = 17;
+	    break;
+	}
+    case 61 ... 63:{
+	    x = 18;
+	    break;
+	}
+    default:{
+	    x = 19;
+	    break;
+	}
+    }
+
+    return (x);
+}
+
+
+/** Set CW speed
+ *
+ * Set CW speed to the nearest supported value. Converts it into an index into
+ * the speed table and stores that.
+ * \param wpm The CW speed in WPM
+ */
+void SetCWSpeed (unsigned int wpm) {
+    speed = speed_conversion( wpm );
+}
+
+
+/* Get CW speed
+ *
+ * Return the actual CW speed in WPM as integer
+ * \return The CW speed in WPM
+ */
+unsigned int  GetCWSpeed() {
+    char buff[3];
+
+    g_strlcpy(buff, speedstr + (2 * speed), 3);
+    return (atoi(buff));
+}
