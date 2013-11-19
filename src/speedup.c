@@ -47,8 +47,7 @@ int speedup(void)
 
 	    speed++;
 
-	    strncpy(buff, speedstr + (speed * 2), 2);
-	    buff[2] = '\0';
+	    snprintf(buff, 3, "%2d", GetCWSpeed());
 
 	    retval = netkeyer(K_SPEED, buff);
 
@@ -68,8 +67,7 @@ int speedup(void)
 
 	    speed++;
 
-	    strncpy(buff, speedstr + (speed * 2), 2);
-	    buff[2] = '\0';
+	    snprintf(buff, 3, "%2d", GetCWSpeed());
 
 	    strcpy(buffer, "\\\015");
 	    sendbuf();
@@ -98,10 +96,7 @@ int speedup(void)
 
 	    speed++;
 
-	    strncpy(buff, speedstr + (speed * 2), 2);
-	    buff[2] = '\0';
-
-	    orion_set_cw_speed(atoi(buff));
+	    orion_set_cw_speed(GetCWSpeed());
 
 	}
     }
