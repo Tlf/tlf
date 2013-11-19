@@ -234,7 +234,6 @@ char weightbuf[4];
 char tonestr[5] = "600";
 int cqdelay = 8;
 char wkeyerbuffer[400];
-int keyspeed = 5;
 int cfd;			/* cwkeyer file descriptor */
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2

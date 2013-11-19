@@ -91,8 +91,6 @@ int getexchange(void)
     char commentbuf[40] = "";
     int retval;
     char *gridmult = "";
-    int keyspeed = 30;
-    char speedbuf[3] = "";
 
     instring[1] = '\0';
 
@@ -271,12 +269,10 @@ int getexchange(void)
 			no_rst ? : mvprintw(12, 49, my_rst);
 		    }
 		} else {	/* speed up */
-		    keyspeed = speedup();
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
+		    speedup();
 
                     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%s", speedbuf);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 		break;
 
@@ -291,12 +287,10 @@ int getexchange(void)
 			no_rst ? : mvprintw(12, 49, my_rst);
 		    }
 		} else {
-		    keyspeed = speeddown();
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
+		    speeddown();
 
                     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%s", speedbuf);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 		break;
 

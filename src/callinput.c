@@ -59,7 +59,6 @@ char callinput(void)
     extern char lastcall[];
     extern char band[9][4];
     extern int bandinx;
-    extern int keyspeed;
     extern int cqdelay;
     extern char his_rst[];
     extern char backgrnd_str[];
@@ -106,7 +105,6 @@ char callinput(void)
     int i, j, ii, rc, t, x = 0, y = 0;
     char instring[2] = { '\0', '\0' };
     char dupecall[17];
-    char speedbuf[3] = "";
     char weightbuf[5];
     static int lastwindow;
 
@@ -299,11 +297,9 @@ char callinput(void)
 	    }
 	case 247:		// Alt-w set weight
 	    {
-		strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		speedbuf[2] = '\0';
 		nicebox(1, 1, 2, 11, "Cw");
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-		mvprintw(2, 2, "Speed: %s  ", speedbuf);
+		mvprintw(2, 2, "Speed: %2d  ", GetCWSpeed());
 		if (weight < 0)
 		    mvprintw(3, 2, "Weight:%d ", weight);
 		else
@@ -360,32 +356,24 @@ char callinput(void)
 		if (ctcomp == 1) {
 		    while (x != 27)	//escape
 		    {
-			strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-			speedbuf[2] = '\0';
 			nicebox(1, 1, 2, 9, "Cw");
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-			mvprintw(2, 2, "Speed: %s", speedbuf);
+			mvprintw(2, 2, "Speed: %2d", GetCWSpeed());
 			mvprintw(3, 2, "Weight: %d", weight);
 			printcall();
 			refreshp();
 
 			x = onechar();
 			if (x == 152) {
-			    keyspeed = speedup();
-			    strncpy(speedbuf, speedstr + (2 * keyspeed),
-				    2);
-			    speedbuf[2] = '\0';
+			    speedup();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-			    mvprintw(0, 14, "%s", speedbuf);
+			    mvprintw(0, 14, "%2d", GetCWSpeed());
 
 			} else if (x == 153) {
-			    keyspeed = speeddown();
-			    strncpy(speedbuf, speedstr + (2 * keyspeed),
-				    2);
-			    speedbuf[2] = '\0';
+			    speeddown();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-			    mvprintw(0, 14, "%s", speedbuf);
+			    mvprintw(0, 14, "%2d", GetCWSpeed());
 
 			} else
 			    x = 27;
@@ -443,13 +431,10 @@ char callinput(void)
 		    }
 
 		} else {	// change cw speed
-		    keyspeed = speedup();
-
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
+		    speedup();
 
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%s", speedbuf);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 
 		break;
@@ -480,12 +465,10 @@ char callinput(void)
 
 		} else {
 
-		    keyspeed = speeddown();
+		    speeddown();
 
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%s", speedbuf);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 		break;
 	    }
