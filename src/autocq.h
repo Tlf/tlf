@@ -17,15 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-#include<stdlib.h>
-#include <string.h>
-#include <curses.h>
-#include "clear_display.h"
-#include "printcall.h"
-#include "sendbuf.h"
-#include "tlf.h"
+#ifndef AUTOCQ_H
+
+#define AUTOCQ_H
 
 int  auto_cq  (void);
 
+#endif /* end of include guard: AUTOCQ_H */
 

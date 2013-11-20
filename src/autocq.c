@@ -23,8 +23,13 @@
 	 *--------------------------------------------------------------*/
 
 #include "autocq.h"
+#include "printcall.h"
+#include "clear_display.h"
+#include "sendbuf.h"
 #include "stoptx.h"
 #include "cw_utils.h"
+#include <string.h>
+#include <curses.h>
 
 int play_file(char *audiofile);
 
@@ -41,7 +46,6 @@ int auto_cq(void)
     extern int cqmode;
     extern int trxmode;
     extern char hiscall[];
-    extern int trxmode;
 
     int inchar = -1, delayval = 0, cw_message_len = 0, realspeed = 0, j =
 	0;
