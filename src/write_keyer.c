@@ -94,7 +94,7 @@ int write_keyer(void)
 			send_orion[2] = '\015';
 			rc = write(native_rig_fd, send_orion, 3);
 
-			usleep(cw_char_length(send_orion + 1) *
+			usleep(cw_message_length(send_orion + 1) *
 			       (int) (1200000.0 / realspeed));
 		    } else
 			usleep(6 * (int) (1200000.0 / realspeed));

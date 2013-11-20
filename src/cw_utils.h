@@ -25,4 +25,7 @@ extern int speed;
 void SetCWSpeed(unsigned int wpm);
 unsigned int  GetCWSpeed();
 
+unsigned int getCWdots(char ch);
+unsigned int cw_message_length(char *message);
+
 #endif /* end of include guard: CW_UTILS_H */

@@ -27,6 +27,5 @@
 #include "tlf.h"
 
 int  auto_cq  (void);
-int cw_char_length( char *message) ;
 
 

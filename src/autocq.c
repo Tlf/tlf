@@ -26,8 +26,6 @@
 #include "stoptx.h"
 #include "cw_utils.h"
 
-int cw_char_length(char *message);
-int getlength(int testchar, int message_length);
 int play_file(char *audiofile);
 
 /* FIXME: Needs refactorization and cleanup of logic */
@@ -73,7 +71,7 @@ int auto_cq(void)
 	if (trxmode == CWMODE) {
 	    realspeed = GetCWSpeed();
 	    strncpy(cwmessage, message[11], 79);
-	    cw_message_len = cw_char_length(cwmessage);
+	    cw_message_len = cw_message_length(cwmessage);
 	    message_time = (long) (1200.0 / realspeed) * cw_message_len;
 	    for (j = 0; j < 10; j++) {
 		usleep(message_time * 100);
@@ -130,158 +128,4 @@ int auto_cq(void)
 	return (letter);
 }
 
-/* FIXME: move next two functions to new file -> refactoring */
-int cw_char_length(char *message)	// calculate point lenght of cw messages...
-{
-    extern char call[];
 
-    int i;
-    int message_length = 0;
-    char cwmessage[80];
-    int testchar, j;
-
-    strncpy(cwmessage, message, 79);
-    cwmessage[79] = '\0';
-
-    for (i = 0; i < strlen(cwmessage); i++) {
-
-	testchar = cwmessage[i];
-	if (testchar == '%') {
-	    for (j = 0; j < strlen(call); j++) {
-		testchar = call[j];
-		message_length = getlength(testchar, message_length);
-	    }
-
-	} else
-	    message_length = getlength(testchar, message_length);
-
-    }
-    return (message_length);
-}
-
-int getlength(int testchar, int message_length)
-{
-
-    switch (testchar) {
-    case 'A':
-	message_length += 9;
-	break;
-    case 'B':
-	message_length += 13;
-	break;
-    case 'C':
-	message_length += 15;
-	break;
-    case 'D':
-	message_length += 11;
-	break;
-    case 'E':
-	message_length += 5;
-	break;
-    case 'F':
-	message_length += 13;
-	break;
-    case 'G':
-	message_length += 13;
-	break;
-    case 'H':
-	message_length += 11;
-	break;
-    case 'I':
-	message_length += 7;
-	break;
-    case 'J':
-	message_length += 17;
-	break;
-    case 'K':
-	message_length += 13;
-	break;
-    case 'L':
-	message_length += 13;
-	break;
-    case 'M':
-	message_length += 11;
-	break;
-    case 'N':
-	message_length += 9;
-	break;
-    case 'O':
-	message_length += 15;
-	break;
-    case 'P':
-	message_length += 15;
-	break;
-    case 'Q':
-	message_length += 17;
-	break;
-    case 'R':
-	message_length += 11;
-	break;
-    case 'S':
-	message_length += 9;
-	break;
-    case 'T':
-	message_length += 7;
-	break;
-    case 'U':
-	message_length += 11;
-	break;
-    case 'V':
-	message_length += 13;
-	break;
-    case 'W':
-	message_length += 13;
-	break;
-    case 'X':
-	message_length += 15;
-	break;
-    case 'Y':
-	message_length += 17;
-	break;
-    case 'Z':
-	message_length += 15;
-	break;
-    case '0':
-	message_length += 23;
-	break;
-    case '1':
-	message_length += 21;
-	break;
-    case '2':
-	message_length += 19;
-	break;
-    case '3':
-	message_length += 17;
-	break;
-    case '4':
-	message_length += 15;
-	break;
-    case '5':
-	message_length += 13;
-	break;
-    case '6':
-	message_length += 15;
-	break;
-    case '7':
-	message_length += 17;
-	break;
-    case '8':
-	message_length += 19;
-	break;
-    case '9':
-	message_length += 21;
-	break;
-    case '/':
-	message_length += 17;
-	break;
-    case '?':
-	message_length += 19;
-	break;
-    case ' ':
-	message_length += 3;
-	break;
-    default:
-	;
-    }
-    return (message_length);
-}
