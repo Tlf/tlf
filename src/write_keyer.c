@@ -22,6 +22,7 @@
 #include "cwkeyer.h"
 #include <curses.h>
 #include "netkeyer.h"
+#include "cw_utils.h"
 
 int write_keyer(void)
 {
@@ -32,14 +33,11 @@ int write_keyer(void)
     extern int data_ready;
     extern char controllerport[];
     extern int native_rig_fd;
-    extern char speedstr[];
-    extern int speed;
     extern char rttyoutput[];
 
     FILE *bfp = NULL;
     int i, rc;
     char send_orion[3];
-    char buff[8];
     int realspeed = 32;
     char outstring[120] = "";
 
@@ -71,7 +69,7 @@ int write_keyer(void)
 	    if (strlen(rttyoutput) < 2) {
 		mvprintw(24, 0, "No modem file specified!");
 	    }
-	    sprintf(outstring, "echo -n \"\n%s\" >> %s", 
+	    sprintf(outstring, "echo -n \"\n%s\" >> %s",
 		    wkeyerbuffer, rttyoutput);
 	    rc = system(outstring);
 
@@ -84,9 +82,7 @@ int write_keyer(void)
 		sleep(1);
 		clear_display();
 	    } else {
-		strncpy(buff, (speedstr + (speed * 2)), 2);
-		buff[2] = '\0';
-		realspeed = atoi(buff);
+		realspeed = GetCWSpeed();
 
 		for (i = 0; i < strlen(wkeyerbuffer); i++) {
 
@@ -98,7 +94,7 @@ int write_keyer(void)
 			send_orion[2] = '\015';
 			rc = write(native_rig_fd, send_orion, 3);
 
-			usleep(cw_char_length(send_orion + 1) *
+			usleep(cw_message_length(send_orion + 1) *
 			       (int) (1200000.0 / realspeed));
 		    } else
 			usleep(6 * (int) (1200000.0 / realspeed));

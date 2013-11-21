@@ -34,7 +34,6 @@ int keyer(void)
     extern int bufloc;
     extern char buffer[];
     extern char termbuf[];
-    extern int keyspeed;
     extern char message[15][80];
     extern char wkeyerbuffer[];
     extern int data_ready;
@@ -270,13 +269,13 @@ int keyer(void)
 		}
 	    case 156:
 		{
-		    keyspeed = speedup();
+		    speedup();
 		    clear_display();
 		    break;
 		}
 	    case 157:
 		{
-		    keyspeed = speeddown();
+		    speeddown();
 		    clear_display();
 		    break;
 		}
