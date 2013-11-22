@@ -30,19 +30,25 @@ void printcall(void)
     extern int use_rxvt;
     extern char hiscall[];
     extern int miniterm;
+    extern int cqmode;
+    extern int cwstart;
 
     int currentterm;
+    attr_t attrib = A_STANDOUT;
 
     currentterm = miniterm;
     miniterm = 0;
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_INPUT) | A_STANDOUT | A_BOLD);
-    else
-	attron(COLOR_PAIR(C_INPUT) | A_STANDOUT);
+	attrib |= A_BOLD;
+
+    attron(COLOR_PAIR(C_INPUT) | attrib);
 
     mvprintw(12, 29, "            ");
     mvprintw(12, 29, hiscall);
+    if ((cqmode == CQ) && (cwstart != 0))
+    	mvchgat(12, 29 + cwstart, 12 - cwstart,
+		attrib | A_UNDERLINE, C_INPUT, NULL);
     refreshp();
 
     miniterm = currentterm;
