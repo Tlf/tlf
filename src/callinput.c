@@ -1129,7 +1129,7 @@ int autosend()
 	    hiscall[len+1] = '\0';
 
 	    /* display it  */
-	    addch(x);
+	    printcall();
 
 	    /* send it to cw */
 	    append[0] = x;
