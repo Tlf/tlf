@@ -57,7 +57,7 @@ void prefix_add (char *pfxstr)
 	}
 	else
 	    new_prefix -> itu = last_dx -> itu;
-	    
+
 	loc = strchr(pfxstr, '(');
 	if (loc != NULL) {
 	    new_prefix -> cq = atoi(loc + 1);
@@ -65,7 +65,7 @@ void prefix_add (char *pfxstr)
 	}
 	else
 	    new_prefix -> cq = last_dx -> cq;
-	    
+
 	new_prefix -> pfx = g_strdup(pfxstr);
 	new_prefix -> dxcc_index = last_index;
 
@@ -115,7 +115,13 @@ void dxcc_add (char * dxcc_line)
 	new_dxcc -> lat = atof(split[4]);
 	new_dxcc -> lon = atof(split[5]);
 	new_dxcc -> timezone = atof(split[6]);
-	new_dxcc -> pfx = g_strdup(split[7]);
+	if (*split[7] == '*') {
+	    new_dxcc -> pfx = g_strdup(split[7]+1);
+	    new_dxcc -> starred = 1;
+	} else {
+	    new_dxcc -> pfx = g_strdup(split[7]);
+	    new_dxcc -> starred = 0;
+	}
 
 	g_ptr_array_add (dxcc, new_dxcc);
 
