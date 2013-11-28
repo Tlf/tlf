@@ -159,7 +159,7 @@ int changepars(void)
     switch (i) {
     case 0:			/* SPOTS) */
 	{
-	    /* SPOTS not supported anymore 
+	    /* SPOTS not supported anymore
 	     * - default to MAP*/
 	    cluster = MAP;
 	    break;
@@ -228,13 +228,7 @@ int changepars(void)
 	}
     case 13:			/*  HELP   */
 	{
-//                      show_help();
-	    endwin();
-	    rc = system("clear");
-	    rc = system("less help.txt");
-	    rc = system("clear");
-	    set_term(mainscreen);
-	    clear_display();
+	    show_help();
 	    break;
 	}
     case 14:			/*  DEMODE   */
@@ -582,7 +576,7 @@ int changepars(void)
 	    break;
 
 	}
-    case 40:			/* ADIF */	
+    case 40:			/* ADIF */
 	{
 	    write_adif();
 
@@ -707,13 +701,13 @@ int changepars(void)
 
 	    /* remember new setting */
 	    if (x != 27)
-		cwstart = x; 
+		cwstart = x;
 
 	    if (cwstart)
-		mvprintw(13,29, "Autosend now: %1d                 ", 
+		mvprintw(13,29, "Autosend now: %1d                 ",
 			cwstart);
 	    else
-		mvprintw(13,29, "Autosend now: OFF                "); 
+		mvprintw(13,29, "Autosend now: OFF                ");
 
 	    refreshp();
 	    break;

@@ -752,12 +752,7 @@ char callinput(void)
 	    }
 	case 232:		// alt-H
 	    {
-		endwin();
-		rc=system("clear");
-		rc=system("less help.txt");
-		rc=system("clear");
-		set_term(mainscreen);
-		clear_display();
+		show_help();
 		break;
 	    }
 

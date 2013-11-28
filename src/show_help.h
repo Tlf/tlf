@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2013           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,14 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <string.h>
-#include <stdlib.h>
-#include <curses.h>
-#include "tlf.h"
-#include "nicebox.h"
-#include "onechar.h"
-#include "clear_display.h"
 
+#ifndef SHOW_HELP_H
+#define SHOW_HELP_H
 
 int show_help(void);
 
+#endif /* end of include guard: SHOW_HELP_H */
