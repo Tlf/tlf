@@ -185,13 +185,13 @@ char callinput(void)
 
 	    if (x == '=' && *hiscall == '\0') {
 		strcat(buffer, lastcall);
-		strcat(buffer, " OK ");
+		strcat(buffer, " TU ");
 		sendbuf();
 		break;
 	    } else if (x == '=' && strlen(hiscall) != 0) {
 		/** \todo check if unreachable code */
 		strcat(buffer, lastcall);
-		strcat(buffer, " OK ");
+		strcat(buffer, " TU ");
 		sendbuf();
 		break;
 	    }
