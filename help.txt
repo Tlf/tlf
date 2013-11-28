@@ -1,0 +1,94 @@
+Keys (shortcuts) to be used in TLF
+
+If you want to see some of the start up parameters try: 'tlf -h'.
+
+<ALT+?>
+Alt-a     Cluster info                  Alt-b   Band up
+Alt-t     Tune                          Alt-n   Note in log
+Alt-v     Band down (CW Speed?)         Alt-p   turn PTT on/off
+Alt-h     show help.txt                 Alt-w   CW Weight
+Alt-i     See talk messages             Alt-j   See QRG's
+Alt-k     CW from Keyboard              Alt-x   exit program (Alt-q)
+Alt-m     Multi display (Alt-c)         Alt-s   Score window (Alt-r)
+Alt-,     show Bandmap                  Alt-j   show frequency
+Alt-z     show worked zones             Alt-g   grab Call (min. 2 letters from bandmap)
+
+<CTRL+?>
+Ctrl-a         add a spot to list
+Ctrl-c         Quit tlf                 Ctrl-b    Cluster send
+Ctrl-g         Grab a bandmap spot      Ctrl-p    MUF display
+Ctrl-page-up   Auto CQ delay +          Ctrl-page-down Auto CQ delay -
+Ctrl-k         CW from keyboard         Ctrl-f    frequency control window 
+Ctrl-t         Send message             Ctrl-r    LPT0 pin 14 on/off (SSB mic)
+
+
+<direct Keyboard commands>
+'+'       Switch RUN/S&P (default, TR Log mode)
+'+'       Send exchange (CT log mode)
+'Insert'  Log QSO (CT log mode)
+PG-UP     CW + 2wpm
+PG-DWN    CW - 2wpm
+','       CW from Keyboard
+'.'       filter bandmap content
+';'       Note in log              
+F1 - F12  Send F1 - F12 msg          
+TAB       Switch fields            
+ENTER     Log qso, call cq         
+SPACE     
+'\'       Log qso w/o CW           
+Up-arrow  Edit prev qso            
+'-'       Delete last qso          
+'_'       confirm last serial nr   
+'='       confirm last call        
+L-arrow   Edit call                
+L/R Arrow Band change              
+ESCAPE    stop TX            
+'"'       Talk message             
+'#'       save/go to a MEM Frequency
+!         New shell                
+
+<commands from "Call" field>
+:ssb      Switch to ssb                 
+:cwm      Switch to cw                  
+:dig      Switch to rtty                
+:hel      Help                          
+:mes      Set cw messages              
+:set      Edit config file              
+:cfg      Edit config file              
+:sim      CW CQWW Simulator             
+:ZONes    show list of zones to be worked
+:cty      list of coutries to be worked
+:cqd      CW delay
+:rit      reset RIT after QSO is logged
+:VIEw     show complete log
+:EDIt     edit the log
+:LISt     list CW messages
+:MESsage  change CW messages
+:CHEck    open Check window
+:NOCheck  close Check window
+:pac      open Terminal
+:CLUster  open Terminal
+:SPOts    only DX spots sorted by time
+:FILter   filter DX Cluster content
+:map      filter band map content
+:SYNc     synchronize log in network
+:EXIt     exit program
+:MULt     toggle remaing multi display
+:CONtest  toggle contest mode on/off
+:SCOre    toggle score window on/off
+:FREq     show frequency
+:CLOff    Cluster off
+:INFo     network status
+:TRXcont  toggle TRX control on/off
+:CHAR     Autosend: number of chars before starting to send
+:DEBug_tty test rig link
+:SOUnd    record sound files
+:SCAnner  scanner function (experimental)
+:wri      Write cabrillo
+:adi      Write Adif
+:exi      Exit tlf
+:inf      Network info
+:         Telnet window
+:ton      Set sidetone (0 = off)
+:res      Rescore
+:sou      Sound utility
