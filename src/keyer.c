@@ -201,6 +201,7 @@ int keyer(void)
 
 	    switch (x) {
 	    case 9:
+	    case 32:
 		{
 		    bufloc = 0;
 		    buffer[bufloc] = '\0';
