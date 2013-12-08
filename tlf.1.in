@@ -137,9 +137,9 @@ Show frequency or band/score info of your other stations...
 
 .TR
 .B :HELp
-Show online help (displays a file
+Show online help (displays  
 .B help.txt
-in the working directory).
+from working directory or from @prefix@/share if no local one exists).
 
 .TR
 .B :INFo
