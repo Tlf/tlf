@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DXCC_H
-#define _DXCC_H
+#ifndef DXCC_H
+#define DXCC_H
 
 typedef struct {
 	char *pfx;
@@ -36,6 +36,7 @@ typedef struct {
 	float lon;
 	float timezone;
 	char *pfx;
+	char starred;
 } dxcc_data;
 
 void prefix_init(void);
@@ -53,4 +54,5 @@ int dxcc_count(void);
 dxcc_data *dxcc_by_index(int index);
 
 void dxcc_add (char * dxcc_line);
-#endif
+
+#endif 	/* DXCC_H */

@@ -37,15 +37,15 @@
  *     \verbatim
  *     0        1         2         3         4         5
  *     123456789012345678901234567890123456789012345678901234
- *     bndmod dd-mmm-yy hh:mm qso.  call.......... rst  rst  
+ *     bndmod dd-mmm-yy hh:mm qso.  call.......... rst  rst
  *                            nr..                 his  my.\endverbatim
- *   Alternatively in 'qso' or 'dxped' mode if 'LOGFREQUENCY' is set 
- *     there is the khz part of the working frequnecy instead of 
+ *   Alternatively in 'qso' or 'dxped' mode if 'LOGFREQUENCY' is set
+ *     there is the khz part of the working frequnecy instead of
  *     the qso number:
  *     \verbatim
  *     0        1         2         3         4         5
  *     123456789012345678901234567890123456789012345678901234
- *     bndmod dd-mmm-yy hh:mm  khz  call.......... rst  rst  
+ *     bndmod dd-mmm-yy hh:mm  khz  call.......... rst  rst
  *                                                 his  my.\endverbatim
  * - contest dependent part (list may not complete):\n
  *   - QSO mode
@@ -63,7 +63,7 @@
  *     \verbatim
  *     5    6         7         8
  *     56789012345678901234567890
- *     hiszone       pfx zn  pp\endverbatim
+ *     hiszone       pfx  zn pp\endverbatim
  *     zn - new zone
  *   - normal contest
  *     \verbatim
@@ -156,11 +156,10 @@ void makelogline(void)
 	strcat(logline4, "  ");
 
     strcat(logline4, hiscall);	/*  29 */
-    lastcall[0] = '\0';		/* remember  for edit  */
-    strcat(lastcall, hiscall);
+    strcpy(lastcall, hiscall);  /* remember  for edit  */
     strncat(logline4, fillspaces, (15 - strlen(hiscall)));	/*  44 */
 
-    if (!no_rst) {
+    if (no_rst == 0) {
 	if ((trxmode == CWMODE) || (trxmode == DIGIMODE)) {
 	    his_rst[2] = '9';
 	    my_rst[2] = '9';
@@ -179,7 +178,7 @@ void makelogline(void)
 
     /* second (contest dependent part of logline */
 
-    if (arrlss == 1) {		
+    if (arrlss == 1) {
 	// ----------------------------arrlss----------------
 	strcat(logline4, ssexchange);
 	section[0] = '\0';
@@ -217,25 +216,26 @@ void makelogline(void)
 		strcat (logline4, zone_export);
 */
 	strcat(logline4, comment);
-    } else {
+    } else {	//----------------------end cqww ---------------
 	strcat(logline4, comment);
-    }				//----------------------end cqww ---------------
+    }
 
-    lastcomment[0] = '\0';
-    strcat(lastcomment, comment);	/* remember  for edit  */
+    strcpy(lastcomment, comment);	/* remember for edit  */
 
-    strncat(logline4, fillspaces, (77 - strlen(logline4)));
+    if (strlen(logline4) < 77)
+	strncat(logline4, fillspaces, (77 - strlen(logline4)));
 
     if (contest == 1)
 	logline4[68] = '\0';
 
-    /* If WPX 
+    /* If WPX
      * -> add prefix to prefixes_worked and include new pfx in log line */
     new_pfx = (add_pfx(pxstr) == 0);	/* add prefix, remember if new */
 
     if (wpx ==1) {			/* wpx */
 	if (new_pfx) {
-	    strcat(logline4, pxstr);
+	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
+	    strncat(logline4, pxstr, 5);
 	    strncat(logline4, fillspaces, (5 - strlen(pxstr)));
 	} else
 	    strncat(logline4, fillspaces, 5);
@@ -246,12 +246,15 @@ void makelogline(void)
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
+	    if (dxcc_by_index(addcty)->pfx[0] == '*')
+		strncat(logline4, dxcc_by_index(addcty) -> pfx+1, 5);
+	    else
+		strncat(logline4, dxcc_by_index(addcty) -> pfx, 5);
 
-	    strncat(logline4, fillspaces, 72 - strlen(logline4));
+	    strncat(logline4, fillspaces, 73 - strlen(logline4));
 	    addcty = 0;
 	} else {
-	    strcat(logline4, "    ");
+	    strcat(logline4, "     ");
 	}
 
 	if (addzone != 0) {
@@ -267,10 +270,10 @@ void makelogline(void)
 	    } else
 		strncat(logline4, comment, 2);
 
-	    strcat(logline4, "   ");
+	    strcat(logline4, "  ");
 	    addzone = 0;
 	} else {
-	    strcat(logline4, "     ");
+	    strcat(logline4, "    ");
 	    zone_fix[0] = '\0';
 	}
 	//----------------------------------end cqww-----------------
@@ -279,7 +282,7 @@ void makelogline(void)
 	logline4[68] = '\0';
 	if (addcty != 0) {
 	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
-	    
+
 	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
 
@@ -310,11 +313,12 @@ void makelogline(void)
 
 	    strcat(logline4, mults[shownewmult]);
 
-	    strncat(logline4, "              |", 77 - strlen(logline4));
+	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    shownewmult = -1;
 
 	} else
 	    strncat(logline4, fillspaces, 9);
+
     } else if ((dx_arrlsections == 1)
 	       && ((countrynr == w_cty) || (countrynr == ve_cty))) {
 	logline4[68] = '\0';
@@ -323,7 +327,7 @@ void makelogline(void)
 
 	    strcat(logline4, mults[shownewmult]);
 
-	    strncat(logline4, "              |", 77 - strlen(logline4));
+	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    shownewmult = -1;
 
 	} else
@@ -341,19 +345,13 @@ void makelogline(void)
 
 	} else if (addcallarea == 1) {
 
-	    strcat(logline4, pxstr);
+	    strncat(logline4, pxstr, 3);
 
-	    if (strlen(pxstr) == 2) {
-		strcat(logline4, " ");
-	    }
-
-	    strcat(logline4, "  ");
+	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 
 	    addcallarea = 0;
 
-	    strcat(logline4, "    ");
 	} else
-
 	    strncat(logline4, fillspaces, 9);
 
     } else if ((universal == 1)

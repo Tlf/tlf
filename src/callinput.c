@@ -27,11 +27,13 @@
 #include "addspot.h"
 #include "changefreq.h"
 #include "bandmap.h"
-#include "glib.h"
+#include <glib.h>
+#include "cw_utils.h"
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
 void send_bandswitch(int freq);
+int autosend(void);
 
 /** callsign input loop
  *
@@ -47,7 +49,6 @@ char callinput(void)
     extern int dxped;
     extern int cwstart;
     extern int early_started;
-    extern int sending_call;
     extern char hiscall[];
     extern char hiscall_sent[];
     extern char comment[];
@@ -58,8 +59,6 @@ char callinput(void)
     extern char lastcall[];
     extern char band[9][4];
     extern int bandinx;
-    extern char speedstr[];
-    extern int keyspeed;
     extern int cqdelay;
     extern char his_rst[];
     extern char backgrnd_str[];
@@ -106,7 +105,6 @@ char callinput(void)
     int i, j, ii, rc, t, x = 0, y = 0;
     char instring[2] = { '\0', '\0' };
     char dupecall[17];
-    char speedbuf[3] = "";
     char weightbuf[5];
     static int lastwindow;
 
@@ -187,13 +185,13 @@ char callinput(void)
 
 	    if (x == '=' && *hiscall == '\0') {
 		strcat(buffer, lastcall);
-		strcat(buffer, " OK ");
+		strcat(buffer, " TU ");
 		sendbuf();
 		break;
 	    } else if (x == '=' && strlen(hiscall) != 0) {
 		/** \todo check if unreachable code */
 		strcat(buffer, lastcall);
-		strcat(buffer, " OK ");
+		strcat(buffer, " TU ");
 		sendbuf();
 		break;
 	    }
@@ -222,21 +220,6 @@ char callinput(void)
 		break;
 	    }
 
-	case 153:		// down - start sending call if cw mode
-	case 32:		// space
-	    {
-		if (trxmode == CWMODE && contest == 1) {
-		    strcpy(buffer, hiscall);
-		    early_started = 1;
-		    sending_call = 1;
-		    sendbuf();
-		    sending_call = 0;
-		    strcpy(hiscall_sent, hiscall);
-		    printcall();
-		    x = 153;
-		} 
-		break;
-	    }
 	case 155:		/* left */
 	    {
 		if (*hiscall != '\0') {
@@ -314,11 +297,9 @@ char callinput(void)
 	    }
 	case 247:		// Alt-w set weight
 	    {
-		strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		speedbuf[2] = '\0';
 		nicebox(1, 1, 2, 11, "Cw");
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-		mvprintw(2, 2, "Speed: %s  ", speedbuf);
+		mvprintw(2, 2, "Speed: %2d  ", GetCWSpeed());
 		if (weight < 0)
 		    mvprintw(3, 2, "Weight:%d ", weight);
 		else
@@ -375,32 +356,24 @@ char callinput(void)
 		if (ctcomp == 1) {
 		    while (x != 27)	//escape
 		    {
-			strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-			speedbuf[2] = '\0';
 			nicebox(1, 1, 2, 9, "Cw");
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-			mvprintw(2, 2, "Speed: %s", speedbuf);
+			mvprintw(2, 2, "Speed: %2d", GetCWSpeed());
 			mvprintw(3, 2, "Weight: %d", weight);
 			printcall();
 			refreshp();
 
 			x = onechar();
 			if (x == 152) {
-			    keyspeed = speedup();
-			    strncpy(speedbuf, speedstr + (2 * keyspeed),
-				    2);
-			    speedbuf[2] = '\0';
+			    speedup();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-			    mvprintw(0, 14, "%s", speedbuf);
+			    mvprintw(0, 14, "%2d", GetCWSpeed());
 
 			} else if (x == 153) {
-			    keyspeed = speeddown();
-			    strncpy(speedbuf, speedstr + (2 * keyspeed),
-				    2);
-			    speedbuf[2] = '\0';
+			    speeddown();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-			    mvprintw(0, 14, "%s", speedbuf);
+			    mvprintw(0, 14, "%2d", GetCWSpeed());
 
 			} else
 			    x = 27;
@@ -452,19 +425,16 @@ char callinput(void)
 		    if (his_rst[1] <= 56) {
 
 			his_rst[1]++;
-			
+
 			no_rst ? : mvprintw(12, 44, his_rst);
 			mvprintw(12, 29, hiscall);
 		    }
 
 		} else {	// change cw speed
-		    keyspeed = speedup();
-
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
+		    speedup();
 
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%s", speedbuf);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 
 		break;
@@ -495,12 +465,10 @@ char callinput(void)
 
 		} else {
 
-		    keyspeed = speeddown();
+		    speeddown();
 
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%s", speedbuf);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 		break;
 	    }
@@ -784,12 +752,7 @@ char callinput(void)
 	    }
 	case 232:		// alt-H
 	    {
-		endwin();
-		rc=system("clear");
-		rc=system("less help.txt");
-		rc=system("clear");
-		set_term(mainscreen);
-		clear_display();
+		show_help();
 		break;
 	    }
 
@@ -1046,38 +1009,25 @@ char callinput(void)
 		instring[1] = '\0';
 		addch(x);
 		strcat(hiscall, instring);
-		if (cwstart != 0 && trxmode == CWMODE && contest == 1) {
+		if (cqmode == CQ && cwstart != 0 &&
+			trxmode == CWMODE && contest == 1) {
 		    /* early start keying after 'cwstart' characters */
 		    if (strlen(hiscall) == cwstart) {
-			strcpy(buffer, hiscall);
-			early_started = 1;
-			sending_call = 1;
-			sendbuf();
-			sending_call = 0;
-			strcpy(hiscall_sent, hiscall);
+			x = autosend();
 		    }
 		}
 	    }
-
-	    refreshp();
 
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
 		strncpy(dupecall, hiscall, 16);
 
 		y = getctydata(dupecall);
-
 		showinfo(y);
 
 		searchlog(hiscall);
-
-
-	    } else {
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(24, 0,
-			 "                                                           ");
-		mvprintw(12, 29 + strlen(hiscall), "");
 	    }
+
 	    refreshp();
 
 	}
@@ -1086,7 +1036,7 @@ char callinput(void)
 	    || x == 92)
 	    break;
 
-	if (trxmode == DIGIMODE && (keyerport == GMFSK 
+	if (trxmode == DIGIMODE && (keyerport == GMFSK
 		|| keyerport == MFJ1278_KEYER)) {
 	    show_rtty();
 	    refreshp();
@@ -1096,6 +1046,105 @@ char callinput(void)
 
     return (x);
 }
+
+/** autosend function
+ *
+ * autosend allow an operator in RUN mode to just enter the call of the
+ * other station. TLF will start sending the call and switch automatically
+ * to sending the exchange when typing stops.
+ *  - starts after 2..5 characters
+ *  - shorter calls have to be finished with ENTER key
+ *  - as soon as autosend starts only alfanumerical keys are accepted
+ *  - no edit after input possible
+ *  - switch to sending exchange after 700 ms timeout
+ *
+ *  \return last typed key, ESC or \n
+ *          ESC - transmission has stopped
+ *          \n  - timeout or CR pressed -> send exchange
+ */
+int autosend()
+{
+    extern char buffer[];
+    extern int early_started;
+    extern int sending_call;
+    extern char hiscall_sent[];
+    extern char hiscall[];
+    extern char wkeyerbuffer[];
+
+    GTimer *timeout;
+    int x;
+
+    strcpy(buffer, hiscall);
+    early_started = 1;
+    sending_call = 1;
+    sendbuf();
+    sending_call = 0;
+    strcpy(hiscall_sent, hiscall);
+
+    timeout = g_timer_new();
+
+    x = -1;
+    while ((x != 27) && (x != '\n')) {
+	nodelay(stdscr, TRUE);
+	x = -1;
+	while ((x == -1) && (g_timer_elapsed(timeout, NULL) < 0.7)) {
+
+	    usleep(10000);
+
+	    /* make sure that the wrefresh() inside getch() shows the cursor
+	     * in the input field */
+	    wmove(stdscr, 12, 29 + strlen(hiscall));
+	    x = onechar();
+
+	}
+	nodelay(stdscr, FALSE);
+
+	if (x == -1) { 		/* timeout */
+	    x = '\n';
+	    continue;
+	}
+
+	if (x == 27) {
+	    stoptx();
+	    *hiscall_sent = '\0';
+	    early_started = 0;
+	    continue;
+	}
+
+	/* convert to upper case */
+	if (x >= 'a' && x <= 'z')
+	    x = x - 32;
+
+	int len = strlen(hiscall);
+	if (len < 13 && x >= '/' && x <= 'Z') {
+	    char append[2];
+
+	    /* insert into hiscall */
+	    hiscall[len] = x;
+	    hiscall[len+1] = '\0';
+
+	    /* display it  */
+	    addch(x);
+
+	    /* send it to cw */
+	    append[0] = x;
+	    append[1] = '\0';
+	    strcat(wkeyerbuffer, append);
+	    sendbuf();
+
+	    len = strlen(hiscall_sent);
+	    hiscall_sent[len] = x;
+	    hiscall_sent[len+1] = '\0';
+
+	    /* and reset timer */
+	    g_timer_reset(timeout);
+	}
+    }
+
+    g_timer_destroy(timeout);
+    return x;
+}
+
 
 int play_file(char *audiofile)
 {
@@ -1113,7 +1162,7 @@ int play_file(char *audiofile)
     } else {
 	close(fd);
 	if (access("./play_vk", X_OK) == 0 ) {
-	   sprintf( playcommand, "./play_vk %s", audiofile); 
+	   sprintf( playcommand, "./play_vk %s", audiofile);
 	}
 	else {
 	   sprintf( playcommand, "play_vk %s", audiofile);

@@ -83,9 +83,9 @@ writes adif file (*.adif)
 
 .TR
 .B :CHAr 
-Input number of characters for CW auto-start. Default is 0 (off).
-You can also start sending the first part of the call by hitting 'space' of 'down-arrow'.
-This works only in CW CONTEST modes. 
+Input number of characters for CW auto-start. Possible values are 2..5, default is 0 (off).
+After typing as many characters in the input field TLF starts sending the callsign without further keystrokes. You can type in the rest off the call (but quickly). As soon as you stop typing (atm for 0.7s) TLF automatically send the exchange and the cursor jumps to the exchange field. ESC stops sending.
+This works only in CW CONTEST in RUN mode. 
 
 .TR
 .B :CHEck, :NOCheck
@@ -137,9 +137,9 @@ Show frequency or band/score info of your other stations...
 
 .TR
 .B :HELp
-Show online help (displays a file
+Show online help (displays  
 .B help.txt
-in the working directory).
+from working directory or from @prefix@/share if no local one exists).
 
 .TR
 .B :INFo
@@ -579,7 +579,7 @@ Adds an ip address to which we broadcast stuff.
 
 .TR
 .B THISNODE=<A...H>
-Node designator. If tlf hears it's own node ID on the network it will exit and ask you to pick another one!!
+Node designator (default 'A'). If tlf hears it's own node ID on the network it will exit and ask you to pick another one!!
 
 .TR
 .B LANDEBUG

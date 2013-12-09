@@ -153,7 +153,6 @@ int get_nr_of_mults()
     }
     else if (universal == 1 && multlist == 1 && arrlss != 1) {
 
-	/* FIXME: Who provides totalmults here? */
 	return totalmults ;
     }
     else if (pacc_pa_flg == 1) {
@@ -180,8 +179,10 @@ int get_nr_of_mults()
 	return nr_of_px;
     }
     else 
-	/* should never reach that point */
-	assert(1 == 0);
+	/* should never reach that point 
+	 *
+	 * \TODO: so we need some instrument of warning here
+	 */
 	return 1;
 }
 
