@@ -1079,8 +1079,9 @@ int autosend()
     extern char wkeyerbuffer[];
 
     GTimer *timer;
-    double timeout;
+    double timeout, timeout_sent;
     int x;
+    int char_sent;
 
     strcpy(buffer, hiscall);
     early_started = 1;
@@ -1088,6 +1089,9 @@ int autosend()
     sendbuf();
     sending_call = 0;
     strcpy(hiscall_sent, hiscall);
+
+    char_sent = 0; 			/* no char sent so far */
+    timeout_sent = (1.2 / GetCWSpeed()) * getCWdots(hiscall[char_sent]);
 
     timer = g_timer_new();
     timeout = (1.2 / GetCWSpeed()) * cw_message_length(hiscall);
@@ -1098,7 +1102,23 @@ int autosend()
 	x = -1;
 	while ((x == -1) && (g_timer_elapsed(timer, NULL) < timeout)) {
 
+	    extern int use_rxvt;
+	    attr_t attrib = A_NORMAL;
+
+	    mvchgat(12, 29, char_sent+1, attrib, C_INPUT, NULL);
+
 	    usleep(10000);
+
+	    if (g_timer_elapsed(timer, NULL) > timeout_sent) {
+		if (use_rxvt == 0)
+		    attrib |= A_BOLD;
+
+		/* one char sent - display and set new timeout */
+		char_sent ++;
+		timeout_sent +=
+		    (1.2 / GetCWSpeed()) * getCWdots(hiscall[char_sent]);
+
+	    }
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
