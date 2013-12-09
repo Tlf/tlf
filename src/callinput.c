@@ -1104,15 +1104,14 @@ int autosend()
 
 	    extern int use_rxvt;
 	    attr_t attrib = A_NORMAL;
+	    if (use_rxvt == 0)
+		attrib |= A_BOLD;
 
 	    mvchgat(12, 29, char_sent+1, attrib, C_INPUT, NULL);
 
 	    usleep(10000);
 
 	    if (g_timer_elapsed(timer, NULL) > timeout_sent) {
-		if (use_rxvt == 0)
-		    attrib |= A_BOLD;
-
 		/* one char sent - display and set new timeout */
 		char_sent ++;
 		timeout_sent +=
