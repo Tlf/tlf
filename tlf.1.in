@@ -294,6 +294,10 @@ Start Auto_CQ (sends F12 message)
 Switch between call input and exchange fields
 
 .TR
+.B Space
+Switch from Call input window to exchange window
+
+.TR
 .B +
 Toggle CQ/S&P mode (TRlog mode) or Send F3 + log qso(CT mode)
 
