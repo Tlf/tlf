@@ -34,7 +34,7 @@ PG-DWN    CW - 2wpm
 F1 - F12  Send F1 - F12 msg          
 TAB       Switch fields            
 ENTER     Log qso, call cq         
-SPACE     
+SPACE     Switch from call input to exchange field
 '\'       Log qso w/o CW           
 Up-arrow  Edit prev qso            
 '-'       Delete last qso          
