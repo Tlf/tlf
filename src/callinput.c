@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@eudxf.org>
+ * Copyright (C) 2001-2005 Rein Couperus <pa0r@eudxf.org>
+ *               2009-2013 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -26,8 +27,13 @@
 #include "addspot.h"
 #include "changefreq.h"
 #include "bandmap.h"
+#include <glib.h>
+#include "cw_utils.h"
+
+#define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
 void send_bandswitch(int freq);
+int autosend(void);
 
 /** callsign input loop
  *
@@ -43,7 +49,6 @@ char callinput(void)
     extern int dxped;
     extern int cwstart;
     extern int early_started;
-    extern int sending_call;
     extern char hiscall[];
     extern char hiscall_sent[];
     extern char comment[];
@@ -54,8 +59,6 @@ char callinput(void)
     extern char lastcall[];
     extern char band[9][4];
     extern int bandinx;
-    extern char speedstr[];
-    extern int keyspeed;
     extern int cqdelay;
     extern char his_rst[];
     extern char backgrnd_str[];
@@ -91,19 +94,17 @@ char callinput(void)
     extern int nob4;
     extern int change_rst;
     extern int weight;
-    extern int k_tune;
-    extern int tune_val;
     extern int k_pin14;
     extern int k_ptt;
     extern int noautocq;
     extern int keyerport;
     extern int miniterm;
+    extern int no_rst;
 
     int cury, curx;
     int i, j, ii, rc, t, x = 0, y = 0;
     char instring[2] = { '\0', '\0' };
     char dupecall[17];
-    char speedbuf[3] = "";
     char weightbuf[5];
     static int lastwindow;
 
@@ -118,10 +119,14 @@ char callinput(void)
 
     for (i = strlen(hiscall); i <= 13; i++) {
 
+	printcall();
+
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	nodelay(stdscr, TRUE);	/* main loop waiting for input */
 	x = -1;
 	while (x < 1) {
+
+	    usleep(10000);
 
 	    time_update();
 
@@ -130,7 +135,6 @@ char callinput(void)
 		show_rtty();
 		printcall();
 	    }
-
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
@@ -151,7 +155,7 @@ char callinput(void)
 		    cqmode = CQ;
 
 		/* and show new mode */
-		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 		if (cqmode == CQ) {
 		    mvprintw(0, 2, "Log     ");
@@ -181,13 +185,13 @@ char callinput(void)
 
 	    if (x == '=' && *hiscall == '\0') {
 		strcat(buffer, lastcall);
-		strcat(buffer, " OK ");
+		strcat(buffer, " TU ");
 		sendbuf();
 		break;
 	    } else if (x == '=' && strlen(hiscall) != 0) {
-		/** \todo check if unreachabel code */
+		/** \todo check if unreachable code */
 		strcat(buffer, lastcall);
-		strcat(buffer, " OK ");
+		strcat(buffer, " TU ");
 		sendbuf();
 		break;
 	    }
@@ -200,7 +204,6 @@ char callinput(void)
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			strcat(buffer, message[2]);	/* F3 */
 			sendbuf();
-			mvprintw(12, 29 + strlen(hiscall), "");
 
 		    } else
 			play_file(ph_message[2]);
@@ -217,21 +220,6 @@ char callinput(void)
 		break;
 	    }
 
-	case 153:		// down - start sending call if cw mode
-	case 32:		// space
-	    {
-		if (trxmode == CWMODE && contest == 1) {
-		    strcpy(buffer, hiscall);
-		    early_started = 1;
-		    sending_call = 1;
-		    sendbuf();
-		    sending_call = 0;
-		    strcpy(hiscall_sent, hiscall);
-		    printcall();
-		    x = 153;
-		} 
-		break;
-	    }
 	case 155:		/* left */
 	    {
 		if (*hiscall != '\0') {
@@ -241,6 +229,7 @@ char callinput(void)
 		if (bandinx >= 0 && *hiscall == '\0' && no_arrows == 0) {
 
 		    bandinx--;
+
 		    if (bandinx == -1)
 			bandinx = 8;
 
@@ -248,9 +237,9 @@ char callinput(void)
 			&& ((bandinx == 3) || (bandinx == 5)
 			    || (bandinx == 7)))
 			bandinx--;
-		    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+
+		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 		    mvprintw(12, 0, band[bandinx]);
-		    printcall();
 		    i--;
 #ifdef HAVE_LIBHAMLIB
 		    if (trx_control == 1) {
@@ -272,10 +261,8 @@ char callinput(void)
 
 	case 154:		/* right */
 	    {
-		if (no_arrows == 1)	//don't use arrow keys for band change
-		    break;
+		if (bandinx <= 8 && *hiscall == '\0' && no_arrows == 0) {
 
-		if (bandinx <= 8 && *hiscall == '\0') {
 		    bandinx++;
 
 		    if (bandinx > 8)
@@ -285,14 +272,9 @@ char callinput(void)
 			&& ((bandinx == 3) || (bandinx == 5)
 			    || (bandinx == 7)))
 			bandinx++;
-		    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+
+		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 		    mvprintw(12, 0, band[bandinx]);
-		    if (use_rxvt == 0)
-			attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-		    else
-			attron(COLOR_PAIR(NORMCOLOR));
-		    attron(A_STANDOUT);
-		    mvprintw(12, 29 + strlen(hiscall), "");
 
 #ifdef HAVE_LIBHAMLIB
 
@@ -315,11 +297,9 @@ char callinput(void)
 	    }
 	case 247:		// Alt-w set weight
 	    {
-		strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		speedbuf[2] = '\0';
 		nicebox(1, 1, 2, 11, "Cw");
-		attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
-		mvprintw(2, 2, "Speed: %s  ", speedbuf);
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+		mvprintw(2, 2, "Speed: %2d  ", GetCWSpeed());
 		if (weight < 0)
 		    mvprintw(3, 2, "Weight:%d ", weight);
 		else
@@ -362,7 +342,7 @@ char callinput(void)
 		if (weight > -51 && weight < 50) {
 		    netkeyer(K_WEIGHT, weightbuf);
 		}
-		attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		mvprintw(1, 1, "             ");
 		mvprintw(2, 1, "             ");
 		mvprintw(3, 1, "             ");
@@ -376,53 +356,39 @@ char callinput(void)
 		if (ctcomp == 1) {
 		    while (x != 27)	//escape
 		    {
-			strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-			speedbuf[2] = '\0';
 			nicebox(1, 1, 2, 9, "Cw");
-			attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
-			mvprintw(2, 2, "Speed: %s", speedbuf);
+			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+			mvprintw(2, 2, "Speed: %2d", GetCWSpeed());
 			mvprintw(3, 2, "Weight: %d", weight);
 			printcall();
 			refreshp();
 
 			x = onechar();
 			if (x == 152) {
-			    keyspeed = speedup();
-			    strncpy(speedbuf, speedstr + (2 * keyspeed),
-				    2);
-			    speedbuf[2] = '\0';
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			    speedup();
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-			    mvprintw(0, 14, "%s", speedbuf);
-			    printcall();
+			    mvprintw(0, 14, "%2d", GetCWSpeed());
+
 			} else if (x == 153) {
-			    keyspeed = speeddown();
-			    strncpy(speedbuf, speedstr + (2 * keyspeed),
-				    2);
-			    speedbuf[2] = '\0';
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-			    mvprintw(0, 14, "%s", speedbuf);
+			    speeddown();
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+			    mvprintw(0, 14, "%2d", GetCWSpeed());
 
-			    if (use_rxvt == 0)
-				attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-			    else
-				attron(COLOR_PAIR(NORMCOLOR));
-
-			    mvprintw(12, 29 + strlen(hiscall), "");
 			} else
 			    x = 27;
 
-			attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 			mvprintw(1, 1, "           ");
 			mvprintw(2, 1, "           ");
 			mvprintw(3, 1, "           ");
 			mvprintw(4, 1, "           ");
-			printcall();
 		    }
 		} else {	// trlog compatible, band switch
 		    if (bandinx >= 0 && *hiscall == '\0') {
 
 			bandinx--;
+
 			if (bandinx == -1)
 			    bandinx = 8;
 
@@ -430,7 +396,8 @@ char callinput(void)
 			    && ((bandinx == 3) || (bandinx == 5)
 				|| (bandinx == 7)))
 			    bandinx--;
-			attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+
+			attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 			mvprintw(12, 0, band[bandinx]);
 			printcall();
 			i--;
@@ -459,19 +426,15 @@ char callinput(void)
 
 			his_rst[1]++;
 
-			mvprintw(12, 44, his_rst);
+			no_rst ? : mvprintw(12, 44, his_rst);
 			mvprintw(12, 29, hiscall);
 		    }
 
 		} else {	// change cw speed
-		    keyspeed = speedup();
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    speedup();
 
-		    mvprintw(0, 14, "%s", speedbuf);
-		    printcall();
-
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 
 		break;
@@ -480,16 +443,10 @@ char callinput(void)
 	    {
 		if (cqdelay <= 60) {
 		    cqdelay++;
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 19, "  ");
 		    mvprintw(0, 19, "%i", cqdelay);
-
-		    if (use_rxvt == 0)
-			attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-		    else
-			attron(COLOR_PAIR(NORMCOLOR));
-
-		    mvprintw(12, 29 + strlen(hiscall), "");
 		}
 
 		break;
@@ -502,36 +459,26 @@ char callinput(void)
 		    if (his_rst[1] > 49) {
 			his_rst[1]--;
 
-			mvprintw(12, 44, his_rst);
+			no_rst ? : mvprintw(12, 44, his_rst);
 			mvprintw(12, 29, hiscall);
 		    }
 
 		} else {
 
-		    keyspeed = speeddown();
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-		    mvprintw(0, 14, "%s", speedbuf);
+		    speeddown();
 
-		    if (use_rxvt == 0)
-			attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-		    else
-			attron(COLOR_PAIR(NORMCOLOR));
-
-		    mvprintw(12, 29 + strlen(hiscall), "");
-
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 		break;
 	    }
 	case 413:{		// ctrl-pgdown, cqdelay (not for TERM=linux)
 		if (cqdelay >= 4) {
 		    cqdelay--;
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 19, "  ");
 		    mvprintw(0, 19, "%i", cqdelay);
-		    printcall();
 		}
 
 		break;
@@ -555,7 +502,6 @@ char callinput(void)
 		if (isdupe != 0) {
 		    strcat(buffer, message[6]);	/* as with F7 */
 		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
 		    cleanup();
 		    clear_display();
 		}
@@ -564,9 +510,13 @@ char callinput(void)
 	case 160:		/* insert */
 	    {
 		if (ctcomp != 0) {
-		    strcat(buffer, message[1]);
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			strcat(buffer, message[1]);
+			sendbuf();
+
+		    } else
+			play_file(ph_message[1]);
+
 		}
 		break;
 	    }
@@ -576,7 +526,7 @@ char callinput(void)
 		hiscall[0] = '\0';
 		x = 0;
 		clear_display();
-		attron(COLOR_PAIR(7) | A_STANDOUT);
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		for (j = 13; j <= 23; j++) {
 		    mvprintw(j, 0, backgrnd_str);
@@ -630,9 +580,7 @@ char callinput(void)
 	case 176 ... 186:
 	    {
 		strcat(buffer, message[x - 162]);	/* alt-0 to alt-9 */
-		mvprintw(5, 0, "");
 		sendbuf();
-		mvprintw(12, 54, comment);
 
 		break;
 	    }
@@ -651,7 +599,6 @@ char callinput(void)
 		    }
 
 		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
 
 		    if (simulator != 0) {
 			simulator_mode = 1;
@@ -666,114 +613,22 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 130:
+	case 130 ... 138:			/* F2.. F10 */
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[1]);	/* F2 */
+		    strcat(buffer, message[x - 129]);	/* F2 */
 		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
 
 		} else
-		    play_file(ph_message[1]);
+		    play_file(ph_message[x - 129]);
 
 		break;
 	    }
-	case 131:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[2]);	/* F3 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-
-		} else
-		    play_file(ph_message[2]);
-
-		break;
-	    }
-	case 132:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[3]);	/* F4 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[3]);
-
-		break;
-	    }
-	case 133:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[4]);	/* F5 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[4]);
-
-		break;
-	    }
-	case 134:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[5]);	/* F6 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[5]);
-
-		break;
-	    }
-	case 135:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[6]);	/* F7 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[6]);
-
-		break;
-	    }
-	case 136:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[7]);	/* F8 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[7]);
-
-		break;
-	    }
-	case 137:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[8]);	/* F9 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[8]);
-
-		break;
-	    }
-	case 138:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[9]);	/* F10 */
-		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
-		} else
-		    play_file(ph_message[9]);
-
-		break;
-	    }
-
 	case 140:
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    strcat(buffer, message[10]);	/* F11 */
 		    sendbuf();
-		    mvprintw(12, 29 + strlen(hiscall), "");
 		} else
 		    play_file(ph_message[10]);
 
@@ -787,8 +642,8 @@ char callinput(void)
 	    {
 		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
-		    mvprintw(12, curx - 1, " ");
-		    mvprintw(12, curx - 1, "");
+		    mvprintw(cury, curx - 1, " ");
+		    mvprintw(cury, curx - 1, "");
 		    hiscall[strlen(hiscall) - 1] = '\0';
 
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */
@@ -815,18 +670,12 @@ char callinput(void)
 		    showscore_flag = 1;
 		else {
 		    showscore_flag = 0;
-		    /** \todo drop display of scrore */
-		    attron(COLOR_PAIR(7) | A_STANDOUT);
+		    /** \todo drop display of score */
+		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
-		    refreshp();
 		}
-		break;
-	    }
-	case 142 ... 150:
-	    {
-		message_change(x);
-
+		clear_display();
 		break;
 	    }
 	case 235:
@@ -840,7 +689,7 @@ char callinput(void)
 		    cluster = CLUSTER;	// alt-A
 		    announcefilter = FILTER_ALL;
 		} else if (cluster == CLUSTER) {
-		    attron(COLOR_PAIR(7) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
@@ -848,7 +697,7 @@ char callinput(void)
 
 		    cluster = MAP;
 		} else if (cluster == MAP) {
-		    attron(COLOR_PAIR(7) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		    for (ii = 14; ii < 24; ii++)
 			mvprintw(ii, 0, backgrnd_str);
@@ -872,14 +721,9 @@ char callinput(void)
 			    && ((bandinx == 3) || (bandinx == 5)
 				|| (bandinx == 7)))
 			    bandinx++;
-			attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+
+			attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 			mvprintw(12, 0, band[bandinx]);
-			if (use_rxvt == 0)
-			    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-			else
-			    attron(COLOR_PAIR(NORMCOLOR));
-			attron(A_STANDOUT);
-			mvprintw(12, 29 + strlen(hiscall), "");
 
 #ifdef HAVE_LIBHAMLIB
 
@@ -908,12 +752,7 @@ char callinput(void)
 	    }
 	case 232:		// alt-H
 	    {
-		endwin();
-		rc=system("clear");
-		rc=system("less help.txt");
-		rc=system("clear");
-		set_term(mainscreen);
-		clear_display();
+		show_help();
 		break;
 	    }
 
@@ -942,7 +781,7 @@ char callinput(void)
 	    {
 		if (k_ptt == 0) {
 		    k_ptt = 1;
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 2, "PTT on   ");
 		    mvprintw(12, 29, "");
 		    refreshp();
@@ -960,22 +799,35 @@ char callinput(void)
 	    }
 	case 244:		// Alt-t (tune)
 	    {
-		if (k_tune == 0) {
-		    k_tune = 1;
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-		    mvprintw(0, 2, "Tune     ");
-		    mvprintw(12, 29, "");
-		    refreshp();
-		    if (tune_val == 0) {
-			netkeyer(K_TUNE, "1");	// cw on
-			onechar();	// any character to stop tuning
-			netkeyer(K_TUNE, "0");	// cw off
-		    }
-		    k_tune = 0;
-		    mvprintw(0, 2, "%s", mode);
-		    refreshp();
-		} else
-		    netkeyer(K_TUNE, "0");	// cw off in any case.
+		int count;
+		gchar *buff;
+
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 2, "Tune     ");
+		mvprintw(12, 29, "");
+		refreshp();
+
+		buff = g_strdup_printf("%d", TUNE_UP);
+		netkeyer(K_TUNE, buff);	// cw on
+		g_free(buff);
+
+		nodelay (stdscr, TRUE);
+
+		count = TUNE_UP / 0.25;
+
+		while (count != 0) {
+		    usleep( 250000 );
+		    if ((onechar()) != -1)	// any key pressed ?
+			break;
+		    count--;
+		}
+
+		nodelay (stdscr, FALSE);
+
+		netkeyer( K_ABORT, "");	// cw abort
+
+		mvprintw(0, 2, "%s", mode);
+		refreshp();
 
 		break;
 	    }
@@ -1006,6 +858,7 @@ char callinput(void)
 
 		    if (x == 'y' || x == 'Y') {
 			writeparas();
+			cleanup_telnet();
 			endwin();
 
 			puts("\n\nThanks for using TLF.. 73\n");
@@ -1134,7 +987,7 @@ char callinput(void)
 
 		    refreshp();
 		    getchar();
-		    attron(COLOR_PAIR(7) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
 			mvprintw(14 + t, 0,
 				 "                                                             ");
@@ -1156,38 +1009,25 @@ char callinput(void)
 		instring[1] = '\0';
 		addch(x);
 		strcat(hiscall, instring);
-		if (cwstart != 0 && trxmode == CWMODE && contest == 1) {
+		if (cqmode == CQ && cwstart != 0 &&
+			trxmode == CWMODE && contest == 1) {
 		    /* early start keying after 'cwstart' characters */
 		    if (strlen(hiscall) == cwstart) {
-			strcpy(buffer, hiscall);
-			early_started = 1;
-			sending_call = 1;
-			sendbuf();
-			sending_call = 0;
-			strcpy(hiscall_sent, hiscall);
+			x = autosend();
 		    }
 		}
 	    }
-
-	    refreshp();
 
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
 		strncpy(dupecall, hiscall, 16);
 
 		y = getctydata(dupecall);
-
 		showinfo(y);
 
 		searchlog(hiscall);
-
-
-	    } else {
-		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-		mvprintw(24, 0,
-			 "                                                           ");
-		mvprintw(12, 29 + strlen(hiscall), "");
 	    }
+
 	    refreshp();
 
 	}
@@ -1196,12 +1036,9 @@ char callinput(void)
 	    || x == 92)
 	    break;
 
-	time_update();		// TODO: can be dropped
-
-	if (trxmode == DIGIMODE && (keyerport == GMFSK 
+	if (trxmode == DIGIMODE && (keyerport == GMFSK
 		|| keyerport == MFJ1278_KEYER)) {
 	    show_rtty();
-	    mvprintw(12, 54, comment);
 	    refreshp();
 	}
 
@@ -1210,8 +1047,105 @@ char callinput(void)
     return (x);
 }
 
-#define new_play
-#ifdef new_play
+/** autosend function
+ *
+ * autosend allow an operator in RUN mode to just enter the call of the
+ * other station. TLF will start sending the call and switch automatically
+ * to sending the exchange when typing stops.
+ *  - starts after 2..5 characters
+ *  - shorter calls have to be finished with ENTER key
+ *  - as soon as autosend starts only alfanumerical keys are accepted
+ *  - no edit after input possible
+ *  - switch to sending exchange after 700 ms timeout
+ *
+ *  \return last typed key, ESC or \n
+ *          ESC - transmission has stopped
+ *          \n  - timeout or CR pressed -> send exchange
+ */
+int autosend()
+{
+    extern char buffer[];
+    extern int early_started;
+    extern int sending_call;
+    extern char hiscall_sent[];
+    extern char hiscall[];
+    extern char wkeyerbuffer[];
+
+    GTimer *timeout;
+    int x;
+
+    strcpy(buffer, hiscall);
+    early_started = 1;
+    sending_call = 1;
+    sendbuf();
+    sending_call = 0;
+    strcpy(hiscall_sent, hiscall);
+
+    timeout = g_timer_new();
+
+    x = -1;
+    while ((x != 27) && (x != '\n')) {
+	nodelay(stdscr, TRUE);
+	x = -1;
+	while ((x == -1) && (g_timer_elapsed(timeout, NULL) < 0.7)) {
+
+	    usleep(10000);
+
+	    /* make sure that the wrefresh() inside getch() shows the cursor
+	     * in the input field */
+	    wmove(stdscr, 12, 29 + strlen(hiscall));
+	    x = onechar();
+
+	}
+	nodelay(stdscr, FALSE);
+
+	if (x == -1) { 		/* timeout */
+	    x = '\n';
+	    continue;
+	}
+
+	if (x == 27) {
+	    stoptx();
+	    *hiscall_sent = '\0';
+	    early_started = 0;
+	    continue;
+	}
+
+	/* convert to upper case */
+	if (x >= 'a' && x <= 'z')
+	    x = x - 32;
+
+	int len = strlen(hiscall);
+	if (len < 13 && x >= '/' && x <= 'Z') {
+	    char append[2];
+
+	    /* insert into hiscall */
+	    hiscall[len] = x;
+	    hiscall[len+1] = '\0';
+
+	    /* display it  */
+	    addch(x);
+
+	    /* send it to cw */
+	    append[0] = x;
+	    append[1] = '\0';
+	    strcat(wkeyerbuffer, append);
+	    sendbuf();
+
+	    len = strlen(hiscall_sent);
+	    hiscall_sent[len] = x;
+	    hiscall_sent[len+1] = '\0';
+
+	    /* and reset timer */
+	    g_timer_reset(timeout);
+	}
+    }
+
+    g_timer_destroy(timeout);
+    return x;
+}
+
+
 int play_file(char *audiofile)
 {
 
@@ -1228,7 +1162,7 @@ int play_file(char *audiofile)
     } else {
 	close(fd);
 	if (access("./play_vk", X_OK) == 0 ) {
-	   sprintf( playcommand, "./play_vk %s", audiofile); 
+	   sprintf( playcommand, "./play_vk %s", audiofile);
 	}
 	else {
 	   sprintf( playcommand, "play_vk %s", audiofile);
@@ -1242,42 +1176,7 @@ int play_file(char *audiofile)
 
     return (0);
 }
-#else
-int play_file(char *audiofile)
-{
 
-    extern int txdelay;
-
-    int fd,rc;
-    char playcommand[120];
-
-    if (*audiofile == '\0')
-	return (0);
-
-    netkeyer(K_PTT, "1");	// ptt on
-    if ((fd = open(audiofile, O_RDONLY, 0664)) < 0) {
-	mvprintw(24, 0, "cannot open sound file %s!", audiofile);
-    } else {
-	close(fd);
-	playcommand[0] = '\0';
-	//strcat (playcommand, "play -d ");             //G4KNO
-	strcat(playcommand, "play ");	//G4KNO
-	//strcat (playcommand, sc_device);              //G4KNO
-	strcat(playcommand, " ");
-	strcat(playcommand, audiofile);
-	//strcat (playcommand, " > /dev/null ");        //G4KNO
-	strcat(playcommand, " -q ");	//G4KNO
-	usleep(txdelay * 1000);
-	rc=system("amixer -c 0 set Mic mute -q");	//G4KNO: mute mic
-	rc=system(playcommand);
-	rc=system("amixer -c 0 set Mic unmute -q");	//G4KNO: unmute mic
-	printcall();
-    }
-    netkeyer(K_PTT, "0");	// ptt off
-
-    return (0);
-}
-#endif
 
 void send_bandswitch(int freq)
 {

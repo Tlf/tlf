@@ -9,16 +9,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DXCC_H
-#define _DXCC_H
+#ifndef DXCC_H
+#define DXCC_H
 
 typedef struct {
 	char *pfx;
@@ -36,6 +36,7 @@ typedef struct {
 	float lon;
 	float timezone;
 	char *pfx;
+	char starred;
 } dxcc_data;
 
 void prefix_init(void);
@@ -53,4 +54,5 @@ int dxcc_count(void);
 dxcc_data *dxcc_by_index(int index);
 
 void dxcc_add (char * dxcc_line);
-#endif
+
+#endif 	/* DXCC_H */

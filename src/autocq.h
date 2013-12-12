@@ -9,24 +9,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-#include<stdlib.h>
-#include <string.h>
-#include <curses.h>
-#include "clear_display.h"
-#include "printcall.h"
-#include "sendbuf.h"
-#include "tlf.h"
+#ifndef AUTOCQ_H
+
+#define AUTOCQ_H
 
 int  auto_cq  (void);
-int cw_char_length( char *message) ;
 
+#endif /* end of include guard: AUTOCQ_H */
 

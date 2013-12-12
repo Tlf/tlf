@@ -8,7 +8,7 @@
 .SH "OPTIONS"
 .TP
 \fB\-f\fR Start with non-default configuration file (tlf -fPA0R) 
-\fR Defaults to logcfg.dat.
+\fR Defaults to logcfg.dat in actual working directory.
 .TP
 \fB\-h\fR Show summary of options and exit.
 .TP
@@ -83,9 +83,9 @@ writes adif file (*.adif)
 
 .TR
 .B :CHAr 
-Input number of characters for CW auto-start. Default is 0 (off).
-You can also start sending the first part of the call by hitting 'space' of 'down-arrow'.
-This works only in CW CONTEST modes. 
+Input number of characters for CW auto-start. Possible values are 2..5, default is 0 (off).
+After typing as many characters in the input field TLF starts sending the callsign without further keystrokes. You can type in the rest off the call (but quickly). As soon as you stop typing (atm for 0.7s) TLF automatically send the exchange and the cursor jumps to the exchange field. ESC stops sending.
+This works only in CW CONTEST in RUN mode. 
 
 .TR
 .B :CHEck, :NOCheck
@@ -137,9 +137,9 @@ Show frequency or band/score info of your other stations...
 
 .TR
 .B :HELp
-Show online help (displays a file
+Show online help (displays  
 .B help.txt
-in the working directory).
+from working directory or from @prefix@/share if no local one exists).
 
 .TR
 .B :INFo
@@ -240,7 +240,7 @@ Synchronize the logfile of this node with the logfile pointed to by parameter SY
 
 .TR
 .B :TONe 
-Set PC sidetone frequency (300 - 900)
+Set PC sidetone frequency (300 - 900, 0 = Off)
 
 .TR
 .B :TRXcontrol
@@ -252,8 +252,8 @@ View the log with LESS
 
 .TR
 .B :WRIte 
-Write cabrillo file for selected contests (CQ and ARRL contests).
-Other contests may work, you have to experiment.
+Write cabrillo file according to specified format (see \fBCABRILLO=\fR 
+statement).
 
 .SH "KEYS"
 
@@ -292,6 +292,10 @@ Start Auto_CQ (sends F12 message)
 .TR
 .B Tab
 Switch between call input and exchange fields
+
+.TR
+.B Space
+Switch from Call input to exchange field
 
 .TR
 .B +
@@ -492,7 +496,9 @@ Toggle score window
 
 .TR
 .B Alt-t
-Tune (via cwdaemon) 
+
+Tune your rig (via cwdaemon). Activates PTT and Key output for 6 seconds. 
+Stop with any key.
 
 .TR
 .B Alt-v
@@ -578,7 +584,7 @@ Adds an ip address to which we broadcast stuff.
 
 .TR
 .B THISNODE=<A...H>
-Node designator. If tlf hears it's own node ID on the network it will exit and ask you to pick another one!!
+Node designator (default 'A'). If tlf hears it's own node ID on the network it will exit and ask you to pick another one!!
 
 .TR
 .B LANDEBUG
@@ -619,7 +625,8 @@ Use soundcard for sidetone output
 
 .TR
 .B SIDETONE_VOLUME=<soundcard volume> (0...99)
-Set soundcard sidetone volume (default=70)
+Set soundcard sidetone volume (default=70). A value of 0 turns off sidetone
+output (even for the console speaker).
 
 .TR
 .B CQDELAY=<Auto_cq delay in 1/2 seconds> (3...60)
@@ -627,7 +634,12 @@ Use a value which is message length + listening time!!
 
 .TR
 .B CWTONE=<pc speaker or soundcard sidetone> (0...999)
-A value of 0 switches the sidetone off.
+A value of 0 switches the sidetone off (!!! Due to a bug in cwdaemon 
+it also turns off the 
+.B Alt-t
+tune function. Use
+.B SIDETONE_VOLUME = 0
+instead).
 
 .TR
 .B BANDOUTPUT
@@ -672,11 +684,11 @@ Anything you dump into this fifo will be displayed by the packet interface.
 .TR
 .B RADIO_CONTROL
 Switches the radio interface on. The rig interface makes use of the Hamlib library which
-supports a lot of different rigs..
+supports a lot of different rigs.
 
 .TR
 .B RIGMODEL=<rig number>
-Look at the Hamlib stuff for the NUMBER of your rig...
+Look at the Hamlib stuff for the NUMBER of your rig.
 
 .TR
 .B RIGSPEED=<Baud rate>
@@ -695,6 +707,17 @@ Will send rig configuration parameters to Hamlib
 E.g.: RIGCONF=civaddr=0x40,retry=3,rig_pathname=/dev/ttyS0
 
 .TR
+.B RIT_CLEAR
+Clears the RIT after logging the qso. This only works if the rig, and the
+hamlib routine supports it. (It works for the OMNI 6+).
+
+.TR
+.B CWBANDWIDTH=<width>
+Sets the cw bandwidth of your rig when changing bands. If unset or 0 the
+default bandwidth (as determined by hamlib) is used. (You have to use a
+valid bandwidth for your rig!).
+
+.TR
 .B SC_DEVICE=
 Sound card device for scan function (e.g. /dev/dsp0)
 
@@ -702,11 +725,6 @@ Sound card device for scan function (e.g. /dev/dsp0)
 .B S_METER=
 Audio s-meter calibration values for the scan function
 e.g. S_METER=20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1
-
-.TR
-.B RIT_CLEAR
-Clears the RIT after logging the qso. This only works if the rig, and the
-hamlib routine supports it. (It works for the OMNI 6+).
 
 .TR
 .B SSBMODE
@@ -748,7 +766,7 @@ Show cluster bandmap on startup and set start values for filtering.
   'M' - only own mode
   'D' - do not show dupes
   'S' - skip dupes during grab_next (ctrl-g)
-  <number> livetime for new spots in second (number >=300)
+  <number> livetime for new spots in second (number >=30)
 
 .TR
 .B SCOREWINDOW
@@ -826,9 +844,17 @@ Some contests, like cqww and wpx, are pre-programmed. look for the relevant rule
 .B LOGFILE=<logfilename>
 Mandatory
 
+.TR 
+.B CABRILLO=<cabrillo_format> 
+Specify the name of the cabrillo format to use (see doc/README.cab).
+
 .TR
 .B CONTEST_MODE
 Sets contest mode. Uncomment for normal qso logging.
+
+.TR
+.B NO_RST
+Do not use RST in contest (e.g. for CW Open or ARRL Field Day). Use '---' as placeholder instead of RST in the logfile and the main display. If you want to write a cabrillo log you have to provide an according format definition without RST values.
 
 .TR
 .B CQWW_M2

@@ -1,7 +1,7 @@
 #include "tlf.h"
 #include <glib.h>
 
-extern char qsos[MAX_QSOS][82];		// array of log lines of QSOs so far; 
+extern char qsos[MAX_QSOS][LOGLINELEN+1];// array of log lines of QSOs so far; 
 					// note that not every log line needs 
 					// to be a QSO, it could also be a 
 					// comment, starting with a semicolon
@@ -70,7 +70,7 @@ extern int minute_timer;
 // extern char logline2[81];
 // extern char logline3[81];
 // extern char logline4[];
-extern char logline_edit[5][88];
+extern char logline_edit[5][LOGLINELEN+1];
 #define logline0 logline_edit[0]
 #define logline1 logline_edit[1]
 #define logline2 logline_edit[2]

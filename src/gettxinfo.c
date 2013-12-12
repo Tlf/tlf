@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -34,7 +34,6 @@ int gettxinfo(void)
     extern freq_t rigfreq;
     extern freq_t outfreq;
     extern int cw_bandwidth;
-    extern int nobandchange;
 #else
     extern float rigfreq;
     extern int outfreq;
@@ -48,8 +47,6 @@ int gettxinfo(void)
     extern int trxmode;
 
     int retval = 0;
-    int qrg = 0;
-    char qrg_string[8];
     static int oldbandinx;
 
     void send_bandswitch(int freq);
@@ -65,65 +62,69 @@ int gettxinfo(void)
 	else
 	    rigfreq = native_rig_get_freq(rignumber);	//ORION
 
+	if (retval != RIG_OK || rigfreq < 0.1) {
+	    freq = 0.0;
+	    return (0);
+	}
 #else
 	rigfreq = (float) native_rig_get_freq(rignumber);	//ORION
+
+	if (rigfreq < 0.1) {
+	    freq = 0.0;
+	    return (0);
+	}
 #endif
 
-	if (rigfreq > 1800.0) {
-	    freq = rigfreq / 1000.0;
-	    qrg = (int) rigfreq / 1000;
+
+	if (rigfreq >= 1800000.0) {
+	    freq = rigfreq / 1000.0;		/* kHz */
 	}
 
-	qrg_string[7] = '\0';
 
-	switch (qrg) {
+	switch ((int)freq) {
 	case 1800 ... 2000:{
 		bandinx = 0;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 3500 ... 4000:{
 		bandinx = 1;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 7000 ... 7300:{
 		bandinx = 2;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 10100 ... 10150:{
 		bandinx = 3;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 14000 ... 14350:{
 		bandinx = 4;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 18068 ... 18168:{
 		bandinx = 5;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 21000 ... 21450:{
 		bandinx = 6;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 24890 ... 24990:{
 		bandinx = 7;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
 	case 28000 ... 29700:{
 		bandinx = 8;
-		bandfrequency[bandinx] = freq;
 		break;
 	    }
-
+	default:
+		bandinx = NBANDS;	/* out of band */
 	}
+
+	if (bandinx != NBANDS)
+	    bandfrequency[bandinx] = freq;
+
 	if (bandinx != oldbandinx)	// band change on trx
 	{
 	    oldbandinx = bandinx;
@@ -166,18 +167,14 @@ int gettxinfo(void)
 		} else {
 //                                      retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  RIG_PASSBAND_NORMAL);
 		    if (cw_bandwidth == 0) {
-			if (nobandchange != 1) {
 			    retval =
 				rig_set_mode(my_rig, RIG_VFO_CURR,
 					     RIG_MODE_CW,
 					     RIG_PASSBAND_NORMAL);
-			}
 		    } else {
-			if (nobandchange != 1) {
 			    retval =
 				rig_set_mode(my_rig, RIG_VFO_CURR,
 					     RIG_MODE_CW, cw_bandwidth);
-			}
 		    }
 
 		    if (retval != RIG_OK) {
@@ -235,17 +232,13 @@ int gettxinfo(void)
 	if (rignumber < 2000) {
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	    if (cw_bandwidth == 0) {
-		if (nobandchange != 1) {
-		    retval =
-			rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
+		retval =
+		    rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
 				     RIG_PASSBAND_NORMAL);
-		}
 	    } else {
-		if (nobandchange != 1) {
-		    retval =
-			rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
+		retval =
+		    rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
 				     cw_bandwidth);
-		}
 	    }
 #endif
 	} else {

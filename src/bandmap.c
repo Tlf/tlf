@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "bandmap.h"
@@ -548,7 +548,7 @@ void bm_menu()
 
     getyx( stdscr, cury, curx);		/* remember cursor */
 
-    attrset( COLOR_PAIR(7) | A_STANDOUT );
+    attrset( COLOR_PAIR(C_LOG) | A_STANDOUT );
     mvprintw( 13, 0, "  Toggle <B>and, <M>ode or <D>upes filter");
     printw(" | any other - leave");
 

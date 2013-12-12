@@ -3,6 +3,7 @@
 CONTEST=pacc_pa
 logfile=pacc.log
 CONTEST_MODE
+CABRILLO=UNIVERSAL
 #
 ##################################
 #                                #

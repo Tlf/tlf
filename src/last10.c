@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 	/* ------------------------------------------------------------
 	 *     last 10 - return time (in mins) for last 10 QSOs on 
@@ -27,7 +27,7 @@
 int last10(void)
 {
 
-    char input[82];
+    char input[LOGLINELEN+1];
 
     int minsbefore;
     int minsnow;
@@ -55,7 +55,7 @@ int last10(void)
     if (counter < 0)
 	return (-1);			/* not 10 QSOs found */
 
-    strncpy(input, qsos[counter], 82);
+    strncpy(input, qsos[counter], LOGLINELEN+1);
 
     input[17 + 5] = '\0';
     minsbefore = atoi(input + 17 + 3);

@@ -1,8 +1,11 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(tlf, 1.1.1, rein@couperus.com es tb@forth-ev.de)
+AC_INIT(tlf, 1.2.0_pre3, rein@couperus.com es tb@forth-ev.de)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
+
+dnl Clean compilation output makes compiler warnings more visible
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # Checks for programs.
 AC_PROG_CC
@@ -13,8 +16,9 @@ PKG_CHECK_MODULES(GLIB, glib-2.0)
 AC_CHECK_LIB([m], [atan])
 AC_CHECK_LIB([pthread], [pthread_create])
 ACX_PTHREAD
-AC_CHECK_LIB([ncurses], [initscr])
-AC_CHECK_LIB([panel], [update_panels])
+AC_CHECK_LIB([ncurses], [initscr],,AC_MSG_ERROR([needs ncurses library]))
+AC_CHECK_LIB([panel], [update_panels],,
+		AC_MSG_ERROR([needs ncurses panel library]))
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -22,7 +26,8 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h memory.h netdb.h netinet/in.h stdlib.h str
 
 dnl Check if we want to link the Hamradio control libraries (hamlib)
 AC_ARG_ENABLE([hamlib],
-[  --enable-hamlib   Add support for hamradio control libraries],
+	[AS_HELP_STRING([--enable-hamlib],
+			[Add support for Ham Radio Control Libraries])],
 [case "${enableval}" in
 	yes) wanthamlib=true ;;
 	no)  wanthamlib=false ;;
@@ -43,10 +48,10 @@ if test "x${wanthamlib}" != "xfalse"; then
 	AC_CHECK_LIB(hamlib,main,,AC_MSG_ERROR([Hamradio control libraries not found...]))
 	AC_CHECK_HEADERS(hamlib/rig.h,,AC_MSG_ERROR([Hamlib headers not found...]))
 	AC_DEFINE([WANT_HAMLIB], 1, [Want Hamlib])
-	echo "enabling hamlib support"
+	echo "enabling Hamlib support"
 else
 	AC_DEFINE([WANT_HAMLIB], 0, [No Hamlib])
-	echo "disabling hamlib support"
+	echo "disabling Hamlib support"
 fi
 
 if test "${ac_cv_c_compiler_gnu}" = "yes"; then

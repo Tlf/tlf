@@ -1,10 +1,154 @@
+tlf-1.2.0_pre3
+==============
+Prerelease and test version
+
+tlf-1.2.0 will be a major release with some new features and improvements.
+tlf-1.2.0_pre3 should test some more of them.
+
+Contains all bug fixes and enhancements from 1.1.4 and 1.1.5.
+
+New features since 1.2.0_pre2:
+    - Major rework how to write of cabrillo logfiles. Old code 
+      contained some errors and was not easily extendable to new contests 
+      with different cabrillo formats.
+      New routine formats cabrillo log according to a textual description
+      (Which can be modified and extended by the user) in 
+      /usr/(local/)share/cabrillo.fmt. See doc/README.cabrillo for details.
+
+
+tlf-1.1.5
+=========
+Minor maintenance release.
+
+New features:
+    - Report line number for badly formatted lines in initial exchange file.
+      That makes it easier to find the problem for files with a lot of entries.
+      Thanks Mario DH5YM for reporting the problem.
+    - Allow to set SIDETONE_VOLUME to 0 independent from choosen sidetone
+      device. Due to a bug in cwdaemon-0.9.4 setting SIDETONE to 0 switches
+      off the sidetone but also the keying. So please...
+      !!! Set SIDETONE_VOLUME = 0 to switch off sidetone output !!!
+
+Bug fixes:
+    - Fix display of zone and section in searchlog window
+    - Correct handling of function keys to send messages in digimode.
+      Old code allowed function keys only during call input. New code supports
+      them also in exchange field.
+
+
+tlf-1.1.4
+=========
+Minor maintenance release.
+
+New features:
+    - ask for confirmation about reported problems in config files to give
+      you time to recognize the problems.
+    - Rework of digimode handling together with fldigi.
+      Fix digimode receive routine 'rx_rtty()', make miniterm output more
+      robust and update miniterm also while the cursor is in the exchange
+      field. Drop some unneeded newlines for each function key macro.
+    - Minor corrections and additions to the man page
+
+Bug fixes:
+    - Old version segfaults in 'searchlog' function if a really long callsign
+      filled the input field.
+    - Parsing logic for special characters in own exchange (# ...) do not rely
+      anymore on a trailing NL to the exchange macro.
+    - Fix sidetone control. Recognize CWTONE=0 in logcfg.dat, work around a
+      bug in cwdaemon which does not allow to switch tone back on afterwards.
+    - Stop flickering cursor between input or exchange field and dupe
+      searchwindow.
+    - Fix Alt-t (tune) function to switch tuning on for 6 seconds (can be
+      stopped early with any key press). !!Be aware that there are some
+      problems in different cwdaemon versions (no PTT keying, no chance to stop
+      tuning early, ...). Working with the maintainer to fix it.
+
+
+tlf-1.1.3
+tlf-1.2.0_pre2
+==============
+Bugfix release.
+
+Old tlf-1.1.2 contained a bug in the parsing logic for logcfg.dat and rules
+files. It failed to recognize some keywords if there was a similar one with
+the same beginning (e.g. CLUSTERLOGIN got not recognized as there is also a
+CLUSTER keyword). i
+Furthermore it complained about empty lines in that files with: 'Keyword '' 
+not supported'.
+Thanks to David N1EA and Marting OK1RR for pointing that out.
+
+New features:
+    - New keyword CABRILLO=<formatname> accepted. specifies the cabrillo format 
+      to be used (not working yet).
+
+Bug fixes:
+    - Implemented new and much more robust parsing logic for keywords.
+      Reworked and rechecked also all parameter handling to allow a better 
+      failure handling.
+    - tlf no longer complains about empty lines in config files.
+    - Add support for '~' expansion for '-f' command line switch. (Thanks N1EA).
+      Something like 'tlf -f~/mydir/logcfg.dat' is working now.
+    - Add description of reset of CW bandwidth during band switch and 
+      CWBANDWIDTH= keyword to man page.
+
+Furthermore some cleanup and internal changes are made to simplify future 
+maintenance, e.g.:
+    - Cleanup of unused variables and comments.
+    - Rename 'configure.in' into 'configure.ac' as former will be no longer
+      accepted by automake-1.13
+
+
+tlf-1.2.0_pre1
+==============
+Prerelease for new tlf-1.2.0
+
+tlf-1.2.0 will be a major release with some new features and improvements. 
+The prerelease should test some first main features.
+
+New features:
+    - change log file format to make room for recording of actual working
+      frequency (columns 0..79 - old TR-log format, QRG gets added with
+      one decimal after that)
+    - Better check of log file format on startup. Can migrate old logs to
+      new format.
+    - Record actual working QRG in log if a rig is connected
+    - Write QRG into ADIF and Cabrillo export files
+    - Renamed ADIF and Cabrillo files to <call>.adi and <contest>.cbr as
+      suggested by Martin OK1RR
+    - Check for size of Terminal (at least 25x80 is needed).
+
+Furthermore a lot of cleanup and internal changes are made to simplify future 
+maintenance, e.g.:
+    - A new scheme for color initialisation and naming
+    - Cleanup of unused variables and comments.
+    - Fix configure-script to abort if no ncurses lib is installed.
+
+To be done:
+    - Fix generation of cabrillo files (still broken in this prerelease)
+    - Document log file format
+    - make exchange field editable
+
+
+tlf-1.1.2
+=========
+Minor maintenance release.
+
+New features:
+    - Add ARRL 10m Contest rules for DX stations.
+    - Provide more actual multiplier files for arrldx and arrl10m contests.
+    - Add a better recognition of unkown keywords in config file.
+
+Bug fixes:
+    - Fix recongnition of COUNTRY_LIST keyword.
+    - fix a segfault problem in exchange handling.
+
 tlf-1.1.1
 =========
 Minor maintenance release.
 
 New features:
     - New doc/README.ssb gives some good hints how to use TLF on SSB contest.
-      Thansk Andy, D4KNO for contributing.
+      Thansk Andy, G4KNO for contributing.
 
 Bug fixes:
     - Fix spelling of unmute command in scripts/play_vk. Tnx G4KNO
@@ -898,6 +1042,9 @@ tlf-0.8.13
 
 - added "SERIAL+SECTION" multiplier capability for nrau (scandinavian) test
 
+
+
+
 - added "MULT_LIST=xxxxxx" capability for nrau test (flat ascii multiplier file
   (all caps) required  in working directory)
 
@@ -930,6 +1077,7 @@ Bug/unwanted feature fixes:
   past the end of line, it will overflow to the next line. And there's no
   solution to go back (ESC and :edit to fix it though) But the screen looks
   ugly in the mean time.
+
 
 - tlf does not handle very well bogus .log text files.
   mostly FIXED, needs more work
@@ -1027,6 +1175,7 @@ tlf-0.8.3
 =======
 
 - Added M2 category for cqww (cabrillo file + logfile)
+
 
 - Added CQWW_M2 command for logcfg.dat
 

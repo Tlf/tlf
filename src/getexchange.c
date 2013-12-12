@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@eudx.org>
+ *               2011-2012                Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -26,11 +27,19 @@
 #include "recall_exchange.h"
 #include "addspot.h"
 #include "logit.h"
+#include "cw_utils.h"
 #include <glib.h>
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
+#define LEN(array) (sizeof(array) / sizeof(array[0]))
 
 int play_file(char *audiofile);
+
+
+int checkexchange (int x);
+int getlastpattern (char *checkstring);
+char *getgrid (char *comment);
+void exchange_edit (void);
 
 int getexchange(void)
 {
@@ -39,7 +48,6 @@ int getexchange(void)
     extern char cqzone[];
     extern char ituzone[];
     extern char my_rst[];
-    extern char speedstr[];
     extern int change_rst;
     extern char message[15][80];
     extern char ph_message[14][80];
@@ -75,17 +83,14 @@ int getexchange(void)
     extern char continent[];
     extern int keyerport;
     extern int commentfield;
-//extern int dxped;
+    extern int no_rst;
 
     int i;
     int x = 0;
-    int cury, curx;
     char instring[2];
     char commentbuf[40] = "";
     int retval;
     char *gridmult = "";
-    int keyspeed = 30;
-    char speedbuf[3] = "";
 
     instring[1] = '\0';
 
@@ -115,12 +120,37 @@ int getexchange(void)
 	strcpy(comment, continent);
     }
 
-    refresh_comment();
+    /* parse input and modify exchange field accordingly */
 
     commentfield = 1;
-    for (i = strlen(comment); i < 26; i++) {
-	wmove(stdscr, 12, 54 + strlen(comment));
-	x = onechar();
+
+    i = strlen(comment);
+
+    while (1) {
+
+	refresh_comment();
+
+       	/* wait for next char pressed, but update time, cluster and TRX qrg */
+	nodelay(stdscr, TRUE);  /* main loop waiting for input */
+	x = -1;
+	while (x < 1) {
+
+	    usleep(10000);
+
+	    time_update();
+
+	    if (trxmode == DIGIMODE && (keyerport == GMFSK
+	           || keyerport == MFJ1278_KEYER)) {
+	        show_rtty();
+	    }
+
+            /* make sure that the wrefresh() inside getch() shows the cursor
+             * in the input field */
+	    wmove(stdscr, 12, 54 + strlen(comment));
+	    x = onechar();
+        }
+        nodelay(stdscr, FALSE);
+
 
 	switch (x) {
 
@@ -134,12 +164,9 @@ int getexchange(void)
 
 	case 127:					/* erase */
 	    {
-		if (strlen(comment) >= 1) {
-		    getyx(stdscr, cury, curx);
-		    mvprintw(12, curx - 1, " ");
-		    mvprintw(12, curx - 1, "");
+		if (i >= 1) {
 		    comment[strlen(comment) - 1] = '\0';
-		    i -= 2;
+		    i -= 1;
 		}
 		break;
 	    }
@@ -150,7 +177,6 @@ int getexchange(void)
 		if (comment[0] != '\0') {	/* if comment not empty */
 		    /* drop exchange so far */
 		    comment[0] = '\0';
-		    refresh_comment();
 		    i = 0;
 		} else {
 		    /* back to callinput */
@@ -162,10 +188,10 @@ int getexchange(void)
 	case 160:		// for CT compatibility
 	    {
 		if (ctcomp != 0) {
-		    if (trxmode == CWMODE) {
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			strcat(buffer, message[1]);
 			sendbuf();
-			mvprintw(12, 29 + strlen(hiscall), "");
+
 		    } else
 			play_file(ph_message[1]);
 
@@ -176,10 +202,10 @@ int getexchange(void)
 	case '+':		// for CT compatibility
 	    {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
-		    if (trxmode == CWMODE) {
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			strcat(buffer, message[2]);	/* F3 */
 			sendbuf();
-			mvprintw(12, 29 + strlen(hiscall), "");
+
 		    } else
 			play_file(ph_message[2]);
 
@@ -190,36 +216,47 @@ int getexchange(void)
 
 	case 129:
 	    {
-		if (trxmode == CWMODE) {
+		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    strcat(buffer, call);	/* F1 */
-		    mvprintw(5, 0, "");
 		    sendbuf();
 		} else
 		    play_file(ph_message[5]);	// call
 
-		mvprintw(12, 54, comment);
 		break;
 	    }
 
-	case 130 ... 137:
+	case 130 ... 138:
 	    {
-		if (trxmode == CWMODE) {
-		    strcat(buffer, message[x - 129]);	/* F2 */
-		    mvprintw(5, 0, "");
+		if (trxmode == CWMODE || trxmode == DIGIMODE) {
+		    strcat(buffer, message[x - 129]);	/* F2..F10 */
 		    sendbuf();
 		} else
 		    play_file(ph_message[x - 129]);
 
-		mvprintw(12, 54, comment);
 		break;
 	    }
+	case 140:
+            {
+                if (trxmode == CWMODE || trxmode == DIGIMODE) {
+                    strcat(buffer, message[10]);        /* F11 */
+                    sendbuf();
+                } else
+                    play_file(ph_message[10]);
+
+                break;
+            }
 	case 176 ... 186:
 	    {
 		strcat(buffer, message[x - 162]);	/* alt-0 to alt-9 */
-		mvprintw(5, 0, "");
 		sendbuf();
-		mvprintw(12, 54, comment);
 
+		break;
+	    }
+
+	case 155:		/* edit exchange field */
+	    {
+		if (*comment != '\0')
+		    exchange_edit();
 		break;
 	    }
 
@@ -228,18 +265,14 @@ int getexchange(void)
 		if (change_rst == 1) {
 		    if (my_rst[1] <= 56) {
 			my_rst[1]++;
-			mvprintw(12, 49, my_rst);
-			mvprintw(12, 54, comment);
+
+			no_rst ? : mvprintw(12, 49, my_rst);
 		    }
 		} else {	/* speed up */
-		    keyspeed = speedup();
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
-//                                                              attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    speedup();
 
-		    mvprintw(0, 14, "%s", speedbuf);
-		    mvprintw(12, 54, comment);
-		    refreshp();
+                    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 		break;
 
@@ -250,36 +283,32 @@ int getexchange(void)
 
 		    if (my_rst[1] > 49) {
 			my_rst[1]--;
-			mvprintw(12, 49, my_rst);
-			mvprintw(12, 54, comment);
+
+			no_rst ? : mvprintw(12, 49, my_rst);
 		    }
 		} else {
-		    keyspeed = speeddown();
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
-		    //                                              attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-		    mvprintw(0, 14, "%s", speedbuf);
-		    mvprintw(12, 54, comment);
-		    refreshp();
+		    speeddown();
+
+                    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 		break;
 
 	    }
 	case 44:		// , keyer
+	case 11:		// ctrl-k
 	    {
-		getyx(stdscr, cury, curx);
 		mvprintw(5, 0, "");
 		keyer();
-		mvprintw(cury, curx, "");
 		x = 0;
 		break;
 	    }
 	case '\n':
-	    {			/* log QSO immediately if CT compatible 
+	    {			/* log QSO immediately if CT compatible
 				 * or not in contest */
 		if ((ctcomp == 1) || (contest != 1))
 		    x = 92;
-//                                                      if (dxped == 1) x = 92;
+//                            if (dxped == 1) x = 92;
 		break;
 	    }
 	}
@@ -296,10 +325,10 @@ int getexchange(void)
 		    show_rtty();
 		    mvprintw(12, 54, comment);
 		}
+		i++;
 		refreshp();
 	    }
-	} else
-	    i--;
+	}
 
 	if ((serial_section_mult == 1) ||
 	    (dx_arrlsections == 1) ||
@@ -423,7 +452,8 @@ int getexchange(void)
     return (x);
 }
 
-/*  --------------------------------------------------------------------------*/
+
+/* ------------------------------------------------------------------------ */
 
 char cmpattern[32] = "                               ";	// global
 char ssexchange[30] = "";
@@ -432,7 +462,8 @@ char callupdate[7];
 int call_update = 0;
 char zone_export[3] = "  ";
 char zone_fix[3] = "";
-/*  --------------------------------------------------------------------------*/
+
+/* ------------------------------------------------------------------------ */
 
 int checkexchange(int x)
 {
@@ -458,15 +489,15 @@ int checkexchange(int x)
     char checksection[30];
     char zone[4] = "";
 
-/* field of allowed pattern sequences 
+/* field of allowed pattern sequences
  *
- * The chearacters have the following meaning:
+ * The characters have the following meaning:
  * u - undefined (left or right delimiter)
  * b - blank character
  * a - ascii character
  * f - a figure / digit
  *
- * e.g. faf means a character between two digits 
+ * e.g. faf means a character between two digits
  */
     char serpats[8][8] = {
 	"bfb",
@@ -537,10 +568,8 @@ int checkexchange(int x)
 
     int i, s, hr, ii, pr, jj;
 
-    // get the pattern
-
-    if (strlen(comment) < 2)
-	strcpy(cmpattern, "u                    ");
+    /* get the pattern sequence from comment string */
+    strcpy(cmpattern, "u                    ");
 
     if (strlen(comment) > 0) {
 
@@ -577,9 +606,7 @@ int checkexchange(int x)
 	s = atoi(comment);
 	snprintf( zone, sizeof(zone), "%02d", s);
 
-	hr = 0;
-
-	for (ii = 0; ii < 6; ii++) {
+	for (ii = 0; ii < LEN(zonepats); ii++) {
 
 	    hr = getlastpattern(zonepats[ii]);
 
@@ -596,11 +623,10 @@ int checkexchange(int x)
 	}
 
 	if (strlen(hiscall) >= 2)
-	    OnLowerSearchPanel(34, zone_export);
+	    OnLowerSearchPanel(32, zone_export);
 
-	hr = 0;
 
-	for (ii = 0; ii < 5; ii++) {
+	for (ii = 0; ii < LEN(callpats); ii++) {
 
 	    hr = getlastpattern(callpats[ii]);	// call update ?
 
@@ -619,7 +645,6 @@ int checkexchange(int x)
 		case 4:
 		    strncpy(callupdate, comment + hr, 6);
 		    callupdate[6] = '\0';
-
 		}
 
 		if (strlen(callupdate) > 3) {
@@ -631,16 +656,14 @@ int checkexchange(int x)
 		    mvprintw(12, 29, "%s", hiscall);
 		    mvprintw(12, 54, "%s", comment);
 		}
-
 	    }
 	}
 
+	return (x);
     }
 
     // ---------------------------arrls------------------------------
     if (arrlss == 1) {
-
-	serial[4] = '\0';
 
 	// get serial nr.
 
@@ -649,12 +672,12 @@ int checkexchange(int x)
 	if (s != 0)
 	    snprintf(serial, sizeof(serial), "%4d", s);
 
-	for (ii = 0; ii < 8; ii++) {
+	for (ii = 0; ii < LEN(serpats); ii++) {
 
 	    hr = getlastpattern(serpats[ii]);
 
 	    if (hr > 0)
-			snprintf(serial, sizeof(serial), "%4d", 
+			snprintf(serial, sizeof(serial), "%4d",
 				atoi(comment + hr - 1));
 
 	    if (ii == 5 && hr > 0) {
@@ -663,7 +686,7 @@ int checkexchange(int x)
 	    }
 
 	}
-	
+
 	// get precedent
 
 	if (((comment[0] == 'A')
@@ -677,9 +700,9 @@ int checkexchange(int x)
 	    precedent[0] = comment[0];
 	}
 
-	hr = 0;
+
 	/* look for a single letter */
-	for (ii = 0; ii < 8; ii++) {
+	for (ii = 0; ii < LEN(precpats); ii++) {
 
 	    hr = getlastpattern(precpats[ii]);
 
@@ -694,9 +717,8 @@ int checkexchange(int x)
 	}
 
 	// get call update
-	hr = 0;
 
-	for (ii = 0; ii < 5; ii++) {
+	for (ii = 0; ii < LEN(callpats); ii++) {
 
 	    hr = getlastpattern(callpats[ii]);
 
@@ -737,9 +759,8 @@ int checkexchange(int x)
 	}
 
 	// get check
-	hr = 0;
 
-	for (ii = 0; ii < 6; ii++) {
+	for (ii = 0; ii < LEN(checkpats); ii++) {
 
 	    hr = getlastpattern(checkpats[ii]);
 	    if (hr > 0) {
@@ -750,10 +771,9 @@ int checkexchange(int x)
 	}
 
 	// get section
-	hr = 0;
 	*section = '\0';
 
-	for (ii = 0; ii < 10; ii++) {
+	for (ii = 0; ii < LEN(secpats); ii++) {
 
 	    hr = getlastpattern(secpats[ii]);
 
@@ -777,7 +797,6 @@ int checkexchange(int x)
 		}
 	    }
 	}
-	hr = 0;
 
 	{
 	    char buf[40];
@@ -810,32 +829,32 @@ int checkexchange(int x)
 	if (serial_section_mult == 1) {
 
 	    // get serial nr.
-	    serial[4] = '\0';
 
 	    s = atoi(comment);
 
 	    if (s != 0)
-		sprintf(serial, "%4d", atoi(comment));
+		snprintf(serial, sizeof(serial), "%4d", atoi(comment));
 
-	    for (ii = 0; ii < 8; ii++) {
+	    for (ii = 0; ii < LEN(serpats); ii++) {
 
 		hr = getlastpattern(serpats[ii]);
 
 		if (hr > 0)
-		    sprintf(serial, "%4d", atoi(comment + hr - 1));
+		    snprintf(serial, sizeof(serial), "%4d",
+			    atoi(comment + hr - 1));
 
 		if (ii == 5 && hr > 0) {
-		    sprintf(serial, "%4d", atoi(comment + hr - 1));
-		    sprintf(check, "%2d", atoi(comment + hr + 2));
+		    snprintf(serial, sizeof(serial), "%4d",
+			    atoi(comment + hr - 1));
+		    snprintf(check, sizeof(check), "%2d",
+			    atoi(comment + hr + 2));
 		}
 
 	    }
 
 	    // get section
 
-	    hr = 0;
-
-	    for (ii = 0; ii < 7; ii++) {
+	    for (ii = 0; ii < LEN(secpats); ii++) {
 
 		hr = getlastpattern(secpats[ii]);
 
@@ -847,7 +866,7 @@ int checkexchange(int x)
 			checksection[strlen(checksection) - 1] = '\0';
 		    }
 
-		    for (jj = 0; jj < MAX_MULTS; jj++) {
+		    for (jj = 0; jj < mults_possible->len; jj++) {
 
 			if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
 			    && (strcmp(checksection, MULTS_POSSIBLE(jj)) ==
@@ -861,9 +880,7 @@ int checkexchange(int x)
 	}			// end serial_section_mult
 	if (sectn_mult == 1) {
 
-	    hr = 0;
-
-	    for (ii = 0; ii < 7; ii++) {
+	    for (ii = 0; ii < LEN(sectionpats); ii++) {
 
 		hr = getlastpattern(sectionpats[ii]);
 
@@ -883,9 +900,7 @@ int checkexchange(int x)
 	}			//  end sectn_mult
 	if (dx_arrlsections == 1) {
 
-	    hr = 0;
-
-	    for (ii = 0; ii < 7; ii++) {
+	    for (ii = 0; ii < LEN(sectionpats); ii++) {
 
 		hr = getlastpattern(sectionpats[ii]);
 
@@ -909,17 +924,14 @@ int checkexchange(int x)
 
 	}			// end dx_arrlsections
 
-	hr = 0;
-
 	callupdate[0] = '\0';
 
     }
 
 
     // get call update
-    hr = 0;
 
-    for (ii = 0; ii < 5; ii++) {
+    for (ii = 0; ii < LEN(callpats); ii++) {
 
 	hr = getlastpattern(callpats[ii]);
 
@@ -959,13 +971,13 @@ int checkexchange(int x)
 	}
 
     }
-    OnLowerSearchPanel(34, "   ");
-    OnLowerSearchPanel(34, section);	/* show section on lower frame of 
+    OnLowerSearchPanel(32, "   ");
+    OnLowerSearchPanel(32, section);	/* show section on lower frame of
 					   Worked window */
     ssexchange[0] = '\0';
 
 /*	if (serial_section_mult == 1) {
-		strcat(ssexchange,serial);
+		strcat (ssexchange,serial);
 		strcat (ssexchange, " ");
 	}
 */
@@ -979,7 +991,7 @@ int checkexchange(int x)
 }
 
 
-/*  --------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------ */
 
 /** search checkstring in cmpattern
  *
@@ -1011,7 +1023,9 @@ int getlastpattern(char *checkstring)
 
 }
 
-/*  --------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------
+ * return a pointer to the start of grid locator
+ */
 
 char *getgrid(char *comment)
 {
@@ -1020,6 +1034,7 @@ char *getgrid(char *comment)
     int multposition = 0;
     int i = 0;
 
+    /* search for first letter, that should be the start of the Grid locator*/
     for (i = 0; i < strlen(comment); i++) {
 	if (comment[i] > 64 && comment[i] < 91) {
 	    multposition = i;
@@ -1029,4 +1044,95 @@ char *getgrid(char *comment)
     gridmult = comment + multposition;
 
     return (gridmult);
+}
+
+/* ------------------------------------------------------------------------ */
+/** Edit exchange field
+ */
+
+void exchange_edit (void)
+{
+    extern char comment[];
+
+    int l, b;
+    int i = 0, j;
+    char comment2[27];
+
+    l = strlen(comment);
+    b = l - 1;
+
+    while ((i != 27) && (b <= strlen(comment))) {
+	attroff(A_STANDOUT);
+	attron(COLOR_PAIR(C_HEADER));
+
+	mvprintw(12, 54, "                          ");
+	mvprintw(12, 54, comment);
+	mvprintw(12, 54 + b, "");
+
+	i = onechar();
+
+	if (i == 1) {		// ctrl-A, Home
+
+	    b = 0;
+
+	} else if (i == 5) {	// ctrl-E, End
+
+	    b = strlen(comment) - 1;
+
+	} else if (i == 155) {	// left
+
+	    if (b > 0)
+		b--;
+
+	} else if (i == 154) {	// right
+
+	    if (b < strlen(comment) - 1) {
+		b++;
+	    } else
+		break;		/* stop edit */
+
+	} else if (i == 161) {	/* delete */
+
+	    l = strlen(comment);
+
+	    for (j = b; j <= l; j++) {
+		comment[j] = comment[j + 1];	/* move to left incl.\0 */
+	    }
+
+	} else if (i == 127) {	/* backspace */
+
+	    if (b > 0) {
+		b--;
+
+		l = strlen(comment);
+
+		for (j = b; j <= l; j++) {
+		    comment[j] = comment[j + 1];
+		}
+	    }
+	} else if (i != 27) {
+
+	    if ((i >= 'a') && (i <= 'z'))
+		i = i - 32;
+
+	    if ((i >= ' ') && (i <= 'Z')) {
+
+		if (strlen(comment) <= 24) {
+		    /* copy including trailing \0 */
+		    strncpy(comment2, comment + b, strlen(comment) - (b - 1));
+
+		    comment[b] = i;
+		    comment[b + 1] = '\0';
+		    strcat(comment, comment2);
+
+		    b++;
+		}
+
+	    } else if (i != 0)
+		i = 27;
+	}
+    }
+
+    attron(A_STANDOUT);
+    refresh_comment();
 }

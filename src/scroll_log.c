@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /* ------------------------------------------------------------------------
 *    scroll  the loglines of the keyer terminal 1 up
@@ -40,7 +40,7 @@ void scroll_log(void)
 
 	inputbuffer[0] = '\0';
 
-	if (fseek(fp, -1 * ii * 81, SEEK_END) == 0)
+	if (fseek(fp, -1 * ii * LOGLINELEN, SEEK_END) == 0)
 	    rp = fgets(inputbuffer, 90, fp);
 	else
 	    strcpy(inputbuffer,
@@ -51,7 +51,7 @@ void scroll_log(void)
 	if (strlen(inputbuffer) <= 10)	/* log repair */
 	    rp = fgets(inputbuffer, 90, fp);
 
-//              if (strlen(inputbuffer) != 81)
+//              if (strlen(inputbuffer) != LOGLINELEN)
 //                      strcat (inputbuffer, backgrnd_str);
 
 	inputbuffer[80] = '\0';

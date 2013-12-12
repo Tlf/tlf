@@ -10,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -158,6 +158,8 @@ int addmult(void)
 	shownewmult = remember_multi( section, bandinx, 1); 
 
     }
+
+    free(stripped_comment);
 
     return (found);
 }
@@ -346,7 +348,7 @@ void init_mults()
    multarray_nr = 0;
 }
 
-/** register wortked multiplier and check if its new
+/** register worked multiplier and check if its new
  *
  * Check if multiplier is already registered. If not make a new entry in
  * mults[] array and increment the total mults count 'multarray_nr'.

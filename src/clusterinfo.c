@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *                         2011 Thomas Beierlein <tb@forth-ev.de>
+ *               2011i,2013     Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -64,7 +64,8 @@ void clusterinfo(char *timestr)
     static int frcounter;
     static int daysecs = 0;
 
-    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+    /* show band, date and time */
+    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
     strncpy(time_buf, timestr, 8);
     mvaddstr(12, 0, band[bandinx]);
     mvprintw(12, 17, time_buf);
@@ -78,32 +79,34 @@ void clusterinfo(char *timestr)
 	daysecs++;
     }
 
+    /* show frequency and frequency memory if rig control is active */
     if (trx_control == 1) {
-	if (freq != 0.0) {
 
-	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD);
-	    else
-		attron(COLOR_PAIR(COLOR_WHITE));
+	if (use_rxvt == 0)
+	    attron(COLOR_PAIR(C_LOG) | A_BOLD);
+	else
+	    attron(COLOR_PAIR(C_LOG));
 
-	    if ((showfreq == 0) || (showscore_flag == 1))
-		mvprintw(13, 68, "TRX: %7.1f", freq);
+	if ((showfreq == 0) || (showscore_flag == 1))
+	    mvprintw(13, 68, "TRX: %7.1f", freq);
 
-	    if (mem > 0.0)
-		mvprintw(14, 68, "MEM: %7.1f", mem);
-	    else
-		mvprintw(14, 68, "            ");
+	if (mem > 0.0)
+	    mvprintw(14, 68, "MEM: %7.1f", mem);
+	else
+	    mvprintw(14, 68, "            ");
 
-	    if ((showfreq == 1) && (showscore_flag == 0)) {
+	if ((showfreq == 1) && (showscore_flag == 0)) {
 
-		freq_display();
-	    }
+	    freq_display();
 	}
     }
 
+    refreshp();
+
     frcounter++;
 
-    if (frcounter >= 60) {	// 60 seconds
+    /* broadcast frequency via LAN, act as time master if allowed */
+    if (frcounter >= 60) {	// every 60 seconds
 	frcounter = 0;
 	if (lan_active != 0) {
 	    send_freq(freq);
@@ -112,8 +115,8 @@ void clusterinfo(char *timestr)
 	}
     }
 
-    refreshp();
 
+    /* cluster and bandmap display */
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
     else
@@ -123,7 +126,7 @@ void clusterinfo(char *timestr)
 
     if (cluster == MAP) {
 
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	nroflines = loadbandmap();
 
@@ -147,7 +150,7 @@ void clusterinfo(char *timestr)
 
     if (cluster == CLUSTER) {
 
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	inputbuffer[0] = '\0';
 	strncat(inputbuffer, backgrnd_str, 78);
@@ -175,7 +178,7 @@ void clusterinfo(char *timestr)
 	if (k < 0)
 	    k = -1;
 
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	inputbuffer[0] = '\0';
 	strncat(inputbuffer, backgrnd_str, 78);

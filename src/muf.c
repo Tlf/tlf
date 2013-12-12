@@ -10,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "muf.h"
 #include "tlf.h"
@@ -24,18 +24,19 @@
 #include <panel.h>
 
 extern int use_rxvt;
-extern double yt;
-extern double xt;
-extern double yr;
-extern double xr;
 extern double r;
 extern int m;
 extern struct tm *time_ptr;
 
+double yt;
+double xt;
+double yr;
+double xr;
+
 int t = 21;
-double n = 0.0;
-double se, xn, xs, ff, rd, ls, h, ff, x, yn_, d, q, x, k, lm, u, a, ab, k,
-    lm;
+
+double xn, xs, ls, h, ff, x, yn_, q, k, lm, u, a;
+//FIXME: q should be local variable
 
 static double power(man, ex)
 double man, ex;
@@ -46,24 +47,13 @@ double man, ex;
 
 static void interlat()
 {
-    extern double q;
-    extern double rd;
-    extern double x;
-    extern double xn;
-    extern double yn_;
-    extern double xt;
-    extern double k;
-    extern double lm;
-    extern double d;
-    extern double u;
-
     double yi;
     /* Intermediate Latitude & Longitude calculations */
-    q = cos(u * rd) * cos(xt * rd) * sin(k * lm * rd);
-    x = q + sin(xt * rd) * cos(k * lm * rd);
-    xn = atan(x / sqrt(1 - x * x + 1e-12)) * d;
-    q = cos(k * lm * rd) - sin(xt * rd) * sin(xn * rd);
-    yi = (PI / 2 - atan(x / sqrt(1 - x * x + 1e-12))) * d;
+    q = cos(u / RADIAN) * cos(xt / RADIAN) * sin(k * lm / RADIAN);
+    x = q + sin(xt / RADIAN) * cos(k * lm / RADIAN);
+    xn = atan(x / sqrt(1 - x * x + 1e-12)) * RADIAN;
+    q = cos(k * lm / RADIAN) - sin(xt / RADIAN) * sin(xn / RADIAN);
+    yi = (M_PI_2 - atan(x / sqrt(1 - x * x + 1e-12))) * RADIAN;
 
     if (u < 180.0)
 	yi = -yi;
@@ -76,15 +66,6 @@ static void interlat()
 
 static void mini_f2()
 {
-    extern double yn_;
-    extern double xn;
-    extern double rd;
-    extern double x;
-    extern double ff;
-    extern double a;
-    extern int t;
-    extern double h;
-
     double temp, tl, yf, ex, yz, yg, zo, z, mh, xh, wx, sx, ty, fo, sf;
 
     yz = yn_;
@@ -106,7 +87,7 @@ static void mini_f2()
 	mh += 6;
     }
 
-    xh = cos(30.0 * (mh - 6.5) * rd);	/* 1 week delay on equinoxes */
+    xh = cos(30.0 * (mh - 6.5) / RADIAN);	/* 1 week delay on equinoxes */
     sx = (fabs(xh) + xh) / 2.0;	/* F-layer local summer variance */
     wx = (fabs(xh) - xh) / 2.0;	/* F-layer local winter variance */
 
@@ -121,10 +102,10 @@ static void mini_f2()
     if (fabs(yf) > 60.0)
 	yf = 60.0;
     x = 1 + r / (175.0 + sx * 175.0);
-    fo = 6.5 * x * cos(yf * rd) *
-	sqrt(cos((z - sx * 5.0 + wx * 5.0) * rd));
+    fo = 6.5 * x * cos(yf / RADIAN) *
+	sqrt(cos((z - sx * 5.0 + wx * 5.0) / RADIAN));
     ex = -0.5;
-    temp = cos(a * rd) * 6367.0 / (6367.0 + h);
+    temp = cos(a / RADIAN) * 6367.0 / (6367.0 + h);
     sf = power(1.0 - temp * temp, ex);
     ff = fo * sf;
     ff *= 1.15;
@@ -133,33 +114,22 @@ static void mini_f2()
 
 static void e_layer()
 {
-    extern double q;
-    extern double xn;
-    extern double rd;
-    extern double xs;
-    extern double x;
-    extern double yn_;
-    extern int t;
-    extern double d;
-    extern double a;
-    extern double ls;
-
     double temp, fe, se, ex, xz;
 
-    q = sin(xn * rd) * sin(xs * rd);
+    q = sin(xn / RADIAN) * sin(xs / RADIAN);
     x = q +
-	cos(xn * rd) * cos(xs * rd) * cos((yn_ - 15.0 * (t - 12.0)) * rd);
-    xz = (PI / 2 - atan(x / sqrt(1 - x * x + 1e-12))) * d;
+	cos(xn / RADIAN) * cos(xs / RADIAN) * cos((yn_ - 15.0 * (t - 12.0)) / RADIAN);
+    xz = (M_PI_2 - atan(x / sqrt(1 - x * x + 1e-12))) * RADIAN;
 
     if (xz <= 85.0) {
 	ex = 1.0 / 3.0;
-	fe = 3.4 * (1.0 + 0.0016 * r) * power(cos(xz * rd), ex);
+	fe = 3.4 * (1.0 + 0.0016 * r) * power(cos(xz / RADIAN), ex);
     } else {
 	ex = -0.5;
 	fe = 3.4 * (1.0 + 0.0016 * r) * power(xz - 80.0, ex);
     }
 
-    temp = cos(a * rd);
+    temp = cos(a / RADIAN);
     se = power(1.0 - (0.965 * temp * temp), ex);
 //se /= 4;
 //se += 1;
@@ -170,21 +140,6 @@ static void e_layer()
 
 int muf(void)
 {
-    extern double rd;
-    extern double q;
-    extern double u;
-    extern double a;
-    extern double ab;
-    extern double k;
-    extern double lm;
-    extern double d;
-    extern double ff;
-    extern double n;
-    extern int t;
-    extern double h;
-    extern double xs;
-    extern double ls;
-    extern int m;
     extern char C_QTH_Lat[];
     extern char C_QTH_Long[];
     extern char C_DEST_Lat[];
@@ -198,7 +153,7 @@ int muf(void)
 
     dxcc_data *dx;
     int row;
-    static double x, la, l, mf, lh;
+    static double la, l, mf, lh;
     static long ve, ho;
     static int correct;
     int key;
@@ -207,6 +162,8 @@ int muf(void)
     int i;
     char time_buf[25];
     int su, sd, su_min, sd_min, iv;
+    double ab;
+    double n;
     double td;
 
     PANEL *pan;
@@ -215,10 +172,8 @@ int muf(void)
     win = newwin( 25, 80, 0, 0);
     pan = new_panel(win);
 
-    rd = PI / 180;
-    d = 180 / PI;
     correct = 0;
-    n = 0;
+    n = 0.0;
 
     xt = atof(C_QTH_Lat);
     yt = atof(C_QTH_Long);
@@ -229,17 +184,17 @@ int muf(void)
 //strftime(time_buf, 60, "    %d-%b-%Y %H:%M ",  time_ptr);     ### bug fix
     strftime(time_buf, sizeof(time_buf), "    %d-%b-%Y %H:%M ", time_ptr);
 
-    q = sin(xt * rd) * sin(xr * rd);
-    x = q + cos(xt * rd) * cos(xr * rd) * cos(yt * rd - yr * rd);
-    la = (PI / 2 - atan(x / sqrt(1 - x * x + 1e-12))) * d;
+    q = sin(xt / RADIAN) * sin(xr / RADIAN);
+    x = q + cos(xt / RADIAN) * cos(xr / RADIAN) * cos(yt / RADIAN - yr / RADIAN);
+    la = (M_PI_2 - atan(x / sqrt(1 - x * x + 1e-12))) * RADIAN;
     l = 111.1 * la;
-    q = sin(xr * rd) - sin(xt * rd) * cos(la * rd);
-    x = q / cos(xt * rd) / sin(la * rd);
-    u = (PI / 2 - atan(x / sqrt(1 - x * x + 1e-12))) * d;
+    q = sin(xr / RADIAN) - sin(xt / RADIAN) * cos(la / RADIAN);
+    x = q / cos(xt / RADIAN) / sin(la / RADIAN);
+    u = (M_PI_2 - atan(x / sqrt(1 - x * x + 1e-12))) * RADIAN;
     if (yt - yr <= 0)
 	u = 360 - u;
     h = 275 + r / 2;
-    xs = 23.4 * cos(30 * (m - 6.25) * rd);
+    xs = 23.4 * cos(30 * (m - 6.25) / RADIAN);
     n++;
     lh = l / n;
     while (lh > 4000.0) {
@@ -248,8 +203,8 @@ int muf(void)
     }
 
     lm = la / n;
-    a = atan((cos(0.5 * lm * rd) -
-	      6367.0 / (h + 6367.0)) / sin(0.5 * lm * rd)) * d;
+    a = atan((cos(0.5 * lm / RADIAN) -
+	      6367.0 / (h + 6367.0)) / sin(0.5 * lm / RADIAN)) * RADIAN;
 
     while (a < 1.5) {
 	n++;
@@ -259,8 +214,8 @@ int muf(void)
 	    lh = l / n;
 	}
 	lm = la / n;
-	a = atan((cos(0.5 * lm * rd) -
-		  6367.0 / (h + 6367.0)) / sin(0.5 * lm * rd)) * d;
+	a = atan((cos(0.5 * lm / RADIAN) -
+		  6367.0 / (h + 6367.0)) / sin(0.5 * lm / RADIAN)) * RADIAN;
     }
 
     dx = dxcc_by_index(mycountrynr);
@@ -271,9 +226,9 @@ int muf(void)
 
     wclear(win);
     if (use_rxvt == 0)
-	wattron(win, COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	wattron(win, COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	wattron(win, COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	wattron(win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     for (i = 0; i < 25; i++)
 	mvwprintw(win, i, 0,

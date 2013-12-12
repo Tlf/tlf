@@ -10,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -44,7 +44,7 @@ int addspot(void)
 
     if (trx_control == 0) {
 
-	attron(COLOR_PAIR(7) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	mvprintw(13, 20, "freq.: ");
 	echo();
@@ -53,16 +53,12 @@ int addspot(void)
 	freq = atof(frequency);
     }
 
-//!    \todo extend to 3 decimals for own spots, enables coming back
-//!	to that exact frequency
-//    sprintf(spotline, "DX de TLF:       %9.3f  %s", freq, hiscall);
-//    needs to adapt 'grabspot
     sprintf(spotline, "DX de TLF-%c:     %9.3f  %s", thisnode, freq, hiscall);
 
     strcat(spotline, "                                           ");
 
     get_time();
-//              strftime(spottime, 80, "%H%MZ", time_ptr);      ### bug fix
+
     strftime(spottime, sizeof(spottime), "%H%MZ", time_ptr);
     strcpy(spotline + 70, spottime);
     strcat(spotline, "\n\n");

@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* Splitscreen telnet client */
@@ -966,6 +966,7 @@ int cleanup_telnet(void)
 
     extern int prsock;
     extern WINDOW *entwin;
+    extern WINDOW *sclwin;
     extern SCREEN *mainscreen;
     extern int packetinterface;
     extern int fdSertnc;
@@ -978,6 +979,11 @@ int cleanup_telnet(void)
 	wmove(entwin, 1, 0);
 	wrefresh(entwin);
 	vidattr(A_NORMAL);
+	delwin(entwin);
+	wclear(sclwin);
+	wrefresh(sclwin);
+	delwin(sclwin);
+
 	endwin();
 
 	if (prsock > 0)
@@ -997,8 +1003,6 @@ int cleanup_telnet(void)
     }
 
     set_term(mainscreen);
-    clear();
-    clear_display();
 
     return (0);
 }
@@ -1279,7 +1283,7 @@ int send_cluster(void)
 	    usputs(prsock, line);
     } 
 
-    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
     mvprintw(24, 0,
 	     "                                                                           ");

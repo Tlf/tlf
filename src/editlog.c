@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -53,11 +53,11 @@ int logedit(void)
 
     strcat(comstr, logfile);
     rc = system(comstr);
-    attron(COLOR_PAIR(7) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();
     refreshp();
     clear_display();
-    attron(COLOR_PAIR(7) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     for (j = 13; j <= 23; j++) {
 	mvprintw(j, 0, backgrnd_str);
@@ -73,8 +73,8 @@ int logedit(void)
 
 	fstat(lfile, &statbuf);
 	qsobytes = statbuf.st_size;
-	qsolines = qsobytes / 81;
-	errbytes = qsobytes - (qsolines * 81);
+	qsolines = qsobytes / LOGLINELEN;
+	errbytes = qsobytes - (qsolines * LOGLINELEN);
 
 	if (errbytes != 0) {
 
@@ -91,6 +91,7 @@ int logedit(void)
 		if ((outfile = fopen("./cpyfile", "w")) == NULL) {
 		    mvprintw(24, 0, "Unable to open cpyfile...");
 		    refreshp();
+		    fclose(infile);
 		    sleep(2);
 		} else {
 
@@ -98,9 +99,9 @@ int logedit(void)
 
 			rp = fgets(inputbuffer, 160, infile);
 
-			if (strlen(inputbuffer) != 81) {
+			if (strlen(inputbuffer) != LOGLINELEN) {
 			    strcat(inputbuffer, backgrnd_str);
-			    inputbuffer[81] = '\0';
+			    inputbuffer[LOGLINELEN] = '\0';
 			}
 
 			fputs(inputbuffer, outfile);
@@ -121,7 +122,7 @@ int logedit(void)
 		    fstat(lfile, &statbuf);
 
 		    if (statbuf.st_size > 80) {
-			rc = ftruncate(lfile, statbuf.st_size - 81);
+			rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 			fsync(lfile);
 
 		    }

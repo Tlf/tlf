@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0r@eudxf.org>
+ *               2012                Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -23,6 +24,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "rtty.h"
+#include <ctype.h>
 #include <termios.h>
 #include <curses.h>
 #include <string.h>
@@ -33,6 +35,7 @@
 #include <fcntl.h>
 #include "tlf.h"
 #include "printcall.h"
+#include <glib.h>
 
 static int fdcont;		// global for this file: tty file descriptor
 static char ry_term[5][50] = { "", "", "", "", "" };
@@ -71,73 +74,54 @@ int init_controller()
 }
 
 /* ------------------------  add text to terminal ------------------------ */
-
-int ry_addtext(char *line)
+void ry_addchar(char c)
 {
-
-    int k, m, j;
-    char *ptr;
-    char bufferline[80];
+    static int k = 0;
     FILE *ry_fp;
-
-    ptr = line;
-    k = strlen(line);
 
     if ((ry_fp = fopen("RTTYlog", "a")) == NULL) {
 	mvprintw(24, 0, "cannot open RTTYlog");
 	refreshp();
-	return (-1);
+	return;
     } else {
-	fputs(line, ry_fp);
-
+	fputc(c, ry_fp);
 	fclose(ry_fp);
-
     }
 
-    if (k > 40)
-	return (0);
+    if ((c & 0x80) != 0)
+	return;			/* drop on ascii characters */
 
-    strcpy(bufferline, line);
-
-    for (j = 0; j < k; j++) {
-	if (bufferline[j] == 10 || bufferline[j] == 13
-	    || bufferline[j] == 7) {
-	    bufferline[j] = 32;
-	    if (j < 40) {
-		strcat(bufferline,
-		       "                                      ");
-		bufferline[39] = '\0';
-		j = 0;
-		k = 0;
-	    }
-	}
-    }
-
-    m = strlen(ry_term[4]);
-
-    if (k <= (40 - strlen(ry_term[4]))) {
-	strcat(ry_term[4], bufferline);
-	ry_term[4][40] = '\0';
-	line[0] = '\0';
-	bufferline[0] = '\0';
-    } else {
-	strncat(ry_term[4], bufferline, 39 - m);
-	ry_term[4][40] = '\0';
-//      bufferline += (40-m);
-	strcpy(bufferline, bufferline + (40 - m));
-	strncpy(ry_term[0], ry_term[1], 40);
-	strncpy(ry_term[1], ry_term[2], 40);
-	strncpy(ry_term[2], ry_term[3], 40);
-	strncpy(ry_term[3], ry_term[4], 40);
-
+    if ((c == '\n') || (c == '\r')) {
+	/* start new line */
+	g_strlcpy(ry_term[0], ry_term[1], 41);
+	g_strlcpy(ry_term[1], ry_term[2], 41);
+	g_strlcpy(ry_term[2], ry_term[3], 41);
+	g_strlcpy(ry_term[3], ry_term[4], 41);
 	ry_term[4][0] = '\0';
-	strcat(ry_term[4], bufferline);
-	line[0] = '\0';
-	bufferline[0] = '\0';
+	k = 0;
     }
+    else {
+	if (iscntrl( c )) {
+	    /* replace all other control characters by space */
+	    c = ' ';
+	}
 
-    return (0);
+	if (k >= 40) {
+	    // scroll line
+	    g_strlcpy(ry_term[0], ry_term[1], 41);
+	    g_strlcpy(ry_term[1], ry_term[2], 41);
+	    g_strlcpy(ry_term[2], ry_term[3], 41);
+	    g_strlcpy(ry_term[3], ry_term[4], 41);
+	    ry_term[4][0] = '\0';
+	    k = 0;
+	}
+	// add char to line
+	ry_term[4][k++] = c;
+	ry_term[4][k] = '\0';
+
+    }
 }
+
 
 /* ----------------------  display rtty ---------------------------------- */
 
@@ -146,7 +130,6 @@ int show_rtty(void)
 
     extern int use_rxvt;
     extern int trxmode;
-//extern char hiscall[];
     extern int miniterm;
     extern int commentfield;
     extern char comment[];
@@ -156,20 +139,20 @@ int show_rtty(void)
 
     attroff(A_STANDOUT);
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_GREEN) | A_BOLD);
+	attron(COLOR_PAIR(C_HEADER) | A_BOLD);
     else
-	attron(COLOR_PAIR(COLOR_GREEN));
+	attron(COLOR_PAIR(C_HEADER));
 
-    mvprintw(1, 0, "                                         ");
-    mvprintw(1, 0, ry_term[0]);
-    mvprintw(2, 0, "                                         ");
-    mvprintw(2, 0, ry_term[1]);
-    mvprintw(3, 0, "                                         ");
-    mvprintw(3, 0, ry_term[2]);
-    mvprintw(4, 0, "                                         ");
-    mvprintw(4, 0, ry_term[3]);
-    mvprintw(5, 0, "                                         ");
-    mvprintw(5, 0, ry_term[4]);
+    mvprintw(1, 0, "                                        ");
+    mvprintw(1, 0, "%s", ry_term[0]);
+    mvprintw(2, 0, "                                        ");
+    mvprintw(2, 0, "%s", ry_term[1]);
+    mvprintw(3, 0, "                                        ");
+    mvprintw(3, 0, "%s", ry_term[2]);
+    mvprintw(4, 0, "                                        ");
+    mvprintw(4, 0, "%s", ry_term[3]);
+    mvprintw(5, 0, "                                        ");
+    mvprintw(5, 0, "%s", ry_term[4]);
     if (commentfield == 0) {
 	printcall();
     } else {
@@ -185,12 +168,19 @@ int show_rtty(void)
 
 int rx_rtty()
 {
-
-    extern char hiscall[];
     extern int miniterm;
-    int i = 0;
+    extern int keyerport;
+
+    int i;
+    int j;
     char line[40];
+    char c;
     static int miniterm_status = 0;	/* for one time initialization */
+    static int state = 0;		/* 0 - line start found
+					   1 - ')' found
+					   2 - ':' found
+					   3 - additional space passed
+					 */
 
     if (fdcont > 0) {
 
@@ -204,21 +194,51 @@ int rx_rtty()
 	}
 
 	i = read(fdcont, line, 39);
-//RX (2006-03-31 14:41Z):               remove
-	if (i > 0) {
-	    line[i] = '\0';
 
-	    if (i > 23)
-		strcpy(line, line + 24);
+	if (i == 0)
+	    return 0;
 
-	    ry_addtext(line);
+	if (keyerport == GMFSK) {
+	    /* skip begin of line until '):' if keyer == GMFSK */
+	    /* RX (2006-03-31 14:41Z): */
+	    for (j = 0; j < i; j++) {
+		c = line[j];
 
+		switch (state) {
+		    case 0:
+			if (c == ')')
+			    state++;
+			break;
+		    case 1:
+			if (c == ':')
+			    state++;
+			else
+			    state = 0;
+			break;
+		    case 2:
+			if (c == '\n')
+			    state = 0;
+			else
+			    state++;
+			break;
+		    case 3:
+			if (c == '\n')
+			    state = 0;
+
+			ry_addchar( c );
+			break;
+		    default:
+			break;
+		}
+	    }
 	}
-
+	else {
+	    /* serial modem */
+	    for (j = 0; j < i; j++) {
+		ry_addchar( line[j] );
+	    }
+	}
     }
-
-    if (strlen(hiscall) > 0)
-	show_rtty();
 
     return (0);
 }

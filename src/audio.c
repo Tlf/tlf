@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
+ *                                   2012 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -347,16 +348,16 @@ int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 	    break;
 	case 5:
 	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(COLOR_GREEN) | A_BOLD | A_STANDOUT);
+		attron(COLOR_PAIR(C_HEADER) | A_BOLD | A_STANDOUT);
 	    else
-		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 	    mvprintw(ypos + i, xpos, ">   <");
 
 	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+		attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
 	    else
-		attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 	}
     }
 
@@ -399,9 +400,9 @@ int panscan(void)
     while (1) {
 	key = 0;
 	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
 	else
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	for (j = 0; j <= 24; j++)
 	    mvprintw(j, 0,
@@ -508,9 +509,9 @@ int nbscan(void)
     while (1) {
 	key = 0;
 	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
 	else
-	    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 	for (j = 0; j <= 24; j++)	// wipe the screen
 	    mvprintw(j, 0,
@@ -602,9 +603,9 @@ void scanmenu(void)
     int j;
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -679,9 +680,9 @@ void recordmenue(void)
     int j;
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -699,7 +700,33 @@ void recordmenue(void)
 
 }
 
-/*--------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+void do_record(int message_nr)
+{
+    extern char ph_message[14][80];
+
+    int rc;
+    char commands[80] = "";
+
+    mvprintw(15, 20, "recording %s", ph_message[message_nr]);
+    mvprintw(16, 20, "ESC to exit");
+    mvprintw(17, 20, "");
+    refreshp();
+    strcpy(commands, "rec -r 8000 ");	//G4KNO
+    strcat(commands, ph_message[message_nr]);
+    strcat(commands, " -q &");	//G4KNO
+    rc = system(commands);
+    //G4KNO: Loop until <esc> keypress
+    while (1) {
+	if (getch() == 27) {
+	    //kill process (SIGINT=Ctrl-C).
+	    rc = system("pkill -SIGINT -n rec");
+	    break;
+	}
+    }
+}
+
+/*--------------------------------------------------------------------------*/
 void record(void)
 {
 
@@ -723,271 +750,61 @@ void record(void)
 	switch (key) {
 
 	case 129:
-	    mvprintw(15, 20, "recording %s", ph_message[0]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[0]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(0);
 	    runnit = 0;
 	    break;
 	case 130:
-	    mvprintw(15, 20, "recording %s", ph_message[1]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[1]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(1);
 	    runnit = 0;
 	    break;
 	case 131:
-	    mvprintw(15, 20, "recording %s", ph_message[2]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[2]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(2);
 	    runnit = 0;
 	    break;
 	case 132:
-	    mvprintw(15, 20, "recording %s", ph_message[3]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[3]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(3);
 	    runnit = 0;
 	    break;
 	case 133:
-	    mvprintw(15, 20, "recording %s", ph_message[4]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[4]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(4);
 	    runnit = 0;
 	    break;
 	case 134:
-	    mvprintw(15, 20, "recording %s", ph_message[5]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[5]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(5);
 	    runnit = 0;
 	    break;
 	case 135:
-	    mvprintw(15, 20, "recording %s", ph_message[6]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[6]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(6);
 	    runnit = 0;
 	    break;
 	case 136:
-	    mvprintw(15, 20, "recording %s", ph_message[7]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[7]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(7);
 	    runnit = 0;
 	    break;
 	case 137:
-	    mvprintw(15, 20, "recording %s", ph_message[8]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[8]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(8);
 	    runnit = 0;
 	    break;
 	case 138:
-	    mvprintw(15, 20, "recording %s", ph_message[9]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[9]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(9);
 	    runnit = 0;
 	    break;
 	case 140:
-	    mvprintw(15, 20, "recording %s", ph_message[10]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[10]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(10);
 	    runnit = 0;
 	    break;
 	case 141:
-	    mvprintw(15, 20, "recording %s", ph_message[11]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[11]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(11);
 	    runnit = 0;
 	    break;
 	case 's':
 	case 'S':
-	    mvprintw(15, 20, "recording %s", ph_message[12]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[12]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(12);
 	    runnit = 0;
 	    break;
 	case 'c':
 	case 'C':
-	    mvprintw(15, 20, "recording %s", ph_message[13]);
-	    mvprintw(16, 20, "ESC to exit");
-	    mvprintw(17, 20, "");
-	    refreshp();
-	    strcpy(commands, "rec -r 8000 ");	//G4KNO
-	    strcat(commands, ph_message[13]);
-	    strcat(commands, " -q &");	//G4KNO
-	    rc = system(commands);
-	    //G4KNO: Loop until <esc> keypress
-	    while (1) {
-		if (getch() == 27) {
-		    //kill process (SIGINT=Ctrl-C).
-		    rc = system("pkill -SIGINT -n rec");
-		    break;
-		}
-	    }
+	    do_record(13);
 	    runnit = 0;
 	    break;
 	case '1':

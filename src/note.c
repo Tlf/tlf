@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 	/* ------------------------------------------------------------
 	 *       Include note  in log
@@ -33,7 +33,7 @@ int include_note(void)
     extern char thisnode;
 
     char buffer[80] = "";
-    char buffer2[160] = "";
+    char buffer2[LOGLINELEN+1] = "";
 
     int i;
     FILE *fp;
@@ -57,9 +57,10 @@ int include_note(void)
 	sprintf(buffer2, "; ");
 
     if (strlen(buffer) >= 1) {
-	strncat(buffer2, buffer, 80 - strlen(buffer2));
-	strncat(buffer2, backgrnd_str, 80 - strlen(buffer2)); /* fill spaces */
-	strcat(buffer2, "\n");
+	strncat(buffer2, buffer, (LOGLINELEN-1) - strlen(buffer2));
+	memset(buffer2 + strlen(buffer2), ' ', 
+		(LOGLINELEN-1) - strlen(buffer2)); /* fill spaces */
+	buffer2[LOGLINELEN-1] = '\0';
 
 	if ((fp = fopen(logfile, "a")) == NULL) {
 	    endwin();
@@ -67,16 +68,20 @@ int include_note(void)
 	    exit(1);
 	}
 	fputs(buffer2, fp);
+	fputs("\n", fp);
 
 	fclose(fp);
 
+	strncpy (qsos[nr_qsos], buffer2, LOGLINELEN-1);
+	nr_qsos++;
+
 	scroll_log();
-	strncpy(logline4, buffer2, (strlen(buffer2) - 1));
+	strncpy(logline4, buffer2, 80);  /* max. 80 columns */
 	clear_display();
 
     }
 
-    attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
+    attron(COLOR_PAIR(C_LOG | A_STANDOUT));
 
     for (i = 14; i <= 16; i++)
 	mvprintw(i, 0, backgrnd_str);

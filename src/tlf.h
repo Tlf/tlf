@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -96,16 +96,25 @@ enum {
     BANDINDEX_15,
     BANDINDEX_12,
     BANDINDEX_10,
-    NBANDS 		// not yet used everywhere, 
-};			// many places have hardcode 9 
+    NBANDS 		// not yet used everywhere,
+};			// many places have hardcode 9
 			// (or 8, being the maximum band index)
 			//
 extern int inxes[NBANDS];  /*< conversion from BANDINDEX to BAND-mask,
 			see addmult.c */
 
 
-#define DUPECOLOR 5
-#define NORMCOLOR 4
+/* display color sets */
+enum {
+    C_HEADER = 2,
+    C_BORDER,
+    C_INPUT,
+    C_DUPE,
+    C_WINDOW,
+    C_LOG
+};
+
+#define NORMCOLOR C_INPUT
 #define ISDUPE 1
 #define NODUPE 0
 
@@ -121,8 +130,8 @@ extern int inxes[NBANDS];  /*< conversion from BANDINDEX to BAND-mask,
 #define EDITOR_E3 2
 #define EDITOR_MC 3
 
-#define  CW_SPEEDS	"06121416182022242628303234363840424446485060"
-
+#define LOGLINELEN (88)		/* Length of logline in logfile
+				   (including linefeed) */
 #if defined (TLN_LOGLINE)
 /* do nothing, already defined */
 #else

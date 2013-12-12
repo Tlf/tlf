@@ -1,9 +1,12 @@
 Makefile
 Makefile.in
 *.[oa]
+*.gcda
+*.gcno
 tlf
 tlf.1
 autom4te.cache
+aclocal.m4
 config.guess
 config.h
 config.log

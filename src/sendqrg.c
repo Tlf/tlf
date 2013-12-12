@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "sendqrg.h"
@@ -110,7 +110,6 @@ int init_tlf_rig(void)
 
     if (!my_rig) {
 	shownr("Unknown rig num %d", (int) myrig_model);
-	sleep(2);
 	return (-1);
     } else {
 	if (strlen(rigportname) > 1) {
@@ -151,8 +150,6 @@ int init_tlf_rig(void)
 	if (rigconf[i] == ',' || i + 1 == rigconf_len) {
 	    if (cnfval <= cnfparm) {
 		showstring("Missing parm value in RIGCONF: ", rigconf);
-		refreshp();
-		sleep(2);
 		return (-1);
 	    }
 	    if (rigconf[i] == ',')
@@ -162,8 +159,6 @@ int init_tlf_rig(void)
 			     cnfval);
 	    if (retcode != RIG_OK) {
 		showmsg("rig_set_conf: error  ");
-		refreshp();
-		sleep(5);
 		return (-1);
 	    }
 
@@ -176,9 +171,6 @@ int init_tlf_rig(void)
 
     if (retcode != RIG_OK) {
 	showmsg("rig_open: error ");
-	//              mvprintw(7,0,"rig_open: error = %s \n", rigerror(retcode));
-	refreshp();
-	sleep(2);
 	return (-1);
     }
 
@@ -186,13 +178,12 @@ int init_tlf_rig(void)
 
     if (retcode != RIG_OK) {
 	showmsg("Problem with rig link!");
-	sleep(1);
-    } else {
-	shownr("freq =", (int) rigfreq);
-
-	if (verbose == 1)
-	    sleep(1);
+	if (!debugflag)
+	    return (-1);
     }
+
+    shownr("freq =", (int) rigfreq);
+
     if (debugflag == 1) {	// debug routines
 	sleep(10);
 
@@ -203,9 +194,6 @@ int init_tlf_rig(void)
 	    sleep(1);
 	} else {
 	    shownr("freq =", (int) rigfreq);
-
-	    if (verbose == 1)
-		sleep(1);
 	}
 	sleep(10);
 
@@ -218,8 +206,6 @@ int init_tlf_rig(void)
 	    sleep(1);
 	} else {
 	    showmsg("Rig set freq ok!");
-	    sleep(1);
-
 	}
 
 	outfreq = 0;
@@ -231,16 +217,12 @@ int init_tlf_rig(void)
 	    sleep(1);
 	} else {
 	    shownr("freq =", (int) rigfreq);
-	    if (verbose == 1)
-		sleep(1);
 	}
 	sleep(10);
 
     }				// end debug
 
-    if (verbose == 1 || debugflag == 1)
-	sleep(1);
-
+    sleep(1);
     return (0);
 }
 

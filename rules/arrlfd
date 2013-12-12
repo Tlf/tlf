@@ -1,29 +1,38 @@
 ##########################
 # ARRL Field day contest #
 #     PA0R  3.10.2003    #
+#     N0NB  6.5.2013     #
 ##########################
 #
-CONTEST=arrlfd
+CONTEST=arrl_fd
 LOGFILE=fd.log
 CONTEST_MODE
+NO_RST
 ##################################
 #                                #
 #  Messages F1= to F12=          #
 #  Message CQ_TU_MSG=            #
 #  Message S&P_TU_MSG=           #
 #                                #
-#  % = call v                    #
+#  % = mycall                    #
 #  @ = hiscall                   #
 #  # = serial                    #
 #  [ = RST                       #
 #  + = increase cw speed         #
 #  - = decrease cw speed         #
+#  * = AR                        #
+#  = = BT                        #
+#  < = SK                        #
+#  ( = KN                        #
+#  ! = SN                        #
+#  & = AS                        #
+#  > = BK                        #
 #                                #
 ##################################
 #
-F1=CQ CQ FD DE % % K
+F1=CQ FD DE % K
 F2=@ DE %
-F3=@ 5NN 3ACT
+F3=@ 3A CT
 F4=TU 73
 F5= @
 F6=%
@@ -32,10 +41,10 @@ F8=AGN
 F9= ?
 F10= QRZ?
 F11= PSE K
-F12=++++TEST---- % %
+F12=+FD- %
 #
 CQ_TU_MSG=TU %
-S&P_TU_MSG=TU 5NN 3ACT
+S&P_TU_MSG=TU 3A CT
 #
 #ALT_0=
 #ALT_1=
@@ -69,6 +78,11 @@ S&P_TU_MSG=TU 5NN 3ACT
 #VKSPM= (S&P return message)
 #VKCQM=	(CQ mode return message)
 #
-ONEPOINT
+#################################
+#                               #
+#  Field Day points             #
+#################################
 #
-
+SSBPOINTS=1
+CWPOINTS=2
+MIXED

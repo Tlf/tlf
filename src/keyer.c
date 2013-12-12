@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*------------------------------------------------------------------------
@@ -34,7 +34,6 @@ int keyer(void)
     extern int bufloc;
     extern char buffer[];
     extern char termbuf[];
-    extern int keyspeed;
     extern char message[15][80];
     extern char wkeyerbuffer[];
     extern int data_ready;
@@ -53,7 +52,7 @@ int keyer(void)
 
     strcpy(mode, "Keyboard");
     clear_display();
-    attron(COLOR_PAIR(7) | A_STANDOUT);
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     if (keyerport == NO_KEYER)	/* no keyer present */
 	return (1);
@@ -144,7 +143,7 @@ int keyer(void)
 			keyerstring[28] = x;
 			keyerstring[29] = '\0';
 
-			attron(COLOR_PAIR(7) | A_STANDOUT);
+			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 			mvprintw(5, 0, "%s", keyerstring);
 			refreshp();
 		    } else if (keyerport == ORION_KEYER) {
@@ -159,7 +158,7 @@ int keyer(void)
 			keyerstring[28] = x;
 			keyerstring[29] = '\0';
 
-			attron(COLOR_PAIR(7) | A_STANDOUT);
+			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 			mvprintw(5, 0, "%s", keyerstring);
 			refreshp();
 
@@ -174,9 +173,9 @@ int keyer(void)
 			buffer[0] = '\0';
 
 		    getyx(stdscr, cury, curx);
-		    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvaddstr(0, 0, "  ");
-		    attron(COLOR_PAIR(7));
+		    attron(COLOR_PAIR(C_LOG));
 		    mvaddstr(cury, curx, "");
 		    refreshp();
 
@@ -202,6 +201,7 @@ int keyer(void)
 
 	    switch (x) {
 	    case 9:
+	    case 32:
 		{
 		    bufloc = 0;
 		    buffer[bufloc] = '\0';
@@ -270,13 +270,13 @@ int keyer(void)
 		}
 	    case 156:
 		{
-		    keyspeed = speedup();
+		    speedup();
 		    clear_display();
 		    break;
 		}
 	    case 157:
 		{
-		    keyspeed = speeddown();
+		    speeddown();
 		    clear_display();
 		    break;
 		}
@@ -357,15 +357,6 @@ int keyer(void)
 		    strcat(buffer, message[11]);	/* F12 */
 		    sendbuf();
 		    break;
-		}
-
-	    case 142 ... 150:	/* CTRL  O */
-
-		{
-		    message_change(x);
-
-		    break;
-
 		}
 
 	    default:

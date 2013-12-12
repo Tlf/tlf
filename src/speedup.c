@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 	/* ------------------------------------------------------------
 	 *        Page-up increases CW speed with 2 wpm
@@ -26,15 +26,13 @@
 #include "cwkeyer.h"
 #include "clear_display.h"
 #include "netkeyer.h"
+#include "cw_utils.h"
 
 int speedup(void)
 {
 
-    extern int speed;
-    extern char speedstr[];
     extern int trxmode;
     extern int keyerport;
-    extern int cfd;
     extern char buffer[];
 
     int retval = 0;
@@ -49,8 +47,7 @@ int speedup(void)
 
 	    speed++;
 
-	    strncpy(buff, speedstr + (speed * 2), 2);
-	    buff[2] = '\0';
+	    snprintf(buff, 3, "%2d", GetCWSpeed());
 
 	    retval = netkeyer(K_SPEED, buff);
 
@@ -70,8 +67,7 @@ int speedup(void)
 
 	    speed++;
 
-	    strncpy(buff, speedstr + (speed * 2), 2);
-	    buff[2] = '\0';
+	    snprintf(buff, 3, "%2d", GetCWSpeed());
 
 	    strcpy(buffer, "\\\015");
 	    sendbuf();
@@ -100,10 +96,7 @@ int speedup(void)
 
 	    speed++;
 
-	    strncpy(buff, speedstr + (speed * 2), 2);
-	    buff[2] = '\0';
-
-	    orion_set_cw_speed(atoi(buff));
+	    orion_set_cw_speed(GetCWSpeed());
 
 	}
     }

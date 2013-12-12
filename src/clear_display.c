@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * 		 2013           Thomas Beierlein <tb@forth-ev.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -24,12 +25,11 @@
 
 #include "globalvars.h"
 #include "clear_display.h"
+#include "cw_utils.h"
 
 void clear_display(void)
 {
     extern int use_rxvt;
-    extern char speedstr[];
-    extern int speed;
     extern char mode[];
     extern int cqdelay;
     extern char headerline[];
@@ -52,25 +52,26 @@ void clear_display(void)
     extern int m;
     extern struct tm *time_ptr;
     extern char whichcontest[];
+    extern int no_rst;
 
     char time_buf[80];
     char speedbuf[4] = "  ";
     int cury, curx;
 
-    strncpy(speedbuf, speedstr + (2 * speed), 2);
-    speedbuf[2] = '\0';
+    snprintf(speedbuf, 3, "%2d", GetCWSpeed());
+
     getyx(stdscr, cury, curx);
 
     mvprintw(0, 0, "");
-    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(0, 0, "                             ");
     mvprintw(0, 0, "  %s  S=%s D=%i ", mode, speedbuf, cqdelay);
     mvprintw(0, 21, headerline);
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_WHITE | A_BOLD | A_STANDOUT));
+	attron(COLOR_PAIR(C_LOG | A_BOLD | A_STANDOUT));
     else
-	attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
+	attron(COLOR_PAIR(C_LOG | A_STANDOUT));
 
     mvaddstr(1, 0, terminal1);
     mvaddstr(2, 0, terminal2);
@@ -79,7 +80,7 @@ void clear_display(void)
     mvaddstr(5, 0, backgrnd_str);
     mvprintw(6, 0, "");
     mvaddstr(6, 0, "");
-    attron(COLOR_PAIR(COLOR_GREEN));
+    attron(COLOR_PAIR(C_HEADER));
 //    hline(ACS_HLINE, 80);
     mvaddstr(6, 0, backgrnd_str);
     mvprintw(6, (80 - strlen(whichcontest))/2 - 4, " == %s == ", whichcontest);
@@ -87,17 +88,18 @@ void clear_display(void)
     showscore();
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     mvaddstr(7, 0, logline0);
     mvaddstr(8, 0, logline1);
     mvaddstr(9, 0, logline2);
     mvaddstr(10, 0, logline3);
     mvaddstr(11, 0, logline4);
-    attron(COLOR_PAIR(COLOR_CYAN));
+    attron(COLOR_PAIR(C_WINDOW));
     mvaddstr(12, 0, backgrnd_str);
+
     mvaddstr(12, 0, band[bandinx]);
 
     get_time();
@@ -126,8 +128,13 @@ void clear_display(void)
 
     }
 
-    mvaddstr(12, 44, his_rst);
-    mvaddstr(12, 49, my_rst);
+    if (no_rst) {
+	mvaddstr(12, 44, "---");
+	mvaddstr(12, 49, "---");
+    } else {
+	mvaddstr(12, 44, his_rst);
+	mvaddstr(12, 49, my_rst);
+    }
 
     if (cqww == 1) {
 	if (use_rxvt == 0)
@@ -155,7 +162,7 @@ void clear_display(void)
 
     mvaddstr(12, 29, hiscall);
 
-    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(24, 0, backgrnd_str);
 
     if (use_rxvt == 0)

@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "write_keyer.h"
 #include <assert.h>
@@ -22,6 +22,7 @@
 #include "cwkeyer.h"
 #include <curses.h>
 #include "netkeyer.h"
+#include "cw_utils.h"
 
 int write_keyer(void)
 {
@@ -30,17 +31,13 @@ int write_keyer(void)
     extern int trxmode;
     extern int keyerport;
     extern int data_ready;
-    extern int cfd;
     extern char controllerport[];
     extern int native_rig_fd;
-    extern char speedstr[];
-    extern int speed;
     extern char rttyoutput[];
 
     FILE *bfp = NULL;
     int i, rc;
     char send_orion[3];
-    char buff[8];
     int realspeed = 32;
     char outstring[120] = "";
 
@@ -69,26 +66,23 @@ int write_keyer(void)
 	    }
 
 	} else if (keyerport == GMFSK) {
-	    sprintf(outstring, "echo %c%c%s%c%c", '"', '\n', wkeyerbuffer,
-		    '\n', '"');
-	    strcat(outstring, " >> ");
 	    if (strlen(rttyoutput) < 2) {
 		mvprintw(24, 0, "No modem file specified!");
 	    }
-	    strcat(outstring, rttyoutput);
+	    sprintf(outstring, "echo -n \"\n%s\" >> %s",
+		    wkeyerbuffer, rttyoutput);
 	    rc = system(outstring);
 
 	    wkeyerbuffer[0] = '\0';
 	    data_ready = 0;
+
 	} else if (keyerport == ORION_KEYER && strlen(wkeyerbuffer) > 0) {
 	    if (native_rig_fd == 0) {
 		mvprintw(24, 0, "Orion keyer not open.");
 		sleep(1);
 		clear_display();
 	    } else {
-		strncpy(buff, (speedstr + (speed * 2)), 2);
-		buff[2] = '\0';
-		realspeed = atoi(buff);
+		realspeed = GetCWSpeed();
 
 		for (i = 0; i < strlen(wkeyerbuffer); i++) {
 
@@ -100,7 +94,7 @@ int write_keyer(void)
 			send_orion[2] = '\015';
 			rc = write(native_rig_fd, send_orion, 3);
 
-			usleep(cw_char_length(send_orion + 1) *
+			usleep(cw_message_length(send_orion + 1) *
 			       (int) (1200000.0 / realspeed));
 		    } else
 			usleep(6 * (int) (1200000.0 / realspeed));

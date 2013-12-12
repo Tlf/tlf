@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------------------------
@@ -27,10 +27,8 @@
 
 #include "initial_exchange.h"
 
-struct ie_list *make_ie_list(void)
+struct ie_list *make_ie_list(char *file)
 {
-
-    extern char exchange_list[];
 
     FILE *fp;
     char inputbuffer[91];
@@ -39,14 +37,17 @@ struct ie_list *make_ie_list(void)
     struct ie_list *ie_listhead = NULL;
     struct ie_list *new;
     char *token;
+    int linectr = 0;
 
-    if ((fp = fopen(exchange_list, "r")) == NULL) {
+    if ((fp = fopen(file, "r")) == NULL) {
 	showmsg("Cannot find initial exchange file");
 	return (NULL);
     } else
-	showstring("Using initial exchange file", exchange_list);
+	showstring("Using initial exchange file", file);
 
     while (fgets(inputbuffer, 90, fp) != NULL) {
+
+	linectr++;
 
 	/* allow empty and comment lines */
 	if ((inputbuffer[0] == '#') ||
@@ -59,9 +60,11 @@ struct ie_list *make_ie_list(void)
 
 	if (strlen(inputbuffer) > 80) {
 	    /* line to long */
+	    char msg[80];
 	    free_ie_list(ie_listhead);
 	    fclose(fp);
-	    showmsg("Wrong format, line to long");
+	    sprintf( msg, "Line %d: too long", linectr);
+	    showmsg(msg);
 	    return NULL;
 	}
 
@@ -85,9 +88,12 @@ struct ie_list *make_ie_list(void)
 							   whitespace */
 	    if ((token == NULL) || strtok(NULL, " \t")) {
 		/* 0 or >1 token before comma */
+		char msg[80];
 		free_ie_list(ie_listhead);
 		fclose(fp);
-		showmsg("Wrong format, 0 or more than one token before comma");
+		sprintf( msg, "Line %d: 0 or more than one token before comma",
+			linectr);
+		showmsg(msg);
 		return (NULL);
 	    }
 
@@ -106,9 +112,11 @@ struct ie_list *make_ie_list(void)
 
 	} else {
 	    /* no comma found */
+	    char msg[80];
 	    free_ie_list(ie_listhead);
 	    fclose(fp);
-	    showmsg("Wrong format, no comma found");
+	    sprintf( msg, "Line %d: no comma found", linectr);
+	    showmsg(msg);
 	    return NULL;			
 	}
     }

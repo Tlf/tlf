@@ -10,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #define NDEBUG
 #define NEWCODE = 1
@@ -24,6 +24,7 @@
 #include "globalvars.h"
 #include "main.h"
 #include "searchlog.h"
+#include "cw_utils.h"
 #include <glib.h>
 #include <panel.h>
 #include <pthread.h>
@@ -39,7 +40,7 @@ extern int lan_active;
 
 int prsock = 0;
 char pr_hostaddress[48] = "131.155.192.179";
-char config_file[80] = "";
+char *config_file = NULL;
 int portnum = 0;
 struct tln_logline *loghead = NULL;
 struct tln_logline *logtail = NULL;
@@ -53,7 +54,7 @@ int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
 {COLOR_WHITE, COLOR_RED},
 {COLOR_CYAN, COLOR_WHITE},
 {COLOR_WHITE, COLOR_BLACK},
-{COLOR_MAGENTA, COLOR_WHITE},
+{COLOR_WHITE, COLOR_MAGENTA},
 {COLOR_BLUE, COLOR_YELLOW},
 {COLOR_WHITE, COLOR_BLACK}
 };
@@ -88,15 +89,14 @@ int ssbpoints;
 int cwpoints;
 int lowband_point_mult = 0;
 int sc_sidetone;
-char sc_volume[3] = "";
+char sc_volume[4] = "";
   /* LZ3NY mods */
-char contest_name[50];
-int multiplier_points = -1;
+int countrylist_points = -1;
 int my_country_points = -1;
 int my_cont_points = -1;
 int dx_cont_points = -1;
 char mit_multiplier_list[255][6];
-int multiplier_only = 0;
+int countrylist_only = 0;
 int mult_side = 0;
 char *mit_mult_array;
 int in_country_list;
@@ -123,6 +123,7 @@ int ignoredupe = 0;
 int noautocq = 0;
 int emptydir = 0;
 int verbose = 0;
+int no_rst = 0;			/* 1 - do not use RS/RST */
 
 int pacc_qsos[10][10];
 int ve_cty;
@@ -136,9 +137,7 @@ int vk_cty;
 int zs_cty;
 int ua9_cty;
 
-char tlfversion[80] = "";
-char testbuffer[120] = "";
-char multsfile[80] = "";	/* name of file with a list of allowed 
+char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
 char exchange_list[40] = "";
 int timeoffset = 0;
@@ -167,6 +166,7 @@ int defer_store = 0;
 char buffer[162];
 char call[20];
 char logfile[120] = "general.log";
+char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
 char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = 0;
@@ -225,15 +225,13 @@ char sc_device[40] = "/dev/dsp";
 
 /*-------------------------------------keyer------------------------------*/
 int keyerport = NO_KEYER;
-int speed = 10;
 int txdelay = 0;
 int weight = 0;
 char weightbuf[4];
-char speedstr[50] = CW_SPEEDS;
 char tonestr[5] = "600";
 int cqdelay = 8;
 char wkeyerbuffer[400];
-int keyspeed = 5;
+int bufloc = 0;
 int cfd;			/* cwkeyer file descriptor */
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
@@ -248,8 +246,8 @@ int commentfield = 0;		/* 1 if we are in comment/excahnge input */
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
 int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
+char lastwwv[120] = "";
 int ptr;				/* Anzahl Lines in ispot_ptr array */
-long int *wwv_ptr;
 int packetinterface = 0;
 int fdSertnc = 0;
 int fdFIFO = 0;
@@ -276,7 +274,6 @@ int outfreq;			/* output  to rig */
 #endif
 int ssb_bandwidth = 3000;
 int cw_bandwidth = 0;
-int nobandchange = 0;
 int serial_rate = 2400;
 int rig_port = 0;
 char rigportname[40];
@@ -294,7 +291,7 @@ char tonecpy[5];
 char simulator_tone[5];
 
 /*-------------------------------the log lines-----------------------------*/
-char qsos[MAX_QSOS][82];
+char qsos[MAX_QSOS][LOGLINELEN+1];
 int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
@@ -333,16 +330,13 @@ int shownewmult = -1;
 int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */
-int qsonum = 1;
-int bufloc = 0;
+int qsonum = 1;			/* nr of next QSO */
 int ymax, xmax;			/* screen size */
-char lastwwv[120] = "";
 int nroflines;
 
 pid_t pid;
 struct tm *time_ptr;
 
-char qrg_string[8];
 float freq;
 float mem;
 int logfrequency = 0;
@@ -352,12 +346,13 @@ int showfreq = 0;
 float bandfrequency[9] =
     { 1830.0, 3525.0, 7010.0, 10105.0, 14025.0, 18070.0, 21025.0, 24900.0,
 28025.0 };
-char spot_target[8][40];
 
 char headerline[81] =
     "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  \n";
 char backgrnd_str[81] =
     "                                                                                ";
+
+char logline_edit[5][LOGLINELEN+1];
 
 char terminal1[88] = "";
 char terminal2[88] = "";
@@ -371,10 +366,6 @@ char C_QTH_Long[8] = "-5";
 char C_DEST_Lat[7] = "51";
 char C_DEST_Long[8] = "1";
 
-double yt = -4.9;		/* for muf calculation */
-double xt = 52.4;
-double yr = 5.0;
-double xr = 50.0;
 double r = 50;
 int m = 1;
 char hiscountry[40];
@@ -414,13 +405,23 @@ int main(int argc, char *argv[])
     int ret;
     int retval;
     char keyerbuff[3];
+    char tlfversion[80] = "";
+    int status;
 
     while ((argc > 1) && (argv[1][0] == '-')) {
 	switch (argv[1][1]) {
 	    /* verbose option */
 	case 'f':
-	    if (strlen(argv[1] + 2) > 0)
-		strcpy(config_file, argv[1] + 2);
+	    if (strlen(argv[1] + 2) > 0) {
+		if ((*(argv[1] + 2) == '~') && (*(argv[1] + 3) == '/')) {
+		    /* tilde expansion */
+		    config_file = g_strconcat( g_get_home_dir(),
+			    argv[1] + 3, NULL);
+		}
+	    	else {
+		    config_file = g_strdup(argv[1] + 2);
+		}
+	    }
 	    break;
 	case 's':
 	    if (strlen(argv[1] + 2) > 0)
@@ -496,6 +497,21 @@ int main(int argc, char *argv[])
 				   for refreshp() to work */
 
     getmaxyx(stdscr, ymax, xmax);
+    if ((ymax < 25) || (xmax < 80)) {
+	char c;
+
+	showmsg( "!! TLF needs at least 25 lines and 80 columns !!");
+	showmsg( "   Continue anyway? Y/(N)" );
+	c = toupper( getch() );
+	if (c != 'Y') {
+	    showmsg( "73 es cuagn" );
+	    sleep(1);
+	    endwin();
+	    exit(1);
+	}
+	showmsg("");
+    }
+
     noecho();
     crmode();
 
@@ -513,19 +529,9 @@ int main(int argc, char *argv[])
 	    sleep(5);
 	    exit(EXIT_FAILURE);
 	}
-	// use linux console colours
-	init_pair(COLOR_BLACK, tlfcolors[0][0], tlfcolors[0][1]);
-	init_pair(COLOR_GREEN, tlfcolors[1][0], tlfcolors[1][1]);
-	init_pair(COLOR_RED, tlfcolors[2][0], tlfcolors[2][1]);
-	init_pair(COLOR_CYAN, tlfcolors[3][0], tlfcolors[3][1]);
-	init_pair(COLOR_WHITE, tlfcolors[4][0], tlfcolors[4][1]);
-	init_pair(COLOR_MAGENTA, tlfcolors[5][0], tlfcolors[5][1]);
-	init_pair(COLOR_BLUE, tlfcolors[6][0], tlfcolors[6][1]);
-	init_pair(COLOR_YELLOW, tlfcolors[7][0], tlfcolors[7][1]);
 
-	strcpy(tlfversion, "        Welcome to tlf-");
-	strcat(tlfversion, VERSION);
-	strcat(tlfversion, " by PA0R!!");
+	sprintf(tlfversion,
+		"        Welcome to tlf-%s by PA0R!!" , VERSION);
 	showmsg(tlfversion);
 	showmsg("");
 
@@ -534,10 +540,24 @@ int main(int argc, char *argv[])
 
 	showmsg("reading configuration data");
 
-	read_logcfg();		/* read the configuration file */
-	read_rules();		/* read the additional contest rules in "rules/contestname"  LZ3NY */
+	status = read_logcfg(); /* read the configuration file */
+	status |= read_rules();	/* read the additional contest rules in "rules/contestname"  LZ3NY */
 
-	checklogfile();		/* make sure logfile is there */
+	if (status != PARSE_OK) {
+	    showmsg( "Problems in logcfg.dat or rule file detected! Continue Y/(N)?");
+	    if (toupper( getchar() ) != 'Y') {
+		endwin();
+		exit(1);
+	    }
+	}
+
+	/* make sure logfile is there and has the right format */
+	if (checklogfile_new(logfile) != 0) {
+	    showmsg( "Giving up" );
+	    sleep(2);
+	    endwin();
+	    exit(1);
+	}
 
 //              if (strlen(synclogfile) > 0)
 //                      synclog(synclogfile);
@@ -551,34 +571,30 @@ int main(int argc, char *argv[])
 	if (use_rxvt == 1) {	// use rxvt colours
 	    init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_RED);
 	    if (use_xterm == 1) {
-		init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_BLUE);
+		init_pair(C_HEADER, COLOR_GREEN, COLOR_BLUE);
 		init_pair(COLOR_RED, COLOR_WHITE, 8);
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_MAGENTA);
+		init_pair(C_WINDOW, COLOR_CYAN, COLOR_MAGENTA);
+		init_pair(C_DUPE, COLOR_WHITE, COLOR_MAGENTA);
+		init_pair(C_INPUT, COLOR_BLUE, COLOR_WHITE);
 	    } else {
-		init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_YELLOW);
+		init_pair(C_HEADER, COLOR_GREEN, COLOR_YELLOW);
 		init_pair(COLOR_RED, COLOR_WHITE, COLOR_RED);
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_RED);
+		init_pair(C_WINDOW, COLOR_CYAN, COLOR_RED);
+		init_pair(C_DUPE, COLOR_RED, COLOR_MAGENTA);
+		init_pair(C_INPUT, COLOR_BLUE, COLOR_YELLOW);
 	    }
-	    init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
-	    if (use_xterm == 1) {
-		init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_WHITE);
-		init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_WHITE);
-	    } else {
-		init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_RED);
-		init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_YELLOW);
-	    }
-	    init_pair(COLOR_YELLOW, COLOR_CYAN, COLOR_YELLOW);
+	    init_pair(C_LOG, COLOR_WHITE, COLOR_BLACK);
+	    init_pair(C_BORDER, COLOR_CYAN, COLOR_YELLOW);
 	} else {
-	    // use linux console colours redefined....
-	    init_pair(COLOR_BLACK, tlfcolors[0][0], tlfcolors[0][1]);
-	    init_pair(COLOR_GREEN, tlfcolors[1][0], tlfcolors[1][1]);
-	    init_pair(COLOR_RED, tlfcolors[2][0], tlfcolors[2][1]);
-	    init_pair(COLOR_CYAN, tlfcolors[3][0], tlfcolors[3][1]);
-	    init_pair(COLOR_WHITE, tlfcolors[4][0], tlfcolors[4][1]);
-	    init_pair(COLOR_MAGENTA, tlfcolors[5][0], tlfcolors[5][1]);
-	    init_pair(COLOR_BLUE, tlfcolors[6][0], tlfcolors[6][1]);
-	    init_pair(COLOR_YELLOW, tlfcolors[7][0], tlfcolors[7][1]);
-
+	    // use linux console colours
+	    init_pair(COLOR_BLACK, tlfcolors[0][0], tlfcolors[0][1]); // b/w
+	    init_pair(C_HEADER, tlfcolors[1][0], tlfcolors[1][1]);    // Gn/Ye
+	    init_pair(COLOR_RED, tlfcolors[2][0], tlfcolors[2][1]);   // W/R
+	    init_pair(C_WINDOW, tlfcolors[3][0], tlfcolors[3][1]);    // Cy/W
+	    init_pair(C_LOG, tlfcolors[4][0], tlfcolors[4][1]);       // W/B
+	    init_pair(C_DUPE, tlfcolors[5][0], tlfcolors[5][1]);      // W/Mag
+	    init_pair(C_INPUT, tlfcolors[6][0], tlfcolors[6][1]);     // Bl/Y
+	    init_pair(C_BORDER, tlfcolors[7][0], tlfcolors[7][1]);    // W/B
 	}
 
 	mults_possible = g_ptr_array_new();
@@ -594,11 +610,21 @@ int main(int argc, char *argv[])
 
 	nr_callmastercalls = load_callmaster();
 
-	main_ie_list = make_ie_list();	// get initial exchange file
-	if (main_ie_list == NULL)
-	    showmsg("No initial exchange available");
-//else
-//      test_ie_list(main_ie_list);
+	if (*exchange_list != '\0') {
+	    // read initial exchange file
+	    main_ie_list = make_ie_list(exchange_list);
+	    if (main_ie_list == NULL) {
+		showmsg( "Problems in initial exchange file detected! Continue Y/(N)?");
+		if (toupper( getchar() ) != 'Y') {
+		    endwin();
+		    exit(1);
+		}
+		else {
+		    showmsg( "Initial exchange data not loaded! Continuing ...");
+		    sleep(2);
+		}
+	    }
+	}
 
 #ifdef HAVE_LIBHAMLIB		// Code for hamlib interface
 
@@ -613,9 +639,9 @@ int main(int argc, char *argv[])
 
 	    /** \todo fix exclusion of newer hamlib models */
 	    if ((int) myrig_model > 1999)
-		init_native_rig();
+		status = init_native_rig();
 	    else
-		init_tlf_rig();
+		status = init_tlf_rig();
 	}
 #else
 	if (trx_control != 0) {
@@ -623,15 +649,25 @@ int main(int argc, char *argv[])
 	    showmsg("No Hamlib library, using native driver");
 	    shownr("Rignumber is", rignumber);
 	    shownr("Rig speed is", serial_rate);
-	    init_native_rig();
+	    status = init_native_rig();
 	    sleep(1);
 	}
 #endif				// end code for hamlib interface
 
+	if (status  != 0) {
+	    showmsg( "Continue without rig control Y/(N)?");
+	    if (toupper( getchar() ) != 'Y') {
+		endwin();
+		exit(1);
+	    }
+	    trx_control = 0;
+	    showmsg( "Disabling rig control!");
+	    sleep(1);
+	}
+
+
 	if (keyerport == NET_KEYER) {
 	    showmsg("Keyer is cwdaemon");
-	    if (verbose == 1)
-		sleep(1);
 	}
 	if (keyerport == MFJ1278_KEYER || keyerport == GMFSK) {
 	    init_controller();
@@ -650,16 +686,11 @@ int main(int argc, char *argv[])
 	    else
 		showmsg("LAN send initialized");
 	}
-	if (verbose == 1)
-	    sleep(1);
 
 	checkparameters();	/* check .paras file */
 
 	clear();
-	strcpy(tlfversion, "        Welcome to tlf-");
-	strcat(tlfversion, VERSION);
-	strcat(tlfversion, " by PA0R!!\n\n");
-	mvprintw(0, 0, tlfversion);
+	mvprintw(0, 0, "        Welcome to tlf-%s by PA0R!!\n\n" , VERSION);
 	refreshp();
 	getmessages();		/* read .paras file */
 
@@ -690,30 +721,24 @@ int main(int argc, char *argv[])
 
 		sprintf(weightbuf, "%d", weight);
 
-		strncpy(keyerbuff, speedstr + (speed * 2), 2);
-		keyerbuff[2] = '\0';
-
 		write_tone();
 
-		netkeyer(K_SPEED, keyerbuff);	// set speed
+		snprintf(keyerbuff, 3, "%2d", GetCWSpeed());
+		netkeyer(K_SPEED, keyerbuff);		// set speed
 
-		netkeyer(K_WEIGHT, weightbuf);	// set weight
+		netkeyer(K_WEIGHT, weightbuf);		// set weight
 
 		if (*keyer_device != '\0')
 		    netkeyer(K_DEVICE, keyer_device);	// set device
 
 		sprintf(keyerbuff, "%d", txdelay);
+		netkeyer(K_TOD, keyerbuff);		// set TOD
 
-		netkeyer(K_TOD, keyerbuff);	// set TOD
-
-		if (sc_sidetone != 0)	// set soundcard output
-		{
+		if (sc_sidetone != 0)			// set soundcard output
 		    netkeyer(K_SIDETONE, "");
 
-		    if (*sc_volume != '\0')	// set soundcard volume
-
+		if (*sc_volume != '\0')			// set soundcard volume
 			netkeyer(K_STVOLUME, sc_volume);
-		}
 	    }
 
 	    if (keyerport != NET_KEYER)
@@ -730,7 +755,7 @@ int main(int argc, char *argv[])
 
 	qrb();
 
-	attron(COLOR_PAIR(7) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	for (j = 13; j <= 23; j++) {	/* wipe lower window */
 	    mvprintw(j, 0, backgrnd_str);

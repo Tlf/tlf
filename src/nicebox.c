@@ -9,18 +9,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 	/* ------------------------------------------------------------
  	*          Nicebox draws  a  box with  a header
  	*
  	*--------------------------------------------------------------*/
 
+#include "tlf.h"
 #include "nicebox.h"
 
 void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname)
@@ -31,9 +32,9 @@ void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname)
     width += 1;
 
     if (use_rxvt == 0)
-	wattrset(win, COLOR_PAIR(COLOR_YELLOW) | A_BOLD);
+	wattrset(win, COLOR_PAIR(C_BORDER) | A_BOLD);
     else
-	wattrset(win, COLOR_PAIR(COLOR_YELLOW));
+	wattrset(win, COLOR_PAIR(C_BORDER));
 
     mvwaddch(win, y, x, ACS_ULCORNER);
     whline(win, ACS_HLINE, width);

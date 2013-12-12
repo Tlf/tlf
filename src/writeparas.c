@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 	/* ------------------------------------------------------------
 	 *        Write parameter file to disk
@@ -22,6 +22,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "writeparas.h"
+#include "cw_utils.h"
 
 int writeparas(void)
 {
@@ -40,7 +41,6 @@ int writeparas(void)
     extern int announcefilter;
     extern int showscore_flag;
     extern int cqdelay;
-    extern int speed;
     extern int trxmode;
     extern int stop_backgrnd_process;
 

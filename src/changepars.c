@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2011-2013      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -24,6 +25,7 @@
 
 #include "changepars.h"
 #include "sendbuf.h"
+#include "rules.h"
 #include <termios.h>
 #include <glib.h>
 
@@ -52,7 +54,7 @@ int changepars(void)
     extern int cqdelay;
     extern int ctcomp;
     extern SCREEN *mainscreen;
-    extern char config_file[];
+    extern char *config_file;
     extern int miniterm;
     extern char buffer[];
 
@@ -65,7 +67,6 @@ int changepars(void)
     extern int simulator;
     extern int keyerport;
     extern char synclogfile[];
-    extern int sc_sidetone;
     extern char sc_volume[];
     extern int cwstart;
 
@@ -134,7 +135,7 @@ int changepars(void)
     nopar = 0;
 
     attroff(A_STANDOUT);
-    attron(COLOR_PAIR(COLOR_GREEN));
+    attron(COLOR_PAIR(C_HEADER));
     mvprintw(12, 29, "PARAMETER?  ");
     refreshp();
 
@@ -158,7 +159,7 @@ int changepars(void)
     switch (i) {
     case 0:			/* SPOTS) */
 	{
-	    /* SPOTS not supported anymore 
+	    /* SPOTS not supported anymore
 	     * - default to MAP*/
 	    cluster = MAP;
 	    break;
@@ -227,13 +228,7 @@ int changepars(void)
 	}
     case 13:			/*  HELP   */
 	{
-//                      show_help();
-	    endwin();
-	    rc = system("clear");
-	    rc = system("less help.txt");
-	    rc = system("clear");
-	    set_term(mainscreen);
-	    clear_display();
+	    show_help();
 	    break;
 	}
     case 14:			/*  DEMODE   */
@@ -289,11 +284,13 @@ int changepars(void)
 	}
     case 18:			/*  WRITE CABRILLO FILE   */
 	{
+	    int old_cluster = cluster;
+	    cluster = NOCLUSTER;
+
 	    write_cabrillo();
 
-	    mvprintw(13, 29, "writing  cabrillo file");
-	    refreshp();
-	    sleep(1);
+	    cluster = old_cluster;
+
 
 	    break;
 	}
@@ -301,6 +298,7 @@ int changepars(void)
 	{
 	    writeparas();
 	    clear();
+	    cleanup_telnet();
 	    endwin();
 	    puts("\n\nThanks for using TLF.. 73\n");
 	    exit(0);
@@ -350,27 +348,24 @@ int changepars(void)
 	    break;
 	}
     case 24:			/* SET PARAMETERS */
+    case 29:			/* CFG PARAMETERS */
 	{
 	    clear();
 	    if (editor == EDITOR_JOE) {
 		strcpy(cmdstring, "joe ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
 	    } else if (editor == EDITOR_VI) {
 		strcpy(cmdstring, "vi ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
 	    } else if (editor == EDITOR_MC) {
 		strcpy(cmdstring, "mcedit ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
 	    } else {
 		strcpy(cmdstring, "e3 ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
 	    }
 
+	    strcat(cmdstring, config_file);
+	    rc = system(cmdstring);
+
 	    read_logcfg();
+	    read_rules();	/* also reread rules file */
 	    writeparas();
 	    mvprintw(24, 0, "Logcfg.dat loaded, parameters written..");
 	    refreshp();
@@ -423,33 +418,6 @@ int changepars(void)
 	    refreshp();
 	    sleep(1);
 
-	    break;
-	}
-    case 29:			/* CFG PARAMETERS */
-	{			/* same as #24 tb */
-	    clear();
-	    if (editor == EDITOR_JOE) {
-		strcpy(cmdstring, "joe ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
-	    } else if (editor == EDITOR_VI) {
-		strcpy(cmdstring, "vi ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
-	    } else if (editor == EDITOR_MC) {
-		strcpy(cmdstring, "mcedit ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
-	    } else {
-		strcpy(cmdstring, "e3 ");
-		strcat(cmdstring, config_file);
-		rc = system(cmdstring);
-	    }
-	    read_logcfg();
-	    writeparas();
-	    mvprintw(24, 0, "Logcfg.dat loaded, parameters written..");
-	    refreshp();
-	    clear_display();
 	    break;
 	}
     case 30:			/* CW  */
@@ -556,6 +524,7 @@ int changepars(void)
     case 38:			/* EXIT=QUIT */
 	{
 	    writeparas();
+	    cleanup_telnet();
 	    endwin();
 	    puts("\n\nThanks for using TLF.. 73\n");
 	    exit(0);
@@ -574,7 +543,7 @@ int changepars(void)
 		case 156:{
 			if (cqdelay <= 60) {
 			    cqdelay++;
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 			    mvprintw(0, 19, "  ");
 			    mvprintw(0, 19, "%i", cqdelay);
 			    break;
@@ -584,7 +553,7 @@ int changepars(void)
 		case 157:{
 			if (cqdelay >= 1) {
 			    cqdelay--;
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 			    mvprintw(0, 19, "  ");
 			    mvprintw(0, 19, "%i", cqdelay);
@@ -607,12 +576,9 @@ int changepars(void)
 	    break;
 
 	}
-    case 40:			/* ADIF */	
+    case 40:			/* ADIF */
 	{
 	    write_adif();
-	    mvprintw(13, 29, "writing adif file");
-	    refreshp();
-	    sleep(1);
 
 	    break;
 	}
@@ -635,11 +601,12 @@ int changepars(void)
 	}
     case 43:			/* SCVOLUME - set soundcard volume */
 	{
-	    if (sc_sidetone == 0)
-		break;
-
-	    mvprintw(12, 29, "Vol: %d", atoi(sc_volume));
 	    volumebuffer = atoi(sc_volume);
+	    mvprintw(12, 29, "Vol: pgup/dwn");
+	    refreshp();
+	    usleep(500000);
+	    mvprintw(12, 29, "Vol:         ");
+	    mvprintw(12, 29, "Vol: %d", volumebuffer);
 
 	    x = 1;
 	    while (x) {
@@ -647,32 +614,29 @@ int changepars(void)
 
 		switch (x) {
 		case 156:{
-			if (volumebuffer <= 99) {
+			if (volumebuffer < 95)
 			    volumebuffer += 5;
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-			    mvprintw(12, 34, "  ");
-			    mvprintw(12, 34, "%d", volumebuffer);
-			    break;
 
-			}
+			break;
 		    }
 		case 157:{
-			if (volumebuffer >= 6) {
+			if (volumebuffer >= 5)
 			    volumebuffer -= 5;
-			    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
 
-			    mvprintw(12, 34, "  ");
-			    mvprintw(12, 34, "%d", volumebuffer);
-			    break;
-
-			}
+			break;
+		    }
 		default:
 			x = 0;
-		    }
-		    if (volumebuffer >= 0 && volumebuffer <= 99)
-			sprintf(sc_volume, "%d", volumebuffer);
 
 		}
+
+		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		mvprintw(12, 34, "  ");
+		mvprintw(12, 34, "%d", volumebuffer);
+
+		if (volumebuffer >= 0 && volumebuffer <= 99)
+		    sprintf(sc_volume, "%d", volumebuffer);
+
 		netkeyer(K_STVOLUME, sc_volume);
 	    }
 
@@ -723,12 +687,29 @@ int changepars(void)
 	}
     case 50:			/* CHARS */
 	{
-	    mvprintw(13, 29, "? Characters: (0...4)");
+	    mvprintw(13, 29, "Autosend: (0 (off), 2..5 chars) ?");
 	    refreshp();
-	    x = onechar();
-	    if ((x - 48) < 5 && (x - 48) >= 0)
-		cwstart = x - 48;
+	    x = 1;
 
+	    /* wait for correct input or ESC */
+	    while ((x != 0) && ((x < 2) || (x > 5)) ) {
+		x = onechar();
+		if (x == 27)
+		    break;
+		x = x - '0';
+	    }
+
+	    /* remember new setting */
+	    if (x != 27)
+		cwstart = x;
+
+	    if (cwstart)
+		mvprintw(13,29, "Autosend now: %1d                 ",
+			cwstart);
+	    else
+		mvprintw(13,29, "Autosend now: OFF                ");
+
+	    refreshp();
 	    break;
 
 	}
@@ -775,21 +756,21 @@ int networkinfo(void)
     extern int lan_active;
     extern int nodes;
     extern char bc_hostaddress[MAXNODES][16];
-    extern char config_file[];
+    extern char *config_file;
     extern char whichcontest[];
     extern char pr_hostaddress[];
     extern char tncportname[];
     extern char rigportname[];
     extern char logfile[];
 
-    int i, j, inode, key;
+    int i, j, inode;
 
     clear();
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -829,12 +810,12 @@ int networkinfo(void)
     mvprintw(23, 22, " --- Press a key to continue --- ");
     refreshp();
 
-    key = getch();
+    getch();
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (i = 0; i <= 24; i++)
 	mvprintw(i, 0,
 		 "                                                                                ");
@@ -859,7 +840,7 @@ int multiplierinfo(void)
     extern int multarray_nr;
     extern GPtrArray *mults_possible;
 
-    int j, k, key, vert, hor, cnt, found;
+    int j, k, vert, hor, cnt, found;
     char mprint[50];
     char chmult[4];
     char ch2mult[4];
@@ -867,9 +848,9 @@ int multiplierinfo(void)
     clear();
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -906,15 +887,15 @@ int multiplierinfo(void)
 		if (found == 1)
 
 		    if (use_rxvt == 0)
-			attron(COLOR_PAIR(COLOR_GREEN) | A_BOLD |
+			attron(COLOR_PAIR(C_HEADER) | A_BOLD |
 			       A_STANDOUT);
 		    else
-			attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+			attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 		else if (use_rxvt == 0)
-		    attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+		    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
 		else
-		    attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
 		if ((strlen(mprint) > 1) && (strcmp(mprint, "W ") != 0))
 		    mvprintw(vert, hor * 4, "%s", mprint);
@@ -988,20 +969,20 @@ int multiplierinfo(void)
     }
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_CYAN) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_CYAN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     mvprintw(23, 22, " --- Press a key to continue --- ");
 
     refreshp();
 
-    key = getch();
+    getch();
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(COLOR_WHITE) | A_BOLD | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(COLOR_WHITE) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,

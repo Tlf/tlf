@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /* ------------------------------------------------------------------------
 *    send the text buffer to the keyer  driver
@@ -75,7 +75,7 @@ void sendbuf(void)
 
 	loc = strcspn(buffer, "%");	/* mycall */
 
-	while ((strlen(buffer) - loc) > 1) {
+	while (strlen(buffer) > loc) {
 
 	    if (loc != 0)
 		strncat(comstr, buffer, loc);
@@ -89,7 +89,7 @@ void sendbuf(void)
 
 	loc = strcspn(buffer, "@");	/* his call */
 
-	while ((strlen(buffer) - loc) > 1) {
+	while (strlen(buffer) > loc) {
 
 	    if (loc != 0)
 		strncat(comstr, buffer, loc);
@@ -110,7 +110,7 @@ void sendbuf(void)
 
 	loc = strcspn(buffer, "[");	/* his RST */
 
-	while ((strlen(buffer) - loc) > 1) {
+	while (strlen(buffer) > loc) {
 
 	    if (loc != 0)
 		strncat(comstr, buffer, loc);
@@ -144,7 +144,7 @@ void sendbuf(void)
 
 	loc = strcspn(buffer, "#");	/* serial nr */
 
-	while ((strlen(buffer) - loc) > 1) {
+	while (strlen(buffer) > loc) {
 
 	    if (loc != 0)
 		strncat(comstr, buffer, loc);
@@ -185,7 +185,7 @@ void sendbuf(void)
 //              }
 	}
 
-	attron(COLOR_PAIR(7) | A_STANDOUT);
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	if (simulator == 0)
 	    strncat(printlinebuffer, termbuf, strlen(termbuf));
@@ -206,7 +206,7 @@ void sendbuf(void)
 	getyx(stdscr, cury, curx);
 	attron(COLOR_PAIR(COLOR_RED) | A_STANDOUT);
 	mvaddstr(0, 0, "x");
-	attron(COLOR_PAIR(COLOR_WHITE));
+	attron(COLOR_PAIR(C_LOG));
 	mvaddstr(cury, curx, "");
 	refreshp();
 
@@ -254,9 +254,9 @@ void sendbuf(void)
 	}
 
 	getyx(stdscr, cury, curx);
-	attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+	attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	mvaddstr(0, 0, " ");
-	attron(COLOR_PAIR(COLOR_WHITE));
+	attron(COLOR_PAIR(C_LOG));
 	mvaddstr(cury, curx, "");
 
 	if (simulator == 0) {

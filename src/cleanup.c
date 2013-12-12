@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 	/* ------------------------------------------------------------
@@ -46,7 +46,7 @@ int cleanup(void)
     mvprintw(12, 54, "                        ");
     mvprintw(12, 29, "");
 
-    attron(COLOR_PAIR(COLOR_WHITE | A_STANDOUT));
+    attron(COLOR_PAIR(C_LOG | A_STANDOUT));
 
     for (k = 1; k <= 5; k++) {
 	mvprintw(k, 0, "%s", "                                        ");

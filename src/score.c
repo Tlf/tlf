@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 	/* ------------------------------------------------------------
 	 *     score
@@ -25,8 +25,8 @@
 
 int calc_continent(int zone);
 
-/* LZ3NY - New one for COUNTRIES list in logcfg.dat */
-int multi_found(char prefix[])
+/* LZ3NY - check if call is in COUNTRY_LIST from logcfg.dat */
+int country_found(char prefix[])
 {
 
     extern int countrynr;
@@ -45,20 +45,16 @@ int multi_found(char prefix[])
     if (countrynr == 0)
 	countrynr = getctydata(tmpcall);
 
-    while (mit_multiplier_list) {
-	if (strlen(mit_multiplier_list[mit_fg]) == 0) {
-	    break;
-	}
+    while (strlen(mit_multiplier_list[mit_fg]) != 0) {
 	if (getctydata(mit_multiplier_list[mit_fg]) == getctydata(tmpcall)) {
 	    return 1;
-	    break;
 	}
 	mit_fg++;
     }
     return 0;
 }
 
-int exist_in_multi_list()
+int exist_in_country_list()
 {
 //    extern char mit_multiplier_list[][6];
     extern char pxstr[];
@@ -67,19 +63,19 @@ int exist_in_multi_list()
     memset(prefix, '\0', 10);
     strcpy(prefix, pxstr);
 
-    if (multi_found(prefix) == 1) {
+    if (country_found(prefix) == 1) {
 	return (1);
     } else {
 	if ((prefix[strlen(prefix) - 1] < 58)	/* last char '0'..'9' */
 	    && (prefix[strlen(prefix) - 1] > 47)) {
 	    prefix[strlen(prefix) - 1] = '\0';  /* strip number */
-	    if (multi_found(prefix) == 1) {
+	    if (country_found(prefix) == 1) {
 		return 1;
 	    } else {
 		if ((prefix[strlen(prefix) - 1] < 58) /* see above */
 		    && (prefix[strlen(prefix) - 1] > 47)) {
 		    prefix[strlen(prefix) - 1] = '\0';
-		    if (multi_found(prefix) == 1)
+		    if (country_found(prefix) == 1)
 			return (1);
 		    else
 			return (0);
@@ -125,11 +121,11 @@ int score()
 
 /* LZ3NY mods */
 
-    extern int multiplier_points;
+    extern int countrylist_points;
     extern int my_cont_points;
     extern int my_country_points;
     extern int dx_cont_points;
-    extern int multiplier_only;
+    extern int countrylist_only;
 
     int is_mult = 0;
 /* end LZ3NY mods */
@@ -277,17 +273,17 @@ int score()
 
     /* end arrldx_usa */
     /* LZ3NY mods */
-    is_mult = exist_in_multi_list();
-    if (multiplier_only == 1) {
-	if (is_mult == 1 && multiplier_points != -1)
-	    points = multiplier_points;
+    is_mult = exist_in_country_list();
+    if (countrylist_only == 1) {
+	if (is_mult == 1 && countrylist_points != -1)
+	    points = countrylist_points;
 	else
 	    points = 0;
     } else {
 
 	if (is_mult == 1) {
-	    if (multiplier_points != -1)
-		points = multiplier_points;
+	    if (countrylist_points != -1)
+		points = countrylist_points;
 	    else
 		points = 0;
 

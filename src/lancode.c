@@ -9,12 +9,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "tlf.h"
@@ -45,7 +45,6 @@ int send_error_limit[MAXNODES];
 //--------------------------------------
 int lan_port = 6788;
 int lan_active = 0;
-char thisnode;
 int send_error[MAXNODES];
 int lan_mutex = 0;
 int send_packets[MAXNODES];
@@ -61,6 +60,8 @@ int landebug = 0;
 long lantime;
 long timecorr;
 int time_master;
+char thisnode = 'A'; 		/*  start with 'A' if not defined in 
+				    logcfg.dat */
 
   //---------------------end lan globals --------------
 
@@ -303,7 +304,7 @@ int talk(void)
     send_lan_message(TLFMSG, talkline);
 
     talkline[0] = '\0';
-    attron(COLOR_PAIR(COLOR_GREEN));
+    attron(COLOR_PAIR(C_HEADER));
     mvprintw(24, 0,
 	     "                                                                               ");
     refreshp();

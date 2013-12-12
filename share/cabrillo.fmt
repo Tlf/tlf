@@ -1,0 +1,21 @@
+# cabrillo format description for different contests
+
+# used for ARRL and CQ contests, RDXC, Oceania DX Contest, AP Sprint and others
+[UNIVERSAL]
+QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;RST_S,3;EXC_S,6;HISCALL,13;RST_R,3;EXCH,6
+
+
+# used for CQWW (mostly as above but includes number of used TX)
+[CQWW]
+QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;RST_S,3;EXC_S,6;HISCALL,13;RST_R,3;EXCH,6;TX,1
+
+
+# used for EUSPRINT contest
+[EUSPRINT]
+QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;EXC_S,14;HISCALL,13;EXCH,14
+
+
+# for ARRL Sweep Stake
+[ARRL-SS]
+QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,10;EXC_S,13;HISCALL,10;EXCH,13
+
