@@ -577,7 +577,7 @@ Used to shift the tlf time with respect to the computer clock. Normally 0.
 This node transmits the time over the network (only one master allowed!)
 
 .TR
-.B ADDNODE=<node address>
+.B ADDNODE=<node address>:<Port number>
 Adds an ip address to which we broadcast stuff.
 (WARNING: Only add addresses of other nodes).
 
