@@ -25,6 +25,5 @@
 #include "tlf.h"
 #include "displayit.h"
 
-
 void sendbuf(void);
-
+void sendmessage(char *msg);
