@@ -58,8 +58,7 @@ int auto_cq(void)
     nodelay(stdscr, TRUE);
     while (delayval == 0) {
 	if (trxmode == CWMODE || trxmode == DIGIMODE) {
-	    strcat(buffer, message[11]);
-	    sendbuf();
+	    sendmessage(message[11]);
 	} else
 	    play_file(ph_message[11]);
 
