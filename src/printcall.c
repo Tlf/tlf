@@ -55,12 +55,13 @@ void printcall(void)
     miniterm = currentterm;
 }
 
-/** highlite the first n characters of the call input field
+/** highlight the first n characters of the call input field
  *
- * \parm n number of characters to highlite
+ * \parm n number of characters to highlight
  */
 void highlightCall(unsigned int n) {
-    attr_t attrib = A_NORMAL;
+    attr_t attrib = A_NORMAL; 	/* use NORMAL here as normal display
+				   uses STANDOUT */
 
     if (use_rxvt == 0)
 	attrib |= A_BOLD;
