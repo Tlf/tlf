@@ -83,9 +83,9 @@ writes adif file (*.adif)
 
 .TR
 .B :CHAr 
-Input number of characters for CW auto-start. Possible values are 2..5, default is 0 (off).
-After typing as many characters in the input field TLF starts sending the callsign without further keystrokes. You can type in the rest off the call (but quickly). As soon as you stop typing (atm for 0.7s) TLF automatically send the exchange and the cursor jumps to the exchange field. ESC stops sending.
-This works only in CW CONTEST in RUN mode. 
+Input the number of characters for CW auto-start. Possible values are 2..5, default is 0 (off).
+After typing as many characters in the input field TLF starts sending the callsign without further keystrokes. You can type in the rest off the call (but quickly). As soon as the sending catches your last typed character TLF automatically sends the exchange and the cursor jumps to the exchange field. ESC stops sending.
+This works only in CW contests in RUN mode. 
 
 .TR
 .B :CHEck, :NOCheck

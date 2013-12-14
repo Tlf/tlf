@@ -1102,12 +1102,7 @@ int autosend()
 	x = -1;
 	while ((x == -1) && (g_timer_elapsed(timer, NULL) < timeout)) {
 
-	    extern int use_rxvt;
-	    attr_t attrib = A_NORMAL;
-	    if (use_rxvt == 0)
-		attrib |= A_BOLD;
-
-	    mvchgat(12, 29, char_sent+1, attrib, C_INPUT, NULL);
+	    highlightCall(char_sent + 1);
 
 	    usleep(10000);
 

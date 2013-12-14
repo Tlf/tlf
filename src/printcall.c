@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2013           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,10 +25,10 @@
 #include "tlf.h"
 #include "printcall.h"
 
+extern int use_rxvt;
+
 void printcall(void)
 {
-
-    extern int use_rxvt;
     extern char hiscall[];
     extern int miniterm;
     extern int cqmode;
@@ -52,4 +53,17 @@ void printcall(void)
     refreshp();
 
     miniterm = currentterm;
+}
+
+/** highlite the first n characters of the call input field
+ *
+ * \parm n number of characters to highlite
+ */
+void highlightCall(unsigned int n) {
+    attr_t attrib = A_NORMAL;
+
+    if (use_rxvt == 0)
+	attrib |= A_BOLD;
+
+    mvchgat(12, 29, n, attrib, C_INPUT, NULL);
 }
