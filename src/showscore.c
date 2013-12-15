@@ -147,6 +147,10 @@ int get_nr_of_mults()
 	    return 1;
 	}
     }
+    else if (dx_arrlsections == 1) {
+
+	return totalmults + totalcountries;
+    }
     else if (universal == 1 && country_mult == 1) {
 
 	return totalcountries;
@@ -169,10 +173,6 @@ int get_nr_of_mults()
 	|| (sectn_mult == 1)) {
 
 	return totalmults;
-    }
-    else if (dx_arrlsections == 1) {
-
-	return totalmults + totalcountries;
     }
     else if (wpx == 1) {
 
