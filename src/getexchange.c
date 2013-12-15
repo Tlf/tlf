@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@eudx.org>
  *               2011-2012                Thomas Beierlein <tb@forth-ev.de>
+ *               2013                     Ervin Hegedus <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +58,7 @@ int getexchange(void)
     extern int cqww;
     extern int wpx;
     extern int pacc_pa_flg;
+    extern int stewperry_flg;
     extern int arrldx_usa;
     extern int arrl_fd;
     extern int exchange_serial;
@@ -118,6 +120,10 @@ int getexchange(void)
     if ((exc_cont == 1) && (*comment == '\0')
 	&& (strlen(hiscall) != 0)) {
 	strcpy(comment, continent);
+    }
+
+    if (stewperry_flg == 1) {
+	retval = recall_exchange();
     }
 
     /* parse input and modify exchange field accordingly */
@@ -334,7 +340,8 @@ int getexchange(void)
 	    (dx_arrlsections == 1) ||
 	    (sectn_mult == 1) ||
 	    (arrlss == 1) ||
-	    (cqww == 1)) {
+	    (cqww == 1) ||
+	    (stewperry_flg == 1)) {
 
 	    x = checkexchange(x);
 	}
@@ -439,6 +446,18 @@ int getexchange(void)
 		break;
 //                              x = 0; //##debug
 
+	    } else if (stewperry_flg == 1 &&
+	         strlen(comment) == 4 &&
+		 (
+		   (comment[0] < 65 || comment[0] > 82) ||
+		   (comment[1] < 65 || comment[1] > 82) ||
+		   (comment[2] < 48 || comment[2] > 57) ||
+		   (comment[3] < 48 || comment[3] > 57)
+		 )
+	      ) {
+		  mvprintw(13, 54, "locator?");
+		  mvprintw(12, 54, comment);
+		  refreshp();
 	    } else
 		break;
 
@@ -473,6 +492,7 @@ int checkexchange(int x)
     extern GPtrArray *mults_possible;
     extern int cqww;
     extern int arrlss;
+    extern int stewperry_flg;
     extern char section[];
     extern char callupdate[];
     extern char hiscall[];

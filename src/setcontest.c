@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2013           Ervin Hegedus <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +38,7 @@ int setcontest(void)
     extern int arrlss;
     extern int multlist;
     extern int pacc_pa_flg;
+    extern int stewperry_flg;
     extern int universal;
     extern int other_flg;
     extern int exchange_serial;
@@ -211,6 +213,14 @@ int setcontest(void)
 	searchflg = 1;
 	w_cty = getctydata(wcall);
 	ve_cty = getctydata(vecall);
+    }
+
+    if (strcmp(whichcontest, "stewperry") == 0) {
+//      other_flg = 1;
+	stewperry_flg = 1;
+	contest = 1;
+	showscore_flag = 1;
+	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "qso") == 0) {

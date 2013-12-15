@@ -2,6 +2,7 @@
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
 * 		2011-2012           Thomas Beierlein <tb@forth-ev.de>
+*               2013                Ervin Hegedus <airween@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -254,7 +255,8 @@ int parse_logcfg(char *inputbuffer)
     extern char rttyoutput[];
     extern int logfrequency;
     extern int ignoredupe;
-
+    extern char myqra[7];
+    
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
 	"disable",				/* deprecated */
@@ -415,7 +417,8 @@ int parse_logcfg(char *inputbuffer)
 	"CW_TU_MSG",		/* 155 */	/* deprecated */
 	"VKCWR",				/* deprecated */
 	"VKSPR",				/* deprecated */
-	"NO_RST"
+	"NO_RST",
+	"MYQRA",
     };
 
     char **fields;
@@ -1346,6 +1349,11 @@ int parse_logcfg(char *inputbuffer)
     case 158:{
 		 no_rst = 1;
 		 break;
+	    }
+    case 159:{
+		PARAMETER_NEEDED(teststring);
+		strcpy(myqra, fields[1]);
+		break;
 	    }
 
     default: {
