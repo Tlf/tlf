@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * 		 2013 		Fred DH5FS
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,15 +38,18 @@ int cl_send_inhibit = 0;
 char lanbuffer[255];
 struct sockaddr_in bc_address[MAXNODES];
 struct hostent *bc_hostbyname[MAXNODES];
-char bc_hostaddress[MAXNODES][16]; //host names to send notifications to
-char bc_hostservice[MAXNODES][16] = { [0 ... MAXNODES - 1] = { [0 ... 15] = 0 } }; // UDP-port to send notifications to
+/* host names and UDP ports to send notifications to */
+char bc_hostaddress[MAXNODES][16];
+char bc_hostservice[MAXNODES][16] =
+	{ [0 ... MAXNODES - 1] = { [0 ... 15] = 0 } };
 char sendbuffer[256];
 int nodes = 0;
 int node;
 int send_error_limit[MAXNODES];
 //--------------------------------------
-//int lan_port = 6788;
-char lan_service[16] = "6788"; //default port to listen for incomming packets and to send packet to
+/* default port to listen for incomming packets and to send packet to */
+char default_lan_service[16] = "6788";
+
 int lan_active = 0;
 int send_error[MAXNODES];
 int lan_mutex = 0;
@@ -62,7 +66,7 @@ int landebug = 0;
 long lantime;
 long timecorr;
 int time_master;
-char thisnode = 'A'; 		/*  start with 'A' if not defined in 
+char thisnode = 'A'; 		/*  start with 'A' if not defined in
 				    logcfg.dat */
 
   //---------------------end lan globals --------------
@@ -77,7 +81,7 @@ int resolveService(const char * service) {
 		port = atoi(service);
 	}
 	if (port == 0) {
-		port = atoi(lan_service);
+		port = atoi(default_lan_service);
 	}
 	return port;
 }
@@ -89,7 +93,7 @@ int lanrecv_init(void) {
     bzero(&lan_sin, sizeof(lan_sin));
     lan_sin.sin_family = AF_INET;
     lan_sin.sin_addr.s_addr = htonl(INADDR_ANY);
-    lan_sin.sin_port = htons(resolveService(lan_service));
+    lan_sin.sin_port = htons(resolveService(default_lan_service));
     lan_sin_len = sizeof(lan_sin);
 
     lan_socket_descriptor = socket(AF_INET, SOCK_DGRAM, 0);
@@ -187,13 +191,13 @@ int lan_send_init(void)
 	       sizeof(bc_address[node].sin_addr.s_addr));
 
 	bc_address[node].sin_port = htons(resolveService(bc_hostservice[node]));
+
 	syslog(LOG_INFO, "open socket: to %d.%d.%d.%d:%d\n",
-			(ntohl(bc_address[node].sin_addr.s_addr) & 0xff000000) >> 24,
-			(ntohl(bc_address[node].sin_addr.s_addr) & 0x00ff0000) >> 16,
-			(ntohl(bc_address[node].sin_addr.s_addr) & 0x0000ff00) >> 8,
-			(ntohl(bc_address[node].sin_addr.s_addr) & 0x000000ff) >> 0,
-			ntohs(bc_address[node].sin_port));
- 
+		(ntohl(bc_address[node].sin_addr.s_addr) & 0xff000000) >> 24,
+		(ntohl(bc_address[node].sin_addr.s_addr) & 0x00ff0000) >> 16,
+		(ntohl(bc_address[node].sin_addr.s_addr) & 0x0000ff00) >> 8,
+		(ntohl(bc_address[node].sin_addr.s_addr) & 0x000000ff) >> 0,
+		ntohs(bc_address[node].sin_port));
 
 	bc_socket_descriptor[node] = socket(AF_INET, SOCK_DGRAM, 0);
 

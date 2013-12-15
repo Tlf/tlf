@@ -578,7 +578,7 @@ This node transmits the time over the network (only one master allowed!)
 
 .TR
 .B ADDNODE=<node address>:<Port number>
-Adds an ip address to which we broadcast stuff.
+Adds an ip address (and optionally a port number) to which we broadcast stuff.
 (WARNING: Only add addresses of other nodes).
 
 .TR
