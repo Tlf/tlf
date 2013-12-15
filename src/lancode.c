@@ -37,13 +37,15 @@ int cl_send_inhibit = 0;
 char lanbuffer[255];
 struct sockaddr_in bc_address[MAXNODES];
 struct hostent *bc_hostbyname[MAXNODES];
-char bc_hostaddress[MAXNODES][16];
+char bc_hostaddress[MAXNODES][16]; //host names to send notifications to
+char bc_hostservice[MAXNODES][16] = { [0 ... MAXNODES - 1] = { [0 ... 15] = 0 } }; // UDP-port to send notifications to
 char sendbuffer[256];
 int nodes = 0;
 int node;
 int send_error_limit[MAXNODES];
 //--------------------------------------
-int lan_port = 6788;
+//int lan_port = 6788;
+char lan_service[16] = "6788"; //default port to listen for incomming packets and to send packet to
 int lan_active = 0;
 int send_error[MAXNODES];
 int lan_mutex = 0;
@@ -65,16 +67,29 @@ char thisnode = 'A'; 		/*  start with 'A' if not defined in
 
   //---------------------end lan globals --------------
 
-int lanrecv_init(void)
-{
+int resolveService(const char * service) {
+	struct servent * service_ent;
+	service_ent = getservbyname(service, "udp");
+	int port = 0;
+	if (service_ent != NULL) {
+		port = service_ent->s_port;
+	} else if (strlen(service) > 0) {
+		port = atoi(service);
+	}
+	if (port == 0) {
+		port = atoi(lan_service);
+	}
+	return port;
+}
 
+int lanrecv_init(void) {
     if (lan_active == 0)
 	return (1);
 
     bzero(&lan_sin, sizeof(lan_sin));
     lan_sin.sin_family = AF_INET;
     lan_sin.sin_addr.s_addr = htonl(INADDR_ANY);
-    lan_sin.sin_port = htons(lan_port);
+    lan_sin.sin_port = htons(resolveService(lan_service));
     lan_sin_len = sizeof(lan_sin);
 
     lan_socket_descriptor = socket(AF_INET, SOCK_DGRAM, 0);
@@ -168,11 +183,17 @@ int lan_send_init(void)
 
 	bzero(&bc_address[node], sizeof(bc_address[node]));	/* empty data structure */
 	bc_address[node].sin_family = AF_INET;
-	memcpy(&bc_address[node].sin_addr.s_addr,
-	       bc_hostbyname[node]->h_addr,
+	memcpy(&bc_address[node].sin_addr.s_addr, bc_hostbyname[node]->h_addr,
 	       sizeof(bc_address[node].sin_addr.s_addr));
 
-	bc_address[node].sin_port = htons(lan_port);
+	bc_address[node].sin_port = htons(resolveService(bc_hostservice[node]));
+	syslog(LOG_INFO, "open socket: to %d.%d.%d.%d:%d\n",
+			(ntohl(bc_address[node].sin_addr.s_addr) & 0xff000000) >> 24,
+			(ntohl(bc_address[node].sin_addr.s_addr) & 0x00ff0000) >> 16,
+			(ntohl(bc_address[node].sin_addr.s_addr) & 0x0000ff00) >> 8,
+			(ntohl(bc_address[node].sin_addr.s_addr) & 0x000000ff) >> 0,
+			ntohs(bc_address[node].sin_port));
+ 
 
 	bc_socket_descriptor[node] = socket(AF_INET, SOCK_DGRAM, 0);
 

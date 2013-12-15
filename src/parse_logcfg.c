@@ -187,6 +187,7 @@ int parse_logcfg(char *inputbuffer)
     extern int netkeyer_port;
     extern char netkeyer_hostaddress[];
     extern char bc_hostaddress[MAXNODES][16];
+    extern char bc_hostservice[MAXNODES][16];
     extern int lan_active;
     extern char thisnode;
     extern int nodes;
@@ -892,9 +893,23 @@ int parse_logcfg(char *inputbuffer)
     case 68:{
 	    PARAMETER_NEEDED(teststring);
 	    if (node < MAXNODES) {
-		g_strlcpy(bc_hostaddress[node], g_strchomp(fields[1]), 16);
-		if (node++ < MAXNODES)
-		    nodes++;
+			//separate host name and port number, separated by colon
+			char * s = strtok(inputbuffer, ":=\n");
+			if (s != NULL) {
+				//first token should be ADDNODE
+				if ((s = strtok(NULL, ":=\n")) != NULL) {
+					//copy host name
+					strncpy(bc_hostaddress[node], s,
+					sizeof(bc_hostaddress[node]));
+					if ((s = strtok(NULL, ":=\n")) != NULL) {
+					//copy port number if found
+					strncpy(bc_hostservice[node], s,
+					sizeof(bc_hostservice[node]));
+						}
+					}
+				if (node++ < MAXNODES)
+					nodes++;
+				}
 	    }
 	    lan_active = 1;
 	    break;
