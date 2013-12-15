@@ -1,7 +1,8 @@
 /*
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
-* 		2011-2012           Thomas Beierlein <tb@forth-ev.de>
+* 		2011-2013           Thomas Beierlein <tb@forth-ev.de>
+* 		2013 		    Fred DH5FS
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -893,23 +894,21 @@ int parse_logcfg(char *inputbuffer)
     case 68:{
 	    PARAMETER_NEEDED(teststring);
 	    if (node < MAXNODES) {
-			//separate host name and port number, separated by colon
-			char * s = strtok(inputbuffer, ":=\n");
-			if (s != NULL) {
-				//first token should be ADDNODE
-				if ((s = strtok(NULL, ":=\n")) != NULL) {
-					//copy host name
-					strncpy(bc_hostaddress[node], s,
-					sizeof(bc_hostaddress[node]));
-					if ((s = strtok(NULL, ":=\n")) != NULL) {
-					//copy port number if found
-					strncpy(bc_hostservice[node], s,
-					sizeof(bc_hostservice[node]));
-						}
-					}
-				if (node++ < MAXNODES)
-					nodes++;
-				}
+		/* split host name and port number, separated by colon */
+		char **an_fields;
+		an_fields = g_strsplit(fields[1], ":", 2);
+		/* copy host name */
+		g_strlcpy(bc_hostaddress[node], g_strchomp(an_fields[0]),
+			    sizeof(bc_hostaddress[0]));
+		if (an_fields[1] != NULL) {
+		    /* copy host port, if found */
+		    g_strlcpy(bc_hostservice[node], g_strchomp(an_fields[1]),
+				sizeof(bc_hostservice[0]));
+		}
+		g_strfreev(an_fields);
+
+		if (node++ < MAXNODES)
+		    nodes++;
 	    }
 	    lan_active = 1;
 	    break;
