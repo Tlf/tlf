@@ -36,7 +36,7 @@ void sendbuf(void)
     extern char qsonrstr[5];
     extern int shortqsonr;
     extern int searchflg;
-    extern char termbuf[81];
+    extern char termbuf[];
     extern char backgrnd_str[];
     extern int bufloc;
     extern char wkeyerbuffer[];

@@ -286,7 +286,7 @@ int rig_comm_success = 0;
 int simulator = 0;
 int simulator_mode = 0;
 int simulator_seed = 8327;
-long system_secs;
+int system_secs;
 char tonecpy[5];
 char simulator_tone[5];
 

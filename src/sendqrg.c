@@ -20,7 +20,7 @@
 #include "sendqrg.h"
 #include "tlf.h"
 
-int send_bandswitch(int trxqrg);
+void send_bandswitch(int trxqrg);
 
 int sendqrg(void)
 {
