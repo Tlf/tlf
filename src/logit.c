@@ -35,7 +35,7 @@ int logit(void)
     extern int cqmode;
     extern int contest;
     extern char buffer[];
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern char comment[];
     extern int cqww;

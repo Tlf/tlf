@@ -49,7 +49,7 @@ int getexchange(void)
     extern char ituzone[];
     extern char my_rst[];
     extern int change_rst;
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern char hiscall[];
     extern char buffer[];

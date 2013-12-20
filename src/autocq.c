@@ -39,7 +39,7 @@ int auto_cq(void)
 
     extern int use_rxvt;
     extern char mode[];
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern char buffer[];
     extern int cqdelay;

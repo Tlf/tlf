@@ -133,7 +133,7 @@ static int confirmation_needed;
 int parse_logcfg(char *inputbuffer)
 {
     extern int use_rxvt;
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern char sp_return[];
     extern char cq_return[];

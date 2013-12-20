@@ -66,7 +66,7 @@ char callinput(void)
     extern int cluster;
     extern int announcefilter;
     extern char buffer[];
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern float freq;
     extern float mem;
