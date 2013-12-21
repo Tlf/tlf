@@ -41,7 +41,6 @@ int auto_cq(void)
     extern char mode[];
     extern char message[][80];
     extern char ph_message[14][80];
-    extern char buffer[];
     extern int cqdelay;
     extern int cqmode;
     extern int trxmode;

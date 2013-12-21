@@ -163,7 +163,7 @@ char sp_return[80] = " \n";
 char cq_return[80] = " \n";
 char whichcontest[40] = "qso";
 int defer_store = 0;
-char buffer[162];
+extern char buffer[];
 char call[20];
 char logfile[120] = "general.log";
 char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
@@ -455,7 +455,6 @@ int main(int argc, char *argv[])
     }
 
     buffer[0] = '\0';
-    buffer[79] = '\0';
     bufloc = 0;
 
     strcat(logline0, backgrnd_str);

@@ -24,7 +24,7 @@
 #include "netkeyer.h"
 #include <glib.h>
 
-extern char buffer[81];
+char buffer[81];
 
 void sendbuf(void)
 {
