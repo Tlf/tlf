@@ -27,6 +27,6 @@
 #include "log_to_disk.h"
 #include "getctydata.h"
 
-int background_process(void);
+void *background_process(void *);
 int cw_simulator(void);
 

@@ -763,7 +763,7 @@ int main(int argc, char *argv[])
 	bm_init();			/* initialize bandmap */
 
 	/* Create the first thread */
-	ret = pthread_create(&thrd1, NULL, (void *) logit, NULL);
+	ret = pthread_create(&thrd1, NULL, logit, NULL);
 	if (ret) {
 	    perror("pthread_create: logit");
 	    endwin();
@@ -771,9 +771,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* Create the second thread */
-	ret =
-	    pthread_create(&thrd2, NULL, (void *) background_process,
-			   NULL);
+	ret = pthread_create(&thrd2, NULL, background_process, NULL);
 	if (ret) {
 	    perror("pthread_create: backgound_process");
 	    endwin();

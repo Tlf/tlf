@@ -27,7 +27,7 @@
 
 void refresh_comment(void);
 
-int logit(void)
+void *logit(void *ptr)
 {
     extern char mode[];
     extern int trxmode;
@@ -220,7 +220,7 @@ int logit(void)
 	    HideSearchPanel();
 	}
     }
-    return (1);
+    return(NULL);
 }
 
 /** reprint comment field */
