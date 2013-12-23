@@ -50,3 +50,4 @@
  */
 
 int locator2longlat(double *longitude, double *latitude, const char *locator);
+int check_qra(char *qra);

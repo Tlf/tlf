@@ -33,6 +33,7 @@
 #endif
 #include <ctype.h>
 #include "bandmap.h"
+#include "locator2longlat.h"
 
 extern int keyerport;
 extern char tonestr[];
@@ -1353,6 +1354,13 @@ int parse_logcfg(char *inputbuffer)
     case 159:{
 		PARAMETER_NEEDED(teststring);
 		strcpy(myqra, fields[1]);
+
+		if (check_qra(myqra) > 0) {
+		    showmsg
+			("WARNING: Invalid MYQRA parameters! exiting...");
+		    sleep(5);
+		    exit(1);
+		}
 		break;
 	    }
 

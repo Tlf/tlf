@@ -30,6 +30,7 @@
 #include "logit.h"
 #include "cw_utils.h"
 #include <glib.h>
+#include "locator2longlat.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
@@ -446,18 +447,12 @@ int getexchange(void)
 		break;
 //                              x = 0; //##debug
 
-	    } else if (stewperry_flg == 1 &&
-	         strlen(comment) == 4 &&
-		 (
-		   (comment[0] < 65 || comment[0] > 82) ||
-		   (comment[1] < 65 || comment[1] > 82) ||
-		   (comment[2] < 48 || comment[2] > 57) ||
-		   (comment[3] < 48 || comment[3] > 57)
-		 )
-	      ) {
-		  mvprintw(13, 54, "locator?");
-		  mvprintw(12, 54, comment);
-		  refreshp();
+	    } else if (stewperry_flg == 1) {
+		if (check_qra(comment) > 0) {
+		    mvprintw(13, 54, "locator?");
+		    mvprintw(12, 54, comment);
+		}
+		refreshp();
 	    } else
 		break;
 

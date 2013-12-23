@@ -102,3 +102,18 @@ int locator2longlat(double *longitude, double *latitude, const char *locator) {
 
         return 0;
 }
+
+int check_qra(char * qra) {
+	if (strlen(qra) < 4) {
+	    return 1;
+	}
+	if (strlen(qra) >= 4) {
+	  if (qra[0] < 65 || qra[0] > 82 ||
+	      qra[1] < 65 || qra[1] > 82 ||
+	      qra[2] < 48 || qra[2] > 57 ||
+	      qra[3] < 48 || qra[3] > 57) {
+	      return 1;
+	  }
+	}
+	return 0;
+}
