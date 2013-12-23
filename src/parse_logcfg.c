@@ -419,7 +419,7 @@ int parse_logcfg(char *inputbuffer)
 	"VKCWR",				/* deprecated */
 	"VKSPR",				/* deprecated */
 	"NO_RST",
-	"MYQRA",
+	"MYQRA"
     };
 
     char **fields;

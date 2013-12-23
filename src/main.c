@@ -126,7 +126,7 @@ int noautocq = 0;
 int emptydir = 0;
 int verbose = 0;
 int no_rst = 0;			/* 1 - do not use RS/RST */
-char myqra[7];
+char myqra[7] = "";
 
 int pacc_qsos[10][10];
 int ve_cty;
