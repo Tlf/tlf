@@ -39,9 +39,8 @@ int auto_cq(void)
 
     extern int use_rxvt;
     extern char mode[];
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
-    extern char buffer[];
     extern int cqdelay;
     extern int cqmode;
     extern int trxmode;
@@ -58,8 +57,7 @@ int auto_cq(void)
     nodelay(stdscr, TRUE);
     while (delayval == 0) {
 	if (trxmode == CWMODE || trxmode == DIGIMODE) {
-	    strcat(buffer, message[11]);
-	    sendbuf();
+	    sendmessage(message[11]);
 	} else
 	    play_file(ph_message[11]);
 

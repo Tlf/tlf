@@ -34,7 +34,7 @@ int keyer(void)
     extern int bufloc;
     extern char buffer[];
     extern char termbuf[];
-    extern char message[15][80];
+    extern char message[][80];
     extern char wkeyerbuffer[];
     extern int data_ready;
     extern int keyerport;
@@ -201,6 +201,7 @@ int keyer(void)
 
 	    switch (x) {
 	    case 9:
+	    case 32:
 		{
 		    bufloc = 0;
 		    buffer[bufloc] = '\0';
@@ -282,79 +283,67 @@ int keyer(void)
 
 	    case 129:
 		{
-		    strcat(buffer, message[0]);	/* F1 */
 		    getyx(stdscr, cury, curx);
 		    mvprintw(5, 0, "");
-		    sendbuf();
+		    sendmessage(message[0]);	/* F1 */
 		    mvprintw(cury, curx, "");
 		    break;
 		}
 	    case 130:
 		{
-		    strcat(buffer, message[1]);	/* F2 */
-		    sendbuf();
+		    sendmessage(message[1]);	/* F2 */
 		    break;
 		}
 	    case 131:
 		{
-		    strcat(buffer, message[2]);	/* F3 */
-		    sendbuf();
+		    sendmessage(message[2]);	/* F3 */
 		    break;
 		}
 	    case 132:
 		{
-		    strcat(buffer, message[3]);	/* F4 */
-		    sendbuf();
+		    sendmessage(message[3]);	/* F4 */
 		    break;
 		}
 	    case 133:
 		{
-		    strcat(buffer, message[4]);	/* F5 */
-		    sendbuf();
+		    sendmessage(message[4]);	/* F5 */
 		    break;
 		}
 	    case 134:
 		{
-		    strcat(buffer, message[5]);	/* F6 */
-		    sendbuf();
+		    sendmessage(message[5]);	/* F6 */
 		    break;
 		}
 	    case 135:
 		{
-		    strcat(buffer, message[6]);	/* F7 */
-		    sendbuf();
+		    sendmessage(message[6]);	/* F7 */
 		    break;
 		}
 	    case 136:
 		{
-		    strcat(buffer, message[7]);	/* F8 */
-		    sendbuf();
+		    sendmessage(message[7]);	/* F8 */
 		    break;
 		}
 	    case 137:
 		{
-		    strcat(buffer, message[8]);	/* F9 */
-		    sendbuf();
+		    sendmessage(message[8]);	/* F9 */
 		    break;
 		}
 	    case 138:
 		{
-		    strcat(buffer, message[9]);	/* F10 */
-		    sendbuf();
+		    sendmessage(message[9]);	/* F10 */
 		    break;
 		}
 
 	    case 140:
 		{
-		    strcat(buffer, message[10]);	/* F11 */
-		    sendbuf();
+		    sendmessage(message[10]);	/* F11 */
 		    break;
 		}
 	    case 141:
 		{
 
-		    strcat(buffer, message[11]);	/* F12 */
-		    sendbuf();
+		    sendmessage(message[11]);	/* F12 */
 		    break;
 		}
 

@@ -155,12 +155,7 @@ void clear_display(void)
     if (searchflg == SEARCHWINDOW)
 	searchlog(hiscall);
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
-
-    mvaddstr(12, 29, hiscall);
+    printcall();
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(24, 0, backgrnd_str);

@@ -752,7 +752,7 @@ int init_packet(void)
 
     extern int prsock;
     extern int portnum;
-    extern char pr_hostaddress[16];
+    extern char pr_hostaddress[];
     extern SCREEN *packetscreen;
     extern WINDOW *sclwin;
     extern WINDOW *entwin;
@@ -1281,7 +1281,7 @@ int send_cluster(void)
 	}
 	else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
 	    usputs(prsock, line);
-    } 
+    }
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 

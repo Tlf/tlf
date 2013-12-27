@@ -28,7 +28,7 @@ int writeparas(void)
 {
 
     extern char call[];
-    extern char message[15][80];
+    extern char message[][80];
     extern char headerline[];
     extern char logfile[];
     extern char whichcontest[];

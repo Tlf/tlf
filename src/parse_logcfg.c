@@ -1,7 +1,8 @@
 /*
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
-* 		2011-2012           Thomas Beierlein <tb@forth-ev.de>
+* 		2011-2013           Thomas Beierlein <tb@forth-ev.de>
+* 		2013 		    Fred DH5FS
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -132,7 +133,7 @@ static int confirmation_needed;
 int parse_logcfg(char *inputbuffer)
 {
     extern int use_rxvt;
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern char sp_return[];
     extern char cq_return[];
@@ -144,7 +145,6 @@ int parse_logcfg(char *inputbuffer)
     extern int one_point;
     extern int two_point;
     extern int three_point;
-    extern int two_eu_three_dx_points;
     extern int exchange_serial;
     extern int country_mult;
     extern int wysiwyg_multi;
@@ -187,6 +187,7 @@ int parse_logcfg(char *inputbuffer)
     extern int netkeyer_port;
     extern char netkeyer_hostaddress[];
     extern char bc_hostaddress[MAXNODES][16];
+    extern char bc_hostservice[MAXNODES][16];
     extern int lan_active;
     extern char thisnode;
     extern int nodes;
@@ -795,7 +796,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 54:{
-	    two_eu_three_dx_points = 1;
+	    KeywordNotSupported(teststring);
 	    break;
 	}
     case 55:{
@@ -892,7 +893,19 @@ int parse_logcfg(char *inputbuffer)
     case 68:{
 	    PARAMETER_NEEDED(teststring);
 	    if (node < MAXNODES) {
-		g_strlcpy(bc_hostaddress[node], g_strchomp(fields[1]), 16);
+		/* split host name and port number, separated by colon */
+		char **an_fields;
+		an_fields = g_strsplit(fields[1], ":", 2);
+		/* copy host name */
+		g_strlcpy(bc_hostaddress[node], g_strchomp(an_fields[0]),
+			    sizeof(bc_hostaddress[0]));
+		if (an_fields[1] != NULL) {
+		    /* copy host port, if found */
+		    g_strlcpy(bc_hostservice[node], g_strchomp(an_fields[1]),
+				sizeof(bc_hostservice[0]));
+		}
+		g_strfreev(an_fields);
+
 		if (node++ < MAXNODES)
 		    nodes++;
 	    }

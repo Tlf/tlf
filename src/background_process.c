@@ -46,7 +46,7 @@ extern char call[];
 extern int trxmode;
 extern int keyerport;
 
-int background_process(void)
+void *background_process(void *ptr)
 {
 
     extern int landebug;
@@ -212,7 +212,7 @@ int background_process(void)
 
     }
 
-    return (0);
+    return (NULL);
 }
 
 int cw_simulator(void)

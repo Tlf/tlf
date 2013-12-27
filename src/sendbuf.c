@@ -22,19 +22,21 @@
 ---------------------------------------------------------------------------*/
 #include "sendbuf.h"
 #include "netkeyer.h"
+#include <glib.h>
+
+char buffer[81];
 
 void sendbuf(void)
 {
 
     extern int trxmode;
-    extern char buffer[81];
     extern char call[20];
     extern char hiscall[20];
     extern char his_rst[];
     extern char qsonrstr[5];
     extern int shortqsonr;
     extern int searchflg;
-    extern char termbuf[81];
+    extern char termbuf[];
     extern char backgrnd_str[];
     extern int bufloc;
     extern char wkeyerbuffer[];
@@ -267,5 +269,19 @@ void sendbuf(void)
 
 	buffer[0] = '\0';
 	bufloc = 0;
+    }
+}
+
+
+/** \brief send message
+ *
+ * Send the message via CW or DIGI mode, but only if not empty
+ * \parm msg message to send
+ */
+void sendmessage(char *msg)
+{
+    if (strlen(msg) != 0) {
+	g_strlcat(buffer, msg, sizeof(buffer));
+	sendbuf();
     }
 }
