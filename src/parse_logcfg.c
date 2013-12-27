@@ -145,7 +145,6 @@ int parse_logcfg(char *inputbuffer)
     extern int one_point;
     extern int two_point;
     extern int three_point;
-    extern int two_eu_three_dx_points;
     extern int exchange_serial;
     extern int country_mult;
     extern int wysiwyg_multi;
@@ -797,7 +796,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 54:{
-	    two_eu_three_dx_points = 1;
+	    KeywordNotSupported(teststring);
 	    break;
 	}
     case 55:{

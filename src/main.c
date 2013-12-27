@@ -84,7 +84,6 @@ int other_flg;
 int one_point = 0;
 int two_point = 0;
 int three_point = 0;
-int two_eu_three_dx_points = 0;
 int ssbpoints;
 int cwpoints;
 int lowband_point_mult = 0;

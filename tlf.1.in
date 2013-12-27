@@ -604,7 +604,7 @@ You may also need the keyer for PTT or Band info output.
 
 .TR
 .B MFJ1278_KEYER=<serial port>
-Switches supprt for the MFJ1278B multi-mode controller on.
+Switches support for the MFJ1278B multi-mode controller on.
 The 1278 supports CW as well as RTTY contesting.
 Fixed baud rate  9600 Baud.
 
@@ -978,8 +978,8 @@ Points for countries in own continent.
 Points for station in other continents
 
 .TR
-.B 2EU3DX_POINTS<x>
-2 point for own continent, 3 points for other continents (outdated, see MY_CONTINENT_POINTS and DX_POINTS).
+.B 2EU3DX_POINTS
+(deprectated, see MY_CONTINENT_POINTS and DX_POINTS).
 
 .TR
 .B COUNTRY_LIST_POINTS=<x>
