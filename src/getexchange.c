@@ -452,6 +452,9 @@ int getexchange(void)
 		    mvprintw(13, 54, "locator?");
 		    mvprintw(12, 54, comment);
 		}
+		else {
+		  break;
+		}
 		refreshp();
 	    } else
 		break;
