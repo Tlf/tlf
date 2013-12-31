@@ -18,7 +18,7 @@
  */
 
 	/* ------------------------------------------------------------
-	 *      get trx info  
+	 *      get trx info
 	 *
 	 *--------------------------------------------------------------*/
 
@@ -46,6 +46,10 @@ int gettxinfo(void)
     extern int trx_control;
     extern int trxmode;
 
+
+#ifdef HAVE_LIBHAMLIB
+    vfo_t vfo;
+#endif
     int retval = 0;
     static int oldbandinx;
 
@@ -58,7 +62,9 @@ int gettxinfo(void)
 
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	if (rignumber < 2000)
-	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
+	    retval = rig_get_vfo(my_rig, &vfo); /* initialiue RIG_VFO_CURR */
+	    if (retval == RIG_OK)
+		retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 	else
 	    rigfreq = native_rig_get_freq(rignumber);	//ORION
 
