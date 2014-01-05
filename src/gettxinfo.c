@@ -61,10 +61,11 @@ int gettxinfo(void)
     if (outfreq == 0) {
 
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
-	if (rignumber < 2000)
+	if (rignumber < 2000) {
 	    retval = rig_get_vfo(my_rig, &vfo); /* initialiue RIG_VFO_CURR */
 	    if (retval == RIG_OK)
 		retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
+	}
 	else
 	    rigfreq = native_rig_get_freq(rignumber);	//ORION
 
