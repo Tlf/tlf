@@ -1,3 +1,83 @@
+tlf-1.2.0_pre4
+==============
+Prerelease and bugfix version
+
+Contains all bug fixes and enhancements from 1.1.4, 1.1.5. and 1.1.6
+
+Thanks for help and input from OK1RR, DH5YM, DH5FS, HA2OS, N0NB and others.
+
+New features:
+    - finish new CABRILLO handling (see doc/README.cabrillo for details)
+      * supports CABRILLO v3
+      * extensible format
+    - Allow editing of exchange field  
+      * starts with 'left' key if exchange field is not empty 
+      * supports the following keys: 
+        + ctrl-A start of line 
+        + ctrl-E  end of line 
+        + left    one char left 
+        + right   one char right 
+        + del     delete key under cursor 
+        + backspace  delete char left from cursor 
+        + any non control char   insert if string not to long
+    - Reworked autosend feature
+      * starts sending call automatically after entereing 2..5 characters
+        of the call in RUN mode
+      * Enable it via ':char' command (accepts 0 (off) or 2..5 as 
+        number of characters before autosend start).
+      * shorter calls have to be finished with ENTER key 
+      * calculates the expected time to send the call from cw speed and 
+        switches to sending exchange after that time is reached
+      * A progress indicator shows the characters already sent.
+      * SPACE and DOWN no longer starts autosend feature, but jumps to 
+        exchange field
+    - New cty.dat and new calmaster database. Tnx HA2OS.
+    - Provide a standard 'help.txt' file. Tnx DH5FS.
+      Can be overwritten with your own one in working directory.
+    - Allow to specify portnumbers for LAN-stations via ADDNODE command. 
+      Tnx DH5FS.
+
+
+Bug fixes:
+    - Ctrl-k start keyer also in exchange field
+    - Contest rules will be reread after edit of logcfg.dat with :SET or :CFG
+    - Fix display of contest statistics 
+      * Q/M now correct and with one digit after decimal point
+      * show band rate only if more than ten QSOs on band
+    - Fix display of worked countries for CQWW
+    - Improved handling of problems with rig link
+    - Initialise tlf's node designator (THISNODE=...) to 'A' even when no
+      LAN is used (needed for bandmap output)
+    - Do not send empty CW or Digimode messages (avoiding turning on and 
+      off the transmitter). Tnx HA2OS
+    - Fix wrong order of tests for mult counting (DX_&_SECTIONS has 
+      precedence over MULT_LIST in UNIVERSAL contests). Tnx W3NR and DH5FS.
+    - Drop unused keyword '2EU3DX_POINTS'
+
+
+tlf-1.1.6
+=========
+Minor maintenance and bugfix release.
+
+New features:
+    - Reduce minimal livetime for bandmap entries to 30s (requested by DH5YM)
+    - Update ARRL Field Day rules and arrlsections file. Tnx Nate N0NB.
+    - New NO_RST keyword (backported from from tlf-1.2.0 branch). Use it for
+      contests which do not exchange and record RS/RST (e.g. ARRL Field Day 
+      or CW Open)  
+       * do not add RST into log and do not show RST if NO_RST is set, just 
+         add '---' instead  
+
+Bug fixes:
+    - Correct GPL boilerplate in all source files. Tnx Nate N0NB.
+    - QSO points were not written for WYSIWYG_ONCE multis.
+    - ADIF and cabrillo files missed QSOs for some or all WARC bands. 
+      (Even if no WARC bands should be used in contests we add the correct 
+      frequency output for these bands now)
+    - fix recognition of ARRL Field day rules (changed rule file to name
+      it 'arrl_fd').
+
+
 tlf-1.2.0_pre3
 ==============
 Prerelease and test version

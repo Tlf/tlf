@@ -33,7 +33,7 @@
 static int band_cols[6] =
 	{ 50, 55, 60, 65, 70, 75 };
 
-/* list of BANDINDEX entries to show in each column 
+/* list of BANDINDEX entries to show in each column
  * first  - for normal contest bands
  * second - if in warc band */
 static int bi_normal[6] =
@@ -54,8 +54,8 @@ void printfield (int x, int y, int number);
 void show_summary( int points, int multi )
 {
     mvprintw(5, START_COL, "                                   ");
-    /* TODO: respect field boundaries for large numbers */ 
-    mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d", 
+    /* TODO: respect field boundaries for large numbers */
+    mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
 	points, multi, points * multi);
 }
 
@@ -72,7 +72,7 @@ void display_header(int *bi)
     for (i = 0; i < 6; i++) {
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 	addstr("  ");
-	if (bandinx == bi[i]) {		/* highlite active band */
+	if (bandinx == bi[i]) {		/* highlight active band */
 	    attrset(COLOR_PAIR(C_DUPE));
 	}
 	printw("%3d", bands[bi[i]]);
@@ -147,6 +147,10 @@ int get_nr_of_mults()
 	    return 1;
 	}
     }
+    else if (dx_arrlsections == 1) {
+
+	return totalmults + totalcountries;
+    }
     else if (universal == 1 && country_mult == 1) {
 
 	return totalcountries;
@@ -170,16 +174,12 @@ int get_nr_of_mults()
 
 	return totalmults;
     }
-    else if (dx_arrlsections == 1) {
-
-	return totalmults + totalcountries;
-    }
     else if (wpx == 1) {
 
 	return nr_of_px;
     }
-    else 
-	/* should never reach that point 
+    else
+	/* should never reach that point
 	 *
 	 * \TODO: so we need some instrument of warning here
 	 */
