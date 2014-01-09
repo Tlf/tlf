@@ -521,7 +521,8 @@ int parse_logcfg(char *inputbuffer)
 	    // check that call sign can be found in cty database !!
 	    break;
 	}
-    case 17:{
+    case 17:
+    case 122:{
     	    PARAMETER_NEEDED(teststring);
 	    strcpy(whichcontest, g_strchomp(fields[1]));
 	    if (strlen(whichcontest) > 40) {
@@ -1158,18 +1159,6 @@ int parse_logcfg(char *inputbuffer)
 	    }
     case 121:{		// exchange continent abbrev
 		exc_cont = 1;
-		break;
-	    }
-    case 122:{						// RULES=
-		PARAMETER_NEEDED(teststring);
-		strcpy(whichcontest, g_strchomp(fields[1]));
-		if (strlen(whichcontest) > 40) {
-		    showmsg
-			("WARNING: contest name is too long! exiting...");
-		    sleep(5);
-		    exit(1);
-		}
-		setcontest();
 		break;
 	    }
     case 123:{		// don't use auto_cq
