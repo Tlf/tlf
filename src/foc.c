@@ -17,18 +17,40 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "foc.h"
+#include <glib.h>
+
 extern int foc;
 extern int contest;
 extern int showscore_flag;
 extern int searchflg;
-extern int recall_mult;
-extern int no_rst;
 
+/** Initialize settings for FOC contest */
 void foc_init(void) {
     foc = 1;
+    got_g4foc = 0;
     contest = 1;
     showscore_flag = 1;
     searchflg = 1;
-    recall_mult = 1;
-    no_rst = 1;
+}
+
+
+/** calculate score for last QSO
+ *
+ * Calculate the point score for the last qso. Each qso counts one
+ * point on every band. Only exception are qsos with Gx4FOC/xxx which
+ * counts two points.
+ * \param call 	call of the other station
+ * \return 	number of points given
+ */
+int foc_score(char *call) {
+
+    if (g_regex_match_simple("^G(|[A-Z])4FOC(|/.*)", call,
+	    G_REGEX_CASELESS, 0)) {
+	got_g4foc = 1;
+	return 2;
+    }
+    else {
+	return 1;
+    }
 }

@@ -21,6 +21,9 @@
 
 #define _FOC_H
 
+int got_g4foc; 		/* did we got Gx4FOC on the air? */
+
 void foc_init(void);
+int foc_score(char *call);
 
 #endif /* end of include guard: _FOC_H */

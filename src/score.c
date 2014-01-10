@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2013-2014      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +23,9 @@
 	 *--------------------------------------------------------------*/
 
 #include "score.h"
+#include "tlf.h"
+#include "getctydata.h"
+#include <foc.h>
 
 int calc_continent(int zone);
 
@@ -99,6 +103,7 @@ int score()
     extern int three_point;
     extern int band_score[9];
     extern int bandinx;
+    extern int foc;
     extern int wpx;
     extern int pfxmult;
     extern int countrynr;
@@ -144,6 +149,13 @@ int score()
     if ((arrldx_usa == 1)
 	&& ((countrynr == w_cty) || (countrynr == ve_cty)))
 	band_score[bandinx]--;
+
+    if (foc == 1) {
+	points = foc_score(hiscall);
+	total += points;
+
+	return 0;
+    }
 
     if (wpx == 1 && pfxmult == 0) {
 	if (countrynr == mycountrynr) {
