@@ -22,10 +22,12 @@
      *--------------------------------------------------------------*/
 
 #include "setcontest.h"
+#include <foc.h>
 
 int setcontest(void)
 {
 
+    extern int foc;
     extern int wpx;
     extern int pfxmult;
     extern int cqww;
@@ -83,6 +85,7 @@ int setcontest(void)
     sprint = 0;
     arrldx_usa = 0;
     pacc_pa_flg = 0;
+    foc = 0;
     universal = 0;
     contest = 0;
     showscore_flag = 0;
@@ -186,6 +189,10 @@ int setcontest(void)
 	vk_cty = getctydata(vkcall);
 	zs_cty = getctydata(zscall);
 	ua9_cty = getctydata(ua9call);
+    }
+
+    if (strcmp(whichcontest, "foc") == 0) {
+	foc_init();
     }
 
     if (strcmp(whichcontest, "other") == 0) {

@@ -64,8 +64,10 @@ int tune_val = 0;
 int use_bandoutput = 0;
 int no_arrows = 0;
 int bandindexarray[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-int cqww = 0;
 int cqwwm2 = 0;
+
+/* predefined contests */
+int cqww = 0;
 int wpx = 0;
 int dxped = 0;
 int sprint = 0;
@@ -73,6 +75,8 @@ int arrldx_usa = 0;
 int arrl_fd = 0;
 int arrlss = 0;
 int pacc_pa_flg = 0;
+int foc = 0;
+
 int universal = 0;
 int addcallarea;
 int pfxmult = 0;

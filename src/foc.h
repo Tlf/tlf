@@ -21,6 +21,6 @@
 
 #define _FOC_H
 
-
+void foc_init(void);
 
 #endif /* end of include guard: _FOC_H */

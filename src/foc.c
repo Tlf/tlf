@@ -17,4 +17,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+extern int foc;
+extern int contest;
+extern int showscore_flag;
+extern int searchflg;
+extern int recall_mult;
+extern int no_rst;
 
+void foc_init(void) {
+    foc = 1;
+    contest = 1;
+    showscore_flag = 1;
+    searchflg = 1;
+    recall_mult = 1;
+    no_rst = 1;
+}
