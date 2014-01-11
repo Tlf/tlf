@@ -3,6 +3,7 @@
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
 * 		2011-2013           Thomas Beierlein <tb@forth-ev.de>
 * 		2013 		    Fred DH5FS
+*              2014                 Ervin Hegedus - HA2OS <airween@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -54,7 +55,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 159	/* commands in list */
+#define  MAX_COMMANDS 160	/* commands in list */
 
 
 int read_logcfg(void)
@@ -229,6 +230,7 @@ int parse_logcfg(char *inputbuffer)
     extern char sc_volume[];
     extern char modem_mode[];
     extern int no_rst;
+    extern int serial_or_section;
 
 /* LZ3NY mods */
     extern int mult_side;
@@ -416,7 +418,8 @@ int parse_logcfg(char *inputbuffer)
 	"CW_TU_MSG",		/* 155 */	/* deprecated */
 	"VKCWR",				/* deprecated */
 	"VKSPR",				/* deprecated */
-	"NO_RST"
+	"NO_RST",
+	"SERIAL_OR_SECTION"
     };
 
     char **fields;
@@ -1358,6 +1361,11 @@ int parse_logcfg(char *inputbuffer)
 	    }
     case 158:{
 		 no_rst = 1;
+		 break;
+	    }
+	    
+    case 159:{
+		 serial_or_section = 1;
 		 break;
 	    }
 

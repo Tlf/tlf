@@ -20,4 +20,6 @@
 #include "getctydata.h"
 
 int score(void);
- int score2(void);
+int score2(void);
+int country_found(char prefix[]);
+int exist_in_country_list();

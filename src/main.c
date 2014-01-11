@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0r@eudxf.org>
  *                    2010-2011 Thomas Beierlein <tb@forth-ev.de>
+ *                    2014      Ervin Hegedus - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,6 +124,7 @@ int noautocq = 0;
 int emptydir = 0;
 int verbose = 0;
 int no_rst = 0;			/* 1 - do not use RS/RST */
+int serial_or_section = 0;	/* exchange is serial OR section, like HA-DX */
 
 int pacc_qsos[10][10];
 int ve_cty;
