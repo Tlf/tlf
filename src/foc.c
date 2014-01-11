@@ -25,6 +25,8 @@ extern int contest;
 extern int showscore_flag;
 extern int searchflg;
 
+int got_g4foc; 		/* did we got Gx4FOC on the air? */
+
 /** Initialize settings for FOC contest */
 void foc_init(void) {
     foc = 1;
