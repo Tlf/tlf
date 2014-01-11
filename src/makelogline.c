@@ -91,7 +91,6 @@ void makelogline(void)
     extern int trx_control;
     extern char whichcontest[];
     extern float freq;
-    extern int points;
     extern int no_rst;
 
     static char time_buf[80];
@@ -104,6 +103,7 @@ void makelogline(void)
     char freq_buff[10];
     int fnr = 0;
     int new_pfx;
+    int points;
 
     /* first fixed (contest independent) part */
 
@@ -383,7 +383,9 @@ void makelogline(void)
 	strncat(logline4, fillspaces, i);
 
 
-    score();			/* update qso's per band */
+    points = score();			/* update qso's per band
+					   and score qso */
+    total = total + points;
 
     if ((contest == 1) && (dxped == 0)) {
 	    sprintf(logline4 + 76, "%2d", points);

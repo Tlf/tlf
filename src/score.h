@@ -22,7 +22,6 @@
 #define _SCORE_H
 
 int score(void);
-int score2(void);
-
+int score2(char *line);
 
 #endif /* end of include guard: _SCORE_H */
