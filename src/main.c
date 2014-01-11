@@ -204,8 +204,7 @@ int totalzones = 0;
 int secs = 0;
 int countrynr;
 int mycountrynr = 215;
-int points = 0;
-int total = 0;
+int total = 0; 		/**< total number of qso points */
 int band_score[9];
 int dupe = 0;
 int callfound = 0;

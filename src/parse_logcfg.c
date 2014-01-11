@@ -918,7 +918,7 @@ int parse_logcfg(char *inputbuffer)
 	    PARAMETER_NEEDED(teststring);
 	    c = toupper(fields[1][0]);
 	    if (c >= 'A' && c <= 'H')
-		thisnode = 'A';
+		thisnode = c;
 	    else
 		WrongFormat(teststring);
 	    break;
