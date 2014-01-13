@@ -124,10 +124,27 @@ int get_nr_cntry() {
 }
 
 
-/* count nr of continents worked on all bands */
+/* count number of continents worked on all bands */
 int get_nr_cont() {
+    extern int call_country[];
+    extern int callarray_nr;
 
-    return 1;
+    GHashTable *cont;
+    dxcc_data *data;
+    int nr, i;
+
+    cont = g_hash_table_new(g_str_hash, g_str_equal);
+
+    for (i = 0; i < callarray_nr; i++) {
+	data = dxcc_by_index(call_country[i]);
+
+	g_hash_table_add(cont, data->continent);
+    }
+
+    nr = g_hash_table_size(cont);
+    g_hash_table_destroy(cont);
+
+    return nr;
 }
 
 
