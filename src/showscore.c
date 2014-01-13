@@ -24,6 +24,7 @@
 
 #include "globalvars.h"
 #include "showscore.h"
+#include "foc.h"
 #include <assert.h>
 
 
@@ -60,8 +61,13 @@ void show_summary( int points, int multi )
 }
 
 
-/* show header with active band and number of QSOs.
- * Use the list of bandindices in 'bi' for that */
+/** show scoring header
+ *
+ * show header with active band and number of QSOs.
+ * Use the list of bandindices in 'bi' for that
+ *
+ * \param bi  list of band indices to use
+ */
 void display_header(int *bi)
 {
     int i;
@@ -92,6 +98,8 @@ void display_header(int *bi)
 }
 
 
+extern int foc;
+extern int foc_get_nr_of_points();
 
 /* get total number of points */
 int get_nr_of_points()
@@ -186,7 +194,10 @@ int get_nr_of_mults()
 	return 1;
 }
 
-
+/** show contest score
+ *
+ * display scoring results of contest if activated by 'showscore_flag'
+ */
 int showscore(void)
 {
 
@@ -298,6 +309,9 @@ int showscore(void)
 	if (sprint == 1) {
 
 	    mvprintw(5, START_COL, "Score: %d", get_nr_of_points() );
+	}
+	else if (foc == 1) {
+	    foc_show_scoring(START_COL);
 	}
 	else {
 
