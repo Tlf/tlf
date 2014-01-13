@@ -1,0 +1,78 @@
+##########################
+# FOC Marathon           #
+#   DL1JBE  10.1.2014    #
+##########################
+#
+CONTEST=foc
+LOGFILE=foc.log
+RECALL_MULTS
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CQ_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = mycall                    #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#  * = AR                        #
+#  = = BT                        #
+#  < = SK                        #
+#  ( = KN                        #
+#  ! = SN                        #
+#  & = AS                        #
+#  > = BK                        #
+#                                #
+##################################
+#
+F1=CQ FD DE % K
+F2=@ DE %
+F3=@ 3A CT
+F4=TU 73
+F5= @
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9= ?
+F10= QRZ?
+F11= PSE K
+F12=+FD- %
+#
+CQ_TU_MSG=TU %
+S&P_TU_MSG=TU 3A CT
+#
+#ALT_0=
+#ALT_1=
+#ALT_2=
+#ALT_3=
+#ALT_4=
+#ALT_5=
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+#################################
+#                               #
+#  Voice Keyer Files            #
+#    (F1 to F12)                #
+#################################
+#
+#VKM1=
+#VKM2=
+#VKM3=
+#VKM4=
+#VKM5=
+#VKM6=
+#VKM7=
+#VKM8=
+#VKM9=
+#VKM10=
+#VKM11=
+#VKM12=
+#VKSPM= (S&P return message)
+#VKCQM=	(CQ mode return message)
+#
