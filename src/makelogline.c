@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
+ *               2011-2014                Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +22,13 @@
 	 *                       items
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
 #include "makelogline.h"
+#include "globalvars.h"
 #include "dxcc.h"
+#include "qsonr_to_str.h"
+#include "get_time.h"
+#include "addpfx.h"
+#include "score.h"
 
 #include <assert.h>
 
@@ -105,14 +110,7 @@ void makelogline(void)
     int new_pfx;
     int points;
 
-    /* first fixed (contest independent) part */
-
-    logline4[0] = '\0';
-    qsonr_to_str();
-    get_time();
-
-    strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
-
+    /* restart band timer if qso on new band */
     if (wpx == 1) {		// 10 minute timer
 	if (lastbandinx != bandinx) {
 	    lastbandinx = bandinx;
@@ -120,7 +118,11 @@ void makelogline(void)
 	}
     }
 
-    strcat(logline4, band[bandinx]);
+    /* remember call for resend after qso (see callinput.c)  */
+    strcpy(lastcall, hiscall);  
+
+    /* first fixed (contest independent) part of logline */
+    strcpy(logline4, band[bandinx]);
 
     if (trxmode == CWMODE)
 	strcat(logline4, "CW ");
@@ -129,7 +131,11 @@ void makelogline(void)
     else
 	strcat(logline4, "DIG");
 
+    get_time();
+    strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
     strcat(logline4, time_buf);
+
+    qsonr_to_str();
 
     if (logfrequency == 1 &&
 	trx_control == 1 &&
@@ -155,11 +161,12 @@ void makelogline(void)
     } else
 	strcat(logline4, "  ");
 
-    strcat(logline4, hiscall);	/*  29 */
-    strcpy(lastcall, hiscall);  /* remember  for edit  */
+    strncat(logline4, hiscall, 15);	/*  29 */
     strncat(logline4, fillspaces, (15 - strlen(hiscall)));	/*  44 */
 
-    if (no_rst == 0) {
+    if (no_rst) {
+	strcat(logline4, "---  ---  ");	/* instead of RST */
+    } else {
 	if ((trxmode == CWMODE) || (trxmode == DIGIMODE)) {
 	    his_rst[2] = '9';
 	    my_rst[2] = '9';
@@ -172,8 +179,6 @@ void makelogline(void)
 	strcat(logline4, "  ");
 	strcat(logline4, my_rst);
 	strcat(logline4, "  ");
-    } else {
-	strcat(logline4, "---  ---  ");	/* instead of RST */
     }
 
     /* second (contest dependent part of logline */
