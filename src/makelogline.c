@@ -32,12 +32,66 @@
 
 #include <assert.h>
 
+void prepare_fixed_part(void);
+void prepare_specific_part(void);
+
+static char fillspaces[50] = "                              ";
+
+
 /** Construct a new line to add to the logfile.
  *
+ * Prepare a logline for storage in log in 'logline4' 
+ *
  * The structure of a logline entry is as follows:
- * - each logline contains exactly 80 characters
- * - it consists of 2 parts
- *   | fixed part one (54 chars) | contest dependent part 2 (26 chars) |
+ * - each logline contains exactly 87 characters followed by a newline.
+ * - it consists of 3 parts
+ *   | fixed part one (54 chars) | contest dependent part 2 (26 chars) | frequency (8 chars)
+ *
+ *   See function definitions below
+ */
+void makelogline(void)
+{
+    extern int trx_control;
+    extern float freq;
+
+    static int lastbandinx = 0;
+    char freq_buff[10];
+
+    /* restart band timer if qso on new band */
+    if (wpx == 1) {		// 10 minute timer
+	if (lastbandinx != bandinx) {
+	    lastbandinx = bandinx;
+	    minute_timer = 600;	// 10 minutes
+	}
+    }
+
+    /* remember call for resend after qso (see callinput.c)  */
+    strcpy(lastcall, hiscall);  
+
+    /* first fixed (contest independent) part of logline */
+    prepare_fixed_part();
+    assert(strlen(logline4) == 54);
+
+
+    /* second (contest dependent) part of logline */
+    prepare_specific_part();
+    assert(strlen(logline4) <= 80);
+
+    strncat(logline4, fillspaces, 80 - strlen(logline4));
+
+    /* add freq to end of logline */
+    if (trx_control == 1) {
+	snprintf(freq_buff, 8, "%7.1f", freq);
+    } else {
+	snprintf(freq_buff, 8, "        ");
+    }
+    strcat(logline4, freq_buff);
+    assert(strlen(logline4) == 87);
+}
+
+
+/** Construct fixed part of logline 
+ *
  * - fixed part:\n
  *     \verbatim
  *     0        1         2         3         4         5
@@ -52,76 +106,17 @@
  *     123456789012345678901234567890123456789012345678901234
  *     bndmod dd-mmm-yy hh:mm  khz  call.......... rst  rst
  *                                                 his  my.\endverbatim
- * - contest dependent part (list may not complete):\n
- *   - QSO mode
- *     \verbatim
- *     5    6         7         8
- *     56789012345678901234567890
- *     comment................\endverbatim
- *   - wpx
- *     \verbatim
- *     5    6         7         8
- *     56789012345678901234567890
- *     serialnr      pfx     pp\endverbatim
- *     pfx - new prefix, pp -points
- *   - cqww
- *     \verbatim
- *     5    6         7         8
- *     56789012345678901234567890
- *     hiszone       pfx  zn pp\endverbatim
- *     zn - new zone
- *   - normal contest
- *     \verbatim
- *     5    6         7         8
- *     56789012345678901234567890
- *     exchange      mult    pp\endverbatim
- *     mult - multi (cty, province, ...)
- *   - arllss
- *     \verbatim
- *     5    6         7         8
- *     56789012345678901234567890
- *     nr.. p cc sctn        pp\endverbatim
- *     nr - serial exchange, p - precedent, cc - check, sctn - ARRL/RAC section
- *   - arrlfd
- *     5    6         7         8
- *     56789012345678901234567890
- *     class         sctn    pp\endverbatim
- *     class - TX count + operator class, sctn - ARRL/RAC section
  */
-
-void makelogline(void)
-{
-
+void prepare_fixed_part(void) {
+    extern int no_rst;
+    extern char whichcontest[];
     extern int logfrequency;
     extern int trx_control;
-    extern char whichcontest[];
     extern float freq;
-    extern int no_rst;
 
     static char time_buf[80];
-    char fillspaces[50] = "                              ";
-    static int lastbandinx = 0;
-    char grid[7] = "";
-    int sr_nr = 0;
-    int i;
     char khz[5] = " 000";
-    char freq_buff[10];
-    int fnr = 0;
-    int new_pfx;
-    int points;
 
-    /* restart band timer if qso on new band */
-    if (wpx == 1) {		// 10 minute timer
-	if (lastbandinx != bandinx) {
-	    lastbandinx = bandinx;
-	    minute_timer = 600;	// 10 minutes
-	}
-    }
-
-    /* remember call for resend after qso (see callinput.c)  */
-    strcpy(lastcall, hiscall);  
-
-    /* first fixed (contest independent) part of logline */
     strcpy(logline4, band[bandinx]);
 
     if (trxmode == CWMODE)
@@ -141,9 +136,7 @@ void makelogline(void)
 	trx_control == 1 &&
 	((strcmp(whichcontest, "qso") == 0) ||
 	 (strcmp(whichcontest, "dxped") == 0))) {
-	fnr = (int) freq;
-	fnr = fnr % 1000;
-	sprintf(khz, " %3d", fnr);	// show freq.
+	sprintf(khz, " %3d", ((int)freq)%1000);	// show freq.
 	strcat(logline4, khz);
 
     } else {
@@ -180,8 +173,53 @@ void makelogline(void)
 	strcat(logline4, my_rst);
 	strcat(logline4, "  ");
     }
+}
 
-    /* second (contest dependent part of logline */
+
+/** Construct contest dependent part of logline
+ *
+ * - contest dependent part (list may not complete):\n
+ *   - QSO mode
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     comment................\endverbatim
+ *   - wpx
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     serialnr      pfx     pp\endverbatim
+ *     pfx - new prefix, pp -points
+ *   - cqww
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     hiszone       pfx  zn pp\endverbatim
+ *     zn - new zone
+ *   - normal contest
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     exchange      mult    pp\endverbatim
+ *     mult - multi (cty, province, ...)
+ *   - arllss
+ *     \verbatim
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     nr.. p cc sctn        pp\endverbatim
+ *     nr - serial exchange, p - precedent, cc - check, sctn - ARRL/RAC section
+ *   - arrlfd
+ *     5    6         7         8
+ *     56789012345678901234567890
+ *     class         sctn    pp\endverbatim
+ *     class - TX count + operator class, sctn - ARRL/RAC section
+ */
+void prepare_specific_part(void) {
+    int new_pfx;
+    int points;
+    int sr_nr = 0;
+    char grid[7] = "";
+    int i;
 
     if (arrlss == 1) {
 	// ----------------------------arrlss----------------
@@ -398,15 +436,6 @@ void makelogline(void)
 	sprintf(logline4 + 76, "  ");	/* no points for dxpedition */
     }
 
-
-    assert(strlen(logline4) <= 80);
-    strncat(logline4, fillspaces, 80 - strlen(logline4));
-
-    /* add freq to end of logline */
-    if (trx_control == 1) {
-	snprintf(freq_buff, 8, "%7.1f", freq);
-    } else {
-	snprintf(freq_buff, 8, "        ");
-    }
-    strcat(logline4, freq_buff);
 }
+
+
