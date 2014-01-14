@@ -34,6 +34,7 @@
 
 void send_bandswitch(int freq);
 int autosend(void);
+int plain_number(char *str);
 
 /** callsign input loop
  *
@@ -1006,8 +1007,9 @@ char callinput(void)
 		strcat(hiscall, instring);
 		if (cqmode == CQ && cwstart != 0 &&
 			trxmode == CWMODE && contest == 1) {
-		    /* early start keying after 'cwstart' characters */
-		    if (strlen(hiscall) == cwstart) {
+		    /* early start keying after 'cwstart' characters but only
+		     * if input field contains at least one nondigit */
+		    if (strlen(hiscall) == cwstart && !plain_number(hiscall)) {
 			x = autosend();
 		    }
 		}
@@ -1040,6 +1042,25 @@ char callinput(void)
     }
 
     return (x);
+}
+
+/** check if string is plain number
+ *
+ * Check if string contains only digits
+ * \param str    the string to check
+ * \return true  if only digits inside
+ *         false at least one none digit
+ */
+int plain_number(char *str) {
+    int i;
+
+    for (i=0; i < strlen(str); i++) {
+	if (!isdigit(str[i])) {
+	    return false;
+	}
+    }
+
+    return true;
 }
 
 
