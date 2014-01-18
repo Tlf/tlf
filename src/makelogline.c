@@ -36,7 +36,6 @@ void prepare_fixed_part(void);
 void prepare_specific_part(void);
 void fillto(int n);
 
-static char fillspaces[50] = "                              ";
 
 
 /** Construct a new line to add to the logfile.
@@ -57,6 +56,7 @@ void makelogline(void)
 
     static int lastbandinx = 0;
     char freq_buff[10];
+    int points;
 
     /* restart band timer if qso on new band */
     if (wpx == 1) {		// 10 minute timer
@@ -76,17 +76,26 @@ void makelogline(void)
 
     /* second (contest dependent) part of logline */
     prepare_specific_part();
-    assert(strlen(logline4) <= 80);
+    assert(strlen(logline4) == 77);
 
-    strncat(logline4, fillspaces, 80 - strlen(logline4));
+    /* score QSO and add to logline
+     * if not DXpedition or QSO mode */
+    points = score();			/* update qso's per band and score */
+    total = total + points;
+
+    if ((contest == 1) && (dxped == 0)) {
+	    sprintf(logline4 + 76, "%2d", points);
+    }
+
+    fillto(80);
 
     /* add freq to end of logline */
     if (trx_control == 1) {
 	snprintf(freq_buff, 8, "%7.1f", freq);
-    } else {
-	snprintf(freq_buff, 8, "        ");
+	strcat(logline4, freq_buff);
     }
-    strcat(logline4, freq_buff);
+    fillto(87);
+
     assert(strlen(logline4) == 87);
 }
 
@@ -218,7 +227,6 @@ void prepare_fixed_part(void) {
  */
 void prepare_specific_part(void) {
     int new_pfx;
-    int points;
     int sr_nr = 0;
     char grid[7] = "";
     int i;
@@ -265,11 +273,9 @@ void prepare_specific_part(void) {
 	strncat(logline4, comment, 22);
     }
 
-    strcpy(lastcomment, comment);	/* remember for edit  */
-
     fillto(77);
 
-    if (contest == 1)
+    if (contest == 1) 		/* cut back to make room for mults */
 	logline4[68] = '\0';
 
     /* If WPX
@@ -352,7 +358,6 @@ void prepare_specific_part(void) {
 	logline4[68] = '\0';
 
 	if (shownewmult >= 0) {
-
 	    strncat(logline4, mults[shownewmult], 9);
 
 	    shownewmult = -1;
@@ -365,11 +370,9 @@ void prepare_specific_part(void) {
 	logline4[68] = '\0';
 
 	if (shownewmult >= 0) {
-
 	    strncat(logline4, mults[shownewmult], 9);
 
 	    shownewmult = -1;
-
 	}
 
 	fillto(77);
@@ -407,16 +410,6 @@ void prepare_specific_part(void) {
     }
 
     fillto(77);
-
-    points = score();			/* update qso's per band
-					   and score qso */
-    total = total + points;
-
-    if ((contest == 1) && (dxped == 0)) {
-	    sprintf(logline4 + 76, "%2d", points);
-    } else {
-	sprintf(logline4 + 76, "  ");	/* no points for dxpedition */
-    }
 }
 
 
@@ -425,7 +418,9 @@ void prepare_specific_part(void) {
  * fill logline4 with spaces until column n
  */
 void fillto(int n) {
+    char fillspaces[] = "                                                    ";
     int len = strlen(logline4);
+
     if (len < n)
 	strncat(logline4, fillspaces, n - len);
 }
