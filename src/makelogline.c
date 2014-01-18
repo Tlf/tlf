@@ -40,7 +40,7 @@ static char fillspaces[50] = "                              ";
 
 /** Construct a new line to add to the logfile.
  *
- * Prepare a logline for storage in log in 'logline4' 
+ * Prepare a logline for storage in log in 'logline4'
  *
  * The structure of a logline entry is as follows:
  * - each logline contains exactly 87 characters followed by a newline.
@@ -66,7 +66,7 @@ void makelogline(void)
     }
 
     /* remember call for resend after qso (see callinput.c)  */
-    strcpy(lastcall, hiscall);  
+    strcpy(lastcall, hiscall);
 
     /* first fixed (contest independent) part of logline */
     prepare_fixed_part();
@@ -90,7 +90,7 @@ void makelogline(void)
 }
 
 
-/** Construct fixed part of logline 
+/** Construct fixed part of logline
  *
  * - fixed part:\n
  *     \verbatim
@@ -223,12 +223,12 @@ void prepare_specific_part(void) {
 
     if (arrlss == 1) {
 	// ----------------------------arrlss----------------
-	strcat(logline4, ssexchange);
+	strncat(logline4, ssexchange, 22);
 	section[0] = '\0';
 
     } else if (serial_section_mult == 1) {
 	//-------------------------serial_section---------------
-	sprintf(logline4 + 54, "%s", comment);
+	strncat(logline4, comment, 22);
 	section[0] = '\0';
 
     } else if (serial_grid4_mult == 1) {
@@ -247,7 +247,7 @@ void prepare_specific_part(void) {
 
     } else if (sectn_mult == 1) {
 	//-------------------------section only---------------
-	sprintf(logline4 + 54, "%s", section);
+	strncat(logline4, section, 22);
 	section[0] = '\0';
 
     } else if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
@@ -258,9 +258,9 @@ void prepare_specific_part(void) {
 	} else
 		strcat (logline4, zone_export);
 */
-	strcat(logline4, comment);
+	strncat(logline4, comment, 22);
     } else {	//----------------------end cqww ---------------
-	strcat(logline4, comment);
+	strncat(logline4, comment, 22);
     }
 
     strcpy(lastcomment, comment);	/* remember for edit  */
@@ -324,7 +324,7 @@ void prepare_specific_part(void) {
     } else if (arrldx_usa == 1) {
 	logline4[68] = '\0';
 	if (addcty != 0) {
-	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
+	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
 	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
@@ -337,7 +337,7 @@ void prepare_specific_part(void) {
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
+	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
 	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
@@ -354,7 +354,7 @@ void prepare_specific_part(void) {
 
 	if (shownewmult >= 0) {
 
-	    strcat(logline4, mults[shownewmult]);
+	    strncat(logline4, mults[shownewmult], 9);
 
 	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    shownewmult = -1;
@@ -368,7 +368,7 @@ void prepare_specific_part(void) {
 
 	if (shownewmult >= 0) {
 
-	    strcat(logline4, mults[shownewmult]);
+	    strncat(logline4, mults[shownewmult], 9);
 
 	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    shownewmult = -1;
@@ -381,7 +381,7 @@ void prepare_specific_part(void) {
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
+	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
 	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
@@ -403,7 +403,7 @@ void prepare_specific_part(void) {
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
+	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
 	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
