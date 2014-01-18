@@ -34,6 +34,7 @@
 
 void prepare_fixed_part(void);
 void prepare_specific_part(void);
+void fillto(int n);
 
 static char fillspaces[50] = "                              ";
 
@@ -45,7 +46,7 @@ static char fillspaces[50] = "                              ";
  * The structure of a logline entry is as follows:
  * - each logline contains exactly 87 characters followed by a newline.
  * - it consists of 3 parts
- *   | fixed part one (54 chars) | contest dependent part 2 (26 chars) | frequency (8 chars)
+ *   | fixed part (54 chars) | contest dependent part (26 chars) | frequ (8 chars)
  *
  *   See function definitions below
  */
@@ -155,7 +156,8 @@ void prepare_fixed_part(void) {
 	strcat(logline4, "  ");
 
     strncat(logline4, hiscall, 15);	/*  29 */
-    strncat(logline4, fillspaces, (15 - strlen(hiscall)));	/*  44 */
+
+    fillto(44);
 
     if (no_rst) {
 	strcat(logline4, "---  ---  ");	/* instead of RST */
@@ -265,8 +267,7 @@ void prepare_specific_part(void) {
 
     strcpy(lastcomment, comment);	/* remember for edit  */
 
-    if (strlen(logline4) < 77)
-	strncat(logline4, fillspaces, (77 - strlen(logline4)));
+    fillto(77);
 
     if (contest == 1)
 	logline4[68] = '\0';
@@ -279,9 +280,9 @@ void prepare_specific_part(void) {
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, pxstr, 5);
-	    strncat(logline4, fillspaces, (5 - strlen(pxstr)));
-	} else
-	    strncat(logline4, fillspaces, 5);
+	}
+
+	fillto(73);
     }
 
     if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
@@ -294,11 +295,10 @@ void prepare_specific_part(void) {
 	    else
 		strncat(logline4, dxcc_by_index(addcty) -> pfx, 5);
 
-	    strncat(logline4, fillspaces, 73 - strlen(logline4));
 	    addcty = 0;
-	} else {
-	    strcat(logline4, "     ");
 	}
+
+	fillto(73);
 
 	if (addzone != 0) {
 /*
@@ -313,12 +313,13 @@ void prepare_specific_part(void) {
 	    } else
 		strncat(logline4, comment, 2);
 
-	    strcat(logline4, "  ");
 	    addzone = 0;
 	} else {
-	    strcat(logline4, "    ");
 	    zone_fix[0] = '\0';
 	}
+
+	fillto(77);
+
 	//----------------------------------end cqww-----------------
 
     } else if (arrldx_usa == 1) {
@@ -326,11 +327,10 @@ void prepare_specific_part(void) {
 	if (addcty != 0) {
 	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
+	}
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	fillto(77);
 
     } else if ((dx_arrlsections == 1) && (countrynr != w_cty)
 	       && (countrynr != ve_cty)) {
@@ -339,12 +339,11 @@ void prepare_specific_part(void) {
 	if (addcty != 0) {
 	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
-
-	} else {
-	    strncat(logline4, fillspaces, 9);
 	}
+
+	fillto(77);
+
     } else if ((wysiwyg_multi == 1)
 	       || (serial_section_mult == 1)
 	       || (sectn_mult == 1)
@@ -356,11 +355,10 @@ void prepare_specific_part(void) {
 
 	    strncat(logline4, mults[shownewmult], 9);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    shownewmult = -1;
+	}
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	fillto(77);
 
     } else if ((dx_arrlsections == 1)
 	       && ((countrynr == w_cty) || (countrynr == ve_cty))) {
@@ -370,11 +368,11 @@ void prepare_specific_part(void) {
 
 	    strncat(logline4, mults[shownewmult], 9);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    shownewmult = -1;
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	}
+
+	fillto(77);
 
     } else if (pacc_pa_flg == 1) {
 
@@ -383,19 +381,15 @@ void prepare_specific_part(void) {
 	if (addcty != 0) {
 	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
 
 	} else if (addcallarea == 1) {
-
 	    strncat(logline4, pxstr, 3);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
-
 	    addcallarea = 0;
+	}
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	fillto(77);
 
     } else if ((universal == 1)
 	       && ((country_mult == 1) || (dx_arrlsections == 1))) {
@@ -405,26 +399,14 @@ void prepare_specific_part(void) {
 	if (addcty != 0) {
 	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
+	}
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	fillto(77);
 
-    } else if (wpx == 1) {
-	strncat(logline4, fillspaces, 4);
-    } else if (arrl_fd == 1) {
-	strncat(logline4, fillspaces, 4);
-    } else if ((one_point == 1) || (two_point == 1) || (three_point == 1)) {
-	strncat(logline4, fillspaces, 4);
-    } else {
-	strncat(logline4, fillspaces, 4);
     }
 
-    i = 77 - strlen(logline4);
-    if (i > 0)				/* fill line until column 77 */
-	strncat(logline4, fillspaces, i);
-
+    fillto(77);
 
     points = score();			/* update qso's per band
 					   and score qso */
@@ -435,7 +417,16 @@ void prepare_specific_part(void) {
     } else {
 	sprintf(logline4 + 76, "  ");	/* no points for dxpedition */
     }
-
 }
 
+
+/** fill logline4 with spaces
+ *
+ * fill logline4 with spaces until column n
+ */
+void fillto(int n) {
+    int len = strlen(logline4);
+    if (len < n)
+	strncat(logline4, fillspaces, n - len);
+}
 
