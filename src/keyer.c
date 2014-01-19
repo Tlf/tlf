@@ -146,22 +146,6 @@ int keyer(void)
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 			mvprintw(5, 0, "%s", keyerstring);
 			refreshp();
-		    } else if (keyerport == ORION_KEYER) {
-			nkbuffer[0] = x;
-			nkbuffer[1] = '\0';
-			strcat(wkeyerbuffer, nkbuffer);
-			sendbuf();
-			nkbuffer[0] = '\0';
-			for (j = 0; j < 29; j++) {
-			    keyerstring[j] = keyerstring[j + 1];
-			}
-			keyerstring[28] = x;
-			keyerstring[29] = '\0';
-
-			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-			mvprintw(5, 0, "%s", keyerstring);
-			refreshp();
-
 		    }
 		} else		// control char...
 		{

@@ -90,16 +90,6 @@ int speedup(void)
 	}
     }
 
-    if (keyerport == ORION_KEYER) {
-
-	if (speed < 20) {
-
-	    speed++;
-
-	    orion_set_cw_speed(GetCWSpeed());
-
-	}
-    }
     return (speed);
 }
 
