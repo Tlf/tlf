@@ -57,8 +57,11 @@ int readcalls(void)
     for (s = 0; s < MAX_QSOS; s++)
 	qsos[s][0] = '\0';
 
-    for (i = 0; i < MAX_CALLS; i++)
+    for (i = 0; i < MAX_CALLS; i++) {
 	callarray[i][0] = '\0';
+	call_band[i] = 0;
+	call_country[i] = -1;
+    }
 
     for (i = 1; i <= MAX_DATALINES - 1; i++)
 	countries[i] = 0;
