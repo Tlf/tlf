@@ -191,7 +191,7 @@ int setcontest(void)
 	ua9_cty = getctydata(ua9call);
     }
 
-    if (strcmp(whichcontest, "foc") == 0) {
+    if (strcmp(whichcontest, "focmarathon") == 0) {
 	foc_init();
     }
 
