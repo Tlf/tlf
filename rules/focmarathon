@@ -7,7 +7,7 @@ CONTEST=foc
 LOGFILE=marathon.log
 INITIAL_EXCHANGE=focmarathon.txt
 RECALL_MULTS
-CABRILLO=focmarathon
+CABRILLO=FOCMARATHON
 #
 ##################################
 #                                #
