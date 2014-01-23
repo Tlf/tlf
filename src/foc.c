@@ -181,7 +181,7 @@ int get_nr_cont() {
  *
  * \return number of points
  */
-int foc_totalscore() {
+int foc_total_score() {
     extern int call_band[];
 
     int points;
@@ -218,7 +218,7 @@ int foc_totalscore() {
 /** display scoring for FOC marathon */
 void foc_show_scoring(int start_column) {
 
-    int points = foc_totalscore();
+    int points = foc_total_score();
 
 #ifdef old_format
     mvprintw(4, start_column, "Ctry: %3d  Cont: %1d  G4FOC: %c",

@@ -194,6 +194,16 @@ int get_nr_of_mults()
 	return 1;
 }
 
+
+/* calculate total score */
+int get_total_score() {
+    if (foc == 1)
+	return foc_total_score();
+    else
+	return get_nr_of_points() * get_nr_of_mults();
+}
+
+
 /** show contest score
  *
  * display scoring results of contest if activated by 'showscore_flag'
