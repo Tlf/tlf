@@ -55,7 +55,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 159	/* commands in list */
+#define  MAX_COMMANDS 161	/* commands in list */
 
 
 int read_logcfg(void)
@@ -419,7 +419,8 @@ int parse_logcfg(char *inputbuffer)
 	"VKCWR",				/* deprecated */
 	"VKSPR",				/* deprecated */
 	"NO_RST",
-	"MYQRA"
+	"MYQRA",
+	"POWERMULT"		/* 160 */
     };
 
     char **fields;
@@ -1363,7 +1364,14 @@ int parse_logcfg(char *inputbuffer)
 		}
 		break;
 	    }
-
+    case 160:{
+    	    PARAMETER_NEEDED(teststring);
+	    if (fixedmult == 0 && atoi(fields[1]) > 0) {
+	      fixedmult = atoi(fields[1]);
+	    }
+	    break;
+	}
+	    
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

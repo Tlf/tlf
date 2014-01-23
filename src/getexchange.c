@@ -451,10 +451,12 @@ int getexchange(void)
 		if (check_qra(comment) > 0) {
 		    mvprintw(13, 54, "locator?");
 		    mvprintw(12, 54, comment);
+		    break;
 		}
-		else {
-		  break;
-		}
+		//else {
+		//  break;
+		//}
+		break;
 		refreshp();
 	    } else
 		break;
