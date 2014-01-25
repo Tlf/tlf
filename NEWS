@@ -1122,9 +1122,6 @@ tlf-0.8.13
 
 - added "SERIAL+SECTION" multiplier capability for nrau (scandinavian) test
 
-
-
-
 - added "MULT_LIST=xxxxxx" capability for nrau test (flat ascii multiplier file
   (all caps) required  in working directory)
 
@@ -1157,7 +1154,6 @@ Bug/unwanted feature fixes:
   past the end of line, it will overflow to the next line. And there's no
   solution to go back (ESC and :edit to fix it though) But the screen looks
   ugly in the mean time.
-
 
 - tlf does not handle very well bogus .log text files.
   mostly FIXED, needs more work
@@ -1255,7 +1251,6 @@ tlf-0.8.3
 =======
 
 - Added M2 category for cqww (cabrillo file + logfile)
-
 
 - Added CQWW_M2 command for logcfg.dat
 
