@@ -126,20 +126,6 @@ int search_g4foc_in_callarray(void) {
 }
 
 
-/* extra score for 5 or 6 bands for G4FOC */
-int g4foc_score() {
-
-    int points = g4foc_count;
-    if (g4foc_count == 5)
-	points += 10;
-    else if (g4foc_count == 6)
-	points += 15;
-
-    return points;
-}
-
-
-
 /* count nr of countries worked on all bands */
 int get_nr_cntry() {
     int cnt = 0;
@@ -201,16 +187,15 @@ int foc_total_score() {
     /* count 5 and 6 banders and eventually correct for G4FOC */
     count_56_banders();
     if (g4foc_count == 5)
-	five_banders--;
+	five_banders++;
     else if (g4foc_count == 6)
-	six_banders--;
+	six_banders++;
 
-    points = total - (2 * g4foc_count) +
+    points = total + 		/* total contains FOC qsos twice */
 	five_banders * 10 +
 	six_banders * 15 +
 	cntry * 2 +
-	cont * 5 +
-	g4foc_score() * 2;
+	cont * 5;
 
     return points;
 }
@@ -226,10 +211,10 @@ void foc_show_scoring(int start_column) {
     mvprintw(5, start_column, "  5b: %3d  6b: %3d  Score: %d",
 	    five_banders, six_banders, points);
 #else
-    mvprintw(4, start_column, "%s", "QSO  Cty Cont   5b    6b FOC  Score");
-    mvprintw(5, start_column, "%3d  %3d  %2d  %4d  %4d  %2d   %4d",
-	    total - (2 * g4foc_count), cntry * 2, cont * 5,
-	    five_banders * 10, six_banders * 15, 2 * g4foc_score(), points);
+    mvprintw(4, start_column, "%s", " QSO   Cty  Cont    5b    6b  Score");
+    mvprintw(5, start_column, "%4d   %3d    %2d  %4d  %4d   %4d",
+	    total, cntry * 2, cont * 5,
+	    five_banders * 10, six_banders * 15, points);
 #endif
 
 }
