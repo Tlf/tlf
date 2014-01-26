@@ -54,6 +54,7 @@ char callinput(void)
     extern char hiscall_sent[];
     extern char comment[];
     extern char call[];
+    extern char sp_cw_call[];
     extern int cqmode;
     extern int trxmode;
     extern char mode[];
@@ -549,8 +550,14 @@ char callinput(void)
 		    if (cqmode == 0) {
 			if (demode == SEND_DE)
 			    strcat(buffer, "DE ");
-			strcat(buffer, call);		/* S&P */
-			sendbuf();
+			if(sp_cw_call[0] != NULL)
+			{
+                            strcat(buffer, sp_cw_call);		/* S&P */
+                        }
+                        else
+                        {
+                            strcat(buffer, call);		/* S&P */
+                        }
 		    }
 		    else {
 			sendmessage(message[0]);	/* CQ */

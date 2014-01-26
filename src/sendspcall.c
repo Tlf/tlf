@@ -31,6 +31,7 @@ void sendspcall(void){
     extern int demode;
     extern char buffer[];
     extern char call[];
+    extern char sp_cw_call[];
     extern int trxmode;
     extern int keyerport;
     extern char ph_message[14][80];
@@ -41,7 +42,14 @@ void sendspcall(void){
 	if (demode ==  SEND_DE )
 	    strcat(buffer, "DE ");
 
-	strcat(buffer, call);
+        if(sp_cw_call[0] != NULL)
+        {
+            strcat(buffer, sp_cw_call);
+        }
+        else
+        {
+            strcat(buffer, call);
+        }
 	sendbuf();
 
     } else if (trxmode == DIGIMODE) {

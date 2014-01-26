@@ -56,8 +56,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 161	/* commands in list */
-
+#define  MAX_COMMANDS 162	/* commands in list */
 
 int read_logcfg(void)
 {
@@ -135,9 +134,10 @@ static int confirmation_needed;
 int parse_logcfg(char *inputbuffer)
 {
     extern int use_rxvt;
-    extern char message[][80];
+    extern char message[16][80];
     extern char ph_message[14][80];
     extern char sp_return[];
+    extern char sp_cw_call[];
     extern char cq_return[];
     extern char call[];
     extern char whichcontest[];
@@ -421,6 +421,7 @@ int parse_logcfg(char *inputbuffer)
 	"NO_RST",
 	"MYQRA",
 	"POWERMULT"		/* 160 */
+	"S&P_CW_CALL"
     };
 
     char **fields;
@@ -1352,7 +1353,6 @@ int parse_logcfg(char *inputbuffer)
     case 159:{
 		PARAMETER_NEEDED(teststring);
 		strcpy(myqra, fields[1]);
-
 		if (check_qra(myqra) > 0) {
 		    showmsg
 			("WARNING: Invalid MYQRA parameters! exiting...");
@@ -1366,6 +1366,12 @@ int parse_logcfg(char *inputbuffer)
 	    if (fixedmult == 0.0 && atof(fields[1]) > 0.0) {
 	      fixedmult = atof(fields[1]);
 	    }
+	    break;
+	}
+    case 161:{
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(message[15], fields[1]);
+	    strcpy(sp_cw_call, message[15]);
 	    break;
 	}
 	    
