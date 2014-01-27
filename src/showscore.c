@@ -140,8 +140,8 @@ int get_nr_of_mults()
 
 	return totalcountries;
     }
-    else if (arrl_fd == 1) {
-	if (fixedmult != 0) {
+    else if (arrl_fd == 1 || stewperry_flg == 1) {
+	if (fixedmult != 0.0) {
 	    return fixedmult;
 	} else {
 	    return 1;

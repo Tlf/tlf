@@ -154,7 +154,6 @@ int score()
     extern char myqra[7];
     extern char call[];
     extern int stewperry_flg;
-    extern float fixedmult;
 
 
 /* LZ3NY mods */
@@ -320,9 +319,7 @@ int score()
 	    calc_qrb(s1long, s1lat, s2long, s2lat, &distance, &azimuth);
 
 	    points = ceil(distance/500.0);
-	    if (fixedmult > 0.0) {
-		points *= fixedmult;
-	    }
+
 	    total = total + points;
 	}
 
