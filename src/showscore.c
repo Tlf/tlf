@@ -26,7 +26,6 @@
 #include "showscore.h"
 #include <assert.h>
 
-
 #define START_COL 45	/* start display in these column */
 
 /* list of columns to display score for each band */
@@ -53,10 +52,19 @@ void printfield (int x, int y, int number);
 /* show summary line */
 void show_summary( int points, int multi )
 {
+    extern float fixedmult;
+
     mvprintw(5, START_COL, "                                   ");
     /* TODO: respect field boundaries for large numbers */
-    mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
-	points, multi, points * multi);
+    if (fixedmult == 0.0) {
+	mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
+	    points, multi, points * multi);
+    }
+    else {
+	mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %.1f",
+	    points, multi, points * multi * fixedmult);
+    }
+    
 }
 
 
@@ -103,7 +111,7 @@ int get_nr_of_points()
 /* get total number of multis */
 int get_nr_of_mults()
 {
-    extern int fixedmult;
+    extern float fixedmult;
     extern int sprint;
     extern int multlist;
     extern int multscore[];
@@ -141,11 +149,11 @@ int get_nr_of_mults()
 	return totalcountries;
     }
     else if (arrl_fd == 1 || stewperry_flg == 1) {
-	if (fixedmult != 0.0) {
+	/*if (fixedmult != 0.0) {
 	    return fixedmult;
-	} else {
+	} else {*/
 	    return 1;
-	}
+	//}
     }
     else if (dx_arrlsections == 1) {
 
@@ -300,7 +308,6 @@ int showscore(void)
 	    mvprintw(5, START_COL, "Score: %d", get_nr_of_points() );
 	}
 	else {
-
 	    show_summary( get_nr_of_points(), get_nr_of_mults() );
 	}
 
