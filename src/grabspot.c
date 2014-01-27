@@ -21,7 +21,7 @@
 #include "bandmap.h"
 #include <glib.h>
 
-int send_bandswitch(int outfreq);
+void send_bandswitch(int outfreq);
 
 void grabspot(void)
 {

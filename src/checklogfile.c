@@ -32,7 +32,7 @@
 /** Repair log file
  *
  * Try to repair log file if some limes are too short.
- * Same is used to convert old logfile format v1 to new v2 
+ * Same is used to convert old logfile format v1 to new v2
  *
  * \return 0 on success
  */
@@ -122,7 +122,7 @@ int checklogfile_new(char *filename)
 
     while (fgets(buffer, sizeof(buffer), fp)) {
 	int band, linelen;
-	int bandok = 0; 
+	int bandok = 0;
 
 	lineno++;
 
@@ -190,7 +190,7 @@ int checklogfile_new(char *filename)
 void checklogfile(void)
 {
 
-    extern char logfile[26];
+    extern char logfile[];
     extern char backgrnd_str[];
 
     int lfile;

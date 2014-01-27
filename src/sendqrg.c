@@ -20,7 +20,7 @@
 #include "sendqrg.h"
 #include "tlf.h"
 
-int send_bandswitch(int trxqrg);
+void send_bandswitch(int trxqrg);
 
 int sendqrg(void)
 {
@@ -92,6 +92,7 @@ int init_tlf_rig(void)
     extern int verbose;
     extern int debugflag;
 
+    vfo_t vfo;
     int retcode;		/* generic return code from functions */
 
     const char *ptt_file = NULL, *dcd_file = NULL;
@@ -174,7 +175,9 @@ int init_tlf_rig(void)
 	return (-1);
     }
 
-    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
+    retcode = rig_get_vfo(my_rig, &vfo); 	/* initialize RIG_VFO_CURR */
+    if (retcode == RIG_OK)
+	rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 
     if (retcode != RIG_OK) {
 	showmsg("Problem with rig link!");

@@ -1,3 +1,392 @@
+2013-12-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, tlf.1.in: Drop keyword '2EU3DX_POINTS'  
+  - Keyword was not supported for a long time 
+  - It got recognized but did nothing.
+
+2013-12-19..12-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/background_process.h, src/logit.c,
+  src/logit.h, src/main.c, src/autocq.c, src/main.c, src/sendbuf.c, 
+  src/sendbuf.h, src/callinput.c, src/getexchange.c, src/keyer.c,
+  src/listmessages.c, src/messagechange.c, src/parse_logcfg.c,
+  src/writeparas.c, src/bandmap.c, src/bandmap.h, src/checklogfile.c, 
+  src/globalvars.h, src/grabspot.c, src/main.c,
+  src/sendbuf.c, src/sendqrg.c, src/showinfo.c, src/splitscreen.c,
+  src/time_update.c: Cleanup a lot of inconsistencies (see log messages for
+  detail)
+
+2013-12-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c: fix wrong order of tests for mult counting  
+  - DX_&_SECTIONS has precedence over MULT_LIST in UNIVERSAL contest 
+  - Thanks Ed W3NR and Fred DH5FS for pointing it out
+
+2013-12-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/autocq.c, src/callinput.c, src/getexchange.c, src/keyer.c, 
+  src/logit.c, src/sendbuf.c, src/sendbuf.h: send CW/DIGI messages only 
+  if not empty
+  - avoid turning on and off transmitter in CW and Digimodes if message 
+    is empty 
+  - Thanks Ervin HA2OS for pointing out.
+
+2013-12-12  dh5fs <dh5fs@users.noreply.github.com>
+
+  * tlf.1.in, share/help.txt, src/parse_logcfg.c, src/lancode.c: Allow 
+  portnumbers for LAN-stations via ADDNODE command
+
+2013-11-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * help.txt, share/Makefile.am, share/help.txt, src/callinput.c,
+  src/changepars.c, src/show_help.c, src/show_help.h: move 'help.txt' to
+  <prefix>/share/help.txt  
+  - add 'help.txt' to distribution 
+  - install 'help.txt' as default hep file 
+  - can be overridden by an own 'help.txt' in actual directory 
+  - correct description for ':help' command in man page
+
+2013-11-28  dh5fs <dh5fs@freenet.de>
+
+  * src/callinput.c: Update callinput.c  modify CFM message to complete QSO
+
+  * help.txt: Create help.txt  online help file <ALT+h>
+
+2013-11-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/dxcc.c, src/dxcc.h: add special handling for '*...' prefixes  
+  - strip '*' from prefix 
+  - remember in describing structure
+
+2013-11-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/makelogline.c: move zone id in logline a char right  
+  - make room for 5 letter prefixes (e.g. HK0/a) 
+
+2013-11-18..11-20  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/Makefile.am, src/cw_utils.c, src/callinput.c, src/clear_display, 
+  src/cw_utils.h, src/parse_logcfg.c, src/getexchange.c, src/main.c,
+  src/speeddown.c, src/speedup.c, src/tlf.h, src/write_keyer.c, src/autocq.c,
+  src/speed_conversion.h: refactor CW speed logic
+  - add new 'cw_utils'
+  - move speedstr definition to cw_utils  
+  - move 'speed_conversion' to cw_utils 
+  - add SetCWSpeed and use it in parse_logcfg 
+  - add GetCWSpeed and start to use it
+  - drop separate handling of 'keyspeed' variable
+  - move calculation of CW message length to cw_utils
+
+2013-11-19  airween <airween@gmail.com>
+
+  * share/cty.dat: Added new cty.dat, released 2013-11-18
+  * share/callmaster, share/cty.dat: New databases from Ervin HA2OS
+
+2013-11-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/lancode.c, src/parse_logcfg.c, tlf.1.in: Initialise tlf's 
+  node designator (THISNODE=...) to 'A'  
+  - Even if you do not use the LAN features and forgot to name your node 
+    in logcfg.dat the node designator is used internally for adding a QSO 
+    to the bandmap. 
+  - Add further check logic to allow only designators 'A'..'H'
+  - document default setting for node designator in man page
+
+2013-11-11..12-09  Thomas Beierlein <tomjbe@gentoo.org>
+2013-12-06  dh5fs <dh5fs@users.noreply.github.com>
+
+  * src/callinput.c, src/changepars.c, src/keyer.c: implement reworked autosend
+  feature
+  - starts after 2..5 characters 
+  - shorter calls have to be finished with ENTER key 
+  - calculates the expected time to send the call from cw speed and switches 
+    to sending exchange after that time is reached
+  - Allow autosend feature only in RUN mode
+  - Adapt ':char' command (accept 0 (off) or 2..5 as number of characters 
+    before autosend start. Changing input can be dropped with ESC)
+  - SPACE and DOWN no longer starts autosend feature, but jumps to exchange
+    field
+  - A progress indicator shows the characters already sent.
+
+2013-10-28  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/muf.c, src/muf.h: cleanup use of internal variables  
+  - use M_PI from math.h 
+  - make some global variables privat
+
+2013-10-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/cqww, share/cabrillo.fmt: fix cabrillo definition  
+  - use TX identifier at end of line only for cqww contest
+
+2013-10-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Fix handling of non existing cabrillo format file
+
+2013-10-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/log_to_disk.c: Change accepted line length from LAN  - Log lines are
+  longer since we added the QRG to its end. The LAN code missed that change
+  until now. 
+  - Thanks airween HA2OS for the patch.
+
+2013-08-27  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addcall.c, src/addmult.c, src/checklogfile.c, src/editlog.c: close
+  opened files if not needed
+
+2013-08-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/changepars.c, src/splitscreen.c: Cleanup screen when
+  leaving TLF with active cluster  
+  - If packet cluster was active when you leaved TLF there was an intermix 
+    of tlf's screen content and the screen before tlf where started. 
+    Reason was the second terminal for the cluster display which must 
+    be closed with endwin() before leaving the program. Added
+    the code to cleanup_telnet() and called that routine when leaving tlf.
+
+2013-08-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c, src/listmessages.c: Some small fixes  
+  - give a short hint to use PgUp or PgDwn for :scv 
+  - simplify display of cw messages (:list)
+
+
+2013-08-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c: Fix switching on/off the score window
+
+2013-07-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/clusterinfo.c, src/gettxinfo.c, src/main.c, src/sendqrg.c: Improve 
+  handling of problems in rig link  
+  - Report any error during startup of hamlib rig link 
+  - In case of errors ask if user want to continue without rig control. 
+    Otherwise exit tlf. 
+  - If get_frequency fails (maybe because rig is switched off) report
+    frequency as 0.0. Do not change band settings from tranceiver. 
+    (Show and log the actual frequency as 0, meaning no rig control available 
+    at the moment)
+  - writecabrillo() will insert start-of-band frequency in log calculated from
+  band information
+
+2013-07-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/keyer.c, src/messagechange.c: CW messages can no
+  longer be edited by Shift+Fx key  
+  - The quick recall of an Fx message via Shift+Fx for edit got dropped 
+    as the recognition of the keys is not reliable for some terminal emulators. 
+    So we do no longer rely on that feature. Use :mes or edit 
+    the config file instead.
+
+2013-07-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showpxmap.c: fix display of worked countries for cqww  
+  - uses line 1..5 omitting the line with the contest information 
+  - clear the lines before und after use
+
+2013-07-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/showscore.c: Fix display of contest statistics  
+  - Q/M calculates now QSOs per multi (was: points per multi) 
+  - display Q/M with one digit after decimal point 
+  - display Q/M always 
+  - show band rate only for bands with more than ten QSOs
+
+2013-07-07  Nate Bargmann <n0nb@n0nb.us>
+
+  * many files...: Correct GPL boilerplate in sources  
+  The license boilerplate in the source files incorrectly referenced the
+  Library General Public License.  Given that only 'COPYING' (GPL 2.0) is
+  included in the tlf directory, and all other documentation references the
+  GPL, the reference to 'Library' is presumed to be incorrect.   With the
+  concurrance of Tom and Rein, this patch set removes the word 'Library' from
+  the boilerplate in all .c and .h files where it occured.  Include minor Free
+  Software Foundation mailing address correction with this patch set.
+
+2013-06-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/dxcc.c, src/readctydata.c: make parsing cty.dat more robust  
+  - ignore country lines which do not have the needed components
+
+2013-06-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/log_to_disk.c, src/makelogline.c: Move reset of RST to another place  -
+  Setting RST to its default value after a QSO is not the job of a routine
+  which prepares the log line for the last QSO. 
+
+2013-06-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  *  rules/arrlfd, src/callinput.c, src/clear_display.c, src/getexchange.c,
+  src/log_to_disk.c, src/main.c, src/makelogline.c, src/parse_logcfg.c,
+  tlf.1.in: add new configuration switch NO_RST  
+  - will be needed for contests which do not record any exchange 
+    (e.g. ARRLFD or CW Open)
+  - do not add RST into log and do not show RST if NO_RST is set, just 
+    add '---' instead  
+  - suppress redisplay of RST after PgUp/PgDwn if NO_RST is set, as it 
+    does not make sense to change RST if no RST is used.  
+  - document NO_RST in man page and add it to arrlfd rule file
+
+2013-06-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/cabrillo.fmt: ARRL-FD do not use cabrillo. Tnx Nate N0NB
+
+2013-06-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/makelogline.c: Fix for WYSIWYG_ONCE  
+  - points were not written for WYSIWYG_ONCE
+
+  * src/getsummary.c, src/writecabrillo.c: simplify  
+  - use get_nr_of_points() and get_nr_of_mults() to calculate claimed score 
+
+2013-06-03  Nate Bargmann <n0nb@n0nb.us>
+
+  * rules/arrlfd: rules/arrlfd: Update to current FD rules  
+  - The arrlfd rules file was dated so bring it up to date with 
+    changes in Fd and TLF.
+  - fix recognition of ARRL Field day rules  (rule file asked for 
+    'arrlfd' contest, but parser looked for 'arrl_fd')
+
+2013-05-06  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac: configure.ac: Enable silent make rules  Use Autoconf help
+  string formatter for Hamlib option.
+
+2013-05-05  Nate Bargmann <n0nb@n0nb.us>
+
+  * share/arrlsections: arrlsections: Add new Canadian sections  Remove invalid
+  sections.
+
+2013-05-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c, src/showscore.h: Refactor calculation of total score  
+  - factor out calculation of nr of points and mults
+
+2013-06-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c: factor out common code into 'display_header()'  - gets
+  list of bands to show as parameter
+
+  * src/showscore.c: simplify display of headerline and setting of active band 
+  - rename bandindex_normal and bandindex_warc to bi_normal/warc 
+  - show bands in header line according to the list of band indices in 
+    bi_normal or bi_warc
+  - simplify highlighting the  actual band (do it now on the fly while 
+    printing the line in first place.)
+
+2013-05-30  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/showscore.c: Refactor display algorithm for individual score lines  
+  - define the column 'START_COL' where the display of the score should start 
+  - use a table for defining the column number where we display the different
+    score points for each band 
+  - use two further tables to define which bands should be shown for each 
+    column 
+  - rollup the display of the 6 columns into one loop using the above 
+    mentioned tables
+
+2013-05-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c: Change display of score for ARRL SS  
+  - Display points and mults (here section) for ARRL SS similar to 
+    other contests.
+
+2013-05-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/showscore.c: simplify showscore()  
+  - add some comments 
+  - drop unneeded variable initialisation 
+  - unify display of summary for different contests 
+  - factor out display of summary line
+
+2013-05-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/edit_last.c: Fix character input in edit_last()  
+  - display only visible part of logline
+
+2013-05-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Fix frequency output for WARC bands in cabrillo file 
+  - Original code missed all cases for QSOs in WARC bands. No frequency
+    information for that bands were written to cabrillo file.
+  - Even if no WARC bands should be used in contests we add the correct
+  frequency output for these bands
+
+2013-05-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Fix band output for 12m in ADIF file  
+  - Original code missed the case for QSOs in 12m band. The ADIF file 
+    got no band output for that band. Fixed.
+
+2013-03-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c: Reread contest rules file after edit of logcfg.dat with
+  :SET or :CFG
+
+  * src/changepars.c, src/getsummary.c, src/writecabrillo.c: Refactor  
+  - move control of cluster display out to calling context 
+  - reuse code to ask for sent exchange 
+  - drop unused external variable declarations
+
+  * src/getsummary.c, src/getsummary.h: Rework to support Cabrillo v3.0 format 
+  - refactor code to ask for input 
+  - write some entries only to cabrillo file if user provided some input
+
+2013-01-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getsummary.c, src/getsummary.h, src/writecabrillo.c: Simplify writing
+  cabrillo header
+  - Until now the cabrillo header was written to a separate file by
+    'getsummary()' and finally copied together with the formatted QSO-lines.
+    Changed it so that we write the header direct to the final file and
+    therefore can drop the copying.
+
+2013-01-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/arrlss, share/cabrillo.fmt: Add cabrillo definition for ARRL
+  Sweepstake
+
+2013-01-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: Fix parsing of CALL in logcfg.dat  - drop trailing
+  whitespace - for now keep the trailing NL as a lot of code in other parts of
+  tlf rely on that NL cahracter
+
+2013-01-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: Fix parsing of CONTEST, LOGFILE, KEYER_DEVICE and
+  TELNETHOST  
+  - Use g_strchomp to drop NL and trailing whitespaces from keywords 
+  - simplify with g_strlcpy
+
+  * src/parse_logcfg.c: Fix parsing controllerport (ignore trailing whitespace)
+
+2013-01-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, tlf.1.in: Reduce minimal livetime for bandmap entries
+  to 30s (requested by DH5YM)
+
+2012-12-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: allow Ctrl-k to start keyer during getexchange()
+
+2012-12-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c: Allow editing of exchange field  
+  - starts with 'left' key if exchange field is not empty 
+  - supports the following keys: 
+    - ctrl-A  start of line 
+    - ctrl-E  end of line 
+    - left    one char left 
+    - right   one char right 
+    - del     delete key under cursor 
+    - backspace  delete char left from cursor 
+    - any non control char   insert if string not to long
+
+  * src/getexchange.c, src/getexchange.h: Move prototypes of internal functions
+  to hide visibility  - add comments
+
 2012-12-24  Thomas Beierlein <tomjbe@gentoo.org>
 
   * NEWS, configure.ac: prepare for tlf-1.2.0_pre3 prerelease

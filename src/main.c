@@ -86,7 +86,6 @@ int other_flg;
 int one_point = 0;
 int two_point = 0;
 int three_point = 0;
-int two_eu_three_dx_points = 0;
 int ssbpoints;
 int cwpoints;
 int lowband_point_mult = 0;
@@ -110,7 +109,7 @@ int exchange_serial = 0;
 int wysiwyg_once = 0;
 int wysiwyg_multi = 0;
 int country_mult = 0;
-int fixedmult = 0;
+float fixedmult = 0;
 int sectn_mult = 0;
 int dx_arrlsections = 0;
 int serial_section_mult = 0;
@@ -166,7 +165,7 @@ char sp_return[80] = " \n";
 char cq_return[80] = " \n";
 char whichcontest[40] = "qso";
 int defer_store = 0;
-char buffer[162];
+extern char buffer[];
 char call[20];
 char logfile[120] = "general.log";
 char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
@@ -289,7 +288,7 @@ int rig_comm_success = 0;
 int simulator = 0;
 int simulator_mode = 0;
 int simulator_seed = 8327;
-long system_secs;
+int system_secs;
 char tonecpy[5];
 char simulator_tone[5];
 
@@ -458,7 +457,6 @@ int main(int argc, char *argv[])
     }
 
     buffer[0] = '\0';
-    buffer[79] = '\0';
     bufloc = 0;
 
     strcat(logline0, backgrnd_str);
@@ -767,7 +765,7 @@ int main(int argc, char *argv[])
 	bm_init();			/* initialize bandmap */
 
 	/* Create the first thread */
-	ret = pthread_create(&thrd1, NULL, (void *) logit, NULL);
+	ret = pthread_create(&thrd1, NULL, logit, NULL);
 	if (ret) {
 	    perror("pthread_create: logit");
 	    endwin();
@@ -775,9 +773,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* Create the second thread */
-	ret =
-	    pthread_create(&thrd2, NULL, (void *) background_process,
-			   NULL);
+	ret = pthread_create(&thrd2, NULL, background_process, NULL);
 	if (ret) {
 	    perror("pthread_create: backgound_process");
 	    endwin();

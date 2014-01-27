@@ -83,9 +83,9 @@ writes adif file (*.adif)
 
 .TR
 .B :CHAr 
-Input number of characters for CW auto-start. Possible values are 2..5, default is 0 (off).
-After typing as many characters in the input field TLF starts sending the callsign without further keystrokes. You can type in the rest off the call (but quickly). As soon as you stop typing (atm for 0.7s) TLF automatically send the exchange and the cursor jumps to the exchange field. ESC stops sending.
-This works only in CW CONTEST in RUN mode. 
+Input the number of characters for CW auto-start. Possible values are 2..5, default is 0 (off).
+After typing as many characters in the input field TLF starts sending the callsign without further keystrokes. You can type in the rest off the call (but quickly). As soon as the sending catches your last typed character TLF automatically sends the exchange and the cursor jumps to the exchange field. ESC stops sending.
+This works only in CW contests in RUN mode. 
 
 .TR
 .B :CHEck, :NOCheck
@@ -292,6 +292,10 @@ Start Auto_CQ (sends F12 message)
 .TR
 .B Tab
 Switch between call input and exchange fields
+
+.TR
+.B Space
+Switch from Call input to exchange field
 
 .TR
 .B +
@@ -573,8 +577,8 @@ Used to shift the tlf time with respect to the computer clock. Normally 0.
 This node transmits the time over the network (only one master allowed!)
 
 .TR
-.B ADDNODE=<node address>
-Adds an ip address to which we broadcast stuff.
+.B ADDNODE=<node address>:<Port number>
+Adds an ip address (and optionally a port number) to which we broadcast stuff.
 (WARNING: Only add addresses of other nodes).
 
 .TR
@@ -600,7 +604,7 @@ You may also need the keyer for PTT or Band info output.
 
 .TR
 .B MFJ1278_KEYER=<serial port>
-Switches supprt for the MFJ1278B multi-mode controller on.
+Switches support for the MFJ1278B multi-mode controller on.
 The 1278 supports CW as well as RTTY contesting.
 Fixed baud rate  9600 Baud.
 
@@ -974,8 +978,8 @@ Points for countries in own continent.
 Points for station in other continents
 
 .TR
-.B 2EU3DX_POINTS<x>
-2 point for own continent, 3 points for other continents (outdated, see MY_CONTINENT_POINTS and DX_POINTS).
+.B 2EU3DX_POINTS
+(deprectated, see MY_CONTINENT_POINTS and DX_POINTS).
 
 .TR
 .B COUNTRY_LIST_POINTS=<x>

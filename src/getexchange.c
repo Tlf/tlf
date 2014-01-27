@@ -51,7 +51,7 @@ int getexchange(void)
     extern char ituzone[];
     extern char my_rst[];
     extern int change_rst;
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern char hiscall[];
     extern char buffer[];
@@ -196,8 +196,7 @@ int getexchange(void)
 	    {
 		if (ctcomp != 0) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			strcat(buffer, message[1]);
-			sendbuf();
+			sendmessage(message[1]);
 
 		    } else
 			play_file(ph_message[1]);
@@ -210,8 +209,7 @@ int getexchange(void)
 	    {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			strcat(buffer, message[2]);	/* F3 */
-			sendbuf();
+			sendmessage(message[2]);	/* F3 */
 
 		    } else
 			play_file(ph_message[2]);
@@ -235,8 +233,8 @@ int getexchange(void)
 	case 130 ... 138:
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[x - 129]);	/* F2..F10 */
-		    sendbuf();
+		    sendmessage(message[x - 129]);	/* F2..F10 */
+
 		} else
 		    play_file(ph_message[x - 129]);
 
@@ -245,8 +243,8 @@ int getexchange(void)
 	case 140:
             {
                 if (trxmode == CWMODE || trxmode == DIGIMODE) {
-                    strcat(buffer, message[10]);        /* F11 */
-                    sendbuf();
+                    sendmessage(message[10]);        /* F11 */
+
                 } else
                     play_file(ph_message[10]);
 
@@ -254,8 +252,7 @@ int getexchange(void)
             }
 	case 176 ... 186:
 	    {
-		strcat(buffer, message[x - 162]);	/* alt-0 to alt-9 */
-		sendbuf();
+		sendmessage(message[x - 162]);	/* alt-0 to alt-9 */
 
 		break;
 	    }

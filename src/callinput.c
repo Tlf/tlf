@@ -66,7 +66,7 @@ char callinput(void)
     extern int cluster;
     extern int announcefilter;
     extern char buffer[];
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern float freq;
     extern float mem;
@@ -202,8 +202,7 @@ char callinput(void)
 	    {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			strcat(buffer, message[2]);	/* F3 */
-			sendbuf();
+			sendmessage(message[2]);	/* F3 */
 
 		    } else
 			play_file(ph_message[2]);
@@ -500,8 +499,7 @@ char callinput(void)
 		searchlog(hiscall);
 
 		if (isdupe != 0) {
-		    strcat(buffer, message[6]);	/* as with F7 */
-		    sendbuf();
+		    sendmessage(message[6]);	/* as with F7 */
 		    cleanup();
 		    clear_display();
 		}
@@ -511,8 +509,7 @@ char callinput(void)
 	    {
 		if (ctcomp != 0) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			strcat(buffer, message[1]);
-			sendbuf();
+			sendmessage(message[1]);
 
 		    } else
 			play_file(ph_message[1]);
@@ -579,8 +576,7 @@ char callinput(void)
 
 	case 176 ... 186:
 	    {
-		strcat(buffer, message[x - 162]);	/* alt-0 to alt-9 */
-		sendbuf();
+		sendmessage(message[x - 162]);	/* alt-0 to alt-9 */
 
 		break;
 	    }
@@ -593,12 +589,12 @@ char callinput(void)
 			if (demode == SEND_DE)
 			    strcat(buffer, "DE ");
 			strcat(buffer, call);		/* S&P */
+			sendbuf();
 		    }
 		    else {
-			strcat(buffer, message[0]);	/* CQ */
+			sendmessage(message[0]);	/* CQ */
 		    }
 
-		    sendbuf();
 
 		    if (simulator != 0) {
 			simulator_mode = 1;
@@ -616,8 +612,7 @@ char callinput(void)
 	case 130 ... 138:			/* F2.. F10 */
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[x - 129]);	/* F2 */
-		    sendbuf();
+		    sendmessage(message[x - 129]);	/* F2 */
 
 		} else
 		    play_file(ph_message[x - 129]);
@@ -627,8 +622,8 @@ char callinput(void)
 	case 140:
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, message[10]);	/* F11 */
-		    sendbuf();
+		    sendmessage(message[10]);	/* F11 */
+
 		} else
 		    play_file(ph_message[10]);
 
@@ -1047,6 +1042,7 @@ char callinput(void)
     return (x);
 }
 
+
 /** autosend function
  *
  * autosend allow an operator in RUN mode to just enter the call of the
@@ -1056,7 +1052,8 @@ char callinput(void)
  *  - shorter calls have to be finished with ENTER key
  *  - as soon as autosend starts only alfanumerical keys are accepted
  *  - no edit after input possible
- *  - switch to sending exchange after 700 ms timeout
+ *  - calculates expected time to send call from cw speed and
+ *  - switches to sending exchange after that time is reached
  *
  *  \return last typed key, ESC or \n
  *          ESC - transmission has stopped
@@ -1071,8 +1068,10 @@ int autosend()
     extern char hiscall[];
     extern char wkeyerbuffer[];
 
-    GTimer *timeout;
+    GTimer *timer;
+    double timeout, timeout_sent;
     int x;
+    int char_sent;
 
     strcpy(buffer, hiscall);
     early_started = 1;
@@ -1081,15 +1080,29 @@ int autosend()
     sending_call = 0;
     strcpy(hiscall_sent, hiscall);
 
-    timeout = g_timer_new();
+    char_sent = 0; 			/* no char sent so far */
+    timeout_sent = (1.2 / GetCWSpeed()) * getCWdots(hiscall[char_sent]);
+
+    timer = g_timer_new();
+    timeout = (1.2 / GetCWSpeed()) * cw_message_length(hiscall);
 
     x = -1;
     while ((x != 27) && (x != '\n')) {
 	nodelay(stdscr, TRUE);
 	x = -1;
-	while ((x == -1) && (g_timer_elapsed(timeout, NULL) < 0.7)) {
+	while ((x == -1) && (g_timer_elapsed(timer, NULL) < timeout)) {
+
+	    highlightCall(char_sent + 1);
 
 	    usleep(10000);
+
+	    if (g_timer_elapsed(timer, NULL) > timeout_sent) {
+		/* one char sent - display and set new timeout */
+		char_sent ++;
+		timeout_sent +=
+		    (1.2 / GetCWSpeed()) * getCWdots(hiscall[char_sent]);
+
+	    }
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
@@ -1124,7 +1137,7 @@ int autosend()
 	    hiscall[len+1] = '\0';
 
 	    /* display it  */
-	    addch(x);
+	    printcall();
 
 	    /* send it to cw */
 	    append[0] = x;
@@ -1132,16 +1145,16 @@ int autosend()
 	    strcat(wkeyerbuffer, append);
 	    sendbuf();
 
+	    /* add char length to timeout */
+	    timeout += (1.2 / GetCWSpeed()) * getCWdots((char) x);
+
 	    len = strlen(hiscall_sent);
 	    hiscall_sent[len] = x;
 	    hiscall_sent[len+1] = '\0';
-
-	    /* and reset timer */
-	    g_timer_reset(timeout);
 	}
     }
 
-    g_timer_destroy(timeout);
+    g_timer_destroy(timer);
     return x;
 }
 
