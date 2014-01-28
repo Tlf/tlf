@@ -23,6 +23,7 @@
 
 #include "showpxmap.h"
 #include "dxcc.h"
+#include "foc.h"
 
 int show_mults(void)
 {
@@ -31,12 +32,19 @@ int show_mults(void)
     extern int bandinx;
     extern int cqww;
 
+    extern int foc;
+
     int i, j, k, l, bandmask = 0;
     static char prefix[5];
     static char zonecmp[3] = "";
     int ch;
 
     int iMax = dxcc_count();
+
+    if (foc == 1) {
+	foc_show_cty();
+	return 0;
+    }
 
     if (cqww == 1) {
 
@@ -79,8 +87,8 @@ int show_mults(void)
 
 		for (j = 0; j <= 19; j++) {
 
-		    while ((i < iMax) && 
-			((strncmp(dxcc_by_index(i) -> continent, zonecmp, 2)) 
+		    while ((i < iMax) &&
+			((strncmp(dxcc_by_index(i) -> continent, zonecmp, 2))
 				!= 0)) {
 			i++;
 		    }

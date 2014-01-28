@@ -27,5 +27,6 @@ void foc_init(void);
 int foc_score(char *call);
 int foc_total_score();
 void foc_show_scoring(int start_colmn);
+void foc_show_cty();
 
 #endif /* end of include guard: _FOC_H */

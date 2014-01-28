@@ -20,7 +20,11 @@
 #include "foc.h"
 #include "tlf.h"
 #include "dxcc.h"
-#include <ncurses.h>
+#include "initial_exchange.h"
+#include "getctydata.h"
+#include "onechar.h"
+#include "displayit.h"
+#include <curses.h>
 #include <glib.h>
 
 extern int foc;
@@ -30,6 +34,11 @@ extern int searchflg;
 extern int total;
 extern int countries[];
 
+struct pos {
+    int column;
+    int line;
+};
+
 int g4foc_index; 		/* index of Gx4FOC in callarray */
 int g4foc_count; 		/* how often did we work him */
 int five_banders;
@@ -37,7 +46,6 @@ int six_banders;
 int cntry;
 int cont;
 
-void count_56_banders();
 
 /** Initialize settings for FOC contest */
 void foc_init(void) {
@@ -47,7 +55,6 @@ void foc_init(void) {
     searchflg = 1;
 }
 
-/** \todo got_g4foc needs to be reset */
 
 /** calculate score for last QSO
  *
@@ -68,9 +75,10 @@ int foc_score(char *call) {
     }
 }
 
+/* display scoring */
 
 /* count worked contest bands */
-int nr_of_bands(int x) {
+static int nr_of_bands(int x) {
     int i;
     int nr = 0;
 
@@ -86,7 +94,7 @@ int nr_of_bands(int x) {
  *
  * count the number of stations worked on 5 or 6 band (including G4FOC)
  */
-void count_56_banders() {
+static void count_56_banders() {
     int i, nr;
 
     extern int call_band[];
@@ -105,7 +113,7 @@ void count_56_banders() {
 }
 
 
-int search_g4foc_in_callarray(void) {
+static int search_g4foc_in_callarray(void) {
     extern int callarray_nr;
     extern char callarray[MAX_CALLS][20];
 
@@ -127,7 +135,7 @@ int search_g4foc_in_callarray(void) {
 
 
 /* count nr of countries worked on all bands */
-int get_nr_cntry() {
+static int get_nr_cntry() {
     int cnt = 0;
     int i;
 
@@ -141,7 +149,7 @@ int get_nr_cntry() {
 
 
 /* count number of continents worked on all bands */
-int get_nr_cont() {
+static int get_nr_cont() {
     extern int call_country[];
     extern int callarray_nr;
 
@@ -202,7 +210,6 @@ int foc_total_score() {
 
 /** display scoring for FOC marathon */
 void foc_show_scoring(int start_column) {
-
     int points = foc_total_score();
 
 #ifdef old_format
@@ -217,5 +224,89 @@ void foc_show_scoring(int start_column) {
 	    five_banders * 10, six_banders * 15, points);
 #endif
 
+}
+
+
+/* show needed countries */
+
+/** build list of ´possible countries
+ *
+ * Scan initial exchange list and build a list of all countries
+ * in that list. For each country check if we did already work that
+ * country. Remember Cty and worked status in a GTree which
+ * makes the entries unique and sorts it
+ * \return 	pointer to the new GTree
+ */
+static GTree *build_country_list(struct ie_list *main_ie_list) {
+    GTree *tree;
+    int j;
+    struct ie_list *list_head = main_ie_list;
+
+    tree = g_tree_new_full((GCompareDataFunc)g_ascii_strcasecmp, NULL, g_free, NULL);
+
+    while (list_head) {
+	j = getctydata(list_head->call);
+	g_tree_insert(tree, g_strdup(dxcc_by_index(j)->pfx), GINT_TO_POINTER(countries[j]));
+
+	list_head = list_head->next;
+    }
+
+    return tree;
+}
+
+
+static gboolean show_it(gpointer key, gpointer val, gpointer data) {
+    struct pos *pos = (struct pos *)data;
+
+    if (GPOINTER_TO_INT(val) == 0) {
+	standout();
+    	attron(COLOR_PAIR(C_INPUT));
+    }
+    else {
+	standend();
+	attron(COLOR_PAIR(C_HEADER));
+    }
+
+    mvprintw(pos->line, pos->column, "%-3s ", key);
+
+    pos->column += 4;
+    if (pos->column > 76) {
+	pos->column = 0;
+	pos->line ++;
+	if (pos->line == 7) 		/* display full */
+	    return TRUE; 		/* stop iterator */
+    }
+
+    return FALSE; 			/* do not stop until end of tree */
+}
+
+
+void foc_show_cty() {
+    extern struct ie_list *main_ie_list;
+
+    GTree *tree;
+    struct pos pos;
+    int l;
+
+
+    tree = build_country_list(main_ie_list);
+
+    attron(COLOR_PAIR(C_INPUT) | A_STANDOUT);
+    for (l = 1; l < 6; l++)
+	mvprintw(l, 0,
+		 "                                                                                ");
+
+    pos.line   = 1;
+    pos.column = 0;
+
+    g_tree_foreach(tree, (GTraverseFunc)show_it, &pos);
+
+    mvprintw(12, 29, "press a key...");
+    refreshp();
+
+    onechar();
+    displayit();
+
+    g_tree_destroy(tree);
 }
 
