@@ -25,6 +25,7 @@
 #include "globalvars.h"
 #include "showscore.h"
 #include <assert.h>
+#include <math.h>
 
 #define START_COL 45	/* start display in these column */
 
@@ -61,8 +62,8 @@ void show_summary( int points, int multi )
 	    points, multi, points * multi);
     }
     else {
-	mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %.1f",
-	    points, multi, points * multi * fixedmult);
+	mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
+	    points, multi, (int)floor(points * multi * fixedmult));
     }
     
 }

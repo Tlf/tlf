@@ -828,7 +828,9 @@ projection, and center the map on your qth.
 .B POWERMULT=<multi>
 Use this value to multiple the final points. If the contest rule allows
 to use the power multiplier (IE. Stewperry, ARRL-FD), you can pass that
-here. Note, that the type of POWERMULT is float, eg. POWERMULT=1.5
+here. Note, that the type of POWERMULT is float, eg. POWERMULT=1.5, but
+the final score will rounded by floor(), which gives the largest integer
+value that is not greater than multiplied score.
 
 .SH "RULES"
 .TR
