@@ -17,8 +17,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#define NDEBUG
-#define NEWCODE = 1
 
 #include "tlf.h"
 #include "globalvars.h"
@@ -187,7 +185,6 @@ int sending_call = 0;
 int early_started = 0;			/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
 char lastcall[20];
-char lastcomment[40];
 char qsonrstr[5] = "0001";
 char band[9][4] =
     { "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10" };
@@ -206,8 +203,7 @@ int totalzones = 0;
 int secs = 0;
 int countrynr;
 int mycountrynr = 215;
-int points = 0;
-int total = 0;
+int total = 0; 		/**< total number of qso points */
 int band_score[9];
 int dupe = 0;
 int callfound = 0;

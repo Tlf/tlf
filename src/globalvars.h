@@ -113,7 +113,6 @@ extern char my_rst[];
 extern char his_rst[];
 extern char section[];
 extern int wazmult;
-extern char lastcomment[];
 extern int addcallarea;
 extern int addcty;
 extern char zone_fix[];
