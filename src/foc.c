@@ -105,9 +105,9 @@ static void count_56_banders() {
 
     for (i = 0; i < callarray_nr; i++) {
     	nr = nr_of_bands(call_band[i]);
-	if ( nr == 5)
+	if ( nr >= 5) 			/* sixbanders are also fivebanders */
 	    five_banders++;
-	else if (nr == 6)
+	if (nr == 6)
 	    six_banders++;
     }
 }
@@ -194,14 +194,14 @@ int foc_total_score() {
 
     /* count 5 and 6 banders and eventually correct for G4FOC */
     count_56_banders();
-    if (g4foc_count == 5)
+    if (g4foc_count >= 5)
 	five_banders++;
-    else if (g4foc_count == 6)
+    if (g4foc_count == 6)
 	six_banders++;
 
     points = total + 		/* total contains FOC qsos twice */
 	five_banders * 10 +
-	six_banders * 15 +
+	six_banders * 5 +
 	cntry * 2 +
 	cont * 5;
 
@@ -212,17 +212,10 @@ int foc_total_score() {
 void foc_show_scoring(int start_column) {
     int points = foc_total_score();
 
-#ifdef old_format
-    mvprintw(4, start_column, "Ctry: %3d  Cont: %1d  G4FOC: %c",
-	    cntry, cont, got_g4foc ? 'x' : '-');
-    mvprintw(5, start_column, "  5b: %3d  6b: %3d  Score: %d",
-	    five_banders, six_banders, points);
-#else
     mvprintw(4, start_column, "%s", " QSO   Cty  Cont    5b    6b  Score");
     mvprintw(5, start_column, "%4d   %3d    %2d  %4d  %4d   %4d",
 	    total, cntry * 2, cont * 5,
-	    five_banders * 10, six_banders * 15, points);
-#endif
+	    five_banders * 10, six_banders * 5, points);
 
 }
 
