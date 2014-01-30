@@ -3,7 +3,7 @@
 #   DL1JBE, OK1RR  10.1.2014    #
 #################################
 #
-CONTEST=foc
+CONTEST=focmarathon
 LOGFILE=marathon.log
 INITIAL_EXCHANGE=focmarathon.txt
 RECALL_MULTS
