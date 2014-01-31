@@ -527,20 +527,3 @@ int native_rig_reset_rit(int rignumber)
     return (0);
 }
 
-/* -------------------------------------- set cw speed --------------------------------- */
-
-int orion_set_cw_speed(int speed)
-{
-    int rc;
-    extern int native_rig_fd;
-
-    char buffer[10];
-
-    //sprintf(buffer, "%s%d%c%", "*CS", speed, '\015');     ### bug fix
-    sprintf(buffer, "%s%d%c", "*CS", speed, '\015');
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, buffer, strlen(buffer));
-
-    return (0);
-}

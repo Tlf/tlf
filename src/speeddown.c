@@ -78,15 +78,5 @@ int speeddown(void)
 	    sendbuf();
 	}
     }
-    if (keyerport == ORION_KEYER) {
-
-	if (speed >= 1) {
-
-	    speed--;
-
-	    orion_set_cw_speed(GetCWSpeed());
-
-	}
-    }
     return (speed);
 }

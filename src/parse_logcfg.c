@@ -1275,7 +1275,7 @@ int parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 142:{
-		keyerport = ORION_KEYER;
+		KeywordNotSupported(teststring);
 		break;
 	    }
     case 143:{
