@@ -228,11 +228,12 @@ int init_tlf_rig(void)
 
 int close_tlf_rig(RIG * my_rig)
 {
+    extern char rigportname[];
 
     rig_close(my_rig);		/* close port */
     rig_cleanup(my_rig);	/* if you care about memory */
 
-    printf("port %s closed ok \n", SERIAL_PORT);
+    printf("port %s closed ok \n", rigportname);
 
     return (0);
 }
@@ -327,31 +328,6 @@ int native_rig_set_freq(int rignumber, int outfreq)
     const char eom[2] = { '\015', '\0' };	// ORION
 
     sprintf(line, "%s%d", "*AF", outfreq);
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    outfreq = 0;
-
-    return (0);
-}
-
-/* ------------------------------------------ native reset rit----------------------------- */
-
-int native_rig_reset_rit(int rignumber)
-{
-    int rc;
-    extern int native_rig_fd;
-#ifdef HAVE_LIBHAMLIB		//code for Hamlib interface
-    extern freq_t outfreq;
-#else
-    extern int outfreq;
-#endif
-
-    char line[20] = "*RMR0";
-    const char eom[2] = { '\015', '\0' };	// ORION
-
     strcat(line, eom);
 
     if (native_rig_fd > 0)

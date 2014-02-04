@@ -293,7 +293,6 @@ int gettxinfo(void)
 	outfreq = 0;
 
     } else if (outfreq == RESETRIT) {
-	if (rignumber < 2000) {
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	    retval = rig_set_rit(my_rig, RIG_VFO_CURR, 0);
 
@@ -303,8 +302,6 @@ int gettxinfo(void)
 		sleep(1);
 	    }
 #endif
-	} else
-	    native_rig_reset_rit(rignumber);
 
 	outfreq = 0;
 
