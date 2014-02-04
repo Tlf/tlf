@@ -18,7 +18,11 @@
  */
 
 #include "sendqrg.h"
-#include "tlf.h"
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#include "startmsg.h"
 
 void send_bandswitch(int trxqrg);
 
@@ -73,10 +77,10 @@ int sendqrg(void)
 
     }
 
-    return (trxqrg);
+    return ((int)trxqrg);
 }
 
-/********************************************************************************************/
+/**************************************************************************/
 #ifdef HAVE_LIBHAMLIB		//code for Hamlib interface
 
 int init_tlf_rig(void)

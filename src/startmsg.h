@@ -16,6 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef STARTMSG_H
+
+#define STARTMSG_H
 
 
 void showmsg(char *message);	// output text
@@ -23,4 +26,4 @@ void shownr(char *message, int nr); // output text + number
 void showstring(char *message1, char *message2);  // output 2 strings
 
 
-
+#endif /* end of include guard: STARTMSG_H */
