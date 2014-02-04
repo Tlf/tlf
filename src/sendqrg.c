@@ -87,7 +87,6 @@ int init_tlf_rig(void)
     extern freq_t outfreq;
     extern char rigconf[];
     extern int serial_rate;
-    extern int rig_port;
     extern char rigportname[];
     extern int verbose;
     extern int debugflag;
@@ -117,14 +116,12 @@ int init_tlf_rig(void)
 	    rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
 	    strncpy(my_rig->state.rigport.pathname, rigportname,
 		    FILPATHLEN);
-	} else {
-	    if (rig_port == 0)
-		strncpy(my_rig->state.rigport.pathname, "/dev/ttyS0",
-			FILPATHLEN);
-	    else
-		strncpy(my_rig->state.rigport.pathname, "/dev/ttyS1",
-			FILPATHLEN);
+	} else
+	{
+	    showmsg("Missing rig port name!");
+	    return (-1);
 	}
+
 
     }
 
