@@ -271,7 +271,6 @@ int ssb_bandwidth = 3000;
 int cw_bandwidth = 0;
 int serial_rate = 2400;
 char rigportname[40];
-int native_rig_fd = 0;
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;

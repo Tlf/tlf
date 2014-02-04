@@ -241,51 +241,7 @@ int close_tlf_rig(RIG * my_rig)
 
 /* ------------------------------------------ native get mode ----------------------------- */
 
-int native_rig_get_mode(rignumber)
-{
-    extern int native_rig_fd;
-    extern int trxmode;
-
-    int i, rc;
-    char line[20] = "";
-    char inputline[80] = "";
-    const char eom[2] = { '\015', '\0' };
-
-    strcpy(line, "?RMM");
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    usleep(30000);
-
-    inputline[0] = '\0';
-
-    if (native_rig_fd > 0) {
-
-	i = read(native_rig_fd, inputline, sizeof(inputline) - 1);
-
-	if (strncmp(inputline, "Z!", 2) != 0) {
-	    if (strncmp(inputline, "@RMM", 4) == 0) {
-		if (inputline[4] == '0')
-		    trxmode = SSBMODE;
-		else if (inputline[4] == '1')
-		    trxmode = SSBMODE;
-		else
-		    trxmode = CWMODE;
-		mvprintw(23, 30, "%s", inputline);
-		refreshp();
-		sleep(1);
-	    }
-	} else {
-	    mvprintw(24, 0, "Rig communication error");
-	    refreshp();
-	    sleep(2);
-	}
-    }
-
-    return (0);
-}
+int native_rig_fd = 0;
 
 
 /* ------------------------------------------ native rig get freqency --------------------------*/
