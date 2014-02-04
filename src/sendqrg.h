@@ -47,8 +47,6 @@ int sendqrg(void);
 int init_tlf_rig (void);
 int close_tlf_rig (RIG *my_rig);
 #endif
-int init_native_rig(void);
-int close_native_rig(void);
 float native_rig_get_freq (int  my_rig);
 int  native_rig_set_mode(int rignumber,  int mode);
 int  native_rig_set_freq(int rignumber,  int outfreq);
