@@ -88,7 +88,6 @@ int init_tlf_rig(void)
     extern char rigconf[];
     extern int serial_rate;
     extern char rigportname[];
-    extern int verbose;
     extern int debugflag;
 
     vfo_t vfo;
@@ -239,102 +238,4 @@ int close_tlf_rig(RIG * my_rig)
 }
 
 #endif				// end code for Hamlib interface
-
-/* ------------------------------------------ native get mode ----------------------------- */
-
-int native_rig_fd = 0;
-
-
-/* ------------------------------------------ native rig get freqency --------------------------*/
-
-float native_rig_get_freq(int rignumber)	// ORION only
-{
-    extern int native_rig_fd;
-    extern int rig_comm_error;
-    extern int rig_comm_success;
-
-    char line[20] = "";
-    char inputline[20] = "";
-    const char eom[2] = { '\015', '\0' };	// ORION
-    int i, rc, rigfreq;
-
-    strcpy(line, "?AF");	// ORION
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    usleep(100000);
-
-    if (native_rig_fd > 0) {
-
-	i = read(native_rig_fd, inputline, sizeof(inputline) - 1);
-
-	if (strncmp(inputline, "Z!", 2) != 0) {
-	    if (strncmp(inputline, "@AF", 3) == 0
-		&& strlen(inputline) == 12) {
-		rigfreq = atof(inputline + 3);
-		rig_comm_success++;
-		return (rigfreq);
-	    } else {
-		rig_comm_error++;
-	    }
-	} else {
-	    mvprintw(24, 0, "Rig communication error");
-	    refreshp();
-	}
-	inputline[0] = '\0';
-    }
-
-    return (0.0);
-}
-
-/* ------------------------------------------ native set mode ----------------------------- */
-
-int native_rig_set_mode(int rignumber, int mode)
-{
-    extern int native_rig_fd;
-
-    int rc;
-    char line[20] = "";
-    const char eom[2] = { '\015', '\0' };	// ORION
-
-    switch (mode) {
-    case N_RIGMODE_USB:
-	strcpy(line, "*RMM0");	// ORION
-	break;
-    case N_RIGMODE_LSB:
-	strcpy(line, "*RMM1");
-	break;
-    default:
-	strcpy(line, "*RMM3");
-    }
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    return (0);
-}
-
-/* ------------------------------------------ native set frequency----------------------------- */
-
-int native_rig_set_freq(int rignumber, int outfreq)
-{
-    int rc;
-    extern int native_rig_fd;
-
-    char line[20] = "";
-    const char eom[2] = { '\015', '\0' };	// ORION
-
-    sprintf(line, "%s%d", "*AF", outfreq);
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    outfreq = 0;
-
-    return (0);
-}
 
