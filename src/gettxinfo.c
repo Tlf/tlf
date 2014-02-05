@@ -31,11 +31,9 @@ int gettxinfo(void)
 
 #ifdef HAVE_LIBHAMLIB
     extern RIG *my_rig;
-    extern freq_t rigfreq;
     extern freq_t outfreq;
     extern int cw_bandwidth;
 #else
-    extern float rigfreq;
     extern int outfreq;
 #endif
     extern float freq;
@@ -47,7 +45,10 @@ int gettxinfo(void)
 
 
 #ifdef HAVE_LIBHAMLIB
+    freq_t rigfreq;
     vfo_t vfo;
+#else
+    float rigfreq;
 #endif
     int retval = 0;
     static int oldbandinx;

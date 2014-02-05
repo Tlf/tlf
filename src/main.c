@@ -257,14 +257,12 @@ char clusterlogin[80] = "";
 #ifdef HAVE_LIBHAMLIB
 rig_model_t myrig_model = 351;
 RIG *my_rig;			/* handle to rig (instance) */
-freq_t rigfreq;			/* input frequency  */
 freq_t outfreq;			/* output  to rig */
 rmode_t rmode;			/* radio mode of operation */
 pbwidth_t width;
 vfo_t vfo;			/* vfo selection */
 port_t myport;
 #else
-float rigfreq;			/* input frequency  */
 int outfreq;			/* output  to rig */
 #endif
 int ssb_bandwidth = 3000;
