@@ -241,17 +241,12 @@ char callinput(void)
 		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 		    mvprintw(12, 0, band[bandinx]);
 		    i--;
-#ifdef HAVE_LIBHAMLIB
+
 		    if (trx_control == 1) {
 
 			outfreq = (int) (bandfrequency[bandinx] * 1000);
 		    }
-#else
-		    if (trx_control == 1 && rignumber >= 2000) {
 
-			outfreq = (int) (bandfrequency[bandinx] * 1000);
-		    }
-#endif
 		    send_bandswitch(bandinx);
 
 		}
@@ -276,20 +271,12 @@ char callinput(void)
 		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 		    mvprintw(12, 0, band[bandinx]);
 
-#ifdef HAVE_LIBHAMLIB
-
 		    if (trx_control == 1) {
 			freq = bandfrequency[bandinx];
 
 			outfreq = (int) (bandfrequency[bandinx] * 1000);
 		    }
-#else
-		    if (trx_control == 1 && rignumber >= 2000) {
-			freq = bandfrequency[bandinx];
 
-			outfreq = (int) (bandfrequency[bandinx] * 1000);
-		    }
-#endif
 		    send_bandswitch(bandinx);
 
 		}
@@ -401,13 +388,13 @@ char callinput(void)
 			mvprintw(12, 0, band[bandinx]);
 			printcall();
 			i--;
-#ifdef HAVE_LIBHAMLIB
+
 			if (trx_control == 1) {
 
 			    outfreq =
 				(int) (bandfrequency[bandinx] * 1000);
 			}
-#endif
+
 			send_bandswitch(bandinx);
 
 		    }
@@ -547,11 +534,8 @@ char callinput(void)
 		    mvprintw(14, 68, "MEM: %7.1f", mem);
 		} else {
 		    freq = mem;
-#ifdef HAVE_LIBHAMLIB
+
 		    outfreq = (int) (mem * 1000);
-#else
-		    outfreq = (mem * 1000);
-#endif
 
 		    mem = 0.0;
 		    mvprintw(14, 68, "            ");
@@ -721,14 +705,12 @@ char callinput(void)
 			attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 			mvprintw(12, 0, band[bandinx]);
 
-#ifdef HAVE_LIBHAMLIB
-
 			if (trx_control == 1) {
 			    freq = bandfrequency[bandinx];
 			    outfreq =
 				(int) (bandfrequency[bandinx] * 1000);
 			}
-#endif
+
 			send_bandswitch(bandinx);
 
 		    }
