@@ -178,7 +178,6 @@ int parse_logcfg(char *inputbuffer)
 #ifdef HAVE_LIBHAMLIB
     extern rig_model_t myrig_model;
 #endif
-    extern int rig_port;
     extern char rigportname[];
     extern int rignumber;
     extern char rigconf[];
@@ -870,11 +869,7 @@ int parse_logcfg(char *inputbuffer)
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
-	    if (buff[0] == '0' || buff[0] == '1') {
-		rig_port = atoi(buff);
-	    } else {
-		strncpy(rigportname, buff, 39);
-	    }
+	    strncpy(rigportname, buff, 39);
 	    break;
 	}
     case 65:{

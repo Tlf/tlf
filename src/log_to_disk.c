@@ -25,6 +25,7 @@
 
 #include "globalvars.h"
 #include "log_to_disk.h"
+#include "score.h"
 
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 

@@ -270,9 +270,7 @@ int outfreq;			/* output  to rig */
 int ssb_bandwidth = 3000;
 int cw_bandwidth = 0;
 int serial_rate = 2400;
-int rig_port = 0;
 char rigportname[40];
-int native_rig_fd = 0;
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;
@@ -622,7 +620,7 @@ int main(int argc, char *argv[])
 
 #ifdef HAVE_LIBHAMLIB		// Code for hamlib interface
 
-	showmsg("HAMLIB defined");
+	showmsg("HAMLIB compiled in");
 
 	if (trx_control != 0) {
 
@@ -631,33 +629,26 @@ int main(int argc, char *argv[])
 
 	    showmsg("Trying to start rig ctrl");
 
-	    /** \todo fix exclusion of newer hamlib models */
-	    if ((int) myrig_model > 1999)
-		status = init_native_rig();
-	    else
-		status = init_tlf_rig();
+	    status = init_tlf_rig();
+
+	    if (status  != 0) {
+		showmsg( "Continue without rig control Y/(N)?");
+		if (toupper( getchar() ) != 'Y') {
+		    endwin();
+		    exit(1);
+		}
+		trx_control = 0;
+		showmsg( "Disabling rig control!");
+		sleep(1);
+	    }
 	}
 #else
-	if (trx_control != 0) {
-//                      trx_control = 0;
-	    showmsg("No Hamlib library, using native driver");
-	    shownr("Rignumber is", rignumber);
-	    shownr("Rig speed is", serial_rate);
-	    status = init_native_rig();
-	    sleep(1);
-	}
-#endif				// end code for hamlib interface
+	showmsg("No Hamlib compiled in!");
 
-	if (status  != 0) {
-	    showmsg( "Continue without rig control Y/(N)?");
-	    if (toupper( getchar() ) != 'Y') {
-		endwin();
-		exit(1);
-	    }
-	    trx_control = 0;
-	    showmsg( "Disabling rig control!");
-	    sleep(1);
-	}
+	trx_control = 0;
+	showmsg( "Disabling rig control!");
+	sleep(1);
+#endif				/* HAVE_LIBHAMLIB */	
 
 
 	if (keyerport == NET_KEYER) {
