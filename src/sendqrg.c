@@ -175,6 +175,8 @@ int init_tlf_rig(void)
 	return (-1);
     }
 
+    rigfreq = 0.0;
+
     retcode = rig_get_vfo(my_rig, &vfo); 	/* initialize RIG_VFO_CURR */
     if (retcode == RIG_OK)
 	rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);

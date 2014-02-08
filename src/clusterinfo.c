@@ -287,7 +287,7 @@ int loadbandmap(void)
     sysminutes = 60 * time_ptr->tm_hour + time_ptr->tm_min;
 
     /* parse log of cluster output and find DX announcements.
-     * Copy them to bandmap array and find spot_age and spot_freq 
+     * Copy them to bandmap array and find spot_age and spot_freq
      */
 
     pthread_mutex_lock (&spot_ptr_mutex);
@@ -313,7 +313,7 @@ int loadbandmap(void)
 	    /* is spot recent? */
 	    if ((timediff + 30) <= (MAXMINUTES + 30)) {
 
-		/* look for duplicates already in bandmap 
+		/* look for duplicates already in bandmap
 		 * => kill older one and keep younger entry */
 		for (k = 0; k <= i - 1; k++) {
 		    callcopy[0] = '\0';
@@ -397,60 +397,62 @@ int loadbandmap(void)
 		if ((fp = fopen(markerfile, "a")) == NULL) {
 		    mvprintw(24, 0, "Opening markerfile not possible.\n");
 		}
-
-		/* show no callsign if MARKERDOTS */
-		if (xplanet == 2)
-		    callcopy[0]='\0';
-
-		dx = dxcc_by_index(x);
-		lon = (int)(dx -> lon) * -1;
-		lat = (int)(dx -> lat);
-
-		*color = '\0';
-
-		if (spot_age[j] > 15)
-		    strcat(color, "Green");
 		else {
-		    iswarc = 0;
-		    if (spot_freq[j] >= 10100.0 && spot_freq[j] <= 10150.0)
-			iswarc = 1;
-		    if (spot_freq[j] >= 18068.0 && spot_freq[j] <= 18168.0)
-			iswarc = 1;
-		    if (spot_freq[j] >= 24890.0 && spot_freq[j] <= 24990.0)
-			iswarc = 1;
 
-		    if (iswarc == 0) {
-			if (spot_freq[j] < 3500.0)
-			    strcat(color, "Red");
-			if (spot_freq[j] >= 3500.0
-			    && spot_freq[j] <= 4000.0)
-			    strcat(color, "Magenta");
-			if (spot_freq[j] >= 7000.0
-			    && spot_freq[j] <= 7300.0)
-			    strcat(color, "Yellow");
-			if (spot_freq[j] >= 14000.0
+		    /* show no callsign if MARKERDOTS */
+		    if (xplanet == 2)
+			callcopy[0]='\0';
+
+		    dx = dxcc_by_index(x);
+		    lon = (int)(dx -> lon) * -1;
+		    lat = (int)(dx -> lat);
+
+		    *color = '\0';
+
+		    if (spot_age[j] > 15)
+			strcat(color, "Green");
+		    else {
+			iswarc = 0;
+			if (spot_freq[j] >= 10100.0 && spot_freq[j] <= 10150.0)
+			    iswarc = 1;
+			if (spot_freq[j] >= 18068.0 && spot_freq[j] <= 18168.0)
+			    iswarc = 1;
+			if (spot_freq[j] >= 24890.0 && spot_freq[j] <= 24990.0)
+			    iswarc = 1;
+
+			if (iswarc == 0) {
+			    if (spot_freq[j] < 3500.0)
+				strcat(color, "Red");
+			    if (spot_freq[j] >= 3500.0
+				&& spot_freq[j] <= 4000.0)
+				strcat(color, "Magenta");
+			    if (spot_freq[j] >= 7000.0
+				&& spot_freq[j] <= 7300.0)
+				strcat(color, "Yellow");
+			    if (spot_freq[j] >= 14000.0
 			    && spot_freq[j] <= 14350.0)
-			    strcat(color, "Blue");
-			if (spot_freq[j] >= 21000.0
-			    && spot_freq[j] <= 21450.0)
-			    strcat(color, "White");
-			if (spot_freq[j] >= 28000.0
-			    && spot_freq[j] <= 29700.0)
-			    strcat(color, "Green");
+				strcat(color, "Blue");
+			    if (spot_freq[j] >= 21000.0
+				&& spot_freq[j] <= 21450.0)
+				strcat(color, "White");
+			    if (spot_freq[j] >= 28000.0
+				&& spot_freq[j] <= 29700.0)
+				strcat(color, "Green");
 
-		    } else {
-			strcat(color, "Cyan");
+			} else {
+			    strcat(color, "Cyan");
+			}
 		    }
+
+		    if (*color != '\0') {
+			sprintf(marker_out, "%4d   %4d   \"%s\"   color=%s\n",
+			    lat, lon, callcopy, color);
+		    }
+
+		    fputs(marker_out, fp);
+
+		    fclose(fp);
 		}
-
-		if (*color != '\0') {
-		    sprintf(marker_out, "%4d   %4d   \"%s\"   color=%s\n", 
-			lat, lon, callcopy, color);
-		}
-
-		fputs(marker_out, fp);
-
-		fclose(fp);
 	    }
 
 	}
@@ -485,7 +487,7 @@ int loadbandmap(void)
 
     refreshp();
 
-    return (i);			
+    return (i);
     //--------------------------- the end  ------------------
 }
 

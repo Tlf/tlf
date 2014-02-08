@@ -60,6 +60,8 @@ int gettxinfo(void)
 
     if (outfreq == 0) {
 
+	rigfreq = 0.0;
+
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	retval = rig_get_vfo(my_rig, &vfo); /* initialiue RIG_VFO_CURR */
 	if (retval == RIG_OK)
