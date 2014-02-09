@@ -102,7 +102,7 @@ int score()
     extern int three_point;
     extern int band_score[9];
     extern int bandinx;
-    extern int foc;
+    extern int focm;
     extern int wpx;
     extern int pfxmult;
     extern int countrynr;
@@ -149,7 +149,7 @@ int score()
 	&& ((countrynr == w_cty) || (countrynr == ve_cty)))
 	band_score[bandinx]--;
 
-    if (foc == 1) {
+    if (focm == 1) {
 	points = foc_score(hiscall);
 
 	return points;

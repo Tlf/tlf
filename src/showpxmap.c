@@ -32,7 +32,7 @@ int show_mults(void)
     extern int bandinx;
     extern int cqww;
 
-    extern int foc;
+    extern int focm;
 
     int i, j, k, l, bandmask = 0;
     static char prefix[5];
@@ -41,7 +41,7 @@ int show_mults(void)
 
     int iMax = dxcc_count();
 
-    if (foc == 1) {
+    if (focm == 1) {
 	foc_show_cty();
 	return 0;
     }

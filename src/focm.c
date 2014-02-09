@@ -27,7 +27,7 @@
 #include <curses.h>
 #include <glib.h>
 
-extern int foc;
+extern int focm;
 extern int contest;
 extern int showscore_flag;
 extern int searchflg;
@@ -49,7 +49,7 @@ int cont;
 
 /** Initialize settings for FOC contest */
 void foc_init(void) {
-    foc = 1;
+    focm = 1;
     contest = 1;
     showscore_flag = 1;
     searchflg = 1;

@@ -98,7 +98,7 @@ void display_header(int *bi)
 }
 
 
-extern int foc;
+extern int focm;
 extern int foc_get_nr_of_points();
 
 /* get total number of points */
@@ -197,7 +197,7 @@ int get_nr_of_mults()
 
 /* calculate total score */
 int get_total_score() {
-    if (foc == 1)
+    if (focm == 1)
 	return foc_total_score();
     else
 	return get_nr_of_points() * get_nr_of_mults();
@@ -320,7 +320,7 @@ int showscore(void)
 
 	    mvprintw(5, START_COL, "Score: %d", get_nr_of_points() );
 	}
-	else if (foc == 1) {
+	else if (focm == 1) {
 	    foc_show_scoring(START_COL);
 	}
 	else {

@@ -27,7 +27,7 @@
 int setcontest(void)
 {
 
-    extern int foc;
+    extern int focm;
     extern int wpx;
     extern int pfxmult;
     extern int cqww;
@@ -85,7 +85,7 @@ int setcontest(void)
     sprint = 0;
     arrldx_usa = 0;
     pacc_pa_flg = 0;
-    foc = 0;
+    focm = 0;
     universal = 0;
     contest = 0;
     showscore_flag = 0;
