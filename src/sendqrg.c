@@ -18,7 +18,11 @@
  */
 
 #include "sendqrg.h"
-#include "tlf.h"
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#include "startmsg.h"
 
 void send_bandswitch(int trxqrg);
 
@@ -73,25 +77,23 @@ int sendqrg(void)
 
     }
 
-    return (trxqrg);
+    return ((int)trxqrg);
 }
 
-/********************************************************************************************/
+/**************************************************************************/
 #ifdef HAVE_LIBHAMLIB		//code for Hamlib interface
 
 int init_tlf_rig(void)
 {
     extern RIG *my_rig;
     extern rig_model_t myrig_model;
-    extern freq_t rigfreq;	/* frequency  */
     extern freq_t outfreq;
     extern char rigconf[];
     extern int serial_rate;
-    extern int rig_port;
     extern char rigportname[];
-    extern int verbose;
     extern int debugflag;
 
+    freq_t rigfreq;		/* frequency  */
     vfo_t vfo;
     int retcode;		/* generic return code from functions */
 
@@ -117,14 +119,12 @@ int init_tlf_rig(void)
 	    rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
 	    strncpy(my_rig->state.rigport.pathname, rigportname,
 		    FILPATHLEN);
-	} else {
-	    if (rig_port == 0)
-		strncpy(my_rig->state.rigport.pathname, "/dev/ttyS0",
-			FILPATHLEN);
-	    else
-		strncpy(my_rig->state.rigport.pathname, "/dev/ttyS1",
-			FILPATHLEN);
+	} else
+	{
+	    showmsg("Missing rig port name!");
+	    return (-1);
 	}
+
 
     }
 
@@ -174,6 +174,8 @@ int init_tlf_rig(void)
 	showmsg("rig_open: error ");
 	return (-1);
     }
+
+    rigfreq = 0.0;
 
     retcode = rig_get_vfo(my_rig, &vfo); 	/* initialize RIG_VFO_CURR */
     if (retcode == RIG_OK)
@@ -231,299 +233,15 @@ int init_tlf_rig(void)
 
 int close_tlf_rig(RIG * my_rig)
 {
+    extern char rigportname[];
 
     rig_close(my_rig);		/* close port */
     rig_cleanup(my_rig);	/* if you care about memory */
 
-    printf("port %s closed ok \n", SERIAL_PORT);
+    printf("port %s closed ok \n", rigportname);
 
     return (0);
 }
 
 #endif				// end code for Hamlib interface
-
-/* ------------------------------------------ native get mode ----------------------------- */
-
-int native_rig_get_mode(rignumber)
-{
-    extern int native_rig_fd;
-    extern int trxmode;
-
-    int i, rc;
-    char line[20] = "";
-    char inputline[80] = "";
-    const char eom[2] = { '\015', '\0' };
-
-    strcpy(line, "?RMM");
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    usleep(30000);
-
-    inputline[0] = '\0';
-
-    if (native_rig_fd > 0) {
-
-	i = read(native_rig_fd, inputline, sizeof(inputline) - 1);
-
-	if (strncmp(inputline, "Z!", 2) != 0) {
-	    if (strncmp(inputline, "@RMM", 4) == 0) {
-		if (inputline[4] == '0')
-		    trxmode = SSBMODE;
-		else if (inputline[4] == '1')
-		    trxmode = SSBMODE;
-		else
-		    trxmode = CWMODE;
-		mvprintw(23, 30, "%s", inputline);
-		refreshp();
-		sleep(1);
-	    }
-	} else {
-	    mvprintw(24, 0, "Rig communication error");
-	    refreshp();
-	    sleep(2);
-	}
-    }
-
-    return (0);
-}
-
-/*--------------------------------- native rig init------------------------------------------------*/
-
-int init_native_rig(void)
-{
-    extern char rigportname[];
-    extern int serial_rate;
-    extern int native_rig_fd;
-    extern int rignumber;
-
-    int i, rc;
-    struct termios termattribs;
-    char line[20] = "";
-    char inputline[80] = "";
-    const char eom[2] = { '\015', '\0' };
-
-    if (rigportname[strlen(rigportname) - 1] == '\n')
-	rigportname[strlen(rigportname) - 1] = '\0';	// remove \n
-
-    if ((native_rig_fd = open(rigportname, O_RDWR | O_NONBLOCK)) < 0) {
-	mvprintw(5, 0, "open of %s failed!!!", rigportname);
-	refreshp();
-	sleep(2);
-	return (-1);
-    }
-
-    termattribs.c_iflag = IGNBRK | IGNPAR | IMAXBEL | IXOFF;
-    termattribs.c_oflag = 0;
-    termattribs.c_cflag = CS8 | CSTOPB | CREAD | CLOCAL;
-    //     termattribs.c_cflag = CS8 | CREAD | CLOCAL;
-
-    termattribs.c_lflag = 0;	/* Set some term flags */
-
-    /*  The ensure there are no read timeouts (possibly writes?) */
-    termattribs.c_cc[VMIN] = 1;
-    termattribs.c_cc[VTIME] = 0;
-
-    switch (serial_rate) {
-
-    case 1200:{
-	    cfsetispeed(&termattribs, B1200);	/* Set input speed */
-	    cfsetospeed(&termattribs, B1200);	/* Set output speed */
-	    break;
-	}
-
-    case 2400:{
-	    cfsetispeed(&termattribs, B2400);	/* Set input speed */
-	    cfsetospeed(&termattribs, B2400);	/* Set output speed */
-	    break;
-	}
-
-    case 4800:{
-	    cfsetispeed(&termattribs, B4800);	/* Set input speed */
-	    cfsetospeed(&termattribs, B4800);	/* Set output speed */
-	    break;
-	}
-
-    case 9600:{
-	    cfsetispeed(&termattribs, B9600);	/* Set input speed */
-	    cfsetospeed(&termattribs, B9600);	/* Set output speed */
-	    break;
-	}
-    case 57600:{
-	    cfsetispeed(&termattribs, B57600);	/* Set input speed */
-	    cfsetospeed(&termattribs, B57600);	/* Set output speed */
-	    break;
-	}
-
-    default:{
-
-	    cfsetispeed(&termattribs, B9600);	/* Set input speed */
-	    cfsetospeed(&termattribs, B9600);	/* Set output speed */
-	}
-    }
-
-    tcsetattr(native_rig_fd, TCSANOW, &termattribs);	/* Set the serial port */
-
-    strcpy(line, "XX");
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    usleep(30000);
-
-    if (native_rig_fd > 0) {
-
-//                      i = read (native_rig_fd, inputline, RIG_BUFFERSIZE-1);  ### bug fix
-	i = read(native_rig_fd, inputline, sizeof(inputline));
-
-	if (strncmp(inputline, "Z!", 2) != 0) {
-	    rignumber = 2000;	// ORION
-	    mvprintw(23, 0, "%s", inputline);
-	    refreshp();
-	    sleep(1);
-	} else {
-	    mvprintw(23, 0, "Rig communication not initialized");
-	    refreshp();
-	    sleep(2);
-	}
-    }
-
-    native_rig_get_mode(rignumber);
-
-    return (0);
-}
-
-/* ----------------------------------------------- close native rig ----------------------------*/
-
-int close_native_rig(void)
-{
-
-    extern int native_rig_fd;
-
-    if (native_rig_fd > 0)
-	close(native_rig_fd);
-
-    return (0);
-}
-
-/* ------------------------------------------ native rig get freqency --------------------------*/
-
-float native_rig_get_freq(int rignumber)	// ORION only
-{
-    extern int native_rig_fd;
-    extern int rig_comm_error;
-    extern int rig_comm_success;
-
-    char line[20] = "";
-    char inputline[20] = "";
-    const char eom[2] = { '\015', '\0' };	// ORION
-    int i, rc, rigfreq;
-
-    strcpy(line, "?AF");	// ORION
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    usleep(100000);
-
-    if (native_rig_fd > 0) {
-
-	i = read(native_rig_fd, inputline, sizeof(inputline) - 1);
-
-	if (strncmp(inputline, "Z!", 2) != 0) {
-	    if (strncmp(inputline, "@AF", 3) == 0
-		&& strlen(inputline) == 12) {
-		rigfreq = atof(inputline + 3);
-		rig_comm_success++;
-		return (rigfreq);
-	    } else {
-		rig_comm_error++;
-	    }
-	} else {
-	    mvprintw(24, 0, "Rig communication error");
-	    refreshp();
-	}
-	inputline[0] = '\0';
-    }
-
-    return (0.0);
-}
-
-/* ------------------------------------------ native set mode ----------------------------- */
-
-int native_rig_set_mode(int rignumber, int mode)
-{
-    extern int native_rig_fd;
-
-    int rc;
-    char line[20] = "";
-    const char eom[2] = { '\015', '\0' };	// ORION
-
-    switch (mode) {
-    case N_RIGMODE_USB:
-	strcpy(line, "*RMM0");	// ORION
-	break;
-    case N_RIGMODE_LSB:
-	strcpy(line, "*RMM1");
-	break;
-    default:
-	strcpy(line, "*RMM3");
-    }
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    return (0);
-}
-
-/* ------------------------------------------ native set frequency----------------------------- */
-
-int native_rig_set_freq(int rignumber, int outfreq)
-{
-    int rc;
-    extern int native_rig_fd;
-
-    char line[20] = "";
-    const char eom[2] = { '\015', '\0' };	// ORION
-
-    sprintf(line, "%s%d", "*AF", outfreq);
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    outfreq = 0;
-
-    return (0);
-}
-
-/* ------------------------------------------ native reset rit----------------------------- */
-
-int native_rig_reset_rit(int rignumber)
-{
-    int rc;
-    extern int native_rig_fd;
-#ifdef HAVE_LIBHAMLIB		//code for Hamlib interface
-    extern freq_t outfreq;
-#else
-    extern int outfreq;
-#endif
-
-    char line[20] = "*RMR0";
-    const char eom[2] = { '\015', '\0' };	// ORION
-
-    strcat(line, eom);
-
-    if (native_rig_fd > 0)
-	rc = write(native_rig_fd, line, strlen(line));
-
-    outfreq = 0;
-
-    return (0);
-}
 

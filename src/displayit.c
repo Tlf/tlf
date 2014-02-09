@@ -47,6 +47,4 @@ void displayit(void)
     mvprintw(5, 0, "");
 
     clear_display();
-
-    refreshp();
 }
