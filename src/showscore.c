@@ -24,7 +24,7 @@
 
 #include "globalvars.h"
 #include "showscore.h"
-#include "foc.h"
+#include "focm.h"
 #include <assert.h>
 
 

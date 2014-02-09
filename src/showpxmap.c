@@ -23,7 +23,7 @@
 
 #include "showpxmap.h"
 #include "dxcc.h"
-#include "foc.h"
+#include "focm.h"
 
 int show_mults(void)
 {

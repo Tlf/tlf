@@ -22,7 +22,7 @@
      *--------------------------------------------------------------*/
 
 #include "setcontest.h"
-#include "foc.h"
+#include "focm.h"
 
 int setcontest(void)
 {

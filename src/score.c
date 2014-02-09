@@ -25,7 +25,7 @@
 #include "score.h"
 #include "tlf.h"
 #include "getctydata.h"
-#include "foc.h"
+#include "focm.h"
 
 int calc_continent(int zone);
 
