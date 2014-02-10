@@ -1,0 +1,67 @@
+#################################
+# FOC Marathon                  #
+#   DL1JBE, OK1RR  10.1.2014    #
+#################################
+#
+CONTEST=focmarathon
+LOGFILE=marathon.log
+INITIAL_EXCHANGE=focmarathon.txt
+RECALL_MULTS
+CABRILLO=FOCMARATHON
+#
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CQ_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = mycall                    #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#  * = AR                        #
+#  = = BT                        #
+#  < = SK                        #
+#  ( = KN                        #
+#  ! = SN                        #
+#  & = AS                        #
+#  > = BK                        #
+#                                #
+##################################
+#
+F1=CQ FOC % % FOC
+F2=@ DE %
+F3=@ ++5NN-- 1437
+F4=TU % FOC
+F5= @
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9= ?
+F10= QRZ?
+F11= PSE K
+F12=++CQ FOC-- % % ++FOC--
+#
+CQ_TU_MSG=TU % FOC
+S&P_TU_MSG=TU 5NN 1437
+#
+#ALT_0=
+#ALT_1=
+#ALT_2=
+#ALT_3=
+#ALT_4=
+#ALT_5=
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+#################################
+#                               #
+#  Voice Keyer Files            #
+#    (F1 to F12)                #
+#################################
+#
+# only cw here

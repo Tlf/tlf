@@ -87,13 +87,13 @@ int init_tlf_rig(void)
 {
     extern RIG *my_rig;
     extern rig_model_t myrig_model;
-    extern freq_t rigfreq;	/* frequency  */
     extern freq_t outfreq;
     extern char rigconf[];
     extern int serial_rate;
     extern char rigportname[];
     extern int debugflag;
 
+    freq_t rigfreq;		/* frequency  */
     vfo_t vfo;
     int retcode;		/* generic return code from functions */
 
@@ -174,6 +174,8 @@ int init_tlf_rig(void)
 	showmsg("rig_open: error ");
 	return (-1);
     }
+
+    rigfreq = 0.0;
 
     retcode = rig_get_vfo(my_rig, &vfo); 	/* initialize RIG_VFO_CURR */
     if (retcode == RIG_OK)

@@ -102,16 +102,17 @@ void *background_process(void *ptr)
 			    "store_qso.c: Error opening debug file.\n");
 
 		}
-		get_time();
-		strftime(debugbuffer, 80, "%H:%M:%S-", time_ptr);
-		if (strlen(lan_message) > 2) {
-		    strcat(debugbuffer, lan_message);
-		    strcat(debugbuffer, "\n");
-		    fputs(debugbuffer, fp);
-		}
-		debugbuffer[0] = '\0';
+		else {
+		    get_time();
+		    strftime(debugbuffer, 80, "%H:%M:%S-", time_ptr);
+		    if (strlen(lan_message) > 2) {
+			strcat(debugbuffer, lan_message);
+			strcat(debugbuffer, "\n");
+			fputs(debugbuffer, fp);
+		    }
 
-		fclose(fp);
+		    fclose(fp);
+		}
 	    }
 	    if ((*lan_message != '\0') && (lan_message[0] == thisnode)) {
 		mvprintw(24, 0,

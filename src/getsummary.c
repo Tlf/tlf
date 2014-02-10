@@ -72,7 +72,7 @@ int getsummary(FILE *fp)
 
     ask(buffer, "POWER: (HIGH,LOW,QRP)");
     fprintf(fp, "CATEGORY-POWER: %s\n", buffer);
-    
+
     ask(buffer, "Category-Station: (FIXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL");
     if (*buffer != '\0')
 	fprintf(fp, "CATEGORY-STATION: %s\n", buffer);
@@ -89,7 +89,7 @@ int getsummary(FILE *fp)
     if (*buffer != '\0')
 	fprintf(fp, "CATEGORY-OVERLAY: %s\n", buffer);
 
-    fprintf(fp, "CLAIMED-SCORE: %d\n", get_nr_of_points() * get_nr_of_mults());
+    fprintf(fp, "CLAIMED-SCORE: %d\n", get_total_score());
 
     ask(buffer, "Club: ");
     if (*buffer != '\0')
@@ -117,7 +117,7 @@ int getsummary(FILE *fp)
     ask(buffer, "List of Operators: (space delimited)");
     fprintf(fp, "OPERATORS: %s\n", buffer);
 
-    ask(buffer, "OFFTIME: (yyyy-mm-dd hhmm yyyy-mm-dd hhmm)"); 
+    ask(buffer, "OFFTIME: (yyyy-mm-dd hhmm yyyy-mm-dd hhmm)");
     if (*buffer != '\0')
 	fprintf(fp, "OFFTIME: %s\n", buffer);
 

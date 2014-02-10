@@ -222,10 +222,10 @@ void sendbuf(void)
 			    buffer[i] = 13;
 		    for (i = 0; i < strlen(buffer); i++)
 			if (buffer[i] == 123)
-			    buffer[i] = 20;
+			    buffer[i] = 20;	/* ctrl-t */
 		    for (i = 0; i < strlen(buffer); i++)
 			if (buffer[i] == 125)
-			    buffer[i] = 18;
+			    buffer[i] = 18;	/* ctrl-r */
 		}
 		strcat(wkeyerbuffer, buffer);
 		buffer[0] = '\0';
