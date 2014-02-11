@@ -42,8 +42,8 @@
 #define COM1_KEYER 2	/* deprecated */
 #define NET_KEYER 3
 #define MFJ1278_KEYER 4
-#define ORION_KEYER 5
-#define K2_KEYER 6
+#define ORION_KEYER 5 	/* deprecated */
+#define K2_KEYER 6 	/* deprecated */
 #define GMFSK 7
 
 #define SINGLE 0        /* single op */

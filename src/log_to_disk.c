@@ -25,6 +25,7 @@
 
 #include "globalvars.h"
 #include "log_to_disk.h"
+#include "score.h"
 
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -67,12 +68,12 @@ int log_to_disk(int from_lan)
 	makelogline();
 
 	store_qso(logline4);
-	
+
 	// send qso to other nodes......
 	send_lan_message(LOGENTRY, logline4);
 
-	if (trx_control && (cqmode == S_P)) 	
-	    addspot();		/* add call to bandmap if in S&P and 
+	if (trx_control && (cqmode == S_P))
+	    addspot();		/* add call to bandmap if in S&P and
 				   no need to ask for frequency */
 
 	hiscall[0] = '\0';	/* reset the call  string */
@@ -94,7 +95,8 @@ int log_to_disk(int from_lan)
 
 	lan_logline[87] = '\0';
 
-	score2();
+	total = total + score2(lan_logline);
+
 	addcall2();
 
 	store_qso(lan_logline);
@@ -131,7 +133,7 @@ int log_to_disk(int from_lan)
     attron(COLOR_PAIR(C_WINDOW));
 
     mvprintw(12, 23, qsonrstr);
-    
+
     if (no_rst) {
 	mvaddstr(12, 44, "---");
 	mvaddstr(12, 49, "---");

@@ -16,42 +16,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <stdio.h>
-#include <termios.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <curses.h>
-#include "startmsg.h"
+#ifndef SENDQRG_H
 
-#include "tlf.h"
+#define SENDQRG_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif
 
-
-#define SERIAL_PORT "/dev/ttyS0"
-
-#define RIG_BUFFERSIZE 8000
-
-#define N_RIGMODE_USB 0
-#define N_RIGMODE_LSB 1
-#define N_RIGMODE_CW 3
-
 int sendqrg(void);
+
 #ifdef HAVE_LIBHAMLIB
 int init_tlf_rig (void);
 int close_tlf_rig (RIG *my_rig);
 #endif
-int init_native_rig(void);
-int close_native_rig(void);
-float native_rig_get_freq (int  my_rig);
-int  native_rig_set_mode(int rignumber,  int mode);
-int  native_rig_set_freq(int rignumber,  int outfreq);
-int  native_rig_reset_rit(int rignumber);
-int orion_set_cw_speed(int speed);
 
+
+#endif /* end of include guard: SENDQRG_H */

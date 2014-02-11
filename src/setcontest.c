@@ -23,10 +23,12 @@
      *--------------------------------------------------------------*/
 
 #include "setcontest.h"
+#include "focm.h"
 
 int setcontest(void)
 {
 
+    extern int focm;
     extern int wpx;
     extern int pfxmult;
     extern int cqww;
@@ -85,6 +87,7 @@ int setcontest(void)
     sprint = 0;
     arrldx_usa = 0;
     pacc_pa_flg = 0;
+    focm = 0;
     universal = 0;
     contest = 0;
     showscore_flag = 0;
@@ -195,6 +198,10 @@ int setcontest(void)
 	contest = 1;
 	showscore_flag = 1;
 	searchflg = 1;
+    }
+
+    if (strcmp(whichcontest, "focmarathon") == 0) {
+	foc_init();
     }
 
     if (strcmp(whichcontest, "other") == 0) {

@@ -180,7 +180,6 @@ int parse_logcfg(char *inputbuffer)
 #ifdef HAVE_LIBHAMLIB
     extern rig_model_t myrig_model;
 #endif
-    extern int rig_port;
     extern char rigportname[];
     extern int rignumber;
     extern char rigconf[];
@@ -526,7 +525,8 @@ int parse_logcfg(char *inputbuffer)
 	    // check that call sign can be found in cty database !!
 	    break;
 	}
-    case 17:{
+    case 17:
+    case 122:{
     	    PARAMETER_NEEDED(teststring);
 	    strcpy(whichcontest, g_strchomp(fields[1]));
 	    if (strlen(whichcontest) > 40) {
@@ -874,11 +874,7 @@ int parse_logcfg(char *inputbuffer)
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
-	    if (buff[0] == '0' || buff[0] == '1') {
-		rig_port = atoi(buff);
-	    } else {
-		strncpy(rigportname, buff, 39);
-	    }
+	    strncpy(rigportname, buff, 39);
 	    break;
 	}
     case 65:{
@@ -922,7 +918,7 @@ int parse_logcfg(char *inputbuffer)
 	    PARAMETER_NEEDED(teststring);
 	    c = toupper(fields[1][0]);
 	    if (c >= 'A' && c <= 'H')
-		thisnode = 'A';
+		thisnode = c;
 	    else
 		WrongFormat(teststring);
 	    break;
@@ -1165,18 +1161,6 @@ int parse_logcfg(char *inputbuffer)
 		exc_cont = 1;
 		break;
 	    }
-    case 122:{						// RULES=
-		PARAMETER_NEEDED(teststring);
-		strcpy(whichcontest, g_strchomp(fields[1]));
-		if (strlen(whichcontest) > 40) {
-		    showmsg
-			("WARNING: contest name is too long! exiting...");
-		    sleep(5);
-		    exit(1);
-		}
-		setcontest();
-		break;
-	    }
     case 123:{		// don't use auto_cq
 		noautocq = 1;
 		break;
@@ -1291,7 +1275,7 @@ int parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 142:{
-		keyerport = ORION_KEYER;
+		KeywordNotSupported(teststring);
 		break;
 	    }
     case 143:{
