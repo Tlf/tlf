@@ -3,9 +3,26 @@
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedus <airween@gmail.com>
  *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/*
+ * original code in HAMLIB
  *
  * src/locator.c header file
- * 
+ *
  * author Stephane Fillod and the Hamlib Group
  * date 2000-2010
  *
@@ -28,26 +45,13 @@
  *
  *  New bearing code added by N0NB was found at:
  *  http://williams.best.vwh.net/avform.htm#Crs
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef LOCATOR2LONGLAT_H
 
-/*
- * original code in HAMLIB
- */
+#define LOCATOR2LONGLAT_H
+
 
 int locator2longlat(double *longitude, double *latitude, const char *locator);
 int check_qra(char *qra);
+
+#endif /* end of include guard: LOCATOR2LONGLAT_H */
