@@ -743,7 +743,7 @@ int main(int argc, char *argv[])
 
 	clear_display();	/* tidy up the display */
 
-	qrb();
+	qrb_();
 
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 

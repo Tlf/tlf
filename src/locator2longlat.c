@@ -58,6 +58,12 @@
 
 const static int loc_char_range[] = { 18, 10, 24, 10, 24, 10 };
 
+/**
+ * converts QTH locator to lattitude and longitude
+ *
+ * Be aware that it returns east longitudes as negative numbers, wheras dxcc cty table
+ * uses negative numbers
+ */
 int locator2longlat(double *longitude, double *latitude, const char *locator) {
         int x_or_y, paircount;
         int locvalue, pair;
