@@ -16,14 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <math.h>
-#include <curses.h>
+#ifndef QRB_H
+#define QRB_H
 
-#define RADIAN  (180.0 / M_PI)
 
-int qrb(void);
+int qrb(double lon1, double lat1, double lon2, double lat2,
+	double *distance, double *azimuth);
+int qrb_(void);
 
+
+#endif /* end of include guard: QRB_H */

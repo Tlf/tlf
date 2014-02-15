@@ -1,8 +1,9 @@
 /*
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
-* 		2011-2013           Thomas Beierlein <tb@forth-ev.de>
+* 		2011-2012           Thomas Beierlein <tb@forth-ev.de>
 * 		2013 		    Fred DH5FS
+*               2013                Ervin Hegedus <airween@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -33,6 +34,7 @@
 #endif
 #include <ctype.h>
 #include "bandmap.h"
+#include "locator2longlat.h"
 
 extern int keyerport;
 extern char tonestr[];
@@ -54,7 +56,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 159	/* commands in list */
+#define  MAX_COMMANDS 161	/* commands in list */
 
 
 int read_logcfg(void)
@@ -149,7 +151,7 @@ int parse_logcfg(char *inputbuffer)
     extern int country_mult;
     extern int wysiwyg_multi;
     extern int wysiwyg_once;
-    extern int fixedmult;
+    extern float fixedmult;
     extern int portable_x2;
     extern int trx_control;
     extern int rit;
@@ -254,7 +256,8 @@ int parse_logcfg(char *inputbuffer)
     extern char rttyoutput[];
     extern int logfrequency;
     extern int ignoredupe;
-
+    extern char myqra[7];
+    
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
 	"disable",				/* deprecated */
@@ -304,9 +307,9 @@ int parse_logcfg(char *inputbuffer)
 	"EDITOR",		/* 45 */
 	"PARTIALS",
 	"USEPARTIALS",
-	"POWERMULT_5",
-	"POWERMULT_2",
-	"POWERMULT_1",		/* 50 */
+	"POWERMULT_5",				/* deprecated */
+	"POWERMULT_2",				/* deprecated */
+	"POWERMULT_1",		/* 50 */	/* deprecated */
 	"MANY_CALLS",				/* deprecated */
 	"SERIAL_EXCHANGE",
 	"COUNTRY_MULT",
@@ -415,7 +418,9 @@ int parse_logcfg(char *inputbuffer)
 	"CW_TU_MSG",		/* 155 */	/* deprecated */
 	"VKCWR",				/* deprecated */
 	"VKSPR",				/* deprecated */
-	"NO_RST"
+	"NO_RST",
+	"MYQRA",
+	"POWERMULT"		/* 160 */
     };
 
     char **fields;
@@ -771,7 +776,7 @@ int parse_logcfg(char *inputbuffer)
 	    use_part = 1;
 	    break;
 	}
-    case 48:{
+    /*case 48:{
 	    fixedmult = 5;
 	    break;
 	}
@@ -782,7 +787,7 @@ int parse_logcfg(char *inputbuffer)
     case 50:{
 	    fixedmult = 1;
 	    break;
-	}
+	} */
     case 51:{
 	    KeywordNotSupported(teststring);
 	    break;
@@ -1344,7 +1349,26 @@ int parse_logcfg(char *inputbuffer)
 		 no_rst = 1;
 		 break;
 	    }
+    case 159:{
+		PARAMETER_NEEDED(teststring);
+		strcpy(myqra, fields[1]);
 
+		if (check_qra(myqra) > 0) {
+		    showmsg
+			("WARNING: Invalid MYQRA parameters! exiting...");
+		    sleep(5);
+		    exit(1);
+		}
+		break;
+	    }
+    case 160:{
+    	    PARAMETER_NEEDED(teststring);
+	    if (fixedmult == 0.0 && atof(fields[1]) > 0.0) {
+	      fixedmult = atof(fields[1]);
+	    }
+	    break;
+	}
+	    
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

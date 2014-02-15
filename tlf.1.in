@@ -837,6 +837,14 @@ Generate marker file for Xplanet. Xplanet will show the last 8 spots
 on an azimuthal map. See the relevant xplanet documentation. Use azimuthal
 projection, and center the map on your qth.
 
+.TR
+.B POWERMULT=<multi>
+Use this value to multiple the final points. If the contest rule allows
+to use the power multiplier (IE. Stewperry, ARRL-FD), you can pass that
+here. Note, that the type of POWERMULT is float, eg. POWERMULT=1.5, but
+the final score will rounded by floor(), which gives the largest integer
+value that is not greater than multiplied score.
+
 .SH "RULES"
 .TR
 The contest rules can be put into separate files. Tlf will first look for a

@@ -101,7 +101,7 @@ int showinfo(int x)
 	 contstr, zonestr);
 
     if (x != 0 && x != mycountrynr) {
-	qrb();
+	qrb_();
 	mvprintw(24, 35, "%.0f km/%.0f deg ", range, bearing);
     }
 

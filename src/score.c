@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2013           Ervin Hegedus <airween@gmail.com>
  *               2013-2014      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,15 +18,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 	/* ------------------------------------------------------------
 	 *     score
 	 *
 	 *--------------------------------------------------------------*/
 
+#include "qrb.h"
+#include "locator2longlat.h"
 #include "score.h"
 #include "tlf.h"
 #include "getctydata.h"
 #include "focm.h"
+#include <math.h>
+
 
 int calc_continent(int zone);
 
@@ -121,6 +127,10 @@ int score()
     extern int lowband_point_mult;
     extern int portable_x2;
     extern char hiscall[];
+    extern char myqra[7];
+    extern char call[];
+    extern int stewperry_flg;
+
 
 /* LZ3NY mods */
 
@@ -265,6 +275,24 @@ int score()
 	return points;
     }
 
+    if (stewperry_flg == 1) {
+
+	double s1long, s1lat, s2long, s2lat, distance, azimuth;
+
+	points = 0;
+
+	if (strlen(comment) > 3) {
+	    locator2longlat(&s1long, &s1lat, comment);
+	    locator2longlat(&s2long, &s2lat, myqra);
+
+	    qrb(s1long, s1lat, s2long, s2lat, &distance, &azimuth);
+
+	    points = ceil(distance/500.0);
+	}
+
+	return points;
+    }
+
     /* end arrldx_usa */
     /* LZ3NY mods */
     is_mult = exist_in_country_list();
@@ -374,3 +402,4 @@ int calc_continent(int zone)
     }
     return (0);
 }
+
