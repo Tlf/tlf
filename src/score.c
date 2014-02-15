@@ -32,8 +32,6 @@
 #include "focm.h"
 #include <math.h>
 
-#define RADIAN  (180.0 / M_PI)
-#define ARC_IN_KM 111.2
 
 int calc_continent(int zone);
 
