@@ -56,7 +56,7 @@
 #define MAX_LOCATOR_PAIRS       6
 #define MIN_LOCATOR_PAIRS       1
 
-const static int loc_char_range[] = { 18, 10, 24, 10, 24, 10 };
+static const int loc_char_range[] = { 18, 10, 24, 10, 24, 10 };
 
 /**
  * converts QTH locator to lattitude and longitude

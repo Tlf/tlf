@@ -49,24 +49,30 @@ static int bands[NBANDS] =
 	{ 160, 80, 40, 30, 20, 17, 15, 12, 10 };
 
 void printfield (int x, int y, int number);
+void stewperry_show_summary( int points, float fixedmult );
 
+
+/* show summary line for stewperry */
+void stewperry_show_summary( int points, float fixedmult )
+{
+    float mult;
+
+    mvprintw(5, START_COL, "                                   ");
+    /* TODO: respect field boundaries for large numbers */
+    mult = (fixedmult == 0.0) ? 1.0 : fixedmult;
+
+    mvprintw(5, START_COL, "Pts: %d       Score: %d",
+	points, (int)floor(points * mult));
+
+}
 
 /* show summary line */
 void show_summary( int points, int multi )
 {
-    extern float fixedmult;
-
     mvprintw(5, START_COL, "                                   ");
     /* TODO: respect field boundaries for large numbers */
-    if (fixedmult == 0.0) {
-	mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
+    mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
 	    points, multi, points * multi);
-    }
-    else {
-	mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
-	    points, multi, (int)floor(points * multi * fixedmult));
-    }
-    
 }
 
 
@@ -157,12 +163,14 @@ int get_nr_of_mults()
 
 	return totalcountries;
     }
-    else if (arrl_fd == 1 || stewperry_flg == 1) {
-	/*if (fixedmult != 0.0) {
-	    return fixedmult;
-	} else {*/
+    else if (arrl_fd == 1) {
+	/* arrl mults are always integers */
+	int mult = (int)floor(fixedmult + 0.5); 	/* round to nearest integer */
+	if (mult > 0) {
+	    return mult;
+	} else {
 	    return 1;
-	//}
+	}
     }
     else if (dx_arrlsections == 1) {
 
@@ -244,6 +252,7 @@ int showscore(void)
     extern int serial_section_mult;
     extern int sectn_mult;
     extern int dx_arrlsections;
+    extern float fixedmult;
 
     int i, l10;
     float p;
@@ -331,6 +340,10 @@ int showscore(void)
 	}
 	else if (focm == 1) {
 	    foc_show_scoring(START_COL);
+	}
+	else if (stewperry_flg == 1) {
+	    /* no normal multis, but may have POWERMULT set (fixedmult != 0.) */
+	    stewperry_show_summary( get_nr_of_points(), fixedmult );
 	}
 	else {
 	    show_summary( get_nr_of_points(), get_nr_of_mults() );
