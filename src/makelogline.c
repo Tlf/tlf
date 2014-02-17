@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
+ *               2011-2014                Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +22,86 @@
 	 *                       items
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
 #include "makelogline.h"
+#include "globalvars.h"
 #include "dxcc.h"
+#include "qsonr_to_str.h"
+#include "get_time.h"
+#include "addpfx.h"
+#include "score.h"
 
 #include <assert.h>
 
+void prepare_fixed_part(void);
+void prepare_specific_part(void);
+void fillto(int n);
+
+
+
 /** Construct a new line to add to the logfile.
  *
+ * Prepare a logline for storage in log in 'logline4'
+ *
  * The structure of a logline entry is as follows:
- * - each logline contains exactly 80 characters
- * - it consists of 2 parts
- *   | fixed part one (54 chars) | contest dependent part 2 (26 chars) |
+ * - each logline contains exactly 87 characters followed by a newline.
+ * - it consists of 3 parts
+ *   | fixed part (54 chars) | contest dependent part (26 chars) | frequ (8 chars)
+ *
+ *   See function definitions below
+ */
+void makelogline(void)
+{
+    extern int trx_control;
+    extern float freq;
+
+    static int lastbandinx = 0;
+    char freq_buff[10];
+    int points;
+
+    /* restart band timer if qso on new band */
+    if (wpx == 1) {		// 10 minute timer
+	if (lastbandinx != bandinx) {
+	    lastbandinx = bandinx;
+	    minute_timer = 600;	// 10 minutes
+	}
+    }
+
+    /* remember call for resend after qso (see callinput.c)  */
+    strcpy(lastcall, hiscall);
+
+    /* first fixed (contest independent) part of logline */
+    prepare_fixed_part();
+    assert(strlen(logline4) == 54);
+
+
+    /* second (contest dependent) part of logline */
+    prepare_specific_part();
+    assert(strlen(logline4) == 77);
+
+    /* score QSO and add to logline
+     * if not DXpedition or QSO mode */
+    points = score();			/* update qso's per band and score */
+    total = total + points;
+
+    if ((contest == 1) && (dxped == 0)) {
+	    sprintf(logline4 + 76, "%2d", points);
+    }
+
+    fillto(80);
+
+    /* add freq to end of logline */
+    if (trx_control == 1) {
+	snprintf(freq_buff, 8, "%7.1f", freq);
+	strcat(logline4, freq_buff);
+    }
+    fillto(87);
+
+    assert(strlen(logline4) == 87);
+}
+
+
+/** Construct fixed part of logline
+ *
  * - fixed part:\n
  *     \verbatim
  *     0        1         2         3         4         5
@@ -47,6 +116,79 @@
  *     123456789012345678901234567890123456789012345678901234
  *     bndmod dd-mmm-yy hh:mm  khz  call.......... rst  rst
  *                                                 his  my.\endverbatim
+ */
+void prepare_fixed_part(void) {
+    extern int no_rst;
+    extern char whichcontest[];
+    extern int logfrequency;
+    extern int trx_control;
+    extern float freq;
+
+    static char time_buf[80];
+    char khz[5] = " 000";
+
+    strcpy(logline4, band[bandinx]);
+
+    if (trxmode == CWMODE)
+	strcat(logline4, "CW ");
+    else if (trxmode == SSBMODE)
+	strcat(logline4, "SSB");
+    else
+	strcat(logline4, "DIG");
+
+    get_time();
+    strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
+    strcat(logline4, time_buf);
+
+    qsonr_to_str();
+
+    if (logfrequency == 1 &&
+	trx_control == 1 &&
+	((strcmp(whichcontest, "qso") == 0) ||
+	 (strcmp(whichcontest, "dxped") == 0))) {
+	sprintf(khz, " %3d", ((int)freq)%1000);	// show freq.
+	strcat(logline4, khz);
+
+    } else {
+	if ((lan_active == 1) && (exchange_serial == 1)) {	// show qso nr
+	    strcat(logline4, lastqsonr);
+	    lastqsonr[0] = '\0';
+	} else
+	    strcat(logline4, qsonrstr);
+    }
+
+    if (lan_active == 1 && cqwwm2 == 1) {
+	logline4[27] = thisnode;	// set node ID...
+	logline4[28] = '\0';
+	strcat(logline4, " ");
+    } else
+	strcat(logline4, "  ");
+
+    strncat(logline4, hiscall, 15);	/*  29 */
+
+    fillto(44);
+
+    if (no_rst) {
+	strcat(logline4, "---  ---  ");	/* instead of RST */
+    } else {
+	if ((trxmode == CWMODE) || (trxmode == DIGIMODE)) {
+	    his_rst[2] = '9';
+	    my_rst[2] = '9';
+	} else {
+	    his_rst[2] = ' ';
+	    my_rst[2] = ' ';
+	}
+
+	strcat(logline4, his_rst);	/* till 54 */
+	strcat(logline4, "  ");
+	strcat(logline4, my_rst);
+	strcat(logline4, "  ");
+    }
+}
+
+
+/** Construct contest dependent part of logline
+ *
  * - contest dependent part (list may not complete):\n
  *   - QSO mode
  *     \verbatim
@@ -83,109 +225,20 @@
  *     class         sctn    pp\endverbatim
  *     class - TX count + operator class, sctn - ARRL/RAC section
  */
-
-void makelogline(void)
-{
-
-    extern int logfrequency;
-    extern int trx_control;
-    extern char whichcontest[];
-    extern float freq;
-    extern int points;
-    extern int no_rst;
-
-    static char time_buf[80];
-    char fillspaces[50] = "                              ";
-    static int lastbandinx = 0;
-    char grid[7] = "";
-    int sr_nr = 0;
-    int i;
-    char khz[5] = " 000";
-    char freq_buff[10];
-    int fnr = 0;
+void prepare_specific_part(void) {
     int new_pfx;
-
-    /* first fixed (contest independent) part */
-
-    logline4[0] = '\0';
-    qsonr_to_str();
-    get_time();
-
-    strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
-
-    if (wpx == 1) {		// 10 minute timer
-	if (lastbandinx != bandinx) {
-	    lastbandinx = bandinx;
-	    minute_timer = 600;	// 10 minutes
-	}
-    }
-
-    strcat(logline4, band[bandinx]);
-
-    if (trxmode == CWMODE)
-	strcat(logline4, "CW ");
-    else if (trxmode == SSBMODE)
-	strcat(logline4, "SSB");
-    else
-	strcat(logline4, "DIG");
-
-    strcat(logline4, time_buf);
-
-    if (logfrequency == 1 &&
-	trx_control == 1 &&
-	((strcmp(whichcontest, "qso") == 0) ||
-	 (strcmp(whichcontest, "dxped") == 0))) {
-	fnr = (int) freq;
-	fnr = fnr % 1000;
-	sprintf(khz, " %3d", fnr);	// show freq.
-	strcat(logline4, khz);
-
-    } else {
-	if ((lan_active == 1) && (exchange_serial == 1)) {	// show qso nr
-	    strcat(logline4, lastqsonr);
-	    lastqsonr[0] = '\0';
-	} else
-	    strcat(logline4, qsonrstr);
-    }
-
-    if (lan_active == 1 && cqwwm2 == 1) {
-	logline4[27] = thisnode;	// set node ID...
-	logline4[28] = '\0';
-	strcat(logline4, " ");
-    } else
-	strcat(logline4, "  ");
-
-    strcat(logline4, hiscall);	/*  29 */
-    strcpy(lastcall, hiscall);  /* remember  for edit  */
-    strncat(logline4, fillspaces, (15 - strlen(hiscall)));	/*  44 */
-
-    if (no_rst == 0) {
-	if ((trxmode == CWMODE) || (trxmode == DIGIMODE)) {
-	    his_rst[2] = '9';
-	    my_rst[2] = '9';
-	} else {
-	    his_rst[2] = ' ';
-	    my_rst[2] = ' ';
-	}
-
-	strcat(logline4, his_rst);	/* till 54 */
-	strcat(logline4, "  ");
-	strcat(logline4, my_rst);
-	strcat(logline4, "  ");
-    } else {
-	strcat(logline4, "---  ---  ");	/* instead of RST */
-    }
-
-    /* second (contest dependent part of logline */
+    int sr_nr = 0;
+    char grid[7] = "";
+    int i;
 
     if (arrlss == 1) {
 	// ----------------------------arrlss----------------
-	strcat(logline4, ssexchange);
+	strncat(logline4, ssexchange, 22);
 	section[0] = '\0';
 
     } else if (serial_section_mult == 1) {
 	//-------------------------serial_section---------------
-	sprintf(logline4 + 54, "%s", comment);
+	strncat(logline4, comment, 22);
 	section[0] = '\0';
 
     } else if (serial_grid4_mult == 1) {
@@ -204,7 +257,7 @@ void makelogline(void)
 
     } else if (sectn_mult == 1) {
 	//-------------------------section only---------------
-	sprintf(logline4 + 54, "%s", section);
+	strncat(logline4, section, 22);
 	section[0] = '\0';
 
     } else if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
@@ -215,17 +268,14 @@ void makelogline(void)
 	} else
 		strcat (logline4, zone_export);
 */
-	strcat(logline4, comment);
+	strncat(logline4, comment, 22);
     } else {	//----------------------end cqww ---------------
-	strcat(logline4, comment);
+	strncat(logline4, comment, 22);
     }
 
-    strcpy(lastcomment, comment);	/* remember for edit  */
+    fillto(77);
 
-    if (strlen(logline4) < 77)
-	strncat(logline4, fillspaces, (77 - strlen(logline4)));
-
-    if (contest == 1)
+    if (contest == 1) 		/* cut back to make room for mults */
 	logline4[68] = '\0';
 
     /* If WPX
@@ -236,9 +286,9 @@ void makelogline(void)
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, pxstr, 5);
-	    strncat(logline4, fillspaces, (5 - strlen(pxstr)));
-	} else
-	    strncat(logline4, fillspaces, 5);
+	}
+
+	fillto(73);
     }
 
     if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
@@ -251,11 +301,10 @@ void makelogline(void)
 	    else
 		strncat(logline4, dxcc_by_index(addcty) -> pfx, 5);
 
-	    strncat(logline4, fillspaces, 73 - strlen(logline4));
 	    addcty = 0;
-	} else {
-	    strcat(logline4, "     ");
 	}
+
+	fillto(73);
 
 	if (addzone != 0) {
 /*
@@ -270,38 +319,37 @@ void makelogline(void)
 	    } else
 		strncat(logline4, comment, 2);
 
-	    strcat(logline4, "  ");
 	    addzone = 0;
 	} else {
-	    strcat(logline4, "    ");
 	    zone_fix[0] = '\0';
 	}
+
+	fillto(77);
+
 	//----------------------------------end cqww-----------------
 
     } else if (arrldx_usa == 1) {
 	logline4[68] = '\0';
 	if (addcty != 0) {
-	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
+	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
+	}
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	fillto(77);
 
     } else if ((dx_arrlsections == 1) && (countrynr != w_cty)
 	       && (countrynr != ve_cty)) {
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
+	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
-
-	} else {
-	    strncat(logline4, fillspaces, 9);
 	}
+
+	fillto(77);
+
     } else if ((wysiwyg_multi == 1)
 	       || (serial_section_mult == 1)
 	       || (sectn_mult == 1)
@@ -310,49 +358,41 @@ void makelogline(void)
 	logline4[68] = '\0';
 
 	if (shownewmult >= 0) {
+	    strncat(logline4, mults[shownewmult], 9);
 
-	    strcat(logline4, mults[shownewmult]);
-
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    shownewmult = -1;
+	}
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	fillto(77);
 
     } else if ((dx_arrlsections == 1)
 	       && ((countrynr == w_cty) || (countrynr == ve_cty))) {
 	logline4[68] = '\0';
 
 	if (shownewmult >= 0) {
+	    strncat(logline4, mults[shownewmult], 9);
 
-	    strcat(logline4, mults[shownewmult]);
-
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    shownewmult = -1;
+	}
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	fillto(77);
 
     } else if (pacc_pa_flg == 1) {
 
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
+	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
 
 	} else if (addcallarea == 1) {
-
 	    strncat(logline4, pxstr, 3);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
-
 	    addcallarea = 0;
+	}
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	fillto(77);
 
     } else if ((universal == 1)
 	       && ((country_mult == 1) || (dx_arrlsections == 1))) {
@@ -360,46 +400,28 @@ void makelogline(void)
 	logline4[68] = '\0';
 
 	if (addcty != 0) {
-	    strcat(logline4, dxcc_by_index(addcty) -> pfx);
+	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
-	    strncat(logline4, fillspaces, 77 - strlen(logline4));
 	    addcty = 0;
+	}
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	fillto(77);
 
-    } else if (wpx == 1) {
-	strncat(logline4, fillspaces, 4);
-    } else if (arrl_fd == 1) {
-	strncat(logline4, fillspaces, 4);
-    } else if ((one_point == 1) || (two_point == 1) || (three_point == 1)) {
-	strncat(logline4, fillspaces, 4);
-    } else {
-	strncat(logline4, fillspaces, 4);
     }
 
-    i = 77 - strlen(logline4);
-    if (i > 0)				/* fill line until column 77 */
-	strncat(logline4, fillspaces, i);
-
-
-    score();			/* update qso's per band */
-
-    if ((contest == 1) && (dxped == 0)) {
-	    sprintf(logline4 + 76, "%2d", points);
-    } else {
-	sprintf(logline4 + 76, "  ");	/* no points for dxpedition */
-    }
-
-
-    assert(strlen(logline4) <= 80);
-    strncat(logline4, fillspaces, 80 - strlen(logline4));
-
-    /* add freq to end of logline */
-    if (trx_control == 1) {
-	snprintf(freq_buff, 8, "%7.1f", freq);
-    } else {
-	snprintf(freq_buff, 8, "        ");
-    }
-    strcat(logline4, freq_buff);
+    fillto(77);
 }
+
+
+/** fill logline4 with spaces
+ *
+ * fill logline4 with spaces until column n
+ */
+void fillto(int n) {
+    char fillspaces[] = "                                                    ";
+    int len = strlen(logline4);
+
+    if (len < n)
+	strncat(logline4, fillspaces, n - len);
+}
+

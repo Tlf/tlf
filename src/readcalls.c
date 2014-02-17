@@ -37,7 +37,8 @@ int readcalls(void)
     char bndbuf[20];
     char zonebuf[3];
     char checkcall[20];
-    int i = 0, k = 0, l = 0, n = 0, r = 0, s = 0;
+    int i = 0, l = 0, n = 0, r = 0, s = 0;
+    unsigned int k = 0;
     int m = 0;
     int t = 0, tt = 0;
     int z = 0;
@@ -57,8 +58,11 @@ int readcalls(void)
     for (s = 0; s < MAX_QSOS; s++)
 	qsos[s][0] = '\0';
 
-    for (i = 0; i < MAX_CALLS; i++)
+    for (i = 0; i < MAX_CALLS; i++) {
 	callarray[i][0] = '\0';
+	call_band[i] = 0;
+	call_country[i] = -1;
+    }
 
     for (i = 1; i <= MAX_DATALINES - 1; i++)
 	countries[i] = 0;
@@ -84,6 +88,7 @@ int readcalls(void)
 	mvprintw(5, 0, "Error opening logfile.\n");
 	refreshp();
 	sleep(2);
+	exit(1);
     }
     i = 0;
     k = 0;

@@ -18,8 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#define NDEBUG
-#define NEWCODE = 1
 
 #include "tlf.h"
 #include "globalvars.h"
@@ -67,8 +65,10 @@ int tune_val = 0;
 int use_bandoutput = 0;
 int no_arrows = 0;
 int bandindexarray[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-int cqww = 0;
 int cqwwm2 = 0;
+
+/* predefined contests */
+int cqww = 0;
 int wpx = 0;
 int dxped = 0;
 int sprint = 0;
@@ -77,6 +77,8 @@ int arrl_fd = 0;
 int arrlss = 0;
 int pacc_pa_flg = 0;
 int stewperry_flg = 0;
+int focm = 0;
+
 int universal = 0;
 int addcallarea;
 int pfxmult = 0;
@@ -190,7 +192,6 @@ int sending_call = 0;
 int early_started = 0;			/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
 char lastcall[20];
-char lastcomment[40];
 char qsonrstr[5] = "0001";
 char band[9][4] =
     { "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10" };
@@ -209,8 +210,7 @@ int totalzones = 0;
 int secs = 0;
 int countrynr;
 int mycountrynr = 215;
-int points = 0;
-int total = 0;
+int total = 0; 		/**< total number of qso points */
 int band_score[9];
 int dupe = 0;
 int callfound = 0;
@@ -264,22 +264,18 @@ char clusterlogin[80] = "";
 #ifdef HAVE_LIBHAMLIB
 rig_model_t myrig_model = 351;
 RIG *my_rig;			/* handle to rig (instance) */
-freq_t rigfreq;			/* input frequency  */
 freq_t outfreq;			/* output  to rig */
 rmode_t rmode;			/* radio mode of operation */
 pbwidth_t width;
 vfo_t vfo;			/* vfo selection */
 port_t myport;
 #else
-float rigfreq;			/* input frequency  */
 int outfreq;			/* output  to rig */
 #endif
 int ssb_bandwidth = 3000;
 int cw_bandwidth = 0;
 int serial_rate = 2400;
-int rig_port = 0;
 char rigportname[40];
-int native_rig_fd = 0;
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;
@@ -629,7 +625,7 @@ int main(int argc, char *argv[])
 
 #ifdef HAVE_LIBHAMLIB		// Code for hamlib interface
 
-	showmsg("HAMLIB defined");
+	showmsg("HAMLIB compiled in");
 
 	if (trx_control != 0) {
 
@@ -638,33 +634,26 @@ int main(int argc, char *argv[])
 
 	    showmsg("Trying to start rig ctrl");
 
-	    /** \todo fix exclusion of newer hamlib models */
-	    if ((int) myrig_model > 1999)
-		status = init_native_rig();
-	    else
-		status = init_tlf_rig();
+	    status = init_tlf_rig();
+
+	    if (status  != 0) {
+		showmsg( "Continue without rig control Y/(N)?");
+		if (toupper( getchar() ) != 'Y') {
+		    endwin();
+		    exit(1);
+		}
+		trx_control = 0;
+		showmsg( "Disabling rig control!");
+		sleep(1);
+	    }
 	}
 #else
-	if (trx_control != 0) {
-//                      trx_control = 0;
-	    showmsg("No Hamlib library, using native driver");
-	    shownr("Rignumber is", rignumber);
-	    shownr("Rig speed is", serial_rate);
-	    status = init_native_rig();
-	    sleep(1);
-	}
-#endif				// end code for hamlib interface
+	showmsg("No Hamlib compiled in!");
 
-	if (status  != 0) {
-	    showmsg( "Continue without rig control Y/(N)?");
-	    if (toupper( getchar() ) != 'Y') {
-		endwin();
-		exit(1);
-	    }
-	    trx_control = 0;
-	    showmsg( "Disabling rig control!");
-	    sleep(1);
-	}
+	trx_control = 0;
+	showmsg( "Disabling rig control!");
+	sleep(1);
+#endif				/* HAVE_LIBHAMLIB */	
 
 
 	if (keyerport == NET_KEYER) {

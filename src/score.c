@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedus <airween@gmail.com>
+ *               2013-2014      Thomas Beierlein <tb@forth-ev.de>
  *
  * the calc_qrb() function original code in HAMLIB
  * src/locator.c
@@ -51,6 +52,9 @@
 #include "qrb.h"
 #include "locator2longlat.h"
 #include "score.h"
+#include "tlf.h"
+#include "getctydata.h"
+#include "focm.h"
 
 #define RADIAN  (180.0 / M_PI)
 #define ARC_IN_KM 111.2
@@ -126,17 +130,16 @@ int score()
 {
 
     extern int dupe;
-    extern int points;
     extern int one_point;
     extern int two_point;
     extern int three_point;
     extern int band_score[9];
     extern int bandinx;
+    extern int focm;
     extern int wpx;
     extern int pfxmult;
     extern int countrynr;
     extern int mycountrynr;
-    extern int total;
     extern char continent[];
     extern char mycontinent[];
     extern char comment[];
@@ -164,6 +167,7 @@ int score()
     extern int dx_cont_points;
     extern int countrylist_only;
 
+    int points;
     int is_mult = 0;
 /* end LZ3NY mods */
 
@@ -173,7 +177,7 @@ int score()
     if (dupe == ISDUPE) {
 	points = 0;
 	dupe = NODUPE;
-	return (0);
+	return points;
     }
 
     band_score[bandinx]++;	/* qso's per band  */
@@ -182,51 +186,50 @@ int score()
 	&& ((countrynr == w_cty) || (countrynr == ve_cty)))
 	band_score[bandinx]--;
 
+    if (focm == 1) {
+	points = foc_score(hiscall);
+
+	return points;
+    }
+
     if (wpx == 1 && pfxmult == 0) {
 	if (countrynr == mycountrynr) {
 	    points = 1;
-	    total = total + 1;
 
-	    return (0);
+	    return points;
 	}
 
 	if ((strcmp(continent, mycontinent) == 0)
 	    && (bandinx > BANDINDEX_30)) {
 	    if (strstr(mycontinent, "NA") != NULL) {
 		points = 2;
-		total = total + 2;
 	    } else {
 		points = 1;
-		total = total + 1;
 	    }
 
-	    return (0);
+	    return points;
 	}
 
 	if ((strcmp(continent, mycontinent) == 0)
 	    && (bandinx < BANDINDEX_30)) {
 	    if (strstr(mycontinent, "NA") != NULL) {
 		points = 4;
-		total = total + 4;
 	    } else {
 		points = 2;
-		total = total + 2;
 	    }
-	    return (0);
+	    return points;
 	}
 	if ((strcmp(continent, mycontinent) != 0)
 	    && (bandinx > BANDINDEX_30)) {
 	    points = 3;
-	    total = total + 3;
 
-	    return (0);
+	    return points;
 	}
 	if ((strcmp(continent, mycontinent) != 0)
 	    && (bandinx < BANDINDEX_30)) {
 	    points = 6;
-	    total = total + 6;
 
-	    return (0);
+	    return points;
 	}
     }				// end wpx
 
@@ -239,25 +242,22 @@ int score()
 
 	if ((countrynr == mycountrynr)) {
 	    points = 0;
-	    total = total + 0;
-	    return (0);
+
+	    return points;
 	}
 
 	if (strcmp(continent, mycontinent) == 0) {
 	    if (strstr(mycontinent, "NA") != NULL) {
 		points = 2;
-		total = total + 2;
 	    } else {
 		points = 1;
-		total = total + 1;
 	    }
 
-	    return (0);
+	    return points;
 	} else {
 	    points = 3;
-	    total = total + 3;
 
-	    return (0);
+	    return points;
 	}
 
     }
@@ -267,32 +267,27 @@ int score()
 
 	if (trxmode == SSBMODE) {
 	    points = 1;
-	    total = total + 1;
 	} else {
 	    points = 2;
-	    total = total + 2;
 
 	}
-	return (0);
+	return points;
 
     }				// end arrl_fd
 
     if (one_point == 1) {
 	points = 1;
-	total++;
 
-	return (0);
+	return points;
     }
     if (two_point == 1) {
 	points = 2;
-	total = total + 2;
-	return (0);
+	return points;
     }
     if (three_point == 1) {
 	points = 3;
-	total = total + 3;
 
-	return (0);
+	return points;
     }
 
     if (arrldx_usa == 1) {
@@ -302,10 +297,9 @@ int score()
 
 	} else {
 	    points = 3;
-	    total = total + 3;
 	}
 
-	return (0);
+	return points;
     }
 
     if (stewperry_flg == 1) {
@@ -390,27 +384,21 @@ int score()
 	}
     }
 
-    /* The Result of all ABOVE */
-    total = total + points;
-
-    return (0);
+    return points;
 }
+
 
 /* -----------------------------------------------------------------*/
-int score2(void)
+int score2(char *line)
 {
 
-    extern char lan_logline[];
-    extern int total;
-
-    total = total + atoi(lan_logline + 75);
-
-    return (0);
+    return atoi(line + 75);
 }
 
- /* ----------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------- */
 int calc_continent(int zone)
-{				// calculates continent from zone and sets continent
+{			// calculates continent from zone and sets continent
 
     extern char continent[];
 

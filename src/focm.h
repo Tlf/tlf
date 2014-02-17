@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2014 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <curses.h>
-#include "tlf.h"
-#include "nicebox.h"
-#include "last10.h"
-#include "printcall.h"
 
-/* get total number of points */
-int get_nr_of_points();
-/* get total number of multis */
-int get_nr_of_mults();
-/* calculate total score */
-int get_total_score();
+#ifndef _FOC_H
 
-int  showscore(void);
+#define _FOC_H
+
+extern int got_g4foc; 		/* did we got Gx4FOC on the air? */
+
+void foc_init(void);
+int foc_score(char *call);
+int foc_total_score();
+void foc_show_scoring(int start_colmn);
+void foc_show_cty();
+
+#endif /* end of include guard: _FOC_H */
