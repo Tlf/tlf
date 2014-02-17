@@ -158,7 +158,6 @@ int score()
     extern char call[];
     extern int stewperry_flg;
 
-
 /* LZ3NY mods */
 
     extern int countrylist_points;
@@ -314,7 +313,7 @@ int score()
 
 	    points = ceil(distance/500.0);
 
-	    total = total + points;
+	    return points;
 	}
 
 	return (0);
