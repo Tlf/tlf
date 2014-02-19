@@ -450,11 +450,8 @@ int getexchange(void)
 		    mvprintw(12, 54, comment);
 		    break;
 		}
-		//else {
-		//  break;
-		//}
-		break;
 		refreshp();
+		break;
 	    } else
 		break;
 

@@ -131,7 +131,6 @@ int score()
     extern char call[];
     extern int stewperry_flg;
 
-
 /* LZ3NY mods */
 
     extern int countrylist_points;
