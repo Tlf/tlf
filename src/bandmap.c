@@ -301,13 +301,14 @@ void bandmap_age() {
 	spot *data = list->data;
 	GList *temp = list;
 	list = list->next;
-	if (data->timeout)
+	if (data->timeout) {
 	    data->timeout--;
 	    if (data->timeout == 0) {
 		allspots = g_list_remove_link( allspots, temp);
 		g_free (data->call);
 		g_free (data);
 	    }
+	}
     }
 }
 
