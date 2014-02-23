@@ -1,3 +1,236 @@
+2014-02-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/locator2longlat.c, src/showscore.c: split show_summary for stewperry
+  from other display  
+  - ARRL FD uses POWERMULT as an real multiplier, but only as integer value. 
+    So round it to nearest integer and use it as multiplier. 
+  - for STEWPERRY the POWERMULT may be a fractional number and multiplies the
+    final score by that multiplier.
+
+2014-02-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/locator2longlat.c, src/main.c, src/qrb.c, src/qrb.h, src/score.c,
+  src/showinfo.c: unify QRB calculation  
+  - rename old qrb() to qrb_() and change it to use the new qrb() for 
+    real work 
+  - move calc_qrb() to qrb() 
+  - add comments about positive sign for east longitudes to qrb() and
+    locator2longlat()
+
+2013-10-14  airween <airween@gmail.com>
+
+  * src/log_to_disk.c: Modified log_to_disk.c for keep the new logfile format:
+  column 80 contains the '*'.
+
+2014-02-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/focm.c, src/main.c, src/score.c, src/setcontest.c, src/showpxmap.c,
+  src/showscore.c: rename internal contest identifier to 'focm'
+
+  * src/Makefile.am, src/foc.c, src/foc.h, src/focm.c, src/focm.h, src/score.c,
+  src/setcontest.c, src/showpxmap.c, src/showscore.c: renamed file to focm.[ch]
+  for FOC Marathon
+
+2013-08-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c: Fix input of new CW weight factor with Alt-w
+
+2012-05-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/displayit.c, src/keyer.c, src/sendbuf.c: some cleanup for keyer logic 
+  - Fix comments - drop unneeded code - leaving keyer switches back to correct
+  mode (RUN/S&P)
+
+2014-02-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: add missing parentheses
+
+2014-02-08  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/clusterinfo.c, src/gettxinfo.c,
+  src/searchlog.c, src/sendqrg.c: further cleanup of minor problems  
+  - make variable static to allow only local access 
+  - initialize rigfreq in different files 
+  - handle problem if file could not be opened
+
+2014-02-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: fix some minor problems  
+  - make array index unsigned 
+  - leave function if logfile could not be opened
+
+2014-02-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: drop unneeded tests of HAVE_LIBHAMLIB and redundant code
+  * src/gettxinfo.c, src/main.c, src/sendqrg.c: make rigfreq local
+
+2014-02-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendqrg.c, src/sendqrg.h, src/startmsg.h: cleanup header files and add
+  include guards
+
+2014-02-04  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/sendqrg.c, src/sendqrg.h: drop all remaining native_rig_ functions
+  * src/gettxinfo.c: drop all calls to native_rig_ functions from gettxinfo()
+  * src/gettxinfo.c, src/sendqrg.c, src/sendqrg.h: drop native_rig_reset_rit()
+  * src/main.c, src/sendqrg.c: drop unneeded native_rig_get_mode()
+  * src/sendqrg.c, src/sendqrg.h: drop init_ and close_ function for native_rig
+  * src/main.c: disabling rig control if no hamlib library compiled in
+  * src/main.c, src/parse_logcfg.c, src/sendqrg.c: Drop old logic which allowed
+  to have only a rigportnumber  
+  - RIGPORT expects a whole portname (e.g. /dev/ttyS0")
+
+  * src/log_to_disk.c: add header file to fix implicit declaration of score2()
+
+2014-01-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/cabrillo.fmt, share/cty.dat: update files (thanks OK1RR)
+  * src/foc.c: score 6banders as 5banders with an additionla bonus
+
+2014-01-28  airween <airween@gmail.com>
+
+  * src/showscore.c, tlf.1.in: Round final score when POWERMULT is float
+
+2014-01-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/foc.c, src/foc.h, src/showpxmap.c: add list of countries to work  
+  - scan initial exchange file and build list of countries 
+  - display which countries are worked and which are missing 
+  - Call with Alt+M
+
+2014-01-27  airween <airween@gmail.com>
+
+  * src/showscore.c, tlf.1.in: Fixed POWERMULT config keyword
+  * src/main.c, src/score.c, src/showscore.c: Handle POWERMULT config variable
+
+2014-01-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/foc.c: changed display of scoring results
+
+2014-01-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/keyer.c, src/parse_logcfg.c, src/sendqrg.c, src/sendqrg.h,
+  src/speeddown.c, src/speedup.c, src/tlf.h, src/write_keyer.c: drop support
+  for ORION_KEYER  
+  - A check on the mailing list showed that nobody seems to be interested in 
+    that feature. It was also not mentioned in the man page or on Rein's 
+    old tlf page.
+
+2014-01-23  airween <airween@gmail.com>
+
+  * src/getexchange.c, src/parse_logcfg.c, src/score.c: Adding POWERMULT
+  keyword, and multiple the calculated points with it (Stewperry rules, #7)
+
+2014-01-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/foc.c, src/foc.h, src/getsummary.c, src/showscore.c, src/showscore.h:
+  writecabrillo uses new function 'get_total_score()'  
+  - In case we have complex scoring rules these function can redirect 
+  to a contest specific calculation
+
+2014-01-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: initialize complete call statistics  
+  - rescoring works by rereading the logfile and building the whole 
+    statistical data from there. Until now band and country data for 
+    worked calls got not reinitialized.
+    Therefore we got wrong result when deleting the last call and rescoring.
+
+  * src/foc.c: fix scoring for FOC marathon  1 point per QSO 2 points per
+  country 5 points per continent 5b qso gets 10 points bonus 6b qso gets 15
+  points bonus Gx4FOC joker counts double
+
+  * rules/Makefile.am, rules/foc, rules/focmarathon, share/cabrillo.fmt,
+  src/setcontest.c: renamed contest 'foc' to 'focmarathon', added
+  keydefinitions  - Thanks OK1RR.
+
+2014-01-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/globalvars.h, src/main.c, src/makelogline.c: cleanup  
+  - move scoring logic to 'makelogline' 
+  - refactor padding with spaces and simplify
+
+  * src/makelogline.c: delimit strcat operations  
+  - from time to time we have segfaults from copying to long information 
+    fields into the logline. Then we are past the next column. If we 
+    later try to fill up the space we get a segfault. 
+  - Now we delimit all strcat operations which can have a variable
+    field length.
+
+2014-01-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/makelogline.c: split contest independent and dependent part of log line
+
+  * src/makelogline.c, src/makelogline.h: start cleanup makelogline  function
+  gave segfaults more than once. Needs a serious overhaul.  
+  - add include guard
+  - move include files to .c 
+  - sort out different tasks 
+  - sort order of preparing time and qso number
+
+  * src/callinput.c: fix bug in autosend start logic  
+  - triggered autostart even if only a frequency for band change was entered 
+  - new logic checks if inputfield contains a plain number and does 
+    not start autosend if true
+
+2014-01-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * rules/Makefile.am, rules/foc: add foc rules file
+  * src/foc.c: score continents correctly
+  * src/foc.c, src/foc.h, src/showscore.c: implement basic display of contest
+  score
+
+2014-01-11  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: fix wrong setting of LAN designator
+  * src/foc.c, src/foc.h: fix declaration syntax
+
+2014-01-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/foc.c, src/foc.h, src/score.c, src/score.h: add basic scoring logic for
+  qsos  
+  - report 1 one for normal qso 
+  - regex match Gx4FOC/xxx and give him 2 points 
+
+  * src/foc.c, src/foc.h, src/main.c, src/setcontest.c: contest recognition and
+  initialization
+
+2014-01-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/foc.c, src/foc.h: added contest files
+  * src/Makefile.am: start handling of FOC contest  
+  * src/parse_logcfg.c: drop unneeded code dupliction 
+
+2014-01-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c: adapt evaluation of LAN Logline to longer prefixes prepared
+  by makelogline
+
+2013-12-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/gettxinfo.c, src/sendqrg.c: call 'rig_get_vfo' before using
+  RIG_VFO_CURR  
+  - allows to switch VFO on the rig without loosing control by tlf. 
+    Tnx HA2OS for help.
+
+2013-12-28  airween <airween@gmail.com>
+
+  * src/getexchange.c, src/score.c: Fixed Stewperry QRB calculation error
+
+2013-12-23  airween <airween@gmail.com>
+
+  * rules/stewperry: Added rules/stewperry rule file
+
+  * src/getexchange.c, src/locator2longlat.c, src/locator2longlat.h,
+  src/parse_logcfg.c: Fixed Stewperry rules: check MYQRA when Tlf starts, and
+  check the station's QRA as exchange
+
+2013-12-15  airween <airween@gmail.com>
+
+  * src/Makefile.am, src/getexchange.c, src/globalvars.h,
+  src/locator2longlat.c, src/locator2longlat.h, src/main.c, src/parse_logcfg.c,
+
 2013-12-27  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/main.c, src/parse_logcfg.c, tlf.1.in: Drop keyword '2EU3DX_POINTS'  

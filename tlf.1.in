@@ -25,9 +25,10 @@
 .SH "DESCRIPTION"
 \fBtlf\fR
 is a console (ncurses) mode general purpose CW keyer, -logging and -contest
-program for hamradio. It supports the CQWW, the WPX, the ARRL-DX , the ARRL-FD,
+program for hamradio. It supports the CQWW, the WPX, the ARRL-DX , the ARRL-FD, the STEWPERRY, 
 the PACC and the EU SPRINT contests as well as a lot more basic contests,
-general QSO and DXpedition mode. It interfaces with a morse code generator, a
+general QSO and DXpedition mode. From version 1.2.0 on there is also support for the FOC Marathon.
+It interfaces with a morse code generator, a
 number of radios via the hamlib library, and with a DX Cluster. Tlf can project DX cluster data into
 the excellent Xplanet program, written by Hari Nair.
 .P
