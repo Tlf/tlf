@@ -63,8 +63,8 @@ int gettxinfo(void)
 	rigfreq = 0.0;
 
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
-	retval = rig_get_vfo(my_rig, &vfo); /* initialiue RIG_VFO_CURR */
-	if (retval == RIG_OK)
+	retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
+	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL)
 	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 
 	if (retval != RIG_OK || rigfreq < 0.1) {
