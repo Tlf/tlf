@@ -26,12 +26,11 @@
 #include "cwkeyer.h"
 #include "clear_display.h"
 #include "netkeyer.h"
+#include "cw_utils.h"
 
 int speedup(void)
 {
 
-    extern int speed;
-    extern char speedstr[];
     extern int trxmode;
     extern int keyerport;
     extern char buffer[];
@@ -48,8 +47,7 @@ int speedup(void)
 
 	    speed++;
 
-	    strncpy(buff, speedstr + (speed * 2), 2);
-	    buff[2] = '\0';
+	    snprintf(buff, 3, "%2d", GetCWSpeed());
 
 	    retval = netkeyer(K_SPEED, buff);
 
@@ -69,8 +67,7 @@ int speedup(void)
 
 	    speed++;
 
-	    strncpy(buff, speedstr + (speed * 2), 2);
-	    buff[2] = '\0';
+	    snprintf(buff, 3, "%2d", GetCWSpeed());
 
 	    strcpy(buffer, "\\\015");
 	    sendbuf();
@@ -93,19 +90,6 @@ int speedup(void)
 	}
     }
 
-    if (keyerport == ORION_KEYER) {
-
-	if (speed < 20) {
-
-	    speed++;
-
-	    strncpy(buff, speedstr + (speed * 2), 2);
-	    buff[2] = '\0';
-
-	    orion_set_cw_speed(atoi(buff));
-
-	}
-    }
     return (speed);
 }
 

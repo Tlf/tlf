@@ -1,33 +1,40 @@
 #################################
-#                               #
-#  CQWW CONTEST                 #
-#                               #
+# FOC Marathon                  #
+#   DL1JBE, OK1RR  10.1.2014    #
 #################################
 #
-CONTEST=cqww
-LOGFILE=cqww.log
-CONTEST_MODE
-CABRILLO=CQWW
+CONTEST=focmarathon
+LOGFILE=marathon.log
+INITIAL_EXCHANGE=focmarathon.txt
+RECALL_MULTS
+CABRILLO=FOCMARATHON
 #
 ##################################
 #                                #
-#  CW Messages F1= to F12=       #
+#  Messages F1= to F12=          #
 #  Message CQ_TU_MSG=            #
 #  Message S&P_TU_MSG=           #
 #                                #
-#  % = call                      #
+#  % = mycall                    #
 #  @ = hiscall                   #
 #  # = serial                    #
 #  [ = RST                       #
 #  + = increase cw speed         #
 #  - = decrease cw speed         #
+#  * = AR                        #
+#  = = BT                        #
+#  < = SK                        #
+#  ( = KN                        #
+#  ! = SN                        #
+#  & = AS                        #
+#  > = BK                        #
 #                                #
 ##################################
 #
-F1=CQ DE % TEST
+F1=CQ FOC % % FOC
 F2=@ DE %
-F3=@ ++5NN--14
-F4=TU 73
+F3=@ ++5NN-- 1437
+F4=TU % FOC
 F5= @
 F6=%
 F7=@ SRI QSO B4 GL
@@ -35,10 +42,10 @@ F8=AGN
 F9= ?
 F10= QRZ?
 F11= PSE K
-F12=++++TEST---- % %
+F12=++CQ FOC-- % % ++FOC--
 #
-CQ_TU_MSG=TU %
-S&P_TU_MSG=TU 5NN 14
+CQ_TU_MSG=TU % FOC
+S&P_TU_MSG=TU 5NN 1437
 #
 #ALT_0=
 #ALT_1=
@@ -57,19 +64,4 @@ S&P_TU_MSG=TU 5NN 14
 #    (F1 to F12)                #
 #################################
 #
-#VKM1=cq.wav  (examples...)
-#VKM2=
-#VKM3=/home/rein/tlf/rst.wav
-#VKM4=/home/rein/tlf/qsl.wav
-#VKM5=/home/rein/tlf/73.wav
-#VKM6=/home/rein/tlf/call.wav
-#VKM7=
-#VKM8=
-#VKM9=/home/rein/tlf/agn.wav
-#VKM10=/home/rein/tlf/qrz.wav
-#VKM11=/home/rein/tlf/spreturn.wav
-#VKM12=/home/rein/tlf/cq2.wav
-#VKSPM=/home/rein/tlf/spreturn.wav (S&P return message)
-#VKCQM=/home/rein/tlf/qsl.wav	(CQ mode return message)
-#
-####### END #####################
+# only cw here

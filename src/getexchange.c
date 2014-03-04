@@ -28,6 +28,7 @@
 #include "recall_exchange.h"
 #include "addspot.h"
 #include "logit.h"
+#include "cw_utils.h"
 #include <glib.h>
 #include "qtcsend.h"
 #include "qtcrecv.h"
@@ -51,9 +52,8 @@ int getexchange(void)
     extern char cqzone[];
     extern char ituzone[];
     extern char my_rst[];
-    extern char speedstr[];
     extern int change_rst;
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern char hiscall[];
     extern char buffer[];
@@ -100,8 +100,6 @@ int getexchange(void)
     char commentbuf[40] = "";
     int retval = 0;
     char *gridmult = "";
-    int keyspeed = 30;
-    char speedbuf[3] = "";
 
     instring[1] = '\0';
 
@@ -227,8 +225,7 @@ syslog(LOG_DEBUG, "x: %d", x);
 	    {
 		if (ctcomp != 0) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			strcat(buffer, message[1]);
-			sendbuf();
+			sendmessage(message[1]);
 
 		    } else
 			play_file(ph_message[1]);
@@ -241,8 +238,7 @@ syslog(LOG_DEBUG, "x: %d", x);
 	    {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			strcat(buffer, message[2]);	/* F3 */
-			sendbuf();
+			sendmessage(message[2]);	/* F3 */
 
 		    } else
 			play_file(ph_message[2]);
@@ -266,12 +262,7 @@ syslog(LOG_DEBUG, "x: %d", x);
 	case 130 ... 138:
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-syslog(LOG_DEBUG, "esss most");
-syslog(LOG_DEBUG, "%d: %s", x, message[x-129]);
-		    strcat(buffer, message[x - 129]);	/* F2..F10 */
-syslog(LOG_DEBUG, "buffer: %s", buffer);
-		    sendbuf();
-syslog(LOG_DEBUG, "ennyi");
+		    sendmessage(message[x - 129]);	/* F2..F10 */
 		} else
 		    play_file(ph_message[x - 129]);
 
@@ -280,8 +271,8 @@ syslog(LOG_DEBUG, "ennyi");
 	case 140:
             {
                 if (trxmode == CWMODE || trxmode == DIGIMODE) {
-                    strcat(buffer, message[10]);        /* F11 */
-                    sendbuf();
+                    sendmessage(message[10]);        /* F11 */
+
                 } else
                     play_file(ph_message[10]);
 
@@ -289,8 +280,7 @@ syslog(LOG_DEBUG, "ennyi");
             }
 	case 176 ... 186:
 	    {
-		strcat(buffer, message[x - 162]);	/* alt-0 to alt-9 */
-		sendbuf();
+		sendmessage(message[x - 162]);	/* alt-0 to alt-9 */
 
 		break;
 	    }
@@ -311,12 +301,10 @@ syslog(LOG_DEBUG, "ennyi");
 			no_rst ? : mvprintw(12, 49, my_rst);
 		    }
 		} else {	/* speed up */
-		    keyspeed = speedup();
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
-		    
+		    speedup();
+
                     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%s", speedbuf);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 		break;
 
@@ -331,12 +319,10 @@ syslog(LOG_DEBUG, "ennyi");
 			no_rst ? : mvprintw(12, 49, my_rst);
 		    }
 		} else {
-		    keyspeed = speeddown();
-		    strncpy(speedbuf, speedstr + (2 * keyspeed), 2);
-		    speedbuf[2] = '\0';
+		    speeddown();
 
                     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%s", speedbuf);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
 		break;
 
@@ -350,7 +336,7 @@ syslog(LOG_DEBUG, "ennyi");
 		break;
 	    }
 	case '\n':
-	    {			/* log QSO immediately if CT compatible 
+	    {			/* log QSO immediately if CT compatible
 				 * or not in contest */
 		if ((ctcomp == 1) || (contest != 1))
 		    x = 92;
@@ -558,7 +544,7 @@ int checkexchange(int x)
     char checksection[30];
     char zone[4] = "";
 
-/* field of allowed pattern sequences 
+/* field of allowed pattern sequences
  *
  * The characters have the following meaning:
  * u - undefined (left or right delimiter)
@@ -566,7 +552,7 @@ int checkexchange(int x)
  * a - ascii character
  * f - a figure / digit
  *
- * e.g. faf means a character between two digits 
+ * e.g. faf means a character between two digits
  */
     char serpats[8][8] = {
 	"bfb",
@@ -746,7 +732,7 @@ int checkexchange(int x)
 	    hr = getlastpattern(serpats[ii]);
 
 	    if (hr > 0)
-			snprintf(serial, sizeof(serial), "%4d", 
+			snprintf(serial, sizeof(serial), "%4d",
 				atoi(comment + hr - 1));
 
 	    if (ii == 5 && hr > 0) {
@@ -755,7 +741,7 @@ int checkexchange(int x)
 	    }
 
 	}
-	
+
 	// get precedent
 
 	if (((comment[0] == 'A')
@@ -909,13 +895,13 @@ int checkexchange(int x)
 		hr = getlastpattern(serpats[ii]);
 
 		if (hr > 0)
-		    snprintf(serial, sizeof(serial), "%4d", 
+		    snprintf(serial, sizeof(serial), "%4d",
 			    atoi(comment + hr - 1));
 
 		if (ii == 5 && hr > 0) {
-		    snprintf(serial, sizeof(serial), "%4d", 
+		    snprintf(serial, sizeof(serial), "%4d",
 			    atoi(comment + hr - 1));
-		    snprintf(check, sizeof(check), "%2d", 
+		    snprintf(check, sizeof(check), "%2d",
 			    atoi(comment + hr + 2));
 		}
 
@@ -1041,7 +1027,7 @@ int checkexchange(int x)
 
     }
     OnLowerSearchPanel(32, "   ");
-    OnLowerSearchPanel(32, section);	/* show section on lower frame of 
+    OnLowerSearchPanel(32, section);	/* show section on lower frame of
 					   Worked window */
     ssexchange[0] = '\0';
 
@@ -1092,8 +1078,8 @@ int getlastpattern(char *checkstring)
 
 }
 
-/* ------------------------------------------------------------------------ 
- * return a pointer to the start of grid locator 
+/* ------------------------------------------------------------------------
+ * return a pointer to the start of grid locator
  */
 
 char *getgrid(char *comment)
@@ -1143,9 +1129,9 @@ void exchange_edit (void)
 	if (i == 1) {		// ctrl-A, Home
 
 	    b = 0;
-	 
+
 	} else if (i == 5) {	// ctrl-E, End
-	
+
 	    b = strlen(comment) - 1;
 
 	} else if (i == 155) {	// left
@@ -1181,7 +1167,7 @@ void exchange_edit (void)
 	    }
 	} else if (i != 27) {
 
-	    if ((i >= 'a') && (i <= 'z')) 
+	    if ((i >= 'a') && (i <= 'z'))
 		i = i - 32;
 
 	    if ((i >= ' ') && (i <= 'Z')) {
@@ -1189,7 +1175,7 @@ void exchange_edit (void)
 		if (strlen(comment) <= 24) {
 		    /* copy including trailing \0 */
 		    strncpy(comment2, comment + b, strlen(comment) - (b - 1));
-		
+
 		    comment[b] = i;
 		    comment[b + 1] = '\0';
 		    strcat(comment, comment2);

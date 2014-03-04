@@ -1,4 +1,4 @@
-INCLUDES = \
+AM_CPPFLAGS = \
        @GLIB_CFLAGS@
 
 bin_PROGRAMS = tlf
@@ -7,11 +7,11 @@ tlf_SOURCES = \
 	addarea.c addcall.c addmult.c addpfx.c addspot.c audio.c autocq.c \
 	background_process.c bandmap.c \
 	calledit.c callinput.c changefreq.c changepars.c checklogfile.c checkqtclogfile.c \
-	checkparameters.c cleanup.c clear_display.c clusterinfo.c \
+	checkparameters.c cleanup.c clear_display.c clusterinfo.c cw_utils.c \
 	dxcc.c \
 	deleteqso.c displayit.c \
 	edit_last.c editlog.c \
-	freq_display.c \
+	freq_display.c focm.c \
 	genqtclist.c \
 	get_time.c getctydata.c getexchange.c getmessages.c getpx.c \
 	getsummary.c gettxinfo.c getwwv.c grabspot.c \
@@ -41,10 +41,11 @@ noinst_HEADERS = \
 	background_process.h bandmap.h \
 	calledit.h callinput.h changefreq.h changepars.h checklogfile.h checkqtclogfile.h \
 	checkparameters.h cleanup.h clear_display.h clusterinfo.h cwkeyer.h \
+	cw_utils.h \
 	dxcc.h \
 	deleteqso.h displayit.h \
 	edit_last.h editlog.h \
-	freq_display.h \
+	freq_display.h focm.h \
 	genqtclist.h \
 	get_time.h  getctydata.h getexchange.h getmessages.h getpx.h \
 	getsummary.h gettxinfo.h getwwv.h globalvars.h grabspot.h \
@@ -62,7 +63,7 @@ noinst_HEADERS = \
 	score.h scroll_log.h searchcallarray.h searchlog.h sendbuf.h \
 	sendqrg.h sendspcall.h set_tone.h setcontest.h \
 	setparameters.h show_help.h showinfo.h showpxmap.h showscore.h \
-	showzones.h sockserv.h speed_conversion.h speeddown.h speedup.h  \
+	showzones.h sockserv.h speeddown.h speedup.h  \
 	splitscreen.h startmsg.h stoptx.h store_qso.h sunup.h \
 	rtty.h time_update.h tlf.h waedc.h \
 	write_keyer.h write_tone.h writecabrillo.h writeparas.h \

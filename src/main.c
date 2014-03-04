@@ -18,13 +18,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#define NDEBUG
-#define NEWCODE = 1
 
 #include "tlf.h"
 #include "globalvars.h"
 #include "main.h"
 #include "searchlog.h"
+#include "cw_utils.h"
 #include <glib.h>
 #include <panel.h>
 #include <pthread.h>
@@ -66,8 +65,10 @@ int tune_val = 0;
 int use_bandoutput = 0;
 int no_arrows = 0;
 int bandindexarray[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-int cqww = 0;
 int cqwwm2 = 0;
+
+/* predefined contests */
+int cqww = 0;
 int wpx = 0;
 int dxped = 0;
 int sprint = 0;
@@ -76,6 +77,8 @@ int arrl_fd = 0;
 int arrlss = 0;
 int pacc_pa_flg = 0;
 int waedc_flg = 0;
+int focm = 0;
+
 int universal = 0;
 int addcallarea;
 int pfxmult = 0;
@@ -85,14 +88,12 @@ int other_flg;
 int one_point = 0;
 int two_point = 0;
 int three_point = 0;
-int two_eu_three_dx_points = 0;
 int ssbpoints;
 int cwpoints;
 int lowband_point_mult = 0;
 int sc_sidetone;
 char sc_volume[4] = "";
   /* LZ3NY mods */
-char contest_name[50];
 int countrylist_points = -1;
 int my_country_points = -1;
 int my_cont_points = -1;
@@ -140,9 +141,7 @@ int vk_cty;
 int zs_cty;
 int ua9_cty;
 
-char tlfversion[80] = "";
-char testbuffer[120] = "";
-char multsfile[80] = "";	/* name of file with a list of allowed 
+char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
 char exchange_list[40] = "";
 int timeoffset = 0;
@@ -168,7 +167,7 @@ char sp_return[80] = " \n";
 char cq_return[80] = " \n";
 char whichcontest[40] = "qso";
 int defer_store = 0;
-char buffer[162];
+extern char buffer[];
 char call[20];
 char logfile[120] = "general.log";
 char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
@@ -193,7 +192,6 @@ int sending_call = 0;
 int early_started = 0;			/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
 char lastcall[20];
-char lastcomment[40];
 char qsonrstr[5] = "0001";
 char band[9][4] =
     { "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10" };
@@ -212,8 +210,7 @@ int totalzones = 0;
 int secs = 0;
 int countrynr;
 int mycountrynr = 215;
-int points = 0;
-int total = 0;
+int total = 0; 		/**< total number of qso points */
 int band_score[9];
 int dupe = 0;
 int callfound = 0;
@@ -230,15 +227,13 @@ char sc_device[40] = "/dev/dsp";
 
 /*-------------------------------------keyer------------------------------*/
 int keyerport = NO_KEYER;
-int speed = 10;
 int txdelay = 0;
 int weight = 0;
 char weightbuf[4];
-char speedstr[50] = CW_SPEEDS;
 char tonestr[5] = "600";
 int cqdelay = 8;
 char wkeyerbuffer[400];
-int keyspeed = 5;
+int bufloc = 0;
 int cfd;			/* cwkeyer file descriptor */
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
@@ -253,8 +248,8 @@ int commentfield = 0;		/* 1 if we are in comment/excahnge input */
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
 int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
+char lastwwv[120] = "";
 int ptr;				/* Anzahl Lines in ispot_ptr array */
-long int *wwv_ptr;
 int packetinterface = 0;
 int fdSertnc = 0;
 int fdFIFO = 0;
@@ -269,22 +264,18 @@ char clusterlogin[80] = "";
 #ifdef HAVE_LIBHAMLIB
 rig_model_t myrig_model = 351;
 RIG *my_rig;			/* handle to rig (instance) */
-freq_t rigfreq;			/* input frequency  */
 freq_t outfreq;			/* output  to rig */
 rmode_t rmode;			/* radio mode of operation */
 pbwidth_t width;
 vfo_t vfo;			/* vfo selection */
 port_t myport;
 #else
-float rigfreq;			/* input frequency  */
 int outfreq;			/* output  to rig */
 #endif
 int ssb_bandwidth = 3000;
 int cw_bandwidth = 0;
 int serial_rate = 2400;
-int rig_port = 0;
 char rigportname[40];
-int native_rig_fd = 0;
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;
@@ -293,7 +284,7 @@ int rig_comm_success = 0;
 int simulator = 0;
 int simulator_mode = 0;
 int simulator_seed = 8327;
-long system_secs;
+int system_secs;
 char tonecpy[5];
 char simulator_tone[5];
 
@@ -345,9 +336,7 @@ int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;			/* nr of next QSO */
-int bufloc = 0;
 int ymax, xmax;			/* screen size */
-char lastwwv[120] = "";
 int nroflines;
 
 pid_t pid;
@@ -362,7 +351,6 @@ int showfreq = 0;
 float bandfrequency[9] =
     { 1830.0, 3525.0, 7010.0, 10105.0, 14025.0, 18070.0, 21025.0, 24900.0,
 28025.0 };
-char spot_target[8][40];
 
 char headerline[81] =
     "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  \n";
@@ -383,10 +371,6 @@ char C_QTH_Long[8] = "-5";
 char C_DEST_Lat[7] = "51";
 char C_DEST_Long[8] = "1";
 
-double yt = -4.9;		/* for muf calculation */
-double xt = 52.4;
-double yr = 5.0;
-double xr = 50.0;
 double r = 50;
 int m = 1;
 char hiscountry[40];
@@ -426,6 +410,7 @@ int main(int argc, char *argv[])
     int ret;
     int retval;
     char keyerbuff[3];
+    char tlfversion[80] = "";
     int status;
 
     while ((argc > 1) && (argv[1][0] == '-')) {
@@ -435,7 +420,7 @@ int main(int argc, char *argv[])
 	    if (strlen(argv[1] + 2) > 0) {
 		if ((*(argv[1] + 2) == '~') && (*(argv[1] + 3) == '/')) {
 		    /* tilde expansion */
-		    config_file = g_strconcat( g_get_home_dir(), 
+		    config_file = g_strconcat( g_get_home_dir(),
 			    argv[1] + 3, NULL);
 		}
 	    	else {
@@ -475,7 +460,6 @@ int main(int argc, char *argv[])
     }
 
     buffer[0] = '\0';
-    buffer[79] = '\0';
     bufloc = 0;
 
     strcat(logline0, backgrnd_str);
@@ -563,7 +547,7 @@ int main(int argc, char *argv[])
 	status = read_logcfg(); /* read the configuration file */
 	status |= read_rules();	/* read the additional contest rules in "rules/contestname"  LZ3NY */
 
-	if (status != PARSE_OK) { 
+	if (status != PARSE_OK) {
 	    showmsg( "Problems in logcfg.dat or rule file detected! Continue Y/(N)?");
 	    if (toupper( getchar() ) != 'Y') {
 		endwin();
@@ -657,7 +641,7 @@ int main(int argc, char *argv[])
 
 #ifdef HAVE_LIBHAMLIB		// Code for hamlib interface
 
-	showmsg("HAMLIB defined");
+	showmsg("HAMLIB compiled in");
 
 	if (trx_control != 0) {
 
@@ -666,33 +650,26 @@ int main(int argc, char *argv[])
 
 	    showmsg("Trying to start rig ctrl");
 
-	    /** \todo fix exclusion of newer hamlib models */
-	    if ((int) myrig_model > 1999)
-		status = init_native_rig();
-	    else
-		status = init_tlf_rig();
+	    status = init_tlf_rig();
+
+	    if (status  != 0) {
+		showmsg( "Continue without rig control Y/(N)?");
+		if (toupper( getchar() ) != 'Y') {
+		    endwin();
+		    exit(1);
+		}
+		trx_control = 0;
+		showmsg( "Disabling rig control!");
+		sleep(1);
+	    }
 	}
 #else
-	if (trx_control != 0) {
-//                      trx_control = 0;
-	    showmsg("No Hamlib library, using native driver");
-	    shownr("Rignumber is", rignumber);
-	    shownr("Rig speed is", serial_rate);
-	    status = init_native_rig();
-	    sleep(1);
-	}
-#endif				// end code for hamlib interface
+	showmsg("No Hamlib compiled in!");
 
-	if (status  != 0) {
-	    showmsg( "Continue without rig control Y/(N)?");
-	    if (toupper( getchar() ) != 'Y') {
-		endwin();
-		exit(1);
-	    }
-	    trx_control = 0;
-	    showmsg( "Disabling rig control!");
-	    sleep(1);
-	}
+	trx_control = 0;
+	showmsg( "Disabling rig control!");
+	sleep(1);
+#endif				/* HAVE_LIBHAMLIB */	
 
 
 	if (keyerport == NET_KEYER) {
@@ -750,13 +727,11 @@ int main(int argc, char *argv[])
 
 		sprintf(weightbuf, "%d", weight);
 
-		strncpy(keyerbuff, speedstr + (speed * 2), 2);
-		keyerbuff[2] = '\0';
-
 		write_tone();
 
+		snprintf(keyerbuff, 3, "%2d", GetCWSpeed());
 		netkeyer(K_SPEED, keyerbuff);		// set speed
-	
+
 		netkeyer(K_WEIGHT, weightbuf);		// set weight
 
 		if (*keyer_device != '\0')
@@ -800,7 +775,7 @@ int main(int argc, char *argv[])
 	bm_init();			/* initialize bandmap */
 
 	/* Create the first thread */
-	ret = pthread_create(&thrd1, NULL, (void *) logit, NULL);
+	ret = pthread_create(&thrd1, NULL, logit, NULL);
 	if (ret) {
 	    perror("pthread_create: logit");
 	    endwin();
@@ -808,9 +783,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* Create the second thread */
-	ret =
-	    pthread_create(&thrd2, NULL, (void *) background_process,
-			   NULL);
+	ret = pthread_create(&thrd2, NULL, background_process, NULL);
 	if (ret) {
 	    perror("pthread_create: backgound_process");
 	    endwin();

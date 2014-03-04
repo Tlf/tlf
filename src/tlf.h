@@ -43,8 +43,8 @@
 #define COM1_KEYER 2	/* deprecated */
 #define NET_KEYER 3
 #define MFJ1278_KEYER 4
-#define ORION_KEYER 5
-#define K2_KEYER 6
+#define ORION_KEYER 5 	/* deprecated */
+#define K2_KEYER 6 	/* deprecated */
 #define GMFSK 7
 
 #define SINGLE 0        /* single op */
@@ -97,8 +97,8 @@ enum {
     BANDINDEX_15,
     BANDINDEX_12,
     BANDINDEX_10,
-    NBANDS 		// not yet used everywhere, 
-};			// many places have hardcode 9 
+    NBANDS 		// not yet used everywhere,
+};			// many places have hardcode 9
 			// (or 8, being the maximum band index)
 			//
 extern int inxes[NBANDS];  /*< conversion from BANDINDEX to BAND-mask,
@@ -112,7 +112,7 @@ enum {
     C_INPUT,
     C_DUPE,
     C_WINDOW,
-    C_LOG 
+    C_LOG
 };
 
 #define NORMCOLOR C_INPUT
@@ -130,8 +130,6 @@ enum {
 #define EDITOR_VI 1
 #define EDITOR_E3 2
 #define EDITOR_MC 3
-
-#define  CW_SPEEDS	"06121416182022242628303234363840424446485060"
 
 #define LOGLINELEN (88)		/* Length of logline in logfile
 				   (including linefeed) */

@@ -27,7 +27,7 @@
 
 void refresh_comment(void);
 
-int logit(void)
+void *logit(void *ptr)
 {
     extern char mode[];
     extern int trxmode;
@@ -35,7 +35,7 @@ int logit(void)
     extern int cqmode;
     extern int contest;
     extern char buffer[];
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern char comment[];
     extern int cqww;
@@ -89,11 +89,11 @@ int logit(void)
 	    }
 
 	    if (callreturn == '\n' && strlen(hiscall) >= 3) {
-		if ((*comment == '\0') && contest == CONTEST 
+		if ((*comment == '\0') && contest == CONTEST
 			&& !ctcomp && !dxped)
 		    defer_store = 0;
 
-		if ((cqmode == CQ) && (contest == CONTEST) 
+		if ((cqmode == CQ) && (contest == CONTEST)
 			&& (defer_store == 0)) {	/* CQ mode */
 		    if (trxmode == CWMODE || trxmode == DIGIMODE)
 			strcpy(buffer, message[2]);	/*  send F3  on  ENTER  */
@@ -138,7 +138,7 @@ int logit(void)
 		    callreturn = 0;
 		}
 
-		if ((cqmode == S_P) && (contest == CONTEST) 
+		if ((cqmode == S_P) && (contest == CONTEST)
 			&& (defer_store == 0)) {	/* S&P mode */
 
 		    if (cqww == 1) {
@@ -172,9 +172,8 @@ int logit(void)
 		    callreturn = 0;
 		} else if (defer_store > 1) {
 		    if ((cqmode == CQ) && (contest == CONTEST)) {
-			if ((trxmode == CWMODE || trxmode == DIGIMODE) && strlen(cq_return) > 0) {
-			    strcat(buffer, cq_return);	/* send cq return */
-			    sendbuf();
+			if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			    sendmessage(cq_return);	/* send cq return */
 			    if (simulator != 0)
 				simulator_mode = 1;
 			    if (simulator != 0)
@@ -188,9 +187,8 @@ int logit(void)
 		    }
 
 		    if ((cqmode == S_P) && (contest == CONTEST)) {
-			if ((trxmode == CWMODE || trxmode == DIGIMODE) && strlen(sp_return) > 0)  {
-			    strcat(buffer, sp_return);
-			    sendbuf();	/* send S&P return */
+			if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			    sendmessage(sp_return); /* send S&P return */
 			} else
 			    play_file(ph_message[12]);
 
@@ -222,7 +220,7 @@ int logit(void)
 	    HideSearchPanel();
 	}
     }
-    return (1);
+    return(NULL);
 }
 
 /** reprint comment field */

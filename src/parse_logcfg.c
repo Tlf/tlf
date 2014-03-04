@@ -1,7 +1,8 @@
 /*
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
-* 		2011-2012           Thomas Beierlein <tb@forth-ev.de>
+* 		2011-2013           Thomas Beierlein <tb@forth-ev.de>
+* 		2013 		    Fred DH5FS
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,9 +19,9 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "parse_logcfg.h"
-#include "speed_conversion.h"
 #include "tlf.h"
 #include "write_tone.h"
+#include "cw_utils.h"
 #include "speedup.h"
 #include "speeddown.h"
 #include <curses.h>
@@ -35,7 +36,7 @@
 
 extern int keyerport;
 extern char tonestr[];
-extern int speed, partials;
+extern int partials;
 extern int use_part;
 extern int contest;
 extern int portnum;
@@ -67,7 +68,6 @@ int read_logcfg(void)
     int status = PARSE_OK;
 
     contest = 0;
-    speed = 14;
     partials = 0;
     use_part = 0;
     keyerport = 0;
@@ -77,7 +77,7 @@ int read_logcfg(void)
     nodes = 0;
     node = 0;
     shortqsonr = 0;
-    
+
     if (cabrillo != NULL) {
 	free(cabrillo);
 	cabrillo = NULL;
@@ -105,8 +105,8 @@ int read_logcfg(void)
 
     while ( fgets(inputbuffer, 120, fp) != NULL ) {
 
-	if ((inputbuffer[0] != '#') && (strlen(inputbuffer) > 1)) {	
-	    					/* skip comments and 
+	if ((inputbuffer[0] != '#') && (strlen(inputbuffer) > 1)) {
+	    					/* skip comments and
 						 * empty lines */
 	    status |= parse_logcfg(inputbuffer);
 	}
@@ -133,7 +133,7 @@ static int confirmation_needed;
 int parse_logcfg(char *inputbuffer)
 {
     extern int use_rxvt;
-    extern char message[15][80];
+    extern char message[][80];
     extern char ph_message[14][80];
     extern char sp_return[];
     extern char cq_return[];
@@ -145,7 +145,6 @@ int parse_logcfg(char *inputbuffer)
     extern int one_point;
     extern int two_point;
     extern int three_point;
-    extern int two_eu_three_dx_points;
     extern int exchange_serial;
     extern int country_mult;
     extern int wysiwyg_multi;
@@ -161,7 +160,6 @@ int parse_logcfg(char *inputbuffer)
     extern int searchflg;
     extern int demode;
     extern int contest;
-    extern int speed;
     extern int weight;
     extern int txdelay;
     extern char tonestr[];
@@ -180,7 +178,6 @@ int parse_logcfg(char *inputbuffer)
 #ifdef HAVE_LIBHAMLIB
     extern rig_model_t myrig_model;
 #endif
-    extern int rig_port;
     extern char rigportname[];
     extern int rignumber;
     extern char rigconf[];
@@ -189,6 +186,7 @@ int parse_logcfg(char *inputbuffer)
     extern int netkeyer_port;
     extern char netkeyer_hostaddress[];
     extern char bc_hostaddress[MAXNODES][16];
+    extern char bc_hostservice[MAXNODES][16];
     extern int lan_active;
     extern char thisnode;
     extern int nodes;
@@ -516,13 +514,14 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    /* strip NL and trailing whitespace */
 	    g_strlcpy( call, g_strchomp(fields[1]), 20 );
-	    /* as other code parts rely on a trailing NL on the call 
+	    /* as other code parts rely on a trailing NL on the call
 	     * we add back such a NL for now */
 	    strcat( call, "\n");
 	    // check that call sign can be found in cty database !!
 	    break;
 	}
-    case 17:{
+    case 17:
+    case 122:{
     	    PARAMETER_NEEDED(teststring);
 	    strcpy(whichcontest, g_strchomp(fields[1]));
 	    if (strlen(whichcontest) > 40) {
@@ -540,7 +539,7 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 19:{
     	    PARAMETER_NEEDED(teststring);
-	    g_strlcpy(keyer_device, g_strchomp(fields[1]), 
+	    g_strlcpy(keyer_device, g_strchomp(fields[1]),
 		    sizeof(keyer_device));
 	    break;
 	}
@@ -681,7 +680,7 @@ int parse_logcfg(char *inputbuffer)
     	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strncat(buff, fields[1], 2);
-	    speed = speed_conversion(atoi(buff));
+	    SetCWSpeed(atoi(buff));
 	    break;
 	}
     case 39:{
@@ -797,7 +796,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 54:{
-	    two_eu_three_dx_points = 1;
+	    KeywordNotSupported(teststring);
 	    break;
 	}
     case 55:{
@@ -870,11 +869,7 @@ int parse_logcfg(char *inputbuffer)
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
-	    if (buff[0] == '0' || buff[0] == '1') {
-		rig_port = atoi(buff);
-	    } else {
-		strncpy(rigportname, buff, 39);
-	    }
+	    strncpy(rigportname, buff, 39);
 	    break;
 	}
     case 65:{
@@ -894,7 +889,19 @@ int parse_logcfg(char *inputbuffer)
     case 68:{
 	    PARAMETER_NEEDED(teststring);
 	    if (node < MAXNODES) {
-		g_strlcpy(bc_hostaddress[node], g_strchomp(fields[1]), 16);
+		/* split host name and port number, separated by colon */
+		char **an_fields;
+		an_fields = g_strsplit(fields[1], ":", 2);
+		/* copy host name */
+		g_strlcpy(bc_hostaddress[node], g_strchomp(an_fields[0]),
+			    sizeof(bc_hostaddress[0]));
+		if (an_fields[1] != NULL) {
+		    /* copy host port, if found */
+		    g_strlcpy(bc_hostservice[node], g_strchomp(an_fields[1]),
+				sizeof(bc_hostservice[0]));
+		}
+		g_strfreev(an_fields);
+
 		if (node++ < MAXNODES)
 		    nodes++;
 	    }
@@ -902,8 +909,13 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
     case 69:{
+	    char c;
 	    PARAMETER_NEEDED(teststring);
-	    thisnode = fields[1][0];
+	    c = toupper(fields[1][0]);
+	    if (c >= 'A' && c <= 'H')
+		thisnode = c;
+	    else
+		WrongFormat(teststring);
 	    break;
 	}
     case 70:{
@@ -1023,7 +1035,7 @@ int parse_logcfg(char *inputbuffer)
 
 			/* accept only a line starting with the contest name
 			 * (CONTEST=) followed by ':' */
-			if (strncasecmp (buffer, whichcontest, 
+			if (strncasecmp (buffer, whichcontest,
 				strlen(whichcontest) - 1) == 0) {
 
 			    strncpy(multiplier_list,
@@ -1144,18 +1156,6 @@ int parse_logcfg(char *inputbuffer)
 		exc_cont = 1;
 		break;
 	    }
-    case 122:{						// RULES=
-		PARAMETER_NEEDED(teststring);
-		strcpy(whichcontest, g_strchomp(fields[1]));
-		if (strlen(whichcontest) > 40) {
-		    showmsg
-			("WARNING: contest name is too long! exiting...");
-		    sleep(5);
-		    exit(1);
-		}
-		setcontest();
-		break;
-	    }
     case 123:{		// don't use auto_cq
 		noautocq = 1;
 		break;
@@ -1260,7 +1260,7 @@ int parse_logcfg(char *inputbuffer)
     case 140:{
 		PARAMETER_NEEDED(teststring);
 		keyerport = MFJ1278_KEYER;
-		g_strlcpy(controllerport, g_strchomp(fields[1]), 
+		g_strlcpy(controllerport, g_strchomp(fields[1]),
 			sizeof(controllerport));
 		break;
 	    }
@@ -1270,12 +1270,12 @@ int parse_logcfg(char *inputbuffer)
 		break;
 	    }
     case 142:{
-		keyerport = ORION_KEYER;
+		KeywordNotSupported(teststring);
 		break;
 	    }
     case 143:{
 		PARAMETER_NEEDED(teststring);
-		g_strlcpy(exchange_list, g_strchomp(fields[1]),	
+		g_strlcpy(exchange_list, g_strchomp(fields[1]),
 			sizeof(exchange_list));
 		break;
 	    }
@@ -1358,105 +1358,12 @@ int parse_logcfg(char *inputbuffer)
 }
 
 
-int speed_conversion(int cwspeed)
-{
-
-    int x;
-
-    switch (cwspeed) {
-
-    case 0 ... 6:{
-	    x = 0;
-	    break;
-	}
-    case 7 ... 12:{
-	    x = 1;
-	    break;
-	}
-    case 13 ... 14:{
-	    x = 2;
-	    break;
-	}
-    case 15 ... 16:{
-	    x = 3;
-	    break;
-	}
-    case 17 ... 18:{
-	    x = 4;
-	    break;
-	}
-    case 19 ... 20:{
-	    x = 5;
-	    break;
-	}
-    case 21 ... 22:{
-	    x = 6;
-	    break;
-	}
-    case 23 ... 24:{
-	    x = 7;
-	    break;
-	}
-    case 25 ... 26:{
-	    x = 8;
-	    break;
-	}
-    case 27 ... 28:{
-	    x = 9;
-	    break;
-	}
-    case 29 ... 30:{
-	    x = 10;
-	    break;
-	}
-    case 31 ... 36:{
-	    x = 11;
-	    break;
-	}
-    case 37 ... 42:{
-	    x = 12;
-	    break;
-	}
-    case 43 ... 48:{
-	    x = 13;
-	    break;
-	}
-    case 49 ... 50:{
-	    x = 14;
-	    break;
-	}
-    case 51 ... 54:{
-	    x = 15;
-	    break;
-	}
-    case 55 ... 57:{
-	    x = 16;
-	    break;
-	}
-    case 58 ... 60:{
-	    x = 17;
-	    break;
-	}
-    case 61 ... 63:{
-	    x = 18;
-	    break;
-	}
-    default:{
-	    x = 19;
-	    break;
-	}
-    }
-
-    return (x);
-}
-
-
-/** Complain about problems in configuration 
+/** Complain about problems in configuration
  *
  * Complains in standout mode about some problem. Beep and wait for
- * 2 seconds 
+ * 2 seconds
  *
- * \param msg  The reason for the problem to be shown 
+ * \param msg  The reason for the problem to be shown
  */
 void Complain(char *msg) {
     attron(A_STANDOUT);

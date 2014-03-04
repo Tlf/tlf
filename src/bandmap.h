@@ -21,11 +21,11 @@
 #define _BANDMAP_H
 
 typedef struct {
-    char 	*call;  
+    char 	*call;
     int 	freq;	/* freq in Hz */
     char 	mode;
     short 	band;
-    int		node;
+    char	node;
     int 	timeout;
     char 	dupe;	/* only used internal in bm_show() */
 } spot;
@@ -58,21 +58,21 @@ void bm_add(char *s);
 
 void bm_menu();
 
-/** check if call is new multi 
+/** check if call is new multi
  *
  * \return true if new multi
  */
 int bm_ismulti(char *call);
 
 
-/** check if call is a dupe 
+/** check if call is a dupe
  *
  * \return true if is dupe
  */
 int bm_isdupe(char *call, int band);
 
 
-/** add a new spot to bandmap data 
+/** add a new spot to bandmap data
  * \param call  	the call to add
  * \param frequ 	on which frequency heard
  * \param reason	- new cluster spot
@@ -116,9 +116,9 @@ void bandmap_show();
  * - self announced stations
  *   		small preceeding letter for repoting station
  *
- * maybe show own frequency as dashline in other color 
+ * maybe show own frequency as dashline in other color
  * (maybee green highlighted)
- * - highligth actual spot if near its frequency 
+ * - highligth actual spot if near its frequency
  *
  * Allow selection of one of the spots (switches to S&P)
  * - Ctrl-G as known

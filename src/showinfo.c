@@ -24,7 +24,7 @@
 
 /** Show infos for selected country on bottom of screen
  *
- * Prepares info string for the selected country and shows it on the 
+ * Prepares info string for the selected country and shows it on the
  * bottom line of the screen.
  *
  * /param x  Country number
@@ -43,7 +43,7 @@ int showinfo(int x)
     extern double bearing;
     extern double range;
     extern int timeoffset;
-    extern int timecorr;
+    extern long timecorr;
     extern char itustr[];
     extern int mycountrynr;
 
@@ -106,7 +106,7 @@ int showinfo(int x)
     }
 
     mvprintw(24, 64, "  DX time: %s", timebuff);
- 
+
     if (use_rxvt == 0)
 	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
     else

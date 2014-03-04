@@ -25,12 +25,11 @@
 
 #include "globalvars.h"
 #include "clear_display.h"
+#include "cw_utils.h"
 
 void clear_display(void)
 {
     extern int use_rxvt;
-    extern char speedstr[];
-    extern int speed;
     extern char mode[];
     extern int cqdelay;
     extern char headerline[];
@@ -59,8 +58,8 @@ void clear_display(void)
     char speedbuf[4] = "  ";
     int cury, curx;
 
-    strncpy(speedbuf, speedstr + (2 * speed), 2);
-    speedbuf[2] = '\0';
+    snprintf(speedbuf, 3, "%2d", GetCWSpeed());
+
     getyx(stdscr, cury, curx);
 
     mvprintw(0, 0, "");
@@ -156,12 +155,7 @@ void clear_display(void)
     if (searchflg == SEARCHWINDOW)
 	searchlog(hiscall);
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
-
-    mvaddstr(12, 29, hiscall);
+    printcall();
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(24, 0, backgrnd_str);

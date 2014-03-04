@@ -32,7 +32,7 @@
 
 PANEL *search_panel;
 WINDOW *search_win;
-int initialized = 0;
+static int initialized = 0;
 
 void show_needed_sections(void);
 
@@ -285,7 +285,7 @@ void searchlog(char *searchstring)
 
 	wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT );
 	for (i = 0; i < 6; i++)
-	    mvwprintw(search_win, i + 1, 1, 
+	    mvwprintw(search_win, i + 1, 1,
 		    "                                     ");
 
 	mvwprintw(search_win, 1, 1, " 10");
@@ -314,7 +314,7 @@ void searchlog(char *searchstring)
 		    if (ignoredupe == 0) {
 
 			if (mixedmode == 0) {
-			    wattrset(search_win, 
+			    wattrset(search_win,
 				    COLOR_PAIR(C_DUPE));
 			    dupe = ISDUPE;
 			    beep();
@@ -323,7 +323,7 @@ void searchlog(char *searchstring)
 				 (trxmode == CWMODE)) ||
 				((s_inputbuffer[3] == 'S')
 				 && (trxmode == SSBMODE))) {
-				wattrset(search_win, 
+				wattrset(search_win,
 					COLOR_PAIR(C_DUPE));
 				dupe = ISDUPE;
 				beep();
@@ -561,16 +561,16 @@ void searchlog(char *searchstring)
 
 	    j = 0;
 	    m = 0;
-	    
+
 	    /* check what we have worked first */
-	    /** \todo the method below parses through the array of already 
+	    /** \todo the method below parses through the array of already
 	     * looked up search results from the search window. That is quick
 	     * but has the drawback, that we have no band information and
 	     * therefore print some entries more than once.
-	     * Better would be to lookup the partial call in the array of 
-	     * worked stations 'callarray' - it is there only once and we can 
+	     * Better would be to lookup the partial call in the array of
+	     * worked stations 'callarray' - it is there only once and we can
 	     * also see from 'call_band' if it is a dupe here.
-	     * be aware of the problem of marking it dupe only for a complete 
+	     * be aware of the problem of marking it dupe only for a complete
 	     * match.
 	     */
 	    for (m = 0; m < srch_index; m++) {
@@ -587,7 +587,7 @@ void searchlog(char *searchstring)
 			if (dupe == ISDUPE) {
 			    attrset(COLOR_PAIR(C_DUPE));
 			} else {
-			    if (use_rxvt == 0) 
+			    if (use_rxvt == 0)
 				attron(COLOR_PAIR
 				       (C_BORDER) | A_BOLD | A_STANDOUT);
 			    else

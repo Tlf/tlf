@@ -26,4 +26,7 @@
 int get_nr_of_points();
 /* get total number of multis */
 int get_nr_of_mults();
+/* calculate total score */
+int get_total_score();
+
 int  showscore(void);

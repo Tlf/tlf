@@ -30,8 +30,8 @@
 #define NR_LINES 5
 #define NR_COLS 80
 
-/* highlite the edit line and set the cursor */
-static void highlite_line(int row, char *line, int column)
+/* highlight the edit line and set the cursor */
+static void highlight_line(int row, char *line, int column)
 {
     char ln[NR_COLS+1];
 
@@ -42,8 +42,8 @@ static void highlite_line(int row, char *line, int column)
     refreshp();
 }
 
-/* reset the highlite state */
-static void unhighlite_line(int row, char *line)
+/* reset the highlight state */
+static void unhighlight_line(int row, char *line)
 {
     char ln[NR_COLS+1];
 
@@ -54,7 +54,7 @@ static void unhighlite_line(int row, char *line)
 
 
 /* get a copy of selected QSO into the buffer */
-void get_qso(int nr, char *buffer) 
+void get_qso(int nr, char *buffer)
 {
     assert (nr < nr_qsos);
     strcpy (buffer, qsos[nr]);
@@ -103,7 +103,7 @@ void edit_last(void)
     get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
 
     while ((j != 27) && (j != '\n')) {
-	highlite_line(editline, editbuffer, b);
+	highlight_line(editline, editbuffer, b);
 
 	j = onechar();
 
@@ -124,12 +124,12 @@ void edit_last(void)
 		b = 68;
 	    else if (b < 77)
 		b = 77;
-	    else 
+	    else
 		b = 1;
 
 	} else if (j == 152) {	// up
 	    if (editline > (NR_LINES - nr_qsos) && (editline > 0)) {
-		unhighlite_line(editline, editbuffer);
+		unhighlight_line(editline, editbuffer);
 		putback_qso (nr_qsos - (NR_LINES -editline), editbuffer);
 		editline--;
 		get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
@@ -141,7 +141,7 @@ void edit_last(void)
 	} else if (j == 153) {	// down
 
 	    if (editline < NR_LINES-1) {
-		unhighlite_line(editline, editbuffer);
+		unhighlight_line(editline, editbuffer);
 		putback_qso (nr_qsos - (NR_LINES -editline), editbuffer);
 		editline++;
 		get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
@@ -205,7 +205,7 @@ void edit_last(void)
 	}
     }
 
-    unhighlite_line(editline, editbuffer);
+    unhighlight_line(editline, editbuffer);
     putback_qso (nr_qsos - (NR_LINES - editline), editbuffer);
 
     scroll_log();

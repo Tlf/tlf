@@ -32,7 +32,7 @@ void time_update(void)
     extern char qsonrstr[];
     extern int bandinx;
     extern int this_second;
-    extern long system_secs;
+    extern int system_secs;
     extern int miniterm;
 
     char time_buf[11];
@@ -81,7 +81,7 @@ void time_update(void)
 	    mvprintw(9, 0, logline2);
 	    mvprintw(10, 0, logline3);
 	    mvprintw(11, 0, logline4);
-	    mvprintw(13, 0, 
+	    mvprintw(13, 0,
 		    "                                                                    ");
 	    attron(COLOR_PAIR(C_WINDOW));
 	    mvprintw(12, 23, qsonrstr);

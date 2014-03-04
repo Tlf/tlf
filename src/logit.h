@@ -31,5 +31,5 @@
 #include "lancode.h"
 
 
-int logit(void);
+void *logit(void *);
 void refresh_comment(void);

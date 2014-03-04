@@ -20,19 +20,19 @@
  	*        List  CW messages
  	*
  	*--------------------------------------------------------------*/
- 	
+
 #include "listmessages.h"
 
 int listmessages(void)
 {
-	extern char message[15][80];
+	extern char message[][80];
 	extern char backgrnd_str[];
-	
+
 	int i, j;
 	char  printbuffer[160];
 
 	nicebox(8, 0, 14, 78, "Messages");
-	
+
 	for  ( i = 0  ; i  <= 13 ; i++){
 		printbuffer[0] = '\0';
 		strncat (printbuffer,  message[i],  strlen(message[i]) -1);
@@ -51,7 +51,7 @@ int listmessages(void)
 	mvprintw(23, 30,  "Press any key");
 	refreshp();
 	onechar();
-	
+
 	clear_display();
 	attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
 

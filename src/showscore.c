@@ -25,6 +25,7 @@
 
 #include "globalvars.h"
 #include "showscore.h"
+#include "focm.h"
 #include <assert.h>
 
 #define START_COL 45	/* start display in these column */
@@ -33,7 +34,7 @@
 static int band_cols[6] =
 	{ 50, 55, 60, 65, 70, 75 };
 
-/* list of BANDINDEX entries to show in each column 
+/* list of BANDINDEX entries to show in each column
  * first  - for normal contest bands
  * second - if in warc band */
 static int bi_normal[6] =
@@ -54,14 +55,19 @@ void printfield (int x, int y, int number);
 void show_summary( int points, int multi )
 {
     mvprintw(5, START_COL, "                                   ");
-    /* TODO: respect field boundaries for large numbers */ 
-    mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d", 
+    /* TODO: respect field boundaries for large numbers */
+    mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
 	points, multi, points * multi);
 }
 
 
-/* show header with active band and number of QSOs.
- * Use the list of bandindices in 'bi' for that */
+/** show scoring header
+ *
+ * show header with active band and number of QSOs.
+ * Use the list of bandindices in 'bi' for that
+ *
+ * \param bi  list of band indices to use
+ */
 void display_header(int *bi)
 {
     int i;
@@ -72,7 +78,7 @@ void display_header(int *bi)
     for (i = 0; i < 6; i++) {
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 	addstr("  ");
-	if (bandinx == bi[i]) {		/* highlite active band */
+	if (bandinx == bi[i]) {		/* highlight active band */
 	    attrset(COLOR_PAIR(C_DUPE));
 	}
 	printw("%3d", bands[bi[i]]);
@@ -92,6 +98,8 @@ void display_header(int *bi)
 }
 
 
+extern int focm;
+extern int foc_get_nr_of_points();
 
 /* get total number of points */
 int get_nr_of_points()
@@ -147,13 +155,16 @@ int get_nr_of_mults()
 	    return 1;
 	}
     }
+    else if (dx_arrlsections == 1) {
+
+	return totalmults + totalcountries;
+    }
     else if (universal == 1 && country_mult == 1) {
 
 	return totalcountries;
     }
     else if (universal == 1 && multlist == 1 && arrlss != 1) {
 
-	/* FIXME: Who provides totalmults here? */
 	return totalmults ;
     }
     else if (waedc_flg == 1) {
@@ -174,21 +185,32 @@ int get_nr_of_mults()
 
 	return totalmults;
     }
-    else if (dx_arrlsections == 1) {
-
-	return totalmults + totalcountries;
-    }
     else if (wpx == 1) {
 
 	return nr_of_px;
     }
-    else 
-	/* should never reach that point */
-	assert(1 == 0);
+    else
+	/* should never reach that point
+	 *
+	 * \TODO: so we need some instrument of warning here
+	 */
 	return 1;
 }
 
 
+/* calculate total score */
+int get_total_score() {
+    if (focm == 1)
+	return foc_total_score();
+    else
+	return get_nr_of_points() * get_nr_of_mults();
+}
+
+
+/** show contest score
+ *
+ * display scoring results of contest if activated by 'showscore_flag'
+ */
 int showscore(void)
 {
 
@@ -308,6 +330,9 @@ int showscore(void)
 	if (sprint == 1) {
 
 	    mvprintw(5, START_COL, "Score: %d", get_nr_of_points() );
+	}
+	else if (focm == 1) {
+	    foc_show_scoring(START_COL);
 	}
 	else {
 

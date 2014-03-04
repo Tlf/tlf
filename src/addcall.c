@@ -398,7 +398,9 @@ int addcall2(void)
 	if (lan_logline[68] != ' ') {
 
 	    strcpy(lancopy, "     ");
-	    strncpy(lancopy, lan_logline + 68, 4);
+
+	    /* max 5 char for prefix written in makelogline */
+	    strncpy(lancopy, lan_logline + 68, 5);
 
 	    for (p = 0; p <= 5; p++) {	// terminate at first space
 

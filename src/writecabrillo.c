@@ -304,8 +304,6 @@ struct cabrillo_desc *read_cabrillo_format (char *filename, char *format)
 
     if (!g_key_file_load_from_file( keyfile, filename, 
 		G_KEY_FILE_NONE, &error)) {
-	printw( "%s\n", error->message );
-	refreshp();
 	g_error_free( error );
 
 	/* file does not exist or is wrongly formatted */

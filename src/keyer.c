@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2001-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2012-2014 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,36 +31,36 @@ int mfj1278_control(int x);
 int keyer(void)
 {
 
+    extern int cqmode;
     extern char mode[20];
     extern int bufloc;
     extern char buffer[];
     extern char termbuf[];
-    extern int keyspeed;
-    extern char message[15][80];
+    extern char message[][80];
     extern char wkeyerbuffer[];
     extern int data_ready;
     extern int keyerport;
     extern int weight;
 
-    int x = 0, i = 0, j = 0;
+    int x = 0, j = 0;
     int cury, curx;
     char nkbuffer[2];
     char keyerstring[30] = "                              ";
     char weightbuf[15];
-    const char txcontrolstring[2] = { 20, '\0' };
-    const char rxcontrolstring[2] = { 18, '\0' };
-    const char crcontrolstring[2] = { 13, '\0' };
-    const char ctl_c_controlstring[2] = { 92, '\0' };
+    const char txcontrolstring[2] = { 20, '\0' };	// ^t
+    const char rxcontrolstring[2] = { 18, '\0' };	// ^r
+    const char crcontrolstring[2] = { 13, '\0' };	// cr
+    const char ctl_c_controlstring[2] = { 92, '\0' };	// '\'
+
+    if (keyerport == NO_KEYER)	/* no keyer present */
+	return (1);
 
     strcpy(mode, "Keyboard");
     clear_display();
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-    if (keyerport == NO_KEYER)	/* no keyer present */
-	return (1);
-
     if (keyerport == MFJ1278_KEYER) {
-	buffer[0] = 20;		// 1 char at the time !
+	buffer[0] = 20;		// send ctrl-t
 	buffer[1] = '\0';
 	if (data_ready != 1) {
 	    strcat(wkeyerbuffer, buffer);
@@ -71,7 +72,7 @@ int keyer(void)
     while (1) {
 	x = onechar();
 
-	if (x == 34) {		/* bug fix */// "
+	if (x == 34) {		/* skip " */
 	    x = 32;
 	}
 
@@ -80,7 +81,7 @@ int keyer(void)
 
 	if (x == 27 || x == 11 || x == 235) {	//      esc, ctrl-k,  alt-k
 	    if (keyerport == MFJ1278_KEYER) {
-		buffer[0] = 18;	// 1 char at the time !
+		buffer[0] = 18;	// send ctrl-r
 		buffer[1] = '\0';
 		if (data_ready != 1) {
 		    strcat(wkeyerbuffer, buffer);
@@ -94,21 +95,6 @@ int keyer(void)
 	    break;
 	}
 
-	if (x >= 32 && x <= 125) {	// display              space ... }
-	    addch(x);
-	    refreshp();
-	    i++;
-	    if ((i >= 40)) {
-		i = 0;
-		mvprintw(4, 0, "                            ");
-		mvprintw(4, 0, "");
-		refreshp();
-		displayit();
-
-	    }
-
-	    refreshp();
-	}
 
 	if (x == 127 && (strlen(buffer) >= 1)) {	/* erase  */
 
@@ -138,21 +124,7 @@ int keyer(void)
 			nkbuffer[1] = '\0';
 			netkeyer(K_MESSAGE, nkbuffer);
 			nkbuffer[0] = '\0';
-			for (j = 0; j < 29; j++) {
-			    keyerstring[j] = keyerstring[j + 1];
-			}
-			keyerstring[28] = x;
-			keyerstring[29] = '\0';
-
-			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-			mvprintw(5, 0, "%s", keyerstring);
-			refreshp();
-		    } else if (keyerport == ORION_KEYER) {
-			nkbuffer[0] = x;
-			nkbuffer[1] = '\0';
-			strcat(wkeyerbuffer, nkbuffer);
-			sendbuf();
-			nkbuffer[0] = '\0';
+// TODO test if that is correct
 			for (j = 0; j < 29; j++) {
 			    keyerstring[j] = keyerstring[j + 1];
 			}
@@ -187,7 +159,6 @@ int keyer(void)
 
 		    if ((strlen(buffer) + strlen(termbuf) > 39)
 			|| x == '=') {
-			i = 0;
 			mvprintw(5, 0, "                         ");
 			mvprintw(5, 0, "");
 			refreshp();
@@ -202,6 +173,7 @@ int keyer(void)
 
 	    switch (x) {
 	    case 9:
+	    case 32:
 		{
 		    bufloc = 0;
 		    buffer[bufloc] = '\0';
@@ -230,7 +202,7 @@ int keyer(void)
 		    clear_display();
 		    return (2);
 		}
-	    case 123:
+	    case 123:		/* { */
 		{
 		    if (keyerport == MFJ1278_KEYER) {
 			strcat(buffer, txcontrolstring);
@@ -238,7 +210,7 @@ int keyer(void)
 		    }
 		    break;
 		}
-	    case 125:
+	    case 125:		/* } */
 		{
 		    if (keyerport == MFJ1278_KEYER) {
 			strcat(buffer, rxcontrolstring);
@@ -246,7 +218,7 @@ int keyer(void)
 		    }
 		    break;
 		}
-	    case 92:
+	    case 92:		/* \ */
 		{
 		    if (keyerport == MFJ1278_KEYER) {
 			strcat(buffer, ctl_c_controlstring);
@@ -270,92 +242,80 @@ int keyer(void)
 		}
 	    case 156:
 		{
-		    keyspeed = speedup();
+		    speedup();
 		    clear_display();
 		    break;
 		}
 	    case 157:
 		{
-		    keyspeed = speeddown();
+		    speeddown();
 		    clear_display();
 		    break;
 		}
 
 	    case 129:
 		{
-		    strcat(buffer, message[0]);	/* F1 */
 		    getyx(stdscr, cury, curx);
 		    mvprintw(5, 0, "");
-		    sendbuf();
+		    sendmessage(message[0]);	/* F1 */
 		    mvprintw(cury, curx, "");
 		    break;
 		}
 	    case 130:
 		{
-		    strcat(buffer, message[1]);	/* F2 */
-		    sendbuf();
+		    sendmessage(message[1]);	/* F2 */
 		    break;
 		}
 	    case 131:
 		{
-		    strcat(buffer, message[2]);	/* F3 */
-		    sendbuf();
+		    sendmessage(message[2]);	/* F3 */
 		    break;
 		}
 	    case 132:
 		{
-		    strcat(buffer, message[3]);	/* F4 */
-		    sendbuf();
+		    sendmessage(message[3]);	/* F4 */
 		    break;
 		}
 	    case 133:
 		{
-		    strcat(buffer, message[4]);	/* F5 */
-		    sendbuf();
+		    sendmessage(message[4]);	/* F5 */
 		    break;
 		}
 	    case 134:
 		{
-		    strcat(buffer, message[5]);	/* F6 */
-		    sendbuf();
+		    sendmessage(message[5]);	/* F6 */
 		    break;
 		}
 	    case 135:
 		{
-		    strcat(buffer, message[6]);	/* F7 */
-		    sendbuf();
+		    sendmessage(message[6]);	/* F7 */
 		    break;
 		}
 	    case 136:
 		{
-		    strcat(buffer, message[7]);	/* F8 */
-		    sendbuf();
+		    sendmessage(message[7]);	/* F8 */
 		    break;
 		}
 	    case 137:
 		{
-		    strcat(buffer, message[8]);	/* F9 */
-		    sendbuf();
+		    sendmessage(message[8]);	/* F9 */
 		    break;
 		}
 	    case 138:
 		{
-		    strcat(buffer, message[9]);	/* F10 */
-		    sendbuf();
+		    sendmessage(message[9]);	/* F10 */
 		    break;
 		}
 
 	    case 140:
 		{
-		    strcat(buffer, message[10]);	/* F11 */
-		    sendbuf();
+		    sendmessage(message[10]);	/* F11 */
 		    break;
 		}
 	    case 141:
 		{
 
-		    strcat(buffer, message[11]);	/* F12 */
-		    sendbuf();
+		    sendmessage(message[11]);	/* F12 */
 		    break;
 		}
 
@@ -366,7 +326,11 @@ int keyer(void)
 	}
     }
 
-    strcpy(mode, "Log     ");
+    if (cqmode == CQ)
+        strcpy(mode, "Log     ");
+    else
+        strcpy(mode, "S&P     ");
+
     clear_display();
 
     return (2);			/* show end of keyer  routine */
@@ -388,7 +352,7 @@ int mfj1278_control(int x)
 
 	if (trxmode == DIGIMODE) {
 	    if (x == 10)
-		x = 13;		// tnc needs CR
+		x = 13;		// tnc needs CR instead of LF
 	}
 	buffer[0] = x;		// 1 char at the time !
 	buffer[1] = '\0';

@@ -96,7 +96,7 @@ short	bm_initialized = 0;
 
 extern int bandinx;
 extern int trxmode;
-extern int thisnode;
+extern char thisnode;
 
 extern int call_band[];		/** \todo should not be public */
 
@@ -121,7 +121,7 @@ void bm_init() {
 }
 
 
-/** \brief convert frequency to bandnumber 
+/** \brief convert frequency to bandnumber
  *
  * \return	bandnumber or -1 if not in any band
  */
@@ -129,7 +129,7 @@ int freq2band(unsigned int freq) {
     int i;
 
     for (i = 0; i < NBANDS; i++) {
-	if (freq >= (unsigned int)bandcorner[i][0] && 
+	if (freq >= (unsigned int)bandcorner[i][0] &&
 		    freq <= (unsigned int)bandcorner[i][1])
 	    return i;	/* in actual band */
     }
@@ -189,18 +189,18 @@ gint	cmp_freq(spot *a, spot *b) {
     return 0;
 }
 
-/** add a new spot to bandmap data 
+/** add a new spot to bandmap data
  * \param call  	the call to add
  * \param freq 		on which frequency heard
  * \param node		reporting node
  */
 void bandmap_addspot( char *call, unsigned int freq, char node) {
-/* - if a spot on that band and mode is already in list replace old entry 
+/* - if a spot on that band and mode is already in list replace old entry
  *   with new one and set timeout to SPOT_NEW,
  *   otherwise add it to the list as new
  * - if other call on same frequency (with some TOLERANCE) replace it and set
  *   timeout to SPOT_NEW
- * - all frequencies from cluster are rounded to 100 Hz, 
+ * - all frequencies from cluster are rounded to 100 Hz,
  *   remember all other frequencies exactly
  *   but display only rounded to 100 Hz - sort exact
  */
@@ -247,9 +247,9 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	    ((spot*)found->data)->freq = freq;
 	    allspots = g_list_sort(allspots, (GCompareFunc)cmp_freq);
 	}
-    } 
+    }
     else {
-    /* if not in list already -> prepare new entry and 
+    /* if not in list already -> prepare new entry and
      * insert in list at correct freq */
 	spot *entry = g_new(spot, 1);
 	entry -> call = g_strdup(call);
@@ -264,9 +264,9 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	found = g_list_find(allspots, entry);
     }
 
-    /* check that spot is unique on freq +/- TOLERANCE Hz, 
+    /* check that spot is unique on freq +/- TOLERANCE Hz,
      * drop other entries if needed */
-    if (found->prev && 
+    if (found->prev &&
 	(abs(((spot*)(found->prev)->data)->freq - freq) < TOLERANCE)) {
 	spot *olddata;
 	olddata = found->prev->data;
@@ -274,7 +274,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	g_free (olddata->call);
 	g_free (olddata);
     }
-    if (found->next && 
+    if (found->next &&
 	(abs(((spot*)(found->next)->data)->freq - freq) < TOLERANCE)) {
 	spot *olddata;
 	olddata = found->next->data;
@@ -290,7 +290,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 void bandmap_age() {
 /*
  * go through all entries
- *   + decrement timeout 
+ *   + decrement timeout
  *   + set state to new, normal, aged or dead
  *   + if dead -> drop it from collection
  */
@@ -301,13 +301,14 @@ void bandmap_age() {
 	spot *data = list->data;
 	GList *temp = list;
 	list = list->next;
-	if (data->timeout)
+	if (data->timeout) {
 	    data->timeout--;
 	    if (data->timeout == 0) {
 		allspots = g_list_remove_link( allspots, temp);
 		g_free (data->call);
 		g_free (data);
 	    }
+	}
     }
 }
 
@@ -320,16 +321,16 @@ int bm_ismulti( char * call) {
 
 int bm_isdupe( char *call, int band ) {
     int found = -1;
-    
+
     /* spot for warc bands are never dupes */
     if (!inxes[band])
 	return 0;
 
     found = searchcallarray(call);
-    
+
     if (found == -1)		/* new call */
 	return 0;
- 
+
     if (call_band[found] & inxes[band])
 	return 1;
     else
@@ -352,7 +353,7 @@ void bm_show_info() {
     mvprintw (19, 68, "bands: %s", bm_config.allband ? "all" : "own");
     mvprintw (20,68, "modes: %s", bm_config.allmode ? "all" : "own");
     mvprintw (21,68, "dupes: %s", bm_config.showdupes ? "yes" : "no");
-    
+
     attrset(COLOR_PAIR(CB_NEW)|A_STANDOUT);
     mvprintw( 22 ,69, "MULTI");
 
@@ -392,9 +393,9 @@ void bandmap_show() {
  * - self announced stations
  *   		small preceeding letter for reporting station
  *
- * maybe show own frequency as dashline in other color 
+ * maybe show own frequency as dashline in other color
  * (maybee green highlighted)
- * - highligth actual spot if near its frequency 
+ * - highligth actual spot if near its frequency
  *
  * Allow selection of one of the spots (switches to S&P)
  * - Ctrl-G as known
@@ -421,7 +422,7 @@ void bandmap_show() {
 	bm_initialized = 1;
     }
 
-    /* acquire mutex 
+    /* acquire mutex
      * do not add new spots to allspots during
      * - aging and
      * - filtering
@@ -434,7 +435,7 @@ void bandmap_show() {
     /* make array of spots to display
      * filter spotlist according to settings */
 
-    if (spots) 
+    if (spots)
 	g_ptr_array_free( spots, TRUE);		/* free array */
 
     spots = g_ptr_array_sized_new( 128 );	/* allocate new one */
@@ -450,10 +451,10 @@ void bandmap_show() {
 
 	dupe = bm_isdupe(data->call, data->band);
 
-	if ((bm_config.allband || (data->band == bandinx)) && 
+	if ((bm_config.allband || (data->band == bandinx)) &&
 		(bm_config.allmode || (data->mode == trxmode)) &&
 		(bm_config.showdupes || !dupe)) {
-	
+
 	    data -> dupe = dupe;
 	    g_ptr_array_add( spots, data );
 	}
@@ -464,7 +465,7 @@ void bandmap_show() {
     pthread_mutex_unlock( &bm_mutex );
 
 
-    /* afterwards display filtered list around own QRG +/- some offest 
+    /* afterwards display filtered list around own QRG +/- some offest
      * (offset gets resest if we change frequency */
 
     /** \todo Auswahl des Display Bereiches */
@@ -490,15 +491,15 @@ void bandmap_show() {
     bm_show_info();
     /** \fixme Darstellung des # Speichers */
 
-    for (i = 0; i < spots->len; i++) 
+    for (i = 0; i < spots->len; i++)
     {
 	data = g_ptr_array_index( spots, i );
 
 	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
-	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.), 
+	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.),
 		(data->node == thisnode ? '*' : data->node));
 
-	if (data -> timeout > SPOT_NORMAL) 
+	if (data -> timeout > SPOT_NORMAL)
 	    attrset(COLOR_PAIR(CB_NEW)|A_BOLD);
 
 	else if (data -> timeout > SPOT_OLD)
@@ -532,13 +533,13 @@ void bandmap_show() {
 		break;
 	}
     }
-    
+
     move(cury, curx);			/* reset cursor */
 
     refreshp();
 }
 
-/** allow control of bandmap features 
+/** allow control of bandmap features
  */
 void bm_menu()
 {
@@ -554,7 +555,7 @@ void bm_menu()
 
     c = toupper( onechar());
     switch (c) {
-	case 'B':	
+	case 'B':
 	    bm_config.allband = 1 - bm_config.allband;
 	    break;
 
@@ -567,7 +568,7 @@ void bm_menu()
 	    break;
     }
     bandmap_show();		/* refresh display */
-    
+
     move (13,0);
     for (j = 0; j < 80; j++)
 	addch (' ');
@@ -599,7 +600,7 @@ spot *copy_spot(spot *data)
  *
  * \param 	partialcall - part of call to look up
  * \return 	spot * structure with a copy of the found spot
- * 		or NULL if not found (You have to free the structure 
+ * 		or NULL if not found (You have to free the structure
  * 		after use).
  */
 spot *bandmap_lookup(char *partialcall)
@@ -643,7 +644,7 @@ spot *bandmap_lookup(char *partialcall)
  * \param 	freq - frequency to start from
  *
  * \return 	spot * structure with a copy of the found spot
- * 		or NULL if not found (You have to free the structure 
+ * 		or NULL if not found (You have to free the structure
  * 		after use).
  */
 
@@ -662,7 +663,7 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
 		spot *data;
 		data = g_ptr_array_index( spots, i );
 
-		if ((data->freq > freq + TOLERANCE/2) && 
+		if ((data->freq > freq + TOLERANCE/2) &&
 			(!bm_config.skipdupes || data->dupe == 0)) {
 		    /* copy data into a new Spot structure */
 		    result = copy_spot(data);

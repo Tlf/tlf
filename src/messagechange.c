@@ -26,7 +26,7 @@
 int message_change(int x)
 {
     extern char backgrnd_str[];
-    extern char message[15][80];
+    extern char message[][80];
     extern char sp_return[];
     extern char cq_return[];
 
