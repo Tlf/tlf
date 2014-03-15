@@ -30,6 +30,8 @@
 #include "bandmap.h"
 #include <glib.h>
 #include "cw_utils.h"
+#include "qtcsend.h"
+#include "qtcrecv.h"
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
@@ -146,15 +148,12 @@ char callinput(void)
 	nodelay(stdscr, FALSE);
 
 	if (x == 195) {
-	  openlog("tlf", LOG_NDELAY, LOG_SYSLOG);
 	  x = onechar();
 	    if (x == 179) {
 		x = x;		// Alt+S
-		openlog("tlf", LOG_NDELAY, LOG_SYSLOG);
 	    }
 	    if (x == 178) {
 		x = x;		// AltR
-		openlog("tlf", LOG_NDELAY, LOG_SYSLOG);
 	    }
 	}
 
@@ -230,6 +229,19 @@ char callinput(void)
 
 		}
 		break;
+	    }
+
+	case 17:	// CTRL+q
+	    {
+		qtc_recv_panel();
+		x=155;
+		continue;
+	    }
+	case 19:	// CTRL+s
+	    {
+		qtc_send_panel();
+		x=155;
+		continue;
 	    }
 
 	case 155:		/* left */

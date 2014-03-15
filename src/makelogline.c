@@ -1,7 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
- *               2013                     Ervin Hegedüs - HA2OS <airween@gmail.com>
  *               2011-2014                Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -187,6 +186,7 @@ void prepare_fixed_part(void) {
     }
 }
 
+
 /** Construct contest dependent part of logline
  *
  * - contest dependent part (list may not complete):\n
@@ -281,6 +281,7 @@ void prepare_specific_part(void) {
     /* If WPX
      * -> add prefix to prefixes_worked and include new pfx in log line */
     new_pfx = (add_pfx(pxstr) == 0);	/* add prefix, remember if new */
+
     if (wpx ==1) {			/* wpx */
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
@@ -289,6 +290,7 @@ void prepare_specific_part(void) {
 
 	fillto(73);
     }
+
     if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 	/* ------------cqww --------------------- */
 	logline4[68] = '\0';
@@ -376,24 +378,18 @@ void prepare_specific_part(void) {
 	fillto(77);
 
     } else if (pacc_pa_flg == 1 || waedc_flg == 1) {
+
 	logline4[68] = '\0';
+
 	if (addcty != 0) {
 	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
 	    addcty = 0;
+
 	} else if (addcallarea == 1) {
-	    strcat(logline4, pxstr);
-
-	    if (strlen(pxstr) == 2) {
-		strcat(logline4, " ");
-	    }
-
-	    strcat(logline4, "  ");
 	    strncat(logline4, pxstr, 3);
 
 	    addcallarea = 0;
-	} else {
-	    strncat(logline4, fillspaces, 9);
 	}
 
 	fillto(77);
@@ -407,25 +403,12 @@ void prepare_specific_part(void) {
 	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
 
 	    addcty = 0;
+	}
 
-	} else
-	    strncat(logline4, fillspaces, 9);
+	fillto(77);
 
-    } else if (wpx == 1) {
-	strncat(logline4, fillspaces, 4);
-    } else if (arrl_fd == 1) {
-	strncat(logline4, fillspaces, 4);
-    } else if ((one_point == 1) || (two_point == 1) || (three_point == 1)) {
-	strncat(logline4, fillspaces, 4);
-    } else {
-	strncat(logline4, fillspaces, 4);
     }
-    i = 77 - strlen(logline4);
-    if (i > 0)				/* fill line until column 77 */
-	strncat(logline4, fillspaces, i);
 
-
-    score();			/* update qso's per band */
     fillto(77);
 }
 

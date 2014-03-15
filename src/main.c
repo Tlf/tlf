@@ -27,8 +27,10 @@
 #include <glib.h>
 #include <panel.h>
 #include <pthread.h>
+#include <termios.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
+#include "readqtccalls.h"
 #endif
 
 SCREEN *mainscreen;
@@ -412,6 +414,15 @@ int main(int argc, char *argv[])
     char keyerbuff[3];
     char tlfversion[80] = "";
     int status;
+
+    static struct termios oldt, newt;
+
+    tcgetattr( STDIN_FILENO, &oldt);
+    newt = oldt;
+
+    newt.c_iflag &= ~(IXON);
+
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt);
 
     while ((argc > 1) && (argv[1][0] == '-')) {
 	switch (argv[1][1]) {
@@ -810,5 +821,6 @@ int main(int argc, char *argv[])
 
     endwin();
 
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
     return (0);
 }

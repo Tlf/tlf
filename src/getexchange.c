@@ -160,16 +160,15 @@ int getexchange(void)
         }
         nodelay(stdscr, FALSE);
 
-syslog(LOG_DEBUG, "x: %d", x);
 	switch (x) {
 
-	case 242:	// ALT+r
+	case 17:	// CTRL-Q
 	    {
 		qtc_recv_panel();
 		x=155;
 		continue;
 	    }
-	case 243:	// ALT+s
+	case 19:	// CTRL+s
 	    {
 		qtc_send_panel();
 		x=155;

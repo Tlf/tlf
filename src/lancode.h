@@ -39,6 +39,7 @@
 #define FREQMSG 53
 #define INCQSONUM 54
 #define TIMESYNC 55
+#define QTCENTRY 56
 
 int lanrecv_init(void);
 int lan_recv_close(void);

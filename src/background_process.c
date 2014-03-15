@@ -132,6 +132,11 @@ void *background_process(void *ptr)
 		    log_to_disk(true);
 		    break;
 
+		case QTCENTRY:
+
+		    store_recv_qtc(lan_message+2);
+		    break;
+
 		case CLUSTERMSG:
 		    strncpy(prmessage, lan_message + 2, 80);
 		    if (strstr(prmessage, call) != NULL)	// alert for cluster messages

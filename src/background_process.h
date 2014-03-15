@@ -26,6 +26,7 @@
 #include "splitscreen.h"
 #include "log_to_disk.h"
 #include "getctydata.h"
+#include "log_recv_qtc_to_disk.h"
 
 void *background_process(void *);
 int cw_simulator(void);

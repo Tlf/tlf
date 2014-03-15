@@ -108,6 +108,7 @@ int score()
     extern int pfxmult;
     extern int countrynr;
     extern int mycountrynr;
+    extern int total;
     extern char continent[];
     extern char mycontinent[];
     extern char comment[];

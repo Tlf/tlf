@@ -305,6 +305,10 @@ int send_lan_message(int opcode, char *message)
 	sendbuffer[14] = '\0';
 	lan_send(sendbuffer);
     }
+    if (opcode == QTCENTRY) {
+	sendbuffer[82] = '\0';
+	lan_send(sendbuffer);
+    }
 
     return (0);
 }

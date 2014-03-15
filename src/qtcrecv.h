@@ -34,5 +34,7 @@ int shift_left(char * fieldval, int shift);
 int show_status(int idx);
 int number_fields();
 int readqtcfromfile();
+int clear_help_block();
+int show_help_msg();
 //int move_cursor(int dir);
 

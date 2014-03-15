@@ -1,7 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,12 +36,6 @@ int store_qso(char *loglineptr)
 		exit(1);
 	}
 
-	if (waedc_flg == 1 && qtclist.totalsent > 0) {
-	    log_sent_qtc_to_disk((nr_qsos+1));
-	}
-	if (waedc_flg == 1 && qtcreclist.count > 0) {
-	    log_recv_qtc_to_disk((nr_qsos+1));
-	}
 	strcpy(qsos[nr_qsos], loglineptr);
 	nr_qsos++;
 	strcat(loglineptr, "\n");	// pa3fwm, 20040113: this looks suspicious, repeated calls to store_qso() could add multiple \n's

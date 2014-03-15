@@ -23,6 +23,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "onechar.h"
+#include <syslog.h>
 
 int onechar(void)
 {
@@ -69,6 +70,9 @@ int onechar(void)
 	    nodelay(stdscr, FALSE);
 
 	    x = getch();	/* remove '91 */
+	    if (x > 0) {
+	      syslog(LOG_DEBUG, "1st: %d", x);
+	    }
 	    switch (x) {
 	    case 49:
 		{

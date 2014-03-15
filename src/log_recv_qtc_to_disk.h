@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "tlf.h"
+#include "lancode.h"
 
 int log_recv_qtc_to_disk (int qtcnr);
 int store_recv_qtc (char * loglineptr);
