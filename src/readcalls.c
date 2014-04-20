@@ -30,6 +30,7 @@
 #include "tlf.h"
 #include "globalvars.h"
 #include <glib.h>
+#include <syslog.h>
 
 int readcalls(void)
 {
@@ -159,13 +160,13 @@ int readcalls(void)
 		zonebuf[2] = '\0';
 		z = zone_nr(zonebuf);
 	    }
-
 	    if (wysiwyg_once == 1 ||
 		wysiwyg_multi == 1 ||
 		arrlss == 1 ||
 		serial_section_mult == 1 ||
 		serial_grid4_mult == 1 ||
 		sectn_mult == 1 ||
+		itumult == 1 ||
 		((dx_arrlsections == 1)
 		 && ((countrynr == w_cty) || (countrynr == ve_cty)))) {
 
@@ -181,14 +182,13 @@ int readcalls(void)
 
 		    multbuffer[3] = '\0';
 
-		} else if (serial_section_mult == 1) {
-
+		} else if (serial_section_mult == 1 || itumult == 1) {
 		    tt = 0;
 
 		    memset(multbuffer, 0, 39);
 
 		    for (t = 54; t < 64; t++) {
-			if (inputbuffer[t] >= 'A' && inputbuffer[t] <= 'Z') {
+			if ((inputbuffer[t] >= 'A' && inputbuffer[t] <= 'Z') || isdigit(inputbuffer[t])) {
 			    multbuffer[tt] = inputbuffer[t];
 			    tt++;
 			}
@@ -277,9 +277,9 @@ int readcalls(void)
 	    strcpy(hiscall, presentcall);
 
 	    add_ok = waedc_pa();
-
 	    if (add_ok == 0) {
 		band_score[bandinx]++;
+		countries[countrynr] |= inxes[bandinx];
 	    }
 
 	    hiscall[0] = '\0';
@@ -316,7 +316,7 @@ int readcalls(void)
 	}
     }
 
-    if (cqww == 1) {
+    if (cqww == 1 || waedc_flg == 1) {
 	for (n = 1; n <= 40; n++) {
 	    if ((zones[n] & BAND160) != 0)
 		zonescore[0]++;

@@ -31,8 +31,8 @@
 #include "rtty.h"
 #include "sendbuf.h"
 #include "log_recv_qtc_to_disk.h"
-
-#include <syslog.h>
+#include "globalvars.h"
+#include "qtcutil.h"
 
 extern char hiscall[];
 extern int trxmode;
@@ -69,6 +69,7 @@ char helpmsg[6][2][26] = {
   { "Enter the callsign of", "QSO, and press [TAB]" },
   { "Enter the serial of QSO,", "and press [TAB]" },
 };
+int nrofqtc = 0;
 
 int qtc_recv_panel() {
     char qtchead[32];
@@ -90,6 +91,7 @@ int qtc_recv_panel() {
     strcpy(buffer, "QTC QRV ");
     sendbuf();
     strncpy(qtcreclist.callsign, hiscall, strlen(hiscall));
+
     qtcreclist.count = 0;
     qtcreclist.serial = 0;
     qtcreclist.confirmed = 0;
@@ -143,8 +145,7 @@ int qtc_recv_panel() {
     showfield(fieldset.active);
     curpos = 0;
     i=1;
-    //wattrset(qtcrecvwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
-    //mvwprintw(qtcrecvwin, 2, 14, "ALT-c read QTC file");
+
     refreshp();
 
     x = -1;
@@ -327,7 +328,7 @@ int qtc_recv_panel() {
 			}
 		    }
 		    else {
-			if ((fieldset.active < 3) || (fieldset.active-3)%3 >= 0 && (fieldset.active-3)%3 < 2) {
+			if ((fieldset.active < 3) || ((fieldset.active-3)%3 >= 0 && (fieldset.active-3)%3 < 2)) {
 			    fieldset.active++;
 			    showfield(fieldset.active-1);
 			}
@@ -353,7 +354,7 @@ int qtc_recv_panel() {
 			}
 		    }
 		    else {
-			if ((fieldset.active < 3) || (fieldset.active-3)%3 > 0 && (fieldset.active-3)%3 <= 2) {
+			if ((fieldset.active < 3) || ((fieldset.active-3)%3 > 0 && (fieldset.active-3)%3 <= 2)) {
 			    fieldset.active--;
 			    showfield(fieldset.active+1);
 			}
@@ -393,6 +394,16 @@ int qtc_recv_panel() {
 	  case 127:	// backspace
 		    delete_from_field(1);
 		    break;
+	  case 156:	// up
+		    speedup();
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
+		    break;
+	  case 157:	// down
+		    speeddown();
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
+		    break;
 	}
 
 	refreshp();
@@ -427,6 +438,11 @@ int showfield(int fidx) {
 	    sprintf(fieldval, "%s", qtcreclist.callsign);
 	    winrow = 1;
 	    posidx = 0;
+	    nrofqtc = qtc_get(qtcreclist.callsign, bandinx);
+	    if (nrofqtc < 0) {
+		nrofqtc = 0;
+	    }
+	    put_qtc();
 	}
 	else if (fidx == 1) {
 	    sprintf(fieldval, "%4d", qtcreclist.serial);
@@ -489,10 +505,15 @@ int modify_field(int pressed) {
 	int fi, winrow, qtcrow, posidx, stridx;
 
 	posidx = 0;
-	if (fieldset.active == 0 && (isalnum(pressed) || pressed == '?') && strlen(qtcreclist.callsign) < pos[0][2]-1) {
-	    qtcreclist.callsign[strlen(qtcreclist.callsign)] = pressed;
+	if (fieldset.active == 0 && (isalnum(pressed) || pressed == '?' || pressed == '/') && strlen(qtcreclist.callsign) < pos[0][2]-1) {
+	    shift_right(qtcreclist.callsign);
+	    qtcreclist.callsign[strlen(qtcreclist.callsign)-curpos] = pressed;
 	    qtcreclist.callsign[strlen(qtcreclist.callsign)+1] = '\0';
 	    showfield(0);
+	    nrofqtc = qtc_get(qtcreclist.callsign, bandinx);
+	    if (nrofqtc < 0) {
+		nrofqtc = 0;
+	    }
 	}
 	else if (fieldset.active == 1 && (isdigit(pressed) || pressed == '?')) {
 	  sprintf(fieldval, "%d", (qtcreclist.serial)*10);
@@ -633,6 +654,7 @@ int shift_right(char * fieldval) {
 	    fieldval[i] = fieldval[i-1];
 	}
 	fieldval[strlen(fieldval)+1] = '\0';
+	syslog(LOG_DEBUG, "shift_right: '%s', %d", fieldval, curpos);
 	return 0;
 }
 
@@ -849,6 +871,16 @@ int show_help_msg(msgidx) {
 	i++;
     }
 
+    return 0;
+}
+
+int put_qtc() {
+
+    init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
+    int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
+
+    wattrset(qtcrecvwin, line_normal);
+    mvwprintw(qtcrecvwin, 1, 19, "%2dQ on %d", nrofqtc, atoi(band[bandinx]));
     return 0;
 }
 

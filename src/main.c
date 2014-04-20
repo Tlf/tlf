@@ -300,6 +300,8 @@ int next_qtc_qso;
 t_qtclist qtclist;
 int nr_qtcsent = 0;
 t_qtcreclist qtcreclist;
+GHashTable* qtc_rec_store = NULL;
+char qtcreccalls[MAX_CALLS][15];
 
 /*------------------------------dupe array---------------------------------*/
 int callarray_nr = 0;		/* number of calls in callarray */
@@ -575,6 +577,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (waedc_flg == 1) {
+	    qtc_rec_store = g_hash_table_new(g_str_hash, g_str_equal);
 	    if (checkqtclogfile_new() != 0) {
 		showmsg( "QTC's giving up" );
 		sleep(2);

@@ -25,17 +25,20 @@
 #include "get_time.h"
 #include "tlf.h"
 #include "globalvars.h"
+#include "qtcutil.h"
 #include <glib.h>
+
+#include <syslog.h>
 
 int readqtccalls()
 {
     int s = 0;
     char inputbuffer[160];
     FILE *fp;
-    char temps[30];
+    char temps[30], callsign[15];
     int tempi;
     int last_qtc = 0;
-    int i;
+    int i, bandidx;
     
     clear();
     mvprintw(4, 0, "Reading QTC sent logfile...\n");
@@ -87,6 +90,8 @@ int readqtccalls()
     }
 
     while (fgets(inputbuffer, 90, fp) != NULL) {
+	parse_qtcline(inputbuffer, callsign, &bandidx);
+	qtc_inc(callsign, bandidx);
 	total++;
     }
 

@@ -38,18 +38,21 @@
 #include <hamlib/rig.h>
 #endif
 
+#include "qtcutil.h"
 #define TOLERANCE 50
 
-unsigned int bandcorner[NBANDS][2] =
-{{ 1800000, 2000000 },
- { 3500000, 4000000 },
- { 7000000, 7300000 },
- { 10100000, 10150000 },
- { 14000000, 14350000 },
- { 18068000, 18168000 },
- { 21000000, 21450000 },
- { 24890000, 24990000 },
- { 28000000, 29700000 }};
+#include <syslog.h>
+
+unsigned int bandcorner[NBANDS][3] =
+{{ 1800000, 2000000, 0 },	// band bottom, band top, is warc?
+ { 3500000, 4000000, 0 },
+ { 7000000, 7300000, 0 },
+ { 10100000, 10150000, 1 },
+ { 14000000, 14350000, 0 },
+ { 18068000, 18168000, 1 },
+ { 21000000, 21450000, 0 },
+ { 24890000, 24990000, 1 },
+ { 28000000, 29700000, 0 }};
 
 unsigned int cwcorner[NBANDS] =
 { 1838000,
@@ -99,7 +102,7 @@ extern int trxmode;
 extern char thisnode;
 
 extern int call_band[];		/** \todo should not be public */
-
+extern int waedc_flg;
 
 /** \brief initialize bandmap
  *
@@ -132,6 +135,27 @@ int freq2band(unsigned int freq) {
 	if (freq >= (unsigned int)bandcorner[i][0] &&
 		    freq <= (unsigned int)bandcorner[i][1])
 	    return i;	/* in actual band */
+    }
+
+    return -1;		/* not in any band */
+}
+
+/** \brief convert frequency to bandnumber, listen only non-WARC band
+ *
+ * \return	bandnumber or -1 if not in any band
+ */
+int freq2nwband(unsigned int freq) {
+    int i, j = 0;
+
+   for (i = 0; i < NBANDS; i++) {
+	if (freq >= (unsigned int)bandcorner[i][0] &&
+	    freq <= (unsigned int)bandcorner[i][1] &&
+	    bandcorner[i][2] == 0) {
+	    return j;	/* in actual band */
+	}
+	if (bandcorner[i][2] == 0) {
+	    j++;
+	}
     }
 
     return -1;		/* not in any band */
@@ -252,7 +276,12 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
     /* if not in list already -> prepare new entry and
      * insert in list at correct freq */
 	spot *entry = g_new(spot, 1);
-	entry -> call = g_strdup(call);
+	if (waedc_flg == 1) {
+	    qtc_format(entry, call, band);
+	}
+	else {
+	    entry -> call = g_strdup(call);
+	}
 	entry -> freq = freq;
 	entry -> mode = mode;
 	entry -> band = band;
@@ -495,6 +524,10 @@ void bandmap_show() {
     {
 	data = g_ptr_array_index( spots, i );
 
+	if (waedc_flg == 1) {
+	    qtc_format(data, data->call, data->band);
+	}
+	
 	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.),
 		(data->node == thisnode ? '*' : data->node));
@@ -515,6 +548,7 @@ void bandmap_show() {
 	   if (bm_config.showdupes) {
 	       attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 	       attroff(A_STANDOUT);
+
 	       printw ("%-12s", g_ascii_strdown(data->call, -1));
 	   }
 	}
@@ -691,3 +725,41 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
     return result;
 }
 
+int qtc_format(spot* entry, char * call, int band) {
+    char tcall[15];
+    int nrofqtc, clen;
+
+/*
+ *                     | 
+ *                     v
+ 14000.0   CT7/G7DIE/AM21082.4   5Z4/LA4GHA
+ 14031.8   W1AW/4 1    21260.0   YO9GDN
+                       ^
+                       |
+                       not enough space
+ */
+    
+    if (band > -1 && bandcorner[band][2] == 0 || strlen(call) < 15) {
+	clen = strlen(call);
+	if (call[clen-2] == ' ' && (call[clen-1] == 'Q' || (call[clen-1] >= 48 && call[clen-1] <= 57))) {
+	    call[clen-2] = '\0';
+	}
+	nrofqtc = qtc_get(call, band);
+	if (nrofqtc >= 0 && nrofqtc < 10) {
+	    sprintf(tcall, "%s %d", call, nrofqtc);
+	    entry -> call = g_strdup(tcall);
+	}
+	else if (nrofqtc >= 10) {
+	    sprintf(tcall, "%s Q", call);
+	    entry -> call = g_strdup(tcall);
+	}
+	else {
+	    entry -> call = g_strdup(call);
+	}
+    }
+    else {
+      entry -> call = g_strdup(call);
+    }
+
+    return 0;
+}

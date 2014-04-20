@@ -152,30 +152,21 @@ int waedc_pa(void)
 	    k = 0;
 
 	} else if (countrynr == ua9_cty) {
-	    if ((pxnr == 9) || (pxnr == 0)) {
+	    if ((pxnr == 8) || (pxnr == 9) || (pxnr == 0)) {
 		if ((waedc_qsos[9][pxnr] & i) == 0) {
 		    waedc_qsos[9][pxnr] = waedc_qsos[9][pxnr] | i;
-		  countryscore[j]+=weight;
+		    countryscore[j]+=weight;
 		    addcallarea = 1;
 		}
 		k = 0;
 
 	    }
 	} else {
-	    //addcallarea = 0;
-	    //k = 1;
-	    if (strcmp(continent, "EU") != 0) {
+	      //addcallarea = 0;
+	      k = 0;
 	      countryscore[j]+=weight;
 	      addcallarea = 1;
 	      k = 0;
-	    }
-	    else {
-	      //addcallarea = 0;
-	      //k = 1;
-	      //countryscore[j]+=weight;
-	      //addcallarea = 1;
-	      k = 0;
-	    }
 	}
     }
     else  {	// Non-EU stations

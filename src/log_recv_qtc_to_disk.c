@@ -25,6 +25,7 @@
 #include "globalvars.h"
 #include "get_time.h"
 #include "log_recv_qtc_to_disk.h"
+#include "qtcutil.h"
 #include <syslog.h>
 
 extern int trx_control;
@@ -51,8 +52,7 @@ int log_recv_qtc_to_disk(int qsonr)
 	    qpos = 0;
 	    // QTC:  3799 PH 2003-03-23 0711 YB1AQS        001/10     DL8WPX        0330 DL6RAI        1021
 
-	    sprintf(temp, " %04d", qsonr);
-	    strcat(temp, band[bandinx]);
+	    sprintf(temp, "%3s", band[bandinx]);
 	    if (trxmode == CWMODE) {
 		strcat(temp, "CW ");
 	    }
@@ -62,40 +62,38 @@ int log_recv_qtc_to_disk(int qsonr)
 	    else {
 		strcat(temp, "DIG");
 	    }
+	    strncpy(qtclogline, temp, strlen(temp));
 
+	    qpos = strlen(temp);
+	    sprintf(temp, "%04d", qsonr);
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
-	    qpos+=strlen(temp);
+	    qpos += strlen(temp);
 
 	    get_time();
 	    strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
+
 	    strncpy(qtclogline+qpos, time_buf, strlen(time_buf));
 	    qpos+=strlen(time_buf);
-	    
+
 	    if (logfrequency == 1 &&
 		trx_control == 1) {
 		sprintf(khz, " %3d", ((int)freq)%1000);	// show freq.
 		strncpy(qtclogline+qpos, khz, strlen(khz));
 		qpos += strlen(khz);
-
 	    }
-
-	    //strncpy(qtclogline+qpos, temp, strlen(temp));
-	    //qpos+=strlen(temp);
 
 	    if (lan_active == 1) {
 		qtclogline[qpos++] = thisnode;	// set node ID...
-		//strcat(temp, '\0');
 	    } else {
 		qtclogline[qpos++] = ' ';
 	    }
 	    qtclogline[qpos++] = ' ';
 
-	    //strncat(temp, hiscall, 15);	/*  29 */
-	    //fillto(44);
+	    sprintf(temp, "%-14s", qtcreclist.callsign);
 
-	    strncpy(qtclogline+qpos, qtcreclist.callsign, strlen(qtcreclist.callsign));
-	    qpos+=strlen(qtcreclist.callsign);
-	    
+	    strncpy(qtclogline+qpos, temp, strlen(temp));
+	    qpos+=strlen(temp);
+
 	    sprintf(temp, " %04d", qtcreclist.serial);
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
 	    qpos+=strlen(temp);
@@ -103,18 +101,12 @@ int log_recv_qtc_to_disk(int qsonr)
 	    sprintf(temp, " %04d", qtcreclist.count);
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
 	    qpos+=strlen(temp);
-	    
+
 	    sprintf(temp, " %s", qtcreclist.qtclines[i].time);
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
 	    qpos+=strlen(temp);
 
-	    sprintf(temp, " %s", qtcreclist.qtclines[i].callsign);
-	    tempi = strlen(temp);
-	    while(tempi <= 15) {
-		temp[tempi] = ' ';
-		tempi++;
-	    }
-	    temp[tempi] = '\0';
+	    sprintf(temp, " %-14s", qtcreclist.qtclines[i].callsign);
 
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
 	    qpos+=strlen(temp);
@@ -128,7 +120,7 @@ int log_recv_qtc_to_disk(int qsonr)
 	    }
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
 	    qpos+=strlen(temp);
-	    
+
 	    qtclogline[qpos] = '\0';
 
 	    store_recv_qtc(qtclogline);
@@ -159,7 +151,8 @@ int log_recv_qtc_to_disk(int qsonr)
 int store_recv_qtc(char *loglineptr)
 {
 	FILE *fp;
-	int i;
+	int i, bandidx;
+	char callsign[15];
 
 	if  ( (fp = fopen(QTC_RECV_LOG, "a"))  == NULL){
 		fprintf(stdout,  "log_recv_qtc_to_disk.c: Error opening file.\n");
@@ -172,6 +165,8 @@ int store_recv_qtc(char *loglineptr)
 	fputs  (loglineptr, fp);
 
 	fclose(fp);
+	parse_qtcline(loglineptr, callsign, &bandidx);
+	qtc_inc(callsign, bandidx);
 
 	return(0);
 }

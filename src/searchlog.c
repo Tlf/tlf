@@ -29,6 +29,9 @@
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
 #endif
+#include "qtcutil.h"
+
+#include <syslog.h>
 
 PANEL *search_panel;
 WINDOW *search_win;
@@ -132,6 +135,9 @@ void searchlog(char *searchstring)
     static int qso_index = 0;
     static int xwin = 1;
     static int ywin = 1;
+    int bidx = 0;	// bandindex for QTC band
+    char qtccall[15];	// temp str for qtc search
+    char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
 
     if (!initialized) {
 	InitSearchPanel();
@@ -282,6 +288,9 @@ void searchlog(char *searchstring)
 	werase( search_win );
 
 	wnicebox(search_win, 0, 0, 6, 37, "Worked");
+	if (waedc_flg == 1) {
+	    mvwprintw(search_win, 0, 35, "Q");
+	}
 
 	wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT );
 	for (i = 0; i < 6; i++)
@@ -333,20 +342,49 @@ void searchlog(char *searchstring)
 		    }		// end ignore
 		}
 	    }
-	    if (s_inputbuffer[1] == '1')
+	    if (s_inputbuffer[1] == '1') {
 		j = 1;
-	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '5')
+		bidx = BANDINDEX_10;
+	    }
+	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '5') {
 		j = 2;
-	    if (s_inputbuffer[1] == '2')
+		bidx = BANDINDEX_15;
+	    }
+	    if (s_inputbuffer[1] == '2') {
 		j = 3;
-	    if (s_inputbuffer[1] == '4')
+		bidx = BANDINDEX_20;
+	    }
+	    if (s_inputbuffer[1] == '4') {
 		j = 4;
-	    if (s_inputbuffer[1] == '8')
+		bidx = BANDINDEX_40;
+	    }
+	    if (s_inputbuffer[1] == '8') {
 		j = 5;
-	    if (s_inputbuffer[1] == '6')
+		bidx = BANDINDEX_80;
+	    }
+	    if (s_inputbuffer[1] == '6') {
 		j = 6;
+		bidx = BANDINDEX_160;
+	    }
 
 	    if (j != 8) {
+		if (waedc_flg == 1) {
+		    qtccall[0] = '\0';
+		    z = 12;	// firs pos of callsigns
+		    l = 0;
+		    do {
+			qtccall[l] = s_inputbuffer[z];
+			z++; l++;
+		    } while(s_inputbuffer[z] != ' ');
+		    qtccall[l] = '\0';
+		    l = qtc_get(qtccall, bidx);
+		    if (l >= 0 && l < 10) {
+			qtcflags[j-1] = l+48;
+		    }
+		    if (l >= 10) {
+			qtcflags[j-1] = 'Q';
+		    }
+		}
 		mvwprintw(search_win, j, 1, "%s", s_inputbuffer);
 	    }
 
@@ -413,10 +451,17 @@ void searchlog(char *searchstring)
 
 	/* print worked zones and countrys for each band in checkwindow */
 	wattron(search_win, COLOR_PAIR(C_HEADER) | A_STANDOUT);
+	if (waedc_flg == 1) {
+	    for(l=0; l<6; l++) {
+		if (qtcflags[l] != ' ') {
+		    mvwprintw(search_win, l+1, 35, "%c", qtcflags[l]);
+		}
+	    }
+	}
 
 	if (cqww == 1 || contest == 0 || pacc_pa_flg == 1 || waedc_flg == 1) {
 
-	    if ((countries[countrynr] & BAND10) != 0) {
+	  if ((countries[countrynr] & BAND10) != 0) {
 		mvwprintw(search_win, 1, 36, "C");
 		mvwprintw(search_win, 1, 1, " 10");
 	    }
@@ -499,13 +544,11 @@ void searchlog(char *searchstring)
 
 	    }
 	}
-
 	if (waedc_flg == 1) {
 
 	    getpx(hiscall);
 
 	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
-
 	    if ((countrynr == w_cty) ||
 		    (countrynr == ve_cty) ||
 		    (countrynr == ja_cty ) ||
@@ -515,14 +558,15 @@ void searchlog(char *searchstring)
 		    (countrynr == zs_cty ) ||
 		    (countrynr == vk_cty ))
 	    {
-		if ((waedc_qsos[0][pxnr] & BAND160) == BAND160)
+	        if ((waedc_qsos[0][pxnr] & BAND160) == BAND160)
 		    mvwprintw(search_win, 6, 37, "M");
 
 		if ((waedc_qsos[0][pxnr] & BAND80) == BAND80)
 		    mvwprintw(search_win, 5, 37, "M");
 
-		if ((waedc_qsos[0][pxnr] & BAND40) == BAND40)
+		if ((waedc_qsos[0][pxnr] & BAND40) == BAND40) {
 		    mvwprintw(search_win, 4, 37, "M");
+		}
 
 		if ((waedc_qsos[0][pxnr] & BAND20) == BAND20)
 		    mvwprintw(search_win, 3, 37, "M");
