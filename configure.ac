@@ -70,7 +70,6 @@ AC_TYPE_SSIZE_T
 # Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
 AC_FUNC_STRFTIME
-AC_FUNC_MALLOC
 AC_CHECK_FUNCS([bzero floor ftruncate gethostbyname memset mkfifo putenv select socket sqrt strcasecmp strchr strcspn strdup strpbrk strspn strstr])
 
 # Set PACKAGE_DATA_DIR in config.h.
