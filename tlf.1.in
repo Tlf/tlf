@@ -1106,6 +1106,31 @@ Start tlf in SSB mode
 .SH "FILES"
 .TR
 
+.TR
+.B SERIAL_OR_SECTION
+Exchange is serial number or section. This option is similar to SERIAL+SECTION, except the exchange could be
+a serial or the section. The options was introduced for HA-DX, where HA stations gives the shortest form
+of its county, other stations gives serial.
+
+.TR
+.B MYQRA
+For the contest "Stewperry", this option is used to set the QRA, eg: JN97, or the full form: JN97OM.
+In Stewperry, the points calculated based on the distance of the stations.
+
+.TR
+.B POWERMULT
+Use this value to multiple the final points. If the contest rule allows
+to use the power multiplier (IE. Stewperry, ARRL-FD), you can pass that
+here. Note, that the type of POWERMULT is float, eg. POWERMULT=1.5, but
+the final score will rounded by floor(), which gives the largest integer
+value that is not greater than multiplied score.
+
+.TR
+.B SHOW_WARC
+Basically the "searchwindow" looks the callsigns on all non-WARC bands.
+If the CONTESTMODE isn't set (that mean Tlf is in QSO mode), and this
+option has set up, the searchwindow extends the search to WARC bands.
+
 \fB@prefix@/share/@PACKAGE@/logcfg.dat\fR
 is a recent example of the configuration file tlf needs to know what to do. Tlf
 won't start without one. \fBCopy it into the working directory\fP and edit it
