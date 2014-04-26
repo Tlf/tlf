@@ -33,6 +33,9 @@
 #include "log_recv_qtc_to_disk.h"
 #include "globalvars.h"
 #include "qtcutil.h"
+#include "speedup.h"
+#include "speeddown.h"
+#include "cw_utils.h"
 
 extern char hiscall[];
 extern int trxmode;
@@ -59,6 +62,7 @@ int pos[6][3] = {{3, 3, 15}, {3, 6, 4}, {8, 8, 2}, {3, 3, 4}, {8, 8, 15}, {24, 2
 int curpos = 0;
 int curfieldlen = 0;
 static char last_rtty_line[2][50] = {"", ""};	// local copy and store to remain
+static char prevqtccall[15] = "";
 int curr_rtty_line = 0;
 int capturing = 0;
 char helpmsg[6][2][26] = {
@@ -74,6 +78,7 @@ int nrofqtc = 0;
 int qtc_recv_panel() {
     char qtchead[32];
     int i, j, x;
+    int tfi;
     int currqtc = -1;
 
     capturing = 0;
@@ -88,24 +93,30 @@ int qtc_recv_panel() {
     //int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
     //int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
     
-    strcpy(buffer, "QTC QRV ");
-    sendbuf();
-    strncpy(qtcreclist.callsign, hiscall, strlen(hiscall));
-
-    qtcreclist.count = 0;
-    qtcreclist.serial = 0;
-    qtcreclist.confirmed = 0;
-    qtcreclist.sentcfmall = 0;
-    for(i=0; i<10; i++) {
-	qtcreclist.qtclines[i].status = 0;
-	qtcreclist.qtclines[i].time[0] = '\0';
-	qtcreclist.qtclines[i].callsign[0] = '\0';
-	qtcreclist.qtclines[i].serial[0] = '\0';
+    if (strlen(hiscall) > 0) {
+	strncpy(qtcreclist.callsign, hiscall, strlen(hiscall));
     }
-    fieldset.active = 0;
-    fieldset.qtcreclist = qtcreclist;
-    curr_rtty_line = 0;
 
+    if (strcmp(qtcreclist.callsign, prevqtccall) != 0 || strlen(qtcreclist.callsign) == 0) {
+	strcpy(buffer, "QTC QRV ");
+	sendbuf();
+	qtcreclist.count = 0;
+	qtcreclist.serial = 0;
+	qtcreclist.confirmed = 0;
+	qtcreclist.sentcfmall = 0;
+	for(i=0; i<10; i++) {
+	    qtcreclist.qtclines[i].status = 0;
+	    qtcreclist.qtclines[i].time[0] = '\0';
+	    qtcreclist.qtclines[i].callsign[0] = '\0';
+	    qtcreclist.qtclines[i].serial[0] = '\0';
+	    qtcreclist.qtclines[i].confirmed = 0;
+	}
+	fieldset.active = 0;
+	fieldset.qtcreclist = qtcreclist;
+	curr_rtty_line = 0;
+    }
+    strncpy(prevqtccall, qtcreclist.callsign, strlen(qtcreclist.callsign));
+    
     if (qtcrecvpanel == 0) {
       qtcrecvwin = newwin(14, 65, 9, 2);
       qtcrecv_panel = new_panel(qtcrecvwin);
@@ -224,7 +235,9 @@ int qtc_recv_panel() {
 	  case 10:  		// ENTER
 		    if (fieldset.active > 2) {
 			currqtc = ((fieldset.active-3)/3);
-			if ((fieldset.active-3)%3 == 2) {
+			//if ((fieldset.active-3)%3 == 2) {
+			// TODO - is it need to restrict only for last field to allow the ENTER?
+			if (1) {
 			    if (qtcreclist.qtclines[currqtc].status == 0 &&
 				strlen(qtcreclist.qtclines[currqtc].time) == 4 &&
 				strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
@@ -232,29 +245,30 @@ int qtc_recv_panel() {
 			    ) {
 				qtcreclist.qtclines[currqtc].status = 2;
 				show_status(currqtc);
-				qtcreclist.confirmed++;
 				if (currqtc < qtcreclist.count) {
 				    if (trxmode == DIGIMODE) {
+					qtcreclist.qtclines[currqtc].confirmed = 1; // compatibility for other modes
+					qtcreclist.confirmed++;
 					fieldset.active+=3;	// go to next line exch field
 					showfield(fieldset.active-3);
 				    }
 				    else {
-					// TODO
-					// in CW mode send 'R' to station
-					// TODO
-					sprintf(buffer, "R ");
-					sendbuf();
-					fieldset.active++;	// go to next line time field
-					showfield(fieldset.active-1);
+				        if (qtcreclist.qtclines[currqtc].confirmed == 0) {
+					    qtcreclist.qtclines[currqtc].confirmed = 1;
+					    qtcreclist.confirmed++;
+					    sprintf(buffer, "R ");
+					    sendbuf();
+					}
+					tfi = (fieldset.active-3)%3;
+					//fieldset.active++;	// go to next line time field
+					fieldset.active += (3-tfi);
+					showfield(fieldset.active-(3-tfi));
 				    }
 				    showfield(fieldset.active);
 				}
 			    }
-			    else if (qtcreclist.qtclines[currqtc].status == 1) {
+			    else if (qtcreclist.qtclines[currqtc].status == 1 && qtcreclist.qtclines[currqtc].confirmed != 1) {
 				if (trxmode == CWMODE) {
-				    // TODO
-				    // send 'AGN' to station
-				    // TODO
 				    sprintf(buffer, "AGN ");
 				    sendbuf();
 				}
@@ -339,8 +353,8 @@ int qtc_recv_panel() {
 			    }
 			}
 		    }
-		    showfield(fieldset.active);
 		    curpos = 0;
+		    showfield(fieldset.active);
 		    break;
 	  case 90:		// SHIFT + TAB
 		    if (trxmode == DIGIMODE) {
@@ -509,17 +523,24 @@ int modify_field(int pressed) {
 	    shift_right(qtcreclist.callsign);
 	    qtcreclist.callsign[strlen(qtcreclist.callsign)-curpos] = pressed;
 	    qtcreclist.callsign[strlen(qtcreclist.callsign)+1] = '\0';
+	    if (curpos > 0) {
+		curpos--;
+	    }
 	    showfield(0);
 	    nrofqtc = qtc_get(qtcreclist.callsign, bandinx);
 	    if (nrofqtc < 0) {
 		nrofqtc = 0;
 	    }
+	    strncpy(prevqtccall, qtcreclist.callsign, strlen(qtcreclist.callsign));
 	}
 	else if (fieldset.active == 1 && (isdigit(pressed) || pressed == '?')) {
 	  sprintf(fieldval, "%d", (qtcreclist.serial)*10);
 	    shift_right(fieldval);
 	    fieldval[strlen(fieldval)-(1+curpos)] = pressed;
 	    fieldval[strlen(fieldval)] = '\0';
+	    if (curpos > 0) {
+		curpos--;
+	    }
 	    if(strlen(fieldval) <= pos[1][2]) {
 	      qtcreclist.serial = atoi(fieldval);
 	      showfield(1);
@@ -530,6 +551,9 @@ int modify_field(int pressed) {
 	    shift_right(fieldval);
 	    fieldval[strlen(fieldval)-(1+curpos)] = pressed;
 	    fieldval[strlen(fieldval)] = '\0';
+	    if (curpos > 0) {
+		curpos--;
+	    }
 	    if(strlen(fieldval) <= pos[2][2] && atoi(fieldval) <= 10) {
 	      qtcreclist.count = atoi(fieldval);
 	      number_fields();
@@ -553,9 +577,9 @@ int modify_field(int pressed) {
 			break;
 	    }
 	    if (pressed == '?') {
-		if (qtcreclist.qtclines[qtcrow].status == 2) {
-		    qtcreclist.confirmed--;
-		}
+		//if (qtcreclist.qtclines[qtcrow].status == 2) {
+		    //qtcreclist.confirmed--;
+		//}
 		qtcreclist.qtclines[qtcrow].status = 1;	// set incomplete the qtc status
 		show_status(qtcrow);
 	    }
@@ -570,6 +594,9 @@ int modify_field(int pressed) {
 			    break;
 		    case 2: strcpy(qtcreclist.qtclines[qtcrow].serial, fieldval);
 			    break;
+		}
+		if (curpos > 0) {
+		    curpos--;
 		}
 		showfield(fieldset.active);
 		if (stridx == 0 && strlen(fieldval) == pos[posidx][2]) {	// auto TAB if curr field is QTC time, and len is 4
@@ -654,7 +681,6 @@ int shift_right(char * fieldval) {
 	    fieldval[i] = fieldval[i-1];
 	}
 	fieldval[strlen(fieldval)+1] = '\0';
-	syslog(LOG_DEBUG, "shift_right: '%s', %d", fieldval, curpos);
 	return 0;
 }
 
@@ -687,44 +713,59 @@ int show_status(int idx) {
 	//int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
 
 	status = 0;
-	for(i=0;i<strlen(qtcreclist.qtclines[idx].time);i++) {
-	    if (qtcreclist.qtclines[idx].time[i] == '?') {
+	if (idx < qtcreclist.count) {
+	    if (strlen(qtcreclist.qtclines[idx].time) != 4) {
 		status = 1;
-		break;
 	    }
-	}
-	for(i=0;i<strlen(qtcreclist.qtclines[idx].callsign);i++) {
-	    if (qtcreclist.qtclines[idx].callsign[i] == '?') {
+	    else {
+		for(i=0;i<strlen(qtcreclist.qtclines[idx].time);i++) {
+		    if (qtcreclist.qtclines[idx].time[i] == '?' || ! isdigit(qtcreclist.qtclines[idx].time[i])) {
+			status = 1;
+			break;
+		    }
+		}
+	    }
+	    if (strlen(qtcreclist.qtclines[idx].callsign) < 3) {
 		status = 1;
-		break;
 	    }
-	}
-	for(i=0;i<strlen(qtcreclist.qtclines[idx].serial);i++) {
-	    if (qtcreclist.qtclines[idx].serial[i] == '?') {
+	    else {
+		for(i=0;i<strlen(qtcreclist.qtclines[idx].callsign);i++) {
+		    if (qtcreclist.qtclines[idx].callsign[i] == '?') {
+			status = 1;
+			break;
+		    }
+		}
+	    }
+	    if (strlen(qtcreclist.qtclines[idx].serial) == 0) {
 		status = 1;
-		break;
 	    }
-	}
-	if (status == 1) {
-	    if (qtcreclist.qtclines[idx].status == 2) {
-		qtcreclist.confirmed--;
+	    for(i=0;i<strlen(qtcreclist.qtclines[idx].serial);i++) {
+		if (qtcreclist.qtclines[idx].serial[i] == '?' || ! isdigit(qtcreclist.qtclines[idx].serial[i])) {
+		    status = 1;
+		    break;
+		}
 	    }
-	    qtcreclist.qtclines[idx].status = 1;
-	}
-	else if (qtcreclist.qtclines[idx].status != 2) {	// unset incomplete mark if not marked as complete
-	    qtcreclist.qtclines[idx].status = 0;
-	}
+	    if (status == 1) {
+		/*if (qtcreclist.qtclines[idx].status == 2) {
+		    qtcreclist.confirmed--;
+		}*/
+		qtcreclist.qtclines[idx].status = 1;
+	    }
+	    else if (qtcreclist.qtclines[idx].status != 2) {	// unset incomplete mark if not marked as complete
+		qtcreclist.qtclines[idx].status = 0;
+	    }
 
-	switch(qtcreclist.qtclines[idx].status) {
-	    case 0:	flag = ' ';
-			break;
-	    case 1:	flag = '?';
-			break;
-	    case 2:	flag = '*';
-			break;
+	    switch(qtcreclist.qtclines[idx].status) {
+		case 0:	flag = ' ';
+			    break;
+		case 1:	flag = '?';
+			    break;
+		case 2:	flag = '*';
+			    break;
+	    }
+	    wattrset(qtcrecvwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
+	    mvwprintw(qtcrecvwin, idx+3, 30, "%c", flag);
 	}
-	wattrset(qtcrecvwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
-	mvwprintw(qtcrecvwin, idx+3, 30, "%c", flag);
 	return 0;
 }
 

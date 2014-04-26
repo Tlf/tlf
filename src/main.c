@@ -302,6 +302,7 @@ int nr_qtcsent = 0;
 t_qtcreclist qtcreclist;
 GHashTable* qtc_rec_store = NULL;
 char qtcreccalls[MAX_CALLS][15];
+int qtcdirection = 0;
 
 /*------------------------------dupe array---------------------------------*/
 int callarray_nr = 0;		/* number of calls in callarray */

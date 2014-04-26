@@ -92,7 +92,7 @@ int getexchange(void)
     extern int no_rst;
     extern char **qsos;
     extern int nr_qsos;
-
+    extern int qtcdirection;
    
     int i;
     int x = 0;
@@ -164,7 +164,9 @@ int getexchange(void)
 
 	case 17:	// CTRL-Q
 	    {
-		qtc_recv_panel();
+		if (qtcdirection & 1) {
+		    qtc_recv_panel();
+		}
 		x=155;
 		continue;
 	    }

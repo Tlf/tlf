@@ -104,6 +104,7 @@ char callinput(void)
     extern int keyerport;
     extern int miniterm;
     extern int no_rst;
+    extern int qtcdirection;
 
     int cury, curx;
     int i, j, ii, rc, t, x = 0, y = 0;
@@ -233,7 +234,9 @@ char callinput(void)
 
 	case 17:	// CTRL+q
 	    {
-		qtc_recv_panel();
+		if (qtcdirection & 1) {
+		    qtc_recv_panel();
+		}
 		x=155;
 		continue;
 	    }

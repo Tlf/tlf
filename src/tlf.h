@@ -167,6 +167,7 @@ typedef struct {
   char time[5];	// time of qso
   char callsign[15]; // callsign
   char serial[5]; // qso serial
+  int confirmed; // qtc had confirmed
 } t_qtcrecline;
 
 typedef struct {

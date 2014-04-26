@@ -136,4 +136,4 @@ extern t_qtcreclist qtcreclist;		// the QTC list which received
 
 extern GHashTable* qtc_rec_store;
 extern char qtcreccalls[MAX_CALLS][15];
-
+extern int qtcdirection;
