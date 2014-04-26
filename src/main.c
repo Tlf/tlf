@@ -169,6 +169,7 @@ char whichcontest[40] = "qso";
 int defer_store = 0;
 extern char buffer[];
 char call[20];
+char sp_cw_call[20] = { NULL };
 char logfile[120] = "general.log";
 char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
 char synclogfile[120];

@@ -54,6 +54,7 @@ char callinput(void)
     extern char hiscall_sent[];
     extern char comment[];
     extern char call[];
+    extern char sp_cw_call[];
     extern int cqmode;
     extern int trxmode;
     extern char mode[];
@@ -549,8 +550,14 @@ char callinput(void)
 		    if (cqmode == 0) {
 			if (demode == SEND_DE)
 			    strcat(buffer, "DE ");
-			strcat(buffer, call);		/* S&P */
-			sendbuf();
+			if(sp_cw_call[0] != NULL)
+			{
+                            strcat(buffer, sp_cw_call);		/* S&P */
+                        }
+                        else
+                        {
+                            strcat(buffer, call);		/* S&P */
+                        }
 		    }
 		    else {
 			sendmessage(message[0]);	/* CQ */
@@ -594,12 +601,33 @@ char callinput(void)
 	    {
 		x = auto_cq();
 	    }
+
+	case '?':
+            {
+                if (*hiscall != '\0') {
+                    if (trxmode == CWMODE || trxmode == DIGIMODE)
+                    {
+                        strcat(hiscall, " ?");
+                        sendmessage(message[4]);
+                        hiscall[strlen(hiscall) - 2] = '\0';
+
+                    }
+                    else
+                    {
+                        play_file(ph_message[4]);
+                    }
+                }
+                    x = -1;
+                    break;
+                }
+
 	case 127:		/* backspace */
 	    {
 		if (*hiscall != '\0') {
+		    
 		    getyx(stdscr, cury, curx);
-		    mvprintw(cury, curx - 1, " ");
-		    mvprintw(cury, curx - 1, "");
+                    mvprintw(cury, curx - 1, " ");
+                    mvprintw(cury, curx - 1, "");
 		    hiscall[strlen(hiscall) - 1] = '\0';
 
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */
