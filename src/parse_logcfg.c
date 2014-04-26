@@ -420,8 +420,8 @@ int parse_logcfg(char *inputbuffer)
 	"VKSPR",				/* deprecated */
 	"NO_RST",
 	"MYQRA",
-	"POWERMULT"		/* 160 */
-	"S&P_CW_CALL"
+	"POWERMULT",
+	"S&P_CW_CALL"		/* 161 */
     };
 
     char **fields;
