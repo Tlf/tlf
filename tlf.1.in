@@ -882,7 +882,8 @@ M/1 and M/M, to enable post-contest analysis of the nodes.
 .B Macro characters in the messages
 % = your call, @ = hiscall, # = serial number, [ = RST ,
 + = increase cw speed, - = decrease cw speed , * = AR, '=' = BT, < = SK,
-( = KN, ! = SN, & = AS, > = BK
+( = KN, ! = SN, & = AS, > = BK, ! = his serial (eg: confirm exchange of
+station in DIGIMODE)
 
 .TR
 .B F1=<cw message 1>
@@ -1130,6 +1131,12 @@ value that is not greater than multiplied score.
 Basically the "searchwindow" looks the callsigns on all non-WARC bands.
 If the CONTESTMODE isn't set (that mean Tlf is in QSO mode), and this
 option has set up, the searchwindow extends the search to WARC bands.
+
+.TR
+.B SEND_DE
+If it's placed in logcfg.dat, Tlf will send a "DE" word before your callsign,
+eg: "DE W1AW". There is a special case: if SEND_DE is exists, and Tlf is in
+DIGIMODE, then station callsign will be send before DE, eg.: "DL1A DE W1AW".
 
 \fB@prefix@/share/@PACKAGE@/logcfg.dat\fR
 is a recent example of the configuration file tlf needs to know what to do. Tlf
