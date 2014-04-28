@@ -58,7 +58,7 @@ WINDOW * qtcrecvwin;
 PANEL * qtcrecv_panel;
 t_qtcfieldset fieldset;
 // array values: hor position, cursor position, field len to fill with spaces
-int pos[6][3] = {{3, 3, 15}, {3, 6, 4}, {8, 8, 2}, {3, 3, 4}, {8, 8, 15}, {24, 24, 4}};
+int pos[6][3] = {{3, 3, 15}, {3, 6, 4}, {8, 8, 2}, {3, 3, 4}, {8, 8, 14}, {24, 24, 4}};
 int curpos = 0;
 int curfieldlen = 0;
 static char last_rtty_line[2][50] = {"", ""};	// local copy and store to remain
@@ -202,7 +202,7 @@ int qtc_recv_panel() {
 		    curpos = 0;
 		    break;
 	  case 153:		// down
-		    if (fieldset.active < 31) {	// last line serial field idx
+		    if (fieldset.active < 30) {	// last line serial field idx
 		        if (fieldset.active == 0) {
 			    fieldset.active = 1;
 			    showfield(0);
@@ -519,7 +519,7 @@ int modify_field(int pressed) {
 	int fi, winrow, qtcrow, posidx, stridx;
 
 	posidx = 0;
-	if (fieldset.active == 0 && (isalnum(pressed) || pressed == '?' || pressed == '/') && strlen(qtcreclist.callsign) < pos[0][2]-1) {
+	if (fieldset.active == 0 && (isalnum(pressed) || pressed == '/') && strlen(qtcreclist.callsign) < pos[0][2]-1) {
 	    shift_right(qtcreclist.callsign);
 	    qtcreclist.callsign[strlen(qtcreclist.callsign)-curpos] = pressed;
 	    qtcreclist.callsign[strlen(qtcreclist.callsign)+1] = '\0';
@@ -533,8 +533,8 @@ int modify_field(int pressed) {
 	    }
 	    strncpy(prevqtccall, qtcreclist.callsign, strlen(qtcreclist.callsign));
 	}
-	else if (fieldset.active == 1 && (isdigit(pressed) || pressed == '?')) {
-	  sprintf(fieldval, "%d", (qtcreclist.serial)*10);
+	else if (fieldset.active == 1 && isdigit(pressed)) {
+	    sprintf(fieldval, "%d", (qtcreclist.serial)*10);
 	    shift_right(fieldval);
 	    fieldval[strlen(fieldval)-(1+curpos)] = pressed;
 	    fieldval[strlen(fieldval)] = '\0';
@@ -546,7 +546,7 @@ int modify_field(int pressed) {
 	      showfield(1);
 	    }
 	}
-	else if (fieldset.active == 2 && (isdigit(pressed) || pressed == '?')) {
+	else if (fieldset.active == 2 && isdigit(pressed)) {
 	    sprintf(fieldval, "%d", qtcreclist.count*10);
 	    shift_right(fieldval);
 	    fieldval[strlen(fieldval)-(1+curpos)] = pressed;
@@ -560,7 +560,7 @@ int modify_field(int pressed) {
 	      showfield(2);
 	    }
 	}
-	else {
+	else if (fieldset.active >= 3 && fieldset.active <= 32) {
 	    fi = fieldset.active-3;
 	    winrow = (fi/3)+3;
 	    qtcrow = winrow-3;
@@ -583,7 +583,7 @@ int modify_field(int pressed) {
 		qtcreclist.qtclines[qtcrow].status = 1;	// set incomplete the qtc status
 		show_status(qtcrow);
 	    }
-	    if ( ( ( (stridx == 0 || stridx == 2) && (isdigit(pressed) || pressed == '?') ) || stridx == 1) && strlen(fieldval) <= pos[posidx][2]) {
+	    if ( ( ( (stridx == 0 || stridx == 2) && (isdigit(pressed) || pressed == '?') ) || stridx == 1) && strlen(fieldval) < pos[posidx][2]) {
 		shift_right(fieldval);
 		fieldval[strlen(fieldval)-curpos] = pressed;
 		fieldval[strlen(fieldval)+1] = '\0';
@@ -599,7 +599,7 @@ int modify_field(int pressed) {
 		    curpos--;
 		}
 		showfield(fieldset.active);
-		if (stridx == 0 && strlen(fieldval) == pos[posidx][2]) {	// auto TAB if curr field is QTC time, and len is 4
+		if (stridx == 0 && strlen(fieldval) == pos[posidx][2] && fieldset.active <= 32) {	// auto TAB if curr field is QTC time, and len is 4
 		    curpos = 0;
 		    fieldset.active++;
 		    showfield(fieldset.active-1);
