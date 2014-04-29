@@ -840,7 +840,7 @@ projection, and center the map on your qth.
 
 .TR
 .B POWERMULT=<multi>
-Use this value to multiple the final points. If the contest rule allows
+Use this value to multiply the final points. If the contest rule allows
 to use the power multiplier (IE. Stewperry, ARRL-FD), you can pass that
 here. Note, that the type of POWERMULT is float, eg. POWERMULT=1.5, but
 the final score will rounded by floor(), which gives the largest integer
@@ -1111,6 +1111,11 @@ Station can be worked both in SSB and CW
 .TR
 .B SSBMODE
 Start tlf in SSB mode
+
+.TR
+.B MYQRA
+For the contest "Stewperry", this option is used to set the QRA, eg: JN97, or the full form: JN97OM.
+In Stewperry, the points calculated based on the distance of the stations.
 
 .SH "FILES"
 .TR
