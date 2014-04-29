@@ -2,7 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@eudx.org>
  *               2011-2012                Thomas Beierlein <tb@forth-ev.de>
- *               2013                     Ervin Hegedus <airween@gmail.com>
+ *               2013-2014                Ervin Hegedus - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include "cw_utils.h"
 #include <glib.h>
 #include "locator2longlat.h"
+#include "score.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
@@ -87,6 +88,7 @@ int getexchange(void)
     extern int keyerport;
     extern int commentfield;
     extern int no_rst;
+    extern int serial_or_section;
 
     int i;
     int x = 0;
@@ -426,11 +428,11 @@ int getexchange(void)
 		x = 0;
 	    } else if (((serial_section_mult == 1) || (sectn_mult == 1))
 		       && ((x != 9) && (strlen(section) < 1))) {
-		mvprintw(13, 54, "section?");
-		mvprintw(12, 54, comment);
-		refreshp();
-
-		// x = 0;		//##debug 17jan10 tb
+	        if (serial_or_section == 0 || (serial_or_section == 1 && country_found(hiscall) == 1)) {
+		    mvprintw(13, 54, "section?", section);
+		    mvprintw(12, 54, comment);
+		    refreshp();
+		}
 		break;
 
 	    } else if (serial_grid4_mult == 1) {

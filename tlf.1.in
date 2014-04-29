@@ -1073,6 +1073,12 @@ Exchange is serial number and section, multipler is section from multiplier file
 Mults count per band.
 
 .TR
+.B SERIAL_OR_SECTION
+Exchange is serial number or section. This option is similar to SERIAL+SECTION, except the exchange could be
+a serial OR the section. The options was introduced for HA-DX, where HA stations gives the shortest form
+of its county, other stations gives serial.
+
+.TR
 .B SERIAL+GRID4
 Exchange is serial number and grid (e.g. JO21QI), multipler is 4-character grid (JO21).
 Mults count per band.
