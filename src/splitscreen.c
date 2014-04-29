@@ -790,15 +790,20 @@ int init_packet(void)
 	packetscreen = newterm(NULL, stdout, stdin);
 	start_color();
 
-	init_pair(0, 0, 0);
-	init_pair(1, 1, 0);
-	init_pair(2, 2, 0);
-	init_pair(3, 3, 0);
-	init_pair(4, 4, 0);
-	init_pair(5, 5, 0);
-	init_pair(6, 6, 0);
-	init_pair(7, 7, 0);
-
+	/* change color settings only if we got a new screen
+	 * (there is a bug in ncurses-5.8 and 5.9 if using --enable-sp-funcs
+	 * which results in a NULL pointer )
+	 */
+	if (packetscreen) {
+	    init_pair(0, 0, 0);
+	    init_pair(1, 1, 0);
+	    init_pair(2, 2, 0);
+	    init_pair(3, 3, 0);
+	    init_pair(4, 4, 0);
+	    init_pair(5, 5, 0);
+	    init_pair(6, 6, 0);
+	    init_pair(7, 7, 0);
+	}
 	sclwin = newwin(LINES - ENTRYROWS, COLS, 0, 0);
 	entwin = newwin(ENTRYROWS, COLS, LINES - ENTRYROWS, 0);
 	scrollok(sclwin, TRUE);
@@ -1035,7 +1040,10 @@ int packet()
 
     in_packetclient = 1;
     sleep(1);
-    set_term(packetscreen);
+
+    if (packetscreen) {
+    	set_term(packetscreen);
+    }
 
     wclear(sclwin);
     wclear(entwin);
