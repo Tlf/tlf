@@ -76,6 +76,98 @@ you're staying, and shifts the characters to left at the next to
 right.
 
 
+Storing QTC's
+=============
+
+Tlf stores QTC's in two files. The received QTC's are stored in
+QTC_recv.log, sent QTC's are stored in QTC_sent.log.
+
+
+Receiving QTC
+=============
+
+If the station asks you, are you QRV for QTC, you can press the
+CTRL+Q, it doesn't matter in which field are you: callsign or
+exchange. If the QTC window opened, Tlf will send a message to
+station: "QTC QRV".
+
+If the callsign fields isn't empty, the content of that field
+will be copied. If empty, you can fill the empty field in QTC
+window. If station sent QTC previously, you can see the number
+of QTC QSO's on the current band.
+
+Then you can fill the QTC serial, and number of QSO's. What you
+type as number of QSO's, Tlf will numbering so much lines, to
+helps to see, how many lines remain.
+
+If you start to receive the QTC's, you need to fill 3 fields:
+time (HHMM, as hour and minutes), callsign and serial. If you
+enter to a line, that line will be marked as "incomplete", that
+you can see a "?" at the end of that line.
+
+If you fill the time field (4 digits), the cursor will goes to
+the callsign field. Fill that field, and press TAB to move the
+next one. If you put to there at least 1 digit, Tlf recognizes
+that line is complete, and "?" will disappear at the end of the
+line.
+
+Important: in any fields you can type "?", eg: "111?" in time
+field, or "W?" in callsign field. That mean, you couldn't receive
+that letter. Then you fill all fields vainly, the line remain as
+incomplete. Elsewhere, Tlf assumes the line is complete.
+
+This is important, because when you press the ENTER, Tlf will
+send the answer to station based the status of the line. If the
+line is incomplete, Tlf sends "AGN" message, but if it's
+complete, it sends "R".
+
+If you could receive the line, and pressed the ENTER, and Tlf
+sent the "R" signal, then you will see a "*" at the end of the
+line. That means, you receipt the QTC line from the station.
+
+Now the cursor goes to the next line, to the time field, and you
+can continue to receive the lines.
+
+If you receive the last line, and all previous line are complete,
+and the last one is complete too, then you press ENTER - now Tlf
+will close the QTC window, and send "CFM ALL TNX" message to
+station.
+
+At this time the QTC datas will be writed to the logfile on the
+disk, fields will be flushed, and if there is configured any
+other node in logcfg.dat, then QTC lines will be sent to them.
+
+On the other nodes, Tlf also will write the QTC's to its own
+logfiles.
+
+If you press ESC until you receive the QTC block, the data isn't
+lost. Tlf flush's the fields in these cases:
+* you received all QSO's, and saved to disc
+* pressed ESC, and changed regular callsign field
+
+Note, that Tlf send "QTC QRV" message only that case, if the
+fields are empty. Keep in mind, if you've pressed ESC, and CTRL+Q
+again, all data remains, and "QTC QRV" messages will NOT send.
+
+
+Showing QTC capable stations 
+============================
+
+After you receive a QTC block from a station, Tlf writes it to
+the log, but it stores in the memory too. Then, if you meet that
+station on another bands, and use "Worked window", then you can
+see, how many QTC's had been sent the station on each band.
+
+There is a "Q" letter on the border of "Worked window", and in
+that column there are the number of QTC's. If there is "0" in a
+line, that means you sent to or received from QTC from that
+station, but not on that band. If there is a "Q", that means you
+sent to or received from the station the maximum number of QTC.
+
+This information also visible in cluster info, if you use that.
+At the end of the callsign in bandmap, you can see a "0", "Q" or
+any digit, which means same as above.
+
 
 Shortkey summary
 ================
@@ -88,8 +180,15 @@ Shortkey summary
 * BACKSPACE - delete the next to left
 * DELETE - delete the current position, shift to left the right
   next
+* ENTER - send "R" or "AGN" to station
 
 
+If you have any question, just send an e-mail to me, or Tlf devel
+list.
 
 
+73,
+
+Ervin
+HA2OS
 
