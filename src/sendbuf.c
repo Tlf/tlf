@@ -55,7 +55,6 @@ void sendbuf(void)
     extern int sending_call;
 
     static char comstr[80] = "";
-    static char comstr2[2];
     char comstr3[5];
     static char printlinebuffer[82] = "";
     static char qsonroutput[5] = "";
@@ -66,7 +65,6 @@ void sendbuf(void)
     int i, nr;
 
     comstr[0] = '\0';
-    comstr2[0] = '\0';
     printlinebuffer[0] = '\0';
 
     if (arrlss == 1)
@@ -197,9 +195,19 @@ void sendbuf(void)
 	if (searchflg == 0 && simulator == 0)
 	    strncat(printlinebuffer, backgrnd_str,
 		    80 - strlen(printlinebuffer));
-	else
-	    strncat(printlinebuffer, backgrnd_str,
-		    40 - strlen(printlinebuffer));
+	else {
+	    int len = 40 - (int)strlen(printlinebuffer);
+	    if (len > 0) {
+		strncat(printlinebuffer, backgrnd_str, len);
+	    }
+	    if (strlen(printlinebuffer) > 45) {
+		printlinebuffer[42] = '.';
+		printlinebuffer[43] = '.';
+		printlinebuffer[44] = '.';
+		printlinebuffer[45] = '\0';
+	    }
+
+	}
 
 	if ((simulator_mode == 0)) {
 	    mvprintw(5, 0, printlinebuffer);
