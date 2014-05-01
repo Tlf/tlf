@@ -53,6 +53,7 @@ void sendbuf(void)
     extern char hiscall_sent[];
     extern int early_started;
     extern int sending_call;
+    extern char comment[];
 
     static char comstr[80] = "";
     char comstr3[5];
@@ -174,6 +175,21 @@ void sendbuf(void)
 	    strcpy(comstr, "");
 
 	    loc = strcspn(buffer, "#");
+	}
+
+	loc = strcspn(buffer, "!");	/* his serial nr/comment  */
+
+	while (strlen(buffer) > loc) {
+
+	    if (loc != 0)
+		strncat(comstr, buffer, loc);
+	    strncat(comstr, comment, strlen(comment));
+
+	    strcat(comstr, buffer + loc + 1);
+	    strcpy(buffer, comstr);
+	    strcpy(comstr, "");
+
+	    loc = strcspn(buffer, "!");
 	}
 
 	if ((strlen(buffer) + strlen(termbuf)) < 80) {

@@ -891,7 +891,8 @@ M/1 and M/M, to enable post-contest analysis of the nodes.
 .B Macro characters in the messages
 % = your call, @ = hiscall, # = serial number, [ = RST ,
 + = increase cw speed, - = decrease cw speed , * = AR, '=' = BT, < = SK,
-( = KN, ! = SN, & = AS, > = BK
+( = KN, ! = SN, & = AS, > = BK, ! = his serial (eg: confirm exchange of
+station in DIGIMODE)
 
 .TR
 .B F1=<cw message 1>
