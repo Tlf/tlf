@@ -1127,6 +1127,12 @@ In Stewperry, the points calculated based on the distance of the stations.
 .SH "FILES"
 .TR
 
+.TR
+.B SEND_DE
+If it's placed in logcfg.dat, Tlf will send a "DE" word before your callsign,
+eg: "DE W1AW". There is a special case: if SEND_DE is exists, and Tlf is in
+DIGIMODE, then station callsign will be send before DE, eg.: "DL1A DE W1AW".
+
 \fB@prefix@/share/@PACKAGE@/logcfg.dat\fR
 is a recent example of the configuration file tlf needs to know what to do. Tlf
 won't start without one. \fBCopy it into the working directory\fP and edit it
