@@ -83,7 +83,8 @@ static int nr_of_bands(int x) {
     int nr = 0;
 
     for (i = 0; i < NBANDS; i++) {
-	if (x & inxes[i])
+	/* if worked on band and band is not WARC band */
+	if ((x & inxes[i]) && !IsWarcIndex(i))
 	    nr++;
     }
     return nr;

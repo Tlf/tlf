@@ -260,8 +260,7 @@ int showscore(void)
     if (showscore_flag == 1) {
 
 	/* show header with active band and number of QSOs */
-	if ((bandinx != BANDINDEX_30) && (bandinx != BANDINDEX_17)
-	    && (bandinx != BANDINDEX_12)) {
+	if (!IsWarcIndex(bandinx)) {
 
 	    display_header(bi_normal);
 
