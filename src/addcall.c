@@ -199,7 +199,7 @@ int addcall(void)
 		if (j != 0 && (countries[j] & BAND12) == 0) {
 		    countries[j] = (countries[j] | BAND12);
 		    addcty = j;
-	}
+		}
 		if (z != 0 && (zones[z] & BAND12) == 0) {
 		    zones[z] = (zones[z] | BAND12);
 		    addzone = z;
