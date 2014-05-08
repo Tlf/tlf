@@ -56,7 +56,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 165	/* commands in list */
+#define  MAX_COMMANDS 166	/* commands in list */
 
 
 int read_logcfg(void)
@@ -245,6 +245,7 @@ int parse_logcfg(char *inputbuffer)
     extern int dx_cont_points;
     extern int mult_side;
     extern char mit_multiplier_list[][6];
+    extern char continent_multiplier_list[7][3];
     char *mit_mult_array;
 /* end LZ3NY mods */
     extern int tlfcolors[8][2];
@@ -423,7 +424,7 @@ int parse_logcfg(char *inputbuffer)
 	"NO_RST",
 	"MYQRA",
 	"POWERMULT",		/* 160 */
-	"SERIAL_OR_SECTION"
+	"SERIAL_OR_SECTION",
 	"QTC",
 	"CONTINENTLIST",
 	"COUNTINENT_LIST_POINTS",

@@ -369,7 +369,7 @@ void searchlog(char *searchstring)
 		    }		// end ignore
 		}
 	    }
-	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '0')
+	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '0') {
 		j = 1;
 		bidx = BANDINDEX_10;
 	    }
