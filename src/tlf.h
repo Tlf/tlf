@@ -79,12 +79,17 @@
 #define SSBMODE 1
 #define DIGIMODE 2
 
+#define  BAND30 256
+#define  BAND17 128
+#define  BAND12 64
 #define  BAND160 32
 #define  BAND80 16
 #define  BAND40 8
 #define  BAND20 4
 #define  BAND15 2
 #define  BAND10 1
+
+#define IsWarcMask(x) ((x == BAND12) || (x == BAND17) || (x == BAND30))
 
 enum {
     BANDINDEX_160 = 0,
@@ -103,6 +108,8 @@ enum {
 extern int inxes[NBANDS];  /*< conversion from BANDINDEX to BAND-mask,
 			see addmult.c */
 
+#define IsWarcIndex(index) ((index == BANDINDEX_12) || \
+			(index == BANDINDEX_17) || (index == BANDINDEX_30))
 
 /* display color sets */
 enum {

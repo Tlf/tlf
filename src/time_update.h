@@ -31,7 +31,6 @@
 #include "getwwv.h"
 #include "scroll_log.h"
 #include "lancode.h"
-#include "splitscreen.h"
 
 
 void time_update(void);

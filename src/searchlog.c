@@ -32,12 +32,34 @@
 PANEL *search_panel;
 WINDOW *search_win;
 static int initialized = 0;
+int nr_bands;
 
 void show_needed_sections(void);
 
+
+/** Check for all band mode
+ *
+ * Check if we work real contest (only nonWARC bands allowed)
+ * or our mode allows also WARC bands (e.g. dxped or simple QSO mode)
+ * \return - true if also WARC bands
+ */
+int IsAllBand()
+{
+    extern int dxped;
+    extern int contest;
+
+    return ((dxped != 0) || (contest == 0));
+}
+
+
 void InitSearchPanel()
 {
-    search_win = newwin( 8, 39, 1, 41 );
+    if (IsAllBand())
+	nr_bands = 9;
+    else
+	nr_bands = 6;
+
+    search_win = newwin( nr_bands + 2, 39, 1, 41 );
     search_panel = new_panel( search_win );
     hide_panel( search_panel );
 }
@@ -278,10 +300,10 @@ void searchlog(char *searchstring)
 	wbkgd( search_win, (chtype)(' ' | COLOR_PAIR(C_LOG)) );
 	werase( search_win );
 
-	wnicebox(search_win, 0, 0, 6, 37, "Worked");
+	wnicebox(search_win, 0, 0, nr_bands, 37, "Worked");
 
 	wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT );
-	for (i = 0; i < 6; i++)
+	for (i = 0; i < nr_bands; i++)
 	    mvwprintw(search_win, i + 1, 1,
 		    "                                     ");
 
@@ -291,6 +313,11 @@ void searchlog(char *searchstring)
 	mvwprintw(search_win, 4, 1, " 40");
 	mvwprintw(search_win, 5, 1, " 80");
 	mvwprintw(search_win, 6, 1, "160");
+	if (IsAllBand()) {
+	    mvwprintw(search_win, 7, 1, " 12");
+	    mvwprintw(search_win, 8, 1, " 17");
+	    mvwprintw(search_win, 9, 1, " 30");
+	}
 
 	refreshp();
 
@@ -330,7 +357,7 @@ void searchlog(char *searchstring)
 		    }		// end ignore
 		}
 	    }
-	    if (s_inputbuffer[1] == '1')
+	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '0')
 		j = 1;
 	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '5')
 		j = 2;
@@ -342,9 +369,17 @@ void searchlog(char *searchstring)
 		j = 5;
 	    if (s_inputbuffer[1] == '6')
 		j = 6;
+	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '2')
+		j = 7;
+	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '7')
+		j = 8;
+	    if (s_inputbuffer[1] == '3' && s_inputbuffer[2] == '0')
+		j = 9;
 
-	    if (j != 8) {
-		mvwprintw(search_win, j, 1, "%s", s_inputbuffer);
+	    if ((j > 0) && (j < 10)) {
+		if ((j < 7) || IsAllBand()) {
+		    mvwprintw(search_win, j, 1, "%s", s_inputbuffer);
+		}
 	    }
 
 	    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
@@ -393,19 +428,19 @@ void searchlog(char *searchstring)
 
 	wattron(search_win, COLOR_PAIR(C_BORDER));
 
-	mvwprintw(search_win, 7, 2, dx->countryname);
-	mvwprintw(search_win, 7, 32, "%02d", dx->cq);
+	mvwprintw(search_win, nr_bands + 1, 2, dx->countryname);
+	mvwprintw(search_win, nr_bands + 1, 32, "%02d", dx->cq);
 	i = strlen(dx->countryname);
 
 	if (itumult != 1)
-	    mvwprintw(search_win, 7, 32, "%s", zonebuffer);
+	    mvwprintw(search_win, nr_bands + 1, 32, "%s", zonebuffer);
 	else
-	    mvwprintw(search_win, 7, 28, "ITU:%s", zonebuffer);
+	    mvwprintw(search_win, nr_bands + 1, 28, "ITU:%s", zonebuffer);
 
 	s_inputbuffer[0] = '\0';
 
 	if (wpx == 1) {
-	    mvwprintw(search_win, 7, 2 + i + 3, pxstr);
+	    mvwprintw(search_win, nr_bands + 1, 2 + i + 3, pxstr);
 	}
 
 	/* print worked zones and countrys for each band in checkwindow */
@@ -436,6 +471,20 @@ void searchlog(char *searchstring)
 	    if ((countries[countrynr] & BAND160) != 0) {
 		mvwprintw(search_win, 6, 1, "160");
 		mvwprintw(search_win, 6, 36, "C");
+	    }
+	    if (IsAllBand()) {
+		if ((countries[countrynr] & BAND12) != 0) {
+		    mvwprintw(search_win, 7, 1, " 12");
+		    mvwprintw(search_win, 7, 36, "C");
+		}
+		if ((countries[countrynr] & BAND17) != 0) {
+		    mvwprintw(search_win, 8, 1, " 17");
+		    mvwprintw(search_win, 8, 36, "C");
+		}
+		if ((countries[countrynr] & BAND30) != 0) {
+		    mvwprintw(search_win, 9, 1, " 30");
+		    mvwprintw(search_win, 9, 36, "C");
+		}
 	    }
 	}
 	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {

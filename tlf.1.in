@@ -25,9 +25,10 @@
 .SH "DESCRIPTION"
 \fBtlf\fR
 is a console (ncurses) mode general purpose CW keyer, -logging and -contest
-program for hamradio. It supports the CQWW, the WPX, the ARRL-DX , the ARRL-FD,
+program for hamradio. It supports the CQWW, the WPX, the ARRL-DX , the ARRL-FD, the STEWPERRY, 
 the PACC and the EU SPRINT contests as well as a lot more basic contests,
-general QSO and DXpedition mode. It interfaces with a morse code generator, a
+general QSO and DXpedition mode. From version 1.2.0 on there is also support for the FOC Marathon.
+It interfaces with a morse code generator, a
 number of radios via the hamlib library, and with a DX Cluster. Tlf can project DX cluster data into
 the excellent Xplanet program, written by Hari Nair.
 .P
@@ -837,6 +838,14 @@ Generate marker file for Xplanet. Xplanet will show the last 8 spots
 on an azimuthal map. See the relevant xplanet documentation. Use azimuthal
 projection, and center the map on your qth.
 
+.TR
+.B POWERMULT=<multi>
+Use this value to multiply the final points. If the contest rule allows
+to use the power multiplier (IE. Stewperry, ARRL-FD), you can pass that
+here. Note, that the type of POWERMULT is float, eg. POWERMULT=1.5, but
+the final score will rounded by floor(), which gives the largest integer
+value that is not greater than multiplied score.
+
 .SH "RULES"
 .TR
 The contest rules can be put into separate files. Tlf will first look for a
@@ -1065,6 +1074,12 @@ Exchange is serial number and section, multipler is section from multiplier file
 Mults count per band.
 
 .TR
+.B SERIAL_OR_SECTION
+Exchange is serial number or section. This option is similar to SERIAL+SECTION, except the exchange could be
+a serial OR the section. The options was introduced for HA-DX, where HA stations gives the shortest form
+of its county, other stations gives serial.
+
+.TR
 .B SERIAL+GRID4
 Exchange is serial number and grid (e.g. JO21QI), multipler is 4-character grid (JO21).
 Mults count per band.
@@ -1104,8 +1119,10 @@ Station can be worked both in SSB and CW
 .B SSBMODE
 Start tlf in SSB mode
 
-.SH "FILES"
 .TR
+.B MYQRA
+For the contest "Stewperry", this option is used to set the QRA, eg: JN97, or the full form: JN97OM.
+In Stewperry, the points calculated based on the distance of the stations.
 
 .TR
 .B SERIAL_OR_SECTION
@@ -1138,6 +1155,8 @@ If it's placed in logcfg.dat, Tlf will send a "DE" word before your callsign,
 eg: "DE W1AW". There is a special case: if SEND_DE is exists, and Tlf is in
 DIGIMODE, then station callsign will be send before DE, eg.: "DL1A DE W1AW".
 
+.SH "FILES"
+.TR
 \fB@prefix@/share/@PACKAGE@/logcfg.dat\fR
 is a recent example of the configuration file tlf needs to know what to do. Tlf
 won't start without one. \fBCopy it into the working directory\fP and edit it

@@ -29,8 +29,9 @@
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
+/** Converts bandindex to bandmask */
 int inxes[NBANDS] =
-    { BAND160, BAND80, BAND40, 0, BAND20, 0, BAND15, 0, BAND10 };
+    { BAND160, BAND80, BAND40, BAND30, BAND20, BAND17, BAND15, BAND12, BAND10 };
 
 int addmult(void)
 {
@@ -56,7 +57,7 @@ int addmult(void)
 
 		    ismult = 1;
 		    break;
-		} 
+		}
 	    }
 	}
 
@@ -66,8 +67,8 @@ int addmult(void)
 
 	    /* already worked? */
 	    for (j = 0; j < multarray_nr; j++) {
-		if (strncmp (mults[j], 
-			    strstr(ssexchange, MULTS_POSSIBLE(i)), 
+		if (strncmp (mults[j],
+			    strstr(ssexchange, MULTS_POSSIBLE(i)),
 			    multlen) == 0) {
 		    found = 1;
 		    break;
@@ -89,18 +90,18 @@ int addmult(void)
 
 	/* is it a possible mult? */
 	if (mults_possible->len > 0) {
-	    for (i = 0; i < mults_possible->len; i++) {	
+	    for (i = 0; i < mults_possible->len; i++) {
 		// check if valid mult....
 		if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
 		    ismult = 1;
 		    break;
-		} 
+		}
 	    }
 	}
 
 	if (ismult != 0) {
 
-	    shownewmult = remember_multi( MULTS_POSSIBLE(i), bandinx, 1); 
+	    shownewmult = remember_multi( MULTS_POSSIBLE(i), bandinx, 1);
 
 	}
     }
@@ -135,7 +136,7 @@ int addmult(void)
 
 	if (ismult != 0) {
 
-	    shownewmult = remember_multi( MULTS_POSSIBLE(i), bandinx, 1); 
+	    shownewmult = remember_multi( MULTS_POSSIBLE(i), bandinx, 1);
 
 	}
     }
@@ -148,14 +149,14 @@ int addmult(void)
 
     if (wysiwyg_multi == 1 && strlen(stripped_comment) > 0) {
 
-	shownewmult = remember_multi( stripped_comment, bandinx, 1); 
+	shownewmult = remember_multi( stripped_comment, bandinx, 1);
 
     }
-    
+
     if (serial_grid4_mult == 1 && strlen(section) > 0) {
 
 	section[4] = '\0';
-	shownewmult = remember_multi( section, bandinx, 1); 
+	shownewmult = remember_multi( section, bandinx, 1);
 
     }
 
@@ -269,7 +270,7 @@ int addmult2(void)
 /** loads possible multipliers from external file
  *
  * Read in the file named by 'multiplierlist' and interpret it as list
- * of possible multis. 
+ * of possible multis.
  *
  * Lines starting with '#' will be interpreted as comment.
  *
@@ -354,10 +355,10 @@ void init_mults()
  * mults[] array and increment the total mults count 'multarray_nr'.
  * Mark the mult as worked on the actual band. If it is a new band
  * increase the bandspecific 'multscore[band]'.
- * 
+ *
  * \param multiplier  - the multiplier as a string
  * \param band        - the bandindex we are on
- * \param show_new_band -  1 -> check also if new band  
+ * \param show_new_band -  1 -> check also if new band
  * \return            - index in mults[] array if new mult or new on band
  * 			(-1 if multiplier is an empty string or not new)
  */
@@ -371,20 +372,20 @@ int remember_multi(char *multiplier, int band, int show_new_band)
 
     for (i = 0; i < multarray_nr; i++) {
 
-	if (strcmp(mults[i], multiplier) == 0) {	/* already in list? */	
+	if (strcmp(mults[i], multiplier) == 0) {	/* already in list? */
 	    found = 1;
 	    if ((mult_bands[i] & inxes[band]) == 0) {    /* new band? */
 		mult_bands[i] |= inxes[band];
 		multscore[band]++;
 
-		if (show_new_band)	/* if wanted */ 
+		if (show_new_band)	/* if wanted */
 		    index = i;		/* show it as new band */
 	    }
 	    break;
 	}
     }
 
-    if (found == 0) {	/* add new multi */ 	
+    if (found == 0) {	/* add new multi */
 
 	index = multarray_nr;		/* return index of new mult */
 

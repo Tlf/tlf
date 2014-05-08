@@ -723,7 +723,7 @@ int changepars(void)
 	mvprintw(12, 29, "OK !        ");
 	writeparas();
     } else {
-	if ((nopacket ==0) && (packetinterface > 0))
+	if ((nopacket == 0) && (packetinterface > 0))
 	    packet();
     }
 

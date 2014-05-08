@@ -17,6 +17,7 @@ tlf_SOURCES = \
 	initial_exchange.c \
 	keyer.c \
 	lancode.c last10.c listmessages.c log_to_disk.c logit.c logview.c \
+	locator2longlat.c \
 	main.c makelogline.c messagechange.c muf.c \
 	nicebox.c note.c netkeyer.c\
 	onechar.c \
@@ -49,6 +50,7 @@ noinst_HEADERS = \
 	initial_exchange.h \
 	keyer.h \
 	lancode.h last10.h listmessages.h log_to_disk.h logit.h logview.h \
+	locator2longlat.h \
 	main.h makelogline.h messagechange.h muf.h multiplierinfo.h \
 	nicebox.h note.h netkeyer.h\
 	onechar.h \

@@ -323,9 +323,9 @@ int bm_isdupe( char *call, int band ) {
     int found = -1;
 
     /* spot for warc bands are never dupes */
-    if (!inxes[band])
+    if (IsWarcIndex(band))
 	return 0;
-
+ 
     found = searchcallarray(call);
 
     if (found == -1)		/* new call */
