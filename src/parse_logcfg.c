@@ -54,7 +54,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 160	/* commands in list */
+#define  MAX_COMMANDS 163	/* commands in list */
 
 
 int read_logcfg(void)
@@ -417,7 +417,10 @@ int parse_logcfg(char *inputbuffer)
 	"VKCWR",				/* deprecated */
 	"VKSPR",				/* deprecated */
 	"NO_RST",
-	"QTC"
+	"QTC",
+	"CONTINENTLIST",	/* 160 */
+	"COUNTINENT_LIST_POINTS",
+	"USE_COUNTINENTLIST_ONLY"
     };
 
     char **fields;
@@ -1363,7 +1366,97 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    break;
 	}
-	    
+	//    	"CONTINENTLIST",	/* 160 */
+	// "COUNTINENT_LIST_POINTS",
+	// "USE_COUNTINENTLIST_ONLY"
+
+    case 160:{
+	    /* based on LZ3NY code, by HA2OS
+	       COUNTINENT_LIST   (in file or listed in logcfg.dat),
+	       First of all we are checking if inserted data in
+	       COUNTINENT_LIST= is a file name.  If it is we start
+	       parsing the file. If we got our case insensitive contest name,
+	       we copy the multipliers from it into multipliers_list.
+	       If the input was not a file name we directly copy it into
+	       multiplier_list (must not have a preceeding contest name).
+	       The last step is to parse the multipliers_list into an array
+	       (continent_multiplier_list) for future use.
+	     */
+
+	    int mit_fg = 0;
+	    static char multiplier_list[50] = ""; 	/* use only first
+							   COUNTINENT_LIST
+							   definition */
+	    char mit_multlist[255] = "";
+	    char buffer[255] = "";
+	    FILE *fp;
+
+	    PARAMETER_NEEDED(teststring);
+	    if (strlen(multiplier_list) == 0) {	/* if first definition */
+		g_strlcpy(mit_multlist, fields[1], sizeof(mit_multlist));
+		g_strchomp(mit_multlist);	/* drop trailing whitespace */
+
+		if ((fp = fopen(mit_multlist, "r")) != NULL) {
+
+		    while ( fgets(buffer, sizeof(buffer), fp) != NULL ) {
+
+			g_strchomp( buffer ); /* no trailing whitespace*/
+
+			/* accept only a line starting with the contest name
+			 * (CONTEST=) followed by ':' */
+			if (strncasecmp (buffer, whichcontest,
+				strlen(whichcontest) - 1) == 0) {
+
+			    strncpy(multiplier_list,
+				    buffer + strlen(whichcontest) + 1,
+				    strlen(buffer) - 1);
+			}
+		    }
+
+		    fclose(fp);
+		} else {	/* not a file */
+
+		    if (strlen(mit_multlist) > 0)
+			strcpy(multiplier_list, mit_multlist);
+		}
+	    }
+
+	    /* creating the array */
+	    mit_mult_array = strtok(multiplier_list, ":,.- \t");
+	    mit_fg = 0;
+
+	    if (mit_mult_array != NULL) {
+		while (mit_mult_array) {
+		    strcpy(continent_multiplier_list[mit_fg], mit_mult_array);
+		    mit_mult_array = strtok(NULL, ":,.-_\t ");
+		    mit_fg++;
+		}
+	    }
+
+	    /* on which multiplier side of the rules we are */
+	    getpx(call);
+	    mult_side = exist_in_country_list();
+	    setcontest();
+	    break;
+	}
+
+    case 161:{		// COUNTRY_LIST_POINTS
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
+	    if (countrylist_points == -1)
+		countrylist_points = atoi(c_temp);
+
+	    break;
+	}
+    case 162:{		// COUNTRY_LIST_ONLY
+	    countrylist_only = 1;
+	    if (mult_side == 1)
+		countrylist_only = 0;
+
+	    break;
+	}
+
+
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

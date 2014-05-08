@@ -27,6 +27,7 @@
 #include "tlf.h"
 #include "getctydata.h"
 #include "focm.h"
+#include <syslog.h>
 
 int calc_continent(int zone);
 
@@ -90,6 +91,21 @@ int exist_in_country_list()
 	} else
 	    return 0;
     }
+}
+
+int continent_found() {
+    extern char continent[];
+    extern char mit_multiplier_list[][6];
+
+    int mit_fg = 0;
+
+    while (strlen(mit_multiplier_list[mit_fg]) != 0) {
+	if (mit_multiplier_list[mit_fg] == continent) {
+	    return 1;
+	}
+	mit_fg++;
+    }
+    return 0;
 }
 
 /* end LZ3NY code */
