@@ -2,7 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0r@eudxf.org>
  *                    2010-2011 Thomas Beierlein <tb@forth-ev.de>
- *                    2013      Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *                    2013-2014 Ervin Hegedus - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,7 @@ int arrl_fd = 0;
 int arrlss = 0;
 int pacc_pa_flg = 0;
 int waedc_flg = 0;
+int stewperry_flg = 0;
 int focm = 0;
 
 int universal = 0;
@@ -114,10 +115,11 @@ int exchange_serial = 0;
 int wysiwyg_once = 0;
 int wysiwyg_multi = 0;
 int country_mult = 0;
-int fixedmult = 0;
+float fixedmult = 0.0;
 int sectn_mult = 0;
 int dx_arrlsections = 0;
 int serial_section_mult = 0;
+int serial_or_section = 0;	/* exchange is serial OR section, like HA-DX */
 int serial_grid4_mult = 0;
 int qso_once = 0;
 int addcallarea_once = 0;
@@ -130,6 +132,7 @@ int noautocq = 0;
 int emptydir = 0;
 int verbose = 0;
 int no_rst = 0;			/* 1 - do not use RS/RST */
+char myqra[7] = "";
 
 int pacc_qsos[10][10];
 int waedc_qsos[10][10];
@@ -685,7 +688,7 @@ int main(int argc, char *argv[])
 	trx_control = 0;
 	showmsg( "Disabling rig control!");
 	sleep(1);
-#endif				/* HAVE_LIBHAMLIB */	
+#endif				/* HAVE_LIBHAMLIB */
 
 
 	if (keyerport == NET_KEYER) {
@@ -780,7 +783,7 @@ int main(int argc, char *argv[])
 
 	clear_display();	/* tidy up the display */
 
-	qrb();
+	qrb_();
 
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 

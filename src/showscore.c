@@ -27,6 +27,7 @@
 #include "showscore.h"
 #include "focm.h"
 #include <assert.h>
+#include <math.h>
 
 #define START_COL 45	/* start display in these column */
 
@@ -49,7 +50,22 @@ static int bands[NBANDS] =
 	{ 160, 80, 40, 30, 20, 17, 15, 12, 10 };
 
 void printfield (int x, int y, int number);
+void stewperry_show_summary( int points, float fixedmult );
 
+
+/* show summary line for stewperry */
+void stewperry_show_summary( int points, float fixedmult )
+{
+    float mult;
+
+    mvprintw(5, START_COL, "                                   ");
+    /* TODO: respect field boundaries for large numbers */
+    mult = (fixedmult == 0.0) ? 1.0 : fixedmult;
+
+    mvprintw(5, START_COL, "Pts: %d       Score: %d",
+	points, (int)floor(points * mult));
+
+}
 
 /* show summary line */
 void show_summary( int points, int multi )
@@ -57,7 +73,7 @@ void show_summary( int points, int multi )
     mvprintw(5, START_COL, "                                   ");
     /* TODO: respect field boundaries for large numbers */
     mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
-	points, multi, points * multi);
+	    points, multi, points * multi);
 }
 
 
@@ -111,7 +127,7 @@ int get_nr_of_points()
 /* get total number of multis */
 int get_nr_of_mults()
 {
-    extern int fixedmult;
+    extern float fixedmult;
     extern int sprint;
     extern int multlist;
     extern int multscore[];
@@ -149,8 +165,10 @@ int get_nr_of_mults()
 	return totalcountries;
     }
     else if (arrl_fd == 1) {
-	if (fixedmult != 0) {
-	    return fixedmult;
+	/* arrl mults are always integers */
+	int mult = (int)floor(fixedmult + 0.5); 	/* round to nearest integer */
+	if (mult > 0) {
+	    return mult;
 	} else {
 	    return 1;
 	}
@@ -240,6 +258,7 @@ int showscore(void)
     extern int serial_section_mult;
     extern int sectn_mult;
     extern int dx_arrlsections;
+    extern float fixedmult;
 
     int i, l10;
     float p;
@@ -247,8 +266,7 @@ int showscore(void)
     if (showscore_flag == 1) {
 
 	/* show header with active band and number of QSOs */
-	if ((bandinx != BANDINDEX_30) && (bandinx != BANDINDEX_17)
-	    && (bandinx != BANDINDEX_12)) {
+	if (!IsWarcIndex(bandinx)) {
 
 	    display_header(bi_normal);
 
@@ -336,8 +354,11 @@ int showscore(void)
 	else if (focm == 1) {
 	    foc_show_scoring(START_COL);
 	}
+	else if (stewperry_flg == 1) {
+	    /* no normal multis, but may have POWERMULT set (fixedmult != 0.) */
+	    stewperry_show_summary( get_nr_of_points(), fixedmult );
+	}
 	else {
-
 	    show_summary( get_nr_of_points(), get_nr_of_mults() );
 	}
 

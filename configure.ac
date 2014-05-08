@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(tlf, 1.2.0_pre4, rein@couperus.com es tb@forth-ev.de)
+AC_INIT(tlf, 1.2.0, rein@couperus.com es tb@forth-ev.de)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -70,7 +70,6 @@ AC_TYPE_SSIZE_T
 # Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
 AC_FUNC_STRFTIME
-AC_FUNC_MALLOC
 AC_CHECK_FUNCS([bzero floor ftruncate gethostbyname memset mkfifo putenv select socket sqrt strcasecmp strchr strcspn strdup strpbrk strspn strstr])
 
 # Set PACKAGE_DATA_DIR in config.h.

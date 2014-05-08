@@ -1,8 +1,9 @@
 /*
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
-* 		2011-2013           Thomas Beierlein <tb@forth-ev.de>
+* 		2011-2014           Thomas Beierlein <tb@forth-ev.de>
 * 		2013 		    Fred DH5FS
+*               2013-2014           Ervin Hegedus - HA2OS <airween@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -33,6 +34,7 @@
 #endif
 #include <ctype.h>
 #include "bandmap.h"
+#include "locator2longlat.h"
 
 extern int keyerport;
 extern char tonestr[];
@@ -54,7 +56,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 163	/* commands in list */
+#define  MAX_COMMANDS 165	/* commands in list */
 
 
 int read_logcfg(void)
@@ -149,7 +151,7 @@ int parse_logcfg(char *inputbuffer)
     extern int country_mult;
     extern int wysiwyg_multi;
     extern int wysiwyg_once;
-    extern int fixedmult;
+    extern float fixedmult;
     extern int portable_x2;
     extern int trx_control;
     extern int rit;
@@ -229,6 +231,7 @@ int parse_logcfg(char *inputbuffer)
     extern char modem_mode[];
     extern int no_rst;
     extern int qtcdirection;
+    extern int serial_or_section;
 
 /* LZ3NY mods */
     extern int mult_side;
@@ -255,6 +258,7 @@ int parse_logcfg(char *inputbuffer)
     extern char rttyoutput[];
     extern int logfrequency;
     extern int ignoredupe;
+    extern char myqra[7];
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -305,9 +309,9 @@ int parse_logcfg(char *inputbuffer)
 	"EDITOR",		/* 45 */
 	"PARTIALS",
 	"USEPARTIALS",
-	"POWERMULT_5",
-	"POWERMULT_2",
-	"POWERMULT_1",		/* 50 */
+	"POWERMULT_5",				/* deprecated */
+	"POWERMULT_2",				/* deprecated */
+	"POWERMULT_1",		/* 50 */	/* deprecated */
 	"MANY_CALLS",				/* deprecated */
 	"SERIAL_EXCHANGE",
 	"COUNTRY_MULT",
@@ -417,10 +421,13 @@ int parse_logcfg(char *inputbuffer)
 	"VKCWR",				/* deprecated */
 	"VKSPR",				/* deprecated */
 	"NO_RST",
+	"MYQRA",
+	"POWERMULT",		/* 160 */
+	"SERIAL_OR_SECTION"
 	"QTC",
-	"CONTINENTLIST",	/* 160 */
+	"CONTINENTLIST",
 	"COUNTINENT_LIST_POINTS",
-	"USE_COUNTINENTLIST_ONLY"
+	"USE_COUNTINENTLIST_ONLY"  /* 165 */
     };
 
     char **fields;
@@ -776,7 +783,7 @@ int parse_logcfg(char *inputbuffer)
 	    use_part = 1;
 	    break;
 	}
-    case 48:{
+    /*case 48:{
 	    fixedmult = 5;
 	    break;
 	}
@@ -787,7 +794,7 @@ int parse_logcfg(char *inputbuffer)
     case 50:{
 	    fixedmult = 1;
 	    break;
-	}
+	} */
     case 51:{
 	    KeywordNotSupported(teststring);
 	    break;
@@ -1349,8 +1356,31 @@ int parse_logcfg(char *inputbuffer)
 		 no_rst = 1;
 		 break;
 	    }
-
     case 159:{
+		PARAMETER_NEEDED(teststring);
+		strcpy(myqra, fields[1]);
+
+		if (check_qra(myqra) > 0) {
+		    showmsg
+			("WARNING: Invalid MYQRA parameters! exiting...");
+		    sleep(5);
+		    exit(1);
+		}
+		break;
+	    }
+    case 160:{
+    	    PARAMETER_NEEDED(teststring);
+	    if (fixedmult == 0.0 && atof(fields[1]) > 0.0) {
+	      fixedmult = atof(fields[1]);
+	    }
+	    break;
+	}
+    case 161:{
+		 serial_or_section = 1;
+		 break;
+	    }
+
+    case 162:{
 	    PARAMETER_NEEDED(teststring);
 	    if (strcmp(fields[1], "RECV")) {
 	        qtcdirection = 1;
@@ -1370,7 +1400,7 @@ int parse_logcfg(char *inputbuffer)
 	// "COUNTINENT_LIST_POINTS",
 	// "USE_COUNTINENTLIST_ONLY"
 
-    case 160:{
+    case 163:{
 	    /* based on LZ3NY code, by HA2OS
 	       COUNTINENT_LIST   (in file or listed in logcfg.dat),
 	       First of all we are checking if inserted data in
@@ -1440,7 +1470,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
 
-    case 161:{		// COUNTRY_LIST_POINTS
+    case 164:{		// COUNTRY_LIST_POINTS
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (countrylist_points == -1)
@@ -1448,7 +1478,7 @@ int parse_logcfg(char *inputbuffer)
 
 	    break;
 	}
-    case 162:{		// COUNTRY_LIST_ONLY
+    case 165:{		// COUNTRY_LIST_ONLY
 	    countrylist_only = 1;
 	    if (mult_side == 1)
 		countrylist_only = 0;

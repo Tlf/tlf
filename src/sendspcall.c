@@ -34,6 +34,7 @@ void sendspcall(void){
     extern int trxmode;
     extern int keyerport;
     extern char ph_message[14][80];
+    extern char hiscall[];
 
 
     if (trxmode == CWMODE) {
@@ -48,10 +49,18 @@ void sendspcall(void){
 
 	if (keyerport == MFJ1278_KEYER) {
 	    strcat (buffer, "{ ");	/* => ctrl-t */
+	    if (demode ==  SEND_DE) {
+	        strcat(buffer, hiscall);
+		strcat(buffer, " DE ");
+	    }
 	    strcat (buffer, call);
 	    strcat (buffer, "}");	/* => ctrl-r */
 	}
 	else {
+	    if (demode ==  SEND_DE ) {
+	        strcat(buffer, hiscall);
+		strcat(buffer, " DE ");
+	    }
 	    strcat(buffer, call);
 	}
 

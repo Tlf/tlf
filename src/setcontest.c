@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *               2013           Ervin Hegedus <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ int setcontest(void)
     extern int multlist;
     extern int pacc_pa_flg;
     extern int waedc_flg;
+    extern int stewperry_flg;
     extern int universal;
     extern int other_flg;
     extern int exchange_serial;
@@ -210,6 +211,13 @@ int setcontest(void)
 	ua9_cty = getctydata(ua9call);
     }
     
+    if (strcmp(whichcontest, "stewperry") == 0) {
+	stewperry_flg = 1;
+	contest = 1;
+	showscore_flag = 1;
+	searchflg = 1;
+    }
+
     if (strcmp(whichcontest, "focmarathon") == 0) {
 	foc_init();
     }

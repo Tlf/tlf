@@ -141,6 +141,12 @@ int readcalls(void)
 	    bandinx = BANDINDEX_80;
 	if (bndbuf[0] == '6')
 	    bandinx = BANDINDEX_160;
+	if (bndbuf[0] == '1' && bndbuf[1] == '2')
+	    bandinx = BANDINDEX_12;
+	if (bndbuf[0] == '1' && bndbuf[1] == '7')
+	    bandinx = BANDINDEX_17;
+	if (bndbuf[0] == '3')
+	    bandinx = BANDINDEX_30;
 
 	/* get the country number, not known at this point */
 	tmpptr = strchr(presentcall, ' ');

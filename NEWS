@@ -1,3 +1,37 @@
+tlf-1.2.0
+=========
+Major release. 
+
+Contains all bug fixes and enhancements from 1.1.4, 1.1.5, 1.1.6 and
+all 1.2.0_pre versions.
+
+Besides a lot of fixed bugs and internal imporvements it provides 
+some new features:
+
+Major improvements since tlf-1.1
+   - support of CABRILLO format v3. CABRLLO format can be adapted to 
+     new contests (see doc/README.cabrillo)
+   - TLf now records your actual working QRG in the log file and writes it 
+     to CABRILLO or ADIF log.
+   - The exchange field can be edited (like call input field).
+   - More robust handling of problems in config file and rig communication.
+   - Support rigs with hamlib rig numbers >= 2000.
+   - New NO_RST keyword for contests without RS/RST exchange.
+   - Robust AUTOSEND feature
+   - Two new contests: Stewperry and FOC Marathon
+
+For details read the NEWS section from 1.2.0_pre1 to 1.2.0_pre4.
+
+Thanks to all of you for pointing out bugs, submitting ideas and code 
+and testing. To name a few without any order of ranks or being complete: 
+Martin OK1RR, Fred DM3MF, Andy G4KNO, Nate N0NB and Ervin HA2OS. 
+
+Bug fixes since 1.2.0_pre4
+   - false start of autosend when entering a a frequency for band change
+   - setting of the LAN designator character was ignored
+   - initialisation of call sign statistics during ':rescore' was missing
+
+
 tlf-1.2.0_pre4
 ==============
 Prerelease and bugfix version
