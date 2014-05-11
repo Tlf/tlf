@@ -98,6 +98,7 @@ struct qso_t {
 int is_comment(char *buffer);
 struct qso_t *get_next_record (FILE *fp);
 void free_qso(struct qso_t *ptr);
+void removechars(char *string, char *removechars);
 
 
 /** check if logline is only a comment */
@@ -512,6 +513,7 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 		break;
 	    case MYCALL:
 		strcpy(tmp, call);
+                removechars(tmp, "+-");
 		add_rpadded( buf, g_strchomp(tmp), item->len );
 		break;
 	    case HISCALL:
@@ -910,3 +912,18 @@ int write_adif(void)
 
     return (0);
 }				// end write_adif
+
+void removechars(char *string, char *removechars)
+{
+    char *src, *dst;
+    for(;*removechars != '\0'; removechars++)
+    {   
+        for(src = dst = string; *src != '\0'; src++)
+        {   
+            *dst = *src;
+            if(*dst != *removechars) dst++;
+
+        }   
+        *dst = '\0';
+    }   
+}
