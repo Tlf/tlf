@@ -624,6 +624,7 @@ int write_cabrillo(void)
 
     /* open logfile and create a cabrillo file */
     strcpy(cabrillo_tmp_name, call);
+    removechars(cabrillo_tmp_name, "+-");
     g_strstrip(cabrillo_tmp_name); /* drop \n */
     strcat(cabrillo_tmp_name, ".cbr");
 
