@@ -194,7 +194,7 @@ int setcontest(void)
 	ua9_cty = getctydata(ua9call);
     }
 
-    if (strcmp(whichcontest, "waedc") == 0) {
+    /*if (strcmp(whichcontest, "waedc") == 0) {
 	waedc_flg = 1;
 	one_point = 1;
 	contest = 1;
@@ -209,7 +209,7 @@ int setcontest(void)
 	vk_cty = getctydata(vkcall);
 	zs_cty = getctydata(zscall);
 	ua9_cty = getctydata(ua9call);
-    }
+    }*/
     
     if (strcmp(whichcontest, "stewperry") == 0) {
 	stewperry_flg = 1;

@@ -35,6 +35,7 @@
 #include <ctype.h>
 #include "bandmap.h"
 #include "locator2longlat.h"
+#include "dxcc.h"
 
 extern int keyerport;
 extern char tonestr[];
@@ -48,6 +49,7 @@ extern int shortqsonr;
 extern char * cabrillo;
 
 int exist_in_country_list();
+int continent_found();
 
 char inputbuffer[160];
 FILE *fp;
@@ -56,7 +58,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 166	/* commands in list */
+#define  MAX_COMMANDS 168	/* commands in list */
 
 
 int read_logcfg(void)
@@ -117,6 +119,19 @@ int read_logcfg(void)
     fclose(fp);
 
     return( status );
+}
+
+int getidxbybandstr(char *confband) {
+    static char bands_strings[NBANDS][4] = {"160", "80", "40", "30", "20", "17", "15", "12", "10"};
+    g_strchomp(confband);
+    int i;
+
+    for(i=0; i<NBANDS; i++) {
+	if (strcmp(confband, g_strchomp(bands_strings[i])) == 0) {
+	    return i;
+	}
+    }
+    return -1;
 }
 
 
@@ -240,6 +255,8 @@ int parse_logcfg(char *inputbuffer)
     extern int dx_cont_points;
     extern int countrylist_points;
     extern int countrylist_only;
+    extern int continentlist_points;
+    extern int continentlist_only;
     char c_temp[11];
     extern int my_cont_points;
     extern int dx_cont_points;
@@ -260,7 +277,9 @@ int parse_logcfg(char *inputbuffer)
     extern int logfrequency;
     extern int ignoredupe;
     extern char myqra[7];
-
+    extern int bandweight_points[NBANDS];
+    extern int bandweight_multis[NBANDS];
+    
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
 	"disable",				/* deprecated */
@@ -427,8 +446,10 @@ int parse_logcfg(char *inputbuffer)
 	"SERIAL_OR_SECTION",
 	"QTC",
 	"CONTINENTLIST",
-	"COUNTINENT_LIST_POINTS",
-	"USE_COUNTINENTLIST_ONLY"  /* 165 */
+	"CONTINENT_LIST_POINTS",
+	"USE_COUNTINENTLIST_ONLY",  /* 165 */
+	"BANDWEIGHT_POINTS",
+	"BANDWEIGHT_MULTIS"
     };
 
     char **fields;
@@ -473,7 +494,6 @@ int parse_logcfg(char *inputbuffer)
     g_strlcpy( teststring, fields[0], sizeof(teststring) );
 
     for (ii = 0; ii < MAX_COMMANDS; ii++) {
-
 	if (strcmp(teststring, commands[ii]) == 0) {
 	    break;
 	}
@@ -1397,9 +1417,6 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    break;
 	}
-	//    	"CONTINENTLIST",	/* 160 */
-	// "COUNTINENT_LIST_POINTS",
-	// "USE_COUNTINENTLIST_ONLY"
 
     case 163:{
 	    /* based on LZ3NY code, by HA2OS
@@ -1409,13 +1426,13 @@ int parse_logcfg(char *inputbuffer)
 	       parsing the file. If we got our case insensitive contest name,
 	       we copy the multipliers from it into multipliers_list.
 	       If the input was not a file name we directly copy it into
-	       multiplier_list (must not have a preceeding contest name).
+	       cont_multiplier_list (must not have a preceeding contest name).
 	       The last step is to parse the multipliers_list into an array
 	       (continent_multiplier_list) for future use.
 	     */
 
 	    int mit_fg = 0;
-	    static char multiplier_list[50] = ""; 	/* use only first
+	    static char cont_multiplier_list[50] = ""; 	/* use only first
 							   COUNTINENT_LIST
 							   definition */
 	    char mit_multlist[255] = "";
@@ -1423,7 +1440,7 @@ int parse_logcfg(char *inputbuffer)
 	    FILE *fp;
 
 	    PARAMETER_NEEDED(teststring);
-	    if (strlen(multiplier_list) == 0) {	/* if first definition */
+	    if (strlen(cont_multiplier_list) == 0) {	/* if first definition */
 		g_strlcpy(mit_multlist, fields[1], sizeof(mit_multlist));
 		g_strchomp(mit_multlist);	/* drop trailing whitespace */
 
@@ -1438,7 +1455,7 @@ int parse_logcfg(char *inputbuffer)
 			if (strncasecmp (buffer, whichcontest,
 				strlen(whichcontest) - 1) == 0) {
 
-			    strncpy(multiplier_list,
+			    strncpy(cont_multiplier_list,
 				    buffer + strlen(whichcontest) + 1,
 				    strlen(buffer) - 1);
 			}
@@ -1448,45 +1465,89 @@ int parse_logcfg(char *inputbuffer)
 		} else {	/* not a file */
 
 		    if (strlen(mit_multlist) > 0)
-			strcpy(multiplier_list, mit_multlist);
+			strcpy(cont_multiplier_list, mit_multlist);
 		}
 	    }
 
 	    /* creating the array */
-	    mit_mult_array = strtok(multiplier_list, ":,.- \t");
+	    mit_mult_array = strtok(cont_multiplier_list, ":,.- \t");
 	    mit_fg = 0;
 
 	    if (mit_mult_array != NULL) {
 		while (mit_mult_array) {
-		    strcpy(continent_multiplier_list[mit_fg], mit_mult_array);
+		    strncpy(continent_multiplier_list[mit_fg], mit_mult_array, 2);
 		    mit_mult_array = strtok(NULL, ":,.-_\t ");
 		    mit_fg++;
 		}
 	    }
 
-	    /* on which multiplier side of the rules we are */
-	    getpx(call);
-	    mult_side = exist_in_country_list();
 	    setcontest();
 	    break;
 	}
 
-    case 164:{		// COUNTRY_LIST_POINTS
+    case 164:{		// CONTINENT_LIST_POINTS
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
-	    if (countrylist_points == -1)
-		countrylist_points = atoi(c_temp);
+	    if (continentlist_points == -1) {
+		continentlist_points = atoi(c_temp);
+	    }
 
 	    break;
 	}
-    case 165:{		// COUNTRY_LIST_ONLY
-	    countrylist_only = 1;
-	    if (mult_side == 1)
-		countrylist_only = 0;
-
+    case 165:{		// CONTINENT_LIST_ONLY
+	    continentlist_only = 1;
 	    break;
 	}
 
+    case 166:{		// BANDWEIGHT_POINTS
+	    PARAMETER_NEEDED(teststring);
+	    static char bwp_params_list[50] = "";
+	    int bandindex = -1;
+
+	    if (strlen(bwp_params_list) == 0) {
+		g_strlcpy(bwp_params_list, fields[1], sizeof(bwp_params_list));
+		g_strchomp(bwp_params_list);
+	    }
+
+	    mit_mult_array = strtok(bwp_params_list, ";:");
+	    if (mit_mult_array != NULL) {
+		while (mit_mult_array) {
+		  
+		    bandindex = getidxbybandstr(g_strchomp(mit_mult_array));
+		    mit_mult_array = strtok(NULL, ";:");
+		    if (mit_mult_array != NULL && bandindex >= 0) {
+			bandweight_points[bandindex] = atoi(mit_mult_array);
+		    }
+		    mit_mult_array = strtok(NULL, ";:");
+		}
+	    }
+	    break;
+	}
+
+    case 167:{		// BANDWEIGHT_POINTS
+	    PARAMETER_NEEDED(teststring);
+	    static char bwm_params_list[50] = "";
+	    int bandindex = -1;
+
+	    if (strlen(bwm_params_list) == 0) {
+		g_strlcpy(bwm_params_list, fields[1], sizeof(bwm_params_list));
+		g_strchomp(bwm_params_list);
+	    }
+
+	    mit_mult_array = strtok(bwm_params_list, ";:");
+	    if (mit_mult_array != NULL) {
+		while (mit_mult_array) {
+		  
+		    bandindex = getidxbybandstr(g_strchomp(mit_mult_array));
+		    mit_mult_array = strtok(NULL, ";:");
+		    if (mit_mult_array != NULL && bandindex >= 0) {
+			bandweight_multis[bandindex] = atoi(mit_mult_array);
+		    }
+		    mit_mult_array = strtok(NULL, ";:");
+		}
+	    }
+	    break;
+	}
 
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));

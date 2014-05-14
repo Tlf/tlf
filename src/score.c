@@ -1,11 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
-<<<<<<< HEAD
- *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
-=======
  *               2013           Ervin Hegedus <airween@gmail.com>
->>>>>>> master
  *               2013-2014      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,6 +31,8 @@
 #include "getctydata.h"
 #include "focm.h"
 #include <math.h>
+
+#include <syslog.h>
 
 int calc_continent(int zone);
 
@@ -99,15 +97,17 @@ int exist_in_country_list()
 	    return 0;
     }
 }
+/* end LZ3NY code */
 
+/* HA2OS - check if continent is in COUNTINENT_LIST from logcfg.dat */
 int continent_found() {
     extern char continent[];
-    extern char mit_multiplier_list[][6];
+    extern char continent_multiplier_list[7][3];
 
     int mit_fg = 0;
 
-    while (strlen(mit_multiplier_list[mit_fg]) != 0) {
-	if (mit_multiplier_list[mit_fg] == continent) {
+    while (strlen(continent_multiplier_list[mit_fg]) != 0) {
+	if (strcmp(continent_multiplier_list[mit_fg], continent) == 0) {
 	    return 1;
 	}
 	mit_fg++;
@@ -115,7 +115,6 @@ int continent_found() {
     return 0;
 }
 
-/* end LZ3NY code */
 
 int score()
 {
@@ -158,10 +157,14 @@ int score()
     extern int my_country_points;
     extern int dx_cont_points;
     extern int countrylist_only;
-
+    extern int bandweight_points[NBANDS];
+    
     int points;
     int is_mult = 0;
 /* end LZ3NY mods */
+    int is_cont_mult = 0;
+    extern int continentlist_points;
+    extern int continentlist_only;
 
     int zone;
     char *loc;
@@ -294,11 +297,11 @@ int score()
 	return points;
     }
 
-    if (waedc_flg == 1) {
+    /*if (waedc_flg == 1) {
 
 	if (trxmode != DIGIMODE) {
-	    if (	/* if MODE isn't RTTY, EU stations should work only with DX and backwards */
-	      (strcmp(mycontinent, "EU") == 0 && strcmp(continent, "EU") != 0)
+	    if (*/	/* if MODE isn't RTTY, EU stations should work only with DX and backwards */
+	      /*(strcmp(mycontinent, "EU") == 0 && strcmp(continent, "EU") != 0)
 	      ||
 	      (strcmp(mycontinent, "EU") != 0 && strcmp(continent, "EU") == 0)
 	    ) {
@@ -308,7 +311,7 @@ int score()
 	}
 
 	return (0);
-    }
+    }*/
 
     if (stewperry_flg == 1) {
 
@@ -372,6 +375,24 @@ int score()
 	    points = 0;
     }
 
+    /* HA2OS mods */
+    // only continent list allowed
+    if (continentlist_only == 1) {
+	is_cont_mult = continent_found();
+	if (is_cont_mult == 1) {
+	    // if we are on DX continent
+	    if (continent == mycontinent) {
+		points = my_cont_points;
+	    }
+	    else if (continentlist_points != -1) {
+	      points = continentlist_points;
+	    }
+	}
+	else {
+	    points = 0;
+	}
+    }
+
     if (ssbpoints != 0 && cwpoints != 0)	//  e.g. arrl 10m contest
     {
 	if (trxmode == CWMODE) {
@@ -391,6 +412,8 @@ int score()
 	    points *= 2;
 	}
     }
+syslog(LOG_DEBUG, "%d", bandweight_points[bandinx]);
+    points *= bandweight_points[bandinx];
 
     return points;
 }

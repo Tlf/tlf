@@ -98,12 +98,14 @@ int sc_sidetone;
 char sc_volume[4] = "";
   /* LZ3NY mods */
 int countrylist_points = -1;
+int continentlist_points = -1;
 int my_country_points = -1;
 int my_cont_points = -1;
 int dx_cont_points = -1;
 char mit_multiplier_list[255][6];
 char continent_multiplier_list[7][6]; // SA, NA, EU, AF, AS and OC
 int countrylist_only = 0;
+int continentlist_only = 0;
 int mult_side = 0;
 char *mit_mult_array;
 int in_country_list;
@@ -397,6 +399,8 @@ char itustr[3];
 
 int nopacket = 0;		/* set if tlf is called with '-n' */
 
+int bandweight_points[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+int bandweight_multis[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
 

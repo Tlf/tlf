@@ -185,9 +185,9 @@ int get_nr_of_mults()
 
 	return totalmults ;
     }
-    else if (waedc_flg == 1) {
+    /*else if (waedc_flg == 1) {
 	return totalcountries;
-    }
+    }*/
     else if (pacc_pa_flg == 1) {
 
 	return totalcountries;
