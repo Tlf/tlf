@@ -163,7 +163,7 @@ static int get_nr_cont() {
     for (i = 0; i < callarray_nr; i++) {
 	data = dxcc_by_index(call_country[i]);
 
-	g_hash_table_add(cont, data->continent);
+	g_hash_table_replace(cont, data->continent, data->continent);
     }
 
     nr = g_hash_table_size(cont);
