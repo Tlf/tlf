@@ -294,11 +294,8 @@ char qsos[MAX_QSOS][LOGLINELEN+1];
 int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
-int callarray_nr = 0;		/* number of calls in callarray */
-char callarray[MAX_CALLS][20];	/* internal log representation for dupes  */
-char call_exchange[MAX_CALLS][12];
-int call_band[MAX_CALLS];
-int call_country[MAX_CALLS];
+int nr_worked = 0;		/*< number of calls in worked[] */
+struct worked_t worked[MAX_CALLS]; /*< worked stations */
 
 /*----------------------statisticof worked countries,zones ... -----------*/
 int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */

@@ -98,14 +98,14 @@ static int nr_of_bands(int x) {
 static void count_56_banders() {
     int i, nr;
 
-    extern int call_band[];
-    extern int callarray_nr;
+    extern struct worked_t worked[];
+    extern int nr_worked;
 
     five_banders = 0;
     six_banders = 0;
 
-    for (i = 0; i < callarray_nr; i++) {
-    	nr = nr_of_bands(call_band[i]);
+    for (i = 0; i < nr_worked; i++) {
+    	nr = nr_of_bands(worked[i].band);
 	if ( nr >= 5) 			/* sixbanders are also fivebanders */
 	    five_banders++;
 	if (nr == 6)
@@ -115,15 +115,15 @@ static void count_56_banders() {
 
 
 static int search_g4foc_in_callarray(void) {
-    extern int callarray_nr;
-    extern char callarray[MAX_CALLS][20];
+    extern int nr_worked;
+    extern struct worked_t worked[];
 
     int found = -1;
     int i;
 
-    for (i = 0; i < callarray_nr; i++) {
+    for (i = 0; i < nr_worked; i++) {
 
-	if (g_regex_match_simple("^G(|[A-Z])4FOC(|/.*)", callarray[i],
+	if (g_regex_match_simple("^G(|[A-Z])4FOC(|/.*)", worked[i].call,
 		G_REGEX_CASELESS, 0)) {
             found = i;
             break;
@@ -151,8 +151,8 @@ static int get_nr_cntry() {
 
 /* count number of continents worked on all bands */
 static int get_nr_cont() {
-    extern int call_country[];
-    extern int callarray_nr;
+    extern struct worked_t worked[];
+    extern int nr_worked;
 
     GHashTable *cont;
     dxcc_data *data;
@@ -160,8 +160,8 @@ static int get_nr_cont() {
 
     cont = g_hash_table_new(g_str_hash, g_str_equal);
 
-    for (i = 0; i < callarray_nr; i++) {
-	data = dxcc_by_index(call_country[i]);
+    for (i = 0; i < nr_worked; i++) {
+	data = dxcc_by_index(worked[i].country);
 
 	g_hash_table_replace(cont, data->continent, data->continent);
     }
@@ -177,7 +177,7 @@ static int get_nr_cont() {
  * \return number of points
  */
 int foc_total_score() {
-    extern int call_band[];
+    extern struct worked_t worked[];
 
     int points;
 
@@ -185,7 +185,7 @@ int foc_total_score() {
     g4foc_index = search_g4foc_in_callarray();
 
     if (g4foc_index != -1)
-	g4foc_count = nr_of_bands(call_band[g4foc_index]);
+	g4foc_count = nr_of_bands(worked[g4foc_index].band);
     else
 	g4foc_count = 0;
 

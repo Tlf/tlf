@@ -237,7 +237,7 @@ int loadbandmap(void)
     extern char *bandmap[MAX_SPOTS];
     extern struct tm *time_ptr;
     extern int countries[];
-    extern int call_band[];
+    extern struct worked_t worked[];
     extern int xplanet;
     extern char markerfile[];
     extern char lastmsg[];
@@ -250,7 +250,7 @@ int loadbandmap(void)
     int sysminutes = 0;
     int timediff = 0;
     int linepos;
-    int worked;
+    int already_worked;
     int thisband = 10;		/** \todo should it be NBANDS? */
     int dupe;
     int spot_age[MAX_SPOTS];
@@ -372,23 +372,23 @@ int loadbandmap(void)
 	    y = searchcallarray(callcopy);	// lookup index of call in
 	    					// callarray (if already worked)
 
-	    worked = 0;
+	    already_worked = 0;
 	    dupe = 1;
 
 	    thisband = bandinx;
 
 	    /* check if country was already worked on this band */
 	    if ((countries[x] & inxes[thisband]) != 0)
-		worked = 1;	/* no new country/multi */
+		already_worked = 1;	/* no new country/multi */
 
 	    /* check if already worked on these band */
 	    if (y != -1) {	/*  found */
-		if ((call_band[y] & inxes[thisband]) == 0)
+		if ((worked[y].band & inxes[thisband]) == 0)
 		    dupe = 0;	/* not worked on this band yet */
 	    }
 
 	    if (inxes[thisband] == 0) {	/* WARC band */
-		worked = 1;		/* show as not needed */
+		already_worked = 1;		/* show as not needed */
 		dupe = 0;		/* station new, but no country/multi */
 	    }
 
