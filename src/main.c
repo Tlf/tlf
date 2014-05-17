@@ -314,7 +314,6 @@ int multlist = 0;
 char callmasterarray[MAX_CALLMASTER][14];
 long int nr_callmastercalls;
 
-char callmaster_result[50][9];
 int callareas[20];
 int multscore[NBANDS];
 
