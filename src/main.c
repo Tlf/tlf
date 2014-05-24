@@ -235,7 +235,6 @@ char tonestr[5] = "600";
 int cqdelay = 8;
 char wkeyerbuffer[400];
 int bufloc = 0;
-int cfd;			/* cwkeyer file descriptor */
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
 int k_tune;
@@ -830,7 +829,7 @@ int main(int argc, char *argv[])
     if (trxmode == CWMODE && keyerport == NET_KEYER)
 	netkeyer_close();
     else
-	close(cfd);		/* close keyer */
+	deinit_controller();
 
     endwin();
 
