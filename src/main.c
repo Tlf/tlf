@@ -378,6 +378,7 @@ char itustr[3];
 int nopacket = 0;		/* set if tlf is called with '-n' */
 
 
+pthread_t background_thread;
 pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /** fake old refresh code to use update logic for panels */
@@ -718,6 +719,30 @@ void keyer_init()
 
 
 
+/** cleanup function
+ *
+ * Cleanup initialisations made by tlf. Will be called after exit() from
+ * logit() or background_process()
+ */
+void tlf_cleanup()
+{
+    if (pthread_self() != background_thread) {
+	pthread_cancel(background_thread);
+	pthread_join(background_thread, NULL);
+    }
+
+//    commented out for the moment as it will segfault if called twice
+//    cleanup_telnet();
+
+    if (trxmode == CWMODE && keyerport == NET_KEYER)
+	netkeyer_close();
+    else
+	deinit_controller();
+
+    endwin();
+}
+
+
 /* ------------------------------------------------------------------------*/
 /*     Main loop of the program			                           */
 /* ------------------------------------------------------------------------*/
@@ -725,7 +750,6 @@ void keyer_init()
 int main(int argc, char *argv[])
 {
     int j;
-    pthread_t thrd1, thrd2;
     int ret;
     char tlfversion[80] = "";
 
@@ -801,37 +825,18 @@ int main(int argc, char *argv[])
 
     bm_init();			/* initialize bandmap */
 
-    /* Create the first thread */
-    ret = pthread_create(&thrd1, NULL, logit, NULL);
-    if (ret) {
-	perror("pthread_create: logit");
-	endwin();
-	exit(EXIT_FAILURE);
-    }
+    atexit(tlf_cleanup); 	/* register cleanup function */
 
-    /* Create the second thread */
-    ret = pthread_create(&thrd2, NULL, background_process, NULL);
+    /* Create the background thread */
+    ret = pthread_create(&background_thread, NULL, background_process, NULL);
     if (ret) {
 	perror("pthread_create: backgound_process");
 	endwin();
 	exit(EXIT_FAILURE);
     }
 
-    /** \todo both threads do not return, so following code will
-     * not be executed */
-    pthread_join(thrd2, NULL);
-    pthread_join(thrd1, NULL);
-    endwin();
-    exit(EXIT_SUCCESS);
-
-    cleanup_telnet();
-
-    if (trxmode == CWMODE && keyerport == NET_KEYER)
-	netkeyer_close();
-    else
-	deinit_controller();
-
-    endwin();
+    /* now start logging  !! Does never return */
+    logit(NULL);
 
     return 0;
 }
