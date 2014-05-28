@@ -30,6 +30,7 @@
 #	include <config.h>
 #endif
 #include "qtcutil.h"
+#include "getctydata.h"
 
 #include <syslog.h>
 
@@ -103,8 +104,11 @@ void searchlog(char *searchstring)
     extern int cqww;
     extern int pacc_pa_flg;
     extern int waedc_flg;
+    extern int qtcdirection;
     extern int pacc_qsos[10][10];
     extern int waedc_qsos[10][10];
+    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern int pfxnummultinr;
     extern int countrynr;
     extern int contest;
     extern int wpx;
@@ -160,6 +164,7 @@ void searchlog(char *searchstring)
     int bidx = 0;	// bandindex for QTC band
     char qtccall[15];	// temp str for qtc search
     char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
+    int pfxnumcntidx;
 
     if (!initialized) {
 	InitSearchPanel();
@@ -310,7 +315,7 @@ void searchlog(char *searchstring)
 	werase( search_win );
 
 	wnicebox(search_win, 0, 0, nr_bands, 37, "Worked");
-	if (waedc_flg == 1) {
+	if (qtcdirection > 0) {
 	    mvwprintw(search_win, 0, 35, "Q");
 	}
 
@@ -401,7 +406,7 @@ void searchlog(char *searchstring)
 		j = 9;
 
 	    if ((j > 0) && (j < 10)) {
-		if (waedc_flg == 1) {
+		if (qtcdirection > 0) {
 		    qtccall[0] = '\0';
 		    z = 12;	// firs pos of callsigns
 		    l = 0;
@@ -486,7 +491,7 @@ void searchlog(char *searchstring)
 
 	/* print worked zones and countrys for each band in checkwindow */
 	wattron(search_win, COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	if (waedc_flg == 1) {
+	if (qtcdirection > 0) {
 	    for(l=0; l<6; l++) {
 		if (qtcflags[l] != ' ') {
 		    mvwprintw(search_win, l+1, 35, "%c", qtcflags[l]);
@@ -626,6 +631,42 @@ void searchlog(char *searchstring)
 		if ((waedc_qsos[0][pxnr] & BAND10) == BAND10)
 		    mvwprintw(search_win, 1, 37, "M");
 	    }
+	}
+
+	if (pfxnummultinr >= 0) {
+	    getpx(hiscall);
+	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
+
+	    getctydata(hiscall);
+	    pfxnumcntidx = -1;
+
+	    int pfxi = 0;
+	    while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+		pfxi++;
+	    }
+	    if (pfxnummulti[pfxi].countrynr == countrynr) {
+		pfxnumcntidx = pfxi;
+	    }
+
+	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND160) == BAND160) {
+		mvwprintw(search_win, 6, 37, "M");
+	    }
+	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND80) == BAND80) {
+		mvwprintw(search_win, 5, 37, "M");
+	    }
+	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND40) == BAND40) {
+		mvwprintw(search_win, 4, 37, "M");
+	    }
+	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND20) == BAND20) {
+		mvwprintw(search_win, 3, 37, "M");
+	    }
+	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND15) == BAND15) {
+		mvwprintw(search_win, 2, 37, "M");
+	    }
+	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == BAND10) {
+		mvwprintw(search_win, 1, 37, "M");
+	    }
+
 	}
 
 	refreshp();

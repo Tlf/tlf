@@ -375,7 +375,7 @@ void prepare_specific_part(void) {
 
 	fillto(77);
 
-    } else if (pacc_pa_flg == 1 || waedc_flg == 1) {
+    } else if (pacc_pa_flg == 1 || pfxnummultinr > 0) {
 	logline4[68] = '\0';
 	if (addcty != 0) {
 	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);

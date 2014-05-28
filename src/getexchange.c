@@ -63,7 +63,7 @@ int getexchange(void)
     extern int cqww;
     extern int wpx;
     extern int pacc_pa_flg;
-    extern int waedc_flg;
+    //extern int waedc_flg;
     extern int stewperry_flg;
     extern int arrldx_usa;
     extern int arrl_fd;
@@ -457,7 +457,7 @@ int getexchange(void)
 
 	    }
 
-	    if (
+	    /*if (
 	      (waedc_flg == 1) &&
 	      (
 		((trxmode != DIGIMODE) && ((strcmp(mycontinent,"EU")==0 && strcmp(continent,"EU")!=0) || (strcmp(mycontinent,"EU")!=0 && strcmp(continent,"EU")==0)))
@@ -478,7 +478,7 @@ int getexchange(void)
 		    strcat(comment, "0");
 		    strcat(comment, commentbuf);
 		}
-	    }
+	    }*/
 	    
 	    if ((arrlss == 1) && (x != 9) && (strlen(section) < 2)) {
 		mvprintw(13, 54, "section?");

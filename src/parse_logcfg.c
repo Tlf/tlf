@@ -58,7 +58,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 168	/* commands in list */
+#define  MAX_COMMANDS 169	/* commands in list */
 
 
 int read_logcfg(void)
@@ -279,6 +279,8 @@ int parse_logcfg(char *inputbuffer)
     extern char myqra[7];
     extern int bandweight_points[NBANDS];
     extern int bandweight_multis[NBANDS];
+    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern int pfxnummultinr;
     
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -449,7 +451,8 @@ int parse_logcfg(char *inputbuffer)
 	"CONTINENT_LIST_POINTS",
 	"USE_COUNTINENTLIST_ONLY",  /* 165 */
 	"BANDWEIGHT_POINTS",
-	"BANDWEIGHT_MULTIS"
+	"BANDWEIGHT_MULTIS",
+	"PFX_NUM_MULTIS"
     };
 
     char **fields;
@@ -1546,6 +1549,48 @@ int parse_logcfg(char *inputbuffer)
 		    mit_mult_array = strtok(NULL, ";:");
 		}
 	    }
+	    break;
+	}
+
+    case 168:{
+	    /* based on LZ3NY code, by HA2OS
+	       PFX_NUM_MULTIS   (in file or listed in logcfg.dat),
+	       We directly copy it into pfxnummulti_str, then parse the prefixlist
+	       and fill the pfxnummulti array.
+	     */
+
+	    int mit_fg = 0;
+	    int pfxnum;
+	    static char pfxnummulti_str[50] = "";
+	    char parsepfx[15] = "";
+
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(pfxnummulti_str, fields[1], sizeof(pfxnummulti_str));
+	    g_strchomp(pfxnummulti_str);
+
+	    /* creating the array */
+	    mit_mult_array = strtok(pfxnummulti_str, ",");
+	    mit_fg = 0;
+
+	    if (mit_mult_array != NULL) {
+		while (mit_mult_array) {
+		    parsepfx[0] = '\0';
+		    if (isdigit(mit_mult_array[strlen(mit_mult_array)-1])) {
+			sprintf(parsepfx, "%sAA", mit_mult_array);
+		    }
+		    else {
+			sprintf(parsepfx, "%s0AA", mit_mult_array);
+		    }
+		    pfxnummulti[mit_fg].countrynr = getctydata(parsepfx);
+		    for(pfxnum=0; pfxnum<10; pfxnum++) {
+			pfxnummulti[mit_fg].qsos[pfxnum] = 0;
+		    }
+		    mit_mult_array = strtok(NULL, ",");
+		    mit_fg++;
+		}
+	    }
+	    pfxnummultinr = mit_fg;
+	    setcontest();
 	    break;
 	}
 

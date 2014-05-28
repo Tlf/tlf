@@ -149,6 +149,9 @@ int vk_cty;
 int zs_cty;
 int ua9_cty;
 
+t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+int pfxnummultinr = 0;
+
 char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
 char exchange_list[40] = "";

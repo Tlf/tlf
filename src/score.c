@@ -412,7 +412,7 @@ int score()
 	    points *= 2;
 	}
     }
-syslog(LOG_DEBUG, "%d", bandweight_points[bandinx]);
+
     points *= bandweight_points[bandinx];
 
     return points;

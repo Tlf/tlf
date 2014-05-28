@@ -21,6 +21,7 @@
 #include "getctydata.h"
 #include <string.h>
 
+#include <syslog.h>
 int waedc_pa(void)
 {
 
