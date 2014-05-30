@@ -444,7 +444,7 @@ int addcall2(void)
     if (continentlist_only == 1) {
       int ci = 0;
       int cont_in_list = 0;
-      while(continent_multiplier_list[ci] != NULL) {
+      while(strlen(continent_multiplier_list[ci]) != 0) {
 	  if(strcmp(continent, continent_multiplier_list[ci]) == 0) {
 	      cont_in_list = 1;
 	  }
