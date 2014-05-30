@@ -26,7 +26,6 @@
 #include "get_time.h"
 #include "log_recv_qtc_to_disk.h"
 #include "qtcutil.h"
-#include <syslog.h>
 
 extern int trx_control;
 extern float freq;

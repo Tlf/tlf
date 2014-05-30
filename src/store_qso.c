@@ -25,7 +25,6 @@
 #include "store_qso.h"
 
 #include "log_sent_qtc_to_disk.h"
-#include <syslog.h>
 
 int store_qso(char *loglineptr)
 {

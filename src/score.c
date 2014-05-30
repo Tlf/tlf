@@ -32,8 +32,6 @@
 #include "focm.h"
 #include <math.h>
 
-#include <syslog.h>
-
 int calc_continent(int zone);
 
 /* LZ3NY - check if call is in COUNTRY_LIST from logcfg.dat */

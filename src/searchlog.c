@@ -32,8 +32,6 @@
 #include "qtcutil.h"
 #include "getctydata.h"
 
-#include <syslog.h>
-
 PANEL *search_panel;
 WINDOW *search_win;
 static int initialized = 0;

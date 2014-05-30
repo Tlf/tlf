@@ -30,7 +30,6 @@
 #include "tlf.h"
 #include "globalvars.h"
 #include <glib.h>
-#include <syslog.h>
 
 int readcalls(void)
 {

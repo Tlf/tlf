@@ -28,8 +28,6 @@
 #include "qtcutil.h"
 #include <glib.h>
 
-#include <syslog.h>
-
 int readqtccalls()
 {
     int s = 0;

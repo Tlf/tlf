@@ -588,7 +588,7 @@ int main(int argc, char *argv[])
 	    exit(1);
 	}
 
-	if (waedc_flg == 1) {
+	if (qtcdirection > 0) {
 	    qtc_rec_store = g_hash_table_new(g_str_hash, g_str_equal);
 	    if (checkqtclogfile_new() != 0) {
 		showmsg( "QTC's giving up" );

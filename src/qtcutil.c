@@ -25,7 +25,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <syslog.h>
 #define NBANDS 10
 
 typedef unsigned char t_qtc_rec_bands[NBANDS];
