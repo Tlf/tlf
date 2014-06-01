@@ -55,9 +55,9 @@ void clusterinfo(char *timestr)
     extern float node_frequencies[MAXNODES];
     extern char thisnode;
     extern int time_master;
-    extern int nroflines;
     extern struct tm *time_ptr;
 
+    int nroflines;
     int f, j, k;
     char inputbuffer[160] = "";
     char time_buf[40] = "";

@@ -18,11 +18,8 @@ z.Zt. als verkettete Liste realisiert.
 
 Enthält call, exchange, band mask and country für alle gearbeiteten Stationen
 
-- z.Zt. mittels folgender Teilfelder realisiert:
-  * callarray  - Das Call
-  * call_band  - Bitfeld mit gearbeiteten Bändern
-  * call_exchange - letzter Exchange 
-  * call_country  - bisher nicht genutzt
+- mittels struct worked realisiert
+  (see 'struct worked_t' in tlf.h)
 
 - Feld mit Größe MAX_CALLS
 - verwendet für recall_exchange und Suche nach partials, loadbandmap
@@ -38,8 +35,10 @@ Enthält call, exchange, band mask and country für alle gearbeiteten Stationen
 
 - Wird nur für WPX contest benutzt
 
-- genutzt von add_pfx 
-- readcalls liest LOG von disk komplett ein und baut Statistiken auf.
+- Nutzung:
+  . remember each new pfx
+  . check if new pfx
+  . ask for number of prefixes for scoring
 
 - Feld mit Grösse MAX_CALLS
 - Insert bei add_pfx und readcalls

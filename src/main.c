@@ -326,7 +326,6 @@ int minute_timer = 0;
 int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;			/* nr of next QSO */
 int ymax, xmax;			/* screen size */
-int nroflines;
 
 pid_t pid;
 struct tm *time_ptr;

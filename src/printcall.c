@@ -57,7 +57,7 @@ void printcall(void)
 
 /** highlight the first n characters of the call input field
  *
- * \parm n number of characters to highlight
+ * \param n number of characters to highlight
  */
 void highlightCall(unsigned int n) {
     attr_t attrib = A_NORMAL; 	/* use NORMAL here as normal display
