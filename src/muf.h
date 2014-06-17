@@ -16,13 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- #include <curses.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <math.h>
-#include "sunup.h"
-
-#define RADIAN		(180.0 / M_PI)
+#ifndef MUF_H
+#define MUF_H
 
 int muf(void);
 
+#endif /* end of include guard: MUF_H */

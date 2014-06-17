@@ -364,8 +364,6 @@ int m = 1;
 char hiscountry[40];
 
 double range, bearing;
-double sunrise;
-double sundown;
 
 int this_second;
 int stop_backgrnd_process = 1;	/* dont start until we know what we are doing */

@@ -17,20 +17,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "sunup.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <curses.h>
+#include "get_time.h"
+#include <math.h>
+
+#define RADIAN  (180.0 / M_PI)
 
 /** Compute sun up and down at given lattitude 
- * \parm lat - Lattitude */
+ *
+ * \param lat - Lattitude 
+ * \param sunrise - local sunrise in hours
+ * \param sundown - local sundown in hours
+ */
 
-int sunup(double DEST_Lat)
+void sunup(double DEST_Lat, double *sunrise, double *sundown)
 {
 
     extern struct tm *time_ptr;
-    extern double sunrise;
-    extern double sundown;
 
     double lat;
     double sun_lat;
@@ -56,8 +58,6 @@ int sunup(double DEST_Lat)
 	(24.0 / 180.0) * RADIAN *
 	acos(-tan(lat) * tan(sun_lat / RADIAN));
 
-    sunrise = 12.0 - sunshine / 2;
-    sundown = 12.0 + sunshine / 2;
-
-    return (0);
+    *sunrise = 12.0 - sunshine / 2;
+    *sundown = 12.0 + sunshine / 2;
 }
