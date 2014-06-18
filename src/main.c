@@ -354,16 +354,14 @@ char terminal4[88] = "";
 char termbuf[88] = "";
 int termbufcount = 0;
 
-char C_QTH_Lat[7] = "51";
-char C_QTH_Long[8] = "-5";
-char C_DEST_Lat[7] = "51";
-char C_DEST_Long[8] = "1";
+double QTH_Lat = 51.;
+double QTH_Long = -7.;
+double DEST_Lat = 51.;
+double DEST_Long = 1.;
 
 double r = 50;
 int m = 1;
 char hiscountry[40];
-
-double range, bearing;
 
 int this_second;
 int stop_backgrnd_process = 1;	/* dont start until we know what we are doing */
@@ -810,8 +808,6 @@ int main(int argc, char *argv[])
     scroll_log();		/* read the last 5  log lines and set the qso number */
 
     nr_qsos = readcalls();	/* read the logfile for score and dupe */
-
-    qrb_();
 
     clear_display();		/* tidy up the display */
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);

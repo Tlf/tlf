@@ -146,10 +146,10 @@ static void e_layer()
 
 int muf(void)
 {
-    extern char C_QTH_Lat[];
-    extern char C_QTH_Long[];
-    extern char C_DEST_Lat[];
-    extern char C_DEST_Long[];
+    extern double QTH_Lat;
+    extern double QTH_Long;
+    extern double DEST_Lat;
+    extern double DEST_Long;
     double sunrise;
     double sundown;
 
@@ -181,10 +181,10 @@ int muf(void)
     correct = 0;
     n = 0.0;
 
-    xt = atof(C_QTH_Lat);
-    yt = atof(C_QTH_Long);
-    xr = atof(C_DEST_Lat);
-    yr = atof(C_DEST_Long);
+    xt = QTH_Lat;
+    yt = QTH_Long;
+    xr = DEST_Lat;
+    yr = DEST_Long;
 
     get_time();
 //strftime(time_buf, 60, "    %d-%b-%Y %H:%M ",  time_ptr);     ### bug fix
