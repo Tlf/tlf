@@ -85,6 +85,7 @@ int focm = 0;
 int universal = 0;
 int addcallarea;
 int pfxmult = 0;
+int pfxmultab = 0;
 int exc_cont = 0;
 int manise80;
 int other_flg;

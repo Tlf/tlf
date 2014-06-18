@@ -86,8 +86,14 @@ int readcalls(void)
     for (n = 0; n < NBANDS; n++)	//F6CFE
 	multscore[n] = 0;
 
-    init_mults();
+    for(n = 0; n < NBANDS; n++) {
+	pfxs_per_band[n] = 0;
+    }
+    nr_of_px = 0;
+    nr_of_px_ab = 0;    
 
+    init_mults();
+   
     if ((fp = fopen(logfile, "r")) == NULL) {
 	mvprintw(5, 0, "Error opening logfile.\n");
 	refreshp();
@@ -308,6 +314,11 @@ int readcalls(void)
 
 	    hiscall[0] = '\0';
 	}*/
+
+	if (pfxmultab == 1) {
+	    getpx(presentcall);
+	    add_pfx(pxstr);
+	}
 
 	if (pfxnummultinr > 0) {
 	    getpx(presentcall);

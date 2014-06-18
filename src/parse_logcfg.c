@@ -58,7 +58,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 169	/* commands in list */
+#define  MAX_COMMANDS 170	/* commands in list */
 
 
 int read_logcfg(void)
@@ -281,6 +281,7 @@ int parse_logcfg(char *inputbuffer)
     extern int bandweight_multis[NBANDS];
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
+    extern int pfxmultab;
     
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -452,7 +453,8 @@ int parse_logcfg(char *inputbuffer)
 	"USE_COUNTINENTLIST_ONLY",  /* 165 */
 	"BANDWEIGHT_POINTS",
 	"BANDWEIGHT_MULTIS",
-	"PFX_NUM_MULTIS"
+	"PFX_NUM_MULTIS",
+	"PFX_MULT_ALLB"
     };
 
     char **fields;
@@ -1512,16 +1514,16 @@ int parse_logcfg(char *inputbuffer)
 		g_strchomp(bwp_params_list);
 	    }
 
-	    mit_mult_array = strtok(bwp_params_list, ";:");
+	    mit_mult_array = strtok(bwp_params_list, ";:,");
 	    if (mit_mult_array != NULL) {
 		while (mit_mult_array) {
 		  
 		    bandindex = getidxbybandstr(g_strchomp(mit_mult_array));
-		    mit_mult_array = strtok(NULL, ";:");
+		    mit_mult_array = strtok(NULL, ";:,");
 		    if (mit_mult_array != NULL && bandindex >= 0) {
 			bandweight_points[bandindex] = atoi(mit_mult_array);
 		    }
-		    mit_mult_array = strtok(NULL, ";:");
+		    mit_mult_array = strtok(NULL, ";:,");
 		}
 	    }
 	    break;
@@ -1537,16 +1539,16 @@ int parse_logcfg(char *inputbuffer)
 		g_strchomp(bwm_params_list);
 	    }
 
-	    mit_mult_array = strtok(bwm_params_list, ";:");
+	    mit_mult_array = strtok(bwm_params_list, ";:,");
 	    if (mit_mult_array != NULL) {
 		while (mit_mult_array) {
 		  
 		    bandindex = getidxbybandstr(g_strchomp(mit_mult_array));
-		    mit_mult_array = strtok(NULL, ";:");
+		    mit_mult_array = strtok(NULL, ";:,");
 		    if (mit_mult_array != NULL && bandindex >= 0) {
 			bandweight_multis[bandindex] = atoi(mit_mult_array);
 		    }
-		    mit_mult_array = strtok(NULL, ";:");
+		    mit_mult_array = strtok(NULL, ";:,");
 		}
 	    }
 	    break;
@@ -1593,6 +1595,10 @@ int parse_logcfg(char *inputbuffer)
 	    setcontest();
 	    break;
 	}
+    case 169:{		// wpx style prefixes mult
+		pfxmultab = 1;	// enable pfx on all band
+		break;
+	    }
 
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
