@@ -48,7 +48,6 @@ int addcall(void)
     extern int countrynr;
     extern int arrldx_usa;
     extern int pacc_pa_flg;
-    extern int waedc_flg;
     extern int universal;
     extern int country_mult;
     extern int w_cty;
@@ -63,7 +62,6 @@ int addcall(void)
     extern int continentlist_only;
     extern char continent_multiplier_list[7][3];
     extern char continent[];
-    extern int pfxmultab;
     
     static int found = 0;
     static int i, j, z = 0;
@@ -651,6 +649,9 @@ int addcall2(void)
 		    lancopy[p] = '\0';
 		    break;
 		}
+	    }
+	    if (pfxmultab == 1) {
+		bandinx = get_band(lan_logline);
 	    }
 
 	    add_pfx(lancopy);
