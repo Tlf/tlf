@@ -63,7 +63,8 @@ int addcall(void)
     extern int continentlist_only;
     extern char continent_multiplier_list[7][3];
     extern char continent[];
-
+    extern int pfxmultab;
+    
     static int found = 0;
     static int i, j, z = 0;
     static int add_ok;
@@ -359,6 +360,8 @@ int addcall2(void)
     extern int continentlist_only;
     extern char continent_multiplier_list[7][3];
     extern char continent[];
+    extern int pfxmult;
+    extern int pfxmultab;
     
     int found = 0;
     int i, j, p, z = 0;
@@ -633,7 +636,7 @@ int addcall2(void)
 
 	}
     }
-    if (wpx == 1) {
+    if (wpx == 1 || pfxmultab == 1) {
 
 	if (lan_logline[68] != ' ') {
 
