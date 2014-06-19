@@ -247,9 +247,8 @@ int commentfield = 0;		/* 1 if we are in comment/excahnge input */
 
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
-int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
+int nr_of_spots;			/* Anzahl Lines in spot_ptr array */
 char lastwwv[120] = "";
-int ptr;				/* Anzahl Lines in ispot_ptr array */
 int packetinterface = 0;
 int fdSertnc = 0;
 int fdFIFO = 0;

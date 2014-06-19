@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2011i,2013     Thomas Beierlein <tb@forth-ev.de>
+ *               2011-2014      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,16 +23,28 @@
 	 *          clusterinfo +  time update
 	 *--------------------------------------------------------------*/
 
+#include "tlf.h"
 #include "clusterinfo.h"
 #include "dxcc.h"
 #include "bandmap.h"
+#include "get_time.h"
+#include "getctydata.h"
+#include "printcall.h"
+#include "nicebox.h"
+#include "freq_display.h"
+#include "lancode.h"
+#include "searchcallarray.h"
+
 #include <glib.h>
 #include <pthread.h>
+
+#define MAXMINUTES 30
 
 extern int bandinx;
 extern pthread_mutex_t spot_ptr_mutex;
 
 char *bandmap[MAX_SPOTS];
+int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
 
 int loadbandmap(void);
 int getclusterinfo(void);
@@ -49,7 +61,6 @@ void clusterinfo(char *timestr)
     extern int trx_control;
     extern int showfreq;
     extern int showscore_flag;
-    extern int spotarray[MAX_SPOTS];
     extern char spot_ptr[MAX_SPOTS][82];
     extern int lan_active;
     extern float node_frequencies[MAXNODES];
@@ -131,6 +142,7 @@ void clusterinfo(char *timestr)
 	nroflines = loadbandmap();
 
     }
+
     if (cluster == FREQWINDOW) {
 	for (f = 0; f < 8; f++)
 	    mvprintw(15 + f, 4, "                           ");
@@ -152,14 +164,12 @@ void clusterinfo(char *timestr)
 
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
-	inputbuffer[0] = '\0';
-	strncat(inputbuffer, backgrnd_str, 78);
+	g_strlcpy(inputbuffer, backgrnd_str, 79);
 
 	for (j = 15; j <= 22; j++) {
 	    mvprintw(j, 1, "%s", inputbuffer);
 	}
 
-	inputbuffer[0] = '\0';
 
 	/** \todo minimize lock time */
 	pthread_mutex_lock (&spot_ptr_mutex);
@@ -178,20 +188,14 @@ void clusterinfo(char *timestr)
 	if (k < 0)
 	    k = -1;
 
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-
-	inputbuffer[0] = '\0';
-	strncat(inputbuffer, backgrnd_str, 78);
-
-	for (j = 15; j <= 22; j++) {
-	    mvprintw(j, 1, "%s", inputbuffer);
-	}
 
 	for (j = 15; j <= 22; j++) {
 
 	    if (k < (MAX_SPOTS - 2) && spotarray[++k] > -1) {
 		if (k > MAX_SPOTS - 1)
 		    k = MAX_SPOTS - 1;
+
+		inputbuffer[0] = '\0';
 
 		if (spotarray[k] >= 0 && spotarray[k] < MAX_SPOTS)
 		    strcpy(inputbuffer, spot_ptr[spotarray[k]]);
@@ -202,18 +206,12 @@ void clusterinfo(char *timestr)
 		if (strlen(inputbuffer) > 14) {
 		    strncat(inputbuffer, backgrnd_str, 65);
 		    inputbuffer[78] = '\0';
-		    mvprintw(j, 1, "%s", inputbuffer);
 		} else {
-		    inputbuffer[0] = '\0';
-		    strncat(inputbuffer, backgrnd_str, 79);
-		    inputbuffer[78] = '\0';
-		    mvprintw(j, 1, "%s", inputbuffer);
+		    g_strlcpy(inputbuffer, backgrnd_str, 79);
 		}
 
-		inputbuffer[0] = '\0';
-
+		mvprintw(j, 1, "%s", inputbuffer);
 	    }
-
 	}
 
 	pthread_mutex_unlock (&spot_ptr_mutex);
@@ -221,9 +219,7 @@ void clusterinfo(char *timestr)
 	nicebox(14, 0, 8, 78, "Cluster");
 	refreshp();
     }
-
     printcall();
-
 }
 
 
@@ -242,10 +238,11 @@ int loadbandmap(void)
     extern char markerfile[];
     extern char lastmsg[];
     extern char spot_ptr[MAX_SPOTS][82];
-    extern int ptr;
+    extern int nr_of_spots;
 
 
-    int i = 0, j, jj, k, m, x, y;
+    int i = 0, j, jj, m, x, y;
+    unsigned int k;
     int spotminutes = 0;
     int sysminutes = 0;
     int timediff = 0;
@@ -292,13 +289,12 @@ int loadbandmap(void)
 
     pthread_mutex_lock (&spot_ptr_mutex);
 
-    for (j = 0; j < ptr; j++) {
+    for (j = 0; j < nr_of_spots; j++) {
 
 	strncpy ( thisline, spot_ptr[j], 82);
 	if (strncmp(thisline, "DX de ", 6) == 0) {
 
-	    strncpy(spotcall, thisline + 26, 5);
-	    spotcall[5] = '\0';
+	    g_strlcpy(spotcall, thisline + 26, 6);
 
 	    strncpy(spottime, thisline + 70, 4);	// how old?
 	    spottime[4] = spottime[3];
@@ -315,9 +311,8 @@ int loadbandmap(void)
 
 		/* look for duplicates already in bandmap
 		 * => kill older one and keep younger entry */
-		for (k = 0; k <= i - 1; k++) {
-		    callcopy[0] = '\0';
-		    strncat(callcopy, bandmap[k] + 26, 5);
+		for (k = 0; k < i; k++) {
+		    g_strlcpy(callcopy, bandmap[k] + 26, 6);
 
 		    if (strncmp(callcopy, spotcall, 4) == 0) {
 			bandmap[k][0] = 'd';
@@ -353,10 +348,8 @@ int loadbandmap(void)
     for (j = linepos; j < linepos + 8; j++) {
 
 	if (bandmap[j] != NULL) {
-	    strncpy(spotline, bandmap[j] + 17, 22);	// freq and call
-	    spotline[22] = '\0';
-	    strncpy(spottime, bandmap[j] + 70, 5);	// time
-	    spottime[5] = '\0';
+	    g_strlcpy(spotline, bandmap[j] + 17, 23);	// freq and call
+	    g_strlcpy(spottime, bandmap[j] + 70, 6);	// time
 	    strcat(spotline, spottime);
 
 	    strncpy(callcopy, bandmap[j] + 26, 16);	// call
@@ -447,9 +440,10 @@ int loadbandmap(void)
 		    if (*color != '\0') {
 			sprintf(marker_out, "%4d   %4d   \"%s\"   color=%s\n",
 			    lat, lon, callcopy, color);
+
+			fputs(marker_out, fp);
 		    }
 
-		    fputs(marker_out, fp);
 
 		    fclose(fp);
 		}
@@ -461,8 +455,7 @@ int loadbandmap(void)
     /* append last dx cluster message to markerfile; will be shown at bottom */
     if (xplanet == 1 && nofile == 0) {
 
-	xplanetmsg[0] = '\0';
-	strcat(xplanetmsg, " -82 -120 ");
+	strcpy(xplanetmsg, " -82 -120 ");
 	strcat(xplanetmsg, "\"");
 	strcat(xplanetmsg, lastmsg);
 
@@ -488,7 +481,6 @@ int loadbandmap(void)
     refreshp();
 
     return (i);
-    //--------------------------- the end  ------------------
 }
 
 
@@ -497,8 +489,7 @@ int getclusterinfo(void)
 {
 
     extern char spot_ptr[MAX_SPOTS][82];
-    extern int ptr;
-    extern int spotarray[];
+    extern int nr_of_spots;
     extern int announcefilter;
     extern int cluster;
     extern char call[];
@@ -552,7 +543,7 @@ int getclusterinfo(void)
 	} else
 	    i++;
 
-	if (i > (ptr - 1))
+	if (i > (nr_of_spots - 1))
 	    break;
 
     }
