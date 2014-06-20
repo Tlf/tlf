@@ -31,7 +31,6 @@
 #include "getctydata.h"
 #include "printcall.h"
 #include "nicebox.h"
-#include "freq_display.h"
 #include "lancode.h"
 #include "searchcallarray.h"
 
@@ -49,82 +48,22 @@ int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
 int loadbandmap(void);
 int getclusterinfo(void);
 
-void clusterinfo(char *timestr)
+void clusterinfo(void)
 {
     extern int use_rxvt;
     extern int cluster;
     extern char backgrnd_str[];
     extern float freq;
-    extern float mem;
     extern char band[9][4];
     extern int bandinx;
     extern int trx_control;
-    extern int showfreq;
-    extern int showscore_flag;
     extern char spot_ptr[MAX_SPOTS][82];
-    extern int lan_active;
     extern float node_frequencies[MAXNODES];
     extern char thisnode;
-    extern int time_master;
-    extern struct tm *time_ptr;
 
     int nroflines;
     int f, j, k;
     char inputbuffer[160] = "";
-    char time_buf[40] = "";
-    static int frcounter;
-    static int daysecs = 0;
-
-    /* show band, date and time */
-    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-    strncpy(time_buf, timestr, 8);
-    mvaddstr(12, 0, band[bandinx]);
-    mvprintw(12, 17, time_buf);
-
-    if (daysecs > 60) {		// update the date 1x per minute
-	daysecs = 0;
-	get_time();
-	strftime(time_buf, 60, "%d-%b-%y", time_ptr);
-	mvprintw(12, 7, time_buf);
-    } else {
-	daysecs++;
-    }
-
-    /* show frequency and frequency memory if rig control is active */
-    if (trx_control == 1) {
-
-	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(C_LOG) | A_BOLD);
-	else
-	    attron(COLOR_PAIR(C_LOG));
-
-	if ((showfreq == 0) || (showscore_flag == 1))
-	    mvprintw(13, 68, "TRX: %7.1f", freq);
-
-	if (mem > 0.0)
-	    mvprintw(14, 68, "MEM: %7.1f", mem);
-	else
-	    mvprintw(14, 68, "            ");
-
-	if ((showfreq == 1) && (showscore_flag == 0)) {
-
-	    freq_display();
-	}
-    }
-
-    refreshp();
-
-    frcounter++;
-
-    /* broadcast frequency via LAN, act as time master if allowed */
-    if (frcounter >= 60) {	// every 60 seconds
-	frcounter = 0;
-	if (lan_active != 0) {
-	    send_freq(freq);
-	    if (time_master == 1)
-		send_time();
-	}
-    }
 
 
     /* cluster and bandmap display */
@@ -198,19 +137,14 @@ void clusterinfo(char *timestr)
 		inputbuffer[0] = '\0';
 
 		if (spotarray[k] >= 0 && spotarray[k] < MAX_SPOTS)
-		    strcpy(inputbuffer, spot_ptr[spotarray[k]]);
+		    g_strlcpy(inputbuffer, spot_ptr[spotarray[k]], 79);
 		else {
 		    mvprintw(24, 0, "error in packet table");
 		}
 
 		if (strlen(inputbuffer) > 14) {
-		    strncat(inputbuffer, backgrnd_str, 65);
-		    inputbuffer[78] = '\0';
-		} else {
-		    g_strlcpy(inputbuffer, backgrnd_str, 79);
+		    mvprintw(j, 1, "%s", inputbuffer);
 		}
-
-		mvprintw(j, 1, "%s", inputbuffer);
 	    }
 	}
 

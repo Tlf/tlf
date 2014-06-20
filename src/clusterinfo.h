@@ -21,6 +21,6 @@
 #ifndef CLUSTERINFO_H
 #define CLUSTERINFO_H
 
-void  clusterinfo(char *timestr);
+void  clusterinfo(void);
 
 #endif /* end of include guard: CLUSTERINFO_H */
