@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  * 		 2010 - 2013 Thomas Beierlein <tb@forth-ev.de>
+ *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,6 +135,7 @@ int get_nr_of_mults()
     extern int sprint;
     extern int multlist;
     extern int multscore[];
+    extern int bandweight_multis[NBANDS];
 
     int n;
     int totalzones;
@@ -146,9 +148,9 @@ int get_nr_of_mults()
     totalmults = 0;
 
     for (n = 0; n < 6; n++) {
-	totalzones += zonescore[n];
-	totalcountries += countryscore[n];
-	totalmults += multscore[bi_normal[n]];
+	totalzones += (zonescore[n] * bandweight_multis[bi_normal[n]]);
+	totalcountries += (countryscore[n] * bandweight_multis[bi_normal[n]]);
+	totalmults += (multscore[bi_normal[n]] * bandweight_multis[bi_normal[n]]);
     }
 
     if (sprint == 1) {

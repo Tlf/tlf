@@ -1263,7 +1263,7 @@ Multiply points x2 for portable stations (e.g. R1 field day).
 .TP
 .B LOWBAND_DOUBLE
 Double all points for lowband (40, 80, and 160m) QSOs (can be combined with
-any other value).
+any other value). (Will be deprecated in future! Use BANDWEIGHT_POINTS instead.)
 .
 .TP
 .B WYSIWYG_MULTIBAND
@@ -1364,6 +1364,31 @@ Start @PACKAGE_NAME@ in SSB mode.
 For the \(lqStewperry\(rq contest, this option is used to set the QRA,
 e.g.: JN97, or the full form: JN97OM.  In Stewperry, the points are
 calculated based on the distance between the stations.
+.
+.TP
+.B BANDWEIGHT_POINTS
+Allow a point weighting factor for different bands. E.g. 
+.br
+BANDWEIGHT_POINTS=160:3,80:2,40:1,20:1,15:1,10:2 
+.br
+can be used for AADX contest. It will multiply all QSO points by 3 on 160m,
+by 2 on 80m and 10m and on all other bands only by 1. 
+.
+.IP
+Bands not in list are weighted by 1.
+.
+.TP
+.B BANDWEIGHT_MULTIS
+Allow a weigthing factor for multipliers on different bands. E.g.
+.br
+BANDWEIGHT_MULTIS=80:4,40:3,20:2,15:2,10:2
+.br 
+can be used for WAEDC contest. It will multiply the number of multipliers on 
+80 by 4, on 40 by 3 and on 20/15/10 by 2.
+.IP
+The multiply operation is executed after any other multiplier modification.
+.IP
+Bands not in list will be weighted by 1.
 .
 .SH FILES
 .

@@ -32,7 +32,6 @@
 #include "focm.h"
 #include <math.h>
 
-
 int calc_continent(int zone);
 
 /* check if hiscall is in COUNTRY_LIST from logcfg.dat */
@@ -99,9 +98,12 @@ int exist_in_country_list()
 int apply_bandweigth(int points) {
     extern int lowband_point_mult;
     extern int bandinx;
+    extern int bandweight_points[];
 
     if (lowband_point_mult != 0 && (bandinx < BANDINDEX_30))
 	points *= 2;
+
+    points *= bandweight_points[bandinx];
 
     return points;
 }
@@ -396,7 +398,6 @@ int score()
 
     /* start of the universal scoring code */
     return scoreDefault();
-
 }
 
 

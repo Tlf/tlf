@@ -54,7 +54,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 163	/* commands in list */
+#define  MAX_COMMANDS 168	/* commands in list */
 
 
 int read_logcfg(void)
@@ -115,6 +115,21 @@ int read_logcfg(void)
     fclose(fp);
 
     return( status );
+}
+
+/** convert band string into index number (0..NBANDS-1) */
+int getidxbybandstr(char *confband) {
+    static char bands_strings[NBANDS][4] = {"160", "80", "40", "30", "20", "17", "15", "12", "10"};
+    int i;
+
+    g_strchomp(confband);
+
+    for(i=0; i<NBANDS; i++) {
+	if (strcmp(confband, g_strchomp(bands_strings[i])) == 0) {
+	    return i;
+	}
+    }
+    return -1;
 }
 
 
@@ -255,6 +270,8 @@ int parse_logcfg(char *inputbuffer)
     extern int logfrequency;
     extern int ignoredupe;
     extern char myqra[7];
+    extern int bandweight_points[NBANDS];
+    extern int bandweight_multis[NBANDS];
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -420,7 +437,12 @@ int parse_logcfg(char *inputbuffer)
 	"MYQRA",
 	"POWERMULT",		/* 160 */
 	"SERIAL_OR_SECTION",
-	"S&P_CALL_MSG"
+	"S&P_CALL_MSG",
+	"_DUMMY_", // "CONTINENTLIST",
+	"_DUMMY_", //"CONTINENT_LIST_POINTS",
+	"_DUMMY_", // "USE_COUNTINENTLIST_ONLY",  /* 165 */
+	"BANDWEIGHT_POINTS",
+	"BANDWEIGHT_MULTIS"
     };
 
     char **fields;
@@ -1383,6 +1405,57 @@ int parse_logcfg(char *inputbuffer)
 	    strcpy(message[SP_CALL_MSG], fields[1]);
 	    break;	/* end messages */
 	}
+
+    case 166:{		// BANDWEIGHT_POINTS
+	    PARAMETER_NEEDED(teststring);
+	    static char bwp_params_list[50] = "";
+	    int bandindex = -1;
+
+	    if (strlen(bwp_params_list) == 0) {
+		g_strlcpy(bwp_params_list, fields[1], sizeof(bwp_params_list));
+		g_strchomp(bwp_params_list);
+	    }
+
+	    tk_ptr = strtok(bwp_params_list, ";:,");
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+
+		    bandindex = getidxbybandstr(g_strchomp(tk_ptr));
+		    tk_ptr = strtok(NULL, ";:,");
+		    if (tk_ptr != NULL && bandindex >= 0) {
+			bandweight_points[bandindex] = atoi(tk_ptr);
+		    }
+		    tk_ptr = strtok(NULL, ";:,");
+		}
+	    }
+	    break;
+	}
+
+    case 167:{		// BANDWEIGHT_MULTIS
+	    PARAMETER_NEEDED(teststring);
+	    static char bwm_params_list[50] = "";
+	    int bandindex = -1;
+
+	    if (strlen(bwm_params_list) == 0) {
+		g_strlcpy(bwm_params_list, fields[1], sizeof(bwm_params_list));
+		g_strchomp(bwm_params_list);
+	    }
+
+	    tk_ptr = strtok(bwm_params_list, ";:,");
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+
+		    bandindex = getidxbybandstr(g_strchomp(tk_ptr));
+		    tk_ptr = strtok(NULL, ";:,");
+		    if (tk_ptr != NULL && bandindex >= 0) {
+			bandweight_multis[bandindex] = atoi(tk_ptr);
+		    }
+		    tk_ptr = strtok(NULL, ";:,");
+		}
+	    }
+	    break;
+	}
+
 
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
