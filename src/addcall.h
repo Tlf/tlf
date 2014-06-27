@@ -27,7 +27,6 @@
 #include "getpx.h"
 #include "tlf.h"
 #include "paccdx.h"
-#include "waedc.h"
 #include "addmult.h"
 #include "lancode.h"
 #include "tlf.h"

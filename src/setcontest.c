@@ -40,7 +40,6 @@ int setcontest(void)
     extern int arrlss;
     extern int multlist;
     extern int pacc_pa_flg;
-    extern int waedc_flg;
     extern int stewperry_flg;
     extern int universal;
     extern int other_flg;
@@ -193,23 +192,6 @@ int setcontest(void)
 	zs_cty = getctydata(zscall);
 	ua9_cty = getctydata(ua9call);
     }
-
-    /*if (strcmp(whichcontest, "waedc") == 0) {
-	waedc_flg = 1;
-	one_point = 1;
-	contest = 1;
-	showscore_flag = 1;
-	searchflg = 1;
-
-	ve_cty = getctydata(vecall);
-	w_cty = getctydata(wcall);
-	zl_cty = getctydata(zlcall);
-	ja_cty = getctydata(jacall);
-	py_cty = getctydata(pycall);
-	vk_cty = getctydata(vkcall);
-	zs_cty = getctydata(zscall);
-	ua9_cty = getctydata(ua9call);
-    }*/
     
     if (strcmp(whichcontest, "stewperry") == 0) {
 	stewperry_flg = 1;

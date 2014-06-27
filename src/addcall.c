@@ -341,7 +341,6 @@ int addcall2(void)
     extern int countryscore[];
     extern int zonescore[];
     extern int pacc_pa_flg;
-    extern int waedc_flg;
     extern int universal;
     extern int country_mult;
     extern char lan_logline[];

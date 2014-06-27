@@ -186,9 +186,6 @@ int get_nr_of_mults()
 
 	return totalmults ;
     }
-    /*else if (waedc_flg == 1) {
-	return totalcountries;
-    }*/
     else if (pacc_pa_flg == 1) {
 
 	return totalcountries;
@@ -245,7 +242,6 @@ int showscore(void)
     extern int arrl_fd;
     extern int arrlss;
     extern int pacc_pa_flg;
-    extern int waedc_flg;
     extern int universal;
     extern int country_mult;
     extern int wysiwyg_once;
@@ -376,7 +372,7 @@ int showscore(void)
 	attron(COLOR_PAIR(C_HEADER));
 	mvprintw(6, 55, "                   ");
 
-	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1) || (wysiwyg_once == 1) || (universal == 1) || (waedc_flg == 1)) {	/* cqww or wpx */
+	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1) || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
 
 	    totalmults = get_nr_of_mults();
 	    totalmults = totalmults ? totalmults : 1;	/* at least one */

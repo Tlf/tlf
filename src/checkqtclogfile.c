@@ -30,9 +30,6 @@
 
 int checkqtclogfile_new()
 {
-    int lineno;
-    int tooshort;
-    char buffer[160];
     FILE *fp;
 
     /* check if logfile exist and can be opened for read */
@@ -46,7 +43,7 @@ int checkqtclogfile_new()
 	if (errno == ENOENT) {
 	    /* File not found, create new one */
 	    showmsg( "QTC sent log file not found, creating new one");
-	    sleep(2);
+	    sleep(1);
 	    if ((fp = fopen(QTC_SENT_LOG, "w")) == NULL) {
 		/* cannot create logfile */
 		showmsg( "Creating QTC sent logfile not possible");
@@ -67,7 +64,7 @@ int checkqtclogfile_new()
 	if (errno == ENOENT) {
 	    /* File not found, create new one */
 	    showmsg( "QTC recv log file not found, creating new one");
-	    sleep(2);
+	    sleep(1);
 	    if ((fp = fopen(QTC_RECV_LOG, "w")) == NULL) {
 		/* cannot create logfile */
 		showmsg( "Creating QTC recv logfile not possible");

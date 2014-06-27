@@ -101,10 +101,8 @@ void searchlog(char *searchstring)
     extern int partials;
     extern int cqww;
     extern int pacc_pa_flg;
-    extern int waedc_flg;
     extern int qtcdirection;
     extern int pacc_qsos[10][10];
-    extern int waedc_qsos[10][10];
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int countrynr;
@@ -497,7 +495,7 @@ void searchlog(char *searchstring)
 	    }
 	}
 
-	if (cqww == 1 || contest == 0 || pacc_pa_flg == 1 || waedc_flg == 1) {
+	if (cqww == 1 || contest == 0 || pacc_pa_flg == 1) {
 
 	  if ((countries[countrynr] & BAND10) != 0) {
 		mvwprintw(search_win, 1, 36, "C");
@@ -594,40 +592,6 @@ void searchlog(char *searchstring)
 		if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
 		    mvwprintw(search_win, 1, 37, "M");
 
-	    }
-	}
-	if (waedc_flg == 1) {
-
-	    getpx(hiscall);
-
-	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
-	    if ((countrynr == w_cty) ||
-		    (countrynr == ve_cty) ||
-		    (countrynr == ja_cty ) ||
-		    (countrynr == py_cty ) ||
-		    (countrynr == ua9_cty ) ||
-		    (countrynr == zl_cty ) ||
-		    (countrynr == zs_cty ) ||
-		    (countrynr == vk_cty ))
-	    {
-	        if ((waedc_qsos[0][pxnr] & BAND160) == BAND160)
-		    mvwprintw(search_win, 6, 37, "M");
-
-		if ((waedc_qsos[0][pxnr] & BAND80) == BAND80)
-		    mvwprintw(search_win, 5, 37, "M");
-
-		if ((waedc_qsos[0][pxnr] & BAND40) == BAND40) {
-		    mvwprintw(search_win, 4, 37, "M");
-		}
-
-		if ((waedc_qsos[0][pxnr] & BAND20) == BAND20)
-		    mvwprintw(search_win, 3, 37, "M");
-
-		if ((waedc_qsos[0][pxnr] & BAND15) == BAND15)
-		    mvwprintw(search_win, 2, 37, "M");
-
-		if ((waedc_qsos[0][pxnr] & BAND10) == BAND10)
-		    mvwprintw(search_win, 1, 37, "M");
 	    }
 	}
 
