@@ -98,7 +98,7 @@ extern int bandinx;
 extern int trxmode;
 extern char thisnode;
 
-extern int call_band[];		/** \todo should not be public */
+extern struct worked_t worked[];
 
 
 /** \brief initialize bandmap
@@ -325,13 +325,13 @@ int bm_isdupe( char *call, int band ) {
     /* spot for warc bands are never dupes */
     if (IsWarcIndex(band))
 	return 0;
- 
+
     found = searchcallarray(call);
 
     if (found == -1)		/* new call */
 	return 0;
 
-    if (call_band[found] & inxes[band])
+    if (worked[found].band & inxes[band])
 	return 1;
     else
 	return 0;

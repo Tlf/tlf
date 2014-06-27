@@ -30,12 +30,9 @@ int addcall(void)
 {
 
     extern char hiscall[];
-    extern int callarray_nr;
-    extern char callarray[MAX_CALLS][20];
-    extern int call_country[MAX_CALLS];
-    extern int call_band[MAX_CALLS];
+    extern int nr_worked;
+    extern struct worked_t worked[];
     extern char comment[];
-    extern char call_exchange[MAX_CALLS][12];
     extern int cqww;
     extern int bandinx;
     extern int countries[MAX_DATALINES];
@@ -64,16 +61,16 @@ int addcall(void)
 
     if (found == -1) {
 
-	i = callarray_nr;
-	g_strlcpy(callarray[i], hiscall, 20);
-	callarray_nr++;
+	i = nr_worked;
+	g_strlcpy(worked[i].call, hiscall, 20);
+	nr_worked++;
     } else
 	i = found;
 
     j = getctydata(hiscall);
-    call_country[i] = j;
+    worked[i].country = j;
     if (strlen(comment) >= 1) {		/* remember last exchange */
-	strcpy(call_exchange[i], comment);
+	strcpy(worked[i].exchange, comment);
 
 	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 /*
@@ -105,7 +102,7 @@ int addcall(void)
 
     if (add_ok == 1) {
 
-	call_band[i] |= inxes[bandinx];		/* worked on this band */
+	worked[i].band |= inxes[bandinx];	/* worked on this band */
 
 	switch (bandinx) {
 
@@ -243,9 +240,8 @@ int addcall(void)
 int addcall2(void)
 {
 
-    extern int callarray_nr;
-    extern char callarray[MAX_CALLS][20];
-    extern int call_country[MAX_CALLS];
+    extern int nr_worked;
+    extern struct worked_t worked[];
     extern int cqww;
     extern int countries[MAX_DATALINES];
     extern int zones[];
@@ -295,9 +291,9 @@ int addcall2(void)
 
     if (found == -1) {
 
-	i = callarray_nr;
-	g_strlcpy(callarray[i], hiscall, 20);
-	callarray_nr++;
+	i = nr_worked;
+	g_strlcpy(worked[i].call, hiscall, 20);
+	nr_worked++;
     } else
 	i = found;
 
@@ -305,9 +301,9 @@ int addcall2(void)
     j = getctydata2(hiscall);
     g_strlcpy(cqzone, zonebuffer, 4);	//idem....
 
-    call_country[i] = j;
+    worked[i].country = j;
     if (strlen(comment) >= 1) {
-//              strcpy(call_exchange[i],comment);
+//              strcpy(worked[i].exchange,comment);
 
 	if ((cqww == 1) || (wazmult == 1) || (itumult == 1))
 	    z = zone_nr(comment);

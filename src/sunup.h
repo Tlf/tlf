@@ -16,10 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "get_time.h"
-#include <math.h>
+#ifndef SUNUP_H
+#define SUNUP_H
 
-#define RADIAN  (180.0 / M_PI)
+void sunup(double DEST_Lat, double *sunrise, double *sundown);
 
-int sunup (double DEST_Lat);
-
+#endif /* end of include guard: SUNUP_H */

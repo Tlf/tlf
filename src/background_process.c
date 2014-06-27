@@ -69,6 +69,7 @@ void *background_process(void *ptr)
 	    sleep(1);
 	}
 
+
 	usleep(10000);
 
 	if (packetinterface != 0) {
