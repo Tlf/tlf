@@ -18,29 +18,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 	/* ------------------------------------------------------------
-	 *      search  call array
+	 *      search array of worked stations
 	 *
 	 *--------------------------------------------------------------*/
 
 #include "searchcallarray.h"
 
-/**	\brief lookup 'hiscall' in callarray
+/**	\brief lookup 'hiscall' in array of worked stations
  *
- * 	See if 'hiscall' was already worked by looking it up in callarray
+ * 	See if 'hiscall' was already worked by looking it up in worked[]
  * 	\param hiscall 	callsign to lookup
  *      \return index in callarray where hiscall was found (-1 if not found)
  */
 int searchcallarray(char *hiscall)
 {
-    extern int callarray_nr;
-    extern char callarray[MAX_CALLS][20];
+    extern int nr_worked;
+    extern struct worked_t worked[];
 
     int found = -1;
     int i;
 
-    for (i = 0; i < callarray_nr; i++) {
+    for (i = 0; i < nr_worked; i++) {
 
-	if (strcmp(callarray[i], hiscall) == 0) {
+	if (strcmp(worked[i].call, hiscall) == 0) {
 	    found = i;
 	    break;
 	}

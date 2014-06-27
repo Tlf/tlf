@@ -55,7 +55,7 @@ void addlog(char *s)
     extern struct tln_logline *viewing;
     extern char spot_ptr[MAX_SPOTS][82];
     extern char lastmsg[];
-    extern int ptr;
+    extern int nr_of_spots;
     extern int clusterlog;
 
     int len;
@@ -66,10 +66,10 @@ void addlog(char *s)
 
     for (len = 0; len < strlen(s); len += 80) {
 
-	strncpy(spot_ptr[ptr], s + len, 82);
-	if (strlen(spot_ptr[ptr]) > 5) {
+	strncpy(spot_ptr[nr_of_spots], s + len, 82);
+	if (strlen(spot_ptr[nr_of_spots]) > 5) {
 	    lastmsg[0] = '\0';
-	    strncat(lastmsg, spot_ptr[ptr], 82);
+	    strncat(lastmsg, spot_ptr[nr_of_spots], 82);
 	}
 
 	if (clusterlog == 1) {
@@ -85,14 +85,15 @@ void addlog(char *s)
 	    }
 
 	}
-	ptr++;
+	nr_of_spots++;
 
-	if (ptr > MAX_SPOTS - 1) {
-	    for (ptr = 10; ptr <= MAX_SPOTS - 1; ptr++)
-		strncpy(spot_ptr[ptr - 10], spot_ptr[ptr], 82);
-	    for (ptr = MAX_SPOTS - 1; ptr >= MAX_SPOTS - 11; ptr--)
-		spot_ptr[ptr][0] = '\0';
-	    ptr = MAX_SPOTS - 10;
+	if (nr_of_spots > MAX_SPOTS - 1) {
+	    int idx;
+	    for (idx = 10; idx <= MAX_SPOTS - 1; idx++)
+		strncpy(spot_ptr[idx - 10], spot_ptr[idx], 82);
+	    for (idx = MAX_SPOTS - 1; idx >= MAX_SPOTS - 11; idx--)
+		spot_ptr[idx][0] = '\0';
+	    nr_of_spots = MAX_SPOTS - 10;
 	}
     }
 

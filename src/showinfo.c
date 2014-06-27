@@ -30,18 +30,19 @@
  * /param x  Country number
  */
 #include "showinfo.h"
+#include "tlf.h"
 #include "dxcc.h"
+#include "qrb.h"
+#include <curses.h>
+#include <time.h>
 
 int showinfo(int x)
 {
-
     extern int use_rxvt;
     extern char cqzone[];
     extern char ituzone[];
-    extern char C_DEST_Lat[];
-    extern char C_DEST_Long[];
-    extern double bearing;
-    extern double range;
+    extern double DEST_Lat;
+    extern double DEST_Long;
     extern int timeoffset;
     extern long timecorr;
     extern char itustr[];
@@ -52,6 +53,9 @@ int showinfo(int x)
     char countrystr[26];
     char zonestr[3];
     char contstr[3] = "";
+    double bearing;
+    double range;
+
     char timebuff[80];
 
     dxcc_data *dx;
@@ -85,8 +89,8 @@ int showinfo(int x)
     ptr1 = gmtime(&now);
     strftime(timebuff, 80, "%H:%M", ptr1);
 
-    sprintf(C_DEST_Lat, "%6.2f", dx->lat);	/* where is he? */
-    sprintf(C_DEST_Long, "%7.2f", dx->lon);
+    DEST_Lat = dx->lat;				/* where is he? */
+    DEST_Long = dx->lon;
 
     strncpy(contstr, dx->continent, 2);	/* continent */
     contstr[2] = '\0';
@@ -101,7 +105,7 @@ int showinfo(int x)
 	 contstr, zonestr);
 
     if (x != 0 && x != mycountrynr) {
-	qrb_();
+	qrb_(&range, &bearing);
 	mvprintw(24, 35, "%.0f km/%.0f deg ", range, bearing);
     }
 
@@ -115,5 +119,4 @@ int showinfo(int x)
     mvprintw(cury, curx, "");
 
     return (0);
-
 }

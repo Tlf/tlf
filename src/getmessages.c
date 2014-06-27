@@ -39,8 +39,8 @@ int getmessages(void)
     extern int qsonum;
     extern char qsonrstr[];
     extern char backgrnd_str[];
-    extern char C_QTH_Lat[];
-    extern char C_QTH_Long[];
+    extern double QTH_Lat;
+    extern double QTH_Long;
     extern int emptydir;
 
     FILE *fp;
@@ -63,8 +63,8 @@ int getmessages(void)
     mycqzone[0] = '\0';
     sprintf(mycqzone, "%02d", mydx -> cq);
     strcpy(mycontinent, mydx->continent);
-    sprintf(C_QTH_Lat, "%6.2f", mydx->lat); /* whereami? */
-    sprintf(C_QTH_Long, "%7.2f", mydx->lon);
+    QTH_Lat = mydx->lat; 	/* whereami? */
+    QTH_Long = mydx->lon;
 
     printw("     My Zone = ");
     printw(mycqzone);

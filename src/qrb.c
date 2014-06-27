@@ -57,32 +57,19 @@
 
 /* Compute the Bearing and Range */
 
-int qrb_(void) {
+int qrb_(double *range, double *bearing) {
 
-    extern char C_QTH_Lat[];
-    extern char C_QTH_Long[];
-    extern char C_DEST_Lat[];
-    extern char C_DEST_Long[];
+    extern double QTH_Lat;
+    extern double QTH_Long;
+    extern double DEST_Lat;
+    extern double DEST_Long;
     extern char hiscall[];
-
-    extern double range;
-    extern double bearing;
-
-    double QTH_Lat;
-    double QTH_Long;
-    double DEST_Lat;
-    double DEST_Long;
 
     if (*hiscall == '\0')
 	return (0);
 
-    QTH_Lat = atof(C_QTH_Lat);
-    QTH_Long = atof(C_QTH_Long);
-    DEST_Lat = atof(C_DEST_Lat);
-    DEST_Long = atof(C_DEST_Long);
-
     return qrb(-1.0 * QTH_Long, QTH_Lat, -1.0 * DEST_Long, DEST_Lat,
-	    &range, &bearing);
+	    range, bearing);
 }
 
 /* positive numbers are N and E

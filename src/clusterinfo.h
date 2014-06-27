@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2011-2014      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,21 +18,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include <curses.h>
-#include <ctype.h>
-#include "printcall.h"
-#include "tlf.h"
-#include "nicebox.h"
-#include "freq_display.h"
-#include "lancode.h"
-#include "get_time.h"
-#include "searchcallarray.h"
-#include "getctydata.h"
+#ifndef CLUSTERINFO_H
+#define CLUSTERINFO_H
 
-#define MAXMINUTES 30
+void  clusterinfo(void);
 
-void  clusterinfo(char *timestr);
-
+#endif /* end of include guard: CLUSTERINFO_H */

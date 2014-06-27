@@ -20,19 +20,18 @@
 #include "recall_exchange.h"
 #include "initial_exchange.h"
 
-/** \brief Recall former exchange or lookup initial exchange file 
+/** \brief Recall former exchange or lookup initial exchange file
  *
- * First search 'hiscall' in already worked stations (callarray). If not found 
- * there lookup 'hiscall' in initial exchange file. If found somewhere copy 
+ * First search 'hiscall' in already worked stations (callarray). If not found
+ * there lookup 'hiscall' in initial exchange file. If found somewhere copy
  * the according exchange into the 'comment' field.
  *
  * \return 1 - found, -1 - not found, 0 - call field was empty */
 int recall_exchange(void)
 {
 
-    extern int callarray_nr;
-    extern char callarray[MAX_CALLS][20];
-    extern char call_exchange[MAX_CALLS][12];
+    extern int nr_worked;
+    extern struct worked_t worked[];
     extern char hiscall[];
     extern char comment[];
     extern struct ie_list *main_ie_list;
@@ -48,14 +47,14 @@ int recall_exchange(void)
     l = strlen(hiscall);
 
     /* search backwards through list of worked stations */
-    for (i = callarray_nr - 1; i >= 0; i--) {
+    for (i = nr_worked - 1; i >= 0; i--) {
 
 	/* first search call in already worked stations */
 	/* call has to be exact -> la/dl1jbe/p must be the same again */
-	if ((strstr(callarray[i], hiscall) == callarray[i]) &&
-		(*(callarray[i]+l) == '\0' || *(callarray[i]+l) == ' ')) {
+	if ((strstr(worked[i].call, hiscall) == worked[i].call) &&
+		(*(worked[i].call + l) == '\0' || *(worked[i].call + l) == ' ')) {
 	    found = 1;
-	    strcpy(comment, call_exchange[i]);
+	    strcpy(comment, worked[i].exchange);
 	    break;
 	}
     }
@@ -81,7 +80,7 @@ int recall_exchange(void)
 			strcpy(comment, current_ie->exchange);
 			break;
 		    }
-		} 
+		}
 		current_ie = current_ie->next;
 	    }
 	}

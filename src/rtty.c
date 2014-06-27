@@ -73,6 +73,13 @@ int init_controller()
     return (fdcont);		// return file descriptor
 }
 
+/* ------------------------- deinit controller -------------------------- */
+void deinit_controller()
+{
+    if (fdcont)
+	close(fdcont);
+}
+
 /* ------------------------  add text to terminal ------------------------ */
 void ry_addchar(char c)
 {

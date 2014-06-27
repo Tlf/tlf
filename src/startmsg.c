@@ -24,8 +24,8 @@
  #include <unistd.h>
 
 static int linectr; // global
- 
- void showmsg(char *message) {
+
+void showmsg(char *message) {
 
 extern int verbose;
 
@@ -35,10 +35,10 @@ extern int verbose;
  refreshp();
  if (verbose == 1) sleep(1);
  linectr++;
- }
+}
 //---------------------------------------------------------------
 
-  void shownr(char *message, int nr) {
+void shownr(char *message, int nr) {
 
 extern int verbose;
 
@@ -48,11 +48,11 @@ extern int verbose;
  refreshp();
  if (verbose == 1) sleep(1);
  linectr++;
- }
+}
 //----------------------------------------------------------------
 
-  void showstring(char *message1, char *message2) {
-  
+void showstring(char *message1, char *message2) {
+
   extern int verbose;
 
  if (linectr == 24) linectr = 1;
@@ -61,4 +61,4 @@ extern int verbose;
  refreshp();
  if (verbose == 1) sleep(1);
  linectr++;
- }
+}

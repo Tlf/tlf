@@ -25,6 +25,88 @@
 	 *--------------------------------------------------------------*/
 #include "globalvars.h"
 #include "time_update.h"
+#include "freq_display.h"
+#include "lancode.h"
+
+/** broadcast to LAN
+ *
+ * every 120s broadcast frequency via LAN and
+ * act as time master if allowed */
+void broadcast_lan(void)
+{
+    extern int time_master;
+    extern float freq;
+    static int frcounter = 0;
+
+    frcounter++;
+
+    if (frcounter >= 60) {	// every 60 calls
+	frcounter = 0;
+	if (lan_active != 0) {
+	    send_freq(freq);
+	    if (time_master == 1)
+		send_time();
+	}
+    }
+}
+
+
+/** update band, date and time */
+void update_line(char *timestr)
+{
+    extern struct tm *time_ptr;
+
+    static int daysecs = 0;
+    char time_buf[40] = "";
+
+    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    strncpy(time_buf, timestr, 8);
+    mvaddstr(12, 0, band[bandinx]);
+    mvprintw(12, 17, time_buf);
+
+    daysecs++;
+
+    if (daysecs >= 60) {		// update the date 1x per minute
+	daysecs = 0;
+	get_time();
+	strftime(time_buf, 60, "%d-%b-%y", time_ptr);
+	mvprintw(12, 7, time_buf);
+    }
+}
+
+
+/** show frequency and frequency memory if rig control is active */
+void show_freq(void)
+{
+    extern int use_rxvt;
+    extern int showfreq;
+    extern int showscore_flag;
+    extern float mem;
+    extern int trx_control;
+    extern float freq;
+
+    if (trx_control == 1) {
+
+	if (use_rxvt == 0)
+	    attron(COLOR_PAIR(C_LOG) | A_BOLD);
+	else
+	    attron(COLOR_PAIR(C_LOG));
+
+	if ((showfreq == 0) || (showscore_flag == 1))
+	    mvprintw(13, 68, "TRX: %7.1f", freq);
+
+	if (mem > 0.0)
+	    mvprintw(14, 68, "MEM: %7.1f", mem);
+	else
+	    mvprintw(14, 68, "            ");
+
+	if ((showfreq == 1) && (showscore_flag == 0)) {
+
+	    freq_display();
+	}
+    }
+}
+
 
 void time_update(void)
 {
@@ -72,7 +154,10 @@ void time_update(void)
 	    currentterm = miniterm;
 	    miniterm = 0;
 
-	    clusterinfo(time_buf);	/* update cluster info (2 seconds) */
+	    broadcast_lan();
+	    update_line(time_buf);
+	    show_freq();
+	    clusterinfo();		/* update cluster info (2 seconds) */
 
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 

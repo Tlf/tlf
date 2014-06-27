@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0r@eudxf.org>
- *                    2010-2011 Thomas Beierlein <tb@forth-ev.de>
+ *                    2010-2014 Thomas Beierlein <tb@forth-ev.de>
  *                    2013-2014 Ervin Hegedus - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -243,7 +243,6 @@ char tonestr[5] = "600";
 int cqdelay = 8;
 char wkeyerbuffer[400];
 int bufloc = 0;
-int cfd;			/* cwkeyer file descriptor */
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
 int k_tune;
@@ -256,9 +255,8 @@ int commentfield = 0;		/* 1 if we are in comment/excahnge input */
 
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
-int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
+int nr_of_spots;			/* Anzahl Lines in spot_ptr array */
 char lastwwv[120] = "";
-int ptr;				/* Anzahl Lines in ispot_ptr array */
 int packetinterface = 0;
 int fdSertnc = 0;
 int fdFIFO = 0;
@@ -312,11 +310,8 @@ char qtcreccalls[MAX_CALLS][15];
 int qtcdirection = 0;
 
 /*------------------------------dupe array---------------------------------*/
-int callarray_nr = 0;		/* number of calls in callarray */
-char callarray[MAX_CALLS][20];	/* internal log representation for dupes  */
-char call_exchange[MAX_CALLS][12];
-int call_band[MAX_CALLS];
-int call_country[MAX_CALLS];
+int nr_worked = 0;		/*< number of calls in worked[] */
+struct worked_t worked[MAX_CALLS]; /*< worked stations */
 
 /*----------------------statisticof worked countries,zones ... -----------*/
 int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */
@@ -332,7 +327,6 @@ int multlist = 0;
 char callmasterarray[MAX_CALLMASTER][14];
 long int nr_callmastercalls;
 
-char callmaster_result[50][9];
 int callareas[20];
 int multscore[NBANDS];
 
@@ -349,7 +343,6 @@ int minute_timer = 0;
 int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;			/* nr of next QSO */
 int ymax, xmax;			/* screen size */
-int nroflines;
 
 pid_t pid;
 struct tm *time_ptr;
@@ -378,18 +371,14 @@ char terminal4[88] = "";
 char termbuf[88] = "";
 int termbufcount = 0;
 
-char C_QTH_Lat[7] = "51";
-char C_QTH_Long[8] = "-5";
-char C_DEST_Lat[7] = "51";
-char C_DEST_Long[8] = "1";
+double QTH_Lat = 51.;
+double QTH_Long = -7.;
+double DEST_Lat = 51.;
+double DEST_Long = 1.;
 
 double r = 50;
 int m = 1;
 char hiscountry[40];
-
-double range, bearing;
-double sunrise;
-double sundown;
 
 int this_second;
 int stop_backgrnd_process = 1;	/* dont start until we know what we are doing */
@@ -403,6 +392,7 @@ int nopacket = 0;		/* set if tlf is called with '-n' */
 int bandweight_points[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 int bandweight_multis[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
+pthread_t background_thread;
 pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /** fake old refresh code to use update logic for panels */
@@ -413,11 +403,9 @@ void refreshp() {
     pthread_mutex_unlock( &panel_mutex );
 }
 
-/* ------------------------------------------------------------------------*/
-/*     Main loop of the program			                           */
-/* ------------------------------------------------------------------------*/
-
-int main(int argc, char *argv[])
+/** parse program options
+ */
+void parse_options(int argc, char *argv[])
 {
     int j;
     pthread_t thrd1, thrd2;
@@ -481,6 +469,337 @@ int main(int argc, char *argv[])
 	--argc;
 	++argv;
     }
+}
+
+
+/** initialize user interface */
+void ui_init()
+{
+/* getting users terminal string and (if RXVT) setting rxvt colours on it */
+/* LZ3NY hack :) */
+    char *term = getenv("TERM");
+    if (strcasecmp(term, "rxvt") == 0) {
+	use_rxvt = 1;
+    } else if (strcasecmp(term, "xterm") == 0) {
+	use_xterm = 1;
+	use_rxvt = 1;
+    } else
+	putenv("TERM=rxvt");	/*or going to native console linux driver */
+
+    /* activate ncurses terminal control */
+    if ((mainscreen = newterm(NULL, stdout, stdin)) == NULL) {
+	perror("initscr");
+	printf
+	    ("\nSorry, wrong terminal type !!!!! \nTry a  linux text terminal or set TERM=linux !!!\n");
+	sleep(2);
+
+	exit(EXIT_FAILURE);
+    }
+
+    InitSearchPanel();	/* at least one panel has to be defined
+				   for refreshp() to work */
+
+    getmaxyx(stdscr, ymax, xmax);
+    if ((ymax < 25) || (xmax < 80)) {
+	char c;
+
+	showmsg( "!! TLF needs at least 25 lines and 80 columns !!");
+	showmsg( "   Continue anyway? Y/(N)" );
+	c = toupper( getch() );
+	if (c != 'Y') {
+	    showmsg( "73 es cuagn" );
+	    sleep(1);
+	    endwin();
+	    exit(EXIT_FAILURE);
+	}
+	showmsg("");
+    }
+
+    if (!has_colors() || (start_color() == ERR)) {
+	showmsg("Sorry, terminal does not support color");
+	showmsg("Try TERM=linux  or use a text console !!");
+	sleep(2);
+	endwin();
+	exit(EXIT_FAILURE);
+    }
+
+
+    refreshp();
+
+    noecho();
+    crmode();
+
+//keypad(stdscr,TRUE);
+
+}
+
+
+/* setup colors */
+void ui_color_init()
+{
+    if (use_rxvt == 1) {	// use rxvt colours
+	init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_RED);
+	if (use_xterm == 1) {
+	    init_pair(C_HEADER, COLOR_GREEN, COLOR_BLUE);
+	    init_pair(COLOR_RED, COLOR_WHITE, 8);
+	    init_pair(C_WINDOW, COLOR_CYAN, COLOR_MAGENTA);
+	    init_pair(C_DUPE, COLOR_WHITE, COLOR_MAGENTA);
+	    init_pair(C_INPUT, COLOR_BLUE, COLOR_WHITE);
+	} else {
+	    init_pair(C_HEADER, COLOR_GREEN, COLOR_YELLOW);
+	    init_pair(COLOR_RED, COLOR_WHITE, COLOR_RED);
+	    init_pair(C_WINDOW, COLOR_CYAN, COLOR_RED);
+	    init_pair(C_DUPE, COLOR_RED, COLOR_MAGENTA);
+	    init_pair(C_INPUT, COLOR_BLUE, COLOR_YELLOW);
+	}
+	init_pair(C_LOG, COLOR_WHITE, COLOR_BLACK);
+	init_pair(C_BORDER, COLOR_CYAN, COLOR_YELLOW);
+    } else {
+	// use linux console colours
+	init_pair(COLOR_BLACK, tlfcolors[0][0], tlfcolors[0][1]); // b/w
+	init_pair(C_HEADER, tlfcolors[1][0], tlfcolors[1][1]);    // Gn/Ye
+	init_pair(COLOR_RED, tlfcolors[2][0], tlfcolors[2][1]);   // W/R
+	init_pair(C_WINDOW, tlfcolors[3][0], tlfcolors[3][1]);    // Cy/W
+	init_pair(C_LOG, tlfcolors[4][0], tlfcolors[4][1]);       // W/B
+	init_pair(C_DUPE, tlfcolors[5][0], tlfcolors[5][1]);      // W/Mag
+	init_pair(C_INPUT, tlfcolors[6][0], tlfcolors[6][1]);     // Bl/Y
+	init_pair(C_BORDER, tlfcolors[7][0], tlfcolors[7][1]);    // W/B
+    }
+}
+
+	if (qtcdirection > 0) {
+	    qtc_rec_store = g_hash_table_new(g_str_hash, g_str_equal);
+	    if (checkqtclogfile_new() != 0) {
+		showmsg( "QTC's giving up" );
+		sleep(2);
+		endwin();
+		exit(1);
+	    }
+	}
+
+//              if (strlen(synclogfile) > 0)
+//                      synclog(synclogfile);
+
+/** load all databases
+ *
+ * \return EXIT_FAILURE if not successful */
+int databases_load()
+{
+    int status;
+
+    showmsg("reading country data");
+    readctydata();		/* read ctydb.dat */
+
+    showmsg("reading configuration data");
+    status = read_logcfg(); 	/* read the configuration file */
+    status |= read_rules();	/* read the additional contest rules
+				   in "rules/contestname" */
+    if (status != PARSE_OK) {
+	showmsg( "Problems in logcfg.dat or rule file detected! Continue Y/(N)?");
+	if (toupper( getchar() ) != 'Y') {
+	    showmsg("73...");
+	    return EXIT_FAILURE;
+	}
+    }
+
+    if (*call == '\0') {
+	showmsg
+	    ("WARNING: No callsign defined in logcfg.dat! exiting...\n\n\n");
+	return EXIT_FAILURE;
+    }
+
+    mults_possible = g_ptr_array_new();
+
+    if (multlist == 1) {
+	showmsg("reading multiplier data      ");
+	load_multipliers();
+    }
+
+    showmsg("reading callmaster data");
+    nr_callmastercalls = load_callmaster();
+
+    if (*exchange_list != '\0') {
+	showmsg("reading initial exchange file");
+	main_ie_list = make_ie_list(exchange_list);
+
+	if (main_ie_list == NULL) {
+	    showmsg( "Problems in initial exchange file detected! Continue Y/(N)?");
+	    if (toupper( getchar() ) != 'Y') {
+		showmsg("73...");
+		return EXIT_FAILURE;
+	    }
+	}
+    }
+
+    /* make sure logfile is there and has the right format */
+    if (checklogfile_new(logfile) != 0) {
+	showmsg( "Can not access logfile. Giving up" );
+	return EXIT_FAILURE;
+    }
+
+    return 0;
+}
+
+
+void hamlib_init()
+{
+#ifdef HAVE_LIBHAMLIB		// Code for hamlib interface
+    int status;
+
+    showmsg("HAMLIB compiled in");
+
+    if (trx_control != 0) {
+
+	shownr("Rignumber is", (int) myrig_model);
+	shownr("Rig speed is", serial_rate);
+
+	showmsg("Trying to start rig ctrl");
+
+	status = init_tlf_rig();
+
+	if (status  != 0) {
+	    showmsg( "Continue without rig control Y/(N)?");
+	    if (toupper( getchar() ) != 'Y') {
+		endwin();
+		exit(1);
+	    }
+	    trx_control = 0;
+	    showmsg( "Disabling rig control!");
+	    sleep(1);
+	}
+    }
+#else
+    showmsg("No Hamlib compiled in!");
+
+    trx_control = 0;
+    showmsg( "Disabling rig control!");
+    sleep(1);
+#endif				/* HAVE_LIBHAMLIB */
+}
+
+
+void lan_init()
+{
+    if (lan_active == 1) {
+	if (lanrecv_init() < 0)	/* set up the network */
+	    showmsg("LAN receive  init failed");
+	else
+	    showmsg("LAN receive  initialized");
+
+	if (lan_send_init() < 0)
+	    showmsg("LAN send init failed");
+	else
+	    showmsg("LAN send initialized");
+    }
+}
+
+
+void packet_init()
+{
+    if (nopacket == 1)
+	packetinterface = 0;
+
+    set_term(mainscreen);
+
+    // really needed?
+    refreshp();
+
+    if ((nopacket == 0) && (packetinterface != 0)) {
+	if (init_packet() == 0)
+	    packet();
+	else
+	    cleanup_telnet();
+    }
+}
+
+
+void keyer_init()
+{
+    char keyerbuff[3];
+
+    if (keyerport == NET_KEYER) {
+	showmsg("Keyer is cwdaemon");
+
+	if (netkeyer_init() < 0) {
+	    showmsg("Cannot open NET keyer daemon ");
+	    refreshp();
+	    sleep(1);
+
+	} else {
+	    netkeyer(K_RESET, "0");
+
+	    sprintf(weightbuf, "%d", weight);
+
+	    write_tone();
+
+	    snprintf(keyerbuff, 3, "%2d", GetCWSpeed());
+	    netkeyer(K_SPEED, keyerbuff);		// set speed
+
+	    netkeyer(K_WEIGHT, weightbuf);		// set weight
+
+	    if (*keyer_device != '\0')
+		netkeyer(K_DEVICE, keyer_device);	// set device
+
+	    sprintf(keyerbuff, "%d", txdelay);
+	    netkeyer(K_TOD, keyerbuff);		// set TOD
+
+	    if (sc_sidetone != 0)			// set soundcard output
+		netkeyer(K_SIDETONE, "");
+
+	    if (*sc_volume != '\0')			// set soundcard volume
+		netkeyer(K_STVOLUME, sc_volume);
+	}
+
+    }
+
+    if (keyerport == MFJ1278_KEYER || keyerport == GMFSK) {
+	init_controller();
+    }
+
+    if (keyerport != NET_KEYER)
+	write_tone(); 		/** \todo works only for NET_EKYER */
+}
+
+
+
+/** cleanup function
+ *
+ * Cleanup initialisations made by tlf. Will be called after exit() from
+ * logit() or background_process()
+ */
+void tlf_cleanup()
+{
+    if (pthread_self() != background_thread) {
+	pthread_cancel(background_thread);
+	pthread_join(background_thread, NULL);
+    }
+
+//    commented out for the moment as it will segfault if called twice
+//    cleanup_telnet();
+
+    if (trxmode == CWMODE && keyerport == NET_KEYER)
+	netkeyer_close();
+    else
+	deinit_controller();
+
+    endwin();
+}
+
+
+/* ------------------------------------------------------------------------*/
+/*     Main loop of the program			                           */
+/* ------------------------------------------------------------------------*/
+
+int main(int argc, char *argv[])
+{
+    int j;
+    int ret;
+    char tlfversion[80] = "";
+
+    parse_options(argc, argv);
+
+    ui_init();
+
 
     buffer[0] = '\0';
     bufloc = 0;
@@ -499,335 +818,66 @@ int main(int argc, char *argv[])
     termbuf[0] = '\0';
     hiscall[0] = '\0';
 
-/* getting users terminal string and (if RXVT) setting rxvt colours on it */
-/* LZ3NY hack :) */
-    if (strcasecmp(getenv("TERM"), "rxvt") == 0) {
-	use_rxvt = 1;
-	printf("terminal is:%s", getenv("TERM"));
-    } else if (strcasecmp(getenv("TERM"), "xterm") == 0) {
-	use_xterm = 1;
-	use_rxvt = 1;
-    } else
-	putenv("TERM=rxvt");	/*or going to native console linux driver */
-
-    if ((mainscreen = newterm(NULL, stdout, stdin)) == NULL) {	/* activate ncurses terminal control */
-	perror("initscr");
-	printf
-	    ("\n Sorry, wrong terminal type !!!!! \nTry a  linux text terminal or set TERM=linux !!!");
-	sleep(5);
-
-	exit(EXIT_FAILURE);
-    }
-//keypad(stdscr,TRUE);
-
-    InitSearchPanel();	/* at least one panel has to be defined
-				   for refreshp() to work */
-
-    getmaxyx(stdscr, ymax, xmax);
-    if ((ymax < 25) || (xmax < 80)) {
-	char c;
-
-	showmsg( "!! TLF needs at least 25 lines and 80 columns !!");
-	showmsg( "   Continue anyway? Y/(N)" );
-	c = toupper( getch() );
-	if (c != 'Y') {
-	    showmsg( "73 es cuagn" );
-	    sleep(1);
-	    endwin();
-	    exit(1);
-	}
-	showmsg("");
-    }
-
-    noecho();
-    crmode();
-
     strcpy(sp_return, message[12]);
     strcpy(cq_return, message[13]);
 
-    refreshp();
 
-    if (has_colors()) {
-	if (start_color() == ERR) {
-	    perror("start_color");
-	    endwin();
-	    printf
-		("\n Sorry, wrong terminal type !!!!! \n\nTry a linux text terminal or set TERM=linux !!!");
-	    sleep(5);
-	    exit(EXIT_FAILURE);
-	}
+    sprintf(tlfversion,
+	    "        Welcome to tlf-%s by PA0R!!" , VERSION);
+    showmsg(tlfversion);
+    showmsg("");
 
-	sprintf(tlfversion,
-		"        Welcome to tlf-%s by PA0R!!" , VERSION);
-	showmsg(tlfversion);
-	showmsg("");
+    if (databases_load() == EXIT_FAILURE) {
+	sleep(2);
+	endwin();
+	exit(EXIT_FAILURE);
+    }
 
-	showmsg("reading country data");
-	readctydata();		/* read ctydb.dat */
-
-	showmsg("reading configuration data");
-
-	status = read_logcfg(); /* read the configuration file */
-	status |= read_rules();	/* read the additional contest rules in "rules/contestname"  LZ3NY */
-
-	if (status != PARSE_OK) {
-	    showmsg( "Problems in logcfg.dat or rule file detected! Continue Y/(N)?");
-	    if (toupper( getchar() ) != 'Y') {
-		endwin();
-		exit(1);
-	    }
-	}
-
-	/* make sure logfile is there and has the right format */
-	if (checklogfile_new(logfile) != 0) {
-	    showmsg( "Giving up" );
-	    sleep(2);
-	    endwin();
-	    exit(1);
-	}
-
-	if (qtcdirection > 0) {
-	    qtc_rec_store = g_hash_table_new(g_str_hash, g_str_equal);
-	    if (checkqtclogfile_new() != 0) {
-		showmsg( "QTC's giving up" );
-		sleep(2);
-		endwin();
-		exit(1);
-	    }
-	}
+    /* now setup colors */
+    ui_color_init();
 
 //              if (strlen(synclogfile) > 0)
 //                      synclog(synclogfile);
 
-	if (*call == '\0') {
-	    showmsg
-		("WARNING: No callsign defined in logcfg.dat! exiting...\n\n\n");
-	    exit(1);
-	}
+    hamlib_init();
+    lan_init();
+    keyer_init();
 
-	if (use_rxvt == 1) {	// use rxvt colours
-	    init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_RED);
-	    if (use_xterm == 1) {
-		init_pair(C_HEADER, COLOR_GREEN, COLOR_BLUE);
-		init_pair(COLOR_RED, COLOR_WHITE, 8);
-		init_pair(C_WINDOW, COLOR_CYAN, COLOR_MAGENTA);
-		init_pair(C_DUPE, COLOR_WHITE, COLOR_MAGENTA);
-		init_pair(C_INPUT, COLOR_BLUE, COLOR_WHITE);
-	    } else {
-		init_pair(C_HEADER, COLOR_GREEN, COLOR_YELLOW);
-		init_pair(COLOR_RED, COLOR_WHITE, COLOR_RED);
-		init_pair(C_WINDOW, COLOR_CYAN, COLOR_RED);
-		init_pair(C_DUPE, COLOR_RED, COLOR_MAGENTA);
-		init_pair(C_INPUT, COLOR_BLUE, COLOR_YELLOW);
-	    }
-	    init_pair(C_LOG, COLOR_WHITE, COLOR_BLACK);
-	    init_pair(C_BORDER, COLOR_CYAN, COLOR_YELLOW);
-	} else {
-	    // use linux console colours
-	    init_pair(COLOR_BLACK, tlfcolors[0][0], tlfcolors[0][1]); // b/w
-	    init_pair(C_HEADER, tlfcolors[1][0], tlfcolors[1][1]);    // Gn/Ye
-	    init_pair(COLOR_RED, tlfcolors[2][0], tlfcolors[2][1]);   // W/R
-	    init_pair(C_WINDOW, tlfcolors[3][0], tlfcolors[3][1]);    // Cy/W
-	    init_pair(C_LOG, tlfcolors[4][0], tlfcolors[4][1]);       // W/B
-	    init_pair(C_DUPE, tlfcolors[5][0], tlfcolors[5][1]);      // W/Mag
-	    init_pair(C_INPUT, tlfcolors[6][0], tlfcolors[6][1]);     // Bl/Y
-	    init_pair(C_BORDER, tlfcolors[7][0], tlfcolors[7][1]);    // W/B
-	}
+    clear();
+    mvprintw(0, 0, "        Welcome to tlf-%s by PA0R!!\n\n" , VERSION);
+    refreshp();
 
-	mults_possible = g_ptr_array_new();
+    checkparameters();		/* check .paras file */
+    getmessages();		/* read .paras file */
 
-	if (multlist == 1) {
-	    showmsg("reading multiplier data      ");
-	    load_multipliers();
+    packet_init();
+    getwwv();			/* get the latest wwv info from packet */
 
-	}
+    scroll_log();		/* read the last 5  log lines and set the qso number */
 
-	attron(COLOR_PAIR(COLOR_BLACK));
-	showmsg("reading callmaster data");
+    nr_qsos = readcalls();	/* read the logfile for score and dupe */
 
-	nr_callmastercalls = load_callmaster();
-
-	if (*exchange_list != '\0') {
-	    // read initial exchange file
-	    main_ie_list = make_ie_list(exchange_list);
-	    if (main_ie_list == NULL) {
-		showmsg( "Problems in initial exchange file detected! Continue Y/(N)?");
-		if (toupper( getchar() ) != 'Y') {
-		    endwin();
-		    exit(1);
-		}
-		else {
-		    showmsg( "Initial exchange data not loaded! Continuing ...");
-		    sleep(2);
-		}
-	    }
-	}
-
-#ifdef HAVE_LIBHAMLIB		// Code for hamlib interface
-
-	showmsg("HAMLIB compiled in");
-
-	if (trx_control != 0) {
-
-	    shownr("Rignumber is", (int) myrig_model);
-	    shownr("Rig speed is", serial_rate);
-
-	    showmsg("Trying to start rig ctrl");
-
-	    status = init_tlf_rig();
-
-	    if (status  != 0) {
-		showmsg( "Continue without rig control Y/(N)?");
-		if (toupper( getchar() ) != 'Y') {
-		    endwin();
-		    exit(1);
-		}
-		trx_control = 0;
-		showmsg( "Disabling rig control!");
-		sleep(1);
-	    }
-	}
-#else
-	showmsg("No Hamlib compiled in!");
-
-	trx_control = 0;
-	showmsg( "Disabling rig control!");
-	sleep(1);
-#endif				/* HAVE_LIBHAMLIB */
-
-
-	if (keyerport == NET_KEYER) {
-	    showmsg("Keyer is cwdaemon");
-	}
-	if (keyerport == MFJ1278_KEYER || keyerport == GMFSK) {
-	    init_controller();
-	}
-
-	if (lan_active == 1) {
-	    retval = lanrecv_init();
-
-	    if (retval < 0)	/* set up the network */
-		shownr("LAN receive  init failed", retval);
-	    else
-		showmsg("LAN receive  initialized");
-
-	    if (lan_send_init() < 0)
-		showmsg("LAN send init failed");
-	    else
-		showmsg("LAN send initialized");
-	}
-
-	checkparameters();	/* check .paras file */
-
-	clear();
-	mvprintw(0, 0, "        Welcome to tlf-%s by PA0R!!\n\n" , VERSION);
-	refreshp();
-	getmessages();		/* read .paras file */
-
-	if (nopacket == 1)
-	    packetinterface = 0;
-
-	set_term(mainscreen);
-
-	refreshp();
-
-	if ((nopacket == 0) && (packetinterface != 0)) {
-
-	    if (init_packet() == 0)
-		packet();
-	    else
-		cleanup_telnet();
-
-	}
-
-	if (keyerport == NET_KEYER) {
-	    if (netkeyer_init() < 0) {
-		mvprintw(24, 0, "Cannot open NET keyer daemon ");
-		refreshp();
-		sleep(1);
-
-	    } else {
-		netkeyer(K_RESET, "0");
-
-		sprintf(weightbuf, "%d", weight);
-
-		write_tone();
-
-		snprintf(keyerbuff, 3, "%2d", GetCWSpeed());
-		netkeyer(K_SPEED, keyerbuff);		// set speed
-
-		netkeyer(K_WEIGHT, weightbuf);		// set weight
-
-		if (*keyer_device != '\0')
-		    netkeyer(K_DEVICE, keyer_device);	// set device
-
-		sprintf(keyerbuff, "%d", txdelay);
-		netkeyer(K_TOD, keyerbuff);		// set TOD
-
-		if (sc_sidetone != 0)			// set soundcard output
-		    netkeyer(K_SIDETONE, "");
-
-		if (*sc_volume != '\0')			// set soundcard volume
-			netkeyer(K_STVOLUME, sc_volume);
-	    }
-
-	    if (keyerport != NET_KEYER)
-		write_tone();
-	}
-
-	getwwv();		/* get the latest wwv info from packet */
-
-	scroll_log();		/* read the last 5  log lines and set the qso number */
-
-	nr_qsos = readcalls();	/* read the logfile for score and dupe */
-
-	clear_display();	/* tidy up the display */
-
-	qrb_();
-
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-	for (j = 13; j <= 23; j++) {	/* wipe lower window */
-	    mvprintw(j, 0, backgrnd_str);
-	}
-
-	bm_init();			/* initialize bandmap */
-
-	/* Create the first thread */
-	ret = pthread_create(&thrd1, NULL, logit, NULL);
-	if (ret) {
-	    perror("pthread_create: logit");
-	    endwin();
-	    exit(EXIT_FAILURE);
-	}
-
-	/* Create the second thread */
-	ret = pthread_create(&thrd2, NULL, background_process, NULL);
-	if (ret) {
-	    perror("pthread_create: backgound_process");
-	    endwin();
-	    exit(EXIT_FAILURE);
-	}
-
-	pthread_join(thrd2, NULL);
-	pthread_join(thrd1, NULL);
-	endwin();
-	exit(EXIT_SUCCESS);
-
-    } else {
-	printf("Terminal does not support color\n");
-	printf("\nTry TERM=linux  or use a text console !!\n");
-	refreshp();
-	sleep(2);
+    clear_display();		/* tidy up the display */
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    for (j = 13; j <= 23; j++) {	/* wipe lower window */
+	mvprintw(j, 0, backgrnd_str);
     }
-    cleanup_telnet();
+    refreshp();
 
-    if (trxmode == CWMODE && keyerport == NET_KEYER)
-	netkeyer_close();
-    else
-	close(cfd);		/* close keyer */
+    bm_init();			/* initialize bandmap */
 
-    endwin();
+    atexit(tlf_cleanup); 	/* register cleanup function */
+
+    /* Create the background thread */
+    ret = pthread_create(&background_thread, NULL, background_process, NULL);
+    if (ret) {
+	perror("pthread_create: backgound_process");
+	endwin();
+	exit(EXIT_FAILURE);
+    }
+
+    /* now start logging  !! Does never return */
+    logit(NULL);
 
     tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
     return (0);

@@ -63,9 +63,10 @@ int readcalls(void)
 	qsos[s][0] = '\0';
 
     for (i = 0; i < MAX_CALLS; i++) {
-	callarray[i][0] = '\0';
-	call_band[i] = 0;
-	call_country[i] = -1;
+	*worked[i].exchange = '\0';
+	*worked[i].call = '\0';
+	worked[i].band = 0;
+	worked[i].country = -1;
     }
 
     for (i = 1; i <= MAX_DATALINES - 1; i++)
@@ -265,7 +266,7 @@ int readcalls(void)
 	}
 	/*  once  per call !  */
 	for (k = 0; k < i; k++) {	// changed k=< i
-	    m = strcmp(callarray[k], presentcall);
+	    m = strcmp(worked[k].call, presentcall);
 
 	    if (m == 0) {
 		l = k;
@@ -275,13 +276,13 @@ int readcalls(void)
 
 	}
 
-	strncpy(callarray[l], inputbuffer + 29, 19);
-	callarray[l][19] = 0;
-	strtok(callarray[l], " \r");	/* delimit first word */
+	strncpy(worked[l].call, inputbuffer + 29, 19);
+	worked[l].call[19] = 0;
+	strtok(worked[l].call, " \r");	/* delimit first word */
 
-	call_country[l] = countrynr;
-	g_strlcpy(call_exchange[l], inputbuffer + 54, 12);
-	g_strchomp(call_exchange[l]);	/* strip trailing spaces */
+	worked[l].country = countrynr;
+	g_strlcpy(worked[l].exchange, inputbuffer + 54, 12);
+	g_strchomp(worked[l].exchange);	/* strip trailing spaces */
 
 	add_ok = 1;		/* look if calls are excluded */
 
@@ -325,7 +326,8 @@ int readcalls(void)
 
 	if (add_ok == 1) {
 
-	    call_band[l] |= inxes[bandinx];	/* mark band as worked */
+	    worked[l].band |= inxes[bandinx];	/* mark band as worked */
+
 	    band_score[bandinx]++;	/*  qso counter  per band */
 	    if (cqww == 1)
 		zones[z] |= inxes[bandinx];
@@ -345,7 +347,7 @@ int readcalls(void)
     fclose(fp);
 
     /* remember nuber of callarray entries */
-    callarray_nr = i;
+    nr_worked = i;
 
     if (wpx == 1) {
 
@@ -353,7 +355,7 @@ int readcalls(void)
 	nr_of_px = 0;
 
 	for (n = 0; n < i; n++) {
-	    strcpy(checkcall, callarray[n]);
+	    strcpy(checkcall, worked[n].call);
 	    getpx(checkcall);
 	    add_pfx(pxstr);
 	}

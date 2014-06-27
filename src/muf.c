@@ -21,7 +21,14 @@
 #include "tlf.h"
 #include "get_time.h"
 #include "dxcc.h"
+#include "sunup.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <curses.h>
 #include <panel.h>
+#include <math.h>
+
+#define RADIAN		(180.0 / M_PI)
 
 extern int use_rxvt;
 extern double r;
@@ -42,7 +49,6 @@ static double power(man, ex)
 double man, ex;
 {
     return exp(ex * log(man));
-
 }
 
 static void interlat()
@@ -140,12 +146,12 @@ static void e_layer()
 
 int muf(void)
 {
-    extern char C_QTH_Lat[];
-    extern char C_QTH_Long[];
-    extern char C_DEST_Lat[];
-    extern char C_DEST_Long[];
-    extern double sunrise;
-    extern double sundown;
+    extern double QTH_Lat;
+    extern double QTH_Long;
+    extern double DEST_Lat;
+    extern double DEST_Long;
+    double sunrise;
+    double sundown;
 
     extern int mycountrynr;
     extern int countrynr;
@@ -175,10 +181,10 @@ int muf(void)
     correct = 0;
     n = 0.0;
 
-    xt = atof(C_QTH_Lat);
-    yt = atof(C_QTH_Long);
-    xr = atof(C_DEST_Lat);
-    yr = atof(C_DEST_Long);
+    xt = QTH_Lat;
+    yt = QTH_Long;
+    xr = DEST_Lat;
+    yr = DEST_Long;
 
     get_time();
 //strftime(time_buf, 60, "    %d-%b-%Y %H:%M ",  time_ptr);     ### bug fix
@@ -241,7 +247,8 @@ int muf(void)
     mvwprintw(win, 4, 40, "Azim  :   %3ld degrees.", (long) floor(u + 0.5));
     mvwprintw(win, 5, 40, "F-hops:    %2.0f", n);
 
-    sunup(xr);	/* calculate local sunup and down at destination lattitude */
+    sunup(xr, &sunrise, &sundown);	/* calculate local sunup and down 
+    					   at destination lattitude */
 
     /* transform to UTC based on longitude from country description */
     td = (yr * 4) / 60 ; 	/* 4 degree/min */

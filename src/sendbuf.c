@@ -300,7 +300,7 @@ void sendbuf(void)
 /** \brief send message
  *
  * Send the message via CW or DIGI mode, but only if not empty
- * \parm msg message to send
+ * \param msg message to send
  */
 void sendmessage(char *msg)
 {

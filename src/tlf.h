@@ -140,9 +140,18 @@ enum {
 
 #define LOGLINELEN (88)		/* Length of logline in logfile
 				   (including linefeed) */
-#if defined (TLN_LOGLINE)
-/* do nothing, already defined */
-#else
+
+/** worked station
+ *
+ * contains all informations about an already worked station */
+struct worked_t {
+    char call[20]; 		/*< call of the station */
+    char exchange[12]; 		/*< the last exchange */
+    int band; 			/*< bitmap for worked bands */
+    int country; 		/*< its country number */
+};
+
+#ifndef TLN_LOGLINE
 #define TLN_LOGLINE
 struct tln_logline {
     struct tln_logline *next;
