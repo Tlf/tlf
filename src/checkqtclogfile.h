@@ -21,5 +21,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "tlf.h"
+#include "startmsg.h"
 
 int checkqtclogfile_new();

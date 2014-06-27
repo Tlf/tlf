@@ -302,19 +302,6 @@ int readcalls(void)
 	    hiscall[0] = '\0';
 	}
 
-	/*if (waedc_flg == 1) {
-
-	    strcpy(hiscall, presentcall);
-
-	    add_ok = waedc_pa();
-	    if (add_ok == 0) {
-		band_score[bandinx]++;
-		countries[countrynr] |= inxes[bandinx];
-	    }
-
-	    hiscall[0] = '\0';
-	}*/
-
 	if (pfxmultab == 1) {
 	    getpx(presentcall);
 	    add_pfx(pxstr);

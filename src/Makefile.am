@@ -24,13 +24,13 @@ tlf_SOURCES = \
 	onechar.c \
 	paccdx.c parse_logcfg.c prevqso.c printcall.c \
 	qrb.c qsonr_to_str.c qtcsend.c qtcrecv.c qtcutil.c \
-	readcalls.c readqtccalls.c readctydata.c recall_exchange.c rules.c \
+	readcalls.c readctydata.c recall_exchange.c rules.c \
 	score.c scroll_log.c  searchcallarray.c searchlog.c sendbuf.c \
 	sendqrg.c sendspcall.c set_tone.c setcontest.c \
 	setparameters.c show_help.c showinfo.c showpxmap.c \
 	showscore.c showzones.c sockserv.c speeddown.c   \
 	speedup.c stoptx.c store_qso.c sunup.c splitscreen.c startmsg.c\
-	rtty.c time_update.c waedc.c \
+	rtty.c time_update.c \
 	write_keyer.c writecabrillo.c writeparas.c \
 	zone_nr.c
 
@@ -58,13 +58,13 @@ noinst_HEADERS = \
 	onechar.h \
 	paccdx.h parse_logcfg.h prevqso.h printcall.h \
 	qrb.h qsonr_to_str.h qtcsend.h qtcrecv.h qtcutil.h \
-	readcalls.h readqtccalls.h readctydata.h recall_exchange.h \
+	readcalls.h readctydata.h recall_exchange.h \
 	rules.h \
 	score.h scroll_log.h searchcallarray.h searchlog.h sendbuf.h \
 	sendqrg.h sendspcall.h set_tone.h setcontest.h \
 	setparameters.h show_help.h showinfo.h showpxmap.h showscore.h \
 	showzones.h sockserv.h speeddown.h speedup.h  \
 	splitscreen.h startmsg.h stoptx.h store_qso.h sunup.h \
-	rtty.h time_update.h tlf.h waedc.h \
+	rtty.h time_update.h tlf.h \
 	write_keyer.h write_tone.h writecabrillo.h writeparas.h \
 	zone_nr.h

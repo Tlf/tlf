@@ -30,7 +30,6 @@
 #include <termios.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#include "readqtccalls.h"
 #endif
 
 SCREEN *mainscreen;
@@ -78,7 +77,6 @@ int arrldx_usa = 0;
 int arrl_fd = 0;
 int arrlss = 0;
 int pacc_pa_flg = 0;
-int waedc_flg = 0;
 int stewperry_flg = 0;
 int focm = 0;
 
@@ -138,7 +136,6 @@ int no_rst = 0;			/* 1 - do not use RS/RST */
 char myqra[7] = "";
 
 int pacc_qsos[10][10];
-int waedc_qsos[10][10];
 int ve_cty;
 int w_cty;
 int zl_cty;
@@ -783,11 +780,6 @@ int main(int argc, char *argv[])
 	scroll_log();		/* read the last 5  log lines and set the qso number */
 
 	nr_qsos = readcalls();	/* read the logfile for score and dupe */
-
-	if (waedc_flg == 1) {
-	    nr_qsosflags_for_qtc = nr_qsos;
-	    readqtccalls();
-	}
 
 	clear_display();	/* tidy up the display */
 

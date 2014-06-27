@@ -28,7 +28,6 @@
 #include "checklogfile.h"
 #include "checkqtclogfile.h"
 #include "readcalls.h"
-#include "readqtccalls.h"
 #include "clear_display.h"
 #include "logit.h"
 #include "getwwv.h"

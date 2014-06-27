@@ -135,7 +135,6 @@ int score()
     extern int cqww;
     extern int arrl_fd;
     extern int arrldx_usa;
-    extern int waedc_flg;
     extern int w_cty;
     extern int ve_cty;
     extern int trxmode;
@@ -294,22 +293,6 @@ int score()
 
 	return points;
     }
-
-    /*if (waedc_flg == 1) {
-
-	if (trxmode != DIGIMODE) {
-	    if (*/	/* if MODE isn't RTTY, EU stations should work only with DX and backwards */
-	      /*(strcmp(mycontinent, "EU") == 0 && strcmp(continent, "EU") != 0)
-	      ||
-	      (strcmp(mycontinent, "EU") != 0 && strcmp(continent, "EU") == 0)
-	    ) {
-	      points = 1;
-	      total = total + 1;
-	    }
-	}
-
-	return (0);
-    }*/
 
     if (stewperry_flg == 1) {
 

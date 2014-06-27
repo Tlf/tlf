@@ -102,7 +102,8 @@ extern int trxmode;
 extern char thisnode;
 
 extern int call_band[];		/** \todo should not be public */
-extern int waedc_flg;
+
+extern int qtcdirection;
 
 /** \brief initialize bandmap
  *
@@ -276,7 +277,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
     /* if not in list already -> prepare new entry and
      * insert in list at correct freq */
 	spot *entry = g_new(spot, 1);
-	if (waedc_flg == 1) {
+	if (qtcdirection > 0) {
 	    qtc_format(entry, call, band);
 	}
 	else {
@@ -524,7 +525,7 @@ void bandmap_show() {
     {
 	data = g_ptr_array_index( spots, i );
 
-	if (waedc_flg == 1) {
+	if (qtcdirection == 1) {
 	    qtc_format(data, data->call, data->band);
 	}
 	
