@@ -394,6 +394,7 @@ int bandweight_multis[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 pthread_t background_thread;
 pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
+static struct termios oldt, newt;
 
 /** fake old refresh code to use update logic for panels */
 void refreshp() {
@@ -414,8 +415,6 @@ void parse_options(int argc, char *argv[])
     char keyerbuff[3];
     char tlfversion[80] = "";
     int status;
-
-    static struct termios oldt, newt;
 
     tcgetattr( STDIN_FILENO, &oldt);
     newt = oldt;
@@ -567,16 +566,6 @@ void ui_color_init()
     }
 }
 
-	if (qtcdirection > 0) {
-	    qtc_rec_store = g_hash_table_new(g_str_hash, g_str_equal);
-	    if (checkqtclogfile_new() != 0) {
-		showmsg( "QTC's giving up" );
-		sleep(2);
-		endwin();
-		exit(1);
-	    }
-	}
-
 //              if (strlen(synclogfile) > 0)
 //                      synclog(synclogfile);
 
@@ -637,6 +626,15 @@ int databases_load()
 	return EXIT_FAILURE;
     }
 
+    if (qtcdirection > 0) {
+	qtc_rec_store = g_hash_table_new(g_str_hash, g_str_equal);
+	if (checkqtclogfile_new() != 0) {
+	    showmsg( "QTC's giving up" );
+	    return EXIT_FAILURE;
+	}
+    }
+
+    
     return 0;
 }
 
