@@ -22,7 +22,6 @@
 
 int qrb(double lon1, double lat1, double lon2, double lat2,
 	double *distance, double *azimuth);
-int qrb_(void);
-
+int qrb_(double *range, double *bearing);
 
 #endif /* end of include guard: QRB_H */

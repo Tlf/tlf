@@ -1,6 +1,29 @@
+tlf-1.2.1
+=========
+Minor maintenance and bugfix release.
+
+New features:
+    - New config option SERIAL_OR_SECTION (see man page)
+    - New placeholder '!' for CW ad RTTY macros (received exchange)
+    - Additional display of WARC bands in searchwindow if mode is QSO
+      or DXPED (tnx HA2OS).
+    - Use '?' during call input if call not complete or sure. It now
+      immediately sends the call fragment followed by '?' 
+
+Bug fixes:
+    - Fix problem with tcvr control for rigs where rig_get_vfo() in
+      hamlibs rig backend is not implemented (tnx HA2OS)
+    - add missing documentation for some configuration parameters to man 
+      page
+    - correct segfault in string handling code for RTTY
+    - correct focm.c to allow use of <glib-2.32.4
+    - some ncurses libraries (e.g. on OpenSUSE) are not able to allocate 
+      a second newterm() for packet mode. Added a workaround.
+
+
 tlf-1.2.0
 =========
-Major release. 
+Major release.
 
 Contains all bug fixes and enhancements from 1.1.4, 1.1.5, 1.1.6 and
 all 1.2.0_pre versions.

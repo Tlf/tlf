@@ -16,13 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <curses.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include "tlf.h"
-#include "qrb.h"
-#include "sunup.h"
+#ifndef SHOWINFO_H
+#define SHOWINFO_H
 
 int showinfo(int x);
 
+#endif /* end of include guard: SHOWINFO_H */

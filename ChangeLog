@@ -1,3 +1,64 @@
+2014-04-26  Sebastian Kricner <sebastian.kricner@funwelt.de>
+
+  * src/callinput.c: Fragezeichen für Rufzeichen hinzugefügt
+  - Wenn im Eingabefeld ein Fragezeichen eingegeben wird und es kein 
+  leeres Feld ist, werden die Buchstaben in CW gesendet, gefolgt von 
+  einem Fragezeichen.
+
+2014-05-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/searchlog.c: Extend searchlog() to show warc bands
+  - works only in QSO or DXPED mode where you are allowed to work the WARC bands
+  - fix for contest mode if there are some warc qsos in log (will not be shown
+  now)  Based on HA2OS initial work on that. Thanks Ervin.
+
+2014-05-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/focm.c, src/showscore.c: use new IsWarcIndex()
+
+  * src/addcall.c, src/readcalls.c: add statistics info also for warc bands
+  - countryscore and zonescore are evaluated only for non-warc bands
+
+  * src/addmult.c, src/tlf.h: prepare for display of WARC bands  
+  - add entries to tlf.h
+  - complete conversion table 'inxes[]' from band index to band mask
+  - add macros IsWarcMask() and IsWarcIndex()
+
+2014-04-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/splitscreen.c: handle newterm() not being able to allocate a second
+  screen  
+  - happens for ncurses 5.8 and 5.9 with --enable-sp-funcs 
+  - do not change color settings in that case and do not switch to 
+    the packetscreen which is NULL resulting in a segfault
+
+2014-05-01  Ervin Hegedus <airween@gmail.com>
+
+  * src/sendspcall.c, tlf.1.in: add hiscall before send "DE" if SEND_DE is used
+  in DIGIMODE
+
+  * src/sendbuf.c, tlf.1.in: added new placeholder: ! for exchange of other
+  station
+
+2014-04-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * tlf.1.in: add documentation for MY_QRA (needed for Stewperry contest)
+
+2014-03-02  Ervin Hegedus <airween@gmail.com>
+
+  * src/gettxinfo.c, src/sendqrg.c: Handle RIG_ENIMPL and RIG_ENAVAIL response
+  from hamlib's rig_get_vfo() call  
+  - call rig_get_freq() if rig_get_vfo() is not implemented 
+  - error codes are reported as negative numbers
+
+2014-04-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * config.h.in, configure.ac: Drop test for GNU compatible malloc from
+  configure.ac  The test seems to fail sporadically (e.g. reported for OpenSUSE
+  13.1). That test only checks that malloc does return a valid pointer for an
+  requested memory block of size 0. As we do not use these behaviour we do not
+  need to check for it.
+
 2014-02-15  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/locator2longlat.c, src/showscore.c: split show_summary for stewperry

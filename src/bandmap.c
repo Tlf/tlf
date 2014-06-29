@@ -101,7 +101,7 @@ extern int bandinx;
 extern int trxmode;
 extern char thisnode;
 
-extern int call_band[];		/** \todo should not be public */
+extern struct worked_t worked[];
 
 extern int qtcdirection;
 
@@ -355,13 +355,13 @@ int bm_isdupe( char *call, int band ) {
     /* spot for warc bands are never dupes */
     if (IsWarcIndex(band))
 	return 0;
- 
+
     found = searchcallarray(call);
 
     if (found == -1)		/* new call */
 	return 0;
 
-    if (call_band[found] & inxes[band])
+    if (worked[found].band & inxes[band])
 	return 1;
     else
 	return 0;
@@ -528,7 +528,7 @@ void bandmap_show() {
 	if (qtcdirection == 1) {
 	    qtc_format(data, data->call, data->band);
 	}
-	
+
 	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.),
 		(data->node == thisnode ? '*' : data->node));
@@ -731,7 +731,7 @@ int qtc_format(spot* entry, char * call, int band) {
     int nrofqtc, clen;
 
 /*
- *                     | 
+ *                     |
  *                     v
  14000.0   CT7/G7DIE/AM21082.4   5Z4/LA4GHA
  14031.8   W1AW/4 1    21260.0   YO9GDN
@@ -739,7 +739,7 @@ int qtc_format(spot* entry, char * call, int band) {
                        |
                        not enough space
  */
-    
+
     if (band > -1 && bandcorner[band][2] == 0 || strlen(call) < 15) {
 	clen = strlen(call);
 	if (call[clen-2] == ' ' && (call[clen-1] == 'Q' || (call[clen-1] >= 48 && call[clen-1] <= 57))) {

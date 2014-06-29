@@ -20,12 +20,9 @@ extern int multscore[NBANDS];		// number of multipliers worked per
 					// index was 0...5 for only
 					// the non-warc bands!
 
-extern char callarray[MAX_CALLS][20];	// list of all calls worked so far
-extern int callarray_nr;		// number of entries in callarray[]
-extern int call_band[MAX_CALLS];	// for each of them, a bitfield
-					// indicating bands
-extern int call_country[MAX_CALLS];	// for each call, the country
-extern char call_exchange[MAX_CALLS][12]; // for each call, the last exchange
+extern int nr_worked;			// number of worked station
+					// entries in worked[]
+extern struct worked_t worked[MAX_CALLS]; // worked stations
 
 extern int countries[MAX_DATALINES];	// for every country, a bitfield
 					// indicating bands on which it has

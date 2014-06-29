@@ -622,12 +622,30 @@ char callinput(void)
 	    {
 		x = auto_cq();
 	    }
+	case '?':
+            {
+                if (*hiscall != '\0') {
+                    if (trxmode == CWMODE || trxmode == DIGIMODE)
+                    {
+                        strcat(hiscall, " ?");
+                        sendmessage(message[4]);
+                        hiscall[strlen(hiscall) - 2] = '\0';
+                    }
+                    else
+                    {
+                        play_file(ph_message[4]);
+                    }
+                }
+		x = -1;
+		break;
+	    }
+
 	case 127:		/* backspace */
 	    {
 		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
-		    mvprintw(cury, curx - 1, " ");
-		    mvprintw(cury, curx - 1, "");
+                    mvprintw(cury, curx - 1, " ");
+                    mvprintw(cury, curx - 1, "");
 		    hiscall[strlen(hiscall) - 1] = '\0';
 
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */
