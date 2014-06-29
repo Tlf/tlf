@@ -24,8 +24,6 @@
 #include "globalvars.h"
 #include "store_qso.h"
 
-#include "log_sent_qtc_to_disk.h"
-
 int store_qso(char *loglineptr)
 {
 	FILE *fp;
@@ -35,7 +33,6 @@ int store_qso(char *loglineptr)
 		endwin();
 		exit(1);
 	}
-
 	strcpy(qsos[nr_qsos], loglineptr);
 	nr_qsos++;
 	strcat(loglineptr, "\n");	// pa3fwm, 20040113: this looks suspicious, repeated calls to store_qso() could add multiple \n's

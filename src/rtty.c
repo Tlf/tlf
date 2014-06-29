@@ -249,8 +249,3 @@ int rx_rtty()
 
     return (0);
 }
-
-int get_last_rtty_line(char * line) {
-    strcpy(line, ry_term[3]);
-    return 0;
-}

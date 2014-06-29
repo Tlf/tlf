@@ -41,8 +41,6 @@
 #include "qtcutil.h"
 #define TOLERANCE 50
 
-#include <syslog.h>
-
 unsigned int bandcorner[NBANDS][3] =
 {{ 1800000, 2000000, 0 },	// band bottom, band top, is warc?
  { 3500000, 4000000, 0 },
