@@ -148,15 +148,6 @@ char callinput(void)
 	}
 	nodelay(stdscr, FALSE);
 
-	if (x == 195) {
-	  x = onechar();
-	    if (x == 179) {
-		x = x;		// Alt+S
-	    }
-	    if (x == 178) {
-		x = x;		// AltR
-	    }
-	}
 
 	/* special handling of some keycodes if call field is empty */
 	if (i == 0 || *hiscall == '\0') {

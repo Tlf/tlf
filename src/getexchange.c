@@ -183,21 +183,6 @@ int getexchange(void)
 		x=155;
 		continue;
 	    }
-	/* case 195:	// ALT
-	    {
-		x = onechar();
-		switch(x) {
-		    case 178:	// ALT+r
-			      qtc_recv_panel();
-			      x = 155;
-			      continue;
-		    case 179:  // ALT+s
-			      qtc_send_panel();
-			      x = 155;
-			      continue;
-		}
-	    }
-	    break; */
 	case 1:						/* ctrl-a */
 	    {
 		addspot();
