@@ -192,7 +192,7 @@ int setcontest(void)
 	zs_cty = getctydata(zscall);
 	ua9_cty = getctydata(ua9call);
     }
-    
+
     if (strcmp(whichcontest, "stewperry") == 0) {
 	stewperry_flg = 1;
 	contest = 1;

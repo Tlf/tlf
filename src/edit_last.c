@@ -30,6 +30,7 @@
 #define NR_LINES 5
 #define NR_COLS 80
 
+
 /* highlight the edit line and set the cursor */
 static void highlight_line(int row, char *line, int column)
 {

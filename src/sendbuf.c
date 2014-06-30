@@ -237,6 +237,7 @@ void sendbuf(void)
 	refreshp();
 
 	if (trxmode == DIGIMODE) {
+
 	    if (data_ready != 1) {
 		if (keyerport == MFJ1278_KEYER) {
 		    int i = 0;
@@ -255,7 +256,6 @@ void sendbuf(void)
 		data_ready = 1;
 	    } else
 		buffer[0] = '\0';
-
 	}
 
 	if (trxmode == CWMODE) {
