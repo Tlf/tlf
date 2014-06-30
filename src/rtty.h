@@ -30,7 +30,6 @@ int init_controller() ;
 void deinit_controller();
 int rx_rtty () ;
 int show_rtty(void);
-int get_last_rtty_line(char * line);
 
 #endif /* end of include guard: RTTY_H */
 

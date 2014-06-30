@@ -88,12 +88,9 @@ int getexchange(void)
     extern int pfxmult;
     extern int exc_cont;
     extern char continent[];
-    extern char mycontinent[];
     extern int keyerport;
     extern int commentfield;
     extern int no_rst;
-    extern char **qsos;
-    extern int nr_qsos;
     extern int qtcdirection;
     extern int serial_or_section;
 
@@ -145,7 +142,7 @@ int getexchange(void)
     while (1) {
 
 	refresh_comment();
-	
+
        	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	nodelay(stdscr, TRUE);  /* main loop waiting for input */
 	x = -1;
@@ -183,21 +180,6 @@ int getexchange(void)
 		x=155;
 		continue;
 	    }
-	/* case 195:	// ALT
-	    {
-		x = onechar();
-		switch(x) {
-		    case 178:	// ALT+r
-			      qtc_recv_panel();
-			      x = 155;
-			      continue;
-		    case 179:  // ALT+s
-			      qtc_send_panel();
-			      x = 155;
-			      continue;
-		}
-	    }
-	    break; */
 	case 1:						/* ctrl-a */
 	    {
 		addspot();
@@ -455,7 +437,7 @@ int getexchange(void)
 		}
 
 	    }
-    
+
 	    if ((arrlss == 1) && (x != 9) && (strlen(section) < 2)) {
 		mvprintw(13, 54, "section?");
 		mvprintw(12, 54, comment);

@@ -41,8 +41,6 @@
 #include "qtcutil.h"
 #define TOLERANCE 50
 
-#include <syslog.h>
-
 unsigned int bandcorner[NBANDS][3] =
 {{ 1800000, 2000000, 0 },	// band bottom, band top, is warc?
  { 3500000, 4000000, 0 },
@@ -528,7 +526,7 @@ void bandmap_show() {
 	if (qtcdirection == 1) {
 	    qtc_format(data, data->call, data->band);
 	}
-	
+
 	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.),
 		(data->node == thisnode ? '*' : data->node));
@@ -731,7 +729,7 @@ int qtc_format(spot* entry, char * call, int band) {
     int nrofqtc, clen;
 
 /*
- *                     | 
+ *                     |
  *                     v
  14000.0   CT7/G7DIE/AM21082.4   5Z4/LA4GHA
  14031.8   W1AW/4 1    21260.0   YO9GDN
@@ -739,7 +737,7 @@ int qtc_format(spot* entry, char * call, int band) {
                        |
                        not enough space
  */
-    
+
     if (band > -1 && bandcorner[band][2] == 0 || strlen(call) < 15) {
 	clen = strlen(call);
 	if (call[clen-2] == ' ' && (call[clen-1] == 'Q' || (call[clen-1] >= 48 && call[clen-1] <= 57))) {

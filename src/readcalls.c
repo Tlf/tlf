@@ -191,6 +191,7 @@ int readcalls(void)
 		zonebuf[2] = '\0';
 		z = zone_nr(zonebuf);
 	    }
+
 	    if (wysiwyg_once == 1 ||
 		wysiwyg_multi == 1 ||
 		arrlss == 1 ||

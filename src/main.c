@@ -408,21 +408,6 @@ void refreshp() {
  */
 void parse_options(int argc, char *argv[])
 {
-    int j;
-    pthread_t thrd1, thrd2;
-    int ret;
-    int retval;
-    char keyerbuff[3];
-    char tlfversion[80] = "";
-    int status;
-
-    tcgetattr( STDIN_FILENO, &oldt);
-    newt = oldt;
-
-    newt.c_iflag &= ~(IXON);
-
-    tcsetattr( STDIN_FILENO, TCSANOW, &newt);
-
     while ((argc > 1) && (argv[1][0] == '-')) {
 	switch (argv[1][1]) {
 	    /* verbose option */
@@ -474,6 +459,12 @@ void parse_options(int argc, char *argv[])
 /** initialize user interface */
 void ui_init()
 {
+    /* modify stdin terminals attributes to allow Ctrl-Q/S key recognition */
+    tcgetattr( STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_iflag &= ~(IXON);
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt);
+
 /* getting users terminal string and (if RXVT) setting rxvt colours on it */
 /* LZ3NY hack :) */
     char *term = getenv("TERM");
@@ -566,8 +557,6 @@ void ui_color_init()
     }
 }
 
-//              if (strlen(synclogfile) > 0)
-//                      synclog(synclogfile);
 
 /** load all databases
  *
@@ -634,7 +623,7 @@ int databases_load()
 	}
     }
 
-    
+
     return 0;
 }
 
@@ -781,6 +770,7 @@ void tlf_cleanup()
 	deinit_controller();
 
     endwin();
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 }
 
 
@@ -877,6 +867,5 @@ int main(int argc, char *argv[])
     /* now start logging  !! Does never return */
     logit(NULL);
 
-    tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
-    return (0);
+    return 0;
 }
