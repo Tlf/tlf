@@ -102,7 +102,7 @@ int my_country_points = -1;
 int my_cont_points = -1;
 int dx_cont_points = -1;
 char mit_multiplier_list[255][6];
-char continent_multiplier_list[7][6]; // SA, NA, EU, AF, AS and OC
+char continent_multiplier_list[7][3]; // SA, NA, EU, AF, AS and OC
 int countrylist_only = 0;
 int continentlist_only = 0;
 int mult_side = 0;
