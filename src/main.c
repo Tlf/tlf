@@ -105,6 +105,9 @@ int dx_cont_points = -1;
 char countrylist[255][6];
 int countrylist_only = 0;
 int countrylist_points = -1;
+char continent_multiplier_list[7][3]; // SA, NA, EU, AF, AS and OC
+int continentlist_points = -1;
+int continentlist_only = 0;
 int mult_side = 0;
 /* end LZ3NY mods */
 
@@ -445,7 +448,7 @@ void parse_options(int argc, char *argv[])
 	    printf("Version: tlf-%s\n", VERSION);
 	    exit(0);
 	    break;
-	case 'n':		// output version
+	case 'n':		// disable packet
 	    nopacket = 1;
 	    break;
 	case 'r':

@@ -93,6 +93,23 @@ int exist_in_country_list()
 }
 
 
+/* HA2OS - check if continent is in CONTINENT_LIST from logcfg.dat */
+int continent_found() {
+    extern char continent[];
+    extern char continent_multiplier_list[7][3];
+
+    int mit_fg = 0;
+
+    while (strlen(continent_multiplier_list[mit_fg]) != 0) {
+	if (strcmp(continent_multiplier_list[mit_fg], continent) == 0) {
+	    return 1;
+	}
+	mit_fg++;
+    }
+    return 0;
+}
+
+
 /* apply bandweigth scoring *
  * at the moment only LOWBAND_DOUBLES (<30m) can be active */
 int apply_bandweigth(int points) {
@@ -150,6 +167,9 @@ int scoreByContinentOrCountry () {
     extern int countrylist_points;
     extern int countrylist_only;
 
+    extern int continentlist_only;
+    extern int continentlist_points;
+
     extern int my_country_points;
     extern int my_cont_points;
     extern int dx_cont_points;
@@ -192,6 +212,24 @@ int scoreByContinentOrCountry () {
 	} else if (dx_cont_points != -1)
 	    points = dx_cont_points;
     }
+
+    /* HA2OS mods */
+    // only continent list allowed
+    if (continentlist_only == 1) {
+	if (continent_found() == 1) {
+	    // if we are on DX continent
+	    if (strcmp(continent, mycontinent) == 0) {
+		points = my_cont_points;
+	    }
+	    else if (continentlist_points != -1) {
+	      points = continentlist_points;
+	    }
+	}
+	else {
+	    points = 0;
+	}
+    }
+
     return points;
 }
 

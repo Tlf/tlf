@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +37,9 @@
 
 int readcalls(void)
 {
+    extern char continent_multiplier_list[7][3];
+    extern int continentlist_only;
+
     char inputbuffer[160];
     char tmpbuf[20];
     char bndbuf[20];
@@ -157,6 +161,21 @@ int readcalls(void)
 	    *tmpptr = '\0';
 	strcpy(tmpbuf, presentcall);
 	countrynr = getctydata(tmpbuf);
+
+	if (continentlist_only == 1) {
+	  int ci = 0;
+	  int cont_in_list = 0;
+	  while(strlen(continent_multiplier_list[ci]) != 0) {
+	      if(strcmp(continent, continent_multiplier_list[ci]) == 0) {
+		  cont_in_list = 1;
+	      }
+	      ci++;
+	  }
+	  if (cont_in_list == 0) {
+	      band_score[bandinx]++;
+	      continue;
+	  }
+	}
 
 	if (contest == 1) {
 	    strncpy(tmpbuf, inputbuffer + 76, 2);	/* get the points */

@@ -1366,6 +1366,18 @@ e.g.: JN97, or the full form: JN97OM.  In Stewperry, the points are
 calculated based on the distance between the stations.
 .
 .TP
+.BI CONTINENTLIST= "comma separated list of continents"
+Valid values are: SA, NA, EU, AF, AS and OC. 
+.
+.TP
+.BI CONTINENT_LIST_POINTS= d
+Points for stations from continents in CONTINENTLIST
+.
+.TP
+.B USE_CONTINENTLIST_ONLY
+Score zero points for station from continents not in the list.
+.
+.TP
 .B BANDWEIGHT_POINTS
 Allow a point weighting factor for different bands. E.g. 
 .br
@@ -1373,7 +1385,6 @@ BANDWEIGHT_POINTS=160:3,80:2,40:1,20:1,15:1,10:2
 .br
 can be used for AADX contest. It will multiply all QSO points by 3 on 160m,
 by 2 on 80m and 10m and on all other bands only by 1. 
-.
 .IP
 Bands not in list are weighted by 1.
 .

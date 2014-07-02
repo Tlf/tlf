@@ -252,11 +252,15 @@ int parse_logcfg(char *inputbuffer)
     extern int dx_cont_points;
     extern int countrylist_points;
     extern int countrylist_only;
+    extern int continentlist_points;
+    extern int continentlist_only;
     char c_temp[11];
     extern int my_cont_points;
     extern int dx_cont_points;
     extern int mult_side;
     extern char countrylist[][6];
+
+    extern char continent_multiplier_list[7][3];
 /* end LZ3NY mods */
     extern int tlfcolors[8][2];
     extern char synclogfile[];
@@ -438,9 +442,9 @@ int parse_logcfg(char *inputbuffer)
 	"POWERMULT",		/* 160 */
 	"SERIAL_OR_SECTION",
 	"S&P_CALL_MSG",
-	"_DUMMY_", // "CONTINENTLIST",
-	"_DUMMY_", //"CONTINENT_LIST_POINTS",
-	"_DUMMY_", // "USE_COUNTINENTLIST_ONLY",  /* 165 */
+	"CONTINENTLIST",
+	"CONTINENT_LIST_POINTS",
+	"USE_CONTINENTLIST_ONLY",  /* 165 */
 	"BANDWEIGHT_POINTS",
 	"BANDWEIGHT_MULTIS"
     };
@@ -1404,6 +1408,87 @@ int parse_logcfg(char *inputbuffer)
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(message[SP_CALL_MSG], fields[1]);
 	    break;	/* end messages */
+	}
+
+    case 163:{
+	    /* based on LZ3NY code, by HA2OS
+	       CONTINENT_LIST   (in file or listed in logcfg.dat),
+	       First of all we are checking if inserted data in
+	       CONTINENT_LIST= is a file name.  If it is we start
+	       parsing the file. If we got our case insensitive contest name,
+	       we copy the multipliers from it into multipliers_list.
+	       If the input was not a file name we directly copy it into
+	       cont_multiplier_list (must not have a preceeding contest name).
+	       The last step is to parse the multipliers_list into an array
+	       (continent_multiplier_list) for future use.
+	     */
+
+	    int counter = 0;
+	    static char cont_multiplier_list[50] = ""; 	/* use only first
+							   CONTINENT_LIST
+							   definition */
+	    char temp_buffer[255] = "";
+	    char buffer[255] = "";
+	    FILE *fp;
+
+	    PARAMETER_NEEDED(teststring);
+	    if (strlen(cont_multiplier_list) == 0) {	/* if first definition */
+		g_strlcpy(temp_buffer, fields[1], sizeof(temp_buffer));
+		g_strchomp(temp_buffer);	/* drop trailing whitespace */
+
+		if ((fp = fopen(temp_buffer, "r")) != NULL) {
+
+		    while ( fgets(buffer, sizeof(buffer), fp) != NULL ) {
+
+			g_strchomp( buffer ); /* no trailing whitespace*/
+
+			/* accept only a line starting with the contest name
+			 * (CONTEST=) followed by ':' */
+			if (strncasecmp (buffer, whichcontest,
+				strlen(whichcontest) - 1) == 0) {
+
+			    strncpy(cont_multiplier_list,
+				    buffer + strlen(whichcontest) + 1,
+				    strlen(buffer) - 1);
+			}
+		    }
+
+		    fclose(fp);
+		} else {	/* not a file */
+
+		    if (strlen(temp_buffer) > 0)
+			strcpy(cont_multiplier_list, temp_buffer);
+		}
+	    }
+
+	    /* creating the array */
+	    tk_ptr = strtok(cont_multiplier_list, ":,.- \t");
+	    counter = 0;
+
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+		    strncpy(continent_multiplier_list[counter], tk_ptr, 2);
+		    tk_ptr = strtok(NULL, ":,.-_\t ");
+		    counter++;
+		}
+	    }
+
+	    setcontest();
+	    break;
+	}
+
+    case 164:{		// CONTINENT_LIST_POINTS
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
+	    if (continentlist_points == -1) {
+		continentlist_points = atoi(c_temp);
+	    }
+
+	    break;
+	}
+    case 165:{		// CONTINENT_LIST_ONLY
+	    continentlist_only = 1;
+	    break;
 	}
 
     case 166:{		// BANDWEIGHT_POINTS
