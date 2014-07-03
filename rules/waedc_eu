@@ -58,4 +58,14 @@ S&P_TU_MSG=TU 5NN #
 #ALT_8=
 #ALT_9=
 #
+
+QR_F1=QTC?
+QR_F2=QRV
+QR_F3=R
+QR_F5=TIME?
+QR_F6=CALL?
+QR_F7=NR?
+QR_F8=AGN
+QR_F10=QSL ALL
+
 ####### END #####################

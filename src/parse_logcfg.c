@@ -58,7 +58,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 170	/* commands in list */
+#define  MAX_COMMANDS 182	/* commands in list */
 
 
 int read_logcfg(void)
@@ -282,7 +282,8 @@ int parse_logcfg(char *inputbuffer)
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int pfxmultab;
-    
+    extern char qtc_recv_msgs[12][80];
+
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
 	"disable",				/* deprecated */
@@ -454,7 +455,19 @@ int parse_logcfg(char *inputbuffer)
 	"BANDWEIGHT_POINTS",
 	"BANDWEIGHT_MULTIS",
 	"PFX_NUM_MULTIS",
-	"PFX_MULT_ALLB"
+	"PFX_MULT_ALLB",
+	"QR_F1",		/* 170 */
+	"QR_F2",
+	"QR_F3",
+	"QR_F4",
+	"QR_F5",
+	"QR_F6",		/* 175 */
+	"QR_F7",
+	"QR_F8",
+	"QR_F9",
+	"QR_F10",
+	"QR_F11",		/* 180 */
+	"QR_F12",
     };
 
     char **fields;
@@ -1600,6 +1613,11 @@ int parse_logcfg(char *inputbuffer)
 		break;
 	    }
 
+    case 170 ... 181: {
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(qtc_recv_msgs[ii - 170], fields[1]);
+	    break;	
+	    }
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

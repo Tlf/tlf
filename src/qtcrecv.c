@@ -36,6 +36,7 @@
 #include "speedup.h"
 #include "speeddown.h"
 #include "cw_utils.h"
+#include "keyer.h"
 
 extern char hiscall[];
 extern int trxmode;
@@ -43,13 +44,15 @@ extern t_qtcreclist qtcreclist;
 extern int keyerport;
 extern char buffer[];
 extern int nr_qsos;
+extern char qtc_recv_msgs[12][80];
 
 enum {
   QTCRECVWINBG = 32,
   QTCRECVLINE,
   QTCRECVINVLINE,
   QTCRECVCURRLINE,
-  QTCRECVBG
+  QTCRECVBG,
+  KEYERLINE
 };
 
 int qtcrecvpanel = 0;
@@ -65,13 +68,13 @@ static char last_rtty_line[2][50] = {"", ""};	// local copy and store to remain
 static char prevqtccall[15] = "";
 int curr_rtty_line = 0;
 int capturing = 0;
-char helpmsg[6][2][26] = {
-  { "Check the callsign and", "press [TAB]" },
-  { "Enter the QTC serial,", "and press [TAB]" },
-  { "Enter the QTC number,", "and press [TAB]" },
-  { "Enter the time of QSO,", "and press [TAB]" },
-  { "Enter the callsign of", "QSO, and press [TAB]" },
-  { "Enter the serial of QSO,", "and press [TAB]" },
+char helpmsg[6][26] = {
+    "Enter callsign",
+    "Enter the QTC serial",
+    "Enter the QTC number",
+    "Enter the time",
+    "Enter the CALL",
+    "Enter the SERIAL"
 };
 int nrofqtc = 0;
 
@@ -87,6 +90,7 @@ int qtc_recv_panel() {
     init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
     init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
     init_pair(QTCRECVCURRLINE,COLOR_YELLOW, COLOR_MAGENTA);
+    init_pair(KEYERLINE,      COLOR_WHITE,  COLOR_BLACK);
 
     int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
     //int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
@@ -98,8 +102,7 @@ int qtc_recv_panel() {
     }
 
     if (strcmp(qtcreclist.callsign, prevqtccall) != 0 || strlen(qtcreclist.callsign) == 0) {
-	strcpy(buffer, "QTC QRV ");
-	sendbuf();
+	sendmessage(qtc_recv_msgs[1]);
 	qtcreclist.count = 0;
 	qtcreclist.serial = 0;
 	qtcreclist.confirmed = 0;
@@ -118,7 +121,7 @@ int qtc_recv_panel() {
     strncpy(prevqtccall, qtcreclist.callsign, strlen(qtcreclist.callsign));
     
     if (qtcrecvpanel == 0) {
-      qtcrecvwin = newwin(14, 65, 9, 2);
+      qtcrecvwin = newwin(14, 75, 9, 2);
       qtcrecv_panel = new_panel(qtcrecvwin);
       hide_panel(qtcrecv_panel);
       qtcrecvpanel = 1;
@@ -131,7 +134,7 @@ int qtc_recv_panel() {
     sprintf(qtchead, "QTC receive");
     wnicebox(qtcrecvwin, 0, 0, 12, 33, qtchead);
     sprintf(qtchead, "HELP");
-    wnicebox(qtcrecvwin, 0, 35, 12, 28, qtchead);
+    wnicebox(qtcrecvwin, 0, 35, 12, 38, qtchead);
     //mvwprintw(qtcrecvwin, 12, 2, " QTC - F2: all | ENT: curr ");
     wbkgd(qtcrecvwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVWINBG)));
     wattrset(qtcrecvwin, line_inverted);
@@ -256,8 +259,7 @@ int qtc_recv_panel() {
 				        if (qtcreclist.qtclines[currqtc].confirmed == 0) {
 					    qtcreclist.qtclines[currqtc].confirmed = 1;
 					    qtcreclist.confirmed++;
-					    sprintf(buffer, "R ");
-					    sendbuf();
+					    sendmessage(qtc_recv_msgs[2]);
 					}
 					tfi = (fieldset.active-3)%3;
 					//fieldset.active++;	// go to next line time field
@@ -269,28 +271,22 @@ int qtc_recv_panel() {
 			    }
 			    else if (qtcreclist.qtclines[currqtc].status == 1 && qtcreclist.qtclines[currqtc].confirmed != 1) {
 				if (trxmode == CWMODE) {
-				    sprintf(buffer, "AGN ");
-				    sendbuf();
+				    sendmessage(qtc_recv_msgs[7]);
 				}
 				if (trxmode == DIGIMODE) {
-				    sprintf(buffer, "%02d PSE AGN", currqtc+1);
+				    sprintf(buffer, "%02d %s ", currqtc+1, qtc_recv_msgs[7]);
 				    sendbuf();
 				}
 			    }
 
-			    if (qtcreclist.confirmed == qtcreclist.count) {
+			    if (qtcreclist.count > 0 && qtcreclist.confirmed == qtcreclist.count) {
 				if (qtcreclist.sentcfmall == 0) {
 				    if (log_recv_qtc_to_disk(nr_qsos) == 0) {
 					qtcreclist.sentcfmall = 1;
 					// TODO
 					// send 'CFM all' to station
-					if (trxmode == DIGIMODE) {
-					    strcpy(buffer, "QSL ALL QTC");
-					    sendbuf();
-					}
-					if (trxmode == CWMODE) {
-					    strcpy(buffer, "CFM ALL TNX ");
-					    sendbuf();
+					if (trxmode == DIGIMODE || trxmode == CWMODE) {
+					    sendmessage(qtc_recv_msgs[9]);
 					}
 					// TODO
 				    }
@@ -300,7 +296,16 @@ int qtc_recv_panel() {
 			}
 		    }
 		    break;
-	  case 130:		// F2
+	  case 129 ... 138:			/* F1.. F10 */
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			sendmessage(qtc_recv_msgs[x - 129]);
+
+		    } /* else {
+			play_file(ph_message[x - 129]);
+		    } */
+
+		    break;
+	/*case 130:		// F2
 		    for(j=0; j<qtcreclist.count; j++) {
 			if (qtcreclist.qtclines[j].status == 0 &&
 			    strlen(qtcreclist.qtclines[j].time) == 4 &&
@@ -313,11 +318,11 @@ int qtc_recv_panel() {
 			}
 		    }
 		    showfield(fieldset.active);
-		    break;
+		    break;*/
 	  case 161:  		// DELETE
 		    delete_from_field(0);
 		    break;
-	  case 138:			// SHIFT + Fn
+	  /*case 138:			// SHIFT + Fn
 		    x = onechar();
 		    if (x == 81) {	// shift + F2
 			for(j=0; j<qtcreclist.count; j++) {
@@ -329,7 +334,7 @@ int qtc_recv_panel() {
 			}
 			showfield(fieldset.active);
 		    }
-		    break;
+		    break;*/
 	  case 9:		// TAB
 		    if (trxmode == DIGIMODE) {
 			if (fieldset.active == 32) {
@@ -418,8 +423,15 @@ int qtc_recv_panel() {
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		    break;
+	case 44:		// , keyer
+	case 11:		// ctrl-k
+	    {
+		mvprintw(5, 0, "");
+		keyer();
+		x = 0;
+		break;
+	    }
 	}
-
 	refreshp();
 	if (x != 27) {
 	    x = 0;
@@ -898,18 +910,35 @@ int clear_help_block() {
 
     wattrset(qtcrecvwin, line_inverted);
     for(i=1;i<13;i++) {
-	mvwprintw(qtcrecvwin, i, 36, "                            ");
+	mvwprintw(qtcrecvwin, i, 36, "                                      ");
     }
     return 0;
 }
 
 int show_help_msg(msgidx) {
     clear_help_block();
-    int i = 0;
+    int i = 0, j = 0;
+    char buff[80];
 
-    while(helpmsg[msgidx][i][0] != '\0') {
-	mvwprintw(qtcrecvwin, i+1, 36, helpmsg[msgidx][i]);
-	i++;
+    //init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
+    init_pair(QTCRECVCURRLINE,COLOR_YELLOW, COLOR_MAGENTA);
+    init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
+
+    int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
+    //int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
+    int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
+
+    wattrset(qtcrecvwin, line_currinverted);
+    mvwprintw(qtcrecvwin, ++j, 36, helpmsg[msgidx]);
+    wattrset(qtcrecvwin, line_inverted);
+    mvwprintw(qtcrecvwin, ++j, 36, "PgUP/PgDW: QRQ/QRS");
+    mvwprintw(qtcrecvwin, ++j, 36, "ENTER: R & next OR AGN");
+    for(i=0; i<12 && j < 12; i++) {
+        if (strlen(qtc_recv_msgs[i]) > 0) {
+	    strncpy(buff, qtc_recv_msgs[i], strlen(qtc_recv_msgs[i])-1);
+	    buff[strlen(qtc_recv_msgs[i])-1] = '\0';
+	    mvwprintw(qtcrecvwin, ++j, 36, "F%-2d: %s", (i+1), buff);
+	}
     }
 
     return 0;
