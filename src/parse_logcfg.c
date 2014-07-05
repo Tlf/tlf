@@ -58,7 +58,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 182	/* commands in list */
+#define  MAX_COMMANDS 194	/* commands in list */
 
 
 int read_logcfg(void)
@@ -283,6 +283,7 @@ int parse_logcfg(char *inputbuffer)
     extern int pfxnummultinr;
     extern int pfxmultab;
     extern char qtc_recv_msgs[12][80];
+    extern char qtc_send_msgs[12][80];
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -468,6 +469,19 @@ int parse_logcfg(char *inputbuffer)
 	"QR_F10",
 	"QR_F11",		/* 180 */
 	"QR_F12",
+	"QS_F1",
+	"QS_F2",
+	"QS_F3",
+	"QS_F4",
+	"QS_F5",
+	"QS_F6",
+	"QS_F7",
+	"QS_F8",
+	"QS_F9",		/* 190 */
+	"QS_F10",
+	"QS_F11",
+	"QS_F12"
+      
     };
 
     char **fields;

@@ -190,7 +190,8 @@ char message[25][80] =
 	"", "", "", "", "", "", "", "", ""
 };
 char ph_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names
-char qtc_recv_msgs[12][80] = {"QTC?", "QRV", "R", "", "TIME?", "CALL?", "NR?", "AGN", "", "QSL ALL", "", ""}; // QTC receive windowd Fx messages
+char qtc_recv_msgs[12][80] = {"QTC?", "QRV", "R", "", "TIME?", "CALL?", "NR?", "AGN", "", "QSL ALL", "", ""}; // QTC receive windowS Fx messages
+char qtc_send_msgs[12][80] = {"QRV?", "QTC", "", "", "TIME", "CALL", "NR", "", "", "", "", ""}; // QTC send window Fx messages
 
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
