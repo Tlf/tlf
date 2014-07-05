@@ -228,6 +228,9 @@ char callinput(void)
 		if (qtcdirection & 1) {
 		    qtc_recv_panel();
 		}
+		if (qtcdirection & 2) {
+		    qtc_send_panel();
+		}
 		x=155;
 		continue;
 	    }
