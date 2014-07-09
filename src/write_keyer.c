@@ -66,6 +66,10 @@ int write_keyer(void)
 	    if (strlen(rttyoutput) < 2) {
 		mvprintw(24, 0, "No modem file specified!");
 	    }
+	    // when GMFSK used (possible Fldigi interface), the trailing \n doesn't need
+	    if (wkeyerbuffer[strlen(wkeyerbuffer)-1] == '\n') {
+		wkeyerbuffer[strlen(wkeyerbuffer)-1] = '\0';
+	    }
 	    sprintf(outstring, "echo -n \"\n%s\" >> %s",
 		    wkeyerbuffer, rttyoutput);
 	    rc = system(outstring);

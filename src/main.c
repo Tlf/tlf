@@ -745,8 +745,10 @@ void keyer_init()
 	init_controller();
     }
 
-    if (keyerport != NET_KEYER)
+    // check the GMFSK value is just a workaround
+    if (keyerport != NET_KEYER && keyerport != GMFSK) {
 	write_tone(); 		/** \todo works only for NET_EKYER */
+    }
 }
 
 
