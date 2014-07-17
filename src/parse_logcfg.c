@@ -1632,6 +1632,11 @@ int parse_logcfg(char *inputbuffer)
 	    strcpy(qtc_recv_msgs[ii - 170], fields[1]);
 	    break;	
 	    }
+    case 182 ... 193: {
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(qtc_send_msgs[ii - 182], fields[1]);
+	    break;	
+	    }
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

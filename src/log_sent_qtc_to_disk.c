@@ -23,44 +23,117 @@
 ------------------------------------------------------------------------*/
 
 #include "globalvars.h"
+#include "get_time.h"
 #include "log_sent_qtc_to_disk.h"
+#include "qtcutil.h"
 
-pthread_mutex_t qtc_disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-//int log_sent_qtc_to_disk(int qtcnr)
+extern int trx_control;
+extern float freq;
+extern int logfrequency;
+
 int log_sent_qtc_to_disk(int qsonr)
 {
-    char qtclogline[60], temp[10];
+    char qtclogline[80], temp[20];
     int qpos = 0, i;
     int has_empty = 0;
     int last_qtc = 0;
 
+    static char time_buf[80];
+    char khz[5] = " 000";
+
     for(i=0; i<10; i++) {
 
 	if (qtclist.qtclines[i].saved == 0 && qtclist.qtclines[i].flag == 1 && qtclist.qtclines[i].sent == 1) { // not saved and marked for sent
-	    for(qpos=0; qpos<60; qpos++) {
+	    for(qpos=0; qpos<80; qpos++) {
 		qtclogline[qpos] = 32;
 	    }
 	  
 	    qpos = 0;
-	    sprintf(temp, " %04d", qtclist.serial);
+	    // QTC:  3799 PH 2003-03-23 0711 YB1AQS        001/10     DL8WPX        0330 DL6RAI        1021
+	    // QTC: 21086 RY 2001-11-10 0759 HA3LI           1/10     YB1AQS        0003 KB3TS          003
+
+	    sprintf(temp, "%3s", band[bandinx]);
+	    if (trxmode == CWMODE) {
+		strcat(temp, "CW ");
+	    }
+	    else if (trxmode == SSBMODE) {
+		strcat(temp, "SSB");
+	    }
+	    else {
+		strcat(temp, "DIG");
+	    }
 	    strncpy(qtclogline, temp, strlen(temp));
-	    qpos+=strlen(temp);
 
-	    sprintf(temp, " %04d", qtclist.qtclines[i].qsoline);
+	    qpos = strlen(temp);
+	    sprintf(temp, "%04d", qsonr);
+	    strncpy(qtclogline+qpos, temp, strlen(temp));
+	    qpos += strlen(temp);
+
+	    get_time();
+	    strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
+
+	    strncpy(qtclogline+qpos, time_buf, strlen(time_buf));
+	    qpos+=strlen(time_buf);
+
+	    if (logfrequency == 1 &&
+		trx_control == 1) {
+		sprintf(khz, " %3d", ((int)freq)%1000);	// show freq.
+		strncpy(qtclogline+qpos, khz, strlen(khz));
+		qpos += strlen(khz);
+	    }
+
+	    if (lan_active == 1) {
+		qtclogline[qpos++] = thisnode;	// set node ID...
+	    } else {
+		qtclogline[qpos++] = ' ';
+	    }
+	    qtclogline[qpos++] = ' ';
+
+	    sprintf(temp, "%-14s", qtclist.callsign);
+
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
 	    qpos+=strlen(temp);
 
-	    sprintf(temp, " %04d", qsonr);
+	    sprintf(temp, " %04d", qtclist.serial);
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
 	    qpos+=strlen(temp);
 
-	    sprintf(qtclogline+qpos, " %s\n", qtclist.qtclines[i].qtc);
-	    qpos += strlen(qtclist.qtclines[i].qtc)+3;
-	    qtclogline[qpos-1] = '\0';
+	    sprintf(temp, " %04d", qtclist.count);
+	    strncpy(qtclogline+qpos, temp, strlen(temp));
+	    qpos+=strlen(temp);
+
+	    //sprintf(temp, " %s", qtclist.qtclines[i].time);
+	    //strncpy(qtclogline+qpos, temp, strlen(temp));
+	    //qpos+=strlen(temp);
+
+	    //sprintf(temp, " %-14s", qtclist.qtclines[i].callsign);
+
+	    //strncpy(qtclogline+qpos, temp, strlen(temp));
+	    //qpos+=strlen(temp);
+
+	    if(qtclist.serial < 1000) {
+		sprintf(temp, "  %03d", qtclist.serial);
+	    }
+	    else {
+		sprintf(temp, " %04d", qtclist.serial);
+	    }
+	    strncpy(qtclogline+qpos, temp, strlen(temp));
+	    qpos+=strlen(temp);
+
+	    strcpy(qtclogline+qpos, qtclist.qtclines[i].qtc);
+	    qpos+=strlen(qtclist.qtclines[i].qtc);
+	    qtclogline[qpos] = '\0';
 
 	    store_sent_qtc(qtclogline);
-	    
+
+	    // send qtc to other nodes......
+	    if (lan_active == 1) {
+	      send_lan_message(QTCENTRY, qtclogline);
+	    }
+//	    total++;
+
+
 	    // mark qso as sent as qtc
 	    qsoflags_for_qtc[qtclist.qtclines[i].qsoline] = 1;
 	    if (qtclist.qtclines[i].qsoline > last_qtc) {
@@ -75,9 +148,9 @@ int log_sent_qtc_to_disk(int qsonr)
 		next_qtc_qso = qtclist.qtclines[i].qsoline-1;
 	    }
 
-	    qtclist.count = 0;
-	    qtclist.marked = 0;
-	    qtclist.totalsent = 0;
+	    //qtclist.count = 0;
+	    //qtclist.marked = 0;
+	    //qtclist.totalsent = 0;
 	    // set next_qtc_qso pointer to next qso line,
 	    // if the list is continous
 	    if (has_empty == 0) {
@@ -102,6 +175,9 @@ int log_sent_qtc_to_disk(int qsonr)
 	qtclist.qtclines[i].saved = 0;
 	qtclist.qtclines[i].sent = 0;
     }
+    qtclist.count = 0;
+    qtclist.marked = 0;
+    qtclist.totalsent = 0;
     nr_qtcsent++;
     return (0);
 }
