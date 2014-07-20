@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2013 Ervin Hegedüs - HA2OS <airween@gmail.com>
+ * Copyright (C) 2013-2014 Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ int * qtccount;
 int qtc_main_panel(int direction) {
     char qtchead[32];
     int i, j, x;
-    int tfi;
+    int tfi, nrpos;
     int currqtc = -1;
 
     capturing = 0;
@@ -102,9 +102,9 @@ int qtc_main_panel(int direction) {
     init_pair(KEYERLINE,      COLOR_WHITE,  COLOR_BLACK);
 
     int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
-    //int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
-    //int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
-    //int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
+    int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
+    int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
+    int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
     
     if (strlen(hiscall) > 0) {
 	if (direction == RECV) {
@@ -198,6 +198,33 @@ int qtc_main_panel(int direction) {
 	    }
 	}
 	number_fields();
+    }
+    if (direction == SEND) {
+	for(i=0; i<qtclist.count; i++) {
+	    if (qtclist.qtclines[i].flag == 1) {
+		wattrset(qtcwin, line_inverted);
+	    }
+	    else {
+		wattrset(qtcwin, line_normal);
+	    }
+
+	    //if (i+1 == j) {		// default current line
+	    if (i == 0) {		// default current line
+		if (qtclist.qtclines[i].flag == 1) {
+		    wattrset(qtcwin, line_currinverted);
+		}
+		else {
+		    wattrset(qtcwin, line_currnormal);
+		}
+		mvwprintw(qtcwin, i+3, 1, "                                 ");
+	    }
+	    nrpos = (i<9) ? 2 : 1;
+	    mvwprintw(qtcwin, i+3, nrpos, "%d", i+1);
+	    mvwprintw(qtcwin, i+3, 4, "%s", qtclist.qtclines[i].qtc);
+	    if (qtclist.qtclines[i].sent == 1) {
+		mvwprintw(qtcwin, i+3, 30, "*");
+	    }
+	}
     }
 
     showfield(fieldset.active);
@@ -391,14 +418,26 @@ int qtc_main_panel(int direction) {
 			}
 		    }
 		    else {
-			if ((fieldset.active < 3) || ((fieldset.active-3)%3 >= 0 && (fieldset.active-3)%3 < 2)) {
-			    fieldset.active++;
-			    showfield(fieldset.active-1);
+			if (direction == RECV) {
+			  if ((fieldset.active < 3) || ((fieldset.active-3)%3 >= 0 && (fieldset.active-3)%3 < 2)) {
+			      fieldset.active++;
+			      showfield(fieldset.active-1);
+			  }
+			  else {
+			      if ((fieldset.active-3)%3 == 2) {
+				  fieldset.active -= 2;
+				  showfield(fieldset.active+2);
+			      }
+			  }
 			}
-			else {
-			    if ((fieldset.active-3)%3 == 2) {
-				fieldset.active -= 2;
-				showfield(fieldset.active+2);
+			if (direction == SEND) {
+			    switch (fieldset.active) {
+				case 0:	fieldset.active = 2;
+					showfield(0);
+					break;
+				case 2:	fieldset.active = 0;
+					showfield(2);
+					break;
 			    }
 			}
 		    }
