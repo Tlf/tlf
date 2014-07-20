@@ -82,7 +82,7 @@ int qtc_send_panel() {
     }
 
     if (qtcpanel == 0) {
-      qtcsendwin = newwin(13, 35, 10, 2);
+      qtcsendwin = newwin(14, 35, 9, 2);
       qtcsend_panel = new_panel(qtcsendwin);
       hide_panel(qtcsend_panel);
       qtcpanel = 1;
@@ -96,11 +96,12 @@ int qtc_send_panel() {
     sendbuf();
     
     sprintf(qtchead, "QTC #%d send to %s", qtclist.serial, hiscall);
-    wnicebox(qtcsendwin, 0, 0, 11, 33, qtchead);
+    wnicebox(qtcsendwin, 0, 0, 12, 33, qtchead);
     mvwprintw(qtcsendwin, 12, 2, " QTC - F2: all | ENT: curr ");
     wbkgd(qtcsendwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCSENDWINBG)));
     wattrset(qtcsendwin, line_inverted);
     mvwprintw(qtcsendwin, 1, 1, "                                 ");
+    mvwprintw(qtcsendwin, 2, 1, "                                 ");
     for(i=0; i<10; i++) {
 	if(qtclist.qtclines[i].flag == 1) {
 	    wattrset(qtcsendwin, line_inverted);
@@ -108,11 +109,11 @@ int qtc_send_panel() {
 	else {
 	    wattrset(qtcsendwin, line_normal);
 	}
-	mvwprintw(qtcsendwin, i+2, 1, "                                 ");
+	mvwprintw(qtcsendwin, i+3, 1, "                                 ");
     }
 
     wattrset(qtcsendwin, line_inverted);
-    mvwprintw(qtcsendwin, 1, 4, "%d/%d", qtclist.serial, qtclist.marked);
+    mvwprintw(qtcsendwin, 2, 4, "%d/%d", qtclist.serial, qtclist.marked);
 
     for(i=0; i<qtclist.count; i++) {
 	if (qtclist.qtclines[i].flag == 1) {
@@ -130,13 +131,13 @@ int qtc_send_panel() {
 	    else {
 		wattrset(qtcsendwin, line_currnormal);
 	    }
-	    mvwprintw(qtcsendwin, i+2, 1, "                                 ");
+	    mvwprintw(qtcsendwin, i+3, 1, "                                 ");
 	}
 	nrpos = (i<9) ? 2 : 1;
-	mvwprintw(qtcsendwin, i+2, nrpos, "%d", i+1);
-	mvwprintw(qtcsendwin, i+2, 4, "%s", qtclist.qtclines[i].qtc);
+	mvwprintw(qtcsendwin, i+3, nrpos, "%d", i+1);
+	mvwprintw(qtcsendwin, i+3, 4, "%s", qtclist.qtclines[i].qtc);
 	if (qtclist.qtclines[i].sent == 1) {
-	    mvwprintw(qtcsendwin, i+2, 30, "*");
+	    mvwprintw(qtcsendwin, i+3, 30, "*");
 	}
     }
     i=1;
@@ -159,12 +160,12 @@ int qtc_send_panel() {
 			else {
 			    wattrset(qtcsendwin, line_currnormal);
 			}
-			mvwprintw(qtcsendwin, i+1, 1, "                                 ");
+			mvwprintw(qtcsendwin, i+2, 1, "                                 ");
 			nrpos = (i<10) ? 2 : 1;
-			mvwprintw(qtcsendwin, i+1, nrpos, "%d", i);
-			mvwprintw(qtcsendwin, i+1, 4, "%s", qtclist.qtclines[i-1].qtc);
+			mvwprintw(qtcsendwin, i+2, nrpos, "%d", i);
+			mvwprintw(qtcsendwin, i+2, 4, "%s", qtclist.qtclines[i-1].qtc);
 			if (qtclist.qtclines[i-1].sent == 1) {
-			    mvwprintw(qtcsendwin, i+1, 30, "*");
+			    mvwprintw(qtcsendwin, i+2, 30, "*");
 			}
 
 			// set the old position
@@ -174,12 +175,12 @@ int qtc_send_panel() {
 			else {
 			    wattrset(qtcsendwin, line_normal);
 			}
-			mvwprintw(qtcsendwin, i+2, 1, "                                 ");
+			mvwprintw(qtcsendwin, i+3, 1, "                                 ");
 			nrpos = (i<9) ? 2 : 1;
-			mvwprintw(qtcsendwin, i+2, nrpos, "%d", (i+1));
-			mvwprintw(qtcsendwin, i+2, 4, "%s", qtclist.qtclines[i].qtc);
+			mvwprintw(qtcsendwin, i+3, nrpos, "%d", (i+1));
+			mvwprintw(qtcsendwin, i+3, 4, "%s", qtclist.qtclines[i].qtc);
 			if (qtclist.qtclines[i].sent == 1) {
-			    mvwprintw(qtcsendwin, i+2, 30, "*");
+			    mvwprintw(qtcsendwin, i+3, 30, "*");
 			}
 		      
 		    }
@@ -194,12 +195,12 @@ int qtc_send_panel() {
 			else {
 			    wattrset(qtcsendwin, line_currnormal);
 			}
-			mvwprintw(qtcsendwin, i+1, 1, "                                 ");
+			mvwprintw(qtcsendwin, i+2, 1, "                                 ");
 			nrpos = (i<10) ? 2 : 1;
-			mvwprintw(qtcsendwin, i+1, nrpos, "%d", i);
-			mvwprintw(qtcsendwin, i+1, 4, "%s", qtclist.qtclines[i-1].qtc);
+			mvwprintw(qtcsendwin, i+2, nrpos, "%d", i);
+			mvwprintw(qtcsendwin, i+2, 4, "%s", qtclist.qtclines[i-1].qtc);
 			if (qtclist.qtclines[i-1].sent == 1) {
-			    mvwprintw(qtcsendwin, i+1, 30, "*");
+			    mvwprintw(qtcsendwin, i+2, 30, "*");
 			}
 			// set the old position
 			if (qtclist.qtclines[i-2].flag == 1) {
@@ -208,12 +209,12 @@ int qtc_send_panel() {
 			else {
 			    wattrset(qtcsendwin, line_normal);
 			}
-			mvwprintw(qtcsendwin, i, 1, "                                 ");
+			mvwprintw(qtcsendwin, i+1, 1, "                                 ");
 			nrpos = (i<11) ? 2 : 1;
-			mvwprintw(qtcsendwin, i, nrpos, "%d", (i-1));
-			mvwprintw(qtcsendwin, i, 4, "%s", qtclist.qtclines[i-2].qtc);
+			mvwprintw(qtcsendwin, i+1, nrpos, "%d", (i-1));
+			mvwprintw(qtcsendwin, i+1, 4, "%s", qtclist.qtclines[i-2].qtc);
 			if (qtclist.qtclines[i-2].sent == 1) {
-			    mvwprintw(qtcsendwin, i, 30, "*");
+			    mvwprintw(qtcsendwin, i+1, 30, "*");
 			}
 		    }
 		    break;
@@ -258,7 +259,7 @@ int qtc_send_panel() {
 			strncpy(buffer, tempc, strlen(tempc));
 			buffer[strlen(tempc)] = '\0';
 			sendbuf();
-			mvwprintw(qtcsendwin, i+1, 30, "*");
+			mvwprintw(qtcsendwin, i+2, 30, "*");
 		    }
 		    i = scroll_down(i);
 		    break;
@@ -309,7 +310,7 @@ int qtc_send_panel() {
 			else {
 			    wattrset(qtcsendwin, line_currnormal);
 			}
-			mvwprintw(qtcsendwin, i+1, 30, " ");
+			mvwprintw(qtcsendwin, i+2, 30, " ");
 			qtclist.totalsent--;
 		    }
 		    i = scroll_down(i);
@@ -361,12 +362,12 @@ int scroll_down(int i) {
 	else {
 	    wattrset(qtcsendwin, line_currnormal);
 	}
-	mvwprintw(qtcsendwin, i+1, 1, "                                 ");
+	mvwprintw(qtcsendwin, i+2, 1, "                                 ");
 	nrpos = (i<10) ? 2 : 1;
-	mvwprintw(qtcsendwin, i+1, nrpos, "%d", i);
-	mvwprintw(qtcsendwin, i+1, 4, "%s", qtclist.qtclines[i-1].qtc);
+	mvwprintw(qtcsendwin, i+2, nrpos, "%d", i);
+	mvwprintw(qtcsendwin, i+2, 4, "%s", qtclist.qtclines[i-1].qtc);
 	if (qtclist.qtclines[i-1].sent == 1) {
-	    mvwprintw(qtcsendwin, i+1, 30, "*");
+	    mvwprintw(qtcsendwin, i+2, 30, "*");
 	}
 	// set the old position
 	if (qtclist.qtclines[i-2].flag == 1) {
@@ -375,12 +376,12 @@ int scroll_down(int i) {
 	else {
 	    wattrset(qtcsendwin, line_normal);
 	}
-	mvwprintw(qtcsendwin, i, 1, "                                 ");
+	mvwprintw(qtcsendwin, i+1, 1, "                                 ");
 	nrpos = (i<11) ? 2 : 1;
-	mvwprintw(qtcsendwin, i, nrpos, "%d", (i-1));
-	mvwprintw(qtcsendwin, i, 4, "%s", qtclist.qtclines[i-2].qtc);
+	mvwprintw(qtcsendwin, i+1, nrpos, "%d", (i-1));
+	mvwprintw(qtcsendwin, i+1, 4, "%s", qtclist.qtclines[i-2].qtc);
 	if (qtclist.qtclines[i-2].sent == 1) {
-	    mvwprintw(qtcsendwin, i, 30, "*");
+	    mvwprintw(qtcsendwin, i+1, 30, "*");
 	}
     }
     return i;

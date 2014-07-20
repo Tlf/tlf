@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ * Copyright (C) 2013-2014      Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 
 #include "globalvars.h"
 #include "genqtclist.h"
+#include <syslog.h>
 
 int genqtclist(char * callsign)
 {
@@ -45,7 +46,7 @@ int genqtclist(char * callsign)
     s=next_qtc_qso;
 
     while (qtclist.count < qtclistlen && s < nr_qsos) {
-	if (strncmp(qsos[s]+29, callsign, strlen(callsign)) != 0) {	// exclude current callsign
+        if (strlen(callsign) == 0 || strncmp(qsos[s]+29, callsign, strlen(callsign)) != 0) {	// exclude current callsign
 	  if (qsoflags_for_qtc[s] == 0) {
 	      genqtcline(qtclist.qtclines[i].qtc, qsos[s]);
 	      if (trxmode == DIGIMODE) {
