@@ -23,7 +23,7 @@ tlf_SOURCES = \
 	nicebox.c note.c netkeyer.c\
 	onechar.c \
 	paccdx.c parse_logcfg.c prevqso.c printcall.c \
-	qrb.c qsonr_to_str.c qtcsend.c qtcrecv.c qtcutil.c \
+	qrb.c qsonr_to_str.c qtcwin.c qtcutil.c \
 	readcalls.c readctydata.c recall_exchange.c rules.c \
 	score.c scroll_log.c  searchcallarray.c searchlog.c sendbuf.c \
 	sendqrg.c sendspcall.c set_tone.c setcontest.c \
@@ -57,7 +57,7 @@ noinst_HEADERS = \
 	nicebox.h note.h netkeyer.h\
 	onechar.h \
 	paccdx.h parse_logcfg.h prevqso.h printcall.h \
-	qrb.h qsonr_to_str.h qtcsend.h qtcrecv.h qtcutil.h \
+	qrb.h qsonr_to_str.h qtcwin.h qtcutil.h \
 	readcalls.h readctydata.h recall_exchange.h \
 	rules.h \
 	score.h scroll_log.h searchcallarray.h searchlog.h sendbuf.h \

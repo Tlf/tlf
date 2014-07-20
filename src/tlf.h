@@ -204,6 +204,9 @@ typedef struct {
   int qsos[10];
 } t_pfxnummulti;
 
+#define RECV 1		// QTC RECV direction
+#define SEND 2		// QTC SEND direction
+
 void refreshp();
 
 #endif /* TLF_H */
