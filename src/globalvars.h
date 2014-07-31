@@ -134,7 +134,7 @@ extern t_qtclist qtclist;		// the QTC list to send
 extern int nr_qtcsent;
 extern t_qtcreclist qtcreclist;		// the QTC list which received
 
-extern GHashTable* qtc_rec_store;
+extern GHashTable* qtc_store;
 extern char qtcreccalls[MAX_CALLS][15];
 extern int qtcdirection;
 extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];

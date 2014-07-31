@@ -23,7 +23,6 @@
 
 #include "globalvars.h"
 #include "genqtclist.h"
-#include <syslog.h>
 
 int genqtclist(char * callsign)
 {

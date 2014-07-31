@@ -1441,9 +1441,9 @@ int parse_logcfg(char *inputbuffer)
 	    else if (strcmp(fields[1], "SEND")) {
 	        qtcdirection = 2;
 	    }
-	    else if (strcmp(fields[1], "BOTH")) {
+	    /*else if (strcmp(fields[1], "BOTH")) {
 	        qtcdirection = 3;
-	    }
+	    }*/
 	    else {
 		KeywordNotSupported(teststring);
 	    }

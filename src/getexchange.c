@@ -171,12 +171,17 @@ int getexchange(void)
 		if (qtcdirection & 1) {
 		    qtc_main_panel(RECV);
 		}
+		if (qtcdirection & 2) {
+		    qtc_main_panel(SEND);
+		}
 		x=155;
 		continue;
 	    }
 	case 19:	// CTRL+s
 	    {
-		qtc_main_panel(SEND);
+		if (qtcdirection & 2) {
+		    qtc_main_panel(SEND);
+		}
 		x=155;
 		continue;
 	    }

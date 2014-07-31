@@ -24,7 +24,7 @@ tlf_SOURCES = \
 	onechar.c \
 	paccdx.c parse_logcfg.c prevqso.c printcall.c \
 	qrb.c qsonr_to_str.c qtcwin.c qtcutil.c \
-	readcalls.c readctydata.c recall_exchange.c rules.c \
+	readcalls.c readqtccalls.c readctydata.c recall_exchange.c rules.c \
 	score.c scroll_log.c  searchcallarray.c searchlog.c sendbuf.c \
 	sendqrg.c sendspcall.c set_tone.c setcontest.c \
 	setparameters.c show_help.c showinfo.c showpxmap.c \
@@ -58,7 +58,7 @@ noinst_HEADERS = \
 	onechar.h \
 	paccdx.h parse_logcfg.h prevqso.h printcall.h \
 	qrb.h qsonr_to_str.h qtcwin.h qtcutil.h \
-	readcalls.h readctydata.h recall_exchange.h \
+	readcalls.h readqtccalls.h readctydata.h recall_exchange.h \
 	rules.h \
 	score.h scroll_log.h searchcallarray.h searchlog.h sendbuf.h \
 	sendqrg.h sendspcall.h set_tone.h setcontest.h \
