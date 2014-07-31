@@ -27,53 +27,52 @@
 
 #define NBANDS 10
 
-typedef unsigned char t_qtc_rec_bands[NBANDS];
+typedef unsigned char t_qtc_bands[NBANDS];
 
-extern GHashTable* qtc_rec_store; // = NULL;
+extern GHashTable* qtc_store; // = NULL;
 extern char qtcreccalls[MAX_CALLS][15];
 
 /*int create_store() {
-    qtc_rec_store = g_hash_table_new(g_str_hash, g_str_equal);
+    qtc_store = g_hash_table_new(g_str_hash, g_str_equal);
     return 0;
 }*/
 
 int qtc_inc(char callsign[15], int band) {
 
-    t_qtc_rec_bands *qtc_rec_bands;
+    t_qtc_bands *qtc_bands;
     int i, gi;
 
-
-    qtc_rec_bands = g_hash_table_lookup(qtc_rec_store, callsign);
-    if (qtc_rec_bands == NULL) {
-	qtc_rec_bands = g_malloc0(sizeof *qtc_rec_bands);
+    qtc_bands = g_hash_table_lookup(qtc_store, callsign);
+    if (qtc_bands == NULL) {
+	qtc_bands = g_malloc0(sizeof *qtc_bands);
 	for(i=0; i<NBANDS; i++) {
-	    (*qtc_rec_bands)[i] = 0;
+	    (*qtc_bands)[i] = 0;
 	}
-	gi = g_hash_table_size(qtc_rec_store);
+	gi = g_hash_table_size(qtc_store);
 	strncpy(qtcreccalls[gi], callsign, strlen(callsign));
-	g_hash_table_insert(qtc_rec_store, qtcreccalls[gi], qtc_rec_bands);
+	g_hash_table_insert(qtc_store, qtcreccalls[gi], qtc_bands);
     }
     else {
-	qtc_rec_bands = g_hash_table_lookup(qtc_rec_store, callsign);
+	qtc_bands = g_hash_table_lookup(qtc_store, callsign);
     }
-    (*qtc_rec_bands)[band]++;
+    (*qtc_bands)[band]++;
 
     return 0;
 }
 
 int qtc_get(char callsign[15], int band) {
-    t_qtc_rec_bands *qtc_rec_bands;
+    t_qtc_bands *qtc_bands;
 
-    if (qtc_rec_store == NULL) {
+    if (qtc_store == NULL) {
 	return -1;
     }
 
-    qtc_rec_bands = g_hash_table_lookup(qtc_rec_store, callsign);
-    if (qtc_rec_bands == NULL) {
+    qtc_bands = g_hash_table_lookup(qtc_store, callsign);
+    if (qtc_bands == NULL) {
         return -1;
     }
     else {
-      return (*qtc_rec_bands)[band];
+      return (*qtc_bands)[band];
     }
 }
 

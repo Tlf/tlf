@@ -16,27 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include <curses.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <ctype.h>
 #include "tlf.h"
 
-
-typedef struct {
-  t_qtcreclist qtcreclist;	// received QTC list
-  int active;			// current field index
-} t_qtcfieldset;
-
-
-int qtc_main_panel(int direction);
-int showfield(int fidx);
-int modify_field(int pressed);
-int delete_from_field(int dir);
-int shift_right(char * fieldval);
-int shift_left(char * fieldval, int shift);
-int show_status(int idx);
-int number_fields();
-int readqtcfromfile();
-int clear_help_block();
-int show_help_msg();
-int put_qtc();
-int strip_spaces(char * src, char * tempc);
-//int move_cursor(int dir);
-
+int readqtccalls();

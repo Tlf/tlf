@@ -307,7 +307,7 @@ int next_qtc_qso;
 t_qtclist qtclist;
 int nr_qtcsent = 0;
 t_qtcreclist qtcreclist;
-GHashTable* qtc_rec_store = NULL;
+GHashTable* qtc_store = NULL;
 char qtcreccalls[MAX_CALLS][15];
 int qtcdirection = 0;
 
@@ -618,11 +618,15 @@ int databases_load()
     }
 
     if (qtcdirection > 0) {
-	qtc_rec_store = g_hash_table_new(g_str_hash, g_str_equal);
+	qtc_store = g_hash_table_new(g_str_hash, g_str_equal);
+
 	if (checkqtclogfile_new() != 0) {
 	    showmsg( "QTC's giving up" );
 	    return EXIT_FAILURE;
 	}
+	nr_qsosflags_for_qtc = nr_qsos;
+	readqtccalls();
+      
     }
 
 

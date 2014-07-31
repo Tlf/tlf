@@ -127,9 +127,8 @@ int log_recv_qtc_to_disk(int qsonr)
 
 	    // send qtc to other nodes......
 	    if (lan_active == 1) {
-	      send_lan_message(QTCENTRY, qtclogline);
+	      send_lan_message(QTCRENTRY, qtclogline);
 	    }
-	    total++;
 	}
     }
     for(i=0; i<10; i++) {
