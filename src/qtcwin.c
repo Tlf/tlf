@@ -103,7 +103,7 @@ int * qtccurrdiretion;
 int qtc_main_panel(int direction) {
     char qtchead[32], tempc[40];
     int i, j, x;
-    int tfi, nrpos;
+    int tfi, nrpos, tlen = 0;
     int currqtc = -1;
 
     capturing = 0;
@@ -528,7 +528,19 @@ int qtc_main_panel(int direction) {
 			    sendmessage(qtc_recv_msgs[x - 129]);
 			}
 			if(direction == SEND) {
-			    sendmessage(qtc_send_msgs[x - 129]);
+			    tlen = strlen(qtc_send_msgs[x - 129])-5;
+			    char tmess[40];
+			    tmess[0] = '\0';
+			    if (strncmp(qtc_send_msgs[x - 129] + tlen, "sr/nr", 5)) {
+				tempc[0] = '\0';
+				strncpy(tempc, qtc_send_msgs[x - 129], tlen-2);
+				tempc[tlen-1] = '\0';
+				sprintf(tmess, "%s %d/%d ", tempc, qtclist.serial, *qtccount);
+				sendmessage(tmess);
+			    }
+			    else {
+				sendmessage(qtc_send_msgs[x - 129]);
+			    }
 			}
 
 		    } /* else {
@@ -612,7 +624,6 @@ int qtc_main_panel(int direction) {
 					showfield(0);
 					break;
 				default:
-					syslog(LOG_DEBUG, "activefield: %d", activefield);
 					break;
 			    }
 			}
@@ -657,7 +668,6 @@ int qtc_main_panel(int direction) {
 					showfield(0);
 					break;
 				default:
-					syslog(LOG_DEBUG, "activefield: %d", activefield);
 					break;
 			    }
 			}
@@ -1222,14 +1232,19 @@ int show_help_msg(msgidx) {
 	mvwprintw(qtcwin, ++j, 36, help_rec_msgs[msgidx]);
     }
     if (*qtccurrdiretion == SEND) {
-        if (msgidx > 1) {
-	    msgidx = 2;
+        if (msgidx > 2) {
+	    msgidx = 3;
 	}
 	mvwprintw(qtcwin, ++j, 36, help_send_msgs[msgidx]);
     }    
     wattrset(qtcwin, line_inverted);
     mvwprintw(qtcwin, ++j, 36, "PgUP/PgDW: QRQ/QRS");
-    mvwprintw(qtcwin, ++j, 36, "ENTER: R & next OR AGN");
+    if (*qtccurrdiretion == RECV) {
+	mvwprintw(qtcwin, ++j, 36, "ENTER: R & next OR AGN");
+    }
+    if (*qtccurrdiretion == SEND) {
+	mvwprintw(qtcwin, ++j, 36, "ENTER: send QTC");
+    }
     for(i=0; i<12 && j < 12; i++) {
 	if (*qtccurrdiretion == RECV) {
 	    if (strlen(qtc_recv_msgs[i]) > 0) {
