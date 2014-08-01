@@ -1,17 +1,18 @@
 #########################################
 # WAEDC contest for EU and DX stations  #
-#        HA2OS, 14.10.2013              #
+#        HA2OS, 01.08.2014              #
 #########################################
 #
 CONTEST=waedc
 LOGFILE=waedc.log
 CONTEST_MODE
 CABRILLO=UNIVERSAL
-BANDWEIGHT_MULTIS=80:4,40:3,20:2,15:2,10:2
-CONTINENT_LIST_POINTS=1
-#QTC=RECV
+QTC=SEND
 CONTINENTLIST=EU
+CONTINENT_LIST_POINTS=1
 USE_COUNTINENTLIST_ONLY
+BANDWEIGHT_MULTIS=80:4;40:3;20:2;15:2;10:2
+COUNTRY_MULT
 
 #################################
 #NOB4
@@ -31,9 +32,9 @@ USE_COUNTINENTLIST_ONLY
 #                                #
 ##################################
 #
-F1=+++CQ TEST DE--- % ++TEST--
-F2=@ DE %
-F3=CFM UR ++5NN --#
+F1=CQ TEST DE % %
+F2=@ DE % %
+F3=@ QSL - 599 # # DE %
 F4=TU 73
 F5= @
 F6=%
@@ -42,10 +43,10 @@ F8=AGN
 F9= ?
 F10= QRZ?
 F11= PSE K
-F12=++++TEST---- % %
+F12=TEST % %
 #
-CQ_TU_MSG=
-S&P_TU_MSG=TU 5NN #
+CQ_TU_MSG=TU DE % TEST
+S&P_TU_MSG=TU 599 # 599 #
 #
 #ALT_0=
 #ALT_1=
@@ -58,4 +59,9 @@ S&P_TU_MSG=TU 5NN #
 #ALT_8=
 #ALT_9=
 #
+
+# QTC send window shortkeys
+QS_F1=QRV?
+QS_F2=QTC sr/nr
+
 ####### END #####################
