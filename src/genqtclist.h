@@ -18,5 +18,5 @@
  */
 #include "tlf.h"
 
-int genqtclist();
+int genqtclist(char * callsign, int nrofqtc);
 int genqtcline(char * qtc, char * line);

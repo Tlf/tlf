@@ -31,6 +31,7 @@ typedef unsigned char t_qtc_bands[NBANDS];
 
 extern GHashTable* qtc_store; // = NULL;
 extern char qtcreccalls[MAX_CALLS][15];
+extern int qtcdirection;
 
 /*int create_store() {
     qtc_store = g_hash_table_new(g_str_hash, g_str_equal);
@@ -66,13 +67,12 @@ int qtc_get(char callsign[15], int band) {
     if (qtc_store == NULL) {
 	return -1;
     }
-
     qtc_bands = g_hash_table_lookup(qtc_store, callsign);
     if (qtc_bands == NULL) {
-        return -1;
+	return -1;
     }
     else {
-      return (*qtc_bands)[band];
+	return (*qtc_bands)[band];
     }
 }
 
@@ -104,8 +104,12 @@ int parse_qtcline(char * logline, char callsign[15], int * bandidx) {
 			}
 	}
     }
-
-    strncpy(callsign, logline+29, 15);
+    if (qtcdirection == 1) {
+	strncpy(callsign, logline+29, 15);
+    }
+    if (qtcdirection == 2) {
+	strncpy(callsign, logline+34, 15);
+    }
     while(callsign[i] != ' ') {
 	i++;
     }

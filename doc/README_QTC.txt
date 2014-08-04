@@ -150,6 +150,58 @@ fields are empty. Keep in mind, if you've pressed ESC, and CTRL+Q
 again, all data remains, and "QTC QRV" messages will NOT send.
 
 
+Sending QTC
+=============
+
+If the station asks you, can you send one or more QTC's, you
+can press the CTRL+Q, it doesn't matter in which field are you:
+callsign or exchange. If the QTC window opened, you can press
+the F2, then Tlf will send the message: "QTC sr/nr" - but the
+"sr" and "nr" signs will replaced with the serial and number of
+lines in QTC, example: "QTC 3/8".
+
+If the callsign fields isn't empty, the content of that field
+will be copied. If empty, you can fill the empty field in QTC
+window. If station received QTC previously, you can see the number
+of QTC QSO's on the current band.
+
+The QTC serial field will be filled automatically, you just need
+to set up, how many QTC's want to send. Note, that Tlf looks the
+current callsign, and that will be excluded from the QTC list!
+If you modify the callsign field, Tlf will hide some lines, which
+matches the actually callsign, but don't afraid: if you finish
+the modification of field, you can see the available list.
+
+If you don't want to send the maximum available QTC lines, just
+edit the number field, and Tlf will gives only that QTC lines.
+
+Now, you can move to the 1st QTC line with DOWN cursor. If you press
+ENTER, Tlf will send the current QTC, and will put a "*" char
+to the end of the line. It shows you, that QTC line had been sent.
+
+Now just press DOWN and ENTER, if the station gives "R" sign. If
+it asks the last QTC line, just simple press UP, and press ENTER
+again. With the DEL key you can delete the "SENT" flag from the
+end of the line.
+
+If you sent all lines, and station confirm those, you can press
+the CTRL+S (like in most software), and Tlf will save the block.
+After 2 seconds the window will be closed, and you can go away.
+
+At this time the QTC datas will be writed to the logfile on the
+disk, callsign and number fields will be flushed, and if there
+is configured any other node in logcfg.dat, then QTC lines will
+be sent to them.
+
+On the other nodes, Tlf also will write the QTC's to its own
+logfiles.
+
+If you press ESC until you receive the QTC block, the data isn't
+lost. Tlf flush's the fields in these cases:
+* you sent all QSO's, and saved to disc
+
+
+
 Showing QTC capable stations 
 ============================
 
