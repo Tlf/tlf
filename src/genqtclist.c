@@ -24,12 +24,15 @@
 #include "globalvars.h"
 #include "genqtclist.h"
 
-int genqtclist(char * callsign)
+int genqtclist(char * callsign, int nrofqtc)
 {
     int qtclistlen;
     int s = 0, i = 0;
 
     qtclistlen = 10;
+    if (nrofqtc > 0 && nrofqtc < 10) {
+	qtclistlen = nrofqtc;
+    }
     qtclist.serial = nr_qtcsent+1;
     qtclist.marked = 0;
     qtclist.totalsent = 0;

@@ -30,8 +30,7 @@
 #include "logit.h"
 #include "cw_utils.h"
 #include <glib.h>
-#include "qtcsend.h"
-#include "qtcrecv.h"
+#include "qtcwin.h"
 #include "locator2longlat.h"
 #include "score.h"
 
