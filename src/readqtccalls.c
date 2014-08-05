@@ -28,8 +28,6 @@
 #include "qtcutil.h"
 #include <glib.h>
 
-#include <syslog.h>
-
 extern int qtcdirection;
 
 int readqtccalls()

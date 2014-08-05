@@ -1435,16 +1435,16 @@ int parse_logcfg(char *inputbuffer)
 
     case 162:{
 	    PARAMETER_NEEDED(teststring);
-	    if (strcmp(fields[1], "RECV")) {
+	    if (strncmp(fields[1], "RECV", 4) == 0) {
 	        qtcdirection = 1;
 	    }
-	    else if (strcmp(fields[1], "SEND")) {
+	    if (strncmp(fields[1], "SEND", 4) == 0) {
 	        qtcdirection = 2;
 	    }
 	    /*else if (strcmp(fields[1], "BOTH")) {
 	        qtcdirection = 3;
 	    }*/
-	    else {
+	    if (qtcdirection == 0) {
 		KeywordNotSupported(teststring);
 	    }
 	    break;

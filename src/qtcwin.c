@@ -153,7 +153,7 @@ int qtc_main_panel(int direction) {
     }
     if (direction == SEND) {
 	if (strcmp(qtclist.callsign, prevqtccall) != 0 || strlen(qtclist.callsign) == 0 || qtclist.count == 0) {
-	    j = genqtclist(hiscall);
+	    j = genqtclist(hiscall, 10);
 	    activefield = 0;
 	}
 	else {
@@ -215,41 +215,7 @@ int qtc_main_panel(int direction) {
 	number_fields();
     }
     if (direction == SEND) {
-	wattrset(qtcwin, line_inverted);
-	for(i=0; i<10; i++) {
-	    mvwprintw(qtcwin, i+3, 1, "                                 ");
-	}
-	wattrset(qtcwin, line_normal);
-	for(i=0; i<qtclist.count; i++) {
-	    //if (qtclist.qtclines[i].flag == 1) {
-		//wattrset(qtcwin, line_inverted);
-	    //}
-	    //else {
-		//wattrset(qtcwin, line_normal);
-	    //}
-
-	    //if (i+1 == j) {		// default current line
-	    //if (i == 0) {		// default current line
-		//if (qtclist.qtclines[i].flag == 1) {
-		//    wattrset(qtcwin, line_currinverted);
-		//}
-		//else {
-		    //wattrset(qtcwin, line_normal);
-		//}
-		//mvwprintw(qtcwin, i+3, 1, "                                 ");
-	    //}
-	    //nrpos = (i<9) ? 2 : 1;
-	    //mvwprintw(qtcwin, i+3, nrpos, "%d", i+1);
-	    mvwprintw(qtcwin, i+3, 4, "%s", qtclist.qtclines[i].qtc);
-	    if (qtclist.qtclines[i].sent == 1) {
-		mvwprintw(qtcwin, i+3, 30, "*");
-	    }
-	}
-	wattrset(qtcwin, line_normal);
-	for(i=qtclist.count; i<10; i++) {
-	    mvwprintw(qtcwin, i+3, 4, "                        ");
-	}
-	number_fields();
+	show_sendto_lines();
     }
 
     showfield(activefield);
@@ -505,18 +471,15 @@ int qtc_main_panel(int direction) {
 			}
 		    }
 		    break;
-	  case 19:
+	  case 19:	// CTRL-S - save QTC
 		    if (*qtccount > 0 && qtclist.totalsent == *qtccount) {
 			if (log_sent_qtc_to_disk(nr_qsos) == 0) {
-			    wattrset(qtcwin, line_currinverted);
-			    mvwprintw(qtcwin, 2, 15, "QTC block had been saved!");
-			    /*wattrset(qtcwin, line_currinverted);
-			    activefield = 3;
-			    while(activefield < *qtccount) {
-				mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[(activefield-3)].qtc);
-				activefield++;
-			    }*/
-			    sleep(2);
+			    wattrset(qtcwin, line_inverted);
+			    mvwprintw(qtcwin, 2, 11, "QTC's have been saved!");
+			    prevqtccall[0] = '\0';
+			    qtccallsign[0] = '\0';
+			    refreshp();
+			    sleep(1);
 			    x = 27;	// close the window
 			}
 			//data_ready = 1;
@@ -842,6 +805,18 @@ int modify_field(int pressed) {
 	    if (nrofqtc < 0) {
 		nrofqtc = 0;
 	    }
+	    if (*qtccurrdiretion == SEND) {
+		if (strlen(qtccallsign) > 0 && strcmp(qtccallsign, prevqtccall) != 0) {
+		    *qtccount = genqtclist(qtccallsign, 10);
+		    show_sendto_lines();
+		    showfield(2);
+		    nrofqtc = qtc_get(qtccallsign, bandinx);
+		    if (nrofqtc < 0) {
+			nrofqtc = 0;
+		    }
+		    put_qtc();
+		}
+	    }
 	    strncpy(prevqtccall, qtccallsign, strlen(qtccallsign));
 	}
 	else if (activefield == 1 && isdigit(pressed)) {
@@ -866,7 +841,16 @@ int modify_field(int pressed) {
 		curpos--;
 	    }
 	    if(strlen(fieldval) <= pos[2][2] && atoi(fieldval) <= 10) {
-	      *qtccount = atoi(fieldval);
+		if (*qtccurrdiretion == SEND) {
+		    if (*qtccount != atoi(fieldval)) {
+			*qtccount = genqtclist(qtccallsign, atoi(fieldval));
+			show_sendto_lines();
+			put_qtc();
+		    }
+	      }
+	      if (*qtccurrdiretion == RECV) {
+		  *qtccount = atoi(fieldval);
+	      }
 	      number_fields();
 	      showfield(2);
 	    }
@@ -1304,6 +1288,30 @@ int strip_spaces(char * src, char * tempc) {
       tempc[tdp] = '\0';
 
       return 0;
+}
+
+int show_sendto_lines() {
+    int i;
+    int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
+    int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
+
+    wattrset(qtcwin, line_inverted);
+    for(i=0; i<10; i++) {
+	mvwprintw(qtcwin, i+3, 1, "                                 ");
+    }
+    wattrset(qtcwin, line_normal);
+    for(i=0; i<qtclist.count; i++) {
+	mvwprintw(qtcwin, i+3, 4, "%s", qtclist.qtclines[i].qtc);
+	if (qtclist.qtclines[i].sent == 1) {
+	    mvwprintw(qtcwin, i+3, 30, "*");
+	}
+    }
+    wattrset(qtcwin, line_normal);
+    for(i=qtclist.count; i<10; i++) {
+	mvwprintw(qtcwin, i+3, 4, "                        ");
+    }
+    number_fields();
+    return 0;
 }
 
 /* int move_cursor(int dir) {

@@ -30,8 +30,7 @@
 #include "bandmap.h"
 #include <glib.h>
 #include "cw_utils.h"
-#include "qtcsend.h"
-#include "qtcrecv.h"
+#include "qtcwin.h"
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
@@ -236,7 +235,9 @@ char callinput(void)
 	    }
 	case 19:	// CTRL+s
 	    {
-		qtc_main_panel(SEND);
+		if (qtcdirection & 2) {
+		    qtc_main_panel(SEND);
+		}
 		x=155;
 		continue;
 	    }

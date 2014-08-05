@@ -38,5 +38,6 @@ int clear_help_block();
 int show_help_msg();
 int put_qtc();
 int strip_spaces(char * src, char * tempc);
+int show_sendto_lines();
 //int move_cursor(int dir);
 
