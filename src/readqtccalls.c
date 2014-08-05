@@ -27,6 +27,7 @@
 #include "globalvars.h"
 #include "qtcutil.h"
 #include <glib.h>
+#include <syslog.h>
 
 extern int qtcdirection;
 
@@ -100,6 +101,8 @@ int readqtccalls()
 	    parse_qtcline(inputbuffer, callsign, &bandidx);
 	    qtc_inc(callsign, bandidx);
 	    total++;
+syslog(LOG_DEBUG, "total: %d", total);
+
 	}
 
 	fclose(fp);
