@@ -921,7 +921,7 @@ int delete_from_field(int dir) {
 	}
 	else if (activefield == 1) {
 	    sprintf(fieldval, "%d", qtcreclist.serial);
-	    if(strlen(fieldval) >= 0) {
+	    if(strlen(fieldval) > 0) {
 	      //sprintf(fieldval, "%d", qtcreclist.serial/10);
 	      shift_left(fieldval, dir);
 	      qtcreclist.serial = atoi(fieldval);
@@ -930,7 +930,7 @@ int delete_from_field(int dir) {
 	}
 	else if (activefield == 2) {
 	    sprintf(fieldval, "%d", *qtccount);
-	    if(strlen(fieldval) >= 0) {
+	    if(strlen(fieldval) > 0) {
 	      //sprintf(fieldval, "%d", qtcreclist.count/10);
 	      shift_left(fieldval, dir);
 	      *qtccount = atoi(fieldval);
