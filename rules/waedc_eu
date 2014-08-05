@@ -1,18 +1,20 @@
 #########################################
 # WAEDC contest for EU and DX stations  #
-#        HA2OS, 14.10.2013              #
+#        HA2OS, 05.08.2014              #
 #########################################
 #
 CONTEST=waedc
 LOGFILE=waedc.log
 CONTEST_MODE
 CABRILLO=UNIVERSAL
-PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
-BANDWEIGHT_MULTIS=80:4,40:3,20:2,15:2,10:2
-CONTINENT_LIST_POINTS=1
 QTC=RECV
-DX_POINTS=1
-MY_CONTINENT_POINTS=0
+CONTINENTLIST=SA,NA,AF,AS,OC
+CONTINENT_LIST_POINTS=1
+USE_COUNTINENTLIST_ONLY
+BANDWEIGHT_MULTIS=80:4;40:3;20:2;15:2;10:2
+COUNTRY_MULT
+PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
+
 #################################
 #NOB4
 #
