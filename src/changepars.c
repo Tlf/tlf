@@ -57,6 +57,8 @@ int changepars(void)
     extern char *config_file;
     extern int miniterm;
     extern char buffer[];
+    extern int qtcdirection;
+    extern int total;
 
 #ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;
@@ -588,14 +590,22 @@ int changepars(void)
 		synclog(synclogfile);
 	    scroll_log();
 	    /** \todo register return value */
+	    total = 0;
 	    readcalls();
+	    if (qtcdirection > 0) {
+		readqtccalls();
+	    }
 	    clear_display();
 	    break;
 	}
     case 42:			/* RESCORE */
 	{
 	    /** \todo register return value */
+	    total = 0;
 	    readcalls();
+	    if (qtcdirection > 0) {
+		readqtccalls();
+	    }
 	    clear_display();
 	    break;
 	}

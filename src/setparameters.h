@@ -25,6 +25,7 @@
 #include "getwwv.h"
 #include "scroll_log.h"
 #include "readcalls.h"
+#include "readqtccalls.h"
 #include "clear_display.h"
 #include "checkparameters.h"
 
