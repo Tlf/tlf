@@ -821,6 +821,7 @@ int main(int argc, char *argv[])
     showmsg(tlfversion);
     showmsg("");
 
+    total = 0;
     if (databases_load() == EXIT_FAILURE) {
 	sleep(2);
 	endwin();

@@ -176,6 +176,7 @@ int store_sent_qtc(char *loglineptr)
 	loglineptr[i+1] = '\n';
 	loglineptr[i+2] = '\0';
 	fputs  (loglineptr, fp);
+	total++;
 
 	fclose(fp);
 	parse_qtcline(loglineptr, callsign, &bandidx);

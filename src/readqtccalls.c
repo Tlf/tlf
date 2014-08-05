@@ -42,7 +42,7 @@ int readqtccalls()
     
     clear();
 
-    if (qtcdirection & 1) {
+    if (qtcdirection & 2) {
 	mvprintw(4, 0, "Reading QTC sent logfile...\n");
 	refreshp();
 
@@ -86,7 +86,7 @@ int readqtccalls()
 	fclose(fp);
     }
 
-    if (qtcdirection & 2) {
+    if (qtcdirection & 1) {
 	mvprintw(4, 0, "Reading QTC recv logfile...\n");
 	refreshp();
 	if ((fp = fopen(QTC_RECV_LOG, "r")) == NULL) {
