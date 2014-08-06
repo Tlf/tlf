@@ -237,6 +237,32 @@ At the end of the callsign in bandmap, you can see a "0", "Q" or
 any digit, which means same as above.
 
 
+Making CABRILLO
+===============
+
+If you finish the contest, just write ":wri" in callsign field,
+then Tlf will save your log in Cabrillo format. It's a good idea
+to exit from Tlf, and start it again - this is only need to recalc
+correct points, nothing else.
+
+Now leave the Tlf, and run the "qtcmerge.py" script, which is part
+of Tlf, and normally it has been installed to your
+INSTALLDIR/share/tlf, eg. /usr/local/share/tlf. The normal way to
+run this script from the Tlf contest directory is this:
+
+/usr/local/share/tlf/qtcmerge.py YOURCALL.cbr
+
+Now the script reads your saved Cabrillo file, and write your QTC's
+to a new file, in Cabrillo format. The new file name will be
+YOURCALL_QTC.cbr. Save the original file, rename this new one to
+regular YOURCALL.cbr, and you can send it to organizers.
+
+Note, that you can find more info about the QTC's cabrillo format
+here:
+http://dl0tud.tu-dresden.de/~dj1yfk/qtcs/
+http://www.kkn.net/~trey/cabrillo/qso-template.html
+
+
 Shortkey summary
 ================
 
