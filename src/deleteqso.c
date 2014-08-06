@@ -25,13 +25,19 @@
 
 #include "globalvars.h"
 #include "deleteqso.h"
+#include <syslog.h>
+
+extern int qtcdirection;
 
 void delete_qso(void)
 {
 
-    int x, rc;
-    int lfile;
+    int x, rc, i, look, qtclen;
+    int lfile, qtcfile;
     struct stat statbuf;
+    struct stat qstatbuf;
+    char logline[LOGLINELEN+1];
+    char call[15];
 
     mvprintw(13, 29, "OK to delete last qso (y/n)?");
     x = onechar();
@@ -47,8 +53,46 @@ void delete_qso(void)
 
 	    fstat(lfile, &statbuf);
 
-	    if (statbuf.st_size >= LOGLINELEN)
+	    if (statbuf.st_size >= LOGLINELEN) {
+	        if (qtcdirection > 0) {
+		    // seek to last line to read it
+		    lseek(lfile, ((int)statbuf.st_size - LOGLINELEN), SEEK_SET);
+		    rc = read(lfile, logline, LOGLINELEN-1);
+		    // catch the last callsign
+		    strncpy(call, logline+29, 14);
+		    i = strlen(call);
+		    // strip it
+		    for(i=strlen(call)-1; call[i] == ' '; i--);
+		    call[i+1] = '\0';
+		    // if qtc had been set up
+		    if (qtcdirection & 1) {
+			if ((qtcfile = open(QTC_RECV_LOG, O_RDWR)) < 0) {
+			    mvprintw(5, 0, "Error opening QTC received logfile.\n");
+			    sleep(1);
+			}
+			fstat(qtcfile, &qstatbuf);
+			look = 1;
+			qtclen = 0;
+			// iterate till the current line from back of logfile
+			// callsigns is the current callsign
+			// this works only for fixed length qtc line!
+			while (look == 1) {
+			    lseek(qtcfile, ((int)qstatbuf.st_size - (79+qtclen)), SEEK_SET);
+			    rc = read(qtcfile, logline, 78);
+			    if (strncmp(call, logline+29, strlen(call)) != 0) {
+				look = 0;
+			    }
+			    else {
+				qtclen += 79;
+			    }
+			}
+			rc = ftruncate(qtcfile, qstatbuf.st_size - qtclen);
+			fsync(qtcfile);
+			close(qtcfile);
+		    }
+		}
 		rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
+	    }
 
 	    fsync(lfile);
 	    close(lfile);
