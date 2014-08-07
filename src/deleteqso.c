@@ -71,23 +71,25 @@ void delete_qso(void)
 			    sleep(1);
 			}
 			fstat(qtcfile, &qstatbuf);
-			look = 1;
-			qtclen = 0;
-			// iterate till the current line from back of logfile
-			// callsigns is the current callsign
-			// this works only for fixed length qtc line!
-			while (look == 1) {
-			    lseek(qtcfile, ((int)qstatbuf.st_size - (79+qtclen)), SEEK_SET);
-			    rc = read(qtcfile, logline, 78);
-			    if (strncmp(call, logline+29, strlen(call)) != 0) {
-				look = 0;
+			if ((int)qstatbuf.st_size > 0) {
+			    look = 1;
+			    qtclen = 0;
+			    // iterate till the current line from back of logfile
+			    // callsigns is the current callsign
+			    // this works only for fixed length qtc line!
+			    while (look == 1) {
+				lseek(qtcfile, ((int)qstatbuf.st_size - (79+qtclen)), SEEK_SET);
+				rc = read(qtcfile, logline, 78);
+				if (strncmp(call, logline+29, strlen(call)) != 0) {
+				    look = 0;
+				}
+				else {
+				    qtclen += 79;
+				}
 			    }
-			    else {
-				qtclen += 79;
-			    }
+			    rc = ftruncate(qtcfile, qstatbuf.st_size - qtclen);
+			    fsync(qtcfile);
 			}
-			rc = ftruncate(qtcfile, qstatbuf.st_size - qtclen);
-			fsync(qtcfile);
 			close(qtcfile);
 		    }
 		}
