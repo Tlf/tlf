@@ -93,6 +93,13 @@ int readcalls(void)
     nr_of_px = 0;
     nr_of_px_ab = 0;    
 
+    if (pfxnummultinr > 0) {
+	for(i=0; i<pfxnummultinr; i++) {
+	    for(n=0; n<NBANDS; n++) {
+		pfxnummulti[i].qsos[n] = 0;
+	    }
+	}
+    }
     init_mults();
    
     if ((fp = fopen(logfile, "r")) == NULL) {
@@ -464,11 +471,16 @@ int readcalls(void)
 
 	    // first, check pfxnummultinr array, the country 'n' exists
 	    int pfxnumcntnr = -1;
+            // pfxnummultinr is length of pfxnummulti array
 	    if (pfxnummultinr > 0) {
 		int pcntnr;
 		// find the current country
 		// n is the country in the external loop
 		// pfxnummulti[I].countrynr contains the country codes, I:=[0..pfxnummultinr]
+                // it depends from the order of prefixes in rules, eg:
+                // PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
+                // pfxnummulti[0].countrynr will be nr of USA
+                // pfxnummulti[1].countrynr will be nr of Canada
 		for(pcntnr=0; pcntnr<pfxnummultinr; pcntnr++) {
 		    if (pfxnummulti[pcntnr].countrynr == n) {
 			pfxnumcntnr = pcntnr;
@@ -476,7 +488,6 @@ int readcalls(void)
 		    }
 		}
 	    }
-
 	    if (pfxnummultinr > 0 && pfxnumcntnr >= 0) {
 		int pfxnum;
 		// walking pfxnummulti[N].qsos, which is a 10 element array
