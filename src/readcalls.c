@@ -31,8 +31,6 @@
 #include "globalvars.h"
 #include <glib.h>
 
-#include <syslog.h>
-
 int readcalls(void)
 {
     extern char continent_multiplier_list[7][3];
@@ -95,6 +93,13 @@ int readcalls(void)
     nr_of_px = 0;
     nr_of_px_ab = 0;    
 
+    if (pfxnummultinr > 0) {
+	for(i=0; i<pfxnummultinr; i++) {
+	    for(n=0; n<NBANDS; n++) {
+		pfxnummulti[i].qsos[n] = 0;
+	    }
+	}
+    }
     init_mults();
    
     if ((fp = fopen(logfile, "r")) == NULL) {
@@ -483,7 +488,6 @@ int readcalls(void)
 		    }
 		}
 	    }
-syslog(LOG_DEBUG, "pfxnummultinr: %d, pfxnumcntnr: %d", pfxnummultinr, pfxnumcntnr);
 	    if (pfxnummultinr > 0 && pfxnumcntnr >= 0) {
 		int pfxnum;
 		// walking pfxnummulti[N].qsos, which is a 10 element array
