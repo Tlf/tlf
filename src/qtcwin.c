@@ -132,7 +132,6 @@ int qtc_main_panel(int direction) {
     
     if (direction == RECV) {
 	if (strcmp(qtcreclist.callsign, prevqtccall) != 0 || strlen(qtcreclist.callsign) == 0) {
-	    sendmessage(qtc_recv_msgs[1]);
 	    qtcreclist.count = 0;
 	    qtcreclist.serial = 0;
 	    qtcreclist.confirmed = 0;
