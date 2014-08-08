@@ -34,7 +34,7 @@ int checkqtclogfile_new()
     FILE *fp;
 
     /* check if logfile exist and can be opened for read */
-    if (qtcdirection & 1) {
+    if (qtcdirection & 2) {
 	if ((fp = fopen(QTC_SENT_LOG, "r")) == NULL) {
 
 	    if (errno == EACCES) {
@@ -57,7 +57,7 @@ int checkqtclogfile_new()
 	}
     }
 
-    if (qtcdirection & 2) {
+    if (qtcdirection & 1) {
 	if ((fp = fopen(QTC_RECV_LOG, "r")) == NULL) {
 
 	    if (errno == EACCES) {
