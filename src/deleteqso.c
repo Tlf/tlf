@@ -26,6 +26,8 @@
 #include "globalvars.h"
 #include "deleteqso.h"
 #include <syslog.h>
+#define QTCRECVCALLPOS 29
+#define QTCSENTCALLPOS 34
 
 extern int qtcdirection;
 
@@ -71,7 +73,7 @@ void delete_qso(void)
 			    sleep(1);
 			}
 			fstat(qtcfile, &qstatbuf);
-			if ((int)qstatbuf.st_size > 0) {
+			if ((int)qstatbuf.st_size > QTCRECVCALLPOS) {
 			    look = 1;
 			    qtclen = 0;
 			    // iterate till the current line from back of logfile
@@ -80,7 +82,7 @@ void delete_qso(void)
 			    while (look == 1) {
 				lseek(qtcfile, ((int)qstatbuf.st_size - (79+qtclen)), SEEK_SET);
 				rc = read(qtcfile, logline, 78);
-				if (strncmp(call, logline+29, strlen(call)) != 0) {
+				if (strncmp(call, logline+QTCRECVCALLPOS, strlen(call)) != 0) {
 				    look = 0;
 				}
 				else {
@@ -92,7 +94,35 @@ void delete_qso(void)
 			}
 			close(qtcfile);
 		    }
-		}
+                    if (qtcdirection & 2) {
+                        if ((qtcfile = open(QTC_SENT_LOG, O_RDWR)) < 0) {
+                            mvprintw(5, 0, "Error opening QTC sent logfile.\n");
+                            sleep(1);
+                        }
+                        fstat(qtcfile, &qstatbuf);
+                        if ((int)qstatbuf.st_size > QTCSENTCALLPOS) {
+                            look = 1;
+                            qtclen = 0;
+                            // iterate till the current line from back of logfile
+                            // callsigns is the current callsign
+                            // this works only for fixed length qtc line!
+                            while (look == 1) {
+                                lseek(qtcfile, ((int)qstatbuf.st_size - (84+qtclen)), SEEK_SET);
+                                rc = read(qtcfile, logline, 83);
+                                if (strncmp(call, logline+QTCSENTCALLPOS, strlen(call)) != 0) {
+                                    look = 0;
+                                }
+                                else {
+                                    qtclen += 84;
+                                }
+                            }
+                            rc = ftruncate(qtcfile, qstatbuf.st_size - qtclen);
+                            fsync(qtcfile);
+                        }
+                        close(qtcfile);
+                    }
+                  
+                }
 		rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 	    }
 
