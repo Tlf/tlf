@@ -103,6 +103,8 @@ extern struct worked_t worked[];
 
 extern int qtcdirection;
 
+char *qtc_format(char * call, int band);
+
 /** \brief initialize bandmap
  *
  * initalize colors and data structures for bandmap operation
@@ -275,12 +277,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
     /* if not in list already -> prepare new entry and
      * insert in list at correct freq */
 	spot *entry = g_new(spot, 1);
-	if (qtcdirection > 0) {
-	    qtc_format(entry, call, band);
-	}
-	else {
-	    entry -> call = g_strdup(call);
-	}
+	entry -> call = g_strdup(call);
 	entry -> freq = freq;
 	entry -> mode = mode;
 	entry -> band = band;
@@ -521,11 +518,9 @@ void bandmap_show() {
 
     for (i = 0; i < spots->len; i++)
     {
-	data = g_ptr_array_index( spots, i );
+	char *temp;
 
-	if (qtcdirection == 1) {
-	    qtc_format(data, data->call, data->band);
-	}
+	data = g_ptr_array_index( spots, i );
 
 	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.),
@@ -543,17 +538,24 @@ void bandmap_show() {
 	if (bm_ismulti(data->call))
 	    attron(A_STANDOUT);
 
+	if (qtcdirection == 1) {
+	    temp = qtc_format(data->call, data->band);
+	}
+	else
+	    temp = g_strdup(data->call);
+
        if (data->dupe) {
 	   if (bm_config.showdupes) {
 	       attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 	       attroff(A_STANDOUT);
 
-	       printw ("%-12s", g_ascii_strdown(data->call, -1));
+	       printw ("%-12s", g_ascii_strdown(temp, -1));
 	   }
 	}
 	else {
-	    printw ("%-12s", data->call);
+	    printw ("%-12s", temp);
 	}
+	g_free(temp);
 
 	attroff (A_BOLD);
 
@@ -724,10 +726,15 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
     return result;
 }
 
-int qtc_format(spot* entry, char * call, int band) {
-    char tcall[15];
-    int nrofqtc, clen;
 
+/*
+ * format bandmap call output for WAE
+ * - prepare and return a temporary string from call and number of QTC's
+ *   (if any)
+ */
+char *qtc_format(char * call, int band) {
+    char tcall[15];
+    int nrofqtc;
 /*
  *                     |
  *                     v
@@ -737,28 +744,22 @@ int qtc_format(spot* entry, char * call, int band) {
                        |
                        not enough space
  */
+    if ((band > -1 && bandcorner[band][2] == 0) || strlen(call) < 15) {
 
-    if (band > -1 && bandcorner[band][2] == 0 || strlen(call) < 15) {
-	clen = strlen(call);
-	if (call[clen-2] == ' ' && (call[clen-1] == 'Q' || (call[clen-1] >= 48 && call[clen-1] <= 57))) {
-	    call[clen-2] = '\0';
-	}
 	nrofqtc = qtc_get(call, band);
-	if (nrofqtc >= 0 && nrofqtc < 10) {
-	    sprintf(tcall, "%s %d", call, nrofqtc);
-	    entry -> call = g_strdup(tcall);
-	}
-	else if (nrofqtc >= 10) {
-	    sprintf(tcall, "%s Q", call);
-	    entry -> call = g_strdup(tcall);
+	if (nrofqtc <= 0)
+	    return g_strdup(call);
+
+	if (nrofqtc < 10) {
+	    sprintf(tcall, "%-10s %d", call, nrofqtc);
 	}
 	else {
-	    entry -> call = g_strdup(call);
+	    sprintf(tcall, "%-10s Q", call);
 	}
+	return g_strdup(tcall);
     }
     else {
-      entry -> call = g_strdup(call);
+	return g_strdup(call);
     }
-
-    return 0;
 }
+
