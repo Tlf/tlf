@@ -135,10 +135,5 @@ spot *bandmap_lookup(char *partialcall);
 
 spot *bandmap_next(unsigned int upwards, unsigned int freq);
 
-/*
- * format bandmap spot, if qtcdirection > 0
- * - looks callsign in qtc store, and put the result to end of spot
- */
-int qtc_format(spot* entry, char * call, int band);
 
 #endif
