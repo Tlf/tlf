@@ -750,11 +750,12 @@ char *qtc_format(char * call, int band) {
 	if (nrofqtc <= 0)
 	    return g_strdup(call);
 
+	g_strlcpy(tcall, call, 11);
 	if (nrofqtc < 10) {
-	    sprintf(tcall, "%-10s %d", call, nrofqtc);
+	    sprintf(tcall + strlen(tcall), " %d", nrofqtc);
 	}
 	else {
-	    sprintf(tcall, "%-10s Q", call);
+	    sprintf(tcall + strlen(tcall), " Q");
 	}
 	return g_strdup(tcall);
     }
