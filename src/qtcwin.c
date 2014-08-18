@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 	/* ------------------------------------------------------------
-	 *        Handle QTC panel, receiv QTC, write to log
+	 *        Handle QTC panel, receive and send QTC, write to log
 	 *
 	 *--------------------------------------------------------------*/
 
@@ -43,6 +43,7 @@
 #define DIRCLAUSE (direction == RECV) || (direction == SEND && (activefield == 0 || activefield == 2))
 
 extern char hiscall[];
+extern char lastcall[];
 extern int trxmode;
 extern t_qtcreclist qtcreclist;
 extern t_qtclist qtclist;
@@ -52,6 +53,7 @@ extern int nr_qsos;
 extern char qtc_recv_msgs[12][80];
 extern char qtc_send_msgs[12][80];
 extern int data_ready;
+extern struct t_qtc_store_obj *qtc_temp_obj;
 
 enum {
   QTCRECVWINBG = 32,
@@ -94,7 +96,6 @@ char help_send_msgs[6][26] = {
     "",
     ""
 };
-int nrofqtc = 0;
 
 char * qtccallsign;
 int * qtccount;
@@ -122,9 +123,21 @@ int qtc_main_panel(int direction) {
     if (strlen(hiscall) > 0) {
 	if (direction == RECV) {
 	    strncpy(qtcreclist.callsign, hiscall, strlen(hiscall));
+	    qtcreclist.callsign[strlen(hiscall)] = '\0';
 	}
 	if (direction == SEND) {
 	    strncpy(qtclist.callsign, hiscall, strlen(hiscall));
+	    qtclist.callsign[strlen(hiscall)] = '\0';
+	}
+    }
+    else if (strlen(lastcall) > 0) {
+	if (direction == RECV) {
+	    strncpy(qtcreclist.callsign, lastcall, strlen(lastcall));
+	    qtcreclist.callsign[strlen(lastcall)] = '\0';
+	}
+	if (direction == SEND) {
+	    strncpy(qtclist.callsign, lastcall, strlen(lastcall));
+	    qtclist.callsign[strlen(lastcall)] = '\0';
 	}
     }
 
@@ -152,7 +165,7 @@ int qtc_main_panel(int direction) {
     }
     if (direction == SEND) {
 	if (strcmp(qtclist.callsign, prevqtccall) != 0 || strlen(qtclist.callsign) == 0 || qtclist.count == 0) {
-	    j = genqtclist(hiscall, 10);
+	    j = genqtclist(qtclist.callsign, 10);
 	    activefield = 0;
 	}
 	else {
@@ -725,10 +738,7 @@ int showfield(int fidx) {
 	    sprintf(fieldval, "%s", qtccallsign);
 	    winrow = 1;
 	    posidx = 0;
-	    nrofqtc = qtc_get(qtccallsign, bandinx);
-	    if (nrofqtc < 0) {
-		nrofqtc = 0;
-	    }
+	    qtc_temp_obj = qtc_get(qtccallsign);
 	    put_qtc();
 	}
 	else if (fidx == 1) {
@@ -800,19 +810,12 @@ int modify_field(int pressed) {
 		curpos--;
 	    }
 	    showfield(0);
-	    nrofqtc = qtc_get(qtccallsign, bandinx);
-	    if (nrofqtc < 0) {
-		nrofqtc = 0;
-	    }
 	    if (*qtccurrdiretion == SEND) {
 		if (strlen(qtccallsign) > 0 && strcmp(qtccallsign, prevqtccall) != 0) {
 		    *qtccount = genqtclist(qtccallsign, 10);
 		    show_sendto_lines();
 		    showfield(2);
-		    nrofqtc = qtc_get(qtccallsign, bandinx);
-		    if (nrofqtc < 0) {
-			nrofqtc = 0;
-		    }
+		    qtc_temp_obj = qtc_get(qtccallsign);
 		    put_qtc();
 		}
 	    }
@@ -844,6 +847,7 @@ int modify_field(int pressed) {
 		    if (*qtccount != atoi(fieldval)) {
 			*qtccount = genqtclist(qtccallsign, atoi(fieldval));
 			show_sendto_lines();
+			qtc_temp_obj = qtc_get(qtccallsign);
 			put_qtc();
 		    }
 	      }
@@ -914,7 +918,8 @@ int delete_from_field(int dir) {
 	    if (strlen(qtccallsign) > 0) {
 		sprintf(fieldval, "%s", qtccallsign);
 		shift_left(fieldval, dir);
-		strcpy(qtccallsign, fieldval);
+		strncpy(qtccallsign, fieldval, strlen(fieldval));
+		qtccallsign[strlen(fieldval)] = '\0';
 		showfield(0);
 	    }
 	}
@@ -1252,9 +1257,15 @@ int put_qtc() {
 
     init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
     int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
+    char qtcdirstring[3][10] = {"", "Received", "Sent"};
 
     wattrset(qtcwin, line_normal);
-    mvwprintw(qtcwin, 1, 19, "%2dQ on %d", nrofqtc, atoi(band[bandinx]));
+    if (*qtccurrdiretion == RECV || *qtccurrdiretion == SEND) {
+	mvwprintw(qtcwin, 1, 19, "%s %2d QTC", qtcdirstring[*qtccurrdiretion], qtc_temp_obj->total);
+    }
+    else {
+	mvwprintw(qtcwin, 1, 19, "Total: %2d QTC (R: %d, S: %d)", qtc_temp_obj->total, qtc_temp_obj->received, qtc_temp_obj->sent);
+    }
     return 0;
 }
 

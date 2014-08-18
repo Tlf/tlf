@@ -165,8 +165,8 @@ int store_recv_qtc(char *loglineptr)
 	total++;
 
 	fclose(fp);
-	parse_qtcline(loglineptr, callsign, &bandidx);
-	qtc_inc(callsign, bandidx);
+	parse_qtcline(loglineptr, callsign, RECV);
+	qtc_inc(callsign, RECV);
 
 	return(0);
 }

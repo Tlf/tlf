@@ -69,6 +69,8 @@ int readqtccalls()
 	    strncpy(temps, inputbuffer+11, 4);	// qso nr in qso list
 	    tempi = atoi(temps)-1;
 	    qsoflags_for_qtc[tempi] = 1;
+	    parse_qtcline(inputbuffer, callsign, SEND);
+	    qtc_inc(callsign, SEND);
 	    total++;
 	    if (tempi > last_qtc) {
 		last_qtc = tempi;
@@ -97,8 +99,8 @@ int readqtccalls()
 	}
 
 	while (fgets(inputbuffer, 90, fp) != NULL) {
-	    parse_qtcline(inputbuffer, callsign, &bandidx);
-	    qtc_inc(callsign, bandidx);
+	    parse_qtcline(inputbuffer, callsign, RECV);
+	    qtc_inc(callsign, RECV);
 	    total++;
 	}
 

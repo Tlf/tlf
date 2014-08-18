@@ -32,82 +32,58 @@ typedef unsigned char t_qtc_bands[NBANDS];
 extern GHashTable* qtc_store; // = NULL;
 extern char qtcreccalls[MAX_CALLS][15];
 extern int qtcdirection;
+extern struct t_qtc_store_obj *qtc_empty_obj;
 
-/*int create_store() {
-    qtc_store = g_hash_table_new(g_str_hash, g_str_equal);
-    return 0;
-}*/
-
-int qtc_inc(char callsign[15], int band) {
-
-    t_qtc_bands *qtc_bands;
+int qtc_inc(char callsign[15], int direction) {
+    struct t_qtc_store_obj *qtc_obj;
     int i, gi;
-
-    qtc_bands = g_hash_table_lookup(qtc_store, callsign);
-    if (qtc_bands == NULL) {
-	qtc_bands = g_malloc0(sizeof *qtc_bands);
-	for(i=0; i<NBANDS; i++) {
-	    (*qtc_bands)[i] = 0;
-	}
+   
+    qtc_obj = g_hash_table_lookup(qtc_store, callsign);
+    if (qtc_obj == NULL) {
+	//qtc_obj = g_malloc0(sizeof (struct t_qtc_store_obj *));
+	qtc_obj = g_malloc0(sizeof (struct t_qtc_store_obj));
+	qtc_obj->total = 0;
+	qtc_obj->received = 0;
+	qtc_obj->sent = 0;
 	gi = g_hash_table_size(qtc_store);
 	strncpy(qtcreccalls[gi], callsign, strlen(callsign));
-	g_hash_table_insert(qtc_store, qtcreccalls[gi], qtc_bands);
+	g_hash_table_insert(qtc_store, qtcreccalls[gi], qtc_obj);
     }
-    else {
-	qtc_bands = g_hash_table_lookup(qtc_store, callsign);
-    }
-    (*qtc_bands)[band]++;
 
+    qtc_obj->total++;
+    if (direction == RECV) {
+	qtc_obj->received++;
+    }
+    if (direction == SEND) {
+	qtc_obj->sent++;
+    }
+    
     return 0;
 }
 
-int qtc_get(char callsign[15], int band) {
-    t_qtc_bands *qtc_bands;
+struct t_qtc_store_obj * qtc_get(char callsign[15]) {
+    struct t_qtc_store_obj *qtc_obj;
 
     if (qtc_store == NULL) {
-	return -1;
+	return NULL;
     }
-    qtc_bands = g_hash_table_lookup(qtc_store, callsign);
-    if (qtc_bands == NULL) {
-	return -1;
+
+    qtc_obj = g_hash_table_lookup(qtc_store, callsign);
+    if (qtc_obj == NULL) {
+	return qtc_empty_obj;
     }
-    else {
-	return (*qtc_bands)[band];
-    }
+    return qtc_obj;
+
 }
 
-int parse_qtcline(char * logline, char callsign[15], int * bandidx) {
+int parse_qtcline(char * logline, char callsign[15], int direction) {
 
     int i = 0;
 
-    if (logline[0] == '1') {
-	*bandidx = BANDINDEX_160;
-    }
-    else {
-	switch(logline[1]) {
-	    case '8':	*bandidx = BANDINDEX_80;
-			break;
-	    case '4':	*bandidx = BANDINDEX_40;
-			break;
-	    case '2':	*bandidx = BANDINDEX_20;
-			break;
-	    case '1':
-			switch(logline[2]) {
-			    case '7':	*bandidx = BANDINDEX_17;
-					break;
-			    case '5':	*bandidx = BANDINDEX_15;
-					break;
-			    case '2':	*bandidx = BANDINDEX_12;
-					break;
-			    case '0':	*bandidx = BANDINDEX_10;
-					break;
-			}
-	}
-    }
-    if (qtcdirection == 1) {
+    if (direction == RECV) {
 	strncpy(callsign, logline+29, 15);
     }
-    if (qtcdirection == 2) {
+    if (direction == SEND) {
 	strncpy(callsign, logline+34, 15);
     }
     while(callsign[i] != ' ') {

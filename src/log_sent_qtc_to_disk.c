@@ -180,7 +180,7 @@ int store_sent_qtc(char *loglineptr)
 
 	fclose(fp);
 	parse_qtcline(loglineptr, callsign, &bandidx);
-	qtc_inc(callsign, bandidx);
+	qtc_inc(callsign, SEND);
 
 	return(0);
 }
