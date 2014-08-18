@@ -619,6 +619,10 @@ int databases_load()
 
     if (qtcdirection > 0) {
 	qtc_store = g_hash_table_new(g_str_hash, g_str_equal);
+	qtc_empty_obj = g_malloc0(sizeof (struct t_qtc_store_obj));
+	qtc_empty_obj->total = 0;
+	qtc_empty_obj->received = 0;
+	qtc_empty_obj->sent = 0;
 
 	if (checkqtclogfile_new() != 0) {
 	    showmsg( "QTC's giving up" );
