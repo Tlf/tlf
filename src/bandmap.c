@@ -735,6 +735,8 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
 char *qtc_format(char * call, int band) {
     char tcall[15];
     int nrofqtc;
+    extern struct t_qtc_store_obj *qtc_temp_obj;
+    extern int qtcdirection;
 /*
  *                     |
  *                     v
@@ -746,12 +748,12 @@ char *qtc_format(char * call, int band) {
  */
     if ((band > -1 && bandcorner[band][2] == 0) || strlen(call) < 15) {
 
-	nrofqtc = qtc_get(call, band);
-	if (nrofqtc <= 0)
+	qtc_temp_obj = qtc_get(call);
+	if (qtc_temp_obj->total <= 0)
 	    return g_strdup(call);
 
-	if (nrofqtc < 10) {
-	    sprintf(tcall, "%-10s %d", call, nrofqtc);
+	if (qtc_temp_obj->total < 10) {
+	    sprintf(tcall, "%-10s %d", call, qtc_temp_obj->total);
 	}
 	else {
 	    sprintf(tcall, "%-10s Q", call);

@@ -308,6 +308,8 @@ t_qtclist qtclist;
 int nr_qtcsent = 0;
 t_qtcreclist qtcreclist;
 GHashTable* qtc_store = NULL;
+struct t_qtc_store_obj *qtc_temp_obj;
+struct t_qtc_store_obj *qtc_empty_obj;
 char qtcreccalls[MAX_CALLS][15];
 int qtcdirection = 0;
 

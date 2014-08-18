@@ -179,7 +179,7 @@ int store_sent_qtc(char *loglineptr)
 	total++;
 
 	fclose(fp);
-	parse_qtcline(loglineptr, callsign, &bandidx);
+	parse_qtcline(loglineptr, callsign, SEND);
 	qtc_inc(callsign, SEND);
 
 	return(0);
