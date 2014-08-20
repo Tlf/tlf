@@ -39,7 +39,15 @@
 #endif
 
 #include "qtcutil.h"
-#define TOLERANCE 50
+
+#define TOLERANCE 50 		/* spots with a QRG +/-TOLERANCE
+				   will be counted a s the same QRG */
+
+#define SPOT_COLUMN_WIDTH 22
+#define SPOT_FREQ_WIDTH 7
+#define SPOT_CALL_WIDTH SPOT_COLUMN_WIDTH-SPOT_FREQ_WIDTH-4
+				/* 3 space before and 1 after call */
+
 
 unsigned int bandcorner[NBANDS][3] =
 {{ 1800000, 2000000, 0 },	// band bottom, band top, is warc?
@@ -562,7 +570,7 @@ void bandmap_show() {
 	bm_y++;
 	if (bm_y == 24) {
 	    bm_y = 14;
-	    bm_x += 22;
+	    bm_x += SPOT_COLUMN_WIDTH;
 	    cols++;
 	    if (cols > 2)
 		break;
@@ -726,6 +734,20 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
     return result;
 }
 
+/*
+ * copy string to buffer but truncate it to n characters
+ * If truncated show it by replacing last two chars by '..'
+ * The buffer has to be at least n+1 chars long.
+ */
+void str_truncate(char *buffer, char *string, int n) {
+    if (strlen(string) > n) {
+	g_strlcpy(buffer, string, n-1);   	/* truncate to n-2 chars */
+	strcat(buffer, "..");
+    }
+    else {
+	g_strlcpy(buffer, string, n+1); 	/* copy up to n chars */
+    }
+}
 
 /*
  * format bandmap call output for WAE
@@ -735,32 +757,21 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
 char *qtc_format(char * call, int band) {
     char tcall[15];
     int nrofqtc;
-/*
- *                     |
- *                     v
- 14000.0   CT7/G7DIE/AM21082.4   5Z4/LA4GHA
- 14031.8   W1AW/4 1    21260.0   YO9GDN
-                       ^
-                       |
-                       not enough space
- */
-    if ((band > -1 && bandcorner[band][2] == 0) || strlen(call) < 15) {
 
-	nrofqtc = qtc_get(call, band);
-	if (nrofqtc <= 0)
-	    return g_strdup(call);
+    nrofqtc = qtc_get(call, band);
 
-	g_strlcpy(tcall, call, 11);
+    if (nrofqtc <= 0) {
+	str_truncate(tcall, call, SPOT_CALL_WIDTH);
+    }
+    else {
+	str_truncate(tcall, call, SPOT_CALL_WIDTH-2);
 	if (nrofqtc < 10) {
 	    sprintf(tcall + strlen(tcall), " %d", nrofqtc);
 	}
 	else {
 	    sprintf(tcall + strlen(tcall), " Q");
 	}
-	return g_strdup(tcall);
     }
-    else {
-	return g_strdup(call);
-    }
+    return g_strdup(tcall);
 }
 
