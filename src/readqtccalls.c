@@ -38,7 +38,7 @@ int readqtccalls()
     char temps[30], callsign[15];
     int tempi;
     int last_qtc = 0;
-    int i, bandidx;
+    int i;
     
     clear();
 

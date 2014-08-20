@@ -164,7 +164,7 @@ int log_sent_qtc_to_disk(int qsonr)
 int store_sent_qtc(char *loglineptr)
 {
 	FILE *fp;
-	int i, bandidx;
+	int i;
 	char callsign[15];
 
 	if  ( (fp = fopen(QTC_SENT_LOG, "a"))  == NULL){
