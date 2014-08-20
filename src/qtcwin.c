@@ -481,6 +481,18 @@ int qtc_main_panel(int direction) {
 			    }
 			}
 		    }
+		    if (activefield == 2) {
+			if (direction == RECV &&
+			    strlen(qtcreclist.callsign) > 0 &&
+			    qtcreclist.serial > 0 &&
+			    qtcreclist.count > 0 &&
+			    qtcreclist.confirmed == 0
+			) {
+			    sendmessage(qtc_recv_msgs[1]);
+			    activefield++;
+			    showfield(activefield);
+			}
+		    }
 		    break;
 	  case 19:	// CTRL-S - save QTC
 		    if (*qtccount > 0 && qtclist.totalsent == *qtccount) {
@@ -673,7 +685,20 @@ int qtc_main_panel(int direction) {
 		    break;
 	  case 32:	// space
 		    if (DIRCLAUSE) {
-			modify_field(x);
+		        if (x == ' ' && direction == RECV && activefield > 2) {	// space at RECV mode
+			      if (activefield%3 == 2) {
+				  activefield -= 2;
+				  showfield(activefield+2);
+			      }
+			      else {
+				  activefield++;
+				  showfield(activefield-1);
+			      }
+			      showfield(activefield);
+			}
+			else {
+			    modify_field(x);
+			}
 		    }
 		    break;
 	  case 48 ... 57:	// numbers
