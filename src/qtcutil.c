@@ -30,24 +30,19 @@
 typedef unsigned char t_qtc_bands[NBANDS];
 
 extern GHashTable* qtc_store; // = NULL;
-extern char qtcreccalls[MAX_CALLS][15];
 extern int qtcdirection;
 extern struct t_qtc_store_obj *qtc_empty_obj;
 
 int qtc_inc(char callsign[15], int direction) {
     struct t_qtc_store_obj *qtc_obj;
-    int i, gi;
    
     qtc_obj = g_hash_table_lookup(qtc_store, callsign);
     if (qtc_obj == NULL) {
-	//qtc_obj = g_malloc0(sizeof (struct t_qtc_store_obj *));
 	qtc_obj = g_malloc0(sizeof (struct t_qtc_store_obj));
 	qtc_obj->total = 0;
 	qtc_obj->received = 0;
 	qtc_obj->sent = 0;
-	gi = g_hash_table_size(qtc_store);
-	strncpy(qtcreccalls[gi], callsign, strlen(callsign));
-	g_hash_table_insert(qtc_store, qtcreccalls[gi], qtc_obj);
+	g_hash_table_insert(qtc_store, strdup(callsign), qtc_obj);
     }
 
     qtc_obj->total++;
@@ -56,6 +51,23 @@ int qtc_inc(char callsign[15], int direction) {
     }
     if (direction == SEND) {
 	qtc_obj->sent++;
+    }
+    
+    return 0;
+}
+
+int qtc_dec(char callsign[15], int direction) {
+    struct t_qtc_store_obj *qtc_obj;
+   
+    qtc_obj = g_hash_table_lookup(qtc_store, callsign);
+    if (qtc_obj != NULL) {
+	qtc_obj->total--;
+        if (direction == RECV) {
+	    qtc_obj->received--;
+	}
+	if (direction == SEND) {
+	    qtc_obj->sent--;
+	}
     }
     
     return 0;
