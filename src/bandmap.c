@@ -41,16 +41,16 @@
 #include "qtcutil.h"
 #define TOLERANCE 50
 
-unsigned int bandcorner[NBANDS][3] =
-{{ 1800000, 2000000, 0 },	// band bottom, band top, is warc?
- { 3500000, 4000000, 0 },
- { 7000000, 7300000, 0 },
- { 10100000, 10150000, 1 },
- { 14000000, 14350000, 0 },
- { 18068000, 18168000, 1 },
- { 21000000, 21450000, 0 },
- { 24890000, 24990000, 1 },
- { 28000000, 29700000, 0 }};
+unsigned int bandcorner[NBANDS][2] =
+{{ 1800000, 2000000 },	// band bottom, band top
+ { 3500000, 4000000 },
+ { 7000000, 7300000 },
+ { 10100000, 10150000 },
+ { 14000000, 14350000 },
+ { 18068000, 18168000 },
+ { 21000000, 21450000 },
+ { 24890000, 24990000 },
+ { 28000000, 29700000 }};
 
 unsigned int cwcorner[NBANDS] =
 { 1838000,
@@ -141,26 +141,6 @@ int freq2band(unsigned int freq) {
     return -1;		/* not in any band */
 }
 
-/** \brief convert frequency to bandnumber, listen only non-WARC band
- *
- * \return	bandnumber or -1 if not in any band
- */
-int freq2nwband(unsigned int freq) {
-    int i, j = 0;
-
-   for (i = 0; i < NBANDS; i++) {
-	if (freq >= (unsigned int)bandcorner[i][0] &&
-	    freq <= (unsigned int)bandcorner[i][1] &&
-	    bandcorner[i][2] == 0) {
-	    return j;	/* in actual band */
-	}
-	if (bandcorner[i][2] == 0) {
-	    j++;
-	}
-    }
-
-    return -1;		/* not in any band */
-}
 
 /** \brief guess mode based on frequency
  *
@@ -746,7 +726,7 @@ char *qtc_format(char * call, int band) {
                        |
                        not enough space
  */
-    if ((band > -1 && bandcorner[band][2] == 0) || strlen(call) < 15) {
+    if (band > -1 || strlen(call) < 15) {
 
 	qtc_temp_obj = qtc_get(call);
 	if (qtc_temp_obj->total <= 0)
