@@ -890,9 +890,9 @@ int modify_field(int pressed) {
 		curpos--;
 	    }
 	    if(strlen(fieldval) <= pos[2][2] && atoi(fieldval) <= 10) {
-		if (*qtccurrdiretion == SEND) {
+	      qtc_temp_obj = qtc_get(qtccallsign);
+	      if (*qtccurrdiretion == SEND) {
 		    if (*qtccount != atoi(fieldval)) {
-		      	qtc_temp_obj = qtc_get(qtccallsign);
 			if ((atoi(fieldval) + (qtc_temp_obj->total)) >= 10) {
 			    sprintf(fieldval, "%d", (10 - (qtc_temp_obj->total)));
 			}
@@ -902,6 +902,9 @@ int modify_field(int pressed) {
 		    }
 	      }
 	      if (*qtccurrdiretion == RECV) {
+		  if ((atoi(fieldval) + (qtc_temp_obj->total)) >= 10) {
+		      sprintf(fieldval, "%d", (10 - (qtc_temp_obj->total)));
+		  }
 		  *qtccount = atoi(fieldval);
 	      }
 	      number_fields();
