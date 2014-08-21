@@ -136,6 +136,7 @@ int log_recv_qtc_to_disk(int qsonr)
 	qtcreclist.qtclines[i].callsign[0] = '\0';
 	qtcreclist.qtclines[i].serial[0] = '\0';
 	qtcreclist.qtclines[i].status = 0;
+	qtcreclist.qtclines[i].confirmed = 0;
     }
 
     qtcreclist.count = 0;
@@ -150,7 +151,7 @@ int log_recv_qtc_to_disk(int qsonr)
 int store_recv_qtc(char *loglineptr)
 {
 	FILE *fp;
-	int i, bandidx;
+	int i;
 	char callsign[15];
 
 	if  ( (fp = fopen(QTC_RECV_LOG, "a"))  == NULL){
@@ -165,8 +166,8 @@ int store_recv_qtc(char *loglineptr)
 	total++;
 
 	fclose(fp);
-	parse_qtcline(loglineptr, callsign, &bandidx);
-	qtc_inc(callsign, bandidx);
+	parse_qtcline(loglineptr, callsign, RECV);
+	qtc_inc(callsign, RECV);
 
 	return(0);
 }

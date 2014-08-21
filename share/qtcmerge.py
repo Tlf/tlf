@@ -20,6 +20,7 @@ band_hash = {
    15: "21000",
    10: "28000"
 }
+
 try:
     f = open(cbr, "r")
     lines = f.readlines()
@@ -87,6 +88,7 @@ if len(sqtc) > 0:
 	fo.write(q + "\n")
 
 fo.write(lines[-1])
+
 fo.close()
 
 sys.exit(0)

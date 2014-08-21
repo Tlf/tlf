@@ -192,6 +192,10 @@ char message[25][80] =
 char ph_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names
 char qtc_recv_msgs[12][80] = {"QTC?", "QRV", "R", "", "TIME?", "CALL?", "NR?", "AGN", "", "QSL ALL", "", ""}; // QTC receive windowS Fx messages
 char qtc_send_msgs[12][80] = {"QRV?", "QTC", "", "", "TIME", "CALL", "NR", "", "", "", "", ""}; // QTC send window Fx messages
+/*
+char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
+char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
+*/
 
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
@@ -308,7 +312,8 @@ t_qtclist qtclist;
 int nr_qtcsent = 0;
 t_qtcreclist qtcreclist;
 GHashTable* qtc_store = NULL;
-char qtcreccalls[MAX_CALLS][15];
+struct t_qtc_store_obj *qtc_temp_obj;
+struct t_qtc_store_obj *qtc_empty_obj;
 int qtcdirection = 0;
 
 /*------------------------------dupe array---------------------------------*/
@@ -618,7 +623,11 @@ int databases_load()
     }
 
     if (qtcdirection > 0) {
-	qtc_store = g_hash_table_new(g_str_hash, g_str_equal);
+	qtc_store = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+	qtc_empty_obj = g_malloc0(sizeof (struct t_qtc_store_obj));
+	qtc_empty_obj->total = 0;
+	qtc_empty_obj->received = 0;
+	qtc_empty_obj->sent = 0;
 
 	if (checkqtclogfile_new() != 0) {
 	    showmsg( "QTC's giving up" );
@@ -626,7 +635,7 @@ int databases_load()
 	}
 	nr_qsosflags_for_qtc = nr_qsos;
 	readqtccalls();
-      
+
     }
 
 
@@ -749,8 +758,10 @@ void keyer_init()
 	init_controller();
     }
 
-    if (keyerport != NET_KEYER)
+    // check the GMFSK value is just a workaround
+    if (keyerport != NET_KEYER && keyerport != GMFSK) {
 	write_tone(); 		/** \todo works only for NET_EKYER */
+    }
 }
 
 

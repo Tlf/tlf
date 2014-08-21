@@ -25,21 +25,23 @@
 
 #include "globalvars.h"
 #include "deleteqso.h"
-#include <syslog.h>
+#include "qtcutil.h"
+
 #define QTCRECVCALLPOS 29
 #define QTCSENTCALLPOS 34
 
 extern int qtcdirection;
+extern int nr_qtcsent;
 
 void delete_qso(void)
 {
 
-    int x, rc, i, look, qtclen;
+    int x, rc, i, look, qtclen, s;
     int lfile, qtcfile;
     struct stat statbuf;
     struct stat qstatbuf;
     char logline[LOGLINELEN+1];
-    char call[15];
+    char call[15], bandmode[6];
 
     mvprintw(13, 29, "OK to delete last qso (y/n)?");
     x = onechar();
@@ -60,6 +62,9 @@ void delete_qso(void)
 		    // seek to last line to read it
 		    lseek(lfile, ((int)statbuf.st_size - LOGLINELEN), SEEK_SET);
 		    rc = read(lfile, logline, LOGLINELEN-1);
+		    // catch the band and mode (for QTC)
+		    strncpy(bandmode, logline, 5);
+		    bandmode[5] = '\0';
 		    // catch the last callsign
 		    strncpy(call, logline+29, 14);
 		    i = strlen(call);
@@ -82,11 +87,12 @@ void delete_qso(void)
 			    while (look == 1) {
 				lseek(qtcfile, ((int)qstatbuf.st_size - (79+qtclen)), SEEK_SET);
 				rc = read(qtcfile, logline, 78);
-				if (strncmp(call, logline+QTCRECVCALLPOS, strlen(call)) != 0) {
+				if (! (strncmp(call, logline+QTCRECVCALLPOS, strlen(call)) == 0 && strncmp(bandmode, logline, 5) == 0)) {
 				    look = 0;
 				}
 				else {
 				    qtclen += 79;
+				    qtc_dec(call, RECV);
 				}
 			    }
 			    rc = ftruncate(qtcfile, qstatbuf.st_size - qtclen);
@@ -103,25 +109,36 @@ void delete_qso(void)
                         if ((int)qstatbuf.st_size > QTCSENTCALLPOS) {
                             look = 1;
                             qtclen = 0;
+			    s = nr_qsos;
+			    while(s >= 0 && qsoflags_for_qtc[s] != 1) {
+				s--;
+			    }
                             // iterate till the current line from back of logfile
                             // callsigns is the current callsign
                             // this works only for fixed length qtc line!
                             while (look == 1) {
                                 lseek(qtcfile, ((int)qstatbuf.st_size - (84+qtclen)), SEEK_SET);
                                 rc = read(qtcfile, logline, 83);
-                                if (strncmp(call, logline+QTCSENTCALLPOS, strlen(call)) != 0) {
+                                if (! (strncmp(call, logline+QTCSENTCALLPOS, strlen(call)) == 0 && strncmp(bandmode, logline, 5) == 0)) {
                                     look = 0;
                                 }
                                 else {
                                     qtclen += 84;
+				    qtc_dec(call, SEND);
+				    qsoflags_for_qtc[s] = 0;
+				    next_qtc_qso = s;
+				    while(s >= 0 && qsoflags_for_qtc[s] != 1) {
+					s--;
+				    }
                                 }
                             }
                             rc = ftruncate(qtcfile, qstatbuf.st_size - qtclen);
+			    nr_qtcsent--;
                             fsync(qtcfile);
                         }
                         close(qtcfile);
                     }
-                  
+
                 }
 		rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 	    }

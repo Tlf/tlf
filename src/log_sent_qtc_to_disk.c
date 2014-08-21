@@ -46,7 +46,7 @@ int log_sent_qtc_to_disk(int qsonr)
 	    for(qpos=0; qpos<80; qpos++) {
 		qtclogline[qpos] = 32;
 	    }
-	  
+
 	    qpos = 0;
 	    // QTC:  3799 PH 2003-03-23 0711 YB1AQS        001/10     DL8WPX        0330 DL6RAI        1021
 	    // QTC: 21086 RY 2001-11-10 0759 HA3LI           1/10     YB1AQS        0003 KB3TS          003
@@ -164,7 +164,7 @@ int log_sent_qtc_to_disk(int qsonr)
 int store_sent_qtc(char *loglineptr)
 {
 	FILE *fp;
-	int i, bandidx;
+	int i;
 	char callsign[15];
 
 	if  ( (fp = fopen(QTC_SENT_LOG, "a"))  == NULL){
@@ -179,8 +179,8 @@ int store_sent_qtc(char *loglineptr)
 	total++;
 
 	fclose(fp);
-	parse_qtcline(loglineptr, callsign, &bandidx);
-	qtc_inc(callsign, bandidx);
+	parse_qtcline(loglineptr, callsign, SEND);
+	qtc_inc(callsign, SEND);
 
 	return(0);
 }

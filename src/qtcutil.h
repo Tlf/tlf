@@ -21,7 +21,9 @@
 #include "tlf.h"
 
 //int create_store();
-int qtc_inc(char callsign[15], int band);
-int qtc_get(char callsign[15], int band);
-int parse_qtcline(char * line, char callsign[15], int * band);
+int qtc_inc(char callsign[15], int direction);
+int qtc_dec(char callsign[15], int direction);
+struct t_qtc_store_obj * qtc_get(char callsign[15]);
+
+int parse_qtcline(char * line, char callsign[15], int direction);
 
