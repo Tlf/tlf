@@ -77,7 +77,7 @@ struct t_qtc_store_obj * qtc_get(char callsign[15]) {
     struct t_qtc_store_obj *qtc_obj;
 
     if (qtc_store == NULL) {
-	return NULL;
+	return qtc_empty_obj;
     }
 
     qtc_obj = g_hash_table_lookup(qtc_store, callsign);

@@ -737,17 +737,15 @@ void str_truncate(char *buffer, char *string, int n) {
 char *qtc_format(char * call, int band) {
     char tcall[15];
     int nrofqtc;
-    extern struct t_qtc_store_obj *qtc_temp_obj;
-    extern int qtcdirection;
 
-    qtc_temp_obj = qtc_get(call);
+    nrofqtc = qtc_get(call)->total;
 
-    if (qtc_temp_obj->total <= 0) {
+    if (nrofqtc <= 0) {
 	str_truncate(tcall, call, SPOT_CALL_WIDTH);
     }
     else {
 	str_truncate(tcall, call, SPOT_CALL_WIDTH-2);
-	if (qtc_temp_obj->total < 10) {
+	if (nrofqtc < 10) {
 	    sprintf(tcall + strlen(tcall), " %d", nrofqtc);
 	}
 	else {
