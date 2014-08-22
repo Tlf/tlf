@@ -39,7 +39,7 @@ int readqtccalls()
     int tempi;
     int last_qtc = 0;
     int i;
-    
+
     clear();
 
     if (qtcdirection & 2) {

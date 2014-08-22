@@ -135,5 +135,4 @@ spot *bandmap_lookup(char *partialcall);
 
 spot *bandmap_next(unsigned int upwards, unsigned int freq);
 
-
 #endif

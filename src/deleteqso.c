@@ -138,7 +138,7 @@ void delete_qso(void)
                         }
                         close(qtcfile);
                     }
-                  
+
                 }
 		rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 	    }

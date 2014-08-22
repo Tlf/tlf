@@ -120,7 +120,7 @@ int qtc_main_panel(int direction) {
     int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
     int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
     int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
-    
+
     if (strlen(hiscall) > 0) {
 	if (direction == RECV) {
 	    strncpy(qtcreclist.callsign, hiscall, strlen(hiscall));
@@ -143,7 +143,7 @@ int qtc_main_panel(int direction) {
     }
 
     qtccurrdiretion = &direction;
-    
+
     if (direction == RECV) {
 	if (strcmp(qtcreclist.callsign, prevqtccall) != 0 || strlen(qtcreclist.callsign) == 0) {
 	    qtcreclist.count = 0;
@@ -220,7 +220,7 @@ int qtc_main_panel(int direction) {
     showfield(2);	// QTC nr of row
 
     clear_help_block();
-    
+
     if (direction == RECV) {
 	wattrset(qtcwin, line_inverted);
 	for(i=0; i<10; i++) {
@@ -256,7 +256,7 @@ int qtc_main_panel(int direction) {
 	        show_rtty();
 	    }
 	    x = onechar();
-	  
+
 	}
         nodelay(stdscr, FALSE);
 
@@ -545,7 +545,7 @@ int qtc_main_panel(int direction) {
 				    tmess[i] = ' ';
 				    tmess[i+1] = '\0';
 				    sendmessage(tmess);
-				}			      
+				}
 			    }
 			    else {
 				sendmessage(qtc_send_msgs[x - 129]);
@@ -718,7 +718,7 @@ int qtc_main_panel(int direction) {
 		    if (DIRCLAUSE) {
 			modify_field(x-32);
 		    }
-		    break;	  
+		    break;
 	  case 47:	// '/' sign
 		    if (DIRCLAUSE) {
 			modify_field(x);
@@ -957,7 +957,7 @@ int modify_field(int pressed) {
 		    showfield(activefield);
 		}
 	    }
-	    
+
 	}
 	return 0;
 }
@@ -1022,7 +1022,7 @@ int delete_from_field(int dir) {
 		}
 		showfield(activefield);
 	    }
-	    
+
 	}
 	return 0;
 }
@@ -1231,7 +1231,7 @@ int readqtcfromfile() {
 		temps[i] = '\0';
 		strncpy(qtcreclist.qtclines[linenr-1].callsign, temps, i);
 		showfield(2+((linenr-1)*3)+2);
-	      
+
 	    }
 	    linenr++;
 	}
@@ -1277,7 +1277,7 @@ int show_help_msg(msgidx) {
 	    msgidx = 3;
 	}
 	mvwprintw(qtcwin, ++j, 36, help_send_msgs[msgidx]);
-    }    
+    }
     wattrset(qtcwin, line_inverted);
     mvwprintw(qtcwin, ++j, 36, "PgUP/PgDW: QRQ/QRS");
     if (*qtccurrdiretion == RECV) {

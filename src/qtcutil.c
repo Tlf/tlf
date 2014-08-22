@@ -35,7 +35,7 @@ extern struct t_qtc_store_obj *qtc_empty_obj;
 
 int qtc_inc(char callsign[15], int direction) {
     struct t_qtc_store_obj *qtc_obj;
-   
+
     qtc_obj = g_hash_table_lookup(qtc_store, callsign);
     if (qtc_obj == NULL) {
 	qtc_obj = g_malloc0(sizeof (struct t_qtc_store_obj));
@@ -52,13 +52,13 @@ int qtc_inc(char callsign[15], int direction) {
     if (direction == SEND) {
 	qtc_obj->sent++;
     }
-    
+
     return 0;
 }
 
 int qtc_dec(char callsign[15], int direction) {
     struct t_qtc_store_obj *qtc_obj;
-   
+
     qtc_obj = g_hash_table_lookup(qtc_store, callsign);
     if (qtc_obj != NULL) {
 	qtc_obj->total--;
@@ -69,7 +69,7 @@ int qtc_dec(char callsign[15], int direction) {
 	    qtc_obj->sent--;
 	}
     }
-    
+
     return 0;
 }
 
@@ -77,7 +77,7 @@ struct t_qtc_store_obj * qtc_get(char callsign[15]) {
     struct t_qtc_store_obj *qtc_obj;
 
     if (qtc_store == NULL) {
-	return NULL;
+	return qtc_empty_obj;
     }
 
     qtc_obj = g_hash_table_lookup(qtc_store, callsign);
