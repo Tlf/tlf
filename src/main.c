@@ -637,8 +637,6 @@ int databases_load()
 	readqtccalls();
 
     }
-
-
     return 0;
 }
 
