@@ -111,7 +111,7 @@ extern struct worked_t worked[];
 
 extern int qtcdirection;
 
-char *qtc_format(char * call, int band);
+char *qtc_format(char * call);
 
 /** \brief initialize bandmap
  *
@@ -526,8 +526,8 @@ void bandmap_show() {
 	if (bm_ismulti(data->call))
 	    attron(A_STANDOUT);
 
-	if (qtcdirection == 1) {
-	    temp = qtc_format(data->call, data->band);
+	if (qtcdirection > 0) {
+	    temp = qtc_format(data->call);
 	}
 	else
 	    temp = g_strdup(data->call);
@@ -734,7 +734,7 @@ void str_truncate(char *buffer, char *string, int n) {
  * - prepare and return a temporary string from call and number of QTC's
  *   (if any)
  */
-char *qtc_format(char * call, int band) {
+char *qtc_format(char * call) {
     char tcall[15];
     int nrofqtc;
 
