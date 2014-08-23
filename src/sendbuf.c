@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
+ *               2014                     Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +23,22 @@
 ---------------------------------------------------------------------------*/
 #include "sendbuf.h"
 #include "netkeyer.h"
+#include "lancode.h"
+#include "displayit.h"
+#include "tlf.h"
+
 #include <glib.h>
+
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <curses.h>
 
 char buffer[81];
 
 void sendbuf(void)
 {
-
     extern int trxmode;
     extern char call[20];
     extern char hiscall[20];
@@ -61,7 +71,6 @@ void sendbuf(void)
     static char qsonroutput[5] = "";
     static char rst_out[4] = "";
 
-    int cury, curx;
     size_t loc;
     int i, nr;
 
@@ -229,11 +238,6 @@ void sendbuf(void)
 	    mvprintw(5, 0, printlinebuffer);
 	    refreshp();
 	}
-	getyx(stdscr, cury, curx);
-	attron(COLOR_PAIR(COLOR_RED) | A_STANDOUT);
-	mvaddstr(0, 0, "x");
-	attron(COLOR_PAIR(C_LOG));
-	mvaddstr(cury, curx, "");
 	refreshp();
 
 	if (trxmode == DIGIMODE) {
@@ -278,12 +282,6 @@ void sendbuf(void)
 	    } else
 		buffer[0] = '\0';
 	}
-
-	getyx(stdscr, cury, curx);
-	attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	mvaddstr(0, 0, " ");
-	attron(COLOR_PAIR(C_LOG));
-	mvaddstr(cury, curx, "");
 
 	if (simulator == 0) {
 	    if (sending_call == 0)
