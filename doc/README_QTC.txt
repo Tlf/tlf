@@ -14,7 +14,7 @@ needs a value, which could be one of these: "RECV", "SEND", or
 "BOTH". These values means you only want to receive or send
 QTC's, or you want to send AND receive QTC's (for example, in
 RTTY mode). Note, that currently only the RECV and SEND are
-implemented.
+implemented. Both will used for RTTY mode.
 
 
 QTC window
@@ -41,10 +41,12 @@ The data site contains the QTC's fields:
 
 This site contains many "meta" information:
 * at right of the QTC callsing field, Tlf shows the QTC info of
-  current stations: how many QTC has it on the current band; when
-  the station not send or received yet any QTC on the current
-  band, there is this value: "0Q on 10". If you are on 40m, and
-  station has 1 or more QTC, there is some like this: "5Q on 40"
+  current stations: how many QTC has it; if the callsign field
+  in main window is empty, the last callsign will be pivked up.
+  When the station not send or received yet any QTC, there will
+  be this value: "Received 0 QTC", or "Sent 0 QTC". If you had
+  changed any QTC with station, the message is "Received 3 QTC",
+  or "Sent 5 QTC".
 * if you type the number of QSO in the QTC block in RECV mode,
   Tlf will shows its number at the begin of every line; if the
   station indicates that it will send to you 6 QSO, and you type
@@ -54,7 +56,8 @@ This site contains many "meta" information:
   Tlf will find the next number QSO, which doesn't contain the
   current callsign (see contest rules 7.2). Note, that if you
   don't have eonugh QSO, you can't send the maximum (10), eg.
-  you have only 9 QSO.
+  you have only 9 QSO. If you type greater number than available
+  QTC number, the field value will be aligned to maximum number!
 * in RECV mode, every QSO line has a status, which could be:
   "invalid", "valid", "confirmed". This status is indicated by a
   sign at the end of the line. When a line is invalid, you can
@@ -76,7 +79,11 @@ which followed by current, and Shift+TAB goes back. There is an
 exception: if you in a QSO line, till you don't confirm the line,
 TAB doesn't takes away, it takes to the time field, if you are in
 the exchange field, and Shift+TAB does it in reverse mode.
-With UP and DOWN cursor keys you can go to up or down. 
+With UP and DOWN cursor keys you can go to up or down.
+
+In RECV mode with SPACE, you can navigate between the fields in one
+line, for faster move, so that mean the SPACE and TAB are equals
+this mode, in QTC line.
 
 
 Navigation in a field
@@ -88,14 +95,17 @@ press a not allowed character, then nothing happens. The
 BACKSPACE key deletes the next charaters to left, and move the
 right part to left. DELETE key deletes the current character as
 you're staying, and shifts the characters to left at the next to
-right.
+right. As I described above, the SPACE move the cursor to the next
+field (or first, if you are in last field) inside of QTC line, in
+RECV mode.
 
 
 Storing QTC's
 =============
 
 Tlf stores QTC's in two files. The received QTC's are stored in
-QTC_recv.log, sent QTC's are stored in QTC_sent.log.
+QTC_recv.log, sent QTC's are stored in QTC_sent.log. These logfiles
+will created automatically, when Tlf starts.
 
 
 Receiving QTC
@@ -103,17 +113,25 @@ Receiving QTC
 
 If the station asks you, are you QRV for QTC, you can press the
 CTRL+Q, it doesn't matter in which field are you: callsign or
-exchange. If the QTC window opened, Tlf will send a message to
-station: "QTC QRV".
+exchange. Another way, you open the QTC window (CTRL+Q), and press
+F1 - that configured in rule file to send "QTC?".
 
 If the callsign fields isn't empty, the content of that field
-will be copied. If empty, you can fill the empty field in QTC
-window. If station sent QTC previously, you can see the number
-of QTC QSO's on the current band.
+will be copied. Elsewhere the callsign of the last QSO will be
+copied. If station sent QTC previously, you can see the number
+of QTC QSO's, eg. "Received 3 QTC". You can receive maximum 10
+QTC from every station. If you have 3 QTC from a station, then
+you can receive 7 QTC. If you type more than 7, Tlf will replace
+the number to 7.
 
 Then you can fill the QTC serial, and number of QSO's. What you
 type as number of QSO's, Tlf will numbering so much lines, to
 helps to see, how many lines remain.
+
+If you filled the callsign, serial and number fields (all three
+fields are required), and at this time you press ENTER, then
+Tlf will send the F2 message, which is "QRV" normally, so you don't
+need to send by manually.
 
 If you start to receive the QTC's, you need to fill 3 fields:
 time (HHMM, as hour and minutes), callsign and serial. If you
@@ -125,6 +143,9 @@ the callsign field. Fill that field, and press TAB to move the
 next one. If you put to there at least 1 digit, Tlf recognizes
 that line is complete, and "?" will disappear at the end of the
 line.
+
+If you press SPACE in any field, the cursor will goes to the next
+field (or first, if the current is the exchange number).
 
 Important: in any fields you can type "?", eg: "111?" in time
 field, or "W?" in callsign field. That mean, you couldn't receive
@@ -140,12 +161,16 @@ If you could receive the line, and pressed the ENTER, and Tlf
 sent the "R" signal, then you will see a "*" at the end of the
 line. That means, you receipt the QTC line from the station.
 
-Now the cursor goes to the next line, to the time field, and you
-can continue to receive the lines.
+If you want to ask only one field (eg. only callsign), then you
+need just press F5 (TIME?), F6 (CALL?), or F7 (NR?). If you want
+to ask the complete QTC line, you can press F8 (AGN).
+
+When you received a QTC, the cursor goes to the next line, to
+the time field, and you can continue to receive the lines.
 
 If you receive the last line, and all previous line are complete,
 and the last one is complete too, then you press ENTER - now Tlf
-will close the QTC window, and send "CFM ALL TNX" message to
+will close the QTC window, and send "QSL ALL" message to
 station.
 
 At this time the QTC datas will be writed to the logfile on the
@@ -160,9 +185,9 @@ lost. Tlf flush's the fields in these cases:
 * you received all QSO's, and saved to disc
 * pressed ESC, and changed regular callsign field
 
-Note, that Tlf send "QTC QRV" message only that case, if the
+Note, that Tlf send "QRV" message only that case, if the
 fields are empty. Keep in mind, if you've pressed ESC, and CTRL+Q
-again, all data remains, and "QTC QRV" messages will NOT send.
+again, all data remains, and "QRV" messages will NOT send.
 
 
 Sending QTC
@@ -176,9 +201,14 @@ the F2, then Tlf will send the message: "QTC sr/nr" - but the
 lines in QTC, example: "QTC 3/8".
 
 If the callsign fields isn't empty, the content of that field
-will be copied. If empty, you can fill the empty field in QTC
-window. If station received QTC previously, you can see the number
-of QTC QSO's on the current band.
+will be copied. If empty, the callsign of last QSO will be copied.
+If station received QTC previously, you can see the number
+of QTC QSO's on the current band, eg. "Sent 3 QTC". You can send
+maximum 10 QTC to every station. If you sent 3 QTC to a station,
+you can send maximum 7 QTC in next block. If you type more, than
+7, Tlf will replace the number to 7, and of course, only 7 QSO
+will shows. If you don't have enough QSO, Tlf also will replace
+this value to the number of the available QSO.
 
 The QTC serial field will be filled automatically, you just need
 to set up, how many QTC's want to send. Note, that Tlf looks the
@@ -229,12 +259,12 @@ each band.
 There is a "Q" letter on the border of "Worked window", and in
 that column there are the number of QTC's. If there is "0" in a
 line, that means you sent to or received from QTC from that
-station, but not on that band. If there is a "Q", that means you
-sent to or received from the station the maximum number of QTC.
+station. If there is a "Q", that means you sent to or received
+from the station the maximum number of QTC (10).
 
 This information also visible in cluster info, if you use that.
 At the end of the callsign in bandmap, you can see a "0", "Q" or
-any digit, which means same as above.
+any digit, which means same as above, eg "DL1A  Q", or "HA5A  3".
 
 
 Making CABRILLO
@@ -269,6 +299,7 @@ Shortkey summary
 * CTRL+Q - open QTC window
 * ESC - close QTC window
 * TAB - move to the next field
+* SPACE - move to the next field in QTC line, in RECV mode
 * Shift+TAB - move to the previous field
 * UP, DOWN - move to up or down
 * BACKSPACE - delete the next to left
