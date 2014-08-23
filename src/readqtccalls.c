@@ -23,10 +23,18 @@
 
 #include "readqtccalls.h"
 #include "get_time.h"
-#include "tlf.h"
 #include "globalvars.h"
+#include "tlf.h"
 #include "qtcutil.h"
 #include <glib.h>
+
+#include <curses.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <ctype.h>
+
 
 extern int qtcdirection;
 

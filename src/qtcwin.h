@@ -16,13 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "tlf.h"
 
-
-typedef struct {
-  t_qtcreclist qtcreclist;	// received QTC list
-  int active;			// current field index
-} t_qtcfieldset;
+#ifndef QTCWIN_H
+#define QTCWIN_H
 
 
 int qtc_main_panel(int direction);
@@ -41,3 +37,5 @@ int strip_spaces(char * src, char * tempc);
 int show_sendto_lines();
 //int move_cursor(int dir);
 
+
+#endif /* end of include guard: QTCWIN_H */
