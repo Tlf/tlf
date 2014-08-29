@@ -40,7 +40,7 @@ void delete_qso(void)
     int lfile, qtcfile;
     struct stat statbuf;
     struct stat qstatbuf;
-    char logline[LOGLINELEN+1];
+    char logline[100];
     char call[15], bandmode[6];
 
     mvprintw(13, 29, "OK to delete last qso (y/n)?");
@@ -84,14 +84,15 @@ void delete_qso(void)
 			    // iterate till the current line from back of logfile
 			    // callsigns is the current callsign
 			    // this works only for fixed length qtc line!
+			    lseek(qtcfile, 0, SEEK_SET);
 			    while (look == 1) {
-				lseek(qtcfile, ((int)qstatbuf.st_size - (79+qtclen)), SEEK_SET);
-				rc = read(qtcfile, logline, 78);
+				lseek(qtcfile, ((int)qstatbuf.st_size - (90+qtclen)), SEEK_SET);
+				rc = read(qtcfile, logline, 89);
 				if (! (strncmp(call, logline+QTCRECVCALLPOS, strlen(call)) == 0 && strncmp(bandmode, logline, 5) == 0)) {
 				    look = 0;
 				}
 				else {
-				    qtclen += 79;
+				    qtclen += 80;
 				    qtc_dec(call, RECV);
 				}
 			    }
@@ -117,13 +118,13 @@ void delete_qso(void)
                             // callsigns is the current callsign
                             // this works only for fixed length qtc line!
                             while (look == 1) {
-                                lseek(qtcfile, ((int)qstatbuf.st_size - (84+qtclen)), SEEK_SET);
-                                rc = read(qtcfile, logline, 83);
+                                lseek(qtcfile, ((int)qstatbuf.st_size - (95+qtclen)), SEEK_SET);
+                                rc = read(qtcfile, logline, 94);
                                 if (! (strncmp(call, logline+QTCSENTCALLPOS, strlen(call)) == 0 && strncmp(bandmode, logline, 5) == 0)) {
                                     look = 0;
                                 }
                                 else {
-                                    qtclen += 84;
+                                    qtclen += 95;
 				    qtc_dec(call, SEND);
 				    qsoflags_for_qtc[s] = 0;
 				    next_qtc_qso = s;

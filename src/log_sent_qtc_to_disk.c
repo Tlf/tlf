@@ -33,13 +33,13 @@ extern int logfrequency;
 
 int log_sent_qtc_to_disk(int qsonr)
 {
-    char qtclogline[85], temp[20];
+    char qtclogline[100], temp[20];
     int qpos = 0, i;
     int has_empty = 0;
     int last_qtc = 0;
 
     static char time_buf[80];
-    char khz[5] = " 000";
+    char khz[9] = "";
 
     for(i=0; i<10; i++) {
 	if (qtclist.qtclines[i].saved == 0 && qtclist.qtclines[i].flag == 1 && qtclist.qtclines[i].sent == 1) { // not saved and marked for sent
@@ -78,13 +78,6 @@ int log_sent_qtc_to_disk(int qsonr)
 	    strncpy(qtclogline+qpos, time_buf, strlen(time_buf));
 	    qpos+=strlen(time_buf);
 
-	    if (logfrequency == 1 &&
-		trx_control == 1) {
-		sprintf(khz, " %3d", ((int)freq)%1000);	// show freq.
-		strncpy(qtclogline+qpos, khz, strlen(khz));
-		qpos += strlen(khz);
-	    }
-
 	    if (lan_active == 1) {
 		qtclogline[qpos++] = thisnode;	// set node ID...
 	    } else {
@@ -107,6 +100,18 @@ int log_sent_qtc_to_disk(int qsonr)
 
 	    strcpy(qtclogline+qpos, qtclist.qtclines[i].qtc);
 	    qpos+=strlen(qtclist.qtclines[i].qtc);
+	    strncpy(qtclogline+qpos, "    ", 4);
+	    qpos += 4;
+
+	    if (trx_control == 1) {
+		snprintf(khz, 8, "%7.1f", freq);
+	    }
+	    else {
+		snprintf(khz, 8, "      *");
+	    }
+
+	    strncpy(qtclogline+qpos, khz, strlen(khz));
+	    qpos += strlen(khz);
 	    qtclogline[qpos] = '\0';
 
 	    store_sent_qtc(qtclogline);

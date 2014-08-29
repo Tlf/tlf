@@ -310,7 +310,7 @@ int send_lan_message(int opcode, char *message)
 	lan_send(sendbuffer);
     }
     if (opcode == QTCSENTRY) {
-	sendbuffer[87] = '\0';
+	sendbuffer[98] = '\0';
 	lan_send(sendbuffer);
     }
 

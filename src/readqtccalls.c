@@ -58,7 +58,7 @@ int readqtccalls()
 	    return -1;
 	}
 
-	while (fgets(inputbuffer, 85, fp) != NULL) {
+	while (fgets(inputbuffer, 100, fp) != NULL) {
 	    s++;
 	    strncpy(temps, inputbuffer+50, 4);	// serial
 	    tempi = atoi(temps);
