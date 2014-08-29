@@ -11,6 +11,8 @@ if len(sys.argv) < 2:
 cbr = sys.argv[1]
 sqtc = []
 rqtc = []
+sqtctimes = []
+rqtctimes = []
 
 band_hash = {
   160: "1800",
@@ -52,6 +54,7 @@ try:
 	qtc.append("%s" % (fields[9+fshift].ljust(13, ' ')))
 	qtc.append("%s" % (fields[10+fshift].strip()))
 	sqtc.append(" ".join(qtc))
+	sqtctimes.append(int(time.strftime("%s", time.strptime(fields[3] + " " + fields[4], "%d-%b-%y %H:%M"))))
     f.close()
 except:
     print "Can't open or parse QTC_sent.log"
@@ -72,20 +75,34 @@ try:
 	qtc.append("%s" % (fields[8+fshift].ljust(13, ' ')))
 	qtc.append("%s" % (fields[9+fshift].strip()))
 	rqtc.append(" ".join(qtc))
+	rqtctimes.append(int(time.strftime("%s", time.strptime(fields[2] + " " + fields[3], "%d-%b-%y %H:%M"))))
     f.close()
 except:
     print "Can't open or parse QTC_recv.log"
 
 fo = open(cbr.replace(".cbr", "_QTC.cbr"), "w+")
+pos, rpos, spos = 0, 0, 0
 for l in lines[:-1]:
     f = filter(None, [fl for fl in l.split(" ")])
+    if len(f) > 1 and f[0] == "QSO:":
+	qsotime = int(time.strftime("%s", time.strptime(f[3] + " " + f[4], "%Y-%m-%d %H%M")))
+    else:
+	qsotime = None
+    if qsotime is not None:
+	while len(rqtctimes) > rpos and rqtctimes[rpos] < qsotime:
+	    fo.write(rqtc[rpos] + "\n")
+	    rpos += 1
+	while len(sqtctimes) > spos and sqtctimes[spos] < qsotime:
+	    fo.write(sqtc[spos] + "\n")
+	    spos += 1
     fo.write(l)
-if len(rqtc) > 0:
-    for q in rqtc:
-	fo.write(q + "\n")
-if len(sqtc) > 0:
-    for q in sqtc:
-	fo.write(q + "\n")
+    pos += 1
+#if len(rqtc) > 0:
+#    for q in rqtc:
+#	fo.write(q + "\n")
+#if len(sqtc) > 0:
+#    for q in sqtc:
+#	fo.write(q + "\n")
 
 fo.write(lines[-1])
 

@@ -266,7 +266,7 @@ int lan_send(char *lanbuffer)
 int send_lan_message(int opcode, char *message)
 {
 
-    char sendbuffer[88];
+    char sendbuffer[100];
 
     sendbuffer[0] = thisnode;
     sendbuffer[1] = opcode;
@@ -306,7 +306,7 @@ int send_lan_message(int opcode, char *message)
 	lan_send(sendbuffer);
     }
     if (opcode == QTCRENTRY) {
-	sendbuffer[82] = '\0';
+	sendbuffer[94] = '\0';
 	lan_send(sendbuffer);
     }
     if (opcode == QTCSENTRY) {

@@ -33,11 +33,11 @@ extern int logfrequency;
 
 int log_recv_qtc_to_disk(int qsonr)
 {
-    char qtclogline[80], temp[20];
+    char qtclogline[100], temp[20];
     int qpos = 0, i, tempi;
 
     static char time_buf[80];
-    char khz[5] = " 000";
+    char khz[9];
 
     for(i=0; i<10; i++) {
 
@@ -75,13 +75,6 @@ int log_recv_qtc_to_disk(int qsonr)
 	    strncpy(qtclogline+qpos, time_buf, strlen(time_buf));
 	    qpos+=strlen(time_buf);
 
-	    if (logfrequency == 1 &&
-		trx_control == 1) {
-		sprintf(khz, " %3d", ((int)freq)%1000);	// show freq.
-		strncpy(qtclogline+qpos, khz, strlen(khz));
-		qpos += strlen(khz);
-	    }
-
 	    if (lan_active == 1) {
 		qtclogline[qpos++] = thisnode;	// set node ID...
 	    } else {
@@ -113,13 +106,22 @@ int log_recv_qtc_to_disk(int qsonr)
 
 	    tempi = atoi(qtcreclist.qtclines[i].serial);
 	    if(tempi < 1000) {
-		sprintf(temp, "  %03d", tempi);
+		sprintf(temp, "  %03d    ", tempi);
 	    }
 	    else {
-		sprintf(temp, " %04d", tempi);
+		sprintf(temp, " %04d    ", tempi);
 	    }
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
 	    qpos+=strlen(temp);
+	    
+	    if (trx_control == 1) {
+		snprintf(khz, 8, "%7.1f", freq);
+	    }
+	    else {
+		snprintf(khz, 8, "      *");
+	    }
+	    strncpy(qtclogline+qpos, khz, strlen(khz));
+	    qpos += strlen(khz);
 
 	    qtclogline[qpos] = '\0';
 

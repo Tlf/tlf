@@ -98,7 +98,7 @@ int readqtccalls()
 	    return -1;
 	}
 
-	while (fgets(inputbuffer, 90, fp) != NULL) {
+	while (fgets(inputbuffer, 100, fp) != NULL) {
 	    parse_qtcline(inputbuffer, callsign, RECV);
 	    qtc_inc(callsign, RECV);
 	    total++;
