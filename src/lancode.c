@@ -271,7 +271,7 @@ int send_lan_message(int opcode, char *message)
     sendbuffer[0] = thisnode;
     sendbuffer[1] = opcode;
     sendbuffer[2] = '\0';
-    strncat(sendbuffer, message, 80);
+    strncat(sendbuffer, message, 98);
     if (opcode == CLUSTERMSG) {
 	if (cl_send_inhibit == 0) {
 	    strcat(sendbuffer, "\n");
@@ -306,7 +306,7 @@ int send_lan_message(int opcode, char *message)
 	lan_send(sendbuffer);
     }
     if (opcode == QTCRENTRY) {
-	sendbuffer[94] = '\0';
+	sendbuffer[92] = '\0';
 	lan_send(sendbuffer);
     }
     if (opcode == QTCSENTRY) {
