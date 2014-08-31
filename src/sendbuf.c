@@ -37,18 +37,157 @@
 
 char buffer[81];
 
+void ExpandMacro(void) {
+
+    extern char call[20];
+    extern char hiscall[20];
+    extern char hiscall_sent[];
+    extern char his_rst[];
+    extern char qsonrstr[5];
+    extern char comment[];
+    extern char lastqsonr[];
+    extern int early_started;
+    extern int shortqsonr;
+    extern int noleadingzeros;
+    extern int lan_active;
+    extern int exchange_serial;
+
+    size_t loc;
+    int i, nr;
+    static char comstr[80] = "";
+    char comstr3[5];
+    static char qsonroutput[5] = "";
+    static char rst_out[4] = "";
+
+    comstr[0] = '\0';
+
+    loc = strcspn(buffer, "%");	/* mycall */
+
+    while (strlen(buffer) > loc) {
+
+	if (loc != 0)
+	    strncat(comstr, buffer, loc);
+	strncat(comstr, call, (strlen(call) - 1));
+	strcat(comstr, buffer + loc + 1);
+	strcpy(buffer, comstr);
+	strcpy(comstr, "");
+
+	loc = strcspn(buffer, "%");
+    }
+
+    loc = strcspn(buffer, "@");	/* his call */
+
+    while (strlen(buffer) > loc) {
+
+	if (loc != 0)
+	    strncat(comstr, buffer, loc);
+	if (strlen(hiscall_sent) == 0) {
+	    strcat(comstr, hiscall);
+	} else {
+	    strcat(comstr, hiscall + strlen(hiscall_sent));
+	    hiscall_sent[0] = '\0';
+	    early_started = 0;
+//                              sending_call = 0;
+	}
+	strcat(comstr, buffer + loc + 1);
+	strcpy(buffer, comstr);
+	strcpy(comstr, "");
+
+	loc = strcspn(buffer, "@");
+    }
+
+    loc = strcspn(buffer, "[");	/* his RST */
+
+    while (strlen(buffer) > loc) {
+
+	if (loc != 0)
+	    strncat(comstr, buffer, loc);
+
+	strncpy(rst_out, his_rst, 4);
+
+	if (shortqsonr == 1) {
+	    if (rst_out[1] == '9')
+		rst_out[1] = 'N';
+	    if (rst_out[2] == '9')
+		rst_out[2] = 'N';
+	}
+	strcat(comstr, rst_out);
+	strcat(comstr, buffer + loc + 1);
+	strcpy(buffer, comstr);
+	strcpy(comstr, "");
+
+	loc = strcspn(buffer, "[");
+    }
+
+    strcpy(qsonroutput, qsonrstr);
+
+    if (shortqsonr != 0) {
+	for (i = 0; i <= 4; i++) {
+	    if (qsonroutput[i] == '0')
+		qsonroutput[i] = 'T';
+	    if (qsonroutput[i] == '9')
+		qsonroutput[i] = 'N';
+	}
+    }
+
+    loc = strcspn(buffer, "#");	/* serial nr */
+
+    while (strlen(buffer) > loc) {
+
+	if (loc != 0)
+	    strncat(comstr, buffer, loc);
+
+	if (noleadingzeros == 1) {
+
+	    nr = atoi(qsonroutput);
+	    sprintf(comstr3, "%d", nr);
+	    strcat(comstr, comstr3);
+
+	} else {
+	    if (qsonroutput[0] == '0' || qsonroutput[0] == 'T')
+		strcat(comstr, qsonroutput + 1);
+	    else
+		strcat(comstr, qsonroutput);
+	}
+
+	strcat(comstr, buffer + loc + 1);
+
+	strcpy(buffer, comstr);
+
+	if ((lan_active == 1) && (exchange_serial == 1)) {
+	    strncpy(lastqsonr, qsonrstr, 5);
+	    send_lan_message(INCQSONUM, qsonrstr);
+	}
+
+	strcpy(comstr, "");
+
+	loc = strcspn(buffer, "#");
+    }
+
+    loc = strcspn(buffer, "!");	/* his serial nr/comment  */
+
+    while (strlen(buffer) > loc) {
+
+	if (loc != 0)
+	    strncat(comstr, buffer, loc);
+	strncat(comstr, comment, strlen(comment));
+
+	strcat(comstr, buffer + loc + 1);
+	strcpy(buffer, comstr);
+	strcpy(comstr, "");
+
+	loc = strcspn(buffer, "!");
+    }
+}
+
+
 void sendbuf(void)
 {
     extern int trxmode;
-    extern char call[20];
-    extern char hiscall[20];
-    extern char his_rst[];
-    extern char qsonrstr[5];
     extern int shortqsonr;
     extern int searchflg;
     extern char termbuf[];
     extern char backgrnd_str[];
-    extern int bufloc;
     extern char wkeyerbuffer[];
     extern int keyerport;
     extern int data_ready;
@@ -56,25 +195,13 @@ void sendbuf(void)
     extern int simulator_mode;
     extern int lan_active;
     extern int exchange_serial;
-    extern char lastqsonr[];
     extern int noleadingzeros;
     extern int arrlss;
-    extern int keyerport;
-    extern char hiscall_sent[];
     extern int early_started;
     extern int sending_call;
-    extern char comment[];
 
-    static char comstr[80] = "";
-    char comstr3[5];
     static char printlinebuffer[82] = "";
-    static char qsonroutput[5] = "";
-    static char rst_out[4] = "";
 
-    size_t loc;
-    int i, nr;
-
-    comstr[0] = '\0';
     printlinebuffer[0] = '\0';
 
     if (arrlss == 1)
@@ -83,123 +210,7 @@ void sendbuf(void)
     if ((trxmode == CWMODE || trxmode == DIGIMODE)
 	&& (keyerport != NO_KEYER)) {
 
-	loc = strcspn(buffer, "%");	/* mycall */
-
-	while (strlen(buffer) > loc) {
-
-	    if (loc != 0)
-		strncat(comstr, buffer, loc);
-	    strncat(comstr, call, (strlen(call) - 1));
-	    strcat(comstr, buffer + loc + 1);
-	    strcpy(buffer, comstr);
-	    strcpy(comstr, "");
-
-	    loc = strcspn(buffer, "%");
-	}
-
-	loc = strcspn(buffer, "@");	/* his call */
-
-	while (strlen(buffer) > loc) {
-
-	    if (loc != 0)
-		strncat(comstr, buffer, loc);
-	    if (strlen(hiscall_sent) == 0) {
-		strcat(comstr, hiscall);
-	    } else {
-		strcat(comstr, hiscall + strlen(hiscall_sent));
-		hiscall_sent[0] = '\0';
-		early_started = 0;
-//                              sending_call = 0;
-	    }
-	    strcat(comstr, buffer + loc + 1);
-	    strcpy(buffer, comstr);
-	    strcpy(comstr, "");
-
-	    loc = strcspn(buffer, "@");
-	}
-
-	loc = strcspn(buffer, "[");	/* his RST */
-
-	while (strlen(buffer) > loc) {
-
-	    if (loc != 0)
-		strncat(comstr, buffer, loc);
-
-	    strncpy(rst_out, his_rst, 4);
-
-	    if (shortqsonr == 1) {
-		if (rst_out[1] == '9')
-		    rst_out[1] = 'N';
-		if (rst_out[2] == '9')
-		    rst_out[2] = 'N';
-	    }
-	    strcat(comstr, rst_out);
-	    strcat(comstr, buffer + loc + 1);
-	    strcpy(buffer, comstr);
-	    strcpy(comstr, "");
-
-	    loc = strcspn(buffer, "[");
-	}
-
-	strcpy(qsonroutput, qsonrstr);
-
-	if (shortqsonr != 0) {
-	    for (i = 0; i <= 4; i++) {
-		if (qsonroutput[i] == '0')
-		    qsonroutput[i] = 'T';
-		if (qsonroutput[i] == '9')
-		    qsonroutput[i] = 'N';
-	    }
-	}
-
-	loc = strcspn(buffer, "#");	/* serial nr */
-
-	while (strlen(buffer) > loc) {
-
-	    if (loc != 0)
-		strncat(comstr, buffer, loc);
-
-	    if (noleadingzeros == 1) {
-
-		nr = atoi(qsonroutput);
-		sprintf(comstr3, "%d", nr);
-		strcat(comstr, comstr3);
-
-	    } else {
-		if (qsonroutput[0] == '0' || qsonroutput[0] == 'T')
-		    strcat(comstr, qsonroutput + 1);
-		else
-		    strcat(comstr, qsonroutput);
-	    }
-
-	    strcat(comstr, buffer + loc + 1);
-
-	    strcpy(buffer, comstr);
-
-	    if ((lan_active == 1) && (exchange_serial == 1)) {
-		strncpy(lastqsonr, qsonrstr, 5);
-		send_lan_message(INCQSONUM, qsonrstr);
-	    }
-
-	    strcpy(comstr, "");
-
-	    loc = strcspn(buffer, "#");
-	}
-
-	loc = strcspn(buffer, "!");	/* his serial nr/comment  */
-
-	while (strlen(buffer) > loc) {
-
-	    if (loc != 0)
-		strncat(comstr, buffer, loc);
-	    strncat(comstr, comment, strlen(comment));
-
-	    strcat(comstr, buffer + loc + 1);
-	    strcpy(buffer, comstr);
-	    strcpy(comstr, "");
-
-	    loc = strcspn(buffer, "!");
-	}
+	ExpandMacro();
 
 	if ((strlen(buffer) + strlen(termbuf)) < 80) {
 	    if (simulator == 0)
@@ -209,8 +220,6 @@ void sendbuf(void)
 //                      sending_call = 0;
 //              }
 	}
-
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	if (simulator == 0)
 	    strncat(printlinebuffer, termbuf, strlen(termbuf));
@@ -233,6 +242,8 @@ void sendbuf(void)
 	    }
 
 	}
+
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	if ((simulator_mode == 0)) {
 	    mvprintw(5, 0, printlinebuffer);
@@ -290,7 +301,6 @@ void sendbuf(void)
 	}
 
 	buffer[0] = '\0';
-	bufloc = 0;
     }
 }
 
