@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
- * 		 2010, 2011 Thomas Beierlein <tb@forth-ev.de>
+ * 		 2010-2014 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@ void *logit(void *ptr)
     extern char hiscall[];
     extern int cqmode;
     extern int contest;
-    extern char buffer[];
     extern char message[][80];
     extern char ph_message[14][80];
     extern char comment[];

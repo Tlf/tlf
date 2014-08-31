@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2005 Rein Couperus <pa0r@amsat.org>
- *               2012      Thomas Beierlein <tb@forth-ev.de>
+ *               2012,2014      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,17 @@
  	*
  	*--------------------------------------------------------------*/
 
-#include "sendspcall.h" 	
- 	
+#include "sendspcall.h"
+#include <string.h>
+#include "tlf.h"
+#include "sendbuf.h"
+
+
 int play_file(char *audiofile);
-	
+
 void sendspcall(void){
 
     extern int demode;
-    extern char buffer[];
     extern char call[];
     extern int trxmode;
     extern int keyerport;

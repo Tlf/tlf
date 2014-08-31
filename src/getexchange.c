@@ -55,7 +55,6 @@ int getexchange(void)
     extern char message[][80];
     extern char ph_message[14][80];
     extern char hiscall[];
-    extern char buffer[];
     extern char qsonrstr[];
     extern int cqww;
     extern int wpx;

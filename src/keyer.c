@@ -34,7 +34,6 @@ int keyer(void)
     extern int cqmode;
     extern char mode[20];
     extern int bufloc;
-    extern char buffer[];
     extern char termbuf[];
     extern char message[][80];
     extern char wkeyerbuffer[];

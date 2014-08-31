@@ -23,7 +23,7 @@
 
 #include "speeddown.h"
 #include "tlf.h"
-#include "cwkeyer.h"
+#include "sendbuf.h"
 #include "clear_display.h"
 #include "netkeyer.h"
 #include "cw_utils.h"
@@ -33,7 +33,6 @@ int speeddown(void)
 
     extern int trxmode;
     extern int keyerport;
-    extern char buffer[];
 
     int retval;
     char buff[3];

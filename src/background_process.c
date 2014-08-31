@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *                         2011 Thomas Beierlein <tb@forth-ev.de>
+ *               2011, 2014     Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,15 @@
  */
 
 #include "background_process.h"
+#include "tlf.h"
+#include "time_update.h"
+#include "write_keyer.h"
+#include "sendbuf.h"
+#include "set_tone.h"
+#include "lancode.h"
+#include "splitscreen.h"
+#include "log_to_disk.h"
+#include "getctydata.h"
 #include "set_tone.h"
 #include "rtty.h"
 
@@ -45,6 +54,8 @@ extern int timeoffset;
 extern char call[];
 extern int trxmode;
 extern int keyerport;
+
+int cw_simulator(void);
 
 void *background_process(void *ptr)
 {
@@ -223,7 +234,6 @@ int cw_simulator(void)
     extern char callmasterarray[MAX_CALLMASTER][14];
     extern int simulator;
     extern int simulator_mode;
-    extern char buffer[];
     extern int simulator_seed;
     extern char simulator_tone[5];
     extern char tonestr[5];

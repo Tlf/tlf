@@ -56,7 +56,6 @@ int changepars(void)
     extern SCREEN *mainscreen;
     extern char *config_file;
     extern int miniterm;
-    extern char buffer[];
 
 #ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;

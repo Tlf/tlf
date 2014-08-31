@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2005 Rein Couperus <pa0r@eudxf.org>
- *               2009-2013 Thomas Beierlein <tb@forth-ev.de>
+ *               2009-2014 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,6 @@ char callinput(void)
     extern int demode;
     extern int cluster;
     extern int announcefilter;
-    extern char buffer[];
     extern char message[][80];
     extern char ph_message[14][80];
     extern float freq;
@@ -1058,7 +1057,6 @@ int plain_number(char *str) {
  */
 int autosend()
 {
-    extern char buffer[];
     extern int early_started;
     extern int sending_call;
     extern char hiscall_sent[];
