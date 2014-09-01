@@ -223,8 +223,7 @@ int getexchange(void)
 	case 129:
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, call);	/* F1 */
-		    sendbuf();
+		    sendmessage(call);		/* F1 */
 		} else
 		    play_file(ph_message[5]);	// call
 

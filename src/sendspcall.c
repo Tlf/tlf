@@ -26,48 +26,67 @@
 #include <string.h>
 #include "tlf.h"
 #include "sendbuf.h"
+#include <glib.h>
 
 
 int play_file(char *audiofile);
 
-void sendspcall(void){
 
+/** prepares your own call in S&P mode
+ *
+ * \return string with prepared call, has to be freed with g_free()
+ *         after use
+ */
+char *PrepareSPcall() {
     extern int demode;
     extern char call[];
     extern int trxmode;
     extern int keyerport;
-    extern char ph_message[14][80];
     extern char hiscall[];
 
+    char *buf = g_malloc(80);
+    buf[0] = '\0';
 
     if (trxmode == CWMODE) {
 
 	if (demode ==  SEND_DE )
-	    strcat(buffer, "DE ");
+	    strcat(buf, "DE ");
 
-	strcat(buffer, call);
-	sendbuf();
+	strcat(buf, call);
 
     } else if (trxmode == DIGIMODE) {
 
 	if (keyerport == MFJ1278_KEYER) {
-	    strcat (buffer, "{ ");	/* => ctrl-t */
+	    strcat (buf, "{ ");	/* => ctrl-t */
 	    if (demode ==  SEND_DE) {
-	        strcat(buffer, hiscall);
-		strcat(buffer, " DE ");
+		strcat(buf, hiscall);
+		strcat(buf, " DE ");
 	    }
-	    strcat (buffer, call);
-	    strcat (buffer, "}");	/* => ctrl-r */
+	    strcat (buf, call);
+	    strcat (buf, "}");	/* => ctrl-r */
 	}
 	else {
 	    if (demode ==  SEND_DE ) {
-	        strcat(buffer, hiscall);
-		strcat(buffer, " DE ");
+		strcat(buf, hiscall);
+		strcat(buf, " DE ");
 	    }
-	    strcat(buffer, call);
+	    strcat(buf, call);
 	}
+    }
+    return buf;
+}
 
-	sendbuf();
+
+void sendspcall(void){
+
+    extern int trxmode;
+    extern char ph_message[14][80];
+
+    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+
+	char *SPcall = PrepareSPcall();
+	sendmessage(SPcall);
+	g_free(SPcall);
 
     } else
 

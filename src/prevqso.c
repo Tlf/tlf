@@ -26,6 +26,7 @@
 #include "qsonr_to_str.h"
 #include "sendbuf.h"
 #include <string.h>
+#include <glib.h>
 
 int prev_qso(void)
 {
@@ -34,6 +35,7 @@ int prev_qso(void)
     extern char qsonrstr[];
 
     char nr_buffer[5];
+    char *str;
 
     qsonum--;
     qsonr_to_str();
@@ -52,14 +54,12 @@ int prev_qso(void)
 	nr_buffer[1] = '\0';
     }
 
-    strcat(buffer, "NR ");
-    strcat(buffer, nr_buffer);
-    strcat(buffer, " ");
+    str = g_strdup_printf("NR %s ", nr_buffer);
+    sendmessage(str);
+    g_free(str);
 
     qsonum++;
     qsonr_to_str();
-
-    sendbuf();
 
     return (0);
 }
