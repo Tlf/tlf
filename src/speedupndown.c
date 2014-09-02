@@ -25,69 +25,61 @@
 #include "netkeyer.h"
 #include "cw_utils.h"
 
+
+void setspeed(void) {
+
+    extern int keyerport;
+
+    int retval = 0;
+    char buff[3];
+
+    snprintf(buff, 3, "%2d", GetCWSpeed());
+
+    if (keyerport == NET_KEYER) {
+
+	retval = netkeyer(K_SPEED, buff);
+
+	if (retval < 0) {
+	    mvprintw(24, 0, "keyer not active");
+//                      trxmode = SSBMODE;
+	    sleep(1);
+	    clear_display();
+	}
+
+    }
+
+    if (keyerport == MFJ1278_KEYER) {
+
+	strcpy(buffer, "\\\015");
+	sendbuf();
+	usleep(500000);
+	strcpy(buffer, "MSP ");
+	strcat(buffer, buff);
+	strcat(buffer, " \015");
+	sendbuf();
+	usleep(500000);
+	strcpy(buffer, "CONV\015\n");
+	sendbuf();
+
+    }
+}
+
 /* ------------------------------------------------------------
  *        Page-up increases CW speed with 2 wpm
  *
  *--------------------------------------------------------------*/
 int speedup(void)
 {
-
     extern int trxmode;
-    extern int keyerport;
-
-    int retval = 0;
-    char buff[3];
 
     if (trxmode != CWMODE)
 	return (0);
 
-    if (keyerport == NET_KEYER) {
+    if (speed < 20) {
 
-	if (speed < 20) {
+	speed++;
+	setspeed();
 
-	    speed++;
-
-	    snprintf(buff, 3, "%2d", GetCWSpeed());
-
-	    retval = netkeyer(K_SPEED, buff);
-
-	    if (retval < 0) {
-		mvprintw(24, 0, "keyer not active");
-//                      trxmode = SSBMODE;
-		sleep(1);
-		clear_display();
-	    }
-
-	}
-    }
-
-    if (keyerport == MFJ1278_KEYER) {
-
-	if (speed < 20) {
-
-	    speed++;
-
-	    snprintf(buff, 3, "%2d", GetCWSpeed());
-
-	    strcpy(buffer, "\\\015");
-	    sendbuf();
-	    usleep(500000);
-	    strcpy(buffer, "MSP ");
-	    strcat(buffer, buff);
-	    strcat(buffer, " \015");
-	    sendbuf();
-	    usleep(500000);
-	    strcpy(buffer, "CONV\015\n");
-	    sendbuf();
-
-	    if (retval < 0) {
-		mvprintw(24, 0, "keyer not active");
-//                      trxmode = SSBMODE;
-		sleep(1);
-		clear_display();
-	    }
-
-	}
     }
 
     return (speed);
@@ -100,53 +92,18 @@ int speedup(void)
  *--------------------------------------------------------------*/
 int speeddown(void)
 {
-
     extern int trxmode;
-    extern int keyerport;
-
-    int retval;
-    char buff[3];
 
     if (trxmode != CWMODE)	/* bail out, this is an SSB contest */
 	return (0);
 
-    if (keyerport == NET_KEYER) {
+    if (speed >= 1) {
+	
+	speed--;
+	setspeed();
 
-	if (speed >= 1) {
-
-	    speed--;
-
-	    snprintf(buff, 3, "%2d", GetCWSpeed());
-
-	    retval = netkeyer(K_SPEED, buff);
-	    if (retval < 0) {
-		mvprintw(24, 0, "keyer not active; switching to SSB");
-		trxmode = SSBMODE;
-		clear_display();
-	    }
-
-	}
     }
-    if (keyerport == MFJ1278_KEYER) {
 
-	if (speed >= 1) {
-
-	    speed--;
-
-	    snprintf(buff, 3, "%2d", GetCWSpeed());
-
-	    strcpy(buffer, "\\\015");
-	    sendbuf();
-	    usleep(500000);
-	    strcpy(buffer, "MSP ");
-	    strcat(buffer, buff);
-	    strcat(buffer, " \015");
-	    sendbuf();
-	    usleep(500000);
-	    strcpy(buffer, "CONV\015\n");
-	    sendbuf();
-	}
-    }
     return (speed);
 }
 
@@ -170,7 +127,6 @@ int setweight(int weight)
 	    sleep(1);
 	    clear_display();
 	}
-
     }
 
     return (0);
