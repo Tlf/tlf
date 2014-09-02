@@ -95,7 +95,7 @@ void *logit(void *ptr)
 		if ((cqmode == CQ) && (contest == CONTEST)
 			&& (defer_store == 0)) {	/* CQ mode */
 		    if (trxmode == CWMODE || trxmode == DIGIMODE)
-			strcpy(buffer, message[2]);	/*  send F3  on  ENTER  */
+			sendmessage(message[2]);    /*  send F3  on  ENTER  */
 		    else {
 			play_file(ph_message[2]);
 			if (exchange_serial == 1)
@@ -132,7 +132,6 @@ void *logit(void *ptr)
 			}
 		    }
 
-		    sendbuf();
 		    defer_store = 1;
 		    callreturn = 0;
 		}

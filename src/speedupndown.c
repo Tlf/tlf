@@ -24,6 +24,7 @@
 #include "clear_display.h"
 #include "netkeyer.h"
 #include "cw_utils.h"
+#include <glib.h>
 
 
 void setspeed(void) {
@@ -45,22 +46,21 @@ void setspeed(void) {
 	    sleep(1);
 	    clear_display();
 	}
-
     }
 
     if (keyerport == MFJ1278_KEYER) {
 
-	strcpy(buffer, "\\\015");
-	sendbuf();
-	usleep(500000);
-	strcpy(buffer, "MSP ");
-	strcat(buffer, buff);
-	strcat(buffer, " \015");
-	sendbuf();
-	usleep(500000);
-	strcpy(buffer, "CONV\015\n");
-	sendbuf();
+	char *msg;
 
+	sendmessage("\\\015");
+	usleep(500000);
+
+	msg = g_strdup_printf("MSP %s \015", buff);
+	sendmessage(msg);
+	g_free(msg);
+
+	usleep(500000);
+	sendmessage("CONV\015\n");
     }
 }
 
@@ -98,7 +98,7 @@ int speeddown(void)
 	return (0);
 
     if (speed >= 1) {
-	
+
 	speed--;
 	setspeed();
 
