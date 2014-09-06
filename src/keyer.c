@@ -59,13 +59,10 @@ int keyer(void)
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     if (keyerport == MFJ1278_KEYER) {
-	buffer[0] = 20;		// send ctrl-t
-	buffer[1] = '\0';
-	if (data_ready != 1) {
-	    strcat(wkeyerbuffer, buffer);
+	if (data_ready != 1) { 		/* swith to tx */
+	    strcat(wkeyerbuffer, txcontrolstring);
 	    data_ready = 1;
 	}
-	buffer[0] = '\0';
     }
 
     while (1) {
@@ -79,18 +76,15 @@ int keyer(void)
 	    x = 32;
 
 	if (x == 27 || x == 11 || x == 235) {	//      esc, ctrl-k,  alt-k
-	    if (keyerport == MFJ1278_KEYER) {
-		buffer[0] = 18;	// send ctrl-r
-		buffer[1] = '\0';
+	    if (keyerport == MFJ1278_KEYER) {	// send ctrl-r
 		if (data_ready != 1) {
-		    strcat(wkeyerbuffer, buffer);
+		    strcat(wkeyerbuffer, rxcontrolstring);
 		    data_ready = 1;
 		}
 	    } else {
 		stoptx();
 	    }
 
-	    buffer[0] = '\0';
 	    break;
 	}
 
@@ -122,7 +116,6 @@ int keyer(void)
 			nkbuffer[0] = x;	// 1 char at the time !
 			nkbuffer[1] = '\0';
 			netkeyer(K_MESSAGE, nkbuffer);
-			nkbuffer[0] = '\0';
 // TODO test if that is correct
 			for (j = 0; j < 29; j++) {
 			    keyerstring[j] = keyerstring[j + 1];
@@ -144,13 +137,6 @@ int keyer(void)
 		    } else
 			buffer[0] = '\0';
 
-		    getyx(stdscr, cury, curx);
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvaddstr(0, 0, "  ");
-		    attron(COLOR_PAIR(C_LOG));
-		    mvaddstr(cury, curx, "");
-		    refreshp();
-
 		    strcat(termbuf, buffer);
 		    strcat(termbuf, " ");
 		    mvprintw(5, 0, termbuf);
@@ -171,57 +157,33 @@ int keyer(void)
 	} else {
 
 	    switch (x) {
-	    case 9:
-	    case 32:
-		{
-		    bufloc = 0;
-		    buffer[bufloc] = '\0';
-		    strcpy(mode, "Log     ");
-		    clear_display();
-		    return (2);
-		}
 	    case '\n':
 	    case 13:
 		{
-		    if (keyerport == MFJ1278_KEYER && strlen(buffer) < 39) {
-			strcat(buffer, crcontrolstring);
-			sendbuf();
-			bufloc = 0;
+		    if (keyerport == MFJ1278_KEYER) {
+			sendmessage(crcontrolstring);
 		    }
 		    break;
 		}
 
-	    case 27:
-	    case 11:
-		{
-		    stoptx();
-		    bufloc = 0;
-		    buffer[bufloc] = '\0';
-		    strcpy(mode, "Log     ");
-		    clear_display();
-		    return (2);
-		}
 	    case 123:		/* { */
 		{
 		    if (keyerport == MFJ1278_KEYER) {
-			strcat(buffer, txcontrolstring);
-			sendbuf();
+			sendmessage(txcontrolstring);
 		    }
 		    break;
 		}
 	    case 125:		/* } */
 		{
 		    if (keyerport == MFJ1278_KEYER) {
-			strcat(buffer, rxcontrolstring);
-			sendbuf();
+			sendmessage(rxcontrolstring);
 		    }
 		    break;
 		}
 	    case 92:		/* \ */
 		{
 		    if (keyerport == MFJ1278_KEYER) {
-			strcat(buffer, ctl_c_controlstring);
-			sendbuf();
+			sendmessage(ctl_c_controlstring);
 		    }
 		    break;
 		}

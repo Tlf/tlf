@@ -310,7 +310,7 @@ void sendbuf(void)
  * Send the message via CW or DIGI mode, but only if not empty
  * \param msg message to send
  */
-void sendmessage(char *msg)
+void sendmessage(const char *msg)
 {
     if (strlen(msg) != 0) {
 	g_strlcat(buffer, msg, sizeof(buffer));
