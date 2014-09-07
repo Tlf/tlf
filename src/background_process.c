@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *                         2011 Thomas Beierlein <tb@forth-ev.de>
+ *               2011, 2014     Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,18 @@
  */
 
 #include "background_process.h"
+#include "tlf.h"
+#include "time_update.h"
+#include "write_keyer.h"
+#include "sendbuf.h"
+#include "set_tone.h"
+#include "lancode.h"
+#include "splitscreen.h"
+#include "log_to_disk.h"
+#include "getctydata.h"
 #include "set_tone.h"
 #include "rtty.h"
+#include <glib.h>
 
 extern int stop_backgrnd_process;
 extern int this_second;
@@ -45,6 +55,8 @@ extern int timeoffset;
 extern char call[];
 extern int trxmode;
 extern int keyerport;
+
+int cw_simulator(void);
 
 void *background_process(void *ptr)
 {
@@ -233,7 +245,6 @@ int cw_simulator(void)
     extern char callmasterarray[MAX_CALLMASTER][14];
     extern int simulator;
     extern int simulator_mode;
-    extern char buffer[];
     extern int simulator_seed;
     extern char simulator_tone[5];
     extern char tonestr[5];
@@ -244,7 +255,6 @@ int cw_simulator(void)
     static int callnumber;
     char callcpy[80];
     static int x;
-    char datacpy[160];
 
     if (simulator == 0)
 	return (-1);
@@ -315,10 +325,8 @@ int cw_simulator(void)
 	if (callnumber >= 27000)
 	    callnumber -= 27000;
 
-	strcpy(buffer, callmasterarray[callnumber]);
-	sendbuf();
+	sendmessage(callmasterarray[callnumber]);
 	write_keyer();
-	buffer[0] = '\0';
 	simulator_mode = 0;
 
 	strcpy(tonestr, tonecpy);
@@ -327,6 +335,7 @@ int cw_simulator(void)
 
     if (simulator_mode == 2) {
 
+	char *str;
 	strcpy(tonecpy, tonestr);
 	strcpy(tonestr, simulator_tone);
 	write_tone();
@@ -335,14 +344,10 @@ int cw_simulator(void)
 
 	x = getctydata(callcpy);
 
-	buffer[0] = '\0';
-	strcat(buffer, "TU 5NN ");
+	str = g_strdup_printf("TU 5NN %2s", zone_export);
+	sendmessage(str);
+	g_free(str);
 
-	strncpy(datacpy, zone_export, 2);
-	strncat(buffer, datacpy, 2);
-
-	sendbuf();
-	buffer[0] = '\0';
 	simulator_mode = 0;
 	write_keyer();
 
@@ -352,6 +357,8 @@ int cw_simulator(void)
     }
     if (simulator_mode == 3) {
 
+	char *str;
+
 	strcpy(tonecpy, tonestr);
 	strcpy(tonestr, simulator_tone);
 	write_tone();
@@ -359,16 +366,11 @@ int cw_simulator(void)
 	strcpy(callcpy, callmasterarray[callnumber]);
 	x = getctydata(callcpy);
 
-	buffer[0] = '\0';
-	strcat(buffer, "DE ");
-	strcat(buffer, callmasterarray[callnumber]);
-	strcat(buffer, " TU 5NN ");
+	str = g_strdup_printf("DE %s TU 5NN %s",
+		callmasterarray[callnumber], zone_export);
+	sendmessage(str);
+	g_free(str);
 
-	strncpy(datacpy, zone_export, 2);
-	strncat(buffer, datacpy, 2);
-
-	sendbuf();
-	buffer[0] = '\0';
 	simulator_mode = 0;
 	write_keyer();
 

@@ -1,9 +1,9 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2005 Rein Couperus <pa0r@eudxf.org>
- *               2009-2013 Thomas Beierlein <tb@forth-ev.de>
+ *               2009-2014 Thomas Beierlein <tb@forth-ev.de>
  *               2013      Ervin Hegedüs - HA2OS <airween@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -68,7 +68,6 @@ char callinput(void)
     extern int demode;
     extern int cluster;
     extern int announcefilter;
-    extern char buffer[];
     extern char message[][80];
     extern char ph_message[14][80];
     extern float freq;
@@ -187,15 +186,9 @@ char callinput(void)
 	    }
 
 	    if (x == '=' && *hiscall == '\0') {
-		strcat(buffer, lastcall);
-		strcat(buffer, " TU ");
-		sendbuf();
-		break;
-	    } else if (x == '=' && strlen(hiscall) != 0) {
-		/** \todo check if unreachable code */
-		strcat(buffer, lastcall);
-		strcat(buffer, " TU ");
-		sendbuf();
+		char *str = g_strdup_printf("%s TU ", lastcall);
+		sendmessage(str);
+		g_free(str);
 		break;
 	    }
 	}
@@ -570,10 +563,11 @@ char callinput(void)
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
 		    if (cqmode == 0) {
-			if (demode == SEND_DE)
-			    strcat(buffer, "DE ");
-			strcat(buffer, call);		/* S&P */
-			sendbuf();
+			char *format = (demode == SEND_DE) ? "DE %s" : "%s";
+			char *str = g_strdup_printf(format, call);
+			sendmessage(str); 		/* S&P */
+			g_free(str);
+
 		    }
 		    else {
 			sendmessage(message[0]);	/* CQ */
@@ -1081,22 +1075,19 @@ int plain_number(char *str) {
  */
 int autosend()
 {
-    extern char buffer[];
     extern int early_started;
     extern int sending_call;
     extern char hiscall_sent[];
     extern char hiscall[];
-    extern char wkeyerbuffer[];
 
     GTimer *timer;
     double timeout, timeout_sent;
     int x;
     int char_sent;
 
-    strcpy(buffer, hiscall);
     early_started = 1;
     sending_call = 1;
-    sendbuf();
+    sendmessage(hiscall);
     sending_call = 0;
     strcpy(hiscall_sent, hiscall);
 
@@ -1162,8 +1153,7 @@ int autosend()
 	    /* send it to cw */
 	    append[0] = x;
 	    append[1] = '\0';
-	    strcat(wkeyerbuffer, append);
-	    sendbuf();
+	    sendmessage(append);
 
 	    /* add char length to timeout */
 	    timeout += (1.2 / GetCWSpeed()) * getCWdots((char) x);

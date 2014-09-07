@@ -23,8 +23,7 @@
 #include "tlf.h"
 #include "write_tone.h"
 #include "cw_utils.h"
-#include "speedup.h"
-#include "speeddown.h"
+#include "speedupndown.h"
 #include <curses.h>
 #include <string.h>
 #include "startmsg.h"

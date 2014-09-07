@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2014           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,82 +17,96 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *        Page-up increases CW speed with 2 wpm
-	 *
-	 *--------------------------------------------------------------*/
 
-#include "speedup.h"
+#include "speedupndown.h"
 #include "tlf.h"
-#include "cwkeyer.h"
+#include "sendbuf.h"
 #include "clear_display.h"
 #include "netkeyer.h"
 #include "cw_utils.h"
+#include <glib.h>
 
-int speedup(void)
-{
 
-    extern int trxmode;
+void setspeed(void) {
+
     extern int keyerport;
-    extern char buffer[];
 
     int retval = 0;
     char buff[3];
 
-    if (trxmode != CWMODE)
-	return (0);
+    snprintf(buff, 3, "%2d", GetCWSpeed());
 
     if (keyerport == NET_KEYER) {
 
-	if (speed < 20) {
+	retval = netkeyer(K_SPEED, buff);
 
-	    speed++;
-
-	    snprintf(buff, 3, "%2d", GetCWSpeed());
-
-	    retval = netkeyer(K_SPEED, buff);
-
-	    if (retval < 0) {
-		mvprintw(24, 0, "keyer not active");
+	if (retval < 0) {
+	    mvprintw(24, 0, "keyer not active");
 //                      trxmode = SSBMODE;
-		sleep(1);
-		clear_display();
-	    }
-
+	    sleep(1);
+	    clear_display();
 	}
     }
 
     if (keyerport == MFJ1278_KEYER) {
 
-	if (speed < 20) {
+	char *msg;
 
-	    speed++;
+	sendmessage("\\\015");
+	usleep(500000);
 
-	    snprintf(buff, 3, "%2d", GetCWSpeed());
+	msg = g_strdup_printf("MSP %s \015", buff);
+	sendmessage(msg);
+	g_free(msg);
 
-	    strcpy(buffer, "\\\015");
-	    sendbuf();
-	    usleep(500000);
-	    strcpy(buffer, "MSP ");
-	    strcat(buffer, buff);
-	    strcat(buffer, " \015");
-	    sendbuf();
-	    usleep(500000);
-	    strcpy(buffer, "CONV\015\n");
-	    sendbuf();
+	usleep(500000);
+	sendmessage("CONV\015\n");
+    }
+}
 
-	    if (retval < 0) {
-		mvprintw(24, 0, "keyer not active");
-//                      trxmode = SSBMODE;
-		sleep(1);
-		clear_display();
-	    }
+/* ------------------------------------------------------------
+ *        Page-up increases CW speed with 2 wpm
+ *
+ *--------------------------------------------------------------*/
+int speedup(void)
+{
+    extern int trxmode;
 
-	}
+    if (trxmode != CWMODE)
+	return (0);
+
+    if (speed < 20) {
+
+	speed++;
+	setspeed();
+
     }
 
     return (speed);
 }
+
+
+/* ------------------------------------------------------------
+ *        Page down,  decrementing the cw speed with  2 wpm
+ *
+ *--------------------------------------------------------------*/
+int speeddown(void)
+{
+    extern int trxmode;
+
+    if (trxmode != CWMODE)	/* bail out, this is an SSB contest */
+	return (0);
+
+    if (speed >= 1) {
+
+	speed--;
+	setspeed();
+
+    }
+
+    return (speed);
+}
+
 
 int setweight(int weight)
 {				//  write weight to netkeyer
@@ -112,7 +127,6 @@ int setweight(int weight)
 	    sleep(1);
 	    clear_display();
 	}
-
     }
 
     return (0);
