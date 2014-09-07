@@ -20,9 +20,6 @@
 #ifndef SENDBUF_H
 #define SENDBUF_H
 
-extern char buffer[];
-
-void sendbuf(void);
 void sendmessage(const char *msg);
 
 #endif /*  SENDBUF_H */
