@@ -33,8 +33,6 @@ int keyer(void)
 
     extern int cqmode;
     extern char mode[20];
-    extern int bufloc;
-    extern char termbuf[];
     extern char message[][80];
     extern char wkeyerbuffer[];
     extern int data_ready;
@@ -88,72 +86,32 @@ int keyer(void)
 	    break;
 	}
 
-
-	if (x == 127 && (strlen(buffer) >= 1)) {	/* erase  */
-
-	    getyx(stdscr, cury, curx);
-	    mvprintw(5, curx - 1, " ");
-	    mvprintw(5, curx - 1, "");
-	    buffer[strlen(buffer) - 1] = '\0';
-	    bufloc--;
-	}
-
 	if (x > 96 && x < 123)	/* upper case only */
 	    x = x - 32;
 
 	if (x > 9 && x < 91) {
 
-	    if (bufloc >= 38)	// maximum buffer = 39
-	    {
-		bufloc = 38;
-		printw("\nBuffer overflow !, bufloc = %d\n", bufloc);
-		refreshp();
-	    } else {
-		if (x > 31 || x == 10) {
-		    if (keyerport == MFJ1278_KEYER) {
-			mfj1278_control(x);
-		    } else if (keyerport == NET_KEYER) {
-			nkbuffer[0] = x;	// 1 char at the time !
-			nkbuffer[1] = '\0';
-			netkeyer(K_MESSAGE, nkbuffer);
+	    if (x > 31 || x == 10) {
+		if (keyerport == MFJ1278_KEYER) {
+		    mfj1278_control(x);
+		} else if (keyerport == NET_KEYER) {
+		    nkbuffer[0] = x;	// 1 char at the time !
+		    nkbuffer[1] = '\0';
+		    netkeyer(K_MESSAGE, nkbuffer);
 // TODO test if that is correct
-			for (j = 0; j < 29; j++) {
-			    keyerstring[j] = keyerstring[j + 1];
-			}
-			keyerstring[28] = x;
-			keyerstring[29] = '\0';
-
-			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-			mvprintw(5, 0, "%s", keyerstring);
-			refreshp();
-
+		    for (j = 0; j < 29; j++) {
+			keyerstring[j] = keyerstring[j + 1];
 		    }
-		} else		// control char...
-		{
+		    keyerstring[28] = x;
+		    keyerstring[29] = '\0';
 
-		    if (data_ready != 1) {
-			strcat(wkeyerbuffer, buffer);
-			data_ready = 1;
-		    } else
-			buffer[0] = '\0';
-
-		    strcat(termbuf, buffer);
-		    strcat(termbuf, " ");
-		    mvprintw(5, 0, termbuf);
+		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+		    mvprintw(5, 0, "%s", keyerstring);
 		    refreshp();
 
-		    if ((strlen(buffer) + strlen(termbuf) > 39)
-			|| x == '=') {
-			mvprintw(5, 0, "                         ");
-			mvprintw(5, 0, "");
-			refreshp();
-			displayit();
-		    }
-
-		    bufloc = 0;
-		    buffer[bufloc] = '\0';
 		}
 	    }
+		// drop all other control char...
 	} else {
 
 	    switch (x) {

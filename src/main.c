@@ -233,7 +233,6 @@ char weightbuf[4];
 char tonestr[5] = "600";
 int cqdelay = 8;
 char wkeyerbuffer[400];
-int bufloc = 0;
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
 int k_tune;
@@ -750,9 +749,6 @@ int main(int argc, char *argv[])
 
     ui_init();
 
-
-    buffer[0] = '\0';
-    bufloc = 0;
 
     strcat(logline0, backgrnd_str);
     strcat(logline1, backgrnd_str);
