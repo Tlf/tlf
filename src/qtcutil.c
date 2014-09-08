@@ -24,6 +24,9 @@
 #include "qtcutil.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <glib.h>
+#include "tlf.h"
+
 
 #define NBANDS 10
 

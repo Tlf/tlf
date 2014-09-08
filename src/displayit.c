@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2014           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +23,13 @@
 *
 ---------------------------------------------------------------------------*/
 
+#include "tlf.h"
+#include<stdlib.h>
+#include<string.h>
+#include "clear_display.h"
 #include "displayit.h"
+#include <glib.h>
+
 
 void displayit(void)
 {
@@ -33,12 +40,12 @@ void displayit(void)
     extern char terminal3[];
     extern char terminal4[];
 
-    char term2buf[85] = "";
+    char term2buf[81] = "";
 
-    strncat(term2buf, termbuf, strlen(termbuf) - 1);
-    strncat(term2buf, backgrnd_str, 81 - strlen(termbuf));	/* fill with blanks */
+    g_strlcpy(term2buf, termbuf, sizeof(term2buf));
+    g_strchomp(term2buf);
+    g_strlcat(term2buf, backgrnd_str, sizeof(term2buf));	/* fill with blanks */
 
-    term2buf[80] = '\0';
     strcpy(terminal1, terminal2);
     strcpy(terminal2, terminal3);
     strcpy(terminal3, terminal4);

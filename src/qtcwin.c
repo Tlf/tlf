@@ -35,8 +35,7 @@
 #include "globalvars.h"
 #include "qtcutil.h"
 #include "genqtclist.h"
-#include "speedup.h"
-#include "speeddown.h"
+#include "speedupndown.h"
 #include "cw_utils.h"
 #include "keyer.h"
 
@@ -48,7 +47,6 @@ extern int trxmode;
 extern t_qtcreclist qtcreclist;
 extern t_qtclist qtclist;
 extern int keyerport;
-extern char buffer[];
 extern int nr_qsos;
 extern char qtc_recv_msgs[12][80];
 extern char qtc_send_msgs[12][80];
@@ -421,8 +419,9 @@ int qtc_main_panel(int direction) {
 					sendmessage(qtc_recv_msgs[7]);
 				    }
 				    if (trxmode == DIGIMODE) {
-					sprintf(buffer, "%02d %s ", currqtc+1, qtc_recv_msgs[7]);
-					sendbuf();
+					char *str = g_strdup_printf("%02d %s", currqtc+1, qtc_recv_msgs[7]);
+					sendmessage(str);
+					g_free(str);
 				    }
 				}
 
@@ -449,10 +448,10 @@ int qtc_main_panel(int direction) {
 			    }
 			    tempc[0] = '\0';
 			    strip_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
-			    strncpy(buffer, tempc, strlen(tempc));
-			    buffer[strlen(tempc)] = '\0';
+
 			    data_ready = 1;
-			    sendbuf();
+			    sendmessage(tempc);
+
 			    mvwprintw(qtcwin, activefield, 30, "*");
 			    qtclist.qtclines[activefield-3].flag = 1;
 			    // scroll down if not at end of qtclist:

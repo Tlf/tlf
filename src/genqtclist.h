@@ -16,7 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "tlf.h"
+#ifndef GENQTCLIST_H
+#define GENQTCLIST_H
 
 int genqtclist(char * callsign, int nrofqtc);
 int genqtcline(char * qtc, char * line);
+
+
+#endif /* end of include guard: GENQTCLIST_H */

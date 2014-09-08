@@ -27,6 +27,12 @@
 #include "log_recv_qtc_to_disk.h"
 #include "qtcutil.h"
 
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "tlf.h"
+#include "lancode.h"
+
 extern int trx_control;
 extern float freq;
 extern int logfrequency;

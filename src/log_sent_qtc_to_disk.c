@@ -27,6 +27,12 @@
 #include "log_sent_qtc_to_disk.h"
 #include "qtcutil.h"
 
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "tlf.h"
+#include "lancode.h"
+
 extern int trx_control;
 extern float freq;
 extern int logfrequency;
@@ -46,7 +52,7 @@ int log_sent_qtc_to_disk(int qsonr)
 	    for(qpos=0; qpos<80; qpos++) {
 		qtclogline[qpos] = 32;
 	    }
-	  
+
 	    qpos = 0;
 	    // QTC:  3799 PH 2003-03-23 0711 YB1AQS        001/10     DL8WPX        0330 DL6RAI        1021
 	    // QTC: 21086 RY 2001-11-10 0759 HA3LI           1/10     YB1AQS        0003 KB3TS          003

@@ -57,7 +57,6 @@ int getexchange(void)
     extern char message[][80];
     extern char ph_message[14][80];
     extern char hiscall[];
-    extern char buffer[];
     extern char qsonrstr[];
     extern int cqww;
     extern int wpx;
@@ -245,8 +244,7 @@ int getexchange(void)
 	case 129:
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    strcat(buffer, call);	/* F1 */
-		    sendbuf();
+		    sendmessage(call);		/* F1 */
 		} else
 		    play_file(ph_message[5]);	// call
 
