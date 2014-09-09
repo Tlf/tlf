@@ -62,6 +62,7 @@ int debugflag = 0;
 int editor = EDITOR_JOE;
 char rttyoutput[120];
 int use_vk = 0;
+int use_qtc_vk = 0;
 int tune_val = 0;
 int use_bandoutput = 0;
 int no_arrows = 0;
@@ -191,6 +192,8 @@ char message[25][80] =
 char ph_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names
 char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
 char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
+char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTC's
+char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTC's
 
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early

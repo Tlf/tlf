@@ -92,7 +92,7 @@ void delete_qso(void)
 				    look = 0;
 				}
 				else {
-				    qtclen += 80;
+				    qtclen += 90;
 				    qtc_dec(call, RECV);
 				}
 			    }

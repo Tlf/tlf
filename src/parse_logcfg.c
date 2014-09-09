@@ -57,7 +57,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 194	/* commands in list */
+#define  MAX_COMMANDS 222	/* commands in list */
 
 
 int read_logcfg(void)
@@ -230,6 +230,7 @@ int parse_logcfg(char *inputbuffer)
     extern int show_time;
     extern char keyer_device[10];
     extern int use_vk;
+    extern int use_qtc_vk;
     extern int wazmult;
     extern int itumult;
     extern int cqdelay;
@@ -283,6 +284,8 @@ int parse_logcfg(char *inputbuffer)
     extern int pfxmultab;
     extern char qtc_recv_msgs[12][80];
     extern char qtc_send_msgs[12][80];
+    extern char qtc_phrecv_message[14][80];
+    extern char qtc_phsend_message[14][80];
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -479,8 +482,35 @@ int parse_logcfg(char *inputbuffer)
 	"QS_F9",		/* 190 */
 	"QS_F10",
 	"QS_F11",
-	"QS_F12"
-      
+	"QS_F12",
+	"QR_VKM1",
+	"QR_VKM2",
+	"QR_VKM3",
+	"QR_VKM4",
+	"QR_VKM5",
+	"QR_VKM6",
+	"QR_VKM7",			/* 200 */
+	"QR_VKM8",
+	"QR_VKM9",
+	"QR_VKM10",
+	"QR_VKM11",
+	"QR_VKM12",
+	"QR_VKSPM",
+	"QR_VKCQM",
+	"QS_VKM1",
+	"QS_VKM2",
+	"QS_VKM3",			/* 210 */
+	"QS_VKM4",
+	"QS_VKM5",
+	"QS_VKM6",
+	"QS_VKM7",
+	"QS_VKM8",
+	"QS_VKM9",
+	"QS_VKM10",
+	"QS_VKM11",
+	"QS_VKM12",
+	"QS_VKSPM",		/* 220 */
+	"QS_VKCQM"
     };
 
     char **fields;
@@ -1636,6 +1666,24 @@ int parse_logcfg(char *inputbuffer)
 	    strcpy(qtc_send_msgs[ii - 182], fields[1]);
 	    break;	
 	    }
+    case 194 ... 207:{	// get QTC recv phone messages
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(qtc_phrecv_message[ii - 194], g_strchomp(fields[1]), 71);
+	    mvprintw(15, 5, "A: QTC RECV phone message #%d is %s", ii - 194, qtc_phrecv_message[ii - 194]);
+	    refreshp();
+	    if (strlen(ph_message[ii - 194]) > 0)
+		use_qtc_vk = 1;
+	    break;
+	}
+    case 208 ... 221:{	// get QTC send phone messages
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(qtc_phsend_message[ii - 208], g_strchomp(fields[1]), 71);
+	    mvprintw(15, 5, "A: QTC SEND phone message #%d is %s", ii - 208, qtc_phrecv_message[ii - 208]);
+	    refreshp();
+	    if (strlen(ph_message[ii - 208]) > 0)
+		use_qtc_vk = 1;
+	    break;
+	}
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;
