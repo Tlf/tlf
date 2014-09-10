@@ -38,6 +38,7 @@
 #include "speedupndown.h"
 #include "cw_utils.h"
 #include "keyer.h"
+#include "callinput.h"
 
 #define DIRCLAUSE (direction == RECV) || (direction == SEND && (activefield == 0 || activefield == 2))
 
@@ -50,6 +51,8 @@ extern int keyerport;
 extern int nr_qsos;
 extern char qtc_recv_msgs[12][80];
 extern char qtc_send_msgs[12][80];
+extern char qtc_phrecv_message[14][80];
+extern char qtc_phsend_message[14][80];
 extern int data_ready;
 extern struct t_qtc_store_obj *qtc_temp_obj;
 
@@ -404,7 +407,12 @@ int qtc_main_panel(int direction) {
 					    if (qtcreclist.qtclines[currqtc].confirmed == 0) {
 						qtcreclist.qtclines[currqtc].confirmed = 1;
 						qtcreclist.confirmed++;
-						sendmessage(qtc_recv_msgs[2]);
+						if (trxmode == CWMODE) {
+						    sendmessage(qtc_recv_msgs[2]);
+						}
+						if (trxmode == SSBMODE) {
+						    play_file(qtc_phrecv_message[2]);
+						}
 					    }
 					    tfi = (activefield-3)%3;
 					    //activefield++;	// go to next line time field
@@ -417,6 +425,9 @@ int qtc_main_panel(int direction) {
 				else if (qtcreclist.qtclines[currqtc].status == 1 && qtcreclist.qtclines[currqtc].confirmed != 1) {
 				    if (trxmode == CWMODE) {
 					sendmessage(qtc_recv_msgs[7]);
+				    }
+				    if (trxmode == SSBMODE) {
+					play_file(qtc_phrecv_message[7]);
 				    }
 				    if (trxmode == DIGIMODE) {
 					char *str = g_strdup_printf("%02d %s", currqtc+1, qtc_recv_msgs[7]);
@@ -434,6 +445,9 @@ int qtc_main_panel(int direction) {
 					    if (trxmode == DIGIMODE || trxmode == CWMODE) {
 						sendmessage(qtc_recv_msgs[9]);
 					    }
+					    if (trxmode == SSBMODE) {
+						play_file(qtc_phrecv_message[9]);
+					    }
 					    // TODO
 					}
 				    }
@@ -450,7 +464,9 @@ int qtc_main_panel(int direction) {
 			    strip_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
 
 			    data_ready = 1;
-			    sendmessage(tempc);
+			    if (trxmode == CWMODE) {
+				sendmessage(tempc);
+			    }
 
 			    mvwprintw(qtcwin, activefield, 30, "*");
 			    qtclist.qtclines[activefield-3].flag = 1;
@@ -487,7 +503,12 @@ int qtc_main_panel(int direction) {
 			    qtcreclist.count > 0 &&
 			    qtcreclist.confirmed == 0
 			) {
-			    sendmessage(qtc_recv_msgs[1]);
+			    if (trxmode == CWMODE) {
+				sendmessage(qtc_recv_msgs[1]);
+			    }
+			    if (trxmode == SSBMODE) {
+				play_file(qtc_phrecv_message[1]);
+			    }
 			    activefield++;
 			    showfield(activefield);
 			}
@@ -551,9 +572,15 @@ int qtc_main_panel(int direction) {
 			    }
 			}
 
-		    } /* else {
-			play_file(ph_message[x - 129]);
-		    } */
+		    }
+		    if (trxmode == SSBMODE) {
+			if (direction == RECV) {
+			    play_file(qtc_phrecv_message[x - 129]);
+			}
+			if (direction == SEND) {
+			    play_file(qtc_phsend_message[x - 129]);
+			}
+		    }
 
 		    break;
 	/*case 130:		// F2
