@@ -57,7 +57,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 222	/* commands in list */
+#define  MAX_COMMANDS 224	/* commands in list */
 
 
 int read_logcfg(void)
@@ -286,6 +286,9 @@ int parse_logcfg(char *inputbuffer)
     extern char qtc_send_msgs[12][80];
     extern char qtc_phrecv_message[14][80];
     extern char qtc_phsend_message[14][80];
+    extern int qtcrec_record;
+    extern char qtcrec_record_command[2][50];
+    extern char qtcrec_record_command_shutdown[50];
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -510,7 +513,9 @@ int parse_logcfg(char *inputbuffer)
 	"QS_VKM11",
 	"QS_VKM12",
 	"QS_VKSPM",		/* 220 */
-	"QS_VKCQM"
+	"QS_VKCQM",
+	"QTCREC_RECORD",
+	"QTCREC_RECORD_COMMAND"
     };
 
     char **fields;
@@ -1684,6 +1689,41 @@ int parse_logcfg(char *inputbuffer)
 		use_qtc_vk = 1;
 	    break;
 	}
+    case 222: {
+	    qtcrec_record = 1;
+ 	    break;
+    }
+    case 223: {
+	    PARAMETER_NEEDED(teststring);
+	    int p, q = 0, i = 0, s = 0;
+	    for(p=0; p<strlen(fields[1]); p++) {
+	        if (p > 0 && fields[1][p] == ' ') {
+		    s = 1;
+		    qtcrec_record_command_shutdown[p] = '\0';
+		}
+		if (s == 0) {
+		    qtcrec_record_command_shutdown[p] = fields[1][p];
+		}
+		if (fields[1][p] == '$') {
+		    qtcrec_record_command[i][q] = '\0';
+		    i=1;
+		    p++;
+		    q=0;
+		}
+		if (fields[1][p] != '\n') {
+		    qtcrec_record_command[i][q] = fields[1][p];
+		}
+		q++;
+		qtcrec_record_command[i][q] = ' ';
+	    }
+
+	    if (qtcrec_record_command[i][q-1] != '&') {
+		qtcrec_record_command[i][q++] = ' ';
+		qtcrec_record_command[i][q++] = '&';
+	    }
+	    qtcrec_record_command[i][q] = '\0';
+ 	    break;
+    }
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

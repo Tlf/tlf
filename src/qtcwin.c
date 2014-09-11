@@ -55,6 +55,9 @@ extern char qtc_phrecv_message[14][80];
 extern char qtc_phsend_message[14][80];
 extern int data_ready;
 extern struct t_qtc_store_obj *qtc_temp_obj;
+extern int qtcrec_record;
+extern char qtcrec_record_command[2][50];
+extern char qtcrec_record_command_shutdown[50];
 
 enum {
   QTCRECVWINBG = 32,
@@ -106,8 +109,10 @@ int * qtccurrdiretion;
 int qtc_main_panel(int direction) {
     char qtchead[32], tempc[40];
     int i, j, x;
-    int tfi, tlen = 0;
+    int tfi, nrpos, tlen = 0;
     int currqtc = -1;
+    char reccommand[100] = "";
+    static char time_buf[80];
 
     capturing = 0;
     last_rtty_line[0][0] = '\0'; last_rtty_line[1][0] = '\0';
@@ -121,6 +126,8 @@ int qtc_main_panel(int direction) {
     int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
     int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
     int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
+
+    static int record_run = -1;
 
     if (strlen(hiscall) > 0) {
 	if (direction == RECV) {
@@ -442,7 +449,13 @@ int qtc_main_panel(int direction) {
 					if (log_recv_qtc_to_disk(nr_qsos) == 0) {
 					    // TODO
 					    // send 'CFM all' to station
-					    if (trxmode == DIGIMODE || trxmode == CWMODE) {
+					  if (qtcrec_record == 1 && record_run > -1) {
+					      strcpy(reccommand, "pkill -SIGINT -n ");
+					      strcat(reccommand, qtcrec_record_command_shutdown);
+					      system(reccommand);
+					      record_run = -1;
+					  }
+					  if (trxmode == DIGIMODE || trxmode == CWMODE) {
 						sendmessage(qtc_recv_msgs[9]);
 					    }
 					    if (trxmode == SSBMODE) {
@@ -509,6 +522,14 @@ int qtc_main_panel(int direction) {
 			    if (trxmode == SSBMODE) {
 				play_file(qtc_phrecv_message[1]);
 			    }
+			    if (qtcrec_record == 1 && record_run < 0) {
+				strcpy(reccommand, qtcrec_record_command[0]);
+				get_time();
+				strftime(tempc, 60, "%y%m%d%H%M%S.wav", time_ptr);
+				strcat(reccommand, tempc);
+				strcat(reccommand, qtcrec_record_command[1]);
+				record_run = system(reccommand);
+			    }
 			    activefield++;
 			    showfield(activefield);
 			}
@@ -532,6 +553,20 @@ int qtc_main_panel(int direction) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			if(direction == RECV) {
 			    sendmessage(qtc_recv_msgs[x - 129]);
+			    if (qtcrec_record == 1 && strncmp(qtc_recv_msgs[x - 129], "QRV", 3) == 0 && record_run < 0) {
+				strcpy(reccommand, qtcrec_record_command[0]);
+				get_time();
+				strftime(tempc, 60, "%y%m%d%H%M%S.wav", time_ptr);
+				strcat(reccommand, tempc);
+				strcat(reccommand, qtcrec_record_command[1]);
+				record_run = system(reccommand);
+			    }
+			    if (qtcrec_record == 1 && strncmp(qtc_recv_msgs[x - 129], "QSL ALL", 7) == 0 && record_run > -1) {
+				strcpy(reccommand, "pkill -SIGINT -n ");
+				strcat(reccommand, qtcrec_record_command_shutdown);
+				system(reccommand);
+				record_run = -1;
+			    }
 			}
 			if(direction == SEND && strlen(qtc_send_msgs[x - 129]) > 0) {
 			    tlen = strlen(qtc_send_msgs[x - 129])-5;
@@ -575,6 +610,20 @@ int qtc_main_panel(int direction) {
 		    }
 		    if (trxmode == SSBMODE) {
 			if (direction == RECV) {
+			    if (qtcrec_record == 1 && x == 130 && record_run < 0) { // 130 -> F2, "QRV"
+				strcpy(reccommand, qtcrec_record_command[0]);
+				get_time();
+				strftime(tempc, 60, "%y%m%d%H%M%S.wav", time_ptr);
+				strcat(reccommand, tempc);
+				strcat(reccommand, qtcrec_record_command[1]);
+				record_run = system(reccommand);
+			    }
+			    if (qtcrec_record == 1 && x == 138 && record_run > -1) { // 138 -> F10, "QSL ALL"
+				strcpy(reccommand, "pkill -SIGINT -n ");
+				strcat(reccommand, qtcrec_record_command_shutdown);
+				system(reccommand);
+				record_run = -1;
+			    }
 			    play_file(qtc_phrecv_message[x - 129]);
 			}
 			if (direction == SEND) {

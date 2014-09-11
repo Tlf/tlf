@@ -194,6 +194,9 @@ char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n"
 char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
 char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTC's
 char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTC's
+int qtcrec_record = 0;
+char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
+char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
 
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
