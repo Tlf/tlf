@@ -1,6 +1,6 @@
 #########################################
 # WAEDC contest for EU and DX stations  #
-#        HA2OS, 05.08.2014              #
+#        HA2OS, 11.09.2014              #
 #########################################
 #
 CONTEST=waedc
@@ -61,13 +61,34 @@ S&P_TU_MSG=TU 5NN #
 #ALT_9=
 #
 
-QR_F1=QTC?
-QR_F2=QRV
-QR_F3=R
-QR_F5=TIME?
-QR_F6=CALL?
-QR_F7=NR?
-QR_F8=AGN
-QR_F10=QSL ALL
+#VKM1=cq.ogg
+#VKM2=mycall.ogg
+#VKM3=
+#VKM4=
+#VKM5=
+#VKM6=
+#VKM7=
+#VKM8=
+#VKM9=
+#VKM10=
+#VKM11=
+#VKM12=autocq.wav
+#VKSPM=
+#VKCQM=
+
+#QR_VKM1=qtcask.ogg
+#QR_VKM2=qrv.ogg
+#QR_VKM3=roger.wav
+#QR_VKM5=timaegn.wav
+#QR_VKM6=callagn.wav
+#QR_VKM7=nragn.wav
+#QR_VKM8=agnall.wav
+#QR_VKM10=qslall.wav
+
+QTCREC_RECORD
+# record command, the $ mark is the placeholder, Tlf will replace the
+# record file: yymmddhhmmss.wav
+QTCREC_RECORD_COMMAND=rec -r 8000 $ -q
+
 
 ####### END #####################

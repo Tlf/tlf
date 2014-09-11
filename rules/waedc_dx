@@ -64,4 +64,30 @@ S&P_TU_MSG=TU 599 # 599 #
 QS_F1=QRV?
 QS_F2=QTC sr/nr
 
+#VKM1=cq.ogg
+#VKM2=mycall.ogg
+#VKM3=
+#VKM4=
+#VKM5=
+#VKM6=
+#VKM7=
+#VKM8=
+#VKM9=
+#VKM10=
+#VKM11=
+#VKM12=autocq.wav
+#VKSPM=
+#VKCQM=
+
+#QR_VKM1=qrvask.wav
+#QR_VKM2=
+#QR_VKM3=
+#QR_VKM5=
+#QR_VKM6=
+#QR_VKM7=
+#QR_VKM8=
+#QR_VKM10=
+
+
+
 ####### END #####################
