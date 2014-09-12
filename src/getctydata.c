@@ -462,6 +462,9 @@ int getctydata2(char *checkcall)
 
     countrynr = x;
 
+    strncpy(continent, dxcc_by_index(countrynr) -> continent , 3);
+    continent[2] = '\0';
+
     strcpy(checkcall, membuffer);
 
     return (x);
