@@ -26,7 +26,6 @@
 #include "globalvars.h"
 #include "deleteqso.h"
 #include "qtcutil.h"
-#include <syslog.h>
 
 #define QTCRECVCALLPOS 30
 #define QTCSENTCALLPOS 35
