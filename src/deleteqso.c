@@ -26,6 +26,7 @@
 #include "globalvars.h"
 #include "deleteqso.h"
 #include "qtcutil.h"
+#include <syslog.h>
 
 #define QTCRECVCALLPOS 30
 #define QTCSENTCALLPOS 35
@@ -65,6 +66,7 @@ void delete_qso(void)
 		    // catch the band and mode (for QTC)
 		    strncpy(bandmode, logline, 5);
 		    bandmode[5] = '\0';
+		    call[14] = '\0';
 		    // catch the last callsign
 		    strncpy(call, logline+29, 14);
 		    i = strlen(call);
@@ -88,6 +90,8 @@ void delete_qso(void)
 			    while (look == 1) {
 				lseek(qtcfile, ((int)qstatbuf.st_size - (91+qtclen)), SEEK_SET);
 				rc = read(qtcfile, logline, 90);
+                                logline[90] = '\0';
+
 				if (! (strncmp(call, logline+QTCRECVCALLPOS, strlen(call)) == 0 && strncmp(bandmode, logline, 5) == 0)) {
 				    look = 0;
 				}
