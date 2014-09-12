@@ -50,7 +50,7 @@ int log_recv_qtc_to_disk(int qsonr)
 	if (strlen(qtcreclist.qtclines[i].time) == 4 &&
 	    strlen(qtcreclist.qtclines[i].callsign) > 0 &&
 	    strlen(qtcreclist.qtclines[i].serial) > 0) { // all fields are filled
-	    for(qpos=0; qpos<80; qpos++) {
+	    for(qpos=0; qpos<100; qpos++) {
 		qtclogline[qpos] = 32;
 	    }
 
@@ -60,10 +60,10 @@ int log_recv_qtc_to_disk(int qsonr)
 
 	    sprintf(temp, "%3s", band[bandinx]);
 	    if (trxmode == CWMODE) {
-		strcat(temp, "CW ");
+		strcat(temp, "CW  ");
 	    }
 	    else if (trxmode == SSBMODE) {
-		strcat(temp, "SSB");
+		strcat(temp, "SSB ");
 	    }
 	    else {
 		strcat(temp, "DIG");
@@ -75,11 +75,14 @@ int log_recv_qtc_to_disk(int qsonr)
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
 	    qpos += strlen(temp);
 
-	    get_time();
-	    strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
+	    //get_time();
+	    //strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
+	    sprintf(time_buf, " %s ", qtcreclist.qtclines[i].receivedtime);
 
+	    //strncpy(qtclogline+qpos, time_buf, strlen(time_buf));
 	    strncpy(qtclogline+qpos, time_buf, strlen(time_buf));
 	    qpos+=strlen(time_buf);
+	    //qpos+=strlen(qtcreclist.qtclines[i].receivedtime);
 
 	    if (lan_active == 1) {
 		qtclogline[qpos++] = thisnode;	// set node ID...
@@ -145,6 +148,7 @@ int log_recv_qtc_to_disk(int qsonr)
 	qtcreclist.qtclines[i].serial[0] = '\0';
 	qtcreclist.qtclines[i].status = 0;
 	qtcreclist.qtclines[i].confirmed = 0;
+	qtcreclist.qtclines[i].receivedtime[0] = '\0';
     }
 
     qtcreclist.count = 0;

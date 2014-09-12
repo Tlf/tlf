@@ -43,6 +43,7 @@ int genqtclist(char * callsign, int nrofqtc)
 	qtclist.qtclines[s].flag = 0;
 	qtclist.qtclines[s].saved = 0;
 	qtclist.qtclines[s].sent = 0;
+	qtclist.qtclines[s].senttime[0] = '\0';
     }
 
     s=next_qtc_qso;

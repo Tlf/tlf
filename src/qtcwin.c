@@ -39,6 +39,7 @@
 #include "cw_utils.h"
 #include "keyer.h"
 #include "callinput.h"
+#include "get_time.h"
 
 #define DIRCLAUSE (direction == RECV) || (direction == SEND && (activefield == 0 || activefield == 2))
 
@@ -163,6 +164,7 @@ int qtc_main_panel(int direction) {
 		qtcreclist.qtclines[i].time[0] = '\0';
 		qtcreclist.qtclines[i].callsign[0] = '\0';
 		qtcreclist.qtclines[i].serial[0] = '\0';
+		qtcreclist.qtclines[i].receivedtime[0] = '\0';
 		qtcreclist.qtclines[i].confirmed = 0;
 	    }
 	    activefield = 0;
@@ -401,6 +403,8 @@ int qtc_main_panel(int direction) {
 				    strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
 				    strlen(qtcreclist.qtclines[currqtc].serial) > 0
 				) {
+				    get_time();
+				    strftime(qtcreclist.qtclines[currqtc].receivedtime, 60, "%d-%b-%y %H:%M", time_ptr);
 				    qtcreclist.qtclines[currqtc].status = 2;
 				    show_status(currqtc);
 				    if (currqtc < *qtccount) {
@@ -471,6 +475,8 @@ int qtc_main_panel(int direction) {
 			if (direction == SEND) {
 			    if (qtclist.qtclines[activefield-3].sent == 0) {
 				qtclist.qtclines[activefield-3].sent = 1;
+				get_time();
+				strftime(qtclist.qtclines[activefield-3].senttime, 60, "%d-%b-%y %H:%M", time_ptr);
 				qtclist.totalsent++;
 			    }
 			    tempc[0] = '\0';

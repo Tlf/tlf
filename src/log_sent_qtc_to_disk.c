@@ -49,7 +49,7 @@ int log_sent_qtc_to_disk(int qsonr)
 
     for(i=0; i<10; i++) {
 	if (qtclist.qtclines[i].saved == 0 && qtclist.qtclines[i].flag == 1 && qtclist.qtclines[i].sent == 1) { // not saved and marked for sent
-	    for(qpos=0; qpos<80; qpos++) {
+	    for(qpos=0; qpos<100; qpos++) {
 		qtclogline[qpos] = 32;
 	    }
 
@@ -59,13 +59,13 @@ int log_sent_qtc_to_disk(int qsonr)
 
 	    sprintf(temp, "%3s", band[bandinx]);
 	    if (trxmode == CWMODE) {
-		strcat(temp, "CW ");
+		strcat(temp, "CW  ");
 	    }
 	    else if (trxmode == SSBMODE) {
-		strcat(temp, "SSB");
+		strcat(temp, "SSB ");
 	    }
 	    else {
-		strcat(temp, "DIG");
+		strcat(temp, "DIG ");
 	    }
 	    strncpy(qtclogline, temp, strlen(temp));
 
@@ -78,9 +78,7 @@ int log_sent_qtc_to_disk(int qsonr)
 	    strncpy(qtclogline+qpos, temp, strlen(temp));
 	    qpos += strlen(temp);
 
-	    get_time();
-	    strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
-
+	    sprintf(time_buf, " %s ", qtclist.qtclines[i].senttime);
 	    strncpy(qtclogline+qpos, time_buf, strlen(time_buf));
 	    qpos+=strlen(time_buf);
 
@@ -162,6 +160,7 @@ int log_sent_qtc_to_disk(int qsonr)
 	qtclist.qtclines[i].flag = 0;
 	qtclist.qtclines[i].saved = 0;
 	qtclist.qtclines[i].sent = 0;
+	qtclist.qtclines[i].senttime[0] = '\0';
     }
 
     qtclist.count = 0;

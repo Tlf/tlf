@@ -27,8 +27,8 @@
 #include "deleteqso.h"
 #include "qtcutil.h"
 
-#define QTCRECVCALLPOS 29
-#define QTCSENTCALLPOS 34
+#define QTCRECVCALLPOS 30
+#define QTCSENTCALLPOS 35
 
 extern int qtcdirection;
 extern int nr_qtcsent;
@@ -86,13 +86,13 @@ void delete_qso(void)
 			    // this works only for fixed length qtc line!
 			    lseek(qtcfile, 0, SEEK_SET);
 			    while (look == 1) {
-				lseek(qtcfile, ((int)qstatbuf.st_size - (90+qtclen)), SEEK_SET);
-				rc = read(qtcfile, logline, 89);
+				lseek(qtcfile, ((int)qstatbuf.st_size - (91+qtclen)), SEEK_SET);
+				rc = read(qtcfile, logline, 90);
 				if (! (strncmp(call, logline+QTCRECVCALLPOS, strlen(call)) == 0 && strncmp(bandmode, logline, 5) == 0)) {
 				    look = 0;
 				}
 				else {
-				    qtclen += 90;
+				    qtclen += 91;
 				    qtc_dec(call, RECV);
 				}
 			    }
@@ -118,13 +118,13 @@ void delete_qso(void)
                             // callsigns is the current callsign
                             // this works only for fixed length qtc line!
                             while (look == 1) {
-                                lseek(qtcfile, ((int)qstatbuf.st_size - (95+qtclen)), SEEK_SET);
-                                rc = read(qtcfile, logline, 94);
+                                lseek(qtcfile, ((int)qstatbuf.st_size - (96+qtclen)), SEEK_SET);
+                                rc = read(qtcfile, logline, 95);
                                 if (! (strncmp(call, logline+QTCSENTCALLPOS, strlen(call)) == 0 && strncmp(bandmode, logline, 5) == 0)) {
                                     look = 0;
                                 }
                                 else {
-                                    qtclen += 95;
+                                    qtclen += 96;
 				    qtc_dec(call, SEND);
 				    qsoflags_for_qtc[s] = 0;
 				    next_qtc_qso = s;

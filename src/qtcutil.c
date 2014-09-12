@@ -96,10 +96,10 @@ int parse_qtcline(char * logline, char callsign[15], int direction) {
     int i = 0;
 
     if (direction == RECV) {
-	strncpy(callsign, logline+29, 15);
+	strncpy(callsign, logline+30, 15);
     }
     if (direction == SEND) {
-	strncpy(callsign, logline+34, 15);
+	strncpy(callsign, logline+35, 15);
     }
     while(callsign[i] != ' ') {
 	i++;
