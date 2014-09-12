@@ -306,11 +306,11 @@ int send_lan_message(int opcode, char *message)
 	lan_send(sendbuffer);
     }
     if (opcode == QTCRENTRY) {
-	sendbuffer[92] = '\0';
+	sendbuffer[93] = '\0';
 	lan_send(sendbuffer);
     }
     if (opcode == QTCSENTRY) {
-	sendbuffer[98] = '\0';
+	sendbuffer[99] = '\0';
 	lan_send(sendbuffer);
     }
 
