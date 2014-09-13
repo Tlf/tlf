@@ -395,6 +395,7 @@ int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
 
 int nopacket = 0;		/* set if tlf is called with '-n' */
+int no_trx_control = 0;		/* set if tlf is called with '-r' */
 
 int bandweight_points[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 int bandweight_multis[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -444,8 +445,11 @@ void parse_options(int argc, char *argv[])
 	    printf("Version: tlf-%s\n", VERSION);
 	    exit(0);
 	    break;
-	case 'n':		// output version
+	case 'n':		// disable packet
 	    nopacket = 1;
+	    break;
+	case 'r':		
+	    no_trx_control = 1; // disable radio control
 	    break;
 	default:
 	    printf("Use: tlf [-v] Verbose\n");
@@ -454,6 +458,7 @@ void parse_options(int argc, char *argv[])
 	    printf("         [-d] Debug mode\n");
 	    printf("         [-h] This message\n");
 	    printf("         [-n] Start without cluster hookup\n");
+	    printf("         [-r] Start without radio control\n");
 	    exit(0);
 	    break;
 	}
@@ -648,7 +653,7 @@ void hamlib_init()
 
     showmsg("HAMLIB compiled in");
 
-    if (trx_control != 0) {
+    if (trx_control != 0 && no_trx_control != 1) {
 
 	shownr("Rignumber is", (int) myrig_model);
 	shownr("Rig speed is", serial_rate);
@@ -798,7 +803,7 @@ int main(int argc, char *argv[])
     int j;
     int ret;
     char tlfversion[80] = "";
-
+printf("%c\n", argv[1][1]);
     parse_options(argc, argv);
 
     ui_init();
