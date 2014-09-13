@@ -653,7 +653,11 @@ void hamlib_init()
 
     showmsg("HAMLIB compiled in");
 
-    if (trx_control != 0 && no_trx_control != 1) {
+    if (no_trx_control == 1) {
+	trx_control = 0;
+    }
+    
+    if (trx_control != 0) {
 
 	shownr("Rignumber is", (int) myrig_model);
 	shownr("Rig speed is", serial_rate);
