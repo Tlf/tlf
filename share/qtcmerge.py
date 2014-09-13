@@ -13,6 +13,8 @@ sqtc = []
 rqtc = []
 sqtctimes = []
 rqtctimes = []
+sqtccalls = []
+rqtccalls = []
 
 band_hash = {
   160: "1800",
@@ -21,6 +23,11 @@ band_hash = {
    20: "14000",
    15: "21000",
    10: "28000"
+}
+
+mode_hash = {
+  'CW': "CW",
+  'SS': "PH"
 }
 
 try:
@@ -59,16 +66,22 @@ try:
 except:
     print "Can't open or parse QTC_sent.log"
 
-try:
+#try:
+if True:
     f = open("QTC_recv.log", "r")
     qtcl = [l for l in f.readlines()]
     for l in qtcl:
 	fshift = 0
 	fields = filter(None, [fl for fl in l.split(" ")])
 
-	if len(fields) == 11:
+	if l[28] != " ":
 	    fshift = 1
-	qtc = ['QTC:', "%s" % band_hash[(int(l[0:3]))].rjust(5, ' '), l[3:5], time.strftime("%Y-%m-%d %H%M", time.strptime(fields[2] + " " + fields[3], "%d-%b-%y %H:%M")), "%s" % callsign.ljust(13, ' ')]
+	band = band_hash[(int(l[0:3]))].rjust(5, ' ')
+	if fields[-1].strip() != "*":
+	    freq = fields[-1].split(".")[0].rjust(5, ' ')
+	else:
+	    freq = band_hash[(int(l[0:3]))].rjust(5, ' ')
+	qtc = ['QTC:', freq, mode_hash[l[3:5]], time.strftime("%Y-%m-%d %H%M", time.strptime(fields[2] + " " + fields[3], "%d-%b-%y %H:%M")), "%s" % callsign.ljust(13, ' ')]
 	qtc.append("%s" % ("%d/%d" % (int(fields[5+fshift]), int(fields[6+fshift]))).ljust(10, " "))
 	qtc.append("%s" % (fields[4+fshift].ljust(13, ' ')))
 	qtc.append("%s" % (fields[7+fshift]))
@@ -76,8 +89,10 @@ try:
 	qtc.append("%s" % (fields[9+fshift].strip()))
 	rqtc.append(" ".join(qtc))
 	rqtctimes.append(int(time.strftime("%s", time.strptime(fields[2] + " " + fields[3], "%d-%b-%y %H:%M"))))
+	rqtccalls.append(callsign)
     f.close()
-except:
+#except:
+else:
     print "Can't open or parse QTC_recv.log"
 
 fo = open(cbr.replace(".cbr", "_QTC.cbr"), "w+")
@@ -89,7 +104,11 @@ for l in lines[:-1]:
     else:
 	qsotime = None
     if qsotime is not None:
-	while len(rqtctimes) > rpos and rqtctimes[rpos] < qsotime:
+        qtccallsign = ""
+        if len(rqtctimes) > rpos:
+            qtccallsign = rqtccalls[rpos]
+        #print qsotime, rqtctimes[rpos], qtccallsign
+	while len(rqtctimes) > rpos and qsotime >= rqtctimes[rpos] and qtccallsign == rqtccalls[rpos]:
 	    fo.write(rqtc[rpos] + "\n")
 	    rpos += 1
 	while len(sqtctimes) > spos and sqtctimes[spos] < qsotime:
