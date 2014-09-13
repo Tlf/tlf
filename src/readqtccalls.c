@@ -74,7 +74,7 @@ int readqtccalls()
 		nr_qtcsent = tempi;
 	    }
 
-	    strncpy(temps, inputbuffer+11, 4);	// qso nr in qso list
+	    strncpy(temps, inputbuffer+12, 4);	// qso nr in qso list
 	    tempi = atoi(temps)-1;
 	    qsoflags_for_qtc[tempi] = 1;
 	    parse_qtcline(inputbuffer, callsign, SEND);

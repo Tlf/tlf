@@ -167,7 +167,7 @@ typedef struct {
   int saved;	// indicates QTC has saved
   int sent;	// indicates QTC has sent at least once
   char qtc[25]; // QTC line by concatenated fields
-  char senttime[15];  // sent time: YY-mm-dd HH:MM
+  char senttime[16];  // sent time: YY-Mon-dd HH:MM\0
 } t_qtcline;
 
 typedef struct {
@@ -185,7 +185,7 @@ typedef struct {
   char callsign[15]; // callsign
   char serial[5]; // qso serial
   int confirmed; // qtc had confirmed
-  char receivedtime[15]; // received time: YY-mm-dd HH:MM
+  char receivedtime[16]; // received time: YY-Mon-dd HH:MM\0
 } t_qtcrecline;
 
 typedef struct {

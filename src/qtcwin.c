@@ -404,7 +404,10 @@ int qtc_main_panel(int direction) {
 				    strlen(qtcreclist.qtclines[currqtc].serial) > 0
 				) {
 				    get_time();
-				    strftime(qtcreclist.qtclines[currqtc].receivedtime, 60, "%d-%b-%y %H:%M", time_ptr);
+				    tempc[0] = '\0';
+				    strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
+				    strncpy(qtcreclist.qtclines[currqtc].receivedtime, tempc, 15);
+				    qtcreclist.qtclines[currqtc].receivedtime[15] = '\0';
 				    qtcreclist.qtclines[currqtc].status = 2;
 				    show_status(currqtc);
 				    if (currqtc < *qtccount) {
@@ -476,12 +479,14 @@ int qtc_main_panel(int direction) {
 			    if (qtclist.qtclines[activefield-3].sent == 0) {
 				qtclist.qtclines[activefield-3].sent = 1;
 				get_time();
-				strftime(qtclist.qtclines[activefield-3].senttime, 60, "%d-%b-%y %H:%M", time_ptr);
+				tempc[0] = '\0';
+				strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
+				strncpy(qtclist.qtclines[activefield-3].senttime, tempc, 15);
+				qtclist.qtclines[activefield-3].senttime[15] = '\0';
 				qtclist.totalsent++;
 			    }
 			    tempc[0] = '\0';
 			    strip_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
-
 			    data_ready = 1;
 			    if (trxmode == CWMODE) {
 				sendmessage(tempc);
