@@ -807,7 +807,7 @@ int main(int argc, char *argv[])
     int j;
     int ret;
     char tlfversion[80] = "";
-printf("%c\n", argv[1][1]);
+
     parse_options(argc, argv);
 
     ui_init();
