@@ -138,6 +138,7 @@ void searchlog(char *searchstring)
     extern int show_time;
     extern int wazmult;
     extern int itumult;
+    extern int country_mult;
 
     int srch_index = 0;
     int r_index = 0;
@@ -596,37 +597,46 @@ void searchlog(char *searchstring)
 	    }
 	}
 
-	if (pfxnummultinr >= 0) {
+	if (pfxnummultinr >= 0 || country_mult) {
 	    getpx(hiscall);
 	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
 
 	    getctydata(hiscall);
 	    pfxnumcntidx = -1;
+	    int tbandidx = -1;
 
-	    int pfxi = 0;
-	    while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
-		pfxi++;
+	    if (pfxnummultinr >= 0) {
+		int pfxi = 0;
+		while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+		    pfxi++;
+		}
+		if (pfxnummulti[pfxi].countrynr == countrynr) {
+		    pfxnumcntidx = pfxi;
+		}
 	    }
-	    if (pfxnummulti[pfxi].countrynr == countrynr) {
-		pfxnumcntidx = pfxi;
+	    if (pfxnumcntidx >= 0) {
+		tbandidx = pfxnummulti[pfxnumcntidx].qsos[pxnr];
+	    }
+	    else {
+		tbandidx = countries[countrynr];
 	    }
 
-	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND160) == BAND160) {
+	    if ((tbandidx & BAND160) == BAND160) {
 		mvwprintw(search_win, 6, 37, "M");
 	    }
-	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND80) == BAND80) {
+	    if ((tbandidx & BAND80) == BAND80) {
 		mvwprintw(search_win, 5, 37, "M");
 	    }
-	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND40) == BAND40) {
+	    if ((tbandidx & BAND40) == BAND40) {
 		mvwprintw(search_win, 4, 37, "M");
 	    }
-	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND20) == BAND20) {
+	    if ((tbandidx & BAND20) == BAND20) {
 		mvwprintw(search_win, 3, 37, "M");
 	    }
-	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND15) == BAND15) {
+	    if ((tbandidx & BAND15) == BAND15) {
 		mvwprintw(search_win, 2, 37, "M");
 	    }
-	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == BAND10) {
+	    if ((tbandidx & BAND10) == BAND10) {
 		mvwprintw(search_win, 1, 37, "M");
 	    }
 
