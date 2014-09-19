@@ -597,7 +597,7 @@ void searchlog(char *searchstring)
 	    }
 	}
 
-	if (pfxnummultinr >= 0 || country_mult) {
+	if ((pfxnummultinr >= 0 || country_mult) && contest == 1) {
 	    getpx(hiscall);
 	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
 
