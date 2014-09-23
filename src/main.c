@@ -704,9 +704,6 @@ void keyer_init()
     if (keyerport == MFJ1278_KEYER || keyerport == GMFSK) {
 	init_controller();
     }
-
-    if (keyerport != NET_KEYER)
-	write_tone(); 		/** \todo works only for NET_EKYER */
 }
 
 
