@@ -448,7 +448,7 @@ void parse_options(int argc, char *argv[])
 	case 'n':		// disable packet
 	    nopacket = 1;
 	    break;
-	case 'r':		
+	case 'r':
 	    no_trx_control = 1; // disable radio control
 	    break;
 	default:
@@ -648,7 +648,7 @@ void hamlib_init()
     if (no_trx_control == 1) {
 	trx_control = 0;
     }
-    
+
     if (trx_control != 0) {
 
 	shownr("Rignumber is", (int) myrig_model);
@@ -757,10 +757,6 @@ void keyer_init()
 	init_controller();
     }
 
-    // check the GMFSK value is just a workaround
-    if (keyerport != NET_KEYER && keyerport != GMFSK) {
-	write_tone(); 		/** \todo works only for NET_EKYER */
-    }
 }
 
 
