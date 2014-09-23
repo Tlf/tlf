@@ -140,7 +140,7 @@ void *logit(void *ptr)
 			&& (defer_store == 0)) {	/* S&P mode */
 
 		    if (cqww == 1) {
-			if (recall_exchange() == -1)
+			if (strlen(comment) == 0 && recall_exchange() == -1)
 			    strcpy(comment, cqzone);	/* fill in the zone */
 
 			refresh_comment();
