@@ -268,6 +268,12 @@ void prepare_specific_part(void) {
 	} else
 		strcat (logline4, zone_export);
 */
+	if (trxmode == DIGIMODE && cqww == 1 && strlen(comment) < 5) {
+	    comment[2] = ' ';
+	    comment[3] = 'D';
+	    comment[4] = 'X';
+	    comment[5] = '\0';
+	}
 	strncat(logline4, comment, 22);
     } else {	//----------------------end cqww ---------------
 	strncat(logline4, comment, 22);
