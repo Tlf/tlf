@@ -88,6 +88,8 @@ int getexchange(void)
     extern int commentfield;
     extern int no_rst;
     extern int serial_or_section;
+    extern int ve_cty;
+    extern int w_cty;
 
     int i;
     int x = 0;
@@ -452,6 +454,16 @@ int getexchange(void)
 		}
 		refreshp();
 		break;
+	    } else if (cqww == 1 && trxmode == DIGIMODE && ((countrynr == w_cty) || (countrynr == ve_cty))) {
+		if (strlen(comment) < 5) {
+		    mvprintw(13, 54, "state/prov?");
+		    mvprintw(12, 54, comment);
+		    x = 0;
+		}
+		else {
+		    refreshp();
+		    break;
+		}
 	    } else
 		break;
 
