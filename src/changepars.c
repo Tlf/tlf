@@ -56,7 +56,6 @@ int changepars(void)
     extern SCREEN *mainscreen;
     extern char *config_file;
     extern int miniterm;
-    extern char buffer[];
 
 #ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;
@@ -424,12 +423,7 @@ int changepars(void)
     case 49:
 	{
 	    if (keyerport == MFJ1278_KEYER) {
-		strcpy(buffer, "MODE CW,30");
-		buffer[7] = '\015';
-		buffer[8] = 'K';
-		buffer[9] = '\015';
-		buffer[10] = '\0';
-		sendbuf();
+		sendmessage("MODE CW\015K\015");
 	    }
 	    trxmode = CWMODE;
 
@@ -668,12 +662,7 @@ int changepars(void)
 	}
     case 47:			/* RTTY Initialize mode (MFJ1278B controller) */
 	{
-	    strcpy(buffer, "MODE VB");
-	    buffer[7] = '\015';
-	    buffer[8] = 'K';
-	    buffer[9] = '\015';
-	    buffer[10] = '\0';
-	    sendbuf();
+	    sendmessage("MODE VB\015K\015");
 	    trxmode = DIGIMODE;
 
 	    break;

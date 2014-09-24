@@ -168,7 +168,6 @@ char sp_return[80] = " \n";
 char cq_return[80] = " \n";
 char whichcontest[40] = "qso";
 int defer_store = 0;
-extern char buffer[];
 char call[20];
 char logfile[120] = "general.log";
 char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
@@ -234,7 +233,6 @@ char weightbuf[4];
 char tonestr[5] = "600";
 int cqdelay = 8;
 char wkeyerbuffer[400];
-int bufloc = 0;
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
 int k_tune;
@@ -706,9 +704,6 @@ void keyer_init()
     if (keyerport == MFJ1278_KEYER || keyerport == GMFSK) {
 	init_controller();
     }
-
-    if (keyerport != NET_KEYER)
-	write_tone(); 		/** \todo works only for NET_EKYER */
 }
 
 
@@ -751,9 +746,6 @@ int main(int argc, char *argv[])
 
     ui_init();
 
-
-    buffer[0] = '\0';
-    bufloc = 0;
 
     strcat(logline0, backgrnd_str);
     strcat(logline1, backgrnd_str);

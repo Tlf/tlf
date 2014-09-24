@@ -27,8 +27,7 @@
 #include "onechar.h"
 #include "stoptx.h"
 #include "displayit.h"
-#include "speedup.h"
-#include "speeddown.h"
+#include "speedupndown.h"
 #include "sendbuf.h"
 #include "messagechange.h"
 
