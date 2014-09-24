@@ -368,6 +368,7 @@ int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
 
 int nopacket = 0;		/* set if tlf is called with '-n' */
+int no_trx_control = 0;		/* set if tlf is called with '-r' */
 
 
 pthread_t background_thread;
@@ -417,6 +418,9 @@ void parse_options(int argc, char *argv[])
 	case 'n':		// output version
 	    nopacket = 1;
 	    break;
+	case 'r':
+	    no_trx_control = 1; // disable radio control
+	    break;
 	default:
 	    printf("Use: tlf [-v] Verbose\n");
 	    printf("         [-V] Version\n");
@@ -424,6 +428,7 @@ void parse_options(int argc, char *argv[])
 	    printf("         [-d] Debug mode\n");
 	    printf("         [-h] This message\n");
 	    printf("         [-n] Start without cluster hookup\n");
+	    printf("         [-r] Start without radio control\n");
 	    exit(0);
 	    break;
 	}
@@ -596,6 +601,10 @@ void hamlib_init()
     int status;
 
     showmsg("HAMLIB compiled in");
+
+    if (no_trx_control == 1) {
+	trx_control = 0;
+    }
 
     if (trx_control != 0) {
 
