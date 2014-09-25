@@ -22,7 +22,7 @@
 .TP
 \fB\-n\fR Start without packet/cluster.
 .TP
-\fB\-n\fR Start without radio control. Useful argument, when user wants to start Tlf without radio control, but wants to keep the logcfg.dat.
+\fB\-r\fR Start without radio control. Useful argument, when user wants to start Tlf without radio control, but wants to keep the logcfg.dat.
 
 .SH "DESCRIPTION"
 \fBtlf\fR
