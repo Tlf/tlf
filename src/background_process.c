@@ -30,6 +30,7 @@
 #include "getctydata.h"
 #include "set_tone.h"
 #include "rtty.h"
+#include "fldigixmlrpc.h"
 #include <glib.h>
 
 extern int stop_backgrnd_process;
@@ -55,6 +56,7 @@ extern int timeoffset;
 extern char call[];
 extern int trxmode;
 extern int keyerport;
+extern int fldigi_var_carrier;
 
 int cw_simulator(void);
 
@@ -92,6 +94,10 @@ void *background_process(void *ptr)
 	if (trxmode == DIGIMODE
 	    && (keyerport == MFJ1278_KEYER || keyerport == GMFSK))
 	    rx_rtty();
+
+	if (trxmode == DIGIMODE && keyerport == GMFSK) {
+	    fldigi_xmlrpc_get_carrier();
+	}
 
 	if (stop_backgrnd_process == 0) {
 	    write_keyer();

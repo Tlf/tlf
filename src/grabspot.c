@@ -39,6 +39,8 @@ void grabspot(void)
     extern int outfreq;
 #endif
 
+    extern int fldigi_var_carrier;
+
     spot *data;
 
     if (trx_control == 0)
@@ -51,6 +53,7 @@ void grabspot(void)
 	if (data != NULL) {
 
 	    outfreq = data -> freq;
+	    outfreq -= fldigi_var_carrier;
 	    send_bandswitch( outfreq );
 
 	    strcpy( hiscall, data->call );

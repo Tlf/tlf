@@ -11,7 +11,7 @@ tlf_SOURCES = \
 	dxcc.c \
 	deleteqso.c displayit.c \
 	edit_last.c editlog.c \
-	freq_display.c focm.c \
+	fldigixmlrpc.c freq_display.c focm.c \
 	get_time.c getctydata.c getexchange.c getmessages.c getpx.c \
 	getsummary.c gettxinfo.c getwwv.c grabspot.c \
 	initial_exchange.c \
@@ -33,7 +33,7 @@ tlf_SOURCES = \
 	write_keyer.c writecabrillo.c writeparas.c \
 	zone_nr.c
 
-tlf_LDADD = @GLIB_LIBS@
+tlf_LDADD = @GLIB_LIBS@ -lxmlrpc_client -lxmlrpc -lxmlrpc_util
 
 noinst_HEADERS = \
 	addarea.h addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \
@@ -44,7 +44,7 @@ noinst_HEADERS = \
 	dxcc.h \
 	deleteqso.h displayit.h \
 	edit_last.h editlog.h \
-	freq_display.h focm.h \
+	fldigixmlrpc.h freq_display.h focm.h \
 	get_time.h  getctydata.h getexchange.h getmessages.h getpx.h \
 	getsummary.h gettxinfo.h getwwv.h globalvars.h grabspot.h \
 	initial_exchange.h \
