@@ -68,7 +68,7 @@ int gettxinfo(void)
 	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL)
 	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 
-	rigfreq -= fldigi_var_carrier;
+	rigfreq += fldigi_var_carrier;
 
 	if (retval != RIG_OK || rigfreq < 0.1) {
 	    freq = 0.0;

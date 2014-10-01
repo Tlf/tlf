@@ -94,6 +94,8 @@ void grab_next(void)
     extern int outfreq;
 #endif
 
+    extern int fldigi_var_carrier;
+
     static int dir = 1;		/* start scanning up */
 
     spot *data;
@@ -112,6 +114,7 @@ void grab_next(void)
     if (data != NULL) {
 
 	outfreq = data -> freq;
+	outfreq -= fldigi_var_carrier;
 	send_bandswitch( outfreq );
 
 	strcpy( hiscall, data->call );
