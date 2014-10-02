@@ -33,7 +33,7 @@ tlf_SOURCES = \
 	write_keyer.c writecabrillo.c writeparas.c \
 	zone_nr.c
 
-tlf_LDADD = @GLIB_LIBS@ -lxmlrpc_client -lxmlrpc -lxmlrpc_util
+tlf_LDADD = @GLIB_LIBS@
 
 noinst_HEADERS = \
 	addarea.h addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \

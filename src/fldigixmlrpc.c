@@ -23,8 +23,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef HAVE_LIBXMLRPC
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
+#endif
 
 #define NAME "Tlf"
 #define VERSION "1.0"
@@ -32,18 +34,34 @@
 int fldigi_var_carrier = 0;
 
 int fldigi_xmlrpc_get_carrier() {
+#ifdef HAVE_LIBXMLRPC
     xmlrpc_env env;
     xmlrpc_value * result;
     xmlrpc_int32 sum;
+#endif
+    static int errflg;
+    static int trycnt;
 
+    /* if some call timed outs/breaks, we will suspend the call */
+    if (errflg > 0 && trycnt < 1000) {
+        trycnt++;
+	return -1;
+    }
+
+    errflg = 0;
+    trycnt = 0;
     const char * const serverUrl = "http://localhost:7362/RPC2";
     const char * const methodName = "modem.get_carrier";
 
+#ifndef HAVE_LIBXMLRPC
+    return 0;
+#else
     xmlrpc_env_init(&env);
 
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
     if (env.fault_occurred) {
 	fldigi_var_carrier = 0;
+	errflg = 1;
         return -1;
     }
 
@@ -51,13 +69,15 @@ int fldigi_xmlrpc_get_carrier() {
                                  "(ii)", (xmlrpc_int32) 5, (xmlrpc_int32) 7);
     if (env.fault_occurred) {
 	fldigi_var_carrier = 0;
+	errflg = 1;
         return -1;
     }
     
     xmlrpc_read_int(&env, result, &sum);
     if (env.fault_occurred) {
 	fldigi_var_carrier = 0;
-        return -1;
+	errflg = 1;
+	return -1;
     }
     fldigi_var_carrier = (int)sum;
     
@@ -66,5 +86,6 @@ int fldigi_xmlrpc_get_carrier() {
     xmlrpc_client_cleanup();
 
     return 0;
+#endif
 
 }
