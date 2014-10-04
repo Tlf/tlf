@@ -57,6 +57,7 @@ extern char call[];
 extern int trxmode;
 extern int keyerport;
 extern int fldigi_var_carrier;
+extern int trx_control;
 
 int cw_simulator(void);
 
@@ -69,6 +70,7 @@ void *background_process(void *ptr)
     static int i, t;
     static char prmessage[256];
     static int lantimesync = 0;
+    static int fldigi_rpc_cnt;
 
     int n;
 
@@ -95,8 +97,12 @@ void *background_process(void *ptr)
 	    && (keyerport == MFJ1278_KEYER || keyerport == GMFSK))
 	    rx_rtty();
 
-	if (trxmode == DIGIMODE && keyerport == GMFSK) {
-	    fldigi_xmlrpc_get_carrier();
+	if (trxmode == DIGIMODE && keyerport == GMFSK && trx_control == 1) {
+	    if (fldigi_rpc_cnt == 3) {
+		fldigi_xmlrpc_get_carrier();
+		fldigi_rpc_cnt = 0;
+	    }
+	    fldigi_rpc_cnt++;
 	}
 
 	if (stop_backgrnd_process == 0) {

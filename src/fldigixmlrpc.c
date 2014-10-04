@@ -23,13 +23,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <config.h>
+
 #ifdef HAVE_LIBXMLRPC
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
 #endif
 
 #define NAME "Tlf"
-#define VERSION "1.0"
+#define XMLRPCVERSION "1.0"
 
 int fldigi_var_carrier = 0;
 
@@ -58,7 +60,7 @@ int fldigi_xmlrpc_get_carrier() {
 #else
     xmlrpc_env_init(&env);
 
-    xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
+    xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, XMLRPCVERSION, NULL, 0);
     if (env.fault_occurred) {
 	fldigi_var_carrier = 0;
 	errflg = 1;

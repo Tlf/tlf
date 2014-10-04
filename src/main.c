@@ -594,6 +594,14 @@ int databases_load()
     return 0;
 }
 
+void xmlrpc_showinfo()
+{
+#ifdef HAVE_LIBXMLRPC		// Show xmlrpc status
+    showmsg("XMLRPC compiled in");
+#else
+    showmsg("XMLRPC NOT compiled");
+#endif
+}
 
 void hamlib_init()
 {
@@ -791,6 +799,7 @@ int main(int argc, char *argv[])
 //              if (strlen(synclogfile) > 0)
 //                      synclog(synclogfile);
 
+    xmlrpc_showinfo();
     hamlib_init();
     lan_init();
     keyer_init();

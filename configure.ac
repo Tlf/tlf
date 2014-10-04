@@ -54,31 +54,12 @@ else
 	echo "disabling Hamlib support"
 fi
 
-dnl Check if we want to link the Xmlrpc libraries to communicate with Fldigi (xmlrpc-c)
-AC_ARG_ENABLE([xmlrpc],
-	[AS_HELP_STRING([--enable-xmlrpc],
-			[Add support for XMLRPC Libraries])],
-[case "${enableval}" in
-	yes) wantxmlrpc=true ;;
-	no)  wantxmlrpc=false ;;
-#	*)   AC_MSG_ERROR([[bad value ${enableval} for --enable-xmlrpc]]) ;;
-	esac],
-[wantxmlrpc=false])
+AC_CHECK_LIB(xmlrpc,xmlrpc_read_int)
+AC_CHECK_LIB(xmlrpc_client,xmlrpc_client_cleanup)
+AC_CHECK_LIB(xmlrpc_util,xmlrpc_env_init)
+AC_CHECK_HEADERS(xmlrpc-c/base.h)
+AC_CHECK_HEADERS(xmlrpc-c/client.h)
 
-if test "x${wantxmlrpc}" != "xfalse"; then
-    dnl Look for xmlrpc-c
-
-	AC_CHECK_LIB(xmlrpc,xmlrpc_read_int,,AC_MSG_ERROR([Xmlrpc library not found...]))
-	AC_CHECK_LIB(xmlrpc_client,xmlrpc_client_cleanup,,AC_MSG_ERROR([Xmlrpc_client library not found...]))
-	AC_CHECK_LIB(xmlrpc_util,xmlrpc_env_init,,AC_MSG_ERROR([Xmlrpc_util library not found...]))
-	AC_CHECK_HEADERS(xmlrpc-c/base.h,,AC_MSG_ERROR([Xmlrpc base.h header not found...]))
-	AC_CHECK_HEADERS(xmlrpc-c/client.h,,AC_MSG_ERROR([Xmlrpc client.h header not found...]))
-	AC_DEFINE([WANT_XMLRPCLIB], 1, [Want Xmlrpclib])
-	echo "enabling Xmlrpc support"
-else
-	AC_DEFINE([WANT_XMLRPCLIB], 0, [No Xmlrpclib])
-	echo "disabling Xmlrpc support"
-fi
 
 if test "${ac_cv_c_compiler_gnu}" = "yes"; then
 	CFLAGS="${CFLAGS} -Wall"
