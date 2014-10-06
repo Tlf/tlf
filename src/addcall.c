@@ -59,7 +59,9 @@ int addcall(void)
     extern int continentlist_only;
     extern char continent_multiplier_list[7][3];
     extern char continent[];
-    
+    extern int exclude_multilist_type;
+    extern char mit_multiplier_list[][6];
+
     static int found = 0;
     static int i, j, z = 0;
     static int add_ok;
@@ -67,7 +69,7 @@ int addcall(void)
     int pxnr;
 
     found = searchcallarray(hiscall);
-
+syslog(LOG_DEBUG, "exclude_multilist_type: %d", exclude_multilist_type);
     if (found == -1) {
 
 	i = nr_worked;
@@ -126,7 +128,7 @@ int addcall(void)
 
     }
 
-    if (continentlist_only == 1) {
+    if (continentlist_only == 1 || (continentlist_only == 0 && exclude_multilist_type == 1)) {
       int ci = 0;
       int cont_in_list = 0;
 
@@ -136,8 +138,18 @@ int addcall(void)
 	  }
 	  ci++;
       }
-      if (cont_in_list == 0) {
+      if ((cont_in_list == 0 && continentlist_only == 1) || (cont_in_list == 1 && continentlist_only == 0 && exclude_multilist_type == 1)) {
 	  add_ok = 0;
+      }
+    }
+
+    if (exclude_multilist_type == 2) {
+      int ci = 0;
+      while (strlen(mit_multiplier_list[ci]) != 0) {
+        if (getctydata(mit_multiplier_list[ci]) == j) {
+            add_ok = 0;
+        }
+        ci++;
       }
     }
 
@@ -355,6 +367,8 @@ int addcall2(void)
     extern char continent[];
     extern int pfxmult;
     extern int pfxmultab;
+    extern int exclude_multilist_type;
+    extern char mit_multiplier_list[][6];
     
     int found = 0;
     int i, j, p, z = 0;
@@ -437,17 +451,28 @@ int addcall2(void)
 	add_ok = 1;
     }
 
-    if (continentlist_only == 1) {
+    if (continentlist_only == 1 || (continentlist_only == 0 && exclude_multilist_type == 1)) {
       int ci = 0;
       int cont_in_list = 0;
+
       while(strlen(continent_multiplier_list[ci]) != 0) {
 	  if(strcmp(continent, continent_multiplier_list[ci]) == 0) {
 	      cont_in_list = 1;
 	  }
 	  ci++;
       }
-      if (cont_in_list == 0) {
+      if ((cont_in_list == 0 && continentlist_only == 1) || (cont_in_list == 1 && continentlist_only == 0 && exclude_multilist_type == 1)) {
 	  add_ok = 0;
+      }
+    }
+
+    if (exclude_multilist_type == 2) {
+      int ci = 0;
+      while (strlen(mit_multiplier_list[ci]) != 0) {
+        if (getctydata(mit_multiplier_list[ci]) == j) {
+            add_ok = 0;
+        }
+        ci++;
       }
     }
 

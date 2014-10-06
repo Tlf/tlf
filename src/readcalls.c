@@ -51,6 +51,8 @@ int readcalls(void)
     int points;
     int pfxnumcntidx;
     int pxnr;
+    extern int exclude_multilist_type;
+    extern char mit_multiplier_list[][6];
     
     FILE *fp;
 

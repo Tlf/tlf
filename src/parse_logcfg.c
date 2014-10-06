@@ -57,7 +57,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 224	/* commands in list */
+#define  MAX_COMMANDS 225	/* commands in list */
 
 
 int read_logcfg(void)
@@ -263,6 +263,7 @@ int parse_logcfg(char *inputbuffer)
     extern int mult_side;
     extern char mit_multiplier_list[][6];
     extern char continent_multiplier_list[7][3];
+    extern int exclude_multilist_type;
     char *mit_mult_array;
 /* end LZ3NY mods */
     extern int tlfcolors[8][2];
@@ -515,7 +516,8 @@ int parse_logcfg(char *inputbuffer)
 	"QS_VKSPM",		/* 220 */
 	"QS_VKCQM",
 	"QTCREC_RECORD",
-	"QTCREC_RECORD_COMMAND"
+	"QTCREC_RECORD_COMMAND",
+	"EXCLUDE_MULTILIST"
     };
 
     char **fields;
@@ -1723,6 +1725,36 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    qtcrec_record_command[i][q] = '\0';
  	    break;
+    }
+    case 224: {
+	    PARAMETER_NEEDED(teststring);
+syslog(LOG_DEBUG, "%s", fields[1]);
+	    if (strcmp(fields[1], "CONTINENTLIST")) {
+	        if (continent_multiplier_list == NULL) {
+		    showmsg
+			("WARNING: you need to set the CONTINENTLIST paramter...");
+		    sleep(5);
+		    exit(1);
+		}
+		exclude_multilist_type = 1;
+	    }
+	    else if (strcmp(fields[1], "COUNTRYLIST")) {
+	        if (mit_multiplier_list == NULL) {
+		    showmsg
+			("WARNING: you need to set the COUNTRYLIST paramter...");
+		    sleep(5);
+		    exit(1);
+		}
+		exclude_multilist_type = 2;
+	    }
+	    else {
+	        showmsg
+			("WARNING: choose one of these params for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST...");
+		    sleep(5);
+		    exit(1);
+	    }
+syslog(LOG_DEBUG, "exclude_multilist_type: %d", exclude_multilist_type);
+	    break;
     }
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
