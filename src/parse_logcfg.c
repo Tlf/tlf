@@ -1728,7 +1728,6 @@ int parse_logcfg(char *inputbuffer)
     }
     case 224: {
 	    PARAMETER_NEEDED(teststring);
-syslog(LOG_DEBUG, "%s", fields[1]);
 	    if (strcmp(fields[1], "CONTINENTLIST")) {
 	        if (continent_multiplier_list == NULL) {
 		    showmsg
@@ -1753,7 +1752,6 @@ syslog(LOG_DEBUG, "%s", fields[1]);
 		    sleep(5);
 		    exit(1);
 	    }
-syslog(LOG_DEBUG, "exclude_multilist_type: %d", exclude_multilist_type);
 	    break;
     }
     default: {
