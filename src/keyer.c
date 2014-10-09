@@ -23,8 +23,19 @@
     CW keyboard routine
 
 ------------------------------------------------------------------------*/
-#include "keyer.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <curses.h>
+#include "tlf.h"
+#include "clear_display.h"
+#include "onechar.h"
+#include "stoptx.h"
+#include "displayit.h"
+#include "speedupndown.h"
+#include "sendbuf.h"
 #include "netkeyer.h"
+#include <panel.h>
 
 int mfj1278_control(int x);
 
@@ -264,7 +275,6 @@ int mfj1278_control(int x)
     extern char wkeyerbuffer[];
     extern int data_ready;
 
-    int y = 0;
     char buffer[2];
 
     if (trxmode == CWMODE || trxmode == DIGIMODE) {
@@ -283,7 +293,5 @@ int mfj1278_control(int x)
 
     }
 
-    y = x;
-
-    return (y);
+    return x;
 }
