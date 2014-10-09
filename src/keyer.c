@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curses.h>
+#include <panel.h>
 #include "tlf.h"
 #include "clear_display.h"
 #include "onechar.h"
@@ -35,9 +36,17 @@
 #include "speedupndown.h"
 #include "sendbuf.h"
 #include "netkeyer.h"
-#include <panel.h>
+#include "nicebox.h"
 
-int mfj1278_control(int x);
+/* size and position of keyer window */
+#define KEYER_LINE_WIDTH 60
+#define KEYER_WIN_WIDTH (KEYER_LINE_WIDTH+2)
+#define KEYER_WIN_HEIGHT 3
+#define KEYER_X (80-KEYER_WIN_WIDTH)/2
+#define KEYER_Y 7
+
+
+void mfj1278_control(int x);
 
 int keyer(void)
 {
@@ -50,10 +59,14 @@ int keyer(void)
     extern int keyerport;
     extern int weight;
 
+    WINDOW *win = NULL;
+    PANEL *panel = NULL;
+
     int x = 0, j = 0;
     int cury, curx;
     char nkbuffer[2];
-    char keyerstring[30] = "                              ";
+    char keyerstring[KEYER_LINE_WIDTH+1] = "";
+    int keyerstringpos = 0;
     char weightbuf[15];
     const char txcontrolstring[2] = { 20, '\0' };	// ^t
     const char rxcontrolstring[2] = { 18, '\0' };	// ^r
@@ -61,20 +74,43 @@ int keyer(void)
     const char ctl_c_controlstring[2] = { 92, '\0' };	// '\'
 
     if (keyerport == NO_KEYER)	/* no keyer present */
-	return (1);
+	return 1;
 
     strcpy(mode, "Keyboard");
     clear_display();
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
+    if (panel == NULL) {
+	win = newwin(KEYER_WIN_HEIGHT, KEYER_WIN_WIDTH, KEYER_Y, KEYER_Y );
+	if (win == NULL)
+	    return 1;
+	panel = new_panel(win);
+	if (panel == NULL) {
+	    delwin(win);
+	    return 1;
+	}
+    }
+
+    show_panel(panel);
+    werase(win);
+    wnicebox(win, 0, 0, 1, KEYER_LINE_WIDTH, "CW Keyer");
+
     if (keyerport == MFJ1278_KEYER) {
-	if (data_ready != 1) { 		/* swith to tx */
+	if (data_ready != 1) { 		/* switch to tx */
 	    strcat(wkeyerbuffer, txcontrolstring);
 	    data_ready = 1;
 	}
     }
 
     while (1) {
+	wattron(win, COLOR_PAIR(C_LOG) | A_STANDOUT);
+	wmove (win, 1, 1);
+	for (j = 0; j < KEYER_LINE_WIDTH; j++) {
+	    waddch (win, ' ');
+	}
+	mvwprintw(win, 1, 1, "%s", keyerstring);
+	refreshp();
+
 	x = onechar();
 
 	if (x == 34) {		/* skip " */
@@ -85,8 +121,8 @@ int keyer(void)
 	    x = 32;
 
 	if (x == 27 || x == 11 || x == 235) {	//      esc, ctrl-k,  alt-k
-	    if (keyerport == MFJ1278_KEYER) {	// send ctrl-r
-		if (data_ready != 1) {
+	    if (keyerport == MFJ1278_KEYER) {
+		if (data_ready != 1) { 	/* switch back to rx */
 		    strcat(wkeyerbuffer, rxcontrolstring);
 		    data_ready = 1;
 		}
@@ -100,8 +136,7 @@ int keyer(void)
 	if (x > 96 && x < 123)	/* upper case only */
 	    x = x - 32;
 
-	if (x > 9 && x < 91) {
-
+	if (x > 9 && x < 91) { 	/* drop all other control char... */
 	    if (x > 31 || x == 10) {
 		if (keyerport == MFJ1278_KEYER) {
 		    mfj1278_control(x);
@@ -109,20 +144,19 @@ int keyer(void)
 		    nkbuffer[0] = x;	// 1 char at the time !
 		    nkbuffer[1] = '\0';
 		    netkeyer(K_MESSAGE, nkbuffer);
-// TODO test if that is correct
-		    for (j = 0; j < 29; j++) {
-			keyerstring[j] = keyerstring[j + 1];
-		    }
-		    keyerstring[28] = x;
-		    keyerstring[29] = '\0';
-
-		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-		    mvprintw(5, 0, "%s", keyerstring);
-		    refreshp();
-
 		}
+
+		/* if display field is full move text one left */
+		if (keyerstringpos == KEYER_LINE_WIDTH - 1) {
+		    for (j = 0; j < KEYER_LINE_WIDTH - 1; j++) {
+		    	keyerstring[j] = keyerstring[j + 1];
+		    }
+		    keyerstringpos--;
+		}
+		/* add new character for display */
+		keyerstring[keyerstringpos++] = x;
+		keyerstring[keyerstringpos] = '\0';
 	    }
-		// drop all other control char...
 	} else {
 
 	    switch (x) {
@@ -255,6 +289,7 @@ int keyer(void)
 
 	}
     }
+    hide_panel(panel);
 
     if (cqmode == CQ)
         strcpy(mode, "Log     ");
@@ -263,14 +298,13 @@ int keyer(void)
 
     clear_display();
 
-    return (2);			/* show end of keyer  routine */
+    return 0;			/* show end of keyer  routine */
 }
 
-/*  ------------------------------------------  convert input for 1278 ctrl -----------------------*/
+/* ----------------  convert input for 1278 ctrl -----------------------*/
 
-int mfj1278_control(int x)
+void mfj1278_control(int x)
 {
-
     extern int trxmode;
     extern char wkeyerbuffer[];
     extern int data_ready;
@@ -290,8 +324,5 @@ int mfj1278_control(int x)
 	    data_ready = 1;
 	}
 	buffer[0] = '\0';
-
     }
-
-    return x;
 }
