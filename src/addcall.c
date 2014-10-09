@@ -114,8 +114,8 @@ int addcall(void)
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
 	getpx(hiscall);
-	pxnr = pxstr[strlen(pxstr) - 1] - 48;
 
+	pxnr = pxstr[strlen(pxstr) - 1] - 48;
 	getctydata(hiscall);
 
 	int pfxi = 0;
@@ -125,7 +125,6 @@ int addcall(void)
 	if (pfxnummulti[pfxi].countrynr == countrynr) {
 	    pfxnumcntidx = pfxi;
 	}
-
     }
 
     if (continentlist_only == 1 || (continentlist_only == 0 && exclude_multilist_type == 1)) {
@@ -141,6 +140,8 @@ int addcall(void)
 
       if ((cont_in_list == 0 && continentlist_only == 1) || (cont_in_list == 1 && continentlist_only == 0 && exclude_multilist_type == 1)) {
 	  add_ok = 0;
+	  addcty = 0;
+	  addcallarea = 0;
       }
     }
 
@@ -149,7 +150,9 @@ int addcall(void)
       while (strlen(mit_multiplier_list[ci]) != 0) {
         if (getctydata(mit_multiplier_list[ci]) == j) {
             add_ok = 0;
-        }
+	    addcty = 0;
+	    addcallarea = 0;
+	}
         ci++;
       }
     }
