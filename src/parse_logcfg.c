@@ -1477,9 +1477,9 @@ int parse_logcfg(char *inputbuffer)
 	    if (strncmp(fields[1], "SEND", 4) == 0) {
 	        qtcdirection = 2;
 	    }
-	    /*else if (strcmp(fields[1], "BOTH")) {
+	    else if (strcmp(fields[1], "BOTH")) {
 	        qtcdirection = 3;
-	    }*/
+	    }
 	    if (qtcdirection == 0) {
 		KeywordNotSupported(teststring);
 	    }
