@@ -36,7 +36,7 @@ int write_keyer(void)
 
     FILE *bfp = NULL;
     int rc;
-    char outstring[120] = "";
+    char outstring[420] = "";	// this was only 120 char length, but wkeyerbuffer is 400
 
     if (trxmode != CWMODE && trxmode != DIGIMODE)
 	return (1);
