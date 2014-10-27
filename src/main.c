@@ -164,8 +164,6 @@ int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 int showscore_flag = 0;		/* show  score window */
 int change_rst = 0;
 char exchange[40];
-char sp_return[80] = " \n";
-char cq_return[80] = " \n";
 char whichcontest[40] = "qso";
 int defer_store = 0;
 char call[20];
@@ -174,13 +172,39 @@ char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
 char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = 0;
-char message[25][80] =
+
+char sp_return[80] = " \n";
+char cq_return[80] = " \n";
+char message[24][80] = /**< Array of CW/DigiMode messages
+ 			*
+ 			* message[0]..[11] activated by F1..F12 key
+ 			* message[12] - TU message S&P mode
+ 			* message[13] - TU message CQ mode
+ 			* message[14]..[23] activated by Alt-0..9
+ 			*
+ 			* special use:
+			*
+ 			* message[0]  (F1)  - 'cq message' in CQ mode,
+			*                     'de <call>' in S&P
+			* message[2]  (F3)  - send rapport
+			* message[4]  (F5)  - hiscall (used if '?' entered
+			* 		      in call field
+			* message[6]  (F7)  - 'worked before' message
+ 			* message[11] (F12) - used for auto-cq
+			*
+			* additional use if in CTCOMP mode
+			* message[1]  (F2)  - insert pressed
+ 			*/
     { "TEST %\n", "@ DE %\n", "@ [\n", "TU 73\n", " @\n", "%\n",
-"@ SRI QSO B4 GL\n", "AGN\n",
-    " ?\n", " QRZ?\n", " PSE K\n", "TEST % %\n", "@ [\n", "TU %\n", "", "",
-	"", "", "", "", "", "", "", "", ""
-};
-char ph_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names
+	"@ SRI QSO B4 GL\n", "AGN\n",
+	" ?\n", " QRZ?\n", " PSE K\n", "TEST % %\n", "@ [\n", "TU %\n",
+	"", "", "", "", "", "", "", "", "", "" };
+
+char ph_message[14][80] = /**< Array of file names for voice keyer messages
+			   * See description of message[]
+			   */
+	{ "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+
 
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
