@@ -175,12 +175,12 @@ int xplanet = 0;
 
 char sp_return[80] = " \n";
 char cq_return[80] = " \n";
-char message[25][80] = /**< Array of CW/DigiMode messages
+char message[24][80] = /**< Array of CW/DigiMode messages
  			*
  			* message[0]..[11] activated by F1..F12 key
  			* message[12] - TU message S&P mode
  			* message[13] - TU message CQ mode
- 			* message[14]..[24] activated by Alt-0..9
+ 			* message[14]..[23] activated by Alt-0..9
  			*
  			* special use:
 			*
@@ -196,10 +196,9 @@ char message[25][80] = /**< Array of CW/DigiMode messages
 			* message[1]  (F2)  - insert pressed
  			*/
     { "TEST %\n", "@ DE %\n", "@ [\n", "TU 73\n", " @\n", "%\n",
-"@ SRI QSO B4 GL\n", "AGN\n",
-    " ?\n", " QRZ?\n", " PSE K\n", "TEST % %\n", "@ [\n", "TU %\n", "", "",
-	"", "", "", "", "", "", "", "", ""
-};
+	"@ SRI QSO B4 GL\n", "AGN\n",
+	" ?\n", " QRZ?\n", " PSE K\n", "TEST % %\n", "@ [\n", "TU %\n",
+	"", "", "", "", "", "", "", "", "", "" };
 
 char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   * See description of message[]
