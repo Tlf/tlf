@@ -161,6 +161,7 @@ int log_sent_qtc_to_disk(int qsonr)
 	qtclist.qtclines[i].saved = 0;
 	qtclist.qtclines[i].sent = 0;
 	qtclist.qtclines[i].senttime[0] = '\0';
+
     }
 
     qtclist.count = 0;

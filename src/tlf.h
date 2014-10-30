@@ -206,6 +206,12 @@ typedef struct {
   int qsos[10];
 } t_pfxnummulti;
 
+#define QTC_RY_LINE_NR 12
+typedef struct {
+  char content[50];
+  int attr;		// meta attr: 0 => not nopied, 1 => copied
+} t_qtc_ry_line;
+
 #define RECV 1		// QTC RECV direction
 #define SEND 2		// QTC SEND direction
 

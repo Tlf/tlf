@@ -66,7 +66,7 @@ int log_recv_qtc_to_disk(int qsonr)
 		strcat(temp, "SSB ");
 	    }
 	    else {
-		strcat(temp, "DIG");
+		strcat(temp, "DIG ");
 	    }
 	    strncpy(qtclogline, temp, strlen(temp));
 
@@ -150,6 +150,12 @@ int log_recv_qtc_to_disk(int qsonr)
 	qtcreclist.qtclines[i].confirmed = 0;
 	qtcreclist.qtclines[i].receivedtime[0] = '\0';
     }
+    for(i=0; i<13; i++) {
+	qtc_ry_lines[i].content[0] = '\0';
+	qtc_ry_lines[i].attr = 0;
+    }
+    qtc_ry_currline = 0;
+    qtc_ry_copied = 0;
 
     qtcreclist.count = 0;
     qtcreclist.serial = 0;

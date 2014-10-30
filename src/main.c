@@ -316,6 +316,12 @@ GHashTable* qtc_store = NULL;
 struct t_qtc_store_obj *qtc_temp_obj;
 struct t_qtc_store_obj *qtc_empty_obj;
 int qtcdirection = 0;
+//char qtc_ry_lines[12][50] = {"", "", "", "", "", "", "", "", "", "", "", ""};
+//int qtc_ry_lines_attr[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
+int qtc_ry_currline = 0;
+int qtc_ry_capture;
+int qtc_ry_copied;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/*< number of calls in worked[] */

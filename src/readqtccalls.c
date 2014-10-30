@@ -35,7 +35,6 @@
 #include <time.h>
 #include <ctype.h>
 
-
 extern int qtcdirection;
 extern GHashTable* qtc_store;
 extern struct t_qtc_store_obj *qtc_empty_obj;

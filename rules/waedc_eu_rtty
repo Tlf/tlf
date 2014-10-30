@@ -1,13 +1,13 @@
-#########################################
-# WAEDC contest for EU stations, RTTY   #
-#        HA2OS, 09.10.2014              #
-#########################################
+###############################################
+# WAEDC contest for EU and DX stations - RTTY #
+#           HA2OS, 30.10.2014                 #
+###############################################
 #
 CONTEST=waedc
 LOGFILE=waedc.log
 CONTEST_MODE
 CABRILLO=UNIVERSAL
-QTC=RECV
+QTC=BOTH
 CONTINENTLIST=EU
 BANDWEIGHT_MULTIS=80:4;40:3;20:2;15:2;10:2
 COUNTRY_MULT
@@ -33,9 +33,9 @@ ONE_POINT
 #                                #
 ##################################
 #
-F1=CQ TEST DE %
+F1=CQ TEST DE % %
 F2=@ DE %
-F3=CFM ! UR 599 #
+F3=CFM UR 599 # #
 F4=TU 73
 F5= @
 F6=%
@@ -44,10 +44,10 @@ F8=AGN
 F9= ?
 F10= QRZ?
 F11= PSE K
-F12=CQ TEST % %
+F12=CQ TEST DE % %
 #
-CQ_TU_MSG=TU ! CQ TEST DE %
-S&P_TU_MSG=TU ! 599 #
+CQ_TU_MSG=TU ! CQ TEST %
+S&P_TU_MSG=TU ! 599 # #
 #
 #ALT_0=
 #ALT_1=
@@ -63,15 +63,15 @@ S&P_TU_MSG=TU ! 599 #
 
 QR_F1=QTC?
 QR_F2=QRV
-QR_F3=R
-QR_F5=TIME?
-QR_F6=CALL?
-QR_F7=NR?
+QR_F3=
+QR_F5=
+QR_F6=
+QR_F7=
 QR_F8=AGN
 QR_F10=QSL ALL
 
-QTCREC_RECORD
-QTCREC_RECORD_COMMAND=rec -r 8000 $ -q
+#QTCREC_RECORD
+#QTCREC_RECORD_COMMAND=rec -r 8000 $ -q
 
 
 ####### END #####################

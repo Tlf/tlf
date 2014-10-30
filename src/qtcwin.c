@@ -42,6 +42,8 @@
 #include "get_time.h"
 #include "write_keyer.h"
 
+#include <sys/time.h>
+
 #define DIRCLAUSE (direction == RECV) || (direction == SEND && (activefield == 0 || activefield == 2))
 
 extern char hiscall[];
@@ -61,6 +63,9 @@ extern int qtcrec_record;
 extern char qtcrec_record_command[2][50];
 extern char qtcrec_record_command_shutdown[50];
 extern char wkeyerbuffer[];
+extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
+extern int qtc_ry_currline;
+extern int qtc_ry_capture;
 
 enum {
   QTCRECVWINBG = 32,
@@ -78,6 +83,10 @@ int qtcpanel = 0;
 int currrecstate;
 WINDOW * qtcwin;
 PANEL * qtc_panel;
+WINDOW * ry_win;
+PANEL * ry_panel;
+WINDOW * ry_help_win;
+PANEL * ry_help_panel;
 int activefield;
 // array values: hor position, cursor position, field len to fill with spaces
 int pos[6][3] = {{3, 3, 15}, {3, 6, 4}, {8, 8, 2}, {3, 3, 4}, {8, 8, 14}, {24, 24, 4}};
@@ -112,10 +121,9 @@ int * qtccurrdiretion;
 int qtc_main_panel(int direction) {
     char qtchead[32], tempc[40];
     int i, j, x;
-    int tfi, nrpos, tlen = 0;
+    int tfi, tlen = 0;
     int currqtc = -1;
     char reccommand[100] = "";
-    static char time_buf[80];
 
     capturing = 0;
     last_rtty_line[0][0] = '\0'; last_rtty_line[1][0] = '\0';
@@ -129,6 +137,8 @@ int qtc_main_panel(int direction) {
     int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
     int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
     int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
+    attr_t attributes;
+    short cpair;
 
     static int record_run = -1;
 
@@ -171,6 +181,8 @@ int qtc_main_panel(int direction) {
 	    }
 	    activefield = 0;
 	    curr_rtty_line = 0;
+	    //qtc_ry_currline = 0;
+	    qtc_ry_copied = 0;
 	}
 	if (qtcreclist.count == 0) {
 	    activefield = 0;
@@ -199,6 +211,12 @@ int qtc_main_panel(int direction) {
       qtc_panel = new_panel(qtcwin);
       hide_panel(qtc_panel);
       qtcpanel = 1;
+      ry_win = newwin(14, 40, 9, 37);
+      ry_panel = new_panel(ry_win);
+      hide_panel(ry_panel);
+      ry_help_win = newwin(5, 75, 4, 2);
+      ry_help_panel = new_panel(ry_help_win);
+      hide_panel(ry_help_panel);
     }
     show_panel(qtc_panel);
     top_panel(qtc_panel);
@@ -247,6 +265,17 @@ int qtc_main_panel(int direction) {
     if (direction == SEND) {
 	show_sendto_lines();
     }
+    if (*qtccurrdiretion == RECV && trxmode == DIGIMODE) {
+	wattrset(qtcwin, line_inverted);
+	if (qtc_ry_capture == 0) {
+	    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+	}
+	else {
+	    mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+	    show_rtty_lines();
+	}
+	wattrset(qtcwin, line_normal);
+    }
 
     showfield(activefield);
     curpos = 0;
@@ -273,9 +302,10 @@ int qtc_main_panel(int direction) {
         nodelay(stdscr, FALSE);
 
 	switch(x) {
-	  case 227:		// ALT-c
+	  //case 227:		// ALT-c
+	  case 20:		// CTRL-t
 		    if (trxmode == DIGIMODE) {
-			readqtcfromfile();
+			show_rtty_lines();
 		    }
 	  case 152:		// up
 		    if (direction == RECV) {
@@ -446,7 +476,7 @@ int qtc_main_panel(int direction) {
 					play_file(qtc_phrecv_message[7]);
 				    }
 				    if (trxmode == DIGIMODE) {
-					char *str = g_strdup_printf("%02d %s", currqtc+1, qtc_recv_msgs[7]);
+					char *str = g_strdup_printf("%s %02d %02d\n", g_strchomp(qtc_recv_msgs[7]), currqtc+1, currqtc+1);
 					sendmessage(str);
 					g_free(str);
 				    }
@@ -590,14 +620,16 @@ int qtc_main_panel(int direction) {
 			    showfield(activefield);
 			}
 			else {
-			  tempc[0] = '\0';
-			  strip_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
-			  sendmessage(tempc);
+			  if (direction == SEND) {
+				tempc[0] = '\0';
+				strip_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
+				sendmessage(tempc);
+			    }
 			}
 		    }
 		    break;
 	  case 19:	// CTRL-S - save QTC
-		    if (*qtccount > 0 && qtclist.totalsent == *qtccount) {
+		    if (*qtccurrdiretion == SEND && *qtccount > 0 && qtclist.totalsent == *qtccount) {
 			if (log_sent_qtc_to_disk(nr_qsos) == 0) {
 			    wattrset(qtcwin, line_inverted);
 			    mvwprintw(qtcwin, 2, 11, "QTC's have been saved!");
@@ -608,6 +640,27 @@ int qtc_main_panel(int direction) {
 			    x = 27;	// close the window
 			}
 			//data_ready = 1;
+		    }
+		    if (*qtccurrdiretion == RECV && trxmode == DIGIMODE) {
+			qtc_ry_capture = 1;
+			wattr_get(qtcwin, &attributes, &cpair, NULL);
+			wattrset(qtcwin, line_inverted);
+			mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+			wattrset(qtcwin, attributes);
+			showfield(activefield);
+			refreshp();
+			show_rtty_lines();
+		    }
+		    break;
+	  case 5:	// CTRL-e  -  end capture
+		    if (*qtccurrdiretion == RECV && trxmode == DIGIMODE) {
+			qtc_ry_capture = 0;
+			wattr_get(qtcwin, &attributes, &cpair, NULL);
+			wattrset(qtcwin, line_inverted);
+			mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+			wattrset(qtcwin, attributes);
+			showfield(activefield);
+			refreshp();
 		    }
 		    break;
 	  case 129 ... 138:			/* F1.. F10 */
@@ -627,6 +680,16 @@ int qtc_main_panel(int direction) {
 				strcat(reccommand, qtcrec_record_command_shutdown);
 				system(reccommand);
 				record_run = -1;
+			    }
+			    if (trxmode == DIGIMODE && strncmp(qtc_recv_msgs[x - 129], "QRV", 3) == 0) {
+				qtc_ry_capture = 1;
+				wattr_get(qtcwin, &attributes, &cpair, NULL);
+				wattrset(qtcwin, line_inverted);
+				mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+				wattrset(qtcwin, attributes);
+				showfield(activefield);
+				refreshp();
+				show_rtty_lines();
 			    }
 			}
 			if(direction == SEND && strlen(qtc_send_msgs[x - 129]) > 0) {
@@ -738,15 +801,13 @@ int qtc_main_panel(int direction) {
 	  case 9:		// TAB
 		  if (direction == RECV) {
 		      if (trxmode == DIGIMODE) {
-			  if (direction == RECV) {
-			      if (activefield == 32) {
-				  activefield = 0;
-				  showfield(32);
-			      }
-			      else {
-				  activefield++;
-				  showfield(activefield-1);
-			      }
+			  if (activefield == 32) {
+			      activefield = 0;
+			      showfield(32);
+			  }
+			  else {
+			      activefield++;
+			      showfield(activefield-1);
 			  }
 		      }
 		      else {
@@ -760,9 +821,9 @@ int qtc_main_panel(int direction) {
 				  showfield(activefield+2);
 			      }
 			  }
-			  showfield(activefield);
 		      }
-		    }
+		      showfield(activefield);
+		  }
 		    if (direction == SEND) {
 			switch (activefield) {
 			    case 0:	activefield = 2;
@@ -782,15 +843,13 @@ int qtc_main_panel(int direction) {
 	  case 90:		// SHIFT + TAB
 		    if (direction == RECV) {
 			if (trxmode == DIGIMODE) {
-			    if (direction == RECV) {
-				if (activefield == 0) {
-				    activefield = 32;
-				    showfield(0);
-				}
-				else {
-				    activefield--;
-				    showfield(activefield+1);
-				}
+			    if (activefield == 0) {
+				activefield = 32;
+				showfield(0);
+			    }
+			    else {
+				activefield--;
+				showfield(activefield+1);
 			    }
 			}
 			else {
@@ -842,11 +901,11 @@ int qtc_main_panel(int direction) {
 		    }
 		    break;
 	  case 48 ... 57:	// numbers
-		    if (direction == RECV && trxmode == DIGIMODE && activefield > 0 && activefield < 3 && *qtccount == 0 && capturing == 0) {
+		    /* if (trxmode == DIGIMODE && direction == RECV && activefield > 0 && activefield < 3 && *qtccount == 0 && capturing == 0) {
 			capturing = 1;
 			wattrset(qtcwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
 			mvwprintw(qtcwin, 1, 19, "CAPTURE ON ");
-		    }
+		    } */
 		    if (DIRCLAUSE) {
 			modify_field(x);
 		    }
@@ -1201,11 +1260,6 @@ int show_status(int idx) {
 	init_pair(QTCRECVCURRLINE,COLOR_YELLOW, COLOR_MAGENTA);
 	init_pair(QTCRECVBG,      COLOR_BLUE,   COLOR_CYAN);
 
-	//int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
-	//int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
-	//int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
-	//int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
-
 	status = 0;
 	if (idx < *qtccount) {
 	    if (strlen(qtcreclist.qtclines[idx].time) != 4) {
@@ -1257,6 +1311,9 @@ int show_status(int idx) {
 		case 2:	flag = '*';
 			    break;
 	    }
+	    if (trxmode == DIGIMODE && qtcreclist.qtclines[idx].status == 0) {
+		flag = '+';
+	    }
 	    wattrset(qtcwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
 	    mvwprintw(qtcwin, idx+3, 30, "%c", flag);
 	}
@@ -1274,112 +1331,6 @@ int number_fields() {
     for(i=0;i<*qtccount;i++) {
 	mvwprintw(qtcwin, i+3, 1, "%2d", i+1);
     }
-    return 0;
-}
-
-int readqtcfromfile() {
-    FILE *fp;
-    char line[50], temps[20];
-    int linenr, i, j, capidx0, capidx1, capidx2;
-
-    if ((fp = fopen("RTTY.qtc", "r"))) {
-	linenr = 0;
-	while(fgets(line, 50, fp) && linenr < 11) {
-	    if (linenr == 0) {
-		j=0; i=0;
-		temps[0] = '\0';
-		while(! isdigit(line[j])) {
-		    j++;
-		}
-		while(isdigit(line[j])) {
-		    temps[i] = line[j];
-		    i++; j++;
-		}
-		temps[i] = '\0';
-		qtcreclist.serial = atoi(temps);
-		showfield(0);
-		while(! isdigit(line[j])) {
-		    j++;
-		}
-		i=0;
-		while(isdigit(line[j])) {
-		    temps[i] = line[j];
-		    i++; j++;
-		}
-		temps[i] = '\0';
-		*qtccount = atoi(temps);
-		showfield(1);
-	    }
-	    else {
-		j=0;
-		// skip chars until it isn't number
-		while(! isdigit(line[j])) {
-		    j++;
-		}
-		temps[0] = '\0';
-		i=0;
-		// parse time
-		while(isdigit(line[j]) && i<4) {
-		    temps[i]=line[j];
-		    i++; j++;
-		}
-		while(i<4) {
-		    temps[i] = '\?';
-		    i++;
-		}
-		temps[i] = '\0';
-		strncpy(qtcreclist.qtclines[linenr-1].time, temps, i);
-
-		showfield(2+((linenr-1)*3));
-		capidx0 = j;
-
-		// parse serial
-		j=strlen(line)-1;
-		while(! isdigit(line[j])) {
-		    j--;
-		}
-		capidx2=j+1;
-		i=0;
-		while(isdigit(line[j]) && i<4) {
-		    j--;
-		    i++;
-		}
-		capidx1=j;
-		j++;
-		i=0;
-		while(j<capidx2) {
-		    temps[i] = line[j];
-		    i++; j++;
-		}
-		temps[i] = '\0';
-		while(i < 3) {
-		    temps[i] = '?';
-		    temps[i+1] = '\0';
-		    i++;
-		}
-		strncpy(qtcreclist.qtclines[linenr-1].serial, temps, i);
-		showfield(2+((linenr-1)*3)+3);
-
-		// parse callsign
-		j = capidx0;
-		while(! isalnum(line[j])) {
-		    j++;
-		}
-		i=0;
-		while((isalnum(line[j]) || line[j] == '/') && i<15) {
-		    temps[i] = line[j];
-		    i++; j++;
-		}
-		temps[i] = '\0';
-		strncpy(qtcreclist.qtclines[linenr-1].callsign, temps, i);
-		showfield(2+((linenr-1)*3)+2);
-
-	    }
-	    linenr++;
-	}
-	fclose(fp);
-    }
-
     return 0;
 }
 
@@ -1401,6 +1352,7 @@ int show_help_msg(msgidx) {
     clear_help_block();
     int i = 0, j = 0;
     char buff[80];
+    int currqtc;
 
     //init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
     init_pair(QTCRECVCURRLINE,COLOR_YELLOW, COLOR_MAGENTA);
@@ -1412,7 +1364,19 @@ int show_help_msg(msgidx) {
 
     wattrset(qtcwin, line_currinverted);
     if (*qtccurrdiretion == RECV) {
-	mvwprintw(qtcwin, ++j, 36, help_rec_msgs[msgidx]);
+        if (trxmode == DIGIMODE && *qtccurrdiretion == RECV) {
+	    currqtc = ((activefield-3)/3);
+	    if (qtcreclist.qtclines[currqtc].status == 0 &&
+		strlen(qtcreclist.qtclines[currqtc].time) == 4 &&
+		strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
+		strlen(qtcreclist.qtclines[currqtc].serial) > 0
+	    ) {
+		mvwprintw(qtcwin, ++j, 36, "Press ENTER to mark as RCVD");
+	    }
+	}
+	else {
+	    mvwprintw(qtcwin, ++j, 36, help_rec_msgs[msgidx]);
+	}
     }
     if (*qtccurrdiretion == SEND) {
         if (msgidx > 2 && msgidx < 6) {
@@ -1444,7 +1408,310 @@ int show_help_msg(msgidx) {
 	    }
 	}
     }
+    if (trxmode == DIGIMODE && *qtccurrdiretion == RECV) {
+        mvwprintw(qtcwin, ++j, 36, "CTRL-T: Terminal window");
+	mvwprintw(qtcwin, ++j, 36, "CTRL-S: Start capture");
+	mvwprintw(qtcwin, ++j, 36, "CTRL-E: End capture");
+    }
 
+    return 0;
+}
+
+int parse_ry_line(char * line) {
+    int j, i = 0, t = -1, f;
+    char lline[40], *token, *wtoken, ttoken[50], tokens[5][15] = {"", "", "", "", ""};	// 5 members, cause possible callsign will AB/CD1EF/P, which will use 3
+    char *saveptr1, *saveptr2;
+    char sep[6] = "";
+    int tactivefield;
+    static int nr_parsed_line = 0;
+    int serial_nr = 0;
+    int maxlength[] = {4, 14, 4};
+
+    if (*qtccount == 0 || qtcreclist.serial == 0) {
+	nr_parsed_line = 0;
+    }
+    if ((*qtccount > 0 || qtcreclist.serial > 0) && nr_parsed_line == 0) {
+	nr_parsed_line = 1;
+    }
+
+    strncpy(lline, line, strlen(line));
+    tactivefield = activefield;
+    if (nr_parsed_line == 0) {		// 1st line: SERIAL/NR
+	wtoken = strtok_r(lline, " ", &saveptr1);
+	while(wtoken != NULL && nr_parsed_line == 0) {
+	    serial_nr = 0;
+	    strcpy(ttoken, wtoken);
+	    sep[0] = '/';
+	    sep[1] = '\0';
+	    token = strtok_r(ttoken, sep, &saveptr2);
+	    t = -1;
+	    while(token != NULL && t < 2) 
+	    {
+		t++;
+		strcpy(tokens[t], token);
+		token = strtok_r(NULL, sep, &saveptr2);
+	    }
+	    f = 0;
+	    for(i=0; i<=t; i++) {
+		f = 1;
+		for(j=0; j<strlen(tokens[i]); j++) {
+		    if (! isdigit(tokens[i][j])) {
+			f = 0;
+		    }
+		}
+		if (f == 1) {
+		    tactivefield = activefield;
+		    activefield = i+1;
+		    showfield(tactivefield);
+		    for(j=0;j<strlen(tokens[i]); j++) {
+			modify_field(tokens[i][j]);
+		    }
+		    showfield(activefield);
+		    serial_nr++;
+		}
+	    }
+	    if (serial_nr == 2) {
+		nr_parsed_line++;
+	    }
+	    wtoken = strtok_r(NULL, " ", &saveptr1);
+	}
+    }
+    else {
+	strcpy(sep, "/;-: ");
+	token = strtok(lline, sep);
+	while(token != NULL && t < 5) 
+	{
+	    t++;
+	    strcpy(tokens[t], token);
+	    token = strtok(NULL, sep);
+	}
+
+	while (t > 2) {
+	    strcat(tokens[1], "/");
+	    strcat(tokens[1], tokens[2]);
+	    strcpy(tokens[t-1], tokens[t]);
+	    tokens[t][0] = '\0';
+	    t--;
+	}
+
+	for(i=0; i<=t; i++) {
+	    f = 1;
+	    for(j=0; j<strlen(tokens[i]); j++) {
+		if ((i == 0 || i == 2) && ! isdigit(tokens[i][j])) {
+		    tokens[i][j] = '?';
+		}
+		if (i == 1 && (!isalnum(tokens[i][j]) && tokens[i][j] != '/')) {
+		    tokens[i][j] = '?';
+		}
+	    }
+	    if (strlen(tokens[i]) > maxlength[i]) {
+		tokens[i][maxlength[i]] = '\0';
+	    }
+	    if (f == 1) {
+		tactivefield = activefield;
+		activefield = (nr_parsed_line*3)+i;
+		showfield(tactivefield);
+		for(j=0;j<strlen(tokens[i]); j++) {
+		    modify_field(tokens[i][j]);
+		}
+		showfield(activefield);
+	    }
+	}
+	for(i=((t>0)?t:0); i<2; i++) {
+	    tactivefield = activefield;
+	    activefield = (nr_parsed_line*3)+i;
+	    showfield(tactivefield);
+	    modify_field('?');
+	    showfield(activefield);
+	}
+	nr_parsed_line++;
+	qtc_ry_copied++;
+    }
+    tactivefield = activefield;
+    
+    return tactivefield;
+}
+
+/* print one line with its status */
+int print_rtty_line(t_qtc_ry_line qtc_ry_line, int row) {
+    char currline[50];
+
+    sprintf(currline, "%-38s", qtc_ry_line.content);
+    currline[39] = '\0';
+    if (qtc_ry_line.attr == 1) {
+	currline[36] = ' ';
+	currline[37] = '*';
+    }
+    mvwprintw(ry_win, row, 1, "%-38s", currline);
+    return 0;
+}
+
+/* RTTY terminal to helps to capture the RTTY content */
+int show_rtty_lines() {
+    extern int miniterm;
+    
+    int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
+    int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
+    int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
+    char boxhead[38];
+    int prevline;
+    char currline[50], firstline[50];
+    int x, j;
+    static int actline = 1;
+    int oactivefield, tactivefield;
+
+    oactivefield = activefield;
+    tactivefield = activefield;
+
+    show_panel(ry_panel);
+    top_panel(ry_panel);
+    werase(ry_win);
+    show_panel(ry_help_panel);
+    top_panel(ry_help_panel);
+    werase(ry_help_win);
+
+    sprintf(boxhead, "HELP");
+    wnicebox(ry_help_win, 0, 0, 3, 73, "HELP");
+    wbkgd(ry_help_win, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVWINBG)));
+    wattrset(ry_help_win, line_inverted);
+    //                           "1234567890123456789012345678901234567890123456789012345678901234567890123"
+    mvwprintw(ry_help_win, 1, 1, "CTRL-R: Reset lines  -  CTRL-S: Start capture  -  CTRL-E: End capture    ");
+    mvwprintw(ry_help_win, 2, 1, "ENTER: add current line to QTC  -  Up/Down: move                         ");
+    mvwprintw(ry_help_win, 3, 1, "ESC: hide RTTY window                                                    ");
+
+    strcpy(boxhead, "RTTY");
+    wnicebox(ry_win, 0, 0, 12, 38, boxhead);
+    wattrset(ry_win, line_normal);
+    for(j=1; j<13; j++) {
+	mvwprintw(ry_win, j, 1, "                                      ");
+    }
+    refreshp();
+
+    if (qtc_ry_capture == 1) {
+	mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+    }
+    else {
+	mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+    }
+    
+    x = -1; j = 1;
+    prevline = -1;
+    curs_set(0);
+    while(x != 27) {
+
+        nodelay(stdscr, TRUE);
+	while (x < 1) {
+
+	    usleep(1000);
+	    time_update();
+	    if (miniterm == 1 && trxmode == DIGIMODE && (keyerport == GMFSK
+	           || keyerport == MFJ1278_KEYER)) {
+		    show_rtty();
+	    }
+	    if ((qtc_ry_currline < 11 && prevline != qtc_ry_currline-1) || qtc_ry_currline == 11) {
+		if (actline > 1 && strcmp(firstline, qtc_ry_lines[0].content) != 0) {
+		  actline--;
+		  strcpy(firstline, qtc_ry_lines[0].content);
+		}
+		if (actline == 1 && qtc_ry_currline > 0) {
+		    strcpy(firstline, qtc_ry_lines[0].content);
+		}
+		for(j=0; j<qtc_ry_currline; j++) {
+		    if (j+1 == actline) {
+			wattrset(ry_win, line_currnormal);
+		    }
+		    print_rtty_line(qtc_ry_lines[j], j+1);
+		    wattrset(ry_win, line_normal);
+		}
+		prevline = qtc_ry_currline-1;
+	    }
+	    if (miniterm == 1 || miniterm == 0) {
+		strncpy(currline, qtc_ry_lines[qtc_ry_currline].content, 38);
+		currline[39] = '\0';
+		mvwprintw(ry_win, qtc_ry_currline+1, 1, "%-38s", currline);
+	    }
+	    refreshp();
+	    x = onechar();
+	}
+
+	switch(x) {
+	    case 152:	// cursor up
+		      wattrset(ry_win, line_normal);
+		      print_rtty_line(qtc_ry_lines[actline-1], actline);
+		      if (actline > 1) {
+			  actline--;
+		      }
+		      else {
+			  if (qtc_ry_currline > 0) {
+			      actline = qtc_ry_currline;
+			  }
+		      }
+		      wattrset(ry_win, line_currnormal);
+		      print_rtty_line(qtc_ry_lines[actline-1], actline);
+		      wattrset(ry_win, line_normal);
+		      break;
+	    case 153:	// cursor down
+		      wattrset(ry_win, line_normal);
+		      print_rtty_line(qtc_ry_lines[actline-1], actline);
+		      if (actline < qtc_ry_currline) {
+			  actline++;
+		      }
+		      else {
+			  actline = 1;
+		      }
+		      wattrset(ry_win, line_currnormal);
+		      print_rtty_line(qtc_ry_lines[actline-1], actline);
+		      wattrset(ry_win, line_normal);
+		      break;
+	    case 18:	// CTRL-r
+		      for(j=0; j<12; j++) {
+			  qtc_ry_lines[j].content[0] = '\0';
+			  qtc_ry_lines[j].attr = 0;
+			  mvwprintw(ry_win, (j+1), 1, "                                      ");
+		      }
+		      prevline = -1;
+		      actline = 1;
+		      qtc_ry_currline = 0;
+		      qtc_ry_copied = 0;
+		      break;
+	    case 19:	// CTRL-s  -  start capture
+		      qtc_ry_capture = 1;
+		      mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+		      break;
+	    case 5:	// CTRL-e  -  end capture
+		      qtc_ry_capture = 0;
+		      mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+		      break;
+	    case 10:	// ENTER  -  add to qtc
+		      if (qtc_ry_lines[actline-1].attr == 0) {
+			  parse_ry_line(qtc_ry_lines[actline-1].content);
+			  qtc_ry_lines[actline-1].attr = 1;
+		      }
+		      wattrset(ry_win, line_currnormal);
+		      print_rtty_line(qtc_ry_lines[actline-1], actline);
+		      wattrset(ry_win, line_normal);
+		      break;
+	}
+	refreshp();
+	if (x != 27) {
+	    x = -1;
+	}
+	if (*qtccount > 0 && qtc_ry_copied == *qtccount) {
+	    qtc_ry_capture = 0;
+	    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+	}
+	nodelay(stdscr, FALSE);
+    }
+    hide_panel(ry_panel);
+    hide_panel(ry_help_panel);
+    //mvwprintw(qtcwin, 2, 11, "           ");
+
+    curs_set(1);
+    tactivefield = activefield;
+    activefield = oactivefield;
+    showfield(tactivefield);
+    showfield(oactivefield);
+    
     return 0;
 }
 

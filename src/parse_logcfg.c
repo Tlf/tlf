@@ -290,6 +290,7 @@ int parse_logcfg(char *inputbuffer)
     extern int qtcrec_record;
     extern char qtcrec_record_command[2][50];
     extern char qtcrec_record_command_shutdown[50];
+    extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -1482,6 +1483,13 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    if (qtcdirection == 0) {
 		KeywordNotSupported(teststring);
+	    }
+	    else {
+		int q;
+		for(q=0; q<QTC_RY_LINE_NR; q++) {
+		    qtc_ry_lines[q].content[0] = '\0';
+		    qtc_ry_lines[q].attr = 0;
+		}
 	    }
 	    break;
 	}

@@ -60,17 +60,7 @@ S&P_TU_MSG=TU ! 599 #
 #ALT_9=
 #
 
-QR_F1=QTC?
-QR_F2=QRV
-QR_F3=R
-QR_F5=TIME?
-QR_F6=CALL?
-QR_F7=NR?
-QR_F8=AGN
-QR_F10=QSL ALL
-
-QTCREC_RECORD
-QTCREC_RECORD_COMMAND=rec -r 8000 $ -q
-
+QS_F1=QRV?
+QS_F2=QTC sr/nr
 
 ####### END #####################

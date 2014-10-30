@@ -27,7 +27,6 @@
 #include <glib.h>
 #include "tlf.h"
 
-
 #define NBANDS 10
 
 typedef unsigned char t_qtc_bands[NBANDS];

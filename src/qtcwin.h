@@ -29,14 +29,13 @@ int shift_right(char * fieldval);
 int shift_left(char * fieldval, int shift);
 int show_status(int idx);
 int number_fields();
-int readqtcfromfile();
 int clear_help_block();
 int show_help_msg();
 int put_qtc();
 int strip_spaces(char * src, char * tempc);
 int show_sendto_lines();
 int recalc_qtclist();
-//int move_cursor(int dir);
+int show_rtty_lines();
 
 
 #endif /* end of include guard: QTCWIN_H */

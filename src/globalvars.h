@@ -141,3 +141,8 @@ extern struct t_qtc_store_obj *qtc_empty_obj;
 extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
 extern int pfxnummultinr;
 extern int continentlist_only;
+//extern char qtc_ry_lines[12][50];
+extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
+extern int qtc_ry_currline;
+extern int qtc_ry_capture;
+extern int qtc_ry_copied;
