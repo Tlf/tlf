@@ -1187,6 +1187,34 @@ UA9 prefix, then Tlf will looks the UA9, which is Asiatic Russia. If you made a 
 with a station from Asiatic Russia, then the PFX number will evaulated with a new
 multiplier - but Europien Russia will not.
 
+.TR
+.B EXCLUDE_MULTILIST
+Some contest has a special multipliers list, which is easier to write with a substract
+of two predefined set. For example, the main set could be COUNTRY_MULT, and you need
+to substract from that just a few countries, than SAC test uses (then the scandinavian
+stations aren't multiplier for each other). In that case you can use this config:
+.BI
+  COUNTRY_MULT
+  COUNTRYLIST=sac:JW,JX,LA,OF1,OF0,OJ1,OJ0,OX,OW,OZ,SM,TF
+  EXCLUDE_MULTILIST=COUNTRYLIST
+
+Another useful example at WAEDC RTTY contest: then all stations can work with each others,
+for EU stations only the non-EU stations are the multi's, and reverse: for non-EU stations
+only the EU stations are the multipliers. In that case the EU stations can use this config:
+.BI
+  CONTINENTLIST=EU
+  COUNTRY_MULT
+  EXCLUDE_MULTILIST=CONTINENTLIST
+
+Now all country are multi, except the EU stations. In this contest the non-EU stations
+can use this config:
+.BI
+  CONTINENTLIST=SA,NA,AF,AS,OC
+  COUNTRY_MULT
+  EXCLUDE_MULTILIST=CONTINENTLIST
+
+In this example all countries are multis, except from SA, NA, AF, OC and AS continent, so
+only the EU stations left as multipliers.
 
 .SH "FILES"
 .TR
