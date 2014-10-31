@@ -17,20 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <curses.h>
-#include "tlf.h"
-#include "clear_display.h"
-#include "onechar.h"
-#include "stoptx.h"
-#include "displayit.h"
-#include "speedupndown.h"
-#include "sendbuf.h"
-#include "messagechange.h"
-
+#ifndef KEYER_H
+#define KEYER_H
 
 int keyer(void);
 
+#endif /* end of include guard: KEYER_H */
