@@ -505,6 +505,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;	/* end messages */
 	}
     case 16:{
+	    char *tmpcall;
     	    PARAMETER_NEEDED(teststring);
 	    if (strlen(fields[1]) > 20) {
 		mvprintw(6,0,
@@ -518,8 +519,11 @@ int parse_logcfg(char *inputbuffer)
 		refreshp();
 		exit(1);
 	    }
-	    /* strip NL and trailing whitespace */
-	    g_strlcpy( call, g_strchomp(fields[1]), 20 );
+
+	    /* strip NL and trailing whitespace, convert to upper case */
+	    tmpcall = g_ascii_strup(g_strchomp(fields[1]), -1);
+	    g_strlcpy( call, tmpcall, 20 );
+	    g_free(tmpcall);
 	    /* as other code parts rely on a trailing NL on the call
 	     * we add back such a NL for now */
 	    strcat( call, "\n");
