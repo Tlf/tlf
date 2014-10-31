@@ -19,3 +19,5 @@
  */
 
 int fldigi_xmlrpc_get_carrier(void);
+int fldigi_get_carrier();
+void xmlrpc_showinfo();

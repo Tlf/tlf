@@ -39,7 +39,6 @@ int sendqrg(void)
     extern int outfreq;
 #endif
 
-    extern int fldigi_var_carrier;
     float trxqrg;
 
     if (trx_control != 1)

@@ -37,11 +37,16 @@
 int fldigi_var_carrier = 0;
 
 int fldigi_xmlrpc_get_carrier() {
-#ifdef HAVE_LIBXMLRPC
+
+#ifndef HAVE_LIBXMLRPC
+    return 0;
+#else
+
     xmlrpc_env env;
     xmlrpc_value * result;
     xmlrpc_int32 sum;
-#endif
+    xmlrpc_env_init(&env);
+    
     static int errflg;
     static int trycnt;
 
@@ -55,11 +60,6 @@ int fldigi_xmlrpc_get_carrier() {
     trycnt = 0;
     const char * const serverUrl = "http://localhost:7362/RPC2";
     const char * const methodName = "modem.get_carrier";
-
-#ifndef HAVE_LIBXMLRPC
-    return 0;
-#else
-    xmlrpc_env_init(&env);
 
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, XMLRPCVERSION, NULL, 0);
     if (env.fault_occurred) {
@@ -91,4 +91,20 @@ int fldigi_xmlrpc_get_carrier() {
     return 0;
 #endif
 
+}
+
+int fldigi_get_carrier() {
+#ifdef HAVE_LIBXMLRPC
+        return fldigi_var_carrier;
+#else
+        return 0;
+#endif
+}
+
+void xmlrpc_showinfo() {
+#ifdef HAVE_LIBXMLRPC		// Show xmlrpc status
+    showmsg("XMLRPC compiled in");
+#else
+    showmsg("XMLRPC NOT compiled");
+#endif
 }

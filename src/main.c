@@ -29,6 +29,7 @@
 #include <pthread.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
+#include "fldigixmlrpc.h"
 #endif
 
 SCREEN *mainscreen;
@@ -616,15 +617,6 @@ int databases_load()
     }
 
     return 0;
-}
-
-void xmlrpc_showinfo()
-{
-#ifdef HAVE_LIBXMLRPC		// Show xmlrpc status
-    showmsg("XMLRPC compiled in");
-#else
-    showmsg("XMLRPC NOT compiled");
-#endif
 }
 
 void hamlib_init()

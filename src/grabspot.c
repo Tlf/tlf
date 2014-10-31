@@ -20,6 +20,7 @@
 #include "grabspot.h"
 #include "bandmap.h"
 #include <glib.h>
+#include "fldigixmlrpc.h"
 
 void send_bandswitch(int outfreq);
 
@@ -39,8 +40,6 @@ void grabspot(void)
     extern int outfreq;
 #endif
 
-    extern int fldigi_var_carrier;
-
     spot *data;
 
     if (trx_control == 0)
@@ -53,7 +52,7 @@ void grabspot(void)
 	if (data != NULL) {
 
 	    outfreq = data -> freq;
-	    outfreq -= fldigi_var_carrier;
+	    outfreq -= fldigi_get_carrier();
 	    send_bandswitch( outfreq );
 
 	    strcpy( hiscall, data->call );
@@ -94,8 +93,6 @@ void grab_next(void)
     extern int outfreq;
 #endif
 
-    extern int fldigi_var_carrier;
-
     static int dir = 1;		/* start scanning up */
 
     spot *data;
@@ -114,7 +111,7 @@ void grab_next(void)
     if (data != NULL) {
 
 	outfreq = data -> freq;
-	outfreq -= fldigi_var_carrier;
+	outfreq -= fldigi_get_carrier();
 	send_bandswitch( outfreq );
 
 	strcpy( hiscall, data->call );
