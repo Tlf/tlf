@@ -54,12 +54,30 @@ else
 	echo "disabling Hamlib support"
 fi
 
-AC_CHECK_LIB(xmlrpc,xmlrpc_read_int)
-AC_CHECK_LIB(xmlrpc_client,xmlrpc_client_cleanup)
-AC_CHECK_LIB(xmlrpc_util,xmlrpc_env_init)
-AC_CHECK_HEADERS(xmlrpc-c/base.h)
-AC_CHECK_HEADERS(xmlrpc-c/client.h)
+dnl Check if we want to use xmlrpc to read carrier from Fldigi
+AC_ARG_ENABLE([fldigi-xmlrpc],
+	[AS_HELP_STRING([--enable-fldigi-xmlrpc],
+			[Add support for XMLRPC to read Fldigi's carrier (usually in RTTY/DIGIMODE)])],
+[case "${enableval}" in
+	yes) wantfldigixmlrpc=true ;;
+	no)  wantfldigixmlrpc=false ;;
+	esac],
+[wantfldigixmlrpc=false])
 
+if test "x${wantfldigixmlrpc}" != "xfalse"; then
+    dnl Look for xmlrpc libraries
+
+	AC_CHECK_LIB(xmlrpc,xmlrpc_read_int,,AC_MSG_ERROR([Xmlrpc libraries not found...]))
+	AC_CHECK_LIB(xmlrpc_client,xmlrpc_client_cleanup,,AC_MSG_ERROR([Xmlrpc-client libraries not found...]))
+	AC_CHECK_LIB(xmlrpc_util,xmlrpc_env_init,,AC_MSG_ERROR([Xmlrpc-util libraries not found...]))
+	AC_CHECK_HEADERS(xmlrpc-c/base.h,,AC_MSG_ERROR([Xmlrpc base.h header not found...]))
+	AC_CHECK_HEADERS(xmlrpc-c/client.h,,AC_MSG_ERROR([Xmlrpc client.h header not found...]))
+	#AC_DEFINE([WANT_FLDIGIXMLRPC], 1, [Want Fldigi XMLRPC])
+	echo "enabling XMLRPC for Fldigi"
+else
+	#AC_DEFINE([WANT_FLDIGIXMLRPC], 0, [No XMLRPC for Fldigi])
+	echo "disabling XMLRPC for Fldigi"
+fi
 
 if test "${ac_cv_c_compiler_gnu}" = "yes"; then
 	CFLAGS="${CFLAGS} -Wall"
