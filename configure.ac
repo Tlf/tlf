@@ -72,10 +72,8 @@ if test "x${wantfldigixmlrpc}" != "xfalse"; then
 	AC_CHECK_LIB(xmlrpc_util,xmlrpc_env_init,,AC_MSG_ERROR([Xmlrpc-util libraries not found...]))
 	AC_CHECK_HEADERS(xmlrpc-c/base.h,,AC_MSG_ERROR([Xmlrpc base.h header not found...]))
 	AC_CHECK_HEADERS(xmlrpc-c/client.h,,AC_MSG_ERROR([Xmlrpc client.h header not found...]))
-	#AC_DEFINE([WANT_FLDIGIXMLRPC], 1, [Want Fldigi XMLRPC])
 	echo "enabling XMLRPC for Fldigi"
 else
-	#AC_DEFINE([WANT_FLDIGIXMLRPC], 0, [No XMLRPC for Fldigi])
 	echo "disabling XMLRPC for Fldigi"
 fi
 

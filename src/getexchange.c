@@ -465,7 +465,6 @@ int getexchange(void)
 		        refreshp();
 			break;
 		    }
-		    x = 0;
 		}
 		else {
 		    refreshp();
