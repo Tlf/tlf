@@ -30,6 +30,7 @@
 #include "getctydata.h"
 #include "set_tone.h"
 #include "rtty.h"
+#include "fldigixmlrpc.h"
 #include <glib.h>
 
 extern int stop_backgrnd_process;
@@ -55,6 +56,7 @@ extern int timeoffset;
 extern char call[];
 extern int trxmode;
 extern int keyerport;
+extern int trx_control;
 
 int cw_simulator(void);
 
@@ -67,6 +69,7 @@ void *background_process(void *ptr)
     static int i, t;
     static char prmessage[256];
     static int lantimesync = 0;
+    static int fldigi_rpc_cnt;
 
     int n;
 
@@ -92,6 +95,22 @@ void *background_process(void *ptr)
 	if (trxmode == DIGIMODE
 	    && (keyerport == MFJ1278_KEYER || keyerport == GMFSK))
 	    rx_rtty();
+
+	/*
+	 * calling Fldigi XMLRPC method, which reads the Fldigi's carrier
+	 * this function helps to show the correct freq of the RIG: reads
+	 * the carrier value from Fldigi, and stores in a variable; then
+	 * it readable by fldigi_get_carrier()
+	 * only need at every 2nd cycle
+	 * see fldigixmlrpc.[ch]
+	 */
+	if (trxmode == DIGIMODE && keyerport == GMFSK && trx_control == 1) {
+	    if (fldigi_rpc_cnt == 2) {
+		fldigi_xmlrpc_get_carrier();
+		fldigi_rpc_cnt = 0;
+	    }
+	    fldigi_rpc_cnt++;
+	}
 
 	if (stop_backgrnd_process == 0) {
 	    write_keyer();
