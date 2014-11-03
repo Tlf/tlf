@@ -21,6 +21,7 @@
 
 #include "fldigixmlrpc.h"
 
+#include "startmsg.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -46,7 +47,7 @@ int fldigi_xmlrpc_get_carrier() {
     xmlrpc_value * result;
     xmlrpc_int32 sum;
     xmlrpc_env_init(&env);
-    
+
     static int errflg;
     static int trycnt;
 
@@ -75,7 +76,7 @@ int fldigi_xmlrpc_get_carrier() {
 	errflg = 1;
         return -1;
     }
-    
+
     xmlrpc_read_int(&env, result, &sum);
     if (env.fault_occurred) {
 	fldigi_var_carrier = 0;
@@ -83,7 +84,7 @@ int fldigi_xmlrpc_get_carrier() {
 	return -1;
     }
     fldigi_var_carrier = (int)sum;
-    
+
     xmlrpc_DECREF(result);
     xmlrpc_env_clean(&env);
     xmlrpc_client_cleanup();
