@@ -43,7 +43,6 @@ int gettxinfo(void)
     extern int trx_control;
     extern int trxmode;
 
-
 #ifdef HAVE_LIBHAMLIB
     freq_t rigfreq;
     vfo_t vfo;
@@ -66,6 +65,8 @@ int gettxinfo(void)
 	retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
 	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL)
 	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
+
+	rigfreq += fldigi_get_carrier();
 
 	if (retval != RIG_OK || rigfreq < 0.1) {
 	    freq = 0.0;

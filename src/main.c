@@ -29,6 +29,7 @@
 #include <pthread.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
+#include "fldigixmlrpc.h"
 #endif
 
 SCREEN *mainscreen;
@@ -618,7 +619,6 @@ int databases_load()
     return 0;
 }
 
-
 void hamlib_init()
 {
 #ifdef HAVE_LIBHAMLIB		// Code for hamlib interface
@@ -815,6 +815,7 @@ int main(int argc, char *argv[])
 //              if (strlen(synclogfile) > 0)
 //                      synclog(synclogfile);
 
+    xmlrpc_showinfo();
     hamlib_init();
     lan_init();
     keyer_init();
