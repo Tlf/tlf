@@ -551,7 +551,7 @@ char callinput(void)
 		break;
 	    }
 
-	case 176 ... 186:
+	case 176 ... 185:
 	    {
 		sendmessage(message[x - 162]);	/* alt-0 to alt-9 */
 

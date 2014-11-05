@@ -474,11 +474,17 @@ int getexchange(void)
 		}
 		refreshp();
 		break;
-
-	    } else if (cqww == 1 && trxmode == DIGIMODE && ((countrynr == w_cty) || (countrynr == ve_cty))) { 
+	    } else if (cqww == 1 && trxmode == DIGIMODE && ((countrynr == w_cty) || (countrynr == ve_cty))) {
 		if (strlen(comment) < 5) {
 		    mvprintw(13, 54, "state/prov?");
 		    mvprintw(12, 54, comment);
+		    if (x == '\n' || x == 92) {
+			x = 0;
+		    }
+		    else {
+		        refreshp();
+			break;
+		    }
 		    x = 0;
 		}
 		else {
@@ -487,7 +493,6 @@ int getexchange(void)
 		}
 	    } else
 		break;
-
 	}
 
     }

@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2014           Ervin Hegedus <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +18,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef KEYER_H
-#define KEYER_H
+#ifndef FLDIGIXMLRPC_H
+#define FLDIGIXMLRPC_H
 
-int keyer(void);
+int fldigi_xmlrpc_get_carrier(void);
+int fldigi_get_carrier();
+void xmlrpc_showinfo();
 
-#endif /* end of include guard: KEYER_H */
+
+#endif /* end of include guard: FLDIGIXMLRPC_H */

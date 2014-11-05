@@ -39,6 +39,15 @@
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
 
+/* Define to 1 if you have the `xmlrpc' library (-lxmlrpc). */
+#undef HAVE_LIBXMLRPC
+
+/* Define to 1 if you have the `xmlrpc_client' library (-lxmlrpc_client). */
+#undef HAVE_LIBXMLRPC_CLIENT
+
+/* Define to 1 if you have the `xmlrpc_util' library (-lxmlrpc_util). */
+#undef HAVE_LIBXMLRPC_UTIL
+
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
@@ -131,6 +140,12 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the <xmlrpc-c/base.h> header file. */
+#undef HAVE_XMLRPC_C_BASE_H
+
+/* Define to 1 if you have the <xmlrpc-c/client.h> header file. */
+#undef HAVE_XMLRPC_C_CLIENT_H
 
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL

@@ -1537,7 +1537,7 @@ int print_rtty_line(t_qtc_ry_line qtc_ry_line, int row) {
     char currline[50];
 
     sprintf(currline, "%-38s", qtc_ry_line.content);
-    currline[39] = '\0';
+    currline[38] = '\0';
     if (qtc_ry_line.attr == 1) {
 	currline[36] = ' ';
 	currline[37] = '*';
