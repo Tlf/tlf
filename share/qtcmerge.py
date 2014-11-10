@@ -25,7 +25,8 @@ band_hash = {
 
 mode_hash = {
   'CW': "CW",
-  'SS': "PH"
+  'SS': "PH",
+  'DI': "RY",
 }
 
 try:
