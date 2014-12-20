@@ -7,6 +7,6 @@ do
 		then
 			sleep 10s
 		else
-			rec -w  -r 8000 -d /dev/dsp1 $filename > /dev/null 2> /dev/null
+			rec -w  -r 8000 $filename > /dev/null 2> /dev/null
 		fi
 done
