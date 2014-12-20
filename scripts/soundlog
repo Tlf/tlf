@@ -1,11 +1,11 @@
 #!/bin/sh
 
-while [[ -f $HOME/.VRlock ]]
+while [ -f $HOME/.VRlock ]
 do
 		filename="$HOME/tlf/soundlogs/"`eval date +%d%H%M`".au"
 		if test -f $filename
 		then
-			sleep 10s
+			sleep 10
 		else
 			rec -w  -r 8000 $filename > /dev/null 2> /dev/null
 		fi
