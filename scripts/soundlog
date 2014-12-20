@@ -1,8 +1,8 @@
 #!/bin/sh
 
-while [[ -f /home/rein/.VRlock ]]
+while [[ -f $HOME/.VRlock ]]
 do
-		filename="/home/rein/tlf/soundlogs/"`eval date +%d%H%M`".au"
+		filename="$HOME/tlf/soundlogs/"`eval date +%d%H%M`".au"
 		if test -f $filename
 		then
 			sleep 10s
