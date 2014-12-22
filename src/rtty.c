@@ -44,6 +44,7 @@ static char ry_term[5][50] = { "", "", "", "", "" };
 int init_controller()
 {
     extern char controllerport[];
+    extern int keyerport;
 
     struct termios termattribs;
 
@@ -68,6 +69,9 @@ int init_controller()
 
     tcsetattr(fdcont, TCSANOW, &termattribs);	/* Set the serial port */
 
+    if (keyerport == GMFSK) {
+       lseek(fdcont, 0, SEEK_END);
+    }
     showstring(controllerport, " opened...\n");
 
     return (fdcont);		// return file descriptor
