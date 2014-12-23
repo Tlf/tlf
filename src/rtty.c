@@ -49,7 +49,6 @@ int init_controller()
 {
     extern char controllerport[];
     extern int keyerport;
-    struct stat statbuf;
 
     struct termios termattribs;
 
@@ -75,10 +74,7 @@ int init_controller()
     tcsetattr(fdcont, TCSANOW, &termattribs);	/* Set the serial port */
 
     if (keyerport == GMFSK) {
-	 fstat(fdcont, &statbuf);
-	 if (statbuf.st_size > 0) {
-	    lseek(fdcont, 0, SEEK_END);
-	}
+	lseek(fdcont, 0, SEEK_END);
     }
 
     showstring(controllerport, " opened...\n");
