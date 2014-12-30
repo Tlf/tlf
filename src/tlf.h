@@ -141,8 +141,8 @@ enum {
 				   (including linefeed) */
 /* special message numbers */
 enum {
-    CQ_TU_MSG = 12,
-    SP_TU_MSG = 13,
+    SP_TU_MSG = 12,
+    CQ_TU_MSG = 13,
     SP_CALL_MSG = 24
 };
 
