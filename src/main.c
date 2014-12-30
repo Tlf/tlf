@@ -795,8 +795,8 @@ int main(int argc, char *argv[])
     termbuf[0] = '\0';
     hiscall[0] = '\0';
 
-    strcpy(sp_return, message[12]);
-    strcpy(cq_return, message[13]);
+    strcpy(sp_return, message[SP_TU_MSG]);
+    strcpy(cq_return, message[CQ_TU_MSG]);
 
 
     sprintf(tlfversion,

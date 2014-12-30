@@ -45,6 +45,7 @@ char *formatMessage(int i) {
     /* and fill up with spaces */
     strcat  (printbuffer, backgrnd_str);
     printbuffer[LIST_WIDTH - 7] = '\0';
+
     return printbuffer;
 }
 
@@ -52,13 +53,12 @@ void listmessages(void)
 {
     extern char backgrnd_str[];
 
-    int i, j;
+    int i;
 
     nicebox(LIST_UPPER, LIST_LEFT, LIST_HEIGHT, LIST_WIDTH, "Messages");
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
 
     for  ( i = 0  ; i  < 12 ; i++){
-
 	mvprintw(i + LIST_UPPER + 1, 1, " %2i  : %s",  i+1, formatMessage(i));
     }
 
@@ -69,14 +69,16 @@ void listmessages(void)
     attroff(A_STANDOUT);
     mvprintw(23, 30,  "Press any key");
     refreshp();
+
     onechar();
 
     clear_display();
-    attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
 
-    for (j = 13 ;  j  <= 23 ; j++){
-	 mvprintw(j, 0, backgrnd_str);
+    attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
+    for (i = 13 ;  i  <= 23 ; i++){
+	 mvprintw(i, 0, backgrnd_str);
     }
+
     refreshp();
 
     return;

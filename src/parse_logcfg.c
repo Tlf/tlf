@@ -495,14 +495,14 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 14:{
     	    PARAMETER_NEEDED(teststring);
-	    strcpy(message[12], fields[1]);
-	    strcpy(sp_return, message[12]);
+	    strcpy(message[SP_TU_MSG], fields[1]);
+	    strcpy(sp_return, message[SP_TU_MSG]);
 	    break;
 	}
     case 15:{
     	    PARAMETER_NEEDED(teststring);
-	    strcpy(message[13], fields[1]);
-	    strcpy(cq_return, message[13]);
+	    strcpy(message[CQ_TU_MSG], fields[1]);
+	    strcpy(cq_return, message[CQ_TU_MSG]);
 	    break;	/* end messages */
 	}
     case 16:{
@@ -1381,7 +1381,6 @@ int parse_logcfg(char *inputbuffer)
     case 162:{
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(message[SP_CALL_MSG], fields[1]);
-	    strcpy(cq_return, message[SP_CALL_MSG]);
 	    break;	/* end messages */
 	}
 
