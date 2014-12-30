@@ -55,7 +55,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 162	/* commands in list */
+#define  MAX_COMMANDS 163	/* commands in list */
 
 
 int read_logcfg(void)
@@ -421,7 +421,8 @@ int parse_logcfg(char *inputbuffer)
 	"NO_RST",
 	"MYQRA",
 	"POWERMULT",		/* 160 */
-	"SERIAL_OR_SECTION"
+	"SERIAL_OR_SECTION",
+	"S&P_CALL_MSG"
     };
 
     char **fields;
@@ -1377,6 +1378,12 @@ int parse_logcfg(char *inputbuffer)
 		 serial_or_section = 1;
 		 break;
 	    }
+    case 162:{
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(message[SP_CALL_MSG], fields[1]);
+	    strcpy(cq_return, message[SP_CALL_MSG]);
+	    break;	/* end messages */
+	}
 
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
