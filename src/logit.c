@@ -177,7 +177,7 @@ void *logit(void *ptr)
 			    if (simulator != 0)
 				write_tone();
 			} else {
-			    play_file(ph_message[13]);
+			    play_file(ph_message[CQ_TU_MSG]);
 			}
 
 			defer_store = 0;
@@ -188,7 +188,7 @@ void *logit(void *ptr)
 			if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			    sendmessage(sp_return); /* send S&P return */
 			} else
-			    play_file(ph_message[12]);
+			    play_file(ph_message[SP_TU_MSG]);
 
 			defer_store = 0;
 		    }

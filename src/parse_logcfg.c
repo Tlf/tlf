@@ -57,7 +57,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 225	/* commands in list */
+#define  MAX_COMMANDS 226	/* commands in list */
 
 
 int read_logcfg(void)
@@ -519,6 +519,7 @@ int parse_logcfg(char *inputbuffer)
 	"QTCREC_RECORD",
 	"QTCREC_RECORD_COMMAND",
 	"EXCLUDE_MULTILIST"
+	"S&P_CALL_MSG"
     };
 
     char **fields;
@@ -590,14 +591,14 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 14:{
     	    PARAMETER_NEEDED(teststring);
-	    strcpy(message[12], fields[1]);
-	    strcpy(sp_return, message[12]);
+	    strcpy(message[SP_TU_MSG], fields[1]);
+	    strcpy(sp_return, message[SP_TU_MSG]);
 	    break;
 	}
     case 15:{
     	    PARAMETER_NEEDED(teststring);
-	    strcpy(message[13], fields[1]);
-	    strcpy(cq_return, message[13]);
+	    strcpy(message[CQ_TU_MSG], fields[1]);
+	    strcpy(cq_return, message[CQ_TU_MSG]);
 	    break;	/* end messages */
 	}
     case 16:{
@@ -1592,7 +1593,7 @@ int parse_logcfg(char *inputbuffer)
 	    mit_mult_array = strtok(bwp_params_list, ";:,");
 	    if (mit_mult_array != NULL) {
 		while (mit_mult_array) {
-		  
+
 		    bandindex = getidxbybandstr(g_strchomp(mit_mult_array));
 		    mit_mult_array = strtok(NULL, ";:,");
 		    if (mit_mult_array != NULL && bandindex >= 0) {
@@ -1617,7 +1618,7 @@ int parse_logcfg(char *inputbuffer)
 	    mit_mult_array = strtok(bwm_params_list, ";:,");
 	    if (mit_mult_array != NULL) {
 		while (mit_mult_array) {
-		  
+
 		    bandindex = getidxbybandstr(g_strchomp(mit_mult_array));
 		    mit_mult_array = strtok(NULL, ";:,");
 		    if (mit_mult_array != NULL && bandindex >= 0) {
@@ -1678,12 +1679,12 @@ int parse_logcfg(char *inputbuffer)
     case 170 ... 181: {
     	    PARAMETER_NEEDED(teststring);
 	    strcpy(qtc_recv_msgs[ii - 170], fields[1]);
-	    break;	
+	    break;
 	    }
     case 182 ... 193: {
     	    PARAMETER_NEEDED(teststring);
 	    strcpy(qtc_send_msgs[ii - 182], fields[1]);
-	    break;	
+	    break;
 	    }
     case 194 ... 207:{	// get QTC recv phone messages
 	    PARAMETER_NEEDED(teststring);
@@ -1766,6 +1767,11 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    break;
     }
+    case 225:{
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(message[SP_CALL_MSG], fields[1]);
+	    break;	/* end messages */
+	}
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;
