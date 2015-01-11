@@ -113,8 +113,8 @@ int message_change(int x)
 
     writeparas();
 
-    strncpy(sp_return, message[12], 79);
-    strncpy(cq_return, message[13], 79);
+    strncpy(sp_return, message[SP_TU_MSG], 79);
+    strncpy(cq_return, message[CQ_TU_MSG], 79);
 
     return (0);
 }

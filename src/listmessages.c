@@ -23,43 +23,64 @@
 
 #include "listmessages.h"
 
-int listmessages(void)
+#include "tlf.h"
+#include "onechar.h"
+#include "nicebox.h"
+#include "clear_display.h"
+#include <glib.h>
+
+#define LIST_HEIGHT 15
+#define LIST_WIDTH  78
+#define LIST_UPPER  7
+#define LIST_LEFT   0
+
+char  printbuffer[160];
+
+char *formatMessage(int i) {
+    extern char message[][80];
+    extern char backgrnd_str[];
+
+    /* copy the message string WITHOUT trailing newline */
+    g_strlcpy (printbuffer,  message[i],  strlen(message[i]));
+    /* and fill up with spaces */
+    strcat  (printbuffer, backgrnd_str);
+    printbuffer[LIST_WIDTH - 7] = '\0';
+
+    return printbuffer;
+}
+
+void listmessages(void)
 {
-	extern char message[][80];
-	extern char backgrnd_str[];
+    extern char backgrnd_str[];
 
-	int i, j;
-	char  printbuffer[160];
+    int i;
 
-	nicebox(8, 0, 14, 78, "Messages");
+    nicebox(LIST_UPPER, LIST_LEFT, LIST_HEIGHT, LIST_WIDTH, "Messages");
+    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
 
-	for  ( i = 0  ; i  <= 13 ; i++){
-		printbuffer[0] = '\0';
-		strncat (printbuffer,  message[i],  strlen(message[i]) -1);
-		strcat  (printbuffer, backgrnd_str);
-		printbuffer[71] = '\0';
-		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
-		if (i == 12)
-			mvprintw(i + 9, 1, " SPmg:" );
-		else if ( i== 13)
-			mvprintw(i + 9, 1, " CQmg:" );
-		else
-			mvprintw (i + 9, 1, " %i     ",  i+1);
-		mvprintw (i  + 9, 6,  ": %s",  printbuffer);
-	}
-	attroff(A_STANDOUT);
-	mvprintw(23, 30,  "Press any key");
-	refreshp();
-	onechar();
+    for  ( i = 0  ; i  < 12 ; i++){
+	mvprintw(i + LIST_UPPER + 1, 1, " %2i  : %s",  i+1, formatMessage(i));
+    }
 
-	clear_display();
-	attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
+    mvprintw(12 + LIST_UPPER + 1, 1, " SPmg: %s", formatMessage(SP_TU_MSG));
+    mvprintw(13 + LIST_UPPER + 1, 1, " CQmg: %s", formatMessage(CQ_TU_MSG));
+    mvprintw(14 + LIST_UPPER + 1, 1, " SPCa: %s", formatMessage(SP_CALL_MSG));
 
-	for (j = 13 ;  j  <= 23 ; j++){
-		 mvprintw(j, 0, backgrnd_str);
-		}
+    attroff(A_STANDOUT);
+    mvprintw(23, 30,  "Press any key");
+    refreshp();
 
+    onechar();
 
- return(0);
+    clear_display();
+
+    attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
+    for (i = 13 ;  i  <= 23 ; i++){
+	 mvprintw(i, 0, backgrnd_str);
+    }
+
+    refreshp();
+
+    return;
 }
 

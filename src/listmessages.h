@@ -16,14 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <curses.h>
-#include "tlf.h"
-#include "onechar.h"
-#include "nicebox.h"
-#include "clear_display.h"
+#ifndef LISTMESSAGES_H
 
-int listmessages(void);
+#define LISTMESSAGES_H
 
+void listmessages(void);
+
+#endif /* end of include guard: LISTMESSAGES_H */
