@@ -853,7 +853,7 @@ int qtc_main_panel(int direction) {
 			    }
 			}
 			else {
-			    if ((activefield < 3) || ((activefield-3)%3 > 0 && (activefield-3)%3 <= 2)) {
+			    if ((activefield > 0 && activefield < 3) || ((activefield-3)%3 > 0)) {
 				activefield--;
 				showfield(activefield+1);
 			    }
