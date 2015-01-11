@@ -166,7 +166,7 @@ int log_recv_qtc_to_disk(int qsonr)
     return (0);
 }
 
-int store_recv_qtc(char *loglineptr)
+void store_recv_qtc(char *loglineptr)
 {
 	FILE *fp;
 	int i;
@@ -187,5 +187,4 @@ int store_recv_qtc(char *loglineptr)
 	parse_qtcline(loglineptr, callsign, RECV);
 	qtc_inc(callsign, RECV);
 
-	return(0);
 }

@@ -22,7 +22,7 @@
 
 
 int log_sent_qtc_to_disk (int qtcnr);
-int store_sent_qtc (char * loglineptr);
+void store_sent_qtc (char * loglineptr);
 
 
 #endif /* end of include guard: LOG_SENT_QTC_TO_DISK_H */

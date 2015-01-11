@@ -172,7 +172,7 @@ int log_sent_qtc_to_disk(int qsonr)
     return (0);
 }
 
-int store_sent_qtc(char *loglineptr)
+void store_sent_qtc(char *loglineptr)
 {
 	FILE *fp;
 	int i;
@@ -193,5 +193,4 @@ int store_sent_qtc(char *loglineptr)
 	parse_qtcline(loglineptr, callsign, SEND);
 	qtc_inc(callsign, SEND);
 
-	return(0);
 }

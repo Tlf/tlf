@@ -22,7 +22,7 @@
 
 
 int log_recv_qtc_to_disk (int qtcnr);
-int store_recv_qtc (char * loglineptr);
+void store_recv_qtc (char * loglineptr);
 
 
 #endif /* end of include guard: LOG_RECV_QTC_TO_DISK_H */
