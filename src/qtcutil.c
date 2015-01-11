@@ -27,10 +27,6 @@
 #include <glib.h>
 #include "tlf.h"
 
-#define NBANDS 10
-
-typedef unsigned char t_qtc_bands[NBANDS];
-
 extern GHashTable* qtc_store; // = NULL;
 extern int qtcdirection;
 extern struct t_qtc_store_obj *qtc_empty_obj;
