@@ -225,7 +225,7 @@ struct t_qtc_store_obj {
   int total;
   int received;
   int sent;
-} t_qtc_store_obj;
+};
 
 void refreshp();
 
