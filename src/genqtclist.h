@@ -20,7 +20,7 @@
 #define GENQTCLIST_H
 
 int genqtclist(char * callsign, int nrofqtc);
-int genqtcline(char * qtc, char * line);
+void genqtcline(char * qtc, char * line);
 
 
 #endif /* end of include guard: GENQTCLIST_H */

@@ -76,7 +76,7 @@ int genqtclist(char * callsign, int nrofqtc)
     return qtclist.count;
 }
 
-int genqtcline(char * qtc, char * line) {
+void genqtcline(char * qtc, char * line) {
     int i, qpos;
 
     strncpy(qtc, line+17, 2);
@@ -96,5 +96,4 @@ int genqtcline(char * qtc, char * line) {
     qpos += 4;
     qtc[qpos] = '\0';
 
-    return 0;
 }
