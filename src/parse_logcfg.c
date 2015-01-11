@@ -518,7 +518,7 @@ int parse_logcfg(char *inputbuffer)
 	"QS_VKCQM",
 	"QTCREC_RECORD",
 	"QTCREC_RECORD_COMMAND",
-	"EXCLUDE_MULTILIST"
+	"EXCLUDE_MULTILIST",
 	"S&P_CALL_MSG"
     };
 
