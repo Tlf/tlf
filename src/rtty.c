@@ -239,9 +239,6 @@ int rx_rtty()
 	    ry_term[2][0] = '\0';
 	    ry_term[3][0] = '\0';
 	    ry_term[4][0] = '\0';
-	    /*for(i=0; i<13; i++) {
-		qtc_ry_lines[i][0] = '\0';
-	    }*/
 	}
 
 	i = read(fdcont, line, 39);
