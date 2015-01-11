@@ -1,4 +1,4 @@
-DOC_FILES = FAQ New_Bandmap.txt README README.cabrillo README.ssb README_QTC.txt
+DOC_FILES = FAQ New_Bandmap.txt README README.cabrillo README.ssb README_QTC.txt README_QTC_RTTY.txt
 
 doc_DATA = $(DOC_FILES)
 
