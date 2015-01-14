@@ -20,6 +20,7 @@
 #ifndef QTCUTIL_H
 #define QTCUTIL_H
 
+void qtc_init();
 void qtc_inc(char callsign[15], int direction);
 void qtc_dec(char callsign[15], int direction);
 struct t_qtc_store_obj * qtc_get(char callsign[15]);

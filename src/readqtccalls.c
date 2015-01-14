@@ -36,8 +36,6 @@
 #include <ctype.h>
 
 extern int qtcdirection;
-extern GHashTable* qtc_store;
-extern struct t_qtc_store_obj *qtc_empty_obj;
 extern int nr_qsosflags_for_qtc;
 extern int nr_qsos;
 
@@ -53,17 +51,8 @@ int readqtccalls()
 
     clear();
 
-    if (qtc_store != NULL) {
-	g_hash_table_destroy(qtc_store);
-    }
-    if (qtc_empty_obj != NULL) {
-	g_free(qtc_empty_obj);
-    }
-    qtc_store = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
-    qtc_empty_obj = g_malloc0(sizeof (struct t_qtc_store_obj));
-    qtc_empty_obj->total = 0;
-    qtc_empty_obj->received = 0;
-    qtc_empty_obj->sent = 0;
+    qtc_init();
+
     nr_qsosflags_for_qtc = nr_qsos;
 
     if (qtcdirection & 2) {
