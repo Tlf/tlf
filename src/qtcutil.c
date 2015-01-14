@@ -27,19 +27,22 @@
 #include <glib.h>
 #include "tlf.h"
 
-GHashTable* qtc_store = NULL;
+GHashTable* qtc_store = NULL; 	/* stores number of QTC's per callsign */
+struct t_qtc_store_obj *qtc_empty_obj = NULL;
+
 extern int qtcdirection;
 extern struct t_qtc_store_obj *qtc_empty_obj;
 
 void qtc_init() {
-        if (qtc_store != NULL) {
+    if (qtc_store != NULL) {
 	g_hash_table_destroy(qtc_store);
     }
+    qtc_store = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+
     if (qtc_empty_obj != NULL) {
 	g_free(qtc_empty_obj);
     }
-    qtc_store = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
-    qtc_empty_obj = g_malloc0(sizeof (struct t_qtc_store_obj));
+    qtc_empty_obj = g_malloc(sizeof (struct t_qtc_store_obj));
     qtc_empty_obj->total = 0;
     qtc_empty_obj->received = 0;
     qtc_empty_obj->sent = 0;

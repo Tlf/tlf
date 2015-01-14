@@ -221,12 +221,6 @@ typedef struct {
 #define RECV 1		// QTC RECV direction
 #define SEND 2		// QTC SEND direction
 
-struct t_qtc_store_obj {
-  int total;
-  int received;
-  int sent;
-};
-
 void refreshp();
 
 #endif /* TLF_H */

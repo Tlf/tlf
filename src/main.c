@@ -339,7 +339,6 @@ t_qtclist qtclist;
 int nr_qtcsent = 0;
 t_qtcreclist qtcreclist;
 struct t_qtc_store_obj *qtc_temp_obj;
-struct t_qtc_store_obj *qtc_empty_obj;
 int qtcdirection = 0;
 //char qtc_ry_lines[12][50] = {"", "", "", "", "", "", "", "", "", "", "", ""};
 //int qtc_ry_lines_attr[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
