@@ -22,9 +22,8 @@
 	 *--------------------------------------------------------------*/
 
 #include "qtcutil.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <glib.h>
+#include "string.h"
 #include "tlf.h"
 
 GHashTable* qtc_store = NULL; 	/* stores number of QTC's per callsign */
@@ -101,7 +100,7 @@ struct t_qtc_store_obj * qtc_get(char callsign[15]) {
 
 }
 
-int parse_qtcline(char * logline, char callsign[15], int direction) {
+void parse_qtcline(char * logline, char callsign[15], int direction) {
 
     int i = 0;
 
@@ -115,7 +114,5 @@ int parse_qtcline(char * logline, char callsign[15], int direction) {
 	i++;
     }
     callsign[i] = '\0';
-
-    return 0;
 }
 
