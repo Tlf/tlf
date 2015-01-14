@@ -27,7 +27,7 @@
 #include <glib.h>
 #include "tlf.h"
 
-extern GHashTable* qtc_store; // = NULL;
+GHashTable* qtc_store = NULL;
 extern int qtcdirection;
 extern struct t_qtc_store_obj *qtc_empty_obj;
 

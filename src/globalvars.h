@@ -134,7 +134,6 @@ extern t_qtclist qtclist;		// the QTC list to send
 extern int nr_qtcsent;
 extern t_qtcreclist qtcreclist;		// the QTC list which received
 
-extern GHashTable* qtc_store;
 extern int qtcdirection;
 extern struct t_qtc_store_obj *qtc_temp_obj;
 extern struct t_qtc_store_obj *qtc_empty_obj;

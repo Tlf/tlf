@@ -338,7 +338,6 @@ int next_qtc_qso;
 t_qtclist qtclist;
 int nr_qtcsent = 0;
 t_qtcreclist qtcreclist;
-GHashTable* qtc_store = NULL;
 struct t_qtc_store_obj *qtc_temp_obj;
 struct t_qtc_store_obj *qtc_empty_obj;
 int qtcdirection = 0;
