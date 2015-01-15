@@ -17,10 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include "tlf.h"
-#include "startmsg.h"
+#ifndef CHECKQTCLOGFILE_H
+#define CHECKQTCLOGFILE_H
 
 int checkqtclogfile_new();
+
+#endif /* end of include guard: CHECKQTCLOGFILE_H */

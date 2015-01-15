@@ -24,8 +24,14 @@
 	 *      the loglinelen
 	 *
 	 *--------------------------------------------------------------*/
-#include "checkqtclogfile.h"
+
 #include <glib.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include "tlf.h"
+#include "startmsg.h"
+#include "checkqtclogfile.h"
 
 extern int qtcdirection;
 
