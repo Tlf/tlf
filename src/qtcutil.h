@@ -20,10 +20,17 @@
 #ifndef QTCUTIL_H
 #define QTCUTIL_H
 
+struct t_qtc_store_obj {
+  int total;
+  int received;
+  int sent;
+};
+
+void qtc_init();
 void qtc_inc(char callsign[15], int direction);
 void qtc_dec(char callsign[15], int direction);
 struct t_qtc_store_obj * qtc_get(char callsign[15]);
 
-int parse_qtcline(char * line, char callsign[15], int direction);
+void parse_qtcline(char * line, char callsign[15], int direction);
 
 #endif /* end of include guard: QTCUTIL_H */

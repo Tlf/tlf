@@ -22,14 +22,30 @@
 	 *--------------------------------------------------------------*/
 
 #include "qtcutil.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <glib.h>
+#include "string.h"
 #include "tlf.h"
 
-extern GHashTable* qtc_store; // = NULL;
+GHashTable* qtc_store = NULL; 	/* stores number of QTC's per callsign */
+struct t_qtc_store_obj *qtc_empty_obj = NULL;
+
 extern int qtcdirection;
 extern struct t_qtc_store_obj *qtc_empty_obj;
+
+void qtc_init() {
+    if (qtc_store != NULL) {
+	g_hash_table_destroy(qtc_store);
+    }
+    qtc_store = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+
+    if (qtc_empty_obj != NULL) {
+	g_free(qtc_empty_obj);
+    }
+    qtc_empty_obj = g_malloc(sizeof (struct t_qtc_store_obj));
+    qtc_empty_obj->total = 0;
+    qtc_empty_obj->received = 0;
+    qtc_empty_obj->sent = 0;
+}
 
 void qtc_inc(char callsign[15], int direction) {
     struct t_qtc_store_obj *qtc_obj;
@@ -84,7 +100,7 @@ struct t_qtc_store_obj * qtc_get(char callsign[15]) {
 
 }
 
-int parse_qtcline(char * logline, char callsign[15], int direction) {
+void parse_qtcline(char * logline, char callsign[15], int direction) {
 
     int i = 0;
 
@@ -98,7 +114,5 @@ int parse_qtcline(char * logline, char callsign[15], int direction) {
 	i++;
     }
     callsign[i] = '\0';
-
-    return 0;
 }
 
