@@ -120,7 +120,7 @@ void delete_qso(void)
                             // iterate till the current line from back of logfile
                             // callsigns is the current callsign
                             // this works only for fixed length qtc line!
-                            while (look == 1) {
+                            while (s >= 0 && look == 1) {
                                 lseek(qtcfile, ((int)qstatbuf.st_size - (96+qtclen)), SEEK_SET);
                                 rc = read(qtcfile, logline, 95);
                                 if (! (strncmp(call, logline+QTCSENTCALLPOS, strlen(call)) == 0 && strncmp(bandmode, logline, 5) == 0)) {
