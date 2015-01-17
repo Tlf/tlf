@@ -22,9 +22,11 @@
 	 *              Convert country data
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include <glib.h>
 #include "getctydata.h"
+#include "globalvars.h"
+#include "getpx.h"
+#include "tlf.h"
+#include <glib.h>
 #include "dxcc.h"
 
 int getpfxindex(char *checkcallptr)
@@ -120,7 +122,7 @@ int getpfxindex(char *checkcallptr)
 
     w = -1;
     if (abnormal_call == 1) {
-	// pa3fwm 20040111: is pp guaranteed to be properly initialized 
+	// pa3fwm 20040111: is pp guaranteed to be properly initialized
 	// if/when we get here??
 	// pa0r 20040117: It is not. Code changed...
 	//      strncpy(checkncall , findcall, pp);
@@ -174,10 +176,10 @@ int getpfxindex(char *checkcallptr)
     return w;
 }
 
-int getctynr(char *checkcall) 
+int getctynr(char *checkcall)
 {
     int w;
-    
+
     w = getpfxindex(checkcall);
 
     if (w >= 0)
@@ -283,7 +285,7 @@ int getctydata(char *checkcallptr)
 
     w = -1;
     if (abnormal_call == 1) {
-	// pa3fwm 20040111: is pp guaranteed to be properly initialized 
+	// pa3fwm 20040111: is pp guaranteed to be properly initialized
 	// if/when we get here??
 	// pa0r 20040117: It is not. Code changed...
 	//      strncpy(checkncall , findcall, pp);
@@ -342,7 +344,7 @@ int getctydata(char *checkcallptr)
     if (w > 0 ) {
 	sprintf(cqzone, "%02d", prefix_by_index(w) -> cq);
 	sprintf(ituzone, "%02d", prefix_by_index(w) -> itu);
-    } 
+    }
 
     if (itumult != 1)
 	strcpy(zone_export, cqzone);
@@ -442,7 +444,7 @@ int getctydata2(char *checkcall)
 	checkncall[pp] = '\0';
 
 	for (i = 0; i < pfxmax; i++) {
-		
+
 	    pfx = prefix_by_index(i);
 
 	    if ((strncmp
@@ -461,6 +463,9 @@ int getctydata2(char *checkcall)
     sprintf(cqzone, "%02d", prefix_by_index(w) -> cq);
 
     countrynr = x;
+
+    strncpy(continent, dxcc_by_index(countrynr) -> continent , 3);
+    continent[2] = '\0';
 
     strcpy(checkcall, membuffer);
 
