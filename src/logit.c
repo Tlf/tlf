@@ -206,7 +206,7 @@ void *logit(void *ptr)
 		HideSearchPanel();
 	    }
 
-	    if (callreturn == 11 || callreturn == 44 || callreturn == 235) {	/*  CTRL K  */
+	    if (callreturn == 11 || callreturn == 44) {	/*  CTRL K  */
 		getyx(stdscr, cury, curx);
 		mvprintw(5, 0, "");
 		keyer();

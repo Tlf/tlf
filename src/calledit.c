@@ -50,7 +50,7 @@ void calledit(void)
 	mvprintw(12, 29, "            ");
 	mvprintw(12, 29, hiscall);
 	mvprintw(12, 29 + b, "");
-	/* no refreshp() here as getch() calls wrefresh() for the 
+	/* no refreshp() here as getch() calls wrefresh() for the
 	 * panel with last output (whre the cursor should go */
 
 	i = onechar();
@@ -137,10 +137,10 @@ void calledit(void)
 
 	    if (((i >= 65) && (i <= 90)) || ((i >= 47) && (i <= 57))) {
 
+		call2[0] = '\0';
+
 		if (b <= 12) {
 		    strncpy(call1, hiscall, b);
-		}
-		if (b <= 12) {
 		    strncpy(call2, hiscall + b, strlen(hiscall) - (b - 1));
 		}
 

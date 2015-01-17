@@ -640,7 +640,7 @@ char callinput(void)
 		break;
 	    }
 	case 235:
-	    {			//alt-K     == ctrl-K
+	    {			//alt-K     => ctrl-K
 		x = 11;
 		break;
 	    }
