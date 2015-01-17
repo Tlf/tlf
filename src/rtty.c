@@ -70,8 +70,9 @@ int init_controller()
     tcsetattr(fdcont, TCSANOW, &termattribs);	/* Set the serial port */
 
     if (keyerport == GMFSK) {
-       lseek(fdcont, 0, SEEK_END);
+	lseek(fdcont, 0, SEEK_END);
     }
+
     showstring(controllerport, " opened...\n");
 
     return (fdcont);		// return file descriptor
@@ -129,7 +130,6 @@ void ry_addchar(char c)
 	// add char to line
 	ry_term[4][k++] = c;
 	ry_term[4][k] = '\0';
-
     }
 }
 
