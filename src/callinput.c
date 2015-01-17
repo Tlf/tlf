@@ -29,6 +29,7 @@
 #include "bandmap.h"
 #include <glib.h>
 #include "cw_utils.h"
+#include "netkeyer.h"
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 

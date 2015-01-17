@@ -24,10 +24,30 @@
 	 *--------------------------------------------------------------*/
 
 #include "changepars.h"
+#include "tlf.h"
+#include <glib.h>
+#include <termios.h>
 #include "sendbuf.h"
 #include "rules.h"
-#include <termios.h>
-#include <glib.h>
+#include "messagechange.h"
+#include "listmessages.h"
+#include "set_tone.h"
+#include "editlog.h"
+#include "logview.h"
+#include "show_help.h"
+#include "writecabrillo.h"
+#include "writeparas.h"
+#include "showpxmap.h"
+#include "setparameters.h"
+#include "muf.h"
+#include "parse_logcfg.h"
+#include "gettxinfo.h"
+#include "netkeyer.h"
+#include "splitscreen.h"
+#include "audio.h"
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
