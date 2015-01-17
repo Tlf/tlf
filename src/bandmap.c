@@ -38,10 +38,17 @@
 #include <hamlib/rig.h>
 #endif
 
-#define TOLERANCE 50
+#define TOLERANCE 50 		/* spots with a QRG +/-TOLERANCE
+				   will be counted a s the same QRG */
+
+#define SPOT_COLUMN_WIDTH 22
+#define SPOT_FREQ_WIDTH 7
+#define SPOT_CALL_WIDTH SPOT_COLUMN_WIDTH-SPOT_FREQ_WIDTH-4
+				/* 3 space before and 1 after call */
+
 
 unsigned int bandcorner[NBANDS][2] =
-{{ 1800000, 2000000 },
+{{ 1800000, 2000000 },	// band bottom, band top
  { 3500000, 4000000 },
  { 7000000, 7300000 },
  { 10100000, 10150000 },
@@ -136,6 +143,7 @@ int freq2band(unsigned int freq) {
 
     return -1;		/* not in any band */
 }
+
 
 /** \brief guess mode based on frequency
  *
@@ -493,6 +501,8 @@ void bandmap_show() {
 
     for (i = 0; i < spots->len; i++)
     {
+	char *temp;
+
 	data = g_ptr_array_index( spots, i );
 
 	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
@@ -511,23 +521,27 @@ void bandmap_show() {
 	if (bm_ismulti(data->call))
 	    attron(A_STANDOUT);
 
+       temp = g_strdup(data->call);
+
        if (data->dupe) {
 	   if (bm_config.showdupes) {
 	       attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 	       attroff(A_STANDOUT);
-	       printw ("%-12s", g_ascii_strdown(data->call, -1));
+
+	       printw ("%-12s", g_ascii_strdown(temp, -1));
 	   }
 	}
 	else {
-	    printw ("%-12s", data->call);
+	    printw ("%-12s", temp);
 	}
+	g_free(temp);
 
 	attroff (A_BOLD);
 
 	bm_y++;
 	if (bm_y == 24) {
 	    bm_y = 14;
-	    bm_x += 22;
+	    bm_x += SPOT_COLUMN_WIDTH;
 	    cols++;
 	    if (cols > 2)
 		break;
