@@ -22,7 +22,6 @@
 #include "parse_logcfg.h"
 #include "tlf.h"
 #include <glib.h>
-#include "write_tone.h"
 #include "cw_utils.h"
 #include "speedupndown.h"
 #include "startmsg.h"

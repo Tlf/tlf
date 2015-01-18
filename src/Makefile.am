@@ -64,5 +64,5 @@ noinst_HEADERS = \
 	showzones.h sockserv.h speedupndown.h  \
 	splitscreen.h startmsg.h stoptx.h store_qso.h sunup.h \
 	rtty.h time_update.h tlf.h \
-	write_keyer.h write_tone.h writecabrillo.h writeparas.h \
+	write_keyer.h writecabrillo.h writeparas.h \
 	zone_nr.h
