@@ -28,6 +28,7 @@
 #include "changefreq.h"
 #include "bandmap.h"
 #include <glib.h>
+#include "show_help.h"
 #include "cw_utils.h"
 #include "netkeyer.h"
 

@@ -73,7 +73,6 @@ int changepars(void)
     extern int nopacket;
     extern int cqdelay;
     extern int ctcomp;
-    extern SCREEN *mainscreen;
     extern char *config_file;
     extern int miniterm;
 
@@ -851,8 +850,6 @@ int multiplierinfo(void)
 
     int j, k, vert, hor, cnt, found;
     char mprint[50];
-    char chmult[4];
-    char ch2mult[4];
 
     clear();
 
@@ -866,6 +863,10 @@ int multiplierinfo(void)
 		 "                                                                                ");
 
     if (arrlss == 1) {
+	int attributes;
+	char chmult[6];
+	char ch2mult[6];
+
 	mvprintw(2, 20, "ARRL SWEEPSTAKES -- REMAINING SECTIONS");
 	cnt = 0;
 	for (vert = 9; vert < 18; vert++) {
@@ -877,45 +878,39 @@ int multiplierinfo(void)
 		if (cnt >= mults_possible->len)
 		    break;
 
-		mprint[0] = '\0';
-		strcat(mprint, MULTS_POSSIBLE(cnt));
-		strcat(mprint, " ");
-		mprint[4] = '\0';
+		g_strlcpy(chmult, MULTS_POSSIBLE(cnt), sizeof(chmult));
 
+		/* check if in worked multis */
 		found = 0;
 		for (j = 0; j < multarray_nr; j++) {
-		    strcpy(chmult, MULTS_POSSIBLE(cnt));
-		    strcpy(ch2mult, mults[j]);
+		    g_strlcpy(ch2mult, mults[j], sizeof(ch2mult));
 
-		    if (ch2mult[2] == ' ')
-			ch2mult[2] = '\0';
-
-		    if (strcmp(ch2mult, chmult) == 0)
+		    if (strcmp(g_strchomp(ch2mult), chmult) == 0)
 			found = 1;
 		}
+
 		if (found == 1)
-
-		    if (use_rxvt == 0)
-			attron(COLOR_PAIR(C_HEADER) | A_BOLD |
-			       A_STANDOUT);
-		    else
-			attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-
-		else if (use_rxvt == 0)
-		    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
+		    attributes = COLOR_PAIR(C_HEADER) | A_STANDOUT;
 		else
-		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+		    attributes = COLOR_PAIR(C_WINDOW) | A_STANDOUT;
 
-		if ((strlen(mprint) > 1) && (strcmp(mprint, "W ") != 0))
-		    mvprintw(vert, hor * 4, "%s", mprint);
+		if (use_rxvt == 0)
+		    attributes |= A_BOLD;
+
+		attron(attributes);
+
+		g_strlcpy(mprint, MULTS_POSSIBLE(cnt), 5);
+		mvprintw(vert, hor * 4, "%s", mprint);
 
 		cnt++;
-
 	    }
 	}
     }
 
     if (serial_section_mult == 1 || (sectn_mult == 1 && arrlss != 1)) {
+	char * tmp;
+	int worked_at;
+
 	mvprintw(0, 30, "REMAINING SECTIONS");
 	cnt = 0;
 	for (vert = 2; vert < 22; vert++) {
@@ -926,53 +921,31 @@ int multiplierinfo(void)
 		if (cnt >= mults_possible->len)
 		    break;
 
-		mprint[0] = '\0';
-		strcat(mprint, MULTS_POSSIBLE(cnt));
-		if (strlen(mprint) == 0)
-		    break;
-		if (strlen(mprint) == 1)
-		    strcat(mprint, "   ");
-		if (strlen(mprint) == 2)
-		    strcat(mprint, "  ");
-		if (strlen(mprint) == 3)
-		    strcat(mprint, " ");
-		if (strlen(mprint) > 3)
-		    mprint[4] = '\0';
+		worked_at = 0;
 
-		for (k = 1; k <= MAX_MULTS; k++) {
-		    if (strstr(mults[k], MULTS_POSSIBLE(cnt)) != NULL)
+		/* lookup if already worked */
+		for (k = 0; k < multarray_nr; k++) {
+		    if (strstr(mults[k], MULTS_POSSIBLE(cnt)) != NULL) {
+			worked_at = mult_bands[k];
 			break;
+		    }
 		}
 
-		if ((mult_bands[k] & BAND160) != 0)
-		    strcat(mprint, "*");
-		else
-		    strcat(mprint, "-");
-		if ((mult_bands[k] & BAND80) != 0)
-		    strcat(mprint, "*");
-		else
-		    strcat(mprint, "-");
-		if ((mult_bands[k] & BAND40) != 0)
-		    strcat(mprint, "*");
-		else
-		    strcat(mprint, "-");
-		if ((mult_bands[k] & BAND20) != 0)
-		    strcat(mprint, "*");
-		else
-		    strcat(mprint, "-");
-		if ((mult_bands[k] & BAND15) != 0)
-		    strcat(mprint, "*");
-		else
-		    strcat(mprint, "-");
-		if ((mult_bands[k] & BAND10) != 0)
-		    strcat(mprint, "*");
-		else
-		    strcat(mprint, "-");
+		tmp = g_strndup(MULTS_POSSIBLE(cnt), 4);
+		sprintf(mprint, "%-4s", tmp);
+		g_free(tmp);
+
+		strcat(mprint, (worked_at & BAND160)?"*":"-");
+		strcat(mprint, (worked_at & BAND80)?"*":"-");
+		strcat(mprint, (worked_at & BAND40)?"*":"-");
+		strcat(mprint, (worked_at & BAND20)?"*":"-");
+		strcat(mprint, (worked_at & BAND15)?"*":"-");
+		strcat(mprint, (worked_at & BAND10)?"*":"-");
 
 		mprint[11] = '\0';
 		mvprintw(vert, 2 + hor * 11, "%s", mprint);
-		cnt++;
 
+		cnt++;
 	    }
 	}
     }
