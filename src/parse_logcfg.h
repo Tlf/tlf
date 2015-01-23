@@ -16,15 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <curses.h>
-#include <stdio.h>
-#include "setcontest.h"
-#include "lancode.h"
 
 #ifndef PARSE_LOGCFG_H
 #define PARSE_LOGCFG_H
 
-enum{ 
+enum{
     PARSE_OK,
     PARSE_ERROR,
     PARSE_CONFIRM

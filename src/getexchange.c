@@ -25,6 +25,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "getexchange.h"
+#include "time_update.h"
 #include "recall_exchange.h"
 #include "addspot.h"
 #include "logit.h"

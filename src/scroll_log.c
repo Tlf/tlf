@@ -35,6 +35,9 @@ void scroll_log(void)
     if ((fp = fopen(logfile, "r")) == NULL) {
 
 	mvprintw(24, 0, "Error opening logfile.\n");
+	refreshp();
+	sleep(2);
+	exit(1);
     }
     for (ii = 5; ii >= 1; ii--) {
 

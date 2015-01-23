@@ -85,7 +85,7 @@ int showinfo(int x)
 
     d = dx->timezone;				/* GMT difference */
 
-    now = (time(0) + ((timeoffset - d) * 3600) + timecorr);
+    now = (time(0) + (long)((timeoffset - d) * 3600) + timecorr);
     ptr1 = gmtime(&now);
     strftime(timebuff, 80, "%H:%M", ptr1);
 

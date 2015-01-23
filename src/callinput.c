@@ -29,8 +29,10 @@
 #include "changefreq.h"
 #include "bandmap.h"
 #include <glib.h>
+#include "show_help.h"
 #include "cw_utils.h"
 #include "qtcwin.h"
+#include "netkeyer.h"
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
@@ -663,7 +665,7 @@ char callinput(void)
 		break;
 	    }
 	case 235:
-	    {			//alt-K     == ctrl-K
+	    {			//alt-K     => ctrl-K
 		x = 11;
 		break;
 	    }

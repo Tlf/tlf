@@ -17,33 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <curses.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
-#include "messagechange.h"
-#include "listmessages.h"
-#include "tlf.h"
-#include "set_tone.h"
-#include "editlog.h"
-#include "logview.h"
-#include "show_help.h"
-#include "writecabrillo.h"
-#include "writeparas.h"
-#include "showpxmap.h"
-#include "setparameters.h"
-#include "muf.h"
-#include "parse_logcfg.h"
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
-#include "gettxinfo.h"
-#include "netkeyer.h"
-#include "splitscreen.h"
-#include "audio.h"
+
+#ifndef CHANGEPARS_H
+#define CHANGEPARS_H
 
 #define RITCLEAR 1
 
 int changepars  (void);
 int networkinfo(void);
 int multiplierinfo(void);
+
+
+#endif /* end of include guard: CHANGEPARS_H */

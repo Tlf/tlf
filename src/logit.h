@@ -17,19 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "tlf.h"
-#include "clear_display.h"
-#include "printcall.h"
-#include "callinput.h"
-#include "getexchange.h"
-#include "sendbuf.h"
-#include "sendspcall.h"
-#include "log_to_disk.h"
-#include "keyer.h"
-#include "recall_exchange.h"
-#include "sendqrg.h"
-#include "lancode.h"
-
+#ifndef LOGIT_H
+#define LOGIT_H
 
 void *logit(void *);
 void refresh_comment(void);
+
+
+#endif /* end of include guard: LOGIT_H */
