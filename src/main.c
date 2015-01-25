@@ -66,7 +66,6 @@ int debugflag = 0;
 int editor = EDITOR_JOE;
 char rttyoutput[120];
 int use_vk = 0;
-int use_qtc_vk = 0;
 int tune_val = 0;
 int use_bandoutput = 0;
 int no_arrows = 0;

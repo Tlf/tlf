@@ -232,7 +232,6 @@ int parse_logcfg(char *inputbuffer)
     extern int show_time;
     extern char keyer_device[10];
     extern int use_vk;
-    extern int use_qtc_vk;
     extern int wazmult;
     extern int itumult;
     extern int cqdelay;
@@ -1693,8 +1692,6 @@ int parse_logcfg(char *inputbuffer)
 	    g_strlcpy(qtc_phrecv_message[ii - 194], g_strchomp(fields[1]), 71);
 	    mvprintw(15, 5, "A: QTC RECV phone message #%d is %s", ii - 194, qtc_phrecv_message[ii - 194]);
 	    refreshp();
-	    if (strlen(ph_message[ii - 194]) > 0)
-		use_qtc_vk = 1;
 	    break;
 	}
     case 208 ... 221:{	// get QTC send phone messages
@@ -1702,8 +1699,6 @@ int parse_logcfg(char *inputbuffer)
 	    g_strlcpy(qtc_phsend_message[ii - 208], g_strchomp(fields[1]), 71);
 	    mvprintw(15, 5, "A: QTC SEND phone message #%d is %s", ii - 208, qtc_phrecv_message[ii - 208]);
 	    refreshp();
-	    if (strlen(ph_message[ii - 208]) > 0)
-		use_qtc_vk = 1;
 	    break;
 	}
     case 222: {
