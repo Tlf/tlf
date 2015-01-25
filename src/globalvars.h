@@ -128,12 +128,11 @@ extern t_qtclist qtclist;		// the QTC list to send
 extern int nr_qtcsent;
 extern t_qtcreclist qtcreclist;		// the QTC list which received
 
-extern int qtcdirection;
-extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
-extern int pfxnummultinr;
-extern int continentlist_only;
-//extern char qtc_ry_lines[12][50];
-extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
-extern int qtc_ry_currline;
-extern int qtc_ry_capture;
-extern int qtc_ry_copied;
+extern int qtcdirection;				// QTC direction - 1: RECV, 2: SEND
+extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];	// array of PFX_NUM_MULTIS parameter
+extern int pfxnummultinr;				// length of array of PFX_NUM_MULTIS parameter
+extern int continentlist_only;				// CONTINENT_LIST_ONLY parameter
+extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];	// when QTC is set, and mode is RTTY, then the modem lines stored this array
+extern int qtc_ry_currline;				// current line of QTC RTTY modem
+extern int qtc_ry_capture;				// enable or disable QTC RTTY capturing
+extern int qtc_ry_copied;				// stores the number of copied lines from QTC RTTY terminal to QTC window
