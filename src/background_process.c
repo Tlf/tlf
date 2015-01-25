@@ -23,7 +23,6 @@
 #include "time_update.h"
 #include "write_keyer.h"
 #include "sendbuf.h"
-#include "set_tone.h"
 #include "lancode.h"
 #include "splitscreen.h"
 #include "log_to_disk.h"

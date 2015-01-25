@@ -17,10 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <string.h>
-#include "getpx.h"
-#include "tlf.h"
+#ifndef GETCTYDATA_H
+#define GETCTYDATA_H
 
 int getctynr(char *checkcall);
 int getctydata(char *checkcall);
 int getctydata2(char *checkcall);
+
+
+#endif /* end of include guard: GETCTYDATA_H */

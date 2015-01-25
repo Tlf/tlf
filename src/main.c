@@ -27,6 +27,9 @@
 #include <glib.h>
 #include <panel.h>
 #include <pthread.h>
+#include "set_tone.h"
+#include "splitscreen.h"
+#include "addmult.h"
 #include <termios.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>

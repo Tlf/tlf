@@ -94,9 +94,7 @@ int getwwv(void)
 
 	    d = dxcc_by_index(mycountrynr) -> timezone;
 
-//                      d -= timeoffset;
-
-	    now = (time(0) + ((timeoffset - d) * 3600));
+	    now = (time(0) + (long)((timeoffset - d) * 3600));
 	    ptr1 = gmtime(&now);
 	    strftime(timebuff, 80, "%H:%M", ptr1);
 

@@ -21,13 +21,15 @@
 */
 #include "parse_logcfg.h"
 #include "tlf.h"
-#include "write_tone.h"
+#include <glib.h>
 #include "cw_utils.h"
 #include "speedupndown.h"
-#include <curses.h>
-#include <string.h>
 #include "startmsg.h"
-#include <glib.h>
+#include "bandmap.h"
+#include "locator2longlat.h"
+#include "getpx.h"
+#include "setcontest.h"
+#include "lancode.h"
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif

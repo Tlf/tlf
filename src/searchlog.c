@@ -804,7 +804,6 @@ int load_callmaster(void)
     char callmaster_location[80];
     char s_inputbuffer[186] = "";
     long int count = 0;
-    int file_ok = 0;
 
     strcpy(callmaster_location, "callmaster");
     if ((cfp = fopen(callmaster_location, "r")) == NULL) {
@@ -816,55 +815,44 @@ int load_callmaster(void)
 	    mvprintw(24, 0, "Error opening callmaster file.\n");
 	    refreshp();
 	    sleep(2);
-	} else
-	    file_ok = 1;
-    } else
-	file_ok = 1;
 
-    if (file_ok == 1) {
+	    return count;
+	}
+    }
 
-	count = 0;
+    while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
 
-	while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
+	if ( strlen(s_inputbuffer) < 3 )
+	    /* calls are at least 3 char long */
+	    continue;
 
-	    if ( strlen(s_inputbuffer) < 3 )
-		/* calls are at least 3 char long */
-		continue;
+	g_strchomp(s_inputbuffer);
 
-	    if (arrlss == 1) {
+	if (arrlss == 1) {
 
-		if ((s_inputbuffer[0] == 'A') || (s_inputbuffer[0] == 'K')
-		    || (s_inputbuffer[0] == 'W')
-		    || (s_inputbuffer[0] == 'V')
-		    || (s_inputbuffer[0] == 'C')
-		    || (s_inputbuffer[0] == 'N')) {
-		    s_inputbuffer[strlen(s_inputbuffer) - 1] = '\0';
-
-		    s_inputbuffer[12] = '\0';
-		    strcpy(callmasterarray[count], s_inputbuffer);
-		    count++;
-		}
-
-	    } else {
-
-		if (strlen(s_inputbuffer) > 0)
-		    s_inputbuffer[strlen(s_inputbuffer) - 1] = '\0';
+	    /* keep only NA stations */
+	    if ((s_inputbuffer[0] == 'A') || (s_inputbuffer[0] == 'K')
+		|| (s_inputbuffer[0] == 'W')
+		|| (s_inputbuffer[0] == 'V')
+		|| (s_inputbuffer[0] == 'C')
+		|| (s_inputbuffer[0] == 'N')) {
 
 		s_inputbuffer[12] = '\0';
 		strcpy(callmasterarray[count], s_inputbuffer);
 		count++;
-
 	    }
 
-	}
+	} else {
 
-	fclose(cfp);
-    } else {
-	if (cfp)
-	    fclose(cfp);
+	    s_inputbuffer[12] = '\0';
+	    strcpy(callmasterarray[count], s_inputbuffer);
+	    count++;
+
+	}
     }
 
-    return (count);
+    fclose(cfp);
+    return count;
 }
 
 

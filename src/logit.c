@@ -24,6 +24,19 @@
  ------------------------------------------------------------------------*/
 
 #include "logit.h"
+#include "tlf.h"
+#include "clear_display.h"
+#include "printcall.h"
+#include "callinput.h"
+#include "getexchange.h"
+#include "sendbuf.h"
+#include "sendspcall.h"
+#include "log_to_disk.h"
+#include "keyer.h"
+#include "recall_exchange.h"
+#include "sendqrg.h"
+#include "lancode.h"
+#include "set_tone.h"
 
 void refresh_comment(void);
 
@@ -206,7 +219,7 @@ void *logit(void *ptr)
 		HideSearchPanel();
 	    }
 
-	    if (callreturn == 11 || callreturn == 44 || callreturn == 235) {	/*  CTRL K  */
+	    if (callreturn == 11 || callreturn == 44) {	/*  CTRL K  */
 		getyx(stdscr, cury, curx);
 		mvprintw(5, 0, "");
 		keyer();
