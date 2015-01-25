@@ -1555,7 +1555,7 @@ int show_rtty_lines() {
     int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
     char boxhead[38];
     int prevline;
-    char currline[50], firstline[50];
+    char currline[50] = "", firstline[50] = "";
     int x, j;
     static int actline = 1;
     int oactivefield, tactivefield;
