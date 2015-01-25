@@ -1063,6 +1063,12 @@ Multiplier is the ITU zone (per band).
 Multiplier is prefix (once per contest, not per band.
 
 .TR
+.B PFX_MULT_ALLB
+Same as WPX, but the WPX only used CQ-WW-WPX, and there a single prefix multiplier only
+once, not all band. With this option, the PFX counts as multiplier on all band. This
+usable on AA-DX.
+
+.TR
 .B COUNTRY_MULT
 Multiplier is the DXCC entity (per band)
 
