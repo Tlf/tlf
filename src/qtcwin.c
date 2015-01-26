@@ -1230,9 +1230,7 @@ int delete_from_field(int dir) {
 
 int shift_right(char * fieldval) {
 	int i;
-	for(i=strlen(fieldval); i<strlen(fieldval)-curpos; i--) {
-	    fieldval[i] = fieldval[i-1];
-	}
+
 	fieldval[strlen(fieldval)+1] = '\0';
 	return 0;
 }
