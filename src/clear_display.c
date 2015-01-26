@@ -69,9 +69,9 @@ void clear_display(void)
     mvprintw(0, 21, headerline);
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_LOG | A_BOLD | A_STANDOUT));
+	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(C_LOG | A_STANDOUT));
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     mvaddstr(1, 0, terminal1);
     mvaddstr(2, 0, terminal2);
