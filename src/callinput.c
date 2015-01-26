@@ -217,10 +217,10 @@ char callinput(void)
 
 	case 17:	// CTRL+q
 	    {
-		if (qtcdirection & 1) {
+		if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
 		    qtc_main_panel(RECV);
 		}
-		if (qtcdirection == 2) {
+		if (qtcdirection == 2) {			// in case of QTC=SEND
 		    qtc_main_panel(SEND);
 		}
 		x=155;
@@ -228,7 +228,7 @@ char callinput(void)
 	    }
 	case 19:	// CTRL+s
 	    {
-		if (qtcdirection & 2) {
+		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
 		x=155;
