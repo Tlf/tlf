@@ -30,6 +30,8 @@
 #include "set_tone.h"
 #include "rtty.h"
 #include "fldigixmlrpc.h"
+#include "log_recv_qtc_to_disk.h"
+#include "log_sent_qtc_to_disk.h"
 #include <glib.h>
 
 extern int stop_backgrnd_process;
