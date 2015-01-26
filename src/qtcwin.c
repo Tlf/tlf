@@ -1479,7 +1479,7 @@ int parse_ry_line(char * line) {
     else {
 	strcpy(sep, "/;-: ");
 	token = strtok(lline, sep);
-	while(token != NULL && t < 5) 
+	while(token != NULL && t < 4) 
 	{
 	    t++;
 	    strcpy(tokens[t], token);
