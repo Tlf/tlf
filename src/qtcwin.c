@@ -518,7 +518,7 @@ int qtc_main_panel(int direction) {
 				qtclist.totalsent++;
 			    }
 			    tempc[0] = '\0';
-			    strip_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
+			    replace_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
 			    data_ready = 1;
 			    if (trxmode == CWMODE) {
 				sendmessage(tempc);
@@ -603,7 +603,7 @@ int qtc_main_panel(int direction) {
 				qtclist.totalsent++;
 
 				tempc[0] = '\0';
-				strip_spaces(qtclist.qtclines[ql].qtc, tempc);
+				replace_spaces(qtclist.qtclines[ql].qtc, tempc);
 				strcat(tmess, tempc);
 				mvwprintw(qtcwin, ql+3, 30, "*");
 				qtclist.qtclines[ql].flag = 1;
@@ -622,7 +622,7 @@ int qtc_main_panel(int direction) {
 			else {
 			  if (direction == SEND) {
 				tempc[0] = '\0';
-				strip_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
+				replace_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
 				sendmessage(tempc);
 			    }
 			}
@@ -1729,7 +1729,7 @@ int put_qtc() {
     return 0;
 }
 
-int strip_spaces(char * src, char * tempc) {
+int replace_spaces(char * src, char * tempc) {
       int tsp, tdp;
 
       tsp = 0;
