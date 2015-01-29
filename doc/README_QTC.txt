@@ -269,24 +269,25 @@ any digit, which means same as above, eg "DL1A  Q", or "HA5A  3".
 Preparing CABRILLO
 ==================
 
-If you finish the contest, just write ":wri" in callsign field,
-then Tlf will save your log in Cabrillo format. It's a good idea
-to exit from Tlf, and start it again - this is only need to recalc
-correct points, nothing else.
+When you finished the contest, just use the ":wri" command to save 
+your log in Cabrillo format. (It's a good idea to exit from Tlf, 
+and start it again - this is only need to recalc correct points, 
+nothing else.)
 
-Now leave the Tlf, and run the "qtcmerge.py" script, which is part
-of Tlf, and normally it has been installed to your
-INSTALLDIR/share/tlf, eg. /usr/local/share/tlf. The normal way to
-run this script from the Tlf contest directory is this:
+Now leave Tlf, and run the "qtcmerge.py" script, which is part
+of Tlf, and has been installed to your INSTALLDIR/share/tlf, 
+eg. /usr/local/share/tlf. The normal way to run this script 
+from the Tlf contest directory is:
 
 /usr/local/share/tlf/qtcmerge.py YOURCALL.cbr
 
-Now the script reads your saved Cabrillo file, and write your QTC's
-to a new file, in Cabrillo format. The new file name will be
-YOURCALL_QTC.cbr. Save the original file, rename this new one to
-regular YOURCALL.cbr, and you can send it to organizers.
+The script reads your saved Cabrillo file and your QTC's and 
+saves them to a new file, in Cabrillo format. The new file name 
+will be YOURCALL_QTC.cbr. Make a backup of the original file, 
+rename the new one to YOURCALL.cbr and send it to the contest 
+organizers.
 
-Note, that you can find more info about the QTC's cabrillo format
+Note: You can find more info about the QTC cabrillo format
 here:
 http://dl0tud.tu-dresden.de/~dj1yfk/qtcs/
 http://www.kkn.net/~trey/cabrillo/qso-template.html
@@ -300,14 +301,12 @@ Shortkey summary
 * TAB - move to the next field
 * SPACE - move to the next field in QTC line, in RECV mode
 * Shift+TAB - move to the previous field
-* UP, DOWN - move to up or down
-* BACKSPACE - delete the next to left
-* DELETE - delete the current position, shift to left the right
-  next
+* UP, DOWN - move up or down
+* BACKSPACE - delete the next char left
+* DELETE - delete the current position, shift left the rest of line
 * ENTER - send "R" or "AGN" to station
 
-
-If you have any question, just send an e-mail to me, or Tlf devel
+If you have any question, just send an e-mail to me or the Tlf develop
 list.
 
 
