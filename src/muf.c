@@ -19,6 +19,7 @@
  */
 #include "muf.h"
 #include "tlf.h"
+#include "ui_utils.h"
 #include "get_time.h"
 #include "dxcc.h"
 #include "sunup.h"
@@ -27,7 +28,6 @@
 
 #define RADIAN		(180.0 / M_PI)
 
-extern int use_rxvt;
 extern double r;
 extern int m;
 extern struct tm *time_ptr;
@@ -228,10 +228,7 @@ int muf(void)
     strncpy(country, dx->countryname, 25);
 
     wclear(win);
-    if (use_rxvt == 0)
-	wattron(win, COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-    else
-	wattron(win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    wattron(win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (i = 0; i < 25; i++)
 	mvwprintw(win, i, 0,

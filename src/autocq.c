@@ -29,14 +29,13 @@
 #include "sendbuf.h"
 #include "stoptx.h"
 #include "cw_utils.h"
+#include "ui_utils.h"
 
 int play_file(char *audiofile);
 
 /* FIXME: Needs refactorization and cleanup of logic */
 int auto_cq(void)
 {
-
-    extern int use_rxvt;
     extern char mode[];
     extern char message[][80];
     extern char ph_message[14][80];
@@ -62,10 +61,7 @@ int auto_cq(void)
 
 	mvprintw(12, 29 + strlen(hiscall), "");
 
-	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-	else
-	    attron(COLOR_PAIR(NORMCOLOR));
+	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
 	delayval = cqdelay;
 
@@ -112,10 +108,7 @@ int auto_cq(void)
 
     clear_display();
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     if (letter > 96 && letter < 123)
 	letter -= 32;

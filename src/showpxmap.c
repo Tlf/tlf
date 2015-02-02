@@ -26,10 +26,10 @@
 #include "multiplierinfo.h"
 #include "dxcc.h"
 #include "focm.h"
+#include "ui_utils.h"
 
 int show_mults(void)
 {
-    extern int use_rxvt;
     extern int countries[MAX_DATALINES];
     extern int bandinx;
     extern int cqww;
@@ -130,10 +130,7 @@ int show_mults(void)
 
 			strncat(prefix, "     ", 4 - strlen(prefix));
 
-			if (use_rxvt == 0)
-			    attron(COLOR_PAIR(C_INPUT) | A_BOLD);
-			else
-			    attron(COLOR_PAIR(C_INPUT));
+			attron(modify_attr(COLOR_PAIR(C_INPUT)));
 
 			mvprintw(k, j * 4, prefix);
 			refreshp();

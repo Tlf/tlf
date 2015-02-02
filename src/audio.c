@@ -31,6 +31,7 @@
 #include <math.h>
 #include "gettxinfo.h"
 #include "onechar.h"
+#include "ui_utils.h"
 
 #ifdef __OpenBSD__
 # include <soundcard.h>
@@ -342,9 +343,6 @@ int drawscreen(int xpos, int ypos, int yheight, int bar_type)
 
 int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 {
-
-    extern int use_rxvt;
-
     int i;
 
     for (i = 0; i < 21; i++) {
@@ -358,17 +356,9 @@ int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 	    mvprintw(ypos + i, xpos, "|   |");
 	    break;
 	case 5:
-	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(C_HEADER) | A_BOLD | A_STANDOUT);
-	    else
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-
+	    attron(modify_attr(COLOR_PAIR(C_HEADER) | A_STANDOUT));
 	    mvprintw(ypos + i, xpos, ">   <");
-
-	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-	    else
-		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 	}
     }
 
@@ -395,7 +385,6 @@ int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 int panscan(void)
 {
 
-    extern int use_rxvt;
 #ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;
 #else
@@ -410,10 +399,7 @@ int panscan(void)
 
     while (1) {
 	key = 0;
-	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-	else
-	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 	for (j = 0; j <= 24; j++)
 	    mvprintw(j, 0,
@@ -502,8 +488,6 @@ int panscan(void)
 
 int nbscan(void)
 {
-
-    extern int use_rxvt;
 #ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;
 #else
@@ -519,10 +503,7 @@ int nbscan(void)
 
     while (1) {
 	key = 0;
-	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-	else
-	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 	for (j = 0; j <= 24; j++)	// wipe the screen
 	    mvprintw(j, 0,
@@ -608,15 +589,9 @@ int nbscan(void)
 
 void scanmenu(void)
 {
-
-    extern int use_rxvt;
-
     int j;
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -685,15 +660,9 @@ int testaudio()
 
 void recordmenue(void)
 {
-
-    extern int use_rxvt;
-
     int j;
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,

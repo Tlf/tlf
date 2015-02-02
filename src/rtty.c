@@ -24,18 +24,13 @@
 	 *--------------------------------------------------------------*/
 
 #include "rtty.h"
-#include <ctype.h>
 #include <termios.h>
-#include <curses.h>
-#include <string.h>
-#include <stdio.h>
 #include "startmsg.h"
-#include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include "tlf.h"
 #include "printcall.h"
 #include <glib.h>
+#include "ui_utils.h"
 
 static int fdcont;		// global for this file: tty file descriptor
 static char ry_term[5][50] = { "", "", "", "", "" };
@@ -138,8 +133,6 @@ void ry_addchar(char c)
 
 int show_rtty(void)
 {
-
-    extern int use_rxvt;
     extern int trxmode;
     extern int miniterm;
     extern int commentfield;
@@ -149,10 +142,7 @@ int show_rtty(void)
 	return (-1);
 
     attroff(A_STANDOUT);
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_HEADER) | A_BOLD);
-    else
-	attron(COLOR_PAIR(C_HEADER));
+    attron(modify_attr(COLOR_PAIR(C_HEADER)));
 
     mvprintw(1, 0, "                                        ");
     mvprintw(1, 0, "%s", ry_term[0]);

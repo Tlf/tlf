@@ -68,6 +68,7 @@
 #endif
 #include "lancode.h"
 #include "rtty.h"
+#include "ui_utils.h"
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
@@ -82,7 +83,6 @@ char callinput(void)
 {
     extern int itumult;
     extern int wazmult;
-    extern int use_rxvt;
     extern int no_arrows;
     extern int isdupe;		// LZ3NY auto-b4 patch
     extern int contest;
@@ -145,10 +145,7 @@ char callinput(void)
     static int lastwindow;
 
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     printcall();	/* print call input field */
     searchlog(hiscall);
@@ -523,10 +520,7 @@ char callinput(void)
 		    mvprintw(j, 0, backgrnd_str);
 		}
 
-		if (use_rxvt == 0)
-		    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-		else
-		    attron(COLOR_PAIR(NORMCOLOR));
+		attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
 		mvprintw(12, 29, "            ");
 		mvprintw(12, 29, "");
