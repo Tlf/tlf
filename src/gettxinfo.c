@@ -25,6 +25,7 @@
 #include "gettxinfo.h"
 #include <curses.h>
 #include "sendqrg.h"
+#include "fldigixmlrpc.h"
 
 int gettxinfo(void)
 {
