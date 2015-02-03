@@ -21,6 +21,10 @@
 #include "bandmap.h"
 #include <glib.h>
 #include "fldigixmlrpc.h"
+#include "tlf.h"
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
 
 void send_bandswitch(int outfreq);
 
