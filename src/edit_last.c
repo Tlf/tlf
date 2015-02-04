@@ -23,9 +23,17 @@
 	 *--------------------------------------------------------------*/
 
 #include "globalvars.h"
+#include "tlf.h"
 #include "edit_last.h"
 #include <glib.h>
 #include <assert.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include "qsonr_to_str.h"
+#include "scroll_log.h"
+#include "onechar.h"
+#include "logview.h"
+#include "store_qso.h"
 
 #define NR_LINES 5
 #define NR_COLS 80

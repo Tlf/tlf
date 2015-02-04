@@ -16,16 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <stdio.h>
-#include "freq_display.h"
-#include "onechar.h"
-#include "gettxinfo.h"
-#include "time_update.h"
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
+#ifndef CHANGEFREQ_H
+#define CHANGEFREQ_H
 
 void change_freq(void);
 
-
+#endif /* CHANGEFREQ_H */

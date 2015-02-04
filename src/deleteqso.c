@@ -25,6 +25,14 @@
 
 #include "globalvars.h"
 #include "deleteqso.h"
+#include "tlf.h"
+#include <sys/stat.h>
+#include <fcntl.h>
+#include "onechar.h"
+#include "qsonr_to_str.h"
+#include "printcall.h"
+#include "clear_display.h"
+#include "scroll_log.h"
 
 void delete_qso(void)
 {

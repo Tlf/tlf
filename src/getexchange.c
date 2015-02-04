@@ -25,6 +25,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "getexchange.h"
+#include "tlf.h"
 #include "time_update.h"
 #include "recall_exchange.h"
 #include "addspot.h"
@@ -34,6 +35,21 @@
 #include "locator2longlat.h"
 #include "score.h"
 #include "searchlog.h"
+#include "clear_display.h"
+#include "onechar.h"
+#include "stoptx.h"
+#include "displayit.h"
+#include "speedupndown.h"
+#include "sendbuf.h"
+#include "scroll_log.h"
+#include "addcall.h"
+#include "makelogline.h"
+#include "store_qso.h"
+#include "qsonr_to_str.h"
+#include "writeparas.h"
+#include "lancode.h"
+#include "keyer.h"
+#include "rtty.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))

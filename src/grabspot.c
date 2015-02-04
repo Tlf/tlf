@@ -22,6 +22,9 @@
 #include <glib.h>
 #include "fldigixmlrpc.h"
 #include "tlf.h"
+#include "getctydata.h"
+#include "showinfo.h"
+#include "searchlog.h"
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif

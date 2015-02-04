@@ -17,17 +17,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include "qsonr_to_str.h"
-#include "scroll_log.h"
-#include "onechar.h"
-#include "logview.h"
-#include "store_qso.h"
+#ifndef EDIT_LAST_H
+#define EDIT_LAST_H
 
 void edit_last(void);
 
+#endif /* EDIT_LAST_H */
