@@ -23,13 +23,12 @@
 	 *--------------------------------------------------------------*/
 
 #include "autocq.h"
+#include "tlf.h"
 #include "printcall.h"
 #include "clear_display.h"
 #include "sendbuf.h"
 #include "stoptx.h"
 #include "cw_utils.h"
-#include <string.h>
-#include <curses.h>
 
 int play_file(char *audiofile);
 
