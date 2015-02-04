@@ -16,14 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <curses.h>
-#include <string.h>
-#include "clear_display.h"
-#include "scroll_log.h"
+#ifndef EDITLOG_H
+#define EDITLOG_H
 
 int logedit(void);
 
+#endif /* EDITLOG_H */

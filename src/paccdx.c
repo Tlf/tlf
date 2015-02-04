@@ -17,7 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "paccdx.h"
-#include <stdlib.h>
+#include "tlf.h"
+#include "getpx.h"
 #include "getctydata.h"
 
 int pacc_pa(void)
