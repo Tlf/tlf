@@ -26,6 +26,9 @@
 #include "getsummary.h"
 #include "showscore.h"
 #include <glib.h>
+#include "nicebox.h"
+#include "tlf.h"
+
 
 extern char call[];
 

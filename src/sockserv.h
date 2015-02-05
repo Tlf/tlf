@@ -16,7 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+#ifndef SOCKSERV_H
+#define SOCKSERV_H
 
 /* External socket services: supported by sockserv.c */
 /* Written by N2RJT */
@@ -75,3 +76,5 @@ extern void set_udp_peer(long address, int portnum);
 extern void get_udp_peer(long *address, int *portnum);
 extern int udp_socket;
 extern char sockserv_error[];
+
+#endif /* SOCKSERV_H */

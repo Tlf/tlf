@@ -21,6 +21,18 @@
 	 *
 	 *--------------------------------------------------------------*/
 #include "setparameters.h"
+#include "tlf.h"
+#include "setcontest.h"
+#include "writeparas.h"
+#include "onechar.h"
+#include "getmessages.h"
+#include "checklogfile.h"
+#include "getwwv.h"
+#include "scroll_log.h"
+#include "readcalls.h"
+#include "clear_display.h"
+#include "checkparameters.h"
+
 
 int setparameters(void)
 {

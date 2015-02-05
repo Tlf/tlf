@@ -16,8 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <string.h>
-#include "tlf.h"
+#ifndef SEARCHCALLARRAY_H
+#define SEARCHCALLARRAY_H
 
 int searchcallarray  (char  *hiscall);
 
+#endif /* SEARCHCALLARRAY_H */
