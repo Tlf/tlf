@@ -25,9 +25,11 @@
 	 *
 	 *--------------------------------------------------------------*/
 #include "checklogfile.h"
+#include "tlf.h"
+#include <fcntl.h>
+#include <sys/stat.h>
 #include "startmsg.h"
 #include <glib.h>
-
 
 /** Repair log file
  *

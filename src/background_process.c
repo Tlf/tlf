@@ -30,6 +30,9 @@
 #include "set_tone.h"
 #include "rtty.h"
 #include "fldigixmlrpc.h"
+#include "get_time.h"
+#include "qsonr_to_str.h"
+#include "gettxinfo.h"
 #include "log_recv_qtc_to_disk.h"
 #include "log_sent_qtc_to_disk.h"
 #include <glib.h>
@@ -174,7 +177,7 @@ void *background_process(void *ptr)
 
 		    store_sent_qtc(lan_message+2);
 		    break;
-		    
+
 		case CLUSTERMSG:
 		    strncpy(prmessage, lan_message + 2, 80);
 		    if (strstr(prmessage, call) != NULL)	// alert for cluster messages

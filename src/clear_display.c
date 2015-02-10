@@ -22,10 +22,16 @@
 	 *       Clear_display takes  care of status lines  and
 	 *       backgrounds (general repaint of the screen)
 	 *--------------------------------------------------------------*/
-
 #include "globalvars.h"
+#include "tlf.h"
+#include "get_time.h"
+#include "qsonr_to_str.h"
+#include "searchlog.h"
+#include "get_time.h"
 #include "clear_display.h"
 #include "cw_utils.h"
+#include "showscore.h"
+#include "printcall.h"
 
 void clear_display(void)
 {
@@ -69,9 +75,9 @@ void clear_display(void)
     mvprintw(0, 21, headerline);
 
     if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_LOG | A_BOLD | A_STANDOUT));
+	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
     else
-	attron(COLOR_PAIR(C_LOG | A_STANDOUT));
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     mvaddstr(1, 0, terminal1);
     mvaddstr(2, 0, terminal2);

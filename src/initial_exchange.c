@@ -26,6 +26,8 @@
 	 *-------------------------------------------------------------------------------*/
 
 #include "initial_exchange.h"
+#include "startmsg.h"
+#include "tlf.h"
 
 struct ie_list *make_ie_list(char *file)
 {

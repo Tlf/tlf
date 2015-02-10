@@ -23,6 +23,12 @@
 	 *--------------------------------------------------------------*/
 
 #include "searchlog.h"
+#include "printcall.h"
+#include "tlf.h"
+#include "nicebox.h"
+#include "zone_nr.h"
+#include "getpx.h"
+#include "showscore.h"
 #include "dxcc.h"
 #include <panel.h>
 #include <glib.h>

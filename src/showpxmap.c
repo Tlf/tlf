@@ -22,6 +22,8 @@
 	 *--------------------------------------------------------------*/
 
 #include "showpxmap.h"
+#include "tlf.h"
+#include "multiplierinfo.h"
 #include "dxcc.h"
 #include "focm.h"
 

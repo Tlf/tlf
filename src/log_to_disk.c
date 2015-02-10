@@ -26,6 +26,20 @@
 
 #include "globalvars.h"
 #include "log_to_disk.h"
+#include <pthread.h>
+#include "tlf.h"
+#include "scroll_log.h"
+#include "addcall.h"
+#include "makelogline.h"
+#include "store_qso.h"
+#include "qsonr_to_str.h"
+#include "writeparas.h"
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
+#include "gettxinfo.h"
+#include "lancode.h"
+#include "addspot.h"
 #include "score.h"
 
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;

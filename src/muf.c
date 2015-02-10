@@ -22,9 +22,6 @@
 #include "get_time.h"
 #include "dxcc.h"
 #include "sunup.h"
-#include <stdio.h>
-#include <unistd.h>
-#include <curses.h>
 #include <panel.h>
 #include <math.h>
 

@@ -16,23 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include "tlf.h"
-#include "clear_display.h"
-#include "onechar.h"
-#include "stoptx.h"
-#include "displayit.h"
-#include "speedupndown.h"
-#include "sendbuf.h"
-#include "scroll_log.h"
-#include "addcall.h"
-#include "makelogline.h"
-#include "store_qso.h"
-#include "qsonr_to_str.h"
-#include "writeparas.h"
-#include "lancode.h"
-#include "keyer.h"
-#include "rtty.h"
+#ifndef GETEXCHANGE_H
+#define GETEXCHANGE_H
 
 int getexchange(void);
 
+#endif /* GETEXCHANGE_H */

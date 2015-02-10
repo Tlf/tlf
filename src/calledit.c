@@ -24,6 +24,11 @@
      *--------------------------------------------------------------*/
 
 #include "calledit.h"
+#include "tlf.h"
+#include "onechar.h"
+#include "searchlog.h"
+#include "getctydata.h"
+#include "showinfo.h"
 
 void calledit(void)
 {

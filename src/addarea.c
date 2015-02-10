@@ -24,6 +24,7 @@
 
 #include "globalvars.h"
 #include "addarea.h"
+#include "tlf.h"
 
 int add_callarea(void)
 {

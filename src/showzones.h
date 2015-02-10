@@ -16,9 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <curses.h>
-#include "tlf.h"
-#include "nicebox.h"
+#ifndef SHOWZONES_H
+#define SHOWZONES_H
 
 int show_zones(int bandinx);
 
+#endif /* SHOWZONES_H */

@@ -17,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #ifndef SENDQRG_H
-
 #define SENDQRG_H
 
 #ifdef HAVE_CONFIG_H
@@ -26,14 +25,11 @@
 
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
-#endif
 
-int sendqrg(void);
-
-#ifdef HAVE_LIBHAMLIB
 int init_tlf_rig (void);
 int close_tlf_rig (RIG *my_rig);
 #endif
 
+int sendqrg(void);
 
 #endif /* end of include guard: SENDQRG_H */

@@ -24,6 +24,7 @@
 
 #include "globalvars.h"
 #include "getpx.h"
+#include <string.h>
 
 /** \brief Get prefix from call 
  *

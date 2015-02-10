@@ -16,15 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <curses.h>
-#include "tlf.h"
-#include "nicebox.h"
+#ifndef FREQ_DISPLAY_H
+#define FREQ_DISPLAY_H
 
 int freq_display (void);
 int print_dot(int y, int x);
 int print_space(int y, int x);
 int print_big_number(int number, int y_position, int x_position, int location);
 
-
-
+#endif /* FREQ_DISPLAY_H */

@@ -23,6 +23,12 @@
 	 *--------------------------------------------------------------*/
 
 #include "editlog.h"
+#include "tlf.h"
+#include <fcntl.h>
+#include <sys/stat.h>
+#include "clear_display.h"
+#include "scroll_log.h"
+
 
 int logedit(void)
 {

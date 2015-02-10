@@ -18,6 +18,14 @@
  */
 
 #include "changefreq.h"
+#include "tlf.h"
+#include "freq_display.h"
+#include "onechar.h"
+#include "gettxinfo.h"
+#include "time_update.h"
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
 
 void change_freq (void) {
 

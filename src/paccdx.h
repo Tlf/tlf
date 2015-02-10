@@ -16,8 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "tlf.h"
-#include "getpx.h"
+#ifndef PACCDX_H
+#define PACCDX_H
 
 #define W_CALL 0
 #define VE_CALL 1
@@ -32,3 +32,4 @@
 
 int pacc_pa(void);
 
+#endif /* PACCDX_H */

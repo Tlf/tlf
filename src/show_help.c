@@ -23,9 +23,8 @@
 	 * *--------------------------------------------------------------
 	 */
 
-#include <string.h>
-#include <stdlib.h>
-#include <curses.h>
+#include "show_help.h"
+#include "tlf.h"
 #include "onechar.h"
 #include "clear_display.h"
 #include <glib.h>

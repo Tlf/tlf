@@ -24,6 +24,8 @@
 
 #include "setcontest.h"
 #include "focm.h"
+#include "tlf.h"
+#include "getctydata.h"
 
 int setcontest(void)
 {

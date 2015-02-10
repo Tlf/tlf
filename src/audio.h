@@ -21,22 +21,8 @@
  	*      audio.h include file for soundcard input routine
  	*
  	*--------------------------------------------------------------*/
-
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-#ifdef __OpenBSD__
-# include <soundcard.h>
-#else
-# include <sys/soundcard.h>
-#endif
-
-#include <sys/ioctl.h>
-#include <errno.h>
-#include <curses.h>
-#include <string.h>
+#ifndef AUDIO_H
+#define AUDIO_H
 
 #define FS	11025
 #define S_BAR 0
@@ -48,3 +34,5 @@ void init_audio();
 int close_audio();
 int testaudio();
 void record (void);
+
+#endif /* AUDIO_H */

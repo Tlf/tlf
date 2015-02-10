@@ -16,15 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <stdio.h>
-#include<stdlib.h>
-#include<unistd.h>
-#include "tlf.h"
-
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
+#ifndef GETTXINFO_H
+#define GETTXINFO_H
 
 #define SETCWMODE 1
 #define SETSSBMODE 2
@@ -32,3 +25,4 @@
 
 int gettxinfo(void);
 
+#endif /* GETTXINFO_H */

@@ -33,8 +33,8 @@
 #include <termios.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#include "fldigixmlrpc.h"
 #endif
+#include "fldigixmlrpc.h"
 
 SCREEN *mainscreen;
 SCREEN *packetscreen;

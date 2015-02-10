@@ -16,19 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "tlf.h"
-#include "setcontest.h"
-#include "writeparas.h"
-#include "onechar.h"
-#include "getmessages.h"
-#include "checklogfile.h"
-#include "getwwv.h"
-#include "scroll_log.h"
-#include "readcalls.h"
-#include "readqtccalls.h"
-#include "clear_display.h"
-#include "checkparameters.h"
+#ifndef SETPARAMETERS_H
+#define SETPARAMETERS_H
 
 int setparameters(void);
 
-
+#endif /* SETPARAMETERS_H */

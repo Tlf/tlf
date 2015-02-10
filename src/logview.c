@@ -22,6 +22,8 @@
  	*--------------------------------------------------------------*/
 
 #include "logview.h"
+#include "tlf.h"
+#include "clear_display.h"
 
 int logview(void)
 {

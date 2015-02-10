@@ -25,11 +25,18 @@
 
 #include "addcall.h"
 #include "addpfx.h"
+#include "tlf.h"
+#include "searchcallarray.h"
+#include "getctydata.h"
+#include "zone_nr.h"
+#include "getpx.h"
+#include "paccdx.h"
+#include "addmult.h"
+#include "lancode.h"
 #include <glib.h>
 
 int addcall(void)
 {
-
     extern char hiscall[];
     extern int nr_worked;
     extern struct worked_t worked[];

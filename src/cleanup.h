@@ -16,9 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include "tlf.h"
-#include <curses.h>
+#ifndef CLEANUP_H
+#define CLEANUP_H
 
 int cleanup(void);
 
+#endif /* CLEANUP_H */

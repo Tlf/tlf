@@ -16,12 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "printcall.h"
-#include "tlf.h"
-#include "nicebox.h"
-#include "zone_nr.h"
-#include "getpx.h"
-#include "showscore.h"
+#ifndef SEARCHLOG_H
+#define SEARCHLOG_H
 
 void InitSearchPanel(void);
 void ShowSearchPanel(void);
@@ -31,3 +27,4 @@ int load_callmaster(void);
 void show_needed_sections(void);
 void OnLowerSearchPanel(int x, char *str);
 
+#endif /* SEARCHLOG_H */

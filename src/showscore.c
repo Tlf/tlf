@@ -25,6 +25,10 @@
 
 #include "globalvars.h"
 #include "showscore.h"
+#include "tlf.h"
+#include "nicebox.h"
+#include "last10.h"
+#include "printcall.h"
 #include "focm.h"
 #include <assert.h>
 #include <math.h>
