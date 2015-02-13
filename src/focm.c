@@ -22,7 +22,7 @@
 #include "dxcc.h"
 #include "initial_exchange.h"
 #include "getctydata.h"
-#include "onechar.h"
+#include "ui_utils.h"
 #include "displayit.h"
 #include <curses.h>
 #include <glib.h>
@@ -298,7 +298,7 @@ void foc_show_cty() {
     mvprintw(12, 29, "press a key...");
     refreshp();
 
-    onechar();
+    key_get();
     displayit();
 
     g_tree_destroy(tree);

@@ -45,7 +45,6 @@
 #include "netkeyer.h"
 #include "splitscreen.h"
 #include "audio.h"
-#include "onechar.h"
 #include "scroll_log.h"
 #include "readcalls.h"
 #ifdef HAVE_LIBHAMLIB
@@ -553,7 +552,7 @@ int changepars(void)
 
 	    x = 1;
 	    while (x) {
-		x = onechar();
+		x = key_get();
 
 		switch (x) {
 		case 156:{
@@ -623,7 +622,7 @@ int changepars(void)
 
 	    x = 1;
 	    while (x) {
-		x = onechar();
+		x = key_get();
 
 		switch (x) {
 		case 156:{
@@ -701,7 +700,7 @@ int changepars(void)
 
 	    /* wait for correct input or ESC */
 	    while ((x != 0) && ((x < 2) || (x > 5)) ) {
-		x = onechar();
+		x = key_get();
 		if (x == 27)
 		    break;
 		x = x - '0';
@@ -810,7 +809,7 @@ int networkinfo(void)
     mvprintw(23, 22, " --- Press a key to continue --- ");
     refreshp();
 
-    getch();
+    (void)key_get();
 
     attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
     for (i = 0; i <= 24; i++)
@@ -937,7 +936,7 @@ int multiplierinfo(void)
 
     refreshp();
 
-    getch();
+    (void)key_get();
 
     attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
@@ -1106,7 +1105,7 @@ int debug_tty(void)
 
     mvprintw(23, 0, "done");
     refreshp();
-    i = getch();
+    (void)key_get();
 
 /* close the tty */
 

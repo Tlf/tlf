@@ -31,7 +31,7 @@
 #include <sys/stat.h>
 #include "qsonr_to_str.h"
 #include "scroll_log.h"
-#include "onechar.h"
+#include "ui_utils.h"
 #include "logview.h"
 #include "store_qso.h"
 
@@ -114,7 +114,7 @@ void edit_last(void)
     while ((j != 27) && (j != '\n')) {
 	highlight_line(editline, editbuffer, b);
 
-	j = onechar();
+	j = key_get();
 
 	if (j == 1) {		// ctrl A, beginning of line
 	    b = 1;

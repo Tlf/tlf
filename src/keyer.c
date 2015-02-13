@@ -26,7 +26,7 @@
 #include "tlf.h"
 #include <panel.h>
 #include "clear_display.h"
-#include "onechar.h"
+#include "ui_utils.h"
 #include "stoptx.h"
 #include "displayit.h"
 #include "speedupndown.h"
@@ -107,7 +107,7 @@ int keyer(void)
 	mvwprintw(win, 1, 1, "%s", keyerstring);
 	refreshp();
 
-	x = onechar();
+	x = key_get();
 
 	if (x == 34) {		/* skip " */
 	    x = 32;

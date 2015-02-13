@@ -36,7 +36,6 @@
 #include "score.h"
 #include "searchlog.h"
 #include "clear_display.h"
-#include "onechar.h"
 #include "stoptx.h"
 #include "displayit.h"
 #include "speedupndown.h"
@@ -1120,7 +1119,7 @@ void exchange_edit (void)
 	mvprintw(12, 54, comment);
 	mvprintw(12, 54 + b, "");
 
-	i = onechar();
+	i = key_get();
 
 	if (i == 1) {		// ctrl-A, Home
 

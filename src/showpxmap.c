@@ -54,9 +54,9 @@ int show_mults(void)
 
 	refreshp();
 
-	ch = getchar();
+	ch = key_get();
 
-	while (ch != '\015') {
+	while (ch != '\n') {
 
 	    if (ch == 27)
 		break;
@@ -150,7 +150,7 @@ int show_mults(void)
 
 	    }
 
-	    ch = getchar();
+	    ch = key_get();
 
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 

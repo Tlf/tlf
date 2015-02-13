@@ -159,7 +159,6 @@ int muf(void)
     static double la, l, mf, lh;
     static long ve, ho;
     static int correct;
-    int key;
     char mycountry[40];
     char country[40];
     int i;
@@ -241,7 +240,7 @@ int muf(void)
     mvwprintw(win, 4, 40, "Azim  :   %3ld degrees.", (long) floor(u + 0.5));
     mvwprintw(win, 5, 40, "F-hops:    %2.0f", n);
 
-    sunup(xr, &sunrise, &sundown);	/* calculate local sunup and down 
+    sunup(xr, &sunrise, &sundown);	/* calculate local sunup and down
     					   at destination lattitude */
 
     /* transform to UTC based on longitude from country description */
@@ -325,7 +324,7 @@ int muf(void)
     mvwprintw(win, 23, 0, " --- Press a key to continue --- ");
     refreshp();
 
-    key = getch();
+    (void)key_get();
 
     hide_panel(pan);
     del_panel(pan);

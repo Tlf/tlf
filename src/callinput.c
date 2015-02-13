@@ -34,7 +34,6 @@
 #include "nicebox.h"
 #include "tlf.h"
 #include "clear_display.h"
-#include "onechar.h"
 #include "stoptx.h"
 #include "speedupndown.h"
 #include "sendbuf.h"
@@ -356,7 +355,7 @@ char callinput(void)
 			printcall();
 			refreshp();
 
-			x = onechar();
+			x = key_get();
 			if (x == 152) {
 			    speedup();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
@@ -777,7 +776,7 @@ char callinput(void)
 		    mvprintw(12, 29, "");
 		    refreshp();
 		    netkeyer(K_PTT, "1");	// ptt on
-		    x = onechar();	// any character to stop tuning
+		    x = key_get();	// any character to stop tuning
 		    if (x == 240)
 			netkeyer(K_PTT, "0");	// ptt off
 		    k_ptt = 0;
@@ -841,7 +840,7 @@ char callinput(void)
 		mvprintw(13, 29, "You want to leave tlf? (y/n): ");
 		while (x != 'n' && x != 'N') {
 
-		    x = onechar();
+		    x = key_get();
 
 		    if (x == 'y' || x == 'Y') {
 			writeparas();
@@ -973,7 +972,7 @@ char callinput(void)
 		    nicebox(14, 0, 5, 59, "Messages");
 
 		    refreshp();
-		    getchar();
+		    key_get();
 		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
 			mvprintw(14 + t, 0,

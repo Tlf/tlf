@@ -30,7 +30,6 @@
 #include <dirent.h>
 #include <math.h>
 #include "gettxinfo.h"
-#include "onechar.h"
 #include "ui_utils.h"
 
 #ifdef __OpenBSD__
@@ -474,7 +473,7 @@ int panscan(void)
 	/* -----------end scan -------------------- */
 	mvprintw(23, 60, "----   Key?  ----");
 
-	j = getch();
+	j = key_get();
 	if (j == 27)
 	    break;
     }				// end while
@@ -575,7 +574,7 @@ int nbscan(void)
 	/* -----------end scan -------------------- */
 	mvprintw(23, 60, "----   Key?  ----");
 
-	j = getch();
+	j = key_get();
 	if (j == 27)
 	    break;
     }				// end while
@@ -692,7 +691,7 @@ void do_record(int message_nr)
     rc = system(commands);
     //G4KNO: Loop until <esc> keypress
     while (1) {
-	if (getch() == 27) {
+	if (key_get() == 27) {
 	    //kill process (SIGINT=Ctrl-C).
 	    rc = system("pkill -SIGINT -n rec");
 	    break;
