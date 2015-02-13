@@ -22,5 +22,11 @@
 
 int modify_attr( int attr );
 
+/** convenience macro to name alt-keys */
+#define ALT(c) (c + 128)
+
+int key_get();
+int key_poll();
+
 
 #endif /* UI_UTILS_H */

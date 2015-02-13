@@ -20,8 +20,12 @@
 /* User Interface helpers for ncurses based user interface */
 
 #include <curses.h>
+#include "onechar.h"
 
 extern int use_rxvt;
+
+static int getkey(int wait);
+
 
 /** add A_BOLD to attributes if 'use_rxvt' is not set */
 int modify_attr( int attr ) {
@@ -30,6 +34,41 @@ int modify_attr( int attr ) {
 	attr |= A_BOLD;
 
     return attr;
+}
+
+/** key_get  wait for next key from terminal
+ *
+ */
+int key_get()
+{
+    return getkey(1);
+}
+
+/** key_poll return next key from terminal if there is one
+ *
+ */
+int key_poll()
+{
+    return getkey(0);
+}
+
+
+/* helper function to set 'nodelay' mode according to 'wait'
+ * parameter and then ask for the next character
+ * leaves 'nodelay' afterwards always as FALSE (meaning: wait for
+ * character
+ */
+static int getkey(int wait)
+{
+    int x = 0;
+
+    nodelay(stdscr, wait ? FALSE : TRUE);
+
+    x = onechar();
+
+    nodelay(stdscr, FALSE);
+
+    return x;
 }
 
 
