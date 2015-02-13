@@ -52,7 +52,6 @@ int auto_cq(void)
 
     strcpy(mode, "AUTO_CQ ");
     clear_display();
-    nodelay(stdscr, TRUE);
     while (delayval == 0) {
 	if (trxmode == CWMODE || trxmode == DIGIMODE) {
 	    sendmessage(message[11]);
@@ -72,10 +71,9 @@ int auto_cq(void)
 	    message_time = (long) (1200.0 / realspeed) * cw_message_len;
 	    for (j = 0; j < 10; j++) {
 		usleep(message_time * 100);
-		inchar = getch();
-		if (inchar > 0)
-		    letter = inchar;
+		inchar = key_poll();
 		if (inchar > 0) {
+		    letter = inchar;
 		    stoptx();
 		    break;
 		}
@@ -92,7 +90,7 @@ int auto_cq(void)
 	    usleep(500000);
 
 	    if (inchar < 0)
-		inchar = getch();
+		inchar = key_poll();
 	    letter = inchar;
 	    if (inchar > 0)
 		break;
@@ -115,7 +113,6 @@ int auto_cq(void)
 
     mvprintw(12, 29, "             ");
     printcall();
-    nodelay(stdscr, FALSE);
     if (inchar == 27)
 	return (27);
     else

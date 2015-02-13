@@ -465,9 +465,7 @@ int panscan(void)
 
 	    make_bar(5 + j, 20, 20, (int) testvalue, PAN_BAR);
 
-	    nodelay(stdscr, TRUE);
-	    key = getch();
-	    nodelay(stdscr, FALSE);
+	    key = key_poll();
 	    if (key == 27 || key == '\n')
 		break;
 
@@ -568,9 +566,7 @@ int nbscan(void)
 
 	    make_bar(5 + j, 20, 20, (int) testvalue, SPOT_BAR);
 
-	    nodelay(stdscr, TRUE);
-	    key = getch();
-	    nodelay(stdscr, FALSE);
+	    key = key_poll();
 	    if (key == 27 || key == '\n')
 		break;
 
@@ -632,9 +628,7 @@ int testaudio()
 
 	drawSmeter(5, 1, 21, testvalue);
 
-	nodelay(stdscr, TRUE);
-	key = getch();
-	nodelay(stdscr, FALSE);
+	key = key_poll();
 
 	switch (key) {
 
@@ -723,9 +717,7 @@ void record(void)
 
     while (runnit == 1) {
 
-	nodelay(stdscr, TRUE);
-	key = onechar();
-	nodelay(stdscr, FALSE);
+	key = key_poll();
 
 	switch (key) {
 

@@ -155,7 +155,7 @@ char callinput(void)
 	printcall();
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
-	nodelay(stdscr, TRUE);	/* main loop waiting for input */
+	/* main loop waiting for input */
 	x = -1;
 	while (x < 1) {
 
@@ -172,10 +172,9 @@ char callinput(void)
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
 	    wmove(stdscr, 12, 29 + strlen(hiscall));
-	    x = onechar();
+	    x = key_poll();
 
 	}
-	nodelay(stdscr, FALSE);
 
 
 	/* special handling of some keycodes if call field is empty */
@@ -803,18 +802,14 @@ char callinput(void)
 		netkeyer(K_TUNE, buff);	// cw on
 		g_free(buff);
 
-		nodelay (stdscr, TRUE);
-
 		count = TUNE_UP / 0.25;
 
 		while (count != 0) {
 		    usleep( 250000 );
-		    if ((onechar()) != -1)	// any key pressed ?
+		    if ((key_poll()) != -1)	// any key pressed ?
 			break;
 		    count--;
 		}
-
-		nodelay (stdscr, FALSE);
 
 		netkeyer( K_ABORT, "");	// cw abort
 
@@ -1102,7 +1097,6 @@ int autosend()
 
     x = -1;
     while ((x != 27) && (x != '\n')) {
-	nodelay(stdscr, TRUE);
 	x = -1;
 	while ((x == -1) && (g_timer_elapsed(timer, NULL) < timeout)) {
 
@@ -1121,10 +1115,9 @@ int autosend()
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
 	    wmove(stdscr, 12, 29 + strlen(hiscall));
-	    x = onechar();
+	    x = key_poll();
 
 	}
-	nodelay(stdscr, FALSE);
 
 	if (x == -1) { 		/* timeout */
 	    x = '\n';
