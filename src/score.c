@@ -362,7 +362,7 @@ int score()
 	is_cont_mult = continent_found();
 	if (is_cont_mult == 1) {
 	    // if we are on DX continent
-	    if (continent == mycontinent) {
+	    if (strcmp(continent, mycontinent) == 0) {
 		points = my_cont_points;
 	    }
 	    else if (continentlist_points != -1) {
