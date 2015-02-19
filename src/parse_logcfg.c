@@ -1739,7 +1739,7 @@ int parse_logcfg(char *inputbuffer)
     case 224: {
 	    PARAMETER_NEEDED(teststring);
 	    if (strcmp(fields[1], "CONTINENTLIST")) {
-	        if (continent_multiplier_list == NULL) {
+	        if (strlen(continent_multiplier_list[0]) == 0) {
 		    showmsg
 			("WARNING: you need to set the CONTINENTLIST paramter...");
 		    sleep(5);
@@ -1748,7 +1748,7 @@ int parse_logcfg(char *inputbuffer)
 		exclude_multilist_type = 1;
 	    }
 	    else if (strcmp(fields[1], "COUNTRYLIST")) {
-	        if (mit_multiplier_list == NULL) {
+	        if (strlen(mit_multiplier_list[0]) == 0) {
 		    showmsg
 			("WARNING: you need to set the COUNTRYLIST paramter...");
 		    sleep(5);
