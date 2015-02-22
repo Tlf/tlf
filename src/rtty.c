@@ -44,6 +44,7 @@ static char ry_term[5][50] = { "", "", "", "", "" };
 int init_controller()
 {
     extern char controllerport[];
+    extern int keyerport;
 
     struct termios termattribs;
 
@@ -67,6 +68,10 @@ int init_controller()
     cfsetospeed(&termattribs, B9600);	/* Set output speed */
 
     tcsetattr(fdcont, TCSANOW, &termattribs);	/* Set the serial port */
+
+    if (keyerport == GMFSK) {
+	lseek(fdcont, 0, SEEK_END);
+    }
 
     showstring(controllerport, " opened...\n");
 
@@ -125,7 +130,6 @@ void ry_addchar(char c)
 	// add char to line
 	ry_term[4][k++] = c;
 	ry_term[4][k] = '\0';
-
     }
 }
 

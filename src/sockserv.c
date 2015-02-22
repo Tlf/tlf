@@ -22,18 +22,13 @@
 /* intended to simplify the porting of JNOS servers and clients to Unix */
 /* Written by N2RJT - Dave Brown */
 
-#include <sys/types.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "tlf.h"
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <memory.h>
-#include <string.h>
 #include <stdarg.h>
-#include <stdio.h>
-#include <errno.h>
 #include "sockserv.h"
 #include "main.h"
 

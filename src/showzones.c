@@ -22,6 +22,8 @@
 	 *--------------------------------------------------------------*/
 
 #include "showzones.h"
+#include "tlf.h"
+#include "nicebox.h"
 
 int show_zones(int bandinx)
 {

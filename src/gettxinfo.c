@@ -23,8 +23,14 @@
 	 *--------------------------------------------------------------*/
 
 #include "gettxinfo.h"
-#include <curses.h>
+#include "tlf.h"
 #include "sendqrg.h"
+#include "fldigixmlrpc.h"
+
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
+
 
 int gettxinfo(void)
 {

@@ -23,7 +23,6 @@
 #include "time_update.h"
 #include "write_keyer.h"
 #include "sendbuf.h"
-#include "set_tone.h"
 #include "lancode.h"
 #include "splitscreen.h"
 #include "log_to_disk.h"
@@ -31,6 +30,9 @@
 #include "set_tone.h"
 #include "rtty.h"
 #include "fldigixmlrpc.h"
+#include "get_time.h"
+#include "qsonr_to_str.h"
+#include "gettxinfo.h"
 #include <glib.h>
 
 extern int stop_backgrnd_process;

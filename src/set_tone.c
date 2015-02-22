@@ -22,11 +22,11 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+#include "nicebox.h"
 #include "set_tone.h"
 #include "tlf.h"
 #include "cwkeyer.h"
 #include "clear_display.h"
-#include "write_tone.h"
 #include "netkeyer.h"
 
 int set_tone(void)
@@ -62,12 +62,12 @@ void write_tone(void)
     if (netkeyer(K_TONE, tonestr) < 0) {
 	mvprintw(24, 0, "keyer not active; switching to SSB");
 	trxmode = SSBMODE;
-    } 
+    }
 
     if (atoi(tonestr) != 0) {
 	/* work around bugs in cwdaemon:
 	 * cwdaemon < 0.9.6 always set volume to 70% at change of tone freq
-	 * cwdaemon >=0.9.6 do not set volume at all after change of freq, 
+	 * cwdaemon >=0.9.6 do not set volume at all after change of freq,
 	 * resulting in no tone output if you have a freq=0 in between
 	 * So... to be sure we set the volume back to our chosen value
 	 * or to 70% (like cwdaemon) if no volume got specified

@@ -18,7 +18,6 @@
  */
 
 #ifndef AUTOCQ_H
-
 #define AUTOCQ_H
 
 int  auto_cq  (void);

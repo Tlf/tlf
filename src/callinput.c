@@ -28,7 +28,46 @@
 #include "changefreq.h"
 #include "bandmap.h"
 #include <glib.h>
+#include "show_help.h"
 #include "cw_utils.h"
+#include "netkeyer.h"
+#include "nicebox.h"
+#include "tlf.h"
+#include "clear_display.h"
+#include "onechar.h"
+#include "stoptx.h"
+#include "speedupndown.h"
+#include "sendbuf.h"
+#include "scroll_log.h"
+#include "addcall.h"
+#include "makelogline.h"
+#include "store_qso.h"
+#include "qsonr_to_str.h"
+#include "writeparas.h"
+#include "printcall.h"
+#include "time_update.h"
+#include "cleanup.h"
+#include "autocq.h"
+#include "sendspcall.h"
+#include "edit_last.h"
+#include "changepars.h"
+#include "deleteqso.h"
+#include "note.h"
+#include "prevqso.h"
+#include "getctydata.h"
+#include "showinfo.h"
+#include "searchlog.h"
+#include "calledit.h"
+#include "muf.h"
+#include "clusterinfo.h"
+#include "grabspot.h"
+#include "splitscreen.h"
+#include "showpxmap.h"
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
+#include "lancode.h"
+#include "rtty.h"
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
@@ -53,7 +92,6 @@ char callinput(void)
     extern char hiscall[];
     extern char hiscall_sent[];
     extern char comment[];
-    extern char call[];
     extern int cqmode;
     extern int trxmode;
     extern char mode[];
@@ -63,7 +101,6 @@ char callinput(void)
     extern int cqdelay;
     extern char his_rst[];
     extern char backgrnd_str[];
-    extern int demode;
     extern int cluster;
     extern int announcefilter;
     extern char message[][80];
@@ -540,11 +577,7 @@ char callinput(void)
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
 		    if (cqmode == 0) {
-			char *format = (demode == SEND_DE) ? "DE %s" : "%s";
-			char *str = g_strdup_printf(format, call);
-			sendmessage(str); 		/* S&P */
-			g_free(str);
-
+			sendspcall();
 		    }
 		    else {
 			sendmessage(message[0]);	/* CQ */
@@ -554,9 +587,8 @@ char callinput(void)
 		    if (simulator != 0) {
 			simulator_mode = 1;
 		    }
-
-		    break;
 		} else {
+
 		    if (cqmode == 0)
 			play_file(ph_message[5]);	/* S&P */
 		    else
@@ -647,7 +679,7 @@ char callinput(void)
 		break;
 	    }
 	case 235:
-	    {			//alt-K     == ctrl-K
+	    {			//alt-K     => ctrl-K
 		x = 11;
 		break;
 	    }

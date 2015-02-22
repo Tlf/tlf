@@ -16,22 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <string.h>
-#include <stdlib.h>
-#include <curses.h>
-#include "searchcallarray.h"
-#include "getctydata.h"
-#include "zone_nr.h"
-#include "getpx.h"
-#include "tlf.h"
-#include "paccdx.h"
-#include "addmult.h"
-#include "lancode.h"
-#include "tlf.h"
-
-
+#ifndef ADDCALL_H
+#define ADDCALL_H
 
 int addcall(void);
 int addcall2(void);
 int get_band (char *logline);
+
+#endif /* ADDCALL_H */

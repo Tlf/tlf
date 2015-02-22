@@ -22,6 +22,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "qsonr_to_str.h"
+#include "tlf.h"
 
 int qsonr_to_str(void)
 {

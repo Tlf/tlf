@@ -63,11 +63,6 @@ extern int minute_timer;
 extern int stewperry_flg;
 extern char myqra[7];
 
-// extern char logline0[81];
-// extern char logline1[81];
-// extern char logline2[81];
-// extern char logline3[81];
-// extern char logline4[];
 extern char logline_edit[5][LOGLINELEN+1];
 #define logline0 logline_edit[0]
 #define logline1 logline_edit[1]
@@ -120,6 +115,5 @@ extern int one_point;
 extern int two_point;
 extern int three_point;
 extern int dxped;
-extern char pointstring[];
 extern int addzone;
 

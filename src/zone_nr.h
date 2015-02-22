@@ -16,8 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "tlf.h"
-
+#ifndef ZONE_NR_H
+#define ZONE_NR_H
 
 int zone_nr(char *comment);
 
+#endif /* ZONE_NR_H */

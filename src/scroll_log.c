@@ -22,6 +22,8 @@
 ---------------------------------------------------------------------------*/
 #include "globalvars.h"
 #include "scroll_log.h"
+#include "tlf.h"
+#include "qsonr_to_str.h"
 
 void scroll_log(void)
 {
@@ -35,6 +37,9 @@ void scroll_log(void)
     if ((fp = fopen(logfile, "r")) == NULL) {
 
 	mvprintw(24, 0, "Error opening logfile.\n");
+	refreshp();
+	sleep(2);
+	exit(1);
     }
     for (ii = 5; ii >= 1; ii--) {
 

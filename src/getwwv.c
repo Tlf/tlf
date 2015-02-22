@@ -19,6 +19,9 @@
 
 #include "getwwv.h"
 #include "dxcc.h"
+#include "get_time.h"
+#include "printcall.h"
+#include "tlf.h"
 
 int getwwv(void)
 {
@@ -94,9 +97,7 @@ int getwwv(void)
 
 	    d = dxcc_by_index(mycountrynr) -> timezone;
 
-//                      d -= timeoffset;
-
-	    now = (time(0) + ((timeoffset - d) * 3600));
+	    now = (time(0) + (long)((timeoffset - d) * 3600));
 	    ptr1 = gmtime(&now);
 	    strftime(timebuff, 80, "%H:%M", ptr1);
 

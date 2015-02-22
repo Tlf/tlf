@@ -18,8 +18,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "tlf.h"
 #include "lancode.h"
+#include "tlf.h"
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <syslog.h>
 
 int lan_socket_descriptor;
 struct sockaddr_in lan_sin;

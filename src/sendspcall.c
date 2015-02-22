@@ -80,13 +80,20 @@ char *PrepareSPcall() {
 void sendspcall(void){
 
     extern int trxmode;
+    extern char message[][80];
     extern char ph_message[14][80];
 
     if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
-	char *SPcall = PrepareSPcall();
-	sendmessage(SPcall);
-	g_free(SPcall);
+	/* if set use SPCALL message */
+	if (*message[SP_CALL_MSG] != '\0') {
+	    sendmessage(message[SP_CALL_MSG]);
+	}
+	else { /* otherwise prepare one */
+	    char *SPcall = PrepareSPcall();
+	    sendmessage(SPcall);
+	    g_free(SPcall);
+	}
 
     } else
 

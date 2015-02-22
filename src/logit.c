@@ -24,6 +24,20 @@
  ------------------------------------------------------------------------*/
 
 #include "logit.h"
+#include "tlf.h"
+#include "clear_display.h"
+#include "printcall.h"
+#include "callinput.h"
+#include "getexchange.h"
+#include "sendbuf.h"
+#include "sendspcall.h"
+#include "log_to_disk.h"
+#include "keyer.h"
+#include "recall_exchange.h"
+#include "sendqrg.h"
+#include "lancode.h"
+#include "set_tone.h"
+#include "searchlog.h"
 
 void refresh_comment(void);
 
@@ -177,7 +191,7 @@ void *logit(void *ptr)
 			    if (simulator != 0)
 				write_tone();
 			} else {
-			    play_file(ph_message[13]);
+			    play_file(ph_message[CQ_TU_MSG]);
 			}
 
 			defer_store = 0;
@@ -188,7 +202,7 @@ void *logit(void *ptr)
 			if (trxmode == CWMODE || trxmode == DIGIMODE) {
 			    sendmessage(sp_return); /* send S&P return */
 			} else
-			    play_file(ph_message[12]);
+			    play_file(ph_message[SP_TU_MSG]);
 
 			defer_store = 0;
 		    }
@@ -206,7 +220,7 @@ void *logit(void *ptr)
 		HideSearchPanel();
 	    }
 
-	    if (callreturn == 11 || callreturn == 44 || callreturn == 235) {	/*  CTRL K  */
+	    if (callreturn == 11 || callreturn == 44) {	/*  CTRL K  */
 		getyx(stdscr, cury, curx);
 		mvprintw(5, 0, "");
 		keyer();

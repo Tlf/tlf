@@ -16,14 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <string.h>
-#include <curses.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "nicebox.h"
-#include "scroll_log.h"
-#include "clear_display.h"
-
+#ifndef NOTE_H
+#define NOTE_H
 
 int include_note(void);
 
+#endif /* NOTE_H */

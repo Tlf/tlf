@@ -23,6 +23,8 @@
 
 #include "globalvars.h"
 #include "last10.h"
+#include "get_time.h"
+#include "tlf.h"
 
 int last10(void)
 {

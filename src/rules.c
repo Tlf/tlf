@@ -18,6 +18,7 @@
 #include "tlf.h"
 #include "startmsg.h"
 #include "parse_logcfg.h"
+#include "setcontest.h"
 
 extern char whichcontest[];
 extern char logfile[];

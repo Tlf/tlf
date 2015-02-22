@@ -16,22 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <curses.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include "getctydata.h"
-#include "get_time.h"
-#include "checklogfile.h"
-
-#if defined (TLF_H)
-/* do nothing, already defined */
-#else
-#define TLF_H
-#include "tlf.h"
-#endif
+#ifndef GETMESSAGES_H
+#define GETMESSAGES_H
 
 int getmessages(void);
 
+#endif /* GETMESSAGES_H */

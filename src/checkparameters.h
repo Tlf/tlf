@@ -16,19 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <stdio.h>
-#include <stdlib.h>
-
-#if defined (TLF_H)
-/* do nothing, already defined */
-#else
-#define TLF_H
-#include "tlf.h"
-#endif
-
-#include "writeparas.h"
-#include "checklogfile.h"
+#ifndef CHECKPARAMETERS_H
+#define CHECKPARAMETERS_H
 
 int checkparameters(void);
 
+#endif /* CHECKPARAMETERS_H */

@@ -16,15 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef GETSUMMARY_H
+#define GETSUMMARY_H
 
-#include <curses.h>
-#include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include "nicebox.h"
-#include "tlf.h"
 
 int getsummary(FILE *fp);
 void ask(char *buffer, char *what);
 
-
+#endif /* GETSUMMARY_H */

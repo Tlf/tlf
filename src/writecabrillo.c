@@ -24,11 +24,11 @@
 #define _XOPEN_SOURCE 500
 #define _GNU_SOURCE
 #include "writecabrillo.h"
-#include <curses.h>
-#include <stdio.h>
-#include <string.h>
 #include <glib.h>
-#include <time.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include "getsummary.h"
+#include "tlf.h"
 
 extern char call[];
 extern int use_rxvt;

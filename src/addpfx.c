@@ -23,14 +23,13 @@
 	 *--------------------------------------------------------------*/
 
 #include "addpfx.h"
+#include "tlf.h"
 
 char prefixes_worked[MAX_CALLS][6];
 int nr_of_px = 0;
 
 int add_pfx(char *pxstr)
 {
-
-
     int q = 0, found = 0;
 
     prefixes_worked[nr_of_px][0] = '\0';

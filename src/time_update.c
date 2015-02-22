@@ -25,6 +25,15 @@
 	 *--------------------------------------------------------------*/
 #include "globalvars.h"
 #include "time_update.h"
+#include "tlf.h"
+#include "get_time.h"
+#include "gettxinfo.h"
+#include "clusterinfo.h"
+#include "showscore.h"
+#include "showzones.h"
+#include "printcall.h"
+#include "getwwv.h"
+#include "scroll_log.h"
 #include "freq_display.h"
 #include "lancode.h"
 
