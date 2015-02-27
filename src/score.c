@@ -2,7 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedus <airween@gmail.com>
- *               2013-2014      Thomas Beierlein <tb@forth-ev.de>
+ *               2013-2015      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,38 +34,35 @@
 
 int calc_continent(int zone);
 
-/* LZ3NY - check if call is in COUNTRY_LIST from logcfg.dat */
+/* check if hiscall is in COUNTRY_LIST from logcfg.dat */
 int country_found(char prefix[])
 {
-
     extern int countrynr;
     extern char hiscall[];
     extern char call[];
-    extern char mit_multiplier_list[][6];
+    extern char countrylist[][6];
 
     char tmpcall[15];
-    int mit_fg = 0;
+    int counter = 0;
 
     if (strlen(hiscall) == 0) {
 	strcpy(tmpcall, call);
     } else
 	strcpy(tmpcall, hiscall);
 
-    if (countrynr == 0)
-	countrynr = getctydata(tmpcall);
+    countrynr = getctydata(tmpcall);
 
-    while (strlen(mit_multiplier_list[mit_fg]) != 0) {
-	if (getctydata(mit_multiplier_list[mit_fg]) == getctydata(tmpcall)) {
+    while (strlen(countrylist[counter]) != 0) {
+	if (getctydata(countrylist[counter]) == getctydata(tmpcall)) {
 	    return 1;
 	}
-	mit_fg++;
+	counter++;
     }
     return 0;
 }
 
 int exist_in_country_list()
 {
-//    extern char mit_multiplier_list[][6];
     extern char pxstr[];
     char prefix[10];
 
@@ -409,9 +406,9 @@ int score2(char *line)
 
 
 /* ----------------------------------------------------------------- */
+/* calculates continent from zone and sets 'continent' variable      */
 int calc_continent(int zone)
-{			// calculates continent from zone and sets continent
-
+{
     extern char continent[];
 
     switch (zone) {

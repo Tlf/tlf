@@ -67,7 +67,7 @@ int addcall(void)
     extern char continent_multiplier_list[7][3];
     extern char continent[];
     extern int exclude_multilist_type;
-    extern char mit_multiplier_list[][6];
+    extern char countrylist[][6];
 
     static int found = 0;
     static int i, j, z = 0;
@@ -154,8 +154,8 @@ int addcall(void)
 
     if (exclude_multilist_type == 2) {
       int ci = 0;
-      while (strlen(mit_multiplier_list[ci]) != 0) {
-        if (getctydata(mit_multiplier_list[ci]) == j) {
+      while (strlen(countrylist[ci]) != 0) {
+        if (getctydata(countrylist[ci]) == j) {
             add_ok = 0;
 	    addcty = 0;
 	    addcallarea = 0;
@@ -379,7 +379,7 @@ int addcall2(void)
     extern int pfxmult;
     extern int pfxmultab;
     extern int exclude_multilist_type;
-    extern char mit_multiplier_list[][6];
+    extern char countrylist[][6];
     int excl_add_veto;
     /* this variable is helps to handle the excluded multipliers, which came from lan_logline
      * the Tlf scoring logic is totally completely different in local and LAN source
@@ -388,7 +388,7 @@ int addcall2(void)
      * This variable is used in readcall() too.
      *
      */
-    
+
     int found = 0;
     int i, j, p, z = 0;
     int add_ok;
@@ -489,8 +489,8 @@ int addcall2(void)
 
     if (exclude_multilist_type == 2) {
       int ci = 0;
-      while (strlen(mit_multiplier_list[ci]) != 0) {
-        if (getctydata(mit_multiplier_list[ci]) == j) {
+      while (strlen(countrylist[ci]) != 0) {
+        if (getctydata(countrylist[ci]) == j) {
             excl_add_veto = 1;
         }
         ci++;
