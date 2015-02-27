@@ -98,15 +98,13 @@ int lowband_point_mult = 0;
 int sc_sidetone;
 char sc_volume[4] = "";
   /* LZ3NY mods */
-int countrylist_points = -1;
 int my_country_points = -1;
 int my_cont_points = -1;
 int dx_cont_points = -1;
-char mit_multiplier_list[255][6];
+char countrylist[255][6];
 int countrylist_only = 0;
+int countrylist_points = -1;
 int mult_side = 0;
-char *mit_mult_array;
-int in_country_list;
 /* end LZ3NY mods */
 
 int portable_x2 = 0;
