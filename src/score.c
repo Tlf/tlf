@@ -67,7 +67,6 @@ int exist_in_country_list()
     extern char pxstr[];
     char prefix[10];
 
-    memset(prefix, '\0', 10);
     strcpy(prefix, pxstr);
 
     if (country_found(prefix) == 1) {
@@ -94,15 +93,153 @@ int exist_in_country_list()
     }
 }
 
-/* end LZ3NY code */
 
-int score()
+/* apply bandweigth scoring *
+ * at the moment only LOWBAND_DOUBLES (<30m) can be active */
+int apply_bandweigth(int points) {
+    extern int lowband_point_mult;
+    extern int bandinx;
+
+    if (lowband_point_mult != 0 && (bandinx < BANDINDEX_30))
+	points *= 2;
+
+    return points;
+}
+
+
+/* portable stations may count double
+ * see PORTABLE_X2 */
+int portable_doubles(int points) {
+    extern int portable_x2;
+    extern char hiscall[];
+    char *loc;
+
+    if (portable_x2 == 1) {	// portable x2
+	loc = strstr(hiscall, "/P");
+	if (loc == hiscall + strlen(hiscall) - 2) {
+	    points *= 2;
+	}
+    }
+    return points;
+}
+
+
+/* apply points by mode */
+int scoreByMode () {
+    extern int cwpoints;
+    extern int ssbpoints;
+    extern int trxmode;
+
+    switch (trxmode) {
+	case CWMODE:
+	    return cwpoints;
+	case SSBMODE:
+	    return ssbpoints;
+	default:
+	    return 0;
+    }
+}
+
+
+int scoreByContinentOrCountry () {
+
+    extern char hiscall[];
+
+    extern int countrylist_points;
+    extern int countrylist_only;
+
+    extern int my_country_points;
+    extern int my_cont_points;
+    extern int dx_cont_points;
+
+    extern int countrynr;
+    extern int mycountrynr;
+    extern char continent[];
+    extern char mycontinent[];
+
+    int points = 0;
+    int inList = 0;
+
+    inList = exist_in_country_list();
+    if (countrylist_only == 1) {
+	if (inList == 1 && countrylist_points != -1)
+	    points = countrylist_points;
+    } else {
+
+	if (inList == 1) {
+	    if (countrylist_points != -1)
+		points = countrylist_points;
+
+	    if (countrynr == mycountrynr) {
+		if (my_country_points != -1)
+		    points = my_country_points;
+		else if (my_cont_points != -1)
+		    points = my_cont_points;
+		else
+		    points = 0;
+	    }
+
+	} else if (countrynr == mycountrynr) {
+	    if (my_country_points != -1)
+		points = my_country_points;
+	    else if (my_cont_points != -1)
+		points = my_cont_points;
+	} else if (strcmp(continent, mycontinent) == 0) {
+	    if (my_cont_points != -1)
+		points = my_cont_points;
+	} else if (dx_cont_points != -1)
+	    points = dx_cont_points;
+    }
+    return points;
+}
+
+
+/** default scoring code
+ *
+ * the default scoring rules will be applied if no contest specific rules
+ * are active
+ * \return points for QSO
+ */
+int scoreDefault()
 {
-
-    extern int dupe;
+    extern int cwpoints;
+    extern int ssbpoints;
     extern int one_point;
     extern int two_point;
     extern int three_point;
+
+    int points;
+
+    if (one_point == 1) {
+	points = 1;
+	return points;
+    }
+
+    if (two_point == 1) {
+	points = 2;
+	return points;
+    }
+
+    if (three_point == 1) {
+	points = 3;
+	return points;
+    }
+
+    if (ssbpoints != 0 && cwpoints != 0)	//  e.g. arrl 10m contest
+	points = scoreByMode();
+    else
+	points = scoreByContinentOrCountry();
+
+    points = apply_bandweigth(points);
+    points = portable_doubles(points);
+
+    return points;
+}
+
+
+int score()
+{
+    extern int dupe;
     extern int band_score[9];
     extern int bandinx;
     extern int focm;
@@ -119,29 +256,12 @@ int score()
     extern int w_cty;
     extern int ve_cty;
     extern int trxmode;
-    extern int cwpoints;
-    extern int ssbpoints;
-    extern int lowband_point_mult;
-    extern int portable_x2;
     extern char hiscall[];
     extern char myqra[7];
-    extern char call[];
     extern int stewperry_flg;
 
-/* LZ3NY mods */
-
-    extern int countrylist_points;
-    extern int my_cont_points;
-    extern int my_country_points;
-    extern int dx_cont_points;
-    extern int countrylist_only;
-
     int points;
-    int is_mult = 0;
-/* end LZ3NY mods */
-
     int zone;
-    char *loc;
 
     if (dupe == ISDUPE) {
 	points = 0;
@@ -244,21 +364,6 @@ int score()
 
     }				// end arrl_fd
 
-    if (one_point == 1) {
-	points = 1;
-
-	return points;
-    }
-    if (two_point == 1) {
-	points = 2;
-	return points;
-    }
-    if (three_point == 1) {
-	points = 3;
-
-	return points;
-    }
-
     if (arrldx_usa == 1) {
 
 	if ((countrynr == w_cty) || (countrynr == ve_cty)) {
@@ -289,78 +394,15 @@ int score()
 	return points;
     }
 
-    /* end arrldx_usa */
-    /* LZ3NY mods */
-    is_mult = exist_in_country_list();
-    if (countrylist_only == 1) {
-	if (is_mult == 1 && countrylist_points != -1)
-	    points = countrylist_points;
-	else
-	    points = 0;
-    } else {
+    /* start of the universal scoring code */
+    return scoreDefault();
 
-	if (is_mult == 1) {
-	    if (countrylist_points != -1)
-		points = countrylist_points;
-	    else
-		points = 0;
-
-	    if (countrynr == mycountrynr) {
-		if (my_country_points != -1)
-		    points = my_country_points;
-		else if (my_cont_points != -1)
-		    points = my_cont_points;
-		else
-		    points = 0;
-	    }
-
-	} else if (countrynr == mycountrynr) {
-	    if (my_country_points != -1)
-		points = my_country_points;
-	    else if (my_cont_points != -1)
-		points = my_cont_points;
-	    else
-		points = 0;
-	} else if (strcmp(continent, mycontinent) == 0) {
-	    if (my_cont_points != -1)
-		points = my_cont_points;
-	    else
-		points = 0;
-	} else if (dx_cont_points != -1)
-	    points = dx_cont_points;
-
-	else
-	    points = 0;
-    }
-
-    if (ssbpoints != 0 && cwpoints != 0)	//  e.g. arrl 10m contest
-    {
-	if (trxmode == CWMODE) {
-	    points = cwpoints;
-	} else if (trxmode == SSBMODE) {
-	    points = ssbpoints;
-	} else
-	    points = 0;
-    }
-
-    if (lowband_point_mult != 0 && (bandinx < BANDINDEX_30))	// lowband 2x points
-	points *= 2;
-
-    if (portable_x2 == 1) {	// portable x2
-	loc = strstr(hiscall, "/P");
-	if (loc == hiscall + strlen(hiscall) - 2) {
-	    points *= 2;
-	}
-    }
-
-    return points;
 }
 
 
 /* -----------------------------------------------------------------*/
 int score2(char *line)
 {
-
     return atoi(line + 75);
 }
 
