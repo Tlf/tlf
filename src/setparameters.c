@@ -24,7 +24,7 @@
 #include "tlf.h"
 #include "setcontest.h"
 #include "writeparas.h"
-#include "onechar.h"
+#include "ui_utils.h"
 #include "getmessages.h"
 #include "checklogfile.h"
 #include "getwwv.h"
@@ -102,7 +102,7 @@ int setparameters(void)
 
 	refreshp();
 
-	i = onechar();
+	i = key_get();
 
 	if (i == '7') {
 

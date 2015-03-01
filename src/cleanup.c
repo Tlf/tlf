@@ -22,13 +22,13 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+#include "tlf.h"
 #include "cleanup.h"
 #include "tlf.h"
+#include "ui_utils.h"
 
 int cleanup(void)
 {
-
-    extern int use_rxvt;
     extern char hiscall[];
     extern char comment[];
     extern char my_rst[];
@@ -38,10 +38,7 @@ int cleanup(void)
 
     int k = 0;
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvprintw(12, 29, "            ");
     mvprintw(12, 54, "                        ");

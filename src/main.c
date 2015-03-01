@@ -34,6 +34,7 @@
 #include <config.h>
 #endif
 #include "fldigixmlrpc.h"
+#include "ui_utils.h"
 
 SCREEN *mainscreen;
 SCREEN *packetscreen;
@@ -498,7 +499,7 @@ void ui_init()
 
 	showmsg( "!! TLF needs at least 25 lines and 80 columns !!");
 	showmsg( "   Continue anyway? Y/(N)" );
-	c = toupper( getch() );
+	c = toupper( key_get() );
 	if (c != 'Y') {
 	    showmsg( "73 es cuagn" );
 	    sleep(1);
@@ -577,7 +578,7 @@ int databases_load()
 				   in "rules/contestname" */
     if (status != PARSE_OK) {
 	showmsg( "Problems in logcfg.dat or rule file detected! Continue Y/(N)?");
-	if (toupper( getchar() ) != 'Y') {
+	if (toupper( key_get() ) != 'Y') {
 	    showmsg("73...");
 	    return EXIT_FAILURE;
 	}
@@ -605,7 +606,7 @@ int databases_load()
 
 	if (main_ie_list == NULL) {
 	    showmsg( "Problems in initial exchange file detected! Continue Y/(N)?");
-	    if (toupper( getchar() ) != 'Y') {
+	    if (toupper( key_get() ) != 'Y') {
 		showmsg("73...");
 		return EXIT_FAILURE;
 	    }
@@ -643,7 +644,7 @@ void hamlib_init()
 
 	if (status  != 0) {
 	    showmsg( "Continue without rig control Y/(N)?");
-	    if (toupper( getchar() ) != 'Y') {
+	    if (toupper( key_get() ) != 'Y') {
 		endwin();
 		exit(1);
 	    }

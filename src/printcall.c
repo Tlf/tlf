@@ -24,8 +24,8 @@
 
 #include "tlf.h"
 #include "printcall.h"
-
-extern int use_rxvt;
+#include <curses.h>
+#include "ui_utils.h"
 
 void printcall(void)
 {
@@ -35,13 +35,10 @@ void printcall(void)
     extern int cwstart;
 
     int currentterm;
-    attr_t attrib = A_STANDOUT;
+    attr_t attrib = modify_attr(A_STANDOUT);
 
     currentterm = miniterm;
     miniterm = 0;
-
-    if (use_rxvt == 0)
-	attrib |= A_BOLD;
 
     attron(COLOR_PAIR(C_INPUT) | attrib);
 
@@ -60,11 +57,9 @@ void printcall(void)
  * \param n number of characters to highlight
  */
 void highlightCall(unsigned int n) {
-    attr_t attrib = A_NORMAL; 	/* use NORMAL here as normal display
+    attr_t attrib = modify_attr(A_NORMAL);
+				/* use NORMAL here as normal display
 				   uses STANDOUT */
-
-    if (use_rxvt == 0)
-	attrib |= A_BOLD;
 
     mvchgat(12, 29, n, attrib, C_INPUT, NULL);
 }

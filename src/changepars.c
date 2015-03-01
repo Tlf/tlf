@@ -45,12 +45,12 @@
 #include "netkeyer.h"
 #include "splitscreen.h"
 #include "audio.h"
-#include "onechar.h"
 #include "scroll_log.h"
 #include "readcalls.h"
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif
+#include "ui_utils.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
@@ -58,7 +58,6 @@ int debug_tty(void);
 
 int changepars(void)
 {
-    extern int use_rxvt;
     extern int cluster;
     extern int shortqsonr;
     extern int searchflg;
@@ -553,7 +552,7 @@ int changepars(void)
 
 	    x = 1;
 	    while (x) {
-		x = onechar();
+		x = key_get();
 
 		switch (x) {
 		case 156:{
@@ -583,10 +582,7 @@ int changepars(void)
 		}
 	    }
 
-	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-	    else
-		attron(COLOR_PAIR(NORMCOLOR));
+	    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
 	    mvprintw(12, 29 + strlen(hiscall), "");
 	    break;
@@ -626,7 +622,7 @@ int changepars(void)
 
 	    x = 1;
 	    while (x) {
-		x = onechar();
+		x = key_get();
 
 		switch (x) {
 		case 156:{
@@ -704,7 +700,7 @@ int changepars(void)
 
 	    /* wait for correct input or ESC */
 	    while ((x != 0) && ((x < 2) || (x > 5)) ) {
-		x = onechar();
+		x = key_get();
 		if (x == 27)
 		    break;
 		x = x - '0';
@@ -740,10 +736,7 @@ int changepars(void)
 
     refreshp();
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvprintw(12, 29, "            ");
     mvprintw(12, 29, "");
@@ -757,8 +750,6 @@ int changepars(void)
 
 int networkinfo(void)
 {
-
-    extern int use_rxvt;
     extern int use_bandoutput;
     extern int recv_packets;
     extern int recv_error;
@@ -778,10 +769,7 @@ int networkinfo(void)
 
     clear();
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -821,12 +809,9 @@ int networkinfo(void)
     mvprintw(23, 22, " --- Press a key to continue --- ");
     refreshp();
 
-    getch();
+    (void)key_get();
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
     for (i = 0; i <= 24; i++)
 	mvprintw(i, 0,
 		 "                                                                                ");
@@ -841,8 +826,6 @@ int networkinfo(void)
 
 int multiplierinfo(void)
 {
-
-    extern int use_rxvt;
     extern int arrlss;
     extern int serial_section_mult;
     extern int sectn_mult;
@@ -856,10 +839,7 @@ int multiplierinfo(void)
 
     clear();
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -897,10 +877,7 @@ int multiplierinfo(void)
 		else
 		    attributes = COLOR_PAIR(C_WINDOW) | A_STANDOUT;
 
-		if (use_rxvt == 0)
-		    attributes |= A_BOLD;
-
-		attron(attributes);
+		attron(modify_attr(attributes));
 
 		g_strlcpy(mprint, MULTS_POSSIBLE(cnt), 5);
 		mvprintw(vert, hor * 4, "%s", mprint);
@@ -953,21 +930,15 @@ int multiplierinfo(void)
 	}
     }
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     mvprintw(23, 22, " --- Press a key to continue --- ");
 
     refreshp();
 
-    getch();
+    (void)key_get();
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -1134,7 +1105,7 @@ int debug_tty(void)
 
     mvprintw(23, 0, "done");
     refreshp();
-    i = getch();
+    (void)key_get();
 
 /* close the tty */
 

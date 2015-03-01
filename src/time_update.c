@@ -36,6 +36,7 @@
 #include "scroll_log.h"
 #include "freq_display.h"
 #include "lancode.h"
+#include "ui_utils.h"
 
 /** broadcast to LAN
  *
@@ -87,7 +88,6 @@ void update_line(char *timestr)
 /** show frequency and frequency memory if rig control is active */
 void show_freq(void)
 {
-    extern int use_rxvt;
     extern int showfreq;
     extern int showscore_flag;
     extern float mem;
@@ -96,10 +96,7 @@ void show_freq(void)
 
     if (trx_control == 1) {
 
-	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(C_LOG) | A_BOLD);
-	else
-	    attron(COLOR_PAIR(C_LOG));
+	attron(modify_attr(COLOR_PAIR(C_LOG)));
 
 	if ((showfreq == 0) || (showscore_flag == 1))
 	    mvprintw(13, 68, "TRX: %7.1f", freq);

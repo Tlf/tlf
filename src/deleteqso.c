@@ -28,7 +28,7 @@
 #include "tlf.h"
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "onechar.h"
+#include "ui_utils.h"
 #include "qsonr_to_str.h"
 #include "printcall.h"
 #include "clear_display.h"
@@ -42,7 +42,7 @@ void delete_qso(void)
     struct stat statbuf;
 
     mvprintw(13, 29, "OK to delete last qso (y/n)?");
-    x = onechar();
+    x = key_get();
 
     if ((x == 'y') || (x == 'Y')) {
 
