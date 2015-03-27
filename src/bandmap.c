@@ -23,7 +23,7 @@
 #include "getctydata.h"
 #include "showinfo.h"
 #include "searchlog.h"
-#include "onechar.h"
+#include "ui_utils.h"
 
 #include <math.h>
 #include <glib.h>
@@ -576,7 +576,7 @@ void bm_menu()
     mvprintw( 13, 0, "  Toggle <B>and, <M>ode or <D>upes filter");
     printw(" | any other - leave");
 
-    c = toupper( onechar());
+    c = toupper( key_get());
     switch (c) {
 	case 'B':
 	    bm_config.allband = 1 - bm_config.allband;

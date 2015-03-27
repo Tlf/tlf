@@ -25,7 +25,7 @@
 #include "tlf.h"
 #include "clear_display.h"
 #include "nicebox.h"
-#include "onechar.h"
+#include "ui_utils.h"
 #include "writeparas.h"
 
 
@@ -55,7 +55,7 @@ int message_change(int x)
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     while (1) {
-	bufnr = onechar();
+	bufnr = toupper(key_get());
 
 	if ((bufnr == 'C') || (bufnr == 'S'))
 	    break;

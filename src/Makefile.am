@@ -21,7 +21,6 @@ tlf_SOURCES = \
 	logit.c logview.c locator2longlat.c \
 	main.c makelogline.c messagechange.c muf.c \
 	nicebox.c note.c netkeyer.c\
-	onechar.c \
 	paccdx.c parse_logcfg.c prevqso.c printcall.c \
 	qrb.c qsonr_to_str.c qtcwin.c qtcutil.c \
 	readcalls.c readqtccalls.c readctydata.c recall_exchange.c rules.c \
@@ -30,7 +29,7 @@ tlf_SOURCES = \
 	setparameters.c show_help.c showinfo.c showpxmap.c \
 	showscore.c showzones.c sockserv.c speedupndown.c   \
 	stoptx.c store_qso.c sunup.c splitscreen.c startmsg.c\
-	rtty.c time_update.c \
+	rtty.c time_update.c ui_utils.c \
 	write_keyer.c writecabrillo.c writeparas.c \
 	zone_nr.c
 
@@ -55,7 +54,6 @@ noinst_HEADERS = \
 	log_to_disk.h logit.h logview.h locator2longlat.h \
 	main.h makelogline.h messagechange.h muf.h multiplierinfo.h \
 	nicebox.h note.h netkeyer.h\
-	onechar.h \
 	paccdx.h parse_logcfg.h prevqso.h printcall.h \
 	qrb.h qsonr_to_str.h qtcwin.h qtcutil.h \
 	readcalls.h readqtccalls.h readctydata.h recall_exchange.h \
@@ -65,6 +63,6 @@ noinst_HEADERS = \
 	setparameters.h show_help.h showinfo.h showpxmap.h showscore.h \
 	showzones.h sockserv.h speedupndown.h  \
 	splitscreen.h startmsg.h stoptx.h store_qso.h sunup.h \
-	rtty.h time_update.h tlf.h \
+	rtty.h time_update.h tlf.h ui_utils.h \
 	write_keyer.h writecabrillo.h writeparas.h \
 	zone_nr.h

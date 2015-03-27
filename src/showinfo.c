@@ -33,12 +33,10 @@
 #include "tlf.h"
 #include "dxcc.h"
 #include "qrb.h"
-#include <curses.h>
-#include <time.h>
+#include "ui_utils.h"
 
 int showinfo(int x)
 {
-    extern int use_rxvt;
     extern char cqzone[];
     extern char ituzone[];
     extern double DEST_Lat;
@@ -111,10 +109,7 @@ int showinfo(int x)
 
     mvprintw(24, 64, "  DX time: %s", timebuff);
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvprintw(cury, curx, "");
 
