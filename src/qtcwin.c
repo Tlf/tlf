@@ -23,7 +23,7 @@
 
 #include "qtcwin.h"
 
-#include "onechar.h"
+#include "ui_utils.h"
 #include <panel.h>
 #include "nicebox.h"
 #include "time_update.h"
@@ -286,8 +286,6 @@ int qtc_main_panel(int direction) {
     x = -1;
     while(x != 27) {
 
-        nodelay(stdscr, TRUE);
-
 	while (x < 1) {
 
 	    usleep(5000);
@@ -296,10 +294,9 @@ int qtc_main_panel(int direction) {
 	           || keyerport == MFJ1278_KEYER)) {
 	        show_rtty();
 	    }
-	    x = onechar();
+	    x = key_poll();
 
 	}
-        nodelay(stdscr, FALSE);
 
 	switch(x) {
 	  //case 227:		// ALT-c
@@ -607,7 +604,7 @@ int qtc_main_panel(int direction) {
 				strcat(tmess, tempc);
 				mvwprintw(qtcwin, ql+3, 30, "*");
 				qtclist.qtclines[ql].flag = 1;
-				
+
 			    }
 			    data_ready = 1;
 			    strncpy(wkeyerbuffer, tmess, strlen(tmess));
@@ -1443,7 +1440,7 @@ int parse_ry_line(char * line) {
 	    sep[1] = '\0';
 	    token = strtok_r(ttoken, sep, &saveptr2);
 	    t = -1;
-	    while(token != NULL && t < 2) 
+	    while(token != NULL && t < 2)
 	    {
 		t++;
 		strcpy(tokens[t], token);
@@ -1477,7 +1474,7 @@ int parse_ry_line(char * line) {
     else {
 	strcpy(sep, "/;-: ");
 	token = strtok(lline, sep);
-	while(token != NULL && t < 4) 
+	while(token != NULL && t < 4)
 	{
 	    t++;
 	    strcpy(tokens[t], token);
@@ -1526,7 +1523,7 @@ int parse_ry_line(char * line) {
 	qtc_ry_copied++;
     }
     tactivefield = activefield;
-    
+
     return tactivefield;
 }
 
@@ -1547,7 +1544,7 @@ int print_rtty_line(t_qtc_ry_line qtc_ry_line, int row) {
 /* RTTY terminal to helps to capture the RTTY content */
 int show_rtty_lines() {
     extern int miniterm;
-    
+
     int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
     int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
     int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
@@ -1591,13 +1588,12 @@ int show_rtty_lines() {
     else {
 	mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
     }
-    
+
     x = -1; j = 1;
     prevline = -1;
     curs_set(0);
     while(x != 27) {
 
-        nodelay(stdscr, TRUE);
 	while (x < 1) {
 
 	    usleep(1000);
@@ -1629,7 +1625,7 @@ int show_rtty_lines() {
 		mvwprintw(ry_win, qtc_ry_currline+1, 1, "%-38s", currline);
 	    }
 	    refreshp();
-	    x = onechar();
+	    x = key_poll();
 	}
 
 	switch(x) {
@@ -1698,7 +1694,6 @@ int show_rtty_lines() {
 	    qtc_ry_capture = 0;
 	    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
 	}
-	nodelay(stdscr, FALSE);
     }
     hide_panel(ry_panel);
     hide_panel(ry_help_panel);
@@ -1709,7 +1704,7 @@ int show_rtty_lines() {
     activefield = oactivefield;
     showfield(tactivefield);
     showfield(oactivefield);
-    
+
     return 0;
 }
 
