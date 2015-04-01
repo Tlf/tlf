@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +35,8 @@
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
 #endif
+#include "qtcutil.h"
+#include "getctydata.h"
 #include "ui_utils.h"
 
 PANEL *search_panel;
@@ -43,6 +46,7 @@ int nr_bands;
 
 void show_needed_sections(void);
 
+extern struct t_qtc_store_obj *qtc_temp_obj;
 
 /** Check for all band mode
  *
@@ -104,7 +108,10 @@ void searchlog(char *searchstring)
     extern int partials;
     extern int cqww;
     extern int pacc_pa_flg;
+    extern int qtcdirection;
     extern int pacc_qsos[10][10];
+    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern int pfxnummultinr;
     extern int countrynr;
     extern int contest;
     extern int wpx;
@@ -137,6 +144,7 @@ void searchlog(char *searchstring)
     extern int show_time;
     extern int wazmult;
     extern int itumult;
+    extern int country_mult;
 
     int srch_index = 0;
     int r_index = 0;
@@ -157,6 +165,10 @@ void searchlog(char *searchstring)
     static int qso_index = 0;
     static int xwin = 1;
     static int ywin = 1;
+    int bidx = 0;	// bandindex for QTC band
+    char qtccall[15];	// temp str for qtc search
+    char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
+    int pfxnumcntidx;
 
     if (!initialized) {
 	InitSearchPanel();
@@ -307,6 +319,9 @@ void searchlog(char *searchstring)
 	werase( search_win );
 
 	wnicebox(search_win, 0, 0, nr_bands, 37, "Worked");
+	if (qtcdirection > 0) {
+	    mvwprintw(search_win, 0, 35, "Q");
+	}
 
 	wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT );
 	for (i = 0; i < nr_bands; i++)
@@ -363,18 +378,30 @@ void searchlog(char *searchstring)
 		    }		// end ignore
 		}
 	    }
-	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '0')
+	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '0') {
 		j = 1;
-	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '5')
+		bidx = BANDINDEX_10;
+	    }
+	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '5') {
 		j = 2;
-	    if (s_inputbuffer[1] == '2')
+		bidx = BANDINDEX_15;
+	    }
+	    if (s_inputbuffer[1] == '2') {
 		j = 3;
-	    if (s_inputbuffer[1] == '4')
+		bidx = BANDINDEX_20;
+	    }
+	    if (s_inputbuffer[1] == '4') {
 		j = 4;
-	    if (s_inputbuffer[1] == '8')
+		bidx = BANDINDEX_40;
+	    }
+	    if (s_inputbuffer[1] == '8') {
 		j = 5;
-	    if (s_inputbuffer[1] == '6')
+		bidx = BANDINDEX_80;
+	    }
+	    if (s_inputbuffer[1] == '6') {
 		j = 6;
+		bidx = BANDINDEX_160;
+	    }
 	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '2')
 		j = 7;
 	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '7')
@@ -383,6 +410,23 @@ void searchlog(char *searchstring)
 		j = 9;
 
 	    if ((j > 0) && (j < 10)) {
+		if (qtcdirection > 0) {
+		    qtccall[0] = '\0';
+		    z = 12;	// firs pos of callsigns
+		    l = 0;
+		    do {
+			qtccall[l] = s_inputbuffer[z];
+			z++; l++;
+		    } while(s_inputbuffer[z] != ' ');
+		    qtccall[l] = '\0';
+		    qtc_temp_obj = qtc_get(qtccall);
+		    if (qtc_temp_obj->total > 0 && qtc_temp_obj->total < 10) {
+			qtcflags[j-1] = qtc_temp_obj->total+48;
+		    }
+		    if (qtc_temp_obj->total >= 10) {
+			qtcflags[j-1] = 'Q';
+		    }
+		}
 		if ((j < 7) || IsAllBand()) {
 		    mvwprintw(search_win, j, 1, "%s", s_inputbuffer);
 		}
@@ -451,10 +495,17 @@ void searchlog(char *searchstring)
 
 	/* print worked zones and countrys for each band in checkwindow */
 	wattron(search_win, COLOR_PAIR(C_HEADER) | A_STANDOUT);
+	if (qtcdirection > 0) {
+	    for(l=0; l<6; l++) {
+		if (qtcflags[l] != ' ') {
+		    mvwprintw(search_win, l+1, 35, "%c", qtcflags[l]);
+		}
+	    }
+	}
 
 	if (cqww == 1 || contest == 0 || pacc_pa_flg == 1) {
 
-	    if ((countries[countrynr] & BAND10) != 0) {
+	  if ((countries[countrynr] & BAND10) != 0) {
 		mvwprintw(search_win, 1, 36, "C");
 		mvwprintw(search_win, 1, 1, " 10");
 	    }
@@ -551,6 +602,52 @@ void searchlog(char *searchstring)
 
 	    }
 	}
+
+	if ((pfxnummultinr >= 0 || country_mult) && contest == 1) {
+	    getpx(hiscall);
+	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
+
+	    getctydata(hiscall);
+	    pfxnumcntidx = -1;
+	    int tbandidx = -1;
+
+	    if (pfxnummultinr >= 0) {
+		int pfxi = 0;
+		while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+		    pfxi++;
+		}
+		if (pfxnummulti[pfxi].countrynr == countrynr) {
+		    pfxnumcntidx = pfxi;
+		}
+	    }
+	    if (pfxnumcntidx >= 0) {
+		tbandidx = pfxnummulti[pfxnumcntidx].qsos[pxnr];
+	    }
+	    else {
+		tbandidx = countries[countrynr];
+	    }
+
+	    if ((tbandidx & BAND160) == BAND160) {
+		mvwprintw(search_win, 6, 37, "M");
+	    }
+	    if ((tbandidx & BAND80) == BAND80) {
+		mvwprintw(search_win, 5, 37, "M");
+	    }
+	    if ((tbandidx & BAND40) == BAND40) {
+		mvwprintw(search_win, 4, 37, "M");
+	    }
+	    if ((tbandidx & BAND20) == BAND20) {
+		mvwprintw(search_win, 3, 37, "M");
+	    }
+	    if ((tbandidx & BAND15) == BAND15) {
+		mvwprintw(search_win, 2, 37, "M");
+	    }
+	    if ((tbandidx & BAND10) == BAND10) {
+		mvwprintw(search_win, 1, 37, "M");
+	    }
+
+	}
+
 	refreshp();
 
 

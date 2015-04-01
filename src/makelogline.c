@@ -226,6 +226,7 @@ void prepare_fixed_part(void) {
  *     class - TX count + operator class, sctn - ARRL/RAC section
  */
 void prepare_specific_part(void) {
+    extern int pfxnummultinr;
     int new_pfx;
     int sr_nr = 0;
     char grid[7] = "";
@@ -288,7 +289,7 @@ void prepare_specific_part(void) {
      * -> add prefix to prefixes_worked and include new pfx in log line */
     new_pfx = (add_pfx(pxstr) == 0);	/* add prefix, remember if new */
 
-    if (wpx ==1) {			/* wpx */
+    if (wpx ==1 || pfxmultab == 1) {			/* wpx */
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, pxstr, 5);
@@ -383,7 +384,7 @@ void prepare_specific_part(void) {
 
 	fillto(77);
 
-    } else if (pacc_pa_flg == 1) {
+    } else if (pacc_pa_flg == 1 || pfxnummultinr > 0) {
 
 	logline4[68] = '\0';
 

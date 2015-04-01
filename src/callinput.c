@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2005 Rein Couperus <pa0r@eudxf.org>
  *               2009-2014 Thomas Beierlein <tb@forth-ev.de>
+ *               2013      Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +31,7 @@
 #include <glib.h>
 #include "show_help.h"
 #include "cw_utils.h"
+#include "qtcwin.h"
 #include "netkeyer.h"
 #include "nicebox.h"
 #include "tlf.h"
@@ -136,6 +138,7 @@ char callinput(void)
     extern int keyerport;
     extern int miniterm;
     extern int no_rst;
+    extern int qtcdirection;
 
     int cury, curx;
     int i, j, ii, rc, t, x = 0, y = 0;
@@ -242,6 +245,26 @@ char callinput(void)
 
 		}
 		break;
+	    }
+
+	case 17:	// CTRL+q
+	    {
+		if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
+		    qtc_main_panel(RECV);
+		}
+		if (qtcdirection == 2) {			// in case of QTC=SEND
+		    qtc_main_panel(SEND);
+		}
+		x=155;
+		continue;
+	    }
+	case 19:	// CTRL+s
+	    {
+		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
+		    qtc_main_panel(SEND);
+		}
+		x=155;
+		continue;
 	    }
 
 	case 155:		/* left */

@@ -33,6 +33,10 @@
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif
+#include <ctype.h>
+#include "bandmap.h"
+#include "locator2longlat.h"
+#include "dxcc.h"
 
 extern int keyerport;
 extern char tonestr[];
@@ -46,6 +50,7 @@ extern int shortqsonr;
 extern char * cabrillo;
 
 int exist_in_country_list();
+int continent_found();
 
 char inputbuffer[160];
 FILE *fp;
@@ -54,7 +59,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 163	/* commands in list */
+#define  MAX_COMMANDS 226	/* commands in list */
 
 
 int read_logcfg(void)
@@ -115,6 +120,19 @@ int read_logcfg(void)
     fclose(fp);
 
     return( status );
+}
+
+int getidxbybandstr(char *confband) {
+    static char bands_strings[NBANDS][4] = {"160", "80", "40", "30", "20", "17", "15", "12", "10"};
+    g_strchomp(confband);
+    int i;
+
+    for(i=0; i<NBANDS; i++) {
+	if (strcmp(confband, g_strchomp(bands_strings[i])) == 0) {
+	    return i;
+	}
+    }
+    return -1;
 }
 
 
@@ -228,6 +246,7 @@ int parse_logcfg(char *inputbuffer)
     extern char sc_volume[];
     extern char modem_mode[];
     extern int no_rst;
+    extern int qtcdirection;
     extern int serial_or_section;
 
 /* LZ3NY mods */
@@ -237,12 +256,18 @@ int parse_logcfg(char *inputbuffer)
     extern int dx_cont_points;
     extern int countrylist_points;
     extern int countrylist_only;
+    extern int continentlist_points;
+    extern int continentlist_only;
     char c_temp[11];
     extern int my_cont_points;
     extern int dx_cont_points;
     extern int mult_side;
     extern char countrylist[][6];
 /* end LZ3NY mods */
+
+    extern char continent_multiplier_list[7][3];
+    extern int exclude_multilist_type;
+    char *mit_mult_array;
     extern int tlfcolors[8][2];
     extern char synclogfile[];
     extern int scale_values[];
@@ -255,6 +280,19 @@ int parse_logcfg(char *inputbuffer)
     extern int logfrequency;
     extern int ignoredupe;
     extern char myqra[7];
+    extern int bandweight_points[NBANDS];
+    extern int bandweight_multis[NBANDS];
+    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern int pfxnummultinr;
+    extern int pfxmultab;
+    extern char qtc_recv_msgs[12][80];
+    extern char qtc_send_msgs[12][80];
+    extern char qtc_phrecv_message[14][80];
+    extern char qtc_phsend_message[14][80];
+    extern int qtcrec_record;
+    extern char qtcrec_record_command[2][50];
+    extern char qtcrec_record_command_shutdown[50];
+    extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -420,6 +458,69 @@ int parse_logcfg(char *inputbuffer)
 	"MYQRA",
 	"POWERMULT",		/* 160 */
 	"SERIAL_OR_SECTION",
+	"QTC",
+	"CONTINENTLIST",
+	"CONTINENT_LIST_POINTS",
+	"USE_COUNTINENTLIST_ONLY",  /* 165 */
+	"BANDWEIGHT_POINTS",
+	"BANDWEIGHT_MULTIS",
+	"PFX_NUM_MULTIS",
+	"PFX_MULT_ALLB",
+	"QR_F1",		/* 170 */
+	"QR_F2",
+	"QR_F3",
+	"QR_F4",
+	"QR_F5",
+	"QR_F6",		/* 175 */
+	"QR_F7",
+	"QR_F8",
+	"QR_F9",
+	"QR_F10",
+	"QR_F11",		/* 180 */
+	"QR_F12",
+	"QS_F1",
+	"QS_F2",
+	"QS_F3",
+	"QS_F4",
+	"QS_F5",
+	"QS_F6",
+	"QS_F7",
+	"QS_F8",
+	"QS_F9",		/* 190 */
+	"QS_F10",
+	"QS_F11",
+	"QS_F12",
+	"QR_VKM1",
+	"QR_VKM2",
+	"QR_VKM3",
+	"QR_VKM4",
+	"QR_VKM5",
+	"QR_VKM6",
+	"QR_VKM7",			/* 200 */
+	"QR_VKM8",
+	"QR_VKM9",
+	"QR_VKM10",
+	"QR_VKM11",
+	"QR_VKM12",
+	"QR_VKSPM",
+	"QR_VKCQM",
+	"QS_VKM1",
+	"QS_VKM2",
+	"QS_VKM3",			/* 210 */
+	"QS_VKM4",
+	"QS_VKM5",
+	"QS_VKM6",
+	"QS_VKM7",
+	"QS_VKM8",
+	"QS_VKM9",
+	"QS_VKM10",
+	"QS_VKM11",
+	"QS_VKM12",
+	"QS_VKSPM",		/* 220 */
+	"QS_VKCQM",
+	"QTCREC_RECORD",
+	"QTCREC_RECORD_COMMAND",
+	"EXCLUDE_MULTILIST",
 	"S&P_CALL_MSG"
     };
 
@@ -465,7 +566,6 @@ int parse_logcfg(char *inputbuffer)
     g_strlcpy( teststring, fields[0], sizeof(teststring) );
 
     for (ii = 0; ii < MAX_COMMANDS; ii++) {
-
 	if (strcmp(teststring, commands[ii]) == 0) {
 	    break;
 	}
@@ -1378,12 +1478,300 @@ int parse_logcfg(char *inputbuffer)
 		 serial_or_section = 1;
 		 break;
 	    }
+
     case 162:{
+	    PARAMETER_NEEDED(teststring);
+	    if (strncmp(fields[1], "RECV", 4) == 0) {
+	        qtcdirection = 1;
+	    }
+	    if (strncmp(fields[1], "SEND", 4) == 0) {
+	        qtcdirection = 2;
+	    }
+	    else if (strcmp(fields[1], "BOTH")) {
+	        qtcdirection = 3;
+	    }
+	    if (qtcdirection == 0) {
+		KeywordNotSupported(teststring);
+	    }
+	    else {
+		int q;
+		for(q=0; q<QTC_RY_LINE_NR; q++) {
+		    qtc_ry_lines[q].content[0] = '\0';
+		    qtc_ry_lines[q].attr = 0;
+		}
+	    }
+	    break;
+	}
+
+    case 163:{
+	    /* based on LZ3NY code, by HA2OS
+	       COUNTINENT_LIST   (in file or listed in logcfg.dat),
+	       First of all we are checking if inserted data in
+	       COUNTINENT_LIST= is a file name.  If it is we start
+	       parsing the file. If we got our case insensitive contest name,
+	       we copy the multipliers from it into multipliers_list.
+	       If the input was not a file name we directly copy it into
+	       cont_multiplier_list (must not have a preceeding contest name).
+	       The last step is to parse the multipliers_list into an array
+	       (continent_multiplier_list) for future use.
+	     */
+
+	    int mit_fg = 0;
+	    static char cont_multiplier_list[50] = ""; 	/* use only first
+							   COUNTINENT_LIST
+							   definition */
+	    char mit_multlist[255] = "";
+	    char buffer[255] = "";
+	    FILE *fp;
+
+	    PARAMETER_NEEDED(teststring);
+	    if (strlen(cont_multiplier_list) == 0) {	/* if first definition */
+		g_strlcpy(mit_multlist, fields[1], sizeof(mit_multlist));
+		g_strchomp(mit_multlist);	/* drop trailing whitespace */
+
+		if ((fp = fopen(mit_multlist, "r")) != NULL) {
+
+		    while ( fgets(buffer, sizeof(buffer), fp) != NULL ) {
+
+			g_strchomp( buffer ); /* no trailing whitespace*/
+
+			/* accept only a line starting with the contest name
+			 * (CONTEST=) followed by ':' */
+			if (strncasecmp (buffer, whichcontest,
+				strlen(whichcontest) - 1) == 0) {
+
+			    strncpy(cont_multiplier_list,
+				    buffer + strlen(whichcontest) + 1,
+				    strlen(buffer) - 1);
+			}
+		    }
+
+		    fclose(fp);
+		} else {	/* not a file */
+
+		    if (strlen(mit_multlist) > 0)
+			strcpy(cont_multiplier_list, mit_multlist);
+		}
+	    }
+
+	    /* creating the array */
+	    mit_mult_array = strtok(cont_multiplier_list, ":,.- \t");
+	    mit_fg = 0;
+
+	    if (mit_mult_array != NULL) {
+		while (mit_mult_array) {
+		    strncpy(continent_multiplier_list[mit_fg], mit_mult_array, 2);
+		    mit_mult_array = strtok(NULL, ":,.-_\t ");
+		    mit_fg++;
+		}
+	    }
+
+	    setcontest();
+	    break;
+	}
+
+    case 164:{		// CONTINENT_LIST_POINTS
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
+	    if (continentlist_points == -1) {
+		continentlist_points = atoi(c_temp);
+	    }
+
+	    break;
+	}
+    case 165:{		// CONTINENT_LIST_ONLY
+	    continentlist_only = 1;
+	    break;
+	}
+
+    case 166:{		// BANDWEIGHT_POINTS
+	    PARAMETER_NEEDED(teststring);
+	    static char bwp_params_list[50] = "";
+	    int bandindex = -1;
+
+	    if (strlen(bwp_params_list) == 0) {
+		g_strlcpy(bwp_params_list, fields[1], sizeof(bwp_params_list));
+		g_strchomp(bwp_params_list);
+	    }
+
+	    mit_mult_array = strtok(bwp_params_list, ";:,");
+	    if (mit_mult_array != NULL) {
+		while (mit_mult_array) {
+
+		    bandindex = getidxbybandstr(g_strchomp(mit_mult_array));
+		    mit_mult_array = strtok(NULL, ";:,");
+		    if (mit_mult_array != NULL && bandindex >= 0) {
+			bandweight_points[bandindex] = atoi(mit_mult_array);
+		    }
+		    mit_mult_array = strtok(NULL, ";:,");
+		}
+	    }
+	    break;
+	}
+
+    case 167:{		// BANDWEIGHT_POINTS
+	    PARAMETER_NEEDED(teststring);
+	    static char bwm_params_list[50] = "";
+	    int bandindex = -1;
+
+	    if (strlen(bwm_params_list) == 0) {
+		g_strlcpy(bwm_params_list, fields[1], sizeof(bwm_params_list));
+		g_strchomp(bwm_params_list);
+	    }
+
+	    mit_mult_array = strtok(bwm_params_list, ";:,");
+	    if (mit_mult_array != NULL) {
+		while (mit_mult_array) {
+
+		    bandindex = getidxbybandstr(g_strchomp(mit_mult_array));
+		    mit_mult_array = strtok(NULL, ";:,");
+		    if (mit_mult_array != NULL && bandindex >= 0) {
+			bandweight_multis[bandindex] = atoi(mit_mult_array);
+		    }
+		    mit_mult_array = strtok(NULL, ";:,");
+		}
+	    }
+	    break;
+	}
+
+    case 168:{
+	    /* based on LZ3NY code, by HA2OS
+	       PFX_NUM_MULTIS   (in file or listed in logcfg.dat),
+	       We directly copy it into pfxnummulti_str, then parse the prefixlist
+	       and fill the pfxnummulti array.
+	     */
+
+	    int mit_fg = 0;
+	    int pfxnum;
+	    static char pfxnummulti_str[50] = "";
+	    char parsepfx[15] = "";
+
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(pfxnummulti_str, fields[1], sizeof(pfxnummulti_str));
+	    g_strchomp(pfxnummulti_str);
+
+	    /* creating the array */
+	    mit_mult_array = strtok(pfxnummulti_str, ",");
+	    mit_fg = 0;
+
+	    if (mit_mult_array != NULL) {
+		while (mit_mult_array) {
+		    parsepfx[0] = '\0';
+		    if (isdigit(mit_mult_array[strlen(mit_mult_array)-1])) {
+			sprintf(parsepfx, "%sAA", mit_mult_array);
+		    }
+		    else {
+			sprintf(parsepfx, "%s0AA", mit_mult_array);
+		    }
+		    pfxnummulti[mit_fg].countrynr = getctydata(parsepfx);
+		    for(pfxnum=0; pfxnum<10; pfxnum++) {
+			pfxnummulti[mit_fg].qsos[pfxnum] = 0;
+		    }
+		    mit_mult_array = strtok(NULL, ",");
+		    mit_fg++;
+		}
+	    }
+	    pfxnummultinr = mit_fg;
+	    setcontest();
+	    break;
+	}
+    case 169:{		// wpx style prefixes mult
+		pfxmultab = 1;	// enable pfx on all band
+		break;
+	    }
+
+    case 170 ... 181: {
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(qtc_recv_msgs[ii - 170], fields[1]);
+	    break;
+	    }
+    case 182 ... 193: {
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(qtc_send_msgs[ii - 182], fields[1]);
+	    break;
+	    }
+    case 194 ... 207:{	// get QTC recv phone messages
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(qtc_phrecv_message[ii - 194], g_strchomp(fields[1]), 71);
+	    mvprintw(15, 5, "A: QTC RECV phone message #%d is %s", ii - 194, qtc_phrecv_message[ii - 194]);
+	    refreshp();
+	    break;
+	}
+    case 208 ... 221:{	// get QTC send phone messages
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(qtc_phsend_message[ii - 208], g_strchomp(fields[1]), 71);
+	    mvprintw(15, 5, "A: QTC SEND phone message #%d is %s", ii - 208, qtc_phrecv_message[ii - 208]);
+	    refreshp();
+	    break;
+	}
+    case 222: {
+	    qtcrec_record = 1;
+ 	    break;
+    }
+    case 223: {
+	    PARAMETER_NEEDED(teststring);
+	    int p, q = 0, i = 0, s = 0;
+	    for(p=0; p<strlen(fields[1]); p++) {
+	        if (p > 0 && fields[1][p] == ' ') {
+		    s = 1;
+		    qtcrec_record_command_shutdown[p] = '\0';
+		}
+		if (s == 0) {
+		    qtcrec_record_command_shutdown[p] = fields[1][p];
+		}
+		if (fields[1][p] == '$') {
+		    qtcrec_record_command[i][q] = '\0';
+		    i=1;
+		    p++;
+		    q=0;
+		}
+		if (fields[1][p] != '\n') {
+		    qtcrec_record_command[i][q] = fields[1][p];
+		}
+		q++;
+		qtcrec_record_command[i][q] = ' ';
+	    }
+
+	    if (qtcrec_record_command[i][q-1] != '&') {
+		qtcrec_record_command[i][q++] = ' ';
+		qtcrec_record_command[i][q++] = '&';
+	    }
+	    qtcrec_record_command[i][q] = '\0';
+ 	    break;
+    }
+    case 224: {
+	    PARAMETER_NEEDED(teststring);
+	    if (strcmp(fields[1], "CONTINENTLIST")) {
+	        if (strlen(continent_multiplier_list[0]) == 0) {
+		    showmsg
+			("WARNING: you need to set the CONTINENTLIST paramter...");
+		    sleep(5);
+		    exit(1);
+		}
+		exclude_multilist_type = 1;
+	    }
+	    else if (strcmp(fields[1], "COUNTRYLIST")) {
+	        if (strlen(countrylist[0]) == 0) {
+		    showmsg
+			("WARNING: you need to set the COUNTRYLIST paramter...");
+		    sleep(5);
+		    exit(1);
+		}
+		exclude_multilist_type = 2;
+	    }
+	    else {
+	        showmsg
+			("WARNING: choose one of these params for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST...");
+		    sleep(5);
+		    exit(1);
+	    }
+	    break;
+    }
+    case 225:{
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(message[SP_CALL_MSG], fields[1]);
 	    break;	/* end messages */
 	}
-
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

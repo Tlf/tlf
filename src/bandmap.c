@@ -38,6 +38,8 @@
 #include <hamlib/rig.h>
 #endif
 
+#include "qtcutil.h"
+
 #define TOLERANCE 50 		/* spots with a QRG +/-TOLERANCE
 				   will be counted a s the same QRG */
 
@@ -107,6 +109,9 @@ extern char thisnode;
 
 extern struct worked_t worked[];
 
+extern int qtcdirection;
+
+char *qtc_format(char * call);
 
 /** \brief initialize bandmap
  *
@@ -521,7 +526,11 @@ void bandmap_show() {
 	if (bm_ismulti(data->call))
 	    attron(A_STANDOUT);
 
-       temp = g_strdup(data->call);
+	if (qtcdirection > 0) {
+	    temp = qtc_format(data->call);
+	}
+	else
+	    temp = g_strdup(data->call);
 
        if (data->dupe) {
 	   if (bm_config.showdupes) {
@@ -703,5 +712,46 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq)
 
     }
     return result;
+}
+
+/*
+ * copy string to buffer but truncate it to n characters
+ * If truncated show it by replacing last two chars by '..'
+ * The buffer has to be at least n+1 chars long.
+ */
+void str_truncate(char *buffer, char *string, int n) {
+    if (strlen(string) > n) {
+	g_strlcpy(buffer, string, n-1);   	/* truncate to n-2 chars */
+	strcat(buffer, "..");
+    }
+    else {
+	g_strlcpy(buffer, string, n+1); 	/* copy up to n chars */
+    }
+}
+
+/*
+ * format bandmap call output for WAE
+ * - prepare and return a temporary string from call and number of QTC's
+ *   (if any)
+ */
+char *qtc_format(char * call) {
+    char tcall[15];
+    int nrofqtc;
+
+    nrofqtc = qtc_get(call)->total;
+
+    if (nrofqtc <= 0) {
+	str_truncate(tcall, call, SPOT_CALL_WIDTH);
+    }
+    else {
+	str_truncate(tcall, call, SPOT_CALL_WIDTH-2);
+	if (nrofqtc < 10) {
+	    sprintf(tcall + strlen(tcall), " %d", nrofqtc);
+	}
+	else {
+	    sprintf(tcall + strlen(tcall), " Q");
+	}
+    }
+    return g_strdup(tcall);
 }
 

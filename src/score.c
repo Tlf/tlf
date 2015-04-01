@@ -32,7 +32,6 @@
 #include "focm.h"
 #include <math.h>
 
-
 int calc_continent(int zone);
 
 /* check if hiscall is in COUNTRY_LIST from logcfg.dat */
@@ -190,6 +189,7 @@ int scoreByContinentOrCountry () {
 	} else if (dx_cont_points != -1)
 	    points = dx_cont_points;
     }
+
     return points;
 }
 

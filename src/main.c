@@ -30,6 +30,7 @@
 #include "set_tone.h"
 #include "splitscreen.h"
 #include "addmult.h"
+#include <termios.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -87,6 +88,7 @@ int focm = 0;
 int universal = 0;
 int addcallarea;
 int pfxmult = 0;
+int pfxmultab = 0;
 int exc_cont = 0;
 int manise80;
 int other_flg;
@@ -107,6 +109,11 @@ int countrylist_only = 0;
 int countrylist_points = -1;
 int mult_side = 0;
 /* end LZ3NY mods */
+
+int continentlist_points = -1;
+char continent_multiplier_list[7][3]; // SA, NA, EU, AF, AS and OC
+int exclude_multilist_type = 0;
+int continentlist_only = 0;
 
 int portable_x2 = 0;
 int recall_mult = 0;
@@ -144,6 +151,9 @@ int lu_cty;
 int vk_cty;
 int zs_cty;
 int ua9_cty;
+
+t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+int pfxnummultinr = 0;
 
 char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
@@ -209,6 +219,13 @@ char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   */
 	{ "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 
+char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
+char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
+char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTC's
+char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTC's
+int qtcrec_record = 0;
+char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
+char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
 
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
@@ -317,6 +334,19 @@ char simulator_tone[5];
 char qsos[MAX_QSOS][LOGLINELEN+1];
 int nr_qsos = 0;
 
+int qsoflags_for_qtc[MAX_QSOS];
+int nr_qsosflags_for_qtc;
+int next_qtc_qso;
+t_qtclist qtclist;
+int nr_qtcsent = 0;
+t_qtcreclist qtcreclist;
+struct t_qtc_store_obj *qtc_temp_obj;
+int qtcdirection = 0;
+t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
+int qtc_ry_currline = 0;
+int qtc_ry_capture;
+int qtc_ry_copied;
+
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/*< number of calls in worked[] */
 struct worked_t worked[MAX_CALLS]; /*< worked stations */
@@ -398,9 +428,12 @@ char itustr[3];
 int nopacket = 0;		/* set if tlf is called with '-n' */
 int no_trx_control = 0;		/* set if tlf is called with '-r' */
 
+int bandweight_points[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+int bandweight_multis[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 pthread_t background_thread;
 pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
+static struct termios oldt, newt;
 
 /** fake old refresh code to use update logic for panels */
 void refreshp() {
@@ -443,7 +476,7 @@ void parse_options(int argc, char *argv[])
 	    printf("Version: tlf-%s\n", VERSION);
 	    exit(0);
 	    break;
-	case 'n':		// output version
+	case 'n':		// disable packet
 	    nopacket = 1;
 	    break;
 	case 'r':
@@ -469,6 +502,12 @@ void parse_options(int argc, char *argv[])
 /** initialize user interface */
 void ui_init()
 {
+    /* modify stdin terminals attributes to allow Ctrl-Q/S key recognition */
+    tcgetattr( STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_iflag &= ~(IXON);
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt);
+
 /* getting users terminal string and (if RXVT) setting rxvt colours on it */
 /* LZ3NY hack :) */
     char *term = getenv("TERM");
@@ -619,6 +658,13 @@ int databases_load()
 	return EXIT_FAILURE;
     }
 
+    if (qtcdirection > 0) {
+	if (checkqtclogfile_new() != 0) {
+	    showmsg( "QTC's giving up" );
+	    return EXIT_FAILURE;
+	}
+	readqtccalls();
+    }
     return 0;
 }
 
@@ -740,6 +786,7 @@ void keyer_init()
     if (keyerport == MFJ1278_KEYER || keyerport == GMFSK) {
 	init_controller();
     }
+
 }
 
 
@@ -765,6 +812,7 @@ void tlf_cleanup()
 	deinit_controller();
 
     endwin();
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 }
 
 
@@ -806,6 +854,7 @@ int main(int argc, char *argv[])
     showmsg(tlfversion);
     showmsg("");
 
+    total = 0;
     if (databases_load() == EXIT_FAILURE) {
 	sleep(2);
 	endwin();

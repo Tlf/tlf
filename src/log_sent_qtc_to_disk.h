@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ * Copyright (C) 2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef READCALLS_H
-#define READCALLS_H
+#ifndef LOG_SENT_QTC_TO_DISK_H
+#define LOG_SENT_QTC_TO_DISK_H
 
-int readcalls(void);
-int synclog(char *synclogfile);
 
-#endif /* READCALLS_H */
+int log_sent_qtc_to_disk (int qtcnr);
+void store_sent_qtc (char * loglineptr);
+
+
+#endif /* end of include guard: LOG_SENT_QTC_TO_DISK_H */

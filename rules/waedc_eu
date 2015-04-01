@@ -1,0 +1,94 @@
+#########################################
+# WAEDC contest for EU and DX stations  #
+#        HA2OS, 11.09.2014              #
+#########################################
+#
+CONTEST=waedc
+LOGFILE=waedc.log
+CONTEST_MODE
+CABRILLO=UNIVERSAL
+QTC=RECV
+CONTINENTLIST=SA,NA,AF,AS,OC
+CONTINENT_LIST_POINTS=1
+USE_COUNTINENTLIST_ONLY
+BANDWEIGHT_MULTIS=80:4;40:3;20:2;15:2;10:2
+COUNTRY_MULT
+PFX_NUM_MULTIS=W,VE,VK1,ZL,ZS,JA,PY,UA9
+
+#################################
+#NOB4
+#
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CQ_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = call                      #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#                                #
+##################################
+#
+F1=+++CQ TEST DE--- % ++TEST--
+F2=@ DE %
+F3=CFM UR ++5NN --#
+F4=TU 73
+F5= @
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9= ?
+F10= QRZ?
+F11= PSE K
+F12=++++TEST---- % %
+#
+CQ_TU_MSG=
+S&P_TU_MSG=TU 5NN #
+#
+#ALT_0=
+#ALT_1=
+#ALT_2=
+#ALT_3=
+#ALT_4=
+#ALT_5=
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+
+#VKM1=cq.ogg
+#VKM2=mycall.ogg
+#VKM3=
+#VKM4=
+#VKM5=
+#VKM6=
+#VKM7=
+#VKM8=
+#VKM9=
+#VKM10=
+#VKM11=
+#VKM12=autocq.wav
+#VKSPM=
+#VKCQM=
+
+#QR_VKM1=qtcask.ogg
+#QR_VKM2=qrv.ogg
+#QR_VKM3=roger.wav
+#QR_VKM5=timaegn.wav
+#QR_VKM6=callagn.wav
+#QR_VKM7=nragn.wav
+#QR_VKM8=agnall.wav
+#QR_VKM10=qslall.wav
+
+QTCREC_RECORD
+# record command, the $ mark is the placeholder, Tlf will replace the
+# record file: yymmddhhmmss.wav
+QTCREC_RECORD_COMMAND=rec -r 8000 $ -q
+
+
+####### END #####################

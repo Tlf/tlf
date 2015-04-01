@@ -272,12 +272,12 @@ int lan_send(char *lanbuffer)
 int send_lan_message(int opcode, char *message)
 {
 
-    char sendbuffer[84];
+    char sendbuffer[100];
 
     sendbuffer[0] = thisnode;
     sendbuffer[1] = opcode;
     sendbuffer[2] = '\0';
-    strncat(sendbuffer, message, 80);
+    strncat(sendbuffer, message, 98);
     if (opcode == CLUSTERMSG) {
 	if (cl_send_inhibit == 0) {
 	    strcat(sendbuffer, "\n");
@@ -309,6 +309,14 @@ int send_lan_message(int opcode, char *message)
     }
     if (opcode == TIMESYNC) {
 	sendbuffer[14] = '\0';
+	lan_send(sendbuffer);
+    }
+    if (opcode == QTCRENTRY) {
+	sendbuffer[93] = '\0';
+	lan_send(sendbuffer);
+    }
+    if (opcode == QTCSENTRY) {
+	sendbuffer[99] = '\0';
 	lan_send(sendbuffer);
     }
 

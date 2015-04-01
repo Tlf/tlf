@@ -1,7 +1,8 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- * 		 2010 - 2013 Thomas Beierlein <tb@forth-ev.de>
+ *               2010 - 2013    Thomas Beierlein <tb@forth-ev.de>
+ *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,6 +135,7 @@ int get_nr_of_mults()
     extern int sprint;
     extern int multlist;
     extern int multscore[];
+    extern int bandweight_multis[NBANDS];
 
     int n;
     int totalzones;
@@ -146,9 +148,9 @@ int get_nr_of_mults()
     totalmults = 0;
 
     for (n = 0; n < 6; n++) {
-	totalzones += zonescore[n];
-	totalcountries += countryscore[n];
-	totalmults += multscore[bi_normal[n]];
+	totalzones += (zonescore[n] * bandweight_multis[bi_normal[n]]);
+	totalcountries += (countryscore[n] * bandweight_multis[bi_normal[n]]);
+	totalmults += (multscore[bi_normal[n]] * bandweight_multis[bi_normal[n]]);
     }
 
     if (sprint == 1) {
@@ -199,13 +201,18 @@ int get_nr_of_mults()
     else if ((wysiwyg_multi == 1)
 	|| (serial_section_mult == 1)
 	|| (serial_grid4_mult == 1)
-	|| (sectn_mult == 1)) {
+	|| (sectn_mult == 1)
+	|| (itumult == 1)) {
 
 	return totalmults;
     }
     else if (wpx == 1) {
 
 	return nr_of_px;
+    }
+    else if (pfxmultab == 1) {
+
+	return nr_of_px_ab;
     }
     else
 	/* should never reach that point
@@ -258,7 +265,7 @@ int showscore(void)
     extern int dx_arrlsections;
     extern float fixedmult;
 
-    int i, l10;
+    int i, l10, j;
     float p;
 
     if (showscore_flag == 1) {
@@ -277,11 +284,24 @@ int showscore(void)
 	if ((wysiwyg_multi == 1)
 	    || (serial_section_mult == 1)
 	    || (serial_grid4_mult == 1)
-	    || (sectn_mult == 1)) {
+	    || (sectn_mult == 1)
+	    || (itumult == 1)) {
 
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {
 	    	printfield(3, band_cols[i], multscore[bi_normal[i]]);
+	    }
+	}
+
+	if (pfxmultab == 1) {
+	    mvprintw(3, START_COL, "Mult ");
+	    i=0; j=0;
+	    while(i < 6) {
+		if(j != BANDINDEX_12 && j != BANDINDEX_17 && j != BANDINDEX_30) {
+		  printfield(3, band_cols[i], pfxs_per_band[j]);
+		  i++;
+		}
+		j++;
 	    }
 	}
 
@@ -334,7 +354,6 @@ int showscore(void)
 	    	printfield(3, band_cols[i], countryscore[i]);
 	    }
 	}
-
 
 	/* show score summary */
 	if (sprint == 1) {

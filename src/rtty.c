@@ -32,8 +32,12 @@
 #include <glib.h>
 #include "ui_utils.h"
 
+
 static int fdcont;		// global for this file: tty file descriptor
 static char ry_term[5][50] = { "", "", "", "", "" };
+extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
+extern int qtc_ry_currline;
+extern int qtc_ry_capture;
 
 /* ----------------------- initialize  controller ------------------------ */
 int init_controller()
@@ -84,6 +88,7 @@ void deinit_controller()
 void ry_addchar(char c)
 {
     static int k = 0;
+    int i = 0;
     FILE *ry_fp;
 
     if ((ry_fp = fopen("RTTYlog", "a")) == NULL) {
@@ -104,6 +109,21 @@ void ry_addchar(char c)
 	g_strlcpy(ry_term[1], ry_term[2], 41);
 	g_strlcpy(ry_term[2], ry_term[3], 41);
 	g_strlcpy(ry_term[3], ry_term[4], 41);
+	if (qtc_ry_capture == 1) {
+	    if (qtc_ry_currline == 11 && qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
+		for(i=0; i<11; i++) {
+		    g_strlcpy(qtc_ry_lines[i].content, qtc_ry_lines[i+1].content, 41);
+		    qtc_ry_lines[i].attr = qtc_ry_lines[i+1].attr;
+		}
+	    }
+	    else {
+		if (strlen(qtc_ry_lines[qtc_ry_currline].content) > 0) {
+		    qtc_ry_currline++;
+		}
+	    }
+	    qtc_ry_lines[qtc_ry_currline].content[0] = '\0';
+	    qtc_ry_lines[qtc_ry_currline].attr = 0;
+	}
 	ry_term[4][0] = '\0';
 	k = 0;
     }
@@ -119,10 +139,27 @@ void ry_addchar(char c)
 	    g_strlcpy(ry_term[1], ry_term[2], 41);
 	    g_strlcpy(ry_term[2], ry_term[3], 41);
 	    g_strlcpy(ry_term[3], ry_term[4], 41);
+	    if (qtc_ry_capture == 1) {
+		if (qtc_ry_currline == 11 && qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
+		    for(i=0; i<11; i++) {
+			g_strlcpy(qtc_ry_lines[i].content, qtc_ry_lines[i+1].content, 41);
+			qtc_ry_lines[i].attr = qtc_ry_lines[i+1].attr;
+		    }
+		}
+		else {
+		    qtc_ry_currline++;
+		}
+		qtc_ry_lines[qtc_ry_currline].content[0] = '\0';
+		qtc_ry_lines[qtc_ry_currline].attr = 0;
+	    }
 	    ry_term[4][0] = '\0';
 	    k = 0;
 	}
 	// add char to line
+	if (qtc_ry_capture == 1) {
+	    qtc_ry_lines[qtc_ry_currline].content[k] = c;
+	    qtc_ry_lines[qtc_ry_currline].content[k+1] = '\0';
+	}
 	ry_term[4][k++] = c;
 	ry_term[4][k] = '\0';
     }

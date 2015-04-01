@@ -1,7 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ * Copyright (C) 2014           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +16,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef READCALLS_H
-#define READCALLS_H
 
-int readcalls(void);
-int synclog(char *synclogfile);
+#ifndef QTCUTIL_H
+#define QTCUTIL_H
 
-#endif /* READCALLS_H */
+struct t_qtc_store_obj {
+  int total;
+  int received;
+  int sent;
+};
+
+void qtc_init();
+void qtc_inc(char callsign[15], int direction);
+void qtc_dec(char callsign[15], int direction);
+struct t_qtc_store_obj * qtc_get(char callsign[15]);
+
+void parse_qtcline(char * line, char callsign[15], int direction);
+
+#endif /* end of include guard: QTCUTIL_H */

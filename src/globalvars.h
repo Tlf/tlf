@@ -52,6 +52,8 @@ extern int wysiwyg_multi;
 extern int wysiwyg_once;
 extern char pxstr[];
 extern int nr_of_px;
+extern int nr_of_px_ab;
+extern int pfxs_per_band[NBANDS];
 extern int zonescore[6];
 extern int countryscore[6];
 extern int qsonum;
@@ -59,6 +61,7 @@ extern int countrynr;
 extern int w_cty;
 extern int ve_cty;
 extern int pfxmult;
+extern int pfxmultab;
 extern int minute_timer;
 extern int stewperry_flg;
 extern char myqra[7];
@@ -117,3 +120,19 @@ extern int three_point;
 extern int dxped;
 extern int addzone;
 
+extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs for QTC's;
+					// this is an array of flags, which marks when a QSO sent as QTC
+extern int nr_qsosflags_for_qtc;	// number of lines in qsoflags_for_qtc[]
+extern int next_qtc_qso;		// the next non-sent QSO, which can be send next as QTC
+extern t_qtclist qtclist;		// the QTC list to send
+extern int nr_qtcsent;
+extern t_qtcreclist qtcreclist;		// the QTC list which received
+
+extern int qtcdirection;				// QTC direction - 1: RECV, 2: SEND
+extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];	// array of PFX_NUM_MULTIS parameter
+extern int pfxnummultinr;				// length of array of PFX_NUM_MULTIS parameter
+extern int continentlist_only;				// CONTINENT_LIST_ONLY parameter
+extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];	// when QTC is set, and mode is RTTY, then the modem lines stored this array
+extern int qtc_ry_currline;				// current line of QTC RTTY modem
+extern int qtc_ry_capture;				// enable or disable QTC RTTY capturing
+extern int qtc_ry_copied;				// stores the number of copied lines from QTC RTTY terminal to QTC window
