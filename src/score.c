@@ -115,9 +115,12 @@ int continent_found() {
 int apply_bandweigth(int points) {
     extern int lowband_point_mult;
     extern int bandinx;
+    extern int bandweight_points[];
 
     if (lowband_point_mult != 0 && (bandinx < BANDINDEX_30))
 	points *= 2;
+
+    points *= bandweight_points[bandinx];
 
     return points;
 }
