@@ -262,13 +262,12 @@ int parse_logcfg(char *inputbuffer)
     extern int my_cont_points;
     extern int dx_cont_points;
     extern int mult_side;
+    extern char countrylist[][6];
+/* end LZ3NY mods */
 
     extern char continent_multiplier_list[7][3];
     extern int exclude_multilist_type;
     char *mit_mult_array;
-
-    extern char countrylist[][6];
-/* end LZ3NY mods */
     extern int tlfcolors[8][2];
     extern char synclogfile[];
     extern int scale_values[];
