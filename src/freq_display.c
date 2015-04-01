@@ -18,6 +18,9 @@
  */
 
 #include "freq_display.h"
+#include "tlf.h"
+#include "nicebox.h"
+#include "ui_utils.h"
 
 int freq_display(void)
 {
@@ -269,15 +272,8 @@ int print_dot(int y, int x)
 
 int print_space(int y, int x)
 {
-
-    extern int use_rxvt;
-
     attroff(A_STANDOUT);
-
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_LOG) | A_BOLD);
-    else
-	attron(COLOR_PAIR(C_LOG));
+    attron(modify_attr(COLOR_PAIR(C_LOG)));
 
     mvprintw(y, x, "                                   ");
 

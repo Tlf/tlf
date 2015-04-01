@@ -24,7 +24,7 @@
 #include "listmessages.h"
 
 #include "tlf.h"
-#include "onechar.h"
+#include "ui_utils.h"
 #include "nicebox.h"
 #include "clear_display.h"
 #include <glib.h>
@@ -70,7 +70,7 @@ void listmessages(void)
     mvprintw(23, 30,  "Press any key");
     refreshp();
 
-    onechar();
+    (void)key_get();
 
     clear_display();
 

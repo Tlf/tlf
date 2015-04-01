@@ -16,45 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include "tlf.h"
-#include "clear_display.h"
-#include "onechar.h"
-#include "stoptx.h"
-#include "speedupndown.h"
-#include "sendbuf.h"
-#include "scroll_log.h"
-#include "addcall.h"
-#include "makelogline.h"
-#include "store_qso.h"
-#include "qsonr_to_str.h"
-#include "writeparas.h"
-#include "printcall.h"
-#include "time_update.h"
-#include "cleanup.h"
-#include "autocq.h"
-#include "sendspcall.h"
-#include "edit_last.h"
-#include "changepars.h"
-#include "deleteqso.h"
-#include "note.h"
-#include "prevqso.h"
-#include "getctydata.h"
-#include "showinfo.h"
-#include "searchlog.h"
-#include "calledit.h"
-#include "muf.h"
-#include "clusterinfo.h"
-#include "grabspot.h"
-#include "splitscreen.h"
-#include "showpxmap.h"
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
-#include "lancode.h"
-#include "rtty.h"
-
+#ifndef CALLINPUT_H
+#define CALLINPUT_H
 
 char callinput(void);
 int play_file(char *audiofile);
 
+#endif /* CALLINPUT_H */

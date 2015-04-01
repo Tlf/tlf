@@ -22,14 +22,20 @@
 	 *       Clear_display takes  care of status lines  and
 	 *       backgrounds (general repaint of the screen)
 	 *--------------------------------------------------------------*/
-
 #include "globalvars.h"
+#include "tlf.h"
+#include "get_time.h"
+#include "qsonr_to_str.h"
+#include "searchlog.h"
+#include "get_time.h"
 #include "clear_display.h"
 #include "cw_utils.h"
+#include "showscore.h"
+#include "printcall.h"
+#include "ui_utils.h"
 
 void clear_display(void)
 {
-    extern int use_rxvt;
     extern char mode[];
     extern int cqdelay;
     extern char headerline[];
@@ -68,10 +74,7 @@ void clear_display(void)
     mvprintw(0, 0, "  %s  S=%s D=%i ", mode, speedbuf, cqdelay);
     mvprintw(0, 21, headerline);
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_LOG | A_BOLD | A_STANDOUT));
-    else
-	attron(COLOR_PAIR(C_LOG | A_STANDOUT));
+    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
     mvaddstr(1, 0, terminal1);
     mvaddstr(2, 0, terminal2);
@@ -87,10 +90,7 @@ void clear_display(void)
 
     showscore();
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
     mvaddstr(7, 0, logline0);
     mvaddstr(8, 0, logline1);
@@ -137,18 +137,12 @@ void clear_display(void)
     }
 
     if (cqww == 1) {
-	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-	else
-	    attron(COLOR_PAIR(NORMCOLOR));
+	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 	mvaddstr(12, 54, comment);
     }
 
     if (arrldx_usa == 1) {
-	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-	else
-	    attron(COLOR_PAIR(NORMCOLOR));
+	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 	mvaddstr(12, 54, comment);
     }
 
@@ -160,11 +154,7 @@ void clear_display(void)
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(24, 0, backgrnd_str);
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
-
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     mvprintw(cury, curx, "");
     refreshp();
 }

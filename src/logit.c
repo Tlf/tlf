@@ -37,6 +37,8 @@
 #include "sendqrg.h"
 #include "lancode.h"
 #include "set_tone.h"
+#include "searchlog.h"
+#include "ui_utils.h"
 
 void refresh_comment(void);
 
@@ -237,12 +239,8 @@ void *logit(void *ptr)
 /** reprint comment field */
 void refresh_comment(void) {
     extern char comment[];
-    extern int use_rxvt;
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvprintw(12, 54, "                          ");
     mvprintw(12, 54, comment);

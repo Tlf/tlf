@@ -16,10 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include<stdlib.h>
-#include<string.h>
-#include "tlf.h"
-
+#ifndef QSONR_TO_STR_H
+#define QSONR_TO_STR_H
 
 int qsonr_to_str(void);
 
+#endif /* QSONR_TO_STR_H */

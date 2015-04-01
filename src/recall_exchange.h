@@ -16,7 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "tlf.h"
+#ifndef RECALL_EXCHANGE_H
+#define RECALL_EXCHANGE_H
 
 int recall_exchange(void);
 
+#endif /* RECALL_EXCHANGE_H */

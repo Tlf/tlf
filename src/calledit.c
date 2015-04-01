@@ -24,6 +24,11 @@
      *--------------------------------------------------------------*/
 
 #include "calledit.h"
+#include "tlf.h"
+#include "ui_utils.h"
+#include "searchlog.h"
+#include "getctydata.h"
+#include "showinfo.h"
 
 void calledit(void)
 {
@@ -53,7 +58,7 @@ void calledit(void)
 	/* no refreshp() here as getch() calls wrefresh() for the
 	 * panel with last output (whre the cursor should go */
 
-	i = onechar();
+	i = key_get();
 
 	if ((i == 161) || (i == 160))	// Ins / Del
 	    cnt++;
@@ -205,7 +210,7 @@ int insert_char(int curposition)
 
     while (ichr != 27) {
 
-	ichr = onechar();
+	ichr = key_get();
 
 	if ((ichr == 9) || (ichr == '\n') || (ichr == 127))
 	    break;		// leave insert mode

@@ -22,11 +22,11 @@
 	 *--------------------------------------------------------------*/
 
 #include "writeparas.h"
+#include "tlf.h"
 #include "cw_utils.h"
 
 int writeparas(void)
 {
-
     extern char call[];
     extern char message[][80];
     extern char headerline[];

@@ -27,6 +27,10 @@
 #include "getmessages.h"
 #include "qsonr_to_str.h"
 #include "dxcc.h"
+#include "tlf.h"
+#include "getctydata.h"
+#include "get_time.h"
+#include "checklogfile.h"
 
 int getmessages(void)
 {

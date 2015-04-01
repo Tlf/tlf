@@ -16,10 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include "tlf.h"
-#include "addarea.h"
-#include <string.h>
+#ifndef ADDMULT_H
+#define ADDMULT_H
 
 int addmult( void);
 int addmult2( void);
@@ -27,3 +25,4 @@ int load_multipliers(void);
 int remember_multi(char *multiplier, int band, int show_new_band);
 void init_mults();
 
+#endif /* ADDMULT_H */

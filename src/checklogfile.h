@@ -16,12 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include "tlf.h"
+#ifndef CHECKLOGFILE_H
+#define CHECKLOGFILE_H
 
 int checklogfile_new(char *filename);
 void checklogfile(void);
 
+#endif /* CHECKLOGFILE_H */

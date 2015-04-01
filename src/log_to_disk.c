@@ -26,7 +26,22 @@
 
 #include "globalvars.h"
 #include "log_to_disk.h"
+#include <pthread.h>
+#include "tlf.h"
+#include "scroll_log.h"
+#include "addcall.h"
+#include "makelogline.h"
+#include "store_qso.h"
+#include "qsonr_to_str.h"
+#include "writeparas.h"
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
+#include "gettxinfo.h"
+#include "lancode.h"
+#include "addspot.h"
 #include "score.h"
+#include "ui_utils.h"
 
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -38,7 +53,6 @@ pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
  */
 int log_to_disk(int from_lan)
 {
-    extern int use_rxvt;
     extern char hiscall[];
     extern char comment[];
     extern char my_rst[];
@@ -113,10 +127,7 @@ int log_to_disk(int from_lan)
 
     lan_mutex = 0;
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);	/* erase comment  field */
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));	/* erase comment  field */
 
     if (!from_lan)
 	mvprintw(12, 54, "                          ");

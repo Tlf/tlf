@@ -25,6 +25,14 @@
 
 #include "globalvars.h"
 #include "deleteqso.h"
+#include "tlf.h"
+#include <sys/stat.h>
+#include <fcntl.h>
+#include "ui_utils.h"
+#include "qsonr_to_str.h"
+#include "printcall.h"
+#include "clear_display.h"
+#include "scroll_log.h"
 #include "qtcutil.h"
 
 #define QTCRECVCALLPOS 30
@@ -44,7 +52,7 @@ void delete_qso(void)
     char call[15], bandmode[6];
 
     mvprintw(13, 29, "OK to delete last qso (y/n)?");
-    x = onechar();
+    x = key_get();
 
     if ((x == 'y') || (x == 'Y')) {
 

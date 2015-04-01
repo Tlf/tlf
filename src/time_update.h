@@ -16,22 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <curses.h>
-#include "tlf.h"
-#include "get_time.h"
-#include "gettxinfo.h"
-#include "clusterinfo.h"
-#include "showscore.h"
-#include "showzones.h"
-#include "printcall.h"
-#include "getwwv.h"
-#include "scroll_log.h"
-#include "lancode.h"
-
+#ifndef TIME_UPDATE_H
+#define TIME_UPDATE_H
 
 void time_update(void);
 
+#endif /* TIME_UPDATE_H */

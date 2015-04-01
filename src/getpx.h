@@ -16,8 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <string.h>
+#ifndef GETPX_H
+#define GETPX_H
 
 void getpx(char *checkcall);
 
+#endif /* GETPX_H */

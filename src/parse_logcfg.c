@@ -1,7 +1,7 @@
 /*
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
-* 		2011-2014           Thomas Beierlein <tb@forth-ev.de>
+* 		2011-2015           Thomas Beierlein <tb@forth-ev.de>
 * 		2013 		    Fred DH5FS
 *               2013-2014           Ervin Hegedus - HA2OS <airween@gmail.com>
 *
@@ -262,10 +262,12 @@ int parse_logcfg(char *inputbuffer)
     extern int my_cont_points;
     extern int dx_cont_points;
     extern int mult_side;
-    extern char mit_multiplier_list[][6];
+
     extern char continent_multiplier_list[7][3];
     extern int exclude_multilist_type;
     char *mit_mult_array;
+
+    extern char countrylist[][6];
 /* end LZ3NY mods */
     extern int tlfcolors[8][2];
     extern char synclogfile[];
@@ -1109,33 +1111,34 @@ int parse_logcfg(char *inputbuffer)
 	    nob4 = 1;
 	    break;
 	}
-/* LZ3NY mods */
+
     case 95:{
-	    /* COUNTRY_LIST   (in file or listed in logcfg.dat)     LZ3NY
-	       First of all we are checking if inserted data in
-	       COUNTRY_LIST= is a file name.  If it is we start
-	       parsing the file. If we got our case insensitive contest name,
-	       we copy the multipliers from it into multipliers_list.
-	       If the input was not a file name we directly copy it into
-	       multiplier_list (must not have a preceeding contest name).
-	       The last step is to parse the multipliers_list into an array
-	       (mit_multiplier_list) for future use.
+	    /* COUNTRYLIST   (in file or listed in logcfg.dat)     LZ3NY
 	     */
 
-	    int mit_fg = 0;
-	    static char multiplier_list[50] = ""; 	/* use only first
+	    int counter = 0;
+	    static char country_list_raw[50] = ""; 	/* use only first
 							   COUNTRY_LIST
 							   definition */
-	    char mit_multlist[255] = "";
+	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
 
 	    PARAMETER_NEEDED(teststring);
-	    if (strlen(multiplier_list) == 0) {	/* if first definition */
-		g_strlcpy(mit_multlist, fields[1], sizeof(mit_multlist));
-		g_strchomp(mit_multlist);	/* drop trailing whitespace */
+	    if (strlen(country_list_raw) == 0) {/* only if first definition */
 
-		if ((fp = fopen(mit_multlist, "r")) != NULL) {
+	       /* First of all we are checking if the parameter <xxx> in
+	       COUNTRY_LIST=<xxx> is a file name.  If it is we start
+	       parsing the file. If we  find a line starting with our
+	       case insensitive contest name, we copy the countries from
+	       that line into country_list_raw.
+	       If the input was not a file name we directly copy it into
+	       country_list_raw (must not have a preceeding contest name). */
+
+		g_strlcpy(temp_buffer, fields[1], sizeof(temp_buffer));
+		g_strchomp(temp_buffer);	/* drop trailing whitespace */
+
+		if ((fp = fopen(temp_buffer, "r")) != NULL) {
 
 		    while ( fgets(buffer, sizeof(buffer), fp) != NULL ) {
 
@@ -1146,7 +1149,7 @@ int parse_logcfg(char *inputbuffer)
 			if (strncasecmp (buffer, whichcontest,
 				strlen(whichcontest) - 1) == 0) {
 
-			    strncpy(multiplier_list,
+			    strncpy(country_list_raw,
 				    buffer + strlen(whichcontest) + 1,
 				    strlen(buffer) - 1);
 			}
@@ -1155,20 +1158,21 @@ int parse_logcfg(char *inputbuffer)
 		    fclose(fp);
 		} else {	/* not a file */
 
-		    if (strlen(mit_multlist) > 0)
-			strcpy(multiplier_list, mit_multlist);
+		    if (strlen(temp_buffer) > 0)
+			strcpy(country_list_raw, temp_buffer);
 		}
 	    }
 
-	    /* LZ3NY creating the array */
-	    mit_mult_array = strtok(multiplier_list, ":,.- \t");
-	    mit_fg = 0;
+	    /* parse the country_list_raw string into an array
+	     * (countrylist) for future use. */
+	    tk_ptr = strtok(country_list_raw, ":,.- \t");
+	    counter = 0;
 
-	    if (mit_mult_array != NULL) {
-		while (mit_mult_array) {
-		    strcpy(mit_multiplier_list[mit_fg], mit_mult_array);
-		    mit_mult_array = strtok(NULL, ":,.-_\t ");
-		    mit_fg++;
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+		    strcpy(countrylist[counter], tk_ptr);
+		    tk_ptr = strtok(NULL, ":,.-_\t ");
+		    counter++;
 		}
 	    }
 
@@ -1748,7 +1752,7 @@ int parse_logcfg(char *inputbuffer)
 		exclude_multilist_type = 1;
 	    }
 	    else if (strcmp(fields[1], "COUNTRYLIST")) {
-	        if (strlen(mit_multiplier_list[0]) == 0) {
+	        if (strlen(countrylist[0]) == 0) {
 		    showmsg
 			("WARNING: you need to set the COUNTRYLIST paramter...");
 		    sleep(5);

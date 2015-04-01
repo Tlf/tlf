@@ -16,14 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <string.h>
-#include <curses.h>
-#include "tlf.h"
-#include "clear_display.h"
-#include "nicebox.h"
-#include "onechar.h"
-#include "writeparas.h"
-
+#ifndef MESSAGECHANGE_H
+#define MESSAGECHANGE_H
 
 int message_change(int x);
 
+#endif /* MESSAGECHANGE_H */

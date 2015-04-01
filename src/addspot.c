@@ -25,6 +25,9 @@
 	 *
 	 *--------------------------------------------------------------*/
 #include "addspot.h"
+#include "tlf.h"
+#include "splitscreen.h"
+#include "get_time.h" 
 
 int addspot(void)
 {

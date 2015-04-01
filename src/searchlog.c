@@ -23,6 +23,12 @@
 	 *--------------------------------------------------------------*/
 
 #include "searchlog.h"
+#include "printcall.h"
+#include "tlf.h"
+#include "nicebox.h"
+#include "zone_nr.h"
+#include "getpx.h"
+#include "showscore.h"
 #include "dxcc.h"
 #include <panel.h>
 #include <glib.h>
@@ -31,6 +37,7 @@
 #endif
 #include "qtcutil.h"
 #include "getctydata.h"
+#include "ui_utils.h"
 
 PANEL *search_panel;
 WINDOW *search_win;
@@ -93,7 +100,6 @@ static char hiscall_yfk[14] = "            ";
 
 void searchlog(char *searchstring)
 {
-    extern int use_rxvt;
     extern int isdupe;		// LZ3NY auto-b4 patch
     extern int searchflg;
     extern int dupe;
@@ -651,10 +657,7 @@ void searchlog(char *searchstring)
 	    l = 0;
 	    j = 0;
 
-	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(C_LOG) | A_BOLD | A_STANDOUT);
-	    else
-		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+	    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
 	    for (k = 1; k <= 5; k++) {
 		mvprintw(k, 0, "%s",
@@ -694,12 +697,8 @@ void searchlog(char *searchstring)
 			if (dupe == ISDUPE) {
 			    attrset(COLOR_PAIR(C_DUPE));
 			} else {
-			    if (use_rxvt == 0)
-				attron(COLOR_PAIR
-				       (C_BORDER) | A_BOLD | A_STANDOUT);
-			    else
-				attron(COLOR_PAIR
-				       (C_BORDER) | A_STANDOUT);
+			    attron(modify_attr(COLOR_PAIR(C_BORDER) |
+				A_STANDOUT));
 			}
 			mvprintw(xwin + l, ywin + j, "%s ", printres);
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -729,11 +728,7 @@ void searchlog(char *searchstring)
 
 		    if ( strstr(callmasterarray[m], hiscall) != NULL ) {
 
-			if (use_rxvt == 0)
-			    attron(COLOR_PAIR(C_LOG) | A_BOLD |
-				    A_STANDOUT);
-			else
-			    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+			attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
 			mvprintw(xwin + l, ywin + j, "%s  ",
 				 callmasterarray[m]);
@@ -757,10 +752,7 @@ void searchlog(char *searchstring)
 
 	    if ((j <= 13) && (l == 0) && (use_part == 1) && (block_part == 0)) {
 
-		if (use_rxvt == 0)
-		    attron(COLOR_PAIR(C_HEADER) | A_BOLD | A_STANDOUT);
-		else
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		attron(modify_attr(COLOR_PAIR(C_HEADER) | A_STANDOUT));
 
 		mvprintw(13, 0, s_inputbuffercpy);
 		if (strlen(s_inputbuffercpy) > strlen(hiscall)) {
@@ -859,8 +851,6 @@ int load_callmaster(void)
 /*  --------------------------------------------------------------  */
 void show_needed_sections(void)
 {
-
-    extern int use_rxvt;
     extern int arrlss;
     extern int multarray_nr;
     extern char mults[MAX_MULTS][12];
@@ -872,10 +862,7 @@ void show_needed_sections(void)
     if (arrlss == 1) {
 	cnt = 0;
 
-	if (use_rxvt == 0)
-	    wattron(search_win, COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-	else
-	    wattron(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	wattron(search_win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 	for (j = 1; j < 7; j++)
 	    mvwprintw(search_win, j, 1, "                                     ");
@@ -901,11 +888,8 @@ void show_needed_sections(void)
 		if (found != 1) {
 		    mprint[3] = '\0';
 
-		    if (use_rxvt == 0)
-			wattron(search_win, COLOR_PAIR(C_WINDOW) | A_BOLD |
-			       A_STANDOUT);
-		    else
-			wattron(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+		    wattron(search_win,
+			modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 		    if (strlen(mprint) > 1)
 			mvwprintw(search_win, vert, (hor * 4) + 2, "%s ", mprint);
@@ -926,12 +910,7 @@ void show_needed_sections(void)
 
 void OnLowerSearchPanel(int x, char *str)
 {
-    extern int use_rxvt;
-
-    if (use_rxvt == 0)
-	wattrset(search_win, COLOR_PAIR(C_BORDER) | A_BOLD);
-    else
-	wattrset(search_win, COLOR_PAIR(C_BORDER));
+    wattrset(search_win, modify_attr(COLOR_PAIR(C_BORDER)));
 
     mvwprintw(search_win, 7, x, str);
 }

@@ -25,9 +25,11 @@
 	 *
 	 *--------------------------------------------------------------*/
 #include "checklogfile.h"
+#include "tlf.h"
+#include <fcntl.h>
+#include <sys/stat.h>
 #include "startmsg.h"
 #include <glib.h>
-
 
 /** Repair log file
  *
@@ -172,7 +174,7 @@ int checklogfile_new(char *filename)
 	showmsg( "Some log lines are too short (maybe an old log format)!" );
 	showmsg( "Shall I try to repair? Y/(N) " );
 	echo();
-	c =toupper( getch() );
+	c = toupper( key_get() );
 	noecho();
 
 	if (c != 'Y') {

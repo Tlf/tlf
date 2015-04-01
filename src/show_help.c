@@ -23,10 +23,9 @@
 	 * *--------------------------------------------------------------
 	 */
 
-#include <string.h>
-#include <stdlib.h>
-#include <curses.h>
-#include "onechar.h"
+#include "show_help.h"
+#include "tlf.h"
+#include "ui_utils.h"
 #include "clear_display.h"
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -117,7 +116,7 @@ show_help(void)
     attroff(A_STANDOUT);
     mvprintw(23, 30, "Press any key for more");
 
-    i = onechar();
+    (void)key_get();
 
     strcpy(helpinfo[0],
 	   "MESSAGE : Change Messages   F1-F11 : Play Message      FILTER  : Filter ON/OFF      ");
@@ -155,7 +154,7 @@ show_help(void)
 
     attroff(A_STANDOUT);
     mvprintw(23, 30, "Press any key for more");
-    i = onechar();
+    (void)key_get();
 
     strcpy(helpinfo[0],
 	   "                        ==== CT compatible commands ====                            ");
@@ -193,7 +192,7 @@ show_help(void)
     attroff(A_STANDOUT);
     mvprintw(23, 30, "Press any key to return to tlf");
 
-    i = onechar();
+    (void)key_get();
     clear_display();
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 

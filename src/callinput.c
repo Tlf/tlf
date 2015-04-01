@@ -33,6 +33,43 @@
 #include "cw_utils.h"
 #include "qtcwin.h"
 #include "netkeyer.h"
+#include "nicebox.h"
+#include "tlf.h"
+#include "clear_display.h"
+#include "stoptx.h"
+#include "speedupndown.h"
+#include "sendbuf.h"
+#include "scroll_log.h"
+#include "addcall.h"
+#include "makelogline.h"
+#include "store_qso.h"
+#include "qsonr_to_str.h"
+#include "writeparas.h"
+#include "printcall.h"
+#include "time_update.h"
+#include "cleanup.h"
+#include "autocq.h"
+#include "sendspcall.h"
+#include "edit_last.h"
+#include "changepars.h"
+#include "deleteqso.h"
+#include "note.h"
+#include "prevqso.h"
+#include "getctydata.h"
+#include "showinfo.h"
+#include "searchlog.h"
+#include "calledit.h"
+#include "muf.h"
+#include "clusterinfo.h"
+#include "grabspot.h"
+#include "splitscreen.h"
+#include "showpxmap.h"
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
+#include "lancode.h"
+#include "rtty.h"
+#include "ui_utils.h"
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
@@ -47,7 +84,6 @@ char callinput(void)
 {
     extern int itumult;
     extern int wazmult;
-    extern int use_rxvt;
     extern int no_arrows;
     extern int isdupe;		// LZ3NY auto-b4 patch
     extern int contest;
@@ -111,10 +147,7 @@ char callinput(void)
     static int lastwindow;
 
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     printcall();	/* print call input field */
     searchlog(hiscall);
@@ -124,7 +157,7 @@ char callinput(void)
 	printcall();
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
-	nodelay(stdscr, TRUE);	/* main loop waiting for input */
+	/* main loop waiting for input */
 	x = -1;
 	while (x < 1) {
 
@@ -141,10 +174,9 @@ char callinput(void)
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
 	    wmove(stdscr, 12, 29 + strlen(hiscall));
-	    x = onechar();
+	    x = key_poll();
 
 	}
-	nodelay(stdscr, FALSE);
 
 
 	/* special handling of some keycodes if call field is empty */
@@ -346,7 +378,7 @@ char callinput(void)
 			printcall();
 			refreshp();
 
-			x = onechar();
+			x = key_get();
 			if (x == 152) {
 			    speedup();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
@@ -509,10 +541,7 @@ char callinput(void)
 		    mvprintw(j, 0, backgrnd_str);
 		}
 
-		if (use_rxvt == 0)
-		    attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-		else
-		    attron(COLOR_PAIR(NORMCOLOR));
+		attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
 		mvprintw(12, 29, "            ");
 		mvprintw(12, 29, "");
@@ -770,7 +799,7 @@ char callinput(void)
 		    mvprintw(12, 29, "");
 		    refreshp();
 		    netkeyer(K_PTT, "1");	// ptt on
-		    x = onechar();	// any character to stop tuning
+		    x = key_get();	// any character to stop tuning
 		    if (x == 240)
 			netkeyer(K_PTT, "0");	// ptt off
 		    k_ptt = 0;
@@ -795,18 +824,14 @@ char callinput(void)
 		netkeyer(K_TUNE, buff);	// cw on
 		g_free(buff);
 
-		nodelay (stdscr, TRUE);
-
 		count = TUNE_UP / 0.25;
 
 		while (count != 0) {
 		    usleep( 250000 );
-		    if ((onechar()) != -1)	// any key pressed ?
+		    if ((key_poll()) != -1)	// any key pressed ?
 			break;
 		    count--;
 		}
-
-		nodelay (stdscr, FALSE);
 
 		netkeyer( K_ABORT, "");	// cw abort
 
@@ -838,7 +863,7 @@ char callinput(void)
 		mvprintw(13, 29, "You want to leave tlf? (y/n): ");
 		while (x != 'n' && x != 'N') {
 
-		    x = onechar();
+		    x = key_get();
 
 		    if (x == 'y' || x == 'Y') {
 			writeparas();
@@ -970,7 +995,7 @@ char callinput(void)
 		    nicebox(14, 0, 5, 59, "Messages");
 
 		    refreshp();
-		    getchar();
+		    key_get();
 		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
 			mvprintw(14 + t, 0,
@@ -1094,7 +1119,6 @@ int autosend()
 
     x = -1;
     while ((x != 27) && (x != '\n')) {
-	nodelay(stdscr, TRUE);
 	x = -1;
 	while ((x == -1) && (g_timer_elapsed(timer, NULL) < timeout)) {
 
@@ -1113,10 +1137,9 @@ int autosend()
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
 	    wmove(stdscr, 12, 29 + strlen(hiscall));
-	    x = onechar();
+	    x = key_poll();
 
 	}
-	nodelay(stdscr, FALSE);
 
 	if (x == -1) { 		/* timeout */
 	    x = '\n';

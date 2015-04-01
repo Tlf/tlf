@@ -23,9 +23,17 @@
 	 *--------------------------------------------------------------*/
 
 #include "globalvars.h"
+#include "tlf.h"
 #include "edit_last.h"
 #include <glib.h>
 #include <assert.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include "qsonr_to_str.h"
+#include "scroll_log.h"
+#include "ui_utils.h"
+#include "logview.h"
+#include "store_qso.h"
 
 #define NR_LINES 5
 #define NR_COLS 80
@@ -106,7 +114,7 @@ void edit_last(void)
     while ((j != 27) && (j != '\n')) {
 	highlight_line(editline, editbuffer, b);
 
-	j = onechar();
+	j = key_get();
 
 	if (j == 1) {		// ctrl A, beginning of line
 	    b = 1;

@@ -18,6 +18,14 @@
  */
 
 #include "changefreq.h"
+#include "tlf.h"
+#include "freq_display.h"
+#include "ui_utils.h"
+#include "gettxinfo.h"
+#include "time_update.h"
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
 
 void change_freq (void) {
 
@@ -41,11 +49,11 @@ void change_freq (void) {
 	freq_display();
 
 	if (outfreq == 0) {
-	    x = onechar();
+	    x = key_get();
 
 	    switch (x) {
 
-	    case 152:{		//up      
+	    case 152:{		//up
 #ifdef HAVE_LIBHAMLIB
 		    outfreq = (freq_t) (freq * 1000);
 #else

@@ -25,6 +25,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "getexchange.h"
+#include "tlf.h"
 #include "time_update.h"
 #include "recall_exchange.h"
 #include "addspot.h"
@@ -34,6 +35,22 @@
 #include "qtcwin.h"
 #include "locator2longlat.h"
 #include "score.h"
+#include "searchlog.h"
+#include "clear_display.h"
+#include "stoptx.h"
+#include "displayit.h"
+#include "speedupndown.h"
+#include "sendbuf.h"
+#include "scroll_log.h"
+#include "addcall.h"
+#include "makelogline.h"
+#include "store_qso.h"
+#include "qsonr_to_str.h"
+#include "writeparas.h"
+#include "lancode.h"
+#include "keyer.h"
+#include "rtty.h"
+#include "ui_utils.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
@@ -145,7 +162,7 @@ int getexchange(void)
 	refresh_comment();
 
        	/* wait for next char pressed, but update time, cluster and TRX qrg */
-	nodelay(stdscr, TRUE);  /* main loop waiting for input */
+	/* main loop waiting for input */
 	x = -1;
 	while (x < 1) {
 
@@ -161,9 +178,8 @@ int getexchange(void)
             /* make sure that the wrefresh() inside getch() shows the cursor
              * in the input field */
 	    wmove(stdscr, 12, 54 + strlen(comment));
-	    x = onechar();
+	    x = key_poll();
         }
-        nodelay(stdscr, FALSE);
 
 	switch (x) {
 
@@ -1122,7 +1138,7 @@ void exchange_edit (void)
 	mvprintw(12, 54, comment);
 	mvprintw(12, 54 + b, "");
 
-	i = onechar();
+	i = key_get();
 
 	if (i == 1) {		// ctrl-A, Home
 

@@ -22,12 +22,14 @@
 	 *--------------------------------------------------------------*/
 
 #include "showpxmap.h"
+#include "tlf.h"
+#include "multiplierinfo.h"
 #include "dxcc.h"
 #include "focm.h"
+#include "ui_utils.h"
 
 int show_mults(void)
 {
-    extern int use_rxvt;
     extern int countries[MAX_DATALINES];
     extern int bandinx;
     extern int cqww;
@@ -52,9 +54,9 @@ int show_mults(void)
 
 	refreshp();
 
-	ch = getchar();
+	ch = key_get();
 
-	while (ch != '\015') {
+	while (ch != '\n') {
 
 	    if (ch == 27)
 		break;
@@ -128,10 +130,7 @@ int show_mults(void)
 
 			strncat(prefix, "     ", 4 - strlen(prefix));
 
-			if (use_rxvt == 0)
-			    attron(COLOR_PAIR(C_INPUT) | A_BOLD);
-			else
-			    attron(COLOR_PAIR(C_INPUT));
+			attron(modify_attr(COLOR_PAIR(C_INPUT)));
 
 			mvprintw(k, j * 4, prefix);
 			refreshp();
@@ -151,7 +150,7 @@ int show_mults(void)
 
 	    }
 
-	    ch = getchar();
+	    ch = key_get();
 
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 

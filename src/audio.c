@@ -24,11 +24,22 @@
 	 *--------------------------------------------------------------*/
 
 #include "audio.h"
-#include <math.h>
+#include "tlf.h"
+#include <fcntl.h>
+#include <sys/ioctl.h>
 #include <dirent.h>
-#include <sys/types.h>
+#include <math.h>
 #include "gettxinfo.h"
-#include "onechar.h"
+#include "ui_utils.h"
+
+#ifdef __OpenBSD__
+# include <soundcard.h>
+#else
+# include <sys/soundcard.h>
+#endif
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
 
 extern char sc_device[];
 
@@ -331,9 +342,6 @@ int drawscreen(int xpos, int ypos, int yheight, int bar_type)
 
 int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 {
-
-    extern int use_rxvt;
-
     int i;
 
     for (i = 0; i < 21; i++) {
@@ -347,17 +355,9 @@ int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 	    mvprintw(ypos + i, xpos, "|   |");
 	    break;
 	case 5:
-	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(C_HEADER) | A_BOLD | A_STANDOUT);
-	    else
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-
+	    attron(modify_attr(COLOR_PAIR(C_HEADER) | A_STANDOUT));
 	    mvprintw(ypos + i, xpos, ">   <");
-
-	    if (use_rxvt == 0)
-		attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-	    else
-		attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 	}
     }
 
@@ -384,7 +384,6 @@ int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 int panscan(void)
 {
 
-    extern int use_rxvt;
 #ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;
 #else
@@ -399,10 +398,7 @@ int panscan(void)
 
     while (1) {
 	key = 0;
-	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-	else
-	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 	for (j = 0; j <= 24; j++)
 	    mvprintw(j, 0,
@@ -468,9 +464,7 @@ int panscan(void)
 
 	    make_bar(5 + j, 20, 20, (int) testvalue, PAN_BAR);
 
-	    nodelay(stdscr, TRUE);
-	    key = getch();
-	    nodelay(stdscr, FALSE);
+	    key = key_poll();
 	    if (key == 27 || key == '\n')
 		break;
 
@@ -479,7 +473,7 @@ int panscan(void)
 	/* -----------end scan -------------------- */
 	mvprintw(23, 60, "----   Key?  ----");
 
-	j = getch();
+	j = key_get();
 	if (j == 27)
 	    break;
     }				// end while
@@ -491,8 +485,6 @@ int panscan(void)
 
 int nbscan(void)
 {
-
-    extern int use_rxvt;
 #ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;
 #else
@@ -508,10 +500,7 @@ int nbscan(void)
 
     while (1) {
 	key = 0;
-	if (use_rxvt == 0)
-	    attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-	else
-	    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 	for (j = 0; j <= 24; j++)	// wipe the screen
 	    mvprintw(j, 0,
@@ -576,9 +565,7 @@ int nbscan(void)
 
 	    make_bar(5 + j, 20, 20, (int) testvalue, SPOT_BAR);
 
-	    nodelay(stdscr, TRUE);
-	    key = getch();
-	    nodelay(stdscr, FALSE);
+	    key = key_poll();
 	    if (key == 27 || key == '\n')
 		break;
 
@@ -587,7 +574,7 @@ int nbscan(void)
 	/* -----------end scan -------------------- */
 	mvprintw(23, 60, "----   Key?  ----");
 
-	j = getch();
+	j = key_get();
 	if (j == 27)
 	    break;
     }				// end while
@@ -597,15 +584,9 @@ int nbscan(void)
 
 void scanmenu(void)
 {
-
-    extern int use_rxvt;
-
     int j;
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -646,9 +627,7 @@ int testaudio()
 
 	drawSmeter(5, 1, 21, testvalue);
 
-	nodelay(stdscr, TRUE);
-	key = getch();
-	nodelay(stdscr, FALSE);
+	key = key_poll();
 
 	switch (key) {
 
@@ -674,15 +653,9 @@ int testaudio()
 
 void recordmenue(void)
 {
-
-    extern int use_rxvt;
-
     int j;
 
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(C_WINDOW) | A_BOLD | A_STANDOUT);
-    else
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j <= 24; j++)
 	mvprintw(j, 0,
@@ -718,7 +691,7 @@ void do_record(int message_nr)
     rc = system(commands);
     //G4KNO: Loop until <esc> keypress
     while (1) {
-	if (getch() == 27) {
+	if (key_get() == 27) {
 	    //kill process (SIGINT=Ctrl-C).
 	    rc = system("pkill -SIGINT -n rec");
 	    break;
@@ -743,9 +716,7 @@ void record(void)
 
     while (runnit == 1) {
 
-	nodelay(stdscr, TRUE);
-	key = onechar();
-	nodelay(stdscr, FALSE);
+	key = key_poll();
 
 	switch (key) {
 

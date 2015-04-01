@@ -16,13 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
+#ifndef CWKEYER_H
+#define CWKEYER_H
 
 #define	MACRO_QSONUMBER		'#'
 #define MACRO_CALL		'@'
@@ -62,3 +57,5 @@
 #define CWTONE  0xCC01
 #define CWSPEED 0xCC02
 #define CWMUTE  0xCC03
+
+#endif /* CWKEYER_H */

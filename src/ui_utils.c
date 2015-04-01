@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2015 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,72 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *        Onechar handles keyboard input and takes care  of
-	 *                   escape sequences
-	 *--------------------------------------------------------------*/
+/* User Interface helpers for ncurses based user interface */
 
-#include "onechar.h"
+#include <curses.h>
+#include "stoptx.h"
 
-int onechar(void)
+extern int use_rxvt;
+
+static int getkey(int wait);
+static int onechar(void);
+
+
+/** add A_BOLD to attributes if 'use_rxvt' is not set */
+int modify_attr( int attr ) {
+
+    if (use_rxvt == 0)
+	attr |= A_BOLD;
+
+    return attr;
+}
+
+/** key_get  wait for next key from terminal
+ *
+ */
+int key_get()
+{
+    return getkey(1);
+}
+
+/** key_poll return next key from terminal if there is one
+ *
+ */
+int key_poll()
+{
+    return getkey(0);
+}
+
+
+/* helper function to set 'nodelay' mode according to 'wait'
+ * parameter and then ask for the next character
+ * leaves 'nodelay' afterwards always as FALSE (meaning: wait for
+ * character
+ */
+static int getkey(int wait)
+{
+    int x = 0;
+
+    nodelay(stdscr, wait ? FALSE : TRUE);
+
+    x = onechar();
+
+    nodelay(stdscr, FALSE);
+
+    return x;
+}
+
+/* Original key input routine moved here to make it static. Usage is
+ * hidden by the new key_poll() and key_get() functions.
+ * Partially decodes the ESC key sequences for different terminals.
+ *
+ * The routine will be replaced in near future by switching to the curses
+ * keypad mode. That has some advantages:
+ * - more terminal types can be handled
+ * - we get a SIGWINCH code for resizing of the terminal
+ * - we can handle mouse input via curses
+ */
+static int onechar(void)
 {
     extern int use_xterm;
 

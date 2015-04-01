@@ -18,6 +18,7 @@
  */
 #include "sunup.h"
 #include "get_time.h"
+#include <time.h>
 #include <math.h>
 
 #define RADIAN  (180.0 / M_PI)
