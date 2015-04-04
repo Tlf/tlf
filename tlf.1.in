@@ -1392,7 +1392,7 @@ This one is similar to COUNTRY_LIST_POINTS - the listed continents scored by
 this value, example: "CONTINENT_LIST_POINTS=1".
 .
 .TP
-.B USE_COUNTINENTLIST_ONLY
+.B USE_CONTINENTLIST_ONLY
 This one is similar to USE_COUNTRYLIST_ONLY, use with CONTINENTLIST.
 .
 .TP
