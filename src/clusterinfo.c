@@ -33,6 +33,7 @@
 #include "nicebox.h"
 #include "lancode.h"
 #include "searchcallarray.h"
+#include "ui_utils.h"
 
 #include <glib.h>
 #include <pthread.h>
@@ -50,7 +51,6 @@ int getclusterinfo(void);
 
 void clusterinfo(void)
 {
-    extern int use_rxvt;
     extern int cluster;
     extern char backgrnd_str[];
     extern float freq;
@@ -67,10 +67,7 @@ void clusterinfo(void)
 
 
     /* cluster and bandmap display */
-    if (use_rxvt == 0)
-	attron(COLOR_PAIR(NORMCOLOR) | A_BOLD);
-    else
-	attron(COLOR_PAIR(NORMCOLOR));
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvprintw(12, 0, "");
 

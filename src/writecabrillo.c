@@ -24,6 +24,7 @@
 #define _XOPEN_SOURCE 500
 #define _GNU_SOURCE
 #include "writecabrillo.h"
+#include "ui_utils.h"
 #include <glib.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -31,7 +32,6 @@
 #include "tlf.h"
 
 extern char call[];
-extern int use_rxvt;
 
 /* list of different tags for QSO: line items */
 enum tag_t { NO_ITEM, FREQ, MODE, DATE, TIME, MYCALL, HISCALL, RST_S, RST_R, 
@@ -209,11 +209,7 @@ void free_qso(struct qso_t *ptr) {
 /** write out information */
 void info(char *s)
 {
-    if (use_rxvt == 0)
-        attron(COLOR_PAIR(C_INPUT) | A_STANDOUT | A_BOLD);
-    else
-        attron(COLOR_PAIR(C_INPUT) | A_STANDOUT);
-
+    attron(modify_attr(COLOR_PAIR(C_INPUT) | A_STANDOUT));
     mvprintw(13, 29, "%s", s);
     refreshp();
 }

@@ -57,8 +57,8 @@ int readcalls(void)
     int pxnr;
     int excl_add_veto;
     extern int exclude_multilist_type;
-    extern char mit_multiplier_list[][6];
-    
+    extern char countrylist[][6];
+
     FILE *fp;
 
     clear();
@@ -98,7 +98,7 @@ int readcalls(void)
 	pfxs_per_band[n] = 0;
     }
     nr_of_px = 0;
-    nr_of_px_ab = 0;    
+    nr_of_px_ab = 0;
 
     if (pfxnummultinr > 0) {
 	for(i=0; i<pfxnummultinr; i++) {
@@ -108,7 +108,7 @@ int readcalls(void)
 	}
     }
     init_mults();
-   
+
     if ((fp = fopen(logfile, "r")) == NULL) {
 	mvprintw(5, 0, "Error opening logfile.\n");
 	refreshp();
@@ -357,8 +357,8 @@ int readcalls(void)
 
 	if (exclude_multilist_type == 2) {
 	  int ci = 0;
-	  while (strlen(mit_multiplier_list[ci]) != 0) {
-	    if (getctydata(mit_multiplier_list[ci]) == countrynr) {
+	  while (strlen(countrylist[ci]) != 0) {
+	    if (getctydata(countrylist[ci]) == countrynr) {
 		excl_add_veto = 1;
 		break;
 	    }

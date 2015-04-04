@@ -28,6 +28,7 @@
 #include "bandmap.h"
 #include "get_time.h"
 #include <pthread.h>
+#include "ui_utils.h"
 
 pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -572,7 +573,6 @@ void sanitize(char *s)
 
 void addtext(char *s)
 {
-    extern int use_rxvt;
     extern WINDOW *sclwin;
     extern int in_packetclient;
     extern int lan_active;
@@ -618,10 +618,7 @@ void addtext(char *s)
 	    }
 	    cc += 1;
 
-	    if (use_rxvt == 0)
-		wattron(sclwin, COLOR_PAIR(cc) | A_BOLD);
-	    else
-		wattron(sclwin, COLOR_PAIR(cc));
+	    wattron(sclwin, modify_attr(COLOR_PAIR(cc)));
 
 	}
 
@@ -749,7 +746,6 @@ void addtext(char *s)
 
 int init_packet(void)
 {
-
     extern int prsock;
     extern int portnum;
     extern char pr_hostaddress[];
@@ -763,7 +759,6 @@ int init_packet(void)
     extern int packetinterface;
     extern int tnc_serial_rate;
     extern int verbose;
-    extern int use_rxvt;
     extern char tncportname[];
 
     struct termios termattribs;
@@ -775,14 +770,9 @@ int init_packet(void)
 
     tln_input_buffer[0] = '\0';
     attr[NORMAL_ATTR] = A_NORMAL;
-    if (use_rxvt == 0) {
-	attr[MINE_ATTR] = A_BOLD;
-	attr[ENTRY_ATTR] = A_BOLD;
-    } else {
-	attr[MINE_ATTR] = A_NORMAL;
-	attr[ENTRY_ATTR] = A_NORMAL;
+    attr[MINE_ATTR] = modify_attr(A_NORMAL);
+    attr[ENTRY_ATTR] = modify_attr(A_NORMAL);
 
-    }
     addrarg = 0;
 
     if (initialized == 0) {
