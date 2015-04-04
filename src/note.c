@@ -23,6 +23,11 @@
 
 #include "globalvars.h"
 #include "note.h"
+#include "tlf.h"
+#include "nicebox.h"
+#include "scroll_log.h"
+#include "clear_display.h"
+
 
 int include_note(void)
 {

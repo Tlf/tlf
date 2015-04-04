@@ -16,9 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <curses.h>
-#include <string.h>
-#include "clear_display.h"
+#ifndef LOGVIEW_H
+#define LOGVIEW_H
 
 int logview(void);
 
+#endif /* LOGVIEW_H */

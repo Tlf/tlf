@@ -14,9 +14,9 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <stdio.h>
-#include "tlf.h"
-#include "parse_logcfg.h"
-#include "setcontest.h"
+#ifndef RULES_H
+#define RULES_H
 
 int read_rules();
+
+#endif /* RULES_H */

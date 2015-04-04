@@ -16,11 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <curses.h>
-#include "tlf.h"
-#include "nicebox.h"
-#include "last10.h"
-#include "printcall.h"
+#ifndef SHOWSCORE_H
+#define SHOWSCORE_H
 
 /* get total number of points */
 int get_nr_of_points();
@@ -30,3 +27,5 @@ int get_nr_of_mults();
 int get_total_score();
 
 int  showscore(void);
+
+#endif /* SHOWSCORE_H */

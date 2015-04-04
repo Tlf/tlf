@@ -23,12 +23,8 @@
     CW keyboard routine
 
 ------------------------------------------------------------------------*/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <curses.h>
-#include <panel.h>
 #include "tlf.h"
+#include <panel.h>
 #include "clear_display.h"
 #include "onechar.h"
 #include "stoptx.h"

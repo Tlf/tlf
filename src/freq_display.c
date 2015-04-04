@@ -18,6 +18,8 @@
  */
 
 #include "freq_display.h"
+#include "tlf.h"
+#include "nicebox.h"
 
 int freq_display(void)
 {

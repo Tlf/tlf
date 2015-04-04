@@ -22,6 +22,13 @@
 	 *--------------------------------------------------------------*/
 
 #include "messagechange.h"
+#include "tlf.h"
+#include "clear_display.h"
+#include "nicebox.h"
+#include "onechar.h"
+#include "writeparas.h"
+
+
 
 int message_change(int x)
 {

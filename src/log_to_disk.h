@@ -16,24 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <curses.h>
-#include <pthread.h>
-#include "tlf.h"
-#include "scroll_log.h"
-#include "addcall.h"
-#include "makelogline.h"
-#include "store_qso.h"
-#include "qsonr_to_str.h"
-#include "writeparas.h"
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
-#include "gettxinfo.h"
-#include "lancode.h"
-#include "addspot.h"
+#ifndef LOG_TO_DISK_H
+#define LOG_TO_DISK_H
 
 int log_to_disk (int from_lan);
 
+#endif /*  LOG_TO_DISK_H */

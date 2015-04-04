@@ -16,18 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <string.h>
-#include <stdlib.h>
-#include <curses.h>
-#include "getctydata.h"
-#include "showinfo.h"
-#include "searchlog.h"
-
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
+#ifndef GRABSPOT_H
+#define GRABSPOT_H
 
 void grabspot (void);
 void grab_next (void);
 
+#endif /* GRABSPOT_H */

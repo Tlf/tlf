@@ -16,19 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <syslog.h>
-#include <curses.h>
-#include <time.h>
+#ifndef LANCODE_H
+#define LANCODE_H
 
 #define MAXNODES 8
 
@@ -52,3 +41,5 @@ int send_lan_message(int opcode , char *message);
 int talk(void);
 int send_freq(float freq);
 int send_time(void) ;
+
+#endif /* LANCODE_H */

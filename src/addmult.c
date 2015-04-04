@@ -25,6 +25,8 @@
 
 #include "globalvars.h"
 #include "addmult.h"
+#include "tlf.h"
+#include "addarea.h"
 #include <glib.h>
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))

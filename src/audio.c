@@ -24,11 +24,22 @@
 	 *--------------------------------------------------------------*/
 
 #include "audio.h"
-#include <math.h>
+#include "tlf.h"
+#include <fcntl.h>
+#include <sys/ioctl.h>
 #include <dirent.h>
-#include <sys/types.h>
+#include <math.h>
 #include "gettxinfo.h"
 #include "onechar.h"
+
+#ifdef __OpenBSD__
+# include <soundcard.h>
+#else
+# include <sys/soundcard.h>
+#endif
+#ifdef HAVE_LIBHAMLIB
+#include <hamlib/rig.h>
+#endif
 
 extern char sc_device[];
 

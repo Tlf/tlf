@@ -17,6 +17,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef TLF_H
+#define TLF_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,9 +32,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
-
-#ifndef TLF_H
-#define TLF_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

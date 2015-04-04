@@ -45,6 +45,10 @@
 #include "netkeyer.h"
 #include "splitscreen.h"
 #include "audio.h"
+#include "onechar.h"
+#include "scroll_log.h"
+#include "readcalls.h"
+#include "readqtccalls.h"
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif

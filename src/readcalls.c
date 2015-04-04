@@ -26,10 +26,14 @@
 #include "addpfx.h"
 #include "addmult.h"
 #include "get_time.h"
-#include <curses.h>
 #include "tlf.h"
 #include "globalvars.h"
 #include <glib.h>
+#include "getctydata.h"
+#include "zone_nr.h"
+#include "getpx.h"
+#include "paccdx.h"
+#include "startmsg.h"
 
 int readcalls(void)
 {

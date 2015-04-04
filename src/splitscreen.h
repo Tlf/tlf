@@ -20,20 +20,13 @@
 #ifndef SPLITSCREEN_H
 #define SPLITSCREEN_H
 
-#include <sys/types.h>
-#include <curses.h>
+#include "tlf.h"
 #include "sockserv.h"
-#include <errno.h>
-#include <string.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
-#include "tlf.h"
 #include <sys/stat.h>
-#include <stdio.h>
 #include "lancode.h"
 #include "clear_display.h"
 

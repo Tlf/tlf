@@ -16,10 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef NICEBOX_H
+#define NICEBOX_H
+
 #include <curses.h>
 
 void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname);
 void nicebox(int y, int x, int height, int width, char *boxname);
 
+#endif /* NICEBOX_H */

@@ -37,6 +37,7 @@
 #include "sendqrg.h"
 #include "lancode.h"
 #include "set_tone.h"
+#include "searchlog.h"
 
 void refresh_comment(void);
 

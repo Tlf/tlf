@@ -17,21 +17,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <curses.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "onechar.h"
-#include <string.h>
-#include "qsonr_to_str.h"
-#include "printcall.h"
-#include "clear_display.h"
-#include "scroll_log.h"
-
+#ifndef DELETEQSO_H
+#define DELETEQSO_H
 
 void delete_qso(void);
 
+#endif /* DELETEQSO_H */

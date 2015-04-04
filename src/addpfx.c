@@ -23,6 +23,7 @@
 	 *--------------------------------------------------------------*/
 
 #include "addpfx.h"
+#include "tlf.h"
 
 char prefixes_worked[MAX_CALLS][6];
 int nr_of_px = 0;

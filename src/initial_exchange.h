@@ -21,10 +21,8 @@
  	*      initial exchange.h
  	*-------------------------------------------------------------------------------*/
 
-
-#include "startmsg.h"
-#include "tlf.h"
-
+#ifndef INITIAL_EXCHANGE_H
+#define INITIAL_EXCHANGE_H
 
 #define MAX_CALL_LENGTH 13
 #define MAX_IE_LENGTH 30
@@ -58,4 +56,4 @@ void free_ie_list(struct ie_list *head);
 
 int test_ie_list (struct ie_list *example_ie_list);
 
-
+#endif /* INITIAL_EXCHANGE_H */

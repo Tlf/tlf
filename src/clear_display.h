@@ -16,22 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <curses.h>
-#include <time.h>
-#include "get_time.h"
-#include "qsonr_to_str.h"
-#include "searchlog.h"
-#include "get_time.h"
-
-#if defined (TLF_H)
-/* do nothing, already defined */
-#else
-#define TLF_H
-#include "tlf.h"
-#endif
+#ifndef CLEAR_DISPLAY_H
+#define CLEAR_DISPLAY_H
 
 void clear_display(void);
 
+#endif /* CLEAR_DISPLAY_H */

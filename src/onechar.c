@@ -23,6 +23,9 @@
 	 *--------------------------------------------------------------*/
 
 #include "onechar.h"
+#include "tlf.h"
+#include "stoptx.h"
+
 
 int onechar(void)
 {

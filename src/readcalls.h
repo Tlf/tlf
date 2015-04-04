@@ -17,20 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <curses.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <ctype.h>
-#include "getctydata.h"
-#include "zone_nr.h"
-#include "getpx.h"
-#include "paccdx.h"
-#include "tlf.h"
-#include "startmsg.h"
-
+#ifndef READCALLS_H
+#define READCALLS_H
 
 int readcalls(void);
 int synclog(char *synclogfile);
 
+#endif /* READCALLS_H */

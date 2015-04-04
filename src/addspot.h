@@ -16,12 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include <string.h>
-#include <stdio.h>
-#include <curses.h>
-#include <stdlib.h>
-#include "splitscreen.h"
-#include "get_time.h" 
+#ifndef ADDSPOT_H
+#define ADDSPOT_H
 
 int addspot(void);
+
+#endif /* ADDSPOT_H */

@@ -16,6 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef NETKEYER_H
+#define NETKEYER_H
+
 #define K_RESET 0
 #define K_MESSAGE 1
 #define K_SPEED 2
@@ -37,3 +40,5 @@
 int netkeyer(int cw_op, char *cwmessage);
 int netkeyer_close(void);
 int netkeyer_init (void);
+
+#endif /* NETKEYER_H */

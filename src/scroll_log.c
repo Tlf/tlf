@@ -22,6 +22,8 @@
 ---------------------------------------------------------------------------*/
 #include "globalvars.h"
 #include "scroll_log.h"
+#include "tlf.h"
+#include "qsonr_to_str.h"
 
 void scroll_log(void)
 {
