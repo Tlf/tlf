@@ -466,7 +466,7 @@ int parse_logcfg(char *inputbuffer)
 	"BANDWEIGHT_POINTS",
 	"BANDWEIGHT_MULTIS",
 	"PFX_NUM_MULTIS",
-	"PFX_MULT_ALLB",
+	"PFX_MULT_MULTIBAND",
 	"QR_F1",		/* 170 */
 	"QR_F2",
 	"QR_F3",
