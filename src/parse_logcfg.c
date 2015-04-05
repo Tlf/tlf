@@ -1506,9 +1506,9 @@ int parse_logcfg(char *inputbuffer)
 
     case 163:{
 	    /* based on LZ3NY code, by HA2OS
-	       COUNTINENT_LIST   (in file or listed in logcfg.dat),
+	       CONTINENT_LIST   (in file or listed in logcfg.dat),
 	       First of all we are checking if inserted data in
-	       COUNTINENT_LIST= is a file name.  If it is we start
+	       CONTINENT_LIST= is a file name.  If it is we start
 	       parsing the file. If we got our case insensitive contest name,
 	       we copy the multipliers from it into multipliers_list.
 	       If the input was not a file name we directly copy it into
@@ -1519,7 +1519,7 @@ int parse_logcfg(char *inputbuffer)
 
 	    int mit_fg = 0;
 	    static char cont_multiplier_list[50] = ""; 	/* use only first
-							   COUNTINENT_LIST
+							   CONTINENT_LIST
 							   definition */
 	    char mit_multlist[255] = "";
 	    char buffer[255] = "";

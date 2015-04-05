@@ -93,7 +93,7 @@ int exist_in_country_list()
 }
 /* end LZ3NY code */
 
-/* HA2OS - check if continent is in COUNTINENT_LIST from logcfg.dat */
+/* HA2OS - check if continent is in CONTINENT_LIST from logcfg.dat */
 int continent_found() {
     extern char continent[];
     extern char continent_multiplier_list[7][3];
