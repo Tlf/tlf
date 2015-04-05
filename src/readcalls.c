@@ -39,6 +39,8 @@ int readcalls(void)
 {
     extern char continent_multiplier_list[7][3];
     extern int continentlist_only;
+    extern int pfxs_per_band[];
+    extern int nr_of_px_ab;
 
     char inputbuffer[160];
     char tmpbuf[20];
@@ -90,6 +92,12 @@ int readcalls(void)
 
     for (n = 0; n < NBANDS; n++)	//F6CFE
 	multscore[n] = 0;
+
+    for(n = 0; n < NBANDS; n++) {
+	pfxs_per_band[n] = 0;
+    }
+    nr_of_px = 0;
+    nr_of_px_ab = 0;
 
     init_mults();
 
@@ -299,6 +307,11 @@ int readcalls(void)
 	    }
 
 	    hiscall[0] = '\0';
+	}
+
+	if (pfxmultab == 1) {
+	    getpx(presentcall);
+	    add_pfx(pxstr);
 	}
 
 	if (add_ok == 1) {

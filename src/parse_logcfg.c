@@ -54,7 +54,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 168	/* commands in list */
+#define  MAX_COMMANDS 170	/* commands in list */
 
 
 int read_logcfg(void)
@@ -277,6 +277,8 @@ int parse_logcfg(char *inputbuffer)
     extern int bandweight_points[NBANDS];
     extern int bandweight_multis[NBANDS];
 
+    extern int pfxmultab;
+
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
 	"disable",				/* deprecated */
@@ -446,7 +448,9 @@ int parse_logcfg(char *inputbuffer)
 	"CONTINENT_LIST_POINTS",
 	"USE_CONTINENTLIST_ONLY",  /* 165 */
 	"BANDWEIGHT_POINTS",
-	"BANDWEIGHT_MULTIS"
+	"BANDWEIGHT_MULTIS",
+	"__DUMMY__",       /* "PFX_NUM_MULTIS", */
+	"PFX_MULT_MULTIBAND"
     };
 
     char **fields;
@@ -1541,7 +1545,10 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
 
-
+    case 169:{		        /* wpx style prefixes mult */
+		pfxmultab = 1;	/* enable pfx on all band */
+		break;
+	    }
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

@@ -264,6 +264,8 @@ int addcall2(void)
     extern int itumult;
     extern char cqzone[];
 
+    extern int pfxmultab;
+
     int found = 0;
     int i, j, p, z = 0;
     int add_ok;
@@ -452,7 +454,7 @@ int addcall2(void)
 
 	}
     }
-    if (wpx == 1) {
+    if (wpx == 1 || pfxmultab == 1) {
 
 	if (lan_logline[68] != ' ') {
 
@@ -467,6 +469,9 @@ int addcall2(void)
 		    lancopy[p] = '\0';
 		    break;
 		}
+	    }
+	    if (pfxmultab == 1) {
+		bandinx = get_band(lan_logline);
 	    }
 
 	    add_pfx(lancopy);

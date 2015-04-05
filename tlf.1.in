@@ -1289,6 +1289,12 @@ Multiplier is prefix (PA0, DA2, VE7, etc.).  Counted once per contest, not
 per band.
 .
 .TP
+.B PFX_MULT_MULTIBAND
+Same as WPX, but the WPX only used CQ-WW-WPX, and there a single prefix multiplier only
+once, not all band. With this option, the PFX counts as multiplier on all band. This
+usable on AA-DX.
+.
+.TP
 .B COUNTRY_MULT
 Multiplier is the DXCC entity (per band).
 .

@@ -136,6 +136,8 @@ int get_nr_of_mults()
     extern int multlist;
     extern int multscore[];
     extern int bandweight_multis[NBANDS];
+    extern int pfxmultab;
+    extern int nr_of_px_ab;
 
     int n;
     int totalzones;
@@ -209,6 +211,10 @@ int get_nr_of_mults()
 
 	return nr_of_px;
     }
+    else if (pfxmultab == 1) {
+
+	return nr_of_px_ab;
+    }
     else
 	/* should never reach that point
 	 *
@@ -259,8 +265,9 @@ int showscore(void)
     extern int sectn_mult;
     extern int dx_arrlsections;
     extern float fixedmult;
+    extern int pfxs_per_band[];
 
-    int i, l10;
+    int i, l10, j;
     float p;
 
     if (showscore_flag == 1) {
@@ -284,6 +291,18 @@ int showscore(void)
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {
 	    	printfield(3, band_cols[i], multscore[bi_normal[i]]);
+	    }
+	}
+
+	if (pfxmultab == 1) {
+	    mvprintw(3, START_COL, "Mult ");
+	    i=0; j=0;
+	    while(i < 6) {
+		if(j != BANDINDEX_12 && j != BANDINDEX_17 && j != BANDINDEX_30) {
+		  printfield(3, band_cols[i], pfxs_per_band[j]);
+		  i++;
+		}
+		j++;
 	    }
 	}
 
@@ -336,7 +355,6 @@ int showscore(void)
 	    	printfield(3, band_cols[i], countryscore[i]);
 	    }
 	}
-
 
 	/* show score summary */
 	if (sprint == 1) {

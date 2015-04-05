@@ -59,6 +59,7 @@ extern int countrynr;
 extern int w_cty;
 extern int ve_cty;
 extern int pfxmult;
+extern int pfxmultab;
 extern int minute_timer;
 extern int stewperry_flg;
 extern char myqra[7];
