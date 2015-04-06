@@ -39,8 +39,6 @@ int readcalls(void)
 {
     extern char continent_multiplier_list[7][3];
     extern int continentlist_only;
-    extern int pfxs_per_band[];
-    extern int nr_of_px_ab;
     extern int pfxnummultinr;
     extern t_pfxnummulti pfxnummulti[];
     extern int exclude_multilist_type;
@@ -100,11 +98,7 @@ int readcalls(void)
     for (n = 0; n < NBANDS; n++)	//F6CFE
 	multscore[n] = 0;
 
-    for(n = 0; n < NBANDS; n++) {
-	pfxs_per_band[n] = 0;
-    }
-    nr_of_px = 0;
-    nr_of_px_ab = 0;
+    InitPfx();
 
     if (pfxnummultinr > 0) {
 	for(i=0; i<pfxnummultinr; i++) {
@@ -402,7 +396,7 @@ int readcalls(void)
     if (wpx == 1) {
 
 	/* build prefixes_worked array from list of worked stations */
-	nr_of_px = 0;
+	InitPfx();
 
 	for (n = 0; n < i; n++) {
 	    strcpy(checkcall, worked[n].call);
@@ -574,7 +568,8 @@ int readcalls(void)
     }
 
     if (qsonum == 1) {
-	nr_of_px = 0;
+	InitPfx();
+
 	total = 0;
 	for (i = 0; i < NBANDS; i++)
 	    band_score[i] = 0;

@@ -24,6 +24,7 @@
 	 *-------------------------------------------------------------*/
 
 #include "globalvars.h"
+#include "addpfx.h"
 #include "showscore.h"
 #include "tlf.h"
 #include "nicebox.h"
@@ -137,7 +138,6 @@ int get_nr_of_mults()
     extern int multscore[];
     extern int bandweight_multis[NBANDS];
     extern int pfxmultab;
-    extern int nr_of_px_ab;
 
     int n;
     int totalzones;
@@ -209,11 +209,11 @@ int get_nr_of_mults()
     }
     else if (wpx == 1) {
 
-	return nr_of_px;
+	return GetNrOfPfx_once();
     }
     else if (pfxmultab == 1) {
 
-	return nr_of_px_ab;
+	return GetNrOfPfx_multiband();
     }
     else
 	/* should never reach that point
@@ -254,7 +254,6 @@ int showscore(void)
     extern int zonescore[6];
     extern int countryscore[6];
     extern int totalmults;
-    extern int nr_of_px;
     extern int qsonum;
     extern int total;
     extern int wpx;
@@ -265,7 +264,6 @@ int showscore(void)
     extern int sectn_mult;
     extern int dx_arrlsections;
     extern float fixedmult;
-    extern int pfxs_per_band[];
 
     int i, l10, j;
     float p;
@@ -299,7 +297,7 @@ int showscore(void)
 	    i=0; j=0;
 	    while(i < 6) {
 		if(j != BANDINDEX_12 && j != BANDINDEX_17 && j != BANDINDEX_30) {
-		  printfield(3, band_cols[i], pfxs_per_band[j]);
+		  printfield(3, band_cols[i], GetNrOfPfx_OnBand(j));
 		  i++;
 		}
 		j++;
