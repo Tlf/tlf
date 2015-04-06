@@ -55,7 +55,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 170	/* commands in list */
+#define  MAX_COMMANDS 171	/* commands in list */
 
 
 int read_logcfg(void)
@@ -262,6 +262,8 @@ int parse_logcfg(char *inputbuffer)
     extern char countrylist[][6];
 
     extern char continent_multiplier_list[7][3];
+    extern int exclude_multilist_type;
+
 /* end LZ3NY mods */
     extern int tlfcolors[8][2];
     extern char synclogfile[];
@@ -452,7 +454,8 @@ int parse_logcfg(char *inputbuffer)
 	"BANDWEIGHT_POINTS",
 	"BANDWEIGHT_MULTIS",
 	"PFX_NUM_MULTIS",
-	"PFX_MULT_MULTIBAND"
+	"PFX_MULT_MULTIBAND",
+	"EXCLUDE_MULTILIST"	/*170 */
     };
 
     char **fields;
@@ -497,7 +500,6 @@ int parse_logcfg(char *inputbuffer)
     g_strlcpy( teststring, fields[0], sizeof(teststring) );
 
     for (ii = 0; ii < MAX_COMMANDS; ii++) {
-
 	if (strcmp(teststring, commands[ii]) == 0) {
 	    break;
 	}
@@ -1592,6 +1594,34 @@ int parse_logcfg(char *inputbuffer)
 		pfxmultab = 1;	/* enable pfx on all band */
 		break;
 	    }
+    case 170: {
+	    PARAMETER_NEEDED(teststring);
+	    if (strcmp(fields[1], "CONTINENTLIST")) {
+	        if (strlen(continent_multiplier_list[0]) == 0) {
+		    showmsg
+			("WARNING: you need to set the CONTINENTLIST parameter...");
+		    sleep(5);
+		    exit(1);
+		}
+		exclude_multilist_type = 1;
+	    }
+	    else if (strcmp(fields[1], "COUNTRYLIST")) {
+	        if (strlen(countrylist[0]) == 0) {
+		    showmsg
+			("WARNING: you need to set the COUNTRYLIST parameter...");
+		    sleep(5);
+		    exit(1);
+		}
+		exclude_multilist_type = 2;
+	    }
+	    else {
+	        showmsg
+			("WARNING: choose one of these for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST");
+		    sleep(5);
+		    exit(1);
+	    }
+	    break;
+    }
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

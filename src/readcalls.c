@@ -43,6 +43,8 @@ int readcalls(void)
     extern int nr_of_px_ab;
     extern int pfxnummultinr;
     extern t_pfxnummulti pfxnummulti[];
+    extern int exclude_multilist_type;
+    extern char countrylist[][6];
 
     char inputbuffer[160];
     char tmpbuf[20];
@@ -61,6 +63,7 @@ int readcalls(void)
     int points;
     int pfxnumcntidx;
     int pxnr;
+    int excl_add_veto;
 
     FILE *fp;
 
@@ -128,7 +131,7 @@ int readcalls(void)
     while (fgets(inputbuffer, 90, fp) != NULL) {
 	pfxnumcntidx = -1;
 	pxnr = -1;
-
+	excl_add_veto = 0;
 	r++;
 
 	if (r >= 100) {
@@ -343,6 +346,32 @@ int readcalls(void)
 	    add_ok = 1;
 	}
 
+	if (continentlist_only == 0 && exclude_multilist_type == 1) {
+	  int ci = 0;
+	  int cont_in_list = 0;
+
+	  while(strlen(continent_multiplier_list[ci]) != 0) {
+	      if(strcmp(continent, continent_multiplier_list[ci]) == 0) {
+		  cont_in_list = 1;
+	      }
+	      ci++;
+	  }
+	  if (cont_in_list == 1 && continentlist_only == 0 && exclude_multilist_type == 1) {
+	      excl_add_veto = 1;
+	  }
+	}
+
+	if (exclude_multilist_type == 2) {
+	  int ci = 0;
+	  while (strlen(countrylist[ci]) != 0) {
+	    if (getctydata(countrylist[ci]) == countrynr) {
+		excl_add_veto = 1;
+		break;
+	    }
+	    ci++;
+	  }
+	}
+
 	if (add_ok == 1) {
 
 	    worked[l].band |= inxes[bandinx];	/* mark band as worked */
@@ -351,8 +380,9 @@ int readcalls(void)
 	    if (cqww == 1)
 		zones[z] |= inxes[bandinx];
 	    if (pfxnumcntidx < 0) {
-
-		countries[countrynr] |= inxes[bandinx];
+	      	if (excl_add_veto == 0) {
+		    countries[countrynr] |= inxes[bandinx];
+		}
 	    }
 	    else {
 		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
