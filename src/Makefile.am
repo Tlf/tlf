@@ -55,7 +55,7 @@ noinst_HEADERS = \
 	main.h makelogline.h messagechange.h muf.h multiplierinfo.h \
 	nicebox.h note.h netkeyer.h\
 	paccdx.h parse_logcfg.h prevqso.h printcall.h \
-	qrb.h qsonr_to_str.h qtcwin.h qtcutil.h \
+	qrb.h qsonr_to_str.h qtcvars.h qtcwin.h qtcutil.h \
 	readcalls.h readqtccalls.h readctydata.h recall_exchange.h \
 	rules.h \
 	score.h scroll_log.h searchcallarray.h searchlog.h sendbuf.h \

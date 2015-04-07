@@ -34,12 +34,10 @@
 #include "clear_display.h"
 #include "scroll_log.h"
 #include "qtcutil.h"
+#include "qtcvars.h"
 
 #define QTCRECVCALLPOS 30
 #define QTCSENTCALLPOS 35
-
-extern int qtcdirection;
-extern int nr_qtcsent;
 
 void delete_qso(void)
 {

@@ -36,6 +36,7 @@
 #endif
 #include "fldigixmlrpc.h"
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 SCREEN *mainscreen;
 SCREEN *packetscreen;
@@ -332,19 +333,6 @@ char simulator_tone[5];
 /*-------------------------------the log lines-----------------------------*/
 char qsos[MAX_QSOS][LOGLINELEN+1];
 int nr_qsos = 0;
-
-int qsoflags_for_qtc[MAX_QSOS];
-int nr_qsosflags_for_qtc;
-int next_qtc_qso;
-t_qtclist qtclist;
-int nr_qtcsent = 0;
-t_qtcreclist qtcreclist;
-struct t_qtc_store_obj *qtc_temp_obj;
-int qtcdirection = 0;
-t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
-int qtc_ry_currline = 0;
-int qtc_ry_capture;
-int qtc_ry_copied;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/*< number of calls in worked[] */

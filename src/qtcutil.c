@@ -29,9 +29,6 @@
 GHashTable* qtc_store = NULL; 	/* stores number of QTC's per callsign */
 struct t_qtc_store_obj *qtc_empty_obj = NULL;
 
-extern int qtcdirection;
-extern struct t_qtc_store_obj *qtc_empty_obj;
-
 void qtc_init() {
     if (qtc_store != NULL) {
 	g_hash_table_destroy(qtc_store);

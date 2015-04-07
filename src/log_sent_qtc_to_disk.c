@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include "tlf.h"
 #include "lancode.h"
+#include "qtcvars.h"
 
 extern int trx_control;
 extern float freq;

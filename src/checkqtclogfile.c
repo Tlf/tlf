@@ -32,8 +32,7 @@
 #include "tlf.h"
 #include "startmsg.h"
 #include "checkqtclogfile.h"
-
-extern int qtcdirection;
+#include "qtcvars.h"
 
 int checkqtclogfile_new()
 {

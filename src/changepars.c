@@ -52,6 +52,7 @@
 #include <hamlib/rig.h>
 #endif
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
@@ -78,7 +79,6 @@ int changepars(void)
     extern int ctcomp;
     extern char *config_file;
     extern int miniterm;
-    extern int qtcdirection;
     extern int total;
 
 #ifdef HAVE_LIBHAMLIB

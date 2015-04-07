@@ -31,13 +31,11 @@
 #include "printcall.h"
 #include <glib.h>
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 
 static int fdcont;		// global for this file: tty file descriptor
 static char ry_term[5][50] = { "", "", "", "", "" };
-extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
-extern int qtc_ry_currline;
-extern int qtc_ry_capture;
 
 /* ----------------------- initialize  controller ------------------------ */
 int init_controller()

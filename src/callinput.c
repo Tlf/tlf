@@ -70,6 +70,7 @@
 #include "lancode.h"
 #include "rtty.h"
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
@@ -138,7 +139,6 @@ char callinput(void)
     extern int keyerport;
     extern int miniterm;
     extern int no_rst;
-    extern int qtcdirection;
 
     int cury, curx;
     int i, j, ii, rc, t, x = 0, y = 0;

@@ -23,6 +23,7 @@
 
 #include "globalvars.h"
 #include "genqtclist.h"
+#include "qtcvars.h"
 
 int genqtclist(char * callsign, int nrofqtc)
 {

@@ -38,6 +38,7 @@
 #include "qtcutil.h"
 #include "getctydata.h"
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 PANEL *search_panel;
 WINDOW *search_win;
@@ -45,8 +46,6 @@ static int initialized = 0;
 int nr_bands;
 
 void show_needed_sections(void);
-
-extern struct t_qtc_store_obj *qtc_temp_obj;
 
 /** Check for all band mode
  *
@@ -108,7 +107,6 @@ void searchlog(char *searchstring)
     extern int partials;
     extern int cqww;
     extern int pacc_pa_flg;
-    extern int qtcdirection;
     extern int pacc_qsos[10][10];
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;

@@ -37,6 +37,7 @@
 #include "bandmap.h"
 #include "locator2longlat.h"
 #include "dxcc.h"
+#include "qtcvars.h"
 
 extern int keyerport;
 extern char tonestr[];
@@ -246,7 +247,6 @@ int parse_logcfg(char *inputbuffer)
     extern char sc_volume[];
     extern char modem_mode[];
     extern int no_rst;
-    extern int qtcdirection;
     extern int serial_or_section;
 
 /* LZ3NY mods */
@@ -293,7 +293,6 @@ int parse_logcfg(char *inputbuffer)
     extern int qtcrec_record;
     extern char qtcrec_record_command[2][50];
     extern char qtcrec_record_command_shutdown[50];
-    extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */

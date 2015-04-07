@@ -51,6 +51,7 @@
 #include "keyer.h"
 #include "rtty.h"
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
@@ -107,7 +108,6 @@ int getexchange(void)
     extern int keyerport;
     extern int commentfield;
     extern int no_rst;
-    extern int qtcdirection;
     extern int serial_or_section;
     extern int ve_cty;
     extern int w_cty;

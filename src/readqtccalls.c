@@ -26,6 +26,7 @@
 #include "globalvars.h"
 #include "tlf.h"
 #include "qtcutil.h"
+#include "qtcvars.h"
 #include <glib.h>
 
 #include <curses.h>
@@ -35,9 +36,11 @@
 #include <time.h>
 #include <ctype.h>
 
-extern int qtcdirection;
-extern int nr_qsosflags_for_qtc;
-extern int nr_qsos;
+int qtcdirection = 0;
+int nr_qsosflags_for_qtc;
+int next_qtc_qso;
+int qsoflags_for_qtc[MAX_QSOS];
+int nr_qtcsent = 0;
 
 int readqtccalls()
 {

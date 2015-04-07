@@ -24,6 +24,7 @@
 #include "showinfo.h"
 #include "searchlog.h"
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 #include <math.h>
 #include <glib.h>
@@ -108,8 +109,6 @@ extern int trxmode;
 extern char thisnode;
 
 extern struct worked_t worked[];
-
-extern int qtcdirection;
 
 char *qtc_format(char * call);
 

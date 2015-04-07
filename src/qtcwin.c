@@ -41,6 +41,7 @@
 #include "callinput.h"
 #include "get_time.h"
 #include "write_keyer.h"
+#include "qtcvars.h"
 
 #include <sys/time.h>
 
@@ -49,8 +50,6 @@
 extern char hiscall[];
 extern char lastcall[];
 extern int trxmode;
-extern t_qtcreclist qtcreclist;
-extern t_qtclist qtclist;
 extern int keyerport;
 extern int nr_qsos;
 extern char qtc_recv_msgs[12][80];
@@ -58,14 +57,18 @@ extern char qtc_send_msgs[12][80];
 extern char qtc_phrecv_message[14][80];
 extern char qtc_phsend_message[14][80];
 extern int data_ready;
-extern struct t_qtc_store_obj *qtc_temp_obj;
 extern int qtcrec_record;
 extern char qtcrec_record_command[2][50];
 extern char qtcrec_record_command_shutdown[50];
 extern char wkeyerbuffer[];
-extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
-extern int qtc_ry_currline;
-extern int qtc_ry_capture;
+
+t_qtclist qtclist;
+t_qtcreclist qtcreclist;
+t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
+int qtc_ry_currline = 0;
+int qtc_ry_capture;
+int qtc_ry_copied;
+struct t_qtc_store_obj *qtc_temp_obj;
 
 enum {
   QTCRECVWINBG = 32,
