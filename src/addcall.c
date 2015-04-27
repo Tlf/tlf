@@ -35,6 +35,15 @@
 #include "lancode.h"
 #include <glib.h>
 
+int excl_add_veto;
+/* This variable helps to handle in other modules, that station is multiplier or not */
+/* In addcall2(), this variable helps to handle the excluded multipliers, which came from lan_logline
+ * the Tlf scoring logic is totally completely different in local and LAN source
+ * the addcall() function doesn't increment the band_score[] array, that maintains the score()
+ * function. Here, the addcall2() is need to separate the points and multipliers.
+ * This variable is used in readcall() too.
+ */
+
 int addcall(void)
 {
     extern char hiscall[];
@@ -74,6 +83,7 @@ int addcall(void)
     static int add_ok;
     int pfxnumcntidx = -1;
     int pxnr;
+    excl_add_veto = 0;
 
     found = searchcallarray(hiscall);
 
@@ -149,6 +159,7 @@ int addcall(void)
 	  add_ok = 0;
 	  addcty = 0;
 	  addcallarea = 0;
+	  excl_add_veto = 1;
       }
     }
 
@@ -159,6 +170,7 @@ int addcall(void)
             add_ok = 0;
 	    addcty = 0;
 	    addcallarea = 0;
+	    excl_add_veto = 1;
 	}
         ci++;
       }
@@ -380,14 +392,6 @@ int addcall2(void)
     extern int pfxmultab;
     extern int exclude_multilist_type;
     extern char countrylist[][6];
-    int excl_add_veto;
-    /* this variable is helps to handle the excluded multipliers, which came from lan_logline
-     * the Tlf scoring logic is totally completely different in local and LAN source
-     * the addcall() function doesn't increment the band_score[] array, that maintains the score()
-     * function. Here, the addcall2() is need to separate the points and multipliers.
-     * This variable is used in readcall() too.
-     *
-     */
 
     int found = 0;
     int i, j, p, z = 0;
