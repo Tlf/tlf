@@ -427,84 +427,77 @@ int qtc_main_panel(int direction) {
 		    if (activefield > 2) {
 			if (direction == RECV) {
 			    currqtc = ((activefield-3)/3);
-			    //if ((activefield-3)%3 == 2) {
-			    // TODO - is it need to restrict only for last field to allow the ENTER?
-			    if (1) {
-				if (qtcreclist.qtclines[currqtc].status == 0 &&
-				    strlen(qtcreclist.qtclines[currqtc].time) == 4 &&
-				    strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
-				    strlen(qtcreclist.qtclines[currqtc].serial) > 0
-				) {
-				    get_time();
-				    tempc[0] = '\0';
-				    strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
-				    strncpy(qtcreclist.qtclines[currqtc].receivedtime, tempc, 15);
-				    qtcreclist.qtclines[currqtc].receivedtime[15] = '\0';
-				    qtcreclist.qtclines[currqtc].status = 2;
-				    show_status(currqtc);
-				    if (currqtc < *qtccount) {
-					if (trxmode == DIGIMODE) {
-					    qtcreclist.qtclines[currqtc].confirmed = 1; // compatibility for other modes
-					    qtcreclist.confirmed++;
-					    activefield+=3;	// go to next line exch field
-					    showfield(activefield-3);
-					}
-					else {
-					    if (qtcreclist.qtclines[currqtc].confirmed == 0) {
-						qtcreclist.qtclines[currqtc].confirmed = 1;
-						qtcreclist.confirmed++;
-						if (trxmode == CWMODE) {
-						    sendmessage(qtc_recv_msgs[2]);
-						}
-						if (trxmode == SSBMODE) {
-						    play_file(qtc_phrecv_message[2]);
-						}
-					    }
-					    tfi = (activefield-3)%3;
-					    //activefield++;	// go to next line time field
-					    activefield += (3-tfi);
-					    showfield(activefield-(3-tfi));
-					}
-					showfield(activefield);
-				    }
-				}
-				else if (qtcreclist.qtclines[currqtc].status == 1 && qtcreclist.qtclines[currqtc].confirmed != 1) {
-				    if (trxmode == CWMODE) {
-					sendmessage(qtc_recv_msgs[7]);
-				    }
-				    if (trxmode == SSBMODE) {
-					play_file(qtc_phrecv_message[7]);
-				    }
+			    if (qtcreclist.qtclines[currqtc].status == 0 &&
+				strlen(qtcreclist.qtclines[currqtc].time) == 4 &&
+				strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
+				strlen(qtcreclist.qtclines[currqtc].serial) > 0
+			    ) {
+				get_time();
+				tempc[0] = '\0';
+				strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
+				strncpy(qtcreclist.qtclines[currqtc].receivedtime, tempc, 15);
+				qtcreclist.qtclines[currqtc].receivedtime[15] = '\0';
+				qtcreclist.qtclines[currqtc].status = 2;
+				show_status(currqtc);
+				if (currqtc < *qtccount) {
 				    if (trxmode == DIGIMODE) {
-					char *str = g_strdup_printf("%s %02d %02d\n", g_strchomp(qtc_recv_msgs[7]), currqtc+1, currqtc+1);
-					sendmessage(str);
-					g_free(str);
+					qtcreclist.qtclines[currqtc].confirmed = 1; // compatibility for other modes
+					qtcreclist.confirmed++;
+					activefield+=3;	// go to next line exch field
+					showfield(activefield-3);
 				    }
-				}
-
-				if (*qtccount > 0 && qtcreclist.confirmed == *qtccount) {
-				    if (qtcreclist.sentcfmall == 0) {
-					qtcreclist.sentcfmall = 1;
-					if (log_recv_qtc_to_disk(nr_qsos) == 0) {
-					    // TODO
-					    // send 'CFM all' to station
-					  if (qtcrec_record == 1 && record_run > -1) {
-					      strcpy(reccommand, "pkill -SIGINT -n ");
-					      strcat(reccommand, qtcrec_record_command_shutdown);
-					      system(reccommand);
-					      record_run = -1;
-					  }
-					  if (trxmode == DIGIMODE || trxmode == CWMODE) {
-						sendmessage(qtc_recv_msgs[9]);
+				    else {
+					if (qtcreclist.qtclines[currqtc].confirmed == 0) {
+					    qtcreclist.qtclines[currqtc].confirmed = 1;
+					    qtcreclist.confirmed++;
+					    if (trxmode == CWMODE) {
+						sendmessage(qtc_recv_msgs[2]);
 					    }
 					    if (trxmode == SSBMODE) {
-						play_file(qtc_phrecv_message[9]);
+						play_file(qtc_phrecv_message[2]);
 					    }
-					    // TODO
+					}
+					tfi = (activefield-3)%3;
+					//activefield++;	// go to next line time field
+					activefield += (3-tfi);
+					showfield(activefield-(3-tfi));
+				    }
+				    showfield(activefield);
+				}
+			    }
+			    else if (qtcreclist.qtclines[currqtc].status == 1 && qtcreclist.qtclines[currqtc].confirmed != 1) {
+				if (trxmode == CWMODE) {
+				    sendmessage(qtc_recv_msgs[7]);
+				}
+				if (trxmode == SSBMODE) {
+				    play_file(qtc_phrecv_message[7]);
+				}
+				if (trxmode == DIGIMODE) {
+				    char *str = g_strdup_printf("%s %02d %02d\n", g_strchomp(qtc_recv_msgs[7]), currqtc+1, currqtc+1);
+				    sendmessage(str);
+				    g_free(str);
+				}
+			    }
+
+			    if (*qtccount > 0 && qtcreclist.confirmed == *qtccount) {
+				if (qtcreclist.sentcfmall == 0) {
+				    qtcreclist.sentcfmall = 1;
+				    if (log_recv_qtc_to_disk(nr_qsos) == 0) {
+				      if (qtcrec_record == 1 && record_run > -1) {
+					  strcpy(reccommand, "pkill -SIGINT -n ");
+					  strcat(reccommand, qtcrec_record_command_shutdown);
+					  system(reccommand);
+					  record_run = -1;
+				      }
+				      if (trxmode == DIGIMODE || trxmode == CWMODE) {
+					    sendmessage(qtc_recv_msgs[9]);
+					}
+					if (trxmode == SSBMODE) {
+					    play_file(qtc_phrecv_message[9]);
 					}
 				    }
-				    x = 27;	// close the window
 				}
+				x = 27;	// close the window
 			    }
 			}
 			if (direction == SEND && trxmode != DIGIMODE) {
