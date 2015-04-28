@@ -1042,30 +1042,16 @@ int modify_field(int pressed) {
 
 	posidx = 0;
 	if (activefield == 0 && (isalnum(pressed) || pressed == '/') && strlen(qtccallsign) < pos[0][2]-1) {
-	    shift_right(qtccallsign);
 	    qtccallsign[strlen(qtccallsign)-curpos] = pressed;
-	    qtccallsign[strlen(qtccallsign)+1] = '\0';
 	    if (curpos > 0) {
 		curpos--;
 	    }
-	    /*if (*qtccurrdiretion == SEND) {
-		if (strlen(qtccallsign) > 0 && strcmp(qtccallsign, prevqtccall) != 0) {
-		    qtc_temp_obj = qtc_get(qtccallsign);
-		    *qtccount = genqtclist(qtccallsign, (10-(qtc_temp_obj->total)));
-		    show_sendto_lines();
-		    showfield(2);
-		    put_qtc();
-		}
-	    }
-	    strncpy(prevqtccall, qtccallsign, strlen(qtccallsign));*/
 	    recalc_qtclist();
 	    showfield(0);
 	}
 	else if (activefield == 1 && isdigit(pressed)) {
 	    sprintf(fieldval, "%d", (qtcreclist.serial)*10);
-	    shift_right(fieldval);
 	    fieldval[strlen(fieldval)-(1+curpos)] = pressed;
-	    fieldval[strlen(fieldval)] = '\0';
 	    if (curpos > 0) {
 		curpos--;
 	    }
@@ -1076,9 +1062,7 @@ int modify_field(int pressed) {
 	}
 	else if (activefield == 2 && isdigit(pressed)) {
 	    sprintf(fieldval, "%d", (*qtccount)*10);
-	    shift_right(fieldval);
 	    fieldval[strlen(fieldval)-(1+curpos)] = pressed;
-	    fieldval[strlen(fieldval)] = '\0';
 	    if (curpos > 0) {
 		curpos--;
 	    }
@@ -1128,9 +1112,7 @@ int modify_field(int pressed) {
 		show_status(qtcrow);
 	    }
 	    if ( ( ( (stridx == 0 || stridx == 2) && (isdigit(pressed) || pressed == '?') ) || stridx == 1) && strlen(fieldval) < pos[posidx][2]) {
-		shift_right(fieldval);
 		fieldval[strlen(fieldval)-curpos] = pressed;
-		fieldval[strlen(fieldval)+1] = '\0';
 		switch(stridx) {
 		    case 0: strcpy(qtcreclist.qtclines[qtcrow].time, fieldval);
 			    break;
@@ -1218,13 +1200,6 @@ int delete_from_field(int dir) {
 	    }
 
 	}
-	return 0;
-}
-
-int shift_right(char * fieldval) {
-	int i;
-
-	fieldval[strlen(fieldval)+1] = '\0';
 	return 0;
 }
 

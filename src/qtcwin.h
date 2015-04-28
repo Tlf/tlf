@@ -25,7 +25,6 @@ int qtc_main_panel(int direction);
 int showfield(int fidx);
 int modify_field(int pressed);
 int delete_from_field(int dir);
-int shift_right(char * fieldval);
 int shift_left(char * fieldval, int shift);
 int show_status(int idx);
 int number_fields();
