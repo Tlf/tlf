@@ -227,6 +227,7 @@ void prepare_fixed_part(void) {
  */
 void prepare_specific_part(void) {
     extern int pfxnummultinr;
+    extern int excl_add_veto;
     int new_pfx;
     int sr_nr = 0;
     char grid[7] = "";
@@ -287,7 +288,10 @@ void prepare_specific_part(void) {
 
     /* If WPX
      * -> add prefix to prefixes_worked and include new pfx in log line */
-    new_pfx = (add_pfx(pxstr) == 0);	/* add prefix, remember if new */
+    new_pfx = 0;
+    if (! (pfxmultab == 1 && excl_add_veto == 1)) {
+	new_pfx = (add_pfx(pxstr) == 0);	/* add prefix, remember if new */
+    }
 
     if (wpx ==1 || pfxmultab == 1) {			/* wpx */
 	if (new_pfx) {

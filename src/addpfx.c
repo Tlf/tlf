@@ -40,7 +40,6 @@ int add_pfx(char *pxstr)
 
     extern int pfxmultab;
     extern int bandinx;
-    extern int excl_add_veto;
     int q = 0, found = 0, bandfound = 0;
 
     prefixes_worked[nr_of_px][0] = '\0';
@@ -50,7 +49,7 @@ int add_pfx(char *pxstr)
     for (q = 0; q <= nr_of_px; q++) {
 
 	if (pfxmultab == 1) {
-	    if (excl_add_veto == 0 && strcmp(pxstr, prefixes_worked_ab[q].pfx) == 0) {
+	    if (strcmp(pxstr, prefixes_worked_ab[q].pfx) == 0) {
 		found = 1;
 		if (prefixes_worked_ab[q].bands & inxes[bandinx]) {
 		    bandfound = 1;
@@ -67,20 +66,18 @@ int add_pfx(char *pxstr)
     }
 
     if (pfxmultab == 1) {
-	if (excl_add_veto == 0) {
-	    if (found != 1) {
-		strcpy(prefixes_worked_ab[nr_of_px].pfx, pxstr);
-		prefixes_worked_ab[nr_of_px].bands |= inxes[bandinx];
-		nr_of_px++;
+	if (found != 1) {
+	    strcpy(prefixes_worked_ab[nr_of_px].pfx, pxstr);
+	    prefixes_worked_ab[nr_of_px].bands |= inxes[bandinx];
+	    nr_of_px++;
+	    nr_of_px_ab++;
+	    pfxs_per_band[bandinx]++;
+	}
+	else {
+	    if (bandfound != 1) {
+		prefixes_worked_ab[q].bands |= inxes[bandinx];
 		nr_of_px_ab++;
 		pfxs_per_band[bandinx]++;
-	    }
-	    else {
-		if (bandfound != 1) {
-		    prefixes_worked_ab[q].bands |= inxes[bandinx];
-		    nr_of_px_ab++;
-		    pfxs_per_band[bandinx]++;
-		}
 	    }
 	}
     }
@@ -95,9 +92,6 @@ int add_pfx(char *pxstr)
 	return (found);
     }
     else {
-        if (excl_add_veto == 1) {
-	    return(1);
-	}
 	return (bandfound);
     }
 }
