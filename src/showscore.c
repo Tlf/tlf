@@ -265,7 +265,7 @@ int showscore(void)
     extern int dx_arrlsections;
     extern float fixedmult;
 
-    int i, l10, j;
+    int i, l10;
     float p;
 
     if (showscore_flag == 1) {
@@ -294,13 +294,8 @@ int showscore(void)
 
 	if (pfxmultab == 1) {
 	    mvprintw(3, START_COL, "Mult ");
-	    i=0; j=0;
-	    while(i < 6) {
-		if(j != BANDINDEX_12 && j != BANDINDEX_17 && j != BANDINDEX_30) {
-		  printfield(3, band_cols[i], GetNrOfPfx_OnBand(j));
-		  i++;
-		}
-		j++;
+	    for (i = 0; i < 6; i++) {
+	    	printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
 	    }
 	}
 
