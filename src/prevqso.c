@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2014           Thomas Beierlein <tb@forth-ev.de>
+ *               2014, 2015     Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,48 +18,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 	/* ------------------------------------------------------------
-	 *     previous_qsonr
+	 *     repeat previous_qsonr
 	 *
 	 *--------------------------------------------------------------*/
 
 #include "prevqso.h"
-#include "qsonr_to_str.h"
 #include "sendbuf.h"
 #include <string.h>
 #include <glib.h>
 
-int prev_qso(void)
+void prev_qso(void)
 {
-
     extern int qsonum;
-    extern char qsonrstr[];
+    extern char last_rst[];
 
-    char nr_buffer[5];
+    int i;
     char *str;
 
-    qsonum--;
-    qsonr_to_str();
-
-    if (qsonrstr[0] != '0') {
-	strncpy(nr_buffer, qsonrstr, 4);
-	nr_buffer[4] = '\0';
-    } else if (qsonrstr[1] != '0') {
-	strncpy(nr_buffer, qsonrstr + 1, 3);
-	nr_buffer[3] = '\0';
-    } else if (qsonrstr[2] != '0') {
-	strncpy(nr_buffer, qsonrstr + 2, 2);
-	nr_buffer[2] = '\0';
-    } else {
-	strncpy(nr_buffer, qsonrstr + 3, 1);
-	nr_buffer[1] = '\0';
+    str = g_strdup_printf("%3s %d ", last_rst, qsonum-1);
+    for (i=0; i < strlen(str); i++) {
+	str[i] = short_number(str[i]);
     }
-
-    str = g_strdup_printf("5NN %s ", nr_buffer);
     sendmessage(str);
     g_free(str);
-
-    qsonum++;
-    qsonr_to_str();
-
-    return (0);
 }

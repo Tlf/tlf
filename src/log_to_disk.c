@@ -56,6 +56,7 @@ int log_to_disk(int from_lan)
     extern char comment[];
     extern char my_rst[];
     extern char his_rst[];
+    extern char last_rst[4];
     extern char qsonrstr[5];
     extern char lan_logline[];
     extern int rit;
@@ -93,6 +94,7 @@ int log_to_disk(int from_lan)
 	hiscall[0] = '\0';	/* reset the call  string */
 	comment[0] = '\0';	/* reset the comment  string */
 
+	strncpy(last_rst, his_rst, sizeof(last_rst)); /* remember last report */
 	his_rst[1] = '9';	/* restore RST to 599 */
 	my_rst[1] = '9';
 
