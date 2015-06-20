@@ -54,7 +54,7 @@ int prev_qso(void)
 	nr_buffer[1] = '\0';
     }
 
-    str = g_strdup_printf("NR %s ", nr_buffer);
+    str = g_strdup_printf("5NN %s ", nr_buffer);
     sendmessage(str);
     g_free(str);
 
