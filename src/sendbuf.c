@@ -37,6 +37,17 @@
 
 char buffer[81];
 
+/** shorten CW numbers */
+char short_number( char c) {
+    extern int shortqsonr;
+
+    if (shortqsonr == SHORTCW) {
+	if (c == '9')  return 'N';
+	if (c == '0')  return 'T';
+    }
+    return c;
+}
+
 void ExpandMacro(void) {
 
     extern char call[20];
@@ -47,7 +58,6 @@ void ExpandMacro(void) {
     extern char comment[];
     extern char lastqsonr[];
     extern int early_started;
-    extern int shortqsonr;
     extern int noleadingzeros;
     extern int lan_active;
     extern int exchange_serial;
@@ -105,12 +115,9 @@ void ExpandMacro(void) {
 
 	strncpy(rst_out, his_rst, 4);
 
-	if (shortqsonr == 1) {
-	    if (rst_out[1] == '9')
-		rst_out[1] = 'N';
-	    if (rst_out[2] == '9')
-		rst_out[2] = 'N';
-	}
+	rst_out[1] = short_number(rst_out[1]);
+	rst_out[2] = short_number(rst_out[2]);
+
 	strcat(comstr, rst_out);
 	strcat(comstr, buffer + loc + 1);
 	strcpy(buffer, comstr);
@@ -121,13 +128,8 @@ void ExpandMacro(void) {
 
     strcpy(qsonroutput, qsonrstr);
 
-    if (shortqsonr != 0) {
-	for (i = 0; i <= 4; i++) {
-	    if (qsonroutput[i] == '0')
-		qsonroutput[i] = 'T';
-	    if (qsonroutput[i] == '9')
-		qsonroutput[i] = 'N';
-	}
+    for (i = 0; i <= 4; i++) {
+	qsonroutput[i] = short_number(qsonroutput[i]);
     }
 
     loc = strcspn(buffer, "#");	/* serial nr */
@@ -195,7 +197,6 @@ void sendbuf(void)
     extern int lan_active;
     extern int exchange_serial;
     extern int noleadingzeros;
-    extern int arrlss;
     extern int early_started;
     extern int sending_call;
 
