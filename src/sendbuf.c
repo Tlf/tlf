@@ -184,7 +184,6 @@ void ExpandMacro(void) {
 void sendbuf(void)
 {
     extern int trxmode;
-    extern int shortqsonr;
     extern int searchflg;
     extern char termbuf[];
     extern char backgrnd_str[];
@@ -203,9 +202,6 @@ void sendbuf(void)
     static char printlinebuffer[82] = "";
 
     printlinebuffer[0] = '\0';
-
-    if (arrlss == 1)
-	shortqsonr = 0;
 
     if ((trxmode == CWMODE || trxmode == DIGIMODE)
 	&& (keyerport != NO_KEYER)) {

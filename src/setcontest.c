@@ -161,7 +161,6 @@ int setcontest(void)
 	recall_mult = 0;
 //      sectn_mult = 1;
 	noleadingzeros = 1;
-	shortqsonr = 1;
 	contest = 1;
 	showscore_flag = 1;
 	searchflg = 1;
