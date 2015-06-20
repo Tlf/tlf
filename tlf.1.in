@@ -144,9 +144,11 @@ Writes the log to an Amateur Data Interchange Format (ADIF) file (*.adif).
 .
 .TP
 .B :CHAr
-Input the number of characters for CW auto-start.  Possible values are
-2...5, default is 0 (off).  After typing as many characters in the input
-field @PACKAGE_NAME@ starts sending the callsign without further
+Input the number of characters for CW auto-start or 'm' for manual start.
+Possible values are: '0' (off), '2'...'5' or 'm' (manual).  
+After typing as many characters in the input field or after pressing 
+the enter key in manual mode @PACKAGE_NAME@ starts sending 
+the callsign without further
 keystrokes.  You can type in the rest of the call (but quickly).  As soon
 as the sending catches your last typed character @PACKAGE_NAME@
 automatically sends the exchange and the cursor jumps to the exchange

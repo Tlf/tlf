@@ -216,7 +216,7 @@ char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */
 int cwstart = 0;			/**< number characters after which
 					   sending call started automatically,
-					   0 - off */
+					   0 - off, -1 - manual start */
 int sending_call = 0;
 int early_started = 0;			/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
