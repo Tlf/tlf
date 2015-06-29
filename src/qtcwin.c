@@ -159,6 +159,9 @@ int qtc_main_panel(int direction) {
 
     static int record_run = -1;
 
+    /* fill the callsign fields ofthe current qtc direction structure
+     * it depends, which is the actually callsign store: hiscall or lastcall
+     */
     if (strlen(hiscall) > 0) {
 	fill_qtc_callsign(direction, hiscall);
     }
@@ -166,9 +169,14 @@ int qtc_main_panel(int direction) {
 	fill_qtc_callsign(direction, lastcall);
     }
 
+    /* save the address of the direction variable */
     qtccurrdiretion = &direction;
 
+    /* here are the mandatory steps, if the direction is RECV */
     if (direction == RECV) {
+	/* if the callsign field is empty, or the callsign field had been changed in main window,
+	 * then it needs to clean up all received QTC info
+	 */
 	if (strcmp(qtcreclist.callsign, prevqtccall) != 0 || strlen(qtcreclist.callsign) == 0) {
 	    qtcreclist.count = 0;
 	    qtcreclist.serial = 0;
@@ -184,31 +192,42 @@ int qtc_main_panel(int direction) {
 	    }
 	    activefield = 0;
 	    curr_rtty_line = 0;
-	    //qtc_ry_currline = 0;
 	    qtc_ry_copied = 0;
 	}
 	if (qtcreclist.count == 0) {
 	    activefield = 0;
 	    curr_rtty_line = 0;
 	}
+	/* save the previous qtc callsign */
 	strncpy(prevqtccall, qtcreclist.callsign, strlen(qtcreclist.callsign));
 	qtccallsign = qtcreclist.callsign;
+	/* save the address of counter of receive QTC block */
 	qtccount = &qtcreclist.count;
+	/* set the QTC win header */
+        sprintf(qtchead, "QTC receive");
     }
+    /* here are the mandatory steps, if the direction is SEND */
     if (direction == SEND) {
+        /* if the callsign field in main window had been changed, it needs to clean up the qtc structure */
 	if (strcmp(qtclist.callsign, prevqtccall) != 0 || strlen(qtclist.callsign) == 0 || qtclist.count == 0) {
 	    qtc_temp_obj = qtc_get(qtclist.callsign);
 	    j = genqtclist(qtclist.callsign, (10-(qtc_temp_obj->total)));
 	    activefield = 0;
 	}
+	/* else just read the current counter */
 	else {
 	    j = qtclist.count;
 	}
+	/* save the current callsing to previous call variable */
 	strncpy(prevqtccall, qtclist.callsign, strlen(qtclist.callsign));
 	qtccallsign = qtclist.callsign;
+	/* save the adress of counter of SEND qtc structure */
 	qtccount = &qtclist.count;
+	/* set the QTC win header */
+	sprintf(qtchead, "QTC send");
     }
 
+    /* QTC window initialization, if this function called first time */
     if (qtcpanel == 0) {
       qtcwin = newwin(14, 75, 9, 2);
       qtc_panel = new_panel(qtcwin);
@@ -221,24 +240,20 @@ int qtc_main_panel(int direction) {
       ry_help_panel = new_panel(ry_help_win);
       hide_panel(ry_help_panel);
     }
+
     show_panel(qtc_panel);
     top_panel(qtc_panel);
-    //currrecstate = curs_set(0);
     werase(qtcwin);
 
-    if (direction == RECV) {
-      sprintf(qtchead, "QTC receive");
-    }
-    if (direction == SEND) {
-      sprintf(qtchead, "QTC send");
-    }
     wnicebox(qtcwin, 0, 0, 12, 33, qtchead);
     sprintf(qtchead, "HELP");
     wnicebox(qtcwin, 0, 35, 12, 38, qtchead);
-    //mvwprintw(qtcwin, 12, 2, " QTC - F2: all | ENT: curr ");
     wbkgd(qtcwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVWINBG)));
     wattrset(qtcwin, line_inverted);
     mvwprintw(qtcwin, 1, 1, "                                 ");
+    /* the first visible and used line is the qtc serial and count
+     * it differs in RECV and SEND direction, these two lines sets them
+     */
     if (direction == RECV) {
 	mvwprintw(qtcwin, 2, 1, "      /                          ");
     }
@@ -254,6 +269,7 @@ int qtc_main_panel(int direction) {
 
     clear_help_block();
 
+    /* if the direction is RECV, it needs to set fields on the opened QTC window */
     if (direction == RECV) {
 	wattrset(qtcwin, line_inverted);
 	for(i=0; i<10; i++) {
@@ -265,9 +281,13 @@ int qtc_main_panel(int direction) {
 	}
 	number_fields();
     }
+    /* same function, but it's a littlebit more complex, therefore that's in an external function */
     if (direction == SEND) {
 	show_sendto_lines();
     }
+    /* if the direction is RECV, and mode is DIGIMODE, then TLF could capture the DIGIMODEM
+     * the current CAPTURE MODE is showed here
+     */
     if (*qtccurrdiretion == RECV && trxmode == DIGIMODE) {
 	wattrset(qtcwin, line_inverted);
 	if (qtc_ry_capture == 0) {
@@ -287,6 +307,7 @@ int qtc_main_panel(int direction) {
     refreshp();
 
     x = -1;
+    /* main loop */
     while(x != 27) {
 
 	while (x < 1) {
