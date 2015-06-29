@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2013-2014 Ervin Hegedüs - HA2OS <airween@gmail.com>
+ * Copyright (C) 2013-2015 Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,9 @@
 
 #include <sys/time.h>
 
+/* check direction clause macro
+ * direction should be RECV (1) or SEND (2), see tlf.h
+ */
 #define DIRCLAUSE (direction == RECV) || (direction == SEND && (activefield == 0 || activefield == 2))
 
 extern char hiscall[];
@@ -121,6 +124,17 @@ char * qtccallsign;
 int * qtccount;
 int * qtccurrdiretion;
 
+void fill_qtc_callsign(int direction, char * tcall) {
+    if (direction == RECV) {
+	strncpy(qtcreclist.callsign, tcall, strlen(tcall));
+	qtcreclist.callsign[strlen(tcall)] = '\0';
+    }
+    if (direction == SEND) {
+	strncpy(qtclist.callsign, tcall, strlen(tcall));
+	qtclist.callsign[strlen(tcall)] = '\0';
+    }
+}
+
 int qtc_main_panel(int direction) {
     char qtchead[32], tempc[40];
     int i, j, x;
@@ -146,24 +160,10 @@ int qtc_main_panel(int direction) {
     static int record_run = -1;
 
     if (strlen(hiscall) > 0) {
-	if (direction == RECV) {
-	    strncpy(qtcreclist.callsign, hiscall, strlen(hiscall));
-	    qtcreclist.callsign[strlen(hiscall)] = '\0';
-	}
-	if (direction == SEND) {
-	    strncpy(qtclist.callsign, hiscall, strlen(hiscall));
-	    qtclist.callsign[strlen(hiscall)] = '\0';
-	}
+	fill_qtc_callsign(direction, hiscall);
     }
     else if (strlen(lastcall) > 0) {
-	if (direction == RECV) {
-	    strncpy(qtcreclist.callsign, lastcall, strlen(lastcall));
-	    qtcreclist.callsign[strlen(lastcall)] = '\0';
-	}
-	if (direction == SEND) {
-	    strncpy(qtclist.callsign, lastcall, strlen(lastcall));
-	    qtclist.callsign[strlen(lastcall)] = '\0';
-	}
+	fill_qtc_callsign(direction, lastcall);
     }
 
     qtccurrdiretion = &direction;
