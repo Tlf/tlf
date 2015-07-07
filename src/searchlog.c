@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +35,7 @@
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
 #endif
+#include "getctydata.h"
 #include "ui_utils.h"
 
 PANEL *search_panel;
@@ -105,6 +107,8 @@ void searchlog(char *searchstring)
     extern int cqww;
     extern int pacc_pa_flg;
     extern int pacc_qsos[10][10];
+    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern int pfxnummultinr;
     extern int countrynr;
     extern int contest;
     extern int wpx;
@@ -137,6 +141,7 @@ void searchlog(char *searchstring)
     extern int show_time;
     extern int wazmult;
     extern int itumult;
+    extern int country_mult;
 
     int srch_index = 0;
     int r_index = 0;
@@ -157,6 +162,7 @@ void searchlog(char *searchstring)
     static int qso_index = 0;
     static int xwin = 1;
     static int ywin = 1;
+    int pfxnumcntidx;
 
     if (!initialized) {
 	InitSearchPanel();
@@ -551,6 +557,52 @@ void searchlog(char *searchstring)
 
 	    }
 	}
+
+	if ((pfxnummultinr >= 0 || country_mult) && contest == 1) {
+	    getpx(hiscall);
+	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
+
+	    getctydata(hiscall);
+	    pfxnumcntidx = -1;
+	    int tbandidx = -1;
+
+	    if (pfxnummultinr >= 0) {
+		int pfxi = 0;
+		while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+		    pfxi++;
+		}
+		if (pfxnummulti[pfxi].countrynr == countrynr) {
+		    pfxnumcntidx = pfxi;
+		}
+	    }
+	    if (pfxnumcntidx >= 0) {
+		tbandidx = pfxnummulti[pfxnumcntidx].qsos[pxnr];
+	    }
+	    else {
+		tbandidx = countries[countrynr];
+	    }
+
+	    if ((tbandidx & BAND160) == BAND160) {
+		mvwprintw(search_win, 6, 37, "M");
+	    }
+	    if ((tbandidx & BAND80) == BAND80) {
+		mvwprintw(search_win, 5, 37, "M");
+	    }
+	    if ((tbandidx & BAND40) == BAND40) {
+		mvwprintw(search_win, 4, 37, "M");
+	    }
+	    if ((tbandidx & BAND20) == BAND20) {
+		mvwprintw(search_win, 3, 37, "M");
+	    }
+	    if ((tbandidx & BAND15) == BAND15) {
+		mvwprintw(search_win, 2, 37, "M");
+	    }
+	    if ((tbandidx & BAND10) == BAND10) {
+		mvwprintw(search_win, 1, 37, "M");
+	    }
+
+	}
+
 	refreshp();
 
 

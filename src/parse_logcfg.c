@@ -30,6 +30,7 @@
 #include "getpx.h"
 #include "setcontest.h"
 #include "lancode.h"
+#include "getctydata.h"
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif
@@ -276,7 +277,8 @@ int parse_logcfg(char *inputbuffer)
     extern char myqra[7];
     extern int bandweight_points[NBANDS];
     extern int bandweight_multis[NBANDS];
-
+    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern int pfxnummultinr;
     extern int pfxmultab;
 
     char commands[MAX_COMMANDS][30] = {
@@ -449,7 +451,7 @@ int parse_logcfg(char *inputbuffer)
 	"USE_CONTINENTLIST_ONLY",  /* 165 */
 	"BANDWEIGHT_POINTS",
 	"BANDWEIGHT_MULTIS",
-	"__DUMMY__",       /* "PFX_NUM_MULTIS", */
+	"PFX_NUM_MULTIS",
 	"PFX_MULT_MULTIBAND"
     };
 
@@ -1545,6 +1547,47 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
 
+    case 168:{
+	    /* based on LZ3NY code, by HA2OS
+	       PFX_NUM_MULTIS   (in file or listed in logcfg.dat),
+	       We directly copy it into pfxnummulti_str, then parse the prefixlist
+	       and fill the pfxnummulti array.
+	     */
+
+	    int counter = 0;
+	    int pfxnum;
+	    static char pfxnummulti_str[50] = "";
+	    char parsepfx[15] = "";
+
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(pfxnummulti_str, fields[1], sizeof(pfxnummulti_str));
+	    g_strchomp(pfxnummulti_str);
+
+	    /* creating the array */
+	    tk_ptr = strtok(pfxnummulti_str, ",");
+	    counter = 0;
+
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+		    parsepfx[0] = '\0';
+		    if (isdigit(tk_ptr[strlen(tk_ptr)-1])) {
+			sprintf(parsepfx, "%sAA", tk_ptr);
+		    }
+		    else {
+			sprintf(parsepfx, "%s0AA", tk_ptr);
+		    }
+		    pfxnummulti[counter].countrynr = getctydata(parsepfx);
+		    for(pfxnum=0; pfxnum<10; pfxnum++) {
+			pfxnummulti[counter].qsos[pfxnum] = 0;
+		    }
+		    tk_ptr = strtok(NULL, ",");
+		    counter++;
+		}
+	    }
+	    pfxnummultinr = counter;
+	    setcontest();
+	    break;
+	}
     case 169:{		        /* wpx style prefixes mult */
 		pfxmultab = 1;	/* enable pfx on all band */
 		break;

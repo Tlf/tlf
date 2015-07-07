@@ -41,6 +41,8 @@ int readcalls(void)
     extern int continentlist_only;
     extern int pfxs_per_band[];
     extern int nr_of_px_ab;
+    extern int pfxnummultinr;
+    extern t_pfxnummulti pfxnummulti[];
 
     char inputbuffer[160];
     char tmpbuf[20];
@@ -57,6 +59,8 @@ int readcalls(void)
     char presentcall[20];	// copy of call..
     char *tmpptr;
     int points;
+    int pfxnumcntidx;
+    int pxnr;
 
     FILE *fp;
 
@@ -99,6 +103,13 @@ int readcalls(void)
     nr_of_px = 0;
     nr_of_px_ab = 0;
 
+    if (pfxnummultinr > 0) {
+	for(i=0; i<pfxnummultinr; i++) {
+	    for(n=0; n<NBANDS; n++) {
+		pfxnummulti[i].qsos[n] = 0;
+	    }
+	}
+    }
     init_mults();
 
     if ((fp = fopen(logfile, "r")) == NULL) {
@@ -115,6 +126,8 @@ int readcalls(void)
     t = 0;
 
     while (fgets(inputbuffer, 90, fp) != NULL) {
+	pfxnumcntidx = -1;
+	pxnr = -1;
 
 	r++;
 
@@ -314,6 +327,22 @@ int readcalls(void)
 	    add_pfx(pxstr);
 	}
 
+	if (pfxnummultinr > 0) {
+	    getpx(presentcall);
+	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
+
+	    getctydata(presentcall);
+
+	    int pfxi = 0;
+	    while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+		pfxi++;
+	    }
+	    if (pfxnummulti[pfxi].countrynr == countrynr) {
+		pfxnumcntidx = pfxi;
+	    }
+	    add_ok = 1;
+	}
+
 	if (add_ok == 1) {
 
 	    worked[l].band |= inxes[bandinx];	/* mark band as worked */
@@ -321,7 +350,13 @@ int readcalls(void)
 	    band_score[bandinx]++;	/*  qso counter  per band */
 	    if (cqww == 1)
 		zones[z] |= inxes[bandinx];
-	    countries[countrynr] |= inxes[bandinx];
+	    if (pfxnumcntidx < 0) {
+
+		countries[countrynr] |= inxes[bandinx];
+	    }
+	    else {
+		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
+	    }
 
 	}			/* end add_ok */
 
@@ -421,8 +456,8 @@ int readcalls(void)
 	}
 
     }
-
     /* end arrldx_usa */
+
     if (pacc_pa_flg == 1) {
 
 	for (n = 1; n < MAX_DATALINES; n++) {
@@ -441,21 +476,70 @@ int readcalls(void)
 	}
     }
 
-    if (country_mult == 1) {
+    if (country_mult == 1 || pfxnummultinr > 0) {
 
 	for (n = 1; n <= MAX_DATALINES - 1; n++) {
-	    if ((countries[n] & BAND160) != 0)
-		countryscore[0]++;
-	    if ((countries[n] & BAND80) != 0)
-		countryscore[1]++;
-	    if ((countries[n] & BAND40) != 0)
-		countryscore[2]++;
-	    if ((countries[n] & BAND20) != 0)
-		countryscore[3]++;
-	    if ((countries[n] & BAND15) != 0)
-		countryscore[4]++;
-	    if ((countries[n] & BAND10) != 0)
-		countryscore[5]++;
+
+	    // first, check pfxnummultinr array, the country 'n' exists
+	    int pfxnumcntnr = -1;
+            // pfxnummultinr is length of pfxnummulti array
+	    if (pfxnummultinr > 0) {
+		int pcntnr;
+		// find the current country
+		// n is the country in the external loop
+		// pfxnummulti[I].countrynr contains the country codes, I:=[0..pfxnummultinr]
+                // it depends from the order of prefixes in rules, eg:
+                // PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
+                // pfxnummulti[0].countrynr will be nr of USA
+                // pfxnummulti[1].countrynr will be nr of Canada
+		for(pcntnr=0; pcntnr<pfxnummultinr; pcntnr++) {
+		    if (pfxnummulti[pcntnr].countrynr == n) {
+			pfxnumcntnr = pcntnr;
+			pcntnr = pfxnummultinr; // end loop
+		    }
+		}
+	    }
+	    if (pfxnummultinr > 0 && pfxnumcntnr >= 0) {
+		int pfxnum;
+		// walking pfxnummulti[N].qsos, which is a 10 element array
+		// each element represent a number of the country code
+		// eg: K0, K1, K2, ..., K9
+		for(pfxnum=0; pfxnum<10; pfxnum++) {
+		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND160) != 0) {
+			countryscore[0]++;
+		    }
+		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND80) != 0) {
+			countryscore[1]++;
+		    }
+		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND40) != 0) {
+			countryscore[2]++;
+		    }
+		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND20) != 0) {
+			countryscore[3]++;
+		    }
+		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND15) != 0) {
+			countryscore[4]++;
+		    }
+		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND10) != 0) {
+			countryscore[5]++;
+		    }
+		}
+	    }
+	    else {
+		// simple 'country_mult', but it's works together with pfxnummultinr
+		if ((countries[n] & BAND160) != 0)
+		    countryscore[0]++;
+		if ((countries[n] & BAND80) != 0)
+		    countryscore[1]++;
+		if ((countries[n] & BAND40) != 0)
+		    countryscore[2]++;
+		if ((countries[n] & BAND20) != 0)
+		    countryscore[3]++;
+		if ((countries[n] & BAND15) != 0)
+		    countryscore[4]++;
+		if ((countries[n] & BAND10) != 0)
+		    countryscore[5]++;
+	    }
 	}
     }
 

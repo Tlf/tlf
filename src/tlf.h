@@ -166,6 +166,13 @@ struct tln_logline {
 } ;
 #endif
 
+#define MAXPFXNUMMULT 30
+typedef struct {
+  int countrynr;
+  int qsos[10];
+} t_pfxnummulti;
+
+
 void refreshp();
 
 #endif /* TLF_H */

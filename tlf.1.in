@@ -1407,6 +1407,18 @@ The multiply operation is executed after any other multiplier modification.
 .IP
 Bands not in list will be weighted by 1.
 .
+.TP
+.B PFX_NUM_MULTIS
+On WAEDC (and maybe on another contest too) the multipliers are the different countries.
+But there is an execption: in case of some country the different prefix number is
+a different multiplier. On WAEDC these countries are: W, VE, VK, ZL, ZS, JA, PY and
+RA8/RA9 and RAØ. Now with this option, you can list the affected countries:
+PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9. Then Tlf will reads these items, makes a lookup
+in a countrylist for a country code, and that code will be used. So, if you placed
+UA9 prefix, then Tlf will looks the UA9, which is Asiatic Russia. If you made a QSO
+with a station from Asiatic Russia, then the PFX number will evaulated with a new
+multiplier - but Europien Russia will not.
+.
 .SH FILES
 .
 \fB@prefix@/share/@PACKAGE@/logcfg.dat\fR is a recent example of the

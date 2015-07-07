@@ -52,6 +52,8 @@ extern int wysiwyg_multi;
 extern int wysiwyg_once;
 extern char pxstr[];
 extern int nr_of_px;
+extern int nr_of_px_ab;
+extern int pfxs_per_band[NBANDS];
 extern int zonescore[6];
 extern int countryscore[6];
 extern int qsonum;

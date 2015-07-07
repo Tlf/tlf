@@ -226,6 +226,7 @@ void prepare_fixed_part(void) {
  *     class - TX count + operator class, sctn - ARRL/RAC section
  */
 void prepare_specific_part(void) {
+    extern int pfxnummultinr;
     int new_pfx;
     int sr_nr = 0;
     char grid[7] = "";
@@ -383,7 +384,7 @@ void prepare_specific_part(void) {
 
 	fillto(77);
 
-    } else if (pacc_pa_flg == 1) {
+    } else if (pacc_pa_flg == 1 || pfxnummultinr > 0) {
 
 	logline4[68] = '\0';
 
