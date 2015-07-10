@@ -388,7 +388,7 @@ int addcall2(void)
     extern int continentlist_only;
     extern char continent_multiplier_list[7][3];
     extern char continent[];
-    extern int pfxmult;
+
     extern int pfxmultab;
     extern int exclude_multilist_type;
     extern char countrylist[][6];

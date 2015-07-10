@@ -415,8 +415,8 @@ char itustr[3];
 int nopacket = 0;		/* set if tlf is called with '-n' */
 int no_trx_control = 0;		/* set if tlf is called with '-r' */
 
-int bandweight_points[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
-int bandweight_multis[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 pthread_t background_thread;
 pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;

@@ -1263,7 +1263,7 @@ Multiply points x2 for portable stations (e.g. R1 field day).
 .TP
 .B LOWBAND_DOUBLE
 Double all points for lowband (40, 80, and 160m) QSOs (can be combined with
-any other value).
+any other value). (Will be deprecated in future! Use BANDWEIGHT_POINTS instead.)
 .
 .TP
 .B WYSIWYG_MULTIBAND
@@ -1379,42 +1379,40 @@ RECV, SEND, BOTH - note, that currently just the RECV works. For more
 information, please see the README_QTC.txt file.
 .
 .TP
-.B CONTINENTLIST
-This one is similar to COUNTRYLIST, but you can specify the continents instead
-of countries. This could be used on WAEDC, or All-Asian DX (AADX). Valid values
-are: SA, NA, EU, AF, AS and OC. If you work on WAEDC as DX (non-EU station), just
-simply put "CONTINENTLIST=EU", or on AADX "CONTINENTLIST=AS". On WAEDC
-as EU station you can use "CONTINENTLIST=SA,NA,AF,AS,OC".
+.BI CONTINENTLIST= "comma separated list of continents"
+Valid values are: SA, NA, EU, AF, AS and OC.
 .
 .TP
-.B CONTINENT_LIST_POINTS
-This one is similar to COUNTRY_LIST_POINTS - the listed continents scored by
-this value, example: "CONTINENT_LIST_POINTS=1".
+.BI CONTINENT_LIST_POINTS= d
+Points for stations from continents in CONTINENTLIST
 .
 .TP
 .B USE_CONTINENTLIST_ONLY
-This one is similar to USE_COUNTRYLIST_ONLY, use with CONTINENTLIST.
+Score zero points for station from continents not in the list.
 .
 .TP
 .B BANDWEIGHT_POINTS
-Some contest uses weighted points, that means a QSO evaulates different points
-on a different bands, for example on AADX: a QSO on 160m is 3 pts, on 80m and
-10m is 2pts, on another bands are 1pt. Now you can list the multipliers for
-different bands: BANDWEIGHT_POINTS=160:3,80:2,40:1,20:1,15:1,10:2. It's
-important, that these are multipliers, not points! You need to define the
-points with another options, eg. CONTINENT_LIST_POINTS=1, and Tlf will multiple
-the choosed value. If you omit one or more bands from list, that will be evaulated
-as 1.
+Allow a point weighting factor for different bands. E.g.
+.br
+BANDWEIGHT_POINTS=160:3,80:2,40:1,20:1,15:1,10:2
+.br
+can be used for AADX contest. It will multiply all QSO points by 3 on 160m,
+by 2 on 80m and 10m and on all other bands only by 1.
+.IP
+Bands not in list are weighted by 1.
 .
 .TP
 .B BANDWEIGHT_MULTIS
-Some contest uses weighted multipliers, that means you need to multiply the number
-of multipliers on every band with a value. For eg. on WAEDC the 80m need to multiply
-with 4, the 40m with 3, 20/15/10 meters with 2. Now you can list the weights for
-different bands: BANDWEIGHT_MULTIS=80:4,40:3,20:2,15:2,10:2. It's important, that
-these are multipliers, not points! The multiply operation executed after any other
-multiplier and point modification. If you omit one or more bands from list, that
-will be evaulated as 1.
+Allow a weigthing factor for multipliers on different bands. E.g.
+.br
+BANDWEIGHT_MULTIS=80:4,40:3,20:2,15:2,10:2
+.br
+can be used for WAEDC contest. It will multiply the number of multipliers on
+80 by 4, on 40 by 3 and on 20/15/10 by 2.
+.IP
+The multiply operation is executed after any other multiplier modification.
+.IP
+Bands not in list will be weighted by 1.
 .
 .TP
 .B PFX_NUM_MULTIS
