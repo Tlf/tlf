@@ -266,7 +266,7 @@ int showscore(void)
     extern int dx_arrlsections;
     extern float fixedmult;
 
-    int i, l10, j;
+    int i, l10;
     float p;
 
     if (showscore_flag == 1) {
