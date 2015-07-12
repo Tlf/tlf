@@ -30,6 +30,7 @@
 #include "getpx.h"
 #include "setcontest.h"
 #include "lancode.h"
+#include "getctydata.h"
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif
@@ -54,7 +55,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 163	/* commands in list */
+#define  MAX_COMMANDS 171	/* commands in list */
 
 
 int read_logcfg(void)
@@ -115,6 +116,21 @@ int read_logcfg(void)
     fclose(fp);
 
     return( status );
+}
+
+/** convert band string into index number (0..NBANDS-1) */
+int getidxbybandstr(char *confband) {
+    static char bands_strings[NBANDS][4] = {"160", "80", "40", "30", "20", "17", "15", "12", "10"};
+    int i;
+
+    g_strchomp(confband);
+
+    for(i=0; i<NBANDS; i++) {
+	if (strcmp(confband, g_strchomp(bands_strings[i])) == 0) {
+	    return i;
+	}
+    }
+    return -1;
 }
 
 
@@ -237,11 +253,17 @@ int parse_logcfg(char *inputbuffer)
     extern int dx_cont_points;
     extern int countrylist_points;
     extern int countrylist_only;
+    extern int continentlist_points;
+    extern int continentlist_only;
     char c_temp[11];
     extern int my_cont_points;
     extern int dx_cont_points;
     extern int mult_side;
     extern char countrylist[][6];
+
+    extern char continent_multiplier_list[7][3];
+    extern int exclude_multilist_type;
+
 /* end LZ3NY mods */
     extern int tlfcolors[8][2];
     extern char synclogfile[];
@@ -255,6 +277,11 @@ int parse_logcfg(char *inputbuffer)
     extern int logfrequency;
     extern int ignoredupe;
     extern char myqra[7];
+    extern int bandweight_points[NBANDS];
+    extern int bandweight_multis[NBANDS];
+    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern int pfxnummultinr;
+    extern int pfxmultab;
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -420,7 +447,15 @@ int parse_logcfg(char *inputbuffer)
 	"MYQRA",
 	"POWERMULT",		/* 160 */
 	"SERIAL_OR_SECTION",
-	"S&P_CALL_MSG"
+	"S&P_CALL_MSG",
+	"CONTINENTLIST",
+	"CONTINENT_LIST_POINTS",
+	"USE_CONTINENTLIST_ONLY",  /* 165 */
+	"BANDWEIGHT_POINTS",
+	"BANDWEIGHT_MULTIS",
+	"PFX_NUM_MULTIS",
+	"PFX_MULT_MULTIBAND",
+	"EXCLUDE_MULTILIST"	/*170 */
     };
 
     char **fields;
@@ -465,7 +500,6 @@ int parse_logcfg(char *inputbuffer)
     g_strlcpy( teststring, fields[0], sizeof(teststring) );
 
     for (ii = 0; ii < MAX_COMMANDS; ii++) {
-
 	if (strcmp(teststring, commands[ii]) == 0) {
 	    break;
 	}
@@ -1384,6 +1418,210 @@ int parse_logcfg(char *inputbuffer)
 	    break;	/* end messages */
 	}
 
+    case 163:{
+	    /* based on LZ3NY code, by HA2OS
+	       CONTINENT_LIST   (in file or listed in logcfg.dat),
+	       First of all we are checking if inserted data in
+	       CONTINENT_LIST= is a file name.  If it is we start
+	       parsing the file. If we got our case insensitive contest name,
+	       we copy the multipliers from it into multipliers_list.
+	       If the input was not a file name we directly copy it into
+	       cont_multiplier_list (must not have a preceeding contest name).
+	       The last step is to parse the multipliers_list into an array
+	       (continent_multiplier_list) for future use.
+	     */
+
+	    int counter = 0;
+	    static char cont_multiplier_list[50] = ""; 	/* use only first
+							   CONTINENT_LIST
+							   definition */
+	    char temp_buffer[255] = "";
+	    char buffer[255] = "";
+	    FILE *fp;
+
+	    PARAMETER_NEEDED(teststring);
+	    if (strlen(cont_multiplier_list) == 0) {	/* if first definition */
+		g_strlcpy(temp_buffer, fields[1], sizeof(temp_buffer));
+		g_strchomp(temp_buffer);	/* drop trailing whitespace */
+
+		if ((fp = fopen(temp_buffer, "r")) != NULL) {
+
+		    while ( fgets(buffer, sizeof(buffer), fp) != NULL ) {
+
+			g_strchomp( buffer ); /* no trailing whitespace*/
+
+			/* accept only a line starting with the contest name
+			 * (CONTEST=) followed by ':' */
+			if (strncasecmp (buffer, whichcontest,
+				strlen(whichcontest) - 1) == 0) {
+
+			    strncpy(cont_multiplier_list,
+				    buffer + strlen(whichcontest) + 1,
+				    strlen(buffer) - 1);
+			}
+		    }
+
+		    fclose(fp);
+		} else {	/* not a file */
+
+		    if (strlen(temp_buffer) > 0)
+			strcpy(cont_multiplier_list, temp_buffer);
+		}
+	    }
+
+	    /* creating the array */
+	    tk_ptr = strtok(cont_multiplier_list, ":,.- \t");
+	    counter = 0;
+
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+		    strncpy(continent_multiplier_list[counter], tk_ptr, 2);
+		    tk_ptr = strtok(NULL, ":,.-_\t ");
+		    counter++;
+		}
+	    }
+
+	    setcontest();
+	    break;
+	}
+
+    case 164:{		// CONTINENT_LIST_POINTS
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
+	    if (continentlist_points == -1) {
+		continentlist_points = atoi(c_temp);
+	    }
+
+	    break;
+	}
+    case 165:{		// CONTINENT_LIST_ONLY
+	    continentlist_only = 1;
+	    break;
+	}
+
+    case 166:{		// BANDWEIGHT_POINTS
+	    PARAMETER_NEEDED(teststring);
+	    static char bwp_params_list[50] = "";
+	    int bandindex = -1;
+
+	    if (strlen(bwp_params_list) == 0) {
+		g_strlcpy(bwp_params_list, fields[1], sizeof(bwp_params_list));
+		g_strchomp(bwp_params_list);
+	    }
+
+	    tk_ptr = strtok(bwp_params_list, ";:,");
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+
+		    bandindex = getidxbybandstr(g_strchomp(tk_ptr));
+		    tk_ptr = strtok(NULL, ";:,");
+		    if (tk_ptr != NULL && bandindex >= 0) {
+			bandweight_points[bandindex] = atoi(tk_ptr);
+		    }
+		    tk_ptr = strtok(NULL, ";:,");
+		}
+	    }
+	    break;
+	}
+
+    case 167:{		// BANDWEIGHT_MULTIS
+	    PARAMETER_NEEDED(teststring);
+	    static char bwm_params_list[50] = "";
+	    int bandindex = -1;
+
+	    if (strlen(bwm_params_list) == 0) {
+		g_strlcpy(bwm_params_list, fields[1], sizeof(bwm_params_list));
+		g_strchomp(bwm_params_list);
+	    }
+
+	    tk_ptr = strtok(bwm_params_list, ";:,");
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+
+		    bandindex = getidxbybandstr(g_strchomp(tk_ptr));
+		    tk_ptr = strtok(NULL, ";:,");
+		    if (tk_ptr != NULL && bandindex >= 0) {
+			bandweight_multis[bandindex] = atoi(tk_ptr);
+		    }
+		    tk_ptr = strtok(NULL, ";:,");
+		}
+	    }
+	    break;
+	}
+
+    case 168:{
+	    /* based on LZ3NY code, by HA2OS
+	       PFX_NUM_MULTIS   (in file or listed in logcfg.dat),
+	       We directly copy it into pfxnummulti_str, then parse the prefixlist
+	       and fill the pfxnummulti array.
+	     */
+
+	    int counter = 0;
+	    int pfxnum;
+	    static char pfxnummulti_str[50] = "";
+	    char parsepfx[15] = "";
+
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(pfxnummulti_str, fields[1], sizeof(pfxnummulti_str));
+	    g_strchomp(pfxnummulti_str);
+
+	    /* creating the array */
+	    tk_ptr = strtok(pfxnummulti_str, ",");
+	    counter = 0;
+
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+		    parsepfx[0] = '\0';
+		    if (isdigit(tk_ptr[strlen(tk_ptr)-1])) {
+			sprintf(parsepfx, "%sAA", tk_ptr);
+		    }
+		    else {
+			sprintf(parsepfx, "%s0AA", tk_ptr);
+		    }
+		    pfxnummulti[counter].countrynr = getctydata(parsepfx);
+		    for(pfxnum=0; pfxnum<10; pfxnum++) {
+			pfxnummulti[counter].qsos[pfxnum] = 0;
+		    }
+		    tk_ptr = strtok(NULL, ",");
+		    counter++;
+		}
+	    }
+	    pfxnummultinr = counter;
+	    setcontest();
+	    break;
+	}
+    case 169:{		        /* wpx style prefixes mult */
+		pfxmultab = 1;	/* enable pfx on all band */
+		break;
+	    }
+    case 170: {
+	    PARAMETER_NEEDED(teststring);
+	    if (strcmp(fields[1], "CONTINENTLIST")) {
+	        if (strlen(continent_multiplier_list[0]) == 0) {
+		    showmsg
+			("WARNING: you need to set the CONTINENTLIST parameter...");
+		    sleep(5);
+		    exit(1);
+		}
+		exclude_multilist_type = 1;
+	    }
+	    else if (strcmp(fields[1], "COUNTRYLIST")) {
+	        if (strlen(countrylist[0]) == 0) {
+		    showmsg
+			("WARNING: you need to set the COUNTRYLIST parameter...");
+		    sleep(5);
+		    exit(1);
+		}
+		exclude_multilist_type = 2;
+	    }
+	    else {
+	        showmsg
+			("WARNING: choose one of these for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST");
+		    sleep(5);
+		    exit(1);
+	    }
+	    break;
+    }
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

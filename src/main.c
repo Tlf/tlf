@@ -87,6 +87,7 @@ int focm = 0;
 int universal = 0;
 int addcallarea;
 int pfxmult = 0;
+int pfxmultab = 0;
 int exc_cont = 0;
 int manise80;
 int other_flg;
@@ -105,6 +106,10 @@ int dx_cont_points = -1;
 char countrylist[255][6];
 int countrylist_only = 0;
 int countrylist_points = -1;
+char continent_multiplier_list[7][3]; // SA, NA, EU, AF, AS and OC
+int continentlist_points = -1;
+int continentlist_only = 0;
+int exclude_multilist_type = 0;
 int mult_side = 0;
 /* end LZ3NY mods */
 
@@ -144,6 +149,9 @@ int lu_cty;
 int vk_cty;
 int zs_cty;
 int ua9_cty;
+
+t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+int pfxnummultinr = 0;
 
 char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
@@ -399,6 +407,8 @@ char itustr[3];
 int nopacket = 0;		/* set if tlf is called with '-n' */
 int no_trx_control = 0;		/* set if tlf is called with '-r' */
 
+int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 pthread_t background_thread;
 pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -444,7 +454,7 @@ void parse_options(int argc, char *argv[])
 	    printf("Version: tlf-%s\n", VERSION);
 	    exit(0);
 	    break;
-	case 'n':		// output version
+	case 'n':		// disable packet
 	    nopacket = 1;
 	    break;
 	case 'r':

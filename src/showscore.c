@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  * 		 2010 - 2013 Thomas Beierlein <tb@forth-ev.de>
+ *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +24,7 @@
 	 *-------------------------------------------------------------*/
 
 #include "globalvars.h"
+#include "addpfx.h"
 #include "showscore.h"
 #include "tlf.h"
 #include "nicebox.h"
@@ -134,6 +136,8 @@ int get_nr_of_mults()
     extern int sprint;
     extern int multlist;
     extern int multscore[];
+    extern int bandweight_multis[NBANDS];
+    extern int pfxmultab;
 
     int n;
     int totalzones;
@@ -146,9 +150,9 @@ int get_nr_of_mults()
     totalmults = 0;
 
     for (n = 0; n < 6; n++) {
-	totalzones += zonescore[n];
-	totalcountries += countryscore[n];
-	totalmults += multscore[bi_normal[n]];
+	totalzones += (zonescore[n] * bandweight_multis[bi_normal[n]]);
+	totalcountries += (countryscore[n] * bandweight_multis[bi_normal[n]]);
+	totalmults += (multscore[bi_normal[n]] * bandweight_multis[bi_normal[n]]);
     }
 
     if (sprint == 1) {
@@ -205,7 +209,11 @@ int get_nr_of_mults()
     }
     else if (wpx == 1) {
 
-	return nr_of_px;
+	return GetNrOfPfx_once();
+    }
+    else if (pfxmultab == 1) {
+
+	return GetNrOfPfx_multiband();
     }
     else
 	/* should never reach that point
@@ -246,7 +254,6 @@ int showscore(void)
     extern int zonescore[6];
     extern int countryscore[6];
     extern int totalmults;
-    extern int nr_of_px;
     extern int qsonum;
     extern int total;
     extern int wpx;
@@ -282,6 +289,13 @@ int showscore(void)
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {
 	    	printfield(3, band_cols[i], multscore[bi_normal[i]]);
+	    }
+	}
+
+	if (pfxmultab == 1) {
+	    mvprintw(3, START_COL, "Mult ");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
 	    }
 	}
 
@@ -334,7 +348,6 @@ int showscore(void)
 	    	printfield(3, band_cols[i], countryscore[i]);
 	    }
 	}
-
 
 	/* show score summary */
 	if (sprint == 1) {

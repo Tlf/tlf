@@ -1265,7 +1265,7 @@ Multiply points x2 for portable stations (e.g. R1 field day).
 .TP
 .B LOWBAND_DOUBLE
 Double all points for lowband (40, 80, and 160m) QSOs (can be combined with
-any other value).
+any other value). (Will be deprecated in future! Use BANDWEIGHT_POINTS instead.)
 .
 .TP
 .B WYSIWYG_MULTIBAND
@@ -1289,6 +1289,12 @@ Multiplier is the ITU zone (per band).
 .B PFX_MULT
 Multiplier is prefix (PA0, DA2, VE7, etc.).  Counted once per contest, not
 per band.
+.
+.TP
+.B PFX_MULT_MULTIBAND
+Same as WPX, but the WPX only used CQ-WW-WPX, and there a single prefix multiplier only
+once, not all band. With this option, the PFX counts as multiplier on all band. This
+usable on AA-DX.
 .
 .TP
 .B COUNTRY_MULT
@@ -1366,6 +1372,83 @@ Start @PACKAGE_NAME@ in SSB mode.
 For the \(lqStewperry\(rq contest, this option is used to set the QRA,
 e.g.: JN97, or the full form: JN97OM.  In Stewperry, the points are
 calculated based on the distance between the stations.
+.
+.TP
+.BI CONTINENTLIST= "comma separated list of continents"
+Valid values are: SA, NA, EU, AF, AS and OC. 
+.
+.TP
+.BI CONTINENT_LIST_POINTS= d
+Points for stations from continents in CONTINENTLIST
+.
+.TP
+.B USE_CONTINENTLIST_ONLY
+Score zero points for station from continents not in the list.
+.
+.TP
+.B BANDWEIGHT_POINTS
+Allow a point weighting factor for different bands. E.g. 
+.br
+BANDWEIGHT_POINTS=160:3,80:2,40:1,20:1,15:1,10:2 
+.br
+can be used for AADX contest. It will multiply all QSO points by 3 on 160m,
+by 2 on 80m and 10m and on all other bands only by 1. 
+.IP
+Bands not in list are weighted by 1.
+.
+.TP
+.B BANDWEIGHT_MULTIS
+Allow a weigthing factor for multipliers on different bands. E.g.
+.br
+BANDWEIGHT_MULTIS=80:4,40:3,20:2,15:2,10:2
+.br 
+can be used for WAEDC contest. It will multiply the number of multipliers on 
+80 by 4, on 40 by 3 and on 20/15/10 by 2.
+.IP
+The multiply operation is executed after any other multiplier modification.
+.IP
+Bands not in list will be weighted by 1.
+.
+.TP
+.B PFX_NUM_MULTIS
+On WAEDC (and maybe on another contest too) the multipliers are the different countries.
+But there is an execption: in case of some country the different prefix number is
+a different multiplier. On WAEDC these countries are: W, VE, VK, ZL, ZS, JA, PY and
+RA8/RA9 and RAØ. Now with this option, you can list the affected countries:
+PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9. Then Tlf will reads these items, makes a lookup
+in a countrylist for a country code, and that code will be used. So, if you placed
+UA9 prefix, then Tlf will looks the UA9, which is Asiatic Russia. If you made a QSO
+with a station from Asiatic Russia, then the PFX number will evaulated with a new
+multiplier - but Europien Russia will not.
+.
+.TP
+.B EXCLUDE_MULTILIST
+Some contest has a special multipliers list, which is easier to write with a substract
+of two predefined set. For example, the main set could be COUNTRY_MULT, and you need
+to substract from that just a few countries, than SAC test uses (then the scandinavian
+stations aren't multiplier for each other). In that case you can use this config:
+.BI
+  COUNTRY_MULT
+  COUNTRYLIST=sac:JW,JX,LA,OF1,OF0,OJ1,OJ0,OX,OW,OZ,SM,TF
+  EXCLUDE_MULTILIST=COUNTRYLIST
+.
+Another useful example at WAEDC RTTY contest: then all stations can work with each others,
+for EU stations only the non-EU stations are the multi's, and reverse: for non-EU stations
+only the EU stations are the multipliers. In that case the EU stations can use this config:
+.BI
+  CONTINENTLIST=EU
+  COUNTRY_MULT
+  EXCLUDE_MULTILIST=CONTINENTLIST
+.
+Now all country are multi, except the EU stations. In this contest the non-EU stations
+can use this config:
+.BI
+  CONTINENTLIST=SA,NA,AF,AS,OC
+  COUNTRY_MULT
+  EXCLUDE_MULTILIST=CONTINENTLIST
+.
+In this example all countries are multis, except from SA, NA, AF, OC and AS continent, so
+only the EU stations left as multipliers.
 .
 .SH FILES
 .
