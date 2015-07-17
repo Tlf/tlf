@@ -1,6 +1,6 @@
 RULES_FILES = arrl10m_dx arrldx_dx arrldx_usa arrlfd arrlss contest cqww \
-	dxped eusprint focmarathon lzdx pacc_pa pacc_dx qso spdx_dx spdx_sp ssa_mt \
-	stewperry template wpx
+	dxped eusprint focmarathon lzdx pacc_pa pacc_dx qso \
+	spdx_dx spdx_sp ssa_mt stewperry template wpx aadx_dx aadx_as
 SUBDIRS =
 
 rulesdir = $(pkgdatadir)/rules
