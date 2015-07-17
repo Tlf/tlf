@@ -164,6 +164,7 @@ int trxmode = CWMODE;
 int mixedmode = 0;
 char his_rst[4] = "599";
 char my_rst[4] = "599";
+char last_rst[4] = "599";       /* Report for last QSO */
 int mults_per_band = 1;		/* mults count per band */
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
 int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
@@ -232,7 +233,7 @@ char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */
 int cwstart = 0;			/**< number characters after which
 					   sending call started automatically,
-					   0 - off */
+					   0 - off, -1 - manual start */
 int sending_call = 0;
 int early_started = 0;			/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */

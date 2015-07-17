@@ -705,12 +705,12 @@ int changepars(void)
 	}
     case 50:			/* CHARS */
 	{
-	    mvprintw(13, 29, "Autosend: (0 (off), 2..5 chars) ?");
+	    mvprintw(13, 29, "Autosend: (0, 2..5, m)?");
 	    refreshp();
 	    x = 1;
 
 	    /* wait for correct input or ESC */
-	    while ((x != 0) && ((x < 2) || (x > 5)) ) {
+	    while ((x != 0) && !((x >= 2) && (x <= 5)) && !(x == 'm' - '0') ) {
 		x = key_get();
 		if (x == 27)
 		    break;
@@ -718,15 +718,22 @@ int changepars(void)
 	    }
 
 	    /* remember new setting */
-	    if (x != 27)
-		cwstart = x;
+	    if (x != 27) {
+		if (x == 0 || (x >= 2 && x <= 5))
+		    cwstart = x;
+		else
+		    cwstart = -1;
+	    }
 
-	    if (cwstart)
-		mvprintw(13,29, "Autosend now: %1d                 ",
+	    if (cwstart > 0)
+		mvprintw(13,29, "Autosend now: %1d        ",
 			cwstart);
-	    else
-		mvprintw(13,29, "Autosend now: OFF                ");
-
+	    else {
+		if (cwstart < 0 )
+		    mvprintw(13,29, "Autosend now: Manual   ");
+	        else
+		    mvprintw(13,29, "Autosend now: OFF      ");
+	    }
 	    refreshp();
 	    break;
 

@@ -44,7 +44,7 @@ void printcall(void)
 
     mvprintw(12, 29, "            ");
     mvprintw(12, 29, hiscall);
-    if ((cqmode == CQ) && (cwstart != 0))
+    if ((cqmode == CQ) && (cwstart > 0))
     	mvchgat(12, 29 + cwstart, 12 - cwstart,
 		attrib | A_UNDERLINE, C_INPUT, NULL);
     refreshp();

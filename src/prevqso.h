@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2014           Thomas Beierlein <tb@forth-ev.de>
+ *               2014, 2015     Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 #ifndef PREVQSO_H
 #define PREVQSO_H
 
-int prev_qso(void);
+void prev_qso(void);
 
 
 #endif /* end of include guard: PREVQSO_H */

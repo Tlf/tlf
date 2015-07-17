@@ -91,6 +91,7 @@ struct ie_list *make_ie_list(char *file)
 	    if ((token == NULL) || strtok(NULL, " \t")) {
 		/* 0 or >1 token before comma */
 		char msg[80];
+		free(new);
 		free_ie_list(ie_listhead);
 		fclose(fp);
 		sprintf( msg, "Line %d: 0 or more than one token before comma",

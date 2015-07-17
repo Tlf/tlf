@@ -1018,7 +1018,7 @@ char callinput(void)
 		instring[1] = '\0';
 		addch(x);
 		strcat(hiscall, instring);
-		if (cqmode == CQ && cwstart != 0 &&
+		if (cqmode == CQ && cwstart > 0 &&
 			trxmode == CWMODE && contest == 1) {
 		    /* early start keying after 'cwstart' characters but only
 		     * if input field contains at least one nondigit */
@@ -1040,6 +1040,17 @@ char callinput(void)
 
 	    refreshp();
 
+	}
+
+	if (cqmode == CQ && cwstart < 0 && trxmode == CWMODE &&
+		contest == 1) {
+	    if (x == '\n') {
+		/* early start keying after 'Enter' but only if input field
+		 * contains at least two chars, one or more of it nondigit */
+		if (strlen(hiscall) >= 2 && !plain_number(hiscall)) {
+		    x = autosend();
+		}
+	    }
 	}
 
 	if ((x == '\n') || x == 32 || x == 9 || x == 11 || x == 44
