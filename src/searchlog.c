@@ -168,6 +168,8 @@ void searchlog(char *searchstring)
     char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
     int pfxnumcntidx;
 
+    struct t_qtc_store_obj *qtc_temp_ptr;
+
     if (!initialized) {
 	InitSearchPanel();
 	initialized = 1;
@@ -417,11 +419,11 @@ void searchlog(char *searchstring)
 			z++; l++;
 		    } while(s_inputbuffer[z] != ' ');
 		    qtccall[l] = '\0';
-		    qtc_temp_obj = qtc_get(qtccall);
-		    if (qtc_temp_obj->total > 0 && qtc_temp_obj->total < 10) {
-			qtcflags[j-1] = qtc_temp_obj->total+48;
+		    qtc_temp_ptr = qtc_get(qtccall);
+		    if (qtc_temp_ptr->total > 0 && qtc_temp_ptr->total < 10) {
+			qtcflags[j-1] = qtc_temp_ptr->total+48;
 		    }
-		    if (qtc_temp_obj->total >= 10) {
+		    if (qtc_temp_ptr->total >= 10) {
 			qtcflags[j-1] = 'Q';
 		    }
 		}

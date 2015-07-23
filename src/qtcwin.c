@@ -71,7 +71,9 @@ t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
 int qtc_ry_currline = 0;
 int qtc_ry_capture;
 int qtc_ry_copied;
-struct t_qtc_store_obj *qtc_temp_obj;
+struct t_qtc_store_obj *qtc_temp_obj;  /* temp object to help to maintain
+					  the QTC hash */
+
 
 enum {
   QTCRECVWINBG = 32,

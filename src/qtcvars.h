@@ -21,17 +21,22 @@
 #define QTCVARS_H
 
 extern int nr_qsosflags_for_qtc;	// number of lines in qsoflags_for_qtc[]
-extern int next_qtc_qso;		// the next non-sent QSO, which can be send next as QTC
-extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs for QTC's;
-					// this is an array of flags, which marks when a QSO sent as QTC
+extern int next_qtc_qso;		// the next non-sent QSO, which can
+					// be send next as QTC
+extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs
+					// for QTC's;  this is an array of
+					// flags, which marks when a QSO
+					// sent as QTC
 extern int qtcdirection;		// 1: RECV, 2: SEND, 3: BOTH
 extern t_qtclist qtclist;		// the QTC list to send
 extern t_qtcreclist qtcreclist;		// the QTC list which received
 extern int nr_qtcsent;			// number of sent QTC
-extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];	// when QTC is set, and mode is RTTY, then the modem lines stored this array
+extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];	// when QTC is set,
+					// and mode is RTTY, then the modem
+					// lines stored this array
 extern int qtc_ry_currline;		// current line of QTC RTTY modem
 extern int qtc_ry_capture;		// enable or disable QTC RTTY capturing
-extern int qtc_ry_copied;		// stores the number of copied lines from QTC RTTY terminal to QTC window
-extern struct t_qtc_store_obj *qtc_temp_obj;		// temp object to help to maintain the QTC hash
+extern int qtc_ry_copied;		// stores the number of copied lines i
+					// from QTC RTTY terminal to QTC window
 
 #endif /* end of include guard: QTCVARS_H */
