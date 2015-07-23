@@ -505,7 +505,7 @@ void searchlog(char *searchstring)
 
 	if (cqww == 1 || contest == 0 || pacc_pa_flg == 1) {
 
-	  if ((countries[countrynr] & BAND10) != 0) {
+	    if ((countries[countrynr] & BAND10) != 0) {
 		mvwprintw(search_win, 1, 36, "C");
 		mvwprintw(search_win, 1, 1, " 10");
 	    }

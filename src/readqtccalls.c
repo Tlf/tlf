@@ -37,9 +37,9 @@
 #include <ctype.h>
 
 int qtcdirection = 0;
-int nr_qsosflags_for_qtc;
 int next_qtc_qso;
 int qsoflags_for_qtc[MAX_QSOS];
+int nr_qsoflags_for_qtc;
 int nr_qtcsent = 0;
 
 int readqtccalls()
@@ -56,7 +56,7 @@ int readqtccalls()
 
     qtc_init();
 
-    nr_qsosflags_for_qtc = nr_qsos;
+    nr_qsoflags_for_qtc = nr_qsos;
 
     if (qtcdirection & 2) {
 	mvprintw(4, 0, "Reading QTC sent logfile...\n");
