@@ -982,6 +982,8 @@ int showfield(int fidx) {
 	char fieldval[20], filled[20];
 	int qtcrow, winrow, fi, posidx, i;
 
+	fieldval[0] = '\0';
+
 	init_pair(QTCRECVWINBG,   COLOR_BLUE,   COLOR_GREEN);
 	init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
 	init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
@@ -1058,6 +1060,8 @@ int showfield(int fidx) {
 int modify_field(int pressed) {
 	char fieldval[16];
 	int fi, winrow, qtcrow, posidx, stridx;
+
+	fieldval[0] = '\0';
 
 	posidx = 0;
 	if (activefield == 0 && (isalnum(pressed) || pressed == '/') && strlen(qtccallsign) < pos[0][2]-1) {
@@ -1160,6 +1164,8 @@ int delete_from_field(int dir) {
 
 	char fieldval[16];
 	int fi, winrow, qtcrow, stridx;
+
+	fieldval[0] = '\0';
 
 	if (activefield == 0) {
 	    if (strlen(qtccallsign) > 0) {
