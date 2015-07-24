@@ -99,9 +99,7 @@ int activefield;
 int pos[6][3] = {{3, 3, 15}, {3, 6, 4}, {8, 8, 2}, {3, 3, 4}, {8, 8, 14}, {24, 24, 4}};
 int curpos = 0;
 int curfieldlen = 0;
-static char last_rtty_line[2][50] = {"", ""};	// local copy and store to remain
 static char prevqtccall[15] = "";
-int curr_rtty_line = 0;
 int capturing = 0;
 char help_rec_msgs[6][26] = {
     "Enter callsign",
@@ -144,7 +142,6 @@ int qtc_main_panel(int direction) {
     char reccommand[100] = "";
 
     capturing = 0;
-    last_rtty_line[0][0] = '\0'; last_rtty_line[1][0] = '\0';
     init_pair(QTCRECVWINBG,   COLOR_BLUE,   COLOR_GREEN);
     init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
     init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
@@ -192,12 +189,10 @@ int qtc_main_panel(int direction) {
 		qtcreclist.qtclines[i].confirmed = 0;
 	    }
 	    activefield = 0;
-	    curr_rtty_line = 0;
 	    qtc_ry_copied = 0;
 	}
 	if (qtcreclist.count == 0) {
 	    activefield = 0;
-	    curr_rtty_line = 0;
 	}
 	/* save the previous qtc callsign */
 	strncpy(prevqtccall, qtcreclist.callsign, strlen(qtcreclist.callsign));
