@@ -1061,7 +1061,7 @@ int modify_field(int pressed) {
 	char fieldval[16];
 	int fi, winrow, qtcrow, posidx, stridx;
 
-	fieldval[0] = '\0';
+	memset(fieldval, '\0', 15);
 
 	posidx = 0;
 	if (activefield == 0 && (isalnum(pressed) || pressed == '/') && strlen(qtccallsign) < pos[0][2]-1) {
