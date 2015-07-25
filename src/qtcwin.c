@@ -50,6 +50,20 @@
  */
 #define DIRCLAUSE (direction == RECV) || (direction == SEND && (activefield == 0 || activefield == 2))
 
+void clear_help_block();
+void show_help_msg();
+void showfield(int fidx);
+void modify_field(int pressed);
+void delete_from_field(int dir);
+void shift_left(char * fieldval, int shift);
+void show_status(int idx);
+void number_fields();
+void put_qtc();
+void replace_spaces(char * src, char * tempc);
+void show_sendto_lines();
+void recalc_qtclist();
+void show_rtty_lines();
+
 extern char hiscall[];
 extern char lastcall[];
 extern int trxmode;
@@ -86,14 +100,16 @@ enum {
 
 int sentqtc_p;
 
-int qtcpanel = 0;
 int currrecstate;
+
+int qtcpanel = 0;
 WINDOW * qtcwin;
 PANEL * qtc_panel;
 WINDOW * ry_win;
 PANEL * ry_panel;
 WINDOW * ry_help_win;
 PANEL * ry_help_panel;
+
 int activefield;
 // array values: hor position, cursor position, field len to fill with spaces
 int pos[6][3] = {{3, 3, 15}, {3, 6, 4}, {8, 8, 2}, {3, 3, 4}, {8, 8, 14}, {24, 24, 4}};
@@ -134,7 +150,7 @@ void fill_qtc_callsign(int direction, char * tcall) {
     }
 }
 
-int qtc_main_panel(int direction) {
+void qtc_main_panel(int direction) {
     char qtchead[32], tempc[40];
     int i, j, x;
     int tfi, tlen = 0;
@@ -400,9 +416,6 @@ int qtc_main_panel(int direction) {
 				    showfield(0);
 				    showfield(2);
 				    break;
-			    //case 2: activefield = 3;
-				    //showfield(2);
-				    //break;
 			    case 2: activefield = 3;
 				    show_help_msg(activefield);
 				    showfield(2);
@@ -551,16 +564,6 @@ int qtc_main_panel(int direction) {
 				mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");
 				refreshp();
 				show_help_msg(6);
-				// //if (log_send_qtc_to_disk(nr_qsos) == 0) {
-				    // //qtcreclist.sentcfmall = 1;
-				    // TODO
-				    // send 'CFM all' to station
-				    // // if (trxmode == DIGIMODE || trxmode == CWMODE) {
-					// // sendmessage(qtc_send_msgs[9]);
-				    // //}
-				    // TODO
-				// //}
-				// // x = 27;	// close the window
 			    }
 			}
 		    }
@@ -771,20 +774,6 @@ int qtc_main_panel(int direction) {
 		    }
 
 		    break;
-	/*case 130:		// F2
-		    for(j=0; j<qtcreclist.count; j++) {
-			if (qtcreclist.qtclines[j].status == 0 &&
-			    strlen(qtcreclist.qtclines[j].time) == 4 &&
-			    strlen(qtcreclist.qtclines[j].callsign) > 0 &&
-			    strlen(qtcreclist.qtclines[j].serial) > 0
-			) {
-			    qtcreclist.confirmed++;
-			    qtcreclist.qtclines[j].status = 2;
-			    show_status(j);
-			}
-		    }
-		    showfield(activefield);
-		    break;*/
 	  case 161:  		// DELETE
 		    if (DIRCLAUSE) {
 			delete_from_field(0);
@@ -797,19 +786,6 @@ int qtc_main_panel(int direction) {
 			qtclist.totalsent--;
 		    }
 		    break;
-	  /*case 138:			// SHIFT + Fn
-		    x = onechar();
-		    if (x == 81) {	// shift + F2
-			for(j=0; j<qtcreclist.count; j++) {
-			    if (qtcreclist.qtclines[j].status == 2) {
-				qtcreclist.confirmed--;
-			    }
-			    qtcreclist.qtclines[j].status = 0;
-			    show_status(j);
-			}
-			showfield(activefield);
-		    }
-		    break;*/
 	  case 9:		// TAB
 		  if (direction == RECV) {
 		      if (trxmode == DIGIMODE) {
@@ -913,11 +889,6 @@ int qtc_main_panel(int direction) {
 		    }
 		    break;
 	  case 48 ... 57:	// numbers
-		    /* if (trxmode == DIGIMODE && direction == RECV && activefield > 0 && activefield < 3 && qtccount == 0 && capturing == 0) {
-			capturing = 1;
-			wattrset(qtcwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
-			mvwprintw(qtcwin, 1, 19, "CAPTURE ON ");
-		    } */
 		    if (DIRCLAUSE) {
 			modify_field(x);
 		    }
@@ -971,13 +942,9 @@ int qtc_main_panel(int direction) {
     }
     hide_panel(qtc_panel);
     capturing = 0;
-    //curs_set(currrecstate);
-    //x = onechar();
-
-    return 0;
 }
 
-int showfield(int fidx) {
+void showfield(int fidx) {
 
 	char fieldval[20], filled[20];
 	int qtcrow, winrow, fi, posidx, i;
@@ -1053,11 +1020,9 @@ int showfield(int fidx) {
 		wmove(qtcwin, winrow, pos[posidx][1]-curpos);
 	    }
 	}
-
-	return 0;
 }
 
-int modify_field(int pressed) {
+void modify_field(int pressed) {
 	char fieldval[16];
 	int fi, winrow, qtcrow, posidx, stridx;
 
@@ -1128,9 +1093,6 @@ int modify_field(int pressed) {
 			break;
 	    }
 	    if (pressed == '?') {
-		//if (qtcreclist.qtclines[qtcrow].status == 2) {
-		    //qtcreclist.confirmed--;
-		//}
 		qtcreclist.qtclines[qtcrow].status = 1;	// set incomplete the qtc status
 		show_status(qtcrow);
 	    }
@@ -1157,10 +1119,9 @@ int modify_field(int pressed) {
 	    }
 
 	}
-	return 0;
 }
 
-int delete_from_field(int dir) {
+void delete_from_field(int dir) {
 
 	char fieldval[16];
 	int fi, winrow, qtcrow, stridx;
@@ -1224,10 +1185,9 @@ int delete_from_field(int dir) {
 	    }
 
 	}
-	return 0;
 }
 
-int shift_left(char * fieldval, int shift) {
+void shift_left(char * fieldval, int shift) {
 	int i;
 	for(i=strlen(fieldval)-(curpos+shift); i<strlen(fieldval); i++) {
 	    fieldval[i] = fieldval[i+1];
@@ -1236,10 +1196,9 @@ int shift_left(char * fieldval, int shift) {
 	  curpos--;
 	}
 	fieldval[strlen(fieldval)] = '\0';
-	return 0;
 }
 
-int show_status(int idx) {
+void show_status(int idx) {
 
 	char flag = ' ';
 	int i, status = 0;
@@ -1284,9 +1243,6 @@ int show_status(int idx) {
 		}
 	    }
 	    if (status == 1) {
-		/*if (qtcreclist.qtclines[idx].status == 2) {
-		    qtcreclist.confirmed--;
-		}*/
 		qtcreclist.qtclines[idx].status = 1;
 	    }
 	    else if (qtcreclist.qtclines[idx].status != 2) {	// unset incomplete mark if not marked as complete
@@ -1307,10 +1263,9 @@ int show_status(int idx) {
 	    wattrset(qtcwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
 	    mvwprintw(qtcwin, idx+3, 30, "%c", flag);
 	}
-	return 0;
 }
 
-int number_fields() {
+void number_fields() {
     int i;
 
     init_pair(QTCRECVBG,      COLOR_BLUE,   COLOR_CYAN);
@@ -1321,12 +1276,10 @@ int number_fields() {
     for(i=0;i<qtccount;i++) {
 	mvwprintw(qtcwin, i+3, 1, "%2d", i+1);
     }
-    return 0;
 }
 
-int clear_help_block() {
+void clear_help_block() {
     int i;
-
 
     init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
     int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
@@ -1335,21 +1288,19 @@ int clear_help_block() {
     for(i=1;i<13;i++) {
 	mvwprintw(qtcwin, i, 36, "                                      ");
     }
-    return 0;
 }
 
-int show_help_msg(msgidx) {
-    clear_help_block();
+void show_help_msg(msgidx) {
     int i = 0, j = 0;
     char buff[80];
     int currqtc;
 
-    //init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
+    clear_help_block();
+
     init_pair(QTCRECVCURRLINE,COLOR_YELLOW, COLOR_MAGENTA);
     init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
 
     int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
-    //int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
     int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
 
     wattrset(qtcwin, line_currinverted);
@@ -1403,8 +1354,6 @@ int show_help_msg(msgidx) {
 	mvwprintw(qtcwin, ++j, 36, "CTRL-S: Start capture");
 	mvwprintw(qtcwin, ++j, 36, "CTRL-E: End capture");
     }
-
-    return 0;
 }
 
 int parse_ry_line(char * line) {
@@ -1537,7 +1486,7 @@ int print_rtty_line(t_qtc_ry_line qtc_ry_line, int row) {
 }
 
 /* RTTY terminal to helps to capture the RTTY content */
-int show_rtty_lines() {
+void show_rtty_lines() {
     extern int miniterm;
 
     int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
@@ -1692,18 +1641,15 @@ int show_rtty_lines() {
     }
     hide_panel(ry_panel);
     hide_panel(ry_help_panel);
-    //mvwprintw(qtcwin, 2, 11, "           ");
 
     curs_set(1);
     tactivefield = activefield;
     activefield = oactivefield;
     showfield(tactivefield);
     showfield(oactivefield);
-
-    return 0;
 }
 
-int put_qtc() {
+void put_qtc() {
 
     init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
     int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
@@ -1712,10 +1658,9 @@ int put_qtc() {
     wattrset(qtcwin, line_normal);
     mvwprintw(qtcwin, 1, 19, "%s %2d QTC", qtcdirstring[qtccurrdirection], qtc_temp_obj->total);
 
-   return 0;
 }
 
-int replace_spaces(char * src, char * tempc) {
+void replace_spaces(char * src, char * tempc) {
       int tsp, tdp;
 
       tsp = 0;
@@ -1742,11 +1687,9 @@ int replace_spaces(char * src, char * tempc) {
       tempc[tdp] = '\n';
       tdp++;
       tempc[tdp] = '\0';
-
-      return 0;
 }
 
-int show_sendto_lines() {
+void show_sendto_lines() {
     int i;
     int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
     int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
@@ -1767,10 +1710,9 @@ int show_sendto_lines() {
 	mvwprintw(qtcwin, i+3, 4, "                        ");
     }
     number_fields();
-    return 0;
 }
 
-int recalc_qtclist() {
+void recalc_qtclist() {
 	if (qtccurrdirection == SEND) {
 	    if (strlen(qtccallsign) > 0 && strcmp(qtccallsign, prevqtccall) != 0) {
 		qtc_temp_obj = qtc_get(qtccallsign);
@@ -1782,20 +1724,5 @@ int recalc_qtclist() {
 	}
 	strncpy(prevqtccall, qtccallsign, strlen(qtccallsign));
 	prevqtccall[strlen(qtccallsign)] = '\0';
-
-	return 0;
 }
-
-/* int move_cursor(int dir) {
-	int fi, winrow;
-
-	if (activefield == 0 || activefield == 1) {
-	    winrow = 1;
-	}
-	else {
-	    fi = activefield-2;
-	    winrow = (fi/3)+2;
-	}
-	wmove(qtcwin, winrow, pos[posidx][1]);
-} */
 
