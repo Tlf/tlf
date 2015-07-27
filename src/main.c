@@ -647,7 +647,7 @@ int databases_load()
     }
 
     if (qtcdirection > 0) {
-	if (checkqtclogfile_new() != 0) {
+	if (checkqtclogfile() != 0) {
 	    showmsg( "QTC's giving up" );
 	    return EXIT_FAILURE;
 	}
