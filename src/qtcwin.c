@@ -30,8 +30,7 @@
 #include <ctype.h>
 #include "rtty.h"
 #include "sendbuf.h"
-#include "log_recv_qtc_to_disk.h"
-#include "log_sent_qtc_to_disk.h"
+#include "qtc_log.h"
 #include "globalvars.h"
 #include "qtcutil.h"
 #include "genqtclist.h"

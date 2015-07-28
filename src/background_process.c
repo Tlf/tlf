@@ -33,8 +33,7 @@
 #include "get_time.h"
 #include "qsonr_to_str.h"
 #include "gettxinfo.h"
-#include "log_recv_qtc_to_disk.h"
-#include "log_sent_qtc_to_disk.h"
+#include "qtc_log.h"
 #include <glib.h>
 
 extern int stop_backgrnd_process;
