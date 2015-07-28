@@ -18,43 +18,36 @@
  */
 /*------------------------------------------------------------------------
 
-    Log QSO to disk the sent QTC line, do all necessary actions to clear qtc store
+    Log sent QTC line to disk, clear the qtc list
 
 ------------------------------------------------------------------------*/
 
 #include "globalvars.h"
-#include "get_time.h"
 #include "log_sent_qtc_to_disk.h"
+#include "log_recv_qtc_to_disk.h"
 #include "qtcutil.h"
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "tlf.h"
 #include "lancode.h"
 #include "qtcvars.h"
 
 extern int trx_control;
 extern float freq;
-extern int logfrequency;
 
 int log_sent_qtc_to_disk(int qsonr)
 {
-    char qtclogline[100], temp[20];
+    char qtclogline[100], temp[80];
     int qpos = 0, i;
     int has_empty = 0;
     int last_qtc = 0;
 
-    static char time_buf[80];
-    char khz[9] = "";
 
     for(i=0; i<10; i++) {
 	if (qtclist.qtclines[i].saved == 0 && qtclist.qtclines[i].flag == 1 && qtclist.qtclines[i].sent == 1) { // not saved and marked for sent
-	    for(qpos=0; qpos<100; qpos++) {
-		qtclogline[qpos] = 32;
-	    }
 
+	    memset(qtclogline, sizeof(qtclogline)/sizeof(qtclogline[0]), ' ');
 	    qpos = 0;
+
 	    // QTC:  3799 PH 2003-03-23 0711 YB1AQS        001/10     DL8WPX        0330 DL6RAI        1021
 	    // QTC: 21086 RY 2001-11-10 0759 HA3LI           1/10     YB1AQS        0003 KB3TS          003
 
@@ -68,20 +61,16 @@ int log_sent_qtc_to_disk(int qsonr)
 	    else {
 		strcat(temp, "DIG ");
 	    }
-	    strncpy(qtclogline, temp, strlen(temp));
+	    qpos = add_to_qtcline(qtclogline, temp, qpos);
 
-	    qpos = strlen(temp);
 	    sprintf(temp, "%04d", qsonr);
-	    strncpy(qtclogline+qpos, temp, strlen(temp));
-	    qpos += strlen(temp);
+	    qpos = add_to_qtcline(qtclogline, temp, qpos);
 
 	    sprintf(temp, " %04d", qtclist.qtclines[i].qsoline+1);
-	    strncpy(qtclogline+qpos, temp, strlen(temp));
-	    qpos += strlen(temp);
+	    qpos = add_to_qtcline(qtclogline, temp, qpos);
 
-	    sprintf(time_buf, " %s ", qtclist.qtclines[i].senttime);
-	    strncpy(qtclogline+qpos, time_buf, strlen(time_buf));
-	    qpos+=strlen(time_buf);
+	    sprintf(temp, " %s ", qtclist.qtclines[i].senttime);
+	    qpos = add_to_qtcline(qtclogline, temp, qpos);
 
 	    if (lan_active == 1) {
 		qtclogline[qpos++] = thisnode;	// set node ID...
@@ -91,33 +80,29 @@ int log_sent_qtc_to_disk(int qsonr)
 	    qtclogline[qpos++] = ' ';
 
 	    sprintf(temp, "%-14s", qtclist.callsign);
-
-	    strncpy(qtclogline+qpos, temp, strlen(temp));
-	    qpos+=strlen(temp);
+	    qpos = add_to_qtcline(qtclogline, temp, qpos);
 
 	    sprintf(temp, " %04d", qtclist.serial);
-	    strncpy(qtclogline+qpos, temp, strlen(temp));
-	    qpos+=strlen(temp);
+	    qpos = add_to_qtcline(qtclogline, temp, qpos);
 
 	    sprintf(temp, " %04d ", qtclist.count);
-	    strncpy(qtclogline+qpos, temp, strlen(temp));
-	    qpos+=strlen(temp);
+	    qpos = add_to_qtcline(qtclogline, temp, qpos);
 
 	    strcpy(qtclogline+qpos, qtclist.qtclines[i].qtc);
 	    qpos+=strlen(qtclist.qtclines[i].qtc);
-	    strncpy(qtclogline+qpos, "    ", 4);
-	    qpos += 4;
+
+	    qpos = add_to_qtcline(qtclogline, "    ", qpos);
 
 	    if (trx_control == 1) {
-		snprintf(khz, 8, "%7.1f", freq);
+		snprintf(temp, 8, "%7.1f", freq);
 	    }
 	    else {
-		snprintf(khz, 8, "      *");
+		snprintf(temp, 8, "      *");
 	    }
+	    qpos = add_to_qtcline(qtclogline, temp, qpos);
 
-	    strncpy(qtclogline+qpos, khz, strlen(khz));
-	    qpos += strlen(khz);
-	    qtclogline[qpos] = '\0';
+	    qtclogline[qpos] = '\n';
+	    qtclogline[qpos + 1] = '\0';
 
 	    store_sent_qtc(qtclogline);
 
@@ -128,6 +113,7 @@ int log_sent_qtc_to_disk(int qsonr)
 
 	    // mark qso as sent as qtc
 	    qsoflags_for_qtc[qtclist.qtclines[i].qsoline] = 1;
+
 	    if (qtclist.qtclines[i].qsoline > last_qtc) {
 		last_qtc = qtclist.qtclines[i].qsoline;
 	    }
@@ -175,23 +161,5 @@ int log_sent_qtc_to_disk(int qsonr)
 
 void store_sent_qtc(char *loglineptr)
 {
-	FILE *fp;
-	int i;
-	char callsign[15];
-
-	if  ( (fp = fopen(QTC_SENT_LOG, "a"))  == NULL){
-		fprintf(stdout,  "log_sent_qtc_to_disk.c: Error opening file.\n");
-		endwin();
-		exit(1);
-	}
-	for (i=strlen(loglineptr)-1; loglineptr[i] == ' '; i--);
-	loglineptr[i+1] = '\n';
-	loglineptr[i+2] = '\0';
-	fputs  (loglineptr, fp);
-	total++;
-
-	fclose(fp);
-	parse_qtcline(loglineptr, callsign, SEND);
-	qtc_inc(callsign, SEND);
-
+	store_qtc(loglineptr, SEND);
 }

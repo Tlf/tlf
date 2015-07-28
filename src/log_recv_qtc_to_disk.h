@@ -23,6 +23,9 @@
 
 int log_recv_qtc_to_disk (int qtcnr);
 void store_recv_qtc (char * loglineptr);
+int add_to_qtcline(char *line, char *toadd, int pos);
+void store_qtc(char *loglineptr, int direction);
+
 
 
 #endif /* end of include guard: LOG_RECV_QTC_TO_DISK_H */
