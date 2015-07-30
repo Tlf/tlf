@@ -167,6 +167,8 @@ struct tln_logline {
 } ;
 #endif
 
+#define QTC_LINES 10
+
 typedef struct {
   int qsoline;	// qsos[INDEX]
   int flag;	// flag to mark for send
@@ -182,7 +184,7 @@ typedef struct {
   int marked;	// nr of marked to send
   int totalsent; // nr of sent qtc's
   char callsign[15];  // current callsign; helps to detect if QSO has dropped
-  t_qtcline qtclines[10];
+  t_qtcline qtclines[QTC_LINES];
 } t_qtclist;
 
 typedef struct {
@@ -200,7 +202,7 @@ typedef struct {
   int confirmed;
   int sentcfmall;
   char callsign[15];
-  t_qtcrecline qtclines[10];
+  t_qtcrecline qtclines[QTC_LINES];
 } t_qtcreclist;
 
 #define QTC_SENT_LOG	"QTC_sent.log"
