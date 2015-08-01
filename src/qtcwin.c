@@ -97,11 +97,14 @@ enum {
   QTCRECVINVLINE,
   QTCRECVCURRLINE,
   QTCRECVBG,
-  KEYERLINE
 };
 
+#define LINE_INVERTED  		(COLOR_PAIR(QTCRECVINVLINE) | A_BOLD)
+#define LINE_CURRINVERTED 	(COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD)
+#define LINE_CURRNORMAL  	(COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL)
+#define LINE_NORMAL  		(COLOR_PAIR(QTCRECVLINE) | A_NORMAL)
 
-static int qtcpanel_initialized = 0;
+
 WINDOW * qtcwin;
 PANEL * qtc_panel;
 WINDOW * ry_win;
@@ -115,7 +118,6 @@ int pos[6][3] = {{3, 3, 15}, {3, 6, 4}, {8, 8, 2}, {3, 3, 4}, {8, 8, 14}, {24, 2
 int curpos = 0;
 int curfieldlen = 0;
 static char prevqtccall[15] = "";
-int capturing = 0;
 
 char help_rec_msgs[6][26] = {
     "Enter callsign",
@@ -140,18 +142,31 @@ int qtccount;
 int qtccurrdirection;
 
 
+/* Init qtc panels and windows if needed, set used colorpairs */
 void init_qtc_panel() {
-      qtcwin = newwin(14, 75, 9, 2);
-      qtc_panel = new_panel(qtcwin);
-      hide_panel(qtc_panel);
+    static int qtcpanel_initialized = 0;
 
-      ry_win = newwin(14, 40, 9, 37);
-      ry_panel = new_panel(ry_win);
-      hide_panel(ry_panel);
+    if (!qtcpanel_initialized) {
+	qtcwin = newwin(14, 75, 9, 2);
+	qtc_panel = new_panel(qtcwin);
+	hide_panel(qtc_panel);
 
-      ry_help_win = newwin(5, 75, 4, 2);
-      ry_help_panel = new_panel(ry_help_win);
-      hide_panel(ry_help_panel);
+	ry_win = newwin(14, 40, 9, 37);
+	ry_panel = new_panel(ry_win);
+	hide_panel(ry_panel);
+
+	ry_help_win = newwin(5, 75, 4, 2);
+	ry_help_panel = new_panel(ry_help_win);
+	hide_panel(ry_help_panel);
+
+	qtcpanel_initialized = 1;
+    }
+
+    init_pair(QTCRECVWINBG,   COLOR_BLUE,   COLOR_GREEN);
+    init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
+    init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
+    init_pair(QTCRECVCURRLINE,COLOR_YELLOW, COLOR_MAGENTA);
+    init_pair(QTCRECVBG,      COLOR_BLUE,   COLOR_CYAN);
 }
 
 
@@ -172,17 +187,7 @@ void qtc_main_panel(int direction) {
     int currqtc = -1;
     char reccommand[100] = "";
 
-    capturing = 0;
-    init_pair(QTCRECVWINBG,   COLOR_BLUE,   COLOR_GREEN);
-    init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
-    init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
-    init_pair(QTCRECVCURRLINE,COLOR_YELLOW, COLOR_MAGENTA);
-    init_pair(KEYERLINE,      COLOR_WHITE,  COLOR_BLACK);
 
-    int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
-    int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
-    int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
-    int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
     attr_t attributes;
     short cpair;
 
@@ -261,11 +266,7 @@ void qtc_main_panel(int direction) {
 	sprintf(qtchead, "QTC send");
     }
 
-    /* initialize QTC window if needed */
-    if (qtcpanel_initialized == 0) {
-	init_qtc_panel();
-	qtcpanel_initialized = 1;
-    }
+    init_qtc_panel();
 
     show_panel(qtc_panel);
     top_panel(qtc_panel);
@@ -275,7 +276,7 @@ void qtc_main_panel(int direction) {
     sprintf(qtchead, "HELP");
     wnicebox(qtcwin, 0, 35, 12, 38, qtchead);
     wbkgd(qtcwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVWINBG)));
-    wattrset(qtcwin, line_inverted);
+    wattrset(qtcwin, LINE_INVERTED);
     mvwprintw(qtcwin, 1, 1, "                                 ");
     /* the first visible and used line is the qtc serial and count
      * it differs in RECV and SEND direction, these two lines sets them
@@ -297,9 +298,9 @@ void qtc_main_panel(int direction) {
 
     /* if the direction is RECV, it needs to set fields on the opened QTC window */
     if (direction == RECV) {
-	wattrset(qtcwin, line_inverted);
+	wattrset(qtcwin, LINE_INVERTED);
 	for(i=0; i<10; i++) {
-	    wattrset(qtcwin, line_inverted);
+	    wattrset(qtcwin, LINE_INVERTED);
 	    mvwprintw(qtcwin, i+3, 1, "                                 ");
 	    for(j=0; j<3; j++) {
 		showfield((i*3)+j+3);	// QTC fields...
@@ -317,7 +318,7 @@ void qtc_main_panel(int direction) {
      * the current CAPTURE MODE is shown here
      */
     if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
-	wattrset(qtcwin, line_inverted);
+	wattrset(qtcwin, LINE_INVERTED);
 	if (qtc_ry_capture == 0) {
 	    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
 	}
@@ -325,7 +326,7 @@ void qtc_main_panel(int direction) {
 	    mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
 	    show_rtty_lines();
 	}
-	wattrset(qtcwin, line_normal);
+	wattrset(qtcwin, LINE_NORMAL);
     }
 
     showfield(activefield);
@@ -382,7 +383,7 @@ void qtc_main_panel(int direction) {
 			activefield = 12;
 			show_help_msg(activefield);
 			showfield(0);
-			wattrset(qtcwin, line_currinverted);
+			wattrset(qtcwin, LINE_CURRINVERTED);
 			mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[9].qtc);
 			break;
 		    case 2:
@@ -393,15 +394,15 @@ void qtc_main_panel(int direction) {
 		    case 3:
 			activefield = 2;
 			showfield(2);
-			wattrset(qtcwin, line_normal);
+			wattrset(qtcwin, LINE_NORMAL);
 			mvwprintw(qtcwin, activefield+1, 4, "%s", qtclist.qtclines[0].qtc);
 			break;
 		    case 4 ... 12:
 			show_help_msg(activefield);
-			wattrset(qtcwin, line_normal);
+			wattrset(qtcwin, LINE_NORMAL);
 			mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[(activefield-3)].qtc);
 			activefield--;
-			wattrset(qtcwin, line_currinverted);
+			wattrset(qtcwin, LINE_CURRINVERTED);
 			mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[(activefield-3)].qtc);
 			break;
 		    }
@@ -438,20 +439,20 @@ void qtc_main_panel(int direction) {
 			activefield = 3;
 			show_help_msg(activefield);
 			showfield(2);
-			wattrset(qtcwin, line_currinverted);
+			wattrset(qtcwin, LINE_CURRINVERTED);
 			mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[0].qtc);
 			break;
 		    case 3 ... 11:
 			show_help_msg(activefield);
-			wattrset(qtcwin, line_normal);
+			wattrset(qtcwin, LINE_NORMAL);
 			mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[(activefield-3)].qtc);
 			activefield++;
-			wattrset(qtcwin, line_currinverted);
+			wattrset(qtcwin, LINE_CURRINVERTED);
 			mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[(activefield-3)].qtc);
 			break;
 		    case 12:
 			activefield = 0;
-			wattrset(qtcwin, line_normal);
+			wattrset(qtcwin, LINE_NORMAL);
 			mvwprintw(qtcwin, 14, 4, "%s", qtclist.qtclines[9].qtc);
 			showfield(0);
 			break;
@@ -571,14 +572,14 @@ void qtc_main_panel(int direction) {
 			qtclist.qtclines[activefield-3].flag = 1;
 			// scroll down if not at end of qtclist:
 			if (activefield-3 < qtccount-1) {
-			    wattrset(qtcwin, line_normal);
+			    wattrset(qtcwin, LINE_NORMAL);
 			    mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[(activefield-3)].qtc);
 			    activefield++;
-			    wattrset(qtcwin, line_currinverted);
+			    wattrset(qtcwin, LINE_CURRINVERTED);
 			    mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[(activefield-3)].qtc);
 			}
 			if (qtccount > 0 && qtclist.totalsent == qtccount) {
-			    wattrset(qtcwin, line_inverted);
+			    wattrset(qtcwin, LINE_INVERTED);
 			    mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");
 			    refreshp();
 			    show_help_msg(6);
@@ -645,7 +646,7 @@ void qtc_main_panel(int direction) {
 			data_ready = 1;
 			strncpy(wkeyerbuffer, tmess, strlen(tmess));
 			write_keyer();
-			wattrset(qtcwin, line_inverted);
+			wattrset(qtcwin, LINE_INVERTED);
 			mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");
 			refreshp();
 			show_help_msg(6);
@@ -664,7 +665,7 @@ void qtc_main_panel(int direction) {
 	case 19:	// CTRL-S - save QTC
 		if (qtccurrdirection == SEND && qtccount > 0 && qtclist.totalsent == qtccount) {
 		    log_sent_qtc_to_disk(nr_qsos);
-		    wattrset(qtcwin, line_inverted);
+		    wattrset(qtcwin, LINE_INVERTED);
 		    mvwprintw(qtcwin, 2, 11, "QTC's have been saved!");
 		    prevqtccall[0] = '\0';
 		    qtccallsign[0] = '\0';
@@ -677,7 +678,7 @@ void qtc_main_panel(int direction) {
 		if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
 		    qtc_ry_capture = 1;
 		    wattr_get(qtcwin, &attributes, &cpair, NULL);
-		    wattrset(qtcwin, line_inverted);
+		    wattrset(qtcwin, LINE_INVERTED);
 		    mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
 		    wattrset(qtcwin, attributes);
 		    showfield(activefield);
@@ -689,7 +690,7 @@ void qtc_main_panel(int direction) {
 		if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
 		    qtc_ry_capture = 0;
 		    wattr_get(qtcwin, &attributes, &cpair, NULL);
-		    wattrset(qtcwin, line_inverted);
+		    wattrset(qtcwin, LINE_INVERTED);
 		    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
 		    wattrset(qtcwin, attributes);
 		    showfield(activefield);
@@ -717,7 +718,7 @@ void qtc_main_panel(int direction) {
 			if (trxmode == DIGIMODE && strncmp(qtc_recv_msgs[x - 129], "QRV", 3) == 0) {
 			    qtc_ry_capture = 1;
 			    wattr_get(qtcwin, &attributes, &cpair, NULL);
-			    wattrset(qtcwin, line_inverted);
+			    wattrset(qtcwin, LINE_INVERTED);
 			    mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
 			    wattrset(qtcwin, attributes);
 			    showfield(activefield);
@@ -801,7 +802,7 @@ void qtc_main_panel(int direction) {
 		if (direction == SEND && activefield > 2 && trxmode != DIGIMODE) {
 		    qtclist.qtclines[activefield-3].sent = 0;
 		    qtclist.qtclines[activefield-3].flag = 0;
-		    wattrset(qtcwin, line_currnormal);
+		    wattrset(qtcwin, LINE_CURRNORMAL);
 		    mvwprintw(qtcwin, activefield, 30, " ");
 		    qtclist.totalsent--;
 		}
@@ -960,7 +961,6 @@ void qtc_main_panel(int direction) {
 	}
     }
     hide_panel(qtc_panel);
-    capturing = 0;
 }
 
 void showfield(int fidx) {
@@ -969,15 +969,6 @@ void showfield(int fidx) {
     int qtcrow, winrow, fi, posidx, i;
 
     fieldval[0] = '\0';
-
-    init_pair(QTCRECVWINBG,   COLOR_BLUE,   COLOR_GREEN);
-    init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
-    init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
-    init_pair(QTCRECVCURRLINE,COLOR_YELLOW, COLOR_MAGENTA);
-
-    //int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
-    int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
-    int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
 
     posidx = 0;
     if (fidx == 0) {
@@ -1025,10 +1016,10 @@ void showfield(int fidx) {
     }
     filled[i] = '\0';
     if (fidx == activefield) {
-	wattrset(qtcwin, line_currinverted);
+	wattrset(qtcwin, LINE_CURRINVERTED);
     }
     else {
-	wattrset(qtcwin, line_normal);
+	wattrset(qtcwin, LINE_NORMAL);
     }
 
     mvwprintw(qtcwin, winrow, pos[posidx][0], filled);
@@ -1236,12 +1227,6 @@ void show_status(int idx) {
     char flag = ' ';
     int i, status = 0;
 
-    init_pair(QTCRECVWINBG,   COLOR_BLUE,   COLOR_GREEN);
-    init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
-    init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
-    init_pair(QTCRECVCURRLINE,COLOR_YELLOW, COLOR_MAGENTA);
-    init_pair(QTCRECVBG,      COLOR_BLUE,   COLOR_CYAN);
-
     status = 0;
     if (idx < qtccount) {
 	if (strlen(qtcreclist.qtclines[idx].time) != 4) {
@@ -1304,7 +1289,6 @@ void show_status(int idx) {
 void number_fields() {
     int i;
 
-    init_pair(QTCRECVBG,      COLOR_BLUE,   COLOR_CYAN);
     wattrset(qtcwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
     for(i=0;i<10;i++) {
 	mvwprintw(qtcwin, i+3, 1, "  ");
@@ -1317,10 +1301,7 @@ void number_fields() {
 void clear_help_block() {
     int i;
 
-    init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
-    int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
-
-    wattrset(qtcwin, line_inverted);
+    wattrset(qtcwin, LINE_INVERTED);
     for(i=1;i<13;i++) {
 	mvwprintw(qtcwin, i, 36, "                                      ");
     }
@@ -1333,13 +1314,8 @@ void show_help_msg(msgidx) {
 
     clear_help_block();
 
-    init_pair(QTCRECVCURRLINE,COLOR_YELLOW, COLOR_MAGENTA);
-    init_pair(QTCRECVINVLINE, COLOR_YELLOW, COLOR_CYAN);
 
-    int line_currinverted = COLOR_PAIR(QTCRECVCURRLINE) | A_BOLD;
-    int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
-
-    wattrset(qtcwin, line_currinverted);
+    wattrset(qtcwin, LINE_CURRINVERTED);
     if (qtccurrdirection == RECV) {
         if (trxmode == DIGIMODE && qtccurrdirection == RECV) {
 	    currqtc = ((activefield-3)/3);
@@ -1361,7 +1337,7 @@ void show_help_msg(msgidx) {
 	}
 	mvwprintw(qtcwin, ++j, 36, help_send_msgs[msgidx]);
     }
-    wattrset(qtcwin, line_inverted);
+    wattrset(qtcwin, LINE_INVERTED);
     mvwprintw(qtcwin, ++j, 36, "PgUP/PgDW: QRQ/QRS");
     if (qtccurrdirection == RECV) {
 	mvwprintw(qtcwin, ++j, 36, "ENTER: R & next OR AGN");
@@ -1525,9 +1501,6 @@ int print_rtty_line(t_qtc_ry_line qtc_ry_line, int row) {
 void show_rtty_lines() {
     extern int miniterm;
 
-    int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
-    int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
-    int line_currnormal = COLOR_PAIR(QTCRECVCURRLINE) | A_NORMAL;
     char boxhead[38];
     int prevline;
     char currline[50] = "", firstline[50] = "";
@@ -1548,7 +1521,7 @@ void show_rtty_lines() {
     sprintf(boxhead, "HELP");
     wnicebox(ry_help_win, 0, 0, 3, 73, "HELP");
     wbkgd(ry_help_win, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVWINBG)));
-    wattrset(ry_help_win, line_inverted);
+    wattrset(ry_help_win, LINE_INVERTED);
     //                           "1234567890123456789012345678901234567890123456789012345678901234567890123"
     mvwprintw(ry_help_win, 1, 1, "CTRL-R: Reset lines  -  CTRL-S: Start capture  -  CTRL-E: End capture    ");
     mvwprintw(ry_help_win, 2, 1, "ENTER: add current line to QTC  -  Up/Down: move                         ");
@@ -1556,7 +1529,7 @@ void show_rtty_lines() {
 
     strcpy(boxhead, "RTTY");
     wnicebox(ry_win, 0, 0, 12, 38, boxhead);
-    wattrset(ry_win, line_normal);
+    wattrset(ry_win, LINE_NORMAL);
     for(j=1; j<13; j++) {
 	mvwprintw(ry_win, j, 1, "                                      ");
     }
@@ -1594,10 +1567,10 @@ void show_rtty_lines() {
 		}
 		for(j=0; j<qtc_ry_currline; j++) {
 		    if (j+1 == actline) {
-			wattrset(ry_win, line_currnormal);
+			wattrset(ry_win, LINE_CURRNORMAL);
 		    }
 		    print_rtty_line(qtc_ry_lines[j], j+1);
-		    wattrset(ry_win, line_normal);
+		    wattrset(ry_win, LINE_NORMAL);
 		}
 		prevline = qtc_ry_currline-1;
 	    }
@@ -1612,7 +1585,7 @@ void show_rtty_lines() {
 
 	switch(x) {
 	case 152:	// cursor up
-		wattrset(ry_win, line_normal);
+		wattrset(ry_win, LINE_NORMAL);
 		print_rtty_line(qtc_ry_lines[actline-1], actline);
 		if (actline > 1) {
 		    actline--;
@@ -1622,12 +1595,12 @@ void show_rtty_lines() {
 			actline = qtc_ry_currline;
 		    }
 		}
-		wattrset(ry_win, line_currnormal);
+		wattrset(ry_win, LINE_CURRNORMAL);
 		print_rtty_line(qtc_ry_lines[actline-1], actline);
-		wattrset(ry_win, line_normal);
+		wattrset(ry_win, LINE_NORMAL);
 		break;
 	case 153:	// cursor down
-		wattrset(ry_win, line_normal);
+		wattrset(ry_win, LINE_NORMAL);
 		print_rtty_line(qtc_ry_lines[actline-1], actline);
 		if (actline < qtc_ry_currline) {
 		    actline++;
@@ -1635,9 +1608,9 @@ void show_rtty_lines() {
 		else {
 		    actline = 1;
 		}
-		wattrset(ry_win, line_currnormal);
+		wattrset(ry_win, LINE_CURRNORMAL);
 		print_rtty_line(qtc_ry_lines[actline-1], actline);
-		wattrset(ry_win, line_normal);
+		wattrset(ry_win, LINE_NORMAL);
 		break;
 	case 18:	// CTRL-r
 		for(j=0; j<12; j++) {
@@ -1663,9 +1636,9 @@ void show_rtty_lines() {
 		    parse_ry_line(qtc_ry_lines[actline-1].content);
 		    qtc_ry_lines[actline-1].attr = 1;
 		}
-		wattrset(ry_win, line_currnormal);
+		wattrset(ry_win, LINE_CURRNORMAL);
 		print_rtty_line(qtc_ry_lines[actline-1], actline);
-		wattrset(ry_win, line_normal);
+		wattrset(ry_win, LINE_NORMAL);
 		break;
 	}
 	refreshp();
@@ -1689,11 +1662,9 @@ void show_rtty_lines() {
 
 void put_qtc() {
 
-    init_pair(QTCRECVLINE,    COLOR_WHITE,  COLOR_BLUE);
-    int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
     char qtcdirstring[3][10] = {"", "Received", "Sent"};
 
-    wattrset(qtcwin, line_normal);
+    wattrset(qtcwin, LINE_NORMAL);
     mvwprintw(qtcwin, 1, 19, "%s %2d QTC", qtcdirstring[qtccurrdirection],
 	    qtc_temp_obj->total);
 
@@ -1730,21 +1701,19 @@ void replace_spaces(char *src, char *tempc) {
 
 void show_sendto_lines() {
     int i;
-    int line_inverted = COLOR_PAIR(QTCRECVINVLINE) | A_BOLD;
-    int line_normal = COLOR_PAIR(QTCRECVLINE) | A_NORMAL;
 
-    wattrset(qtcwin, line_inverted);
+    wattrset(qtcwin, LINE_INVERTED);
     for(i=0; i<10; i++) {
 	mvwprintw(qtcwin, i+3, 1, "                                 ");
     }
-    wattrset(qtcwin, line_normal);
+    wattrset(qtcwin, LINE_NORMAL);
     for(i=0; i<qtclist.count; i++) {
 	mvwprintw(qtcwin, i+3, 4, "%s", qtclist.qtclines[i].qtc);
 	if (qtclist.qtclines[i].sent == 1) {
 	    mvwprintw(qtcwin, i+3, 30, "*");
 	}
     }
-    wattrset(qtcwin, line_normal);
+    wattrset(qtcwin, LINE_NORMAL);
     for(i=qtclist.count; i<10; i++) {
 	mvwprintw(qtcwin, i+3, 4, "                        ");
     }
