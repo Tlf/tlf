@@ -76,6 +76,15 @@ S&P_TU_MSG=TU 5NN #
 #VKSPM=
 #VKCQM=
 
+QR_F1=QTC?
+QR_F2=QRV
+QR_F3=R
+QR_F5=TIME?
+QR_F6=CALL?
+QR_F7=NR?
+QR_F8=AGN
+QR_F10=QSL ALL
+
 #QR_VKM1=qtcask.ogg
 #QR_VKM2=qrv.ogg
 #QR_VKM3=roger.wav
