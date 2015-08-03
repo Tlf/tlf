@@ -51,6 +51,8 @@
 
 void init_qtc_panel();
 void draw_qtc_panel();
+void start_qtc_recording();
+void stop_qtc_recording();
 void clear_help_block();
 void show_help_msg();
 void showfield(int fidx);
@@ -64,8 +66,6 @@ void replace_spaces(char * src, char * tempc);
 void show_sendto_lines();
 void recalc_qtclist();
 void show_rtty_lines();
-void start_qtc_recording();
-void stop();
 
 extern char hiscall[];
 extern char lastcall[];
@@ -76,7 +76,7 @@ extern char qtc_recv_msgs[12][80];
 extern char qtc_send_msgs[12][80];
 extern char qtc_phrecv_message[14][80];
 extern char qtc_phsend_message[14][80];
-extern int data_ready;
+
 extern int qtcrec_record;
 extern char qtcrec_record_command[2][50];
 extern char qtcrec_record_command_shutdown[50];
@@ -621,8 +621,7 @@ void qtc_main_panel(int direction) {
 			}
 			tempc[0] = '\0';
 			replace_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
-			data_ready = 1;
-			if (trxmode == CWMODE) {
+						if (trxmode == CWMODE) {
 			    sendmessage(tempc);
 			}
 
@@ -696,7 +695,6 @@ void qtc_main_panel(int direction) {
 			    qtclist.qtclines[ql].flag = 1;
 
 			}
-			data_ready = 1;
 			strncpy(wkeyerbuffer, tmess, strlen(tmess));
 			write_keyer();
 			wattrset(qtcwin, LINE_INVERTED);
@@ -726,7 +724,6 @@ void qtc_main_panel(int direction) {
 		    sleep(1);
 		    x = 27;	// close the window
 
-		    //data_ready = 1;
 		}
 		if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
 		    qtc_ry_capture = 1;
