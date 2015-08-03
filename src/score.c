@@ -91,7 +91,7 @@ int exist_in_country_list()
 	    return 0;
     }
 }
-/* end LZ3NY code */
+
 
 /* HA2OS - check if continent is in CONTINENT_LIST from logcfg.dat */
 int continent_found() {

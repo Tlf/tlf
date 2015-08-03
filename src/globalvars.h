@@ -116,6 +116,3 @@ extern int three_point;
 extern int dxped;
 extern int addzone;
 
-extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];	// array of PFX_NUM_MULTIS parameter
-extern int pfxnummultinr;				// length of array of PFX_NUM_MULTIS parameter
-extern int continentlist_only;				// CONTINENT_LIST_ONLY parameter
