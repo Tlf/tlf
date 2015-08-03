@@ -271,8 +271,7 @@ int lan_send(char *lanbuffer)
 
 int send_lan_message(int opcode, char *message)
 {
-
-    char sendbuffer[100];
+    char sendbuffer[102];
 
     sendbuffer[0] = thisnode;
     sendbuffer[1] = opcode;
