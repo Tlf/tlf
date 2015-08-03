@@ -621,7 +621,7 @@ void qtc_main_panel(int direction) {
 			}
 			tempc[0] = '\0';
 			replace_spaces(qtclist.qtclines[activefield-3].qtc, tempc);
-						if (trxmode == CWMODE) {
+			if (trxmode == CWMODE) {
 			    sendmessage(tempc);
 			}
 
@@ -803,13 +803,9 @@ void qtc_main_panel(int direction) {
 				sendmessage(tmess);
 			    }
 			    if (x-129 == 6) {	// F7, SERIAL
-				for(i=strlen(qtclist.qtclines[activefield-3].qtc); qtclist.qtclines[activefield-3].qtc[i] != ' '; i--)
-				    ;
-				i++;
-				strncpy(tmess, qtclist.qtclines[activefield-3].qtc+i, strlen(qtclist.qtclines[activefield-3].qtc)-i);
-				i = strlen(qtclist.qtclines[activefield-3].qtc)-i;
-				tmess[i] = ' ';
-				tmess[i+1] = '\0';
+				strncpy(tmess, qtclist.qtclines[activefield-3].qtc+20, 4);
+				tmess[4] = ' ';
+				tmess[5] = '\0';
 				sendmessage(tmess);
 			    }
 			}

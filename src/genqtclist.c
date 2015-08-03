@@ -115,7 +115,7 @@ void genqtcline(char * qtc, char * qsoline) {
     }
 
     /* add finally 4 digit exchange */
-    strncpy(qtc+qpos, qsoline+53, 4);
+    strncpy(qtc+qpos, qsoline+54, 4);
     qpos += 4;
     qtc[qpos] = '\0';
 }
