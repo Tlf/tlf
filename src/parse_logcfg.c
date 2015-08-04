@@ -288,13 +288,6 @@ int parse_logcfg(char *inputbuffer)
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int pfxmultab;
-    extern char qtc_recv_msgs[12][80];
-    extern char qtc_send_msgs[12][80];
-    extern char qtc_phrecv_message[14][80];
-    extern char qtc_phsend_message[14][80];
-    extern int qtcrec_record;
-    extern char qtcrec_record_command[2][50];
-    extern char qtcrec_record_command_shutdown[50];
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
