@@ -196,6 +196,12 @@ int qtc_main_panel(int direction) {
 	    activefield = 0;
 	    curr_rtty_line = 0;
 	    qtc_ry_copied = 0;
+	    if (qtcrec_record == 1 && record_run > -1) {
+		strcpy(reccommand, "pkill -SIGINT -n ");
+		strcat(reccommand, qtcrec_record_command_shutdown);
+		system(reccommand);
+		record_run = -1;
+	    }
 	}
 	if (qtcreclist.count == 0) {
 	    activefield = 0;
@@ -646,6 +652,23 @@ int qtc_main_panel(int direction) {
 			    }
 			}
 		    }
+		    if (activefield == 0) {
+			if (qtcrec_record == 1 && record_run < 0) {
+			    strcpy(reccommand, qtcrec_record_command[0]);
+			    get_time();
+			    strftime(tempc, 60, "%y%m%d%H%M%S.wav", time_ptr);
+			    strcat(reccommand, tempc);
+			    strcat(reccommand, qtcrec_record_command[1]);
+			    record_run = system(reccommand);
+			}
+		    }
+		    if (activefield < 2) {
+			if (direction == RECV) {
+			    activefield++;
+			    showfield(activefield-1);
+			    showfield(activefield);
+			}
+		    }
 		    break;
 	  case 19:	// CTRL-S - save QTC
 		    if (qtccurrdirection == SEND && *qtccount > 0 && qtclist.totalsent == *qtccount) {
@@ -903,16 +926,48 @@ int qtc_main_panel(int direction) {
 		    break;
 	  case 32:	// space
 		    if (DIRCLAUSE) {
-		        if (x == ' ' && direction == RECV && activefield > 2) {	// space at RECV mode
-			      if (activefield%3 == 2) {
-				  activefield -= 2;
-				  showfield(activefield+2);
-			      }
-			      else {
-				  activefield++;
-				  showfield(activefield-1);
-			      }
-			      showfield(activefield);
+		        if (x == ' ' && direction == RECV) { 	// space at RECV mode
+			    if (activefield > 2) {
+			        if (activefield%3 == 2) {
+				    activefield -= 2;
+				    showfield(activefield+2);
+			        }
+			        else {
+				    activefield++;
+				    showfield(activefield-1);
+			        }
+			        showfield(activefield);
+			    }
+			    if (activefield == 2) {
+				if (direction == RECV &&
+				    strlen(qtcreclist.callsign) > 0 &&
+				    qtcreclist.serial > 0 &&
+				    qtcreclist.count > 0 &&
+				    qtcreclist.confirmed == 0
+				) {
+				    if (trxmode == CWMODE) {
+					sendmessage(qtc_recv_msgs[1]);
+				    }
+				    if (trxmode == SSBMODE) {
+					play_file(qtc_phrecv_message[1]);
+				    }
+				    if (qtcrec_record == 1 && record_run < 0) {
+					strcpy(reccommand, qtcrec_record_command[0]);
+					get_time();
+					strftime(tempc, 60, "%y%m%d%H%M%S.wav", time_ptr);
+					strcat(reccommand, tempc);
+					strcat(reccommand, qtcrec_record_command[1]);
+					record_run = system(reccommand);
+				    }
+				    activefield++;
+				    showfield(activefield);
+				}
+			    }
+			    if (activefield < 2) {
+				activefield++;
+				showfield(activefield-1);
+				showfield(activefield);
+			    }
 			}
 			else {
 			    modify_field(x);
