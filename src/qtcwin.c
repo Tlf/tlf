@@ -45,8 +45,6 @@
 
 #include <sys/time.h>
 
-#include <syslog.h>
-
 /* check direction clause macro
  * direction should be RECV (1) or SEND (2), see tlf.h
  */
