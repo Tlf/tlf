@@ -120,6 +120,7 @@ char help_send_msgs[7][26] = {
 };
 
 char * qtccallsign;
+int * qtccount;
 int qtccurrdirection;
 
 void fill_qtc_callsign(int direction, char * tcall) {
@@ -205,6 +206,7 @@ int qtc_main_panel(int direction) {
 	prevqtccall[strlen(qtcreclist.callsign)] = '\0';
 	qtccallsign = qtcreclist.callsign;
 	/* save the address of counter of receive QTC block */
+	qtccount = &qtcreclist.count;
 	/* set the QTC win header */
         sprintf(qtchead, "QTC receive");
     }
@@ -225,6 +227,7 @@ int qtc_main_panel(int direction) {
 	prevqtccall[strlen(qtclist.callsign)] = '\0';
 	qtccallsign = qtclist.callsign;
 	/* save the adress of counter of SEND qtc structure */
+	qtccount = &qtclist.count;
 	/* set the QTC win header */
 	sprintf(qtchead, "QTC send");
     }
@@ -350,7 +353,7 @@ int qtc_main_panel(int direction) {
 			showfield(activefield);
 			curpos = 0;
 		    }
-		    if (direction == SEND && ((trxmode != DIGIMODE && qtclist.totalsent < qtcreclist.count) || (trxmode == DIGIMODE && qtclist.totalsent == qtcreclist.count))) {
+		    if (direction == SEND && ((trxmode != DIGIMODE && qtclist.totalsent < *qtccount) || (trxmode == DIGIMODE && qtclist.totalsent == *qtccount))) {
 			switch (activefield) {
 			    case 0: activefield = 12;
 				    show_help_msg(activefield);
@@ -398,7 +401,7 @@ int qtc_main_panel(int direction) {
 			showfield(activefield);
 			curpos = 0;
 		    }
-		    if (direction == SEND && ((trxmode != DIGIMODE && qtclist.totalsent < qtcreclist.count) || (trxmode == DIGIMODE && qtclist.totalsent == qtcreclist.count))) {
+		    if (direction == SEND && ((trxmode != DIGIMODE && qtclist.totalsent < *qtccount) || (trxmode == DIGIMODE && qtclist.totalsent == *qtccount))) {
 			switch (activefield) {
 			    case 0: activefield = 2;
 				    showfield(0);
@@ -462,7 +465,7 @@ int qtc_main_panel(int direction) {
 				qtcreclist.qtclines[currqtc].receivedtime[15] = '\0';
 				qtcreclist.qtclines[currqtc].status = 2;
 				show_status(currqtc);
-				if (currqtc < qtcreclist.count) {
+				if (currqtc < *qtccount) {
 				    if (trxmode == DIGIMODE) {
 					qtcreclist.qtclines[currqtc].confirmed = 1; // compatibility for other modes
 					qtcreclist.confirmed++;
@@ -543,7 +546,7 @@ int qtc_main_panel(int direction) {
 			    mvwprintw(qtcwin, activefield, 30, "*");
 			    qtclist.qtclines[activefield-3].flag = 1;
 			    // scroll down if not at end of qtclist:
-			    if (activefield-3 < qtcreclist.count-1) {
+			    if (activefield-3 < (*qtccount-1)) {
 				wattrset(qtcwin, line_normal);
 				mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[(activefield-3)].qtc);
 				activefield++;
@@ -606,13 +609,13 @@ int qtc_main_panel(int direction) {
 				tempc[0] = '\0';
 				strncpy(tempc, qtc_send_msgs[1], tlen-1);
 				tempc[tlen-1] = '\0';
-				sprintf(tmess, "%s %d/%d %s %d/%d\n", tempc, qtclist.serial, qtcreclist.count, tempc, qtclist.serial, qtcreclist.count);
+				sprintf(tmess, "%s %d/%d %s %d/%d\n", tempc, qtclist.serial, *qtccount, tempc, qtclist.serial, *qtccount);
 			    }
 			    timec[0] = '\0';
 			    get_time();
 			    strftime(timec, 40, "%d-%b-%y %H:%M", time_ptr);
 
-			    for(ql = 0; ql < qtcreclist.count; ql++) {
+			    for(ql = 0; ql < (*qtccount); ql++) {
 				qtclist.qtclines[ql].sent = 1;
 				strncpy(qtclist.qtclines[ql].senttime, timec, 15);
 				qtclist.qtclines[ql].senttime[15] = '\0';
@@ -645,7 +648,7 @@ int qtc_main_panel(int direction) {
 		    }
 		    break;
 	  case 19:	// CTRL-S - save QTC
-		    if (qtccurrdirection == SEND && qtcreclist.count > 0 && qtclist.totalsent == qtcreclist.count) {
+		    if (qtccurrdirection == SEND && *qtccount > 0 && qtclist.totalsent == *qtccount) {
 			if (log_sent_qtc_to_disk(nr_qsos) == 0) {
 			    wattrset(qtcwin, line_inverted);
 			    mvwprintw(qtcwin, 2, 11, "QTC's have been saved!");
@@ -719,7 +722,7 @@ int qtc_main_panel(int direction) {
 				tempc[0] = '\0';
 				strncpy(tempc, qtc_send_msgs[x - 129], tlen-1);
 				tempc[tlen-1] = '\0';
-				sprintf(tmess, "%s %d/%d ", tempc, qtclist.serial, qtcreclist.count);
+				sprintf(tmess, "%s %d/%d ", tempc, qtclist.serial, *qtccount);
 				sendmessage(tmess);
 			    }
 			    else if ((activefield-3) >= 0) {
@@ -917,7 +920,7 @@ int qtc_main_panel(int direction) {
 		    }
 		    break;
 	  case 48 ... 57:	// numbers
-		    /* if (trxmode == DIGIMODE && direction == RECV && activefield > 0 && activefield < 3 && qtcreclist.count == 0 && capturing == 0) {
+		    /* if (trxmode == DIGIMODE && direction == RECV && activefield > 0 && activefield < 3 && *qtccount == 0 && capturing == 0) {
 			capturing = 1;
 			wattrset(qtcwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
 			mvwprintw(qtcwin, 1, 19, "CAPTURE ON ");
@@ -1009,7 +1012,7 @@ int showfield(int fidx) {
 	    posidx = 1;
 	}
 	else if (fidx == 2) {
-	    sprintf(fieldval, "%d", qtcreclist.count);
+	    sprintf(fieldval, "%d", *qtccount);
 	    winrow = 2;
 	    posidx = 2;
 	}
@@ -1086,7 +1089,7 @@ int modify_field(int pressed) {
 	    }
 	}
 	else if (activefield == 2 && isdigit(pressed)) {
-	    sprintf(fieldval, "%d", (qtcreclist.count)*10);
+	    sprintf(fieldval, "%d", (*qtccount)*10);
 	    fieldval[strlen(fieldval)-(1+curpos)] = pressed;
 	    if (curpos > 0) {
 		curpos--;
@@ -1094,11 +1097,11 @@ int modify_field(int pressed) {
 	    if(strlen(fieldval) <= pos[2][2] && atoi(fieldval) <= 10) {
 	      qtc_temp_obj = qtc_get(qtccallsign);
 	      if (qtccurrdirection == SEND) {
-		    if (qtcreclist.count != atoi(fieldval)) {
+		    if (*qtccount != atoi(fieldval)) {
 			if ((atoi(fieldval) + (qtc_temp_obj->total)) >= 10) {
 			    sprintf(fieldval, "%d", (10 - (qtc_temp_obj->total)));
 			}
-			qtcreclist.count = genqtclist(qtccallsign, atoi(fieldval));
+			*qtccount = genqtclist(qtccallsign, atoi(fieldval));
 			show_sendto_lines();
 			put_qtc();
 		    }
@@ -1107,7 +1110,7 @@ int modify_field(int pressed) {
 		  if ((atoi(fieldval) + (qtc_temp_obj->total)) >= 10) {
 		      sprintf(fieldval, "%d", (10 - (qtc_temp_obj->total)));
 		  }
-		  qtcreclist.count = atoi(fieldval);
+		  *qtccount = atoi(fieldval);
 	      }
 	      number_fields();
 	      showfield(2);
@@ -1187,11 +1190,11 @@ int delete_from_field(int dir) {
 	    }
 	}
 	else if (activefield == 2) {
-	    sprintf(fieldval, "%d", qtcreclist.count);
+	    sprintf(fieldval, "%d", *qtccount);
 	    if(strlen(fieldval) > 0) {
-	      //sprintf(fieldval, "%d", qtcreclist.count/10);
+	      //sprintf(fieldval, "%d", *qtccount/10);
 	      shift_left(fieldval, dir);
-	      qtcreclist.count = atoi(fieldval);
+	      *qtccount = atoi(fieldval);
 	      showfield(2);
 	    }
 	}
@@ -1251,7 +1254,7 @@ int show_status(int idx) {
 	init_pair(QTCRECVBG,      COLOR_BLUE,   COLOR_CYAN);
 
 	status = 0;
-	if (idx < qtcreclist.count) {
+	if (idx < *qtccount) {
 	    if (strlen(qtcreclist.qtclines[idx].time) != 4) {
 		status = 1;
 	    }
@@ -1318,7 +1321,7 @@ int number_fields() {
     for(i=0;i<10;i++) {
 	mvwprintw(qtcwin, i+3, 1, "  ");
     }
-    for(i=0;i<qtcreclist.count;i++) {
+    for(i=0;i<*qtccount;i++) {
 	mvwprintw(qtcwin, i+3, 1, "%2d", i+1);
     }
     return 0;
@@ -1417,10 +1420,10 @@ int parse_ry_line(char * line) {
     int serial_nr = 0;
     int maxlength[] = {4, 14, 4};
 
-    if (qtcreclist.count == 0 || qtcreclist.serial == 0) {
+    if (*qtccount == 0 || qtcreclist.serial == 0) {
 	nr_parsed_line = 0;
     }
-    if ((qtcreclist.count > 0 || qtcreclist.serial > 0) && nr_parsed_line == 0) {
+    if ((*qtccount > 0 || qtcreclist.serial > 0) && nr_parsed_line == 0) {
 	nr_parsed_line = 1;
     }
 
@@ -1685,7 +1688,7 @@ int show_rtty_lines() {
 	if (x != 27) {
 	    x = -1;
 	}
-	if (qtcreclist.count > 0 && qtc_ry_copied == qtcreclist.count) {
+	if (*qtccount > 0 && qtc_ry_copied == qtcreclist.count) {
 	    qtc_ry_capture = 0;
 	    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
 	}
@@ -1774,7 +1777,7 @@ int recalc_qtclist() {
 	if (qtccurrdirection == SEND) {
 	    if (strlen(qtccallsign) > 0 && strcmp(qtccallsign, prevqtccall) != 0) {
 		qtc_temp_obj = qtc_get(qtccallsign);
-		qtcreclist.count = genqtclist(qtccallsign, (10-(qtc_temp_obj->total)));
+		*qtccount = genqtclist(qtccallsign, (10-(qtc_temp_obj->total)));
 		show_sendto_lines();
 		showfield(2);
 		put_qtc();
