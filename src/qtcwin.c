@@ -219,14 +219,14 @@ int qtc_main_panel(int direction) {
     /* here are the mandatory steps, if the direction is SEND */
     if (direction == SEND) {
         /* if the callsign field in main window had been changed, it needs to clean up the qtc structure */
-	if (strcmp(qtclist.callsign, prevqtccall) != 0 || strlen(qtclist.callsign) == 0 || qtcreclist.count == 0) {
+	if (strcmp(qtclist.callsign, prevqtccall) != 0 || strlen(qtclist.callsign) == 0 || qtclist.count == 0) {
 	    qtc_temp_obj = qtc_get(qtclist.callsign);
 	    j = genqtclist(qtclist.callsign, (10-(qtc_temp_obj->total)));
 	    activefield = 0;
 	}
 	/* else just read the current counter */
 	else {
-	    j = qtcreclist.count;
+	    j = qtclist.count;
 	}
 	/* save the current callsing to previous call variable */
 	strncpy(prevqtccall, qtclist.callsign, strlen(qtclist.callsign));
@@ -269,7 +269,7 @@ int qtc_main_panel(int direction) {
 	mvwprintw(qtcwin, 2, 1, "      /                          ");
     }
     if (direction == SEND) {
-	mvwprintw(qtcwin, 2, 1, "     %d/%2d                        ", qtclist.serial, qtcreclist.count);
+	mvwprintw(qtcwin, 2, 1, "     %d/%2d                        ", qtclist.serial, qtclist.count);
     }
 
     showfield(0);	// QTC CALL
@@ -559,7 +559,7 @@ int qtc_main_panel(int direction) {
 				wattrset(qtcwin, line_currinverted);
 				mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[(activefield-3)].qtc);
 			    }
-			    if (qtcreclist.count > 0 && qtclist.totalsent == qtcreclist.count) {
+			    if (qtclist.count > 0 && qtclist.totalsent == qtclist.count) {
 				wattrset(qtcwin, line_inverted);
 				mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");
 				refreshp();
@@ -1814,14 +1814,14 @@ int show_sendto_lines() {
 	mvwprintw(qtcwin, i+3, 1, "                                 ");
     }
     wattrset(qtcwin, line_normal);
-    for(i=0; i<qtcreclist.count; i++) {
+    for(i=0; i<qtclist.count; i++) {
 	mvwprintw(qtcwin, i+3, 4, "%s", qtclist.qtclines[i].qtc);
 	if (qtclist.qtclines[i].sent == 1) {
 	    mvwprintw(qtcwin, i+3, 30, "*");
 	}
     }
     wattrset(qtcwin, line_normal);
-    for(i=qtcreclist.count; i<10; i++) {
+    for(i=qtclist.count; i<10; i++) {
 	mvwprintw(qtcwin, i+3, 4, "                        ");
     }
     number_fields();
