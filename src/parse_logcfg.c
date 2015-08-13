@@ -34,7 +34,6 @@
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif
-#include <ctype.h>
 #include "bandmap.h"
 #include "locator2longlat.h"
 #include "dxcc.h"
@@ -1477,13 +1476,13 @@ int parse_logcfg(char *inputbuffer)
     case 162:{
 	    PARAMETER_NEEDED(teststring);
 	    if (strncmp(fields[1], "RECV", 4) == 0) {
-	        qtcdirection = 1;
+	        qtcdirection = RECV;
 	    }
 	    if (strncmp(fields[1], "SEND", 4) == 0) {
-	        qtcdirection = 2;
+	        qtcdirection = SEND;
 	    }
 	    else if (strcmp(fields[1], "BOTH")) {
-	        qtcdirection = 3;
+	        qtcdirection = RECV | SEND;
 	    }
 	    if (qtcdirection == 0) {
 		KeywordNotSupported(teststring);
@@ -1740,7 +1739,7 @@ int parse_logcfg(char *inputbuffer)
 	    if (strcmp(fields[1], "CONTINENTLIST")) {
 	        if (strlen(continent_multiplier_list[0]) == 0) {
 		    showmsg
-			("WARNING: you need to set the CONTINENTLIST paramter...");
+			("WARNING: you need to set the CONTINENTLIST parameter...");
 		    sleep(5);
 		    exit(1);
 		}
@@ -1749,7 +1748,7 @@ int parse_logcfg(char *inputbuffer)
 	    else if (strcmp(fields[1], "COUNTRYLIST")) {
 	        if (strlen(countrylist[0]) == 0) {
 		    showmsg
-			("WARNING: you need to set the COUNTRYLIST paramter...");
+			("WARNING: you need to set the COUNTRYLIST parameter...");
 		    sleep(5);
 		    exit(1);
 		}
@@ -1757,7 +1756,7 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    else {
 	        showmsg
-			("WARNING: choose one of these params for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST...");
+			("WARNING: choose one of these for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST");
 		    sleep(5);
 		    exit(1);
 	    }
