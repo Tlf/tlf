@@ -330,9 +330,10 @@ int nr_qsos = 0;
 int nr_worked = 0;		/*< number of calls in worked[] */
 struct worked_t worked[MAX_CALLS]; /*< worked stations */
 
-/*----------------------statisticof worked countries,zones ... -----------*/
+/*----------------------statistic of worked countries,zones ... -----------*/
 int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */
-int zones[41];			/* same for cqzones; using 1 - 40 */
+int zones[MAX_ZONES];		/* same for cq zones or itu zones;
+				   using 1 - 40 or 1 - 90 */
 char mults[MAX_MULTS][12];
 int mult_bands[MAX_MULTS];
 int multarray_nr = 0;
