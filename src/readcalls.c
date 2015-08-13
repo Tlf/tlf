@@ -89,7 +89,7 @@ int readcalls(void)
     for (i = 0; i <= 5; i++)
 	countryscore[i] = 0;
 
-    for (n = 1; n <= 40; n++)
+    for (n = 1; n < MAX_ZONES; n++)
 	zones[n] = 0;
 
     for (n = 0; n < 6; n++)
@@ -201,7 +201,7 @@ int readcalls(void)
 	    points = atoi(tmpbuf);
 	    total = total + points;
 
-	    if (cqww == 1) {
+	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
 		strncpy(zonebuf, inputbuffer + 54, 2);	/* get the zone */
 		zonebuf[2] = '\0';
 		z = zone_nr(zonebuf);
@@ -371,7 +371,7 @@ int readcalls(void)
 	    worked[l].band |= inxes[bandinx];	/* mark band as worked */
 
 	    band_score[bandinx]++;	/*  qso counter  per band */
-	    if (cqww == 1)
+	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1))
 		zones[z] |= inxes[bandinx];
 	    if (pfxnumcntidx < 0) {
 	      	if (excl_add_veto == 0) {
@@ -405,8 +405,8 @@ int readcalls(void)
 	}
     }
 
-    if (cqww == 1) {
-	for (n = 1; n <= 40; n++) {
+    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
+	for (n = 1; n < MAX_ZONES; n++) {
 	    if ((zones[n] & BAND160) != 0)
 		zonescore[0]++;
 	    if ((zones[n] & BAND80) != 0)
@@ -420,7 +420,9 @@ int readcalls(void)
 	    if ((zones[n] & BAND10) != 0)
 		zonescore[5]++;
 	}
+    }
 
+    if (cqww == 1) {
 	for (n = 1; n <= MAX_DATALINES - 1; n++) {
 	    if ((countries[n] & BAND160) != 0)
 		countryscore[0]++;

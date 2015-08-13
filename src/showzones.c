@@ -30,7 +30,7 @@ int show_zones(int bandinx)
 
     extern int zonedisplay;
     extern int bandindex;
-    extern int zones[41];
+    extern int zones[MAX_ZONES];
 
     int i = 0, j = 0;
     int xloc = 19;

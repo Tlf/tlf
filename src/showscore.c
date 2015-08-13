@@ -215,6 +215,9 @@ int get_nr_of_mults()
 
 	return GetNrOfPfx_multiband();
     }
+    else if ((itumult == 1) || (wazmult == 1)) {
+	return totalzones;
+    }
     else
 	/* should never reach that point
 	 *
@@ -289,6 +292,14 @@ int showscore(void)
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {
 	    	printfield(3, band_cols[i], multscore[bi_normal[i]]);
+	    }
+	}
+
+	if ((itumult == 1) || (wazmult == 1)) {
+
+	    mvprintw(3, START_COL, "Mult ");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(3, band_cols[i], zonescore[i]);
 	    }
 	}
 

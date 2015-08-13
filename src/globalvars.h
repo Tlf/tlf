@@ -40,7 +40,7 @@ extern int other_flg;
 extern char hiscall[20];
 extern int total;
 extern int band_score[NBANDS];
-extern int zones[41];
+extern int zones[MAX_ZONES];
 extern int wpx;
 extern int arrlss;
 extern int serial_section_mult;
