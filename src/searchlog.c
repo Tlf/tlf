@@ -114,7 +114,7 @@ void searchlog(char *searchstring)
     extern int contest;
     extern int wpx;
     extern int arrlss;
-    extern int zones[41];
+    extern int zones[MAX_ZONES];
     extern char pxstr[];
     extern int w_cty;
     extern int ve_cty;
