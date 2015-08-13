@@ -203,8 +203,7 @@ int get_nr_of_mults()
     else if ((wysiwyg_multi == 1)
 	|| (serial_section_mult == 1)
 	|| (serial_grid4_mult == 1)
-	|| (sectn_mult == 1)
-	|| (itumult == 1)) {
+	|| (sectn_mult == 1)) {
 
 	return totalmults;
     }
@@ -285,8 +284,7 @@ int showscore(void)
 	if ((wysiwyg_multi == 1)
 	    || (serial_section_mult == 1)
 	    || (serial_grid4_mult == 1)
-	    || (sectn_mult == 1)
-	    || (itumult == 1)) {
+	    || (sectn_mult == 1)) {
 
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {

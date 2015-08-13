@@ -213,7 +213,6 @@ int readcalls(void)
 		serial_section_mult == 1 ||
 		serial_grid4_mult == 1 ||
 		sectn_mult == 1 ||
-		itumult == 1 ||
 		((dx_arrlsections == 1)
 		 && ((countrynr == w_cty) || (countrynr == ve_cty)))) {
 
@@ -229,13 +228,14 @@ int readcalls(void)
 
 		    multbuffer[3] = '\0';
 
-		} else if (serial_section_mult == 1 || itumult == 1) {
+		} else if (serial_section_mult == 1) {
+
 		    tt = 0;
 
 		    memset(multbuffer, 0, 39);
 
 		    for (t = 54; t < 64; t++) {
-			if ((inputbuffer[t] >= 'A' && inputbuffer[t] <= 'Z') || isdigit(inputbuffer[t])) {
+			if (inputbuffer[t] >= 'A' && inputbuffer[t] <= 'Z') {
 			    multbuffer[tt] = inputbuffer[t];
 			    tt++;
 			}
