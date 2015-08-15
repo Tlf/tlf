@@ -34,6 +34,10 @@
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif
+#include "bandmap.h"
+#include "locator2longlat.h"
+#include "dxcc.h"
+#include "qtcvars.h"
 
 extern int keyerport;
 extern char tonestr[];
@@ -47,6 +51,7 @@ extern int shortqsonr;
 extern char * cabrillo;
 
 int exist_in_country_list();
+int continent_found();
 
 char inputbuffer[160];
 FILE *fp;
@@ -55,7 +60,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 171	/* commands in list */
+#define  MAX_COMMANDS 226	/* commands in list */
 
 
 int read_logcfg(void)
@@ -447,7 +452,7 @@ int parse_logcfg(char *inputbuffer)
 	"MYQRA",
 	"POWERMULT",		/* 160 */
 	"SERIAL_OR_SECTION",
-	"S&P_CALL_MSG",
+	"QTC",
 	"CONTINENTLIST",
 	"CONTINENT_LIST_POINTS",
 	"USE_CONTINENTLIST_ONLY",  /* 165 */
@@ -455,7 +460,62 @@ int parse_logcfg(char *inputbuffer)
 	"BANDWEIGHT_MULTIS",
 	"PFX_NUM_MULTIS",
 	"PFX_MULT_MULTIBAND",
-	"EXCLUDE_MULTILIST"	/*170 */
+	"QR_F1",		/* 170 */
+	"QR_F2",
+	"QR_F3",
+	"QR_F4",
+	"QR_F5",
+	"QR_F6",		/* 175 */
+	"QR_F7",
+	"QR_F8",
+	"QR_F9",
+	"QR_F10",
+	"QR_F11",		/* 180 */
+	"QR_F12",
+	"QS_F1",
+	"QS_F2",
+	"QS_F3",
+	"QS_F4",
+	"QS_F5",
+	"QS_F6",
+	"QS_F7",
+	"QS_F8",
+	"QS_F9",		/* 190 */
+	"QS_F10",
+	"QS_F11",
+	"QS_F12",
+	"QR_VKM1",
+	"QR_VKM2",
+	"QR_VKM3",
+	"QR_VKM4",
+	"QR_VKM5",
+	"QR_VKM6",
+	"QR_VKM7",			/* 200 */
+	"QR_VKM8",
+	"QR_VKM9",
+	"QR_VKM10",
+	"QR_VKM11",
+	"QR_VKM12",
+	"QR_VKSPM",
+	"QR_VKCQM",
+	"QS_VKM1",
+	"QS_VKM2",
+	"QS_VKM3",			/* 210 */
+	"QS_VKM4",
+	"QS_VKM5",
+	"QS_VKM6",
+	"QS_VKM7",
+	"QS_VKM8",
+	"QS_VKM9",
+	"QS_VKM10",
+	"QS_VKM11",
+	"QS_VKM12",
+	"QS_VKSPM",		/* 220 */
+	"QS_VKCQM",
+	"QTCREC_RECORD",
+	"QTCREC_RECORD_COMMAND",
+	"EXCLUDE_MULTILIST",
+	"S&P_CALL_MSG"
     };
 
     char **fields;
@@ -1412,10 +1472,29 @@ int parse_logcfg(char *inputbuffer)
 		 serial_or_section = 1;
 		 break;
 	    }
+
     case 162:{
 	    PARAMETER_NEEDED(teststring);
-	    strcpy(message[SP_CALL_MSG], fields[1]);
-	    break;	/* end messages */
+	    if (strncmp(fields[1], "RECV", 4) == 0) {
+	        qtcdirection = RECV;
+	    }
+	    if (strncmp(fields[1], "SEND", 4) == 0) {
+	        qtcdirection = SEND;
+	    }
+	    else if (strcmp(fields[1], "BOTH")) {
+	        qtcdirection = RECV | SEND;
+	    }
+	    if (qtcdirection == 0) {
+		KeywordNotSupported(teststring);
+	    }
+	    else {
+		int q;
+		for(q=0; q<QTC_RY_LINE_NR; q++) {
+		    qtc_ry_lines[q].content[0] = '\0';
+		    qtc_ry_lines[q].attr = 0;
+		}
+	    }
+	    break;
 	}
 
     case 163:{
@@ -1485,6 +1564,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
 
+
     case 164:{		// CONTINENT_LIST_POINTS
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
@@ -1549,7 +1629,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
 
-    case 168:{
+	case 168:{
 	    /* based on LZ3NY code, by HA2OS
 	       PFX_NUM_MULTIS   (in file or listed in logcfg.dat),
 	       We directly copy it into pfxnummulti_str, then parse the prefixlist
@@ -1594,7 +1674,67 @@ int parse_logcfg(char *inputbuffer)
 		pfxmultab = 1;	/* enable pfx on all band */
 		break;
 	    }
-    case 170: {
+
+    case 170 ... 181: {
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(qtc_recv_msgs[ii - 170], fields[1]);
+	    break;
+	    }
+    case 182 ... 193: {
+    	    PARAMETER_NEEDED(teststring);
+	    strcpy(qtc_send_msgs[ii - 182], fields[1]);
+	    break;
+	    }
+    case 194 ... 207:{	// get QTC recv phone messages
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(qtc_phrecv_message[ii - 194], g_strchomp(fields[1]), 71);
+	    mvprintw(15, 5, "A: QTC RECV phone message #%d is %s", ii - 194, qtc_phrecv_message[ii - 194]);
+	    refreshp();
+	    break;
+	}
+    case 208 ... 221:{	// get QTC send phone messages
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(qtc_phsend_message[ii - 208], g_strchomp(fields[1]), 71);
+	    mvprintw(15, 5, "A: QTC SEND phone message #%d is %s", ii - 208, qtc_phrecv_message[ii - 208]);
+	    refreshp();
+	    break;
+	}
+    case 222: {
+	    qtcrec_record = 1;
+ 	    break;
+    }
+    case 223: {
+	    PARAMETER_NEEDED(teststring);
+	    int p, q = 0, i = 0, s = 0;
+	    for(p=0; p<strlen(fields[1]); p++) {
+	        if (p > 0 && fields[1][p] == ' ') {
+		    s = 1;
+		    qtcrec_record_command_shutdown[p] = '\0';
+		}
+		if (s == 0) {
+		    qtcrec_record_command_shutdown[p] = fields[1][p];
+		}
+		if (fields[1][p] == '$') {
+		    qtcrec_record_command[i][q] = '\0';
+		    i=1;
+		    p++;
+		    q=0;
+		}
+		if (fields[1][p] != '\n') {
+		    qtcrec_record_command[i][q] = fields[1][p];
+		}
+		q++;
+		qtcrec_record_command[i][q] = ' ';
+	    }
+
+	    if (qtcrec_record_command[i][q-1] != '&') {
+		qtcrec_record_command[i][q++] = ' ';
+		qtcrec_record_command[i][q++] = '&';
+	    }
+	    qtcrec_record_command[i][q] = '\0';
+ 	    break;
+    }
+    case 224: {
 	    PARAMETER_NEEDED(teststring);
 	    if (strcmp(fields[1], "CONTINENTLIST")) {
 	        if (strlen(continent_multiplier_list[0]) == 0) {
@@ -1622,6 +1762,11 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    break;
     }
+    case 225:{
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(message[SP_CALL_MSG], fields[1]);
+	    break;	/* end messages */
+	}
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

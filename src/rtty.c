@@ -31,6 +31,8 @@
 #include "printcall.h"
 #include <glib.h>
 #include "ui_utils.h"
+#include "qtcvars.h"
+
 
 static int fdcont;		// global for this file: tty file descriptor
 static char ry_term[5][50] = { "", "", "", "", "" };
@@ -84,6 +86,7 @@ void deinit_controller()
 void ry_addchar(char c)
 {
     static int k = 0;
+    int i = 0;
     FILE *ry_fp;
 
     if ((ry_fp = fopen("RTTYlog", "a")) == NULL) {
@@ -106,6 +109,24 @@ void ry_addchar(char c)
 	g_strlcpy(ry_term[3], ry_term[4], 41);
 	ry_term[4][0] = '\0';
 	k = 0;
+
+	if (qtc_ry_capture == 1) {
+	    if (qtc_ry_currline == (QTC_RY_LINE_NR - 1)
+	     && qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
+		for(i=0; i<(QTC_RY_LINE_NR - 1); i++) {
+		    g_strlcpy(qtc_ry_lines[i].content,
+			      qtc_ry_lines[i+1].content, 41);
+		    qtc_ry_lines[i].attr = qtc_ry_lines[i+1].attr;
+		}
+	    }
+	    else {
+		if (strlen(qtc_ry_lines[qtc_ry_currline].content) > 0) {
+		    qtc_ry_currline++;
+		}
+	    }
+	    qtc_ry_lines[qtc_ry_currline].content[0] = '\0';
+	    qtc_ry_lines[qtc_ry_currline].attr = 0;
+	}
     }
     else {
 	if (iscntrl( c )) {
@@ -121,8 +142,29 @@ void ry_addchar(char c)
 	    g_strlcpy(ry_term[3], ry_term[4], 41);
 	    ry_term[4][0] = '\0';
 	    k = 0;
+
+	    if (qtc_ry_capture == 1) {
+		if (qtc_ry_currline == (QTC_RY_LINE_NR - 1)
+		 && qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
+		    for(i=0; i<(QTC_RY_LINE_NR - 1); i++) {
+			g_strlcpy(qtc_ry_lines[i].content,
+				  qtc_ry_lines[i+1].content, 41);
+			qtc_ry_lines[i].attr = qtc_ry_lines[i+1].attr;
+		    }
+		}
+		else {
+		    qtc_ry_currline++;
+		}
+		qtc_ry_lines[qtc_ry_currline].content[0] = '\0';
+		qtc_ry_lines[qtc_ry_currline].attr = 0;
+	    }
 	}
+
 	// add char to line
+	if (qtc_ry_capture == 1) {
+	    qtc_ry_lines[qtc_ry_currline].content[k] = c;
+	    qtc_ry_lines[qtc_ry_currline].content[k+1] = '\0';
+	}
 	ry_term[4][k++] = c;
 	ry_term[4][k] = '\0';
     }

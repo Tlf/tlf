@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- * 		 2010 - 2013 Thomas Beierlein <tb@forth-ev.de>
+ *               2010 - 2015    Thomas Beierlein <tb@forth-ev.de>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -306,7 +306,7 @@ int showscore(void)
 	if (pfxmultab == 1) {
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
+		printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
 	    }
 	}
 

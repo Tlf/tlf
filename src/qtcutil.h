@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2014           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,30 +16,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef LANCODE_H
-#define LANCODE_H
 
-#define MAXNODES 8
+#ifndef QTCUTIL_H
+#define QTCUTIL_H
 
-#define LOGENTRY 49
-#define CLUSTERMSG 50
-#define TLFSPOT 51
-#define TLFMSG 52
-#define FREQMSG 53
-#define INCQSONUM 54
-#define TIMESYNC 55
-#define QTCRENTRY 56
-#define QTCSENTRY 57
+struct t_qtc_store_obj {
+  int total;
+  int received;
+  int sent;
+};
 
-int lanrecv_init(void);
-int lan_recv_close(void);
-int lan_recv(void);
-int lan_send_init (void);
-int lan_send_close(void);
-int lan_send(char *buffer) ;
-int send_lan_message(int opcode , char *message);
-int talk(void);
-int send_freq(float freq);
-int send_time(void) ;
+void qtc_init();
+void qtc_inc(char callsign[15], int direction);
+void qtc_dec(char callsign[15], int direction);
+struct t_qtc_store_obj * qtc_get(char callsign[15]);
 
-#endif /* LANCODE_H */
+void parse_qtcline(char * line, char callsign[15], int direction);
+
+#endif /* end of include guard: QTCUTIL_H */

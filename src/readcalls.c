@@ -118,7 +118,7 @@ int readcalls(void)
     i = 0;
     k = 0;
     l = 0;
-    total = 0;
+
     s = 0;
     t = 0;
 

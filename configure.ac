@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT([Tlf],
-	[1.2.1],
+	[1.2.1-waedc],
 	[rein@couperus.com es tb@forth-ev.de],
 	[tlf],
 	[https://github.com/Tlf/tlf])

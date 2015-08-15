@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,30 +17,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef LANCODE_H
-#define LANCODE_H
+#ifndef LOG_RECV_QTC_TO_DISK_H
+#define LOG_RECV_QTC_TO_DISK_H
 
-#define MAXNODES 8
 
-#define LOGENTRY 49
-#define CLUSTERMSG 50
-#define TLFSPOT 51
-#define TLFMSG 52
-#define FREQMSG 53
-#define INCQSONUM 54
-#define TIMESYNC 55
-#define QTCRENTRY 56
-#define QTCSENTRY 57
+int log_recv_qtc_to_disk (int qtcnr);
+int log_sent_qtc_to_disk (int qtcnr);
+void store_recv_qtc (char * loglineptr);
+void store_sent_qtc (char * loglineptr);
 
-int lanrecv_init(void);
-int lan_recv_close(void);
-int lan_recv(void);
-int lan_send_init (void);
-int lan_send_close(void);
-int lan_send(char *buffer) ;
-int send_lan_message(int opcode , char *message);
-int talk(void);
-int send_freq(float freq);
-int send_time(void) ;
 
-#endif /* LANCODE_H */
+#endif /* end of include guard: LOG_RECV_QTC_TO_DISK_H */

@@ -169,6 +169,7 @@ struct tln_logline {
 } ;
 #endif
 
+
 #define MAXPFXNUMMULT 30
 typedef struct {
   int countrynr;

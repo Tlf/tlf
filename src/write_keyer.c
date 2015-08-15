@@ -36,7 +36,7 @@ int write_keyer(void)
 
     FILE *bfp = NULL;
     int rc;
-    char outstring[120] = "";
+    char outstring[420] = "";	// this was only 120 char length, but wkeyerbuffer is 400
 
     if (trxmode != CWMODE && trxmode != DIGIMODE)
 	return (1);
@@ -65,6 +65,10 @@ int write_keyer(void)
 	} else if (keyerport == GMFSK) {
 	    if (strlen(rttyoutput) < 2) {
 		mvprintw(24, 0, "No modem file specified!");
+	    }
+	    // when GMFSK used (possible Fldigi interface), the trailing \n doesn't need
+	    if (wkeyerbuffer[strlen(wkeyerbuffer)-1] == '\n') {
+		wkeyerbuffer[strlen(wkeyerbuffer)-1] = '\0';
 	    }
 	    sprintf(outstring, "echo -n \"\n%s\" >> %s",
 		    wkeyerbuffer, rttyoutput);
