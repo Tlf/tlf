@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2010 - 2013    Thomas Beierlein <tb@forth-ev.de>
+ *               2010 - 2015    Thomas Beierlein <tb@forth-ev.de>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 	 *-------------------------------------------------------------*/
 
 #include "globalvars.h"
+#include "addpfx.h"
 #include "showscore.h"
 #include "tlf.h"
 #include "nicebox.h"
@@ -136,6 +137,7 @@ int get_nr_of_mults()
     extern int multlist;
     extern int multscore[];
     extern int bandweight_multis[NBANDS];
+    extern int pfxmultab;
 
     int n;
     int totalzones;
@@ -201,18 +203,20 @@ int get_nr_of_mults()
     else if ((wysiwyg_multi == 1)
 	|| (serial_section_mult == 1)
 	|| (serial_grid4_mult == 1)
-	|| (sectn_mult == 1)
-	|| (itumult == 1)) {
+	|| (sectn_mult == 1)) {
 
 	return totalmults;
     }
     else if (wpx == 1) {
 
-	return nr_of_px;
+	return GetNrOfPfx_once();
     }
     else if (pfxmultab == 1) {
 
-	return nr_of_px_ab;
+	return GetNrOfPfx_multiband();
+    }
+    else if ((itumult == 1) || (wazmult == 1)) {
+	return totalzones;
     }
     else
 	/* should never reach that point
@@ -253,7 +257,6 @@ int showscore(void)
     extern int zonescore[6];
     extern int countryscore[6];
     extern int totalmults;
-    extern int nr_of_px;
     extern int qsonum;
     extern int total;
     extern int wpx;
@@ -265,7 +268,7 @@ int showscore(void)
     extern int dx_arrlsections;
     extern float fixedmult;
 
-    int i, l10, j;
+    int i, l10;
     float p;
 
     if (showscore_flag == 1) {
@@ -284,8 +287,7 @@ int showscore(void)
 	if ((wysiwyg_multi == 1)
 	    || (serial_section_mult == 1)
 	    || (serial_grid4_mult == 1)
-	    || (sectn_mult == 1)
-	    || (itumult == 1)) {
+	    || (sectn_mult == 1)) {
 
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {
@@ -293,15 +295,18 @@ int showscore(void)
 	    }
 	}
 
+	if ((itumult == 1) || (wazmult == 1)) {
+
+	    mvprintw(3, START_COL, "Mult ");
+	    for (i = 0; i < 6; i++) {
+	    	printfield(3, band_cols[i], zonescore[i]);
+	    }
+	}
+
 	if (pfxmultab == 1) {
 	    mvprintw(3, START_COL, "Mult ");
-	    i=0; j=0;
-	    while(i < 6) {
-		if(j != BANDINDEX_12 && j != BANDINDEX_17 && j != BANDINDEX_30) {
-		  printfield(3, band_cols[i], pfxs_per_band[j]);
-		  i++;
-		}
-		j++;
+	    for (i = 0; i < 6; i++) {
+		printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
 	    }
 	}
 

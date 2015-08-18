@@ -38,6 +38,12 @@
 int readcalls(void)
 {
     extern char continent_multiplier_list[7][3];
+    extern int continentlist_only;
+    extern int pfxnummultinr;
+    extern t_pfxnummulti pfxnummulti[];
+    extern int exclude_multilist_type;
+    extern char countrylist[][6];
+
     char inputbuffer[160];
     char tmpbuf[20];
     char bndbuf[20];
@@ -56,8 +62,6 @@ int readcalls(void)
     int pfxnumcntidx;
     int pxnr;
     int excl_add_veto;
-    extern int exclude_multilist_type;
-    extern char countrylist[][6];
 
     FILE *fp;
 
@@ -85,7 +89,7 @@ int readcalls(void)
     for (i = 0; i <= 5; i++)
 	countryscore[i] = 0;
 
-    for (n = 1; n <= 40; n++)
+    for (n = 1; n < MAX_ZONES; n++)
 	zones[n] = 0;
 
     for (n = 0; n < 6; n++)
@@ -94,11 +98,7 @@ int readcalls(void)
     for (n = 0; n < NBANDS; n++)	//F6CFE
 	multscore[n] = 0;
 
-    for(n = 0; n < NBANDS; n++) {
-	pfxs_per_band[n] = 0;
-    }
-    nr_of_px = 0;
-    nr_of_px_ab = 0;
+    InitPfx();
 
     if (pfxnummultinr > 0) {
 	for(i=0; i<pfxnummultinr; i++) {
@@ -201,7 +201,7 @@ int readcalls(void)
 	    points = atoi(tmpbuf);
 	    total = total + points;
 
-	    if (cqww == 1) {
+	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
 		strncpy(zonebuf, inputbuffer + 54, 2);	/* get the zone */
 		zonebuf[2] = '\0';
 		z = zone_nr(zonebuf);
@@ -213,7 +213,6 @@ int readcalls(void)
 		serial_section_mult == 1 ||
 		serial_grid4_mult == 1 ||
 		sectn_mult == 1 ||
-		itumult == 1 ||
 		((dx_arrlsections == 1)
 		 && ((countrynr == w_cty) || (countrynr == ve_cty)))) {
 
@@ -229,13 +228,14 @@ int readcalls(void)
 
 		    multbuffer[3] = '\0';
 
-		} else if (serial_section_mult == 1 || itumult == 1) {
+		} else if (serial_section_mult == 1) {
+
 		    tt = 0;
 
 		    memset(multbuffer, 0, 39);
 
 		    for (t = 54; t < 64; t++) {
-			if ((inputbuffer[t] >= 'A' && inputbuffer[t] <= 'Z') || isdigit(inputbuffer[t])) {
+			if (inputbuffer[t] >= 'A' && inputbuffer[t] <= 'Z') {
 			    multbuffer[tt] = inputbuffer[t];
 			    tt++;
 			}
@@ -371,7 +371,7 @@ int readcalls(void)
 	    worked[l].band |= inxes[bandinx];	/* mark band as worked */
 
 	    band_score[bandinx]++;	/*  qso counter  per band */
-	    if (cqww == 1)
+	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1))
 		zones[z] |= inxes[bandinx];
 	    if (pfxnumcntidx < 0) {
 	      	if (excl_add_veto == 0) {
@@ -396,7 +396,7 @@ int readcalls(void)
     if (wpx == 1) {
 
 	/* build prefixes_worked array from list of worked stations */
-	nr_of_px = 0;
+	InitPfx();
 
 	for (n = 0; n < i; n++) {
 	    strcpy(checkcall, worked[n].call);
@@ -405,8 +405,8 @@ int readcalls(void)
 	}
     }
 
-    if (cqww == 1) {
-	for (n = 1; n <= 40; n++) {
+    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
+	for (n = 1; n < MAX_ZONES; n++) {
 	    if ((zones[n] & BAND160) != 0)
 		zonescore[0]++;
 	    if ((zones[n] & BAND80) != 0)
@@ -420,7 +420,9 @@ int readcalls(void)
 	    if ((zones[n] & BAND10) != 0)
 		zonescore[5]++;
 	}
+    }
 
+    if (cqww == 1) {
 	for (n = 1; n <= MAX_DATALINES - 1; n++) {
 	    if ((countries[n] & BAND160) != 0)
 		countryscore[0]++;
@@ -480,7 +482,6 @@ int readcalls(void)
 	}
 
     }
-
     /* end arrldx_usa */
 
     if (pacc_pa_flg == 1) {
@@ -569,7 +570,8 @@ int readcalls(void)
     }
 
     if (qsonum == 1) {
-	nr_of_px = 0;
+	InitPfx();
+
 	total = 0;
 	for (i = 0; i < NBANDS; i++)
 	    band_score[i] = 0;

@@ -25,15 +25,25 @@
 #include "genqtclist.h"
 #include "qtcvars.h"
 
+void genqtcline(char * qtc, char * line);
+
+/** generate list of QTCs to send
+ *
+ * \param callsign - the call of the station we send the QTCs to
+ * \param nrofqtc  - maximum number of lines to send
+ * \return  number of actual lines in the qtclist
+ */
 int genqtclist(char * callsign, int nrofqtc)
 {
     int qtclistlen;
     int s = 0, i = 0;
 
-    qtclistlen = 10;
-    if (nrofqtc > 0 && nrofqtc < 10) {
+    qtclistlen = QTC_LINES;
+    if (nrofqtc > 0 && nrofqtc < QTC_LINES) {
 	qtclistlen = nrofqtc;
     }
+
+    /* initialize qtclist */
     qtclist.serial = nr_qtcsent+1;
     qtclist.marked = 0;
     qtclist.totalsent = 0;
@@ -50,9 +60,15 @@ int genqtclist(char * callsign, int nrofqtc)
     s=next_qtc_qso;
 
     while (qtclist.count < qtclistlen && s < nr_qsos) {
-        if (strlen(callsign) == 0 || strncmp(qsos[s]+29, callsign, strlen(callsign)) != 0) {	// exclude current callsign
+        if (strlen(callsign) == 0 ||
+		strncmp(qsos[s]+29, callsign, strlen(callsign)) != 0) {
+	    /* exclude current callsign */
+
 	  if (qsoflags_for_qtc[s] == 0) {
+	      /* qso line not yet used for QTC */
+
 	      genqtcline(qtclist.qtclines[i].qtc, qsos[s]);
+
 	      if (trxmode == DIGIMODE) {
 		  qtclist.qtclines[i].flag = 1;
 		  qtclist.marked++;
@@ -66,35 +82,40 @@ int genqtclist(char * callsign, int nrofqtc)
 		      qtclist.qtclines[i].flag = 0;
 		  }
 	      }
+	      /* remember number of the corresponding QSO line */
 	      qtclist.qtclines[i].qsoline = s;
+
 	      qtclist.count++;
-	      i++;
+	      i++;	/* next qtcline */
 	  }
 	}
-	s++;
+	s++;		/* try next qso */
     }
 
     return qtclist.count;
 }
 
-void genqtcline(char * qtc, char * line) {
+void genqtcline(char * qtc, char * qsoline) {
     int i, qpos;
 
-    strncpy(qtc, line+17, 2);
-    strncpy(qtc+2, line+20, 2);
+    /* pick out qso time hhmm */
+    strncpy(qtc, qsoline+17, 2);
+    strncpy(qtc+2, qsoline+20, 2);
     qtc[4] = ' ';
-    qpos = 5;
 
-    for(i=29; line[i] != 32; i++) {
-	strncpy(qtc+qpos, line+i, 1);
+    /* copy callsign */
+    qpos = 5;
+    for(i=29; qsoline[i] != ' '; i++) {
+	qtc[qpos] = qsoline[i];
 	qpos++;
     }
     while(qpos<20) {
-       qtc[qpos] = 32;
+       qtc[qpos] = ' ';
        qpos++;
     }
-    strncpy(qtc+qpos, line+53, 4);
+
+    /* add finally 4 digit exchange */
+    strncpy(qtc+qpos, qsoline+54, 4);
     qpos += 4;
     qtc[qpos] = '\0';
-
 }

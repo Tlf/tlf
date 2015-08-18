@@ -30,10 +30,10 @@
 #include "getpx.h"
 #include "setcontest.h"
 #include "lancode.h"
+#include "getctydata.h"
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif
-#include <ctype.h>
 #include "bandmap.h"
 #include "locator2longlat.h"
 #include "dxcc.h"
@@ -123,10 +123,12 @@ int read_logcfg(void)
     return( status );
 }
 
+/** convert band string into index number (0..NBANDS-1) */
 int getidxbybandstr(char *confband) {
     static char bands_strings[NBANDS][4] = {"160", "80", "40", "30", "20", "17", "15", "12", "10"};
-    g_strchomp(confband);
     int i;
+
+    g_strchomp(confband);
 
     for(i=0; i<NBANDS; i++) {
 	if (strcmp(confband, g_strchomp(bands_strings[i])) == 0) {
@@ -262,12 +264,11 @@ int parse_logcfg(char *inputbuffer)
     extern int my_cont_points;
     extern int dx_cont_points;
     extern int mult_side;
+    extern char countrylist[][6];
 
     extern char continent_multiplier_list[7][3];
     extern int exclude_multilist_type;
-    char *mit_mult_array;
 
-    extern char countrylist[][6];
 /* end LZ3NY mods */
     extern int tlfcolors[8][2];
     extern char synclogfile[];
@@ -286,13 +287,6 @@ int parse_logcfg(char *inputbuffer)
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int pfxmultab;
-    extern char qtc_recv_msgs[12][80];
-    extern char qtc_send_msgs[12][80];
-    extern char qtc_phrecv_message[14][80];
-    extern char qtc_phsend_message[14][80];
-    extern int qtcrec_record;
-    extern char qtcrec_record_command[2][50];
-    extern char qtcrec_record_command_shutdown[50];
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -1482,13 +1476,13 @@ int parse_logcfg(char *inputbuffer)
     case 162:{
 	    PARAMETER_NEEDED(teststring);
 	    if (strncmp(fields[1], "RECV", 4) == 0) {
-	        qtcdirection = 1;
+	        qtcdirection = RECV;
 	    }
 	    if (strncmp(fields[1], "SEND", 4) == 0) {
-	        qtcdirection = 2;
+	        qtcdirection = SEND;
 	    }
 	    else if (strcmp(fields[1], "BOTH")) {
-	        qtcdirection = 3;
+	        qtcdirection = RECV | SEND;
 	    }
 	    if (qtcdirection == 0) {
 		KeywordNotSupported(teststring);
@@ -1516,20 +1510,20 @@ int parse_logcfg(char *inputbuffer)
 	       (continent_multiplier_list) for future use.
 	     */
 
-	    int mit_fg = 0;
+	    int counter = 0;
 	    static char cont_multiplier_list[50] = ""; 	/* use only first
 							   CONTINENT_LIST
 							   definition */
-	    char mit_multlist[255] = "";
+	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
 
 	    PARAMETER_NEEDED(teststring);
 	    if (strlen(cont_multiplier_list) == 0) {	/* if first definition */
-		g_strlcpy(mit_multlist, fields[1], sizeof(mit_multlist));
-		g_strchomp(mit_multlist);	/* drop trailing whitespace */
+		g_strlcpy(temp_buffer, fields[1], sizeof(temp_buffer));
+		g_strchomp(temp_buffer);	/* drop trailing whitespace */
 
-		if ((fp = fopen(mit_multlist, "r")) != NULL) {
+		if ((fp = fopen(temp_buffer, "r")) != NULL) {
 
 		    while ( fgets(buffer, sizeof(buffer), fp) != NULL ) {
 
@@ -1549,26 +1543,27 @@ int parse_logcfg(char *inputbuffer)
 		    fclose(fp);
 		} else {	/* not a file */
 
-		    if (strlen(mit_multlist) > 0)
-			strcpy(cont_multiplier_list, mit_multlist);
+		    if (strlen(temp_buffer) > 0)
+			strcpy(cont_multiplier_list, temp_buffer);
 		}
 	    }
 
 	    /* creating the array */
-	    mit_mult_array = strtok(cont_multiplier_list, ":,.- \t");
-	    mit_fg = 0;
+	    tk_ptr = strtok(cont_multiplier_list, ":,.- \t");
+	    counter = 0;
 
-	    if (mit_mult_array != NULL) {
-		while (mit_mult_array) {
-		    strncpy(continent_multiplier_list[mit_fg], mit_mult_array, 2);
-		    mit_mult_array = strtok(NULL, ":,.-_\t ");
-		    mit_fg++;
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+		    strncpy(continent_multiplier_list[counter], tk_ptr, 2);
+		    tk_ptr = strtok(NULL, ":,.-_\t ");
+		    counter++;
 		}
 	    }
 
 	    setcontest();
 	    break;
 	}
+
 
     case 164:{		// CONTINENT_LIST_POINTS
 	    PARAMETER_NEEDED(teststring);
@@ -1594,22 +1589,22 @@ int parse_logcfg(char *inputbuffer)
 		g_strchomp(bwp_params_list);
 	    }
 
-	    mit_mult_array = strtok(bwp_params_list, ";:,");
-	    if (mit_mult_array != NULL) {
-		while (mit_mult_array) {
+	    tk_ptr = strtok(bwp_params_list, ";:,");
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
 
-		    bandindex = getidxbybandstr(g_strchomp(mit_mult_array));
-		    mit_mult_array = strtok(NULL, ";:,");
-		    if (mit_mult_array != NULL && bandindex >= 0) {
-			bandweight_points[bandindex] = atoi(mit_mult_array);
+		    bandindex = getidxbybandstr(g_strchomp(tk_ptr));
+		    tk_ptr = strtok(NULL, ";:,");
+		    if (tk_ptr != NULL && bandindex >= 0) {
+			bandweight_points[bandindex] = atoi(tk_ptr);
 		    }
-		    mit_mult_array = strtok(NULL, ";:,");
+		    tk_ptr = strtok(NULL, ";:,");
 		}
 	    }
 	    break;
 	}
 
-    case 167:{		// BANDWEIGHT_POINTS
+    case 167:{		// BANDWEIGHT_MULTIS
 	    PARAMETER_NEEDED(teststring);
 	    static char bwm_params_list[50] = "";
 	    int bandindex = -1;
@@ -1619,29 +1614,29 @@ int parse_logcfg(char *inputbuffer)
 		g_strchomp(bwm_params_list);
 	    }
 
-	    mit_mult_array = strtok(bwm_params_list, ";:,");
-	    if (mit_mult_array != NULL) {
-		while (mit_mult_array) {
+	    tk_ptr = strtok(bwm_params_list, ";:,");
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
 
-		    bandindex = getidxbybandstr(g_strchomp(mit_mult_array));
-		    mit_mult_array = strtok(NULL, ";:,");
-		    if (mit_mult_array != NULL && bandindex >= 0) {
-			bandweight_multis[bandindex] = atoi(mit_mult_array);
+		    bandindex = getidxbybandstr(g_strchomp(tk_ptr));
+		    tk_ptr = strtok(NULL, ";:,");
+		    if (tk_ptr != NULL && bandindex >= 0) {
+			bandweight_multis[bandindex] = atoi(tk_ptr);
 		    }
-		    mit_mult_array = strtok(NULL, ";:,");
+		    tk_ptr = strtok(NULL, ";:,");
 		}
 	    }
 	    break;
 	}
 
-    case 168:{
+	case 168:{
 	    /* based on LZ3NY code, by HA2OS
 	       PFX_NUM_MULTIS   (in file or listed in logcfg.dat),
 	       We directly copy it into pfxnummulti_str, then parse the prefixlist
 	       and fill the pfxnummulti array.
 	     */
 
-	    int mit_fg = 0;
+	    int counter = 0;
 	    int pfxnum;
 	    static char pfxnummulti_str[50] = "";
 	    char parsepfx[15] = "";
@@ -1651,32 +1646,32 @@ int parse_logcfg(char *inputbuffer)
 	    g_strchomp(pfxnummulti_str);
 
 	    /* creating the array */
-	    mit_mult_array = strtok(pfxnummulti_str, ",");
-	    mit_fg = 0;
+	    tk_ptr = strtok(pfxnummulti_str, ",");
+	    counter = 0;
 
-	    if (mit_mult_array != NULL) {
-		while (mit_mult_array) {
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
 		    parsepfx[0] = '\0';
-		    if (isdigit(mit_mult_array[strlen(mit_mult_array)-1])) {
-			sprintf(parsepfx, "%sAA", mit_mult_array);
+		    if (isdigit(tk_ptr[strlen(tk_ptr)-1])) {
+			sprintf(parsepfx, "%sAA", tk_ptr);
 		    }
 		    else {
-			sprintf(parsepfx, "%s0AA", mit_mult_array);
+			sprintf(parsepfx, "%s0AA", tk_ptr);
 		    }
-		    pfxnummulti[mit_fg].countrynr = getctydata(parsepfx);
+		    pfxnummulti[counter].countrynr = getctydata(parsepfx);
 		    for(pfxnum=0; pfxnum<10; pfxnum++) {
-			pfxnummulti[mit_fg].qsos[pfxnum] = 0;
+			pfxnummulti[counter].qsos[pfxnum] = 0;
 		    }
-		    mit_mult_array = strtok(NULL, ",");
-		    mit_fg++;
+		    tk_ptr = strtok(NULL, ",");
+		    counter++;
 		}
 	    }
-	    pfxnummultinr = mit_fg;
+	    pfxnummultinr = counter;
 	    setcontest();
 	    break;
 	}
-    case 169:{		// wpx style prefixes mult
-		pfxmultab = 1;	// enable pfx on all band
+    case 169:{		        /* wpx style prefixes mult */
+		pfxmultab = 1;	/* enable pfx on all band */
 		break;
 	    }
 
@@ -1744,7 +1739,7 @@ int parse_logcfg(char *inputbuffer)
 	    if (strcmp(fields[1], "CONTINENTLIST")) {
 	        if (strlen(continent_multiplier_list[0]) == 0) {
 		    showmsg
-			("WARNING: you need to set the CONTINENTLIST paramter...");
+			("WARNING: you need to set the CONTINENTLIST parameter...");
 		    sleep(5);
 		    exit(1);
 		}
@@ -1753,7 +1748,7 @@ int parse_logcfg(char *inputbuffer)
 	    else if (strcmp(fields[1], "COUNTRYLIST")) {
 	        if (strlen(countrylist[0]) == 0) {
 		    showmsg
-			("WARNING: you need to set the COUNTRYLIST paramter...");
+			("WARNING: you need to set the COUNTRYLIST parameter...");
 		    sleep(5);
 		    exit(1);
 		}
@@ -1761,7 +1756,7 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    else {
 	        showmsg
-			("WARNING: choose one of these params for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST...");
+			("WARNING: choose one of these for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST");
 		    sleep(5);
 		    exit(1);
 	    }

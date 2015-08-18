@@ -17,12 +17,12 @@ tlf_SOURCES = \
 	getsummary.c gettxinfo.c getwwv.c grabspot.c \
 	initial_exchange.c \
 	keyer.c \
-	lancode.c last10.c listmessages.c log_to_disk.c log_recv_qtc_to_disk.c log_sent_qtc_to_disk.c \
+	lancode.c last10.c listmessages.c log_to_disk.c \
 	logit.c logview.c locator2longlat.c \
 	main.c makelogline.c messagechange.c muf.c \
 	nicebox.c note.c netkeyer.c\
 	paccdx.c parse_logcfg.c prevqso.c printcall.c \
-	qrb.c qsonr_to_str.c qtcwin.c qtcutil.c \
+	qrb.c qsonr_to_str.c qtc_log.c qtcwin.c qtcutil.c \
 	readcalls.c readqtccalls.c readctydata.c recall_exchange.c rules.c \
 	score.c scroll_log.c  searchcallarray.c searchlog.c sendbuf.c \
 	sendqrg.c sendspcall.c set_tone.c setcontest.c \
@@ -50,12 +50,12 @@ noinst_HEADERS = \
 	getsummary.h gettxinfo.h getwwv.h globalvars.h grabspot.h \
 	initial_exchange.h \
 	keyer.h \
-	lancode.h last10.h listmessages.h log_recv_qtc_to_disk.h log_sent_qtc_to_disk.h \
+	lancode.h last10.h listmessages.h \
 	log_to_disk.h logit.h logview.h locator2longlat.h \
 	main.h makelogline.h messagechange.h muf.h multiplierinfo.h \
 	nicebox.h note.h netkeyer.h\
 	paccdx.h parse_logcfg.h prevqso.h printcall.h \
-	qrb.h qsonr_to_str.h qtcvars.h qtcwin.h qtcutil.h \
+	qrb.h qsonr_to_str.h qtc_log.h qtcvars.h qtcwin.h qtcutil.h \
 	readcalls.h readqtccalls.h readctydata.h recall_exchange.h \
 	rules.h \
 	score.h scroll_log.h searchcallarray.h searchlog.h sendbuf.h \

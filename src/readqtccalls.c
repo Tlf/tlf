@@ -22,24 +22,17 @@
 	 *--------------------------------------------------------------*/
 
 #include "readqtccalls.h"
-#include "get_time.h"
 #include "globalvars.h"
 #include "tlf.h"
 #include "qtcutil.h"
 #include "qtcvars.h"
 #include <glib.h>
 
-#include <curses.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <ctype.h>
 
 int qtcdirection = 0;
-int nr_qsosflags_for_qtc;
 int next_qtc_qso;
 int qsoflags_for_qtc[MAX_QSOS];
+int nr_qsoflags_for_qtc;
 int nr_qtcsent = 0;
 
 int readqtccalls()
@@ -56,13 +49,13 @@ int readqtccalls()
 
     qtc_init();
 
-    nr_qsosflags_for_qtc = nr_qsos;
+    nr_qsoflags_for_qtc = nr_qsos;
 
-    if (qtcdirection & 2) {
+    if (qtcdirection & SEND) {
 	mvprintw(4, 0, "Reading QTC sent logfile...\n");
 	refreshp();
 
-	/* set all flags to 0 */
+	/* mark all qso lines as not used for QTC */
 	for (s = 0; s < MAX_QSOS; s++) {
 	    qsoflags_for_qtc[s] = 0;
 	}
@@ -76,24 +69,34 @@ int readqtccalls()
 
 	while (fgets(inputbuffer, 100, fp) != NULL) {
 	    s++;
-	    strncpy(temps, inputbuffer+50, 4);	// serial
+
+	    /* find maximum sent QTC block serial */
+	    g_strlcpy(temps, inputbuffer+50, 5);    // get serial of QTC block
 	    tempi = atoi(temps);
 	    if (tempi > nr_qtcsent) {
 		nr_qtcsent = tempi;
 	    }
 
-	    strncpy(temps, inputbuffer+12, 4);	// qso nr in qso list
+	    /* mark corresponding qso line as used for QTC */
+	    g_strlcpy(temps, inputbuffer+12, 5);    // qso nr in qso list
 	    tempi = atoi(temps)-1;
 	    qsoflags_for_qtc[tempi] = 1;
+
+	    /* remember callsign, build number of sent QTC's */
 	    parse_qtcline(inputbuffer, callsign, SEND);
 	    qtc_inc(callsign, SEND);
-	    total++;
+
+	    total++;			/* add one point per QTC */
+
+	    /* find first unused QSO number for QTCs */
 	    if (tempi > last_qtc) {
 		last_qtc = tempi;
 	    }
 	}
 
 	next_qtc_qso = last_qtc;
+
+	/* find first QSO which was not used for QTC yet */
 	for(i=0; i<last_qtc; i++) {
 	    if (qsoflags_for_qtc[i] == 0) {
 		next_qtc_qso = i;
@@ -104,9 +107,10 @@ int readqtccalls()
 	fclose(fp);
     }
 
-    if (qtcdirection & 1) {
+    if (qtcdirection & RECV) {
 	mvprintw(4, 0, "Reading QTC recv logfile...\n");
 	refreshp();
+
 	if ((fp = fopen(QTC_RECV_LOG, "r")) == NULL) {
 	    mvprintw(5, 0, "Error opening QTC received logfile.\n");
 	    refreshp();
@@ -115,9 +119,12 @@ int readqtccalls()
 	}
 
 	while (fgets(inputbuffer, 100, fp) != NULL) {
+
+	    /* remember callsign, build number of received QTC's */
 	    parse_qtcline(inputbuffer, callsign, RECV);
 	    qtc_inc(callsign, RECV);
-	    total++;
+
+	    total++;			/* add one point per QTC */
 	}
 
 	fclose(fp);

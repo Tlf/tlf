@@ -1,7 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -132,6 +131,9 @@ enum {
 #define  MAX_MULTS 1000        /* max nr of mults in mults array */
 #define	MAX_SPOTS 200		/* max nr. of spots in spotarray */
 #define MAX_CALLMASTER 50000 /* max number of calls in callmaster array */
+#define CQ_ZONES 40
+#define ITU_ZONES 90
+#define MAX_ZONES (ITU_ZONES + 1) /* size of zones array */
 
 #define EDITOR_JOE 0
 #define EDITOR_VI 1
@@ -167,44 +169,6 @@ struct tln_logline {
 } ;
 #endif
 
-typedef struct {
-  int qsoline;	// qsos[INDEX]
-  int flag;	// flag to mark for send
-  int saved;	// indicates QTC has saved
-  int sent;	// indicates QTC has sent at least once
-  char qtc[25]; // QTC line by concatenated fields
-  char senttime[16];  // sent time: YY-Mon-dd HH:MM\0
-} t_qtcline;
-
-typedef struct {
-  int serial;	// qtc serial
-  int count;	// nr of qtc line in block
-  int marked;	// nr of marked to send
-  int totalsent; // nr of sent qtc's
-  char callsign[15];  // current callsign; helps to detect if QSO has dropped
-  t_qtcline qtclines[10];
-} t_qtclist;
-
-typedef struct {
-  int status;	// received, failed, nothing
-  char time[5];	// time of qso
-  char callsign[15]; // callsign
-  char serial[5]; // qso serial
-  int confirmed; // qtc had confirmed
-  char receivedtime[16]; // received time: YY-Mon-dd HH:MM\0
-} t_qtcrecline;
-
-typedef struct {
-  int serial;
-  int count;
-  int confirmed;
-  int sentcfmall;
-  char callsign[15];
-  t_qtcrecline qtclines[10];
-} t_qtcreclist;
-
-#define QTC_SENT_LOG	"QTC_sent.log"
-#define QTC_RECV_LOG	"QTC_recv.log"
 
 #define MAXPFXNUMMULT 30
 typedef struct {
@@ -212,14 +176,6 @@ typedef struct {
   int qsos[10];
 } t_pfxnummulti;
 
-#define QTC_RY_LINE_NR 12
-typedef struct {
-  char content[50];
-  int attr;		// meta attr: 0 => not nopied, 1 => copied
-} t_qtc_ry_line;
-
-#define RECV 1		// QTC RECV direction
-#define SEND 2		// QTC SEND direction
 
 void refreshp();
 

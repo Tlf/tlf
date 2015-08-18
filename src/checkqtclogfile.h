@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ * 		 2015		Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +21,6 @@
 #ifndef CHECKQTCLOGFILE_H
 #define CHECKQTCLOGFILE_H
 
-int checkqtclogfile_new();
+int checkqtclogfile();
 
 #endif /* end of include guard: CHECKQTCLOGFILE_H */

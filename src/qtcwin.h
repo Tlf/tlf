@@ -20,21 +20,6 @@
 #ifndef QTCWIN_H
 #define QTCWIN_H
 
-
-int qtc_main_panel(int direction);
-int showfield(int fidx);
-int modify_field(int pressed);
-int delete_from_field(int dir);
-int shift_left(char * fieldval, int shift);
-int show_status(int idx);
-int number_fields();
-int clear_help_block();
-int show_help_msg();
-int put_qtc();
-int replace_spaces(char * src, char * tempc);
-int show_sendto_lines();
-int recalc_qtclist();
-int show_rtty_lines();
-
+void qtc_main_panel(int direction);
 
 #endif /* end of include guard: QTCWIN_H */

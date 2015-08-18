@@ -40,9 +40,8 @@ extern int other_flg;
 extern char hiscall[20];
 extern int total;
 extern int band_score[NBANDS];
-extern int zones[41];
+extern int zones[MAX_ZONES];
 extern int wpx;
-extern char prefixes_worked[MAX_CALLS][6];
 extern int arrlss;
 extern int serial_section_mult;
 extern int serial_grid4_mult;
@@ -51,9 +50,6 @@ extern int dx_arrlsections;
 extern int wysiwyg_multi;
 extern int wysiwyg_once;
 extern char pxstr[];
-extern int nr_of_px;
-extern int nr_of_px_ab;
-extern int pfxs_per_band[NBANDS];
 extern int zonescore[6];
 extern int countryscore[6];
 extern int qsonum;
@@ -120,6 +116,3 @@ extern int three_point;
 extern int dxped;
 extern int addzone;
 
-extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];	// array of PFX_NUM_MULTIS parameter
-extern int pfxnummultinr;				// length of array of PFX_NUM_MULTIS parameter
-extern int continentlist_only;				// CONTINENT_LIST_ONLY parameter

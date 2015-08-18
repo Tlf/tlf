@@ -718,6 +718,7 @@ void addtext(char *s)
 		    && (tln_input_buffer[0] > 32)
 		    && (tln_input_buffer[0] < 126)) {
 		    strncpy(lan_out, tln_input_buffer, 78);
+		    lan_out[78] = '\0';
 		    strcat(lan_out, "\n");
 		    if (strlen(s) == 0)
 			tln_input_buffer[0] = '\0';
