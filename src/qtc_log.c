@@ -157,9 +157,6 @@ int log_sent_qtc_to_disk(int qsonr)
 {
     char qtclogline[100], temp[80];
     int qpos = 0, i;
-    int has_empty = 0;
-    int last_qtc = 0;
-
 
     for(i=0; i<10; i++) {
 	if (qtclist.qtclines[i].saved == 0 && qtclist.qtclines[i].flag == 1 && qtclist.qtclines[i].sent == 1) { // not saved and marked for sent
@@ -229,35 +226,6 @@ int log_sent_qtc_to_disk(int qsonr)
 	    if (lan_active == 1) {
 	      send_lan_message(QTCSENTRY, qtclogline);
 	    }
-
-	    // mark qso as sent as qtc
-	    qsoflags_for_qtc[qtclist.qtclines[i].qsoline] = 1;
-
-	    if (qtclist.qtclines[i].qsoline > last_qtc) {
-		last_qtc = qtclist.qtclines[i].qsoline;
-	    }
-
-	    // check if prev qso callsign is the current qtc window,
-	    // and excluded from list; if true, set the next_qtc_qso to that
-	    // else see below, the next qtc window pointer will set to
-	    // next qso after the current window
-	    if (qtclist.qtclines[i].qsoline > 0 && qsoflags_for_qtc[qtclist.qtclines[i].qsoline-1] == 0) {
-		has_empty = 1;
-		next_qtc_qso = qtclist.qtclines[i].qsoline-1;
-	    }
-
-	    // set next_qtc_qso pointer to next qso line,
-	    // if the list is continous
-	    if (has_empty == 0) {
-		next_qtc_qso = qtclist.qtclines[i].qsoline+1;
-	    }
-
-	}
-    }
-    for(i=0; i<last_qtc; i++) {
-	if (qsoflags_for_qtc[i] == 0) {
-	    next_qtc_qso = i;
-	    break;
 	}
     }
 
@@ -267,13 +235,11 @@ int log_sent_qtc_to_disk(int qsonr)
 	qtclist.qtclines[i].saved = 0;
 	qtclist.qtclines[i].sent = 0;
 	qtclist.qtclines[i].senttime[0] = '\0';
-
     }
 
     qtclist.count = 0;
     qtclist.marked = 0;
     qtclist.totalsent = 0;
-    nr_qtcsent++;
 
     return (0);
 }
@@ -285,6 +251,8 @@ void store_qtc(char *loglineptr, int direction)
 	FILE *fp;
 	char callsign[15];
 	char filename[80];
+	char temps[15];
+	int tempi;
 
 	if (direction == SEND)
 	    strcpy(filename, QTC_SENT_LOG);
@@ -303,6 +271,25 @@ void store_qtc(char *loglineptr, int direction)
 
 	total++;
 
+	if (direction == SEND) {
+		/* find maximum sent QTC block serial */
+		g_strlcpy(temps, loglineptr+50, 5);    // get serial of qtc block
+		tempi = atoi(temps);
+		if (tempi > nr_qtcsent) {
+		      nr_qtcsent = tempi;
+		}
+
+		/* mark corresponding qso line as used for QTC */
+		g_strlcpy(temps, loglineptr+12, 5);    // qso nr in qso list
+		tempi = atoi(temps)-1;
+		qsoflags_for_qtc[tempi] = 1;
+
+		/* find first unused QSO number for QTCs */
+		if (tempi-1 == next_qtc_qso) {
+		    next_qtc_qso = tempi;
+		}
+	}
+	/* remember callsign, build number of sent or received QTC's */
 	parse_qtcline(loglineptr, callsign, direction);
 	qtc_inc(callsign, direction);
 }
