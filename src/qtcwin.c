@@ -41,6 +41,7 @@
 #include "get_time.h"
 #include "write_keyer.h"
 #include "qtcvars.h"
+#include "lancode.h"
 
 #include <sys/time.h>
 
@@ -983,6 +984,20 @@ void qtc_main_panel(int direction) {
 		keyer();
 		x = 0;
 		break;
+	case 12:	// CTRL-L, mark callsign for late QTC
+	        if (strlen(g_strstrip(qtccallsign)) > 3) {
+			qtc_inc(g_strstrip(qtccallsign), QTC_LATER);
+			sprintf(tempc, "%s;L\n", qtccallsign);
+			send_lan_message(QTCFLAG, tempc);
+		}
+		break;
+	case 14:	// CTRL-N, mark callsign for explicit NO QTC
+	        if (strlen(g_strstrip(qtccallsign)) > 3) {
+			qtc_inc(g_strstrip(qtccallsign), QTC_NO);
+			sprintf(tempc, "%s;N\n", qtccallsign);
+			send_lan_message(QTCFLAG, tempc);
+		}
+		break;
 	}
 	refreshp();
 	if (x != 27) {
@@ -1367,12 +1382,12 @@ void show_help_msg(msgidx) {
 	mvwprintw(qtcwin, ++j, 36, help_send_msgs[msgidx]);
     }
     wattrset(qtcwin, LINE_INVERTED);
-    mvwprintw(qtcwin, ++j, 36, "PgUP/PgDW: QRQ/QRS");
+    mvwprintw(qtcwin, ++j, 36, "PgUP/PgDW: QRQ/QRS      CTRL-N: NO QTC");
     if (qtccurrdirection == RECV) {
-	mvwprintw(qtcwin, ++j, 36, "ENTER: R & next OR AGN");
+	mvwprintw(qtcwin, ++j, 36, "ENTER: R & next OR AGN   CTRL-L: LATER");
     }
     if (qtccurrdirection == SEND) {
-	mvwprintw(qtcwin, ++j, 36, "ENTER: send QTC");
+	mvwprintw(qtcwin, ++j, 36, "ENTER: send QTC          CTRL-L: LATER");
     }
     for(i=0; i<12 && j < 12; i++) {
 	if (qtccurrdirection == RECV) {
@@ -1694,8 +1709,13 @@ void put_qtc() {
     char qtcdirstring[3][10] = {"", "Received", "Sent"};
 
     wattrset(qtcwin, LINE_NORMAL);
-    mvwprintw(qtcwin, 1, 19, "%s %2d QTC", qtcdirstring[qtccurrdirection],
+    if (qtc_temp_obj->capable == -1 && qtc_temp_obj->total == 0) {
+	mvwprintw(qtcwin, 1, 19, "FLAG: NO QTC");
+    }
+    else {
+	mvwprintw(qtcwin, 1, 19, "%s %2d QTC", qtcdirstring[qtccurrdirection],
 	    qtc_temp_obj->total);
+    }
 
 }
 

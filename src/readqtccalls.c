@@ -150,5 +150,20 @@ int readqtccalls()
 	fclose(fp);
     }
 
+    mvprintw(4, 0, "Reading QTC meta logfile...\n");
+    refreshp();
+
+    if ((fp = fopen(QTC_META_LOG, "r")) == NULL) {
+	mvprintw(5, 0, "QTC meta logfile missing, skipping this step.\n");
+	refreshp();
+    }
+    else {
+	while (fgets(inputbuffer, 100, fp) != NULL) {
+	    /* remember callsign, set marked QTC states */
+	    parse_qtc_flagline(inputbuffer);
+	}
+	fclose(fp);
+    }
+
     return s;
 }

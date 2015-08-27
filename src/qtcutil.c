@@ -46,6 +46,36 @@ void qtc_init() {
     qtc_empty_obj->capable = 0;
 }
 
+void qtc_meta_write() {
+    struct t_qtc_store_obj *qtc_obj;
+    GList * qtc_key_list;
+    char logline[20];
+    FILE * fp;
+
+    qtc_key_list = g_hash_table_get_keys(qtc_store);
+    if ((fp = fopen(QTC_META_LOG, "w")) == NULL) {
+	mvprintw(5, 0, "Error opening QTC meta logfile.\n");
+	refreshp();
+	sleep(2);
+    }
+    else {
+	while(qtc_key_list != NULL) {
+		qtc_obj = g_hash_table_lookup(qtc_store, qtc_key_list->data);
+		if (qtc_obj->capable == 2) {
+		    sprintf(logline, "%s;L\n", (char *)qtc_key_list->data);
+		    fputs(logline, fp);
+		}
+		if (qtc_obj->capable == -1) {
+		    sprintf(logline, "%s;N\n", (char *)qtc_key_list->data);
+		    fputs(logline, fp);
+		}
+		qtc_key_list = qtc_key_list->next;
+	}
+	fclose(fp);
+    }
+    g_list_free(qtc_key_list);
+}
+
 void qtc_inc(char callsign[15], int direction) {
     struct t_qtc_store_obj *qtc_obj;
 
@@ -70,7 +100,15 @@ void qtc_inc(char callsign[15], int direction) {
     if (direction == QTC_CAP) {
 	qtc_obj->capable = 1;
     }
-
+    if (direction == QTC_LATER) {
+	qtc_obj->capable = 2;
+    }
+    if (direction == QTC_NO) {
+	qtc_obj->capable = -1;
+    }
+    if (direction == QTC_LATER || direction == QTC_NO) {
+	qtc_meta_write();
+    }
 }
 
 void qtc_dec(char callsign[15], int direction) {
@@ -134,6 +172,41 @@ char qtc_get_value(struct t_qtc_store_obj * qtc_obj) {
 	if (qtc_obj->capable == 1) {
 	    return 'P';
 	}
+	if (qtc_obj->capable == 2) {
+	    return 'L';
+	}
+	if (qtc_obj->capable == -1) {
+	    return 'N';
+	}
     }
     return '\0';
+}
+
+int parse_qtc_flagstr(char * lineptr, char * callsign, char * flag) {
+    char * tmp;
+
+    tmp = strtok(lineptr, ";");
+    if (tmp != NULL) {
+	strcpy(callsign, tmp);
+	tmp = strtok(NULL, ";");
+	if (tmp != NULL) {
+	  strncpy(flag, tmp, 1);
+	  return 0;
+	}
+    }
+    return 1;
+}
+
+void parse_qtc_flagline(char * lineptr) {
+    int rc;
+    char callsign[15], flag[2], msg[18];
+
+    rc = parse_qtc_flagstr(lineptr, callsign, flag);
+    if (rc == 0 && (flag[0] == 'N')) {
+	qtc_inc(callsign, QTC_NO);
+    }
+    if (rc == 0 && (flag[0] == 'L')) {
+	qtc_inc(callsign, QTC_LATER);
+    }
+    sprintf(msg, "%s;%c", callsign, flag[0]);
 }
