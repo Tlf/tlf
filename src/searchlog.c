@@ -408,12 +408,7 @@ void searchlog(char *searchstring)
 		    qtccall[l] = '\0';
 
 		    qtc_temp_ptr = qtc_get(qtccall);
-		    if (qtc_temp_ptr->total > 0 && qtc_temp_ptr->total < 10) {
-			qtcflags[j-1] = qtc_temp_ptr->total+48;
-		    }
-		    if (qtc_temp_ptr->total >= 10) {
-			qtcflags[j-1] = 'Q';
-		    }
+		    qtcflags[j-1] = qtc_get_value(qtc_temp_ptr);
 		}
 		if ((j < 7) || IsAllBand()) {
 		    mvwprintw(search_win, j, 1, "%s", s_inputbuffer);

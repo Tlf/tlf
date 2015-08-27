@@ -28,6 +28,7 @@
 
 #define RECV 1		// QTC RECV direction
 #define SEND 2		// QTC SEND direction
+#define QTC_CAP 4	// QTC CAPABLE station
 
 typedef struct {
   int qsoline;	// qsos[INDEX]
@@ -101,4 +102,6 @@ extern char qtc_send_msgs[12][80];
 /* arras of SSB fiel names for QTC receive and send */
 extern char qtc_phrecv_message[14][80];
 extern char qtc_phsend_message[14][80];
+
+extern char qtc_cap_calls[40];
 #endif /* end of include guard: QTCVARS_H */
