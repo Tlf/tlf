@@ -129,5 +129,26 @@ int readqtccalls()
 
 	fclose(fp);
     }
+
+    if (strlen(qtc_cap_calls) > 0) {
+	mvprintw(4, 0, "Reading QTC callsigns file...\n");
+	refreshp();
+
+	if ((fp = fopen(qtc_cap_calls, "r")) == NULL) {
+	    mvprintw(5, 0, "Error opening QTC callsigns file.\n");
+	    refreshp();
+	    sleep(2);
+	    return -1;
+	}
+
+	while (fgets(inputbuffer, 100, fp) != NULL) {
+
+	    /* remember callsign, mark it as QTC capable, based on eg. last years */
+	    qtc_inc(g_strstrip(inputbuffer), QTC_CAP);
+	}
+
+	fclose(fp);
+    }
+
     return s;
 }

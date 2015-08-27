@@ -735,21 +735,18 @@ void str_truncate(char *buffer, char *string, int n) {
  */
 char *qtc_format(char * call) {
     char tcall[15];
-    int nrofqtc;
+    char qtcflag;
+    struct t_qtc_store_obj *qtc_temp_ptr;
 
-    nrofqtc = qtc_get(call)->total;
+    qtc_temp_ptr = qtc_get(call);
+    qtcflag = qtc_get_value(qtc_temp_ptr);
 
-    if (nrofqtc <= 0) {
+    if (qtc_temp_ptr <= 0 && qtcflag == '\0') {
 	str_truncate(tcall, call, SPOT_CALL_WIDTH);
     }
     else {
 	str_truncate(tcall, call, SPOT_CALL_WIDTH-2);
-	if (nrofqtc < 10) {
-	    sprintf(tcall + strlen(tcall), " %d", nrofqtc);
-	}
-	else {
-	    sprintf(tcall + strlen(tcall), " Q");
-	}
+	sprintf(tcall + strlen(tcall), " %c", qtcflag);
     }
     return g_strdup(tcall);
 }

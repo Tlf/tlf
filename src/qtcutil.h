@@ -24,6 +24,7 @@ struct t_qtc_store_obj {
   int total;
   int received;
   int sent;
+  int capable;
 };
 
 void qtc_init();
@@ -32,5 +33,6 @@ void qtc_dec(char callsign[15], int direction);
 struct t_qtc_store_obj * qtc_get(char callsign[15]);
 
 void parse_qtcline(char * line, char callsign[15], int direction);
+char qtc_get_value(struct t_qtc_store_obj * qtc_obj);
 
 #endif /* end of include guard: QTCUTIL_H */
