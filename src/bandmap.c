@@ -333,6 +333,7 @@ int bm_ismulti( char * call) {
 
 int bm_isdupe( char *call, int band ) {
     int found = -1;
+    struct t_qtc_store_obj *qtc_obj;
 
     /* spot for warc bands are never dupes */
     if (IsWarcIndex(band))
@@ -343,10 +344,21 @@ int bm_isdupe( char *call, int band ) {
     if (found == -1)		/* new call */
 	return 0;
 
-    if (worked[found].band & inxes[band])
+    if (qtcdirection > 0) {
+        qtc_obj = qtc_get(call);
+	if (qtc_obj->total > 0 && qtc_obj->total < 10) {
+	    return 0;
+	}
+	if (qtc_obj->total == 0 && (qtc_obj->capable > 0)) {
+	    return 0;
+	}
+    }
+    if (worked[found].band & inxes[band]) {
 	return 1;
-    else
+    }
+    else {
 	return 0;
+    }
 }
 
 
