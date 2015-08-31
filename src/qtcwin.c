@@ -67,6 +67,7 @@ void replace_spaces(char * src, char * tempc);
 void show_sendto_lines();
 void recalc_qtclist();
 void show_rtty_lines();
+void fill_qtc_times(char * time);
 
 extern char hiscall[];
 extern char lastcall[];
@@ -269,8 +270,6 @@ void stop_qtc_recording() {
     record_run = -1;
 }
 
-
-
 void fill_qtc_callsign(int direction, char * tcall) {
     if (direction == RECV) {
 	strcpy(qtcreclist.callsign, tcall);
@@ -280,6 +279,25 @@ void fill_qtc_callsign(int direction, char * tcall) {
     }
 }
 
+void fill_qtc_times(char * time) {
+    int i;
+    int len;
+    int afield;
+
+    if (trxmode != DIGIMODE && qtccurrdirection == RECV) {
+	afield = (activefield-3)/3;
+        if (strlen(time) >= 2) {
+	    len = 2;
+	}
+	else {
+	    len = strlen(time);
+	}
+	for(i=afield; i<*qtccount; i++) {
+	      strncpy(qtcreclist.qtclines[i].time, time, len);
+	      showfield(3+(i*3));
+	}
+    }
+}
 
 /* prepare data for RECV operation */
 void prepare_for_recv() {
@@ -998,6 +1016,12 @@ void qtc_main_panel(int direction) {
 			send_lan_message(QTCFLAG, tempc);
 		}
 		break;
+	case 6:		// CTRL-F, fill time fields with first 2 chars
+	        if (activefield > 2) {
+			fill_qtc_times(qtcreclist.qtclines[(activefield-3)/3].time);
+			showfield(activefield);
+		}
+		break;
 	}
 	refreshp();
 	if (x != 27) {
@@ -1162,6 +1186,9 @@ void modify_field(int pressed) {
 	    switch(stridx) {
 	    case 0:
 		strcpy(qtcreclist.qtclines[qtcrow].time, fieldval);
+		if (qtc_auto_filltime == 1) {
+		      fill_qtc_times(fieldval);
+		}
 		break;
 	    case 1:
 		strcpy(qtcreclist.qtclines[qtcrow].callsign, fieldval);
@@ -1395,6 +1422,9 @@ void show_help_msg(msgidx) {
 		strncpy(buff, qtc_recv_msgs[i], strlen(qtc_recv_msgs[i])-1);
 		buff[strlen(qtc_recv_msgs[i])-1] = '\0';
 		mvwprintw(qtcwin, ++j, 36, "F%-2d: %s", (i+1), buff);
+	    }
+	    if (i == 1) {
+		mvwprintw(qtcwin, j-1, 56, "CTRL-F: FILL TIMES");
 	    }
 	}
 	if (qtccurrdirection == SEND) {

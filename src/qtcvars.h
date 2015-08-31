@@ -107,4 +107,6 @@ extern char qtc_phrecv_message[14][80];
 extern char qtc_phsend_message[14][80];
 
 extern char qtc_cap_calls[40];
+extern int qtc_auto_filltime;		// set QTC auto filltime; when DX sent first
+					// QTC line, the first two digits will be copied to others
 #endif /* end of include guard: QTCVARS_H */
