@@ -226,15 +226,22 @@ void draw_qtc_panel(int direction) {
     /* if the direction is RECV, and mode is DIGIMODE,
      * show the current CAPTURE MODE
      */
-    if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
-
+    if (qtccurrdirection == RECV) {
 	wattrset(qtcwin, LINE_INVERTED);
-	if (qtc_ry_capture == 0) {
-	    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+
+	if (trxmode == DIGIMODE) {
+	    if (qtc_ry_capture == 0) {
+		mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+	    }
+	    else {
+		mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+		show_rtty_lines();
+	    }
 	}
 	else {
-	    mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
-	    show_rtty_lines();
+	    if (qtcrec_record == 1) {
+		mvwprintw(qtcwin, 2, 11, "RECORD OFF  ");
+	    }
 	}
 	wattrset(qtcwin, LINE_NORMAL);
     }
@@ -257,6 +264,9 @@ void start_qtc_recording() {
     strcat(reccommand, tempc);
     strcat(reccommand, qtcrec_record_command[1]);
     record_run = system(reccommand);
+    if (record_run > -1 && qtcrec_record == 1) {
+	mvwprintw(qtcwin, 2, 11, "RECORD ON   ");
+    }
 }
 
 /* stop recording */
@@ -267,6 +277,9 @@ void stop_qtc_recording() {
     strcat(reccommand, qtcrec_record_command_shutdown);
     system(reccommand);
     record_run = -1;
+    if (qtcrec_record == 1) {
+	mvwprintw(qtcwin, 2, 11, "RECORD OFF  ");
+    }
 }
 
 void fill_qtc_callsign(int direction, char * tcall) {
@@ -322,6 +335,7 @@ void prepare_for_recv() {
 	}
 	activefield = 0;
 	qtc_ry_copied = 0;
+	stop_qtc_recording();
     }
 
     if (qtcreclist.count == 0) {
@@ -723,6 +737,18 @@ void qtc_main_panel(int direction) {
 			}
 		    }
 		}
+		if (activefield == 0) {
+		    if (qtcrec_record == 1 && record_run < 0) {
+			start_qtc_recording();
+		    }
+		}
+		if (activefield < 2) {
+		    if (direction == RECV) {
+			activefield++;
+			showfield(activefield-1);
+			showfield(activefield);
+		    }
+		}
 		break;
 	case 19:	// CTRL-S - save QTC
 		if (qtccurrdirection == SEND && *qtccount > 0 && qtclist.totalsent == *qtccount) {
@@ -941,19 +967,45 @@ void qtc_main_panel(int direction) {
 		break;
 	case 32:	// space
 		if (DIRCLAUSE) {
-		    if (direction == RECV && activefield > 2) {
-			if (activefield%3 == 2) {
-			    activefield -= 2;
-			    showfield(activefield+2);
+		    if (direction == RECV) {
+			if (activefield > 2) {
+			    if (activefield%3 == 2) {
+				activefield -= 2;
+				showfield(activefield+2);
+			    }
+			    else {
+				activefield++;
+				showfield(activefield-1);
+			    }
+			    showfield(activefield);
 			}
-			else {
-			    activefield++;
-			    showfield(activefield-1);
+			if (activefield == 2) {
+			    if (strlen(qtcreclist.callsign) > 0 &&
+				    qtcreclist.serial > 0 &&
+				    qtcreclist.count > 0 &&
+				    qtcreclist.confirmed == 0
+				) {
+				    if (trxmode == CWMODE) {
+					sendmessage(qtc_recv_msgs[1]);
+				    }
+				    if (trxmode == SSBMODE) {
+					play_file(qtc_phrecv_message[1]);
+				    }
+				    if (qtcrec_record == 1 && record_run < 0) {
+					start_qtc_recording();
+				    }
+				    activefield++;
+				    showfield(activefield);
+			    }
 			}
-			showfield(activefield);
-		    }
-		    else {
-			modify_field(x);
+			if (activefield < 2) {
+			      if (activefield == 0 && qtcrec_record == 1 && record_run < 0) {
+				  start_qtc_recording();
+			      }
+			      activefield++;
+			      showfield(activefield-1);
+			      showfield(activefield);
+			}
 		    }
 		}
 		break;
@@ -1017,6 +1069,16 @@ void qtc_main_panel(int direction) {
 			showfield(activefield);
 		}
 		break;
+	case 18:	// CTRL-R, start/stop recording
+		if (direction == RECV && qtcrec_record == 1) {
+		    if (record_run == -1) {
+			start_qtc_recording();
+			showfield(activefield);
+		    }
+		    else {
+			stop_qtc_recording();
+		    }
+		}
 	}
 	refreshp();
 	if (x != 27) {
@@ -1405,10 +1467,10 @@ void show_help_msg(msgidx) {
     wattrset(qtcwin, LINE_INVERTED);
     mvwprintw(qtcwin, ++j, 36, "PgUP/PgDW: QRQ/QRS      CTRL-N: NO QTC");
     if (qtccurrdirection == RECV) {
-	mvwprintw(qtcwin, ++j, 36, "ENTER: R & next OR AGN   CTRL-L: LATER");
+	mvwprintw(qtcwin, ++j, 36, "ENTER: R & next OR AGN  CTRL-L: LATER ");
     }
     if (qtccurrdirection == SEND) {
-	mvwprintw(qtcwin, ++j, 36, "ENTER: send QTC          CTRL-L: LATER");
+	mvwprintw(qtcwin, ++j, 36, "ENTER: send QTC         CTRL-L: LATER ");
     }
     for(i=0; i<12 && j < 12; i++) {
 	if (qtccurrdirection == RECV) {
@@ -1419,6 +1481,9 @@ void show_help_msg(msgidx) {
 	    }
 	    if (i == 1) {
 		mvwprintw(qtcwin, j-1, 56, "CTRL-F: FILL TIMES");
+	    }
+	    if (i == 2) {
+		mvwprintw(qtcwin, j-1, 56, "CTRL-R: RECORD");
 	    }
 	}
 	if (qtccurrdirection == SEND) {
