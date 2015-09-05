@@ -30,6 +30,7 @@
 #define TIMESYNC 55
 #define QTCRENTRY 56
 #define QTCSENTRY 57
+#define QTCFLAG 58
 
 int lanrecv_init(void);
 int lan_recv_close(void);

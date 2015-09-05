@@ -179,3 +179,32 @@ char qtc_get_value(struct t_qtc_store_obj * qtc_obj) {
     }
     return '\0';
 }
+
+int parse_qtc_flagstr(char * lineptr, char * callsign, char * flag) {
+    char * tmp;
+
+    tmp = strtok(lineptr, ";");
+    if (tmp != NULL) {
+	strcpy(callsign, tmp);
+	tmp = strtok(NULL, ";");
+	if (tmp != NULL) {
+	  strncpy(flag, tmp, 1);
+	  return 0;
+	}
+    }
+    return 1;
+}
+
+void parse_qtc_flagline(char * lineptr) {
+    int rc;
+    char callsign[15], flag[2], msg[18];
+
+    rc = parse_qtc_flagstr(lineptr, callsign, flag);
+    if (rc == 0 && (flag[0] == 'N')) {
+	qtc_inc(callsign, QTC_NO);
+    }
+    if (rc == 0 && (flag[0] == 'L')) {
+	qtc_inc(callsign, QTC_LATER);
+    }
+    sprintf(msg, "%s;%c", callsign, flag[0]);
+}

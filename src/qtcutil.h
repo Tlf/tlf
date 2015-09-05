@@ -34,5 +34,7 @@ struct t_qtc_store_obj * qtc_get(char callsign[15]);
 
 void parse_qtcline(char * line, char callsign[15], int direction);
 char qtc_get_value(struct t_qtc_store_obj * qtc_obj);
+void parse_qtc_flagline(char * lineptr);
+int parse_qtc_flagstr(char * lineptr, char * callsign, char * flag);
 
 #endif /* end of include guard: QTCUTIL_H */

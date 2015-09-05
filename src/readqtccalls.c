@@ -160,24 +160,7 @@ int readqtccalls()
     else {
 	while (fgets(inputbuffer, 100, fp) != NULL) {
 	    /* remember callsign, set marked QTC states */
-	    tempi = 0;
-	    callsign[0] = '\0';
-	    for(i=0; inputbuffer[i] != '\0'; i++) {
-		  if (inputbuffer[i] == ';') {
-			tempi = 1;
-			callsign[i] = '\0';
-			i++;
-		  }
-		  if (tempi == 0) {
-			callsign[i] = inputbuffer[i];
-		  }
-		  if (tempi == 1 && (inputbuffer[i] == 'N')) {
-			qtc_inc(callsign, QTC_NO);
-		  }
-		  if (tempi == 1 && (inputbuffer[i] == 'L')) {
-			qtc_inc(callsign, QTC_LATER);
-		  }
-	    }
+	    parse_qtc_flagline(inputbuffer);
 	}
 	fclose(fp);
     }

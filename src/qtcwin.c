@@ -41,6 +41,7 @@
 #include "get_time.h"
 #include "write_keyer.h"
 #include "qtcvars.h"
+#include "lancode.h"
 
 #include <sys/time.h>
 
@@ -1056,11 +1057,15 @@ void qtc_main_panel(int direction) {
 	case 12:	// CTRL-L, mark callsign for late QTC
 	        if (strlen(g_strstrip(qtccallsign)) > 3) {
 			qtc_inc(g_strstrip(qtccallsign), QTC_LATER);
+			sprintf(tempc, "%s;L\n", qtccallsign);
+			send_lan_message(QTCFLAG, tempc);
 		}
 		break;
 	case 14:	// CTRL-N, mark callsign for explicit NO QTC
 	        if (strlen(g_strstrip(qtccallsign)) > 3) {
 			qtc_inc(g_strstrip(qtccallsign), QTC_NO);
+			sprintf(tempc, "%s;N\n", qtccallsign);
+			send_lan_message(QTCFLAG, tempc);
 		}
 		break;
 	case 6:		// CTRL-F, fill time fields with first 2 chars
