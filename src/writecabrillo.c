@@ -30,12 +30,14 @@
 #include <fcntl.h>
 #include "getsummary.h"
 #include "tlf.h"
+#include "qtcvars.h"
+#include <syslog.h>
 
 extern char call[];
 
 /* list of different tags for QSO: line items */
-enum tag_t { NO_ITEM, FREQ, MODE, DATE, TIME, MYCALL, HISCALL, RST_S, RST_R, 
-    EXC_S, EXCH, EXC1, EXC2, EXC3, EXC4, TX };	
+enum tag_t { NO_ITEM, FREQ, MODE, DATE, TIME, MYCALL, HISCALL, RST_S, RST_R, 		// 0...8
+    EXC_S, EXCH, EXC1, EXC2, EXC3, EXC4, TX, QTCRCALL, QTCHEAD, QTCSCALL, QTC };	// 9...19
 
 
 /* conversion table between tag name in format file and internal tag */
@@ -57,7 +59,11 @@ struct tag_conv {
     { "EXC2",	EXC2	},
     { "EXC3",	EXC3	},
     { "EXC4",	EXC4	},
-    { "TX",     TX 	}
+    { "TX",     TX 	},
+    { "QTCRCALL", QTCRCALL	},
+    { "QTCHEAD", QTCHEAD },
+    { "QTCSCALL", QTCSCALL },
+    { "QTC",	QTC }
 };
 
 
@@ -73,6 +79,9 @@ struct cabrillo_desc {
     int item_count;		/* number items in QSO: line */
     GPtrArray *item_array;	/* array of items in QSO: line
     				 * must be from left to right */
+    int qtc_item_count;		/* number items in QTC: line */
+    GPtrArray *qtc_item_array;	/* array of items in QTC: line
+				 * must be from left to right */
 };
 
 
@@ -93,12 +102,18 @@ struct qso_t {
     char *comment;
     float freq;
     int tx;
+    int qtc_serial;
+    int qtc_number;
+    char * qtc_qtime;
+    char * qtc_qcall;
+    char * qtc_qserial;
+    int qtcdirection;
 };
 
 int is_comment(char *buffer);
 struct qso_t *get_next_record (FILE *fp);
+struct qso_t *get_next_qtcrec_record (FILE *fp);
 void free_qso(struct qso_t *ptr);
-
 
 /** check if logline is only a comment */
 int is_comment(char *buf) {
@@ -108,7 +123,6 @@ int is_comment(char *buf) {
    else
 	return 1;
 }
-
 
 /** get next qso record from log
  *
@@ -134,6 +148,7 @@ struct qso_t *get_next_record (FILE *fp)
 
 	    /* remember whole line */
 	    ptr->logline = g_strdup( buffer );
+	    ptr->qtcdirection = 0;
 
 	    /* split buffer into parts for qso_t record and parse
 	     * them accordingly */
@@ -194,6 +209,98 @@ struct qso_t *get_next_record (FILE *fp)
     return NULL;
 }
 
+/** get next received qtc record from log
+ *
+ * Read next line from logfile.
+ * Then parse the received qtc logline into a new allocated received QTC data structure
+ * and return that structure.
+ *
+ * \return ptr to new received qtc record (or NULL if eof)
+ */
+struct qso_t *get_next_qtcrec_record (FILE *fp)
+{
+    char buffer[100];
+    char *tmp;
+    char *sp;
+    struct qso_t *ptr;
+    struct tm date_n_time;
+
+    if (fp == NULL) {
+	return NULL;
+    }
+
+    while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
+
+
+	ptr = g_malloc0 (sizeof(struct qso_t));
+
+	/* remember whole line */
+	ptr->logline = g_strdup( buffer );
+	ptr->qtcdirection = RECV;
+
+	/* tx */
+	ptr->tx = (buffer[28] == ' ') ? 0 : 1;
+
+	/* split buffer into parts for qso_t record and parse
+	  * them accordingly */
+	tmp = strtok_r( buffer, " \t", &sp);
+
+	/* band */
+	ptr->band = atoi( tmp );
+
+	/* mode */
+	if ( strcasestr( tmp, "CW"))
+	    ptr->mode = CWMODE;
+	else if (strcasestr( tmp, "SSB" ))
+	    ptr->mode = SSBMODE;
+	else
+	    ptr->mode = DIGIMODE;
+
+	/* qso number */
+	ptr->qso_nr = atoi( strtok_r( NULL, " \t", &sp ) );
+
+	/* date & time */
+	memset( &date_n_time, 0, sizeof(struct tm) );
+
+	strptime ( strtok_r( NULL, " \t", &sp ), "%d-%b-%y", &date_n_time);
+	strptime ( strtok_r( NULL, " \t", &sp ), "%H:%M", &date_n_time);
+
+	ptr->year = date_n_time.tm_year + 1900;	/* convert to
+							1968..2067 */
+	ptr->month = date_n_time.tm_mon + 1;	/* tm_mon = 0..11 */
+	ptr->day   = date_n_time.tm_mday;
+
+	ptr->hour  = date_n_time.tm_hour;
+	ptr->min   = date_n_time.tm_min;
+
+	if (ptr->tx == 1) {
+	    /* ignore TX if set */
+	    strtok_r( NULL, " \t", &sp );
+	}
+	/* his call */
+	ptr->call = g_strdup( strtok_r( NULL, " \t", &sp ) );
+
+	/* QTC serial and number */
+	/* RST send and received */
+	ptr->qtc_serial = atoi( strtok_r( NULL, " \t", &sp ) );
+	ptr->qtc_number = atoi( strtok_r( NULL, " \t", &sp ) );
+
+	ptr->qtc_qtime = g_strdup( strtok_r( NULL, " \t", &sp ) );
+	ptr->qtc_qcall = g_strdup( strtok_r( NULL, " \t", &sp ) );
+	ptr->qtc_qserial = g_strdup( strtok_r( NULL, " \t", &sp ) );
+
+	/* frequency */
+	ptr->freq = atof( buffer + 80 );
+	if ( ( ptr->freq < 1800. ) || ( ptr->freq >= 30000. ) ) {
+	    ptr->freq = 0.;
+	}
+
+	return ptr;
+    }
+
+    return NULL;
+}
+
 
 /** free qso record pointed to by ptr */
 void free_qso(struct qso_t *ptr) {
@@ -201,10 +308,13 @@ void free_qso(struct qso_t *ptr) {
     g_free( ptr->comment );
     g_free( ptr->logline );
     g_free( ptr->call );
+    if (ptr->qtc_qtime != NULL) {
+	g_free( ptr->qtc_qtime );
+	g_free( ptr->qtc_qcall );
+	g_free( ptr->qtc_qserial );
+    }
     g_free( ptr );
-
 }
-
 
 /** write out information */
 void info(char *s)
@@ -263,6 +373,7 @@ struct line_item *parse_line_entry(char *line_entry) {
 
     if ( g_strv_length(parts) == 2 ) {
 	tag = translate_item_name( parts[0] );
+
 	item->tag = tag;
 	item->len = atoi( parts[1] );
     } 
@@ -332,6 +443,8 @@ struct cabrillo_desc *read_cabrillo_format (char *filename, char *format)
     cabdesc->name = g_strdup(format);
     cabdesc->item_array = g_ptr_array_new();
     cabdesc->item_count = nrstrings;
+    cabdesc->qtc_item_array = NULL;
+    cabdesc->qtc_item_count = 0;
 
     for (i = 0; i < nrstrings; i++) {
 	struct line_item *item;
@@ -349,6 +462,44 @@ struct cabrillo_desc *read_cabrillo_format (char *filename, char *format)
 	g_strfreev( list );
 	g_key_file_free( keyfile );
 	return NULL;
+    }
+
+    g_strfreev( list );
+
+    /* read needed QTC keys */
+    list = g_key_file_get_string_list( keyfile, format,
+			"QTC", &nrstrings, &error );
+
+    if ( error && error->code == G_KEY_FILE_ERROR_KEY_NOT_FOUND) {
+
+	/* if not found -> stop processing as that key is optional */
+	g_error_free( error );
+	g_key_file_free( keyfile );
+
+    }
+    else {
+
+	/* construct new format descriptor and fill it in */
+	cabdesc->qtc_item_array = g_ptr_array_new();
+	cabdesc->qtc_item_count = nrstrings;
+
+	for (i = 0; i < nrstrings; i++) {
+	    struct line_item *item;
+
+	    item = parse_line_entry( list[i] );
+	    if ( item ) {
+		/* add only well formatted entries */
+		g_ptr_array_add( cabdesc->qtc_item_array, item );
+	    }
+	}
+
+	if ( cabdesc->qtc_item_array->len != nrstrings ) {
+	    /* not all entries are ok -> stop processing */
+	    free_cabfmt( cabdesc );
+	    g_strfreev( list );
+	    g_key_file_free( keyfile );
+	    return NULL;
+	}
     }
 
     g_strfreev( list );
@@ -479,15 +630,26 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
     char tmp[80];
     struct line_item *item;
     gchar *token;
+    int item_count;
+    GPtrArray *item_array;
 
     freq = (int)qso->freq;
     if (freq < 1800.)
 	freq = (int)band2freq( qso->band );
 
-    strcpy( buf, "QSO:" );		/* start the line */
-    for  (i = 0; i < desc->item_count; i++) {
-	item = g_ptr_array_index( desc->item_array, i );
-
+    if (qso->qtcdirection == 0) {
+	strcpy( buf, "QSO:" );		/* start the line */
+	item_count = desc->item_count;
+	item_array = desc->item_array;
+    }
+    else {
+	strcpy( buf, "QTC:" );		/* start the line */
+	item_count = desc->qtc_item_count;
+	item_array = desc->qtc_item_array;
+    }
+    for  (i = 0; i < item_count; i++) {
+	item = g_ptr_array_index( item_array, i );
+	tmp[0] = '\0';
 	switch (item->tag) {
 	    case FREQ:
 		sprintf( tmp, "%d", freq );
@@ -569,6 +731,31 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 		sprintf( tmp, "%1d", qso->tx );
 		add_rpadded( buf, tmp, item->len );
 		break;
+	    case QTCRCALL:
+		if (qso->qtcdirection == 1) {	// RECV
+		    strcpy(tmp, call);
+		}
+		if (qso->qtcdirection == 2) {	// SEND
+		    strcpy(tmp, qso->call);
+		}
+		add_rpadded( buf, g_strchomp(tmp), item->len );
+		break;
+	    case QTCHEAD:
+		sprintf(tmp, "%*d/%d\n", 3, qso->qtc_serial, qso->qtc_number);
+		add_rpadded( buf, g_strchomp(tmp), item->len );
+		break;
+	    case QTCSCALL:
+		if (qso->qtcdirection == 1) {	// RECV
+		    strcpy(tmp, qso->call);
+		}
+		if (qso->qtcdirection == 2) {	// SEND
+		    strcpy(tmp, call);
+		}
+		add_rpadded( buf, g_strchomp(tmp), item->len );
+		break;
+	    case QTC:
+		sprintf(tmp, "%s %-13s %s", qso->qtc_qtime, qso->qtc_qcall, qso->qtc_qserial);
+		add_rpadded( buf, g_strchomp(tmp), item->len );
 	    case NO_ITEM:
 	    default:
 		tmp[0] = '\0';
@@ -590,8 +777,9 @@ int write_cabrillo(void)
     char cabrillo_tmp_name[80];
     char buffer[4000] = "";
 
-    FILE *fp1, *fp2;
-    struct qso_t *qso;
+    FILE *fp1, *fp2, *fpqtcrec = NULL;
+    struct qso_t *qso, *qtcrec = NULL;
+    int qsonr, qtcrecnr;
 
     if (cabrillo == NULL) {
 	info("Missing CABRILLO= keyword (see man page)");
@@ -627,6 +815,9 @@ int write_cabrillo(void)
 	free_cabfmt( cabdesc );
 	return (1);
     }
+    if (cabdesc->qtc_item_array != NULL) {
+	fpqtcrec = fopen(QTC_RECV_LOG, "r");
+    }
     if ((fp2 = fopen(cabrillo_tmp_name, "w")) == NULL) {
 	info("Can't create cabrillo file.");
 	sleep(2);
@@ -643,12 +834,36 @@ int write_cabrillo(void)
 
     info("Writing cabrillo file");
 
+    qsonr = 0;
+    qtcrecnr = 0;
     while ((qso = get_next_record(fp1))) {
 
+	qsonr++;
 	prepare_line(qso, cabdesc, buffer);
 
-	if (strlen(buffer) > 5)
+	if (strlen(buffer) > 5) {
 	    fputs(buffer, fp2);
+	}
+	if (fpqtcrec != NULL && qtcrec == NULL) {
+	    qtcrec = get_next_qtcrec_record(fpqtcrec);
+	    if (qtcrec != NULL) {
+		qtcrecnr = qtcrec->qso_nr;
+	    }
+	}
+	while (qtcrecnr == qsonr) {
+	    prepare_line(qtcrec, cabdesc, buffer);
+	    if (strlen(buffer) > 5) {
+		fputs(buffer, fp2);
+		free_qso(qtcrec);
+	    }
+	    qtcrec = get_next_qtcrec_record(fpqtcrec);
+	    if (qtcrec != NULL) {
+		qtcrecnr = qtcrec->qso_nr;
+	    }
+	    else {
+		qtcrecnr = 0;
+	    }
+	}
 
 	free_qso(qso);
     }
