@@ -58,19 +58,21 @@ void qtc_meta_write() {
 	refreshp();
 	sleep(2);
     }
-    while(qtc_key_list != NULL) {
-	    qtc_obj = g_hash_table_lookup(qtc_store, qtc_key_list->data);
-	    if (qtc_obj->capable == 2) {
-		sprintf(logline, "%s;L\n", (char *)qtc_key_list->data);
-		fputs(logline, fp);
-	    }
-	    if (qtc_obj->capable == -1) {
-		sprintf(logline, "%s;N\n", (char *)qtc_key_list->data);
-		fputs(logline, fp);
-	    }
-	    qtc_key_list = qtc_key_list->next;
+    else {
+	while(qtc_key_list != NULL) {
+		qtc_obj = g_hash_table_lookup(qtc_store, qtc_key_list->data);
+		if (qtc_obj->capable == 2) {
+		    sprintf(logline, "%s;L\n", (char *)qtc_key_list->data);
+		    fputs(logline, fp);
+		}
+		if (qtc_obj->capable == -1) {
+		    sprintf(logline, "%s;N\n", (char *)qtc_key_list->data);
+		    fputs(logline, fp);
+		}
+		qtc_key_list = qtc_key_list->next;
+	}
+	fclose(fp);
     }
-    fclose(fp);
     g_list_free(qtc_key_list);
 }
 
