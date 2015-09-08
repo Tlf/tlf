@@ -32,6 +32,7 @@
 #include "logit.h"
 #include "cw_utils.h"
 #include <glib.h>
+#include "qtcwin.h"
 #include "locator2longlat.h"
 #include "score.h"
 #include "searchlog.h"
@@ -50,9 +51,11 @@
 #include "keyer.h"
 #include "rtty.h"
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
+
 
 int play_file(char *audiofile);
 
@@ -113,7 +116,7 @@ int getexchange(void)
     int x = 0;
     char instring[2];
     char commentbuf[40] = "";
-    int retval;
+    int retval = 0;
     char *gridmult = "";
 
     instring[1] = '\0';
@@ -178,9 +181,27 @@ int getexchange(void)
 	    x = key_poll();
         }
 
-
 	switch (x) {
 
+	case 17:	// CTRL-Q
+	    {
+		if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
+		    qtc_main_panel(RECV);
+		}
+		if (qtcdirection == 2) {			// in case of QTC=SEND
+		    qtc_main_panel(SEND);
+		}
+		x=155;
+		continue;
+	    }
+	case 19:	// CTRL+s
+	    {
+		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
+		    qtc_main_panel(SEND);
+		}
+		x=155;
+		continue;
+	    }
 	case 1:						/* ctrl-a */
 	    {
 		addspot();
@@ -253,7 +274,6 @@ int getexchange(void)
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    sendmessage(message[x - 129]);	/* F2..F10 */
-
 		} else
 		    play_file(ph_message[x - 129]);
 
@@ -490,7 +510,6 @@ int getexchange(void)
 		}
 	    } else
 		break;
-
 	}
 
     }

@@ -35,8 +35,10 @@
 #ifdef HAVE_CONFIG_H
 #	include <config.h>
 #endif
+#include "qtcutil.h"
 #include "getctydata.h"
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 PANEL *search_panel;
 WINDOW *search_win;
@@ -44,7 +46,6 @@ static int initialized = 0;
 int nr_bands;
 
 void show_needed_sections(void);
-
 
 /** Check for all band mode
  *
@@ -162,7 +163,11 @@ void searchlog(char *searchstring)
     static int qso_index = 0;
     static int xwin = 1;
     static int ywin = 1;
+    char qtccall[15];	// temp str for qtc search
+    char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
     int pfxnumcntidx;
+
+    struct t_qtc_store_obj *qtc_temp_ptr;
 
     if (!initialized) {
 	InitSearchPanel();
@@ -313,6 +318,9 @@ void searchlog(char *searchstring)
 	werase( search_win );
 
 	wnicebox(search_win, 0, 0, nr_bands, 37, "Worked");
+	if (qtcdirection > 0) {
+	    mvwprintw(search_win, 0, 35, "Q");
+	}
 
 	wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT );
 	for (i = 0; i < nr_bands; i++)
@@ -389,6 +397,24 @@ void searchlog(char *searchstring)
 		j = 9;
 
 	    if ((j > 0) && (j < 10)) {
+		if (qtcdirection > 0) {
+		    qtccall[0] = '\0';
+		    z = 12;	// first pos of callsign
+		    l = 0;
+		    do {
+			qtccall[l] = s_inputbuffer[z];
+			z++; l++;
+		    } while(s_inputbuffer[z] != ' ');
+		    qtccall[l] = '\0';
+
+		    qtc_temp_ptr = qtc_get(qtccall);
+		    if (qtc_temp_ptr->total > 0 && qtc_temp_ptr->total < 10) {
+			qtcflags[j-1] = qtc_temp_ptr->total+48;
+		    }
+		    if (qtc_temp_ptr->total >= 10) {
+			qtcflags[j-1] = 'Q';
+		    }
+		}
 		if ((j < 7) || IsAllBand()) {
 		    mvwprintw(search_win, j, 1, "%s", s_inputbuffer);
 		}
@@ -457,6 +483,14 @@ void searchlog(char *searchstring)
 
 	/* print worked zones and countrys for each band in checkwindow */
 	wattron(search_win, COLOR_PAIR(C_HEADER) | A_STANDOUT);
+
+	if (qtcdirection > 0) {
+	    for(l=0; l<6; l++) {
+		if (qtcflags[l] != ' ') {
+		    mvwprintw(search_win, l+1, 35, "%c", qtcflags[l]);
+		}
+	    }
+	}
 
 	if (cqww == 1 || contest == 0 || pacc_pa_flg == 1) {
 

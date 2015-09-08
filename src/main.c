@@ -30,11 +30,13 @@
 #include "set_tone.h"
 #include "splitscreen.h"
 #include "addmult.h"
+#include <termios.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 #include "fldigixmlrpc.h"
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 SCREEN *mainscreen;
 SCREEN *packetscreen;
@@ -218,6 +220,13 @@ char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   */
 	{ "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 
+char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
+char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
+char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTC's
+char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTC's
+int qtcrec_record = 0;
+char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
+char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
 
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
@@ -413,6 +422,7 @@ int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 pthread_t background_thread;
 pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
+static struct termios oldt, newt;
 
 /** fake old refresh code to use update logic for panels */
 void refreshp() {
@@ -481,6 +491,12 @@ void parse_options(int argc, char *argv[])
 /** initialize user interface */
 void ui_init()
 {
+    /* modify stdin terminals attributes to allow Ctrl-Q/S key recognition */
+    tcgetattr( STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_iflag &= ~(IXON);
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt);
+
 /* getting users terminal string and (if RXVT) setting rxvt colours on it */
 /* LZ3NY hack :) */
     char *term = getenv("TERM");
@@ -631,6 +647,13 @@ int databases_load()
 	return EXIT_FAILURE;
     }
 
+    if (qtcdirection > 0) {
+	if (checkqtclogfile() != 0) {
+	    showmsg( "QTC's giving up" );
+	    return EXIT_FAILURE;
+	}
+	readqtccalls();
+    }
     return 0;
 }
 
@@ -752,6 +775,7 @@ void keyer_init()
     if (keyerport == MFJ1278_KEYER || keyerport == GMFSK) {
 	init_controller();
     }
+
 }
 
 
@@ -777,6 +801,7 @@ void tlf_cleanup()
 	deinit_controller();
 
     endwin();
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 }
 
 
@@ -818,6 +843,7 @@ int main(int argc, char *argv[])
     showmsg(tlfversion);
     showmsg("");
 
+    total = 0;
     if (databases_load() == EXIT_FAILURE) {
 	sleep(2);
 	endwin();

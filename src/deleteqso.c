@@ -33,13 +33,107 @@
 #include "printcall.h"
 #include "clear_display.h"
 #include "scroll_log.h"
+#include "qtcutil.h"
+#include "qtcvars.h"
+#include <glib.h>
+
+#define QTCRECVCALLPOS 30
+#define QTCSENTCALLPOS 35
+
+
+void delete_last_qtcs(char *call, char *bandmode) {
+    int rc, look, qtclen, s;
+    int qtcfile;
+    struct stat qstatbuf;
+    char logline[100];
+
+    // clean up received qtcs with same call and mode
+    if (qtcdirection & RECV) {
+	if ((qtcfile = open(QTC_RECV_LOG, O_RDWR)) < 0) {
+	    mvprintw(5, 0, "Error opening QTC received logfile.\n");
+	    sleep(1);
+	}
+	fstat(qtcfile, &qstatbuf);
+	if ((int)qstatbuf.st_size > QTCRECVCALLPOS) {
+	    look = 1;
+	    qtclen = 0;
+	    // iterate till the current line from back of logfile
+	    // callsigns is the current callsign
+	    // this works only for fixed length qtc line!
+	    lseek(qtcfile, 0, SEEK_SET);
+	    while (look == 1) {
+		lseek(qtcfile, ((int)qstatbuf.st_size - (91+qtclen)), SEEK_SET);
+		rc = read(qtcfile, logline, 90);
+		logline[90] = '\0';
+
+		if (!(strncmp(call, logline+QTCRECVCALLPOS, strlen(call)) == 0
+		   && strncmp(bandmode, logline, 5) == 0)) {
+		    // stop searching
+		    look = 0;
+		}
+		else {
+		    qtclen += 91;
+		    qtc_dec(call, RECV);
+		}
+	    }
+	    rc = ftruncate(qtcfile, qstatbuf.st_size - qtclen);
+	    fsync(qtcfile);
+	}
+	close(qtcfile);
+    }
+
+    // clean up sent qtcs with same call and mode
+    if (qtcdirection & SEND) {
+	if ((qtcfile = open(QTC_SENT_LOG, O_RDWR)) < 0) {
+	    mvprintw(5, 0, "Error opening QTC sent logfile.\n");
+	    sleep(1);
+	}
+	fstat(qtcfile, &qstatbuf);
+	if ((int)qstatbuf.st_size > QTCSENTCALLPOS) {
+	    look = 1;
+	    qtclen = 0;
+	    s = nr_qsos;
+	    while(s >= 0 && qsoflags_for_qtc[s] != 1) {
+		s--;
+	    }
+	    // iterate till the current line from back of logfile
+	    // callsigns is the current callsign
+	    // this works only for fixed length qtc line!
+	    while (s >= 0 && look == 1) {
+		lseek(qtcfile, ((int)qstatbuf.st_size - (96+qtclen)), SEEK_SET);
+		rc = read(qtcfile, logline, 95);
+		if (!(strncmp(call, logline+QTCSENTCALLPOS, strlen(call)) == 0
+		   && strncmp(bandmode, logline, 5) == 0)) {
+		    // stop searching
+		    look = 0;
+		}
+		else {
+		    qtclen += 96;
+		    qtc_dec(call, SEND);
+
+		    qsoflags_for_qtc[s] = 0;
+		    next_qtc_qso = s;
+		    while(s >= 0 && qsoflags_for_qtc[s] != 1) {
+			s--;
+		    }
+		}
+	    }
+	    rc = ftruncate(qtcfile, qstatbuf.st_size - qtclen);
+	    nr_qtcsent--;
+	    fsync(qtcfile);
+	}
+	close(qtcfile);
+    }
+}
+
 
 void delete_qso(void)
 {
-
     int x, rc;
-    int lfile;
     struct stat statbuf;
+    int lfile;
+    char logline[100];
+    char call[15], bandmode[6];
 
     mvprintw(13, 29, "OK to delete last qso (y/n)?");
     x = key_get();
@@ -55,8 +149,21 @@ void delete_qso(void)
 
 	    fstat(lfile, &statbuf);
 
-	    if (statbuf.st_size >= LOGLINELEN)
+	    if (statbuf.st_size >= LOGLINELEN) {
+	        if (qtcdirection > 0) {
+		    // read band, mode and call from last QSO line
+		    lseek(lfile, ((int)statbuf.st_size - LOGLINELEN), SEEK_SET);
+		    rc = read(lfile, logline, LOGLINELEN-1);
+
+		    g_strlcpy(bandmode, logline, 6);
+		    g_strlcpy(call, logline+29, 15);
+		    g_strchomp(call);
+
+		    // delete QTC's for that combination of band, mode and call
+		    delete_last_qtcs(call, bandmode);
+                }
 		rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
+	    }
 
 	    fsync(lfile);
 	    close(lfile);

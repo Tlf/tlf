@@ -47,10 +47,12 @@
 #include "audio.h"
 #include "scroll_log.h"
 #include "readcalls.h"
+#include "readqtccalls.h"
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
 #endif
 #include "ui_utils.h"
+#include "qtcvars.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
@@ -77,6 +79,7 @@ int changepars(void)
     extern int ctcomp;
     extern char *config_file;
     extern int miniterm;
+    extern int total;
 
 #ifdef HAVE_LIBHAMLIB
     extern freq_t outfreq;
@@ -600,14 +603,22 @@ int changepars(void)
 		synclog(synclogfile);
 	    scroll_log();
 	    /** \todo register return value */
+	    total = 0;
 	    readcalls();
+	    if (qtcdirection > 0) {
+		readqtccalls();
+	    }
 	    clear_display();
 	    break;
 	}
     case 42:			/* RESCORE */
 	{
 	    /** \todo register return value */
+	    total = 0;
 	    readcalls();
+	    if (qtcdirection > 0) {
+		readqtccalls();
+	    }
 	    clear_display();
 	    break;
 	}

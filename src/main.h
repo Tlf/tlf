@@ -1,7 +1,8 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *
+ *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -25,7 +26,9 @@
 #include "getmessages.h"
 #include "setcontest.h"
 #include "checklogfile.h"
+#include "checkqtclogfile.h"
 #include "readcalls.h"
+#include "readqtccalls.h"
 #include "clear_display.h"
 #include "logit.h"
 #include "getwwv.h"

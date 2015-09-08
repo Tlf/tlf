@@ -33,6 +33,7 @@
 #include "get_time.h"
 #include "qsonr_to_str.h"
 #include "gettxinfo.h"
+#include "qtc_log.h"
 #include <glib.h>
 
 extern int stop_backgrnd_process;
@@ -164,6 +165,16 @@ void *background_process(void *ptr)
 		case LOGENTRY:
 
 		    log_to_disk(true);
+		    break;
+
+		case QTCRENTRY:
+
+		    store_recv_qtc(lan_message+2);
+		    break;
+
+		case QTCSENTRY:
+
+		    store_sent_qtc(lan_message+2);
 		    break;
 
 		case CLUSTERMSG:
