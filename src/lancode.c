@@ -311,11 +311,13 @@ int send_lan_message(int opcode, char *message)
 	lan_send(sendbuffer);
     }
     if (opcode == QTCRENTRY) {
-	sendbuffer[93] = '\0';
+	strcat(sendbuffer, "\n");
+	sendbuffer[94] = '\0';
 	lan_send(sendbuffer);
     }
     if (opcode == QTCSENTRY) {
-	sendbuffer[99] = '\0';
+	strcat(sendbuffer, "\n");
+	sendbuffer[100] = '\0';
 	lan_send(sendbuffer);
     }
 
