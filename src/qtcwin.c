@@ -1674,7 +1674,7 @@ void show_rtty_lines() {
 	if (x != 27) {
 	    x = -1;
 	}
-	if (*qtccount > 0 && qtc_ry_copied == *qtccount) {
+	if (*qtccount > 0 && qtc_ry_copied == qtcreclist.count) {
 	    qtc_ry_capture = 0;
 	    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
 	}
