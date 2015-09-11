@@ -31,7 +31,6 @@
 #include "getsummary.h"
 #include "tlf.h"
 #include "qtcvars.h"
-#include <syslog.h>
 
 extern char call[];
 
@@ -474,7 +473,6 @@ struct cabrillo_desc *read_cabrillo_format (char *filename, char *format)
 
 	/* if not found -> stop processing as that key is optional */
 	g_error_free( error );
-	g_key_file_free( keyfile );
 
     }
     else {
@@ -649,7 +647,6 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
     }
     for  (i = 0; i < item_count; i++) {
 	item = g_ptr_array_index( item_array, i );
-	tmp[0] = '\0';
 	switch (item->tag) {
 	    case FREQ:
 		sprintf( tmp, "%d", freq );
@@ -741,6 +738,7 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 		add_rpadded( buf, g_strchomp(tmp), item->len );
 		break;
 	    case QTCHEAD:
+		tmp[0] = '\0';
 		sprintf(tmp, "%*d/%d\n", 3, qso->qtc_serial, qso->qtc_number);
 		add_rpadded( buf, g_strchomp(tmp), item->len );
 		break;
