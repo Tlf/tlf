@@ -60,7 +60,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 226	/* commands in list */
+#define  MAX_COMMANDS 228	/* commands in list */
 
 
 int read_logcfg(void)
@@ -515,7 +515,9 @@ int parse_logcfg(char *inputbuffer)
 	"QTCREC_RECORD",
 	"QTCREC_RECORD_COMMAND",
 	"EXCLUDE_MULTILIST",
-	"S&P_CALL_MSG"
+	"S&P_CALL_MSG",
+	"QTC_CAP_CALLS",
+	"QTC_AUTO_FILLTIME"
     };
 
     char **fields;
@@ -1767,6 +1769,16 @@ int parse_logcfg(char *inputbuffer)
 	    strcpy(message[SP_CALL_MSG], fields[1]);
 	    break;	/* end messages */
 	}
+    case 226:{
+		PARAMETER_NEEDED(teststring);
+		g_strlcpy(qtc_cap_calls, g_strchomp(fields[1]),
+			sizeof(exchange_list));
+		break;
+	    }
+    case 227: {
+	    qtc_auto_filltime = 1;
+	    break;
+    }
     default: {
 		KeywordNotSupported(g_strstrip(inputbuffer));
 		break;

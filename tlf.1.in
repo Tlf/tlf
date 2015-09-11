@@ -1381,6 +1381,22 @@ RECV, SEND, BOTH - note, that currently just the RECV works. For more
 information, please see the README_QTC.txt file.
 .
 .TP
+.B QTC_CAP_CALLS= list_of_qtc_capable_callsigns.txt
+If you want to help yourself to indicate, the station is a QTC capable,
+you can see it on your bandmap or worked window. Put the callsign of stations
+to a file, one callsign per line, and put it to as argument to this variable.
+.
+.TP
+.B QTC_AUTO_FILLTIME
+If you use QTC feature, and you are on EU station in CW/SSB modes, then you can
+only RECEIVE the QTC's. Most sender station send their QTC's as a most short form,
+example, after the first line it doesn't send the first two characters of time
+field. If you set this option, then when you fill the first QTC line, then Tlf
+will fills the other time fields, only the first two characters. Of course, if you
+change the hour (eg., if there is a time: 2059, and the next one is 2100), then
+all next time fields will be changed.
+.
+.TP
 .BI CONTINENTLIST= "comma separated list of continents"
 Valid values are: SA, NA, EU, AF, AS and OC.
 .
