@@ -320,6 +320,10 @@ int send_lan_message(int opcode, char *message)
 	sendbuffer[100] = '\0';
 	lan_send(sendbuffer);
     }
+    if (opcode == QTCFLAG) {
+	strcat(sendbuffer, "\n");
+	lan_send(sendbuffer);
+    }
 
     return (0);
 }

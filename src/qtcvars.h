@@ -22,12 +22,16 @@
 
 #define QTC_SENT_LOG	"QTC_sent.log"
 #define QTC_RECV_LOG	"QTC_recv.log"
+#define QTC_META_LOG	"QTC_meta.log"
 
 #define QTC_LINES 10
 #define QTC_RY_LINE_NR 12
 
 #define RECV 1		// QTC RECV direction
 #define SEND 2		// QTC SEND direction
+#define QTC_CAP 4	// QTC CAPABLE station
+#define QTC_LATER 8	// QTC LATER
+#define QTC_NO 16	// NO QTC for/from this station
 
 typedef struct {
   int qsoline;	// qsos[INDEX]
@@ -101,4 +105,8 @@ extern char qtc_send_msgs[12][80];
 /* arras of SSB fiel names for QTC receive and send */
 extern char qtc_phrecv_message[14][80];
 extern char qtc_phsend_message[14][80];
+
+extern char qtc_cap_calls[40];
+extern int qtc_auto_filltime;		// set QTC auto filltime; when DX sent first
+					// QTC line, the first two digits will be copied to others
 #endif /* end of include guard: QTCVARS_H */

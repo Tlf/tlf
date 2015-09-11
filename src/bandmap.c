@@ -333,6 +333,7 @@ int bm_ismulti( char * call) {
 
 int bm_isdupe( char *call, int band ) {
     int found = -1;
+    struct t_qtc_store_obj *qtc_obj;
 
     /* spot for warc bands are never dupes */
     if (IsWarcIndex(band))
@@ -343,10 +344,21 @@ int bm_isdupe( char *call, int band ) {
     if (found == -1)		/* new call */
 	return 0;
 
-    if (worked[found].band & inxes[band])
+    if (qtcdirection > 0) {
+        qtc_obj = qtc_get(call);
+	if (qtc_obj->total > 0 && qtc_obj->total < 10) {
+	    return 0;
+	}
+	if (qtc_obj->total == 0 && (qtc_obj->capable > 0)) {
+	    return 0;
+	}
+    }
+    if (worked[found].band & inxes[band]) {
 	return 1;
-    else
+    }
+    else {
 	return 0;
+    }
 }
 
 
@@ -735,21 +747,18 @@ void str_truncate(char *buffer, char *string, int n) {
  */
 char *qtc_format(char * call) {
     char tcall[15];
-    int nrofqtc;
+    char qtcflag;
+    struct t_qtc_store_obj *qtc_temp_ptr;
 
-    nrofqtc = qtc_get(call)->total;
+    qtc_temp_ptr = qtc_get(call);
+    qtcflag = qtc_get_value(qtc_temp_ptr);
 
-    if (nrofqtc <= 0) {
+    if (qtc_temp_ptr->total <= 0 && qtcflag == '\0') {
 	str_truncate(tcall, call, SPOT_CALL_WIDTH);
     }
     else {
 	str_truncate(tcall, call, SPOT_CALL_WIDTH-2);
-	if (nrofqtc < 10) {
-	    sprintf(tcall + strlen(tcall), " %d", nrofqtc);
-	}
-	else {
-	    sprintf(tcall + strlen(tcall), " Q");
-	}
+	sprintf(tcall + strlen(tcall), " %c", qtcflag);
     }
     return g_strdup(tcall);
 }
