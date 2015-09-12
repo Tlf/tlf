@@ -305,8 +305,9 @@ void fill_qtc_times(char * time) {
 	else {
 	    len = strlen(time);
 	}
-	for(i=afield; i<*qtccount; i++) {
+	for(i=afield+1; i<*qtccount; i++) {
 	      strncpy(qtcreclist.qtclines[i].time, time, len);
+	      qtcreclist.qtclines[i].time[len+1] = '\0';
 	      showfield(3+(i*3));
 	}
     }
