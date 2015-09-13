@@ -41,7 +41,7 @@
 
 #include "qtcutil.h"
 
-#define TOLERANCE 50 		/* spots with a QRG +/-TOLERANCE
+#define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted a s the same QRG */
 
 #define SPOT_COLUMN_WIDTH 22
@@ -107,8 +107,8 @@ short	bm_initialized = 0;
 extern int bandinx;
 extern int trxmode;
 extern char thisnode;
-
 extern struct worked_t worked[];
+extern int contest;
 
 char *qtc_format(char * call);
 
@@ -474,11 +474,12 @@ void bandmap_show() {
 
 	/* if spot is allband or allmode is set or band or mode matches
 	 * actual one than add it to the filtered 'spot' array
+	 * drop spots on WARC bands if in contest mode
 	 */
 
 	dupe = bm_isdupe(data->call, data->band);
-
-	if ((bm_config.allband || (data->band == bandinx)) &&
+	if (    (!contest || !IsWarcIndex(data->band))         &&
+		(bm_config.allband || (data->band == bandinx)) &&
 		(bm_config.allmode || (data->mode == trxmode)) &&
 		(bm_config.showdupes || !dupe)) {
 
