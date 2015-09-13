@@ -377,7 +377,6 @@ void bm_show_info() {
     attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
     move(14,66);
     vline(ACS_VLINE,10);
-    mvprintw( 17, 68, "Spots: %3d", g_list_length(allspots));
 
     mvprintw (19, 68, "bands: %s", bm_config.allband ? "all" : "own");
     mvprintw (20,68, "modes: %s", bm_config.allmode ? "all" : "own");
