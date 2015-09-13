@@ -85,9 +85,8 @@ unsigned int ssbcorner[NBANDS] =
 
 pthread_mutex_t bm_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-/** \brief sorted list of DX all recent spots
- *
- * a simple sorted linked list should do for a first start */
+/** \brief sorted list of all recent DX spots
+ */
 GList *allspots = NULL;
 
 /** \brief sorted list of filtered spots
@@ -104,6 +103,7 @@ bm_config_t bm_config = {
 };
 short	bm_initialized = 0;
 
+extern float freq;
 extern int bandinx;
 extern int trxmode;
 extern char thisnode;
@@ -403,6 +403,45 @@ void bm_show_info() {
 }
 
 
+/* helper functions for bandmap display */
+void colorize_spot(spot *data) {
+    if (data -> timeout > SPOT_NORMAL)
+	attrset(COLOR_PAIR(CB_NEW)|A_BOLD);
+
+    else if (data -> timeout > SPOT_OLD)
+	attrset(COLOR_PAIR(CB_NORMAL));
+
+    else
+	attrset(COLOR_PAIR(CB_OLD));
+
+    if (bm_ismulti(data->call))
+	attron(A_STANDOUT);
+
+    if (data->dupe && bm_config.showdupes) {
+        attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
+        attroff(A_STANDOUT);
+    }
+}
+
+char *format_spot(spot *data) {
+    char *temp;
+    char *temp2;
+
+    if (qtcdirection > 0) {
+	temp = qtc_format(data->call);
+    }
+    else
+	temp = g_strdup(data->call);
+
+    if (data->dupe && bm_config.showdupes) {
+       temp2 = temp;
+       temp = g_ascii_strdown(temp2, -1);
+       g_free(temp2);
+    }
+    return temp;
+}
+
+
 void bandmap_show() {
 /*
  * display depending on filter state
@@ -439,7 +478,6 @@ void bandmap_show() {
 
     GList *list;
     spot *data;
-    int cols = 0;
     int curx, cury;
     int bm_x, bm_y;
     int i,j;
@@ -456,6 +494,7 @@ void bandmap_show() {
      * - filtering
      * furthermore do not allow call lookup as long as
      * filter array is build anew */
+
     pthread_mutex_lock( &bm_mutex );
 
     /* make array of spots to display
@@ -493,7 +532,7 @@ void bandmap_show() {
 
 
     /* afterwards display filtered list around own QRG +/- some offest
-     * (offset gets resest if we change frequency */
+     * (offset gets reset if we change frequency */
 
     /** \todo Auswahl des Display Bereiches */
     getyx( stdscr, cury, curx);		/* remember cursor */
@@ -516,61 +555,107 @@ void bandmap_show() {
     }
 
     bm_show_info();
-    /** \fixme Darstellung des # Speichers */
 
-    for (i = 0; i < spots->len; i++)
+    unsigned int below_qrg = 0;
+    unsigned int on_qrg = 0;
+    unsigned int above_qrg = 0;
+    unsigned int max_below, startindex, stopindex;
+
+    for (i = 0; i < spots->len; i++) {
+	data = g_ptr_array_index( spots, i );
+
+	if (data->freq < (freq*1000 - TOLERANCE))
+	    below_qrg++;
+	else
+	    break;
+    }
+
+    if (below_qrg < spots->len) {
+	data = g_ptr_array_index( spots, below_qrg );
+
+	if (!(data->freq > freq*1000 + TOLERANCE))
+	    on_qrg = 1;
+    }
+
+    above_qrg = spots->len - below_qrg - on_qrg;
+
+    if (above_qrg < 14) {
+	max_below = 30 - above_qrg - 1;
+    }
+    else
+	max_below = 15;
+
+    startindex = (below_qrg < max_below)? 0 : (below_qrg - max_below);
+    stopindex  = (spots->len < startindex + 30 - (1 - on_qrg))
+	? spots->len
+	: (startindex + 30 - (1 - on_qrg));
+
+    for (i = startindex; i < below_qrg; i++)
     {
-	char *temp;
-
 	data = g_ptr_array_index( spots, i );
 
 	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
 	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.),
 		(data->node == thisnode ? '*' : data->node));
 
-	if (data -> timeout > SPOT_NORMAL)
-	    attrset(COLOR_PAIR(CB_NEW)|A_BOLD);
-
-	else if (data -> timeout > SPOT_OLD)
-	    attrset(COLOR_PAIR(CB_NORMAL));
-
-	else
-	    attrset(COLOR_PAIR(CB_OLD));
-
-	if (bm_ismulti(data->call))
-	    attron(A_STANDOUT);
-
-	if (qtcdirection > 0) {
-	    temp = qtc_format(data->call);
-	}
-	else
-	    temp = g_strdup(data->call);
-
-       if (data->dupe) {
-	   if (bm_config.showdupes) {
-	       attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
-	       attroff(A_STANDOUT);
-
-	       printw ("%-12s", g_ascii_strdown(temp, -1));
-	   }
-	}
-	else {
-	    printw ("%-12s", temp);
-	}
+	char *temp = format_spot(data);
+	colorize_spot(data);
+	printw ("%-12s", temp);
 	g_free(temp);
-
-	attroff (A_BOLD);
 
 	bm_y++;
 	if (bm_y == 24) {
 	    bm_y = 14;
 	    bm_x += SPOT_COLUMN_WIDTH;
-	    cols++;
-	    if (cols > 2)
-		break;
 	}
     }
 
+    attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+    if (!on_qrg) {
+	mvprintw (bm_y, bm_x, "%7.1f   ", (freq));
+	printw( "============");
+    }
+    else
+    {
+	data = g_ptr_array_index(spots, i);
+
+	mvprintw (bm_y, bm_x, "%7.1f %c ", (data->freq/1000.),
+		(data->node == thisnode ? '*' : data->node));
+
+	char *temp = format_spot(data);
+	printw ("%-12s", temp);
+	g_free(temp);
+
+	i++;
+    }
+
+    bm_y++;
+    if (bm_y == 24) {
+	bm_y = 14;
+	bm_x += SPOT_COLUMN_WIDTH;
+    }
+
+    for (i = below_qrg + on_qrg; i < stopindex; i++)
+    {
+	data = g_ptr_array_index( spots, i );
+
+	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
+	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.),
+		(data->node == thisnode ? '*' : data->node));
+
+	char *temp = format_spot(data);
+	colorize_spot(data);
+	printw ("%-12s", temp);
+	g_free(temp);
+
+	bm_y++;
+	if (bm_y == 24) {
+	    bm_y = 14;
+	    bm_x += SPOT_COLUMN_WIDTH;
+	}
+    }
+
+    attroff (A_BOLD);
     move(cury, curx);			/* reset cursor */
 
     refreshp();
