@@ -37,6 +37,7 @@
 #include "freq_display.h"
 #include "lancode.h"
 #include "ui_utils.h"
+#include "bandmap.h"
 
 /** broadcast to LAN
  *
@@ -141,6 +142,8 @@ void time_update(void)
 	    if (minute_timer > 0)
 		minute_timer--;
 	}
+
+	bandmap_age();		/* age bandmap spots every second */
 
 	s = (s + 1) % 2;
 	if (s > 0) {		/* every 2 seconds */

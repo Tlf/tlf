@@ -307,6 +307,8 @@ void bandmap_age() {
  *   + if dead -> drop it from collection
  */
 
+    pthread_mutex_lock( &bm_mutex );
+
     GList *list = allspots;
 
     while (list) {
@@ -322,7 +324,10 @@ void bandmap_age() {
 	    }
 	}
     }
+
+    pthread_mutex_unlock( &bm_mutex );
 }
+
 
 int bm_ismulti( char * call) {
     return 0;
@@ -453,8 +458,6 @@ void bandmap_show() {
      * furthermore do not allow call lookup as long as
      * filter array is build anew */
     pthread_mutex_lock( &bm_mutex );
-
-    bandmap_age();			/* age entries in bandmap */
 
     /* make array of spots to display
      * filter spotlist according to settings */

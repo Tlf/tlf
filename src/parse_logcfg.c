@@ -752,8 +752,8 @@ int parse_logcfg(char *inputbuffer)
 		    g_strstrip(bm_fields[1]);
 		    livetime = atoi(bm_fields[1]);
 		    if (livetime >= 30)
-			/* aging called every 2 seconds */
-			bm_config.livetime = livetime/2;
+			/* aging called each second */
+			bm_config.livetime = livetime;
 		}
 
 
