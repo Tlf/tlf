@@ -403,7 +403,12 @@ void bm_show_info() {
 }
 
 
-/* helper functions for bandmap display */
+/* helper function for bandmap display
+ * mark entries according to age, source and worked state. Mark new multis
+ * - new 	brigth blue
+ * - normal	blue
+ * - aged	brown
+ * - worked	small caps */
 void colorize_spot(spot *data) {
     if (data -> timeout > SPOT_NORMAL)
 	attrset(COLOR_PAIR(CB_NEW)|A_BOLD);
@@ -423,6 +428,10 @@ void colorize_spot(spot *data) {
     }
 }
 
+/* helper function for bandmap display
+ * convert dupes to lower case
+ * add QTC flags for WAE contest
+ */
 char *format_spot(spot *data) {
     char *temp;
     char *temp2;
@@ -439,6 +448,21 @@ char *format_spot(spot *data) {
        g_free(temp2);
     }
     return temp;
+}
+
+
+/* helper function for bandmap display
+ * shows formatted spot on actual cursor position
+ */
+void show_spot(spot * data) {
+    attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
+    printw ("%7.1f %c ", (float)(data->freq/1000.),
+	    (data->node == thisnode ? '*' : data->node));
+
+    char *temp = format_spot(data);
+    colorize_spot(data);
+    printw ("%-12s", temp);
+    g_free(temp);
 }
 
 
@@ -466,8 +490,8 @@ void bandmap_show() {
  *
  * Allow selection of one of the spots (switches to S&P)
  * - Ctrl-G as known
- * - '.' and cursor plus 'Enter'
- * - Test mouseclick...
+ * - '.' and cursor plus 'Enter' \Todo
+ * - Test mouseclick..           \Todo
  *
  * '.' goes into map, shows help line above and supports
  * - cursormovement
@@ -590,18 +614,11 @@ void bandmap_show() {
 	? spots->len
 	: (startindex + 30 - (1 - on_qrg));
 
+    /* show spots below QRG */
     for (i = startindex; i < below_qrg; i++)
     {
-	data = g_ptr_array_index( spots, i );
-
-	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
-	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.),
-		(data->node == thisnode ? '*' : data->node));
-
-	char *temp = format_spot(data);
-	colorize_spot(data);
-	printw ("%-12s", temp);
-	g_free(temp);
+	move (bm_y, bm_x);
+	show_spot(g_ptr_array_index( spots, i ));
 
 	bm_y++;
 	if (bm_y == 24) {
@@ -610,22 +627,28 @@ void bandmap_show() {
 	}
     }
 
+
+    /* show (spot on) QRG */
+    move (bm_y, bm_x);
+
     attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     if (!on_qrg) {
-	mvprintw (bm_y, bm_x, "%7.1f   ", (freq));
+	printw ("%7.1f   ", (freq));
 	printw( "============");
     }
     else
     {
 	data = g_ptr_array_index(spots, i);
 
-	mvprintw (bm_y, bm_x, "%7.1f %c ", (data->freq/1000.),
+	printw ("%7.1f %c ", (data->freq/1000.),
 		(data->node == thisnode ? '*' : data->node));
 
 	char *temp = format_spot(data);
 	printw ("%-12s", temp);
 	g_free(temp);
 
+    }
+    if (on_qrg) {
 	i++;
     }
 
@@ -635,18 +658,11 @@ void bandmap_show() {
 	bm_x += SPOT_COLUMN_WIDTH;
     }
 
+    /* show spots above QRG */
     for (i = below_qrg + on_qrg; i < stopindex; i++)
     {
-	data = g_ptr_array_index( spots, i );
-
-	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
-	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.),
-		(data->node == thisnode ? '*' : data->node));
-
-	char *temp = format_spot(data);
-	colorize_spot(data);
-	printw ("%-12s", temp);
-	g_free(temp);
+	move (bm_y, bm_x);
+	show_spot(g_ptr_array_index( spots, i ));
 
 	bm_y++;
 	if (bm_y == 24) {
@@ -660,6 +676,7 @@ void bandmap_show() {
 
     refreshp();
 }
+
 
 /** allow control of bandmap features
  */
