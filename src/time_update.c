@@ -145,6 +145,9 @@ void time_update(void)
 
 	bandmap_age();		/* age bandmap spots every second */
 
+	show_freq();
+	clusterinfo();		/* update cluster info (2 seconds) */
+
 	s = (s + 1) % 2;
 	if (s > 0) {		/* every 2 seconds */
 
@@ -165,8 +168,6 @@ void time_update(void)
 
 	    broadcast_lan();
 	    update_line(time_buf);
-	    show_freq();
-	    clusterinfo();		/* update cluster info (2 seconds) */
 
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
