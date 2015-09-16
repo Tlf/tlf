@@ -466,6 +466,31 @@ void show_spot(spot * data) {
 }
 
 
+/* helper function for bandmap display
+ * shows spot on actual working frequency
+ */
+void show_spot_on_qrg(spot * data) {
+
+    printw ("%7.1f %c ", (data->freq/1000.),
+	    (data->node == thisnode ? '*' : data->node));
+
+    char *temp = format_spot(data);
+    printw ("%-12s", temp);
+    g_free(temp);
+}
+
+
+/* advance to next spot position
+ */
+void next_spot_position (int *y, int *x) {
+    *y += 1;
+    if (*y == 24) {
+	*y = 14;
+	*x += SPOT_COLUMN_WIDTH;
+    }
+}
+
+
 void bandmap_show() {
 /*
  * display depending on filter state
@@ -517,7 +542,7 @@ void bandmap_show() {
      * - aging and
      * - filtering
      * furthermore do not allow call lookup as long as
-     * filter array is build anew */
+     * filtered spot array is build anew */
 
     pthread_mutex_lock( &bm_mutex );
 
@@ -558,7 +583,6 @@ void bandmap_show() {
     /* afterwards display filtered list around own QRG +/- some offest
      * (offset gets reset if we change frequency */
 
-    /** \todo Auswahl des Display Bereiches */
     getyx( stdscr, cury, curx);		/* remember cursor */
 
     /* start in line 14, column 0 */
@@ -578,13 +602,22 @@ void bandmap_show() {
 	    addch (' ');
     }
 
+    /* show info text */
     bm_show_info();
 
+    /* split bandmap into two parts below and above current QRG.
+     * Give both both parts equal size.
+     * If there are less spots then reserved in the half
+     * give the remaining room to the other half.
+     *
+     * These results in maximized usage of the bandmap display while
+     * trying to keep the actual frequency in the center.
+     */
     unsigned int below_qrg = 0;
     unsigned int on_qrg = 0;
-    unsigned int above_qrg = 0;
-    unsigned int max_below, startindex, stopindex;
+    unsigned int startindex, stopindex;
 
+    /* calc number of spots below your current QRG */
     for (i = 0; i < spots->len; i++) {
 	data = g_ptr_array_index( spots, i );
 
@@ -594,6 +627,7 @@ void bandmap_show() {
 	    break;
     }
 
+    /* check if current QRG is on a spot */
     if (below_qrg < spots->len) {
 	data = g_ptr_array_index( spots, below_qrg );
 
@@ -601,15 +635,21 @@ void bandmap_show() {
 	    on_qrg = 1;
     }
 
-    above_qrg = spots->len - below_qrg - on_qrg;
+    /* calc the index into the spot array of the first spot we will display */
+    {
+	unsigned int max_below;
+	unsigned int above_qrg = spots->len - below_qrg - on_qrg;
 
-    if (above_qrg < 14) {
-	max_below = 30 - above_qrg - 1;
+	if (above_qrg < 14) {
+	    max_below = 30 - above_qrg - 1;
+	}
+	else
+	    max_below = 15;
+
+	startindex = (below_qrg < max_below)? 0 : (below_qrg - max_below);
     }
-    else
-	max_below = 15;
 
-    startindex = (below_qrg < max_below)? 0 : (below_qrg - max_below);
+    /* finally calculate the index+1 of the last spot to show */
     stopindex  = (spots->len < startindex + 30 - (1 - on_qrg))
 	? spots->len
 	: (startindex + 30 - (1 - on_qrg));
@@ -619,56 +659,26 @@ void bandmap_show() {
     {
 	move (bm_y, bm_x);
 	show_spot(g_ptr_array_index( spots, i ));
-
-	bm_y++;
-	if (bm_y == 24) {
-	    bm_y = 14;
-	    bm_x += SPOT_COLUMN_WIDTH;
-	}
+	next_spot_position(&bm_y, &bm_x);
     }
 
-
-    /* show (spot on) QRG */
+    /* show frequency marker or spot on QRG */
     move (bm_y, bm_x);
-
     attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     if (!on_qrg) {
-	printw ("%7.1f   ", (freq));
-	printw( "============");
+	printw ("%7.1f   %s", freq,  "============");
     }
-    else
-    {
-	data = g_ptr_array_index(spots, i);
-
-	printw ("%7.1f %c ", (data->freq/1000.),
-		(data->node == thisnode ? '*' : data->node));
-
-	char *temp = format_spot(data);
-	printw ("%-12s", temp);
-	g_free(temp);
-
+    else {
+	show_spot_on_qrg(g_ptr_array_index( spots, below_qrg ));
     }
-    if (on_qrg) {
-	i++;
-    }
-
-    bm_y++;
-    if (bm_y == 24) {
-	bm_y = 14;
-	bm_x += SPOT_COLUMN_WIDTH;
-    }
+    next_spot_position(&bm_y, &bm_x);
 
     /* show spots above QRG */
     for (i = below_qrg + on_qrg; i < stopindex; i++)
     {
 	move (bm_y, bm_x);
 	show_spot(g_ptr_array_index( spots, i ));
-
-	bm_y++;
-	if (bm_y == 24) {
-	    bm_y = 14;
-	    bm_x += SPOT_COLUMN_WIDTH;
-	}
+	next_spot_position(&bm_y, &bm_x);
     }
 
     attroff (A_BOLD);
