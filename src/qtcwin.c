@@ -305,8 +305,9 @@ void fill_qtc_times(char * time) {
 	else {
 	    len = strlen(time);
 	}
-	for(i=afield; i<*qtccount; i++) {
+	for(i=afield+1; i<*qtccount; i++) {
 	      strncpy(qtcreclist.qtclines[i].time, time, len);
+	      qtcreclist.qtclines[i].time[len] = '\0';
 	      showfield(3+(i*3));
 	}
     }
@@ -1446,7 +1447,6 @@ void show_help_msg(msgidx) {
     int currqtc;
 
     clear_help_block();
-
 
     wattrset(qtcwin, LINE_CURRINVERTED);
     if (qtccurrdirection == RECV) {
