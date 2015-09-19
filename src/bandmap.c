@@ -753,7 +753,7 @@ char *qtc_format(char * call) {
     qtc_temp_ptr = qtc_get(call);
     qtcflag = qtc_get_value(qtc_temp_ptr);
 
-    if (qtc_temp_ptr <= 0 && qtcflag == '\0') {
+    if (qtc_temp_ptr->total <= 0 && qtcflag == '\0') {
 	str_truncate(tcall, call, SPOT_CALL_WIDTH);
     }
     else {
