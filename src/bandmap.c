@@ -41,7 +41,7 @@
 
 #include "qtcutil.h"
 
-#define TOLERANCE 50 		/* spots with a QRG +/-TOLERANCE
+#define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted a s the same QRG */
 
 #define SPOT_COLUMN_WIDTH 22
@@ -85,9 +85,8 @@ unsigned int ssbcorner[NBANDS] =
 
 pthread_mutex_t bm_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-/** \brief sorted list of DX all recent spots
- *
- * a simple sorted linked list should do for a first start */
+/** \brief sorted list of all recent DX spots
+ */
 GList *allspots = NULL;
 
 /** \brief sorted list of filtered spots
@@ -104,11 +103,12 @@ bm_config_t bm_config = {
 };
 short	bm_initialized = 0;
 
+extern float freq;
 extern int bandinx;
 extern int trxmode;
 extern char thisnode;
-
 extern struct worked_t worked[];
+extern int contest;
 
 char *qtc_format(char * call);
 
@@ -307,6 +307,8 @@ void bandmap_age() {
  *   + if dead -> drop it from collection
  */
 
+    pthread_mutex_lock( &bm_mutex );
+
     GList *list = allspots;
 
     while (list) {
@@ -322,7 +324,10 @@ void bandmap_age() {
 	    }
 	}
     }
+
+    pthread_mutex_unlock( &bm_mutex );
 }
+
 
 int bm_ismulti( char * call) {
     return 0;
@@ -372,7 +377,6 @@ void bm_show_info() {
     attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
     move(14,66);
     vline(ACS_VLINE,10);
-    mvprintw( 17, 68, "Spots: %3d", g_list_length(allspots));
 
     mvprintw (19, 68, "bands: %s", bm_config.allband ? "all" : "own");
     mvprintw (20,68, "modes: %s", bm_config.allmode ? "all" : "own");
@@ -396,6 +400,94 @@ void bm_show_info() {
     attroff (A_BOLD|A_STANDOUT);
 
     move(cury, curx);			/* reset cursor */
+}
+
+
+/* helper function for bandmap display
+ * mark entries according to age, source and worked state. Mark new multis
+ * - new 	brigth blue
+ * - normal	blue
+ * - aged	brown
+ * - worked	small caps */
+void colorize_spot(spot *data) {
+    if (data -> timeout > SPOT_NORMAL)
+	attrset(COLOR_PAIR(CB_NEW)|A_BOLD);
+
+    else if (data -> timeout > SPOT_OLD)
+	attrset(COLOR_PAIR(CB_NORMAL));
+
+    else
+	attrset(COLOR_PAIR(CB_OLD));
+
+    if (bm_ismulti(data->call))
+	attron(A_STANDOUT);
+
+    if (data->dupe && bm_config.showdupes) {
+        attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
+        attroff(A_STANDOUT);
+    }
+}
+
+/* helper function for bandmap display
+ * convert dupes to lower case
+ * add QTC flags for WAE contest
+ */
+char *format_spot(spot *data) {
+    char *temp;
+    char *temp2;
+
+    if (qtcdirection > 0) {
+	temp = qtc_format(data->call);
+    }
+    else
+	temp = g_strdup(data->call);
+
+    if (data->dupe && bm_config.showdupes) {
+       temp2 = temp;
+       temp = g_ascii_strdown(temp2, -1);
+       g_free(temp2);
+    }
+    return temp;
+}
+
+
+/* helper function for bandmap display
+ * shows formatted spot on actual cursor position
+ */
+void show_spot(spot * data) {
+    attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
+    printw ("%7.1f %c ", (float)(data->freq/1000.),
+	    (data->node == thisnode ? '*' : data->node));
+
+    char *temp = format_spot(data);
+    colorize_spot(data);
+    printw ("%-12s", temp);
+    g_free(temp);
+}
+
+
+/* helper function for bandmap display
+ * shows spot on actual working frequency
+ */
+void show_spot_on_qrg(spot * data) {
+
+    printw ("%7.1f %c ", (data->freq/1000.),
+	    (data->node == thisnode ? '*' : data->node));
+
+    char *temp = format_spot(data);
+    printw ("%-12s", temp);
+    g_free(temp);
+}
+
+
+/* advance to next spot position
+ */
+void next_spot_position (int *y, int *x) {
+    *y += 1;
+    if (*y == 24) {
+	*y = 14;
+	*x += SPOT_COLUMN_WIDTH;
+    }
 }
 
 
@@ -423,8 +515,8 @@ void bandmap_show() {
  *
  * Allow selection of one of the spots (switches to S&P)
  * - Ctrl-G as known
- * - '.' and cursor plus 'Enter'
- * - Test mouseclick...
+ * - '.' and cursor plus 'Enter' \Todo
+ * - Test mouseclick..           \Todo
  *
  * '.' goes into map, shows help line above and supports
  * - cursormovement
@@ -435,7 +527,6 @@ void bandmap_show() {
 
     GList *list;
     spot *data;
-    int cols = 0;
     int curx, cury;
     int bm_x, bm_y;
     int i,j;
@@ -451,10 +542,9 @@ void bandmap_show() {
      * - aging and
      * - filtering
      * furthermore do not allow call lookup as long as
-     * filter array is build anew */
-    pthread_mutex_lock( &bm_mutex );
+     * filtered spot array is build anew */
 
-    bandmap_age();			/* age entries in bandmap */
+    pthread_mutex_lock( &bm_mutex );
 
     /* make array of spots to display
      * filter spotlist according to settings */
@@ -471,11 +561,12 @@ void bandmap_show() {
 
 	/* if spot is allband or allmode is set or band or mode matches
 	 * actual one than add it to the filtered 'spot' array
+	 * drop spots on WARC bands if in contest mode
 	 */
 
 	dupe = bm_isdupe(data->call, data->band);
-
-	if ((bm_config.allband || (data->band == bandinx)) &&
+	if (    (!contest || !IsWarcIndex(data->band))         &&
+		(bm_config.allband || (data->band == bandinx)) &&
 		(bm_config.allmode || (data->mode == trxmode)) &&
 		(bm_config.showdupes || !dupe)) {
 
@@ -490,9 +581,8 @@ void bandmap_show() {
 
 
     /* afterwards display filtered list around own QRG +/- some offest
-     * (offset gets resest if we change frequency */
+     * (offset gets reset if we change frequency */
 
-    /** \todo Auswahl des Display Bereiches */
     getyx( stdscr, cury, curx);		/* remember cursor */
 
     /* start in line 14, column 0 */
@@ -512,66 +602,91 @@ void bandmap_show() {
 	    addch (' ');
     }
 
+    /* show info text */
     bm_show_info();
-    /** \fixme Darstellung des # Speichers */
 
-    for (i = 0; i < spots->len; i++)
-    {
-	char *temp;
+    /* split bandmap into two parts below and above current QRG.
+     * Give both both parts equal size.
+     * If there are less spots then reserved in the half
+     * give the remaining room to the other half.
+     *
+     * These results in maximized usage of the bandmap display while
+     * trying to keep the actual frequency in the center.
+     */
+    unsigned int below_qrg = 0;
+    unsigned int on_qrg = 0;
+    unsigned int startindex, stopindex;
 
+    /* calc number of spots below your current QRG */
+    for (i = 0; i < spots->len; i++) {
 	data = g_ptr_array_index( spots, i );
 
-	attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
-	mvprintw (bm_y, bm_x, "%7.1f %c ", (float)(data->freq/1000.),
-		(data->node == thisnode ? '*' : data->node));
-
-	if (data -> timeout > SPOT_NORMAL)
-	    attrset(COLOR_PAIR(CB_NEW)|A_BOLD);
-
-	else if (data -> timeout > SPOT_OLD)
-	    attrset(COLOR_PAIR(CB_NORMAL));
-
+	if (data->freq < (freq*1000 - TOLERANCE))
+	    below_qrg++;
 	else
-	    attrset(COLOR_PAIR(CB_OLD));
-
-	if (bm_ismulti(data->call))
-	    attron(A_STANDOUT);
-
-	if (qtcdirection > 0) {
-	    temp = qtc_format(data->call);
-	}
-	else
-	    temp = g_strdup(data->call);
-
-       if (data->dupe) {
-	   if (bm_config.showdupes) {
-	       attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
-	       attroff(A_STANDOUT);
-
-	       printw ("%-12s", g_ascii_strdown(temp, -1));
-	   }
-	}
-	else {
-	    printw ("%-12s", temp);
-	}
-	g_free(temp);
-
-	attroff (A_BOLD);
-
-	bm_y++;
-	if (bm_y == 24) {
-	    bm_y = 14;
-	    bm_x += SPOT_COLUMN_WIDTH;
-	    cols++;
-	    if (cols > 2)
-		break;
-	}
+	    break;
     }
 
+    /* check if current QRG is on a spot */
+    if (below_qrg < spots->len) {
+	data = g_ptr_array_index( spots, below_qrg );
+
+	if (!(data->freq > freq*1000 + TOLERANCE))
+	    on_qrg = 1;
+    }
+
+    /* calc the index into the spot array of the first spot we will display */
+    {
+	unsigned int max_below;
+	unsigned int above_qrg = spots->len - below_qrg - on_qrg;
+
+	if (above_qrg < 14) {
+	    max_below = 30 - above_qrg - 1;
+	}
+	else
+	    max_below = 15;
+
+	startindex = (below_qrg < max_below)? 0 : (below_qrg - max_below);
+    }
+
+    /* finally calculate the index+1 of the last spot to show */
+    stopindex  = (spots->len < startindex + 30 - (1 - on_qrg))
+	? spots->len
+	: (startindex + 30 - (1 - on_qrg));
+
+    /* show spots below QRG */
+    for (i = startindex; i < below_qrg; i++)
+    {
+	move (bm_y, bm_x);
+	show_spot(g_ptr_array_index( spots, i ));
+	next_spot_position(&bm_y, &bm_x);
+    }
+
+    /* show frequency marker or spot on QRG */
+    move (bm_y, bm_x);
+    attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+    if (!on_qrg) {
+	printw ("%7.1f   %s", freq,  "============");
+    }
+    else {
+	show_spot_on_qrg(g_ptr_array_index( spots, below_qrg ));
+    }
+    next_spot_position(&bm_y, &bm_x);
+
+    /* show spots above QRG */
+    for (i = below_qrg + on_qrg; i < stopindex; i++)
+    {
+	move (bm_y, bm_x);
+	show_spot(g_ptr_array_index( spots, i ));
+	next_spot_position(&bm_y, &bm_x);
+    }
+
+    attroff (A_BOLD);
     move(cury, curx);			/* reset cursor */
 
     refreshp();
 }
+
 
 /** allow control of bandmap features
  */

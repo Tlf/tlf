@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2011 Thomas Beierlein <tb@forth-ev.de>
+ * Copyright (C) 2011, 2015 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ typedef struct {
     char 	mode;
     short 	band;
     char	node;
-    int 	timeout;
+    int 	timeout;/* time (in seconds) left in bandmap */
     char 	dupe;	/* only used internal in bm_show() */
 } spot;
 
@@ -93,7 +93,7 @@ void bandmap_addspot(char *call, unsigned int frequ, char node);
 void bandmap_age();
 /*
  * - go through all entries
- *   + increment age
+ *   + decrement timeout
  *   + set state to new, normal, aged or dead
  *   + if dead -> drop it from collection
  */
