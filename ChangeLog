@@ -1,3 +1,65 @@
+2015-09-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * ChangeLog, NEWS: Add missing NEWS and ChangeLog entries for tlf-1.2.2_pre1
+
+2015-09-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/bandmap.h, src/parse_logcfg.c, src/time_update.c:
+  Improve bandmap display code
+  - display actual QRG on bandmap
+  - center bandmap around QRG
+  - update bandmap every second
+  - do not show WARC spots in contest mode
+
+2015-09-13  Ervin Hegedus <airween@gmail.com>
+
+  * src/qtcwin.c: Fixed fill QTC time bug: after the last fill, the minutes
+  remained in all lines
+
+2015-08-30  Ervin Hegedus <airween@gmail.com>
+
+  * src/bandmap.c: New feature: better handling of bandmap for WAE stations  -
+  show station as workable on bandmap as long as it has any QTC capable flags
+  left
+
+2015-09-01  Ervin Hegedus <airween@gmail.com>
+
+  * src/qtcwin.c: New feature: Ctrl-R to start and stop QTC recording  - show
+  recording state (on/off)
+
+2015-08-31  Ervin Hegedus <airween@gmail.com>
+
+  * src/main.c, src/parse_logcfg.c, src/qtcvars.h, src/qtcwin.c, tlf.1.in: New
+  feature: QTC_AUTO_FILLTIME  - CTRL-F shortkey to fill the first two letters
+  of QTC time
+
+2015-08-27  Ervin Hegedus <airween@gmail.com>
+
+  * src/background_process.c, src/lancode.c, src/lancode.h, src/qtcutil.c,
+  src/qtcutil.h, src/qtcvars.h, src/qtcwin.c, src/readqtccalls.c: New feature:
+  new QTC capable flags:  - 'L': 'later', 'N': 'NO' for callsigns, - indicates
+  them in bandmap and worked window - send QTC flags through LAN to another
+  nodes
+
+  * src/bandmap.c, src/main.c, src/parse_logcfg.c, src/qtcutil.c,
+  src/qtcutil.h, src/qtcvars.h, src/readqtccalls.c, src/searchlog.c, tlf.1.in:
+  New feature: initial QTC capable callsigns list, and indicates them in
+  bandmap and worked window
+
+2015-09-05  Ervin Hegedus <airween@gmail.com>
+
+  * src/background_process.c, src/lancode.c, src/lancode.h, src/qtcutil.c,
+  src/qtcutil.h, src/qtcwin.c, src/readqtccalls.c: New feature: QTC flags
+  sending through LAN to another nodes, when user mark a callsign.
+
+2015-08-05  Ervin Hegedus <airween@gmail.com>
+
+  * src/qtcwin.c: Added new feature: move to next field in callsign/serial/qtc
+  nr fields with SPACE or ENTER
+
+  * src/qtcwin.c rules/waedc_eu: 
+  Fix some minor problems as result to last WAEDC SSB
+
 2015-08-14  Thomas Beierlein <tomjbe@gentoo.org>
   * Fix handling of ITUMULT and WAZMULT keyword
     CQ and ITU zones gets scored in the same 'zones[]' array. The commit
