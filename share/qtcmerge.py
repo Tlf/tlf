@@ -85,11 +85,11 @@ try:
 	else:
 	    freq = band_hash[(int(l[0:3]))].rjust(5, ' ')
 	qtc = ['QTC:', freq, mode_hash[l[3:5]], time.strftime("%Y-%m-%d %H%M", time.strptime(fields[2] + " " + fields[3], "%d-%b-%y %H:%M")), "%s" % callsign.ljust(13, ' ')]
-	qtc.append("%s" % ("%d/%d" % (int(fields[5+fshift]), int(fields[6+fshift]))).ljust(10, " "))
+	qtc.append("%s" % ("%s/%d" % (("%3d" % int(fields[5+fshift])), int(fields[6+fshift]))).ljust(10, " "))
 	qtc.append("%s" % (fields[4+fshift].ljust(13, ' ')))
 	qtc.append("%s" % (fields[7+fshift]))
 	qtc.append("%s" % (fields[8+fshift].ljust(13, ' ')))
-	qtc.append("%s" % (fields[9+fshift].strip()))
+	qtc.append("%s " % (fields[9+fshift].strip()))
 	rqtc.append(" ".join(qtc))
 	rqtcserials.append(fields[1])
     f.close()

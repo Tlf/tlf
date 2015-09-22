@@ -107,11 +107,12 @@ struct qso_t {
     char * qtc_qcall;
     char * qtc_qserial;
     int qtcdirection;
+    int qsots;
 };
 
 int is_comment(char *buffer);
 struct qso_t *get_next_record (FILE *fp);
-struct qso_t *get_next_qtcrec_record (FILE *fp);
+struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection);
 void free_qso(struct qso_t *ptr);
 
 /** check if logline is only a comment */
@@ -148,6 +149,7 @@ struct qso_t *get_next_record (FILE *fp)
 	    /* remember whole line */
 	    ptr->logline = g_strdup( buffer );
 	    ptr->qtcdirection = 0;
+	    ptr->qsots = 0;
 
 	    /* split buffer into parts for qso_t record and parse
 	     * them accordingly */
@@ -208,20 +210,21 @@ struct qso_t *get_next_record (FILE *fp)
     return NULL;
 }
 
-/** get next received qtc record from log
+/** get next qtc record from log
  *
  * Read next line from logfile.
- * Then parse the received qtc logline into a new allocated received QTC data structure
+ * Then parse the received or sent qtc logline into a new allocated received QTC data structure
  * and return that structure.
  *
- * \return ptr to new received qtc record (or NULL if eof)
+ * \return ptr to new qtc record (or NULL if eof)
  */
-struct qso_t *get_next_qtcrec_record (FILE *fp)
+struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection)
 {
     char buffer[100];
     char *tmp;
     char *sp;
     struct qso_t *ptr;
+    int pos;
     struct tm date_n_time;
 
     if (fp == NULL) {
@@ -235,10 +238,16 @@ struct qso_t *get_next_qtcrec_record (FILE *fp)
 
 	/* remember whole line */
 	ptr->logline = g_strdup( buffer );
-	ptr->qtcdirection = RECV;
+	ptr->qtcdirection = qtcdirection;
 
 	/* tx */
-	ptr->tx = (buffer[28] == ' ') ? 0 : 1;
+	if (qtcdirection == RECV) {
+	    pos = 28;
+	}
+	else {
+	    pos = 33;
+	}
+	ptr->tx = (buffer[pos] == ' ') ? 0 : 1;
 
 	/* split buffer into parts for qso_t record and parse
 	  * them accordingly */
@@ -258,11 +267,18 @@ struct qso_t *get_next_qtcrec_record (FILE *fp)
 	/* qso number */
 	ptr->qso_nr = atoi( strtok_r( NULL, " \t", &sp ) );
 
+	/* in case of SEND direction, the 3rd field is the original number of sent QSO,
+	   but it doesn't need for QTC line */
+	if (qtcdirection == SEND) {
+	    tmp = strtok_r( NULL, " \t", &sp );
+	}
 	/* date & time */
 	memset( &date_n_time, 0, sizeof(struct tm) );
 
 	strptime ( strtok_r( NULL, " \t", &sp ), "%d-%b-%y", &date_n_time);
 	strptime ( strtok_r( NULL, " \t", &sp ), "%H:%M", &date_n_time);
+
+	ptr->qsots = timegm(&date_n_time);
 
 	ptr->year = date_n_time.tm_year + 1900;	/* convert to
 							1968..2067 */
@@ -280,7 +296,6 @@ struct qso_t *get_next_qtcrec_record (FILE *fp)
 	ptr->call = g_strdup( strtok_r( NULL, " \t", &sp ) );
 
 	/* QTC serial and number */
-	/* RST send and received */
 	ptr->qtc_serial = atoi( strtok_r( NULL, " \t", &sp ) );
 	ptr->qtc_number = atoi( strtok_r( NULL, " \t", &sp ) );
 
@@ -299,7 +314,6 @@ struct qso_t *get_next_qtcrec_record (FILE *fp)
 
     return NULL;
 }
-
 
 /** free qso record pointed to by ptr */
 void free_qso(struct qso_t *ptr) {
@@ -739,7 +753,7 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 		break;
 	    case QTCHEAD:
 		tmp[0] = '\0';
-		sprintf(tmp, "%*d/%d\n", 3, qso->qtc_serial, qso->qtc_number);
+		sprintf(tmp, "%*d/%d", 3, qso->qtc_serial, qso->qtc_number);
 		add_rpadded( buf, g_strchomp(tmp), item->len );
 		break;
 	    case QTCSCALL:
@@ -752,7 +766,7 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 		add_rpadded( buf, g_strchomp(tmp), item->len );
 		break;
 	    case QTC:
-		sprintf(tmp, "%s %-13s %s", qso->qtc_qtime, qso->qtc_qcall, qso->qtc_qserial);
+		sprintf(tmp, "%s %-14s %s", qso->qtc_qtime, qso->qtc_qcall, qso->qtc_qserial);
 		add_rpadded( buf, g_strchomp(tmp), item->len );
 	    case NO_ITEM:
 	    default:
@@ -775,9 +789,9 @@ int write_cabrillo(void)
     char cabrillo_tmp_name[80];
     char buffer[4000] = "";
 
-    FILE *fp1, *fp2, *fpqtcrec = NULL;
-    struct qso_t *qso, *qtcrec = NULL;
-    int qsonr, qtcrecnr;
+    FILE *fp1, *fp2, *fpqtcrec = NULL, *fpqtcsent = NULL;
+    struct qso_t *qso, *qtcrec = NULL, *qtcsent = NULL;
+    int qsonr, qtcrecnr, qtcsentnr;
 
     if (cabrillo == NULL) {
 	info("Missing CABRILLO= keyword (see man page)");
@@ -814,7 +828,24 @@ int write_cabrillo(void)
 	return (1);
     }
     if (cabdesc->qtc_item_array != NULL) {
-	fpqtcrec = fopen(QTC_RECV_LOG, "r");
+        if (qtcdirection & 1) {
+	    fpqtcrec = fopen(QTC_RECV_LOG, "r");
+	    if (fpqtcrec == NULL) {
+		info("Can't open received QTC logfile.");
+		sleep(2);
+		free_cabfmt( cabdesc );
+		return (1);
+	    }
+	}
+        if (qtcdirection & 2) {
+	    fpqtcsent = fopen(QTC_SENT_LOG, "r");
+	    if (fpqtcsent == NULL) {
+		info("Can't open sent QTC logfile.");
+		sleep(2);
+		free_cabfmt( cabdesc );
+		return (1);
+	    }
+	}
     }
     if ((fp2 = fopen(cabrillo_tmp_name, "w")) == NULL) {
 	info("Can't create cabrillo file.");
@@ -834,6 +865,7 @@ int write_cabrillo(void)
 
     qsonr = 0;
     qtcrecnr = 0;
+    qtcsentnr = 0;
     while ((qso = get_next_record(fp1))) {
 
 	qsonr++;
@@ -843,23 +875,45 @@ int write_cabrillo(void)
 	    fputs(buffer, fp2);
 	}
 	if (fpqtcrec != NULL && qtcrec == NULL) {
-	    qtcrec = get_next_qtcrec_record(fpqtcrec);
+	    qtcrec = get_next_qtc_record(fpqtcrec, RECV);
 	    if (qtcrec != NULL) {
 		qtcrecnr = qtcrec->qso_nr;
 	    }
 	}
-	while (qtcrecnr == qsonr) {
-	    prepare_line(qtcrec, cabdesc, buffer);
-	    if (strlen(buffer) > 5) {
-		fputs(buffer, fp2);
-		free_qso(qtcrec);
+	if (fpqtcsent != NULL && qtcsent == NULL) {
+	    qtcsent = get_next_qtc_record(fpqtcsent, SEND);
+	    if (qtcsent != NULL) {
+		qtcsentnr = qtcsent->qso_nr;
 	    }
-	    qtcrec = get_next_qtcrec_record(fpqtcrec);
-	    if (qtcrec != NULL) {
-		qtcrecnr = qtcrec->qso_nr;
+	}
+	while (qtcrecnr == qsonr || qtcsentnr == qsonr) {
+	    if (qtcsent == NULL || (qtcrec != NULL && qtcrec->qsots > qtcsent->qsots)) {
+		prepare_line(qtcrec, cabdesc, buffer);
+		if (strlen(buffer) > 5) {
+		    fputs(buffer, fp2);
+		    free_qso(qtcrec);
+		}
+		qtcrec = get_next_qtc_record(fpqtcrec, RECV);
+		if (qtcrec != NULL) {
+		    qtcrecnr = qtcrec->qso_nr;
+		}
+		else {
+		    qtcrecnr = 0;
+		}
 	    }
 	    else {
-		qtcrecnr = 0;
+	        prepare_line(qtcsent, cabdesc, buffer);
+		if (strlen(buffer) > 5) {
+		    fputs(buffer, fp2);
+		    free_qso(qtcsent);
+		}
+		qtcsent = get_next_qtc_record(fpqtcsent, SEND);
+		if (qtcsent != NULL) {
+		    qtcsentnr = qtcsent->qso_nr;
+		}
+		else {
+		    qtcsentnr = 0;
+		}
 	    }
 	}
 
