@@ -104,6 +104,7 @@ bm_config_t bm_config = {
 short	bm_initialized = 0;
 
 extern float freq;
+extern int trx_control;
 extern int bandinx;
 extern int trxmode;
 extern char thisnode;
@@ -480,7 +481,8 @@ void show_spot_on_qrg(spot * data) {
 }
 
 
-/* advance to next spot position
+/* helper function for bandmap display
+ * advance to next spot position
  */
 void next_spot_position (int *y, int *x) {
     *y += 1;
@@ -488,6 +490,31 @@ void next_spot_position (int *y, int *x) {
 	*y = 14;
 	*x += SPOT_COLUMN_WIDTH;
     }
+}
+
+/* helper function for bandmap display
+ * provide center frequency for display
+ *
+ * If we have a rig online, read the frequency from it.
+ * Otherwise calculate center frequency from band and mode
+ * as middle value of the band/mode corners.
+ */
+float bm_get_center(band, mode)
+{
+    float centerfrequency;
+
+    if (trx_control)
+	return freq;		/* return freq from rig */
+
+    /* calculate center frequency for current band and mode */
+    if (CWMODE == mode) {
+	centerfrequency = (bandcorner[band][0] + cwcorner[band]) / 2.;
+    } else if (SSBMODE == mode) {
+	centerfrequency = (ssbcorner[band] + bandcorner[band][1]) / 2.;
+    } else {
+	centerfrequency = (cwcorner[band] + ssbcorner[band]) / 2.;
+    }
+    return centerfrequency / 1000.;
 }
 
 
@@ -531,6 +558,7 @@ void bandmap_show() {
     int bm_x, bm_y;
     int i,j;
     short dupe;
+    float centerfrequency;
 
     if (!bm_initialized) {
 	bm_init();
@@ -617,11 +645,13 @@ void bandmap_show() {
     unsigned int on_qrg = 0;
     unsigned int startindex, stopindex;
 
+    centerfrequency = bm_get_center(bandinx, trxmode);
+
     /* calc number of spots below your current QRG */
     for (i = 0; i < spots->len; i++) {
 	data = g_ptr_array_index( spots, i );
 
-	if (data->freq < (freq*1000 - TOLERANCE))
+	if (data->freq < (centerfrequency*1000 - TOLERANCE))
 	    below_qrg++;
 	else
 	    break;
@@ -631,11 +661,11 @@ void bandmap_show() {
     if (below_qrg < spots->len) {
 	data = g_ptr_array_index( spots, below_qrg );
 
-	if (!(data->freq > freq*1000 + TOLERANCE))
+	if (!(data->freq > centerfrequency*1000 + TOLERANCE))
 	    on_qrg = 1;
     }
 
-    /* calc the index into the spot array of the first spot we will display */
+    /* calc the index into the spot array of the first spot to show */
     {
 	unsigned int max_below;
 	unsigned int above_qrg = spots->len - below_qrg - on_qrg;
@@ -649,10 +679,21 @@ void bandmap_show() {
 	startindex = (below_qrg < max_below)? 0 : (below_qrg - max_below);
     }
 
-    /* finally calculate the index+1 of the last spot to show */
+    /* calculate the index+1 of the last spot to show */
     stopindex  = (spots->len < startindex + 30 - (1 - on_qrg))
 	? spots->len
 	: (startindex + 30 - (1 - on_qrg));
+
+    /* correct calculations if we have no rig frequency to show */
+    if (trx_control == 0) {
+	if (on_qrg) {
+	    on_qrg = 0;
+	} else {
+	    stopindex += 1;
+	}
+	if (spots->len < stopindex)
+	    stopindex = spots->len;
+    }
 
     /* show spots below QRG */
     for (i = startindex; i < below_qrg; i++)
@@ -662,16 +703,19 @@ void bandmap_show() {
 	next_spot_position(&bm_y, &bm_x);
     }
 
-    /* show frequency marker or spot on QRG */
-    move (bm_y, bm_x);
-    attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-    if (!on_qrg) {
-	printw ("%7.1f   %s", freq,  "============");
+    /* show highlighted frequency marker or spot on QRG if rig control
+     * is active */
+    if (trx_control != 0) {
+	move (bm_y, bm_x);
+	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+	if (!on_qrg) {
+	    printw ("%7.1f   %s", centerfrequency,  "============");
+	}
+	else {
+	    show_spot_on_qrg(g_ptr_array_index( spots, below_qrg ));
+	}
+	next_spot_position(&bm_y, &bm_x);
     }
-    else {
-	show_spot_on_qrg(g_ptr_array_index( spots, below_qrg ));
-    }
-    next_spot_position(&bm_y, &bm_x);
 
     /* show spots above QRG */
     for (i = below_qrg + on_qrg; i < stopindex; i++)
