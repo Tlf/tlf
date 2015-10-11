@@ -34,6 +34,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 #ifdef HAVE_LIBHAMLIB
 #include <hamlib/rig.h>
@@ -113,6 +114,89 @@ extern int contest;
 
 char *qtc_format(char * call);
 
+gint cmp_freq(spot *a, spot *b);
+
+/*
+ * write bandmap spots to a file
+ */
+void bmdata_write_file(int last_bm_save_time) {
+
+    FILE * fp;
+    spot * sp;
+    GList *found;
+
+    if ((fp = fopen(".bmdata.dat", "w")) == NULL) {
+	attron(modify_attr(COLOR_PAIR(CB_DUPE)|A_BOLD));
+	mvprintw(13, 29, "can't open bandmap data file!");
+	refreshp();
+    }
+    else {
+      found = allspots;
+      fprintf(fp, "%d\n", last_bm_save_time);
+      while (found != NULL) {
+	  sp = found->data;
+	  fprintf(fp, "%s;%d;%d;%d;%c;%d;%d\n", sp->call, sp->freq, sp->mode, sp->band, sp->node, (int)sp->timeout, sp->dupe);
+	  found = found->next;
+      }
+      fclose(fp);
+    }
+}
+
+/*
+ * read bandmap spots from file, put them to allspots list
+ */
+void bmdata_read_file() {
+    FILE * fp;
+    struct timeval tv;
+    int timediff, last_bm_save_time, linenr, fc;
+    char line[50], *token;
+    static int bmdata_parsed = 0;
+
+    if ((fp = fopen(".bmdata.dat", "r")) != NULL && bmdata_parsed == 0) {
+        bmdata_parsed = 1;
+        linenr = 0;
+	timediff = 0;
+	while(fgets(line, 50, fp)) {
+	    if (linenr == 0) {
+		sscanf(line, "%d", &last_bm_save_time);
+		gettimeofday(&tv, NULL);
+		timediff = (int)tv.tv_sec - last_bm_save_time;
+	    }
+	    else {
+	        spot *entry = g_new(spot, 1);
+		fc = 0;
+		token = strtok (line, ";");
+		entry -> call = g_strdup(token);
+		fc++;
+		while (token != NULL)
+		{
+		    token = strtok (NULL, ";");
+		    switch(fc) {
+			case 1:		sscanf(token, "%d", &entry->freq);
+					break;
+			case 2:		sscanf(token, "%d", &entry->mode);
+					break;
+			case 3:		sscanf(token, "%hd", &entry->band);
+					break;
+			case 4:		sscanf(token, "%c", &entry->node);
+					break;
+			case 5:		sscanf(token, "%d", &entry->timeout);
+					entry->timeout -= timediff;
+					break;
+			case 6:		sscanf(token, "%d", &entry->dupe);
+					break;
+		    }
+		    fc++;
+		}
+		if (entry->timeout > 0) {
+		    allspots = g_list_insert_sorted( allspots, entry, (GCompareFunc)cmp_freq);
+		}
+	    }
+	    linenr++;
+	}
+    }
+}
+
 /** \brief initialize bandmap
  *
  * initalize colors and data structures for bandmap operation
@@ -128,6 +212,8 @@ void bm_init() {
     init_pair (CB_MULTI, COLOR_WHITE, COLOR_BLUE);
 
     spots = g_ptr_array_sized_new( 128 );
+
+    bmdata_read_file();
 
     pthread_mutex_unlock( &bm_mutex );
 }
@@ -220,6 +306,8 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
     GList *found;
     int band;
     char mode;
+    struct timeval tv;
+    static int last_bm_save_time = 0;
 
     /* add only HF spots */
     if (freq > 30000000)
@@ -294,6 +382,15 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	allspots = g_list_remove_link(allspots, found->next);
 	g_free (olddata->call);
 	g_free (olddata);
+    }
+
+    gettimeofday(&tv, NULL);
+    if (last_bm_save_time == 0) {
+	last_bm_save_time = (int)tv.tv_sec;
+    }
+    if ((int)tv.tv_sec > last_bm_save_time+10) {
+	last_bm_save_time = (int)tv.tv_sec;
+	bmdata_write_file(last_bm_save_time);
     }
 
     pthread_mutex_unlock( &bm_mutex );
