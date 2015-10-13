@@ -129,17 +129,18 @@ void bmdata_write_file(int last_bm_save_time) {
 	attron(modify_attr(COLOR_PAIR(CB_DUPE)|A_BOLD));
 	mvprintw(13, 29, "can't open bandmap data file!");
 	refreshp();
+	return;
     }
-    else {
-      found = allspots;
-      fprintf(fp, "%d\n", last_bm_save_time);
-      while (found != NULL) {
-	  sp = found->data;
-	  fprintf(fp, "%s;%d;%d;%d;%c;%d;%d\n", sp->call, sp->freq, sp->mode, sp->band, sp->node, (int)sp->timeout, sp->dupe);
-	  found = found->next;
-      }
-      fclose(fp);
+    found = allspots;
+    fprintf(fp, "%d\n", last_bm_save_time);
+    while (found != NULL) {
+	sp = found->data;
+	fprintf(fp, "%s;%d;%d;%d;%c;%d;%d\n",
+		sp->call, sp->freq, sp->mode, sp->band,
+		sp->node, (int)sp->timeout, sp->dupe);
+	found = found->next;
     }
+    fclose(fp);
 }
 
 /*
@@ -148,30 +149,26 @@ void bmdata_write_file(int last_bm_save_time) {
 void bmdata_read_file() {
     FILE * fp;
     struct timeval tv;
-    int timediff, last_bm_save_time, linenr, fc;
+    int timediff, last_bm_save_time, fc;
     char line[50], *token;
     static int bmdata_parsed = 0;
 
     if ((fp = fopen(".bmdata.dat", "r")) != NULL && bmdata_parsed == 0) {
         bmdata_parsed = 1;
-        linenr = 0;
 	timediff = 0;
-	while(fgets(line, 50, fp)) {
-	    if (linenr == 0) {
-		sscanf(line, "%d", &last_bm_save_time);
-		gettimeofday(&tv, NULL);
-		timediff = (int)tv.tv_sec - last_bm_save_time;
-	    }
-	    else {
-	        spot *entry = g_new(spot, 1);
+	if (fgets(line, 50, fp)) {
+	    sscanf(line, "%d", &last_bm_save_time);
+	    gettimeofday(&tv, NULL);
+	    timediff = (int)tv.tv_sec - last_bm_save_time;
+	    while (fgets(line, 50, fp)) {
+	        spot *entry = g_new0(spot, 1);
 		fc = 0;
 		token = strtok (line, ";");
-		entry -> call = g_strdup(token);
-		fc++;
 		while (token != NULL)
 		{
-		    token = strtok (NULL, ";");
 		    switch(fc) {
+			case 0:		entry -> call = g_strdup(token);
+					break;
 			case 1:		sscanf(token, "%d", &entry->freq);
 					break;
 			case 2:		sscanf(token, "%d", &entry->mode);
@@ -187,13 +184,16 @@ void bmdata_read_file() {
 					break;
 		    }
 		    fc++;
+		    token = strtok (NULL, ";");
 		}
 		if (entry->timeout > 0) {
 		    allspots = g_list_insert_sorted( allspots, entry, (GCompareFunc)cmp_freq);
+		} else {
+		    g_free(entry);
 		}
 	    }
-	    linenr++;
 	}
+	fclose(fp);
     }
 }
 
