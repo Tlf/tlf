@@ -143,7 +143,7 @@ struct qso_t *get_next_record (FILE *fp)
     while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
 
 	if (!is_comment(buffer)) {
-		
+
 	    ptr = g_malloc0 (sizeof(struct qso_t));
 
 	    /* remember whole line */
@@ -370,7 +370,7 @@ enum tag_t translate_item_name( char *name ) {
 }
 
 
-/* parse item describing one entry 
+/* parse item describing one entry
  *
  * has to be in following format: item,length
  *   - item to print (date, time, call, ...)
@@ -389,7 +389,7 @@ struct line_item *parse_line_entry(char *line_entry) {
 
 	item->tag = tag;
 	item->len = atoi( parts[1] );
-    } 
+    }
     else {
 	/* type is NO_ITEM */
 	item->tag = NO_ITEM;
@@ -411,7 +411,7 @@ struct line_item *parse_line_entry(char *line_entry) {
  * \return 		Pointer to a structure describing the format
  * 			(NULL if file or format not found or not readable)
  */
-struct cabrillo_desc *read_cabrillo_format (char *filename, char *format) 
+struct cabrillo_desc *read_cabrillo_format (char *filename, char *format)
 {
     GKeyFile *keyfile;
     GError *error = NULL;
@@ -419,10 +419,10 @@ struct cabrillo_desc *read_cabrillo_format (char *filename, char *format)
     gsize nrstrings;
     struct cabrillo_desc *cabdesc;
     int i;
-    
+
     keyfile = g_key_file_new();
 
-    if (!g_key_file_load_from_file( keyfile, filename, 
+    if (!g_key_file_load_from_file( keyfile, filename,
 		G_KEY_FILE_NONE, &error)) {
 	g_error_free( error );
 
@@ -440,7 +440,7 @@ struct cabrillo_desc *read_cabrillo_format (char *filename, char *format)
     }
 
     /* read needed keys */
-    list = g_key_file_get_string_list( keyfile, format, 
+    list = g_key_file_get_string_list( keyfile, format,
 			"QSO", &nrstrings, &error );
 
     if ( error && error->code == G_KEY_FILE_ERROR_KEY_NOT_FOUND) {
@@ -516,10 +516,10 @@ struct cabrillo_desc *read_cabrillo_format (char *filename, char *format)
 
     g_strfreev( list );
 
-    /* possible further entries in format specification may contain information 
+    /* possible further entries in format specification may contain information
      * about allowed items for different categories:
      * CONTEST, CATEGORY-OPERATOR, CATEGORY_TRANSMITTER, CATEGORY-POWER,
-     * CATEGORY-ASSISTED, CATEGORY-BAND, CATEGORY-MODE, C-STATION, C-TIME. 
+     * CATEGORY-ASSISTED, CATEGORY-BAND, CATEGORY-MODE, C-STATION, C-TIME.
      * C-OVERLAY
      */
 
@@ -540,7 +540,7 @@ float band2freq(int band) {
     float freq;
 
     switch (band) {
-    	case 160: 
+    	case 160:
 	    freq = 1800.;
 	    break;
 	case 80:
@@ -595,7 +595,7 @@ void add_lpadded( char *dst, char *src, int len ) {
 void add_rpadded( char *dst, char *src, int len ) {
     char *field;
     int l;
-	
+
     field = g_malloc( len + 1);
     strcat( dst, " " );
     memset(field, ' ', len);
@@ -671,7 +671,7 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 		add_lpadded( buf, tmp, item->len );
 		break;
 	    case DATE:
-		sprintf( tmp, "%4d-%02d-%02d", 
+		sprintf( tmp, "%4d-%02d-%02d",
 			qso->year, qso->month, qso->day);
 		add_lpadded( buf, tmp, item->len );
 		break;
@@ -834,6 +834,7 @@ int write_cabrillo(void)
 		info("Can't open received QTC logfile.");
 		sleep(2);
 		free_cabfmt( cabdesc );
+		fclose(fp1);
 		return (1);
 	    }
 	}
@@ -843,6 +844,8 @@ int write_cabrillo(void)
 		info("Can't open sent QTC logfile.");
 		sleep(2);
 		free_cabfmt( cabdesc );
+		fclose(fp1);
+		if (fpqtcrec != NULL) fclose(fpqtcrec);
 		return (1);
 	    }
 	}
@@ -851,7 +854,9 @@ int write_cabrillo(void)
 	info("Can't create cabrillo file.");
 	sleep(2);
 	free_cabfmt( cabdesc );
-	fclose(fp1);		//added by F8CFE
+	fclose(fp1);
+	if (fpqtcsent != NULL) fclose(fpqtcsent);
+	if (fpqtcrec != NULL) fclose(fpqtcrec);
 	return (2);
     }
 
@@ -979,7 +984,7 @@ int write_adif(void)
 	sleep(2);
 	fclose(fp1);		//added by F8CFE
 	return (2);
-    } 
+    }
 
     if (strlen(exchange) > 0)
 	strcpy(standardexchange, exchange);
