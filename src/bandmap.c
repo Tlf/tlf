@@ -171,7 +171,7 @@ void bmdata_read_file() {
 					break;
 			case 1:		sscanf(token, "%d", &entry->freq);
 					break;
-			case 2:		sscanf(token, "%d", &entry->mode);
+			case 2:		sscanf(token, "%hhd", &entry->mode);
 					break;
 			case 3:		sscanf(token, "%hd", &entry->band);
 					break;
@@ -180,7 +180,7 @@ void bmdata_read_file() {
 			case 5:		sscanf(token, "%d", &entry->timeout);
 					entry->timeout -= timediff;
 					break;
-			case 6:		sscanf(token, "%d", &entry->dupe);
+			case 6:		sscanf(token, "%hhd", &entry->dupe);
 					break;
 		    }
 		    fc++;
