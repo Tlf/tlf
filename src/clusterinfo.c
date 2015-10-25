@@ -61,7 +61,6 @@ void clusterinfo(void)
     extern float node_frequencies[MAXNODES];
     extern char thisnode;
 
-    int nroflines;
     int f, j, k;
     char inputbuffer[160] = "";
 
@@ -75,7 +74,7 @@ void clusterinfo(void)
 
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
-	nroflines = loadbandmap();
+	loadbandmap();
 
     }
 
@@ -172,7 +171,7 @@ int loadbandmap(void)
     extern int nr_of_spots;
 
 
-    int i = 0, j, jj, m, x, y;
+    int i = 0, j, m, x, y;
     unsigned int k;
     int spotminutes = 0;
     int sysminutes = 0;
@@ -200,11 +199,15 @@ int loadbandmap(void)
     char xplanetmsg[160];
     dxcc_data *dx;
 
+
     for (i = 0; i < MAX_SPOTS; i++) {
 	if (bandmap[i] != NULL) {
 	    g_free(bandmap[i]);
 	    bandmap[i] = NULL;
 	}
+
+	spot_age[i] = 0;
+	spot_freq[i] = 0.;
     }
 
     j = 0;
@@ -263,8 +266,6 @@ int loadbandmap(void)
     pthread_mutex_unlock (&spot_ptr_mutex);
 
     linepos = (i < 8 ? 0 : i - 8);
-
-    jj = 0;
 
     /* prune markerfile by opening it for write */
     if (xplanet > 0 && nofile == 0) {
@@ -411,7 +412,7 @@ int loadbandmap(void)
 
     refreshp();
 
-    return (i);
+    return (i);			/* nr of found spot lines */
 }
 
 
