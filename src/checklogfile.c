@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include "startmsg.h"
 #include <glib.h>
+#include "ui_utils.h"
 
 /** Repair log file
  *
@@ -56,9 +57,20 @@ int repair_log(char *filename) {
     rc = system(cmd);
     g_free(cmd);
 
+    if (rc != 0) {
+	showmsg( "Could not backup logfile. Giving up!" );
+	return 1;
+    }
+
+
     showmsg( "Converting file to new format");
     infp = fopen(backupfile, "r");
     outfp = fopen(filename, "w");
+
+    if (!infp || !outfp) {
+	showmsg( "Could not convert logfile. Sorry!" );
+	return 1;
+    }
 
     while (fgets(buffer, sizeof(buffer), infp)) {
 
@@ -115,6 +127,9 @@ int checklogfile_new(char *filename)
 	    fclose(fp);
 	    return 0;
 	}
+
+	showstring( "Can not check log file: ", filename);
+	return 1;
     }
 
 

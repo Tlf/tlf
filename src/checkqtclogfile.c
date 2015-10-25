@@ -55,7 +55,7 @@ int checkqtclogfile()
 		}
 	    }
 	}
-	fclose(fp);
+	if (fp) fclose(fp);
     }
 
     if (qtcdirection & RECV) {
@@ -78,7 +78,7 @@ int checkqtclogfile()
 		}
 	    }
 	}
-	fclose(fp);
+	if (fp) fclose(fp);
     }
 
     return 0;
