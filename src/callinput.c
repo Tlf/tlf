@@ -634,6 +634,7 @@ char callinput(void)
 	case 141:		/* F12 */
 	    {
 		x = auto_cq();
+		break;
 	    }
 	case '?':
             {
