@@ -42,6 +42,9 @@ int genqtclist(char * callsign, int nrofqtc)
     if (nrofqtc > 0 && nrofqtc < QTC_LINES) {
 	qtclistlen = nrofqtc;
     }
+    if (nrofqtc == 0) {
+	qtclistlen = 0;
+    }
 
     /* initialize qtclist */
     qtclist.serial = nr_qtcsent+1;
