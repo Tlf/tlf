@@ -1,7 +1,7 @@
-###############################################
-# WAEDC contest for EU and DX stations - RTTY #
-#           HA2OS, 30.10.2014                 #
-###############################################
+########################################
+# WAEDC contest for EU stations - RTTY #
+#         HA2OS, 28.10.2015            #
+########################################
 #
 CONTEST=waedc
 LOGFILE=waedc.log
@@ -35,7 +35,7 @@ ONE_POINT
 #
 F1=CQ TEST DE % %
 F2=@ DE %
-F3=CFM UR 599 # #
+F3=@ 599 # #
 F4=TU 73
 F5= @
 F6=%
@@ -46,7 +46,7 @@ F10= QRZ?
 F11= PSE K
 F12=CQ TEST DE % %
 #
-CQ_TU_MSG=TU ! CQ TEST %
+CQ_TU_MSG=@ TU 
 S&P_TU_MSG=TU ! 599 # #
 #
 #ALT_0=
@@ -70,8 +70,7 @@ QR_F7=
 QR_F8=AGN
 QR_F10=QSL ALL
 
-#QTCREC_RECORD
-#QTCREC_RECORD_COMMAND=rec -r 8000 $ -q
-
+QS_F1=QRV?
+QS_F2=QTC sr/nr
 
 ####### END #####################
