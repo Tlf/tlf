@@ -76,6 +76,7 @@ extern int keyerport;
 extern int nr_qsos;
 
 extern char wkeyerbuffer[];
+extern int data_ready;
 
 static int record_run = -1;		/* was recording already started? */
 
@@ -725,6 +726,7 @@ void qtc_main_panel(int direction) {
 
 			}
 			strncpy(wkeyerbuffer, tmess, strlen(tmess));
+			data_ready = 1;
 			write_keyer();
 			wattrset(qtcwin, LINE_INVERTED);
 			mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");
@@ -1817,6 +1819,7 @@ void replace_spaces(char *src, char *tempc) {
 
     tsp = 0;
     tdp = 0;
+    g_strstrip(src);
     while(src[tsp] != '\0') {
 	if (src[tsp] != ' ') {
 	    tempc[tdp] = src[tsp];
@@ -1830,7 +1833,7 @@ void replace_spaces(char *src, char *tempc) {
 		tempc[tdp] = ' ';
 	    }
 	    tdp++;
-	    while(src[tsp+1] == ' ') {
+	    while(src[tsp+1] == ' ' || src[tsp+1] == '-') {
 		tsp++;
 	    }
 	}
