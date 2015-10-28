@@ -1,13 +1,13 @@
 #########################################
 # WAEDC contest for DX stations, RTTY   #
-#        HA2OS, 09.10.2014              #
+#        HA2OS, 28.10.2015              #
 #########################################
 #
 CONTEST=waedc
 LOGFILE=waedc.log
 CONTEST_MODE
 CABRILLO=WAEDC
-QTC=RECV
+QTC=BOTH
 CONTINENTLIST=SA,NA,AF,AS,OC
 BANDWEIGHT_MULTIS=80:4;40:3;20:2;15:2;10:2
 COUNTRY_MULT
@@ -34,7 +34,7 @@ ONE_POINT
 #
 F1=CQ TEST DE %
 F2=@ DE %
-F3=CFM ! UR 599 #
+F3=@ 599 # #
 F4=TU 73
 F5= @
 F6=%
@@ -59,6 +59,15 @@ S&P_TU_MSG=TU ! 599 #
 #ALT_8=
 #ALT_9=
 #
+
+QR_F1=QTC?
+QR_F2=QRV
+QR_F3=
+QR_F5=
+QR_F6=
+QR_F7=
+QR_F8=AGN
+QR_F10=QSL ALL
 
 QS_F1=QRV?
 QS_F2=QTC sr/nr
