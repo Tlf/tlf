@@ -39,7 +39,7 @@ int genqtclist(char * callsign, int nrofqtc)
     int s = 0, i = 0;
 
     qtclistlen = QTC_LINES;
-    if (nrofqtc > 0 && nrofqtc < QTC_LINES) {
+    if (nrofqtc >= 0 && nrofqtc < QTC_LINES) {
 	qtclistlen = nrofqtc;
     }
 
