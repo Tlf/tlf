@@ -259,14 +259,16 @@ void start_qtc_recording() {
     char reccommand[100] = "";
     char tempc[40];
 
-    strcpy(reccommand, qtcrec_record_command[0]);
-    get_time();
-    strftime(tempc, 60, "%y%m%d%H%M%S.wav", time_ptr);
-    strcat(reccommand, tempc);
-    strcat(reccommand, qtcrec_record_command[1]);
-    record_run = system(reccommand);
-    if (record_run > -1 && qtcrec_record == 1) {
-	mvwprintw(qtcwin, 2, 11, "RECORD ON   ");
+    if (qtcrec_record == 1 && strlen((char *)qtcrec_record_command) > 0) {
+	strcpy(reccommand, qtcrec_record_command[0]);
+	get_time();
+	strftime(tempc, 60, "%y%m%d%H%M%S.wav", time_ptr);
+	strcat(reccommand, tempc);
+	strcat(reccommand, qtcrec_record_command[1]);
+	record_run = system(reccommand);
+	if (record_run > -1 && qtcrec_record == 1) {
+	    mvwprintw(qtcwin, 2, 11, "RECORD ON   ");
+	}
     }
 }
 
@@ -274,12 +276,14 @@ void start_qtc_recording() {
 void stop_qtc_recording() {
     char reccommand[100] = "";
 
-    strcpy(reccommand, "pkill -SIGINT -n ");
-    strcat(reccommand, qtcrec_record_command_shutdown);
-    system(reccommand);
-    record_run = -1;
-    if (qtcrec_record == 1) {
-	mvwprintw(qtcwin, 2, 11, "RECORD OFF  ");
+    if (qtcrec_record == 1 && strlen((char *)qtcrec_record_command_shutdown) > 0) {
+	strcpy(reccommand, "pkill -SIGINT -n ");
+	strcat(reccommand, qtcrec_record_command_shutdown);
+	system(reccommand);
+	record_run = -1;
+	if (qtcrec_record == 1) {
+	    mvwprintw(qtcwin, 2, 11, "RECORD OFF  ");
+	}
     }
 }
 
