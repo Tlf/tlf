@@ -1,9 +1,19 @@
 Q: Where can I download the latest callmaster call sign data file.
 
-A: You can use the master.scp file from http://ww.supercheckpartial.com
+A: You can use the master.scp file from http://www.supercheckpartial.com
+   Save it as 'callmaster' and copy it in the actual contest directory or 
+   in TLF's global data directory (/usr/local/share/TLF). The file in the 
+   actual contest directory takes precedence.
+
+Q: Can I add my own list of callsigns to the callmaster file.
+
+A: Sure. Just add it to the end of the file -  each call (in uppercase)
+   on a line  by itself.
+   Be aware that at the moment the file is limited to 50000 entries.
 
 Q: Where can I find an actual CTY.DAT file for TLF?
 
-A: Try http://www.country-files.com/ 
+A: Try http://www.country-files.com/ Make sure to save it as 'cty.dat' in 
+   lower case letters.
    Be aware that there a two different file formats. Make sure to download 
    the file for TLF. 
