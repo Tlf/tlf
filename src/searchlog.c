@@ -798,11 +798,17 @@ int load_callmaster(void)
 
     while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
 
+	g_strchomp(s_inputbuffer);
+
+	if (s_inputbuffer[0] == '#')
+	    /* skip comment lines */
+	    continue;
+
 	if ( strlen(s_inputbuffer) < 3 )
 	    /* calls are at least 3 char long */
 	    continue;
 
-	g_strchomp(s_inputbuffer);
+	s_inputbuffer[12] = '\0';		/* terminate line length */
 
 	if (arrlss == 1) {
 
@@ -813,18 +819,14 @@ int load_callmaster(void)
 		|| (s_inputbuffer[0] == 'C')
 		|| (s_inputbuffer[0] == 'N')) {
 
-		s_inputbuffer[12] = '\0';
 		strcpy(callmasterarray[count], s_inputbuffer);
-		count++;
 	    }
-
 	} else {
 
-	    s_inputbuffer[12] = '\0';
 	    strcpy(callmasterarray[count], s_inputbuffer);
-	    count++;
-
 	}
+
+	count++;
     }
 
     fclose(cfp);
