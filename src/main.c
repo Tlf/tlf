@@ -353,9 +353,6 @@ GPtrArray *mults_possible;
 
 int multlist = 0;
 
-char callmasterarray[MAX_CALLMASTER][14];
-long int nr_callmastercalls;
-
 int callareas[20];
 int multscore[NBANDS];
 
@@ -628,7 +625,7 @@ int databases_load()
     }
 
     showmsg("reading callmaster data");
-    nr_callmastercalls = load_callmaster();
+    load_callmaster();
 
     if (*exchange_list != '\0') {
 	showmsg("reading initial exchange file");

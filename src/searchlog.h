@@ -18,6 +18,10 @@
  */
 #ifndef SEARCHLOG_H
 #define SEARCHLOG_H
+#include <glib.h>
+
+extern GPtrArray *callmaster;
+#define CALLMASTERARRAY(n) ((char *) g_ptr_array_index(callmaster, n))
 
 void InitSearchPanel(void);
 void ShowSearchPanel(void);
