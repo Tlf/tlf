@@ -53,9 +53,12 @@ Enthält call, exchange, band mask and country für alle gearbeiteten Stationen
 - switched to growing GPtrArray (Sep11)
 
 
-* callmasterarray
+5. callmasterarray
 
+- will be constructed only once after start of Tlf
+- contains call signs of active contest stations
 - Nutzer: CW Simulator, searchlog
+- switched to growing GPtrArray (Oct15)
 
 * log data
 
