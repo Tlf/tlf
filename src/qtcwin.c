@@ -260,7 +260,7 @@ void start_qtc_recording() {
     char reccommand[100] = "";
     char tempc[40];
 
-    if (qtcrec_record == 1 && strlen((char *)qtcrec_record_command) > 0) {
+    if (record_run < 0 && qtcrec_record == 1 && strlen((char *)qtcrec_record_command) > 0) {
 	strcpy(reccommand, qtcrec_record_command[0]);
 	get_time();
 	strftime(tempc, 60, "%y%m%d%H%M%S.wav", time_ptr);
@@ -628,7 +628,7 @@ void qtc_main_panel(int direction) {
 			    if (qtcreclist.sentcfmall == 0) {
 				qtcreclist.sentcfmall = 1;
 				log_recv_qtc_to_disk(nr_qsos);
-				if (qtcrec_record == 1 && record_run > -1) {
+				if (record_run > -1) {
 				    stop_qtc_recording();
 				}
 				if (trxmode == DIGIMODE || trxmode == CWMODE) {
@@ -688,9 +688,7 @@ void qtc_main_panel(int direction) {
 			if (trxmode == SSBMODE) {
 			    play_file(qtc_phrecv_message[1]);
 			}
-			if (qtcrec_record == 1 && record_run < 0) {
-			    start_qtc_recording();
-			}
+			start_qtc_recording();
 			activefield++;
 			showfield(activefield);
 		    }
@@ -746,9 +744,7 @@ void qtc_main_panel(int direction) {
 		    }
 		}
 		if (activefield == 0) {
-		    if (qtcrec_record == 1 && record_run < 0) {
-			start_qtc_recording();
-		    }
+		    start_qtc_recording();
 		}
 		if (activefield < 2) {
 		    if (direction == RECV) {
@@ -798,12 +794,12 @@ void qtc_main_panel(int direction) {
 			sendmessage(qtc_recv_msgs[x - 129]);
 
 			/* start recording */
-			if (trxmode == CWMODE && qtcrec_record == 1 && strncmp(qtc_recv_msgs[x - 129], "QRV", 3) == 0 && record_run < 0) {
+			if (trxmode == CWMODE && strncmp(qtc_recv_msgs[x - 129], "QRV", 3) == 0) {
 			    start_qtc_recording();
 			}
 
 			/* stop recording */
-			if (trxmode == CWMODE && qtcrec_record == 1 && strncmp(qtc_recv_msgs[x - 129], "QSL ALL", 7) == 0 && record_run > -1) {
+			if (trxmode == CWMODE && strncmp(qtc_recv_msgs[x - 129], "QSL ALL", 7) == 0 && record_run > -1) {
 			    stop_qtc_recording();
 			}
 
@@ -862,10 +858,10 @@ void qtc_main_panel(int direction) {
 		}
 		if (trxmode == SSBMODE) {
 		    if (direction == RECV) {
-			if (qtcrec_record == 1 && x == 130 && record_run < 0) { // 130 -> F2, "QRV"
+			if (x == 130) { // 130 -> F2, "QRV"
 			    start_qtc_recording();
 			}
-			if (qtcrec_record == 1 && x == 138 && record_run > -1) { // 138 -> F10, "QSL ALL"
+			if (x == 138 && record_run > -1) { // 138 -> F10, "QSL ALL"
 			    stop_qtc_recording();
 			}
 			play_file(qtc_phrecv_message[x - 129]);
@@ -999,15 +995,13 @@ void qtc_main_panel(int direction) {
 				    if (trxmode == SSBMODE) {
 					play_file(qtc_phrecv_message[1]);
 				    }
-				    if (qtcrec_record == 1 && record_run < 0) {
-					start_qtc_recording();
-				    }
+				    start_qtc_recording();
 				    activefield++;
 				    showfield(activefield);
 			    }
 			}
 			if (activefield < 2) {
-			      if (activefield == 0 && qtcrec_record == 1 && record_run < 0) {
+			      if (activefield == 0) {
 				  start_qtc_recording();
 			      }
 			      activefield++;
@@ -1082,8 +1076,8 @@ void qtc_main_panel(int direction) {
 		}
 		break;
 	case 18:	// CTRL-R, start/stop recording
-		if (direction == RECV && qtcrec_record == 1) {
-		    if (record_run == -1) {
+		if (direction == RECV) {
+		    if (record_run < 0) {
 			start_qtc_recording();
 			showfield(activefield);
 		    }
