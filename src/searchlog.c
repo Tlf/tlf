@@ -40,6 +40,8 @@
 #include "ui_utils.h"
 #include "qtcvars.h"
 
+GPtrArray *callmaster = NULL;
+
 PANEL *search_panel;
 WINDOW *search_win;
 static int initialized = 0;
@@ -133,8 +135,6 @@ void searchlog(char *searchstring)
     extern int ignoredupe;
     extern int qso_once;
     extern int trxmode;
-    extern long int nr_callmastercalls;
-    extern char callmasterarray[MAX_CALLMASTER][14];
     extern char qsos[MAX_QSOS][LOGLINELEN+1];
     extern char hiscall[];
     extern char zone_export[];
@@ -707,20 +707,20 @@ void searchlog(char *searchstring)
 	    if (strcmp(hiscall, printres) != 0) {
 
 		/* and now check callmaster database */
-		for (m = 0; m < nr_callmastercalls; m++)
+		for (m = 0; m < callmaster->len; m++)
 		{
 
-		    if ( strstr(callmasterarray[m], hiscall) != NULL ) {
+		    if ( strstr(CALLMASTERARRAY(m), hiscall) != NULL ) {
 
 			attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
 			mvprintw(xwin + l, ywin + j, "%s  ",
-				 callmasterarray[m]);
+				 CALLMASTERARRAY(m));
 
 			if (strlen(s_inputbuffercpy) == 0)
-			    strcpy(s_inputbuffercpy, callmasterarray[m]);
+			    strcpy(s_inputbuffercpy, CALLMASTERARRAY(m));
 
-			j += (strlen(callmasterarray[m])) + 1;
+			j += (strlen(CALLMASTERARRAY(m))) + 1;
 
 			if (j >= 30) {
 			    l++;
@@ -769,17 +769,24 @@ void searchlog(char *searchstring)
     }
 }
 
+void init_callmaster(void) {
+    if (callmaster)
+	g_ptr_array_free(callmaster, TRUE);
+    callmaster = g_ptr_array_new_full(16000, g_free);
+}
+
 /** loads callmaster database from file
+ * returns number of loaded calls
  */
 int load_callmaster(void)
 {
-    extern char callmasterarray[MAX_CALLMASTER][14];
     extern int arrlss;
 
     FILE *cfp = NULL;
     char callmaster_location[80];
     char s_inputbuffer[186] = "";
-    long int count = 0;
+
+    init_callmaster();
 
     strcpy(callmaster_location, "callmaster");
     if ((cfp = fopen(callmaster_location, "r")) == NULL) {
@@ -792,17 +799,23 @@ int load_callmaster(void)
 	    refreshp();
 	    sleep(2);
 
-	    return count;
+	    return 0;
 	}
     }
 
     while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
 
+	g_strchomp(s_inputbuffer);
+
+	if (s_inputbuffer[0] == '#')
+	    /* skip comment lines */
+	    continue;
+
 	if ( strlen(s_inputbuffer) < 3 )
 	    /* calls are at least 3 char long */
 	    continue;
 
-	g_strchomp(s_inputbuffer);
+	s_inputbuffer[12] = '\0';		/* terminate line length */
 
 	if (arrlss == 1) {
 
@@ -813,22 +826,16 @@ int load_callmaster(void)
 		|| (s_inputbuffer[0] == 'C')
 		|| (s_inputbuffer[0] == 'N')) {
 
-		s_inputbuffer[12] = '\0';
-		strcpy(callmasterarray[count], s_inputbuffer);
-		count++;
+		g_ptr_array_add(callmaster, g_strdup(s_inputbuffer));
 	    }
-
 	} else {
 
-	    s_inputbuffer[12] = '\0';
-	    strcpy(callmasterarray[count], s_inputbuffer);
-	    count++;
-
+	    g_ptr_array_add(callmaster, g_strdup(s_inputbuffer));
 	}
     }
 
     fclose(cfp);
-    return count;
+    return callmaster->len;
 }
 
 

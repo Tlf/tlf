@@ -35,6 +35,7 @@
 #include "gettxinfo.h"
 #include "qtc_log.h"
 #include "qtcutil.h"
+#include "searchlog.h"
 #include <glib.h>
 
 extern int stop_backgrnd_process;
@@ -270,7 +271,6 @@ void *background_process(void *ptr)
 int cw_simulator(void)
 {
 
-    extern char callmasterarray[MAX_CALLMASTER][14];
     extern int simulator;
     extern int simulator_mode;
     extern int simulator_seed;
@@ -353,7 +353,7 @@ int cw_simulator(void)
 	if (callnumber >= 27000)
 	    callnumber -= 27000;
 
-	sendmessage(callmasterarray[callnumber]);
+	sendmessage(CALLMASTERARRAY(callnumber));
 	write_keyer();
 	simulator_mode = 0;
 
@@ -368,7 +368,7 @@ int cw_simulator(void)
 	strcpy(tonestr, simulator_tone);
 	write_tone();
 
-	strcpy(callcpy, callmasterarray[callnumber]);
+	strcpy(callcpy, CALLMASTERARRAY(callnumber));
 
 	x = getctydata(callcpy);
 
@@ -391,11 +391,11 @@ int cw_simulator(void)
 	strcpy(tonestr, simulator_tone);
 	write_tone();
 
-	strcpy(callcpy, callmasterarray[callnumber]);
+	strcpy(callcpy, CALLMASTERARRAY(callnumber));
 	x = getctydata(callcpy);
 
 	str = g_strdup_printf("DE %s TU 5NN %s",
-		callmasterarray[callnumber], zone_export);
+		CALLMASTERARRAY(callnumber), zone_export);
 	sendmessage(str);
 	g_free(str);
 

@@ -61,7 +61,6 @@ void clusterinfo(void)
     extern float node_frequencies[MAXNODES];
     extern char thisnode;
 
-    int nroflines;
     int f, j, k;
     char inputbuffer[160] = "";
 
@@ -75,7 +74,7 @@ void clusterinfo(void)
 
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
-	nroflines = loadbandmap();
+	loadbandmap();
 
     }
 
@@ -163,8 +162,6 @@ int loadbandmap(void)
     extern int cluster;
     extern char *bandmap[MAX_SPOTS];
     extern struct tm *time_ptr;
-    extern int countries[];
-    extern struct worked_t worked[];
     extern int xplanet;
     extern char markerfile[];
     extern char lastmsg[];
@@ -172,15 +169,12 @@ int loadbandmap(void)
     extern int nr_of_spots;
 
 
-    int i = 0, j, jj, m, x, y;
+    int i = 0, j, m, x;
     unsigned int k;
     int spotminutes = 0;
     int sysminutes = 0;
     int timediff = 0;
     int linepos;
-    int already_worked;
-    int thisband = 10;		/** \todo should it be NBANDS? */
-    int dupe;
     int spot_age[MAX_SPOTS];
     float spot_freq[MAX_SPOTS];
 
@@ -200,11 +194,15 @@ int loadbandmap(void)
     char xplanetmsg[160];
     dxcc_data *dx;
 
+
     for (i = 0; i < MAX_SPOTS; i++) {
 	if (bandmap[i] != NULL) {
 	    g_free(bandmap[i]);
 	    bandmap[i] = NULL;
 	}
+
+	spot_age[i] = 0;
+	spot_freq[i] = 0.;
     }
 
     j = 0;
@@ -264,8 +262,6 @@ int loadbandmap(void)
 
     linepos = (i < 8 ? 0 : i - 8);
 
-    jj = 0;
-
     /* prune markerfile by opening it for write */
     if (xplanet > 0 && nofile == 0) {
 	if ((fp = fopen(markerfile, "w")) == NULL) {
@@ -293,28 +289,6 @@ int loadbandmap(void)
 
 	    x = getctynr(callcopy);		// CTY of station
 
-	    y = searchcallarray(callcopy);	// lookup index of call in
-	    					// callarray (if already worked)
-
-	    already_worked = 0;
-	    dupe = 1;
-
-	    thisband = bandinx;
-
-	    /* check if country was already worked on this band */
-	    if ((countries[x] & inxes[thisband]) != 0)
-		already_worked = 1;	/* no new country/multi */
-
-	    /* check if already worked on these band */
-	    if (y != -1) {	/*  found */
-		if ((worked[y].band & inxes[thisband]) == 0)
-		    dupe = 0;	/* not worked on this band yet */
-	    }
-
-	    if (inxes[thisband] == 0) {	/* WARC band */
-		already_worked = 1;		/* show as not needed */
-		dupe = 0;		/* station new, but no country/multi */
-	    }
 
 	    if (x != 0 && xplanet > 0 && nofile == 0) {
 
@@ -411,7 +385,7 @@ int loadbandmap(void)
 
     refreshp();
 
-    return (i);
+    return (i);			/* nr of found spot lines */
 }
 
 
