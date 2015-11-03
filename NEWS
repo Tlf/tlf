@@ -1,39 +1,64 @@
+tlf-1.2.2
+=========
+Maintenance and bugfix release.
+
+Contains all bugfixes and enhancements from tlf-1.2.2_pre versions (read below)
+
+New features since tlf-1.2.2_pre2:
+    - TLF can now write cabrillo files for WAEDC contest
+    - bandmap display
+      * does not show QRG if no active rig control is in use
+      * The actual bandmap list will be saved every 10s. Using this 
+        information the last bandmap state will be reconstructed after 
+	a restart of TLF.
+    - FAQ
+      * Add instructions about refreshing callmaster database and cty.dat
+        file
+    - update CTY.DAT and callmaster database
+    - Improvements to callmaster database handling
+      * callmaster database can now contain comment lines starting with '#'
+      * Drop size restrictions of the number of calls in the database
+
+Bug fixes:
+
+    * Fix some minor bugs in WAEDC code for RTTY
+
 tlf-1.2.2_pre2
 ==============
 
 New features:
-    * Improved bandmap display 
-      - display actual QRG on bandmap
-      - center bandmap around QRG
-      - update bandmap every second
-      - do not show WARC spots in contest mode
+    - Improved bandmap display 
+      * display actual QRG on bandmap
+      * center bandmap around QRG
+      * update bandmap every second
+      * do not show WARC spots in contest mode
 
     Improvements to WAEDC QTC handling (by HA2OS)
-    * allow a list of stations known to give QTC's (maybe from last year)
+    - allow a list of stations known to give QTC's (maybe from last year)
 	  QTC_CAP_CALLS=QTC_calls.txt
       If you use this option, then Tlf will put a "P" flag (means "previous") 
       near known station ifrom the list on bandmap, and in worked window. 
       Eg: 7001.0 * R9AA P
-    * new QTC capable flags: 'L': 'later', 'N': 'NO' 
+    - new QTC capable flags: 'L': 'later', 'N': 'NO' 
       You can mark a station on the bandmap for QTC "L"ater or "N"o QTC 
       with Ctrl-L and CTRL-N respective. Flags will automatically deleted 
       as soon as you get at least one QTC from the station.
       The flags will be stored in a separated file, called
       QTC_meta.log. If you exit from Tlf, and you start it again
       later, the marked informations will be available.
-    * stations which can give still more QTC's will not be marked as 
+    - stations which can give still more QTC's will not be marked as 
       dupe on the bandmap
-    * Set QTC_AUTO_FILLTIME keyword in logcfg.dat to automatically fill in the 
+    - Set QTC_AUTO_FILLTIME keyword in logcfg.dat to automatically fill in the 
       the hour for the QTC time 
       (Some stations send only a short time format, e.g. "34 DL3XYZ 9999").
       CTRL-F just fills in the last received hour if QTC_AUTO_FILLTIME 
       is not enabled.
-    * You can use ENTER or SPACE to advance between fields in the QTC window.
-    * manually start and stop QTC recording with CTRL-R in QTC window,
+    - You can use ENTER or SPACE to advance between fields in the QTC window.
+    - manually start and stop QTC recording with CTRL-R in QTC window,
 
 Bug fixes:
 
-    * Fix some problems with using LAN mode for WAEDC
+    - Fix some problems with using LAN mode for WAEDC
 
 
 tlf-1.2.2_pre1
@@ -102,7 +127,7 @@ Major release.
 Contains all bug fixes and enhancements from 1.1.4, 1.1.5, 1.1.6 and
 all 1.2.0_pre versions.
 
-Besides a lot of fixed bugs and internal imporvements it provides 
+Besides a lot of fixed bugs and internal improvements it provides 
 some new features:
 
 Major improvements since tlf-1.1
