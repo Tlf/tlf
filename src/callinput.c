@@ -1020,7 +1020,7 @@ char callinput(void)
 	    x = x - 32;
 
 	if (x >= '/' && x <= 'Z') {
-	    if (trx_control > 0 && bmautoadd > 0 && strlen(hiscall) > 2 && bmadded_spot == 0) {
+	    if (trx_control > 0 && bmautoadd > 0 && strlen(hiscall) > 2 && bmadded_spot == 0 && cqmode == S_P) {
 		start_bmadd_timer();
 	    }
 	    bmadded_spot = 0;
