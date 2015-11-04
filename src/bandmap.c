@@ -116,6 +116,7 @@ extern int bmautograb;
 extern int bmautoadd;
 extern char hiscall[];
 extern char lastcall[];
+extern int cqmode;
 
 char *qtc_format(char * call);
 
@@ -814,7 +815,7 @@ void bandmap_show() {
 	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	if (!on_qrg) {
 	    printw ("%7.1f   %s", centerfrequency,  "============");
-	    if (bmautograb != 0 && autograbbed == 1) {
+	    if (bmautograb != 0 && autograbbed == 1 && cqmode == S_P) {
 		hiscall[0] = '\0';
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
@@ -831,7 +832,7 @@ void bandmap_show() {
 	else {
 	    tdata = g_ptr_array_index( spots, below_qrg );
 	    show_spot_on_qrg(tdata);
-	    if (bmautograb != 0 && autograbbed == 0 && strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0) {
+	    if (bmautograb != 0 && cqmode == S_P && autograbbed == 0 && strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0) {
 		strcpy(hiscall, tdata->call);
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );

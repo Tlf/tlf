@@ -1476,12 +1476,12 @@ only the EU stations left as multipliers.
 .TP
 .B BMAUTOGRAB
 If set, with \fBRADIO_CONTROL\fR and \fBBANDMAP\fR (mandatory) options, Tlf will grab the callsign from
-bandmap, if the TRX frequency is equal with bandmap freq.
+bandmap, if the TRX frequency is equal with bandmap freq. This feature works only in S&P mode.
 .
 .TP
 .B BMAUTOADD
 If set, with \fBRADIO_CONTROL\fR and \fBBANDMAP\fR (mandatory) options, Tlf will add the callsign from
-callsign field, if its lenght is 3 character at least.
+callsign field, if its lenght is 3 character at least. This feature works only in S&P mode.
 .
 .SH FILES
 .
