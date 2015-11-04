@@ -113,6 +113,7 @@ extern struct worked_t worked[];
 extern int contest;
 extern int bmautoadd;
 extern int bmautograb;
+extern int bmautoadd;
 extern char hiscall[];
 extern char lastcall[];
 
@@ -661,6 +662,7 @@ void bandmap_show() {
     short dupe;
     float centerfrequency;
     static int autograbbed = 0;
+    extern int bmadded_spot;
 
     if (!bm_initialized) {
 	bm_init();
@@ -813,6 +815,13 @@ void bandmap_show() {
 	if (!on_qrg) {
 	    printw ("%7.1f   %s", centerfrequency,  "============");
 	    if (bmautograb != 0 && autograbbed == 1) {
+		hiscall[0] = '\0';
+		showinfo( getctydata( hiscall ) );
+		searchlog( hiscall );
+		autograbbed = 0;
+	    }
+	    // clear hiscall if no qrg
+	    if (bmautoadd == 1 && bmadded_spot == 1 && strlen(hiscall) > 0) {
 		hiscall[0] = '\0';
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
