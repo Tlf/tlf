@@ -113,7 +113,6 @@ extern struct worked_t worked[];
 extern int contest;
 extern int bmautoadd;
 extern int bmautograb;
-extern int bmautoadd;
 extern char hiscall[];
 extern char lastcall[];
 extern int cqmode;
@@ -419,9 +418,11 @@ void bandmap_age() {
 	spot *data = list->data;
 	GList *temp = list;
 	list = list->next;
-	if (data->timeout) {
-	    data->timeout--;
-	    if (data->timeout == 0) {
+	if (data->timeout >= 0) {
+	    if (bmautograb == 0 || (bmautograb > 0 && data->timeout > 0)) {
+		data->timeout--;
+	    }
+	    if (data->timeout == 0 && (bmautograb == 0 || (bmautograb > 0 && abs((double)data->freq - freq*1000.0) > TOLERANCE))) {
 		allspots = g_list_remove_link( allspots, temp);
 		g_free (data->call);
 		g_free (data);
