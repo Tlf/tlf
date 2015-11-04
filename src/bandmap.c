@@ -111,6 +111,10 @@ extern int trxmode;
 extern char thisnode;
 extern struct worked_t worked[];
 extern int contest;
+extern int bmautoadd;
+extern int bmautograb;
+extern char hiscall[];
+extern char lastcall[];
 
 char *qtc_format(char * call);
 
@@ -650,12 +654,13 @@ void bandmap_show() {
  */
 
     GList *list;
-    spot *data;
+    spot *data, *tdata;
     int curx, cury;
     int bm_x, bm_y;
     int i,j;
     short dupe;
     float centerfrequency;
+    static int autograbbed = 0;
 
     if (!bm_initialized) {
 	bm_init();
@@ -807,9 +812,22 @@ void bandmap_show() {
 	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	if (!on_qrg) {
 	    printw ("%7.1f   %s", centerfrequency,  "============");
+	    if (bmautograb != 0 && autograbbed == 1) {
+		hiscall[0] = '\0';
+		showinfo( getctydata( hiscall ) );
+		searchlog( hiscall );
+		autograbbed = 0;
+	    }
 	}
 	else {
-	    show_spot_on_qrg(g_ptr_array_index( spots, below_qrg ));
+	    tdata = g_ptr_array_index( spots, below_qrg );
+	    show_spot_on_qrg(tdata);
+	    if (bmautograb != 0 && autograbbed == 0 && strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0) {
+		strcpy(hiscall, tdata->call);
+		showinfo( getctydata( hiscall ) );
+		searchlog( hiscall );
+		autograbbed = 1;
+	    }
 	}
 	next_spot_position(&bm_y, &bm_x);
     }

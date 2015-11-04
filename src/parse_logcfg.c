@@ -60,7 +60,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 228	/* commands in list */
+#define  MAX_COMMANDS 230	/* commands in list */
 
 
 int read_logcfg(void)
@@ -287,6 +287,8 @@ int parse_logcfg(char *inputbuffer)
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int pfxmultab;
+    extern int bmautoadd;
+    extern int bmautograb;
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -517,7 +519,9 @@ int parse_logcfg(char *inputbuffer)
 	"EXCLUDE_MULTILIST",
 	"S&P_CALL_MSG",
 	"QTC_CAP_CALLS",
-	"QTC_AUTO_FILLTIME"
+	"QTC_AUTO_FILLTIME",
+	"BMAUTOGRAB",
+	"BMAUTOADD"
     };
 
     char **fields;
@@ -1777,6 +1781,14 @@ int parse_logcfg(char *inputbuffer)
 	    }
     case 227: {
 	    qtc_auto_filltime = 1;
+	    break;
+    }
+    case 228: {
+	    bmautograb = 1;
+	    break;
+    }
+    case 229: {
+	    bmautoadd = 1;
 	    break;
     }
     default: {
