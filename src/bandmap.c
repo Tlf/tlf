@@ -665,6 +665,7 @@ void bandmap_show() {
     float centerfrequency;
     static int autograbbed = 0;
     extern int bmadded_spot;
+    static int lastbmautofreq = 0;
 
     if (!bm_initialized) {
 	bm_init();
@@ -834,11 +835,15 @@ void bandmap_show() {
 	else {
 	    tdata = g_ptr_array_index( spots, below_qrg );
 	    show_spot_on_qrg(tdata);
-	    if (bmautograb != 0 && cqmode == S_P && (autograbbed == 0 || (strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0))) {
+	    if (lastbmautofreq != tdata->freq) {
+		autograbbed = 0;
+	    }
+	    if (bmautograb != 0 && cqmode == S_P && autograbbed == 0 && strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0) {
 		strcpy(hiscall, tdata->call);
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
 		autograbbed = 1;
+		lastbmautofreq = tdata->freq;
 	    }
 	}
 	next_spot_position(&bm_y, &bm_x);
