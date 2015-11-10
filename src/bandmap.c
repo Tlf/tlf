@@ -811,6 +811,7 @@ void bandmap_show() {
 
     /* show highlighted frequency marker or spot on QRG if rig control
      * is active */
+    //syslog(LOG_DEBUG, "bandmap_show() called");
     if (trx_control != 0) {
 	move (bm_y, bm_x);
 	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
@@ -833,7 +834,7 @@ void bandmap_show() {
 	else {
 	    tdata = g_ptr_array_index( spots, below_qrg );
 	    show_spot_on_qrg(tdata);
-	    if (bmautograb != 0 && cqmode == S_P && autograbbed == 0 && strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0) {
+	    if (bmautograb != 0 && cqmode == S_P && (autograbbed == 0 || (strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0))) {
 		strcpy(hiscall, tdata->call);
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
