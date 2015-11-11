@@ -306,9 +306,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
     GList *found;
     int band;
     char mode;
-    struct timeval tv;
-    static int last_bm_save_time = 0;
-
+    
     /* add only HF spots */
     if (freq > 30000000)
 	return;
@@ -382,15 +380,6 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	allspots = g_list_remove_link(allspots, found->next);
 	g_free (olddata->call);
 	g_free (olddata);
-    }
-
-    gettimeofday(&tv, NULL);
-    if (last_bm_save_time == 0) {
-	last_bm_save_time = (int)tv.tv_sec;
-    }
-    if ((int)tv.tv_sec > last_bm_save_time+10) {
-	last_bm_save_time = (int)tv.tv_sec;
-	bmdata_write_file(last_bm_save_time);
     }
 
     pthread_mutex_unlock( &bm_mutex );
@@ -656,7 +645,9 @@ void bandmap_show() {
     int i,j;
     short dupe;
     float centerfrequency;
-
+    struct timeval tv;
+    static int last_bm_save_time = 0;
+    
     if (!bm_initialized) {
 	bm_init();
 	bm_initialized = 1;
@@ -826,6 +817,16 @@ void bandmap_show() {
     move(cury, curx);			/* reset cursor */
 
     refreshp();
+
+    gettimeofday(&tv, NULL);
+    if (last_bm_save_time == 0) {
+	last_bm_save_time = (int)tv.tv_sec;
+    }
+    if ((int)tv.tv_sec >= last_bm_save_time+10) {
+	last_bm_save_time = (int)tv.tv_sec;
+	bmdata_write_file(last_bm_save_time);
+    }
+  
 }
 
 
