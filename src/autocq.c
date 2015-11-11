@@ -30,6 +30,7 @@
 #include "stoptx.h"
 #include "cw_utils.h"
 #include "ui_utils.h"
+#include "bandmap.h"
 #include "clusterinfo.h"
 #include <sys/time.h>
 
@@ -85,6 +86,7 @@ int auto_cq(void)
 		}
 		gettimeofday(&timecnt, NULL);
 		if ((int)timecnt.tv_sec-1 >= bmtimer) { // 1 sec
+		    bandmap_age();
 		    clusterinfo();
 		    bmtimer = (int)timecnt.tv_sec;
 		}
@@ -103,6 +105,7 @@ int auto_cq(void)
 	    bmtimer++;
 	    if (bmtimer == 2) {
 		bmtimer = 0;
+		bandmap_age();
 		clusterinfo();
 		refreshp();
 	    }
