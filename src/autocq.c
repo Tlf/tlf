@@ -30,6 +30,9 @@
 #include "stoptx.h"
 #include "cw_utils.h"
 #include "ui_utils.h"
+#include "bandmap.h"
+#include "clusterinfo.h"
+#include <sys/time.h>
 
 int play_file(char *audiofile);
 
@@ -49,6 +52,8 @@ int auto_cq(void)
     long message_time = 0;
     char cwmessage[80];
     int letter = 0;
+    int bmtimer = 0;
+    struct timeval timecnt;
 
     strcpy(mode, "AUTO_CQ ");
     clear_display();
@@ -69,6 +74,8 @@ int auto_cq(void)
 	    strncpy(cwmessage, message[11], 79);
 	    cw_message_len = cw_message_length(cwmessage);
 	    message_time = (long) (1200.0 / realspeed) * cw_message_len;
+	    gettimeofday(&timecnt, NULL);
+	    bmtimer = (int)timecnt.tv_sec;
 	    for (j = 0; j < 10; j++) {
 		usleep(message_time * 100);
 		inchar = key_poll();
@@ -77,8 +84,15 @@ int auto_cq(void)
 		    stoptx();
 		    break;
 		}
+		gettimeofday(&timecnt, NULL);
+		if ((int)timecnt.tv_sec-1 >= bmtimer) { // 1 sec
+		    bandmap_age();
+		    clusterinfo();
+		    bmtimer = (int)timecnt.tv_sec;
+		}
 	    }
 	}
+	bmtimer = 0;
 	for (delayval = cqdelay; delayval > 0; delayval--) {
 	    if (inchar < 0) {
 		mvprintw(12, 29, "Auto cq  %d  ", delayval - 1);
@@ -88,6 +102,13 @@ int auto_cq(void)
 	    }
 
 	    usleep(500000);
+	    bmtimer++;
+	    if (bmtimer == 2) {
+		bmtimer = 0;
+		bandmap_age();
+		clusterinfo();
+		refreshp();
+	    }
 
 	    if (inchar < 0)
 		inchar = key_poll();
