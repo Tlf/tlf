@@ -415,11 +415,11 @@ void bandmap_age() {
 	list = list->next;
 	if (data->timeout) {
 	    data->timeout--;
-	    if (data->timeout == 0) {
-		allspots = g_list_remove_link( allspots, temp);
-		g_free (data->call);
-		g_free (data);
-	    }
+	}
+	if (data->timeout == 0) {
+	    allspots = g_list_remove_link( allspots, temp);
+	    g_free (data->call);
+	    g_free (data);
 	}
     }
 

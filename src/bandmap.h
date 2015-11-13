@@ -26,7 +26,7 @@ typedef struct {
     char 	mode;
     short 	band;
     char	node;
-    int 	timeout;/* time (in seconds) left in bandmap */
+    unsigned int timeout;/* time (in seconds) left in bandmap */
     char 	dupe;	/* only used internal in bm_show() */
 } spot;
 
