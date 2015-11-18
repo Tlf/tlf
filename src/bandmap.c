@@ -141,7 +141,7 @@ void bmdata_write_file() {
     fprintf(fp, "%d\n", (int)tv.tv_sec);
     while (found != NULL) {
 	sp = found->data;
-	fprintf(fp, "%s;%d;%d;%d;%c;%d;%d\n",
+	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d\n",
 		sp->call, sp->freq, sp->mode, sp->band,
 		sp->node, (int)sp->timeout, sp->dupe);
 	found = found->next;
@@ -169,6 +169,9 @@ void bmdata_read_file() {
 	    sscanf(line, "%d", &last_bm_save_time);
 	    gettimeofday(&tv, NULL);
 	    timediff = (int)tv.tv_sec - last_bm_save_time;
+	    if (timediff < 0)
+		timediff = 0;
+
 	    while (fgets(line, 50, fp)) {
 	        spot *entry = g_new0(spot, 1);
 		fc = 0;
@@ -186,8 +189,7 @@ void bmdata_read_file() {
 					break;
 			case 4:		sscanf(token, "%c", &entry->node);
 					break;
-			case 5:		sscanf(token, "%d", &entry->timeout);
-					entry->timeout -= timediff;
+			case 5:		sscanf(token, "%u", &entry->timeout);
 					break;
 			case 6:		sscanf(token, "%hhd", &entry->dupe);
 					break;
@@ -195,7 +197,8 @@ void bmdata_read_file() {
 		    fc++;
 		    token = strtok (NULL, ";");
 		}
-		if (entry->timeout > 0) {
+		if (entry->timeout > timediff) {
+		    entry->timeout -= timediff;	/* remaining time */
 		    allspots = g_list_insert_sorted( allspots, entry, (GCompareFunc)cmp_freq);
 		} else {
 		    g_free(entry);
