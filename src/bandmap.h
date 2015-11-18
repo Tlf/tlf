@@ -52,6 +52,11 @@ enum {
     CB_MULTI
 };
 
+/*
+ * write bandmap spots to a file
+ */
+void bmdata_write_file();
+
 void bm_init();
 
 void bm_add(char *s);
