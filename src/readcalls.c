@@ -98,7 +98,7 @@ int readcalls(void)
     for (n = 1; n < MAX_ZONES; n++)
 	zones[n] = 0;
 
-    for (n = 0; n < 6; n++)
+    for (n = 0; n < NBANDS; n++)
 	zonescore[n] = 0;
 
     for (n = 0; n < NBANDS; n++)	//F6CFE
@@ -415,17 +415,17 @@ int readcalls(void)
     if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
 	for (n = 1; n < MAX_ZONES; n++) {
 	    if ((zones[n] & BAND160) != 0)
-		zonescore[0]++;
+		zonescore[BANDINDEX_160]++;
 	    if ((zones[n] & BAND80) != 0)
-		zonescore[1]++;
+		zonescore[BANDINDEX_80]++;
 	    if ((zones[n] & BAND40) != 0)
-		zonescore[2]++;
+		zonescore[BANDINDEX_40]++;
 	    if ((zones[n] & BAND20) != 0)
-		zonescore[3]++;
+		zonescore[BANDINDEX_20]++;
 	    if ((zones[n] & BAND15) != 0)
-		zonescore[4]++;
+		zonescore[BANDINDEX_15]++;
 	    if ((zones[n] & BAND10) != 0)
-		zonescore[5]++;
+		zonescore[BANDINDEX_10]++;
 	}
     }
 

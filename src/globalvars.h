@@ -53,7 +53,7 @@ extern int dx_arrlsections;
 extern int wysiwyg_multi;
 extern int wysiwyg_once;
 extern char pxstr[];
-extern int zonescore[6];
+extern int zonescore[NBANDS];
 extern int countryscore[6];
 extern int qsonum;
 extern int countrynr;

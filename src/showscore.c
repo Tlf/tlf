@@ -150,7 +150,7 @@ int get_nr_of_mults()
     totalmults = 0;
 
     for (n = 0; n < 6; n++) {
-	totalzones += (zonescore[n] * bandweight_multis[bi_normal[n]]);
+	totalzones += (zonescore[bi_normal[n]] * bandweight_multis[bi_normal[n]]);
 	totalcountries += (countryscore[n] * bandweight_multis[bi_normal[n]]);
 	totalmults += (multscore[bi_normal[n]] * bandweight_multis[bi_normal[n]]);
     }
@@ -254,8 +254,6 @@ int showscore(void)
     extern int country_mult;
     extern int wysiwyg_once;
     extern int wysiwyg_multi;
-    extern int zonescore[6];
-    extern int countryscore[6];
     extern int totalmults;
     extern int qsonum;
     extern int total;
@@ -299,7 +297,7 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], zonescore[i]);
+	    	printfield(3, band_cols[i], zonescore[bi_normal[i]]);
 	    }
 	}
 
@@ -332,7 +330,7 @@ int showscore(void)
 
 	    mvprintw(4, START_COL, "Zone ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(4, band_cols[i], zonescore[i]);
+	    	printfield(4, band_cols[i], zonescore[bi_normal[i]]);
 	    }
 	}
 
