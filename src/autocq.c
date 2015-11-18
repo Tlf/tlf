@@ -30,6 +30,7 @@
 #include "stoptx.h"
 #include "cw_utils.h"
 #include "ui_utils.h"
+#include "time_update.h"
 
 int play_file(char *audiofile);
 
@@ -71,6 +72,7 @@ int auto_cq(void)
 	    message_time = (long) (1200.0 / realspeed) * cw_message_len;
 	    for (j = 0; j < 10; j++) {
 		usleep(message_time * 100);
+		time_update();
 		inchar = key_poll();
 		if (inchar > 0) {
 		    letter = inchar;
@@ -86,8 +88,8 @@ int auto_cq(void)
 	    } else {
 		break;
 	    }
-
 	    usleep(500000);
+	    time_update();
 
 	    if (inchar < 0)
 		inchar = key_poll();
