@@ -390,7 +390,7 @@ int multscore[NBANDS];
 struct ie_list *main_ie_list;	/* head of initial exchange list */
 
 int zonescore[NBANDS];
-int countryscore[6];
+int countryscore[NBANDS];
 int zonedisplay = 0;
 int addzone = 0;		/* flag for new zone */
 int addcty = 0;			/* flag for new country */

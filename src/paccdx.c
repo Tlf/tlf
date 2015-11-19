@@ -57,32 +57,32 @@ int pacc_pa(void)
 
     case BANDINDEX_160:{
 	    i = BAND160;
-	    j = 0;
+	    j = BANDINDEX_160;
 	    break;
 	}
     case BANDINDEX_80:{
 	    i = BAND80;
-	    j = 1;
+	    j = BANDINDEX_80;
 	    break;
 	}
     case BANDINDEX_40:{
 	    i = BAND40;
-	    j = 2;
+	    j = BANDINDEX_40;
 	    break;
 	}
     case BANDINDEX_20:{
 	    i = BAND20;
-	    j = 3;
+	    j = BANDINDEX_20;
 	    break;
 	}
     case BANDINDEX_15:{
 	    i = BAND15;
-	    j = 4;
+	    j = BANDINDEX_15;
 	    break;
 	}
     case BANDINDEX_10:{
 	    i = BAND10;
-	    j = 5;
+	    j = BANDINDEX_10;
 	    break;
 	}
     }

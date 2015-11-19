@@ -150,9 +150,12 @@ int get_nr_of_mults()
     totalmults = 0;
 
     for (n = 0; n < 6; n++) {
-	totalzones += (zonescore[bi_normal[n]] * bandweight_multis[bi_normal[n]]);
-	totalcountries += (countryscore[n] * bandweight_multis[bi_normal[n]]);
-	totalmults += (multscore[bi_normal[n]] * bandweight_multis[bi_normal[n]]);
+	totalzones += (zonescore[bi_normal[n]] *
+		bandweight_multis[bi_normal[n]]);
+	totalcountries += (countryscore[bi_normal[n]] *
+		bandweight_multis[bi_normal[n]]);
+	totalmults += (multscore[bi_normal[n]] *
+		bandweight_multis[bi_normal[n]]);
     }
 
     if (sprint == 1) {
@@ -312,7 +315,7 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Cty  ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], countryscore[i]);
+	    	printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	    }
 
 	    mvprintw(4, START_COL, "Sect");
@@ -325,7 +328,7 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Cty  ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], countryscore[i]);
+	    	printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	    }
 
 	    mvprintw(4, START_COL, "Zone ");
@@ -338,7 +341,7 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Cty  ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], countryscore[i]);
+	    	printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	    }
 	}
 
@@ -346,7 +349,7 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Cty  ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], countryscore[i]);
+	    	printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	    }
 	}
 
@@ -354,7 +357,7 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Cty  ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], countryscore[i]);
+	    	printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	    }
 	}
 
