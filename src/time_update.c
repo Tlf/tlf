@@ -128,6 +128,7 @@ void time_update(void)
     int currentterm = 0;
     static int s = 0;
     static int m = 0;
+    static int bm_timeout = 0;
     static int oldsecs = -1;  	/* trigger immediate update */
 
     get_time();
@@ -143,10 +144,17 @@ void time_update(void)
 		minute_timer--;
 	}
 
-	bandmap_age();		/* age bandmap spots every second */
-
 	show_freq();
-	clusterinfo();		/* update cluster info */
+
+	bandmap_age();		/* age bandmap spots every second */
+	clusterinfo();		/* update cluster and bandmap display */
+
+				/* write bandmap spots to file every 10s */
+	bm_timeout = (bm_timeout + 1) % 10;
+	if (bm_timeout == 0) {
+
+	    bmdata_write_file();
+	}
 
 	s = (s + 1) % 2;
 	if (s > 0) {		/* every 2 seconds */

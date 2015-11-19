@@ -1,3 +1,85 @@
+2015-11-01  Thomas Beierlein <tb@forth-ev.de>
+
+  * share/Makefile.am, share/qtcmerge.py: Delete files no longer needed
+  * share/cty.dat: update cty.dat to VER20151027
+
+2015-10-28  Ervin Hegedus <airween@gmail.com>
+
+  * rules/waedc_dx_rtty, rules/waedc_eu_rtty: Modified rule files for WAE RTTY,
+  for EU and DX stations
+
+  * src/qtcwin.c: Some minor changes to fixup the QTC send method in RTTY
+
+  * src/genqtclist.c: Fixed gentclist item length bug:  if QTC set up as BOTH,
+  then the SEND length wasn't calculated correctly
+
+  * src/qtcwin.c: Fixed empty record command issue: if qtcrec_command was
+  empty, Tlf drops an error
+
+2015-10-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * datastructures: update description of datastructures
+
+  * src/background_process.c, src/main.c, src/searchlog.c, src/searchlog.h:
+  switch callmaster database to growing arrays
+
+  * src/searchlog.c: Allow comment lines in callmaster data base
+
+2015-10-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/callmaster: update callmaster file
+
+  * doc/FAQ: extend the FAQ
+
+2015-10-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/clusterinfo.c: drop unused code, initialize spot array
+
+2015-10-27  Ervin Hegedus <airween@gmail.com>
+
+  * src/callinput.c: Fixed immediated auto_cq bug: if Tlf sends CQ in auto
+  mode, and op press the first letter of callsign, that will be lost
+
+2015-10-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/checklogfile.c, src/checkqtclogfile.c: Fix some NULL pointer warnings
+
+  * doc/FAQ: Add information about refreshing callmaster database and CTY.DAT
+  to FAQ
+
+2015-10-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * README: drop reference to not longer accessible wikispaces pages
+
+2015-10-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: Cleanup bmdata_read_file  - fix memory leak - close file
+  pointer - restructre parsing loop - simplify
+
+  * src/writecabrillo.c: Close opened file pointers in case of error
+
+2015-10-11  Ervin Hegedus <airween@gmail.com>
+
+  * src/bandmap.c: Added new feature: save bandmap state when bandmap state
+  changed, and 10 secs elapsed till last write; this file will read by Tlf when
+  starts again
+
+2015-10-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: Do not show QRG in bandmap when no active rig control in use
+   Show bandmap around center frequency for actual selectzed band and mode.
+
+2015-09-22  Ervin Hegedus <airween@gmail.com>
+
+  * rules/waedc_dx, rules/waedc_dx_rtty, rules/waedc_eu, rules/waedc_eu_rtty,
+  share/qtcmerge.py, src/writecabrillo.c: Full 'QTC' line support in cabrillo
+  output
+
+2015-09-13  Ervin Hegedus <airween@gmail.com>
+
+  * src/qtcwin.c: Fixed fill QTC time bug: after the last fill, the minutes
+  remained in all lines
+
 2015-09-22  Thomas Beierlein <tomjbe@gentoo.org>
 
   * ChangeLog, NEWS: Add missing NEWS and ChangeLog entries for tlf-1.2.2_pre1

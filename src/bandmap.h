@@ -26,7 +26,7 @@ typedef struct {
     char 	mode;
     short 	band;
     char	node;
-    int 	timeout;/* time (in seconds) left in bandmap */
+    unsigned int timeout;/* time (in seconds) left in bandmap */
     char 	dupe;	/* only used internal in bm_show() */
 } spot;
 
@@ -51,6 +51,11 @@ enum {
     CB_NEW,
     CB_MULTI
 };
+
+/*
+ * write bandmap spots to a file
+ */
+void bmdata_write_file();
 
 void bm_init();
 
