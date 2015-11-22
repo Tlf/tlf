@@ -82,7 +82,7 @@ int addcall(void)
     static int i, j, z = 0;
     static int add_ok;
     int pfxnumcntidx = -1;
-    int pxnr;
+    int pxnr = 0;
     excl_add_veto = 0;
 
     found = searchcallarray(hiscall);
@@ -131,16 +131,17 @@ int addcall(void)
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
 	getpx(hiscall);
-
 	pxnr = pxstr[strlen(pxstr) - 1] - 48;
+
 	getctydata(hiscall);
 
 	int pfxi = 0;
-	while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+	while(pfxi < pfxnummultinr) {
+	    if (pfxnummulti[pfxi].countrynr == countrynr) {
+		pfxnumcntidx = pfxi;
+		break;
+	    }
 	    pfxi++;
-	}
-	if (pfxnummulti[pfxi].countrynr == countrynr) {
-	    pfxnumcntidx = pfxi;
 	}
     }
 
@@ -404,7 +405,7 @@ int addcall2(void)
     int bandinx;
     int k;
     int pfxnumcntidx = -1;
-    int pxnr;
+    int pxnr = 0;
     excl_add_veto = 0;
 
     g_strlcpy(hiscall, lan_logline + 29, 20);
@@ -466,11 +467,12 @@ int addcall2(void)
 	getctydata(hiscall);
 
 	int pfxi = 0;
-	while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+	while(pfxi < pfxnummultinr) {
+	    if (pfxnummulti[pfxi].countrynr == countrynr) {
+		pfxnumcntidx = pfxi;
+		break;
+	    }
 	    pfxi++;
-	}
-	if (pfxnummulti[pfxi].countrynr == countrynr) {
-	    pfxnumcntidx = pfxi;
 	}
 	add_ok = 1;
     }
