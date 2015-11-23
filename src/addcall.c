@@ -195,7 +195,7 @@ int addcall(void)
 		    zonescore[0]++;
 		    addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
+		if (pfxnumcntidx > -1) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND160) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND160;
 			addcallarea = 1;
@@ -218,7 +218,7 @@ int addcall(void)
 		    zonescore[1]++;
 		    addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
+		if (pfxnumcntidx > -1) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND80) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND80;
 			addcallarea = 1;
@@ -240,7 +240,7 @@ int addcall(void)
 		    zonescore[2]++;
 		    addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
+		if (pfxnumcntidx > -1) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND40) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND40;
 			addcallarea = 1;
@@ -262,7 +262,7 @@ int addcall(void)
 		    zonescore[3]++;
 		    addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
+		if (pfxnumcntidx > -1) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND20) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND20;
 			addcallarea = 1;
@@ -284,7 +284,7 @@ int addcall(void)
 		    zonescore[4]++;
 		    addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
+		if (pfxnumcntidx > -1) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND15) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND15;
 			addcallarea = 1;
@@ -306,7 +306,7 @@ int addcall(void)
 		    zonescore[5]++;
 		    addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
+		if (pfxnumcntidx > -1) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND10;
 			addcallarea = 1;
@@ -521,7 +521,7 @@ int addcall2(void)
 		    zonescore[0]++;
 //                              addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
+		if (pfxnumcntidx > -1 && excl_add_veto == 0) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND160) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND160;
 			addcallarea = 1;
@@ -544,7 +544,7 @@ int addcall2(void)
 		    zonescore[1]++;
 //                              addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
+		if (pfxnumcntidx > -1 && excl_add_veto == 0) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND80) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND80;
 			addcallarea = 1;
@@ -567,7 +567,7 @@ int addcall2(void)
 		    zonescore[2]++;
 //                              addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
+		if (pfxnumcntidx > -1 && excl_add_veto == 0) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND40) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND40;
 			addcallarea = 1;
@@ -590,7 +590,7 @@ int addcall2(void)
 		    zonescore[3]++;
 //                              addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
+		if (pfxnumcntidx > -1 && excl_add_veto == 0) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND20) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND20;
 			addcallarea = 1;
@@ -613,7 +613,7 @@ int addcall2(void)
 		    zonescore[4]++;
 //                              addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
+		if (pfxnumcntidx > -1 && excl_add_veto == 0) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND15) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND15;
 			addcallarea = 1;
@@ -636,7 +636,7 @@ int addcall2(void)
 		    zonescore[5]++;
 //                              addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
+		if (pfxnumcntidx > -1 && excl_add_veto == 0) {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND10;
 			addcallarea = 1;
