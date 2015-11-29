@@ -1,4 +1,7 @@
-#include "tlf.h"
+#ifndef TLF_H
+# include "tlf.h"
+#endif
+
 #include <glib.h>
 
 extern char qsos[MAX_QSOS][LOGLINELEN+1];// array of log lines of QSOs so far;

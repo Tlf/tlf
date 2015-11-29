@@ -17,12 +17,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "sendqrg.h"
+
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdlib.h>
 
+#include "sendqrg.h"		// Sets HAVE_LIBHAMLIB if enabled
 #include "startmsg.h"
+
 
 void send_bandswitch(int trxqrg);
 

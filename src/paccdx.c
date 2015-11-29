@@ -16,10 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "paccdx.h"
-#include "tlf.h"
-#include "getpx.h"
+
+
+#include <string.h>
+
 #include "getctydata.h"
+#include "getpx.h"
+#include "tlf.h"
+
 
 int pacc_pa(void)
 {
@@ -166,7 +170,7 @@ int pacc_pa(void)
 	if ((pxnr == 9) || (pxnr == 0)) {
 	    if ((pacc_qsos[9][pxnr] & i) == 0) {
 		pacc_qsos[9][pxnr] = pacc_qsos[9][pxnr] | i;
-//                      countryscore[j]++;      
+//                      countryscore[j]++;
 		addcallarea = 1;
 	    }
 	    k = 0;

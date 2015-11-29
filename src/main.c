@@ -19,24 +19,55 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "tlf.h"
-#include "globalvars.h"
-#include "main.h"
-#include "searchlog.h"
-#include "cw_utils.h"
-#include <glib.h>
-#include <panel.h>
+
+#include <ctype.h>
 #include <pthread.h>
+#include <stdlib.h>
+#include <string.h>
+#include <termios.h>
+#include <unistd.h>
+
+#include <panel.h>
+
+#include "addmult.h"
+#include "background_process.h"
+#include "bandmap.h"
+#include "checkparameters.h"
+#include "clear_display.h"
+#include "checklogfile.h"
+#include "checkqtclogfile.h"
+#include "cw_utils.h"
+#include "fldigixmlrpc.h"
+#include "getmessages.h"
+#include "getwwv.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
+#include "initial_exchange.h"
+#include "lancode.h"
+#include "logit.h"
+#include "netkeyer.h"
+#include "parse_logcfg.h"
+#include "qtcvars.h"		// Includes globalvars.h
+#include "readctydata.h"
+#include "readcalls.h"
+#include "readqtccalls.h"
+#include "rtty.h"
+#include "rules.h"
+#include "scroll_log.h"
+#include "searchlog.h"		// Includes glib.h
+#include "sendqrg.h"		// Sets HAVE_LIBHAMLIB if enabled
 #include "set_tone.h"
 #include "splitscreen.h"
-#include "addmult.h"
-#include <termios.h>
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include "fldigixmlrpc.h"
+#include "startmsg.h"
 #include "ui_utils.h"
-#include "qtcvars.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_LIBHAMLIB
+# include <hamlib/rig.h>
+#endif
+
 
 SCREEN *mainscreen;
 SCREEN *packetscreen;

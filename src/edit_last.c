@@ -22,18 +22,18 @@
 	 *   edit the 5 latest qsos
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include "tlf.h"
-#include "edit_last.h"
-#include <glib.h>
+
 #include <assert.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include "qsonr_to_str.h"
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <curses.h>
+
+#include "globalvars.h"		// Includes glib.h and tlf.h
+#include "logview.h"
 #include "scroll_log.h"
 #include "ui_utils.h"
-#include "logview.h"
-#include "store_qso.h"
 
 #define NR_LINES 5
 #define NR_COLS 80

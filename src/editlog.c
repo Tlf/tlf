@@ -22,12 +22,18 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "editlog.h"
-#include "tlf.h"
+
 #include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
+
+#include <curses.h>
+
 #include "clear_display.h"
 #include "scroll_log.h"
+#include "tlf.h"
 
 
 int logedit(void)

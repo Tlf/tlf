@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _FOC_H
 
+#ifndef _FOC_H
 #define _FOC_H
 
 extern int got_g4foc; 		/* did we got Gx4FOC on the air? */

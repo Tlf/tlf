@@ -47,13 +47,14 @@
  *
  */
 
-#include "qrb.h"
-#include <stdlib.h>
+
 #include <math.h>
 
+#include "qrb.h"
 
 #define ARC_IN_KM 111.2
 #define RADIAN  (180.0 / M_PI)
+
 
 /* Compute the Bearing and Range */
 

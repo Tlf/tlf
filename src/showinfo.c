@@ -29,11 +29,19 @@
  *
  * /param x  Country number
  */
-#include "showinfo.h"
-#include "tlf.h"
+
+
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+
+#include <curses.h>
+
 #include "dxcc.h"
 #include "qrb.h"
+#include "tlf.h"
 #include "ui_utils.h"
+
 
 int showinfo(int x)
 {

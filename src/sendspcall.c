@@ -22,11 +22,13 @@
  	*
  	*--------------------------------------------------------------*/
 
-#include "sendspcall.h"
+
 #include <string.h>
-#include "tlf.h"
-#include "sendbuf.h"
+
 #include <glib.h>
+
+#include "sendbuf.h"
+#include "tlf.h"
 
 
 int play_file(char *audiofile);

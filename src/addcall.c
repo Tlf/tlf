@@ -23,17 +23,22 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+
+#include <stdlib.h>
+#include <string.h>
+
+#include <glib.h>
+
 #include "addcall.h"
+#include "addmult.h"
 #include "addpfx.h"
-#include "tlf.h"
-#include "searchcallarray.h"
 #include "getctydata.h"
-#include "zone_nr.h"
 #include "getpx.h"
 #include "paccdx.h"
-#include "addmult.h"
-#include "lancode.h"
-#include <glib.h>
+#include "searchcallarray.h"
+#include "tlf.h"
+#include "zone_nr.h"
+
 
 int excl_add_veto;
 /* This variable helps to handle in other modules, that station is multiplier or not */
@@ -82,7 +87,7 @@ int addcall(void)
     static int i, j, z = 0;
     static int add_ok;
     int pfxnumcntidx = -1;
-    int pxnr;
+    int pxnr = 0;
     excl_add_veto = 0;
 
     found = searchcallarray(hiscall);
@@ -404,7 +409,7 @@ int addcall2(void)
     int bandinx;
     int k;
     int pfxnumcntidx = -1;
-    int pxnr;
+    int pxnr = 0;
     excl_add_veto = 0;
 
     g_strlcpy(hiscall, lan_logline + 29, 20);

@@ -22,10 +22,12 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "tlf.h"
-#include "cleanup.h"
+
+#include <curses.h>
+
 #include "tlf.h"
 #include "ui_utils.h"
+
 
 int cleanup(void)
 {
@@ -56,7 +58,7 @@ int cleanup(void)
     his_rst[1] = '9';
     my_rst[1] = '9';
     defer_store = 0;
-    wkeyerbuffer[0] = '\0';	// stop keyer ?? 
+    wkeyerbuffer[0] = '\0';	// stop keyer ??
 
     return (0);
 }

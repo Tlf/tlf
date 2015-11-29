@@ -21,9 +21,11 @@
  	*
  	*--------------------------------------------------------------*/
 
+
+#include "nicebox.h"		// Includes curses.h
 #include "tlf.h"
-#include "nicebox.h"
 #include "ui_utils.h"
+
 
 void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname)
 {

@@ -17,15 +17,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "focm.h"
-#include "tlf.h"
-#include "dxcc.h"
-#include "initial_exchange.h"
-#include "getctydata.h"
-#include "ui_utils.h"
-#include "displayit.h"
+
 #include <curses.h>
 #include <glib.h>
+
+#include "displayit.h"
+#include "dxcc.h"
+#include "getctydata.h"
+#include "initial_exchange.h"
+#include "tlf.h"
+#include "ui_utils.h"
+
 
 extern int focm;
 extern int contest;

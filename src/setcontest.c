@@ -22,10 +22,14 @@
      *
      *--------------------------------------------------------------*/
 
-#include "setcontest.h"
+
+#include <string.h>
+
 #include "focm.h"
-#include "tlf.h"
 #include "getctydata.h"
+#include "setcontest.h"
+#include "tlf.h"
+
 
 int setcontest(void)
 {

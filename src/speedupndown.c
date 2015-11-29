@@ -18,13 +18,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "speedupndown.h"
-#include "tlf.h"
-#include "sendbuf.h"
-#include "clear_display.h"
-#include "netkeyer.h"
-#include "cw_utils.h"
+
+
+#include <stdio.h>
+#include <unistd.h>
+
+#include <curses.h>
 #include <glib.h>
+
+#include "clear_display.h"
+#include "cw_utils.h"
+#include "netkeyer.h"
+#include "sendbuf.h"
+#include "tlf.h"
 
 
 void setspeed(void) {

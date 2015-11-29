@@ -23,19 +23,22 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include "deleteqso.h"
-#include "tlf.h"
-#include <sys/stat.h>
+
 #include <fcntl.h>
-#include "ui_utils.h"
-#include "qsonr_to_str.h"
-#include "printcall.h"
+#include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+#include <curses.h>
+
 #include "clear_display.h"
-#include "scroll_log.h"
+#include "deleteqso.h"
+#include "printcall.h"
 #include "qtcutil.h"
-#include "qtcvars.h"
-#include <glib.h>
+#include "qtcvars.h"		// Includes globalvars.h
+#include "qsonr_to_str.h"
+#include "scroll_log.h"
+#include "ui_utils.h"
 
 #define QTCRECVCALLPOS 30
 #define QTCSENTCALLPOS 35

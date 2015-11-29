@@ -22,18 +22,24 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "readcalls.h"
-#include "addpfx.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <curses.h>
+
 #include "addmult.h"
+#include "addpfx.h"
 #include "get_time.h"
-#include "tlf.h"
-#include "globalvars.h"
-#include <glib.h>
 #include "getctydata.h"
-#include "zone_nr.h"
 #include "getpx.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
 #include "paccdx.h"
 #include "startmsg.h"
+#include "zone_nr.h"
+
 
 int readcalls(void)
 {

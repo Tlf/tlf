@@ -23,16 +23,21 @@
     CW keyboard routine
 
 ------------------------------------------------------------------------*/
-#include "tlf.h"
+
+
+#include <stdlib.h>
+#include <string.h>
+
 #include <panel.h>
+
 #include "clear_display.h"
-#include "ui_utils.h"
-#include "stoptx.h"
-#include "displayit.h"
-#include "speedupndown.h"
-#include "sendbuf.h"
 #include "netkeyer.h"
-#include "nicebox.h"
+#include "nicebox.h"		// Includes curses.h
+#include "sendbuf.h"
+#include "speedupndown.h"
+#include "stoptx.h"
+#include "tlf.h"
+#include "ui_utils.h"
 
 /* size and position of keyer window */
 #define KEYER_LINE_WIDTH 60

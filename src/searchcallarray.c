@@ -22,8 +22,11 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "searchcallarray.h"
+
+#include <string.h>
+
 #include "tlf.h"
+
 
 /**	\brief lookup 'hiscall' in array of worked stations
  *

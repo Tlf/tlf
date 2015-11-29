@@ -21,12 +21,17 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "showpxmap.h"
-#include "tlf.h"
-#include "multiplierinfo.h"
+
+#include <string.h>
+
+#include <curses.h>
+
 #include "dxcc.h"
 #include "focm.h"
+#include "changepars.h"
+#include "tlf.h"
 #include "ui_utils.h"
+
 
 int show_mults(void)
 {

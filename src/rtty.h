@@ -22,8 +22,8 @@
  	*
  	*--------------------------------------------------------------*/
 
-#ifndef RTTY_H
 
+#ifndef RTTY_H
 #define RTTY_H
 
 int init_controller() ;

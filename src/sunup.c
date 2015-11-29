@@ -16,16 +16,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "sunup.h"
-#include "get_time.h"
-#include <time.h>
+
+
 #include <math.h>
+#include <time.h>
+
+#include "get_time.h"
 
 #define RADIAN  (180.0 / M_PI)
 
-/** Compute sun up and down at given lattitude 
+
+/** Compute sun up and down at given lattitude
  *
- * \param lat - Lattitude 
+ * \param lat - Lattitude
  * \param sunrise - local sunrise in hours
  * \param sundown - local sundown in hours
  */

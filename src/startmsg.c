@@ -17,11 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+
+#include <unistd.h>
+
+#include <curses.h>
+
 #include "tlf.h"
- #include "startmsg.h"
- #include <curses.h>
- #include <time.h>
- #include <unistd.h>
+
 
 static int linectr; // global
 

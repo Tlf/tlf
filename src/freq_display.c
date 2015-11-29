@@ -17,10 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+
 #include "freq_display.h"
+#include "nicebox.h"		// Includes curses.h
 #include "tlf.h"
-#include "nicebox.h"
 #include "ui_utils.h"
+
 
 int freq_display(void)
 {

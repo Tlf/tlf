@@ -19,25 +19,34 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-#include "parse_logcfg.h"
-#include "tlf.h"
-#include <glib.h>
+
+
+#include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <curses.h>
+
+#include "bandmap.h"
 #include "cw_utils.h"
-#include "speedupndown.h"
-#include "startmsg.h"
-#include "bandmap.h"
-#include "locator2longlat.h"
-#include "getpx.h"
-#include "setcontest.h"
-#include "lancode.h"
 #include "getctydata.h"
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
-#include "bandmap.h"
+#include "getpx.h"
+#include "lancode.h"
 #include "locator2longlat.h"
-#include "dxcc.h"
-#include "qtcvars.h"
+#include "parse_logcfg.h"
+#include "qtcvars.h"		// Includes globalvars.h
+#include "setcontest.h"
+#include "startmsg.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_LIBHAMLIB
+# include <hamlib/rig.h>
+#endif
+
 
 extern int keyerport;
 extern char tonestr[];

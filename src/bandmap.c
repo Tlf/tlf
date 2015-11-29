@@ -17,30 +17,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "bandmap.h"
-#include "tlf.h"
-#include "searchcallarray.h"
-#include "getctydata.h"
-#include "showinfo.h"
-#include "searchlog.h"
-#include "ui_utils.h"
-#include "qtcvars.h"
 
-#include <math.h>
-#include <glib.h>
-#include <ncurses.h>
+#include <ctype.h>
 #include <pthread.h>
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
 
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
+#include <curses.h>
 
+#include "bandmap.h"
 #include "qtcutil.h"
+#include "qtcvars.h"		// Includes globalvars.h
+#include "searchcallarray.h"
+#include "ui_utils.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted a s the same QRG */

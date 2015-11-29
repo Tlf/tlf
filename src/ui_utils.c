@@ -19,8 +19,11 @@
 
 /* User Interface helpers for ncurses based user interface */
 
+
 #include <curses.h>
+
 #include "stoptx.h"
+
 
 extern int use_rxvt;
 

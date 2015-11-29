@@ -17,12 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+
 #include <stdlib.h>
 #include <string.h>
+
 #include <glib.h>
 
-#define  CW_SPEEDS	"06121416182022242628303234363840424446485060"
-				/*< speed string with 2 chars each (in WPM) */
+#define CW_SPEEDS	"06121416182022242628303234363840424446485060"
+			/*< speed string with 2 chars each (in WPM) */
+
 
 char speedstr[50] = CW_SPEEDS;
 int speed = 10;
