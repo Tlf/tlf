@@ -331,11 +331,12 @@ int readcalls(void)
 	    getctydata(presentcall);
 
 	    int pfxi = 0;
-	    while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+	    while(pfxi < pfxnummultinr) {
+		if (pfxnummulti[pfxi].countrynr == countrynr) {
+		    pfxnumcntidx = pfxi;
+		    break;
+		}
 		pfxi++;
-	    }
-	    if (pfxnummulti[pfxi].countrynr == countrynr) {
-		pfxnumcntidx = pfxi;
 	    }
 	    add_ok = 1;
 	}
