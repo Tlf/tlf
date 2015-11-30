@@ -856,8 +856,9 @@ int parse_logcfg(char *inputbuffer)
     	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
-	    if ((strncmp(buff, "MC", 2) == 0)
-		|| (strncmp(buff, "mc", 2) == 0)) {
+	    if ((strncmp(buff, "mcedit", 6) == 0)
+		|| (strncmp(buff, "mc", 2) == 0)
+		|| (strncmp(buff, "MC", 2) == 0)) {
 		editor = EDITOR_MC;
 		break;
 	    }
