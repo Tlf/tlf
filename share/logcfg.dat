@@ -30,7 +30,7 @@ RULES=cqww
 EDITOR=joe
 #EDITOR=vi
 #EDITOR=e3
-#EDITOR=MC
+#EDITOR=mcedit
 #
 #################################
 #                               #

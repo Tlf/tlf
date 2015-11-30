@@ -60,6 +60,8 @@ int logedit(void)
 	strcat(comstr, "joe  ");	/*   my favorite editor   */
     else if (editor == EDITOR_VI)
 	strcat(comstr, "vi  ");
+    else if (editor == EDITOR_MC)
+	strcat(comstr, "mcedit  ");
     else
 	strcat(comstr, "e3  ");
 
