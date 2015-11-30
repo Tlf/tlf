@@ -1,0 +1,56 @@
+#################################
+# ARRL 160m CONTEST (Stateside) #
+#################################
+#
+CONTEST=arrl160m_usa
+LOGFILE=arrl160m.log
+CONTEST_MODE
+CABRILLO=UNIVERSAL
+#
+MULT_LIST=arrlsections
+DX_&_SECTIONS
+RECALL_MULTS
+#
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CQ_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = call                      #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#                                #
+##################################
+#
+F1=CQ DE % TEST
+F2=@ DE %
+F3=@ ++5NN--PA
+F4=TU 73
+F5= @
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9= ?
+F10= QRZ?
+F11= PSE K
+F12=++++TEST---- % %
+#
+CQ_TU_MSG=TU %
+S&P_TU_MSG=TU 5NN PA
+#
+#ALT_0=
+#ALT_1=
+#ALT_2=
+#ALT_3=
+#ALT_4=
+#ALT_5=
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+
