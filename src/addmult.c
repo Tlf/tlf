@@ -34,6 +34,10 @@
 #include "addmult.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
 
@@ -291,10 +295,11 @@ int addmult2(void)
 int load_multipliers(void)
 {
     extern GPtrArray *mults_possible;
-    extern char multsfile[];
+    extern char multsfile[];    // Set by parse_logcfg()
 
     FILE *cfp;
     char s_inputbuffer[186] = "";
+    char mults_location[_POSIX_PATH_MAX * 2];   // 512 chars.  Larger?
     int count = 0;
 
 
@@ -305,19 +310,29 @@ int load_multipliers(void)
 	exit(1);
     }
 
+    // Check for mults file in working directory first
     if ((cfp = fopen(multsfile, "r")) == NULL) {
-	mvprintw(9, 0, "Error opening multiplier file %s.\n", multsfile);
-	refreshp();
-	sleep(2);
-    } else {
+        // Check if multsfile is in installation directory
+        if ((strlen(PACKAGE_DATA_DIR) + strlen(multsfile) + 1) <= (_POSIX_PATH_MAX * 2)) {
+            sprintf(mults_location, "%s%s%s", PACKAGE_DATA_DIR, "/", multsfile);
 
-	count = 0;
+            if ((cfp = fopen(mults_location, "r")) == NULL) {
+                mvprintw(9, 0, "Error opening multiplier file %s.\n", multsfile);
+                refreshp();
+                sleep(5);
+            }
+        } else {
+            mvprintw(9, 0, "Multiplier file path length exceeds buffer size of %d.\n", _POSIX_PATH_MAX * 2);
+            refreshp();
+            sleep(5);
+        }
+    }
 
-	while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
-
-	    /* drop comments starting with '#' */
-	    if (*s_inputbuffer == '#')
-		continue;
+    if (cfp) {
+        while (fgets(s_inputbuffer, 85, cfp) != NULL) {
+            /* drop comments starting with '#' */
+            if (*s_inputbuffer == '#')
+                continue;
 
 	    /* strip leading and trailing whitespace */
 	    g_strstrip( s_inputbuffer );
@@ -332,8 +347,7 @@ int load_multipliers(void)
 	    count++;
 	}
 
-	fclose(cfp);
-
+        fclose(cfp);
     }
 
     return (count);
