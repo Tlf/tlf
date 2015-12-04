@@ -124,7 +124,7 @@ int readcalls(void)
 
     while (fgets(inputbuffer, 90, fp) != NULL) {
 	pfxnumcntidx = -1;
-	pxnr = -1;
+	pxnr = 0;
 	excl_add_veto = 0;
 	r++;
 
