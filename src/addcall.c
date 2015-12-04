@@ -389,29 +389,31 @@ int addcall2(void)
 
 	bandinx = get_band(lan_logline);
 	band_score[bandinx]++;
-	switch (bandinx) {
 
-	case BANDINDEX_160:
-	case BANDINDEX_80:
-	case BANDINDEX_40:
-	case BANDINDEX_20:
-	case BANDINDEX_15:
-	case BANDINDEX_10:
+	if (excl_add_veto == 0) {
 
-	    if (pfxnumcntidx < 0) {
-		if (j != 0 && (countries[j] & inxes[bandinx]) == 0 && excl_add_veto == 0) {
-		    countries[j] = (countries[j] | inxes[bandinx]);
-		    countryscore[bandinx]++;
+	    switch (bandinx) {
+
+	    case BANDINDEX_160:
+	    case BANDINDEX_80:
+	    case BANDINDEX_40:
+	    case BANDINDEX_20:
+	    case BANDINDEX_15:
+	    case BANDINDEX_10:
+
+		if (pfxnumcntidx < 0) {
+		    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
+			countries[j] = (countries[j] | inxes[bandinx]);
+			countryscore[bandinx]++;
 //                              addcty = j;
-		}
-		if (z != 0 && (zones[z] & inxes[bandinx]) == 0 && excl_add_veto == 0) {
-		    zones[z] = (zones[z] | inxes[bandinx]);
-		    zonescore[bandinx]++;
+		    }
+		    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
+			zones[z] = (zones[z] | inxes[bandinx]);
+			zonescore[bandinx]++;
 //                              addzone = z;
+		    }
 		}
-	    }
-	    else {
-		if (excl_add_veto == 0) {
+		else {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
 			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | inxes[bandinx];
 			addcallarea = 1;
@@ -419,23 +421,22 @@ int addcall2(void)
 			countryscore[bandinx]++;
 		    }
 		}
-	    }
-	    break;
+		break;
 
-	case BANDINDEX_30:
-	case BANDINDEX_17:
-	case BANDINDEX_12:
+	    case BANDINDEX_30:
+	    case BANDINDEX_17:
+	    case BANDINDEX_12:
 
-	    if (j != 0 && (countries[j] & inxes[bandinx]) == 0 && excl_add_veto == 0) {
-		countries[j] = (countries[j] | inxes[bandinx]);
-	    }
-	    if (z != 0 && (zones[z] & inxes[bandinx]) == 0 && excl_add_veto == 0) {
-		zones[z] = (zones[z] | inxes[bandinx]);
-	    }
-	    break;
+		if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
+		    countries[j] = (countries[j] | inxes[bandinx]);
+		}
+		if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
+		    zones[z] = (zones[z] | inxes[bandinx]);
+		}
+		break;
 
+	    }
 	}
-
     }
     if (wpx == 1 || pfxmultab == 1) {
 
