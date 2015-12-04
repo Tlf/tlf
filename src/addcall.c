@@ -197,12 +197,12 @@ int addcall(void)
 
 	    if (pfxnumcntidx < 0) {
 		if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
-		    countries[j] = (countries[j] | inxes[bandinx]);
+		    countries[j] |= inxes[bandinx];
 		    countryscore[bandinx]++;
 		    addcty = j;
 		}
 		if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
-		    zones[z] = (zones[z] | inxes[bandinx]);
+		    zones[z] |= inxes[bandinx];
 		    zonescore[bandinx]++;
 		    addzone = z;
 		}
@@ -210,8 +210,7 @@ int addcall(void)
 	    else {
 		if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[bandinx])
 			== 0) {
-		    pfxnummulti[pfxnumcntidx].qsos[pxnr] =
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] | inxes[bandinx];
+		    pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
 		    addcallarea = 1;
 		    countryscore[bandinx]++;
 		    zonescore[bandinx]++;
@@ -225,11 +224,11 @@ int addcall(void)
 	case BANDINDEX_30:
 
 	    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
-		countries[j] = (countries[j] | inxes[bandinx]);
+		countries[j] |= inxes[bandinx];
 		addcty = j;
 	    }
 	    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
-		zones[z] = (zones[z] | inxes[bandinx]);
+		zones[z] |= inxes[bandinx];
 		addzone = z;
 	    }
 	    break;
@@ -403,19 +402,19 @@ int addcall2(void)
 
 		if (pfxnumcntidx < 0) {
 		    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
-			countries[j] = (countries[j] | inxes[bandinx]);
+			countries[j] |= inxes[bandinx];
 			countryscore[bandinx]++;
 //                              addcty = j;
 		    }
 		    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
-			zones[z] = (zones[z] | inxes[bandinx]);
+			zones[z] |= inxes[bandinx];
 			zonescore[bandinx]++;
 //                              addzone = z;
 		    }
 		}
 		else {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | inxes[bandinx];
+			pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
 			addcallarea = 1;
 			zonescore[bandinx]++;
 			countryscore[bandinx]++;
@@ -428,10 +427,10 @@ int addcall2(void)
 	    case BANDINDEX_12:
 
 		if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
-		    countries[j] = (countries[j] | inxes[bandinx]);
+		    countries[j] |= inxes[bandinx];
 		}
 		if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
-		    zones[z] = (zones[z] | inxes[bandinx]);
+		    zones[z] |= inxes[bandinx];
 		}
 		break;
 
