@@ -22,16 +22,17 @@
 /* intended to simplify the porting of JNOS servers and clients to Unix */
 /* Written by N2RJT - Dave Brown */
 
-#include "tlf.h"
-#include <sys/time.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <memory.h>
-#include <stdarg.h>
-#include "sockserv.h"
-#include "main.h"
 
+#include <errno.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <curses.h>
+
+#include "sockserv.h"
 
 
 /* This structure holds the buffers for each open socket.  It was an */
@@ -110,7 +111,7 @@ extern WINDOW *sclwin;
     strcpy(sockserv_error, "");
     if (udp_socket == s) {
 	peerlen = sizeof(udp_peer);
-	if (sendto(s, buf, buflen, 0, (struct sockaddr *) &udp_peer, 
+	if (sendto(s, buf, buflen, 0, (struct sockaddr *) &udp_peer,
                    peerlen) < 0) {
 	    myperror("usputb:sendto");
 	    return -1;
@@ -332,7 +333,7 @@ int recvline(int *fd, char *buf, int buflen)
 	    if (i < nlsock) {
 		if (FD_ISSET(lsock[i], &readfds)) {
 		    len = sizeof(client);
-		    while ((ns = accept(lsock[i], (struct sockaddr *) &client, 
+		    while ((ns = accept(lsock[i], (struct sockaddr *) &client,
                                         &len)) == -1) {
 			if (errno != EINTR) {
 			    myperror("recvline: accept");

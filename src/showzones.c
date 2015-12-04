@@ -21,9 +21,10 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "showzones.h"
+
+#include "nicebox.h"		// Includes curses.h
 #include "tlf.h"
-#include "nicebox.h"
+
 
 int show_zones(int bandinx)
 {

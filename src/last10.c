@@ -17,14 +17,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 	/* ------------------------------------------------------------
-	 *     last 10 - return time (in mins) for last 10 QSOs on 
+	 *     last 10 - return time (in mins) for last 10 QSOs on
 	 *		 actual band
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include "last10.h"
+
+#include <stdlib.h>
+#include <string.h>
+
 #include "get_time.h"
-#include "tlf.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
+
 
 int last10(void)
 {

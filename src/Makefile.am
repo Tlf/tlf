@@ -52,7 +52,7 @@ noinst_HEADERS = \
 	keyer.h \
 	lancode.h last10.h listmessages.h \
 	log_to_disk.h logit.h logview.h locator2longlat.h \
-	main.h makelogline.h messagechange.h muf.h multiplierinfo.h \
+	makelogline.h messagechange.h muf.h \
 	nicebox.h note.h netkeyer.h\
 	paccdx.h parse_logcfg.h prevqso.h printcall.h \
 	qrb.h qsonr_to_str.h qtc_log.h qtcvars.h qtcwin.h qtcutil.h \

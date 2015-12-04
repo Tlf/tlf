@@ -24,13 +24,17 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "qrb.h"
-#include "locator2longlat.h"
-#include "score.h"
-#include "tlf.h"
-#include "getctydata.h"
-#include "focm.h"
+
 #include <math.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "focm.h"
+#include "getctydata.h"
+#include "locator2longlat.h"
+#include "qrb.h"
+#include "tlf.h"
+
 
 int calc_continent(int zone);
 

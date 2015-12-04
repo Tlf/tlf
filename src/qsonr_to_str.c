@@ -21,8 +21,9 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "qsonr_to_str.h"
-#include "tlf.h"
+
+#include <string.h>
+
 
 int qsonr_to_str(void)
 {

@@ -21,13 +21,15 @@
 	 *         last change: 25.2.02 11:50
 	 *--------------------------------------------------------------*/
 
-#include "messagechange.h"
-#include "tlf.h"
+
+#include <ctype.h>
+#include <string.h>
+
 #include "clear_display.h"
-#include "nicebox.h"
+#include "nicebox.h"		// Includes curses.h
+#include "tlf.h"
 #include "ui_utils.h"
 #include "writeparas.h"
-
 
 
 int message_change(int x)

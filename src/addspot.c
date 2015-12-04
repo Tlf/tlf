@@ -24,10 +24,20 @@
 	 *
 	 *
 	 *--------------------------------------------------------------*/
-#include "addspot.h"
-#include "tlf.h"
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#include <curses.h>
+
+#include "get_time.h"
+#include "lancode.h"
 #include "splitscreen.h"
-#include "get_time.h" 
+#include "tlf.h"
+
 
 int addspot(void)
 {

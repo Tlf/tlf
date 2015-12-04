@@ -22,10 +22,12 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "tlf.h"
-#include "printcall.h"
+
 #include <curses.h>
+
+#include "tlf.h"
 #include "ui_utils.h"
+
 
 void printcall(void)
 {

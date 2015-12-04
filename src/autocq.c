@@ -22,15 +22,21 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "autocq.h"
-#include "tlf.h"
-#include "printcall.h"
+
+#include <string.h>
+#include <unistd.h>
+
+#include <curses.h>
+
 #include "clear_display.h"
+#include "cw_utils.h"
+#include "printcall.h"
 #include "sendbuf.h"
 #include "stoptx.h"
-#include "cw_utils.h"
+#include "tlf.h"
 #include "ui_utils.h"
 #include "time_update.h"
+
 
 int play_file(char *audiofile);
 

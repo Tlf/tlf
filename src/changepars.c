@@ -23,38 +23,52 @@
 	 *          parameterdialog
 	 *--------------------------------------------------------------*/
 
-#include "changepars.h"
-#include "tlf.h"
-#include <glib.h>
+
+#include <ctype.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
 #include <termios.h>
-#include "sendbuf.h"
-#include "rules.h"
-#include "messagechange.h"
-#include "listmessages.h"
-#include "set_tone.h"
-#include "editlog.h"
-#include "logview.h"
-#include "show_help.h"
-#include "writecabrillo.h"
-#include "writeparas.h"
-#include "showpxmap.h"
-#include "setparameters.h"
-#include "muf.h"
-#include "parse_logcfg.h"
-#include "gettxinfo.h"
-#include "netkeyer.h"
-#include "splitscreen.h"
+#include <unistd.h>
+
+#include <curses.h>
+
 #include "audio.h"
-#include "scroll_log.h"
+#include "changepars.h"
+#include "clear_display.h"
+#include "editlog.h"
+#include "gettxinfo.h"
+#include "lancode.h"
+#include "listmessages.h"
+#include "logview.h"
+#include "messagechange.h"
+#include "muf.h"
+#include "netkeyer.h"
+#include "parse_logcfg.h"
+#include "qtcvars.h"		// Includes globalvars.h
 #include "readcalls.h"
 #include "readqtccalls.h"
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
+#include "rules.h"
+#include "scroll_log.h"
+#include "sendbuf.h"
+#include "set_tone.h"
+#include "show_help.h"
+#include "showpxmap.h"
+#include "splitscreen.h"
 #include "ui_utils.h"
-#include "qtcvars.h"
+#include "writecabrillo.h"
+#include "writeparas.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_LIBHAMLIB
+# include <hamlib/rig.h>
+#endif
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
+
 
 int debug_tty(void);
 

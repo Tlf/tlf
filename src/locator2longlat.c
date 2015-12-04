@@ -49,12 +49,12 @@
  */
 
 
-#include "locator2longlat.h"
-#include <string.h>
 #include <ctype.h>
+#include <string.h>
 
 #define MAX_LOCATOR_PAIRS       6
 #define MIN_LOCATOR_PAIRS       1
+
 
 static const int loc_char_range[] = { 18, 10, 24, 10, 24, 10 };
 

@@ -23,15 +23,20 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "rtty.h"
-#include <termios.h>
-#include "startmsg.h"
+
+#include <ctype.h>
 #include <fcntl.h>
-#include "tlf.h"
+#include <stdio.h>
+#include <string.h>
+#include <termios.h>
+#include <unistd.h>
+
+#include <curses.h>
+
 #include "printcall.h"
-#include <glib.h>
+#include "qtcvars.h"		// Includes globalvars.h
+#include "startmsg.h"
 #include "ui_utils.h"
-#include "qtcvars.h"
 
 
 static int fdcont;		// global for this file: tty file descriptor

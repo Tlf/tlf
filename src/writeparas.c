@@ -21,9 +21,17 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "writeparas.h"
-#include "tlf.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <curses.h>
+
 #include "cw_utils.h"
+#include "tlf.h"
+
 
 int writeparas(void)
 {

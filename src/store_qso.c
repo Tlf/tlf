@@ -21,9 +21,15 @@
  	*
  	*--------------------------------------------------------------*/
 
-#include "store_qso.h"
-#include "tlf.h"
-#include "globalvars.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <curses.h>
+
+#include "globalvars.h"		// Includes glib.h and tlf.h
+
 
 int store_qso(char *loglineptr)
 {

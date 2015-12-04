@@ -21,9 +21,11 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include "genqtclist.h"
-#include "qtcvars.h"
+
+#include <string.h>
+
+#include "qtcvars.h"		// Includes globalvars.h
+
 
 void genqtcline(char * qtc, char * line);
 

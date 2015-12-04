@@ -23,17 +23,22 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+
+#include <stdlib.h>
+#include <string.h>
+
+#include <glib.h>
+
 #include "addcall.h"
+#include "addmult.h"
 #include "addpfx.h"
-#include "tlf.h"
-#include "searchcallarray.h"
 #include "getctydata.h"
-#include "zone_nr.h"
 #include "getpx.h"
 #include "paccdx.h"
-#include "addmult.h"
-#include "lancode.h"
-#include <glib.h>
+#include "searchcallarray.h"
+#include "tlf.h"
+#include "zone_nr.h"
+
 
 int excl_add_veto;
 /* This variable helps to handle in other modules, that station is multiplier or not */

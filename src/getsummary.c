@@ -23,11 +23,17 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "getsummary.h"
-#include "showscore.h"
+
+#include <stdio.h>
+
 #include <glib.h>
-#include "nicebox.h"
-#include "tlf.h"
+
+#include "nicebox.h"		// Includes curses.h
+#include "showscore.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 
 extern char call[];

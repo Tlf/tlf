@@ -23,22 +23,26 @@
  *
  ------------------------------------------------------------------------*/
 
-#include "logit.h"
+
+#include <string.h>
+
+#include <curses.h>
+
 #include "tlf.h"
-#include "clear_display.h"
-#include "printcall.h"
 #include "callinput.h"
+#include "clear_display.h"
 #include "getexchange.h"
-#include "sendbuf.h"
-#include "sendspcall.h"
-#include "log_to_disk.h"
 #include "keyer.h"
+#include "log_to_disk.h"
+#include "printcall.h"
 #include "recall_exchange.h"
-#include "sendqrg.h"
-#include "lancode.h"
+#include "searchlog.h"		// Includes glib.h
+#include "sendbuf.h"
+#include "sendqrg.h"		// Sets HAVE_LIBHAMLIB if enabled
+#include "sendspcall.h"
 #include "set_tone.h"
-#include "searchlog.h"
 #include "ui_utils.h"
+
 
 void refresh_comment(void);
 

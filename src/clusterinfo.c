@@ -23,22 +23,25 @@
 	 *          clusterinfo +  time update
 	 *--------------------------------------------------------------*/
 
-#include "tlf.h"
-#include "clusterinfo.h"
-#include "dxcc.h"
-#include "bandmap.h"
-#include "get_time.h"
-#include "getctydata.h"
-#include "printcall.h"
-#include "nicebox.h"
-#include "lancode.h"
-#include "searchcallarray.h"
-#include "ui_utils.h"
+
+#include <pthread.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <glib.h>
-#include <pthread.h>
+
+#include "bandmap.h"
+#include "dxcc.h"
+#include "get_time.h"
+#include "getctydata.h"
+#include "lancode.h"
+#include "nicebox.h"		// Includes curses.h
+#include "printcall.h"
+#include "tlf.h"
+#include "ui_utils.h"
 
 #define MAXMINUTES 30
+
 
 extern int bandinx;
 extern pthread_mutex_t spot_ptr_mutex;

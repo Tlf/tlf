@@ -20,10 +20,18 @@
 *    scroll  the loglines of the keyer terminal 1 up
 *
 ---------------------------------------------------------------------------*/
-#include "globalvars.h"
-#include "scroll_log.h"
-#include "tlf.h"
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <curses.h>
+
+#include "globalvars.h"		// Includes glib.h and tlf.h
 #include "qsonr_to_str.h"
+
 
 void scroll_log(void)
 {

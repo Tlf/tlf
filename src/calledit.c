@@ -23,12 +23,17 @@
      *
      *--------------------------------------------------------------*/
 
-#include "calledit.h"
+
+#include <string.h>
+
+#include <curses.h>
+
+#include "getctydata.h"
+#include "searchlog.h"		// Includes glib.h
+#include "showinfo.h"
 #include "tlf.h"
 #include "ui_utils.h"
-#include "searchlog.h"
-#include "getctydata.h"
-#include "showinfo.h"
+
 
 void calledit(void)
 {

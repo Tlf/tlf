@@ -23,13 +23,19 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <curses.h>
+
 #include "addmult.h"
-#include "tlf.h"
-#include "addarea.h"
-#include <glib.h>
+#include "globalvars.h"		// Includes glib.h and tlf.h
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
+
 
 /** Converts bandindex to bandmask */
 int inxes[NBANDS] =

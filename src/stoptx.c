@@ -21,18 +21,20 @@
  	*
  	*--------------------------------------------------------------*/
 
-#include "stoptx.h"
-#include "tlf.h"
-#include "cwkeyer.h"
+
+#include <curses.h>
+
 #include "clear_display.h"
 #include "netkeyer.h"
+#include "tlf.h"
+
 
 int stoptx(void)
 {
   	extern int trxmode;
   	extern int keyerport;
 
- 	
+
  	if (trxmode != CWMODE){
  		return(1);
  	}
@@ -41,11 +43,11 @@ int stoptx(void)
 	if (keyerport == NET_KEYER) {
 
 		if (netkeyer (K_ABORT, NULL) < 0) {
-			
+
 			mvprintw(24,0, "keyer not active; switching to SSB");
 			trxmode = SSBMODE;
 			clear_display();
-			
+
 		}
 	}
 	return(0);

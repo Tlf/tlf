@@ -23,18 +23,18 @@
 	 *
 	 *-------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include "addpfx.h"
-#include "showscore.h"
-#include "tlf.h"
-#include "nicebox.h"
-#include "last10.h"
-#include "printcall.h"
-#include "focm.h"
-#include <assert.h>
+
 #include <math.h>
 
+#include "addpfx.h"
+#include "focm.h"
+#include "globalvars.h"		// Includes tlf.h
+#include "last10.h"
+#include "nicebox.h"		// Includes curses.h
+#include "printcall.h"
+
 #define START_COL 45	/* start display in these column */
+
 
 /* list of columns to display score for each band */
 static int band_cols[6] =

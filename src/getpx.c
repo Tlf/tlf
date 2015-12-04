@@ -22,11 +22,14 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include "getpx.h"
+
+#include <ctype.h>
 #include <string.h>
 
-/** \brief Get prefix from call 
+#include "globalvars.h"		// Includes glib.h and tlf.h
+
+
+/** \brief Get prefix from call
  *
  * Analyses callsign and extract prefix information like follows:
  *    - Remember a portable prefix area if present .../8
@@ -40,7 +43,7 @@
  *
  * \param checkcall Call to analyse
  */
- 
+
 /** \todo fix problem: k3a/2 wird nicht als K2 erkannt,
  *  kl32a/4 wird zu kl34 ???, check andere Implementierungen */
 

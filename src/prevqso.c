@@ -22,10 +22,13 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "prevqso.h"
-#include "sendbuf.h"
+
 #include <string.h>
+
 #include <glib.h>
+
+#include "sendbuf.h"
+
 
 void prev_qso(void)
 {

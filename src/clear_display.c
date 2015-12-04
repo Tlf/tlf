@@ -22,17 +22,22 @@
 	 *       Clear_display takes  care of status lines  and
 	 *       backgrounds (general repaint of the screen)
 	 *--------------------------------------------------------------*/
-#include "globalvars.h"
-#include "tlf.h"
-#include "get_time.h"
-#include "qsonr_to_str.h"
-#include "searchlog.h"
-#include "get_time.h"
-#include "clear_display.h"
+
+
+#include <stdio.h>
+#include <string.h>
+
+#include <curses.h>
+
 #include "cw_utils.h"
-#include "showscore.h"
+#include "get_time.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
 #include "printcall.h"
+#include "qsonr_to_str.h"
+#include "searchlog.h"		// Includes glib.h
+#include "showscore.h"
 #include "ui_utils.h"
+
 
 void clear_display(void)
 {

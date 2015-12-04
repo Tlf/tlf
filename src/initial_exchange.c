@@ -25,9 +25,14 @@
 	 *
 	 *-------------------------------------------------------------------------------*/
 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "initial_exchange.h"
 #include "startmsg.h"
-#include "tlf.h"
+
 
 struct ie_list *make_ie_list(char *file)
 {
@@ -54,9 +59,9 @@ struct ie_list *make_ie_list(char *file)
 	/* allow empty and comment lines */
 	if ((inputbuffer[0] == '#') ||
 	    strspn(inputbuffer, " \t") == strlen(inputbuffer)-1)
-	    continue;			
+	    continue;
 
-	/* strip trailing newline */ 
+	/* strip trailing newline */
 	if ((loc = strchr(inputbuffer, '\n')) != NULL)
 	    *loc = '\0';
 
@@ -120,7 +125,7 @@ struct ie_list *make_ie_list(char *file)
 	    fclose(fp);
 	    sprintf( msg, "Line %d: no comma found", linectr);
 	    showmsg(msg);
-	    return NULL;			
+	    return NULL;
 	}
     }
 

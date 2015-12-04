@@ -20,16 +20,6 @@
 #ifndef SPLITSCREEN_H
 #define SPLITSCREEN_H
 
-#include "tlf.h"
-#include "sockserv.h"
-#include <netdb.h>
-#include <netinet/in.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <sys/stat.h>
-#include "lancode.h"
-#include "clear_display.h"
-
 #define SERVICE "telnet"
 
 #define ALLOWCOLOR has_colors()

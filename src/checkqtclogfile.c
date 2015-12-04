@@ -24,11 +24,14 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+
+#include <errno.h>
 #include <stdio.h>
-#include "tlf.h"
+#include <unistd.h>
+
+#include "qtcvars.h"		// Includes globalvars.h
 #include "startmsg.h"
-#include "checkqtclogfile.h"
-#include "qtcvars.h"
+
 
 int checkqtclogfile()
 {

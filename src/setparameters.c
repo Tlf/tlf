@@ -21,18 +21,23 @@
 	 *      List and set parameters
 	 *
 	 *--------------------------------------------------------------*/
-#include "setparameters.h"
-#include "tlf.h"
-#include "setcontest.h"
-#include "writeparas.h"
-#include "ui_utils.h"
-#include "getmessages.h"
-#include "checklogfile.h"
-#include "getwwv.h"
-#include "scroll_log.h"
-#include "readcalls.h"
+
+
+#include <string.h>
+#include <unistd.h>
+
+#include <curses.h>
+
 #include "clear_display.h"
-#include "checkparameters.h"
+#include "checklogfile.h"
+#include "getmessages.h"
+#include "getwwv.h"
+#include "readcalls.h"
+#include "scroll_log.h"
+#include "setcontest.h"
+#include "tlf.h"
+#include "ui_utils.h"
+#include "writeparas.h"
 
 
 int setparameters(void)

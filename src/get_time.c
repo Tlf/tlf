@@ -22,8 +22,9 @@
 	*   for use by  several routines
 	---------------------------------------------------------------------------*/
 
-#include "get_time.h"
+
 #include <time.h>
+
 
 void get_time(void)
 {
