@@ -55,36 +55,15 @@ int pacc_pa(void)
 
     switch (bandinx) {
 
-    case BANDINDEX_160:{
-	    i = BAND160;
-	    j = BANDINDEX_160;
+    case BANDINDEX_160:
+    case BANDINDEX_80:
+    case BANDINDEX_40:
+    case BANDINDEX_20:
+    case BANDINDEX_15:
+    case BANDINDEX_10:
+	    i = inxes[bandinx];
+	    j = bandinx;
 	    break;
-	}
-    case BANDINDEX_80:{
-	    i = BAND80;
-	    j = BANDINDEX_80;
-	    break;
-	}
-    case BANDINDEX_40:{
-	    i = BAND40;
-	    j = BANDINDEX_40;
-	    break;
-	}
-    case BANDINDEX_20:{
-	    i = BAND20;
-	    j = BANDINDEX_20;
-	    break;
-	}
-    case BANDINDEX_15:{
-	    i = BAND15;
-	    j = BANDINDEX_15;
-	    break;
-	}
-    case BANDINDEX_10:{
-	    i = BAND10;
-	    j = BANDINDEX_10;
-	    break;
-	}
     }
 
     getpx(hiscall);
