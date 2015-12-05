@@ -208,7 +208,7 @@ can be set in logcfg.dat).
 .B :EXIt
 .TQ
 .B :QUIT
-Exit @PACKAGE_NAME@ (synonyms to
+Exit @PACKAGE_NAME@ (synonym to
 .BR Ctl-C ,
 .BR Ctl-D ,
 .BR Alt-Q ,
@@ -506,7 +506,7 @@ Send a spot to the DX Cluster.
 .B Ctrl-C
 .TQ
 .B Ctrl-D
-Exit @PACKAGE_NAME@ (synonyms to
+Exit @PACKAGE_NAME@ (synonym to
 .BR :EXIt ,
 .BR :QUIT ,
 .BR Alt-Q ,
@@ -607,7 +607,7 @@ Toggle PTT (via cwdaemon).
 .B Alt-Q
 .TQ
 .B Alt-X
-Exit @PACKAGE_NAME@ (synonyms to
+Exit @PACKAGE_NAME@ (synonym to
 .BR :EXIt ,
 .BR :QUIT ,
 .BR Ctl-C ,
@@ -649,7 +649,7 @@ etc., and a separate rules file per contest.
 .P
 The logcfg.dat file can be edited from within @PACKAGE_NAME@ by the
 \fB:CFG\fR or \fB:SET\fR commands (or with any other plain text editor
-before startign @PACKAGE_NAME@).
+before starting @PACKAGE_NAME@).
 .P
 You can set your favourite editor (joe | vi[m] | e3 | mcedit) in the
 logcfg.dat file.
@@ -666,7 +666,7 @@ your call and your preferred system configuration.
 .SH LOGCFG.DAT STATEMENTS
 .
 Configuration parameters set in \(lqlogcfg.dat\(rq located in the working
-directory (where @PACKAGE_NAM@ is started).
+directory (where @PACKAGE_NAME@ is started).
 .TP
 .BI RULES= contest_rules_filename
 Name of the rules file to load.  It helps if you name the rules file
