@@ -143,6 +143,10 @@ int usvprintf(int s, char *fmt, va_list args)
 	/* Use a default value that is huge */
 	withargs = 1;
 	buf = (char *) malloc(SOBUF);
+	if (buf == NULL) {
+	    /* no memory available -> just ignore the output to the socket */
+	    return 0;
+	}
 	if ((len = vsprintf(buf, fmt, args)) >= SOBUF) {
 	    /* It's too late to be sorry.  He's dead, Jim */
 	    fprintf(stderr, "usprintf() exceeded %d bytes (%d bytes)\n",
@@ -487,9 +491,9 @@ int startcliaddr(int family, unsigned long int addr, unsigned short int portnum)
 
     while ((s = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 	if (errno != EINTR) {
-wprintw(sclwin, "socket failure");
-wrefresh(sclwin);
-sleep(1);
+	    wprintw(sclwin, "socket failure");
+	    wrefresh(sclwin);
+	    sleep(1);
 	    return -1;
 	}
     }
@@ -507,9 +511,9 @@ sleep(1);
 	ifds = nfds - 1;
     FD_SET(s, &openfds);
 
-wprintw(sclwin, "still here...");
-wrefresh(sclwin);
-sleep(2);
+    wprintw(sclwin, "still here...");
+    wrefresh(sclwin);
+    sleep(2);
 
     sockbuf[s].buf = (char *) malloc(sizeof(char) * SOBUF);
 
@@ -517,9 +521,10 @@ sleep(2);
     sockbuf[s].buflen = 0;
     sockbuf[s].fragment = 0;
     sockbuf[s].whole_lines = 0;
-wprintw(sclwin, "not dead...");
-wrefresh(sclwin);
-sleep(1);
+
+    wprintw(sclwin, "not dead...");
+    wrefresh(sclwin);
+    sleep(1);
 
     return s;
 }

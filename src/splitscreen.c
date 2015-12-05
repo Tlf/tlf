@@ -131,6 +131,10 @@ void addlog(char *s)
 	free(temp->text);
     } else {
 	temp = (struct tln_logline *) malloc(sizeof(struct tln_logline));
+
+	if (temp == NULL)
+	    return;		/* drop line if no line puffer available */
+
 	tln_loglines++;
     }
     temp->next = NULL;
@@ -573,8 +577,8 @@ int edit_line(int c)
 
 void sanitize(char *s)
 {
-    char *t;
-    for (t = s; *s != '\0'; s++) {
+    char *t = s;
+    for (; *s != '\0'; s++) {
 	if (*s == '\007')
 	    beep();
 	else if (*s == '\015');
