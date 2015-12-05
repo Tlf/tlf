@@ -11,6 +11,8 @@ MULT_LIST=arrlsections
 DX_&_SECTIONS
 RECALL_MULTS
 #
+COUNTRY_LIST_POINTS=5
+TWO_POINTS
 ##################################
 #                                #
 #  Messages F1= to F12=          #
