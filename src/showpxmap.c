@@ -102,32 +102,7 @@ int show_mults(void)
 		    if (i == iMax)
 		  	 break;
 
-		    switch (bandinx) {
-		    case BANDINDEX_160:{
-			    bandmask = BAND160;
-			    break;
-			}
-		    case BANDINDEX_80:{
-			    bandmask = BAND80;
-			    break;
-			}
-		    case BANDINDEX_40:{
-			    bandmask = BAND40;
-			    break;
-			}
-		    case BANDINDEX_20:{
-			    bandmask = BAND20;
-			    break;
-			}
-		    case BANDINDEX_15:{
-			    bandmask = BAND15;
-			    break;
-			}
-		    case BANDINDEX_10:{
-			    bandmask = BAND10;
-			    break;
-			}
-		    }
+		    bandmask = inxes[bandinx];
 
 		    if ((countries[i] & bandmask) == 0) {
 			prefix[0] = '\0';
