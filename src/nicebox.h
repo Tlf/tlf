@@ -21,7 +21,19 @@
 #ifndef NICEBOX_H
 #define NICEBOX_H
 
-#include <curses.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_NCURSES_NCURSES_H
+# include <ncurses/ncurses.h>
+#elif defined HAVE_NCURSES_CURSES_H
+# include <ncurses/curses.h>
+#elif defined HAVE_NCURSES_H
+# include <ncurses.h>
+#elif defined HAVE_CURSES_H
+# include <curses.h>
+#endif
 
 void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname);
 void nicebox(int y, int x, int height, int width, char *boxname);

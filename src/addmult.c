@@ -29,14 +29,22 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
-#include "addmult.h"
-#include "globalvars.h"		// Includes glib.h and tlf.h
-
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
+
+#ifdef HAVE_NCURSES_NCURSES_H
+# include <ncurses/ncurses.h>
+#elif defined HAVE_NCURSES_CURSES_H
+# include <ncurses/curses.h>
+#elif defined HAVE_NCURSES_H
+# include <ncurses.h>
+#elif defined HAVE_CURSES_H
+# include <curses.h>
+#endif
+
+#include "addmult.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 

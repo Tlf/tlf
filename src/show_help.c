@@ -27,14 +27,23 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <curses.h>
-#include <glib/gstdio.h>
-
-#include "clear_display.h"
-
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
+
+#ifdef HAVE_NCURSES_NCURSES_H
+# include <ncurses/ncurses.h>
+#elif defined HAVE_NCURSES_CURSES_H
+# include <ncurses/curses.h>
+#elif defined HAVE_NCURSES_H
+# include <ncurses.h>
+#elif defined HAVE_CURSES_H
+# include <curses.h>
+#endif
+
+#include <glib/gstdio.h>
+
+#include "clear_display.h"
 
 #define new_help 	/* new implementation */
 #ifdef new_help
