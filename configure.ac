@@ -20,9 +20,18 @@ PKG_CHECK_MODULES(GLIB, glib-2.0)
 AC_CHECK_LIB([m], [atan])
 AC_CHECK_LIB([pthread], [pthread_create])
 ACX_PTHREAD
-AC_CHECK_LIB([ncurses], [initscr],,AC_MSG_ERROR([needs ncurses library]))
-AC_CHECK_LIB([panel], [update_panels],,
-		AC_MSG_ERROR([needs ncurses panel library]))
+
+
+dnl Order matters as -lpanel should be before -lncurses and
+dnl AC_SEARCH_LIBS prepends found libraries to @LIBS@ so search
+dnl for the panel library after ncurses to get the correct order.
+AC_SEARCH_LIBS([initscr], [ncurses],,[AC_MSG_ERROR([needs ncurses library])])
+AC_SEARCH_LIBS([update_panels], [panel],,
+	[AC_MSG_ERROR([needs ncurses panel library])
+])
+
+dnl Ncurses libraries have been found, now look for the headers.
+AC_CHECK_HEADERS([ncurses.h curses.h ncurses/ncurses.h ncurses/curses.h panel.h ncurses/panel.h])
 
 # Checks for header files.
 AC_HEADER_STDC

@@ -27,7 +27,15 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <panel.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_NCURSES_PANEL_H
+# include <ncurses/panel.h>
+#elif HAVE_PANEL_H
+# include <panel.h>
+#endif
 
 #include "callinput.h"
 #include "cw_utils.h"

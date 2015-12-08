@@ -27,7 +27,15 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include <panel.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_NCURSES_PANEL_H
+# include <ncurses/panel.h>
+#elif HAVE_PANEL_H
+# include <panel.h>
+#endif
 
 #include "addmult.h"
 #include "background_process.h"
@@ -59,10 +67,6 @@
 #include "splitscreen.h"
 #include "startmsg.h"
 #include "ui_utils.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 #ifdef HAVE_LIBHAMLIB
 # include <hamlib/rig.h>
