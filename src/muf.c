@@ -23,7 +23,15 @@
 #include <string.h>
 #include <time.h>
 
-#include <panel.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_NCURSES_PANEL_H
+# include <ncurses/panel.h>
+#elif HAVE_PANEL_H
+# include <panel.h>
+#endif
 
 #include "dxcc.h"
 #include "get_time.h"

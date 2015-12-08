@@ -29,7 +29,19 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#include <curses.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_NCURSES_NCURSES_H
+# include <ncurses/ncurses.h>
+#elif defined HAVE_NCURSES_CURSES_H
+# include <ncurses/curses.h>
+#elif defined HAVE_NCURSES_H
+# include <ncurses.h>
+#elif defined HAVE_CURSES_H
+# include <curses.h>
+#endif
 
 #include "addcall.h"
 #include "addspot.h"
@@ -41,10 +53,6 @@
 #include "score.h"
 #include "store_qso.h"
 #include "ui_utils.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 #ifdef HAVE_LIBHAMLIB
 # include <hamlib/rig.h>
