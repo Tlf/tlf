@@ -451,16 +451,7 @@ int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 pthread_t background_thread;
-pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
 static struct termios oldt, newt;
-
-/** fake old refresh code to use update logic for panels */
-void refreshp() {
-    pthread_mutex_lock( &panel_mutex );
-    update_panels();
-    doupdate();
-    pthread_mutex_unlock( &panel_mutex );
-}
 
 /** parse program options
  */

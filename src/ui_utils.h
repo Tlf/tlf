@@ -21,6 +21,7 @@
 #ifndef UI_UTILS_H
 #define UI_UTILS_H
 
+void refreshp();
 int modify_attr(int attr);
 
 /** convenience macro to name alt-keys */
