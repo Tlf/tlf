@@ -591,16 +591,6 @@ int readcalls(void)
 
     }
 
-
-    /* \todo check what the following code is for tb 19sep2011 */
-    if (((serial_section_mult == 1)
-//              || (serial_grid4_mult == 1)
-	 || (sectn_mult == 1)) && multarray_nr == 1) {	// correction ......
-	mults[1][0] = '\0';
-	mult_bands[1] = 0;
-    } else if (serial_section_mult == 1 && multarray_nr > 1)
-	multarray_nr++;
-
     return (s);			// nr of lines in log
 }
 
