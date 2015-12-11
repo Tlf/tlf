@@ -5,7 +5,7 @@ AC_INIT([Tlf],
 	[tlf],
 	[https://github.com/Tlf/tlf])
 AM_INIT_AUTOMAKE
-AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_SRCDIR([src/tlf.h])
 AC_CONFIG_HEADERS([config.h])
 
 dnl Clean compilation output makes compiler warnings more visible
