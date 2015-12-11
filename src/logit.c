@@ -24,9 +24,9 @@
  ------------------------------------------------------------------------*/
 
 
-#include <string.h>
+#include <config.h>		// Includes found ncurses.h
 
-#include <curses.h>
+#include <string.h>
 
 #include "tlf.h"
 #include "callinput.h"

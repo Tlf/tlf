@@ -18,17 +18,13 @@
  */
 
 
-#include <unistd.h>
+#include <config.h>		// Includes found ncurses.h
 
-#include <curses.h>
+#include <unistd.h>
 
 #include "freq_display.h"
 #include "time_update.h"
 #include "ui_utils.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 #ifdef HAVE_LIBHAMLIB
 # include <hamlib/rig.h>

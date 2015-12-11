@@ -22,12 +22,12 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found panel.h
+
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <panel.h>
 
 #include "callinput.h"
 #include "cw_utils.h"

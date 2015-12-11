@@ -18,9 +18,9 @@
  */
 
 
-#include <string.h>
+#include <config.h>		// Includes found ncurses.h
 
-#include <curses.h>
+#include <string.h>
 
 #include "bandmap.h"
 #include "fldigixmlrpc.h"
@@ -28,10 +28,6 @@
 #include "searchlog.h"		// Includes glib.h
 #include "showinfo.h"
 #include "tlf.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 #ifdef HAVE_LIBHAMLIB
 # include <hamlib/rig.h>

@@ -24,12 +24,12 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
-
-#include <curses.h>
 
 #include "clear_display.h"
 #include "deleteqso.h"

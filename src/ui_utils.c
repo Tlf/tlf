@@ -20,7 +20,7 @@
 /* User Interface helpers for ncurses based user interface */
 
 
-#include <curses.h>
+#include <config.h>		// Includes found ncurses.h
 
 #include "stoptx.h"
 

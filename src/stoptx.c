@@ -22,7 +22,7 @@
  	*--------------------------------------------------------------*/
 
 
-#include <curses.h>
+#include <config.h>		// Includes found ncurses.h
 
 #include "clear_display.h"
 #include "netkeyer.h"

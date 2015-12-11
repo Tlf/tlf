@@ -18,11 +18,11 @@
  */
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#include <curses.h>
 
 #include "tlf.h"
 #include "dxcc.h"

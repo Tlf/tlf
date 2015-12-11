@@ -23,10 +23,10 @@
 ------------------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdlib.h>
 #include <string.h>
-
-#include <curses.h>
 
 #include "lancode.h"
 #include "qtc_log.h"

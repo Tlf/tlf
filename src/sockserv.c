@@ -23,14 +23,14 @@
 /* Written by N2RJT - Dave Brown */
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <errno.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <curses.h>
 
 #include "sockserv.h"
 

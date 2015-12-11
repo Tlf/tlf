@@ -26,12 +26,12 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#include <curses.h>
 
 #include "get_time.h"
 #include "lancode.h"

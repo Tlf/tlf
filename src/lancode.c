@@ -19,6 +19,8 @@
  */
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -30,8 +32,6 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-
-#include <curses.h>
 
 #include "lancode.h"
 #include "tlf.h"

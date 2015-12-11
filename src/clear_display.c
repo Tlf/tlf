@@ -24,10 +24,10 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdio.h>
 #include <string.h>
-
-#include <curses.h>
 
 #include "cw_utils.h"
 #include "get_time.h"

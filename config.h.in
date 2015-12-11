@@ -6,6 +6,9 @@
 /* Define to 1 if you have the `bzero' function. */
 #undef HAVE_BZERO
 
+/* Define to 1 if you have the <curses.h> header file. */
+#undef HAVE_CURSES_H
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
@@ -57,11 +60,26 @@
 /* Define to 1 if you have the `mkfifo' function. */
 #undef HAVE_MKFIFO
 
+/* Define to 1 if you have the <ncurses/curses.h> header file. */
+#undef HAVE_NCURSES_CURSES_H
+
+/* Define to 1 if you have the <ncurses.h> header file. */
+#undef HAVE_NCURSES_H
+
+/* Define to 1 if you have the <ncurses/ncurses.h> header file. */
+#undef HAVE_NCURSES_NCURSES_H
+
+/* Define to 1 if you have the <ncurses/panel.h> header file. */
+#undef HAVE_NCURSES_PANEL_H
+
 /* Define to 1 if you have the <netdb.h> header file. */
 #undef HAVE_NETDB_H
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
+
+/* Define to 1 if you have the <panel.h> header file. */
+#undef HAVE_PANEL_H
 
 /* Define if you have POSIX threads libraries and header files. */
 #undef HAVE_PTHREAD
@@ -198,3 +216,21 @@
 
 /* Define to `int' if <sys/types.h> does not define. */
 #undef ssize_t
+
+
+#ifdef HAVE_NCURSES_NCURSES_H
+# include <ncurses/ncurses.h>
+#elif defined HAVE_NCURSES_CURSES_H
+# include <ncurses/curses.h>
+#elif defined HAVE_NCURSES_H
+# include <ncurses.h>
+#elif defined HAVE_CURSES_H
+# include <curses.h>
+#endif
+
+#ifdef HAVE_NCURSES_PANEL_H
+# include <ncurses/panel.h>
+#elif HAVE_PANEL_H
+# include <panel.h>
+#endif
+

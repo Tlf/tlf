@@ -25,11 +25,11 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <curses.h>
 
 #include "addspot.h"
 #include "cw_utils.h"

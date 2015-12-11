@@ -31,11 +31,11 @@
  */
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-
-#include <curses.h>
 
 #include "dxcc.h"
 #include "qrb.h"

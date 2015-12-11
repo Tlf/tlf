@@ -24,14 +24,14 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <ctype.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
-
-#include <curses.h>
 
 #include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h

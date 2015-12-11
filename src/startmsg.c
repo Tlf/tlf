@@ -18,9 +18,9 @@
  */
 
 
-#include <unistd.h>
+#include <config.h>		// Includes found ncurses.h
 
-#include <curses.h>
+#include <unistd.h>
 
 #include "tlf.h"
 

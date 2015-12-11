@@ -24,9 +24,10 @@
 ---------------------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <string.h>
 
-#include <curses.h>
 #include <glib.h>
 
 #include "clear_display.h"

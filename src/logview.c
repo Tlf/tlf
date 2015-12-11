@@ -22,10 +22,10 @@
  	*--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdlib.h>
 #include <string.h>
-
-#include <curses.h>
 
 #include "clear_display.h"
 #include "tlf.h"

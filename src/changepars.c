@@ -24,14 +24,14 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <ctype.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
-
-#include <curses.h>
 
 #include "audio.h"
 #include "changepars.h"
@@ -58,10 +58,6 @@
 #include "ui_utils.h"
 #include "writecabrillo.h"
 #include "writeparas.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 #ifdef HAVE_LIBHAMLIB
 # include <hamlib/rig.h>

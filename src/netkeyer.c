@@ -18,11 +18,11 @@
  */
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <netdb.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <curses.h>
 
 #include "tlf.h"
 #include "netkeyer.h"

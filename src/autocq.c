@@ -23,10 +23,10 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <string.h>
 #include <unistd.h>
-
-#include <curses.h>
 
 #include "clear_display.h"
 #include "cw_utils.h"

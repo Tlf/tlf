@@ -19,11 +19,11 @@
  */
 
 
+#include <config.h>		// Includes found panel.h
+
 #include <math.h>
 #include <string.h>
 #include <time.h>
-
-#include <panel.h>
 
 #include "dxcc.h"
 #include "get_time.h"

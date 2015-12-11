@@ -19,9 +19,9 @@
  */
 
 
-#include <string.h>
+#include <config.h>		// Includes found ncurses.h
 
-#include <curses.h>
+#include <string.h>
 
 #include "initial_exchange.h"
 #include "tlf.h"

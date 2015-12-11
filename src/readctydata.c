@@ -23,20 +23,17 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
 #include <glib.h>
 
 #include "dxcc.h"
 #include "tlf.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 
 int readctydata(void)

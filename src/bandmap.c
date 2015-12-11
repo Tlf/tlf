@@ -18,14 +18,14 @@
  */
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <ctype.h>
 #include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
-
-#include <curses.h>
 
 #include "bandmap.h"
 #include "qtcutil.h"

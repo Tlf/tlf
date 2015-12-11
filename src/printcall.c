@@ -23,7 +23,7 @@
 	 *--------------------------------------------------------------*/
 
 
-#include <curses.h>
+#include <config.h>		// Includes found ncurses.h
 
 #include "tlf.h"
 #include "ui_utils.h"

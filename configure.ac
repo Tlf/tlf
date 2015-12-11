@@ -20,9 +20,13 @@ PKG_CHECK_MODULES(GLIB, glib-2.0)
 AC_CHECK_LIB([m], [atan])
 AC_CHECK_LIB([pthread], [pthread_create])
 ACX_PTHREAD
-AC_CHECK_LIB([ncurses], [initscr],,AC_MSG_ERROR([needs ncurses library]))
+
+AC_CHECK_LIB([ncurses], [initscr],,[AC_MSG_ERROR([needs ncurses library])])
 AC_CHECK_LIB([panel], [update_panels],,
-		AC_MSG_ERROR([needs ncurses panel library]))
+	[AC_MSG_ERROR([needs ncurses panel library])])
+
+dnl Ncurses libraries have been found, now look for the headers.
+AC_CHECK_HEADERS([ncurses.h curses.h ncurses/ncurses.h ncurses/curses.h panel.h ncurses/panel.h])
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -116,5 +120,23 @@ AC_CONFIG_FILES([Makefile
 	share/Makefile
 	src/Makefile
 	tlf.1])
+
+AH_BOTTOM([
+#ifdef HAVE_NCURSES_NCURSES_H
+# include <ncurses/ncurses.h>
+#elif defined HAVE_NCURSES_CURSES_H
+# include <ncurses/curses.h>
+#elif defined HAVE_NCURSES_H
+# include <ncurses.h>
+#elif defined HAVE_CURSES_H
+# include <curses.h>
+#endif
+
+#ifdef HAVE_NCURSES_PANEL_H
+# include <ncurses/panel.h>
+#elif HAVE_PANEL_H
+# include <panel.h>
+#endif
+])
 
 AC_OUTPUT

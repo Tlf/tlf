@@ -24,19 +24,15 @@
  *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "addmult.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 

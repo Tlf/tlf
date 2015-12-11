@@ -23,12 +23,12 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <curses.h>
 
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "logview.h"

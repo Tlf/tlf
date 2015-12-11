@@ -25,6 +25,8 @@
 
 #define VERSIONSPLIT "V1.4.1 5/18/96 - N2RJT"
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <fcntl.h>
 #include <pthread.h>
 #include <stdlib.h>
@@ -32,8 +34,6 @@
 #include <termios.h>
 #include <unistd.h>
 #include <sys/stat.h>
-
-#include <curses.h>
 
 #include "bandmap.h"
 #include "clear_display.h"

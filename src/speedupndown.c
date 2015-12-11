@@ -20,10 +20,11 @@
 
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdio.h>
 #include <unistd.h>
 
-#include <curses.h>
 #include <glib.h>
 
 #include "clear_display.h"

@@ -23,11 +23,11 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found panel.h
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <panel.h>
 
 #include "dxcc.h"
 #include "getctydata.h"
@@ -39,10 +39,6 @@
 #include "searchlog.h"		// Includes glib.h
 #include "ui_utils.h"
 #include "zone_nr.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 
 GPtrArray *callmaster = NULL;

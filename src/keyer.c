@@ -25,10 +25,10 @@
 ------------------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found panel.h
+
 #include <stdlib.h>
 #include <string.h>
-
-#include <panel.h>
 
 #include "clear_display.h"
 #include "netkeyer.h"

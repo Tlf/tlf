@@ -18,7 +18,8 @@
  */
 
 
-#include <curses.h>
+#include <config.h>		// Includes found ncurses.h
+
 #include <glib.h>
 
 #include "displayit.h"

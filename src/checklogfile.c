@@ -26,6 +26,8 @@
 	 *--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <errno.h>
 #include <ctype.h>
 #include <fcntl.h>
@@ -34,7 +36,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <curses.h>
 #include <glib.h>
 
 #include "startmsg.h"

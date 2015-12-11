@@ -21,12 +21,12 @@
 */
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <curses.h>
 
 #include "bandmap.h"
 #include "cw_utils.h"
@@ -38,10 +38,6 @@
 #include "qtcvars.h"		// Includes globalvars.h
 #include "setcontest.h"
 #include "startmsg.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 #ifdef HAVE_LIBHAMLIB
 # include <hamlib/rig.h>

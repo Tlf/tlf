@@ -24,17 +24,14 @@
 	 */
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <curses.h>
 #include <glib/gstdio.h>
 
 #include "clear_display.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 #define new_help 	/* new implementation */
 #ifdef new_help

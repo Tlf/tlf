@@ -22,11 +22,11 @@
  	*--------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <curses.h>
 
 #include "globalvars.h"		// Includes glib.h and tlf.h
 

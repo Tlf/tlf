@@ -23,12 +23,12 @@
 ---------------------------------------------------------------------------*/
 
 
+#include <config.h>		// Includes found ncurses.h
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <curses.h>
 #include <glib.h>
 
 #include "displayit.h"

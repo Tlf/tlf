@@ -19,11 +19,11 @@
  */
 
 
+#include <config.h>		// Includes found ncurses.h
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <curses.h>
 
 #include "fldigixmlrpc.h"
 #include "getctydata.h"
