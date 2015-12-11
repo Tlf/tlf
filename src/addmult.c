@@ -202,9 +202,10 @@ int addmult2(void)
 	    }
 
 	    if (found == 0) {
-		multarray_nr++;
+		/* not found, add it */
 		strncpy(mults[multarray_nr],
 			strstr(ssexchange, MULTS_POSSIBLE(i)), multlen);
+		multarray_nr++;
 
 		if (strlen(mults[multarray_nr]) == 2)
 		    strcat(mults[multarray_nr], " ");
