@@ -48,7 +48,7 @@ int inxes[NBANDS] = \
 int addmult(void)
 {
     int found = 0;
-    int i, j, ismult, multlen = 0;
+    int i, j, ismult = 0, multlen = 0;
     char *stripped_comment;
 
     shownewmult = -1;
@@ -58,17 +58,14 @@ int addmult(void)
 
     // mult for all bands   -------- arrlss --------------
     if (arrlss == 1) {
-	ismult = 0;
 
 	/* is it a possible mult? */
-	if (mults_possible->len > 0) {
-	    for (i = 0; i < mults_possible->len; i++) {
-		if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		    && (strlen(MULTS_POSSIBLE(i)) > 1)) {
+	for (i = 0; i < mults_possible->len; i++) {
+	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
+		&& (strlen(MULTS_POSSIBLE(i)) > 1)) {
 
-		    ismult = 1;
-		    break;
-		}
+		ismult = 1;
+		break;
 	    }
 	}
 
@@ -97,16 +94,13 @@ int addmult(void)
     // ---------------------------serial + section ---------------------------
 
     if ((serial_section_mult == 1) || (sectn_mult == 1)) {
-	ismult = 0;
 
 	/* is it a possible mult? */
-	if (mults_possible->len > 0) {
-	    for (i = 0; i < mults_possible->len; i++) {
-		// check if valid mult....
-		if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
-		    ismult = 1;
-		    break;
-		}
+	for (i = 0; i < mults_possible->len; i++) {
+	    // check if valid mult....
+	    if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
+		ismult = 1;
+		break;
 	    }
 	}
 
@@ -119,24 +113,20 @@ int addmult(void)
 
     if ((dx_arrlsections == 1) &&
 	((countrynr == w_cty) || (countrynr == ve_cty))) {
+
 	char *ptr;		// local pointer
 
-	ismult = 0;
-
 	/* is it a possible mult? */
-	if (mults_possible->len > 0) {
-	    // check if valid mult.
-	    for (i = 0; i < mults_possible->len; i++) {
-		ptr = strstr(ssexchange, MULTS_POSSIBLE(i));
+	// check if valid mult.
+	for (i = 0; i < mults_possible->len; i++) {
+	    ptr = strstr(ssexchange, MULTS_POSSIBLE(i));
 
-		if (ptr != NULL) {
-		    ismult = 1;
-		    multlen = strlen(MULTS_POSSIBLE(i));
+	    if (ptr != NULL) {
+		ismult = 1;
 
-		    if (strlen(MULTS_POSSIBLE(i)) == strlen(ptr))
-			break;
+		if (strlen(MULTS_POSSIBLE(i)) == strlen(ptr))
+		    break;
 
-		}
 	    }
 	}
 
@@ -150,11 +140,11 @@ int addmult(void)
 	shownewmult = remember_multi(stripped_comment, bandinx, 0);
     }
 
-    if (wysiwyg_multi == 1 && strlen(stripped_comment) > 0) {
+    if (wysiwyg_multi == 1) {
 	shownewmult = remember_multi(stripped_comment, bandinx, 1);
     }
 
-    if (serial_grid4_mult == 1 && strlen(section) > 0) {
+    if (serial_grid4_mult == 1) {
 	section[4] = '\0';
 	shownewmult = remember_multi(section, bandinx, 1);
     }
