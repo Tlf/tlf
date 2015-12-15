@@ -32,10 +32,9 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-#include <curses.h>
-
 #include "audio.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 #ifdef HAVE_CONFIG_H

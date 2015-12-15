@@ -30,9 +30,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "sockserv.h"
+#include "tlf_curses.h"
 
 
 /* This structure holds the buffers for each open socket.  It was an */

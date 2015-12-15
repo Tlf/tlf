@@ -20,9 +20,8 @@
 
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "tlf.h"
+#include "tlf_curses.h"
 
 
 static int linectr; // global

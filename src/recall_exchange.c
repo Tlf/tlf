@@ -21,10 +21,9 @@
 
 #include <string.h>
 
-#include <curses.h>
-
 #include "initial_exchange.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 
 
 /** \brief Recall former exchange or lookup initial exchange file

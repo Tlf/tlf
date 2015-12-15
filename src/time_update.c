@@ -27,8 +27,6 @@
 
 #include <string.h>
 
-#include <curses.h>
-
 #include "bandmap.h"
 #include "clusterinfo.h"
 #include "freq_display.h"
@@ -39,6 +37,7 @@
 #include "printcall.h"
 #include "showscore.h"
 #include "showzones.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 

@@ -31,10 +31,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include <curses.h>
-
 #include "lancode.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 
 
 int lan_socket_descriptor;

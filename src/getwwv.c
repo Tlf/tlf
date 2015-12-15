@@ -22,11 +22,10 @@
 #include <string.h>
 #include <time.h>
 
-#include <curses.h>
-
-#include "tlf.h"
 #include "dxcc.h"
 #include "printcall.h"
+#include "tlf.h"
+#include "tlf_curses.h"
 
 
 int getwwv(void)

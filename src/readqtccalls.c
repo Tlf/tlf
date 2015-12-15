@@ -27,10 +27,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
+#include "tlf_curses.h"
 
 
 int qtcdirection = 0;

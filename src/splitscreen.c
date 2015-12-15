@@ -33,8 +33,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include <curses.h>
-
 #include "bandmap.h"
 #include "clear_display.h"
 #include "get_time.h"
@@ -42,6 +40,7 @@
 #include "lancode.h"
 #include "splitscreen.h"
 #include "sockserv.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 

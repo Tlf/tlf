@@ -27,10 +27,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <curses.h>
 #include <glib/gstdio.h>
 
 #include "clear_display.h"
+#include "tlf_curses.h"
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>

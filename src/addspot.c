@@ -31,12 +31,11 @@
 #include <string.h>
 #include <time.h>
 
-#include <curses.h>
-
 #include "get_time.h"
 #include "lancode.h"
 #include "splitscreen.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 
 
 int addspot(void)

@@ -29,11 +29,10 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include <curses.h>
-
 #include "clear_display.h"
 #include "scroll_log.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 
 
 int logedit(void)

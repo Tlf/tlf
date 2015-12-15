@@ -26,9 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <curses.h>
-
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "tlf_curses.h"
 
 
 int store_qso(char *loglineptr)

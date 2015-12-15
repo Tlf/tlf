@@ -29,8 +29,6 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "addcall.h"
 #include "addspot.h"
 #include "gettxinfo.h"
@@ -40,6 +38,7 @@
 #include "scroll_log.h"
 #include "score.h"
 #include "store_qso.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 #ifdef HAVE_CONFIG_H

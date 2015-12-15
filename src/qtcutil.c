@@ -25,10 +25,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
+#include "tlf_curses.h"
 
 
 GHashTable* qtc_store = NULL; 	/* stores number of QTC's per callsign */

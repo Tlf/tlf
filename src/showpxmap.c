@@ -24,12 +24,11 @@
 
 #include <string.h>
 
-#include <curses.h>
-
 #include "dxcc.h"
 #include "focm.h"
 #include "changepars.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 

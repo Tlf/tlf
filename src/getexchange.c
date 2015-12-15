@@ -29,8 +29,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "addspot.h"
 #include "cw_utils.h"
 #include "keyer.h"
@@ -47,6 +45,7 @@
 #include "speedupndown.h"
 #include "stoptx.h"
 #include "time_update.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))

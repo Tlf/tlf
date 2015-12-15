@@ -25,11 +25,10 @@
 
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>

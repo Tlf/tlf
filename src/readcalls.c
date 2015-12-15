@@ -28,8 +28,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "addmult.h"
 #include "addpfx.h"
 #include "get_time.h"
@@ -38,6 +36,7 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "paccdx.h"
 #include "startmsg.h"
+#include "tlf_curses.h"
 #include "zone_nr.h"
 
 

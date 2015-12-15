@@ -26,8 +26,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "bandmap.h"
 #include "cw_utils.h"
 #include "getctydata.h"
@@ -38,6 +36,7 @@
 #include "qtcvars.h"		// Includes globalvars.h
 #include "setcontest.h"
 #include "startmsg.h"
+#include "tlf_curses.h"
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>

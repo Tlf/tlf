@@ -25,12 +25,11 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-#include <curses.h>
-
 #include "bandmap.h"
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "searchcallarray.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE

@@ -28,13 +28,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <curses.h>
 #include <glib.h>
 
 #include "displayit.h"
 #include "lancode.h"
 #include "netkeyer.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 
 
 char buffer[81];

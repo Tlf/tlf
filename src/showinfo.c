@@ -35,11 +35,10 @@
 #include <string.h>
 #include <time.h>
 
-#include <curses.h>
-
 #include "dxcc.h"
 #include "qrb.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 

@@ -29,14 +29,13 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include <curses.h>
-
 #include "clear_display.h"
 #include "deleteqso.h"
 #include "printcall.h"
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "qsonr_to_str.h"
+#include "tlf_curses.h"
 #include "scroll_log.h"
 #include "ui_utils.h"
 

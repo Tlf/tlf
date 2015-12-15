@@ -26,10 +26,10 @@
 
 #include <string.h>
 
-#include <curses.h>
 #include <glib.h>
 
 #include "clear_display.h"
+#include "tlf_curses.h"
 
 
 void displayit(void)
