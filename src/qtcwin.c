@@ -27,8 +27,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <panel.h>
-
 #include "callinput.h"
 #include "cw_utils.h"
 #include "genqtclist.h"
@@ -43,6 +41,7 @@
 #include "sendbuf.h"
 #include "speedupndown.h"
 #include "time_update.h"
+#include "tlf_panel.h"
 #include "ui_utils.h"
 #include "write_keyer.h"
 

@@ -63,6 +63,6 @@ noinst_HEADERS = \
 	setparameters.h show_help.h showinfo.h showpxmap.h showscore.h \
 	showzones.h sockserv.h speedupndown.h  \
 	splitscreen.h startmsg.h stoptx.h store_qso.h sunup.h \
-	rtty.h time_update.h tlf.h ui_utils.h \
+	rtty.h time_update.h tlf.h tlf_panel.h ui_utils.h \
 	write_keyer.h writecabrillo.h writeparas.h \
 	zone_nr.h

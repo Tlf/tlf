@@ -20,11 +20,10 @@
 /* User Interface helpers for ncurses based user interface */
 
 
-#include <curses.h>
-#include <panel.h>
-
 #include <pthread.h>
+
 #include "stoptx.h"
+#include "tlf_panel.h"
 
 
 extern int use_rxvt;
