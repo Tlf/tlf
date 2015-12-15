@@ -15,6 +15,25 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_PROG_CC
 AC_PROG_INSTALL
 
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h \
+	sys/ioctl.h sys/socket.h sys/time.h syslog.h termios.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+dnl needed? AC_HEADER_STDBOOL
+AC_TYPE_MODE_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+
+# Checks for library functions.
+dnl obsolescent AC_PROG_GCC_TRADITIONAL
+dnl obsolescent AC_FUNC_STRFTIME
+AC_CHECK_FUNCS([bzero floor ftruncate gethostbyname memset mkfifo putenv \
+	select socket sqrt strcasecmp strchr strcspn strdup strpbrk strspn \
+	strstr])
+
 # Checks for libraries.
 PKG_CHECK_MODULES(GLIB, glib-2.0)
 AC_CHECK_LIB([m], [atan])
@@ -23,10 +42,6 @@ ACX_PTHREAD
 AC_CHECK_LIB([ncurses], [initscr],,AC_MSG_ERROR([needs ncurses library]))
 AC_CHECK_LIB([panel], [update_panels],,
 		AC_MSG_ERROR([needs ncurses panel library]))
-
-# Checks for header files.
-AC_HEADER_STDC
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h memory.h netdb.h netinet/in.h stdlib.h string.h sys/ioctl.h sys/socket.h sys/time.h syslog.h termios.h unistd.h])
 
 dnl Check if we want to link the Hamradio control libraries (hamlib)
 AC_ARG_ENABLE([hamlib],
@@ -86,18 +101,6 @@ if test "${ac_cv_c_compiler_gnu}" = "yes"; then
 fi
 
 
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_TYPE_MODE_T
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-AC_TYPE_SSIZE_T
-
-# Checks for library functions.
-AC_PROG_GCC_TRADITIONAL
-AC_FUNC_STRFTIME
-AC_CHECK_FUNCS([bzero floor ftruncate gethostbyname memset mkfifo putenv select socket sqrt strcasecmp strchr strcspn strdup strpbrk strspn strstr])
 
 # Set PACKAGE_DATA_DIR in config.h.
 if test "x${prefix}" = "xNONE"; then
