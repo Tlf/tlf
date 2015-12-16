@@ -173,7 +173,8 @@ AC_DEFUN([_AX_WITH_CURSES_CHECKEXTRA], [
         AC_DEFINE([_AX_WITH_CURSES_CHECKEXTRA_have_var],        [1], [Define to 1 if the Curses $2 library is present])
         AC_DEFINE([_AX_WITH_CURSES_CHECKEXTRA_have_header_var], [1], [Define to 1 if <$4> is present])
     ], [
-        _AX_WITH_CURSES_CHECKEXTRA_cv_var=no
+        AS_IF([test "x$[]_AX_WITH_CURSES_CHECKEXTRA_cv_var" = xyes], [],
+            [_AX_WITH_CURSES_CHECKEXTRA_cv_var=no])
     ])
     LIBS=$ax_saved_LIBS
 
