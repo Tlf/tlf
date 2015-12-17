@@ -23,12 +23,11 @@
 #include <string.h>
 #include <time.h>
 
-#include <panel.h>
-
 #include "dxcc.h"
 #include "get_time.h"
 #include "sunup.h"
 #include "tlf.h"
+#include "tlf_panel.h"
 #include "ui_utils.h"
 
 #define RADIAN		(180.0 / M_PI)

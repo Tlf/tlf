@@ -18,7 +18,6 @@
  */
 
 
-#include <curses.h>
 #include <glib.h>
 
 #include "displayit.h"
@@ -26,6 +25,7 @@
 #include "getctydata.h"
 #include "initial_exchange.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 

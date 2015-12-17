@@ -21,7 +21,7 @@
 #ifndef NICEBOX_H
 #define NICEBOX_H
 
-#include <curses.h>
+#include "tlf_curses.h"
 
 void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname);
 void nicebox(int y, int x, int height, int width, char *boxname);

@@ -31,11 +31,10 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "startmsg.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 

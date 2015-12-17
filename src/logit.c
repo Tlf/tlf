@@ -26,9 +26,6 @@
 
 #include <string.h>
 
-#include <curses.h>
-
-#include "tlf.h"
 #include "callinput.h"
 #include "clear_display.h"
 #include "getexchange.h"
@@ -41,6 +38,8 @@
 #include "sendqrg.h"		// Sets HAVE_LIBHAMLIB if enabled
 #include "sendspcall.h"
 #include "set_tone.h"
+#include "tlf.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 

@@ -26,8 +26,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "clear_display.h"
 #include "checklogfile.h"
 #include "getmessages.h"
@@ -36,6 +34,7 @@
 #include "scroll_log.h"
 #include "setcontest.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 #include "writeparas.h"
 

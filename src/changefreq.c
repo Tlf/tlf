@@ -20,10 +20,9 @@
 
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "freq_display.h"
 #include "time_update.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 #ifdef HAVE_CONFIG_H

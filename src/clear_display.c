@@ -27,8 +27,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <curses.h>
-
 #include "cw_utils.h"
 #include "get_time.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
@@ -36,6 +34,7 @@
 #include "qsonr_to_str.h"
 #include "searchlog.h"		// Includes glib.h
 #include "showscore.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 

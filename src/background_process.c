@@ -23,8 +23,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "fldigixmlrpc.h"
 #include "getctydata.h"
 #include "get_time.h"
@@ -40,6 +38,7 @@
 #include "set_tone.h"
 #include "splitscreen.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 #include "write_keyer.h"
 
 

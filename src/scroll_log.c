@@ -27,10 +27,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "qsonr_to_str.h"
+#include "tlf_curses.h"
 
 
 void scroll_log(void)

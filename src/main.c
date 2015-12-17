@@ -27,8 +27,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include <panel.h>
-
 #include "addmult.h"
 #include "background_process.h"
 #include "bandmap.h"
@@ -58,6 +56,7 @@
 #include "set_tone.h"
 #include "splitscreen.h"
 #include "startmsg.h"
+#include "tlf_panel.h"
 #include "ui_utils.h"
 
 #ifdef HAVE_CONFIG_H

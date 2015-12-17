@@ -29,10 +29,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "addmult.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "tlf_curses.h"
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>

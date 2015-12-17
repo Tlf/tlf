@@ -27,8 +27,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <panel.h>
-
 #include "dxcc.h"
 #include "getctydata.h"
 #include "getpx.h"
@@ -37,6 +35,7 @@
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "searchlog.h"		// Includes glib.h
+#include "tlf_panel.h"
 #include "ui_utils.h"
 #include "zone_nr.h"
 

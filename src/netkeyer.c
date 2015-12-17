@@ -22,10 +22,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <curses.h>
-
-#include "tlf.h"
 #include "netkeyer.h"
+#include "tlf.h"
+#include "tlf_curses.h"
 
 
 int netkeyer_port = 6789;

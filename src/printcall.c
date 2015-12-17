@@ -23,9 +23,8 @@
 	 *--------------------------------------------------------------*/
 
 
-#include <curses.h>
-
 #include "tlf.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 

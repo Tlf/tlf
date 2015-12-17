@@ -34,11 +34,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <curses.h>
 #include <glib.h>
 
 #include "startmsg.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 
 

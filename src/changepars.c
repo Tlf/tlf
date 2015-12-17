@@ -31,8 +31,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include <curses.h>
-
 #include "audio.h"
 #include "changepars.h"
 #include "clear_display.h"
@@ -55,6 +53,7 @@
 #include "show_help.h"
 #include "showpxmap.h"
 #include "splitscreen.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
 #include "writecabrillo.h"
 #include "writeparas.h"

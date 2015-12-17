@@ -22,11 +22,10 @@
  	*--------------------------------------------------------------*/
 
 
-#include <curses.h>
-
 #include "clear_display.h"
 #include "netkeyer.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 
 
 int stoptx(void)

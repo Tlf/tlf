@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2015 Nate Bargmann <n0nb@n0nb.us>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,44 +16,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 	/* ------------------------------------------------------------
- 	*        View Log using "less" function
- 	*
- 	*--------------------------------------------------------------*/
 
 
-#include <stdlib.h>
-#include <string.h>
+/* Collate the macro test boilerplate into this file and then
+ * include this file into the Tlf source files that need [n]curses.h
+ * functions.
+ */
 
-#include "clear_display.h"
-#include "tlf.h"
-#include "tlf_curses.h"
+#ifndef TLF_CURSES_H
+#define TLF_CURSES_H
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-int logview(void)
-{
-	extern char logfile[];
-	extern char backgrnd_str[];
+#if defined HAVE_NCURSES_CURSES_H
+# include <ncurses/curses.h>
+#elif defined HAVE_NCURSES_H
+# include <ncurses.h>
+#elif defined HAVE_CURSES_H
+# include <curses.h>
+#else
+# error "SysV or X/Open-compatible Curses header file required"
+#endif
 
-	char comstr[40]  = "";
-	int j, rc;
-
-	strcat(comstr,  "less  +G ");
-	strcat(comstr,  logfile);
-	rc=system(comstr);
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-	erase();
-	refreshp();
-	clear_display();
-	attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
-
-	for (j = 13 ;  j  <= 23 ; j++){
-		mvprintw(j, 0, backgrnd_str);
-	}
-
-	refreshp();
-
-
-	return(0);
-}
-
+#endif

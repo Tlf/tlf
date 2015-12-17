@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <curses.h>
 #include <glib.h>
 
 #include "clear_display.h"
@@ -31,6 +30,7 @@
 #include "netkeyer.h"
 #include "sendbuf.h"
 #include "tlf.h"
+#include "tlf_curses.h"
 
 
 void setspeed(void) {

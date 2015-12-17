@@ -28,8 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <panel.h>
-
 #include "clear_display.h"
 #include "netkeyer.h"
 #include "nicebox.h"		// Includes curses.h
@@ -37,6 +35,7 @@
 #include "speedupndown.h"
 #include "stoptx.h"
 #include "tlf.h"
+#include "tlf_panel.h"
 #include "ui_utils.h"
 
 /* size and position of keyer window */
