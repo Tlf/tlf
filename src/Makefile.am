@@ -1,5 +1,4 @@
-AM_CPPFLAGS = \
-       @GLIB_CFLAGS@
+AM_CPPFLAGS = @GLIB_CFLAGS@
 
 bin_PROGRAMS = tlf
 

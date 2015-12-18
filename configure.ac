@@ -36,10 +36,24 @@ AC_CHECK_FUNCS([bzero floor ftruncate gethostbyname memset mkfifo putenv \
 	strstr])
 
 # Checks for libraries.
-PKG_CHECK_MODULES(GLIB, glib-2.0)
 AC_CHECK_LIB([m], [atan])
 AC_CHECK_LIB([pthread], [pthread_create])
 ACX_PTHREAD
+
+
+##----------------------------------##
+## Third party library tests follow ##
+##----------------------------------##
+
+dnl Make certain pkg-config is installed
+PKG_PROG_PKG_CONFIG([0.16])
+
+AS_IF([test "x$PKG_CONFIG" = x],
+	[AC_MSG_ERROR([pkg-config is required to configure $PACKAGE_NAME])])
+
+dnl From /usr/share/aclocal/glib-2.0.m4 on Debian 8.0.
+dnl Provides compilation testing of the found glib library for suitability.
+AM_PATH_GLIB_2_0
 
 
 # ncurses and panel required, if not found exit with error message.
