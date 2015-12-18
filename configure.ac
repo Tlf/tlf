@@ -37,8 +37,8 @@ AC_CHECK_FUNCS([bzero floor ftruncate gethostbyname memset mkfifo putenv \
 
 # Checks for libraries.
 AC_CHECK_LIB([m], [atan])
-AC_CHECK_LIB([pthread], [pthread_create])
-ACX_PTHREAD
+
+AX_PTHREAD
 
 
 ##----------------------------------##
