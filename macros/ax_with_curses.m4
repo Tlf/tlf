@@ -187,20 +187,12 @@
 AU_ALIAS([MP_WITH_CURSES], [AX_WITH_CURSES])
 AC_DEFUN([AX_WITH_CURSES], [
     AC_ARG_VAR([CURSES_LIB], [linker library for Curses, e.g. -lcurses])
-
-dnl As Ncurses is required for Tlf, comment out the AC_ARG_WITH macros
-dnl    AC_ARG_WITH([ncurses], [AS_HELP_STRING([--with-ncurses],
-dnl        [force the use of Ncurses or NcursesW])],
-dnl        [], [with_ncurses=check])
-dnl    AC_ARG_WITH([ncursesw], [AS_HELP_STRING([--without-ncursesw],
-dnl        [do not use NcursesW (wide character support)])],
-dnl        [], [with_ncursesw=check])
-
-dnl Now set the variables to force search for ncurses and ignoring
-dnl ncursesw at this time.
-
-    with_ncursesw=no
-    with_ncurses=yes
+    AC_ARG_WITH([ncurses], [AS_HELP_STRING([--with-ncurses],
+        [force the use of Ncurses or NcursesW])],
+        [], [with_ncurses=check])
+    AC_ARG_WITH([ncursesw], [AS_HELP_STRING([--without-ncursesw],
+        [do not use NcursesW (wide character support)])],
+        [], [with_ncursesw=check])
 
     ax_saved_LIBS=$LIBS
     AS_IF([test "x$with_ncurses" = xyes || test "x$with_ncursesw" = xyes],
