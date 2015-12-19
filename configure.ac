@@ -73,8 +73,8 @@ AS_IF([test "x$ax_cv_panel" != xyes],
 
 dnl Check if we want to link the Hamradio control libraries (hamlib)
 AC_MSG_CHECKING([whether to build Hamlib support])
-AC_ARG_ENABLE([hamlib],
-	[AS_HELP_STRING([--enable-hamlib],
+AC_ARG_ENABLE([hamlib], [
+	AS_HELP_STRING([--enable-hamlib],
 		[Add support for Ham Radio Control Libraries])],
 	[wanthamlib=true],
 	[wanthamlib=false])
@@ -101,27 +101,44 @@ AS_IF([test "x$wanthamlib" = xtrue], [
 
 
 dnl Check if we want to use xmlrpc to read carrier from Fldigi
-AC_ARG_ENABLE([fldigi-xmlrpc],
-	[AS_HELP_STRING([--enable-fldigi-xmlrpc],
-			[Add support for XMLRPC to read Fldigi's carrier (usually in RTTY/DIGIMODE)])],
-[case "${enableval}" in
-	yes) wantfldigixmlrpc=true ;;
-	no)  wantfldigixmlrpc=false ;;
-	esac],
-[wantfldigixmlrpc=false])
+AC_MSG_CHECKING([whether to build Fldigi XML RPC support])
+AC_ARG_ENABLE([fldigi-xmlrpc], [
+	AS_HELP_STRING([--enable-fldigi-xmlrpc],
+		[Add support for XMLRPC to read Fldigi's carrier (usually in RTTY/DIGIMODE)])],
+	[wantfldigixmlrpc=true],
+	[wantfldigixmlrpc=false])
 
-if test "x${wantfldigixmlrpc}" != "xfalse"; then
-    dnl Look for xmlrpc libraries
+AS_IF([test "x$wantfldigixmlrpc" = xtrue], [
+	dnl Look for xmlrpc libraries
+	AC_MSG_RESULT([yes])
 
-	AC_CHECK_LIB(xmlrpc,xmlrpc_read_int,,AC_MSG_ERROR([Xmlrpc libraries not found...]))
-	AC_CHECK_LIB(xmlrpc_client,xmlrpc_client_cleanup,,AC_MSG_ERROR([Xmlrpc-client libraries not found...]))
-	AC_CHECK_LIB(xmlrpc_util,xmlrpc_env_init,,AC_MSG_ERROR([Xmlrpc-util libraries not found...]))
-	AC_CHECK_HEADERS(xmlrpc-c/base.h,,AC_MSG_ERROR([Xmlrpc base.h header not found...]))
-	AC_CHECK_HEADERS(xmlrpc-c/client.h,,AC_MSG_ERROR([Xmlrpc client.h header not found...]))
-	echo "enabling XMLRPC for Fldigi"
-else
-	echo "disabling XMLRPC for Fldigi"
-fi
+	AC_CHECK_LIB([xmlrpc], [xmlrpc_read_int], [
+		AC_DEFINE([HAVE_LIBXMLRPC], [1],
+			[Define to 1 if you have the `xmlrpc' library (-lxmlrpc).])
+		AC_SUBST([LIBXMLRPC_LIB], [-lxmlrpc])], [
+		AC_MSG_ERROR([xmlrpc library not found...])])
+
+	AC_CHECK_LIB([xmlrpc_client], [xmlrpc_client_cleanup], [
+		AC_DEFINE([HAVE_LIBXMLRPC_CLIENT], [1],
+			[Define to 1 if you have the `xmlrpc_client' library (-lxmlrpc_client).])
+		AC_SUBST([LIBXMLRPC_CLIENT_LIB], [-lxmlrpc_client])], [
+		AC_MSG_ERROR([xmlrpc-client library not found...])])
+
+	AC_CHECK_LIB([xmlrpc_util], [xmlrpc_env_init], [
+		AC_DEFINE([HAVE_LIBXMLRPC_UTIL], [1],
+			[Define to 1 if you have the `xmlrpc_util' library (-lxmlrpc_util).])
+		AC_SUBST([LIBXMLRPC_UTIL_LIB], [-lxmlrpc_util])], [
+		AC_MSG_ERROR([xmlrpc-util library not found...])])
+
+	AC_CHECK_HEADERS([xmlrpc-c/base.h], [], [
+		AC_MSG_ERROR([xmlrpc-c/base.h header not found...])])
+
+	AC_CHECK_HEADERS([xmlrpc-c/client.h], [], [
+		AC_MSG_ERROR([xmlrpc-c/client.h header not found...])])], [
+
+	dnl else Fldigi XML RPC not wanted
+	AC_MSG_RESULT([no])])
+
 
 if test "${ac_cv_c_compiler_gnu}" = "yes"; then
 	CFLAGS="${CFLAGS} -Wall"
