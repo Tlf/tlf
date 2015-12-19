@@ -262,7 +262,7 @@ int addmult2(void)
  *
  * \return number of loaded multipliers (nr of entries in mults_possible)
  * */
-int load_multipliers(void)
+int init_and_load_multipliers(void)
 {
     extern GPtrArray *mults_possible;
     extern char multsfile[];	// Set by parse_logcfg()
@@ -272,12 +272,15 @@ int load_multipliers(void)
     char mults_location[_POSIX_PATH_MAX * 2];	// 512 chars.  Larger?
     int count = 0;
 
+    if (mults_possible) {
+	/* free old array if exists */
+	g_ptr_array_free(mults_possible, TRUE);
+    }
+    mults_possible = g_ptr_array_new_with_free_func( g_free );
+
 
     if (strlen(multsfile) == 0) {
-	mvprintw(9, 0, "No multiplier file specified, exiting.. !!\n");
-	refreshp();
-	sleep(5);
-	exit(1);
+	return 0;
     }
 
     // Check for mults file in working directory first

@@ -639,12 +639,17 @@ int databases_load()
 	return EXIT_FAILURE;
     }
 
-    mults_possible = g_ptr_array_new();
 
     if (multlist == 1) {
 	showmsg("reading multiplier data      ");
-	load_multipliers();
+	if (strlen(multsfile) == 0) {
+	    mvprintw(9, 0, "No multiplier file specified, exiting.. !!\n");
+	    refreshp();
+	    sleep(5);
+	    exit(1);
+	}
     }
+    init_and_load_multipliers();
 
     showmsg("reading callmaster data");
     load_callmaster();

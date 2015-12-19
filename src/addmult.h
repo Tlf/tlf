@@ -23,7 +23,7 @@
 
 int addmult( void);
 int addmult2( void);
-int load_multipliers(void);
+int init_and_load_multipliers(void);
 int remember_multi(char *multiplier, int band, int show_new_band);
 void init_mults();
 
