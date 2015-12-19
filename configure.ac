@@ -140,10 +140,12 @@ AS_IF([test "x$wantfldigixmlrpc" = xtrue], [
 	AC_MSG_RESULT([no])])
 
 
-if test "${ac_cv_c_compiler_gnu}" = "yes"; then
-	CFLAGS="${CFLAGS} -Wall"
-fi
+dnl Set warnings for compilation
+dnl CFLAGS is reserved for user, so set the AM_* counterpart.
+# macros/ax_cflags_warn_all.m4
+AX_CFLAGS_WARN_ALL([AM_CFLAGS])
 
+AC_SUBST([AM_CFLAGS])
 
 
 # Set PACKAGE_DATA_DIR in config.h.
