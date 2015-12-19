@@ -36,7 +36,11 @@ AC_CHECK_FUNCS([bzero floor ftruncate gethostbyname memset mkfifo putenv \
 	strstr])
 
 # Checks for libraries.
-AC_CHECK_LIB([m], [atan])
+AC_CHECK_LIB([m], [atan], [
+	AC_DEFINE([HAVE_LIBM], [1],
+		[Define to 1 if you have the `m' library (-lm).])
+	AC_SUBST([LIBM_LIB], [-lm])], [
+	AC_MSG_ERROR([m library not found...])])
 
 AX_PTHREAD
 
