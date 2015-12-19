@@ -72,34 +72,33 @@ AS_IF([test "x$ax_cv_panel" != xyes],
 
 
 dnl Check if we want to link the Hamradio control libraries (hamlib)
+AC_MSG_CHECKING([whether to build Hamlib support])
 AC_ARG_ENABLE([hamlib],
 	[AS_HELP_STRING([--enable-hamlib],
-			[Add support for Ham Radio Control Libraries])],
-[case "${enableval}" in
-	yes) wanthamlib=true ;;
-	no)  wanthamlib=false ;;
-#	*)   AC_MSG_ERROR([[bad value ${enableval} for --enable-hamlib]]) ;;
-	esac],
-[wanthamlib=false])
+		[Add support for Ham Radio Control Libraries])],
+	[wanthamlib=true],
+	[wanthamlib=false])
 
-if test "x${wanthamlib}" != "xfalse"; then
-    dnl Look for hamlib
-    hamlib_modules="hamlib >= 1.2.8"
-    PKG_CHECK_MODULES(HAMLIB, [$hamlib_modules], [
-                           CFLAGS="$CFLAGS $HAMLIB_CFLAGS";
-                           LIBS="$LIBS $HAMLIB_LIBS";
-                           ], [
-                               AC_MSG_ERROR([Hamradio control libraries 1.2.8 or later not found...])
-                           ])
+AS_IF([test "x$wanthamlib" = xtrue], [
+	dnl Look for hamlib
+	AC_MSG_RESULT([yes])
+	hamlib_modules="hamlib >= 1.2.8"
+	PKG_CHECK_MODULES([HAMLIB], [$hamlib_modules], [],
+		[AC_MSG_ERROR([Hamradio control libraries 1.2.8 or later not found...])])
 
-	AC_CHECK_LIB(hamlib,main,,AC_MSG_ERROR([Hamradio control libraries not found...]))
-	AC_CHECK_HEADERS(hamlib/rig.h,,AC_MSG_ERROR([Hamlib headers not found...]))
-	AC_DEFINE([WANT_HAMLIB], 1, [Want Hamlib])
-	echo "enabling Hamlib support"
-else
-	AC_DEFINE([WANT_HAMLIB], 0, [No Hamlib])
-	echo "disabling Hamlib support"
-fi
+	AC_CHECK_LIB([hamlib], [rig_open], [
+		AC_DEFINE([HAVE_LIBHAMLIB], [1],
+			[Define to 1 if you have the `hamlib' library (-lhamlib).])], [
+		AC_MSG_ERROR([Hamradio control libraries not found!])])
+
+	AC_CHECK_HEADERS([hamlib/rig.h], [], [
+		AC_MSG_ERROR([Hamlib headers not found...])])
+	AC_DEFINE([WANT_HAMLIB], [1], [Want Hamlib])], [
+
+	dnl else Hamlib not wanted
+	AC_DEFINE([WANT_HAMLIB], [0], [No Hamlib])
+	AC_MSG_RESULT([no])])
+
 
 dnl Check if we want to use xmlrpc to read carrier from Fldigi
 AC_ARG_ENABLE([fldigi-xmlrpc],
