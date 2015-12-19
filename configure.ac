@@ -148,16 +148,6 @@ AX_CFLAGS_WARN_ALL([AM_CFLAGS])
 AC_SUBST([AM_CFLAGS])
 
 
-# Set PACKAGE_DATA_DIR in config.h.
-if test "x${prefix}" = "xNONE"; then
-AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR,"${ac_default_prefix}/share/${PACKAGE}",
-		   [package_data_dir is in default])
-else
-AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${prefix}/share/${PACKAGE}",
-		   [package_data_dir is in prefix])
-fi
-
-
 AC_CONFIG_FILES([Makefile
 	doc/Makefile
 	rules/Makefile

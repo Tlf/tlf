@@ -33,10 +33,6 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "tlf_curses.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
 

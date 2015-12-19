@@ -39,10 +39,6 @@
 #include "ui_utils.h"
 #include "zone_nr.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 
 GPtrArray *callmaster = NULL;
 

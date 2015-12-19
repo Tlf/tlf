@@ -25,10 +25,6 @@
 #include "startmsg.h"
 #include "tlf.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 
 extern char whichcontest[];
 extern char logfile[];
