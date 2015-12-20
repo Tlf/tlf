@@ -40,6 +40,7 @@
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
+enum { ALL_BAND, PER_BAND };
 
 /** Converts bandindex to bandmask */
 int inxes[NBANDS] = \
@@ -48,7 +49,8 @@ int inxes[NBANDS] = \
 int addmult(void)
 {
     int found = 0;
-    int i, j, ismult = 0, multlen = 0;
+    int i;
+    int matching_len = 0, idx = -1;
     char *stripped_comment;
 
     shownewmult = -1;
@@ -56,97 +58,77 @@ int addmult(void)
     stripped_comment = strdup(comment);
     g_strchomp(stripped_comment);
 
-    // mult for all bands   -------- arrlss --------------
+    // --------------------------- arrlss ------------------------------------
     if (arrlss == 1) {
 
-	/* is it a possible mult? */
+	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
 	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
 		&& (strlen(MULTS_POSSIBLE(i)) > 1)) {
 
-		ismult = 1;
-		break;
+		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
+		    matching_len = strlen(MULTS_POSSIBLE(i));
+		    idx = i;
+		}
 	    }
 	}
 
-	if (ismult != 0) {
-	    found = 0;
-	    multlen = strlen(MULTS_POSSIBLE(i));
-
-	    /* already worked? */
-	    for (j = 0; j < multarray_nr; j++) {
-		if (strncmp(mults[j],
-			    strstr(ssexchange, MULTS_POSSIBLE(i)),
-			    multlen) == 0) {
-		    found = 1;
-		    break;
-		}
-	    }
-
-	    if (found == 0) {
-		/* not found, add it */
-		strcpy(mults[multarray_nr], MULTS_POSSIBLE(i));
-		multarray_nr++;
-	    }
+	if (idx >= 0) {
+	    remember_multi(MULTS_POSSIBLE(idx), bandinx, ALL_BAND);
 	}
     }
 
     // ---------------------------serial + section ---------------------------
-
     if ((serial_section_mult == 1) || (sectn_mult == 1)) {
 
 	/* is it a possible mult? */
 	for (i = 0; i < mults_possible->len; i++) {
 	    // check if valid mult....
 	    if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
-		ismult = 1;
+		idx = i;
 		break;
 	    }
 	}
 
-	if (ismult != 0) {
-	    shownewmult = remember_multi(MULTS_POSSIBLE(i), bandinx, 1);
+	if (idx >= 0) {
+	    shownewmult =
+		remember_multi(MULTS_POSSIBLE(idx), bandinx, PER_BAND);
 	}
     }
 
     // ------------------------------- section ----------------------------
-
     if ((dx_arrlsections == 1) &&
 	((countrynr == w_cty) || (countrynr == ve_cty))) {
 
-	char *ptr;		// local pointer
-
-	/* is it a possible mult? */
-	// check if valid mult.
+	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    ptr = strstr(ssexchange, MULTS_POSSIBLE(i));
+	    if (strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL) {
 
-	    if (ptr != NULL) {
-		ismult = 1;
-
-		if (strlen(MULTS_POSSIBLE(i)) == strlen(ptr))
-		    break;
-
+		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
+		    matching_len = strlen(MULTS_POSSIBLE(i));
+		    idx = i;
+		}
 	    }
 	}
 
-	if (ismult != 0) {
-	    shownewmult = remember_multi(MULTS_POSSIBLE(i), bandinx, 1);
+	if (idx >= 0) {
+	    shownewmult =
+		remember_multi(MULTS_POSSIBLE(idx), bandinx, PER_BAND);
 	}
     }
 
     // --------------------wysiwyg----------------
     if (wysiwyg_once == 1) {
-	shownewmult = remember_multi(stripped_comment, bandinx, 0);
+	shownewmult = remember_multi(stripped_comment, bandinx, ALL_BAND);
     }
 
     if (wysiwyg_multi == 1) {
-	shownewmult = remember_multi(stripped_comment, bandinx, 1);
+	shownewmult = remember_multi(stripped_comment, bandinx, PER_BAND);
     }
 
     if (serial_grid4_mult == 1) {
 	section[4] = '\0';
-	shownewmult = remember_multi(section, bandinx, 1);
+	shownewmult = remember_multi(section, bandinx, PER_BAND);
     }
 
     free(stripped_comment);
@@ -376,7 +358,7 @@ int remember_multi(char *multiplier, int band, int show_new_band)
 		multscore[band]++;
 
 		/* if wanted, show it as new band */
-		if (show_new_band)
+		if (show_new_band == PER_BAND)
 		    index = i;
 	    }
 
