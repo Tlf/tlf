@@ -231,6 +231,12 @@ int addmult2(void)
 }
 
 
+/* compare functions to sort multi by aphabetic order  */
+gint	cmp_size (char **a, char **b) {
+
+    return g_strcmp0(*a, *b);
+}
+
 /** loads possible multipliers from external file
  *
  * Read in the file named by 'multiplierlist' and interpret it as list
@@ -303,6 +309,9 @@ int init_and_load_multipliers(void)
 	}
 
 	fclose(cfp);
+
+	/* do not rely on the order in the mult file but sort it here */
+	g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);
     }
 
     return (count);
