@@ -31,6 +31,9 @@
 #include "searchcallarray.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "showinfo.h"
+#include "getctydata.h"
+#include "searchlog.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted a s the same QRG */
@@ -101,6 +104,11 @@ extern int trxmode;
 extern char thisnode;
 extern struct worked_t worked[];
 extern int contest;
+extern int bmautoadd;
+extern int bmautograb;
+extern char hiscall[];
+extern char lastcall[];
+extern int cqmode;
 
 char *qtc_format(char * call);
 
@@ -408,7 +416,7 @@ void bandmap_age() {
 	if (data->timeout) {
 	    data->timeout--;
 	}
-	if (data->timeout == 0) {
+	if (data->timeout == 0 && (bmautograb == 0 || (bmautograb > 0 && (abs((double)data->freq - freq*1000.0) > TOLERANCE && strcmp(data->call, hiscall) != 0)))) {
 	    allspots = g_list_remove_link( allspots, temp);
 	    g_free (data->call);
 	    g_free (data);
@@ -642,12 +650,15 @@ void bandmap_show() {
  */
 
     GList *list;
-    spot *data;
+    spot *data, *tdata;
     int curx, cury;
     int bm_x, bm_y;
     int i,j;
     short dupe;
     float centerfrequency;
+    static int autograbbed = 0;
+    extern int bmadded_spot;
+    static int lastbmautofreq = 0;
 
     if (!bm_initialized) {
 	bm_init();
@@ -799,9 +810,33 @@ void bandmap_show() {
 	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	if (!on_qrg) {
 	    printw ("%7.1f   %s", centerfrequency,  "============");
+	    if (bmautograb == 1 && autograbbed == 1 && cqmode == S_P) {
+		hiscall[0] = '\0';
+		showinfo( getctydata( hiscall ) );
+		searchlog( hiscall );
+		autograbbed = 0;
+	    }
+	    // clear hiscall if no qrg
+	    if (bmautoadd == 1 && bmadded_spot == 1 && strlen(hiscall) > 0) {
+		hiscall[0] = '\0';
+		showinfo( getctydata( hiscall ) );
+		searchlog( hiscall );
+		autograbbed = 0;
+	    }
 	}
 	else {
-	    show_spot_on_qrg(g_ptr_array_index( spots, below_qrg ));
+	    tdata = g_ptr_array_index( spots, below_qrg );
+	    show_spot_on_qrg(tdata);
+	    if (lastbmautofreq != tdata->freq) {
+		autograbbed = 0;
+	    }
+	    if (bmautograb != 0 && cqmode == S_P && (autograbbed == 0 || (strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0))) {
+		strcpy(hiscall, tdata->call);
+		showinfo( getctydata( hiscall ) );
+		searchlog( hiscall );
+		autograbbed = 1;
+		lastbmautofreq = tdata->freq;
+	    }
 	}
 	next_spot_position(&bm_y, &bm_x);
     }

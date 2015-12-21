@@ -76,12 +76,18 @@
 # include <hamlib/rig.h>
 #endif
 
+#include <signal.h>
+#include <sys/time.h>
+
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
 
 void send_bandswitch(int freq);
 int autosend(void);
 int plain_number(char *str);
+static void start_bmadd_timer();
+
+int bmadded_spot = 0;
 
 /** callsign input loop
  *
@@ -144,6 +150,7 @@ char callinput(void)
     extern int keyerport;
     extern int miniterm;
     extern int no_rst;
+    extern int bmautoadd;
 
     int cury, curx;
     int i, j, ii, rc, t, x = 0, y = 0;
@@ -1019,6 +1026,10 @@ char callinput(void)
 	    x = x - 32;
 
 	if (x >= '/' && x <= 'Z') {
+	    if (trx_control > 0 && bmautoadd > 0 && strlen(hiscall) > 2 && bmadded_spot == 0 && cqmode == S_P) {
+		start_bmadd_timer();
+	    }
+	    bmadded_spot = 0;
 	    if (strlen(hiscall) < 13) {
 		instring[0] = x;
 		instring[1] = '\0';
@@ -1283,4 +1294,34 @@ void send_bandswitch(int freq)
 	sprintf(outnibble, "%d", bandswitch);
 	netkeyer(K_SWITCH, outnibble);
     }
+}
+
+static void bmadd_timer_handler(int sig, siginfo_t *siginfo, void *context)
+{
+	extern char hiscall[];
+	char tcall[15];
+	if (strlen(hiscall) > 2) {
+	    strcpy(tcall, hiscall);
+	    addspot();
+	    bmadded_spot = 1;
+	    strcpy(hiscall, tcall);
+	    refreshp();
+	}
+	sigaction(SIGALRM, NULL, NULL);
+	setitimer(ITIMER_REAL, NULL, NULL);
+}
+
+static void start_bmadd_timer() {
+	struct sigaction act;
+	struct itimerval tv;
+
+	memset (&act, '\0', sizeof(act));
+
+	act.sa_sigaction = &bmadd_timer_handler;
+	sigaction(SIGALRM, &act, NULL);
+	tv.it_value.tv_sec = 1;
+        tv.it_value.tv_usec = 500000;
+        tv.it_interval.tv_sec = 0;
+        tv.it_interval.tv_usec = 0;
+        setitimer(ITIMER_REAL, &tv, NULL);
 }
