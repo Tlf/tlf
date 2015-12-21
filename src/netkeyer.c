@@ -16,12 +16,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+
+#include <netdb.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "netkeyer.h"
 #include "tlf.h"
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+#include "tlf_curses.h"
+
 
 int netkeyer_port = 6789;
 char netkeyer_hostaddress[16] = "127.0.0.1";

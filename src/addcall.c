@@ -23,17 +23,22 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+
+#include <stdlib.h>
+#include <string.h>
+
+#include <glib.h>
+
 #include "addcall.h"
+#include "addmult.h"
 #include "addpfx.h"
-#include "tlf.h"
-#include "searchcallarray.h"
 #include "getctydata.h"
-#include "zone_nr.h"
 #include "getpx.h"
 #include "paccdx.h"
-#include "addmult.h"
-#include "lancode.h"
-#include <glib.h>
+#include "searchcallarray.h"
+#include "tlf.h"
+#include "zone_nr.h"
+
 
 int excl_add_veto;
 /* This variable helps to handle in other modules, that station is multiplier or not */
@@ -82,7 +87,7 @@ int addcall(void)
     static int i, j, z = 0;
     static int add_ok;
     int pfxnumcntidx = -1;
-    int pxnr;
+    int pxnr = 0;
     excl_add_veto = 0;
 
     found = searchcallarray(hiscall);
@@ -131,16 +136,17 @@ int addcall(void)
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
 	getpx(hiscall);
-
 	pxnr = pxstr[strlen(pxstr) - 1] - 48;
+
 	getctydata(hiscall);
 
 	int pfxi = 0;
-	while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+	while(pfxi < pfxnummultinr) {
+	    if (pfxnummulti[pfxi].countrynr == countrynr) {
+		pfxnumcntidx = pfxi;
+		break;
+	    }
 	    pfxi++;
-	}
-	if (pfxnummulti[pfxi].countrynr == countrynr) {
-	    pfxnumcntidx = pfxi;
 	}
     }
 
@@ -182,175 +188,51 @@ int addcall(void)
 
 	switch (bandinx) {
 
-	case BANDINDEX_160:{
+	case BANDINDEX_160:
+	case BANDINDEX_80:
+	case BANDINDEX_40:
+	case BANDINDEX_20:
+	case BANDINDEX_15:
+	case BANDINDEX_10:
 
-		if (j != 0 && (countries[j] & BAND160) == 0 && pfxnumcntidx < 0) {
-		    countries[j] = (countries[j] | BAND160);
-		    countryscore[0]++;
+	    if (pfxnumcntidx < 0) {
+		if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
+		    countries[j] |= inxes[bandinx];
+		    countryscore[bandinx]++;
 		    addcty = j;
 		}
-		if (z != 0 && (zones[z] & BAND160) == 0 && pfxnumcntidx < 0) {
-		    zones[z] = (zones[z] | BAND160);
-		    zonescore[0]++;
+		if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
+		    zones[z] |= inxes[bandinx];
+		    zonescore[bandinx]++;
 		    addzone = z;
 		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND160) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND160;
-			addcallarea = 1;
-			countryscore[0]++;
-			zonescore[0]++;
-		    }
-		}
-		break;
-
 	    }
-	case BANDINDEX_80:{
-
-		if (j != 0 && (countries[j] & BAND80) == 0 && pfxnumcntidx < 0) {
-		    countries[j] = (countries[j] | BAND80);
-		    countryscore[1]++;
-		    addcty = j;
+	    else {
+		if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[bandinx])
+			== 0) {
+		    pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
+		    addcallarea = 1;
+		    countryscore[bandinx]++;
+		    zonescore[bandinx]++;
 		}
-		if (z != 0 && (zones[z] & BAND80) == 0 && pfxnumcntidx < 0) {
-		    zones[z] = (zones[z] | BAND80);
-		    zonescore[1]++;
-		    addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND80) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND80;
-			addcallarea = 1;
-			countryscore[1]++;
-			zonescore[1]++;
-		    }
-		}
-		break;
 	    }
-	case BANDINDEX_40:{
+	    break;
 
-		if (j != 0 && (countries[j] & BAND40) == 0 && pfxnumcntidx < 0) {
-		    countries[j] = (countries[j] | BAND40);
-		    countryscore[2]++;
-		    addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND40) == 0 && pfxnumcntidx < 0) {
-		    zones[z] = (zones[z] | BAND40);
-		    zonescore[2]++;
-		    addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND40) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND40;
-			addcallarea = 1;
-			countryscore[2]++;
-			zonescore[2]++;
-		    }
-		}
-		break;
-	    }
-	case BANDINDEX_20:{
 
-		if (j != 0 && (countries[j] & BAND20) == 0 && pfxnumcntidx < 0) {
-		    countries[j] = (countries[j] | BAND20);
-		    countryscore[3]++;
-		    addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND20) == 0 && pfxnumcntidx < 0) {
-		    zones[z] = (zones[z] | BAND20);
-		    zonescore[3]++;
-		    addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND20) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND20;
-			addcallarea = 1;
-			countryscore[3]++;
-			zonescore[3]++;
-		    }
-		}
-		break;
-	    }
-	case BANDINDEX_15:{
+	case BANDINDEX_12:
+	case BANDINDEX_17:
+	case BANDINDEX_30:
 
-		if (j != 0 && (countries[j] & BAND15) == 0 && pfxnumcntidx < 0) {
-		    countries[j] = (countries[j] | BAND15);
-		    countryscore[4]++;
-		    addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND15) == 0 && pfxnumcntidx < 0) {
-		    zones[z] = (zones[z] | BAND15);
-		    zonescore[4]++;
-		    addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND15) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND15;
-			addcallarea = 1;
-			countryscore[4]++;
-			zonescore[4]++;
-		    }
-		}
-		break;
+	    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
+		countries[j] |= inxes[bandinx];
+		addcty = j;
 	    }
-	case BANDINDEX_10:{
+	    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
+		zones[z] |= inxes[bandinx];
+		addzone = z;
+	    }
+	    break;
 
-		if (j != 0 && (countries[j] & BAND10) == 0 && pfxnumcntidx < 0) {
-		    countries[j] = (countries[j] | BAND10);
-		    countryscore[5]++;
-		    addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND10) == 0 && pfxnumcntidx < 0) {
-		    zones[z] = (zones[z] | BAND10);
-		    zonescore[5]++;
-		    addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND10;
-			addcallarea = 1;
-			countryscore[5]++;
-			zonescore[5]++;
-		    }
-		}
-		break;
-	    }
-	case BANDINDEX_12:{
-
-		if (j != 0 && (countries[j] & BAND12) == 0) {
-		    countries[j] = (countries[j] | BAND12);
-		    addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND12) == 0) {
-		    zones[z] = (zones[z] | BAND12);
-		    addzone = z;
-		}
-		break;
-	    }
-	case BANDINDEX_17:{
-
-		if (j != 0 && (countries[j] & BAND17) == 0) {
-		    countries[j] = (countries[j] | BAND17);
-		    addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND17) == 0) {
-		    zones[z] = (zones[z] | BAND17);
-		    addzone = z;
-		}
-		break;
-	    }
-	case BANDINDEX_30:{
-
-		if (j != 0 && (countries[j] & BAND30) == 0) {
-		    countries[j] = (countries[j] | BAND30);
-		    addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND30) == 0) {
-		    zones[z] = (zones[z] | BAND30);
-		    addzone = z;
-		}
-		break;
-	    }
 	}
     }
 
@@ -404,7 +286,7 @@ int addcall2(void)
     int bandinx;
     int k;
     int pfxnumcntidx = -1;
-    int pxnr;
+    int pxnr = 0;
     excl_add_veto = 0;
 
     g_strlcpy(hiscall, lan_logline + 29, 20);
@@ -466,11 +348,12 @@ int addcall2(void)
 	getctydata(hiscall);
 
 	int pfxi = 0;
-	while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+	while(pfxi < pfxnummultinr) {
+	    if (pfxnummulti[pfxi].countrynr == countrynr) {
+		pfxnumcntidx = pfxi;
+		break;
+	    }
 	    pfxi++;
-	}
-	if (pfxnummulti[pfxi].countrynr == countrynr) {
-	    pfxnumcntidx = pfxi;
 	}
 	add_ok = 1;
     }
@@ -505,178 +388,53 @@ int addcall2(void)
 
 	bandinx = get_band(lan_logline);
 	band_score[bandinx]++;
-	switch (bandinx) {
 
-	case BANDINDEX_160:{
+	if (excl_add_veto == 0) {
 
-		if (j != 0 && (countries[j] & BAND160) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    countries[j] = (countries[j] | BAND160);
-		    countryscore[0]++;
-//                          addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND160) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    zones[z] = (zones[z] | BAND160);
-		    zonescore[0]++;
+	    switch (bandinx) {
+
+	    case BANDINDEX_160:
+	    case BANDINDEX_80:
+	    case BANDINDEX_40:
+	    case BANDINDEX_20:
+	    case BANDINDEX_15:
+	    case BANDINDEX_10:
+
+		if (pfxnumcntidx < 0) {
+		    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
+			countries[j] |= inxes[bandinx];
+			countryscore[bandinx]++;
+//                              addcty = j;
+		    }
+		    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
+			zones[z] |= inxes[bandinx];
+			zonescore[bandinx]++;
 //                              addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND160) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND160;
-			addcallarea = 1;
-			countryscore[0]++;
-			zonescore[0]++;
 		    }
 		}
-		break;
-
-	    }
-	case BANDINDEX_80:{
-
-		if (j != 0 && (countries[j] & BAND80) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    countries[j] = (countries[j] | BAND80);
-		    countryscore[1]++;
-//                              addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND80) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    zones[z] = (zones[z] | BAND80);
-		    zonescore[1]++;
-//                              addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND80) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND80;
-			addcallarea = 1;
-			countryscore[1]++;
-			zonescore[1]++;
-		    }
-		}
-
-		break;
-	    }
-	case BANDINDEX_40:{
-
-		if (j != 0 && (countries[j] & BAND40) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    countries[j] = (countries[j] | BAND40);
-		    countryscore[2]++;
-//                              addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND40) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    zones[z] = (zones[z] | BAND40);
-		    zonescore[2]++;
-//                              addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND40) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND40;
-			addcallarea = 1;
-			countryscore[2]++;
-			zonescore[2]++;
-		    }
-		}
-
-		break;
-	    }
-	case BANDINDEX_20:{
-
-		if (j != 0 && (countries[j] & BAND20) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    countries[j] = (countries[j] | BAND20);
-		    countryscore[3]++;
-//                              addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND20) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    zones[z] = (zones[z] | BAND20);
-		    zonescore[3]++;
-//                              addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND20) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND20;
-			addcallarea = 1;
-			countryscore[3]++;
-			zonescore[3]++;
-		    }
-		}
-
-		break;
-	    }
-	case BANDINDEX_15:{
-
-		if (j != 0 && (countries[j] & BAND15) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    countries[j] = (countries[j] | BAND15);
-		    countryscore[4]++;
-//                              addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND15) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    zones[z] = (zones[z] | BAND15);
-		    zonescore[4]++;
-//                              addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND15) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND15;
-			addcallarea = 1;
-			countryscore[4]++;
-			zonescore[4]++;
-		    }
-		}
-
-		break;
-	    }
-	case BANDINDEX_10:{
-
-		if (j != 0 && (countries[j] & BAND10) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    countries[j] = (countries[j] | BAND10);
-		    countryscore[5]++;
-//                              addcty = j;
-		}
-		if (z != 0 && (zones[z] & BAND10) == 0 && pfxnumcntidx < 0 && excl_add_veto == 0) {
-		    zones[z] = (zones[z] | BAND10);
-		    zonescore[5]++;
-//                              addzone = z;
-		}
-		if (pfxnummultinr > 0 && pfxnumcntidx > -1 && excl_add_veto == 0) {
+		else {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] = pfxnummulti[pfxnumcntidx].qsos[pxnr] | BAND10;
+			pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
 			addcallarea = 1;
-			zonescore[5]++;
-			countryscore[5]++;
+			zonescore[bandinx]++;
+			countryscore[bandinx]++;
 		    }
 		}
-
 		break;
-	    }
-	case BANDINDEX_12:{
 
-		if (j != 0 && (countries[j] & BAND12) == 0 && excl_add_veto == 0) {
-		    countries[j] = (countries[j] | BAND12);
-		}
-		if (z != 0 && (zones[z] & BAND12) == 0 && excl_add_veto == 0) {
-		    zones[z] = (zones[z] | BAND12);
-		}
-		break;
-	    }
-	case BANDINDEX_17:{
+	    case BANDINDEX_30:
+	    case BANDINDEX_17:
+	    case BANDINDEX_12:
 
-		if (j != 0 && (countries[j] & BAND17) == 0 && excl_add_veto == 0) {
-		    countries[j] = (countries[j] | BAND17);
+		if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
+		    countries[j] |= inxes[bandinx];
 		}
-		if (z != 0 && (zones[z] & BAND17) == 0 && excl_add_veto == 0) {
-		    zones[z] = (zones[z] | BAND17);
+		if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
+		    zones[z] |= inxes[bandinx];
 		}
 		break;
+
 	    }
-	case BANDINDEX_30:{
-
-		if (j != 0 && (countries[j] & BAND30) == 0 && excl_add_veto == 0) {
-		    countries[j] = (countries[j] | BAND30);
-		}
-		if (z != 0 && (zones[z] & BAND30) == 0 && excl_add_veto == 0) {
-		    zones[z] = (zones[z] | BAND30);
-		}
-		break;
-	    }
-
-
 	}
     }
     if (wpx == 1 || pfxmultab == 1) {

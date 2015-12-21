@@ -16,26 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+
 #ifndef TLF_H
 #define TLF_H
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <curses.h>
-
-#include <errno.h>
-#include <time.h>
-#include <ctype.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 
 #define NO_KEYER 0
 #define LPT_KEYER 1 	/* deprecated */

@@ -21,18 +21,21 @@
  	*
  	*--------------------------------------------------------------*/
 
-#include "listmessages.h"
 
+#include <string.h>
+
+#include <glib.h>
+
+#include "clear_display.h"
+#include "nicebox.h"		// Includes curses.h
 #include "tlf.h"
 #include "ui_utils.h"
-#include "nicebox.h"
-#include "clear_display.h"
-#include <glib.h>
 
 #define LIST_HEIGHT 15
 #define LIST_WIDTH  78
 #define LIST_UPPER  7
 #define LIST_LEFT   0
+
 
 char  printbuffer[160];
 

@@ -21,11 +21,14 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+
+#include <string.h>
+#include <unistd.h>
+
 #include "qtcutil.h"
-#include <glib.h>
-#include "string.h"
-#include "tlf.h"
-#include "qtcvars.h"
+#include "qtcvars.h"		// Includes globalvars.h
+#include "tlf_curses.h"
+
 
 GHashTable* qtc_store = NULL; 	/* stores number of QTC's per callsign */
 struct t_qtc_store_obj *qtc_empty_obj = NULL;

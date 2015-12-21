@@ -22,18 +22,23 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "readcalls.h"
-#include "addpfx.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "addmult.h"
+#include "addpfx.h"
 #include "get_time.h"
-#include "tlf.h"
-#include "globalvars.h"
-#include <glib.h>
 #include "getctydata.h"
-#include "zone_nr.h"
 #include "getpx.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
 #include "paccdx.h"
 #include "startmsg.h"
+#include "tlf_curses.h"
+#include "zone_nr.h"
+
 
 int readcalls(void)
 {
@@ -86,13 +91,13 @@ int readcalls(void)
     for (i = 0; i < NBANDS; i++)
 	band_score[i] = 0;
 
-    for (i = 0; i <= 5; i++)
+    for (i = 0; i < NBANDS; i++)
 	countryscore[i] = 0;
 
     for (n = 1; n < MAX_ZONES; n++)
 	zones[n] = 0;
 
-    for (n = 0; n < 6; n++)
+    for (n = 0; n < NBANDS; n++)
 	zonescore[n] = 0;
 
     for (n = 0; n < NBANDS; n++)	//F6CFE
@@ -124,7 +129,7 @@ int readcalls(void)
 
     while (fgets(inputbuffer, 90, fp) != NULL) {
 	pfxnumcntidx = -1;
-	pxnr = -1;
+	pxnr = 0;
 	excl_add_veto = 0;
 	r++;
 
@@ -331,11 +336,12 @@ int readcalls(void)
 	    getctydata(presentcall);
 
 	    int pfxi = 0;
-	    while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+	    while(pfxi < pfxnummultinr) {
+		if (pfxnummulti[pfxi].countrynr == countrynr) {
+		    pfxnumcntidx = pfxi;
+		    break;
+		}
 		pfxi++;
-	    }
-	    if (pfxnummulti[pfxi].countrynr == countrynr) {
-		pfxnumcntidx = pfxi;
 	    }
 	    add_ok = 1;
 	}
@@ -408,34 +414,34 @@ int readcalls(void)
     if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
 	for (n = 1; n < MAX_ZONES; n++) {
 	    if ((zones[n] & BAND160) != 0)
-		zonescore[0]++;
+		zonescore[BANDINDEX_160]++;
 	    if ((zones[n] & BAND80) != 0)
-		zonescore[1]++;
+		zonescore[BANDINDEX_80]++;
 	    if ((zones[n] & BAND40) != 0)
-		zonescore[2]++;
+		zonescore[BANDINDEX_40]++;
 	    if ((zones[n] & BAND20) != 0)
-		zonescore[3]++;
+		zonescore[BANDINDEX_20]++;
 	    if ((zones[n] & BAND15) != 0)
-		zonescore[4]++;
+		zonescore[BANDINDEX_15]++;
 	    if ((zones[n] & BAND10) != 0)
-		zonescore[5]++;
+		zonescore[BANDINDEX_10]++;
 	}
     }
 
     if (cqww == 1) {
 	for (n = 1; n <= MAX_DATALINES - 1; n++) {
 	    if ((countries[n] & BAND160) != 0)
-		countryscore[0]++;
+		countryscore[BANDINDEX_160]++;
 	    if ((countries[n] & BAND80) != 0)
-		countryscore[1]++;
+		countryscore[BANDINDEX_80]++;
 	    if ((countries[n] & BAND40) != 0)
-		countryscore[2]++;
+		countryscore[BANDINDEX_40]++;
 	    if ((countries[n] & BAND20) != 0)
-		countryscore[3]++;
+		countryscore[BANDINDEX_20]++;
 	    if ((countries[n] & BAND15) != 0)
-		countryscore[4]++;
+		countryscore[BANDINDEX_15]++;
 	    if ((countries[n] & BAND10) != 0)
-		countryscore[5]++;
+		countryscore[BANDINDEX_10]++;
 	}
     }
     /* end cqww */
@@ -448,17 +454,17 @@ int readcalls(void)
 	    if (cntr != w_cty && cntr != ve_cty)	// W and VE don't count here...
 	    {
 		if ((countries[cntr] & BAND160) != 0)
-		    countryscore[0]++;
+		    countryscore[BANDINDEX_160]++;
 		if ((countries[cntr] & BAND80) != 0)
-		    countryscore[1]++;
+		    countryscore[BANDINDEX_80]++;
 		if ((countries[cntr] & BAND40) != 0)
-		    countryscore[2]++;
+		    countryscore[BANDINDEX_40]++;
 		if ((countries[cntr] & BAND20) != 0)
-		    countryscore[3]++;
+		    countryscore[BANDINDEX_20]++;
 		if ((countries[cntr] & BAND15) != 0)
-		    countryscore[4]++;
+		    countryscore[BANDINDEX_15]++;
 		if ((countries[cntr] & BAND10) != 0)
-		    countryscore[5]++;
+		    countryscore[BANDINDEX_10]++;
 	    }
 	}
     }				// end dx_arrlsections
@@ -468,17 +474,17 @@ int readcalls(void)
 	int cntr;
 	for (cntr = 1; cntr < MAX_DATALINES; cntr++) {
 	    if ((countries[cntr] & BAND160) != 0)
-		countryscore[0]++;
+		countryscore[BANDINDEX_160]++;
 	    if ((countries[cntr] & BAND80) != 0)
-		countryscore[1]++;
+		countryscore[BANDINDEX_80]++;
 	    if ((countries[cntr] & BAND40) != 0)
-		countryscore[2]++;
+		countryscore[BANDINDEX_40]++;
 	    if ((countries[cntr] & BAND20) != 0)
-		countryscore[3]++;
+		countryscore[BANDINDEX_20]++;
 	    if ((countries[cntr] & BAND15) != 0)
-		countryscore[4]++;
+		countryscore[BANDINDEX_15]++;
 	    if ((countries[cntr] & BAND10) != 0)
-		countryscore[5]++;
+		countryscore[BANDINDEX_10]++;
 	}
 
     }
@@ -488,17 +494,17 @@ int readcalls(void)
 
 	for (n = 1; n < MAX_DATALINES; n++) {
 	    if ((countries[n] & BAND160) != 0)
-		countryscore[0]++;
+		countryscore[BANDINDEX_160]++;
 	    if ((countries[n] & BAND80) != 0)
-		countryscore[1]++;
+		countryscore[BANDINDEX_80]++;
 	    if ((countries[n] & BAND40) != 0)
-		countryscore[2]++;
+		countryscore[BANDINDEX_40]++;
 	    if ((countries[n] & BAND20) != 0)
-		countryscore[3]++;
+		countryscore[BANDINDEX_20]++;
 	    if ((countries[n] & BAND15) != 0)
-		countryscore[4]++;
+		countryscore[BANDINDEX_15]++;
 	    if ((countries[n] & BAND10) != 0)
-		countryscore[5]++;
+		countryscore[BANDINDEX_10]++;
 	}
     }
 
@@ -532,39 +538,39 @@ int readcalls(void)
 		// eg: K0, K1, K2, ..., K9
 		for(pfxnum=0; pfxnum<10; pfxnum++) {
 		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND160) != 0) {
-			countryscore[0]++;
+			countryscore[BANDINDEX_160]++;
 		    }
 		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND80) != 0) {
-			countryscore[1]++;
+			countryscore[BANDINDEX_80]++;
 		    }
 		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND40) != 0) {
-			countryscore[2]++;
+			countryscore[BANDINDEX_40]++;
 		    }
 		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND20) != 0) {
-			countryscore[3]++;
+			countryscore[BANDINDEX_20]++;
 		    }
 		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND15) != 0) {
-			countryscore[4]++;
+			countryscore[BANDINDEX_15]++;
 		    }
 		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND10) != 0) {
-			countryscore[5]++;
+			countryscore[BANDINDEX_10]++;
 		    }
 		}
 	    }
 	    else {
 		// simple 'country_mult', but it's works together with pfxnummultinr
 		if ((countries[n] & BAND160) != 0)
-		    countryscore[0]++;
+		    countryscore[BANDINDEX_160]++;
 		if ((countries[n] & BAND80) != 0)
-		    countryscore[1]++;
+		    countryscore[BANDINDEX_80]++;
 		if ((countries[n] & BAND40) != 0)
-		    countryscore[2]++;
+		    countryscore[BANDINDEX_40]++;
 		if ((countries[n] & BAND20) != 0)
-		    countryscore[3]++;
+		    countryscore[BANDINDEX_20]++;
 		if ((countries[n] & BAND15) != 0)
-		    countryscore[4]++;
+		    countryscore[BANDINDEX_15]++;
 		if ((countries[n] & BAND10) != 0)
-		    countryscore[5]++;
+		    countryscore[BANDINDEX_10]++;
 	    }
 	}
     }
@@ -576,23 +582,13 @@ int readcalls(void)
 	for (i = 0; i < NBANDS; i++)
 	    band_score[i] = 0;
 
-	for (i = 0; i <= 5; i++)
+	for (i = 0; i < NBANDS; i++)
 	    countryscore[i] = 0;
 
 	for (i = 0; i < NBANDS; i++)
 	    multscore[i] = 0;
 
     }
-
-
-    /* \todo check what the following code is for tb 19sep2011 */
-    if (((serial_section_mult == 1)
-//              || (serial_grid4_mult == 1)
-	 || (sectn_mult == 1)) && multarray_nr == 1) {	// correction ......
-	mults[1][0] = '\0';
-	mult_bands[1] = 0;
-    } else if (serial_section_mult == 1 && multarray_nr > 1)
-	multarray_nr++;
 
     return (s);			// nr of lines in log
 }

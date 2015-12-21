@@ -1,4 +1,7 @@
-#include "tlf.h"
+#ifndef TLF_H
+# include "tlf.h"
+#endif
+
 #include <glib.h>
 
 extern char qsos[MAX_QSOS][LOGLINELEN+1];// array of log lines of QSOs so far;
@@ -50,8 +53,8 @@ extern int dx_arrlsections;
 extern int wysiwyg_multi;
 extern int wysiwyg_once;
 extern char pxstr[];
-extern int zonescore[6];
-extern int countryscore[6];
+extern int zonescore[NBANDS];
+extern int countryscore[NBANDS];
 extern int qsonum;
 extern int countrynr;
 extern int w_cty;

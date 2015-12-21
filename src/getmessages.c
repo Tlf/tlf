@@ -23,14 +23,19 @@
 	 *        also gets the nr of the last qso from  the logfile
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include "getmessages.h"
-#include "qsonr_to_str.h"
-#include "dxcc.h"
-#include "tlf.h"
-#include "getctydata.h"
-#include "get_time.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "checklogfile.h"
+#include "dxcc.h"
+#include "getctydata.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
+#include "qsonr_to_str.h"
+#include "tlf_curses.h"
+
 
 int getmessages(void)
 {

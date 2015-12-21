@@ -19,25 +19,33 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-#include "parse_logcfg.h"
-#include "tlf.h"
-#include <glib.h>
+
+
+#include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "bandmap.h"
 #include "cw_utils.h"
-#include "speedupndown.h"
-#include "startmsg.h"
-#include "bandmap.h"
-#include "locator2longlat.h"
-#include "getpx.h"
-#include "setcontest.h"
-#include "lancode.h"
 #include "getctydata.h"
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
-#include "bandmap.h"
+#include "getpx.h"
+#include "lancode.h"
 #include "locator2longlat.h"
-#include "dxcc.h"
-#include "qtcvars.h"
+#include "parse_logcfg.h"
+#include "qtcvars.h"		// Includes globalvars.h
+#include "setcontest.h"
+#include "startmsg.h"
+#include "tlf_curses.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_LIBHAMLIB
+# include <hamlib/rig.h>
+#endif
+
 
 extern int keyerport;
 extern char tonestr[];
@@ -851,8 +859,9 @@ int parse_logcfg(char *inputbuffer)
     	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
-	    if ((strncmp(buff, "MC", 2) == 0)
-		|| (strncmp(buff, "mc", 2) == 0)) {
+	    if ((strncmp(buff, "mcedit", 6) == 0)
+		|| (strncmp(buff, "mc", 2) == 0)
+		|| (strncmp(buff, "MC", 2) == 0)) {
 		editor = EDITOR_MC;
 		break;
 	    }

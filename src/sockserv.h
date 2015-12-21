@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+
 #ifndef SOCKSERV_H
 #define SOCKSERV_H
 
@@ -51,7 +53,7 @@ void socktimeout(int msec);
 void nosocktimeout(void);
 
 /*
-   ** Set line mode: TRUE - only give me complete lines.  
+   ** Set line mode: TRUE - only give me complete lines.
    **                FALSE- give me any data received, even multiple lines.
    ** The default is FALSE.
  */
@@ -62,7 +64,7 @@ void setlinemode(int s, int tf);
    ** s      = [OUT] the socket data was received on;
    ** buf    = [OUT] character buffer containing socket data;
    **                if linemode = TRUE, buffer is terminated with null character
-   ** buflen = [IN]  length of the character buffer; 
+   ** buflen = [IN]  length of the character buffer;
    ** returns the number of bytes read, or -1 indicating EOF on the socket.
    **         or -2 indicating timeout (if enabled).
  */

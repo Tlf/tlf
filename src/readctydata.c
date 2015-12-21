@@ -22,13 +22,22 @@
 	 *              Read country data  from disk file cty.dat
 	 *--------------------------------------------------------------*/
 
-#include "readctydata.h"
-#include "tlf.h"
-#include "dxcc.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include <glib.h>
+
+#include "dxcc.h"
+#include "tlf.h"
+#include "tlf_curses.h"
+
 #ifdef HAVE_CONFIG_H
-#	include <config.h>
+# include <config.h>
 #endif
+
 
 int readctydata(void)
 {

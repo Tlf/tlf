@@ -24,24 +24,31 @@
 
 ------------------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include "log_to_disk.h"
+
+#include <string.h>
 #include <pthread.h>
-#include "tlf.h"
-#include "scroll_log.h"
+#include <unistd.h>
+
 #include "addcall.h"
-#include "makelogline.h"
-#include "store_qso.h"
-#include "qsonr_to_str.h"
-#include "writeparas.h"
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
-#include "gettxinfo.h"
-#include "lancode.h"
 #include "addspot.h"
+#include "gettxinfo.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
+#include "lancode.h"
+#include "makelogline.h"
+#include "scroll_log.h"
 #include "score.h"
+#include "store_qso.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_LIBHAMLIB
+# include <hamlib/rig.h>
+#endif
+
 
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 

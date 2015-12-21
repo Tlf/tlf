@@ -22,9 +22,9 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include "addarea.h"
-#include "tlf.h"
+
+#include <string.h>
+
 
 int add_callarea(void)
 {

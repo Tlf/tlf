@@ -46,8 +46,9 @@
  *  New bearing code added by N0NB was found at:
  *  http://williams.best.vwh.net/avform.htm#Crs
  */
-#ifndef LOCATOR2LONGLAT_H
 
+
+#ifndef LOCATOR2LONGLAT_H
 #define LOCATOR2LONGLAT_H
 
 

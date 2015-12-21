@@ -19,13 +19,28 @@
 
 /* User Interface helpers for ncurses based user interface */
 
-#include <curses.h>
+
+#include <pthread.h>
+
 #include "stoptx.h"
+#include "tlf_panel.h"
+
 
 extern int use_rxvt;
 
+pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 static int getkey(int wait);
 static int onechar(void);
+
+
+/** fake refresh code to use update logic for panels */
+void refreshp() {
+    pthread_mutex_lock( &panel_mutex );
+    update_panels();
+    doupdate();
+    pthread_mutex_unlock( &panel_mutex );
+}
 
 
 /** add A_BOLD to attributes if 'use_rxvt' is not set */

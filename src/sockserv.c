@@ -22,16 +22,16 @@
 /* intended to simplify the porting of JNOS servers and clients to Unix */
 /* Written by N2RJT - Dave Brown */
 
-#include "tlf.h"
-#include <sys/time.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <memory.h>
-#include <stdarg.h>
-#include "sockserv.h"
-#include "main.h"
 
+#include <errno.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "sockserv.h"
+#include "tlf_curses.h"
 
 
 /* This structure holds the buffers for each open socket.  It was an */
@@ -110,7 +110,7 @@ extern WINDOW *sclwin;
     strcpy(sockserv_error, "");
     if (udp_socket == s) {
 	peerlen = sizeof(udp_peer);
-	if (sendto(s, buf, buflen, 0, (struct sockaddr *) &udp_peer, 
+	if (sendto(s, buf, buflen, 0, (struct sockaddr *) &udp_peer,
                    peerlen) < 0) {
 	    myperror("usputb:sendto");
 	    return -1;
@@ -142,6 +142,10 @@ int usvprintf(int s, char *fmt, va_list args)
 	/* Use a default value that is huge */
 	withargs = 1;
 	buf = (char *) malloc(SOBUF);
+	if (buf == NULL) {
+	    /* no memory available -> just ignore the output to the socket */
+	    return 0;
+	}
 	if ((len = vsprintf(buf, fmt, args)) >= SOBUF) {
 	    /* It's too late to be sorry.  He's dead, Jim */
 	    fprintf(stderr, "usprintf() exceeded %d bytes (%d bytes)\n",
@@ -332,7 +336,7 @@ int recvline(int *fd, char *buf, int buflen)
 	    if (i < nlsock) {
 		if (FD_ISSET(lsock[i], &readfds)) {
 		    len = sizeof(client);
-		    while ((ns = accept(lsock[i], (struct sockaddr *) &client, 
+		    while ((ns = accept(lsock[i], (struct sockaddr *) &client,
                                         &len)) == -1) {
 			if (errno != EINTR) {
 			    myperror("recvline: accept");
@@ -486,9 +490,9 @@ int startcliaddr(int family, unsigned long int addr, unsigned short int portnum)
 
     while ((s = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 	if (errno != EINTR) {
-wprintw(sclwin, "socket failure");
-wrefresh(sclwin);
-sleep(1);
+	    wprintw(sclwin, "socket failure");
+	    wrefresh(sclwin);
+	    sleep(1);
 	    return -1;
 	}
     }
@@ -506,9 +510,9 @@ sleep(1);
 	ifds = nfds - 1;
     FD_SET(s, &openfds);
 
-wprintw(sclwin, "still here...");
-wrefresh(sclwin);
-sleep(2);
+    wprintw(sclwin, "still here...");
+    wrefresh(sclwin);
+    sleep(2);
 
     sockbuf[s].buf = (char *) malloc(sizeof(char) * SOBUF);
 
@@ -516,9 +520,10 @@ sleep(2);
     sockbuf[s].buflen = 0;
     sockbuf[s].fragment = 0;
     sockbuf[s].whole_lines = 0;
-wprintw(sclwin, "not dead...");
-wrefresh(sclwin);
-sleep(1);
+
+    wprintw(sclwin, "not dead...");
+    wrefresh(sclwin);
+    sleep(1);
 
     return s;
 }

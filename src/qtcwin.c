@@ -21,34 +21,35 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "qtcwin.h"
 
-#include "ui_utils.h"
-#include <panel.h>
-#include "nicebox.h"
-#include "time_update.h"
 #include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "callinput.h"
+#include "cw_utils.h"
+#include "genqtclist.h"
+#include "get_time.h"
+#include "keyer.h"
+#include "lancode.h"
+#include "nicebox.h"		// Includes curses.h
+#include "qtc_log.h"
+#include "qtcutil.h"
+#include "qtcvars.h"		// Includes globalvars.h
 #include "rtty.h"
 #include "sendbuf.h"
-#include "qtc_log.h"
-#include "globalvars.h"
-#include "qtcutil.h"
-#include "genqtclist.h"
 #include "speedupndown.h"
-#include "cw_utils.h"
-#include "keyer.h"
-#include "callinput.h"
-#include "get_time.h"
+#include "time_update.h"
+#include "tlf_panel.h"
+#include "ui_utils.h"
 #include "write_keyer.h"
-#include "qtcvars.h"
-#include "lancode.h"
-
-#include <sys/time.h>
 
 /* check direction clause macro
  * direction should be RECV (1) or SEND (2), see tlf.h
  */
 #define DIRCLAUSE (direction == RECV) || (direction == SEND && (activefield == 0 || activefield == 2))
+
 
 void init_qtc_panel();
 void draw_qtc_panel();

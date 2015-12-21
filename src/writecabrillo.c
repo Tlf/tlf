@@ -21,16 +21,25 @@
 	 *   write cabrillo  file
 	 *
 	 *--------------------------------------------------------------*/
+
+
 #define _XOPEN_SOURCE 500
 #define _GNU_SOURCE
-#include "writecabrillo.h"
-#include "ui_utils.h"
-#include <glib.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "getsummary.h"
-#include "tlf.h"
-#include "qtcvars.h"
+#include "qtcvars.h"		// Includes globalvars.h
+#include "tlf_curses.h"
+#include "ui_utils.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 
 extern char call[];
 

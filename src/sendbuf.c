@@ -21,19 +21,21 @@
 *    send the text buffer to the keyer  driver
 *
 ---------------------------------------------------------------------------*/
-#include "sendbuf.h"
-#include "netkeyer.h"
-#include "lancode.h"
-#include "displayit.h"
-#include "tlf.h"
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <glib.h>
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <sys/types.h>
-#include <curses.h>
+#include "displayit.h"
+#include "lancode.h"
+#include "netkeyer.h"
+#include "tlf.h"
+#include "tlf_curses.h"
+
 
 char buffer[81];
 

@@ -19,21 +19,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "fldigixmlrpc.h"
 
 #include "startmsg.h"
-#include <stdlib.h>
-#include <stdio.h>
 
-#include <config.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #ifdef HAVE_LIBXMLRPC
-#include <xmlrpc-c/base.h>
-#include <xmlrpc-c/client.h>
+# include <xmlrpc-c/base.h>
+# include <xmlrpc-c/client.h>
 #endif
 
 #define NAME "Tlf"
 #define XMLRPCVERSION "1.0"
+
 
 int fldigi_var_carrier = 0;
 

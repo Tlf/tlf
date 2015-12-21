@@ -22,10 +22,11 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "checkparameters.h"
-#include "tlf.h"
+
+#include <stdio.h>
+
 #include "writeparas.h"
-#include "checklogfile.h"
+
 
 int checkparameters(void)
 {

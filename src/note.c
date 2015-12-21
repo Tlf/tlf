@@ -21,12 +21,14 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "globalvars.h"
-#include "note.h"
-#include "tlf.h"
-#include "nicebox.h"
-#include "scroll_log.h"
+
+#include <stdlib.h>
+#include <string.h>
+
 #include "clear_display.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
+#include "nicebox.h"		// Includes curses.h
+#include "scroll_log.h"
 
 
 int include_note(void)
@@ -63,7 +65,7 @@ int include_note(void)
 
     if (strlen(buffer) >= 1) {
 	strncat(buffer2, buffer, (LOGLINELEN-1) - strlen(buffer2));
-	memset(buffer2 + strlen(buffer2), ' ', 
+	memset(buffer2 + strlen(buffer2), ' ',
 		(LOGLINELEN-1) - strlen(buffer2)); /* fill spaces */
 	buffer2[LOGLINELEN-1] = '\0';
 

@@ -24,57 +24,60 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "callinput.h"
+
+#include <ctype.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "addspot.h"
-#include "changefreq.h"
-#include "bandmap.h"
-#include <glib.h>
-#include "show_help.h"
-#include "cw_utils.h"
-#include "qtcwin.h"
-#include "netkeyer.h"
-#include "nicebox.h"
-#include "tlf.h"
-#include "clear_display.h"
-#include "stoptx.h"
-#include "speedupndown.h"
-#include "sendbuf.h"
-#include "scroll_log.h"
-#include "addcall.h"
-#include "makelogline.h"
-#include "store_qso.h"
-#include "qsonr_to_str.h"
-#include "writeparas.h"
-#include "printcall.h"
-#include "time_update.h"
-#include "cleanup.h"
 #include "autocq.h"
-#include "sendspcall.h"
-#include "edit_last.h"
+#include "bandmap.h"
+#include "calledit.h"
+#include "callinput.h"
+#include "changefreq.h"
 #include "changepars.h"
+#include "clear_display.h"
+#include "cleanup.h"
+#include "cw_utils.h"
+#include "edit_last.h"
 #include "deleteqso.h"
+#include "getctydata.h"
+#include "grabspot.h"
+#include "lancode.h"
+#include "muf.h"
+#include "netkeyer.h"
+#include "nicebox.h"		// Includes curses.h
 #include "note.h"
 #include "prevqso.h"
-#include "getctydata.h"
-#include "showinfo.h"
-#include "searchlog.h"
-#include "calledit.h"
-#include "muf.h"
-#include "clusterinfo.h"
-#include "grabspot.h"
-#include "splitscreen.h"
-#include "showpxmap.h"
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
-#include "lancode.h"
+#include "printcall.h"
+#include "qtcvars.h"		// Includes globalvars.h
+#include "qtcwin.h"
 #include "rtty.h"
+#include "searchlog.h"		// Includes glib.h
+#include "sendbuf.h"
+#include "sendspcall.h"
+#include "show_help.h"
+#include "showinfo.h"
+#include "showpxmap.h"
+#include "speedupndown.h"
+#include "splitscreen.h"
+#include "stoptx.h"
+#include "time_update.h"
 #include "ui_utils.h"
-#include "qtcvars.h"
-#include <sys/time.h>
-#include <signal.h>
+#include "writeparas.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_LIBHAMLIB
+# include <hamlib/rig.h>
+#endif
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
+
 
 void send_bandswitch(int freq);
 int autosend(void);

@@ -16,10 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "paccdx.h"
-#include "tlf.h"
-#include "getpx.h"
+
+
+#include <string.h>
+
 #include "getctydata.h"
+#include "getpx.h"
+#include "tlf.h"
+
 
 int pacc_pa(void)
 {
@@ -51,36 +55,15 @@ int pacc_pa(void)
 
     switch (bandinx) {
 
-    case BANDINDEX_160:{
-	    i = BAND160;
-	    j = 0;
+    case BANDINDEX_160:
+    case BANDINDEX_80:
+    case BANDINDEX_40:
+    case BANDINDEX_20:
+    case BANDINDEX_15:
+    case BANDINDEX_10:
+	    i = inxes[bandinx];
+	    j = bandinx;
 	    break;
-	}
-    case BANDINDEX_80:{
-	    i = BAND80;
-	    j = 1;
-	    break;
-	}
-    case BANDINDEX_40:{
-	    i = BAND40;
-	    j = 2;
-	    break;
-	}
-    case BANDINDEX_20:{
-	    i = BAND20;
-	    j = 3;
-	    break;
-	}
-    case BANDINDEX_15:{
-	    i = BAND15;
-	    j = 4;
-	    break;
-	}
-    case BANDINDEX_10:{
-	    i = BAND10;
-	    j = 5;
-	    break;
-	}
     }
 
     getpx(hiscall);
@@ -166,7 +149,7 @@ int pacc_pa(void)
 	if ((pxnr == 9) || (pxnr == 0)) {
 	    if ((pacc_qsos[9][pxnr] & i) == 0) {
 		pacc_qsos[9][pxnr] = pacc_qsos[9][pxnr] | i;
-//                      countryscore[j]++;      
+//                      countryscore[j]++;
 		addcallarea = 1;
 	    }
 	    k = 0;

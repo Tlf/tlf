@@ -17,11 +17,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "getwwv.h"
+
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
 #include "dxcc.h"
-#include "get_time.h"
 #include "printcall.h"
 #include "tlf.h"
+#include "tlf_curses.h"
+
 
 int getwwv(void)
 {

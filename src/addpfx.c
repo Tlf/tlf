@@ -24,8 +24,11 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "addpfx.h"
+
+#include <string.h>
+
 #include "tlf.h"
+
 
 int nr_of_px = 0;
 int nr_of_px_ab = 0;

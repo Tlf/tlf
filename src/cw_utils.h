@@ -16,8 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef CW_UTILS_H
 
+
+#ifndef CW_UTILS_H
 #define CW_UTILS_H
 
 extern int speed;

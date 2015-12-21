@@ -22,15 +22,19 @@
 	 *                       items
 	 *--------------------------------------------------------------*/
 
-#include "makelogline.h"
-#include "globalvars.h"
-#include "dxcc.h"
-#include "qsonr_to_str.h"
-#include "get_time.h"
-#include "addpfx.h"
-#include "score.h"
 
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "addpfx.h"
+#include "dxcc.h"
+#include "get_time.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
+#include "qsonr_to_str.h"
+#include "score.h"
+
 
 void prepare_fixed_part(void);
 void prepare_specific_part(void);

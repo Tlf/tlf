@@ -18,25 +18,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "background_process.h"
-#include "tlf.h"
-#include "time_update.h"
-#include "write_keyer.h"
-#include "sendbuf.h"
-#include "lancode.h"
-#include "splitscreen.h"
-#include "log_to_disk.h"
-#include "getctydata.h"
-#include "set_tone.h"
-#include "rtty.h"
+
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "fldigixmlrpc.h"
+#include "getctydata.h"
 #include "get_time.h"
-#include "qsonr_to_str.h"
 #include "gettxinfo.h"
+#include "lancode.h"
+#include "log_to_disk.h"
+#include "qsonr_to_str.h"
 #include "qtc_log.h"
 #include "qtcutil.h"
-#include "searchlog.h"
-#include <glib.h>
+#include "rtty.h"
+#include "searchlog.h"		// Includes glib.h
+#include "sendbuf.h"
+#include "set_tone.h"
+#include "splitscreen.h"
+#include "tlf.h"
+#include "tlf_curses.h"
+#include "write_keyer.h"
+
 
 extern int stop_backgrnd_process;
 extern int this_second;

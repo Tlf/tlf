@@ -22,13 +22,16 @@
 
 ------------------------------------------------------------------------*/
 
-#include "globalvars.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+#include "lancode.h"
 #include "qtc_log.h"
 #include "qtcutil.h"
+#include "qtcvars.h"		// Includes globalvars.h
+#include "tlf_curses.h"
 
-#include "tlf.h"
-#include "lancode.h"
-#include "qtcvars.h"
 
 extern int trx_control;
 extern float freq;

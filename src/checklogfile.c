@@ -24,17 +24,27 @@
 	 *      the loglinelen
 	 *
 	 *--------------------------------------------------------------*/
-#include "checklogfile.h"
-#include "tlf.h"
+
+
+#include <errno.h>
+#include <ctype.h>
 #include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
-#include "startmsg.h"
+#include <unistd.h>
+
 #include <glib.h>
+
+#include "startmsg.h"
+#include "tlf.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
+
 
 /** Repair log file
  *
- * Try to repair log file if some limes are too short.
+ * Try to repair log file if some lines are too short.
  * Same is used to convert old logfile format v1 to new v2
  *
  * \return 0 on success

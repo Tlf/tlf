@@ -22,13 +22,20 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+
+#include <unistd.h>
+
+#include "fldigixmlrpc.h"
 #include "gettxinfo.h"
 #include "tlf.h"
-#include "sendqrg.h"
-#include "fldigixmlrpc.h"
+#include "tlf_curses.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
+# include <hamlib/rig.h>
 #endif
 
 

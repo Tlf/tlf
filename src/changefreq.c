@@ -17,15 +17,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "changefreq.h"
-#include "tlf.h"
+
+#include <unistd.h>
+
 #include "freq_display.h"
-#include "ui_utils.h"
-#include "gettxinfo.h"
 #include "time_update.h"
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
+#include "tlf_curses.h"
+#include "ui_utils.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
 #endif
+
+#ifdef HAVE_LIBHAMLIB
+# include <hamlib/rig.h>
+#endif
+
 
 void change_freq (void) {
 

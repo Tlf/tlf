@@ -17,16 +17,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "grabspot.h"
+
+#include <string.h>
+
 #include "bandmap.h"
-#include <glib.h>
 #include "fldigixmlrpc.h"
-#include "tlf.h"
 #include "getctydata.h"
+#include "searchlog.h"		// Includes glib.h
 #include "showinfo.h"
-#include "searchlog.h"
+#include "tlf.h"
+#include "tlf_curses.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
+# include <hamlib/rig.h>
 #endif
 
 void send_bandswitch(int outfreq);

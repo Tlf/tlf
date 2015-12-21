@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2015 Nate Bargmann <n0nb@n0nb.us>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef MULTIPLIERINFO_H
-#define MULTIPLIERINFO_H
 
-int multiplierinfo(void);
 
-#endif /* MULTIPLIERINFO_H */
+/* Collate the macro test boilerplate into this file and then
+ * include this file into the Tlf source files that need panel.h
+ * functions.
+ *
+ * For ncurses including panel.h also includes curses.h.
+ */
+
+#ifndef TLF_PANEL_H
+#define TLF_PANEL_H
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#if defined HAVE_NCURSESW_PANEL_H
+# include <ncursesw/panel.h>
+#elif defined HAVE_NCURSES_PANEL_H
+# include <ncurses/panel.h>
+#elif defined HAVE_PANEL_H
+# include <panel.h>
+#else
+# error "SysV-compatible Curses Panel header file required"
+#endif
+
+#endif

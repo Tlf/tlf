@@ -23,23 +23,34 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+
+#include <fcntl.h>
+#include <dirent.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+
 #include "audio.h"
 #include "tlf.h"
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <dirent.h>
-#include <math.h>
-#include "gettxinfo.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#ifdef HAVE_LIBHAMLIB
+# include <hamlib/rig.h>
+#endif
 
 #ifdef __OpenBSD__
 # include <soundcard.h>
 #else
 # include <sys/soundcard.h>
 #endif
-#ifdef HAVE_LIBHAMLIB
-#include <hamlib/rig.h>
-#endif
+
 
 extern char sc_device[];
 

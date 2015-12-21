@@ -22,12 +22,17 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "editlog.h"
-#include "tlf.h"
+
 #include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
+
 #include "clear_display.h"
 #include "scroll_log.h"
+#include "tlf.h"
+#include "tlf_curses.h"
 
 
 int logedit(void)
@@ -54,6 +59,8 @@ int logedit(void)
 	strcat(comstr, "joe  ");	/*   my favorite editor   */
     else if (editor == EDITOR_VI)
 	strcat(comstr, "vi  ");
+    else if (editor == EDITOR_MC)
+	strcat(comstr, "mcedit  ");
     else
 	strcat(comstr, "e3  ");
 

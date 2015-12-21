@@ -17,9 +17,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "recall_exchange.h"
+
+
+#include <string.h>
+
 #include "initial_exchange.h"
 #include "tlf.h"
+#include "tlf_curses.h"
+
 
 /** \brief Recall former exchange or lookup initial exchange file
  *

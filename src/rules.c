@@ -14,11 +14,21 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include "rules.h"
-#include "tlf.h"
-#include "startmsg.h"
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "parse_logcfg.h"
 #include "setcontest.h"
+#include "startmsg.h"
+#include "tlf.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 
 extern char whichcontest[];
 extern char logfile[];

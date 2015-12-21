@@ -21,9 +21,14 @@
  	*
  	*--------------------------------------------------------------*/
 
-#include "logview.h"
-#include "tlf.h"
+
+#include <stdlib.h>
+#include <string.h>
+
 #include "clear_display.h"
+#include "tlf.h"
+#include "tlf_curses.h"
+
 
 int logview(void)
 {
@@ -32,7 +37,7 @@ int logview(void)
 
 	char comstr[40]  = "";
 	int j, rc;
- 			
+
 	strcat(comstr,  "less  +G ");
 	strcat(comstr,  logfile);
 	rc=system(comstr);
@@ -45,7 +50,7 @@ int logview(void)
 	for (j = 13 ;  j  <= 23 ; j++){
 		mvprintw(j, 0, backgrnd_str);
 	}
-	
+
 	refreshp();
 
 

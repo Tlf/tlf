@@ -22,13 +22,27 @@
 /* dave brown n2rjt (dcb@vectorbd.com) wrote most of this */
 /* TLF integration and TNC interface by PA0RCT   07/30/2002 */
 
+
 #define VERSIONSPLIT "V1.4.1 5/18/96 - N2RJT"
 
-#include "splitscreen.h"
-#include "bandmap.h"
-#include "get_time.h"
+#include <fcntl.h>
 #include <pthread.h>
+#include <stdlib.h>
+#include <string.h>
+#include <termios.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+#include "bandmap.h"
+#include "clear_display.h"
+#include "get_time.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
+#include "lancode.h"
+#include "splitscreen.h"
+#include "sockserv.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
+
 
 pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -116,6 +130,10 @@ void addlog(char *s)
 	free(temp->text);
     } else {
 	temp = (struct tln_logline *) malloc(sizeof(struct tln_logline));
+
+	if (temp == NULL)
+	    return;		/* drop line if no line puffer available */
+
 	tln_loglines++;
     }
     temp->next = NULL;
@@ -558,8 +576,8 @@ int edit_line(int c)
 
 void sanitize(char *s)
 {
-    char *t;
-    for (t = s; *s != '\0'; s++) {
+    char *t = s;
+    for (; *s != '\0'; s++) {
 	if (*s == '\007')
 	    beep();
 	else if (*s == '\015');

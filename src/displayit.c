@@ -23,12 +23,13 @@
 *
 ---------------------------------------------------------------------------*/
 
-#include "tlf.h"
-#include<stdlib.h>
-#include<string.h>
-#include "clear_display.h"
-#include "displayit.h"
+
+#include <string.h>
+
 #include <glib.h>
+
+#include "clear_display.h"
+#include "tlf_curses.h"
 
 
 void displayit(void)

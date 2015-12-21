@@ -22,12 +22,15 @@
 	 *              Convert country data
 	 *--------------------------------------------------------------*/
 
-#include "getctydata.h"
-#include "globalvars.h"
-#include "getpx.h"
-#include "tlf.h"
-#include <glib.h>
+
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "dxcc.h"
+#include "getpx.h"
+#include "globalvars.h"		// Includes glib.h and tlf.h
+
 
 int getpfxindex(char *checkcallptr)
 {

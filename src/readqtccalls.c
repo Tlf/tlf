@@ -21,12 +21,15 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "readqtccalls.h"
-#include "globalvars.h"
-#include "tlf.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "qtcutil.h"
-#include "qtcvars.h"
-#include <glib.h>
+#include "qtcvars.h"		// Includes globalvars.h
+#include "tlf_curses.h"
 
 
 int qtcdirection = 0;

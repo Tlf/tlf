@@ -22,23 +22,27 @@
 	 *
 	 *--------------------------------------------------------------*/
 
-#include "searchlog.h"
-#include "printcall.h"
-#include "tlf.h"
-#include "nicebox.h"
-#include "zone_nr.h"
-#include "getpx.h"
-#include "showscore.h"
+
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "dxcc.h"
-#include <panel.h>
-#include <glib.h>
-#ifdef HAVE_CONFIG_H
-#	include <config.h>
-#endif
-#include "qtcutil.h"
 #include "getctydata.h"
+#include "getpx.h"
+#include "nicebox.h"		// Includes curses.h
+#include "printcall.h"
+#include "qtcutil.h"
+#include "qtcvars.h"		// Includes globalvars.h
+#include "searchlog.h"		// Includes glib.h
+#include "tlf_panel.h"
 #include "ui_utils.h"
-#include "qtcvars.h"
+#include "zone_nr.h"
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 
 GPtrArray *callmaster = NULL;
 
@@ -597,11 +601,12 @@ void searchlog(char *searchstring)
 
 	    if (pfxnummultinr >= 0) {
 		int pfxi = 0;
-		while(countrynr != pfxnummulti[pfxi].countrynr && pfxi < pfxnummultinr) {
+		while(pfxi < pfxnummultinr) {
+		    if (pfxnummulti[pfxi].countrynr == countrynr) {
+			pfxnumcntidx = pfxi;
+			break;
+		    }
 		    pfxi++;
-		}
-		if (pfxnummulti[pfxi].countrynr == countrynr) {
-		    pfxnumcntidx = pfxi;
 		}
 	    }
 	    if (pfxnumcntidx >= 0) {
