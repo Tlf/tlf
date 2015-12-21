@@ -76,6 +76,9 @@
 # include <hamlib/rig.h>
 #endif
 
+#include <signal.h>
+#include <sys/time.h>
+
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
 

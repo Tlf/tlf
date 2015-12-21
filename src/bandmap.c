@@ -31,6 +31,9 @@
 #include "searchcallarray.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "showinfo.h"
+#include "getctydata.h"
+#include "searchlog.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted a s the same QRG */
@@ -413,7 +416,7 @@ void bandmap_age() {
 	if (data->timeout) {
 	    data->timeout--;
 	}
-	if (data->timeout == 0) {
+	if (data->timeout == 0 && (bmautograb == 0 || (bmautograb > 0 && (abs((double)data->freq - freq*1000.0) > TOLERANCE && strcmp(data->call, hiscall) != 0)))) {
 	    allspots = g_list_remove_link( allspots, temp);
 	    g_free (data->call);
 	    g_free (data);
@@ -802,13 +805,12 @@ void bandmap_show() {
 
     /* show highlighted frequency marker or spot on QRG if rig control
      * is active */
-    //syslog(LOG_DEBUG, "bandmap_show() called");
     if (trx_control != 0) {
 	move (bm_y, bm_x);
 	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	if (!on_qrg) {
 	    printw ("%7.1f   %s", centerfrequency,  "============");
-	    if (bmautograb != 0 && autograbbed == 1 && cqmode == S_P) {
+	    if (bmautograb == 1 && autograbbed == 1 && cqmode == S_P) {
 		hiscall[0] = '\0';
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
@@ -828,7 +830,7 @@ void bandmap_show() {
 	    if (lastbmautofreq != tdata->freq) {
 		autograbbed = 0;
 	    }
-	    if (bmautograb != 0 && cqmode == S_P && autograbbed == 0 && strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0) {
+	    if (bmautograb != 0 && cqmode == S_P && (autograbbed == 0 || (strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0))) {
 		strcpy(hiscall, tdata->call);
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
