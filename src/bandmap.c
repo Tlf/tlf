@@ -659,6 +659,7 @@ void bandmap_show() {
     static int autograbbed = 0;
     extern int bmadded_spot;
     static int lastbmautofreq = 0;
+    static char autoadded[15];
 
     if (!bm_initialized) {
 	bm_init();
@@ -812,6 +813,7 @@ void bandmap_show() {
 	    printw ("%7.1f   %s", centerfrequency,  "============");
 	    if (bmautograb == 1 && autograbbed == 1 && cqmode == S_P) {
 		hiscall[0] = '\0';
+		autoadded[0] = '\0';
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
 		autograbbed = 0;
@@ -819,6 +821,7 @@ void bandmap_show() {
 	    // clear hiscall if no qrg
 	    if (bmautoadd == 1 && bmadded_spot == 1 && strlen(hiscall) > 0) {
 		hiscall[0] = '\0';
+		autoadded[0] = '\0';
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
 		autograbbed = 0;
@@ -830,8 +833,9 @@ void bandmap_show() {
 	    if (lastbmautofreq != tdata->freq) {
 		autograbbed = 0;
 	    }
-	    if (bmautograb != 0 && cqmode == S_P && (autograbbed == 0 || (strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0))) {
+	    if (bmautograb != 0 && cqmode == S_P && (autograbbed == 0 || (strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0 && strcmp(tdata->call, autoadded) != 0))) {
 		strcpy(hiscall, tdata->call);
+		strcpy(autoadded, tdata->call);
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
 		autograbbed = 1;
