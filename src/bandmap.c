@@ -659,7 +659,7 @@ void bandmap_show() {
     static int autograbbed = 0;
     extern int bmadded_spot;
     static int lastbmautofreq = 0;
-    static char autoadded[15];
+    static char grabbedcall[15];
 
     if (!bm_initialized) {
 	bm_init();
@@ -813,7 +813,7 @@ void bandmap_show() {
 	    printw ("%7.1f   %s", centerfrequency,  "============");
 	    if (bmautograb == 1 && autograbbed == 1 && cqmode == S_P) {
 		hiscall[0] = '\0';
-		autoadded[0] = '\0';
+		grabbedcall[0] = '\0';
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
 		autograbbed = 0;
@@ -821,7 +821,7 @@ void bandmap_show() {
 	    // clear hiscall if no qrg
 	    if (bmautoadd == 1 && bmadded_spot == 1 && strlen(hiscall) > 0) {
 		hiscall[0] = '\0';
-		autoadded[0] = '\0';
+		grabbedcall[0] = '\0';
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
 		autograbbed = 0;
@@ -833,9 +833,17 @@ void bandmap_show() {
 	    if (lastbmautofreq != tdata->freq) {
 		autograbbed = 0;
 	    }
-	    if (bmautograb != 0 && cqmode == S_P && (autograbbed == 0 || (strlen(tdata->call) > 0 && strcmp(tdata->call, hiscall) != 0 && strcmp(tdata->call, lastcall) != 0 && strcmp(tdata->call, autoadded) != 0))) {
+	    if (bmautograb == 1 && cqmode == S_P && 		// feature set up and S&P mode
+	            (autograbbed == 0 ||			// not grabbed yet 
+	            (						// OR autograbbed AND
+		        strlen(tdata->call) > 0 &&		// spot call is not zero length
+		        strcmp(tdata->call, hiscall) != 0 &&	// spot call is not filled
+		        strcmp(tdata->call, lastcall) != 0 &&	// spot call is not the last QSO
+		        strcmp(tdata->call, grabbedcall) != 0)	// spot call is not grabbed
+		    )
+	       ) {
 		strcpy(hiscall, tdata->call);
-		strcpy(autoadded, tdata->call);
+		strcpy(grabbedcall, tdata->call);
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
 		autograbbed = 1;
