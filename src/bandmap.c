@@ -416,7 +416,7 @@ void bandmap_age() {
 	if (data->timeout) {
 	    data->timeout--;
 	}
-	if (data->timeout == 0 && (bmautograb == 0 || (bmautograb > 0 && (abs((double)data->freq - freq*1000.0) > TOLERANCE && strcmp(data->call, hiscall) != 0)))) {
+	if (data->timeout == 0 && (bmautograb == 0 || (bmautograb != 0 && (abs((double)data->freq - freq*1000.0) > TOLERANCE && strcmp(data->call, hiscall) != 0)))) {
 	    allspots = g_list_remove_link( allspots, temp);
 	    g_free (data->call);
 	    g_free (data);
@@ -657,7 +657,7 @@ void bandmap_show() {
     short dupe;
     float centerfrequency;
     static int autograbbed = 0;
-    extern int bmadded_spot;
+    extern int bmadd_pending;
     static int lastbmautofreq = 0;
     static char grabbedcall[15];
 
@@ -819,7 +819,7 @@ void bandmap_show() {
 		autograbbed = 0;
 	    }
 	    // clear hiscall if no qrg
-	    if (bmautoadd == 1 && bmadded_spot == 1 && strlen(hiscall) > 0) {
+	    if (bmautoadd == 1 && bmadd_pending == 1 && strlen(hiscall) > 0) {
 		hiscall[0] = '\0';
 		grabbedcall[0] = '\0';
 		showinfo( getctydata( hiscall ) );
@@ -834,6 +834,7 @@ void bandmap_show() {
 		autograbbed = 0;
 	    }
 	    if (bmautograb == 1 && cqmode == S_P && 		// feature set up and S&P mode
+	            bmadd_pending == 0 &&			// not wait to add the modified hiscall
 	            (autograbbed == 0 ||			// not grabbed yet 
 	            (						// OR autograbbed AND
 		        strlen(tdata->call) > 0 &&		// spot call is not zero length
@@ -847,6 +848,7 @@ void bandmap_show() {
 		showinfo( getctydata( hiscall ) );
 		searchlog( hiscall );
 		autograbbed = 1;
+		bmadd_pending = 0;
 		lastbmautofreq = tdata->freq;
 	    }
 	}

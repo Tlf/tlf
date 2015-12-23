@@ -87,7 +87,7 @@ int autosend(void);
 int plain_number(char *str);
 static void start_bmadd_timer();
 
-int bmadded_spot = 0;
+int bmadd_pending = 0;
 
 /** callsign input loop
  *
@@ -674,6 +674,11 @@ char callinput(void)
                     mvprintw(cury, curx - 1, "");
 		    hiscall[strlen(hiscall) - 1] = '\0';
 
+		    if (trx_control > 0 && bmautoadd > 0 && strlen(hiscall) > 2 && cqmode == S_P) {
+		      bmadd_pending = 1;
+		      start_bmadd_timer();
+		    }
+
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */
 			strncpy(dupecall, hiscall, 16);
 
@@ -1026,15 +1031,15 @@ char callinput(void)
 	    x = x - 32;
 
 	if (x >= '/' && x <= 'Z') {
-	    if (trx_control > 0 && bmautoadd > 0 && strlen(hiscall) > 2 && bmadded_spot == 0 && cqmode == S_P) {
-		start_bmadd_timer();
-	    }
-	    bmadded_spot = 0;
 	    if (strlen(hiscall) < 13) {
 		instring[0] = x;
 		instring[1] = '\0';
 		addch(x);
 		strcat(hiscall, instring);
+		if (trx_control > 0 && bmautoadd > 0 && strlen(hiscall) > 2 && cqmode == S_P) {
+		    bmadd_pending = 1;
+		    start_bmadd_timer();
+		}
 		if (cqmode == CQ && cwstart > 0 &&
 			trxmode == CWMODE && contest == 1) {
 		    /* early start keying after 'cwstart' characters but only
@@ -1303,7 +1308,7 @@ static void bmadd_timer_handler(int sig, siginfo_t *siginfo, void *context)
 	if (strlen(hiscall) > 2) {
 	    strcpy(tcall, hiscall);
 	    addspot();
-	    bmadded_spot = 1;
+	    bmadd_pending = 1;
 	    strcpy(hiscall, tcall);
 	    refreshp();
 	}
@@ -1317,7 +1322,7 @@ static void start_bmadd_timer() {
 
 	memset (&act, '\0', sizeof(act));
 
-	act.sa_sigaction = &bmadd_timer_handler;
+	act.sa_sigaction = bmadd_timer_handler;
 	sigaction(SIGALRM, &act, NULL);
 	tv.it_value.tv_sec = 1;
         tv.it_value.tv_usec = 500000;
