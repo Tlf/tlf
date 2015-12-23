@@ -24,6 +24,7 @@
 
 
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
@@ -38,6 +39,7 @@
 # include <hamlib/rig.h>
 #endif
 
+#define TOLERANCE 100
 
 int gettxinfo(void)
 {
@@ -50,6 +52,7 @@ int gettxinfo(void)
     extern int outfreq;
 #endif
     extern float freq;
+    extern float freqstore;
     extern int bandinx;
     extern float bandfrequency[];
 
@@ -64,6 +67,7 @@ int gettxinfo(void)
 #endif
     int retval = 0;
     static int oldbandinx;
+    extern int bmadd_pending;
 
     void send_bandswitch(int freq);
 
@@ -90,6 +94,10 @@ int gettxinfo(void)
 
 	if (rigfreq >= 1800000.0) {
 	    freq = rigfreq / 1000.0;		/* kHz */
+	}
+	if (abs(freq - freqstore) > TOLERANCE) {
+	    freqstore = freq;
+	    bmadd_pending = 0;
 	}
 
 

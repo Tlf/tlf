@@ -673,10 +673,9 @@ char callinput(void)
                     mvprintw(cury, curx - 1, " ");
                     mvprintw(cury, curx - 1, "");
 		    hiscall[strlen(hiscall) - 1] = '\0';
-
+		    bmadd_pending = 1;
 		    if (trx_control > 0 && bmautoadd > 0 && strlen(hiscall) > 2 && cqmode == S_P) {
-		      bmadd_pending = 1;
-		      start_bmadd_timer();
+		        start_bmadd_timer();
 		    }
 
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */
@@ -1036,8 +1035,8 @@ char callinput(void)
 		instring[1] = '\0';
 		addch(x);
 		strcat(hiscall, instring);
+		bmadd_pending = 1;	// set flag to avoid the rewrite callsign from bandmap
 		if (trx_control > 0 && bmautoadd > 0 && strlen(hiscall) > 2 && cqmode == S_P) {
-		    bmadd_pending = 1;
 		    start_bmadd_timer();
 		}
 		if (cqmode == CQ && cwstart > 0 &&
@@ -1308,7 +1307,7 @@ static void bmadd_timer_handler(int sig, siginfo_t *siginfo, void *context)
 	if (strlen(hiscall) > 2) {
 	    strcpy(tcall, hiscall);
 	    addspot();
-	    bmadd_pending = 1;
+	    bmadd_pending = 0;
 	    strcpy(hiscall, tcall);
 	    refreshp();
 	}

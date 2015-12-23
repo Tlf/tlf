@@ -811,7 +811,7 @@ void bandmap_show() {
 	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	if (!on_qrg) {
 	    printw ("%7.1f   %s", centerfrequency,  "============");
-	    if (bmautograb == 1 && autograbbed == 1 && cqmode == S_P) {
+	    if (bmautograb == 1 && autograbbed == 1 && cqmode == S_P && bmadd_pending == 0) {
 		hiscall[0] = '\0';
 		grabbedcall[0] = '\0';
 		showinfo( getctydata( hiscall ) );
@@ -819,7 +819,7 @@ void bandmap_show() {
 		autograbbed = 0;
 	    }
 	    // clear hiscall if no qrg
-	    if (bmautoadd == 1 && bmadd_pending == 1 && strlen(hiscall) > 0) {
+	    if (bmautoadd == 1 && bmadd_pending == 0 && strlen(hiscall) > 0) {
 		hiscall[0] = '\0';
 		grabbedcall[0] = '\0';
 		showinfo( getctydata( hiscall ) );

@@ -406,6 +406,7 @@ pid_t pid;
 struct tm *time_ptr;
 
 float freq;
+float freqstore;
 float mem;
 int logfrequency = 0;
 int rit;
