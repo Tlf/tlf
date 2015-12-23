@@ -1,5 +1,5 @@
-AM_CPPFLAGS = \
-       @GLIB_CFLAGS@
+AM_CPPFLAGS = @GLIB_CFLAGS@
+AM_CFLAGS = @PTHREAD_CFLAGS@
 
 bin_PROGRAMS = tlf
 
@@ -33,7 +33,7 @@ tlf_SOURCES = \
 	write_keyer.c writecabrillo.c writeparas.c \
 	zone_nr.c
 
-tlf_LDADD = @GLIB_LIBS@ @PANEL_LIB@ @CURSES_LIB@
+tlf_LDADD = @PTHREAD_LIBS@ @GLIB_LIBS@ @PANEL_LIB@ @CURSES_LIB@
 
 noinst_HEADERS = \
 	addarea.h addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \
