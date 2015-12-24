@@ -142,51 +142,37 @@ int addmult(void)
 int addmult2(void)
 {
     int n, addarea = 0, found = 0;
-    int i, j, ismult, multlen = 0;
+    int i;
+    int matching_len = 0, idx = -1;
     char ssexchange[21];
 
     shownewmult = -1;
 
+    // --------------------------- arrlss ------------------------------------
     if (arrlss == 1) {		// mult for all bands
-	ismult = 0;
 	strncpy(ssexchange, lan_logline + 54, 20);
 
-	if (mults_possible->len > 0) {
-	    for (i = 0; i < mults_possible->len; i++) {
-		if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL) &&
-		    (strlen(MULTS_POSSIBLE(i)) > 1)) {
+	/* check all possible mults for match and remember the longest one */
+	for (i = 0; i < mults_possible->len; i++) {
+	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
+		&& (strlen(MULTS_POSSIBLE(i)) > 1)) {
 
-		    ismult = 1;
-		    multlen = strlen(MULTS_POSSIBLE(i));
-		    break;
+		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
+		    matching_len = strlen(MULTS_POSSIBLE(i));
+		    idx = i;
 		}
 	    }
 	}
 
-	if (ismult != 0) {
-	    for (j = 0; j < multarray_nr; j++) {
-		if (strncmp
-		    (mults[j], strstr(ssexchange, MULTS_POSSIBLE(i)),
-		     multlen) == 0) {
-		    found = 1;
-		    break;
-		}
-	    }
-
-	    if (found == 0) {
-		/* not found, add it */
-		strncpy(mults[multarray_nr],
-			strstr(ssexchange, MULTS_POSSIBLE(i)), multlen);
-		multarray_nr++;
-
-		if (strlen(mults[multarray_nr]) == 2)
-		    strcat(mults[multarray_nr], " ");
-	    }
+	if (idx >= 0) {
+	    remember_multi(MULTS_POSSIBLE(idx), bandinx, ALL_BAND);
 	}
     }
 
+    // --------------------wysiwyg----------------
     if (wysiwyg_once == 1) {
 	for (n = 0; n < multarray_nr; n++) {
+	    /** \todo that is the wrong 'comment' field here */
 	    if (strcmp(mults[n], comment) == 0) {
 		found = 1;
 		break;
