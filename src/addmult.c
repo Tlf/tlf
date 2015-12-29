@@ -141,15 +141,16 @@ int addmult(void)
 
 int addmult2(void)
 {
-    int n, addarea = 0, found = 0;
+    int found = 0;
     int i;
     int matching_len = 0, idx = -1;
     char ssexchange[21];
+    char stripped_comment[21];
 
     shownewmult = -1;
 
     // --------------------------- arrlss ------------------------------------
-    if (arrlss == 1) {		// mult for all bands
+    if (arrlss == 1) {
 	strncpy(ssexchange, lan_logline + 54, 20);
 
 	/* check all possible mults for match and remember the longest one */
@@ -171,46 +172,17 @@ int addmult2(void)
 
     // --------------------wysiwyg----------------
     if (wysiwyg_once == 1) {
-	for (n = 0; n < multarray_nr; n++) {
-	    /** \todo that is the wrong 'comment' field here */
-	    if (strcmp(mults[n], comment) == 0) {
-		found = 1;
-		break;
-	    }
-	}
+	strncpy(stripped_comment, lan_logline + 54, 14);
+	g_strchomp(stripped_comment);
 
-	if (found == 0) {
-	    strcpy(mults[multarray_nr], comment);
-	    multarray_nr++;
-	    addarea = 1;
-	    shownewmult = n;
-	}
+	shownewmult = remember_multi(stripped_comment, bandinx, ALL_BAND);
     }
 
-    if ((wysiwyg_multi == 1) && (strlen(comment) > 0)) {
-	for (n = 0; n < multarray_nr; n++) {
-	    if (strcmp(mults[n], comment) == 0) {
-		found = 1;
-		break;
-	    }
-	}
+    if (wysiwyg_multi == 1) {
+	strncpy(stripped_comment, lan_logline + 54, 14);
+	g_strchomp(stripped_comment);
 
-	if (found == 0) {
-	    strcpy(mults[multarray_nr], comment);
-	    mult_bands[multarray_nr] =
-		mult_bands[multarray_nr] | inxes[bandinx];
-	    multarray_nr++;
-	    addarea = 1;
-	    shownewmult = multarray_nr - 1;
-	} else if ((found == 1) && ((mult_bands[n] & inxes[bandinx]) == 0)) {
-	    mult_bands[n] = mult_bands[n] | inxes[bandinx];
-	    addarea = 1;
-	    shownewmult = n;
-	}
-    }
-
-    if (addarea == 1) {
-	multscore[bandinx]++;
+	shownewmult = remember_multi(stripped_comment, bandinx, PER_BAND);
     }
 
     return (found);
