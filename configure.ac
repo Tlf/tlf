@@ -90,17 +90,28 @@ AS_IF([test "x$wanthamlib" = xtrue], [
 	PKG_CHECK_MODULES([HAMLIB], [$hamlib_modules], [],
 		[AC_MSG_ERROR([Hamradio control libraries 1.2.8 or later not found...])])
 
+	tlf_saved_LIBS=$LIBS
+	LIBS="$LIBS $HAMLIB_LIBS"
+
 	AC_CHECK_LIB([hamlib], [rig_open], [
 		AC_DEFINE([HAVE_LIBHAMLIB], [1],
 			[Define to 1 if you have the `hamlib' library (-lhamlib).])], [
 		AC_MSG_ERROR([Hamradio control libraries not found!])])
 
+	LIBS=$tlf_saved_LIBS
+
+	tlf_saved_CFLAGS=$CFLAGS
+	tlf_saved_CPPFLAGS=$CPPFLAGS
+	CFLAGS="$CFLAGS $HAMLIB_CFLAGS"
+	CPPFLAGS="$CPPFLAGS `$PKG_CONFIG --cflags-only-I hamlib 2>&1`"
+
 	AC_CHECK_HEADERS([hamlib/rig.h], [], [
 		AC_MSG_ERROR([Hamlib headers not found...])])
-	AC_DEFINE([WANT_HAMLIB], [1], [Want Hamlib])], [
+
+	CPPFLAGS=$tlf_saved_CPPFLAGS
+	CFLAGS=$tlf_saved_CFLAGS], [
 
 	dnl else Hamlib not wanted
-	AC_DEFINE([WANT_HAMLIB], [0], [No Hamlib])
 	AC_MSG_RESULT([no])])
 
 
@@ -161,3 +172,19 @@ AC_CONFIG_FILES([Makefile
 	tlf.1])
 
 AC_OUTPUT
+
+echo \
+"----------------------------------------------------------------------
+
+ ${PACKAGE_NAME} Version ${PACKAGE_VERSION} configuration:
+
+ Prefix         ${prefix}
+ Preprocessor   ${CPP} ${CPPFLAGS}
+ C Compiler     ${CC} ${CFLAGS}
+
+ Package features:
+
+ With Hamlib	$wanthamlib
+ With XML RPC	$wantfldigixmlrpc
+
+-----------------------------------------------------------------------"
