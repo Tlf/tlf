@@ -36,7 +36,11 @@ AC_CHECK_FUNCS([bzero floor ftruncate gethostbyname memset mkfifo putenv \
 	strstr])
 
 # Checks for libraries.
-AC_CHECK_LIB([m], [atan])
+AC_CHECK_LIB([m], [atan], [
+	AC_DEFINE([HAVE_LIBM], [1],
+		[Define to 1 if you have the `m' library (-lm).])
+	AC_SUBST([LIBM_LIB], [-lm])], [
+	AC_MSG_ERROR([m library not found...])])
 
 AX_PTHREAD
 
@@ -72,72 +76,91 @@ AS_IF([test "x$ax_cv_panel" != xyes],
 
 
 dnl Check if we want to link the Hamradio control libraries (hamlib)
-AC_ARG_ENABLE([hamlib],
-	[AS_HELP_STRING([--enable-hamlib],
-			[Add support for Ham Radio Control Libraries])],
-[case "${enableval}" in
-	yes) wanthamlib=true ;;
-	no)  wanthamlib=false ;;
-#	*)   AC_MSG_ERROR([[bad value ${enableval} for --enable-hamlib]]) ;;
-	esac],
-[wanthamlib=false])
+AC_MSG_CHECKING([whether to build Hamlib support])
+AC_ARG_ENABLE([hamlib], [
+	AS_HELP_STRING([--enable-hamlib],
+		[Add support for Ham Radio Control Libraries])],
+	[wanthamlib=true],
+	[wanthamlib=false])
 
-if test "x${wanthamlib}" != "xfalse"; then
-    dnl Look for hamlib
-    hamlib_modules="hamlib >= 1.2.8"
-    PKG_CHECK_MODULES(HAMLIB, [$hamlib_modules], [
-                           CFLAGS="$CFLAGS $HAMLIB_CFLAGS";
-                           LIBS="$LIBS $HAMLIB_LIBS";
-                           ], [
-                               AC_MSG_ERROR([Hamradio control libraries 1.2.8 or later not found...])
-                           ])
+AS_IF([test "x$wanthamlib" = xtrue], [
+	dnl Look for hamlib
+	AC_MSG_RESULT([yes])
+	hamlib_modules="hamlib >= 1.2.8"
+	PKG_CHECK_MODULES([HAMLIB], [$hamlib_modules], [],
+		[AC_MSG_ERROR([Hamradio control libraries 1.2.8 or later not found...])])
 
-	AC_CHECK_LIB(hamlib,main,,AC_MSG_ERROR([Hamradio control libraries not found...]))
-	AC_CHECK_HEADERS(hamlib/rig.h,,AC_MSG_ERROR([Hamlib headers not found...]))
-	AC_DEFINE([WANT_HAMLIB], 1, [Want Hamlib])
-	echo "enabling Hamlib support"
-else
-	AC_DEFINE([WANT_HAMLIB], 0, [No Hamlib])
-	echo "disabling Hamlib support"
-fi
+	tlf_saved_LIBS=$LIBS
+	LIBS="$LIBS $HAMLIB_LIBS"
+
+	AC_CHECK_LIB([hamlib], [rig_open], [
+		AC_DEFINE([HAVE_LIBHAMLIB], [1],
+			[Define to 1 if you have the `hamlib' library (-lhamlib).])], [
+		AC_MSG_ERROR([Hamradio control libraries not found!])])
+
+	LIBS=$tlf_saved_LIBS
+
+	tlf_saved_CFLAGS=$CFLAGS
+	tlf_saved_CPPFLAGS=$CPPFLAGS
+	CFLAGS="$CFLAGS $HAMLIB_CFLAGS"
+	CPPFLAGS="$CPPFLAGS `$PKG_CONFIG --cflags-only-I hamlib 2>&1`"
+
+	AC_CHECK_HEADERS([hamlib/rig.h], [], [
+		AC_MSG_ERROR([Hamlib headers not found...])])
+
+	CPPFLAGS=$tlf_saved_CPPFLAGS
+	CFLAGS=$tlf_saved_CFLAGS], [
+
+	dnl else Hamlib not wanted
+	AC_MSG_RESULT([no])])
+
 
 dnl Check if we want to use xmlrpc to read carrier from Fldigi
-AC_ARG_ENABLE([fldigi-xmlrpc],
-	[AS_HELP_STRING([--enable-fldigi-xmlrpc],
-			[Add support for XMLRPC to read Fldigi's carrier (usually in RTTY/DIGIMODE)])],
-[case "${enableval}" in
-	yes) wantfldigixmlrpc=true ;;
-	no)  wantfldigixmlrpc=false ;;
-	esac],
-[wantfldigixmlrpc=false])
+AC_MSG_CHECKING([whether to build Fldigi XML RPC support])
+AC_ARG_ENABLE([fldigi-xmlrpc], [
+	AS_HELP_STRING([--enable-fldigi-xmlrpc],
+		[Add support for XMLRPC to read Fldigi's carrier (usually in RTTY/DIGIMODE)])],
+	[wantfldigixmlrpc=true],
+	[wantfldigixmlrpc=false])
 
-if test "x${wantfldigixmlrpc}" != "xfalse"; then
-    dnl Look for xmlrpc libraries
+AS_IF([test "x$wantfldigixmlrpc" = xtrue], [
+	dnl Look for xmlrpc libraries
+	AC_MSG_RESULT([yes])
 
-	AC_CHECK_LIB(xmlrpc,xmlrpc_read_int,,AC_MSG_ERROR([Xmlrpc libraries not found...]))
-	AC_CHECK_LIB(xmlrpc_client,xmlrpc_client_cleanup,,AC_MSG_ERROR([Xmlrpc-client libraries not found...]))
-	AC_CHECK_LIB(xmlrpc_util,xmlrpc_env_init,,AC_MSG_ERROR([Xmlrpc-util libraries not found...]))
-	AC_CHECK_HEADERS(xmlrpc-c/base.h,,AC_MSG_ERROR([Xmlrpc base.h header not found...]))
-	AC_CHECK_HEADERS(xmlrpc-c/client.h,,AC_MSG_ERROR([Xmlrpc client.h header not found...]))
-	echo "enabling XMLRPC for Fldigi"
-else
-	echo "disabling XMLRPC for Fldigi"
-fi
+	AC_CHECK_LIB([xmlrpc], [xmlrpc_read_int], [
+		AC_DEFINE([HAVE_LIBXMLRPC], [1],
+			[Define to 1 if you have the `xmlrpc' library (-lxmlrpc).])
+		AC_SUBST([LIBXMLRPC_LIB], [-lxmlrpc])], [
+		AC_MSG_ERROR([xmlrpc library not found...])])
 
-if test "${ac_cv_c_compiler_gnu}" = "yes"; then
-	CFLAGS="${CFLAGS} -Wall"
-fi
+	AC_CHECK_LIB([xmlrpc_client], [xmlrpc_client_cleanup], [
+		AC_DEFINE([HAVE_LIBXMLRPC_CLIENT], [1],
+			[Define to 1 if you have the `xmlrpc_client' library (-lxmlrpc_client).])
+		AC_SUBST([LIBXMLRPC_CLIENT_LIB], [-lxmlrpc_client])], [
+		AC_MSG_ERROR([xmlrpc-client library not found...])])
+
+	AC_CHECK_LIB([xmlrpc_util], [xmlrpc_env_init], [
+		AC_DEFINE([HAVE_LIBXMLRPC_UTIL], [1],
+			[Define to 1 if you have the `xmlrpc_util' library (-lxmlrpc_util).])
+		AC_SUBST([LIBXMLRPC_UTIL_LIB], [-lxmlrpc_util])], [
+		AC_MSG_ERROR([xmlrpc-util library not found...])])
+
+	AC_CHECK_HEADERS([xmlrpc-c/base.h], [], [
+		AC_MSG_ERROR([xmlrpc-c/base.h header not found...])])
+
+	AC_CHECK_HEADERS([xmlrpc-c/client.h], [], [
+		AC_MSG_ERROR([xmlrpc-c/client.h header not found...])])], [
+
+	dnl else Fldigi XML RPC not wanted
+	AC_MSG_RESULT([no])])
 
 
+dnl Set warnings for compilation
+dnl CFLAGS is reserved for user, so set the AM_* counterpart.
+# macros/ax_cflags_warn_all.m4
+AX_CFLAGS_WARN_ALL([AM_CFLAGS])
 
-# Set PACKAGE_DATA_DIR in config.h.
-if test "x${prefix}" = "xNONE"; then
-AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR,"${ac_default_prefix}/share/${PACKAGE}",
-		   [package_data_dir is in default])
-else
-AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${prefix}/share/${PACKAGE}",
-		   [package_data_dir is in prefix])
-fi
+AC_SUBST([AM_CFLAGS])
 
 
 AC_CONFIG_FILES([Makefile
@@ -149,3 +172,19 @@ AC_CONFIG_FILES([Makefile
 	tlf.1])
 
 AC_OUTPUT
+
+echo \
+"----------------------------------------------------------------------
+
+ ${PACKAGE_NAME} Version ${PACKAGE_VERSION} configuration:
+
+ Prefix         ${prefix}
+ Preprocessor   ${CPP} ${CPPFLAGS}
+ C Compiler     ${CC} ${CFLAGS}
+
+ Package features:
+
+ With Hamlib	$wanthamlib
+ With XML RPC	$wantfldigixmlrpc
+
+-----------------------------------------------------------------------"

@@ -34,10 +34,6 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 
 int readctydata(void)
 {
