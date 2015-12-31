@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT([Tlf],
 	[1.2.2],
-	[rein@couperus.com es tb@forth-ev.de es airween@gmail.com],
+	[tlf-devel@nongnu.org],
 	[tlf],
 	[https://github.com/Tlf/tlf])
 AM_INIT_AUTOMAKE
