@@ -60,7 +60,9 @@ int fldigi_xmlrpc_get_carrier() {
     xmlrpc_value * result;
     xmlrpc_int32 sum;
     xmlrpc_env_init(&env);
+#ifdef HAVE_LIBHAMLIB
     freq_t rigfreq;
+#endif
     int retval;
 
     static int errflg;
