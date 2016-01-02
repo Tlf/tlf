@@ -191,6 +191,7 @@ char exchange_list[40] = "";
 int timeoffset = 0;
 int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
+int rigmode = 0;		/* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
 int mixedmode = 0;
 char his_rst[4] = "599";
 char my_rst[4] = "599";

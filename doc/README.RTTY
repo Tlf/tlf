@@ -1,0 +1,99 @@
+Tlf RTTY howto
+
+2015, Ervin Hegedus, HA2OS
+
+This is a guide for Tlf, how to use it with Fldigi in RTTY mode,
+especially in FSK, LSB or USB modulations.
+
+To work in RTTY, you need to solve two problems: read and demodulate
+RTTY signals (RX), and send your messages (TX). To demodulate the
+signals, we use the Fldigi, the most popular software for digital
+modes. Fldigi also can modulate, but there are several solutions,
+eg. MFJ 1278, or any other modems, which can be work through serial
+port.
+
+
+Let's see, how works the TX direction with Fldigi.
+
+Important: if you set up your Fldigi instance, don't set up your
+RIG! Tlf needs to handle the RIG, because it needs to tune the VFO,
+to use the bandmap.
+
+First, you have to create some files in your $HOME directory:
+
+~$ touch TLFfldigi
+~$ touch gmfsk_autofile
+
+The TLFfldigi file indicates to Fldigi, that it needs to listen
+the gmfsk_autofile file. Tlf writes its RTTY messages to
+gmfsk_autofile file, and Fldigi can reads that. If you want to look
+that file, when Fldigi runs, then you can't find it - after the
+Fldigi reads RTTY lines from that, then removes it. So, when Tlf
+wants to send a message again, it creates a new one, and Fldigi
+reads that and removes again - so don't worry, if you don't find it.
+
+Now in your logcfg.dat, you have to set up these variables:
+
+RTTYMODE
+GMFSK=/home/YOURUSER/gMFSK.log
+DIGIMODEM=/home/YOURUSER/gmfsk_autofile
+
+Note, that GMFSK directive tells to Tlf, that it can be read the
+output of modem, and it can be shows it in its own modem window.
+(The miniterm window opens when you type the ":miniterm" command
+in callsign field.)
+
+If you want to use a serial port driven FSK modem, just replace
+the DIGIMODEM value for your modem path. Eg. I've build an FSK
+modem with the Arduino board, which reads the serial port of my
+PC. So, I've set it up like this:
+
+DIGIMODEM=/dev/ttyS0
+
+The TX direction of RTTY mode only is that - you don't need to do
+anything in Tlf config - of course, you have to set up your Fldigi
+instance, eg. sound device, etc...
+
+
+The RX mode is a slightly difficult. I don't want to expose that
+here, I suppose that anybody knows that, if works in RTTY. I had
+a "big" problem with Tlf: when I've worked in AFSK, and I moved the
+Fldigi carrier, I could't know exactly, what is the correct QRG of
+my RIG. And it was the problem, because I could't use the cluster
+info, moreover the grabbed spots! So, when I grabbed a station, TLF
+stored it to the currently QRG, but it didn't stored the Fldigi
+carrier shift! So, now the Tlf follows this philosophy below.
+
+The "native" mode is FSK. If you turn on your RIG, and switch to
+FSK mode, tune the VFO to an RTTY station. If you want to see its
+signals in Fldigi, you have to move the Fldigi carrier to 2210Hz.
+Note, that 2210Hz calculated from the space and mark frequency. The
+space is 2125Hz, the mark is 2295Hz. 2295-2125 = 170, 170/2 = 85,
+and 2125+85 = 2210. This value is indicated at bottom-middle of
+Fldigi window.
+
+Note, that you have to swith the Fldigi to reverse mode, so you need
+to push the [Rv] button.
+
+From now on if you find a station on the bandmap, and press the
+CTRL-G (grab the spot), Tlf will tune to VFO that frequency, and
+you can hear the station. That's it. Almost :). In FSK mode, there
+isn't too easy to tune the VFO to the correct QRG. But if Tlf can
+detect, that your RIG is in FSK mode (through CAT system), then
+if you move the Fldigi carrier to an another station (which exists
+eg. on 1000Hz), then Tlf calculates the new VFO frequency, tune the
+RIG to there, and tune Fldigi's carrier to back, 2210Hz.
+
+If you're working in AFSK, then the used modulation is LSB (or USB).
+In this case, you can move the Fldigi's carrier anywhere you want
+(from 85Hz to 2915Hz), Tlf only catch's the Fldigi carrrier's value,
+and calculates the accurate QRG, which indicated on left-middle part
+in Tlf window. If you want to grab a spot (with CTRL-G), then leave
+the Fldigi carrier's as it exists, and grab the next spot. Tlf will
+calculates the requested QRG from the different of the spot and
+Fldigi carrier's frequency, and tune the RIG. That's it.
+
+
+73, Ervin
+HA2OS
+
