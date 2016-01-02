@@ -42,7 +42,9 @@
 #define CENTER_FREQ 2210	// low: 2125Hz, high: 2295Hz, shift: 170Hz, 2125+(170/2) = 2210Hz
 #define MAXSHIFT 20		// max shift value in Fldigi, when Tlf set it back to RIG carrier
 
+#ifdef HAVE_LIBHAMLIB
 extern RIG *my_rig;
+#endif
 
 int fldigi_var_carrier = 0;
 

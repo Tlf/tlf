@@ -61,13 +61,14 @@ int gettxinfo(void)
 #ifdef HAVE_LIBHAMLIB
     freq_t rigfreq;
     vfo_t vfo;
+    pbwidth_t bwidth;
+    int retval;
+    int retvalmode;
 #else
     float rigfreq;
 #endif
-    int retval = 0;
-    int retvalmode = 0;
+
     static int oldbandinx;
-    pbwidth_t bwidth;
 
     void send_bandswitch(int freq);
 
