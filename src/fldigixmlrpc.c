@@ -119,11 +119,11 @@ int fldigi_xmlrpc_get_carrier() {
 	if (rigmode != RIG_MODE_NONE) {
 	    switch (rigmode) {
 		case RIG_MODE_USB:	signum = 1;
-					break;
 					modeshift = 0;
+					break;
 		case RIG_MODE_LSB:	signum = -1;
-					break;
 					modeshift = 0;
+					break;
 		case RIG_MODE_RTTY:	signum = 0;
 					modeshift = -100; // on my TS850, in FSK mode, the QRG is differ by 100Hz up
 							  // possible need to check in other rigs
