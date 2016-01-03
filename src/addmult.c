@@ -33,12 +33,9 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "tlf_curses.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
+enum { ALL_BAND, PER_BAND };
 
 /** Converts bandindex to bandmask */
 int inxes[NBANDS] = \
@@ -47,7 +44,8 @@ int inxes[NBANDS] = \
 int addmult(void)
 {
     int found = 0;
-    int i, j, ismult, multlen = 0;
+    int i;
+    int matching_len = 0, idx = -1;
     char *stripped_comment;
 
     shownewmult = -1;
@@ -55,107 +53,77 @@ int addmult(void)
     stripped_comment = strdup(comment);
     g_strchomp(stripped_comment);
 
-    // mult for all bands   -------- arrlss --------------
+    // --------------------------- arrlss ------------------------------------
     if (arrlss == 1) {
-	ismult = 0;
 
-	/* is it a possible mult? */
-	if (mults_possible->len > 0) {
-	    for (i = 0; i < mults_possible->len; i++) {
-		if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		    && (strlen(MULTS_POSSIBLE(i)) > 1)) {
+	/* check all possible mults for match and remember the longest one */
+	for (i = 0; i < mults_possible->len; i++) {
+	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
+		&& (strlen(MULTS_POSSIBLE(i)) > 1)) {
 
-		    ismult = 1;
-		    break;
+		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
+		    matching_len = strlen(MULTS_POSSIBLE(i));
+		    idx = i;
 		}
 	    }
 	}
 
-	if (ismult != 0) {
-	    found = 0;
-	    multlen = strlen(MULTS_POSSIBLE(i));
-
-	    /* already worked? */
-	    for (j = 0; j < multarray_nr; j++) {
-		if (strncmp(mults[j],
-			    strstr(ssexchange, MULTS_POSSIBLE(i)),
-			    multlen) == 0) {
-		    found = 1;
-		    break;
-		}
-	    }
-
-	    if (found == 0) {
-		/* not found, add it */
-		strcpy(mults[multarray_nr], MULTS_POSSIBLE(i));
-		multarray_nr++;
-	    }
+	if (idx >= 0) {
+	    remember_multi(MULTS_POSSIBLE(idx), bandinx, ALL_BAND);
 	}
     }
 
     // ---------------------------serial + section ---------------------------
-
     if ((serial_section_mult == 1) || (sectn_mult == 1)) {
-	ismult = 0;
 
 	/* is it a possible mult? */
-	if (mults_possible->len > 0) {
-	    for (i = 0; i < mults_possible->len; i++) {
-		// check if valid mult....
-		if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
-		    ismult = 1;
-		    break;
-		}
+	for (i = 0; i < mults_possible->len; i++) {
+	    // check if valid mult....
+	    if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
+		idx = i;
+		break;
 	    }
 	}
 
-	if (ismult != 0) {
-	    shownewmult = remember_multi(MULTS_POSSIBLE(i), bandinx, 1);
+	if (idx >= 0) {
+	    shownewmult =
+		remember_multi(MULTS_POSSIBLE(idx), bandinx, PER_BAND);
 	}
     }
 
     // ------------------------------- section ----------------------------
-
     if ((dx_arrlsections == 1) &&
 	((countrynr == w_cty) || (countrynr == ve_cty))) {
-	char *ptr;		// local pointer
 
-	ismult = 0;
+	/* check all possible mults for match and remember the longest one */
+	for (i = 0; i < mults_possible->len; i++) {
+	    if (strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL) {
 
-	/* is it a possible mult? */
-	if (mults_possible->len > 0) {
-	    // check if valid mult.
-	    for (i = 0; i < mults_possible->len; i++) {
-		ptr = strstr(ssexchange, MULTS_POSSIBLE(i));
-
-		if (ptr != NULL) {
-		    ismult = 1;
-		    multlen = strlen(MULTS_POSSIBLE(i));
-
-		    if (strlen(MULTS_POSSIBLE(i)) == strlen(ptr))
-			break;
-
+		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
+		    matching_len = strlen(MULTS_POSSIBLE(i));
+		    idx = i;
 		}
 	    }
 	}
 
-	if (ismult != 0) {
-	    shownewmult = remember_multi(MULTS_POSSIBLE(i), bandinx, 1);
+	if (idx >= 0) {
+	    shownewmult =
+		remember_multi(MULTS_POSSIBLE(idx), bandinx, PER_BAND);
 	}
     }
 
     // --------------------wysiwyg----------------
     if (wysiwyg_once == 1) {
-	shownewmult = remember_multi(stripped_comment, bandinx, 0);
+	shownewmult = remember_multi(stripped_comment, bandinx, ALL_BAND);
     }
 
-    if (wysiwyg_multi == 1 && strlen(stripped_comment) > 0) {
-	shownewmult = remember_multi(stripped_comment, bandinx, 1);
+    if (wysiwyg_multi == 1) {
+	shownewmult = remember_multi(stripped_comment, bandinx, PER_BAND);
     }
 
-    if (serial_grid4_mult == 1 && strlen(section) > 0) {
+    if (serial_grid4_mult == 1) {
 	section[4] = '\0';
-	shownewmult = remember_multi(section, bandinx, 1);
+	shownewmult = remember_multi(section, bandinx, PER_BAND);
     }
 
     free(stripped_comment);
@@ -168,95 +136,59 @@ int addmult(void)
 
 int addmult2(void)
 {
-    int n, addarea = 0, found = 0;
-    int i, j, ismult, multlen = 0;
+    int found = 0;
+    int i;
+    int matching_len = 0, idx = -1;
     char ssexchange[21];
+    char stripped_comment[21];
 
     shownewmult = -1;
 
-    if (arrlss == 1) {		// mult for all bands
-	ismult = 0;
+    // --------------------------- arrlss ------------------------------------
+    if (arrlss == 1) {
 	strncpy(ssexchange, lan_logline + 54, 20);
 
-	if (mults_possible->len > 0) {
-	    for (i = 0; i < mults_possible->len; i++) {
-		if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL) &&
-		    (strlen(MULTS_POSSIBLE(i)) > 1)) {
+	/* check all possible mults for match and remember the longest one */
+	for (i = 0; i < mults_possible->len; i++) {
+	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
+		&& (strlen(MULTS_POSSIBLE(i)) > 1)) {
 
-		    ismult = 1;
-		    multlen = strlen(MULTS_POSSIBLE(i));
-		    break;
+		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
+		    matching_len = strlen(MULTS_POSSIBLE(i));
+		    idx = i;
 		}
 	    }
 	}
 
-	if (ismult != 0) {
-	    for (j = 0; j < multarray_nr; j++) {
-		if (strncmp
-		    (mults[j], strstr(ssexchange, MULTS_POSSIBLE(i)),
-		     multlen) == 0) {
-		    found = 1;
-		    break;
-		}
-	    }
-
-	    if (found == 0) {
-		/* not found, add it */
-		strncpy(mults[multarray_nr],
-			strstr(ssexchange, MULTS_POSSIBLE(i)), multlen);
-		multarray_nr++;
-
-		if (strlen(mults[multarray_nr]) == 2)
-		    strcat(mults[multarray_nr], " ");
-	    }
+	if (idx >= 0) {
+	    remember_multi(MULTS_POSSIBLE(idx), bandinx, ALL_BAND);
 	}
     }
 
+    // --------------------wysiwyg----------------
     if (wysiwyg_once == 1) {
-	for (n = 0; n < multarray_nr; n++) {
-	    if (strcmp(mults[n], comment) == 0) {
-		found = 1;
-		break;
-	    }
-	}
+	strncpy(stripped_comment, lan_logline + 54, 14);
+	g_strchomp(stripped_comment);
 
-	if (found == 0) {
-	    strcpy(mults[multarray_nr], comment);
-	    multarray_nr++;
-	    addarea = 1;
-	    shownewmult = n;
-	}
+	shownewmult = remember_multi(stripped_comment, bandinx, ALL_BAND);
     }
 
-    if ((wysiwyg_multi == 1) && (strlen(comment) > 0)) {
-	for (n = 0; n < multarray_nr; n++) {
-	    if (strcmp(mults[n], comment) == 0) {
-		found = 1;
-		break;
-	    }
-	}
+    if (wysiwyg_multi == 1) {
+	strncpy(stripped_comment, lan_logline + 54, 14);
+	g_strchomp(stripped_comment);
 
-	if (found == 0) {
-	    strcpy(mults[multarray_nr], comment);
-	    mult_bands[multarray_nr] =
-		mult_bands[multarray_nr] | inxes[bandinx];
-	    multarray_nr++;
-	    addarea = 1;
-	    shownewmult = multarray_nr - 1;
-	} else if ((found == 1) && ((mult_bands[n] & inxes[bandinx]) == 0)) {
-	    mult_bands[n] = mult_bands[n] | inxes[bandinx];
-	    addarea = 1;
-	    shownewmult = n;
-	}
-    }
-
-    if (addarea == 1) {
-	multscore[bandinx]++;
+	shownewmult = remember_multi(stripped_comment, bandinx, PER_BAND);
     }
 
     return (found);
 }
 
+
+/* compare functions to sort multi by aphabetic order  */
+gint	cmp_size (char **a, char **b) {
+
+    return g_strcmp0(*a, *b);
+}
 
 /** loads possible multipliers from external file
  *
@@ -271,7 +203,7 @@ int addmult2(void)
  *
  * \return number of loaded multipliers (nr of entries in mults_possible)
  * */
-int load_multipliers(void)
+int init_and_load_multipliers(void)
 {
     extern GPtrArray *mults_possible;
     extern char multsfile[];	// Set by parse_logcfg()
@@ -281,12 +213,15 @@ int load_multipliers(void)
     char mults_location[_POSIX_PATH_MAX * 2];	// 512 chars.  Larger?
     int count = 0;
 
+    if (mults_possible) {
+	/* free old array if exists */
+	g_ptr_array_free(mults_possible, TRUE);
+    }
+    mults_possible = g_ptr_array_new_with_free_func( g_free );
+
 
     if (strlen(multsfile) == 0) {
-	mvprintw(9, 0, "No multiplier file specified, exiting.. !!\n");
-	refreshp();
-	sleep(5);
-	exit(1);
+	return 0;
     }
 
     // Check for mults file in working directory first
@@ -327,6 +262,9 @@ int load_multipliers(void)
 	}
 
 	fclose(cfp);
+
+	/* do not rely on the order in the mult file but sort it here */
+	g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);
     }
 
     return (count);
@@ -382,7 +320,7 @@ int remember_multi(char *multiplier, int band, int show_new_band)
 		multscore[band]++;
 
 		/* if wanted, show it as new band */
-		if (show_new_band)
+		if (show_new_band == PER_BAND)
 		    index = i;
 	    }
 

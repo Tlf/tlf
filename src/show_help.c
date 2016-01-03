@@ -32,10 +32,6 @@
 #include "clear_display.h"
 #include "tlf_curses.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #define new_help 	/* new implementation */
 #ifdef new_help
 

@@ -58,14 +58,19 @@ int gettxinfo(void)
 
     extern int trx_control;
     extern int trxmode;
+    extern int rigmode;
+    extern int keyerport;
 
 #ifdef HAVE_LIBHAMLIB
     freq_t rigfreq;
     vfo_t vfo;
+    pbwidth_t bwidth;
+    int retval;
+    int retvalmode;
 #else
     float rigfreq;
 #endif
-    int retval = 0;
+
     static int oldbandinx;
     extern int bmadd_pending;
 
@@ -80,10 +85,19 @@ int gettxinfo(void)
 
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
-	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL)
+	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL) {
 	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
+	    if (trxmode == DIGIMODE && keyerport == GMFSK && retval == RIG_OK) {
+		retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, (rmode_t *)&rigmode, &bwidth);
+		if (retvalmode != RIG_OK) {
+		    rigmode = RIG_MODE_NONE;
+		}
+	    }
+	}
 
-	rigfreq += fldigi_get_carrier();
+	if (trxmode == DIGIMODE && keyerport == GMFSK) {
+	    rigfreq += fldigi_get_carrier();
+	}
 
 	if (retval != RIG_OK || rigfreq < 0.1) {
 	    freq = 0.0;

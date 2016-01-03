@@ -1,5 +1,5 @@
-AM_CPPFLAGS = @GLIB_CFLAGS@
-AM_CFLAGS = @PTHREAD_CFLAGS@
+AM_CPPFLAGS = @GLIB_CFLAGS@ -DPACKAGE_DATA_DIR=\"$(pkgdatadir)\"
+AM_CFLAGS = @AM_CFLAGS@ @PTHREAD_CFLAGS@ @HAMLIB_CFLAGS@
 
 bin_PROGRAMS = tlf
 
@@ -33,7 +33,8 @@ tlf_SOURCES = \
 	write_keyer.c writecabrillo.c writeparas.c \
 	zone_nr.c
 
-tlf_LDADD = @PTHREAD_LIBS@ @GLIB_LIBS@ @PANEL_LIB@ @CURSES_LIB@
+tlf_LDADD = @LIBM_LIB@ @PTHREAD_LIBS@ @GLIB_LIBS@ @PANEL_LIB@ @CURSES_LIB@ @HAMLIB_LIBS@ \
+	@LIBXMLRPC_LIB@ @LIBXMLRPC_CLIENT_LIB@ @LIBXMLRPC_UTIL_LIB@
 
 noinst_HEADERS = \
 	addarea.h addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \

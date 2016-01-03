@@ -191,6 +191,7 @@ char exchange_list[40] = "";
 int timeoffset = 0;
 int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
+int rigmode = 0;		/* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
 int mixedmode = 0;
 char his_rst[4] = "599";
 char my_rst[4] = "599";
@@ -641,12 +642,17 @@ int databases_load()
 	return EXIT_FAILURE;
     }
 
-    mults_possible = g_ptr_array_new();
 
     if (multlist == 1) {
 	showmsg("reading multiplier data      ");
-	load_multipliers();
+	if (strlen(multsfile) == 0) {
+	    mvprintw(9, 0, "No multiplier file specified, exiting.. !!\n");
+	    refreshp();
+	    sleep(5);
+	    exit(1);
+	}
     }
+    init_and_load_multipliers();
 
     showmsg("reading callmaster data");
     load_callmaster();
