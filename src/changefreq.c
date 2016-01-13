@@ -60,7 +60,9 @@ void change_freq (void) {
 
 	    switch (x) {
 
-	    case 152:{		//up
+	    // Up arrow, raise frequency by 100 Hz.
+	    case KEY_UP:
+		{
 #ifdef HAVE_LIBHAMLIB
 		    outfreq = (freq_t) (freq * 1000);
 #else
@@ -70,7 +72,10 @@ void change_freq (void) {
 
 		    break;
 		}
-	    case 153:{		//down
+
+	    // Down arrow, lower frequency by 100 Hz.
+	    case KEY_DOWN:
+		{
 #ifdef HAVE_LIBHAMLIB
 		    outfreq = (freq_t) (freq * 1000);
 #else
@@ -80,7 +85,10 @@ void change_freq (void) {
 
 		    break;
 		}
-	    case 154:{		//right
+
+	    // Right arrow, raise frequency by 20 Hz.
+	    case KEY_RIGHT:
+		{
 #ifdef HAVE_LIBHAMLIB
 		    outfreq = (freq_t) (freq * 1000);
 #else
@@ -90,7 +98,10 @@ void change_freq (void) {
 
 		    break;
 		}
-	    case 155:{		//left
+
+	    // Left arrow, lower frequency by 20 Hz.
+	    case KEY_LEFT:
+		{
 #ifdef HAVE_LIBHAMLIB
 		    outfreq = (freq_t) (freq * 1000);
 #else
@@ -100,7 +111,10 @@ void change_freq (void) {
 
 		    break;
 		}
-	    case 156:{		//left
+
+	    // <Page-Up>, raise frequency by 500 Hz.
+	    case KEY_PPAGE:
+		{
 #ifdef HAVE_LIBHAMLIB
 		    outfreq = (freq_t) (freq * 1000);
 #else
@@ -110,7 +124,10 @@ void change_freq (void) {
 
 		    break;
 		}
-	    case 157:{		//left
+
+	    // <Page-Down>, lower frequency by 500 Hz.
+	    case KEY_NPAGE:
+		{
 #ifdef HAVE_LIBHAMLIB
 		    outfreq = (freq_t) (freq * 1000);
 #else

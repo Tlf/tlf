@@ -110,18 +110,21 @@ void edit_last(void)
     /* start with last QSO */
     get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
 
-    while ((j != 27) && (j != '\n')) {
+    while ((j != 27) && (j != '\n' || j != KEY_ENTER)) {
 	highlight_line(editline, editbuffer, b);
 
 	j = key_get();
 
-	if (j == 1) {		// ctrl A, beginning of line
+	// Ctrl-A (^A) or <Home>, beginning of line.
+	if (j == 1 || j == KEY_HOME) {
 	    b = 1;
 
-	} else if (j == 5) {	// ctrl E, end of line
+	// Ctrl-E (^E) or <End>, end of line.
+	} else if (j == 5 || j == KEY_END) {
 	    b = 77;
 
-	} else if (j == 9) {	// TAB, next field
+	// <Tab>, next field.
+	} else if (j == 9) {
 	    if (b < 17)
 		b = 17;
 	    else if (b < 29)
@@ -135,7 +138,8 @@ void edit_last(void)
 	    else
 		b = 1;
 
-	} else if (j == 152) {	// up
+	// Up arrow, move to previous line.
+	} else if (j == KEY_UP) {
 	    if (editline > (NR_LINES - nr_qsos) && (editline > 0)) {
 		unhighlight_line(editline, editbuffer);
 		putback_qso (nr_qsos - (NR_LINES -editline), editbuffer);
@@ -146,7 +150,8 @@ void edit_last(void)
 		j = 27;
 	    }
 
-	} else if (j == 153) {	// down
+	// Down arrow, move to next line.
+	} else if (j == KEY_DOWN) {
 
 	    if (editline < NR_LINES-1) {
 		unhighlight_line(editline, editbuffer);
@@ -156,55 +161,67 @@ void edit_last(void)
 	    } else
 		j = 27;		/* escape */
 
-	} else if (j == 155) {  // left
+	// Left arrow, move cursor one position left.
+	} else if (j == KEY_LEFT) {
 	    if (b >= 1)
 		b--;
 
-	} else if (j == 154) {	// right
+	// Right arrow, move cursor one position right.
+	} else if (j == KEY_RIGHT) {
 	    if (b < 79)
 		b++;
 
-	} else if ((j == 160) && (b >= 0) && (b < 28)) {	// insert
+	// <Insert>, positions 0 to 27.
+	} else if ((j == KEY_IC) && (b >= 0) && (b < 28)) {
 	    for (k = 28; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	} else if ((j == 160) && (b >= 29) && (b < 39)) {	// insert  call
+	// <Insert>, positions 29 to 38.
+	} else if ((j == KEY_IC) && (b >= 29) && (b < 39)) {
 	    for (k = 39; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	} else if ((j == 160) && (b >= 54) && (b < 64)) {	// insert
+	// <Insert>, positions 54 to 63.
+	} else if ((j == KEY_IC) && (b >= 54) && (b < 64)) {
 	    for (k = 64; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	} else if ((j == 160) && (b >= 68) && (b < 76)) {	// insert
+	// <Insert>, positions 68 to 75.
+	} else if ((j == KEY_IC) && (b >= 68) && (b < 76)) {
 	    for (k = 76; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	} else if ((j == 161) && (b >= 1) && (b < 28)) {	// delete
+	// <Delete>, positions 1 to 27.
+	} else if ((j == KEY_DC) && (b >= 1) && (b < 28)) {
 	    for (k = b; k < 28; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	} else if ((j == 161) && (b >= 29) && (b < 39)) {	// delete
+	// <Delete>, positions 29 to 38.
+	} else if ((j == KEY_DC) && (b >= 29) && (b < 39)) {
 	    for (k = b; k < 39; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	} else if ((j == 161) && (b >= 68) && (b < 76)) {	// delete
+	// <Delete>, positions 68 to 75.
+	} else if ((j == KEY_DC) && (b >= 68) && (b < 76)) {
 	    for (k = b; k < 76; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	} else if ((j == 161) && (b >= 54) && (b < 64)) {	// delete
+	// <Delete>, positions 54 to 63.
+	} else if ((j == KEY_DC) && (b >= 54) && (b < 64)) {
 	    for (k = b; k < 64; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
 	} else if (j != 27) {
 
+	    // Promote lower case to upper case.
 	    if ((j >= 97) && (j <= 122))
 		j = j - 32;
 
+	    // Accept most all printable characters.
 	    if ((j >= 32) && (j < 97)) {
 		editbuffer[b] = j;
 		if ((b < strlen(editbuffer) - 2) && (b < 80))

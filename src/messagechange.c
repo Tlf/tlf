@@ -62,7 +62,7 @@ int message_change(int x)
 	if ((bufnr == 'C') || (bufnr == 'S'))
 	    break;
 
-	if (bufnr >= 129 && bufnr <= 141)
+	if (bufnr >= KEY_F(1) && bufnr <= KEY_F(12))
 	    break;
     }
 
@@ -71,12 +71,7 @@ int message_change(int x)
     } else if (bufnr == 'C') {
 	bufnr = 13;
     } else {
-
-	if (bufnr <= 138) {
-	    bufnr = bufnr - 129;
-	} else {
-	    bufnr = bufnr - 130;
-	}
+	bufnr = bufnr - KEY_F(1);
     }
 
     printbuf[0] = '\0';

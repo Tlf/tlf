@@ -113,14 +113,17 @@ int keyer(void)
 
 	x = key_get();
 
-	if (x == 34) {		/* skip " */
+	// Send space instead of double quote.
+	if (x == 34) {
 	    x = 32;
 	}
 
-	if (x == '\n')
+	// Send space instead of newline or return.
+	if (x == '\n' || x == KEY_ENTER)
 	    x = 32;
 
-	if (x == 27 || x == 11 || x == 235) {	//      esc, ctrl-k,  alt-k
+	// <Escape>, Ctrl-K (^K), Alt-k (M-k)
+	if (x == 27 || x == 11 || x == 235) {
 	    if (keyerport == MFJ1278_KEYER) {
 		if (data_ready != 1) { 	/* switch back to rx */
 		    strcat(wkeyerbuffer, rxcontrolstring);
@@ -133,7 +136,8 @@ int keyer(void)
 	    break;
 	}
 
-	if (x > 96 && x < 123)	/* upper case only */
+	// Promote lower case to upper case.
+	if (x > 96 && x < 123)
 	    x = x - 32;
 
 	if (x > 9 && x < 91) { 	/* drop all other control char... */
@@ -162,6 +166,7 @@ int keyer(void)
 	    switch (x) {
 	    case '\n':
 	    case 13:
+	    case KEY_ENTER:
 		{
 		    if (keyerport == MFJ1278_KEYER) {
 			sendmessage(crcontrolstring);
@@ -204,20 +209,24 @@ int keyer(void)
 		    netkeyer(K_WEIGHT, weightbuf);
 		    break;
 		}
-	    case 156:
+
+	    // <Page-Up>, increase CW speed.
+	    case KEY_PPAGE:
 		{
 		    speedup();
 		    clear_display();
 		    break;
 		}
-	    case 157:
+
+	    // <Page-Down>, decrease CW speed.
+	    case KEY_NPAGE:
 		{
 		    speeddown();
 		    clear_display();
 		    break;
 		}
 
-	    case 129:
+	    case KEY_F(1):
 		{
 		    getyx(stdscr, cury, curx);
 		    mvprintw(5, 0, "");
@@ -225,58 +234,58 @@ int keyer(void)
 		    mvprintw(cury, curx, "");
 		    break;
 		}
-	    case 130:
+	    case KEY_F(2):
 		{
 		    sendmessage(message[1]);	/* F2 */
 		    break;
 		}
-	    case 131:
+	    case KEY_F(3):
 		{
 		    sendmessage(message[2]);	/* F3 */
 		    break;
 		}
-	    case 132:
+	    case KEY_F(4):
 		{
 		    sendmessage(message[3]);	/* F4 */
 		    break;
 		}
-	    case 133:
+	    case KEY_F(5):
 		{
 		    sendmessage(message[4]);	/* F5 */
 		    break;
 		}
-	    case 134:
+	    case KEY_F(6):
 		{
 		    sendmessage(message[5]);	/* F6 */
 		    break;
 		}
-	    case 135:
+	    case KEY_F(7):
 		{
 		    sendmessage(message[6]);	/* F7 */
 		    break;
 		}
-	    case 136:
+	    case KEY_F(8):
 		{
 		    sendmessage(message[7]);	/* F8 */
 		    break;
 		}
-	    case 137:
+	    case KEY_F(9):
 		{
 		    sendmessage(message[8]);	/* F9 */
 		    break;
 		}
-	    case 138:
+	    case KEY_F(10):
 		{
 		    sendmessage(message[9]);	/* F10 */
 		    break;
 		}
 
-	    case 140:
+	    case KEY_F(11):
 		{
 		    sendmessage(message[10]);	/* F11 */
 		    break;
 		}
-	    case 141:
+	    case KEY_F(12):
 		{
 
 		    sendmessage(message[11]);	/* F12 */

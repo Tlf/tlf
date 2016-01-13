@@ -308,6 +308,9 @@ Start contest recording to ddhhmm.au.
 Stop contest recording.
 .IP
 .BR 3 :
+List contest recordings.
+.IP
+.BR 4 :
 Play back contest recording ddhh[mm][:xx].
 .RS
 .RS
@@ -378,19 +381,19 @@ F1-F12 and Alt-<char> keys.  Moreover on some systems you must set
 .B PgUp
 Increase CW (Morse Code) speed (from call and exchange fields).
 .IP
-If field not empty and CHANGE_RST is set: change RST value.
+If field is not empty and CHANGE_RST is set: change RST value.
 .
 .TP
 .B PgDown
 Decrease CW (Morse Code) speed (from call and exchange fields).
 .IP
-If field not empty and CHANGE_RST is set: change RST value.
+If field is not empty and CHANGE_RST is set: change RST value.
 .
 .TP
 .B Ctrl-PgUp
 Increase Auto_CQ delay (+1/2 sec).
 .IP
-Set Auto_CW delay to message length + pause length.  This is because
+Set Auto_CQ delay to message length + pause length.  This is because
 @PACKAGE_NAME@ does not know when the cwdaemon is ready.
 .
 .TP
@@ -398,8 +401,13 @@ Set Auto_CW delay to message length + pause length.  This is because
 Decrease Auto_CQ delay (\-1/2 sec).
 .
 .TP
-.B F1-F11
-Send CW, RTTY or VOICE message.
+.B F1
+In CQ mode, send message 1 (CQ message).  In S&P mode send message
+6 (my callsign).
+.
+.TP
+.B F2-F11
+Send CW, RTTY or VOICE messages 2 through 11.
 .
 .TP
 .B F12
@@ -414,8 +422,14 @@ Switch between call input and exchange fields.
 Switch from call input to exchange field.
 .
 .TP
+.B Backspace
+Erases the character to the left of the cursor and moves it one position to the
+left.  Remaining characters are evaluated for 
+.
+.TP
 .BR +\  (Plus)
-Toggle CQ/S&P mode (TR-Log mode) or send F3 message + log QSO (CT mode).
+Toggle between CQ (calling CQ on a frequency) and S&P (tuning and working other
+stations calling CQ) modes (TR-Log mode) or send F3 message + log QSO (CT mode).
 .
 .TP
 .BR \(<-\  (Left-Arrow)
@@ -432,8 +446,9 @@ Smart key for contest mode: Calls CQ, Calls station, Sends exchange, Logs
 the QSO.
 .
 .TP
-.BR \(rs\  (Backslash)
-Log QSO without CW output.
+.BR ?\  (Query)
+In CW or DIGIMODE sends the partial call followed by " ?".  In VOICE mode
+sends recorded message 5 (F5).
 .
 .TP
 .BR ;\  (Semicolon)
@@ -441,7 +456,7 @@ Insert note in log.
 .
 .TP
 .BR ,\  (comma)
-Keyboard on.  This works only when the call input field is empty; use Ctrl-K if it is not.
+Activate Morse Keyboard.  Also Ctrl-K.
 .
 .TP
 .B Escape
@@ -477,6 +492,9 @@ In RTTY (DIGIMODE), keyboard mode switch TX off (RX).
 .
 .TP
 .BR \e\  (Backslash)
+Log QSO without CW output.
+.
+.IP
 In RTTY (DIGIMODE), keyboard mode switch controller to command mode
 (back to operating mode with \(aqK <Enter>\(aq.
 .
@@ -489,6 +507,8 @@ Transceiver VFO frequency \(-> mem, mem \(-> transceiver VFO frequency.
 Get a new shell.  Come back with \(aqexit\(aq.
 .
 .TP
+.BR Alt-,
+.TQ
 .BR .\  (Period)
 Change bandmap filter configuration.  You can filter to show spots from all
 or own band only, from all/own mode only and if you want to see dupes or
@@ -514,6 +534,13 @@ and
 .BR Alt-X ")."
 .
 .TP
+.B Ctrl-E
+Ends modem capture for RTTY mode in QTC window (started with Ctrl-S).
+.
+.IP
+See doc/README_QTC_RTTY.txt for more information.
+.
+.TP
 .B Ctrl-F
 Set frequency.  Use Up/Down-Arrow for 100hz steps and PgUp/PgDown for
 500hz steps.  Return to logging with <Esc>.
@@ -527,12 +554,20 @@ Grab next DX spot from bandmap.
 Keyboard (CW and RTTY).
 .
 .TP
+.B Ctrl-L
+Reset the screen.
+.
+.TP
 .B Ctrl-P
 Maximum Usable Frequency (MUF) display.
 .
 .TP
 .B Ctrl-Q
-XOFF (Linux terminal function).
+Open the QTC window for receiving QTCs if QTC=RECV or QTC=BOTH or sending QTCs
+if QTC=SEND is set in logcfg.dat.  Same as Ctrl-S if QTC=SEND.
+.
+.IP
+See doc/README_QTC.txt and doc/README_QTC_RTTY.txt for more information.
 .
 .TP
 .B Ctrl-R
@@ -540,11 +575,19 @@ Toggle /dev/lp0 pin 14 (Mic/Soundcard switch | trx1/trx2 switch).
 .
 .TP
 .B Ctrl-S
-XON (Linux terminal function).
+Open the QTC window for sending QTCs if QTC=SEND or QTC=BOTH in logcfg.dat.
+Saves QTCs while in QTC window.
+.
+.IP
+In RTTY mode starts capture from the modem after the window has been
+opened with Ctrl-Q.  End capture with Ctrl-E.
+.
+.IP
+See doc/README_QTC.txt and doc/README_QTC_RTTY.txt for more information.
 .
 .TP
 .B Ctrl-T
-Show talk messages.
+Show talk messages.  In the QTC window shows RTTY lines.
 .
 .TP
 .B Ctrl-Z
@@ -560,7 +603,7 @@ Cycle cluster window: NOCLUSTER \(-> CLUSTER \(-> BANDMAP \(-> ...
 .
 .TP
 .B Alt-B
-Band up.
+Band up in TR-Log mode.
 .
 .TP
 .B Alt-C

@@ -571,7 +571,10 @@ int changepars(void)
 		x = key_get();
 
 		switch (x) {
-		case 156:{
+
+		// <Page-Up>, increase autoCQ delay by 1/2 second.
+		case KEY_PPAGE:
+		    {
 			if (cqdelay <= 60) {
 			    cqdelay++;
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
@@ -581,7 +584,10 @@ int changepars(void)
 
 			}
 		    }
-		case 157:{
+
+		// <Page-Down>, decrease autoCQ delay by 1/2 second.
+		case KEY_NPAGE:
+		    {
 			if (cqdelay >= 1) {
 			    cqdelay--;
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
@@ -649,13 +655,18 @@ int changepars(void)
 		x = key_get();
 
 		switch (x) {
-		case 156:{
+
+		// <Page-Up>, increase volume by 5%.
+		case KEY_PPAGE:
+		    {
 			if (volumebuffer < 95)
 			    volumebuffer += 5;
 
 			break;
 		    }
-		case 157:{
+		// <Page-Down>, decrease volume by 5%.
+		case KEY_NPAGE:
+		    {
 			if (volumebuffer >= 5)
 			    volumebuffer -= 5;
 

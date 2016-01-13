@@ -44,4 +44,33 @@
 # error "SysV or X/Open-compatible Curses header file required"
 #endif
 
+
+/* Additional key codes reported by Gnome Terminal and Xterm
+ * and apparently in the terminfo database but not in Ncurses header files.
+ *
+ * The following keys are defined in the xterm terminfo database.
+ * Key names with a suffix of '3' are Alt-key combinations.
+ * Key names with a suffix of '5' are Ctl-key combinations.
+ *
+ * Keys are defined in decimal ordinal order.
+ */
+#define kDC5	519	/* Ctrl-Delete */
+#define kDN3	523	/* Alt-Down arrow */
+#define kDN5	525	/* Ctrl-Down arrow */
+#define kEND3	528	/* Alt-End */
+#define kEND5	530	/* Ctrl-End */
+#define kHOM3	533	/* Alt-Home */
+#define kHOM5	535	/* Ctrl-Home */
+#define kIC5	540	/* Ctrl-Insert */
+#define kLFT3	543	/* Alt-Left arrow */
+#define kLFT5	545	/* Ctrl-Left arrow */
+#define kNXT3	548	/* Alt-Page Down */
+#define kNXT5	550	/* Ctrl-Page Down */
+#define kPRV3	553	/* Alt-Page Up */
+#define kPRV5	555	/* Ctrl-Page Up */
+#define kRIT3	558	/* Alt-Right arrow */
+#define kRIT5	560	/* Ctrl-Right arrow */
+#define kUP3	564	/* Alt-Up arrow */
+#define kUP5	566	/* Ctrl-Up arrow */
+
 #endif

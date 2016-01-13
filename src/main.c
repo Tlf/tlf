@@ -529,6 +529,20 @@ void ui_init()
     } else
 	putenv("TERM=rxvt");	/*or going to native console linux driver */
 
+    /* Check the environment variable ESCDELAY.
+     *
+     * If unset set it to 25 mS which should allow enough time to capture
+     * escaped key codes and yet be fast enough to call stoptx() when needed
+     * by the user.  When unset Ncurses assumes a default value of 1000 mS so
+     * use set_escdelay(0) to set it as the Ncurses documentation declares this
+     * method to be thread safe.
+     *
+     * Else let Ncurses honor the user defined value of the env variable.
+     */
+    if (getenv("ESCDELAY") == NULL) {
+	set_escdelay(25);
+    }
+
     /* activate ncurses terminal control */
     if ((mainscreen = newterm(NULL, stdout, stdin)) == NULL) {
 	perror("initscr");
@@ -572,8 +586,7 @@ void ui_init()
     noecho();
     crmode();
 
-//keypad(stdscr,TRUE);
-
+    keypad(stdscr,TRUE);
 }
 
 

@@ -64,41 +64,49 @@ void calledit(void)
 
 	i = key_get();
 
-	if ((i == 161) || (i == 160))	// Ins / Del
+	// <Delete> or <Insert>
+	if ((i == KEY_DC) || (i == KEY_IC))
 	    cnt++;
 	else {
 	    if (i != 27)
 		cnt = 0;
 	}
 
+	// <Tab>
 	if (i == 9)
 	    block_part = 1;
 	else
 	    block_part = 0;
 
-	if (i == 1)		// ctrl-A, home
+	// Ctrl-A (^A) or <Home>
+	if (i == 1 || i == KEY_HOME)
 	{
 	    b = 0;
 	    x = 0;
 	}
-	if (i == 5)		// ctrl-E, End
+
+	// Ctrl-E (^E) or <End>
+	if (i == 5 || i == KEY_END)
 	{
 	    b = strlen(hiscall) - 1;
 	    x = 0;
 	}
 
-	if (i == 155) {		// left
+	// Left arrow
+	if (i == KEY_LEFT) {
 
 	    if (b > 0)
 		b--;
 
-	} else if (i == 154) {	// right
+	// Right arrow
+	} else if (i == KEY_RIGHT) {
 	    if (b < strlen(hiscall) - 1) {
 		b++;
 	    } else
 		break;		/* stop edit */
 
-	} else if (i == 161) {	/* delete */
+	// <Delete>
+	} else if (i == KEY_DC) {
 
 	    l = strlen(hiscall);
 
@@ -113,7 +121,8 @@ void calledit(void)
 	    if (cnt > 1)
 		searchlog(hiscall);
 
-	} else if (i == 127) {	/* backspace */
+	// <Backspace>
+	} else if (i == KEY_BACKSPACE) {
 
 	    if (b > 0) {
 
@@ -133,17 +142,21 @@ void calledit(void)
 		    searchlog(hiscall);
 	    }
 
-	} else if (i == 160) {	/* insert */
+	// <Insert>
+	} else if (i == KEY_IC) {
 	    if (insertflg == 0)
 		insertflg = 1;
 	    else
 		insertflg = 0;
 
+	// Any character left other than <Escape>.
 	} else if (i != 27) {
 
+	    // Promote lower case to upper case.
 	    if ((i >= 97) && (i <= 122))
 		i = i - 32;
 
+	    // Accept A-Z or / and 1-9
 	    if (((i >= 65) && (i <= 90)) || ((i >= 47) && (i <= 57))) {
 
 		call2[0] = '\0';
@@ -216,23 +229,28 @@ int insert_char(int curposition)
 
 	ichr = key_get();
 
-	if ((ichr == 9) || (ichr == '\n') || (ichr == 127))
-	    break;		// leave insert mode
+	// Leave insert mode if <Tab>, <Enter>, or <Backspace> are received.
+	if ((ichr == 9) || (ichr == '\n') || (ichr == KEY_ENTER) || (ichr == 127))
+	    break;
 
+	// Promote lower case to upper case.
 	if ((ichr >= 97) && (ichr <= 122))
 	    ichr = ichr - 32;
 
 	if (curposition <= 10) {
 	    strncpy(call1, hiscall, curposition);
 	}
+
 	if (curposition <= 10) {
 	    strncpy(call2, hiscall + curposition,
 		    strlen(hiscall) - (curposition - 1));
 	}
 
+	// Too long!
 	if (strlen(hiscall) + 1 == 13)
 	    break;		// leave insert mode
 
+	// Accept A-Z or / and 1-9
 	if (((ichr >= 65) && (ichr <= 90))
 	    || ((ichr >= 47) && (ichr <= 57))) {
 	    call1[curposition] = ichr;

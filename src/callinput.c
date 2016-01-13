@@ -207,7 +207,8 @@ char callinput(void)
 
 	    }
 
-	    if (x == '\n' && *hiscall == '\0') {
+	    // <Enter>, sends CQ message (F1), starts autoCQ, or sends S&P message.
+	    if ((x == '\n' || x == KEY_ENTER) && *hiscall == '\0') {
 		if (cqmode == CQ) {
 		    if (noautocq != 1)
 			x = auto_cq();
@@ -217,11 +218,13 @@ char callinput(void)
 		}
 	    }
 
-	    if (x == 152 || x == 229) {	// up-arrow or alt-e
+	    // Up Arrow or Alt-e, edit last QSO
+	    if (x == KEY_UP || x == 229) {
 		edit_last();
 		break;
 	    }
 
+	    // Equals, confirms last callsign already logged if call field is empty.
 	    if (x == '=' && *hiscall == '\0') {
 		char *str = g_strdup_printf("%s TU ", lastcall);
 		sendmessage(str);
@@ -231,6 +234,8 @@ char callinput(void)
 	}
 
 	switch (x) {
+
+	// Plus, in CT mode send exchange, log QSO, no message sent.
 	case '+':
 	    {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
@@ -246,13 +251,14 @@ char callinput(void)
 
 		    if ((itumult == 1) && (*comment == '\0'))
 			strcpy(comment, ituzone);
-		    x = 92;
+		    x = 92;	// '\'
 
 		}
 		break;
 	    }
 
-	case 17:	// CTRL+q
+	// Ctrl-Q (^Q), open QTC window for receiving or sending QTCs.
+	case 17:
 	    {
 		if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
 		    qtc_main_panel(RECV);
@@ -260,19 +266,22 @@ char callinput(void)
 		if (qtcdirection == 2) {			// in case of QTC=SEND
 		    qtc_main_panel(SEND);
 		}
-		x=155;
+		x = KEY_LEFT;
 		continue;
 	    }
-	case 19:	// CTRL+s
+
+	// Ctrl-S (^S), open QTC window for sending QTCs.
+	case 19:
 	    {
 		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
-		x=155;
+		x = KEY_LEFT;
 		continue;
 	    }
 
-	case 155:		/* left */
+	// Left Arrow, enter call edit when call field is not empty, or band down.
+	case KEY_LEFT:
 	    {
 		if (*hiscall != '\0') {
 		    calledit();
@@ -306,7 +315,8 @@ char callinput(void)
 		break;
 	    }
 
-	case 154:		/* right */
+	// Right Arrow, band up when call field is empty.
+	case KEY_RIGHT:
 	    {
 		if (bandinx <= 8 && *hiscall == '\0' && no_arrows == 0) {
 
@@ -334,7 +344,9 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 247:		// Alt-w set weight
+
+	// Alt-w (M-w), set Morse weight.
+	case 247:
 	    {
 		char weightbuf[5] = "";
 		char *end;
@@ -371,7 +383,9 @@ char callinput(void)
 
 		break;
 	    }
-	case 246:		// Alt-v
+
+	// Alt-v (M-v), change Morse speed in CW mode, else band down.
+	case 246:
 	    {
 		if (ctcomp == 1) {
 		    while (x != 27)	//escape
@@ -384,19 +398,19 @@ char callinput(void)
 			refreshp();
 
 			x = key_get();
-			if (x == 152) {
+			if (x == KEY_UP) {
 			    speedup();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 			    mvprintw(0, 14, "%2d", GetCWSpeed());
 
-			} else if (x == 153) {
+			} else if (x == KEY_DOWN) {
 			    speeddown();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 			    mvprintw(0, 14, "%2d", GetCWSpeed());
 
 			} else
-			    x = 27;
+			    x = 27;	// <Escape>
 
 			clear_display();
 		    }
@@ -434,7 +448,8 @@ char callinput(void)
 		break;
 	    }
 
-	case 156:		/* pgup */
+	// <Page-Up>, change RST if call field not empty, else increase CW speed.
+	case KEY_PPAGE:
 	    {
 		if ((change_rst == 1) && (strlen(hiscall) != 0)) {	// change RST
 
@@ -455,7 +470,9 @@ char callinput(void)
 
 		break;
 	    }
-	case 412:		/* ctrl-pgup, cqdelay (not for TERM=linux */
+
+	// Ctrl-<Page-Up>, increase cqdelay by 1/2 second.
+	case kPRV5:
 	    {
 		if (cqdelay <= 60) {
 		    cqdelay++;
@@ -468,7 +485,8 @@ char callinput(void)
 		break;
 	    }
 
-	case 157:		/* pgdown */
+	// <Page-Down>, change RST if call field not empty, else decrease CW speed.
+	case KEY_NPAGE:
 	    {
 		if ((change_rst == 1) && (strlen(hiscall) != 0)) {
 
@@ -488,7 +506,10 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 413:{		// ctrl-pgdown, cqdelay (not for TERM=linux)
+
+	// Ctrl-<Page-Down>, decrease cqdelay by 1/2 Second.
+	case kNXT5:
+	    {
 		if (cqdelay >= 4) {
 		    cqdelay--;
 
@@ -499,11 +520,15 @@ char callinput(void)
 
 		break;
 	    }
-	case '\n':{
+
+	// <Enter>, log QSO in CT mode, else test if B4 message should be sent.
+	case '\n':
+	case KEY_ENTER:
+	    {
 		if (strlen(hiscall) > 2 && ctcomp == 1) {
 		    /* there seems to be a call
 		     * means: log it (in CT mode */
-		    x = 92;
+		    x = 92;	// '\' log without sending message
 		    break;
 		}
 
@@ -522,11 +547,13 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 160:		/* insert */
+
+	// <Insert>, send exchange in CT mode
+	case KEY_IC:
 	    {
 		if (ctcomp != 0) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			sendmessage(message[1]);
+			sendmessage(message[1]);	// F2
 
 		    } else
 			play_file(ph_message[1]);
@@ -534,7 +561,9 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 58:		/* :   change parameters */
+
+	// Colon, prefix for entering commands or changing parameters.
+	case ':':
 	    {
 		changepars();
 		hiscall[0] = '\0';
@@ -553,7 +582,9 @@ char callinput(void)
 		refreshp();
 		break;
 	    }
-	case 35:		/*  #  memory */
+
+	// Hash, save xcvr freq to mem or restore mem to xcvr.
+	case '#':
 	    {
 		if (mem == 0.0) {
 		    mem = freq;
@@ -571,20 +602,24 @@ char callinput(void)
 		refreshp();
 		break;
 	    }
-	case 45:		/* - delete qso */
+
+	// Minus, delete previous QSO from log.
+	case '-':
 	    {
 		delete_qso();
 		break;
 	    }
 
-	case 59:		/* ; note */
-	case 238:		/* alt-n */
+	// Semicolon or Alt-n (M-n), insert note in log.
+	case ';':
+	case 238:
 	    {
 		include_note();
 		x = -1;
 		break;
 	    }
 
+	// Alt-0 to Alt-9 (M-0...M-9), send CW/Digimode messages 15-24.
 	case 176 ... 185:
 	    {
 		sendmessage(message[x - 162]);	/* alt-0 to alt-9 */
@@ -592,7 +627,8 @@ char callinput(void)
 		break;
 	    }
 
-	case 129:		/*  F1 */
+	// F1, send CQ or S&P call message.
+	case KEY_F(1):
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
@@ -616,50 +652,57 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 130 ... 138:			/* F2.. F10 */
+
+	// F2-F11, send messages 2 through 11.
+	case KEY_F(2) ... KEY_F(11):
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    sendmessage(message[x - 129]);	/* F2 */
+		    sendmessage(message[x - KEY_F(1)]);	// F2...F11 - F1 = 1...10
 
 		} else
-		    play_file(ph_message[x - 129]);
+		    play_file(ph_message[x - KEY_F(1)]);
 
 		break;
 	    }
-	case 140:
-	    {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    sendmessage(message[10]);	/* F11 */
 
-		} else
-		    play_file(ph_message[10]);
+//	case KEY_F(11):
+//	    {
+//		if (trxmode == CWMODE || trxmode == DIGIMODE) {
+//		    sendmessage(message[10]);	/* F11 */
+//
+//		} else
+//		    play_file(ph_message[10]);
+//
+//		break;
+//	    }
 
-		break;
-	    }
-	case 141:		/* F12 */
+	// F12, activate autocq timing and message.
+	case KEY_F(12):
 	    {
 		x = auto_cq();
 		break;
 	    }
+
+	// Query, send call with " ?" appended or F5 message in voice mode.
 	case '?':
-            {
-                if (*hiscall != '\0') {
-                    if (trxmode == CWMODE || trxmode == DIGIMODE)
-                    {
-                        strcat(hiscall, " ?");
-                        sendmessage(message[4]);
-                        hiscall[strlen(hiscall) - 2] = '\0';
-                    }
-                    else
-                    {
-                        play_file(ph_message[4]);
-                    }
-                }
+	    {
+		if (*hiscall != '\0') {
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			strcat(hiscall, " ?");
+			sendmessage(message[4]);
+			hiscall[strlen(hiscall) - 2] = '\0';
+		    }
+		    else
+		    {
+			play_file(ph_message[4]);
+		    }
+		}
 		x = -1;
 		break;
 	    }
 
-	case 127:		/* backspace */
+	// <Backspace>, remove chracter left of cursor, move cursor left one position.
+	case KEY_BACKSPACE:
 	    {
 		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
@@ -684,8 +727,10 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 242:		// alt-R
-	case 243:		// alt-S
+
+	// Alt-r (M-r) or Alt-s (M-s), toggle score window.
+	case 242:
+	case 243:
 	    {
 		if (showscore_flag == 0)
 		    showscore_flag = 1;
@@ -699,12 +744,16 @@ char callinput(void)
 		clear_display();
 		break;
 	    }
+
+	// Alt-k (M-k), synonym for Ctrl-K (^K).
 	case 235:
-	    {			//alt-K     => ctrl-K
-		x = 11;
+	    {
+		x = 11;		// Ctrl-K
 		break;
 	    }
-	case 225:		// Alt-a
+
+	// Alt-a (M-a), cycle cluster window.
+	case 225:
 	    {
 		if (cluster == NOCLUSTER) {
 		    cluster = CLUSTER;	// alt-A
@@ -729,7 +778,9 @@ char callinput(void)
 
 		break;
 	    }
-	case 226:		// alt-b  (band-up for trlog)
+
+	// Alt-b (M-b), band-up for TR-Log mode.
+	case 226:
 	    {
 		if (ctcomp == 0) {
 		    if (bandinx <= 8 && *hiscall == '\0') {
@@ -759,7 +810,9 @@ char callinput(void)
 		}
 		break;
 	    }
-	case 234:		// alt-J
+
+	// Alt-j (M-j), show station frequencies.
+	case 234:
 	    {
 		if (cluster != FREQWINDOW) {
 		    lastwindow = cluster;
@@ -769,19 +822,24 @@ char callinput(void)
 
 		break;
 	    }
-	case 232:		// alt-H
+
+	// Alt-h (M-h), show help.
+	case 232:
 	    {
 		show_help();
 		break;
 	    }
 
-	case 172:		// alt-,
-	case 46:		// . (dot)
+	// Alt-, (M-,) or period, change bandmap filter config.
+	case 172:
+	case '.':
 	    {
 		bm_menu();
 		break;
 	    }
-	case 227:		//Alt-C
+
+	// Alt-c (M-c), toggle check window.
+	case 227:
 	    {
 		if (searchflg != SEARCHWINDOW)
 		    searchflg = SEARCHWINDOW;
@@ -790,13 +848,16 @@ char callinput(void)
 		break;
 	    }
 
-	case 237:		// alt-M
+	// Alt-m (M-m), show multipliers.
+	case 237:
 	    {
 		show_mults();
 		refreshp();
 		break;
 	    }
-	case 240:		// Alt-p (toggle ptt)
+
+	// Alt-p (M-p), toggle PTT via cwdaemon
+	case 240:
 	    {
 		if (k_ptt == 0) {
 		    k_ptt = 1;
@@ -806,7 +867,7 @@ char callinput(void)
 		    refreshp();
 		    netkeyer(K_PTT, "1");	// ptt on
 		    x = key_get();	// any character to stop tuning
-		    if (x == 240)
+		    if (x == 240)	// Alt-P (M-p)
 			netkeyer(K_PTT, "0");	// ptt off
 		    k_ptt = 0;
 		    mvprintw(0, 2, "%s", mode);
@@ -816,7 +877,9 @@ char callinput(void)
 
 		break;
 	    }
-	case 244:		// Alt-t (tune)
+
+	// Alt-t (M-t), tune xcvr via cwdaemon.
+	case 244:
 	    {
 		int count;
 		gchar *buff;
@@ -847,7 +910,8 @@ char callinput(void)
 		break;
 	    }
 
-	case 250:		//Alt-z
+	// Alt-z (M-z), show zones worked.
+	case 250:
 	    {
 		if (cqww == 1) {
 		    if (zonedisplay == 0)
@@ -863,8 +927,9 @@ char callinput(void)
 		break;
 	    }
 
-	case 241:		/* EXIT */
-	case 248:		// Alt-q || Alt-x
+	// Alt-q (M-q) or Alt-x (M-x), Exit
+	case 241:
+	case 248:
 	    {
 		mvprintw(13, 29, "You want to leave tlf? (y/n): ");
 		while (x != 'n' && x != 'N') {
@@ -880,11 +945,12 @@ char callinput(void)
 			exit(0);
 		    }
 		}
-		x = 27;
+		x = 27;		// <Escape>
 		break;
 	    }
 
-	case 27:		// ESC
+	// <Escape>, clear call input or stop sending.
+	case 27:
 	    {
 		if (early_started == 0) {
 		    /* if CW not started early drop call and start anew */
@@ -900,12 +966,16 @@ char callinput(void)
 
 		break;
 	    }
-	case 95:
+
+	// Underscore, confirm last exchange.
+	case '_':
 	    {
 		prev_qso();
 
 		break;
 	    }
+
+	// Exclamation, open a new shell.
 	case '!':
 	    {
 		endwin();
@@ -917,7 +987,9 @@ char callinput(void)
 
 		break;
 	    }
-	case 12:		// ctrl-L
+
+	// Ctrl-L (^L), resets screen.
+	case 12:
 	    {
 		endwin();
 		set_term(mainscreen);
@@ -925,7 +997,9 @@ char callinput(void)
 
 		break;
 	    }
-	case 16:		// ctrl-P
+
+	// Ctrl-P (^P), show MUF display.
+	case 16:
 	    {
 		int currentterm = miniterm;
 		miniterm = 0;
@@ -935,14 +1009,18 @@ char callinput(void)
 
 		break;
 	    }
-	case 1:		// ctl-A
+
+	// Ctrl-A (^A), add a spot and share on LAN.
+	case 1:
 	    {
 		addspot();
 		HideSearchPanel();
 
 		break;
 	    }
-	case 2:		// ctl-b
+
+	// Ctrl-B (^B), send spot to DX cluster.
+	case 2:
 	    {
 		announcefilter = 0;
 		cluster = CLUSTER;
@@ -951,32 +1029,41 @@ char callinput(void)
 		break;
 	    }
 
-	case 6:		// ctl-f
+	// Ctrl-F (^F), change frequency dialog.
+	case 6:
 	    {
 		change_freq();
 
 		break;
 	    }
-	case 7:		// ctl-g
+
+	// Ctrl-G (^G), grab next DX spot from bandmap.
+	case 7:
 	    {
 		grab_next();
 
 		break;
 	    }
-	case 231:		// alt-g
+
+	// Alt-g (M-g), grab first spot matching call field chars.
+	case 231:
 	    {
 		grabspot();
 
 		break;
 	    }
-	case '\"':		// "
+
+	// Double quote, send talk message to other nodes.
+	case '\"':
 	    {
 		if (lan_active != 0)
 		    talk();
 
 		break;
 	    }
-	case 18:		// ctrl-r
+
+	// Ctrl-R (^R), toogle trx1, trx2 via lp0 pin 14.
+	case 18:
 	    {
 		if (k_pin14 == 0) {
 		    k_pin14 = 1;
@@ -988,8 +1075,9 @@ char callinput(void)
 		break;
 	    }
 
-	case 20:		// ctrl-t
-	case 233:		// alt-I
+	// Ctrl-T (^T) or Alt-i (M-i), show talk messages.
+	case 20:
+	case 233:
 	    {
 		if (lan_active != 0) {
 
@@ -1014,10 +1102,11 @@ char callinput(void)
 
 	}	/* end switch */
 
-	/* convert to upper case */
+	/* Convert to upper case */
 	if (x >= 'a' && x <= 'z')
 	    x = x - 32;
 
+	/* Add character to call input field. */
 	if (x >= '/' && x <= 'Z') {
 	    if (strlen(hiscall) < 13) {
 		instring[0] = x;
@@ -1050,7 +1139,7 @@ char callinput(void)
 
 	if (cqmode == CQ && cwstart < 0 && trxmode == CWMODE &&
 		contest == 1) {
-	    if (x == '\n') {
+	    if (x == '\n' || x == KEY_ENTER) {
 		/* early start keying after 'Enter' but only if input field
 		 * contains at least two chars, one or more of it nondigit */
 		if (strlen(hiscall) >= 2 && !plain_number(hiscall)) {
@@ -1059,8 +1148,8 @@ char callinput(void)
 	    }
 	}
 
-	if ((x == '\n') || x == 32 || x == 9 || x == 11 || x == 44
-	    || x == 92)
+	if ((x == '\n' || x == KEY_ENTER) || x == 32 || x == 9 || x == 11
+	    || x == 44 || x == 92)
 	    break;
 
 	if (trxmode == DIGIMODE && (keyerport == GMFSK
@@ -1135,7 +1224,7 @@ int autosend()
     timeout = (1.2 / GetCWSpeed()) * cw_message_length(hiscall);
 
     x = -1;
-    while ((x != 27) && (x != '\n')) {
+    while ((x != 27) && (x != '\n' || x != KEY_ENTER)) {
 	x = -1;
 	while ((x == -1) && (g_timer_elapsed(timer, NULL) < timeout)) {
 
@@ -1163,6 +1252,7 @@ int autosend()
 	    continue;
 	}
 
+	// <Escape>
 	if (x == 27) {
 	    stoptx();
 	    *hiscall_sent = '\0';

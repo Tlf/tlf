@@ -87,183 +87,176 @@ static int getkey(int wait)
     return x;
 }
 
-/* Original key input routine moved here to make it static. Usage is
- * hidden by the new key_poll() and key_get() functions.
- * Partially decodes the ESC key sequences for different terminals.
- *
- * The routine will be replaced in near future by switching to the curses
- * keypad mode. That has some advantages:
- * - more terminal types can be handled
- * - we get a SIGWINCH code for resizing of the terminal
- * - we can handle mouse input via curses
+
+/* New onechar() that takes advantage of Ncurses keypad mode and processes
+ * certain escaped keys and assigns them to Ncurses values known by
+ * keyname().  Also catches Escape and processes it immediately as well
+ * as calling stoptx() for minimal delay.
  */
 static int onechar(void)
 {
-    extern int use_xterm;
-
     int x = 0;
     int trash = 0;
 
     x = getch();
 
-    if (x == 8)
-	x = 127;			/* replace Ctrl-H bei Backspace */
+    /* Replace Ctl-H and Backspace with KEY_BACKSPACE */
+    if (x == 8 || x == 127)
+	x = KEY_BACKSPACE;
 
     if (x == 27) {
 	nodelay(stdscr, TRUE);
+
 	x = getch();
 
-	if (x != 91) {
+	/* Escape pressed, not an escaped key. */
+	if (x == ERR) {
+	    stoptx();
+
+	    return x = 27;
+
+	} else if (x != 91) {
+
 	    switch (x) {
 
-	    case 79:
-		x = getch();
-		if (x >= 80 && x <= 84)
-		    x += 49;
-		break;
+		case 32 ... 57:   // Alt-Space to Alt-9,   160 - 185
+		case 97 ... 122:  // Alt-a to alt-z,       225 - 250
+		    x += 128;
+		    break;
 
-	    case 32 ... 57:	//   alt-space to alt-9,   160 - 186
-	    case 97 ... 122:	//   alt-a to alt-z,     225 -  250
-		x += 128;
-		break;
-	    case 65 ... 78:	//   alt-A to alt-Z,     225 -  250
-	    case 80 ... 90:	//   alt-A to alt-Z,     225 -  250
-		x += 160;
-		break;
+		/* Not all terminals support Ctl-Shift-ch so
+		 * treat them as Alt-ch
+		 */
+		case 65 ... 78:   //   alt-A to alt-N,     225 - 238
+		case 80 ... 90:   //   alt-P to alt-Z,     240 - 250
+		    x += 160;
+		    break;
 
-	    default:{
-		    x = 27;
-		    stoptx();
+		case 79: {
+		    x = getch();
+
+		    /* Catch Alt-O */
+		    if (x == ERR) {
+			x = 239;
+			break;
+		    }
+
+		    /* Key codes for Shift-F1 to Shift-F4 in Xfce terminal. */
+		    if (x == 49) {
+			x = getch();
+
+			if (x == 59) {
+			    x = getch();
+			    if (x == 50) {
+				x = getch();
+
+				switch (x) {
+
+				    case 80: {
+					x = KEY_F(13);
+					break;
+				    }
+
+				    case 81: {
+					x = KEY_F(14);
+					break;
+				    }
+
+				    case 82: {
+					x = KEY_F(15);
+					break;
+				    }
+
+				    case 83: {
+					x = KEY_F(16);
+					break;
+				    }
+				}
+			    }
+			}
+		    }
 		}
 	    }
+
 	    nodelay(stdscr, FALSE);
 
 	} else {
 	    nodelay(stdscr, FALSE);
 
-	    x = getch();	/* remove '91 */
+	    x = getch();        /* Get next code after 91 */
 
 	    switch (x) {
-	    case 49:
-		{
+
+		/* Key codes for this section:
+		 * 27 91 49 126 Home
+		 * 27 91 52 126 End
+		 */
+		case 49: {
 		    x = getch();
 
 		    if (x == 126) {
-			x = 158;	/* home */
+			x = KEY_HOME;
 			break;
-		    } else {
-			x = x + 79;
-
-			if (use_xterm == 1 && x <= 132)
-			    x++;
-
-			trash = getch();
-			break;	/* F6 F7 F8, 134 135 136 */
 		    }
 		}
-	    case 50:
-		{
-		    x = getch();
-		    if (x == 126) {
-			x = 160;	/* insert */
-			break;
-		    } else {
-			x = x + 89;
-			trash = getch();
-			break;	/* F9 - SF4, 137, 138, 140, 141; 142, 143, 145, 146 */
 
-		    }
-		}
-	    case 51:
-		{
-		    x = getch();
-		    if (x == 126) {
-			x = 161;	/* delete */
-			break;
-		    } else {
-			x = x + 98;
-			trash = getch();
-			break;	/* SF5 - SF8, 147, 148, 149, 150  */
-		    }
-		}
-	    case 52:		/* end */
-		{
-		    x = 159;
+		case 52: {
+		    x = KEY_END;
 		    trash = getch();
 		    break;
 		}
-	    case 53:		/* pgup */
-		{
-		    x = 156;
+	    }
+	}
+    }
 
-		    trash = getch();
-		    if (use_xterm == 0) {
-			if (trash == 94)
-			    x = x + 256;	// 412, ctrl-pgup
-		    } else {
+    /* It seems Xterm treats Alt-Space through Alt-9 with a prefix
+     * character of 194 followed by 160 through 185.
+     */
+    if (x == 194) {
+	nodelay(stdscr, TRUE);
 
-			if (trash == 59) {
-			    x = x + 256;
-			    trash = getch();
-			    trash = getch();
-			}
-		    }
-		    break;
-		}
-	    case 54:		/* pgdwn */
-		{
-		    x = 157;
-		    trash = getch();
-		    if (use_xterm == 0) {
-			if (trash == 94)
-			    x = x + 256;	// 413, ctrl-pgup
-		    } else {
-			if (trash == 59) {
-			    x = x + 256;
-			    trash = getch();
-			    trash = getch();
-			}
-		    }
-		    break;
-		}
-	    case 65:
-		{
-		    x = 152;	/* up */
-		    break;
-		}
-	    case 66:
-		{
-		    x = 153;	/* dwn */
-		    break;
-		}
-	    case 67:
-		{
-		    x = 154;	/* right */
-		    break;
-		}
-	    case 68:
-		{
-		    x = 155;	/* left */
-		    break;
-		}
-	    case 91:
-		{
-		    if (use_xterm == 0) {
-			x = getch();
-			if (x >= 65 && x <= 69) {	/* F1 - F5, 129 - 134 */
-			    x = x + 64;
-			    break;
-			}
-		    }
-		}
-	    default:
-		{
-		    x = x;
+	trash = getch();
 
-		}
-	    }			// end switch
-	}			// end else
-    }				// end if x=27
+	if (trash == ERR)
+	    return x;
 
-    return (x);
+	x = trash;
+
+	// Alt-Space to Alt-9
+	if (x >= 160 && x <= 185) {
+	    nodelay(stdscr, FALSE);
+
+	    return x;
+	}
+    }
+
+    /* It seems Xterm treats Alt-a to Alt-z with a prefix
+     * character of 195 followed by 161-186 (a-z) or
+     * 129-154 (A-Z).
+     */
+    if (x == 195) {
+	nodelay(stdscr, TRUE);
+
+	trash = getch();
+
+	if (trash == ERR)
+	    return x;
+
+	x = trash;
+
+	switch (x) {
+
+	    case 161 ... 186:  // Alt-a to Alt-z  225 - 250
+		x += 64;
+		break;
+
+	    case 129 ... 154:  // Alt-A to Alt-Z  225 - 250
+		x += 96;
+		break;
+	}
+
+	nodelay(stdscr, FALSE);
+    }
+
+    return x;
 }
