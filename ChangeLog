@@ -1,3 +1,280 @@
+2016-01-02  Ervin Hegedus <airween@gmail.com>
+
+  * src/fldigixmlrpc.c: Fixed hamlib-related variable compile error
+
+2016-01-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/fldigixmlrpc.c: fix unreachable code sequences
+
+  * src/fldigixmlrpc.c, src/gettxinfo.c: fix compile errors with
+  --disable-hamlib
+
+2015-12-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * configure.ac: Use mailing list address in AC_INIT macro  ... as suggested
+  by Nate N0NB
+
+2015-12-30  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac: Set temporary CFLAGS, CPPFLAGS, LIBS variables  To assist
+  AC_CHECK_LIB and AC_CHECK_HEADERS temporarily set the user variables to the
+  paths found by pkg-config.
+
+2015-12-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Correct logic for WYSIWYG multis coming in via LAN
+
+2015-12-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: keep the list of possible multis sorted
+
+  * src/addmult.c: better tests for possible mults for ARRL_SS and
+  DX_&_SECTIONS  Old logic failed if some multi was part of a multi coming
+  later in the multi list (e.g. NE and ONE). Then tlf picked up the first one
+  and mised the other one. New logic scans all possible multis and keeps the
+  longest one which matches.  Added some syntactic sugar - ALL_BAND or PER_BAND
+  to make clear if a multi counts per band or only once per contest.
+
+2015-12-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/addmult.h, src/main.c: cleanup logic 
+  init_and_load_multipliers is now responsible for (freeing and new) allocation
+  of the mults_possible array. It now handles empty multplier filenames
+  gracefully by giving back an empty mults_possible array. The former check for
+  naming the file is now the responsibility of the calling function (if
+  needed).
+
+2015-12-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: Tests for empty strings are already handled in
+  remember_multi().  Furthermore for-loops tests themself if endcondition is
+  already fullfilled when entered. So we can drop some needless tests.
+
+2015-12-19  Nate Bargmann <n0nb@n0nb.us>
+
+  * macros/ax_with_curses.m4, src/tlf_curses.h, src/tlf_panel.h: Revert local
+  changes to macros/ax_with_curses.m4  Tom, DL1JBE, reported that on some
+  systems with ncursesw installed, the modification made to
+  macros/ax_with_curses.m4 caused a compilation failure.  The patch reverts
+  those changes and returns the macro file to its original format of serial 15.
+   Also updated src/tlf_curses.h and src/tlf_panel.h to extend the header macro
+  tests to the ncursesw headers.
+
+  * configure.ac, src/Makefile.am: Set LIBM_LIB to preserve the LIBS variable 
+  Autoconf documentation states the LIBS is a precious variable reserved for
+  the user.  Add macros to define HAVE_LIBM in config.h and LIBM_LIB in
+  src/Makefile.  Add LIBM_LIB to tlf_LDADD in src/Makefile.am.
+
+  * configure.ac, src/Makefile.am, src/addmult.c, src/readctydata.c,
+  src/rules.c, src/searchlog.c, src/show_help.c, src/writecabrillo.c: 
+  Define
+  PACKAGE_DATA_DIR in src/Makefile.am  Automake provides the predefined
+  'pkgdatadir' Makefile variable which is the same path as the previously
+  caclulated PACKAGE_DATA_DIR value in configure.ac.  Use it to set
+  PACKAGE_DATA_DIR as a -D value to the preprocessor via AM_CPPFLAGS in
+  src/Makefile.am which is passed to the source files during preprocessing. 
+  This conforms with current Autotools convention.  As PACKAGE_DATA_DIR is
+  longer defined in config.h, remove its include directive from those files
+  that were only including it for the PACKAGE_DATA_DIR definition.
+
+2015-12-18  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac, macros/ax_append_flag.m4, macros/ax_cflags_warn_all.m4,
+  macros/ax_require_defined.m4, src/Makefile.am: Use AX_CFLAGS_WARN_ALL to
+  determine compiler warnings  As CFLAGS is a a precious user variable, use the
+  AX_CFLAGS_WARN_ALL macro and have it assign the warning flag(s) to AM_CFLAGS
+  which is then substituted into the Makefile.  This macro determines the best
+  warning for various compilers.  This macro depends on the AX_APPEND_FLAG and
+  AX_REQUIRE_DEFINED macros (in separate files).
+
+  * configure.ac, src/Makefile.am: Update Fldigi XML RPC stanza in configure.ac
+   The Autoconf documentation states that LIBS and CFLAGS are reserved for the
+  user.  Refactor the Fldigi XML RPC stanza to avoid assigment to those
+  precious variables.  Instead assign new LIBXMLRPC_LIB, LIBXMLRPC_CLIENT_LIB,
+  and LIBXMLRPC_UTIL_LIB to tlf_LDDADD in src/Makefile.am.  Define the
+  HAVE_LIBXMLRPC, HAVE_LIBXMLRPC_CLIENT, and HAVE_LIBXMLRPC_UTIL macros for
+  config.h  Also use standard Autoconf macros instead of raw shell if
+  conditional and complete quoting per current Autoconf convention.
+
+  * configure.ac, src/Makefile.am: Update Hamlib stanza in configure.ac  The
+  Autoconf documentation states that LIBS and CFLAGS are reserved for the user.
+   Refactor the Hamlib stanza to avoid assigment to those precious variables. 
+  Instead assign the HAMLIB_CFLAGS and HAMLIB_LIBS generated by the pkg-config
+  macro to AM_CFLAGS and tlf_LDDADD in src/Makefile.am respectively.  Also use
+  standard Autoconf macros instead of raw shell if conditional and complete
+  quoting per current Autoconf standards.
+
+  * acinclude.m4, configure.ac, macros/ax_pthread.m4, src/Makefile.am: Update
+  to AX_PTHREAD macro  The newer ax_pthread.m4 macro file from the Autoconf
+  archive provides updated searches for determining the correct pthread
+  compilation flags and linking libraries.  This version also adds support for
+  clang which is becoming more important as a supported compiler.  As the
+  ACX_PTHREAD macro is now outdated, remove acinclude.m4 from the repository.
+
+  * configure.ac, src/Makefile.am: Use glib macro to detect glib  The glib
+  package includes its own M4 macro that uses pkg-config and also compiles
+  against the library to ensure it is available and suitable for use.  Also
+  check that pkg-config is really available and exit configure with an error if
+  it is not.
+
+2015-12-16  Nate Bargmann <n0nb@n0nb.us>
+
+  * macros/ax_with_curses_extra.m4: Fix bug in ax_with_curses_extra.m4  Found a
+  bug where the AX_WITH_CURSES_PANEL macro would incorrectly reset the
+  ax_cv_panel variable to 'no' when checking for the panel.h header a second
+  time even though it had found it as ncurses/panel.h on the previous call. 
+  Confirmed working by David, CT1DRB.
+
+2015-12-15  Nate Bargmann <n0nb@n0nb.us>
+
+  * 
+  Load ncurses.h via tlf_curses.h  Regarding Tlf Issue #51, this patch provides
+  consistency in the form of having the build system determine which ncurses
+  header file is available.  The build system will set relevant macros in
+  config.h and boilerplate in tlf_curses.h will select the proper include path
+  based on the tests. This patch confines the boiler plate to one file
+  resulting in minimal editing of the other source files.
+
+  this patch resolves the problem of distributions putting panel.h in
+  /usr/include/ncurses rather than in /usr/include.  Thanks to David, CT1DRB,
+  for reporting this issue with OpenSuSE LEAP 42.1.  The build system will set
+  relevant macros in config.h and boilerplate in tlf_panel.h will select
+  the proper include path based on the tests. This patch confines the
+  boiler plate to one file resulting in minimal editing of the other
+  source files.
+
+  * configure.ac, macros/ax_with_curses.m4, macros/ax_with_curses_extra.m4,
+  src/Makefile.am: Switch Autoconf Archive macros for Curses search  Use the
+  AX_WITH_CURSES and AX_WITH_CURSES_PANEL macros to determine the library and
+  header files location for curses.  For now the AX_WITH_CURSES macro is edited
+  to only look for ncurses or curses and not ncursesw.  Also the configure
+  options have been commented out as ncurses is required.  Macros are set in
+  config.h to allow testing for the proper header file location to include.
+
+2015-12-14  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac: Adjust tests in configure.ac  Reposition several tests to be
+  run before the tests for third party packages.  Temporarily comment out the
+  AC_PROG_GCC_TRADITIONAL and AC_FUNC_STRFTIME macros as the Autoconf
+  documentation states they are obsolescent.  Temporarily comment out the
+  AC_HEADER_STDBOOL macro as no source file loads stdbool.h at this time. 
+  Remove some header files from AC_CHECK_HEADERS as they are already checked by
+  the AC_HEADER_STDC macro.
+
+  * .gitignore, config.h.in, configure.ac: Remove generated config.h.in file 
+  Have Autoconf check for src/tlf.h to assure the build system is working in
+  the correct project directory.  As the AC_CONFIG_HEADERS macro will generate
+  config.h.in upon build system bootstrap, there is no need to carry this file
+  in the repository.  Have git ignore generated config.h.in.
+
+2015-12-08  Nate Bargmann <n0nb@n0nb.us>
+
+  * .gitignore: Have Git ignore backup files ( *~ ).
+
+2015-12-12  Ervin Hegedus <airween@gmail.com>
+
+  * doc/README.RTTY, src/fldigixmlrpc.c, src/gettxinfo.c, src/globalvars.h,
+  src/main.c: Added new feature: calculate the QRG in different modulations, as
+  FSK, LSB/USB
+
+2015-12-11  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: Fix bug in using multarray_nr for 'SERIAL&SECTION' keyword
+   Back in tlf 0.9.10 there was some inconsistent handling of the index for
+  adding new multis to mults[] array. Sometimes they were counted from 0
+  sometimes from 1 (depending on the contest).  That was fixed some time ago
+  but there was a remnant in 'readcalls()' function left. That got dropped now.
+
+  * src/addmult.c: Fix bug in multcounting for ARRL-SS  'multarray_nr' is the
+  number of multis in 'mults[]' array. So to add a new mult first copy it into
+  the array and later increment the number of the multis.
+
+2015-12-09  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/main.c, src/ui_utils.c, src/ui_utils.h: Move refreshp() to ui_utils.c
+
+2015-12-03  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/addmult.c: Test for existence of MULT_LIST in install directory  Code
+  only checked for MULT_LIST value in the working directory.  Now also check
+  for the file in the installation directory.  e.g. /usr/local/share/tlf
+
+2015-12-05  Nate Bargmann <n0nb@n0nb.us>
+
+  * tlf.1.in: Fix typos in tlf.1.in
+
+2015-11-30  Nate Bargmann <n0nb@n0nb.us>
+
+  * share/logcfg.dat, src/editlog.c, src/parse_logcfg.c: Prefer 'mcedit' for
+  logcfg.dat  Also make sure that old values of 'mc' and 'MC' are recognized. 
+  Enable 'mcedit' as a log file editor.
+
+  * rules/Makefile.am, rules/arrl160m_usa: Add ARRL 160m USA rules file  Ensure
+  the new file is distributed and installed.
+
+2015-11-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c: simplify switch logic in addcall() and addcall2()  Replace
+  hard coded bandmask and bandindex values by switch variable and finally merge
+  the different switch branches which are now identical together.
+
+2015-11-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/globalvars.h, src/main.c, src/paccdx.c, src/readcalls.c,
+  src/showscore.c: extend countryscore[] to full number of bands  see
+  * src/addcall.c, src/globalvars.h, src/main.c, src/readcalls.c,
+  src/showscore.c: 
+  extend zonescore[] and countryscore[] array to full number of bands  Until now
+  there was a distinction between counting things for all bands (WARC and non
+  WARC) and counting zones and countries for contest bands only. The handling
+  can be simplified if we unify the handling and count zones and countries for
+  ALL bands. We can then ignore the non WARC entries for contest scoring.
+  Furthermore it is more easy to add additionla bands later.
+
+
+2015-11-28  Nate Bargmann <n0nb@n0nb.us>
+
+  * Move includes from headers as much as possible.  Only include
+  other header files in header files if absolutely necessary. Source files
+  declare all needed includes.  This results in five local headers that still
+  include other headers 
+  src/globalvars.h:2:# include "tlf.h" 
+  src/globalvars.h:5:#include <glib.h>
+  src/nicebox.h:24:#include <curses.h> 
+  src/qtcvars.h:21:#include "globalvars.h"
+  src/searchlog.h:24:#include <glib.h> 
+  src/sendqrg.h:25:# include <config.h>
+  src/sendqrg.h:29:# include <hamlib/rig.h>  
+  
+  This minimizes, but doesn't entirely eliminate depedency chains when
+  including certain header files.  All local header files should have include
+  guards so multiple include directives should not cause an error.
+
+
+2015-11-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c: Drop redundant test for 'pfxnummultinr>0'  'pfcnumcntidx >
+  -1' can only be true if 'pfxnummultinr > 0'.
+
+2015-11-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c: Fix lookup in pfxnummulti table  If getctydata() did not
+  find the country (returns 0) then pfxnumcntidx got set to a wrong number.
+
+2015-11-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: fix calculation of remaining time during bandmap read 
+  Lastly spot->timeout got changed to unsigned. We must take care that we do
+  not get a wrap ariund if the diff between writing und reading the bandmap
+  data ist to big.
+
+  * src/bandmap.c, src/bandmap.h, src/time_update.c: Fix saving of bandmap data
+   Bandmap data are saved every 10s. It works now even if the bandmap is not
+  shown and even if auto CQ is working.
+
+  * src/autocq.c: Fix some small bug in auto_cq mode:  - Do a time_update() to
+  keep displayed time and bandmap actual (tnx HA2OS for reporting)
+
 2015-11-01  Thomas Beierlein <tb@forth-ev.de>
 
   * share/Makefile.am, share/qtcmerge.py: Delete files no longer needed

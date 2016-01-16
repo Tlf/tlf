@@ -1,3 +1,27 @@
+tlf-1.2.3
+=========
+Maintenance and bugfix release.
+
+New features since tlf-1.2.2:
+    - Support for ARRL 160m contest (tnx N0NB)
+    - Search MULT_LIST file not only in working direxctory but also in 
+      install directory, e.g. /wusr/local/share/tlf (tnx N0NB)
+    - Better calculation of working QRG for RTTY qso's according to the used 
+      rig modulations (USB/LSB/FSK) (tnx HA2OS)
+    - Automatic recognition of ncurses install directories (esp. for OpenSUSE)
+      (tnx N0NB)
+
+Bug fixes:
+    - Bandmap gets saved even if bandmap is not displayed every 10s. 
+    - Fix calculation of remaining spot time for saved badnmap data 
+      if tlf is restarted
+    - Fix time update if auto_cq is running.
+    - fixed multi counting for ARRL-SS
+    - Fixed multi counting for SERIAL&SECTION keyword.
+    - Old multi counting code did not correctly differentiate between 
+      similar ARRL sections like NE and ONE for DX_&_SECTIONS. Fixed.
+    - Corrected WYSIWYG multi scoring coming in via LAN.
+
 tlf-1.2.2
 =========
 Maintenance and bugfix release.
