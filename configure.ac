@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT([Tlf],
-	[1.2.2],
+	[1.2.3],
 	[tlf-devel@nongnu.org],
 	[tlf],
 	[https://github.com/Tlf/tlf])
