@@ -265,25 +265,26 @@ int getexchange(void)
 		break;
 	    }
 
-	case KEY_F(2) ... KEY_F(10):
+	case KEY_F(2) ... KEY_F(11):
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    sendmessage(message[x - KEY_F(1)]);	/* F2...F10 - F1 = 1...9 */
+		    /* F2...F11 - F1 = 1...10 */
+		    sendmessage(message[x - KEY_F(1)]);
 		} else
 		    play_file(ph_message[x - KEY_F(1)]);
 
 		break;
 	    }
-	case KEY_F(11):
-            {
-                if (trxmode == CWMODE || trxmode == DIGIMODE) {
-                    sendmessage(message[10]);        /* F11 */
+//	case KEY_F(11):
+//            {
+//                if (trxmode == CWMODE || trxmode == DIGIMODE) {
+//                    sendmessage(message[10]);        /* F11 */
 
-                } else
-                    play_file(ph_message[10]);
+//                } else
+//                    play_file(ph_message[10]);
 
-                break;
-            }
+//                break;
+//            }
 	case 176 ... 185:	/* Alt-0 to Alt-9 */
 	    {
 		sendmessage(message[x - 162]);	/* Messages 15-24 */
