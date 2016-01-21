@@ -584,7 +584,7 @@ void ui_init()
     refreshp();
 
     noecho();
-    crmode();
+    cbreak();
 
     keypad(stdscr,TRUE);
 }
