@@ -391,14 +391,22 @@ If field is not empty and CHANGE_RST is set: change RST value.
 .
 .TP
 .B Ctrl-PgUp
-Increase Auto_CQ delay (+1/2 sec).
+.TQ
+.B Alt-PgUp
+Increase Auto_CQ delay pause length (+1/2 sec).
 .IP
-Set Auto_CQ delay to message length + pause length.  This is because
-@PACKAGE_NAME@ does not know when the cwdaemon is ready.
+Set Auto_CQ delay to message length + pause length.
 .
 .TP
 .B Ctrl-PgDown
-Decrease Auto_CQ delay (\-1/2 sec).
+.TQ
+.B Alt-PgDown
+Decrease Auto_CQ delay pause length (\-1/2 sec).
+.
+.IP
+As some terminals, Xfce Terminal is one such, consume
+Ctrl-PageUp/Ctrl-PageDown, the Alt-key combinations allow for setting the
+Auto_CQ delay pause length.
 .
 .TP
 .B F1

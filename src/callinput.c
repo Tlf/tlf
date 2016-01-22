@@ -472,7 +472,9 @@ char callinput(void)
 	    }
 
 	// Ctrl-<Page-Up>, increase cqdelay by 1/2 second.
+	// Alt-<Page-Up>, same for terminals that eat Ctrl-<Page-Up>.
 	case kPRV5:
+	case kPRV3:
 	    {
 		if (cqdelay <= 60) {
 		    cqdelay++;
@@ -508,7 +510,9 @@ char callinput(void)
 	    }
 
 	// Ctrl-<Page-Down>, decrease cqdelay by 1/2 Second.
+	// Alt-<Page-Down>, same for terminals that eat Ctrl-<Page-Down>.
 	case kNXT5:
+	case kNXT3:
 	    {
 		if (cqdelay >= 4) {
 		    cqdelay--;
