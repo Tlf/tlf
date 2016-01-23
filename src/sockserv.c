@@ -412,7 +412,7 @@ int recvline(int *fd, char *buf, int buflen)
 			len = sockbuf[ifds].buflen;
 		    memcpy(buf, sockbuf[ifds].buf, len);
 		    if (sockbuf[ifds].buflen > len)
-			memcpy(sockbuf[ifds].buf, sockbuf[ifds].buf + len,
+			memmove(sockbuf[ifds].buf, sockbuf[ifds].buf + len,
 			       sockbuf[ifds].buflen - len);
 		    sockbuf[ifds].buflen -= len;
 		    *fd = ifds;
