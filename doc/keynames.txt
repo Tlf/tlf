@@ -416,7 +416,7 @@ Ordinal: 410     Name: KEY_RESIZE
 # Key names with a suffix of '3' are Alt-key combinations
 # Key names with a suffix of '5' are Ctl-key combinations
 #
-# Keys in ordinal order are:
+# Keys are:
 # Delete
 # Down Arrow
 # End
@@ -427,21 +427,23 @@ Ordinal: 410     Name: KEY_RESIZE
 # Page Up
 # Right Arrow
 # Up Arrow
-Ordinal: 519     Name: kDC5
-Ordinal: 523     Name: kDN3
-Ordinal: 525     Name: kDN5
-Ordinal: 528     Name: kEND3
-Ordinal: 530     Name: kEND5
-Ordinal: 533     Name: kHOM3
-Ordinal: 535     Name: kHOM5
-Ordinal: 540     Name: kIC5
-Ordinal: 543     Name: kLFT3
-Ordinal: 545     Name: kLFT5
-Ordinal: 548     Name: kNXT3
-Ordinal: 550     Name: kNXT5
-Ordinal: 553     Name: kPRV3
-Ordinal: 555     Name: kPRV5
-Ordinal: 558     Name: kRIT3
-Ordinal: 560     Name: kRIT5
-Ordinal: 564     Name: kUP3
-Ordinal: 566     Name: kUP5
+#
+# Ordinal values seem to vary depending on the terminfo database in use.
+Ordinal: ?       Name: kDC5
+Ordinal: ?       Name: kDN3
+Ordinal: ?       Name: kDN5
+Ordinal: ?       Name: kEND3
+Ordinal: ?       Name: kEND5
+Ordinal: ?       Name: kHOM3
+Ordinal: ?       Name: kHOM5
+Ordinal: ?       Name: kIC5
+Ordinal: ?       Name: kLFT3
+Ordinal: ?       Name: kLFT5
+Ordinal: ?       Name: kNXT3
+Ordinal: ?       Name: kNXT5
+Ordinal: ?       Name: kPRV3
+Ordinal: ?       Name: kPRV5
+Ordinal: ?       Name: kRIT3
+Ordinal: ?       Name: kRIT5
+Ordinal: ?       Name: kUP3
+Ordinal: ?       Name: kUP5

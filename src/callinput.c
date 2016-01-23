@@ -471,21 +471,6 @@ char callinput(void)
 		break;
 	    }
 
-	// Ctrl-<Page-Up>, increase cqdelay by 1/2 second.
-	// Alt-<Page-Up>, same for terminals that eat Ctrl-<Page-Up>.
-	case kPRV5:
-	case kPRV3:
-	    {
-		if (cqdelay <= 60) {
-		    cqdelay++;
-
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 19, "  ");
-		    mvprintw(0, 19, "%i", cqdelay);
-		}
-
-		break;
-	    }
 
 	// <Page-Down>, change RST if call field not empty, else decrease CW speed.
 	case KEY_NPAGE:
@@ -506,22 +491,6 @@ char callinput(void)
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 14, "%2d", GetCWSpeed());
 		}
-		break;
-	    }
-
-	// Ctrl-<Page-Down>, decrease cqdelay by 1/2 Second.
-	// Alt-<Page-Down>, same for terminals that eat Ctrl-<Page-Down>.
-	case kNXT5:
-	case kNXT3:
-	    {
-		if (cqdelay >= 4) {
-		    cqdelay--;
-
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 19, "  ");
-		    mvprintw(0, 19, "%i", cqdelay);
-		}
-
 		break;
 	    }
 
@@ -1105,6 +1074,41 @@ char callinput(void)
 	    }
 
 	}	/* end switch */
+
+
+	// Ctrl-<Page-Up>, increase cqdelay by 1/2 second.
+	// Alt-<Page-Up>, same for terminals that consume Ctrl-<Page-Up>.
+	if ((strcmp(keyname(x), "kPRV5") == 0)
+	    || (strcmp(keyname(x), "kPRV3") == 0)) {
+
+		if (cqdelay <= 60) {
+		    cqdelay++;
+
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 19, "  ");
+		    mvprintw(0, 19, "%i", cqdelay);
+		}
+
+		break;
+	}
+
+
+	// Ctrl-<Page-Down>, decrease cqdelay by 1/2 Second.
+	// Alt-<Page-Down>, same for terminals that consume Ctrl-<Page-Down>.
+	if ((strcmp(keyname(x), "kNXT5") == 0)
+	    || (strcmp(keyname(x), "kNXT3") == 0)) {
+
+		if (cqdelay >= 4) {
+		    cqdelay--;
+
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 19, "  ");
+		    mvprintw(0, 19, "%i", cqdelay);
+		}
+
+		break;
+	}
+
 
 	/* Convert to upper case */
 	if (x >= 'a' && x <= 'z')
