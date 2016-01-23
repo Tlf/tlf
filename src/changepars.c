@@ -331,6 +331,7 @@ int changepars(void)
 	    break;
 	}
     case 19:			/* EXIT */
+    case 38:			/* QUIT */
 	{
 	    writeparas();
 	    clear();
@@ -552,15 +553,6 @@ int changepars(void)
 	    break;
 	}
 
-    case 38:			/* EXIT=QUIT */
-	{
-	    writeparas();
-	    cleanup_telnet();
-	    endwin();
-	    puts("\n\nThanks for using TLF.. 73\n");
-	    exit(0);
-	    break;
-	}
     case 39:			/* CQDELAY */
 	{
 	    mvprintw(12, 29, "CQD: pgup/dwn", cqdelay);
