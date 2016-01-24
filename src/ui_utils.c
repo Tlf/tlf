@@ -28,6 +28,11 @@
 
 extern int use_rxvt;
 
+int key_kNXT3 = 0;
+int key_kPRV3 = 0;
+int key_kNXT5 = 0;
+int key_kPRV5 = 0;
+
 pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static int getkey(int wait);
@@ -50,6 +55,41 @@ int modify_attr( int attr ) {
 	attr |= A_BOLD;
 
     return attr;
+}
+
+
+/** lookup key code by capability name
+ *
+ * ncurses automatically maps extended capabilities (such as kNXT3 or similar)
+ * to keycodes. But there is no fixed ordering for that.
+ * So we look up the key code by its name on strtup and use that afterwards.
+ * \param capability  - capability name
+ * \return              keycode or 0 if no associated key found
+ */
+int lookup_key(char *capability) {
+    char *esc_sequence = NULL;
+    int keycode = 0;
+
+    if (*capability == '\0') {
+	return 0;
+    }
+
+    esc_sequence = tigetstr(capability);
+
+    if (esc_sequence == NULL || esc_sequence == (char *)-1) {
+	return 0;
+    }
+
+    keycode = key_defined(esc_sequence);
+
+    return keycode;
+}
+
+void lookup_keys() {
+    key_kNXT3 = lookup_key("kNXT3");
+    key_kPRV3 = lookup_key("kPRV3");
+    key_kNXT5 = lookup_key("kNXT5");
+    key_kPRV5 = lookup_key("kPRV5");
 }
 
 /** key_get  wait for next key from terminal

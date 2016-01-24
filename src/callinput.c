@@ -1078,8 +1078,8 @@ char callinput(void)
 
 	// Ctrl-<Page-Up>, increase cqdelay by 1/2 second.
 	// Alt-<Page-Up>, same for terminals that consume Ctrl-<Page-Up>.
-	if ((strcmp(keyname(x), "kPRV5") == 0)
-	    || (strcmp(keyname(x), "kPRV3") == 0)) {
+	if ((key_kPRV3 && x == key_kPRV3)
+	    || (key_kPRV5 && x == key_kPRV5)) {
 
 		if (cqdelay <= 60) {
 		    cqdelay++;
@@ -1095,8 +1095,8 @@ char callinput(void)
 
 	// Ctrl-<Page-Down>, decrease cqdelay by 1/2 Second.
 	// Alt-<Page-Down>, same for terminals that consume Ctrl-<Page-Down>.
-	if ((strcmp(keyname(x), "kNXT5") == 0)
-	    || (strcmp(keyname(x), "kNXT3") == 0)) {
+	if ((key_kNXT3 && x == key_kNXT3)
+	    || (key_kNXT5 && x == key_kNXT5)) {
 
 		if (cqdelay >= 4) {
 		    cqdelay--;
