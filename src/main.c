@@ -587,6 +587,8 @@ void ui_init()
     cbreak();
 
     keypad(stdscr,TRUE);
+
+    lookup_keys();
 }
 
 
