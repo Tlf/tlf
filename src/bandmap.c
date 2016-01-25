@@ -359,6 +359,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	entry -> band = band;
 	entry -> node = node;
 	entry -> timeout = SPOT_NEW;
+	entry -> dupe = 0;	/* Dupe will be determined later. */
 
 	allspots = g_list_insert_sorted( allspots, entry, (GCompareFunc)cmp_freq);
 	/* lookup where it is */
