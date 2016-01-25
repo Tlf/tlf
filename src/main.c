@@ -841,6 +841,14 @@ void tlf_cleanup()
     else
 	deinit_controller();
 
+#ifdef HAVE_LIBHAMLIB
+
+    if (my_rig) {
+	close_tlf_rig(my_rig);
+    }
+
+#endif
+
     endwin();
     tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 }
