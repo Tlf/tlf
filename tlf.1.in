@@ -408,6 +408,9 @@ As some terminals, Xfce Terminal is one such, consume
 Ctrl-PageUp/Ctrl-PageDown, the Alt-key combinations allow for setting the
 Auto_CQ delay pause length.
 .
+.IP
+If both key combinations do not working try ':cqd' instead.
+.
 .TP
 .B F1
 In CQ mode, send message 1 (CQ message).  In S&P mode send message
