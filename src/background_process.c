@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "fldigixmlrpc.h"
 #include "getctydata.h"
@@ -40,7 +41,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "write_keyer.h"
-
+#include "addspot.h"
 
 extern int stop_backgrnd_process;
 extern int this_second;
@@ -66,6 +67,10 @@ extern char call[];
 extern int trxmode;
 extern int keyerport;
 extern int trx_control;
+extern float freq;
+extern char hiscall[];
+extern int bmautoadd;
+extern char node;
 
 int cw_simulator(void);
 
@@ -79,6 +84,9 @@ void *background_process(void *ptr)
     static char prmessage[256];
     static int lantimesync = 0;
     static int fldigi_rpc_cnt;
+    static float freqstore;
+    float t_freq;
+    static int cycle = 0;
 
     int n;
 
@@ -267,6 +275,30 @@ void *background_process(void *ptr)
 
 	gettxinfo();		/* get freq info from TRX */
 
+	if (freqstore == 0.0) {
+	    freqstore = freq;
+	}
+
+	if (bmautoadd > 0) {
+	    if (cycle >= 1 && strlen(hiscall) >= 3) {
+		if (fabsf(freq-freqstore) > 0.1) {
+		    t_freq = freq;
+		    freq = freqstore;
+		    addspot();
+		    freq = t_freq;
+		    hiscall[0] = '\0';
+		    freqstore = freq;
+		    cycle = 0;
+		}
+	    }
+	    else {
+		if (fabsf(freq - freqstore) > 0.1) {
+		    freqstore = freq;
+		    cycle = 0;
+		}
+	    }
+	}
+	cycle++;
     }
 
     return (NULL);
