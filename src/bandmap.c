@@ -31,6 +31,9 @@
 #include "searchcallarray.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "showinfo.h"
+#include "getctydata.h"
+#include "searchlog.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted a s the same QRG */
@@ -101,6 +104,11 @@ extern int trxmode;
 extern char thisnode;
 extern struct worked_t worked[];
 extern int contest;
+extern int bmautoadd;
+extern int bmautograb;
+extern char hiscall[];
+extern char lastcall[];
+extern int cqmode;
 
 char *qtc_format(char * call);
 
@@ -409,7 +417,7 @@ void bandmap_age() {
 	if (data->timeout) {
 	    data->timeout--;
 	}
-	if (data->timeout == 0) {
+	if (data->timeout == 0 && (bmautograb == 0 || (bmautograb != 0 && (abs((double)data->freq - freq*1000.0) > TOLERANCE && strcmp(data->call, hiscall) != 0)))) {
 	    allspots = g_list_remove_link( allspots, temp);
 	    g_free (data->call);
 	    g_free (data);
@@ -643,12 +651,16 @@ void bandmap_show() {
  */
 
     GList *list;
-    spot *data;
+    spot *data, *tdata;
     int curx, cury;
     int bm_x, bm_y;
     int i,j;
     short dupe;
     float centerfrequency;
+    static int autograbbed = 0;
+    extern int bmadd_pending;
+    static int lastbmautofreq = 0;
+    static char grabbedcall[15];
 
     if (!bm_initialized) {
 	bm_init();
@@ -800,9 +812,46 @@ void bandmap_show() {
 	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	if (!on_qrg) {
 	    printw ("%7.1f   %s", centerfrequency,  "============");
+	    if (bmautograb == 1 && autograbbed == 1 && cqmode == S_P && bmadd_pending == 0) {
+		hiscall[0] = '\0';
+		grabbedcall[0] = '\0';
+		showinfo( getctydata( hiscall ) );
+		searchlog( hiscall );
+		autograbbed = 0;
+	    }
+	    // clear hiscall if no qrg
+	    if (bmautoadd == 1 && bmadd_pending == 0 && strlen(hiscall) > 0) {
+		hiscall[0] = '\0';
+		grabbedcall[0] = '\0';
+		showinfo( getctydata( hiscall ) );
+		searchlog( hiscall );
+		autograbbed = 0;
+	    }
 	}
 	else {
-	    show_spot_on_qrg(g_ptr_array_index( spots, below_qrg ));
+	    tdata = g_ptr_array_index( spots, below_qrg );
+	    show_spot_on_qrg(tdata);
+	    if (lastbmautofreq != tdata->freq) {
+		autograbbed = 0;
+	    }
+	    if (bmautograb == 1 && cqmode == S_P && 		// feature set up and S&P mode
+	            bmadd_pending == 0 &&			// not wait to add the modified hiscall
+	            (autograbbed == 0 ||			// not grabbed yet 
+	            (						// OR autograbbed AND
+		        strlen(tdata->call) > 0 &&		// spot call is not zero length
+		        strcmp(tdata->call, hiscall) != 0 &&	// spot call is not filled
+		        strcmp(tdata->call, lastcall) != 0 &&	// spot call is not the last QSO
+		        strcmp(tdata->call, grabbedcall) != 0)	// spot call is not grabbed
+		    )
+	       ) {
+		strcpy(hiscall, tdata->call);
+		strcpy(grabbedcall, tdata->call);
+		showinfo( getctydata( hiscall ) );
+		searchlog( hiscall );
+		autograbbed = 1;
+		bmadd_pending = 0;
+		lastbmautofreq = tdata->freq;
+	    }
 	}
 	next_spot_position(&bm_y, &bm_x);
     }

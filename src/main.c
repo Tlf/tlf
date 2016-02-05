@@ -335,6 +335,8 @@ char rigconf[80];
 int in_packetclient;
 int tnc_serial_rate = 2400;
 char clusterlogin[80] = "";
+int bmautoadd = 0;
+int bmautograb = 0;
 
 /*-------------------------------------rigctl-------------------------------*/
 #ifdef HAVE_LIBHAMLIB
@@ -405,6 +407,7 @@ pid_t pid;
 struct tm *time_ptr;
 
 float freq;
+float freqstore;
 float mem;
 int logfrequency = 0;
 int rit;
