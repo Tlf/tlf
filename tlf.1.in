@@ -1473,6 +1473,16 @@ can use this config:
 In this example all countries are multis, except from SA, NA, AF, OC and AS continent, so
 only the EU stations left as multipliers.
 .
+.TP
+.B BMAUTOGRAB
+If set, with \fBRADIO_CONTROL\fR and \fBBANDMAP\fR (mandatory) options, Tlf will grab the callsign from
+bandmap, if the TRX frequency is equal with bandmap freq.
+.
+.TP
+.B BMAUTOADD
+If set, with \fBRADIO_CONTROL\fR and \fBBANDMAP\fR (mandatory) options, Tlf will add the callsign from
+callsign field, if its lenght is 3 character at least.
+.
 .SH FILES
 .
 \fB@prefix@/share/@PACKAGE@/logcfg.dat\fR is a recent example of the
