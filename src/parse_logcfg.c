@@ -3,7 +3,7 @@
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
 * 		2011-2015           Thomas Beierlein <tb@forth-ev.de>
 * 		2013 		    Fred DH5FS
-*               2013-2014           Ervin Hegedus - HA2OS <airween@gmail.com>
+*               2013-2016           Ervin Hegedus - HA2OS <airween@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by

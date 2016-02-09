@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2005 Rein Couperus <pa0r@eudxf.org>
- *               2009-2014 Thomas Beierlein <tb@forth-ev.de>
+ *               2009-2016 Thomas Beierlein <tb@forth-ev.de>
  *               2013      Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -67,6 +67,8 @@
 #include "time_update.h"
 #include "ui_utils.h"
 #include "writeparas.h"
+
+#include <math.h>
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -145,6 +147,11 @@ char callinput(void)
     extern int miniterm;
     extern int no_rst;
 
+    extern int bmautoadd;
+
+    static float freqstore;
+    static int cycle = 0;
+
     int cury, curx;
     int i, j, ii, rc, t, x = 0, y = 0;
     char instring[2] = { '\0', '\0' };
@@ -175,6 +182,30 @@ char callinput(void)
 		show_rtty();
 		printcall();
 	    }
+
+	    if (freqstore == 0.0) {
+		freqstore = freq;
+	    }
+
+	    if (bmautoadd > 0) {
+		if (cycle >= 1 && strlen(hiscall) >= 3) {
+		    if (fabsf(freq-freqstore) > 0.1) {
+			add_to_spots(hiscall, freqstore);
+			hiscall[0] = '\0';
+			HideSearchPanel();
+			freqstore = freq;
+			cycle = 0;
+		    }
+		}
+		else {
+		    if (fabsf(freq - freqstore) > 0.1) {
+			freqstore = freq;
+			cycle = 0;
+		    }
+		}
+	    }
+	    cycle++;
+
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
