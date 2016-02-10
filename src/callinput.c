@@ -149,7 +149,8 @@ char callinput(void)
 
     extern int bmautoadd;
 
-    static float freqstore;
+    static float freqstore;		/* qrg during last callsign input
+					   character, 0 if grabbed */
     static int cycle = 0;
 
     int cury, curx;
@@ -183,23 +184,13 @@ char callinput(void)
 		printcall();
 	    }
 
-	    if (freqstore == 0.0) {
-		freqstore = freq;
-	    }
-
-	    if (bmautoadd > 0) {
+	    if (bmautoadd > 0 && freqstore != 0) {
 		if (cycle >= 1 && strlen(hiscall) >= 3) {
 		    if (fabsf(freq-freqstore) > 0.1) {
 			add_to_spots(hiscall, freqstore);
 			hiscall[0] = '\0';
 			HideSearchPanel();
-			freqstore = freq;
-			cycle = 0;
-		    }
-		}
-		else {
-		    if (fabsf(freq - freqstore) > 0.1) {
-			freqstore = freq;
+			freqstore = 0;
 			cycle = 0;
 		    }
 		}
@@ -929,6 +920,7 @@ char callinput(void)
 		    early_started = 0;
 		}
 
+		freqstore = 0;
 		break;
 	    }
 	case 95:
@@ -991,12 +983,14 @@ char callinput(void)
 	case 7:		// ctl-g
 	    {
 		grab_next();
+		freqstore = 0;
 
 		break;
 	    }
 	case 231:		// alt-g
 	    {
 		grabspot();
+		freqstore = 0;
 
 		break;
 	    }
@@ -1076,6 +1070,8 @@ char callinput(void)
 	    }
 
 	    refreshp();
+
+	    freqstore = freq;
 
 	}
 
