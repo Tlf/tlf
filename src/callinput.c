@@ -151,8 +151,6 @@ char callinput(void)
 
     static float freqstore;		/* qrg during last callsign input
 					   character, 0 if grabbed */
-    static int cycle = 0;
-
     int cury, curx;
     int i, j, ii, rc, t, x = 0, y = 0;
     char instring[2] = { '\0', '\0' };
@@ -185,17 +183,15 @@ char callinput(void)
 	    }
 
 	    if (bmautoadd > 0 && freqstore != 0) {
-		if (cycle >= 1 && strlen(hiscall) >= 3) {
+		if (strlen(hiscall) >= 3) {
 		    if (fabsf(freq-freqstore) > 0.1) {
 			add_to_spots(hiscall, freqstore);
 			hiscall[0] = '\0';
 			HideSearchPanel();
 			freqstore = 0;
-			cycle = 0;
 		    }
 		}
 	    }
-	    cycle++;
 
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
