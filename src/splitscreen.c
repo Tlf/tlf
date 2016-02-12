@@ -1017,6 +1017,9 @@ int cleanup_telnet(void)
     }
 
     set_term(mainscreen);
+    clear();
+    clear_display();
+    keypad(stdscr, TRUE);
 
     return (0);
 }
@@ -1072,6 +1075,7 @@ int packet()
 	    set_term(mainscreen);
 	    clear();
 	    clear_display();
+	    keypad(stdscr, TRUE);
 	    in_packetclient = 0;
 	    return (0);
 	}
@@ -1183,6 +1187,7 @@ int packet()
     set_term(mainscreen);
     clear();
     clear_display();
+    keypad(stdscr, TRUE);
 
     in_packetclient = 0;
 

@@ -60,7 +60,7 @@ int show_mults(void)
 
 	ch = key_get();
 
-	while (ch != '\n') {
+	while (ch != '\n' || ch != KEY_ENTER) {
 
 	    if (ch == 27)
 		break;

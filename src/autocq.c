@@ -115,6 +115,7 @@ int auto_cq(void)
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
+    // Promote lower case letters to uppercase.
     if (letter > 96 && letter < 123)
 	letter -= 32;
 

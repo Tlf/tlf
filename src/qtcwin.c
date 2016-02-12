@@ -444,11 +444,15 @@ void qtc_main_panel(int direction) {
 
 	switch(x) {
 	//case 227:		// ALT-c
-	case 20:		// CTRL-t
+
+	// Ctrl-T (^T)
+	case 20:
 		if (trxmode == DIGIMODE) {
 		    show_rtty_lines();
 		}
-	case 152:		// up
+
+	// Up Arrow
+	case KEY_UP:
 		if (direction == RECV) {
 		    if (activefield > 0) {	// nr of QTC record field idx
 			if (activefield == 1 || activefield == 2) {
@@ -499,7 +503,9 @@ void qtc_main_panel(int direction) {
 		    }
 		}
 		break;
-	case 153:		// down
+
+	// Down Arrow
+	case KEY_DOWN:
 		if (direction == RECV) {
 		    if (activefield < 30) {	// last line serial field idx
 			if (activefield == 0) {
@@ -550,7 +556,9 @@ void qtc_main_panel(int direction) {
 		    }
 		}
 		break;
-	case 155:	// left
+
+	// Left Arrow
+	case KEY_LEFT:
 		if (DIRCLAUSE) {
 		    if (curpos < curfieldlen) {	// curpos is a shift, means lenght - position
 			curpos++;
@@ -558,7 +566,9 @@ void qtc_main_panel(int direction) {
 		    }
 		}
 		break;
-	case 154:	// right
+
+	// Right Arrow
+	case KEY_RIGHT:
 		if (DIRCLAUSE) {
 		    if (curpos > 0) {
 			curpos--;
@@ -566,7 +576,10 @@ void qtc_main_panel(int direction) {
 		    }
 		}
 		break;
-	case 10:  		// ENTER
+
+	// <Enter>
+	case '\n':
+	case KEY_ENTER:
 		if (activefield > 2) {
 		    if (direction == RECV) {
 			currqtc = ((activefield-3)/3);
@@ -639,7 +652,7 @@ void qtc_main_panel(int direction) {
 				    play_file(qtc_phrecv_message[9]);
 				}
 			    }
-			    x = 27;	// close the window
+			    x = 27;	// <Escape> close the window
 			}
 		    }
 		    if (direction == SEND && trxmode != DIGIMODE) {
@@ -755,7 +768,9 @@ void qtc_main_panel(int direction) {
 		    }
 		}
 		break;
-	case 19:	// CTRL-S - save QTC
+
+	// Ctrl-S (^S), save QTC
+	case 19:
 		if (qtccurrdirection == SEND && *qtccount > 0 && qtclist.totalsent == *qtccount) {
 		    log_sent_qtc_to_disk(nr_qsos);
 		    wattrset(qtcwin, LINE_INVERTED);
@@ -764,7 +779,7 @@ void qtc_main_panel(int direction) {
 		    qtccallsign[0] = '\0';
 		    refreshp();
 		    sleep(1);
-		    x = 27;	// close the window
+		    x = 27;	// <Escape> close the window
 
 		}
 		if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
@@ -778,7 +793,9 @@ void qtc_main_panel(int direction) {
 		    show_rtty_lines();
 		}
 		break;
-	case 5:	// CTRL-e  -  end capture
+
+	// Ctrl-E (^E), end capture
+	case 5:
 		if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
 		    qtc_ry_capture = 0;
 		    wattr_get(qtcwin, &attributes, &cpair, NULL);
@@ -789,22 +806,24 @@ void qtc_main_panel(int direction) {
 		    refreshp();
 		}
 		break;
-	case 129 ... 138:			/* F1.. F10 */
+
+	// F1...F10
+	case KEY_F(1) ... KEY_F(10):
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    if(direction == RECV) {
-			sendmessage(qtc_recv_msgs[x - 129]);
+			sendmessage(qtc_recv_msgs[x - KEY_F(1)]); /* 0-9 */
 
 			/* start recording */
-			if (trxmode == CWMODE && strncmp(qtc_recv_msgs[x - 129], "QRV", 3) == 0) {
+			if (trxmode == CWMODE && strncmp(qtc_recv_msgs[x - KEY_F(1)], "QRV", 3) == 0) {
 			    start_qtc_recording();
 			}
 
 			/* stop recording */
-			if (trxmode == CWMODE && strncmp(qtc_recv_msgs[x - 129], "QSL ALL", 7) == 0 && record_run > -1) {
+			if (trxmode == CWMODE && strncmp(qtc_recv_msgs[x - KEY_F(1)], "QSL ALL", 7) == 0 && record_run > -1) {
 			    stop_qtc_recording();
 			}
 
-			if (trxmode == DIGIMODE && strncmp(qtc_recv_msgs[x - 129], "QRV", 3) == 0) {
+			if (trxmode == DIGIMODE && strncmp(qtc_recv_msgs[x - KEY_F(1)], "QRV", 3) == 0) {
 			    qtc_ry_capture = 1;
 			    wattr_get(qtcwin, &attributes, &cpair, NULL);
 			    wattrset(qtcwin, LINE_INVERTED);
@@ -816,27 +835,27 @@ void qtc_main_panel(int direction) {
 			}
 		    }
 
-		    if(direction == SEND && strlen(qtc_send_msgs[x - 129]) > 0) {
-			if (qtc_send_msgs[x - 129][strlen(qtc_send_msgs[x - 129])-1] == '\n') {
-			    qtc_send_msgs[x - 129][strlen(qtc_send_msgs[x - 129])-1] = 0;
+		    if(direction == SEND && strlen(qtc_send_msgs[x - KEY_F(1)]) > 0) {
+			if (qtc_send_msgs[x - KEY_F(1)][strlen(qtc_send_msgs[x - KEY_F(1)])-1] == '\n') {
+			    qtc_send_msgs[x - KEY_F(1)][strlen(qtc_send_msgs[x - KEY_F(1)])-1] = 0;
 			}
-			tlen = strlen(qtc_send_msgs[x - 129])-5; // len("sr/nr") = 5
+			tlen = strlen(qtc_send_msgs[x - KEY_F(1)])-5; // len("sr/nr") = 5
 			char tmess[40];
 			tmess[0] = '\0';
-			if (tlen > 0 && strncmp(qtc_send_msgs[x - 129] + tlen, "sr/nr", 5) == 0) {
+			if (tlen > 0 && strncmp(qtc_send_msgs[x - KEY_F(1)] + tlen, "sr/nr", 5) == 0) {
 			    tempc[0] = '\0';
-			    strncpy(tempc, qtc_send_msgs[x - 129], tlen-1);
+			    strncpy(tempc, qtc_send_msgs[x - KEY_F(1)], tlen-1);
 			    tempc[tlen-1] = '\0';
 			    sprintf(tmess, "%s %d/%d ", tempc, qtclist.serial, *qtccount);
 			    sendmessage(tmess);
 			}
 			else if ((activefield-3) >= 0) {
-			    if (x-129 == 4) {	// F5, TIME
+			    if (x - KEY_F(1) == 4) {	// F5, TIME
 				strncpy(tmess, qtclist.qtclines[activefield-3].qtc, 5);
 				tmess[5] = '\0';
 				sendmessage(tmess);
 			    }
-			    if (x-129 == 5) {	// F6, CALLSIGN
+			    if (x - KEY_F(1) == 5) {	// F6, CALLSIGN
 				strncpy(tmess, qtclist.qtclines[activefield-3].qtc+5, 13);
 				for(i=12; tmess[i] == ' '; i--)
 				    ;
@@ -844,7 +863,7 @@ void qtc_main_panel(int direction) {
 				tmess[i+2] = '\0';
 				sendmessage(tmess);
 			    }
-			    if (x-129 == 6) {	// F7, SERIAL
+			    if (x - KEY_F(1) == 6) {	// F7, SERIAL
 				strncpy(tmess, qtclist.qtclines[activefield-3].qtc+20, 4);
 				tmess[4] = ' ';
 				tmess[5] = '\0';
@@ -852,28 +871,30 @@ void qtc_main_panel(int direction) {
 			    }
 			}
 			else {
-			    sendmessage(qtc_send_msgs[x - 129]);
+			    sendmessage(qtc_send_msgs[x - KEY_F(1)]);
 			}
 		    }
 
 		}
 		if (trxmode == SSBMODE) {
 		    if (direction == RECV) {
-			if (x == 130) { // 130 -> F2, "QRV"
+			if (x == KEY_F(2)) { // F2, "QRV"
 			    start_qtc_recording();
 			}
-			if (x == 138 && record_run > -1) { // 138 -> F10, "QSL ALL"
+			if (x == KEY_F(10) && record_run > -1) { // F10, "QSL ALL"
 			    stop_qtc_recording();
 			}
-			play_file(qtc_phrecv_message[x - 129]);
+			play_file(qtc_phrecv_message[x - KEY_F(1)]);
 		    }
 		    if (direction == SEND) {
-			play_file(qtc_phsend_message[x - 129]);
+			play_file(qtc_phsend_message[x - KEY_F(1)]);
 		    }
 		}
 
 		break;
-	case 161:  		// DELETE
+
+	// <Delete>, Keypad <Del>
+	case KEY_DC:
 		if (DIRCLAUSE) {
 		    delete_from_field(0);
 		}
@@ -885,7 +906,9 @@ void qtc_main_panel(int direction) {
 		    qtclist.totalsent--;
 		}
 		break;
-	case 9:		// TAB
+
+	// <Tab>
+	case 9:
 	      if (direction == RECV) {
 		  if (trxmode == DIGIMODE) {
 		      if (activefield == 32) {
@@ -927,7 +950,9 @@ void qtc_main_panel(int direction) {
 	      }
 	      curpos = 0;
 	      break;
-	case 90:		// SHIFT + TAB
+
+	// Shift <Tab>
+	case KEY_BTAB:
 		if (direction == RECV) {
 		    if (trxmode == DIGIMODE) {
 			if (activefield == 0) {
@@ -970,7 +995,9 @@ void qtc_main_panel(int direction) {
 		}
 		curpos = 0;
 		break;
-	case 32:	// space
+
+	// <Space>
+	case ' ':
 		if (DIRCLAUSE) {
 		    if (direction == RECV) {
 			if (activefield > 2) {
@@ -1012,71 +1039,96 @@ void qtc_main_panel(int direction) {
 		    }
 		}
 		break;
-	case 48 ... 57:	// numbers
+
+	// Numerals
+	case '0' ... '9':
 		if (DIRCLAUSE) {
 		    modify_field(x);
 		}
 		break;
+
 	/*case 65 ... 90:	// letters
 		modify_field(x);
 		break;*/
-	case 97 ... 122:	// letters
+
+	// Convert lower case to upper case
+	case 'a' ... 'z':
 		if (DIRCLAUSE) {
 		    modify_field(x-32);
 		}
 		break;
-	case 47:	// '/' sign
+
+	// Slash
+	case '/':
 		if (DIRCLAUSE) {
 		    modify_field(x);
 		}
 		break;
-	case 63:	// '?' sign
+
+	// Query
+	case '?':
 		if (DIRCLAUSE) {
 		    modify_field(x);
 		}
 		break;
-	case 127:	// backspace
+
+	// <Backspace>
+	case KEY_BACKSPACE:
 		if (DIRCLAUSE) {
 		    delete_from_field(1);
 		}
 		break;
-	case 156:	// pgup
+
+	// <Page-Up>
+	case KEY_PPAGE:
 		speedup();
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(0, 14, "%2d", GetCWSpeed());
 		break;
-	case 157:	// pgdown
+
+	// <Page-Down>
+	case KEY_NPAGE:
 		speeddown();
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(0, 14, "%2d", GetCWSpeed());
 		break;
-	case 44:		// , keyer
-	case 11:		// ctrl-k
+
+	// Comma or Ctrl-K (^K), keyboard window
+	case ',':
+	case 11:
 		mvprintw(5, 0, "");
 		keyer();
 		x = 0;
 		break;
-	case 12:	// CTRL-L, mark callsign for late QTC
+
+	// Ctrl-L (^L), mark callsign for late QTC
+	case 12:
 	        if (strlen(g_strstrip(qtccallsign)) > 3) {
 			qtc_inc(g_strstrip(qtccallsign), QTC_LATER);
 			sprintf(tempc, "%s;L\n", qtccallsign);
 			send_lan_message(QTCFLAG, tempc);
 		}
 		break;
-	case 14:	// CTRL-N, mark callsign for explicit NO QTC
+
+	// Ctrl-N (^N), mark callsign for explicit NO QTC
+	case 14:
 	        if (strlen(g_strstrip(qtccallsign)) > 3) {
 			qtc_inc(g_strstrip(qtccallsign), QTC_NO);
 			sprintf(tempc, "%s;N\n", qtccallsign);
 			send_lan_message(QTCFLAG, tempc);
 		}
 		break;
-	case 6:		// CTRL-F, fill time fields with first 2 chars
+
+	// Ctrl-F (^F), fill time fields with first 2 chars
+	case 6:
 	        if (activefield > 2) {
 			fill_qtc_times(qtcreclist.qtclines[(activefield-3)/3].time);
 			showfield(activefield);
 		}
 		break;
-	case 18:	// CTRL-R, start/stop recording
+
+	// Ctrl-R (^R), start/stop recording
+	case 18:
 		if (direction == RECV) {
 		    if (record_run < 0) {
 			start_qtc_recording();
@@ -1724,7 +1776,9 @@ void show_rtty_lines() {
 	}
 
 	switch(x) {
-	case 152:	// cursor up
+
+	// Up arrow
+	case KEY_UP:
 		wattrset(ry_win, LINE_NORMAL);
 		print_rtty_line(qtc_ry_lines[actline-1], actline);
 		if (actline > 1) {
@@ -1739,7 +1793,9 @@ void show_rtty_lines() {
 		print_rtty_line(qtc_ry_lines[actline-1], actline);
 		wattrset(ry_win, LINE_NORMAL);
 		break;
-	case 153:	// cursor down
+
+	// Down arrow
+	case KEY_DOWN:
 		wattrset(ry_win, LINE_NORMAL);
 		print_rtty_line(qtc_ry_lines[actline-1], actline);
 		if (actline < qtc_ry_currline) {
@@ -1752,7 +1808,9 @@ void show_rtty_lines() {
 		print_rtty_line(qtc_ry_lines[actline-1], actline);
 		wattrset(ry_win, LINE_NORMAL);
 		break;
-	case 18:	// CTRL-r
+
+	// Ctrl-R (^R)
+	case 18:
 		for(j=0; j<12; j++) {
 		    qtc_ry_lines[j].content[0] = '\0';
 		    qtc_ry_lines[j].attr = 0;
@@ -1763,15 +1821,21 @@ void show_rtty_lines() {
 		qtc_ry_currline = 0;
 		qtc_ry_copied = 0;
 		break;
-	case 19:	// CTRL-s  -  start capture
+
+	// Ctrl-S (^S), start capture
+	case 19:
 		qtc_ry_capture = 1;
 		mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
 		break;
-	case 5:	// CTRL-e  -  end capture
+
+	// Ctrl-E (^E), end capture
+	case 5:
 		qtc_ry_capture = 0;
 		mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
 		break;
-	case 10:	// ENTER  -  add to qtc
+
+	// <Enter>, add to qtc
+	case 10:
 		if (qtc_ry_lines[actline-1].attr == 0) {
 		    parse_ry_line(qtc_ry_lines[actline-1].content);
 		    qtc_ry_lines[actline-1].attr = 1;

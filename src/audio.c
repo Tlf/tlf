@@ -476,7 +476,7 @@ int panscan(void)
 	    make_bar(5 + j, 20, 20, (int) testvalue, PAN_BAR);
 
 	    key = key_poll();
-	    if (key == 27 || key == '\n')
+	    if (key == 27 || key == '\n' || key == KEY_ENTER)
 		break;
 
 	}			// end for
@@ -577,7 +577,7 @@ int nbscan(void)
 	    make_bar(5 + j, 20, 20, (int) testvalue, SPOT_BAR);
 
 	    key = key_poll();
-	    if (key == 27 || key == '\n')
+	    if (key == 27 || key == '\n' || key == KEY_ENTER)
 		break;
 
 	}			// end for
@@ -651,6 +651,7 @@ int testaudio()
 	    scanmenu();
 	    break;
 
+	// <Escape>
 	case 27:
 	    runnit = 0;
 	}
@@ -729,53 +730,55 @@ void record(void)
 
 	key = key_poll();
 
+	/* Look for F1-F12, s|S, c|C, 1-4 */
 	switch (key) {
 
-	case 129:
+	/* Record voice keyer messages, F1-F12, s|S, c|C. */
+	case KEY_F(1):
 	    do_record(0);
 	    runnit = 0;
 	    break;
-	case 130:
+	case KEY_F(2):
 	    do_record(1);
 	    runnit = 0;
 	    break;
-	case 131:
+	case KEY_F(3):
 	    do_record(2);
 	    runnit = 0;
 	    break;
-	case 132:
+	case KEY_F(4):
 	    do_record(3);
 	    runnit = 0;
 	    break;
-	case 133:
+	case KEY_F(5):
 	    do_record(4);
 	    runnit = 0;
 	    break;
-	case 134:
+	case KEY_F(6):
 	    do_record(5);
 	    runnit = 0;
 	    break;
-	case 135:
+	case KEY_F(7):
 	    do_record(6);
 	    runnit = 0;
 	    break;
-	case 136:
+	case KEY_F(8):
 	    do_record(7);
 	    runnit = 0;
 	    break;
-	case 137:
+	case KEY_F(9):
 	    do_record(8);
 	    runnit = 0;
 	    break;
-	case 138:
+	case KEY_F(10):
 	    do_record(9);
 	    runnit = 0;
 	    break;
-	case 140:
+	case KEY_F(11):
 	    do_record(10);
 	    runnit = 0;
 	    break;
-	case 141:
+	case KEY_F(12):
 	    do_record(11);
 	    runnit = 0;
 	    break;
@@ -789,6 +792,10 @@ void record(void)
 	    do_record(13);
 	    runnit = 0;
 	    break;
+
+	/* Contest recording and playback. */
+
+	// Start contest recording.
 	case '1':
 	    rc = system("echo " " > ~/.VRlock");
 
@@ -800,6 +807,8 @@ void record(void)
 	    sleep(1);
 	    runnit = 0;
 	    break;
+
+	// Stop contest recording.
 	case '2':
 	    mvprintw(15, 20, "Contest recording disabled...");
 	    refreshp();
@@ -808,6 +817,8 @@ void record(void)
 	    rc = system("pkill -f soundlogs > /dev/null 2> /dev/null ");
 	    runnit = 0;
 	    break;
+
+	// List contest recordings.
 	case '3':
 	    sounddir = opendir("$HOME/tlf/soundlogs/");	// (W9WI)
 
@@ -840,8 +851,8 @@ void record(void)
 	    }
 	    closedir(sounddir);
 
+	// Play back contest recording.
 	case '4':
-
 	    mvprintw(15, 20, "Play back file (ddhhmmxx): ");
 	    refreshp();
 

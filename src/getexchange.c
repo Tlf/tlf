@@ -178,7 +178,7 @@ int getexchange(void)
 
 	switch (x) {
 
-	case 17:	// CTRL-Q
+	case 17:	// Ctl-q (^Q)--Open QTC panel for receiving or sending QTCs
 	    {
 		if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
 		    qtc_main_panel(RECV);
@@ -186,26 +186,26 @@ int getexchange(void)
 		if (qtcdirection == 2) {			// in case of QTC=SEND
 		    qtc_main_panel(SEND);
 		}
-		x=155;
+		x = KEY_LEFT;
 		continue;
 	    }
-	case 19:	// CTRL+s
+	case 19:	// Ctl+s (^S)--Open QTC panel for sending QTCs
 	    {
 		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
-		x=155;
+		x = KEY_LEFT;
 		continue;
 	    }
-	case 1:						/* ctrl-a */
+	case 1:		// Ctl-a (^A)
 	    {
 		addspot();
 		*comment = '\0';
-		x = 9;
+		x = 9;	// <Tab>
 		break;
 	    }
 
-	case 127:					/* erase */
+	case KEY_BACKSPACE:	// Erase (^H or <Backspace>)
 	    {
 		if (i >= 1) {
 		    comment[strlen(comment) - 1] = '\0';
@@ -214,7 +214,7 @@ int getexchange(void)
 		break;
 	    }
 
-	case 27:
+	case 27:	// <Escape>
 	    {
 		stoptx();			/* stop sending CW */
 		if (comment[0] != '\0') {	/* if comment not empty */
@@ -223,16 +223,16 @@ int getexchange(void)
 		    i = 0;
 		} else {
 		    /* back to callinput */
-		    x = 9;
+		    x = 9;	// <Tab>
 		}
 		break;
 	    }
 
-	case 160:		// for CT compatibility
+	case 160:		// For CT compatibility Meta-<Space> (M- )
 	    {
 		if (ctcomp != 0) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			sendmessage(message[1]);
+			sendmessage(message[1]);	// F2
 
 		    } else
 			play_file(ph_message[1]);
@@ -250,12 +250,12 @@ int getexchange(void)
 		    } else
 			play_file(ph_message[2]);
 
-		    x = 92;
+		    x = 92;	// '\'
 		}
 		break;
 	    }
 
-	case 129:
+	case KEY_F(1):
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    sendmessage(call);		/* F1 */
@@ -265,40 +265,41 @@ int getexchange(void)
 		break;
 	    }
 
-	case 130 ... 138:
+	case KEY_F(2) ... KEY_F(11):
 	    {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    sendmessage(message[x - 129]);	/* F2..F10 */
+		    /* F2...F11 - F1 = 1...10 */
+		    sendmessage(message[x - KEY_F(1)]);
 		} else
-		    play_file(ph_message[x - 129]);
+		    play_file(ph_message[x - KEY_F(1)]);
 
 		break;
 	    }
-	case 140:
-            {
-                if (trxmode == CWMODE || trxmode == DIGIMODE) {
-                    sendmessage(message[10]);        /* F11 */
+//	case KEY_F(11):
+//            {
+//                if (trxmode == CWMODE || trxmode == DIGIMODE) {
+//                    sendmessage(message[10]);        /* F11 */
 
-                } else
-                    play_file(ph_message[10]);
+//                } else
+//                    play_file(ph_message[10]);
 
-                break;
-            }
-	case 176 ... 186:
+//                break;
+//            }
+	case 176 ... 185:	/* Alt-0 to Alt-9 */
 	    {
-		sendmessage(message[x - 162]);	/* alt-0 to alt-9 */
+		sendmessage(message[x - 162]);	/* Messages 15-24 */
 
 		break;
 	    }
 
-	case 155:		/* edit exchange field */
+	case KEY_LEFT:		/* Left Arrow--edit exchange field */
 	    {
 		if (*comment != '\0')
 		    exchange_edit();
 		break;
 	    }
 
-	case 156:		/* change MY RST */
+	case KEY_PPAGE:		/* Page-Up--change MY RST */
 	    {
 		if (change_rst == 1) {
 		    if (my_rst[1] <= 56) {
@@ -315,7 +316,7 @@ int getexchange(void)
 		break;
 
 	    }
-	case 157:
+	case KEY_NPAGE:		/* Page-Down--change MY RST */
 	    {
 		if (change_rst == 1) {
 
@@ -324,7 +325,7 @@ int getexchange(void)
 
 			no_rst ? : mvprintw(12, 49, my_rst);
 		    }
-		} else {
+		} else {	/* speed down */
 		    speeddown();
 
                     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
@@ -333,8 +334,8 @@ int getexchange(void)
 		break;
 
 	    }
-	case 44:		// , keyer
-	case 11:		// ctrl-k
+	case ',':		// Keyboard Morse
+	case 11:		// Ctrl-K
 	    {
 		mvprintw(5, 0, "");
 		keyer();
@@ -342,17 +343,18 @@ int getexchange(void)
 		break;
 	    }
 	case '\n':
+	case KEY_ENTER:
 	    {			/* log QSO immediately if CT compatible
 				 * or not in contest */
 		if ((ctcomp == 1) || (contest != 1))
-		    x = 92;
+		    x = 92;	// '\'
 //                            if (dxped == 1) x = 92;
 		break;
 	    }
-	}
+	}	// End switch
 
 	if (x >= 'a' && x <= 'z')
-	    x = x - 32;
+	    x = x - 32;		// Promote to upper case
 
 	if (i < 25) {		/* normal character -> insert if space left */
 	    if (x >= ' ' && x <= 'Z') {
@@ -378,7 +380,8 @@ int getexchange(void)
 	    x = checkexchange(x);
 	}
 
-	if (x == '\n' || x == 9 || x == 11 || x == 92) {
+	/* <Enter>, <Tab>, Ctl-K, '\' */
+	if (x == '\n' || x == KEY_ENTER || x == 9 || x == 11 || x == 92) {
 
 	    if ((exchange_serial == 1 && comment[0] >= '0' && comment[0] <= '9')) {	/* align serial nr. */
 		if (strlen(comment) == 1) {
@@ -490,7 +493,7 @@ int getexchange(void)
 		if (strlen(comment) < 5) {
 		    mvprintw(13, 54, "state/prov?");
 		    mvprintw(12, 54, comment);
-		    if (x == '\n' || x == 92) {
+		    if (x == '\n' || x == KEY_ENTER || x == 92) {
 			x = 0;
 		    }
 		    else {
@@ -1135,27 +1138,33 @@ void exchange_edit (void)
 
 	i = key_get();
 
-	if (i == 1) {		// ctrl-A, Home
+	// Ctrl-A (^A) or <Home>, move to beginning of comment field.
+	if (i == 1 || i == KEY_HOME) {
 
 	    b = 0;
 
-	} else if (i == 5) {	// ctrl-E, End
+	// Ctrl-E (^E) or <End>, move to end of comment field.
+	} else if (i == 5 || i == KEY_END) {
 
 	    b = strlen(comment) - 1;
 
-	} else if (i == 155) {	// left
+	// Left arrow, move cursor left one position.
+	} else if (i == KEY_LEFT) {
 
 	    if (b > 0)
 		b--;
 
-	} else if (i == 154) {	// right
+	// Right arrow, move cursor right one position.
+	} else if (i == KEY_RIGHT) {
 
 	    if (b < strlen(comment) - 1) {
 		b++;
 	    } else
 		break;		/* stop edit */
 
-	} else if (i == 161) {	/* delete */
+	// <Delete>, erase character under the cursor,
+	// shift all characters to the right of the cursor left one position.
+	} else if (i == KEY_DC) {
 
 	    l = strlen(comment);
 
@@ -1163,7 +1172,9 @@ void exchange_edit (void)
 		comment[j] = comment[j + 1];	/* move to left incl.\0 */
 	    }
 
-	} else if (i == 127) {	/* backspace */
+	// <Backspace>, erase character to the left of the cursor,
+	// shift all characters to the right of the cursor left one position.
+	} else if (i == KEY_BACKSPACE) {
 
 	    if (b > 0) {
 		b--;
@@ -1174,11 +1185,15 @@ void exchange_edit (void)
 		    comment[j] = comment[j + 1];
 		}
 	    }
+
+	// <Escape> not received.
 	} else if (i != 27) {
 
+	    // Promote lower case to upper case.
 	    if ((i >= 'a') && (i <= 'z'))
 		i = i - 32;
 
+	    // Accept printable characters.
 	    if ((i >= ' ') && (i <= 'Z')) {
 
 		if (strlen(comment) <= 24) {
