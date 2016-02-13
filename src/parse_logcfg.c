@@ -242,7 +242,6 @@ int parse_logcfg(char *inputbuffer)
     extern int noautocq;
     extern int show_time;
     extern char keyer_device[10];
-    extern int use_vk;
     extern int wazmult;
     extern int itumult;
     extern int cqdelay;
@@ -1241,8 +1240,6 @@ int parse_logcfg(char *inputbuffer)
 	    mvprintw(15, 5, "A: Phone message #%d is %s", ii - 103, ph_message[ii - 103]);	// (W9WI)
 	    refreshp();
 	    //                             system ("sleep 2");
-	    if (strlen(ph_message[ii - 103]) > 0)
-		use_vk = 1;
 	    break;
 	}
     case 117:{		// WAZ Zone is a Multiplier
