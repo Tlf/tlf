@@ -1,19 +1,23 @@
-/***************************************************************************
-                          rules.c  -  description
-                             -------------------
-    begin                : Tue Sep 10 2003
-    copyright            : (C) 2003 by lz3ny
-    email                : lz3ny@bfra.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/*
+* Tlf - contest logging program for amateur radio operators
+* Copyright (C) 2003	  LZ3NY <lz3ny@bfra.org>
+* 		2003-2004 Rein Couperus <pa0rct@amsat.org>
+* 		2011-2015           Thomas Beierlein <tb@forth-ev.de>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
 
 
 #include <stdio.h>
@@ -44,7 +48,6 @@ int read_rules()
 /* If no contest is given, whichcontest is set to default "qso"   (PA0R, Sep 24 2003)*/
     if (strlen(whichcontest) == 0) {
 	showmsg("contest name is empty! Assuming general qso mode!! ");
-//              mvprintw(5,0,"\n contest name is empty!\n Assuming general qso mode!! ");
 	strcpy(whichcontest, "qso");
 	return (PARSE_ERROR);
     }
@@ -52,7 +55,6 @@ int read_rules()
     if (strlen(whichcontest) >= 40) {
 	showmsg("contest name is too long!");
 	showmsg("exiting...");
-//      mvprintw(5,0,"\n contest name is too long!\n exiting...\n ");
 	exit(1);
     }
 
@@ -66,8 +68,6 @@ int read_rules()
     if ((mit_contest_file = fopen(contest_conf, "r")) != NULL) {
 
 	showstring("reading contest rules file:", contest_conf);
-//      mvprintw(6,0,"reading contest rules file: %s ... \n",contest_conf);
-//      refreshp();
 
 	while ( fgets(mit_contest_rule, sizeof(mit_contest_rule),
 		       mit_contest_file) != NULL ) {
@@ -79,13 +79,9 @@ int read_rules()
 	}
 	fclose(mit_contest_file);
 	showstring("Using contest rules file: ", contest_conf);
-//       mvprintw(7,0,"\nUsing contest rules file: %s\n",contest_conf);
-//       refreshp();
     } else if ((mit_contest_file = fopen(basic_contest_conf, "r")) != NULL) {
 
 	showstring("reading contest rules file:", basic_contest_conf);
-//      mvprintw(6,0,"reading contest rules file: %s ... \n",basic_contest_conf);
-//      refreshp();
 
 	while ( fgets(mit_contest_rule, sizeof(mit_contest_rule),
 		       mit_contest_file) != NULL ) {
@@ -97,14 +93,11 @@ int read_rules()
 	}
 	fclose(mit_contest_file);
 	showstring("Using contest rules file:", basic_contest_conf);
-//       mvprintw(7,0,"\nUsing contest rules file: %s\n",basic_contest_conf);
-//       refreshp();
     }
 
     else {
 	showstring("There is no contest rules file", contest_conf);
 	showmsg("Assuming regular QSO operation. Logfile is qso.log");
-//      mvprintw(7,0,"\nThere is no contest rules file %s!\nAssuming regular QSO operation.\nLogfile is qso.log\n",contest_conf);
 	strcpy(whichcontest, "qso");	// default use general qso mode... (PA0R, 24 Sept. 2003)
 	setcontest();
 	strcpy(logfile, "qso.log");
