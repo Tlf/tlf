@@ -148,9 +148,14 @@ char callinput(void)
     extern int no_rst;
 
     extern int bmautoadd;
+    extern int bmautograb;
 
     static float freqstore;		/* qrg during last callsign input
 					   character, 0 if grabbed */
+    static float spotfreq;
+    static char grabbedcall[15];
+    static int already_grabbed = 0;		/* only one time */
+
     int cury, curx;
     int i, j, ii, rc, t, x = 0, y = 0;
     char instring[2] = { '\0', '\0' };
@@ -182,7 +187,7 @@ char callinput(void)
 		printcall();
 	    }
 
-	    if (bmautoadd > 0 && freqstore != 0) {
+	    if (bmautoadd != 0 && freqstore != 0) {
 		if (strlen(hiscall) >= 3) {
 		    if (fabsf(freq-freqstore) > 0.1) {
 			add_to_spots(hiscall, freqstore);
@@ -191,6 +196,32 @@ char callinput(void)
 			freqstore = 0;
 		    }
 		}
+	    }
+
+	    /* \todo call it not so often */
+	    if (bmautograb != 0 && *hiscall == '\0' &&
+		    cqmode == S_P && already_grabbed == 0) {
+		get_spot_on_qrg(grabbedcall, freq);
+		if (strlen(grabbedcall) >= 3) {
+		    strncpy(hiscall, grabbedcall, sizeof(hiscall));
+		    already_grabbed = 1;
+		    spotfreq = freq;
+
+		    strncpy(dupecall, hiscall, 16);
+		    y = getctydata(dupecall);
+		    showinfo(y);
+		    printcall();
+		    searchlog(hiscall);
+		}
+	    }
+
+	    if (fabsf(freq-spotfreq) > 0.1 && already_grabbed == 1) {
+		already_grabbed = 0;
+		*grabbedcall = '\0';
+		hiscall[0] = '\0';
+		printcall();
+		HideSearchPanel();
+		showinfo(0);
 	    }
 
 
@@ -959,6 +990,8 @@ char callinput(void)
 		addspot();
 		HideSearchPanel();
 
+		already_grabbed = 1;
+		spotfreq = freq;
 		break;
 	    }
 	case 2:		// ctl-b
@@ -979,6 +1012,7 @@ char callinput(void)
 	case 7:		// ctl-g
 	    {
 		grab_next();
+		already_grabbed = 1;
 		freqstore = 0;
 
 		break;
@@ -986,6 +1020,7 @@ char callinput(void)
 	case 231:		// alt-g
 	    {
 		grabspot();
+		already_grabbed = 1;
 		freqstore = 0;
 
 		break;
@@ -1040,6 +1075,7 @@ char callinput(void)
 	    x = x - 32;
 
 	if (x >= '/' && x <= 'Z') {
+
 	    if (strlen(hiscall) < 13) {
 		instring[0] = x;
 		instring[1] = '\0';
@@ -1083,8 +1119,9 @@ char callinput(void)
 	}
 
 	if ((x == '\n') || x == 32 || x == 9 || x == 11 || x == 44
-	    || x == 92)
+	    || x == 92) {
 	    break;
+	}
 
 	if (trxmode == DIGIMODE && (keyerport == GMFSK
 		|| keyerport == MFJ1278_KEYER)) {
