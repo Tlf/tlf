@@ -157,7 +157,7 @@ char callinput(void)
     static int already_grabbed = 0;		/* only one time */
 
     int cury, curx;
-    int i, j, ii, rc, t, x = 0, y = 0;
+    int i, j, ii, rc, t, x = 0;
     char instring[2] = { '\0', '\0' };
     char dupecall[17];
     static int lastwindow;
@@ -198,9 +198,7 @@ char callinput(void)
 		}
 	    }
 
-	    /* \todo call it not so often */
-	    if (bmautograb != 0 && *hiscall == '\0' &&
-		    cqmode == S_P && already_grabbed == 0) {
+	    if (bmautograb != 0 && *hiscall == '\0' && already_grabbed == 0) {
 		get_spot_on_qrg(grabbedcall, freq);
 		if (strlen(grabbedcall) >= 3) {
 		    strncpy(hiscall, grabbedcall, sizeof(hiscall));
@@ -208,8 +206,7 @@ char callinput(void)
 		    spotfreq = freq;
 
 		    strncpy(dupecall, hiscall, 16);
-		    y = getctydata(dupecall);
-		    showinfo(y);
+		    showinfo(getctydata(dupecall));
 		    printcall();
 		    searchlog(hiscall);
 		}
@@ -1098,9 +1095,7 @@ char callinput(void)
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
 		strncpy(dupecall, hiscall, 16);
-
-		y = getctydata(dupecall);
-		showinfo(y);
+		showinfo(getctydata(dupecall));
 
 		searchlog(hiscall);
 	    }
