@@ -1014,6 +1014,8 @@ char callinput(void)
 	case 7:
 	    {
 		grab_next();
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 2, "%s", mode);
 
 		break;
 	    }
@@ -1022,6 +1024,8 @@ char callinput(void)
 	case 231:
 	    {
 		grabspot();
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 2, "%s", mode);
 
 		break;
 	    }
