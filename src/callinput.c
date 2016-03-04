@@ -1012,6 +1012,8 @@ char callinput(void)
 	case 7:		// ctl-g
 	    {
 		grab_next();
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 2, "%s", mode);
 		already_grabbed = 1;
 		freqstore = 0;
 
@@ -1020,6 +1022,8 @@ char callinput(void)
 	case 231:		// alt-g
 	    {
 		grabspot();
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 2, "%s", mode);
 		already_grabbed = 1;
 		freqstore = 0;
 
