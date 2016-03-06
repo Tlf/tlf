@@ -146,9 +146,8 @@ char callinput(void)
     extern int no_rst;
 
     int cury, curx;
-    int i, j, ii, rc, t, x = 0, y = 0;
+    int i, j, ii, rc, t, x = 0;
     char instring[2] = { '\0', '\0' };
-    char dupecall[17];
     static int lastwindow;
 
 
@@ -684,12 +683,7 @@ char callinput(void)
 		    hiscall[strlen(hiscall) - 1] = '\0';
 
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */
-			strncpy(dupecall, hiscall, 16);
-
-			x = getctydata(dupecall);
-
-			showinfo(x);
-
+			showinfo( getctydata(hiscall) );
 			searchlog(hiscall);
 			refreshp();
 		    }
@@ -1137,11 +1131,7 @@ char callinput(void)
 
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
-		strncpy(dupecall, hiscall, 16);
-
-		y = getctydata(dupecall);
-		showinfo(y);
-
+		showinfo( getctydata(hiscall) );
 		searchlog(hiscall);
 	    }
 
