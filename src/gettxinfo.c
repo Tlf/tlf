@@ -45,6 +45,9 @@ int gettxinfo(void)
     extern RIG *my_rig;
     extern freq_t outfreq;
     extern int cw_bandwidth;
+    extern int trxmode;
+    extern int rigmode;
+    extern int keyerport;
 #else
     extern int outfreq;
 #endif
@@ -53,9 +56,6 @@ int gettxinfo(void)
     extern float bandfrequency[];
 
     extern int trx_control;
-    extern int trxmode;
-    extern int rigmode;
-    extern int keyerport;
 
 #ifdef HAVE_LIBHAMLIB
     freq_t rigfreq;

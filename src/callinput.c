@@ -118,7 +118,6 @@ char callinput(void)
     extern freq_t outfreq;
 #else
     extern int outfreq;
-    extern int rignumber;
 #endif
     extern int trx_control;
     extern float bandfrequency[];
@@ -637,17 +636,6 @@ char callinput(void)
 		break;
 	    }
 
-//	case KEY_F(11):
-//	    {
-//		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-//		    sendmessage(message[10]);	/* F11 */
-//
-//		} else
-//		    play_file(ph_message[10]);
-//
-//		break;
-//	    }
-
 	// F12, activate autocq timing and message.
 	case KEY_F(12):
 	    {
@@ -703,10 +691,6 @@ char callinput(void)
 		    showscore_flag = 1;
 		else {
 		    showscore_flag = 0;
-		    /** \todo drop display of score */
-		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-		    for (ii = 14; ii < 24; ii++)
-			mvprintw(ii, 0, backgrnd_str);
 		}
 		clear_display();
 		break;
@@ -982,6 +966,7 @@ char callinput(void)
 	    {
 		addspot();
 		HideSearchPanel();
+		showinfo(0);
 
 		break;
 	    }
