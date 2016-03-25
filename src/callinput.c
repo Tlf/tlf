@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2005 Rein Couperus <pa0r@eudxf.org>
- *               2009-2014 Thomas Beierlein <tb@forth-ev.de>
+ *               2009-2016 Thomas Beierlein <tb@forth-ev.de>
  *               2013      Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -67,6 +67,8 @@
 #include "time_update.h"
 #include "ui_utils.h"
 #include "writeparas.h"
+
+#include <math.h>
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -144,9 +146,19 @@ char callinput(void)
     extern int miniterm;
     extern int no_rst;
 
+    extern int bmautoadd;
+    extern int bmautograb;
+
+    static float freqstore;		/* qrg during last callsign input
+					   character, 0 if grabbed */
+    static float spotfreq;
+    static char grabbedcall[15];
+    static int already_grabbed = 0;		/* only one time */
+
     int cury, curx;
     int i, j, ii, rc, t, x = 0;
     char instring[2] = { '\0', '\0' };
+    char dupecall[17];
     static int lastwindow;
 
 
@@ -173,6 +185,41 @@ char callinput(void)
 		show_rtty();
 		printcall();
 	    }
+
+	    if (bmautoadd != 0 && freqstore != 0) {
+		if (strlen(hiscall) >= 3) {
+		    if (fabsf(freq-freqstore) > 0.1) {
+			add_to_spots(hiscall, freqstore);
+			hiscall[0] = '\0';
+			HideSearchPanel();
+			freqstore = 0;
+		    }
+		}
+	    }
+
+	    if (bmautograb != 0 && *hiscall == '\0' && already_grabbed == 0) {
+		get_spot_on_qrg(grabbedcall, freq);
+		if (strlen(grabbedcall) >= 3) {
+		    strncpy(hiscall, grabbedcall, sizeof(hiscall));
+		    already_grabbed = 1;
+		    spotfreq = freq;
+
+		    strncpy(dupecall, hiscall, 16);
+		    showinfo(getctydata(dupecall));
+		    printcall();
+		    searchlog(hiscall);
+		}
+	    }
+
+	    if (fabsf(freq-spotfreq) > 0.1 && already_grabbed == 1) {
+		already_grabbed = 0;
+		*grabbedcall = '\0';
+		hiscall[0] = '\0';
+		printcall();
+		HideSearchPanel();
+		showinfo(0);
+	    }
+
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
@@ -915,6 +962,7 @@ char callinput(void)
 		    early_started = 0;
 		}
 
+		freqstore = 0;
 		break;
 	    }
 
@@ -968,6 +1016,8 @@ char callinput(void)
 		HideSearchPanel();
 		showinfo(0);
 
+		already_grabbed = 1;
+		spotfreq = freq;
 		break;
 	    }
 
@@ -995,6 +1045,8 @@ char callinput(void)
 		grab_next();
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(0, 2, "%s", mode);
+		already_grabbed = 1;
+		freqstore = 0;
 
 		break;
 	    }
@@ -1005,6 +1057,8 @@ char callinput(void)
 		grabspot();
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(0, 2, "%s", mode);
+		already_grabbed = 1;
+		freqstore = 0;
 
 		break;
 	    }
@@ -1099,6 +1153,7 @@ char callinput(void)
 
 	/* Add character to call input field. */
 	if (x >= '/' && x <= 'Z') {
+
 	    if (strlen(hiscall) < 13) {
 		instring[0] = x;
 		instring[1] = '\0';
@@ -1122,6 +1177,8 @@ char callinput(void)
 
 	    refreshp();
 
+	    freqstore = freq;
+
 	}
 
 	if (cqmode == CQ && cwstart < 0 && trxmode == CWMODE &&
@@ -1136,8 +1193,9 @@ char callinput(void)
 	}
 
 	if ((x == '\n' || x == KEY_ENTER) || x == 32 || x == 9 || x == 11
-	    || x == 44 || x == 92)
+	    || x == 44 || x == 92) {
 	    break;
+	}
 
 	if (trxmode == DIGIMODE && (keyerport == GMFSK
 		|| keyerport == MFJ1278_KEYER)) {

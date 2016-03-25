@@ -3,7 +3,7 @@
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
 * 		2011-2015           Thomas Beierlein <tb@forth-ev.de>
 * 		2013 		    Fred DH5FS
-*               2013-2014           Ervin Hegedus - HA2OS <airween@gmail.com>
+*               2013-2016           Ervin Hegedus - HA2OS <airween@gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 228	/* commands in list */
+#define  MAX_COMMANDS 230	/* commands in list */
 
 
 int read_logcfg(void)
@@ -294,6 +294,8 @@ int parse_logcfg(char *inputbuffer)
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int pfxmultab;
+    extern int bmautoadd;
+    extern int bmautograb;
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -524,7 +526,9 @@ int parse_logcfg(char *inputbuffer)
 	"EXCLUDE_MULTILIST",
 	"S&P_CALL_MSG",
 	"QTC_CAP_CALLS",
-	"QTC_AUTO_FILLTIME"
+	"QTC_AUTO_FILLTIME",
+	"BMAUTOGRAB",
+	"BMAUTOADD"
     };
 
     char **fields;
@@ -1783,6 +1787,14 @@ int parse_logcfg(char *inputbuffer)
 	    }
     case 227: {
 	    qtc_auto_filltime = 1;
+	    break;
+    }
+    case 228: {
+	    bmautograb = 1;
+	    break;
+    }
+    case 229: {
+	    bmautoadd = 1;
 	    break;
     }
     default: {

@@ -21,6 +21,7 @@
 #ifndef ADDSPOT_H
 #define ADDSPOT_H
 
+void add_to_spots(char *call, float freq);
 int addspot(void);
 
 #endif /* ADDSPOT_H */

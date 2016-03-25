@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
+#include <math.h>
 
 #include "bandmap.h"
 #include "qtcutil.h"
@@ -1012,3 +1013,36 @@ char *qtc_format(char * call) {
     return g_strdup(tcall);
 }
 
+
+/** Search filtered bandmap for a spot near the given frequency
+ *
+ * Return the call found at that frequency or NULL if no spot found
+ *
+ * \param 	dest - place to put the call in
+ * \param 	freq - the frequency where to look for a spot
+ */
+void get_spot_on_qrg(char *dest, float freq) {
+
+    *dest = '\0';
+
+    if (spots->len > 0)
+    {
+	int i;
+
+	pthread_mutex_lock( &bm_mutex );
+
+	for (i = 0; i < spots->len; i++) {
+	    spot *data;
+	    data = g_ptr_array_index( spots, i );
+
+	    if ((fabs(data->freq - freq*1000) < TOLERANCE) &&
+		    (!bm_config.skipdupes || data->dupe == 0)) {
+		strcpy(dest, data->call);
+		break;
+	    }
+	}
+
+	pthread_mutex_unlock( &bm_mutex );
+
+    }
+}
