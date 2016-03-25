@@ -1035,7 +1035,8 @@ void get_spot_on_qrg(char *dest, float freq) {
 	    spot *data;
 	    data = g_ptr_array_index( spots, i );
 
-	    if (fabs(data->freq - freq*1000) < TOLERANCE) {
+	    if ((fabs(data->freq - freq*1000) < TOLERANCE) &&
+		    (!bm_config.skipdupes || data->dupe == 0)) {
 		strcpy(dest, data->call);
 		break;
 	    }
