@@ -1779,6 +1779,11 @@ If set, with \fBRADIO_CONTROL\fR and \fBBANDMAP\fR (mandatory) options, Tlf will
 callsign field, if its length is 3 character at least. Use 'S'kip dupes in
 BANDMAP settings to control if it should also grab dupes.
 .
+.TP
+.B SPRINTMODE
+If set, Tlf will automatically switch its mode between LOG and S&P after every
+QSO.
+.
 .SH FILES
 .
 \fB@prefix@/share/@PACKAGE@/logcfg.dat\fR is a recent example of the

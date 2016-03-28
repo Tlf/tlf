@@ -68,7 +68,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 231	/* commands in list */
+#define  MAX_COMMANDS 232	/* commands in list */
 
 
 int read_logcfg(void)
@@ -296,6 +296,7 @@ int parse_logcfg(char *inputbuffer)
     extern int pfxmultab;
     extern int bmautoadd;
     extern int bmautograb;
+    extern int sprint_mode;
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -529,7 +530,8 @@ int parse_logcfg(char *inputbuffer)
 	"QTC_AUTO_FILLTIME",
 	"BMAUTOGRAB",
 	"BMAUTOADD",
-	"QTC_RECV_LAZY"		/* 230 */
+	"QTC_RECV_LAZY",		/* 230 */
+	"SPRINTMODE"
     };
 
     char **fields;
@@ -1800,6 +1802,10 @@ int parse_logcfg(char *inputbuffer)
     }
     case 230: {
 	    qtc_recv_lazy = 1;
+	    break;
+    }
+    case 231: {
+	    sprint_mode = 1;
 	    break;
     }
     default: {

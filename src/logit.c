@@ -41,9 +41,11 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "cleanup.h"
 
 
 void refresh_comment(void);
+void change_mode(void);
 
 void *logit(void *ptr)
 {
@@ -72,6 +74,7 @@ void *logit(void *ptr)
     extern int exchange_serial;
     extern char tonestr[];
     extern int dxped;
+    extern int sprint_mode;
 
     char callreturn = 0;
     int cury, curx;
@@ -212,6 +215,9 @@ void *logit(void *ptr)
 		    }
 
 		    log_to_disk(false);
+		    if (sprint_mode == 1) {
+			change_mode();
+		    }
 		    HideSearchPanel();
 
 		}
@@ -221,6 +227,9 @@ void *logit(void *ptr)
 		defer_store = 0;
 
 		log_to_disk(false);
+		if (sprint_mode == 1) {
+		    change_mode();
+		}
 		HideSearchPanel();
 	    }
 
@@ -246,4 +255,28 @@ void refresh_comment(void) {
 
     mvprintw(12, 54, "                          ");
     mvprintw(12, 54, comment);
+}
+
+void change_mode(void) {
+    extern char mode[];
+    extern int cqmode;
+
+    /* switch to other mode */
+    if (cqmode == CQ) {
+	cqmode = S_P;
+    } else {
+    	cqmode = CQ;
+    }
+
+    /* and show new mode */
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+
+    if (cqmode == CQ) {
+	mvprintw(0, 2, "Log     ");
+	strcpy(mode, "Log     ");
+    } else {
+	mvprintw(0, 2, "S&P     ");
+	strcpy(mode, "S&P     ");
+    }
+    cleanup();
 }
