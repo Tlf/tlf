@@ -146,7 +146,7 @@ int addmult2(void)
 
     // --------------------------- arrlss ------------------------------------
     if (arrlss == 1) {
-	strncpy(ssexchange, lan_logline + 54, 20);
+	g_strlcpy(ssexchange, lan_logline + 54, 21);
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
@@ -167,14 +167,14 @@ int addmult2(void)
 
     // --------------------wysiwyg----------------
     if (wysiwyg_once == 1) {
-	strncpy(stripped_comment, lan_logline + 54, 14);
+	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 
 	shownewmult = remember_multi(stripped_comment, bandinx, ALL_BAND);
     }
 
     if (wysiwyg_multi == 1) {
-	strncpy(stripped_comment, lan_logline + 54, 14);
+	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 
 	shownewmult = remember_multi(stripped_comment, bandinx, PER_BAND);
