@@ -1,3 +1,9 @@
+tlf-1.2.4.1
+===========
+
+Bug fixes:
+    - Fix a possible buffer overflow in addmult2 due to strncpy
+
 tlf-1.2.4
 =========
 

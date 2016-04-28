@@ -1,3 +1,7 @@
+2016-04-28 Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: fix possible buffer overflows due to strncpy
+
 2016-03-25  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/bandmap.c: respect 'S'kip not dupes setting for bandmap
