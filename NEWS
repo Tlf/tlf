@@ -1,3 +1,28 @@
+tlf-1.2.4
+=========
+
+Maintenance and bugfix release.
+
+New features since tlf-1.2.3:
+    - Switch hardcoded keyboard handling which supported only xterm, linux 
+      terminal and rxvt to use of ncruses keypad(). That way other terminal
+      settings should be supported as well (Tnx to Nate N0NB for the work).
+    - Extend bandmap functionality. See man page for details
+      (tnx to Ervin HA2OS).
+      * Setting BMAUTOADD in logcfg.dat simplify the adding of heard stations 
+        to the bandmap list. Just type in the call and as soon as you turn of 
+	to another frequency the call gets added to the bandmap (similar 
+	to Ctl-A).
+      * If BMAUTOGRAB is set in logcfg.dat Tlf will automatically grab a 
+        call from the bandmap list and put it in the call input field if 
+	you tune in next to the station. You can just start working it 
+	in S&P by pressing ENTER. 
+
+Bug fixes:
+    - Cleanup some valgrind warnng about possible memory leaks.
+    - Fix autoconf settings for new lookup of ncurses include files
+    - Fix a segmentation fault if we have unexpected long call sign prefixes
+
 tlf-1.2.3
 =========
 Maintenance and bugfix release.

@@ -1535,7 +1535,8 @@ bandmap, if the TRX frequency is equal with bandmap freq.
 .TP
 .B BMAUTOADD
 If set, with \fBRADIO_CONTROL\fR and \fBBANDMAP\fR (mandatory) options, Tlf will add the callsign from
-callsign field, if its lenght is 3 character at least.
+callsign field, if its lenght is 3 character at least. Use 'S'kip dupes in 
+BANDMAP settings to control if it should also grab dupes.
 .
 .SH FILES
 .
