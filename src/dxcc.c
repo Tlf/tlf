@@ -29,9 +29,20 @@
 GPtrArray *dxcc;
 GPtrArray *prefix;
 
+void prefix_free(gpointer data) {
+	prefix_data *pfx_data = data;
+
+	g_free(pfx_data -> pfx);
+	g_free(pfx_data);
+}
+
+
 void prefix_init(void)
 {
-	prefix = g_ptr_array_new();
+	if (prefix) {
+		g_ptr_array_free(prefix, TRUE);
+	}
+	prefix = g_ptr_array_new_with_free_func(prefix_free);
 }
 
 /* return number of entries in prefix array */
@@ -77,9 +88,22 @@ void prefix_add (char *pfxstr)
 }
 
 
+
+void dxcc_free(gpointer data) {
+	dxcc_data *dxcc = data;
+
+	g_free(dxcc -> countryname);
+	g_free(dxcc -> continent);
+	g_free(dxcc -> pfx);
+	g_free(dxcc);
+}
+
 void dxcc_init(void)
 {
-	dxcc = g_ptr_array_new();
+	if (dxcc) {
+		g_ptr_array_free(dxcc, TRUE);
+	}
+	dxcc = g_ptr_array_new_with_free_func(dxcc_free);
 }
 
 /* return number of entries in dxcc array */
