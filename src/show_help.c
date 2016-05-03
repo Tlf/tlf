@@ -66,6 +66,10 @@ int show_help(void) {
     rc=system("clear");
     rc=system(cmdstr);
     rc=system("clear");
+
+    g_free(helpfile);
+    g_free(cmdstr);
+
     set_term(mainscreen);
     clear_display();
     return 0;
