@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
- *               2014                     Thomas Beierlein <tb@forth-ev.de>
+ *               2014, 2016               Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -240,14 +240,10 @@ void sendbuf(void)
     extern char termbuf[];
     extern char backgrnd_str[];
     extern char wkeyerbuffer[];
-    extern int keyerport;
     extern int data_ready;
+    extern int keyerport;
     extern int simulator;
     extern int simulator_mode;
-    extern int lan_active;
-    extern int exchange_serial;
-    extern int noleadingzeros;
-    extern int early_started;
     extern int sending_call;
 
     static char printlinebuffer[82] = "";
