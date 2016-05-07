@@ -37,6 +37,7 @@
 #include "tlf.h"
 #include "tlf_panel.h"
 #include "ui_utils.h"
+#include "write_keyer.h"
 
 /* size and position of keyer window */
 #define KEYER_LINE_WIDTH 60
@@ -54,8 +55,6 @@ int keyer(void)
     extern int cqmode;
     extern char mode[20];
     extern char message[][80];
-    extern char wkeyerbuffer[];
-    extern int data_ready;
     extern int keyerport;
     extern int weight;
 
@@ -96,10 +95,8 @@ int keyer(void)
     wnicebox(win, 0, 0, 1, KEYER_LINE_WIDTH, "CW Keyer");
 
     if (keyerport == MFJ1278_KEYER) {
-	if (data_ready != 1) { 		/* switch to tx */
-	    strcat(wkeyerbuffer, txcontrolstring);
-	    data_ready = 1;
-	}
+	/* switch to tx */
+	keyer_append(txcontrolstring);
     }
 
     while (1) {
@@ -125,10 +122,8 @@ int keyer(void)
 	// <Escape>, Ctrl-K (^K), Alt-k (M-k)
 	if (x == 27 || x == 11 || x == 235) {
 	    if (keyerport == MFJ1278_KEYER) {
-		if (data_ready != 1) { 	/* switch back to rx */
-		    strcat(wkeyerbuffer, rxcontrolstring);
-		    data_ready = 1;
-		}
+		/* switch back to rx */
+		keyer_append(rxcontrolstring);
 	    } else {
 		stoptx();
 	    }
@@ -147,7 +142,7 @@ int keyer(void)
 		} else if (keyerport == NET_KEYER) {
 		    nkbuffer[0] = x;	// 1 char at the time !
 		    nkbuffer[1] = '\0';
-		    netkeyer(K_MESSAGE, nkbuffer);
+		    keyer_append(nkbuffer);
 		}
 
 		/* if display field is full move text one left */
@@ -315,8 +310,6 @@ int keyer(void)
 void mfj1278_control(int x)
 {
     extern int trxmode;
-    extern char wkeyerbuffer[];
-    extern int data_ready;
 
     char buffer[2];
 
@@ -328,10 +321,6 @@ void mfj1278_control(int x)
 	}
 	buffer[0] = x;		// 1 char at the time !
 	buffer[1] = '\0';
-	if (data_ready != 1) {
-	    strcat(wkeyerbuffer, buffer);
-	    data_ready = 1;
-	}
-	buffer[0] = '\0';
+	keyer_append(buffer);
     }
 }

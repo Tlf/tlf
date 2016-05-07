@@ -35,6 +35,7 @@
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
+#include "write_keyer.h"
 
 #define BUFSIZE   81
 char buffer[BUFSIZE];
@@ -239,8 +240,6 @@ void sendbuf(void)
     extern int searchflg;
     extern char termbuf[];
     extern char backgrnd_str[];
-    extern char wkeyerbuffer[];
-    extern int data_ready;
     extern int keyerport;
     extern int simulator;
     extern int simulator_mode;
@@ -296,45 +295,30 @@ void sendbuf(void)
 
 	if (trxmode == DIGIMODE) {
 
-	    if (data_ready != 1) {
-		if (keyerport == MFJ1278_KEYER) {
-		    int i = 0;
-		    for (i = 0; i < strlen(buffer); i++)
-			if (buffer[i] == '\n')
-			    buffer[i] = 13;
-		    for (i = 0; i < strlen(buffer); i++)
-			if (buffer[i] == 123)
-			    buffer[i] = 20;	/* ctrl-t */
-		    for (i = 0; i < strlen(buffer); i++)
-			if (buffer[i] == 125)
-			    buffer[i] = 18;	/* ctrl-r */
-		}
-		strcat(wkeyerbuffer, buffer);
-		buffer[0] = '\0';
-		data_ready = 1;
-	    } else
-		buffer[0] = '\0';
+	    if (keyerport == MFJ1278_KEYER) {
+		int i = 0;
+		for (i = 0; i < strlen(buffer); i++)
+		    if (buffer[i] == '\n')
+			buffer[i] = 13;
+		for (i = 0; i < strlen(buffer); i++)
+		    if (buffer[i] == 123)
+			buffer[i] = 20;	/* ctrl-t */
+		for (i = 0; i < strlen(buffer); i++)
+		    if (buffer[i] == 125)
+			buffer[i] = 18;	/* ctrl-r */
+	    }
+	    keyer_append(buffer);
 	}
 
 	if (trxmode == CWMODE) {
 
-	    if (data_ready != 1) {
-		if (keyerport == MFJ1278_KEYER) {
-		    int i = 0;
-		    for (i = 0; i < strlen(buffer); i++)
-			if (buffer[i] == '\n')
-			    buffer[i] = 13;
-		}
-		strcat(wkeyerbuffer, buffer);
-		if (keyerport == NET_KEYER) {
-		    netkeyer(K_MESSAGE, wkeyerbuffer);
-		    wkeyerbuffer[0] = '\0';
-		    data_ready = 0;
-		} else
-		    data_ready = 1;
-
-	    } else
-		buffer[0] = '\0';
+	    if (keyerport == MFJ1278_KEYER) {
+		int i = 0;
+		for (i = 0; i < strlen(buffer); i++)
+		    if (buffer[i] == '\n')
+			buffer[i] = 13;
+	    }
+	    keyer_append(buffer);
 	}
 
 	if (simulator == 0) {
@@ -356,7 +340,7 @@ void sendbuf(void)
 void sendmessage(const char *msg)
 {
     if (strlen(msg) != 0) {
-	g_strlcat(buffer, msg, sizeof(buffer));
+	g_strlcpy(buffer, msg, sizeof(buffer));
 	sendbuf();
     }
 }

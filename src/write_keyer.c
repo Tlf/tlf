@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <glib.h>
 
 #include "clear_display.h"
 #include "netkeyer.h"
@@ -30,35 +32,63 @@
 
 #include "fldigixmlrpc.h"
 
+char wkeyerbuffer[400] = "";
+int data_ready = 0;
+
+pthread_mutex_t keybuffer_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+/** append string to key buffer*/
+void keyer_append(const char *string) {
+    pthread_mutex_lock( &keybuffer_mutex );
+    g_strlcat(wkeyerbuffer, string, sizeof(wkeyerbuffer));
+    data_ready = 1;
+    pthread_mutex_unlock( &keybuffer_mutex );
+}
+
+/** flush key buffer */
+void keyer_flush() {
+    pthread_mutex_lock( &keybuffer_mutex );
+    wkeyerbuffer[0] = '\0';
+    data_ready = 0;
+    pthread_mutex_unlock( &keybuffer_mutex );
+}
+
+
+/** write key buffer to keying device
+ *
+ * should be called periodically from the background task */
 int write_keyer(void)
 {
 
-    extern char wkeyerbuffer[];
     extern int trxmode;
     extern int keyerport;
-    extern int data_ready;
     extern char controllerport[];
     extern char rttyoutput[];
 
     FILE *bfp = NULL;
     int rc;
     char outstring[420] = "";	// this was only 120 char length, but wkeyerbuffer is 400
+    char *tosend = NULL;
 
     if (trxmode != CWMODE && trxmode != DIGIMODE)
 	return (1);
 
+    pthread_mutex_lock( &keybuffer_mutex );
     if (data_ready == 1) {
+	/* allocate a copy of the data and free the buffer */
+	tosend = g_strdup(wkeyerbuffer);
+	wkeyerbuffer[0] = '\0';
+	data_ready = 0;
+    }
+    pthread_mutex_unlock( &keybuffer_mutex );
+
+    if (tosend != NULL) {
 
 	if (keyerport == FLDIGI && trxmode == DIGIMODE) {
-	    fldigi_send_text(wkeyerbuffer);
-	    wkeyerbuffer[0] = '\0';
-	    data_ready = 0;
+	    fldigi_send_text(tosend);
 	}
-	else {
-	if (keyerport == NET_KEYER) {
-	    netkeyer(K_MESSAGE, wkeyerbuffer);
-	    wkeyerbuffer[0] = '\0';
-	    data_ready = 0;
+	else if (keyerport == NET_KEYER) {
+	    netkeyer(K_MESSAGE, tosend);
 
 	} else if (keyerport == MFJ1278_KEYER) {
 	    if ((bfp = fopen(controllerport, "a")) == NULL) {
@@ -67,10 +97,7 @@ int write_keyer(void)
 		trxmode = SSBMODE;
 		clear_display();
 	    } else {
-		fputs(wkeyerbuffer, bfp);
-		wkeyerbuffer[0] = '\0';
-		data_ready = 0;
-
+		fputs(tosend, bfp);
 		fclose(bfp);
 	    }
 
@@ -79,19 +106,16 @@ int write_keyer(void)
 		mvprintw(24, 0, "No modem file specified!");
 	    }
 	    // when GMFSK used (possible Fldigi interface), the trailing \n doesn't need
-	    if (wkeyerbuffer[strlen(wkeyerbuffer)-1] == '\n') {
-		wkeyerbuffer[strlen(wkeyerbuffer)-1] = '\0';
+	    if (tosend[strlen(tosend)-1] == '\n') {
+		tosend[strlen(tosend)-1] = '\0';
 	    }
 	    sprintf(outstring, "echo -n \"\n%s\" >> %s",
-		    wkeyerbuffer, rttyoutput);
+		    tosend, rttyoutput);
 	    rc = system(outstring);
-
-	    wkeyerbuffer[0] = '\0';
-	    data_ready = 0;
-	    }
 	}
+
+	g_free (tosend);
+	tosend = NULL;
     }
-
     return (0);
-
 }

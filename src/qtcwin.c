@@ -76,9 +76,6 @@ extern int trxmode;
 extern int keyerport;
 extern int nr_qsos;
 
-extern char wkeyerbuffer[];
-extern int data_ready;
-
 static int record_run = -1;		/* was recording already started? */
 
 t_qtclist qtclist;
@@ -771,8 +768,7 @@ void qtc_main_panel(int direction) {
 			    qtclist.qtclines[ql].flag = 1;
 
 			}
-			strncpy(wkeyerbuffer, tmess, strlen(tmess));
-			data_ready = 1;
+			keyer_append(tmess);
 			write_keyer();
 			wattrset(qtcwin, LINE_INVERTED);
 			mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");

@@ -26,6 +26,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "write_keyer.h"
 
 
 int cleanup(void)
@@ -35,7 +36,6 @@ int cleanup(void)
     extern char my_rst[];
     extern char his_rst[];
     extern int defer_store;
-    extern char wkeyerbuffer[];
 
     int k = 0;
 
@@ -57,7 +57,7 @@ int cleanup(void)
     his_rst[1] = '9';
     my_rst[1] = '9';
     defer_store = 0;
-    wkeyerbuffer[0] = '\0';	// stop keyer ??
+    keyer_flush();
 
     return (0);
 }

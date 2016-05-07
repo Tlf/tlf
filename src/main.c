@@ -312,8 +312,6 @@ int weight = 0;
 char weightbuf[4];
 char tonestr[5] = "600";
 int cqdelay = 8;
-char wkeyerbuffer[400];
-int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
 int k_tune;
 int k_pin14;
