@@ -36,6 +36,11 @@
 
 #ifdef HAVE_LIBHAMLIB
 # include <hamlib/rig.h>
+#ifdef RIG_PASSBAND_NOCHANGE
+#define TLF_DEFAULT_PASSBAND RIG_PASSBAND_NOCHANGE
+#else
+#define TLF_DEFAULT_PASSBAND RIG_PASSBAND_NORMAL
+#endif
 #endif
 
 int gettxinfo(void)
@@ -163,12 +168,12 @@ int gettxinfo(void)
 		    retval =
 			rig_set_mode(my_rig, RIG_VFO_CURR,
 				     RIG_MODE_LSB,
-				     RIG_PASSBAND_NORMAL);
+				     TLF_DEFAULT_PASSBAND);
 		else
 		    retval =
 			rig_set_mode(my_rig, RIG_VFO_CURR,
 				     RIG_MODE_USB,
-				     RIG_PASSBAND_NORMAL);
+				     TLF_DEFAULT_PASSBAND);
 
 		if (retval != RIG_OK) {
 		    mvprintw(24, 0,
@@ -179,7 +184,7 @@ int gettxinfo(void)
 	    } else if (trxmode == DIGIMODE) {
 		retval =
 		    rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,
-				 RIG_PASSBAND_NORMAL);
+				 TLF_DEFAULT_PASSBAND);
 
 		if (retval != RIG_OK) {
 		    mvprintw(24, 0,
@@ -189,12 +194,12 @@ int gettxinfo(void)
 		}
 
 	    } else {
-//                                      retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  RIG_PASSBAND_NORMAL);
+//                                      retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  TLF_DEFAULT_PASSBAND);
 		if (cw_bandwidth == 0) {
 			retval =
 			    rig_set_mode(my_rig, RIG_VFO_CURR,
 					 RIG_MODE_CW,
-					 RIG_PASSBAND_NORMAL);
+					 TLF_DEFAULT_PASSBAND);
 		} else {
 			retval =
 			    rig_set_mode(my_rig, RIG_VFO_CURR,
@@ -219,7 +224,7 @@ int gettxinfo(void)
 	if (cw_bandwidth == 0) {
 	    retval =
 		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
-				 RIG_PASSBAND_NORMAL);
+				 TLF_DEFAULT_PASSBAND);
 	} else {
 	    retval =
 		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
@@ -240,11 +245,11 @@ int gettxinfo(void)
 	if (freq > 13999.9)
 	    retval =
 		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_USB,
-			     RIG_PASSBAND_NORMAL);
+			     TLF_DEFAULT_PASSBAND);
 	else
 	    retval =
 		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,
-			     RIG_PASSBAND_NORMAL);
+			     TLF_DEFAULT_PASSBAND);
 
 	if (retval != RIG_OK) {
 	    mvprintw(24, 0, "Problem with rig link!\n");
