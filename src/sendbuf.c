@@ -36,8 +36,8 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
-
-char buffer[81];
+#define BUFSIZE   81
+char buffer[BUFSIZE];
 
 /** shorten CW numbers */
 char short_number( char c) {
@@ -48,6 +48,40 @@ char short_number( char c) {
 	if (c == '0')  return 'T';
     }
     return c;
+}
+
+/*
+ * Replace in-place occurences of 'what' in 'buf' by 'rep'.
+ * Maximum 'count' replacements are done.
+ *
+ */
+void replace_n(char *buf, const char *what, const char *rep, int count) {
+    char tmp[BUFSIZE];
+    char *p = buf;
+    char *q;
+    int len_what = strlen(what);
+    int len_rep = strlen(rep);
+
+    if (len_what == 0) {
+        return;
+    }
+
+    while (count-- > 0 && ((q = strstr(p, what)) != NULL)) {
+        strcpy(tmp, q + len_what);
+        int available = BUFSIZE - (q - buf);
+        strncpy(q, rep, available);
+        available -= len_rep;
+        strncpy(q + len_rep, tmp, available);
+        p = q + len_rep;
+    }
+}
+
+void replace_1(char *buf, const char *what, const char *rep) {
+    replace_n(buf, what, rep, 1);
+}
+
+void replace_all(char *buf, const char *what, const char *rep) {
+    replace_n(buf, what, rep, 999);
 }
 
 void ExpandMacro(void) {
@@ -64,124 +98,64 @@ void ExpandMacro(void) {
     extern int lan_active;
     extern int exchange_serial;
 
-    size_t loc;
-    int i, nr;
-    static char comstr[80] = "";
-    char comstr3[5];
+    int i;
+    static char comstr[BUFSIZE] = "";
     static char qsonroutput[5] = "";
     static char rst_out[4] = "";
 
-    comstr[0] = '\0';
 
-    loc = strcspn(buffer, "%");	/* mycall */
+    strcpy(comstr, call); 
+    comstr[strlen(call) - 1] = '\0'; // skip trailing \n
+    replace_all(buffer, "%", comstr);   /* mycall */
 
-    while (strlen(buffer) > loc) {
 
-	if (loc != 0)
-	    strncat(comstr, buffer, loc);
-	strncat(comstr, call, (strlen(call) - 1));
-	strcat(comstr, buffer + loc + 1);
-	strcpy(buffer, comstr);
-	strcpy(comstr, "");
-
-	loc = strcspn(buffer, "%");
-    }
-
-    loc = strcspn(buffer, "@");	/* his call */
-
-    while (strlen(buffer) > loc) {
-
-	if (loc != 0)
-	    strncat(comstr, buffer, loc);
-	if (strlen(hiscall_sent) == 0) {
-	    strcat(comstr, hiscall);
-	} else {
-	    strcat(comstr, hiscall + strlen(hiscall_sent));
+    if (NULL != strstr(buffer, "@")) {
+        char *p = hiscall + strlen(hiscall_sent);
+	if (strlen(hiscall_sent) != 0) {
 	    hiscall_sent[0] = '\0';
 	    early_started = 0;
 //                              sending_call = 0;
 	}
-	strcat(comstr, buffer + loc + 1);
-	strcpy(buffer, comstr);
-	strcpy(comstr, "");
-
-	loc = strcspn(buffer, "@");
+        replace_1(buffer, "@", p);   /* his call, 1st occurence */
+        replace_all(buffer, "@", hiscall);   /* his call, further occurrences */
     }
 
-    loc = strcspn(buffer, "[");	/* his RST */
 
-    while (strlen(buffer) > loc) {
+    strncpy(rst_out, his_rst, 4);
+    rst_out[1] = short_number(rst_out[1]);
+    rst_out[2] = short_number(rst_out[2]);
+    rst_out[3] = '\0';
 
-	if (loc != 0)
-	    strncat(comstr, buffer, loc);
+    replace_all(buffer, "[", rst_out);   /* his RST */
 
-	strncpy(rst_out, his_rst, 4);
 
-	rst_out[1] = short_number(rst_out[1]);
-	rst_out[2] = short_number(rst_out[2]);
+    if (NULL != strstr(buffer, "#")) {
+        int leading_zeros = 0;
+        int lead = 1;
+        for (i = 0; i <= 4; i++) {
+            if (lead && qsonrstr[i] == '0') {
+                ++leading_zeros;
+            } else {
+                lead = 0;
+            }
+            qsonroutput[i] = short_number(qsonrstr[i]);
+        }
+        qsonroutput[4] = '\0';
 
-	strcat(comstr, rst_out);
-	strcat(comstr, buffer + loc + 1);
-	strcpy(buffer, comstr);
-	strcpy(comstr, "");
-
-	loc = strcspn(buffer, "[");
-    }
-
-    strcpy(qsonroutput, qsonrstr);
-
-    for (i = 0; i <= 4; i++) {
-	qsonroutput[i] = short_number(qsonroutput[i]);
-    }
-
-    loc = strcspn(buffer, "#");	/* serial nr */
-
-    while (strlen(buffer) > loc) {
-
-	if (loc != 0)
-	    strncat(comstr, buffer, loc);
-
-	if (noleadingzeros == 1) {
-
-	    nr = atoi(qsonroutput);
-	    sprintf(comstr3, "%d", nr);
-	    strcat(comstr, comstr3);
-
-	} else {
-	    if (qsonroutput[0] == '0' || qsonroutput[0] == 'T')
-		strcat(comstr, qsonroutput + 1);
-	    else
-		strcat(comstr, qsonroutput);
+	if (noleadingzeros != 1 && leading_zeros > 1) {
+            leading_zeros = 1;
 	}
 
-	strcat(comstr, buffer + loc + 1);
-
-	strcpy(buffer, comstr);
+        replace_all(buffer, "#", qsonroutput + leading_zeros);   /* serial nr */
 
 	if ((lan_active == 1) && (exchange_serial == 1)) {
 	    strncpy(lastqsonr, qsonrstr, 5);
 	    send_lan_message(INCQSONUM, qsonrstr);
 	}
-
-	strcpy(comstr, "");
-
-	loc = strcspn(buffer, "#");
     }
 
-    loc = strcspn(buffer, "!");	/* his serial nr/comment  */
 
-    while (strlen(buffer) > loc) {
-
-	if (loc != 0)
-	    strncat(comstr, buffer, loc);
-	strncat(comstr, comment, strlen(comment));
-
-	strcat(comstr, buffer + loc + 1);
-	strcpy(buffer, comstr);
-	strcpy(comstr, "");
-
-	loc = strcspn(buffer, "!");
-    }
+    replace_all(buffer, "!", comment);
 }
 
 
