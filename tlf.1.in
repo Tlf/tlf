@@ -1070,8 +1070,8 @@ projection and center the map on your QTH.
 .
 .TP
 .BI POWERMULT= power_multiplier
-Use this value to multiply the final points.  If the contest rule allows to
-use the power multiplier (e.g. Stewperry, ARRL-FD), you can pass that
+Use this value to multiply the final points.  If the contest rule allows one
+to use the power multiplier (e.g. Stewperry, ARRL-FD), you can pass that
 here.
 .IP
 \fBNB\fR: The type of
@@ -1290,7 +1290,7 @@ Points for working a station in other continents.
 .
 .TP
 .B 2EU3DX_POINTS
-Deprectated.  Use
+Deprecated.  Use
 .B MY_CONTINENT_POINTS
 and
 .B DX_POINTS
@@ -1535,7 +1535,7 @@ bandmap, if the TRX frequency is equal with bandmap freq.
 .TP
 .B BMAUTOADD
 If set, with \fBRADIO_CONTROL\fR and \fBBANDMAP\fR (mandatory) options, Tlf will add the callsign from
-callsign field, if its lenght is 3 character at least. Use 'S'kip dupes in 
+callsign field, if its length is 3 character at least. Use 'S'kip dupes in
 BANDMAP settings to control if it should also grab dupes.
 .
 .SH FILES
