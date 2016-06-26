@@ -13,26 +13,45 @@ Radiosport
 .SH DESCRIPTION
 .
 .B @PACKAGE_NAME@
-is a console (ncurses) mode general purpose CW keyer, logging and contest
-program for amateur radio operators. It supports the CQWW, the WPX, the
-ARRL-DX, the ARRL-FD, the STEWPERRY, the PACC and the EU SPRINT contests
-as well as a lot more basic contests, general QSO and DXpedition mode.
+is a console (ncurses) mode general purpose
+.SM CW
+keyer, logging and contest program for amateur radio operators. It supports the
+.SM CQWW,
+.SM WPX,
+.SM ARRL-DX,
+.SM ARRL-FD,
+.SM STEWPERRY,
+.SM PACC
+and
+.SM EU SPRINT
+contests as well as a lot more basic contests, general QSO and DXpedition mode.
 From version 1.2.0 onward there is also support for the FOC Marathon.  It
-interfaces with a morse code generator, a number of radios via the Hamlib
-library, and with a DX Cluster.  @PACKAGE_NAME@ can project DX cluster data
-into the excellent Xplanet program, written by Hari Nair.
+interfaces with a Morse Code generator, a number of radios via the
+.B Hamlib
+library, and with a
+.B "DX Cluster"
+via telnet or packet radio.  @PACKAGE_NAME@ can project DX cluster data into
+the excellent Xplanet program, written by Hari Nair.
 .P
-Contest operation mimics the popular TR-Log program for DOS, the output
-file is TR-Log compatible.  The log can be exported in ADIF or Cabrillo
+Contest operation mimics the popular
+.B TR-Log
+program for DOS, the output file is TR-Log compatible.  The log can be exported
+in
+.SM ADIF
+or
+.B Cabrillo
 format.
 .P
 The program was written for console mode on purpose, which allows it to run
-on smaller machines, or remotely via SSH or a modem link.
+on smaller machines, or remotely via
+.SM SSH
+or a modem link.
 .P
-Since @PACKAGE_NAME@ version 0.9.21 the cwdaemon 0.9 is fully supported,
-featuring direct mode for the keyboard and output to parallel and serial
-ports and speed and weight control from the keyboard, and band info output
-on the parallel port.
+Since @PACKAGE_NAME@ version 0.9.21 the
+.B cwdaemon
+0.9 is fully supported, featuring direct mode for the keyboard and output to
+parallel and serial ports and speed and weight control from the keyboard, and
+band info output on the parallel port.
 .P
 For radio control @PACKAGE_NAME@ works with Hamlib (version >= 1.2.3), you
 can find it at
@@ -40,9 +59,10 @@ can find it at
 SourceForge.net
 .UE .
 .P
-@PACKAGE_NAME@ provides full TCP/IP networking between @PACKAGE_NAME@
-nodes, syncing/distributing log, packet data, frequency data, local talk,
-serial numbers, time sync etc.
+@PACKAGE_NAME@ provides full
+.SM TCP/IP
+networking between @PACKAGE_NAME@ nodes, syncing/distributing log, packet data,
+frequency data, local talk, serial numbers, time sync etc.
 .P
 .
 .SH OPTIONS
@@ -59,7 +79,9 @@ Start with non-default configuration file:
 @PACKAGE@ \-f PA0R
 .EE
 .IP
-Defaults to logcfg.dat in actual working directory.
+Defaults to
+.I logcfg.dat
+in actual working directory.
 .TP
 .BI \-s\  user:password@host/dir/logfilename
 Synchronize log with other node
@@ -77,38 +99,51 @@ Output version information and exit.
 Verbose startup.
 .TP
 .B \-d
-Debug rigctl.
+Debug
+.B rigctl.
 .TP
 .B \-n
 Start without packet/cluster.
 .TP
 .B \-r
 Start without radio control when user wants to start @PACKAGE_NAME@ without
-modifying logcfg.dat.
+modifying
+.IR logcfg.dat \.
 .
 .SH USAGE
 .
-@PACKAGE_NAME@ has been written for \fBconsole mode\fR. If you want to run
-@PACKAGE_NAME@ from a terminal in X, you will probably get the best results
-if you set \fITERM=linux\fR and use a Linux console terminal.  Both KDE and
-GNOME terminals have a facility to start a Linux console in an X terminal
-as does Xfce.
+@PACKAGE_NAME@ has been written for
+.BR "console mode" \.
+If you want to run @PACKAGE_NAME@ from a terminal in
+.BR X ,
+you will probably get the best results if you set
+.BI TERM= linux
+and use a Linux console terminal.  Both KDE and GNOME terminals have a facility
+to start a Linux console in an X terminal as does Xfce.
 .P
-By default, Xterm will give unreadable colours.  You will have to set
-different colours in the logcfg.dat file.  Also F1 does not work in Xterm,
-which is not compatible with Linux consoles.  Other keys (sometimes F4 and
-F5) may not work in your Xterm, YMMV.
+By default, Xterm may give unreadable colours.  If so, you will have to set
+different colours in
+.IR logcfg.dat \.
 .P
-There are excellent results with the latest KDE, GNOME, and Xfce consoles
-(I prefer vi colours).  As @PACKAGE_NAME@ uses ncurses to format its
-display you must use a proper font.  (The Linux font works o.k.,
-Inconsolata does as well).  If you have problems, try the linux text
-console first and work from there.
+Recent efforts have resulted in improved keyboard handling.  If you find keys
+that do not work, the developers would like to receive your report of which
+keys and which terminal have the problem.  Please send the report to the
+mailing list shown in the
+.B BUGS
+ section below.
+.P
+There are excellent results with the latest KDE, GNOME, and Xfce consoles (vi
+colours are preferred by some).  As @PACKAGE_NAME@ uses ncurses to format its
+display you must use a proper font.  (The Linux font works o.k., Inconsolata
+does as well).  If you have problems, try the linux text console first and work
+from there.
 .P
 Normally you start or restart @PACKAGE_NAME@ in fast mode with
-\fB@PACKAGE@\fR.  During debugging of a logcfg.dat file you can start in
-verbose mode, to have a look at the startup messages.  From @PACKAGE_NAME@
-version 0.9.3 you can load different config files with:
+.BR @PACKAGE@ \.
+During debugging of a
+.I logcfg.dat
+file you can start in verbose mode, to have a look at the startup messages.
+From @PACKAGE_NAME@ version 0.9.3 you can load different config files with:
 .
 .IP
 .EX
@@ -116,13 +151,23 @@ version 0.9.3 you can load different config files with:
 .EE
 .
 .P
-If you have the packet cluster enabled you will first see the packet
-screen.  Log in with your callsign and switch to @PACKAGE_NAME@ with
-\fB:\fR<Enter>.  You can come back to the packet screen later with the same
+If you have the packet cluster enabled you will first see the packet screen (if
+you are using telnet and you have provided your callsign in
+.IR logcfg.dat \,
+you will be automatically logged in switched to the mail logging screen).  Log
+in with your callsign, if needed, and switch to @PACKAGE_NAME@ with
+.B :
+\*(lqEnter\*(rq.  You can come back to the packet screen later with the same
 command from the call input field.
 .P
-You can exit and close @PACKAGE_NAME@ with the \fB:EXIt\fR or \fB:QUIT\fR
-commands or with \fBCtrl-C\fR, \fBAlt-Q\fR or \fBAlt-X\fR.
+You can exit and close @PACKAGE_NAME@ with the
+.B :EXIt
+or
+.B :QUIT
+commands or with
+.BR Ctrl-C ,
+.BR Alt-Q \ or
+.BR Alt-X \.
 .P
 At restart @PACKAGE_NAME@ recalculates the score, which may take some time
 depending on the number of QSOs in the logfile and the speed of your
@@ -135,77 +180,79 @@ on the contest).
 These commands are entered in the
 .B callsign
 field of the main logging screen.  Each command consists of the leading
-\(lq\fB:\fR\(rq and at minimum the upper case characters of the command name plus
-any needed parameters separated by <Space>.
+\(lq:\(rq and at minimum the upper case characters of the command name plus
+any needed parameters separated by \*(lqSpace\*(rq.
 .
 .TP
-.B :ADIf
-Writes the log to an Amateur Data Interchange Format (ADIF) file (*.adif).
+.BR :ADI f
+Writes the log to an Amateur Data Interchange Format (ADIF) file
+.IR logfile.adif \.
 .
 .TP
-.B :CHAr
-Input the number of characters for CW auto-start or 'm' for manual start.
-Possible values are: '0' (off), '2'...'5' or 'm' (manual).  
-After typing as many characters in the input field or after pressing 
-the enter key in manual mode @PACKAGE_NAME@ starts sending 
-the callsign without further
-keystrokes.  You can type in the rest of the call (but quickly).  As soon
-as the sending catches your last typed character @PACKAGE_NAME@
-automatically sends the exchange and the cursor jumps to the exchange
-field.  <Esc> stops sending.  This works only in CW contests in RUN mode.
+.BR :CHA r
+Input the number of characters for CW auto-start or \*(lqm\*(rq for manual
+start. Possible values are: \*(lq0\*(rq (off), \*(lq2\*(rq...\*(lq5\*(rq or
+\*(lqm\*(rq (manual).  After typing as many characters in the input field or
+after pressing the \*(lqEnter\*(rq key in manual mode @PACKAGE_NAME@ starts
+sending the callsign without further keystrokes.  You can type in the rest of
+the call (but quickly).  As soon as the sending catches your last typed
+character @PACKAGE_NAME@ automatically sends the exchange and the cursor jumps
+to the exchange field.  \*(lqEscape\*(rq stops sending.  This works only in CW
+contests in RUN mode.
 .
 .TP
-.B :CHEck
+.BR :CHE ck
 .TQ
-.B :NOCheck
+.BR :NOC heck
 Turn the dupe check window On|Off.
 .
 .TP
-.B :CQDelay
-Change CQDelay (in 1/2 seconds, with Up/Down arrows).
+.BR :CQD elay
+Change Auto_CQ delay (in 1/2 seconds, with Up/Down arrow keys).
 .
 .TP
-.B :CLOff
+.BR :CLO ff
 No cluster information (non-assisted contest operation).
 .
 .TP
-.B :CLUster
+.BR :CLU ster
 .TQ
 .B :MAP
 Show cluster window or bandmap.
 .
 .TP
-.B :CONtest
-Toggle contest mode On/Off.
+.BR :CON test
+Toggle contest mode On|Off.
 .
 .TP
 .B :CTY
 .TQ
-.B :ZONe
+.BR :ZON e
 .TQ
-.B :MULt
-Show needed country multipliers, zones, multipliers per continent (depends
-on the contest).
+.BR :MUL t
+Show needed country multipliers, zones, multipliers per continent (depends on
+the contest).
 .
 .TP
-.B :CWMode
+.BR :CWM ode
 .TQ
-.B :SSBmode
+.BR :SSB mode
 .TQ
-.B :DIGimode
+.BR :DIG imode
 Switch TRX to CW|SSB|Digimode mode.
 .
 .TP
-.B :DEBug_tty
+.BR :DEB ug_tty
 Debug routine for rig communication links.
 .
 .TP
 .B :EDIt
 Edit the log with your favourite editor (the editor (vi[m]|joe|e3|mcedit)
-can be set in logcfg.dat).
+can be set in
+.IR logcfg.dat ).
 .
 .TP
-.B :EXIt
+.BR :EXI t
 .TQ
 .B :QUIT
 Exit @PACKAGE_NAME@ (synonym to
@@ -216,87 +263,99 @@ and
 .BR Alt-X ")."
 .
 .TP
-.B :FILter
+.BR :FIL ter
 Filter cluster info (announce, dx-spots, all).
 .
 .TP
-.B :FREq
+.BR :FRE q
 Show frequency or band/score information of your other stations.
 .
 .TP
-.B :HELp
+.BR :HEL p
 Show online help (displays
-.B help.txt
-from working directory or from @prefix@/share if no local one exists).
+.I help.txt
+from working directory or from
+.I @prefix@/share
+if no local one exists).
 .
 .TP
-.B :INFo
+.BR :INF o
 Show network status.
 .
 .TP
-.B :MESsage
+.BR :MES sage
 Edit CW (Morse Code) messages.
 .
 .TP
-.B :MODe
+.BR :MOD e
 Toggle TRX mode (CW|SSB|DIG).
 .
 .TP
-.B :PACket
+.BR :PACk et
 Switch to the packet terminal.  Switch back to @PACKAGE_NAME@ with
-\(lq\fB:\fR\(rq.
+\(lq:\(rq.
 .
 .TP
-.B :REConnect
+.BR :REC onnect
 Reopens the connection to the DX cluster in case it was disconnected.
 .
 .TP
-.B :REScore
+.BR :RES core
 Recalculates the values in the score window (e.g. after deleting or editing
 QSOs).
 .
 .TP
-.B :RITclear
-Toggle the RIT reset after QSO On/Off.
+.BR :RIT clear
+Toggle the RIT reset after QSO On|Off.
 .
 .TP
 .B :SET
 .TQ
 .B :CFG
-Edit various parameters in logcfg.dat file and reload it.
+Edit various parameters in
+.I logcfg.dat
+file and reload it.
 .
 .TP
-.B :SCAn
-Enter the SCAN function (return with <Esc>).
+.BR :SCA n
+Enter the SCAN function (return with \*(lqEscape\*(rq).
 .
 .TP
-.B :SCOre
-Toggle the score window On/Off.
+.BR :SCO re
+Toggle the score window On|Off.
 .
 .TP
-.BI :SCVolume\  dd
-Adjust the soundcard volume for the sidetone (Up/Down).  Range: 0-99.
+.BR :SCV olume
+Adjust the soundcard volume for the sidetone (Up|Down).  Range: 0-99.
 .
 .TP
-.B :SIMulator
-Toggle simulator mode.  In simulator mode you can work a complete
-CQWW CW contest in TR-Log mode.  Set \fBCONTEST=\fIcqww\fR.
+.BR :SIM ulator
+Toggle simulator mode.  In simulator mode you can work a complete CQWW CW
+contest in TR-Log mode.  Set \fBCONTEST=\fIcqww\fR.
 .
 .TP
-.B :SOUnd
-The SOUND recorder is a utility to record the voice keyer messages and
-enables you to record the complete contest in chunks of 1 hour to the hard
-drive.  It does this in the directory: ~/@PACKAGE@/soundlogs.  The sound
-recorder uses a script called
+.BR :SOU nd
+The SOUND recorder is a utility to record the voice keyer messages and enables
+you to record the complete contest in chunks of 1 hour to the hard drive.  It
+does this in the directory:
+.IR $HOME/@PACKAGE@/soundlogs \.
+The sound recorder uses a script called
 .B soundlog
-which has to be located in ~/@PACKAGE@/soundlogs.  It can be found in the
+which has to be located in
+.IR $HOME/@PACKAGE@/soundlogs \.
+It can be found in the
 .B scripts
-directory.  If your soundcard is different from /dev/dsp you can use the
+directory.  If your soundcard is different from
+.I /dev/dsp
+you can use the
 .B SC_DEVICE
-parameter in the logcfg.dat file (my soundcard is at SC_DEVICE=/dev/dsp1).
-The file extension is .au, the Sun ulaw format.  The recorder produces < 60
-MB per hour.  This means you can record a complete CQWW in less than 3 GB.
-If your disk cannot handle this, FTP the soundfile to a server every hour.
+parameter in the
+.I logcfg.dat
+file.  The file extension is
+.IR .au ,
+the Sun ulaw format.  The recorder produces < 60 MB per hour.  This means you
+can record a complete CQWW in less than 3 Giga Bytes. If your disk cannot
+handle this, FTP the soundfile to a server every hour.
 .IP
 .BR "F1 ... F12" ,\  s ,\  c ,\ ...
 will record the voice keyer message for that key.
@@ -338,56 +397,226 @@ interval period in length.
 .RE
 .IP
 Once started the recorder will run until the lock file
-.B ~/.VRlock
+.BI $HOME /.VRlock
 is removed.
 .
 .TP
-.B :SYNc
-Synchronize the logfile of this node with the logfile pointed to by
-parameter SYNCFILE=<user:password@host/dir/logfile>.  @PACKAGE_NAME@ will
+.BR :SYN c
+Synchronize the logfile of this node with the logfile pointed to by parameter
+SYNCFILE=<user:password@host/dir/logfile>.  @PACKAGE_NAME@ will
 .B wget
-the logfile from the relevant node, make a dated backup of your local
-logfile, and merge the 2 files.  The score will be recalculated.
+the logfile from the relevant node, make a dated backup of your local logfile,
+and merge the 2 files.  The score will be recalculated.
 .
 .TP
-.BI :TONe\  [dd]d
+\fB:TON\fRe \fI[dd]d\fR
 Set PC sidetone frequency in Hertz.  Range: 300-900, 0 = Off.
 .
 .TP
-.B :TRXcontrol
-Toggle rig control On/Off.  Default is Off (only makes sense with rig control
-capability)
+.BR :TRX control
+Toggle rig control On|Off.  Default is Off unless
+.B RADIO_CONTROL
+is given in
+.I logcfg.dat
+(only makes sense with rig control capability).
 .
 .TP
-.B :VIEw
+.BR :VIE w
 View the log with
 .BR less (1).
 .
 .TP
-.B :WRIte
+.BR :WRIt e
 Write cabrillo file according to specified format (see
-.B CABRILLO=
-statement).
+.B CABRILLO
+statement in the RULES section).
 .
 .SH KEYS
 .
-The keymap refers to the Linux text console.  It may be slightly different
-on X terminals.  Turn off any key recognition by the terminal for its own
-purposes (menu access, help display, etc.).  Pay special attention to the
-F1-F12 and Alt-<char> keys.  Moreover on some systems you must set
-\fB\TERM=linux\fR\ or \fB\TERM=rxvt\fR.  This also works under VNC.
+Work has been ongoing to unify the key map between the Linux text console and
+the various X terminals.  It may be slightly different on certain X terminals
+depending on which keys they consume for their own use.  Turn off any key
+recognition by the terminal for its own purposes (menu access, help display,
+etc.) if possible.  Pay special attention to the F1-F12 and Alt-<char> keys.
+Moreover, on some systems you must set the
+.BI TERM= linux
+or
+.BI TERM= rxvt
+environment variables.  This also works under VNC.
+.P
+Certain key combinations will probably not be useable as the Linux console
+consumes Alt-F1 through
+.RI Alt-F x
+(often F7, but could be greater) for switching its virtual consoles.
+Likewise, the various desktop environments consume key combinations for their
+own use.  Ctrl-F1 through
+.RI Ctrl-F x
+are used to switch desktop workspaces.
+.RI Alt-F x
+combinations are used for various desktop features and are unavailable
+for @PACKAGE_NAME@ use.
+.P
+Some desktop terminal emulators are capable of being configured to allow the
+application running in them to get all of the keys the desktop environment
+does not consume.  In testing good choices seem to be Gnome Terminal, Rox
+Terminal, or the classic Xterm (although its color representation differs from
+the Linux console and other terminal emulators).  Xfce Terminal is known to
+consume F11 and Ctrl-PageUp and Ctrl-PageDown.  The @PACKAGE_NAME@ developers
+have implemented Alt-PageUp and Alt-PageDown as a work-around for the Ctrl
+counterparts.  Reports of success with other terminals are welcome.
+.
+.SS Call Input and Exchange Fields
+.
+The Call Input and Exchange Fields are the two main entry fields of
+@PACKAGE_NAME@ where the majority of the keyboard entry takes place.  The call
+input field is active when @PACKAGE_NAME@ completes its initialization and
+presents the main screen.
+.P
+Most key sequences are the same in both fields.  Differences are noted as
+necessary.
+.
+.TP
+.BR A-Z ,\  0-9 ,\  /
+\fBCall input:\fR ASCII letters, numerals, and the '/' characters that make up
+an internationally recognized amateur radio callsign plus temporary location
+identifiers.  Spaces are not allowed.
+.IP
+\fBExchange:\fR information provided by the other station possibly separated by
+spaces, e.g., ARRL Field Day and ARRL Sweepstakes.
+.
+.TP
+.B Space
+Switches from call input to exchange field.  Separates exchange field elements
+when multiple exchange elements must be entered, e.g., ARRL Field Day and ARRL
+Sweepstakes.
+.
+.TP
+.B Tab
+Switch between call input and exchange fields (jump back to call input from
+exchange field).
+.
+.TP
+.B Enter
+Smart key depending on contest mode.
+.
+.IP
+@PACKAGE_NAME@ follows the TR operating style which has two modes, CQ and S&P.
+.IP
+CQ mode is used for \*(lqrunning\*(rq, i.e., staying on one frequency and
+having other stations answer your call.
+.br
+S&P mode is for tuning up or down the band and answering the calls of other
+stations.
+.
+.IP
+.B CQ Mode:
+.RS 7
+.IP \(bu 2
+With the call input field empty sends the F12 message (Auto CQ).
+.IP \(bu 2
+With characters in the call input field, answers the calling station by sending
+the F5 message (HIS) followed by the F3 message (RST) and moves the cursor to
+the exchange field.
+.IP \(bu 2
+If the exchange field is empty, repeats the F5 and F3 messages.
+.IP \(bu 2
+After the exchange information received from the other station is entered,
+sends the CQ_TU_MSG message, logs the QSO, and the cursor is returned to the
+call input field to answer the next call.
+.RE
+.
+.IP
+.B S&P Mode:
+.RS 7
+.IP \(bu 2
+With the call input field empty sends the F6 message (MY).
+.IP \(bu 2
+If the exchange field is empty sends the F6 message (MY).
+.IP \(bu 2
+With characters in the call input field sends the F6 message (MY) and moves the
+cursor to the exchange field.
+.IP \(bu 2
+Once the exchange has been received, sends the F4 message (73) followed by the
+F3 message (RST), logs the QSO, and the cursor is returned to the call input
+field to answer the next call.
+.RE
+.
+.TP
+.B Backspace
+Erases the character to the left of the cursor and moves the cursor one
+position to the left.
+.
+.TP
+.B Escape
+Stop CW transmission, clears characters, returns to call input field, keyboard
+off (universal undo).
+.IP
+As an example, characters have been entered in both the call input and
+exchange fields, the cursor is in the exchange field, and the transmission of
+a CW message is in progress.  The first press of \*(lqEscape\*(rq will stop
+the CW transmission and clear the exchange field and position the cursor to
+the leftmost position of the exchange field.  The second press of
+\*(lqEscape\*(rq will move the cursor to the right of the last character in
+the call input field.  The third press of \*(lqEscape\*(rq will clear the call
+input field.
+.
+.TP
+.BR \(<-\  (Left-Arrow)
+Change to next band lower or wrap to highest band if already on the lowest band
+when callsign field empty.
+.IP
+Enter edit mode if one or more characters are present and move the cursor to
+the left of the rightmost character.
+.
+.TP
+.BR \(->\  (Right-Arrow)
+Change to next band higher or wrap to the lowest band if already on the highest
+band when call input field is empty.
+.
+.IP
+If both key combinations do not working try ':cqd' instead.
+.
+.TP
+.B F1
+In CQ mode, send message F1 (CQ).
+.br
+In S&P mode send message F6 (MY).
+.
+.TP
+.B F2-F11
+Send CW, RTTY or VOICE messages 2 through 11.
+.
+.TP
+.B F12
+Start
+.B Auto_CQ
+(only from call input field).  Sends F12 message repeatedly pausing for Auto_CQ
+delay time between messages.  Auto_CQ is cancelled with first character entry
+into the call input field.
+.
+.TP
+.BR +\  (Plus)
+Toggle between the CQ and S&P modes.
 .
 .TP
 .B PgUp
 Increase CW (Morse Code) speed (from call and exchange fields).
 .IP
-If field is not empty and CHANGE_RST is set: change RST value.
+If the cursor is in the call input field and it is not empty and CHANGE_RST is
+set: increase his S value (the leftmost of the RST pair).
+.IP
+If the cursor is in the exchange field and it is not empty and CHANGE_RST is
+set: increase my S value (the rightmost of the RST pair).
 .
 .TP
 .B PgDown
-Decrease CW (Morse Code) speed (from call and exchange fields).
+Decrease CW (Morse Code) speed (from call input and exchange fields).
 .IP
-If field is not empty and CHANGE_RST is set: change RST value.
+If the cursor is in the call input field and it is not empty and CHANGE_RST is
+set: decrease his S value (the leftmost of the RST pair).
+.IP
+If the cursor is in the exchange field and it is not empty and CHANGE_RST is
+set: decrease my S value (the rightmost of the RST pair).
 .
 .TP
 .B Ctrl-PgUp
@@ -408,54 +637,6 @@ As some terminals, Xfce Terminal is one such, consume
 Ctrl-PageUp/Ctrl-PageDown, the Alt-key combinations allow for setting the
 Auto_CQ delay pause length.
 .
-.IP
-If both key combinations do not working try ':cqd' instead.
-.
-.TP
-.B F1
-In CQ mode, send message 1 (CQ message).  In S&P mode send message
-6 (my callsign).
-.
-.TP
-.B F2-F11
-Send CW, RTTY or VOICE messages 2 through 11.
-.
-.TP
-.B F12
-Start Auto_CQ (sends F12 message).
-.
-.TP
-.B Tab
-Switch between call input and exchange fields.
-.
-.TP
-.B Space
-Switch from call input to exchange field.
-.
-.TP
-.B Backspace
-Erases the character to the left of the cursor and moves it one position to the
-left.  Remaining characters are evaluated for 
-.
-.TP
-.BR +\  (Plus)
-Toggle between CQ (calling CQ on a frequency) and S&P (tuning and working other
-stations calling CQ) modes (TR-Log mode) or send F3 message + log QSO (CT mode).
-.
-.TP
-.BR \(<-\  (Left-Arrow)
-Change band if callsign field empty (enter edit mode if callsign present,
-leave edit mode with <Enter> or <Esc>).
-.
-.TP
-.BR \(->\  (Right-Arrow)
-Change band.
-.
-.TP
-.B Enter
-Smart key for contest mode: Calls CQ, Calls station, Sends exchange, Logs
-the QSO.
-.
 .TP
 .BR ?\  (Query)
 In CW or DIGIMODE sends the partial call followed by " ?".  In VOICE mode
@@ -468,10 +649,6 @@ Insert note in log.
 .TP
 .BR ,\  (comma)
 Activate Morse Keyboard.  Also Ctrl-K.
-.
-.TP
-.B Escape
-Return to call input field, keyboard off, stop CW, reset call and exchange (universal undo).
 .
 .TP
 .BR \(dq\  "(Double quotation)"
@@ -507,7 +684,7 @@ Log QSO without CW output.
 .
 .IP
 In RTTY (DIGIMODE), keyboard mode switch controller to command mode
-(back to operating mode with \(aqK <Enter>\(aq.
+(back to operating mode with \(aqK \*(lqEnter\*(rq\(aq.
 .
 .TP
 .BR #\  (Hash)
@@ -518,12 +695,14 @@ Transceiver VFO frequency \(-> mem, mem \(-> transceiver VFO frequency.
 Get a new shell.  Come back with \(aqexit\(aq.
 .
 .TP
-.BR Alt-,
+.B Alt-,
 .TQ
 .BR .\  (Period)
-Change bandmap filter configuration.  You can filter to show spots from all
-or own band only, from all/own mode only and if you want to see dupes or
-not (see the help display).
+Change bandmap filter configuration.  You can filter to show spots from all or
+own band only, from all/own mode only and if you want to see dupes or not (see
+the help (
+.B Alt-H
+) display).
 .
 .TP
 .B Ctrl-A
@@ -531,14 +710,14 @@ Add a spot to bandmap and broadcast it on the local network.
 .
 .TP
 .B Ctrl-B
-Send a spot to the DX Cluster.
+Send a spot to the DX Cluster (a connection to a DX cluster must exit).
 .
 .TP
 .B Ctrl-C
 .TQ
 .B Ctrl-D
-Exit @PACKAGE_NAME@ (synonym to
-.BR :EXIt ,
+Exit @PACKAGE_NAME@ (synonyms to
+.BR :EXI "t ,"
 .BR :QUIT ,
 .BR Alt-Q ,
 and
@@ -546,10 +725,13 @@ and
 .
 .TP
 .B Ctrl-E
-Ends modem capture for RTTY mode in QTC window (started with Ctrl-S).
+Ends modem capture for RTTY mode in QTC window (started with
+.BR Ctrl-S ).
 .
 .IP
-See doc/README_QTC_RTTY.txt for more information.
+See
+.I @prefix@/share/doc/README_QTC_RTTY.txt
+for more information.
 .
 .TP
 .B Ctrl-F
@@ -574,27 +756,52 @@ Maximum Usable Frequency (MUF) display.
 .
 .TP
 .B Ctrl-Q
-Open the QTC window for receiving QTCs if QTC=RECV or QTC=BOTH or sending QTCs
-if QTC=SEND is set in logcfg.dat.  Same as Ctrl-S if QTC=SEND.
+Open the QTC window for receiving QTCs if
+.BI QTC= RECV
+or
+.BI QTC= BOTH
+or sending QTCs if
+.BI QTC= SEND
+is set in
+.IR logcfg.dat .
+Same as
+.B Ctrl-S
+if \fBQTC=\fISEND\fR.
 .
 .IP
-See doc/README_QTC.txt and doc/README_QTC_RTTY.txt for more information.
+See
+.I @prefix@/share/doc/README_QTC.txt
+and
+.I @prefix@/share/doc/README_QTC_RTTY.txt
+for more information.
 .
 .TP
 .B Ctrl-R
-Toggle /dev/lp0 pin 14 (Mic/Soundcard switch | trx1/trx2 switch).
+Toggle
+.I /dev/lp0
+pin 14 (Mic/Soundcard switch | trx1/trx2 switch).
 .
 .TP
 .B Ctrl-S
-Open the QTC window for sending QTCs if QTC=SEND or QTC=BOTH in logcfg.dat.
-Saves QTCs while in QTC window.
+Open the QTC window for sending QTCs if
+.BI QTC= SEND
+or
+.BI QTC= BOTH
+in \fIlogcfg.dat\fR.  Saves QTCs while in QTC window.
 .
 .IP
-In RTTY mode starts capture from the modem after the window has been
-opened with Ctrl-Q.  End capture with Ctrl-E.
+In RTTY mode starts capture from the modem after the window has been opened
+with
+.BR Ctrl-Q .
+End capture with
+.BR Ctrl-E .
 .
 .IP
-See doc/README_QTC.txt and doc/README_QTC_RTTY.txt for more information.
+See
+.I @prefix@/share/doc/README_QTC.txt
+and
+.I @prefix@/share/doc/README_QTC_RTTY.txt
+for more information.
 .
 .TP
 .B Ctrl-T
@@ -605,7 +812,7 @@ Show talk messages.  In the QTC window shows RTTY lines.
 Stop @PACKAGE_NAME@.
 .
 .TP
-.B Alt-0 ... Alt-9
+.BR Alt-0 ... Alt-9
 Send CW (Morse code) messages.
 .
 .TP
@@ -626,8 +833,9 @@ Enter QSO edit mode.
 .
 .TP
 .B Alt-G
-Grab first spot from bandmap which has the characters in the call input
-field in its call.  Allow the operator to selectively grab a specific call.
+Grab first spot from bandmap which has the characters in the call input field
+in its call.  Allows the operator to selectively grab a specific call from the
+bandmap.
 .
 .TP
 .B Alt-H
@@ -662,7 +870,7 @@ Toggle PTT (via cwdaemon).
 .TQ
 .B Alt-X
 Exit @PACKAGE_NAME@ (synonym to
-.BR :EXIt ,
+.BR :EXI "t ,"
 .BR :QUIT ,
 .BR Ctl-C ,
 and
@@ -697,69 +905,94 @@ Show zones worked.
 .
 @PACKAGE_NAME@ can be fully configured by editing the
 .I logcfg.dat
-file.  Normally you keep one logcfg.dat file, setting up your callsign, the
-log file name, the ports and addresses for packet, the radio, the network
-etc., and a separate rules file per contest.
+file.  Normally you keep one
+.I logcfg.dat
+file, setting up your callsign, the log file name, the ports and addresses for
+packet, the radio, the network etc., and a separate rules file per contest.
 .P
-The logcfg.dat file can be edited from within @PACKAGE_NAME@ by the
-\fB:CFG\fR or \fB:SET\fR commands (or with any other plain text editor
-before starting @PACKAGE_NAME@).
+The
+.I logcfg.dat
+file can be edited from within @PACKAGE_NAME@ by the
+.BR :CFG \ or \ :SET
+commands (or with any other plain text editor before starting @PACKAGE_NAME@).
 .P
 You can set your favourite editor (joe | vi[m] | e3 | mcedit) in the
-logcfg.dat file.
+.IR logcfg.dat \ file.
 .P
 You connect the rules file by using the statement
 .BI RULES= contest_rules_file_name
-in logcfg.dat.
+in
+.IR logcfg.dat .
 .P
-@PACKAGE_NAME@ will first look in the working directory for a logcfg.dat
-file, and if it cannot find one it will look in @prefix@/share/@PACKAGE@
-for a default one.  Make sure you edit the logcfg.dat file at least to hold
-your call and your preferred system configuration.
+@PACKAGE_NAME@ will first look in the working directory for a
+.I logcfg.dat
+file, and if it cannot find one it will look in
+.I @prefix@/share/@PACKAGE@
+for a default one.  Make sure you edit the
+.I logcfg.dat
+file at least to hold your call and your preferred system configuration.
 .
 .SH LOGCFG.DAT STATEMENTS
 .
-Configuration parameters set in \(lqlogcfg.dat\(rq located in the working
-directory (where @PACKAGE_NAME@ is started).
+Configuration parameters set in
+.I logcfg.dat
+located in the working directory (where @PACKAGE_NAME@ is started).
+.
 .TP
 .BI RULES= contest_rules_filename
-Name of the rules file to load.  It helps if you name the rules file
-according to the contest you want to describe.
+Name of the rules file to load.  It helps if you name the rules file according
+to the contest you want to describe.
 .
 .TP
 .BI SYNCFILE= user:password@host/dir/syncfile
-File on remote host you want to synchronize with (use \fBwget\fR(1)
+File on remote host you want to synchronize with (use
+.BR wget (1)
 syntax).
 .
 .TP
 .B CTCOMPATIBLE
-Does not use the TR-Log QSO sequence, but \(lq+\(rq, <Insert> and <Enter>
-to log the QSO.
+Do not use the TR-Log QSO sequence, but use \*(lq+\*(rq, \*(lqInsert\*(rq and
+\*(lqEnter\*(rq to log the QSO.
 .
 .IP
-The default is the TR-Log sequence which uses \(lq+\(rq to switch between
-Run and Search & Pounce modes, in which <Enter> is the sole key used to
-call the other station, send the exchange, and log the QSO.
+The default mode of operation is the TR-Log sequence which uses \*(lq+\*(rq to
+switch between CQ and S&P modes, in which \*(lqEnter\*(rq is the sole key used
+to call the other station, send the exchange, and log the QSO.
 .
 .TP
-.BI TLFCOLOR x = FG/BG
+.BI TLFCOLOR n = FG/BG
 Defaults:
-        \fBTLFCOLOR1=\fI23\fR   (Header and footer)
-        \fBTLFCOLOR2=\fI67\fR   (Pop up windows)
-        \fBTLFCOLOR3=\fI70\fR   (Log window)
-        \fBTLFCOLOR4=\fI57\fR   (Markers/dupe colour)
-        \fBTLFCOLOR5=\fI43\fR   (Input fields)
-        \fBTLFCOLOR6=\fI63\fR   (Window frames)
+.RS 14
+.BI TLFCOLOR1= 23
+(Header and footer)
+.br
+.BI TLFCOLOR2= 67
+(Pop up windows)
+.br
+.BI TLFCOLOR3= 70
+(Log window)
+.br
+.BI TLFCOLOR4= 57
+(Markers/dupe colour)
+.br
+.BI TLFCOLOR5= 43
+(Input fields)
+.br
+.BI TLFCOLOR6= 63
+(Window frames)
+.RE
 .
 .IP
 The numbers are given in octal, FG/BG or BG/FG (some experimentation likely
 required).
 .
 .IP
-You should only specify these if you do not agree with the standard colours
-of @PACKAGE_NAME@.  In some Terminals you can set a special profile for
+You should only specify these if you wish to modify the standard colours of
+@PACKAGE_NAME@.  In some Terminals you can set a special profile for
 @PACKAGE_NAME@ with your own colours.  Another way is to define the colours
-is via an ~/.Xdefault file.
+via the
+.I $HOME/.Xresources
+file.
 .
 .TP
 \fBEDITOR=\fIjoe\fR | \fIvi\fR[\fIm\fR] | \fIe3\fR | \fImcedit\fR
@@ -780,9 +1013,9 @@ Normally 0.  Range: 0-23.
 This node transmits the time over the network (only one master allowed!).
 .
 .TP
-.BI ADDNODE= Node_address:Port_number
-Adds an IP address (and optionally a port number) to which we broadcast
-stuff.  (WARNING: Only add addresses of other nodes).
+\fBADDNODE=\fINode_address\fR[\fI:Port_number\fR]
+Adds an IP address (and optionally a port number) to which we broadcast stuff.
+(WARNING: Only add addresses of other nodes).
 .
 .TP
 .BI THISNODE= A
@@ -792,17 +1025,19 @@ A-H.
 .
 .TP
 .B LANDEBUG
-Switches on the debug function.  Dumps all @PACKAGE_NAME@ net traffic
-received on this node into a file named \(lqdebuglog\(rq in the working
-directory.  This log can be used as a backup log for the whole network, as
-it is easy to retrieve QSO data, cluster messages, gab messages etc. after
-the contest.  Some users have this enabled all the time.
+Switches on the debug function.  Dumps all @PACKAGE_NAME@ net traffic received
+on this node into a file named
+.I debuglog
+in the working directory.  This log can be used as a backup log for the whole
+network, as it is easy to retrieve QSO data, cluster messages, gab messages
+etc. after the contest.  Some users have this enabled all the time.
 .
 .TP
 .B NETKEYER
-Switches the CW keyer on.  Only the IP networked keyer cwdaemon is actively
-supported.  You may also need the keyer for PTT control or band info
-output.
+Switches the CW keyer on.  Only the IP networked keyer
+.B cwdaemon
+or any other program that emulates cwdaemon is supported.  You may also need
+the keyer for PTT control or band info output.
 .
 .TP
 .BI NETKEYERPORT= port_number
@@ -814,9 +1049,8 @@ Default host is 127.0.0.1 (localhost).
 .
 .TP
 .BI MFJ1278_KEYER= serial_port
-Switches support for the MFJ-1278B multi-mode controller on.  The
-MFJ-1278 supports CW as well as RTTY contesting.  Fixed serial port rate
-is 9600 bps.
+Activates support for the MFJ-1278B multi-mode controller.  The MFJ-1278
+supports CW as well as RTTY contesting.  Fixed serial port rate is 9600 bps.
 .
 .TP
 .BI CWSPEED= speed_in_WPM
@@ -841,8 +1075,8 @@ sidetone output (even for the console speaker).  Range: 0-99.
 .
 .TP
 .BI CQDELAY= Auto_cq
-Set automatic CQ delay in 1/2 seconds increments.  Range: 3-60.  Use a
-value which is message length + listening time!
+Set automatic CQ pause delay in 1/2 seconds increments between message
+transmissions.  Range: 3-60.
 .
 .TP
 .BI CWTONE= sidetone
@@ -858,9 +1092,9 @@ instead).
 .
 .TP
 .B BANDOUTPUT
-Outputs band information to pins 2, 7, 8, 9 on the parallel port.  Output
-is 1 (160m), 2 (80m) ... 9 (10m).  This format is compatible with the
-standard interface for antenna switches, band filters etc.
+Outputs band information to pins 2, 7, 8, 9 on the parallel port.  Output is 1
+(160m), 2 (80m) ... 9 (10m).  This format is compatible with the standard
+interface for antenna switches, band filters etc.
 .
 .TP
 .BI BANDOUTPUT= 124181818
@@ -1585,7 +1819,7 @@ An operation manual (a little bit outdated) is available in HTML format at
 the old @PACKAGE_NAME@ project page
 .UE .
 .
-.P
+.SH BUGS
 Please send bug reports to
 .MT tlf-devel@nongnu.org
 the @PACKAGE_NAME@ development list
