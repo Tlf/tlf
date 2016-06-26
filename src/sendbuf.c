@@ -36,8 +36,8 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
-
-char buffer[81];
+#define BUFSIZE   81
+char buffer[BUFSIZE];
 
 /** shorten CW numbers */
 char short_number( char c) {
@@ -48,6 +48,114 @@ char short_number( char c) {
 	if (c == '0')  return 'T';
     }
     return c;
+}
+
+/*
+ * Replace occurences of 'what' in 'buf' by 'rep'.
+ * The amount of bytes assigned to 'buf' is 'size'.
+ * This includes the terminating \0, i.e. max length of 'buf' is 'size'-1
+ * Replacements are done in-place, no other memory area than 'buf' is used.
+ * Maximum 'count' replacements are done.
+ *
+ */
+void replace_n(char *buf, int size, const char *what, const char *rep, int count) {
+    int len = strlen(buf);
+    if (len > size - 1) {
+        // input string already too long, don't touch it
+        return;
+    }
+    int len_what = strlen(what);
+    if (len_what == 0) {
+        return;
+    }
+
+    int len_rep = strlen(rep);
+    int len_overlap = (len_rep < len_what ? len_rep : len_what);
+
+    buf[size - 1] = 0; // ensure proper termination
+
+    char *p = buf;
+    char *q;
+
+    while (count-- > 0 && (q = strstr(p, what)) != NULL) {
+        char *dst;
+        const char *src;
+        int n, overflow = 0;
+
+        strncpy(q, rep, len_overlap);
+
+        if (len_rep < len_what) {
+            //
+            //   ....WHATabcdef
+            //   ....REPTabcdef
+            //      q^  ||
+            //       dst^|
+            //        src^
+            //
+            //   ....REPabcdef
+            //
+            // shift rest down
+            dst = q + len_overlap;
+            src = q + len_what;
+            n = buf + len + 1 - src; // include terminating \0
+            memmove(dst, src, n);
+
+            // result gets shorter
+            len -= len_what - len_rep;
+        } else if (len_rep > len_what) {
+            //
+            //   ....Wabcdef
+            //   ....Rabcdef
+            //      q^| |
+            //     src^ |
+            //       dst^
+            //
+            //   ....R__abcdef
+            //   ....REPabcdef
+            //
+            // shift rest up
+            dst = q + len_rep;
+            src = q + len_overlap;
+            n = buf + len + 1 - src; // include terminating \0
+            if (dst + n - 1 >= buf + size - 1) {
+                // would be longer than (size-1), shift only a part
+                n = buf + size - 1 - dst;
+                if (n <= 0) {
+                    // even a part wont fit; no operation
+                    n = 0;
+                    overflow = 1;
+                }
+            }
+            memmove(dst, src, n);
+
+            // copy tail of rep
+            dst = q + len_overlap;
+            src = rep + len_overlap;
+            n = len_rep - len_what;
+            if (dst + n - 1 >= buf + size - 1) {
+                // only a part of rep fits
+                n = buf + size - 1 - dst;
+                overflow = 1;
+            }
+            memcpy(dst, src, n);
+
+            if (overflow) {
+                break;
+            }
+
+            // result gets longer
+            len += len_rep - len_what;
+        }
+        p = q + len_rep;
+    }
+}
+
+void replace_1(char *buf, int size, const char *what, const char *rep) {
+    replace_n(buf, size, what, rep, 1);
+}
+
+void replace_all(char *buf, int size, const char *what, const char *rep) {
+    replace_n(buf, size, what, rep, 999);
 }
 
 void ExpandMacro(void) {
@@ -64,124 +172,64 @@ void ExpandMacro(void) {
     extern int lan_active;
     extern int exchange_serial;
 
-    size_t loc;
-    int i, nr;
-    static char comstr[80] = "";
-    char comstr3[5];
+    int i;
+    static char comstr[BUFSIZE] = "";
     static char qsonroutput[5] = "";
     static char rst_out[4] = "";
 
-    comstr[0] = '\0';
 
-    loc = strcspn(buffer, "%");	/* mycall */
+    strcpy(comstr, call); 
+    comstr[strlen(call) - 1] = '\0'; // skip trailing \n
+    replace_all(buffer, BUFSIZE, "%", comstr);   /* mycall */
 
-    while (strlen(buffer) > loc) {
 
-	if (loc != 0)
-	    strncat(comstr, buffer, loc);
-	strncat(comstr, call, (strlen(call) - 1));
-	strcat(comstr, buffer + loc + 1);
-	strcpy(buffer, comstr);
-	strcpy(comstr, "");
-
-	loc = strcspn(buffer, "%");
-    }
-
-    loc = strcspn(buffer, "@");	/* his call */
-
-    while (strlen(buffer) > loc) {
-
-	if (loc != 0)
-	    strncat(comstr, buffer, loc);
-	if (strlen(hiscall_sent) == 0) {
-	    strcat(comstr, hiscall);
-	} else {
-	    strcat(comstr, hiscall + strlen(hiscall_sent));
+    if (NULL != strstr(buffer, "@")) {
+        char *p = hiscall + strlen(hiscall_sent);
+	if (strlen(hiscall_sent) != 0) {
 	    hiscall_sent[0] = '\0';
 	    early_started = 0;
 //                              sending_call = 0;
 	}
-	strcat(comstr, buffer + loc + 1);
-	strcpy(buffer, comstr);
-	strcpy(comstr, "");
-
-	loc = strcspn(buffer, "@");
+        replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurence */
+        replace_all(buffer, BUFSIZE, "@", hiscall);   /* his call, further occurrences */
     }
 
-    loc = strcspn(buffer, "[");	/* his RST */
 
-    while (strlen(buffer) > loc) {
+    strncpy(rst_out, his_rst, 4);
+    rst_out[1] = short_number(rst_out[1]);
+    rst_out[2] = short_number(rst_out[2]);
+    rst_out[3] = '\0';
 
-	if (loc != 0)
-	    strncat(comstr, buffer, loc);
+    replace_all(buffer, BUFSIZE, "[", rst_out);   /* his RST */
 
-	strncpy(rst_out, his_rst, 4);
 
-	rst_out[1] = short_number(rst_out[1]);
-	rst_out[2] = short_number(rst_out[2]);
+    if (NULL != strstr(buffer, "#")) {
+        int leading_zeros = 0;
+        int lead = 1;
+        for (i = 0; i <= 4; i++) {
+            if (lead && qsonrstr[i] == '0') {
+                ++leading_zeros;
+            } else {
+                lead = 0;
+            }
+            qsonroutput[i] = short_number(qsonrstr[i]);
+        }
+        qsonroutput[4] = '\0';
 
-	strcat(comstr, rst_out);
-	strcat(comstr, buffer + loc + 1);
-	strcpy(buffer, comstr);
-	strcpy(comstr, "");
-
-	loc = strcspn(buffer, "[");
-    }
-
-    strcpy(qsonroutput, qsonrstr);
-
-    for (i = 0; i <= 4; i++) {
-	qsonroutput[i] = short_number(qsonroutput[i]);
-    }
-
-    loc = strcspn(buffer, "#");	/* serial nr */
-
-    while (strlen(buffer) > loc) {
-
-	if (loc != 0)
-	    strncat(comstr, buffer, loc);
-
-	if (noleadingzeros == 1) {
-
-	    nr = atoi(qsonroutput);
-	    sprintf(comstr3, "%d", nr);
-	    strcat(comstr, comstr3);
-
-	} else {
-	    if (qsonroutput[0] == '0' || qsonroutput[0] == 'T')
-		strcat(comstr, qsonroutput + 1);
-	    else
-		strcat(comstr, qsonroutput);
+	if (noleadingzeros != 1 && leading_zeros > 1) {
+            leading_zeros = 1;
 	}
 
-	strcat(comstr, buffer + loc + 1);
-
-	strcpy(buffer, comstr);
+        replace_all(buffer, BUFSIZE, "#", qsonroutput + leading_zeros);   /* serial nr */
 
 	if ((lan_active == 1) && (exchange_serial == 1)) {
 	    strncpy(lastqsonr, qsonrstr, 5);
 	    send_lan_message(INCQSONUM, qsonrstr);
 	}
-
-	strcpy(comstr, "");
-
-	loc = strcspn(buffer, "#");
     }
 
-    loc = strcspn(buffer, "!");	/* his serial nr/comment  */
 
-    while (strlen(buffer) > loc) {
-
-	if (loc != 0)
-	    strncat(comstr, buffer, loc);
-	strncat(comstr, comment, strlen(comment));
-
-	strcat(comstr, buffer + loc + 1);
-	strcpy(buffer, comstr);
-	strcpy(comstr, "");
-
-	loc = strcspn(buffer, "!");
-    }
+    replace_all(buffer, BUFSIZE, "!", comment);
 }
 
 

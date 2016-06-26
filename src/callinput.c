@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2005 Rein Couperus <pa0r@eudxf.org>
- *               2009-2014 Thomas Beierlein <tb@forth-ev.de>
+ *               2009-2016 Thomas Beierlein <tb@forth-ev.de>
  *               2013      Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -68,6 +68,8 @@
 #include "ui_utils.h"
 #include "writeparas.h"
 
+#include <math.h>
+
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -118,7 +120,6 @@ char callinput(void)
     extern freq_t outfreq;
 #else
     extern int outfreq;
-    extern int rignumber;
 #endif
     extern int trx_control;
     extern float bandfrequency[];
@@ -145,8 +146,17 @@ char callinput(void)
     extern int miniterm;
     extern int no_rst;
 
+    extern int bmautoadd;
+    extern int bmautograb;
+
+    static float freqstore;		/* qrg during last callsign input
+					   character, 0 if grabbed */
+    static float spotfreq;
+    static char grabbedcall[15];
+    static int already_grabbed = 0;		/* only one time */
+
     int cury, curx;
-    int i, j, ii, rc, t, x = 0, y = 0;
+    int i, j, ii, rc, t, x = 0;
     char instring[2] = { '\0', '\0' };
     char dupecall[17];
     static int lastwindow;
@@ -175,6 +185,41 @@ char callinput(void)
 		show_rtty();
 		printcall();
 	    }
+
+	    if (bmautoadd != 0 && freqstore != 0) {
+		if (strlen(hiscall) >= 3) {
+		    if (fabsf(freq-freqstore) > 0.1) {
+			add_to_spots(hiscall, freqstore);
+			hiscall[0] = '\0';
+			HideSearchPanel();
+			freqstore = 0;
+		    }
+		}
+	    }
+
+	    if (bmautograb != 0 && *hiscall == '\0' && already_grabbed == 0) {
+		get_spot_on_qrg(grabbedcall, freq);
+		if (strlen(grabbedcall) >= 3) {
+		    strncpy(hiscall, grabbedcall, sizeof(hiscall));
+		    already_grabbed = 1;
+		    spotfreq = freq;
+
+		    strncpy(dupecall, hiscall, 16);
+		    showinfo(getctydata(dupecall));
+		    printcall();
+		    searchlog(hiscall);
+		}
+	    }
+
+	    if (fabsf(freq-spotfreq) > 0.1 && already_grabbed == 1) {
+		already_grabbed = 0;
+		*grabbedcall = '\0';
+		hiscall[0] = '\0';
+		printcall();
+		HideSearchPanel();
+		showinfo(0);
+	    }
+
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
@@ -638,17 +683,6 @@ char callinput(void)
 		break;
 	    }
 
-//	case KEY_F(11):
-//	    {
-//		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-//		    sendmessage(message[10]);	/* F11 */
-//
-//		} else
-//		    play_file(ph_message[10]);
-//
-//		break;
-//	    }
-
 	// F12, activate autocq timing and message.
 	case KEY_F(12):
 	    {
@@ -684,12 +718,7 @@ char callinput(void)
 		    hiscall[strlen(hiscall) - 1] = '\0';
 
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */
-			strncpy(dupecall, hiscall, 16);
-
-			x = getctydata(dupecall);
-
-			showinfo(x);
-
+			showinfo( getctydata(hiscall) );
 			searchlog(hiscall);
 			refreshp();
 		    }
@@ -709,10 +738,6 @@ char callinput(void)
 		    showscore_flag = 1;
 		else {
 		    showscore_flag = 0;
-		    /** \todo drop display of score */
-		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-		    for (ii = 14; ii < 24; ii++)
-			mvprintw(ii, 0, backgrnd_str);
 		}
 		clear_display();
 		break;
@@ -937,6 +962,7 @@ char callinput(void)
 		    early_started = 0;
 		}
 
+		freqstore = 0;
 		break;
 	    }
 
@@ -988,7 +1014,10 @@ char callinput(void)
 	    {
 		addspot();
 		HideSearchPanel();
+		showinfo(0);
 
+		already_grabbed = 1;
+		spotfreq = freq;
 		break;
 	    }
 
@@ -1014,6 +1043,10 @@ char callinput(void)
 	case 7:
 	    {
 		grab_next();
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 2, "%s", mode);
+		already_grabbed = 1;
+		freqstore = 0;
 
 		break;
 	    }
@@ -1022,6 +1055,10 @@ char callinput(void)
 	case 231:
 	    {
 		grabspot();
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 2, "%s", mode);
+		already_grabbed = 1;
+		freqstore = 0;
 
 		break;
 	    }
@@ -1116,6 +1153,7 @@ char callinput(void)
 
 	/* Add character to call input field. */
 	if (x >= '/' && x <= 'Z') {
+
 	    if (strlen(hiscall) < 13) {
 		instring[0] = x;
 		instring[1] = '\0';
@@ -1133,15 +1171,13 @@ char callinput(void)
 
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
-		strncpy(dupecall, hiscall, 16);
-
-		y = getctydata(dupecall);
-		showinfo(y);
-
+		showinfo( getctydata(hiscall) );
 		searchlog(hiscall);
 	    }
 
 	    refreshp();
+
+	    freqstore = freq;
 
 	}
 
@@ -1157,8 +1193,9 @@ char callinput(void)
 	}
 
 	if ((x == '\n' || x == KEY_ENTER) || x == 32 || x == 9 || x == 11
-	    || x == 44 || x == 92)
+	    || x == 44 || x == 92) {
 	    break;
+	}
 
 	if (trxmode == DIGIMODE && (keyerport == GMFSK
 		|| keyerport == MFJ1278_KEYER)) {

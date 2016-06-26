@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2010-2011      Thomas Beierlein <tb@forth-ev.de>
+ *               2010-2016      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,18 +38,43 @@
 #include "tlf_curses.h"
 
 
-int addspot(void)
-{
-    extern float freq;
-    extern char hiscall[];
-    extern int trx_control;
+/** add call to list of spots
+ *
+ * format a fake DX spot from call and frequency add it to the spot list
+ * and send it to other stations in the LAN
+ */
+void add_to_spots(char *call, float freq) {
+
     extern int lanspotflg;
     extern struct tm *time_ptr;
     extern char thisnode;
 
     char spotline[160];
-    char frequency[8];
     char spottime[6];
+
+    sprintf(spotline, "DX de TLF-%c:     %9.3f  %s", thisnode, freq, call);
+    strcat(spotline, "                                           ");
+
+    get_time();
+
+    strftime(spottime, sizeof(spottime), "%H%MZ", time_ptr);
+    strcpy(spotline + 70, spottime);
+    strcat(spotline, "\n\n");
+
+    send_lan_message(TLFSPOT, spotline);
+    lanspotflg = 1;
+    addtext(spotline);
+    lanspotflg = 0;
+}
+
+
+int addspot(void)
+{
+    extern float freq;
+    extern char hiscall[];
+    extern int trx_control;
+
+    char frequency[8];
 
     if (strlen(hiscall) < 3)
 	return(0);
@@ -65,21 +90,8 @@ int addspot(void)
 	freq = atof(frequency);
     }
 
-    sprintf(spotline, "DX de TLF-%c:     %9.3f  %s", thisnode, freq, hiscall);
+    add_to_spots(hiscall, freq);
 
-    strcat(spotline, "                                           ");
-
-    get_time();
-
-    strftime(spottime, sizeof(spottime), "%H%MZ", time_ptr);
-    strcpy(spotline + 70, spottime);
-    strcat(spotline, "\n\n");
-
-    send_lan_message(TLFSPOT, spotline);
-    lanspotflg = 1;
-    addtext(spotline);
-    lanspotflg = 0;
-    spotline[0] = '\0';
     hiscall[0] = '\0';
 
     return (0);

@@ -141,4 +141,5 @@ spot *bandmap_lookup(char *partialcall);
 
 spot *bandmap_next(unsigned int upwards, unsigned int freq);
 
+void get_spot_on_qrg(char *dest, float freq);
 #endif

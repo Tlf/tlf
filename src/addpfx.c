@@ -26,15 +26,17 @@
 
 
 #include <string.h>
-
+#include <glib.h>
 #include "tlf.h"
 
+#define MAX_PFX_LEN 5
 
 int nr_of_px = 0;
 int nr_of_px_ab = 0;
 
+
 struct {
-    char pfx[6];
+    char pfx[MAX_PFX_LEN + 1];
     int bands;
 } prefixes_worked[MAX_CALLS];
 
@@ -69,7 +71,7 @@ int add_pfx(char *pxstr)
 
     if (found != 1) {
 	/* new pfx */
-	strcpy(prefixes_worked[nr_of_px].pfx, pxstr);
+	g_strlcpy(prefixes_worked[nr_of_px].pfx, pxstr, MAX_PFX_LEN+1);
 	prefixes_worked[nr_of_px].bands |= inxes[bandinx];
 	nr_of_px++;
 	nr_of_px_ab++;

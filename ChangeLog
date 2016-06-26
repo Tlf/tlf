@@ -1,3 +1,155 @@
+2016-04-28 Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c: fix possible buffer overflows due to strncpy
+
+2016-03-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: respect 'S'kip not dupes setting for bandmap
+
+  * src/addpfx.c: fix possible segmentation fault  Do only remember MAX_PFX_LEN
+  chars from prefix (atm 5). As prefix regognition is not perfect we get
+  sometimes longer prefix signatures which led to segfaults.
+
+2016-03-06  Thomas Beierlein <tb@forth-ev.de>
+
+  * Makefile.am: autoconf needs some more hints to find our macros
+
+2016-03-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: allow BMAUTOGRAB also in Run mode
+
+  * src/callinput.c: update run/s&p mode display after alt/ctrl-g
+
+2016-03-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/bandmap.h, src/callinput.c: Implement BMAUTOGRAB  If set
+  callinput field will automatically grab an active spot from teh bandmap if
+  TRX frequency is near spot frequency.  Works only in S&P mode.
+
+2016-02-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: change autoadd triggering  Former version had difficulties
+  to distinct between callsigns entered by the operator and callsigns grabbed
+  from bandmap. Now 'freqstore' remembers the actual QRG as soon as the
+  operator enters any chars into the call input field. That frequency is used
+  to detect QRG changes (tuning away). In any other case (e.g. callsign grabbed
+  from bandmap) 'freqstore' stays 0.
+
+2016-02-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/callinput.c, src/main.c, src/parse_logcfg.c:
+  Move AUTOGRAB function to callinput()
+
+2016-02-08  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addspot.c, src/addspot.h: Refactor code to add a spot to bandmap  -
+  Split out the code to format a fake DX spot, add it to the own spot list and
+  send it to other stations on the LAN.
+
+  * tlf.1.in: Add description to man page
+
+2016-02-05  Ervin Hegedus <airween@gmail.com>
+
+  * src/background_process.c, src/main.c, src/parse_logcfg.c: Improve new
+  BMAUTOADD feature
+
+2016-01-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/ui_utils.c, tlf.1.in: Add some warning to lookup_keys()  If some
+  special key combinations (Alt/Ctrl-PgUp/PgDown) do not work on the terminal
+  give a message to the user and suggest using ':cqd'  Add that to the man page
+  also
+
+2016-01-25  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/bandmap.c: Initialize dupe value when a new spot is created  Checking
+  with Valgrind memcheck generated in the report that, "Conditional jump or
+  move depends on uninitialised value(s)" in bmdata_write_file (bandmap.c:134).
+   The result is that various values could be written for the dupe value in
+  .bmdata.dat.  Fixed by setting the dupe variable to 0 in bandmap_addspot(). 
+  This variable is only used in bandmap_show() and is never stored back into
+  the allspots GList.
+
+  * src/main.c: Make sure that rig control is closed properly on exit  If
+  Hamlib is enabled in the build, close the rig port and release the rig
+  instance on exit.
+
+2016-01-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/main.c, src/ui_utils.c, src/ui_utils.h: determine key
+  codes for extended keys during startup
+
+2016-01-23  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/changepars.c: Combine EXIT and QUIT stanzas  The case stanzas for EXIT
+  and QUIT were identical so combine them.
+
+  * src/sockserv.c: Use memmove() for overlapping strings.  Checking Tlf with
+  Valgrind showed that memcpy() was assigning a string back onto itself.  The
+  Glibc documentation says doing so will result in undefined behavior and
+  recommends using memmove() instead.
+
+  * doc/keynames.txt, src/callinput.c: Use keyname() to test for Ctrl/Alt
+  PageUp/Down keys  Testing has shown that the ordinal values for these
+  extended keys are defined in the terminfo database and vary across systems. 
+  Use the ncurses keyname() function along with strcmp() to determine the keys
+  based on their names which appears to be consistent across the systems
+  tested.
+
+2016-01-21  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/callinput.c, tlf.1.in: Add Alt-PageUp/PageDown keys for Auto_CQ delay 
+  Some terminals consume the Ctl-PageUp/PageDown keys (Xfce Terminal is one). 
+  Add Alt-PageUp/PageDown as alternatives for increasing or decreasing the
+  Auto_CQ pause delay time.
+
+2016-01-20  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/splitscreen.c: Ensure keypad is called when exiting packet screen  When
+  the packet screen is opened, keypad(entwin, TRUE) is called on the entwin
+  window.  When set_term(mainscreen) was called, the keypad was not being
+  redirected back to stdscr.  This should now be fixed and the arrow keys
+  respond as expected in the call input field.
+
+  * src/main.c: Don't call obsolete crmode() function  Ncurses documentation
+  advises that crmode() should not be used.  In curses.h it is a macro that
+  calls cbreak(), so call cbreak() instead for clarity.
+
+2016-01-17  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/getexchange.c: Merge F11 processing with other F keys  The old code had
+  a skip in the numbering of the F keys jumping from 138 for F10 to 140 for
+  F11.  As Ncurses now assigns sequential values using the KEY_F(n) = KEY_F(0)
+  + n macro, this special handling is no longer necessary.
+
+2016-01-12  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/audio.c, src/autocq.c, src/calledit.c, src/callinput.c,
+  src/changefreq.c, src/changepars.c, src/edit_last.c, src/getexchange.c,
+  src/keyer.c, src/main.c, src/messagechange.c, src/qtcwin.c, src/showpxmap.c,
+  src/tlf_curses.h, src/ui_utils.c, tlf.1.in: Process input keystrokes using
+  keypad()  Ncurses provides the keypad() function that maps most escaped key
+  codes to named constants found in curses.h.  The onechar() function has been
+  reworked to minimize the amount of key escapes that need to be caught. Those
+  that are caught are assigned values to match the Ncurses declared constants. 
+  Keys were tested on the Linux console, and the following X11 terminal
+  emulators, Xfce Terminal, Gnome Terminal, Xterm, and Qterm.  Update the
+  tested constants to match the Ncurses defined constants in the rest of the
+  sort where key_get() and key_poll() are called.  Ncurses will honor the value
+  of the environment variable ESCDELAY but to avoid the users having to set it,
+  use the set_escdelay() function to set the delay to 25 mS (default is 1000 mS
+  when unset) when the environment variable is unset.  Should that be too
+  short, users can set it via the usual method, i.e. 'export ESCDELAY=125'
+  would set a delay of 125 mS.
+
+2016-01-08  Nate Bargmann <n0nb@n0nb.us>
+
+  * doc/keynames.txt: Add keynames.txt  Document the decimal value and name
+  string as returned by keyname() and accepted by key_defined() for Ncurses by
+  default.  Keystrokes are processed from the various codes as shown by
+  'showkey -a' and escaped sequences are assigned to values corresponding to
+  the values and names in this file.
+
 2016-01-02  Ervin Hegedus <airween@gmail.com>
 
   * src/fldigixmlrpc.c: Fixed hamlib-related variable compile error

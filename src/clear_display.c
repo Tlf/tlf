@@ -72,35 +72,31 @@ void clear_display(void)
 
     getyx(stdscr, cury, curx);
 
-    mvprintw(0, 0, "");
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(0, 0, "                             ");
     mvprintw(0, 0, "  %s  S=%s D=%i ", mode, speedbuf, cqdelay);
     mvprintw(0, 21, headerline);
 
     attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
-
     mvaddstr(1, 0, terminal1);
     mvaddstr(2, 0, terminal2);
     mvaddstr(3, 0, terminal3);
     mvaddstr(4, 0, terminal4);
     mvaddstr(5, 0, backgrnd_str);
-    mvprintw(6, 0, "");
-    mvaddstr(6, 0, "");
+
     attron(COLOR_PAIR(C_HEADER));
-//    hline(ACS_HLINE, 80);
     mvaddstr(6, 0, backgrnd_str);
     mvprintw(6, (80 - strlen(whichcontest))/2 - 4, " == %s == ", whichcontest);
 
     showscore();
 
     attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
-
     mvaddstr(7, 0, logline0);
     mvaddstr(8, 0, logline1);
     mvaddstr(9, 0, logline2);
     mvaddstr(10, 0, logline3);
     mvaddstr(11, 0, logline4);
+
     attron(COLOR_PAIR(C_WINDOW));
     mvaddstr(12, 0, backgrnd_str);
 

@@ -72,7 +72,6 @@ int setcontest(void)
     extern int sectn_mult;
     extern int recall_mult;
     extern int noleadingzeros;
-    extern int shortqsonr;
 
     char wcall[] = "W1AW";
     char vecall[] = "VE1AA";

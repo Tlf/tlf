@@ -74,10 +74,13 @@ int repair_log(char *filename) {
 
 
     showmsg( "Converting file to new format");
-    infp = fopen(backupfile, "r");
-    outfp = fopen(filename, "w");
+    if ((infp = fopen(backupfile, "r")) == NULL) {
+	showmsg( "Could not convert logfile. Sorry!" );
+	return 1;
+    }
 
-    if (!infp || !outfp) {
+    if ((outfp = fopen(filename, "w")) == NULL) {
+	fclose(infp);
 	showmsg( "Could not convert logfile. Sorry!" );
 	return 1;
     }

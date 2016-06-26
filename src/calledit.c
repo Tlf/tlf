@@ -44,7 +44,6 @@ void calledit(void)
     int j = 0;
     int x = 0;
     int cnt = 0, insertflg = 0;
-    char dupecall[20];
     char call1[30], call2[10];
 
     l = strlen(hiscall);
@@ -114,9 +113,7 @@ void calledit(void)
 		hiscall[j] = hiscall[j + 1];	/* move to left incl. \0 */
 	    }
 
-	    strncpy(dupecall, hiscall, 16);	/* update cty info */
-	    x = getctydata(dupecall);
-	    showinfo(x);
+	    showinfo( getctydata(hiscall) );
 
 	    if (cnt > 1)
 		searchlog(hiscall);
@@ -134,9 +131,7 @@ void calledit(void)
 		    hiscall[j] = hiscall[j + 1];
 		}
 
-		strncpy(dupecall, hiscall, 16);	/* update cty info */
-		x = getctydata(dupecall);
-		showinfo(x);
+		showinfo( getctydata(hiscall) );
 
 		if (cnt > 1)
 		    searchlog(hiscall);
@@ -186,9 +181,7 @@ void calledit(void)
 		else
 		    break;
 
-		strncpy(dupecall, hiscall, 16);	/* update cty info */
-		x = getctydata(dupecall);
-		showinfo(x);
+		showinfo( getctydata(hiscall) );
 
 		searchlog(hiscall);
 

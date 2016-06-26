@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- * 		 2011, 2013 Thomas Beierlein <tb@forth-ev.de>
+ * 		 2011, 2013, 2016 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,28 +34,14 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
-
-int readctydata(void)
-{
+/** load cty database from filename */
+int load_ctydata(char *filename) {
+    FILE *fd;
     char buf[181] = "";
-    char ctydb_location[80];
     char *loc;
 
-    FILE *fp_db;
-
-    strcpy(ctydb_location, "cty.dat");
-    if ((fp_db = fopen(ctydb_location, "r")) == NULL) {
-	strcpy(ctydb_location, PACKAGE_DATA_DIR);
-	strcat(ctydb_location, "/cty.dat");
-
-	if ((fp_db = fopen(ctydb_location, "r")) == NULL) {
-	    mvprintw(4, 0, "Error opening cty.dat file.\n");
-	    refreshp();
-	    sleep(5);
-	    endwin();
-	    exit(1);
-	}
-    }
+    if ((fd = fopen(filename, "r")) == NULL) 
+	return -1;
 
     dxcc_init();
     prefix_init();
@@ -63,7 +49,7 @@ int readctydata(void)
     // set default for empty country
     dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
-    while (fgets(buf, sizeof(buf), fp_db) != NULL) {
+    while (fgets(buf, sizeof(buf), fd) != NULL) {
 
 	g_strchomp(buf); 	/* drop CR and/or NL and */
 	if (*buf == '\0')	/* ignore empty lines */
@@ -84,8 +70,28 @@ int readctydata(void)
 	    }
 	}
     }
+    fclose(fd);
+    return 0;
+}
 
-    fclose(fp_db);
+
+int readctydata(void)
+{
+    gchar *filename;
+ 
+    if (load_ctydata("cty.dat") == -1) {
+	filename = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S, 
+		    "cty.dat", NULL);
+	if (load_ctydata(filename) == -1) {
+	    g_free(filename);
+	    mvprintw(4, 0, "Error opening cty.dat file.\n");
+	    refreshp();
+	    sleep(5);
+	    endwin();
+	    exit(1);
+	}
+	g_free(filename);
+    }
 
     return (0);
 }

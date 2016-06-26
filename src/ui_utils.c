@@ -21,9 +21,11 @@
 
 
 #include <pthread.h>
+#include <unistd.h>
 
 #include "stoptx.h"
 #include "tlf_panel.h"
+#include "startmsg.h"
 
 
 extern int use_rxvt;
@@ -85,11 +87,31 @@ int lookup_key(char *capability) {
     return keycode;
 }
 
+/** lookup all needed special keys not defined by ncurses */
 void lookup_keys() {
+    int not_ok = 0;
+
     key_kNXT3 = lookup_key("kNXT3");
     key_kPRV3 = lookup_key("kPRV3");
     key_kNXT5 = lookup_key("kNXT5");
     key_kPRV5 = lookup_key("kPRV5");
+
+    if ((key_kNXT3 || key_kPRV3) == 0) {
+	showmsg("Terminal does not support Alt-PgUp/PgDn keys");
+	not_ok = 1;
+    }
+
+    if ((key_kNXT5 || key_kPRV5) == 0) {
+	showmsg("Terminal does not support Ctrl-PgUp/PgDn keys");
+	not_ok = 1;
+    }
+
+    if (not_ok == 1) {
+	showmsg("See ':CQD' in man page for setting Auto_CQ delay");
+	showmsg("");
+	beep();
+	sleep(2);
+    }
 }
 
 /** key_get  wait for next key from terminal
