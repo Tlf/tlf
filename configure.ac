@@ -77,8 +77,8 @@ AS_IF([test "x$ax_cv_panel" != xyes],
 
 dnl Check if we want to link the Hamradio control libraries (hamlib)
 AC_MSG_CHECKING([whether to build Hamlib support])
-AC_ARG_ENABLE([hamlib], [
-	AS_HELP_STRING([--enable-hamlib],
+AC_ARG_ENABLE([hamlib],
+	[AS_HELP_STRING([--enable-hamlib],
 		[Add support for Ham Radio Control Libraries])],
 	[wanthamlib=true],
 	[wanthamlib=false])
@@ -117,8 +117,8 @@ AS_IF([test "x$wanthamlib" = xtrue], [
 
 dnl Check if we want to use xmlrpc to read carrier from Fldigi
 AC_MSG_CHECKING([whether to build Fldigi XML RPC support])
-AC_ARG_ENABLE([fldigi-xmlrpc], [
-	AS_HELP_STRING([--enable-fldigi-xmlrpc],
+AC_ARG_ENABLE([fldigi-xmlrpc],
+	[AS_HELP_STRING([--enable-fldigi-xmlrpc],
 		[Add support for XMLRPC to read Fldigi's carrier (usually in RTTY/DIGIMODE)])],
 	[wantfldigixmlrpc=true],
 	[wantfldigixmlrpc=false])
