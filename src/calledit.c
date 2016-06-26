@@ -77,18 +77,18 @@ void calledit(void)
 	else
 	    block_part = 0;
 
-	// Ctrl-A (^A) or <Home>
+	// Ctrl-A (^A) or <Home>, move to head of callsign field.
 	if (i == 1 || i == KEY_HOME)
 	{
 	    b = 0;
 	    x = 0;
 	}
 
-	// Ctrl-E (^E) or <End>
+	// Ctrl-E (^E) or <End>, move to end of callsign field, exit edit mode.
 	if (i == 5 || i == KEY_END)
 	{
-	    b = strlen(hiscall) - 1;
-	    x = 0;
+	    b = strlen(hiscall);
+	    break;
 	}
 
 	// Left arrow

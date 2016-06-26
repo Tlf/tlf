@@ -325,6 +325,16 @@ char callinput(void)
 		continue;
 	    }
 
+	// <Home>, enter call edit when call field is not empty.
+	case KEY_HOME:
+	    {
+		if ((*hiscall != '\0') && (ungetch(x) == OK)) {
+			calledit();
+		}
+
+		break;
+	    }
+
 	// Left Arrow, enter call edit when call field is not empty, or band down.
 	case KEY_LEFT:
 	    {

@@ -292,6 +292,15 @@ int getexchange(void)
 		break;
 	    }
 
+	/* <Home>--edit exchange field, position cursor to left end of field.
+	 * Fall through to KEY_LEFT stanza if ungetch() is successful.
+	 */
+	case KEY_HOME:
+	    {
+		if (ungetch(x) != OK)
+		    break;
+	    }
+
 	case KEY_LEFT:		/* Left Arrow--edit exchange field */
 	    {
 		if (*comment != '\0')
@@ -1143,10 +1152,11 @@ void exchange_edit (void)
 
 	    b = 0;
 
-	// Ctrl-E (^E) or <End>, move to end of comment field.
+	// Ctrl-E (^E) or <End>, move to end of comment field, exit edit mode.
 	} else if (i == 5 || i == KEY_END) {
 
-	    b = strlen(comment) - 1;
+	    b = strlen(comment);
+	    break;
 
 	// Left arrow, move cursor left one position.
 	} else if (i == KEY_LEFT) {
