@@ -31,7 +31,7 @@
 #define K_WEIGHT 7
 #define K_DEVICE 8
 #define K_TOD 9			// set txdelay (turn on delay)
-#define K_ADDRESS 10	// set port address of device
+//#define K_ADDRESS 10	// set port address of device [obsolete and has no effect]
 #define K_SET14 11 		// set pin 14 on lpt
 #define K_TUNE 12		// tune
 #define K_PTT 13		// PTT on/off

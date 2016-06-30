@@ -22,6 +22,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <glib.h>
+
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -29,9 +31,9 @@
 
 int netkeyer_port = 6789;
 char netkeyer_hostaddress[16] = "127.0.0.1";
-int socket_descriptor;
-struct sockaddr_in address;
-struct hostent *hostbyname;
+
+static int socket_descriptor;
+static struct sockaddr_in address;
 
 int netkeyer_init(void)
 {
@@ -39,10 +41,11 @@ int netkeyer_init(void)
 /*
    Translate a host name to IP address
 */
+    struct hostent *hostbyname;
     hostbyname = gethostbyname(netkeyer_hostaddress);
     if (hostbyname == NULL) {
 	perror("gethostbyname failed");
-	return (-1);
+	return -1;
     }
 /*
    Initialize socket address structure for Internet Protocols
@@ -59,10 +62,10 @@ int netkeyer_init(void)
     socket_descriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_descriptor == -1) {
 	perror("socket call failed");
-	return (-1);
+	return -1;
     }
 
-    return (0);
+    return 0;
 }
 
   /*-------------------------end netkeyer_init---------------*/
@@ -74,103 +77,91 @@ int netkeyer_close(void)
     close_rc = close(socket_descriptor);
     if (close_rc == -1) {
 	perror("close call failed");
-	return (-1);
+	return -1;
     }
 
-    return (0);
+    return 0;
 }
 
   /*-------------------------end netkeyer_close---------------*/
 
+#define BUFSIZE 81
+
 int netkeyer(int cw_op, char *cwmessage)
 {
-    char buf[80] = "";
+    char buf[BUFSIZE] = "\e\0\0"; // pre-set ESC and 3 terminating NULs for commands
     ssize_t sendto_rc = 0;
+    int add_message = 0;
 
     switch (cw_op) {
 
     case K_RESET:
-	buf[0] = 27;
-	sprintf(buf + 1, "0");		// reset
+        buf[1] = '0';       // reset: <ESC>0
 	break;
     case K_MESSAGE:
-	sprintf(buf, "%s", cwmessage);	// cw message
+        buf[0] = 0;
+        add_message = 1;    // play cw message
 	break;
     case K_SPEED:
-	buf[0] = 27;
-	sprintf(buf + 1, "2");		// speed
-	sprintf(buf + 2, "%s", cwmessage);	// cw message
+	buf[1] = '2';       // speed: <ESC>2NN
+        add_message = 1;
 	break;
-    case K_TONE:			// tone
-	buf[0] = 27;
-	sprintf(buf + 1, "3");
-	sprintf(buf + 2, "%s", cwmessage);	// cw message
+    case K_TONE:
+	buf[1] = '3';       // tone: <ESC>3NN
+        add_message = 1;
 	break;
-    case K_ABORT:			// message abort
-	buf[0] = 27;
-	sprintf(buf + 1, "4");
+    case K_ABORT:
+        buf[1] = '4';       // message abort: <ESC>4
 	break;
-    case K_STOP:			// keyer daemon stop
-	buf[0] = 27;
-	sprintf(buf + 1, "5");
+    case K_STOP:
+	buf[1] = '5';       // keyer daemon stop: <ESC>5
 	break;
-    case K_WORDMODE:			// non-interruptable
-	buf[0] = 27;
-	sprintf(buf + 1, "6");
+    case K_WORDMODE:
+	buf[1] = '6';       // non-interruptible: <ESC>6
 	break;
-    case K_WEIGHT:			// set weight
-	buf[0] = 27;
-	sprintf(buf + 1, "7");
-	sprintf(buf + 2, "%s", cwmessage);	// cw message
+    case K_WEIGHT:
+	buf[1] = '7';       // set weight: <ESC>7NN
+        add_message = 1;
 	break;
-    case K_DEVICE:			// set device
-	buf[0] = 27;
-	sprintf(buf + 1, "8");
-	sprintf(buf + 2, "%s", cwmessage);	// cw message
+    case K_DEVICE:
+	buf[1] = '8';       // set device: <ESC>8NN
+        add_message = 1;
 	break;
-    case K_ADDRESS:			// set device
-	buf[0] = 27;
-	sprintf(buf + 1, "9");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_PTT:
+	buf[1] = 'a';       // PTT on/off: <ESC>aNN
+        add_message = 1;
 	break;
-    case K_PTT:				// PTT on/off
-	buf[0] = 27;
-	sprintf(buf + 1, "a");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_SET14:
+	buf[1] = 'b';       // set pin 14 of lp port: <ESC>bNN
+        add_message = 1;
 	break;
-    case K_SET14:			// set pin 14 of lp port
-	buf[0] = 27;
-	sprintf(buf + 1, "b");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_TUNE:
+	buf[1] = 'c';       // tune: <ESC>cNN
+        add_message = 1;
 	break;
-    case K_TUNE:			// tune
-	buf[0] = 27;
-	sprintf(buf + 1, "c");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_TOD:
+	buf[1] = 'd';       // set Turn On Delay (TXDELAY): <ESC>dNN
+        add_message = 1;
 	break;
-    case K_TOD:				// set Turn On Delay (TXDELAY)
-	buf[0] = 27;
-	sprintf(buf + 1, "d");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_SWITCH:
+	buf[1] = 'e';       // set band switch output: <ESC>eNN
+        add_message = 1;
 	break;
-    case K_SWITCH:			// set band switch output
-	buf[0] = 27;
-	sprintf(buf + 1, "e");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_SIDETONE:
+	buf[1] = 'f';       // set sidetone output to sound card: <ESC>fs
+        buf[2] = 's';
 	break;
-    case K_SIDETONE:			// set sidetone output to sound card
-	buf[0] = 27;
-	sprintf(buf + 1, "f");
-	sprintf(buf + 2, "s");
-	break;
-    case K_STVOLUME:			// set sound card output volume
-	buf[0] = 27;
-	sprintf(buf + 1, "g");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_STVOLUME:
+	buf[1] = 'g';       // set sound card output volume: <ESC>gNN
+        add_message = 1;
 	break;
 
     default:
-	buf[0] = '\0';
+        return 0;
+    }
+
+    if (add_message) {
+        g_strlcat(buf, cwmessage, BUFSIZE);
     }
 
     if (buf[0] != '\0') {
@@ -179,16 +170,13 @@ int netkeyer(int cw_op, char *cwmessage)
 			   sizeof(address));
     }
 
-    buf[0] = '\0';
-    cw_op = K_RESET;
-
     if (sendto_rc == -1) {
 	mvprintw(24, 0, "Keyer send failed...!");
 	refreshp();
 	sleep(2);
-	return (-1);
+	return -1;
     }
 
-    return (0);
+    return 0;
 }
 
