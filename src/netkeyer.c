@@ -29,9 +29,9 @@
 
 int netkeyer_port = 6789;
 char netkeyer_hostaddress[16] = "127.0.0.1";
-int socket_descriptor;
-struct sockaddr_in address;
-struct hostent *hostbyname;
+
+static int socket_descriptor;
+static struct sockaddr_in address;
 
 int netkeyer_init(void)
 {
@@ -39,10 +39,11 @@ int netkeyer_init(void)
 /*
    Translate a host name to IP address
 */
+    struct hostent *hostbyname;
     hostbyname = gethostbyname(netkeyer_hostaddress);
     if (hostbyname == NULL) {
 	perror("gethostbyname failed");
-	return (-1);
+	return -1;
     }
 /*
    Initialize socket address structure for Internet Protocols
@@ -59,10 +60,10 @@ int netkeyer_init(void)
     socket_descriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_descriptor == -1) {
 	perror("socket call failed");
-	return (-1);
+	return -1;
     }
 
-    return (0);
+    return 0;
 }
 
   /*-------------------------end netkeyer_init---------------*/
@@ -74,10 +75,10 @@ int netkeyer_close(void)
     close_rc = close(socket_descriptor);
     if (close_rc == -1) {
 	perror("close call failed");
-	return (-1);
+	return -1;
     }
 
-    return (0);
+    return 0;
 }
 
   /*-------------------------end netkeyer_close---------------*/
@@ -85,7 +86,7 @@ int netkeyer_close(void)
 int netkeyer(int cw_op, char *cwmessage)
 {
     char buf[80] = "";
-    ssize_t sendto_rc = 0;
+    ssize_t sendto_rc;
 
     switch (cw_op) {
 
@@ -170,25 +171,19 @@ int netkeyer(int cw_op, char *cwmessage)
 	break;
 
     default:
-	buf[0] = '\0';
+	return 0;
     }
 
-    if (buf[0] != '\0') {
-	sendto_rc = sendto(socket_descriptor, buf, strlen(buf) + 1,
-			   0, (struct sockaddr *) &address,
-			   sizeof(address));
-    }
-
-    buf[0] = '\0';
-    cw_op = K_RESET;
-
+    sendto_rc = sendto(socket_descriptor, buf, strlen(buf) + 1,
+		       0, (struct sockaddr *) &address,
+		       sizeof(address));
     if (sendto_rc == -1) {
 	mvprintw(24, 0, "Keyer send failed...!");
 	refreshp();
 	sleep(2);
-	return (-1);
+	return -1;
     }
 
-    return (0);
+    return 0;
 }
 
