@@ -22,6 +22,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <glib.h>
+
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -83,100 +85,92 @@ int netkeyer_close(void)
 
   /*-------------------------end netkeyer_close---------------*/
 
+#define BUFSIZE 81
+
+#define CMD(x) { do { 	buf[0] = '\e'; \
+			buf[1] = x; \
+			buf[2] = 0; } while(0); }
+
 int netkeyer(int cw_op, char *cwmessage)
 {
-    char buf[80] = "";
-    ssize_t sendto_rc;
+    char buf[BUFSIZE] = "";
+    ssize_t sendto_rc = 0;
+    int add_message = 0;
 
     switch (cw_op) {
 
     case K_RESET:
-	buf[0] = 27;
-	sprintf(buf + 1, "0");		// reset
+        CMD('0');       // reset: <ESC>0
 	break;
     case K_MESSAGE:
-	sprintf(buf, "%s", cwmessage);	// cw message
+        buf[0] = 0;
+        add_message = 1;    // play cw message
 	break;
     case K_SPEED:
-	buf[0] = 27;
-	sprintf(buf + 1, "2");		// speed
-	sprintf(buf + 2, "%s", cwmessage);	// cw message
+	CMD('2');       // speed: <ESC>2NN
+        add_message = 1;
 	break;
-    case K_TONE:			// tone
-	buf[0] = 27;
-	sprintf(buf + 1, "3");
-	sprintf(buf + 2, "%s", cwmessage);	// cw message
+    case K_TONE:
+	CMD('3');       // tone: <ESC>3NN
+        add_message = 1;
 	break;
-    case K_ABORT:			// message abort
-	buf[0] = 27;
-	sprintf(buf + 1, "4");
+    case K_ABORT:
+        CMD('4');       // message abort: <ESC>4
 	break;
-    case K_STOP:			// keyer daemon stop
-	buf[0] = 27;
-	sprintf(buf + 1, "5");
+    case K_STOP:
+	CMD('5');       // keyer daemon stop: <ESC>5
 	break;
-    case K_WORDMODE:			// non-interruptable
-	buf[0] = 27;
-	sprintf(buf + 1, "6");
+    case K_WORDMODE:
+	CMD('6');       // non-interruptible: <ESC>6
 	break;
-    case K_WEIGHT:			// set weight
-	buf[0] = 27;
-	sprintf(buf + 1, "7");
-	sprintf(buf + 2, "%s", cwmessage);	// cw message
+    case K_WEIGHT:
+	CMD('7');       // set weight: <ESC>7NN
+        add_message = 1;
 	break;
-    case K_DEVICE:			// set device
-	buf[0] = 27;
-	sprintf(buf + 1, "8");
-	sprintf(buf + 2, "%s", cwmessage);	// cw message
+    case K_DEVICE:
+	CMD('8');       // set device: <ESC>8NN
+        add_message = 1;
 	break;
-    case K_ADDRESS:			// set device
-	buf[0] = 27;
-	sprintf(buf + 1, "9");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_PTT:
+	CMD('a');       // PTT on/off: <ESC>aNN
+        add_message = 1;
 	break;
-    case K_PTT:				// PTT on/off
-	buf[0] = 27;
-	sprintf(buf + 1, "a");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_SET14:
+	CMD('b');       // set pin 14 of lp port: <ESC>bNN
+        add_message = 1;
 	break;
-    case K_SET14:			// set pin 14 of lp port
-	buf[0] = 27;
-	sprintf(buf + 1, "b");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_TUNE:
+	CMD('c');       // tune: <ESC>cNN
+        add_message = 1;
 	break;
-    case K_TUNE:			// tune
-	buf[0] = 27;
-	sprintf(buf + 1, "c");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_TOD:
+	CMD('d');       // set Turn On Delay (TXDELAY): <ESC>dNN
+        add_message = 1;
 	break;
-    case K_TOD:				// set Turn On Delay (TXDELAY)
-	buf[0] = 27;
-	sprintf(buf + 1, "d");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_SWITCH:
+	CMD('e');       // set band switch output: <ESC>eNN
+        add_message = 1;
 	break;
-    case K_SWITCH:			// set band switch output
-	buf[0] = 27;
-	sprintf(buf + 1, "e");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_SIDETONE:
+	CMD('f');       // set sidetone output to sound card: <ESC>fs
+        buf[2] = 's';
 	break;
-    case K_SIDETONE:			// set sidetone output to sound card
-	buf[0] = 27;
-	sprintf(buf + 1, "f");
-	sprintf(buf + 2, "s");
-	break;
-    case K_STVOLUME:			// set sound card output volume
-	buf[0] = 27;
-	sprintf(buf + 1, "g");
-	sprintf(buf + 2, "%s", cwmessage);
+    case K_STVOLUME:
+	CMD('g');       // set sound card output volume: <ESC>gNN
+        add_message = 1;
 	break;
 
     default:
 	return 0;
     }
 
+    if (add_message) {
+        g_strlcat(buf, cwmessage, BUFSIZE);
+    }
+
     sendto_rc = sendto(socket_descriptor, buf, strlen(buf) + 1,
-		       0, (struct sockaddr *) &address,
-		       sizeof(address));
+		   0, (struct sockaddr *) &address,
+		   sizeof(address));
     if (sendto_rc == -1) {
 	mvprintw(24, 0, "Keyer send failed...!");
 	refreshp();
