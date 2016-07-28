@@ -50,7 +50,7 @@ int show_help(void) {
     char *cmdstr;
 
     if (g_access(filename, R_OK) == 0) {
-	helpfile = filename;
+	helpfile = g_strdup(filename);
     } else {
 	helpfile = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
 		filename, NULL);
