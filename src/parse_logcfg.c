@@ -68,7 +68,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 230	/* commands in list */
+#define  MAX_COMMANDS 231	/* commands in list */
 
 
 int read_logcfg(void)
@@ -528,7 +528,8 @@ int parse_logcfg(char *inputbuffer)
 	"QTC_CAP_CALLS",
 	"QTC_AUTO_FILLTIME",
 	"BMAUTOGRAB",
-	"BMAUTOADD"
+	"BMAUTOADD",
+	"QTC_RECV_LAZY"		/* 230 */
     };
 
     char **fields;
@@ -1795,6 +1796,10 @@ int parse_logcfg(char *inputbuffer)
     }
     case 229: {
 	    bmautoadd = 1;
+	    break;
+    }
+    case 230: {
+	    qtc_recv_lazy = 1;
 	    break;
     }
     default: {

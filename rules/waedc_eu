@@ -99,5 +99,6 @@ QTCREC_RECORD
 # record file: yymmddhhmmss.wav
 QTCREC_RECORD_COMMAND=rec -r 8000 $ -q
 
+# QTC_RECV_LAZY
 
 ####### END #####################

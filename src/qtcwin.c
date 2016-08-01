@@ -44,7 +44,7 @@
 #include "tlf_panel.h"
 #include "ui_utils.h"
 #include "write_keyer.h"
-
+#include <syslog.h>
 /* check direction clause macro
  * direction should be RECV (1) or SEND (2), see tlf.h
  */
@@ -319,6 +319,29 @@ void fill_qtc_times(char * time) {
     }
 }
 
+void fill_lazy_line(t_qtcrecline * recline) {
+    int i;
+
+    // fill time field
+    for (i=strlen(recline->time); i<4; i++) {
+	recline->time[i+1] = '\0';
+	recline->time[i] = '?';
+    }
+
+    // fill callsign field
+    for (i=strlen(recline->callsign); i<3; i++) {
+	recline->callsign[i+1] = '\0';
+	recline->callsign[i] = '?';
+    }
+
+    // fill serial field
+    for (i=strlen(recline->serial); i<1; i++) {
+        recline->serial[i+1] = '\0';
+	recline->serial[i] = '?';
+    }
+
+}
+
 /* prepare data for RECV operation */
 void prepare_for_recv() {
     int i;
@@ -583,11 +606,20 @@ void qtc_main_panel(int direction) {
 		if (activefield > 2) {
 		    if (direction == RECV) {
 			currqtc = ((activefield-3)/3);
-			if (qtcreclist.qtclines[currqtc].status == 0 &&
+			if ((qtcreclist.qtclines[currqtc].status == 0 &&
 			    strlen(qtcreclist.qtclines[currqtc].time) == 4 &&
 			    strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
-			    strlen(qtcreclist.qtclines[currqtc].serial) > 0
+			    strlen(qtcreclist.qtclines[currqtc].serial) > 0)
+			    ||
+			    qtc_recv_lazy == 1
 			) {
+			    if (qtc_recv_lazy == 1) {
+				fill_lazy_line(&qtcreclist.qtclines[currqtc]);
+				showfield(3*(currqtc+1));
+				showfield((3*(currqtc+1))+1);
+				showfield((3*(currqtc+1))+2);
+			    }
+
 			    get_time();
 			    tempc[0] = '\0';
 			    strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
@@ -1192,7 +1224,6 @@ void showfield(int fidx) {
 	}
 	show_status(qtcrow);
     }
-
     curfieldlen = strlen(fieldval);
 
     for(i=0; i<pos[posidx][2]; i++) {

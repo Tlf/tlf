@@ -1685,6 +1685,13 @@ change the hour (eg., if there is a time: 2059, and the next one is 2100), then
 all next time fields will be changed.
 .
 .TP
+.B QTC_RECV_LAZY
+If you use QTC feature, and you are on EU station in CW/SSB modes, then you can use
+this feature. In normal case, Tlf checks all received QTC lines: the time field
+must be 4 characters long, callsign and serial fields must be non-empty. If you set up
+this option, Tlf will ignore this restrictions.
+.
+.TP
 .BI CONTINENTLIST= "comma separated list of continents"
 Valid values are: SA, NA, EU, AF, AS and OC.
 .

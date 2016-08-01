@@ -259,6 +259,7 @@ char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
 char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
 char qtc_cap_calls[40] = "";
 int qtc_auto_filltime = 0;
+int qtc_recv_lazy = 0;
 
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
@@ -695,6 +696,10 @@ int databases_load()
 	    return EXIT_FAILURE;
 	}
 	readqtccalls();
+    }
+    // unset QTC_RECV_LAZY if mode is DIGIMODE
+    if (trxmode == DIGIMODE) {
+	qtc_recv_lazy = 0;
     }
     return 0;
 }
