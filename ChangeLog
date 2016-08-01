@@ -1,3 +1,59 @@
+2016-07-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/show_help.c: drop old unused implementation of show_help(),
+  fix segmentation fault if help.txt gets found in local directory
+
+2016-07-18  zcsahok <ha5cqz@freemail.hu>
+
+  * src/netkeyer.c, src/netkeyer.h: netkeyer: streamlined (part 2)  - add
+  synthactic sugar - fix buffer overflow
+
+2016-07-03  zcsahok <ha5cqz@freemail.hu>
+
+  * src/netkeyer.c: netkeyer: streamlined (part 1)
+
+2016-06-26  Nate Bargmann <n0nb@n0nb.us>
+
+  * configure.ac: Remove unwanted indentation from '--help' output
+
+  * src/calledit.c, src/callinput.c, src/getexchange.c: Fix <Home> and <End>
+  keys for call input and exchange fields
+
+  * tlf.1.in: Update the man page  Many updates to the manual page.  Many more
+  corrections and additions likely remain.
+
+2016-05-16  zcsahok <ha5cqz@freemail.hu>
+
+  * src/sendbuf.c: sendbuf.c: fix replace_n, reworked ExpandMacro
+
+2016-05-11  Colin Tuckley <colint@debian.org>
+
+  * tlf.1.in: Fix spelling errors.
+
+2016-05-09  Ervin Hegedus <airween@gmail.com>
+
+  * src/gettxinfo.c: Aligned hamlib's passband argument to the new macro:
+  RIG_PASSBAND_NORMAL
+
+2016-05-04  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/checklogfile.c: fix possible ressource leaks
+
+2016-05-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/dxcc.c: support reloading the cty.dat database  Free the g_ptr_arrays
+  for dxcc and prefix data befre reallocation
+
+2016-05-03  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/readctydata.c, src/readctydata.h: split out loading of cty database
+  from named file  That allows a better testability as we can provide a
+  specialised cty.dat file.
+
+2016-05-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/show_help.c: fix memory leak
+
 2016-04-28 Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/addmult.c: fix possible buffer overflows due to strncpy

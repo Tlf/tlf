@@ -1,3 +1,18 @@
+tlf-1.2.4.2
+===========
+
+Bugfix release.
+
+Bug fixes:
+    - fix some memory and ressource leaks in seldom used functions
+
+Enhancements:
+    - Update and fix spelling errors in man page
+    - Cleanup some code in CW sending logic
+    - Align hamlib's passband argument to new macro: RIG_PASSBAND_NORMAL 
+      (provided by the coming hamlib-3.1). That allows to switch 
+      frequency without changing the rig passband settings.
+
 tlf-1.2.4.1
 ===========
 
