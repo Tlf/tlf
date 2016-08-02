@@ -35,7 +35,6 @@
 int qtcdirection = 0;
 int next_qtc_qso;
 int qsoflags_for_qtc[MAX_QSOS];
-int nr_qsoflags_for_qtc;
 int nr_qtcsent = 0;
 
 int readqtccalls()
@@ -51,8 +50,6 @@ int readqtccalls()
     clear();
 
     qtc_init();
-
-    nr_qsoflags_for_qtc = nr_qsos;
 
     if (qtcdirection & SEND) {
 	mvprintw(4, 0, "Reading QTC sent logfile...\n");

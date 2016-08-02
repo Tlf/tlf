@@ -77,7 +77,6 @@ typedef struct {
   int attr;		// meta attr: 0 => not nopied, 1 => copied
 } t_qtc_ry_line;
 
-extern int nr_qsoflags_for_qtc;		// number of lines in qsoflags_for_qtc[]
 extern int next_qtc_qso;		// the next non-sent QSO, which can
 					// be send next as QTC
 extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs
