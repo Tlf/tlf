@@ -1,3 +1,17 @@
+2016-08-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/qtcvars.h, src/readqtccalls.c: drop unused variable
+
+2016-08-01  Ervin Hegedus <airween@gmail.com>
+
+  * doc/README_QTC.txt, rules/waedc_eu, src/main.c, src/parse_logcfg.c,
+  src/qtcvars.h, src/qtcwin.c, tlf.1.in: QTC_RECV_LAZY config option to skip
+  the RECV restrictions
+
+2016-08-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * ChangeLog, NEWS, configure.ac: Prepare for tlf-1.2.4.2 bug fix release
+
 2016-07-28  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/show_help.c: drop old unused implementation of show_help(),

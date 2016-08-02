@@ -1,3 +1,11 @@
+tlf-1.2.4.3
+===========
+
+New feature:
+    - QTC_RECV_LAZY keyword. Setting it skips check of received QTC records
+      for completion. Useful during rx if you record the audio during qso
+      and complete the QTC records later.
+
 tlf-1.2.4.2
 ===========
 
