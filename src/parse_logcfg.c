@@ -68,7 +68,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 233	/* commands in list */
+#define  MAX_COMMANDS 234	/* commands in list */
 
 
 int read_logcfg(void)
@@ -298,7 +298,7 @@ int parse_logcfg(char *inputbuffer)
     extern int bmautograb;
     extern int sprint_mode;
     extern char fldigi_url[50];
-
+    extern unsigned char rigptt;
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -527,14 +527,15 @@ int parse_logcfg(char *inputbuffer)
 	"QTCREC_RECORD",
 	"QTCREC_RECORD_COMMAND",
 	"EXCLUDE_MULTILIST",
-	"S&P_CALL_MSG",
+	"S&P_CALL_MSG",		/* 225 */
 	"QTC_CAP_CALLS",
 	"QTC_AUTO_FILLTIME",
 	"BMAUTOGRAB",
 	"BMAUTOADD",
 	"QTC_RECV_LAZY",		/* 230 */
 	"SPRINTMODE",
-	"FLDIGI"
+	"FLDIGI",
+	"RIGPTT"
     };
 
     char **fields;
@@ -1823,6 +1824,10 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    keyerport = FLDIGI;
 #endif
+	    break;
+    }
+    case 233:{
+	    rigptt |= (1 << 0);		/* bit 0 set--CAT PTT wanted (RIGPTT) */
 	    break;
     }
     default: {

@@ -1173,6 +1173,12 @@ Clears the RIT after logging the qso.  This only works if the rig, and the
 Hamlib routine supports it (tested on the OMNI 6+).
 .
 .TP
+.B RIGPTT
+Declares that Hamlib CAT PTT capability should be checked at startup and if
+available use it to activate the radio's PTT for sending voice messages instead
+of the NetKeyer PTT.
+.
+.TP
 .BI CWBANDWIDTH= width
 Sets the CW bandwidth of your rig when changing bands.  If unset or 0 the
 default bandwidth (as determined by Hamlib) is used. (a valid bandwidth for

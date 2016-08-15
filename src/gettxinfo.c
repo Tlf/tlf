@@ -61,6 +61,7 @@ int gettxinfo(void)
     extern float bandfrequency[];
 
     extern int trx_control;
+    extern unsigned char rigptt;
 
 #ifdef HAVE_LIBHAMLIB
     freq_t rigfreq;
@@ -80,6 +81,34 @@ int gettxinfo(void)
 
     if (trx_control != 1)
 	return (0);
+
+#ifdef HAVE_LIBHAMLIB
+    /* CAT PTT wanted, available, inactive, and PTT On requested
+     * bits 0, 1, and 3 set.
+     */
+    if (rigptt == 0x0b) {
+	retval = rig_set_ptt(my_rig, RIG_VFO_CURR, RIG_PTT_ON);
+
+	/* Set PTT active bit. */
+	rigptt |= (1 << 2);		/* 0x0f */
+
+	/* Clear PTT On requested bit. */
+	rigptt &= ~(1 << 3);		/* 0x07 */
+    }
+
+    /* CAT PTT wanted, available, active and PTT Off requested
+     * bits 0, 1, 2, and 4 set.
+     */
+     if (rigptt == 0x17) {
+	retval = rig_set_ptt(my_rig, RIG_VFO_CURR, RIG_PTT_OFF);
+
+	/* Clear PTT Off requested bit. */
+	rigptt &= ~(1 << 4);		/* 0x07 */
+
+	/* Clear PTT active bit. */
+	rigptt &= ~(1 << 2);		/* 0x03 */
+    }
+#endif
 
     if (outfreq == 0) {
 
