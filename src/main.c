@@ -216,6 +216,13 @@ char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
 char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = 0;
+unsigned char rigptt = 0;	/* Bitmask for Hamlib CAT PTT
+				 * bit 0 set: CAT PTT wanted--RIGPTT in logcfg.dat (set in parse_logcfg)
+				 * bit 1 set: CAT PTT available--from rig caps (set in sendqrg)
+				 * bit 2 set: PTT active (set/unset in gettxinfo)
+				 * bit 3 set: PTT On (set/unset in callinput)
+				 * bit 4 set: PTT Off (set/unset in callinput)
+				 */
 
 char sp_return[80] = " \n";
 char cq_return[80] = " \n";

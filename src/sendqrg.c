@@ -94,17 +94,19 @@ int init_tlf_rig(void)
     extern int serial_rate;
     extern char rigportname[];
     extern int debugflag;
+    extern unsigned char rigptt;
 
     freq_t rigfreq;		/* frequency  */
     vfo_t vfo;
     int retcode;		/* generic return code from functions */
 
     const char *ptt_file = NULL, *dcd_file = NULL;
-    ptt_type_t ptt_type = RIG_PTT_NONE;
     dcd_type_t dcd_type = RIG_DCD_NONE;
 
     char *cnfparm, *cnfval;
     int rigconf_len, i;
+
+    const struct rig_caps *caps;
 
     /*
      * allocate memory, setup & open port
@@ -130,8 +132,15 @@ int init_tlf_rig(void)
 
     }
 
-    if (ptt_type != RIG_PTT_NONE)
-	my_rig->state.pttport.type.ptt = ptt_type;
+    caps = my_rig->caps;
+
+    /* If CAT PTT is wanted, test for CAT capability of rig backend. */
+    if (rigptt & (1 << 0)) {
+	if (caps->ptt_type == RIG_PTT_RIG) {
+	    rigptt |= (1 << 1);		/* bit 1 set--CAT PTT available. */
+	}
+    }
+
     if (dcd_type != RIG_DCD_NONE)
 	my_rig->state.dcdport.type.dcd = dcd_type;
     if (ptt_file)
