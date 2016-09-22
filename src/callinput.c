@@ -128,7 +128,6 @@ char callinput(void)
     extern int simulator_mode;
     extern char talkarray[5][62];
     extern int lan_active;
-    extern int cluster;
     extern int zonedisplay;
     extern int showscore_flag;
     extern int searchflg;

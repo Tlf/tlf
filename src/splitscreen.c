@@ -1277,12 +1277,10 @@ int send_cluster(void)
     extern int packetinterface;
     extern int prsock;
     extern int cluster;
-    extern int showscore_flag;
 
     char line[MAX_CMD_LEN+2] = "";
 
     cluster = CLUSTER;
-    showscore_flag = 0;
     mvprintw(24, 0,
 	     "                                                                           ");
     mvprintw(24, 0, ">");
