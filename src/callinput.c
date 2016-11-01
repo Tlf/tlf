@@ -149,15 +149,26 @@ char callinput(void)
     extern int bmautograb;
 
     static float freqstore;		/* qrg during last callsign input
-					   character, 0 if grabbed */
-    static float spotfreq;
-    static char grabbedcall[15];
-    static int already_grabbed = 0;		/* only one time */
+					   character, 0 if grabbed,
+					   used to decide if a call in input
+					   field was entered by hand or
+					   grabbed from spot list */
+
+    enum grabstate_t { NONE, IN_PROGRESS, REACHED };
+
+    struct grab_t {
+	enum grabstate_t state;
+	float spotfreq;
+	char call[15];
+    };
+
+    static struct grab_t grab =  { .state = NONE };
+
+
 
     int cury, curx;
     int i, j, ii, rc, t, x = 0;
     char instring[2] = { '\0', '\0' };
-    char dupecall[17];
     static int lastwindow;
 
 
@@ -185,6 +196,9 @@ char callinput(void)
 		printcall();
 	    }
 
+	    /* if BMAUTOADD is active and user has input a call sign
+	     * (indicated by non-zeor freqstore) check if he turns away
+	     * from frequency and if so add call to spot list */
 	    if (bmautoadd != 0 && freqstore != 0) {
 		if (strlen(hiscall) >= 3) {
 		    if (fabsf(freq-freqstore) > 0.1) {
@@ -196,23 +210,34 @@ char callinput(void)
 		}
 	    }
 
-	    if (bmautograb != 0 && *hiscall == '\0' && already_grabbed == 0) {
-		get_spot_on_qrg(grabbedcall, freq);
-		if (strlen(grabbedcall) >= 3) {
-		    strncpy(hiscall, grabbedcall, sizeof(hiscall));
-		    already_grabbed = 1;
-		    spotfreq = freq;
+	    /* if BMAUTOGRAB is active and input field is empty and a spot has
+	     * not already been grabbed here check if a spot is on freq
+	     * and pick it up if one found */
+	    if (bmautograb != 0 && *hiscall == '\0' && grab.state == NONE) {
+		get_spot_on_qrg(grab.call, freq);
+		if (strlen(grab.call) >= 3) {
+		    strncpy(hiscall, grab.call, sizeof(hiscall));
+		    grab.state = REACHED;
+		    grab.spotfreq = freq;
 
-		    strncpy(dupecall, hiscall, 16);
-		    showinfo(getctydata(dupecall));
+		    showinfo(getctydata(hiscall));
 		    printcall();
 		    searchlog(hiscall);
 		}
 	    }
 
-	    if (fabsf(freq-spotfreq) > 0.1 && already_grabbed == 1) {
-		already_grabbed = 0;
-		*grabbedcall = '\0';
+	    /* wait till freq of grabbed spot is reported back from rig.
+	     * Then go to 'reached' state' */
+	    if (grab.state == IN_PROGRESS && fabs(freq-grab.spotfreq) <= 0.1)
+		grab.state = REACHED;
+
+	    /* Check if we tune away from old freq before a grabbed spot is
+	     * reached. If so stop grab process */
+
+	    /* if we have grabbed a call from spot list and tune away
+	     * then forget about it */
+	    if (fabsf(freq-grab.spotfreq) > 0.1 && grab.state == REACHED) {
+		grab.state = NONE;
 		hiscall[0] = '\0';
 		printcall();
 		HideSearchPanel();
@@ -1025,8 +1050,8 @@ char callinput(void)
 		HideSearchPanel();
 		showinfo(0);
 
-		already_grabbed = 1;
-		spotfreq = freq;
+		grab.state = REACHED;
+		grab.spotfreq = freq;
 		break;
 	    }
 
@@ -1052,9 +1077,10 @@ char callinput(void)
 	case 7:
 	    {
 		grab_next();
+		grab.state = IN_PROGRESS;
+		grab.spotfreq = outfreq/1000.;
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(0, 2, "%s", mode);
-		already_grabbed = 1;
 		freqstore = 0;
 
 		break;
@@ -1064,9 +1090,10 @@ char callinput(void)
 	case 231:
 	    {
 		grabspot();
+		grab.state = IN_PROGRESS;
+		grab.spotfreq = outfreq/1000.;
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(0, 2, "%s", mode);
-		already_grabbed = 1;
 		freqstore = 0;
 
 		break;
