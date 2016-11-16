@@ -110,7 +110,7 @@ void edit_last(void)
     /* start with last QSO */
     get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
 
-    while ((j != 27) && (j != '\n' || j != KEY_ENTER)) {
+    while (j != 27 && j != '\n' && j != KEY_ENTER) {
 	highlight_line(editline, editbuffer, b);
 
 	j = key_get();
