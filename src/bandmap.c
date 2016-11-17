@@ -34,7 +34,7 @@
 #include "ui_utils.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
-				   will be counted a s the same QRG */
+				   will be counted as the same QRG */
 
 #define SPOT_COLUMN_WIDTH 22
 #define SPOT_FREQ_WIDTH 7
@@ -286,7 +286,7 @@ gint	cmp_freq(spot *a, spot *b) {
     unsigned int af = a->freq;
     unsigned int bf = b->freq;
 
-    if (af < bf)    return -1;
+    if (af < bf)  return -1;
     if (af > bf)  return  1;
     return 0;
 }
@@ -616,7 +616,7 @@ void bandmap_show() {
  * - all mode  on/off
  * - dupes     on/off
  *
- * If more entries to show than place in window, show around current frequency
+ * If more entries to show than room in window, show around current frequency
  *
  * mark entries according to age, source and worked state. Mark new multis
  * - new 	brigth blue
@@ -742,7 +742,7 @@ void bandmap_show() {
     for (i = 0; i < spots->len; i++) {
 	data = g_ptr_array_index( spots, i );
 
-	if (data->freq < (centerfrequency*1000 - TOLERANCE))
+	if (data->freq <= (centerfrequency*1000 - TOLERANCE))
 	    below_qrg++;
 	else
 	    break;
