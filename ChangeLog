@@ -1,4 +1,27 @@
-2016-08-02  Thomas Beierlein <tomjbe@gentoo.org>
+2016-11-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: fix bandmap display  
+  
+  If stations in bandmap are really close to each other (0.1 kcs) after a grab
+  from bandmap tlf showed the call on the frequency below as actual frequency.
+  The above fixes the behaviour and does some minor corrections on comments.
+
+2016-11-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/edit_last.c: Fix bug: Enter did not end editing of last QSOs. fixed.
+
+2016-11-01  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: Fix bug: grab_next() not working without BMAUTOGRAB set  
+  
+  The grab functionality did not work if BMAUTOGRAB was not set. Closer
+  inspection showed that it worked shortly but got overridden by the tune-away
+  functionality. The main reason was the time delay between requesting the
+  change to a new QRG and the read back of the actual QRG. 
+  To fix it we  introduced a small state machine for grabbing spots with i
+  an intermediate IN_PROGRESS state which changes to REACHED as soon as 
+  the actual QRG reaches the spot QRG. And only then the tune-away 
+  functionality can do their work.
 
   * src/qtcvars.h, src/readqtccalls.c: drop unused variable
 

@@ -1,3 +1,14 @@
+tlf-1.4.2.4
+===========
+
+Bugfix release.
+
+Bug fixes:
+    - Do not change scorewindow state when sending to DX cluster. Tnx HA2OS
+    - Fix Grab function if BMAUTOGRAB not set.
+    - Fix bandmap display if grabbed station is very near to other ones
+      in bandmap. Tnx Fred DH5FS.
+
 tlf-1.2.4.3
 ===========
 
