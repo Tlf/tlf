@@ -236,7 +236,6 @@ void *logit(void *ptr)
 	    HideSearchPanel();
 	}
     }
-    return(NULL);
 }
 
 /** reprint comment field */

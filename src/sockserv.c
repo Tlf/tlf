@@ -454,7 +454,6 @@ long resolve(char *hostname)
 	} else {
 	    valid = 0;
 	    break;
-	    a[i] = 0;
 	}
     }
     if (valid) {
