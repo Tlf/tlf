@@ -68,7 +68,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 232	/* commands in list */
+#define  MAX_COMMANDS 233	/* commands in list */
 
 
 int read_logcfg(void)
@@ -297,6 +297,8 @@ int parse_logcfg(char *inputbuffer)
     extern int bmautoadd;
     extern int bmautograb;
     extern int sprint_mode;
+    extern char fldigi_url[50];
+
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -531,7 +533,8 @@ int parse_logcfg(char *inputbuffer)
 	"BMAUTOGRAB",
 	"BMAUTOADD",
 	"QTC_RECV_LAZY",		/* 230 */
-	"SPRINTMODE"
+	"SPRINTMODE",
+	"FLDIGI"
     };
 
     char **fields;
@@ -1806,6 +1809,19 @@ int parse_logcfg(char *inputbuffer)
     }
     case 231: {
 	    sprint_mode = 1;
+	    break;
+    }
+    case 232:{
+		PARAMETER_NEEDED(teststring);
+#ifndef HAVE_LIBXMLRPC
+		showmsg ("WARNING: XMLRPC not compiled - skipping setup.");
+		sleep(2);
+		keyerport = NO_KEYER;
+#else
+		g_strlcpy(fldigi_url, g_strchomp(fields[1]),
+			sizeof(fldigi_url));
+		keyerport = FLDIGI;
+#endif
 	    break;
     }
     default: {

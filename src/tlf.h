@@ -29,6 +29,7 @@
 #define ORION_KEYER 5 	/* deprecated */
 #define K2_KEYER 6 	/* deprecated */
 #define GMFSK 7
+#define FLDIGI 8
 
 #define SINGLE 0        /* single op */
 #define MULTI 1         /* multi op / single tx */

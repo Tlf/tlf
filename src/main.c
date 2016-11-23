@@ -359,6 +359,9 @@ int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;
 
+/*----------------------------------fldigi---------------------------------*/
+char fldigi_url[50] = "";
+
 /*---------------------------------simulator-------------------------------*/
 int simulator = 0;
 int simulator_mode = 0;

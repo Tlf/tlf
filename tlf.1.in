@@ -1784,6 +1784,13 @@ BANDMAP settings to control if it should also grab dupes.
 If set, Tlf will automatically switch its mode between LOG and S&P after every
 QSO.
 .
+.TP
+.B FLDIGI
+If you work in RTTY (or any other digital modes), you can communicate with Fldigi through XMLRPC. To activate
+the interface set up Fldigi's XMLRPC URL with this keyword. In most cases, the regular usage of this keyword is:
+.BI
+  FLDIGI=http://localhost:7362/RPC2
+.
 .SH FILES
 .
 \fB@prefix@/share/@PACKAGE@/logcfg.dat\fR is a recent example of the
