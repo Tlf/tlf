@@ -22,9 +22,15 @@
 #ifndef FLDIGIXMLRPC_H
 #define FLDIGIXMLRPC_H
 
+int fldigi_xmlrpc_init();
+int fldigi_xmlrpc_cleanup();
+
 int fldigi_xmlrpc_get_carrier(void);
 int fldigi_get_carrier();
+int fldigi_get_shift_freq();
+int fldigi_get_rx_text(char * line);
+int fldigi_send_text(char * line);
+void fldigi_rx();
 void xmlrpc_showinfo();
-
 
 #endif /* end of include guard: FLDIGIXMLRPC_H */

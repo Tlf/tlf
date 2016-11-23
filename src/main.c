@@ -748,6 +748,19 @@ void hamlib_init()
 #endif				/* HAVE_LIBHAMLIB */
 }
 
+void fldigi_init() {
+#ifdef HAVE_LIBXMLRPC
+    int status;
+
+    if (keyerport == FLDIGI) {
+	xmlrpc_showinfo();
+	status = fldigi_xmlrpc_init();
+	if (status != 0) {
+	    keyerport = NO_KEYER;
+	}
+    }
+#endif
+}
 
 void lan_init()
 {
@@ -859,6 +872,12 @@ void tlf_cleanup()
 
 #endif
 
+#ifdef HAVE_LIBXMLRPC
+    if (keyerport == FLDIGI) {
+	fldigi_xmlrpc_cleanup();
+    }
+#endif
+
     endwin();
     tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 }
@@ -915,8 +934,8 @@ int main(int argc, char *argv[])
 //              if (strlen(synclogfile) > 0)
 //                      synclog(synclogfile);
 
-    xmlrpc_showinfo();
     hamlib_init();
+    fldigi_init();
     lan_init();
     keyer_init();
 

@@ -37,6 +37,7 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
+#include "fldigixmlrpc.h"
 
 static int fdcont;		// global for this file: tty file descriptor
 static char ry_term[5][50] = { "", "", "", "", "" };
@@ -284,6 +285,12 @@ int rx_rtty()
 	    for (j = 0; j < i; j++) {
 		ry_addchar( line[j] );
 	    }
+	}
+    }
+    else if (keyerport == FLDIGI) {
+	i = fldigi_get_rx_text(line);
+	for (j = 0; j < i; j++) {
+	    ry_addchar( line[j] );
 	}
     }
 

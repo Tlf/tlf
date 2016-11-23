@@ -27,6 +27,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
+#include "fldigixmlrpc.h"
 
 int stoptx(void)
 {
@@ -34,12 +35,11 @@ int stoptx(void)
   	extern int keyerport;
 
 
- 	if (trxmode != CWMODE){
- 		return(1);
+	if (keyerport == FLDIGI && trxmode == DIGIMODE) {
+	    fldigi_rx();
  	}
-
-
-	if (keyerport == NET_KEYER) {
+	else if (trxmode == CWMODE) {
+	    if (keyerport == NET_KEYER) {
 
 		if (netkeyer (K_ABORT, NULL) < 0) {
 
@@ -48,6 +48,10 @@ int stoptx(void)
 			clear_display();
 
 		}
+	    }
+	}
+	else {
+	    return(1);
 	}
 	return(0);
 }

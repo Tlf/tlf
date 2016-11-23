@@ -78,7 +78,7 @@ void *background_process(void *ptr)
     static int i, t;
     static char prmessage[256];
     static int lantimesync = 0;
-    static int fldigi_rpc_cnt;
+    static int fldigi_rpc_cnt = 0;
 
     int n;
 
@@ -102,7 +102,7 @@ void *background_process(void *ptr)
 	}
 
 	if (trxmode == DIGIMODE
-	    && (keyerport == MFJ1278_KEYER || keyerport == GMFSK))
+	    && (keyerport == MFJ1278_KEYER || keyerport == GMFSK || keyerport == FLDIGI))
 	    rx_rtty();
 
 	/*
@@ -113,12 +113,12 @@ void *background_process(void *ptr)
 	 * only need at every 2nd cycle
 	 * see fldigixmlrpc.[ch]
 	 */
-	if (trxmode == DIGIMODE && keyerport == GMFSK && trx_control == 1) {
-	    if (fldigi_rpc_cnt == 2) {
+	if (trxmode == DIGIMODE && (keyerport == GMFSK || keyerport == FLDIGI)
+		&& trx_control == 1) {
+	    if (fldigi_rpc_cnt == 0) {
 		fldigi_xmlrpc_get_carrier();
-		fldigi_rpc_cnt = 0;
 	    }
-	    fldigi_rpc_cnt++;
+	    fldigi_rpc_cnt = 1 - fldigi_rpc_cnt;
 	}
 
 	if (stop_backgrnd_process == 0) {

@@ -28,6 +28,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
+#include "fldigixmlrpc.h"
 
 int write_keyer(void)
 {
@@ -48,6 +49,12 @@ int write_keyer(void)
 
     if (data_ready == 1) {
 
+	if (keyerport == FLDIGI && trxmode == DIGIMODE) {
+	    fldigi_send_text(wkeyerbuffer);
+	    wkeyerbuffer[0] = '\0';
+	    data_ready = 0;
+	}
+	else {
 	if (keyerport == NET_KEYER) {
 	    netkeyer(K_MESSAGE, wkeyerbuffer);
 	    wkeyerbuffer[0] = '\0';
@@ -81,8 +88,7 @@ int write_keyer(void)
 
 	    wkeyerbuffer[0] = '\0';
 	    data_ready = 0;
-
-
+	    }
 	}
     }
 

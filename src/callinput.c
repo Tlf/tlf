@@ -191,7 +191,7 @@ char callinput(void)
 	    time_update();
 
 	    if (trxmode == DIGIMODE && (keyerport == GMFSK
-		    || keyerport == MFJ1278_KEYER)) {
+		    || keyerport == MFJ1278_KEYER || keyerport == FLDIGI)) {
 		show_rtty();
 		printcall();
 	    }
@@ -1234,7 +1234,7 @@ char callinput(void)
 	}
 
 	if (trxmode == DIGIMODE && (keyerport == GMFSK
-		|| keyerport == MFJ1278_KEYER)) {
+		|| keyerport == MFJ1278_KEYER || keyerport == FLDIGI)) {
 	    show_rtty();
 	    refreshp();
 	}

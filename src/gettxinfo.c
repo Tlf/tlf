@@ -73,6 +73,8 @@ int gettxinfo(void)
 #endif
 
     static int oldbandinx;
+    static int fldigi_carrier;
+    static int fldigi_shift_freq;
 
     void send_bandswitch(int freq);
 
@@ -87,7 +89,8 @@ int gettxinfo(void)
 	retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
 	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL) {
 	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
-	    if (trxmode == DIGIMODE && keyerport == GMFSK && retval == RIG_OK) {
+	    if (trxmode == DIGIMODE && (keyerport == GMFSK || keyerport == FLDIGI)
+			&& retval == RIG_OK) {
 		retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, (rmode_t *)&rigmode, &bwidth);
 		if (retvalmode != RIG_OK) {
 		    rigmode = RIG_MODE_NONE;
@@ -95,8 +98,15 @@ int gettxinfo(void)
 	    }
 	}
 
-	if (trxmode == DIGIMODE && keyerport == GMFSK) {
-	    rigfreq += fldigi_get_carrier();
+	if (trxmode == DIGIMODE && (keyerport == GMFSK || keyerport == FLDIGI)) {
+	    fldigi_carrier = fldigi_get_carrier();
+	    rigfreq += (freq_t)fldigi_carrier;
+	    if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {
+		fldigi_shift_freq = fldigi_get_shift_freq();
+		if (fldigi_shift_freq != 0) {
+		    retval = rig_set_freq(my_rig, RIG_VFO_CURR, ((freq_t)rigfreq + (freq_t)fldigi_shift_freq));
+		}
+	    }
 	}
 
 	if (retval != RIG_OK || rigfreq < 0.1) {
@@ -182,15 +192,17 @@ int gettxinfo(void)
 		    sleep(1);
 		}
 	    } else if (trxmode == DIGIMODE) {
-		retval =
-		    rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,
+                if ((rigmode & (RIG_MODE_LSB | RIG_MODE_USB | RIG_MODE_RTTY | RIG_MODE_RTTYR)) != rigmode) {
+		    retval =
+		    	rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,
 				 TLF_DEFAULT_PASSBAND);
 
-		if (retval != RIG_OK) {
-		    mvprintw(24, 0,
+		    if (retval != RIG_OK) {
+			mvprintw(24, 0,
 			     "Problem with rig link: set mode!\n");
-		    refreshp();
-		    sleep(1);
+			refreshp();
+		    	sleep(1);
+                    }
 		}
 
 	    } else {
