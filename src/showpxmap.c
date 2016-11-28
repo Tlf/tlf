@@ -60,7 +60,7 @@ int show_mults(void)
 
 	ch = key_get();
 
-	while (ch != '\n' || ch != KEY_ENTER) {
+	while (ch != '\n' && ch != KEY_ENTER) {
 
 	    if (ch == 27)
 		break;
@@ -136,6 +136,7 @@ int show_mults(void)
 
 	}			// end while
 
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	for (l = 1; l < 6; l++)
 	    mvprintw(l, 0,
 		     "                                                                                ");

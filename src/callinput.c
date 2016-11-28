@@ -1305,7 +1305,7 @@ int autosend()
     timeout = (1.2 / GetCWSpeed()) * cw_message_length(hiscall);
 
     x = -1;
-    while ((x != 27) && (x != '\n' || x != KEY_ENTER)) {
+    while ((x != 27) && (x != '\n' && x != KEY_ENTER)) {
 	x = -1;
 	while ((x == -1) && (g_timer_elapsed(timer, NULL) < timeout)) {
 
