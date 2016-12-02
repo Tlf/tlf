@@ -432,7 +432,7 @@ int score()
 
 	    qrb(s1long, s1lat, s2long, s2lat, &distance, &azimuth);
 
-	    points = ceil(distance/500.0);
+	    points = (int) ceil(distance/500.0);
 	}
 
 	return points;

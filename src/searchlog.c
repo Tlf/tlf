@@ -396,7 +396,7 @@ void searchlog(char *searchstring)
 	    if (s_inputbuffer[1] == '3' && s_inputbuffer[2] == '0')
 		j = 9;
 
-	    if ((j > 0) && (j < 10)) {
+	    if ((j > 0) && (j < 7)) {  /* no WARC band */
 		if (qtcdirection > 0) {
 		    qtccall[0] = '\0';
 		    z = 12;	// first pos of callsign

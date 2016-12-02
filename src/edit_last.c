@@ -82,7 +82,7 @@ void putback_qso (int nr, char *buffer)
 	refreshp();
 	sleep(2);
     }else {
-	fseek(fp, nr * LOGLINELEN, SEEK_SET);
+	fseek(fp, (long)nr * LOGLINELEN, SEEK_SET);
 	fputs(buffer, fp);
 	fputs("\n", fp);
 

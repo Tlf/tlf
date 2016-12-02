@@ -52,7 +52,7 @@ void scroll_log(void)
 
 	inputbuffer[0] = '\0';
 
-	if (fseek(fp, -1 * ii * LOGLINELEN, SEEK_END) == 0)
+	if (fseek(fp, -1L * ii * LOGLINELEN, SEEK_END) == 0)
 	    rp = fgets(inputbuffer, 90, fp);
 	else
 	    strcpy(inputbuffer,

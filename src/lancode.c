@@ -437,7 +437,7 @@ int send_time(void)
     long now;
     char timebuffer[14];
 
-    now = (long) (time(0) + (timeoffset * 3600));
+    now = (long) (time(0) + (timeoffset * 3600L));
 
     sprintf(timebuffer, "%ld", now);
     strcat(timebuffer, " ");

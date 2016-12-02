@@ -247,10 +247,10 @@ void *background_process(void *ptr)
 			if (lantimesync == 1)
 			    timecorr =
 				((4 * timecorr) + lantime -
-				 (time(0) + (timeoffset * 3600))) / 5;
+				 (time(0) + (timeoffset * 3600L))) / 5;
 			else {
 			    timecorr =
-				lantime - (time(0) + (timeoffset * 3600));
+				lantime - (time(0) + (timeoffset * 3600L));
 			    lantimesync = 1;
 			}
 

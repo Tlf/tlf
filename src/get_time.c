@@ -35,7 +35,7 @@ void get_time(void)
     time_t now;
 
 //time (&now);
-    now = (time(0) + (timeoffset * 3600) + timecorr);
+    now = (time(0) + (timeoffset * 3600L) + timecorr);
 
     time_ptr =  gmtime(&now);
 }

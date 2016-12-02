@@ -925,7 +925,7 @@ char callinput(void)
 		netkeyer(K_TUNE, buff);	// cw on
 		g_free(buff);
 
-		count = TUNE_UP / 0.25;
+		count = (int) (TUNE_UP / 0.25);
 
 		while (count != 0) {
 		    usleep( 250000 );

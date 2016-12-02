@@ -67,7 +67,7 @@ void grabspot(void)
 
 	    outfreq = data -> freq;
 	    outfreq -= fldigi_get_carrier();
-	    send_bandswitch( outfreq );
+	    send_bandswitch( (int) outfreq );
 
 	    strcpy( hiscall, data->call );
 
@@ -126,7 +126,7 @@ void grab_next(void)
 
 	outfreq = data -> freq;
 	outfreq -= fldigi_get_carrier();
-	send_bandswitch( outfreq );
+	send_bandswitch( (int) outfreq );
 
 	strcpy( hiscall, data->call );
 
