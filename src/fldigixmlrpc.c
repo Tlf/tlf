@@ -136,7 +136,7 @@ int fldigi_xmlrpc_query(xmlrpc_res * local_result, xmlrpc_env * local_env,
     if connerr had been set up to 1, that means an error
     occured at last xmlrpc_call() method
     if that true, then we count the number of calling this
-    function (xmlrpc()), if counter reaches 100, then clear
+    function (xmlrpc()), if counter reaches 10, then clear
     it, and try again
     this handles the xmlrpc_call() errors, eg. Fldigi is
     unreacheable, but it will check again and again, not
@@ -190,7 +190,8 @@ int fldigi_xmlrpc_query(xmlrpc_res * local_result, xmlrpc_env * local_env,
 
 	va_end(argptr);
 
-	callresult = xmlrpc_client_call_server_params(local_env, serverInfoP, methodname, pcall_array);
+	callresult = xmlrpc_client_call_server_params(local_env, serverInfoP,
+		methodname, pcall_array);
 	if (local_env->fault_occurred) {
 	    // error till xmlrpc_call
 	    connerr = 1;
@@ -211,15 +212,21 @@ int fldigi_xmlrpc_query(xmlrpc_res * local_result, xmlrpc_env * local_env,
 	    }
 	    switch(restype) {
 		// int
-		case XMLRPC_TYPE_INT:    xmlrpc_read_int(local_env, callresult, &local_result->intval);
-					 break;
+		case XMLRPC_TYPE_INT:
+		    xmlrpc_read_int(local_env, callresult,
+			    &local_result->intval);
+		    break;
 		// string
-		case XMLRPC_TYPE_STRING: xmlrpc_read_string(local_env, callresult, &local_result->stringval);
-					 break;
+		case XMLRPC_TYPE_STRING:
+		    xmlrpc_read_string(local_env, callresult,
+			    &local_result->stringval);
+		    break;
 		// byte stream
-		case XMLRPC_TYPE_BASE64: xmlrpc_read_base64(local_env, callresult, &bytesize, &local_result->byteval);
-					 local_result->intval = (int)bytesize;
-					 break;
+		case XMLRPC_TYPE_BASE64:
+		    xmlrpc_read_base64(local_env, callresult,
+			    &bytesize, &local_result->byteval);
+		    local_result->intval = (int)bytesize;
+		    break;
 	    }
 	    xmlrpc_DECREF(callresult);
 	}
@@ -236,7 +243,8 @@ int fldigi_xmlrpc_query(xmlrpc_res * local_result, xmlrpc_env * local_env,
 }
 #endif
 
-void fldigi_rx() { /* FIXME: better name may be fldigi_to_rx() */
+/* command fldigi to RX now */
+void fldigi_to_rx() {
 #ifdef HAVE_LIBXMLRPC
     xmlrpc_res result;
     xmlrpc_env env;
@@ -253,13 +261,6 @@ int fldigi_send_text(char * line) {
 #ifdef HAVE_LIBXMLRPC
     xmlrpc_res result;
     xmlrpc_env env;
-    int len;
-
-    len = strlen(line);  /* FIXME: is line long enough to add another
-			    two characters? */
-    line[len++] = '^';  // need for Fldigi
-    line[len++] = 'r';  // STOP TX
-    line[len]   = '\0';
 
     rc = fldigi_xmlrpc_query(&result, &env, "main.get_trx_state", "");
     if (rc != 0) {
@@ -286,10 +287,16 @@ int fldigi_send_text(char * line) {
     if (rc != 0) {
 	return -1;
     }
+    /* switch to rx afterwards */
+    rc = fldigi_xmlrpc_query(&result, &env, "text.add_tx", "s", "^r");
+    if (rc != 0) {
+	return -1;
+    }
 
     if (result.stringval != NULL) {
 	free((void *)result.stringval);
     }
+    /* switch to tx */
     rc = fldigi_xmlrpc_query(&result, &env, "main.tx", "");
 
     if (result.stringval != NULL) {
@@ -320,7 +327,8 @@ int fldigi_get_rx_text(char * line) {
     }
     else {
 	if (lastpos < textlen) {
-	    rc = fldigi_xmlrpc_query(&result, &env, "text.get_rx", "dd", lastpos, textlen);
+	    rc = fldigi_xmlrpc_query(&result, &env, "text.get_rx", "dd",
+		    lastpos, textlen);
 	    if (rc != 0) {
 		return 0;
 	    }
@@ -369,9 +377,12 @@ int fldigi_xmlrpc_get_carrier() {
 #ifdef HAVE_LIBHAMLIB
     if (trx_control > 0) {
 	if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {
-	    if (fldigi_var_carrier != CENTER_FREQ && abs(CENTER_FREQ - fldigi_var_carrier) > MAXSHIFT) {
+	    if (fldigi_var_carrier != CENTER_FREQ &&
+		    abs(CENTER_FREQ - fldigi_var_carrier) > MAXSHIFT) {
 		if (fldigi_var_shift_freq == 0) {
-		    rc = fldigi_xmlrpc_query(&result, &env, "modem.set_carrier", "d", (xmlrpc_int32) CENTER_FREQ);
+		    rc = fldigi_xmlrpc_query(&result, &env,
+			    "modem.set_carrier", "d",
+			    (xmlrpc_int32) CENTER_FREQ);
 		    if (rc != 0) {
 			return 0;
 		    }
