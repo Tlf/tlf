@@ -360,7 +360,7 @@ int rig_comm_error = 0;
 int rig_comm_success = 0;
 
 /*----------------------------------fldigi---------------------------------*/
-char fldigi_url[50] = "";
+char fldigi_url[50] = "http://localhost:7362/RPC2";
 
 /*---------------------------------simulator-------------------------------*/
 int simulator = 0;

@@ -1786,9 +1786,12 @@ QSO.
 .
 .TP
 .B FLDIGI
-If you work in RTTY (or any other digital modes), you can communicate with Fldigi through XMLRPC. To activate
-the interface set up Fldigi's XMLRPC URL with this keyword. In most cases, the regular usage of this keyword is:
-.BI
+If you work in RTTY (or any other digital modes), you can communicate with 
+Fldigi through XMLRPC. The FLDIGI keyword will activate the interface.
+By default it connects to http://localhost:7362/RPC2 .
+
+If you run fldigi's xmlrpc server on an different port use
+.BI 
   FLDIGI=http://localhost:7362/RPC2
 .
 .SH FILES

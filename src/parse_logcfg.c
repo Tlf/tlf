@@ -1812,15 +1812,16 @@ int parse_logcfg(char *inputbuffer)
 	    break;
     }
     case 232:{
-		PARAMETER_NEEDED(teststring);
 #ifndef HAVE_LIBXMLRPC
-		showmsg ("WARNING: XMLRPC not compiled - skipping setup.");
-		sleep(2);
-		keyerport = NO_KEYER;
+	    showmsg ("WARNING: XMLRPC not compiled - skipping setup.");
+	    sleep(2);
+	    keyerport = NO_KEYER;
 #else
+	    if (fields[1] != NULL) {
 		g_strlcpy(fldigi_url, g_strchomp(fields[1]),
 			sizeof(fldigi_url));
-		keyerport = FLDIGI;
+	    }
+	    keyerport = FLDIGI;
 #endif
 	    break;
     }
