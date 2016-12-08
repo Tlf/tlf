@@ -296,6 +296,7 @@ int parse_logcfg(char *inputbuffer)
     extern int pfxmultab;
     extern int bmautoadd;
     extern int bmautograb;
+    extern unsigned char rigptt;
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -524,12 +525,13 @@ int parse_logcfg(char *inputbuffer)
 	"QTCREC_RECORD",
 	"QTCREC_RECORD_COMMAND",
 	"EXCLUDE_MULTILIST",
-	"S&P_CALL_MSG",
+	"S&P_CALL_MSG",		/* 225 */
 	"QTC_CAP_CALLS",
 	"QTC_AUTO_FILLTIME",
 	"BMAUTOGRAB",
 	"BMAUTOADD",
-	"QTC_RECV_LAZY"		/* 230 */
+	"QTC_RECV_LAZY",	/* 230 */
+	"RIGPTT"
     };
 
     char **fields;
@@ -1800,6 +1802,10 @@ int parse_logcfg(char *inputbuffer)
     }
     case 230: {
 	    qtc_recv_lazy = 1;
+	    break;
+    }
+    case 231: {
+	    rigptt |= (1 << 0);		/* bit 0 set--CAT PTT wanted (RIGPTT) */
 	    break;
     }
     default: {

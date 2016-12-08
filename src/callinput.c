@@ -1379,6 +1379,7 @@ int play_file(char *audiofile)
 {
 
     extern int txdelay;
+    extern unsigned char rigptt;
 
     int fd,rc;
     char playcommand[120];
@@ -1396,11 +1397,36 @@ int play_file(char *audiofile)
 	else {
 	   sprintf( playcommand, "play_vk %s", audiofile);
 	}
+#ifdef HAVE_LIBHAMLIB
+	/* CAT PTT wanted and available, use it. */
+	if (rigptt == 0x03) {
+	    /* Request PTT On */
+	    rigptt |= (1 << 3);		/* 0x0b */
+	}
+	else {		/* Fall back to netkeyer interface */
+#endif
 	netkeyer(K_PTT, "1");	// ptt on
+#ifdef HAVE_LIBHAMLIB
+	}
+#endif
+
 	usleep(txdelay * 1000);
 	rc=system(playcommand);
 	printcall();
+
+#ifdef HAVE_LIBHAMLIB
+	/* CAT PTT wanted, available, and active. */
+	if (rigptt == 0x07) {
+
+	    /* Request PTT Off */
+	    rigptt |= (1 << 4);		/* 0x17 */
+	}
+	else {		/* Fall back to netkeyer interface */
+#endif
 	netkeyer(K_PTT, "0");	// ptt off
+#ifdef HAVE_LIBHAMLIB
+	}
+#endif
     }
 
     return (0);
