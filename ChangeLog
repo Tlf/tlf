@@ -1,3 +1,17 @@
+
+2016-12-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/callinput.c, src/edit_last.c, src/get_time.c,
+  src/getmessages.c, src/grabspot.c, src/lancode.c, src/score.c,
+  src/scroll_log.c, src/searchlog.c: Cleanup  
+  - fix type mismatches for 64 bit compilers
+  * src/sendbuf.c: cleanup some external declarations
+
+2016-11-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/showpxmap.c: Fix bug: autosend did not work as Enter
+  key was wrongly checked
+
 2016-11-17  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/bandmap.c: fix bandmap display  
