@@ -69,18 +69,12 @@
 
 
 SCREEN *mainscreen;
-SCREEN *packetscreen;
-WINDOW *sclwin, *entwin;
 
 extern int lan_active;
 
-int prsock = 0;
 char pr_hostaddress[48] = "131.155.192.179";
 char *config_file = NULL;
 int portnum = 0;
-struct tln_logline *loghead = NULL;
-struct tln_logline *logtail = NULL;
-struct tln_logline *viewing = NULL;
 
 int use_rxvt = 0;
 int use_xterm = 0;
@@ -327,11 +321,9 @@ int nr_of_spots;			/* Anzahl Lines in spot_ptr array */
 char lastwwv[120] = "";
 int packetinterface = 0;
 int fdSertnc = 0;
-int fdFIFO = 0;
 int tncport = 1;
 char tncportname[40];
 char rigconf[80];
-int in_packetclient;
 int tnc_serial_rate = 2400;
 char clusterlogin[80] = "";
 int bmautoadd = 0;

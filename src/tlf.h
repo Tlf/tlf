@@ -144,16 +144,6 @@ struct worked_t {
     int country; 		/*< its country number */
 };
 
-#ifndef TLN_LOGLINE
-#define TLN_LOGLINE
-struct tln_logline {
-    struct tln_logline *next;
-    struct tln_logline *prev;
-    char *text;
-    int attr;
-} ;
-#endif
-
 
 #define MAXPFXNUMMULT 30
 typedef struct {

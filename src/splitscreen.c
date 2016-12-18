@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2016           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@
 /* Uses ncurses, so hopefully compatible with much */
 /* dave brown n2rjt (dcb@vectorbd.com) wrote most of this */
 /* TLF integration and TNC interface by PA0RCT   07/30/2002 */
+/* Adaption to ncurses 6 by DL1JBE 2016 */
 
 
 #define VERSIONSPLIT "V1.4.1 5/18/96 - N2RJT"
@@ -43,12 +45,26 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
+struct tln_logline {
+    struct tln_logline *next;
+    struct tln_logline *prev;
+    char *text;
+    int attr;
+} ;
+
 
 pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+int prsock = 0;
+int fdFIFO = 0;
+
+WINDOW *sclwin, *entwin;
+SCREEN *packetscreen;
+
+int in_packetclient;
+
 int currow;
 int curcol;
-int maxtln_loglines = DEFAULTTLN_LOGLINES;
 int attr[3];
 int color[3][2];
 int curattr = 0;
@@ -57,7 +73,11 @@ char outbuffer[82];
 char lanflag;
 int lanspotflg = 0;
 
+int maxtln_loglines = DEFAULTTLN_LOGLINES;
 int tln_loglines = 0;
+struct tln_logline *loghead = NULL;
+struct tln_logline *logtail = NULL;
+struct tln_logline *viewing = NULL;
 
 int view_state = STATE_EDITING;
 char tln_input_buffer[2 * BUFFERSIZE];
@@ -65,9 +85,6 @@ char tln_input_buffer[2 * BUFFERSIZE];
 void addlog(char *s)
 {
     extern char lastwwv[];
-    extern struct tln_logline *loghead;
-    extern struct tln_logline *logtail;
-    extern struct tln_logline *viewing;
     extern char spot_ptr[MAX_SPOTS][82];
     extern char lastmsg[];
     extern int nr_of_spots;
@@ -151,8 +168,6 @@ void addlog(char *s)
 
 int logattr(void)
 {
-    extern struct tln_logline *viewing;
-
     if (!viewing)
 	return 0;
     else
@@ -161,9 +176,6 @@ int logattr(void)
 
 char *firstlog(void)
 {
-    extern struct tln_logline *loghead;
-    extern struct tln_logline *viewing;
-
     viewing = loghead;
     view_state = STATE_VIEWING;
     return viewing->text;
@@ -171,9 +183,6 @@ char *firstlog(void)
 
 char *lastlog(void)
 {
-    extern struct tln_logline *logtail;
-    extern struct tln_logline *viewing;
-
     viewing = logtail;
     view_state = STATE_VIEWING;
     return viewing->text;
@@ -181,10 +190,6 @@ char *lastlog(void)
 
 char *nextlog(void)
 {
-    extern struct tln_logline *loghead;
-    extern struct tln_logline *logtail;
-    extern struct tln_logline *viewing;
-
     if (view_state == STATE_EDITING)
 	viewing = loghead;
     else if (viewing)
@@ -200,10 +205,6 @@ char *nextlog(void)
 
 char *prevlog(void)
 {
-    extern struct tln_logline *loghead;
-    extern struct tln_logline *logtail;
-    extern struct tln_logline *viewing;
-
     if (view_state == STATE_EDITING)
 	viewing = logtail;
     else if (viewing)
@@ -219,9 +220,6 @@ char *prevlog(void)
 
 void start_editing(void)
 {
-    extern struct tln_logline *viewing;
-    extern WINDOW *entwin;
-
     werase(entwin);
     currow = curcol = 0;
     viewing = NULL;
@@ -230,8 +228,6 @@ void start_editing(void)
 
 void delete_prev_char(void)
 {
-    extern WINDOW *entwin;
-
     int i, j;
     int c, cc;
     if (currow != 0 || curcol != 0) {
@@ -256,8 +252,6 @@ void delete_prev_char(void)
 
 void right_arrow(void)
 {
-    extern WINDOW *entwin;
-
     if (++curcol >= COLS) {
 	curcol = 0;
 	if (++currow >= ENTRYROWS) {
@@ -270,8 +264,6 @@ void right_arrow(void)
 
 void left_arrow(void)
 {
-    extern WINDOW *entwin;
-
     if (--curcol < 0) {
 	curcol = COLS - 1;
 	if (--currow < 0) {
@@ -283,8 +275,6 @@ void left_arrow(void)
 
 void move_eol(void)
 {
-    extern WINDOW *entwin;
-
     currow = ENTRYROWS - 1;
     curcol = COLS - 1;
     while ((A_CHARTEXT & mvwinch(entwin, currow, curcol)) == ' ') {
@@ -303,7 +293,6 @@ void move_eol(void)
 
 void gather_input(char *s)
 {
-    extern WINDOW *entwin;
     int l = 0;
     int i, j;
     for (i = j = 0; i < ENTRYROWS && j < 81; j++) {
@@ -356,8 +345,6 @@ int walkdn(void)
 
 int pageup(int lines)
 {
-    extern WINDOW *sclwin;
-
     int i;
     char *s = NULL;
     walkup();
@@ -378,8 +365,6 @@ int pageup(int lines)
 
 int pagedn(int lines)
 {
-    extern WINDOW *sclwin;
-
     int i;
     char *s = NULL;
     walkdn();
@@ -401,8 +386,6 @@ char entry_text[BUFFERSIZE];
 
 void viewbottom(void)
 {
-    extern WINDOW *sclwin;
-
     int i;
     char *s;
 
@@ -431,8 +414,6 @@ void viewbottom(void)
 
 void viewtop(void)
 {
-    extern WINDOW *sclwin;
-
     int i;
     char *s;
 
@@ -453,10 +434,6 @@ void viewtop(void)
 
 void resume_editing(void)
 {
-    extern WINDOW *entwin;
-    extern WINDOW *sclwin;
-    extern struct tln_logline *viewing;
-
     viewbottom();
     wattrset(sclwin, curattr);
     werase(entwin);
@@ -469,9 +446,6 @@ void resume_editing(void)
 
 void viewlog(void)
 {
-    extern WINDOW *entwin;
-    extern struct tln_logline *viewing;
-
     attop = FALSE;
     if (walkup()) {
 	view_state = STATE_EDITING;
@@ -487,9 +461,6 @@ void viewlog(void)
 int litflag = FALSE;
 int edit_line(int c)
 {
-    extern WINDOW *entwin;
-    extern WINDOW *sclwin;
-
     if (view_state != STATE_EDITING) {
 	if (c == '\n')
 	    resume_editing();
@@ -591,8 +562,6 @@ void sanitize(char *s)
 
 void addtext(char *s)
 {
-    extern WINDOW *sclwin;
-    extern int in_packetclient;
     extern int lan_active;
     extern char call[];
     extern char hiscall[];
@@ -765,16 +734,11 @@ void addtext(char *s)
 
 int init_packet(void)
 {
-    extern int prsock;
     extern int portnum;
     extern char pr_hostaddress[];
-    extern SCREEN *packetscreen;
-    extern WINDOW *sclwin;
-    extern WINDOW *entwin;
     extern char spot_ptr[MAX_SPOTS][82];
     extern int tncport;
     extern int fdSertnc;
-    extern int fdFIFO;
     extern int packetinterface;
     extern int tnc_serial_rate;
     extern int verbose;
@@ -978,13 +942,9 @@ int init_packet(void)
 int cleanup_telnet(void)
 {
 
-    extern int prsock;
-    extern WINDOW *entwin;
-    extern WINDOW *sclwin;
     extern SCREEN *mainscreen;
     extern int packetinterface;
     extern int fdSertnc;
-    extern int fdFIFO;
 
     if (packetinterface == TELNET_INTERFACE) {
 
@@ -1035,14 +995,8 @@ int packet()
 {
 
     extern SCREEN *mainscreen;
-    extern SCREEN *packetscreen;
-    extern WINDOW *sclwin;
-    extern WINDOW *entwin;
-    extern int prsock;
     extern int fdSertnc;
-    extern int fdFIFO;
     extern int packetinterface;
-    extern int in_packetclient;
     extern char clusterlogin[];
 
     char line[BUFFERSIZE];
@@ -1203,12 +1157,8 @@ int packet()
 
 int receive_packet(void)
 {
-
-    extern int prsock;
     extern int packetinterface;
     extern int fdSertnc;
-    extern int fdFIFO;
-    extern int in_packetclient;
 
     char line[BUFFERSIZE];
     int i = 0;
@@ -1275,7 +1225,6 @@ int send_cluster(void)
 {
     extern int fdSertnc;
     extern int packetinterface;
-    extern int prsock;
     extern int cluster;
 
     char line[MAX_CMD_LEN+2] = "";
