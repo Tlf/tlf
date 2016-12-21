@@ -43,6 +43,7 @@
 #include "splitscreen.h"
 #include "sockserv.h"
 #include "tlf_curses.h"
+#include "tlf_panel.h"
 #include "ui_utils.h"
 
 struct tln_logline {
@@ -59,7 +60,7 @@ int prsock = 0;
 int fdFIFO = 0;
 
 WINDOW *sclwin, *entwin;
-SCREEN *packetscreen;
+static int initialized = 0;
 
 int in_packetclient;
 
@@ -731,6 +732,8 @@ void addtext(char *s)
 =             This initializes the packet windows
 =
 ===========================================*/
+WINDOW *packet_win;
+PANEL  *packet_panel;
 
 int init_packet(void)
 {
@@ -749,7 +752,6 @@ int init_packet(void)
     int addrarg;
     int iptr = 0;
     mode_t mode = 0666;
-    static int initialized = 0;
 
     tln_input_buffer[0] = '\0';
     attr[NORMAL_ATTR] = A_NORMAL;
@@ -760,15 +762,20 @@ int init_packet(void)
 
     if (initialized == 0) {
 
+	packet_win = newwin(LINES,COLS,0,0);
+	packet_panel = new_panel(packet_win);
+	show_panel(packet_panel);
+	refreshp();
+
 	initialized = 1;
-	packetscreen = newterm(NULL, stdout, stdin);
 	start_color();
 
 	/* change color settings only if we got a new screen
 	 * (there is a bug in ncurses-5.8 and 5.9 if using --enable-sp-funcs
 	 * which results in a NULL pointer )
 	 */
-	if (packetscreen) {
+#if 0
+	if (initialized) {
 	    init_pair(0, 0, 0);
 	    init_pair(1, 1, 0);
 	    init_pair(2, 2, 0);
@@ -778,8 +785,9 @@ int init_packet(void)
 	    init_pair(6, 6, 0);
 	    init_pair(7, 7, 0);
 	}
-	sclwin = newwin(LINES - ENTRYROWS, COLS, 0, 0);
-	entwin = newwin(ENTRYROWS, COLS, LINES - ENTRYROWS, 0);
+#endif
+	sclwin = derwin(packet_win, LINES - ENTRYROWS, COLS, 0, 0);
+	entwin = derwin(packet_win, ENTRYROWS, COLS, LINES - ENTRYROWS, 0);
 	scrollok(sclwin, TRUE);
 	scrollok(entwin, FALSE);
 	keypad(entwin, TRUE);
@@ -942,24 +950,10 @@ int init_packet(void)
 int cleanup_telnet(void)
 {
 
-    extern SCREEN *mainscreen;
     extern int packetinterface;
     extern int fdSertnc;
 
     if (packetinterface == TELNET_INTERFACE) {
-
-	wattrset(entwin, A_NORMAL);
-	wclear(entwin);
-	wmove(entwin, 1, 0);
-	wrefresh(entwin);
-	vidattr(A_NORMAL);
-	delwin(entwin);
-	wclear(sclwin);
-	wrefresh(sclwin);
-	delwin(sclwin);
-
-	endwin();
-
 	if (prsock > 0)
 	    close_s(prsock);
 
@@ -976,7 +970,14 @@ int cleanup_telnet(void)
 	remove("./clfile");
     }
 
-    set_term(mainscreen);
+    hide_panel(packet_panel);
+    delwin(entwin);
+    delwin(sclwin);
+    del_panel(packet_panel);
+    delwin(packet_win);
+
+    initialized = 0;
+
     clear();
     clear_display();
     keypad(stdscr, TRUE);
@@ -994,7 +995,6 @@ int cleanup_telnet(void)
 int packet()
 {
 
-    extern SCREEN *mainscreen;
     extern int fdSertnc;
     extern int packetinterface;
     extern char clusterlogin[];
@@ -1008,12 +1008,12 @@ int packet()
     in_packetclient = 1;
     sleep(1);
 
-    if (packetscreen) {
-    	set_term(packetscreen);
-    }
+    show_panel(packet_panel);
 
-    wclear(sclwin);
+    wrefresh(sclwin);
+
     wclear(entwin);
+    wrefresh(entwin);
 
     count = 0;
 
@@ -1025,8 +1025,9 @@ int packet()
 	    sent_login = 1;
 	    addtext("logged into cluster...\n\n");
 	    sleep(1);
-	    endwin();
-	    set_term(mainscreen);
+
+	    hide_panel(packet_panel);
+
 	    clear();
 	    clear_display();
 	    keypad(stdscr, TRUE);
@@ -1137,8 +1138,9 @@ int packet()
 	    start_editing();
 	}
     }
-    endwin();
-    set_term(mainscreen);
+
+    hide_panel(packet_panel);
+
     clear();
     clear_display();
     keypad(stdscr, TRUE);
