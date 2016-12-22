@@ -582,7 +582,7 @@ void addtext(char *s)
     int i, l;
 
     l = strlen(tln_input_buffer);
-    if (view_state == STATE_EDITING) {
+    if (initialized != 0 && view_state == STATE_EDITING) {
 
 	if (s[0] == '<' && s[1] != '<') {	// must be convers
 	    for (ci = 0; ci <= cl; ci++) {
@@ -623,8 +623,8 @@ void addtext(char *s)
 	if (in_packetclient == 1)
 	    wrefresh(sclwin);
     }
-// Cluster private spotting interface
 
+    // Cluster private spotting interface
     if (strncmp(s, call, strlen(call) - 1) == 0
 	&& strlen(s) < 81 && strchr(s, '>') == NULL) {
 
@@ -694,7 +694,7 @@ void addtext(char *s)
 	}
 
     }
-// end cluster private spotting interface
+    // end cluster private spotting interface
 
     for (i = 0; i < strlen(s); i++) {
 	if (s[i] == '\n' || i + l + 1 >= COLS) {
@@ -767,7 +767,6 @@ int init_packet(void)
 	show_panel(packet_panel);
 	refreshp();
 
-	initialized = 1;
 	start_color();
 
 	/* change color settings only if we got a new screen
@@ -794,6 +793,8 @@ int init_packet(void)
 	intrflush(entwin, FALSE);
 	wattrset(sclwin, attr[NORMAL_ATTR]);
 	wattrset(entwin, attr[ENTRY_ATTR]);
+
+	initialized = 1;
 
 	noecho();
 	cbreak();
