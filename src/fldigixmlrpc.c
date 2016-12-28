@@ -24,6 +24,7 @@
 #include <string.h>
 #include <stdarg.h>	// need for va_list...
 #include <unistd.h>
+#include <pthread.h>
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -64,6 +65,8 @@ extern char fldigi_url[50];
 int fldigi_var_carrier = 0;
 int fldigi_var_shift_freq = 0;
 static int initialized = 0;
+
+pthread_mutex_t xmlrpc_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /*
  * Used XML RPC methods, and its formats of arguments
@@ -128,10 +131,12 @@ int fldigi_xmlrpc_query(xmlrpc_res * local_result, xmlrpc_env * local_env,
     int restype;
     size_t bytesize = 0;
 
+
     if (initialized == 0) {
 	return -1;
     }
 
+    pthread_mutex_lock( &xmlrpc_mutex );
     /*
     if connerr had been set up to 1, that means an error
     occured at last xmlrpc_call() method
@@ -166,11 +171,13 @@ int fldigi_xmlrpc_query(xmlrpc_res * local_result, xmlrpc_env * local_env,
 		va_param = xmlrpc_string_new(local_env, s);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
+		    pthread_mutex_unlock( &xmlrpc_mutex );
 		    return -1;
 		}
 		xmlrpc_array_append_item(local_env, pcall_array, va_param);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
+		    pthread_mutex_unlock( &xmlrpc_mutex );
 		    return -1;
 		}
 		xmlrpc_DECREF(va_param);
@@ -181,6 +188,7 @@ int fldigi_xmlrpc_query(xmlrpc_res * local_result, xmlrpc_env * local_env,
 		xmlrpc_array_append_item(local_env, pcall_array, va_param);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
+		    pthread_mutex_unlock( &xmlrpc_mutex );
 		    return -1;
 		}
 		xmlrpc_DECREF(va_param);
@@ -197,6 +205,7 @@ int fldigi_xmlrpc_query(xmlrpc_res * local_result, xmlrpc_env * local_env,
 	    connerr = 1;
 	    xmlrpc_DECREF(pcall_array);
 	    xmlrpc_env_clean(local_env);
+	    pthread_mutex_unlock( &xmlrpc_mutex );
 	    return -1;
 	}
 	else {
@@ -205,6 +214,7 @@ int fldigi_xmlrpc_query(xmlrpc_res * local_result, xmlrpc_env * local_env,
 		xmlrpc_DECREF(callresult);
 		xmlrpc_DECREF(pcall_array);
 		xmlrpc_env_clean(local_env);
+		pthread_mutex_unlock( &xmlrpc_mutex );
 		return -1;
 	    }
 	    else {
@@ -234,12 +244,13 @@ int fldigi_xmlrpc_query(xmlrpc_res * local_result, xmlrpc_env * local_env,
 	xmlrpc_DECREF(pcall_array);
     }
     if (connerr == 0) {
+	pthread_mutex_unlock( &xmlrpc_mutex );
 	return 0;
     }
     else {
+	pthread_mutex_unlock( &xmlrpc_mutex );
 	return -1;
     }
-
 }
 #endif
 
