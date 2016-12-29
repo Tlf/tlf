@@ -139,6 +139,10 @@ int init_tlf_rig(void)
 	if (caps->ptt_type == RIG_PTT_RIG) {
 	    rigptt |= (1 << 1);		/* bit 1 set--CAT PTT available. */
 	}
+	else {
+	    rigptt = 0;
+	    showmsg("Controlling PTT via hamlib is not supported for that rig!");
+	}
     }
 
     if (dcd_type != RIG_DCD_NONE)
