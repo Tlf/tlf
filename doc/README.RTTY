@@ -1,9 +1,10 @@
 Tlf RTTY howto
 
-2015, Ervin Hegedus, HA2OS
+2016, Ervin Hegedus, HA2OS
 
 This is a guide for Tlf, how to use it with Fldigi in RTTY mode,
-especially in FSK, LSB or USB modulations.
+especially in FSK, LSB or USB modulations. Tlf got a new Fldigi
+interface, here is what you need to know.
 
 To work in RTTY, you need to solve two problems: read and demodulate
 RTTY signals (RX), and send your messages (TX). To demodulate the
@@ -19,27 +20,32 @@ Important: if you set up your Fldigi instance, don't set up your
 RIG! Tlf needs to handle the RIG, because it needs to tune the VFO,
 to use the bandmap.
 
-First, you have to create some files in your $HOME directory:
+Starting with TLF-1.3 there are two ways to comunicate with Fldigi -
+the old GMFSK interface and the actual XMLRPC one.
+
+Note: Using the new interface ist recommended. The old GMFSK interface 
+will be no longer maintained and will go away soon.
+
+GMFSK interface
+===============
+
+First you need to create some filesin your $HOME directory:
 
 ~$ touch TLFfldigi
 ~$ touch gmfsk_autofile
 
 The TLFfldigi file indicates to Fldigi, that it needs to listen
 the gmfsk_autofile file. Tlf writes its RTTY messages to
-gmfsk_autofile file, and Fldigi can reads that. If you want to look
-that file, when Fldigi runs, then you can't find it - after the
-Fldigi reads RTTY lines from that, then removes it. So, when Tlf
-wants to send a message again, it creates a new one, and Fldigi
-reads that and removes again - so don't worry, if you don't find it.
+that file, and Fldigi reads the messages from it. 
 
-Now in your logcfg.dat, you have to set up these variables:
+In your logcfg.dat, you had to set up the following lines:
 
 RTTYMODE
 GMFSK=/home/YOURUSER/gMFSK.log
 DIGIMODEM=/home/YOURUSER/gmfsk_autofile
 
-Note, that GMFSK directive tells to Tlf, that it can be read the
-output of modem, and it can be shows it in its own modem window.
+Note, that GMFSK directive tells Tlf, that it can read the
+output of modem, and it can be shown in its own modem window.
 (The miniterm window opens when you type the ":miniterm" command
 in callsign field.)
 
@@ -50,10 +56,31 @@ PC. So, I've set it up like this:
 
 DIGIMODEM=/dev/ttyS0
 
-The TX direction of RTTY mode only is that - you don't need to do
-anything in Tlf config - of course, you have to set up your Fldigi
-instance, eg. sound device, etc...
+XMLRPC interface
+================
 
+The only thing to do is to set the following command into your 
+logcfg.dat
+
+FLDIGI
+
+That will work as long as your Fldigi is compiled with the XMLRPC 
+interface and you do use the standard port for it.
+
+If you run fldigis XMLRPC on a different port (or machine) use 
+
+FLDIGI=http://<host>:<portnumber>/RPC2
+
+That's it. Tlf will realizes that you have Fldigi, and will
+communicate through XMLRPC.
+
+You can still read of Fldigi RX window (top) in Tlf own terminal,
+just use ":miniterm" command in callsign field.
+
+IMPORTANT: The FLDIGI command sets the XMLRPC interface as keyer for
+both CW and DIGIMODE. That means you can not have FLDIGI and NETKEYER 
+(first for Ddigimode, second for CW) at the same time. That limitation
+will go away in next versions of tlf.
 
 The RX mode is a slightly difficult. I don't want to expose that
 here, I suppose that anybody knows that, if works in RTTY. I had
@@ -93,6 +120,15 @@ the Fldigi carrier's as it exists, and grab the next spot. Tlf will
 calculates the requested QRG from the different of the spot and
 Fldigi carrier's frequency, and tune the RIG. That's it.
 
+More new feature in Fldigi interface:
+- when Tlf sends a message throug Fldigi, it switches Fldigi to TX mode.
+- similar to CW mode, if you press ESC while Fldigi sends the message,
+  Tlf will stop it.
+- if the connection between Tlf and Fldigi breaks (eg. you close
+  Fldigi, or you start Tlf before Fldigi), then Tlf realizes it,
+  and handles as correctly. You will lost the Fldigi functions (no
+  TX/RX, QRG align), but Tlf runs away. If you start Fldigi again,
+  after a few seconds, Tlf will work with it again
 
 73, Ervin
 HA2OS
