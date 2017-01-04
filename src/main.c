@@ -90,7 +90,6 @@ int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
 };
 int debugflag = 0;
 int editor = EDITOR_JOE;
-char rttyoutput[120];
 int tune_val = 0;
 int use_bandoutput = 0;
 int no_arrows = 0;
@@ -308,16 +307,23 @@ char sc_device[40] = "/dev/dsp";
 
 /*-------------------------------------keyer------------------------------*/
 int keyerport = NO_KEYER;
+int cwkeyer = NO_KEYER;
+int digikeyer = NO_KEYER;
+
+char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2 for net_keyer
+
+char controllerport[80] = "/dev/ttyS0"; // for GMFSK or MFJ-1278
+char rttyoutput[120];		// where to GMFSK digimode output
+
 int txdelay = 0;
 int weight = 0;
 char weightbuf[4];
 char tonestr[5] = "600";
 int cqdelay = 8;
-char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
 int k_tune;
 int k_pin14;
 int k_ptt;
-char controllerport[80] = "/dev/ttyS0";
+
 int miniterm = 0;		/* is miniterm for digimode active? */
 char modem_mode[8];
 int commentfield = 0;		/* 1 if we are in comment/excahnge input */

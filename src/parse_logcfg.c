@@ -48,6 +48,8 @@
 
 
 extern int keyerport;
+extern int cwkeyer;
+extern int digikeyer;
 extern char tonestr[];
 extern int partials;
 extern int use_part;
@@ -84,7 +86,9 @@ int read_logcfg(void)
     contest = 0;
     partials = 0;
     use_part = 0;
-    keyerport = 0;
+    keyerport = NO_KEYER;
+    cwkeyer = NO_KEYER;
+    digikeyer = NO_KEYER;
     portnum = 0;
     packetinterface = 0;
     tncport = 0;
@@ -998,6 +1002,7 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 65:{
 	    keyerport = NET_KEYER;
+	    cwkeyer = NET_KEYER;
 	    break;
 	}
     case 66:{
@@ -1384,6 +1389,8 @@ int parse_logcfg(char *inputbuffer)
     case 140:{
 		PARAMETER_NEEDED(teststring);
 		keyerport = MFJ1278_KEYER;
+		cwkeyer = MFJ1278_KEYER;
+		digikeyer = MFJ1278_KEYER;
 		g_strlcpy(controllerport, g_strchomp(fields[1]),
 			sizeof(controllerport));
 		break;
@@ -1427,6 +1434,7 @@ int parse_logcfg(char *inputbuffer)
     case 149:{
 		PARAMETER_NEEDED(teststring);
 		keyerport = GMFSK;
+		digikeyer = GMFSK;
 		g_strlcpy(controllerport, g_strchomp(fields[1]),
 			sizeof(controllerport));
 		break;
@@ -1817,12 +1825,14 @@ int parse_logcfg(char *inputbuffer)
 	    showmsg ("WARNING: XMLRPC not compiled - skipping setup.");
 	    sleep(2);
 	    keyerport = NO_KEYER;
+	    digikeyer = NO_KEYER;
 #else
 	    if (fields[1] != NULL) {
 		g_strlcpy(fldigi_url, g_strchomp(fields[1]),
 			sizeof(fldigi_url));
 	    }
 	    keyerport = FLDIGI;
+	    digikeyer = FLDIGI;
 #endif
 	    break;
     }
