@@ -240,7 +240,7 @@ void sendbuf(void)
     extern int searchflg;
     extern char termbuf[];
     extern char backgrnd_str[];
-    extern int keyerport;
+    extern int cwkeyer;
     extern int digikeyer;
     extern int simulator;
     extern int simulator_mode;
@@ -250,7 +250,7 @@ void sendbuf(void)
 
     printlinebuffer[0] = '\0';
 
-    if ((trxmode == CWMODE && keyerport != NO_KEYER ) ||
+    if ((trxmode == CWMODE && cwkeyer != NO_KEYER ) ||
 	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
 	ExpandMacro();
@@ -313,7 +313,7 @@ void sendbuf(void)
 
 	if (trxmode == CWMODE) {
 
-	    if (keyerport == MFJ1278_KEYER) {
+	    if (cwkeyer == MFJ1278_KEYER) {
 		int i = 0;
 		for (i = 0; i < strlen(buffer); i++)
 		    if (buffer[i] == '\n')

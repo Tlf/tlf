@@ -101,7 +101,7 @@ int changepars(void)
 #endif
 
     extern int simulator;
-    extern int keyerport;
+    extern int cwkeyer;
     extern char synclogfile[];
     extern char sc_volume[];
     extern int cwstart;
@@ -460,7 +460,7 @@ int changepars(void)
     case 30:			/* CW  */
     case 49:
 	{
-	    if (keyerport == MFJ1278_KEYER) {
+	    if (cwkeyer == MFJ1278_KEYER) {
 		sendmessage("MODE CW\015K\015");
 	    }
 	    trxmode = CWMODE;
@@ -499,7 +499,7 @@ int changepars(void)
 
 		refreshp();
 
-		if (keyerport == NET_KEYER) {
+		if (cwkeyer == NET_KEYER) {
 
 		    if (netkeyer(K_WORDMODE, NULL) < 0) {
 			mvprintw(24, 0,
@@ -513,7 +513,7 @@ int changepars(void)
 		mvprintw(13, 29, "Simulator off");
 		refreshp();
 
-		if (keyerport == NET_KEYER) {
+		if (cwkeyer == NET_KEYER) {
 
 		    if (netkeyer(K_RESET, NULL) < 0) {
 			mvprintw(24, 0,

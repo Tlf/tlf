@@ -35,14 +35,14 @@
 
 void setspeed(void) {
 
-    extern int keyerport;
+    extern int cwkeyer;
 
     int retval = 0;
     char buff[3];
 
     snprintf(buff, 3, "%2d", GetCWSpeed());
 
-    if (keyerport == NET_KEYER) {
+    if (cwkeyer == NET_KEYER) {
 
 	retval = netkeyer(K_SPEED, buff);
 
@@ -54,7 +54,7 @@ void setspeed(void) {
 	}
     }
 
-    if (keyerport == MFJ1278_KEYER) {
+    if (cwkeyer == MFJ1278_KEYER) {
 
 	char *msg;
 
@@ -117,12 +117,12 @@ int speeddown(void)
 int setweight(int weight)
 {				//  write weight to netkeyer
 
-    extern int keyerport;
+    extern int cwkeyer;
 
     int retval;
     char buff[4];
 
-    if (keyerport == NET_KEYER && weight > -51 && weight < 51) {
+    if (cwkeyer == NET_KEYER && weight > -51 && weight < 51) {
 
 	sprintf(buff, "%d", weight);
 

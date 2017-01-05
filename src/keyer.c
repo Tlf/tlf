@@ -56,7 +56,7 @@ int keyer(void)
     extern char mode[20];
     extern char message[][80];
     extern int trxmode;
-    extern int keyerport;
+    extern int cwkeyer;
     extern int digikeyer;
     extern int weight;
 
@@ -74,7 +74,7 @@ int keyer(void)
     const char crcontrolstring[2] = { 13, '\0' };	// cr
     const char ctl_c_controlstring[2] = { 92, '\0' };	// '\'
 
-    if ((trxmode == CWMODE && keyerport == NO_KEYER) ||
+    if ((trxmode == CWMODE && cwkeyer == NO_KEYER) ||
 	(trxmode == DIGIMODE && digikeyer == NO_KEYER)) /* no keyer present */
 	return 1;
 
@@ -97,7 +97,7 @@ int keyer(void)
     werase(win);
     wnicebox(win, 0, 0, 1, KEYER_LINE_WIDTH, "CW Keyer");
 
-    if (keyerport == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
+    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 	/* switch to tx */
 	keyer_append(txcontrolstring);
     }
@@ -124,7 +124,7 @@ int keyer(void)
 
 	// <Escape>, Ctrl-K (^K), Alt-k (M-k)
 	if (x == 27 || x == 11 || x == 235) {
-	    if (keyerport == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
+	    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 		/* switch back to rx */
 		keyer_append(rxcontrolstring);
 	    } else {
@@ -140,9 +140,9 @@ int keyer(void)
 
 	if (x > 9 && x < 91) { 	/* drop all other control char... */
 	    if (x > 31 || x == 10) {
-		if (keyerport == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
+		if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 		    mfj1278_control(x);
-		} else if (keyerport == NET_KEYER) {
+		} else if (cwkeyer == NET_KEYER) {
 		    nkbuffer[0] = x;	// 1 char at the time !
 		    nkbuffer[1] = '\0';
 		    keyer_append(nkbuffer);
@@ -166,7 +166,7 @@ int keyer(void)
 	    case 13:
 	    case KEY_ENTER:
 		{
-		    if (keyerport == MFJ1278_KEYER ||
+		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(crcontrolstring);
 		    }
@@ -175,7 +175,7 @@ int keyer(void)
 
 	    case 123:		/* { */
 		{
-		    if (keyerport == MFJ1278_KEYER ||
+		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(txcontrolstring);
 		    }
@@ -183,7 +183,7 @@ int keyer(void)
 		}
 	    case 125:		/* } */
 		{
-		    if (keyerport == MFJ1278_KEYER ||
+		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(rxcontrolstring);
 		    }
@@ -191,7 +191,7 @@ int keyer(void)
 		}
 	    case 92:		/* \ */
 		{
-		    if (keyerport == MFJ1278_KEYER ||
+		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(ctl_c_controlstring);
 		    }

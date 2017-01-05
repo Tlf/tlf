@@ -32,7 +32,7 @@
 int stoptx(void)
 {
   	extern int trxmode;
-  	extern int keyerport;
+  	extern int cwkeyer;
 	extern int digikeyer;
 
 
@@ -40,7 +40,7 @@ int stoptx(void)
 	    fldigi_to_rx();
  	}
 	else if (trxmode == CWMODE) {
-	    if (keyerport == NET_KEYER) {
+	    if (cwkeyer == NET_KEYER) {
 
 		if (netkeyer (K_ABORT, NULL) < 0) {
 

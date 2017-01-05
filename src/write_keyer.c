@@ -61,7 +61,7 @@ int write_keyer(void)
 {
 
     extern int trxmode;
-    extern int keyerport;
+    extern int cwkeyer;
     extern int digikeyer;
     extern char controllerport[];
     extern char rttyoutput[];
@@ -88,10 +88,10 @@ int write_keyer(void)
 	if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
 	    fldigi_send_text(tosend);
 	}
-	else if (keyerport == NET_KEYER) {
+	else if (cwkeyer == NET_KEYER) {
 	    netkeyer(K_MESSAGE, tosend);
 
-	} else if (keyerport == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
+	} else if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 	    if ((bfp = fopen(controllerport, "a")) == NULL) {
 		mvprintw(24, 0, "1278 not active. Switching to SSB mode.");
 		sleep(1);

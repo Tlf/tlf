@@ -804,8 +804,8 @@ void keyer_init()
 {
     char keyerbuff[3];
 
-    if (keyerport == NET_KEYER) {
-	showmsg("Keyer is cwdaemon");
+    if (cwkeyer == NET_KEYER) {
+	showmsg("CW-Keyer is cwdaemon");
 
 	if (netkeyer_init() < 0) {
 	    showmsg("Cannot open NET keyer daemon ");
@@ -839,7 +839,7 @@ void keyer_init()
 
     }
 
-    if (keyerport == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER ||
+    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER ||
 	    digikeyer == GMFSK) {
 	init_controller();
     }
@@ -863,7 +863,7 @@ void tlf_cleanup()
 //    commented out for the moment as it will segfault if called twice
 //    cleanup_telnet();
 
-    if (trxmode == CWMODE && keyerport == NET_KEYER)
+    if (trxmode == CWMODE && cwkeyer == NET_KEYER)
 	netkeyer_close();
     else
 	deinit_controller();
