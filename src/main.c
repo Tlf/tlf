@@ -306,7 +306,6 @@ int scale_values[20] =
 char sc_device[40] = "/dev/dsp";
 
 /*-------------------------------------keyer------------------------------*/
-int keyerport = NO_KEYER;
 int cwkeyer = NO_KEYER;
 int digikeyer = NO_KEYER;
 
