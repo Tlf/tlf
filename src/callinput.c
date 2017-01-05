@@ -190,10 +190,8 @@ char callinput(void)
 
 	    time_update();
 
-	    if (trxmode == DIGIMODE && (keyerport == GMFSK
-		    || keyerport == MFJ1278_KEYER || keyerport == FLDIGI)) {
+	    if (trxmode == DIGIMODE) {
 		show_rtty();
-		printcall();
 	    }
 
 	    /* if BMAUTOADD is active and user has input a call sign
@@ -1231,12 +1229,6 @@ char callinput(void)
 	if ((x == '\n' || x == KEY_ENTER) || x == 32 || x == 9 || x == 11
 	    || x == 44 || x == 92) {
 	    break;
-	}
-
-	if (trxmode == DIGIMODE && (keyerport == GMFSK
-		|| keyerport == MFJ1278_KEYER || keyerport == FLDIGI)) {
-	    show_rtty();
-	    refreshp();
 	}
 
     }

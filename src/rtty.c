@@ -180,12 +180,11 @@ void ry_addchar(char c)
 
 int show_rtty(void)
 {
-    extern int trxmode;
     extern int miniterm;
     extern int commentfield;
     extern char comment[];
 
-    if (trxmode != DIGIMODE || miniterm == 0)
+    if (miniterm == 0)
 	return (-1);
 
     attroff(A_STANDOUT);

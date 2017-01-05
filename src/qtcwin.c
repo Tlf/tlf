@@ -454,8 +454,7 @@ void qtc_main_panel(int direction) {
 
 	    usleep(5000);
 	    time_update();
-	    if (trxmode == DIGIMODE && (keyerport == GMFSK
-	           || keyerport == MFJ1278_KEYER)) {
+	    if (trxmode == DIGIMODE) {
 	        show_rtty();
 	    }
 	    x = key_poll();
@@ -1718,8 +1717,6 @@ int print_rtty_line(t_qtc_ry_line qtc_ry_line, int row) {
 
 /* RTTY terminal to helps to capture the RTTY content */
 void show_rtty_lines() {
-    extern int miniterm;
-
     char boxhead[38];
     int prevline;
     char currline[50] = "", firstline[50] = "";
@@ -1771,8 +1768,7 @@ void show_rtty_lines() {
 	    usleep(1000);
 	    time_update();
 
-	    if (miniterm == 1 && trxmode == DIGIMODE
-		    && (keyerport == GMFSK || keyerport == MFJ1278_KEYER)) {
+	    if (trxmode == DIGIMODE) {
 		show_rtty();
 	    }
 

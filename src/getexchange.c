@@ -100,7 +100,6 @@ int getexchange(void)
     extern int pfxmult;
     extern int exc_cont;
     extern char continent[];
-    extern int keyerport;
     extern int commentfield;
     extern int no_rst;
     extern int serial_or_section;
@@ -165,8 +164,7 @@ int getexchange(void)
 
 	    time_update();
 
-	    if (trxmode == DIGIMODE && (keyerport == GMFSK
-	           || keyerport == MFJ1278_KEYER)) {
+	    if (trxmode == DIGIMODE) {
 	        show_rtty();
 	    }
 
@@ -370,10 +368,6 @@ int getexchange(void)
 		instring[0] = x;
 		addch(x);
 		strcat(comment, instring);
-		if (keyerport == GMFSK) {
-		    show_rtty();
-		    mvprintw(12, 54, comment);
-		}
 		i++;
 		refreshp();
 	    }

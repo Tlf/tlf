@@ -99,7 +99,7 @@ int gettxinfo(void)
     /* CAT PTT wanted, available, active and PTT Off requested
      * bits 0, 1, 2, and 4 set.
      */
-     if (rigptt == 0x17) {
+    if (rigptt == 0x17) {
 	retval = rig_set_ptt(my_rig, RIG_VFO_CURR, RIG_PTT_OFF);
 
 	/* Clear PTT Off requested bit. */
