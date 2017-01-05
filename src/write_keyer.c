@@ -62,6 +62,7 @@ int write_keyer(void)
 
     extern int trxmode;
     extern int keyerport;
+    extern int digikeyer;
     extern char controllerport[];
     extern char rttyoutput[];
 
@@ -84,13 +85,13 @@ int write_keyer(void)
 
     if (tosend != NULL) {
 
-	if (keyerport == FLDIGI && trxmode == DIGIMODE) {
+	if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
 	    fldigi_send_text(tosend);
 	}
 	else if (keyerport == NET_KEYER) {
 	    netkeyer(K_MESSAGE, tosend);
 
-	} else if (keyerport == MFJ1278_KEYER) {
+	} else if (keyerport == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 	    if ((bfp = fopen(controllerport, "a")) == NULL) {
 		mvprintw(24, 0, "1278 not active. Switching to SSB mode.");
 		sleep(1);
@@ -101,7 +102,7 @@ int write_keyer(void)
 		fclose(bfp);
 	    }
 
-	} else if (keyerport == GMFSK) {
+	} else if (digikeyer == GMFSK) {
 	    if (strlen(rttyoutput) < 2) {
 		mvprintw(24, 0, "No modem file specified!");
 	    }

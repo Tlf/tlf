@@ -46,7 +46,7 @@ static char ry_term[5][50] = { "", "", "", "", "" };
 int init_controller()
 {
     extern char controllerport[];
-    extern int keyerport;
+    extern int digikeyer;
 
     struct termios termattribs;
 
@@ -71,7 +71,7 @@ int init_controller()
 
     tcsetattr(fdcont, TCSANOW, &termattribs);	/* Set the serial port */
 
-    if (keyerport == GMFSK) {
+    if (digikeyer == GMFSK) {
 	lseek(fdcont, 0, SEEK_END);
     }
 
@@ -216,7 +216,7 @@ int show_rtty(void)
 int rx_rtty()
 {
     extern int miniterm;
-    extern int keyerport;
+    extern int digikeyer;
 
     int i;
     int j;
@@ -245,7 +245,7 @@ int rx_rtty()
 	if (i == 0)
 	    return 0;
 
-	if (keyerport == GMFSK) {
+	if (digikeyer == GMFSK) {
 	    /* skip begin of line until '):' if keyer == GMFSK */
 	    /* RX (2006-03-31 14:41Z): */
 	    for (j = 0; j < i; j++) {
@@ -286,7 +286,7 @@ int rx_rtty()
 	    }
 	}
     }
-    else if (keyerport == FLDIGI) {
+    else if (digikeyer == FLDIGI) {
 	i = fldigi_get_rx_text(line);
 	for (j = 0; j < i; j++) {
 	    ry_addchar( line[j] );

@@ -64,7 +64,7 @@ extern long timecorr;
 extern int timeoffset;
 extern char call[];
 extern int trxmode;
-extern int keyerport;
+extern int digikeyer;
 extern int trx_control;
 
 int cw_simulator(void);
@@ -101,8 +101,7 @@ void *background_process(void *ptr)
 
 	}
 
-	if (trxmode == DIGIMODE
-	    && (keyerport == MFJ1278_KEYER || keyerport == GMFSK || keyerport == FLDIGI))
+	if (trxmode == DIGIMODE && digikeyer != NO_KEYER)
 	    rx_rtty();
 
 	/*
@@ -113,7 +112,7 @@ void *background_process(void *ptr)
 	 * only need at every 2nd cycle
 	 * see fldigixmlrpc.[ch]
 	 */
-	if (trxmode == DIGIMODE && (keyerport == GMFSK || keyerport == FLDIGI)
+	if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)
 		&& trx_control == 1) {
 	    if (fldigi_rpc_cnt == 0) {
 		fldigi_xmlrpc_get_carrier();

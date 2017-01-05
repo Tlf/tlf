@@ -52,7 +52,7 @@ int gettxinfo(void)
     extern int cw_bandwidth;
     extern int trxmode;
     extern int rigmode;
-    extern int keyerport;
+    extern int digikeyer;
 #else
     extern int outfreq;
 #endif
@@ -118,7 +118,7 @@ int gettxinfo(void)
 	retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
 	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL) {
 	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
-	    if (trxmode == DIGIMODE && (keyerport == GMFSK || keyerport == FLDIGI)
+	    if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)
 			&& retval == RIG_OK) {
 		retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, (rmode_t *)&rigmode, &bwidth);
 		if (retvalmode != RIG_OK) {
@@ -127,7 +127,7 @@ int gettxinfo(void)
 	    }
 	}
 
-	if (trxmode == DIGIMODE && (keyerport == GMFSK || keyerport == FLDIGI)) {
+	if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)) {
 	    fldigi_carrier = fldigi_get_carrier();
 	    rigfreq += (freq_t)fldigi_carrier;
 	    if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {

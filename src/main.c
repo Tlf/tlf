@@ -755,11 +755,11 @@ void fldigi_init() {
 #ifdef HAVE_LIBXMLRPC
     int status;
 
-    if (keyerport == FLDIGI) {
+    if (digikeyer == FLDIGI) {
 	xmlrpc_showinfo();
 	status = fldigi_xmlrpc_init();
 	if (status != 0) {
-	    keyerport = NO_KEYER;
+	    digikeyer = NO_KEYER;
 	}
     }
 #endif
@@ -839,7 +839,8 @@ void keyer_init()
 
     }
 
-    if (keyerport == MFJ1278_KEYER || keyerport == GMFSK) {
+    if (keyerport == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER ||
+	    digikeyer == GMFSK) {
 	init_controller();
     }
 
@@ -876,7 +877,7 @@ void tlf_cleanup()
 #endif
 
 #ifdef HAVE_LIBXMLRPC
-    if (keyerport == FLDIGI) {
+    if (digikeyer == FLDIGI) {
 	fldigi_xmlrpc_cleanup();
     }
 #endif

@@ -141,7 +141,6 @@ char callinput(void)
     extern int k_pin14;
     extern int k_ptt;
     extern int noautocq;
-    extern int keyerport;
     extern int miniterm;
     extern int no_rst;
 

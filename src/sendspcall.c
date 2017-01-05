@@ -43,7 +43,7 @@ char *PrepareSPcall() {
     extern int demode;
     extern char call[];
     extern int trxmode;
-    extern int keyerport;
+    extern int digikeyer;
     extern char hiscall[];
 
     char *buf = g_malloc(80);
@@ -58,7 +58,7 @@ char *PrepareSPcall() {
 
     } else if (trxmode == DIGIMODE) {
 
-	if (keyerport == MFJ1278_KEYER) {
+	if (digikeyer == MFJ1278_KEYER) {
 	    strcat (buf, "{ ");	/* => ctrl-t */
 	    if (demode ==  SEND_DE) {
 		strcat(buf, hiscall);

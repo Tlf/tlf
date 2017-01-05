@@ -73,7 +73,6 @@ void fill_qtc_times(char * time);
 extern char hiscall[];
 extern char lastcall[];
 extern int trxmode;
-extern int keyerport;
 extern int nr_qsos;
 
 static int record_run = -1;		/* was recording already started? */

@@ -179,7 +179,7 @@ void ExpandMacro(void) {
     static char rst_out[4] = "";
 
 
-    strcpy(comstr, call); 
+    strcpy(comstr, call);
     comstr[strlen(call) - 1] = '\0'; // skip trailing \n
     replace_all(buffer, BUFSIZE, "%", comstr);   /* mycall */
 
@@ -241,6 +241,7 @@ void sendbuf(void)
     extern char termbuf[];
     extern char backgrnd_str[];
     extern int keyerport;
+    extern int digikeyer;
     extern int simulator;
     extern int simulator_mode;
     extern int sending_call;
@@ -249,8 +250,8 @@ void sendbuf(void)
 
     printlinebuffer[0] = '\0';
 
-    if ((trxmode == CWMODE || trxmode == DIGIMODE)
-	&& (keyerport != NO_KEYER)) {
+    if ((trxmode == CWMODE && keyerport != NO_KEYER ) ||
+	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
 	ExpandMacro();
 
@@ -295,7 +296,7 @@ void sendbuf(void)
 
 	if (trxmode == DIGIMODE) {
 
-	    if (keyerport == MFJ1278_KEYER) {
+	    if (digikeyer == MFJ1278_KEYER) {
 		int i = 0;
 		for (i = 0; i < strlen(buffer); i++)
 		    if (buffer[i] == '\n')

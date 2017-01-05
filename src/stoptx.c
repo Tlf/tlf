@@ -33,9 +33,10 @@ int stoptx(void)
 {
   	extern int trxmode;
   	extern int keyerport;
+	extern int digikeyer;
 
 
-	if (keyerport == FLDIGI && trxmode == DIGIMODE) {
+	if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
 	    fldigi_to_rx();
  	}
 	else if (trxmode == CWMODE) {
