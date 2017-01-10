@@ -31,6 +31,14 @@
 #include "getpx.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 
+/* check for calls which have no assigned country and no assigned zone,
+ * e.g. airborn mobile /AM or maritime mobile /MM
+ */
+int location_unknown(const char *call) {
+
+    return g_regex_match_simple("/AM$|/MM$", call,
+	    (GRegexCompileFlags)0, (GRegexMatchFlags)0);
+}
 
 int getpfxindex(char *checkcallptr)
 {
@@ -51,20 +59,19 @@ int getpfxindex(char *checkcallptr)
 
     portable = '\0';
 
-    if (strstr(checkcall, "/QRP") != NULL)	/* drop QRP suffix */
+    if (strstr(checkcall, "/QRP") ==
+	    (checkcall + strlen(checkcall) - 4))
+	/* drop QRP suffix */
 	checkcall[strlen(checkcall) - 4] = '\0';
 
-    if (strstr(checkcall, "/AM") != NULL)	// airborne mobile, no country (0), no zone (0)
-	checkcall[0] = '\0';
-
-    if (strstr(checkcall, "/MM") != NULL)	// maritime mobile, no country, no zone
+    if (location_unknown(checkcall))
 	checkcall[0] = '\0';
 
     strncpy(findcall, checkcall, 16);
 
     loc = strcspn(checkcall, "/");
 
-    if (loc != strlen(checkcall)) {
+    if (loc != strlen(checkcall)) {		/* found a '/' */
 	char call1[17];
 	char call2[17];
 
@@ -211,13 +218,12 @@ int getctydata(char *checkcallptr)
 
     portable = '\0';
 
-    if (strstr(checkcall, "/QRP") != NULL)	/* drop QRP suffix */
+    if (strstr(checkcall, "/QRP") ==
+	    (checkcall + strlen(checkcall) - 4))
+	/* drop QRP suffix */
 	checkcall[strlen(checkcall) - 4] = '\0';
 
-    if (strstr(checkcall, "/AM") != NULL)	// airborne mobile, no country (0), no zone (0)
-	checkcall[0] = '\0';
-
-    if (strstr(checkcall, "/MM") != NULL)	// maritime mobile, no country, no zone
+    if (location_unknown(checkcall))
 	checkcall[0] = '\0';
 
     strncpy(findcall, checkcall, 16);
@@ -362,4 +368,3 @@ int getctydata(char *checkcallptr)
 
     return (x);
 }
-
