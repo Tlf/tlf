@@ -363,8 +363,9 @@ int readcalls(void)
 
 	if (exclude_multilist_type == 2) {
 	  int ci = 0;
+	  int countrynr_tocheck = countrynr;
 	  while (strlen(countrylist[ci]) != 0) {
-	    if (getctydata(countrylist[ci]) == countrynr) {
+	    if (getctydata(countrylist[ci]) == countrynr_tocheck) {
 		excl_add_veto = 1;
 		break;
 	    }
