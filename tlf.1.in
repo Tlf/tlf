@@ -1800,6 +1800,17 @@ If you run fldigi's xmlrpc server on an different port use
 .BI 
   FLDIGI=http://localhost:7362/RPC2
 .
+.TP
+.B MINITEST[=NNN]
+Use this option when the contest is a minitest like contest. In that contests
+the full contest intervall is divided into shorter sections (e.g. 6 * 10 min. 
+sections in an 60 min hour).  
+Any station can be worked once in each of the 
+time sections without counting as dupe. 
+The default length of the sections is 600s (10min) but you can pass another 
+value (in seconds) after the '=' sign. There must be an integral number of time
+sections per hour!
+.
 .SH FILES
 .
 \fB@prefix@/share/@PACKAGE@/logcfg.dat\fR is a recent example of the

@@ -22,11 +22,13 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+#define _XOPEN_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "addmult.h"
 #include "addpfx.h"
@@ -67,6 +69,11 @@ int readcalls(void)
     int pfxnumcntidx;
     int pxnr;
     int excl_add_veto;
+    char date_and_time[16];
+    struct tm qsotime;
+    time_t qsotimets;
+    int qsomode;
+    int linenr = 0;
 
     FILE *fp;
 
@@ -83,6 +90,11 @@ int readcalls(void)
 	*worked[i].call = '\0';
 	worked[i].band = 0;
 	worked[i].country = -1;
+	for(l=0; l<3; l++) {
+	    for(n=0; n<NBANDS; n++) {
+		worked[i].qsotime[l][n] = 0;
+	    }
+	}
     }
 
     for (i = 1; i <= MAX_DATALINES - 1; i++)
@@ -131,6 +143,7 @@ int readcalls(void)
 	pfxnumcntidx = -1;
 	pxnr = 0;
 	excl_add_veto = 0;
+	linenr++;
 	r++;
 
 	if (r >= 100) {
@@ -304,6 +317,25 @@ int readcalls(void)
 	worked[l].country = countrynr;
 	g_strlcpy(worked[l].exchange, inputbuffer + 54, 12);
 	g_strchomp(worked[l].exchange);	/* strip trailing spaces */
+
+	if (strncmp("CW ", inputbuffer+3, 3) == 0) {
+	    qsomode = CWMODE;
+	} else if (strncmp("SSB", inputbuffer+3, 3) == 0) {
+	    qsomode = SSBMODE;
+	} else if (strncmp("DIG", inputbuffer+3, 3) == 0) {
+	    qsomode = DIGIMODE;
+	} else {
+	    mvprintw(5, 0, "Invalid line format in line %d.\n", linenr);
+	    refreshp();
+	    sleep(2);
+	    exit(1);
+	}
+
+	/* calculate QSO timestamp from logline */
+	strncpy(date_and_time, inputbuffer+7, 15);
+	strptime(date_and_time, "%d-%b-%y %H:%M", &qsotime);
+	qsotimets = mktime(&qsotime);
+	worked[l].qsotime[qsomode][bandinx] = qsotimets;
 
 	add_ok = 1;		/* look if calls are excluded */
 

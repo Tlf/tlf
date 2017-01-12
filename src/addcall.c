@@ -23,11 +23,13 @@
 	 *
 	 *--------------------------------------------------------------*/
 
+#define _XOPEN_SOURCE
 
 #include <stdlib.h>
 #include <string.h>
 
 #include <glib.h>
+#include <time.h>
 
 #include "addcall.h"
 #include "addmult.h"
@@ -38,7 +40,7 @@
 #include "searchcallarray.h"
 #include "tlf.h"
 #include "zone_nr.h"
-
+#include "get_time.h"
 
 int excl_add_veto;
 /* This variable helps to handle in other modules, that station is multiplier or not */
@@ -82,6 +84,8 @@ int addcall(void)
     extern char continent[];
     extern int exclude_multilist_type;
     extern char countrylist[][6];
+    extern int trxmode;
+    extern struct tm *time_ptr;
 
     static int found = 0;
     static int i, j, z = 0;
@@ -89,6 +93,8 @@ int addcall(void)
     int pfxnumcntidx = -1;
     int pxnr = 0;
     excl_add_veto = 0;
+
+    get_time();
 
     found = searchcallarray(hiscall);
 
@@ -100,6 +106,7 @@ int addcall(void)
     } else
 	i = found;
 
+    worked[i].qsotime[trxmode][bandinx] = (long)mktime(time_ptr);
     j = getctydata(hiscall);
     worked[i].country = j;
     if (strlen(comment) >= 1) {		/* remember last exchange */
@@ -274,6 +281,7 @@ int addcall2(void)
     extern int pfxmultab;
     extern int exclude_multilist_type;
     extern char countrylist[][6];
+    extern int trxmode;
 
     int found = 0;
     int i, j, p, z = 0;
@@ -288,6 +296,9 @@ int addcall2(void)
     int pfxnumcntidx = -1;
     int pxnr = 0;
     excl_add_veto = 0;
+    char date_and_time[16];
+    struct tm qsotime;
+    time_t qsotimets;
 
     g_strlcpy(hiscall, lan_logline + 29, 20);
 
@@ -321,6 +332,14 @@ int addcall2(void)
     j = getctydata2(hiscall);
     g_strlcpy(cqzone, zonebuffer, 4);	//idem....
 
+    bandinx = get_band(lan_logline);
+
+    /* calculate QSO timestamp from lan_logline */
+    strncpy(date_and_time, lan_logline+7, 15);
+    strptime(date_and_time, "%d-%b-%y %H:%M", &qsotime);
+    qsotimets = mktime(&qsotime);
+
+    worked[i].qsotime[trxmode][bandinx] = qsotimets;
     worked[i].country = j;
     if (strlen(comment) >= 1) {
 //              strcpy(worked[i].exchange,comment);
@@ -388,6 +407,8 @@ int addcall2(void)
 
 	bandinx = get_band(lan_logline);
 	band_score[bandinx]++;
+
+	worked[i].band |= inxes[bandinx];	/* worked on this band */
 
 	if (excl_add_veto == 0) {
 

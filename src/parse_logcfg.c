@@ -69,7 +69,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 234	/* commands in list */
+#define  MAX_COMMANDS 235	/* commands in list */
 
 
 int read_logcfg(void)
@@ -300,6 +300,7 @@ int parse_logcfg(char *inputbuffer)
     extern int sprint_mode;
     extern char fldigi_url[50];
     extern unsigned char rigptt;
+    extern int minitest;
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -536,7 +537,8 @@ int parse_logcfg(char *inputbuffer)
 	"QTC_RECV_LAZY",		/* 230 */
 	"SPRINTMODE",
 	"FLDIGI",
-	"RIGPTT"
+	"RIGPTT",
+	"MINITEST"
     };
 
     char **fields;
@@ -1830,6 +1832,25 @@ int parse_logcfg(char *inputbuffer)
     }
     case 233:{
 	    rigptt |= (1 << 0);		/* bit 0 set--CAT PTT wanted (RIGPTT) */
+	    break;
+    }
+    case 234:{
+	    if (fields[1] != NULL) {
+		int minisec;
+		minisec = atoi(g_strchomp(fields[1]));
+		if ((3600%minisec) != 0) {
+		    showmsg
+			("WARNING: invalid MINITEST value, must be an integral divider for 3600s!");
+		    sleep(5);
+		    exit(1);
+		}
+		else {
+		    minitest = minisec;
+		}
+	    }
+	    else {
+		minitest = MINITEST_DEFAULT_PERIOD;
+	    }
 	    break;
     }
     default: {

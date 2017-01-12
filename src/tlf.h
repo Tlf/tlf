@@ -127,6 +127,10 @@ enum {
 
 #define LOGLINELEN (88)		/* Length of logline in logfile
 				   (including linefeed) */
+#define MINITEST_DEFAULT_PERIOD 600
+				/* ignore dupe state when MINITEST is set
+				 * and last QSO was not in actual period */
+
 /* special message numbers */
 enum {
     SP_TU_MSG = 12,
@@ -142,6 +146,8 @@ struct worked_t {
     char exchange[12]; 		/*< the last exchange */
     int band; 			/*< bitmap for worked bands */
     int country; 		/*< its country number */
+    long qsotime[3][NBANDS];	/*< last timestamp of qso in gmtime
+				  for all modes and bands */
 };
 
 
