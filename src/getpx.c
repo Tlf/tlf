@@ -32,61 +32,71 @@
 /** \brief Get prefix from call
  *
  * Analyses callsign and extract prefix information like follows:
- *    - Remember a portable prefix area if present .../8
+ *    - If callsign contains only letters, copy first two and append '0'
+ *    - Remember a portable prefix area if present .../3
  *    - Copy first character (letter or number)
  *    - Copy all following letters
- *    - Copy one more character (number or /)
- *    - If next char is a digit, copy it too
- *        - else if portable prefix remembered replace last character (number)
- *    - If last copied character was '/' replace it by '0'
- *        - else if last character was a letter append '0'
+ *    - Copy all following numbers
+ *    - If portable prefix remembered and last character is digit
+ *	replace last character
+ *    - If last character was a letter append '0'
  *
  * \param checkcall Call to analyse
+ *	    (!has to be in normalized format:
+ *	     - call
+ *	     - portable prefix/call
+ *	     - call/portable area)
  */
 
-/** \todo fix problem: k3a/2 wird nicht als K2 erkannt,
- *  kl32a/4 wird zu kl34 ???, check andere Implementierungen */
+/** \todo fix problem: kl32a/4 wird zu kl34 ??? */
+
+int letters_only(const char *call) {
+    int i;
+
+    for (i = 0; i < strlen(call); i++) {
+	if (!isalpha(call[i]))
+	    return 0;
+    }
+    return 1;
+}
 
 void getpx(char *checkcall)
 {
     char pxbuffer[16] = "";
     int i, len;
-    char j = 0;
+    char portable = '\0';
 
-    len = strlen(checkcall);
-
-    if (len >= 2) {
-
-	if ((checkcall[len - 2] == '/') && isdigit(checkcall[len - 1]))	/*  portable /3 */
-	    j = checkcall[len - 1];
+    if (letters_only(checkcall)) {
+	/* only characters in call */
+	strncpy(pxbuffer, checkcall, 2);
+	strcat(pxbuffer, "0");
     }
-
-    for (i = 0; i < len; i++) {
-	if (((checkcall[i] <= 'Z') && (checkcall[i] >= 'A')) || (i == 0))
-	    pxbuffer[i] = checkcall[i];
-	else
-	    break;
-    }
-    pxbuffer[i] = checkcall[i];
-
-    i++;
-
-    if (isdigit(checkcall[i])) {
-	pxbuffer[i] = checkcall[i];
-	pxbuffer[i + 1] = '\0';
-    } else {
-	if (j != 0) {
-	    pxbuffer[i - 1] = j;
+    else {
+	len = strlen(checkcall);
+	if (len >= 2) {
+	    if ((checkcall[len - 2] == '/') && isdigit(checkcall[len - 1]))
+		/*  portable /3 */
+		portable = checkcall[len - 1];
 	}
-	pxbuffer[i] = '\0';
+
+	for (i = 0; i < len; i++) {
+	    if (((checkcall[i] <= 'Z') && (checkcall[i] >= 'A')) || (i == 0))
+		pxbuffer[i] = checkcall[i];
+	    else
+		break;
+	}
+	for (; i < len; i++) {
+	    if (((checkcall[i] <= '9') && (checkcall[i] >= '0')) || (i == 0))
+		pxbuffer[i] = checkcall[i];
+	    else
+		break;
+	}
+
+	if (portable != '\0' && isdigit(pxbuffer[i-1]))
+	    pxbuffer[i-1] = portable;
+
+	if (isalpha(pxbuffer[i-1]))
+	    pxbuffer[i] = '0';
     }
-
     strcpy(pxstr, pxbuffer);
-
-    if (pxstr[strlen(pxstr) - 1] == '/') {
-	pxstr[strlen(pxstr) - 1] = '0';
-    } else if ((pxstr[strlen(pxstr) - 1] <= 'Z')
-	       && (pxstr[strlen(pxstr) - 1] >= 'A'))
-	strcat(pxstr, "0");
-
 }
