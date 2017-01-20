@@ -344,7 +344,7 @@ int getctydata(char *checkcallptr)
 	    x = prefix_by_index(w)->dxcc_index;
     }
 
-    if (w > 0 ) {
+    if (w >= 0 ) {
 	sprintf(cqzone, "%02d", prefix_by_index(w) -> cq);
 	sprintf(ituzone, "%02d", prefix_by_index(w) -> itu);
     }
@@ -358,8 +358,7 @@ int getctydata(char *checkcallptr)
 //    strncpy(ituzone, ituarray[w], 2);
 
     countrynr = x;
-    strncpy(continent, dxcc_by_index(countrynr) -> continent , 3);
-    continent[2] = '\0';
+    g_strlcpy(continent, dxcc_by_index(countrynr) -> continent , 3);
 
     return (x);
 }
@@ -386,7 +385,9 @@ int getctydata2(char *checkcall)
     strncpy(membuffer, checkcall, 16);
     portable = '\0';
 
-    if (strstr(checkcall, "/QRP") != NULL)	//strip the qrp
+    if (strstr(checkcall, "/QRP") ==
+	    (checkcall + strlen(checkcall) - 4))
+	/* drop QRP suffix */
 	checkcall[strlen(checkcall) - 4] = '\0';
 
     loc = strcspn(checkcall, "/");

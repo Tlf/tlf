@@ -1605,7 +1605,7 @@ Multiplier is section from multipliers file.
 .
 .TP
 .B SERIAL+SECTION
-Exchange is serial number and section, multipler is section from multiplier
+Exchange is serial number and section, multiplier is section from multiplier
 file.  Mults count per band.
 .
 .TP
