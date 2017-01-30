@@ -17,10 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------------------
-	*  get the local time from the  kernel  and put into global buffer (time_ptr)
-	*   for use by  several routines
-	---------------------------------------------------------------------------*/
+    /* ------------------------------------------------------------------------
+    *  First get the local time from the kernel, apply corrections
+    *  - TIME_OFFSET setting from logcfg.dat and
+    *  - time synchronistation from LAN.
+    *  Finally convert time to UTC put it into global buffer (time_ptr)
+    *  for use by other routines
+    ---------------------------------------------------------------------------*/
 
 
 #include <time.h>
@@ -34,7 +37,6 @@ void get_time(void)
 
     time_t now;
 
-//time (&now);
     now = (time(0) + (timeoffset * 3600L) + timecorr);
 
     time_ptr =  gmtime(&now);
