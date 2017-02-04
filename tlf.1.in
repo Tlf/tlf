@@ -1811,6 +1811,18 @@ The default length of the sections is 600s (10min) but you can pass another
 value (in seconds) after the '=' sign. There must be an integral number of time
 sections per hour!
 .
+.TP
+.B UNIQUE_CALL_MULTI
+Multiplier is callsign. 
+You have to pass one of these arguments: ALL, BAND.
+  Example:
+  UNIQUE_CALL_MULTI=BAND
+
+.
+The argument tells Tlf, how to score the callsigns as multiplier:
+ALL means the callsign is a multiplier, uindependet of band.
+BAND means the callsign counts as multiplier on different bands.
+.
 .SH FILES
 .
 \fB@prefix@/share/@PACKAGE@/logcfg.dat\fR is a recent example of the

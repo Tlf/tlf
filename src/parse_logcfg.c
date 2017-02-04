@@ -69,7 +69,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 235	/* commands in list */
+#define  MAX_COMMANDS 236	/* commands in list */
 
 
 int read_logcfg(void)
@@ -301,6 +301,7 @@ int parse_logcfg(char *inputbuffer)
     extern char fldigi_url[50];
     extern unsigned char rigptt;
     extern int minitest;
+    extern int unique_call_multi;
 
     char commands[MAX_COMMANDS][30] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -538,7 +539,8 @@ int parse_logcfg(char *inputbuffer)
 	"SPRINTMODE",
 	"FLDIGI",
 	"RIGPTT",
-	"MINITEST"
+	"MINITEST",
+	"UNIQUE_CALL_MULTI"		/* 235 */
     };
 
     char **fields;
@@ -1850,6 +1852,28 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    else {
 		minitest = MINITEST_DEFAULT_PERIOD;
+	    }
+	    break;
+    }
+    case 235: {
+	    PARAMETER_NEEDED(teststring);
+	    if (strcmp(g_strchomp(fields[1]), "ALL") == 0) {
+		unique_call_multi = UNIQUECALL_ALL;
+	    }
+	    else if (strcmp(g_strchomp(fields[1]), "BAND") == 0) {
+		unique_call_multi = UNIQUECALL_BAND;
+	    }
+	    else if (strcmp(g_strchomp(fields[1]), "MODE") == 0) {
+		unique_call_multi = UNIQUECALL_MODE;
+	    }
+	    else if (strcmp(g_strchomp(fields[1]), "BANDMODE") == 0) {
+		unique_call_multi = UNIQUECALL_BANDMODE;
+	    }
+	    else {
+		showmsg
+			("WARNING: choose one of these for UNIQUE_CALL_MULTI: ALL, BAND, MODE, BANDMODE");
+		    sleep(5);
+		    exit(1);
 	    }
 	    break;
     }
