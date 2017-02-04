@@ -227,6 +227,7 @@ int readcalls(void)
 
 	    if (wysiwyg_once == 1 ||
 		wysiwyg_multi == 1 ||
+		unique_call_multi != 0 ||
 		arrlss == 1 ||
 		serial_section_mult == 1 ||
 		serial_grid4_mult == 1 ||
@@ -267,6 +268,11 @@ int readcalls(void)
 
 			multbuffer[t] = inputbuffer[t + 59];
 		    }
+
+		} else if (unique_call_multi != 0) {
+
+		    g_strlcpy(multbuffer, inputbuffer + 68, 10);
+		    g_strchomp(multbuffer);
 
 		} else {
 

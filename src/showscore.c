@@ -199,11 +199,13 @@ int get_nr_of_mults()
 
 	return totalcountries;
     }
-    else if (wysiwyg_once == 1) {
+    else if ((wysiwyg_once == 1)
+	|| (unique_call_multi == UNIQUECALL_ALL)) {
 
 	return multarray_nr;
     }
     else if ((wysiwyg_multi == 1)
+	|| (unique_call_multi == UNIQUECALL_BAND)
 	|| (serial_section_mult == 1)
 	|| (serial_grid4_mult == 1)
 	|| (sectn_mult == 1)) {

@@ -366,6 +366,7 @@ void prepare_specific_part(void) {
 	fillto(77);
 
     } else if ((wysiwyg_multi == 1)
+	       || (unique_call_multi != 0)
 	       || (serial_section_mult == 1)
 	       || (sectn_mult == 1)
 	       || (serial_grid4_mult)) {

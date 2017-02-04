@@ -126,6 +126,15 @@ int addmult(void)
 	shownewmult = remember_multi(section, bandinx, PER_BAND);
     }
 
+    /* -------------- unique call multi -------------- */
+    if (unique_call_multi == UNIQUECALL_ALL) {
+	shownewmult = remember_multi(hiscall, bandinx, ALL_BAND);
+    }
+
+    if (unique_call_multi == UNIQUECALL_BAND) {
+	shownewmult = remember_multi(hiscall, bandinx, PER_BAND);
+    }
+
     free(stripped_comment);
 
     return (found);
@@ -141,6 +150,7 @@ int addmult2(void)
     int matching_len = 0, idx = -1;
     char ssexchange[21];
     char stripped_comment[21];
+    char multi_call[20];
 
     shownewmult = -1;
 
@@ -179,6 +189,19 @@ int addmult2(void)
 
 	shownewmult = remember_multi(stripped_comment, bandinx, PER_BAND);
     }
+
+    /* -------------- unique call multi -------------- */
+    g_strlcpy(multi_call, lan_logline + 68, 10);
+    g_strchomp(multi_call);
+
+    if (unique_call_multi == UNIQUECALL_ALL) {
+	shownewmult = remember_multi(multi_call, bandinx, ALL_BAND);
+    }
+
+    if (unique_call_multi == UNIQUECALL_BAND) {
+	shownewmult = remember_multi(multi_call, bandinx, PER_BAND);
+    }
+
 
     return (found);
 }
