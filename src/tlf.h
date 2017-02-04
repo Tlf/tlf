@@ -127,8 +127,6 @@ enum {
 
 #define UNIQUECALL_ALL      1
 #define UNIQUECALL_BAND     2
-#define UNIQUECALL_MODE     3
-#define UNIQUECALL_BANDMODE 4
 
 #define LOGLINELEN (88)		/* Length of logline in logfile
 				   (including linefeed) */

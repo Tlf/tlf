@@ -1863,15 +1863,9 @@ int parse_logcfg(char *inputbuffer)
 	    else if (strcmp(g_strchomp(fields[1]), "BAND") == 0) {
 		unique_call_multi = UNIQUECALL_BAND;
 	    }
-	    else if (strcmp(g_strchomp(fields[1]), "MODE") == 0) {
-		unique_call_multi = UNIQUECALL_MODE;
-	    }
-	    else if (strcmp(g_strchomp(fields[1]), "BANDMODE") == 0) {
-		unique_call_multi = UNIQUECALL_BANDMODE;
-	    }
 	    else {
 		showmsg
-			("WARNING: choose one of these for UNIQUE_CALL_MULTI: ALL, BAND, MODE, BANDMODE");
+			("WARNING: choose one of these for UNIQUE_CALL_MULTI: ALL, BAND");
 		    sleep(5);
 		    exit(1);
 	    }
