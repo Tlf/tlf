@@ -1,4 +1,40 @@
-tlf-1.4.2.5
+tlf-1.3.0
+=========
+Major release.
+
+Besides a some of fixed bugs and i lot of internal improvements it provides 
+some new features:
+
+Bugfixes:
+    - Fixed wrong parsing of EXCLUDE_MULTILIST keyword.
+    - Fixed recognition of CQ zone for 1Axxx stations.
+
+New features:
+    - Allow direct use of fldigis XMLRPC interface for receiving and sending
+      digimode data. See doc/READMA_RTTY.txt and man page for details. 
+      Tnx Ervin HA2OS. (The old GMFSK interface to fldigi is still available
+      but will be dropped in next versions).
+    - New keyword MINITEST to support Minitest like contests, where you can
+      operate the same station each time in one of two or more time
+      intervalls. Tnx HA2OS.
+    - New multi keyword UNIQUE_CALL_MULTI for Minitest or CWops CWT contest.
+      Allows to count unique call signs as multi for all band or per band.
+      Tnx HA2OS.
+    - Enable PTT keying via Hamlibs CAT interface (for SSB contests). Tnx Nate
+      N0NB for providing the code.
+    - Updated CTY.DAT to version from January 2017.
+    - Better implementation of WPX prefix recognition. Can now handle call
+      signs with only letters (e.g. RAEM) and long numbers (e.g. DR2006Q).
+    - Add hints to correct own CQ zone to FAQ.
+    - Refactor keying logic to allow having separate keyer devices for CW and
+      DIGI modes at the same time.
+    - Better automatic recognition of ncurses components for different
+      distributions. Adds also support for ncurses versions with split out 
+      tinfo database.
+    - Fix color handling and packet screen interface for the new ncurses6.
+
+
+tlf-1.2.4.5
 ===========
 
 Bugfix release.
@@ -7,7 +43,7 @@ Bug fixes:
     - autosend did not work as Enter key was wrongly checked. Tnx Feed DH5FS.
 
 
-tlf-1.4.2.4
+tlf-1.2.4.4
 ===========
 
 Bugfix release.

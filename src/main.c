@@ -108,7 +108,7 @@ int pacc_pa_flg = 0;
 int stewperry_flg = 0;
 int focm = 0;
 int sprint_mode = 0;
-int minitest = 0;	/*< if set, length of minitest period in seconds */
+int minitest = 0;	/**< if set, length of minitest period in seconds */
 int unique_call_multi = 0;          /* do we count calls as multiplier */
 
 int universal = 0;
@@ -184,14 +184,16 @@ char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
 char exchange_list[40] = "";
 int timeoffset = 0;
-int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
 int rigmode = 0;		/* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
 int mixedmode = 0;
 char his_rst[4] = "599";
 char my_rst[4] = "599";
 char last_rst[4] = "599";       /* Report for last QSO */
+
+/* TODO Maybe we can use the following */
 int mults_per_band = 1;		/* mults count per band */
+
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
 int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
 int clusterlog = 0;		/* clusterlog on/off */
@@ -208,17 +210,18 @@ char whichcontest[40] = "qso";
 int defer_store = 0;
 char call[20];
 char logfile[120] = "general.log";
-char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
+char *cabrillo = NULL;		/**< Name of the cabrillo format definition */
 char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = 0;
-unsigned char rigptt = 0;	/* Bitmask for Hamlib CAT PTT
-				 * bit 0 set: CAT PTT wanted--RIGPTT in logcfg.dat (set in parse_logcfg)
-				 * bit 1 set: CAT PTT available--from rig caps (set in sendqrg)
-				 * bit 2 set: PTT active (set/unset in gettxinfo)
-				 * bit 3 set: PTT On (set/unset in callinput)
-				 * bit 4 set: PTT Off (set/unset in callinput)
-				 */
+unsigned char rigptt = 0;
+	/**< Bitmask for Hamlib CAT PTT
+	 * bit 0 set: CAT PTT wanted--RIGPTT in logcfg.dat (set in parse_logcfg)
+	 * bit 1 set: CAT PTT available--from rig caps (set in sendqrg)
+	 * bit 2 set: PTT active (set/unset in gettxinfo)
+	 * bit 3 set: PTT On (set/unset in callinput)
+	 * bit 4 set: PTT Off (set/unset in callinput)
+	 */
 
 char sp_return[80] = " \n";
 char cq_return[80] = " \n";
@@ -379,8 +382,8 @@ char qsos[MAX_QSOS][LOGLINELEN+1];
 int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
-int nr_worked = 0;		/*< number of calls in worked[] */
-struct worked_t worked[MAX_CALLS]; /*< worked stations */
+int nr_worked = 0;		/**< number of calls in worked[] */
+struct worked_t worked[MAX_CALLS]; /**< worked stations */
 
 /*----------------------statistic of worked countries,zones ... -----------*/
 int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */

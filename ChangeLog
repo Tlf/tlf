@@ -1,3 +1,183 @@
+2017-02-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/FAQ: add hints to correct own CQ zone to FAQ
+
+  * share/cty.dat: update cty.dat file
+
+2017-02-04  Ervin Hegedus <airween@gmail.com>
+
+  * src/main.c, src/parse_logcfg.c, src/tlf.h: Removed unused UNIQUECALL values
+
+2017-02-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/globalvars.h, src/makelogline.c, src/readcalls.c,
+  src/showscore.c: Added UNIQUE_CALL_MULTI handling  
+  
+  - unique call signs can now be counted as multis for allband or per band. 
+   (Needed e.g. for minitest like contests).
+
+  * src/main.c, src/parse_logcfg.c, src/tlf.h, tlf.1.in: Accept
+  UNIQUE_CALL_MULTI keyword
+
+2017-01-12  Ervin Hegedus <airween@gmail.com>
+
+  * src/addcall.c, src/main.c, src/parse_logcfg.c, src/readcalls.c,
+  src/searchlog.c, src/tlf.h, tlf.1.in: Added new feature: MINITEST keyword to
+  support the Mini CW test  
+  Optional an argument may passed to MINITEST, instean of hardcoded value
+
+2017-01-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * macros/ax_with_curses_extra.m4: Better regocnition of <panel.h>  
+  
+  If ax_with_ncurses finds a ncursesw instance the former code checks only for
+  <ncursesw/panelh>. If not there the search fails. That lead to problems at
+  least in Arch Linux which has only <panel.h> installed. The patched version
+  here checks first for <ncursesw/panel.h> and if not found also for
+  <panel.h>.  
+  
+  Tested for the following distributions:  Gentoo, Debian 7..9, Linux Mint 17 
+  and 18.1, Arch Linux, Ubuntu
+
+  * src/get_time.c: clarify function of get_time()
+
+2017-01-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getctydata.c, tlf.1.in: Fix recognition of cq zone for 1Axxx stations
+
+2017-01-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: fix warning about redefinition of _GNU_SOURCE
+
+2017-01-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c: drop remnants of old 'keyerport' variable
+
+  * src/changepars.c, src/keyer.c, src/main.c, src/sendbuf.c,
+  src/speedupndown.c, src/stoptx.c, src/write_keyer.c: switch to new 'cwkeyer'
+  variable
+
+  * src/background_process.c, src/callinput.c, src/gettxinfo.c, src/keyer.c,
+  src/main.c, src/qtcwin.c, src/rtty.c, src/sendbuf.c, src/sendspcall.c,
+  src/stoptx.c, src/write_keyer.c: switch to new 'digikeyer' variable
+
+2017-01-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c: prepare for separate keyers for CW and
+  digimode
+
+2017-01-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getpx.c: better implementation of getpx()  
+  
+  - handles callsigns with only letters 
+  - correct handling of callsigns with long nummbers, e.g. DR2006Q or 9A800VZ
+
+2017-01-06  Ervin Hegedus <airween@gmail.com>
+
+  * src/parse_logcfg.c: Fixed wrong parsing for EXCLUDE_MULTILIST parameters
+
+2017-01-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcalls.c: Fix test for countrynr in countrylist  
+  
+  As getctydata() has a sideeffect of changing 'countrynr' itself we need to
+  switch to use a local variable 'countrynr_tocheck' for the comparison.
+
+2017-01-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/getexchange.c, src/gettxinfo.c, src/qtcwin.c,
+  src/rtty.c: simplify logic to call 'show_rtty'  Call 'show_rtty' whenever we
+  are in DIGIMODE.
+
+2016-12-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/sendqrg.c: add message if RIGPTT is not available for that rig
+
+2016-08-14  Nate Bargmann <n0nb@n0nb.us>
+
+  * share/logcfg.dat, src/callinput.c, src/gettxinfo.c, src/main.c,
+  src/parse_logcfg.c, src/sendqrg.c, tlf.1.in: Enable Hamlib CAT PTT if wanted
+  and available  
+  
+  Introduce a new keyword for logcfg.dat, RIGPTT, which is a directive to test
+  for a Hamlib radio backend's PTT via CAT capability.  If the backend reports
+  it is capable, Hamlib CAT PTT will be used in place of the netkeyer PTT
+  if Tlf is compiled with Hamlib support.
+
+2016-12-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/splitscreen.c: output of cluster message needs a packet screen  
+  
+  Each cluster message (external or from internal network between multiple
+  loggers) will be processed in several steps: putting it on cluster screen,
+  looking for a personal conversation, adding to bandmap. 
+  
+  The change guarantees that it will only be added to the cluster screen if
+  such an object got initialized.  (That would not be the case if we started
+  with the 'nopacket'-option or have no cluster configured).
+
+2016-12-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/splitscreen.c: Migrate packet screen to ncurses panels  
+  
+  Old implementation used a separate newterm call to get a separate display
+  for packet screen -- separate from normal logger display. It was quite a
+  hack but worked ok. In new ncurses6 newterm does no longer give us a
+  separate screen.  So we had to switch to use ncurses panels for the
+  packet screen. A popup panel covers inow the whole screen when we switch
+  to packet. That window is split into two derived windows for display of
+  cluster messages and a second one for input - as did the old
+  implementation.
+
+2016-12-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * macros/ax_with_curses.m4, macros/ax_with_curses_extra.m4, src/Makefile.am:
+  Use new AX_WITH_CURSES macro  
+  
+  New macro uses pkg-config for detecting libs and cflags for programs 
+  using ncurses and falls back to old finding out the
+  parameters 'by hand'.  For TLF it fixes:  - Using libtinfo if stripped out
+  from libncurses - Added feature_test_macros for correct color handling if
+  needed.
+
+2016-12-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * doc/README.RTTY: adapt README.RTTY
+
+2016-12-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/fldigixmlrpc.c: Make xmlrpc fldigi interface thread safe
+
+2016-05-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/cleanup.c, src/keyer.c, src/main.c, src/qtcwin.c, src/sendbuf.c,
+  src/write_keyer.c, src/write_keyer.h: refactor handling of send cw or digi
+  data  
+  Cleanup code so that all data for cw or digi keying goes through the
+  write_keyer() interface. 
+  That means anyone who wants to send code has to use the keyer_append() 
+  function which (in an thread safe manner) appends the data
+  to a keybuffer. The actual keying is done by a background thread which
+  regularly has to call the write_keyer() function.
+
+2016-12-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, tlf.1.in: Set fldigis default URL
+  automatically.
+
+  * src/fldigixmlrpc.c, src/fldigixmlrpc.h, src/stoptx.c: minor changes  
+  - rename to 'fldigi_to_rx()' 
+  - do not add to a string of unknown length. Send '^r' on separate call 
+    afterwars.
+
+2016-11-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/callinput.c, src/fldigixmlrpc.c,
+  src/fldigixmlrpc.h, src/gettxinfo.c, src/main.c, src/rtty.c, src/stoptx.c,
+  src/write_keyer.c, src/main.c, src/parse_logcfg.c, src/tlf.h, tlf.1.in: 
+  Allow new keyword FLDIGI to set up fldigi xmlrpc interface
+
 
 2016-12-02  Thomas Beierlein <tomjbe@gentoo.org>
 
