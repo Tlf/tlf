@@ -29,6 +29,14 @@
 GPtrArray *dxcc;
 GPtrArray *prefix;
 
+prefix_data dummy_pfx = {
+    "No Prefix",
+    0,
+    0,
+    0
+};
+
+
 void prefix_free(gpointer data) {
 	prefix_data *pfx_data = data;
 
@@ -46,14 +54,17 @@ void prefix_init(void)
 }
 
 /* return number of entries in prefix array */
-int prefix_count(void)
+unsigned int prefix_count(void)
 {
 	return prefix->len;
 }
 
 /* give pointer to prefix struct at 'index' */
-prefix_data *prefix_by_index(int index)
+prefix_data *prefix_by_index(unsigned int index)
 {
+	if (index >= prefix_count())
+	    return &dummy_pfx;
+
 	return (prefix_data *)g_ptr_array_index(prefix, index);
 }
 
@@ -107,14 +118,17 @@ void dxcc_init(void)
 }
 
 /* return number of entries in dxcc array */
-int dxcc_count(void)
+unsigned int dxcc_count(void)
 {
 	return dxcc->len;
 }
 
 /* give pointer to dxcc_data struct at 'index' */
-dxcc_data *dxcc_by_index(int index)
+dxcc_data *dxcc_by_index(unsigned int index)
 {
+	if (index >= dxcc_count())
+	    index = 0;
+
 	return (dxcc_data *)g_ptr_array_index(dxcc, index);
 }
 
@@ -151,7 +165,7 @@ void dxcc_add (char * dxcc_line)
 	    new_dxcc -> starred = 0;
 	}
 
-	g_ptr_array_add (dxcc, new_dxcc);
-
 	g_strfreev (split);
+
+	g_ptr_array_add (dxcc, new_dxcc);
 }

@@ -42,17 +42,17 @@ typedef struct {
 
 void prefix_init(void);
 
-int prefix_count(void);
+unsigned int prefix_count(void);
 
-prefix_data *prefix_by_index(int index);
+prefix_data *prefix_by_index(unsigned int index);
 
 void prefix_add (char *pfxstr);
 
 void dxcc_init(void);
 
-int dxcc_count(void);
+unsigned int dxcc_count(void);
 
-dxcc_data *dxcc_by_index(int index);
+dxcc_data *dxcc_by_index(unsigned int index);
 
 void dxcc_add (char * dxcc_line);
 
