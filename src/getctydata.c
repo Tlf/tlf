@@ -51,13 +51,11 @@ int getpfxindex(char *checkcallptr)
     int pfxmax = prefix_count();
 
     int i = 0, w = 0, abnormal_call = 0;
-    char portable = '\0';
     int pp = 0;
     size_t loc;
 
     g_strlcpy(checkcall, checkcallptr, 17);
 
-    portable = '\0';
 
     if (strstr(checkcall, "/QRP") ==
 	    (checkcall + strlen(checkcall) - 4))
@@ -94,14 +92,6 @@ int getpfxindex(char *checkcallptr)
 
 	    if (strlen(checkbuffer) == 1)
 		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'M' && strlen(checkbuffer) <= 3)
-		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'Q' && strlen(checkbuffer) == 3)	/* /QRP */
-		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'A' && strlen(checkbuffer) <= 3)	/*  /A,  /AM etc */
-		checkcall[loc] = '\0';
-	    if ((strlen(checkbuffer) <= 3) && (checkbuffer[0] <= '9') && (checkbuffer[0] >= '0'))	/*  /3,   etc */
-		portable = checkbuffer[0];
 	    loc = strcspn(checkcall, "/");
 	}
 
@@ -210,13 +200,10 @@ int getctydata(char *checkcallptr)
     int pfxmax = prefix_count();
 
     int i = 0, w = 0, x = 0, abnormal_call = 0;
-    char portable = '\0';
     int pp = 0;
     size_t loc;
 
     g_strlcpy(checkcall, checkcallptr, 17);
-
-    portable = '\0';
 
     if (strstr(checkcall, "/QRP") ==
 	    (checkcall + strlen(checkcall) - 4))
@@ -252,14 +239,6 @@ int getctydata(char *checkcallptr)
 
 	    if (strlen(checkbuffer) == 1)
 		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'M' && strlen(checkbuffer) <= 3)
-		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'Q' && strlen(checkbuffer) == 3)	/* /QRP */
-		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'A' && strlen(checkbuffer) <= 3)	/*  /A,  /AM etc */
-		checkcall[loc] = '\0';
-	    if ((strlen(checkbuffer) <= 3) && (checkbuffer[0] <= '9') && (checkbuffer[0] >= '0'))	/*  /3,   etc */
-		portable = checkbuffer[0];
 	    loc = strcspn(checkcall, "/");
 	}
 
