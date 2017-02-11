@@ -265,10 +265,6 @@ int getctydata(char *checkcallptr)
 
     }
 
-    if (wpx == 1 || pfxmult == 1)
-    	/* needed for wpx and other pfx contests */
-	getpx(checkcall);
-
     /* -------------check full call exceptions first...--------------------- */
 
     w = -1;
@@ -283,7 +279,6 @@ int getctydata(char *checkcallptr)
 	    pfx = prefix_by_index(i);
 	    if (strcmp(checkncall, pfx->pfx) == 0) {
 		w = i;
-		x = pfx->dxcc_index;
 		break;
 	    }
 	}
@@ -305,8 +300,6 @@ int getctydata(char *checkcallptr)
 		w = i;
 	    }
 	}
-	if (w >= 0)
-	    x = prefix_by_index(w)->dxcc_index;
     }
 
     if (w < 0 && 0 != strcmp(findcall, checkcall)) {
@@ -325,11 +318,16 @@ int getctydata(char *checkcallptr)
 		w = i;
 	    }
 	}
-	if (w >= 0)
-	    x = prefix_by_index(w)->dxcc_index;
     }
 
+
+    if (wpx == 1 || pfxmult == 1)
+    	/* needed for wpx and other pfx contests */
+	getpx(checkcall);
+
+
     if (w >= 0 ) {
+	x = prefix_by_index(w)->dxcc_index;
 	sprintf(cqzone, "%02d", prefix_by_index(w) -> cq);
 	sprintf(ituzone, "%02d", prefix_by_index(w) -> itu);
     }
