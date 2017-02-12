@@ -40,6 +40,24 @@ int location_unknown(const char *call) {
 	    (GRegexCompileFlags)0, (GRegexMatchFlags)0);
 }
 
+
+/* replace callsign area (K2ND/4 -> K4ND)
+ *
+ * for stations with multiple digits (LZ1000) it replaces the last digit
+ * (may be wrong)
+ */
+void change_area(char *call, char area){
+    int i;
+
+    for (i = strlen(call) - 1; i > 0; i--) {
+	if (isdigit(call[i])) {
+	    call[i] = area;
+	    break;
+	}
+    }
+}
+
+
 int getpfxindex(char *checkcallptr)
 {
     char checkbuffer[17] = "";
@@ -51,7 +69,6 @@ int getpfxindex(char *checkcallptr)
     int pfxmax = prefix_count();
 
     int i = 0, w = 0, abnormal_call = 0;
-    int pp = 0;
     size_t loc;
 
     g_strlcpy(strippedcall, checkcallptr, 17);
@@ -106,12 +123,9 @@ int getpfxindex(char *checkcallptr)
 	/* ------------------------------------------------------------ */
 
 	if ((strlen(checkbuffer) == 1) && isdigit(checkbuffer[0])) {	/*  /3 */
-	    for (pp = strlen(checkcall) - 1; pp > 0; pp--) {
-		if (isdigit(checkcall[pp])) {
-		    checkcall[pp] = checkbuffer[0];
-		    break;
-		}
-	    }
+
+	    change_area (checkcall, checkbuffer[0]);
+
 	} else if (strlen(checkbuffer) > 1)
 	    strcpy(checkcall, checkbuffer);
 
@@ -199,7 +213,6 @@ int getctydata(char *checkcallptr)
     int pfxmax = prefix_count();
 
     int i = 0, w = 0, x = 0, abnormal_call = 0;
-    int pp = 0;
     size_t loc;
 
     g_strlcpy(strippedcall, checkcallptr, 17);
@@ -254,12 +267,9 @@ int getctydata(char *checkcallptr)
 	/* ------------------------------------------------------------ */
 
 	if ((strlen(checkbuffer) == 1) && isdigit(checkbuffer[0])) {	/*  /3 */
-	    for (pp = strlen(checkcall) - 1; pp > 0; pp--) {
-		if (isdigit(checkcall[pp])) {
-		    checkcall[pp] = checkbuffer[0];
-		    break;
-		}
-	    }
+
+	    change_area (checkcall, checkbuffer[0]);
+
 	} else if (strlen(checkbuffer) > 1)
 	    strcpy(checkcall, checkbuffer);
 
