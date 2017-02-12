@@ -40,6 +40,49 @@ int location_unknown(const char *call) {
 	    (GRegexCompileFlags)0, (GRegexMatchFlags)0);
 }
 
+/* search for a full match of 'call' in the pfx table */
+int find_full_match (const char *call) {
+    int i, w;
+    prefix_data *pfx;
+    int pfxmax = prefix_count();
+
+    w = -1;
+    for (i = 0; i < pfxmax; i++) {
+	pfx = prefix_by_index(i);
+	if (strcmp(call, pfx->pfx) == 0) {
+	    w = i;
+	    break;
+	}
+    }
+    return w;
+}
+
+
+/* search for the best mach of 'call' in pfx table */
+int find_best_match (const char *call) {
+    int bestlen = 0;
+    int i, w;
+    prefix_data *pfx;
+    int pfxmax = prefix_count();
+
+    w = -1;
+    for (i = 0; i < pfxmax; i++) {
+	int l;
+	pfx = prefix_by_index(i);
+	if (*pfx->pfx != call[0])
+	    continue;
+
+	l = strlen(pfx->pfx);
+	if (l <= bestlen)
+	    continue;
+
+	if (strncmp(pfx->pfx, call, l) == 0) {
+	    bestlen = l;
+	    w = i;
+	}
+    }
+    return w;
+}
 
 /* replace callsign area (K2ND/4 -> K4ND)
  *
@@ -60,15 +103,11 @@ void change_area(char *call, char area){
 
 int getpfxindex(char *checkcallptr)
 {
-    char checkbuffer[17] = "";
-    char checkncall[17] = "";
     char checkcall[17] = "";
     char strippedcall[17] = "";
 
-    prefix_data *pfx;
-    int pfxmax = prefix_count();
 
-    int i = 0, w = 0, abnormal_call = 0;
+    int w = 0, abnormal_call = 0;
     size_t loc;
 
     g_strlcpy(strippedcall, checkcallptr, 17);
@@ -87,6 +126,7 @@ int getpfxindex(char *checkcallptr)
     loc = strcspn(checkcall, "/");
 
     if (loc != strlen(checkcall)) {		/* found a '/' */
+	char checkbuffer[17] = "";
 	char call1[17];
 	char call2[17];
 
@@ -133,57 +173,15 @@ int getpfxindex(char *checkcallptr)
 
     /* -------------check full call exceptions first...--------------------- */
 
-    w = -1;
     if (abnormal_call == 1) {
-	// pa3fwm 20040111: is pp guaranteed to be properly initialized
-	// if/when we get here??
-	// pa0r 20040117: It is not. Code changed...
-	//      strncpy(checkncall , stripepdcall, pp);
-	strncpy(checkncall, strippedcall, sizeof(checkncall) - 1);
-
-	for (i = 0; i < pfxmax; i++) {
-	    pfx = prefix_by_index(i);
-	    if (strcmp(checkncall, pfx->pfx) == 0) {
-		w = i;
-		break;
-	    }
-	}
-
+	w = find_full_match(strippedcall);
     } else {
-	int bestlen = 0;
-	for (i = 0; i < pfxmax; i++) {
-	    int l;
-	    pfx = prefix_by_index(i);
-	    if (*pfx->pfx != strippedcall[0])
-		continue;
-
-	    l = strlen(pfx->pfx);
-	    if (l <= bestlen)
-		continue;
-
-	    if (strncmp(pfx->pfx, strippedcall, l) == 0) {
-		bestlen = l;
-		w = i;
-	    }
-	}
+	w = find_best_match( strippedcall );
     }
 
     if (w < 0 && 0 != strcmp(strippedcall, checkcall)) {
 	// only if not found in prefix full call exception list
-	int bestlen = 0;
-	for (i = 0; i < pfxmax; i++) {
-	    int l;
-	    pfx = prefix_by_index(i);
-	    if (*pfx->pfx != checkcall[0])
-		continue;
-	    l = strlen(pfx->pfx);
-	    if (l <= bestlen)
-		continue;
-	    if (strncmp(pfx->pfx, checkcall, l) == 0) {
-		bestlen = l;
-		w = i;
-	    }
-	}
+	w = find_best_match( checkcall );
     }
 
     return w;
@@ -204,15 +202,11 @@ int getctynr(char *checkcall)
 
 int getctydata(char *checkcallptr)
 {
-    char checkbuffer[17] = "";
-    char checkncall[17] = "";
     char checkcall[17] = "";
     char strippedcall[17] = "";
 
-    prefix_data *pfx;
-    int pfxmax = prefix_count();
 
-    int i = 0, w = 0, x = 0, abnormal_call = 0;
+    int w = 0, x = 0, abnormal_call = 0;
     size_t loc;
 
     g_strlcpy(strippedcall, checkcallptr, 17);
@@ -231,6 +225,7 @@ int getctydata(char *checkcallptr)
     loc = strcspn(checkcall, "/");
 
     if (loc != strlen(checkcall)) {
+	char checkbuffer[17] = "";
 	char call1[17];
 	char call2[17];
 
@@ -277,57 +272,15 @@ int getctydata(char *checkcallptr)
 
     /* -------------check full call exceptions first...--------------------- */
 
-    w = -1;
     if (abnormal_call == 1) {
-	// pa3fwm 20040111: is pp guaranteed to be properly initialized
-	// if/when we get here??
-	// pa0r 20040117: It is not. Code changed...
-	//      strncpy(checkncall , findcall, pp);
-	strncpy(checkncall, strippedcall, sizeof(checkncall) - 1);
-
-	for (i = 0; i < pfxmax; i++) {
-	    pfx = prefix_by_index(i);
-	    if (strcmp(checkncall, pfx->pfx) == 0) {
-		w = i;
-		break;
-	    }
-	}
-
+	w = find_full_match(strippedcall);
     } else {
-	int bestlen = 0;
-	for (i = 0; i < pfxmax; i++) {
-	    int l;
-	    pfx = prefix_by_index(i);
-	    if (*pfx->pfx != strippedcall[0])
-		continue;
-
-	    l = strlen(pfx->pfx);
-	    if (l <= bestlen)
-		continue;
-
-	    if (strncmp(pfx->pfx, strippedcall, l) == 0) {
-		bestlen = l;
-		w = i;
-	    }
-	}
+	w = find_best_match( strippedcall );
     }
 
     if (w < 0 && 0 != strcmp(strippedcall, checkcall)) {
 	// only if not found in prefix full call exception list
-	int bestlen = 0;
-	for (i = 0; i < pfxmax; i++) {
-	    int l;
-	    pfx = prefix_by_index(i);
-	    if (*pfx->pfx != checkcall[0])
-		continue;
-	    l = strlen(pfx->pfx);
-	    if (l <= bestlen)
-		continue;
-	    if (strncmp(pfx->pfx, checkcall, l) == 0) {
-		bestlen = l;
-		w = i;
-	    }
-	}
+	w = find_best_match( checkcall );
     }
 
 
