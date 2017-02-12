@@ -45,7 +45,7 @@ int getpfxindex(char *checkcallptr)
     char checkbuffer[17] = "";
     char checkncall[17] = "";
     char checkcall[17] = "";
-    char findcall[17] = "";
+    char strippedcall[17] = "";
 
     prefix_data *pfx;
     int pfxmax = prefix_count();
@@ -54,25 +54,24 @@ int getpfxindex(char *checkcallptr)
     int pp = 0;
     size_t loc;
 
-    g_strlcpy(checkcall, checkcallptr, 17);
+    g_strlcpy(strippedcall, checkcallptr, 17);
 
-
-    if (strstr(checkcall, "/QRP") ==
-	    (checkcall + strlen(checkcall) - 4))
+    if (strstr(strippedcall, "/QRP") ==
+	    (strippedcall + strlen(strippedcall) - 4))
 	/* drop QRP suffix */
-	checkcall[strlen(checkcall) - 4] = '\0';
+	strippedcall[strlen(strippedcall) - 4] = '\0';
 
-    if (location_unknown(checkcall))
-	checkcall[0] = '\0';
+    /* go out if /MM, /AM or similar */
+    if (location_unknown(strippedcall))
+	strippedcall[0] = '\0';
 
-    strncpy(findcall, checkcall, 16);
+    strncpy(checkcall, strippedcall, 16);
 
     loc = strcspn(checkcall, "/");
 
     if (loc != strlen(checkcall)) {		/* found a '/' */
 	char call1[17];
 	char call2[17];
-
 
 	strncpy(call1, checkcall, loc);		/* 1st part before '/' */
 	call1[loc] = '\0';
@@ -125,8 +124,8 @@ int getpfxindex(char *checkcallptr)
 	// pa3fwm 20040111: is pp guaranteed to be properly initialized
 	// if/when we get here??
 	// pa0r 20040117: It is not. Code changed...
-	//      strncpy(checkncall , findcall, pp);
-	strncpy(checkncall, findcall, sizeof(checkncall) - 1);
+	//      strncpy(checkncall , stripepdcall, pp);
+	strncpy(checkncall, strippedcall, sizeof(checkncall) - 1);
 
 	for (i = 0; i < pfxmax; i++) {
 	    pfx = prefix_by_index(i);
@@ -141,21 +140,21 @@ int getpfxindex(char *checkcallptr)
 	for (i = 0; i < pfxmax; i++) {
 	    int l;
 	    pfx = prefix_by_index(i);
-	    if (*pfx->pfx != findcall[0])
+	    if (*pfx->pfx != strippedcall[0])
 		continue;
 
 	    l = strlen(pfx->pfx);
 	    if (l <= bestlen)
 		continue;
 
-	    if (strncmp(pfx->pfx, findcall, l) == 0) {
+	    if (strncmp(pfx->pfx, strippedcall, l) == 0) {
 		bestlen = l;
 		w = i;
 	    }
 	}
     }
 
-    if (w < 0 && 0 != strcmp(findcall, checkcall)) {
+    if (w < 0 && 0 != strcmp(strippedcall, checkcall)) {
 	// only if not found in prefix full call exception list
 	int bestlen = 0;
 	for (i = 0; i < pfxmax; i++) {
@@ -194,7 +193,7 @@ int getctydata(char *checkcallptr)
     char checkbuffer[17] = "";
     char checkncall[17] = "";
     char checkcall[17] = "";
-    char findcall[17] = "";
+    char strippedcall[17] = "";
 
     prefix_data *pfx;
     int pfxmax = prefix_count();
@@ -203,17 +202,18 @@ int getctydata(char *checkcallptr)
     int pp = 0;
     size_t loc;
 
-    g_strlcpy(checkcall, checkcallptr, 17);
+    g_strlcpy(strippedcall, checkcallptr, 17);
 
-    if (strstr(checkcall, "/QRP") ==
-	    (checkcall + strlen(checkcall) - 4))
+    if (strstr(strippedcall, "/QRP") ==
+	    (strippedcall + strlen(strippedcall) - 4))
 	/* drop QRP suffix */
-	checkcall[strlen(checkcall) - 4] = '\0';
+	strippedcall[strlen(strippedcall) - 4] = '\0';
 
-    if (location_unknown(checkcall))
-	checkcall[0] = '\0';
+    /* go out if /MM, /AM or similar */
+    if (location_unknown(strippedcall))
+	strippedcall[0] = '\0';
 
-    strncpy(findcall, checkcall, 16);
+    strncpy(checkcall, strippedcall, 16);
 
     loc = strcspn(checkcall, "/");
 
@@ -273,7 +273,7 @@ int getctydata(char *checkcallptr)
 	// if/when we get here??
 	// pa0r 20040117: It is not. Code changed...
 	//      strncpy(checkncall , findcall, pp);
-	strncpy(checkncall, findcall, sizeof(checkncall) - 1);
+	strncpy(checkncall, strippedcall, sizeof(checkncall) - 1);
 
 	for (i = 0; i < pfxmax; i++) {
 	    pfx = prefix_by_index(i);
@@ -288,21 +288,21 @@ int getctydata(char *checkcallptr)
 	for (i = 0; i < pfxmax; i++) {
 	    int l;
 	    pfx = prefix_by_index(i);
-	    if (*pfx->pfx != findcall[0])
+	    if (*pfx->pfx != strippedcall[0])
 		continue;
 
 	    l = strlen(pfx->pfx);
 	    if (l <= bestlen)
 		continue;
 
-	    if (strncmp(pfx->pfx, findcall, l) == 0) {
+	    if (strncmp(pfx->pfx, strippedcall, l) == 0) {
 		bestlen = l;
 		w = i;
 	    }
 	}
     }
 
-    if (w < 0 && 0 != strcmp(findcall, checkcall)) {
+    if (w < 0 && 0 != strcmp(strippedcall, checkcall)) {
 	// only if not found in prefix full call exception list
 	int bestlen = 0;
 	for (i = 0; i < pfxmax; i++) {
