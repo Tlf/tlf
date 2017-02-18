@@ -22,6 +22,9 @@
 	 *      add call/band to dupe list
 	 *
 	 *--------------------------------------------------------------*/
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 
 #define _XOPEN_SOURCE
 
@@ -41,6 +44,7 @@
 #include "tlf.h"
 #include "zone_nr.h"
 #include "get_time.h"
+#include "dxcc.h"
 
 int excl_add_veto;
 /* This variable helps to handle in other modules, that station is multiplier or not */
@@ -145,11 +149,9 @@ int addcall(void)
 	getpx(hiscall);
 	pxnr = pxstr[strlen(pxstr) - 1] - 48;
 
-	getctydata(hiscall);
-
 	int pfxi = 0;
 	while(pfxi < pfxnummultinr) {
-	    if (pfxnummulti[pfxi].countrynr == countrynr) {
+	    if (pfxnummulti[pfxi].countrynr == j) {
 		pfxnumcntidx = pfxi;
 		break;
 	    }
@@ -179,7 +181,7 @@ int addcall(void)
     if (exclude_multilist_type == 2) {
       int ci = 0;
       while (strlen(countrylist[ci]) != 0) {
-        if (getctydata(countrylist[ci]) == j) {
+        if (getctynr(countrylist[ci]) == j) {
             add_ok = 0;
 	    addcty = 0;
 	    addcallarea = 0;
@@ -268,7 +270,6 @@ int addcall2(void)
     extern int wpx;
     extern int wazmult;
     extern int itumult;
-    extern char cqzone[];
     extern char pxstr[];
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
@@ -287,12 +288,10 @@ int addcall2(void)
     int i, j, p, z = 0;
     int add_ok;
     char lancopy[6];
-    char zonebuffer[4];
 
     char hiscall[20];
     char comment[40];
     int bandinx;
-    int k;
     int pfxnumcntidx = -1;
     int pxnr = 0;
     excl_add_veto = 0;
@@ -301,23 +300,12 @@ int addcall2(void)
     time_t qsotimets;
 
     g_strlcpy(hiscall, lan_logline + 29, 20);
-
-    for (k = 0; k < strlen(hiscall); k++) {	// terminate string at first space
-	if (hiscall[k] == ' ') {
-	    hiscall[k] = '\0';
-	    break;
-	}
-    }
+    *strchrnul(hiscall, ' ') = '\0';	/* terminate on first blank */
 
     g_strlcpy(comment, lan_logline + 54, 31);
+    *strchrnul(comment, ' ') = '\0';	/* terminate on first blank */
 
-    for (k = 0; k < strlen(comment); k++) {	// terminate string at first space
-	if (comment[k] == ' ') {
-	    comment[k] = '\0';
-	    break;
-	}
-    }
-
+    /* FIXME: worked array needs mutex protection */
     found = searchcallarray(hiscall);
 
     if (found == -1) {
@@ -328,9 +316,7 @@ int addcall2(void)
     } else
 	i = found;
 
-    g_strlcpy(zonebuffer, cqzone, 4);	//hack: getctydata should not change zone!
-    j = getctydata2(hiscall);
-    g_strlcpy(cqzone, zonebuffer, 4);	//idem....
+    j = getctynr(hiscall);
 
     bandinx = get_band(lan_logline);
 
@@ -350,25 +336,26 @@ int addcall2(void)
 
     add_ok = 1;			/* look if certain calls are excluded */
 
-/* 	     if ((arrldx_usa ==1) && ((countrynr == w_cty) || (countrynr == ve_cty)))
+/* 	     if ((arrldx_usa ==1) && ((j == w_cty) || (j == ve_cty)))
  	     	add_ok = 0;
 */
     if ((country_mult == 1) && (universal == 1))
 	add_ok = 1;
 
     if (pacc_pa_flg == 1)
+	/* FIXME: Does not work for LAN qso's as pacc_pa uses global variables
+	 * set from foreground task */
 	add_ok = pacc_pa();
 
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
-	getpx(hiscall);
+	getpx(hiscall);		/* FIXME: uses global 'pxstr' for background
+				   job */
 	pxnr = pxstr[strlen(pxstr) - 1] - 48;
-
-	getctydata(hiscall);
 
 	int pfxi = 0;
 	while(pfxi < pfxnummultinr) {
-	    if (pfxnummulti[pfxi].countrynr == countrynr) {
+	    if (pfxnummulti[pfxi].countrynr == j) {
 		pfxnumcntidx = pfxi;
 		break;
 	    }
@@ -382,7 +369,8 @@ int addcall2(void)
       int cont_in_list = 0;
 
       while(strlen(continent_multiplier_list[ci]) != 0) {
-	  if(strcmp(continent, continent_multiplier_list[ci]) == 0) {
+	  if(strcmp(dxcc_by_index(j)->continent, continent_multiplier_list[ci])
+		  == 0) {
 	      cont_in_list = 1;
 	  }
 	  ci++;
@@ -396,7 +384,7 @@ int addcall2(void)
     if (exclude_multilist_type == 2) {
       int ci = 0;
       while (strlen(countrylist[ci]) != 0) {
-        if (getctydata(countrylist[ci]) == j) {
+        if (getctynr(countrylist[ci]) == j) {
             excl_add_veto = 1;
         }
         ci++;
