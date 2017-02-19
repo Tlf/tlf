@@ -69,7 +69,7 @@ void foc_init(void) {
 int foc_score(char *call) {
 
     if (g_regex_match_simple("^G(|[A-Z])4FOC(|/.*)", call,
-	    G_REGEX_CASELESS, 0)) {
+	    G_REGEX_CASELESS, (GRegexMatchFlags)0)) {
 	return 2;
     }
     else {
@@ -126,7 +126,7 @@ static int search_g4foc_in_callarray(void) {
     for (i = 0; i < nr_worked; i++) {
 
 	if (g_regex_match_simple("^G(|[A-Z])4FOC(|/.*)", worked[i].call,
-		G_REGEX_CASELESS, 0)) {
+		G_REGEX_CASELESS, (GRegexMatchFlags)0)) {
             found = i;
             break;
         }

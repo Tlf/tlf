@@ -403,8 +403,10 @@ int recvline(int *fd, char *buf, int buflen)
 		    sockbuf[ifds].buflen = 0;
 		    continue;
 		} else {
+		    /* nl != NULL || whole_lines == 0 */
 		    if (sockbuf[ifds].whole_lines) {
-			*nl = '\0';
+			if (nl != NULL)
+			    *nl = '\0';
 			len = strlen(sockbuf[ifds].buf) + 1;
 		    } else if (sockbuf[ifds].buflen > buflen)
 			len = buflen;
@@ -457,7 +459,7 @@ long resolve(char *hostname)
 	}
     }
     if (valid) {
-	haddr = a[3] + 256 * (a[2] + 256 * (a[1] + 256 * a[0]));
+	haddr = a[3] + 256u * (a[2] + 256u * (a[1] + 256u * a[0]));
 	haddr = htonl(haddr);
     } else {
 	struct hostent *hp;
