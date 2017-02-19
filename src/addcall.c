@@ -474,11 +474,10 @@ int addcall2(void)
 		    break;
 		}
 	    }
-	    if (pfxmultab == 1) {
-		bandinx = get_band(lan_logline);
-	    }
 
-	    add_pfx(lancopy);
+	    bandinx = get_band(lan_logline);
+
+	    add_pfx(lancopy, bandinx);
 	}
     }
 

@@ -364,7 +364,7 @@ int readcalls(void)
 
 	if (pfxmultab == 1) {
 	    getpx(presentcall);
-	    add_pfx(pxstr);
+	    add_pfx(pxstr, bandinx);
 	}
 
 	if (pfxnummultinr > 0) {
@@ -446,7 +446,7 @@ int readcalls(void)
 	for (n = 0; n < i; n++) {
 	    strcpy(checkcall, worked[n].call);
 	    getpx(checkcall);
-	    add_pfx(pxstr);
+	    add_pfx(pxstr, bandinx);
 	}
     }
 

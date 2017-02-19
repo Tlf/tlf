@@ -294,7 +294,7 @@ void prepare_specific_part(void) {
      * -> add prefix to prefixes_worked and include new pfx in log line */
     new_pfx = 0;
     if (! (pfxmultab == 1 && excl_add_veto == 1)) {
-	new_pfx = (add_pfx(pxstr) == 0);	/* add prefix, remember if new */
+	new_pfx = (add_pfx(pxstr, bandinx) == 0);	/* add prefix, remember if new */
     }
 
     if (wpx ==1 || pfxmultab == 1) {			/* wpx */

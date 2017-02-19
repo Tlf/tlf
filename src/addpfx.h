@@ -21,10 +21,10 @@
 #ifndef ADDPFX_H
 #define ADDPFX_H
 
-int add_pfx(char *pxstr);
-int GetNrOfPfx_once();
-int GetNrOfPfx_multiband();
-int GetNrOfPfx_OnBand(int bandindex);
+int add_pfx(char *pxstr, unsigned int bandindex);
+unsigned int GetNrOfPfx_once();
+unsigned int GetNrOfPfx_multiband();
+unsigned int GetNrOfPfx_OnBand(unsigned int bandindex);
 void InitPfx();
 
 #endif /* ADDPFX_H */

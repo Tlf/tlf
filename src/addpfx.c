@@ -31,8 +31,8 @@
 
 #define MAX_PFX_LEN 5
 
-int nr_of_px = 0;
-int nr_of_px_ab = 0;
+unsigned int nr_of_px = 0;
+unsigned int nr_of_px_ab = 0;
 
 
 struct {
@@ -40,12 +40,11 @@ struct {
     int bands;
 } prefixes_worked[MAX_CALLS];
 
-int pfxs_per_band[NBANDS] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+unsigned int pfxs_per_band[NBANDS] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-int add_pfx(char *pxstr)
+int add_pfx(char *pxstr, unsigned int bandindex)
 {
     extern int pfxmultab;
-    extern int bandinx;
     int q = 0, found = 0, bandfound = 0;
 
     prefixes_worked[nr_of_px].pfx[0] = '\0';
@@ -56,14 +55,14 @@ int add_pfx(char *pxstr)
 	if (strcmp(pxstr, prefixes_worked[q].pfx) == 0) {
 	    /* pfx already worked */
 	    found = 1;
-	    if (prefixes_worked[q].bands & inxes[bandinx]) {
+	    if (prefixes_worked[q].bands & inxes[bandindex]) {
 		bandfound = 1;
 	    }
 	    else {
 		/* pfx new on band */
-		prefixes_worked[q].bands |= inxes[bandinx];
+		prefixes_worked[q].bands |= inxes[bandindex];
 		nr_of_px_ab++;
-		pfxs_per_band[bandinx]++;
+		pfxs_per_band[bandindex]++;
 	    }
 	    break;
 	}
@@ -72,10 +71,10 @@ int add_pfx(char *pxstr)
     if (found != 1) {
 	/* new pfx */
 	g_strlcpy(prefixes_worked[nr_of_px].pfx, pxstr, MAX_PFX_LEN+1);
-	prefixes_worked[nr_of_px].bands |= inxes[bandinx];
+	prefixes_worked[nr_of_px].bands |= inxes[bandindex];
 	nr_of_px++;
 	nr_of_px_ab++;
-	pfxs_per_band[bandinx]++;
+	pfxs_per_band[bandindex]++;
     }
 
     if (pfxmultab != 1) {
@@ -87,17 +86,17 @@ int add_pfx(char *pxstr)
 }
 
 
-int GetNrOfPfx_once() {
+unsigned int GetNrOfPfx_once() {
     return nr_of_px;
 }
 
 
-int GetNrOfPfx_multiband() {
+unsigned int GetNrOfPfx_multiband() {
     return nr_of_px_ab;
 }
 
 
-int GetNrOfPfx_OnBand(int bandindex) {
+unsigned int GetNrOfPfx_OnBand(unsigned int bandindex) {
     if (bandindex < NBANDS)
 	return pfxs_per_band[bandindex];
     else
