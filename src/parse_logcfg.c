@@ -208,7 +208,7 @@ int parse_logcfg(char *inputbuffer)
 #ifdef HAVE_LIBHAMLIB
     extern rig_model_t myrig_model;
 #endif
-    extern char rigportname[];
+    extern char *rigportname;
     extern int rignumber;
     extern char rigconf[];
     extern char exchange_list[40];
@@ -996,9 +996,7 @@ int parse_logcfg(char *inputbuffer)
 	}
     case 64:{
 	    PARAMETER_NEEDED(teststring);
-	    buff[0] = '\0';
-	    strcat(buff, fields[1]);
-	    strncpy(rigportname, buff, 39);
+	    rigportname = strdup(fields[1]);
 	    break;
 	}
     case 65:{

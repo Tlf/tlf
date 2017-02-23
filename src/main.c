@@ -361,7 +361,7 @@ int outfreq;			/* output  to rig */
 int ssb_bandwidth = 3000;
 int cw_bandwidth = 0;
 int serial_rate = 2400;
-char rigportname[40];
+char *rigportname;
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;

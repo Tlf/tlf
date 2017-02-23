@@ -92,7 +92,7 @@ int init_tlf_rig(void)
     extern freq_t outfreq;
     extern char rigconf[];
     extern int serial_rate;
-    extern char rigportname[];
+    extern char *rigportname;
     extern int debugflag;
     extern unsigned char rigptt;
 
@@ -248,7 +248,7 @@ int init_tlf_rig(void)
 
 int close_tlf_rig(RIG * my_rig)
 {
-    extern char rigportname[];
+    extern char *rigportname;
 
     rig_close(my_rig);		/* close port */
     rig_cleanup(my_rig);	/* if you care about memory */

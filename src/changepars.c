@@ -796,7 +796,7 @@ int networkinfo(void)
     extern char whichcontest[];
     extern char pr_hostaddress[];
     extern char tncportname[];
-    extern char rigportname[];
+    extern char *rigportname;
     extern char logfile[];
 
     int i, j, inode;
@@ -989,7 +989,7 @@ int multiplierinfo(void)
 int debug_tty(void)
 {
 
-    extern char rigportname[];
+    extern char *rigportname;
     extern int serial_rate;
 
     int fdSertnc;
