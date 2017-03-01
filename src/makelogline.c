@@ -374,7 +374,7 @@ void prepare_specific_part(void) {
 	logline4[68] = '\0';
 
 	if (shownewmult >= 0) {
-	    strncat(logline4, mults[shownewmult], 9);
+	    strncat(logline4, multis[shownewmult].name, 9);
 
 	    shownewmult = -1;
 	}
@@ -386,7 +386,7 @@ void prepare_specific_part(void) {
 	logline4[68] = '\0';
 
 	if (shownewmult >= 0) {
-	    strncat(logline4, mults[shownewmult], 9);
+	    strncat(logline4, multis[shownewmult].name, 9);
 
 	    shownewmult = -1;
 	}

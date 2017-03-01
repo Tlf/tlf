@@ -112,8 +112,7 @@ int readcalls(void)
     for (n = 0; n < NBANDS; n++)
 	zonescore[n] = 0;
 
-    for (n = 0; n < NBANDS; n++)	//F6CFE
-	multscore[n] = 0;
+    init_mults();
 
     InitPfx();
 
@@ -124,7 +123,6 @@ int readcalls(void)
 	    }
 	}
     }
-    init_mults();
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 	mvprintw(5, 0, "Error opening logfile.\n");

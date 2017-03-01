@@ -867,8 +867,8 @@ int load_callmaster(void)
 void show_needed_sections(void)
 {
     extern int arrlss;
-    extern int multarray_nr;
-    extern char mults[MAX_MULTS][12];
+    extern int nr_multis;
+    extern struct mults_t multis[MAX_MULTS];
     extern GPtrArray *mults_possible;
 
     int j, vert, hor, cnt, found;
@@ -893,8 +893,8 @@ void show_needed_sections(void)
 		strcpy(mprint, g_ptr_array_index(mults_possible, cnt));
 
 		found = 0;
-		for (j = 0; j < multarray_nr; j++) {
-		    if (strncmp(mults[j], mprint, strlen(mprint)) == 0) {
+		for (j = 0; j < nr_multis; j++) {
+		    if (strncmp(multis[j].name, mprint, strlen(mprint)) == 0) {
 			found = 1;
 			break;
 		    }

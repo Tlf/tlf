@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0r@eudxf.org>
- *                    2010-2014 Thomas Beierlein <tb@forth-ev.de>
+ *                    2010-2017 Thomas Beierlein <tb@forth-ev.de>
  *                    2013-2016 Ervin Hegedus - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -112,6 +112,7 @@ int minitest = 0;	/**< if set, length of minitest period in seconds */
 int unique_call_multi = 0;          /* do we count calls as multiplier */
 
 int universal = 0;
+
 int addcallarea;
 int pfxmult = 0;
 int pfxmultab = 0;
@@ -389,9 +390,9 @@ struct worked_t worked[MAX_CALLS]; /**< worked stations */
 int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */
 int zones[MAX_ZONES];		/* same for cq zones or itu zones;
 				   using 1 - 40 or 1 - 90 */
-char mults[MAX_MULTS][12];
-int mult_bands[MAX_MULTS];
-int multarray_nr = 0;
+
+struct mults_t multis[MAX_MULTS]; /**< worked multis */
+int nr_multis = 0;		/**< number of multis in multis[] */
 
 GPtrArray *mults_possible;
 

@@ -296,25 +296,27 @@ int init_and_load_multipliers(void)
 
 /** initialize mults scoring
  *
- * empties mults[] and mult_bands[] arrays and set the number of
- * mults to 0.
+ * empties multis[] array, set the number of multis and multscore per band to 0.
  */
 void init_mults()
 {
     int n;
 
     for (n = 0; n < MAX_MULTS; n++) {
-	mults[n][0] = '\0';
-	mult_bands[n] = 0;
+	multis[n].name[0] = '\0';
+	multis[n].band = 0;
     }
 
-    multarray_nr = 0;
+    nr_multis = 0;
+
+    for (n = 0; n < NBANDS; n++)
+	multscore[n] = 0;
 }
 
 /** register worked multiplier and check if its new
  *
  * Check if multiplier is already registered. If not make a new entry in
- * mults[] array and increment the total mults count 'multarray_nr'.
+ * multis[] array and increment the total mults count 'nr_multis'.
  * Mark the mult as worked on the actual band. If it is a new band
  * increase the bandspecific 'multscore[band]'.
  *
@@ -332,14 +334,14 @@ int remember_multi(char *multiplier, int band, int show_new_band)
     if (*multiplier == '\0')
 	return -1;			/* ignore empty string */
 
-    for (i = 0; i < multarray_nr; i++) {
+    for (i = 0; i < nr_multis; i++) {
 	/* already in list? */
-	if (strcmp(mults[i], multiplier) == 0) {
+	if (strcmp(multis[i].name, multiplier) == 0) {
 	    found = 1;
 
 	    /* new band? */
-	    if ((mult_bands[i] & inxes[band]) == 0) {
-		mult_bands[i] |= inxes[band];
+	    if ((multis[i].band & inxes[band]) == 0) {
+		multis[i].band |= inxes[band];
 		multscore[band]++;
 
 		/* if wanted, show it as new band */
@@ -353,12 +355,12 @@ int remember_multi(char *multiplier, int band, int show_new_band)
 
     /* add new multi */
     if (found == 0) {
-	index = multarray_nr;		/* return index of new mult */
+	index = nr_multis;		/* return index of new mult */
 
-	strcpy(mults[multarray_nr], multiplier);
-	mult_bands[multarray_nr] |= inxes[band];
+	strcpy(multis[nr_multis].name, multiplier);
+	multis[nr_multis].band |= inxes[band];
 	multscore[band]++;
-	multarray_nr++;
+	nr_multis++;
     }
 
     return index;

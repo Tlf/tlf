@@ -863,9 +863,8 @@ int multiplierinfo(void)
     extern int arrlss;
     extern int serial_section_mult;
     extern int sectn_mult;
-    extern char mults[MAX_MULTS][12];
-    extern int mult_bands[MAX_MULTS];
-    extern int multarray_nr;
+    extern struct mults_t multis[MAX_MULTS];
+    extern int nr_multis;
     extern GPtrArray *mults_possible;
 
     int j, k, vert, hor, cnt, found;
@@ -899,8 +898,8 @@ int multiplierinfo(void)
 
 		/* check if in worked multis */
 		found = 0;
-		for (j = 0; j < multarray_nr; j++) {
-		    g_strlcpy(ch2mult, mults[j], sizeof(ch2mult));
+		for (j = 0; j < nr_multis; j++) {
+		    g_strlcpy(ch2mult, multis[j].name, sizeof(ch2mult));
 
 		    if (strcmp(g_strchomp(ch2mult), chmult) == 0)
 			found = 1;
@@ -938,9 +937,9 @@ int multiplierinfo(void)
 		worked_at = 0;
 
 		/* lookup if already worked */
-		for (k = 0; k < multarray_nr; k++) {
-		    if (strstr(mults[k], MULTS_POSSIBLE(cnt)) != NULL) {
-			worked_at = mult_bands[k];
+		for (k = 0; k < nr_multis; k++) {
+		    if (strstr(multis[k].name, MULTS_POSSIBLE(cnt)) != NULL) {
+			worked_at = multis[k].band;
 			break;
 		    }
 		}

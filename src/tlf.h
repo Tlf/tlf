@@ -90,7 +90,7 @@ enum {
 };			// many places have hardcode 9
 			// (or 8, being the maximum band index)
 			//
-extern int inxes[NBANDS];  /*< conversion from BANDINDEX to BAND-mask,
+extern int inxes[NBANDS];  /**< conversion from BANDINDEX to BAND-mask,
 			see addmult.c */
 
 #define IsWarcIndex(index) ((index == BANDINDEX_12) || \
@@ -145,12 +145,20 @@ enum {
  *
  * contains all informations about an already worked station */
 struct worked_t {
-    char call[20]; 		/*< call of the station */
-    char exchange[12]; 		/*< the last exchange */
-    int band; 			/*< bitmap for worked bands */
-    int country; 		/*< its country number */
-    long qsotime[3][NBANDS];	/*< last timestamp of qso in gmtime
+    char call[20]; 		/**< call of the station */
+    char exchange[12]; 		/**< the last exchange */
+    int band; 			/**< bitmap for worked bands */
+    int country; 		/**< its country number */
+    long qsotime[3][NBANDS];	/**< last timestamp of qso in gmtime
 				  for all modes and bands */
+};
+
+/** worked mults
+ *
+ * all information about worked multis */
+struct mults_t {
+    char name[12];		/**< Multiplier */
+    int band;			/**< bitmap with abnds the multi was worked */
 };
 
 

@@ -164,7 +164,7 @@ int get_nr_of_mults()
     }
     else if (arrlss == 1) {
 
-	return multarray_nr;
+	return nr_multis;
     }
     else if (cqww == 1) {
 
@@ -202,7 +202,7 @@ int get_nr_of_mults()
     else if ((wysiwyg_once == 1)
 	|| (unique_call_multi == UNIQUECALL_ALL)) {
 
-	return multarray_nr;
+	return nr_multis;
     }
     else if ((wysiwyg_multi == 1)
 	|| (unique_call_multi == UNIQUECALL_BAND)

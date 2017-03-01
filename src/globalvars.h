@@ -10,12 +10,8 @@ extern char qsos[MAX_QSOS][LOGLINELEN+1];// array of log lines of QSOs so far;
 					// comment, starting with a semicolon
 extern int nr_qsos;			// number of lines in qsos[]
 
-extern char mults[MAX_MULTS][12];	// array of multipliers worked so far
-extern int multarray_nr;		// number of entries in mults[]
-extern int mult_bands[];		// bitfield indicating on which band(s)
-					// the multiplier has been worked;
-					// bits assigned according to
-					// BAND160..BAND10 defined in tlf.h
+extern struct mults_t multis[MAX_MULTS]; // array of multipliers worked so far
+extern int nr_multis;			// number of entries in mults[]
 extern int multscore[NBANDS];		// number of multipliers worked per
 					// band; index is
 					// BANDINDEX_160 ... BANDINDEX_10
