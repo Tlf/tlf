@@ -38,7 +38,7 @@ void prev_qso(void)
     int i;
     char *str;
 
-    str = g_strdup_printf("%3s %d ", last_rst, qsonum-1);
+    str = g_strdup_printf("%3s %03d ", last_rst, qsonum-1);
     for (i=0; i < strlen(str); i++) {
 	str[i] = short_number(str[i]);
     }
