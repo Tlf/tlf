@@ -56,4 +56,5 @@ dxcc_data *dxcc_by_index(unsigned int index);
 
 void dxcc_add (char * dxcc_line);
 
+int load_ctydata(char *filename);
 #endif 	/* DXCC_H */

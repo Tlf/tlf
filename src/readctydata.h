@@ -21,7 +21,6 @@
 #ifndef READCTYDATA_H
 #define READCTYDATA_H
 
-int load_ctydata(char *filename);
 int  readctydata(void);
 
 #endif /* READCTYDATA_H */

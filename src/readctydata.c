@@ -34,53 +34,13 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
-/** load cty database from filename */
-int load_ctydata(char *filename) {
-    FILE *fd;
-    char buf[181] = "";
-    char *loc;
-
-    if ((fd = fopen(filename, "r")) == NULL) 
-	return -1;
-
-    dxcc_init();
-    prefix_init();
-
-    // set default for empty country
-    dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
-
-    while (fgets(buf, sizeof(buf), fd) != NULL) {
-
-	g_strchomp(buf); 	/* drop CR and/or NL and */
-	if (*buf == '\0')	/* ignore empty lines */
-	    continue;
-
-	if (buf[0] != ' ') {	// data line
-
-	    dxcc_add(buf);
-
-	} else			// prefix line
-	{
-	    loc = strtok(buf, " ,;");
-	    while (loc != NULL) {
-
-		prefix_add (loc);
-
-		loc = strtok(NULL, " ,;");
-	    }
-	}
-    }
-    fclose(fd);
-    return 0;
-}
-
 
 int readctydata(void)
 {
     gchar *filename;
- 
+
     if (load_ctydata("cty.dat") == -1) {
-	filename = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S, 
+	filename = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
 		    "cty.dat", NULL);
 	if (load_ctydata(filename) == -1) {
 	    g_free(filename);
