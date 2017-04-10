@@ -26,48 +26,116 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <malloc.h>
 #include "dxcc.h"
 #include "getpx.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 
+/* check for calls which have no assigned country and no assigned zone,
+ * e.g. airborn mobile /AM or maritime mobile /MM
+ */
+int location_unknown(const char *call) {
 
-int getpfxindex(char *checkcallptr)
-{
-    char checkbuffer[17] = "";
-    char checkncall[17] = "";
-    char checkcall[17] = "";
-    char findcall[17] = "";
+    return g_regex_match_simple("/AM$|/MM$", call,
+	    (GRegexCompileFlags)0, (GRegexMatchFlags)0);
+}
 
+/* search for a full match of 'call' in the pfx table */
+int find_full_match (const char *call) {
+    int i, w;
     prefix_data *pfx;
     int pfxmax = prefix_count();
 
-    int i = 0, w = 0, abnormal_call = 0;
-    char portable = '\0';
-    int pp = 0;
+    w = -1;
+    for (i = 0; i < pfxmax; i++) {
+	pfx = prefix_by_index(i);
+	if (strcmp(call, pfx->pfx) == 0) {
+	    w = i;
+	    break;
+	}
+    }
+    return w;
+}
+
+
+/* search for the best mach of 'call' in pfx table */
+int find_best_match (const char *call) {
+    int bestlen = 0;
+    int i, w;
+    prefix_data *pfx;
+    int pfxmax = prefix_count();
+
+    w = -1;
+    for (i = 0; i < pfxmax; i++) {
+	int l;
+	pfx = prefix_by_index(i);
+	if (*pfx->pfx != call[0])
+	    continue;
+
+	l = strlen(pfx->pfx);
+	if (l <= bestlen)
+	    continue;
+
+	if (strncmp(pfx->pfx, call, l) == 0) {
+	    bestlen = l;
+	    w = i;
+	}
+    }
+    return w;
+}
+
+/* replace callsign area (K2ND/4 -> K4ND)
+ *
+ * for stations with multiple digits (LZ1000) it replaces the last digit
+ * (may be wrong)
+ */
+void change_area(char *call, char area){
+    int i;
+
+    for (i = strlen(call) - 1; i > 0; i--) {
+	if (isdigit(call[i])) {
+	    call[i] = area;
+	    break;
+	}
+    }
+}
+
+
+/* prepare and check callsign and look it up in dxcc data base
+ *
+ * returns index in data base or -1 if not found
+ * if normalized_call ptr is not NULL retruns a copy of the normalized call
+ * e.g. DL1XYZ/PA gives PA/DL1XYZ
+ * caller has to free the copy after use
+ */
+int getpfxindex(char *checkcallptr, char **normalized_call)
+{
+    char checkcall[17] = "";
+    char strippedcall[17] = "";
+
+
+    int w = 0, abnormal_call = 0;
     size_t loc;
 
-    g_strlcpy(checkcall, checkcallptr, 17);
+    g_strlcpy(strippedcall, checkcallptr, 17);
 
-    portable = '\0';
+    if (strstr(strippedcall, "/QRP") ==
+	    (strippedcall + strlen(strippedcall) - 4))
+	/* drop QRP suffix */
+	strippedcall[strlen(strippedcall) - 4] = '\0';
 
-    if (strstr(checkcall, "/QRP") != NULL)	/* drop QRP suffix */
-	checkcall[strlen(checkcall) - 4] = '\0';
+    /* go out if /MM, /AM or similar */
+    if (location_unknown(strippedcall))
+	strippedcall[0] = '\0';
 
-    if (strstr(checkcall, "/AM") != NULL)	// airborne mobile, no country (0), no zone (0)
-	checkcall[0] = '\0';
-
-    if (strstr(checkcall, "/MM") != NULL)	// maritime mobile, no country, no zone
-	checkcall[0] = '\0';
-
-    strncpy(findcall, checkcall, 16);
+    strncpy(checkcall, strippedcall, 16);
 
     loc = strcspn(checkcall, "/");
 
-    if (loc != strlen(checkcall)) {
+    if (loc != strlen(checkcall)) {		/* found a '/' */
+	char checkbuffer[17] = "";
 	char call1[17];
 	char call2[17];
-
 
 	strncpy(call1, checkcall, loc);		/* 1st part before '/' */
 	call1[loc] = '\0';
@@ -87,14 +155,6 @@ int getpfxindex(char *checkcallptr)
 
 	    if (strlen(checkbuffer) == 1)
 		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'M' && strlen(checkbuffer) <= 3)
-		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'Q' && strlen(checkbuffer) == 3)	/* /QRP */
-		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'A' && strlen(checkbuffer) <= 3)	/*  /A,  /AM etc */
-		checkcall[loc] = '\0';
-	    if ((strlen(checkbuffer) <= 3) && (checkbuffer[0] <= '9') && (checkbuffer[0] >= '0'))	/*  /3,   etc */
-		portable = checkbuffer[0];
 	    loc = strcspn(checkcall, "/");
 	}
 
@@ -110,12 +170,9 @@ int getpfxindex(char *checkcallptr)
 	/* ------------------------------------------------------------ */
 
 	if ((strlen(checkbuffer) == 1) && isdigit(checkbuffer[0])) {	/*  /3 */
-	    for (pp = strlen(checkcall) - 1; pp > 0; pp--) {
-		if (isdigit(checkcall[pp])) {
-		    checkcall[pp] = checkbuffer[0];
-		    break;
-		}
-	    }
+
+	    change_area (checkcall, checkbuffer[0]);
+
 	} else if (strlen(checkbuffer) > 1)
 	    strcpy(checkcall, checkbuffer);
 
@@ -123,67 +180,29 @@ int getpfxindex(char *checkcallptr)
 
     /* -------------check full call exceptions first...--------------------- */
 
-    w = -1;
     if (abnormal_call == 1) {
-	// pa3fwm 20040111: is pp guaranteed to be properly initialized
-	// if/when we get here??
-	// pa0r 20040117: It is not. Code changed...
-	//      strncpy(checkncall , findcall, pp);
-	strncpy(checkncall, findcall, sizeof(checkncall) - 1);
-
-	for (i = 0; i < pfxmax; i++) {
-	    pfx = prefix_by_index(i);
-	    if (strcmp(checkncall, pfx->pfx) == 0) {
-		w = i;
-		break;
-	    }
-	}
-
+	w = find_full_match(strippedcall);
     } else {
-	int bestlen = 0;
-	for (i = 0; i < pfxmax; i++) {
-	    int l;
-	    pfx = prefix_by_index(i);
-	    if (*pfx->pfx != findcall[0])
-		continue;
-
-	    l = strlen(pfx->pfx);
-	    if (l <= bestlen)
-		continue;
-
-	    if (strncmp(pfx->pfx, findcall, l) == 0) {
-		bestlen = l;
-		w = i;
-	    }
-	}
+	w = find_best_match( strippedcall );
     }
 
-    if (w < 0 && 0 != strcmp(findcall, checkcall)) {
+    if (w < 0 && 0 != strcmp(strippedcall, checkcall)) {
 	// only if not found in prefix full call exception list
-	int bestlen = 0;
-	for (i = 0; i < pfxmax; i++) {
-	    int l;
-	    pfx = prefix_by_index(i);
-	    if (*pfx->pfx != checkcall[0])
-		continue;
-	    l = strlen(pfx->pfx);
-	    if (l <= bestlen)
-		continue;
-	    if (strncmp(pfx->pfx, checkcall, l) == 0) {
-		bestlen = l;
-		w = i;
-	    }
-	}
+	w = find_best_match( checkcall );
     }
+
+    if (normalized_call != NULL)
+	*normalized_call = strdup(checkcall);
 
     return w;
 }
 
+/* lookup dxcc cty number from callsign */
 int getctynr(char *checkcall)
 {
     int w;
 
-    w = getpfxindex(checkcall);
+    w = getpfxindex(checkcall, NULL);
 
     if (w >= 0)
 	return prefix_by_index(w)->dxcc_index;
@@ -192,159 +211,26 @@ int getctynr(char *checkcall)
 }
 
 
+/* lookup various dxcc cty data from callsign
+ *
+ * side effect: set up various global variables
+ */
 int getctydata(char *checkcallptr)
 {
-    char checkbuffer[17] = "";
-    char checkncall[17] = "";
-    char checkcall[17] = "";
-    char findcall[17] = "";
+    int w = 0, x = 0;
+    char *normalized_call = NULL;
 
-    prefix_data *pfx;
-    int pfxmax = prefix_count();
-
-    int i = 0, w = 0, x = 0, abnormal_call = 0;
-    char portable = '\0';
-    int pp = 0;
-    size_t loc;
-
-    g_strlcpy(checkcall, checkcallptr, 17);
-
-    portable = '\0';
-
-    if (strstr(checkcall, "/QRP") != NULL)	/* drop QRP suffix */
-	checkcall[strlen(checkcall) - 4] = '\0';
-
-    if (strstr(checkcall, "/AM") != NULL)	// airborne mobile, no country (0), no zone (0)
-	checkcall[0] = '\0';
-
-    if (strstr(checkcall, "/MM") != NULL)	// maritime mobile, no country, no zone
-	checkcall[0] = '\0';
-
-    strncpy(findcall, checkcall, 16);
-
-    loc = strcspn(checkcall, "/");
-
-    if (loc != strlen(checkcall)) {
-	char call1[17];
-	char call2[17];
-
-	strncpy(call1, checkcall, loc);		/* 1st part before '/' */
-	call1[loc] = '\0';
-	strcpy(call2, checkcall + loc + 1);	/* 2nd part after '/' */
-
-	if (strlen(call2) < strlen(call1)
-	    && strlen(call2) > 1) {
-	    sprintf(checkcall, "%s/%s", call2, call1);
-	    abnormal_call = 1;
-	    loc = strcspn(checkcall, "/");
-	}
-
-	if (loc > 3) {
-
-	    strncpy(checkbuffer, (checkcall + loc + 1),
-		    (strlen(checkcall) + 1) - loc);
-
-	    if (strlen(checkbuffer) == 1)
-		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'M' && strlen(checkbuffer) <= 3)
-		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'Q' && strlen(checkbuffer) == 3)	/* /QRP */
-		checkcall[loc] = '\0';
-	    if (checkbuffer[0] == 'A' && strlen(checkbuffer) <= 3)	/*  /A,  /AM etc */
-		checkcall[loc] = '\0';
-	    if ((strlen(checkbuffer) <= 3) && (checkbuffer[0] <= '9') && (checkbuffer[0] >= '0'))	/*  /3,   etc */
-		portable = checkbuffer[0];
-	    loc = strcspn(checkcall, "/");
-	}
-
-	if (loc != strlen(checkcall)) {
-
-	    if (loc < 5)
-		checkcall[loc] = '\0';	/*  "PA/DJ0LN/P   */
-	    else {		/*  DJ0LN/P       */
-		strncpy(checkcall, checkcall, loc + 1);
-	    }
-	}
-
-	/* ------------------------------------------------------------ */
-
-	if ((strlen(checkbuffer) == 1) && isdigit(checkbuffer[0])) {	/*  /3 */
-	    for (pp = strlen(checkcall) - 1; pp > 0; pp--) {
-		if (isdigit(checkcall[pp])) {
-		    checkcall[pp] = checkbuffer[0];
-		    break;
-		}
-	    }
-	} else if (strlen(checkbuffer) > 1)
-	    strcpy(checkcall, checkbuffer);
-
-    }
+    w = getpfxindex(checkcallptr, &normalized_call);
 
     if (wpx == 1 || pfxmult == 1)
     	/* needed for wpx and other pfx contests */
-	getpx(checkcall);
+	getpx(normalized_call);
 
-    /* -------------check full call exceptions first...--------------------- */
-
-    w = -1;
-    if (abnormal_call == 1) {
-	// pa3fwm 20040111: is pp guaranteed to be properly initialized
-	// if/when we get here??
-	// pa0r 20040117: It is not. Code changed...
-	//      strncpy(checkncall , findcall, pp);
-	strncpy(checkncall, findcall, sizeof(checkncall) - 1);
-
-	for (i = 0; i < pfxmax; i++) {
-	    pfx = prefix_by_index(i);
-	    if (strcmp(checkncall, pfx->pfx) == 0) {
-		w = i;
-		x = pfx->dxcc_index;
-		break;
-	    }
-	}
-
-    } else {
-	int bestlen = 0;
-	for (i = 0; i < pfxmax; i++) {
-	    int l;
-	    pfx = prefix_by_index(i);
-	    if (*pfx->pfx != findcall[0])
-		continue;
-
-	    l = strlen(pfx->pfx);
-	    if (l <= bestlen)
-		continue;
-
-	    if (strncmp(pfx->pfx, findcall, l) == 0) {
-		bestlen = l;
-		w = i;
-	    }
-	}
-	if (w >= 0)
-	    x = prefix_by_index(w)->dxcc_index;
-    }
-
-    if (w < 0 && 0 != strcmp(findcall, checkcall)) {
-	// only if not found in prefix full call exception list
-	int bestlen = 0;
-	for (i = 0; i < pfxmax; i++) {
-	    int l;
-	    pfx = prefix_by_index(i);
-	    if (*pfx->pfx != checkcall[0])
-		continue;
-	    l = strlen(pfx->pfx);
-	    if (l <= bestlen)
-		continue;
-	    if (strncmp(pfx->pfx, checkcall, l) == 0) {
-		bestlen = l;
-		w = i;
-	    }
-	}
-	if (w >= 0)
-	    x = prefix_by_index(w)->dxcc_index;
-    }
+    free (normalized_call);
+    normalized_call = NULL;
 
     if (w >= 0 ) {
+	x = prefix_by_index(w)->dxcc_index;
 	sprintf(cqzone, "%02d", prefix_by_index(w) -> cq);
 	sprintf(ituzone, "%02d", prefix_by_index(w) -> itu);
     }
@@ -354,12 +240,8 @@ int getctydata(char *checkcallptr)
     else
 	strcpy(zone_export, ituzone);
 
-// w must be >0  tb 17feb2011
-//    strncpy(ituzone, ituarray[w], 2);
-
     countrynr = x;
     g_strlcpy(continent, dxcc_by_index(countrynr) -> continent , 3);
 
     return (x);
 }
-
