@@ -117,8 +117,8 @@ int setcontest(void)
 	contest = 1;
 	showscore_flag = 1;
 	searchflg = 1;
-	w_cty = getctydata(wcall);
-	ve_cty = getctydata(vecall);
+	w_cty = getctynr(wcall);
+	ve_cty = getctynr(vecall);
     }
 
     if (strcmp(whichcontest, "dxped") == 0) {
@@ -185,16 +185,16 @@ int setcontest(void)
 	showscore_flag = 1;
 	searchflg = 1;
 
-	ve_cty = getctydata(vecall);
-	w_cty = getctydata(wcall);
-	zl_cty = getctydata(zlcall);
-	ja_cty = getctydata(jacall);
-	py_cty = getctydata(pycall);
-	ce_cty = getctydata(cecall);
-	lu_cty = getctydata(lucall);
-	vk_cty = getctydata(vkcall);
-	zs_cty = getctydata(zscall);
-	ua9_cty = getctydata(ua9call);
+	ve_cty = getctynr(vecall);
+	w_cty = getctynr(wcall);
+	zl_cty = getctynr(zlcall);
+	ja_cty = getctynr(jacall);
+	py_cty = getctynr(pycall);
+	ce_cty = getctynr(cecall);
+	lu_cty = getctynr(lucall);
+	vk_cty = getctynr(vkcall);
+	zs_cty = getctynr(zscall);
+	ua9_cty = getctynr(ua9call);
     }
 
     if (strcmp(whichcontest, "stewperry") == 0) {
@@ -229,8 +229,8 @@ int setcontest(void)
 //      universal = 1;
 	showscore_flag = 1;
 	searchflg = 1;
-	w_cty = getctydata(wcall);
-	ve_cty = getctydata(vecall);
+	w_cty = getctynr(wcall);
+	ve_cty = getctynr(vecall);
     }
 
     if (strcmp(whichcontest, "qso") == 0) {

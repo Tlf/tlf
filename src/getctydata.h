@@ -23,7 +23,6 @@
 
 int getctynr(char *checkcall);
 int getctydata(char *checkcall);
-int getctydata2(char *checkcall);
 
 
 #endif /* end of include guard: GETCTYDATA_H */
