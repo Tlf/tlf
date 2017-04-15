@@ -321,6 +321,7 @@ int addcall2(void)
     bandinx = get_band(lan_logline);
 
     /* calculate QSO timestamp from lan_logline */
+    memset( &qsotime, 0, sizeof(struct tm) );
     strncpy(date_and_time, lan_logline+7, 15);
     strptime(date_and_time, "%d-%b-%y %H:%M", &qsotime);
     qsotimets = mktime(&qsotime);

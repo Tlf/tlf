@@ -336,6 +336,7 @@ int readcalls(void)
 	}
 
 	/* calculate QSO timestamp from logline */
+	memset( &qsotime, 0, sizeof(struct tm) );
 	strncpy(date_and_time, inputbuffer+7, 15);
 	strptime(date_and_time, "%d-%b-%y %H:%M", &qsotime);
 	qsotimets = mktime(&qsotime);
