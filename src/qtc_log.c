@@ -159,7 +159,7 @@ int log_recv_qtc_to_disk(int qsonr)
 int log_sent_qtc_to_disk(int qsonr)
 {
     char qtclogline[100], temp[80];
-    int qpos = 0, i;
+    int qpos = 0, i, l;
 
     for(i=0; i<10; i++) {
 	if (qtclist.qtclines[i].saved == 0 && qtclist.qtclines[i].flag == 1 && qtclist.qtclines[i].sent == 1) { // not saved and marked for sent
@@ -169,6 +169,9 @@ int log_sent_qtc_to_disk(int qsonr)
 
 	    // QTC:  3799 PH 2003-03-23 0711 YB1AQS        001/10     DL8WPX        0330 DL6RAI        1021
 	    // QTC: 21086 RY 2001-11-10 0759 HA3LI           1/10     YB1AQS        0003 KB3TS          003
+	    // QTC: 14000 RY 2016-11-14 1219 W1AW            1/9      HA2OS         1040 W2AW          1002
+	    // QTC: 14000 RY 2016-11-14 1219 W1AW            1/9      HA2OS         1040 W3AW           003
+
 
 	    sprintf(temp, "%3s", band[bandinx]);
 	    if (trxmode == CWMODE) {
@@ -206,6 +209,14 @@ int log_sent_qtc_to_disk(int qsonr)
 
 	    sprintf(temp, " %04d ", qtclist.count);
 	    qpos = add_to_qtcline(qtclogline, temp, qpos);
+	    // check and fill the QTC to 24 chars, eg:
+	    // HHMM CALL            1
+	    // 012345678901234567890123
+            l = strlen(qtclist.qtclines[i].qtc);
+            if (l < 24) {
+                qtclist.qtclines[i].qtc[l] = ' ';
+                qtclist.qtclines[i].qtc[l+1] = '\0';
+            }
 
 	    strcpy(qtclogline+qpos, qtclist.qtclines[i].qtc);
 	    qpos+=strlen(qtclist.qtclines[i].qtc);
