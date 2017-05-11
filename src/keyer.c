@@ -59,6 +59,7 @@ int keyer(void)
     extern int cwkeyer;
     extern int digikeyer;
     extern int weight;
+    extern int keyer_backspace;
 
     WINDOW *win = NULL;
     PANEL *panel = NULL;
@@ -133,6 +134,23 @@ int keyer(void)
 
 	    break;
 	}
+
+
+        if (x == KEY_BACKSPACE
+            || x == KEY_DC /* delete-character key */
+            || x == KEY_LEFT) {
+
+            x = 0;  // default: no operation
+
+            if (keyer_backspace && keyerstringpos > 0) {
+                //
+                // remove last char
+                //
+                --keyerstringpos;
+                keyerstring[keyerstringpos] = '\0';
+                x = KEY_BACKSPACE;
+            }
+        }
 
 	// Promote lower case to upper case.
 	if (x > 96 && x < 123)
@@ -291,6 +309,11 @@ int keyer(void)
 		{
 
 		    sendmessage(message[11]);	/* F12 */
+		    break;
+		}
+	    case KEY_BACKSPACE:
+		{
+		    sendmessage("\b");          /* ASCII BS */
 		    break;
 		}
 

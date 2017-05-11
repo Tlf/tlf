@@ -316,6 +316,7 @@ int cwkeyer = NO_KEYER;
 int digikeyer = NO_KEYER;
 
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2 for net_keyer
+int keyer_backspace = 0;        // disabled
 
 char controllerport[80] = "/dev/ttyS0"; // for GMFSK or MFJ-1278
 char rttyoutput[120];		// where to GMFSK digimode output

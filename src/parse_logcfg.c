@@ -49,6 +49,7 @@
 
 extern int cwkeyer;
 extern int digikeyer;
+extern int keyer_backspace;
 extern char tonestr[];
 extern int partials;
 extern int use_part;
@@ -69,7 +70,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 236	/* commands in list */
+#define  MAX_COMMANDS 237	/* commands in list */
 
 
 int read_logcfg(void)
@@ -540,7 +541,8 @@ int parse_logcfg(char *inputbuffer)
 	"FLDIGI",
 	"RIGPTT",
 	"MINITEST",
-	"UNIQUE_CALL_MULTI"		/* 235 */
+	"UNIQUE_CALL_MULTI",		/* 235 */
+        "KEYER_BACKSPACE"
     };
 
     char **fields;
@@ -1867,6 +1869,10 @@ int parse_logcfg(char *inputbuffer)
 		    sleep(5);
 		    exit(1);
 	    }
+	    break;
+    }
+    case 236: { // KEYER_BACKSPACE
+	    keyer_backspace = 1;
 	    break;
     }
     default: {
