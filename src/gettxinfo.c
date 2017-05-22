@@ -152,39 +152,39 @@ int gettxinfo(void)
 
 	switch ((int)freq) {
 	case 1800 ... 2000:{
-		bandinx = 0;
+		bandinx = BANDINDEX_160;
 		break;
 	    }
 	case 3500 ... 4000:{
-		bandinx = 1;
+		bandinx = BANDINDEX_80;
 		break;
 	    }
 	case 7000 ... 7300:{
-		bandinx = 2;
+		bandinx = BANDINDEX_40;
 		break;
 	    }
 	case 10100 ... 10150:{
-		bandinx = 3;
+		bandinx = BANDINDEX_30;
 		break;
 	    }
 	case 14000 ... 14350:{
-		bandinx = 4;
+		bandinx = BANDINDEX_20;
 		break;
 	    }
 	case 18068 ... 18168:{
-		bandinx = 5;
+		bandinx = BANDINDEX_17;
 		break;
 	    }
 	case 21000 ... 21450:{
-		bandinx = 6;
+		bandinx = BANDINDEX_15;
 		break;
 	    }
 	case 24890 ... 24990:{
-		bandinx = 7;
+		bandinx = BANDINDEX_12;
 		break;
 	    }
 	case 28000 ... 29700:{
-		bandinx = 8;
+		bandinx = BANDINDEX_10;
 		break;
 	    }
 	default:

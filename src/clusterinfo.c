@@ -57,7 +57,7 @@ void clusterinfo(void)
     extern int cluster;
     extern char backgrnd_str[];
     extern float freq;
-    extern char band[9][4];
+    extern char band[NBANDS+1][4];
     extern int bandinx;
     extern int trx_control;
     extern char spot_ptr[MAX_SPOTS][82];
