@@ -70,7 +70,7 @@ extern char logline_edit[5][LOGLINELEN+1];
 #define logline4 logline_edit[4]
 
 extern int stop_backgrnd_process;
-extern char band[9][4];
+extern char band[NBANDS+1][4];
 extern struct tm *time_ptr;
 
 extern int inxes[NBANDS]; //  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10} ;

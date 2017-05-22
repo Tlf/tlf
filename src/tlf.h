@@ -86,10 +86,9 @@ enum {
     BANDINDEX_15,
     BANDINDEX_12,
     BANDINDEX_10,
-    NBANDS 		// not yet used everywhere,
-};			// many places have hardcode 9
-			// (or 8, being the maximum band index)
-			//
+    NBANDS
+};
+
 extern int inxes[NBANDS];  /**< conversion from BANDINDEX to BAND-mask,
 			see addmult.c */
 
