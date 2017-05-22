@@ -44,7 +44,6 @@
 #include "tlf_panel.h"
 #include "ui_utils.h"
 #include "write_keyer.h"
-#include <syslog.h>
 /* check direction clause macro
  * direction should be RECV (1) or SEND (2), see tlf.h
  */
@@ -73,6 +72,7 @@ void fill_qtc_times(char * time);
 extern char hiscall[];
 extern char lastcall[];
 extern int trxmode;
+extern int digikeyer;
 extern int nr_qsos;
 
 static int record_run = -1;		/* was recording already started? */
@@ -453,7 +453,7 @@ void qtc_main_panel(int direction) {
 
 	    usleep(5000);
 	    time_update();
-	    if (trxmode == DIGIMODE) {
+	    if (trxmode == DIGIMODE && digikeyer != NO_KEYER) {
 	        show_rtty();
 	    }
 	    x = key_poll();
@@ -1716,6 +1716,8 @@ int print_rtty_line(t_qtc_ry_line qtc_ry_line, int row) {
 
 /* RTTY terminal to helps to capture the RTTY content */
 void show_rtty_lines() {
+    extern int miniterm;
+
     char boxhead[38];
     int prevline;
     char currline[50] = "", firstline[50] = "";
@@ -1767,7 +1769,7 @@ void show_rtty_lines() {
 	    usleep(1000);
 	    time_update();
 
-	    if (trxmode == DIGIMODE) {
+	    if (miniterm == 1 && trxmode == DIGIMODE && digikeyer != NO_KEYER) {
 		show_rtty();
 	    }
 

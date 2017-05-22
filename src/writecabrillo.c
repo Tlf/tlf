@@ -230,7 +230,7 @@ struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection)
     char *tmp;
     char *sp;
     struct qso_t *ptr;
-    int pos;
+    int pos, shift;
     struct tm date_n_time;
 
     if (fp == NULL) {
@@ -249,9 +249,11 @@ struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection)
 	/* tx */
 	if (qtcdirection == RECV) {
 	    pos = 28;
+	    shift = 0;
 	}
 	else {
 	    pos = 33;
+	    shift = 5;
 	}
 	ptr->tx = (buffer[pos] == ' ') ? 0 : 1;
 
@@ -275,7 +277,7 @@ struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection)
 
 	/* in case of SEND direction, the 3rd field is the original number of sent QSO,
 	   but it doesn't need for QTC line */
-	if (qtcdirection == SEND) {
+	if (qtcdirection & SEND) {
 	    tmp = strtok_r( NULL, " \t", &sp );
 	}
 	/* date & time */
@@ -310,7 +312,7 @@ struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection)
 	ptr->qtc_qserial = g_strdup( strtok_r( NULL, " \t", &sp ) );
 
 	/* frequency */
-	ptr->freq = atof( buffer + 80 );
+	ptr->freq = atof( buffer + 80 + shift );
 	if ( ( ptr->freq < 1800. ) || ( ptr->freq >= 30000. ) ) {
 	    ptr->freq = 0.;
 	}
@@ -772,7 +774,7 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 		add_rpadded( buf, g_strchomp(tmp), item->len );
 		break;
 	    case QTC:
-		sprintf(tmp, "%s %-14s %s", qso->qtc_qtime, qso->qtc_qcall, qso->qtc_qserial);
+		sprintf(tmp, "%s %-13s %4s", qso->qtc_qtime, qso->qtc_qcall, qso->qtc_qserial);
 		add_rpadded( buf, g_strchomp(tmp), item->len );
 	    case NO_ITEM:
 	    default:
@@ -898,7 +900,7 @@ int write_cabrillo(void)
 	    }
 	}
 	while (qtcrecnr == qsonr || qtcsentnr == qsonr) {
-	    if (qtcsent == NULL || (qtcrec != NULL && qtcrec->qsots > qtcsent->qsots)) {
+	    if (qtcsent == NULL || (qtcrec != NULL && qtcrec->qsots < qtcsent->qsots)) {
 		prepare_line(qtcrec, cabdesc, buffer);
 		if (strlen(buffer) > 5) {
 		    fputs(buffer, fp2);
