@@ -84,6 +84,26 @@
 void send_bandswitch(int freq);
 int autosend(void);
 int plain_number(char *str);
+void handle_bandswitch(int direction);
+
+#define UP      +1
+#define DOWN    -1
+
+extern int no_arrows;
+extern char hiscall[];
+extern int bandinx;
+extern char band[NBANDS][4];
+extern int contest;
+extern int dxped;
+#ifdef HAVE_LIBHAMLIB
+extern freq_t outfreq;
+#else
+extern int outfreq;
+#endif
+extern float freq;
+extern int trx_control;
+extern float bandfrequency[];
+
 
 /** callsign input loop
  *
@@ -92,21 +112,15 @@ char callinput(void)
 {
     extern int itumult;
     extern int wazmult;
-    extern int no_arrows;
     extern int isdupe;		// LZ3NY auto-b4 patch
-    extern int contest;
-    extern int dxped;
     extern int cwstart;
     extern int early_started;
-    extern char hiscall[];
     extern char hiscall_sent[];
     extern char comment[];
     extern int cqmode;
     extern int trxmode;
     extern char mode[];
     extern char lastcall[];
-    extern char band[9][4];
-    extern int bandinx;
     extern int cqdelay;
     extern char his_rst[];
     extern char backgrnd_str[];
@@ -114,15 +128,7 @@ char callinput(void)
     extern int announcefilter;
     extern char message[][80];
     extern char ph_message[14][80];
-    extern float freq;
     extern float mem;
-#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-#else
-    extern int outfreq;
-#endif
-    extern int trx_control;
-    extern float bandfrequency[];
     extern SCREEN *mainscreen;
     extern int simulator;
     extern int simulator_mode;
@@ -361,31 +367,8 @@ char callinput(void)
 	    {
 		if (*hiscall != '\0') {
 		    calledit();
-		}
-
-		if (bandinx >= 0 && *hiscall == '\0' && no_arrows == 0) {
-
-		    bandinx--;
-
-		    if (bandinx == -1)
-			bandinx = 8;
-
-		    if ((contest == 1) && (dxped == 0)
-			&& ((bandinx == 3) || (bandinx == 5)
-			    || (bandinx == 7)))
-			bandinx--;
-
-		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-		    mvprintw(12, 0, band[bandinx]);
-		    i--;
-
-		    if (trx_control == 1) {
-
-			outfreq = (int) (bandfrequency[bandinx] * 1000);
-		    }
-
-		    send_bandswitch(bandinx);
-
+		} else {
+                    handle_bandswitch(DOWN);
 		}
 
 		break;
@@ -394,30 +377,7 @@ char callinput(void)
 	// Right Arrow, band up when call field is empty.
 	case KEY_RIGHT:
 	    {
-		if (bandinx <= 8 && *hiscall == '\0' && no_arrows == 0) {
-
-		    bandinx++;
-
-		    if (bandinx > 8)
-			bandinx = 0;
-
-		    if ((contest == 1) && (dxped == 0)
-			&& ((bandinx == 3) || (bandinx == 5)
-			    || (bandinx == 7)))
-			bandinx++;
-
-		    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-		    mvprintw(12, 0, band[bandinx]);
-
-		    if (trx_control == 1) {
-			freq = bandfrequency[bandinx];
-
-			outfreq = (int) (bandfrequency[bandinx] * 1000);
-		    }
-
-		    send_bandswitch(bandinx);
-
-		}
+                handle_bandswitch(UP);
 		break;
 	    }
 
@@ -491,33 +451,7 @@ char callinput(void)
 			clear_display();
 		    }
 		} else {	// trlog compatible, band switch
-		    if (bandinx >= 0 && *hiscall == '\0') {
-
-			bandinx--;
-
-			if (bandinx == -1)
-			    bandinx = 8;
-
-			if ((contest == 1) && (dxped == 0)
-			    && ((bandinx == 3) || (bandinx == 5)
-				|| (bandinx == 7)))
-			    bandinx--;
-
-			attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-			mvprintw(12, 0, band[bandinx]);
-			printcall();
-			i--;
-
-			if (trx_control == 1) {
-
-			    outfreq =
-				(int) (bandfrequency[bandinx] * 1000);
-			}
-
-			send_bandswitch(bandinx);
-
-		    }
-
+                    handle_bandswitch(DOWN);
 		}
 		x = -1;
 
@@ -812,30 +746,7 @@ char callinput(void)
 	case 226:
 	    {
 		if (ctcomp == 0) {
-		    if (bandinx <= 8 && *hiscall == '\0') {
-			bandinx++;
-
-			if (bandinx > 8)
-			    bandinx = 0;
-
-			if ((contest == 1) && (dxped == 0)
-			    && ((bandinx == 3) || (bandinx == 5)
-				|| (bandinx == 7)))
-			    bandinx++;
-
-			attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-			mvprintw(12, 0, band[bandinx]);
-
-			if (trx_control == 1) {
-			    freq = bandfrequency[bandinx];
-			    outfreq =
-				(int) (bandfrequency[bandinx] * 1000);
-			}
-
-			send_bandswitch(bandinx);
-
-		    }
-
+                    handle_bandswitch(UP);
 		}
 		break;
 	    }
@@ -1471,4 +1382,39 @@ void send_bandswitch(int freq)
 	sprintf(outnibble, "%d", bandswitch);
 	netkeyer(K_SWITCH, outnibble);
     }
+}
+
+/** handle bandswitch from keyboard
+ *
+ **/
+void handle_bandswitch(int direction) {
+    // make sure call field is empty and arrows are enabled
+    if (*hiscall != '\0' || no_arrows) {
+        return;
+    }
+
+    bandinx += direction;
+
+    if (bandinx < 0) {
+        bandinx = NBANDS - 1;
+    }
+
+    if (bandinx >= NBANDS) {
+        bandinx = 0;
+    }
+
+    if (contest == 1 && dxped == 0
+        && IsWarcIndex(bandinx)) {
+        bandinx += direction;
+    }
+
+    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+    mvprintw(12, 0, band[bandinx]);
+
+    if (trx_control == 1) {
+        freq = bandfrequency[bandinx];
+        outfreq = (int) (bandfrequency[bandinx] * 1000);
+    }
+
+    send_bandswitch(bandinx);
 }
