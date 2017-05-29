@@ -57,7 +57,7 @@ void clusterinfo(void)
     extern int cluster;
     extern char backgrnd_str[];
     extern float freq;
-    extern char band[9][4];
+    extern char band[NBANDS][4];
     extern int bandinx;
     extern int trx_control;
     extern char spot_ptr[MAX_SPOTS][82];
@@ -162,7 +162,6 @@ void clusterinfo(void)
 int loadbandmap(void)
 {
 
-    extern int cluster;
     extern char *bandmap[MAX_SPOTS];
     extern struct tm *time_ptr;
     extern int xplanet;
@@ -399,9 +398,7 @@ int getclusterinfo(void)
     extern char spot_ptr[MAX_SPOTS][82];
     extern int nr_of_spots;
     extern int announcefilter;
-    extern int cluster;
     extern char call[];
-    extern int bandinx;
 
     int i;
     int si = 0;

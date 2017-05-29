@@ -49,6 +49,7 @@ int pacc_pa(void)
 //extern int band_score[];
 
     int pxnr;
+    /* FIXME: Initialisation is wrong as 0 is bandindex for 160m */
     int i = 0, j = 0, k;
 
     k = 1;

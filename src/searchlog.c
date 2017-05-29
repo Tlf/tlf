@@ -106,7 +106,7 @@ void searchlog(char *searchstring)
     extern int isdupe;		// LZ3NY auto-b4 patch
     extern int searchflg;
     extern int dupe;
-    extern char band[9][4];
+    extern char band[NBANDS][4];
     extern int bandinx;
     extern int partials;
     extern int cqww;

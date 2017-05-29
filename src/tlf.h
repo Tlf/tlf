@@ -73,6 +73,7 @@
 #define  BAND20 4
 #define  BAND15 2
 #define  BAND10 1
+#define  BANDOOB 0  // out of band
 
 #define IsWarcMask(x) ((x == BAND12) || (x == BAND17) || (x == BAND30))
 
@@ -86,10 +87,10 @@ enum {
     BANDINDEX_15,
     BANDINDEX_12,
     BANDINDEX_10,
-    NBANDS 		// not yet used everywhere,
-};			// many places have hardcode 9
-			// (or 8, being the maximum band index)
-			//
+    BANDINDEX_OOB,	/* out of band */
+    NBANDS
+};
+
 extern int inxes[NBANDS];  /**< conversion from BANDINDEX to BAND-mask,
 			see addmult.c */
 

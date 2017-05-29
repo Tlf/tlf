@@ -51,7 +51,8 @@ unsigned int bandcorner[NBANDS][2] =
  { 18068000, 18168000 },
  { 21000000, 21450000 },
  { 24890000, 24990000 },
- { 28000000, 29700000 }};
+ { 28000000, 29700000 },
+ {        0,        0 }};
 
 unsigned int cwcorner[NBANDS] =
 { 1838000,
@@ -62,7 +63,8 @@ unsigned int cwcorner[NBANDS] =
   18095000,
   21070000,
   24915000,
-  28070000};
+  28070000,
+         0};
 
 unsigned int ssbcorner[NBANDS] =
 { 1840000,
@@ -73,7 +75,8 @@ unsigned int ssbcorner[NBANDS] =
  18120000,
  21150000,
  24930000,
- 28300000 };
+ 28300000,
+        0};
 
 pthread_mutex_t bm_mutex = PTHREAD_MUTEX_INITIALIZER;
 

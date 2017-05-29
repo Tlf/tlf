@@ -38,7 +38,7 @@ extern int country_mult;
 extern int other_flg;
 extern char hiscall[20];
 extern int total;
-extern int band_score[NBANDS];
+extern int band_score[NBANDS];		// QSO/band
 extern int zones[MAX_ZONES];
 extern int wpx;
 extern int arrlss;
@@ -70,10 +70,10 @@ extern char logline_edit[5][LOGLINELEN+1];
 #define logline4 logline_edit[4]
 
 extern int stop_backgrnd_process;
-extern char band[9][4];
+extern char band[NBANDS][4];
 extern struct tm *time_ptr;
 
-extern int inxes[NBANDS]; //  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10} ;
+extern int inxes[NBANDS]; //  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10, BAND_OOB} ;
 		    // from addmult.c
 
 extern char cqzone[];

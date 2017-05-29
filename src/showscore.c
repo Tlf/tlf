@@ -51,8 +51,8 @@ static int bi_warc[6] =
 	  BANDINDEX_30,  BANDINDEX_17, BANDINDEX_12 };
 
 /* bands as numbers */
-static int bands[NBANDS] =
-	{ 160, 80, 40, 30, 20, 17, 15, 12, 10 };
+static int bandnr[NBANDS] =
+	{ 160, 80, 40, 30, 20, 17, 15, 12, 10, 0 };
 
 void printfield (int x, int y, int number);
 void stewperry_show_summary( int points, float fixedmult );
@@ -102,7 +102,7 @@ void display_header(int *bi)
 	if (bandinx == bi[i]) {		/* highlight active band */
 	    attrset(COLOR_PAIR(C_DUPE));
 	}
-	printw("%3d", bands[bi[i]]);
+	printw("%3d", bandnr[bi[i]]);
     }
 
     /* show number of QSO */
@@ -249,7 +249,6 @@ int showscore(void)
 {
 
     extern int showscore_flag;
-    extern int band_score[9];
     extern int cqww;
     extern int arrldx_usa;
     extern int arrl_fd;

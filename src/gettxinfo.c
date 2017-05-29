@@ -188,7 +188,7 @@ int gettxinfo(void)
 		break;
 	    }
 	default:
-		bandinx = NBANDS;	/* out of band */
+		bandinx = BANDINDEX_OOB;	/* out of band */
 	}
 
 	if (bandinx != NBANDS)

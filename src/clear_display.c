@@ -48,7 +48,7 @@ void clear_display(void)
     extern char terminal3[];
     extern char terminal4[];
     extern char backgrnd_str[];
-    extern char band[9][4];
+    extern char band[NBANDS][4];
     extern int bandinx;
     extern int trxmode;
     extern char my_rst[];

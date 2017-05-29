@@ -39,7 +39,8 @@ enum { ALL_BAND, PER_BAND };
 
 /** Converts bandindex to bandmask */
 int inxes[NBANDS] = \
-    { BAND160, BAND80, BAND40, BAND30, BAND20, BAND17, BAND15, BAND12, BAND10 };
+    { BAND160, BAND80, BAND40, BAND30, BAND20, BAND17, BAND15, BAND12, BAND10,
+	BANDOOB };
 
 int addmult(void)
 {

@@ -40,7 +40,7 @@ struct {
     int bands;
 } prefixes_worked[MAX_CALLS];
 
-unsigned int pfxs_per_band[NBANDS] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+unsigned int pfxs_per_band[NBANDS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 int add_pfx(char *pxstr, unsigned int bandindex)
 {

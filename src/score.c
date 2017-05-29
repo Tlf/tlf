@@ -284,7 +284,7 @@ int scoreDefault()
 int score()
 {
     extern int dupe;
-    extern int band_score[9];
+    extern int band_score[NBANDS];
     extern int bandinx;
     extern int focm;
     extern int wpx;

@@ -279,8 +279,8 @@ int early_started = 0;			/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
 char lastcall[20];
 char qsonrstr[5] = "0001";
-char band[9][4] =
-    { "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10" };
+char band[NBANDS][4] =
+    { "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
 char comment[80];
 char mode[20] = "Log     ";
 char cqzone[3] = "";
@@ -297,7 +297,7 @@ int secs = 0;
 int countrynr;
 int mycountrynr = 215;
 int total = 0; 		/**< total number of qso points */
-int band_score[9];
+int band_score[NBANDS];
 int dupe = 0;
 int callfound = 0;
 int partials = 0;	/**< show partial calls */
@@ -425,9 +425,9 @@ int logfrequency = 0;
 int rit;
 int trx_control = 0;
 int showfreq = 0;
-float bandfrequency[9] =
+float bandfrequency[NBANDS] =
     { 1830.0, 3525.0, 7010.0, 10105.0, 14025.0, 18070.0, 21025.0, 24900.0,
-28025.0 };
+28025.0, 0. };
 
 char headerline[81] =
     "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  \n";
@@ -462,8 +462,8 @@ char itustr[3];
 int nopacket = 0;		/* set if tlf is called with '-n' */
 int no_trx_control = 0;		/* set if tlf is called with '-r' */
 
-int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
-int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
+int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 
 pthread_t background_thread;
 static struct termios oldt, newt;
