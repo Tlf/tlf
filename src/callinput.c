@@ -1403,9 +1403,10 @@ void handle_bandswitch(int direction) {
         bandinx = 0;
     }
 
-    if (contest == 1 && dxped == 0
-        && IsWarcIndex(bandinx)) {
-        bandinx += direction;
+    if (contest == 1 && dxped == 0) {
+	while (IsWarcIndex(bandinx)) {	/* loop till next contest band */
+            bandinx += direction;
+	}
     }
 
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
