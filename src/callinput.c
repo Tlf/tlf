@@ -86,8 +86,8 @@ int autosend(void);
 int plain_number(char *str);
 void handle_bandswitch(int direction);
 
-#define UP      +1
-#define DOWN    -1
+#define BAND_UP      +1
+#define BAND_DOWN    -1
 
 extern int no_arrows;
 extern char hiscall[];
@@ -368,7 +368,7 @@ char callinput(void)
 		if (*hiscall != '\0') {
 		    calledit();
 		} else {
-                    handle_bandswitch(DOWN);
+                    handle_bandswitch(BAND_DOWN);
 		}
 
 		break;
@@ -377,7 +377,7 @@ char callinput(void)
 	// Right Arrow, band up when call field is empty.
 	case KEY_RIGHT:
 	    {
-                handle_bandswitch(UP);
+                handle_bandswitch(BAND_UP);
 		break;
 	    }
 
@@ -451,7 +451,7 @@ char callinput(void)
 			clear_display();
 		    }
 		} else {	// trlog compatible, band switch
-                    handle_bandswitch(DOWN);
+                    handle_bandswitch(BAND_DOWN);
 		}
 		x = -1;
 
@@ -746,7 +746,7 @@ char callinput(void)
 	case 226:
 	    {
 		if (ctcomp == 0) {
-                    handle_bandswitch(UP);
+                    handle_bandswitch(BAND_UP);
 		}
 		break;
 	    }
@@ -1384,15 +1384,7 @@ void send_bandswitch(int freq)
     }
 }
 
-/** handle bandswitch from keyboard
- *
- **/
-void handle_bandswitch(int direction) {
-    // make sure call field is empty and arrows are enabled
-    if (*hiscall != '\0' || no_arrows) {
-        return;
-    }
-
+static void next_band(int direction) {
     bandinx += direction;
 
     if (bandinx < 0) {
@@ -1402,10 +1394,22 @@ void handle_bandswitch(int direction) {
     if (bandinx >= NBANDS) {
         bandinx = 0;
     }
+}
+
+/** handle bandswitch from keyboard
+ *
+ **/
+void handle_bandswitch(int direction) {
+    // make sure call field is empty and arrows are enabled
+    if (*hiscall != '\0' || no_arrows) {
+        return;
+    }
+
+    next_band(direction);
 
     if (contest == 1 && dxped == 0) {
 	while (IsWarcIndex(bandinx)) {	/* loop till next contest band */
-            bandinx += direction;
+            next_band(direction);
 	}
     }
 
