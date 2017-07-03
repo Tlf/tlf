@@ -77,7 +77,6 @@ void makelogline(void)
     prepare_fixed_part();
     assert(strlen(logline4) == 54);
 
-
     /* second (contest dependent) part of logline */
     prepare_specific_part();
     assert(strlen(logline4) == 77);
@@ -140,12 +139,16 @@ void prepare_fixed_part(void) {
     else
 	strcat(logline4, "DIG");
 
-    get_time();
-    strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
+    if (do_cabrillo == 0) {
+	get_time();
+	strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
+    }
+    else {
+	strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr_cabrillo);
+    }
     strcat(logline4, time_buf);
 
     qsonr_to_str();
-
     if (logfrequency == 1 &&
 	trx_control == 1 &&
 	((strcmp(whichcontest, "qso") == 0) ||

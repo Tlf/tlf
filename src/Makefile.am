@@ -6,7 +6,8 @@ bin_PROGRAMS = tlf
 tlf_SOURCES = \
 	addarea.c addcall.c addmult.c addpfx.c addspot.c audio.c autocq.c \
 	background_process.c bandmap.c \
-	calledit.c callinput.c changefreq.c changepars.c checklogfile.c checkqtclogfile.c \
+	cabrillo_utils.c calledit.c callinput.c changefreq.c changepars.c \
+	checklogfile.c checkqtclogfile.c \
 	checkparameters.c cleanup.c clear_display.c clusterinfo.c cw_utils.c \
 	dxcc.c \
 	deleteqso.c displayit.c \
@@ -22,7 +23,7 @@ tlf_SOURCES = \
 	main.c makelogline.c messagechange.c muf.c \
 	nicebox.c note.c netkeyer.c\
 	paccdx.c parse_logcfg.c prevqso.c printcall.c \
-	qrb.c qsonr_to_str.c qtc_log.c qtcwin.c qtcutil.c \
+	qrb.c qsonr_to_str.c qtc_log.c qtcwin.c qtcutil.c readcabrillo.c \
 	readcalls.c readqtccalls.c readctydata.c recall_exchange.c rules.c \
 	score.c scroll_log.c  searchcallarray.c searchlog.c sendbuf.c \
 	sendqrg.c sendspcall.c set_tone.c setcontest.c \
@@ -40,7 +41,8 @@ tlf_LDADD = @LIBM_LIB@ @PTHREAD_LIBS@ @GLIB_LIBS@ @PANEL_LIBS@ @CURSES_LIBS@ \
 noinst_HEADERS = \
 	addarea.h addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \
 	background_process.h bandmap.h \
-	calledit.h callinput.h changefreq.h changepars.h checklogfile.h checkqtclogfile.h \
+	cabrillo_utils.h calledit.h callinput.h changefreq.h changepars.h \
+	checklogfile.h checkqtclogfile.h \
 	checkparameters.h cleanup.h clear_display.h clusterinfo.h cwkeyer.h \
 	cw_utils.h \
 	dxcc.h \
@@ -59,7 +61,7 @@ noinst_HEADERS = \
 	paccdx.h parse_logcfg.h prevqso.h printcall.h \
 	qrb.h qsonr_to_str.h qtc_log.h qtcvars.h qtcwin.h qtcutil.h \
 	readcalls.h readqtccalls.h readctydata.h recall_exchange.h \
-	rules.h \
+	rules.h readcabrillo.h \
 	score.h scroll_log.h searchcallarray.h searchlog.h sendbuf.h \
 	sendqrg.h sendspcall.h set_tone.h setcontest.h \
 	setparameters.h show_help.h showinfo.h showpxmap.h showscore.h \
