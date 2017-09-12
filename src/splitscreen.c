@@ -749,7 +749,6 @@ int init_packet(void)
 
     struct termios termattribs;
 
-    int addrarg;
     int iptr = 0;
     mode_t mode = 0666;
 
@@ -757,8 +756,6 @@ int init_packet(void)
     attr[NORMAL_ATTR] = A_NORMAL;
     attr[MINE_ATTR] = modify_attr(A_NORMAL);
     attr[ENTRY_ATTR] = modify_attr(A_NORMAL);
-
-    addrarg = 0;
 
     if (initialized == 0) {
 
@@ -954,6 +951,10 @@ int cleanup_telnet(void)
     extern int packetinterface;
     extern int fdSertnc;
 
+    if (!initialized) {
+        return 0;
+    }
+
     if (packetinterface == TELNET_INTERFACE) {
 	if (prsock > 0)
 	    close_s(prsock);
@@ -1003,8 +1004,12 @@ int packet()
     char line[BUFFERSIZE];
 
     int i = 0;
-    int c, count;
+    int c;
     static int sent_login = 0;
+
+    if (!initialized) {
+        return 0;
+    }
 
     in_packetclient = 1;
     sleep(1);
@@ -1015,8 +1020,6 @@ int packet()
 
     wclear(entwin);
     wrefresh(entwin);
-
-    count = 0;
 
     if ((tln_loglines == 0) && (packetinterface == TELNET_INTERFACE)) {
 	addtext("Welcome to TLF telnet\n\n");
