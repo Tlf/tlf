@@ -35,6 +35,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#define SPLITSCREEN_H_PRIVATE
+
 #include "bandmap.h"
 #include "clear_display.h"
 #include "get_time.h"
