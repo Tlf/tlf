@@ -866,8 +866,7 @@ void tlf_cleanup()
 	pthread_join(background_thread, NULL);
     }
 
-//    commented out for the moment as it will segfault if called twice
-//    cleanup_telnet();
+    cleanup_telnet();
 
     if (trxmode == CWMODE && cwkeyer == NET_KEYER)
 	netkeyer_close();
