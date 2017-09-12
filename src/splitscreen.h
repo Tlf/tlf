@@ -20,11 +20,19 @@
 #ifndef SPLITSCREEN_H
 #define SPLITSCREEN_H
 
-#define SERVICE "telnet"
+int init_packet(void) ;
+int cleanup_telnet (void);
+int packet(void);
+int send_cluster(void);
+void addtext(char *s);
+int receive_packet(void);
 
-#define ALLOWCOLOR has_colors()
+
+#ifdef SPLITSCREEN_H_PRIVATE
+
 #define ENTRYROWS 2
 #define BUFFERSIZE 256
+
 #define SCROLLSIZE (LINES/4*3+1)
 #define DEFAULTTLN_LOGLINES 300
 
@@ -36,34 +44,29 @@
 #define STATE_VIEWING 1
 
 
-
 void addlog (char *s);
- int logattr(void);
- char *firstlog(void);
- char *lastlog(void);
+int logattr(void);
+char *firstlog(void);
+char *lastlog(void);
 char *nextlog(void);
 char *prevlog(void);
- void start_editing(void);
+void start_editing(void);
 void delete_prev_char(void);
 void right_arrow(void);
 void left_arrow(void);
 void move_eol(void);
- void gather_input(char *s);
+void gather_input(char *s);
 int walkup(void);
 int walkdn(void);
 int pageup(int lines);
 int pagedn(int lines);
 void viewbottom(void);
- void viewtop(void);
- void resume_editing(void);
- void viewlog(void);
- int edit_line(int c);
+void viewtop(void);
+void resume_editing(void);
+void viewlog(void);
+int edit_line(int c);
 void sanitize(char *s);
- void addtext(char *s);
-int init_packet(void) ;
-int cleanup_telnet (void);
-int packet(void);
-int receive_packet(void);
-int send_cluster(void);
+
+#endif /* SPLITSCREEN_H_PRIVATE */
 
 #endif /* end of include guard: SPLITSCREEN_H */
