@@ -130,12 +130,24 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 
     // [WAEDC]
     // QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;RST_S,3;EXC_S,6;HISCALL,13;RST_R,3;EXCH,6
+    // QTC=FREQ,5;MODE,2;DATE,10;TIME,4;QTCRCALL,13;QTCHEAD,10;QTCSCALL,13;QTC,23
     // QSO: 14043 CW 2016-08-13 0022 HA2OS         599 0004   KL7SB/VY2     599 025
     // QSO:  7002 CW 2016-08-13 0033 HA2OS         599 0008   K6ND          599 044
     //
     // Tlf log:
     //  20CW  13-Aug-16 00:22 0004  KL7SB/VY2      599  599  025           KL7      1  14043.5
     //  40CW  13-Aug-16 00:33 0008  K6ND           599  599  044           K6       1   7002.8
+
+    // QSO: 14084 RY 2016-11-12 1210 HA2OS         599 0013   K4GM          599 156   
+    // QTC: 14084 RY 2016-11-12 1214 HA2OS          13/10     K4GM          0230 DL6UHD         074
+    // 
+    //  20DIG 0013 12-Nov-16 12:14   K4GM           0013 0010 0230 DL6UHD          074    14084.0
+    //
+    // QSO:  3593 RY 2016-11-12 2020 HA2OS         599 0110   RG9A          599 959   
+    // QTC:  3593 RY 2016-11-12 2021 RG9A            2/10     HA2OS         1208 2M0WEV         018
+    //
+    //  80DIG 0110 0011 12-Nov-16 20:21   RG9A           0002 0010 1208 2M0WEV         018     3593.8
+
 
     if (strncmp(line, "QSO", 3) == 0) {
 	shift = 5;
