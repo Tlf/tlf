@@ -52,8 +52,8 @@ struct tag_conv tag_tbl[] = {
     { "EXC3",	EXC3	},
     { "EXC4",	EXC4	},
     { "TX",     TX 	},
-    { "QTCRCALL", QTCRCALL	},
-    { "QTCHEAD", QTCHEAD },
+    { "QTCRCALL", QTCRCALL },
+    { "QTCHEAD",  QTCHEAD  },
     { "QTCSCALL", QTCSCALL },
     { "QTC",	QTC }
 };
@@ -79,13 +79,26 @@ enum tag_t translate_item_name( char *name ) {
 void free_cabfmt(struct cabrillo_desc *desc) {
     int i;
 
-    for ( i = 0; i < desc->item_array->len; i++ ) {
-	g_free( g_ptr_array_index(desc->item_array, i) );
+    if (desc == NULL)
+	return;
+
+    if (desc->item_array) {
+	for ( i = 0; i < desc->item_array->len; i++ ) {
+	    g_free( g_ptr_array_index(desc->item_array, i) );
+	}
+
+	g_ptr_array_free( desc->item_array, TRUE );
     }
 
-    g_ptr_array_free( desc->item_array, TRUE );
+    if (desc->qtc_item_array) {
+	for ( i = 0; i < desc->qtc_item_array->len; i++ ) {
+	    g_free( g_ptr_array_index(desc->qtc_item_array, i) );
+	}
 
-    g_free( desc->name );
+	g_ptr_array_free( desc->qtc_item_array, TRUE );
+    }
+
+    if (desc->name) g_free( desc->name );
     g_free( desc );
 }
 
