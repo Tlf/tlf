@@ -40,6 +40,7 @@
 #include "store_qso.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "cleanup.h"
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -60,8 +61,6 @@ pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
  */
 int log_to_disk(int from_lan)
 {
-    extern char hiscall[];
-    extern char comment[];
     extern char my_rst[];
     extern char his_rst[];
     extern char last_rst[4];
@@ -99,13 +98,9 @@ int log_to_disk(int from_lan)
 	    addspot();		/* add call to bandmap if in S&P and
 				   no need to ask for frequency */
 
-	hiscall[0] = '\0';	/* reset the call  string */
-	comment[0] = '\0';	/* reset the comment  string */
-
 	strncpy(last_rst, his_rst, sizeof(last_rst)); /* remember last report */
-	his_rst[1] = '9';	/* restore RST to 599 */
-	my_rst[1] = '9';
 
+	cleanup_qso();		/* reset qso related parameters */
     } else {			// qso from lan
 
 	strncpy(lan_logline, lan_message + 2, 87);
