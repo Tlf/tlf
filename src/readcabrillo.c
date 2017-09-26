@@ -30,8 +30,10 @@
 #include "tlf_curses.h"
 
 #include "cabrillo_utils.h"
-#include "getsummary.h"
-#include "log_to_disk.h"
+#include "addcall.h"
+#include "makelogline.h"
+#include "store_qso.h"
+#include "cleanup.h"
 #include "startmsg.h"
 #include "addmult.h"
 #include "getexchange.h"
@@ -40,15 +42,13 @@
 
 static int cablinecnt = 0;
 
-char spinner_syms[] = "|/-\\";
-
 /* set band from freq
  *
  * set band value based on the freq, which readed from QSO line
  *
  */
 
-int set_band_from_freq(int freq) {
+int set_band_from_freq(float freq) {
 
 	int cab_bandinx;
 
@@ -138,16 +138,19 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
     //  20CW  13-Aug-16 00:22 0004  KL7SB/VY2      599  599  025           KL7      1  14043.5
     //  40CW  13-Aug-16 00:33 0008  K6ND           599  599  044           K6       1   7002.8
 
-    // QSO: 14084 RY 2016-11-12 1210 HA2OS         599 0013   K4GM          599 156   
+    // QSO: 14084 RY 2016-11-12 1210 HA2OS         599 0013   K4GM          599 156
     // QTC: 14084 RY 2016-11-12 1214 HA2OS          13/10     K4GM          0230 DL6UHD         074
-    // 
+    //
     //  20DIG 0013 12-Nov-16 12:14   K4GM           0013 0010 0230 DL6UHD          074    14084.0
     //
-    // QSO:  3593 RY 2016-11-12 2020 HA2OS         599 0110   RG9A          599 959   
+    // QSO:  3593 RY 2016-11-12 2020 HA2OS         599 0110   RG9A          599 959
     // QTC:  3593 RY 2016-11-12 2021 RG9A            2/10     HA2OS         1208 2M0WEV         018
     //
     //  80DIG 0110 0011 12-Nov-16 20:21   RG9A           0002 0010 1208 2M0WEV         018     3593.8
 
+    strcpy(t_qsonrstr, qsonrstr);
+    t_qsonum = qsonum;
+    t_bandinx = bandinx;
 
     if (strncmp(line, "QSO", 3) == 0) {
 	shift = 5;
@@ -163,15 +166,13 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
     }
     for  (i = 0; i < item_count; i++) {
 	item = g_ptr_array_index( item_array, i );
-	strncpy(tempstr, line+pos, item->len);
-	tempstr[item->len] = '\0';
+	g_strlcpy(tempstr, line+pos, item->len + 1);
 	g_strchomp(tempstr);
 	pos += item->len;
 	pos++;		// space between fields
 	switch (item->tag) {
 	    case FREQ:
-		freq = atoi(tempstr)*1.0;
-		t_bandinx = bandinx;
+		freq = atoi(tempstr);
 		bandinx = set_band_from_freq(freq);
 		break;
 	    case MODE:
@@ -201,23 +202,19 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 	    case MYCALL:
 		break;
 	    case HISCALL:
-		strncpy(hiscall, tempstr, strlen(tempstr));
-		hiscall[strlen(tempstr)] = '\0';
+		strcpy(hiscall, tempstr);
 		break;
 	    case RST_S:
-		strncpy(my_rst, tempstr, strlen(tempstr));
-		my_rst[strlen(tempstr)] = '\0';
+		strcpy(my_rst, tempstr);
 		break;
 	    case RST_R:
-		strncpy(his_rst, tempstr, strlen(tempstr));
-		his_rst[strlen(tempstr)] = '\0';
+		strcpy(his_rst, tempstr);
 		break;
 	    case EXCH:
-		strncpy(comment, tempstr, strlen(tempstr));
-		comment[strlen(tempstr)] = '\0';
+		strcpy(comment, tempstr);
 		break;
 	    case EXC1:
-		concat_comment(tempstr);
+		strcpy(comment, tempstr);
 		break;
 	    case EXC2:
 		concat_comment(tempstr);
@@ -229,15 +226,10 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 		concat_comment(tempstr);
 		break;
 	    case EXC_S:
-		break;
 	    case TX:
-		break;
 	    case QTCRCALL:
-		break;
 	    case QTCHEAD:
-		break;
 	    case QTCSCALL:
-		break;
 	    case QTC:
 	    case NO_ITEM:
 	    default:
@@ -245,17 +237,21 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 	}
 
     }
-    t_bandinx = bandinx;
-    strcpy(t_qsonrstr, qsonrstr);
-    t_qsonum = qsonum;
+
     qsonum = cablinecnt;
     sprintf(qsonrstr, "%04d", cablinecnt);
+
     if (serial_grid4_mult == 1) {
 	gridmult = getgrid(comment);
 	strcpy(section, gridmult);
     }
+
     checkexchange(0);
-    log_to_disk(0);
+    addcall();		/* add call to dupe list */
+    makelogline();	/* format logline */
+    store_qso(logline4);
+    cleanup_qso();
+
     strcpy(qsonrstr, t_qsonrstr);
     qsonum = t_qsonum;
     bandinx = t_bandinx;
