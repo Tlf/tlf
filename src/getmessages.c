@@ -36,25 +36,39 @@
 #include "qsonr_to_str.h"
 #include "tlf_curses.h"
 
+/* get countrynumber, QTH, CQ zone and continent for myself */
+void getstationinfo() {
+    extern char call[];
+    extern int mycountrynr;
+    extern char mycqzone[];
+    extern char mycontinent[];
+    extern double QTH_Lat;
+    extern double QTH_Long;
+
+    dxcc_data *mydx;
+
+    mycountrynr = getctydata(call);	/* whoami? */
+    mydx = dxcc_by_index(mycountrynr);
+
+    sprintf(mycqzone, "%02d", mydx -> cq);
+    strcpy(mycontinent, mydx->continent);
+    QTH_Lat = mydx->lat; 	/* whereami? */
+    QTH_Long = mydx->lon;
+}
 
 int getmessages(void)
 {
-
     extern char call[];
-    extern int mycountrynr;
     extern char mycqzone[];
     extern char mycontinent[];
     extern char logfile[];
     extern int qsonum;
     extern char qsonrstr[];
     extern char backgrnd_str[];
-    extern double QTH_Lat;
-    extern double QTH_Long;
     extern int emptydir;
 
     FILE *fp;
 
-    dxcc_data *mydx;
     int i, ii;
     char logline[5][82];
     char printcall[12] = "";
@@ -66,14 +80,7 @@ int getmessages(void)
     strncat(printcall, call, sizeof(printcall) - 1);
     printw(printcall);
 
-    mycountrynr = getctydata(call);	/* whoami? */
-    mydx = dxcc_by_index(mycountrynr);
-
-    mycqzone[0] = '\0';
-    sprintf(mycqzone, "%02d", mydx -> cq);
-    strcpy(mycontinent, mydx->continent);
-    QTH_Lat = mydx->lat; 	/* whereami? */
-    QTH_Long = mydx->lon;
+    getstationinfo();
 
     printw("     My Zone = ");
     printw(mycqzone);

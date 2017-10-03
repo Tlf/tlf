@@ -21,6 +21,7 @@
 #ifndef GETMESSAGES_H
 #define GETMESSAGES_H
 
+void getstationinfo(void);
 int getmessages(void);
 
 #endif /* GETMESSAGES_H */
