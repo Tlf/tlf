@@ -49,48 +49,47 @@ static int cablinecnt = 0;
  */
 
 int set_band_from_freq(float freq) {
+    int cab_bandinx;
 
-	int cab_bandinx;
-
-	switch ((int)freq) {
-		case 1800 ... 2000:{
-			cab_bandinx = BANDINDEX_160;
-			break;
-		    }
-		case 3500 ... 4000:{
-			cab_bandinx = BANDINDEX_80;
-			break;
-		    }
-		case 7000 ... 7300:{
-			cab_bandinx = BANDINDEX_40;
-			break;
-		    }
-		case 10100 ... 10150:{
-			cab_bandinx = BANDINDEX_30;
-			break;
-		    }
-		case 14000 ... 14350:{
-			cab_bandinx = BANDINDEX_20;
-			break;
-		    }
-		case 18068 ... 18168:{
-			cab_bandinx = BANDINDEX_17;
-			break;
-		    }
-		case 21000 ... 21450:{
-			cab_bandinx = BANDINDEX_15;
-			break;
-		    }
-		case 24890 ... 24990:{
-			cab_bandinx = BANDINDEX_12;
-			break;
-		    }
-		case 28000 ... 29700:{
-			cab_bandinx = BANDINDEX_10;
-			break;
-		    }
-		default:
-			cab_bandinx = NBANDS;	/* out of band */
+    switch ((int)freq) {
+	case 1800 ... 2000:{
+	    cab_bandinx = BANDINDEX_160;
+	    break;
+	}
+	case 3500 ... 4000:{
+	    cab_bandinx = BANDINDEX_80;
+	    break;
+	}
+	case 7000 ... 7300:{
+	    cab_bandinx = BANDINDEX_40;
+	    break;
+	}
+	case 10100 ... 10150:{
+	    cab_bandinx = BANDINDEX_30;
+	    break;
+	}
+	case 14000 ... 14350:{
+	    cab_bandinx = BANDINDEX_20;
+	    break;
+	}
+	case 18068 ... 18168:{
+	    cab_bandinx = BANDINDEX_17;
+	    break;
+	}
+	case 21000 ... 21450:{
+	    cab_bandinx = BANDINDEX_15;
+	    break;
+	}
+	case 24890 ... 24990:{
+	    cab_bandinx = BANDINDEX_12;
+	    break;
+	}
+	case 28000 ... 29700:{
+	    cab_bandinx = BANDINDEX_10;
+	    break;
+	}
+	default:
+	    cab_bandinx = BANDINDEX_OOB;	/* out of band */
 	}
 
 	return cab_bandinx;
@@ -122,8 +121,9 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
     int i, t_qsonum, t_bandinx;
     item_count = cabdesc->item_count;
     item_array = cabdesc->item_array;
-    int shift = 0, pos = 0;
+    int pos = 0;
     char tempstr[80], timestr[3], t_qsonrstr[5], *gridmult = "";
+    struct tm tm;
 
     // [UNIVERSAL]
     // QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;RST_S,3;EXC_S,6;HISCALL,13;RST_R,3;EXCH,6
@@ -152,18 +152,17 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
     t_qsonum = qsonum;
     t_bandinx = bandinx;
 
+    time_ptr_cabrillo = &tm;
+    memset(&tm, 0, sizeof(struct tm));
+
     if (strncmp(line, "QSO", 3) == 0) {
-	shift = 5;
-	cablinecnt++;
+	pos = 5;
     }
     else if (strncmp(line, "X-QSO", 5) == 0) {
-	shift = 7;
-	cablinecnt++;
+	pos = 7;
     }
-    pos = shift;
-    if (time_ptr_cabrillo == NULL) {
-	time_ptr_cabrillo = malloc(sizeof (struct tm));
-    }
+    cablinecnt++;
+
     for  (i = 0; i < item_count; i++) {
 	item = g_ptr_array_index( item_array, i );
 	g_strlcpy(tempstr, line+pos, item->len + 1);
@@ -283,7 +282,6 @@ int readcabrillo(int mode)
     char output_logfile[80], temp_logfile[80];
     char logline[MAX_CABRILLO_LEN];
     char tempstr[80];
-    int linnr = 0;
 
     FILE *fp1, *fp2;
 
@@ -336,6 +334,7 @@ int readcabrillo(int mode)
 	free_cabfmt( cabdesc );
 	return (1);
     }
+    fclose(fp2);
 
     if ((fp1 = fopen(input_logfile, "r")) == NULL) {
 	sprintf(tempstr, "Can't open input logfile: %s.", input_logfile);
@@ -348,7 +347,6 @@ int readcabrillo(int mode)
 
     while(fgets(logline, MAX_CABRILLO_LEN, fp1) != NULL) {
 	if (strncmp(logline, "QSO", 3) == 0 || strncmp(logline, "X-QSO", 5) == 0) {
-	  linnr++;
 	  cab_qso_to_tlf(logline, cabdesc);
 	}
     }
