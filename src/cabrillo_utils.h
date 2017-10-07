@@ -42,7 +42,27 @@ struct qso_t {
     int qsots;
 };
 
-/* list of different tags for QSO: line items */
+/* represents different parts of a qtc logline */
+struct read_qtc_t {
+    char logline[120];
+    char band[4];
+    char mode[4];
+    int qsonr;
+    char date[10];
+    char time[6];
+    char call[15];
+    char qtchead[10];
+    int qtchead_serial;
+    int qtchead_count;
+    char qtc_time[5];
+    char qtc_call[16];
+    int qtc_serial;
+    float freq;
+    int callpos;
+    char qtcstr[30];
+};
+
+/* list of different tags for QSO/QTC: line items */
 enum tag_t { NO_ITEM, FREQ, MODE, DATE, TIME, MYCALL, HISCALL, RST_S, RST_R, 		// 0...8
     EXC_S, EXCH, EXC1, EXC2, EXC3, EXC4, TX, QTCRCALL, QTCHEAD, QTCSCALL, QTC };	// 9...19
 
@@ -62,5 +82,8 @@ enum tag_t translate_item_name( char *name );
 void free_cabfmt(struct cabrillo_desc *desc);
 struct line_item *parse_line_entry(char *line_entry);
 struct cabrillo_desc *read_cabrillo_format (char *filename, char *format);
+
+#define LOGPREF_QSO 1
+#define LOGPREF_QTC 2
 
 #endif
