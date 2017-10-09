@@ -71,7 +71,7 @@ struct tag_conv {
     char 	*item_name;
     enum tag_t  tag;
 };
-   
+
 /* describes one item for printing the QSO: line in cabrillo */
 struct line_item {
     enum tag_t tag;	/* item type */
@@ -82,8 +82,5 @@ enum tag_t translate_item_name( char *name );
 void free_cabfmt(struct cabrillo_desc *desc);
 struct line_item *parse_line_entry(char *line_entry);
 struct cabrillo_desc *read_cabrillo_format (char *filename, char *format);
-
-#define LOGPREF_QSO 1
-#define LOGPREF_QTC 2
 
 #endif

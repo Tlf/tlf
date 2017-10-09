@@ -40,6 +40,12 @@
 
 #define MAX_CABRILLO_LEN 255
 
+enum {
+    LOGPREF_NONE,
+    LOGPREF_QSO,
+    LOGPREF_QTC
+};
+
 static int cablinecnt = 0;
 char qtcsend_logfile_import[] = "IMPORT_QTC_sent.log";
 char qtcrecv_logfile_import[] = "IMPORT_QTC_recv.log";
@@ -128,13 +134,13 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
     struct line_item *item;
     GPtrArray *item_array;
 
-    int i, t_qsonum, t_bandinx;
+    int i;
     item_count = cabdesc->item_count;
     item_array = cabdesc->item_array;
     int pos = 0;
-    char tempstr[80], *tempstrp, timestr[3], t_qsonrstr[5], *gridmult = "";
+    char tempstr[80], *tempstrp, timestr[3], *gridmult = "";
     struct tm tm;
-    int linetype = 0;
+    int linetype = LOGPREF_NONE;
     char qtcrcall[15], qtcscall[15];
     struct read_qtc_t qtc_line;
     static int qtc_curr_call_nr = 0;
@@ -170,9 +176,6 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
     //  80DIG 0110 0011 12-Nov-16 20:21   RG9A           0002 0010 1208 2M0WEV         018     3593.8
     //  BANDM QSO  POS  DATE      TIME    CALL           SERIAL/NR TIME QTCCALL     QTCSER     FREQ
 
-    strcpy(t_qsonrstr, qsonrstr);
-    t_qsonum = qsonum;
-    t_bandinx = bandinx;
 
     time_ptr_cabrillo = &tm;
     memset(&tm, 0, sizeof(struct tm));
@@ -198,7 +201,7 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 	item_array = cabdesc->qtc_item_array;
     }
 
-    if (linetype == 0) {
+    if (linetype == LOGPREF_NONE) {
 	return;
     }
 
@@ -409,9 +412,6 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 	fclose(fpqtc);
     }
 
-    strcpy(qsonrstr, t_qsonrstr);
-    qsonum = t_qsonum;
-    bandinx = t_bandinx;
 }
 
 void show_readcab_msg(int mode, char *msg) {
@@ -440,6 +440,10 @@ int readcabrillo(int mode)
     char output_logfile[80], temp_logfile[80];
     char logline[MAX_CABRILLO_LEN];
     char tempstr[80];
+
+    char t_qsonrstr[5];
+    int t_qsonum;
+    int t_bandinx;
 
     FILE *fp1, *fp2, *fpqtc;
 
@@ -515,6 +519,10 @@ int readcabrillo(int mode)
 	}
     }
 
+    strcpy(t_qsonrstr, qsonrstr);
+    t_qsonum = qsonum;
+    t_bandinx = bandinx;
+
     while(fgets(logline, MAX_CABRILLO_LEN, fp1) != NULL) {
 	if (strncmp(logline, "QSO", 3) == 0 ||
 		strncmp(logline, "X-QSO", 5) == 0) {
@@ -527,6 +535,10 @@ int readcabrillo(int mode)
 	    cab_qso_to_tlf(logline, cabdesc);
 	}
     }
+
+    strcpy(qsonrstr, t_qsonrstr);
+    qsonum = t_qsonum;
+    bandinx = t_bandinx;
 
     fclose(fp1);
 
