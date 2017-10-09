@@ -1506,7 +1506,7 @@ int parse_logcfg(char *inputbuffer)
 	    if (strncmp(fields[1], "SEND", 4) == 0) {
 	        qtcdirection = SEND;
 	    }
-	    else if (strcmp(fields[1], "BOTH")) {
+	    else if (strcmp(fields[1], "BOTH") == 0) {
 	        qtcdirection = RECV | SEND;
 	    }
 	    if (qtcdirection == 0) {
