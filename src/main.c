@@ -510,7 +510,7 @@ void parse_options(int argc, char *argv[])
 	case 'r':
 	    no_trx_control = 1; // disable radio control
 	    break;
-        case 'c':
+        case 'i':
             convert_cabrillo = 1;
             break;
 	default:
@@ -521,7 +521,7 @@ void parse_options(int argc, char *argv[])
 	    printf("         [-h] This message\n");
 	    printf("         [-n] Start without cluster hookup\n");
 	    printf("         [-r] Start without radio control\n");
-	    printf("         [-c] Convert cabrillo file to Tlf format\n");
+	    printf("         [-i] Import cabrillo file to Tlf format\n");
 	    exit(0);
 	    break;
 	}
