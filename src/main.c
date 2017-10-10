@@ -418,7 +418,7 @@ int qsonum = 1;			/* nr of next QSO */
 int ymax, xmax;			/* screen size */
 
 pid_t pid;
-struct tm *time_ptr, *time_ptr_cabrillo;
+struct tm *time_ptr, time_ptr_cabrillo;
 
 float freq;
 float mem;

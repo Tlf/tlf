@@ -251,7 +251,7 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 
     extern float freq;
-    extern struct tm *time_ptr_cabrillo;
+    extern struct tm time_ptr_cabrillo;
     extern char call[];
 
 
@@ -262,7 +262,6 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
     int i;
     int pos = 0;
     char tempstr[80], *tempstrp, timestr[3];
-    struct tm tm;
     int linetype = LOGPREF_NONE;
     char qtcrcall[15], qtcscall[15];
     struct read_qtc_t qtc_line;
@@ -293,8 +292,7 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
     //  BANDM QSO  POS  DATE      TIME    CALL           SERIAL/NR TIME QTCCALL     QTCSER     FREQ
 
 
-    time_ptr_cabrillo = &tm;
-    memset(&tm, 0, sizeof(struct tm));
+    memset(&time_ptr_cabrillo, 0, sizeof(struct tm));
     memset(&qtc_line, 0, sizeof(struct read_qtc_t));
 
     if (starts_with(line, "QSO")) {
@@ -350,19 +348,19 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 		}
 		break;
 	    case DATE:
-		strptime(tempstr, "%Y-%m-%d", time_ptr_cabrillo);
-		strftime(qtc_line.date, 60, "%d-%b-%y", time_ptr_cabrillo);
+		strptime(tempstr, "%Y-%m-%d", &time_ptr_cabrillo);
+		strftime(qtc_line.date, 60, "%d-%b-%y", &time_ptr_cabrillo);
 		break;
 	    case TIME:
 		timestr[0] = tempstr[0];
 		timestr[1] = tempstr[1];
 		timestr[2] = '\0';
-		time_ptr_cabrillo->tm_hour = atoi(timestr);
+		time_ptr_cabrillo.tm_hour = atoi(timestr);
 		timestr[0] = tempstr[2];
 		timestr[1] = tempstr[3];
 		timestr[2] = '\0';
-		time_ptr_cabrillo->tm_min = atoi(timestr);
-		sprintf(qtc_line.time, "%02d:%02d", time_ptr_cabrillo->tm_hour, time_ptr_cabrillo->tm_min);
+		time_ptr_cabrillo.tm_min = atoi(timestr);
+		sprintf(qtc_line.time, "%02d:%02d", time_ptr_cabrillo.tm_hour, time_ptr_cabrillo.tm_min);
 		break;
 	    case MYCALL:
 		break;

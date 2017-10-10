@@ -144,7 +144,7 @@ void prepare_fixed_part(void) {
 	strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
     }
     else {
-	strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr_cabrillo);
+	strftime(time_buf, 60, " %d-%b-%y %H:%M ", &time_ptr_cabrillo);
     }
     strcat(logline4, time_buf);
 
