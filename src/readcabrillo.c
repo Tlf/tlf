@@ -43,6 +43,7 @@
 enum {
     LOGPREF_NONE,
     LOGPREF_QSO,
+    LOGPREF_XQSO,
     LOGPREF_QTC
 };
 
@@ -113,6 +114,130 @@ void concat_comment(char * exchstr) {
     strcat(comment, exchstr);
 }
 
+int qtcs_allowed(struct cabrillo_desc *cabdesc) {
+    return ((qtcdirection > 0) && (cabdesc->qtc_item_count > 0));
+}
+
+/* check if line starts with 'start' */
+int starts_with(char *line, char *start) {
+    return (strncmp(line, start, strlen(start)) == 0);
+}
+
+/* write a new line to the qso log */
+void write_log_fm_cabr() {
+    qsonum = cablinecnt;
+    sprintf(qsonrstr, "%04d", cablinecnt);
+
+    if (serial_grid4_mult == 1) {
+	strcpy(section, getgrid(comment));
+    }
+
+    checkexchange(0);
+    addcall();		/* add call to dupe list */
+    makelogline();	/* format logline */
+    store_qso(logline4);
+    cleanup_qso();
+    qsoflags_for_qtc[nr_qsos-1] = 0;
+}
+
+/* write a new line to the qtc log */
+void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
+    extern char call[];
+
+    FILE *fpqtc;
+    char fpqtcname[25];
+
+    static int qtc_curr_call_nr = 0;
+    static int qtc_last_call_nr = 0;
+    static int qtc_last_qtc_serial = 0;
+    static int qtc_last_qtc_count = 0;
+    static char qtc_last_qtc_rcall[15] = "";
+
+    char thiscall[15] = "", ttime[5] = "";
+    int found_call = 0, found_empty = 0;
+
+    if (strcmp(qtcrcall, call) == 0) {  // RECV
+	strcpy(fpqtcname, qtcrecv_logfile_import);
+	sprintf(qtc_line.logline,
+	    "%s%s %04d %s %s   %-14s %04d %04d %s %-15s %03d    %7.1f\n",
+	    qtc_line.band, qtc_line.mode, cablinecnt,
+	    qtc_line.date, qtc_line.time, qtc_line.call,
+	    qtc_line.qtchead_serial, qtc_line.qtchead_count,
+	    qtc_line.qtc_time, qtc_line.qtc_call,
+	    qtc_line.qtc_serial, qtc_line.freq);
+    }
+    else { // SENT
+
+	// search the sent callsign in list of QSO's
+
+	found_call = 0;	// indicates that the callsign found
+	found_empty = 0;// indicates that there is the "hole" in the list
+			// some reason, eg. own call
+	// if new qtc block comes, go back to last empty
+	if (qtc_last_qtc_count != qtc_line.qtchead_count &&
+		qtc_last_qtc_serial != qtc_line.qtchead_serial &&
+		strcmp(qtc_last_qtc_rcall, qtcrcall) != 0) {
+	    // current nr	last stored nr - empty (see above) or after last
+	    qtc_curr_call_nr = qtc_last_call_nr;
+	    strcpy(qtc_last_qtc_rcall, qtcrcall);
+	    qtc_last_qtc_serial = qtc_line.qtchead_serial;
+	    qtc_last_qtc_count = qtc_line.qtchead_count;
+	}
+
+	// look until not found and we're in list
+	while(found_call == 0 && qtc_curr_call_nr < nr_qsos) {
+	    strncpy(thiscall, qsos[qtc_curr_call_nr]+29, 14);
+	    g_strchomp(thiscall);
+	    strncpy(ttime, qsos[qtc_curr_call_nr]+17, 2);
+	    strncpy(ttime+2, qsos[qtc_curr_call_nr]+20, 2);
+	    ttime[4] = '\0';
+	    // check the call was't sent, and call and time are equals
+	    if (qsoflags_for_qtc[qtc_curr_call_nr] == 0 &&
+		    (strcmp(thiscall, qtc_line.qtc_call) == 0) &&
+		    (strcmp(ttime, qtc_line.qtc_time)) == 0 ) {
+		found_call = qtc_curr_call_nr+1;
+		qsoflags_for_qtc[qtc_curr_call_nr] = 1;
+	    }
+	    else {
+		if (found_empty == 0) {
+		    found_empty = 1;
+		    qtc_last_call_nr = qtc_curr_call_nr;
+		}
+	    }
+
+	    // increment list pos.
+	    qtc_curr_call_nr++;
+
+	}
+	// end search
+	if (found_empty == 0 && found_call > 0) {
+	    qtc_last_call_nr = qtc_curr_call_nr;
+	}
+	else {
+	    // TODO
+	    // handling this issue
+	    //if (found_call == 0) {
+		//syslog(LOG_DEBUG, "Found invalid QTC time / QTC call: '%s' '%s' - '%s' '%s' at QTC with %s [%d] (%d - %d)", qtc_line.qtc_time, qtc_line.qtc_call, ttime, thiscall, qtcrcall, qtc_curr_call_nr, found_empty, found_call);
+	    //}
+	    qtc_curr_call_nr = qtc_last_call_nr;
+	}
+
+	strcpy(fpqtcname, qtcsend_logfile_import);
+	sprintf(qtc_line.logline,
+	    "%s%s %04d %04d %s %s   %-14s %04d %04d %s %-14s %03d    %7.1f\n",
+	    qtc_line.band, qtc_line.mode, cablinecnt,
+	    found_call, qtc_line.date, qtc_line.time, qtcrcall,
+	    qtc_line.qtchead_serial, qtc_line.qtchead_count,
+	    qtc_line.qtc_time, qtc_line.qtc_call,
+	    qtc_line.qtc_serial, qtc_line.freq);
+    }
+
+    fpqtc = fopen(fpqtcname, "a");
+    fputs(qtc_line.logline, fpqtc);
+    fclose(fpqtc);
+
+}
+
 /* cabrillo QSO to Tlf format
  *
  * walk through the lines which starts with QSO/X-QSO, and
@@ -127,29 +252,18 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
     extern struct tm *time_ptr_cabrillo;
     extern char call[];
 
-    FILE *fpqtc;
-    char fpqtcname[25];
 
     int item_count;
     struct line_item *item;
     GPtrArray *item_array;
 
     int i;
-    item_count = cabdesc->item_count;
-    item_array = cabdesc->item_array;
     int pos = 0;
-    char tempstr[80], *tempstrp, timestr[3], *gridmult = "";
+    char tempstr[80], *tempstrp, timestr[3];
     struct tm tm;
     int linetype = LOGPREF_NONE;
     char qtcrcall[15], qtcscall[15];
     struct read_qtc_t qtc_line;
-    static int qtc_curr_call_nr = 0;
-    static int qtc_last_call_nr = 0;
-    static int qtc_last_qtc_serial = 0;
-    static int qtc_last_qtc_count = 0;
-    static char qtc_last_qtc_rcall[15] = "";
-    char thiscall[15] = "", ttime[5] = "";
-    int found_call = 0, found_empty = 0;
 
     // [UNIVERSAL]
     // QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;RST_S,3;EXC_S,6;HISCALL,13;RST_R,3;EXCH,6
@@ -180,21 +294,21 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
     time_ptr_cabrillo = &tm;
     memset(&tm, 0, sizeof(struct tm));
 
-    if (strncmp(line, "QSO", 3) == 0) {
+    if (starts_with(line, "QSO")) {
 	pos = 5;
 	cablinecnt++;
 	linetype = LOGPREF_QSO;
 	item_count = cabdesc->item_count;
 	item_array = cabdesc->item_array;
     }
-    else if (strncmp(line, "X-QSO", 5) == 0) {
+    else if (starts_with(line, "X-QSO")) {
 	pos = 7;
 	cablinecnt++;
-	linetype = LOGPREF_QSO;
+	linetype = LOGPREF_XQSO;
 	item_count = cabdesc->item_count;
 	item_array = cabdesc->item_array;
     }
-    else if (strncmp(line, "QTC", 3) == 0) {
+    else if (qtcs_allowed(cabdesc) && (starts_with(line, "QTC"))) {
 	pos = 5;
 	linetype = LOGPREF_QTC;
 	item_count = cabdesc->qtc_item_count;
@@ -314,102 +428,12 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 
     }
 
-    if (linetype == LOGPREF_QSO) {
-	qsonum = cablinecnt;
-	sprintf(qsonrstr, "%04d", cablinecnt);
 
-	if (serial_grid4_mult == 1) {
-	    gridmult = getgrid(comment);
-	    strcpy(section, gridmult);
-	}
-
-	checkexchange(0);
-	addcall();		/* add call to dupe list */
-	makelogline();	/* format logline */
-	store_qso(logline4);
-	cleanup_qso();
-	qsoflags_for_qtc[nr_qsos-1] = 0;
+    if ((linetype == LOGPREF_QSO) || (linetype == LOGPREF_XQSO)) {
+	write_log_fm_cabr();
     }
     else if (linetype == LOGPREF_QTC) {
-        if (strcmp(qtcrcall, call) == 0) {  // RECV
-	    strcpy(fpqtcname, qtcrecv_logfile_import);
-	    sprintf(qtc_line.logline,
-		"%s%s %04d %s %s   %-14s %04d %04d %s %-15s %03d    %7.1f\n",
-		qtc_line.band, qtc_line.mode, cablinecnt,
-		qtc_line.date, qtc_line.time, qtc_line.call,
-		qtc_line.qtchead_serial, qtc_line.qtchead_count,
-		qtc_line.qtc_time, qtc_line.qtc_call,
-		qtc_line.qtc_serial, qtc_line.freq);
-	}
-	else { // SENT
-
-	    // search the sent callsign in list of QSO's
-
-	    found_call = 0;	// indicates that the callsign found
-	    found_empty = 0;	// indicates that there is the "hole" in the list
-				// some reason, eg. own call
-	    // if new qtc block comes, go back to last empty
-	    if (qtc_last_qtc_count != qtc_line.qtchead_count &&
-		    qtc_last_qtc_serial != qtc_line.qtchead_serial &&
-		    strcmp(qtc_last_qtc_rcall, qtcrcall) != 0) {
-		// current nr	last stored nr - empty (see above) or after last
-		qtc_curr_call_nr = qtc_last_call_nr;
-		strcpy(qtc_last_qtc_rcall, qtcrcall);
-		qtc_last_qtc_serial = qtc_line.qtchead_serial;
-		qtc_last_qtc_count = qtc_line.qtchead_count;
-	    }
-
-	    // look until not found and we're in list
-	    while(found_call == 0 && qtc_curr_call_nr < nr_qsos) {
-		strncpy(thiscall, qsos[qtc_curr_call_nr]+29, 14);
-		g_strchomp(thiscall);
-		strncpy(ttime, qsos[qtc_curr_call_nr]+17, 2);
-		strncpy(ttime+2, qsos[qtc_curr_call_nr]+20, 2);
-		ttime[4] = '\0';
-		// check the call was't sent, and call and time are equals
-		if (qsoflags_for_qtc[qtc_curr_call_nr] == 0 &&
-			(strcmp(thiscall, qtc_line.qtc_call) == 0) &&
-			(strcmp(ttime, qtc_line.qtc_time)) == 0 ) {
-		    found_call = qtc_curr_call_nr+1;
-		    qsoflags_for_qtc[qtc_curr_call_nr] = 1;
-		}
-		else {
-		    if (found_empty == 0) {
-			found_empty = 1;
-			qtc_last_call_nr = qtc_curr_call_nr;
-		    }
-		}
-
-		// increment list pos.
-		qtc_curr_call_nr++;
-
-	    }
-	    // end search
-	    if (found_empty == 0 && found_call > 0) {
-		qtc_last_call_nr = qtc_curr_call_nr;
-	    }
-	    else {
-		// TODO
-		// handling this issue
-		//if (found_call == 0) {
-		    //syslog(LOG_DEBUG, "Found invalid QTC time / QTC call: '%s' '%s' - '%s' '%s' at QTC with %s [%d] (%d - %d)", qtc_line.qtc_time, qtc_line.qtc_call, ttime, thiscall, qtcrcall, qtc_curr_call_nr, found_empty, found_call);
-		//}
-		qtc_curr_call_nr = qtc_last_call_nr;
-	    }
-
-	    strcpy(fpqtcname, qtcsend_logfile_import);
-	    sprintf(qtc_line.logline,
-		"%s%s %04d %04d %s %s   %-14s %04d %04d %s %-14s %03d    %7.1f\n",
-		qtc_line.band, qtc_line.mode, cablinecnt,
-		found_call, qtc_line.date, qtc_line.time, qtcrcall,
-		qtc_line.qtchead_serial, qtc_line.qtchead_count,
-		qtc_line.qtc_time, qtc_line.qtc_call,
-		qtc_line.qtc_serial, qtc_line.freq);
-	}
-
-	fpqtc = fopen(fpqtcname, "a");
-	fputs(qtc_line.logline, fpqtc);
-	fclose(fpqtc);
+	write_qtclog_fm_cabr(qtcrcall, qtc_line);
     }
 
 }
@@ -524,16 +548,7 @@ int readcabrillo(int mode)
     t_bandinx = bandinx;
 
     while(fgets(logline, MAX_CABRILLO_LEN, fp1) != NULL) {
-	if (strncmp(logline, "QSO", 3) == 0 ||
-		strncmp(logline, "X-QSO", 5) == 0) {
-	    cab_qso_to_tlf(logline, cabdesc);
-	}
-	if ((qtcdirection > 0) && (strncmp(logline, "QTC", 3) == 0 ||
-		strncmp(logline, "X-QTC", 5) == 0) &&
-	    (cabdesc->qtc_item_count > 0)
-	) {
-	    cab_qso_to_tlf(logline, cabdesc);
-	}
+	cab_qso_to_tlf(logline, cabdesc);
     }
 
     strcpy(qsonrstr, t_qsonrstr);
