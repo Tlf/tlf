@@ -233,8 +233,10 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
     }
 
     fpqtc = fopen(fpqtcname, "a");
-    fputs(qtc_line.logline, fpqtc);
-    fclose(fpqtc);
+    if (fpqtc) {
+	fputs(qtc_line.logline, fpqtc);
+	fclose(fpqtc);
+    }
 
 }
 
@@ -254,8 +256,8 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 
 
     int item_count;
-    struct line_item *item;
     GPtrArray *item_array;
+    struct line_item *item;
 
     int i;
     int pos = 0;
@@ -293,6 +295,7 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 
     time_ptr_cabrillo = &tm;
     memset(&tm, 0, sizeof(struct tm));
+    memset(&qtc_line, 0, sizeof(struct read_qtc_t));
 
     if (starts_with(line, "QSO")) {
 	pos = 5;
@@ -313,9 +316,7 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 	linetype = LOGPREF_QTC;
 	item_count = cabdesc->qtc_item_count;
 	item_array = cabdesc->qtc_item_array;
-    }
-
-    if (linetype == LOGPREF_NONE) {
+    } else {
 	return;
     }
 
@@ -534,12 +535,12 @@ int readcabrillo(int mode)
     if (cabdesc->qtc_item_count > 0) {
 	if (qtcdirection & SEND) {
 	    fpqtc = fopen(qtcsend_logfile_import, "w");
-	    fclose(fpqtc);
+	    if (fpqtc) fclose(fpqtc);
 	}
 
 	if (qtcdirection & RECV) {
 	    fpqtc = fopen(qtcrecv_logfile_import, "w");
-	    fclose(fpqtc);
+	    if (fpqtc) fclose(fpqtc);
 	}
     }
 
