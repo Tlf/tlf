@@ -40,6 +40,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "write_keyer.h"
+#include "qtcvars.h"
 
 
 extern int stop_backgrnd_process;
@@ -174,12 +175,12 @@ void *background_process(void *ptr)
 
 		case QTCRENTRY:
 
-		    store_recv_qtc(lan_message+2);
+		    store_qtc(lan_message+2, RECV, QTC_RECV_LOG);
 		    break;
 
 		case QTCSENTRY:
 
-		    store_sent_qtc(lan_message+2);
+		    store_qtc(lan_message+2, SEND, QTC_SENT_LOG);
 		    break;
 
 		case QTCFLAG:

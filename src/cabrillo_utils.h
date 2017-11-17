@@ -44,22 +44,23 @@ struct qso_t {
 
 /* represents different parts of a qtc logline */
 struct read_qtc_t {
-    char logline[120];
-    char band[4];
-    char mode[4];
-    int qsonr;
-    char date[10];
-    char time[6];
-    char call[15];
-    char qtchead[10];
-    int qtchead_serial;
-    int qtchead_count;
-    char qtc_time[5];
-    char qtc_call[16];
-    int qtc_serial;
-    float freq;
-    int callpos;
-    char qtcstr[30];
+    int direction;      // represents the direction of QTC: SEND or RECV
+    char logline[120];  // represents the final log, if require
+    char band[4];       // band, eg "160"
+    char mode[4];       // mode, eg "DIG"
+    int qsonr;          // qso number after the QTC maked
+    char date[10];      // date of creation of QTC
+    char time[6];       // time of creation of QTC
+    char call[15];      // callsign
+    char qtchead[10];   // QTC serial and number as string
+    int qtchead_serial; // QTC serial as integer
+    int qtchead_count;  // QTC number as integer
+    char qtc_time[5];   // QTC TIME field
+    char qtc_call[16];  // QTC CALL FIELD
+    int qtc_serial;     // QTC SERIAL field
+    float freq;         // FREQ of QTC
+    int callpos;        // in case of SEND direction, the serial of sent callsign
+    char qtcstr[30];    // QTC fields as concatenated
 };
 
 /* list of different tags for QSO/QTC: line items */

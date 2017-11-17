@@ -37,6 +37,7 @@
 #include "startmsg.h"
 #include "addmult.h"
 #include "getexchange.h"
+#include "qtc_log.h"
 
 #define MAX_CABRILLO_LEN 255
 
@@ -144,9 +145,6 @@ void write_log_fm_cabr() {
 void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
     extern char call[];
 
-    FILE *fpqtc;
-    char fpqtcname[25];
-
     static int qtc_curr_call_nr = 0;
     static int qtc_last_call_nr = 0;
     static int qtc_last_qtc_serial = 0;
@@ -157,17 +155,13 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
     int found_call = 0, found_empty = 0;
 
     if (strcmp(qtcrcall, call) == 0) {  // RECV
-	strcpy(fpqtcname, qtcrecv_logfile_import);
-	sprintf(qtc_line.logline,
-	    "%s%s %04d %s %s   %-14s %04d %04d %s %-15s %03d    %7.1f\n",
-	    qtc_line.band, qtc_line.mode, cablinecnt,
-	    qtc_line.date, qtc_line.time, qtc_line.call,
-	    qtc_line.qtchead_serial, qtc_line.qtchead_count,
-	    qtc_line.qtc_time, qtc_line.qtc_call,
-	    qtc_line.qtc_serial, qtc_line.freq);
+	qtc_line.direction = RECV;
+	qtc_line.qsonr = cablinecnt;
+	make_qtc_logline(qtc_line, qtcrecv_logfile_import);
     }
     else { // SENT
 
+	qtc_line.direction = SEND;
 	// search the sent callsign in list of QSO's
 
 	found_call = 0;	// indicates that the callsign found
@@ -222,22 +216,10 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 	    qtc_curr_call_nr = qtc_last_call_nr;
 	}
 
-	strcpy(fpqtcname, qtcsend_logfile_import);
-	sprintf(qtc_line.logline,
-	    "%s%s %04d %04d %s %s   %-14s %04d %04d %s %-14s %03d    %7.1f\n",
-	    qtc_line.band, qtc_line.mode, cablinecnt,
-	    found_call, qtc_line.date, qtc_line.time, qtcrcall,
-	    qtc_line.qtchead_serial, qtc_line.qtchead_count,
-	    qtc_line.qtc_time, qtc_line.qtc_call,
-	    qtc_line.qtc_serial, qtc_line.freq);
+	qtc_line.callpos = found_call;
+        qtc_line.qsonr = cablinecnt;
+        make_qtc_logline(qtc_line, qtcsend_logfile_import);
     }
-
-    fpqtc = fopen(fpqtcname, "a");
-    if (fpqtc) {
-	fputs(qtc_line.logline, fpqtc);
-	fclose(fpqtc);
-    }
-
 }
 
 /* cabrillo QSO to Tlf format

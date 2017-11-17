@@ -946,7 +946,7 @@ int main(int argc, char *argv[])
     }
 
     if (convert_cabrillo == 1) {
-        char tstring[80] = "";
+        char tstring[100] = "";
         sprintf(tstring, "Converting cabrillo for contest %s from file %s.cbr", whichcontest, g_strstrip(call));
         showmsg(tstring);
         showmsg("");
