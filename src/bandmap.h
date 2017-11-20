@@ -29,6 +29,9 @@ typedef struct {
     char	node;
     unsigned int timeout;/* time (in seconds) left in bandmap */
     char 	dupe;	/* only used internal in bm_show() */
+    int 	cqzone;	/* CQ zone */
+    int 	ctynr;	/* Country nr */
+    char 	*pfx; /* prefix */
 } spot;
 
 #define SPOT_NEW	(bm_config.livetime)
@@ -41,6 +44,7 @@ typedef struct {
     short showdupes;
     short skipdupes;
     short livetime;
+    short onlymults;
 } bm_config_t;
 
 extern bm_config_t bm_config;
@@ -68,7 +72,7 @@ void bm_menu();
  *
  * \return true if new multi
  */
-int bm_ismulti(char *call);
+int bm_ismulti(char *call, spot *data, int band);
 
 
 /** check if call is a dupe

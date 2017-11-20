@@ -32,6 +32,8 @@
 #include "searchcallarray.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "getctydata.h"
+#include "dxcc.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted as the same QRG */
@@ -94,7 +96,8 @@ bm_config_t bm_config = {
     1,  /* show all mode */
     1,  /* show dupes */
     1,	/* skip dupes during grab */
-    900	/* default livetime */
+    900,/* default livetime */
+    0  /* DO NOT show ONLY multipliers */
 };
 short	bm_initialized = 0;
 
@@ -105,6 +108,7 @@ extern int trxmode;
 extern char thisnode;
 extern struct worked_t worked[];
 extern int contest;
+extern char whichcontest[];
 
 char *qtc_format(char * call);
 
@@ -135,9 +139,10 @@ void bmdata_write_file() {
     fprintf(fp, "%d\n", (int)tv.tv_sec);
     while (found != NULL) {
 	sp = found->data;
-	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d\n",
+	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s\n",
 		sp->call, sp->freq, sp->mode, sp->band,
-		sp->node, (int)sp->timeout, sp->dupe);
+		sp->node, (int)sp->timeout, sp->dupe, sp->cqzone,
+		sp->ctynr, sp->pfx);
 	found = found->next;
     }
 
@@ -187,7 +192,13 @@ void bmdata_read_file() {
 					break;
 			case 6:		sscanf(token, "%hhd", &entry->dupe);
 					break;
-		    }
+			case 7:		sscanf(token, "%u", &entry->cqzone);
+					break;
+			case 8:		sscanf(token, "%u", &entry->ctynr);
+					break;
+			case 9:		entry->pfx = g_strdup(token);
+					break;
+                    }
 		    fc++;
 		    token = strtok (NULL, ";");
 		}
@@ -312,6 +323,10 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
     GList *found;
     int band;
     char mode;
+    dxcc_data *dxccdata;
+    int dxccindex;
+    int wi;
+    char *lastexch;
 
     /* add only HF spots */
     if (freq > 30000000)
@@ -365,6 +380,32 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	entry -> timeout = SPOT_NEW;
 	entry -> dupe = 0;	/* Dupe will be determined later. */
 
+	dxccindex = getctynr(entry->call);
+        if (strcmp(whichcontest, "cqww") == 0) {
+            // check the callsign is exists in worked list
+            lastexch = NULL;
+            for(wi=0; wi<nr_worked; wi++) {
+                if (strcmp(worked[wi].call, call) == 0) {
+                    lastexch = g_strdup(worked[wi].exchange);
+                    wi = nr_worked;
+                }
+            }
+        }
+        if (dxccindex >= 0) {
+            dxccdata = dxcc_by_index(dxccindex);
+            entry -> cqzone = dxccdata->cq;
+            if (lastexch != NULL) {
+                entry -> cqzone = atoi(lastexch);
+                g_free(lastexch);
+            }
+            entry -> ctynr = dxccindex;
+            entry -> pfx = g_strdup(dxccdata->pfx);
+        }
+        else {
+            entry -> cqzone = -1;
+            entry -> ctynr = -1;
+            strcpy(entry -> pfx, "");
+        }
 	allspots = g_list_insert_sorted( allspots, entry, (GCompareFunc)cmp_freq);
 	/* lookup where it is */
 	found = g_list_find(allspots, entry);
@@ -378,6 +419,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	olddata = found->prev->data;
 	allspots = g_list_remove_link(allspots, found->prev);
 	g_free (olddata->call);
+        g_free (olddata->pfx);
 	g_free (olddata);
     }
     if (found->next &&
@@ -386,6 +428,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	olddata = found->next->data;
 	allspots = g_list_remove_link(allspots, found->next);
 	g_free (olddata->call);
+        g_free (olddata->pfx);
 	g_free (olddata);
     }
 
@@ -416,6 +459,7 @@ void bandmap_age() {
 	if (data->timeout == 0) {
 	    allspots = g_list_remove_link( allspots, temp);
 	    g_free (data->call);
+            g_free (data->pfx);
 	    g_free (data);
 	}
     }
@@ -424,7 +468,24 @@ void bandmap_age() {
 }
 
 
-int bm_ismulti( char * call) {
+int bm_ismulti( char * call, spot *data, int band) {
+
+    int found;
+
+    if (call != NULL) {
+        found = searchcallarray(call);
+
+        if (found == -1)		/* new call */
+            return 0;
+    }
+
+    if (data != NULL && data->cqzone >= 0 && data->ctynr >= 0) {
+        if (strcmp(whichcontest, "cqww") == 0) {
+            if ((zones[data->cqzone] & inxes[band]) == 0 || (countries[data->ctynr] & inxes[band]) == 0) {
+                return 1;
+            }
+        }
+    }
     return 0;
 }
 
@@ -473,9 +534,10 @@ void bm_show_info() {
     move(14,66);
     vline(ACS_VLINE,10);
 
-    mvprintw (19, 68, "bands: %s", bm_config.allband ? "all" : "own");
-    mvprintw (20,68, "modes: %s", bm_config.allmode ? "all" : "own");
-    mvprintw (21,68, "dupes: %s", bm_config.showdupes ? "yes" : "no");
+    mvprintw (18, 68, "bands: %s", bm_config.allband ? "all" : "own");
+    mvprintw (19,68, "modes: %s", bm_config.allmode ? "all" : "own");
+    mvprintw (20,68, "dupes: %s", bm_config.showdupes ? "yes" : "no");
+    mvprintw (21,68, "onl.ml: %s", bm_config.onlymults ? "yes" : "no");
 
     attrset(COLOR_PAIR(CB_NEW)|A_STANDOUT);
     mvprintw( 22 ,69, "MULTI");
@@ -514,10 +576,12 @@ void colorize_spot(spot *data) {
     else
 	attrset(COLOR_PAIR(CB_OLD));
 
-    if (bm_ismulti(data->call))
+    if (bm_ismulti(NULL, data, data->band)) {
+        attrset(COLOR_PAIR(CB_NEW)|A_STANDOUT);
 	attron(A_STANDOUT);
+    }
 
-    if (data->dupe && bm_config.showdupes) {
+    else if (data->dupe && bm_config.showdupes) {
         attrset(COLOR_PAIR(CB_DUPE)|A_BOLD);
         attroff(A_STANDOUT);
     }
@@ -643,7 +707,7 @@ void bandmap_show() {
  * - cursormovement
  * - 'ESC' leaves mode
  * - 'Enter' selects spot
- * - 'B', 'D', 'M' switches filtering for band, dupes and mode on or off.
+ * - 'B', 'D', 'M', 'O' switches filtering for band, dupes, mode and multiPlier on or off.
  */
 
     GList *list;
@@ -651,7 +715,7 @@ void bandmap_show() {
     int curx, cury;
     int bm_x, bm_y;
     int i,j;
-    short dupe;
+    short dupe, multi;
     float centerfrequency;
 
     if (!bm_initialized) {
@@ -678,6 +742,14 @@ void bandmap_show() {
 
     list = allspots;
 
+    struct timeval _tv;
+    static struct timeval _old_tv;
+
+    gettimeofday(&_tv, NULL);
+
+    if (_old_tv.tv_sec == 0) {
+        _old_tv.tv_sec = _tv.tv_sec;
+    }
     while (list) {
 	data = list->data;
 
@@ -685,12 +757,14 @@ void bandmap_show() {
 	 * actual one than add it to the filtered 'spot' array
 	 * drop spots on WARC bands if in contest mode
 	 */
-
+        multi = bm_ismulti(NULL, data, data->band);
 	dupe = bm_isdupe(data->call, data->band);
+
 	if (    (!contest || !IsWarcIndex(data->band))         &&
 		(bm_config.allband || (data->band == bandinx)) &&
 		(bm_config.allmode || (data->mode == trxmode)) &&
-		(bm_config.showdupes || !dupe)) {
+		(bm_config.showdupes || !dupe) &&
+		(! bm_config.onlymults || multi)) {
 
 	    data -> dupe = dupe;
 	    g_ptr_array_add( spots, data );
@@ -837,7 +911,7 @@ void bm_menu()
     getyx( stdscr, cury, curx);		/* remember cursor */
 
     attrset( COLOR_PAIR(C_LOG) | A_STANDOUT );
-    mvprintw( 13, 0, "  Toggle <B>and, <M>ode or <D>upes filter");
+    mvprintw( 13, 0, "  Toggle <B>and, <M>ode, <D>upes or <O>nly multi filter");
     printw(" | any other - leave");
 
     c = toupper( key_get());
@@ -852,6 +926,10 @@ void bm_menu()
 
 	case 'D':
 	    bm_config.showdupes = 1 - bm_config.showdupes;
+	    break;
+
+        case 'O':
+	    bm_config.onlymults = 1 - bm_config.onlymults;
 	    break;
     }
     bandmap_show();		/* refresh display */
@@ -876,6 +954,9 @@ spot *copy_spot(spot *data)
     result -> node = data -> node;
     result -> timeout = data -> timeout;
     result -> dupe = data -> dupe;
+    result -> cqzone = data -> cqzone;
+    result -> ctynr = data -> ctynr;
+    result -> pfx = g_strdup(data -> pfx);
 
     return result;
 }
