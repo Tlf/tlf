@@ -380,18 +380,18 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	entry -> timeout = SPOT_NEW;
 	entry -> dupe = 0;	/* Dupe will be determined later. */
 
+	lastexch = NULL;
 	dxccindex = getctynr(entry->call);
         if (strcmp(whichcontest, "cqww") == 0) {
-            // check the callsign is exists in worked list
-            lastexch = NULL;
+            // check if the callsign exists in worked list
             for(wi=0; wi<nr_worked; wi++) {
                 if (strcmp(worked[wi].call, call) == 0) {
                     lastexch = g_strdup(worked[wi].exchange);
-                    wi = nr_worked;
+                    break;
                 }
             }
         }
-        if (dxccindex >= 0) {
+        if (dxccindex > 0) {
             dxccdata = dxcc_by_index(dxccindex);
             entry -> cqzone = dxccdata->cq;
             if (lastexch != NULL) {
@@ -402,9 +402,9 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
             entry -> pfx = g_strdup(dxccdata->pfx);
         }
         else {
-            entry -> cqzone = -1;
-            entry -> ctynr = -1;
-            strcpy(entry -> pfx, "");
+            entry -> cqzone = 0;
+            entry -> ctynr = 0;
+            entry -> pfx = g_strdup("");
         }
 	allspots = g_list_insert_sorted( allspots, entry, (GCompareFunc)cmp_freq);
 	/* lookup where it is */
@@ -742,14 +742,6 @@ void bandmap_show() {
 
     list = allspots;
 
-    struct timeval _tv;
-    static struct timeval _old_tv;
-
-    gettimeofday(&_tv, NULL);
-
-    if (_old_tv.tv_sec == 0) {
-        _old_tv.tv_sec = _tv.tv_sec;
-    }
     while (list) {
 	data = list->data;
 
