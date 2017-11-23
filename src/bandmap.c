@@ -34,6 +34,7 @@
 #include "ui_utils.h"
 #include "getctydata.h"
 #include "dxcc.h"
+#include "initial_exchange.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted as the same QRG */
@@ -142,7 +143,7 @@ void bmdata_write_file() {
 	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s\n",
 		sp->call, sp->freq, sp->mode, sp->band,
 		sp->node, (int)sp->timeout, sp->dupe, sp->cqzone,
-		sp->ctynr, sp->pfx);
+		sp->ctynr, g_strchomp(sp->pfx));
 	found = found->next;
     }
 
@@ -327,6 +328,9 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
     int dxccindex;
     int wi;
     char *lastexch;
+    extern char exchange_list[40];
+    extern struct ie_list *main_ie_list;
+    struct ie_list *current_ie;
 
     /* add only HF spots */
     if (freq > 30000000)
@@ -382,12 +386,23 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 
 	lastexch = NULL;
 	dxccindex = getctynr(entry->call);
-        if (strcmp(whichcontest, "cqww") == 0) {
+        if (cqww == 1) {
             // check if the callsign exists in worked list
             for(wi=0; wi<nr_worked; wi++) {
                 if (strcmp(worked[wi].call, call) == 0) {
                     lastexch = g_strdup(worked[wi].exchange);
                     break;
+                }
+            }
+            if (lastexch == NULL && *exchange_list != '\0') {
+                current_ie = main_ie_list;
+
+                while (current_ie) {
+                    if (strcmp(call, current_ie->call) == 0) {
+                        lastexch = g_strdup(current_ie->exchange);
+                        break;
+                    }
+                    current_ie = current_ie->next;
                 }
             }
         }
@@ -478,9 +493,8 @@ int bm_ismulti( char * call, spot *data, int band) {
         if (found == -1)		/* new call */
             return 0;
     }
-
-    if (data != NULL && data->cqzone >= 0 && data->ctynr >= 0) {
-        if (strcmp(whichcontest, "cqww") == 0) {
+    if (data != NULL && data->cqzone > 0 && data->ctynr > 0) {
+        if (cqww == 1) {
             if ((zones[data->cqzone] & inxes[band]) == 0 || (countries[data->ctynr] & inxes[band]) == 0) {
                 return 1;
             }
