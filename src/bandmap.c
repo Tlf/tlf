@@ -328,7 +328,6 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
     int dxccindex;
     int wi;
     char *lastexch;
-    extern char exchange_list[40];
     extern struct ie_list *main_ie_list;
     struct ie_list *current_ie;
 
@@ -388,13 +387,12 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	dxccindex = getctynr(entry->call);
         if (cqww == 1) {
             // check if the callsign exists in worked list
-            for(wi=0; wi<nr_worked; wi++) {
-                if (strcmp(worked[wi].call, call) == 0) {
-                    lastexch = g_strdup(worked[wi].exchange);
-                    break;
-                }
-            }
-            if (lastexch == NULL && *exchange_list != '\0') {
+	    wi = searchcallarray(call);
+	    if (wi >= 0) {
+		lastexch = g_strdup(worked[wi].exchange);
+	    }
+
+            if (lastexch == NULL && main_ie_list != NULL) {
                 current_ie = main_ie_list;
 
                 while (current_ie) {
@@ -485,14 +483,6 @@ void bandmap_age() {
 
 int bm_ismulti( char * call, spot *data, int band) {
 
-    int found;
-
-    if (call != NULL) {
-        found = searchcallarray(call);
-
-        if (found == -1)		/* new call */
-            return 0;
-    }
     if (data != NULL && data->cqzone > 0 && data->ctynr > 0) {
         if (cqww == 1) {
             if ((zones[data->cqzone] & inxes[band]) == 0 || (countries[data->ctynr] & inxes[band]) == 0) {
