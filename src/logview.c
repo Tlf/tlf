@@ -53,6 +53,7 @@ int logview(void)
 
 	refreshp();
 
+        keypad(stdscr, TRUE);
 
 	return(0);
 }
