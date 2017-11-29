@@ -40,10 +40,11 @@ int logview(void)
 
 	strcat(comstr,  "less  +G ");
 	strcat(comstr,  logfile);
+
+	endwin();
 	rc=system(comstr);
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-	erase();
 	refreshp();
+
 	clear_display();
 	attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
 
@@ -52,8 +53,6 @@ int logview(void)
 	}
 
 	refreshp();
-
-        keypad(stdscr, TRUE);
 
 	return(0);
 }
