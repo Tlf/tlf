@@ -919,9 +919,13 @@ char callinput(void)
 	// Exclamation, open a new shell.
 	case '!':
 	    {
+                const char *shell = getenv("SHELL");
+                if (shell == NULL) {
+                    shell = "sh";
+                }
 		endwin();
 		rc=system("clear");
-		rc=system("sh");
+		rc=system(shell);
 		rc=system("clear");
 		set_term(mainscreen);
 		clear_display();
