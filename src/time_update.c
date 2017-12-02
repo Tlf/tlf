@@ -36,7 +36,6 @@
 #include "lancode.h"
 #include "printcall.h"
 #include "showscore.h"
-#include "showzones.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
@@ -193,7 +192,6 @@ void time_update(void)
 	    printcall();
 
 	    showscore();	/* update  score  window every 2 seconds */
-	    show_zones(bandinx);
 	    miniterm = currentterm;
 	}
     }

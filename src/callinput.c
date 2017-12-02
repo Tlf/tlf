@@ -67,6 +67,7 @@
 #include "time_update.h"
 #include "ui_utils.h"
 #include "writeparas.h"
+#include "showzones.h"
 
 #include <math.h>
 
@@ -184,6 +185,7 @@ char callinput(void)
 
     for (i = strlen(hiscall); i <= 13; i++) {
 
+	show_zones(bandinx);
 	printcall();
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */

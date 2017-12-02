@@ -24,6 +24,7 @@
 
 #include "nicebox.h"		// Includes curses.h
 #include "tlf.h"
+#include "tlf_panel.h"
 
 
 int show_zones(int bandinx)
@@ -33,12 +34,35 @@ int show_zones(int bandinx)
     extern int bandindex;
     extern int zones[MAX_ZONES];
 
-    int i = 0, j = 0;
-    int xloc = 19;
-    int yloc = 15;
+    static WINDOW *zones_win = NULL;
+    static PANEL *zones_panel = NULL;
 
-    if (zonedisplay != 1)
+    int i = 0, j = 0;
+    int xloc = -2;
+    int yloc = 1;
+
+    if (zones_panel == NULL) {
+	zones_win = newwin(10, 18, 14, 22 );
+	if (zones_win == NULL)
+	    return -1;
+	zones_panel = new_panel(zones_win);
+	if (zones_panel == NULL) {
+	    delwin(zones_win);
+	    return -1;
+	}
+    }
+
+    if (zonedisplay != 1) {
+	hide_panel(zones_panel);
 	return (0);
+    }
+
+    show_panel( zones_panel );
+    top_panel( zones_panel );
+    werase(zones_win);
+    wnicebox(zones_win, 0, 0, 8, 16, "Zones");
+
+    wattron(zones_win, COLOR_PAIR(C_INPUT) | A_STANDOUT);
 
     switch (bandinx) {
     case 0:{
@@ -65,7 +89,6 @@ int show_zones(int bandinx)
 	bandindex = BAND10;
     }
 
-    attron(COLOR_PAIR(C_INPUT) | A_STANDOUT);
 
     for (i = 0; i <= 7; i++) {
 
@@ -73,17 +96,16 @@ int show_zones(int bandinx)
 
 	    if ((zones[(i * 5) + j] & bandindex) == 0) {
 
-		mvprintw(i + yloc, (j * 3) + xloc, " %02d", (i * 5) + j);
+		mvwprintw(zones_win, i + yloc, (j * 3) + xloc, " %02d", (i * 5) + j);
 
 	    } else {
 
-		mvprintw(i + yloc, (j * 3) + xloc, "   ");
+		mvwprintw(zones_win, i + yloc, (j * 3) + xloc, "   ");
 
 	    }
 	}
-
+	wprintw(zones_win, " ");
     }
-    nicebox(14, 22, 8, 14, "Zones");
 
     return (0);
 }
