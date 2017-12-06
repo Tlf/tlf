@@ -509,35 +509,59 @@ S&P mode is for tuning up or down the band and answering the calls of other
 stations.
 .
 .IP
-.B CQ Mode:
+.B In CQ Mode:
 .RS 7
 .IP \(bu 2
-With the call input field empty sends the F12 message (Auto CQ).
+With the call input field empty,
+\*(lqEnter\*(rq
+sends the F12 message (Auto CQ).
 .IP \(bu 2
-With characters in the call input field, answers the calling station by sending
-the F5 message (HIS) followed by the F3 message (RST) and moves the cursor to
+With characters in the call input field,
+\*(lqEnter\*(rq
+answers the calling station by sending
+the F3 message (RST) and moves the cursor to
 the exchange field.
 .IP \(bu 2
-If the exchange field is empty, repeats the F5 and F3 messages.
+If the exchange field is empty,
+\*(lqEnter\*(rq
+repeats the F3 message (RST).
 .IP \(bu 2
 After the exchange information received from the other station is entered,
-sends the CQ_TU_MSG message, logs the QSO, and the cursor is returned to the
+\*(lqEnter\*(rq
+sends the CQ_TU_MSG message if defined,
+or \*(lqTU\*(rq and your call otherwise.
+Afterwards it logs the QSO,
+and returns the cursor to the
 call input field to answer the next call.
 .RE
 .
 .IP
-.B S&P Mode:
+.B In S&P Mode:
 .RS 7
 .IP \(bu 2
-With the call input field empty sends the F6 message (MY).
+When the call input field is empty,
+\*(lqEnter\*(rq
+sends the S&P_CALL_MSG if defined,
+or your call otherwise.
 .IP \(bu 2
-If the exchange field is empty sends the F6 message (MY).
+When the exchange field is empty,
+\*(lqEnter\*(rq
+sends the S&P_CALL_MSG if defined,
+or your call otherwise.
 .IP \(bu 2
-With characters in the call input field sends the F6 message (MY) and moves the
-cursor to the exchange field.
+When the call input field has been filled,
+\*(lqEnter\*(rq
+sends the S&P_CALL_MSG if defined,
+or your call otherwise.
+Afterwards it moves the cursor to the exchange field.
 .IP \(bu 2
-Once the exchange has been received, sends the F4 message (73) followed by the
-F3 message (RST), logs the QSO, and the cursor is returned to the call input
+Once the exchange has been received,
+\*(lqEnter\*(rq
+sends the S&P_TU_MSG if defined,
+otherwise it sends your call
+followed by the F3 message (RST).
+Afterwards it logs the QSO
+and returns the cursor to the call input
 field to answer the next call.
 .RE
 .
