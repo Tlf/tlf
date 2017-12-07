@@ -702,7 +702,7 @@ Change bandmap filter configuration.  You can filter to show spots from all or
 own band only, from all/own mode only and if you want to see dupes or not (see
 the help (
 .B Alt-H
-) display).
+) display), only new multiplier or all call (only CQWW).
 .
 .TP
 .B Ctrl-A
@@ -1242,6 +1242,8 @@ Show cluster bandmap on startup and set start values for filtering.
 	\(aqD\(aq - do not show dupes
 .br
 	\(aqS\(aq - skip dupes during grab_next (\fBCtrl-G\fR)
+.br
+	\(aqO\(aq - show only multiplier (CQWW only)
 .br
 <number> livetime for new spots in seconds (number >=30)
 .
