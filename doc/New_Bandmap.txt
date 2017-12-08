@@ -43,6 +43,7 @@ or both conditions are not met). Wait some moments until some spots shows up.
   * b - toggle band filter
   * m - toggle mode filter
   * d - toggle display of dupes
+  * o - only shows the multipliers (CQWW only)
 - Tune in to any interesting station, insert its call into the input field
   and press 'Ctrl-A'. The heard station gets added to the bandmap and
   broadcasted to other stations in the local net. See that it gets marked with
@@ -74,6 +75,7 @@ You can also configure bandmap filtering and spot livetime from logcfg.dat
   'M' - only own mode
   'D' - do not show dupes
   'S' - skip dupes during grab_next (ctrl-g)
+  'O' - only shows the multipliers (CQWW only)
   <number> livetime for new spots in second (number >=300)
 
 

@@ -402,7 +402,8 @@ int multlist = 0;
 int callareas[20];
 int multscore[NBANDS];
 
-struct ie_list *main_ie_list;	/* head of initial exchange list */
+struct ie_list *main_ie_list = NULL;
+				/* head of initial exchange list */
 
 int zonescore[NBANDS];
 int countryscore[NBANDS];

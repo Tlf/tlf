@@ -744,6 +744,7 @@ int parse_logcfg(char *inputbuffer)
 	    bm_config.showdupes = 1;
 	    bm_config.skipdupes = 0;
 	    bm_config.livetime = 900;
+	    bm_config.onlymults = 0;
 
 	    /* Allow configuration of bandmap display if keyword
 	     * is followed by a '='
@@ -765,6 +766,8 @@ int parse_logcfg(char *inputbuffer)
 			    case 'D': bm_config.showdupes = 0;
 				      break;
 			    case 'S': bm_config.skipdupes = 1;
+				      break;
+			    case 'O': bm_config.onlymults = 1;
 				      break;
 			    default:
 				      break;
