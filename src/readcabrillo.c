@@ -215,10 +215,10 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 	    //}
 	    qtc_curr_call_nr = qtc_last_call_nr;
 	}
-
+	strcpy(qtc_line.call, qtcrcall);
 	qtc_line.callpos = found_call;
-        qtc_line.qsonr = cablinecnt;
-        make_qtc_logline(qtc_line, qtcsend_logfile_import);
+	qtc_line.qsonr = cablinecnt;
+	make_qtc_logline(qtc_line, qtcsend_logfile_import);
     }
 }
 

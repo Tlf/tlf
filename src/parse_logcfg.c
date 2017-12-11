@@ -1500,6 +1500,7 @@ int parse_logcfg(char *inputbuffer)
 
     case 162:{
 	    PARAMETER_NEEDED(teststring);
+	    g_strchomp(fields[1]);
 	    if (strncmp(fields[1], "RECV", 4) == 0) {
 	        qtcdirection = RECV;
 	    }

@@ -109,6 +109,15 @@ Start without packet/cluster.
 Start without radio control when user wants to start @PACKAGE_NAME@ without
 modifying
 .IR logcfg.dat \.
+.TP
+.B \-i
+Import an existing CABRILLO file. When Tlf starts, looks for the YOURCALL.cab
+log, reads the configuration and rule files, and based on the current setup,
+generates the log(s). If the contest is WAE, and you have QTC's in cabrillo,
+then Tlf makes the QTC logfiles too. Tlf doesn't write over the existing log(s).
+The generated import will be IMPORT_CONTEST.log, where the CONTEST is the name
+of contest in the config. If QTC exists, then the files will IMPORT_QTC_sent.log
+and IMPORT_QTC_recv.log.
 .
 .SH USAGE
 .

@@ -32,7 +32,6 @@
 #include "qtcvars.h"		// Includes globalvars.h
 #include "tlf_curses.h"
 
-
 extern int trx_control;
 extern float freq;
 
@@ -223,7 +222,6 @@ void store_qtc(char *loglineptr, int direction, char * filename)
 	fclose(fp);
 
 	total++;
-
 	if (direction == SEND) {
 		/* find maximum sent QTC block serial */
 		g_strlcpy(temps, loglineptr+50, 5);    // get serial of qtc block
@@ -238,8 +236,12 @@ void store_qtc(char *loglineptr, int direction, char * filename)
 		qsoflags_for_qtc[tempi] = 1;
 
 		/* find first unused QSO number for QTCs */
-		if (tempi-1 == next_qtc_qso) {
-		    next_qtc_qso = tempi;
+		if (tempi == next_qtc_qso && tempi < MAX_QSOS) {
+		    while(qsoflags_for_qtc[tempi++] == 1) {
+			if (tempi == MAX_QSOS)
+			    break;
+			next_qtc_qso = tempi;
+                    }
 		}
 	}
 	/* remember callsign, build number of sent or received QTC's */

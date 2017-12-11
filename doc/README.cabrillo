@@ -92,6 +92,27 @@ as in the following example:
 QSO: 28000 CW 2012-09-23 0815 DL1JBE        0001 Tom       HB9XXX        0023 Joe
 QSO: .....
 
+IMPORT CABRILLO
+===============
 
+You can import the existing cabrillo file, when you pass the "-i" argument at
+startup of Tlf. Logfile must be called YOURCALL.cbr, which is the standard name
+convention of Tlf. In this case, Tlf reads the configuration and rule files, so
+the scoring and multipliers will be used as your config describes. Your config also
+describes the CABRILLO format, what Tlf uses to parses the log to handle the fields
+as correctly.
+
+The output file(s) will IMPORT_contest.log, where the contest is the name of
+contest in your rule/config file. Eg. my cabrillo is HA2OS.cbr, which must be
+exists in the current directory. After the import, the result is IMPORT_cqww.log
+(if the contest name is cqww), so the Tlf doesn't write over the existing logfile.
+
+If you want to use the new, imported file, you have to move the old one, and rename
+the imported file.
+
+When the contest is WAE, and the rule file contains a valid QTC setup, and cabrillo
+contains lines with begin of "QTC:", then you will have the IMPORT_QTC_sent.log and
+IMPORT_QTC_recv.log. In this case, the original files also kept, and you have to
+archive and rename the files.
 
 
