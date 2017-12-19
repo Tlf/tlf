@@ -48,6 +48,8 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
+#include "getexchange.h"
+
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
 
@@ -55,9 +57,7 @@
 int play_file(char *audiofile);
 
 
-int checkexchange (int x);
 int getlastpattern (char *checkstring);
-char *getgrid (char *comment);
 void exchange_edit (void);
 
 int getexchange(void)

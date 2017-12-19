@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2017 Ervin Hegedus <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef READ_CABRILLO_H
+#define READ_CABRILLO_H
 
-#ifndef CLEANUP_H
-#define CLEANUP_H
+#define READCAB_MODE_CLI	1
 
-void cleanup_qso(void);
-int cleanup(void);
+int readcabrillo(int mode);
 
-#endif /* CLEANUP_H */
+#endif /* READ_CABRILLO_H */

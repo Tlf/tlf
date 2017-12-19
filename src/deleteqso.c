@@ -102,15 +102,15 @@ void delete_last_qtcs(char *call, char *bandmode) {
 	    // callsigns is the current callsign
 	    // this works only for fixed length qtc line!
 	    while (s >= 0 && look == 1) {
-		lseek(qtcfile, ((int)qstatbuf.st_size - (96+qtclen)), SEEK_SET);
-		rc = read(qtcfile, logline, 95);
+		lseek(qtcfile, ((int)qstatbuf.st_size - (95+qtclen)), SEEK_SET);
+		rc = read(qtcfile, logline, 94);
 		if (!(strncmp(call, logline+QTCSENTCALLPOS, strlen(call)) == 0
 		   && strncmp(bandmode, logline, 5) == 0)) {
 		    // stop searching
 		    look = 0;
 		}
 		else {
-		    qtclen += 96;
+		    qtclen += 95;
 		    qtc_dec(call, SEND);
 
 		    qsoflags_for_qtc[s] = 0;

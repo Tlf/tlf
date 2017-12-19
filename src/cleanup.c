@@ -28,13 +28,20 @@
 #include "ui_utils.h"
 #include "write_keyer.h"
 
-
-int cleanup(void)
-{
+void cleanup_qso(void) {
     extern char hiscall[];
     extern char comment[];
     extern char my_rst[];
     extern char his_rst[];
+
+    hiscall[0] = '\0';	    /* reset hiscall and comment */
+    comment[0] = '\0';
+    his_rst[1] = '9';	    /* reset to 599 */
+    my_rst[1] = '9';
+}
+
+int cleanup(void)
+{
     extern int defer_store;
 
     int k = 0;
@@ -52,10 +59,7 @@ int cleanup(void)
     }
 
     refreshp();
-    hiscall[0] = '\0';
-    comment[0] = '\0';
-    his_rst[1] = '9';
-    my_rst[1] = '9';
+    cleanup_qso();
     defer_store = 0;
     keyer_flush();
 
