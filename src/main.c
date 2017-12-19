@@ -290,7 +290,6 @@ char ituzone[3] = "";
 char continent[3] = "";
 char mycontinent[3] = "";
 char pxstr[11] = "";
-int bandindex = 0;
 int totalmults = 0;
 int totalcountries = 0;
 int totalzones = 0;
