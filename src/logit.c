@@ -278,5 +278,4 @@ void change_mode(void) {
 	mvprintw(0, 2, "S&P     ");
 	strcpy(mode, "S&P     ");
     }
-    cleanup();
 }
