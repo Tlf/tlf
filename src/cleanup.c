@@ -27,6 +27,7 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "write_keyer.h"
+#include "cleanup.h"
 
 void cleanup_qso(void) {
     extern char hiscall[];
@@ -40,7 +41,7 @@ void cleanup_qso(void) {
     my_rst[1] = '9';
 }
 
-int cleanup(void)
+int cleanup(int exclude_mask)
 {
     extern int defer_store;
 
@@ -58,10 +59,17 @@ int cleanup(void)
 	mvprintw(k, 0, "%s", "                                        ");
     }
 
-    refreshp();
-    cleanup_qso();
-    defer_store = 0;
-    keyer_flush();
-
+    if (! (exclude_mask & CLEANUP_EXCL_REFRESH)) {
+        refreshp();
+    }
+    if (! (exclude_mask & CLEANUP_EXCL_CLEANUP_QSO)) {
+        cleanup_qso();
+    }
+    if (! (exclude_mask & CLEANUP_EXCL_DEFER_STORE)) {
+        defer_store = 0;
+    }
+    if (! (exclude_mask & CLEANUP_EXCL_KEYER_FLUSH)) {
+        keyer_flush();
+    }
     return (0);
 }

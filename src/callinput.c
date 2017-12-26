@@ -277,7 +277,7 @@ char callinput(void)
 		    mvprintw(0, 2, "S&P     ");
 		    strcpy(mode, "S&P     ");
 		}
-		cleanup();
+		cleanup(CLEANUP_NO_EXCLUDE);
 
 	    }
 
@@ -527,7 +527,7 @@ char callinput(void)
 
 		if (isdupe != 0) {
 		    sendmessage(message[6]);	/* as with F7 */
-		    cleanup();
+		    cleanup(CLEANUP_NO_EXCLUDE);
 		    clear_display();
 		}
 		break;
@@ -896,7 +896,7 @@ char callinput(void)
 	    {
 		if (early_started == 0) {
 		    /* if CW not started early drop call and start anew */
-		    cleanup();
+		    cleanup(CLEANUP_NO_EXCLUDE);
 		    clear_display();
 		}
 		else {
