@@ -215,10 +215,10 @@ char callinput(void)
 		}
 	    }
 
-	    /* if BMAUTOGRAB is active and input field is empty and a spot has
+	    /* if BMAUTOGRAB is active in S&P mode and input field is empty and a spot has
 	     * not already been grabbed here check if a spot is on freq
 	     * and pick it up if one found */
-	    if (bmautograb != 0 && *hiscall == '\0' && grab.state == NONE) {
+	    if (bmautograb && cqmode == S_P && *hiscall == '\0' && grab.state == NONE) {
 		get_spot_on_qrg(grab.call, freq);
 		if (strlen(grab.call) >= 3) {
 		    strncpy(hiscall, grab.call, sizeof(hiscall));
