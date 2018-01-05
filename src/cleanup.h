@@ -22,12 +22,6 @@
 #define CLEANUP_H
 
 void cleanup_qso(void);
-int cleanup(int exclude_mask);
-
-#define CLEANUP_NO_EXCLUDE       0
-#define CLEANUP_EXCL_REFRESH     1
-#define CLEANUP_EXCL_CLEANUP_QSO 2
-#define CLEANUP_EXCL_DEFER_STORE 4
-#define CLEANUP_EXCL_KEYER_FLUSH 8
+int cleanup(void);
 
 #endif /* CLEANUP_H */
