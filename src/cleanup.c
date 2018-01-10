@@ -55,7 +55,7 @@ int cleanup(void)
     attron(COLOR_PAIR(C_LOG | A_STANDOUT));
 
     for (k = 1; k <= 5; k++) {
-	mvprintw(k, 0, "%s", "                                        ");
+ 	mvprintw(k, 0, "%s", "                                        ");
     }
 
     refreshp();
