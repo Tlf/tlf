@@ -23,5 +23,6 @@
 
 char callinput(void);
 int play_file(char *audiofile);
+void send_bandswitch(int freq);
 
 #endif /* CALLINPUT_H */

@@ -30,6 +30,7 @@
 #include "gettxinfo.h"
 #include "tlf.h"
 #include "tlf_curses.h"
+#include "callinput.h"
 #include "bandmap.h"
 
 #ifdef HAVE_CONFIG_H
@@ -45,28 +46,30 @@
 #endif
 #endif
 
-static double get_current_seconds();
-
-int gettxinfo(void)
-{
-
 #ifdef HAVE_LIBHAMLIB
-    extern RIG *my_rig;
-    extern freq_t outfreq;
-    extern int cw_bandwidth;
-    extern int trxmode;
-    extern int rigmode;
-    extern int digikeyer;
+extern RIG *my_rig;
+extern freq_t outfreq;
+extern int cw_bandwidth;
+extern int trxmode;
+extern int rigmode;
+extern int digikeyer;
 #else
-    extern int outfreq;
+extern int outfreq;
 #endif
 
-    extern float freq;
-    extern int bandinx;
-    extern float bandfrequency[];
+extern float freq;
+extern int bandinx;
+extern float bandfrequency[];
 
-    extern int trx_control;
-    extern unsigned char rigptt;
+extern int trx_control;
+extern unsigned char rigptt;
+
+static double get_current_seconds();
+static void handle_trx_bandswitch(int freq);
+
+
+void gettxinfo(void)
+{
 
 #ifdef HAVE_LIBHAMLIB
     freq_t rigfreq;
@@ -83,10 +86,9 @@ int gettxinfo(void)
     static int fldigi_carrier;
     static int fldigi_shift_freq;
 
-    void send_bandswitch(int freq);
 
-    if (trx_control != 1)
-	return (0);
+    if (!trx_control)
+	return;
 
 #ifdef HAVE_LIBHAMLIB
     /* CAT PTT wanted, available, inactive, and PTT On requested
@@ -123,7 +125,7 @@ int gettxinfo(void)
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
         double now = get_current_seconds();
         if (now < last_freq_time + 0.2) {
-            return 0;   // last read-out was within 200 ms, skip this query
+            return;   // last read-out was within 200 ms, skip this query
         }
         last_freq_time = now;
 
@@ -152,7 +154,7 @@ int gettxinfo(void)
 
 	if (retval != RIG_OK || rigfreq < 0.1) {
 	    freq = 0.0;
-	    return (0);
+	    return;
 	}
 #endif
 
@@ -163,71 +165,12 @@ int gettxinfo(void)
 
         bandinx = freq2band((unsigned int)(freq * 1000.0));
 
-	bandfrequency[bandinx] = freq;
+        bandfrequency[bandinx] = freq;
 
 	if (bandinx != oldbandinx)	// band change on trx
 	{
 	    oldbandinx = bandinx;
-	    send_bandswitch((int) freq);
-
-
-#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
-
-	    if (trxmode == SSBMODE) {
-		if (freq < 14000.0)
-		    retval =
-			rig_set_mode(my_rig, RIG_VFO_CURR,
-				     RIG_MODE_LSB,
-				     TLF_DEFAULT_PASSBAND);
-		else
-		    retval =
-			rig_set_mode(my_rig, RIG_VFO_CURR,
-				     RIG_MODE_USB,
-				     TLF_DEFAULT_PASSBAND);
-
-		if (retval != RIG_OK) {
-		    mvprintw(24, 0,
-			     "Problem with rig link: set mode!\n");
-		    refreshp();
-		    sleep(1);
-		}
-	    } else if (trxmode == DIGIMODE) {
-                if ((rigmode & (RIG_MODE_LSB | RIG_MODE_USB | RIG_MODE_RTTY | RIG_MODE_RTTYR)) != rigmode) {
-		    retval =
-		    	rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,
-				 TLF_DEFAULT_PASSBAND);
-
-		    if (retval != RIG_OK) {
-			mvprintw(24, 0,
-			     "Problem with rig link: set mode!\n");
-			refreshp();
-		    	sleep(1);
-                    }
-		}
-
-	    } else {
-//                                      retval =  rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,  TLF_DEFAULT_PASSBAND);
-		if (cw_bandwidth == 0) {
-			retval =
-			    rig_set_mode(my_rig, RIG_VFO_CURR,
-					 RIG_MODE_CW,
-					 TLF_DEFAULT_PASSBAND);
-		} else {
-			retval =
-			    rig_set_mode(my_rig, RIG_VFO_CURR,
-					 RIG_MODE_CW, cw_bandwidth);
-		}
-
-		if (retval != RIG_OK) {
-		    mvprintw(24, 0,
-			     "Problem with rig link: set mode!\n");
-		    refreshp();
-		    sleep(1);
-		}
-
-	    }
-#endif
-
+            handle_trx_bandswitch((int) freq);
 	}
 
     } else if (outfreq == SETCWMODE) {
@@ -250,8 +193,6 @@ int gettxinfo(void)
 	}
 #endif
 
-	outfreq = 0;
-
     } else if (outfreq == SETSSBMODE) {
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	if (freq > 13999.9)
@@ -270,8 +211,6 @@ int gettxinfo(void)
 	}
 #endif
 
-	outfreq = 0;
-
     } else if (outfreq == RESETRIT) {
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	    retval = rig_set_rit(my_rig, RIG_VFO_CURR, 0);
@@ -283,10 +222,8 @@ int gettxinfo(void)
 	    }
 #endif
 
-	outfreq = 0;
-
     } else {
-
+        // set rig frequency to `outfreq'
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	retval = rig_set_freq(my_rig, RIG_VFO_CURR, outfreq);
 
@@ -303,16 +240,54 @@ int gettxinfo(void)
 	}
 #endif
 
-	outfreq = 0;
-
     }
 
-    return (0);
+    outfreq = 0;    // clear request
 }
+
 
 static double get_current_seconds() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_sec + tv.tv_usec / 1e6;
+}
+
+
+static void handle_trx_bandswitch(int freq) {
+
+    send_bandswitch(freq);
+
+#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
+
+    rmode_t mode = RIG_MODE_NONE;           // default: no change
+    pbwidth_t width = TLF_DEFAULT_PASSBAND; // passband width, in Hz
+
+    if (trxmode == SSBMODE) {
+        mode = (freq < 14000 ? RIG_MODE_LSB : RIG_MODE_USB);
+    } else if (trxmode == DIGIMODE) {
+        if ((rigmode & (RIG_MODE_LSB | RIG_MODE_USB | RIG_MODE_RTTY | RIG_MODE_RTTYR)) != rigmode) {
+            mode = RIG_MODE_LSB;
+        }
+    } else {
+        mode = RIG_MODE_CW;
+        if (cw_bandwidth != 0) {
+            width = cw_bandwidth;
+        }
+    }
+
+    if (mode == RIG_MODE_NONE) {
+        return;     // no change was requested
+    }
+
+    int retval = rig_set_mode(my_rig, RIG_VFO_CURR, mode, width);
+
+    if (retval != RIG_OK) {
+        mvprintw(24, 0,
+                 "Problem with rig link: set mode!\n");
+        refreshp();
+        sleep(1);
+    }
+
+#endif
 }
 
