@@ -25,6 +25,6 @@
 #define SETSSBMODE 2
 #define RESETRIT 99
 
-int gettxinfo(void);
+void gettxinfo(void);
 
 #endif /* GETTXINFO_H */

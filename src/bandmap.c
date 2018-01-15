@@ -45,7 +45,7 @@
 				/* 3 space before and 1 after call */
 
 
-unsigned int bandcorner[NBANDS][2] =
+const unsigned int bandcorner[NBANDS][2] =
 {{ 1800000, 2000000 },	// band bottom, band top
  { 3500000, 4000000 },
  { 7000000, 7300000 },
@@ -57,7 +57,7 @@ unsigned int bandcorner[NBANDS][2] =
  { 28000000, 29700000 },
  {        0,        0 }};
 
-unsigned int cwcorner[NBANDS] =
+const unsigned int cwcorner[NBANDS] =
 { 1838000,
   3580000,
   7040000,
@@ -69,7 +69,7 @@ unsigned int cwcorner[NBANDS] =
   28070000,
          0};
 
-unsigned int ssbcorner[NBANDS] =
+const unsigned int ssbcorner[NBANDS] =
 { 1840000,
   3600000,
   7040000,
@@ -237,20 +237,20 @@ void bm_init() {
 }
 
 
-/** \brief convert frequency to bandnumber
+/** \brief convert frequency in Hz to bandindex
  *
- * \return	bandnumber or -1 if not in any band
+ * \return	bandindex or BANDINDEX_OOB if not in any band
  */
 int freq2band(unsigned int freq) {
     int i;
 
     for (i = 0; i < NBANDS; i++) {
-	if (freq >= (unsigned int)bandcorner[i][0] &&
-		    freq <= (unsigned int)bandcorner[i][1])
+	if (freq >= bandcorner[i][0] &&
+		    freq <= bandcorner[i][1])
 	    return i;	/* in actual band */
     }
 
-    return -1;		/* not in any band */
+    return BANDINDEX_OOB;   /* not in any band (out of band) */
 }
 
 
@@ -336,7 +336,7 @@ void bandmap_addspot( char *call, unsigned int freq, char node) {
 	return;
 
     band = freq2band(freq);
-    if (band < 0)	/* no ham band */
+    if (band == BANDINDEX_OOB)  /* no ham band */
 	return;
 
     mode = freq2mode(freq, band);
@@ -661,7 +661,7 @@ void next_spot_position (int *y, int *x) {
  * Otherwise calculate center frequency from band and mode
  * as middle value of the band/mode corners.
  */
-float bm_get_center(band, mode)
+float bm_get_center(int band, int mode)
 {
     float centerfrequency;
 
