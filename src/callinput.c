@@ -1394,10 +1394,10 @@ static void next_band(int direction) {
     bandinx += direction;
 
     if (bandinx < 0) {
-        bandinx = NBANDS - 1;
+        bandinx = BANDINDEX_OOB - 1;
     }
 
-    if (bandinx >= NBANDS) {
+    if (bandinx >= BANDINDEX_OOB) {
         bandinx = 0;
     }
 }
