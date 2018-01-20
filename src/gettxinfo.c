@@ -29,6 +29,7 @@
 #include "gettxinfo.h"
 #include "tlf.h"
 #include "tlf_curses.h"
+#include "bandmap.h"
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -56,6 +57,7 @@ int gettxinfo(void)
 #else
     extern int outfreq;
 #endif
+
     extern float freq;
     extern int bandinx;
     extern float bandfrequency[];
@@ -149,50 +151,9 @@ int gettxinfo(void)
 	    freq = rigfreq / 1000.0;		/* kHz */
 	}
 
+        bandinx = freq2band((unsigned int)(freq * 1000.0));
 
-	switch ((int)freq) {
-	case 1800 ... 2000:{
-		bandinx = BANDINDEX_160;
-		break;
-	    }
-	case 3500 ... 4000:{
-		bandinx = BANDINDEX_80;
-		break;
-	    }
-	case 7000 ... 7300:{
-		bandinx = BANDINDEX_40;
-		break;
-	    }
-	case 10100 ... 10150:{
-		bandinx = BANDINDEX_30;
-		break;
-	    }
-	case 14000 ... 14350:{
-		bandinx = BANDINDEX_20;
-		break;
-	    }
-	case 18068 ... 18168:{
-		bandinx = BANDINDEX_17;
-		break;
-	    }
-	case 21000 ... 21450:{
-		bandinx = BANDINDEX_15;
-		break;
-	    }
-	case 24890 ... 24990:{
-		bandinx = BANDINDEX_12;
-		break;
-	    }
-	case 28000 ... 29700:{
-		bandinx = BANDINDEX_10;
-		break;
-	    }
-	default:
-		bandinx = BANDINDEX_OOB;	/* out of band */
-	}
-
-	if (bandinx != NBANDS)
-	    bandfrequency[bandinx] = freq;
+	bandfrequency[bandinx] = freq;
 
 	if (bandinx != oldbandinx)	// band change on trx
 	{
