@@ -24,6 +24,7 @@
 
 
 #include <unistd.h>
+#include <sys/time.h>
 
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
@@ -43,6 +44,8 @@
 #define TLF_DEFAULT_PASSBAND RIG_PASSBAND_NORMAL
 #endif
 #endif
+
+static double get_current_seconds();
 
 int gettxinfo(void)
 {
@@ -71,6 +74,7 @@ int gettxinfo(void)
     pbwidth_t bwidth;
     int retval;
     int retvalmode;
+    static double last_freq_time = 0.0;
 #else
     float rigfreq;
 #endif
@@ -117,6 +121,12 @@ int gettxinfo(void)
 	rigfreq = 0.0;
 
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
+        double now = get_current_seconds();
+        if (now < last_freq_time + 0.2) {
+            return 0;   // last read-out was within 200 ms, skip this query
+        }
+        last_freq_time = now;
+
 	retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
 	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL) {
 	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
@@ -299,3 +309,10 @@ int gettxinfo(void)
 
     return (0);
 }
+
+static double get_current_seconds() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec + tv.tv_usec / 1e6;
+}
+
