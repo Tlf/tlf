@@ -30,6 +30,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "bands.h"
 
 
 int show_mults(void) {

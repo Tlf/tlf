@@ -45,6 +45,7 @@
 #include "zone_nr.h"
 #include "get_time.h"
 #include "dxcc.h"
+#include "bands.h"
 
 int excl_add_veto;
 /* This variable helps to handle in other modules, that station is multiplier or not */

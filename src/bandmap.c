@@ -35,6 +35,7 @@
 #include "getctydata.h"
 #include "dxcc.h"
 #include "initial_exchange.h"
+#include "bands.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted as the same QRG */

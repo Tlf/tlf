@@ -40,6 +40,7 @@
 #include "startmsg.h"
 #include "tlf_curses.h"
 #include "zone_nr.h"
+#include "bands.h"
 
 
 int readcalls(void) {

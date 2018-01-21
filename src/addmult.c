@@ -32,17 +32,12 @@
 #include "addmult.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "tlf_curses.h"
+#include "bands.h"
 
 #define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
 enum { ALL_BAND, PER_BAND };
 
-/** Converts bandindex to bandmask */
-int inxes[NBANDS] = \
-{
-    BAND160, BAND80, BAND40, BAND30, BAND20, BAND17, BAND15, BAND12, BAND10,
-    BANDOOB
-};
 
 int addmult(void) {
     int found = 0;

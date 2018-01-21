@@ -24,5 +24,9 @@
 #ifndef BANDS_H
 #define BANDS_H
 
+#include "tlf.h"
+
+extern int inxes[NBANDS];  /**< conversion from BANDINDEX to BAND-mask */
+
 
 #endif /* BANDS_H */

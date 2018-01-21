@@ -28,6 +28,7 @@
 #include <string.h>
 #include <glib.h>
 #include "tlf.h"
+#include "bands.h"
 
 #define MAX_PFX_LEN 5
 

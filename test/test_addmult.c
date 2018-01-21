@@ -3,10 +3,12 @@
 #include "../src/tlf.h"
 #include "../src/addmult.h"
 #include "../src/globalvars.h"
+#include "../src/bands.h"
 #include <stdio.h>
 #include <unistd.h>
 
 // OBJECT ../src/addmult.o
+// OBJECT ../src/bands.o
 
 struct mults_t multis[MAX_MULTS];
 int nr_multis;

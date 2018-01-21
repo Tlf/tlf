@@ -91,9 +91,6 @@ enum {
     NBANDS
 };
 
-extern int inxes[NBANDS];  /**< conversion from BANDINDEX to BAND-mask,
-			see addmult.c */
-
 #define IsWarcIndex(index) ((index == BANDINDEX_12) || \
 			(index == BANDINDEX_17) || (index == BANDINDEX_30))
 
