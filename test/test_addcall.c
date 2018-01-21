@@ -7,6 +7,7 @@
 
 // OBJECT ../src/addcall.o
 // OBJECT ../src/addmult.o
+// OBJECT ../src/bands.o
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o

@@ -4,7 +4,7 @@
 
 #include <glib.h>
 
-extern char qsos[MAX_QSOS][LOGLINELEN + 1]; 
+extern char qsos[MAX_QSOS][LOGLINELEN + 1];
 					// array of log lines of QSOs so far;
 					// note that not every log line needs
 					// to be a QSO, it could also be a
@@ -74,10 +74,6 @@ extern int stop_backgrnd_process;
 extern char band[NBANDS][4];
 extern struct tm *time_ptr;
 extern struct tm time_ptr_cabrillo;
-
-extern int inxes[NBANDS]; 
-	//  = {BAND160,BAND80,BAND40,0,BAND20,0,BAND15,0,BAND10, BAND_OOB};
-	// from addmult.c
 
 extern char cqzone[];
 extern char ituzone[];

@@ -25,6 +25,7 @@
 #include "nicebox.h"		// Includes curses.h
 #include "tlf.h"
 #include "tlf_panel.h"
+#include "bands.h"
 
 
 int show_zones(int bandinx) {

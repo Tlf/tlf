@@ -21,3 +21,9 @@
  * ham radio bands
  */
 
+#include "bands.h"
+
+/** Converts bandindex to bandmask */
+int inxes[NBANDS] = \
+    { BAND160, BAND80, BAND40, BAND30, BAND20, BAND17, BAND15, BAND12, BAND10,
+        BANDOOB };

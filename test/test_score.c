@@ -8,6 +8,7 @@
 
 // OBJECT ../src/score.o
 // OBJECT ../src/addmult.o
+// OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/focm.o
 // OBJECT ../src/getctydata.o

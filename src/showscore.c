@@ -32,6 +32,7 @@
 #include "last10.h"
 #include "nicebox.h"		// Includes curses.h
 #include "printcall.h"
+#include "bands.h"
 
 #define START_COL 45	/* start display in these column */
 
