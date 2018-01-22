@@ -27,92 +27,48 @@
 #include "showinfo.h"
 #include "tlf.h"
 #include "tlf_curses.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef HAVE_LIBHAMLIB
-# include <hamlib/rig.h>
-#endif
+#include "gettxinfo.h"
 
 void send_bandswitch(int outfreq);
 
-void grabspot(void)
+static double execute_grab(spot *data);
+
+double grabspot(void)
 {
     extern char hiscall[];
-    extern char mode[];
-    extern int cqmode;
     extern int trx_control;
-
-    extern float mem;
-    extern float freq;
-
-#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-#else
-    extern int outfreq;
-#endif
 
     spot *data;
 
-    if (trx_control == 0)
-	return;
-
-    if (hiscall[0] != '\0') {
-
-	data = bandmap_lookup( hiscall );
-
-	if (data != NULL) {
-
-	    outfreq = data -> freq;
-	    outfreq -= fldigi_get_carrier();
-	    send_bandswitch( (int) outfreq );
-
-	    strcpy( hiscall, data->call );
-
-	    showinfo( getctydata( hiscall ) );
-	    searchlog( hiscall );
-
-	    /* if in CQ mode switch to S&P and remember QRG */
-	    if (cqmode == CQ) {
-		cqmode = S_P;
-		strcpy(mode, "S&P     ");
-		mem = freq;
-		mvprintw(14, 68, "MEM: %7.1f", mem);
-	    }
-
-	    refreshp();
-
-	    g_free( data->call );
-	    g_free( data );
-	}
-
+    if (!trx_control) {
+	return 0;   // no trx control
     }
+
+    if (hiscall[0] == '\0') {
+        return 0;   // call input is empty
+    }
+
+    data = bandmap_lookup( hiscall );
+
+    if (data == NULL) {
+        return 0;   // no spot found
+    }
+
+    return execute_grab(data);
 }
 
-void grab_next(void)
+double grab_next(void)
 {
-    extern char hiscall[];
-    extern char mode[];
-    extern int cqmode;
     extern int trx_control;
-
-    extern float mem;
     extern float freq;
-
-#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-#else
-    extern int outfreq;
-#endif
 
     static int dir = 1;		/* start scanning up */
 
     spot *data;
 
-    if (trx_control == 0)
-	return;
+    if (!trx_control) {
+	return 0;   // no trx control
+    }
 
     data = bandmap_next( dir, (unsigned int)(freq*1000) );
 
@@ -122,28 +78,45 @@ void grab_next(void)
 	data = bandmap_next( dir, (unsigned int)(freq*1000));
     }
 
-    if (data != NULL) {
-
-	outfreq = data -> freq;
-	outfreq -= fldigi_get_carrier();
-	send_bandswitch( (int) outfreq );
-
-	strcpy( hiscall, data->call );
-
-	showinfo( getctydata( hiscall ) );
-	searchlog( hiscall );
-
-	/* if in CQ mode switch to S&P and remember QRG */
-	if (cqmode == CQ) {
-	    cqmode = S_P;
-	    strcpy(mode, "S&P     ");
-	    mem = freq;
-	    mvprintw(14, 68, "MEM: %7.1f", mem);
-	}
-
-	refreshp();
-
-	g_free( data->call );
-	g_free( data );
+    if (data == NULL) {
+        return 0;
     }
+
+    return execute_grab(data);
+}
+
+/* Perform the steps needed to grab a call and then free data
+ * \return frequency of the spot in Hz
+ */
+static double execute_grab(spot *data)
+{
+    extern char hiscall[];
+    extern char mode[];
+    extern int cqmode;
+    extern float mem;
+    extern float freq;
+
+    double f = data->freq - fldigi_get_carrier();
+    set_outfreq(f);
+    send_bandswitch( (int) f );
+
+    strcpy( hiscall, data->call );
+
+    showinfo( getctydata( hiscall ) );
+    searchlog( hiscall );
+
+    /* if in CQ mode switch to S&P and remember QRG */
+    if (cqmode == CQ) {
+        cqmode = S_P;
+        strcpy(mode, "S&P     ");
+        mem = freq;
+        mvprintw(14, 68, "MEM: %7.1f", mem);
+    }
+
+    refreshp();
+
+    g_free( data->call );
+    g_free( data );
+
+    return f;
 }

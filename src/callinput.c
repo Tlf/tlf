@@ -44,6 +44,7 @@
 #include "edit_last.h"
 #include "deleteqso.h"
 #include "getctydata.h"
+#include "gettxinfo.h"
 #include "grabspot.h"
 #include "lancode.h"
 #include "muf.h"
@@ -990,12 +991,14 @@ char callinput(void)
 	// Ctrl-G (^G), grab next DX spot from bandmap.
 	case 7:
 	    {
-		grab_next();
-		grab.state = IN_PROGRESS;
-		grab.spotfreq = outfreq/1000.;
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 2, "%s", mode);
-		freqstore = 0;
+		double f = grab_next();
+                if (f > 0.0) {
+                    grab.state = IN_PROGRESS;
+                    grab.spotfreq = f/1000.;
+                    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+                    mvprintw(0, 2, "%s", mode);
+                    freqstore = 0;
+                }
 
 		break;
 	    }
@@ -1003,12 +1006,14 @@ char callinput(void)
 	// Alt-g (M-g), grab first spot matching call field chars.
 	case 231:
 	    {
-		grabspot();
-		grab.state = IN_PROGRESS;
-		grab.spotfreq = outfreq/1000.;
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 2, "%s", mode);
-		freqstore = 0;
+		double f = grabspot();
+                if (f > 0.0) {
+                    grab.state = IN_PROGRESS;
+                    grab.spotfreq = f/1000.;
+                    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+                    mvprintw(0, 2, "%s", mode);
+                    freqstore = 0;
+                }
 
 		break;
 	    }
@@ -1422,9 +1427,9 @@ void handle_bandswitch(int direction) {
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
     mvprintw(12, 0, band[bandinx]);
 
-    if (trx_control == 1) {
-        freq = bandfrequency[bandinx];
-        outfreq = (int) (bandfrequency[bandinx] * 1000);
+    if (trx_control) {
+        freq = bandfrequency[bandinx]; // TODO: is this needed?
+        set_outfreq(bandfrequency[bandinx] * 1000);
     }
 
     send_bandswitch(bandinx);

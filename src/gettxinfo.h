@@ -21,9 +21,11 @@
 #ifndef GETTXINFO_H
 #define GETTXINFO_H
 
-#define SETCWMODE 1
-#define SETSSBMODE 2
-#define RESETRIT 99
+#define SETCWMODE   (-1)
+#define SETSSBMODE  (-2)
+#define RESETRIT    (-3)
+
+void set_outfreq(double hertz); 
 
 void gettxinfo(void);
 
