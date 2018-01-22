@@ -29,7 +29,21 @@
 #define IsWarcIndex(index) ((index == BANDINDEX_12) || \
 			(index == BANDINDEX_17) || (index == BANDINDEX_30))
 
+/* Direction for switch to next band */
+#define BAND_UP      +1
+#define BAND_DOWN    -1
+
+
 extern int inxes[NBANDS];  /**< conversion from BANDINDEX to BAND-mask */
 
+
+/** Switch to next band
+ *
+ * Switch to next ham radio band up or down. Wrap around if lowest or highest
+ * band reached.
+ *
+ * \param direction  BAND_UP or BAND_DOWN to choose next band up or down
+ */
+void next_band(int direction);
 
 #endif /* BANDS_H */

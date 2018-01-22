@@ -89,9 +89,6 @@ int autosend(void);
 int plain_number(char *str);
 void handle_bandswitch(int direction);
 
-#define BAND_UP      +1
-#define BAND_DOWN    -1
-
 extern int no_arrows;
 extern char hiscall[];
 extern int bandinx;
@@ -1332,17 +1329,6 @@ void send_bandswitch(int freq) {
     }
 }
 
-static void next_band(int direction) {
-    bandinx += direction;
-
-    if (bandinx < 0) {
-	bandinx = BANDINDEX_OOB - 1;
-    }
-
-    if (bandinx >= BANDINDEX_OOB) {
-	bandinx = 0;
-    }
-}
 
 /** handle bandswitch from keyboard
  *
