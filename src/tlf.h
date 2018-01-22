@@ -75,7 +75,6 @@
 #define  BAND10 1
 #define  BANDOOB 0  // out of band
 
-#define IsWarcMask(x) ((x == BAND12) || (x == BAND17) || (x == BAND30))
 
 enum {
     BANDINDEX_160 = 0,
@@ -91,8 +90,6 @@ enum {
     NBANDS
 };
 
-#define IsWarcIndex(index) ((index == BANDINDEX_12) || \
-			(index == BANDINDEX_17) || (index == BANDINDEX_30))
 
 /* display color sets */
 enum {
