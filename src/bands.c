@@ -27,3 +27,20 @@
 int inxes[NBANDS] = \
     { BAND160, BAND80, BAND40, BAND30, BAND20, BAND17, BAND15, BAND12, BAND10,
         BANDOOB };
+
+extern int bandinx;
+
+void next_band(int direction) {
+    bandinx += direction;
+
+    if (bandinx < 0) {
+        bandinx = BANDINDEX_OOB - 1;
+    }
+
+    if (bandinx >= BANDINDEX_OOB) {
+        bandinx = 0;
+    }
+}
+
+
+
