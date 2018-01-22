@@ -25,6 +25,7 @@
 
 #include <unistd.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
@@ -48,13 +49,10 @@
 
 #ifdef HAVE_LIBHAMLIB
 extern RIG *my_rig;
-extern freq_t outfreq;
 extern int cw_bandwidth;
 extern int trxmode;
 extern int rigmode;
 extern int digikeyer;
-#else
-extern int outfreq;
 #endif
 
 extern float freq;
@@ -64,8 +62,42 @@ extern float bandfrequency[];
 extern int trx_control;
 extern unsigned char rigptt;
 
+/* output frequency to rig or other rig-related request
+ *
+ * possible values:
+ *  0 - poll rig
+ *  SETCWMODE
+ *  SETSSBMODE
+ *  RESETRIT
+ *  else - set rig frequency
+ *
+ */
+//static double outfreq;
+#ifdef HAVE_LIBHAMLIB
+freq_t outfreq;
+#else
+int outfreq;
+#endif
+
+static pthread_mutex_t outfreq_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+
 static double get_current_seconds();
 static void handle_trx_bandswitch(int freq);
+
+void set_outfreq(double hertz) {
+    pthread_mutex_lock (&outfreq_mutex);
+    outfreq = hertz;
+    pthread_mutex_unlock (&outfreq_mutex);
+}
+
+static double get_and_reset_outfreq() {
+    pthread_mutex_lock (&outfreq_mutex);
+    double f = outfreq;
+    outfreq = 0.0;
+    pthread_mutex_unlock (&outfreq_mutex);
+    return f;
+}
 
 
 void gettxinfo(void)
@@ -118,7 +150,9 @@ void gettxinfo(void)
     }
 #endif
 
-    if (outfreq == 0) {
+    double reqf = get_and_reset_outfreq();  // get actual request
+
+    if (reqf == 0) {
 
 	rigfreq = 0.0;
 
@@ -173,7 +207,7 @@ void gettxinfo(void)
             handle_trx_bandswitch((int) freq);
 	}
 
-    } else if (outfreq == SETCWMODE) {
+    } else if (reqf == SETCWMODE) {
 
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	if (cw_bandwidth == 0) {
@@ -193,7 +227,7 @@ void gettxinfo(void)
 	}
 #endif
 
-    } else if (outfreq == SETSSBMODE) {
+    } else if (reqf == SETSSBMODE) {
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	if (freq > 13999.9)
 	    retval =
@@ -211,7 +245,7 @@ void gettxinfo(void)
 	}
 #endif
 
-    } else if (outfreq == RESETRIT) {
+    } else if (reqf == RESETRIT) {
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	    retval = rig_set_rit(my_rig, RIG_VFO_CURR, 0);
 
@@ -223,17 +257,11 @@ void gettxinfo(void)
 #endif
 
     } else {
-        // set rig frequency to `outfreq'
+        // set rig frequency to `reqf'
 #ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
-	retval = rig_set_freq(my_rig, RIG_VFO_CURR, outfreq);
+	retval = rig_set_freq(my_rig, RIG_VFO_CURR, (freq_t) reqf);
 
 	if (retval != RIG_OK) {
-	    mvprintw(24, 0, "Problem with rig link: set frequency!\n");
-	    refreshp();
-	    sleep(1);
-	}
-
-	if (retval != 0) {
 	    mvprintw(24, 0, "Problem with rig link: set frequency!\n");
 	    refreshp();
 	    sleep(1);
@@ -242,7 +270,6 @@ void gettxinfo(void)
 
     }
 
-    outfreq = 0;    // clear request
 }
 
 
