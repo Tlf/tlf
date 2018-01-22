@@ -26,6 +26,9 @@
 
 #include "tlf.h"
 
+#define IsWarcIndex(index) ((index == BANDINDEX_12) || \
+			(index == BANDINDEX_17) || (index == BANDINDEX_30))
+
 extern int inxes[NBANDS];  /**< conversion from BANDINDEX to BAND-mask */
 
 

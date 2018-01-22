@@ -69,6 +69,7 @@
 #include "ui_utils.h"
 #include "writeparas.h"
 #include "showzones.h"
+#include "bands.h"
 
 #include <math.h>
 
