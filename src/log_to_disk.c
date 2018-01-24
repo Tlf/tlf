@@ -42,14 +42,6 @@
 #include "ui_utils.h"
 #include "cleanup.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef HAVE_LIBHAMLIB
-# include <hamlib/rig.h>
-#endif
-
 
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -69,11 +61,6 @@ int log_to_disk(int from_lan)
     extern int rit;
     extern int trx_control;
     extern int cqmode;
-#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-#else
-    extern int outfreq;
-#endif
     extern int block_part;
     extern char lan_message[];
     extern char thisnode;
@@ -160,8 +147,9 @@ int log_to_disk(int from_lan)
 
     sync();
 
-    if ((rit == 1) && (trx_control == 1))
-	outfreq = RESETRIT;
+    if (rit) {
+	set_outfreq(RESETRIT);
+    }
 
     block_part = 0;		/* unblock use partials */
 

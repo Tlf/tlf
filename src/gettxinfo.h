@@ -26,6 +26,7 @@
 #define RESETRIT    (-3)
 
 void set_outfreq(double hertz); 
+double get_outfreq();
 
 void gettxinfo(void);
 

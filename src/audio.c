@@ -36,14 +36,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef HAVE_LIBHAMLIB
-# include <hamlib/rig.h>
-#endif
+#include "gettxinfo.h"
 
 #ifdef __OpenBSD__
 # include <soundcard.h>
@@ -394,13 +387,6 @@ int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 
 int panscan(void)
 {
-
-#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-#else
-    extern int outfreq;
-#endif
-
     int rc, j, key = 0;
     float testvalue;
     float FromFrequency = 0.0;
@@ -459,16 +445,12 @@ int panscan(void)
 	    int i;
 
 	    for (i = 0; i < 100; i++) {
-		if (outfreq == 0)
+		if (get_outfreq() == 0)
 		    break;
-		usleep(10000);
+		usleep(10 * 1000);
 	    }
 
-#ifdef HAVE_LIBHAMLIB
-	    outfreq = (freq_t) (frequencies[j] * 1000);
-#else
-	    outfreq = (int) (frequencies[j] * 1000);
-#endif
+	    set_outfreq(frequencies[j] * 1000);
 
 	    usleep(50 * 1000);
 	    testvalue = get_audio_sample();
@@ -496,12 +478,6 @@ int panscan(void)
 
 int nbscan(void)
 {
-#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-#else
-    extern int outfreq;
-#endif
-
     int rc, j, key = 0;
     float testvalue;
     float FromFrequency = 0.0;
@@ -559,15 +535,13 @@ int nbscan(void)
 	    int i;
 
 	    for (i = 0; i < 100; i++) {
-		if (outfreq == 0)
+		if (get_outfreq() == 0)
 		    break;
-		usleep(10000);
+		usleep(10 * 1000);
 	    }
-#ifdef HAVE_LIBHAMLIB
-	    outfreq = (freq_t) (frequencies[j] * 1000);
-#else
-	    outfreq = (int) (frequencies[j] * 1000);
-#endif
+
+	    set_outfreq(frequencies[j] * 1000);
+
 	    usleep(50 * 1000);
 	    testvalue = get_audio_sample();
 	    values[j] = testvalue;
