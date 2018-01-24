@@ -22,64 +22,41 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "sendqrg.h"		// Sets HAVE_LIBHAMLIB if enabled
+#include "sendqrg.h"
 #include "startmsg.h"
+#include "gettxinfo.h"
+#include "bandmap.h"
 
 
 void send_bandswitch(int trxqrg);
 
+/* check if call input field contains a frequency value and switch to it.
+ * 
+ */
 int sendqrg(void)
 {
 
     extern char hiscall[];
     extern int trx_control;
-#ifdef HAVE_LIBHAMLIB
-//extern RIG *my_rig;
-    extern freq_t outfreq;
-#else
-//extern int my_rig;
-    extern int outfreq;
-#endif
 
     float trxqrg;
 
-    if (trx_control != 1)
-	return (0);		/* nothing to do here */
+    if (!trx_control) {
+	return 0;               /* nothing to do here */
+    }
 
     trxqrg = atof(hiscall);
 
-    switch ((int) trxqrg) {
+    int bandinx = freq2band((unsigned int)(trxqrg * 1000.0));
 
-    case 0 ... 1799:{
-	    trxqrg = 0;
-	    break;
-	}
-    case 1800 ...  2000:
-    case 3500 ...  4000:
-    case 7000 ...  7300:
-    case 10100 ... 10150:
-    case 14000 ... 14350:
-    case 18068 ... 18168:
-    case 21000 ... 21450:
-    case 24890 ... 24990:
-    case 28000 ... 29700:
-	{
-#ifdef HAVE_LIBHAMLIB
-	    outfreq = (freq_t) (trxqrg * 1000);
-#else
-	    outfreq = (int) (trxqrg * 1000);
-#endif
-
-	    send_bandswitch((int) trxqrg);
-
-	    break;
-	}
-    default:
-	trxqrg = 0;
-
+    if (bandinx == BANDINDEX_OOB) {
+        return 0;   // not a frequency or out of band
     }
 
-    return ((int)trxqrg);
+    set_outfreq(trxqrg * 1000);
+    send_bandswitch((int) trxqrg);
+
+    return (int) trxqrg;
 }
 
 /**************************************************************************/
@@ -89,7 +66,6 @@ int init_tlf_rig(void)
 {
     extern RIG *my_rig;
     extern rig_model_t myrig_model;
-    extern freq_t outfreq;
     extern char rigconf[];
     extern int serial_rate;
     extern char *rigportname;
@@ -217,9 +193,9 @@ int init_tlf_rig(void)
 	}
 	sleep(10);
 
-	outfreq = 14000000;	//test set frequency
+	const freq_t testfreq = 14000000;	// test set frequency
 
-	retcode = rig_set_freq(my_rig, RIG_VFO_CURR, outfreq);
+	retcode = rig_set_freq(my_rig, RIG_VFO_CURR, testfreq);
 
 	if (retcode != RIG_OK) {
 	    showmsg("Problem with rig set freq!");
@@ -228,8 +204,6 @@ int init_tlf_rig(void)
 	    showmsg("Rig set freq ok!");
 	}
 
-	outfreq = 0;
-
 	retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);	// read qrg
 
 	if (retcode != RIG_OK) {
@@ -237,6 +211,9 @@ int init_tlf_rig(void)
 	    sleep(1);
 	} else {
 	    shownr("freq =", (int) rigfreq);
+            if (rigfreq != testfreq) {
+                showmsg("Failed to set rig freq!");
+            }
 	}
 	sleep(10);
 

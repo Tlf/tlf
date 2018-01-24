@@ -93,13 +93,6 @@ int changepars(void)
     extern char *config_file;
     extern int miniterm;
     extern int total;
-
-#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-#else
-    extern int outfreq;
-#endif
-
     extern int simulator;
     extern int cwkeyer;
     extern char synclogfile[];
@@ -464,15 +457,13 @@ int changepars(void)
 		sendmessage("MODE CW\015K\015");
 	    }
 	    trxmode = CWMODE;
-
-	    if (trx_control == 1)
-		outfreq = SETCWMODE;
+            set_outfreq(SETCWMODE);
 	    break;
 	}
     case 31:			/* SSBMODE  */
 	{
 	    trxmode = SSBMODE;
-	    outfreq = SETSSBMODE;
+            set_outfreq(SETSSBMODE);
 	    break;
 	}
     case 32:			/* DIGIMODE  */

@@ -21,6 +21,8 @@
 #ifndef _BANDMAP_H
 #define _BANDMAP_H
 
+#include "tlf.h"
+
 typedef struct {
     char 	*call;
     int 	freq;	/* freq in Hz */

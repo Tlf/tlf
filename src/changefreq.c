@@ -24,25 +24,14 @@
 #include "time_update.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef HAVE_LIBHAMLIB
-# include <hamlib/rig.h>
-#endif
+#include "gettxinfo.h"
 
 
 void change_freq (void) {
 
     extern float freq;
     extern int trx_control;
-#ifdef HAVE_LIBHAMLIB
-    extern freq_t outfreq;
-#else
-    extern int outfreq;
-#endif
+
     int brkflg = 0;
     int x;
 
@@ -55,86 +44,52 @@ void change_freq (void) {
 
 	freq_display();
 
-	if (outfreq == 0) {
+	if (get_outfreq() == 0) {
 	    x = key_get();
+
+            int deltaf = 0;
 
 	    switch (x) {
 
 	    // Up arrow, raise frequency by 100 Hz.
 	    case KEY_UP:
 		{
-#ifdef HAVE_LIBHAMLIB
-		    outfreq = (freq_t) (freq * 1000);
-#else
-		    outfreq = (int) (freq * 1000);
-#endif
-		    outfreq += 100;
-
+		    deltaf = 100;
 		    break;
 		}
 
 	    // Down arrow, lower frequency by 100 Hz.
 	    case KEY_DOWN:
 		{
-#ifdef HAVE_LIBHAMLIB
-		    outfreq = (freq_t) (freq * 1000);
-#else
-		    outfreq = (int) (freq * 1000);
-#endif
-		    outfreq -= 100;
-
+		    deltaf = -100;
 		    break;
 		}
 
 	    // Right arrow, raise frequency by 20 Hz.
 	    case KEY_RIGHT:
 		{
-#ifdef HAVE_LIBHAMLIB
-		    outfreq = (freq_t) (freq * 1000);
-#else
-		    outfreq = (int) (freq * 1000);
-#endif
-		    outfreq += 20;
-
+		    deltaf = 20;
 		    break;
 		}
 
 	    // Left arrow, lower frequency by 20 Hz.
 	    case KEY_LEFT:
 		{
-#ifdef HAVE_LIBHAMLIB
-		    outfreq = (freq_t) (freq * 1000);
-#else
-		    outfreq = (int) (freq * 1000);
-#endif
-		    outfreq -= 20;
-
+		    deltaf = -20;
 		    break;
 		}
 
 	    // <Page-Up>, raise frequency by 500 Hz.
 	    case KEY_PPAGE:
 		{
-#ifdef HAVE_LIBHAMLIB
-		    outfreq = (freq_t) (freq * 1000);
-#else
-		    outfreq = (int) (freq * 1000);
-#endif
-		    outfreq += 500;
-
+		    deltaf = 500;
 		    break;
 		}
 
 	    // <Page-Down>, lower frequency by 500 Hz.
 	    case KEY_NPAGE:
 		{
-#ifdef HAVE_LIBHAMLIB
-		    outfreq = (freq_t) (freq * 1000);
-#else
-		    outfreq = (int) (freq * 1000);
-#endif
-		    outfreq -= 500;
-
+		    deltaf = -500;
 		    break;
 		}
 
@@ -144,6 +99,10 @@ void change_freq (void) {
 		}
 
 	    }
+
+            if (deltaf) {
+                set_outfreq(freq * 1000 + deltaf);
+            }
 	}
 
 	if (brkflg == 1) {
@@ -155,7 +114,7 @@ void change_freq (void) {
 
 	time_update();
 
-	usleep(100000);
+	usleep(100 * 1000);
 
     }
     curs_set(1);

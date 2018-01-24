@@ -97,11 +97,6 @@ extern int bandinx;
 extern char band[NBANDS][4];
 extern int contest;
 extern int dxped;
-#ifdef HAVE_LIBHAMLIB
-extern freq_t outfreq;
-#else
-extern int outfreq;
-#endif
 extern float freq;
 extern int trx_control;
 extern float bandfrequency[];
@@ -578,7 +573,7 @@ char callinput(void)
 		} else {
 		    freq = mem;
 
-		    outfreq = (int) (mem * 1000);
+		    set_outfreq(mem * 1000);
 
 		    mem = 0.0;
 		    mvprintw(14, 68, "            ");

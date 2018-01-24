@@ -72,11 +72,10 @@ extern unsigned char rigptt;
  *  else - set rig frequency
  *
  */
-//static double outfreq;
 #ifdef HAVE_LIBHAMLIB
-freq_t outfreq;
+static freq_t outfreq = 0;
 #else
-int outfreq;
+static int outfreq = 0;
 #endif
 
 static pthread_mutex_t outfreq_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -86,9 +85,16 @@ static double get_current_seconds();
 static void handle_trx_bandswitch(int freq);
 
 void set_outfreq(double hertz) {
+    if (!trx_control) {
+	hertz = 0;      // no rig control, ignore request
+    }
     pthread_mutex_lock (&outfreq_mutex);
     outfreq = hertz;
     pthread_mutex_unlock (&outfreq_mutex);
+}
+
+double get_outfreq() {
+    return outfreq;
 }
 
 static double get_and_reset_outfreq() {
