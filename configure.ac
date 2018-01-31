@@ -162,6 +162,8 @@ AX_CFLAGS_WARN_ALL([AM_CFLAGS])
 
 AC_SUBST([AM_CFLAGS])
 
+m4_syscmd([ cd test; perl generate_defs.pl ])
+
 
 AC_CONFIG_FILES([Makefile
 	doc/Makefile
@@ -169,6 +171,7 @@ AC_CONFIG_FILES([Makefile
 	scripts/Makefile
 	share/Makefile
 	src/Makefile
+	test/Makefile
 	tlf.1])
 
 AC_OUTPUT

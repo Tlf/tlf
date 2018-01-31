@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I macros
 
-SUBDIRS = doc rules src share  scripts
+SUBDIRS = doc rules src share scripts test
 
 CLEANFILES = *~
 

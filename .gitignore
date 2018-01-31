@@ -23,3 +23,8 @@ src/.deps
 src/cscope.out
 src/.gdbinit
 stamp-h1
+test/defs.*
+test/run_*
+test/*.log
+test/.deps
+test-driver

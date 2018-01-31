@@ -4,7 +4,10 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libhamlib-dev
   - sudo apt-get install -y libxmlrpc-core-c3-dev
-
-script:
-  - autoreconf -i && ./configure --enable-hamlib && make
+  - sudo apt-get install -y libcmocka-dev
+  
+script: 
+  - autoreconf -i && ./configure --enable-hamlib && make   
   - make clean && ./configure --enable-hamlib --enable-fldigi-xmlrpc && make
+  - make check; rc=$?; cat test/run_*.log; exit $rc
+
