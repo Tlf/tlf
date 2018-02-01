@@ -12,11 +12,11 @@ for my $c (glob 'test_*.c') {
 
     open(my $SRC, $c) or die;
     while (<$SRC>) {
-        if (/\/\/ OBJECT (\S+)/) {
+        if (/\/\/\s+OBJECT\s+(\S+)/) {
             push @{$groups{$group_name}{OBJECTS}}, $1;
             next;
         }
-        if (/^((int|void) ((setup|teardown|test)(_\w+)?)\(void \*\*\w+\))/) {
+        if (/^\s*((int|void)\s+((setup|teardown|test)(_\w+)?)\s*\(\s*void\s+\*\*\s*\w+\s*\))/) {
             ${$groups{$group_name}{FUNCTIONS}}{$3} = $1;
             # check if it's a test function
             if ($2 eq 'void') {
