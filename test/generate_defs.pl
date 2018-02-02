@@ -1,5 +1,10 @@
 use strict;
 
+use Getopt::Std;
+
+our $opt_v;     # -v    verbose mode
+getopts("v");
+
 my %groups;
 
 #
@@ -10,9 +15,12 @@ for my $c (glob 'test_*.c') {
 
     my $group_name = substr($c, 5, -2);
 
+    print "\n$c\n" if $opt_v;
+
     open(my $SRC, $c) or die;
     while (<$SRC>) {
         if (/\/\/\s+OBJECT\s+(\S+)/) {
+            print "    OBJECT $1\n" if $opt_v;
             push @{$groups{$group_name}{OBJECTS}}, $1;
             next;
         }
@@ -21,7 +29,10 @@ for my $c (glob 'test_*.c') {
             # check if it's a test function
             if ($2 eq 'void') {
                 my $name =  substr($3, 5);
+                print "    TEST $name\n" if $opt_v;
                 push @{$groups{$group_name}{TESTS}}, $name;
+            } else {
+                print "    FUNCTION $3\n" if $opt_v;
             }
             next;
         }
