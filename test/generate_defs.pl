@@ -31,7 +31,7 @@ for my $c (glob 'test_*.c') {
 }
 
 #
-# genarate defs.am and sources for run's
+# generate defs.am and sources for run's
 #
 
 open(my $AM, '> defs.am') or die;
@@ -80,6 +80,11 @@ EOT
             $setup = "setup_$t";
         } elsif (defined ${$groups{$g}{FUNCTIONS}}{setup_default}) {
             $setup = 'setup_default';
+        }
+        if (defined ${$groups{$g}{FUNCTIONS}}{"teardown_$t"}) {
+            $teardown = "teardown_$t";
+        } elsif (defined ${$groups{$g}{FUNCTIONS}}{teardown_default}) {
+            $teardown = 'teardown_default';
         }
         print $C "      cmocka_unit_test_setup_teardown(test_${t}, ${setup}, ${teardown}),\n";
     }
