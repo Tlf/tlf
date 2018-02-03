@@ -5,19 +5,27 @@ use Getopt::Std;
 our $opt_v;     # -v    verbose mode
 getopts("v");
 
+my @files;
+if ($#ARGV >= 0) {
+    @files = @ARGV;
+    $opt_v = 1; # switch to verbose if files were specified
+} else {
+    @files = glob 'test_*.c';
+}
+
 my %groups;
 
 #
 # scan test sources
 #
 
-for my $c (glob 'test_*.c') {
+for my $c (@files) {
 
     my $group_name = substr($c, 5, -2);
 
     print "\n$c\n" if $opt_v;
 
-    open(my $SRC, $c) or die;
+    open(my $SRC, $c) or die "Can't open $c: $!\n";
     while (<$SRC>) {
         if (/\/\/\s+OBJECT\s+(\S+)/) {
             print "    OBJECT $1\n" if $opt_v;
