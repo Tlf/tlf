@@ -50,19 +50,19 @@ void test_location_unknown_used(void **state) {
 }
 
 /* getctynr */
-void test_suffix_getctynr(void ** state) {
+void test_suffix_getctynr(void **state) {
     assert_int_not_equal(getctynr("LA3BB"), 0);
     assert_int_not_equal(getctynr("LA3BB/QRP"), 0);
     assert_int_equal(getctynr("LA3BB/QRP"), getctynr("LA3BB"));
 }
 
 /* getctydata */
-void test_suffix_getctydata(void ** state) {
+void test_suffix_getctydata(void **state) {
     assert_int_not_equal(getctydata("LA3BB"), 0);
     assert_int_not_equal(getctydata("LA3BB/QRP"), 0);
 }
 
-void test_someidea(void ** data) {
+void test_someidea(void **data) {
     assert_int_not_equal(getpfxindex("DJ0LN/A", NULL), -1);
     assert_int_not_equal(getpfxindex("PA/DJ0LN/P", NULL), -1);
     assert_int_not_equal(getpfxindex("DJ0LN/P", NULL), -1);
@@ -74,7 +74,7 @@ void test_someidea(void ** data) {
 
 #define check(x) (assert_int_equal(getctynr(x), getctydata(x)))
 
-void test_same_result(void ** data) {
+void test_same_result(void **data) {
     check("DJ0LN/A");
     check("PA/DJ0LN/P");
     check("DJ0LN/P");
@@ -91,7 +91,7 @@ void test_no_wpx(void **state) {
     pxstr[0] = '\0';
     nr = getctydata("DJ/PA3LM");
     assert_string_equal(pxstr, "");
-    assert_int_equal(getctydata("DL"),nr);
+    assert_int_equal(getctydata("DL"), nr);
 }
 
 void test_is_wpx(void **state) {
@@ -100,13 +100,13 @@ void test_is_wpx(void **state) {
     pxstr[0] = '\0';
     nr = getctydata("DJ/PA3LM");
     assert_string_equal(pxstr, "DJ0");
-    assert_int_equal(getctydata("DL"),nr);
+    assert_int_equal(getctydata("DL"), nr);
 }
 
 void test_abnormal_call(void **state) {
     int nr;
     nr = getctydata("ET3AA/YOTA");
-    assert_int_equal(getctydata("ET"),nr);
+    assert_int_equal(getctydata("ET"), nr);
 }
 
 

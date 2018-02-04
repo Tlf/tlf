@@ -42,13 +42,13 @@ void test_add_dxcc_check_count(void **state) {
 void test_add_dxcc_check_parsed(void **state) {
     dxcc_data *mydx;
     mydx = dxcc_by_index(1);
-    assert_string_equal(mydx->countryname,"France");
+    assert_string_equal(mydx->countryname, "France");
     assert_int_equal(mydx->cq, 14);
     assert_int_equal(mydx->itu, 27);
     assert_true(mydx->lat == 46.);
     assert_true(mydx->lon == -2.);
     assert_true(mydx->timezone == -1.0);
-    assert_string_equal(mydx->continent,"EU");
+    assert_string_equal(mydx->continent, "EU");
     assert_string_equal(mydx->pfx, "F");
     assert_false(mydx->starred);
 }

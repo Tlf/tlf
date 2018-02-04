@@ -69,7 +69,7 @@ int setup_addcall_pfxnum_inList(void **state) {
     setup_default(state);
 
     pfxnummultinr = 2;
-    pfxnummulti[0].countrynr = countrynr+3;
+    pfxnummulti[0].countrynr = countrynr + 3;
     pfxnummulti[1].countrynr = countrynr;
 
     return 0;
@@ -80,9 +80,9 @@ int setup_addcall_pfxnum_notinList(void **state) {
 }
 
 void test_addcall_nopfxnum(void **state) {
-   strcpy(hiscall, "LZ1AB");
-   addcall();
-   assert_int_equal(addcallarea, 0);
+    strcpy(hiscall, "LZ1AB");
+    addcall();
+    assert_int_equal(addcallarea, 0);
 }
 
 
@@ -99,19 +99,21 @@ void test_addcall_pfxnum_inList(void **state) {
 
 
 void test_addcall_pfxnum_notinList(void **state) {
-    strcpy (hiscall, "HA2BNL");
+    strcpy(hiscall, "HA2BNL");
     addcall();
     assert_int_equal(addcallarea, 0);
 }
 
-char logline[] = "160CW  08-Feb-11 17:06 0025  LZ1AB          599  599  20            LZ  20   1  ";
+char logline[] =
+    "160CW  08-Feb-11 17:06 0025  LZ1AB          599  599  20            LZ  20   1  ";
 
-char logline_2[] = "160CW  08-Feb-11 17:06 0025  HA1AB          599  599  19            LZ  20   1  ";
+char logline_2[] =
+    "160CW  08-Feb-11 17:06 0025  HA1AB          599  599  19            LZ  20   1  ";
 
 void test_addcall2_nopfxnum(void **state) {
-   strcpy(lan_logline, logline);
-   addcall2();
-   assert_int_equal(addcallarea, 0);
+    strcpy(lan_logline, logline);
+    addcall2();
+    assert_int_equal(addcallarea, 0);
 }
 
 int setup_addcall2_pfxnum_inList(void **state) {
@@ -167,7 +169,7 @@ void test_add_country_2_band(void **state) {
     addcall();
     assert_int_equal(countryscore[BANDINDEX_10], 1);
     assert_int_equal(countryscore[BANDINDEX_15], 1);
-    assert_int_equal(countries[getctynr("LZ0AA")], BAND10|BAND15);
+    assert_int_equal(countries[getctynr("LZ0AA")], BAND10 | BAND15);
 }
 
 void test_add_country_2_stations(void **state) {
@@ -220,7 +222,7 @@ void test_add_zone_2_band(void **state) {
     addcall();
     assert_int_equal(zonescore[BANDINDEX_10], 1);
     assert_int_equal(zonescore[BANDINDEX_15], 1);
-    assert_int_equal(zones[15], BAND10|BAND15);
+    assert_int_equal(zones[15], BAND10 | BAND15);
 }
 
 void test_add_zone_2_stations(void **state) {
@@ -272,7 +274,7 @@ void test_add2_country_2_band(void **state) {
     addcall2();
     assert_int_equal(countryscore[BANDINDEX_160], 1);
     assert_int_equal(countryscore[BANDINDEX_15], 1);
-    assert_int_equal(countries[getctynr("LZ0AA")], BAND160|BAND15);
+    assert_int_equal(countries[getctynr("LZ0AA")], BAND160 | BAND15);
 }
 
 void test_add2_country_2_stations(void **state) {
@@ -320,7 +322,7 @@ void test_add2_zone_2_band(void **state) {
     addcall2();
     assert_int_equal(zonescore[BANDINDEX_160], 1);
     assert_int_equal(zonescore[BANDINDEX_15], 1);
-    assert_int_equal(zones[20], BAND160|BAND15);
+    assert_int_equal(zones[20], BAND160 | BAND15);
 }
 
 void test_add2_zone_2_stations(void **state) {
