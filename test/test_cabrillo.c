@@ -29,6 +29,14 @@ void makelogline() {
     bandinx_spy = bandinx;
 }
 
+char formatfile[100];
+
+int setup(void **state) {
+    strcpy(formatfile, TOP_SRCDIR);
+    strcat(formatfile, "/share/cabrillo.fmt");
+    return 0;
+}
+
 /* export non public protoypes for test */
 int starts_with(char *line, char *start);
 void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc);
@@ -103,7 +111,7 @@ void test_parseLine(void **state) {
 
 void test_readCabrilloFormatUniversal(void **state) {
     struct cabrillo_desc *desc;
-    desc = read_cabrillo_format("../share/cabrillo.fmt", "UNIVERSAL");
+    desc = read_cabrillo_format(formatfile, "UNIVERSAL");
     assert_non_null(desc);
     assert_string_equal(desc->name, "UNIVERSAL");
     assert_int_equal(desc->item_count, 10);
@@ -115,7 +123,7 @@ void test_readCabrilloFormatUniversal(void **state) {
 
 void test_readCabrilloFormatWAE(void **state) {
     struct cabrillo_desc *desc;
-    desc = read_cabrillo_format("../share/cabrillo.fmt", "WAEDC");
+    desc = read_cabrillo_format(formatfile, "WAEDC");
     assert_non_null(desc);
     assert_string_equal(desc->name, "WAEDC");
     assert_int_equal(desc->item_count, 10);
@@ -127,13 +135,16 @@ void test_readCabrilloFormatWAE(void **state) {
 
 void test_readCabrilloFileNotFound(void **state) {
     struct cabrillo_desc *desc;
-    desc = read_cabrillo_format("../share/cabrillo1.fmt", "WAEDC");
+    char formatfile1[100];
+    strcpy(formatfile1, TOP_SRCDIR);
+    strcat(formatfile1, "/share/cabrillo1.fmt");
+    desc = read_cabrillo_format(formatfile1, "WAEDC");
     assert_null(desc);
 }
 
 void test_readCabrilloFormatNotFound(void **state) {
     struct cabrillo_desc *desc;
-    desc = read_cabrillo_format("../share/cabrillo.fmt", "NOT_IN_FILE");
+    desc = read_cabrillo_format(formatfile, "NOT_IN_FILE");
     assert_null(desc);
 }
 
@@ -141,7 +152,7 @@ void test_readCabrilloFormatNotFound(void **state) {
 /* tests for readcabrillo */
 void test_cabToTlf_ParseQSO(void **state) {
     struct cabrillo_desc *desc;
-    desc = read_cabrillo_format("../share/cabrillo.fmt", "UNIVERSAL");
+    desc = read_cabrillo_format(formatfile, "UNIVERSAL");
     bandinx_spy = 0;
     cab_qso_to_tlf("QSO:  7002 RY 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
 		   desc);
