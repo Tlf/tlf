@@ -19,11 +19,15 @@ char countrylist[255][6];
 
 
 int setup_default(void **state) {
+    char filename[100];
+
     wpx = 0;
     pfxmult = 0;
     strcpy(countrylist[0], "");
 
-    assert_int_equal(load_ctydata("../share/cty.dat"), 0);
+    strcpy(filename, TOP_SRCDIR);
+    strcat(filename, "/share/cty.dat");
+    assert_int_equal(load_ctydata(filename), 0);
     return 0;
 }
 

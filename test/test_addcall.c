@@ -35,6 +35,8 @@ long timecorr = 0;
 
 /* setups */
 int setup_default(void **state) {
+    char filename[100];
+
     bandinx = BANDINDEX_10;
     cqww = 1;   /* trigger zone evaluation */
     wpx = 0;
@@ -58,7 +60,9 @@ int setup_default(void **state) {
     memset(zones, 0, sizeof(zones));
     memset(zonescore, 0, sizeof(zonescore));
 
-    assert_int_equal(load_ctydata("../share/cty.dat"), 0);
+    strcpy(filename, TOP_SRCDIR);
+    strcat(filename, "/share/cty.dat");
+    assert_int_equal(load_ctydata(filename), 0);
 
     return 0;
 }
