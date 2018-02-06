@@ -21,7 +21,7 @@
 #ifndef LOGIT_H
 #define LOGIT_H
 
-void *logit(void *);
+void logit(void);
 void refresh_comment(void);
 
 
