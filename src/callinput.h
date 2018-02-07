@@ -21,7 +21,7 @@
 #ifndef CALLINPUT_H
 #define CALLINPUT_H
 
-char callinput(void);
+int callinput(void);
 int play_file(char *audiofile);
 void send_bandswitch(int freq);
 
