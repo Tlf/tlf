@@ -105,7 +105,7 @@ extern float bandfrequency[];
 /** callsign input loop
  *
  * \return code of last typed character */
-char callinput(void)
+int callinput(void)
 {
     extern int itumult;
     extern int wazmult;
@@ -169,7 +169,7 @@ char callinput(void)
 
 
     int cury, curx;
-    int i, j, ii, rc, t, x = 0;
+    int j, ii, rc, t, x = 0;
     char instring[2] = { '\0', '\0' };
     static int lastwindow;
 
@@ -179,7 +179,7 @@ char callinput(void)
     printcall();	/* print call input field */
     searchlog(hiscall);
 
-    for (i = strlen(hiscall); i <= 13; i++) {
+    while (strlen(hiscall) <= 13) {
 
 	show_zones(bandinx);
 	printcall();
@@ -253,9 +253,8 @@ char callinput(void)
 
 	}
 
-
 	/* special handling of some keycodes if call field is empty */
-	if (i == 0 || *hiscall == '\0') {
+	if (*hiscall == '\0') {
 	    if ((x == '+') && (*hiscall == '\0') && (ctcomp == 0)) {
 		/* switch to other mode */
 		if (cqmode == CQ) {
@@ -686,7 +685,6 @@ char callinput(void)
 			refreshp();
 		    }
 
-		    i--;
 		    x = -1;
 		    break;
 		}
