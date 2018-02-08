@@ -47,7 +47,7 @@
 void refresh_comment(void);
 void change_mode(void);
 
-void *logit(void *ptr)
+void logit(void)
 {
     extern char mode[];
     extern int trxmode;
@@ -76,7 +76,7 @@ void *logit(void *ptr)
     extern int dxped;
     extern int sprint_mode;
 
-    char callreturn = 0;
+    int callreturn = 0;
     int cury, curx;
     int qrg_out = 0;
 
