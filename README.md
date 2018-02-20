@@ -1,5 +1,8 @@
-Tlf ham radio contest logger - Summary
-======================================
+# Tlf ham radio contest logger
+
+[![Build Status](https://travis-ci.org/Tlf/tlf.svg?branch=master)](https://travis-ci.org/Tlf/tlf)
+
+## Summary
 
 Tlf is a console (ncurses) mode general purpose CW/VOICE keyer, logging and 
 contest program for hamradio. 
@@ -21,12 +24,11 @@ over 30 years of experience in CW contesting.
 The program was written for console mode on purpose, to make it run also on 
 smaller machines, or remotely via a modem link. 
 
-See 'man tlf' for detailed documentation. See also doc/README for details, 
+See `man tlf` for detailed documentation. See also doc/README for details, 
 and the INSTALL file for an quick installation guide.
 
 
-Contribution
-------------
+## Contributing
 
 * There is a mailing list at tlf-devel@nongnu.org (see 
   http://lists.nongnu.org/mailman/listinfo/tlf-devel)
