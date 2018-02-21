@@ -17,9 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------------------------
- 	*      initial exchange.h
- 	*-------------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------------
+*      initial exchange.h
+*-------------------------------------------------------------------------------*/
 
 
 #ifndef INITIAL_EXCHANGE_H
@@ -30,31 +30,16 @@
 
 /** Dataelement for one initial entry item */
 struct ie_list {
-	struct ie_list *next;			/**< pointer to next element */
-	char call[MAX_CALL_LENGTH+1];		/**< call of the station */
-	char exchange [MAX_IE_LENGTH+1];	/**< initial exchange field */
+    struct ie_list *next;		/**< pointer to next element */
+    char call[MAX_CALL_LENGTH + 1];	/**< call of the station */
+    char exchange [MAX_IE_LENGTH + 1];	/**< initial exchange field */
 };
 
 /**
-*	Make linked list from initial exchange  file.
+*	Make linked list from initial exchange file.
 *	File must be in CALL,EXCHANGE format.
 *	Returns pointer to the top of the list.
 */
-struct ie_list *make_ie_list (char *file);
-
-/**
-* 	Free linked list of all allocated entries pointed
-* 	to by 'head'.
-*/
-
-void free_ie_list(struct ie_list *head);
-
-/**
-*	Print linked list from initial exchange  file.
-*	File must be in CALL,EXCHANGE format.
-*	Returns 0 if o.k.
-*/
-
-int test_ie_list (struct ie_list *example_ie_list);
+struct ie_list *make_ie_list(char *file);
 
 #endif /* INITIAL_EXCHANGE_H */
