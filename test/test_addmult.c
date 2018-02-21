@@ -135,7 +135,8 @@ void test_write_mult(void **state) {
     write_testfile(testfile, "Hallo");
     fp = fopen(testfile, "r");
     assert_non_null(fp);
-    fgets(buffer, sizeof(buffer), fp);
+    char *p = fgets(buffer, sizeof(buffer), fp);
+    assert_ptr_equal(p, buffer);
     assert_string_equal(buffer, "Hallo");
 }
 
