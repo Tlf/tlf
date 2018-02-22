@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *   show zone map
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *   show zone map
+ *
+ *--------------------------------------------------------------*/
 
 
 #include "nicebox.h"		// Includes curses.h
@@ -27,8 +27,7 @@
 #include "tlf_panel.h"
 
 
-int show_zones(int bandinx)
-{
+int show_zones(int bandinx) {
     extern int zonedisplay;
     extern int zones[MAX_ZONES];
 
@@ -41,7 +40,7 @@ int show_zones(int bandinx)
     int zonenr;
 
     if (zones_panel == NULL) {
-	zones_win = newwin(10, 18, 14, 22 );
+	zones_win = newwin(10, 18, 14, 22);
 	if (zones_win == NULL)
 	    return -1;
 	zones_panel = new_panel(zones_win);
@@ -56,8 +55,8 @@ int show_zones(int bandinx)
 	return (0);
     }
 
-    show_panel( zones_panel );
-    top_panel( zones_panel );
+    show_panel(zones_panel);
+    top_panel(zones_panel);
     werase(zones_win);
     wnicebox(zones_win, 0, 0, 8, 16, "Zones");
 

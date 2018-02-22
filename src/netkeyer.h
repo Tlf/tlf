@@ -41,6 +41,6 @@
 
 int netkeyer(int cw_op, char *cwmessage);
 int netkeyer_close(void);
-int netkeyer_init (void);
+int netkeyer_init(void);
 
 #endif /* NETKEYER_H */

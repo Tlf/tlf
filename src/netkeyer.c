@@ -35,30 +35,29 @@ char netkeyer_hostaddress[16] = "127.0.0.1";
 static int socket_descriptor;
 static struct sockaddr_in address;
 
-int netkeyer_init(void)
-{
+int netkeyer_init(void) {
 
-/*
-   Translate a host name to IP address
-*/
+    /*
+       Translate a host name to IP address
+    */
     struct hostent *hostbyname;
     hostbyname = gethostbyname(netkeyer_hostaddress);
     if (hostbyname == NULL) {
 	perror("gethostbyname failed");
 	return -1;
     }
-/*
-   Initialize socket address structure for Internet Protocols
-   The address comes from the datastructure returned by gethostbyname()
-*/
+    /*
+       Initialize socket address structure for Internet Protocols
+       The address comes from the datastructure returned by gethostbyname()
+    */
     bzero(&address, sizeof(address));	/* empty data structure */
     address.sin_family = AF_INET;
     memcpy(&address.sin_addr.s_addr, hostbyname->h_addr,
 	   sizeof(address.sin_addr.s_addr));
     address.sin_port = htons(netkeyer_port);
-/*
-   Create a UDP socket
-*/
+    /*
+       Create a UDP socket
+    */
     socket_descriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_descriptor == -1) {
 	perror("socket call failed");
@@ -68,10 +67,9 @@ int netkeyer_init(void)
     return 0;
 }
 
-  /*-------------------------end netkeyer_init---------------*/
+/*-------------------------end netkeyer_init---------------*/
 
-int netkeyer_close(void)
-{
+int netkeyer_close(void) {
     int close_rc;
 
     close_rc = close(socket_descriptor);
@@ -83,7 +81,7 @@ int netkeyer_close(void)
     return 0;
 }
 
-  /*-------------------------end netkeyer_close---------------*/
+/*-------------------------end netkeyer_close---------------*/
 
 #define BUFSIZE 81
 
@@ -91,8 +89,7 @@ int netkeyer_close(void)
 			buf[1] = x; \
 			buf[2] = 0; } while(0); }
 
-int netkeyer(int cw_op, char *cwmessage)
-{
+int netkeyer(int cw_op, char *cwmessage) {
     char buf[BUFSIZE] = "";
     ssize_t sendto_rc = 0;
     int add_message = 0;
@@ -100,22 +97,22 @@ int netkeyer(int cw_op, char *cwmessage)
     switch (cw_op) {
 
     case K_RESET:
-        CMD('0');       // reset: <ESC>0
+	CMD('0');       // reset: <ESC>0
 	break;
     case K_MESSAGE:
-        buf[0] = 0;
-        add_message = 1;    // play cw message
+	buf[0] = 0;
+	add_message = 1;    // play cw message
 	break;
     case K_SPEED:
 	CMD('2');       // speed: <ESC>2NN
-        add_message = 1;
+	add_message = 1;
 	break;
     case K_TONE:
 	CMD('3');       // tone: <ESC>3NN
-        add_message = 1;
+	add_message = 1;
 	break;
     case K_ABORT:
-        CMD('4');       // message abort: <ESC>4
+	CMD('4');       // message abort: <ESC>4
 	break;
     case K_STOP:
 	CMD('5');       // keyer daemon stop: <ESC>5
@@ -125,39 +122,39 @@ int netkeyer(int cw_op, char *cwmessage)
 	break;
     case K_WEIGHT:
 	CMD('7');       // set weight: <ESC>7NN
-        add_message = 1;
+	add_message = 1;
 	break;
     case K_DEVICE:
 	CMD('8');       // set device: <ESC>8NN
-        add_message = 1;
+	add_message = 1;
 	break;
     case K_PTT:
 	CMD('a');       // PTT on/off: <ESC>aNN
-        add_message = 1;
+	add_message = 1;
 	break;
     case K_SET14:
 	CMD('b');       // set pin 14 of lp port: <ESC>bNN
-        add_message = 1;
+	add_message = 1;
 	break;
     case K_TUNE:
 	CMD('c');       // tune: <ESC>cNN
-        add_message = 1;
+	add_message = 1;
 	break;
     case K_TOD:
 	CMD('d');       // set Turn On Delay (TXDELAY): <ESC>dNN
-        add_message = 1;
+	add_message = 1;
 	break;
     case K_SWITCH:
 	CMD('e');       // set band switch output: <ESC>eNN
-        add_message = 1;
+	add_message = 1;
 	break;
     case K_SIDETONE:
 	CMD('f');       // set sidetone output to sound card: <ESC>fs
-        buf[2] = 's';
+	buf[2] = 's';
 	break;
     case K_STVOLUME:
 	CMD('g');       // set sound card output volume: <ESC>gNN
-        add_message = 1;
+	add_message = 1;
 	break;
 
     default:
@@ -165,12 +162,12 @@ int netkeyer(int cw_op, char *cwmessage)
     }
 
     if (add_message) {
-        g_strlcat(buf, cwmessage, BUFSIZE);
+	g_strlcat(buf, cwmessage, BUFSIZE);
     }
 
     sendto_rc = sendto(socket_descriptor, buf, strlen(buf) + 1,
-		   0, (struct sockaddr *) &address,
-		   sizeof(address));
+		       0, (struct sockaddr *) &address,
+		       sizeof(address));
     if (sendto_rc == -1) {
 	mvprintw(24, 0, "Keyer send failed...!");
 	refreshp();

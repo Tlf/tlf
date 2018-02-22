@@ -28,8 +28,8 @@ int fldigi_xmlrpc_cleanup();
 int fldigi_xmlrpc_get_carrier(void);
 int fldigi_get_carrier();
 int fldigi_get_shift_freq();
-int fldigi_get_rx_text(char * line);
-int fldigi_send_text(char * line);
+int fldigi_get_rx_text(char *line);
+int fldigi_send_text(char *line);
 void fldigi_to_rx();
 void xmlrpc_showinfo();
 

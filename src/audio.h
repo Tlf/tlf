@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
- 	*      audio.h include file for soundcard input routine
- 	*
- 	*--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+*      audio.h include file for soundcard input routine
+*
+*--------------------------------------------------------------*/
 
 #ifndef AUDIO_H
 #define AUDIO_H
@@ -34,6 +34,6 @@
 void init_audio();
 int close_audio();
 int testaudio();
-void record (void);
+void record(void);
 
 #endif /* AUDIO_H */

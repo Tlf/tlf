@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *      List and set parameters
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *      List and set parameters
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -39,8 +39,7 @@
 #include "writeparas.h"
 
 
-int setparameters(void)
-{
+int setparameters(void) {
 
     extern int cluster;
     extern int shortqsonr;

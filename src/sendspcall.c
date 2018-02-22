@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-  	/* ------------------------------------------------------------
- 	*        Sendspcall  sends (de) call if callarea empty
- 	*
- 	*--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+*        Sendspcall  sends (de) call if callarea empty
+*
+*--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -51,7 +51,7 @@ char *PrepareSPcall() {
 
     if (trxmode == CWMODE) {
 
-	if (demode ==  SEND_DE )
+	if (demode == SEND_DE)
 	    strcat(buf, "DE ");
 
 	strcat(buf, call);
@@ -59,16 +59,15 @@ char *PrepareSPcall() {
     } else if (trxmode == DIGIMODE) {
 
 	if (digikeyer == MFJ1278_KEYER) {
-	    strcat (buf, "{ ");	/* => ctrl-t */
+	    strcat(buf, "{ ");	/* => ctrl-t */
 	    if (demode ==  SEND_DE) {
 		strcat(buf, hiscall);
 		strcat(buf, " DE ");
 	    }
-	    strcat (buf, call);
-	    strcat (buf, "}");	/* => ctrl-r */
-	}
-	else {
-	    if (demode ==  SEND_DE ) {
+	    strcat(buf, call);
+	    strcat(buf, "}");	/* => ctrl-r */
+	} else {
+	    if (demode ==  SEND_DE) {
 		strcat(buf, hiscall);
 		strcat(buf, " DE ");
 	    }
@@ -79,7 +78,7 @@ char *PrepareSPcall() {
 }
 
 
-void sendspcall(void){
+void sendspcall(void) {
 
     extern int trxmode;
     extern char message[][80];
@@ -90,8 +89,7 @@ void sendspcall(void){
 	/* if set use SPCALL message */
 	if (*message[SP_CALL_MSG] != '\0') {
 	    sendmessage(message[SP_CALL_MSG]);
-	}
-	else { /* otherwise prepare one */
+	} else { /* otherwise prepare one */
 	    char *SPcall = PrepareSPcall();
 	    sendmessage(SPcall);
 	    g_free(SPcall);

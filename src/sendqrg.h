@@ -28,8 +28,8 @@
 #ifdef HAVE_LIBHAMLIB
 # include <hamlib/rig.h>
 
-int init_tlf_rig (void);
-int close_tlf_rig (RIG *my_rig);
+int init_tlf_rig(void);
+int close_tlf_rig(RIG *my_rig);
 #endif
 
 int sendqrg(void);

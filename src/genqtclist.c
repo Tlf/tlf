@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *        Generate QTC list to send
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        Generate QTC list to send
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -29,7 +29,7 @@
 #include "qtcvars.h"		// Includes globalvars.h
 
 
-void genqtcline(char * qtc, char * line);
+void genqtcline(char *qtc, char *line);
 
 /** generate list of QTCs to send
  *
@@ -37,8 +37,8 @@ void genqtcline(char * qtc, char * line);
  * \param nrofqtc  - maximum number of lines to send
  * \return  number of actual lines in the qtclist
  */
-int genqtclist(char * callsign, int nrofqtc)
-{
+int genqtclist(char *callsign, int nrofqtc) {
+
     int qtclistlen;
     int s = 0, i = 0;
 
@@ -48,12 +48,12 @@ int genqtclist(char * callsign, int nrofqtc)
     }
 
     /* initialize qtclist */
-    qtclist.serial = nr_qtcsent+1;
+    qtclist.serial = nr_qtcsent + 1;
     qtclist.marked = 0;
     qtclist.totalsent = 0;
     qtclist.count = 0;
     strncpy(qtclist.callsign, callsign, strlen(callsign));
-    for(s = 0; s < qtclistlen; s++) {
+    for (s = 0; s < qtclistlen; s++) {
 	qtclist.qtclines[s].qtc[0] = '\0';
 	qtclist.qtclines[s].flag = 0;
 	qtclist.qtclines[s].saved = 0;
@@ -61,37 +61,35 @@ int genqtclist(char * callsign, int nrofqtc)
 	qtclist.qtclines[s].senttime[0] = '\0';
     }
 
-    s=next_qtc_qso;
+    s = next_qtc_qso;
 
     while (qtclist.count < qtclistlen && s < nr_qsos) {
-        if (strlen(callsign) == 0 ||
-		strncmp(qsos[s]+29, callsign, strlen(callsign)) != 0) {
+	if (strlen(callsign) == 0 ||
+		strncmp(qsos[s] + 29, callsign, strlen(callsign)) != 0) {
 	    /* exclude current callsign */
 
-	  if (qsoflags_for_qtc[s] == 0) {
-	      /* qso line not yet used for QTC */
+	    if (qsoflags_for_qtc[s] == 0) {
+		/* qso line not yet used for QTC */
 
-	      genqtcline(qtclist.qtclines[i].qtc, qsos[s]);
+		genqtcline(qtclist.qtclines[i].qtc, qsos[s]);
 
-	      if (trxmode == DIGIMODE) {
-		  qtclist.qtclines[i].flag = 1;
-		  qtclist.marked++;
-	      }
-	      else {
-		  if (i == 0) {
-		      qtclist.qtclines[i].flag = 1;
-		      qtclist.marked++;
-		  }
-		  else {
-		      qtclist.qtclines[i].flag = 0;
-		  }
-	      }
-	      /* remember number of the corresponding QSO line */
-	      qtclist.qtclines[i].qsoline = s;
+		if (trxmode == DIGIMODE) {
+		    qtclist.qtclines[i].flag = 1;
+		    qtclist.marked++;
+		} else {
+		    if (i == 0) {
+			qtclist.qtclines[i].flag = 1;
+			qtclist.marked++;
+		    } else {
+			qtclist.qtclines[i].flag = 0;
+		    }
+		}
+		/* remember number of the corresponding QSO line */
+		qtclist.qtclines[i].qsoline = s;
 
-	      qtclist.count++;
-	      i++;	/* next qtcline */
-	  }
+		qtclist.count++;
+		i++;	/* next qtcline */
+	    }
 	}
 	s++;		/* try next qso */
     }
@@ -99,38 +97,38 @@ int genqtclist(char * callsign, int nrofqtc)
     return qtclist.count;
 }
 
-void genqtcline(char * qtc, char * qsoline) {
+void genqtcline(char *qtc, char *qsoline) {
     int i, qpos, nr;
     char tstring[5];
 
     /* pick out qso time hhmm */
-    strncpy(qtc, qsoline+17, 2);
-    strncpy(qtc+2, qsoline+20, 2);
+    strncpy(qtc, qsoline + 17, 2);
+    strncpy(qtc + 2, qsoline + 20, 2);
     qtc[4] = ' ';
 
     /* copy callsign */
     qpos = 5;
-    for(i=29; qsoline[i] != ' '; i++) {
+    for (i = 29; qsoline[i] != ' '; i++) {
 	qtc[qpos] = qsoline[i];
 	qpos++;
     }
-    while(qpos<20) {
-       qtc[qpos] = ' ';
-       qpos++;
+    while (qpos < 20) {
+	qtc[qpos] = ' ';
+	qpos++;
     }
 
     /* add finally 3 or 4 digit exchange */
-    strncpy(tstring, qsoline+54, 4);
+    strncpy(tstring, qsoline + 54, 4);
     nr = atoi(tstring);
     // 3 digit
     if (nr < 1000) {
-        sprintf(tstring, "%03d ", nr);
+	sprintf(tstring, "%03d ", nr);
     }
     // 4 digit
     else {
-        sprintf(tstring, "%d", nr);
+	sprintf(tstring, "%d", nr);
     }
-    strncpy(qtc+qpos, tstring, strlen(tstring));
+    strncpy(qtc + qpos, tstring, strlen(tstring));
     qpos += 4;
     qtc[qpos] = '\0';
 }

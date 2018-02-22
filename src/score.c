@@ -19,10 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *     score
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *     score
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <math.h>
@@ -39,8 +39,8 @@
 int calc_continent(int zone);
 
 /* check if hiscall is in COUNTRY_LIST from logcfg.dat */
-int country_found(char prefix[])
-{
+int country_found(char prefix[]) {
+
     extern int countrynr;
     extern char hiscall[];
     extern char call[];
@@ -65,8 +65,8 @@ int country_found(char prefix[])
     return 0;
 }
 
-int exist_in_country_list()
-{
+int exist_in_country_list() {
+
     extern char pxstr[];
     char prefix[10];
 
@@ -76,13 +76,13 @@ int exist_in_country_list()
 	return (1);
     } else {
 	if ((prefix[strlen(prefix) - 1] < 58)	/* last char '0'..'9' */
-	    && (prefix[strlen(prefix) - 1] > 47)) {
+		&& (prefix[strlen(prefix) - 1] > 47)) {
 	    prefix[strlen(prefix) - 1] = '\0';  /* strip number */
 	    if (country_found(prefix) == 1) {
 		return 1;
 	    } else {
 		if ((prefix[strlen(prefix) - 1] < 58) /* see above */
-		    && (prefix[strlen(prefix) - 1] > 47)) {
+			&& (prefix[strlen(prefix) - 1] > 47)) {
 		    prefix[strlen(prefix) - 1] = '\0';
 		    if (country_found(prefix) == 1)
 			return (1);
@@ -148,23 +148,23 @@ int portable_doubles(int points) {
 
 
 /* apply points by mode */
-int scoreByMode () {
+int scoreByMode() {
     extern int cwpoints;
     extern int ssbpoints;
     extern int trxmode;
 
     switch (trxmode) {
-	case CWMODE:
-	    return cwpoints;
-	case SSBMODE:
-	    return ssbpoints;
-	default:
-	    return 0;
+    case CWMODE:
+	return cwpoints;
+    case SSBMODE:
+	return ssbpoints;
+    default:
+	return 0;
     }
 }
 
 
-int scoreByContinentOrCountry () {
+int scoreByContinentOrCountry() {
 
     extern char hiscall[];
 
@@ -224,12 +224,10 @@ int scoreByContinentOrCountry () {
 	    // if we are on DX continent
 	    if (strcmp(continent, mycontinent) == 0) {
 		points = my_cont_points;
+	    } else if (continentlist_points != -1) {
+		points = continentlist_points;
 	    }
-	    else if (continentlist_points != -1) {
-	      points = continentlist_points;
-	    }
-	}
-	else {
+	} else {
 	    points = 0;
 	}
     }
@@ -244,8 +242,8 @@ int scoreByContinentOrCountry () {
  * are active
  * \return points for QSO
  */
-int scoreDefault()
-{
+int scoreDefault() {
+
     extern int cwpoints;
     extern int ssbpoints;
     extern int one_point;
@@ -281,8 +279,8 @@ int scoreDefault()
 }
 
 
-int score()
-{
+int score() {
+
     extern int dupe;
     extern int band_score[NBANDS];
     extern int bandinx;
@@ -316,7 +314,7 @@ int score()
     band_score[bandinx]++;	/* qso's per band  */
 
     if ((arrldx_usa == 1)
-	&& ((countrynr == w_cty) || (countrynr == ve_cty)))
+	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	band_score[bandinx]--;
 
     if (focm == 1) {
@@ -333,7 +331,7 @@ int score()
 	}
 
 	if ((strcmp(continent, mycontinent) == 0)
-	    && (bandinx > BANDINDEX_30)) {
+		&& (bandinx > BANDINDEX_30)) {
 	    if (strstr(mycontinent, "NA") != NULL) {
 		points = 2;
 	    } else {
@@ -344,7 +342,7 @@ int score()
 	}
 
 	if ((strcmp(continent, mycontinent) == 0)
-	    && (bandinx < BANDINDEX_30)) {
+		&& (bandinx < BANDINDEX_30)) {
 	    if (strstr(mycontinent, "NA") != NULL) {
 		points = 4;
 	    } else {
@@ -353,13 +351,13 @@ int score()
 	    return points;
 	}
 	if ((strcmp(continent, mycontinent) != 0)
-	    && (bandinx > BANDINDEX_30)) {
+		&& (bandinx > BANDINDEX_30)) {
 	    points = 3;
 
 	    return points;
 	}
 	if ((strcmp(continent, mycontinent) != 0)
-	    && (bandinx < BANDINDEX_30)) {
+		&& (bandinx < BANDINDEX_30)) {
 	    points = 6;
 
 	    return points;
@@ -432,7 +430,7 @@ int score()
 
 	    qrb(s1long, s1lat, s2long, s2lat, &distance, &azimuth);
 
-	    points = (int) ceil(distance/500.0);
+	    points = (int) ceil(distance / 500.0);
 	}
 
 	return points;
@@ -444,16 +442,14 @@ int score()
 
 
 /* -----------------------------------------------------------------*/
-int score2(char *line)
-{
+int score2(char *line) {
     return atoi(line + 75);
 }
 
 
 /* ----------------------------------------------------------------- */
 /* calculates continent from zone and sets 'continent' variable      */
-int calc_continent(int zone)
-{
+int calc_continent(int zone) {
     extern char continent[];
 
     switch (zone) {

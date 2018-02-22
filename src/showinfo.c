@@ -16,11 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *
-	 *              Make info string for lower status line
-	 *		x - countrynumber
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *
+ *              Make info string for lower status line
+ *		x - countrynumber
+ *--------------------------------------------------------------*/
 
 /** Show infos for selected country on bottom of screen
  *
@@ -42,8 +42,8 @@
 #include "ui_utils.h"
 
 
-int showinfo(int x)
-{
+int showinfo(int x) {
+
     extern char cqzone[];
     extern char ituzone[];
     extern double DEST_Lat;
@@ -106,8 +106,8 @@ int showinfo(int x)
     mvprintw(24, 0, " %s  %s             ", pxstr, countrystr);
 
     mvprintw(24, 26,
-	 " %s %s                                           ",
-	 contstr, zonestr);
+	     " %s %s                                           ",
+	     contstr, zonestr);
 
     if (x != 0 && x != mycountrynr) {
 	qrb_(&range, &bearing);

@@ -33,8 +33,7 @@
  * \param sundown - local sundown in hours
  */
 
-void sunup(double DEST_Lat, double *sunrise, double *sundown)
-{
+void sunup(double DEST_Lat, double *sunrise, double *sundown) {
 
     extern struct tm *time_ptr;
 
@@ -54,8 +53,8 @@ void sunup(double DEST_Lat, double *sunrise, double *sundown)
 	total_days += 365.25;
 
     /* calculate todays lattitude of the sun */
-    sun_lat = asin( sin(23.439 / RADIAN) *
-	    sin(((total_days - 90.086) / 365.25) * 360 / RADIAN)) * RADIAN;
+    sun_lat = asin(sin(23.439 / RADIAN) *
+		   sin(((total_days - 90.086) / 365.25) * 360 / RADIAN)) * RADIAN;
 
     /* sunshine period today at given lat */
     sunshine =

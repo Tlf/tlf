@@ -18,9 +18,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *   edit the 5 latest qsos
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *   edit the 5 latest qsos
+ *--------------------------------------------------------------*/
 
 
 #include <assert.h>
@@ -39,11 +39,11 @@
 
 
 /* highlight the edit line and set the cursor */
-static void highlight_line(int row, char *line, int column)
-{
-    char ln[NR_COLS+1];
+static void highlight_line(int row, char *line, int column) {
 
-    g_strlcpy (ln, line, NR_COLS+1);
+    char ln[NR_COLS + 1];
+
+    g_strlcpy(ln, line, NR_COLS + 1);
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(7 + row, 0, ln);
     mvprintw(7 + row, column, "");
@@ -51,37 +51,36 @@ static void highlight_line(int row, char *line, int column)
 }
 
 /* reset the highlight state */
-static void unhighlight_line(int row, char *line)
-{
-    char ln[NR_COLS+1];
+static void unhighlight_line(int row, char *line) {
 
-    g_strlcpy (ln, line, NR_COLS+1);
+    char ln[NR_COLS + 1];
+
+    g_strlcpy(ln, line, NR_COLS + 1);
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     mvprintw(7 + row, 0, ln);
 }
 
 
 /* get a copy of selected QSO into the buffer */
-void get_qso(int nr, char *buffer)
-{
-    assert (nr < nr_qsos);
-    strcpy (buffer, qsos[nr]);
-    assert (strlen(buffer) == (LOGLINELEN - 1));
+void get_qso(int nr, char *buffer) {
+
+    assert(nr < nr_qsos);
+    strcpy(buffer, qsos[nr]);
+    assert(strlen(buffer) == (LOGLINELEN - 1));
 }
 
 /* save editbuffer back to log */
-void putback_qso (int nr, char *buffer)
-{
+void putback_qso(int nr, char *buffer) {
     FILE *fp;
 
-    assert (strlen(buffer) == (LOGLINELEN - 1));
-    assert (nr < nr_qsos);
+    assert(strlen(buffer) == (LOGLINELEN - 1));
+    assert(nr < nr_qsos);
 
     if ((fp = fopen(logfile, "r+")) == NULL) {
 	mvprintw(24, 0, "Can not open logfile...");
 	refreshp();
 	sleep(2);
-    }else {
+    } else {
 	fseek(fp, (long)nr * LOGLINELEN, SEEK_SET);
 	fputs(buffer, fp);
 	fputs("\n", fp);
@@ -93,12 +92,11 @@ void putback_qso (int nr, char *buffer)
 }
 
 
-void edit_last(void)
-{
+void edit_last(void) {
 
     int j = 0, b, k;
-    int editline = NR_LINES-1;
-    char editbuffer[LOGLINELEN+1];
+    int editline = NR_LINES - 1;
+    char editbuffer[LOGLINELEN + 1];
 
     if (nr_qsos == 0)
 	return;			/* nothing to edit */
@@ -108,7 +106,7 @@ void edit_last(void)
     b = 29;
 
     /* start with last QSO */
-    get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
+    get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 
     while (j != 27 && j != '\n' && j != KEY_ENTER) {
 	highlight_line(editline, editbuffer, b);
@@ -119,11 +117,11 @@ void edit_last(void)
 	if (j == 1 || j == KEY_HOME) {
 	    b = 1;
 
-	// Ctrl-E (^E) or <End>, end of line.
+	    // Ctrl-E (^E) or <End>, end of line.
 	} else if (j == 5 || j == KEY_END) {
 	    b = 77;
 
-	// <Tab>, next field.
+	    // <Tab>, next field.
 	} else if (j == 9) {
 	    if (b < 17)
 		b = 17;
@@ -138,79 +136,79 @@ void edit_last(void)
 	    else
 		b = 1;
 
-	// Up arrow, move to previous line.
+	    // Up arrow, move to previous line.
 	} else if (j == KEY_UP) {
 	    if (editline > (NR_LINES - nr_qsos) && (editline > 0)) {
 		unhighlight_line(editline, editbuffer);
-		putback_qso (nr_qsos - (NR_LINES -editline), editbuffer);
+		putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 		editline--;
-		get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
+		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 	    } else {
 		logview();
 		j = 27;
 	    }
 
-	// Down arrow, move to next line.
+	    // Down arrow, move to next line.
 	} else if (j == KEY_DOWN) {
 
-	    if (editline < NR_LINES-1) {
+	    if (editline < NR_LINES - 1) {
 		unhighlight_line(editline, editbuffer);
-		putback_qso (nr_qsos - (NR_LINES -editline), editbuffer);
+		putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 		editline++;
-		get_qso (nr_qsos - (NR_LINES - editline), editbuffer);
+		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 	    } else
 		j = 27;		/* escape */
 
-	// Left arrow, move cursor one position left.
+	    // Left arrow, move cursor one position left.
 	} else if (j == KEY_LEFT) {
 	    if (b >= 1)
 		b--;
 
-	// Right arrow, move cursor one position right.
+	    // Right arrow, move cursor one position right.
 	} else if (j == KEY_RIGHT) {
 	    if (b < 79)
 		b++;
 
-	// <Insert>, positions 0 to 27.
+	    // <Insert>, positions 0 to 27.
 	} else if ((j == KEY_IC) && (b >= 0) && (b < 28)) {
 	    for (k = 28; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	// <Insert>, positions 29 to 38.
+	    // <Insert>, positions 29 to 38.
 	} else if ((j == KEY_IC) && (b >= 29) && (b < 39)) {
 	    for (k = 39; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	// <Insert>, positions 54 to 63.
+	    // <Insert>, positions 54 to 63.
 	} else if ((j == KEY_IC) && (b >= 54) && (b < 64)) {
 	    for (k = 64; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	// <Insert>, positions 68 to 75.
+	    // <Insert>, positions 68 to 75.
 	} else if ((j == KEY_IC) && (b >= 68) && (b < 76)) {
 	    for (k = 76; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 
-	// <Delete>, positions 1 to 27.
+	    // <Delete>, positions 1 to 27.
 	} else if ((j == KEY_DC) && (b >= 1) && (b < 28)) {
 	    for (k = b; k < 28; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	// <Delete>, positions 29 to 38.
+	    // <Delete>, positions 29 to 38.
 	} else if ((j == KEY_DC) && (b >= 29) && (b < 39)) {
 	    for (k = b; k < 39; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	// <Delete>, positions 68 to 75.
+	    // <Delete>, positions 68 to 75.
 	} else if ((j == KEY_DC) && (b >= 68) && (b < 76)) {
 	    for (k = b; k < 76; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	// <Delete>, positions 54 to 63.
+	    // <Delete>, positions 54 to 63.
 	} else if ((j == KEY_DC) && (b >= 54) && (b < 64)) {
 	    for (k = b; k < 64; k++)
 		editbuffer[k] = editbuffer[k + 1];
@@ -231,7 +229,7 @@ void edit_last(void)
     }
 
     unhighlight_line(editline, editbuffer);
-    putback_qso (nr_qsos - (NR_LINES - editline), editbuffer);
+    putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 
     scroll_log();
 

@@ -21,6 +21,6 @@
 #ifndef SEARCHCALLARRAY_H
 #define SEARCHCALLARRAY_H
 
-int searchcallarray  (char  *hiscall);
+int searchcallarray(char *hiscall);
 
 #endif /* SEARCHCALLARRAY_H */

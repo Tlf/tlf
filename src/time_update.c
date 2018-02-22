@@ -17,12 +17,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *
-	 *              Update time
-	 *
-	 *              also updates windows every second
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *
+ *              Update time
+ *
+ *              also updates windows every second
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -44,8 +44,8 @@
  *
  * every 120s broadcast frequency via LAN and
  * act as time master if allowed */
-void broadcast_lan(void)
-{
+void broadcast_lan(void) {
+
     extern int time_master;
     extern float freq;
     static int frcounter = 0;
@@ -64,8 +64,8 @@ void broadcast_lan(void)
 
 
 /** update band, date and time */
-void update_line(char *timestr)
-{
+void update_line(char *timestr) {
+
     extern struct tm *time_ptr;
 
     static int daysecs = 0;
@@ -88,8 +88,8 @@ void update_line(char *timestr)
 
 
 /** show frequency and frequency memory if rig control is active */
-void show_freq(void)
-{
+void show_freq(void) {
+
     extern int showfreq;
     extern int showscore_flag;
     extern float mem;
@@ -116,8 +116,8 @@ void show_freq(void)
 }
 
 
-void time_update(void)
-{
+void time_update(void) {
+
     extern struct tm *time_ptr;
     extern char qsonrstr[];
     extern int bandinx;
@@ -150,7 +150,7 @@ void time_update(void)
 	bandmap_age();		/* age bandmap spots every second */
 	clusterinfo();		/* update cluster and bandmap display */
 
-				/* write bandmap spots to file every 10s */
+	/* write bandmap spots to file every 10s */
 	bm_timeout = (bm_timeout + 1) % 10;
 	if (bm_timeout == 0) {
 
@@ -186,7 +186,7 @@ void time_update(void)
 	    mvprintw(10, 0, logline3);
 	    mvprintw(11, 0, logline4);
 	    mvprintw(13, 0,
-		    "                                                                    ");
+		     "                                                                    ");
 	    attron(COLOR_PAIR(C_WINDOW));
 	    mvprintw(12, 23, qsonrstr);
 	    printcall();

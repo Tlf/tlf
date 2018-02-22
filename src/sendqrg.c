@@ -31,10 +31,9 @@
 void send_bandswitch(int trxqrg);
 
 /* check if call input field contains a frequency value and switch to it.
- * 
+ *
  */
-int sendqrg(void)
-{
+int sendqrg(void) {
 
     extern char hiscall[];
     extern int trx_control;
@@ -50,7 +49,7 @@ int sendqrg(void)
     int bandinx = freq2band((unsigned int)(trxqrg * 1000.0));
 
     if (bandinx == BANDINDEX_OOB) {
-        return 0;   // not a frequency or out of band
+	return 0;   // not a frequency or out of band
     }
 
     set_outfreq(trxqrg * 1000);
@@ -62,8 +61,7 @@ int sendqrg(void)
 /**************************************************************************/
 #ifdef HAVE_LIBHAMLIB		//code for Hamlib interface
 
-int init_tlf_rig(void)
-{
+int init_tlf_rig(void) {
     extern RIG *my_rig;
     extern rig_model_t myrig_model;
     extern char rigconf[];
@@ -99,8 +97,7 @@ int init_tlf_rig(void)
 	    rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
 	    strncpy(my_rig->state.rigport.pathname, rigportname,
 		    FILPATHLEN);
-	} else
-	{
+	} else {
 	    showmsg("Missing rig port name!");
 	    return (-1);
 	}
@@ -114,8 +111,7 @@ int init_tlf_rig(void)
     if (rigptt & (1 << 0)) {
 	if (caps->ptt_type == RIG_PTT_RIG) {
 	    rigptt |= (1 << 1);		/* bit 1 set--CAT PTT available. */
-	}
-	else {
+	} else {
 	    rigptt = 0;
 	    showmsg("Controlling PTT via hamlib is not supported for that rig!");
 	}
@@ -211,9 +207,9 @@ int init_tlf_rig(void)
 	    sleep(1);
 	} else {
 	    shownr("freq =", (int) rigfreq);
-            if (rigfreq != testfreq) {
-                showmsg("Failed to set rig freq!");
-            }
+	    if (rigfreq != testfreq) {
+		showmsg("Failed to set rig freq!");
+	    }
 	}
 	sleep(10);
 
@@ -223,8 +219,7 @@ int init_tlf_rig(void)
     return (0);
 }
 
-int close_tlf_rig(RIG * my_rig)
-{
+int close_tlf_rig(RIG *my_rig) {
     extern char *rigportname;
 
     rig_close(my_rig);		/* close port */

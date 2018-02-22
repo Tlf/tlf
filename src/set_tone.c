@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *        Set Cw sidetone
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        Set Cw sidetone
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <stdlib.h>
@@ -31,8 +31,7 @@
 #include "tlf.h"
 
 
-int set_tone(void)
-{
+int set_tone(void) {
 
     extern char tonestr[];
     extern int trxmode;
@@ -54,8 +53,7 @@ int set_tone(void)
     return (0);
 }
 
-void write_tone(void)
-{
+void write_tone(void) {
 
     extern int trxmode;
     extern char tonestr[];
@@ -75,7 +73,7 @@ void write_tone(void)
 	 * or to 70% (like cwdaemon) if no volume got specified
 	 */
 	if (*sc_volume != '\0')     // set soundcard volume
-            netkeyer(K_STVOLUME, sc_volume);
+	    netkeyer(K_STVOLUME, sc_volume);
 	else
 	    netkeyer(K_STVOLUME, "70");
     }

@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *        Write parameter file to disk
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        Write parameter file to disk
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <stdio.h>
@@ -32,8 +32,8 @@
 #include "tlf_curses.h"
 
 
-int writeparas(void)
-{
+int writeparas(void) {
+
     extern char call[];
     extern char message[][80];
     extern char headerline[];

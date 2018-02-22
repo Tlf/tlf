@@ -16,14 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *   get zone number
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *   get zone number
+ *
+ *--------------------------------------------------------------*/
 
 
-int zone_nr(char *comment)
-{
+int zone_nr(char *comment) {
     int z = 0;
 
     if (comment[0] <= 57 && comment[0] >= 48)

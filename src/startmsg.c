@@ -28,38 +28,38 @@ static int linectr; // global
 
 void showmsg(char *message) {
 
-extern int verbose;
+    extern int verbose;
 
- if (linectr == 24) linectr = 1;
+    if (linectr == 24) linectr = 1;
 
- mvprintw(linectr, 0, message);
- refreshp();
- if (verbose == 1) sleep(1);
- linectr++;
+    mvprintw(linectr, 0, message);
+    refreshp();
+    if (verbose == 1) sleep(1);
+    linectr++;
 }
 //---------------------------------------------------------------
 
 void shownr(char *message, int nr) {
 
-extern int verbose;
+    extern int verbose;
 
- if (linectr == 24) linectr = 1;
+    if (linectr == 24) linectr = 1;
 
- mvprintw(linectr, 0, "%s %d", message, nr);
- refreshp();
- if (verbose == 1) sleep(1);
- linectr++;
+    mvprintw(linectr, 0, "%s %d", message, nr);
+    refreshp();
+    if (verbose == 1) sleep(1);
+    linectr++;
 }
 //----------------------------------------------------------------
 
 void showstring(char *message1, char *message2) {
 
-  extern int verbose;
+    extern int verbose;
 
- if (linectr == 24) linectr = 1;
+    if (linectr == 24) linectr = 1;
 
- mvprintw(linectr, 0, "%s %s", message1, message2);
- refreshp();
- if (verbose == 1) sleep(1);
- linectr++;
+    mvprintw(linectr, 0, "%s %s", message1, message2);
+    refreshp();
+    if (verbose == 1) sleep(1);
+    linectr++;
 }

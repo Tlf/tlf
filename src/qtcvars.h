@@ -37,44 +37,44 @@
 #define QTC_NO 16	// NO QTC for/from this station
 
 typedef struct {
-  int qsoline;	// qsos[INDEX]
-  int flag;	// flag to mark for send
-  int saved;	// indicates QTC has saved
-  int sent;	// indicates QTC has sent at least once
-  char qtc[25]; // QTC line by concatenated fields
-  char senttime[16];  // sent time: YY-Mon-dd HH:MM\0
+    int qsoline;	// qsos[INDEX]
+    int flag;	// flag to mark for send
+    int saved;	// indicates QTC has saved
+    int sent;	// indicates QTC has sent at least once
+    char qtc[25]; // QTC line by concatenated fields
+    char senttime[16];  // sent time: YY-Mon-dd HH:MM\0
 } t_qtcline;
 
 typedef struct {
-  int serial;	// qtc serial
-  int count;	// nr of qtc line in block
-  int marked;	// nr of marked to send
-  int totalsent; // nr of sent qtc's
-  char callsign[15];  // current callsign; helps to detect if QSO has dropped
-  t_qtcline qtclines[QTC_LINES];
+    int serial;	// qtc serial
+    int count;	// nr of qtc line in block
+    int marked;	// nr of marked to send
+    int totalsent; // nr of sent qtc's
+    char callsign[15];  // current callsign; helps to detect if QSO has dropped
+    t_qtcline qtclines[QTC_LINES];
 } t_qtclist;
 
 typedef struct {
-  int status;	// received, failed, nothing
-  char time[5];	// time of qso
-  char callsign[15]; // callsign
-  char serial[5]; // qso serial
-  int confirmed; // qtc had confirmed
-  char receivedtime[16]; // received time: YY-Mon-dd HH:MM\0
+    int status;	// received, failed, nothing
+    char time[5];	// time of qso
+    char callsign[15]; // callsign
+    char serial[5]; // qso serial
+    int confirmed; // qtc had confirmed
+    char receivedtime[16]; // received time: YY-Mon-dd HH:MM\0
 } t_qtcrecline;
 
 typedef struct {
-  int serial;
-  int count;
-  int confirmed;
-  int sentcfmall;
-  char callsign[15];
-  t_qtcrecline qtclines[QTC_LINES];
+    int serial;
+    int count;
+    int confirmed;
+    int sentcfmall;
+    char callsign[15];
+    t_qtcrecline qtclines[QTC_LINES];
 } t_qtcreclist;
 
 typedef struct {
-  char content[50];
-  int attr;		// meta attr: 0 => not nopied, 1 => copied
+    char content[50];
+    int attr;		// meta attr: 0 => not nopied, 1 => copied
 } t_qtc_ry_line;
 
 extern int next_qtc_qso;		// the next non-sent QSO, which can

@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-    /* ------------------------------------------------------------
-     *      Set contest parameters
-     *
-     *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *      Set contest parameters
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -31,8 +31,7 @@
 #include "tlf.h"
 
 
-int setcontest(void)
-{
+int setcontest(void) {
 
     extern int focm;
     extern int wpx;

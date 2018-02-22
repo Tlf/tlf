@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-  	/* ------------------------------------------------------------
- 	*        Store_qso  writes qso to disk
- 	*
- 	*--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+*        Store_qso  writes qso to disk
+*
+*--------------------------------------------------------------*/
 
 
 #include <stdio.h>
@@ -30,22 +30,23 @@
 #include "tlf_curses.h"
 
 
-int store_qso(char *loglineptr)
-{
-	FILE *fp;
+int store_qso(char *loglineptr) {
+    FILE *fp;
 
-	if  ( (fp = fopen(logfile,"a"))  == NULL){
-		fprintf(stdout,  "store_qso.c: Error opening file.\n");
-		endwin();
-		exit(1);
-	}
-	strcpy(qsos[nr_qsos], loglineptr);
-	nr_qsos++;
-	strcat(loglineptr, "\n");	// pa3fwm, 20040113: this looks suspicious, repeated calls to store_qso() could add multiple \n's
-	fputs  (loglineptr, fp);
+    if ((fp = fopen(logfile, "a"))  == NULL) {
+	fprintf(stdout,  "store_qso.c: Error opening file.\n");
+	endwin();
+	exit(1);
+    }
+    strcpy(qsos[nr_qsos], loglineptr);
+    nr_qsos++;
+    strcat(loglineptr, "\n");	/* pa3fwm, 20040113: this looks suspicious,
+				   repeated calls to store_qso() could 
+				   add multiple \n's */
+    fputs(loglineptr, fp);
 
-	fclose(fp);
+    fclose(fp);
 
-	return(0);
+    return (0);
 }
 

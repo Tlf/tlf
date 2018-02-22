@@ -22,20 +22,20 @@
 #define QTCUTIL_H
 
 struct t_qtc_store_obj {
-  int total;
-  int received;
-  int sent;
-  int capable;
+    int total;
+    int received;
+    int sent;
+    int capable;
 };
 
 void qtc_init();
 void qtc_inc(char callsign[15], int direction);
 void qtc_dec(char callsign[15], int direction);
-struct t_qtc_store_obj * qtc_get(char callsign[15]);
+struct t_qtc_store_obj *qtc_get(char callsign[15]);
 
-void parse_qtcline(char * line, char callsign[15], int direction);
-char qtc_get_value(struct t_qtc_store_obj * qtc_obj);
-void parse_qtc_flagline(char * lineptr);
-int parse_qtc_flagstr(char * lineptr, char * callsign, char * flag);
+void parse_qtcline(char *line, char callsign[15], int direction);
+char qtc_get_value(struct t_qtc_store_obj *qtc_obj);
+void parse_qtc_flagline(char *lineptr);
+int parse_qtc_flagstr(char *lineptr, char *callsign, char *flag);
 
 #endif /* end of include guard: QTCUTIL_H */

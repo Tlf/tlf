@@ -165,8 +165,8 @@ struct mults_t {
 
 #define MAXPFXNUMMULT 30
 typedef struct {
-  int countrynr;
-  int qsos[10];
+    int countrynr;
+    int qsos[10];
 } t_pfxnummulti;
 
 

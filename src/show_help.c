@@ -17,11 +17,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/*
-	 * ------------------------------------------------------------ *
-	 * Show help file *
-	 * *--------------------------------------------------------------
-	 */
+/*
+ * ------------------------------------------------------------ *
+ * Show help file *
+ * *--------------------------------------------------------------
+ */
 
 
 #include <stdlib.h>
@@ -50,7 +50,7 @@ int show_help(void) {
 	helpfile = g_strdup(filename);
     } else {
 	helpfile = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
-		filename, NULL);
+			       filename, NULL);
 	if (g_access(helpfile, R_OK) != 0) {
 	    g_free(helpfile);
 	    return -1;
@@ -60,9 +60,9 @@ int show_help(void) {
     cmdstr = g_strdup_printf("less %s", helpfile);
 
     endwin();
-    rc=system("clear");
-    rc=system(cmdstr);
-    rc=system("clear");
+    rc = system("clear");
+    rc = system(cmdstr);
+    rc = system("clear");
 
     g_free(helpfile);
     g_free(cmdstr);

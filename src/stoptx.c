@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-    /* ------------------------------------------------------------
- 	*      Stop TX
- 	*
- 	*--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+*      Stop TX
+*
+*--------------------------------------------------------------*/
 
 
 #include "clear_display.h"
@@ -29,31 +29,28 @@
 
 #include "fldigixmlrpc.h"
 
-int stoptx(void)
-{
-  	extern int trxmode;
-  	extern int cwkeyer;
-	extern int digikeyer;
+int stoptx(void) {
+    extern int trxmode;
+    extern int cwkeyer;
+    extern int digikeyer;
 
 
-	if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
-	    fldigi_to_rx();
- 	}
-	else if (trxmode == CWMODE) {
-	    if (cwkeyer == NET_KEYER) {
+    if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
+	fldigi_to_rx();
+    } else if (trxmode == CWMODE) {
+	if (cwkeyer == NET_KEYER) {
 
-		if (netkeyer (K_ABORT, NULL) < 0) {
+	    if (netkeyer(K_ABORT, NULL) < 0) {
 
-			mvprintw(24,0, "keyer not active; switching to SSB");
-			trxmode = SSBMODE;
-			clear_display();
+		mvprintw(24, 0, "keyer not active; switching to SSB");
+		trxmode = SSBMODE;
+		clear_display();
 
-		}
 	    }
 	}
-	else {
-	    return(1);
-	}
-	return(0);
+    } else {
+	return (1);
+    }
+    return (0);
 }
 

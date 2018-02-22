@@ -74,8 +74,7 @@ void setspeed(void) {
  *        Page-up increases CW speed with 2 wpm
  *
  *--------------------------------------------------------------*/
-int speedup(void)
-{
+int speedup(void) {
     extern int trxmode;
 
     if (trxmode != CWMODE)
@@ -96,8 +95,7 @@ int speedup(void)
  *        Page down,  decrementing the cw speed with  2 wpm
  *
  *--------------------------------------------------------------*/
-int speeddown(void)
-{
+int speeddown(void) {
     extern int trxmode;
 
     if (trxmode != CWMODE)	/* bail out, this is an SSB contest */
@@ -114,8 +112,8 @@ int speeddown(void)
 }
 
 
-int setweight(int weight)
-{				//  write weight to netkeyer
+/*  write weight to netkeyer */
+int setweight(int weight) {
 
     extern int cwkeyer;
 

@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *      search array of worked stations
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *      search array of worked stations
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -34,8 +34,7 @@
  * 	\param hiscall 	callsign to lookup
  *      \return index in callarray where hiscall was found (-1 if not found)
  */
-int searchcallarray(char *hiscall)
-{
+int searchcallarray(char *hiscall) {
     extern int nr_worked;
     extern struct worked_t worked[];
 

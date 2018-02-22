@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *   show prefix map
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *   show prefix map
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -32,8 +32,8 @@
 #include "ui_utils.h"
 
 
-int show_mults(void)
-{
+int show_mults(void) {
+
     extern int countries[MAX_DATALINES];
     extern int bandinx;
     extern int cqww;
@@ -94,12 +94,12 @@ int show_mults(void)
 		for (j = 0; j <= 19; j++) {
 
 		    while ((i < iMax) &&
-			((strncmp(dxcc_by_index(i) -> continent, zonecmp, 2))
-				!= 0)) {
+			    ((strncmp(dxcc_by_index(i) -> continent, zonecmp, 2))
+			     != 0)) {
 			i++;
 		    }
 		    if (i == iMax)
-		  	 break;
+			break;
 
 		    bandmask = inxes[bandinx];
 

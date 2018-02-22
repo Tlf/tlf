@@ -17,13 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *    make sure logfile is present and can be opened for append
-	 *    - create one if it does not exist
-	 *    - check that length of logfile is a integer m^ultiple of
-	 *      the loglinelen
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *    make sure logfile is present and can be opened for append
+ *    - create one if it does not exist
+ *    - check that length of logfile is a integer m^ultiple of
+ *      the loglinelen
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <errno.h>
@@ -61,27 +61,27 @@ int repair_log(char *filename) {
 
     /* make a backup of the original file */
     backupfile = g_strconcat(filename, ".bak", NULL);
-    showstring ( "Backing up original file as: ", backupfile);
+    showstring("Backing up original file as: ", backupfile);
 
     cmd = g_strconcat("cp ", filename, " ", backupfile, NULL);
     rc = system(cmd);
     g_free(cmd);
 
     if (rc != 0) {
-	showmsg( "Could not backup logfile. Giving up!" );
+	showmsg("Could not backup logfile. Giving up!");
 	return 1;
     }
 
 
-    showmsg( "Converting file to new format");
+    showmsg("Converting file to new format");
     if ((infp = fopen(backupfile, "r")) == NULL) {
-	showmsg( "Could not convert logfile. Sorry!" );
+	showmsg("Could not convert logfile. Sorry!");
 	return 1;
     }
 
     if ((outfp = fopen(filename, "w")) == NULL) {
 	fclose(infp);
-	showmsg( "Could not convert logfile. Sorry!" );
+	showmsg("Could not convert logfile. Sorry!");
 	return 1;
     }
 
@@ -91,7 +91,7 @@ int repair_log(char *filename) {
 	g_strchomp(buffer);
 
 	/* append spaces */
-	fill = g_strnfill( (LOGLINELEN-1) - strlen(buffer), ' ' );
+	fill = g_strnfill((LOGLINELEN - 1) - strlen(buffer), ' ');
 	strcat(buffer, fill);
 	g_free(fill);
 
@@ -104,7 +104,7 @@ int repair_log(char *filename) {
 
     g_free(backupfile);
 
-    showmsg( "Done" );
+    showmsg("Done");
     sleep(2);
 
     return 0;
@@ -112,8 +112,8 @@ int repair_log(char *filename) {
 
 
 
-int checklogfile_new(char *filename)
-{
+int checklogfile_new(char *filename) {
+
     int lineno;
     int tooshort;
     char buffer[160];
@@ -123,25 +123,25 @@ int checklogfile_new(char *filename)
     if ((fp = fopen(filename, "r")) == NULL) {
 
 	if (errno == EACCES) {
-	    showstring( "Can not access log file: ", filename);
+	    showstring("Can not access log file: ", filename);
 	    return 1;
 	}
 
 	if (errno == ENOENT) {
 	    /* File not found, create new one */
-	    showmsg( "Log file not found, creating new one");
+	    showmsg("Log file not found, creating new one");
 	    sleep(2);
 	    if ((fp = fopen(filename, "w")) == NULL) {
 		/* cannot create logfile */
-		showmsg( "Creating logfile not possible");
-	        return 1;
+		showmsg("Creating logfile not possible");
+		return 1;
 	    }
 	    /* New logfile created */
 	    fclose(fp);
 	    return 0;
 	}
 
-	showstring( "Can not check log file: ", filename);
+	showstring("Can not check log file: ", filename);
 	return 1;
     }
 
@@ -160,19 +160,19 @@ int checklogfile_new(char *filename)
 	band = atoi(buffer);
 
 	if ((band == 160) ||
-	    (band == 80) ||
-	    (band == 40) ||
-	    (band == 30) ||
-	    (band == 20) ||
-	    (band == 17) ||
-	    (band == 15) ||
-	    (band == 12) ||
-	    (band == 10))
-		bandok = 1;
+		(band == 80) ||
+		(band == 40) ||
+		(band == 30) ||
+		(band == 20) ||
+		(band == 17) ||
+		(band == 15) ||
+		(band == 12) ||
+		(band == 10))
+	    bandok = 1;
 
 	if (!((buffer[0] == ';') || bandok)) {
 	    /* msg no valid logline in line #, cannot handle it */
-	    shownr( "No valid log line in line ", lineno);
+	    shownr("No valid log line in line ", lineno);
 	    return 1;
 	}
 
@@ -182,8 +182,8 @@ int checklogfile_new(char *filename)
 	if (linelen > LOGLINELEN) {
 	    /* msg length of line # to long,
 	     * cannot handle that log file format */
-	    shownr( "Log line to long in line ", lineno);
-	    showmsg( "Can not handle that log format");
+	    shownr("Log line to long in line ", lineno);
+	    showmsg("Can not handle that log format");
 	    return 1;
 	}
 
@@ -199,10 +199,10 @@ int checklogfile_new(char *filename)
 	char c;
 
 	/* some lines in logfile are too short, maybe old logfile format */
-	showmsg( "Some log lines are too short (maybe an old log format)!" );
-	showmsg( "Shall I try to repair? Y/(N) " );
+	showmsg("Some log lines are too short (maybe an old log format)!");
+	showmsg("Shall I try to repair? Y/(N) ");
 	echo();
-	c = toupper( key_get() );
+	c = toupper(key_get());
 	noecho();
 
 	if (c != 'Y') {
@@ -217,8 +217,7 @@ int checklogfile_new(char *filename)
 }
 
 
-void checklogfile(void)
-{
+void checklogfile(void) {
 
     extern char logfile[];
     extern char backgrnd_str[];

@@ -21,7 +21,7 @@
 #ifndef GENQTCLIST_H
 #define GENQTCLIST_H
 
-int genqtclist(char * callsign, int nrofqtc);
+int genqtclist(char *callsign, int nrofqtc);
 
 
 #endif /* end of include guard: GENQTCLIST_H */

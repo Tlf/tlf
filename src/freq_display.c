@@ -24,8 +24,7 @@
 #include "ui_utils.h"
 
 
-int freq_display(void)
-{
+int freq_display(void) {
 
     extern float freq;
     extern int trxmode;
@@ -75,187 +74,186 @@ int freq_display(void)
 }
 
 int print_big_number(int number, int y_position, int x_position,
-		     int location)
-{
+		     int location) {
 
     switch (number) {
 
-    case 1:{
+    case 1: {
 
-	    print_dot(y_position, location + x_position + 3);
-	    print_dot(y_position + 1, location + x_position + 3);
-	    print_dot(y_position + 2, location + x_position + 3);
-	    print_dot(y_position + 3, location + x_position + 3);
-	    print_dot(y_position + 4, location + x_position + 3);
+	print_dot(y_position, location + x_position + 3);
+	print_dot(y_position + 1, location + x_position + 3);
+	print_dot(y_position + 2, location + x_position + 3);
+	print_dot(y_position + 3, location + x_position + 3);
+	print_dot(y_position + 4, location + x_position + 3);
 
-	    break;
-	}
+	break;
+    }
 
-    case 2:{
+    case 2: {
 
-	    print_dot(y_position, location + x_position);
-	    print_dot(y_position, location + x_position + 1);
-	    print_dot(y_position, location + x_position + 2);
-	    print_dot(y_position, location + x_position + 3);
-	    print_dot(y_position + 1, location + x_position + 3);
-	    print_dot(y_position + 2, location + x_position);
-	    print_dot(y_position + 2, location + x_position + 1);
-	    print_dot(y_position + 2, location + x_position + 2);
-	    print_dot(y_position + 2, location + x_position + 3);
-	    print_dot(y_position + 3, location + x_position);
-	    print_dot(y_position + 4, location + x_position);
-	    print_dot(y_position + 4, location + x_position + 1);
-	    print_dot(y_position + 4, location + x_position + 2);
-	    print_dot(y_position + 4, location + x_position + 3);
+	print_dot(y_position, location + x_position);
+	print_dot(y_position, location + x_position + 1);
+	print_dot(y_position, location + x_position + 2);
+	print_dot(y_position, location + x_position + 3);
+	print_dot(y_position + 1, location + x_position + 3);
+	print_dot(y_position + 2, location + x_position);
+	print_dot(y_position + 2, location + x_position + 1);
+	print_dot(y_position + 2, location + x_position + 2);
+	print_dot(y_position + 2, location + x_position + 3);
+	print_dot(y_position + 3, location + x_position);
+	print_dot(y_position + 4, location + x_position);
+	print_dot(y_position + 4, location + x_position + 1);
+	print_dot(y_position + 4, location + x_position + 2);
+	print_dot(y_position + 4, location + x_position + 3);
 
-	    break;
-	}
+	break;
+    }
 
-    case 3:{
+    case 3: {
 
-	    print_dot(y_position, location + x_position);
-	    print_dot(y_position, location + x_position + 1);
-	    print_dot(y_position, location + x_position + 2);
-	    print_dot(y_position, location + x_position + 3);
-	    print_dot(y_position + 1, location + x_position + 3);
-	    print_dot(y_position + 2, location + x_position);
-	    print_dot(y_position + 2, location + x_position + 1);
-	    print_dot(y_position + 2, location + x_position + 2);
-	    print_dot(y_position + 2, location + x_position + 3);
-	    print_dot(y_position + 3, location + x_position + 3);
-	    print_dot(y_position + 4, location + x_position);
-	    print_dot(y_position + 4, location + x_position + 1);
-	    print_dot(y_position + 4, location + x_position + 2);
-	    print_dot(y_position + 4, location + x_position + 3);
+	print_dot(y_position, location + x_position);
+	print_dot(y_position, location + x_position + 1);
+	print_dot(y_position, location + x_position + 2);
+	print_dot(y_position, location + x_position + 3);
+	print_dot(y_position + 1, location + x_position + 3);
+	print_dot(y_position + 2, location + x_position);
+	print_dot(y_position + 2, location + x_position + 1);
+	print_dot(y_position + 2, location + x_position + 2);
+	print_dot(y_position + 2, location + x_position + 3);
+	print_dot(y_position + 3, location + x_position + 3);
+	print_dot(y_position + 4, location + x_position);
+	print_dot(y_position + 4, location + x_position + 1);
+	print_dot(y_position + 4, location + x_position + 2);
+	print_dot(y_position + 4, location + x_position + 3);
 
-	    break;
-	}
-    case 4:{
+	break;
+    }
+    case 4: {
 
-	    print_dot(y_position, location + x_position);
-	    print_dot(y_position, location + x_position + 3);
-	    print_dot(y_position + 1, location + x_position);
-	    print_dot(y_position + 1, location + x_position + 3);
-	    print_dot(y_position + 2, location + x_position);
-	    print_dot(y_position + 2, location + x_position + 1);
-	    print_dot(y_position + 2, location + x_position + 2);
-	    print_dot(y_position + 2, location + x_position + 3);
-	    print_dot(y_position + 3, location + x_position + 3);
-	    print_dot(y_position + 4, location + x_position + 3);
+	print_dot(y_position, location + x_position);
+	print_dot(y_position, location + x_position + 3);
+	print_dot(y_position + 1, location + x_position);
+	print_dot(y_position + 1, location + x_position + 3);
+	print_dot(y_position + 2, location + x_position);
+	print_dot(y_position + 2, location + x_position + 1);
+	print_dot(y_position + 2, location + x_position + 2);
+	print_dot(y_position + 2, location + x_position + 3);
+	print_dot(y_position + 3, location + x_position + 3);
+	print_dot(y_position + 4, location + x_position + 3);
 
-	    break;
-	}
+	break;
+    }
 
-    case 5:{
+    case 5: {
 
-	    print_dot(y_position, location + x_position);
-	    print_dot(y_position, location + x_position + 1);
-	    print_dot(y_position, location + x_position + 2);
-	    print_dot(y_position, location + x_position + 3);
-	    print_dot(y_position + 1, location + x_position);
-	    print_dot(y_position + 2, location + x_position);
-	    print_dot(y_position + 2, location + x_position + 1);
-	    print_dot(y_position + 2, location + x_position + 2);
-	    print_dot(y_position + 2, location + x_position + 3);
-	    print_dot(y_position + 3, location + x_position + 3);
-	    print_dot(y_position + 4, location + x_position);
-	    print_dot(y_position + 4, location + x_position + 1);
-	    print_dot(y_position + 4, location + x_position + 2);
-	    print_dot(y_position + 4, location + x_position + 3);
+	print_dot(y_position, location + x_position);
+	print_dot(y_position, location + x_position + 1);
+	print_dot(y_position, location + x_position + 2);
+	print_dot(y_position, location + x_position + 3);
+	print_dot(y_position + 1, location + x_position);
+	print_dot(y_position + 2, location + x_position);
+	print_dot(y_position + 2, location + x_position + 1);
+	print_dot(y_position + 2, location + x_position + 2);
+	print_dot(y_position + 2, location + x_position + 3);
+	print_dot(y_position + 3, location + x_position + 3);
+	print_dot(y_position + 4, location + x_position);
+	print_dot(y_position + 4, location + x_position + 1);
+	print_dot(y_position + 4, location + x_position + 2);
+	print_dot(y_position + 4, location + x_position + 3);
 
-	    break;
-	}
+	break;
+    }
 
-    case 6:{
+    case 6: {
 
-	    print_dot(y_position, location + x_position);
-	    print_dot(y_position + 1, location + x_position);
-	    print_dot(y_position + 2, location + x_position);
-	    print_dot(y_position + 2, location + x_position + 1);
-	    print_dot(y_position + 2, location + x_position + 2);
-	    print_dot(y_position + 2, location + x_position + 3);
-	    print_dot(y_position + 3, location + x_position);
-	    print_dot(y_position + 3, location + x_position + 3);
-	    print_dot(y_position + 4, location + x_position);
-	    print_dot(y_position + 4, location + x_position + 1);
-	    print_dot(y_position + 4, location + x_position + 2);
-	    print_dot(y_position + 4, location + x_position + 3);
+	print_dot(y_position, location + x_position);
+	print_dot(y_position + 1, location + x_position);
+	print_dot(y_position + 2, location + x_position);
+	print_dot(y_position + 2, location + x_position + 1);
+	print_dot(y_position + 2, location + x_position + 2);
+	print_dot(y_position + 2, location + x_position + 3);
+	print_dot(y_position + 3, location + x_position);
+	print_dot(y_position + 3, location + x_position + 3);
+	print_dot(y_position + 4, location + x_position);
+	print_dot(y_position + 4, location + x_position + 1);
+	print_dot(y_position + 4, location + x_position + 2);
+	print_dot(y_position + 4, location + x_position + 3);
 
-	    break;
-	}
+	break;
+    }
 
-    case 7:{
+    case 7: {
 
-	    print_dot(y_position, location + x_position);
-	    print_dot(y_position, location + x_position + 1);
-	    print_dot(y_position, location + x_position + 2);
-	    print_dot(y_position, location + x_position + 3);
-	    print_dot(y_position + 1, location + x_position + 3);
-	    print_dot(y_position + 2, location + x_position + 3);
-	    print_dot(y_position + 3, location + x_position + 3);
-	    print_dot(y_position + 4, location + x_position + 3);
+	print_dot(y_position, location + x_position);
+	print_dot(y_position, location + x_position + 1);
+	print_dot(y_position, location + x_position + 2);
+	print_dot(y_position, location + x_position + 3);
+	print_dot(y_position + 1, location + x_position + 3);
+	print_dot(y_position + 2, location + x_position + 3);
+	print_dot(y_position + 3, location + x_position + 3);
+	print_dot(y_position + 4, location + x_position + 3);
 
-	    break;
-	}
+	break;
+    }
 
-    case 8:{
+    case 8: {
 
-	    print_dot(y_position, location + x_position);
-	    print_dot(y_position, location + x_position + 1);
-	    print_dot(y_position, location + x_position + 2);
-	    print_dot(y_position, location + x_position + 3);
-	    print_dot(y_position + 1, location + x_position);
-	    print_dot(y_position + 1, location + x_position + 3);
-	    print_dot(y_position + 2, location + x_position);
-	    print_dot(y_position + 2, location + x_position + 1);
-	    print_dot(y_position + 2, location + x_position + 2);
-	    print_dot(y_position + 2, location + x_position + 3);
-	    print_dot(y_position + 3, location + x_position);
-	    print_dot(y_position + 3, location + x_position + 3);
-	    print_dot(y_position + 4, location + x_position);
-	    print_dot(y_position + 4, location + x_position + 1);
-	    print_dot(y_position + 4, location + x_position + 2);
-	    print_dot(y_position + 4, location + x_position + 3);
+	print_dot(y_position, location + x_position);
+	print_dot(y_position, location + x_position + 1);
+	print_dot(y_position, location + x_position + 2);
+	print_dot(y_position, location + x_position + 3);
+	print_dot(y_position + 1, location + x_position);
+	print_dot(y_position + 1, location + x_position + 3);
+	print_dot(y_position + 2, location + x_position);
+	print_dot(y_position + 2, location + x_position + 1);
+	print_dot(y_position + 2, location + x_position + 2);
+	print_dot(y_position + 2, location + x_position + 3);
+	print_dot(y_position + 3, location + x_position);
+	print_dot(y_position + 3, location + x_position + 3);
+	print_dot(y_position + 4, location + x_position);
+	print_dot(y_position + 4, location + x_position + 1);
+	print_dot(y_position + 4, location + x_position + 2);
+	print_dot(y_position + 4, location + x_position + 3);
 
-	    break;
-	}
+	break;
+    }
 
-    case 9:{
+    case 9: {
 
-	    print_dot(y_position, location + x_position);
-	    print_dot(y_position, location + x_position + 1);
-	    print_dot(y_position, location + x_position + 2);
-	    print_dot(y_position, location + x_position + 3);
-	    print_dot(y_position + 1, location + x_position);
-	    print_dot(y_position + 1, location + x_position + 3);
-	    print_dot(y_position + 2, location + x_position);
-	    print_dot(y_position + 2, location + x_position + 1);
-	    print_dot(y_position + 2, location + x_position + 2);
-	    print_dot(y_position + 2, location + x_position + 3);
-	    print_dot(y_position + 3, location + x_position + 3);
-	    print_dot(y_position + 4, location + x_position + 3);
+	print_dot(y_position, location + x_position);
+	print_dot(y_position, location + x_position + 1);
+	print_dot(y_position, location + x_position + 2);
+	print_dot(y_position, location + x_position + 3);
+	print_dot(y_position + 1, location + x_position);
+	print_dot(y_position + 1, location + x_position + 3);
+	print_dot(y_position + 2, location + x_position);
+	print_dot(y_position + 2, location + x_position + 1);
+	print_dot(y_position + 2, location + x_position + 2);
+	print_dot(y_position + 2, location + x_position + 3);
+	print_dot(y_position + 3, location + x_position + 3);
+	print_dot(y_position + 4, location + x_position + 3);
 
-	    break;
-	}
+	break;
+    }
 
-    case 0:{
+    case 0: {
 
-	    print_dot(y_position, location + x_position);
-	    print_dot(y_position, location + x_position + 1);
-	    print_dot(y_position, location + x_position + 2);
-	    print_dot(y_position, location + x_position + 3);
-	    print_dot(y_position + 1, location + x_position);
-	    print_dot(y_position + 1, location + x_position + 3);
-	    print_dot(y_position + 2, location + x_position);
-	    print_dot(y_position + 2, location + x_position + 3);
-	    print_dot(y_position + 3, location + x_position);
-	    print_dot(y_position + 3, location + x_position + 3);
-	    print_dot(y_position + 4, location + x_position);
-	    print_dot(y_position + 4, location + x_position + 1);
-	    print_dot(y_position + 4, location + x_position + 2);
-	    print_dot(y_position + 4, location + x_position + 3);
-	    break;
-	}
+	print_dot(y_position, location + x_position);
+	print_dot(y_position, location + x_position + 1);
+	print_dot(y_position, location + x_position + 2);
+	print_dot(y_position, location + x_position + 3);
+	print_dot(y_position + 1, location + x_position);
+	print_dot(y_position + 1, location + x_position + 3);
+	print_dot(y_position + 2, location + x_position);
+	print_dot(y_position + 2, location + x_position + 3);
+	print_dot(y_position + 3, location + x_position);
+	print_dot(y_position + 3, location + x_position + 3);
+	print_dot(y_position + 4, location + x_position);
+	print_dot(y_position + 4, location + x_position + 1);
+	print_dot(y_position + 4, location + x_position + 2);
+	print_dot(y_position + 4, location + x_position + 3);
+	break;
+    }
 
     }
     refreshp();
@@ -263,8 +261,7 @@ int print_big_number(int number, int y_position, int x_position,
     return (0);
 }
 
-int print_dot(int y, int x)
-{
+int print_dot(int y, int x) {
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(y, x, " ");
@@ -272,8 +269,8 @@ int print_dot(int y, int x)
     return (0);
 }
 
-int print_space(int y, int x)
-{
+int print_space(int y, int x) {
+
     attroff(A_STANDOUT);
     attron(modify_attr(COLOR_PAIR(C_LOG)));
 

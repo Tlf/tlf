@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *      audio.c   soundcard input routine
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *      audio.c   soundcard input routine
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <fcntl.h>
@@ -51,8 +51,7 @@ int afd;
 
 #define ABUFSIZE          4000
 
-void init_audio()
-{
+void init_audio() {
 
     char afile[40];		/* Audio device name */
     int sndfmt;			/* Encoding of audio from */
@@ -63,7 +62,7 @@ void init_audio()
     channels = 1;
     speed = 8000;
 
-/* Audio device setup */
+    /* Audio device setup */
 
     strcpy(afile, sc_device);
 
@@ -88,8 +87,7 @@ void init_audio()
     }
 }
 
-int close_audio()
-{
+int close_audio() {
 
     close(afd);
 
@@ -98,8 +96,7 @@ int close_audio()
 
 /* ------------ rescale bar ----------*/
 
-int rescale(int testvalue)
-{
+int rescale(int testvalue) {
 
     extern int scale_values[];
 
@@ -147,8 +144,7 @@ int rescale(int testvalue)
     return (testvalue);
 }
 
-float get_audio_sample(void)
-{
+float get_audio_sample(void) {
 
     int rc = 0;			/* Return value from subs */
     static float avg = 128.0;
@@ -164,8 +160,7 @@ float get_audio_sample(void)
 	    exit(errno);
 	}
 
-	for (i = 0; i < rc; i++)	// calculate average
-	{
+	for (i = 0; i < rc; i++) {	// calculate average
 	    if ((maxval - minval) != 0.0) {
 		if (i > 2)
 		    avg =
@@ -182,8 +177,7 @@ float get_audio_sample(void)
 		avg = 128.0;
 
 	}
-	for (i = 0; i < rc; i++)	// calculate maximum avg value
-	{
+	for (i = 0; i < rc; i++) {	// calculate maximum avg value
 	    if (abuf[i] >= avg) {
 		if (i > 0)
 		    maxval =
@@ -225,8 +219,7 @@ float get_audio_sample(void)
 /* ----------make bar for s meter ------------*/
 
 int make_bar(int xpos, int ypos, int yheight, unsigned int value,
-	     int bar_type)
-{
+	     int bar_type) {
 
     int i;
 
@@ -235,7 +228,7 @@ int make_bar(int xpos, int ypos, int yheight, unsigned int value,
 	    mvprintw(ypos - i, xpos, " ");
     }
 
-/* Make the bar */
+    /* Make the bar */
 
     if (bar_type == S_BAR || bar_type == PAN_BAR) {
 	for (i = 0; i < value && i < 20; i++)
@@ -250,8 +243,7 @@ int make_bar(int xpos, int ypos, int yheight, unsigned int value,
 
 /* ------------ draw noise bridge screen ----------*/
 
-int draw_nb_screen(int xpos, int ypos, int yheight, int bar_type)
-{
+int draw_nb_screen(int xpos, int ypos, int yheight, int bar_type) {
 
     int i;
 
@@ -295,8 +287,7 @@ int draw_nb_screen(int xpos, int ypos, int yheight, int bar_type)
 
 /* ------------ draw scanner screen ----------*/
 
-int drawscreen(int xpos, int ypos, int yheight, int bar_type)
-{
+int drawscreen(int xpos, int ypos, int yheight, int bar_type) {
 
     int i;
 
@@ -344,8 +335,8 @@ int drawscreen(int xpos, int ypos, int yheight, int bar_type)
 
 /* ------------ draw S meter screen ----------*/
 
-int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
-{
+int drawSmeter(int xpos, int ypos, int yheight, float testvalue) {
+
     int i;
 
     for (i = 0; i < 21; i++) {
@@ -385,8 +376,8 @@ int drawSmeter(int xpos, int ypos, int yheight, float testvalue)
 
 /* ------------------ Panoramic scan -------------------- */
 
-int panscan(void)
-{
+int panscan(void) {
+
     int rc, j, key = 0;
     float testvalue;
     float FromFrequency = 0.0;
@@ -476,8 +467,8 @@ int panscan(void)
 
 /* ------------------ Noise bridge scan -------------------- */
 
-int nbscan(void)
-{
+int nbscan(void) {
+
     int rc, j, key = 0;
     float testvalue;
     float FromFrequency = 0.0;
@@ -567,8 +558,7 @@ int nbscan(void)
     return (0);
 }
 
-void scanmenu(void)
-{
+void scanmenu(void) {
     int j;
 
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
@@ -592,8 +582,7 @@ void scanmenu(void)
 
 /* -------------------main test routine ------- */
 
-int testaudio()
-{
+int testaudio() {
 
     float testvalue;
     char key = '\0';
@@ -603,7 +592,7 @@ int testaudio()
 
     scanmenu();
 
-/* ------------initialize sound card --------*/
+    /* ------------initialize sound card --------*/
     init_audio();
 
     while (runnit == 1) {
@@ -637,8 +626,7 @@ int testaudio()
     return (0);
 }
 
-void recordmenue(void)
-{
+void recordmenue(void) {
     int j;
 
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
@@ -660,8 +648,8 @@ void recordmenue(void)
 }
 
 /*--------------------------------------------------------------------------*/
-void do_record(int message_nr)
-{
+void do_record(int message_nr) {
+
     extern char ph_message[14][80];
 
     int rc;
@@ -686,8 +674,7 @@ void do_record(int message_nr)
 }
 
 /*--------------------------------------------------------------------------*/
-void record(void)
-{
+void record(void) {
 
     extern char ph_message[14][80];
 
@@ -774,7 +761,7 @@ void record(void)
 	    rc = system("echo " " > ~/.VRlock");
 
 	    rc = system
-		("cd ~/tlf/soundlogs; ./soundlog  > /dev/null 2> /dev/null &");
+		 ("cd ~/tlf/soundlogs; ./soundlog  > /dev/null 2> /dev/null &");
 
 	    mvprintw(15, 20, "Contest recording enabled...");
 	    refreshp();
