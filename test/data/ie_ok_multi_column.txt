@@ -1,0 +1,3 @@
+2E0BBB,   51N00W,comment1
+2E0AAA,51N3W    , comment2
+YU5T,43N22O,,,comment3,
