@@ -69,10 +69,9 @@ void foc_init(void) {
 int foc_score(char *call) {
 
     if (g_regex_match_simple("^G(|[A-Z])4FOC(|/.*)", call,
-	    G_REGEX_CASELESS, (GRegexMatchFlags)0)) {
+			     G_REGEX_CASELESS, (GRegexMatchFlags)0)) {
 	return 2;
-    }
-    else {
+    } else {
 	return 1;
     }
 }
@@ -107,8 +106,8 @@ static void count_56_banders() {
     six_banders = 0;
 
     for (i = 0; i < nr_worked; i++) {
-    	nr = nr_of_bands(worked[i].band);
-	if ( nr >= 5) 			/* sixbanders are also fivebanders */
+	nr = nr_of_bands(worked[i].band);
+	if (nr >= 5) 			/* sixbanders are also fivebanders */
 	    five_banders++;
 	if (nr == 6)
 	    six_banders++;
@@ -126,10 +125,10 @@ static int search_g4foc_in_callarray(void) {
     for (i = 0; i < nr_worked; i++) {
 
 	if (g_regex_match_simple("^G(|[A-Z])4FOC(|/.*)", worked[i].call,
-		G_REGEX_CASELESS, (GRegexMatchFlags)0)) {
-            found = i;
-            break;
-        }
+				 G_REGEX_CASELESS, (GRegexMatchFlags)0)) {
+	    found = i;
+	    break;
+	}
 
     }
 
@@ -203,10 +202,10 @@ int foc_total_score() {
 	six_banders++;
 
     points = total + 		/* total contains FOC qsos twice */
-	five_banders * 10 +
-	six_banders * 5 +
-	cntry * 2 +
-	cont * 5;
+	     five_banders * 10 +
+	     six_banders * 5 +
+	     cntry * 2 +
+	     cont * 5;
 
     return points;
 }
@@ -217,8 +216,8 @@ void foc_show_scoring(int start_column) {
 
     mvprintw(4, start_column, "%s", " QSO   Cty  Cont    5b    6b  Score");
     mvprintw(5, start_column, "%4d   %3d    %2d  %4d  %4d   %4d",
-	    total, cntry * 2, cont * 5,
-	    five_banders * 10, six_banders * 5, points);
+	     total, cntry * 2, cont * 5,
+	     five_banders * 10, six_banders * 5, points);
 
 }
 
@@ -238,11 +237,13 @@ static GTree *build_country_list(struct ie_list *main_ie_list) {
     int j;
     struct ie_list *list_head = main_ie_list;
 
-    tree = g_tree_new_full((GCompareDataFunc)g_ascii_strcasecmp, NULL, g_free, NULL);
+    tree = g_tree_new_full((GCompareDataFunc)g_ascii_strcasecmp, NULL, g_free,
+			   NULL);
 
     while (list_head) {
 	j = getctydata(list_head->call);
-	g_tree_insert(tree, g_strdup(dxcc_by_index(j)->pfx), GINT_TO_POINTER(countries[j]));
+	g_tree_insert(tree, g_strdup(dxcc_by_index(j)->pfx),
+		      GINT_TO_POINTER(countries[j]));
 
 	list_head = list_head->next;
     }
@@ -256,9 +257,8 @@ static gboolean show_it(gpointer key, gpointer val, gpointer data) {
 
     if (GPOINTER_TO_INT(val) == 0) {
 	standout();
-    	attron(COLOR_PAIR(C_INPUT));
-    }
-    else {
+	attron(COLOR_PAIR(C_INPUT));
+    } else {
 	standend();
 	attron(COLOR_PAIR(C_HEADER));
     }

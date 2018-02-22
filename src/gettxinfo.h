@@ -25,7 +25,7 @@
 #define SETSSBMODE  (-2)
 #define RESETRIT    (-3)
 
-void set_outfreq(double hertz); 
+void set_outfreq(double hertz);
 double get_outfreq();
 
 void gettxinfo(void);

@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *        Cleanup call input field
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        Cleanup call input field
+ *
+ *--------------------------------------------------------------*/
 
 
 #include "tlf.h"
@@ -40,8 +40,7 @@ void cleanup_qso(void) {
     my_rst[1] = '9';
 }
 
-int cleanup(void)
-{
+int cleanup(void) {
     extern int defer_store;
 
     int k = 0;

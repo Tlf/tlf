@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *     get the prefix
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *     get the prefix
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <ctype.h>
@@ -60,8 +60,7 @@ int letters_only(const char *call) {
     return 1;
 }
 
-void getpx(char *checkcall)
-{
+void getpx(char *checkcall) {
     char pxbuffer[16] = "";
     int i, len;
     char portable = '\0';
@@ -70,8 +69,7 @@ void getpx(char *checkcall)
 	/* only characters in call */
 	strncpy(pxbuffer, checkcall, 2);
 	strcat(pxbuffer, "0");
-    }
-    else {
+    } else {
 	len = strlen(checkcall);
 	if (len >= 2) {
 	    if ((checkcall[len - 2] == '/') && isdigit(checkcall[len - 1]))
@@ -92,10 +90,10 @@ void getpx(char *checkcall)
 		break;
 	}
 
-	if (portable != '\0' && isdigit(pxbuffer[i-1]))
-	    pxbuffer[i-1] = portable;
+	if (portable != '\0' && isdigit(pxbuffer[i - 1]))
+	    pxbuffer[i - 1] = portable;
 
-	if (isalpha(pxbuffer[i-1]))
+	if (isalpha(pxbuffer[i - 1]))
 	    pxbuffer[i] = '0';
     }
     strcpy(pxstr, pxbuffer);

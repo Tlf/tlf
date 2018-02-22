@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 	/* ------------------------------------------------------------
- 	*        View Log using "less" function
- 	*
- 	*--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+*        View Log using "less" function
+*
+*--------------------------------------------------------------*/
 
 
 #include <stdlib.h>
@@ -30,30 +30,29 @@
 #include "tlf_curses.h"
 
 
-int logview(void)
-{
-	extern char logfile[];
-	extern char backgrnd_str[];
+int logview(void) {
+    extern char logfile[];
+    extern char backgrnd_str[];
 
-	char comstr[40]  = "";
-	int j, rc;
+    char comstr[40]  = "";
+    int j, rc;
 
-	strcat(comstr,  "less  +G ");
-	strcat(comstr,  logfile);
+    strcat(comstr,  "less  +G ");
+    strcat(comstr,  logfile);
 
-	endwin();
-	rc=system(comstr);
-	refreshp();
+    endwin();
+    rc = system(comstr);
+    refreshp();
 
-	clear_display();
-	attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
+    clear_display();
+    attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
 
-	for (j = 13 ;  j  <= 23 ; j++){
-		mvprintw(j, 0, backgrnd_str);
-	}
+    for (j = 13 ;  j  <= 23 ; j++) {
+	mvprintw(j, 0, backgrnd_str);
+    }
 
-	refreshp();
+    refreshp();
 
-	return(0);
+    return (0);
 }
 

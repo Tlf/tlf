@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *       Include note  in log
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *       Include note  in log
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <stdlib.h>
@@ -31,8 +31,7 @@
 #include "scroll_log.h"
 
 
-int include_note(void)
-{
+int include_note(void) {
 
     extern char backgrnd_str[];
     extern char logfile[];
@@ -40,7 +39,7 @@ int include_note(void)
     extern char thisnode;
 
     char buffer[80] = "";
-    char buffer2[LOGLINELEN+1] = "";
+    char buffer2[LOGLINELEN + 1] = "";
 
     int i;
     FILE *fp;
@@ -64,10 +63,10 @@ int include_note(void)
 	sprintf(buffer2, "; ");
 
     if (strlen(buffer) >= 1) {
-	strncat(buffer2, buffer, (LOGLINELEN-1) - strlen(buffer2));
+	strncat(buffer2, buffer, (LOGLINELEN - 1) - strlen(buffer2));
 	memset(buffer2 + strlen(buffer2), ' ',
-		(LOGLINELEN-1) - strlen(buffer2)); /* fill spaces */
-	buffer2[LOGLINELEN-1] = '\0';
+	       (LOGLINELEN - 1) - strlen(buffer2)); /* fill spaces */
+	buffer2[LOGLINELEN - 1] = '\0';
 
 	if ((fp = fopen(logfile, "a")) == NULL) {
 	    endwin();
@@ -79,7 +78,7 @@ int include_note(void)
 
 	fclose(fp);
 
-	strncpy (qsos[nr_qsos], buffer2, LOGLINELEN-1);
+	strncpy(qsos[nr_qsos], buffer2, LOGLINELEN - 1);
 	nr_qsos++;
 
 	scroll_log();

@@ -36,16 +36,18 @@ extern char logfile[];
 /* This function overrides the parse_logcfg() details */
 /* 10.09.2003 - LZ3NY */
 
-int read_rules()
-{
+int read_rules() {
+
     char mit_contest_rule[80];
-    char contest_conf[80] = "";	// contest_conf needs room for contest name... (PA0R)
+    char contest_conf[80] = "";	/* contest_conf needs room
+				   for contest name... (PA0R) */
     char basic_contest_conf[75] = PACKAGE_DATA_DIR;
     FILE *mit_contest_file;
 
     int status = PARSE_OK;
 
-/* If no contest is given, whichcontest is set to default "qso"   (PA0R, Sep 24 2003)*/
+    /* If no contest is given, whichcontest is set to default "qso" 
+       (PA0R, Sep 24 2003)*/
     if (strlen(whichcontest) == 0) {
 	showmsg("contest name is empty! Assuming general qso mode!! ");
 	strcpy(whichcontest, "qso");
@@ -61,7 +63,8 @@ int read_rules()
     memset(mit_contest_rule, '\0', strlen(whichcontest) + 6);
     strcat(contest_conf, "rules/");
     strcat(contest_conf, whichcontest);
-/* If rules are not found in local working directory, look in /usr/local/share... (PA0R, Sep 24 2003)*/
+    /* If rules are not found in local working directory, 
+       look in /usr/local/share... (PA0R, Sep 24 2003)*/
     strcat(basic_contest_conf, "/rules/");
     strcat(basic_contest_conf, whichcontest);
 
@@ -69,8 +72,8 @@ int read_rules()
 
 	showstring("reading contest rules file:", contest_conf);
 
-	while ( fgets(mit_contest_rule, sizeof(mit_contest_rule),
-		       mit_contest_file) != NULL ) {
+	while (fgets(mit_contest_rule, sizeof(mit_contest_rule),
+		     mit_contest_file) != NULL) {
 
 	    /* if not comment interpret line */
 	    if ((mit_contest_rule[0] != '#') && (mit_contest_rule[0] != ';')) {
@@ -83,8 +86,8 @@ int read_rules()
 
 	showstring("reading contest rules file:", basic_contest_conf);
 
-	while ( fgets(mit_contest_rule, sizeof(mit_contest_rule),
-		       mit_contest_file) != NULL ) {
+	while (fgets(mit_contest_rule, sizeof(mit_contest_rule),
+		     mit_contest_file) != NULL) {
 
 	    /* if not comment interpret line */
 	    if ((mit_contest_rule[0] != '#') && (mit_contest_rule[0] != ';')) {
@@ -98,10 +101,11 @@ int read_rules()
     else {
 	showstring("There is no contest rules file", contest_conf);
 	showmsg("Assuming regular QSO operation. Logfile is qso.log");
-	strcpy(whichcontest, "qso");	// default use general qso mode... (PA0R, 24 Sept. 2003)
+	strcpy(whichcontest, "qso");	/* default use general qso mode...
+					   (PA0R, 24 Sept. 2003) */
 	setcontest();
 	strcpy(logfile, "qso.log");
 	refreshp();
     }
-    return( status );
+    return (status);
 }

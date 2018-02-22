@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-    /* ------------------------------------------------------------
-     *        Edit call input field
-     *
-     *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        Edit call input field
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -34,8 +34,7 @@
 #include "ui_utils.h"
 
 
-void calledit(void)
-{
+void calledit(void) {
 
     extern char hiscall[];
     extern int block_part;
@@ -78,15 +77,13 @@ void calledit(void)
 	    block_part = 0;
 
 	// Ctrl-A (^A) or <Home>, move to head of callsign field.
-	if (i == 1 || i == KEY_HOME)
-	{
+	if (i == 1 || i == KEY_HOME) {
 	    b = 0;
 	    x = 0;
 	}
 
 	// Ctrl-E (^E) or <End>, move to end of callsign field, exit edit mode.
-	if (i == 5 || i == KEY_END)
-	{
+	if (i == 5 || i == KEY_END) {
 	    b = strlen(hiscall);
 	    break;
 	}
@@ -97,14 +94,14 @@ void calledit(void)
 	    if (b > 0)
 		b--;
 
-	// Right arrow
+	    // Right arrow
 	} else if (i == KEY_RIGHT) {
 	    if (b < strlen(hiscall) - 1) {
 		b++;
 	    } else
 		break;		/* stop edit */
 
-	// <Delete>
+	    // <Delete>
 	} else if (i == KEY_DC) {
 
 	    l = strlen(hiscall);
@@ -113,12 +110,12 @@ void calledit(void)
 		hiscall[j] = hiscall[j + 1];	/* move to left incl. \0 */
 	    }
 
-	    showinfo( getctydata(hiscall) );
+	    showinfo(getctydata(hiscall));
 
 	    if (cnt > 1)
 		searchlog(hiscall);
 
-	// <Backspace>
+	    // <Backspace>
 	} else if (i == KEY_BACKSPACE) {
 
 	    if (b > 0) {
@@ -131,20 +128,20 @@ void calledit(void)
 		    hiscall[j] = hiscall[j + 1];
 		}
 
-		showinfo( getctydata(hiscall) );
+		showinfo(getctydata(hiscall));
 
 		if (cnt > 1)
 		    searchlog(hiscall);
 	    }
 
-	// <Insert>
+	    // <Insert>
 	} else if (i == KEY_IC) {
 	    if (insertflg == 0)
 		insertflg = 1;
 	    else
 		insertflg = 0;
 
-	// Any character left other than <Escape>.
+	    // Any character left other than <Escape>.
 	} else if (i != 27) {
 
 	    // Promote lower case to upper case.
@@ -181,7 +178,7 @@ void calledit(void)
 		else
 		    break;
 
-		showinfo( getctydata(hiscall) );
+		showinfo(getctydata(hiscall));
 
 		searchlog(hiscall);
 
@@ -204,8 +201,7 @@ void calledit(void)
     searchlog(hiscall);
 }
 
-int insert_char(int curposition)
-{
+int insert_char(int curposition) {
 
     extern char hiscall[];
 
@@ -245,7 +241,7 @@ int insert_char(int curposition)
 
 	// Accept A-Z or / and 1-9
 	if (((ichr >= 65) && (ichr <= 90))
-	    || ((ichr >= 47) && (ichr <= 57))) {
+		|| ((ichr >= 47) && (ichr <= 57))) {
 	    call1[curposition] = ichr;
 	    call1[curposition + 1] = '\0';
 	    if ((strlen(call1) + strlen(call2)) < 12) {

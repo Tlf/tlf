@@ -18,12 +18,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *
-	 *              Add spot to bandmap
-	 *
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *
+ *              Add spot to bandmap
+ *
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <stdio.h>
@@ -68,8 +68,7 @@ void add_to_spots(char *call, float freq) {
 }
 
 
-int addspot(void)
-{
+int addspot(void) {
     extern float freq;
     extern char hiscall[];
     extern int trx_control;
@@ -77,7 +76,7 @@ int addspot(void)
     char frequency[8];
 
     if (strlen(hiscall) < 3)
-	return(0);
+	return (0);
 
     if (trx_control == 0) {
 

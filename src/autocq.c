@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *        AUTO_CQ
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        AUTO_CQ
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -40,8 +40,7 @@
 int play_file(char *audiofile);
 
 /* FIXME: Needs refactorization and cleanup of logic */
-int auto_cq(void)
-{
+int auto_cq(void) {
     extern char mode[];
     extern char message[][80];
     extern char ph_message[14][80];
@@ -50,8 +49,8 @@ int auto_cq(void)
     extern int trxmode;
     extern char hiscall[];
 
-    int inchar = -1, delayval = 0, cw_message_len = 0, realspeed = 0, j =
-	0;
+    int inchar = -1, delayval = 0, cw_message_len = 0, realspeed = 0,
+	j = 0;
     long message_time = 0;
     char cwmessage[80];
     int letter = 0;
@@ -74,7 +73,7 @@ int auto_cq(void)
 	    realspeed = GetCWSpeed();
 	    strncpy(cwmessage, message[11], 79);
 	    cw_message_len = cw_message_length(cwmessage);
-	    message_time = (long) (1200.0 / realspeed) * cw_message_len;
+	    message_time = (long)(1200.0 / realspeed) * cw_message_len;
 	    for (j = 0; j < 10; j++) {
 		usleep(message_time * 100);
 		time_update();

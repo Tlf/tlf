@@ -70,91 +70,92 @@ int qrb_(double *range, double *bearing) {
 	return (0);
 
     return qrb(-1.0 * QTH_Long, QTH_Lat, -1.0 * DEST_Long, DEST_Lat,
-	    range, bearing);
+	       range, bearing);
 }
 
 /* positive numbers are N and E
  *
  * be aware that dxcc counts east longitudes as negative numbers
  */
-int qrb(double lon1, double lat1, double lon2, double lat2, double *distance, double *azimuth) {
-	double delta_long, tmp, arc, az;
+int qrb(double lon1, double lat1, double lon2, double lat2, double *distance,
+	double *azimuth) {
+    double delta_long, tmp, arc, az;
 
-	/* bail if NULL pointers passed */
-	if (!distance || !azimuth)
-		return -1;
+    /* bail if NULL pointers passed */
+    if (!distance || !azimuth)
+	return -1;
 
-	if ((lat1 > 90.0 || lat1 < -90.0) || (lat2 > 90.0 || lat2 < -90.0))
-		return -1;
+    if ((lat1 > 90.0 || lat1 < -90.0) || (lat2 > 90.0 || lat2 < -90.0))
+	return -1;
 
-	if ((lon1 > 180.0 || lon1 < -180.0) || (lon2 > 180.0 || lon2 < -180.0))
-		return -1;
+    if ((lon1 > 180.0 || lon1 < -180.0) || (lon2 > 180.0 || lon2 < -180.0))
+	return -1;
 
-	/* Prevent ACOS() Domain Error */
-	if (lat1 == 90.0)
-		lat1 = 89.999999999;
-	else if (lat1 == -90.0)
-		lat1 = -89.999999999;
+    /* Prevent ACOS() Domain Error */
+    if (lat1 == 90.0)
+	lat1 = 89.999999999;
+    else if (lat1 == -90.0)
+	lat1 = -89.999999999;
 
-	if (lat2 == 90.0)
-		lat2 = 89.999999999;
-	else if (lat2 == -90.0)
-		lat2 = -89.999999999;
+    if (lat2 == 90.0)
+	lat2 = 89.999999999;
+    else if (lat2 == -90.0)
+	lat2 = -89.999999999;
 
-	/* Convert variables to Radians */
-	lat1	/= RADIAN;
-	lon1	/= RADIAN;
-	lat2	/= RADIAN;
-	lon2	/= RADIAN;
+    /* Convert variables to Radians */
+    lat1	/= RADIAN;
+    lon1	/= RADIAN;
+    lat2	/= RADIAN;
+    lon2	/= RADIAN;
 
-	delta_long = lon2 - lon1;
+    delta_long = lon2 - lon1;
 
-	tmp = sin(lat1) * sin(lat2) +
-	      cos(lat1) * cos(lat2) * cos(delta_long);
+    tmp = sin(lat1) * sin(lat2) +
+	  cos(lat1) * cos(lat2) * cos(delta_long);
 
-	if (tmp > .999999999999999) {
-		/* Station points coincide, use an Omni! */
-		*distance = 0.0;
-		*azimuth = 0.0;
-		return 0;
-	}
-
-	if (tmp < -.999999) {
-		/*
-		 * points are antipodal, it's straight down.
-		 * Station is equal distance in all Azimuths.
-		 * So take 180 Degrees of arc times 60 nm,
-		 * and you get 10800 nm, or whatever units...
-		 */
-		*distance = 180.0 * ARC_IN_KM;
-		*azimuth = 0.0;
-		return 0;
-	}
-
-	arc = acos(tmp);
-
-	/*
-	 * One degree of arc is 60 Nautical miles
-	 * at the surface of the earth, 111.2 km, or 69.1 sm
-	 * This method is easier than the one in the handbook
-	 */
-
-
-	*distance = ARC_IN_KM * RADIAN * arc;
-
-	/* Short Path */
-	/* Change to azimuth computation by Dave Freese, W1HKJ */
-
-	az = RADIAN * atan2(sin(lon2 - lon1) * cos(lat2),
-			    (cos(lat1) * sin(lat2) -
-			     sin(lat1) * cos(lat2) * cos(lon2 - lon1)));
-
-	az = fmod(360.0 + az, 360.0);
-	if (az < 0.0)
-		az += 360.0;
-	else if (az >= 360.0)
-		az -= 360.0;
-
-	*azimuth = floor(az + 0.5);
+    if (tmp > .999999999999999) {
+	/* Station points coincide, use an Omni! */
+	*distance = 0.0;
+	*azimuth = 0.0;
 	return 0;
+    }
+
+    if (tmp < -.999999) {
+	/*
+	 * points are antipodal, it's straight down.
+	 * Station is equal distance in all Azimuths.
+	 * So take 180 Degrees of arc times 60 nm,
+	 * and you get 10800 nm, or whatever units...
+	 */
+	*distance = 180.0 * ARC_IN_KM;
+	*azimuth = 0.0;
+	return 0;
+    }
+
+    arc = acos(tmp);
+
+    /*
+     * One degree of arc is 60 Nautical miles
+     * at the surface of the earth, 111.2 km, or 69.1 sm
+     * This method is easier than the one in the handbook
+     */
+
+
+    *distance = ARC_IN_KM * RADIAN * arc;
+
+    /* Short Path */
+    /* Change to azimuth computation by Dave Freese, W1HKJ */
+
+    az = RADIAN * atan2(sin(lon2 - lon1) * cos(lat2),
+			(cos(lat1) * sin(lat2) -
+			 sin(lat1) * cos(lat2) * cos(lon2 - lon1)));
+
+    az = fmod(360.0 + az, 360.0);
+    if (az < 0.0)
+	az += 360.0;
+    else if (az >= 360.0)
+	az -= 360.0;
+
+    *azimuth = floor(az + 0.5);
+    return 0;
 }

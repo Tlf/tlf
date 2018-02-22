@@ -51,8 +51,7 @@ pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
  *
  * \param from_lan true - Log lanmessage, false - normal message
  */
-int log_to_disk(int from_lan)
-{
+int log_to_disk(int from_lan) {
     extern char my_rst[];
     extern char his_rst[];
     extern char last_rst[4];

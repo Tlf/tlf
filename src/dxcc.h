@@ -22,22 +22,22 @@
 #define DXCC_H
 
 typedef struct {
-	char *pfx;
-	short cq;
-	short itu;
-	short dxcc_index;
+    char *pfx;
+    short cq;
+    short itu;
+    short dxcc_index;
 } prefix_data;
 
 typedef struct {
-	char *countryname;
-	short cq;
-	short itu;
-	char *continent;
-	float lat;
-	float lon;
-	float timezone;
-	char *pfx;
-	char starred;
+    char *countryname;
+    short cq;
+    short itu;
+    char *continent;
+    float lat;
+    float lon;
+    float timezone;
+    char *pfx;
+    char starred;
 } dxcc_data;
 
 void prefix_init(void);
@@ -46,7 +46,7 @@ unsigned int prefix_count(void);
 
 prefix_data *prefix_by_index(unsigned int index);
 
-void prefix_add (char *pfxstr);
+void prefix_add(char *pfxstr);
 
 void dxcc_init(void);
 
@@ -54,7 +54,7 @@ unsigned int dxcc_count(void);
 
 dxcc_data *dxcc_by_index(unsigned int index);
 
-void dxcc_add (char * dxcc_line);
+void dxcc_add(char *dxcc_line);
 
 int load_ctydata(char *filename);
 #endif 	/* DXCC_H */

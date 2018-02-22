@@ -33,8 +33,7 @@ void send_bandswitch(int outfreq);
 
 static double execute_grab(spot *data);
 
-double grabspot(void)
-{
+double grabspot(void) {
     extern char hiscall[];
     extern int trx_control;
 
@@ -45,20 +44,19 @@ double grabspot(void)
     }
 
     if (hiscall[0] == '\0') {
-        return 0;   // call input is empty
+	return 0;   // call input is empty
     }
 
-    data = bandmap_lookup( hiscall );
+    data = bandmap_lookup(hiscall);
 
     if (data == NULL) {
-        return 0;   // no spot found
+	return 0;   // no spot found
     }
 
     return execute_grab(data);
 }
 
-double grab_next(void)
-{
+double grab_next(void) {
     extern int trx_control;
     extern float freq;
 
@@ -70,16 +68,16 @@ double grab_next(void)
 	return 0;   // no trx control
     }
 
-    data = bandmap_next( dir, (unsigned int)(freq*1000) );
+    data = bandmap_next(dir, (unsigned int)(freq * 1000));
 
     if (data == NULL) {		/* nothing in that direction */
 				/* try other one */
 	dir = 1 - dir;
-	data = bandmap_next( dir, (unsigned int)(freq*1000));
+	data = bandmap_next(dir, (unsigned int)(freq * 1000));
     }
 
     if (data == NULL) {
-        return 0;
+	return 0;
     }
 
     return execute_grab(data);
@@ -88,8 +86,7 @@ double grab_next(void)
 /* Perform the steps needed to grab a call and then free data
  * \return frequency of the spot in Hz
  */
-static double execute_grab(spot *data)
-{
+static double execute_grab(spot *data) {
     extern char hiscall[];
     extern char mode[];
     extern int cqmode;
@@ -98,25 +95,25 @@ static double execute_grab(spot *data)
 
     double f = data->freq - fldigi_get_carrier();
     set_outfreq(f);
-    send_bandswitch( (int) f );
+    send_bandswitch((int) f);
 
-    strcpy( hiscall, data->call );
+    strcpy(hiscall, data->call);
 
-    showinfo( getctydata( hiscall ) );
-    searchlog( hiscall );
+    showinfo(getctydata(hiscall));
+    searchlog(hiscall);
 
     /* if in CQ mode switch to S&P and remember QRG */
     if (cqmode == CQ) {
-        cqmode = S_P;
-        strcpy(mode, "S&P     ");
-        mem = freq;
-        mvprintw(14, 68, "MEM: %7.1f", mem);
+	cqmode = S_P;
+	strcpy(mode, "S&P     ");
+	mem = freq;
+	mvprintw(14, 68, "MEM: %7.1f", mem);
     }
 
     refreshp();
 
-    g_free( data->call );
-    g_free( data );
+    g_free(data->call);
+    g_free(data);
 
     return f;
 }

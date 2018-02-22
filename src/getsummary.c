@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *   write cabrillo header
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *   write cabrillo header
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <stdio.h>
@@ -38,8 +38,7 @@
 
 extern char call[];
 
-void ask(char *buffer, char *what)
-{
+void ask(char *buffer, char *what) {
 
     attron(A_STANDOUT);
     mvprintw(15, 1,
@@ -55,8 +54,7 @@ void ask(char *buffer, char *what)
 }
 
 
-int getsummary(FILE *fp)
-{
+int getsummary(FILE *fp) {
     char buffer[80];
 
     fprintf(fp, "START-OF-LOG: 3.0\n");
@@ -82,7 +80,8 @@ int getsummary(FILE *fp)
     ask(buffer, "POWER: (HIGH,LOW,QRP)");
     fprintf(fp, "CATEGORY-POWER: %s\n", buffer);
 
-    ask(buffer, "Category-Station: (FIXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL");
+    ask(buffer,
+	"Category-Station: (FIXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL");
     if (*buffer != '\0')
 	fprintf(fp, "CATEGORY-STATION: %s\n", buffer);
 

@@ -53,8 +53,7 @@ double man, ex;
     return exp(ex * log(man));
 }
 
-static void interlat()
-{
+static void interlat() {
     double yi;
     /* Intermediate Latitude & Longitude calculations */
     q = cos(u / RADIAN) * cos(xt / RADIAN) * sin(k * lm / RADIAN);
@@ -72,8 +71,7 @@ static void interlat()
 	yn_ += 360.0;
 }
 
-static void mini_f2()
-{
+static void mini_f2() {
     double temp, tl, yf, ex, yz, yg, zo, z, mh, xh, wx, sx, ty, fo, sf;
 
     yz = yn_;
@@ -105,13 +103,13 @@ static void mini_f2()
     if (ty < 5.0)
 	ty = tl + 24.0;
     yf = (ty - 14.0 - sx * 2.0 + wx * 2.0 - r / 175.0) *
-	(7.0 - sx * 3.0 + wx * 4.0 - r / (150.0 - wx * 75.0));
+	 (7.0 - sx * 3.0 + wx * 4.0 - r / (150.0 - wx * 75.0));
 
     if (fabs(yf) > 60.0)
 	yf = 60.0;
     x = 1 + r / (175.0 + sx * 175.0);
     fo = 6.5 * x * cos(yf / RADIAN) *
-	sqrt(cos((z - sx * 5.0 + wx * 5.0) / RADIAN));
+	 sqrt(cos((z - sx * 5.0 + wx * 5.0) / RADIAN));
     ex = -0.5;
     temp = cos(a / RADIAN) * 6367.0 / (6367.0 + h);
     sf = power(1.0 - temp * temp, ex);
@@ -120,8 +118,7 @@ static void mini_f2()
 
 }
 
-static void e_layer()
-{
+static void e_layer() {
     double temp, fe, se, ex, xz;
 
     q = sin(xn / RADIAN) * sin(xs / RADIAN);
@@ -146,8 +143,7 @@ static void e_layer()
 
 }
 
-int muf(void)
-{
+int muf(void) {
     extern double QTH_Lat;
     extern double QTH_Long;
     extern double DEST_Lat;
@@ -176,7 +172,7 @@ int muf(void)
     PANEL *pan;
     WINDOW *win;
 
-    win = newwin( 25, 80, 0, 0);
+    win = newwin(25, 80, 0, 0);
     pan = new_panel(win);
 
     correct = 0;
@@ -236,7 +232,7 @@ int muf(void)
 
     for (i = 0; i < 25; i++)
 	mvwprintw(win, i, 0,
-		 "                                                                                ");
+		  "                                                                                ");
 
     mvwprintw(win, 1, 40, "%s", country);
     mvwprintw(win, 1, 0, "        SSN: %3.0f ", r);
@@ -263,14 +259,15 @@ int muf(void)
     else if (sundown <= 0.0)
 	sundown += 24.0;
 
-    su = (int) (sunrise);
-    sd = (int) (sundown);
+    su = (int)(sunrise);
+    sd = (int)(sundown);
 
-    su_min = (int) ((sunrise - su) * 60);
-    sd_min = (int) ((sundown - sd) * 60);
+    su_min = (int)((sunrise - su) * 60);
+    sd_min = (int)((sundown - sd) * 60);
 
     mvwprintw(win, 3, 0, time_buf);
-    mvwprintw(win, 7, 40, "sun   : %02d:%02d-%02d:%02d UTC", su, su_min, sd, sd_min);
+    mvwprintw(win, 7, 40, "sun   : %02d:%02d-%02d:%02d UTC", su, su_min, sd,
+	      sd_min);
 
     lastwwv[75] = '\0';		/* cut the bell chars */
     if ((strlen(lastwwv) >= 28) && (r != 0))

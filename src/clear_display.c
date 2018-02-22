@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *       Clear_display takes  care of status lines  and
-	 *       backgrounds (general repaint of the screen)
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *       Clear_display takes  care of status lines  and
+ *       backgrounds (general repaint of the screen)
+ *--------------------------------------------------------------*/
 
 
 #include <stdio.h>
@@ -38,8 +38,7 @@
 #include "ui_utils.h"
 
 
-void clear_display(void)
-{
+void clear_display(void) {
     extern char mode[];
     extern int cqdelay;
     extern char headerline[];
@@ -86,7 +85,7 @@ void clear_display(void)
 
     attron(COLOR_PAIR(C_HEADER));
     mvaddstr(6, 0, backgrnd_str);
-    mvprintw(6, (80 - strlen(whichcontest))/2 - 4, " == %s == ", whichcontest);
+    mvprintw(6, (80 - strlen(whichcontest)) / 2 - 4, " == %s == ", whichcontest);
 
     showscore();
 

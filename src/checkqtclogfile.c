@@ -18,11 +18,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *    make sure QTC logfile is present and can be opened for append
-	 *    - create one if it does not exist
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *    make sure QTC logfile is present and can be opened for append
+ *    - create one if it does not exist
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <errno.h>
@@ -33,27 +33,27 @@
 #include "startmsg.h"
 
 
-int checkqtclogfile()
-{
+int checkqtclogfile() {
+
     FILE *fp;
 
     /* check if logfile exist and can be opened for read */
     if (qtcdirection & SEND) {
-	showstring( "Checking:", QTC_SENT_LOG);
+	showstring("Checking:", QTC_SENT_LOG);
 	if ((fp = fopen(QTC_SENT_LOG, "r")) == NULL) {
 
 	    if (errno == EACCES) {
-		showmsg( "Can not access QTC log file");
+		showmsg("Can not access QTC log file");
 		return 1;
 	    }
 
 	    if (errno == ENOENT) {
 		/* File not found, create new one */
-		showmsg( "Log file not found, creating new one");
+		showmsg("Log file not found, creating new one");
 		sleep(1);
 		if ((fp = fopen(QTC_SENT_LOG, "w")) == NULL) {
 		    /* cannot create logfile */
-		    showmsg( "Creating QTC logfile not possible");
+		    showmsg("Creating QTC logfile not possible");
 		    return 1;
 		}
 	    }
@@ -62,21 +62,21 @@ int checkqtclogfile()
     }
 
     if (qtcdirection & RECV) {
-	showstring( "Checking:", QTC_RECV_LOG);
+	showstring("Checking:", QTC_RECV_LOG);
 	if ((fp = fopen(QTC_RECV_LOG, "r")) == NULL) {
 
 	    if (errno == EACCES) {
-		showmsg( "Can not access QTC log file");
+		showmsg("Can not access QTC log file");
 		return 1;
 	    }
 
 	    if (errno == ENOENT) {
 		/* File not found, create new one */
-		showmsg( "Log file not found, creating new one");
+		showmsg("Log file not found, creating new one");
 		sleep(1);
 		if ((fp = fopen(QTC_RECV_LOG, "w")) == NULL) {
 		    /* cannot create logfile */
-		    showmsg( "Creating QTC logfile not possible");
+		    showmsg("Creating QTC logfile not possible");
 		    return 1;
 		}
 	    }

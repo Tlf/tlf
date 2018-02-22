@@ -32,8 +32,8 @@
 #include "tlf_curses.h"
 
 
-void displayit(void)
-{
+void displayit(void) {
+
     extern char termbuf[];
     extern char backgrnd_str[];
     extern char terminal1[];

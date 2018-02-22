@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *
-	 *              Read country data  from disk file cty.dat
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *
+ *              Read country data  from disk file cty.dat
+ *--------------------------------------------------------------*/
 
 
 #include <stdio.h>
@@ -35,13 +35,12 @@
 #include "tlf_curses.h"
 
 
-int readctydata(void)
-{
+int readctydata(void) {
     gchar *filename;
 
     if (load_ctydata("cty.dat") == -1) {
 	filename = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
-		    "cty.dat", NULL);
+			       "cty.dat", NULL);
 	if (load_ctydata(filename) == -1) {
 	    g_free(filename);
 	    mvprintw(4, 0, "Error opening cty.dat file.\n");

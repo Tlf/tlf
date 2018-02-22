@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *              Parse various  call  formats
-	 *              Convert country data
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *              Parse various  call  formats
+ *              Convert country data
+ *--------------------------------------------------------------*/
 
 
 #include <ctype.h>
@@ -37,11 +37,11 @@
 int location_unknown(const char *call) {
 
     return g_regex_match_simple("/AM$|/MM$", call,
-	    (GRegexCompileFlags)0, (GRegexMatchFlags)0);
+				(GRegexCompileFlags)0, (GRegexMatchFlags)0);
 }
 
 /* search for a full match of 'call' in the pfx table */
-int find_full_match (const char *call) {
+int find_full_match(const char *call) {
     int i, w;
     prefix_data *pfx;
     int pfxmax = prefix_count();
@@ -59,7 +59,7 @@ int find_full_match (const char *call) {
 
 
 /* search for the best mach of 'call' in pfx table */
-int find_best_match (const char *call) {
+int find_best_match(const char *call) {
     int bestlen = 0;
     int i, w;
     prefix_data *pfx;
@@ -89,7 +89,7 @@ int find_best_match (const char *call) {
  * for stations with multiple digits (LZ1000) it replaces the last digit
  * (may be wrong)
  */
-void change_area(char *call, char area){
+void change_area(char *call, char area) {
     int i;
 
     for (i = strlen(call) - 1; i > 0; i--) {
@@ -108,8 +108,7 @@ void change_area(char *call, char area){
  * e.g. DL1XYZ/PA gives PA/DL1XYZ
  * caller has to free the copy after use
  */
-int getpfxindex(char *checkcallptr, char **normalized_call)
-{
+int getpfxindex(char *checkcallptr, char **normalized_call) {
     char checkcall[17] = "";
     char strippedcall[17] = "";
 
@@ -142,7 +141,7 @@ int getpfxindex(char *checkcallptr, char **normalized_call)
 	strcpy(call2, checkcall + loc + 1);	/* 2nd part after '/' */
 
 	if (strlen(call2) < strlen(call1)
-	    && strlen(call2) > 1) {
+		&& strlen(call2) > 1) {
 	    sprintf(checkcall, "%s/%s", call2, call1);
 	    abnormal_call = 1;
 	    loc = strcspn(checkcall, "/");
@@ -171,7 +170,7 @@ int getpfxindex(char *checkcallptr, char **normalized_call)
 
 	if ((strlen(checkbuffer) == 1) && isdigit(checkbuffer[0])) {	/*  /3 */
 
-	    change_area (checkcall, checkbuffer[0]);
+	    change_area(checkcall, checkbuffer[0]);
 
 	} else if (strlen(checkbuffer) > 1)
 	    strcpy(checkcall, checkbuffer);
@@ -183,12 +182,12 @@ int getpfxindex(char *checkcallptr, char **normalized_call)
     if (abnormal_call == 1) {
 	w = find_full_match(strippedcall);
     } else {
-	w = find_best_match( strippedcall );
+	w = find_best_match(strippedcall);
     }
 
     if (w < 0 && 0 != strcmp(strippedcall, checkcall)) {
 	// only if not found in prefix full call exception list
-	w = find_best_match( checkcall );
+	w = find_best_match(checkcall);
     }
 
     if (normalized_call != NULL)
@@ -198,8 +197,7 @@ int getpfxindex(char *checkcallptr, char **normalized_call)
 }
 
 /* lookup dxcc cty number from callsign */
-int getctynr(char *checkcall)
-{
+int getctynr(char *checkcall) {
     int w;
 
     w = getpfxindex(checkcall, NULL);
@@ -215,21 +213,20 @@ int getctynr(char *checkcall)
  *
  * side effect: set up various global variables
  */
-int getctydata(char *checkcallptr)
-{
+int getctydata(char *checkcallptr) {
     int w = 0, x = 0;
     char *normalized_call = NULL;
 
     w = getpfxindex(checkcallptr, &normalized_call);
 
     if (wpx == 1 || pfxmult == 1)
-    	/* needed for wpx and other pfx contests */
+	/* needed for wpx and other pfx contests */
 	getpx(normalized_call);
 
-    free (normalized_call);
+    free(normalized_call);
     normalized_call = NULL;
 
-    if (w >= 0 ) {
+    if (w >= 0) {
 	x = prefix_by_index(w)->dxcc_index;
 	sprintf(cqzone, "%02d", prefix_by_index(w) -> cq);
 	sprintf(ituzone, "%02d", prefix_by_index(w) -> itu);
@@ -241,7 +238,7 @@ int getctydata(char *checkcallptr)
 	strcpy(zone_export, ituzone);
 
     countrynr = x;
-    g_strlcpy(continent, dxcc_by_index(countrynr) -> continent , 3);
+    g_strlcpy(continent, dxcc_by_index(countrynr) -> continent, 3);
 
     return (x);
 }

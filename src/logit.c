@@ -47,8 +47,7 @@
 void refresh_comment(void);
 void change_mode(void);
 
-void logit(void)
-{
+void logit(void) {
     extern char mode[];
     extern int trxmode;
     extern char hiscall[];
@@ -99,7 +98,7 @@ void logit(void)
 	if (qrg_out == 0) {		/* no frequency entered? */
 
 	    if ((trxmode == CWMODE || trxmode == DIGIMODE)
-		&& (callreturn == '\n') && ctcomp == 1) {
+		    && (callreturn == '\n') && ctcomp == 1) {
 		callreturn = 92; 	/* '\' */
 		strcpy(comment, cqzone);
 	    }
@@ -265,7 +264,7 @@ void change_mode(void) {
     if (cqmode == CQ) {
 	cqmode = S_P;
     } else {
-    	cqmode = CQ;
+	cqmode = CQ;
     }
 
     /* and show new mode */

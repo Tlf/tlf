@@ -16,17 +16,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *        i-to-a function for qso number (4  chars)
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        i-to-a function for qso number (4  chars)
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
 
 
-int qsonr_to_str(void)
-{
+int qsonr_to_str(void) {
     extern int qsonum;
     extern char qsonrstr[5];
 

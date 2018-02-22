@@ -28,8 +28,7 @@
 #include "tlf_curses.h"
 
 
-int getwwv(void)
-{
+int getwwv(void) {
 
     extern char lastwwv[];
     extern char backgrnd_str[];
@@ -55,7 +54,7 @@ int getwwv(void)
 	lastwwv[78] = '\0';	/* cut the bell chars */
 
 	if ((strncmp(lastwwv, "WCY", 3) == 0)
-	    || (strncmp(lastwwv, "WWV", 3) == 0)) {
+		|| (strncmp(lastwwv, "WWV", 3) == 0)) {
 
 	    strcat(printbuffer, "Condx: ");
 

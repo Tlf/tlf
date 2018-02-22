@@ -39,11 +39,12 @@ enum { ALL_BAND, PER_BAND };
 
 /** Converts bandindex to bandmask */
 int inxes[NBANDS] = \
-    { BAND160, BAND80, BAND40, BAND30, BAND20, BAND17, BAND15, BAND12, BAND10,
-	BANDOOB };
-
-int addmult(void)
 {
+    BAND160, BAND80, BAND40, BAND30, BAND20, BAND17, BAND15, BAND12, BAND10,
+    BANDOOB
+};
+
+int addmult(void) {
     int found = 0;
     int i;
     int matching_len = 0, idx = -1;
@@ -60,7 +61,7 @@ int addmult(void)
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
 	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		&& (strlen(MULTS_POSSIBLE(i)) > 1)) {
+		    && (strlen(MULTS_POSSIBLE(i)) > 1)) {
 
 		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
 		    matching_len = strlen(MULTS_POSSIBLE(i));
@@ -94,7 +95,7 @@ int addmult(void)
 
     // ------------------------------- section ----------------------------
     if ((dx_arrlsections == 1) &&
-	((countrynr == w_cty) || (countrynr == ve_cty))) {
+	    ((countrynr == w_cty) || (countrynr == ve_cty))) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
@@ -144,8 +145,7 @@ int addmult(void)
 
 /* -------------------------------------------------------------------*/
 
-int addmult2(void)
-{
+int addmult2(void) {
     int found = 0;
     int i;
     int matching_len = 0, idx = -1;
@@ -162,7 +162,7 @@ int addmult2(void)
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
 	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		&& (strlen(MULTS_POSSIBLE(i)) > 1)) {
+		    && (strlen(MULTS_POSSIBLE(i)) > 1)) {
 
 		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
 		    matching_len = strlen(MULTS_POSSIBLE(i));
@@ -209,7 +209,7 @@ int addmult2(void)
 
 
 /* compare functions to sort multi by aphabetic order  */
-gint	cmp_size (char **a, char **b) {
+gint	cmp_size(char **a, char **b) {
 
     return g_strcmp0(*a, *b);
 }
@@ -227,8 +227,7 @@ gint	cmp_size (char **a, char **b) {
  *
  * \return number of loaded multipliers (nr of entries in mults_possible)
  * */
-int init_and_load_multipliers(void)
-{
+int init_and_load_multipliers(void) {
     extern GPtrArray *mults_possible;
     extern char multsfile[];	// Set by parse_logcfg()
 
@@ -241,7 +240,7 @@ int init_and_load_multipliers(void)
 	/* free old array if exists */
 	g_ptr_array_free(mults_possible, TRUE);
     }
-    mults_possible = g_ptr_array_new_with_free_func( g_free );
+    mults_possible = g_ptr_array_new_with_free_func(g_free);
 
 
     if (strlen(multsfile) == 0) {
@@ -251,7 +250,8 @@ int init_and_load_multipliers(void)
     // Check for mults file in working directory first
     if ((cfp = fopen(multsfile, "r")) == NULL) {
 	// Check if multsfile is in installation directory
-	if ((strlen(PACKAGE_DATA_DIR) + strlen(multsfile) + 1) <= (_POSIX_PATH_MAX * 2)) {
+	if ((strlen(PACKAGE_DATA_DIR) + strlen(multsfile) + 1) <=
+		(_POSIX_PATH_MAX * 2)) {
 	    sprintf(mults_location, "%s%s%s", PACKAGE_DATA_DIR, "/", multsfile);
 
 	    if ((cfp = fopen(mults_location, "r")) == NULL) {
@@ -260,7 +260,8 @@ int init_and_load_multipliers(void)
 		sleep(5);
 	    }
 	} else {
-	    mvprintw(9, 0, "Multiplier file path length exceeds buffer size of %d.\n", _POSIX_PATH_MAX * 2);
+	    mvprintw(9, 0, "Multiplier file path length exceeds buffer size of %d.\n",
+		     _POSIX_PATH_MAX * 2);
 	    refreshp();
 	    sleep(5);
 	}
@@ -299,8 +300,7 @@ int init_and_load_multipliers(void)
  *
  * empties multis[] array, set the number of multis and multscore per band to 0.
  */
-void init_mults()
-{
+void init_mults() {
     int n;
 
     for (n = 0; n < MAX_MULTS; n++) {
@@ -327,8 +327,7 @@ void init_mults()
  * \return	      - index in mults[] array if new mult or new on band
  *			(-1 if multiplier is an empty string or not new)
  */
-int remember_multi(char *multiplier, int band, int show_new_band)
-{
+int remember_multi(char *multiplier, int band, int show_new_band) {
     /* search multbuffer in mults arry */
     int found = 0, i, index = -1;
 

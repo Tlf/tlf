@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *        Makelogline takes care of formatting the log
-	 *                       items
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        Makelogline takes care of formatting the log
+ *                       items
+ *--------------------------------------------------------------*/
 
 
 #include <assert.h>
@@ -53,8 +53,7 @@ void fillto(int n);
  *
  *   See function definitions below
  */
-void makelogline(void)
-{
+void makelogline(void) {
     extern int trx_control;
     extern float freq;
 
@@ -87,7 +86,7 @@ void makelogline(void)
     total = total + points;
 
     if ((contest == 1) && (dxped == 0)) {
-	    sprintf(logline4 + 76, "%2d", points);
+	sprintf(logline4 + 76, "%2d", points);
     }
 
     fillto(80);
@@ -142,18 +141,17 @@ void prepare_fixed_part(void) {
     if (do_cabrillo == 0) {
 	get_time();
 	strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
-    }
-    else {
+    } else {
 	strftime(time_buf, 60, " %d-%b-%y %H:%M ", &time_ptr_cabrillo);
     }
     strcat(logline4, time_buf);
 
     qsonr_to_str();
     if (logfrequency == 1 &&
-	trx_control == 1 &&
-	((strcmp(whichcontest, "qso") == 0) ||
-	 (strcmp(whichcontest, "dxped") == 0))) {
-	sprintf(khz, " %3d", ((int)freq)%1000);	// show freq.
+	    trx_control == 1 &&
+	    ((strcmp(whichcontest, "qso") == 0) ||
+	     (strcmp(whichcontest, "dxped") == 0))) {
+	sprintf(khz, " %3d", ((int)freq) % 1000);	// show freq.
 	strcat(logline4, khz);
 
     } else {
@@ -296,11 +294,11 @@ void prepare_specific_part(void) {
     /* If WPX
      * -> add prefix to prefixes_worked and include new pfx in log line */
     new_pfx = 0;
-    if (! (pfxmultab == 1 && excl_add_veto == 1)) {
+    if (!(pfxmultab == 1 && excl_add_veto == 1)) {
 	new_pfx = (add_pfx(pxstr, bandinx) == 0);	/* add prefix, remember if new */
     }
 
-    if (wpx ==1 || pfxmultab == 1) {			/* wpx */
+    if (wpx == 1 || pfxmultab == 1) {			/* wpx */
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, pxstr, 5);
@@ -315,7 +313,7 @@ void prepare_specific_part(void) {
 
 	if (addcty != 0) {
 	    if (dxcc_by_index(addcty)->pfx[0] == '*')
-		strncat(logline4, dxcc_by_index(addcty) -> pfx+1, 5);
+		strncat(logline4, dxcc_by_index(addcty) -> pfx + 1, 5);
 	    else
 		strncat(logline4, dxcc_by_index(addcty) -> pfx, 5);
 

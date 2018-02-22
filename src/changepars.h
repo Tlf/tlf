@@ -23,7 +23,7 @@
 
 #define RITCLEAR 1
 
-int changepars  (void);
+int changepars(void);
 int networkinfo(void);
 int multiplierinfo(void);
 

@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *         Change CW messages
-	 *         last change: 25.2.02 11:50
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *         Change CW messages
+ *         last change: 25.2.02 11:50
+ *--------------------------------------------------------------*/
 
 
 #include <ctype.h>
@@ -32,8 +32,7 @@
 #include "writeparas.h"
 
 
-int message_change(int x)
-{
+int message_change(int x) {
     extern char backgrnd_str[];
     extern char message[][80];
     extern char sp_return[];
@@ -102,7 +101,7 @@ int message_change(int x)
 
     for (count = 0; count <= mes_length; count++) {
 	if ((message[bufnr][count] > 96)
-	    && (message[bufnr][count] < 123))
+		&& (message[bufnr][count] < 123))
 	    message[bufnr][count] = message[bufnr][count] - 32;
     }
 

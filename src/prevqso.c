@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *     repeat previous_qsonr
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *     repeat previous_qsonr
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -30,16 +30,15 @@
 #include "sendbuf.h"
 
 
-void prev_qso(void)
-{
+void prev_qso(void) {
     extern int qsonum;
     extern char last_rst[];
 
     int i;
     char *str;
 
-    str = g_strdup_printf("%3s %03d ", last_rst, qsonum-1);
-    for (i=0; i < strlen(str); i++) {
+    str = g_strdup_printf("%3s %03d ", last_rst, qsonum - 1);
+    for (i = 0; i < strlen(str); i++) {
 	str[i] = short_number(str[i]);
     }
     sendmessage(str);

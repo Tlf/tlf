@@ -19,10 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *     add prefix
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *     add prefix
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -42,8 +42,7 @@ struct {
 
 unsigned int pfxs_per_band[NBANDS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-int add_pfx(char *pxstr, unsigned int bandindex)
-{
+int add_pfx(char *pxstr, unsigned int bandindex) {
     extern int pfxmultab;
     int q = 0, found = 0, bandfound = 0;
 
@@ -57,8 +56,7 @@ int add_pfx(char *pxstr, unsigned int bandindex)
 	    found = 1;
 	    if (prefixes_worked[q].bands & inxes[bandindex]) {
 		bandfound = 1;
-	    }
-	    else {
+	    } else {
 		/* pfx new on band */
 		prefixes_worked[q].bands |= inxes[bandindex];
 		nr_of_px_ab++;
@@ -70,7 +68,7 @@ int add_pfx(char *pxstr, unsigned int bandindex)
 
     if (found != 1) {
 	/* new pfx */
-	g_strlcpy(prefixes_worked[nr_of_px].pfx, pxstr, MAX_PFX_LEN+1);
+	g_strlcpy(prefixes_worked[nr_of_px].pfx, pxstr, MAX_PFX_LEN + 1);
 	prefixes_worked[nr_of_px].bands |= inxes[bandindex];
 	nr_of_px++;
 	nr_of_px_ab++;
@@ -79,8 +77,7 @@ int add_pfx(char *pxstr, unsigned int bandindex)
 
     if (pfxmultab != 1) {
 	return (found);
-    }
-    else {
+    } else {
 	return (bandfound);
     }
 }
@@ -110,8 +107,8 @@ void InitPfx() {
     nr_of_px = 0;
     nr_of_px_ab = 0;
 
-    for(i = 0; i < NBANDS; i++) {
-        pfxs_per_band[i] = 0;
+    for (i = 0; i < NBANDS; i++) {
+	pfxs_per_band[i] = 0;
     }
 }
 

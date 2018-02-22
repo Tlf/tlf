@@ -70,8 +70,7 @@ extern int trx_control;
 
 int cw_simulator(void);
 
-void *background_process(void *ptr)
-{
+void *background_process(void *ptr) {
 
     extern int landebug;
     extern struct tm *time_ptr;
@@ -142,8 +141,7 @@ void *background_process(void *ptr)
 		    fprintf(stdout,
 			    "store_qso.c: Error opening debug file.\n");
 
-		}
-		else {
+		} else {
 		    get_time();
 		    strftime(debugbuffer, 80, "%H:%M:%S-", time_ptr);
 		    if (strlen(lan_message) > 2) {
@@ -157,14 +155,14 @@ void *background_process(void *ptr)
 	    }
 	    if ((*lan_message != '\0') && (lan_message[0] == thisnode)) {
 		mvprintw(24, 0,
-		   "Warning: NODE ID CONFLICT ?! You should use another ID! ");
+			 "Warning: NODE ID CONFLICT ?! You should use another ID! ");
 		refreshp();
 		sleep(5);
 	    }
 
 	    if ((*lan_message != '\0')
-		&& (lan_message[0] != thisnode)
-		&& (stop_backgrnd_process != 1)) {
+		    && (lan_message[0] != thisnode)
+		    && (stop_backgrnd_process != 1)) {
 
 		switch (lan_message[1]) {
 
@@ -175,23 +173,22 @@ void *background_process(void *ptr)
 
 		case QTCRENTRY:
 
-		    store_qtc(lan_message+2, RECV, QTC_RECV_LOG);
+		    store_qtc(lan_message + 2, RECV, QTC_RECV_LOG);
 		    break;
 
 		case QTCSENTRY:
 
-		    store_qtc(lan_message+2, SEND, QTC_SENT_LOG);
+		    store_qtc(lan_message + 2, SEND, QTC_SENT_LOG);
 		    break;
 
 		case QTCFLAG:
 
-		    parse_qtc_flagline(lan_message+2);
+		    parse_qtc_flagline(lan_message + 2);
 		    break;
 
 		case CLUSTERMSG:
 		    strncpy(prmessage, lan_message + 2, 80);
-		    if (strstr(prmessage, call) != NULL)	// alert for cluster messages
-		    {
+		    if (strstr(prmessage, call) != NULL) {	// alert for cluster messages
 			mvprintw(24, 0,
 				 "                                                                           ");
 			mvprintw(24, 0, "%s", prmessage);
@@ -221,7 +218,7 @@ void *background_process(void *ptr)
 		    break;
 		case FREQMSG:
 		    if ((lan_message[0] >= 'A')
-			&& (lan_message[0] <= 'A' + MAXNODES)) {
+			    && (lan_message[0] <= 'A' + MAXNODES)) {
 			node_frequencies[lan_message[0] - 'A'] =
 			    atof(lan_message + 2);
 			break;
@@ -241,7 +238,7 @@ void *background_process(void *ptr)
 
 		case TIMESYNC:
 		    if ((lan_message[0] >= 'A')
-			&& (lan_message[0] <= 'A' + MAXNODES)) {
+			    && (lan_message[0] <= 'A' + MAXNODES)) {
 			lantime = atoi(lan_message + 2);
 
 			if (lantimesync == 1)
@@ -272,8 +269,7 @@ void *background_process(void *ptr)
     return (NULL);
 }
 
-int cw_simulator(void)
-{
+int cw_simulator(void) {
 
     extern int simulator;
     extern int simulator_mode;
@@ -352,7 +348,7 @@ int cw_simulator(void)
 
 	callnumber =
 	    callnumber + simulator_seed + system_secs -
-	    (60 * (int) (system_secs / 60));
+	    (60 * (int)(system_secs / 60));
 
 	if (callnumber >= 27000)
 	    callnumber -= 27000;
@@ -399,7 +395,7 @@ int cw_simulator(void)
 	x = getctydata(callcpy);
 
 	str = g_strdup_printf("DE %s TU 5NN %s",
-		CALLMASTERARRAY(callnumber), zone_export);
+			      CALLMASTERARRAY(callnumber), zone_export);
 	sendmessage(str);
 	g_free(str);
 

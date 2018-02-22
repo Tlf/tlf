@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *        Edit Log
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        Edit Log
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <fcntl.h>
@@ -35,8 +35,8 @@
 #include "tlf_curses.h"
 
 
-int logedit(void)
-{
+int logedit(void) {
+
     extern char logfile[];
     extern char backgrnd_str[];
     extern int editor;

@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *        Read sent QTC QSO's
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        Read sent QTC QSO's
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <stdio.h>
@@ -37,8 +37,7 @@ int next_qtc_qso;
 int qsoflags_for_qtc[MAX_QSOS];
 int nr_qtcsent = 0;
 
-int readqtccalls()
-{
+int readqtccalls() {
     int s = 0;
     char inputbuffer[160];
     FILE *fp;
@@ -71,15 +70,15 @@ int readqtccalls()
 	    s++;
 
 	    /* find maximum sent QTC block serial */
-	    g_strlcpy(temps, inputbuffer+50, 5);    // get serial of QTC block
+	    g_strlcpy(temps, inputbuffer + 50, 5);  // get serial of QTC block
 	    tempi = atoi(temps);
 	    if (tempi > nr_qtcsent) {
 		nr_qtcsent = tempi;
 	    }
 
 	    /* mark corresponding qso line as used for QTC */
-	    g_strlcpy(temps, inputbuffer+12, 5);    // qso nr in qso list
-	    tempi = atoi(temps)-1;
+	    g_strlcpy(temps, inputbuffer + 12, 5);  // qso nr in qso list
+	    tempi = atoi(temps) - 1;
 	    qsoflags_for_qtc[tempi] = 1;
 
 	    /* remember callsign, build number of sent QTC's */
@@ -97,7 +96,7 @@ int readqtccalls()
 	next_qtc_qso = last_qtc;
 
 	/* find first QSO which was not used for QTC yet */
-	for(i=0; i<last_qtc; i++) {
+	for (i = 0; i < last_qtc; i++) {
 	    if (qsoflags_for_qtc[i] == 0) {
 		next_qtc_qso = i;
 		break;
@@ -156,8 +155,7 @@ int readqtccalls()
     if ((fp = fopen(QTC_META_LOG, "r")) == NULL) {
 	mvprintw(5, 0, "QTC meta logfile missing, skipping this step.\n");
 	refreshp();
-    }
-    else {
+    } else {
 	while (fgets(inputbuffer, 100, fp) != NULL) {
 	    /* remember callsign, set marked QTC states */
 	    parse_qtc_flagline(inputbuffer);

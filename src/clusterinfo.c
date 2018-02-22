@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *
-	 *          clusterinfo +  time update
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *
+ *          clusterinfo +  time update
+ *--------------------------------------------------------------*/
 
 
 #include <pthread.h>
@@ -52,8 +52,8 @@ int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
 int loadbandmap(void);
 int getclusterinfo(void);
 
-void clusterinfo(void)
-{
+void clusterinfo(void) {
+
     extern int cluster;
     extern char backgrnd_str[];
     extern float freq;
@@ -110,7 +110,7 @@ void clusterinfo(void)
 
 
 	/** \todo minimize lock time */
-	pthread_mutex_lock (&spot_ptr_mutex);
+	pthread_mutex_lock(&spot_ptr_mutex);
 
 	getclusterinfo();
 
@@ -147,7 +147,7 @@ void clusterinfo(void)
 	    }
 	}
 
-	pthread_mutex_unlock (&spot_ptr_mutex);
+	pthread_mutex_unlock(&spot_ptr_mutex);
 
 	nicebox(14, 0, 8, 78, "Cluster");
 	refreshp();
@@ -159,8 +159,7 @@ void clusterinfo(void)
 
 /* ----------------------------------------------------*/
 
-int loadbandmap(void)
-{
+int loadbandmap(void) {
 
     extern char *bandmap[MAX_SPOTS];
     extern struct tm *time_ptr;
@@ -218,11 +217,11 @@ int loadbandmap(void)
      * Copy them to bandmap array and find spot_age and spot_freq
      */
 
-    pthread_mutex_lock (&spot_ptr_mutex);
+    pthread_mutex_lock(&spot_ptr_mutex);
 
     for (j = 0; j < nr_of_spots; j++) {
 
-	strncpy ( thisline, spot_ptr[j], 82);
+	strncpy(thisline, spot_ptr[j], 82);
 	if (strncmp(thisline, "DX de ", 6) == 0) {
 
 	    g_strlcpy(spotcall, thisline + 26, 6);
@@ -260,7 +259,7 @@ int loadbandmap(void)
     }
 
 
-    pthread_mutex_unlock (&spot_ptr_mutex);
+    pthread_mutex_unlock(&spot_ptr_mutex);
 
     linepos = (i < 8 ? 0 : i - 8);
 
@@ -296,12 +295,11 @@ int loadbandmap(void)
 
 		if ((fp = fopen(markerfile, "a")) == NULL) {
 		    mvprintw(24, 0, "Opening markerfile not possible.\n");
-		}
-		else {
+		} else {
 
 		    /* show no callsign if MARKERDOTS */
 		    if (xplanet == 2)
-			callcopy[0]='\0';
+			callcopy[0] = '\0';
 
 		    dx = dxcc_by_index(x);
 		    lon = (int)(dx -> lon) * -1;
@@ -324,19 +322,19 @@ int loadbandmap(void)
 			    if (spot_freq[j] < 3500.0)
 				strcat(color, "Red");
 			    if (spot_freq[j] >= 3500.0
-				&& spot_freq[j] <= 4000.0)
+				    && spot_freq[j] <= 4000.0)
 				strcat(color, "Magenta");
 			    if (spot_freq[j] >= 7000.0
-				&& spot_freq[j] <= 7300.0)
+				    && spot_freq[j] <= 7300.0)
 				strcat(color, "Yellow");
 			    if (spot_freq[j] >= 14000.0
-			    && spot_freq[j] <= 14350.0)
+				    && spot_freq[j] <= 14350.0)
 				strcat(color, "Blue");
 			    if (spot_freq[j] >= 21000.0
-				&& spot_freq[j] <= 21450.0)
+				    && spot_freq[j] <= 21450.0)
 				strcat(color, "White");
 			    if (spot_freq[j] >= 28000.0
-				&& spot_freq[j] <= 29700.0)
+				    && spot_freq[j] <= 29700.0)
 				strcat(color, "Green");
 
 			} else {
@@ -346,7 +344,7 @@ int loadbandmap(void)
 
 		    if (*color != '\0') {
 			sprintf(marker_out, "%4d   %4d   \"%s\"   color=%s\n",
-			    lat, lon, callcopy, color);
+				lat, lon, callcopy, color);
 
 			fputs(marker_out, fp);
 		    }
@@ -392,8 +390,7 @@ int loadbandmap(void)
 
 
 
-int getclusterinfo(void)
-{
+int getclusterinfo(void) {
 
     extern char spot_ptr[MAX_SPOTS][82];
     extern int nr_of_spots;

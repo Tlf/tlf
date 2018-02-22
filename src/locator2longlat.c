@@ -65,65 +65,65 @@ static const int loc_char_range[] = { 18, 10, 24, 10, 24, 10 };
  * uses negative numbers
  */
 int locator2longlat(double *longitude, double *latitude, const char *locator) {
-        int x_or_y, paircount;
-        int locvalue, pair;
-        int divisions;
-        double xy[2], ordinate;
+    int x_or_y, paircount;
+    int locvalue, pair;
+    int divisions;
+    double xy[2], ordinate;
 
-        /* bail if NULL pointers passed */
-        if (!longitude || !latitude)
-                return -1;
+    /* bail if NULL pointers passed */
+    if (!longitude || !latitude)
+	return -1;
 
-        paircount = strlen(locator) / 2;
+    paircount = strlen(locator) / 2;
 
-        /* verify paircount is within limits */
-        if (paircount > MAX_LOCATOR_PAIRS)
-                paircount = MAX_LOCATOR_PAIRS;
-        else if (paircount < MIN_LOCATOR_PAIRS)
-                return -1;
+    /* verify paircount is within limits */
+    if (paircount > MAX_LOCATOR_PAIRS)
+	paircount = MAX_LOCATOR_PAIRS;
+    else if (paircount < MIN_LOCATOR_PAIRS)
+	return -1;
 
-        /* For x(=longitude) and y(=latitude) */
-        for (x_or_y = 0;  x_or_y < 2;  ++x_or_y) {
-                ordinate = -90.0;
-                divisions = 1;
+    /* For x(=longitude) and y(=latitude) */
+    for (x_or_y = 0;  x_or_y < 2;  ++x_or_y) {
+	ordinate = -90.0;
+	divisions = 1;
 
-                for (pair = 0;  pair < paircount;  ++pair) {
-                        locvalue = locator[pair*2 + x_or_y];
+	for (pair = 0;  pair < paircount;  ++pair) {
+	    locvalue = locator[pair * 2 + x_or_y];
 
-                        /* Value of digit or letter */
-                        locvalue -= (loc_char_range[pair] == 10) ? '0' :
-                                (isupper(locvalue)) ? 'A' : 'a';
+	    /* Value of digit or letter */
+	    locvalue -= (loc_char_range[pair] == 10) ? '0' :
+			(isupper(locvalue)) ? 'A' : 'a';
 
-                        /* Check range for non-letter/digit or out of range */
-                        if ((locvalue < 0) || (locvalue >= loc_char_range[pair]))
-                                return -1;
+	    /* Check range for non-letter/digit or out of range */
+	    if ((locvalue < 0) || (locvalue >= loc_char_range[pair]))
+		return -1;
 
-                        divisions *= loc_char_range[pair];
-                        ordinate += locvalue * 180.0 / divisions;
-                }
-                /* Center ordinate in the Maidenhead "square" or "subsquare" */
-                ordinate += 90.0 / divisions;
+	    divisions *= loc_char_range[pair];
+	    ordinate += locvalue * 180.0 / divisions;
+	}
+	/* Center ordinate in the Maidenhead "square" or "subsquare" */
+	ordinate += 90.0 / divisions;
 
-                xy[x_or_y] = ordinate;
-        }
+	xy[x_or_y] = ordinate;
+    }
 
-        *longitude = xy[0] * 2.0;
-        *latitude = xy[1];
+    *longitude = xy[0] * 2.0;
+    *latitude = xy[1];
 
-        return 0;
+    return 0;
 }
 
-int check_qra(char * qra) {
-	if (strlen(qra) < 4) {
+int check_qra(char *qra) {
+    if (strlen(qra) < 4) {
+	return 1;
+    }
+    if (strlen(qra) >= 4) {
+	if (qra[0] < 65 || qra[0] > 82 ||
+		qra[1] < 65 || qra[1] > 82 ||
+		qra[2] < 48 || qra[2] > 57 ||
+		qra[3] < 48 || qra[3] > 57) {
 	    return 1;
 	}
-	if (strlen(qra) >= 4) {
-	  if (qra[0] < 65 || qra[0] > 82 ||
-	      qra[1] < 65 || qra[1] > 82 ||
-	      qra[2] < 48 || qra[2] > 57 ||
-	      qra[3] < 48 || qra[3] > 57) {
-	      return 1;
-	  }
-	}
-	return 0;
+    }
+    return 0;
 }

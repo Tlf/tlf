@@ -24,6 +24,6 @@
 
 int addcall(void);
 int addcall2(void);
-int get_band (char *logline);
+int get_band(char *logline);
 
 #endif /* ADDCALL_H */

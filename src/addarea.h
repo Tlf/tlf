@@ -21,6 +21,6 @@
 #ifndef ADDAREA_H
 #define ADDAREA_H
 
-int add_callarea( void);
+int add_callarea(void);
 
 #endif /* ADDAREA_H */

@@ -21,7 +21,7 @@
 #ifndef AUTOCQ_H
 #define AUTOCQ_H
 
-int  auto_cq  (void);
+int auto_cq(void);
 
 #endif /* end of include guard: AUTOCQ_H */
 

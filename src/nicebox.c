@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
- 	*          Nicebox draws  a  box with  a header
- 	*
- 	*--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+*          Nicebox draws  a  box with  a header
+*
+*--------------------------------------------------------------*/
 
 
 #include "nicebox.h"		// Includes curses.h
@@ -27,8 +27,8 @@
 #include "ui_utils.h"
 
 
-void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname)
-{
+void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname) {
+
     height += 1;
     width += 1;
 
@@ -47,8 +47,7 @@ void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname)
     return;
 }
 
-void nicebox(int y, int x, int height, int width, char *boxname)
-{
-	wnicebox( stdscr, y, x, height, width, boxname);
+void nicebox(int y, int x, int height, int width, char *boxname) {
+    wnicebox(stdscr, y, x, height, width, boxname);
 }
 

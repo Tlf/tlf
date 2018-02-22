@@ -21,7 +21,7 @@
 #ifndef PARSE_LOGCFG_H
 #define PARSE_LOGCFG_H
 
-enum{
+enum {
     PARSE_OK,
     PARSE_ERROR,
     PARSE_CONFIRM

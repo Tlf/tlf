@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
- 	*        List  CW messages
- 	*
- 	*--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+*        List  CW messages
+*
+*--------------------------------------------------------------*/
 
 
 #include <string.h>
@@ -44,25 +44,24 @@ char *formatMessage(int i) {
     extern char backgrnd_str[];
 
     /* copy the message string WITHOUT trailing newline */
-    g_strlcpy (printbuffer,  message[i],  strlen(message[i]));
+    g_strlcpy(printbuffer,  message[i],  strlen(message[i]));
     /* and fill up with spaces */
-    strcat  (printbuffer, backgrnd_str);
+    strcat(printbuffer, backgrnd_str);
     printbuffer[LIST_WIDTH - 7] = '\0';
 
     return printbuffer;
 }
 
-void listmessages(void)
-{
+void listmessages(void) {
     extern char backgrnd_str[];
 
     int i;
 
     nicebox(LIST_UPPER, LIST_LEFT, LIST_HEIGHT, LIST_WIDTH, "Messages");
-    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT );
+    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
-    for  ( i = 0  ; i  < 12 ; i++){
-	mvprintw(i + LIST_UPPER + 1, 1, " %2i  : %s",  i+1, formatMessage(i));
+    for (i = 0  ; i  < 12 ; i++) {
+	mvprintw(i + LIST_UPPER + 1, 1, " %2i  : %s",  i + 1, formatMessage(i));
     }
 
     mvprintw(12 + LIST_UPPER + 1, 1, " SPmg: %s", formatMessage(SP_TU_MSG));
@@ -78,8 +77,8 @@ void listmessages(void)
     clear_display();
 
     attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
-    for (i = 13 ;  i  <= 23 ; i++){
-	 mvprintw(i, 0, backgrnd_str);
+    for (i = 13 ;  i  <= 23 ; i++) {
+	mvprintw(i, 0, backgrnd_str);
     }
 
     refreshp();

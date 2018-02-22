@@ -21,6 +21,6 @@
 #ifndef LOG_TO_DISK_H
 #define LOG_TO_DISK_H
 
-int log_to_disk (int from_lan);
+int log_to_disk(int from_lan);
 
 #endif /*  LOG_TO_DISK_H */

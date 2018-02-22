@@ -84,21 +84,21 @@ int time_master;
 char thisnode = 'A'; 		/*  start with 'A' if not defined in
 				    logcfg.dat */
 
-  //---------------------end lan globals --------------
+//---------------------end lan globals --------------
 
-int resolveService(const char * service) {
-	struct servent * service_ent;
-	service_ent = getservbyname(service, "udp");
-	int port = 0;
-	if (service_ent != NULL) {
-		port = service_ent->s_port;
-	} else if (strlen(service) > 0) {
-		port = atoi(service);
-	}
-	if (port == 0) {
-		port = atoi(default_lan_service);
-	}
-	return port;
+int resolveService(const char *service) {
+    struct servent *service_ent;
+    service_ent = getservbyname(service, "udp");
+    int port = 0;
+    if (service_ent != NULL) {
+	port = service_ent->s_port;
+    } else if (strlen(service) > 0) {
+	port = atoi(service);
+    }
+    if (port == 0) {
+	port = atoi(default_lan_service);
+    }
+    return port;
 }
 
 int lanrecv_init(void) {
@@ -134,8 +134,7 @@ int lanrecv_init(void) {
     return (0);
 }
 
-int lan_recv_close(void)
-{
+int lan_recv_close(void) {
 
     if (lan_active == 0)
 	return (-1);
@@ -149,8 +148,7 @@ int lan_recv_close(void)
     return (0);
 }
 
-int lan_recv(void)
-{
+int lan_recv(void) {
 
     if (lan_active == 0)
 	return (-1);
@@ -186,8 +184,7 @@ int lan_recv(void)
 
 // ----------------send routines --------------------------
 
-int lan_send_init(void)
-{
+int lan_send_init(void) {
 
     if (lan_active == 0)
 	return (1);
@@ -208,11 +205,11 @@ int lan_send_init(void)
 	bc_address[node].sin_port = htons(resolveService(bc_hostservice[node]));
 
 	syslog(LOG_INFO, "open socket: to %d.%d.%d.%d:%d\n",
-		(ntohl(bc_address[node].sin_addr.s_addr) & 0xff000000) >> 24,
-		(ntohl(bc_address[node].sin_addr.s_addr) & 0x00ff0000) >> 16,
-		(ntohl(bc_address[node].sin_addr.s_addr) & 0x0000ff00) >> 8,
-		(ntohl(bc_address[node].sin_addr.s_addr) & 0x000000ff) >> 0,
-		ntohs(bc_address[node].sin_port));
+	       (ntohl(bc_address[node].sin_addr.s_addr) & 0xff000000) >> 24,
+	       (ntohl(bc_address[node].sin_addr.s_addr) & 0x00ff0000) >> 16,
+	       (ntohl(bc_address[node].sin_addr.s_addr) & 0x0000ff00) >> 8,
+	       (ntohl(bc_address[node].sin_addr.s_addr) & 0x000000ff) >> 0,
+	       ntohs(bc_address[node].sin_port));
 
 	bc_socket_descriptor[node] = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -225,8 +222,7 @@ int lan_send_init(void)
     return (0);
 }
 
-int lan_send_close(void)
-{
+int lan_send_close(void) {
 
     if (lan_active == 0)
 	return (-1);
@@ -243,8 +239,7 @@ int lan_send_close(void)
     return (0);
 }
 
-int lan_send(char *lanbuffer)
-{
+int lan_send(char *lanbuffer) {
 
     if (lan_active == 0)
 	return (-1);
@@ -278,8 +273,7 @@ int lan_send(char *lanbuffer)
 
 /* ----------------- send lan message ----------*/
 
-int send_lan_message(int opcode, char *message)
-{
+int send_lan_message(int opcode, char *message) {
     char sendbuffer[102];
 
     sendbuffer[0] = thisnode;
@@ -339,8 +333,7 @@ int send_lan_message(int opcode, char *message)
 
 /* ----------------- send talk message ----------*/
 
-int talk(void)
-{
+int talk(void) {
 
     char talkline[61] = "";
 
@@ -367,8 +360,7 @@ int talk(void)
 
 /* ----------------- send freq. message ----------*/
 
-int send_freq(float freq)
-{
+int send_freq(float freq) {
 
     extern int bandinx;
     extern int trx_control;
@@ -429,15 +421,14 @@ int send_freq(float freq)
 
 /* ----------------- send time message ----------*/
 
-int send_time(void)
-{
+int send_time(void) {
 
     extern int timeoffset;
 
     long now;
     char timebuffer[14];
 
-    now = (long) (time(0) + (timeoffset * 3600L));
+    now = (long)(time(0) + (timeoffset * 3600L));
 
     sprintf(timebuffer, "%ld", now);
     strcat(timebuffer, " ");

@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *     last 10 - return time (in mins) for last 10 QSOs on
-	 *		 actual band
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *     last 10 - return time (in mins) for last 10 QSOs on
+ *		 actual band
+ *--------------------------------------------------------------*/
 
 
 #include <stdlib.h>
@@ -29,10 +29,9 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 
 
-int last10(void)
-{
+int last10(void) {
 
-    char input[LOGLINELEN+1];
+    char input[LOGLINELEN + 1];
 
     int minsbefore;
     int minsnow;
@@ -60,7 +59,7 @@ int last10(void)
     if (counter < 0)
 	return (-1);			/* not 10 QSOs found */
 
-    strncpy(input, qsos[counter], LOGLINELEN+1);
+    strncpy(input, qsos[counter], LOGLINELEN + 1);
 
     input[17 + 5] = '\0';
     minsbefore = atoi(input + 17 + 3);

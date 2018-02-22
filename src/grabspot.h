@@ -21,7 +21,7 @@
 #ifndef GRABSPOT_H
 #define GRABSPOT_H
 
-double grabspot (void);
-double grab_next (void);
+double grabspot(void);
+double grab_next(void);
 
 #endif /* GRABSPOT_H */

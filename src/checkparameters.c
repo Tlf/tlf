@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *      Check for .paras file
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *      Check for .paras file
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <stdio.h>
@@ -28,8 +28,7 @@
 #include "writeparas.h"
 
 
-int checkparameters(void)
-{
+int checkparameters(void) {
 
     extern int emptydir;
 

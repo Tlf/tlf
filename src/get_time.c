@@ -17,20 +17,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-    /* ------------------------------------------------------------------------
-    *  First get the local time from the kernel, apply corrections
-    *  - TIME_OFFSET setting from logcfg.dat and
-    *  - time synchronistation from LAN.
-    *  Finally convert time to UTC put it into global buffer (time_ptr)
-    *  for use by other routines
-    ---------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------
+*  First get the local time from the kernel, apply corrections
+*  - TIME_OFFSET setting from logcfg.dat and
+*  - time synchronistation from LAN.
+*  Finally convert time to UTC put it into global buffer (time_ptr)
+*  for use by other routines
+---------------------------------------------------------------------------*/
 
 
 #include <time.h>
 
 
-void get_time(void)
-{
+void get_time(void) {
+
     extern struct tm *time_ptr;
     extern int timeoffset;
     extern long timecorr;

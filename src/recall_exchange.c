@@ -33,8 +33,7 @@
  * the according exchange into the 'comment' field.
  *
  * \return 1 - found, -1 - not found, 0 - call field was empty */
-int recall_exchange(void)
-{
+int recall_exchange(void) {
 
     extern int nr_worked;
     extern struct worked_t worked[];
@@ -79,8 +78,8 @@ int recall_exchange(void)
 		if ((loc = strstr(hiscall, current_ie->call)) != NULL) {
 
 		    loc2 = loc + strlen(current_ie->call);
-		    if (((loc == hiscall) || (*(loc-1) == '/')) &&
-			((*loc2 == '\0') || (*loc2 == '/'))) {
+		    if (((loc == hiscall) || (*(loc - 1) == '/')) &&
+			    ((*loc2 == '\0') || (*loc2 == '/'))) {
 
 			found = 1;
 			strcpy(comment, current_ie->exchange);
@@ -94,8 +93,8 @@ int recall_exchange(void)
     }
 
     if (found) {
-	    mvprintw(12, 54, comment);
-	    refreshp();
+	mvprintw(12, 54, comment);
+	refreshp();
     }
 
     return found;

@@ -32,97 +32,96 @@ int speed = 10;
 
 
 /* converts cw speed in wpm to an numbered index into speedstr table */
-int speed_conversion(int cwspeed)
-{
+int speed_conversion(int cwspeed) {
 
     int x;
 
     switch (cwspeed) {
 
-    case 0 ... 6:{
-	    x = 0;
-	    break;
-	}
-    case 7 ... 12:{
-	    x = 1;
-	    break;
-	}
-    case 13 ... 14:{
-	    x = 2;
-	    break;
-	}
-    case 15 ... 16:{
-	    x = 3;
-	    break;
-	}
-    case 17 ... 18:{
-	    x = 4;
-	    break;
-	}
-    case 19 ... 20:{
-	    x = 5;
-	    break;
-	}
-    case 21 ... 22:{
-	    x = 6;
-	    break;
-	}
-    case 23 ... 24:{
-	    x = 7;
-	    break;
-	}
-    case 25 ... 26:{
-	    x = 8;
-	    break;
-	}
-    case 27 ... 28:{
-	    x = 9;
-	    break;
-	}
-    case 29 ... 30:{
-	    x = 10;
-	    break;
-	}
-    case 31 ... 32:{
-	    x = 11;
-	    break;
-	}
-    case 33 ... 34:{
-	    x = 12;
-	    break;
-	}
-    case 35 ... 36:{
-	    x = 13;
-	    break;
-	}
-    case 37 ... 38:{
-	    x = 14;
-	    break;
-	}
-    case 39 ... 40:{
-	    x = 15;
-	    break;
-	}
-    case 41 ... 42:{
-	    x = 16;
-	    break;
-	}
-    case 43 ... 44:{
-	    x = 17;
-	    break;
-	}
-    case 45 ... 46:{
-	    x = 18;
-	    break;
-	}
-    case 47 ... 48:{
-	    x = 19;
-	    break;
-	}
-    default:{
-	    x = 20;
-	    break;
-	}
+    case 0 ... 6: {
+	x = 0;
+	break;
+    }
+    case 7 ... 12: {
+	x = 1;
+	break;
+    }
+    case 13 ... 14: {
+	x = 2;
+	break;
+    }
+    case 15 ... 16: {
+	x = 3;
+	break;
+    }
+    case 17 ... 18: {
+	x = 4;
+	break;
+    }
+    case 19 ... 20: {
+	x = 5;
+	break;
+    }
+    case 21 ... 22: {
+	x = 6;
+	break;
+    }
+    case 23 ... 24: {
+	x = 7;
+	break;
+    }
+    case 25 ... 26: {
+	x = 8;
+	break;
+    }
+    case 27 ... 28: {
+	x = 9;
+	break;
+    }
+    case 29 ... 30: {
+	x = 10;
+	break;
+    }
+    case 31 ... 32: {
+	x = 11;
+	break;
+    }
+    case 33 ... 34: {
+	x = 12;
+	break;
+    }
+    case 35 ... 36: {
+	x = 13;
+	break;
+    }
+    case 37 ... 38: {
+	x = 14;
+	break;
+    }
+    case 39 ... 40: {
+	x = 15;
+	break;
+    }
+    case 41 ... 42: {
+	x = 16;
+	break;
+    }
+    case 43 ... 44: {
+	x = 17;
+	break;
+    }
+    case 45 ... 46: {
+	x = 18;
+	break;
+    }
+    case 47 ... 48: {
+	x = 19;
+	break;
+    }
+    default: {
+	x = 20;
+	break;
+    }
     }
 
     return (x);
@@ -135,8 +134,8 @@ int speed_conversion(int cwspeed)
  * the speed table and stores that.
  * \param wpm The CW speed in WPM
  */
-void SetCWSpeed (unsigned int wpm) {
-    speed = speed_conversion( wpm );
+void SetCWSpeed(unsigned int wpm) {
+    speed = speed_conversion(wpm);
 }
 
 
@@ -160,8 +159,8 @@ unsigned int  GetCWSpeed() {
  * \return number of dots for the character including the following character
  *         space
  */
-unsigned int getCWdots(char ch)
-{
+unsigned int getCWdots(char ch) {
+
     unsigned int length;
 
     switch (ch) {
@@ -296,8 +295,8 @@ unsigned int getCWdots(char ch)
  * \param message the CW message
  * \return number of dot elements in the message
  */
-unsigned int cw_message_length(char *message)
-{
+unsigned int cw_message_length(char *message) {
+
     extern char call[];
 
     int i;

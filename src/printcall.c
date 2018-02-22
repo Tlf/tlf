@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *      printcall
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *      printcall
+ *
+ *--------------------------------------------------------------*/
 
 
 #include "tlf.h"
@@ -28,8 +28,7 @@
 #include "ui_utils.h"
 
 
-void printcall(void)
-{
+void printcall(void) {
     extern char hiscall[];
     extern int miniterm;
     extern int cqmode;
@@ -46,7 +45,7 @@ void printcall(void)
     mvprintw(12, 29, "            ");
     mvprintw(12, 29, hiscall);
     if ((cqmode == CQ) && (cwstart > 0))
-    	mvchgat(12, 29 + cwstart, 12 - cwstart,
+	mvchgat(12, 29 + cwstart, 12 - cwstart,
 		attrib | A_UNDERLINE, C_INPUT, NULL);
     refreshp();
 
