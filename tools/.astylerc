@@ -1,0 +1,48 @@
+# astylerc--custom options for Tlf
+
+# K&R style formatting/indenting with some tweaks.
+style=attach
+
+# Indent with a width of 4 spaces. Use 8 space tabs if possible
+indent=force-tab-x=8
+indent=force-tab=4
+
+# Pad empty lines around header blocks (e.g. 'if', 'for', 'while'...).
+#break-blocks
+
+# Remove extra space padding around parenthesis on the inside and outside.
+unpad-paren
+
+# Insert space padding around operators.
+pad-oper
+
+# Insert space padding after paren headers only (e.g. 'if', 'for', 'while'...).
+pad-header
+
+# Attach a pointer operator (*) to name (name) and reference operator (&)
+# to type (type).
+align-pointer=name
+align-reference=type
+
+# Add brackets to unbracketed one line conditional statements
+# (e.g. 'if', 'for', 'while'...).
+#add-brackets
+
+# Don't break one-line blocks.
+keep-one-line-blocks
+
+# Don't break complex statements and multiple statements residing on a single line.
+keep-one-line-statements
+
+# Breaks else from immediately preceding closing braces
+#break-closing-braces
+
+# try to shorten long lines to 80 characters
+max-code-length=80
+
+# Preserve the file date and time
+preserve-date
+
+# Do not retain backup copies
+suffix=none
+
