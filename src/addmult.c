@@ -267,32 +267,32 @@ int init_and_load_multipliers(void) {
 	}
     }
 
-    if (cfp) {
-	while (fgets(s_inputbuffer, 85, cfp) != NULL) {
-	    /* drop comments starting with '#' */
-	    if (*s_inputbuffer == '#')
-		continue;
-
-	    /* strip leading and trailing whitespace */
-	    g_strstrip(s_inputbuffer);
-	    s_inputbuffer[9] = '\0';
-
-	    /* drop empty lines */
-	    if (*s_inputbuffer == '\0')
-		continue;
-
-	    g_ptr_array_add(mults_possible, g_strdup(s_inputbuffer));
-
-	    count++;
-	}
-
-	fclose(cfp);
-
-	/* do not rely on the order in the mult file but sort it here */
-	g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);
+    if (cfp == NULL) {
+	return 0;       // couldn't open file
     }
 
-    return (count);
+    while (fgets(s_inputbuffer, 85, cfp) != NULL) {
+	/* strip leading and trailing whitespace */
+	g_strstrip(s_inputbuffer);
+
+	/* drop comments starting with '#' and empty lines */
+	if (*s_inputbuffer == '#' || *s_inputbuffer == '\0') {
+	    continue;
+	}
+
+	s_inputbuffer[9] = '\0';
+
+	g_ptr_array_add(mults_possible, g_strdup(s_inputbuffer));
+
+	count++;
+    }
+
+    fclose(cfp);
+
+    /* do not rely on the order in the mult file but sort it here */
+    g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);
+
+    return count;
 }
 
 
