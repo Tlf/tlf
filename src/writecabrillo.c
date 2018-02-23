@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *   write cabrillo  file
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *   write cabrillo  file
+ *
+ *--------------------------------------------------------------*/
 
 
 #ifndef _GNU_SOURCE
@@ -43,16 +43,16 @@ extern char call[];
 extern struct tag_conv tag_tbl[];
 
 int is_comment(char *buffer);
-struct qso_t *get_next_record (FILE *fp);
-struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection);
+struct qso_t *get_next_record(FILE *fp);
+struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection);
 void free_qso(struct qso_t *ptr);
 
 /** check if logline is only a comment */
 int is_comment(char *buf) {
 
-   if (buf[0] != ';' && strlen(buf) > 60) /** \todo better check */
+    if (buf[0] != ';' && strlen(buf) > 60) /** \todo better check */
 	return 0;
-   else
+    else
 	return 1;
 }
 
@@ -64,8 +64,8 @@ int is_comment(char *buf) {
  *
  * \return ptr to new qso record (or NULL if eof)
  */
-struct qso_t *get_next_record (FILE *fp)
-{
+struct qso_t *get_next_record(FILE *fp) {
+
     char buffer[160];
     char *tmp;
     char *sp;
@@ -76,34 +76,34 @@ struct qso_t *get_next_record (FILE *fp)
 
 	if (!is_comment(buffer)) {
 
-	    ptr = g_malloc0 (sizeof(struct qso_t));
+	    ptr = g_malloc0(sizeof(struct qso_t));
 
 	    /* remember whole line */
-	    ptr->logline = g_strdup( buffer );
+	    ptr->logline = g_strdup(buffer);
 	    ptr->qtcdirection = 0;
 	    ptr->qsots = 0;
 
 	    /* split buffer into parts for qso_t record and parse
 	     * them accordingly */
-	    tmp = strtok_r( buffer, " \t", &sp);
+	    tmp = strtok_r(buffer, " \t", &sp);
 
 	    /* band */
-	    ptr->band = atoi( tmp );
+	    ptr->band = atoi(tmp);
 
 
 	    /* mode */
-	    if ( strcasestr( tmp, "CW"))
+	    if (strcasestr(tmp, "CW"))
 		ptr->mode = CWMODE;
-	    else if (strcasestr( tmp, "SSB" ))
+	    else if (strcasestr(tmp, "SSB"))
 		ptr->mode = SSBMODE;
 	    else
 		ptr->mode = DIGIMODE;
 
 	    /* date & time */
-	    memset( &date_n_time, 0, sizeof(struct tm) );
+	    memset(&date_n_time, 0, sizeof(struct tm));
 
-	    strptime ( strtok_r( NULL, " \t", &sp ), "%d-%b-%y", &date_n_time);
-	    strptime ( strtok_r( NULL, " \t", &sp ), "%H:%M", &date_n_time);
+	    strptime(strtok_r(NULL, " \t", &sp), "%d-%b-%y", &date_n_time);
+	    strptime(strtok_r(NULL, " \t", &sp), "%H:%M", &date_n_time);
 
 	    ptr->year = date_n_time.tm_year + 1900;	/* convert to
 							   1968..2067 */
@@ -114,24 +114,24 @@ struct qso_t *get_next_record (FILE *fp)
 	    ptr->min   = date_n_time.tm_min;
 
 	    /* qso number */
-	    ptr->qso_nr = atoi( strtok_r( NULL, " \t", &sp ) );
+	    ptr->qso_nr = atoi(strtok_r(NULL, " \t", &sp));
 
 	    /* his call */
-	    ptr->call = g_strdup( strtok_r( NULL, " \t", &sp ) );
+	    ptr->call = g_strdup(strtok_r(NULL, " \t", &sp));
 
 	    /* RST send and received */
-	    ptr->rst_s = atoi( strtok_r( NULL, " \t", &sp ) );
-	    ptr->rst_r = atoi( strtok_r( NULL, " \t", &sp ) );
+	    ptr->rst_s = atoi(strtok_r(NULL, " \t", &sp));
+	    ptr->rst_r = atoi(strtok_r(NULL, " \t", &sp));
 
 	    /* comment (exchange) */
-	    ptr->comment = g_strndup( buffer + 54, 13 );
+	    ptr->comment = g_strndup(buffer + 54, 13);
 
 	    /* tx */
 	    ptr->tx = (buffer[79] == '*') ? 1 : 0;
 
 	    /* frequency */
-	    ptr->freq = atof( buffer + 80 );
-	    if ( ( ptr->freq < 1800. ) || ( ptr->freq >= 30000. ) ) {
+	    ptr->freq = atof(buffer + 80);
+	    if ((ptr->freq < 1800.) || (ptr->freq >= 30000.)) {
 		ptr->freq = 0.;
 	    }
 
@@ -150,8 +150,8 @@ struct qso_t *get_next_record (FILE *fp)
  *
  * \return ptr to new qtc record (or NULL if eof)
  */
-struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection)
-{
+struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
+
     char buffer[100];
     char *tmp;
     char *sp;
@@ -166,18 +166,17 @@ struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection)
     while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
 
 
-	ptr = g_malloc0 (sizeof(struct qso_t));
+	ptr = g_malloc0(sizeof(struct qso_t));
 
 	/* remember whole line */
-	ptr->logline = g_strdup( buffer );
+	ptr->logline = g_strdup(buffer);
 	ptr->qtcdirection = qtcdirection;
 
 	/* tx */
 	if (qtcdirection == RECV) {
 	    pos = 28;
 	    shift = 0;
-	}
-	else {
+	} else {
 	    pos = 33;
 	    shift = 5;
 	}
@@ -185,32 +184,32 @@ struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection)
 
 	/* split buffer into parts for qso_t record and parse
 	  * them accordingly */
-	tmp = strtok_r( buffer, " \t", &sp);
+	tmp = strtok_r(buffer, " \t", &sp);
 
 	/* band */
-	ptr->band = atoi( tmp );
+	ptr->band = atoi(tmp);
 
 	/* mode */
-	if ( strcasestr( tmp, "CW"))
+	if (strcasestr(tmp, "CW"))
 	    ptr->mode = CWMODE;
-	else if (strcasestr( tmp, "SSB" ))
+	else if (strcasestr(tmp, "SSB"))
 	    ptr->mode = SSBMODE;
 	else
 	    ptr->mode = DIGIMODE;
 
 	/* qso number */
-	ptr->qso_nr = atoi( strtok_r( NULL, " \t", &sp ) );
+	ptr->qso_nr = atoi(strtok_r(NULL, " \t", &sp));
 
 	/* in case of SEND direction, the 3rd field is the original number of sent QSO,
 	   but it doesn't need for QTC line */
 	if (qtcdirection & SEND) {
-	    tmp = strtok_r( NULL, " \t", &sp );
+	    tmp = strtok_r(NULL, " \t", &sp);
 	}
 	/* date & time */
-	memset( &date_n_time, 0, sizeof(struct tm) );
+	memset(&date_n_time, 0, sizeof(struct tm));
 
-	strptime ( strtok_r( NULL, " \t", &sp ), "%d-%b-%y", &date_n_time);
-	strptime ( strtok_r( NULL, " \t", &sp ), "%H:%M", &date_n_time);
+	strptime(strtok_r(NULL, " \t", &sp), "%d-%b-%y", &date_n_time);
+	strptime(strtok_r(NULL, " \t", &sp), "%H:%M", &date_n_time);
 
 	ptr->qsots = timegm(&date_n_time);
 
@@ -224,22 +223,22 @@ struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection)
 
 	if (ptr->tx == 1) {
 	    /* ignore TX if set */
-	    strtok_r( NULL, " \t", &sp );
+	    strtok_r(NULL, " \t", &sp);
 	}
 	/* his call */
-	ptr->call = g_strdup( strtok_r( NULL, " \t", &sp ) );
+	ptr->call = g_strdup(strtok_r(NULL, " \t", &sp));
 
 	/* QTC serial and number */
-	ptr->qtc_serial = atoi( strtok_r( NULL, " \t", &sp ) );
-	ptr->qtc_number = atoi( strtok_r( NULL, " \t", &sp ) );
+	ptr->qtc_serial = atoi(strtok_r(NULL, " \t", &sp));
+	ptr->qtc_number = atoi(strtok_r(NULL, " \t", &sp));
 
-	ptr->qtc_qtime = g_strdup( strtok_r( NULL, " \t", &sp ) );
-	ptr->qtc_qcall = g_strdup( strtok_r( NULL, " \t", &sp ) );
-	ptr->qtc_qserial = g_strdup( strtok_r( NULL, " \t", &sp ) );
+	ptr->qtc_qtime = g_strdup(strtok_r(NULL, " \t", &sp));
+	ptr->qtc_qcall = g_strdup(strtok_r(NULL, " \t", &sp));
+	ptr->qtc_qserial = g_strdup(strtok_r(NULL, " \t", &sp));
 
 	/* frequency */
-	ptr->freq = atof( buffer + 80 + shift );
-	if ( ( ptr->freq < 1800. ) || ( ptr->freq >= 30000. ) ) {
+	ptr->freq = atof(buffer + 80 + shift);
+	if ((ptr->freq < 1800.) || (ptr->freq >= 30000.)) {
 	    ptr->freq = 0.;
 	}
 
@@ -253,21 +252,20 @@ struct qso_t *get_next_qtc_record (FILE *fp, int qtcdirection)
 void free_qso(struct qso_t *ptr) {
 
     if (ptr != NULL) {
-	g_free( ptr->comment );
-	g_free( ptr->logline );
-	g_free( ptr->call );
+	g_free(ptr->comment);
+	g_free(ptr->logline);
+	g_free(ptr->call);
 	if (ptr->qtc_qtime != NULL) {
-	    g_free( ptr->qtc_qtime );
-	    g_free( ptr->qtc_qcall );
-	    g_free( ptr->qtc_qserial );
+	    g_free(ptr->qtc_qtime);
+	    g_free(ptr->qtc_qcall);
+	    g_free(ptr->qtc_qserial);
 	}
-	g_free( ptr );
+	g_free(ptr);
     }
 }
 
 /** write out information */
-void info(char *s)
-{
+void info(char *s) {
     attron(modify_attr(COLOR_PAIR(C_INPUT) | A_STANDOUT));
     mvprintw(13, 29, "%s", s);
     refreshp();
@@ -285,100 +283,100 @@ float band2freq(int band) {
     float freq;
 
     switch (band) {
-    	case 160:
-	    freq = 1800.;
-	    break;
-	case 80:
-	    freq = 3500.;
-	    break;
-	case 40:
-	    freq = 7000.;
-	    break;
-	case 30:
-	    freq = 10100.;
-	    break;
-	case 20:
-	    freq = 14000.;
-	    break;
-	case 17:
-	    freq = 18068;
-	    break;
-	case 15:
-	    freq = 21000.;
-	    break;
-	case 12:
-	    freq = 24890;
-	    break;
-	case 10:
-	    freq = 28000.;
-	    break;
-	default:
-	    freq = 0.;
-	    break;
+    case 160:
+	freq = 1800.;
+	break;
+    case 80:
+	freq = 3500.;
+	break;
+    case 40:
+	freq = 7000.;
+	break;
+    case 30:
+	freq = 10100.;
+	break;
+    case 20:
+	freq = 14000.;
+	break;
+    case 17:
+	freq = 18068;
+	break;
+    case 15:
+	freq = 21000.;
+	break;
+    case 12:
+	freq = 24890;
+	break;
+    case 10:
+	freq = 28000.;
+	break;
+    default:
+	freq = 0.;
+	break;
     }
 
     return freq;
 }
 
 /* add 'src' to 'dst' with max. 'len' chars left padded */
-void add_lpadded( char *dst, char *src, int len ) {
+void add_lpadded(char *dst, char *src, int len) {
     char *field;
     int l;
 
-    field = g_malloc( len + 1);
-    strcat( dst, " " );
+    field = g_malloc(len + 1);
+    strcat(dst, " ");
     memset(field, ' ', len);
     l = strlen(src);
     if (l > len) l = len;
     memcpy(field + len - l, src, l);
     field[len] = '\0';
-    strcat( dst, field );
-    g_free( field );
+    strcat(dst, field);
+    g_free(field);
 }
 
 /* add 'src' to 'dst' with max. 'len' char right padded */
-void add_rpadded( char *dst, char *src, int len ) {
+void add_rpadded(char *dst, char *src, int len) {
     char *field;
     int l;
 
-    field = g_malloc( len + 1);
-    strcat( dst, " " );
+    field = g_malloc(len + 1);
+    strcat(dst, " ");
     memset(field, ' ', len);
     l = strlen(src);
     if (l > len) l = len;
     memcpy(field, src, l);
     field[len] = '\0';
-    strcat( dst, field );
-    g_free( field );
+    strcat(dst, field);
+    g_free(field);
 }
 
 /* get the n-th token of a string, return empty string if no n-th token */
-gchar *get_nth_token( gchar *str, int n) {
-    gchar *string = g_strdup( str );
+gchar *get_nth_token(gchar *str, int n) {
+    gchar *string = g_strdup(str);
     gchar *ptr;
     char *sp;
 
-    ptr = strtok_r( string, " \t", &sp );
+    ptr = strtok_r(string, " \t", &sp);
 
-    while ( n > 0 && ptr != NULL ) {
-	ptr = strtok_r( NULL, " \t", &sp );
+    while (n > 0 && ptr != NULL) {
+	ptr = strtok_r(NULL, " \t", &sp);
 	n--;
     }
 
     /* if no n-th element in string, return empty string */
-    if ( ptr == NULL )
-	ptr = strdup( "" );
+    if (ptr == NULL)
+	ptr = strdup("");
     else
-	ptr = strdup( ptr );
+	ptr = strdup(ptr);
 
-    g_free( string );
+    g_free(string);
     return ptr;
 }
 
 
 /* format QSO: line for actual qso according to cabrillo format description
  * and put it into buffer */
-void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
+void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 
     extern char exchange[];
 
@@ -397,144 +395,143 @@ void prepare_line( struct qso_t *qso, struct cabrillo_desc *desc, char *buf ) {
 
     freq = (int)qso->freq;
     if (freq < 1800.)
-	freq = (int)band2freq( qso->band );
+	freq = (int)band2freq(qso->band);
 
     if (qso->qtcdirection == 0) {
-	strcpy( buf, "QSO:" );		/* start the line */
+	strcpy(buf, "QSO:");		/* start the line */
 	item_count = desc->item_count;
 	item_array = desc->item_array;
-    }
-    else {
-	strcpy( buf, "QTC:" );		/* start the line */
+    } else {
+	strcpy(buf, "QTC:");		/* start the line */
 	item_count = desc->qtc_item_count;
 	item_array = desc->qtc_item_array;
     }
-    for  (i = 0; i < item_count; i++) {
-	item = g_ptr_array_index( item_array, i );
+    for (i = 0; i < item_count; i++) {
+	item = g_ptr_array_index(item_array, i);
 	switch (item->tag) {
-	    case FREQ:
-		sprintf( tmp, "%d", freq );
-		add_lpadded( buf, tmp, item->len );
-		break;
-	    case MODE:
-		sprintf( tmp, "%s", to_mode[qso->mode] );
-		add_lpadded( buf, tmp, item->len );
-		break;
-	    case DATE:
-		sprintf( tmp, "%4d-%02d-%02d",
-			qso->year, qso->month, qso->day);
-		add_lpadded( buf, tmp, item->len );
-		break;
-	    case TIME:
-		sprintf( tmp, "%02d%02d", qso->hour, qso->min );
-		add_lpadded( buf, tmp, item->len );
-		break;
-	    case MYCALL:
-		strcpy(tmp, call);
-		add_rpadded( buf, g_strchomp(tmp), item->len );
-		break;
-	    case HISCALL:
-		add_rpadded( buf, qso->call, item->len );
-		break;
-	    case RST_S:
-		sprintf( tmp, "%d", qso->rst_s );
-		add_rpadded( buf, tmp, item->len );
-		break;
-	    case RST_R:
-		sprintf( tmp, "%d", qso->rst_r );
-		add_rpadded( buf, tmp, item->len );
-		break;
-	    case EXCH:
-		add_rpadded( buf, qso->comment, item->len );
-		break;
-	    case EXC1:
-		token = get_nth_token( qso->comment, 0);
-		add_rpadded( buf, token, item->len );
-		g_free( token );
-		break;
-	    case EXC2:
-		token = get_nth_token( qso->comment, 1);
-		add_rpadded( buf, token, item->len );
-		g_free( token );
-		break;
-	    case EXC3:
-		token = get_nth_token( qso->comment, 2);
-		add_rpadded( buf, token, item->len );
-		g_free( token );
-		break;
-	    case EXC4:
-		token = get_nth_token( qso->comment, 3);
-		add_rpadded( buf, token, item->len );
-		g_free( token );
-		break;
-	    case EXC_S: {
-		int pos;
-		char *start = exchange;
-		tmp[0] = '\0';
-		pos = strcspn( start, "#" );
-		strncat( tmp, start, pos ); /** \todo avoid buffer overflow */
-		while ( pos < strlen(start) ) {
-		    if ( start[pos] == '#' ) {
-			/* format and add serial number */
-			char number[6];
-			sprintf( number, "%04d", qso->qso_nr );
-			strcat( tmp, number );
-		    }
+	case FREQ:
+	    sprintf(tmp, "%d", freq);
+	    add_lpadded(buf, tmp, item->len);
+	    break;
+	case MODE:
+	    sprintf(tmp, "%s", to_mode[qso->mode]);
+	    add_lpadded(buf, tmp, item->len);
+	    break;
+	case DATE:
+	    sprintf(tmp, "%4d-%02d-%02d",
+		    qso->year, qso->month, qso->day);
+	    add_lpadded(buf, tmp, item->len);
+	    break;
+	case TIME:
+	    sprintf(tmp, "%02d%02d", qso->hour, qso->min);
+	    add_lpadded(buf, tmp, item->len);
+	    break;
+	case MYCALL:
+	    strcpy(tmp, call);
+	    add_rpadded(buf, g_strchomp(tmp), item->len);
+	    break;
+	case HISCALL:
+	    add_rpadded(buf, qso->call, item->len);
+	    break;
+	case RST_S:
+	    sprintf(tmp, "%d", qso->rst_s);
+	    add_rpadded(buf, tmp, item->len);
+	    break;
+	case RST_R:
+	    sprintf(tmp, "%d", qso->rst_r);
+	    add_rpadded(buf, tmp, item->len);
+	    break;
+	case EXCH:
+	    add_rpadded(buf, qso->comment, item->len);
+	    break;
+	case EXC1:
+	    token = get_nth_token(qso->comment, 0);
+	    add_rpadded(buf, token, item->len);
+	    g_free(token);
+	    break;
+	case EXC2:
+	    token = get_nth_token(qso->comment, 1);
+	    add_rpadded(buf, token, item->len);
+	    g_free(token);
+	    break;
+	case EXC3:
+	    token = get_nth_token(qso->comment, 2);
+	    add_rpadded(buf, token, item->len);
+	    g_free(token);
+	    break;
+	case EXC4:
+	    token = get_nth_token(qso->comment, 3);
+	    add_rpadded(buf, token, item->len);
+	    g_free(token);
+	    break;
+	case EXC_S: {
+	    int pos;
+	    char *start = exchange;
+	    tmp[0] = '\0';
+	    pos = strcspn(start, "#");
+	    strncat(tmp, start, pos);   /** \todo avoid buffer overflow */
+	    while (pos < strlen(start)) {
+		if (start[pos] == '#') {
+		    /* format and add serial number */
+		    char number[6];
+		    sprintf(number, "%04d", qso->qso_nr);
+		    strcat(tmp, number);
+		}
 
-		    start = start + pos + 1; 	/* skip special character */
-		    pos = strcspn( start, "#" );
-		    strncat( tmp, start, pos );
-		}
-		add_rpadded( buf, tmp, item->len );
-		}
-		break;
-	    case TX:
-		sprintf( tmp, "%1d", qso->tx );
-		add_rpadded( buf, tmp, item->len );
-		break;
-	    case QTCRCALL:
-		if (qso->qtcdirection == 1) {	// RECV
-		    strcpy(tmp, call);
-		}
-		if (qso->qtcdirection == 2) {	// SEND
-		    strcpy(tmp, qso->call);
-		}
-		add_rpadded( buf, g_strchomp(tmp), item->len );
-		break;
-	    case QTCHEAD:
-		tmp[0] = '\0';
-		sprintf(tmp, "%*d/%d", 3, qso->qtc_serial, qso->qtc_number);
-		add_rpadded( buf, g_strchomp(tmp), item->len );
-		break;
-	    case QTCSCALL:
-		if (qso->qtcdirection == 1) {	// RECV
-		    strcpy(tmp, qso->call);
-		}
-		if (qso->qtcdirection == 2) {	// SEND
-		    strcpy(tmp, call);
-		}
-		add_rpadded( buf, g_strchomp(tmp), item->len );
-		break;
-	    case QTC:
-		sprintf(tmp, "%s %-13s %4s", qso->qtc_qtime, qso->qtc_qcall, qso->qtc_qserial);
-		add_rpadded( buf, g_strchomp(tmp), item->len );
-	    case NO_ITEM:
-	    default:
-		tmp[0] = '\0';
+		start = start + pos + 1; 	/* skip special character */
+		pos = strcspn(start, "#");
+		strncat(tmp, start, pos);
+	    }
+	    add_rpadded(buf, tmp, item->len);
+	}
+	break;
+	case TX:
+	    sprintf(tmp, "%1d", qso->tx);
+	    add_rpadded(buf, tmp, item->len);
+	    break;
+	case QTCRCALL:
+	    if (qso->qtcdirection == 1) {	// RECV
+		strcpy(tmp, call);
+	    }
+	    if (qso->qtcdirection == 2) {	// SEND
+		strcpy(tmp, qso->call);
+	    }
+	    add_rpadded(buf, g_strchomp(tmp), item->len);
+	    break;
+	case QTCHEAD:
+	    tmp[0] = '\0';
+	    sprintf(tmp, "%*d/%d", 3, qso->qtc_serial, qso->qtc_number);
+	    add_rpadded(buf, g_strchomp(tmp), item->len);
+	    break;
+	case QTCSCALL:
+	    if (qso->qtcdirection == 1) {	// RECV
+		strcpy(tmp, qso->call);
+	    }
+	    if (qso->qtcdirection == 2) {	// SEND
+		strcpy(tmp, call);
+	    }
+	    add_rpadded(buf, g_strchomp(tmp), item->len);
+	    break;
+	case QTC:
+	    sprintf(tmp, "%s %-13s %4s", qso->qtc_qtime, qso->qtc_qcall, qso->qtc_qserial);
+	    add_rpadded(buf, g_strchomp(tmp), item->len);
+	case NO_ITEM:
+	default:
+	    tmp[0] = '\0';
 	}
 
     }
-    strcat( buf, "\n" ); 		/* closing nl */
+    strcat(buf, "\n"); 		/* closing nl */
 }
 
-int write_cabrillo(void)
-{
-    extern char* cabrillo;
+int write_cabrillo(void) {
+
+    extern char *cabrillo;
     extern char logfile[];
     extern char exchange[];
     extern char call[];
 
-    char* cab_dfltfile;
+    char *cab_dfltfile;
     struct cabrillo_desc *cabdesc;
     char cabrillo_tmp_name[80];
     char buffer[4000] = "";
@@ -546,7 +543,7 @@ int write_cabrillo(void)
     if (cabrillo == NULL) {
 	info("Missing CABRILLO= keyword (see man page)");
 	sleep(2);
-    	return(1);
+	return (1);
     }
 
     /* Try to read cabrillo format first from local directory.
@@ -555,15 +552,15 @@ int write_cabrillo(void)
     cabdesc = read_cabrillo_format("cabrillo.fmt", cabrillo);
     if (!cabdesc) {
 	cab_dfltfile = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
-	    "cabrillo.fmt", NULL);
+				   "cabrillo.fmt", NULL);
 	cabdesc = read_cabrillo_format(cab_dfltfile, cabrillo);
 	g_free(cab_dfltfile);
     }
 
     if (!cabdesc) {
-    	info("Cabrillo format specification not found!");
+	info("Cabrillo format specification not found!");
 	sleep(2);
-	return(2);
+	return (2);
     }
 
     /* open logfile and create a cabrillo file */
@@ -574,26 +571,26 @@ int write_cabrillo(void)
     if ((fp1 = fopen(logfile, "r")) == NULL) {
 	info("Can't open logfile.");
 	sleep(2);
-	free_cabfmt( cabdesc );
+	free_cabfmt(cabdesc);
 	return (1);
     }
     if (cabdesc->qtc_item_array != NULL) {
-        if (qtcdirection & 1) {
+	if (qtcdirection & 1) {
 	    fpqtcrec = fopen(QTC_RECV_LOG, "r");
 	    if (fpqtcrec == NULL) {
 		info("Can't open received QTC logfile.");
 		sleep(2);
-		free_cabfmt( cabdesc );
+		free_cabfmt(cabdesc);
 		fclose(fp1);
 		return (1);
 	    }
 	}
-        if (qtcdirection & 2) {
+	if (qtcdirection & 2) {
 	    fpqtcsent = fopen(QTC_SENT_LOG, "r");
 	    if (fpqtcsent == NULL) {
 		info("Can't open sent QTC logfile.");
 		sleep(2);
-		free_cabfmt( cabdesc );
+		free_cabfmt(cabdesc);
 		fclose(fp1);
 		if (fpqtcrec != NULL) fclose(fpqtcrec);
 		return (1);
@@ -603,7 +600,7 @@ int write_cabrillo(void)
     if ((fp2 = fopen(cabrillo_tmp_name, "w")) == NULL) {
 	info("Can't create cabrillo file.");
 	sleep(2);
-	free_cabfmt( cabdesc );
+	free_cabfmt(cabdesc);
 	fclose(fp1);
 	if (fpqtcsent != NULL) fclose(fpqtcsent);
 	if (fpqtcrec != NULL) fclose(fpqtcrec);
@@ -612,9 +609,10 @@ int write_cabrillo(void)
 
 
     /* ask for exchange and header information */
-    ask(buffer, "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
+    ask(buffer,
+	"Your exchange (e.g. State, province, age etc... (# if serial number)): ");
     strncpy(exchange, buffer, 10);
-    getsummary( fp2 );
+    getsummary(fp2);
 
     info("Writing cabrillo file");
 
@@ -651,13 +649,11 @@ int write_cabrillo(void)
 		qtcrec = get_next_qtc_record(fpqtcrec, RECV);
 		if (qtcrec != NULL) {
 		    qtcrecnr = qtcrec->qso_nr;
-		}
-		else {
+		} else {
 		    qtcrecnr = 0;
 		}
-	    }
-	    else {
-	        prepare_line(qtcsent, cabdesc, buffer);
+	    } else {
+		prepare_line(qtcsent, cabdesc, buffer);
 		if (strlen(buffer) > 5) {
 		    fputs(buffer, fp2);
 		    free_qso(qtcsent);
@@ -665,8 +661,7 @@ int write_cabrillo(void)
 		qtcsent = get_next_qtc_record(fpqtcsent, SEND);
 		if (qtcsent != NULL) {
 		    qtcsentnr = qtcsent->qso_nr;
-		}
-		else {
+		} else {
 		    qtcsentnr = 0;
 		}
 	    }
@@ -683,7 +678,7 @@ int write_cabrillo(void)
 	fclose(fpqtcrec);
     }
 
-    free_cabfmt( cabdesc );
+    free_cabfmt(cabdesc);
 
     return 0;
 }
@@ -695,8 +690,7 @@ int write_cabrillo(void)
     as shown on http://www.adif.org
     LZ3NY
 */
-int write_adif(void)
-{
+int write_adif(void) {
 
     extern char logfile[];
     extern char exchange[];
@@ -742,7 +736,8 @@ int write_adif(void)
     /* in case using write_adif() without write_cabrillo() before
      * just ask for the needed information */
     if ((strlen(standardexchange) == 0) && (exchange_serial != 1)) {
-	ask(buffer, "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
+	ask(buffer,
+	    "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
 	strncpy(standardexchange, buffer, 10);
     }
 
@@ -750,18 +745,18 @@ int write_adif(void)
 
     /* write header */
     fputs
-	("################################################################################\n",
-	 fp2);
+    ("################################################################################\n",
+     fp2);
     fputs
-	("#                     ADIF v1.00 data file exported by TLF\n",
-	 fp2);
+    ("#                     ADIF v1.00 data file exported by TLF\n",
+     fp2);
     fputs
-	("#              according to specifications on http://www.adif.org\n",
-	 fp2);
+    ("#              according to specifications on http://www.adif.org\n",
+     fp2);
     fputs("#\n", fp2);
     fputs
-	("################################################################################\n",
-	 fp2);
+    ("################################################################################\n",
+     fp2);
     fputs("<adif_ver:4>1.00\n<eoh>\n", fp2);
 
     while (fgets(buf, sizeof(buf), fp1)) {
@@ -769,9 +764,9 @@ int write_adif(void)
 	buffer[0] = '\0';
 
 	if ((buf[0] != ';') && ((buf[0] != ' ') || (buf[1] != ' '))
-	    && (buf[0] != '#') && (buf[0] != '\n') && (buf[0] != '\r')) {
+		&& (buf[0] != '#') && (buf[0] != '\n') && (buf[0] != '\r')) {
 
-/* CALLSIGN */
+	    /* CALLSIGN */
 	    strcat(buffer, "<CALL:");
 	    strncpy(adif_tmp_call, buf + 29, 12);
 	    strcpy(adif_tmp_call, g_strstrip(adif_tmp_call));
@@ -781,7 +776,7 @@ int write_adif(void)
 	    strcat(buffer, ">");
 	    strcat(buffer, adif_tmp_call);
 
-/* BAND */
+	    /* BAND */
 	    if (buf[1] == '6')
 		strcat(buffer, "<BAND:4>160M");
 	    else if (buf[1] == '8')
@@ -801,19 +796,19 @@ int write_adif(void)
 	    else if (buf[1] == '1' && buf[2] == '0')
 		strcat(buffer, "<BAND:3>10M");
 
-/* FREQ if available */
+	    /* FREQ if available */
 	    if (strlen(buf) > 81) {
-		freq = atof(buf+80);
+		freq = atof(buf + 80);
 		freq_buf[0] = '\0';
 		if ((freq > 1799.) && (freq < 10000.)) {
-		    sprintf(freq_buf, "<FREQ:6>%.4f", freq/1000.);
+		    sprintf(freq_buf, "<FREQ:6>%.4f", freq / 1000.);
 		} else if (freq >= 10000.) {
-		    sprintf(freq_buf, "<FREQ:7>%.4f", freq/1000.);
+		    sprintf(freq_buf, "<FREQ:7>%.4f", freq / 1000.);
 		}
 		strcat(buffer, freq_buf);
 	    }
 
-/* QSO MODE */
+	    /* QSO MODE */
 	    if (buf[3] == 'C')
 		strcat(buffer, "<MODE:2>CW");
 	    else if (buf[3] == 'S')
@@ -824,7 +819,7 @@ int write_adif(void)
 		/* \todo DIGI is no allowed mode */
 		strcat(buffer, "<MODE:4>DIGI");
 
-/* QSO_DATE */
+	    /* QSO_DATE */
 	    /* Y2K :) */
 	    adif_year_check[0] = '\0';
 	    strncpy(adif_year_check, buf + 14, 2);
@@ -865,7 +860,7 @@ int write_adif(void)
 	    /*date */
 	    strncat(buffer, buf + 7, 2);
 
-/* TIME_ON */
+	    /* TIME_ON */
 	    strcat(buffer, "<TIME_ON:4>");
 	    strncat(buffer, buf + 17, 2);
 	    strncat(buffer, buf + 20, 2);
@@ -876,7 +871,7 @@ int write_adif(void)
 	    else
 		adif_mode_dep = 3;
 
-/* RST_SENT */
+	    /* RST_SENT */
 	    strcat(buffer, "<RST_SENT:");
 	    adif_tmp_str[1] = '\0';	/*       PA0R 02/10/2003  */
 	    adif_tmp_str[0] = adif_mode_dep + 48;
@@ -884,7 +879,7 @@ int write_adif(void)
 	    strcat(buffer, ">");
 	    strncat(buffer, buf + 44, adif_mode_dep);
 
-/* STX - sent contest number */
+	    /* STX - sent contest number */
 	    strcat(buffer, "<STX:");
 
 	    if ((exchange_serial == 1) || (standardexchange[0] == '#')) {
@@ -898,7 +893,7 @@ int write_adif(void)
 		strcat(buffer, g_strstrip(standardexchange));
 	    }
 
-/* RST_RCVD */
+	    /* RST_RCVD */
 	    strncpy(adif_tmp_rr, buf + 49, 4);
 	    strcpy(adif_tmp_rr, g_strstrip(adif_tmp_rr));
 	    strcat(buffer, "<RST_RCVD:");
@@ -908,7 +903,7 @@ int write_adif(void)
 	    strcat(buffer, ">");
 	    strncat(buffer, buf + 49, adif_mode_dep);
 
-/* SRX - received contest number */
+	    /* SRX - received contest number */
 	    strncpy(adif_rcvd_num, buf + 54, 14);
 	    strcpy(adif_rcvd_num, g_strstrip(adif_rcvd_num));
 	    snprintf(resultat, sizeof(resultat), "%zd",
@@ -919,7 +914,7 @@ int write_adif(void)
 	    if (strcmp(buf + 54, " ") != 0)
 		strcat(buffer, adif_rcvd_num);
 
-/* <EOR> */
+	    /* <EOR> */
 	    strcat(buffer, "<eor>\n");	//end of ADIF row
 
 	    fputs(buffer, fp2);

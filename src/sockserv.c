@@ -65,29 +65,25 @@ static int ifds = -1;
 #define NULLCHAR (char *) NULL
 #define myperror perror
 
-void setlinemode(int s, int tf)
-{
+void setlinemode(int s, int tf) {
     sockbuf[s].whole_lines = tf;
 }
 
-int close_s(int s)
-{
+int close_s(int s) {
     FD_CLR(s, &openfds);
-	if ( 0 != sockbuf[s].buflen )
-		 free(sockbuf[s].buf);
+    if (0 != sockbuf[s].buflen)
+	free(sockbuf[s].buf);
     sockbuf[s].buflen = 0;
     sockbuf[s].fragment = 0;
     shutdown(s, 2);
     return close(s);
 }
 
-void fds_copy(fd_set *tofd, fd_set *fmfd)
-{
+void fds_copy(fd_set *tofd, fd_set *fmfd) {
     memcpy(tofd, fmfd, sizeof(fd_set));
 }
 
-int usputs(int s, char *buf)
-{
+int usputs(int s, char *buf) {
     int len, i;
     len = strlen(buf);
     if (sockbuf[s].cr_translation) {
@@ -102,16 +98,15 @@ int usputs(int s, char *buf)
 	return usputb(s, buf, len);
 }
 
-int usputb(int s, char *buf, int buflen)
-{
+int usputb(int s, char *buf, int buflen) {
 
-extern WINDOW *sclwin;
+    extern WINDOW *sclwin;
 
     strcpy(sockserv_error, "");
     if (udp_socket == s) {
 	peerlen = sizeof(udp_peer);
 	if (sendto(s, buf, buflen, 0, (struct sockaddr *) &udp_peer,
-                   peerlen) < 0) {
+		   peerlen) < 0) {
 	    myperror("usputb:sendto");
 	    return -1;
 	} else
@@ -120,7 +115,7 @@ extern WINDOW *sclwin;
 	if (write(s, buf, buflen) < 0) {
 //	    myperror("usputb:write");
 	    wprintw(sclwin, "Not connected !!");
-	     wrefresh(sclwin);
+	    wrefresh(sclwin);
 	    sleep(2);
 	    return -1;
 	} else
@@ -128,8 +123,7 @@ extern WINDOW *sclwin;
     }
 }
 
-int usvprintf(int s, char *fmt, va_list args)
-{
+int usvprintf(int s, char *fmt, va_list args) {
     int len, withargs;
     char *buf;
 
@@ -159,8 +153,7 @@ int usvprintf(int s, char *fmt, va_list args)
     return len;
 }
 
-int usprintf(int s, char *fmt,...)
-{
+int usprintf(int s, char *fmt, ...) {
     va_list args;
     int len;
 
@@ -170,8 +163,7 @@ int usprintf(int s, char *fmt,...)
     return len;
 }
 
-int tprintf(char *fmt,...)
-{
+int tprintf(char *fmt, ...) {
     va_list args;
     int len;
 
@@ -181,22 +173,19 @@ int tprintf(char *fmt,...)
     return len;
 }
 
-int tputstr(char *buf)
-{
+int tputstr(char *buf) {
     return usputs(ifds, buf);
 }
 
-int tputc(char c)
-{
+int tputc(char c) {
     char ic;
     ic = c;
     return usputb(ifds, &ic, 1);
 }
 
-static void (*login[MAX_SERVED_SOCKETS]) (int i);
+static void (*login[MAX_SERVED_SOCKETS])(int i);
 char sockserv_error[80];
-static int initialize(void)
-{
+static int initialize(void) {
     int i;
     strcpy(sockserv_error, "");
     /* First-time initialization */
@@ -215,8 +204,7 @@ static int initialize(void)
 
 }
 
-int startup(int portnum, void (*newin) (int))
-{
+int startup(int portnum, void (*newin)(int)) {
     struct sockaddr_in sin;
 
     initialize();
@@ -257,11 +245,10 @@ int startup(int portnum, void (*newin) (int))
     if (ifds == -1)
 	ifds = nfds - 1;
     nlsock++;
-    return lsock[nlsock-1];
+    return lsock[nlsock - 1];
 }
 
-int startup_udp(int portnum)
-{
+int startup_udp(int portnum) {
     struct sockaddr_in sin;
 
     initialize();
@@ -300,8 +287,7 @@ int startup_udp(int portnum)
     return udp_socket;
 }
 
-int recvline(int *fd, char *buf, int buflen)
-{
+int recvline(int *fd, char *buf, int buflen) {
     unsigned int len;
     int ns, i;
     struct sockaddr_in client;
@@ -337,7 +323,7 @@ int recvline(int *fd, char *buf, int buflen)
 		if (FD_ISSET(lsock[i], &readfds)) {
 		    len = sizeof(client);
 		    while ((ns = accept(lsock[i], (struct sockaddr *) &client,
-                                        &len)) == -1) {
+					&len)) == -1) {
 			if (errno != EINTR) {
 			    myperror("recvline: accept");
 			    exit(1);
@@ -351,7 +337,7 @@ int recvline(int *fd, char *buf, int buflen)
 		    sockbuf[ns].fragment = 0;
 		    sockbuf[ns].whole_lines = sockbuf[lsock[i]].whole_lines;
 		    sockbuf[ns].cr_translation = 0;
-		    (*login[i]) (ns);
+		    (*login[i])(ns);
 		}
 		FD_CLR(lsock[i], &readfds);
 	    } else {
@@ -359,8 +345,8 @@ int recvline(int *fd, char *buf, int buflen)
 		    if (ifds == udp_socket) {
 			peerlen = sizeof(udp_peer);
 			while ((sockbuf[ifds].buflen =
-				recvfrom(ifds, sockbuf[ifds].buf + sockbuf[ifds].fragment,
-			     SOBUF - 1, 0, (struct sockaddr *) &udp_peer, &peerlen)) == -1) {
+				    recvfrom(ifds, sockbuf[ifds].buf + sockbuf[ifds].fragment,
+					     SOBUF - 1, 0, (struct sockaddr *) &udp_peer, &peerlen)) == -1) {
 			    if (errno != EINTR) {
 				break;
 			    }
@@ -368,8 +354,8 @@ int recvline(int *fd, char *buf, int buflen)
 			}
 		    } else {
 			while ((sockbuf[ifds].buflen =
-				read(ifds, sockbuf[ifds].buf + sockbuf[ifds].fragment,
-				     SOBUF - 1)) == -1) {
+				    read(ifds, sockbuf[ifds].buf + sockbuf[ifds].fragment,
+					 SOBUF - 1)) == -1) {
 			    if (errno != EINTR) {
 				break;
 			    }
@@ -415,7 +401,7 @@ int recvline(int *fd, char *buf, int buflen)
 		    memcpy(buf, sockbuf[ifds].buf, len);
 		    if (sockbuf[ifds].buflen > len)
 			memmove(sockbuf[ifds].buf, sockbuf[ifds].buf + len,
-			       sockbuf[ifds].buflen - len);
+				sockbuf[ifds].buflen - len);
 		    sockbuf[ifds].buflen -= len;
 		    *fd = ifds;
 		    if (sockbuf[ifds].buflen)
@@ -427,8 +413,7 @@ int recvline(int *fd, char *buf, int buflen)
     }
 }
 
-long resolve(char *hostname)
-{
+long resolve(char *hostname) {
     unsigned long int haddr;
     unsigned char a[4];
     int i;
@@ -476,11 +461,11 @@ long resolve(char *hostname)
     return (haddr);
 }
 
-int startcliaddr(int family, unsigned long int addr, unsigned short int portnum)
-{
-	extern WINDOW *sclwin;
+int startcliaddr(int family, unsigned long int addr,
+		 unsigned short int portnum) {
+    extern WINDOW *sclwin;
 
-	int s;
+    int s;
     struct sockaddr_in sin;
 
     initialize();
@@ -529,12 +514,11 @@ int startcliaddr(int family, unsigned long int addr, unsigned short int portnum)
     return s;
 }
 
-int startcli(void)
-{
-	extern char pr_hostaddress[];
-	 extern int portnum;
+int startcli(void) {
+    extern char pr_hostaddress[];
+    extern int portnum;
 
-	unsigned long int haddr;
+    unsigned long int haddr;
     int addrtype;
     haddr = resolve(pr_hostaddress);
     addrtype = AF_INET;
@@ -542,8 +526,7 @@ int startcli(void)
     return (startcliaddr(addrtype, haddr, (short) portnum));
 }
 
-void socktimeout(int msec)
-{
+void socktimeout(int msec) {
     if (!socktimeval)
 	socktimeval = (struct timeval *) malloc(sizeof(struct timeval));
     if (!selecttimeval)
@@ -552,16 +535,14 @@ void socktimeout(int msec)
     socktimeval->tv_usec = (msec % 1000L) * 1000L;
 }
 
-void nosocktimeout(void)
-{
+void nosocktimeout(void) {
     free(socktimeval);
     socktimeval = NULL;
     free(selecttimeval);
     selecttimeval = NULL;
 }
 
-void set_udp_peer(long address, int portnum)
-{
+void set_udp_peer(long address, int portnum) {
     memset(&udp_peer, 0, sizeof(udp_peer));
     udp_peer.sin_addr.s_addr = address;
     udp_peer.sin_family = AF_INET;
@@ -569,8 +550,7 @@ void set_udp_peer(long address, int portnum)
     peerlen = sizeof(udp_peer);
 }
 
-void get_udp_peer(long *address, int *portnum)
-{
+void get_udp_peer(long *address, int *portnum) {
     *address = udp_peer.sin_addr.s_addr;
     *portnum = 0;
     *portnum = ntohs(udp_peer.sin_port);

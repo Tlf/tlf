@@ -35,9 +35,9 @@ struct qso_t {
     int tx;
     int qtc_serial;
     int qtc_number;
-    char * qtc_qtime;
-    char * qtc_qcall;
-    char * qtc_qserial;
+    char *qtc_qtime;
+    char *qtc_qcall;
+    char *qtc_qserial;
     int qtcdirection;
     int qsots;
 };
@@ -65,7 +65,8 @@ struct read_qtc_t {
 
 /* list of different tags for QSO/QTC: line items */
 enum tag_t { NO_ITEM, FREQ, MODE, DATE, TIME, MYCALL, HISCALL, RST_S, RST_R, 		// 0...8
-    EXC_S, EXCH, EXC1, EXC2, EXC3, EXC4, TX, QTCRCALL, QTCHEAD, QTCSCALL, QTC };	// 9...19
+	     EXC_S, EXCH, EXC1, EXC2, EXC3, EXC4, TX, QTCRCALL, QTCHEAD, QTCSCALL, QTC
+	   };	// 9...19
 
 /* type for conversion table between tag name in format file and internal tag */
 struct tag_conv {
@@ -79,9 +80,9 @@ struct line_item {
     int len;		/* max. item length */
 };
 
-enum tag_t translate_item_name( char *name );
+enum tag_t translate_item_name(char *name);
 void free_cabfmt(struct cabrillo_desc *desc);
 struct line_item *parse_line_entry(char *line_entry);
-struct cabrillo_desc *read_cabrillo_format (char *filename, char *format);
+struct cabrillo_desc *read_cabrillo_format(char *filename, char *format);
 
 #endif

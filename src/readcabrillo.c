@@ -51,7 +51,8 @@ enum {
 static int cablinecnt = 0;
 char qtcsend_logfile_import[] = "IMPORT_QTC_sent.log";
 char qtcrecv_logfile_import[] = "IMPORT_QTC_recv.log";
-extern char qsos[MAX_QSOS][LOGLINELEN+1];// array of log lines of QSOs so far;
+extern char qsos[MAX_QSOS][LOGLINELEN +
+			   1]; // array of log lines of QSOs so far;
 extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs
 extern int nr_qsos;
 
@@ -65,50 +66,50 @@ int set_band_from_freq(float freq) {
     int cab_bandinx;
 
     switch ((int)freq) {
-	case 1800 ... 2000:{
-	    cab_bandinx = BANDINDEX_160;
-	    break;
-	}
-	case 3500 ... 4000:{
-	    cab_bandinx = BANDINDEX_80;
-	    break;
-	}
-	case 7000 ... 7300:{
-	    cab_bandinx = BANDINDEX_40;
-	    break;
-	}
-	case 10100 ... 10150:{
-	    cab_bandinx = BANDINDEX_30;
-	    break;
-	}
-	case 14000 ... 14350:{
-	    cab_bandinx = BANDINDEX_20;
-	    break;
-	}
-	case 18068 ... 18168:{
-	    cab_bandinx = BANDINDEX_17;
-	    break;
-	}
-	case 21000 ... 21450:{
-	    cab_bandinx = BANDINDEX_15;
-	    break;
-	}
-	case 24890 ... 24990:{
-	    cab_bandinx = BANDINDEX_12;
-	    break;
-	}
-	case 28000 ... 29700:{
-	    cab_bandinx = BANDINDEX_10;
-	    break;
-	}
-	default:
-	    cab_bandinx = BANDINDEX_OOB;	/* out of band */
-	}
+    case 1800 ... 2000: {
+	cab_bandinx = BANDINDEX_160;
+	break;
+    }
+    case 3500 ... 4000: {
+	cab_bandinx = BANDINDEX_80;
+	break;
+    }
+    case 7000 ... 7300: {
+	cab_bandinx = BANDINDEX_40;
+	break;
+    }
+    case 10100 ... 10150: {
+	cab_bandinx = BANDINDEX_30;
+	break;
+    }
+    case 14000 ... 14350: {
+	cab_bandinx = BANDINDEX_20;
+	break;
+    }
+    case 18068 ... 18168: {
+	cab_bandinx = BANDINDEX_17;
+	break;
+    }
+    case 21000 ... 21450: {
+	cab_bandinx = BANDINDEX_15;
+	break;
+    }
+    case 24890 ... 24990: {
+	cab_bandinx = BANDINDEX_12;
+	break;
+    }
+    case 28000 ... 29700: {
+	cab_bandinx = BANDINDEX_10;
+	break;
+    }
+    default:
+	cab_bandinx = BANDINDEX_OOB;	/* out of band */
+    }
 
-	return cab_bandinx;
+    return cab_bandinx;
 }
 
-void concat_comment(char * exchstr) {
+void concat_comment(char *exchstr) {
     if (strlen(comment) > 0) {
 	strcat(comment, " ");
     }
@@ -138,7 +139,7 @@ void write_log_fm_cabr() {
     makelogline();	/* format logline */
     store_qso(logline4);
     cleanup_qso();
-    qsoflags_for_qtc[nr_qsos-1] = 0;
+    qsoflags_for_qtc[nr_qsos - 1] = 0;
 }
 
 /* write a new line to the qtc log */
@@ -158,15 +159,14 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 	qtc_line.direction = RECV;
 	qtc_line.qsonr = cablinecnt;
 	make_qtc_logline(qtc_line, qtcrecv_logfile_import);
-    }
-    else { // SENT
+    } else { // SENT
 
 	qtc_line.direction = SEND;
 	// search the sent callsign in list of QSO's
 
 	found_call = 0;	// indicates that the callsign found
 	found_empty = 0;// indicates that there is the "hole" in the list
-			// some reason, eg. own call
+	// some reason, eg. own call
 	// if new qtc block comes, go back to last empty
 	if (qtc_last_qtc_count != qtc_line.qtchead_count &&
 		qtc_last_qtc_serial != qtc_line.qtchead_serial &&
@@ -179,20 +179,19 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 	}
 
 	// look until not found and we're in list
-	while(found_call == 0 && qtc_curr_call_nr < nr_qsos) {
-	    strncpy(thiscall, qsos[qtc_curr_call_nr]+29, 14);
+	while (found_call == 0 && qtc_curr_call_nr < nr_qsos) {
+	    strncpy(thiscall, qsos[qtc_curr_call_nr] + 29, 14);
 	    g_strchomp(thiscall);
-	    strncpy(ttime, qsos[qtc_curr_call_nr]+17, 2);
-	    strncpy(ttime+2, qsos[qtc_curr_call_nr]+20, 2);
+	    strncpy(ttime, qsos[qtc_curr_call_nr] + 17, 2);
+	    strncpy(ttime + 2, qsos[qtc_curr_call_nr] + 20, 2);
 	    ttime[4] = '\0';
 	    // check the call was't sent, and call and time are equals
 	    if (qsoflags_for_qtc[qtc_curr_call_nr] == 0 &&
 		    (strcmp(thiscall, qtc_line.qtc_call) == 0) &&
-		    (strcmp(ttime, qtc_line.qtc_time)) == 0 ) {
-		found_call = qtc_curr_call_nr+1;
+		    (strcmp(ttime, qtc_line.qtc_time)) == 0) {
+		found_call = qtc_curr_call_nr + 1;
 		qsoflags_for_qtc[qtc_curr_call_nr] = 1;
-	    }
-	    else {
+	    } else {
 		if (found_empty == 0) {
 		    found_empty = 1;
 		    qtc_last_call_nr = qtc_curr_call_nr;
@@ -206,12 +205,11 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 	// end search
 	if (found_empty == 0 && found_call > 0) {
 	    qtc_last_call_nr = qtc_curr_call_nr;
-	}
-	else {
+	} else {
 	    // TODO
 	    // handling this issue
 	    //if (found_call == 0) {
-		//syslog(LOG_DEBUG, "Found invalid QTC time / QTC call: '%s' '%s' - '%s' '%s' at QTC with %s [%d] (%d - %d)", qtc_line.qtc_time, qtc_line.qtc_call, ttime, thiscall, qtcrcall, qtc_curr_call_nr, found_empty, found_call);
+	    //syslog(LOG_DEBUG, "Found invalid QTC time / QTC call: '%s' '%s' - '%s' '%s' at QTC with %s [%d] (%d - %d)", qtc_line.qtc_time, qtc_line.qtc_call, ttime, thiscall, qtcrcall, qtc_curr_call_nr, found_empty, found_call);
 	    //}
 	    qtc_curr_call_nr = qtc_last_call_nr;
 	}
@@ -230,7 +228,7 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
  * date, time, band, ...) instead of the real
  */
 
-void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
+void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 
     extern float freq;
     extern struct tm time_ptr_cabrillo;
@@ -283,15 +281,13 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 	linetype = LOGPREF_QSO;
 	item_count = cabdesc->item_count;
 	item_array = cabdesc->item_array;
-    }
-    else if (starts_with(line, "X-QSO")) {
+    } else if (starts_with(line, "X-QSO")) {
 	pos = 7;
 	cablinecnt++;
 	linetype = LOGPREF_XQSO;
 	item_count = cabdesc->item_count;
 	item_array = cabdesc->item_array;
-    }
-    else if (qtcs_allowed(cabdesc) && (starts_with(line, "QTC"))) {
+    } else if (qtcs_allowed(cabdesc) && (starts_with(line, "QTC"))) {
 	pos = 5;
 	linetype = LOGPREF_QTC;
 	item_count = cabdesc->qtc_item_count;
@@ -302,109 +298,108 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 
     qtcrcall[0] = '\0';
     qtcscall[0] = '\0';
-    for  (i = 0; i < item_count; i++) {
-	item = g_ptr_array_index( item_array, i );
-	g_strlcpy(tempstr, line+pos, item->len + 1);
+    for (i = 0; i < item_count; i++) {
+	item = g_ptr_array_index(item_array, i);
+	g_strlcpy(tempstr, line + pos, item->len + 1);
 	g_strchomp(tempstr);
 	pos += item->len;
 	pos++;		// space between fields
 	switch (item->tag) {
-	    case FREQ:
-		freq = atof(tempstr);
-		bandinx = set_band_from_freq(freq);
-		strcpy(qtc_line.band, band[bandinx]);
-		qtc_line.freq = freq;
-		break;
-	    case MODE:
-		if (strcmp(tempstr, "CW") == 0) {
-		    trxmode = CWMODE;
-		    strcpy(qtc_line.mode, "CW ");
-		}
-		else if (strcmp(tempstr, "PH") == 0) {
-		    trxmode = SSBMODE;
-		    strcpy(qtc_line.mode, "PH ");
-		}
-		else {
-		    trxmode = DIGIMODE;
-		    strcpy(qtc_line.mode, "DIG");
-		}
-		break;
-	    case DATE:
-		strptime(tempstr, "%Y-%m-%d", &time_ptr_cabrillo);
-		strftime(qtc_line.date, 60, "%d-%b-%y", &time_ptr_cabrillo);
-		break;
-	    case TIME:
-		timestr[0] = tempstr[0];
-		timestr[1] = tempstr[1];
-		timestr[2] = '\0';
-		time_ptr_cabrillo.tm_hour = atoi(timestr);
-		timestr[0] = tempstr[2];
-		timestr[1] = tempstr[3];
-		timestr[2] = '\0';
-		time_ptr_cabrillo.tm_min = atoi(timestr);
-		sprintf(qtc_line.time, "%02d:%02d", time_ptr_cabrillo.tm_hour, time_ptr_cabrillo.tm_min);
-		break;
-	    case MYCALL:
-		break;
-	    case HISCALL:
-		strcpy(hiscall, tempstr);
-		break;
-	    case RST_S:
-		strcpy(my_rst, tempstr);
-		break;
-	    case RST_R:
-		strcpy(his_rst, tempstr);
-		break;
-	    case EXCH:
-		strcpy(comment, tempstr);
-		break;
-	    case EXC1:
-		strcpy(comment, tempstr);
-		break;
-	    case EXC2:
-		concat_comment(tempstr);
-		break;
-	    case EXC3:
-		concat_comment(tempstr);
-		break;
-	    case EXC4:
-		concat_comment(tempstr);
-		break;
-	    case EXC_S:
-	    case TX:
-	    case QTCRCALL:
-		strcpy(qtcrcall, tempstr);
-		strcpy(qtc_line.call, tempstr);
-		break;
-	    case QTCHEAD:
-		strcpy(qtc_line.qtchead, tempstr);
-		tempstrp = strtok(qtc_line.qtchead, "/");
-		qtc_line.qtchead_serial = atoi(tempstrp);
+	case FREQ:
+	    freq = atof(tempstr);
+	    bandinx = set_band_from_freq(freq);
+	    strcpy(qtc_line.band, band[bandinx]);
+	    qtc_line.freq = freq;
+	    break;
+	case MODE:
+	    if (strcmp(tempstr, "CW") == 0) {
+		trxmode = CWMODE;
+		strcpy(qtc_line.mode, "CW ");
+	    } else if (strcmp(tempstr, "PH") == 0) {
+		trxmode = SSBMODE;
+		strcpy(qtc_line.mode, "PH ");
+	    } else {
+		trxmode = DIGIMODE;
+		strcpy(qtc_line.mode, "DIG");
+	    }
+	    break;
+	case DATE:
+	    strptime(tempstr, "%Y-%m-%d", &time_ptr_cabrillo);
+	    strftime(qtc_line.date, 60, "%d-%b-%y", &time_ptr_cabrillo);
+	    break;
+	case TIME:
+	    timestr[0] = tempstr[0];
+	    timestr[1] = tempstr[1];
+	    timestr[2] = '\0';
+	    time_ptr_cabrillo.tm_hour = atoi(timestr);
+	    timestr[0] = tempstr[2];
+	    timestr[1] = tempstr[3];
+	    timestr[2] = '\0';
+	    time_ptr_cabrillo.tm_min = atoi(timestr);
+	    sprintf(qtc_line.time, "%02d:%02d", time_ptr_cabrillo.tm_hour,
+		    time_ptr_cabrillo.tm_min);
+	    break;
+	case MYCALL:
+	    break;
+	case HISCALL:
+	    strcpy(hiscall, tempstr);
+	    break;
+	case RST_S:
+	    strcpy(my_rst, tempstr);
+	    break;
+	case RST_R:
+	    strcpy(his_rst, tempstr);
+	    break;
+	case EXCH:
+	    strcpy(comment, tempstr);
+	    break;
+	case EXC1:
+	    strcpy(comment, tempstr);
+	    break;
+	case EXC2:
+	    concat_comment(tempstr);
+	    break;
+	case EXC3:
+	    concat_comment(tempstr);
+	    break;
+	case EXC4:
+	    concat_comment(tempstr);
+	    break;
+	case EXC_S:
+	case TX:
+	case QTCRCALL:
+	    strcpy(qtcrcall, tempstr);
+	    strcpy(qtc_line.call, tempstr);
+	    break;
+	case QTCHEAD:
+	    strcpy(qtc_line.qtchead, tempstr);
+	    tempstrp = strtok(qtc_line.qtchead, "/");
+	    qtc_line.qtchead_serial = atoi(tempstrp);
 
-		tempstrp[0] = '\0';
-		tempstrp = strtok(NULL, "/");
-		qtc_line.qtchead_count = atoi(tempstrp);
+	    tempstrp[0] = '\0';
+	    tempstrp = strtok(NULL, "/");
+	    qtc_line.qtchead_count = atoi(tempstrp);
 
-		break;
-	    case QTCSCALL:
-		strcpy(qtcscall, tempstr);
-		strcpy(qtc_line.call, tempstr);
-		break;
-	    case QTC:
-		strcpy(qtc_line.qtcstr, tempstr);
-		tempstrp = strtok(qtc_line.qtcstr, " ");
-		strcpy(qtc_line.qtc_time, tempstrp);
+	    break;
+	case QTCSCALL:
+	    strcpy(qtcscall, tempstr);
+	    strcpy(qtc_line.call, tempstr);
+	    break;
+	case QTC:
+	    strcpy(qtc_line.qtcstr, tempstr);
+	    tempstrp = strtok(qtc_line.qtcstr, " ");
+	    strcpy(qtc_line.qtc_time, tempstrp);
 
-		tempstrp = strtok(NULL, " ");
-		g_strchomp(tempstrp);
-		strcpy(qtc_line.qtc_call, tempstrp);
+	    tempstrp = strtok(NULL, " ");
+	    g_strchomp(tempstrp);
+	    strcpy(qtc_line.qtc_call, tempstrp);
 
-		tempstrp = strtok(NULL, " ");
-		g_strchomp(tempstrp);
-		qtc_line.qtc_serial = atoi(tempstrp);
-	    case NO_ITEM:
-	    default:
-		break;
+	    tempstrp = strtok(NULL, " ");
+	    g_strchomp(tempstrp);
+	    qtc_line.qtc_serial = atoi(tempstrp);
+	case NO_ITEM:
+	default:
+	    break;
 	}
 
     }
@@ -412,8 +407,7 @@ void cab_qso_to_tlf(char * line, struct cabrillo_desc *cabdesc) {
 
     if ((linetype == LOGPREF_QSO) || (linetype == LOGPREF_XQSO)) {
 	write_log_fm_cabr();
-    }
-    else if (linetype == LOGPREF_QTC) {
+    } else if (linetype == LOGPREF_QTC) {
 	write_qtclog_fm_cabr(qtcrcall, qtc_line);
     }
 
@@ -434,12 +428,12 @@ void show_readcab_msg(int mode, char *msg) {
  *
  */
 
-int readcabrillo(int mode)
-{
-    extern char* cabrillo;
+int readcabrillo(int mode) {
+
+    extern char *cabrillo;
     extern char call[];
 
-    char* cab_dfltfile;
+    char *cab_dfltfile;
     struct cabrillo_desc *cabdesc;
     char input_logfile[80];
     char output_logfile[80], temp_logfile[80];
@@ -458,7 +452,7 @@ int readcabrillo(int mode)
 	show_readcab_msg(mode, "Missing CABRILLO= keyword (see man page)");
 	sleep(2);
 	do_cabrillo = 0;
-	return(1);
+	return (1);
     }
 
     /* Try to read cabrillo format first from local directory.
@@ -467,18 +461,17 @@ int readcabrillo(int mode)
     cabdesc = read_cabrillo_format("cabrillo.fmt", cabrillo);
     if (!cabdesc) {
 	cab_dfltfile = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
-	    "cabrillo.fmt", NULL);
+				   "cabrillo.fmt", NULL);
 	cabdesc = read_cabrillo_format(cab_dfltfile, cabrillo);
 	g_free(cab_dfltfile);
     }
 
     if (!cabdesc) {
-        show_readcab_msg(mode, "Cabrillo format specification not found!");
+	show_readcab_msg(mode, "Cabrillo format specification not found!");
 	sleep(2);
 	do_cabrillo = 0;
-	return(2);
-    }
-    else {
+	return (2);
+    } else {
 	sprintf(tempstr, "CABRILLO format: %s", cabrillo);
 	show_readcab_msg(mode, tempstr);
 	sleep(1);
@@ -498,7 +491,7 @@ int readcabrillo(int mode)
 	show_readcab_msg(mode, tempstr);
 	sleep(2);
 	do_cabrillo = 0;
-	free_cabfmt( cabdesc );
+	free_cabfmt(cabdesc);
 	return (1);
     }
     fclose(fp2);
@@ -508,7 +501,7 @@ int readcabrillo(int mode)
 	show_readcab_msg(mode, tempstr);
 	sleep(2);
 	do_cabrillo = 0;
-	free_cabfmt( cabdesc );
+	free_cabfmt(cabdesc);
 	return (1);
     }
 
@@ -528,7 +521,7 @@ int readcabrillo(int mode)
     t_qsonum = qsonum;
     t_bandinx = bandinx;
 
-    while(fgets(logline, MAX_CABRILLO_LEN, fp1) != NULL) {
+    while (fgets(logline, MAX_CABRILLO_LEN, fp1) != NULL) {
 	cab_qso_to_tlf(logline, cabdesc);
     }
 
@@ -538,7 +531,7 @@ int readcabrillo(int mode)
 
     fclose(fp1);
 
-    free_cabfmt( cabdesc );
+    free_cabfmt(cabdesc);
 
     strcpy(logfile, temp_logfile);
     do_cabrillo = 0;

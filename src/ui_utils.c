@@ -43,15 +43,15 @@ static int onechar(void);
 
 /** fake refresh code to use update logic for panels */
 void refreshp() {
-    pthread_mutex_lock( &panel_mutex );
+    pthread_mutex_lock(&panel_mutex);
     update_panels();
     doupdate();
-    pthread_mutex_unlock( &panel_mutex );
+    pthread_mutex_unlock(&panel_mutex);
 }
 
 
 /** add A_BOLD to attributes if 'use_rxvt' is not set */
-int modify_attr( int attr ) {
+int modify_attr(int attr) {
 
     if (use_rxvt == 0)
 	attr |= A_BOLD;
@@ -78,7 +78,7 @@ int lookup_key(char *capability) {
 
     esc_sequence = tigetstr(capability);
 
-    if (esc_sequence == NULL || esc_sequence == (char *)-1) {
+    if (esc_sequence == NULL || esc_sequence == (char *) - 1) {
 	return 0;
     }
 
@@ -117,16 +117,14 @@ void lookup_keys() {
 /** key_get  wait for next key from terminal
  *
  */
-int key_get()
-{
+int key_get() {
     return getkey(1);
 }
 
 /** key_poll return next key from terminal if there is one
  *
  */
-int key_poll()
-{
+int key_poll() {
     return getkey(0);
 }
 
@@ -136,8 +134,7 @@ int key_poll()
  * leaves 'nodelay' afterwards always as FALSE (meaning: wait for
  * character
  */
-static int getkey(int wait)
-{
+static int getkey(int wait) {
     int x = 0;
 
     nodelay(stdscr, wait ? FALSE : TRUE);
@@ -155,8 +152,7 @@ static int getkey(int wait)
  * keyname().  Also catches Escape and processes it immediately as well
  * as calling stoptx() for minimal delay.
  */
-static int onechar(void)
-{
+static int onechar(void) {
     int x = 0;
     int trash = 0;
 
@@ -181,62 +177,62 @@ static int onechar(void)
 
 	    switch (x) {
 
-		case 32 ... 57:   // Alt-Space to Alt-9,   160 - 185
-		case 97 ... 122:  // Alt-a to alt-z,       225 - 250
-		    x += 128;
-		    break;
+	    case 32 ... 57:   // Alt-Space to Alt-9,   160 - 185
+	    case 97 ... 122:  // Alt-a to alt-z,       225 - 250
+		x += 128;
+		break;
 
-		/* Not all terminals support Ctl-Shift-ch so
-		 * treat them as Alt-ch
-		 */
-		case 65 ... 78:   //   alt-A to alt-N,     225 - 238
-		case 80 ... 90:   //   alt-P to alt-Z,     240 - 250
-		    x += 160;
-		    break;
+	    /* Not all terminals support Ctl-Shift-ch so
+	     * treat them as Alt-ch
+	     */
+	    case 65 ... 78:   //   alt-A to alt-N,     225 - 238
+	    case 80 ... 90:   //   alt-P to alt-Z,     240 - 250
+		x += 160;
+		break;
 
-		case 79: {
+	    case 79: {
+		x = getch();
+
+		/* Catch Alt-O */
+		if (x == ERR) {
+		    x = 239;
+		    break;
+		}
+
+		/* Key codes for Shift-F1 to Shift-F4 in Xfce terminal. */
+		if (x == 49) {
 		    x = getch();
 
-		    /* Catch Alt-O */
-		    if (x == ERR) {
-			x = 239;
-			break;
-		    }
-
-		    /* Key codes for Shift-F1 to Shift-F4 in Xfce terminal. */
-		    if (x == 49) {
+		    if (x == 59) {
 			x = getch();
-
-			if (x == 59) {
+			if (x == 50) {
 			    x = getch();
-			    if (x == 50) {
-				x = getch();
 
-				switch (x) {
+			    switch (x) {
 
-				    case 80: {
-					x = KEY_F(13);
-					break;
-				    }
+			    case 80: {
+				x = KEY_F(13);
+				break;
+			    }
 
-				    case 81: {
-					x = KEY_F(14);
-					break;
-				    }
+			    case 81: {
+				x = KEY_F(14);
+				break;
+			    }
 
-				    case 82: {
-					x = KEY_F(15);
-					break;
-				    }
+			    case 82: {
+				x = KEY_F(15);
+				break;
+			    }
 
-				    case 83: {
-					x = KEY_F(16);
-					break;
-				    }
-				}
+			    case 83: {
+				x = KEY_F(16);
+				break;
+			    }
 			    }
 			}
 		    }
+		}
 		}
 	    }
 
@@ -249,24 +245,24 @@ static int onechar(void)
 
 	    switch (x) {
 
-		/* Key codes for this section:
-		 * 27 91 49 126 Home
-		 * 27 91 52 126 End
-		 */
-		case 49: {
-		    x = getch();
+	    /* Key codes for this section:
+	     * 27 91 49 126 Home
+	     * 27 91 52 126 End
+	     */
+	    case 49: {
+		x = getch();
 
-		    if (x == 126) {
-			x = KEY_HOME;
-			break;
-		    }
-		}
-
-		case 52: {
-		    x = KEY_END;
-		    trash = getch();
+		if (x == 126) {
+		    x = KEY_HOME;
 		    break;
 		}
+	    }
+
+	    case 52: {
+		x = KEY_END;
+		trash = getch();
+		break;
+	    }
 	    }
 	}
     }
@@ -308,13 +304,13 @@ static int onechar(void)
 
 	switch (x) {
 
-	    case 161 ... 186:  // Alt-a to Alt-z  225 - 250
-		x += 64;
-		break;
+	case 161 ... 186:  // Alt-a to Alt-z  225 - 250
+	    x += 64;
+	    break;
 
-	    case 129 ... 154:  // Alt-A to Alt-Z  225 - 250
-		x += 96;
-		break;
+	case 129 ... 154:  // Alt-A to Alt-Z  225 - 250
+	    x += 96;
+	    break;
 	}
 
 	nodelay(stdscr, FALSE);

@@ -30,8 +30,8 @@
 /* Output functions: return number of bytes transmitted, or -1 on error */
 extern int usputb(int s, char *buf, int buflen);
 extern int usputs(int s, char *buf);
-extern int usprintf(int s, char *fmt,...);
-extern int tprintf(char *fmt,...);
+extern int usprintf(int s, char *fmt, ...);
+extern int tprintf(char *fmt, ...);
 
 /* Close a socket */
 extern int close_s(int s);
@@ -44,7 +44,7 @@ extern int close_s(int s);
    **           where: s is the new socket number
    ** The logout condition is detected by a -1 returned from recvline().
  */
-extern int startup(int portnum, void (*login) (int));
+extern int startup(int portnum, void (*login)(int));
 
 /*
    ** Set timeout for recvline call
@@ -70,7 +70,8 @@ void setlinemode(int s, int tf);
  */
 extern int recvline(int *s, char *buf, int buflen);
 extern int startcli(void);
-extern int startcliaddr(int family, unsigned long int addr, unsigned short int portnum);
+extern int startcliaddr(int family, unsigned long int addr,
+			unsigned short int portnum);
 extern long resolve(char *hostname);
 
 extern int startup_udp(int portnum);

@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-  	/* ------------------------------------------------------------
- 	*      rtty.h   rtty  mini terminal
- 	*
- 	*--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+*      rtty.h   rtty  mini terminal
+*
+*--------------------------------------------------------------*/
 
 
 #ifndef RTTY_H
@@ -28,7 +28,7 @@
 
 int init_controller() ;
 void deinit_controller();
-int rx_rtty () ;
+int rx_rtty() ;
 int show_rtty(void);
 
 #endif /* end of include guard: RTTY_H */

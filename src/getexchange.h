@@ -21,8 +21,8 @@
 #ifndef GETEXCHANGE_H
 #define GETEXCHANGE_H
 
-int checkexchange (int x);
-char *getgrid (char *comment);
+int checkexchange(int x);
+char *getgrid(char *comment);
 int getexchange(void);
 
 #endif /* GETEXCHANGE_H */

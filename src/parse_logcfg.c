@@ -58,7 +58,7 @@ extern int portnum;
 extern int packetinterface;
 extern int tncport;
 extern int shortqsonr;
-extern char * cabrillo;
+extern char *cabrillo;
 
 int exist_in_country_list();
 int continent_found();
@@ -73,8 +73,8 @@ void WrongFormat(char *keyword);
 #define  MAX_COMMANDS 237	/* commands in list */
 
 
-int read_logcfg(void)
-{
+int read_logcfg(void) {
+
     extern int nodes;
     extern int node;
     extern char *config_file;
@@ -120,18 +120,18 @@ int read_logcfg(void)
     } else
 	showstring("Opening config file", config_file);
 
-    while ( fgets(inputbuffer, 120, fp) != NULL ) {
+    while (fgets(inputbuffer, 120, fp) != NULL) {
 
 	if ((inputbuffer[0] != '#') && (strlen(inputbuffer) > 1)) {
-	    					/* skip comments and
-						 * empty lines */
+	    /* skip comments and
+	     * empty lines */
 	    status |= parse_logcfg(inputbuffer);
 	}
     }
 
     fclose(fp);
 
-    return( status );
+    return (status);
 }
 
 /** convert band string into index number (0..NBANDS-1) */
@@ -141,7 +141,7 @@ int getidxbybandstr(char *confband) {
 
     g_strchomp(confband);
 
-    for(i=0; i<NBANDS; i++) {
+    for (i = 0; i < NBANDS; i++) {
 	if (strcmp(confband, g_strchomp(bands_strings[i])) == 0) {
 	    return i;
 	}
@@ -162,8 +162,8 @@ static int confirmation_needed;
 	}					\
     } while(0)
 
-int parse_logcfg(char *inputbuffer)
-{
+int parse_logcfg(char *inputbuffer) {
+
     extern int use_rxvt;
     extern char message[][80];
     extern char ph_message[14][80];
@@ -260,7 +260,7 @@ int parse_logcfg(char *inputbuffer)
     extern int no_rst;
     extern int serial_or_section;
 
-/* LZ3NY mods */
+    /* LZ3NY mods */
     extern int mult_side;
     extern int my_country_points;
     extern int my_cont_points;
@@ -278,7 +278,7 @@ int parse_logcfg(char *inputbuffer)
     extern char continent_multiplier_list[7][3];
     extern int exclude_multilist_type;
 
-/* end LZ3NY mods */
+    /* end LZ3NY mods */
     extern int tlfcolors[8][2];
     extern char synclogfile[];
     extern int scale_values[];
@@ -542,7 +542,7 @@ int parse_logcfg(char *inputbuffer)
 	"RIGPTT",
 	"MINITEST",
 	"UNIQUE_CALL_MULTI",		/* 235 */
-        "KEYER_BACKSPACE"
+	"KEYER_BACKSPACE"
     };
 
     char **fields;
@@ -572,19 +572,19 @@ int parse_logcfg(char *inputbuffer)
      */
     confirmation_needed = PARSE_OK;
 
-    fields = g_strsplit( inputbuffer, "=", 2);
-    g_strstrip( fields[0] );
+    fields = g_strsplit(inputbuffer, "=", 2);
+    g_strstrip(fields[0]);
 
-    if ( *fields[0] == '\0' ) { 	/* only whitespace found? */
-	g_strfreev( fields );
-	return( PARSE_OK );
+    if (*fields[0] == '\0') { 	/* only whitespace found? */
+	g_strfreev(fields);
+	return (PARSE_OK);
     }
 
-    if (g_strv_length( fields ) == 2) { /* strip leading whitespace */
-	g_strchug( fields[1] );		/* from parameters */
+    if (g_strv_length(fields) == 2) {   /* strip leading whitespace */
+	g_strchug(fields[1]);		/* from parameters */
     }
 
-    g_strlcpy( teststring, fields[0], sizeof(teststring) );
+    g_strlcpy(teststring, fields[0], sizeof(teststring));
 
     for (ii = 0; ii < MAX_COMMANDS; ii++) {
 	if (strcmp(teststring, commands[ii]) == 0) {
@@ -594,231 +594,230 @@ int parse_logcfg(char *inputbuffer)
 
     switch (ii) {
 
-    case 0:{
-	    KeywordNotSupported(teststring);
-	    break;
+    case 0: {
+	KeywordNotSupported(teststring);
+	break;
+    }
+    case 1: {
+	KeywordNotSupported(teststring);
+	break;
+    }
+    case 2 ... 10: {	/* messages */
+	PARAMETER_NEEDED(teststring);
+	strcpy(message[ii - 2], fields[1]);
+	break;
+    }
+    case 11 ... 13: {
+	PARAMETER_NEEDED(teststring);
+	strcpy(message[ii - 2], fields[1]);
+	break;
+    }
+    case 14: {
+	PARAMETER_NEEDED(teststring);
+	strcpy(message[SP_TU_MSG], fields[1]);
+	strcpy(sp_return, message[SP_TU_MSG]);
+	break;
+    }
+    case 15: {
+	PARAMETER_NEEDED(teststring);
+	strcpy(message[CQ_TU_MSG], fields[1]);
+	strcpy(cq_return, message[CQ_TU_MSG]);
+	break;	/* end messages */
+    }
+    case 16: {
+	char *tmpcall;
+	PARAMETER_NEEDED(teststring);
+	if (strlen(fields[1]) > 20) {
+	    mvprintw(6, 0,
+		     "WARNING: Defined call sign too long! exiting...\n");
+	    refreshp();
+	    exit(1);
 	}
-    case 1:{
-	    KeywordNotSupported(teststring);
-	    break;
+	if (strlen(fields[1]) == 0) {
+	    mvprintw(6, 0,
+		     "WARNING: No callsign defined in logcfg.dat! exiting...\n");
+	    refreshp();
+	    exit(1);
 	}
-    case 2 ... 10:{	/* messages */
-    	    PARAMETER_NEEDED(teststring);
-	    strcpy(message[ii - 2], fields[1]);
-	    break;
-	}
-    case 11 ... 13:{
-    	    PARAMETER_NEEDED(teststring);
-	    strcpy(message[ii - 2], fields[1]);
-	    break;
-	}
-    case 14:{
-    	    PARAMETER_NEEDED(teststring);
-	    strcpy(message[SP_TU_MSG], fields[1]);
-	    strcpy(sp_return, message[SP_TU_MSG]);
-	    break;
-	}
-    case 15:{
-    	    PARAMETER_NEEDED(teststring);
-	    strcpy(message[CQ_TU_MSG], fields[1]);
-	    strcpy(cq_return, message[CQ_TU_MSG]);
-	    break;	/* end messages */
-	}
-    case 16:{
-	    char *tmpcall;
-    	    PARAMETER_NEEDED(teststring);
-	    if (strlen(fields[1]) > 20) {
-		mvprintw(6,0,
-			"WARNING: Defined call sign too long! exiting...\n");
-		refreshp();
-		exit(1);
-	    }
-	    if (strlen(fields[1]) == 0) {
-		mvprintw(6, 0,
-			 "WARNING: No callsign defined in logcfg.dat! exiting...\n");
-		refreshp();
-		exit(1);
-	    }
 
-	    /* strip NL and trailing whitespace, convert to upper case */
-	    tmpcall = g_ascii_strup(g_strchomp(fields[1]), -1);
-	    g_strlcpy( call, tmpcall, 20 );
-	    g_free(tmpcall);
-	    /* as other code parts rely on a trailing NL on the call
-	     * we add back such a NL for now */
-	    strcat( call, "\n");
-	    // check that call sign can be found in cty database !!
-	    break;
-	}
+	/* strip NL and trailing whitespace, convert to upper case */
+	tmpcall = g_ascii_strup(g_strchomp(fields[1]), -1);
+	g_strlcpy(call, tmpcall, 20);
+	g_free(tmpcall);
+	/* as other code parts rely on a trailing NL on the call
+	 * we add back such a NL for now */
+	strcat(call, "\n");
+	// check that call sign can be found in cty database !!
+	break;
+    }
     case 17:
-    case 122:{
-    	    PARAMETER_NEEDED(teststring);
-	    strcpy(whichcontest, g_strchomp(fields[1]));
-	    if (strlen(whichcontest) > 40) {
-		showmsg
-		    ("WARNING: contest name is too long! exiting...");
-		exit(1);
+    case 122: {
+	PARAMETER_NEEDED(teststring);
+	strcpy(whichcontest, g_strchomp(fields[1]));
+	if (strlen(whichcontest) > 40) {
+	    showmsg
+	    ("WARNING: contest name is too long! exiting...");
+	    exit(1);
+	}
+	setcontest();
+	break;
+    }
+    case 18: {
+	PARAMETER_NEEDED(teststring);
+	strcpy(logfile, g_strchomp(fields[1]));
+	break;
+    }
+    case 19: {
+	PARAMETER_NEEDED(teststring);
+	g_strlcpy(keyer_device, g_strchomp(fields[1]),
+		  sizeof(keyer_device));
+	break;
+    }
+    case 20: {		// Use the bandswitch output on parport0
+	/* \todo add message if parameter too short */
+	use_bandoutput = 1;
+	if ((fields[1] != NULL) && (strlen(fields[1]) >= 10)) {
+	    for (jj = 0; jj <= 9; jj++) {	// 10x
+		hh = ((int)(fields[1][jj])) - 48;
+
+		if (hh >= 0 && hh <= 9)
+		    bandindexarray[jj] = hh;
+		else
+		    bandindexarray[jj] = 0;
 	    }
-	    setcontest();
-	    break;
 	}
-    case 18:{
-    	    PARAMETER_NEEDED(teststring);
-	    strcpy(logfile, g_strchomp(fields[1]));
-	    break;
-	}
-    case 19:{
-    	    PARAMETER_NEEDED(teststring);
-	    g_strlcpy(keyer_device, g_strchomp(fields[1]),
-		    sizeof(keyer_device));
-	    break;
-	}
-    case 20:{		// Use the bandswitch output on parport0
-			/* \todo add message if parameter too short */
-	    use_bandoutput = 1;
-	    if ((fields[1] != NULL) && (strlen(fields[1]) >= 10)) {
-		for (jj = 0; jj <= 9; jj++)	// 10x
-		{
-		    hh = ((int) (fields[1][jj])) - 48;
+	break;
+    }
+    case 21: {
+	recall_mult = 1;
+	break;
+    }
+    case 22: {
+	one_point = 1;
+	universal = 1;
+	break;
+    }
+    case 23: {
+	three_point = 1;
+	universal = 1;
+	break;
+    }
+    case 24: {
+	wysiwyg_multi = 1;
+	break;
+    }
+    case 25: {
+	wysiwyg_once = 1;
+	break;
+    }
+    case 26: {
+	trx_control = 1;
+	break;
+    }
+    case 27: {
+	rit = 1;
+	break;
+    }
+    case 28: {
+	shortqsonr = 1;
+	break;
+    }
+    case 29: {
+	shortqsonr = 0;
+	break;
+    }
+    case 30: {
+	contest = 1;
+	break;
+    }
+    case 31: {
+	cluster = CLUSTER;
+	break;
+    }
+    case 32: {
+	cluster = MAP;
 
-		    if (hh >= 0 && hh <= 9)
-			bandindexarray[jj] = hh;
-		    else
-			bandindexarray[jj] = 0;
-		}
-	    }
-	    break;
-	}
-    case 21:{
-	    recall_mult = 1;
-	    break;
-	}
-    case 22:{
-	    one_point = 1;
-	    universal = 1;
-	    break;
-	}
-    case 23:{
-	    three_point = 1;
-	    universal = 1;
-	    break;
-	}
-    case 24:{
-	    wysiwyg_multi = 1;
-	    break;
-	}
-    case 25:{
-	    wysiwyg_once = 1;
-	    break;
-	}
-    case 26:{
-	    trx_control = 1;
-	    break;
-	}
-    case 27:{
-	    rit = 1;
-	    break;
-	}
-    case 28:{
-	    shortqsonr = 1;
-	    break;
-	}
-    case 29:{
-	    shortqsonr = 0;
-	    break;
-	}
-    case 30:{
-	    contest = 1;
-	    break;
-	}
-    case 31:{
-	    cluster = CLUSTER;
-	    break;
-	}
-    case 32:{
-	    cluster = MAP;
+	/* init bandmap filtering */
+	bm_config.allband = 1;
+	bm_config.allmode = 1;
+	bm_config.showdupes = 1;
+	bm_config.skipdupes = 0;
+	bm_config.livetime = 900;
+	bm_config.onlymults = 0;
 
-	    /* init bandmap filtering */
-	    bm_config.allband = 1;
-	    bm_config.allmode = 1;
-	    bm_config.showdupes = 1;
-	    bm_config.skipdupes = 0;
-	    bm_config.livetime = 900;
-	    bm_config.onlymults = 0;
-
-	    /* Allow configuration of bandmap display if keyword
-	     * is followed by a '='
-	     * Parameter format is BANDMAP=<xxx>,<number>
-	     * <xxx> - string parsed for the letters B, M, D and S
-	     * <number> - spot livetime in seconds (>=30)
-	     */
-	    if (fields[1] != NULL) {
-		char **bm_fields;
-		bm_fields = g_strsplit(fields[1], ",", 2);
-		if (bm_fields[0] != NULL) {
-		    char *ptr = bm_fields[0];
-		    while (*ptr != '\0') {
-			switch (*ptr++) {
-			    case 'B': bm_config.allband = 0;
-				      break;
-			    case 'M': bm_config.allmode = 0;
-				      break;
-			    case 'D': bm_config.showdupes = 0;
-				      break;
-			    case 'S': bm_config.skipdupes = 1;
-				      break;
-			    case 'O': bm_config.onlymults = 1;
-				      break;
-			    default:
-				      break;
-			}
+	/* Allow configuration of bandmap display if keyword
+	 * is followed by a '='
+	 * Parameter format is BANDMAP=<xxx>,<number>
+	 * <xxx> - string parsed for the letters B, M, D and S
+	 * <number> - spot livetime in seconds (>=30)
+	 */
+	if (fields[1] != NULL) {
+	    char **bm_fields;
+	    bm_fields = g_strsplit(fields[1], ",", 2);
+	    if (bm_fields[0] != NULL) {
+		char *ptr = bm_fields[0];
+		while (*ptr != '\0') {
+		    switch (*ptr++) {
+		    case 'B': bm_config.allband = 0;
+			break;
+		    case 'M': bm_config.allmode = 0;
+			break;
+		    case 'D': bm_config.showdupes = 0;
+			break;
+		    case 'S': bm_config.skipdupes = 1;
+			break;
+		    case 'O': bm_config.onlymults = 1;
+			break;
+		    default:
+			break;
 		    }
 		}
-
-		if (bm_fields[1] != NULL) {
-		    int livetime;
-		    g_strstrip(bm_fields[1]);
-		    livetime = atoi(bm_fields[1]);
-		    if (livetime >= 30)
-			/* aging called each second */
-			bm_config.livetime = livetime;
-		}
-
-
-		g_strfreev(bm_fields);
 	    }
-	    break;
+
+	    if (bm_fields[1] != NULL) {
+		int livetime;
+		g_strstrip(bm_fields[1]);
+		livetime = atoi(bm_fields[1]);
+		if (livetime >= 30)
+		    /* aging called each second */
+		    bm_config.livetime = livetime;
+	    }
+
+
+	    g_strfreev(bm_fields);
 	}
-    case 33:{
+	break;
+	}
+    case 33: {
 	    KeywordNotSupported(teststring);
 	    break;
-		}
-    case 34:{
+	}
+    case 34: {
 	    showscore_flag = 1;
 	    break;
 	}
-    case 35:{
+    case 35: {
 	    searchflg = 1;
 	    break;
 	}
-    case 36:{
+    case 36: {
 	    KeywordNotSupported(teststring);
 	    break;
 	}
-    case 37:{
+    case 37: {
 	    demode = 1;
 	    break;
 	}
-    case 38:{
-    	    PARAMETER_NEEDED(teststring);
+    case 38: {
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strncat(buff, fields[1], 2);
 	    SetCWSpeed(atoi(buff));
 	    break;
 	}
-    case 39:{
+    case 39: {
 	    int tone;
-    	    PARAMETER_NEEDED(teststring);
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
 	    tone = atoi(buff);
@@ -827,8 +826,8 @@ int parse_logcfg(char *inputbuffer)
 	    }
 	    break;
 	}
-    case 40:{
-    	    PARAMETER_NEEDED(teststring);
+    case 40: {
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
 	    weight = atoi(buff);
@@ -838,8 +837,8 @@ int parse_logcfg(char *inputbuffer)
 		weight = 50;
 	    break;
 	}
-    case 41:{
-    	    PARAMETER_NEEDED(teststring);
+    case 41: {
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
 	    txdelay = atoi(buff);
@@ -849,8 +848,8 @@ int parse_logcfg(char *inputbuffer)
 		txdelay = 0;
 	    break;
 	}
-    case 42:{
-    	    PARAMETER_NEEDED(teststring);
+    case 42: {
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
 	    outputbuff[0] = '\0';
@@ -858,8 +857,8 @@ int parse_logcfg(char *inputbuffer)
 	    strcpy(lastwwv, outputbuff);
 	    break;
 	}
-    case 43:{
-    	    PARAMETER_NEEDED(teststring);
+    case 43: {
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
 	    outputbuff[0] = '\0';
@@ -867,17 +866,17 @@ int parse_logcfg(char *inputbuffer)
 	    strcpy(lastwwv, outputbuff);
 	    break;
 	}
-    case 44:{
+    case 44: {
 	    showfreq = 1;
 	    break;
 	}
-    case 45:{
-    	    PARAMETER_NEEDED(teststring);
+    case 45: {
+	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
 	    if ((strncmp(buff, "mcedit", 6) == 0)
-		|| (strncmp(buff, "mc", 2) == 0)
-		|| (strncmp(buff, "MC", 2) == 0)) {
+		    || (strncmp(buff, "mc", 2) == 0)
+		    || (strncmp(buff, "MC", 2) == 0)) {
 		editor = EDITOR_MC;
 		break;
 	    }
@@ -896,57 +895,57 @@ int parse_logcfg(char *inputbuffer)
 		break;
 	    }
 	}
-    case 46:{
+    case 46: {
 	    partials = 1;
 	    break;
 	}
 
-    case 47:{
+    case 47: {
 	    use_part = 1;
 	    break;
 	}
     /*case 48:{
-	    fixedmult = 5;
-	    break;
-	}
+        fixedmult = 5;
+        break;
+    }
     case 49:{
-	    fixedmult = 2;
-	    break;
-	}
+        fixedmult = 2;
+        break;
+    }
     case 50:{
-	    fixedmult = 1;
-	    break;
-	} */
-    case 51:{
+        fixedmult = 1;
+        break;
+    } */
+    case 51: {
 	    KeywordNotSupported(teststring);
 	    break;
 	}
-    case 52:{
+    case 52: {
 	    exchange_serial = 1;
 	    break;
 	}
-    case 53:{
+    case 53: {
 	    country_mult = 1;
 	    break;
 	}
-    case 54:{
+    case 54: {
 	    KeywordNotSupported(teststring);
 	    break;
 	}
-    case 55:{
+    case 55: {
 	    portable_x2 = 1;
 	    break;
 	}
-    case 56:{
+    case 56: {
 	    mixedmode = 1;
 	    break;
 	}
-    case 57:{
+    case 57: {
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(pr_hostaddress, g_strchomp(fields[1]), 48);
 	    break;
 	}
-    case 58:{
+    case 58: {
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strncat(buff, fields[1], 5);
@@ -954,7 +953,7 @@ int parse_logcfg(char *inputbuffer)
 	    packetinterface = TELNET_INTERFACE;
 	    break;
 	}
-    case 59:{
+    case 59: {
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
@@ -966,11 +965,11 @@ int parse_logcfg(char *inputbuffer)
 	    packetinterface = TNC_INTERFACE;
 	    break;
 	}
-    case 60:{
+    case 60: {
 	    packetinterface = FIFO_INTERFACE;
 	    break;
 	}
-    case 61:{
+    case 61: {
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
@@ -985,40 +984,40 @@ int parse_logcfg(char *inputbuffer)
 
 	    break;
 	}
-    case 62:{
+    case 62: {
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
 	    serial_rate = atoi(buff);
 	    break;
 	}
-    case 63:{
+    case 63: {
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strcat(buff, fields[1]);
 	    tnc_serial_rate = atoi(buff);
 	    break;
 	}
-    case 64:{
+    case 64: {
 	    PARAMETER_NEEDED(teststring);
 	    rigportname = strdup(fields[1]);
 	    break;
 	}
-    case 65:{
+    case 65: {
 	    cwkeyer = NET_KEYER;
 	    break;
 	}
-    case 66:{
+    case 66: {
 	    PARAMETER_NEEDED(teststring);
 	    netkeyer_port = atoi(fields[1]);
 	    break;
 	}
-    case 67:{
+    case 67: {
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(netkeyer_hostaddress, g_strchomp(fields[1]), 16);
 	    break;
 	}
-    case 68:{
+    case 68: {
 	    PARAMETER_NEEDED(teststring);
 	    if (node < MAXNODES) {
 		/* split host name and port number, separated by colon */
@@ -1026,11 +1025,11 @@ int parse_logcfg(char *inputbuffer)
 		an_fields = g_strsplit(fields[1], ":", 2);
 		/* copy host name */
 		g_strlcpy(bc_hostaddress[node], g_strchomp(an_fields[0]),
-			    sizeof(bc_hostaddress[0]));
+			  sizeof(bc_hostaddress[0]));
 		if (an_fields[1] != NULL) {
 		    /* copy host port, if found */
 		    g_strlcpy(bc_hostservice[node], g_strchomp(an_fields[1]),
-				sizeof(bc_hostservice[0]));
+			      sizeof(bc_hostservice[0]));
 		}
 		g_strfreev(an_fields);
 
@@ -1040,7 +1039,7 @@ int parse_logcfg(char *inputbuffer)
 	    lan_active = 1;
 	    break;
 	}
-    case 69:{
+    case 69: {
 	    char c;
 	    PARAMETER_NEEDED(teststring);
 	    c = toupper(fields[1][0]);
@@ -1050,24 +1049,24 @@ int parse_logcfg(char *inputbuffer)
 		WrongFormat(teststring);
 	    break;
 	}
-    case 70:{
+    case 70: {
 	    cqwwm2 = 1;
 	    break;
 	}
-    case 71:{
+    case 71: {
 	    landebug = 1;
 	    break;
 	}
-    case 72 ... 81:{	/* messages */
+    case 72 ... 81: {	/* messages */
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(message[ii - 58], fields[1]);
 	    break;
 	}
-    case 82:{
+    case 82: {
 	    call_update = 1;
 	    break;
 	}
-    case 83:{
+    case 83: {
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
 	    strncat(buff, fields[1], 3);
@@ -1078,63 +1077,63 @@ int parse_logcfg(char *inputbuffer)
 		timeoffset = -23;
 	    break;
 	}
-    case 84:{
+    case 84: {
 	    time_master = 1;
 	    break;
 	}
-    case 85:{
+    case 85: {
 	    ctcomp = 1;
 	    break;
 	}
-    case 86:{
+    case 86: {
 	    two_point = 1;
 	    universal = 1;
 	    break;
 	}
-    case 87:{
+    case 87: {
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(multsfile, g_strchomp(fields[1]), 80);
 	    multlist = 1;
 	    universal = 1;
 	    break;
 	}
-    case 88:{
+    case 88: {
 	    serial_section_mult = 1;
 	    break;
 	}
-    case 89:{
+    case 89: {
 	    sectn_mult = 1;
 	    break;
 	}
-    case 90:{
+    case 90: {
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(markerfile, g_strchomp(fields[1]));
 	    xplanet = 1;
 	    break;
 	}
-    case 91:{
+    case 91: {
 	    dx_arrlsections = 1;
 	    setcontest();
 	    break;
 	}
-    case 92:{
+    case 92: {
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(markerfile, g_strchomp(fields[1]));
 	    xplanet = 2;
 	    break;
 	}
-    case 93:{
+    case 93: {
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(markerfile, g_strchomp(fields[1]));
 	    xplanet = 3;
 	    break;
 	}
-    case 94:{
+    case 94: {
 	    nob4 = 1;
 	    break;
 	}
 
-    case 95:{
+    case 95: {
 	    /* COUNTRYLIST   (in file or listed in logcfg.dat)     LZ3NY
 	     */
 
@@ -1149,27 +1148,27 @@ int parse_logcfg(char *inputbuffer)
 	    PARAMETER_NEEDED(teststring);
 	    if (strlen(country_list_raw) == 0) {/* only if first definition */
 
-	       /* First of all we are checking if the parameter <xxx> in
-	       COUNTRY_LIST=<xxx> is a file name.  If it is we start
-	       parsing the file. If we  find a line starting with our
-	       case insensitive contest name, we copy the countries from
-	       that line into country_list_raw.
-	       If the input was not a file name we directly copy it into
-	       country_list_raw (must not have a preceeding contest name). */
+		/* First of all we are checking if the parameter <xxx> in
+		COUNTRY_LIST=<xxx> is a file name.  If it is we start
+		parsing the file. If we  find a line starting with our
+		case insensitive contest name, we copy the countries from
+		that line into country_list_raw.
+		If the input was not a file name we directly copy it into
+		country_list_raw (must not have a preceeding contest name). */
 
 		g_strlcpy(temp_buffer, fields[1], sizeof(temp_buffer));
 		g_strchomp(temp_buffer);	/* drop trailing whitespace */
 
 		if ((fp = fopen(temp_buffer, "r")) != NULL) {
 
-		    while ( fgets(buffer, sizeof(buffer), fp) != NULL ) {
+		    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
 
-			g_strchomp( buffer ); /* no trailing whitespace*/
+			g_strchomp(buffer);   /* no trailing whitespace*/
 
 			/* accept only a line starting with the contest name
 			 * (CONTEST=) followed by ':' */
-			if (strncasecmp (buffer, whichcontest,
-				strlen(whichcontest) - 1) == 0) {
+			if (strncasecmp(buffer, whichcontest,
+					strlen(whichcontest) - 1) == 0) {
 
 			    strncpy(country_list_raw,
 				    buffer + strlen(whichcontest) + 1,
@@ -1205,7 +1204,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
 
-    case 96:{		// COUNTRY_LIST_POINTS
+    case 96: {		// COUNTRY_LIST_POINTS
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (countrylist_points == -1)
@@ -1213,14 +1212,14 @@ int parse_logcfg(char *inputbuffer)
 
 	    break;
 	}
-    case 97:{		// COUNTRY_LIST_ONLY
+    case 97: {		// COUNTRY_LIST_ONLY
 	    countrylist_only = 1;
 	    if (mult_side == 1)
 		countrylist_only = 0;
 
 	    break;
 	}
-    case 98:{		//HOW Many points scores my country  lz3ny
+    case 98: {		//HOW Many points scores my country  lz3ny
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (my_country_points == -1)
@@ -1228,7 +1227,7 @@ int parse_logcfg(char *inputbuffer)
 
 	    break;
 	}
-    case 99:{		//MY_CONTINENT_POINTS       lz3ny
+    case 99: {		//MY_CONTINENT_POINTS       lz3ny
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (my_cont_points == -1)
@@ -1236,289 +1235,288 @@ int parse_logcfg(char *inputbuffer)
 
 	    break;
 	}
-    case 100:{		//DX_CONTINENT_POINTS       lz3ny
+    case 100: {		//DX_CONTINENT_POINTS       lz3ny
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (dx_cont_points == -1)
-	    dx_cont_points = atoi(c_temp);
+		dx_cont_points = atoi(c_temp);
 
 	    break;
-       }
-/* end LZ3NY mod */
-    case 101:{		// show time in searchlog window
-		show_time = 1;
-		break;
-	    }
-    case 102:{		// use rxvt colours
-		use_rxvt = 1;
-		break;
-	    }
-    case 103 ... 116:{	// get phone messages
+	}
+    /* end LZ3NY mod */
+    case 101: {		// show time in searchlog window
+	    show_time = 1;
+	    break;
+	}
+    case 102: {		// use rxvt colours
+	    use_rxvt = 1;
+	    break;
+	}
+    case 103 ... 116: {	// get phone messages
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(ph_message[ii - 103], g_strchomp(fields[1]), 71);
-	    mvprintw(15, 5, "A: Phone message #%d is %s", ii - 103, ph_message[ii - 103]);	// (W9WI)
+	    mvprintw(15, 5, "A: Phone message #%d is %s", ii - 103,
+		     ph_message[ii - 103]);	// (W9WI)
 	    refreshp();
 	    //                             system ("sleep 2");
 	    break;
 	}
-    case 117:{		// WAZ Zone is a Multiplier
-		wazmult = 1;
-		break;
-	    }
-    case 118:{		// ITU Zone is a Multiplier
-		itumult = 1;
-		break;
-	    }
-    case 119:{		// CQ Delay (0.5 sec)
-		PARAMETER_NEEDED(teststring);
-		buff[0] = '\0';
-		strncpy(buff, fields[1], 3);
-		cqdelay = atoi(buff);
-		if ((cqdelay < 3) || (cqdelay > 60))
-		    cqdelay = 20;
+    case 117: {		// WAZ Zone is a Multiplier
+	    wazmult = 1;
+	    break;
+	}
+    case 118: {		// ITU Zone is a Multiplier
+	    itumult = 1;
+	    break;
+	}
+    case 119: {		// CQ Delay (0.5 sec)
+	    PARAMETER_NEEDED(teststring);
+	    buff[0] = '\0';
+	    strncpy(buff, fields[1], 3);
+	    cqdelay = atoi(buff);
+	    if ((cqdelay < 3) || (cqdelay > 60))
+		cqdelay = 20;
 
-		break;
+	    break;
+	}
+    case 120: {		// wpx style prefixes mult
+	    pfxmult = 1;	// enable set points
+	    wpx = 1;	// handle like wpx
+	    break;
+	}
+    case 121: {		// exchange continent abbrev
+	    exc_cont = 1;
+	    break;
+	}
+    case 123: {		// don't use auto_cq
+	    noautocq = 1;
+	    break;
+	}
+    case 124: {		// start in SSB mode
+	    trxmode = SSBMODE;
+	    break;
+	}
+    case 125: {		// arrow keys don't switch bands...
+	    no_arrows = 1;
+	    break;
+	}
+    case 126: {		// Hamlib rig conf parameters
+	    PARAMETER_NEEDED(teststring);
+	    if (strlen(fields[1]) >= 80) {
+		showmsg
+		("WARNING: rigconf parameters too long! exiting...");
+		sleep(5);
+		exit(1);
 	    }
-    case 120:{		// wpx style prefixes mult
-		pfxmult = 1;	// enable set points
-		wpx = 1;	// handle like wpx
-		break;
-	    }
-    case 121:{		// exchange continent abbrev
-		exc_cont = 1;
-		break;
-	    }
-    case 123:{		// don't use auto_cq
-		noautocq = 1;
-		break;
-	    }
-    case 124:{		// start in SSB mode
-		trxmode = SSBMODE;
-		break;
-	    }
-    case 125:{		// arrow keys don't switch bands...
-		no_arrows = 1;
-		break;
-	    }
-    case 126:{		// Hamlib rig conf parameters
-		PARAMETER_NEEDED(teststring);
-		if (strlen(fields[1]) >= 80) {
-		    showmsg
-			("WARNING: rigconf parameters too long! exiting...");
-		    sleep(5);
-		    exit(1);
-		}
-		g_strlcpy(rigconf, g_strchomp(fields[1]), 80);	// RIGCONF=
-		break;
-	    }
-    case 127:{		// define color GREEN (header)
-		PARAMETER_NEEDED(teststring);
-		if (strlen(fields[1]) >= 2 && isdigit(fields[1][0]) &&
-			isdigit(fields[1][1])) {
-		    tlfcolors[1][0] = fields[1][0] - 48;
-		    tlfcolors[1][1] = fields[1][1] - 48;
-		} else {
-		    WrongFormat(teststring);
-		}
-		break;
-	    }
-    case 128 ... 132:{		// define color CYAN (windows), WHITE (log win)
-		      		// MAGENTA (Marker / dupes), BLUE (input field)
-				// and YELLOW (Window frames)
-		PARAMETER_NEEDED(teststring);
-		if (strlen(fields[1]) >= 2 && isdigit(fields[1][0]) &&
-			isdigit(fields[1][1])) {
-		    tlfcolors[ii - 128 + 3][0] = fields[1][0] - 48;
-		    tlfcolors[ii - 128 + 3][1] = fields[1][1] - 48;
-		} else {
-		    WrongFormat(teststring);
-		}
-		break;
-	    }
-    case 133:{		// define name of synclogfile
-		PARAMETER_NEEDED(teststring);
-		strcpy(synclogfile, g_strchomp(fields[1]));
-		break;
-	    }
-    case 134:{		//SSBPOINTS=
-		PARAMETER_NEEDED(teststring);
-		strcpy(buff, fields[1]);
-		ssbpoints = atoi(buff);
-		break;
-	    }
-    case 135:{		//CWPOINTS=
-		PARAMETER_NEEDED(teststring);
-		strcpy(buff, fields[1]);
-		cwpoints = atoi(buff);
-		break;
-	    }
-    case 136:{		// SOUNDCARD, use soundcard for cw sidetone
-		sc_sidetone = 1;
-		break;
-	    }
-    case 137:{		// sound card volume (default = 70)
-		int volume;
-
-		PARAMETER_NEEDED(teststring);
-		volume = atoi(fields[1]);
-		if (volume > -1 && volume < 101)
-		    sprintf(sc_volume, "%d", volume);
-		else
-		    strcpy(sc_volume, "70");
-		break;
-	    }
-    case 138:{
-		int i = 0;
-
-		PARAMETER_NEEDED(teststring);
-		tk_ptr = strtok(fields[1], ":,.-_\t ");
-
-		if (tk_ptr != NULL) {
-		    while (tk_ptr) {
-			if (i < 20)
-			    scale_values[i] = atoi(tk_ptr);
-			tk_ptr = strtok(NULL, ":,.-_\t ");
-			i++;
-		    }
-		}
-
-		break;
-	    }
-    case 139:{		// dsp for s-meter
-		PARAMETER_NEEDED(teststring);
-		g_strlcpy(sc_device, g_strchomp(fields[1]), sizeof(sc_device));
-		break;
-	    }
-    case 140:{
-		PARAMETER_NEEDED(teststring);
-		cwkeyer = MFJ1278_KEYER;
-		digikeyer = MFJ1278_KEYER;
-		g_strlcpy(controllerport, g_strchomp(fields[1]),
-			sizeof(controllerport));
-		break;
-	    }
-    case 141:{
-		PARAMETER_NEEDED(teststring);
-		strcpy(clusterlogin, fields[1]);
-		break;
-	    }
-    case 142:{
-		KeywordNotSupported(teststring);
-		break;
-	    }
-    case 143:{
-		PARAMETER_NEEDED(teststring);
-		g_strlcpy(exchange_list, g_strchomp(fields[1]),
-			sizeof(exchange_list));
-		break;
-	    }
-    case 144:{
-		PARAMETER_NEEDED(teststring);
-		cw_bandwidth = atoi(fields[1]);
-		break;
-	    }
-    case 145:{
-		lowband_point_mult = 1;
-		break;
-	    }
-    case 146:{
-		clusterlog = 1;
-		break;
-	    }
-    case 147:{
-		serial_grid4_mult = 1;
-		break;
-	    }
-    case 148:{
-		change_rst = 1;
-		break;
-	    }
-    case 149:{
-		PARAMETER_NEEDED(teststring);
-		digikeyer = GMFSK;
-		g_strlcpy(controllerport, g_strchomp(fields[1]),
-			sizeof(controllerport));
-		break;
-	    }
-    case 150:{		// start in digital mode
-		trxmode = DIGIMODE;
-		strcpy(modem_mode, "RTTY");
-		break;
-	    }
-    case 151:{
-		PARAMETER_NEEDED(teststring);
-		g_strlcpy(rttyoutput, g_strchomp(fields[1]), 111);
-		break;
-	    }
-    case 152:{
-		logfrequency = 1;
-		break;
-	    }
-    case 153:{
-		ignoredupe = 1;
-		break;
-	    }
-    case 154:{		/* read name of cabrillo format to use */
-
-		if (cabrillo != NULL) {
-		    free(cabrillo);	/* free old string if already set */
-		    cabrillo = NULL;
-		}
-	    	cabrillo = strdup(g_strchomp(fields[1]));
-    		break;
-	    }
-    case 155:
-    case 156:
-    case 157:{
-		KeywordNotSupported(teststring);
-		break;
-	    }
-    case 158:{
-		 no_rst = 1;
-		 break;
-	    }
-    case 159:{
-		PARAMETER_NEEDED(teststring);
-		strcpy(myqra, fields[1]);
-
-		if (check_qra(myqra) > 0) {
-		    showmsg
-			("WARNING: Invalid MYQRA parameters! exiting...");
-		    sleep(5);
-		    exit(1);
-		}
-		break;
-	    }
-    case 160:{
-    	    PARAMETER_NEEDED(teststring);
-	    if (fixedmult == 0.0 && atof(fields[1]) > 0.0) {
-	      fixedmult = atof(fields[1]);
+	    g_strlcpy(rigconf, g_strchomp(fields[1]), 80);	// RIGCONF=
+	    break;
+	}
+    case 127: {		// define color GREEN (header)
+	    PARAMETER_NEEDED(teststring);
+	    if (strlen(fields[1]) >= 2 && isdigit(fields[1][0]) &&
+		    isdigit(fields[1][1])) {
+		tlfcolors[1][0] = fields[1][0] - 48;
+		tlfcolors[1][1] = fields[1][1] - 48;
+	    } else {
+		WrongFormat(teststring);
 	    }
 	    break;
 	}
-    case 161:{
-		 serial_or_section = 1;
-		 break;
+    case 128 ... 132: {		// define color CYAN (windows), WHITE (log win)
+	    // MAGENTA (Marker / dupes), BLUE (input field)
+	    // and YELLOW (Window frames)
+	    PARAMETER_NEEDED(teststring);
+	    if (strlen(fields[1]) >= 2 && isdigit(fields[1][0]) &&
+		    isdigit(fields[1][1])) {
+		tlfcolors[ii - 128 + 3][0] = fields[1][0] - 48;
+		tlfcolors[ii - 128 + 3][1] = fields[1][1] - 48;
+	    } else {
+		WrongFormat(teststring);
+	    }
+	    break;
+	}
+    case 133: {		// define name of synclogfile
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(synclogfile, g_strchomp(fields[1]));
+	    break;
+	}
+    case 134: {		//SSBPOINTS=
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(buff, fields[1]);
+	    ssbpoints = atoi(buff);
+	    break;
+	}
+    case 135: {		//CWPOINTS=
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(buff, fields[1]);
+	    cwpoints = atoi(buff);
+	    break;
+	}
+    case 136: {		// SOUNDCARD, use soundcard for cw sidetone
+	    sc_sidetone = 1;
+	    break;
+	}
+    case 137: {		// sound card volume (default = 70)
+	    int volume;
+
+	    PARAMETER_NEEDED(teststring);
+	    volume = atoi(fields[1]);
+	    if (volume > -1 && volume < 101)
+		sprintf(sc_volume, "%d", volume);
+	    else
+		strcpy(sc_volume, "70");
+	    break;
+	}
+    case 138: {
+	    int i = 0;
+
+	    PARAMETER_NEEDED(teststring);
+	    tk_ptr = strtok(fields[1], ":,.-_\t ");
+
+	    if (tk_ptr != NULL) {
+		while (tk_ptr) {
+		    if (i < 20)
+			scale_values[i] = atoi(tk_ptr);
+		    tk_ptr = strtok(NULL, ":,.-_\t ");
+		    i++;
+		}
 	    }
 
-    case 162:{
+	    break;
+	}
+    case 139: {		// dsp for s-meter
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(sc_device, g_strchomp(fields[1]), sizeof(sc_device));
+	    break;
+	}
+    case 140: {
+	    PARAMETER_NEEDED(teststring);
+	    cwkeyer = MFJ1278_KEYER;
+	    digikeyer = MFJ1278_KEYER;
+	    g_strlcpy(controllerport, g_strchomp(fields[1]),
+		      sizeof(controllerport));
+	    break;
+	}
+    case 141: {
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(clusterlogin, fields[1]);
+	    break;
+	}
+    case 142: {
+	    KeywordNotSupported(teststring);
+	    break;
+	}
+    case 143: {
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(exchange_list, g_strchomp(fields[1]),
+		      sizeof(exchange_list));
+	    break;
+	}
+    case 144: {
+	    PARAMETER_NEEDED(teststring);
+	    cw_bandwidth = atoi(fields[1]);
+	    break;
+	}
+    case 145: {
+	    lowband_point_mult = 1;
+	    break;
+	}
+    case 146: {
+	    clusterlog = 1;
+	    break;
+	}
+    case 147: {
+	    serial_grid4_mult = 1;
+	    break;
+	}
+    case 148: {
+	    change_rst = 1;
+	    break;
+	}
+    case 149: {
+	    PARAMETER_NEEDED(teststring);
+	    digikeyer = GMFSK;
+	    g_strlcpy(controllerport, g_strchomp(fields[1]),
+		      sizeof(controllerport));
+	    break;
+	}
+    case 150: {		// start in digital mode
+	    trxmode = DIGIMODE;
+	    strcpy(modem_mode, "RTTY");
+	    break;
+	}
+    case 151: {
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(rttyoutput, g_strchomp(fields[1]), 111);
+	    break;
+	}
+    case 152: {
+	    logfrequency = 1;
+	    break;
+	}
+    case 153: {
+	    ignoredupe = 1;
+	    break;
+	}
+    case 154: {		/* read name of cabrillo format to use */
+
+	    if (cabrillo != NULL) {
+		free(cabrillo);	/* free old string if already set */
+		cabrillo = NULL;
+	    }
+	    cabrillo = strdup(g_strchomp(fields[1]));
+	    break;
+	}
+    case 155:
+    case 156:
+    case 157: {
+	    KeywordNotSupported(teststring);
+	    break;
+	}
+    case 158: {
+	    no_rst = 1;
+	    break;
+	}
+    case 159: {
+	    PARAMETER_NEEDED(teststring);
+	    strcpy(myqra, fields[1]);
+
+	    if (check_qra(myqra) > 0) {
+		showmsg
+		("WARNING: Invalid MYQRA parameters! exiting...");
+		sleep(5);
+		exit(1);
+	    }
+	    break;
+	}
+    case 160: {
+	    PARAMETER_NEEDED(teststring);
+	    if (fixedmult == 0.0 && atof(fields[1]) > 0.0) {
+		fixedmult = atof(fields[1]);
+	    }
+	    break;
+	}
+    case 161: {
+	    serial_or_section = 1;
+	    break;
+	}
+
+    case 162: {
 	    PARAMETER_NEEDED(teststring);
 	    g_strchomp(fields[1]);
 	    if (strncmp(fields[1], "RECV", 4) == 0) {
-	        qtcdirection = RECV;
+		qtcdirection = RECV;
 	    }
 	    if (strncmp(fields[1], "SEND", 4) == 0) {
-	        qtcdirection = SEND;
-	    }
-	    else if (strcmp(fields[1], "BOTH") == 0) {
-	        qtcdirection = RECV | SEND;
+		qtcdirection = SEND;
+	    } else if (strcmp(fields[1], "BOTH") == 0) {
+		qtcdirection = RECV | SEND;
 	    }
 	    if (qtcdirection == 0) {
 		KeywordNotSupported(teststring);
-	    }
-	    else {
+	    } else {
 		int q;
-		for(q=0; q<QTC_RY_LINE_NR; q++) {
+		for (q = 0; q < QTC_RY_LINE_NR; q++) {
 		    qtc_ry_lines[q].content[0] = '\0';
 		    qtc_ry_lines[q].attr = 0;
 		}
@@ -1526,7 +1524,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
 
-    case 163:{
+    case 163: {
 	    /* based on LZ3NY code, by HA2OS
 	       CONTINENT_LIST   (in file or listed in logcfg.dat),
 	       First of all we are checking if inserted data in
@@ -1554,14 +1552,14 @@ int parse_logcfg(char *inputbuffer)
 
 		if ((fp = fopen(temp_buffer, "r")) != NULL) {
 
-		    while ( fgets(buffer, sizeof(buffer), fp) != NULL ) {
+		    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
 
-			g_strchomp( buffer ); /* no trailing whitespace*/
+			g_strchomp(buffer);   /* no trailing whitespace*/
 
 			/* accept only a line starting with the contest name
 			 * (CONTEST=) followed by ':' */
-			if (strncasecmp (buffer, whichcontest,
-				strlen(whichcontest) - 1) == 0) {
+			if (strncasecmp(buffer, whichcontest,
+					strlen(whichcontest) - 1) == 0) {
 
 			    strncpy(cont_multiplier_list,
 				    buffer + strlen(whichcontest) + 1,
@@ -1594,7 +1592,7 @@ int parse_logcfg(char *inputbuffer)
 	}
 
 
-    case 164:{		// CONTINENT_LIST_POINTS
+    case 164: {		// CONTINENT_LIST_POINTS
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(c_temp, fields[1], sizeof(c_temp));
 	    if (continentlist_points == -1) {
@@ -1603,12 +1601,12 @@ int parse_logcfg(char *inputbuffer)
 
 	    break;
 	}
-    case 165:{		// CONTINENT_LIST_ONLY
+    case 165: {		// CONTINENT_LIST_ONLY
 	    continentlist_only = 1;
 	    break;
 	}
 
-    case 166:{		// BANDWEIGHT_POINTS
+    case 166: {		// BANDWEIGHT_POINTS
 	    PARAMETER_NEEDED(teststring);
 	    static char bwp_params_list[50] = "";
 	    int bandindex = -1;
@@ -1633,7 +1631,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
 
-    case 167:{		// BANDWEIGHT_MULTIS
+    case 167: {		// BANDWEIGHT_MULTIS
 	    PARAMETER_NEEDED(teststring);
 	    static char bwm_params_list[50] = "";
 	    int bandindex = -1;
@@ -1658,7 +1656,7 @@ int parse_logcfg(char *inputbuffer)
 	    break;
 	}
 
-	case 168:{
+    case 168: {
 	    /* based on LZ3NY code, by HA2OS
 	       PFX_NUM_MULTIS   (in file or listed in logcfg.dat),
 	       We directly copy it into pfxnummulti_str, then parse the prefixlist
@@ -1681,14 +1679,13 @@ int parse_logcfg(char *inputbuffer)
 	    if (tk_ptr != NULL) {
 		while (tk_ptr) {
 		    parsepfx[0] = '\0';
-		    if (isdigit(tk_ptr[strlen(tk_ptr)-1])) {
+		    if (isdigit(tk_ptr[strlen(tk_ptr) - 1])) {
 			sprintf(parsepfx, "%sAA", tk_ptr);
-		    }
-		    else {
+		    } else {
 			sprintf(parsepfx, "%s0AA", tk_ptr);
 		    }
 		    pfxnummulti[counter].countrynr = getctydata(parsepfx);
-		    for(pfxnum=0; pfxnum<10; pfxnum++) {
+		    for (pfxnum = 0; pfxnum < 10; pfxnum++) {
 			pfxnummulti[counter].qsos[pfxnum] = 0;
 		    }
 		    tk_ptr = strtok(NULL, ",");
@@ -1699,44 +1696,46 @@ int parse_logcfg(char *inputbuffer)
 	    setcontest();
 	    break;
 	}
-    case 169:{		        /* wpx style prefixes mult */
-		pfxmultab = 1;	/* enable pfx on all band */
-		break;
-	    }
+    case 169: {		       /* wpx style prefixes mult */
+	    pfxmultab = 1;	/* enable pfx on all band */
+	    break;
+	}
 
     case 170 ... 181: {
-    	    PARAMETER_NEEDED(teststring);
+	    PARAMETER_NEEDED(teststring);
 	    strcpy(qtc_recv_msgs[ii - 170], fields[1]);
 	    break;
-	    }
+	}
     case 182 ... 193: {
-    	    PARAMETER_NEEDED(teststring);
+	    PARAMETER_NEEDED(teststring);
 	    strcpy(qtc_send_msgs[ii - 182], fields[1]);
 	    break;
-	    }
-    case 194 ... 207:{	// get QTC recv phone messages
+	}
+    case 194 ... 207: {	// get QTC recv phone messages
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(qtc_phrecv_message[ii - 194], g_strchomp(fields[1]), 71);
-	    mvprintw(15, 5, "A: QTC RECV phone message #%d is %s", ii - 194, qtc_phrecv_message[ii - 194]);
+	    mvprintw(15, 5, "A: QTC RECV phone message #%d is %s", ii - 194,
+		     qtc_phrecv_message[ii - 194]);
 	    refreshp();
 	    break;
 	}
-    case 208 ... 221:{	// get QTC send phone messages
+    case 208 ... 221: {	// get QTC send phone messages
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(qtc_phsend_message[ii - 208], g_strchomp(fields[1]), 71);
-	    mvprintw(15, 5, "A: QTC SEND phone message #%d is %s", ii - 208, qtc_phrecv_message[ii - 208]);
+	    mvprintw(15, 5, "A: QTC SEND phone message #%d is %s", ii - 208,
+		     qtc_phrecv_message[ii - 208]);
 	    refreshp();
 	    break;
 	}
     case 222: {
 	    qtcrec_record = 1;
- 	    break;
-    }
+	    break;
+	}
     case 223: {
 	    PARAMETER_NEEDED(teststring);
 	    int p, q = 0, i = 0, s = 0;
-	    for(p=0; p<strlen(fields[1]); p++) {
-	        if (p > 0 && fields[1][p] == ' ') {
+	    for (p = 0; p < strlen(fields[1]); p++) {
+		if (p > 0 && fields[1][p] == ' ') {
 		    s = 1;
 		    qtcrec_record_command_shutdown[p] = '\0';
 		}
@@ -1745,9 +1744,9 @@ int parse_logcfg(char *inputbuffer)
 		}
 		if (fields[1][p] == '$') {
 		    qtcrec_record_command[i][q] = '\0';
-		    i=1;
+		    i = 1;
 		    p++;
-		    q=0;
+		    q = 0;
 		}
 		if (fields[1][p] != '\n') {
 		    qtcrec_record_command[i][q] = fields[1][p];
@@ -1756,138 +1755,132 @@ int parse_logcfg(char *inputbuffer)
 		qtcrec_record_command[i][q] = ' ';
 	    }
 
-	    if (qtcrec_record_command[i][q-1] != '&') {
+	    if (qtcrec_record_command[i][q - 1] != '&') {
 		qtcrec_record_command[i][q++] = ' ';
 		qtcrec_record_command[i][q++] = '&';
 	    }
 	    qtcrec_record_command[i][q] = '\0';
- 	    break;
-    }
+	    break;
+	}
     case 224: {
 	    PARAMETER_NEEDED(teststring);
 	    if (strcmp(g_strchomp(fields[1]), "CONTINENTLIST") == 0) {
-	        if (strlen(continent_multiplier_list[0]) == 0) {
+		if (strlen(continent_multiplier_list[0]) == 0) {
 		    showmsg
-			("WARNING: you need to set the CONTINENTLIST parameter...");
+		    ("WARNING: you need to set the CONTINENTLIST parameter...");
 		    sleep(5);
 		    exit(1);
 		}
 		exclude_multilist_type = 1;
-	    }
-	    else if (strcmp(g_strchomp(fields[1]), "COUNTRYLIST") == 0) {
-	        if (strlen(countrylist[0]) == 0) {
+	    } else if (strcmp(g_strchomp(fields[1]), "COUNTRYLIST") == 0) {
+		if (strlen(countrylist[0]) == 0) {
 		    showmsg
-			("WARNING: you need to set the COUNTRYLIST parameter...");
+		    ("WARNING: you need to set the COUNTRYLIST parameter...");
 		    sleep(5);
 		    exit(1);
 		}
 		exclude_multilist_type = 2;
-	    }
-	    else {
-	        showmsg
-			("WARNING: choose one of these for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST");
-		    sleep(5);
-		    exit(1);
+	    } else {
+		showmsg
+		("WARNING: choose one of these for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST");
+		sleep(5);
+		exit(1);
 	    }
 	    break;
-    }
-    case 225:{
+	}
+    case 225: {
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(message[SP_CALL_MSG], fields[1]);
 	    break;	/* end messages */
 	}
-    case 226:{
-		PARAMETER_NEEDED(teststring);
-		g_strlcpy(qtc_cap_calls, g_strchomp(fields[1]),
-			sizeof(exchange_list));
-		break;
-	    }
+    case 226: {
+	    PARAMETER_NEEDED(teststring);
+	    g_strlcpy(qtc_cap_calls, g_strchomp(fields[1]),
+		      sizeof(exchange_list));
+	    break;
+	}
     case 227: {
 	    qtc_auto_filltime = 1;
 	    break;
-    }
+	}
     case 228: {
 	    bmautograb = 1;
 	    break;
-    }
+	}
     case 229: {
 	    bmautoadd = 1;
 	    break;
-    }
+	}
     case 230: {
 	    qtc_recv_lazy = 1;
 	    break;
-    }
+	}
     case 231: {
 	    sprint_mode = 1;
 	    break;
-    }
-    case 232:{
+	}
+    case 232: {
 #ifndef HAVE_LIBXMLRPC
-	    showmsg ("WARNING: XMLRPC not compiled - skipping setup.");
+	    showmsg("WARNING: XMLRPC not compiled - skipping setup.");
 	    sleep(2);
 	    digikeyer = NO_KEYER;
 #else
 	    if (fields[1] != NULL) {
 		g_strlcpy(fldigi_url, g_strchomp(fields[1]),
-			sizeof(fldigi_url));
+			  sizeof(fldigi_url));
 	    }
 	    digikeyer = FLDIGI;
 #endif
 	    break;
-    }
-    case 233:{
+	}
+    case 233: {
 	    rigptt |= (1 << 0);		/* bit 0 set--CAT PTT wanted (RIGPTT) */
 	    break;
-    }
-    case 234:{
+	}
+    case 234: {
 	    if (fields[1] != NULL) {
 		int minisec;
 		minisec = atoi(g_strchomp(fields[1]));
-		if ((3600%minisec) != 0) {
+		if ((3600 % minisec) != 0) {
 		    showmsg
-			("WARNING: invalid MINITEST value, must be an integral divider for 3600s!");
+		    ("WARNING: invalid MINITEST value, must be an integral divider for 3600s!");
 		    sleep(5);
 		    exit(1);
-		}
-		else {
+		} else {
 		    minitest = minisec;
 		}
-	    }
-	    else {
+	    } else {
 		minitest = MINITEST_DEFAULT_PERIOD;
 	    }
 	    break;
-    }
+	}
     case 235: {
 	    PARAMETER_NEEDED(teststring);
 	    if (strcmp(g_strchomp(fields[1]), "ALL") == 0) {
 		unique_call_multi = UNIQUECALL_ALL;
-	    }
-	    else if (strcmp(g_strchomp(fields[1]), "BAND") == 0) {
+	    } else if (strcmp(g_strchomp(fields[1]), "BAND") == 0) {
 		unique_call_multi = UNIQUECALL_BAND;
-	    }
-	    else {
+	    } else {
 		showmsg
-			("WARNING: choose one of these for UNIQUE_CALL_MULTI: ALL, BAND");
-		    sleep(5);
-		    exit(1);
+		("WARNING: choose one of these for UNIQUE_CALL_MULTI: ALL, BAND");
+		sleep(5);
+		exit(1);
 	    }
 	    break;
-    }
+	}
     case 236: { // KEYER_BACKSPACE
 	    keyer_backspace = 1;
 	    break;
-    }
+	}
     default: {
-		KeywordNotSupported(g_strstrip(inputbuffer));
-		break;
-	    }
+	    KeywordNotSupported(g_strstrip(inputbuffer));
+	    break;
+	}
     }
 
-    g_strfreev( fields );
+    g_strfreev(fields);
 
-    return( confirmation_needed );
+    return (confirmation_needed);
 
 }
 

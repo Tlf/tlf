@@ -85,8 +85,7 @@ struct tln_logline *viewing = NULL;
 int view_state = STATE_EDITING;
 char tln_input_buffer[2 * BUFFERSIZE];
 
-void addlog(char *s)
-{
+void addlog(char *s) {
     extern char lastwwv[];
     extern char spot_ptr[MAX_SPOTS][82];
     extern char lastmsg[];
@@ -97,7 +96,7 @@ void addlog(char *s)
     FILE *fp;
     struct tln_logline *temp;
 
-    pthread_mutex_lock (&spot_ptr_mutex);
+    pthread_mutex_lock(&spot_ptr_mutex);
 
     for (len = 0; len < strlen(s); len += 80) {
 
@@ -132,13 +131,13 @@ void addlog(char *s)
 	}
     }
 
-    pthread_mutex_unlock (&spot_ptr_mutex);
+    pthread_mutex_unlock(&spot_ptr_mutex);
 
     // \todo drop it later tb mar11
     bm_add(s);
 
-    if ((strncmp( s, "WWV", 3) == 0) || strncmp ( s, "WCY", 3) == 0)
-	strncpy (lastwwv, s, 82);
+    if ((strncmp(s, "WWV", 3) == 0) || strncmp(s, "WCY", 3) == 0)
+	strncpy(lastwwv, s, 82);
 
     if (tln_loglines >= maxtln_loglines) {
 	temp = loghead;
@@ -169,30 +168,26 @@ void addlog(char *s)
     logtail = temp;
 }
 
-int logattr(void)
-{
+int logattr(void) {
     if (!viewing)
 	return 0;
     else
 	return viewing->attr;
 }
 
-char *firstlog(void)
-{
+char *firstlog(void) {
     viewing = loghead;
     view_state = STATE_VIEWING;
     return viewing->text;
 }
 
-char *lastlog(void)
-{
+char *lastlog(void) {
     viewing = logtail;
     view_state = STATE_VIEWING;
     return viewing->text;
 }
 
-char *nextlog(void)
-{
+char *nextlog(void) {
     if (view_state == STATE_EDITING)
 	viewing = loghead;
     else if (viewing)
@@ -206,8 +201,7 @@ char *nextlog(void)
     }
 }
 
-char *prevlog(void)
-{
+char *prevlog(void) {
     if (view_state == STATE_EDITING)
 	viewing = logtail;
     else if (viewing)
@@ -221,16 +215,14 @@ char *prevlog(void)
     }
 }
 
-void start_editing(void)
-{
+void start_editing(void) {
     werase(entwin);
     currow = curcol = 0;
     viewing = NULL;
     view_state = STATE_EDITING;
 }
 
-void delete_prev_char(void)
-{
+void delete_prev_char(void) {
     int i, j;
     int c, cc;
     if (currow != 0 || curcol != 0) {
@@ -240,7 +232,7 @@ void delete_prev_char(void)
 	}
 	c = ' ';
 	for (i = ENTRYROWS - 1, j = COLS - 1; i > currow || j >= curcol;
-	     j--) {
+		j--) {
 	    if (j < 0) {
 		j = COLS - 1;
 		i--;
@@ -253,8 +245,7 @@ void delete_prev_char(void)
     }
 }
 
-void right_arrow(void)
-{
+void right_arrow(void) {
     if (++curcol >= COLS) {
 	curcol = 0;
 	if (++currow >= ENTRYROWS) {
@@ -265,8 +256,7 @@ void right_arrow(void)
     wmove(entwin, currow, curcol);
 }
 
-void left_arrow(void)
-{
+void left_arrow(void) {
     if (--curcol < 0) {
 	curcol = COLS - 1;
 	if (--currow < 0) {
@@ -276,8 +266,7 @@ void left_arrow(void)
     wmove(entwin, currow, curcol);
 }
 
-void move_eol(void)
-{
+void move_eol(void) {
     currow = ENTRYROWS - 1;
     curcol = COLS - 1;
     while ((A_CHARTEXT & mvwinch(entwin, currow, curcol)) == ' ') {
@@ -294,8 +283,7 @@ void move_eol(void)
     right_arrow();
 }
 
-void gather_input(char *s)
-{
+void gather_input(char *s) {
     int l = 0;
     int i, j;
     for (i = j = 0; i < ENTRYROWS && j < 81; j++) {
@@ -316,8 +304,7 @@ void gather_input(char *s)
 }
 
 int attop = 0;
-int walkup(void)
-{
+int walkup(void) {
     int i;
     if (attop)
 	return 0;
@@ -331,8 +318,7 @@ int walkup(void)
     return 0;
 }
 
-int walkdn(void)
-{
+int walkdn(void) {
     int i;
     if (!attop)
 	return 0;
@@ -346,8 +332,7 @@ int walkdn(void)
     return 0;
 }
 
-int pageup(int lines)
-{
+int pageup(int lines) {
     int i;
     char *s = NULL;
     walkup();
@@ -366,8 +351,7 @@ int pageup(int lines)
     return (s != NULL);
 }
 
-int pagedn(int lines)
-{
+int pagedn(int lines) {
     int i;
     char *s = NULL;
     walkdn();
@@ -387,8 +371,7 @@ int pagedn(int lines)
 
 char entry_text[BUFFERSIZE];
 
-void viewbottom(void)
-{
+void viewbottom(void) {
     int i;
     char *s;
 
@@ -415,8 +398,7 @@ void viewbottom(void)
     attop = FALSE;
 }
 
-void viewtop(void)
-{
+void viewtop(void) {
     int i;
     char *s;
 
@@ -435,8 +417,7 @@ void viewtop(void)
     attop = FALSE;
 }
 
-void resume_editing(void)
-{
+void resume_editing(void) {
     viewbottom();
     wattrset(sclwin, curattr);
     werase(entwin);
@@ -447,8 +428,7 @@ void resume_editing(void)
     wrefresh(entwin);
 }
 
-void viewlog(void)
-{
+void viewlog(void) {
     attop = FALSE;
     if (walkup()) {
 	view_state = STATE_EDITING;
@@ -462,8 +442,7 @@ void viewlog(void)
 }
 
 int litflag = FALSE;
-int edit_line(int c)
-{
+int edit_line(int c) {
     if (view_state != STATE_EDITING) {
 	if (c == '\n')
 	    resume_editing();
@@ -548,8 +527,7 @@ int edit_line(int c)
     return 0;
 }
 
-void sanitize(char *s)
-{
+void sanitize(char *s) {
     char *t = s;
     for (; *s != '\0'; s++) {
 	if (*s == '\007')
@@ -563,8 +541,7 @@ void sanitize(char *s)
     *t = '\0';
 }
 
-void addtext(char *s)
-{
+void addtext(char *s) {
     extern int lan_active;
     extern char call[];
     extern char hiscall[];
@@ -628,7 +605,7 @@ void addtext(char *s)
 
     // Cluster private spotting interface
     if (strncmp(s, call, strlen(call) - 1) == 0
-	&& strlen(s) < 81 && strchr(s, '>') == NULL) {
+	    && strlen(s) < 81 && strchr(s, '>') == NULL) {
 
 	mvprintw(24, 0,
 		 "                                                                                ");
@@ -705,8 +682,8 @@ void addtext(char *s)
 
 	    if (lan_active == 1 && lanspotflg == 0) {
 		if ((strlen(tln_input_buffer) > 0)
-		    && (tln_input_buffer[0] > 32)
-		    && (tln_input_buffer[0] < 126)) {
+			&& (tln_input_buffer[0] > 32)
+			&& (tln_input_buffer[0] < 126)) {
 		    strncpy(lan_out, tln_input_buffer, 78);
 		    lan_out[78] = '\0';
 		    strcat(lan_out, "\n");
@@ -737,8 +714,7 @@ void addtext(char *s)
 WINDOW *packet_win;
 PANEL  *packet_panel;
 
-int init_packet(void)
-{
+int init_packet(void) {
     extern int portnum;
     extern char pr_hostaddress[];
     extern char spot_ptr[MAX_SPOTS][82];
@@ -761,7 +737,7 @@ int init_packet(void)
 
     if (initialized == 0) {
 
-	packet_win = newwin(LINES,COLS,0,0);
+	packet_win = newwin(LINES, COLS, 0, 0);
 	packet_panel = new_panel(packet_win);
 	show_panel(packet_panel);
 	refreshp();
@@ -835,7 +811,7 @@ int init_packet(void)
 	} else {
 	    if (tncport == 1) {
 		if ((fdSertnc =
-		     open("/dev/ttyS0", O_RDWR | O_NONBLOCK)) < 0) {
+			    open("/dev/ttyS0", O_RDWR | O_NONBLOCK)) < 0) {
 		    wprintw(sclwin, "open of /dev/ttyS0 failed!!!\n");
 		    wrefresh(sclwin);
 		    sleep(2);
@@ -844,7 +820,7 @@ int init_packet(void)
 	    } else if (tncport == 2) {
 
 		if ((fdSertnc =
-		     open("/dev/ttyS1", O_RDWR | O_NONBLOCK)) < 0) {
+			    open("/dev/ttyS1", O_RDWR | O_NONBLOCK)) < 0) {
 		    wprintw(sclwin, "open of /dev/ttyS1 failed!!!\n");
 		    wrefresh(sclwin);
 		    sleep(2);
@@ -864,34 +840,34 @@ int init_packet(void)
 
 	switch (tnc_serial_rate) {
 
-	case 1200:{
-		cfsetispeed(&termattribs, B1200);	/* Set input speed */
-		cfsetospeed(&termattribs, B1200);	/* Set output speed */
-		break;
-	    }
+	case 1200: {
+	    cfsetispeed(&termattribs, B1200);	/* Set input speed */
+	    cfsetospeed(&termattribs, B1200);	/* Set output speed */
+	    break;
+	}
 
-	case 2400:{
-		cfsetispeed(&termattribs, B2400);	/* Set input speed */
-		cfsetospeed(&termattribs, B2400);	/* Set output speed */
-		break;
-	    }
+	case 2400: {
+	    cfsetispeed(&termattribs, B2400);	/* Set input speed */
+	    cfsetospeed(&termattribs, B2400);	/* Set output speed */
+	    break;
+	}
 
-	case 4800:{
-		cfsetispeed(&termattribs, B4800);	/* Set input speed */
-		cfsetospeed(&termattribs, B4800);	/* Set output speed */
-		break;
-	    }
+	case 4800: {
+	    cfsetispeed(&termattribs, B4800);	/* Set input speed */
+	    cfsetospeed(&termattribs, B4800);	/* Set output speed */
+	    break;
+	}
 
-	case 9600:{
-		cfsetispeed(&termattribs, B9600);	/* Set input speed */
-		cfsetospeed(&termattribs, B9600);	/* Set output speed */
-		break;
-	    }
-	default:{
+	case 9600: {
+	    cfsetispeed(&termattribs, B9600);	/* Set input speed */
+	    cfsetospeed(&termattribs, B9600);	/* Set output speed */
+	    break;
+	}
+	default: {
 
-		cfsetispeed(&termattribs, B9600);	/* Set input speed */
-		cfsetospeed(&termattribs, B9600);	/* Set output speed */
-	    }
+	    cfsetispeed(&termattribs, B9600);	/* Set input speed */
+	    cfsetospeed(&termattribs, B9600);	/* Set output speed */
+	}
 	}
 
 	tcsetattr(fdSertnc, TCSANOW, &termattribs);	/* Set the serial port */
@@ -932,10 +908,10 @@ int init_packet(void)
     wprintw(sclwin, "\n Use \":\" to go to tlf !! \n");
     wrefresh(sclwin);
 
-    pthread_mutex_lock (&spot_ptr_mutex);
+    pthread_mutex_lock(&spot_ptr_mutex);
     for (iptr = 0; iptr < MAX_SPOTS; iptr++)
 	spot_ptr[iptr][0] = '\0';
-    pthread_mutex_unlock (&spot_ptr_mutex);
+    pthread_mutex_unlock(&spot_ptr_mutex);
 
     return (0);
 }
@@ -947,14 +923,13 @@ int init_packet(void)
 =
 ===========================================*/
 
-int cleanup_telnet(void)
-{
+int cleanup_telnet(void) {
 
     extern int packetinterface;
     extern int fdSertnc;
 
     if (!initialized) {
-        return 0;
+	return 0;
     }
 
     if (packetinterface == TELNET_INTERFACE) {
@@ -996,8 +971,7 @@ int cleanup_telnet(void)
 =
 ===========================================*/
 
-int packet()
-{
+int packet() {
 
     extern int fdSertnc;
     extern int packetinterface;
@@ -1010,7 +984,7 @@ int packet()
     static int sent_login = 0;
 
     if (!initialized) {
-        return 0;
+	return 0;
     }
 
     in_packetclient = 1;
@@ -1026,7 +1000,7 @@ int packet()
     if ((tln_loglines == 0) && (packetinterface == TELNET_INTERFACE)) {
 	addtext("Welcome to TLF telnet\n\n");
 	if ((sent_login == 0) && (strlen(clusterlogin) > 0)
-	    && (packetinterface == TELNET_INTERFACE) && (prsock > 0)) {
+		&& (packetinterface == TELNET_INTERFACE) && (prsock > 0)) {
 	    usputs(prsock, clusterlogin);
 	    sent_login = 1;
 	    addtext("logged into cluster...\n\n");
@@ -1163,8 +1137,7 @@ int packet()
 ========================================================
 */
 
-int receive_packet(void)
-{
+int receive_packet(void) {
     extern int packetinterface;
     extern int fdSertnc;
 
@@ -1229,13 +1202,12 @@ int receive_packet(void)
 */
 #define MAX_CMD_LEN 60
 
-int send_cluster(void)
-{
+int send_cluster(void) {
     extern int fdSertnc;
     extern int packetinterface;
     extern int cluster;
 
-    char line[MAX_CMD_LEN+2] = "";
+    char line[MAX_CMD_LEN + 2] = "";
 
     cluster = CLUSTER;
     mvprintw(24, 0,
@@ -1255,8 +1227,7 @@ int send_cluster(void)
 	    line[strlen(line)] = '\0';	/* not needed */
 
 	    rc = write(fdSertnc, line, strlen(line));
-	}
-	else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
+	} else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
 	    usputs(prsock, line);
     }
 

@@ -19,10 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *        Getexchange handles  the  comment field
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        Getexchange handles  the  comment field
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <stdlib.h>
@@ -57,11 +57,11 @@
 int play_file(char *audiofile);
 
 
-int getlastpattern (char *checkstring);
-void exchange_edit (void);
+int getlastpattern(char *checkstring);
+void exchange_edit(void);
 
-int getexchange(void)
-{
+int getexchange(void) {
+
     extern int contest;
     extern char comment[];
     extern char cqzone[];
@@ -130,14 +130,14 @@ int getexchange(void)
 	retval = recall_exchange();
 
     if (((cqww == 1) || (wazmult == 1) || (itumult == 1))
-	&& (*comment == '\0') && (strlen(hiscall) != 0)) {
+	    && (*comment == '\0') && (strlen(hiscall) != 0)) {
 	if (itumult == 1)
 	    strcpy(comment, ituzone);
 	else
 	    strcpy(comment, cqzone);
     }
     if ((exc_cont == 1) && (*comment == '\0')
-	&& (strlen(hiscall) != 0)) {
+	    && (strlen(hiscall) != 0)) {
 	strcpy(comment, continent);
     }
 
@@ -155,7 +155,7 @@ int getexchange(void)
 
 	refresh_comment();
 
-       	/* wait for next char pressed, but update time, cluster and TRX qrg */
+	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	/* main loop waiting for input */
 	x = -1;
 	while (x < 1) {
@@ -165,114 +165,105 @@ int getexchange(void)
 	    time_update();
 
 	    if (trxmode == DIGIMODE) {
-	        show_rtty();
+		show_rtty();
 	    }
 
-            /* make sure that the wrefresh() inside getch() shows the cursor
-             * in the input field */
+	    /* make sure that the wrefresh() inside getch() shows the cursor
+	     * in the input field */
 	    wmove(stdscr, 12, 54 + strlen(comment));
 	    x = key_poll();
-        }
+	}
 
 	switch (x) {
 
-	case 17:	// Ctl-q (^Q)--Open QTC panel for receiving or sending QTCs
-	    {
-		if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
-		    qtc_main_panel(RECV);
-		}
-		if (qtcdirection == 2) {			// in case of QTC=SEND
-		    qtc_main_panel(SEND);
-		}
-		x = KEY_LEFT;
-		continue;
+	case 17: {	// Ctl-q (^Q)--Open QTC panel for receiving or sending QTCs
+	    if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
+		qtc_main_panel(RECV);
 	    }
-	case 19:	// Ctl+s (^S)--Open QTC panel for sending QTCs
-	    {
-		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
-		    qtc_main_panel(SEND);
-		}
-		x = KEY_LEFT;
-		continue;
+	    if (qtcdirection == 2) {			// in case of QTC=SEND
+		qtc_main_panel(SEND);
 	    }
-	case 1:		// Ctl-a (^A)
-	    {
-		addspot();
-		*comment = '\0';
+	    x = KEY_LEFT;
+	    continue;
+	}
+	case 19: {	// Ctl+s (^S)--Open QTC panel for sending QTCs
+	    if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
+		qtc_main_panel(SEND);
+	    }
+	    x = KEY_LEFT;
+	    continue;
+	}
+	case 1: {	// Ctl-a (^A)
+	    addspot();
+	    *comment = '\0';
+	    x = 9;	// <Tab>
+	    break;
+	}
+
+	case KEY_BACKSPACE: {	// Erase (^H or <Backspace>)
+	    if (i >= 1) {
+		comment[strlen(comment) - 1] = '\0';
+		i -= 1;
+	    }
+	    break;
+	}
+
+	case 27: {	// <Escape>
+	    stoptx();			/* stop sending CW */
+	    if (comment[0] != '\0') {	/* if comment not empty */
+		/* drop exchange so far */
+		comment[0] = '\0';
+		i = 0;
+	    } else {
+		/* back to callinput */
 		x = 9;	// <Tab>
-		break;
 	    }
+	    break;
+	}
 
-	case KEY_BACKSPACE:	// Erase (^H or <Backspace>)
-	    {
-		if (i >= 1) {
-		    comment[strlen(comment) - 1] = '\0';
-		    i -= 1;
-		}
-		break;
-	    }
-
-	case 27:	// <Escape>
-	    {
-		stoptx();			/* stop sending CW */
-		if (comment[0] != '\0') {	/* if comment not empty */
-		    /* drop exchange so far */
-		    comment[0] = '\0';
-		    i = 0;
-		} else {
-		    /* back to callinput */
-		    x = 9;	// <Tab>
-		}
-		break;
-	    }
-
-	case 160:		// For CT compatibility Meta-<Space> (M- )
-	    {
-		if (ctcomp != 0) {
-		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			sendmessage(message[1]);	// F2
-
-		    } else
-			play_file(ph_message[1]);
-
-		}
-		break;
-	    }
-
-	case '+':		// for CT compatibility
-	    {
-		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
-		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			sendmessage(message[2]);	/* F3 */
-
-		    } else
-			play_file(ph_message[2]);
-
-		    x = 92;	// '\'
-		}
-		break;
-	    }
-
-	case KEY_F(1):
-	    {
+	case 160: {	// For CT compatibility Meta-<Space> (M- )
+	    if (ctcomp != 0) {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    sendmessage(call);		/* F1 */
+		    sendmessage(message[1]);	// F2
+
 		} else
-		    play_file(ph_message[5]);	// call
+		    play_file(ph_message[1]);
 
-		break;
 	    }
+	    break;
+	}
 
-	case KEY_F(2) ... KEY_F(11):
-	    {
+	case '+': {	// for CT compatibility
+	    if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    /* F2...F11 - F1 = 1...10 */
-		    sendmessage(message[x - KEY_F(1)]);
-		} else
-		    play_file(ph_message[x - KEY_F(1)]);
+		    sendmessage(message[2]);	/* F3 */
 
-		break;
+		} else
+		    play_file(ph_message[2]);
+
+		x = 92;	// '\'
 	    }
+	    break;
+	}
+
+	case KEY_F(1): {
+	    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+		sendmessage(call);		/* F1 */
+	    } else
+		play_file(ph_message[5]);	// call
+
+	    break;
+	}
+
+	case KEY_F(2) ... KEY_F(11): {
+	    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+		/* F2...F11 - F1 = 1...10 */
+		sendmessage(message[x - KEY_F(1)]);
+	    } else
+		play_file(ph_message[x - KEY_F(1)]);
+
+	    break;
+	}
 //	case KEY_F(11):
 //            {
 //                if (trxmode == CWMODE || trxmode == DIGIMODE) {
@@ -283,81 +274,75 @@ int getexchange(void)
 
 //                break;
 //            }
-	case 176 ... 185:	/* Alt-0 to Alt-9 */
-	    {
-		sendmessage(message[x - 162]);	/* Messages 15-24 */
+	case 176 ... 185: {	/* Alt-0 to Alt-9 */
+	    sendmessage(message[x - 162]);	/* Messages 15-24 */
 
-		break;
-	    }
+	    break;
+	}
 
 	/* <Home>--edit exchange field, position cursor to left end of field.
 	 * Fall through to KEY_LEFT stanza if ungetch() is successful.
 	 */
-	case KEY_HOME:
-	    {
-		if (ungetch(x) != OK)
-		    break;
-	    }
-
-	case KEY_LEFT:		/* Left Arrow--edit exchange field */
-	    {
-		if (*comment != '\0')
-		    exchange_edit();
+	case KEY_HOME: {
+	    if (ungetch(x) != OK)
 		break;
-	    }
+	}
 
-	case KEY_PPAGE:		/* Page-Up--change MY RST */
-	    {
-		if (change_rst == 1) {
-		    if (my_rst[1] <= 56) {
-			my_rst[1]++;
+	case KEY_LEFT: {	/* Left Arrow--edit exchange field */
+	    if (*comment != '\0')
+		exchange_edit();
+	    break;
+	}
 
-			no_rst ? : mvprintw(12, 49, my_rst);
-		    }
-		} else {	/* speed up */
-		    speedup();
+	case KEY_PPAGE: {	/* Page-Up--change MY RST */
+	    if (change_rst == 1) {
+		if (my_rst[1] <= 56) {
+		    my_rst[1]++;
 
-                    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2d", GetCWSpeed());
+		    no_rst ? : mvprintw(12, 49, my_rst);
 		}
-		break;
+	    } else {	/* speed up */
+		speedup();
 
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 14, "%2d", GetCWSpeed());
 	    }
-	case KEY_NPAGE:		/* Page-Down--change MY RST */
-	    {
-		if (change_rst == 1) {
+	    break;
 
-		    if (my_rst[1] > 49) {
-			my_rst[1]--;
+	}
+	case KEY_NPAGE: {	/* Page-Down--change MY RST */
+	    if (change_rst == 1) {
 
-			no_rst ? : mvprintw(12, 49, my_rst);
-		    }
-		} else {	/* speed down */
-		    speeddown();
+		if (my_rst[1] > 49) {
+		    my_rst[1]--;
 
-                    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2d", GetCWSpeed());
+		    no_rst ? : mvprintw(12, 49, my_rst);
 		}
-		break;
+	    } else {	/* speed down */
+		speeddown();
 
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 14, "%2d", GetCWSpeed());
 	    }
+	    break;
+
+	}
 	case ',':		// Keyboard Morse
-	case 11:		// Ctrl-K
-	    {
-		mvprintw(5, 0, "");
-		keyer();
-		x = 0;
-		break;
-	    }
+	case 11: {	// Ctrl-K
+	    mvprintw(5, 0, "");
+	    keyer();
+	    x = 0;
+	    break;
+	}
 	case '\n':
-	case KEY_ENTER:
-	    {			/* log QSO immediately if CT compatible
-				 * or not in contest */
-		if ((ctcomp == 1) || (contest != 1))
-		    x = 92;	// '\'
+	case KEY_ENTER: {
+	    /* log QSO immediately if CT compatible
+	     * or not in contest */
+	    if ((ctcomp == 1) || (contest != 1))
+		x = 92;	// '\'
 //                            if (dxped == 1) x = 92;
-		break;
-	    }
+	    break;
+	}
 	}	// End switch
 
 	if (x >= 'a' && x <= 'z')
@@ -374,11 +359,11 @@ int getexchange(void)
 	}
 
 	if ((serial_section_mult == 1) ||
-	    (dx_arrlsections == 1) ||
-	    (sectn_mult == 1) ||
-	    (arrlss == 1) ||
-	    (cqww == 1) ||
-	    (stewperry_flg == 1)) {
+		(dx_arrlsections == 1) ||
+		(sectn_mult == 1) ||
+		(arrlss == 1) ||
+		(cqww == 1) ||
+		(stewperry_flg == 1)) {
 
 	    x = checkexchange(x);
 	}
@@ -386,7 +371,8 @@ int getexchange(void)
 	/* <Enter>, <Tab>, Ctl-K, '\' */
 	if (x == '\n' || x == KEY_ENTER || x == 9 || x == 11 || x == 92) {
 
-	    if ((exchange_serial == 1 && comment[0] >= '0' && comment[0] <= '9')) {	/* align serial nr. */
+	    if ((exchange_serial == 1 && comment[0] >= '0'
+		    && comment[0] <= '9')) {	/* align serial nr. */
 		if (strlen(comment) == 1) {
 		    strcpy(commentbuf, comment);
 		    comment[0] = '\0';
@@ -466,7 +452,8 @@ int getexchange(void)
 		x = 0;
 	    } else if (((serial_section_mult == 1) || (sectn_mult == 1))
 		       && ((x != 9) && (strlen(section) < 1))) {
-	        if (serial_or_section == 0 || (serial_or_section == 1 && country_found(hiscall) == 1)) {
+		if (serial_or_section == 0 || (serial_or_section == 1
+					       && country_found(hiscall) == 1)) {
 		    mvprintw(13, 54, "section?", section);
 		    mvprintw(12, 54, comment);
 		    refreshp();
@@ -492,20 +479,19 @@ int getexchange(void)
 		}
 		refreshp();
 		break;
-	    } else if (cqww == 1 && trxmode == DIGIMODE && ((countrynr == w_cty) || (countrynr == ve_cty))) {
+	    } else if (cqww == 1 && trxmode == DIGIMODE && ((countrynr == w_cty)
+		       || (countrynr == ve_cty))) {
 		if (strlen(comment) < 5) {
 		    mvprintw(13, 54, "state/prov?");
 		    mvprintw(12, 54, comment);
 		    if (x == '\n' || x == KEY_ENTER || x == 92) {
 			x = 0;
-		    }
-		    else {
-		        refreshp();
+		    } else {
+			refreshp();
 			break;
 		    }
 		    x = 0;
-		}
-		else {
+		} else {
 		    refreshp();
 		    break;
 		}
@@ -534,8 +520,7 @@ char zone_fix[3] = "";
 
 /* ------------------------------------------------------------------------ */
 
-int checkexchange(int x)
-{
+int checkexchange(int x) {
 
     extern char comment[];
     extern char ssexchange[];
@@ -559,16 +544,16 @@ int checkexchange(int x)
     char checksection[30];
     char zone[4] = "";
 
-/* field of allowed pattern sequences
- *
- * The characters have the following meaning:
- * u - undefined (left or right delimiter)
- * b - blank character
- * a - ascii character
- * f - a figure / digit
- *
- * e.g. faf means a character between two digits
- */
+    /* field of allowed pattern sequences
+     *
+     * The characters have the following meaning:
+     * u - undefined (left or right delimiter)
+     * b - blank character
+     * a - ascii character
+     * f - a figure / digit
+     *
+     * e.g. faf means a character between two digits
+     */
     char serpats[8][8] = {
 	"bfb",
 	"afb",
@@ -647,22 +632,22 @@ int checkexchange(int x)
 
 	    switch ((int) comment[i]) {
 
-	    case 'A'...'Z':{
-		    cmpattern[i + 1] = 'a';
-		    cmpattern[i + 2] = 'u';
-		    break;
-		}
+	    case 'A'...'Z': {
+		cmpattern[i + 1] = 'a';
+		cmpattern[i + 2] = 'u';
+		break;
+	    }
 
-	    case '0'...'9':{
-		    cmpattern[i + 1] = 'f';
-		    cmpattern[i + 2] = 'u';
-		    break;
-		}
+	    case '0'...'9': {
+		cmpattern[i + 1] = 'f';
+		cmpattern[i + 2] = 'u';
+		break;
+	    }
 
-	    case ' ':{
-		    cmpattern[i + 1] = 'b';
-		    break;
-		}
+	    case ' ': {
+		cmpattern[i + 1] = 'b';
+		break;
+	    }
 
 	    default:
 		cmpattern[i + 1] = 'u';
@@ -674,7 +659,7 @@ int checkexchange(int x)
     if (cqww == 1) {
 
 	s = atoi(comment);
-	snprintf( zone, sizeof(zone), "%02d", s);
+	snprintf(zone, sizeof(zone), "%02d", s);
 
 	for (ii = 0; ii < LEN(zonepats); ii++) {
 
@@ -747,8 +732,8 @@ int checkexchange(int x)
 	    hr = getlastpattern(serpats[ii]);
 
 	    if (hr > 0)
-			snprintf(serial, sizeof(serial), "%4d",
-				atoi(comment + hr - 1));
+		snprintf(serial, sizeof(serial), "%4d",
+			 atoi(comment + hr - 1));
 
 	    if (ii == 5 && hr > 0) {
 		snprintf(serial, sizeof(serial), "%4d", atoi(comment + hr - 1));
@@ -760,12 +745,12 @@ int checkexchange(int x)
 	// get precedent
 
 	if (((comment[0] == 'A')
-	     || (comment[0] == 'B')
-	     || (comment[0] == 'M')
-	     || (comment[0] == 'Q')
-	     || (comment[0] == 'S')
-	     || (comment[0] == 'U'))
-	    && ((comment[1] == ' ') || (cmpattern[2] == 'f'))) {
+		|| (comment[0] == 'B')
+		|| (comment[0] == 'M')
+		|| (comment[0] == 'Q')
+		|| (comment[0] == 'S')
+		|| (comment[0] == 'U'))
+		&& ((comment[1] == ' ') || (cmpattern[2] == 'f'))) {
 
 	    precedent[0] = comment[0];
 	}
@@ -779,7 +764,7 @@ int checkexchange(int x)
 	    if (hr > 0) {
 		pr = comment[hr];
 		if ((pr == 'Q') || (pr == 'A') || (pr == 'B')
-		    || (pr == 'U') || (pr == 'M') || (pr == 'S')) {
+			|| (pr == 'U') || (pr == 'M') || (pr == 'S')) {
 		    precedent[0] = pr;
 		    precedent[1] = '\0';
 		}
@@ -794,9 +779,9 @@ int checkexchange(int x)
 
 	    if (hr > 0) {
 		if (((comment[hr] == 'A') && (comment[hr + 1] > 59))
-		    || (comment[hr] == 'K') || (comment[hr] == 'N')
-		    || (comment[hr] == 'W')
-		    || (comment[hr] == 'V') || (comment[hr] == 'C')) {
+			|| (comment[hr] == 'K') || (comment[hr] == 'N')
+			|| (comment[hr] == 'W')
+			|| (comment[hr] == 'V') || (comment[hr] == 'C')) {
 
 		    switch (ii) {
 
@@ -858,7 +843,7 @@ int checkexchange(int x)
 		    g_strchomp(multi);
 
 		    if ((strlen(multi) >= 1) &&
-			(strcmp(checksection, multi) == 0)) {
+			    (strcmp(checksection, multi) == 0)) {
 
 			strcpy(section, multi);
 			break;
@@ -871,7 +856,7 @@ int checkexchange(int x)
 	{
 	    char buf[40];
 	    sprintf(buf, " %4s %1s %2s %2s ", serial, precedent,
-		 check, section);
+		    check, section);
 	    OnLowerSearchPanel(8, buf);
 	}
 
@@ -894,7 +879,7 @@ int checkexchange(int x)
 
     // ----------------------serial+section--------------------------
     if ((serial_section_mult == 1) || (sectn_mult == 1)
-	|| (dx_arrlsections == 1)) {
+	    || (dx_arrlsections == 1)) {
 
 	if (serial_section_mult == 1) {
 
@@ -911,13 +896,13 @@ int checkexchange(int x)
 
 		if (hr > 0)
 		    snprintf(serial, sizeof(serial), "%4d",
-			    atoi(comment + hr - 1));
+			     atoi(comment + hr - 1));
 
 		if (ii == 5 && hr > 0) {
 		    snprintf(serial, sizeof(serial), "%4d",
-			    atoi(comment + hr - 1));
+			     atoi(comment + hr - 1));
 		    snprintf(check, sizeof(check), "%2d",
-			    atoi(comment + hr + 2));
+			     atoi(comment + hr + 2));
 		}
 
 	    }
@@ -939,8 +924,8 @@ int checkexchange(int x)
 		    for (jj = 0; jj < mults_possible->len; jj++) {
 
 			if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
-			    && (strcmp(checksection, MULTS_POSSIBLE(jj)) ==
-				0)) {
+				&& (strcmp(checksection, MULTS_POSSIBLE(jj)) ==
+				    0)) {
 			    strcpy(section, MULTS_POSSIBLE(jj));
 			    break;	// new
 			}
@@ -959,8 +944,8 @@ int checkexchange(int x)
 		for (jj = 0; jj < mults_possible->len; jj++) {
 
 		    if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
-			&& (strstr(checksection, MULTS_POSSIBLE(jj)) !=
-			    NULL)) {
+			    && (strstr(checksection, MULTS_POSSIBLE(jj)) !=
+				NULL)) {
 
 			strcpy(section, MULTS_POSSIBLE(jj));
 		    }
@@ -980,9 +965,9 @@ int checkexchange(int x)
 		for (jj = 0; jj < mults_possible->len; jj++) {
 
 		    if ((strlen(MULTS_POSSIBLE(jj)) ==
-			 strlen(checksection))
-			&& (strstr(checksection, MULTS_POSSIBLE(jj)) !=
-			    NULL)) {
+			    strlen(checksection))
+			    && (strstr(checksection, MULTS_POSSIBLE(jj)) !=
+				NULL)) {
 
 			strcpy(section, MULTS_POSSIBLE(jj));
 
@@ -1007,9 +992,9 @@ int checkexchange(int x)
 
 	if (hr > 0) {
 	    if (((comment[hr] == 'A') && (comment[hr + 1] > 59))
-		|| (comment[hr] == 'K') || (comment[hr] == 'N')
-		|| (comment[hr] == 'W')
-		|| (comment[hr] == 'V') || (comment[hr] == 'C')) {
+		    || (comment[hr] == 'K') || (comment[hr] == 'N')
+		    || (comment[hr] == 'W')
+		    || (comment[hr] == 'V') || (comment[hr] == 'C')) {
 
 		switch (ii) {
 
@@ -1046,11 +1031,11 @@ int checkexchange(int x)
 					   Worked window */
     ssexchange[0] = '\0';
 
-/*	if (serial_section_mult == 1) {
-		strcat (ssexchange,serial);
-		strcat (ssexchange, " ");
-	}
-*/
+    /*	if (serial_section_mult == 1) {
+    		strcat (ssexchange,serial);
+    		strcat (ssexchange, " ");
+    	}
+    */
     strcat(ssexchange, section);
 
     // ---------------------------end mults --------------------------
@@ -1069,8 +1054,7 @@ int checkexchange(int x)
  * \parm checkstring - the pattern to be found
  * \return offset of checkstring in cmpattern (or 0 if not found)
  */
-int getlastpattern(char *checkstring)
-{
+int getlastpattern(char *checkstring) {
 
     extern char comment[];
     char newpat[80];
@@ -1097,8 +1081,7 @@ int getlastpattern(char *checkstring)
  * return a pointer to the start of grid locator
  */
 
-char *getgrid(char *comment)
-{
+char *getgrid(char *comment) {
 
     char *gridmult = "";
     int multposition = 0;
@@ -1120,8 +1103,7 @@ char *getgrid(char *comment)
 /** Edit exchange field
  */
 
-void exchange_edit (void)
-{
+void exchange_edit(void) {
     extern char comment[];
 
     int l, b;
@@ -1146,19 +1128,19 @@ void exchange_edit (void)
 
 	    b = 0;
 
-	// Ctrl-E (^E) or <End>, move to end of comment field, exit edit mode.
+	    // Ctrl-E (^E) or <End>, move to end of comment field, exit edit mode.
 	} else if (i == 5 || i == KEY_END) {
 
 	    b = strlen(comment);
 	    break;
 
-	// Left arrow, move cursor left one position.
+	    // Left arrow, move cursor left one position.
 	} else if (i == KEY_LEFT) {
 
 	    if (b > 0)
 		b--;
 
-	// Right arrow, move cursor right one position.
+	    // Right arrow, move cursor right one position.
 	} else if (i == KEY_RIGHT) {
 
 	    if (b < strlen(comment) - 1) {
@@ -1166,8 +1148,8 @@ void exchange_edit (void)
 	    } else
 		break;		/* stop edit */
 
-	// <Delete>, erase character under the cursor,
-	// shift all characters to the right of the cursor left one position.
+	    // <Delete>, erase character under the cursor,
+	    // shift all characters to the right of the cursor left one position.
 	} else if (i == KEY_DC) {
 
 	    l = strlen(comment);
@@ -1176,8 +1158,8 @@ void exchange_edit (void)
 		comment[j] = comment[j + 1];	/* move to left incl.\0 */
 	    }
 
-	// <Backspace>, erase character to the left of the cursor,
-	// shift all characters to the right of the cursor left one position.
+	    // <Backspace>, erase character to the left of the cursor,
+	    // shift all characters to the right of the cursor left one position.
 	} else if (i == KEY_BACKSPACE) {
 
 	    if (b > 0) {
@@ -1190,7 +1172,7 @@ void exchange_edit (void)
 		}
 	    }
 
-	// <Escape> not received.
+	    // <Escape> not received.
 	} else if (i != 27) {
 
 	    // Promote lower case to upper case.

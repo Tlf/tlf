@@ -17,10 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *        Search log for calls / bands  /  countries
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *        Search log for calls / bands  /  countries
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <stdlib.h>
@@ -57,8 +57,7 @@ void show_needed_sections(void);
  * or our mode allows also WARC bands (e.g. dxped or simple QSO mode)
  * \return - true if also WARC bands
  */
-int IsAllBand()
-{
+int IsAllBand() {
     extern int dxped;
     extern int contest;
 
@@ -66,43 +65,40 @@ int IsAllBand()
 }
 
 
-void InitSearchPanel()
-{
+void InitSearchPanel() {
     if (IsAllBand())
 	nr_bands = 9;
     else
 	nr_bands = 6;
 
-    search_win = newwin( nr_bands + 2, 39, 1, 41 );
-    search_panel = new_panel( search_win );
-    hide_panel( search_panel );
+    search_win = newwin(nr_bands + 2, 39, 1, 41);
+    search_panel = new_panel(search_win);
+    hide_panel(search_panel);
 }
 
-void ShowSearchPanel(void)
-{
+void ShowSearchPanel(void) {
     if (!initialized) {
 	InitSearchPanel();
 	initialized = 1;
     }
-    show_panel( search_panel );
-    top_panel( search_panel );
+    show_panel(search_panel);
+    top_panel(search_panel);
 }
 
-void HideSearchPanel(void)
-{
+void HideSearchPanel(void) {
     hide_panel(search_panel);
 }
 
 static char searchresult[MAX_CALLS][82];
 static char result[MAX_CALLS][82];
- /* DJ1YFK "worked window"-patch */
+/* DJ1YFK "worked window"-patch */
 static char band_yfk[5] = "";
 static char testcall_yfk[14] = "";
 static char hiscall_yfk[14] = "            ";
- /* */
+/* */
 
-void searchlog(char *searchstring)
-{
+void searchlog(char *searchstring) {
+
     extern int isdupe;		// LZ3NY auto-b4 patch
     extern int searchflg;
     extern int dupe;
@@ -137,7 +133,7 @@ void searchlog(char *searchstring)
     extern int ignoredupe;
     extern int qso_once;
     extern int trxmode;
-    extern char qsos[MAX_QSOS][LOGLINELEN+1];
+    extern char qsos[MAX_QSOS][LOGLINELEN + 1];
     extern char hiscall[];
     extern char zone_export[];
     extern char zone_fix[];
@@ -155,8 +151,8 @@ void searchlog(char *searchstring)
     int yy;
     int bandnr;
     int bm[6];
-    char s_inputbuffer[LOGLINELEN+1] = "";
-    char s_inputbuffercpy[LOGLINELEN+1] = "";
+    char s_inputbuffer[LOGLINELEN + 1] = "";
+    char s_inputbuffercpy[LOGLINELEN + 1] = "";
     char printres[14] = "";
     char *loc;
     dxcc_data *dx;
@@ -207,9 +203,9 @@ void searchlog(char *searchstring)
 	while (strlen(qsos[qso_index]) > 4) {
 
 	    if (((qsos[qso_index][3] == 'C' && trxmode == CWMODE) ||
-		 (qsos[qso_index][3] == 'S' && trxmode == SSBMODE) ||
-		 (qsos[qso_index][3] == 'D' && trxmode == DIGIMODE)) ||
-		mixedmode == 0) {
+		    (qsos[qso_index][3] == 'S' && trxmode == SSBMODE) ||
+		    (qsos[qso_index][3] == 'D' && trxmode == DIGIMODE)) ||
+		    mixedmode == 0) {
 		// ist letzterTest korrekt?
 
 		strncpy(s_inputbuffer, qsos[qso_index], LOGLINELEN);
@@ -272,69 +268,69 @@ void searchlog(char *searchstring)
 	// but *before* the better matching one, so they will be
 	// overwritten later.
 	switch (bandnr) {
-	case 160:{
-		if (yy < bm[0]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[0] = yy;
-		}
-		break;
+	case 160: {
+	    if (yy < bm[0]) {
+		result[r_index][0] = '\0';
+	    } else {
+		bm[0] = yy;
 	    }
-	case 80:{
-		if (yy < bm[1]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[1] = yy;
-		}
-		break;
+	    break;
+	}
+	case 80: {
+	    if (yy < bm[1]) {
+		result[r_index][0] = '\0';
+	    } else {
+		bm[1] = yy;
 	    }
-	case 40:{
-		if (yy < bm[2]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[2] = yy;
-		}
-		break;
+	    break;
+	}
+	case 40: {
+	    if (yy < bm[2]) {
+		result[r_index][0] = '\0';
+	    } else {
+		bm[2] = yy;
 	    }
-	case 20:{
-		if (yy < bm[3]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[3] = yy;
-		}
-		break;
+	    break;
+	}
+	case 20: {
+	    if (yy < bm[3]) {
+		result[r_index][0] = '\0';
+	    } else {
+		bm[3] = yy;
 	    }
-	case 15:{
-		if (yy < bm[4]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[4] = yy;
-		}
-		break;
+	    break;
+	}
+	case 15: {
+	    if (yy < bm[4]) {
+		result[r_index][0] = '\0';
+	    } else {
+		bm[4] = yy;
 	    }
-	case 10:{
-		if (yy < bm[5]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[5] = yy;
-		}
+	    break;
+	}
+	case 10: {
+	    if (yy < bm[5]) {
+		result[r_index][0] = '\0';
+	    } else {
+		bm[5] = yy;
 	    }
+	}
 	}			/* end of patch */
 
 	dupe = NODUPE;
 
-	wbkgd( search_win, (chtype)(' ' | COLOR_PAIR(C_LOG)) );
-	werase( search_win );
+	wbkgd(search_win, (chtype)(' ' | COLOR_PAIR(C_LOG)));
+	werase(search_win);
 
 	wnicebox(search_win, 0, 0, nr_bands, 37, "Worked");
 	if (qtcdirection > 0) {
 	    mvwprintw(search_win, 0, 35, "Q");
 	}
 
-	wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT );
+	wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT);
 	for (i = 0; i < nr_bands; i++)
 	    mvwprintw(search_win, i + 1, 1,
-		    "                                     ");
+		      "                                     ");
 
 	mvwprintw(search_win, 1, 1, " 10");
 	mvwprintw(search_win, 2, 1, " 15");
@@ -360,10 +356,10 @@ void searchlog(char *searchstring)
 	    s_inputbuffer[37] = '\0';
 
 	    if ((hiscall[0] == s_inputbuffer[12]) &&
-		(strlen(hiscall) >= 3 &&
-		 (s_inputbuffer[12 + strlen(hiscall)] == ' '))) {
+		    (strlen(hiscall) >= 3 &&
+		     (s_inputbuffer[12 + strlen(hiscall)] == ' '))) {
 		if ((strncmp(band[bandinx], s_inputbuffer, 3) == 0)
-		    || (qso_once == 1)) {
+			|| (qso_once == 1)) {
 		    if (ignoredupe == 0) {
 
 			dupe_veto = 1;
@@ -371,8 +367,8 @@ void searchlog(char *searchstring)
 			    found = searchcallarray(hiscall);
 			    if (found > -1) {
 				currtime = mktime(time_ptr);
-				mod = ((long)currtime)%minitest;	/* how many secods passed till last period */
-				if (worked[found].qsotime[trxmode][bandinx] < (((long)currtime)-mod)) {
+				mod = ((long)currtime) % minitest;	/* how many secods passed till last period */
+				if (worked[found].qsotime[trxmode][bandinx] < (((long)currtime) - mod)) {
 				    dupe_veto = 0;
 				}
 			    }
@@ -381,16 +377,16 @@ void searchlog(char *searchstring)
 			if (dupe_veto == 1) {
 			    if (mixedmode == 0) {
 				wattrset(search_win,
-					COLOR_PAIR(C_DUPE));
+					 COLOR_PAIR(C_DUPE));
 				dupe = ISDUPE;
 				beep();
 			    } else {
 				if (((s_inputbuffer[3] == 'C') &&
-				    (trxmode == CWMODE)) ||
-				    ((s_inputbuffer[3] == 'S')
-				    && (trxmode == SSBMODE))) {
+					(trxmode == CWMODE)) ||
+					((s_inputbuffer[3] == 'S')
+					 && (trxmode == SSBMODE))) {
 				    wattrset(search_win,
-					    COLOR_PAIR(C_DUPE));
+					     COLOR_PAIR(C_DUPE));
 				    dupe = ISDUPE;
 				    beep();
 				}
@@ -427,11 +423,11 @@ void searchlog(char *searchstring)
 		    do {
 			qtccall[l] = s_inputbuffer[z];
 			z++; l++;
-		    } while(s_inputbuffer[z] != ' ');
+		    } while (s_inputbuffer[z] != ' ');
 		    qtccall[l] = '\0';
 
 		    qtc_temp_ptr = qtc_get(qtccall);
-		    qtcflags[j-1] = qtc_get_value(qtc_temp_ptr);
+		    qtcflags[j - 1] = qtc_get_value(qtc_temp_ptr);
 		}
 		if ((j < 7) || IsAllBand()) {
 		    mvwprintw(search_win, j, 1, "%s", s_inputbuffer);
@@ -503,9 +499,9 @@ void searchlog(char *searchstring)
 	wattron(search_win, COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
 	if (qtcdirection > 0) {
-	    for(l=0; l<6; l++) {
+	    for (l = 0; l < 6; l++) {
 		if (qtcflags[l] != ' ') {
-		    mvwprintw(search_win, l+1, 35, "%c", qtcflags[l]);
+		    mvwprintw(search_win, l + 1, 35, "%c", qtcflags[l]);
 		}
 	    }
 	}
@@ -553,22 +549,22 @@ void searchlog(char *searchstring)
 	}
 	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 	    if ((zones[z] & BAND10) != 0) {
-		mvwprintw( search_win, 1, 37, "Z");
+		mvwprintw(search_win, 1, 37, "Z");
 	    }
 	    if ((zones[z] & BAND15) != 0) {
-		mvwprintw( search_win, 2, 37, "Z");
+		mvwprintw(search_win, 2, 37, "Z");
 	    }
 	    if ((zones[z] & BAND20) != 0) {
-		mvwprintw( search_win, 3, 37, "Z");
+		mvwprintw(search_win, 3, 37, "Z");
 	    }
 	    if ((zones[z] & BAND40) != 0) {
-		mvwprintw( search_win, 4, 37, "Z");
+		mvwprintw(search_win, 4, 37, "Z");
 	    }
 	    if ((zones[z] & BAND80) != 0) {
-		mvwprintw( search_win, 5, 37, "Z");
+		mvwprintw(search_win, 5, 37, "Z");
 	    }
 	    if ((zones[z] & BAND160) != 0) {
-		mvwprintw( search_win, 6, 37, "Z");
+		mvwprintw(search_win, 6, 37, "Z");
 	    }
 	}
 
@@ -580,15 +576,14 @@ void searchlog(char *searchstring)
 
 	    if ((countrynr == w_cty) ||
 		    (countrynr == ve_cty) ||
-		    (countrynr == ja_cty ) ||
-		    (countrynr == py_cty ) ||
-		    (countrynr == lu_cty ) ||
-		    (countrynr == ua9_cty ) ||
-		    (countrynr == zl_cty ) ||
-		    (countrynr == ce_cty ) ||
-		    (countrynr == zs_cty ) ||
-		    (countrynr == vk_cty ))
-	    {
+		    (countrynr == ja_cty) ||
+		    (countrynr == py_cty) ||
+		    (countrynr == lu_cty) ||
+		    (countrynr == ua9_cty) ||
+		    (countrynr == zl_cty) ||
+		    (countrynr == ce_cty) ||
+		    (countrynr == zs_cty) ||
+		    (countrynr == vk_cty)) {
 		if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
 		    mvwprintw(search_win, 6, 37, "M");
 
@@ -620,7 +615,7 @@ void searchlog(char *searchstring)
 
 	    if (pfxnummultinr >= 0) {
 		int pfxi = 0;
-		while(pfxi < pfxnummultinr) {
+		while (pfxi < pfxnummultinr) {
 		    if (pfxnummulti[pfxi].countrynr == countrynr) {
 			pfxnumcntidx = pfxi;
 			break;
@@ -630,8 +625,7 @@ void searchlog(char *searchstring)
 	    }
 	    if (pfxnumcntidx >= 0) {
 		tbandidx = pfxnummulti[pfxnumcntidx].qsos[pxnr];
-	    }
-	    else {
+	    } else {
 		tbandidx = countries[countrynr];
 	    }
 
@@ -660,8 +654,7 @@ void searchlog(char *searchstring)
 
 
 	/* print list of partials in upper left region */
-	if (partials == 1)
-	{
+	if (partials == 1) {
 	    l = 0;
 	    j = 0;
 
@@ -693,7 +686,7 @@ void searchlog(char *searchstring)
 	     */
 	    for (m = 0; m < srch_index; m++) {
 		if (strlen(hiscall) > 2 && strlen(searchresult[m]) > 2) {
-		    if ( strstr(searchresult[m], hiscall) != NULL ) {
+		    if (strstr(searchresult[m], hiscall) != NULL) {
 			printres[0] = '\0';
 			strncat(printres, searchresult[m] + 29, 12);
 
@@ -706,7 +699,7 @@ void searchlog(char *searchstring)
 			    attrset(COLOR_PAIR(C_DUPE));
 			} else {
 			    attron(modify_attr(COLOR_PAIR(C_BORDER) |
-				A_STANDOUT));
+					       A_STANDOUT));
 			}
 			mvprintw(xwin + l, ywin + j, "%s ", printres);
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -731,10 +724,9 @@ void searchlog(char *searchstring)
 	    if (strcmp(hiscall, printres) != 0) {
 
 		/* and now check callmaster database */
-		for (m = 0; m < callmaster->len; m++)
-		{
+		for (m = 0; m < callmaster->len; m++) {
 
-		    if ( strstr(CALLMASTERARRAY(m), hiscall) != NULL ) {
+		    if (strstr(CALLMASTERARRAY(m), hiscall) != NULL) {
 
 			attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
@@ -785,10 +777,9 @@ void searchlog(char *searchstring)
 	    usleep(100000);
 	} else
 	    isdupe = 0;		// LZ3NY auto-b4 patch
-	    printcall();
+	printcall();
 
-    }
-    else {
+    } else {
 	HideSearchPanel();
     }
 }
@@ -802,8 +793,7 @@ void init_callmaster(void) {
 /** loads callmaster database from file
  * returns number of loaded calls
  */
-int load_callmaster(void)
-{
+int load_callmaster(void) {
     extern int arrlss;
 
     FILE *cfp = NULL;
@@ -827,7 +817,7 @@ int load_callmaster(void)
 	}
     }
 
-    while ( fgets(s_inputbuffer, 85, cfp) != NULL ) {
+    while (fgets(s_inputbuffer, 85, cfp) != NULL) {
 
 	g_strchomp(s_inputbuffer);
 
@@ -835,7 +825,7 @@ int load_callmaster(void)
 	    /* skip comment lines */
 	    continue;
 
-	if ( strlen(s_inputbuffer) < 3 )
+	if (strlen(s_inputbuffer) < 3)
 	    /* calls are at least 3 char long */
 	    continue;
 
@@ -845,10 +835,10 @@ int load_callmaster(void)
 
 	    /* keep only NA stations */
 	    if ((s_inputbuffer[0] == 'A') || (s_inputbuffer[0] == 'K')
-		|| (s_inputbuffer[0] == 'W')
-		|| (s_inputbuffer[0] == 'V')
-		|| (s_inputbuffer[0] == 'C')
-		|| (s_inputbuffer[0] == 'N')) {
+		    || (s_inputbuffer[0] == 'W')
+		    || (s_inputbuffer[0] == 'V')
+		    || (s_inputbuffer[0] == 'C')
+		    || (s_inputbuffer[0] == 'N')) {
 
 		g_ptr_array_add(callmaster, g_strdup(s_inputbuffer));
 	    }
@@ -864,8 +854,7 @@ int load_callmaster(void)
 
 
 /*  --------------------------------------------------------------  */
-void show_needed_sections(void)
-{
+void show_needed_sections(void) {
     extern int arrlss;
     extern int nr_multis;
     extern struct mults_t multis[MAX_MULTS];
@@ -904,7 +893,7 @@ void show_needed_sections(void)
 		    mprint[3] = '\0';
 
 		    wattron(search_win,
-			modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
+			    modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 		    if (strlen(mprint) > 1)
 			mvwprintw(search_win, vert, (hor * 4) + 2, "%s ", mprint);
@@ -923,8 +912,7 @@ void show_needed_sections(void)
 
 }
 
-void OnLowerSearchPanel(int x, char *str)
-{
+void OnLowerSearchPanel(int x, char *str) {
     wattrset(search_win, modify_attr(COLOR_PAIR(C_BORDER)));
 
     mvwprintw(search_win, 7, x, str);

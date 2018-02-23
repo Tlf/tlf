@@ -22,7 +22,7 @@
 #ifndef SENDBUF_H
 #define SENDBUF_H
 
-char short_number( char c);
+char short_number(char c);
 void sendmessage(const char *msg);
 
 #endif /*  SENDBUF_H */

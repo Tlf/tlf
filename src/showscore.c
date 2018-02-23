@@ -18,10 +18,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-	/* ------------------------------------------------------------
-	 *     showscore
-	 *
-	 *-------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *     showscore
+ *
+ *-------------------------------------------------------------*/
 
 
 #include <math.h>
@@ -38,29 +38,30 @@
 
 /* list of columns to display score for each band */
 static int band_cols[6] =
-	{ 50, 55, 60, 65, 70, 75 };
+{ 50, 55, 60, 65, 70, 75 };
 
 /* list of BANDINDEX entries to show in each column
  * first  - for normal contest bands
  * second - if in warc band */
-static int bi_normal[6] =
-	{ BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
-	  BANDINDEX_20,  BANDINDEX_15, BANDINDEX_10 };
-static int bi_warc[6] =
-	{ BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
-	  BANDINDEX_30,  BANDINDEX_17, BANDINDEX_12 };
+static int bi_normal[6] = {
+    BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
+    BANDINDEX_20,  BANDINDEX_15, BANDINDEX_10
+};
+static int bi_warc[6] = {
+    BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
+    BANDINDEX_30,  BANDINDEX_17, BANDINDEX_12
+};
 
 /* bands as numbers */
 static int bandnr[NBANDS] =
-	{ 160, 80, 40, 30, 20, 17, 15, 12, 10, 0 };
+{ 160, 80, 40, 30, 20, 17, 15, 12, 10, 0 };
 
-void printfield (int x, int y, int number);
-void stewperry_show_summary( int points, float fixedmult );
+void printfield(int x, int y, int number);
+void stewperry_show_summary(int points, float fixedmult);
 
 
 /* show summary line for stewperry */
-void stewperry_show_summary( int points, float fixedmult )
-{
+void stewperry_show_summary(int points, float fixedmult) {
     float mult;
 
     mvprintw(5, START_COL, "                                   ");
@@ -68,17 +69,16 @@ void stewperry_show_summary( int points, float fixedmult )
     mult = (fixedmult == 0.0) ? 1.0 : fixedmult;
 
     mvprintw(5, START_COL, "Pts: %d       Score: %d",
-	points, (int)floor(points * mult));
+	     points, (int)floor(points * mult));
 
 }
 
 /* show summary line */
-void show_summary( int points, int multi )
-{
+void show_summary(int points, int multi) {
     mvprintw(5, START_COL, "                                   ");
     /* TODO: respect field boundaries for large numbers */
     mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
-	    points, multi, points * multi);
+	     points, multi, points * multi);
 }
 
 
@@ -89,8 +89,7 @@ void show_summary( int points, int multi )
  *
  * \param bi  list of band indices to use
  */
-void display_header(int *bi)
-{
+void display_header(int *bi) {
     int i;
 
     /* prepare header line */
@@ -123,15 +122,13 @@ extern int focm;
 extern int foc_get_nr_of_points();
 
 /* get total number of points */
-int get_nr_of_points()
-{
+int get_nr_of_points() {
     return total;
 }
 
 
 /* get total number of multis */
-int get_nr_of_mults()
-{
+int get_nr_of_mults() {
     extern float fixedmult;
     extern int sprint;
     extern int multlist;
@@ -151,30 +148,26 @@ int get_nr_of_mults()
 
     for (n = 0; n < 6; n++) {
 	totalzones += (zonescore[bi_normal[n]] *
-		bandweight_multis[bi_normal[n]]);
+		       bandweight_multis[bi_normal[n]]);
 	totalcountries += (countryscore[bi_normal[n]] *
-		bandweight_multis[bi_normal[n]]);
+			   bandweight_multis[bi_normal[n]]);
 	totalmults += (multscore[bi_normal[n]] *
-		bandweight_multis[bi_normal[n]]);
+		       bandweight_multis[bi_normal[n]]);
     }
 
     if (sprint == 1) {
 	/* no multis used */
 	return 1;
-    }
-    else if (arrlss == 1) {
+    } else if (arrlss == 1) {
 
 	return nr_multis;
-    }
-    else if (cqww == 1) {
+    } else if (cqww == 1) {
 
 	return totalcountries + totalzones;
-    }
-    else if (arrldx_usa == 1) {
+    } else if (arrldx_usa == 1) {
 
 	return totalcountries;
-    }
-    else if (arrl_fd == 1) {
+    } else if (arrl_fd == 1) {
 	/* arrl mults are always integers */
 	int mult = (int)floor(fixedmult + 0.5); 	/* round to nearest integer */
 	if (mult > 0) {
@@ -182,48 +175,38 @@ int get_nr_of_mults()
 	} else {
 	    return 1;
 	}
-    }
-    else if (dx_arrlsections == 1) {
+    } else if (dx_arrlsections == 1) {
 
 	return totalmults + totalcountries;
-    }
-    else if (universal == 1 && country_mult == 1) {
+    } else if (universal == 1 && country_mult == 1) {
 
 	return totalcountries;
-    }
-    else if (universal == 1 && multlist == 1 && arrlss != 1) {
+    } else if (universal == 1 && multlist == 1 && arrlss != 1) {
 
 	return totalmults ;
-    }
-    else if (pacc_pa_flg == 1) {
+    } else if (pacc_pa_flg == 1) {
 
 	return totalcountries;
-    }
-    else if ((wysiwyg_once == 1)
-	|| (unique_call_multi == UNIQUECALL_ALL)) {
+    } else if ((wysiwyg_once == 1)
+	       || (unique_call_multi == UNIQUECALL_ALL)) {
 
 	return nr_multis;
-    }
-    else if ((wysiwyg_multi == 1)
-	|| (unique_call_multi == UNIQUECALL_BAND)
-	|| (serial_section_mult == 1)
-	|| (serial_grid4_mult == 1)
-	|| (sectn_mult == 1)) {
+    } else if ((wysiwyg_multi == 1)
+	       || (unique_call_multi == UNIQUECALL_BAND)
+	       || (serial_section_mult == 1)
+	       || (serial_grid4_mult == 1)
+	       || (sectn_mult == 1)) {
 
 	return totalmults;
-    }
-    else if (wpx == 1) {
+    } else if (wpx == 1) {
 
 	return GetNrOfPfx_once();
-    }
-    else if (pfxmultab == 1) {
+    } else if (pfxmultab == 1) {
 
 	return GetNrOfPfx_multiband();
-    }
-    else if ((itumult == 1) || (wazmult == 1)) {
+    } else if ((itumult == 1) || (wazmult == 1)) {
 	return totalzones;
-    }
-    else
+    } else
 	/* should never reach that point
 	 *
 	 * \TODO: so we need some instrument of warning here
@@ -245,8 +228,7 @@ int get_total_score() {
  *
  * display scoring results of contest if activated by 'showscore_flag'
  */
-int showscore(void)
-{
+int showscore(void) {
 
     extern int showscore_flag;
     extern int cqww;
@@ -287,13 +269,13 @@ int showscore(void)
 
 	/* show score per band */
 	if ((wysiwyg_multi == 1)
-	    || (serial_section_mult == 1)
-	    || (serial_grid4_mult == 1)
-	    || (sectn_mult == 1)) {
+		|| (serial_section_mult == 1)
+		|| (serial_grid4_mult == 1)
+		|| (sectn_mult == 1)) {
 
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], multscore[bi_normal[i]]);
+		printfield(3, band_cols[i], multscore[bi_normal[i]]);
 	    }
 	}
 
@@ -301,7 +283,7 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Mult ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], zonescore[bi_normal[i]]);
+		printfield(3, band_cols[i], zonescore[bi_normal[i]]);
 	    }
 	}
 
@@ -316,12 +298,12 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Cty  ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+		printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	    }
 
 	    mvprintw(4, START_COL, "Sect");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(4, band_cols[i], multscore[bi_normal[i]]);
+		printfield(4, band_cols[i], multscore[bi_normal[i]]);
 	    }
 	}
 
@@ -329,12 +311,12 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Cty  ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+		printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	    }
 
 	    mvprintw(4, START_COL, "Zone ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(4, band_cols[i], zonescore[bi_normal[i]]);
+		printfield(4, band_cols[i], zonescore[bi_normal[i]]);
 	    }
 	}
 
@@ -342,7 +324,7 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Cty  ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+		printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	    }
 	}
 
@@ -350,7 +332,7 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Cty  ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+		printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	    }
 	}
 
@@ -358,24 +340,21 @@ int showscore(void)
 
 	    mvprintw(3, START_COL, "Cty  ");
 	    for (i = 0; i < 6; i++) {
-	    	printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+		printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	    }
 	}
 
 	/* show score summary */
 	if (sprint == 1) {
 
-	    mvprintw(5, START_COL, "Score: %d", get_nr_of_points() );
-	}
-	else if (focm == 1) {
+	    mvprintw(5, START_COL, "Score: %d", get_nr_of_points());
+	} else if (focm == 1) {
 	    foc_show_scoring(START_COL);
-	}
-	else if (stewperry_flg == 1) {
+	} else if (stewperry_flg == 1) {
 	    /* no normal multis, but may have POWERMULT set (fixedmult != 0.) */
-	    stewperry_show_summary( get_nr_of_points(), fixedmult );
-	}
-	else {
-	    show_summary( get_nr_of_points(), get_nr_of_mults() );
+	    stewperry_show_summary(get_nr_of_points(), fixedmult);
+	} else {
+	    show_summary(get_nr_of_points(), get_nr_of_mults());
 	}
 
 
@@ -383,7 +362,8 @@ int showscore(void)
 	attron(COLOR_PAIR(C_HEADER));
 	mvprintw(6, 55, "                   ");
 
-	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1) || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
+	if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1)
+		|| (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
 
 	    totalmults = get_nr_of_mults();
 	    totalmults = totalmults ? totalmults : 1;	/* at least one */
@@ -407,8 +387,7 @@ int showscore(void)
 }
 
 /** formated print of integer number 0..9999 */
-void printfield (int y, int x, int number)
-{
+void printfield(int y, int x, int number) {
     attron(COLOR_PAIR(C_LOG));
 
     mvprintw(y, x, " %4d", number);

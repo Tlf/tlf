@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-	/* ------------------------------------------------------------
-	 *      rtty mini terminal
-	 *
-	 *--------------------------------------------------------------*/
+/* ------------------------------------------------------------
+ *      rtty mini terminal
+ *
+ *--------------------------------------------------------------*/
 
 
 #include <ctype.h>
@@ -43,8 +43,8 @@ static int fdcont;		// global for this file: tty file descriptor
 static char ry_term[5][50] = { "", "", "", "", "" };
 
 /* ----------------------- initialize  controller ------------------------ */
-int init_controller()
-{
+int init_controller() {
+
     extern char controllerport[];
     extern int digikeyer;
 
@@ -81,15 +81,14 @@ int init_controller()
 }
 
 /* ------------------------- deinit controller -------------------------- */
-void deinit_controller()
-{
+void deinit_controller() {
     if (fdcont)
 	close(fdcont);
 }
 
 /* ------------------------  add text to terminal ------------------------ */
-void ry_addchar(char c)
-{
+void ry_addchar(char c) {
+
     static int k = 0;
     int i = 0;
     FILE *ry_fp;
@@ -117,14 +116,13 @@ void ry_addchar(char c)
 
 	if (qtc_ry_capture == 1) {
 	    if (qtc_ry_currline == (QTC_RY_LINE_NR - 1)
-	     && qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
-		for(i=0; i<(QTC_RY_LINE_NR - 1); i++) {
+		    && qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
+		for (i = 0; i < (QTC_RY_LINE_NR - 1); i++) {
 		    g_strlcpy(qtc_ry_lines[i].content,
-			      qtc_ry_lines[i+1].content, 41);
-		    qtc_ry_lines[i].attr = qtc_ry_lines[i+1].attr;
+			      qtc_ry_lines[i + 1].content, 41);
+		    qtc_ry_lines[i].attr = qtc_ry_lines[i + 1].attr;
 		}
-	    }
-	    else {
+	    } else {
 		if (strlen(qtc_ry_lines[qtc_ry_currline].content) > 0) {
 		    qtc_ry_currline++;
 		}
@@ -132,9 +130,8 @@ void ry_addchar(char c)
 	    qtc_ry_lines[qtc_ry_currline].content[0] = '\0';
 	    qtc_ry_lines[qtc_ry_currline].attr = 0;
 	}
-    }
-    else {
-	if (iscntrl( c )) {
+    } else {
+	if (iscntrl(c)) {
 	    /* replace all other control characters by space */
 	    c = ' ';
 	}
@@ -150,14 +147,13 @@ void ry_addchar(char c)
 
 	    if (qtc_ry_capture == 1) {
 		if (qtc_ry_currline == (QTC_RY_LINE_NR - 1)
-		 && qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
-		    for(i=0; i<(QTC_RY_LINE_NR - 1); i++) {
+			&& qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
+		    for (i = 0; i < (QTC_RY_LINE_NR - 1); i++) {
 			g_strlcpy(qtc_ry_lines[i].content,
-				  qtc_ry_lines[i+1].content, 41);
-			qtc_ry_lines[i].attr = qtc_ry_lines[i+1].attr;
+				  qtc_ry_lines[i + 1].content, 41);
+			qtc_ry_lines[i].attr = qtc_ry_lines[i + 1].attr;
 		    }
-		}
-		else {
+		} else {
 		    qtc_ry_currline++;
 		}
 		qtc_ry_lines[qtc_ry_currline].content[0] = '\0';
@@ -168,7 +164,7 @@ void ry_addchar(char c)
 	// add char to line
 	if (qtc_ry_capture == 1) {
 	    qtc_ry_lines[qtc_ry_currline].content[k] = c;
-	    qtc_ry_lines[qtc_ry_currline].content[k+1] = '\0';
+	    qtc_ry_lines[qtc_ry_currline].content[k + 1] = '\0';
 	}
 	ry_term[4][k++] = c;
 	ry_term[4][k] = '\0';
@@ -178,8 +174,8 @@ void ry_addchar(char c)
 
 /* ----------------------  display rtty ---------------------------------- */
 
-int show_rtty(void)
-{
+int show_rtty(void) {
+
     extern int miniterm;
     extern int commentfield;
     extern char comment[];
@@ -213,8 +209,8 @@ int show_rtty(void)
 
 /* ---------------------  receive rtty ----------------------------------- */
 
-int rx_rtty()
-{
+int rx_rtty() {
+
     extern int miniterm;
     extern int digikeyer;
 
@@ -252,44 +248,42 @@ int rx_rtty()
 		c = line[j];
 
 		switch (state) {
-		    case 0:
-			if (c == ')')
-			    state++;
-			break;
-		    case 1:
-			if (c == ':')
-			    state++;
-			else
-			    state = 0;
-			break;
-		    case 2:
-			if (c == '\n')
-			    state = 0;
-			else
-			    state++;
-			break;
-		    case 3:
-			if (c == '\n')
-			    state = 0;
+		case 0:
+		    if (c == ')')
+			state++;
+		    break;
+		case 1:
+		    if (c == ':')
+			state++;
+		    else
+			state = 0;
+		    break;
+		case 2:
+		    if (c == '\n')
+			state = 0;
+		    else
+			state++;
+		    break;
+		case 3:
+		    if (c == '\n')
+			state = 0;
 
-			ry_addchar( c );
-			break;
-		    default:
-			break;
+		    ry_addchar(c);
+		    break;
+		default:
+		    break;
 		}
 	    }
-	}
-	else {
+	} else {
 	    /* serial modem */
 	    for (j = 0; j < i; j++) {
-		ry_addchar( line[j] );
+		ry_addchar(line[j]);
 	    }
 	}
-    }
-    else if (digikeyer == FLDIGI) {
+    } else if (digikeyer == FLDIGI) {
 	i = fldigi_get_rx_text(line);
 	for (j = 0; j < i; j++) {
-	    ry_addchar( line[j] );
+	    ry_addchar(line[j]);
 	}
     }
 

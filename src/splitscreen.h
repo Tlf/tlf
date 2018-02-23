@@ -21,7 +21,7 @@
 #define SPLITSCREEN_H
 
 int init_packet(void) ;
-int cleanup_telnet (void);
+int cleanup_telnet(void);
 int packet(void);
 int send_cluster(void);
 void addtext(char *s);
@@ -44,7 +44,7 @@ int receive_packet(void);
 #define STATE_VIEWING 1
 
 
-void addlog (char *s);
+void addlog(char *s);
 int logattr(void);
 char *firstlog(void);
 char *lastlog(void);

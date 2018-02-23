@@ -41,7 +41,7 @@
 char buffer[BUFSIZE];
 
 /** shorten CW numbers */
-char short_number( char c) {
+char short_number(char c) {
     extern int shortqsonr;
 
     if (shortqsonr == SHORTCW) {
@@ -59,15 +59,16 @@ char short_number( char c) {
  * Maximum 'count' replacements are done.
  *
  */
-void replace_n(char *buf, int size, const char *what, const char *rep, int count) {
+void replace_n(char *buf, int size, const char *what, const char *rep,
+	       int count) {
     int len = strlen(buf);
     if (len > size - 1) {
-        // input string already too long, don't touch it
-        return;
+	// input string already too long, don't touch it
+	return;
     }
     int len_what = strlen(what);
     if (len_what == 0) {
-        return;
+	return;
     }
 
     int len_rep = strlen(rep);
@@ -79,75 +80,75 @@ void replace_n(char *buf, int size, const char *what, const char *rep, int count
     char *q;
 
     while (count-- > 0 && (q = strstr(p, what)) != NULL) {
-        char *dst;
-        const char *src;
-        int n, overflow = 0;
+	char *dst;
+	const char *src;
+	int n, overflow = 0;
 
-        strncpy(q, rep, len_overlap);
+	strncpy(q, rep, len_overlap);
 
-        if (len_rep < len_what) {
-            //
-            //   ....WHATabcdef
-            //   ....REPTabcdef
-            //      q^  ||
-            //       dst^|
-            //        src^
-            //
-            //   ....REPabcdef
-            //
-            // shift rest down
-            dst = q + len_overlap;
-            src = q + len_what;
-            n = buf + len + 1 - src; // include terminating \0
-            memmove(dst, src, n);
+	if (len_rep < len_what) {
+	    //
+	    //   ....WHATabcdef
+	    //   ....REPTabcdef
+	    //      q^  ||
+	    //       dst^|
+	    //        src^
+	    //
+	    //   ....REPabcdef
+	    //
+	    // shift rest down
+	    dst = q + len_overlap;
+	    src = q + len_what;
+	    n = buf + len + 1 - src; // include terminating \0
+	    memmove(dst, src, n);
 
-            // result gets shorter
-            len -= len_what - len_rep;
-        } else if (len_rep > len_what) {
-            //
-            //   ....Wabcdef
-            //   ....Rabcdef
-            //      q^| |
-            //     src^ |
-            //       dst^
-            //
-            //   ....R__abcdef
-            //   ....REPabcdef
-            //
-            // shift rest up
-            dst = q + len_rep;
-            src = q + len_overlap;
-            n = buf + len + 1 - src; // include terminating \0
-            if (dst + n - 1 >= buf + size - 1) {
-                // would be longer than (size-1), shift only a part
-                n = buf + size - 1 - dst;
-                if (n <= 0) {
-                    // even a part wont fit; no operation
-                    n = 0;
-                    overflow = 1;
-                }
-            }
-            memmove(dst, src, n);
+	    // result gets shorter
+	    len -= len_what - len_rep;
+	} else if (len_rep > len_what) {
+	    //
+	    //   ....Wabcdef
+	    //   ....Rabcdef
+	    //      q^| |
+	    //     src^ |
+	    //       dst^
+	    //
+	    //   ....R__abcdef
+	    //   ....REPabcdef
+	    //
+	    // shift rest up
+	    dst = q + len_rep;
+	    src = q + len_overlap;
+	    n = buf + len + 1 - src; // include terminating \0
+	    if (dst + n - 1 >= buf + size - 1) {
+		// would be longer than (size-1), shift only a part
+		n = buf + size - 1 - dst;
+		if (n <= 0) {
+		    // even a part wont fit; no operation
+		    n = 0;
+		    overflow = 1;
+		}
+	    }
+	    memmove(dst, src, n);
 
-            // copy tail of rep
-            dst = q + len_overlap;
-            src = rep + len_overlap;
-            n = len_rep - len_what;
-            if (dst + n - 1 >= buf + size - 1) {
-                // only a part of rep fits
-                n = buf + size - 1 - dst;
-                overflow = 1;
-            }
-            memcpy(dst, src, n);
+	    // copy tail of rep
+	    dst = q + len_overlap;
+	    src = rep + len_overlap;
+	    n = len_rep - len_what;
+	    if (dst + n - 1 >= buf + size - 1) {
+		// only a part of rep fits
+		n = buf + size - 1 - dst;
+		overflow = 1;
+	    }
+	    memcpy(dst, src, n);
 
-            if (overflow) {
-                break;
-            }
+	    if (overflow) {
+		break;
+	    }
 
-            // result gets longer
-            len += len_rep - len_what;
-        }
-        p = q + len_rep;
+	    // result gets longer
+	    len += len_rep - len_what;
+	}
+	p = q + len_rep;
     }
 }
 
@@ -185,14 +186,15 @@ void ExpandMacro(void) {
 
 
     if (NULL != strstr(buffer, "@")) {
-        char *p = hiscall + strlen(hiscall_sent);
+	char *p = hiscall + strlen(hiscall_sent);
 	if (strlen(hiscall_sent) != 0) {
 	    hiscall_sent[0] = '\0';
 	    early_started = 0;
 //                              sending_call = 0;
 	}
-        replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurence */
-        replace_all(buffer, BUFSIZE, "@", hiscall);   /* his call, further occurrences */
+	replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurence */
+	replace_all(buffer, BUFSIZE, "@",
+		    hiscall);   /* his call, further occurrences */
     }
 
 
@@ -205,23 +207,24 @@ void ExpandMacro(void) {
 
 
     if (NULL != strstr(buffer, "#")) {
-        int leading_zeros = 0;
-        int lead = 1;
-        for (i = 0; i <= 4; i++) {
-            if (lead && qsonrstr[i] == '0') {
-                ++leading_zeros;
-            } else {
-                lead = 0;
-            }
-            qsonroutput[i] = short_number(qsonrstr[i]);
-        }
-        qsonroutput[4] = '\0';
+	int leading_zeros = 0;
+	int lead = 1;
+	for (i = 0; i <= 4; i++) {
+	    if (lead && qsonrstr[i] == '0') {
+		++leading_zeros;
+	    } else {
+		lead = 0;
+	    }
+	    qsonroutput[i] = short_number(qsonrstr[i]);
+	}
+	qsonroutput[4] = '\0';
 
 	if (noleadingzeros != 1 && leading_zeros > 1) {
-            leading_zeros = 1;
+	    leading_zeros = 1;
 	}
 
-        replace_all(buffer, BUFSIZE, "#", qsonroutput + leading_zeros);   /* serial nr */
+	replace_all(buffer, BUFSIZE, "#",
+		    qsonroutput + leading_zeros);   /* serial nr */
 
 	if ((lan_active == 1) && (exchange_serial == 1)) {
 	    strncpy(lastqsonr, qsonrstr, 5);
@@ -234,8 +237,7 @@ void ExpandMacro(void) {
 }
 
 
-void sendbuf(void)
-{
+void sendbuf(void) {
     extern int trxmode;
     extern int searchflg;
     extern char termbuf[];
@@ -250,7 +252,7 @@ void sendbuf(void)
 
     printlinebuffer[0] = '\0';
 
-    if ((trxmode == CWMODE && cwkeyer != NO_KEYER ) ||
+    if ((trxmode == CWMODE && cwkeyer != NO_KEYER) ||
 	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
 	ExpandMacro();
@@ -338,8 +340,7 @@ void sendbuf(void)
  * Send the message via CW or DIGI mode, but only if not empty
  * \param msg message to send
  */
-void sendmessage(const char *msg)
-{
+void sendmessage(const char *msg) {
     if (strlen(msg) != 0) {
 	g_strlcpy(buffer, msg, sizeof(buffer));
 	sendbuf();
