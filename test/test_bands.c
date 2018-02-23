@@ -33,25 +33,25 @@ void test_IsWarcIndex(void **state) {
 }
 
 /* test switch to next band UP or DOWN */
-void nextBandUpTest(void **state) {
+void test_nextBandUp(void **state) {
     bandinx = BANDINDEX_12;
     next_band(BAND_UP);
     assert_int_equal(bandinx, BANDINDEX_10);
 }
 
-void nextBandDownTest(void **state) {
+void test_nextBandDown(void **state) {
     bandinx = BANDINDEX_12;
     next_band(BAND_DOWN);
     assert_int_equal(bandinx, BANDINDEX_15);
 }
 
-void nextBandWrapUpwardsTest(void **state) {
+void test_nextBandWrapUpwards(void **state) {
     bandinx = BANDINDEX_10;
     next_band(BAND_UP);
     assert_int_equal(bandinx, BANDINDEX_160);
 }
 
-void nextBandWrapDownwardsTest(void **state) {
+void test_nextBandWrapDownwards(void **state) {
     bandinx = BANDINDEX_160;
     next_band(BAND_DOWN);
     assert_int_equal(bandinx, BANDINDEX_10);
