@@ -148,6 +148,23 @@ void test_load_multi(void **state) {
     assert_string_equal(mults_possible->pdata[2], "ZH");
 }
 
+void test_load_multi_dos(void **state) {
+    write_testfile(testfile, "AB\r\n#LZ is not active\r\nKL\r\n 	\r\nZH\r\n");
+    strcpy(multsfile, testfile);
+    assert_int_equal(init_and_load_multipliers(), 3);
+    assert_string_equal(mults_possible->pdata[0], "AB");
+    assert_string_equal(mults_possible->pdata[2], "ZH");
+}
+
+// leading space both on comment and data lines
+void test_load_multi_leading_space(void **state) {
+    write_testfile(testfile, " AB\n   #LZ is not active\nKL\n 	\nZH\n");
+    strcpy(multsfile, testfile);
+    assert_int_equal(init_and_load_multipliers(), 3);
+    assert_string_equal(mults_possible->pdata[0], "AB");
+    assert_string_equal(mults_possible->pdata[2], "ZH");
+}
+
 void test_load_multi_sorted(void **state) {
     write_testfile(testfile, "AB\n#LZ is not active\nZH\n 	\nKL\n");
     strcpy(multsfile, testfile);
