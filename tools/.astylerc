@@ -10,6 +10,10 @@ indent=force-tab=4
 # Pad empty lines around header blocks (e.g. 'if', 'for', 'while'...).
 #break-blocks
 
+# Indent 'switch' blocks so that the 'case X:' statements are indented 
+# in the switch block.
+indent-switches
+
 # Remove extra space padding around parenthesis on the inside and outside.
 unpad-paren
 
