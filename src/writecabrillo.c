@@ -283,36 +283,36 @@ float band2freq(int band) {
     float freq;
 
     switch (band) {
-    case 160:
-	freq = 1800.;
-	break;
-    case 80:
-	freq = 3500.;
-	break;
-    case 40:
-	freq = 7000.;
-	break;
-    case 30:
-	freq = 10100.;
-	break;
-    case 20:
-	freq = 14000.;
-	break;
-    case 17:
-	freq = 18068;
-	break;
-    case 15:
-	freq = 21000.;
-	break;
-    case 12:
-	freq = 24890;
-	break;
-    case 10:
-	freq = 28000.;
-	break;
-    default:
-	freq = 0.;
-	break;
+	case 160:
+	    freq = 1800.;
+	    break;
+	case 80:
+	    freq = 3500.;
+	    break;
+	case 40:
+	    freq = 7000.;
+	    break;
+	case 30:
+	    freq = 10100.;
+	    break;
+	case 20:
+	    freq = 14000.;
+	    break;
+	case 17:
+	    freq = 18068;
+	    break;
+	case 15:
+	    freq = 21000.;
+	    break;
+	case 12:
+	    freq = 24890;
+	    break;
+	case 10:
+	    freq = 28000.;
+	    break;
+	default:
+	    freq = 0.;
+	    break;
     }
 
     return freq;
@@ -409,115 +409,115 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
     for (i = 0; i < item_count; i++) {
 	item = g_ptr_array_index(item_array, i);
 	switch (item->tag) {
-	case FREQ:
-	    sprintf(tmp, "%d", freq);
-	    add_lpadded(buf, tmp, item->len);
-	    break;
-	case MODE:
-	    sprintf(tmp, "%s", to_mode[qso->mode]);
-	    add_lpadded(buf, tmp, item->len);
-	    break;
-	case DATE:
-	    sprintf(tmp, "%4d-%02d-%02d",
-		    qso->year, qso->month, qso->day);
-	    add_lpadded(buf, tmp, item->len);
-	    break;
-	case TIME:
-	    sprintf(tmp, "%02d%02d", qso->hour, qso->min);
-	    add_lpadded(buf, tmp, item->len);
-	    break;
-	case MYCALL:
-	    strcpy(tmp, call);
-	    add_rpadded(buf, g_strchomp(tmp), item->len);
-	    break;
-	case HISCALL:
-	    add_rpadded(buf, qso->call, item->len);
-	    break;
-	case RST_S:
-	    sprintf(tmp, "%d", qso->rst_s);
-	    add_rpadded(buf, tmp, item->len);
-	    break;
-	case RST_R:
-	    sprintf(tmp, "%d", qso->rst_r);
-	    add_rpadded(buf, tmp, item->len);
-	    break;
-	case EXCH:
-	    add_rpadded(buf, qso->comment, item->len);
-	    break;
-	case EXC1:
-	    token = get_nth_token(qso->comment, 0);
-	    add_rpadded(buf, token, item->len);
-	    g_free(token);
-	    break;
-	case EXC2:
-	    token = get_nth_token(qso->comment, 1);
-	    add_rpadded(buf, token, item->len);
-	    g_free(token);
-	    break;
-	case EXC3:
-	    token = get_nth_token(qso->comment, 2);
-	    add_rpadded(buf, token, item->len);
-	    g_free(token);
-	    break;
-	case EXC4:
-	    token = get_nth_token(qso->comment, 3);
-	    add_rpadded(buf, token, item->len);
-	    g_free(token);
-	    break;
-	case EXC_S: {
-	    int pos;
-	    char *start = exchange;
-	    tmp[0] = '\0';
-	    pos = strcspn(start, "#");
-	    strncat(tmp, start, pos);   /** \todo avoid buffer overflow */
-	    while (pos < strlen(start)) {
-		if (start[pos] == '#') {
-		    /* format and add serial number */
-		    char number[6];
-		    sprintf(number, "%04d", qso->qso_nr);
-		    strcat(tmp, number);
-		}
-
-		start = start + pos + 1; 	/* skip special character */
+	    case FREQ:
+		sprintf(tmp, "%d", freq);
+		add_lpadded(buf, tmp, item->len);
+		break;
+	    case MODE:
+		sprintf(tmp, "%s", to_mode[qso->mode]);
+		add_lpadded(buf, tmp, item->len);
+		break;
+	    case DATE:
+		sprintf(tmp, "%4d-%02d-%02d",
+			qso->year, qso->month, qso->day);
+		add_lpadded(buf, tmp, item->len);
+		break;
+	    case TIME:
+		sprintf(tmp, "%02d%02d", qso->hour, qso->min);
+		add_lpadded(buf, tmp, item->len);
+		break;
+	    case MYCALL:
+		strcpy(tmp, call);
+		add_rpadded(buf, g_strchomp(tmp), item->len);
+		break;
+	    case HISCALL:
+		add_rpadded(buf, qso->call, item->len);
+		break;
+	    case RST_S:
+		sprintf(tmp, "%d", qso->rst_s);
+		add_rpadded(buf, tmp, item->len);
+		break;
+	    case RST_R:
+		sprintf(tmp, "%d", qso->rst_r);
+		add_rpadded(buf, tmp, item->len);
+		break;
+	    case EXCH:
+		add_rpadded(buf, qso->comment, item->len);
+		break;
+	    case EXC1:
+		token = get_nth_token(qso->comment, 0);
+		add_rpadded(buf, token, item->len);
+		g_free(token);
+		break;
+	    case EXC2:
+		token = get_nth_token(qso->comment, 1);
+		add_rpadded(buf, token, item->len);
+		g_free(token);
+		break;
+	    case EXC3:
+		token = get_nth_token(qso->comment, 2);
+		add_rpadded(buf, token, item->len);
+		g_free(token);
+		break;
+	    case EXC4:
+		token = get_nth_token(qso->comment, 3);
+		add_rpadded(buf, token, item->len);
+		g_free(token);
+		break;
+	    case EXC_S: {
+		int pos;
+		char *start = exchange;
+		tmp[0] = '\0';
 		pos = strcspn(start, "#");
-		strncat(tmp, start, pos);
+		strncat(tmp, start, pos);   /** \todo avoid buffer overflow */
+		while (pos < strlen(start)) {
+		    if (start[pos] == '#') {
+			/* format and add serial number */
+			char number[6];
+			sprintf(number, "%04d", qso->qso_nr);
+			strcat(tmp, number);
+		    }
+
+		    start = start + pos + 1; 	/* skip special character */
+		    pos = strcspn(start, "#");
+		    strncat(tmp, start, pos);
+		}
+		add_rpadded(buf, tmp, item->len);
 	    }
-	    add_rpadded(buf, tmp, item->len);
-	}
-	break;
-	case TX:
-	    sprintf(tmp, "%1d", qso->tx);
-	    add_rpadded(buf, tmp, item->len);
 	    break;
-	case QTCRCALL:
-	    if (qso->qtcdirection == 1) {	// RECV
-		strcpy(tmp, call);
-	    }
-	    if (qso->qtcdirection == 2) {	// SEND
-		strcpy(tmp, qso->call);
-	    }
-	    add_rpadded(buf, g_strchomp(tmp), item->len);
-	    break;
-	case QTCHEAD:
-	    tmp[0] = '\0';
-	    sprintf(tmp, "%*d/%d", 3, qso->qtc_serial, qso->qtc_number);
-	    add_rpadded(buf, g_strchomp(tmp), item->len);
-	    break;
-	case QTCSCALL:
-	    if (qso->qtcdirection == 1) {	// RECV
-		strcpy(tmp, qso->call);
-	    }
-	    if (qso->qtcdirection == 2) {	// SEND
-		strcpy(tmp, call);
-	    }
-	    add_rpadded(buf, g_strchomp(tmp), item->len);
-	    break;
-	case QTC:
-	    sprintf(tmp, "%s %-13s %4s", qso->qtc_qtime, qso->qtc_qcall, qso->qtc_qserial);
-	    add_rpadded(buf, g_strchomp(tmp), item->len);
-	case NO_ITEM:
-	default:
-	    tmp[0] = '\0';
+	    case TX:
+		sprintf(tmp, "%1d", qso->tx);
+		add_rpadded(buf, tmp, item->len);
+		break;
+	    case QTCRCALL:
+		if (qso->qtcdirection == 1) {	// RECV
+		    strcpy(tmp, call);
+		}
+		if (qso->qtcdirection == 2) {	// SEND
+		    strcpy(tmp, qso->call);
+		}
+		add_rpadded(buf, g_strchomp(tmp), item->len);
+		break;
+	    case QTCHEAD:
+		tmp[0] = '\0';
+		sprintf(tmp, "%*d/%d", 3, qso->qtc_serial, qso->qtc_number);
+		add_rpadded(buf, g_strchomp(tmp), item->len);
+		break;
+	    case QTCSCALL:
+		if (qso->qtcdirection == 1) {	// RECV
+		    strcpy(tmp, qso->call);
+		}
+		if (qso->qtcdirection == 2) {	// SEND
+		    strcpy(tmp, call);
+		}
+		add_rpadded(buf, g_strchomp(tmp), item->len);
+		break;
+	    case QTC:
+		sprintf(tmp, "%s %-13s %4s", qso->qtc_qtime, qso->qtc_qcall, qso->qtc_qserial);
+		add_rpadded(buf, g_strchomp(tmp), item->len);
+	    case NO_ITEM:
+	    default:
+		tmp[0] = '\0';
 	}
 
     }

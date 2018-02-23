@@ -51,46 +51,46 @@ void change_freq(void) {
 
 	    switch (x) {
 
-	    // Up arrow, raise frequency by 100 Hz.
-	    case KEY_UP: {
-		deltaf = 100;
-		break;
-	    }
+		// Up arrow, raise frequency by 100 Hz.
+		case KEY_UP: {
+		    deltaf = 100;
+		    break;
+		}
 
-	    // Down arrow, lower frequency by 100 Hz.
-	    case KEY_DOWN: {
-		deltaf = -100;
-		break;
-	    }
+		// Down arrow, lower frequency by 100 Hz.
+		case KEY_DOWN: {
+		    deltaf = -100;
+		    break;
+		}
 
-	    // Right arrow, raise frequency by 20 Hz.
-	    case KEY_RIGHT: {
-		deltaf = 20;
-		break;
-	    }
+		// Right arrow, raise frequency by 20 Hz.
+		case KEY_RIGHT: {
+		    deltaf = 20;
+		    break;
+		}
 
-	    // Left arrow, lower frequency by 20 Hz.
-	    case KEY_LEFT: {
-		deltaf = -20;
-		break;
-	    }
+		// Left arrow, lower frequency by 20 Hz.
+		case KEY_LEFT: {
+		    deltaf = -20;
+		    break;
+		}
 
-	    // <Page-Up>, raise frequency by 500 Hz.
-	    case KEY_PPAGE: {
-		deltaf = 500;
-		break;
-	    }
+		// <Page-Up>, raise frequency by 500 Hz.
+		case KEY_PPAGE: {
+		    deltaf = 500;
+		    break;
+		}
 
-	    // <Page-Down>, lower frequency by 500 Hz.
-	    case KEY_NPAGE: {
-		deltaf = -500;
-		break;
-	    }
+		// <Page-Down>, lower frequency by 500 Hz.
+		case KEY_NPAGE: {
+		    deltaf = -500;
+		    break;
+		}
 
-	    default: {
-		brkflg = 1;
-		break;
-	    }
+		default: {
+		    brkflg = 1;
+		    break;
+		}
 
 	    }
 

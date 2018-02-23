@@ -96,69 +96,69 @@ int netkeyer(int cw_op, char *cwmessage) {
 
     switch (cw_op) {
 
-    case K_RESET:
-	CMD('0');       // reset: <ESC>0
-	break;
-    case K_MESSAGE:
-	buf[0] = 0;
-	add_message = 1;    // play cw message
-	break;
-    case K_SPEED:
-	CMD('2');       // speed: <ESC>2NN
-	add_message = 1;
-	break;
-    case K_TONE:
-	CMD('3');       // tone: <ESC>3NN
-	add_message = 1;
-	break;
-    case K_ABORT:
-	CMD('4');       // message abort: <ESC>4
-	break;
-    case K_STOP:
-	CMD('5');       // keyer daemon stop: <ESC>5
-	break;
-    case K_WORDMODE:
-	CMD('6');       // non-interruptible: <ESC>6
-	break;
-    case K_WEIGHT:
-	CMD('7');       // set weight: <ESC>7NN
-	add_message = 1;
-	break;
-    case K_DEVICE:
-	CMD('8');       // set device: <ESC>8NN
-	add_message = 1;
-	break;
-    case K_PTT:
-	CMD('a');       // PTT on/off: <ESC>aNN
-	add_message = 1;
-	break;
-    case K_SET14:
-	CMD('b');       // set pin 14 of lp port: <ESC>bNN
-	add_message = 1;
-	break;
-    case K_TUNE:
-	CMD('c');       // tune: <ESC>cNN
-	add_message = 1;
-	break;
-    case K_TOD:
-	CMD('d');       // set Turn On Delay (TXDELAY): <ESC>dNN
-	add_message = 1;
-	break;
-    case K_SWITCH:
-	CMD('e');       // set band switch output: <ESC>eNN
-	add_message = 1;
-	break;
-    case K_SIDETONE:
-	CMD('f');       // set sidetone output to sound card: <ESC>fs
-	buf[2] = 's';
-	break;
-    case K_STVOLUME:
-	CMD('g');       // set sound card output volume: <ESC>gNN
-	add_message = 1;
-	break;
+	case K_RESET:
+	    CMD('0');       // reset: <ESC>0
+	    break;
+	case K_MESSAGE:
+	    buf[0] = 0;
+	    add_message = 1;    // play cw message
+	    break;
+	case K_SPEED:
+	    CMD('2');       // speed: <ESC>2NN
+	    add_message = 1;
+	    break;
+	case K_TONE:
+	    CMD('3');       // tone: <ESC>3NN
+	    add_message = 1;
+	    break;
+	case K_ABORT:
+	    CMD('4');       // message abort: <ESC>4
+	    break;
+	case K_STOP:
+	    CMD('5');       // keyer daemon stop: <ESC>5
+	    break;
+	case K_WORDMODE:
+	    CMD('6');       // non-interruptible: <ESC>6
+	    break;
+	case K_WEIGHT:
+	    CMD('7');       // set weight: <ESC>7NN
+	    add_message = 1;
+	    break;
+	case K_DEVICE:
+	    CMD('8');       // set device: <ESC>8NN
+	    add_message = 1;
+	    break;
+	case K_PTT:
+	    CMD('a');       // PTT on/off: <ESC>aNN
+	    add_message = 1;
+	    break;
+	case K_SET14:
+	    CMD('b');       // set pin 14 of lp port: <ESC>bNN
+	    add_message = 1;
+	    break;
+	case K_TUNE:
+	    CMD('c');       // tune: <ESC>cNN
+	    add_message = 1;
+	    break;
+	case K_TOD:
+	    CMD('d');       // set Turn On Delay (TXDELAY): <ESC>dNN
+	    add_message = 1;
+	    break;
+	case K_SWITCH:
+	    CMD('e');       // set band switch output: <ESC>eNN
+	    add_message = 1;
+	    break;
+	case K_SIDETONE:
+	    CMD('f');       // set sidetone output to sound card: <ESC>fs
+	    buf[2] = 's';
+	    break;
+	case K_STVOLUME:
+	    CMD('g');       // set sound card output volume: <ESC>gNN
+	    add_message = 1;
+	    break;
 
-    default:
-	return 0;
+	default:
+	    return 0;
     }
 
     if (add_message) {

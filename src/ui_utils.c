@@ -177,62 +177,62 @@ static int onechar(void) {
 
 	    switch (x) {
 
-	    case 32 ... 57:   // Alt-Space to Alt-9,   160 - 185
-	    case 97 ... 122:  // Alt-a to alt-z,       225 - 250
-		x += 128;
-		break;
-
-	    /* Not all terminals support Ctl-Shift-ch so
-	     * treat them as Alt-ch
-	     */
-	    case 65 ... 78:   //   alt-A to alt-N,     225 - 238
-	    case 80 ... 90:   //   alt-P to alt-Z,     240 - 250
-		x += 160;
-		break;
-
-	    case 79: {
-		x = getch();
-
-		/* Catch Alt-O */
-		if (x == ERR) {
-		    x = 239;
+		case 32 ... 57:   // Alt-Space to Alt-9,   160 - 185
+		case 97 ... 122:  // Alt-a to alt-z,       225 - 250
+		    x += 128;
 		    break;
-		}
 
-		/* Key codes for Shift-F1 to Shift-F4 in Xfce terminal. */
-		if (x == 49) {
+		/* Not all terminals support Ctl-Shift-ch so
+		 * treat them as Alt-ch
+		 */
+		case 65 ... 78:   //   alt-A to alt-N,     225 - 238
+		case 80 ... 90:   //   alt-P to alt-Z,     240 - 250
+		    x += 160;
+		    break;
+
+		case 79: {
 		    x = getch();
 
-		    if (x == 59) {
+		    /* Catch Alt-O */
+		    if (x == ERR) {
+			x = 239;
+			break;
+		    }
+
+		    /* Key codes for Shift-F1 to Shift-F4 in Xfce terminal. */
+		    if (x == 49) {
 			x = getch();
-			if (x == 50) {
+
+			if (x == 59) {
 			    x = getch();
+			    if (x == 50) {
+				x = getch();
 
-			    switch (x) {
+				switch (x) {
 
-			    case 80: {
-				x = KEY_F(13);
-				break;
-			    }
+				    case 80: {
+					x = KEY_F(13);
+					break;
+				    }
 
-			    case 81: {
-				x = KEY_F(14);
-				break;
-			    }
+				    case 81: {
+					x = KEY_F(14);
+					break;
+				    }
 
-			    case 82: {
-				x = KEY_F(15);
-				break;
-			    }
+				    case 82: {
+					x = KEY_F(15);
+					break;
+				    }
 
-			    case 83: {
-				x = KEY_F(16);
-				break;
-			    }
+				    case 83: {
+					x = KEY_F(16);
+					break;
+				    }
+				}
 			    }
 			}
 		    }
-		}
 		}
 	    }
 
@@ -245,24 +245,24 @@ static int onechar(void) {
 
 	    switch (x) {
 
-	    /* Key codes for this section:
-	     * 27 91 49 126 Home
-	     * 27 91 52 126 End
-	     */
-	    case 49: {
-		x = getch();
+		/* Key codes for this section:
+		 * 27 91 49 126 Home
+		 * 27 91 52 126 End
+		 */
+		case 49: {
+		    x = getch();
 
-		if (x == 126) {
-		    x = KEY_HOME;
+		    if (x == 126) {
+			x = KEY_HOME;
+			break;
+		    }
+		}
+
+		case 52: {
+		    x = KEY_END;
+		    trash = getch();
 		    break;
 		}
-	    }
-
-	    case 52: {
-		x = KEY_END;
-		trash = getch();
-		break;
-	    }
 	    }
 	}
     }
@@ -304,13 +304,13 @@ static int onechar(void) {
 
 	switch (x) {
 
-	case 161 ... 186:  // Alt-a to Alt-z  225 - 250
-	    x += 64;
-	    break;
+	    case 161 ... 186:  // Alt-a to Alt-z  225 - 250
+		x += 64;
+		break;
 
-	case 129 ... 154:  // Alt-A to Alt-Z  225 - 250
-	    x += 96;
-	    break;
+	    case 129 ... 154:  // Alt-A to Alt-Z  225 - 250
+		x += 96;
+		break;
 	}
 
 	nodelay(stdscr, FALSE);

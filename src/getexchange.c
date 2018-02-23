@@ -176,94 +176,94 @@ int getexchange(void) {
 
 	switch (x) {
 
-	case 17: {	// Ctl-q (^Q)--Open QTC panel for receiving or sending QTCs
-	    if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
-		qtc_main_panel(RECV);
+	    case 17: {	// Ctl-q (^Q)--Open QTC panel for receiving or sending QTCs
+		if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
+		    qtc_main_panel(RECV);
+		}
+		if (qtcdirection == 2) {			// in case of QTC=SEND
+		    qtc_main_panel(SEND);
+		}
+		x = KEY_LEFT;
+		continue;
 	    }
-	    if (qtcdirection == 2) {			// in case of QTC=SEND
-		qtc_main_panel(SEND);
+	    case 19: {	// Ctl+s (^S)--Open QTC panel for sending QTCs
+		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
+		    qtc_main_panel(SEND);
+		}
+		x = KEY_LEFT;
+		continue;
 	    }
-	    x = KEY_LEFT;
-	    continue;
-	}
-	case 19: {	// Ctl+s (^S)--Open QTC panel for sending QTCs
-	    if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
-		qtc_main_panel(SEND);
-	    }
-	    x = KEY_LEFT;
-	    continue;
-	}
-	case 1: {	// Ctl-a (^A)
-	    addspot();
-	    *comment = '\0';
-	    x = 9;	// <Tab>
-	    break;
-	}
-
-	case KEY_BACKSPACE: {	// Erase (^H or <Backspace>)
-	    if (i >= 1) {
-		comment[strlen(comment) - 1] = '\0';
-		i -= 1;
-	    }
-	    break;
-	}
-
-	case 27: {	// <Escape>
-	    stoptx();			/* stop sending CW */
-	    if (comment[0] != '\0') {	/* if comment not empty */
-		/* drop exchange so far */
-		comment[0] = '\0';
-		i = 0;
-	    } else {
-		/* back to callinput */
+	    case 1: {	// Ctl-a (^A)
+		addspot();
+		*comment = '\0';
 		x = 9;	// <Tab>
+		break;
 	    }
-	    break;
-	}
 
-	case 160: {	// For CT compatibility Meta-<Space> (M- )
-	    if (ctcomp != 0) {
+	    case KEY_BACKSPACE: {	// Erase (^H or <Backspace>)
+		if (i >= 1) {
+		    comment[strlen(comment) - 1] = '\0';
+		    i -= 1;
+		}
+		break;
+	    }
+
+	    case 27: {	// <Escape>
+		stoptx();			/* stop sending CW */
+		if (comment[0] != '\0') {	/* if comment not empty */
+		    /* drop exchange so far */
+		    comment[0] = '\0';
+		    i = 0;
+		} else {
+		    /* back to callinput */
+		    x = 9;	// <Tab>
+		}
+		break;
+	    }
+
+	    case 160: {	// For CT compatibility Meta-<Space> (M- )
+		if (ctcomp != 0) {
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			sendmessage(message[1]);	// F2
+
+		    } else
+			play_file(ph_message[1]);
+
+		}
+		break;
+	    }
+
+	    case '+': {	// for CT compatibility
+		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
+		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+			sendmessage(message[2]);	/* F3 */
+
+		    } else
+			play_file(ph_message[2]);
+
+		    x = 92;	// '\'
+		}
+		break;
+	    }
+
+	    case KEY_F(1): {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    sendmessage(message[1]);	// F2
-
+		    sendmessage(call);		/* F1 */
 		} else
-		    play_file(ph_message[1]);
+		    play_file(ph_message[5]);	// call
 
+		break;
 	    }
-	    break;
-	}
 
-	case '+': {	// for CT compatibility
-	    if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
+	    case KEY_F(2) ... KEY_F(11): {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    sendmessage(message[2]);	/* F3 */
-
+		    /* F2...F11 - F1 = 1...10 */
+		    sendmessage(message[x - KEY_F(1)]);
 		} else
-		    play_file(ph_message[2]);
+		    play_file(ph_message[x - KEY_F(1)]);
 
-		x = 92;	// '\'
+		break;
 	    }
-	    break;
-	}
-
-	case KEY_F(1): {
-	    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		sendmessage(call);		/* F1 */
-	    } else
-		play_file(ph_message[5]);	// call
-
-	    break;
-	}
-
-	case KEY_F(2) ... KEY_F(11): {
-	    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		/* F2...F11 - F1 = 1...10 */
-		sendmessage(message[x - KEY_F(1)]);
-	    } else
-		play_file(ph_message[x - KEY_F(1)]);
-
-	    break;
-	}
 //	case KEY_F(11):
 //            {
 //                if (trxmode == CWMODE || trxmode == DIGIMODE) {
@@ -274,75 +274,75 @@ int getexchange(void) {
 
 //                break;
 //            }
-	case 176 ... 185: {	/* Alt-0 to Alt-9 */
-	    sendmessage(message[x - 162]);	/* Messages 15-24 */
+	    case 176 ... 185: {	/* Alt-0 to Alt-9 */
+		sendmessage(message[x - 162]);	/* Messages 15-24 */
 
-	    break;
-	}
-
-	/* <Home>--edit exchange field, position cursor to left end of field.
-	 * Fall through to KEY_LEFT stanza if ungetch() is successful.
-	 */
-	case KEY_HOME: {
-	    if (ungetch(x) != OK)
 		break;
-	}
-
-	case KEY_LEFT: {	/* Left Arrow--edit exchange field */
-	    if (*comment != '\0')
-		exchange_edit();
-	    break;
-	}
-
-	case KEY_PPAGE: {	/* Page-Up--change MY RST */
-	    if (change_rst == 1) {
-		if (my_rst[1] <= 56) {
-		    my_rst[1]++;
-
-		    no_rst ? : mvprintw(12, 49, my_rst);
-		}
-	    } else {	/* speed up */
-		speedup();
-
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 14, "%2d", GetCWSpeed());
 	    }
-	    break;
 
-	}
-	case KEY_NPAGE: {	/* Page-Down--change MY RST */
-	    if (change_rst == 1) {
-
-		if (my_rst[1] > 49) {
-		    my_rst[1]--;
-
-		    no_rst ? : mvprintw(12, 49, my_rst);
-		}
-	    } else {	/* speed down */
-		speeddown();
-
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 14, "%2d", GetCWSpeed());
+	    /* <Home>--edit exchange field, position cursor to left end of field.
+	     * Fall through to KEY_LEFT stanza if ungetch() is successful.
+	     */
+	    case KEY_HOME: {
+		if (ungetch(x) != OK)
+		    break;
 	    }
-	    break;
 
-	}
-	case ',':		// Keyboard Morse
-	case 11: {	// Ctrl-K
-	    mvprintw(5, 0, "");
-	    keyer();
-	    x = 0;
-	    break;
-	}
-	case '\n':
-	case KEY_ENTER: {
-	    /* log QSO immediately if CT compatible
-	     * or not in contest */
-	    if ((ctcomp == 1) || (contest != 1))
-		x = 92;	// '\'
+	    case KEY_LEFT: {	/* Left Arrow--edit exchange field */
+		if (*comment != '\0')
+		    exchange_edit();
+		break;
+	    }
+
+	    case KEY_PPAGE: {	/* Page-Up--change MY RST */
+		if (change_rst == 1) {
+		    if (my_rst[1] <= 56) {
+			my_rst[1]++;
+
+			no_rst ? : mvprintw(12, 49, my_rst);
+		    }
+		} else {	/* speed up */
+		    speedup();
+
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
+		}
+		break;
+
+	    }
+	    case KEY_NPAGE: {	/* Page-Down--change MY RST */
+		if (change_rst == 1) {
+
+		    if (my_rst[1] > 49) {
+			my_rst[1]--;
+
+			no_rst ? : mvprintw(12, 49, my_rst);
+		    }
+		} else {	/* speed down */
+		    speeddown();
+
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 14, "%2d", GetCWSpeed());
+		}
+		break;
+
+	    }
+	    case ',':		// Keyboard Morse
+	    case 11: {	// Ctrl-K
+		mvprintw(5, 0, "");
+		keyer();
+		x = 0;
+		break;
+	    }
+	    case '\n':
+	    case KEY_ENTER: {
+		/* log QSO immediately if CT compatible
+		 * or not in contest */
+		if ((ctcomp == 1) || (contest != 1))
+		    x = 92;	// '\'
 //                            if (dxped == 1) x = 92;
-	    break;
-	}
+		break;
+	    }
 	}	// End switch
 
 	if (x >= 'a' && x <= 'z')
@@ -632,25 +632,25 @@ int checkexchange(int x) {
 
 	    switch ((int) comment[i]) {
 
-	    case 'A'...'Z': {
-		cmpattern[i + 1] = 'a';
-		cmpattern[i + 2] = 'u';
-		break;
-	    }
+		case 'A'...'Z': {
+		    cmpattern[i + 1] = 'a';
+		    cmpattern[i + 2] = 'u';
+		    break;
+		}
 
-	    case '0'...'9': {
-		cmpattern[i + 1] = 'f';
-		cmpattern[i + 2] = 'u';
-		break;
-	    }
+		case '0'...'9': {
+		    cmpattern[i + 1] = 'f';
+		    cmpattern[i + 2] = 'u';
+		    break;
+		}
 
-	    case ' ': {
-		cmpattern[i + 1] = 'b';
-		break;
-	    }
+		case ' ': {
+		    cmpattern[i + 1] = 'b';
+		    break;
+		}
 
-	    default:
-		cmpattern[i + 1] = 'u';
+		default:
+		    cmpattern[i + 1] = 'u';
 	    }
 	}
     }
@@ -689,17 +689,17 @@ int checkexchange(int x) {
 
 		switch (ii) {
 
-		case 0 ... 1:
-		    strncpy(callupdate, comment + hr, 4);
-		    callupdate[4] = '\0';
-		    break;
-		case 2 ... 3:
-		    strncpy(callupdate, comment + hr, 5);
-		    callupdate[5] = '\0';
-		    break;
-		case 4:
-		    strncpy(callupdate, comment + hr, 6);
-		    callupdate[6] = '\0';
+		    case 0 ... 1:
+			strncpy(callupdate, comment + hr, 4);
+			callupdate[4] = '\0';
+			break;
+		    case 2 ... 3:
+			strncpy(callupdate, comment + hr, 5);
+			callupdate[5] = '\0';
+			break;
+		    case 4:
+			strncpy(callupdate, comment + hr, 6);
+			callupdate[6] = '\0';
 		}
 
 		if (strlen(callupdate) > 3) {
@@ -785,17 +785,17 @@ int checkexchange(int x) {
 
 		    switch (ii) {
 
-		    case 0 ... 1:
-			strncpy(callupdate, comment + hr, 4);
-			callupdate[4] = '\0';
-			break;
-		    case 2 ... 3:
-			strncpy(callupdate, comment + hr, 5);
-			callupdate[5] = '\0';
-			break;
-		    case 4:
-			strncpy(callupdate, comment + hr, 6);
-			callupdate[6] = '\0';
+			case 0 ... 1:
+			    strncpy(callupdate, comment + hr, 4);
+			    callupdate[4] = '\0';
+			    break;
+			case 2 ... 3:
+			    strncpy(callupdate, comment + hr, 5);
+			    callupdate[5] = '\0';
+			    break;
+			case 4:
+			    strncpy(callupdate, comment + hr, 6);
+			    callupdate[6] = '\0';
 
 		    }
 		    if (strlen(callupdate) > 3) {
@@ -998,17 +998,17 @@ int checkexchange(int x) {
 
 		switch (ii) {
 
-		case 0 ... 1:
-		    strncpy(callupdate, comment + hr, 4);
-		    callupdate[4] = '\0';
-		    break;
-		case 2 ... 3:
-		    strncpy(callupdate, comment + hr, 5);
-		    callupdate[5] = '\0';
-		    break;
-		case 4:
-		    strncpy(callupdate, comment + hr, 6);
-		    callupdate[6] = '\0';
+		    case 0 ... 1:
+			strncpy(callupdate, comment + hr, 4);
+			callupdate[4] = '\0';
+			break;
+		    case 2 ... 3:
+			strncpy(callupdate, comment + hr, 5);
+			callupdate[5] = '\0';
+			break;
+		    case 4:
+			strncpy(callupdate, comment + hr, 6);
+			callupdate[6] = '\0';
 
 		}
 

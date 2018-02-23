@@ -248,30 +248,30 @@ int rx_rtty() {
 		c = line[j];
 
 		switch (state) {
-		case 0:
-		    if (c == ')')
-			state++;
-		    break;
-		case 1:
-		    if (c == ':')
-			state++;
-		    else
-			state = 0;
-		    break;
-		case 2:
-		    if (c == '\n')
-			state = 0;
-		    else
-			state++;
-		    break;
-		case 3:
-		    if (c == '\n')
-			state = 0;
+		    case 0:
+			if (c == ')')
+			    state++;
+			break;
+		    case 1:
+			if (c == ':')
+			    state++;
+			else
+			    state = 0;
+			break;
+		    case 2:
+			if (c == '\n')
+			    state = 0;
+			else
+			    state++;
+			break;
+		    case 3:
+			if (c == '\n')
+			    state = 0;
 
-		    ry_addchar(c);
-		    break;
-		default:
-		    break;
+			ry_addchar(c);
+			break;
+		    default:
+			break;
 		}
 	    }
 	} else {

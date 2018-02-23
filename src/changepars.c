@@ -186,516 +186,516 @@ int changepars(void) {
     }
 
     switch (i) {
-    case 0: {		/* SPOTS) */
-	/* SPOTS not supported anymore
-	 * - default to MAP*/
-	cluster = MAP;
-	break;
-    }
-    case 1: {		/* BANDMAP */
-	cluster = MAP;
-	break;
-    }
-    case 2: {		/* CLOFF  */
-	cluster = NOCLUSTER;
-	break;
-    }
-    case 3: {		/* CLUSTER  */
-	cluster = CLUSTER;
-	announcefilter = FILTER_ALL;
-	break;
-    }
-    case 4: {		/* SHORTNR  */
-	shortqsonr = SHORTCW;
-	break;
-    }
-    case 5: {		/* LONGNR  */
-	shortqsonr = LONGCW;
-	break;
-    }
-    case 6: {		/* MESSAGE  */
-	message_change(i);
-	break;
-    }
+	case 0: {		/* SPOTS) */
+	    /* SPOTS not supported anymore
+	     * - default to MAP*/
+	    cluster = MAP;
+	    break;
+	}
+	case 1: {		/* BANDMAP */
+	    cluster = MAP;
+	    break;
+	}
+	case 2: {		/* CLOFF  */
+	    cluster = NOCLUSTER;
+	    break;
+	}
+	case 3: {		/* CLUSTER  */
+	    cluster = CLUSTER;
+	    announcefilter = FILTER_ALL;
+	    break;
+	}
+	case 4: {		/* SHORTNR  */
+	    shortqsonr = SHORTCW;
+	    break;
+	}
+	case 5: {		/* LONGNR  */
+	    shortqsonr = LONGCW;
+	    break;
+	}
+	case 6: {		/* MESSAGE  */
+	    message_change(i);
+	    break;
+	}
 
-    case 7: {		/* LIST  */
-	listmessages();
-	break;
-    }
-    case 8: {		/* CHECK  */
-	searchflg = SEARCHWINDOW;
-	break;
-    }
-    case 9: {		/* NOCHECK  */
-	searchflg = 0;
-	break;
-    }
-    case 10: {		/*  TONE   */
-	set_tone();
-	break;
-    }
-    case 11: {		/*  EDIT   */
-	logedit();
-	break;
-    }
-    case 12: {		/*  VIEW   */
-	logview();
-	break;
-    }
-    case 13: {		/*  HELP   */
-	show_help();
-	break;
-    }
-    case 14: {		/*  DEMODE   */
-	if (demode == SEND_DE)
-	    demode = 0;
-	else
-	    demode = SEND_DE;
-	mvprintw(13, 29, "DE-mode is %d", demode);
-	refreshp();
-	sleep(1);
-
-	break;
-    }
-    case 15: {		/*  CONTEST   */
-	if (contest == CONTEST)
-	    contest = 0;
-	else {
-	    contest = CONTEST;
+	case 7: {		/* LIST  */
+	    listmessages();
+	    break;
+	}
+	case 8: {		/* CHECK  */
 	    searchflg = SEARCHWINDOW;
+	    break;
 	}
-	mvprintw(13, 29, "CONTEST-mode is %d", contest);
-	refreshp();
-	sleep(1);
-
-	break;
-    }
-    case 16: {		/*  FILTER   */
-	announcefilter++;
-	if (announcefilter > 3)
-	    announcefilter = 0;
-	mvprintw(13, 29, "FILTER-mode is %d", announcefilter);
-	refreshp();
-	sleep(1);
-
-	break;
-    }
-    case 17: {		/*  SCORE   */
-	if (showscore_flag == 0)
-	    showscore_flag = 1;
-	else {
-	    showscore_flag = 0;
-
+	case 9: {		/* NOCHECK  */
+	    searchflg = 0;
+	    break;
 	}
-	mvprintw(13, 29, "Show score-mode is %d", showscore_flag);
-	refreshp();
-	sleep(1);
-
-	break;
-    }
-    case 18: {		/*  WRITE CABRILLO FILE   */
-	int old_cluster = cluster;
-	cluster = NOCLUSTER;
-
-	write_cabrillo();
-
-	cluster = old_cluster;
-
-
-	break;
-    }
-    case 19:			/* EXIT */
-    case 38: {		/* QUIT */
-	writeparas();
-	clear();
-	cleanup_telnet();
-	endwin();
-	puts("\n\nThanks for using TLF.. 73\n");
-	exit(0);
-	break;
-    }
-    case 20: {		/*  TXFILE   */
-	break;
-    }
-    case 21: {		/*  ZONES   */
-	if (zonedisplay == 0)
-	    zonedisplay = 1;
-	else {
-	    zonedisplay = 0;
-
+	case 10: {		/*  TONE   */
+	    set_tone();
+	    break;
 	}
-
-	break;
-    }
-    case 22: {		/* COUNTRIES */
-	show_mults();
-	refreshp();
-	sleep(1);
-
-	break;
-    }
-    case 23: {		/*  MODE   */
-	if (trxmode == CWMODE)
-	    trxmode = SSBMODE;
-	else if (trxmode == SSBMODE)
-	    trxmode = DIGIMODE;
-	else
-	    trxmode = CWMODE;
-
-	if (trxmode == CWMODE) {
-	    mvprintw(13, 29, "TRXMODE = CW");
-	} else if (trxmode == SSBMODE)
-	    mvprintw(13, 29, "TRXMODE = SSB");
-	else
-	    mvprintw(13, 29, "TRXMODE = DIG");
-	refreshp();
-	sleep(1);
-
-	break;
-    }
-    case 24:			/* SET PARAMETERS */
-    case 29: {		/* CFG PARAMETERS */
-	clear();
-	if (editor == EDITOR_JOE) {
-	    strcpy(cmdstring, "joe ");
-	} else if (editor == EDITOR_VI) {
-	    strcpy(cmdstring, "vi ");
-	} else if (editor == EDITOR_MC) {
-	    strcpy(cmdstring, "mcedit ");
-	} else {
-	    strcpy(cmdstring, "e3 ");
+	case 11: {		/*  EDIT   */
+	    logedit();
+	    break;
 	}
-
-	strcat(cmdstring, config_file);
-	rc = system(cmdstring);
-
-	read_logcfg();
-	read_rules();	/* also reread rules file */
-	writeparas();
-	mvprintw(24, 0, "Logcfg.dat loaded, parameters written..");
-	refreshp();
-	clear_display();
-	break;
-    }
-    case 25: {		/*  MULTI   */
-	multiplierinfo();
-
-	break;
-    }
-    case 26: {		/* PROPAGATION */
-	muf();
-	clear_display();
-	break;
-    }
-    case 27: {		/*  RITCLEAR   */
-	if (rit == RITCLEAR)
-	    rit = 0;
-	else {
-	    rit = RITCLEAR;
-
+	case 12: {		/*  VIEW   */
+	    logview();
+	    break;
 	}
-	if (rit == RITCLEAR) {
-	    mvprintw(13, 29, "RIT clear on");
-	} else {
-	    mvprintw(13, 29, "RIT clear off");
+	case 13: {		/*  HELP   */
+	    show_help();
+	    break;
 	}
-	refreshp();
-	sleep(1);
-
-	break;
-    }
-    case 28: {		/*  trx ctl   */
-	if (trx_control == 1)
-	    trx_control = 0;
-	else {
-	    trx_control = 1;
-
-	}
-	if (trx_control == 1) {
-	    mvprintw(13, 29, "TRX control on");
-	} else {
-	    mvprintw(13, 29, "TRX control off");
-	}
-	refreshp();
-	sleep(1);
-
-	break;
-    }
-    case 30:			/* CW  */
-    case 49: {
-	if (cwkeyer == MFJ1278_KEYER) {
-	    sendmessage("MODE CW\015K\015");
-	}
-	trxmode = CWMODE;
-	set_outfreq(SETCWMODE);
-	break;
-    }
-    case 31: {		/* SSBMODE  */
-	trxmode = SSBMODE;
-	set_outfreq(SETSSBMODE);
-	break;
-    }
-    case 32: {		/* DIGIMODE  */
-	trxmode = DIGIMODE;
-	break;
-    }
-    case 33: {		/* PACKET  */
-	if ((nopacket == 0) && (packetinterface > 0))
-	    packet();
-	break;
-    }
-    case 34: {		/* SIMULATOR  */
-	if (simulator == 0) {
-	    simulator = 1;
-	    if (ctcomp == 1) {
-		mvprintw(13, 19,
-			 "The simulator only works in TRmode. Switching to TRmode");
-		ctcomp = 0;
-	    } else
-		mvprintw(13, 29, "Simulator on");
-
+	case 14: {		/*  DEMODE   */
+	    if (demode == SEND_DE)
+		demode = 0;
+	    else
+		demode = SEND_DE;
+	    mvprintw(13, 29, "DE-mode is %d", demode);
 	    refreshp();
+	    sleep(1);
 
-	    if (cwkeyer == NET_KEYER) {
-
-		if (netkeyer(K_WORDMODE, NULL) < 0) {
-		    mvprintw(24, 0,
-			     "keyer not active; switching to SSB");
-		    trxmode = SSBMODE;
-		    clear_display();
-		}
-	    }
-	} else {
-	    simulator = 0;
-	    mvprintw(13, 29, "Simulator off");
-	    refreshp();
-
-	    if (cwkeyer == NET_KEYER) {
-
-		if (netkeyer(K_RESET, NULL) < 0) {
-		    mvprintw(24, 0,
-			     "keyer not active; switching to SSB");
-		    trxmode = SSBMODE;
-		    clear_display();
-		}
-	    }
-
+	    break;
 	}
-	break;
-    }
-    case 35: {		/* INFO  */
-	int currentterm = miniterm;
-	miniterm = 0;
-	networkinfo();
-	miniterm = currentterm;
+	case 15: {		/*  CONTEST   */
+	    if (contest == CONTEST)
+		contest = 0;
+	    else {
+		contest = CONTEST;
+		searchflg = SEARCHWINDOW;
+	    }
+	    mvprintw(13, 29, "CONTEST-mode is %d", contest);
+	    refreshp();
+	    sleep(1);
 
-	if (currentmode == DIGIMODE)
-	    trxmode = DIGIMODE;
-	break;
-    }
-    case 36: {		/* CLOFF  */
-	cluster = FREQWINDOW;
-	break;
-    }
+	    break;
+	}
+	case 16: {		/*  FILTER   */
+	    announcefilter++;
+	    if (announcefilter > 3)
+		announcefilter = 0;
+	    mvprintw(13, 29, "FILTER-mode is %d", announcefilter);
+	    refreshp();
+	    sleep(1);
 
-    case 37: {		/* RECONNECT  */
-	if ((nopacket == 0) && (packetinterface > 0)) {
+	    break;
+	}
+	case 17: {		/*  SCORE   */
+	    if (showscore_flag == 0)
+		showscore_flag = 1;
+	    else {
+		showscore_flag = 0;
+
+	    }
+	    mvprintw(13, 29, "Show score-mode is %d", showscore_flag);
+	    refreshp();
+	    sleep(1);
+
+	    break;
+	}
+	case 18: {		/*  WRITE CABRILLO FILE   */
+	    int old_cluster = cluster;
+	    cluster = NOCLUSTER;
+
+	    write_cabrillo();
+
+	    cluster = old_cluster;
+
+
+	    break;
+	}
+	case 19:			/* EXIT */
+	case 38: {		/* QUIT */
+	    writeparas();
+	    clear();
 	    cleanup_telnet();
-	    init_packet();
-	    packet();
+	    endwin();
+	    puts("\n\nThanks for using TLF.. 73\n");
+	    exit(0);
+	    break;
 	}
-	break;
-    }
+	case 20: {		/*  TXFILE   */
+	    break;
+	}
+	case 21: {		/*  ZONES   */
+	    if (zonedisplay == 0)
+		zonedisplay = 1;
+	    else {
+		zonedisplay = 0;
 
-    case 39: {		/* CQDELAY */
-	mvprintw(12, 29, "CQD: pgup/dwn", cqdelay);
-	refreshp();
+	    }
 
-	x = 1;
-	while (x) {
-	    x = key_get();
+	    break;
+	}
+	case 22: {		/* COUNTRIES */
+	    show_mults();
+	    refreshp();
+	    sleep(1);
 
-	    switch (x) {
+	    break;
+	}
+	case 23: {		/*  MODE   */
+	    if (trxmode == CWMODE)
+		trxmode = SSBMODE;
+	    else if (trxmode == SSBMODE)
+		trxmode = DIGIMODE;
+	    else
+		trxmode = CWMODE;
 
-	    // <Page-Up>, increase autoCQ delay by 1/2 second.
-	    case KEY_PPAGE: {
-		if (cqdelay <= 60) {
-		    cqdelay++;
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 19, "  ");
-		    mvprintw(0, 19, "%i", cqdelay);
-		    break;
+	    if (trxmode == CWMODE) {
+		mvprintw(13, 29, "TRXMODE = CW");
+	    } else if (trxmode == SSBMODE)
+		mvprintw(13, 29, "TRXMODE = SSB");
+	    else
+		mvprintw(13, 29, "TRXMODE = DIG");
+	    refreshp();
+	    sleep(1);
 
+	    break;
+	}
+	case 24:			/* SET PARAMETERS */
+	case 29: {		/* CFG PARAMETERS */
+	    clear();
+	    if (editor == EDITOR_JOE) {
+		strcpy(cmdstring, "joe ");
+	    } else if (editor == EDITOR_VI) {
+		strcpy(cmdstring, "vi ");
+	    } else if (editor == EDITOR_MC) {
+		strcpy(cmdstring, "mcedit ");
+	    } else {
+		strcpy(cmdstring, "e3 ");
+	    }
+
+	    strcat(cmdstring, config_file);
+	    rc = system(cmdstring);
+
+	    read_logcfg();
+	    read_rules();	/* also reread rules file */
+	    writeparas();
+	    mvprintw(24, 0, "Logcfg.dat loaded, parameters written..");
+	    refreshp();
+	    clear_display();
+	    break;
+	}
+	case 25: {		/*  MULTI   */
+	    multiplierinfo();
+
+	    break;
+	}
+	case 26: {		/* PROPAGATION */
+	    muf();
+	    clear_display();
+	    break;
+	}
+	case 27: {		/*  RITCLEAR   */
+	    if (rit == RITCLEAR)
+		rit = 0;
+	    else {
+		rit = RITCLEAR;
+
+	    }
+	    if (rit == RITCLEAR) {
+		mvprintw(13, 29, "RIT clear on");
+	    } else {
+		mvprintw(13, 29, "RIT clear off");
+	    }
+	    refreshp();
+	    sleep(1);
+
+	    break;
+	}
+	case 28: {		/*  trx ctl   */
+	    if (trx_control == 1)
+		trx_control = 0;
+	    else {
+		trx_control = 1;
+
+	    }
+	    if (trx_control == 1) {
+		mvprintw(13, 29, "TRX control on");
+	    } else {
+		mvprintw(13, 29, "TRX control off");
+	    }
+	    refreshp();
+	    sleep(1);
+
+	    break;
+	}
+	case 30:			/* CW  */
+	case 49: {
+	    if (cwkeyer == MFJ1278_KEYER) {
+		sendmessage("MODE CW\015K\015");
+	    }
+	    trxmode = CWMODE;
+	    set_outfreq(SETCWMODE);
+	    break;
+	}
+	case 31: {		/* SSBMODE  */
+	    trxmode = SSBMODE;
+	    set_outfreq(SETSSBMODE);
+	    break;
+	}
+	case 32: {		/* DIGIMODE  */
+	    trxmode = DIGIMODE;
+	    break;
+	}
+	case 33: {		/* PACKET  */
+	    if ((nopacket == 0) && (packetinterface > 0))
+		packet();
+	    break;
+	}
+	case 34: {		/* SIMULATOR  */
+	    if (simulator == 0) {
+		simulator = 1;
+		if (ctcomp == 1) {
+		    mvprintw(13, 19,
+			     "The simulator only works in TRmode. Switching to TRmode");
+		    ctcomp = 0;
+		} else
+		    mvprintw(13, 29, "Simulator on");
+
+		refreshp();
+
+		if (cwkeyer == NET_KEYER) {
+
+		    if (netkeyer(K_WORDMODE, NULL) < 0) {
+			mvprintw(24, 0,
+				 "keyer not active; switching to SSB");
+			trxmode = SSBMODE;
+			clear_display();
+		    }
 		}
-	    }
+	    } else {
+		simulator = 0;
+		mvprintw(13, 29, "Simulator off");
+		refreshp();
 
-	    // <Page-Down>, decrease autoCQ delay by 1/2 second.
-	    case KEY_NPAGE: {
-		if (cqdelay >= 1) {
-		    cqdelay--;
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		if (cwkeyer == NET_KEYER) {
 
-		    mvprintw(0, 19, "  ");
-		    mvprintw(0, 19, "%i", cqdelay);
-		    break;
-
-		}
-		default:
-		    x = 0;
+		    if (netkeyer(K_RESET, NULL) < 0) {
+			mvprintw(24, 0,
+				 "keyer not active; switching to SSB");
+			trxmode = SSBMODE;
+			clear_display();
+		    }
 		}
 
 	    }
+	    break;
 	}
-
-	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-
-	mvprintw(12, 29 + strlen(hiscall), "");
-	break;
-
-    }
-    case 40: {		/* ADIF */
-	write_adif();
-
-	break;
-    }
-    case 41: {		/* SYNC */
-	if (strlen(synclogfile) > 0)
-	    synclog(synclogfile);
-	scroll_log();
-	/** \todo register return value */
-	total = 0;
-	readcalls();
-	if (qtcdirection > 0) {
-	    readqtccalls();
-	}
-	clear_display();
-	break;
-    }
-    case 42: {		/* RESCORE */
-	/** \todo register return value */
-	total = 0;
-	readcalls();
-	if (qtcdirection > 0) {
-	    readqtccalls();
-	}
-	clear_display();
-	break;
-    }
-    case 43: {		/* SCVOLUME - set soundcard volume */
-	volumebuffer = atoi(sc_volume);
-	mvprintw(12, 29, "Vol: pgup/dwn");
-	refreshp();
-	usleep(500000);
-	mvprintw(12, 29, "Vol:         ");
-	mvprintw(12, 29, "Vol: %d", volumebuffer);
-
-	x = 1;
-	while (x) {
-	    x = key_get();
-
-	    switch (x) {
-
-	    // <Page-Up>, increase volume by 5%.
-	    case KEY_PPAGE: {
-		if (volumebuffer < 95)
-		    volumebuffer += 5;
-
-		break;
-	    }
-	    // <Page-Down>, decrease volume by 5%.
-	    case KEY_NPAGE: {
-		if (volumebuffer >= 5)
-		    volumebuffer -= 5;
-
-		break;
-	    }
-	    default:
-		x = 0;
-
-	    }
-
-	    attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-	    mvprintw(12, 34, "  ");
-	    mvprintw(12, 34, "%d", volumebuffer);
-
-	    if (volumebuffer >= 0 && volumebuffer <= 99)
-		sprintf(sc_volume, "%d", volumebuffer);
-
-	    netkeyer(K_STVOLUME, sc_volume);
-	}
-
-	clear_display();
-	break;
-    }
-    case 44: {		/* SCAN */
-	int currentterm = miniterm;
-	miniterm = 0;
-	testaudio();
-	clear_display();
-	miniterm = currentterm;
-	break;
-    }
-    case 45: {		/* DEBUG */
-	debug_tty();
-	clear_display();
-	break;
-    }
-    case 46: {		/* MINITERM ON/OFF */
-	if (miniterm == 1)
+	case 35: {		/* INFO  */
+	    int currentterm = miniterm;
 	    miniterm = 0;
-	else
-	    miniterm = 1;
-	break;
-    }
-    case 47: {		/* RTTY Initialize mode (MFJ1278B controller) */
-	sendmessage("MODE VB\015K\015");
-	trxmode = DIGIMODE;
+	    networkinfo();
+	    miniterm = currentterm;
 
-	break;
-    }
-    case 48: {		/* SOUND */
-	clear_display();
-	record();
-	clear_display();
-	break;
-    }
-    case 50: {		/* CHARS */
-	mvprintw(13, 29, "Autosend: (0, 2..5, m)?");
-	refreshp();
-	x = 1;
-
-	/* wait for correct input or ESC */
-	while ((x != 0) && !((x >= 2) && (x <= 5)) && !(x == 'm' - '0')) {
-	    x = key_get();
-	    if (x == 27)
-		break;
-	    x = x - '0';
+	    if (currentmode == DIGIMODE)
+		trxmode = DIGIMODE;
+	    break;
+	}
+	case 36: {		/* CLOFF  */
+	    cluster = FREQWINDOW;
+	    break;
 	}
 
-	/* remember new setting */
-	if (x != 27) {
-	    if (x == 0 || (x >= 2 && x <= 5))
-		cwstart = x;
+	case 37: {		/* RECONNECT  */
+	    if ((nopacket == 0) && (packetinterface > 0)) {
+		cleanup_telnet();
+		init_packet();
+		packet();
+	    }
+	    break;
+	}
+
+	case 39: {		/* CQDELAY */
+	    mvprintw(12, 29, "CQD: pgup/dwn", cqdelay);
+	    refreshp();
+
+	    x = 1;
+	    while (x) {
+		x = key_get();
+
+		switch (x) {
+
+		    // <Page-Up>, increase autoCQ delay by 1/2 second.
+		    case KEY_PPAGE: {
+			if (cqdelay <= 60) {
+			    cqdelay++;
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+			    mvprintw(0, 19, "  ");
+			    mvprintw(0, 19, "%i", cqdelay);
+			    break;
+
+			}
+		    }
+
+		    // <Page-Down>, decrease autoCQ delay by 1/2 second.
+		    case KEY_NPAGE: {
+			if (cqdelay >= 1) {
+			    cqdelay--;
+			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+
+			    mvprintw(0, 19, "  ");
+			    mvprintw(0, 19, "%i", cqdelay);
+			    break;
+
+			}
+			default:
+			    x = 0;
+			}
+
+		}
+	    }
+
+	    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
+
+	    mvprintw(12, 29 + strlen(hiscall), "");
+	    break;
+
+	}
+	case 40: {		/* ADIF */
+	    write_adif();
+
+	    break;
+	}
+	case 41: {		/* SYNC */
+	    if (strlen(synclogfile) > 0)
+		synclog(synclogfile);
+	    scroll_log();
+	    /** \todo register return value */
+	    total = 0;
+	    readcalls();
+	    if (qtcdirection > 0) {
+		readqtccalls();
+	    }
+	    clear_display();
+	    break;
+	}
+	case 42: {		/* RESCORE */
+	    /** \todo register return value */
+	    total = 0;
+	    readcalls();
+	    if (qtcdirection > 0) {
+		readqtccalls();
+	    }
+	    clear_display();
+	    break;
+	}
+	case 43: {		/* SCVOLUME - set soundcard volume */
+	    volumebuffer = atoi(sc_volume);
+	    mvprintw(12, 29, "Vol: pgup/dwn");
+	    refreshp();
+	    usleep(500000);
+	    mvprintw(12, 29, "Vol:         ");
+	    mvprintw(12, 29, "Vol: %d", volumebuffer);
+
+	    x = 1;
+	    while (x) {
+		x = key_get();
+
+		switch (x) {
+
+		    // <Page-Up>, increase volume by 5%.
+		    case KEY_PPAGE: {
+			if (volumebuffer < 95)
+			    volumebuffer += 5;
+
+			break;
+		    }
+		    // <Page-Down>, decrease volume by 5%.
+		    case KEY_NPAGE: {
+			if (volumebuffer >= 5)
+			    volumebuffer -= 5;
+
+			break;
+		    }
+		    default:
+			x = 0;
+
+		}
+
+		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
+		mvprintw(12, 34, "  ");
+		mvprintw(12, 34, "%d", volumebuffer);
+
+		if (volumebuffer >= 0 && volumebuffer <= 99)
+		    sprintf(sc_volume, "%d", volumebuffer);
+
+		netkeyer(K_STVOLUME, sc_volume);
+	    }
+
+	    clear_display();
+	    break;
+	}
+	case 44: {		/* SCAN */
+	    int currentterm = miniterm;
+	    miniterm = 0;
+	    testaudio();
+	    clear_display();
+	    miniterm = currentterm;
+	    break;
+	}
+	case 45: {		/* DEBUG */
+	    debug_tty();
+	    clear_display();
+	    break;
+	}
+	case 46: {		/* MINITERM ON/OFF */
+	    if (miniterm == 1)
+		miniterm = 0;
 	    else
-		cwstart = -1;
+		miniterm = 1;
+	    break;
 	}
+	case 47: {		/* RTTY Initialize mode (MFJ1278B controller) */
+	    sendmessage("MODE VB\015K\015");
+	    trxmode = DIGIMODE;
 
-	if (cwstart > 0)
-	    mvprintw(13, 29, "Autosend now: %1d        ",
-		     cwstart);
-	else {
-	    if (cwstart < 0)
-		mvprintw(13, 29, "Autosend now: Manual   ");
-	    else
-		mvprintw(13, 29, "Autosend now: OFF      ");
+	    break;
 	}
-	refreshp();
-	break;
+	case 48: {		/* SOUND */
+	    clear_display();
+	    record();
+	    clear_display();
+	    break;
+	}
+	case 50: {		/* CHARS */
+	    mvprintw(13, 29, "Autosend: (0, 2..5, m)?");
+	    refreshp();
+	    x = 1;
 
-    }
-    default: {
-	nopar = 1;
-    }
+	    /* wait for correct input or ESC */
+	    while ((x != 0) && !((x >= 2) && (x <= 5)) && !(x == 'm' - '0')) {
+		x = key_get();
+		if (x == 27)
+		    break;
+		x = x - '0';
+	    }
+
+	    /* remember new setting */
+	    if (x != 27) {
+		if (x == 0 || (x >= 2 && x <= 5))
+		    cwstart = x;
+		else
+		    cwstart = -1;
+	    }
+
+	    if (cwstart > 0)
+		mvprintw(13, 29, "Autosend now: %1d        ",
+			 cwstart);
+	    else {
+		if (cwstart < 0)
+		    mvprintw(13, 29, "Autosend now: Manual   ");
+		else
+		    mvprintw(13, 29, "Autosend now: OFF      ");
+	    }
+	    refreshp();
+	    break;
+
+	}
+	default: {
+	    nopar = 1;
+	}
     }
 
     if (nopar != 1) {
@@ -986,40 +986,40 @@ int debug_tty(void) {
 
     switch (serial_rate) {
 
-    case 1200: {
-	cfsetispeed(&termattribs, B1200);	/* Set input speed */
-	cfsetospeed(&termattribs, B1200);	/* Set output speed */
-	break;
-    }
+	case 1200: {
+	    cfsetispeed(&termattribs, B1200);	/* Set input speed */
+	    cfsetospeed(&termattribs, B1200);	/* Set output speed */
+	    break;
+	}
 
-    case 2400: {
-	cfsetispeed(&termattribs, B2400);	/* Set input speed */
-	cfsetospeed(&termattribs, B2400);	/* Set output speed */
-	break;
-    }
+	case 2400: {
+	    cfsetispeed(&termattribs, B2400);	/* Set input speed */
+	    cfsetospeed(&termattribs, B2400);	/* Set output speed */
+	    break;
+	}
 
-    case 4800: {
-	cfsetispeed(&termattribs, B4800);	/* Set input speed */
-	cfsetospeed(&termattribs, B4800);	/* Set output speed */
-	break;
-    }
+	case 4800: {
+	    cfsetispeed(&termattribs, B4800);	/* Set input speed */
+	    cfsetospeed(&termattribs, B4800);	/* Set output speed */
+	    break;
+	}
 
-    case 9600: {
-	cfsetispeed(&termattribs, B9600);	/* Set input speed */
-	cfsetospeed(&termattribs, B9600);	/* Set output speed */
-	break;
-    }
-    case 57600: {
-	cfsetispeed(&termattribs, B57600);	/* Set input speed */
-	cfsetospeed(&termattribs, B57600);	/* Set output speed */
-	break;
-    }
+	case 9600: {
+	    cfsetispeed(&termattribs, B9600);	/* Set input speed */
+	    cfsetospeed(&termattribs, B9600);	/* Set output speed */
+	    break;
+	}
+	case 57600: {
+	    cfsetispeed(&termattribs, B57600);	/* Set input speed */
+	    cfsetospeed(&termattribs, B57600);	/* Set output speed */
+	    break;
+	}
 
-    default: {
+	default: {
 
-	cfsetispeed(&termattribs, B9600);	/* Set input speed */
-	cfsetospeed(&termattribs, B9600);	/* Set output speed */
-    }
+	    cfsetispeed(&termattribs, B9600);	/* Set input speed */
+	    cfsetospeed(&termattribs, B9600);	/* Set output speed */
+	}
     }
 
     tcsetattr(fdSertnc, TCSANOW, &termattribs);	/* Set the serial port */

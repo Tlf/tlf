@@ -840,34 +840,34 @@ int init_packet(void) {
 
 	switch (tnc_serial_rate) {
 
-	case 1200: {
-	    cfsetispeed(&termattribs, B1200);	/* Set input speed */
-	    cfsetospeed(&termattribs, B1200);	/* Set output speed */
-	    break;
-	}
+	    case 1200: {
+		cfsetispeed(&termattribs, B1200);	/* Set input speed */
+		cfsetospeed(&termattribs, B1200);	/* Set output speed */
+		break;
+	    }
 
-	case 2400: {
-	    cfsetispeed(&termattribs, B2400);	/* Set input speed */
-	    cfsetospeed(&termattribs, B2400);	/* Set output speed */
-	    break;
-	}
+	    case 2400: {
+		cfsetispeed(&termattribs, B2400);	/* Set input speed */
+		cfsetospeed(&termattribs, B2400);	/* Set output speed */
+		break;
+	    }
 
-	case 4800: {
-	    cfsetispeed(&termattribs, B4800);	/* Set input speed */
-	    cfsetospeed(&termattribs, B4800);	/* Set output speed */
-	    break;
-	}
+	    case 4800: {
+		cfsetispeed(&termattribs, B4800);	/* Set input speed */
+		cfsetospeed(&termattribs, B4800);	/* Set output speed */
+		break;
+	    }
 
-	case 9600: {
-	    cfsetispeed(&termattribs, B9600);	/* Set input speed */
-	    cfsetospeed(&termattribs, B9600);	/* Set output speed */
-	    break;
-	}
-	default: {
+	    case 9600: {
+		cfsetispeed(&termattribs, B9600);	/* Set input speed */
+		cfsetospeed(&termattribs, B9600);	/* Set output speed */
+		break;
+	    }
+	    default: {
 
-	    cfsetispeed(&termattribs, B9600);	/* Set input speed */
-	    cfsetospeed(&termattribs, B9600);	/* Set output speed */
-	}
+		cfsetispeed(&termattribs, B9600);	/* Set input speed */
+		cfsetospeed(&termattribs, B9600);	/* Set output speed */
+	    }
 	}
 
 	tcsetattr(fdSertnc, TCSANOW, &termattribs);	/* Set the serial port */

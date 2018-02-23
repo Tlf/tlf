@@ -218,22 +218,22 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 		local_result->intval = 0;
 	    }
 	    switch (restype) {
-	    // int
-	    case XMLRPC_TYPE_INT:
-		xmlrpc_read_int(local_env, callresult,
-				&local_result->intval);
-		break;
-	    // string
-	    case XMLRPC_TYPE_STRING:
-		xmlrpc_read_string(local_env, callresult,
-				   &local_result->stringval);
-		break;
-	    // byte stream
-	    case XMLRPC_TYPE_BASE64:
-		xmlrpc_read_base64(local_env, callresult,
-				   &bytesize, &local_result->byteval);
-		local_result->intval = (int)bytesize;
-		break;
+		// int
+		case XMLRPC_TYPE_INT:
+		    xmlrpc_read_int(local_env, callresult,
+				    &local_result->intval);
+		    break;
+		// string
+		case XMLRPC_TYPE_STRING:
+		    xmlrpc_read_string(local_env, callresult,
+				       &local_result->stringval);
+		    break;
+		// byte stream
+		case XMLRPC_TYPE_BASE64:
+		    xmlrpc_read_base64(local_env, callresult,
+				       &bytesize, &local_result->byteval);
+		    local_result->intval = (int)bytesize;
+		    break;
 	    }
 	    xmlrpc_DECREF(callresult);
 	}
@@ -399,29 +399,29 @@ int fldigi_xmlrpc_get_carrier() {
 
 	if (rigmode != RIG_MODE_NONE) {
 	    switch (rigmode) {
-	    case RIG_MODE_USB:
-		signum = 1;
-		modeshift = 0;
-		break;
-	    case RIG_MODE_LSB:
-		signum = -1;
-		modeshift = 0;
-		break;
-	    case RIG_MODE_RTTY:
-		signum = 0;
-		modeshift = -100; /* on my TS850, in FSK mode, the QRG 
+		case RIG_MODE_USB:
+		    signum = 1;
+		    modeshift = 0;
+		    break;
+		case RIG_MODE_LSB:
+		    signum = -1;
+		    modeshift = 0;
+		    break;
+		case RIG_MODE_RTTY:
+		    signum = 0;
+		    modeshift = -100; /* on my TS850, in FSK mode, the QRG
 				     is differ by 100Hz up,
 				     possible need to check in other rigs */
-		modeshift = 0;
-		break;
-	    case RIG_MODE_RTTYR:
-		signum = 0;	  /* not checked - I don't have RTTY-REV mode
+		    modeshift = 0;
+		    break;
+		case RIG_MODE_RTTYR:
+		    signum = 0;	  /* not checked - I don't have RTTY-REV mode
 				     on my RIG */
-		modeshift = -100;
-		break;
-	    default:
-		signum = 0;	// this is the "normal"
-		modeshift = 0;
+		    modeshift = -100;
+		    break;
+		default:
+		    signum = 0;	// this is the "normal"
+		    modeshift = 0;
 	    }
 	    fldigi_var_carrier = ((signum) * fldigi_var_carrier) + modeshift;
 	}

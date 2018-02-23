@@ -66,44 +66,44 @@ int set_band_from_freq(float freq) {
     int cab_bandinx;
 
     switch ((int)freq) {
-    case 1800 ... 2000: {
-	cab_bandinx = BANDINDEX_160;
-	break;
-    }
-    case 3500 ... 4000: {
-	cab_bandinx = BANDINDEX_80;
-	break;
-    }
-    case 7000 ... 7300: {
-	cab_bandinx = BANDINDEX_40;
-	break;
-    }
-    case 10100 ... 10150: {
-	cab_bandinx = BANDINDEX_30;
-	break;
-    }
-    case 14000 ... 14350: {
-	cab_bandinx = BANDINDEX_20;
-	break;
-    }
-    case 18068 ... 18168: {
-	cab_bandinx = BANDINDEX_17;
-	break;
-    }
-    case 21000 ... 21450: {
-	cab_bandinx = BANDINDEX_15;
-	break;
-    }
-    case 24890 ... 24990: {
-	cab_bandinx = BANDINDEX_12;
-	break;
-    }
-    case 28000 ... 29700: {
-	cab_bandinx = BANDINDEX_10;
-	break;
-    }
-    default:
-	cab_bandinx = BANDINDEX_OOB;	/* out of band */
+	case 1800 ... 2000: {
+	    cab_bandinx = BANDINDEX_160;
+	    break;
+	}
+	case 3500 ... 4000: {
+	    cab_bandinx = BANDINDEX_80;
+	    break;
+	}
+	case 7000 ... 7300: {
+	    cab_bandinx = BANDINDEX_40;
+	    break;
+	}
+	case 10100 ... 10150: {
+	    cab_bandinx = BANDINDEX_30;
+	    break;
+	}
+	case 14000 ... 14350: {
+	    cab_bandinx = BANDINDEX_20;
+	    break;
+	}
+	case 18068 ... 18168: {
+	    cab_bandinx = BANDINDEX_17;
+	    break;
+	}
+	case 21000 ... 21450: {
+	    cab_bandinx = BANDINDEX_15;
+	    break;
+	}
+	case 24890 ... 24990: {
+	    cab_bandinx = BANDINDEX_12;
+	    break;
+	}
+	case 28000 ... 29700: {
+	    cab_bandinx = BANDINDEX_10;
+	    break;
+	}
+	default:
+	    cab_bandinx = BANDINDEX_OOB;	/* out of band */
     }
 
     return cab_bandinx;
@@ -305,101 +305,101 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 	pos += item->len;
 	pos++;		// space between fields
 	switch (item->tag) {
-	case FREQ:
-	    freq = atof(tempstr);
-	    bandinx = set_band_from_freq(freq);
-	    strcpy(qtc_line.band, band[bandinx]);
-	    qtc_line.freq = freq;
-	    break;
-	case MODE:
-	    if (strcmp(tempstr, "CW") == 0) {
-		trxmode = CWMODE;
-		strcpy(qtc_line.mode, "CW ");
-	    } else if (strcmp(tempstr, "PH") == 0) {
-		trxmode = SSBMODE;
-		strcpy(qtc_line.mode, "PH ");
-	    } else {
-		trxmode = DIGIMODE;
-		strcpy(qtc_line.mode, "DIG");
-	    }
-	    break;
-	case DATE:
-	    strptime(tempstr, "%Y-%m-%d", &time_ptr_cabrillo);
-	    strftime(qtc_line.date, 60, "%d-%b-%y", &time_ptr_cabrillo);
-	    break;
-	case TIME:
-	    timestr[0] = tempstr[0];
-	    timestr[1] = tempstr[1];
-	    timestr[2] = '\0';
-	    time_ptr_cabrillo.tm_hour = atoi(timestr);
-	    timestr[0] = tempstr[2];
-	    timestr[1] = tempstr[3];
-	    timestr[2] = '\0';
-	    time_ptr_cabrillo.tm_min = atoi(timestr);
-	    sprintf(qtc_line.time, "%02d:%02d", time_ptr_cabrillo.tm_hour,
-		    time_ptr_cabrillo.tm_min);
-	    break;
-	case MYCALL:
-	    break;
-	case HISCALL:
-	    strcpy(hiscall, tempstr);
-	    break;
-	case RST_S:
-	    strcpy(my_rst, tempstr);
-	    break;
-	case RST_R:
-	    strcpy(his_rst, tempstr);
-	    break;
-	case EXCH:
-	    strcpy(comment, tempstr);
-	    break;
-	case EXC1:
-	    strcpy(comment, tempstr);
-	    break;
-	case EXC2:
-	    concat_comment(tempstr);
-	    break;
-	case EXC3:
-	    concat_comment(tempstr);
-	    break;
-	case EXC4:
-	    concat_comment(tempstr);
-	    break;
-	case EXC_S:
-	case TX:
-	case QTCRCALL:
-	    strcpy(qtcrcall, tempstr);
-	    strcpy(qtc_line.call, tempstr);
-	    break;
-	case QTCHEAD:
-	    strcpy(qtc_line.qtchead, tempstr);
-	    tempstrp = strtok(qtc_line.qtchead, "/");
-	    qtc_line.qtchead_serial = atoi(tempstrp);
+	    case FREQ:
+		freq = atof(tempstr);
+		bandinx = set_band_from_freq(freq);
+		strcpy(qtc_line.band, band[bandinx]);
+		qtc_line.freq = freq;
+		break;
+	    case MODE:
+		if (strcmp(tempstr, "CW") == 0) {
+		    trxmode = CWMODE;
+		    strcpy(qtc_line.mode, "CW ");
+		} else if (strcmp(tempstr, "PH") == 0) {
+		    trxmode = SSBMODE;
+		    strcpy(qtc_line.mode, "PH ");
+		} else {
+		    trxmode = DIGIMODE;
+		    strcpy(qtc_line.mode, "DIG");
+		}
+		break;
+	    case DATE:
+		strptime(tempstr, "%Y-%m-%d", &time_ptr_cabrillo);
+		strftime(qtc_line.date, 60, "%d-%b-%y", &time_ptr_cabrillo);
+		break;
+	    case TIME:
+		timestr[0] = tempstr[0];
+		timestr[1] = tempstr[1];
+		timestr[2] = '\0';
+		time_ptr_cabrillo.tm_hour = atoi(timestr);
+		timestr[0] = tempstr[2];
+		timestr[1] = tempstr[3];
+		timestr[2] = '\0';
+		time_ptr_cabrillo.tm_min = atoi(timestr);
+		sprintf(qtc_line.time, "%02d:%02d", time_ptr_cabrillo.tm_hour,
+			time_ptr_cabrillo.tm_min);
+		break;
+	    case MYCALL:
+		break;
+	    case HISCALL:
+		strcpy(hiscall, tempstr);
+		break;
+	    case RST_S:
+		strcpy(my_rst, tempstr);
+		break;
+	    case RST_R:
+		strcpy(his_rst, tempstr);
+		break;
+	    case EXCH:
+		strcpy(comment, tempstr);
+		break;
+	    case EXC1:
+		strcpy(comment, tempstr);
+		break;
+	    case EXC2:
+		concat_comment(tempstr);
+		break;
+	    case EXC3:
+		concat_comment(tempstr);
+		break;
+	    case EXC4:
+		concat_comment(tempstr);
+		break;
+	    case EXC_S:
+	    case TX:
+	    case QTCRCALL:
+		strcpy(qtcrcall, tempstr);
+		strcpy(qtc_line.call, tempstr);
+		break;
+	    case QTCHEAD:
+		strcpy(qtc_line.qtchead, tempstr);
+		tempstrp = strtok(qtc_line.qtchead, "/");
+		qtc_line.qtchead_serial = atoi(tempstrp);
 
-	    tempstrp[0] = '\0';
-	    tempstrp = strtok(NULL, "/");
-	    qtc_line.qtchead_count = atoi(tempstrp);
+		tempstrp[0] = '\0';
+		tempstrp = strtok(NULL, "/");
+		qtc_line.qtchead_count = atoi(tempstrp);
 
-	    break;
-	case QTCSCALL:
-	    strcpy(qtcscall, tempstr);
-	    strcpy(qtc_line.call, tempstr);
-	    break;
-	case QTC:
-	    strcpy(qtc_line.qtcstr, tempstr);
-	    tempstrp = strtok(qtc_line.qtcstr, " ");
-	    strcpy(qtc_line.qtc_time, tempstrp);
+		break;
+	    case QTCSCALL:
+		strcpy(qtcscall, tempstr);
+		strcpy(qtc_line.call, tempstr);
+		break;
+	    case QTC:
+		strcpy(qtc_line.qtcstr, tempstr);
+		tempstrp = strtok(qtc_line.qtcstr, " ");
+		strcpy(qtc_line.qtc_time, tempstrp);
 
-	    tempstrp = strtok(NULL, " ");
-	    g_strchomp(tempstrp);
-	    strcpy(qtc_line.qtc_call, tempstrp);
+		tempstrp = strtok(NULL, " ");
+		g_strchomp(tempstrp);
+		strcpy(qtc_line.qtc_call, tempstrp);
 
-	    tempstrp = strtok(NULL, " ");
-	    g_strchomp(tempstrp);
-	    qtc_line.qtc_serial = atoi(tempstrp);
-	case NO_ITEM:
-	default:
-	    break;
+		tempstrp = strtok(NULL, " ");
+		g_strchomp(tempstrp);
+		qtc_line.qtc_serial = atoi(tempstrp);
+	    case NO_ITEM:
+	    default:
+		break;
 	}
 
     }

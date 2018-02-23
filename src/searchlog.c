@@ -268,53 +268,53 @@ void searchlog(char *searchstring) {
 	// but *before* the better matching one, so they will be
 	// overwritten later.
 	switch (bandnr) {
-	case 160: {
-	    if (yy < bm[0]) {
-		result[r_index][0] = '\0';
-	    } else {
-		bm[0] = yy;
+	    case 160: {
+		if (yy < bm[0]) {
+		    result[r_index][0] = '\0';
+		} else {
+		    bm[0] = yy;
+		}
+		break;
 	    }
-	    break;
-	}
-	case 80: {
-	    if (yy < bm[1]) {
-		result[r_index][0] = '\0';
-	    } else {
-		bm[1] = yy;
+	    case 80: {
+		if (yy < bm[1]) {
+		    result[r_index][0] = '\0';
+		} else {
+		    bm[1] = yy;
+		}
+		break;
 	    }
-	    break;
-	}
-	case 40: {
-	    if (yy < bm[2]) {
-		result[r_index][0] = '\0';
-	    } else {
-		bm[2] = yy;
+	    case 40: {
+		if (yy < bm[2]) {
+		    result[r_index][0] = '\0';
+		} else {
+		    bm[2] = yy;
+		}
+		break;
 	    }
-	    break;
-	}
-	case 20: {
-	    if (yy < bm[3]) {
-		result[r_index][0] = '\0';
-	    } else {
-		bm[3] = yy;
+	    case 20: {
+		if (yy < bm[3]) {
+		    result[r_index][0] = '\0';
+		} else {
+		    bm[3] = yy;
+		}
+		break;
 	    }
-	    break;
-	}
-	case 15: {
-	    if (yy < bm[4]) {
-		result[r_index][0] = '\0';
-	    } else {
-		bm[4] = yy;
+	    case 15: {
+		if (yy < bm[4]) {
+		    result[r_index][0] = '\0';
+		} else {
+		    bm[4] = yy;
+		}
+		break;
 	    }
-	    break;
-	}
-	case 10: {
-	    if (yy < bm[5]) {
-		result[r_index][0] = '\0';
-	    } else {
-		bm[5] = yy;
+	    case 10: {
+		if (yy < bm[5]) {
+		    result[r_index][0] = '\0';
+		} else {
+		    bm[5] = yy;
+		}
 	    }
-	}
 	}			/* end of patch */
 
 	dupe = NODUPE;

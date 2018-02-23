@@ -251,24 +251,24 @@ int draw_nb_screen(int xpos, int ypos, int yheight, int bar_type) {
 
     for (i = 0; i < 21; i++) {
 	switch (i) {
-	case 0:
-	case 20:
-	    mvprintw(ypos + i, xpos,
-		     "+---------+---------+---------+---------+---------+");
-	    break;
-	case 1 ... 4:
-	case 6 ... 9:
-	case 11 ... 14:
-	case 16 ... 19:
-	    mvprintw(ypos + i, xpos,
-		     "|    |    |    |    |    |    |    |    |    |    |");
-	    break;
-	case 5:
-	case 10:
-	case 15:
+	    case 0:
+	    case 20:
+		mvprintw(ypos + i, xpos,
+			 "+---------+---------+---------+---------+---------+");
+		break;
+	    case 1 ... 4:
+	    case 6 ... 9:
+	    case 11 ... 14:
+	    case 16 ... 19:
+		mvprintw(ypos + i, xpos,
+			 "|    |    |    |    |    |    |    |    |    |    |");
+		break;
+	    case 5:
+	    case 10:
+	    case 15:
 
-	    mvprintw(ypos + i, xpos,
-		     "+----+----+----+----+----+----+----+----+----+----+");
+		mvprintw(ypos + i, xpos,
+			 "+----+----+----+----+----+----+----+----+----+----+");
 
 	}
     }
@@ -295,24 +295,24 @@ int drawscreen(int xpos, int ypos, int yheight, int bar_type) {
 
     for (i = 0; i < 21; i++) {
 	switch (i) {
-	case 0:
-	case 20:
-	    mvprintw(ypos + i, xpos,
-		     "+---------+---------+---------+---------+---------+");
-	    break;
-	case 1 ... 4:
-	case 6 ... 9:
-	case 11 ... 14:
-	case 16 ... 19:
-	    mvprintw(ypos + i, xpos,
-		     "|    |    |    |    |    |    |    |    |    |    |");
-	    break;
-	case 5:
-	case 10:
-	case 15:
+	    case 0:
+	    case 20:
+		mvprintw(ypos + i, xpos,
+			 "+---------+---------+---------+---------+---------+");
+		break;
+	    case 1 ... 4:
+	    case 6 ... 9:
+	    case 11 ... 14:
+	    case 16 ... 19:
+		mvprintw(ypos + i, xpos,
+			 "|    |    |    |    |    |    |    |    |    |    |");
+		break;
+	    case 5:
+	    case 10:
+	    case 15:
 
-	    mvprintw(ypos + i, xpos,
-		     "+----+----+----+----+----+----+----+----+----+----+");
+		mvprintw(ypos + i, xpos,
+			 "+----+----+----+----+----+----+----+----+----+----+");
 
 	}
     }
@@ -341,18 +341,18 @@ int drawSmeter(int xpos, int ypos, int yheight, float testvalue) {
 
     for (i = 0; i < 21; i++) {
 	switch (i) {
-	case 0:
-	case 20:
-	    mvprintw(ypos + i, xpos, "+---+");
-	    break;
-	case 1 ... 4:
-	case 6 ... 19:
-	    mvprintw(ypos + i, xpos, "|   |");
-	    break;
-	case 5:
-	    attron(modify_attr(COLOR_PAIR(C_HEADER) | A_STANDOUT));
-	    mvprintw(ypos + i, xpos, ">   <");
-	    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
+	    case 0:
+	    case 20:
+		mvprintw(ypos + i, xpos, "+---+");
+		break;
+	    case 1 ... 4:
+	    case 6 ... 19:
+		mvprintw(ypos + i, xpos, "|   |");
+		break;
+	    case 5:
+		attron(modify_attr(COLOR_PAIR(C_HEADER) | A_STANDOUT));
+		mvprintw(ypos + i, xpos, ">   <");
+		attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 	}
     }
 
@@ -412,15 +412,15 @@ int panscan(void) {
 	for (j = 0; j < 51; j++) {
 	    frequencies[j] = FromFrequency + j * FrequencyStep;
 	    switch (j) {
-	    case 10:
-	    case 20:
-	    case 30:
-	    case 40:
-	    case 50:
-		mvprintw(22, j + 1, "%5.1f", frequencies[j]);
-		break;
-	    default:
-		;
+		case 10:
+		case 20:
+		case 30:
+		case 40:
+		case 50:
+		    mvprintw(22, j + 1, "%5.1f", frequencies[j]);
+		    break;
+		default:
+		    ;
 	    }
 
 	}
@@ -502,15 +502,15 @@ int nbscan(void) {
 	for (j = 0; j < 51; j++) {	// draw the X scale
 	    frequencies[j] = FromFrequency + j * FrequencyStep;
 	    switch (j) {
-	    case 10:
-	    case 20:
-	    case 30:
-	    case 40:
-	    case 50:
-		mvprintw(22, j + 1, "%5.1f", frequencies[j]);
-		break;
-	    default:
-		;
+		case 10:
+		case 20:
+		case 30:
+		case 40:
+		case 50:
+		    mvprintw(22, j + 1, "%5.1f", frequencies[j]);
+		    break;
+		default:
+		    ;
 	    }
 
 	}
@@ -605,18 +605,18 @@ int testaudio() {
 
 	switch (key) {
 
-	case '1':
-	    panscan();
-	    scanmenu();
-	    break;
-	case '2':
-	    nbscan();
-	    scanmenu();
-	    break;
+	    case '1':
+		panscan();
+		scanmenu();
+		break;
+	    case '2':
+		nbscan();
+		scanmenu();
+		break;
 
-	// <Escape>
-	case 27:
-	    runnit = 0;
+	    // <Escape>
+	    case 27:
+		runnit = 0;
 	}
     }
 
@@ -694,154 +694,154 @@ void record(void) {
 	/* Look for F1-F12, s|S, c|C, 1-4 */
 	switch (key) {
 
-	/* Record voice keyer messages, F1-F12, s|S, c|C. */
-	case KEY_F(1):
-	    do_record(0);
-	    runnit = 0;
-	    break;
-	case KEY_F(2):
-	    do_record(1);
-	    runnit = 0;
-	    break;
-	case KEY_F(3):
-	    do_record(2);
-	    runnit = 0;
-	    break;
-	case KEY_F(4):
-	    do_record(3);
-	    runnit = 0;
-	    break;
-	case KEY_F(5):
-	    do_record(4);
-	    runnit = 0;
-	    break;
-	case KEY_F(6):
-	    do_record(5);
-	    runnit = 0;
-	    break;
-	case KEY_F(7):
-	    do_record(6);
-	    runnit = 0;
-	    break;
-	case KEY_F(8):
-	    do_record(7);
-	    runnit = 0;
-	    break;
-	case KEY_F(9):
-	    do_record(8);
-	    runnit = 0;
-	    break;
-	case KEY_F(10):
-	    do_record(9);
-	    runnit = 0;
-	    break;
-	case KEY_F(11):
-	    do_record(10);
-	    runnit = 0;
-	    break;
-	case KEY_F(12):
-	    do_record(11);
-	    runnit = 0;
-	    break;
-	case 's':
-	case 'S':
-	    do_record(12);
-	    runnit = 0;
-	    break;
-	case 'c':
-	case 'C':
-	    do_record(13);
-	    runnit = 0;
-	    break;
-
-	/* Contest recording and playback. */
-
-	// Start contest recording.
-	case '1':
-	    rc = system("echo " " > ~/.VRlock");
-
-	    rc = system
-		 ("cd ~/tlf/soundlogs; ./soundlog  > /dev/null 2> /dev/null &");
-
-	    mvprintw(15, 20, "Contest recording enabled...");
-	    refreshp();
-	    sleep(1);
-	    runnit = 0;
-	    break;
-
-	// Stop contest recording.
-	case '2':
-	    mvprintw(15, 20, "Contest recording disabled...");
-	    refreshp();
-	    sleep(1);
-	    rc = system("rm ~/.VRlock");
-	    rc = system("pkill -f soundlogs > /dev/null 2> /dev/null ");
-	    runnit = 0;
-	    break;
-
-	// List contest recordings.
-	case '3':
-	    sounddir = opendir("$HOME/tlf/soundlogs/");	// (W9WI)
-
-	    if (sounddir == NULL)
+	    /* Record voice keyer messages, F1-F12, s|S, c|C. */
+	    case KEY_F(1):
+		do_record(0);
+		runnit = 0;
+		break;
+	    case KEY_F(2):
+		do_record(1);
+		runnit = 0;
+		break;
+	    case KEY_F(3):
+		do_record(2);
+		runnit = 0;
+		break;
+	    case KEY_F(4):
+		do_record(3);
+		runnit = 0;
+		break;
+	    case KEY_F(5):
+		do_record(4);
+		runnit = 0;
+		break;
+	    case KEY_F(6):
+		do_record(5);
+		runnit = 0;
+		break;
+	    case KEY_F(7):
+		do_record(6);
+		runnit = 0;
+		break;
+	    case KEY_F(8):
+		do_record(7);
+		runnit = 0;
+		break;
+	    case KEY_F(9):
+		do_record(8);
+		runnit = 0;
+		break;
+	    case KEY_F(10):
+		do_record(9);
+		runnit = 0;
+		break;
+	    case KEY_F(11):
+		do_record(10);
+		runnit = 0;
+		break;
+	    case KEY_F(12):
+		do_record(11);
+		runnit = 0;
+		break;
+	    case 's':
+	    case 'S':
+		do_record(12);
+		runnit = 0;
+		break;
+	    case 'c':
+	    case 'C':
+		do_record(13);
+		runnit = 0;
 		break;
 
-	    for (i = 4; i < 15; i++)
-		mvprintw(i, 0,
-			 "                                                                                ");
+	    /* Contest recording and playback. */
 
-	    mvprintw(4, 10, "");
+	    // Start contest recording.
+	    case '1':
+		rc = system("echo " " > ~/.VRlock");
 
-	    for (i = 10; i < 81; i += 10) {
-		soundfilename = readdir(sounddir);
-		if (soundfilename == NULL)
+		rc = system
+		     ("cd ~/tlf/soundlogs; ./soundlog  > /dev/null 2> /dev/null &");
+
+		mvprintw(15, 20, "Contest recording enabled...");
+		refreshp();
+		sleep(1);
+		runnit = 0;
+		break;
+
+	    // Stop contest recording.
+	    case '2':
+		mvprintw(15, 20, "Contest recording disabled...");
+		refreshp();
+		sleep(1);
+		rc = system("rm ~/.VRlock");
+		rc = system("pkill -f soundlogs > /dev/null 2> /dev/null ");
+		runnit = 0;
+		break;
+
+	    // List contest recordings.
+	    case '3':
+		sounddir = opendir("$HOME/tlf/soundlogs/");	// (W9WI)
+
+		if (sounddir == NULL)
 		    break;
-		else {
-		    if (strstr(soundfilename->d_name, ".au") != NULL) {
-			if (i > 60) {
-			    i = 10;
-			    j++;
-			}
-			strncpy(printname, soundfilename->d_name, 6);
-			mvprintw(j, i, "%s", printname);
-			refreshp();
 
-		    } else if (i >= 10)
-			i -= 10;
+		for (i = 4; i < 15; i++)
+		    mvprintw(i, 0,
+			     "                                                                                ");
+
+		mvprintw(4, 10, "");
+
+		for (i = 10; i < 81; i += 10) {
+		    soundfilename = readdir(sounddir);
+		    if (soundfilename == NULL)
+			break;
+		    else {
+			if (strstr(soundfilename->d_name, ".au") != NULL) {
+			    if (i > 60) {
+				i = 10;
+				j++;
+			    }
+			    strncpy(printname, soundfilename->d_name, 6);
+			    mvprintw(j, i, "%s", printname);
+			    refreshp();
+
+			} else if (i >= 10)
+			    i -= 10;
+		    }
 		}
-	    }
-	    closedir(sounddir);
+		closedir(sounddir);
 
-	// Play back contest recording.
-	case '4':
-	    mvprintw(15, 20, "Play back file (ddhhmmxx): ");
-	    refreshp();
+	    // Play back contest recording.
+	    case '4':
+		mvprintw(15, 20, "Play back file (ddhhmmxx): ");
+		refreshp();
 
-	    echo();
-	    getnstr(playbackfile, 8);
-	    noecho();
-	    strcpy(commands, "play -d ");
-	    strcat(commands, sc_device);
-	    strcat(commands, " ~/tlf/soundlogs/");
-	    if (strlen(playbackfile) > 6) {
-		strncat(commands, playbackfile, 6);
-		strcat(commands, ".au trim ");
-		strcat(commands, playbackfile + 6);
-	    } else if (strlen(playbackfile) < 5) {
-		strcat(commands, playbackfile);
-		strcat(commands, "00.au");
-	    } else {
-		strcat(commands, playbackfile);
-		strcat(commands, ".au");
-	    }
-	    mvprintw(16, 20, "Use Ctrl-c to stop and return to tlf");
-	    mvprintw(18, 20, "");
-	    refreshp();
-	    rc = system(commands);
-	    runnit = 0;
-	    break;
-	case 27:
-	    runnit = 0;
+		echo();
+		getnstr(playbackfile, 8);
+		noecho();
+		strcpy(commands, "play -d ");
+		strcat(commands, sc_device);
+		strcat(commands, " ~/tlf/soundlogs/");
+		if (strlen(playbackfile) > 6) {
+		    strncat(commands, playbackfile, 6);
+		    strcat(commands, ".au trim ");
+		    strcat(commands, playbackfile + 6);
+		} else if (strlen(playbackfile) < 5) {
+		    strcat(commands, playbackfile);
+		    strcat(commands, "00.au");
+		} else {
+		    strcat(commands, playbackfile);
+		    strcat(commands, ".au");
+		}
+		mvprintw(16, 20, "Use Ctrl-c to stop and return to tlf");
+		mvprintw(18, 20, "");
+		refreshp();
+		rc = system(commands);
+		runnit = 0;
+		break;
+	    case 27:
+		runnit = 0;
 	}
     }
 

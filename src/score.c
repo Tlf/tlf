@@ -154,12 +154,12 @@ int scoreByMode() {
     extern int trxmode;
 
     switch (trxmode) {
-    case CWMODE:
-	return cwpoints;
-    case SSBMODE:
-	return ssbpoints;
-    default:
-	return 0;
+	case CWMODE:
+	    return cwpoints;
+	case SSBMODE:
+	    return ssbpoints;
+	default:
+	    return 0;
     }
 }
 
@@ -453,29 +453,29 @@ int calc_continent(int zone) {
     extern char continent[];
 
     switch (zone) {
-    case 1 ... 8:
-	strncpy(continent, "NA", 3);
-	break;
-    case 9 ... 13:
-	strncpy(continent, "SA", 3);
-	break;
-    case 14 ... 16:
-	strncpy(continent, "EU", 3);
-	break;
-    case 17 ... 26:
-	strncpy(continent, "AS", 3);
-	break;
-    case 27 ... 32:
-	strncpy(continent, "AS", 3);
-	break;
-    case 33 ... 39:
-	strncpy(continent, "AF", 3);
-	break;
-    case 40:
-	strncpy(continent, "EU", 3);
-	break;
-    default:
-	strncpy(continent, "??", 3);
+	case 1 ... 8:
+	    strncpy(continent, "NA", 3);
+	    break;
+	case 9 ... 13:
+	    strncpy(continent, "SA", 3);
+	    break;
+	case 14 ... 16:
+	    strncpy(continent, "EU", 3);
+	    break;
+	case 17 ... 26:
+	    strncpy(continent, "AS", 3);
+	    break;
+	case 27 ... 32:
+	    strncpy(continent, "AS", 3);
+	    break;
+	case 33 ... 39:
+	    strncpy(continent, "AF", 3);
+	    break;
+	case 40:
+	    strncpy(continent, "EU", 3);
+	    break;
+	default:
+	    strncpy(continent, "??", 3);
     }
     return (0);
 }

@@ -187,8 +187,8 @@ char multsfile[80] = "";	/* name of file with a list of allowed
 char exchange_list[40] = "";
 int timeoffset = 0;
 int trxmode = CWMODE;
-int rigmode = 0;		/* RIG_MODE_NONE in hamlib/rig.h, 
-				   but if hamlib not compiled, 
+int rigmode = 0;		/* RIG_MODE_NONE in hamlib/rig.h,
+				   but if hamlib not compiled,
 				   then no dependency */
 int mixedmode = 0;
 char his_rst[4] = "599";
@@ -219,13 +219,13 @@ char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = 0;
 unsigned char rigptt = 0;
-    /**< Bitmask for Hamlib CAT PTT
-     * bit 0 set: CAT PTT wanted--RIGPTT in logcfg.dat (set in parse_logcfg)
-     * bit 1 set: CAT PTT available--from rig caps (set in sendqrg)
-     * bit 2 set: PTT active (set/unset in gettxinfo)
-     * bit 3 set: PTT On (set/unset in callinput)
-     * bit 4 set: PTT Off (set/unset in callinput)
-     */
+/**< Bitmask for Hamlib CAT PTT
+ * bit 0 set: CAT PTT wanted--RIGPTT in logcfg.dat (set in parse_logcfg)
+ * bit 1 set: CAT PTT available--from rig caps (set in sendqrg)
+ * bit 2 set: PTT active (set/unset in gettxinfo)
+ * bit 3 set: PTT On (set/unset in callinput)
+ * bit 4 set: PTT Off (set/unset in callinput)
+ */
 
 char sp_return[80] = " \n";
 char cq_return[80] = " \n";
@@ -308,7 +308,7 @@ int partials = 0;	/**< show partial calls */
 int use_part = 0;	/**< if 1 use automatically found partial call */
 int block_part = 0; 	/**< if 1 block the call autocompletion
 			  for these QSO */
-char para_word[80] = "LODNCFS:3C\n";	/* longcw, cluster, search, DE, 
+char para_word[80] = "LODNCFS:3C\n";	/* longcw, cluster, search, DE,
 					   contest, filter,  speed,  delay */
 char lastmsg[1000] = "";
 int scale_values[20] = {
@@ -479,52 +479,52 @@ static struct termios oldt, newt;
 void parse_options(int argc, char *argv[]) {
     while ((argc > 1) && (argv[1][0] == '-')) {
 	switch (argv[1][1]) {
-	/* verbose option */
-	case 'f':
-	    if (strlen(argv[1] + 2) > 0) {
-		if ((*(argv[1] + 2) == '~') && (*(argv[1] + 3) == '/')) {
-		    /* tilde expansion */
-		    config_file = g_strconcat(g_get_home_dir(),
-					      argv[1] + 3, NULL);
-		} else {
-		    config_file = g_strdup(argv[1] + 2);
+	    /* verbose option */
+	    case 'f':
+		if (strlen(argv[1] + 2) > 0) {
+		    if ((*(argv[1] + 2) == '~') && (*(argv[1] + 3) == '/')) {
+			/* tilde expansion */
+			config_file = g_strconcat(g_get_home_dir(),
+						  argv[1] + 3, NULL);
+		    } else {
+			config_file = g_strdup(argv[1] + 2);
+		    }
 		}
-	    }
-	    break;
-	case 's':
-	    if (strlen(argv[1] + 2) > 0)
-		strcpy(synclogfile, argv[1] + 2);
-	    break;
-	case 'd':		// debug rigctl
-	    debugflag = 1;
-	    break;
-	case 'v':		// verbose startup
-	    verbose = 1;
-	    break;
-	case 'V':		// output version
-	    printf("Version: tlf-%s\n", VERSION);
-	    exit(0);
-	    break;
-	case 'n':		// disable packet
-	    nopacket = 1;
-	    break;
-	case 'r':
-	    no_trx_control = 1; // disable radio control
-	    break;
-	case 'i':
-	    convert_cabrillo = 1;
-	    break;
-	default:
-	    printf("Use: tlf [-v] Verbose\n");
-	    printf("         [-V] Version\n");
-	    printf("         [-f] Configuration file\n");
-	    printf("         [-d] Debug mode\n");
-	    printf("         [-h] This message\n");
-	    printf("         [-n] Start without cluster hookup\n");
-	    printf("         [-r] Start without radio control\n");
-	    printf("         [-i] Import cabrillo file to Tlf format\n");
-	    exit(0);
-	    break;
+		break;
+	    case 's':
+		if (strlen(argv[1] + 2) > 0)
+		    strcpy(synclogfile, argv[1] + 2);
+		break;
+	    case 'd':		// debug rigctl
+		debugflag = 1;
+		break;
+	    case 'v':		// verbose startup
+		verbose = 1;
+		break;
+	    case 'V':		// output version
+		printf("Version: tlf-%s\n", VERSION);
+		exit(0);
+		break;
+	    case 'n':		// disable packet
+		nopacket = 1;
+		break;
+	    case 'r':
+		no_trx_control = 1; // disable radio control
+		break;
+	    case 'i':
+		convert_cabrillo = 1;
+		break;
+	    default:
+		printf("Use: tlf [-v] Verbose\n");
+		printf("         [-V] Version\n");
+		printf("         [-f] Configuration file\n");
+		printf("         [-d] Debug mode\n");
+		printf("         [-h] This message\n");
+		printf("         [-n] Start without cluster hookup\n");
+		printf("         [-r] Start without radio control\n");
+		printf("         [-i] Import cabrillo file to Tlf format\n");
+		exit(0);
+		break;
 	}
 	--argc;
 	++argv;

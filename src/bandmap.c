@@ -181,26 +181,26 @@ void bmdata_read_file() {
 		token = strtok(line, ";");
 		while (token != NULL) {
 		    switch (fc) {
-		    case 0:		entry -> call = g_strdup(token);
-			break;
-		    case 1:		sscanf(token, "%d", &entry->freq);
-			break;
-		    case 2:		sscanf(token, "%hhd", &entry->mode);
-			break;
-		    case 3:		sscanf(token, "%hd", &entry->band);
-			break;
-		    case 4:		sscanf(token, "%c", &entry->node);
-			break;
-		    case 5:		sscanf(token, "%u", &entry->timeout);
-			break;
-		    case 6:		sscanf(token, "%hhd", &entry->dupe);
-			break;
-		    case 7:		sscanf(token, "%u", &entry->cqzone);
-			break;
-		    case 8:		sscanf(token, "%u", &entry->ctynr);
-			break;
-		    case 9:		entry->pfx = g_strdup(token);
-			break;
+			case 0:		entry -> call = g_strdup(token);
+			    break;
+			case 1:		sscanf(token, "%d", &entry->freq);
+			    break;
+			case 2:		sscanf(token, "%hhd", &entry->mode);
+			    break;
+			case 3:		sscanf(token, "%hd", &entry->band);
+			    break;
+			case 4:		sscanf(token, "%c", &entry->node);
+			    break;
+			case 5:		sscanf(token, "%u", &entry->timeout);
+			    break;
+			case 6:		sscanf(token, "%hhd", &entry->dupe);
+			    break;
+			case 7:		sscanf(token, "%u", &entry->cqzone);
+			    break;
+			case 8:		sscanf(token, "%u", &entry->ctynr);
+			    break;
+			case 9:		entry->pfx = g_strdup(token);
+			    break;
 		    }
 		    fc++;
 		    token = strtok(NULL, ";");
@@ -906,21 +906,21 @@ void bm_menu() {
 
     c = toupper(key_get());
     switch (c) {
-    case 'B':
-	bm_config.allband = 1 - bm_config.allband;
-	break;
+	case 'B':
+	    bm_config.allband = 1 - bm_config.allband;
+	    break;
 
-    case 'M':
-	bm_config.allmode = 1 - bm_config.allmode;
-	break;
+	case 'M':
+	    bm_config.allmode = 1 - bm_config.allmode;
+	    break;
 
-    case 'D':
-	bm_config.showdupes = 1 - bm_config.showdupes;
-	break;
+	case 'D':
+	    bm_config.showdupes = 1 - bm_config.showdupes;
+	    break;
 
-    case 'O':
-	bm_config.onlymults = 1 - bm_config.onlymults;
-	break;
+	case 'O':
+	    bm_config.onlymults = 1 - bm_config.onlymults;
+	    break;
     }
     bandmap_show();		/* refresh display */
 

@@ -46,7 +46,7 @@ int read_rules() {
 
     int status = PARSE_OK;
 
-    /* If no contest is given, whichcontest is set to default "qso" 
+    /* If no contest is given, whichcontest is set to default "qso"
        (PA0R, Sep 24 2003)*/
     if (strlen(whichcontest) == 0) {
 	showmsg("contest name is empty! Assuming general qso mode!! ");
@@ -63,7 +63,7 @@ int read_rules() {
     memset(mit_contest_rule, '\0', strlen(whichcontest) + 6);
     strcat(contest_conf, "rules/");
     strcat(contest_conf, whichcontest);
-    /* If rules are not found in local working directory, 
+    /* If rules are not found in local working directory,
        look in /usr/local/share... (PA0R, Sep 24 2003)*/
     strcat(basic_contest_conf, "/rules/");
     strcat(basic_contest_conf, whichcontest);

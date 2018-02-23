@@ -458,708 +458,708 @@ void qtc_main_panel(int direction) {
 	}
 
 	switch (x) {
-	//case 227:		// ALT-c
+	    //case 227:		// ALT-c
 
-	// Ctrl-T (^T)
-	case 20:
-	    if (trxmode == DIGIMODE) {
-		show_rtty_lines();
-	    }
+	    // Ctrl-T (^T)
+	    case 20:
+		if (trxmode == DIGIMODE) {
+		    show_rtty_lines();
+		}
 
-	// Up Arrow
-	case KEY_UP:
-	    if (direction == RECV) {
-		if (activefield > 0) {	// nr of QTC record field idx
-		    if (activefield == 1 || activefield == 2) {
-			activefield = 0;
-			showfield(1);
-			showfield(2);
-		    } else if (activefield == 3 || activefield == 4) {
-			activefield -= 2;
-			showfield(activefield + 2);
-		    } else {
-			activefield -= 3;
-			showfield(activefield + 3);
-		    }
-		}
-		showfield(activefield);
-		curpos = 0;
-	    }
-	    if (direction == SEND && ((trxmode != DIGIMODE
-				       && qtclist.totalsent < *qtccount) || (trxmode == DIGIMODE
-					       && qtclist.totalsent == *qtccount))) {
-		switch (activefield) {
-		case 0:
-		    activefield = 12;
-		    show_help_msg(activefield);
-		    showfield(0);
-		    wattrset(qtcwin, LINE_CURRINVERTED);
-		    mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[9].qtc);
-		    break;
-		case 2:
-		    activefield = 0;
-		    showfield(2);
-		    showfield(0);
-		    break;
-		case 3:
-		    activefield = 2;
-		    showfield(2);
-		    wattrset(qtcwin, LINE_NORMAL);
-		    mvwprintw(qtcwin, activefield + 1, 4, "%s", qtclist.qtclines[0].qtc);
-		    break;
-		case 4 ... 12:
-		    show_help_msg(activefield);
-		    wattrset(qtcwin, LINE_NORMAL);
-		    mvwprintw(qtcwin, activefield, 4, "%s",
-			      qtclist.qtclines[(activefield - 3)].qtc);
-		    activefield--;
-		    wattrset(qtcwin, LINE_CURRINVERTED);
-		    mvwprintw(qtcwin, activefield, 4, "%s",
-			      qtclist.qtclines[(activefield - 3)].qtc);
-		    break;
-		}
-	    }
-	    break;
-
-	// Down Arrow
-	case KEY_DOWN:
-	    if (direction == RECV) {
-		if (activefield < 30) {	// last line serial field idx
-		    if (activefield == 0) {
-			activefield = 1;
-			showfield(0);
-		    } else if (activefield == 1 || activefield == 2) {
-			activefield += 2;
-			showfield(1);
-			showfield(2);
-		    } else {
-			activefield += 3;
-			showfield(activefield - 3);
-		    }
-		}
-		showfield(activefield);
-		curpos = 0;
-	    }
-	    if (direction == SEND && ((trxmode != DIGIMODE
-				       && qtclist.totalsent < *qtccount) || (trxmode == DIGIMODE
-					       && qtclist.totalsent == *qtccount))) {
-		switch (activefield) {
-		case 0:
-		    activefield = 2;
-		    showfield(0);
-		    showfield(2);
-		    break;
-		case 2:
-		    activefield = 3;
-		    show_help_msg(activefield);
-		    showfield(2);
-		    wattrset(qtcwin, LINE_CURRINVERTED);
-		    mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[0].qtc);
-		    break;
-		case 3 ... 11:
-		    show_help_msg(activefield);
-		    wattrset(qtcwin, LINE_NORMAL);
-		    mvwprintw(qtcwin, activefield, 4, "%s",
-			      qtclist.qtclines[(activefield - 3)].qtc);
-		    activefield++;
-		    wattrset(qtcwin, LINE_CURRINVERTED);
-		    mvwprintw(qtcwin, activefield, 4, "%s",
-			      qtclist.qtclines[(activefield - 3)].qtc);
-		    break;
-		case 12:
-		    activefield = 0;
-		    wattrset(qtcwin, LINE_NORMAL);
-		    mvwprintw(qtcwin, 14, 4, "%s", qtclist.qtclines[9].qtc);
-		    showfield(0);
-		    break;
-		}
-	    }
-	    break;
-
-	// Left Arrow
-	case KEY_LEFT:
-	    if (DIRCLAUSE) {
-		if (curpos < curfieldlen) {	// curpos is a shift, means lenght - position
-		    curpos++;
-		    showfield(activefield);
-		}
-	    }
-	    break;
-
-	// Right Arrow
-	case KEY_RIGHT:
-	    if (DIRCLAUSE) {
-		if (curpos > 0) {
-		    curpos--;
-		    showfield(activefield);
-		}
-	    }
-	    break;
-
-	// <Enter>
-	case '\n':
-	case KEY_ENTER:
-	    if (activefield > 2) {
+	    // Up Arrow
+	    case KEY_UP:
 		if (direction == RECV) {
-		    currqtc = ((activefield - 3) / 3);
-		    if ((qtcreclist.qtclines[currqtc].status == 0 &&
-			    strlen(qtcreclist.qtclines[currqtc].time) == 4 &&
-			    strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
-			    strlen(qtcreclist.qtclines[currqtc].serial) > 0)
-			    ||
-			    qtc_recv_lazy == 1
-		       ) {
-			if (qtc_recv_lazy == 1) {
-			    fill_lazy_line(&qtcreclist.qtclines[currqtc]);
-			    showfield(3 * (currqtc + 1));
-			    showfield((3 * (currqtc + 1)) + 1);
-			    showfield((3 * (currqtc + 1)) + 2);
-			}
-
-			get_time();
-			tempc[0] = '\0';
-			strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
-			strncpy(qtcreclist.qtclines[currqtc].receivedtime, tempc, 15);
-			qtcreclist.qtclines[currqtc].receivedtime[15] = '\0';
-			qtcreclist.qtclines[currqtc].status = 2;
-			show_status(currqtc);
-			if (currqtc < *qtccount) {
-			    if (trxmode == DIGIMODE) {
-				qtcreclist.qtclines[currqtc].confirmed = 1; // compatibility for other modes
-				qtcreclist.confirmed++;
-				activefield += 3;	// go to next line exch field
-				showfield(activefield - 3);
-			    } else {
-				if (qtcreclist.qtclines[currqtc].confirmed == 0) {
-				    qtcreclist.qtclines[currqtc].confirmed = 1;
-				    qtcreclist.confirmed++;
-				    if (trxmode == CWMODE) {
-					sendmessage(qtc_recv_msgs[2]);
-				    }
-				    if (trxmode == SSBMODE) {
-					play_file(qtc_phrecv_message[2]);
-				    }
-				}
-				tfi = (activefield - 3) % 3;
-				//activefield++;	// go to next line time field
-				activefield += (3 - tfi);
-				showfield(activefield - (3 - tfi));
-			    }
-			    showfield(activefield);
-			}
-		    } else if (qtcreclist.qtclines[currqtc].status == 1 &&
-			       qtcreclist.qtclines[currqtc].confirmed != 1) {
-			if (trxmode == CWMODE) {
-			    sendmessage(qtc_recv_msgs[7]);
-			}
-			if (trxmode == SSBMODE) {
-			    play_file(qtc_phrecv_message[7]);
-			}
-			if (trxmode == DIGIMODE) {
-			    char *str = g_strdup_printf("%s %02d %02d\n",
-							g_strchomp(qtc_recv_msgs[7]),
-							currqtc + 1, currqtc + 1);
-			    sendmessage(str);
-			    g_free(str);
+		    if (activefield > 0) {	// nr of QTC record field idx
+			if (activefield == 1 || activefield == 2) {
+			    activefield = 0;
+			    showfield(1);
+			    showfield(2);
+			} else if (activefield == 3 || activefield == 4) {
+			    activefield -= 2;
+			    showfield(activefield + 2);
+			} else {
+			    activefield -= 3;
+			    showfield(activefield + 3);
 			}
 		    }
+		    showfield(activefield);
+		    curpos = 0;
+		}
+		if (direction == SEND && ((trxmode != DIGIMODE
+					   && qtclist.totalsent < *qtccount) || (trxmode == DIGIMODE
+						   && qtclist.totalsent == *qtccount))) {
+		    switch (activefield) {
+			case 0:
+			    activefield = 12;
+			    show_help_msg(activefield);
+			    showfield(0);
+			    wattrset(qtcwin, LINE_CURRINVERTED);
+			    mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[9].qtc);
+			    break;
+			case 2:
+			    activefield = 0;
+			    showfield(2);
+			    showfield(0);
+			    break;
+			case 3:
+			    activefield = 2;
+			    showfield(2);
+			    wattrset(qtcwin, LINE_NORMAL);
+			    mvwprintw(qtcwin, activefield + 1, 4, "%s", qtclist.qtclines[0].qtc);
+			    break;
+			case 4 ... 12:
+			    show_help_msg(activefield);
+			    wattrset(qtcwin, LINE_NORMAL);
+			    mvwprintw(qtcwin, activefield, 4, "%s",
+				      qtclist.qtclines[(activefield - 3)].qtc);
+			    activefield--;
+			    wattrset(qtcwin, LINE_CURRINVERTED);
+			    mvwprintw(qtcwin, activefield, 4, "%s",
+				      qtclist.qtclines[(activefield - 3)].qtc);
+			    break;
+		    }
+		}
+		break;
 
-		    if (*qtccount > 0 && qtcreclist.confirmed == *qtccount) {
-			if (qtcreclist.sentcfmall == 0) {
-			    qtcreclist.sentcfmall = 1;
-			    log_recv_qtc_to_disk(nr_qsos);
-			    if (record_run > -1) {
-				stop_qtc_recording();
+	    // Down Arrow
+	    case KEY_DOWN:
+		if (direction == RECV) {
+		    if (activefield < 30) {	// last line serial field idx
+			if (activefield == 0) {
+			    activefield = 1;
+			    showfield(0);
+			} else if (activefield == 1 || activefield == 2) {
+			    activefield += 2;
+			    showfield(1);
+			    showfield(2);
+			} else {
+			    activefield += 3;
+			    showfield(activefield - 3);
+			}
+		    }
+		    showfield(activefield);
+		    curpos = 0;
+		}
+		if (direction == SEND && ((trxmode != DIGIMODE
+					   && qtclist.totalsent < *qtccount) || (trxmode == DIGIMODE
+						   && qtclist.totalsent == *qtccount))) {
+		    switch (activefield) {
+			case 0:
+			    activefield = 2;
+			    showfield(0);
+			    showfield(2);
+			    break;
+			case 2:
+			    activefield = 3;
+			    show_help_msg(activefield);
+			    showfield(2);
+			    wattrset(qtcwin, LINE_CURRINVERTED);
+			    mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[0].qtc);
+			    break;
+			case 3 ... 11:
+			    show_help_msg(activefield);
+			    wattrset(qtcwin, LINE_NORMAL);
+			    mvwprintw(qtcwin, activefield, 4, "%s",
+				      qtclist.qtclines[(activefield - 3)].qtc);
+			    activefield++;
+			    wattrset(qtcwin, LINE_CURRINVERTED);
+			    mvwprintw(qtcwin, activefield, 4, "%s",
+				      qtclist.qtclines[(activefield - 3)].qtc);
+			    break;
+			case 12:
+			    activefield = 0;
+			    wattrset(qtcwin, LINE_NORMAL);
+			    mvwprintw(qtcwin, 14, 4, "%s", qtclist.qtclines[9].qtc);
+			    showfield(0);
+			    break;
+		    }
+		}
+		break;
+
+	    // Left Arrow
+	    case KEY_LEFT:
+		if (DIRCLAUSE) {
+		    if (curpos < curfieldlen) {	// curpos is a shift, means lenght - position
+			curpos++;
+			showfield(activefield);
+		    }
+		}
+		break;
+
+	    // Right Arrow
+	    case KEY_RIGHT:
+		if (DIRCLAUSE) {
+		    if (curpos > 0) {
+			curpos--;
+			showfield(activefield);
+		    }
+		}
+		break;
+
+	    // <Enter>
+	    case '\n':
+	    case KEY_ENTER:
+		if (activefield > 2) {
+		    if (direction == RECV) {
+			currqtc = ((activefield - 3) / 3);
+			if ((qtcreclist.qtclines[currqtc].status == 0 &&
+				strlen(qtcreclist.qtclines[currqtc].time) == 4 &&
+				strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
+				strlen(qtcreclist.qtclines[currqtc].serial) > 0)
+				||
+				qtc_recv_lazy == 1
+			   ) {
+			    if (qtc_recv_lazy == 1) {
+				fill_lazy_line(&qtcreclist.qtclines[currqtc]);
+				showfield(3 * (currqtc + 1));
+				showfield((3 * (currqtc + 1)) + 1);
+				showfield((3 * (currqtc + 1)) + 2);
 			    }
-			    if (trxmode == DIGIMODE || trxmode == CWMODE) {
-				sendmessage(qtc_recv_msgs[9]);
+
+			    get_time();
+			    tempc[0] = '\0';
+			    strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
+			    strncpy(qtcreclist.qtclines[currqtc].receivedtime, tempc, 15);
+			    qtcreclist.qtclines[currqtc].receivedtime[15] = '\0';
+			    qtcreclist.qtclines[currqtc].status = 2;
+			    show_status(currqtc);
+			    if (currqtc < *qtccount) {
+				if (trxmode == DIGIMODE) {
+				    qtcreclist.qtclines[currqtc].confirmed = 1; // compatibility for other modes
+				    qtcreclist.confirmed++;
+				    activefield += 3;	// go to next line exch field
+				    showfield(activefield - 3);
+				} else {
+				    if (qtcreclist.qtclines[currqtc].confirmed == 0) {
+					qtcreclist.qtclines[currqtc].confirmed = 1;
+					qtcreclist.confirmed++;
+					if (trxmode == CWMODE) {
+					    sendmessage(qtc_recv_msgs[2]);
+					}
+					if (trxmode == SSBMODE) {
+					    play_file(qtc_phrecv_message[2]);
+					}
+				    }
+				    tfi = (activefield - 3) % 3;
+				    //activefield++;	// go to next line time field
+				    activefield += (3 - tfi);
+				    showfield(activefield - (3 - tfi));
+				}
+				showfield(activefield);
+			    }
+			} else if (qtcreclist.qtclines[currqtc].status == 1 &&
+				   qtcreclist.qtclines[currqtc].confirmed != 1) {
+			    if (trxmode == CWMODE) {
+				sendmessage(qtc_recv_msgs[7]);
 			    }
 			    if (trxmode == SSBMODE) {
-				play_file(qtc_phrecv_message[9]);
+				play_file(qtc_phrecv_message[7]);
+			    }
+			    if (trxmode == DIGIMODE) {
+				char *str = g_strdup_printf("%s %02d %02d\n",
+							    g_strchomp(qtc_recv_msgs[7]),
+							    currqtc + 1, currqtc + 1);
+				sendmessage(str);
+				g_free(str);
 			    }
 			}
-			x = 27;	// <Escape> close the window
+
+			if (*qtccount > 0 && qtcreclist.confirmed == *qtccount) {
+			    if (qtcreclist.sentcfmall == 0) {
+				qtcreclist.sentcfmall = 1;
+				log_recv_qtc_to_disk(nr_qsos);
+				if (record_run > -1) {
+				    stop_qtc_recording();
+				}
+				if (trxmode == DIGIMODE || trxmode == CWMODE) {
+				    sendmessage(qtc_recv_msgs[9]);
+				}
+				if (trxmode == SSBMODE) {
+				    play_file(qtc_phrecv_message[9]);
+				}
+			    }
+			    x = 27;	// <Escape> close the window
+			}
+		    }
+		    if (direction == SEND && trxmode != DIGIMODE) {
+			if (qtclist.qtclines[activefield - 3].sent == 0) {
+			    qtclist.qtclines[activefield - 3].sent = 1;
+			    get_time();
+			    tempc[0] = '\0';
+			    strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
+			    strncpy(qtclist.qtclines[activefield - 3].senttime, tempc, 15);
+			    qtclist.qtclines[activefield - 3].senttime[15] = '\0';
+			    qtclist.totalsent++;
+			}
+			tempc[0] = '\0';
+			replace_spaces(qtclist.qtclines[activefield - 3].qtc, tempc);
+			if (trxmode == CWMODE) {
+			    sendmessage(tempc);
+			}
+
+			mvwprintw(qtcwin, activefield, 30, "*");
+			qtclist.qtclines[activefield - 3].flag = 1;
+			// scroll down if not at end of qtclist:
+			if (activefield - 3 < *qtccount - 1) {
+			    wattrset(qtcwin, LINE_NORMAL);
+			    mvwprintw(qtcwin, activefield, 4, "%s",
+				      qtclist.qtclines[(activefield - 3)].qtc);
+			    activefield++;
+			    wattrset(qtcwin, LINE_CURRINVERTED);
+			    mvwprintw(qtcwin, activefield, 4, "%s",
+				      qtclist.qtclines[(activefield - 3)].qtc);
+			}
+			if (*qtccount > 0 && qtclist.totalsent == *qtccount) {
+			    wattrset(qtcwin, LINE_INVERTED);
+			    mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");
+			    refreshp();
+			    show_help_msg(6);
+			}
 		    }
 		}
-		if (direction == SEND && trxmode != DIGIMODE) {
-		    if (qtclist.qtclines[activefield - 3].sent == 0) {
-			qtclist.qtclines[activefield - 3].sent = 1;
-			get_time();
-			tempc[0] = '\0';
-			strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
-			strncpy(qtclist.qtclines[activefield - 3].senttime, tempc, 15);
-			qtclist.qtclines[activefield - 3].senttime[15] = '\0';
-			qtclist.totalsent++;
-		    }
-		    tempc[0] = '\0';
-		    replace_spaces(qtclist.qtclines[activefield - 3].qtc, tempc);
-		    if (trxmode == CWMODE) {
-			sendmessage(tempc);
-		    }
-
-		    mvwprintw(qtcwin, activefield, 30, "*");
-		    qtclist.qtclines[activefield - 3].flag = 1;
-		    // scroll down if not at end of qtclist:
-		    if (activefield - 3 < *qtccount - 1) {
-			wattrset(qtcwin, LINE_NORMAL);
-			mvwprintw(qtcwin, activefield, 4, "%s",
-				  qtclist.qtclines[(activefield - 3)].qtc);
+		if (activefield == 2) {
+		    if (direction == RECV &&
+			    strlen(qtcreclist.callsign) > 0 &&
+			    qtcreclist.serial > 0 &&
+			    qtcreclist.count > 0 &&
+			    qtcreclist.confirmed == 0
+		       ) {
+			if (trxmode == CWMODE) {
+			    sendmessage(qtc_recv_msgs[1]);
+			}
+			if (trxmode == SSBMODE) {
+			    play_file(qtc_phrecv_message[1]);
+			}
+			start_qtc_recording();
 			activefield++;
-			wattrset(qtcwin, LINE_CURRINVERTED);
-			mvwprintw(qtcwin, activefield, 4, "%s",
-				  qtclist.qtclines[(activefield - 3)].qtc);
+			showfield(activefield);
 		    }
-		    if (*qtccount > 0 && qtclist.totalsent == *qtccount) {
+		}
+		if (trxmode == DIGIMODE) {
+		    if (direction == SEND && (activefield == 0 || activefield == 2)
+			    && qtclist.totalsent == 0) {
+			if (qtc_send_msgs[1][strlen(qtc_send_msgs[1]) - 1] == 10) {
+			    qtc_send_msgs[1][strlen(qtc_send_msgs[1]) - 1] = '\0';
+			}
+			tlen = strlen(qtc_send_msgs[1]) - 5; // len("sr/nr") = 5
+			char tmess[300], timec[40];
+			int ql;
+			tmess[0] = '\0';
+			if (tlen > 0 && strncmp(qtc_send_msgs[1] + tlen, "sr/nr", 5) == 0) {
+			    tempc[0] = '\0';
+			    strncpy(tempc, qtc_send_msgs[1], tlen - 1);
+			    tempc[tlen - 1] = '\0';
+			    sprintf(tmess, "%s %d/%d %s %d/%d\n", tempc, qtclist.serial, *qtccount, tempc,
+				    qtclist.serial, *qtccount);
+			}
+			timec[0] = '\0';
+			get_time();
+			strftime(timec, 40, "%d-%b-%y %H:%M", time_ptr);
+
+			for (ql = 0; ql < *qtccount; ql++) {
+			    qtclist.qtclines[ql].sent = 1;
+			    strncpy(qtclist.qtclines[ql].senttime, timec, 15);
+			    qtclist.qtclines[ql].senttime[15] = '\0';
+			    qtclist.totalsent++;
+
+			    tempc[0] = '\0';
+			    replace_spaces(qtclist.qtclines[ql].qtc, tempc);
+			    strcat(tmess, tempc);
+			    mvwprintw(qtcwin, ql + 3, 30, "*");
+			    qtclist.qtclines[ql].flag = 1;
+
+			}
+			keyer_append(tmess);
+			write_keyer();
 			wattrset(qtcwin, LINE_INVERTED);
 			mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");
 			refreshp();
 			show_help_msg(6);
-		    }
-		}
-	    }
-	    if (activefield == 2) {
-		if (direction == RECV &&
-			strlen(qtcreclist.callsign) > 0 &&
-			qtcreclist.serial > 0 &&
-			qtcreclist.count > 0 &&
-			qtcreclist.confirmed == 0
-		   ) {
-		    if (trxmode == CWMODE) {
-			sendmessage(qtc_recv_msgs[1]);
-		    }
-		    if (trxmode == SSBMODE) {
-			play_file(qtc_phrecv_message[1]);
-		    }
-		    start_qtc_recording();
-		    activefield++;
-		    showfield(activefield);
-		}
-	    }
-	    if (trxmode == DIGIMODE) {
-		if (direction == SEND && (activefield == 0 || activefield == 2)
-			&& qtclist.totalsent == 0) {
-		    if (qtc_send_msgs[1][strlen(qtc_send_msgs[1]) - 1] == 10) {
-			qtc_send_msgs[1][strlen(qtc_send_msgs[1]) - 1] = '\0';
-		    }
-		    tlen = strlen(qtc_send_msgs[1]) - 5; // len("sr/nr") = 5
-		    char tmess[300], timec[40];
-		    int ql;
-		    tmess[0] = '\0';
-		    if (tlen > 0 && strncmp(qtc_send_msgs[1] + tlen, "sr/nr", 5) == 0) {
-			tempc[0] = '\0';
-			strncpy(tempc, qtc_send_msgs[1], tlen - 1);
-			tempc[tlen - 1] = '\0';
-			sprintf(tmess, "%s %d/%d %s %d/%d\n", tempc, qtclist.serial, *qtccount, tempc,
-				qtclist.serial, *qtccount);
-		    }
-		    timec[0] = '\0';
-		    get_time();
-		    strftime(timec, 40, "%d-%b-%y %H:%M", time_ptr);
 
-		    for (ql = 0; ql < *qtccount; ql++) {
-			qtclist.qtclines[ql].sent = 1;
-			strncpy(qtclist.qtclines[ql].senttime, timec, 15);
-			qtclist.qtclines[ql].senttime[15] = '\0';
-			qtclist.totalsent++;
-
-			tempc[0] = '\0';
-			replace_spaces(qtclist.qtclines[ql].qtc, tempc);
-			strcat(tmess, tempc);
-			mvwprintw(qtcwin, ql + 3, 30, "*");
-			qtclist.qtclines[ql].flag = 1;
-
-		    }
-		    keyer_append(tmess);
-		    write_keyer();
-		    wattrset(qtcwin, LINE_INVERTED);
-		    mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");
-		    refreshp();
-		    show_help_msg(6);
-
-		    showfield(activefield);
-		} else {
-		    if (direction == SEND) {
-			tempc[0] = '\0';
-			replace_spaces(qtclist.qtclines[activefield - 3].qtc, tempc);
-			sendmessage(tempc);
-		    }
-		}
-	    }
-	    if (activefield == 0) {
-		start_qtc_recording();
-	    }
-	    if (activefield < 2) {
-		if (direction == RECV) {
-		    activefield++;
-		    showfield(activefield - 1);
-		    showfield(activefield);
-		}
-	    }
-	    break;
-
-	// Ctrl-S (^S), save QTC
-	case 19:
-	    if (qtccurrdirection == SEND && *qtccount > 0
-		    && qtclist.totalsent == *qtccount) {
-		log_sent_qtc_to_disk(nr_qsos);
-		wattrset(qtcwin, LINE_INVERTED);
-		mvwprintw(qtcwin, 2, 11, "QTC's have been saved!");
-		prevqtccall[0] = '\0';
-		qtccallsign[0] = '\0';
-		refreshp();
-		sleep(1);
-		x = 27;	// <Escape> close the window
-
-	    }
-	    if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
-		qtc_ry_capture = 1;
-		wattr_get(qtcwin, &attributes, &cpair, NULL);
-		wattrset(qtcwin, LINE_INVERTED);
-		mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
-		wattrset(qtcwin, attributes);
-		showfield(activefield);
-		refreshp();
-		show_rtty_lines();
-	    }
-	    break;
-
-	// Ctrl-E (^E), end capture
-	case 5:
-	    if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
-		qtc_ry_capture = 0;
-		wattr_get(qtcwin, &attributes, &cpair, NULL);
-		wattrset(qtcwin, LINE_INVERTED);
-		mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
-		wattrset(qtcwin, attributes);
-		showfield(activefield);
-		refreshp();
-	    }
-	    break;
-
-	// F1...F10
-	case KEY_F(1) ... KEY_F(10):
-	    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		if (direction == RECV) {
-		    sendmessage(qtc_recv_msgs[x - KEY_F(1)]); /* 0-9 */
-
-		    /* start recording */
-		    if (trxmode == CWMODE && strncmp(qtc_recv_msgs[x - KEY_F(1)], "QRV", 3) == 0) {
-			start_qtc_recording();
-		    }
-
-		    /* stop recording */
-		    if (trxmode == CWMODE
-			    && strncmp(qtc_recv_msgs[x - KEY_F(1)], "QSL ALL", 7) == 0 && record_run > -1) {
-			stop_qtc_recording();
-		    }
-
-		    if (trxmode == DIGIMODE
-			    && strncmp(qtc_recv_msgs[x - KEY_F(1)], "QRV", 3) == 0) {
-			qtc_ry_capture = 1;
-			wattr_get(qtcwin, &attributes, &cpair, NULL);
-			wattrset(qtcwin, LINE_INVERTED);
-			mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
-			wattrset(qtcwin, attributes);
 			showfield(activefield);
-			refreshp();
-			show_rtty_lines();
-		    }
-		}
-
-		if (direction == SEND && strlen(qtc_send_msgs[x - KEY_F(1)]) > 0) {
-		    if (qtc_send_msgs[x - KEY_F(1)][strlen(qtc_send_msgs[x - KEY_F(
-			    1)]) - 1] == '\n') {
-			qtc_send_msgs[x - KEY_F(1)][strlen(qtc_send_msgs[x - KEY_F(1)]) - 1] = 0;
-		    }
-		    tlen = strlen(qtc_send_msgs[x - KEY_F(1)]) - 5; // len("sr/nr") = 5
-		    char tmess[40];
-		    tmess[0] = '\0';
-		    if (tlen > 0 && strncmp(qtc_send_msgs[x - KEY_F(1)] + tlen, "sr/nr", 5) == 0) {
-			tempc[0] = '\0';
-			strncpy(tempc, qtc_send_msgs[x - KEY_F(1)], tlen - 1);
-			tempc[tlen - 1] = '\0';
-			sprintf(tmess, "%s %d/%d ", tempc, qtclist.serial, *qtccount);
-			sendmessage(tmess);
-		    } else if ((activefield - 3) >= 0) {
-			if (x - KEY_F(1) == 4) {	// F5, TIME
-			    strncpy(tmess, qtclist.qtclines[activefield - 3].qtc, 5);
-			    tmess[5] = '\0';
-			    sendmessage(tmess);
-			}
-			if (x - KEY_F(1) == 5) {	// F6, CALLSIGN
-			    strncpy(tmess, qtclist.qtclines[activefield - 3].qtc + 5, 13);
-			    for (i = 12; tmess[i] == ' '; i--)
-				;
-			    tmess[i + 1] = ' ';
-			    tmess[i + 2] = '\0';
-			    sendmessage(tmess);
-			}
-			if (x - KEY_F(1) == 6) {	// F7, SERIAL
-			    strncpy(tmess, qtclist.qtclines[activefield - 3].qtc + 20, 4);
-			    tmess[4] = ' ';
-			    tmess[5] = '\0';
-			    sendmessage(tmess);
-			}
 		    } else {
-			sendmessage(qtc_send_msgs[x - KEY_F(1)]);
+			if (direction == SEND) {
+			    tempc[0] = '\0';
+			    replace_spaces(qtclist.qtclines[activefield - 3].qtc, tempc);
+			    sendmessage(tempc);
+			}
 		    }
 		}
-
-	    }
-	    if (trxmode == SSBMODE) {
-		if (direction == RECV) {
-		    if (x == KEY_F(2)) { // F2, "QRV"
-			start_qtc_recording();
-		    }
-		    if (x == KEY_F(10) && record_run > -1) { // F10, "QSL ALL"
-			stop_qtc_recording();
-		    }
-		    play_file(qtc_phrecv_message[x - KEY_F(1)]);
+		if (activefield == 0) {
+		    start_qtc_recording();
 		}
-		if (direction == SEND) {
-		    play_file(qtc_phsend_message[x - KEY_F(1)]);
-		}
-	    }
-
-	    break;
-
-	// <Delete>, Keypad <Del>
-	case KEY_DC:
-	    if (DIRCLAUSE) {
-		delete_from_field(0);
-	    }
-	    if (direction == SEND && activefield > 2 && trxmode != DIGIMODE) {
-		qtclist.qtclines[activefield - 3].sent = 0;
-		qtclist.qtclines[activefield - 3].flag = 0;
-		wattrset(qtcwin, LINE_CURRNORMAL);
-		mvwprintw(qtcwin, activefield, 30, " ");
-		qtclist.totalsent--;
-	    }
-	    break;
-
-	// <Tab>
-	case 9:
-	    if (direction == RECV) {
-		if (trxmode == DIGIMODE) {
-		    if (activefield == 32) {
-			activefield = 0;
-			showfield(32);
-		    } else {
+		if (activefield < 2) {
+		    if (direction == RECV) {
 			activefield++;
 			showfield(activefield - 1);
-		    }
-		} else {
-		    if ((activefield < 3) || (activefield - 3) % 3 < 2) {
-			activefield++;
-			showfield(activefield - 1);
-		    } else {	/* (activefield-3)%3 == 2*/
-			activefield -= 2;
-			showfield(activefield + 2);
+			showfield(activefield);
 		    }
 		}
-		showfield(activefield);
-	    }
-	    if (direction == SEND) {
-		switch (activefield) {
-		case 0:
-		    activefield = 2;
-		    showfield(0);
-		    showfield(2);
-		    break;
-		case 2:
-		    activefield = 0;
-		    showfield(2);
-		    showfield(0);
-		    break;
-		default:
-		    break;
-		}
-	    }
-	    curpos = 0;
-	    break;
+		break;
 
-	// Shift <Tab>
-	case KEY_BTAB:
-	    if (direction == RECV) {
-		if (trxmode == DIGIMODE) {
-		    if (activefield == 0) {
-			activefield = 32;
-			showfield(0);
-		    } else {
-			activefield--;
-			showfield(activefield + 1);
-		    }
-		} else {
-		    if ((activefield > 0 && activefield < 3) ||
-			    ((activefield - 3) % 3 > 0)) {
-			activefield--;
-			showfield(activefield + 1);
-		    } else {		/* (activefield-3)%3 == 0) */
-			activefield += 2;
-			showfield(activefield - 2);
-		    }
-		}
-		showfield(activefield);
-	    }
-	    if (direction == SEND) {
-		switch (activefield) {
-		case 0:
-		    activefield = 2;
-		    showfield(0);
-		    showfield(2);
-		    break;
-		case 2:
-		    activefield = 0;
-		    showfield(2);
-		    showfield(0);
-		    break;
-		default:
-		    break;
-		}
-	    }
-	    curpos = 0;
-	    break;
+	    // Ctrl-S (^S), save QTC
+	    case 19:
+		if (qtccurrdirection == SEND && *qtccount > 0
+			&& qtclist.totalsent == *qtccount) {
+		    log_sent_qtc_to_disk(nr_qsos);
+		    wattrset(qtcwin, LINE_INVERTED);
+		    mvwprintw(qtcwin, 2, 11, "QTC's have been saved!");
+		    prevqtccall[0] = '\0';
+		    qtccallsign[0] = '\0';
+		    refreshp();
+		    sleep(1);
+		    x = 27;	// <Escape> close the window
 
-	// <Space>
-	case ' ':
-	    if (DIRCLAUSE) {
+		}
+		if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
+		    qtc_ry_capture = 1;
+		    wattr_get(qtcwin, &attributes, &cpair, NULL);
+		    wattrset(qtcwin, LINE_INVERTED);
+		    mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+		    wattrset(qtcwin, attributes);
+		    showfield(activefield);
+		    refreshp();
+		    show_rtty_lines();
+		}
+		break;
+
+	    // Ctrl-E (^E), end capture
+	    case 5:
+		if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
+		    qtc_ry_capture = 0;
+		    wattr_get(qtcwin, &attributes, &cpair, NULL);
+		    wattrset(qtcwin, LINE_INVERTED);
+		    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+		    wattrset(qtcwin, attributes);
+		    showfield(activefield);
+		    refreshp();
+		}
+		break;
+
+	    // F1...F10
+	    case KEY_F(1) ... KEY_F(10):
+		if (trxmode == CWMODE || trxmode == DIGIMODE) {
+		    if (direction == RECV) {
+			sendmessage(qtc_recv_msgs[x - KEY_F(1)]); /* 0-9 */
+
+			/* start recording */
+			if (trxmode == CWMODE && strncmp(qtc_recv_msgs[x - KEY_F(1)], "QRV", 3) == 0) {
+			    start_qtc_recording();
+			}
+
+			/* stop recording */
+			if (trxmode == CWMODE
+				&& strncmp(qtc_recv_msgs[x - KEY_F(1)], "QSL ALL", 7) == 0 && record_run > -1) {
+			    stop_qtc_recording();
+			}
+
+			if (trxmode == DIGIMODE
+				&& strncmp(qtc_recv_msgs[x - KEY_F(1)], "QRV", 3) == 0) {
+			    qtc_ry_capture = 1;
+			    wattr_get(qtcwin, &attributes, &cpair, NULL);
+			    wattrset(qtcwin, LINE_INVERTED);
+			    mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+			    wattrset(qtcwin, attributes);
+			    showfield(activefield);
+			    refreshp();
+			    show_rtty_lines();
+			}
+		    }
+
+		    if (direction == SEND && strlen(qtc_send_msgs[x - KEY_F(1)]) > 0) {
+			if (qtc_send_msgs[x - KEY_F(1)][strlen(qtc_send_msgs[x - KEY_F(
+				1)]) - 1] == '\n') {
+			    qtc_send_msgs[x - KEY_F(1)][strlen(qtc_send_msgs[x - KEY_F(1)]) - 1] = 0;
+			}
+			tlen = strlen(qtc_send_msgs[x - KEY_F(1)]) - 5; // len("sr/nr") = 5
+			char tmess[40];
+			tmess[0] = '\0';
+			if (tlen > 0 && strncmp(qtc_send_msgs[x - KEY_F(1)] + tlen, "sr/nr", 5) == 0) {
+			    tempc[0] = '\0';
+			    strncpy(tempc, qtc_send_msgs[x - KEY_F(1)], tlen - 1);
+			    tempc[tlen - 1] = '\0';
+			    sprintf(tmess, "%s %d/%d ", tempc, qtclist.serial, *qtccount);
+			    sendmessage(tmess);
+			} else if ((activefield - 3) >= 0) {
+			    if (x - KEY_F(1) == 4) {	// F5, TIME
+				strncpy(tmess, qtclist.qtclines[activefield - 3].qtc, 5);
+				tmess[5] = '\0';
+				sendmessage(tmess);
+			    }
+			    if (x - KEY_F(1) == 5) {	// F6, CALLSIGN
+				strncpy(tmess, qtclist.qtclines[activefield - 3].qtc + 5, 13);
+				for (i = 12; tmess[i] == ' '; i--)
+				    ;
+				tmess[i + 1] = ' ';
+				tmess[i + 2] = '\0';
+				sendmessage(tmess);
+			    }
+			    if (x - KEY_F(1) == 6) {	// F7, SERIAL
+				strncpy(tmess, qtclist.qtclines[activefield - 3].qtc + 20, 4);
+				tmess[4] = ' ';
+				tmess[5] = '\0';
+				sendmessage(tmess);
+			    }
+			} else {
+			    sendmessage(qtc_send_msgs[x - KEY_F(1)]);
+			}
+		    }
+
+		}
+		if (trxmode == SSBMODE) {
+		    if (direction == RECV) {
+			if (x == KEY_F(2)) { // F2, "QRV"
+			    start_qtc_recording();
+			}
+			if (x == KEY_F(10) && record_run > -1) { // F10, "QSL ALL"
+			    stop_qtc_recording();
+			}
+			play_file(qtc_phrecv_message[x - KEY_F(1)]);
+		    }
+		    if (direction == SEND) {
+			play_file(qtc_phsend_message[x - KEY_F(1)]);
+		    }
+		}
+
+		break;
+
+	    // <Delete>, Keypad <Del>
+	    case KEY_DC:
+		if (DIRCLAUSE) {
+		    delete_from_field(0);
+		}
+		if (direction == SEND && activefield > 2 && trxmode != DIGIMODE) {
+		    qtclist.qtclines[activefield - 3].sent = 0;
+		    qtclist.qtclines[activefield - 3].flag = 0;
+		    wattrset(qtcwin, LINE_CURRNORMAL);
+		    mvwprintw(qtcwin, activefield, 30, " ");
+		    qtclist.totalsent--;
+		}
+		break;
+
+	    // <Tab>
+	    case 9:
 		if (direction == RECV) {
-		    if (activefield > 2) {
-			if (activefield % 3 == 2) {
-			    activefield -= 2;
-			    showfield(activefield + 2);
+		    if (trxmode == DIGIMODE) {
+			if (activefield == 32) {
+			    activefield = 0;
+			    showfield(32);
 			} else {
 			    activefield++;
 			    showfield(activefield - 1);
 			}
-			showfield(activefield);
-		    }
-		    if (activefield == 2) {
-			if (strlen(qtcreclist.callsign) > 0 &&
-				qtcreclist.serial > 0 &&
-				qtcreclist.count > 0 &&
-				qtcreclist.confirmed == 0
-			   ) {
-			    if (trxmode == CWMODE) {
-				sendmessage(qtc_recv_msgs[1]);
-			    }
-			    if (trxmode == SSBMODE) {
-				play_file(qtc_phrecv_message[1]);
-			    }
-			    start_qtc_recording();
+		    } else {
+			if ((activefield < 3) || (activefield - 3) % 3 < 2) {
 			    activefield++;
+			    showfield(activefield - 1);
+			} else {	/* (activefield-3)%3 == 2*/
+			    activefield -= 2;
+			    showfield(activefield + 2);
+			}
+		    }
+		    showfield(activefield);
+		}
+		if (direction == SEND) {
+		    switch (activefield) {
+			case 0:
+			    activefield = 2;
+			    showfield(0);
+			    showfield(2);
+			    break;
+			case 2:
+			    activefield = 0;
+			    showfield(2);
+			    showfield(0);
+			    break;
+			default:
+			    break;
+		    }
+		}
+		curpos = 0;
+		break;
+
+	    // Shift <Tab>
+	    case KEY_BTAB:
+		if (direction == RECV) {
+		    if (trxmode == DIGIMODE) {
+			if (activefield == 0) {
+			    activefield = 32;
+			    showfield(0);
+			} else {
+			    activefield--;
+			    showfield(activefield + 1);
+			}
+		    } else {
+			if ((activefield > 0 && activefield < 3) ||
+				((activefield - 3) % 3 > 0)) {
+			    activefield--;
+			    showfield(activefield + 1);
+			} else {		/* (activefield-3)%3 == 0) */
+			    activefield += 2;
+			    showfield(activefield - 2);
+			}
+		    }
+		    showfield(activefield);
+		}
+		if (direction == SEND) {
+		    switch (activefield) {
+			case 0:
+			    activefield = 2;
+			    showfield(0);
+			    showfield(2);
+			    break;
+			case 2:
+			    activefield = 0;
+			    showfield(2);
+			    showfield(0);
+			    break;
+			default:
+			    break;
+		    }
+		}
+		curpos = 0;
+		break;
+
+	    // <Space>
+	    case ' ':
+		if (DIRCLAUSE) {
+		    if (direction == RECV) {
+			if (activefield > 2) {
+			    if (activefield % 3 == 2) {
+				activefield -= 2;
+				showfield(activefield + 2);
+			    } else {
+				activefield++;
+				showfield(activefield - 1);
+			    }
+			    showfield(activefield);
+			}
+			if (activefield == 2) {
+			    if (strlen(qtcreclist.callsign) > 0 &&
+				    qtcreclist.serial > 0 &&
+				    qtcreclist.count > 0 &&
+				    qtcreclist.confirmed == 0
+			       ) {
+				if (trxmode == CWMODE) {
+				    sendmessage(qtc_recv_msgs[1]);
+				}
+				if (trxmode == SSBMODE) {
+				    play_file(qtc_phrecv_message[1]);
+				}
+				start_qtc_recording();
+				activefield++;
+				showfield(activefield);
+			    }
+			}
+			if (activefield < 2) {
+			    if (activefield == 0) {
+				start_qtc_recording();
+			    }
+			    activefield++;
+			    showfield(activefield - 1);
 			    showfield(activefield);
 			}
 		    }
-		    if (activefield < 2) {
-			if (activefield == 0) {
-			    start_qtc_recording();
-			}
-			activefield++;
-			showfield(activefield - 1);
+		}
+		break;
+
+	    // Numerals
+	    case '0' ... '9':
+		if (DIRCLAUSE) {
+		    modify_field(x);
+		}
+		break;
+
+	    /*case 65 ... 90:	// letters
+	    	modify_field(x);
+	    	break;*/
+
+	    // Convert lower case to upper case
+	    case 'a' ... 'z':
+		if (DIRCLAUSE) {
+		    modify_field(x - 32);
+		}
+		break;
+
+	    // Slash
+	    case '/':
+		if (DIRCLAUSE) {
+		    modify_field(x);
+		}
+		break;
+
+	    // Query
+	    case '?':
+		if (DIRCLAUSE) {
+		    modify_field(x);
+		}
+		break;
+
+	    // <Backspace>
+	    case KEY_BACKSPACE:
+		if (DIRCLAUSE) {
+		    delete_from_field(1);
+		}
+		break;
+
+	    // <Page-Up>
+	    case KEY_PPAGE:
+		speedup();
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 14, "%2d", GetCWSpeed());
+		break;
+
+	    // <Page-Down>
+	    case KEY_NPAGE:
+		speeddown();
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 14, "%2d", GetCWSpeed());
+		break;
+
+	    // Comma or Ctrl-K (^K), keyboard window
+	    case ',':
+	    case 11:
+		mvprintw(5, 0, "");
+		keyer();
+		x = 0;
+		break;
+
+	    // Ctrl-L (^L), mark callsign for late QTC
+	    case 12:
+		if (strlen(g_strstrip(qtccallsign)) > 3) {
+		    qtc_inc(g_strstrip(qtccallsign), QTC_LATER);
+		    sprintf(tempc, "%s;L\n", qtccallsign);
+		    send_lan_message(QTCFLAG, tempc);
+		}
+		break;
+
+	    // Ctrl-N (^N), mark callsign for explicit NO QTC
+	    case 14:
+		if (strlen(g_strstrip(qtccallsign)) > 3) {
+		    qtc_inc(g_strstrip(qtccallsign), QTC_NO);
+		    sprintf(tempc, "%s;N\n", qtccallsign);
+		    send_lan_message(QTCFLAG, tempc);
+		}
+		break;
+
+	    // Ctrl-F (^F), fill time fields with first 2 chars
+	    case 6:
+		if (activefield > 2) {
+		    fill_qtc_times(qtcreclist.qtclines[(activefield - 3) / 3].time);
+		    showfield(activefield);
+		}
+		break;
+
+	    // Ctrl-R (^R), start/stop recording
+	    case 18:
+		if (direction == RECV) {
+		    if (record_run < 0) {
+			start_qtc_recording();
 			showfield(activefield);
+		    } else {
+			stop_qtc_recording();
 		    }
 		}
-	    }
-	    break;
-
-	// Numerals
-	case '0' ... '9':
-	    if (DIRCLAUSE) {
-		modify_field(x);
-	    }
-	    break;
-
-	/*case 65 ... 90:	// letters
-		modify_field(x);
-		break;*/
-
-	// Convert lower case to upper case
-	case 'a' ... 'z':
-	    if (DIRCLAUSE) {
-		modify_field(x - 32);
-	    }
-	    break;
-
-	// Slash
-	case '/':
-	    if (DIRCLAUSE) {
-		modify_field(x);
-	    }
-	    break;
-
-	// Query
-	case '?':
-	    if (DIRCLAUSE) {
-		modify_field(x);
-	    }
-	    break;
-
-	// <Backspace>
-	case KEY_BACKSPACE:
-	    if (DIRCLAUSE) {
-		delete_from_field(1);
-	    }
-	    break;
-
-	// <Page-Up>
-	case KEY_PPAGE:
-	    speedup();
-	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	    mvprintw(0, 14, "%2d", GetCWSpeed());
-	    break;
-
-	// <Page-Down>
-	case KEY_NPAGE:
-	    speeddown();
-	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	    mvprintw(0, 14, "%2d", GetCWSpeed());
-	    break;
-
-	// Comma or Ctrl-K (^K), keyboard window
-	case ',':
-	case 11:
-	    mvprintw(5, 0, "");
-	    keyer();
-	    x = 0;
-	    break;
-
-	// Ctrl-L (^L), mark callsign for late QTC
-	case 12:
-	    if (strlen(g_strstrip(qtccallsign)) > 3) {
-		qtc_inc(g_strstrip(qtccallsign), QTC_LATER);
-		sprintf(tempc, "%s;L\n", qtccallsign);
-		send_lan_message(QTCFLAG, tempc);
-	    }
-	    break;
-
-	// Ctrl-N (^N), mark callsign for explicit NO QTC
-	case 14:
-	    if (strlen(g_strstrip(qtccallsign)) > 3) {
-		qtc_inc(g_strstrip(qtccallsign), QTC_NO);
-		sprintf(tempc, "%s;N\n", qtccallsign);
-		send_lan_message(QTCFLAG, tempc);
-	    }
-	    break;
-
-	// Ctrl-F (^F), fill time fields with first 2 chars
-	case 6:
-	    if (activefield > 2) {
-		fill_qtc_times(qtcreclist.qtclines[(activefield - 3) / 3].time);
-		showfield(activefield);
-	    }
-	    break;
-
-	// Ctrl-R (^R), start/stop recording
-	case 18:
-	    if (direction == RECV) {
-		if (record_run < 0) {
-		    start_qtc_recording();
-		    showfield(activefield);
-		} else {
-		    stop_qtc_recording();
-		}
-	    }
 	}
 	refreshp();
 	if (x != 27) {
@@ -1196,18 +1196,18 @@ void showfield(int fidx) {
 	winrow = (fi / 3) + 3;
 	qtcrow = winrow - 3;
 	switch (fi % 3) {
-	case 0:
-	    sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].time);
-	    posidx = 3;
-	    break;
-	case 1:
-	    sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].callsign);
-	    posidx = 4;
-	    break;
-	case 2:
-	    sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].serial);
-	    posidx = 5;
-	    break;
+	    case 0:
+		sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].time);
+		posidx = 3;
+		break;
+	    case 1:
+		sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].callsign);
+		posidx = 4;
+		break;
+	    case 2:
+		sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].serial);
+		posidx = 5;
+		break;
 	}
 	show_status(qtcrow);
     }
@@ -1293,18 +1293,18 @@ void modify_field(int pressed) {
 	qtcrow = winrow - 3;
 	stridx = fi % 3;
 	switch (stridx) {
-	case 0:
-	    sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].time);
-	    posidx = 3;
-	    break;
-	case 1:
-	    sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].callsign);
-	    posidx = 4;
-	    break;
-	case 2:
-	    sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].serial);
-	    posidx = 5;
-	    break;
+	    case 0:
+		sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].time);
+		posidx = 3;
+		break;
+	    case 1:
+		sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].callsign);
+		posidx = 4;
+		break;
+	    case 2:
+		sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].serial);
+		posidx = 5;
+		break;
 	}
 	if (pressed == '?') {
 	    qtcreclist.qtclines[qtcrow].status = 1;	// set incomplete the qtc status
@@ -1315,18 +1315,18 @@ void modify_field(int pressed) {
 
 	    fieldval[strlen(fieldval) - curpos] = pressed;
 	    switch (stridx) {
-	    case 0:
-		strcpy(qtcreclist.qtclines[qtcrow].time, fieldval);
-		if (qtc_auto_filltime == 1) {
-		    fill_qtc_times(fieldval);
-		}
-		break;
-	    case 1:
-		strcpy(qtcreclist.qtclines[qtcrow].callsign, fieldval);
-		break;
-	    case 2:
-		strcpy(qtcreclist.qtclines[qtcrow].serial, fieldval);
-		break;
+		case 0:
+		    strcpy(qtcreclist.qtclines[qtcrow].time, fieldval);
+		    if (qtc_auto_filltime == 1) {
+			fill_qtc_times(fieldval);
+		    }
+		    break;
+		case 1:
+		    strcpy(qtcreclist.qtclines[qtcrow].callsign, fieldval);
+		    break;
+		case 2:
+		    strcpy(qtcreclist.qtclines[qtcrow].serial, fieldval);
+		    break;
 	    }
 	    if (curpos > 0) {
 		curpos--;
@@ -1381,30 +1381,30 @@ void delete_from_field(int dir) {
 	qtcrow = winrow - 3;
 	stridx = fi % 3;
 	switch (stridx) {
-	case 0:
-	    sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].time);
-	    break;
-	case 1:
-	    sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].callsign);
-	    break;
-	case 2:
-	    sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].serial);
-	    break;
+	    case 0:
+		sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].time);
+		break;
+	    case 1:
+		sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].callsign);
+		break;
+	    case 2:
+		sprintf(fieldval, "%s", qtcreclist.qtclines[qtcrow].serial);
+		break;
 	}
 
 	if (strlen(fieldval) > 0) {
 	    shift_left(fieldval, dir);
 	    fieldval[strlen(fieldval)] = '\0';
 	    switch (stridx) {
-	    case 0:
-		strcpy(qtcreclist.qtclines[qtcrow].time, fieldval);
-		break;
-	    case 1:
-		strcpy(qtcreclist.qtclines[qtcrow].callsign, fieldval);
-		break;
-	    case 2:
-		strcpy(qtcreclist.qtclines[qtcrow].serial, fieldval);
-		break;
+		case 0:
+		    strcpy(qtcreclist.qtclines[qtcrow].time, fieldval);
+		    break;
+		case 1:
+		    strcpy(qtcreclist.qtclines[qtcrow].callsign, fieldval);
+		    break;
+		case 2:
+		    strcpy(qtcreclist.qtclines[qtcrow].serial, fieldval);
+		    break;
 	    }
 	    showfield(activefield);
 	}
@@ -1468,15 +1468,15 @@ void show_status(int idx) {
 	}
 
 	switch (qtcreclist.qtclines[idx].status) {
-	case 0:
-	    flag = ' ';
-	    break;
-	case 1:
-	    flag = '?';
-	    break;
-	case 2:
-	    flag = '*';
-	    break;
+	    case 0:
+		flag = ' ';
+		break;
+	    case 1:
+		flag = '?';
+		break;
+	    case 2:
+		flag = '*';
+		break;
 	}
 	if (trxmode == DIGIMODE && qtcreclist.qtclines[idx].status == 0) {
 	    flag = '+';
@@ -1788,71 +1788,71 @@ void show_rtty_lines() {
 
 	switch (x) {
 
-	// Up arrow
-	case KEY_UP:
-	    wattrset(ry_win, LINE_NORMAL);
-	    print_rtty_line(qtc_ry_lines[actline - 1], actline);
-	    if (actline > 1) {
-		actline--;
-	    } else {
-		if (qtc_ry_currline > 0) {
-		    actline = qtc_ry_currline;
+	    // Up arrow
+	    case KEY_UP:
+		wattrset(ry_win, LINE_NORMAL);
+		print_rtty_line(qtc_ry_lines[actline - 1], actline);
+		if (actline > 1) {
+		    actline--;
+		} else {
+		    if (qtc_ry_currline > 0) {
+			actline = qtc_ry_currline;
+		    }
 		}
-	    }
-	    wattrset(ry_win, LINE_CURRNORMAL);
-	    print_rtty_line(qtc_ry_lines[actline - 1], actline);
-	    wattrset(ry_win, LINE_NORMAL);
-	    break;
+		wattrset(ry_win, LINE_CURRNORMAL);
+		print_rtty_line(qtc_ry_lines[actline - 1], actline);
+		wattrset(ry_win, LINE_NORMAL);
+		break;
 
-	// Down arrow
-	case KEY_DOWN:
-	    wattrset(ry_win, LINE_NORMAL);
-	    print_rtty_line(qtc_ry_lines[actline - 1], actline);
-	    if (actline < qtc_ry_currline) {
-		actline++;
-	    } else {
+	    // Down arrow
+	    case KEY_DOWN:
+		wattrset(ry_win, LINE_NORMAL);
+		print_rtty_line(qtc_ry_lines[actline - 1], actline);
+		if (actline < qtc_ry_currline) {
+		    actline++;
+		} else {
+		    actline = 1;
+		}
+		wattrset(ry_win, LINE_CURRNORMAL);
+		print_rtty_line(qtc_ry_lines[actline - 1], actline);
+		wattrset(ry_win, LINE_NORMAL);
+		break;
+
+	    // Ctrl-R (^R)
+	    case 18:
+		for (j = 0; j < 12; j++) {
+		    qtc_ry_lines[j].content[0] = '\0';
+		    qtc_ry_lines[j].attr = 0;
+		    mvwprintw(ry_win, (j + 1), 1, "                                      ");
+		}
+		prevline = -1;
 		actline = 1;
-	    }
-	    wattrset(ry_win, LINE_CURRNORMAL);
-	    print_rtty_line(qtc_ry_lines[actline - 1], actline);
-	    wattrset(ry_win, LINE_NORMAL);
-	    break;
+		qtc_ry_currline = 0;
+		qtc_ry_copied = 0;
+		break;
 
-	// Ctrl-R (^R)
-	case 18:
-	    for (j = 0; j < 12; j++) {
-		qtc_ry_lines[j].content[0] = '\0';
-		qtc_ry_lines[j].attr = 0;
-		mvwprintw(ry_win, (j + 1), 1, "                                      ");
-	    }
-	    prevline = -1;
-	    actline = 1;
-	    qtc_ry_currline = 0;
-	    qtc_ry_copied = 0;
-	    break;
+	    // Ctrl-S (^S), start capture
+	    case 19:
+		qtc_ry_capture = 1;
+		mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+		break;
 
-	// Ctrl-S (^S), start capture
-	case 19:
-	    qtc_ry_capture = 1;
-	    mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
-	    break;
+	    // Ctrl-E (^E), end capture
+	    case 5:
+		qtc_ry_capture = 0;
+		mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+		break;
 
-	// Ctrl-E (^E), end capture
-	case 5:
-	    qtc_ry_capture = 0;
-	    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
-	    break;
-
-	// <Enter>, add to qtc
-	case 10:
-	    if (qtc_ry_lines[actline - 1].attr == 0) {
-		parse_ry_line(qtc_ry_lines[actline - 1].content);
-		qtc_ry_lines[actline - 1].attr = 1;
-	    }
-	    wattrset(ry_win, LINE_CURRNORMAL);
-	    print_rtty_line(qtc_ry_lines[actline - 1], actline);
-	    wattrset(ry_win, LINE_NORMAL);
-	    break;
+	    // <Enter>, add to qtc
+	    case 10:
+		if (qtc_ry_lines[actline - 1].attr == 0) {
+		    parse_ry_line(qtc_ry_lines[actline - 1].content);
+		    qtc_ry_lines[actline - 1].attr = 1;
+		}
+		wattrset(ry_win, LINE_CURRNORMAL);
+		print_rtty_line(qtc_ry_lines[actline - 1], actline);
+		wattrset(ry_win, LINE_NORMAL);
+		break;
 	}
 	refreshp();
 	if (x != 27) {

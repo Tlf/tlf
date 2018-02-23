@@ -55,8 +55,9 @@ struct sockaddr_in bc_address[MAXNODES];
 struct hostent *bc_hostbyname[MAXNODES];
 /* host names and UDP ports to send notifications to */
 char bc_hostaddress[MAXNODES][16];
-char bc_hostservice[MAXNODES][16] =
-	{ [0 ... MAXNODES - 1] = { [0 ... 15] = 0 } };
+char bc_hostservice[MAXNODES][16] = { 
+	[0 ... MAXNODES - 1] = { [0 ... 15] = 0 } 
+};
 char sendbuffer[256];
 int nodes = 0;
 int node;
@@ -373,44 +374,44 @@ int send_freq(float freq) {
     } else {
 	switch (bandinx) {
 
-	case 0:
-	    sprintf(fbuffer, " 160.0");
-	    break;
+	    case 0:
+		sprintf(fbuffer, " 160.0");
+		break;
 
-	case 1:
-	    sprintf(fbuffer, "  80.0");
-	    break;
+	    case 1:
+		sprintf(fbuffer, "  80.0");
+		break;
 
-	case 2:
-	    sprintf(fbuffer, "  40.0");
-	    break;
+	    case 2:
+		sprintf(fbuffer, "  40.0");
+		break;
 
-	case 3:
-	    sprintf(fbuffer, "  30.0");
-	    break;
+	    case 3:
+		sprintf(fbuffer, "  30.0");
+		break;
 
-	case 4:
-	    sprintf(fbuffer, "  20.0");
-	    break;
+	    case 4:
+		sprintf(fbuffer, "  20.0");
+		break;
 
-	case 5:
-	    sprintf(fbuffer, "  17.0");
-	    break;
+	    case 5:
+		sprintf(fbuffer, "  17.0");
+		break;
 
-	case 6:
-	    sprintf(fbuffer, "  15.0");
-	    break;
+	    case 6:
+		sprintf(fbuffer, "  15.0");
+		break;
 
-	case 7:
-	    sprintf(fbuffer, "  12.0");
-	    break;
+	    case 7:
+		sprintf(fbuffer, "  12.0");
+		break;
 
-	case 8:
-	    sprintf(fbuffer, "  10.0");
-	    break;
+	    case 8:
+		sprintf(fbuffer, "  10.0");
+		break;
 
-	default:
-	    sprintf(fbuffer, "     ");
+	    default:
+		sprintf(fbuffer, "     ");
 	}
     }
 

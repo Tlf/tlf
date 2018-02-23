@@ -198,49 +198,49 @@ int addcall(void) {
 
 	switch (bandinx) {
 
-	case BANDINDEX_160:
-	case BANDINDEX_80:
-	case BANDINDEX_40:
-	case BANDINDEX_20:
-	case BANDINDEX_15:
-	case BANDINDEX_10:
+	    case BANDINDEX_160:
+	    case BANDINDEX_80:
+	    case BANDINDEX_40:
+	    case BANDINDEX_20:
+	    case BANDINDEX_15:
+	    case BANDINDEX_10:
 
-	    if (pfxnumcntidx < 0) {
+		if (pfxnumcntidx < 0) {
+		    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
+			countries[j] |= inxes[bandinx];
+			countryscore[bandinx]++;
+			addcty = j;
+		    }
+		    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
+			zones[z] |= inxes[bandinx];
+			zonescore[bandinx]++;
+			addzone = z;
+		    }
+		} else {
+		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[bandinx])
+			    == 0) {
+			pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
+			addcallarea = 1;
+			countryscore[bandinx]++;
+			zonescore[bandinx]++;
+		    }
+		}
+		break;
+
+
+	    case BANDINDEX_12:
+	    case BANDINDEX_17:
+	    case BANDINDEX_30:
+
 		if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
 		    countries[j] |= inxes[bandinx];
-		    countryscore[bandinx]++;
 		    addcty = j;
 		}
 		if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
 		    zones[z] |= inxes[bandinx];
-		    zonescore[bandinx]++;
 		    addzone = z;
 		}
-	    } else {
-		if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[bandinx])
-			== 0) {
-		    pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
-		    addcallarea = 1;
-		    countryscore[bandinx]++;
-		    zonescore[bandinx]++;
-		}
-	    }
-	    break;
-
-
-	case BANDINDEX_12:
-	case BANDINDEX_17:
-	case BANDINDEX_30:
-
-	    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
-		countries[j] |= inxes[bandinx];
-		addcty = j;
-	    }
-	    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
-		zones[z] |= inxes[bandinx];
-		addzone = z;
-	    }
-	    break;
+		break;
 
 	}
     }
@@ -404,45 +404,45 @@ int addcall2(void) {
 
 	    switch (bandinx) {
 
-	    case BANDINDEX_160:
-	    case BANDINDEX_80:
-	    case BANDINDEX_40:
-	    case BANDINDEX_20:
-	    case BANDINDEX_15:
-	    case BANDINDEX_10:
+		case BANDINDEX_160:
+		case BANDINDEX_80:
+		case BANDINDEX_40:
+		case BANDINDEX_20:
+		case BANDINDEX_15:
+		case BANDINDEX_10:
 
-		if (pfxnumcntidx < 0) {
+		    if (pfxnumcntidx < 0) {
+			if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
+			    countries[j] |= inxes[bandinx];
+			    countryscore[bandinx]++;
+//                              addcty = j;
+			}
+			if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
+			    zones[z] |= inxes[bandinx];
+			    zonescore[bandinx]++;
+//                              addzone = z;
+			}
+		    } else {
+			if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
+			    pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
+			    addcallarea = 1;
+			    zonescore[bandinx]++;
+			    countryscore[bandinx]++;
+			}
+		    }
+		    break;
+
+		case BANDINDEX_30:
+		case BANDINDEX_17:
+		case BANDINDEX_12:
+
 		    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
 			countries[j] |= inxes[bandinx];
-			countryscore[bandinx]++;
-//                              addcty = j;
 		    }
 		    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
 			zones[z] |= inxes[bandinx];
-			zonescore[bandinx]++;
-//                              addzone = z;
 		    }
-		} else {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
-			addcallarea = 1;
-			zonescore[bandinx]++;
-			countryscore[bandinx]++;
-		    }
-		}
-		break;
-
-	    case BANDINDEX_30:
-	    case BANDINDEX_17:
-	    case BANDINDEX_12:
-
-		if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
-		    countries[j] |= inxes[bandinx];
-		}
-		if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
-		    zones[z] |= inxes[bandinx];
-		}
-		break;
+		    break;
 
 	    }
 	}
@@ -481,41 +481,41 @@ int get_band(char *logline) {
 
     switch (atoi(logline)) {
 
-    case 160:
-	j = BANDINDEX_160;
-	break;
+	case 160:
+	    j = BANDINDEX_160;
+	    break;
 
-    case 80:
-	j = BANDINDEX_80;
-	break;
+	case 80:
+	    j = BANDINDEX_80;
+	    break;
 
-    case 40:
-	j = BANDINDEX_40;
-	break;
+	case 40:
+	    j = BANDINDEX_40;
+	    break;
 
-    case 20:
-	j = BANDINDEX_20;
-	break;
+	case 20:
+	    j = BANDINDEX_20;
+	    break;
 
-    case 15:
-	j = BANDINDEX_15;
-	break;
+	case 15:
+	    j = BANDINDEX_15;
+	    break;
 
-    case 10:
-	j = BANDINDEX_10;
-	break;
+	case 10:
+	    j = BANDINDEX_10;
+	    break;
 
-    case 12:
-	j = BANDINDEX_12;
-	break;
+	case 12:
+	    j = BANDINDEX_12;
+	    break;
 
-    case 17:
-	j = BANDINDEX_17;
-	break;
+	case 17:
+	    j = BANDINDEX_17;
+	    break;
 
-    case 30:
-	j = BANDINDEX_30;
-	break;
+	case 30:
+	    j = BANDINDEX_30;
+	    break;
 
     }
 
