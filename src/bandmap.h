@@ -149,9 +149,4 @@ spot *bandmap_next(unsigned int upwards, unsigned int freq);
 
 void get_spot_on_qrg(char *dest, float freq);
 
-/** \brief convert frequency in Hz to bandindex
- *
- * \return	bandindex or BANDINDEX_OOB if not in any band
- */
-int freq2band(unsigned int freq);
 #endif
