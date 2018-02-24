@@ -33,9 +33,10 @@
 #define BAND_UP      +1
 #define BAND_DOWN    -1
 
-
 extern int inxes[NBANDS];  /**< conversion from BANDINDEX to BAND-mask */
-
+extern const unsigned int bandcorner[NBANDS][2];
+extern const unsigned int cwcorner[NBANDS];
+extern const unsigned int ssbcorner[NBANDS];
 
 /** Switch to next band
  *
@@ -45,5 +46,11 @@ extern int inxes[NBANDS];  /**< conversion from BANDINDEX to BAND-mask */
  * \param direction  BAND_UP or BAND_DOWN to choose next band up or down
  */
 void next_band(int direction);
+
+/** \brief convert frequency in Hz to bandindex
+ *
+ * \return	bandindex or BANDINDEX_OOB if not in any band
+ */
+int freq2band(unsigned int freq);
 
 #endif /* BANDS_H */

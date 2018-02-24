@@ -46,45 +46,6 @@
 				/* 3 space before and 1 after call */
 
 
-const unsigned int bandcorner[NBANDS][2] = {
-    { 1800000, 2000000 },	// band bottom, band top
-    { 3500000, 4000000 },
-    { 7000000, 7300000 },
-    { 10100000, 10150000 },
-    { 14000000, 14350000 },
-    { 18068000, 18168000 },
-    { 21000000, 21450000 },
-    { 24890000, 24990000 },
-    { 28000000, 29700000 },
-    {        0,        0 }
-};
-
-const unsigned int cwcorner[NBANDS] = {
-    1838000,
-    3580000,
-    7040000,
-    10140000,
-    14070000,
-    18095000,
-    21070000,
-    24915000,
-    28070000,
-    0
-};
-
-const unsigned int ssbcorner[NBANDS] = {
-    1840000,
-    3600000,
-    7040000,
-    10150000,
-    14100000,
-    18120000,
-    21150000,
-    24930000,
-    28300000,
-    0
-};
-
 pthread_mutex_t bm_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /** \brief sorted list of all recent DX spots
@@ -237,23 +198,6 @@ void bm_init() {
     bmdata_read_file();
 
     pthread_mutex_unlock(&bm_mutex);
-}
-
-
-/** \brief convert frequency in Hz to bandindex
- *
- * \return	bandindex or BANDINDEX_OOB if not in any band
- */
-int freq2band(unsigned int freq) {
-    int i;
-
-    for (i = 0; i < NBANDS; i++) {
-	if (freq >= bandcorner[i][0] &&
-		freq <= bandcorner[i][1])
-	    return i;	/* in actual band */
-    }
-
-    return BANDINDEX_OOB;   /* not in any band (out of band) */
 }
 
 
