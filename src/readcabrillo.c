@@ -38,6 +38,7 @@
 #include "addmult.h"
 #include "getexchange.h"
 #include "qtc_log.h"
+#include "bands.h"
 
 #define MAX_CABRILLO_LEN 255
 
@@ -56,58 +57,6 @@ extern char qsos[MAX_QSOS][LOGLINELEN +
 extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs
 extern int nr_qsos;
 
-/* set band from freq
- *
- * set band value based on the freq, which readed from QSO line
- *
- */
-
-int set_band_from_freq(float freq) {
-    int cab_bandinx;
-
-    switch ((int)freq) {
-	case 1800 ... 2000: {
-	    cab_bandinx = BANDINDEX_160;
-	    break;
-	}
-	case 3500 ... 4000: {
-	    cab_bandinx = BANDINDEX_80;
-	    break;
-	}
-	case 7000 ... 7300: {
-	    cab_bandinx = BANDINDEX_40;
-	    break;
-	}
-	case 10100 ... 10150: {
-	    cab_bandinx = BANDINDEX_30;
-	    break;
-	}
-	case 14000 ... 14350: {
-	    cab_bandinx = BANDINDEX_20;
-	    break;
-	}
-	case 18068 ... 18168: {
-	    cab_bandinx = BANDINDEX_17;
-	    break;
-	}
-	case 21000 ... 21450: {
-	    cab_bandinx = BANDINDEX_15;
-	    break;
-	}
-	case 24890 ... 24990: {
-	    cab_bandinx = BANDINDEX_12;
-	    break;
-	}
-	case 28000 ... 29700: {
-	    cab_bandinx = BANDINDEX_10;
-	    break;
-	}
-	default:
-	    cab_bandinx = BANDINDEX_OOB;	/* out of band */
-    }
-
-    return cab_bandinx;
-}
 
 void concat_comment(char *exchstr) {
     if (strlen(comment) > 0) {
@@ -307,7 +256,7 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 	switch (item->tag) {
 	    case FREQ:
 		freq = atof(tempstr);
-		bandinx = set_band_from_freq(freq);
+		bandinx = freq2band((int)(freq * 1000));
 		strcpy(qtc_line.band, band[bandinx]);
 		qtc_line.freq = freq;
 		break;

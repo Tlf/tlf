@@ -5,6 +5,7 @@
 
 // OBJECT ../src/cabrillo_utils.o
 // OBJECT ../src/readcabrillo.o
+// OBJECT ../src/bands.o
 
 /* test stubs and dummies */
 int do_cabrillo = 0;	/* actually converting cabrillo file to Tlf log */
@@ -38,7 +39,6 @@ int setup(void **state) {
 /* export non public protoypes for test */
 int starts_with(char *line, char *start);
 void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc);
-
 
 /* Test of helper functions */
 void test_starts_with_succeed(void **state) {
@@ -185,3 +185,5 @@ static void test_cabToTlf_KeepUnrelated(void **state) {
     assert_int_equal(bandinx, 0);
 }
 #endif
+
+
