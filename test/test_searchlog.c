@@ -115,13 +115,11 @@ void test_callmaster_ok_dos(void **state) {
 }
 
 void test_callmaster_ok_spaces(void **state) {
-#if 0
     write_callmaster(" # data \n A1AA \n A2BB \n\n");
     int n = load_callmaster();
     assert_int_equal(n, 2);
     assert_string_equal(CALLMASTERARRAY(0), "A1AA");
     assert_string_equal(CALLMASTERARRAY(1), "A2BB");
-#endif
 }
 
 void test_callmaster_ok_arrlss(void **state) {
