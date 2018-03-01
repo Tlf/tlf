@@ -10,7 +10,6 @@
 int do_cabrillo = 0;	/* actually converting cabrillo file to Tlf log */
 struct tm *time_ptr, time_ptr_cabrillo;
 
-int qtcdirection = 0;
 int qsoflags_for_qtc[MAX_QSOS];
 float freq;
 

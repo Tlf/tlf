@@ -203,6 +203,10 @@ char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
 char qtc_cap_calls[40] = "";
 int qtc_auto_filltime = 0;
 
+int qtcdirection = 0;
+
+int minitest = 0;
+
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */
@@ -338,6 +342,7 @@ struct ie_list *main_ie_list;	/* head of initial exchange list */
 int zonescore[NBANDS];
 int countryscore[NBANDS];
 int zonedisplay = 0;
+char zone_fix[3] = "";
 int addzone = 0;		/* flag for new zone */
 int addcty = 0;			/* flag for new country */
 int shownewmult = -1;
