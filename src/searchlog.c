@@ -784,19 +784,19 @@ void searchlog(char *searchstring) {
     }
 }
 
-void init_callmaster(void) {
-    if (callmaster)
+static void init_callmaster(void) {
+    if (callmaster) {
 	g_ptr_array_free(callmaster, TRUE);
-    callmaster = g_ptr_array_new_full(16000, g_free);
+    }
+    callmaster = g_ptr_array_new_full(CALLMASTER_SIZE, g_free);
 }
 
 /** loads callmaster database from file
  * returns number of loaded calls
  */
 int load_callmaster(void) {
-    extern int arrlss;
 
-    FILE *cfp = NULL;
+    FILE *cfp;
     char callmaster_location[80];
     char s_inputbuffer[186] = "";
 
@@ -819,33 +819,23 @@ int load_callmaster(void) {
 
     while (fgets(s_inputbuffer, 85, cfp) != NULL) {
 
-	g_strchomp(s_inputbuffer);
+	g_strstrip(s_inputbuffer);
 
-	if (s_inputbuffer[0] == '#')
-	    /* skip comment lines */
+	/* skip comment lines and calls shorter than 3 chars */
+	if (s_inputbuffer[0] == '#' || strlen(s_inputbuffer) < 3) {
 	    continue;
-
-	if (strlen(s_inputbuffer) < 3)
-	    /* calls are at least 3 char long */
-	    continue;
+	}
 
 	s_inputbuffer[12] = '\0';		/* terminate line length */
 
-	if (arrlss == 1) {
-
+	if (arrlss) {
 	    /* keep only NA stations */
-	    if ((s_inputbuffer[0] == 'A') || (s_inputbuffer[0] == 'K')
-		    || (s_inputbuffer[0] == 'W')
-		    || (s_inputbuffer[0] == 'V')
-		    || (s_inputbuffer[0] == 'C')
-		    || (s_inputbuffer[0] == 'N')) {
-
-		g_ptr_array_add(callmaster, g_strdup(s_inputbuffer));
+	    if (strchr("AKWVCN", s_inputbuffer[0]) == NULL) {
+		continue;
 	    }
-	} else {
-
-	    g_ptr_array_add(callmaster, g_strdup(s_inputbuffer));
 	}
+
+	g_ptr_array_add(callmaster, g_strdup(s_inputbuffer));
     }
 
     fclose(cfp);

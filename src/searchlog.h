@@ -23,15 +23,18 @@
 
 #include <glib.h>
 
+#define CALLMASTER_SIZE 16000
+
 extern GPtrArray *callmaster;
 #define CALLMASTERARRAY(n) ((char *) g_ptr_array_index(callmaster, n))
+
+int load_callmaster(void);
+
+void searchlog(char *searchstring);
 
 void InitSearchPanel(void);
 void ShowSearchPanel(void);
 void HideSearchPanel(void);
-void searchlog(char *searchstring);
-int load_callmaster(void);
-void show_needed_sections(void);
 void OnLowerSearchPanel(int x, char *str);
 
 #endif /* SEARCHLOG_H */
