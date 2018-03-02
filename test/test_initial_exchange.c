@@ -4,29 +4,16 @@
 
 // OBJECT ../src/initial_exchange.o
 
-const char *NOT_SET = "__NOT_SET__";
-
-static const char *msg, *msg1, *msg2;
-
-void showmsg(char *message) {
-    msg = message;
-}
-
-void showstring(char *message1, char *message2) {
-    msg1 = message1;
-    msg2 = message2;
-}
-
 int setup_default(void **state) {
-    msg = msg1 = msg2 = NOT_SET;
+    showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
     return 0;
 }
 
 void test_no_file(void **state) {
     struct ie_list *data = make_ie_list("/nosuchfile");
-    assert_string_equal(msg, "Cannot find initial exchange file");
-    assert_string_equal(msg1, NOT_SET);
-    assert_string_equal(msg2, NOT_SET);
+    assert_string_equal(showmsg_spy, "Cannot find initial exchange file");
+    assert_string_equal(showstring_spy1, STRING_NOT_SET);
+    assert_string_equal(showstring_spy2, STRING_NOT_SET);
     assert_null(data);
 }
 
@@ -54,57 +41,58 @@ static void check_data(struct ie_list *data) {
 
 void test_ok(void **state) {
     struct ie_list *data = make_ie_list("data/ie_ok.txt");
-    assert_string_equal(msg, NOT_SET);
-    assert_string_equal(msg1, "Using initial exchange file");
-    assert_string_equal(msg2, "data/ie_ok.txt");
+    assert_string_equal(showmsg_spy, STRING_NOT_SET);
+    assert_string_equal(showstring_spy1, "Using initial exchange file");
+    assert_string_equal(showstring_spy2, "data/ie_ok.txt");
     check_data(data);
 }
 
 void test_ok_dos(void **state) {
     struct ie_list *data = make_ie_list("data/ie_ok_dos.txt");
-    assert_string_equal(msg, NOT_SET);
-    assert_string_equal(msg1, "Using initial exchange file");
-    assert_string_equal(msg2, "data/ie_ok_dos.txt");
+    assert_string_equal(showmsg_spy, STRING_NOT_SET);
+    assert_string_equal(showstring_spy1, "Using initial exchange file");
+    assert_string_equal(showstring_spy2, "data/ie_ok_dos.txt");
     check_data(data);
 }
 
 void test_long_line(void **state) {
     struct ie_list *data = make_ie_list("data/ie_long_line.txt");
-    assert_string_equal(msg, "Line 1: too long");
-    assert_string_equal(msg1, "Using initial exchange file");
-    assert_string_equal(msg2, "data/ie_long_line.txt");
+    assert_string_equal(showmsg_spy, "Line 1: too long");
+    assert_string_equal(showstring_spy1, "Using initial exchange file");
+    assert_string_equal(showstring_spy2, "data/ie_long_line.txt");
     assert_null(data);
 }
 
 void test_no_comma(void **state) {
     struct ie_list *data = make_ie_list("data/ie_no_comma.txt");
-    assert_string_equal(msg, "Line 2: no comma found");
-    assert_string_equal(msg1, "Using initial exchange file");
-    assert_string_equal(msg2, "data/ie_no_comma.txt");
+    assert_string_equal(showmsg_spy, "Line 2: no comma found");
+    assert_string_equal(showstring_spy1, "Using initial exchange file");
+    assert_string_equal(showstring_spy2, "data/ie_no_comma.txt");
     assert_null(data);
 }
 
 void test_ok_tab(void **state) {
     struct ie_list *data = make_ie_list("data/ie_ok_tab.txt");
-    assert_string_equal(msg, NOT_SET);
-    assert_string_equal(msg1, "Using initial exchange file");
-    assert_string_equal(msg2, "data/ie_ok_tab.txt");
+    assert_string_equal(showmsg_spy, STRING_NOT_SET);
+    assert_string_equal(showstring_spy1, "Using initial exchange file");
+    assert_string_equal(showstring_spy2, "data/ie_ok_tab.txt");
     check_data(data);
 }
 
 void test_empty_call(void **state) {
     struct ie_list *data = make_ie_list("data/ie_empty_call.txt");
-    assert_string_equal(msg, "Line 1: 0 or more than one token before comma");
-    assert_string_equal(msg1, "Using initial exchange file");
-    assert_string_equal(msg2, "data/ie_empty_call.txt");
+    assert_string_equal(showmsg_spy,
+			"Line 1: 0 or more than one token before comma");
+    assert_string_equal(showstring_spy1, "Using initial exchange file");
+    assert_string_equal(showstring_spy2, "data/ie_empty_call.txt");
     assert_null(data);
 }
 
 void test_ok_multi_column(void **state) {
     struct ie_list *data = make_ie_list("data/ie_ok_multi_column.txt");
-    assert_string_equal(msg, NOT_SET);
-    assert_string_equal(msg1, "Using initial exchange file");
-    assert_string_equal(msg2, "data/ie_ok_multi_column.txt");
+    assert_string_equal(showmsg_spy, STRING_NOT_SET);
+    assert_string_equal(showstring_spy1, "Using initial exchange file");
+    assert_string_equal(showstring_spy2, "data/ie_ok_multi_column.txt");
     check_data(data);
 }
 

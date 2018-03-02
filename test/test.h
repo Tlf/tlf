@@ -1,3 +1,5 @@
+#ifndef _TEST_H
+#define _TEST_H
 
 //
 // common includes for the test groups
@@ -12,3 +14,8 @@
 
 #include <cmocka.h>
 
+extern const char STRING_NOT_SET[];
+
+extern const char *showmsg_spy, *showstring_spy1, *showstring_spy2;
+
+#endif

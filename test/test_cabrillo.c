@@ -16,7 +16,6 @@ float freq;
 void addcall() { }
 void store_qso() { }
 void cleanup_qso() { }
-void showmsg(char *message) { }
 void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) { }
 char *getgrid(char *comment) { return comment; }
 void checkexchange(int x) { }

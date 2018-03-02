@@ -17,19 +17,6 @@
 extern WINDOW *search_win;
 extern int nr_bands;
 
-const char *NOT_SET = "__NOT_SET__";
-
-static const char *msg, *msg1, *msg2;
-
-void showmsg(char *message) {
-    msg = message;
-}
-
-void showstring(char *message1, char *message2) {
-    msg1 = message1;
-    msg2 = message2;
-}
-
 /*********************/
 // mocks
 
@@ -63,7 +50,7 @@ int getctydata(char *checkcallptr) {
 /*********************/
 
 int setup_default(void **state) {
-    msg = msg1 = msg2 = NOT_SET;
+    showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
     arrlss = 0;
     dxped = 0;
     contest = 0;
@@ -93,9 +80,9 @@ void test_callmaster_no_file(void **state) {
     remove_callmaster();
     int n = load_callmaster();
     assert_int_equal(n, 0);
-    assert_string_equal(msg, NOT_SET);
-    assert_string_equal(msg1, NOT_SET);
-    assert_string_equal(msg2, NOT_SET);
+    assert_string_equal(showmsg_spy, STRING_NOT_SET);
+    assert_string_equal(showstring_spy1, STRING_NOT_SET);
+    assert_string_equal(showstring_spy2, STRING_NOT_SET);
 }
 
 void test_callmaster_ok(void **state) {
