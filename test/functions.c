@@ -1,8 +1,33 @@
 #include "test.h"
 
-int key_get() {
+#include "curses.h"
+
+int __wrap_key_get() {
     return -1;
 }
+
+// wrap with a plugin function
+int_func_t key_poll_func = NULL;
+
+int __wrap_key_poll() {
+    if (key_poll_func != NULL) {
+	return key_poll_func();
+    }
+    return -1;
+}
+
+int_func_t getch_func = NULL;
+
+int __wrap_wgetch(WINDOW *w) {
+    if (getch_func != NULL) {
+	return getch_func();
+    }
+    return -1;
+}
+
+void __wrap_refreshp() {
+}
+
 
 const char STRING_NOT_SET[] = "__NOT_SET__";
 

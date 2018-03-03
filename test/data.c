@@ -426,9 +426,6 @@ int wattr_on(WINDOW *win, attr_t attrs, void *opts) {
     return 0;
 }
 
-void refreshp() {
-}
-
 void displayit() {
 }
 
