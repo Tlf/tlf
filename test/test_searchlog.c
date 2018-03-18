@@ -76,14 +76,14 @@ int teardown_default(void **state) {
     return 0;
 }
 
-void test_callmaster_no_file(void **state) {
-    remove_callmaster();
-    int n = load_callmaster();
-    assert_int_equal(n, 0);
-    assert_string_equal(showmsg_spy, STRING_NOT_SET);
-    assert_string_equal(showstring_spy1, STRING_NOT_SET);
-    assert_string_equal(showstring_spy2, STRING_NOT_SET);
-}
+//void test_callmaster_no_file(void **state) {
+//    remove_callmaster();
+//    int n = load_callmaster();
+//    assert_int_equal(n, 0);
+//    assert_string_equal(showmsg_spy, STRING_NOT_SET);
+//    assert_string_equal(showstring_spy1, STRING_NOT_SET);
+//    assert_string_equal(showstring_spy2, STRING_NOT_SET);
+//}
 
 void test_callmaster_ok(void **state) {
     write_callmaster("# data\nA1AA\nA2BB\n\n");
