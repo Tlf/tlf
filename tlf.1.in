@@ -53,10 +53,18 @@ Since @PACKAGE_NAME@ version 0.9.21 the
 parallel and serial ports and speed and weight control from the keyboard, and
 band info output on the parallel port.
 .P
-For radio control @PACKAGE_NAME@ works with Hamlib (version >= 1.2.3), you
+For users of the K1EL series of \(lqWin Keyers\(rq, the
+.B winkeydaemon
+is available from
+.UR https://github.com/N0NB/winkeydaemon
+GitHub
+.UE .
+Setup is the same as for the cwdaemon.
+.P
+For radio control @PACKAGE_NAME@ works with Hamlib (version >= 1.2.8), you
 can find it at
-.UR https://sourceforge.net/projects/hamlib/
-SourceForge.net
+.UR https://www.hamlib.org/
+www.hamlib.org
 .UE .
 .P
 @PACKAGE_NAME@ provides full
@@ -1827,28 +1835,28 @@ QSO.
 .
 .TP
 .B FLDIGI
-If you work in RTTY (or any other digital modes), you can communicate with 
+If you work in RTTY (or any other digital modes), you can communicate with
 Fldigi through XMLRPC. The FLDIGI keyword will activate the interface.
-By default it connects to http://localhost:7362/RPC2 .
+By default it connects to
+.UR http://localhost:7362/RPC2
+http://localhost:7362/RPC2
+.UE .
 
-If you run fldigi's xmlrpc server on an different port use
-.BI 
-  FLDIGI=http://localhost:7362/RPC2
+If you run Fldigi's xmlrpc server on an different port use
+.BI FLDIGI =http://localhost:port_#/RPC2
 .
 .TP
 .B MINITEST[=NNN]
 Use this option when the contest is a minitest like contest. In that contests
-the full contest intervall is divided into shorter sections (e.g. 6 * 10 min. 
-sections in an 60 min hour).  
-Any station can be worked once in each of the 
-time sections without counting as dupe. 
-The default length of the sections is 600s (10min) but you can pass another 
-value (in seconds) after the '=' sign. There must be an integral number of time
-sections per hour!
+the full contest intervall is divided into shorter sections (e.g. 6 * 10 min.
+sections in an 60 min hour).  Any station can be worked once in each of the
+time sections without counting as dupe.  The default length of the sections is
+600s (10min) but you can pass another value (in seconds) after the '='
+sign. There must be an integral number of time sections per hour!
 .
 .TP
 .B UNIQUE_CALL_MULTI
-Multiplier is callsign. 
+Multiplier is callsign.
 You have to pass one of these arguments: ALL, BAND.
   Example:
   UNIQUE_CALL_MULTI=BAND
