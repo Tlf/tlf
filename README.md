@@ -30,6 +30,7 @@ and the INSTALL file for an quick installation guide.
 
 ## Contributing
 
+* See homepage at https://Tlf.github.io for more information
 * There is a mailing list at tlf-devel@nongnu.org (see 
   http://lists.nongnu.org/mailman/listinfo/tlf-devel)
 * If you want to contribute clone the repo, make changes and send us a patch 
