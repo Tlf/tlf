@@ -1,0 +1,51 @@
+! Sample Xresources for Xterm.
+! Copy to your home directory as $HOME/.Xresources and
+! run xrdb -merge ~/.Xresources to make these settings visible
+! to a running X instance
+
+!Xcursor*theme: DMZ-White
+
+!xterm*font:     *-fixed-*-*-*-20-*
+!xterm*font:     10x20
+
+! Adjust the size parameter to your preference
+xterm*faceName: DejaVu Sans Mono:size=18:antialias=false
+XTerm*allowBoldFonts: true
+
+! terminal colors ------------------------------------------------------------
+
+! Linux terminal scheme
+xterm*background: #000000
+xterm*foreground: #c0c0c0
+
+! Black + DarkGrey
+xterm*color0:  #000000
+xterm*color8:  #808080
+
+! DarkRed + Red
+xterm*color1:  #800000
+xterm*color9:  #ff0000
+
+! DarkGreen + Green
+xterm*color2:  #008000
+xterm*color10: #00ff00
+
+! Brown + Yellow
+xterm*color3:  #808000
+xterm*color11: #ffff00
+
+! DarkBlue + Blue
+xterm*color4:  #000080
+xterm*color12: #0000ff
+
+! DarkMagenta + Magenta
+xterm*color5:  #800080
+xterm*color13: #ff00ff
+
+!DarkCyan + Cyan
+xterm*color6:  #008080
+xterm*color14: #00ffff
+
+! LightGrey + White
+xterm*color7:  #c0c0c0
+xterm*color15: #ffffff
