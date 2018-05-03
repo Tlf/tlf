@@ -196,7 +196,7 @@ int callinput(void) {
 	    }
 
 	    /* if BMAUTOADD is active and user has input a call sign
-	     * (indicated by non-zeor freqstore) check if he turns away
+	     * (indicated by non-zero freqstore) check if he turns away
 	     * from frequency and if so add call to spot list */
 	    if (bmautoadd != 0 && freqstore != 0) {
 		if (strlen(hiscall) >= 3) {
@@ -222,6 +222,7 @@ int callinput(void) {
 		    showinfo(getctydata(hiscall));
 		    printcall();
 		    searchlog(hiscall);
+		    freqstore = 0;
 		}
 	    }
 
