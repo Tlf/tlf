@@ -35,6 +35,7 @@
 #include "changepars.h"
 #include "clear_display.h"
 #include "editlog.h"
+#include "fldigixmlrpc.h"
 #include "gettxinfo.h"
 #include "lancode.h"
 #include "listmessages.h"
@@ -98,9 +99,11 @@ int changepars(void) {
     extern char synclogfile[];
     extern char sc_volume[];
     extern int cwstart;
+    extern int digikeyer;
+    extern int fldigi_used;
 
     char parameterstring[20];
-    char parameters[51][19];
+    char parameters[52][19];
     char cmdstring[80];
     int i, k, x, nopar = 0;
     int maxpar = 50;
@@ -160,6 +163,7 @@ int changepars(void) {
     strcpy(parameters[48], "SOUND");
     strcpy(parameters[49], "CWMODE");
     strcpy(parameters[50], "CHARS");
+    strcpy(parameters[51], "FLDIGI");
 
     nopar = 0;
 
@@ -692,6 +696,21 @@ int changepars(void) {
 	    refreshp();
 	    break;
 
+	}
+        case 51: {              /* FLDIGI - turn on/off */
+	    if (digikeyer == FLDIGI) {
+		if (fldigi_used == 0) {
+		    fldigi_used = 1;
+		    fldigi_clear_connerr();
+		    mvprintw(13, 29, "FLDIGI ON");
+	        }
+	        else {
+		    fldigi_used = 0;
+		    mvprintw(13, 29, "FLDIGI OFF");
+		}
+		refreshp();
+	    }
+	    break;
 	}
 	default: {
 	    nopar = 1;

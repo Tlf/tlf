@@ -1,6 +1,6 @@
 Tlf RTTY howto
 
-2016, Ervin Hegedus, HA2OS
+2016-2018, Ervin Hegedus, HA2OS
 
 This is a guide for Tlf, how to use it with Fldigi in RTTY mode,
 especially in FSK, LSB or USB modulations. Tlf got a new Fldigi
@@ -18,43 +18,17 @@ Let's see, how works the TX direction with Fldigi.
 
 Important: if you set up your Fldigi instance, don't set up your
 RIG! Tlf needs to handle the RIG, because it needs to tune the VFO,
-to use the bandmap.
+to use the bandmap. After the version 1.3, Tlf can controlls Fldigi,
+then it can be show the QRG (frequency of RIG - see later), and
+mode of RIG (eg: LSB, USB, FSK).
 
 Starting with TLF-1.3 there are two ways to comunicate with Fldigi -
-the old GMFSK interface and the actual XMLRPC one.
+the old GMFSK interface and the actual XMLRPC one. Note, that after
+version 1.3 the GMFSK works as standalone interface, but can't work
+with Fldigi.
 
-Note: Using the new interface ist recommended. The old GMFSK interface 
+Note: Using the new interface is recommended. The old GMFSK interface 
 will be no longer maintained and will go away soon.
-
-GMFSK interface
-===============
-
-First you need to create some filesin your $HOME directory:
-
-~$ touch TLFfldigi
-~$ touch gmfsk_autofile
-
-The TLFfldigi file indicates to Fldigi, that it needs to listen
-the gmfsk_autofile file. Tlf writes its RTTY messages to
-that file, and Fldigi reads the messages from it. 
-
-In your logcfg.dat, you had to set up the following lines:
-
-RTTYMODE
-GMFSK=/home/YOURUSER/gMFSK.log
-DIGIMODEM=/home/YOURUSER/gmfsk_autofile
-
-Note, that GMFSK directive tells Tlf, that it can read the
-output of modem, and it can be shown in its own modem window.
-(The miniterm window opens when you type the ":miniterm" command
-in callsign field.)
-
-If you want to use a serial port driven FSK modem, just replace
-the DIGIMODEM value for your modem path. Eg. I've build an FSK
-modem with the Arduino board, which reads the serial port of my
-PC. So, I've set it up like this:
-
-DIGIMODEM=/dev/ttyS0
 
 XMLRPC interface
 ================
@@ -77,10 +51,12 @@ communicate through XMLRPC.
 You can still read of Fldigi RX window (top) in Tlf own terminal,
 just use ":miniterm" command in callsign field.
 
-IMPORTANT: The FLDIGI command sets the XMLRPC interface as keyer for
-both CW and DIGIMODE. That means you can not have FLDIGI and NETKEYER 
-(first for Ddigimode, second for CW) at the same time. That limitation
-will go away in next versions of tlf.
+There is a new command: ":fldigi", which helps to you to turn on and
+off Fldigi communication. Then you don't need to modifiy the logcfg.dat
+to change your mode.
+
+Note: in old versions of Tlf, you could't use NETKEYER and FLDIGI in
+same time. Now this restriction is gone, you can use them in same time.
 
 The RX mode is a slightly difficult. I don't want to expose that
 here, I suppose that anybody knows that, if works in RTTY. I had
@@ -120,6 +96,14 @@ the Fldigi carrier's as it exists, and grab the next spot. Tlf will
 calculates the requested QRG from the different of the spot and
 Fldigi carrier's frequency, and tune the RIG. That's it.
 
+Error handling: if you forgot to start the Fldigi, or you close that
+till Tlf runs and wants to communicate with it, Tlf tries to connect.
+After ten (10) continuous unsuccessful attemtp Tlf will show you the
+error message (at bottom left corner): "Fldigi: lost connection", and
+turns it off. If you want to turn on again, just type ":fldigi"
+command in CALLSIGN field. If Fldigi comes back after less, than ten
+attempt, the error counter cleared.
+
 More new feature in Fldigi interface:
 - when Tlf sends a message throug Fldigi, it switches Fldigi to TX mode.
 - similar to CW mode, if you press ESC while Fldigi sends the message,
@@ -129,6 +113,15 @@ More new feature in Fldigi interface:
   and handles as correctly. You will lost the Fldigi functions (no
   TX/RX, QRG align), but Tlf runs away. If you start Fldigi again,
   after a few seconds, Tlf will work with it again
+
+New features after 1.3:
+- Fldigi supports nanoIO software, which is a small Arduino project
+  Homepage: https://github.com/w1hkj/nanoIO
+  whit this, you can work in real FSK mode
+- Fldigi can catch the different strings as field values, eg:
+  CALLSIGN, EXCHANGE. If you click in RX window to a callsign, Fldigi
+  fills its CALL field, and Tlf will grab it. EXCHANGE field is similar.
+
 
 73, Ervin
 HA2OS

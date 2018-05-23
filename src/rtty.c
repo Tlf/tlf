@@ -281,7 +281,7 @@ int rx_rtty() {
 	    }
 	}
     } else if (digikeyer == FLDIGI) {
-	i = fldigi_get_rx_text(line);
+	i = fldigi_get_rx_text(line, sizeof(line));
 	for (j = 0; j < i; j++) {
 	    ry_addchar(line[j]);
 	}

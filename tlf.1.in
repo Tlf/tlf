@@ -303,6 +303,10 @@ Filter cluster info (announce, dx-spots, all).
 Show frequency or band/score information of your other stations.
 .
 .TP
+.BR :FLDIGI
+Turn off/on Fldigi communication.
+.
+.TP
 .BR :HEL p
 Show online help (displays
 .I help.txt
