@@ -300,7 +300,7 @@ int parse_logcfg(char *inputbuffer) {
     extern int bmautograb;
     extern int sprint_mode;
     extern char fldigi_url[50];
-    extern int fldigi_used;
+    extern int use_fldigi;
     extern unsigned char rigptt;
     extern int minitest;
     extern int unique_call_multi;
@@ -1831,7 +1831,7 @@ int parse_logcfg(char *inputbuffer) {
 			  sizeof(fldigi_url));
 	    }
 	    digikeyer = FLDIGI;
-	    fldigi_used = 1;
+	    use_fldigi = 1;
 #endif
 	    break;
 	}

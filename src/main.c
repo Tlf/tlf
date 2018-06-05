@@ -353,7 +353,6 @@ int tnc_serial_rate = 2400;
 char clusterlogin[80] = "";
 int bmautoadd = 0;
 int bmautograb = 0;
-int hiscall_filled = 0;
 
 /*-------------------------------------rigctl-------------------------------*/
 #ifdef HAVE_LIBHAMLIB
@@ -374,7 +373,7 @@ int rig_comm_success = 0;
 
 /*----------------------------------fldigi---------------------------------*/
 char fldigi_url[50] = "http://localhost:7362/RPC2";
-int fldigi_used = 0;
+int use_fldigi = 0;
 
 /*---------------------------------simulator-------------------------------*/
 int simulator = 0;

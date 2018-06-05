@@ -67,7 +67,7 @@ extern char call[];
 extern int trxmode;
 extern int digikeyer;
 extern int trx_control;
-extern int fldigi_used;
+extern int use_fldigi;
 
 int cw_simulator(void);
 
@@ -118,7 +118,7 @@ void *background_process(void *ptr) {
 	 *   fldigi_get_log_call() reads the callsign, if user clicks to a string in Fldigi's RX window
 	 *   fldigi_get_log_serial_number() reads the exchange
 	 */
-	if (digikeyer == FLDIGI && fldigi_used == 1
+	if (digikeyer == FLDIGI && use_fldigi == 1
 		&& trx_control == 1) {
 	    if (fldigi_rpc_cnt == 0) {
 		fldigi_xmlrpc_get_carrier();

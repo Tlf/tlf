@@ -63,8 +63,7 @@ typedef struct xmlrpc_res_s {
 				   it back to RIG carrier */
 
 extern char fldigi_url[50];
-extern int fldigi_used;
-extern int hiscall_filled;
+extern int use_fldigi;
 
 int fldigi_var_carrier = 0;
 int fldigi_var_shift_freq = 0;
@@ -177,9 +176,9 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
     unreacheable, but it will check again and again, not
     need to restart Tlf, or type ":FLDIGI" to turn on again
     */
-    if (connerr == 1 && fldigi_used == 1) {
+    if (connerr == 1 && use_fldigi == 1) {
 	if (connerrcnt == 10) {
-	    fldigi_used = 0;
+	    use_fldigi = 0;
 	    mvprintw(24, 0, "Fldigi: lost connection!\n");
 	    refreshp();
 	    sleep(1);
@@ -192,7 +191,7 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 
     local_result->stringval = NULL;
     local_result->byteval = NULL;
-    if (connerr == 0 && fldigi_used == 1) {
+    if (connerr == 0 && use_fldigi == 1) {
 	va_start(argptr, format);
 	xmlrpc_env_init(local_env);
 	pcall_array = xmlrpc_array_new(local_env);
@@ -569,7 +568,6 @@ int fldigi_get_log_call() {
 			strcpy(hiscall, tempstr);
 			hiscall[strlen(tempstr)] = '\0';
 			strcpy(thiscall, hiscall);
-			hiscall_filled = 1;
 			printcall();
 		    }
 		}
