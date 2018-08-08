@@ -219,7 +219,7 @@ int callinput(void) {
 		    grab.state = REACHED;
 		    grab.spotfreq = freq;
 
-		    showinfo(getctydata(hiscall));
+		    showinfo(getctydata_pfx(hiscall));
 		    printcall();
 		    searchlog(hiscall);
 		    freqstore = 0;
@@ -241,7 +241,7 @@ int callinput(void) {
 		hiscall[0] = '\0';
 		printcall();
 		HideSearchPanel();
-		showinfo(0);
+		showinfo(SHOWINFO_DUMMY);
 	    }
 
 
@@ -653,7 +653,7 @@ int callinput(void) {
 		    hiscall[strlen(hiscall) - 1] = '\0';
 
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */
-			showinfo(getctydata(hiscall));
+			showinfo(getctydata_pfx(hiscall));
 			searchlog(hiscall);
 			refreshp();
 		    }
@@ -909,7 +909,7 @@ int callinput(void) {
 	    case 1: {
 		addspot();
 		HideSearchPanel();
-		showinfo(0);
+		showinfo(SHOWINFO_DUMMY);
 
 		grab.state = REACHED;
 		grab.spotfreq = freq;
@@ -1065,7 +1065,7 @@ int callinput(void) {
 
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
-		showinfo(getctydata(hiscall));
+		showinfo(getctydata_pfx(hiscall));
 		searchlog(hiscall);
 	    }
 
