@@ -53,6 +53,7 @@ extern int cw_bandwidth;
 extern int trxmode;
 extern int rigmode;
 extern int digikeyer;
+extern rmode_t digi_mode;
 #endif
 
 extern float freq;
@@ -69,6 +70,7 @@ extern unsigned char rigptt;
  *  SETCWMODE
  *  SETSSBMODE
  *  RESETRIT
+ *  SETDIGIMODE
  *  else - set rig frequency
  *
  */
@@ -242,6 +244,26 @@ void gettxinfo(void) {
 	    retval =
 		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,
 			     TLF_DEFAULT_PASSBAND);
+
+	if (retval != RIG_OK) {
+	    mvprintw(24, 0, "Problem with rig link!\n");
+	    refreshp();
+	    sleep(1);
+	}
+#endif
+
+    } else if (reqf == SETDIGIMODE) {
+#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
+	rmode_t new_mode = digi_mode;
+	if (new_mode == RIG_MODE_NONE) {
+	    if (digikeyer == FLDIGI)
+		new_mode = RIG_MODE_USB;
+	    else
+		new_mode = RIG_MODE_LSB;
+	}
+	retval =
+	    rig_set_mode(my_rig, RIG_VFO_CURR, new_mode,
+		TLF_DEFAULT_PASSBAND);
 
 	if (retval != RIG_OK) {
 	    mvprintw(24, 0, "Problem with rig link!\n");
