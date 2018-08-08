@@ -26,6 +26,11 @@ typedef struct {
     short cq;
     short itu;
     short dxcc_index;
+    float lat;
+    float lon;
+    char *continent;
+    float timezone;
+    char exact;
 } prefix_data;
 
 typedef struct {
@@ -39,6 +44,8 @@ typedef struct {
     char *pfx;
     char starred;
 } dxcc_data;
+
+extern char have_exact_matches;
 
 void prefix_init(void);
 
