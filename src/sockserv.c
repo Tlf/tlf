@@ -23,6 +23,8 @@
 /* Written by N2RJT - Dave Brown */
 
 
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <errno.h>
 #include <netdb.h>
 #include <stdio.h>
