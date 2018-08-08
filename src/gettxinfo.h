@@ -24,6 +24,7 @@
 #define SETCWMODE   (-1)
 #define SETSSBMODE  (-2)
 #define RESETRIT    (-3)
+#define SETDIGIMODE (-4)
 
 void set_outfreq(double hertz);
 double get_outfreq();

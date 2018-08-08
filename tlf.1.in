@@ -1385,6 +1385,13 @@ is present in logcfg.dat, and @PACKAGE_NAME@ if is in DIGIMODE, then the
 other station's callsign will be sent before \(lqDE\(rq, e.g. \(lqDL1A DE
 W1AW\(rq.
 .
+.TP
+\fBDIGI_RIG_MODE\fR=\fImode\fR
+If set with \fBRADIO_CONTROL\fR option, specifies the mode to change the
+rig to when :DIG mode is selected. \fImode\fR may be one of \(lqUSB\(rq, \(lqLSB\(rq,
+\(lqRTTY\(rq, or \(lqRTTYR\(rq.  If not set, \(lqUSB\(rq is used if FLDIGI is
+set and \(lqLSB\(rq is used otherwise.
+.
 .SH RULES
 .
 The contest rules can be put into separate files.  @PACKAGE_NAME@ will

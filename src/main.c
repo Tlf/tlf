@@ -326,6 +326,9 @@ int keyer_backspace = 0;        // disabled
 
 char controllerport[80] = "/dev/ttyS0"; // for GMFSK or MFJ-1278
 char rttyoutput[120];		// where to GMFSK digimode output
+#ifdef HAVE_LIBHAMLIB
+rmode_t digi_mode = RIG_MODE_NONE;
+#endif
 
 int txdelay = 0;
 int weight = 0;

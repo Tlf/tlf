@@ -59,6 +59,9 @@ extern int packetinterface;
 extern int tncport;
 extern int shortqsonr;
 extern char *cabrillo;
+#ifdef HAVE_LIBHAMLIB
+extern rmode_t digi_mode;
+#endif
 
 int exist_in_country_list();
 int continent_found();
@@ -70,7 +73,7 @@ void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
 
-#define  MAX_COMMANDS 237	/* commands in list */
+#define  MAX_COMMANDS (sizeof(commands) / sizeof(*commands))	/* commands in list */
 
 
 int read_logcfg(void) {
@@ -305,7 +308,7 @@ int parse_logcfg(char *inputbuffer) {
     extern int minitest;
     extern int unique_call_multi;
 
-    char commands[MAX_COMMANDS][30] = {
+    char *commands[] = {
 	"enable",		/* 0 */		/* deprecated */
 	"disable",				/* deprecated */
 	"F1",
@@ -543,7 +546,8 @@ int parse_logcfg(char *inputbuffer) {
 	"RIGPTT",
 	"MINITEST",
 	"UNIQUE_CALL_MULTI",		/* 235 */
-	"KEYER_BACKSPACE"
+	"KEYER_BACKSPACE",
+	"DIGI_RIG_MODE"
     };
 
     char **fields;
@@ -1872,6 +1876,27 @@ int parse_logcfg(char *inputbuffer) {
 	}
 	case 236: { // KEYER_BACKSPACE
 	    keyer_backspace = 1;
+	    break;
+	}
+	case 237: {
+#ifdef HAVE_LIBHAMLIB
+	    PARAMETER_NEEDED(teststring);
+	    g_ascii_strup(g_strchomp(fields[1]), -1);
+	    if (strcmp(fields[1], "USB") == 0)
+		digi_mode = RIG_MODE_USB;
+	    else if (strcmp(fields[1], "LSB") == 0)
+		digi_mode = RIG_MODE_LSB;
+	    else if (strcmp(fields[1], "RTTY") == 0)
+		digi_mode = RIG_MODE_RTTY;
+	    else if (strcmp(fields[1], "RTTYR") == 0)
+		digi_mode = RIG_MODE_RTTYR;
+	    else {
+		showmsg
+		("WARNING: invalid DIGI_RIG_MODE value, must be \"USB\", \"LSB\", \"RTTY\", or \"RTTYR\"");
+		sleep(5);
+		exit(1);
+	    }
+#endif
 	    break;
 	}
 	default: {
