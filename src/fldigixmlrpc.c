@@ -383,7 +383,7 @@ int fldigi_get_rx_text(char *line, int len) {
     } else {
 	if (lastpos < textlen) {
 	    rc = fldigi_xmlrpc_query(&result, &env, "text.get_rx", "dd",
-				     lastpos, textlen);
+				     lastpos, textlen - lastpos);
 	    if (rc != 0) {
 		return -1;
 	    }
