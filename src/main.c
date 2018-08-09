@@ -550,8 +550,7 @@ void ui_init() {
     } else if (strcasecmp(term, "xterm") == 0) {
 	use_xterm = 1;
 	use_rxvt = 1;
-    } else
-	putenv("TERM=rxvt");	/*or going to native console linux driver */
+    }
 
     /* Check the environment variable ESCDELAY.
      *
