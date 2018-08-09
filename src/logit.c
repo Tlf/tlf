@@ -26,6 +26,7 @@
 
 #include <string.h>
 
+#include "background_process.h"
 #include "callinput.h"
 #include "clear_display.h"
 #include "getexchange.h"
