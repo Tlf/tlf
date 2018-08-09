@@ -36,6 +36,7 @@
 
 #include <glib.h>
 
+#include "ignore_unused.h"
 #include "startmsg.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -261,7 +262,7 @@ void checklogfile(void) {
 
 		    while (!(feof(infile))) {
 
-			(void) fgets(inputbuffer, 160, infile);
+			IGNORE(fgets(inputbuffer, 160, infile));;
 
 			if (strlen(inputbuffer) != LOGLINELEN) {
 			    strcat(inputbuffer, backgrnd_str);
@@ -286,7 +287,7 @@ void checklogfile(void) {
 		    fstat(lfile, &statbuf);
 
 		    if (statbuf.st_size > 80) {
-			(void) ftruncate(lfile, statbuf.st_size - LOGLINELEN);
+			IGNORE(ftruncate(lfile, statbuf.st_size - LOGLINELEN));;
 			fsync(lfile);
 
 		    }

@@ -41,6 +41,7 @@
 #include "clear_display.h"
 #include "get_time.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "ignore_unused.h"
 #include "lancode.h"
 #include "splitscreen.h"
 #include "sockserv.h"
@@ -1108,7 +1109,7 @@ int packet() {
 	    if (packetinterface == TNC_INTERFACE) {
 		line[strlen(line) - 1] = 13;
 		line[strlen(line)] = '\0';
-		(void) write(fdSertnc, line, strlen(line));
+		IGNORE(write(fdSertnc, line, strlen(line)));;
 	    }
 
 	    curattr = attr[NORMAL_ATTR];
@@ -1224,7 +1225,7 @@ int send_cluster(void) {
 	    line[strlen(line) - 1] = '\r';
 	    line[strlen(line)] = '\0';	/* not needed */
 
-	    (void) write(fdSertnc, line, strlen(line));
+	    IGNORE(write(fdSertnc, line, strlen(line)));;
 	} else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
 	    usputs(prsock, line);
     }

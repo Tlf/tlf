@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 
 #include "clear_display.h"
+#include "ignore_unused.h"
 #include "scroll_log.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -64,7 +65,7 @@ int logedit(void) {
 	strcat(comstr, "e3  ");
 
     strcat(comstr, logfile);
-    (void) system(comstr);
+    IGNORE(system(comstr));;
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();
     refreshp();
@@ -134,7 +135,7 @@ int logedit(void) {
 		    fstat(lfile, &statbuf);
 
 		    if (statbuf.st_size > 80) {
-			(void) ftruncate(lfile, statbuf.st_size - LOGLINELEN);
+			IGNORE(ftruncate(lfile, statbuf.st_size - LOGLINELEN));;
 			fsync(lfile);
 
 		    }
