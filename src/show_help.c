@@ -30,6 +30,7 @@
 #include <glib/gstdio.h>
 
 #include "clear_display.h"
+#include "ignore_unused.h"
 #include "tlf_curses.h"
 
 extern SCREEN *mainscreen;
@@ -59,9 +60,9 @@ int show_help(void) {
     cmdstr = g_strdup_printf("less %s", helpfile);
 
     endwin();
-    (void) system("clear");
-    (void) system(cmdstr);
-    (void) system("clear");
+    IGNORE(system("clear"));;
+    IGNORE(system(cmdstr));;
+    IGNORE(system("clear"));;
 
     g_free(helpfile);
     g_free(cmdstr);

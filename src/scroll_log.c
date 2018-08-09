@@ -28,6 +28,7 @@
 #include <unistd.h>
 
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "ignore_unused.h"
 #include "qsonr_to_str.h"
 #include "tlf_curses.h"
 
@@ -52,7 +53,7 @@ void scroll_log(void) {
 	inputbuffer[0] = '\0';
 
 	if (fseek(fp, -1L * ii * LOGLINELEN, SEEK_END) == 0)
-	    (void) fgets(inputbuffer, 90, fp);
+	    IGNORE(fgets(inputbuffer, 90, fp));
 	else
 	    strcpy(inputbuffer,
 		   "                                                                                ");
@@ -60,7 +61,7 @@ void scroll_log(void) {
 	kk = 5 - ii;
 
 	if (strlen(inputbuffer) <= 10)	/* log repair */
-	    (void) fgets(inputbuffer, 90, fp);
+	    IGNORE(fgets(inputbuffer, 90, fp));;
 
 //              if (strlen(inputbuffer) != LOGLINELEN)
 //                      strcat (inputbuffer, backgrnd_str);

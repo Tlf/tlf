@@ -36,6 +36,7 @@
 #include "getctydata.h"
 #include "getpx.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "ignore_unused.h"
 #include "paccdx.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
@@ -684,8 +685,8 @@ int synclog(char *synclogfile) {
 	exit(1);
     }
     sleep(1);
-    (void) system("rm log1");
-    (void) system("rm log2");
+    IGNORE(system("rm log1"));;
+    IGNORE(system("rm log2"));;
 
     return (0);
 }

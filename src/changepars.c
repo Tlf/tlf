@@ -37,6 +37,7 @@
 #include "editlog.h"
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
+#include "ignore_unused.h"
 #include "lancode.h"
 #include "listmessages.h"
 #include "logview.h"
@@ -369,7 +370,7 @@ int changepars(void) {
 	    }
 
 	    strcat(cmdstring, config_file);
-	    (void) system(cmdstring);
+	    IGNORE(system(cmdstring));;
 
 	    read_logcfg();
 	    read_rules();	/* also reread rules file */
@@ -1055,7 +1056,7 @@ int debug_tty(void) {
     mvprintw(7, 40, "Length = %d characters", strlen(line));
     refreshp();
 
-    (void) write(fdSertnc, line, strlen(line));
+    IGNORE(write(fdSertnc, line, strlen(line)));;
 
     mvprintw(8, 0, "receiving message from trx");
     refreshp();

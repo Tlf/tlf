@@ -26,6 +26,7 @@
 #include <glib.h>
 
 #include "clear_display.h"
+#include "ignore_unused.h"
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -110,7 +111,7 @@ int write_keyer(void) {
 	    }
 	    sprintf(outstring, "echo -n \"\n%s\" >> %s",
 		    tosend, rttyoutput);
-	    (void) system(outstring);
+	    IGNORE(system(outstring));;
 	}
 
 	g_free(tosend);

@@ -26,6 +26,7 @@
 #include <string.h>
 
 #include "clear_display.h"
+#include "ignore_unused.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 
@@ -41,7 +42,7 @@ int logview(void) {
     strcat(comstr,  logfile);
 
     endwin();
-    (void) system(comstr);
+    IGNORE(system(comstr));;
     refreshp();
 
     clear_display();

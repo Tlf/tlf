@@ -31,6 +31,7 @@
 
 #include "clear_display.h"
 #include "deleteqso.h"
+#include "ignore_unused.h"
 #include "printcall.h"
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
@@ -65,7 +66,7 @@ void delete_last_qtcs(char *call, char *bandmode) {
 	    lseek(qtcfile, 0, SEEK_SET);
 	    while (look == 1) {
 		lseek(qtcfile, ((int)qstatbuf.st_size - (91 + qtclen)), SEEK_SET);
-		(void) read(qtcfile, logline, 90);
+		IGNORE(read(qtcfile, logline, 90));;
 		logline[90] = '\0';
 
 		if (!(strncmp(call, logline + QTCRECVCALLPOS, strlen(call)) == 0
@@ -77,7 +78,7 @@ void delete_last_qtcs(char *call, char *bandmode) {
 		    qtc_dec(call, RECV);
 		}
 	    }
-	    (void) ftruncate(qtcfile, qstatbuf.st_size - qtclen);
+	    IGNORE(ftruncate(qtcfile, qstatbuf.st_size - qtclen));;
 	    fsync(qtcfile);
 	}
 	close(qtcfile);
@@ -102,7 +103,7 @@ void delete_last_qtcs(char *call, char *bandmode) {
 	    // this works only for fixed length qtc line!
 	    while (s >= 0 && look == 1) {
 		lseek(qtcfile, ((int)qstatbuf.st_size - (95 + qtclen)), SEEK_SET);
-		(void) read(qtcfile, logline, 94);
+		IGNORE(read(qtcfile, logline, 94));;
 		if (!(strncmp(call, logline + QTCSENTCALLPOS, strlen(call)) == 0
 			&& strncmp(bandmode, logline, 5) == 0)) {
 		    // stop searching
@@ -118,7 +119,7 @@ void delete_last_qtcs(char *call, char *bandmode) {
 		    }
 		}
 	    }
-	    (void) ftruncate(qtcfile, qstatbuf.st_size - qtclen);
+	    IGNORE(ftruncate(qtcfile, qstatbuf.st_size - qtclen));;
 	    nr_qtcsent--;
 	    fsync(qtcfile);
 	}
@@ -153,7 +154,7 @@ void delete_qso(void) {
 		if (qtcdirection > 0) {
 		    // read band, mode and call from last QSO line
 		    lseek(lfile, ((int)statbuf.st_size - LOGLINELEN), SEEK_SET);
-		    (void) read(lfile, logline, LOGLINELEN - 1);
+		    IGNORE(read(lfile, logline, LOGLINELEN - 1));;
 
 		    g_strlcpy(bandmode, logline, 6);
 		    g_strlcpy(call, logline + 29, 15);
@@ -162,7 +163,7 @@ void delete_qso(void) {
 		    // delete QTC's for that combination of band, mode and call
 		    delete_last_qtcs(call, bandmode);
 		}
-		ftruncate(lfile, statbuf.st_size - LOGLINELEN);
+		IGNORE(ftruncate(lfile, statbuf.st_size - LOGLINELEN));
 	    }
 
 	    fsync(lfile);

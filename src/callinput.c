@@ -46,6 +46,7 @@
 #include "getctydata.h"
 #include "gettxinfo.h"
 #include "grabspot.h"
+#include "ignore_unused.h"
 #include "lancode.h"
 #include "muf.h"
 #include "netkeyer.h"
@@ -862,9 +863,9 @@ int callinput(void) {
 		    shell = "sh";
 		}
 		endwin();
-		(void) system("clear");
-		(void) system(shell);
-		(void) system("clear");
+		IGNORE(system("clear"));;
+		IGNORE(system(shell));;
+		IGNORE(system("clear"));;
 		set_term(mainscreen);
 		clear_display();
 
@@ -1248,7 +1249,7 @@ int play_file(char *audiofile) {
 #endif
 
 	usleep(txdelay * 1000);
-	(void) system(playcommand);
+	IGNORE(system(playcommand));;
 	printcall();
 
 #ifdef HAVE_LIBHAMLIB
