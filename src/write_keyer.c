@@ -116,6 +116,10 @@ int write_keyer(void) {
 
 	g_free(tosend);
 	tosend = NULL;
+    } else {
+	if (digikeyer == FLDIGI && trxmode == DIGIMODE)
+		fldigi_stop_text();
     }
+
     return (0);
 }

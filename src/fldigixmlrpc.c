@@ -69,6 +69,7 @@ int fldigi_var_carrier = 0;
 int fldigi_var_shift_freq = 0;
 static int initialized = 0;
 static int connerr = 0;
+static int fldigi_sending = 0;
 
 char thiscall[20] = "";
 char tcomment[20] = "";
@@ -319,31 +320,8 @@ int fldigi_send_text(char *line) {
 	return -1;
     }
 
-    // if state is TX, stop it
-    // if the RX success, clear the previous message from TX text window
-    if (strcmp(result.stringval, "TX") == 0) {
-	free((void *)result.stringval);
-	rc = fldigi_xmlrpc_query(&result, &env, "main.rx", "");
-	if (rc != 0) {
-	    return -1;
-	}
-	rc = fldigi_xmlrpc_query(&result, &env, "text.clear_tx", "");
-	if (rc != 0) {
-	    return -1;
-	}
-	sleep(2);
-    }
-    if (result.stringval != NULL) {
-	free((void *)result.stringval);
-    }
-
     // add message to
     rc = fldigi_xmlrpc_query(&result, &env, "text.add_tx", "s", line);
-    if (rc != 0) {
-	return -1;
-    }
-    /* switch to rx afterwards */
-    rc = fldigi_xmlrpc_query(&result, &env, "text.add_tx", "s", "^r");
     if (rc != 0) {
 	return -1;
     }
@@ -353,12 +331,26 @@ int fldigi_send_text(char *line) {
     }
     /* switch to tx */
     rc = fldigi_xmlrpc_query(&result, &env, "main.tx", "");
+    fldigi_sending = 1;
 
     if (result.stringval != NULL) {
 	free((void *)result.stringval);
     }
 #endif
     return rc;
+}
+
+void fldigi_stop_text(void)
+{
+#ifdef HAVE_LIBXMLRPC
+    xmlrpc_res result;
+    xmlrpc_env env;
+
+    if (fldigi_sending) {
+	fldigi_xmlrpc_query(&result, &env, "text.add_tx", "s", "^r");
+	fldigi_sending = 0;
+    }
+#endif
 }
 
 /* read the text from Fldigi's RX window, from last read position */
