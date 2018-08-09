@@ -35,13 +35,13 @@ int logview(void) {
     extern char backgrnd_str[];
 
     char comstr[40]  = "";
-    int j, rc;
+    int j;
 
     strcat(comstr,  "less  +G ");
     strcat(comstr,  logfile);
 
     endwin();
-    rc = system(comstr);
+    (void) system(comstr);
     refreshp();
 
     clear_display();

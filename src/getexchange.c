@@ -109,7 +109,6 @@ int getexchange(void) {
     int x = 0;
     char instring[2];
     char commentbuf[40] = "";
-    int retval = 0;
     char *gridmult = "";
 
     instring[1] = '\0';
@@ -120,13 +119,13 @@ int getexchange(void) {
     }
 
     if (recall_mult == 1)
-	retval = recall_exchange();
+	recall_exchange();
 
     if ((arrldx_usa == 1) && (trxmode != CWMODE))
-	retval = recall_exchange();
+	recall_exchange();
 
     if (arrl_fd == 1)
-	retval = recall_exchange();
+	recall_exchange();
 
     if (((cqww == 1) || (wazmult == 1) || (itumult == 1))
 	    && (*comment == '\0') && (strlen(hiscall) != 0)) {
@@ -141,7 +140,7 @@ int getexchange(void) {
     }
 
     if (stewperry_flg == 1) {
-	retval = recall_exchange();
+	recall_exchange();
     }
 
     /* parse input and modify exchange field accordingly */
@@ -283,7 +282,8 @@ int getexchange(void) {
 		    if (my_rst[1] <= 56) {
 			my_rst[1]++;
 
-			no_rst ? : mvprintw(12, 49, my_rst);
+			if (!no_rst)
+			    mvprintw(12, 49, my_rst);
 		    }
 		} else {	/* speed up */
 		    speedup();
@@ -300,7 +300,8 @@ int getexchange(void) {
 		    if (my_rst[1] > 49) {
 			my_rst[1]--;
 
-			no_rst ? : mvprintw(12, 49, my_rst);
+			if (!no_rst)
+			    mvprintw(12, 49, my_rst);
 		    }
 		} else {	/* speed down */
 		    speeddown();

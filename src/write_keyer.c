@@ -66,7 +66,6 @@ int write_keyer(void) {
     extern char rttyoutput[];
 
     FILE *bfp = NULL;
-    int rc;
     char outstring[420] =
 	"";	// this was only 120 char length, but wkeyerbuffer is 400
     char *tosend = NULL;
@@ -111,7 +110,7 @@ int write_keyer(void) {
 	    }
 	    sprintf(outstring, "echo -n \"\n%s\" >> %s",
 		    tosend, rttyoutput);
-	    rc = system(outstring);
+	    (void) system(outstring);
 	}
 
 	g_free(tosend);

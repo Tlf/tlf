@@ -31,7 +31,6 @@ int freq_display(void) {
 
     int x_position = 40;
     int y_position = 17;
-    int location = 0;
     char fbuffer[8];
 
     print_space(y_position, x_position);
@@ -43,8 +42,6 @@ int freq_display(void) {
     print_dot(y_position + 4, 28 + x_position + 1);
 
     sprintf(fbuffer, "%7.1f", freq);
-
-    location = 32;
 
     if (fbuffer[0] != ' ')
 	print_big_number(fbuffer[0] - 48, y_position, x_position, 4);
