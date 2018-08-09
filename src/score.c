@@ -371,7 +371,7 @@ int score() {
 	    calc_continent(zone);	// sets continent
 	}
 
-	if ((countrynr == mycountrynr)) {
+	if (countrynr == mycountrynr) {
 	    points = 0;
 
 	    return points;

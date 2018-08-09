@@ -298,7 +298,8 @@ int getexchange(void) {
 		    if (my_rst[1] <= 56) {
 			my_rst[1]++;
 
-			no_rst ? : mvprintw(12, 49, my_rst);
+			if (!no_rst)
+			    mvprintw(12, 49, my_rst);
 		    }
 		} else {	/* speed up */
 		    speedup();
@@ -315,7 +316,8 @@ int getexchange(void) {
 		    if (my_rst[1] > 49) {
 			my_rst[1]--;
 
-			no_rst ? : mvprintw(12, 49, my_rst);
+			if (!no_rst)
+			    mvprintw(12, 49, my_rst);
 		    }
 		} else {	/* speed down */
 		    speeddown();

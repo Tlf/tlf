@@ -295,9 +295,6 @@ int keyer(void) {
 		    sendmessage("\b");          /* ASCII BS */
 		    break;
 		}
-
-		default:
-		    x = x;
 	    }
 
 	}

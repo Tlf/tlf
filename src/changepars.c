@@ -370,7 +370,7 @@ int changepars(void) {
 	    }
 
 	    strcat(cmdstring, config_file);
-	    system(cmdstring);
+	    (void) system(cmdstring);
 
 	    read_logcfg();
 	    read_rules();	/* also reread rules file */
@@ -1057,7 +1057,7 @@ int debug_tty(void) {
     mvprintw(7, 40, "Length = %d characters", strlen(line));
     refreshp();
 
-    write(fdSertnc, line, strlen(line));
+    (void) write(fdSertnc, line, strlen(line));
 
     mvprintw(8, 0, "receiving message from trx");
     refreshp();

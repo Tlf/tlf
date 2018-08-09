@@ -59,9 +59,9 @@ int show_help(void) {
     cmdstr = g_strdup_printf("less %s", helpfile);
 
     endwin();
-    system("clear");
-    system(cmdstr);
-    system("clear");
+    (void) system("clear");
+    (void) system(cmdstr);
+    (void) system("clear");
 
     g_free(helpfile);
     g_free(cmdstr);

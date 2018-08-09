@@ -110,7 +110,7 @@ int write_keyer(void) {
 	    }
 	    sprintf(outstring, "echo -n \"\n%s\" >> %s",
 		    tosend, rttyoutput);
-	    system(outstring);
+	    (void) system(outstring);
 	}
 
 	g_free(tosend);

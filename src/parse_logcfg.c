@@ -299,8 +299,10 @@ int parse_logcfg(char *inputbuffer) {
     extern int bmautoadd;
     extern int bmautograb;
     extern int sprint_mode;
+#ifdef HAVE_LIBXMLRPC
     extern char fldigi_url[50];
     extern int use_fldigi;
+#endif
     extern unsigned char rigptt;
     extern int minitest;
     extern int unique_call_multi;

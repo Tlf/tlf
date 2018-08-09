@@ -684,8 +684,8 @@ int synclog(char *synclogfile) {
 	exit(1);
     }
     sleep(1);
-    system("rm log1");
-    system("rm log2");
+    (void) system("rm log1");
+    (void) system("rm log2");
 
     return (0);
 }

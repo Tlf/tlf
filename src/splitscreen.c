@@ -224,7 +224,7 @@ void start_editing(void) {
 
 void delete_prev_char(void) {
     int i, j;
-    int c, cc;
+    chtype c, cc;
     if (currow != 0 || curcol != 0) {
 	if (curcol-- == 0) {
 	    curcol = COLS - 1;
@@ -1108,7 +1108,7 @@ int packet() {
 	    if (packetinterface == TNC_INTERFACE) {
 		line[strlen(line) - 1] = 13;
 		line[strlen(line)] = '\0';
-		write(fdSertnc, line, strlen(line));
+		(void) write(fdSertnc, line, strlen(line));
 	    }
 
 	    curattr = attr[NORMAL_ATTR];
@@ -1224,7 +1224,7 @@ int send_cluster(void) {
 	    line[strlen(line) - 1] = '\r';
 	    line[strlen(line)] = '\0';	/* not needed */
 
-	    write(fdSertnc, line, strlen(line));
+	    (void) write(fdSertnc, line, strlen(line));
 	} else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
 	    usputs(prsock, line);
     }

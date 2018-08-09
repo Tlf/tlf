@@ -453,7 +453,8 @@ int callinput(void) {
 
 			his_rst[1]++;
 
-			no_rst ? : mvprintw(12, 44, his_rst);
+			if (!no_rst)
+			    mvprintw(12, 44, his_rst);
 			mvprintw(12, 29, hiscall);
 		    }
 
@@ -475,7 +476,8 @@ int callinput(void) {
 		    if (his_rst[1] > 49) {
 			his_rst[1]--;
 
-			no_rst ? : mvprintw(12, 44, his_rst);
+			if (!no_rst)
+			    mvprintw(12, 44, his_rst);
 			mvprintw(12, 29, hiscall);
 		    }
 
@@ -876,9 +878,9 @@ int callinput(void) {
 		    shell = "sh";
 		}
 		endwin();
-		system("clear");
-		system(shell);
-		system("clear");
+		(void) system("clear");
+		(void) system(shell);
+		(void) system("clear");
 		set_term(mainscreen);
 		clear_display();
 
@@ -1230,7 +1232,9 @@ int autosend() {
 int play_file(char *audiofile) {
 
     extern int txdelay;
+#ifdef HAVE_LIBHAMLIB
     extern unsigned char rigptt;
+#endif
 
     int fd;
     char playcommand[120];
@@ -1260,7 +1264,7 @@ int play_file(char *audiofile) {
 #endif
 
 	usleep(txdelay * 1000);
-	system(playcommand);
+	(void) system(playcommand);
 	printcall();
 
 #ifdef HAVE_LIBHAMLIB

@@ -105,7 +105,7 @@ int getmessages(void) {
 
 	if (fseek(fp, -1L * i * LOGLINELEN, SEEK_END) == 0) {
 
-	    fgets(logline[ii], 85, fp);
+	    (void) fgets(logline[ii], 85, fp);
 	} else {
 	    strncpy(logline[ii], backgrnd_str, 81);
 	}

@@ -276,7 +276,7 @@ void stop_qtc_recording() {
     if (qtcrec_record == 1 && strlen((char *)qtcrec_record_command_shutdown) > 0) {
 	strcpy(reccommand, "pkill -SIGINT -n ");
 	strcat(reccommand, qtcrec_record_command_shutdown);
-	system(reccommand);
+	(void) system(reccommand);
 	record_run = -1;
 	if (qtcrec_record == 1) {
 	    mvwprintw(qtcwin, 2, 11, "RECORD OFF  ");

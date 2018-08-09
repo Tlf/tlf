@@ -41,7 +41,7 @@ int logview(void) {
     strcat(comstr,  logfile);
 
     endwin();
-    system(comstr);
+    (void) system(comstr);
     refreshp();
 
     clear_display();

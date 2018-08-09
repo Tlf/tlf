@@ -64,7 +64,7 @@ int logedit(void) {
 	strcat(comstr, "e3  ");
 
     strcat(comstr, logfile);
-    system(comstr);
+    (void) system(comstr);
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();
     refreshp();
@@ -134,7 +134,7 @@ int logedit(void) {
 		    fstat(lfile, &statbuf);
 
 		    if (statbuf.st_size > 80) {
-			ftruncate(lfile, statbuf.st_size - LOGLINELEN);
+			(void) ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 			fsync(lfile);
 
 		    }

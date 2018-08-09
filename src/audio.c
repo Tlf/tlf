@@ -398,14 +398,14 @@ int panscan(void) {
 	mvprintw(5, 60, "Frequency: ");
 	refreshp();
 	echo();
-	scanf("%f", &FromFrequency);
+	(void) scanf("%f", &FromFrequency);
 	noecho();
 	mvprintw(5, 72, "%5.1f", FromFrequency);
 	mvprintw(22, 1, "%5.1f", FromFrequency);
 	refreshp();
 	mvprintw(7, 60, "Step (kHz): ");
 	refreshp();
-	scanf("%f", &FrequencyStep);
+	(void) scanf("%f", &FrequencyStep);
 	mvprintw(7, 72, "%5.1f", FrequencyStep);
 	refreshp();
 
@@ -489,13 +489,13 @@ int nbscan(void) {
 	mvprintw(1, 60, "- NOISE BRIDGE -");	// get the parameters
 	mvprintw(5, 60, "Frequency: ");
 	refreshp();
-	scanf("%f", &FromFrequency);
+	(void) scanf("%f", &FromFrequency);
 	mvprintw(5, 72, "%5.1f", FromFrequency);
 	mvprintw(22, 1, "%5.1f", FromFrequency);
 	refreshp();
 	mvprintw(7, 60, "Step (kHz): ");
 	refreshp();
-	scanf("%f", &FrequencyStep);
+	(void) scanf("%f", &FrequencyStep);
 	mvprintw(7, 72, "%5.1f", FrequencyStep);
 	refreshp();
 
@@ -661,12 +661,12 @@ void do_record(int message_nr) {
     strcpy(commands, "rec -r 8000 ");	//G4KNO
     strcat(commands, ph_message[message_nr]);
     strcat(commands, " -q &");	//G4KNO
-    system(commands);
+    (void) system(commands);
     //G4KNO: Loop until <esc> keypress
     while (1) {
 	if (key_get() == 27) {
 	    //kill process (SIGINT=Ctrl-C).
-	    system("pkill -SIGINT -n rec");
+	    (void) system("pkill -SIGINT -n rec");
 	    break;
 	}
     }
@@ -757,9 +757,9 @@ void record(void) {
 
 	    // Start contest recording.
 	    case '1':
-		system("echo " " > ~/.VRlock");
+		(void) system("echo " " > ~/.VRlock");
 
-		system
+		(void) system
 		     ("cd ~/tlf/soundlogs; ./soundlog  > /dev/null 2> /dev/null &");
 
 		mvprintw(15, 20, "Contest recording enabled...");
@@ -773,8 +773,8 @@ void record(void) {
 		mvprintw(15, 20, "Contest recording disabled...");
 		refreshp();
 		sleep(1);
-		system("rm ~/.VRlock");
-		system("pkill -f soundlogs > /dev/null 2> /dev/null ");
+		(void) system("rm ~/.VRlock");
+		(void) system("pkill -f soundlogs > /dev/null 2> /dev/null ");
 		runnit = 0;
 		break;
 
@@ -836,7 +836,7 @@ void record(void) {
 		mvprintw(16, 20, "Use Ctrl-c to stop and return to tlf");
 		mvprintw(18, 20, "");
 		refreshp();
-		system(commands);
+		(void) system(commands);
 		runnit = 0;
 		break;
 	    case 27:

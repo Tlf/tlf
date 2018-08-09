@@ -290,7 +290,7 @@ void sendbuf(void) {
 
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-	if ((simulator_mode == 0)) {
+	if (simulator_mode == 0) {
 	    mvprintw(5, 0, printlinebuffer);
 	    refreshp();
 	}
