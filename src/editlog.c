@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include "background_process.h"
 #include "clear_display.h"
 #include "scroll_log.h"
 #include "tlf.h"
@@ -40,7 +41,6 @@ int logedit(void) {
     extern char logfile[];
     extern char backgrnd_str[];
     extern int editor;
-    extern int stop_backgrnd_process;
 
     char comstr[40] = "";
     int j;
@@ -93,7 +93,7 @@ int logedit(void) {
 
 	    close(lfile);
 
-	    stop_backgrnd_process = 1;
+	    stop_background_process();
 
 	    if ((infile = fopen(logfile, "r")) == NULL) {
 		mvprintw(24, 0, "Unable to open logfile...");
@@ -150,7 +150,7 @@ int logedit(void) {
 	} else
 	    close(lfile);
 
-	stop_backgrnd_process = 0;
+	start_background_process();
     }
 
     close(lfile);

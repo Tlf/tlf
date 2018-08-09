@@ -23,5 +23,7 @@
 #define BACKGROUND_PROCESS_H
 
 void *background_process(void *);
+void stop_background_process(void);
+void start_background_process(void);
 
 #endif /* end of include guard: BACKGROUND_PROCESS_H */

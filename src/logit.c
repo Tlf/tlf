@@ -26,6 +26,7 @@
 
 #include <string.h>
 
+#include "background_process.h"
 #include "callinput.h"
 #include "clear_display.h"
 #include "getexchange.h"
@@ -62,7 +63,6 @@ void logit(void) {
     extern char cq_return[];
     extern char sp_return[];
     extern int defer_store;
-    extern int stop_backgrnd_process;
     extern int recall_mult;
     extern int simulator;
     extern int simulator_mode;
@@ -83,7 +83,7 @@ void logit(void) {
     clear_display();
     defer_store = 0;
 
-    stop_backgrnd_process = 0;	/* start it up */
+    start_background_process();	/* start it up */
 
     while (1) {
 	printcall();

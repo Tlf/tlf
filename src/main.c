@@ -458,7 +458,6 @@ int m = 1;
 char hiscountry[40];
 
 int this_second;
-int stop_backgrnd_process = 1;	/* dont start until we know what we are doing */
 
 int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
 int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
