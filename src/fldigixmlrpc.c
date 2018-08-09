@@ -67,9 +67,11 @@ extern int use_fldigi;
 
 int fldigi_var_carrier = 0;
 int fldigi_var_shift_freq = 0;
+#ifdef HAVE_LIBXMLRPC
 static int initialized = 0;
-static int connerr = 0;
 static int fldigi_sending = 0;
+#endif
+static int connerr = 0;
 
 char thiscall[20] = "";
 char tcomment[20] = "";
