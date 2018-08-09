@@ -70,7 +70,6 @@ extern char logline_edit[5][LOGLINELEN + 1];
 #define logline3 logline_edit[3]
 #define logline4 logline_edit[4]
 
-extern int stop_backgrnd_process;
 extern char band[NBANDS][4];
 extern struct tm *time_ptr;
 extern struct tm time_ptr_cabrillo;

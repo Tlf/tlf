@@ -27,6 +27,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "background_process.h"
 #include "cw_utils.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -49,13 +50,11 @@ int writeparas(void) {
     extern int showscore_flag;
     extern int cqdelay;
     extern int trxmode;
-    extern int stop_backgrnd_process;
 
     FILE *fp;
     int i;
 
-    stop_backgrnd_process = 1;
-    sleep(1);
+    stop_background_process();
 
     if (strlen(call) <= 3) {
 	mvprintw(24, 0, "Cannot write parameters file: data corrupt... ");
@@ -155,7 +154,7 @@ int writeparas(void) {
 
     fclose(fp);
 
-    stop_backgrnd_process = 0;
+    start_background_process();
 
     return (0);
 

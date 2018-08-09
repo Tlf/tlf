@@ -28,6 +28,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "background_process.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "logview.h"
 #include "scroll_log.h"
@@ -101,7 +102,7 @@ void edit_last(void) {
     if (nr_qsos == 0)
 	return;			/* nothing to edit */
 
-    stop_backgrnd_process = 1;	//(no qso add during edit process)
+    stop_background_process();
 
     b = 29;
 
@@ -233,5 +234,5 @@ void edit_last(void) {
 
     scroll_log();
 
-    stop_backgrnd_process = 0;
+    start_background_process();
 }

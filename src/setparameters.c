@@ -26,6 +26,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "background_process.h"
 #include "clear_display.h"
 #include "checklogfile.h"
 #include "getmessages.h"
@@ -50,13 +51,12 @@ int setparameters(void) {
     extern char call[];
     extern char logfile[];
     extern char whichcontest[];
-    extern int stop_backgrnd_process;
 
     int i = '9';
     char callcpy[12] = "";
     char logbuffer[20];
 
-    stop_backgrnd_process = 1;	/* to prevent race condition */
+    stop_background_process();	/* to prevent race condition */
 
     while ((i == '7') || (i == '8') || (i == '9')) {
 
@@ -188,7 +188,7 @@ int setparameters(void) {
 	beep();
     }
 
-    stop_backgrnd_process = 0;	/* release backgrnd process */
+    start_background_process();	/* release backgrnd process */
 
     return (0);
 }

@@ -19,6 +19,7 @@
  */
 
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -43,7 +44,6 @@
 #include "qtcvars.h"
 
 
-extern int stop_backgrnd_process;
 extern int this_second;
 extern int cluster;
 extern int packetinterface;
@@ -68,7 +68,38 @@ extern int trxmode;
 extern int digikeyer;
 extern int trx_control;
 
+static int stop_backgrnd_process = 1;	/* dont start until we know what we are doing */
+static pthread_mutex_t stop_backgrnd_process_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t start_backgrnd_process_cond = PTHREAD_COND_INITIALIZER;
+static pthread_cond_t backgrnd_process_stopped_cond = PTHREAD_COND_INITIALIZER;
+
 int cw_simulator(void);
+
+void stop_background_process(void) {
+	pthread_mutex_lock(&stop_backgrnd_process_mutex);
+	assert(stop_backgrnd_process == 0);
+	stop_backgrnd_process = 1;
+	pthread_cond_wait(&backgrnd_process_stopped_cond, &stop_backgrnd_process_mutex);
+	pthread_mutex_unlock(&stop_backgrnd_process_mutex);
+}
+
+void start_background_process(void) {
+	pthread_mutex_lock(&stop_backgrnd_process_mutex);
+	assert(stop_backgrnd_process == 1);
+	stop_backgrnd_process = 0;
+	pthread_cond_broadcast(&start_backgrnd_process_cond);
+	pthread_mutex_unlock(&stop_backgrnd_process_mutex);
+}
+
+static void background_process_wait(void)
+{
+	pthread_mutex_lock(&stop_backgrnd_process_mutex);
+	if (stop_backgrnd_process) {
+		pthread_cond_broadcast(&backgrnd_process_stopped_cond);
+		pthread_cond_wait(&start_backgrnd_process_cond, &stop_backgrnd_process_mutex);
+	}
+	pthread_mutex_unlock(&stop_backgrnd_process_mutex);
+}
 
 void *background_process(void *ptr) {
 
@@ -89,9 +120,7 @@ void *background_process(void *ptr) {
 
     while (i) {
 
-	while (stop_backgrnd_process == 1) {
-	    sleep(1);
-	}
+	background_process_wait();
 
 
 	usleep(10000);
