@@ -167,7 +167,7 @@ int callinput(void) {
 
 
     int cury, curx;
-    int j, ii, rc, t, x = 0;
+    int j, ii, t, x = 0;
     char instring[2] = { '\0', '\0' };
     static int lastwindow;
 
@@ -876,9 +876,9 @@ int callinput(void) {
 		    shell = "sh";
 		}
 		endwin();
-		rc = system("clear");
-		rc = system(shell);
-		rc = system("clear");
+		system("clear");
+		system(shell);
+		system("clear");
 		set_term(mainscreen);
 		clear_display();
 
@@ -1232,7 +1232,7 @@ int play_file(char *audiofile) {
     extern int txdelay;
     extern unsigned char rigptt;
 
-    int fd, rc;
+    int fd;
     char playcommand[120];
 
     if (*audiofile == '\0')
@@ -1260,7 +1260,7 @@ int play_file(char *audiofile) {
 #endif
 
 	usleep(txdelay * 1000);
-	rc = system(playcommand);
+	system(playcommand);
 	printcall();
 
 #ifdef HAVE_LIBHAMLIB

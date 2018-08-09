@@ -290,7 +290,6 @@ int cw_simulator(void) {
 
     static int callnumber;
     char callcpy[80];
-    static int x;
 
     if (simulator == 0)
 	return (-1);
@@ -378,7 +377,7 @@ int cw_simulator(void) {
 
 	strcpy(callcpy, CALLMASTERARRAY(callnumber));
 
-	x = getctydata(callcpy);
+	getctydata(callcpy);
 
 	str = g_strdup_printf("TU 5NN %2s", zone_export);
 	sendmessage(str);
@@ -400,7 +399,7 @@ int cw_simulator(void) {
 	write_tone();
 
 	strcpy(callcpy, CALLMASTERARRAY(callnumber));
-	x = getctydata(callcpy);
+	getctydata(callcpy);
 
 	str = g_strdup_printf("DE %s TU 5NN %s",
 			      CALLMASTERARRAY(callnumber), zone_export);

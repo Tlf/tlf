@@ -1106,10 +1106,9 @@ int packet() {
 	    }
 
 	    if (packetinterface == TNC_INTERFACE) {
-		int rc;
 		line[strlen(line) - 1] = 13;
 		line[strlen(line)] = '\0';
-		rc = write(fdSertnc, line, strlen(line));
+		write(fdSertnc, line, strlen(line));
 	    }
 
 	    curattr = attr[NORMAL_ATTR];
@@ -1222,11 +1221,10 @@ int send_cluster(void) {
 	strcat(line, "\n");
 
 	if (packetinterface == TNC_INTERFACE) {
-	    int rc;
 	    line[strlen(line) - 1] = '\r';
 	    line[strlen(line)] = '\0';	/* not needed */
 
-	    rc = write(fdSertnc, line, strlen(line));
+	    write(fdSertnc, line, strlen(line));
 	} else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
 	    usputs(prsock, line);
     }

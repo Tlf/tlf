@@ -224,12 +224,9 @@ void checklogfile(void) {
 
     int lfile;
     int qsobytes;
-    int qsolines;
     int errbytes;
-    int rc;
     struct stat statbuf;
     char inputbuffer[800];
-    char *rp;
 
     FILE *infile;
     FILE *outfile;
@@ -243,7 +240,6 @@ void checklogfile(void) {
 
 	fstat(fileno(fp), &statbuf);
 	qsobytes = statbuf.st_size;
-	qsolines = qsobytes / LOGLINELEN;
 	errbytes = qsobytes % LOGLINELEN;
 
 	if (errbytes != 0) {
@@ -265,7 +261,7 @@ void checklogfile(void) {
 
 		    while (!(feof(infile))) {
 
-			rp = fgets(inputbuffer, 160, infile);
+			fgets(inputbuffer, 160, infile);
 
 			if (strlen(inputbuffer) != LOGLINELEN) {
 			    strcat(inputbuffer, backgrnd_str);
@@ -290,7 +286,7 @@ void checklogfile(void) {
 		    fstat(lfile, &statbuf);
 
 		    if (statbuf.st_size > 80) {
-			rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
+			ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 			fsync(lfile);
 
 		    }

@@ -638,7 +638,6 @@ int synclog(char *synclogfile) {
     extern char logfile[];
     extern struct tm *time_ptr;
 
-    int rc;
     char wgetcmd[120] = "wget ftp://";	//user:password@hst/dir/file
     char date_buf[60];
 
@@ -685,8 +684,8 @@ int synclog(char *synclogfile) {
 	exit(1);
     }
     sleep(1);
-    rc = system("rm log1");
-    rc = system("rm log2");
+    system("rm log1");
+    system("rm log2");
 
     return (0);
 }

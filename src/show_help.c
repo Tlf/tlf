@@ -41,7 +41,6 @@ extern SCREEN *mainscreen;
  * in PKG_DATA_DIR
  */
 int show_help(void) {
-    int rc;
     char filename[] = "help.txt";
     char *helpfile;
     char *cmdstr;
@@ -60,9 +59,9 @@ int show_help(void) {
     cmdstr = g_strdup_printf("less %s", helpfile);
 
     endwin();
-    rc = system("clear");
-    rc = system(cmdstr);
-    rc = system("clear");
+    system("clear");
+    system(cmdstr);
+    system("clear");
 
     g_free(helpfile);
     g_free(cmdstr);

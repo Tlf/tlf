@@ -48,7 +48,6 @@ int logedit(void) {
     int qsobytes;
     int qsolines;
     int errbytes;
-    int rc;
     struct stat statbuf;
     FILE *infile;
     FILE *outfile;
@@ -65,7 +64,7 @@ int logedit(void) {
 	strcat(comstr, "e3  ");
 
     strcat(comstr, logfile);
-    rc = system(comstr);
+    system(comstr);
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();
     refreshp();
@@ -112,7 +111,7 @@ int logedit(void) {
 
 			rp = fgets(inputbuffer, 160, infile);
 
-			if (strlen(inputbuffer) != LOGLINELEN) {
+			if (rp != NULL && strlen(inputbuffer) != LOGLINELEN) {
 			    strcat(inputbuffer, backgrnd_str);
 			    inputbuffer[LOGLINELEN] = '\0';
 			}
@@ -135,7 +134,7 @@ int logedit(void) {
 		    fstat(lfile, &statbuf);
 
 		    if (statbuf.st_size > 80) {
-			rc = ftruncate(lfile, statbuf.st_size - LOGLINELEN);
+			ftruncate(lfile, statbuf.st_size - LOGLINELEN);
 			fsync(lfile);
 
 		    }

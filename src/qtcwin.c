@@ -1507,7 +1507,7 @@ void clear_help_block() {
     }
 }
 
-void show_help_msg(msgidx) {
+void show_help_msg(int msgidx) {
     int i = 0, j = 0;
     char buff[80];
     int currqtc;

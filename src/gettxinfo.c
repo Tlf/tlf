@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 
+#include "bands.h"
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
 #include "tlf.h"
