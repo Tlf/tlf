@@ -30,12 +30,16 @@
 
 #include <glib.h>
 
+#include "callinput.h"
 #include "displayit.h"
+#include "globalvars.h"
 #include "lancode.h"
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "write_keyer.h"
+
+extern char ph_message[14][80];
 
 #define BUFSIZE   81
 char buffer[BUFSIZE];
@@ -234,6 +238,8 @@ void ExpandMacro(void) {
 
 
     replace_all(buffer, BUFSIZE, "!", comment);
+    if (trxmode == DIGIMODE)
+	replace_all(buffer, BUFSIZE, "|", "\r");   /* CR */
 }
 
 
@@ -344,5 +350,33 @@ void sendmessage(const char *msg) {
     if (strlen(msg) != 0) {
 	g_strlcpy(buffer, msg, sizeof(buffer));
 	sendbuf();
+    }
+}
+
+void send_standard_message(int msg)
+{
+    switch (trxmode) {
+	case CWMODE:
+	    sendmessage(message[msg]);
+	    break;
+	case DIGIMODE:
+	    sendmessage(digi_message[msg]);
+	    break;
+	default:
+	    if (msg < 14)
+		play_file(ph_message[msg]);
+	    break;
+    }
+}
+
+void send_keyer_message(int msg)
+{
+    switch (trxmode) {
+	case DIGIMODE:
+	    sendmessage(digi_message[msg]);
+	    break;
+	default:
+	    sendmessage(message[msg]);
+	    break;
     }
 }

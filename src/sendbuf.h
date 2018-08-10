@@ -24,5 +24,7 @@
 
 char short_number(char c);
 void sendmessage(const char *msg);
+void send_standard_message(int msg);
+void send_keyer_message(int msg);
 
 #endif /*  SENDBUF_H */

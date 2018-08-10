@@ -26,7 +26,6 @@
 int changepars(void);
 int networkinfo(void);
 int multiplierinfo(void);
-void digi_messages(void);
 
 
 #endif /* end of include guard: CHANGEPARS_H */

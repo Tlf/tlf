@@ -69,6 +69,7 @@ int continent_found();
 char inputbuffer[160];
 FILE *fp;
 
+void KeywordRepeated(char *keyword);
 void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
 void WrongFormat(char *keyword);
@@ -85,6 +86,7 @@ int read_logcfg(void) {
     char defltconf[80];
 
     int status = PARSE_OK;
+    int i;
 
     contest = 0;
     partials = 0;
@@ -98,6 +100,12 @@ int read_logcfg(void) {
     node = 0;
     shortqsonr = 0;
 
+    for (i = 0; i < 25; i++) {
+	if (digi_message[i] != NULL) {
+	    free(digi_message[i]);
+	    digi_message[i] = NULL;
+        }
+    }
     if (cabrillo != NULL) {
 	free(cabrillo);
 	cabrillo = NULL;
@@ -170,8 +178,6 @@ int parse_logcfg(char *inputbuffer) {
     extern int use_rxvt;
     extern char message[][80];
     extern char ph_message[14][80];
-    extern char sp_return[];
-    extern char cq_return[];
     extern char call[];
     extern char whichcontest[];
     extern char logfile[];
@@ -547,7 +553,32 @@ int parse_logcfg(char *inputbuffer) {
 	"MINITEST",
 	"UNIQUE_CALL_MULTI",		/* 235 */
 	"KEYER_BACKSPACE",
-	"DIGI_RIG_MODE"
+	"DIGI_RIG_MODE",
+	"DKF1",				/* 238 */
+	"DKF2",
+	"DKF3",
+	"DKF4",
+	"DKF5",
+	"DKF6",
+	"DKF7",
+	"DKF8",
+	"DKF9",
+	"DKF10",
+	"DKF11",
+	"DKF12",
+	"DKCQM",			/* 250 */
+	"DKSPM",
+	"DKSPC"
+	"ALT_DK1",			/* 253 */
+	"ALT_DK2",
+	"ALT_DK3",
+	"ALT_DK4",
+	"ALT_DK5",
+	"ALT_DK6",
+	"ALT_DK7",
+	"ALT_DK8",
+	"ALT_DK9",
+	"ALT_DK10"
     };
 
     char **fields;
@@ -620,13 +651,11 @@ int parse_logcfg(char *inputbuffer) {
 	case 14: {
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(message[SP_TU_MSG], fields[1]);
-	    strcpy(sp_return, message[SP_TU_MSG]);
 	    break;
 	}
 	case 15: {
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(message[CQ_TU_MSG], fields[1]);
-	    strcpy(cq_return, message[CQ_TU_MSG]);
 	    break;	/* end messages */
 	}
 	case 16: {
@@ -1881,7 +1910,7 @@ int parse_logcfg(char *inputbuffer) {
 	case 237: {
 #ifdef HAVE_LIBHAMLIB
 	    PARAMETER_NEEDED(teststring);
-	    g_ascii_strup(g_strchomp(fields[1]), -1);
+	    g_strchomp(fields[1]);
 	    if (strcmp(fields[1], "USB") == 0)
 		digi_mode = RIG_MODE_USB;
 	    else if (strcmp(fields[1], "LSB") == 0)
@@ -1897,6 +1926,78 @@ int parse_logcfg(char *inputbuffer) {
 		exit(1);
 	    }
 #endif
+	    break;
+	}
+	case 238 ... 249: {
+	    PARAMETER_NEEDED(teststring);
+	    if (digi_message[ii - 238]) {
+		KeywordRepeated(commands[ii]);
+		free(digi_message[ii - 238]);
+	    }
+	    digi_message[ii - 238] = strdup(fields[1]);
+	    if (digi_message[ii - 238]) {
+		/* Replace trailing newline with a space */
+		char *nl = strrchr(digi_message[ii - 238], '\n');
+		if (nl)
+		    *nl = ' ';
+	    }
+	    break;
+	}
+	case 250:
+	    PARAMETER_NEEDED(teststring);
+	    if (digi_message[CQ_TU_MSG]) {
+		KeywordRepeated(commands[ii]);
+		free(digi_message[CQ_TU_MSG]);
+	    }
+	    digi_message[CQ_TU_MSG] = strdup(fields[1]);
+	    if (digi_message[CQ_TU_MSG]) {
+		/* Replace trailing newline with a space */
+		char *nl = strrchr(digi_message[CQ_TU_MSG], '\n');
+		if (nl)
+		    *nl = ' ';
+	    }
+	    break;
+	case 251:
+	    PARAMETER_NEEDED(teststring);
+	    if (digi_message[SP_TU_MSG]) {
+		KeywordRepeated(commands[ii]);
+		free(digi_message[SP_TU_MSG]);
+	    }
+	    digi_message[SP_TU_MSG] = strdup(fields[1]);
+	    if (digi_message[SP_TU_MSG]) {
+		/* Replace trailing newline with a space */
+		char *nl = strrchr(digi_message[SP_TU_MSG], '\n');
+		if (nl)
+		    *nl = ' ';
+	    }
+	    break;
+	case 252:
+	    PARAMETER_NEEDED(teststring);
+	    if (digi_message[SP_CALL_MSG]) {
+		KeywordRepeated(commands[ii]);
+		free(digi_message[SP_CALL_MSG]);
+	    }
+	    digi_message[SP_CALL_MSG] = strdup(fields[1]);
+	    if (digi_message[SP_CALL_MSG]) {
+		/* Replace trailing newline with a space */
+		char *nl = strrchr(digi_message[SP_CALL_MSG], '\n');
+		if (nl)
+		    *nl = ' ';
+	    }
+	    break;
+	case 253 ... 263: {
+	    PARAMETER_NEEDED(teststring);
+	    if (digi_message[ii - 239]) {
+		KeywordRepeated(commands[ii]);
+		free(digi_message[ii - 239]);
+	    }
+	    digi_message[ii - 239] = strdup(fields[1]);
+	    if (digi_message[ii - 239]) {
+		/* Replace trailing newline with a space */
+		char *nl = strrchr(digi_message[ii - 239], '\n');
+		if (nl)
+		    *nl = ' ';
+	    }
 	    break;
 	}
 	default: {
@@ -1925,6 +2026,15 @@ void Complain(char *msg) {
     attroff(A_STANDOUT);
     confirmation_needed = PARSE_CONFIRM;
     beep();
+}
+
+/** Complain about duplicate keyword */
+void KeywordRepeated(char *keyword) {
+    char msgbuffer[100];
+    sprintf(msgbuffer,
+	    "Keyword '%s' repeated more than once.\n",
+	    keyword);
+    Complain(msgbuffer);
 }
 
 /** Complain about not supported keyword */

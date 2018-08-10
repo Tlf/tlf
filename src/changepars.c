@@ -72,30 +72,6 @@
 
 int debug_tty(void);
 
-extern char message[][80];
-
-static void cw_messages(void) {
-    int i;
-    size_t len;
-
-    for (i = 0; i < 23; i++) {
-	    len = strlen(message[i]);
-	    if (message[i][len-1] == ' ')
-		message[i][len-1] = '\n';
-    }
-}
-
-void digi_messages(void) {
-    int i;
-    size_t len;
-
-    for (i = 0; i < 23; i++) {
-	    len = strlen(message[i]);
-	    if (message[i][len-1] == '\n')
-		message[i][len-1] = ' ';
-    }
-}
-
 int changepars(void) {
 
     extern int cluster;
@@ -454,7 +430,6 @@ int changepars(void) {
 	    if (cwkeyer == MFJ1278_KEYER) {
 		sendmessage("MODE CW\015K\015");
 	    }
-	    cw_messages();
 	    trxmode = CWMODE;
 	    set_outfreq(SETCWMODE);
 	    break;
@@ -465,7 +440,6 @@ int changepars(void) {
 	    break;
 	}
 	case 32: {		/* DIGIMODE  */
-	    digi_messages();
 	    trxmode = DIGIMODE;
 	    set_outfreq(SETDIGIMODE);
 	    break;

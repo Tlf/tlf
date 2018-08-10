@@ -227,9 +227,7 @@ unsigned char rigptt = 0;
  * bit 4 set: PTT Off (set/unset in callinput)
  */
 
-char sp_return[80] = " \n";
-char cq_return[80] = " \n";
-char message[25][80] = /**< Array of CW/DigiMode messages
+char message[25][80] = /**< Array of CW messages
  			*
  			* message[0]..[11] activated by F1..F12 key
  			* message[12] - TU message S&P mode
@@ -256,6 +254,8 @@ char message[25][80] = /**< Array of CW/DigiMode messages
     " ?\n", " QRZ?\n", " PSE K\n", "TEST % %\n", "@ [\n", "TU %\n",
     "", "", "", "", "", "", "", "", "", "", ""
 };
+
+char *digi_message[sizeof(message) / sizeof(message[0])];
 
 char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   * See description of message[]
@@ -926,9 +926,6 @@ int main(int argc, char *argv[]) {
 
     termbuf[0] = '\0';
     hiscall[0] = '\0';
-
-    strcpy(sp_return, message[SP_TU_MSG]);
-    strcpy(cq_return, message[CQ_TU_MSG]);
 
 
     sprintf(tlfversion,

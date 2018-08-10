@@ -28,6 +28,7 @@
 #include <unistd.h>
 
 #include "cw_utils.h"
+#include "globalvars.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 
@@ -81,6 +82,16 @@ int writeparas(void) {
 	if (i == 13)
 	    fputs("# TU  message CQ mode---------------------\n", fp);
 	fputs(message[i], fp);
+    }
+
+    fputs("# Digi Messages  F1...F12 ---------------------\n", fp);
+
+    for (i = 0; i <= 13; i++) {
+	if (i == 12)
+	    fputs("# TU message S&P mode---------------------\n", fp);
+	if (i == 13)
+	    fputs("# TU  message CQ mode---------------------\n", fp);
+	fputs(digi_message[i], fp);
     }
 
     fputs("# Info for top status line----------------\n", fp);
