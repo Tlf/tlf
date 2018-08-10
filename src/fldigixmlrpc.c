@@ -383,17 +383,17 @@ int fldigi_get_rx_text(char *line, int len) {
     } else {
 	if (lastpos < textlen) {
 	    rc = fldigi_xmlrpc_query(&result, &env, "text.get_rx", "dd",
-				     lastpos, textlen);
+				     lastpos, textlen - lastpos >= len ? len - 1 : textlen - lastpos);
 	    if (rc != 0) {
 		return -1;
 	    }
 
 	    if (result.intval > 0 && result.byteval != NULL) {
 		linelen = result.intval;
-		if (result.intval > len) {
-		    linelen = len;
+		if (result.intval >= len) {
+		    linelen = len - 1;
 		}
-		memcpy(line, result.byteval, linelen - 1);
+		memcpy(line, result.byteval, linelen);
 		line[linelen] = '\0';
 		retval = linelen;
 	    }
