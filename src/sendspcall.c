@@ -60,18 +60,22 @@ char *PrepareSPcall() {
 
 	if (digikeyer == MFJ1278_KEYER) {
 	    strcat(buf, "{ ");	/* => ctrl-t */
+	    strcat(buf, "|");	/* => CR */
 	    if (demode ==  SEND_DE) {
 		strcat(buf, hiscall);
 		strcat(buf, " DE ");
 	    }
 	    strcat(buf, call);
+	    strcat(buf, " ");
 	    strcat(buf, "}");	/* => ctrl-r */
 	} else {
+	    strcat(buf, "|");	/* => CR */
 	    if (demode ==  SEND_DE) {
 		strcat(buf, hiscall);
 		strcat(buf, " DE ");
 	    }
 	    strcat(buf, call);
+	    strcat(buf, " ");
 	}
     }
     return buf;

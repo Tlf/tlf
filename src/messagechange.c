@@ -23,9 +23,11 @@
 
 
 #include <ctype.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "clear_display.h"
+#include "globalvars.h"
 #include "nicebox.h"		// Includes curses.h
 #include "tlf.h"
 #include "ui_utils.h"
@@ -35,14 +37,13 @@
 int message_change(int x) {
     extern char backgrnd_str[];
     extern char message[][80];
-    extern char sp_return[];
-    extern char cq_return[];
 
     int j;
     int count;
     int mes_length;
     int bufnr = 0;
     char printbuf[80];
+    char *msg;
 
     clear_display();
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -73,20 +74,28 @@ int message_change(int x) {
 	bufnr = bufnr - KEY_F(1);
     }
 
+    if (trxmode == DIGIMODE)
+	msg = digi_message[bufnr];
+    else
+	msg = message[bufnr];
+
     printbuf[0] = '\0';
-    strncat(printbuf, message[bufnr], strlen(message[bufnr]) - 1);
+    strncat(printbuf, msg, strlen(msg) - 1);
     mvprintw(15, 4, "%s", printbuf);
     refreshp();
 
     mvprintw(16, 4, "");
-    message[bufnr][0] = '\0';
+    msg[0] = '\0';
 
     echo();
-    getnstr(message[bufnr], 60);
+    getnstr(printbuf, 60);
     noecho();
 
-    strcat(message[bufnr], "\n");
-    mes_length = strlen(message[bufnr]);
+    if (trxmode == DIGIMODE)
+	strcat(printbuf, " ");
+    else
+	strcat(printbuf, "\n");
+    mes_length = strlen(printbuf);
 
     if (mes_length < 2) {
 	clear_display();
@@ -96,14 +105,30 @@ int message_change(int x) {
 	    mvprintw(j, 0, backgrnd_str);
 	}
 
+	if (trxmode == DIGIMODE) {
+	    strcat(printbuf, " ");
+	    free(digi_message[bufnr]);
+	    digi_message[bufnr] = strdup(printbuf);
+        }
+	else
+	    strcpy(message[bufnr], printbuf);
+
 	return (1);
     }
 
     for (count = 0; count <= mes_length; count++) {
-	if ((message[bufnr][count] > 96)
-		&& (message[bufnr][count] < 123))
-	    message[bufnr][count] = message[bufnr][count] - 32;
+	if ((printbuf[count] > 96)
+		&& (printbuf[count] < 123))
+	    printbuf[count] = printbuf[count] - 32;
     }
+
+    if (trxmode == DIGIMODE) {
+	strcat(printbuf, " ");
+	free(digi_message[bufnr]);
+	digi_message[bufnr] = strdup(printbuf);
+    }
+    else
+	strcpy(message[bufnr], printbuf);
 
     mvprintw(12, 29, "");
     refreshp();
@@ -115,9 +140,6 @@ int message_change(int x) {
     }
 
     writeparas();
-
-    strncpy(sp_return, message[SP_TU_MSG], 79);
-    strncpy(cq_return, message[CQ_TU_MSG], 79);
 
     return (0);
 }

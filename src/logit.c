@@ -54,14 +54,11 @@ void logit(void) {
     extern char hiscall[];
     extern int cqmode;
     extern int contest;
-    extern char message[][80];
     extern char ph_message[14][80];
     extern char comment[];
     extern int cqww;
     extern char cqzone[];
     extern char itustr[];
-    extern char cq_return[];
-    extern char sp_return[];
     extern int defer_store;
     extern int recall_mult;
     extern int simulator;
@@ -114,10 +111,8 @@ void logit(void) {
 
 		if ((cqmode == CQ) && (contest == CONTEST)
 			&& (defer_store == 0)) {	/* CQ mode */
-		    if (trxmode == CWMODE || trxmode == DIGIMODE)
-			sendmessage(message[2]);    /*  send F3  on  ENTER  */
-		    else {
-			play_file(ph_message[2]);
+		    send_standard_message(2);
+		    if (trxmode != CWMODE && trxmode != DIGIMODE) {
 			if (exchange_serial == 1)
 			    mvprintw(13, 29, "Serial number: %d", qsonum);
 			refreshp();
@@ -190,14 +185,12 @@ void logit(void) {
 		    callreturn = 0;
 		} else if (defer_store > 1) {
 		    if ((cqmode == CQ) && (contest == CONTEST)) {
+			send_standard_message(CQ_TU_MSG);	/* send cq return */
 			if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			    sendmessage(cq_return);	/* send cq return */
 			    if (simulator != 0)
 				simulator_mode = 1;
 			    if (simulator != 0)
 				write_tone();
-			} else {
-			    play_file(ph_message[CQ_TU_MSG]);
 			}
 
 			defer_store = 0;
@@ -205,10 +198,7 @@ void logit(void) {
 		    }
 
 		    if ((cqmode == S_P) && (contest == CONTEST)) {
-			if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			    sendmessage(sp_return); /* send S&P return */
-			} else
-			    play_file(ph_message[SP_TU_MSG]);
+			send_standard_message(SP_TU_MSG); /* send S&P return */
 
 			defer_store = 0;
 		    }
