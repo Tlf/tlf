@@ -17,15 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef _XOPEN_SOURCE
+#define _XOPEN_SOURCE
+#endif
 #include "readcabrillo.h"
 #include "globalvars.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE
-#endif
 #include <time.h>
 #include "tlf_curses.h"
 
@@ -39,7 +39,6 @@
 #include "qtc_log.h"
 #include "startmsg.h"
 #include "store_qso.h"
-#include "time.h"
 
 #define MAX_CABRILLO_LEN 255
 
