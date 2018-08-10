@@ -1910,6 +1910,22 @@ means the callsign is a multiplier, independet of band.
 .B BAND
 means the callsign counts as multiplier on different bands.
 .
+.TP
+\fBDKF1\fR=\fIdigi keyer message 1\fR ... \fBDKF12\fR=\fIdigi keyer message 12\fR
+Use F1 ... F12 keys to send recorded messages for phone.
+.
+.TP
+\fBDKCQM\fR=\fImessage\fR
+Auto Exchange TU digi message in CQ mode (TR-Log mode)
+.
+.TP
+\fBDKSPM\fR=\fImessage\fR
+Auto Exchange TU digi message in S&P mode (TR-Log mode)
+.
+.TP
+\fBDKSPC\fR=\fImessage\fR
+Auto Exchange call digi message in S&P mode (TR-Log mode)
+.
 .SH FILES
 .
 \fI@prefix@/share/@PACKAGE@/logcfg.dat\fR is a recent example of the
