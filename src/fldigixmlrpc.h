@@ -39,5 +39,7 @@ int fldigi_get_log_call();
 int fldigi_get_log_serial_number();
 void fldigi_clear_connerr();
 void fldigi_stop_text(void);
+int fldigi_toggle(void);
+int fldigi_get(void);
 
 #endif /* end of include guard: FLDIGIXMLRPC_H */
