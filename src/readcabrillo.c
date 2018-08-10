@@ -29,16 +29,17 @@
 #include <time.h>
 #include "tlf_curses.h"
 
-#include "cabrillo_utils.h"
 #include "addcall.h"
-#include "makelogline.h"
-#include "store_qso.h"
-#include "cleanup.h"
-#include "startmsg.h"
 #include "addmult.h"
-#include "getexchange.h"
-#include "qtc_log.h"
 #include "bands.h"
+#include "cabrillo_utils.h"
+#include "cleanup.h"
+#include "getexchange.h"
+#include "makelogline.h"
+#include "qtc_log.h"
+#include "startmsg.h"
+#include "store_qso.h"
+#include "time.h"
 
 #define MAX_CABRILLO_LEN 255
 

@@ -163,7 +163,7 @@ void delete_qso(void) {
 		    // delete QTC's for that combination of band, mode and call
 		    delete_last_qtcs(call, bandmode);
 		}
-		ftruncate(lfile, statbuf.st_size - LOGLINELEN);
+		IGNORE(ftruncate(lfile, statbuf.st_size - LOGLINELEN));
 	    }
 
 	    fsync(lfile);
