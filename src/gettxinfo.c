@@ -125,7 +125,7 @@ void gettxinfo(void) {
 #endif
 
     static int oldbandinx;
-#ifdef HAVE_LIBXMLRPC
+#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
     static int fldigi_carrier;
     static int fldigi_shift_freq;
 #endif
