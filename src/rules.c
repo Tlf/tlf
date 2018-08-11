@@ -114,11 +114,11 @@ int read_rules() {
      * putting CRLF at the start, and changing the trailing \n to a
      * space
      */
-    for (int i = 0; i < 25; i++) {
+    int i;
+    for (i = 0; i < 25; i++) {
 	if (digi_message[i] == NULL) {
-	    asprintf(&digi_message[i], "|%s", message[i]);
-
-	    if (digi_message[i] == NULL) {
+	    if (asprintf(&digi_message[i], "|%s", message[i]) == -1) {
+		digi_message[i] = NULL;
 		showmsg("unable to create digi message!");
 		status = PARSE_ERROR;
 	    }
