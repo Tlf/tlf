@@ -47,6 +47,7 @@ char *PrepareSPcall() {
     extern char hiscall[];
 
     char *buf = g_malloc(80);
+    char *c;
     buf[0] = '\0';
 
     if (trxmode == CWMODE) {
@@ -66,7 +67,10 @@ char *PrepareSPcall() {
 		strcat(buf, " DE ");
 	    }
 	    strcat(buf, call);
-	    strcat(buf, " ");
+	    if ((c = strchr(buf, '\n')) == NULL)
+		strcat(buf, " ");
+	    else
+		*c = ' ';
 	    strcat(buf, "}");	/* => ctrl-r */
 	} else {
 	    strcat(buf, "|");	/* => CR */
@@ -75,7 +79,10 @@ char *PrepareSPcall() {
 		strcat(buf, " DE ");
 	    }
 	    strcat(buf, call);
-	    strcat(buf, " ");
+	    if ((c = strchr(buf, '\n')) == NULL)
+		strcat(buf, " ");
+	    else
+		*c = ' ';
 	}
     }
     return buf;
