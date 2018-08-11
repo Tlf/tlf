@@ -70,7 +70,7 @@ char *PrepareSPcall() {
 	    if ((c = strchr(buf, '\n')) == NULL)
 		strcat(buf, " ");
 	    else
-		*c = 0;
+		*c = ' ';
 	    strcat(buf, "}");	/* => ctrl-r */
 	} else {
 	    strcat(buf, "|");	/* => CR */
@@ -82,7 +82,7 @@ char *PrepareSPcall() {
 	    if ((c = strchr(buf, '\n')) == NULL)
 		strcat(buf, " ");
 	    else
-		*c = 0;
+		*c = ' ';
 	}
     }
     return buf;
