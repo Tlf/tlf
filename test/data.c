@@ -188,6 +188,8 @@ char message[25][80] = /**< Array of CW/DigiMode messages
     "", "", "", "", "", "", "", "", "", "", ""
 };
 
+char *digi_message[sizeof(message) / sizeof(message[0])];
+
 char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   * See description of message[]
 			   */
