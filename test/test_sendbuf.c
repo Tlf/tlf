@@ -193,27 +193,27 @@ void test_prepareSPcallDIGInoDeMode(void **state) {
     trxmode = DIGIMODE;
     digikeyer = NET_KEYER;
     demode = 0;
-    assert_string_equal(SPcall = PrepareSPcall(), "dl1jbe\n");
+    assert_string_equal(SPcall = PrepareSPcall(), "|dl1jbe ");
 }
 
 void test_prepareSPcallDIGIDeMode(void **state) {
     trxmode = DIGIMODE;
     digikeyer = NET_KEYER;
     demode = 1;
-    assert_string_equal(SPcall = PrepareSPcall(), "lz1ab DE dl1jbe\n");
+    assert_string_equal(SPcall = PrepareSPcall(), "|lz1ab DE dl1jbe ");
 }
 
 void test_prepareSPcallMFJnoDeMode(void **state) {
     trxmode = DIGIMODE;
     digikeyer = MFJ1278_KEYER;
     demode = 0;
-    assert_string_equal(SPcall = PrepareSPcall(), "{ dl1jbe\n}");
+    assert_string_equal(SPcall = PrepareSPcall(), "{ |dl1jbe }");
 }
 
 void test_prepareSPcallMFJDeMode(void **state) {
     trxmode = DIGIMODE;
     digikeyer = MFJ1278_KEYER;
     demode = 1;
-    assert_string_equal(SPcall = PrepareSPcall(), "{ lz1ab DE dl1jbe\n}");
+    assert_string_equal(SPcall = PrepareSPcall(), "{ |lz1ab DE dl1jbe }");
 }
 
