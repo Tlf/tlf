@@ -37,6 +37,7 @@
 #include "editlog.h"
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
+#include "ignore_unused.h"
 #include "lancode.h"
 #include "listmessages.h"
 #include "logview.h"
@@ -109,7 +110,6 @@ int changepars(void) {
     int maxpar = 50;
     int volumebuffer;
     int currentmode = 0;
-    int rc;
 
     strcpy(parameters[0], "SPOT");
     strcpy(parameters[1], "MAP");
@@ -371,7 +371,7 @@ int changepars(void) {
 	    }
 
 	    strcat(cmdstring, config_file);
-	    rc = system(cmdstring);
+	    IGNORE(system(cmdstring));;
 
 	    read_logcfg();
 	    read_rules();	/* also reread rules file */
@@ -949,7 +949,7 @@ int debug_tty(void) {
 
     int fdSertnc;
     int tncport = 0;
-    int i, rc;
+    int i;
     struct termios termattribs;
     char line[20] = "?AF\015";
     char inputline[80] = "";
@@ -1058,7 +1058,7 @@ int debug_tty(void) {
     mvprintw(7, 40, "Length = %d characters", strlen(line));
     refreshp();
 
-    rc = write(fdSertnc, line, strlen(line));
+    IGNORE(write(fdSertnc, line, strlen(line)));;
 
     mvprintw(8, 0, "receiving message from trx");
     refreshp();

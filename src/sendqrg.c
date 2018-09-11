@@ -22,6 +22,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "bands.h"
 #include "sendqrg.h"
 #include "startmsg.h"
 #include "gettxinfo.h"

@@ -159,12 +159,11 @@ int muf(void) {
     int row;
     static double la, l, mf, lh;
     static long ve, ho;
-    static int correct;
     char mycountry[40];
     char country[40];
     int i;
     char time_buf[25];
-    int su, sd, su_min, sd_min, iv;
+    int su, sd, su_min, sd_min;
     double ab;
     double n;
     double td;
@@ -175,7 +174,6 @@ int muf(void) {
     win = newwin(25, 80, 0, 0);
     pan = new_panel(win);
 
-    correct = 0;
     n = 0.0;
 
     xt = QTH_Lat;
@@ -301,7 +299,6 @@ int muf(void) {
 
 	if (ff < mf)
 	    mf = ff;
-	iv = (int) floor(mf / 2.0 + 0.5);
 	ve = 21 - (long) floor(mf / 2.0 + 0.5);
 
 	ho = t + 1;

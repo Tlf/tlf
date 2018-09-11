@@ -67,7 +67,9 @@ extern int use_fldigi;
 
 int fldigi_var_carrier = 0;
 int fldigi_var_shift_freq = 0;
+#ifdef HAVE_LIBXMLRPC
 static int initialized = 0;
+#endif
 static int connerr = 0;
 
 char thiscall[20] = "";
@@ -417,15 +419,17 @@ int fldigi_xmlrpc_get_carrier() {
     return 0;
 #else
 
-    extern int rigmode;
-    extern int trx_control;
-    extern float freq;
     int rc;
     xmlrpc_res result;
     xmlrpc_env env;
+#ifdef HAVE_LIBHAMLIB
+    extern int rigmode;
+    extern int trx_control;
+    extern float freq;
     int signum;
     int modeshift;
     char fldigi_mode[6] = "";
+#endif
 
     rc = fldigi_xmlrpc_query(&result, &env, "modem.get_carrier", "");
     if (rc != 0) {

@@ -34,6 +34,7 @@
 #include "getctydata.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "qsonr_to_str.h"
+#include "ignore_unused.h"
 #include "tlf_curses.h"
 
 /* get countrynumber, QTH, CQ zone and continent for myself */
@@ -72,7 +73,6 @@ int getmessages(void) {
     int i, ii;
     char logline[5][82];
     char printcall[12] = "";
-    char *rp;
 
     printw("\n     Call = ");
 
@@ -106,7 +106,7 @@ int getmessages(void) {
 
 	if (fseek(fp, -1L * i * LOGLINELEN, SEEK_END) == 0) {
 
-	    rp = fgets(logline[ii], 85, fp);
+	    IGNORE(fgets(logline[ii], 85, fp));;
 	} else {
 	    strncpy(logline[ii], backgrnd_str, 81);
 	}

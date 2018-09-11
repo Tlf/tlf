@@ -31,6 +31,7 @@
 #include "cw_utils.h"
 #include "genqtclist.h"
 #include "get_time.h"
+#include "ignore_unused.h"
 #include "keyer.h"
 #include "lancode.h"
 #include "nicebox.h"		// Includes curses.h
@@ -276,7 +277,7 @@ void stop_qtc_recording() {
     if (qtcrec_record == 1 && strlen((char *)qtcrec_record_command_shutdown) > 0) {
 	strcpy(reccommand, "pkill -SIGINT -n ");
 	strcat(reccommand, qtcrec_record_command_shutdown);
-	system(reccommand);
+	IGNORE(system(reccommand));;
 	record_run = -1;
 	if (qtcrec_record == 1) {
 	    mvwprintw(qtcwin, 2, 11, "RECORD OFF  ");
@@ -1507,7 +1508,7 @@ void clear_help_block() {
     }
 }
 
-void show_help_msg(msgidx) {
+void show_help_msg(int msgidx) {
     int i = 0, j = 0;
     char buff[80];
     int currqtc;
