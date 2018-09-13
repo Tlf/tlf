@@ -28,6 +28,7 @@
 
 #include "bandmap.h"
 #include "cw_utils.h"
+#include "fldigixmlrpc.h"
 #include "getctydata.h"
 #include "getpx.h"
 #include "lancode.h"
@@ -300,7 +301,6 @@ int parse_logcfg(char *inputbuffer) {
     extern int bmautograb;
     extern int sprint_mode;
     extern char fldigi_url[50];
-    extern int use_fldigi;
     extern unsigned char rigptt;
     extern int minitest;
     extern int unique_call_multi;
@@ -1831,7 +1831,8 @@ int parse_logcfg(char *inputbuffer) {
 			  sizeof(fldigi_url));
 	    }
 	    digikeyer = FLDIGI;
-	    use_fldigi = 1;
+	    if (!fldigi_get())
+		fldigi_toggle();
 #endif
 	    break;
 	}
