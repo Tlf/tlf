@@ -21,6 +21,8 @@
 #ifndef DXCC_H
 #define DXCC_H
 
+#include <stdbool.h>
+
 typedef struct {
     char *pfx;
     short cq;
@@ -30,7 +32,7 @@ typedef struct {
     float lon;
     char *continent;
     float timezone;
-    char exact;
+    bool exact;
 } prefix_data;
 
 typedef struct {

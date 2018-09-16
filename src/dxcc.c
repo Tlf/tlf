@@ -41,7 +41,7 @@ prefix_data dummy_pfx = {
     INFINITY,
     NULL,
     INFINITY,
-    FALSE
+    false
 };
 
 
@@ -56,7 +56,7 @@ void prefix_free(gpointer data) {
 
 void prefix_init(void) {
     if (prefix) {
-	g_ptr_array_free(prefix, TRUE);
+	g_ptr_array_free(prefix, true);
     }
     prefix = g_ptr_array_new_with_free_func(prefix_free);
 }
@@ -82,11 +82,11 @@ void prefix_add(char *pfxstr) {
     prefix_data *new_prefix = g_new(prefix_data, 1);
 
     if (*pfxstr == '=') {
-	new_prefix -> exact = TRUE;
-	have_exact_matches = TRUE;
+	new_prefix -> exact = true;
+	have_exact_matches = true;
 	pfxstr++;
     } else
-	new_prefix -> exact = FALSE;
+	new_prefix -> exact = false;
 
     loc = strchr(pfxstr, '~');
     if (loc != NULL) {
@@ -152,7 +152,7 @@ void dxcc_free(gpointer data) {
 
 void dxcc_init(void) {
     if (dxcc) {
-	g_ptr_array_free(dxcc, TRUE);
+	g_ptr_array_free(dxcc, true);
     }
     dxcc = g_ptr_array_new_with_free_func(dxcc_free);
 }
