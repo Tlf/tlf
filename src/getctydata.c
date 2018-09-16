@@ -258,9 +258,9 @@ static int getctydata_internal(char *checkcallptr, int get_country) {
 }
 
 int getctydata(char *checkcallptr) {
-    return getctydata_internal(checkcallptr, TRUE);
+    return getctydata_internal(checkcallptr, true);
 }
 
 int getctydata_pfx(char *checkcallptr) {
-    return getctydata_internal(checkcallptr, FALSE);
+    return getctydata_internal(checkcallptr, false);
 }
