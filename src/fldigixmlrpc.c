@@ -126,7 +126,7 @@ int fldigi_toggle(void) {
     return ret;
 }
 
-int fldigi_get(void) {
+int fldigi_isenabled(void) {
     int ret;
 
     pthread_mutex_lock(&xmlrpc_mutex);

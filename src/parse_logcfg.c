@@ -1831,7 +1831,7 @@ int parse_logcfg(char *inputbuffer) {
 			  sizeof(fldigi_url));
 	    }
 	    digikeyer = FLDIGI;
-	    if (!fldigi_get())
+	    if (!fldigi_isenabled())
 		fldigi_toggle();
 #endif
 	    break;
