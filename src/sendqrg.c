@@ -26,6 +26,7 @@
 #include "startmsg.h"
 #include "gettxinfo.h"
 #include "bandmap.h"
+#include "globalvars.h"
 
 
 void send_bandswitch(int trxqrg);
@@ -214,6 +215,18 @@ int init_tlf_rig(void) {
 	sleep(10);
 
     }				// end debug
+
+    switch (trxmode) {
+	case SSBMODE:
+	    set_outfreq(SETSSBMODE);
+	    break;
+	case DIGIMODE:
+	    set_outfreq(SETDIGIMODE);
+	    break;
+	case CWMODE:
+	    set_outfreq(SETCWMODE);
+	    break;
+    }
 
     sleep(1);
     return (0);

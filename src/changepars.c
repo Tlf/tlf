@@ -440,6 +440,7 @@ int changepars(void) {
 	}
 	case 32: {		/* DIGIMODE  */
 	    trxmode = DIGIMODE;
+	    set_outfreq(SETDIGIMODE);
 	    break;
 	}
 	case 33: {		/* PACKET  */

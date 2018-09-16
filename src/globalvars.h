@@ -4,6 +4,10 @@
 
 #include <glib.h>
 
+#ifdef HAVE_LIBHAMLIB
+# include <hamlib/rig.h>
+#endif
+
 extern char qsos[MAX_QSOS][LOGLINELEN + 1];
 					// array of log lines of QSOs so far;
 					// note that not every log line needs
@@ -116,3 +120,6 @@ extern int three_point;
 extern int dxped;
 extern int addzone;
 extern int do_cabrillo;
+#ifdef HAVE_LIBHAMLIB
+extern rmode_t digi_mode;
+#endif
