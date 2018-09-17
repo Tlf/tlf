@@ -25,8 +25,7 @@
 #include "sendqrg.h"
 #include "startmsg.h"
 #include "gettxinfo.h"
-#include "bandmap.h"
-
+#include "bands.h"
 
 void send_bandswitch(int trxqrg);
 

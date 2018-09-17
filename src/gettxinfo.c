@@ -32,7 +32,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "callinput.h"
-#include "bandmap.h"
+#include "bands.h"
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>

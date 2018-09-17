@@ -222,6 +222,7 @@ int freq2mode(int freq, int band) {
  * if so split it into pieces and insert in spot list */
 void bm_add(char *s) {
     char *line;
+    char *call;
     char node = ' ';
 
     line = g_strdup(s);
@@ -230,11 +231,15 @@ void bm_add(char *s) {
 	return;
     }
 
+    if ((call = strtok(line + 26, " \t")) == NULL) {
+	g_free(line);
+	return;
+    }
+
     if (strncmp(line + 6, "TLF-", 4) == 0)
 	node = line[10];		/* get sending node id */
 
-    bandmap_addspot(strtok(line + 26, " \t"),
-		    (unsigned int)(atof(line + 16) * 1000), node);
+    bandmap_addspot(call, (unsigned int)(atof(line + 16) * 1000), node);
     g_free(line);
 }
 
