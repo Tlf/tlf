@@ -30,7 +30,7 @@
 
 GPtrArray *dxcc;
 GPtrArray *prefix;
-char have_exact_matches;
+bool have_exact_matches;
 
 prefix_data dummy_pfx = {
     "No Prefix",
@@ -56,7 +56,7 @@ void prefix_free(gpointer data) {
 
 void prefix_init(void) {
     if (prefix) {
-	g_ptr_array_free(prefix, true);
+	g_ptr_array_free(prefix, TRUE);
     }
     prefix = g_ptr_array_new_with_free_func(prefix_free);
 }
@@ -152,7 +152,7 @@ void dxcc_free(gpointer data) {
 
 void dxcc_init(void) {
     if (dxcc) {
-	g_ptr_array_free(dxcc, true);
+	g_ptr_array_free(dxcc, TRUE);
     }
     dxcc = g_ptr_array_new_with_free_func(dxcc_free);
 }
@@ -196,10 +196,10 @@ void dxcc_add(char *dxcc_line) {
     new_dxcc -> timezone = atof(split[6]);
     if (*split[7] == '*') {
 	new_dxcc -> pfx = g_strdup(split[7] + 1);
-	new_dxcc -> starred = 1;
+	new_dxcc -> starred = true;
     } else {
 	new_dxcc -> pfx = g_strdup(split[7]);
-	new_dxcc -> starred = 0;
+	new_dxcc -> starred = false;
     }
 
     g_strfreev(split);

@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "dxcc.h"
 #include "getpx.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
@@ -222,7 +223,7 @@ int getctynr(char *checkcall) {
  *
  * side effect: set up various global variables
  */
-static int getctydata_internal(char *checkcallptr, int get_country) {
+static int getctydata_internal(char *checkcallptr, bool get_country) {
     int w = 0, x = 0;
     char *normalized_call = NULL;
 

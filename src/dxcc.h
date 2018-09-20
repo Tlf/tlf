@@ -44,10 +44,10 @@ typedef struct {
     float lon;
     float timezone;
     char *pfx;
-    char starred;
+    bool starred;
 } dxcc_data;
 
-extern char have_exact_matches;
+extern bool have_exact_matches;
 
 void prefix_init(void);
 
