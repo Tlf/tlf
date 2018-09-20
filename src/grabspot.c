@@ -99,7 +99,7 @@ static double execute_grab(spot *data) {
 
     strcpy(hiscall, data->call);
 
-    showinfo(getctydata(hiscall));
+    showinfo(getctydata_pfx(hiscall));
     searchlog(hiscall);
 
     /* if in CQ mode switch to S&P and remember QRG */

@@ -23,18 +23,25 @@
 #include <string.h>
 
 #include <glib.h>
+#include <math.h>
 
 #include "dxcc.h"
 
 
 GPtrArray *dxcc;
 GPtrArray *prefix;
+char have_exact_matches;
 
 prefix_data dummy_pfx = {
     "No Prefix",
     0,
     0,
-    0
+    0,
+    INFINITY,
+    INFINITY,
+    NULL,
+    INFINITY,
+    false
 };
 
 
@@ -42,13 +49,14 @@ void prefix_free(gpointer data) {
     prefix_data *pfx_data = data;
 
     g_free(pfx_data -> pfx);
+    g_free(pfx_data -> continent);
     g_free(pfx_data);
 }
 
 
 void prefix_init(void) {
     if (prefix) {
-	g_ptr_array_free(prefix, TRUE);
+	g_ptr_array_free(prefix, true);
     }
     prefix = g_ptr_array_new_with_free_func(prefix_free);
 }
@@ -72,6 +80,44 @@ void prefix_add(char *pfxstr) {
     gint last_index = dxcc_count() - 1;
     dxcc_data *last_dx = dxcc_by_index(last_index);
     prefix_data *new_prefix = g_new(prefix_data, 1);
+
+    if (*pfxstr == '=') {
+	new_prefix -> exact = true;
+	have_exact_matches = true;
+	pfxstr++;
+    } else
+	new_prefix -> exact = false;
+
+    loc = strchr(pfxstr, '~');
+    if (loc != NULL) {
+	new_prefix -> timezone = atof(loc + 1);
+	*loc = '\0';
+    }
+    else
+	new_prefix -> timezone = INFINITY;
+
+    loc = strchr(pfxstr, '{');
+    if (loc != NULL) {
+	new_prefix -> continent = g_strdup(loc + 1);
+	*loc = '\0';
+	loc = strchr(new_prefix -> continent, '}');
+	if (loc != NULL)
+	    *loc = '\0';
+    }
+    else
+	new_prefix -> continent = NULL;
+
+    loc = strchr(pfxstr, '<');
+    if (loc != NULL) {
+	new_prefix -> lat = atof(loc + 1);
+	*loc = '\0';
+	if ((loc = strchr(loc, '/')) != NULL)
+	    new_prefix -> lon = atof(loc + 1);
+	else
+	    new_prefix -> lon = INFINITY;
+    }
+    else
+	new_prefix -> lat = new_prefix -> lon = INFINITY;
 
     loc = strchr(pfxstr, '[');
     if (loc != NULL) {
@@ -106,7 +152,7 @@ void dxcc_free(gpointer data) {
 
 void dxcc_init(void) {
     if (dxcc) {
-	g_ptr_array_free(dxcc, TRUE);
+	g_ptr_array_free(dxcc, true);
     }
     dxcc = g_ptr_array_new_with_free_func(dxcc_free);
 }

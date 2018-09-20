@@ -49,6 +49,8 @@ int find_full_match(const char *call) {
     w = -1;
     for (i = 0; i < pfxmax; i++) {
 	pfx = prefix_by_index(i);
+	if (have_exact_matches && !pfx->exact)
+	    continue;
 	if (strcmp(call, pfx->pfx) == 0) {
 	    w = i;
 	    break;
@@ -69,6 +71,13 @@ int find_best_match(const char *call) {
     for (i = 0; i < pfxmax; i++) {
 	int l;
 	pfx = prefix_by_index(i);
+	if (pfx->exact) {
+	    if (strcmp(call, pfx->pfx) == 0) {
+		w = i;
+		break;
+	    }
+	    continue;
+	}
 	if (*pfx->pfx != call[0])
 	    continue;
 
@@ -213,7 +222,7 @@ int getctynr(char *checkcall) {
  *
  * side effect: set up various global variables
  */
-int getctydata(char *checkcallptr) {
+static int getctydata_internal(char *checkcallptr, int get_country) {
     int w = 0, x = 0;
     char *normalized_call = NULL;
 
@@ -238,7 +247,20 @@ int getctydata(char *checkcallptr) {
 	strcpy(zone_export, ituzone);
 
     countrynr = x;
-    g_strlcpy(continent, dxcc_by_index(countrynr) -> continent, 3);
+    if (prefix_by_index(w) -> continent != NULL)
+	g_strlcpy(continent, prefix_by_index(w) -> continent, 3);
+    else
+	g_strlcpy(continent, dxcc_by_index(countrynr) -> continent, 3);
 
-    return (x);
+    if (get_country)
+	return (x);
+    return w;
+}
+
+int getctydata(char *checkcallptr) {
+    return getctydata_internal(checkcallptr, true);
+}
+
+int getctydata_pfx(char *checkcallptr) {
+    return getctydata_internal(checkcallptr, false);
 }
