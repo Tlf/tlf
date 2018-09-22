@@ -110,7 +110,7 @@ void calledit(void) {
 		hiscall[j] = hiscall[j + 1];	/* move to left incl. \0 */
 	    }
 
-	    showinfo(getctydata(hiscall));
+	    showinfo(getctydata_pfx(hiscall));
 
 	    if (cnt > 1)
 		searchlog(hiscall);
@@ -128,7 +128,7 @@ void calledit(void) {
 		    hiscall[j] = hiscall[j + 1];
 		}
 
-		showinfo(getctydata(hiscall));
+		showinfo(getctydata_pfx(hiscall));
 
 		if (cnt > 1)
 		    searchlog(hiscall);
@@ -178,7 +178,7 @@ void calledit(void) {
 		else
 		    break;
 
-		showinfo(getctydata(hiscall));
+		showinfo(getctydata_pfx(hiscall));
 
 		searchlog(hiscall);
 

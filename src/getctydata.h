@@ -23,6 +23,7 @@
 
 int getctynr(char *checkcall);
 int getctydata(char *checkcall);
+int getctydata_pfx(char *checkcallptr);
 
 
 #endif /* end of include guard: GETCTYDATA_H */

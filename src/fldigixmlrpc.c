@@ -63,7 +63,7 @@ typedef struct xmlrpc_res_s {
 				   it back to RIG carrier */
 
 extern char fldigi_url[50];
-extern int use_fldigi;
+static int use_fldigi;
 
 int fldigi_var_carrier = 0;
 int fldigi_var_shift_freq = 0;
@@ -74,6 +74,7 @@ char thiscall[20] = "";
 char tcomment[20] = "";
 
 pthread_mutex_t xmlrpc_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t xmlrpc_get_rx_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /*
  * Used XML RPC methods, and its formats of arguments
@@ -110,7 +111,28 @@ xmlrpc_server_info *serverInfoP = NULL;
 #endif
 
 void fldigi_clear_connerr() {
+    pthread_mutex_lock(&xmlrpc_mutex);
     connerr = 0;
+    pthread_mutex_unlock(&xmlrpc_mutex);
+}
+
+int fldigi_toggle(void) {
+    int ret;
+
+    pthread_mutex_lock(&xmlrpc_mutex);
+    use_fldigi = !use_fldigi;
+    ret = use_fldigi;
+    pthread_mutex_unlock(&xmlrpc_mutex);
+    return ret;
+}
+
+int fldigi_isenabled(void) {
+    int ret;
+
+    pthread_mutex_lock(&xmlrpc_mutex);
+    ret = use_fldigi;
+    pthread_mutex_unlock(&xmlrpc_mutex);
+    return ret;
 }
 
 void xmlrpc_res_init(xmlrpc_res *res) {
@@ -123,27 +145,32 @@ void xmlrpc_res_init(xmlrpc_res *res) {
 
 int fldigi_xmlrpc_init() {
 #ifdef HAVE_LIBXMLRPC
+    pthread_mutex_lock(&xmlrpc_mutex);
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME,
 			XMLRPCVERSION, NULL, 0);
     serverInfoP = xmlrpc_server_info_new(&env, fldigi_url);
     if (env.fault_occurred != 0) {
 	serverInfoP = NULL;
 	initialized = 0;
+	pthread_mutex_unlock(&xmlrpc_mutex);
 	return -1;
     }
 
     initialized = 1;
+    pthread_mutex_unlock(&xmlrpc_mutex);
 #endif
     return 0;
 }
 
 int fldigi_xmlrpc_cleanup() {
 #ifdef HAVE_LIBXMLRPC
+    pthread_mutex_lock(&xmlrpc_mutex);
     if (serverInfoP != NULL) {
 	xmlrpc_server_info_free(serverInfoP);
 	serverInfoP = NULL;
 	initialized = 0;
     }
+    pthread_mutex_unlock(&xmlrpc_mutex);
 #endif
     return 0;
 }
@@ -159,13 +186,15 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
     va_list argptr;
     int restype;
     size_t bytesize = 0;
+    int ret;
 
-
-    if (initialized == 0) {
-	return -1;
-    }
 
     pthread_mutex_lock(&xmlrpc_mutex);
+
+    if (initialized == 0) {
+	pthread_mutex_unlock(&xmlrpc_mutex);
+	return -1;
+    }
     /*
     if connerr had been set up to 1, that means an error
     occured at last xmlrpc_call() method
@@ -201,15 +230,15 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 		va_param = xmlrpc_string_new(local_env, s);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
-		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    connerr = 1;
+		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    return -1;
 		}
 		xmlrpc_array_append_item(local_env, pcall_array, va_param);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
-		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    connerr = 1;
+		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    return -1;
 		}
 		xmlrpc_DECREF(va_param);
@@ -219,8 +248,8 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 		xmlrpc_array_append_item(local_env, pcall_array, va_param);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
-		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    connerr = 1;
+		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    return -1;
 		}
 		xmlrpc_DECREF(va_param);
@@ -230,8 +259,8 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 		xmlrpc_array_append_item(local_env, pcall_array, va_param);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
-		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    connerr = 1;
+		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    return -1;
 		}
 		xmlrpc_DECREF(va_param);
@@ -284,12 +313,12 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 
 	xmlrpc_DECREF(pcall_array);
     }
+    if (connerr == 0 && use_fldigi)
+	ret = 0;
+    else
+	ret = -1;
     pthread_mutex_unlock(&xmlrpc_mutex);
-    if (connerr == 0) {
-	return 0;
-    } else {
-	return -1;
-    }
+    return ret;
 }
 #endif
 
@@ -323,6 +352,7 @@ int fldigi_send_text(char *line) {
     // if the RX success, clear the previous message from TX text window
     if (strcmp(result.stringval, "TX") == 0) {
 	free((void *)result.stringval);
+	result.stringval = NULL;
 	rc = fldigi_xmlrpc_query(&result, &env, "main.rx", "");
 	if (rc != 0) {
 	    return -1;
@@ -362,6 +392,10 @@ int fldigi_send_text(char *line) {
 }
 
 /* read the text from Fldigi's RX window, from last read position */
+/*
+ * Since this uses a static variable, it is not thread-safe and must
+ * use a protective mutex.
+ */
 int fldigi_get_rx_text(char *line, int len) {
 #ifdef HAVE_LIBXMLRPC
     int rc;
@@ -372,8 +406,10 @@ int fldigi_get_rx_text(char *line, int len) {
     int retval = 0;
     int linelen = 0;
 
+    pthread_mutex_lock(&xmlrpc_get_rx_mutex);
     rc = fldigi_xmlrpc_query(&result, &env, "text.get_rx_length", "");
     if (rc != 0) {
+	pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
 	return -1;
     }
 
@@ -383,17 +419,20 @@ int fldigi_get_rx_text(char *line, int len) {
     } else {
 	if (lastpos < textlen) {
 	    rc = fldigi_xmlrpc_query(&result, &env, "text.get_rx", "dd",
-				     lastpos, textlen);
+				    lastpos,
+				    textlen - lastpos >= len ?
+					len - 1 : textlen - lastpos);
 	    if (rc != 0) {
+		pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
 		return -1;
 	    }
 
 	    if (result.intval > 0 && result.byteval != NULL) {
 		linelen = result.intval;
-		if (result.intval > len) {
-		    linelen = len;
+		if (result.intval >= len) {
+		    linelen = len - 1;
 		}
-		memcpy(line, result.byteval, linelen - 1);
+		memcpy(line, result.byteval, linelen);
 		line[linelen] = '\0';
 		retval = linelen;
 	    }
@@ -403,6 +442,7 @@ int fldigi_get_rx_text(char *line, int len) {
 	}
     }
     lastpos = textlen;
+    pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
     return retval;
 
 #else

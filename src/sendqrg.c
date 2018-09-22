@@ -27,6 +27,7 @@
 #include "startmsg.h"
 #include "gettxinfo.h"
 #include "bandmap.h"
+#include "bands.h"
 #include "globalvars.h"
 
 

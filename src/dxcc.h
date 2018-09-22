@@ -21,11 +21,18 @@
 #ifndef DXCC_H
 #define DXCC_H
 
+#include <stdbool.h>
+
 typedef struct {
     char *pfx;
     short cq;
     short itu;
     short dxcc_index;
+    float lat;
+    float lon;
+    char *continent;
+    float timezone;
+    bool exact;
 } prefix_data;
 
 typedef struct {
@@ -37,8 +44,10 @@ typedef struct {
     float lon;
     float timezone;
     char *pfx;
-    char starred;
+    bool starred;
 } dxcc_data;
+
+extern bool have_exact_matches;
 
 void prefix_init(void);
 

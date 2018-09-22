@@ -376,7 +376,6 @@ int rig_comm_success = 0;
 
 /*----------------------------------fldigi---------------------------------*/
 char fldigi_url[50] = "http://localhost:7362/RPC2";
-int use_fldigi = 0;
 
 /*---------------------------------simulator-------------------------------*/
 int simulator = 0;
@@ -461,7 +460,6 @@ int m = 1;
 char hiscountry[40];
 
 int this_second;
-int stop_backgrnd_process = 1;	/* dont start until we know what we are doing */
 
 int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
 int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
@@ -553,8 +551,7 @@ void ui_init() {
     } else if (strcasecmp(term, "xterm") == 0) {
 	use_xterm = 1;
 	use_rxvt = 1;
-    } else
-	putenv("TERM=rxvt");	/*or going to native console linux driver */
+    }
 
     /* Check the environment variable ESCDELAY.
      *

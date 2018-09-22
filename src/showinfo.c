@@ -31,12 +31,14 @@
  */
 
 
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
 #include "dxcc.h"
 #include "qrb.h"
+#include "showinfo.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -64,11 +66,16 @@ int showinfo(int x) {
     char timebuff[80];
 
     dxcc_data *dx;
+    prefix_data *pfx;
     double d;
     time_t now;
     struct tm *ptr1;
 
-    dx = dxcc_by_index(x);
+    if (x == SHOWINFO_DUMMY)
+	pfx = prefix_by_index(prefix_count());
+    else
+	pfx = prefix_by_index(x);
+    dx = dxcc_by_index(pfx -> dxcc_index);
 
     strcpy(pxstr, dx->pfx);
     strcpy(countrystr, dx->countryname);	/* country */
@@ -88,16 +95,28 @@ int showinfo(int x) {
 	itustr[2] = '\0';
     }
 
-    d = dx->timezone;				/* GMT difference */
+    if (pfx->timezone != INFINITY)
+	d = pfx->timezone;
+    else
+	d = dx->timezone;				/* GMT difference */
 
     now = (time(0) + (long)((timeoffset - d) * 3600) + timecorr);
     ptr1 = gmtime(&now);
     strftime(timebuff, 80, "%H:%M", ptr1);
 
-    DEST_Lat = dx->lat;				/* where is he? */
-    DEST_Long = dx->lon;
+    if (pfx->lat != INFINITY)
+	DEST_Lat = pfx->lat;
+    else
+	DEST_Lat = dx->lat;				/* where is he? */
+    if (pfx->lon != INFINITY)
+	DEST_Lat = pfx->lon;
+    else
+	DEST_Long = dx->lon;
 
-    strncpy(contstr, dx->continent, 2);	/* continent */
+    if (pfx->continent != NULL)
+	strncpy(contstr, pfx->continent, 2);	/* continent */
+    else
+	strncpy(contstr, dx->continent, 2);	/* continent */
     contstr[2] = '\0';
 
     getyx(stdscr, cury, curx);

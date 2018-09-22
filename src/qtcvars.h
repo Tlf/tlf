@@ -18,10 +18,10 @@
  */
 
 
-#include "globalvars.h"
-
 #ifndef QTCVARS_H
 #define QTCVARS_H
+
+#include "globalvars.h"
 
 #define QTC_SENT_LOG	"QTC_sent.log"
 #define QTC_RECV_LOG	"QTC_recv.log"

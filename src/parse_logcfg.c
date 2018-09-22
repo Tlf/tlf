@@ -28,6 +28,7 @@
 
 #include "bandmap.h"
 #include "cw_utils.h"
+#include "fldigixmlrpc.h"
 #include "getctydata.h"
 #include "getpx.h"
 #include "lancode.h"
@@ -309,7 +310,6 @@ int parse_logcfg(char *inputbuffer) {
     extern int bmautograb;
     extern int sprint_mode;
     extern char fldigi_url[50];
-    extern int use_fldigi;
     extern unsigned char rigptt;
     extern int minitest;
     extern int unique_call_multi;
@@ -1864,7 +1864,8 @@ int parse_logcfg(char *inputbuffer) {
 			  sizeof(fldigi_url));
 	    }
 	    digikeyer = FLDIGI;
-	    use_fldigi = 1;
+	    if (!fldigi_isenabled())
+		fldigi_toggle();
 #endif
 	    break;
 	}
@@ -1910,7 +1911,7 @@ int parse_logcfg(char *inputbuffer) {
 	case 237: {
 #ifdef HAVE_LIBHAMLIB
 	    PARAMETER_NEEDED(teststring);
-	    g_strchomp(fields[1]);
+	    g_ascii_strup(g_strchomp(fields[1]), -1);
 	    if (strcmp(fields[1], "USB") == 0)
 		digi_mode = RIG_MODE_USB;
 	    else if (strcmp(fields[1], "LSB") == 0)

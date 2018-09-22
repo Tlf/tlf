@@ -100,7 +100,6 @@ int changepars(void) {
     extern char sc_volume[];
     extern int cwstart;
     extern int digikeyer;
-    extern int use_fldigi;
 
     char parameterstring[20];
     char parameters[52][19];
@@ -700,13 +699,11 @@ int changepars(void) {
 	}
         case 51: {              /* FLDIGI - turn on/off */
 	    if (digikeyer == FLDIGI) {
-		if (use_fldigi == 0) {
-		    use_fldigi = 1;
+		if (fldigi_toggle()) {
 		    fldigi_clear_connerr();
 		    mvprintw(13, 29, "FLDIGI ON");
 	        }
 	        else {
-		    use_fldigi = 0;
 		    mvprintw(13, 29, "FLDIGI OFF");
 		}
 		refreshp();
