@@ -122,3 +122,6 @@ extern int do_cabrillo;
 #ifdef HAVE_LIBHAMLIB
 extern rmode_t digi_mode;
 #endif
+
+extern char message[][80];
+extern char *digi_message[];

@@ -19,11 +19,12 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
+#define _GNU_SOURCE	// For asprintf()
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "globalvars.h"
 #include "parse_logcfg.h"
 #include "setcontest.h"
 #include "startmsg.h"
@@ -107,5 +108,27 @@ int read_rules() {
 	strcpy(logfile, "qso.log");
 	refreshp();
     }
+
+    /*
+     * Now, for unspecified digi messages, copy from the CW message,
+     * putting CRLF at the start, and changing the trailing \n to a
+     * space
+     */
+    int i;
+    for (i = 0; i < 25; i++) {
+	if (digi_message[i] == NULL) {
+	    if (asprintf(&digi_message[i], "|%s", message[i]) == -1) {
+		digi_message[i] = NULL;
+		showmsg("unable to create digi message!");
+		status = PARSE_ERROR;
+	    }
+	    else {
+		char *c = strrchr(digi_message[i], '\n');
+		if (c)
+		    *c = ' ';
+	    }
+	}
+    }
+
     return (status);
 }

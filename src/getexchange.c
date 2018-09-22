@@ -68,7 +68,6 @@ int getexchange(void) {
     extern char ituzone[];
     extern char my_rst[];
     extern int change_rst;
-    extern char message[][80];
     extern char ph_message[14][80];
     extern char hiscall[];
     extern char qsonrstr[];
@@ -223,11 +222,7 @@ int getexchange(void) {
 
 	    case 160: {	// For CT compatibility Meta-<Space> (M- )
 		if (ctcomp != 0) {
-		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			sendmessage(message[1]);	// F2
-
-		    } else
-			play_file(ph_message[1]);
+		    send_standard_message(1);		// F2
 
 		}
 		break;
@@ -235,11 +230,7 @@ int getexchange(void) {
 
 	    case '+': {	// for CT compatibility
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
-		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			sendmessage(message[2]);	/* F3 */
-
-		    } else
-			play_file(ph_message[2]);
+		    send_standard_message(2);		/* F3 */
 
 		    x = 92;	// '\'
 		}
@@ -256,26 +247,19 @@ int getexchange(void) {
 	    }
 
 	    case KEY_F(2) ... KEY_F(11): {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    /* F2...F11 - F1 = 1...10 */
-		    sendmessage(message[x - KEY_F(1)]);
-		} else
-		    play_file(ph_message[x - KEY_F(1)]);
+		/* F2...F11 - F1 = 1...10 */
+		send_standard_message(x - KEY_F(1));
 
 		break;
 	    }
 //	case KEY_F(11):
 //            {
-//                if (trxmode == CWMODE || trxmode == DIGIMODE) {
-//                    sendmessage(message[10]);        /* F11 */
-
-//                } else
-//                    play_file(ph_message[10]);
+//                send_standard_message(10);        /* F11 */
 
 //                break;
 //            }
 	    case 176 ... 185: {	/* Alt-0 to Alt-9 */
-		sendmessage(message[x - 162]);	/* Messages 15-24 */
+		send_standard_message(x - 162);	/* Messages 15-24 */
 
 		break;
 	    }

@@ -28,6 +28,7 @@
 
 #include "clear_display.h"
 #include "cw_utils.h"
+#include "globalvars.h"
 #include "printcall.h"
 #include "sendbuf.h"
 #include "stoptx.h"
@@ -43,7 +44,6 @@ int play_file(char *audiofile);
 int auto_cq(void) {
     extern char mode[];
     extern char message[][80];
-    extern char ph_message[14][80];
     extern int cqdelay;
     extern int cqmode;
     extern int trxmode;
@@ -58,10 +58,7 @@ int auto_cq(void) {
     strcpy(mode, "AUTO_CQ ");
     clear_display();
     while (delayval == 0) {
-	if (trxmode == CWMODE || trxmode == DIGIMODE) {
-	    sendmessage(message[11]);
-	} else
-	    play_file(ph_message[11]);
+	send_standard_message(11);
 
 	mvprintw(12, 29 + strlen(hiscall), "");
 

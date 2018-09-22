@@ -121,7 +121,6 @@ int callinput(void) {
     extern char backgrnd_str[];
     extern int cluster;
     extern int announcefilter;
-    extern char message[][80];
     extern char ph_message[14][80];
     extern float mem;
     extern SCREEN *mainscreen;
@@ -306,11 +305,7 @@ int callinput(void) {
 	    // Plus, in CT mode send exchange, log QSO, no message sent.
 	    case '+': {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
-		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			sendmessage(message[2]);	/* F3 */
-
-		    } else
-			play_file(ph_message[2]);
+		    send_standard_message(2);
 
 		    if (((cqww == 1) || (wazmult == 1))
 			    && (*comment == '\0'))
@@ -508,7 +503,8 @@ int callinput(void) {
 		searchlog(hiscall);
 
 		if (isdupe != 0) {
-		    sendmessage(message[6]);	/* as with F7 */
+		    // XXX: Before digi_message, SSB mode sent CW here. - W8BSD
+		    send_standard_message(6);	/* as with F7 */
 		    cleanup();
 		    clear_display();
 		}
@@ -518,11 +514,7 @@ int callinput(void) {
 	    // <Insert>, send exchange in CT mode
 	    case KEY_IC: {
 		if (ctcomp != 0) {
-		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			sendmessage(message[1]);	// F2
-
-		    } else
-			play_file(ph_message[1]);
+		    send_standard_message(1);		// F2
 
 		}
 		break;
@@ -583,7 +575,7 @@ int callinput(void) {
 
 	    // Alt-0 to Alt-9 (M-0...M-9), send CW/Digimode messages 15-24.
 	    case 176 ... 185: {
-		sendmessage(message[x - 162]);	/* alt-0 to alt-9 */
+		send_standard_message(x - 162);	/* alt-0 to alt-9 */
 
 		break;
 	    }
@@ -595,7 +587,7 @@ int callinput(void) {
 		    if (cqmode == 0) {
 			sendspcall();
 		    } else {
-			sendmessage(message[0]);	/* CQ */
+			send_standard_message(0);	/* CQ */
 		    }
 
 
@@ -614,11 +606,7 @@ int callinput(void) {
 
 	    // F2-F11, send messages 2 through 11.
 	    case KEY_F(2) ... KEY_F(11): {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    sendmessage(message[x - KEY_F(1)]);	// F2...F11 - F1 = 1...10
-
-		} else
-		    play_file(ph_message[x - KEY_F(1)]);
+		send_standard_message(x - KEY_F(1));	// F2...F11 - F1 = 1...10
 
 		break;
 	    }
@@ -632,13 +620,9 @@ int callinput(void) {
 	    // Query, send call with " ?" appended or F5 message in voice mode.
 	    case '?': {
 		if (*hiscall != '\0') {
-		    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			strcat(hiscall, " ?");
-			sendmessage(message[4]);
-			hiscall[strlen(hiscall) - 2] = '\0';
-		    } else {
-			play_file(ph_message[4]);
-		    }
+		    strcat(hiscall, " ?");
+		    send_standard_message(4);
+		    hiscall[strlen(hiscall) - 2] = '\0';
 		}
 		x = -1;
 		break;

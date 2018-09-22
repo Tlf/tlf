@@ -27,6 +27,7 @@
 #include <glib.h>
 
 #include "clear_display.h"
+#include "globalvars.h"
 #include "nicebox.h"		// Includes curses.h
 #include "tlf.h"
 #include "ui_utils.h"
@@ -43,8 +44,11 @@ char *formatMessage(int i) {
     extern char message[][80];
     extern char backgrnd_str[];
 
-    /* copy the message string WITHOUT trailing newline */
-    g_strlcpy(printbuffer,  message[i],  strlen(message[i]));
+    /* copy the message string WITHOUT trailing newline/space */
+    if (trxmode == DIGIMODE)
+	g_strlcpy(printbuffer,  digi_message[i],  strlen(digi_message[i]));
+    else
+	g_strlcpy(printbuffer,  message[i],  strlen(message[i]));
     /* and fill up with spaces */
     strcat(printbuffer, backgrnd_str);
     printbuffer[LIST_WIDTH - 7] = '\0';
