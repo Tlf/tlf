@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "globalvars.h"
 #include "parse_logcfg.h"
@@ -118,9 +119,9 @@ int read_rules() {
     for (i = 0; i < 25; i++) {
 	if (digi_message[i] == NULL) {
 	    if (asprintf(&digi_message[i], "|%s", message[i]) == -1) {
-		digi_message[i] = NULL;
-		showmsg("unable to create digi message!");
-		status = PARSE_ERROR;
+		showmsg("Out of memory: unable to create digi message!");
+		sleep(2);
+		exit(EXIT_FAILURE);
 	    }
 	    else {
 		char *c = strrchr(digi_message[i], '\n');
