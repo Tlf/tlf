@@ -52,7 +52,7 @@ noinst_HEADERS = \
 	genqtclist.h \
 	get_time.h  getctydata.h getexchange.h getmessages.h getpx.h \
 	getsummary.h gettxinfo.h getwwv.h globalvars.h grabspot.h \
-	initial_exchange.h \
+	ignore_unused.h initial_exchange.h \
 	keyer.h \
 	lancode.h last10.h listmessages.h \
 	log_to_disk.h logit.h logview.h locator2longlat.h \
