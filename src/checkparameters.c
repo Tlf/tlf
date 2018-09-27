@@ -35,7 +35,7 @@ int checkparameters(void) {
     FILE *fp;
 
     if ((fp = fopen(".paras", "r")) == NULL) {
-	writeparas();
+	writeparas_file();
 	emptydir = 1;
 
     } else {

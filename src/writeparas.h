@@ -21,6 +21,7 @@
 #ifndef WRITEPARAS_H
 #define WRITEPARAS_H
 
+int writeparas_file(void);
 int writeparas(void);
 
 #endif /* WRITEPARAS_H */

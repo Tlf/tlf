@@ -1964,7 +1964,7 @@ Save the
 .I master.scp
 file as
 .I callmaster
-in the working directory.  It will take precendence over the system insalled
+in the working directory.  It will take precendence over the system installed
 .IR callmaster .
 .
 .P

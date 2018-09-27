@@ -33,8 +33,8 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
-
-int writeparas(void) {
+/* write a .paras file */
+int writeparas_file(void) {
 
     extern char call[];
     extern char message[][80];
@@ -54,8 +54,6 @@ int writeparas(void) {
 
     FILE *fp;
     int i;
-
-    stop_background_process();
 
     if (strlen(call) <= 3) {
 	mvprintw(24, 0, "Cannot write parameters file: data corrupt... ");
@@ -165,8 +163,17 @@ int writeparas(void) {
 
     fclose(fp);
 
-    start_background_process();
-
     return (0);
-
 }
+
+
+/* write .paras fiel with background thread stopped */
+int writeparas(void) {
+    int result;
+
+    stop_background_process();
+    result = writeparas_file();
+    start_background_process();
+    return result;
+}
+
