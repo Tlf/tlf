@@ -7,4 +7,6 @@ CLEANFILES = *~
 man_MANS = tlf.1
 
 README: README.md
-	grep -v "Build Status" $< > $@
+	grep -v "Build Status" $< > $(srcdir)/$@
+
+EXTRA_DIST = README.md

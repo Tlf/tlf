@@ -5,7 +5,11 @@
 // OBJECT ../src/initial_exchange.o
 
 int setup_default(void **state) {
+    int result;
     showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
+    result = chdir(SRCDIR);
+    if (result == -1)
+	perror("chdir");
     return 0;
 }
 
