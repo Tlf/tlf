@@ -579,6 +579,7 @@ int fldigi_get_log_call() {
     xmlrpc_res_init(&result);
 
     extern char hiscall[];
+    extern int fldigi_set_callfield;
     char tempstr[20];
     int i, j;
 
@@ -617,6 +618,7 @@ int fldigi_get_log_call() {
 			printcall();
 			getctydata_pfx(hiscall);
 			searchlog(hiscall);
+			fldigi_set_callfield = 1;
 		    }
 		}
 	    }

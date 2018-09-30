@@ -84,7 +84,6 @@
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
-
 void send_bandswitch(int freq);
 int autosend(void);
 int plain_number(char *str);
@@ -147,6 +146,8 @@ int callinput(void) {
 
     extern int bmautoadd;
     extern int bmautograb;
+    extern int fldigi_set_callfield;
+    extern int digikeyer;
 
     static float freqstore;		/* qrg during last callsign input
 					   character, 0 if grabbed,
@@ -193,6 +194,11 @@ int callinput(void) {
 
 	    if (trxmode == DIGIMODE) {
 		show_rtty();
+	    }
+
+	    if (digikeyer == FLDIGI && fldigi_set_callfield == 1 && hiscall[0] != '\0') {
+		freqstore = freq;
+		fldigi_set_callfield = 0;
 	    }
 
 	    /* if BMAUTOADD is active and user has input a call sign
