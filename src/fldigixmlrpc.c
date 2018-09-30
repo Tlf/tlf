@@ -516,7 +516,7 @@ int fldigi_xmlrpc_get_carrier() {
 		    strcpy(fldigi_mode, "RTTY");
 		    break;
 		case RIG_MODE_RTTYR:
-		    signum = -1;	// not checked - I don't have RTTY-REV mode on my RIG
+		    signum = 0;		// not checked - I don't have RTTY-REV mode on my RIG
 		    modeshift = 0;
 		    strcpy(fldigi_mode, "RTTYR");
 		    break;
