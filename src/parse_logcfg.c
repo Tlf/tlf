@@ -315,6 +315,7 @@ int parse_logcfg(char *inputbuffer) {
     extern unsigned char rigptt;
     extern int minitest;
     extern int unique_call_multi;
+    extern int lan_port;
 
     char *commands[] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -570,7 +571,7 @@ int parse_logcfg(char *inputbuffer) {
 	"DKF12",
 	"DKCQM",			/* 250 */
 	"DKSPM",
-	"DKSPC"
+	"DKSPC",
 	"ALT_DK1",			/* 253 */
 	"ALT_DK2",
 	"ALT_DK3",
@@ -580,7 +581,8 @@ int parse_logcfg(char *inputbuffer) {
 	"ALT_DK7",
 	"ALT_DK8",
 	"ALT_DK9",
-	"ALT_DK10"
+	"ALT_DK10",
+        "LAN_PORT"                     /* 263 */
     };
 
     char **fields;
@@ -629,7 +631,6 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
     }
-
     switch (ii) {
 
 	case 0: {
@@ -1988,7 +1989,7 @@ int parse_logcfg(char *inputbuffer) {
 		    *nl = ' ';
 	    }
 	    break;
-	case 253 ... 263: {
+	case 253 ... 262: {
 	    PARAMETER_NEEDED(teststring);
 	    if (digi_message[ii - 239]) {
 		KeywordRepeated(commands[ii]);
@@ -2001,6 +2002,11 @@ int parse_logcfg(char *inputbuffer) {
 		if (nl)
 		    *nl = ' ';
 	    }
+	    break;
+	}
+	case 263: {
+	    PARAMETER_NEEDED(teststring);
+	    lan_port = atoi(fields[1]);
 	    break;
 	}
 	default: {
