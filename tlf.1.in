@@ -1073,6 +1073,11 @@ ID on the network it will exit and ask you to pick another one!  Range:
 A\(enH.
 .
 .TP
+\fBLAN_PORT\fR=\fIPortnumber\fR
+Specifies on which portnumber (default \(lq6788\(rq) @PACKAGE_NAME@ is 
+listening for broadcasts from other instances.
+.
+.TP
 .B LANDEBUG
 Switches on the debug function.  Dumps all @PACKAGE_NAME@ net traffic received
 on this node into a file named

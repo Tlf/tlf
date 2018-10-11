@@ -306,6 +306,7 @@ int parse_logcfg(char *inputbuffer) {
     extern unsigned char rigptt;
     extern int minitest;
     extern int unique_call_multi;
+    extern int lan_port;
 
     char *commands[] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -572,7 +573,8 @@ int parse_logcfg(char *inputbuffer) {
 	"ALT_DK8",			/* 260 */
 	"ALT_DK9",
 	"ALT_DK10",
-	"CALLMASTER"
+	"CALLMASTER",
+        "LAN_PORT"                     /* 264 */
     };
 
     char **fields;
@@ -1983,6 +1985,11 @@ int parse_logcfg(char *inputbuffer) {
 	    }
 	    callmaster_filename = g_strdup(fields[1]);
 
+	    break;
+	}
+        case 264: {
+	    PARAMETER_NEEDED(teststring);
+	    lan_port = atoi(fields[1]);
 	    break;
 	}
 	default: {
