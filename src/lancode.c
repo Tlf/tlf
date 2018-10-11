@@ -66,7 +66,7 @@ int send_error_limit[MAXNODES];
 /* default port to listen for incomming packets and to send packet to */
 char default_lan_service[16] = "6788";
 /* lan port parsed from config */
-int lan_port = 0; 
+int lan_port = 0;
 
 int lan_active = 0;
 int send_error[MAXNODES];
@@ -98,9 +98,9 @@ int resolveService(const char *service) {
     if(lan_port == 0 ) {
       /* lookup port based on services db - does .. this ever work? */
       if (service_ent != NULL) {
-  	port = service_ent->s_port;
+	    port = service_ent->s_port;
       } else if (strlen(service) > 0) {
-  	port = atoi(service);
+	    port = atoi(service);
       }
       /* if no port was returned from service entry, use the default port */
       if (port == 0) {

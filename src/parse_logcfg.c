@@ -571,7 +571,7 @@ int parse_logcfg(char *inputbuffer) {
 	"DKF12",
 	"DKCQM",			/* 250 */
 	"DKSPM",
-	"DKSPC"
+	"DKSPC",
 	"ALT_DK1",			/* 253 */
 	"ALT_DK2",
 	"ALT_DK3",
@@ -631,7 +631,6 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
     }
-
     switch (ii) {
 
 	case 0: {
@@ -2005,12 +2004,11 @@ int parse_logcfg(char *inputbuffer) {
 	    }
 	    break;
 	}
-        case 263: {
+	case 263: {
 	    PARAMETER_NEEDED(teststring);
 	    lan_port = atoi(fields[1]);
-            lan_active = 1;
-          break;
-        }
+	    break;
+	}
 	default: {
 	    KeywordNotSupported(g_strstrip(inputbuffer));
 	    break;
