@@ -570,7 +570,7 @@ int parse_logcfg(char *inputbuffer) {
 	"DKF12",
 	"DKCQM",			/* 250 */
 	"DKSPM",
-	"DKSPC"
+	"DKSPC",
 	"ALT_DK1",			/* 253 */
 	"ALT_DK2",
 	"ALT_DK3",
