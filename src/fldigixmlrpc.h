@@ -25,6 +25,8 @@
 #define FLDIGI_TX   1
 #define FLDIGI_RX   2
 
+extern int fldigi_set_callfield;
+
 int fldigi_xmlrpc_init();
 int fldigi_xmlrpc_cleanup();
 

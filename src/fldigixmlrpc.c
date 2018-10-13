@@ -53,6 +53,8 @@
 #define NAME "Tlf"
 #define XMLRPCVERSION "1.0"
 
+int fldigi_set_callfield = 0;
+
 typedef struct xmlrpc_res_s {
     int			intval;
     const char		*stringval;
@@ -579,7 +581,6 @@ int fldigi_get_log_call() {
     xmlrpc_res_init(&result);
 
     extern char hiscall[];
-    extern int fldigi_set_callfield;
     char tempstr[20];
     int i, j;
 

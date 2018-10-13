@@ -71,6 +71,7 @@
 #include "writeparas.h"
 #include "showzones.h"
 #include "bands.h"
+#include "fldigixmlrpc.h"
 
 #include <math.h>
 
@@ -146,7 +147,6 @@ int callinput(void) {
 
     extern int bmautoadd;
     extern int bmautograb;
-    extern int fldigi_set_callfield;
     extern int digikeyer;
 
     static float freqstore;		/* qrg during last callsign input
