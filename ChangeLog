@@ -1,3 +1,473 @@
+2018-10-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/fldigixmlrpc.c, src/fldigixmlrpc.h, src/main.c: move
+  variable to related file
+
+2018-10-12  Eric Tamme <eric@uphreak.com>
+
+  * src/parse_logcfg.c: fix missing comma in command array
+
+2018-09-30  Ervin Hegedus <airween@gmail.com>
+
+  * src/callinput.c, src/fldigixmlrpc.c, src/main.c: BMAUTOADD adds callsign to
+  bandmap when Fldigi set it. Show correct CTY info when call comes from
+  Fldigi.  Changed RTTY-REV mode freq calc.  
+
+2018-09-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * Makefile.am, test/Makefile.am, test/test_initial_exchange.c: Fix 'make
+  distcheck'  'make distcheck' does an VPATH install where the build directory
+  is not the source directory. That failed for data file used during unit
+  tests.
+
+2018-09-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * test/Makefile.am: add missing files to test/Makefile.am and 
+ src/Makefile.am
+
+  * src/checkparameters.c, src/writeparas.c, src/writeparas.h, tlf.1.in: Fix
+  assertion if no .paras file exists during start
+
+2018-09-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * AUTHORS, INSTALL: update INSTALL and AUTHORS file
+
+2018-08-09  Stephen Hurd <shurd@sasktel.net>
+
+  * src/audio.c, src/background_process.c, src/callinput.c, src/changepars.c,
+  src/checklogfile.c, src/deleteqso.c, src/editlog.c, src/fldigixmlrpc.c,
+  src/freq_display.c, src/getexchange.c, src/getmessages.c, src/gettxinfo.c,
+  src/keyer.c, src/logview.c, src/muf.c, src/parse_logcfg.c, src/qtcwin.c,
+  src/readcalls.c, src/score.c, src/scroll_log.c, src/sendbuf.c,
+  src/sendqrg.c, src/show_help.c, src/splitscreen.c, src/write_keyer.c: 
+  Fix warnings.  While many of these return codes should be checked, none of
+  them actually are, so having the return codes stored in variables is
+  pointless. 
+  Create IGNORE() macro to ignore ignored unused results warnings.
+
+2018-09-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/rules.c: make memory allocation error fatal
+
+2018-08-10  Stephen Hurd <shurd@sasktel.net>
+
+  * test/data.c, test/test_sendbuf.c: Update the DIGIMODE tests for
+  PrepareSPcall() tests.  Add digi_message to data in tests.
+
+  * tlf.1.in: Add documentation for DKF1..DKF12, ALT_DK1..ALT_DK10, DKCQM,
+  DKSPM, DKSPC
+
+  * src/autocq.c, src/callinput.c, src/getexchange.c, src/globalvars.h,
+  src/keyer.c, src/listmessages.c, src/logit.c, src/main.c,
+  src/messagechange.c, src/parse_logcfg.c, src/rules.c, src/sendbuf.c,
+  src/sendbuf.h, src/sendspcall.c, src/writeparas.c: Use separate messages for
+  RTTY than CW  RTTY contests use a space, not newline at end of messages and
+  should start with a CR.  To enable starting with CR, add a | character that
+  is translated to CR  Add config keys DKF1..DKF12, ALT_DK1..ALT_DK10, DKCQM,
+  DKSPM, DKSPC  Default values are the CW message with | at the start and the
+  trailing newline changed to a space.  Note that in callinput.c, in SSB mode,
+  ENTER on a dupe when NOB4 is not set would send F7 message in CW.  This now
+  sends the voice F7 message instead since that was likely the intent.  New
+  function send_standard_message(int) added which sends the passed message
+  number using the current trxmode (cw, voice, or digi).  Also added is
+  send_keyer_message(int) which works as above, but in voice mode will still
+  send CW.  This is used by the CW keyer.  LIST and MESSAGE will now show/edit
+  the DIGI messages in DIGI mode. In CW and voice modes, the CW messages will
+  be shown/changed.
+
+2018-08-08  Stephen Hurd <shurd@sasktel.net>
+
+  * src/background_process.c, src/background_process.h, src/edit_last.c,
+  src/editlog.c, src/globalvars.h, src/logit.c, src/main.c,
+  src/setparameters.c, src/writeparas.c: Use condition variables to start/stop
+  the background process.  Testing a global in a loop without volatile can
+  cause various issues with optimizers.  Further, the sleep(1) granularity made
+  the background task unresponsive.  Instead, use condition variables and
+  mutexes to allow waiting for the background thread to be restarted, then
+  running immediately when the condition occurs.
+
+2018-09-16  Stephen Hurd <shurd@sasktel.net>
+
+  * src/dxcc.c, src/dxcc.h, src/getctydata.c: Use stdbool.h for booleans.
+
+2018-08-08  Stephen Hurd <shurd@sasktel.net>
+
+  * src/calledit.c, src/callinput.c, src/dxcc.c, src/dxcc.h, src/getctydata.c,
+  src/getctydata.h, src/grabspot.c, src/showinfo.c, src/showinfo.h: Support CT9
+  cty.dat files  This adds three new overrides, lat/lon, continent, and time
+  offset. showinfo() now needs a prefix, so create add a getctydata_pfx()
+  function which returns the prefix rather than the country.  If a callsign in
+  cty.dat starts with an '=', it will only use exact matching, not prefix
+  matching.  To allow backward compatability, Tlf remembers if it saw any '='
+  prefixes and if so, find_full_match() will only match those.  If there were
+  no '=' prefixes, the behaviour is as before, and it will match any prefix.
+
+2018-09-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/gettxinfo.c, src/sendqrg.c: Fix wrong includes and
+  possible NULL pointer problem.
+
+2018-08-09  Stephen Hurd <shurd@sasktel.net>
+
+  * src/main.c: There are more than two valid TERM values...  Remove the hack
+  which replaced any TERM value that wasn't "xterm" with "rxvt".  Forcing rxvt
+  means that if the terminal is not rxvt compatible, all kinds of ncurses
+  things would break.  The most common difference is F1 - F4.  rxvt uses
+  \E[11~, \E[12~, \E[13~ and \E[14~ while most modern xterm compatibles use
+  \E[OP, \E[OQ, \EOR, and \EOS respectively.  xterm-color and xterm-256color
+  for example would suffer from this issue, and F1 to F4 would not work
+  correctly.
+
+2018-09-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/fldigixmlrpc.c, src/fldigixmlrpc.h,
+  src/parse_logcfg.c: Rename fldigi_get() to fldigi_isenabled()
+
+2018-08-10  Stephen Hurd <shurd@sasktel.net>
+
+  * src/background_process.c, src/changepars.c, src/fldigixmlrpc.c,
+  src/fldigixmlrpc.h, src/main.c, src/parse_logcfg.c: Clean up various race
+  conditions in fldigi stuff  Furthermore have fldigi_xmlrpc_query() return -1
+  when use_fldigi is false.  Returning success resulted in uninitialized data
+  being used by callers, making it unsafe to ever turn off fldigi from tlf.
+
+2018-08-08  Stephen Hurd <shurd@sasktel.net>
+
+  * src/fldigixmlrpc.c: Fix text.get_rx.  Was using start:end instead of
+  start:length  Don't request more characters than we can accept. Copy all the
+  received bytes into the result, rather than one less than was received.
+
+  * src/readcalls.c: POSIX doesn't define the -w option  It seems to be a GNU
+  extension, and doesn't seem to be needed in this use case.  The FreeBSD uniq
+  utility doesn't support it.
+
+  * src/netkeyer.c, src/sockserv.c: Add missing socket headers.  These are
+  necessary to build on at least FreeBSD, and likely many more systems.  I'm
+  actually surprised Linux builds without them.
+
+  * src/getctydata.c: malloc() is defined in stdlib.h.  stdlib.h has been the
+  correct header for malloc() since C89.
+
+2018-06-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/changepars.c, src/fldigixmlrpc.c, src/main.c,
+  src/parse_logcfg.c: Drop unused variable and rename for better readability
+
+2018-05-23  Ervin Hegedus <airween@gmail.com>
+
+  * doc/README.RTTY, src/background_process.c, src/changepars.c,
+  src/fldigixmlrpc.c, src/fldigixmlrpc.h, src/main.c, src/parse_logcfg.c,
+  src/rtty.c, tlf.1.in: Extend Fldigi interface
+
+2018-05-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: Fix bug in BMAUTO_ADD and BMAUTO_GRAB logic.  After
+  logging a new contact in S&P mode the next station from bandmap you tune over
+  got falsely the spot frequency of that last logged station.
+
+2018-03-30  Nate Bargmann <n0nb@n0nb.us>
+
+  * doc/Makefile.am, doc/Xresources, tlf.1.in: Update man page for more
+  consistency  New keywords, commands, and configuration parameters are now in
+  bold while value descriptions and files and pathnames are in italics.  Typed
+  strings are enclosed in double quotes while typed key names are enclosed in
+  single quotes.  Tried to ensure that text is more clear and from an objective
+  point of discussion.  Added a sample Xresources file for configuring Xterm
+  with Linux console compatible color scheme for use with Tlf.
+
+2018-02-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/readcabrillo.c, test/test_cabrillo.c: Use freq2band() conversion. Adapt
+  test code
+
+2018-02-24  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/bandmap.h, src/bands.c, src/bands.h: Move bandcorners
+  and freq2band() to bands.c
+
+2018-01-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bands.c, src/bands.h, src/callinput.c: Move next_band to bands.c
+
+  * src/bands.h, src/callinput.c, src/tlf.h: Move IsWarcIndex to bands.h
+
+2018-01-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/addmult.c, src/addpfx.c, src/bandmap.c, src/bands.c,
+  src/bands.h, src/focm.c, src/globalvars.h, src/paccdx.c, src/readcalls.c,
+  src/showpxmap.c, src/showscore.c, src/showzones.c, src/tlf.h,
+  test/test_addcall.c, test/test_addmult.c, test/test_score.c: Move inxes[] to
+  bands.c and adapt test code
+
+  * src/Makefile.am, src/bands.c, src/bands.h: Add new files bands.c and
+  bands.h  Will concentrate all band and frequency related definitions in one
+  place.
+
+2018-03-28  Nate Bargmann <n0nb@n0nb.us>
+
+  * tlf.1.in: Add documentation for winkeydaemon (#92)  The winkeydaemon adds
+  cwdaemon style support for K1EL "Win Keyers" and compatible devices such as
+  the Ham Gadgets Master Keyer 1.
+
+2018-03-01  zcsahok <ha5cqz@freemail.hu>
+
+  * src/searchlog.c, src/searchlog.h: allow leading spaces in callmaster file
+
+2018-02-23  zcsahok <ha5cqz@freemail.hu>
+
+  * src/addmult.c: allow space before comment in addmult
+
+2018-02-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * tools/.astylerc: add astyle formatting rules
+  * Reformat using .astylerc
+
+2018-02-21  zcsahok <ha5cqz@freemail.hu>
+
+  * src/initial_exchange.c, src/initial_exchange.h: fix initial_exchange: allow
+  DOS line endings and multiple columns
+
+2018-02-19  zcsahok <ha5cqz@freemail.hu>
+
+  * .gitignore, Makefile.am: create README from README.md
+
+  * README => README.md: added README.md
+
+2018-02-08  zcsahok <ha5cqz@freemail.hu>
+
+  * src/callinput.c, src/callinput.h: Fix wrong return value of callinput() 
+  This PR fixes the "long CQ bug": when sending a longer series of unanswered
+  CQ's the cursor sometimes jumps to the exchange field. This causes F1 to send
+  your call instead of CQ, so the op has to press either Esc or Tab to get back
+  to CQ'ing. Quite annoying, but keeps op awake. :-)  An Easter egg version of
+  this "feature" is:  start tlf press F3 14 times CW keyer window pops up.  The
+  bug is a result of two issues.  In callinput() key codes returned as char
+  although they fit in an int only. E.g. F1 is 0x109 and F3 is 0x10B. On return
+  only the lower 8 bits are kept and thus F1 is transformed into a Tab/Ctrl-I
+  (0x09) and F3 into Ctrl-K (0x0B).  callinput() is supposed to return to
+  logit() only when some non-local keypress is to be handled (e.g. Enter). 
+  Instead it returns when its internal counter i reaches 14:  for (i =
+  strlen(hiscall); i <= 13; i++) {  The idea may have been an optimization to
+  avoid excessive calls to strlen and track call length in i.  But this doesn't
+  bring anything as this check is done only once per keypress and in the inner
+  loop [while (x < 1)] strlen and other stuff is happening 100 times a second
+  anyway.
+
+  * src/logit.c, src/logit.h, src/main.c: Fix prototyp of logit() function  Old
+  prototype was a remnant from starting 'logit()' as thread in former code.
+
+2018-01-31  zcsahok <ha5cqz@freemail.hu>
+
+  * .gitignore, .travis.yml, Makefile.am, configure.ac, test/Makefile.am,
+  test/data.c, test/functions.c, test/generate_defs.pl, test/test.h,
+  test/test_locator2longlat.c, test/test_score.c, test/test_zone_nr.c:
+  introduce test framework based on cmocka
+
+  * test/test_addcall.c, test/test_dxcc.c, test/test_getctydata.c: ported some
+  more tests
+
+2018-01-31  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * .travis.yml: Add Travis-CI configuration file
+
+2018-01-15  zcsahok <ha5cqz@freemail.hu>
+
+  * src/callinput.h, src/gettxinfo.c, src/gettxinfo.h: Factor out
+  band switching logic and change return type of gettxinfo()
+
+2018-01-21  zcsahok <ha5cqz@freemail.hu>
+
+  * src/gettxinfo.c: limit frequency polling to once per 200ms
+
+2018-01-20  zcsahok <ha5cqz@freemail.hu>
+
+  * src/gettxinfo.c: use freq2band() for gettxinfo()
+
+  * src/bandmap.c, src/bandmap.h: Cleanup freq2band()
+
+2018-01-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: Fix band switching  After introduction of BANDINDEX_OOB
+  the band up/down key did not work on upper and lower band (10->160 or
+  160->10)
+
+2017-12-26  Ervin Hegedus <airween@gmail.com>
+
+  * src/logit.c: Removed the cleanup() from the end of the change_mode()  In
+  case of SPRINTMODE the TU_MESSAGES was cutted by the cleanup(). That is
+  wrong.
+
+2017-12-26  zcsahok <ha5cqz@freemail.hu>
+
+  * src/callinput.c: BMAUTOGRAB only in S&P mode
+
+2017-11-17  Ervin Hegedus <airween@gmail.com>
+
+  * src/background_process.c, src/cabrillo_utils.h, src/main.c, src/qtc_log.c,
+  src/qtc_log.h, src/readcabrillo.c: Refactor writing of QTC log file  contest
+  and reading in cabrillo files are using the same code now.
+
+2017-10-10  Ervin Hegedus <airween@gmail.com>
+
+  * src/globalvars.h, src/main.c, src/makelogline.c, src/readcabrillo.c:
+  Replaced time_ptr_cabrillo pointer to static struct
+
+  * src/main.c: Changed '-c' (convert) cli argument to '-i' (import)
+
+2017-10-07  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/cabrillo_utils.h, src/readcabrillo.c: pick up addition for QTC
+  conversion from HA2OS
+
+2017-07-03  Ervin Hegedus <airween@gmail.com>
+
+  * src/Makefile.am, src/cabrillo_utils.c, src/cabrillo_utils.h,
+  src/getexchange.c, src/getexchange.h, src/globalvars.h, src/main.c,
+  src/makelogline.c, src/readcabrillo.c, src/readcabrillo.h,
+  src/writecabrillo.c: Add readcabrillo feature
+
+2017-12-07  Ervin Hegedus <airween@gmail.com>
+
+  * doc/New_Bandmap.txt, src/parse_logcfg.c, tlf.1.in: Fixed BANDMAP
+  configuration directive (added 'O' option to string), added some
+  documentation
+
+2017-11-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c, src/main.c: cleanup  - Rely directly on the initialised list
+
+2017-11-23  Ervin Hegedus <airween@gmail.com>
+
+  * src/bandmap.c: Add CQ zone value to BM spot from INIT_EXCH list, if exists
+
+2017-11-20  Ervin Hegedus <airween@gmail.com>
+
+  * src/bandmap.c, src/bandmap.h: New feature: hide/mark spots on BM if them
+  are multipliers
+
+2017-12-05  tnalpgge <tnalpgge@users.noreply.github.com>
+
+  * tlf.1.in: Correct documentation on Enter key to match observed behavior
+
+2017-12-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/showzones.c, src/time_update.c: move zones display to
+  using panels  Old code blinks zone display in 2s intervall. Tnx for reporting
+  Fred DH5FS.
+
+2017-12-01  zcsahok <ha5cqz@freemail.hu>
+
+  * src/callinput.c: spawn $SHELL instead of sh  Use user's setting instead of
+  plain sh when opening a shell using '!'
+
+2017-11-25  zcsahok <ha5cqz@freemail.hu>
+
+  * src/logview.c: Switch back to normal keypad mode in logview
+
+2017-11-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/callmaster, share/cty.dat: update callmaster database and cty.dat 
+  Version are VER20171103 for callmaster VER20171122 for cty.dat
+
+2017-10-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c: fix wrong parsing of QTC= keyword
+
+2017-07-04  Ervin Hegedus <airween@gmail.com>
+
+  * rules/tesla, share/cabrillo.fmt: Added Tesla memorial contest rule and
+  cabrillo format
+
+2017-05-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/addpfx.c, src/bandmap.c, src/clear_display.c,
+  src/clusterinfo.c, src/gettxinfo.c, src/globalvars.h, src/main.c,
+  src/paccdx.c, src/score.c, src/searchlog.c, src/showscore.c, src/tlf.h: Add a
+  special OOB out_of_band entry  
+  * Tlf normally recognizes the band in use from
+  rigs frequency. If the rig is outside of any band there is a indetermined
+  state resulting in irregular characters on display and possible wrong entries
+  into the contest statistics. Tnx to Zoltan Csahok HA5CQZ for pointing out the
+  problem. 
+
+2017-06-14  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/callinput.c: make skip of WARC-bands during contest more robust  In
+  case of multiple neighboured WARC bands skip all until next contest band is
+  reached.
+
+2017-05-29  zcsahok <ha5cqz@freemail.hu>
+
+  * src/callinput.c, src/gettxinfo.c: Refactor band switching code into a
+  common function.
+
+2017-05-09  Ervin Hegedus <airween@gmail.com>
+
+  * src/genqtclist.c, src/qtc_log.c, src/qtcwin.c, src/writecabrillo.c: Bugfix:
+  when QTC was set up as BOTH (eg. RTTY) the CABRILLO had created as wrong
+  format
+
+2017-05-11  zcsahok <ha5cqz@freemail.hu>
+
+  * src/keyer.c, src/main.c, src/parse_logcfg.c: added option to use backspace
+  in the keyer window  This is for the fast but not perfectly typers: 
+
+2017-04-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/readcalls.c: struct needs initialization
+
+2017-04-10  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/getctydata.c: factor out common code  getctynr and getctydata uses the
+  same code to prepare the call and look it up in prefix table.
+
+2017-04-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getctydata.h, src/setcontest.c: switch to getctynr() as we are only
+  interested in the number here
+
+2017-04-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/dxcc.c, src/dxcc.h, src/readctydata.c, src/readctydata.h: move
+  load_ctydata() to dxcc.c
+
+2017-01-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getctydata.c: Refactor getctydata() code  
+
+2017-02-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/getctydata.c: fix inconsistent usage of getctydata() in
+  addcall2()
+
+2017-03-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/prevqso.c: resend report and qso nr with at least 3 digits
+
+2017-03-01  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/addmult.c, src/changepars.c, src/globalvars.h, src/main.c,
+  src/makelogline.c, src/readcalls.c, src/searchlog.c, src/showscore.c,
+  src/tlf.h: add a structure to represent worked multis  
+
+2017-02-23  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/changepars.c, src/main.c, src/parse_logcfg.c, src/sendqrg.c: Allow
+  arbitrary long string for 'RIGPORT' keyword  Tnx Ed W3NR for pointing out.
+
+2017-02-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/dxcc.c, src/dxcc.h: make usage of function more secure  Only non
+  negativ indices allowed. Check for out of bounds index. Return empty dummy
+  data if no element found.
+
+2017-02-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addcall.c, src/addpfx.c, src/addpfx.h, src/makelogline.c,
+  src/readcalls.c: change interface to add_pfx() function  gets now pfxstr to
+  add and bandindex for worked band. Makes function more independent if called
+  for data coming from LAN
+
 2017-02-06  Thomas Beierlein <tomjbe@gentoo.org>
 
   * doc/FAQ: add hints to correct own CQ zone to FAQ
