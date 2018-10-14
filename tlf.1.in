@@ -1116,6 +1116,10 @@ Set the dot to dash ratio.  Only for the NETKEYER.  Range: \-45\(en50.
 Delay activation of the Push To Talk pin.  Range: 0\(en50.
 .
 .TP
+.B KEYER_BACKSPACE
+Support backspace key in keyer window.
+.
+.TP
 .B SOUNDCARD
 Use soundcard for sidetone output.
 .
