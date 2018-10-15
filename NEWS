@@ -6,7 +6,7 @@ Maintenance and bugfix release.
 Besides some fixed bugs and a lot of internal improvements it provides 
 some new features:
 
-New features since tlf-1.2.3:
+New features since tlf-1.3.0:
     - Allow an arbitrary long string for 'RIGPORT' keyword  Tnx Ed W3NR.
     - Added keyword KEYER_BACKSPACE to allow use of backspace in 
       the keyer window. 
