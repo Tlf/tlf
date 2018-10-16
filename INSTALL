@@ -1,23 +1,57 @@
 Tlf now comes with automake and autoconf.
 Starting with TLF-1.0.0 you need pkg-config too.
 
-Easiest way to install tlf is by typing:
+Build Dependencies
+------------------
 
+Building TLF requires some other components to be installed before. 
+It depends on
+
+ * the _Hamlib_ library for controlling your radio,
+ * _ncurses_ and _tinfo_ for text screen handling,
+ * the _XMLRPC_C_ library for communication with programs like _FlDigi_ and
+ * _Glib-2.0_ for supporting C functions.
+
+If you are using a distribution of the _Debian_ family make sure to install
+also the needed header files with
+
+----
+sudo apt install libglib2.0-dev libhamlib-dev libncurses5-dev libtinfo-dev libxmlrpc-core-c3
+----
+
+While not a strict build dependency installing the following packages is
+helpful too:
+
+ * _sox_ for audio signal handling during SSB contests and
+ * _xplanet_ which allows you to see the latest DX spots on the globe.
+
+
+Quick Install
+-------------
+
+The easiest way to install tlf is by typing:
+
+----
 ./configure
 make
 make install
+----
 
 
 If you want to compile tlf from the repo, please do a 
 
+----
 autoreconf --install
+----
 
 before the above commands.
 
 
 If support for Hamlib (>=1.2.8) is wanted, use 
 
+----
 ./configure --enable-hamlib
+----
 
 
 By default, tlf will install into /usr/local/bin, together with the
@@ -31,7 +65,7 @@ will install tlf and scripts into /usr/bin, datafiles into /usr/share/tlf.
 
 If you are doing a lot of contesting in digimodes using Fldigi there is support for reading the audio frequency via xmlrpc. Make sure to install XMLRPC-c and configure tlf with
 
+----
 ./configure --enable-fldigi-xmlrpc
+----
 
-
-See doc/README for more details.
