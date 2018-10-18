@@ -31,10 +31,6 @@
 #include "nicebox.h"		// Includes curses.h
 #include "showscore.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 
 extern char call[];
 
@@ -133,5 +129,5 @@ int getsummary(FILE *fp) {
     if (*buffer != '\0')
 	fprintf(fp, "SOAPBOX: %s\n", buffer);
 
-    return (0);
+    return 0;
 }

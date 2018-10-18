@@ -39,6 +39,7 @@
 #include "startmsg.h"
 #include "tlf_curses.h"
 
+#include <config.h>
 #include <hamlib/rig.h>
 
 

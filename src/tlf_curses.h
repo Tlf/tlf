@@ -26,9 +26,7 @@
 #ifndef TLF_CURSES_H
 #define TLF_CURSES_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #if defined HAVE_NCURSESW_CURSES_H
 # include <ncursesw/curses.h>
