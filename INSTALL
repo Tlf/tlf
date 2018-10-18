@@ -47,13 +47,6 @@ autoreconf --install
 before the above commands.
 
 
-If support for Hamlib (>=1.2.8) is wanted, use 
-
-----
-./configure --enable-hamlib
-----
-
-
 By default, tlf will install into /usr/local/bin, together with the
 shell-scripts from the scripts directory. Data files will install into
 /usr/local/share/tlf.

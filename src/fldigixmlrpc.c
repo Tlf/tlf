@@ -28,9 +28,7 @@
 #include <glib.h>
 #include <ctype.h>
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #include "fldigixmlrpc.h"
 #include "printcall.h"
@@ -46,9 +44,7 @@
 # include <xmlrpc-c/client_global.h>
 #endif
 
-#ifdef HAVE_LIBHAMLIB
-# include <hamlib/rig.h>
-#endif
+#include <hamlib/rig.h>
 
 #define NAME "Tlf"
 #define XMLRPCVERSION "1.0"
@@ -466,14 +462,12 @@ int fldigi_xmlrpc_get_carrier() {
     int rc;
     xmlrpc_res result;
     xmlrpc_env env;
-#ifdef HAVE_LIBHAMLIB
     extern int rigmode;
     extern int trx_control;
     extern float freq;
     int signum;
     int modeshift;
     char fldigi_mode[6] = "";
-#endif
 
     rc = fldigi_xmlrpc_query(&result, &env, "modem.get_carrier", "");
     if (rc != 0) {
@@ -485,7 +479,6 @@ int fldigi_xmlrpc_get_carrier() {
     /* if mode == RTTY(R), and Hamlib configured, set VFO to new freq where the signal
      * will placed on 2210 Hz - the FSK center freq
      */
-#ifdef HAVE_LIBHAMLIB
     if (trx_control > 0) {
 	if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {
 	    if (fldigi_var_carrier != CENTER_FREQ &&
@@ -556,7 +549,7 @@ int fldigi_xmlrpc_get_carrier() {
 	    }
 	}
     }
-#endif
+
     return 0;
 #endif
 

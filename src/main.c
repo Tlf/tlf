@@ -52,7 +52,7 @@
 #include "rules.h"
 #include "scroll_log.h"
 #include "searchlog.h"		// Includes glib.h
-#include "sendqrg.h"		// Sets HAVE_LIBHAMLIB if enabled
+#include "sendqrg.h"
 #include "set_tone.h"
 #include "splitscreen.h"
 #include "startmsg.h"
@@ -60,13 +60,8 @@
 #include "ui_utils.h"
 #include "readcabrillo.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef HAVE_LIBHAMLIB
-# include <hamlib/rig.h>
-#endif
+#include <config.h>
+#include <hamlib/rig.h>
 
 
 SCREEN *mainscreen;
@@ -187,9 +182,8 @@ char multsfile[80] = "";	/* name of file with a list of allowed
 char exchange_list[40] = "";
 int timeoffset = 0;
 int trxmode = CWMODE;
-int rigmode = 0;		/* RIG_MODE_NONE in hamlib/rig.h,
-				   but if hamlib not compiled,
-				   then no dependency */
+int rigmode = RIG_MODE_NONE;
+
 int mixedmode = 0;
 char his_rst[4] = "599";
 char my_rst[4] = "599";
@@ -326,9 +320,7 @@ int keyer_backspace = 0;        // disabled
 
 char controllerport[80] = "/dev/ttyS0"; // for GMFSK or MFJ-1278
 char rttyoutput[120];		// where to GMFSK digimode output
-#ifdef HAVE_LIBHAMLIB
 rmode_t digi_mode = RIG_MODE_NONE;
-#endif
 
 int txdelay = 0;
 int weight = 0;
@@ -358,14 +350,12 @@ int bmautoadd = 0;
 int bmautograb = 0;
 
 /*-------------------------------------rigctl-------------------------------*/
-#ifdef HAVE_LIBHAMLIB
-rig_model_t myrig_model = 351;
+rig_model_t myrig_model = 351;  /* Ten-Tec Omni VI Plus */
 RIG *my_rig;			/* handle to rig (instance) */
 rmode_t rmode;			/* radio mode of operation */
 pbwidth_t width;
 vfo_t vfo;			/* vfo selection */
 port_t myport;
-#endif
 int ssb_bandwidth = 3000;
 int cw_bandwidth = 0;
 int serial_rate = 2400;
@@ -727,10 +717,7 @@ int databases_load() {
 
 void hamlib_init() {
 
-#ifdef HAVE_LIBHAMLIB		// Code for hamlib interface
     int status;
-
-    showmsg("HAMLIB compiled in");
 
     if (no_trx_control == 1) {
 	trx_control = 0;
@@ -756,13 +743,6 @@ void hamlib_init() {
 	    sleep(1);
 	}
     }
-#else
-    showmsg("No Hamlib compiled in!");
-
-    trx_control = 0;
-    showmsg("Disabling rig control!");
-    sleep(1);
-#endif				/* HAVE_LIBHAMLIB */
 }
 
 void fldigi_init() {
@@ -877,13 +857,9 @@ void tlf_cleanup() {
     else
 	deinit_controller();
 
-#ifdef HAVE_LIBHAMLIB
-
     if (my_rig) {
 	close_tlf_rig(my_rig);
     }
-
-#endif
 
 #ifdef HAVE_LIBXMLRPC
     if (digikeyer == FLDIGI) {
