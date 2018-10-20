@@ -59,6 +59,20 @@ dnl From /usr/share/aclocal/glib-2.0.m4 on Debian 8.0.
 dnl Provides compilation testing of the found glib library for suitability.
 AM_PATH_GLIB_2_0
 
+dnl check for cmocka test framework and warn if not installed
+have_cmocka="yes"
+PKG_CHECK_MODULES([CMOCKA], [cmocka >= 1.1.0],,[have_cmocka="no"])
+AC_CHECK_HEADER([setjmp.h])
+AC_CHECK_HEADER([cmocka.h],, [have_cmocka="no"],
+[#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+])
+
+if test "${have_cmocka}" = "no"; then
+    AC_MSG_WARN([you will need cmocka for running unit tests])
+fi
+
 
 # ncurses and panel required, if not found exit with error message.
 
