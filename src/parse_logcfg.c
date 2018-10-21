@@ -39,13 +39,8 @@
 #include "startmsg.h"
 #include "tlf_curses.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef HAVE_LIBHAMLIB
-# include <hamlib/rig.h>
-#endif
+#include <config.h>
+#include <hamlib/rig.h>
 
 
 extern int cwkeyer;
@@ -60,9 +55,7 @@ extern int packetinterface;
 extern int tncport;
 extern int shortqsonr;
 extern char *cabrillo;
-#ifdef HAVE_LIBHAMLIB
 extern rmode_t digi_mode;
-#endif
 
 int exist_in_country_list();
 int continent_found();
@@ -216,9 +209,7 @@ int parse_logcfg(char *inputbuffer) {
     extern int tnc_serial_rate;
     extern char lastwwv[];
     extern int serial_rate;
-#ifdef HAVE_LIBHAMLIB
     extern rig_model_t myrig_model;
-#endif
     extern char *rigportname;
     extern int rignumber;
     extern char rigconf[];
@@ -1014,9 +1005,8 @@ int parse_logcfg(char *inputbuffer) {
 		rignumber = 2000;
 	    else
 		rignumber = atoi(buff);
-#ifdef HAVE_LIBHAMLIB
+
 	    myrig_model = (rig_model_t) rignumber;
-#endif
 
 	    break;
 	}
@@ -1911,7 +1901,6 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 237: {
-#ifdef HAVE_LIBHAMLIB
 	    PARAMETER_NEEDED(teststring);
 	    g_strchomp(fields[1]);
 	    if (strcmp(fields[1], "USB") == 0)
@@ -1928,7 +1917,6 @@ int parse_logcfg(char *inputbuffer) {
 		sleep(5);
 		exit(1);
 	    }
-#endif
 	    break;
 	}
 	case 238 ... 249: {

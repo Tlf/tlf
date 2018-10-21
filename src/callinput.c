@@ -75,14 +75,6 @@
 
 #include <math.h>
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef HAVE_LIBHAMLIB
-# include <hamlib/rig.h>
-#endif
-
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
 void send_bandswitch(int freq);
@@ -1223,9 +1215,7 @@ int autosend() {
 int play_file(char *audiofile) {
 
     extern int txdelay;
-#ifdef HAVE_LIBHAMLIB
     extern unsigned char rigptt;
-#endif
 
     int fd;
     char playcommand[120];
@@ -1242,37 +1232,29 @@ int play_file(char *audiofile) {
 	} else {
 	    sprintf(playcommand, "play_vk %s", audiofile);
 	}
-#ifdef HAVE_LIBHAMLIB
 	/* CAT PTT wanted and available, use it. */
 	if (rigptt == 0x03) {
 	    /* Request PTT On */
 	    rigptt |= (1 << 3);		/* 0x0b */
 	} else {		/* Fall back to netkeyer interface */
-#endif
 	    netkeyer(K_PTT, "1");	// ptt on
-#ifdef HAVE_LIBHAMLIB
 	}
-#endif
 
 	usleep(txdelay * 1000);
 	IGNORE(system(playcommand));;
 	printcall();
 
-#ifdef HAVE_LIBHAMLIB
 	/* CAT PTT wanted, available, and active. */
 	if (rigptt == 0x07) {
 
 	    /* Request PTT Off */
 	    rigptt |= (1 << 4);		/* 0x17 */
 	} else {		/* Fall back to netkeyer interface */
-#endif
 	    netkeyer(K_PTT, "0");	// ptt off
-#ifdef HAVE_LIBHAMLIB
 	}
-#endif
     }
 
-    return (0);
+    return 0;
 }
 
 

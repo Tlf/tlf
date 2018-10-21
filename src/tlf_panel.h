@@ -28,9 +28,7 @@
 #ifndef TLF_PANEL_H
 #define TLF_PANEL_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #if defined HAVE_NCURSESW_PANEL_H
 # include <ncursesw/panel.h>

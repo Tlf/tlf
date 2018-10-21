@@ -21,16 +21,10 @@
 #ifndef SENDQRG_H
 #define SENDQRG_H
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef HAVE_LIBHAMLIB
-# include <hamlib/rig.h>
+#include <hamlib/rig.h>
 
 int init_tlf_rig(void);
 int close_tlf_rig(RIG *my_rig);
-#endif
 
 int sendqrg(void);
 

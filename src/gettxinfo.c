@@ -35,27 +35,20 @@
 #include "callinput.h"
 #include "bands.h"
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <hamlib/rig.h>
 
-#ifdef HAVE_LIBHAMLIB
-# include <hamlib/rig.h>
 #ifdef RIG_PASSBAND_NOCHANGE
 #define TLF_DEFAULT_PASSBAND RIG_PASSBAND_NOCHANGE
 #else
 #define TLF_DEFAULT_PASSBAND RIG_PASSBAND_NORMAL
 #endif
-#endif
 
-#ifdef HAVE_LIBHAMLIB
 extern RIG *my_rig;
 extern int cw_bandwidth;
 extern int trxmode;
 extern int rigmode;
 extern int digikeyer;
 extern rmode_t digi_mode;
-#endif
 
 extern float freq;
 extern int bandinx;
@@ -75,18 +68,11 @@ extern unsigned char rigptt;
  *  else - set rig frequency
  *
  */
-#ifdef HAVE_LIBHAMLIB
 static freq_t outfreq = 0;
-#else
-static int outfreq = 0;
-#endif
 
 static pthread_mutex_t outfreq_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-
-#ifdef HAVE_LIBHAMLIB
 static double get_current_seconds();
-#endif
 static void handle_trx_bandswitch(int freq);
 
 void set_outfreq(double hertz) {
@@ -113,28 +99,20 @@ static double get_and_reset_outfreq() {
 
 void gettxinfo(void) {
 
-#ifdef HAVE_LIBHAMLIB
     freq_t rigfreq;
     vfo_t vfo;
     pbwidth_t bwidth;
     int retval;
     int retvalmode;
     static double last_freq_time = 0.0;
-#else
-    float rigfreq;
-#endif
 
     static int oldbandinx;
-#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
     static int fldigi_carrier;
     static int fldigi_shift_freq;
-#endif
-
 
     if (!trx_control)
 	return;
 
-#ifdef HAVE_LIBHAMLIB
     /* CAT PTT wanted, available, inactive, and PTT On requested
      * bits 0, 1, and 3 set.
      */
@@ -160,7 +138,6 @@ void gettxinfo(void) {
 	/* Clear PTT active bit. */
 	rigptt &= ~(1 << 2);		/* 0x03 */
     }
-#endif
 
     double reqf = get_and_reset_outfreq();  // get actual request
 
@@ -168,7 +145,6 @@ void gettxinfo(void) {
 
 	rigfreq = 0.0;
 
-#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	double now = get_current_seconds();
 	if (now < last_freq_time + 0.2) {
 	    return;   // last read-out was within 200 ms, skip this query
@@ -203,7 +179,6 @@ void gettxinfo(void) {
 	    freq = 0.0;
 	    return;
 	}
-#endif
 
 
 	if (rigfreq >= 1800000.0) {
@@ -221,7 +196,6 @@ void gettxinfo(void) {
 
     } else if (reqf == SETCWMODE) {
 
-#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	if (cw_bandwidth == 0) {
 	    retval =
 		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
@@ -237,10 +211,8 @@ void gettxinfo(void) {
 	    refreshp();
 	    sleep(1);
 	}
-#endif
 
     } else if (reqf == SETSSBMODE) {
-#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	if (freq > 13999.9)
 	    retval =
 		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_USB,
@@ -255,10 +227,8 @@ void gettxinfo(void) {
 	    refreshp();
 	    sleep(1);
 	}
-#endif
 
     } else if (reqf == SETDIGIMODE) {
-#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	rmode_t new_mode = digi_mode;
 	if (new_mode == RIG_MODE_NONE) {
 	    if (digikeyer == FLDIGI)
@@ -275,10 +245,8 @@ void gettxinfo(void) {
 	    refreshp();
 	    sleep(1);
 	}
-#endif
 
     } else if (reqf == RESETRIT) {
-#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	retval = rig_set_rit(my_rig, RIG_VFO_CURR, 0);
 
 	if (retval != RIG_OK) {
@@ -286,11 +254,9 @@ void gettxinfo(void) {
 	    refreshp();
 	    sleep(1);
 	}
-#endif
 
     } else {
 	// set rig frequency to `reqf'
-#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 	retval = rig_set_freq(my_rig, RIG_VFO_CURR, (freq_t) reqf);
 
 	if (retval != RIG_OK) {
@@ -298,27 +264,22 @@ void gettxinfo(void) {
 	    refreshp();
 	    sleep(1);
 	}
-#endif
 
     }
 
 }
 
 
-#ifdef HAVE_LIBHAMLIB
 static double get_current_seconds() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_sec + tv.tv_usec / 1e6;
 }
-#endif
 
 
 static void handle_trx_bandswitch(int freq) {
 
     send_bandswitch(freq);
-
-#ifdef HAVE_LIBHAMLIB		// Code for Hamlib interface
 
     rmode_t mode = RIG_MODE_NONE;           // default: no change
     pbwidth_t width = TLF_DEFAULT_PASSBAND; // passband width, in Hz
@@ -350,6 +311,5 @@ static void handle_trx_bandswitch(int freq) {
 	sleep(1);
     }
 
-#endif
 }
 

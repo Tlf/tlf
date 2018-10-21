@@ -89,44 +89,32 @@ AS_IF([test "x$ax_cv_panel" != xyes],
 	[AC_MSG_ERROR([the Curses Panel library is required])])
 
 
-dnl Check if we want to link the Hamradio control libraries (hamlib)
-AC_MSG_CHECKING([whether to build Hamlib support])
-AC_ARG_ENABLE([hamlib],
-	[AS_HELP_STRING([--enable-hamlib],
-		[Add support for Ham Radio Control Libraries])],
-	[wanthamlib=true],
-	[wanthamlib=false])
+dnl Check the Hamradio control libraries (hamlib)
 
-AS_IF([test "x$wanthamlib" = xtrue], [
-	dnl Look for hamlib
-	AC_MSG_RESULT([yes])
-	hamlib_modules="hamlib >= 1.2.8"
-	PKG_CHECK_MODULES([HAMLIB], [$hamlib_modules], [],
-		[AC_MSG_ERROR([Hamradio control libraries 1.2.8 or later not found...])])
+hamlib_modules="hamlib >= 1.2.8"
+PKG_CHECK_MODULES([HAMLIB], [$hamlib_modules], [],
+        [AC_MSG_ERROR([Hamradio control libraries 1.2.8 or later not found...])])
 
-	tlf_saved_LIBS=$LIBS
-	LIBS="$LIBS $HAMLIB_LIBS"
+tlf_saved_LIBS=$LIBS
+LIBS="$LIBS $HAMLIB_LIBS"
 
-	AC_CHECK_LIB([hamlib], [rig_open], [
-		AC_DEFINE([HAVE_LIBHAMLIB], [1],
-			[Define to 1 if you have the `hamlib' library (-lhamlib).])], [
-		AC_MSG_ERROR([Hamradio control libraries not found!])])
+AC_CHECK_LIB([hamlib], [rig_open], [
+        AC_DEFINE([HAVE_LIBHAMLIB], [1],
+                [Define to 1 if you have the `hamlib' library (-lhamlib).])], [
+        AC_MSG_ERROR([Hamradio control libraries not found!])])
 
-	LIBS=$tlf_saved_LIBS
+LIBS=$tlf_saved_LIBS
 
-	tlf_saved_CFLAGS=$CFLAGS
-	tlf_saved_CPPFLAGS=$CPPFLAGS
-	CFLAGS="$CFLAGS $HAMLIB_CFLAGS"
-	CPPFLAGS="$CPPFLAGS `$PKG_CONFIG --cflags-only-I hamlib 2>&1`"
+tlf_saved_CFLAGS=$CFLAGS
+tlf_saved_CPPFLAGS=$CPPFLAGS
+CFLAGS="$CFLAGS $HAMLIB_CFLAGS"
+CPPFLAGS="$CPPFLAGS `$PKG_CONFIG --cflags-only-I hamlib 2>&1`"
 
-	AC_CHECK_HEADERS([hamlib/rig.h], [], [
-		AC_MSG_ERROR([Hamlib headers not found...])])
+AC_CHECK_HEADERS([hamlib/rig.h], [], [
+        AC_MSG_ERROR([Hamlib headers not found...])])
 
-	CPPFLAGS=$tlf_saved_CPPFLAGS
-	CFLAGS=$tlf_saved_CFLAGS], [
-
-	dnl else Hamlib not wanted
-	AC_MSG_RESULT([no])])
+CPPFLAGS=$tlf_saved_CPPFLAGS
+CFLAGS=$tlf_saved_CFLAGS
 
 
 dnl Check if we want to use xmlrpc to read carrier from Fldigi
@@ -201,7 +189,6 @@ echo \
 
  Package features:
 
- With Hamlib	$wanthamlib
  With XML RPC	$wantfldigixmlrpc
 
 -----------------------------------------------------------------------"

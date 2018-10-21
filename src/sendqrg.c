@@ -61,7 +61,6 @@ int sendqrg(void) {
 }
 
 /**************************************************************************/
-#ifdef HAVE_LIBHAMLIB		//code for Hamlib interface
 
 int init_tlf_rig(void) {
     extern RIG *my_rig;
@@ -244,5 +243,4 @@ int close_tlf_rig(RIG *my_rig) {
     return (0);
 }
 
-#endif				// end code for Hamlib interface
 

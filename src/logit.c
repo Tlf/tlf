@@ -36,7 +36,7 @@
 #include "recall_exchange.h"
 #include "searchlog.h"		// Includes glib.h
 #include "sendbuf.h"
-#include "sendqrg.h"		// Sets HAVE_LIBHAMLIB if enabled
+#include "sendqrg.h"
 #include "sendspcall.h"
 #include "set_tone.h"
 #include "tlf.h"
