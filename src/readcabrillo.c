@@ -323,12 +323,13 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 		break;
 	    case QTCHEAD:
 		strcpy(qtc_line.qtchead, tempstr);
-		tempstrp = strtok(qtc_line.qtchead, "/");
-		qtc_line.qtchead_serial = atoi(tempstrp);
+		qtc_line.qtchead_serial = 0;
+		if ((tempstrp = strtok(qtc_line.qtchead, "/")) != NULL)
+		    qtc_line.qtchead_serial = atoi(tempstrp);
 
-//		tempstrp[0] = '\0';
-		tempstrp = strtok(NULL, " ");
-		qtc_line.qtchead_count = atoi(tempstrp);
+		qtc_line.qtchead_count = 0;
+		if ((tempstrp = strtok(NULL, " ")) != NULL)
+		    qtc_line.qtchead_count = atoi(tempstrp);
 
 		break;
 	    case QTCSCALL:
@@ -337,16 +338,19 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 		break;
 	    case QTC:
 		strcpy(qtc_line.qtcstr, tempstr);
-		tempstrp = strtok(qtc_line.qtcstr, " ");
-		strcpy(qtc_line.qtc_time, tempstrp);
+		if ((tempstrp = strtok(qtc_line.qtcstr, " ")) != NULL)
+		    strcpy(qtc_line.qtc_time, tempstrp);
 
-		tempstrp = strtok(NULL, " ");
-		g_strchomp(tempstrp);
-		strcpy(qtc_line.qtc_call, tempstrp);
+		if ((tempstrp = strtok(NULL, " ")) != NULL) {
+		    g_strchomp(tempstrp);
+		    strcpy(qtc_line.qtc_call, tempstrp);
+		}
 
-		tempstrp = strtok(NULL, " ");
-		g_strchomp(tempstrp);
-		qtc_line.qtc_serial = atoi(tempstrp);
+		qtc_line.qtc_serial = 0;
+		if ((tempstrp = strtok(NULL, " ")) != NULL) {
+		    g_strchomp(tempstrp);
+		    qtc_line.qtc_serial = atoi(tempstrp);
+		}
 	    case NO_ITEM:
 	    default:
 		break;
