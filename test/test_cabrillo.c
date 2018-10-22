@@ -39,6 +39,7 @@ int setup(void **state) {
 /* export non public protoypes for test */
 int starts_with(char *line, char *start);
 void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc);
+extern struct read_qtc_t qtc_line;	/* make global for testability */
 
 /* Test of helper functions */
 void test_starts_with_succeed(void **state) {
@@ -166,6 +167,48 @@ void test_cabToTlf_ParseQSO(void **state) {
     assert_int_equal(time_ptr_cabrillo.tm_year, 2016 - 1900); /* year-1900 */
     assert_int_equal(time_ptr_cabrillo.tm_mon, 8 - 1);	  /* 0-11 */
     assert_int_equal(time_ptr_cabrillo.tm_mday, 13);
+}
+
+void test_cabToTlf_ParseXQSO(void **state) {
+    struct cabrillo_desc *desc;
+    desc = read_cabrillo_format(formatfile, "UNIVERSAL");
+    bandinx_spy = 0;
+    cab_qso_to_tlf("X-QSO:  7002 PH 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
+		   desc);
+    assert_int_equal(bandinx_spy, 2);
+    assert_int_equal((int)freq, 7002);
+    assert_int_equal(trxmode, SSBMODE);
+    assert_string_equal(hiscall, "K6ND");
+    assert_string_equal(my_rst, "589");
+    assert_string_equal(his_rst, "599");
+    assert_string_equal(comment, "044");
+    assert_int_equal(time_ptr_cabrillo.tm_hour, 00);
+    assert_int_equal(time_ptr_cabrillo.tm_min, 33);
+    assert_int_equal(time_ptr_cabrillo.tm_year, 2016 - 1900); /* year-1900 */
+    assert_int_equal(time_ptr_cabrillo.tm_mon, 8 - 1);	  /* 0-11 */
+    assert_int_equal(time_ptr_cabrillo.tm_mday, 13);
+}
+
+void test_cabToTlf_ParseQTC(void **state) {
+    struct cabrillo_desc *desc;
+    desc = read_cabrillo_format(formatfile, "WAEDC");
+    qtcdirection = SEND;
+    bandinx_spy = 0;
+    cab_qso_to_tlf("QTC: 14084 CW 2016-11-12 1214 HA2OS          13/10     K4GM          0230 DL6UHD         074",
+		   desc);
+    assert_int_equal((int)qtc_line.freq, 14084);
+    assert_string_equal(qtc_line.mode, "CW ");
+    assert_int_equal(time_ptr_cabrillo.tm_hour, 12);
+    assert_int_equal(time_ptr_cabrillo.tm_min, 14);
+    assert_int_equal(time_ptr_cabrillo.tm_year, 2016 - 1900); /* year-1900 */
+    assert_int_equal(time_ptr_cabrillo.tm_mon, 11 - 1);	  /* 0-11 */
+    assert_int_equal(time_ptr_cabrillo.tm_mday, 12);
+    assert_string_equal(qtc_line.call, "K4GM");
+    assert_int_equal(qtc_line.qtchead_serial, 13);
+    assert_int_equal(qtc_line.qtchead_count, 10);
+    assert_string_equal(qtc_line.qtc_time, "0230");
+    assert_string_equal(qtc_line.qtc_call, "DL6UHD");
+    assert_int_equal(qtc_line.qtc_serial, 74);
 }
 
 #if 0

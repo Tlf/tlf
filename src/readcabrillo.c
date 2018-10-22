@@ -177,6 +177,8 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
  * date, time, band, ...) instead of the real
  */
 
+struct read_qtc_t qtc_line;	/* make global for testability */
+
 void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 
     extern float freq;
@@ -193,7 +195,6 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
     char tempstr[80], *tempstrp, timestr[3];
     int linetype = LOGPREF_NONE;
     char qtcrcall[15], qtcscall[15];
-    struct read_qtc_t qtc_line;
 
     // [UNIVERSAL]
     // QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;RST_S,3;EXC_S,6;HISCALL,13;RST_R,3;EXCH,6
@@ -325,8 +326,8 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 		tempstrp = strtok(qtc_line.qtchead, "/");
 		qtc_line.qtchead_serial = atoi(tempstrp);
 
-		tempstrp[0] = '\0';
-		tempstrp = strtok(NULL, "/");
+//		tempstrp[0] = '\0';
+		tempstrp = strtok(NULL, " ");
 		qtc_line.qtchead_count = atoi(tempstrp);
 
 		break;
