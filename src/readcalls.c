@@ -678,7 +678,7 @@ int synclog(char *synclogfile) {
     sprintf(wgetcmd, "cat log1 log2 | sort -g -k4,4 | uniq  > %s",
 	    logfile);
     if (system(wgetcmd) == 0)
-	showmsg("Merging logs successfull\n");
+	showmsg("Merging logs successful\n");
     else {
 	showmsg("Problem merging logs.\nExiting...\n");
 	sleep(5);

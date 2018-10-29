@@ -1415,7 +1415,7 @@ The rules file overrides settings from the
 file!
 .P
 .B WARNING!
-It is your own reponsibility to try these rules well BEFORE the contest.
+It is your own responsibility to try these rules well BEFORE the contest.
 The authors of @PACKAGE_NAME@ cannot possibly check all rules for all
 contests :) and during the contest there is normally no time to fix it.
 .
@@ -1832,7 +1832,7 @@ Some contests have a special multipliers list, which is easier to write with
 by excluding a predefined set. For example, the main set could be
 .BR COUNTRY_MULT ,
 and you need to exclude from that list just a few countries, e.g. the SAC
-contest excludes the Scandinavian contries as they are not multipliers). In
+contest excludes the Scandinavian countries as they are not multipliers). In
 that case you can use this configuration:
 .br
     \fBCOUNTRY_MULT\fR
@@ -1968,7 +1968,7 @@ Save the
 .I master.scp
 file as
 .I callmaster
-in the working directory.  It will take precendence over the system installed
+in the working directory.  It will take precedence over the system installed
 .IR callmaster .
 .
 .P
