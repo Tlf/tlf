@@ -32,6 +32,9 @@
 
 void send_bandswitch(int trxqrg);
 
+static int parse_rigconf();
+static void debug_tlf_rig();
+
 /* check if call input field contains a frequency value and switch to it.
  *
  */
@@ -65,7 +68,6 @@ int sendqrg(void) {
 int init_tlf_rig(void) {
     extern RIG *my_rig;
     extern rig_model_t myrig_model;
-    extern char rigconf[];
     extern int serial_rate;
     extern char *rigportname;
     extern int debugflag;
@@ -78,9 +80,6 @@ int init_tlf_rig(void) {
     const char *ptt_file = NULL, *dcd_file = NULL;
     dcd_type_t dcd_type = RIG_DCD_NONE;
 
-    char *cnfparm, *cnfval;
-    int rigconf_len, i;
-
     const struct rig_caps *caps;
 
     /*
@@ -91,20 +90,18 @@ int init_tlf_rig(void) {
     my_rig = rig_init(myrig_model);
 
     if (!my_rig) {
-	shownr("Unknown rig num %d", (int) myrig_model);
-	return (-1);
-    } else {
-	if (strlen(rigportname) > 1) {
-	    rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
-	    strncpy(my_rig->state.rigport.pathname, rigportname,
-		    FILPATHLEN);
-	} else {
-	    showmsg("Missing rig port name!");
-	    return (-1);
-	}
-
-
+	shownr("Unknown rig model", (int) myrig_model);
+	return -1;
     }
+
+    if (rigportname == NULL || strlen(rigportname) == 0) {
+	showmsg("Missing rig port name!");
+	return -1;
+    }
+
+    rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
+    strncpy(my_rig->state.rigport.pathname, rigportname,
+	    FILPATHLEN);
 
     caps = my_rig->caps;
 
@@ -127,40 +124,16 @@ int init_tlf_rig(void) {
 
     my_rig->state.rigport.parm.serial.rate = serial_rate;
 
-    cnfparm = cnfval = rigconf;
-    rigconf_len = strlen(rigconf);
-    for (i = 0; i < rigconf_len; i++) {
-	/* FIXME: left hand value of = cannot be null */
-	if (rigconf[i] == '=' && cnfval == cnfparm) {
-	    cnfval = rigconf + i + 1;
-	    rigconf[i] = '\0';
-	    continue;
-	}
-	if (rigconf[i] == ',' || i + 1 == rigconf_len) {
-	    if (cnfval <= cnfparm) {
-		showstring("Missing parm value in RIGCONF: ", rigconf);
-		return (-1);
-	    }
-	    if (rigconf[i] == ',')
-		rigconf[i] = '\0';
-	    retcode =
-		rig_set_conf(my_rig, rig_token_lookup(my_rig, cnfparm),
-			     cnfval);
-	    if (retcode != RIG_OK) {
-		showmsg("rig_set_conf: error  ");
-		return (-1);
-	    }
-
-	    cnfparm = cnfval = rigconf + i + 1;
-	    continue;
-	}
+    // parse RIGCONF parameters
+    if (parse_rigconf() < 0) {
+        return -1;
     }
 
     retcode = rig_open(my_rig);
 
     if (retcode != RIG_OK) {
 	showmsg("rig_open: error ");
-	return (-1);
+	return -1;
     }
 
     rigfreq = 0.0;
@@ -172,49 +145,14 @@ int init_tlf_rig(void) {
     if (retcode != RIG_OK) {
 	showmsg("Problem with rig link!");
 	if (!debugflag)
-	    return (-1);
+	    return -1;
     }
 
     shownr("freq =", (int) rigfreq);
 
-    if (debugflag == 1) {	// debug routines
-	sleep(10);
-
-	retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
-
-	if (retcode != RIG_OK) {
-	    showmsg("Problem with rig get freq!");
-	    sleep(1);
-	} else {
-	    shownr("freq =", (int) rigfreq);
-	}
-	sleep(10);
-
-	const freq_t testfreq = 14000000;	// test set frequency
-
-	retcode = rig_set_freq(my_rig, RIG_VFO_CURR, testfreq);
-
-	if (retcode != RIG_OK) {
-	    showmsg("Problem with rig set freq!");
-	    sleep(1);
-	} else {
-	    showmsg("Rig set freq ok!");
-	}
-
-	retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);	// read qrg
-
-	if (retcode != RIG_OK) {
-	    showmsg("Problem with rig get freq!");
-	    sleep(1);
-	} else {
-	    shownr("freq =", (int) rigfreq);
-	    if (rigfreq != testfreq) {
-		showmsg("Failed to set rig freq!");
-	    }
-	}
-	sleep(10);
-
-    }				// end debug
+    if (debugflag) {	// debug rig control
+	debug_tlf_rig();
+    }
 
     switch (trxmode) {
 	case SSBMODE:
@@ -229,7 +167,7 @@ int init_tlf_rig(void) {
     }
 
     sleep(1);
-    return (0);
+    return 0;
 }
 
 int close_tlf_rig(RIG *my_rig) {
@@ -238,9 +176,92 @@ int close_tlf_rig(RIG *my_rig) {
     rig_close(my_rig);		/* close port */
     rig_cleanup(my_rig);	/* if you care about memory */
 
-    printf("port %s closed ok \n", rigportname);
+    printf("Rig port %s closed ok\n", rigportname);
 
-    return (0);
+    return 0;
+}
+
+static int parse_rigconf() {
+    extern char rigconf[];
+    extern RIG *my_rig;
+
+    char *cnfparm, *cnfval;
+    const int rigconf_len = strlen(rigconf);
+    int i;
+    int retcode;
+
+    cnfparm = cnfval = rigconf;
+
+    for (i = 0; i < rigconf_len; i++) {
+	/* FIXME: left hand value of = cannot be null */
+	if (rigconf[i] == '=' && cnfval == cnfparm) {
+	    cnfval = rigconf + i + 1;
+	    rigconf[i] = '\0';
+	    continue;
+	}
+	if (rigconf[i] == ',' || i + 1 == rigconf_len) {
+	    if (cnfval <= cnfparm) {
+		showstring("Missing parm value in RIGCONF: ", rigconf);
+		return -1;
+	    }
+	    if (rigconf[i] == ',')
+		rigconf[i] = '\0';
+	    retcode =
+		rig_set_conf(my_rig, rig_token_lookup(my_rig, cnfparm),
+			     cnfval);
+	    if (retcode != RIG_OK) {
+		showmsg("rig_set_conf: error  ");
+		return -1;
+	    }
+
+	    cnfparm = cnfval = rigconf + i + 1;
+	    continue;
+	}
+    }
+
+    return 0;
 }
 
 
+static void debug_tlf_rig() {
+    extern RIG *my_rig;
+    freq_t rigfreq;
+    int retcode;
+
+    sleep(10);
+
+    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
+
+    if (retcode != RIG_OK) {
+	showmsg("Problem with rig get freq!");
+	sleep(1);
+    } else {
+	shownr("freq =", (int) rigfreq);
+    }
+    sleep(10);
+
+    const freq_t testfreq = 14000000;	// test set frequency
+
+    retcode = rig_set_freq(my_rig, RIG_VFO_CURR, testfreq);
+
+    if (retcode != RIG_OK) {
+	showmsg("Problem with rig set freq!");
+	sleep(1);
+    } else {
+	showmsg("Rig set freq ok!");
+    }
+
+    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);	// read qrg
+
+    if (retcode != RIG_OK) {
+	showmsg("Problem with rig get freq!");
+	sleep(1);
+    } else {
+	shownr("freq =", (int) rigfreq);
+	if (rigfreq != testfreq) {
+	    showmsg("Failed to set rig freq!");
+	}
+    }
+    sleep(10);
+
+}
