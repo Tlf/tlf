@@ -10,6 +10,7 @@ LOGFILE=ss.log
 MULT_LIST=arrlsections
 CONTEST_MODE
 CABRILLO=ARRL-SS
+NO_RST
 #
 ##################################
 #                                #
@@ -28,7 +29,7 @@ CABRILLO=ARRL-SS
 #
 F1=CQ CQ DE % % K
 F2=@ DE %
-F3=@ # A CT 83
+F3=@ # A % 83 CT
 F4=TU 73
 F5= @
 F6=%
@@ -40,17 +41,23 @@ F11= PSE K
 F12=++++TEST---- % %
 #
 CQ_TU_MSG=TU %
-S&P_TU_MSG=TU UR # A CT 83
+S&P_TU_MSG=TU UR # A % 83 CT
 #
 ALT_0=message alt 0
 ALT_1=nr is # #
 ALT_2=prec?
 ALT_3=ur section?
-ALT_4=ck is 83 83 
+ALT_4=ck is 83 83
 ALT_5=sec is CT CT
 #ALT_6=
 #ALT_7=
 #ALT_8=
 #ALT_9=
 #
+# Alternate ALT messages:
+#ALT_1=#
+#ALT_2=A
+#ALT_3=%
+#ALT_4=83
+#ALT_5=CT
 ####### END #####################
