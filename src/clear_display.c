@@ -128,8 +128,8 @@ void clear_display(void) {
     }
 
     if (no_rst) {
-	mvaddstr(12, 44, "---");
-	mvaddstr(12, 49, "---");
+	mvaddstr(12, 44, "   ");
+	mvaddstr(12, 49, "   ");
     } else {
 	mvaddstr(12, 44, his_rst);
 	mvaddstr(12, 49, my_rst);
