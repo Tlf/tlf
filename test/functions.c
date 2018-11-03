@@ -35,13 +35,24 @@ const char *showmsg_spy = STRING_NOT_SET;
 const char *showstring_spy1 = STRING_NOT_SET;
 const char *showstring_spy2 = STRING_NOT_SET;
 
+#define BUFSZ 200
+char showmsg_spy_buf[BUFSZ];
+char showstring_spy1_buf[BUFSZ];
+char showstring_spy2_buf[BUFSZ];
+
+static char *save_string(char *dest, const char *src) {
+    strncpy(dest, src, BUFSZ - 1);
+    dest[BUFSZ - 1] = 0;
+    return dest;
+}
+
 void showmsg(char *message) {
-    showmsg_spy = message;
+    showmsg_spy = save_string(showmsg_spy_buf, message);
 }
 
 void showstring(char *message1, char *message2) {
-    showstring_spy1 = message1;
-    showstring_spy2 = message2;
+    showstring_spy1 = save_string(showstring_spy1_buf, message1);
+    showstring_spy2 = save_string(showstring_spy2_buf, message2);
 }
 
 unsigned int __wrap_sleep(unsigned int seconds) {
