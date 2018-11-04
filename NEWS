@@ -1,3 +1,22 @@
+tlf-1.3.2
+=========
+
+Bugfix release.
+
+The release mainly fixes a number of bugs, which were discovered since 
+the release of tlf-1.3.1:
+
+Minor corrections:
+    - Add build dependencies to INSTALL instructions
+    - check for cmocka testing framework in ./configure and warn if not
+      installed
+    - Minor syntax cleanup in code and documentation
+
+Bug fixes:
+    - Fix segement violation if RIGPORT is undefined in logcfg.dat
+    - Fixes some test programs
+
+
 tlf-1.3.1
 =========
 
