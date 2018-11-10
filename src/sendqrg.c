@@ -32,8 +32,10 @@
 
 void send_bandswitch(int trxqrg);
 
+#ifdef HAVE_LIBHAMLIB		//code for Hamlib interface
 static int parse_rigconf();
 static void debug_tlf_rig();
+#endif
 
 /* check if call input field contains a frequency value and switch to it.
  *
@@ -223,8 +225,6 @@ static int parse_rigconf() {
     return 0;
 }
 
-#endif				// end code for Hamlib interface
-
 static void debug_tlf_rig() {
     extern RIG *my_rig;
     freq_t rigfreq;
@@ -267,3 +267,5 @@ static void debug_tlf_rig() {
     sleep(10);
 
 }
+
+#endif				// end code for Hamlib interface
