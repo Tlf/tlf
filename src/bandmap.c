@@ -45,6 +45,8 @@
 #define SPOT_CALL_WIDTH SPOT_COLUMN_WIDTH-SPOT_FREQ_WIDTH-4
 				/* 3 space before and 1 after call */
 
+#define DISTANCE(x, y) \
+    ( x < y ? y - x : x -y )
 
 pthread_mutex_t bm_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -319,7 +321,7 @@ void bandmap_addspot(char *call, unsigned int freq, char node) {
     if (found) {
 	((spot *)found->data)->timeout = SPOT_NEW;
 	((spot *)found->data)->node = node;
-	if (abs(((spot *)found->data)->freq - freq) > TOLERANCE) {
+	if (DISTANCE(((spot *)found->data)->freq, freq) > TOLERANCE) {
 	    ((spot *)found->data)->freq = freq;
 	    allspots = g_list_sort(allspots, (GCompareFunc)cmp_freq);
 	}
@@ -378,7 +380,7 @@ void bandmap_addspot(char *call, unsigned int freq, char node) {
     /* check that spot is unique on freq +/- TOLERANCE Hz,
      * drop other entries if needed */
     if (found->prev &&
-	    (abs(((spot *)(found->prev)->data)->freq - freq) < TOLERANCE)) {
+	    (DISTANCE(((spot *)(found->prev)->data)->freq, freq) < TOLERANCE)) {
 	spot *olddata;
 	olddata = found->prev->data;
 	allspots = g_list_remove_link(allspots, found->prev);
@@ -387,7 +389,7 @@ void bandmap_addspot(char *call, unsigned int freq, char node) {
 	g_free(olddata);
     }
     if (found->next &&
-	    (abs(((spot *)(found->next)->data)->freq - freq) < TOLERANCE)) {
+	    (DISTANCE(((spot *)(found->next)->data)->freq, freq) < TOLERANCE)) {
 	spot *olddata;
 	olddata = found->next->data;
 	allspots = g_list_remove_link(allspots, found->next);
