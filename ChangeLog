@@ -1,3 +1,37 @@
+2018-11-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: Fix compiler warning from clang  Calculation the difference
+  of two unsinged numbers gives an unsigned result. clang warns that doing an
+  abs() of it makes no sense. Thansk nate N0NB for reporting.
+
+2018-11-04  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * NEWS, configure.ac: update configure.ac and NEWS file
+
+2018-11-03  zcsahok <ha5cqz@freemail.hu>
+
+  * test/functions.c: fix test: store message strings
+
+2018-10-18  zcsahok <ha5cqz@freemail.hu>
+
+  * src/rules.c: avoid redefining _GNU_SOURCE
+
+2018-11-01  zcsahok <ha5cqz@freemail.hu>
+
+  * src/sendqrg.c: fix SegV on missing RIGPORT
+
+2018-10-29  Ervin Hegedus <airween@gmail.com>
+
+  * src/readcalls.c, tlf.1.in: Typo fixes
+
+2018-10-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * configure.ac: Check for cmocka test framework and warn if not installed
+
+2018-10-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * INSTALL: add build dependencies to install instructions
+
 2018-10-13  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/callinput.c, src/fldigixmlrpc.c, src/fldigixmlrpc.h, src/main.c: move
