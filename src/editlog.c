@@ -64,8 +64,11 @@ int logedit(void) {
     else
 	strcat(comstr, "e3  ");
 
+    stop_background_process();
     strcat(comstr, logfile);
     IGNORE(system(comstr));;
+    start_background_process();
+
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();
     refreshp();
@@ -122,7 +125,6 @@ int logedit(void) {
 
 		    fclose(infile);
 		    fclose(outfile);
-
 		}
 
 		if ((lfile = open("./cpyfile", O_RDWR)) < 0) {
@@ -137,7 +139,6 @@ int logedit(void) {
 		    if (statbuf.st_size > 80) {
 			IGNORE(ftruncate(lfile, statbuf.st_size - LOGLINELEN));;
 			fsync(lfile);
-
 		    }
 
 		    close(lfile);
@@ -147,10 +148,9 @@ int logedit(void) {
 		remove("./cpyfile");
 	    }
 
+	    start_background_process();
 	} else
 	    close(lfile);
-
-	start_background_process();
     }
 
     close(lfile);
