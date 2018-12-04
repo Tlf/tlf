@@ -442,7 +442,8 @@ int netkeyer(int cw_op, char *cwmessage) {
 char mvprintw_last[NLAST][LINESZ];
 int mvprintw(int y, int x, const char *fmt, ...) {
 
-    for (int i = NLAST - 1; i >= 1; --i) {
+    int i;
+    for (i = NLAST - 1; i >= 1; --i) {
 	strcpy(mvprintw_last[i], mvprintw_last[i - 1]);
     }
 

@@ -102,19 +102,21 @@ static void put_short_line(char *p, int index) {
 }
 
 int setup_default(void **state) {
+    int i;
+
     strcpy(call, "N0CALL\n"); 		// !!! do not forget trailing \n
 
     xplanet = 0;
 
     // clear mvprintw history
-    for (int i = 0; i < NLAST; ++i) {
+    for (i = 0; i < NLAST; ++i) {
 	mvprintw_last[i][0] = 0;
     }
 
     // generate 25 various cluster spots
     nr_of_spots = 25;
 
-    for (int i = 0; i < MAX_SPOTS; ++i) {
+    for (i = 0; i < MAX_SPOTS; ++i) {
 	char *spot = spot_ptr[i];
 	if (i >= nr_of_spots) {
 	    spot[0] = 0;
