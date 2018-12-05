@@ -20,8 +20,12 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "../src/globalvars.h"
 #include "../src/tlf.h"
+
+#include "test.h"
+
 
 int lan_active = 0;
 char lastqsonr[5];
@@ -435,17 +439,27 @@ int netkeyer(int cw_op, char *cwmessage) {
     return 0;
 }
 
+char mvprintw_history[NLAST][LINESZ];
+
+void clear_mvprintw_history() {
+    for (int i = 0; i < NLAST; ++i) {
+	mvprintw_history[i][0] = 0;
+    }
+}
+
 int mvprintw(int y, int x, const char *fmt, ...) {
+
+    // shift history
+    for (int i = NLAST - 1; i >= 1; --i) {
+	strcpy(mvprintw_history[i], mvprintw_history[i - 1]);
+    }
+
+    va_list args;
+    va_start(args, fmt);
+    sprintf(mvprintw_history[0], "%02d|%02d|", y, x);
+    vsnprintf(mvprintw_history[0] + 6, 100 - 6, fmt, args);
+    va_end(args);
+
     return 0;
 }
 
-#if 0
-#define gsize int
-#define gchar char
-gsize
-g_strlcat(gchar *dest,
-	  const gchar *src,
-	  gsize dest_size) {
-    return 0;
-}
-#endif

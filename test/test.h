@@ -27,4 +27,11 @@ extern int_func_t getch_func;
 // the real functions
 extern int __real_key_poll();
 
+// number of mvprintw lines to store
+#define NLAST   30
+// length of a mvprintw line
+#define LINESZ  100
+extern char mvprintw_history[NLAST][LINESZ];
+extern void clear_mvprintw_history();
+
 #endif
