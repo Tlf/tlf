@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 
 #include "background_process.h"
+#include "checklogfile.h"
 #include "clear_display.h"
 #include "ignore_unused.h"
 #include "scroll_log.h"
@@ -45,15 +46,6 @@ int logedit(void) {
 
     char comstr[40] = "";
     int j;
-    int lfile;
-    int qsobytes;
-    int qsolines;
-    int errbytes;
-    struct stat statbuf;
-    FILE *infile;
-    FILE *outfile;
-    char inputbuffer[800];
-    char *rp;
 
     if (editor == EDITOR_JOE)
 	strcat(comstr, "joe  ");	/*   my favorite editor   */
@@ -79,81 +71,9 @@ int logedit(void) {
 	mvprintw(j, 0, backgrnd_str);
     }
 
-    if ((lfile = open(logfile, O_RDONLY)) < 0) {
-
-	mvprintw(24, 0, "I can not find the logfile...");
-	refreshp();
-	sleep(2);
-
-    } else {
-
-	fstat(lfile, &statbuf);
-	qsobytes = statbuf.st_size;
-	qsolines = qsobytes / LOGLINELEN;
-	errbytes = qsobytes - (qsolines * LOGLINELEN);
-
-	if (errbytes != 0) {
-
-	    close(lfile);
-
-	    stop_background_process();
-
-	    if ((infile = fopen(logfile, "r")) == NULL) {
-		mvprintw(24, 0, "Unable to open logfile...");
-		refreshp();
-		sleep(2);
-
-	    } else {
-		if ((outfile = fopen("./cpyfile", "w")) == NULL) {
-		    mvprintw(24, 0, "Unable to open cpyfile...");
-		    refreshp();
-		    fclose(infile);
-		    sleep(2);
-		} else {
-
-		    while (!(feof(infile))) {
-
-			rp = fgets(inputbuffer, 160, infile);
-
-			if (rp != NULL && strlen(inputbuffer) != LOGLINELEN) {
-			    strcat(inputbuffer, backgrnd_str);
-			    inputbuffer[LOGLINELEN] = '\0';
-			}
-
-			fputs(inputbuffer, outfile);
-		    }
-
-		    fclose(infile);
-		    fclose(outfile);
-		}
-
-		if ((lfile = open("./cpyfile", O_RDWR)) < 0) {
-
-		    mvprintw(24, 0, "I can not find the copy file...");
-		    refreshp();
-		    sleep(2);
-		} else {
-
-		    fstat(lfile, &statbuf);
-
-		    if (statbuf.st_size > 80) {
-			IGNORE(ftruncate(lfile, statbuf.st_size - LOGLINELEN));;
-			fsync(lfile);
-		    }
-
-		    close(lfile);
-		}
-
-		rename("./cpyfile", logfile);
-		remove("./cpyfile");
-	    }
-
-	    start_background_process();
-	} else
-	    close(lfile);
-    }
-
-    close(lfile);
+    stop_background_process();
+    checklogfile();
+    start_background_process();
 
     scroll_log();
     refreshp();

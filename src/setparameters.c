@@ -25,6 +25,7 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "background_process.h"
 #include "clear_display.h"
@@ -34,6 +35,7 @@
 #include "readcalls.h"
 #include "scroll_log.h"
 #include "setcontest.h"
+#include "startmsg.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -132,7 +134,11 @@ int setparameters(void) {
 	    getmessages();	/* read .paras file */
 	    sleep(2);
 
-	    checklogfile();	/* make sure logfile is there */
+	    /* make sure logfile is there */
+	    if (checklogfile_new(logfile) != 0) {
+		showmsg("Can not access logfile. Giving up");
+		return EXIT_FAILURE;
+	    }
 
 	    setcontest();	/* set contest parameters */
 

@@ -91,8 +91,6 @@ int getmessages(void) {
     printw("\n\n");
     refreshp();
 
-    checklogfile();
-
     if ((fp = fopen(logfile, "r")) == NULL) {
 	printw("\nError opening logfile.\nExiting...\n");
 	refreshp();

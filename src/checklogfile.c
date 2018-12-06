@@ -228,14 +228,16 @@ void checklogfile(void) {
     int errbytes;
     struct stat statbuf;
     char inputbuffer[800];
+    char *rp;
 
     FILE *infile;
     FILE *outfile;
     FILE *fp;
 
     if ((fp = fopen(logfile, "a")) == NULL) {
-	fprintf(stdout, "Opening logfile not possible.\n");
-	exit(1);
+	mvprintw(24, 0, "I can not find the logfile ...");
+	refreshp();
+	sleep(2);
 
     } else {
 
@@ -262,9 +264,9 @@ void checklogfile(void) {
 
 		    while (!(feof(infile))) {
 
-			IGNORE(fgets(inputbuffer, 160, infile));;
+			rp = fgets(inputbuffer, 160, infile);
 
-			if (strlen(inputbuffer) != LOGLINELEN) {
+			if (rp != NULL && strlen(inputbuffer) != LOGLINELEN) {
 			    strcat(inputbuffer, backgrnd_str);
 			    inputbuffer[LOGLINELEN] = '\0';
 			}
@@ -274,7 +276,6 @@ void checklogfile(void) {
 
 		    fclose(infile);
 		    fclose(outfile);
-
 		}
 
 		if ((lfile = open("./cpyfile", O_RDWR)) < 0) {
