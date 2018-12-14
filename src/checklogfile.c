@@ -221,7 +221,6 @@ int checklogfile_new(char *filename) {
 void checklogfile(void) {
 
     extern char logfile[];
-    extern char backgrnd_str[];
 
     int lfile;
     int qsobytes;
@@ -267,7 +266,13 @@ void checklogfile(void) {
 			rp = fgets(inputbuffer, 160, infile);
 
 			if (rp != NULL && strlen(inputbuffer) != LOGLINELEN) {
-			    strcat(inputbuffer, backgrnd_str);
+			    /* append spaces */
+			    for (int i = strlen(inputbuffer);
+				    i < LOGLINELEN; i++) {
+
+				strcat(inputbuffer, " ");
+			    }
+
 			    inputbuffer[LOGLINELEN] = '\0';
 			}
 
