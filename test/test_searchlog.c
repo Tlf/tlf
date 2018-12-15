@@ -21,6 +21,8 @@ extern int searchflg;
 extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
 
+void filterLog();
+
 /*********************/
 // mocks
 
@@ -179,7 +181,7 @@ void test_init_search_panel_dxped(void **state) {
 /* testing searchlog for refactoring */
 void test_searchlog_pickup_call(void **state) {
     strcpy (hiscall, "UA");
-    searchlog("");
+    filterLog("");
     assert_int_equal (strncmp(searchresult[0], QSO3, 80), 0);
     assert_int_equal (strncmp(searchresult[1], QSO4, 80), 0);
     assert_int_equal (strncmp(searchresult[2], QSO5, 80), 0);
@@ -187,7 +189,7 @@ void test_searchlog_pickup_call(void **state) {
 
 void test_searchlog_extract_data(void **state) {
     strcpy (hiscall, "UA");
-    searchlog("");
+    filterLog("");
     assert_string_equal (result[0], " 40CW  0007 OE3UAI       15            ");
     assert_string_equal (result[1], " 80SSB 0008 UA3JK        16            ");
 }
