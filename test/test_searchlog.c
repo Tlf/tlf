@@ -22,6 +22,7 @@ extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
 
 void filterLog();
+int bandstr2line(char *buffer);
 
 /*********************/
 // mocks
@@ -194,3 +195,14 @@ void test_searchlog_extract_data(void **state) {
     assert_string_equal (result[1], " 80SSB 0008 UA3JK        16            ");
 }
 
+void test_bandstr2line(void **state) {
+    assert_int_equal( bandstr2line( " 10"), 1);
+    assert_int_equal( bandstr2line( " 15"), 2);
+    assert_int_equal( bandstr2line( " 20"), 3);
+    assert_int_equal( bandstr2line( " 40"), 4);
+    assert_int_equal( bandstr2line( " 80"), 5);
+    assert_int_equal( bandstr2line( "160"), 6);
+    assert_int_equal( bandstr2line( " 12"), 7);
+    assert_int_equal( bandstr2line( " 17"), 8);
+    assert_int_equal( bandstr2line( " 30"), 9);
+}
