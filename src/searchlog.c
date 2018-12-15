@@ -91,11 +91,6 @@ void HideSearchPanel(void) {
 
 static char searchresult[MAX_CALLS][82];
 static char result[MAX_CALLS][82];
-/* DJ1YFK "worked window"-patch */
-static char band_yfk[5] = "";
-static char testcall_yfk[14] = "";
-static char hiscall_yfk[14] = "            ";
-/* */
 
 void searchlog(char *searchstring) {
 
@@ -147,10 +142,6 @@ void searchlog(char *searchstring) {
 
     int srch_index = 0;
     int r_index = 0;
-    int xx;
-    int yy;
-    int bandnr;
-    int bm[6];
     char s_inputbuffer[LOGLINELEN + 1] = "";
     char s_inputbuffercpy[LOGLINELEN + 1] = "";
     char printres[14] = "";
@@ -223,11 +214,6 @@ void searchlog(char *searchstring) {
 	    qso_index++;
 	}
 
-	// initialize array best matching callsigns
-	for (xx = 0; xx < 6; xx++) {
-	    bm[xx] = 0;
-	}
-
 	for (r_index = 0; r_index < srch_index; r_index++) {
 
 	    strncpy(result[r_index], searchresult[r_index], 7);	/* band + mode */
@@ -242,80 +228,6 @@ void searchlog(char *searchstring) {
 	    strncat(result[r_index], searchresult[r_index] + 52, 16);	/* exch */
 	}
 
-	/* DJ1YFK worked-window patch */
-	strncpy(band_yfk, searchresult[r_index], 3);
-	band_yfk[3] = '\0';
-	bandnr = atoi(band_yfk);
-
-	strncpy(testcall_yfk, searchresult[r_index] + 29, 12);
-	testcall_yfk[13] = '\0';
-
-	// Create string with his call + whitespaces
-	strcpy(hiscall_yfk, "            ");
-	for (xx = 0; xx < strlen(hiscall); xx++) {
-	    hiscall_yfk[xx] = hiscall[xx];
-	}
-	// find out how many characters match
-	yy = 0;
-	for (xx = 0; xx < 13; xx++) {
-	    if (hiscall_yfk[xx] == testcall_yfk[xx]) {
-		yy++;
-	    }
-	}
-
-	// delete QSOs that match worse than anything before
-	// of course still less-good matching QSOs can be in the array,
-	// but *before* the better matching one, so they will be
-	// overwritten later.
-	switch (bandnr) {
-	    case 160: {
-		if (yy < bm[0]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[0] = yy;
-		}
-		break;
-	    }
-	    case 80: {
-		if (yy < bm[1]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[1] = yy;
-		}
-		break;
-	    }
-	    case 40: {
-		if (yy < bm[2]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[2] = yy;
-		}
-		break;
-	    }
-	    case 20: {
-		if (yy < bm[3]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[3] = yy;
-		}
-		break;
-	    }
-	    case 15: {
-		if (yy < bm[4]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[4] = yy;
-		}
-		break;
-	    }
-	    case 10: {
-		if (yy < bm[5]) {
-		    result[r_index][0] = '\0';
-		} else {
-		    bm[5] = yy;
-		}
-	    }
-	}			/* end of patch */
 
 	dupe = NODUPE;
 
