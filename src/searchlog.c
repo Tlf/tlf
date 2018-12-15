@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *               2018           Thomas Beierlein - <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,6 +94,54 @@ void HideSearchPanel(void) {
     hide_panel(search_panel);
 }
 
+void drawSearchWin(void) {
+    int i;
+
+    wbkgd(search_win, (chtype)(' ' | COLOR_PAIR(C_LOG)));
+    werase(search_win);
+
+    wnicebox(search_win, 0, 0, nr_bands, 37, "Worked");
+    if (qtcdirection > 0) {
+        mvwprintw(search_win, 0, 35, "Q");
+    }
+
+    wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT);
+    for (i = 0; i < nr_bands; i++)
+        mvwprintw(search_win, i + 1, 1,
+                      "                                     ");
+
+    mvwprintw(search_win, 1, 1, " 10");
+    mvwprintw(search_win, 2, 1, " 15");
+    mvwprintw(search_win, 3, 1, " 20");
+    mvwprintw(search_win, 4, 1, " 40");
+    mvwprintw(search_win, 5, 1, " 80");
+    mvwprintw(search_win, 6, 1, "160");
+    if (IsAllBand()) {
+        mvwprintw(search_win, 7, 1, " 12");
+        mvwprintw(search_win, 8, 1, " 17");
+        mvwprintw(search_win, 9, 1, " 30");
+    }
+}
+
+void displayCallInfo (dxcc_data* dx, char* zonebuffer, char *pxstr) {
+    int i;
+
+    wattroff(search_win, A_STANDOUT);
+    wattron(search_win, COLOR_PAIR(C_BORDER));
+
+    mvwprintw(search_win, nr_bands + 1, 2, dx->countryname);
+    mvwprintw(search_win, nr_bands + 1, 32, "%02d", dx->cq);
+
+    if (itumult != 1)
+	mvwprintw(search_win, nr_bands + 1, 32, "%s", zonebuffer);
+    else
+	mvwprintw(search_win, nr_bands + 1, 28, "ITU:%s", zonebuffer);
+
+    if (wpx == 1) {
+	i = strlen(dx->countryname);
+	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, pxstr);
+    }
+}
 
 /* Parses searchresult and prepare string for searchwindow display from it */
 void extractData(int index) {
@@ -109,9 +158,35 @@ void extractData(int index) {
     strncat(result[index], searchresult[index] + 52, 16); /* exch */
 }
 
+/* find band from bandstring and choose line 'j' for display */
+int bandstr2line(char *buffer){
+    int j = 0;
 
-/* filter out all loglines which contains 'hiscall' fragment as substring in
- * callsign field */
+    if (buffer[1] == '1' && buffer[2] == '0')
+	j = 1;
+    if (buffer[1] == '1' && buffer[2] == '5')
+	j = 2;
+    if (buffer[1] == '2')
+	j = 3;
+    if (buffer[1] == '4')
+	j = 4;
+    if (buffer[1] == '8')
+	j = 5;
+    if (buffer[1] == '6')
+	j = 6;
+    if (buffer[1] == '1' && buffer[2] == '2')
+	j = 7;
+    if (buffer[1] == '1' && buffer[2] == '7')
+	j = 8;
+    if (buffer[1] == '3' && buffer[2] == '0')
+	j = 9;
+    return j;
+}
+
+
+/* search complete Log for 'hiscall' as substring in callsign field and
+ * copy found QSO to 'searchresults'. Extract relevant data to 'result'.
+ * */
 void filterLog() {
     extern int mixedmode;
 
@@ -120,9 +195,6 @@ void filterLog() {
 
     srch_index = 0;
 
-    /* durchsuche komplettes Log nach 'hiscall' als substring und
-     * kopiere gefundene QSO's nach 'searchresults'
-     * extract relevant data to 'result'*/
     while (strlen(qsos[qso_index]) > 4) {
 
 	if (((qsos[qso_index][3] == 'C' && trxmode == CWMODE) ||
@@ -201,7 +273,7 @@ void searchlog(char *searchstring) {
     dxcc_data *dx;
     static char zonebuffer[3] = "";
     static int z, z1;
-    static int i, j, k, l;
+    static int j, k, l;
     static long int m;
     static int pxnr;
     static int xwin = 1;
@@ -230,6 +302,7 @@ void searchlog(char *searchstring) {
     if (strlen(hiscall) > 1 && searchflg == SEARCHWINDOW) {
 
 	ShowSearchPanel();
+	drawSearchWin();
 
 	if (strlen(hiscall) == 2)
 	    z1 = 0;
@@ -239,31 +312,6 @@ void searchlog(char *searchstring) {
 	filterLog();
 
 	dupe = NODUPE;
-
-	wbkgd(search_win, (chtype)(' ' | COLOR_PAIR(C_LOG)));
-	werase(search_win);
-
-	wnicebox(search_win, 0, 0, nr_bands, 37, "Worked");
-	if (qtcdirection > 0) {
-	    mvwprintw(search_win, 0, 35, "Q");
-	}
-
-	wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT);
-	for (i = 0; i < nr_bands; i++)
-	    mvwprintw(search_win, i + 1, 1,
-		      "                                     ");
-
-	mvwprintw(search_win, 1, 1, " 10");
-	mvwprintw(search_win, 2, 1, " 15");
-	mvwprintw(search_win, 3, 1, " 20");
-	mvwprintw(search_win, 4, 1, " 40");
-	mvwprintw(search_win, 5, 1, " 80");
-	mvwprintw(search_win, 6, 1, "160");
-	if (IsAllBand()) {
-	    mvwprintw(search_win, 7, 1, " 12");
-	    mvwprintw(search_win, 8, 1, " 17");
-	    mvwprintw(search_win, 9, 1, " 30");
-	}
 
 	refreshp();
 
@@ -317,24 +365,9 @@ void searchlog(char *searchstring) {
 		    }		// end ignore
 		}
 	    }
-	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '0')
-		j = 1;
-	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '5')
-		j = 2;
-	    if (s_inputbuffer[1] == '2')
-		j = 3;
-	    if (s_inputbuffer[1] == '4')
-		j = 4;
-	    if (s_inputbuffer[1] == '8')
-		j = 5;
-	    if (s_inputbuffer[1] == '6')
-		j = 6;
-	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '2')
-		j = 7;
-	    if (s_inputbuffer[1] == '1' && s_inputbuffer[2] == '7')
-		j = 8;
-	    if (s_inputbuffer[1] == '3' && s_inputbuffer[2] == '0')
-		j = 9;
+	    /* display line in search window */
+	    j = bandstr2line(s_inputbuffer);
+
 
 	    if ((j > 0) && (j < 7)) {  /* no WARC band */
 		if (qtcdirection > 0) {
@@ -399,22 +432,10 @@ void searchlog(char *searchstring) {
 	    }
 	}
 
-	wattron(search_win, COLOR_PAIR(C_BORDER));
+	displayCallInfo(dx, zonebuffer, pxstr);
 
-	mvwprintw(search_win, nr_bands + 1, 2, dx->countryname);
-	mvwprintw(search_win, nr_bands + 1, 32, "%02d", dx->cq);
-	i = strlen(dx->countryname);
-
-	if (itumult != 1)
-	    mvwprintw(search_win, nr_bands + 1, 32, "%s", zonebuffer);
-	else
-	    mvwprintw(search_win, nr_bands + 1, 28, "ITU:%s", zonebuffer);
 
 	s_inputbuffer[0] = '\0';
-
-	if (wpx == 1) {
-	    mvwprintw(search_win, nr_bands + 1, 2 + i + 3, pxstr);
-	}
 
 	/* print worked zones and countrys for each band in checkwindow */
 	wattron(search_win, COLOR_PAIR(C_HEADER) | A_STANDOUT);
