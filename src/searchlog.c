@@ -110,6 +110,41 @@ void extractData(int index) {
 }
 
 
+/* filter out all loglines which contains 'hiscall' fragment as substring in
+ * callsign field */
+void filterLog() {
+    extern int mixedmode;
+
+    int qso_index = 0;
+    char s_inputbuffer[LOGLINELEN + 1] = "";
+
+    srch_index = 0;
+
+    /* durchsuche komplettes Log nach 'hiscall' als substring und
+     * kopiere gefundene QSO's nach 'searchresults'
+     * extract relevant data to 'result'*/
+    while (strlen(qsos[qso_index]) > 4) {
+
+	if (((qsos[qso_index][3] == 'C' && trxmode == CWMODE) ||
+		(qsos[qso_index][3] == 'S' && trxmode == SSBMODE) ||
+		(qsos[qso_index][3] == 'D' && trxmode == DIGIMODE)) ||
+		mixedmode == 0) {
+	    // ist letzterTest korrekt?
+
+	    g_strlcpy(s_inputbuffer, qsos[qso_index]+29, 13); /* call */
+	    if (strstr(s_inputbuffer, hiscall) != 0) {
+
+		g_strlcpy(searchresult[srch_index], qsos[qso_index], 81);
+		extractData(srch_index);
+
+		if (srch_index++ > MAX_CALLS - 1)
+		    break;
+	    }
+	}
+	qso_index++;
+    }
+}
+
 void searchlog(char *searchstring) {
 
     extern int isdupe;		// LZ3NY auto-b4 patch
@@ -169,7 +204,6 @@ void searchlog(char *searchstring) {
     static int i, j, k, l;
     static long int m;
     static int pxnr;
-    static int qso_index = 0;
     static int xwin = 1;
     static int ywin = 1;
     char qtccall[15];	// temp str for qtc search
@@ -202,33 +236,7 @@ void searchlog(char *searchstring) {
 
 	r_index = 0;
 
-	qso_index = 0;
-	srch_index = 0;
-
-	/* durchsuche komplettes Log nach 'hiscall' als substring und
-	 * kopiere gefundene QSO's nach 'searchresults'
-         * extract relevant data to 'result'*/
-	while (strlen(qsos[qso_index]) > 4) {
-
-	    if (((qsos[qso_index][3] == 'C' && trxmode == CWMODE) ||
-		    (qsos[qso_index][3] == 'S' && trxmode == SSBMODE) ||
-		    (qsos[qso_index][3] == 'D' && trxmode == DIGIMODE)) ||
-		    mixedmode == 0) {
-		// ist letzterTest korrekt?
-
-		g_strlcpy(s_inputbuffer, qsos[qso_index]+29, 13); /* call */
-		if (strstr(s_inputbuffer, hiscall) != 0) {
-
-		    g_strlcpy(searchresult[srch_index], qsos[qso_index], 81);
-		    extractData(srch_index);
-
-		    if (srch_index++ > MAX_CALLS - 1)
-			break;
-		}
-	    }
-	    qso_index++;
-	}
-
+	filterLog();
 
 	dupe = NODUPE;
 
