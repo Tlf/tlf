@@ -222,12 +222,9 @@ void checklogfile(void) {
 
     extern char logfile[];
 
-    int lfile;
     int qsobytes;
-    int errbytes;
     struct stat statbuf;
     char inputbuffer[800];
-    char *rp;
 
     FILE *infile;
     FILE *outfile;
@@ -239,14 +236,12 @@ void checklogfile(void) {
 	sleep(2);
 
     } else {
-
 	fstat(fileno(fp), &statbuf);
+	fclose(fp);
+
 	qsobytes = statbuf.st_size;
-	errbytes = qsobytes % LOGLINELEN;
 
-	if (errbytes != 0) {
-
-	    fclose(fp);
+	if ((qsobytes % LOGLINELEN) != 0) {
 
 	    if ((infile = fopen(logfile, "r")) == NULL) {
 		mvprintw(24, 0, "Unable to open logfile...");
@@ -259,8 +254,8 @@ void checklogfile(void) {
 		    refreshp();
 		    fclose(infile);
 		    sleep(2);
-		} else {
 
+		} else {
 		    while (fgets(inputbuffer, 160, infile) != NULL) {
 
 			if (strlen(inputbuffer) != LOGLINELEN) {
@@ -274,19 +269,15 @@ void checklogfile(void) {
 			    inputbuffer[LOGLINELEN - 1] = '\n';
 			    inputbuffer[LOGLINELEN] = '\0';
 			}
-
 			fputs(inputbuffer, outfile);
 		    }
 
 		    fclose(infile);
 		    fclose(outfile);
 		}
-
 		rename("./cpyfile", logfile);
 		remove("./cpyfile");
 	    }
-
-	} else
-	    fclose(fp);
+	}
     }
 }
