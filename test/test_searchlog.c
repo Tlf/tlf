@@ -16,6 +16,10 @@
 
 extern WINDOW *search_win;
 extern int nr_bands;
+extern int searchflg;
+
+extern char searchresult[MAX_CALLS][82];
+extern char result[MAX_CALLS][82];
 
 /*********************/
 // mocks
@@ -39,15 +43,47 @@ void getpx(char *checkcall) {
 }
 
 // dxcc.c
+static dxcc_data dummy_dxcc = {
+    "Noland",
+    1,
+    2,
+    "NO",
+    34,
+    56,
+    7,
+    "QQ",
+    false
+};
+
 dxcc_data *dxcc_by_index(unsigned int index) {
-    return NULL; //oops
+    return &dummy_dxcc;
 }
 
 // getctydata.c
 int getctydata(char *checkcallptr) {
     return 0;
 }
+
 /*********************/
+#define QSO1 " 40SSB 12-Jan-18 16:34 0006  SP9ABC         599  599  15                     1         "
+#define QSO2 " 40CW  12-Jan-18 11:42 0127  K4DEF          599  599  05                     3   7026.1"
+#define QSO3 " 40CW  12-Jan-18 16:34 0007  OE3UAI         599  599  15            OE       1         "
+#define QSO4 " 80SSB 12-Jan-18 16:34 0008  UA3JK          599  599  16            UA  16   1         "
+#define QSO5 " 80CW  12-Jan-18 16:34 0009  UA9LM          599  599  17            UA9 17   3         "
+#define QSO6 " 80CW  12-Jan-18 16:36 0010  AA3BP          599  599  05            K   05   3         "
+
+static void write_qsos() {
+    int i;
+    for (i = 0; i < MAX_QSOS; i++) {
+	strcpy (qsos[i], "");
+    }
+    strcpy (qsos[0], QSO1);
+    strcpy (qsos[1], QSO2);
+    strcpy (qsos[2], QSO3);
+    strcpy (qsos[3], QSO4);
+    strcpy (qsos[4], QSO5);
+    strcpy (qsos[5], QSO6);
+}
 
 int setup_default(void **state) {
     showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
@@ -55,6 +91,10 @@ int setup_default(void **state) {
     dxped = 0;
     contest = 0;
     search_win = NULL;
+    searchflg = SEARCHWINDOW;
+    trxmode = CWMODE;
+
+    write_qsos();
     return 0;
 }
 
@@ -133,5 +173,22 @@ void test_init_search_panel_dxped(void **state) {
     dxped = 1;
     InitSearchPanel();
     assert_int_equal(nr_bands, 9);
+}
+
+
+/* testing searchlog for refactoring */
+void test_searchlog_pickup_call(void **state) {
+    strcpy (hiscall, "UA");
+    searchlog("");
+    assert_int_equal (strncmp(searchresult[0], QSO3, 80), 0);
+    assert_int_equal (strncmp(searchresult[1], QSO4, 80), 0);
+    assert_int_equal (strncmp(searchresult[2], QSO5, 80), 0);
+}
+
+void test_searchlog_extract_data(void **state) {
+    strcpy (hiscall, "UA");
+    searchlog("");
+    assert_string_equal (result[0], " 40CW  0007 OE3UAI       15            ");
+    assert_string_equal (result[1], " 80SSB 0008 UA3JK        16            ");
 }
 

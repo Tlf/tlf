@@ -44,6 +44,10 @@
 
 GPtrArray *callmaster = NULL;
 
+char searchresult[MAX_CALLS][82];
+char result[MAX_CALLS][82];
+int srch_index = 0;
+
 PANEL *search_panel;
 WINDOW *search_win;
 static int initialized = 0;
@@ -89,8 +93,22 @@ void HideSearchPanel(void) {
     hide_panel(search_panel);
 }
 
-static char searchresult[MAX_CALLS][82];
-static char result[MAX_CALLS][82];
+
+/* Parses searchresult and prepare string for searchwindow display from it */
+void extractData(int index) {
+    extern int show_time;
+
+    g_strlcpy(result[index], searchresult[index], 7);    /* band + mode */
+
+    if (show_time == 1) // show qso time
+        strncat(result[index], searchresult[index] + 17, 5);
+    else                // show qso number
+        strncat(result[index], searchresult[index] + 22, 5);
+
+    strncat(result[index], searchresult[index] + 28, 12); /* call */
+    strncat(result[index], searchresult[index] + 52, 16); /* exch */
+}
+
 
 void searchlog(char *searchstring) {
 
@@ -140,7 +158,6 @@ void searchlog(char *searchstring) {
     extern struct worked_t worked[];
     extern struct tm *time_ptr;
 
-    int srch_index = 0;
     int r_index = 0;
     char s_inputbuffer[LOGLINELEN + 1] = "";
     char s_inputbuffercpy[LOGLINELEN + 1] = "";
@@ -183,14 +200,14 @@ void searchlog(char *searchstring) {
 	if (strlen(hiscall) == 2)
 	    z1 = 0;
 
-	qso_index = 0;
-
-	srch_index = 0;
-
 	r_index = 0;
 
+	qso_index = 0;
+	srch_index = 0;
+
 	/* durchsuche komplettes Log nach 'hiscall' als substring und
-	 * kopiere gefundene QSO's nach 'searchresults' */
+	 * kopiere gefundene QSO's nach 'searchresults'
+         * extract relevant data to 'result'*/
 	while (strlen(qsos[qso_index]) > 4) {
 
 	    if (((qsos[qso_index][3] == 'C' && trxmode == CWMODE) ||
@@ -199,33 +216,17 @@ void searchlog(char *searchstring) {
 		    mixedmode == 0) {
 		// ist letzterTest korrekt?
 
-		strncpy(s_inputbuffer, qsos[qso_index], LOGLINELEN);
-
+		g_strlcpy(s_inputbuffer, qsos[qso_index]+29, 13); /* call */
 		if (strstr(s_inputbuffer, hiscall) != 0) {
-		    strcpy(searchresult[srch_index], s_inputbuffer);
-		    searchresult[srch_index][80] = '\0';
+
+		    g_strlcpy(searchresult[srch_index], qsos[qso_index], 81);
+		    extractData(srch_index);
 
 		    if (srch_index++ > MAX_CALLS - 1)
 			break;
-
 		}
 	    }
-
 	    qso_index++;
-	}
-
-	for (r_index = 0; r_index < srch_index; r_index++) {
-
-	    strncpy(result[r_index], searchresult[r_index], 7);	/* band + mode */
-	    result[r_index][6] = '\0';
-
-	    if (show_time == 1)	// show qso time
-		strncat(result[r_index], searchresult[r_index] + 17, 5);
-	    else		// show qso number
-		strncat(result[r_index], searchresult[r_index] + 22, 5);
-
-	    strncat(result[r_index], searchresult[r_index] + 28, 12);	/* call */
-	    strncat(result[r_index], searchresult[r_index] + 52, 16);	/* exch */
 	}
 
 
