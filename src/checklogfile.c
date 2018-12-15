@@ -261,11 +261,9 @@ void checklogfile(void) {
 		    sleep(2);
 		} else {
 
-		    while (!(feof(infile))) {
+		    while (fgets(inputbuffer, 160, infile) != NULL) {
 
-			rp = fgets(inputbuffer, 160, infile);
-
-			if (rp != NULL && strlen(inputbuffer) != LOGLINELEN) {
+			if (strlen(inputbuffer) != LOGLINELEN) {
 			    /* append spaces */
 			    for (int i = strlen(inputbuffer);
 				    i < LOGLINELEN; i++) {
@@ -273,6 +271,7 @@ void checklogfile(void) {
 				strcat(inputbuffer, " ");
 			    }
 
+			    inputbuffer[LOGLINELEN - 1] = '\n';
 			    inputbuffer[LOGLINELEN] = '\0';
 			}
 
@@ -281,24 +280,6 @@ void checklogfile(void) {
 
 		    fclose(infile);
 		    fclose(outfile);
-		}
-
-		if ((lfile = open("./cpyfile", O_RDWR)) < 0) {
-
-		    mvprintw(24, 0, "I can not find the copy file...");
-		    refreshp();
-		    sleep(2);
-		} else {
-
-		    fstat(lfile, &statbuf);
-
-		    if (statbuf.st_size > 80) {
-			IGNORE(ftruncate(lfile, statbuf.st_size - LOGLINELEN));;
-			fsync(lfile);
-
-		    }
-
-		    close(lfile);
 		}
 
 		rename("./cpyfile", logfile);

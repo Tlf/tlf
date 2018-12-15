@@ -72,6 +72,10 @@ int check_log(char *file) {
 	    result = 1;
 	    break;
 	}
+	if (buffer[LOGLINELEN - 1] != '\n') {
+	    result = 1;
+	    break;
+	}
     }
 
     fclose(fp);
@@ -79,19 +83,26 @@ int check_log(char *file) {
 }
 
 /* verify check_log helper can detect errors */
-void test_filelength_ok(void **state) {
+void test_check_length_ok(void **state) {
     assert_int_equal(check_log(logfile), 0);
 }
 
-void test_file_to_Long(void **state) {
+void test_check_to_Long(void **state) {
     append_tofile(logfile, " ");
+    assert_int_equal(check_log(logfile), 1);
+}
+
+void test_check_no_newline(void **state) {
+    for (int i = 0; i < LOGLINELEN ; i++) {
+	append_tofile(logfile, " ");
+    }
     assert_int_equal(check_log(logfile), 1);
 }
 
 /* checklogfile() shall check and fix logfile so that it conforms to the
  * following:
-/* 1. each logfile should have lines with only LOGLINELEN as length */
-/* 2. each line should end with an \n (future request) */
+ * 1. each logfile should have lines with only LOGLINELEN as length */
+/* 2. each line should end with an \n */
 void test_file_length_ok(void **state) {
     checklogfile();
     assert_int_equal(check_log(logfile), 0);
