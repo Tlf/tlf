@@ -49,6 +49,8 @@ char searchresult[MAX_CALLS][82];
 char result[MAX_CALLS][82];
 int srch_index = 0;
 
+static const int xwin = 1;
+static const int ywin = 1;
 PANEL *search_panel;
 WINDOW *search_win;
 static int initialized = 0;
@@ -140,6 +142,119 @@ void displayCallInfo (dxcc_data* dx, char* zonebuffer, char *pxstr) {
     if (wpx == 1) {
 	i = strlen(dx->countryname);
 	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, pxstr);
+    }
+}
+
+void displayPartials(char *s_inputbuffercpy) {
+    extern int dupe;
+    extern int use_part;
+    extern int block_part;
+
+    int l, j, k;
+    char *loc;
+    char printres[14] = "";
+
+    l = 0;
+    j = 0;
+
+    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
+
+    for (k = 1; k <= 5; k++) {
+	mvprintw(k, 0, "%s",
+		 "                                        ");
+    }
+    attrset(COLOR_PAIR(C_DUPE));
+    mvprintw(1, 1, "??");
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+
+    /* check what we have worked first */
+    /** \todo the method below parses through the array of already
+     * looked up search results from the search window. That is quick
+     * but has the drawback, that we have no band information and
+     * therefore print some entries more than once.
+     * Better would be to lookup the partial call in the array of
+     * worked stations 'callarray' - it is there only once and we can
+     * also see from 'call_band' if it is a dupe here.
+     * be aware of the problem of marking it dupe only for a complete
+     * match.
+     */
+    for (k = 0; k < srch_index; k++) {
+	if (strlen(hiscall) >= 2 && strlen(searchresult[k]) > 2) {
+	    if (strstr(searchresult[k], hiscall) != NULL) {
+		printres[0] = '\0';
+		strncat(printres, searchresult[k] + 29, 12);
+
+		/* cut string just at first space after call */
+		loc = strchr(printres, ' ');
+		if (loc)
+		    *loc = '\0';
+
+		if (dupe == ISDUPE) {
+		    attrset(COLOR_PAIR(C_DUPE));
+		} else {
+		    attron(modify_attr(COLOR_PAIR(C_BORDER) |
+				       A_STANDOUT));
+		}
+		mvprintw(xwin + l, ywin + j, "%s ", printres);
+		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+
+		attroff(A_BOLD);
+
+		j += (strlen(printres) + 1);
+
+		if (j >= 30) {
+		    l++;
+		    j = 0;
+
+		}
+		if (l > 4)
+		    break;
+	    }
+	}
+    }
+
+    if (strcmp(hiscall, printres) != 0) {
+
+	/* and now check callmaster database */
+	for (k = 0; k < callmaster->len; k++) {
+
+	    if (strstr(CALLMASTERARRAY(k), hiscall) != NULL) {
+
+		attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
+
+		mvprintw(xwin + l, ywin + j, "%s  ",
+			 CALLMASTERARRAY(k));
+
+		if (strlen(s_inputbuffercpy) == 0)
+		    strcpy(s_inputbuffercpy, CALLMASTERARRAY(k));
+
+		j += (strlen(CALLMASTERARRAY(k))) + 1;
+
+		if (j >= 30) {
+		    l++;
+		    j = 0;
+
+		}
+		if (l > 4)
+		    break;
+
+	    }
+	}
+    }
+
+    /* If only one partial call found and USE_PARTIALS set,
+     * use that call for auto-completion. Can be blocked by
+     * pressing tab in calledit() function
+     */
+    if ((j <= 13) && (l == 0) && (use_part == 1) && (block_part == 0)) {
+
+	attron(modify_attr(COLOR_PAIR(C_HEADER) | A_STANDOUT));
+	mvprintw(13, 0, s_inputbuffercpy);
+
+	if (strlen(s_inputbuffercpy) > strlen(hiscall)) {
+	    strcpy(hiscall, s_inputbuffercpy);
+	    beep();
+	}
     }
 }
 
@@ -247,8 +362,6 @@ void searchlog(char *searchstring) {
     extern int ce_cty;
     extern int zs_cty;
     extern int countries[MAX_DATALINES];
-    extern int use_part;
-    extern int block_part;
     extern int mixedmode;
     extern int ignoredupe;
     extern int qso_once;
@@ -257,7 +370,6 @@ void searchlog(char *searchstring) {
     extern char hiscall[];
     extern char zone_export[];
     extern char zone_fix[];
-    extern int show_time;
     extern int wazmult;
     extern int itumult;
     extern int country_mult;
@@ -268,16 +380,11 @@ void searchlog(char *searchstring) {
     int r_index = 0;
     char s_inputbuffer[LOGLINELEN + 1] = "";
     char s_inputbuffercpy[LOGLINELEN + 1] = "";
-    char printres[14] = "";
-    char *loc;
     dxcc_data *dx;
     static char zonebuffer[3] = "";
     static int z, z1;
-    static int j, k, l;
-    static long int m;
+    static int j, l;
     static int pxnr;
-    static int xwin = 1;
-    static int ywin = 1;
     char qtccall[15];	// temp str for qtc search
     char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
     int pfxnumcntidx;
@@ -339,8 +446,8 @@ void searchlog(char *searchstring) {
 			    if ((mixedmode == 0) ||
 				((s_inputbuffer[3] == 'C') &&
 					(trxmode == CWMODE)) ||
-				((s_inputbuffer[3] == 'S')
-					 && (trxmode == SSBMODE))) {
+				((s_inputbuffer[3] == 'S') &&
+					(trxmode == SSBMODE))) {
 				wattrset(search_win, COLOR_PAIR(C_DUPE));
 				dupe = ISDUPE;
 				beep();
@@ -579,117 +686,9 @@ void searchlog(char *searchstring) {
 
 	refreshp();
 
-
 	/* print list of partials in upper left region */
 	if (partials == 1) {
-	    l = 0;
-	    j = 0;
-
-	    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
-
-	    for (k = 1; k <= 5; k++) {
-		mvprintw(k, 0, "%s",
-			 "                                        ");
-	    }
-	    attrset(COLOR_PAIR(C_DUPE));
-	    mvprintw(1, 1, "??");
-	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-	    refreshp();
-
-	    j = 0;
-	    m = 0;
-
-	    /* check what we have worked first */
-	    /** \todo the method below parses through the array of already
-	     * looked up search results from the search window. That is quick
-	     * but has the drawback, that we have no band information and
-	     * therefore print some entries more than once.
-	     * Better would be to lookup the partial call in the array of
-	     * worked stations 'callarray' - it is there only once and we can
-	     * also see from 'call_band' if it is a dupe here.
-	     * be aware of the problem of marking it dupe only for a complete
-	     * match.
-	     */
-	    for (m = 0; m < srch_index; m++) {
-		if (strlen(hiscall) > 2 && strlen(searchresult[m]) > 2) {
-		    if (strstr(searchresult[m], hiscall) != NULL) {
-			printres[0] = '\0';
-			strncat(printres, searchresult[m] + 29, 12);
-
-			/* cut string just at first space after call */
-			loc = strchr(printres, ' ');
-			if (loc)
-			    *loc = '\0';
-
-			if (dupe == ISDUPE) {
-			    attrset(COLOR_PAIR(C_DUPE));
-			} else {
-			    attron(modify_attr(COLOR_PAIR(C_BORDER) |
-					       A_STANDOUT));
-			}
-			mvprintw(xwin + l, ywin + j, "%s ", printres);
-			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-			attroff(A_BOLD);
-
-			refreshp();
-
-			j += (strlen(printres) + 1);
-
-			if (j >= 30) {
-			    l++;
-			    j = 0;
-
-			}
-			if (l > 4)
-			    break;
-		    }
-		}
-	    }
-
-	    if (strcmp(hiscall, printres) != 0) {
-
-		/* and now check callmaster database */
-		for (m = 0; m < callmaster->len; m++) {
-
-		    if (strstr(CALLMASTERARRAY(m), hiscall) != NULL) {
-
-			attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
-
-			mvprintw(xwin + l, ywin + j, "%s  ",
-				 CALLMASTERARRAY(m));
-
-			if (strlen(s_inputbuffercpy) == 0)
-			    strcpy(s_inputbuffercpy, CALLMASTERARRAY(m));
-
-			j += (strlen(CALLMASTERARRAY(m))) + 1;
-
-			if (j >= 30) {
-			    l++;
-			    j = 0;
-
-			}
-			if (l > 4)
-			    break;
-
-		    }
-		}
-	    }
-
-	    if ((j <= 13) && (l == 0) && (use_part == 1) && (block_part == 0)) {
-
-		attron(modify_attr(COLOR_PAIR(C_HEADER) | A_STANDOUT));
-
-		mvprintw(13, 0, s_inputbuffercpy);
-		if (strlen(s_inputbuffercpy) > strlen(hiscall)) {
-
-		    strcpy(hiscall, s_inputbuffercpy);
-		    beep();
-		}
-	    }
-
-	    refreshp();
+	    displayPartials(s_inputbuffercpy);
 	}
 
 	/* show needed sections for ARRL_Sweep Stake*/
@@ -701,7 +700,7 @@ void searchlog(char *searchstring) {
 	    attrset(COLOR_PAIR(C_DUPE));
 	    mvprintw(12, 29, hiscall);
 	    refreshp();
-	    usleep(100000);
+	    usleep(500000);
 	} else
 	    isdupe = 0;		// LZ3NY auto-b4 patch
 
@@ -712,6 +711,7 @@ void searchlog(char *searchstring) {
     }
 }
 
+/* loading callmaster database */
 static void init_callmaster(void) {
     if (callmaster) {
 	g_ptr_array_free(callmaster, TRUE);
