@@ -281,7 +281,7 @@ void searchlog(char *searchstring) {
     char qtccall[15];	// temp str for qtc search
     char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
     int pfxnumcntidx;
-    int found, dupe_veto, mod;
+    int found, display_dupe, mod;
     time_t currtime;
 
     get_time();
@@ -304,69 +304,59 @@ void searchlog(char *searchstring) {
 	ShowSearchPanel();
 	drawSearchWin();
 
-	if (strlen(hiscall) == 2)
-	    z1 = 0;
-
-	r_index = 0;
-
 	filterLog();
 
 	dupe = NODUPE;
 
-	refreshp();
-
-	wattrset(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-
-	k = 0;
 
 	/* print resulting call in line according to band in check window */
 	for (r_index = 0; r_index < srch_index; r_index++) {
-	    strcpy(s_inputbuffer, result[r_index]);
-	    s_inputbuffer[37] = '\0';
+	    wattrset(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+	    g_strlcpy(s_inputbuffer, result[r_index], 38);
 
 	    if ((hiscall[0] == s_inputbuffer[12]) &&
 		    (strlen(hiscall) >= 3 &&
 		     (s_inputbuffer[12 + strlen(hiscall)] == ' '))) {
+		/* full call match */
 		if ((strncmp(band[bandinx], s_inputbuffer, 3) == 0)
 			|| (qso_once == 1)) {
-		    if (ignoredupe == 0) {
+		    /* band matches */
+		    if (ignoredupe == 0) { /* do we ignore dupes? */
 
-			dupe_veto = 1;
+			display_dupe = 1;
 			if (minitest > 0) {
 			    found = searchcallarray(hiscall);
 			    if (found > -1) {
 				currtime = mktime(time_ptr);
 				mod = ((long)currtime) % minitest;	/* how many secods passed till last period */
 				if (worked[found].qsotime[trxmode][bandinx] < (((long)currtime) - mod)) {
-				    dupe_veto = 0;
+				    display_dupe = 0;
 				}
 			    }
 			}
 
-			if (dupe_veto == 1) {
-			    if (mixedmode == 0) {
-				wattrset(search_win,
-					 COLOR_PAIR(C_DUPE));
+			if (display_dupe == 1) {
+			    if ((mixedmode == 0) ||
+				((s_inputbuffer[3] == 'C') &&
+					(trxmode == CWMODE)) ||
+				((s_inputbuffer[3] == 'S')
+					 && (trxmode == SSBMODE))) {
+				wattrset(search_win, COLOR_PAIR(C_DUPE));
 				dupe = ISDUPE;
 				beep();
-			    } else {
-				if (((s_inputbuffer[3] == 'C') &&
-					(trxmode == CWMODE)) ||
-					((s_inputbuffer[3] == 'S')
-					 && (trxmode == SSBMODE))) {
-				    wattrset(search_win,
-					     COLOR_PAIR(C_DUPE));
-				    dupe = ISDUPE;
-				    beep();
-				}
-
-			    }	// end mixed
+			    }
 			}
-		    }		// end ignore
+		    }		// end ignoredupe
 		}
 	    }
+
 	    /* display line in search window */
 	    j = bandstr2line(s_inputbuffer);
+
+
+	    if ((j < 7) || IsAllBand()) {
+		mvwprintw(search_win, j, 1, "%s", s_inputbuffer);
+	    }
 
 
 	    if ((j > 0) && (j < 7)) {  /* no WARC band */
@@ -383,10 +373,11 @@ void searchlog(char *searchstring) {
 		    qtc_temp_ptr = qtc_get(qtccall);
 		    qtcflags[j - 1] = qtc_get_value(qtc_temp_ptr);
 		}
-		if ((j < 7) || IsAllBand()) {
-		    mvwprintw(search_win, j, 1, "%s", s_inputbuffer);
-		}
 	    }
+
+
+	    if (strlen(hiscall) == 2)
+		z1 = 0;
 
 	    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 		z = 0;
@@ -401,8 +392,6 @@ void searchlog(char *searchstring) {
 		    z = z1;
 	    }
 
-	    wattron(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-
 	    if ((partials == 1) && (strlen(hiscall) >= 2)) {
 		if (strlen(s_inputbuffer) != 0)
 		    strncpy(s_inputbuffercpy, s_inputbuffer + 12, 6);
@@ -416,22 +405,18 @@ void searchlog(char *searchstring) {
 	}
 
 	/* prepare and print lower line of checkwindow */
-	wattroff(search_win, A_STANDOUT);
 	dx = dxcc_by_index(countrynr);
-
 	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 
 	    if (z == 0) {
 		if (strlen(zone_fix) > 1) {
-		    strncpy(zonebuffer, zone_fix, 2);
+		    g_strlcpy(zonebuffer, zone_fix, 3);
 		} else
-		    strncpy(zonebuffer, zone_export, 2);
+		    g_strlcpy(zonebuffer, zone_export, 3);
 
-		zonebuffer[2] = '\0';
 		z = zone_nr(zonebuffer);
 	    }
 	}
-
 	displayCallInfo(dx, zonebuffer, pxstr);
 
 
@@ -719,6 +704,7 @@ void searchlog(char *searchstring) {
 	    usleep(100000);
 	} else
 	    isdupe = 0;		// LZ3NY auto-b4 patch
+
 	printcall();
 
     } else {
