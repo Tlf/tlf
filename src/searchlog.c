@@ -128,7 +128,7 @@ void drawSearchWin(void) {
     }
 }
 
-void displayCallInfo (dxcc_data* dx, char* zonebuffer, char *pxstr) {
+void displayCallInfo (dxcc_data* dx, int z, char *pxstr) {
     int i;
 
     wattroff(search_win, A_STANDOUT);
@@ -138,9 +138,9 @@ void displayCallInfo (dxcc_data* dx, char* zonebuffer, char *pxstr) {
     mvwprintw(search_win, nr_bands + 1, 32, "%02d", dx->cq);
 
     if (itumult != 1)
-	mvwprintw(search_win, nr_bands + 1, 32, "%s", zonebuffer);
+	mvwprintw(search_win, nr_bands + 1, 32, "%02d", z);
     else
-	mvwprintw(search_win, nr_bands + 1, 28, "ITU:%s", zonebuffer);
+	mvwprintw(search_win, nr_bands + 1, 28, "ITU:%02d", z);
 
     if (wpx == 1) {
 	i = strlen(dx->countryname);
@@ -693,7 +693,7 @@ void searchlog(char *searchstring) {
 		z = zone_nr(zonebuffer);
 	    }
 	}
-	displayCallInfo(dx, zonebuffer, pxstr);
+	displayCallInfo(dx, z, pxstr);
 	displayWorkedZonesCountries(z);
 
 	refreshp();
