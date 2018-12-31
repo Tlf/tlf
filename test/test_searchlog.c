@@ -15,6 +15,7 @@
 // OBJECT ../src/printcall.o
 
 extern WINDOW *search_win;
+extern PANEL *search_panel;
 extern int nr_bands;
 extern int searchflg;
 
@@ -97,9 +98,20 @@ int setup_default(void **state) {
     searchflg = SEARCHWINDOW;
     trxmode = CWMODE;
 
+    clear_mvprintw_history();
+
     write_qsos();
     return 0;
 }
+
+
+static void check_mvprintw_output(int index, int y, int x, const char *text) {
+    char buffer[7];
+    sprintf(buffer, "%02d|%02d|", y, x);
+    assert_memory_equal(mvprintw_history[index], buffer, 6);
+    assert_string_equal(mvprintw_history[index] + 6, text);
+}
+
 
 // callmaster is checked first in current directory,
 // create it there
@@ -205,4 +217,17 @@ void test_bandstr2line(void **state) {
     assert_int_equal( bandstr2line( " 12"), 7);
     assert_int_equal( bandstr2line( " 17"), 8);
     assert_int_equal( bandstr2line( " 30"), 9);
+}
+
+
+void test_OnLowerSearchPanel_contest(void **state) {
+    contest = 1;
+    OnLowerSearchPanel(4, "test");
+    check_mvprintw_output(0, 7, 4, "test");
+}
+
+void test_OnLowerSearchPanel_AllBand(void **state) {
+    dxped = 1;
+    OnLowerSearchPanel(4, "test");
+    check_mvprintw_output(0, 10, 4, "test");
 }

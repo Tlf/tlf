@@ -463,3 +463,11 @@ int mvprintw(int y, int x, const char *fmt, ...) {
     return 0;
 }
 
+int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    mvprintw(y, x, fmt, args);
+    va_end(args);
+
+    return 0;
+}
