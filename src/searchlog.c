@@ -843,7 +843,8 @@ void show_needed_sections(void) {
 }
 
 void OnLowerSearchPanel(int x, char *str) {
-    wattrset(search_win, modify_attr(COLOR_PAIR(C_BORDER)));
+    int y = 1 + (IsAllBand() ? 9 : 6);
 
-    mvwprintw(search_win, 7, x, str);
+    wattrset(search_win, modify_attr(COLOR_PAIR(C_BORDER)));
+    mvwprintw(search_win, y, x, str);
 }
