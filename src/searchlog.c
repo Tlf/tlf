@@ -49,6 +49,8 @@ char searchresult[MAX_CALLS][82];
 char result[MAX_CALLS][82];
 int srch_index = 0;
 
+int found_zone;			/* make zone lookup testable */
+
 char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
 
 static const int xwin = 1;
@@ -295,6 +297,7 @@ void extractData(int index) {
     strncat(result[index], searchresult[index] + 28, 12); /* call */
     strncat(result[index], searchresult[index] + 52, 16); /* exch */
 }
+
 
 /* find band from bandstring and choose line 'j' for display */
 int bandstr2line(char *buffer){
@@ -704,6 +707,8 @@ void searchlog(char *searchstring) {
 	}
 	displayCallInfo(dx, z, pxstr);
 	displayWorkedZonesCountries(z);
+
+	found_zone = z;			/* make zone lookup testable */
 
 	refreshp();
 
