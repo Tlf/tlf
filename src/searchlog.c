@@ -49,7 +49,6 @@ char searchresult[MAX_CALLS][82];
 char result[MAX_CALLS][82];
 int srch_index = 0;
 
-char s_inputbuffercpy[LOGLINELEN + 1] = "";
 char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
 
 static const int xwin = 1;
@@ -148,14 +147,13 @@ void displayCallInfo (dxcc_data* dx, int z, char *pxstr) {
     }
 }
 
-void displayPartials(char *s_inputbuffercpy) {
+int displayPartials(char *suggested_call) {
     extern int dupe;
-    extern int use_part;
-    extern int block_part;
 
     int l, j, k;
     char *loc;
     char printres[14] = "";
+    int suggested = 0;
 
     l = 0;
     j = 0;
@@ -228,10 +226,12 @@ void displayPartials(char *s_inputbuffercpy) {
 		mvprintw(xwin + l, ywin + j, "%s  ",
 			 CALLMASTERARRAY(k));
 
-		if (strlen(s_inputbuffercpy) == 0)
-		    strcpy(s_inputbuffercpy, CALLMASTERARRAY(k));
+		if (strlen(suggested_call) == 0) {
+		    strcpy(suggested_call, CALLMASTERARRAY(k));
+		    suggested++;
+		}
 
-		j += (strlen(CALLMASTERARRAY(k))) + 1;
+		j += strlen(CALLMASTERARRAY(k)) + 1;
 
 		if (j >= 30) {
 		    l++;
@@ -244,22 +244,42 @@ void displayPartials(char *s_inputbuffercpy) {
 	    }
 	}
     }
+    return suggested;
+}
 
-    /* If only one partial call found and USE_PARTIALS set,
+/* Display list of partials and handle USEPARTIAL auto-completion */
+void handlePartials(void) {
+    extern int use_part;
+    extern int block_part;
+
+    char suggested_call[LOGLINELEN + 1] = "";
+    int nr_suggested;
+
+    /* print list of partials in upper left region */
+    nr_suggested = displayPartials(suggested_call);
+
+    /* pick call from log if unique there */
+    if ((nr_suggested == 0) && (srch_index == 1)) {
+	gchar **list = g_strsplit(result[0] + 12, " ", 2);
+	if (list != NULL) {
+	    g_strlcpy(suggested_call, list[0], 13);
+	    g_strfreev(list);
+	}
+    }
+    nr_suggested += srch_index;
+
+     /* If only one partial call found and USEPARTIALS set,
      * use that call for auto-completion. Can be blocked by
      * pressing tab in calledit() function
      */
-    if ((j <= 13) && (l == 0) && (use_part == 1) && (block_part == 0)) {
-
-	attron(modify_attr(COLOR_PAIR(C_HEADER) | A_STANDOUT));
-	mvprintw(13, 0, s_inputbuffercpy);
-
-	if (strlen(s_inputbuffercpy) > strlen(hiscall)) {
-	    strcpy(hiscall, s_inputbuffercpy);
+    if ((nr_suggested == 1 ) && (use_part == 1) && (block_part == 0)) {
+	if (strlen(suggested_call) > strlen(hiscall)) {
+	    strcpy(hiscall, suggested_call);
 	    beep();
 	}
     }
 }
+
 
 /* Parses searchresult and prepare string for searchwindow display from it */
 void extractData(int index) {
@@ -340,7 +360,6 @@ void filterLog() {
 int displaySearchResults(void) {
     extern int dupe;
     extern int ignoredupe;
-    extern int partials;
     extern int qso_once;
     extern int mixedmode;
     extern int ignoredupe;
@@ -448,16 +467,6 @@ int displaySearchResults(void) {
 	    if (z1 != 0)
 		z = z1;
 	}
-
-	if ((partials == 1) && (strlen(hiscall) >= 2)) {
-	    if (strlen(s_inputbuffer) != 0)
-		strncpy(s_inputbuffercpy, s_inputbuffer + 12, 6);
-	    if (s_inputbuffercpy[5] == ' ')
-		s_inputbuffercpy[5] = '\0';
-	    if (s_inputbuffercpy[4] == ' ')
-		s_inputbuffercpy[4] = '\0';
-	}
-
 	s_inputbuffer[0] = '\0';
     }
 
@@ -698,9 +707,9 @@ void searchlog(char *searchstring) {
 
 	refreshp();
 
-	/* print list of partials in upper left region */
+
 	if (partials == 1) {
-	    displayPartials(s_inputbuffercpy);
+	    handlePartials();
 	}
 
 	/* show needed sections for ARRL_Sweep Stake*/
