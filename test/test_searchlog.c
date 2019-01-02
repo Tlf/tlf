@@ -20,9 +20,15 @@ extern int nr_bands;
 extern int searchflg;
 extern int use_part;
 extern int partials;
+extern int cqww;
+
+extern char zone_export[];
+extern char zone_fix[];
 
 extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
+
+extern int found_zone;
 
 void handlePartials(void);
 void filterLog();
@@ -103,6 +109,11 @@ int setup_default(void **state) {
 
     partials = 1;
     use_part = 0;
+
+    strcpy(zone_export, "");
+    strcpy(zone_fix, "");
+
+    found_zone = 0;
 
     clear_mvprintw_history();
 
@@ -263,6 +274,36 @@ void test_UsePartialNotUnique(void **state) {
 }
 
 
+/* test lookup of zone - will be used for display if already worked
+ * - normally determined from countryinformation
+ * - can be picked up from previous qso if we have full match
+ * - or overwritten in exchange field */
+void test_ZoneFromCountry(void **state) {
+    cqww = 1;
+    strcpy(zone_export, "15");
+    strcpy( hiscall, "OH2");
+    searchlog(hiscall);
+    assert_int_equal (found_zone, 15);
+}
+
+void test_ZoneFromExchange(void **state) {
+    cqww = 1;
+    strcpy(zone_fix, "14");
+    strcpy(zone_export, "15");
+    strcpy( hiscall, "OH2");
+    searchlog(hiscall);
+    assert_int_equal (found_zone, 14);
+}
+
+void test_ZoneFromLog(void **state) {
+    cqww = 1;
+    strcpy(zone_export, "14");
+    strcpy( hiscall, "SP9");
+    searchlog(hiscall);
+    assert_int_equal (found_zone, 15);
+}
+
+/* test position of output on lower border of search window */
 void test_OnLowerSearchPanel_contest(void **state) {
     contest = 1;
     OnLowerSearchPanel(4, "test");
