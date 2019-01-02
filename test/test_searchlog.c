@@ -24,7 +24,7 @@ extern int partials;
 extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
 
-
+void handlePartials(void);
 void filterLog();
 int bandstr2line(char *buffer);
 
@@ -229,14 +229,16 @@ void test_bandstr2line(void **state) {
 void test_UsePartialFromLog (void **state) {
     use_part = 1;
     strcpy(hiscall, "K4DE");
-    searchlog(hiscall);
+    filterLog();
+    handlePartials();
     assert_string_equal( hiscall, "K4DEF");
 }
 
 void test_UsePartialFromLogNotUnique (void **state) {
     use_part = 1;
     strcpy(hiscall, "UA");
-    searchlog(hiscall);
+    filterLog();
+    handlePartials();
     assert_string_equal( hiscall, "UA");
 }
 
@@ -245,7 +247,8 @@ void test_UsePartialFromCallmaster(void **state) {
     load_callmaster();
     use_part = 1;
     strcpy(hiscall, "A1");
-    searchlog(hiscall);
+    filterLog();
+    handlePartials();
     assert_string_equal( hiscall, "A1AA");
 }
 
@@ -254,7 +257,8 @@ void test_UsePartialNotUnique(void **state) {
     load_callmaster();
     use_part = 1;
     strcpy(hiscall, "A3");
-    searchlog(hiscall);
+    filterLog();
+    handlePartials();
     assert_string_equal( hiscall, "A3");
 }
 
