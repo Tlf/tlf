@@ -18,9 +18,13 @@ extern WINDOW *search_win;
 extern PANEL *search_panel;
 extern int nr_bands;
 extern int searchflg;
+extern int use_part;
+extern int partials;
 
 extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
+extern char s_inputbuffercpy[];
+
 
 void filterLog();
 int bandstr2line(char *buffer);
@@ -97,6 +101,9 @@ int setup_default(void **state) {
     search_win = NULL;
     searchflg = SEARCHWINDOW;
     trxmode = CWMODE;
+
+    partials = 1;
+    use_part = 0;
 
     clear_mvprintw_history();
 
@@ -217,6 +224,39 @@ void test_bandstr2line(void **state) {
     assert_int_equal( bandstr2line( " 12"), 7);
     assert_int_equal( bandstr2line( " 17"), 8);
     assert_int_equal( bandstr2line( " 30"), 9);
+}
+
+/* testing pickup call suggestion for USEPARTIAL */
+void test_UsePartialFromLog (void **state) {
+    use_part = 1;
+    strcpy(hiscall, "K4DE");
+    searchlog(hiscall);
+    assert_string_equal( hiscall, "K4DEF");
+}
+
+void test_UsePartialFromLogNotUnique (void **state) {
+    use_part = 1;
+    strcpy(hiscall, "UA");
+    searchlog(hiscall);
+    assert_string_equal( hiscall, "UA");
+}
+
+void test_UsePartialFromCallmaster(void **state) {
+    write_callmaster("# data\nA1AA\nA2BB\n\n");
+    load_callmaster();
+    use_part = 1;
+    strcpy(hiscall, "A1");
+    searchlog(hiscall);
+    assert_string_equal( hiscall, "A1AA");
+}
+
+void test_UsePartialNotUnique(void **state) {
+    write_callmaster("# data\nA1AA\nA2BB\nA3BB\n");
+    load_callmaster();
+    use_part = 1;
+    strcpy(hiscall, "A3");
+    searchlog(hiscall);
+    assert_string_equal( hiscall, "A3");
 }
 
 
