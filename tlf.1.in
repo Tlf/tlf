@@ -1318,7 +1318,7 @@ Show the country/call check window.
 Show a list of possible contest calls.
 .
 .TP
-.B USE_PARTIALS
+.B USEPARTIALS
 Use the auto-complete utility (takes some practice...).  @PACKAGE_NAME@ will
 complete the call as soon as it is unique in the database.  This can of course
 lead to strange effects, but in practice there are far more hits than misses.
