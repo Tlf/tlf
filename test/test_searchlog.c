@@ -23,7 +23,6 @@ extern int partials;
 
 extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
-extern char s_inputbuffercpy[];
 
 
 void filterLog();
