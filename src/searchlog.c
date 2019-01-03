@@ -49,8 +49,6 @@ char searchresult[MAX_CALLS][82];
 char result[MAX_CALLS][82];
 int srch_index = 0;
 
-int found_zone;			/* make zone lookup testable */
-
 char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
 
 static const int xwin = 1;
@@ -360,7 +358,7 @@ void filterLog() {
     }
 }
 
-int displaySearchResults(void) {
+void displaySearchResults(void) {
     extern int dupe;
     extern int ignoredupe;
     extern int qso_once;
@@ -370,7 +368,6 @@ int displaySearchResults(void) {
     extern int bandinx;
     extern char band[NBANDS][4];
 
-    static char zonebuffer[3] = "";
     int r_index;
     char s_inputbuffer[LOGLINELEN + 1] = "";
     char qtccall[15];	// temp str for qtc search
@@ -378,7 +375,6 @@ int displaySearchResults(void) {
     int z, l, j;
     time_t currtime;
     struct t_qtc_store_obj *qtc_temp_ptr;
-    static int z1;
 
 
     z = 0;
@@ -449,30 +445,47 @@ int displaySearchResults(void) {
 	    }
 	}
 
-
-	if (strlen(hiscall) == 2)
-	    z1 = 0;
-
-	/* get zone nr from previous QSO */
-	/* \FIXME use nr from last displayed entry
-	 * which is the right one if we have a full match
-	 */
-	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
-	    z = 0;
-	    if (strlen(s_inputbuffer) >= 24) {
-		/* convert exchange back to zone nr */
-		g_strlcpy(zonebuffer, s_inputbuffer + 25, 3);
-		z1 = zone_nr(zonebuffer);
-	    } else
-		/* use zone nr from getctydata */
-		z = zone_nr(zone_export);
-
-	    if (z1 != 0)
-		z = z1;
-	}
 	s_inputbuffer[0] = '\0';
     }
+}
 
+int getZone() {
+    char zonebuffer[3];
+    int z;
+
+    static int z1;
+
+    z = 0;
+
+    if (strlen(hiscall) == 2)
+	z1 = 0;
+
+    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+	for (int i = 0; i < srch_index; i++) {
+
+	    /* get zone nr from previous QSO */
+	    /* \FIXME use nr from last displayed entry
+	     * which is the right one if we have a full match
+	     */
+	    if (strlen(result[i]) >= 24) {
+		/* convert exchange back to zone nr */
+		g_strlcpy(zonebuffer, result[i] + 25, 3);
+		z1 = zone_nr(zonebuffer);
+	    }
+	}
+
+	if (z1 != 0) {
+	    z = z1;
+	} else
+	{
+	    if (strlen(zone_fix) > 1) {
+		g_strlcpy(zonebuffer, zone_fix, 3);
+	    } else
+		g_strlcpy(zonebuffer, zone_export, 3);
+
+	    z = zone_nr(zonebuffer);
+	}
+    }
     return z;
 }
 
@@ -671,8 +684,7 @@ void searchlog(char *searchstring) {
     extern int itumult;
 
     dxcc_data *dx;
-    static char zonebuffer[3] = "";
-    static int z;
+    int zone;
 
     get_time();
 
@@ -681,8 +693,6 @@ void searchlog(char *searchstring) {
 	initialized = 1;
     }
 
-    zonebuffer[0] = '\0';
-
     /* show checkwindow and partials */
     if (strlen(hiscall) > 1 && searchflg == SEARCHWINDOW) {
 
@@ -690,25 +700,14 @@ void searchlog(char *searchstring) {
 	drawSearchWin();
 
 	filterLog();
-	z = displaySearchResults();
+	displaySearchResults();
+
 
 	/* prepare and print lower line of checkwindow */
 	dx = dxcc_by_index(countrynr);
-	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
-
-	    if (z == 0) {
-		if (strlen(zone_fix) > 1) {
-		    g_strlcpy(zonebuffer, zone_fix, 3);
-		} else
-		    g_strlcpy(zonebuffer, zone_export, 3);
-
-		z = zone_nr(zonebuffer);
-	    }
-	}
-	displayCallInfo(dx, z, pxstr);
-	displayWorkedZonesCountries(z);
-
-	found_zone = z;			/* make zone lookup testable */
+	zone = getZone();
+	displayCallInfo(dx, zone, pxstr);
+	displayWorkedZonesCountries(zone);
 
 	refreshp();
 

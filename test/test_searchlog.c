@@ -28,11 +28,10 @@ extern char zone_fix[];
 extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
 
-extern int found_zone;
-
 void handlePartials(void);
 void filterLog();
 int bandstr2line(char *buffer);
+int getZone(void);
 
 /*********************/
 // mocks
@@ -112,8 +111,6 @@ int setup_default(void **state) {
 
     strcpy(zone_export, "");
     strcpy(zone_fix, "");
-
-    found_zone = 0;
 
     clear_mvprintw_history();
 
@@ -282,8 +279,8 @@ void test_ZoneFromCountry(void **state) {
     cqww = 1;
     strcpy(zone_export, "15");
     strcpy( hiscall, "OH2");
-    searchlog(hiscall);
-    assert_int_equal (found_zone, 15);
+    filterLog();
+    assert_int_equal (getZone(), 15);
 }
 
 void test_ZoneFromExchange(void **state) {
@@ -291,16 +288,16 @@ void test_ZoneFromExchange(void **state) {
     strcpy(zone_fix, "14");
     strcpy(zone_export, "15");
     strcpy( hiscall, "OH2");
-    searchlog(hiscall);
-    assert_int_equal (found_zone, 14);
+    filterLog();
+    assert_int_equal (getZone(), 14);
 }
 
 void test_ZoneFromLog(void **state) {
     cqww = 1;
     strcpy(zone_export, "14");
     strcpy( hiscall, "SP9");
-    searchlog(hiscall);
-    assert_int_equal (found_zone, 15);
+    filterLog();
+    assert_int_equal (getZone(), 15);
 }
 
 /* test position of output on lower border of search window */
