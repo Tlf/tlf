@@ -1250,12 +1250,6 @@ Sound card device for scan function.
 e.g. \fBSC_DEVICE\fR=\fI/dev/dsp0\fR
 .
 .TP
-\fBS_METER\fR=\fIcalibration\fR
-Audio s-meter calibration values for the scan function.
-.br
-e.g. \fBS_METER\fR=\fI20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1\fR
-.
-.TP
 .B SSBMODE
 Start @PACKAGE_NAME@ in SSB mode (default is CW).
 .

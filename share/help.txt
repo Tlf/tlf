@@ -83,7 +83,6 @@ ESCAPE    stop TX
 :CHAR     Autosend: number of chars before starting to send
 :DEBug_tty test rig link
 :SOUnd    record sound files
-:SCAnner  scanner function (experimental)
 :wri      Write cabrillo
 :adi      Write Adif
 :exi      Exit tlf
