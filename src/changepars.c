@@ -94,7 +94,7 @@ int changepars(void) {
     extern int cwstart;
     extern int digikeyer;
 
-    char parameterstring[20];
+    char parameterstring[20] = "";
     char parameters[52][19];
     char cmdstring[80];
     int i, k, x, nopar = 0;
@@ -148,6 +148,7 @@ int changepars(void) {
     strcpy(parameters[42], "RESCORE");
     strcpy(parameters[43], "SCVOLUME");
     //strcpy(parameters[44], "SCAN");	/* 05jan18 no longer supported */
+    strcpy(parameters[44], "");
     strcpy(parameters[45], "DEBUG");
     strcpy(parameters[46], "MINITERM");
     strcpy(parameters[47], "RTTY");

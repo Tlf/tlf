@@ -283,7 +283,6 @@ int parse_logcfg(char *inputbuffer) {
     /* end LZ3NY mods */
     extern int tlfcolors[8][2];
     extern char synclogfile[];
-    extern int scale_values[];
     extern char sc_device[40];
     extern char controllerport[80];	// port for multi-mode controller
     extern char clusterlogin[];
@@ -448,7 +447,7 @@ int parse_logcfg(char *inputbuffer) {
 	"CWPOINTS",		/* 135 */
 	"SOUNDCARD",
 	"SIDETONE_VOLUME",
-	"S_METER",
+	"S_METER",				/* deprecated */
 	"SC_DEVICE",
 	"MFJ1278_KEYER",	/* 140 */
 	"CLUSTERLOGIN",
@@ -1395,24 +1394,7 @@ int parse_logcfg(char *inputbuffer) {
 		strcpy(sc_volume, "70");
 	    break;
 	}
-	case 138: {
-	    int i = 0;
-
-	    PARAMETER_NEEDED(teststring);
-	    tk_ptr = strtok(fields[1], ":,.-_\t ");
-
-	    if (tk_ptr != NULL) {
-		while (tk_ptr) {
-		    if (i < 20)
-			scale_values[i] = atoi(tk_ptr);
-		    tk_ptr = strtok(NULL, ":,.-_\t ");
-		    i++;
-		}
-	    }
-
-	    break;
-	}
-	case 139: {		// dsp for s-meter
+	case 139: {
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(sc_device, g_strchomp(fields[1]), sizeof(sc_device));
 	    break;
