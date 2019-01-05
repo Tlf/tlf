@@ -55,14 +55,14 @@ TIME_MASTER
 #  LAN PORT                     #
 #                               #
 #################################
-#  addnode only OTHER nodes !!
+#  use 'addnode' only for OTHER nodes !!
 #
 #ADDNODE=10.0.0.115
 #ADDNODE=192.168.1.2
 #
 THISNODE=A
 #
-LAN_DEBUG
+#LAN_DEBUG
 #
 #################################
 #                               #
