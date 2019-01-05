@@ -147,7 +147,7 @@ int changepars(void) {
     strcpy(parameters[41], "SYNC");
     strcpy(parameters[42], "RESCORE");
     strcpy(parameters[43], "SCVOLUME");
-    strcpy(parameters[44], "SCAN");
+    //strcpy(parameters[44], "SCAN");	/* 05jan18 no longer supported */
     strcpy(parameters[45], "DEBUG");
     strcpy(parameters[46], "MINITERM");
     strcpy(parameters[47], "RTTY");
@@ -162,13 +162,11 @@ int changepars(void) {
     attron(COLOR_PAIR(C_HEADER));
     mvprintw(12, 29, "PARAMETER?  ");
     refreshp();
-
+    usleep(400000);
     mvprintw(12, 29, "            ");
-    mvprintw(12, 29, "");
-    refreshp();
 
     echo();
-    getstr(parameterstring);
+    mvgetnstr(12, 29, parameterstring,19);
     noecho();
 
     for (k = 0; parameterstring[k]; k++)
@@ -317,7 +315,6 @@ int changepars(void) {
 		zonedisplay = 1;
 	    else {
 		zonedisplay = 0;
-
 	    }
 
 	    break;
@@ -348,7 +345,7 @@ int changepars(void) {
 
 	    break;
 	}
-	case 24:			/* SET PARAMETERS */
+	case 24:		/* SET PARAMETERS */
 	case 29: {		/* CFG PARAMETERS */
 	    clear();
 	    if (editor == EDITOR_JOE) {
@@ -621,14 +618,6 @@ int changepars(void) {
 	    }
 
 	    clear_display();
-	    break;
-	}
-	case 44: {		/* SCAN */
-	    int currentterm = miniterm;
-	    miniterm = 0;
-	    testaudio();
-	    clear_display();
-	    miniterm = currentterm;
 	    break;
 	}
 	case 45: {		/* DEBUG */
