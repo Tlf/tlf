@@ -5,12 +5,12 @@ Planned improvements for TLF-1.4 release
 [ ] switch to hamlib's freq_t for frequencies ( and maybe factor out
     hamlib stuff to a separate module )
 [ ] allow vertical resizing of tlf (more room for cluster messages)
-[ ] drop 'SCAN' menu with noise bridge, panorama scan and smeter
+[x] drop 'SCAN' menu with noise bridge, panorama scan and smeter
     display (It did not work for a long time and I think no one is
     using it)
 [ ] Handling multiplier aliases (see thread started by Nate in June)
 [ ] automatically switch back to 'Run' mode from "grab spot" after QSO
-[ ] Allow other callmaster databases (hardcoded or by CALLMASTER= keyword)
+[x] Allow other callmaster databases (hardcoded or by CALLMASTER= keyword)
 [ ] Rework startup display for better readability by user
 
 Planned for later versions
