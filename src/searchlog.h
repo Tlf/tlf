@@ -28,6 +28,9 @@
 extern GPtrArray *callmaster;
 #define CALLMASTERARRAY(n) ((char *) g_ptr_array_index(callmaster, n))
 
+#define CALLMASTER_DEFAULT "callmaster"
+extern char *callmaster_filename;
+
 int load_callmaster(void);
 
 void searchlog(char *searchstring);
