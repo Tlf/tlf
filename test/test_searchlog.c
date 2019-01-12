@@ -129,8 +129,8 @@ static void check_mvprintw_output(int index, int y, int x, const char *text) {
 
 // callmaster is checked first in current directory,
 // create it there
-static void write_callmaster(const char *content) {
-    FILE *f = fopen("callmaster", "w");
+static void write_callmaster(const char *filename, const char *content) {
+    FILE *f = fopen(filename, "w");
     assert_non_null(f);
     fputs(content, f);
     fclose(f);
@@ -155,7 +155,7 @@ int teardown_default(void **state) {
 //}
 
 void test_callmaster_ok(void **state) {
-    write_callmaster("# data\nA1AA\nA2BB\n\n");
+    write_callmaster("callmaster", "# data\nA1AA\nA2BB\n\n");
     int n = load_callmaster();
     assert_int_equal(n, 2);
     assert_string_equal(CALLMASTERARRAY(0), "A1AA");
@@ -163,7 +163,7 @@ void test_callmaster_ok(void **state) {
 }
 
 void test_callmaster_ok_dos(void **state) {
-    write_callmaster("# data\r\nA1AA\r\nA2BB\r\n\r\n");
+    write_callmaster("callmaster", "# data\r\nA1AA\r\nA2BB\r\n\r\n");
     int n = load_callmaster();
     assert_int_equal(n, 2);
     assert_string_equal(CALLMASTERARRAY(0), "A1AA");
@@ -171,7 +171,7 @@ void test_callmaster_ok_dos(void **state) {
 }
 
 void test_callmaster_ok_spaces(void **state) {
-    write_callmaster(" # data \n A1AA \n A2BB \n\n");
+    write_callmaster("callmaster", " # data \n A1AA \n A2BB \n\n");
     int n = load_callmaster();
     assert_int_equal(n, 2);
     assert_string_equal(CALLMASTERARRAY(0), "A1AA");
@@ -179,7 +179,7 @@ void test_callmaster_ok_spaces(void **state) {
 }
 
 void test_callmaster_ok_arrlss(void **state) {
-    write_callmaster("# data\nA1AA\nG0CC\nN2BB\n\n");
+    write_callmaster("callmaster", "# data\nA1AA\nG0CC\nN2BB\n\n");
     arrlss = 1;
     int n = load_callmaster();
     assert_int_equal(n, 2);
@@ -251,7 +251,7 @@ void test_UsePartialFromLogNotUnique (void **state) {
 }
 
 void test_UsePartialFromCallmaster(void **state) {
-    write_callmaster("# data\nA1AA\nA2BB\n\n");
+    write_callmaster("callmaster", "# data\nA1AA\nA2BB\n\n");
     load_callmaster();
     use_part = 1;
     strcpy(hiscall, "A1");
@@ -261,7 +261,7 @@ void test_UsePartialFromCallmaster(void **state) {
 }
 
 void test_UsePartialNotUnique(void **state) {
-    write_callmaster("# data\nA1AA\nA2BB\nA3BB\n");
+    write_callmaster("callmaster", "# data\nA1AA\nA2BB\nA3BB\n");
     load_callmaster();
     use_part = 1;
     strcpy(hiscall, "A3");
