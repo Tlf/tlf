@@ -1725,6 +1725,11 @@ exchange, like e.g. the FOC Marathon.  The module also recognises embedded
 calls (CT3/PA0R/QRP).
 .
 .TP
+.B CALLMASTER\fR=\fIcallmaster\fR
+Allow to name a different file used as callmaster database 
+(default is '\fIcallmaster\fR'). See FILES section.
+.
+.TP
 .B CONTINENT_EXCHANGE
 Exchange is continent (NA, SA, EU, AS, AF, OC).
 .
@@ -1968,7 +1973,9 @@ Save the
 .I master.scp
 file as
 .I callmaster
-in the working directory.  It will take precedence over the system installed
+in the working directory (or use \fBCALLMASTER\fR=\fImaster.scp\fR to use
+that file).  
+It will take precedence over the system installed
 .IR callmaster .
 .
 .P

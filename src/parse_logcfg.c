@@ -38,6 +38,7 @@
 #include "setcontest.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
+#include "searchlog.h"
 
 #include <config.h>
 #include <hamlib/rig.h>
@@ -569,9 +570,10 @@ int parse_logcfg(char *inputbuffer) {
 	"ALT_DK5",
 	"ALT_DK6",
 	"ALT_DK7",
-	"ALT_DK8",
+	"ALT_DK8",			/* 260 */
 	"ALT_DK9",
-	"ALT_DK10"
+	"ALT_DK10",
+	"CALLMASTER"
     };
 
     char **fields;
@@ -1976,7 +1978,7 @@ int parse_logcfg(char *inputbuffer) {
 		    *nl = ' ';
 	    }
 	    break;
-	case 253 ... 263: {
+	case 253 ... 262: {
 	    PARAMETER_NEEDED(teststring);
 	    if (digi_message[ii - 239]) {
 		KeywordRepeated(commands[ii]);
@@ -1989,6 +1991,16 @@ int parse_logcfg(char *inputbuffer) {
 		if (nl)
 		    *nl = ' ';
 	    }
+	    break;
+	}
+	case 263: {
+	    PARAMETER_NEEDED(teststring);
+	    g_strchomp(fields[1]);
+	    if (callmaster_filename != NULL) {
+		g_free(callmaster_filename);
+	    }
+	    callmaster_filename = g_strdup(fields[1]);
+
 	    break;
 	}
 	default: {
