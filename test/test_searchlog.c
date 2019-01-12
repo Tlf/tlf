@@ -106,6 +106,8 @@ int setup_default(void **state) {
     searchflg = SEARCHWINDOW;
     trxmode = CWMODE;
 
+    callmaster_filename = NULL;
+
     partials = 1;
     use_part = 0;
 
@@ -185,6 +187,15 @@ void test_callmaster_ok_arrlss(void **state) {
     assert_int_equal(n, 2);
     assert_string_equal(CALLMASTERARRAY(0), "A1AA");
     assert_string_equal(CALLMASTERARRAY(1), "N2BB");
+}
+
+void test_use_different_callmaster(void **state) {
+    write_callmaster("callmaster", " # data \n A1AA \n A2BB \n\n");
+    write_callmaster("master.scp", " # data \n A1CC \n A2DD \n\n");
+    callmaster_filename = "master.scp";
+    int n = load_callmaster();
+    assert_int_equal(n, 2);
+    assert_string_equal(CALLMASTERARRAY(0), "A1CC");
 }
 
 void test_init_search_panel_no_contest(void **state) {

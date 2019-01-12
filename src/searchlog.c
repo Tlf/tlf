@@ -43,6 +43,7 @@
 #include "get_time.h"
 
 
+char *callmaster_filename = NULL;
 GPtrArray *callmaster = NULL;
 
 char searchresult[MAX_CALLS][82];
@@ -755,11 +756,15 @@ int load_callmaster(void) {
 
     init_callmaster();
 
-    strcpy(callmaster_location, "callmaster");
+    if (callmaster_filename == NULL)
+	callmaster_filename = g_strdup("callmaster");
+
+    strcpy(callmaster_location, callmaster_filename);
     if ((cfp = fopen(callmaster_location, "r")) == NULL) {
 	callmaster_location[0] = '\0';
 	strcpy(callmaster_location, PACKAGE_DATA_DIR);
-	strcat(callmaster_location, "/callmaster");
+	strcat(callmaster_location, "/");
+	strcat(callmaster_location, callmaster_filename);
 
 	if ((cfp = fopen(callmaster_location, "r")) == NULL) {
 	    mvprintw(24, 0, "Error opening callmaster file.\n");
