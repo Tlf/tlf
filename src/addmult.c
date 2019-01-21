@@ -203,10 +203,17 @@ int addmult2(void) {
 }
 
 
+/* lookup n-th position in list of possible mults and
+ * return pointer to data structure */
+possible_mult_t *get_mult_base(int n) {
+    return (possible_mult_t *)g_ptr_array_index(mults_possible, n);
+}
+
+
 /* look up n-th position in list of possible mults and
- * return pointer to data */
+ * return pointer to multname */
 char *get_mult(int n) {
-    return (char *)g_ptr_array_index(mults_possible, n);
+    return get_mult_base(n)->name;
 }
 
 /* return number of possible mults */
@@ -214,10 +221,21 @@ int get_mult_count(void) {
     return mults_possible->len;
 }
 
+
+/* function to free mults_possible entries */
+void free_possible_mult (gpointer data) {
+    possible_mult_t *tmp = (possible_mult_t *)data;
+    g_free(tmp -> name);	/* free the name of the multi */
+    g_slist_free_full(tmp -> aliases, g_free);
+    g_free(tmp);
+}
+
 /* compare functions to sort multi by aphabetic order  */
 gint	cmp_size(char **a, char **b) {
 
-    return g_strcmp0(*a, *b);
+    possible_mult_t *t1 = (possible_mult_t *)*a;
+    possible_mult_t *t2 = (possible_mult_t *)*b;
+    return g_strcmp0(t1->name, t2->name);
 }
 
 /** loads possible multipliers from external file
@@ -245,7 +263,7 @@ int init_and_load_multipliers(void) {
 	/* free old array if exists */
 	g_ptr_array_free(mults_possible, TRUE);
     }
-    mults_possible = g_ptr_array_new_with_free_func(g_free);
+    mults_possible = g_ptr_array_new_with_free_func(free_possible_mult);
 
 
     if (strlen(multsfile) == 0) {
@@ -277,6 +295,7 @@ int init_and_load_multipliers(void) {
     }
 
     while (fgets(s_inputbuffer, 85, cfp) != NULL) {
+
 	/* strip leading and trailing whitespace */
 	g_strstrip(s_inputbuffer);
 
@@ -287,7 +306,11 @@ int init_and_load_multipliers(void) {
 
 	s_inputbuffer[9] = '\0';
 
-	g_ptr_array_add(mults_possible, g_strdup(s_inputbuffer));
+	possible_mult_t *multi = g_new0(possible_mult_t, 1);
+	multi->name = g_strdup(s_inputbuffer);
+	multi->aliases = NULL;
+
+	g_ptr_array_add(mults_possible, multi);
 
 	count++;
     }

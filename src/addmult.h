@@ -20,7 +20,17 @@
 
 #ifndef ADDMULT_H
 #define ADDMULT_H
-#include "glib.h"
+
+#include <glib.h>
+
+/** possible multi
+ *
+ * name of possible multiplier and
+ * list of belonging aliases */
+typedef struct {
+    char *name;
+    GSList *aliases;
+} possible_mult_t;
 
 
 int addmult(void);
