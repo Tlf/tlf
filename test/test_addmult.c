@@ -118,14 +118,13 @@ void test_remember_mult_same_2x_newband(void **state) {
 
 /* helper for checking content of mults_possible array */
 void check_multi(int pos, char * str) {
-    assert_string_equal(MULTS_POSSIBLE(pos), str);
+    assert_string_equal(get_mult(pos), str);
 }
 
 /* tests for load_multipliers */
 void test_load_multi_no_file(void **state) {
     assert_int_equal(init_and_load_multipliers(), 0);
-    assert_non_null(mults_possible);
-    assert_int_equal(mults_possible->len, 0);
+    assert_int_equal(get_mult_count(), 0);
 }
 
 /** \todo better would be to return -1 if multsfile could not be found */

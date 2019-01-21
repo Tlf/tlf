@@ -807,7 +807,6 @@ void show_needed_sections(void) {
     extern int arrlss;
     extern int nr_multis;
     extern struct mults_t multis[MAX_MULTS];
-    extern GPtrArray *mults_possible;
 
     int j, vert, hor, cnt, found;
     char mprint[50];
@@ -821,14 +820,14 @@ void show_needed_sections(void) {
 	    mvwprintw(search_win, j, 1, "                                     ");
 
 	for (vert = 1; vert < 7; vert++) {
-	    if (cnt >= mults_possible->len)
+	    if (cnt >= get_mult_count())
 		break;
 
 	    for (hor = 0; hor < 9; hor++) {
-		if (cnt >= mults_possible->len)
+		if (cnt >= get_mult_count())
 		    break;
 
-		strcpy(mprint, g_ptr_array_index(mults_possible, cnt));
+		strcpy(mprint, get_mult(cnt));
 
 		found = 0;
 		for (j = 0; j < nr_multis; j++) {

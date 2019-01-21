@@ -55,18 +55,18 @@ int addmult(void) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		    && (strlen(MULTS_POSSIBLE(i)) > 1)) {
+	    if ((strstr(ssexchange, get_mult(i)) != NULL)
+		    && (strlen(get_mult(i)) > 1)) {
 
-		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
-		    matching_len = strlen(MULTS_POSSIBLE(i));
+		if (strlen(get_mult(i)) > matching_len) {
+		    matching_len = strlen(get_mult(i));
 		    idx = i;
 		}
 	    }
 	}
 
 	if (idx >= 0) {
-	    remember_multi(MULTS_POSSIBLE(idx), bandinx, ALL_BAND);
+	    remember_multi(get_mult(idx), bandinx, ALL_BAND);
 	}
     }
 
@@ -76,7 +76,7 @@ int addmult(void) {
 	/* is it a possible mult? */
 	for (i = 0; i < mults_possible->len; i++) {
 	    // check if valid mult....
-	    if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
+	    if (strcmp(ssexchange, get_mult(i)) == 0) {
 		idx = i;
 		break;
 	    }
@@ -84,7 +84,7 @@ int addmult(void) {
 
 	if (idx >= 0) {
 	    shownewmult =
-		remember_multi(MULTS_POSSIBLE(idx), bandinx, PER_BAND);
+		remember_multi(get_mult(idx), bandinx, PER_BAND);
 	}
     }
 
@@ -94,10 +94,10 @@ int addmult(void) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    if (strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL) {
+	    if (strstr(ssexchange, get_mult(i)) != NULL) {
 
-		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
-		    matching_len = strlen(MULTS_POSSIBLE(i));
+		if (strlen(get_mult(i)) > matching_len) {
+		    matching_len = strlen(get_mult(i));
 		    idx = i;
 		}
 	    }
@@ -105,7 +105,7 @@ int addmult(void) {
 
 	if (idx >= 0) {
 	    shownewmult =
-		remember_multi(MULTS_POSSIBLE(idx), bandinx, PER_BAND);
+		remember_multi(get_mult(idx), bandinx, PER_BAND);
 	}
     }
 
@@ -156,18 +156,18 @@ int addmult2(void) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		    && (strlen(MULTS_POSSIBLE(i)) > 1)) {
+	    if ((strstr(ssexchange, get_mult(i)) != NULL)
+		    && (strlen(get_mult(i)) > 1)) {
 
-		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
-		    matching_len = strlen(MULTS_POSSIBLE(i));
+		if (strlen(get_mult(i)) > matching_len) {
+		    matching_len = strlen(get_mult(i));
 		    idx = i;
 		}
 	    }
 	}
 
 	if (idx >= 0) {
-	    remember_multi(MULTS_POSSIBLE(idx), bandinx, ALL_BAND);
+	    remember_multi(get_mult(idx), bandinx, ALL_BAND);
 	}
     }
 
@@ -203,6 +203,17 @@ int addmult2(void) {
 }
 
 
+/* look up n-th position in list of possible mults and
+ * return pointer to data */
+char *get_mult(int n) {
+    return (char *)g_ptr_array_index(mults_possible, n);
+}
+
+/* return number of possible mults */
+int get_mult_count(void) {
+    return mults_possible->len;
+}
+
 /* compare functions to sort multi by aphabetic order  */
 gint	cmp_size(char **a, char **b) {
 
@@ -223,7 +234,6 @@ gint	cmp_size(char **a, char **b) {
  * \return number of loaded multipliers (nr of entries in mults_possible)
  * */
 int init_and_load_multipliers(void) {
-    extern GPtrArray *mults_possible;
     extern char multsfile[];	// Set by parse_logcfg()
 
     FILE *cfp;

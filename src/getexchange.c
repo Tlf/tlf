@@ -509,7 +509,6 @@ int checkexchange(int x) {
 
     extern char comment[];
     extern char ssexchange[];
-    extern GPtrArray *mults_possible;
     extern int cqww;
     extern int arrlss;
     extern int stewperry_flg;
@@ -822,9 +821,9 @@ int checkexchange(int x) {
 		g_strlcpy(checksection, comment + hr, 4);
 		g_strchomp(checksection);
 
-		for (jj = 0; jj < mults_possible->len; jj++) {
+		for (jj = 0; jj < get_mult_count(); jj++) {
 
-		    char *multi = g_strdup(MULTS_POSSIBLE(jj));
+		    char *multi = g_strdup(get_mult(jj));
 		    g_strchomp(multi);
 
 		    if ((strlen(multi) >= 1) &&
@@ -906,12 +905,12 @@ int checkexchange(int x) {
 			checksection[strlen(checksection) - 1] = '\0';
 		    }
 
-		    for (jj = 0; jj < mults_possible->len; jj++) {
+		    for (jj = 0; jj < get_mult_count(); jj++) {
 
-			if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
-				&& (strcmp(checksection, MULTS_POSSIBLE(jj)) ==
+			if ((strlen(get_mult(jj)) >= 1)
+				&& (strcmp(checksection, get_mult(jj)) ==
 				    0)) {
-			    strcpy(section, MULTS_POSSIBLE(jj));
+			    strcpy(section, get_mult(jj));
 			    break;	// new
 			}
 		    }
@@ -926,13 +925,13 @@ int checkexchange(int x) {
 
 		strncpy(checksection, comment, 3);
 		checksection[3] = '\0';
-		for (jj = 0; jj < mults_possible->len; jj++) {
+		for (jj = 0; jj < get_mult_count(); jj++) {
 
-		    if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
-			    && (strstr(checksection, MULTS_POSSIBLE(jj)) !=
+		    if ((strlen(get_mult(jj)) >= 1)
+			    && (strstr(checksection, get_mult(jj)) !=
 				NULL)) {
 
-			strcpy(section, MULTS_POSSIBLE(jj));
+			strcpy(section, get_mult(jj));
 		    }
 		}
 	    }
@@ -947,14 +946,14 @@ int checkexchange(int x) {
 		strncpy(checksection, comment, 3);
 		checksection[3] = '\0';
 
-		for (jj = 0; jj < mults_possible->len; jj++) {
+		for (jj = 0; jj < get_mult_count(); jj++) {
 
-		    if ((strlen(MULTS_POSSIBLE(jj)) ==
+		    if ((strlen(get_mult(jj)) ==
 			    strlen(checksection))
-			    && (strstr(checksection, MULTS_POSSIBLE(jj)) !=
+			    && (strstr(checksection, get_mult(jj)) !=
 				NULL)) {
 
-			strcpy(section, MULTS_POSSIBLE(jj));
+			strcpy(section, get_mult(jj));
 
 			// if (strlen(section) == strlen(mults_possible[jj])) break;
 		    }
