@@ -34,7 +34,7 @@
 #include "tlf_curses.h"
 #include "bands.h"
 
-#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
+GPtrArray *mults_possible;
 
 enum { ALL_BAND, PER_BAND };
 

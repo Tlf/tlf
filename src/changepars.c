@@ -59,8 +59,7 @@
 #include "ui_utils.h"
 #include "writecabrillo.h"
 #include "writeparas.h"
-
-#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
+#include "addmult.h"
 
 
 int debug_tty(void);

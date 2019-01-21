@@ -20,6 +20,10 @@
 
 #ifndef ADDMULT_H
 #define ADDMULT_H
+#include "glib.h"
+
+extern GPtrArray *mults_possible;
+#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 
 int addmult(void);
 int addmult2(void);

@@ -41,6 +41,7 @@
 #include "zone_nr.h"
 #include "searchcallarray.h"
 #include "get_time.h"
+#include "addmult.h"
 
 
 char *callmaster_filename = NULL;

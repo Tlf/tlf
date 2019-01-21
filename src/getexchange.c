@@ -47,10 +47,10 @@
 #include "time_update.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "addmult.h"
 
 #include "getexchange.h"
 
-#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
 
 

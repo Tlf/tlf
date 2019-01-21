@@ -117,8 +117,6 @@ void test_remember_mult_same_2x_newband(void **state) {
 
 
 /* helper for checking content of mults_possible array */
-#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
-
 void check_multi(int pos, char * str) {
     assert_string_equal(MULTS_POSSIBLE(pos), str);
 }
