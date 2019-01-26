@@ -179,6 +179,30 @@ void test_load_multi_sorted(void **state) {
     check_multi(2, "ZH");
 }
 
+void test_load_multi_redefined(void **state) {
+    write_testfile(testfile, "AB\nKL\nZH\nKL\n");
+    strcpy(multsfile, testfile);
+    assert_int_equal(init_and_load_multipliers(), 3);
+    check_multi(0, "AB");
+    check_multi(2, "ZH");
+}
+
+
+void test_load_multi_with_emptyalias(void **state) {
+    write_testfile(testfile, "AB\nLZ :\nZH\nKL\n");
+    strcpy(multsfile, testfile);
+    assert_int_equal(init_and_load_multipliers(), 4);
+    check_multi(0, "AB");
+    check_multi(2, "LZ");
+}
+
+void test_load_multi_with_alias(void **state) {
+    write_testfile(testfile, "AB\nLZ: NH, ZD,AA\nZH\nKL\n");
+    strcpy(multsfile, testfile);
+    assert_int_equal(init_and_load_multipliers(), 4);
+    check_multi(0, "AB");
+    check_multi(2, "LZ");
+}
 
 /* addmult tests */
 void test_wysiwyg_once(void **state) {

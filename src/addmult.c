@@ -34,6 +34,7 @@
 #include "tlf_curses.h"
 #include "bands.h"
 
+
 GPtrArray *mults_possible;
 
 enum { ALL_BAND, PER_BAND };
@@ -238,6 +239,58 @@ gint	cmp_size(char **a, char **b) {
     return g_strcmp0(t1->name, t2->name);
 }
 
+
+/* parse a mult line and add data to databse
+ *
+ * multline consists of either
+ *   multiplier
+ * or
+ *   multplier:followed,by,comma,separated,list,of,aliases
+ *
+ * There may be more than one alias line for a multi, so add all aliases to
+ * that multi */
+void add_mult_line(char *line) {
+    possible_mult_t *multi;
+    gchar ** list;
+    char *mult = NULL;
+    int index = -1;
+
+    list = g_strsplit(line,":",2);
+    mult = g_strstrip(list[0]);
+
+    /* find mult in already defined ones */
+    for (int i = 0; i < get_mult_count(); i++) {
+	if (strcmp(get_mult(i), mult) == 0) {
+	    index = i;
+	    break;
+	}
+    }
+
+    if (index == -1) {
+	/* not found -> prepare new one */
+	multi = g_new0(possible_mult_t, 1);
+	multi->name = g_strdup(mult);
+        multi->aliases = NULL;
+	g_ptr_array_add(mults_possible, multi);
+    }
+    else
+	/* else use existing one */
+	multi = get_mult_base(index);
+
+    if (list[1] != NULL) {	    /* parse aliases if present */
+	gchar ** aliaslist;
+	aliaslist = g_strsplit(list[1], ",", 0);
+	for (int i = 0; aliaslist[i] != NULL; i++) {
+	    multi->aliases =
+		g_slist_append(multi->aliases,
+			g_strdup(g_strstrip(aliaslist[i])));
+	}
+	g_strfreev(aliaslist);
+    }
+
+    g_strfreev(list);
+}
+
 /** loads possible multipliers from external file
  *
  * Read in the file named by 'multiplierlist' and interpret it as list
@@ -257,7 +310,6 @@ int init_and_load_multipliers(void) {
     FILE *cfp;
     char s_inputbuffer[186] = "";
     char mults_location[_POSIX_PATH_MAX * 2];	// 512 chars.  Larger?
-    int count = 0;
 
     if (mults_possible) {
 	/* free old array if exists */
@@ -304,15 +356,8 @@ int init_and_load_multipliers(void) {
 	    continue;
 	}
 
-	s_inputbuffer[9] = '\0';
+	add_mult_line(s_inputbuffer);
 
-	possible_mult_t *multi = g_new0(possible_mult_t, 1);
-	multi->name = g_strdup(s_inputbuffer);
-	multi->aliases = NULL;
-
-	g_ptr_array_add(mults_possible, multi);
-
-	count++;
     }
 
     fclose(cfp);
@@ -320,7 +365,7 @@ int init_and_load_multipliers(void) {
     /* do not rely on the order in the mult file but sort it here */
     g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);
 
-    return count;
+    return get_mult_count();
 }
 
 
