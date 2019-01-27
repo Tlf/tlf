@@ -217,6 +217,11 @@ char *get_mult(int n) {
     return get_mult_base(n)->name;
 }
 
+/* get alias list on n-th position of possible mults */
+GSList *get_aliases(int n) {
+    return get_mult_base(n)->aliases;
+}
+
 /* return number of possible mults */
 int get_mult_count(void) {
     return mults_possible->len;

@@ -18,6 +18,9 @@ extern char multsfile[];	/* name of file with a list of allowed
 
 char *testfile = "mults";
 
+/* export internal definition */
+GSList *get_aliases(int n);
+
 /* helpers for writing a temporary multsfile for testing */
 void write_testfile(char *name, char *content) {
     FILE *fp;
@@ -62,7 +65,7 @@ int setup_default(void **state) {
     return 0;
 }
 
-
+/* tewst initialization of 'multis' */
 void test_init_mults(void **state) {
     nr_multis = 2;
     strcpy(multis[0].name, "abc");
@@ -116,6 +119,21 @@ void test_remember_mult_same_2x_newband(void **state) {
 }
 
 
+/* helpers for check of loading of possible mults */
+void test_write_mult(void **state) {
+    FILE *fp;
+    char buffer[100];
+
+    buffer[0] = '\0';
+    write_testfile(testfile, "Hallo");
+    fp = fopen(testfile, "r");
+    assert_non_null(fp);
+    char *p = fgets(buffer, sizeof(buffer), fp);
+    assert_ptr_equal(p, buffer);
+    assert_string_equal(buffer, "Hallo");
+}
+
+
 /* helper for checking content of mults_possible array */
 void check_multi(int pos, char * str) {
     assert_string_equal(get_mult(pos), str);
@@ -133,75 +151,57 @@ void test_load_multi_file_not_found(void **state) {
     assert_int_equal(init_and_load_multipliers(), 0);
 }
 
-void test_write_mult(void **state) {
-    FILE *fp;
-    char buffer[100];
-
-    buffer[0] = '\0';
-    write_testfile(testfile, "Hallo");
-    fp = fopen(testfile, "r");
-    assert_non_null(fp);
-    char *p = fgets(buffer, sizeof(buffer), fp);
-    assert_ptr_equal(p, buffer);
-    assert_string_equal(buffer, "Hallo");
-}
-
 void test_load_multi(void **state) {
-    write_testfile(testfile, "AB\n#LZ is not active\nKL\n 	\nZH\n");
-    strcpy(multsfile, testfile);
-    assert_int_equal(init_and_load_multipliers(), 3);
+    setup_multis("AB\n#LZ is not active\nKL\n 	\nZH\n");
+    assert_int_equal(get_mult_count(), 3);
     check_multi(0, "AB");
     check_multi(2, "ZH");
 }
 
 void test_load_multi_dos(void **state) {
-    write_testfile(testfile, "AB\r\n#LZ is not active\r\nKL\r\n 	\r\nZH\r\n");
-    strcpy(multsfile, testfile);
-    assert_int_equal(init_and_load_multipliers(), 3);
+    setup_multis("AB\r\n#LZ is not active\r\nKL\r\n 	\r\nZH\r\n");
+    assert_int_equal(get_mult_count(), 3);
     check_multi(0, "AB");
     check_multi(2, "ZH");
 }
 
 // leading space both on comment and data lines
 void test_load_multi_leading_space(void **state) {
-    write_testfile(testfile, " AB\n   #LZ is not active\nKL\n 	\nZH\n");
-    strcpy(multsfile, testfile);
-    assert_int_equal(init_and_load_multipliers(), 3);
+    setup_multis(" AB\n   #LZ is not active\nKL\n 	\nZH\n");
+    assert_int_equal(get_mult_count(), 3);
     check_multi(0, "AB");
     check_multi(2, "ZH");
 }
 
 void test_load_multi_sorted(void **state) {
-    write_testfile(testfile, "AB\n#LZ is not active\nZH\n 	\nKL\n");
-    strcpy(multsfile, testfile);
-    assert_int_equal(init_and_load_multipliers(), 3);
+    setup_multis("AB\n#LZ is not active\nZH\n 	\nKL\n");
+    assert_int_equal(get_mult_count(), 3);
     check_multi(0, "AB");
     check_multi(2, "ZH");
 }
 
 void test_load_multi_redefined(void **state) {
-    write_testfile(testfile, "AB\nKL\nZH\nKL\n");
-    strcpy(multsfile, testfile);
-    assert_int_equal(init_and_load_multipliers(), 3);
+    setup_multis("AB\nKL\nZH\nKL\n");
+    assert_int_equal(get_mult_count(), 3);
     check_multi(0, "AB");
     check_multi(2, "ZH");
 }
 
 
 void test_load_multi_with_emptyalias(void **state) {
-    write_testfile(testfile, "AB\nLZ :\nZH\nKL\n");
-    strcpy(multsfile, testfile);
-    assert_int_equal(init_and_load_multipliers(), 4);
+    setup_multis("AB\nZH :\nZH\nKL\n");
+    assert_int_equal(get_mult_count(), 3);
     check_multi(0, "AB");
-    check_multi(2, "LZ");
+    check_multi(2, "ZH");
+    assert_int_equal(g_slist_length(get_aliases(2)), 0);
 }
 
 void test_load_multi_with_alias(void **state) {
-    write_testfile(testfile, "AB\nLZ: NH, ZD,AA\nZH\nKL\n");
-    strcpy(multsfile, testfile);
-    assert_int_equal(init_and_load_multipliers(), 4);
+    setup_multis("AB\nZH: NH, ZD,AA\nZH\nKL\n");
+    assert_int_equal(get_mult_count(), 3);
     check_multi(0, "AB");
-    check_multi(2, "LZ");
+    check_multi(2, "ZH");
+    assert_int_equal(g_slist_length(get_aliases(2)), 3);
 }
 
 /* addmult tests */
