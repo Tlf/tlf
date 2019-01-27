@@ -37,6 +37,7 @@ int addmult(void);
 int addmult2(void);
 char *get_mult(int n);
 int get_mult_count(void);
+unsigned int get_matching_length(char *str, unsigned int n);
 int init_and_load_multipliers(void);
 int remember_multi(char *multiplier, int band, int show_new_band);
 void init_mults();

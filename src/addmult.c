@@ -56,13 +56,10 @@ int addmult(void) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    if ((strstr(ssexchange, get_mult(i)) != NULL)
-		    && (strlen(get_mult(i)) > 1)) {
-
-		if (strlen(get_mult(i)) > matching_len) {
-		    matching_len = strlen(get_mult(i));
-		    idx = i;
-		}
+	    int len = get_matching_length(ssexchange, i);
+	    if (len > matching_len) {
+		matching_len = len;
+		idx = i;
 	    }
 	}
 
@@ -76,8 +73,7 @@ int addmult(void) {
 
 	/* is it a possible mult? */
 	for (i = 0; i < mults_possible->len; i++) {
-	    // check if valid mult....
-	    if (strcmp(ssexchange, get_mult(i)) == 0) {
+	    if (get_matching_length(ssexchange, i) == strlen(ssexchange)) {
 		idx = i;
 		break;
 	    }
@@ -95,12 +91,10 @@ int addmult(void) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    if (strstr(ssexchange, get_mult(i)) != NULL) {
-
-		if (strlen(get_mult(i)) > matching_len) {
-		    matching_len = strlen(get_mult(i));
-		    idx = i;
-		}
+	    int len = get_matching_length(ssexchange, i);
+	    if (len > matching_len) {
+		matching_len = len;
+		idx = i;
 	    }
 	}
 
@@ -157,13 +151,10 @@ int addmult2(void) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    if ((strstr(ssexchange, get_mult(i)) != NULL)
-		    && (strlen(get_mult(i)) > 1)) {
-
-		if (strlen(get_mult(i)) > matching_len) {
-		    matching_len = strlen(get_mult(i));
-		    idx = i;
-		}
+	    int len = get_matching_length(ssexchange, i);
+	    if (len > matching_len) {
+		matching_len = len;
+		idx = i;
 	    }
 	}
 
@@ -210,14 +201,13 @@ possible_mult_t *get_mult_base(int n) {
     return (possible_mult_t *)g_ptr_array_index(mults_possible, n);
 }
 
-
 /* look up n-th position in list of possible mults and
  * return pointer to multname */
 char *get_mult(int n) {
     return get_mult_base(n)->name;
 }
 
-/* get alias list on n-th position of possible mults */
+/* return alias list on n-th position of possible mults */
 GSList *get_aliases(int n) {
     return get_mult_base(n)->aliases;
 }
@@ -225,6 +215,24 @@ GSList *get_aliases(int n) {
 /* return number of possible mults */
 int get_mult_count(void) {
     return mults_possible->len;
+}
+
+/* get best matching lenght of of name or aliaslist of mult 'n' in 'str' */
+unsigned int get_matching_length(char *str, unsigned int n) {
+    unsigned len = 0;
+
+    if (strstr(str, get_mult(n)) != NULL) {
+	len = strlen(get_mult(n));
+    }
+
+    for (int i = 0; i < g_slist_length(get_aliases(n)); i++) {
+	char *tmp =g_slist_nth_data(get_aliases(n), i);
+	if (strstr(str, tmp) != NULL) {
+	    if (strlen(tmp) >= len)
+		len = strlen(tmp);
+	}
+    }
+    return len;
 }
 
 

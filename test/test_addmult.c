@@ -204,6 +204,28 @@ void test_load_multi_with_alias(void **state) {
     assert_int_equal(g_slist_length(get_aliases(2)), 3);
 }
 
+/* test matching of mults and aliases */
+void test_match_length_no_match(void **state) {
+    setup_multis("ZH:NHA,ZDL,AA,AAC\n");
+    assert_int_equal(get_matching_length("ABC",0), 0);
+}
+
+void test_match_length_match_mult(void **state) {
+    setup_multis("ZH:NHA,ZDL,AA,AAC\n");
+    assert_int_equal(get_matching_length("12aZHXc",0), 2);
+}
+
+void test_match_length_match_alias(void **state) {
+    setup_multis("ZH:NHA,ZDL,AA,AAC\n");
+    assert_int_equal(get_matching_length("12aAAX2",0), 2);
+}
+
+void test_match_length_match_alias2(void **state) {
+    setup_multis("ZH:NHA,ZDL,AA,AAC\n");
+    assert_int_equal(get_matching_length("12aAAC2",0), 3);
+}
+
+
 /* addmult tests */
 void test_wysiwyg_once(void **state) {
     wysiwyg_once = 1;
