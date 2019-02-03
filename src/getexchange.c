@@ -906,12 +906,10 @@ int checkexchange(int x) {
 		    }
 
 		    for (jj = 0; jj < get_mult_count(); jj++) {
-
-			if ((strlen(get_mult(jj)) >= 1)
-				&& (strcmp(checksection, get_mult(jj)) ==
-				    0)) {
+			if (get_matching_length(checksection, jj) ==
+				strlen(checksection)) {
 			    strcpy(section, get_mult(jj));
-			    break;	// new
+			    break;
 			}
 		    }
 		}
@@ -925,14 +923,19 @@ int checkexchange(int x) {
 
 		strncpy(checksection, comment, 3);
 		checksection[3] = '\0';
+
+		int best_len = 0;
+		int idx = -1;
 		for (jj = 0; jj < get_mult_count(); jj++) {
-
-		    if ((strlen(get_mult(jj)) >= 1)
-			    && (strstr(checksection, get_mult(jj)) !=
-				NULL)) {
-
-			strcpy(section, get_mult(jj));
+		    int len = get_matching_length(checksection, jj);
+		    if (len > best_len) {
+			best_len = len;
+			idx = jj;
 		    }
+		}
+
+		if (idx >= 0) {
+		    strcpy(section, get_mult(idx));
 		}
 	    }
 
@@ -947,12 +950,7 @@ int checkexchange(int x) {
 		checksection[3] = '\0';
 
 		for (jj = 0; jj < get_mult_count(); jj++) {
-
-		    if ((strlen(get_mult(jj)) ==
-			    strlen(checksection))
-			    && (strstr(checksection, get_mult(jj)) !=
-				NULL)) {
-
+		    if (get_matching_length(checksection, jj) == strlen(checksection)) {
 			strcpy(section, get_mult(jj));
 
 			// if (strlen(section) == strlen(mults_possible[jj])) break;
