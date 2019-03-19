@@ -2,6 +2,7 @@ tlf-1.4git
 ==========
 
 New features since tlf-1.3.2:
+    - Allow using of aliases in multiplier file (Tnx for suggesting to N0NB)
     - Make compiling with hamlib library mandatory
     - Correct transposition of check and section for arrlss (Tnx N0NB)
     - Old SCAN functionality got dropped from code, as it was no longer
