@@ -47,10 +47,10 @@
 #include "time_update.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "addmult.h"
 
 #include "getexchange.h"
 
-#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
 
 
@@ -509,7 +509,6 @@ int checkexchange(int x) {
 
     extern char comment[];
     extern char ssexchange[];
-    extern GPtrArray *mults_possible;
     extern int cqww;
     extern int arrlss;
     extern int stewperry_flg;
@@ -822,9 +821,9 @@ int checkexchange(int x) {
 		g_strlcpy(checksection, comment + hr, 4);
 		g_strchomp(checksection);
 
-		for (jj = 0; jj < mults_possible->len; jj++) {
+		for (jj = 0; jj < get_mult_count(); jj++) {
 
-		    char *multi = g_strdup(MULTS_POSSIBLE(jj));
+		    char *multi = g_strdup(get_mult(jj));
 		    g_strchomp(multi);
 
 		    if ((strlen(multi) >= 1) &&
@@ -906,13 +905,11 @@ int checkexchange(int x) {
 			checksection[strlen(checksection) - 1] = '\0';
 		    }
 
-		    for (jj = 0; jj < mults_possible->len; jj++) {
-
-			if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
-				&& (strcmp(checksection, MULTS_POSSIBLE(jj)) ==
-				    0)) {
-			    strcpy(section, MULTS_POSSIBLE(jj));
-			    break;	// new
+		    for (jj = 0; jj < get_mult_count(); jj++) {
+			if (get_matching_length(checksection, jj) ==
+				strlen(checksection)) {
+			    strcpy(section, get_mult(jj));
+			    break;
 			}
 		    }
 		}
@@ -926,14 +923,19 @@ int checkexchange(int x) {
 
 		strncpy(checksection, comment, 3);
 		checksection[3] = '\0';
-		for (jj = 0; jj < mults_possible->len; jj++) {
 
-		    if ((strlen(MULTS_POSSIBLE(jj)) >= 1)
-			    && (strstr(checksection, MULTS_POSSIBLE(jj)) !=
-				NULL)) {
-
-			strcpy(section, MULTS_POSSIBLE(jj));
+		int best_len = 0;
+		int idx = -1;
+		for (jj = 0; jj < get_mult_count(); jj++) {
+		    int len = get_matching_length(checksection, jj);
+		    if (len > best_len) {
+			best_len = len;
+			idx = jj;
 		    }
+		}
+
+		if (idx >= 0) {
+		    strcpy(section, get_mult(idx));
 		}
 	    }
 
@@ -947,14 +949,9 @@ int checkexchange(int x) {
 		strncpy(checksection, comment, 3);
 		checksection[3] = '\0';
 
-		for (jj = 0; jj < mults_possible->len; jj++) {
-
-		    if ((strlen(MULTS_POSSIBLE(jj)) ==
-			    strlen(checksection))
-			    && (strstr(checksection, MULTS_POSSIBLE(jj)) !=
-				NULL)) {
-
-			strcpy(section, MULTS_POSSIBLE(jj));
+		for (jj = 0; jj < get_mult_count(); jj++) {
+		    if (get_matching_length(checksection, jj) == strlen(checksection)) {
+			strcpy(section, get_mult(jj));
 
 			// if (strlen(section) == strlen(mults_possible[jj])) break;
 		    }

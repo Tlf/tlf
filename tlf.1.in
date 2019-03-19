@@ -1674,7 +1674,17 @@ Multiplier is the DXCC entity (per band).
 .TP
 \fBMULT_LIST\fR=\fIfile_name\fR
 Name of multipliers file (often sections, provinces, states, counties).  May
-contain comment lines starting with \(lq#\(rq in the first column.
+contain comment lines starting with \(lq#\(rq in the first column. Each
+multiplier resides on a single line by itself. 
+.IP
+Starting from Tlf-1.4 on you can also use aliases for the multipliers. Define
+the aliases as 
+.IP
+    \fImultiplier:alias1,alias2,alias3\fR
+.IP
+If you log a QSO with one of the aliases  it will be counted
+for as the according multiplier. You can have more 
+than one line for the same multiplier.
 .
 .TP
 .B SECTION_MULT
@@ -1980,7 +1990,7 @@ It will take precedence over the system installed
 .P
 \fISection files\fR contain a flat ASCII database of multpliers like states,
 sections, provinces, districts, names, ages, etc.  They are invoked by
-including \fBMULT_LIST\fR=\fIsection_file_name\fR in the rules file.
+including \fBMULT_LIST\fR=\fIsection_file_name\fR in the rules file. 
 .
 .SH DOCUMENTATION
 .

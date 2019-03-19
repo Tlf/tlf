@@ -264,7 +264,7 @@ void prepare_specific_part(void) {
 
     } else if (sectn_mult == 1) {
 	//-------------------------section only---------------
-	strncat(logline4, section, 22);
+	strncat(logline4, comment, 22);
 	section[0] = '\0';
 
     } else if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {

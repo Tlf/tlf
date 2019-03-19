@@ -34,7 +34,8 @@
 #include "tlf_curses.h"
 #include "bands.h"
 
-#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
+
+GPtrArray *mults_possible;
 
 enum { ALL_BAND, PER_BAND };
 
@@ -55,18 +56,15 @@ int addmult(void) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		    && (strlen(MULTS_POSSIBLE(i)) > 1)) {
-
-		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
-		    matching_len = strlen(MULTS_POSSIBLE(i));
-		    idx = i;
-		}
+	    int len = get_matching_length(ssexchange, i);
+	    if (len > matching_len) {
+		matching_len = len;
+		idx = i;
 	    }
 	}
 
 	if (idx >= 0) {
-	    remember_multi(MULTS_POSSIBLE(idx), bandinx, ALL_BAND);
+	    remember_multi(get_mult(idx), bandinx, ALL_BAND);
 	}
     }
 
@@ -75,8 +73,7 @@ int addmult(void) {
 
 	/* is it a possible mult? */
 	for (i = 0; i < mults_possible->len; i++) {
-	    // check if valid mult....
-	    if (strcmp(ssexchange, MULTS_POSSIBLE(i)) == 0) {
+	    if (get_matching_length(ssexchange, i) == strlen(ssexchange)) {
 		idx = i;
 		break;
 	    }
@@ -84,7 +81,7 @@ int addmult(void) {
 
 	if (idx >= 0) {
 	    shownewmult =
-		remember_multi(MULTS_POSSIBLE(idx), bandinx, PER_BAND);
+		remember_multi(get_mult(idx), bandinx, PER_BAND);
 	}
     }
 
@@ -94,18 +91,16 @@ int addmult(void) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    if (strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL) {
-
-		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
-		    matching_len = strlen(MULTS_POSSIBLE(i));
-		    idx = i;
-		}
+	    int len = get_matching_length(ssexchange, i);
+	    if (len > matching_len) {
+		matching_len = len;
+		idx = i;
 	    }
 	}
 
 	if (idx >= 0) {
 	    shownewmult =
-		remember_multi(MULTS_POSSIBLE(idx), bandinx, PER_BAND);
+		remember_multi(get_mult(idx), bandinx, PER_BAND);
 	}
     }
 
@@ -156,18 +151,15 @@ int addmult2(void) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    if ((strstr(ssexchange, MULTS_POSSIBLE(i)) != NULL)
-		    && (strlen(MULTS_POSSIBLE(i)) > 1)) {
-
-		if (strlen(MULTS_POSSIBLE(i)) > matching_len) {
-		    matching_len = strlen(MULTS_POSSIBLE(i));
-		    idx = i;
-		}
+	    int len = get_matching_length(ssexchange, i);
+	    if (len > matching_len) {
+		matching_len = len;
+		idx = i;
 	    }
 	}
 
 	if (idx >= 0) {
-	    remember_multi(MULTS_POSSIBLE(idx), bandinx, ALL_BAND);
+	    remember_multi(get_mult(idx), bandinx, ALL_BAND);
 	}
     }
 
@@ -203,10 +195,113 @@ int addmult2(void) {
 }
 
 
+/* lookup n-th position in list of possible mults and
+ * return pointer to data structure */
+possible_mult_t *get_mult_base(int n) {
+    return (possible_mult_t *)g_ptr_array_index(mults_possible, n);
+}
+
+/* look up n-th position in list of possible mults and
+ * return pointer to multname */
+char *get_mult(int n) {
+    return get_mult_base(n)->name;
+}
+
+/* return alias list on n-th position of possible mults */
+GSList *get_aliases(int n) {
+    return get_mult_base(n)->aliases;
+}
+
+/* return number of possible mults */
+int get_mult_count(void) {
+    return mults_possible->len;
+}
+
+/* get best matching lenght of of name or aliaslist of mult 'n' in 'str' */
+unsigned int get_matching_length(char *str, unsigned int n) {
+    unsigned len = 0;
+
+    if (strstr(str, get_mult(n)) != NULL) {
+	len = strlen(get_mult(n));
+    }
+
+    for (int i = 0; i < g_slist_length(get_aliases(n)); i++) {
+	char *tmp =g_slist_nth_data(get_aliases(n), i);
+	if (strstr(str, tmp) != NULL) {
+	    if (strlen(tmp) >= len)
+		len = strlen(tmp);
+	}
+    }
+    return len;
+}
+
+
+/* function to free mults_possible entries */
+void free_possible_mult (gpointer data) {
+    possible_mult_t *tmp = (possible_mult_t *)data;
+    g_free(tmp -> name);	/* free the name of the multi */
+    g_slist_free_full(tmp -> aliases, g_free);
+    g_free(tmp);
+}
+
 /* compare functions to sort multi by aphabetic order  */
 gint	cmp_size(char **a, char **b) {
 
-    return g_strcmp0(*a, *b);
+    possible_mult_t *t1 = (possible_mult_t *)*a;
+    possible_mult_t *t2 = (possible_mult_t *)*b;
+    return g_strcmp0(t1->name, t2->name);
+}
+
+
+/* parse a mult line and add data to databse
+ *
+ * multline consists of either
+ *   multiplier
+ * or
+ *   multplier:followed,by,comma,separated,list,of,aliases
+ *
+ * There may be more than one alias line for a multi, so add all aliases to
+ * that multi */
+void add_mult_line(char *line) {
+    possible_mult_t *multi;
+    gchar ** list;
+    char *mult = NULL;
+    int index = -1;
+
+    list = g_strsplit(line,":",2);
+    mult = g_strstrip(list[0]);
+
+    /* find mult in already defined ones */
+    for (int i = 0; i < get_mult_count(); i++) {
+	if (strcmp(get_mult(i), mult) == 0) {
+	    index = i;
+	    break;
+	}
+    }
+
+    if (index == -1) {
+	/* not found -> prepare new one */
+	multi = g_new0(possible_mult_t, 1);
+	multi->name = g_strdup(mult);
+        multi->aliases = NULL;
+	g_ptr_array_add(mults_possible, multi);
+    }
+    else
+	/* else use existing one */
+	multi = get_mult_base(index);
+
+    if (list[1] != NULL) {	    /* parse aliases if present */
+	gchar ** aliaslist;
+	aliaslist = g_strsplit(list[1], ",", 0);
+	for (int i = 0; aliaslist[i] != NULL; i++) {
+	    multi->aliases =
+		g_slist_append(multi->aliases,
+			g_strdup(g_strstrip(aliaslist[i])));
+	}
+	g_strfreev(aliaslist);
+    }
+
+    g_strfreev(list);
 }
 
 /** loads possible multipliers from external file
@@ -223,19 +318,17 @@ gint	cmp_size(char **a, char **b) {
  * \return number of loaded multipliers (nr of entries in mults_possible)
  * */
 int init_and_load_multipliers(void) {
-    extern GPtrArray *mults_possible;
     extern char multsfile[];	// Set by parse_logcfg()
 
     FILE *cfp;
     char s_inputbuffer[186] = "";
     char mults_location[_POSIX_PATH_MAX * 2];	// 512 chars.  Larger?
-    int count = 0;
 
     if (mults_possible) {
 	/* free old array if exists */
 	g_ptr_array_free(mults_possible, TRUE);
     }
-    mults_possible = g_ptr_array_new_with_free_func(g_free);
+    mults_possible = g_ptr_array_new_with_free_func(free_possible_mult);
 
 
     if (strlen(multsfile) == 0) {
@@ -267,6 +360,7 @@ int init_and_load_multipliers(void) {
     }
 
     while (fgets(s_inputbuffer, 85, cfp) != NULL) {
+
 	/* strip leading and trailing whitespace */
 	g_strstrip(s_inputbuffer);
 
@@ -275,11 +369,8 @@ int init_and_load_multipliers(void) {
 	    continue;
 	}
 
-	s_inputbuffer[9] = '\0';
+	add_mult_line(s_inputbuffer);
 
-	g_ptr_array_add(mults_possible, g_strdup(s_inputbuffer));
-
-	count++;
     }
 
     fclose(cfp);
@@ -287,7 +378,7 @@ int init_and_load_multipliers(void) {
     /* do not rely on the order in the mult file but sort it here */
     g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);
 
-    return count;
+    return get_mult_count();
 }
 
 
