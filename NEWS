@@ -2,12 +2,13 @@ tlf-1.4git
 ==========
 
 New features since tlf-1.3.2:
+    - Allow using of aliases in multiplier file (Tnx for suggesting to N0NB)
     - Make compiling with hamlib library mandatory
     - Correct transposition of check and section for arrlss (Tnx N0NB)
     - Old SCAN functionality got dropped from code, as it was no longer
       working.
     - Added CALLMASTER= keywords to allow naming the callmaster database file
-      (deafult is still 'callmaster')
+      (default is still 'callmaster')
 
 Bug fixes:
     - Fix possible segfaults in readcabrillo() function

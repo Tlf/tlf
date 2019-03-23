@@ -59,8 +59,7 @@
 #include "ui_utils.h"
 #include "writecabrillo.h"
 #include "writeparas.h"
-
-#define MULTS_POSSIBLE(n) ((char *)g_ptr_array_index(mults_possible, n))
+#include "addmult.h"
 
 
 int debug_tty(void);
@@ -802,7 +801,6 @@ int multiplierinfo(void) {
     extern int sectn_mult;
     extern struct mults_t multis[MAX_MULTS];
     extern int nr_multis;
-    extern GPtrArray *mults_possible;
 
     int j, k, vert, hor, cnt, found;
     char mprint[50];
@@ -824,14 +822,14 @@ int multiplierinfo(void) {
 	cnt = 0;
 	for (vert = 9; vert < 18; vert++) {
 
-	    if (cnt >= mults_possible->len)
+	    if (cnt >= get_mult_count())
 		break;
 
 	    for (hor = 5; hor < 15; hor++) {
-		if (cnt >= mults_possible->len)
+		if (cnt >= get_mult_count())
 		    break;
 
-		g_strlcpy(chmult, MULTS_POSSIBLE(cnt), sizeof(chmult));
+		g_strlcpy(chmult, get_mult(cnt), sizeof(chmult));
 
 		/* check if in worked multis */
 		found = 0;
@@ -849,7 +847,7 @@ int multiplierinfo(void) {
 
 		attron(modify_attr(attributes));
 
-		g_strlcpy(mprint, MULTS_POSSIBLE(cnt), 5);
+		g_strlcpy(mprint, get_mult(cnt), 5);
 		mvprintw(vert, hor * 4, "%s", mprint);
 
 		cnt++;
@@ -864,24 +862,24 @@ int multiplierinfo(void) {
 	mvprintw(0, 30, "REMAINING SECTIONS");
 	cnt = 0;
 	for (vert = 2; vert < 22; vert++) {
-	    if (cnt >= mults_possible->len)
+	    if (cnt >= get_mult_count())
 		break;
 
 	    for (hor = 0; hor < 7; hor++) {
-		if (cnt >= mults_possible->len)
+		if (cnt >= get_mult_count())
 		    break;
 
 		worked_at = 0;
 
 		/* lookup if already worked */
 		for (k = 0; k < nr_multis; k++) {
-		    if (strstr(multis[k].name, MULTS_POSSIBLE(cnt)) != NULL) {
+		    if (strstr(multis[k].name, get_mult(cnt)) != NULL) {
 			worked_at = multis[k].band;
 			break;
 		    }
 		}
 
-		tmp = g_strndup(MULTS_POSSIBLE(cnt), 4);
+		tmp = g_strndup(get_mult(cnt), 4);
 		sprintf(mprint, "%-4s", tmp);
 		g_free(tmp);
 

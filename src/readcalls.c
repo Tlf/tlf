@@ -61,7 +61,7 @@ int readcalls(void) {
     int i = 0, l = 0, n = 0, r = 0, s = 0;
     unsigned int k = 0;
     int m = 0;
-    int t = 0, tt = 0;
+    int t = 0;
     int z = 0;
     int add_ok;
     char multbuffer[40];
@@ -250,16 +250,16 @@ int readcalls(void) {
 
 		} else if (serial_section_mult == 1) {
 
-		    tt = 0;
-
 		    memset(multbuffer, 0, 39);
 
-		    for (t = 54; t < 64; t++) {
-			if (inputbuffer[t] >= 'A' && inputbuffer[t] <= 'Z') {
-			    multbuffer[tt] = inputbuffer[t];
-			    tt++;
-			}
-		    }
+		    strncpy(multbuffer, inputbuffer + 68, 3);
+		    g_strchomp(multbuffer);
+
+		} else if (sectn_mult == 1) {
+		    memset(multbuffer, 0, 39);
+
+		    strncpy(multbuffer, inputbuffer + 68, 3);
+		    g_strchomp(multbuffer);
 
 		} else if (serial_grid4_mult == 1) {
 

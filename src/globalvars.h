@@ -82,7 +82,6 @@ extern char continent[];
 extern char zone_export[];
 extern int itumult;
 
-extern GPtrArray *mults_possible;	/* growing array of possible mutlipliers */
 extern char ssexchange[];
 extern int shownewmult;
 extern char comment[];

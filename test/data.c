@@ -336,8 +336,6 @@ char mults[MAX_MULTS][12];
 int mult_bands[MAX_MULTS];
 int multarray_nr = 0;
 
-GPtrArray *mults_possible;
-
 int multlist = 0;
 
 int callareas[20];

@@ -7,6 +7,8 @@
 #include "../src/searchlog.h"
 #include "../src/dxcc.h"
 
+// OBJECT ../src/addmult.o
+// OBJECT ../src/bands.o
 // OBJECT ../src/searchlog.o
 // OBJECT ../src/zone_nr.o
 // OBJECT ../src/searchcallarray.o

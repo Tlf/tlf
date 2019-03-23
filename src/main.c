@@ -387,8 +387,6 @@ int zones[MAX_ZONES];		/* same for cq zones or itu zones;
 struct mults_t multis[MAX_MULTS]; /**< worked multis */
 int nr_multis = 0;		/**< number of multis in multis[] */
 
-GPtrArray *mults_possible;
-
 int multlist = 0;
 
 int callareas[20];
