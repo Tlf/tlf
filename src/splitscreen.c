@@ -556,7 +556,6 @@ void addtext(char *s) {
     static int m = 0, t = 0;
     static char dxtext[160];
     static char spottime[40];
-    static float freq;
     static char *spotpointer;
 
     int i, l;
@@ -628,20 +627,20 @@ void addtext(char *s) {
 	    strcat(spotline, "DX de ");
 	    strncat(spotline, dxtext, spotpointer - dxtext);
 	    strcat(spotline, ":                                ");
-	    freq = atof(spotpointer + 5);
-	    if (freq > 1800.0 && freq < 30000.0) {
+	    const double khz = atof(spotpointer + 5);
+	    if (khz > 1800.0 && khz < 30000.0) {
 
-		if (freq >= 100000.0) {
-		    sprintf(spotline + 16, "%5.1f  ", freq);
+		if (khz >= 100000.0) {
+		    sprintf(spotline + 16, "%5.1f  ", khz);
 		    sprintf(spotline + 26, "%s", spotpointer + 14);
-		} else if (freq >= 10000.0) {
-		    sprintf(spotline + 17, "%5.1f  ", freq);
+		} else if (khz >= 10000.0) {
+		    sprintf(spotline + 17, "%5.1f  ", khz);
 		    sprintf(spotline + 26, "%s", spotpointer + 13);
-		} else if (freq >= 1000.0) {
-		    sprintf(spotline + 18, "%5.1f  ", freq);
+		} else if (khz >= 1000.0) {
+		    sprintf(spotline + 18, "%5.1f  ", khz);
 		    sprintf(spotline + 26, "%s", spotpointer + 12);
 		} else {
-		    sprintf(spotline + 19, "%5.1f  ", freq);
+		    sprintf(spotline + 19, "%5.1f  ", khz);
 		    sprintf(spotline + 26, "%s", spotpointer + 11);
 		}
 

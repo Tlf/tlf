@@ -20,10 +20,10 @@ extern int nr_of_spots;
 extern int announcefilter;
 extern int xplanet;
 extern int trx_control;
-extern float freq;
+extern freq_t freq;
 
 char thisnode = 'A';
-float node_frequencies[MAXNODES];
+freq_t node_frequencies[MAXNODES];
 char call[20];
 int cluster;
 
@@ -132,7 +132,7 @@ int setup_default(void **state) {
     }
 
     trx_control = 1;
-    freq = 7123.8;
+    freq = 7123800.0;   // Hz
 
     nicebox_boxname[0] = 0;
     printcall_called = 0;

@@ -129,9 +129,9 @@ struct qso_t *get_next_record(FILE *fp) {
 	    /* tx */
 	    ptr->tx = (buffer[79] == '*') ? 1 : 0;
 
-	    /* frequency */
-	    ptr->freq = atof(buffer + 80);
-	    if ((ptr->freq < 1800.) || (ptr->freq >= 30000.)) {
+	    /* frequency (kHz) */
+	    ptr->freq = atof(buffer + 80) * 1000.0;
+	    if ((ptr->freq < 1800000.) || (ptr->freq >= 30000000.)) {
 		ptr->freq = 0.;
 	    }
 
@@ -237,8 +237,8 @@ struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 	ptr->qtc_qserial = g_strdup(strtok_r(NULL, " \t", &sp));
 
 	/* frequency */
-	ptr->freq = atof(buffer + 80 + shift);
-	if ((ptr->freq < 1800.) || (ptr->freq >= 30000.)) {
+	ptr->freq = atof(buffer + 80 + shift) * 1000.0;
+	if ((ptr->freq < 1800000.) || (ptr->freq >= 30000000.)) {
 	    ptr->freq = 0.;
 	}
 
@@ -272,43 +272,43 @@ void info(char *s) {
 }
 
 
-char *to_mode[] = {
+const char *to_mode[] = {
     "CW",
     "PH",
     "RY"
 };
 
 /* converts band to frequency of start of band */
-float band2freq(int band) {
-    float freq;
+static freq_t band2freq(int band) {
+    freq_t freq;
 
     switch (band) {
 	case 160:
-	    freq = 1800.;
+	    freq = 1800000.;
 	    break;
 	case 80:
-	    freq = 3500.;
+	    freq = 3500000.;
 	    break;
 	case 40:
-	    freq = 7000.;
+	    freq = 7000000.;
 	    break;
 	case 30:
-	    freq = 10100.;
+	    freq = 10100000.;
 	    break;
 	case 20:
-	    freq = 14000.;
+	    freq = 14000000.;
 	    break;
 	case 17:
-	    freq = 18068;
+	    freq = 18068000.;
 	    break;
 	case 15:
-	    freq = 21000.;
+	    freq = 21000000.;
 	    break;
 	case 12:
-	    freq = 24890;
+	    freq = 24890000.;
 	    break;
 	case 10:
-	    freq = 28000.;
+	    freq = 28000000.;
 	    break;
 	default:
 	    freq = 0.;
@@ -380,7 +380,7 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 
     extern char exchange[];
 
-    int freq;
+    freq_t freq;
     int i;
     char tmp[80];
     struct line_item *item;
@@ -393,9 +393,9 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 	return;
     }
 
-    freq = (int)qso->freq;
-    if (freq < 1800.)
-	freq = (int)band2freq(qso->band);
+    freq = qso->freq;
+    if (freq < 1800000.)
+	freq = band2freq(qso->band);
 
     if (qso->qtcdirection == 0) {
 	strcpy(buf, "QSO:");		/* start the line */
@@ -410,7 +410,7 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 	item = g_ptr_array_index(item_array, i);
 	switch (item->tag) {
 	    case FREQ:
-		sprintf(tmp, "%d", freq);
+		sprintf(tmp, "%d", (int)(freq / 1000.0));
 		add_lpadded(buf, tmp, item->len);
 		break;
 	    case MODE:
@@ -708,7 +708,6 @@ int write_adif(void) {
     char adif_rcvd_num[16] = "";
     char resultat[16];
     char adif_tmp_rr[5] = "";
-    double freq;
     char freq_buf[16];
 
     int adif_mode_dep = 0;
@@ -798,12 +797,12 @@ int write_adif(void) {
 
 	    /* FREQ if available */
 	    if (strlen(buf) > 81) {
-		freq = atof(buf + 80);
+                // read kHz and write MHz
+		const double mhz = atof(buf + 80) / 1000.0;
 		freq_buf[0] = '\0';
-		if ((freq > 1799.) && (freq < 10000.)) {
-		    sprintf(freq_buf, "<FREQ:6>%.4f", freq / 1000.);
-		} else if (freq >= 10000.) {
-		    sprintf(freq_buf, "<FREQ:7>%.4f", freq / 1000.);
+		if (mhz > 1.799) {
+                    sprintf(freq_buf, "<FREQ:%d>%.4f",
+                        mhz < 10 ? 6 : 7, mhz);
 		}
 		strcat(buffer, freq_buf);
 	    }

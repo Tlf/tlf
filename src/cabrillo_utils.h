@@ -31,7 +31,7 @@ struct qso_t {
     int rst_s;
     int rst_r;
     char *comment;
-    float freq;
+    freq_t freq;
     int tx;
     int qtc_serial;
     int qtc_number;
@@ -58,7 +58,7 @@ struct read_qtc_t {
     char qtc_time[5];   // QTC TIME field
     char qtc_call[16];  // QTC CALL FIELD
     int qtc_serial;     // QTC SERIAL field
-    float freq;         // FREQ of QTC
+    freq_t freq;        // FREQ of QTC
     int callpos;        // in case of SEND direction, the serial of sent callsign
     char qtcstr[30];    // QTC fields as concatenated
 };

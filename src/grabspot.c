@@ -20,6 +20,8 @@
 
 #include <string.h>
 
+#include "grabspot.h"
+
 #include "bandmap.h"
 #include "fldigixmlrpc.h"
 #include "getctydata.h"
@@ -31,9 +33,9 @@
 
 void send_bandswitch(int outfreq);
 
-static double execute_grab(spot *data);
+static freq_t execute_grab(spot *data);
 
-double grabspot(void) {
+freq_t grabspot(void) {
     extern char hiscall[];
     extern int trx_control;
 
@@ -56,9 +58,9 @@ double grabspot(void) {
     return execute_grab(data);
 }
 
-double grab_next(void) {
+freq_t grab_next(void) {
     extern int trx_control;
-    extern float freq;
+    extern freq_t freq;
 
     static int dir = 1;		/* start scanning up */
 
@@ -68,12 +70,12 @@ double grab_next(void) {
 	return 0;   // no trx control
     }
 
-    data = bandmap_next(dir, (unsigned int)(freq * 1000));
+    data = bandmap_next(dir, freq);
 
     if (data == NULL) {		/* nothing in that direction */
 				/* try other one */
 	dir = 1 - dir;
-	data = bandmap_next(dir, (unsigned int)(freq * 1000));
+	data = bandmap_next(dir, freq);
     }
 
     if (data == NULL) {
@@ -86,14 +88,14 @@ double grab_next(void) {
 /* Perform the steps needed to grab a call and then free data
  * \return frequency of the spot in Hz
  */
-static double execute_grab(spot *data) {
+static freq_t execute_grab(spot *data) {
     extern char hiscall[];
     extern char mode[];
     extern int cqmode;
-    extern float mem;
-    extern float freq;
+    extern freq_t mem;
+    extern freq_t freq;
 
-    double f = data->freq - fldigi_get_carrier();
+    freq_t f = data->freq - fldigi_get_carrier();
     set_outfreq(f);
     send_bandswitch((int) f);
 

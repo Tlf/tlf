@@ -76,7 +76,7 @@ int recv_error;
 int recv_packets;
 int buflen;
 char talkarray[5][62];
-float node_frequencies[MAXNODES];
+freq_t node_frequencies[MAXNODES];
 int lanqsos;
 char lastqsonr[5];
 int highqsonr;
@@ -364,7 +364,7 @@ int talk(void) {
 
 /* ----------------- send freq. message ----------*/
 
-int send_freq(float freq) {
+int send_freq(freq_t freq) {
 
     extern int bandinx;
     extern int trx_control;

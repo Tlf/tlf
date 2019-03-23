@@ -34,6 +34,8 @@
 #define QTCSENTRY 57
 #define QTCFLAG 58
 
+#include <hamlib/rig.h>
+
 int lanrecv_init(void);
 int lan_recv_close(void);
 int lan_recv(void);
@@ -42,7 +44,7 @@ int lan_send_close(void);
 int lan_send(char *buffer) ;
 int send_lan_message(int opcode, char *message);
 int talk(void);
-int send_freq(float freq);
+int send_freq(freq_t freq);
 int send_time(void) ;
 
 #endif /* LANCODE_H */

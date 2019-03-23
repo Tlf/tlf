@@ -26,8 +26,10 @@
 #define RESETRIT    (-3)
 #define SETDIGIMODE (-4)
 
-void set_outfreq(double hertz);
-double get_outfreq();
+#include <hamlib/rig.h>
+
+void set_outfreq(freq_t hertz);
+freq_t get_outfreq();
 
 void gettxinfo(void);
 

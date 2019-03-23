@@ -363,13 +363,13 @@ char zone_export[3] = "  ";
 pid_t pid;
 struct tm *time_ptr;
 
-float freq;
-float mem;
+freq_t freq;
+freq_t mem;
 int logfrequency = 0;
 int rit;
 int trx_control = 0;
 int showfreq = 0;
-float bandfrequency[9] = {
+freq_t bandfrequency[9] = {
     1830.0, 3525.0, 7010.0, 10105.0, 14025.0, 18070.0, 21025.0, 24900.0,
     28025.0
 };

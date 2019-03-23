@@ -21,7 +21,9 @@
 #ifndef GRABSPOT_H
 #define GRABSPOT_H
 
-double grabspot(void);
-double grab_next(void);
+#include <hamlib/rig.h>
+
+freq_t grabspot(void);
+freq_t grab_next(void);
 
 #endif /* GRABSPOT_H */

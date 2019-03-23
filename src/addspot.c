@@ -43,7 +43,7 @@
  * format a fake DX spot from call and frequency add it to the spot list
  * and send it to other stations in the LAN
  */
-void add_to_spots(char *call, float freq) {
+void add_to_spots(char *call, freq_t freq) {
 
     extern int lanspotflg;
     extern struct tm *time_ptr;
@@ -52,7 +52,7 @@ void add_to_spots(char *call, float freq) {
     char spotline[160];
     char spottime[6];
 
-    sprintf(spotline, "DX de TLF-%c:     %9.3f  %s", thisnode, freq, call);
+    sprintf(spotline, "DX de TLF-%c:     %9.3f  %s", thisnode, freq / 1000.0, call);
     strcat(spotline, "                                           ");
 
     get_time();
@@ -69,7 +69,7 @@ void add_to_spots(char *call, float freq) {
 
 
 int addspot(void) {
-    extern float freq;
+    extern freq_t freq;
     extern char hiscall[];
     extern int trx_control;
 
@@ -86,7 +86,7 @@ int addspot(void) {
 	echo();
 	getnstr(frequency, 7);
 	noecho();
-	freq = atof(frequency);
+	freq = atof(frequency) * 1000.0;
     }
 
     add_to_spots(hiscall, freq);

@@ -47,7 +47,7 @@
 void broadcast_lan(void) {
 
     extern int time_master;
-    extern float freq;
+    extern freq_t freq;
     static int frcounter = 0;
 
     frcounter++;
@@ -92,19 +92,19 @@ void show_freq(void) {
 
     extern int showfreq;
     extern int showscore_flag;
-    extern float mem;
+    extern freq_t mem;
     extern int trx_control;
-    extern float freq;
+    extern freq_t freq;
 
     if (trx_control == 1) {
 
 	attron(modify_attr(COLOR_PAIR(C_LOG)));
 
 	if ((showfreq == 0) || (showscore_flag == 1))
-	    mvprintw(13, 68, "TRX: %7.1f", freq);
+	    mvprintw(13, 68, "TRX: %7.1f", freq / 1000.0);
 
 	if (mem > 0.0)
-	    mvprintw(14, 68, "MEM: %7.1f", mem);
+	    mvprintw(14, 68, "MEM: %7.1f", mem / 1000.0);
 	else
 	    mvprintw(14, 68, "            ");
 

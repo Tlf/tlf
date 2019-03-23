@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <hamlib/rig.h>
 
 #include "freq_display.h"
 #include "nicebox.h"		// Includes curses.h
@@ -26,7 +27,7 @@
 
 int freq_display(void) {
 
-    extern float freq;
+    extern freq_t freq;
     extern int trxmode;
 
     int x_position = 40;
@@ -41,7 +42,7 @@ int freq_display(void) {
     nicebox(16, 39, 5, 35, "TRX");
     print_dot(y_position + 4, 28 + x_position + 1);
 
-    sprintf(fbuffer, "%7.1f", freq);
+    sprintf(fbuffer, "%7.1f", freq / 1000.0);
 
     if (fbuffer[0] != ' ')
 	print_big_number(fbuffer[0] - 48, y_position, x_position, 4);

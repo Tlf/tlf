@@ -29,7 +29,7 @@
 
 void change_freq(void) {
 
-    extern float freq;
+    extern freq_t freq;
     extern int trx_control;
 
     int brkflg = 0;
@@ -45,6 +45,7 @@ void change_freq(void) {
 	freq_display();
 
 	if (get_outfreq() == 0) {
+            // last request has been processed, check keys again
 	    x = key_get();
 
 	    int deltaf = 0;
@@ -87,6 +88,7 @@ void change_freq(void) {
 		    break;
 		}
 
+                // any other key: exit frequency change mode
 		default: {
 		    brkflg = 1;
 		    break;
@@ -95,12 +97,11 @@ void change_freq(void) {
 	    }
 
 	    if (deltaf) {
-		set_outfreq(freq * 1000 + deltaf);
+		set_outfreq(freq + deltaf);
 	    }
 	}
 
-	if (brkflg == 1) {
-	    brkflg = 0;
+	if (brkflg) {
 	    break;
 	}
 

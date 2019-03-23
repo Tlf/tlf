@@ -411,15 +411,15 @@ int ymax, xmax;			/* screen size */
 pid_t pid;
 struct tm *time_ptr, time_ptr_cabrillo;
 
-float freq;
-float mem;
+freq_t freq;
+freq_t mem;
 int logfrequency = 0;
 int rit;
 int trx_control = 0;
 int showfreq = 0;
-float bandfrequency[NBANDS] = {
-    1830.0, 3525.0, 7010.0, 10105.0, 14025.0, 18070.0, 21025.0, 24900.0,
-    28025.0, 0.
+freq_t bandfrequency[NBANDS] = {
+    1830000, 3525000, 7010000, 10105000, 14025000, 18070000, 21025000, 24900000,
+    28025000, 0.
 };
 
 char headerline[81] =

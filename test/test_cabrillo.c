@@ -12,7 +12,7 @@ int do_cabrillo = 0;	/* actually converting cabrillo file to Tlf log */
 struct tm *time_ptr, time_ptr_cabrillo;
 
 int qsoflags_for_qtc[MAX_QSOS];
-float freq;
+freq_t freq;
 
 void addcall() { }
 void store_qso() { }
@@ -156,7 +156,7 @@ void test_cabToTlf_ParseQSO(void **state) {
     cab_qso_to_tlf("QSO:  7002 RY 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
 		   desc);
     assert_int_equal(bandinx_spy, 2);
-    assert_int_equal((int)freq, 7002);
+    assert_int_equal((int)freq, 7002000);
     assert_int_equal(trxmode, DIGIMODE);
     assert_string_equal(hiscall, "K6ND");
     assert_string_equal(my_rst, "589");
@@ -176,7 +176,7 @@ void test_cabToTlf_ParseXQSO(void **state) {
     cab_qso_to_tlf("X-QSO:  7002 PH 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
 		   desc);
     assert_int_equal(bandinx_spy, 2);
-    assert_int_equal((int)freq, 7002);
+    assert_int_equal((int)freq, 7002000);
     assert_int_equal(trxmode, SSBMODE);
     assert_string_equal(hiscall, "K6ND");
     assert_string_equal(my_rst, "589");
@@ -196,7 +196,7 @@ void test_cabToTlf_ParseQTC(void **state) {
     bandinx_spy = 0;
     cab_qso_to_tlf("QTC: 14084 CW 2016-11-12 1214 HA2OS          13/10     K4GM          0230 DL6UHD         074",
 		   desc);
-    assert_int_equal((int)qtc_line.freq, 14084);
+    assert_int_equal((int)qtc_line.freq, 14084000);
     assert_string_equal(qtc_line.mode, "CW ");
     assert_int_equal(time_ptr_cabrillo.tm_hour, 12);
     assert_int_equal(time_ptr_cabrillo.tm_min, 14);

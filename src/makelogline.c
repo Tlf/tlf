@@ -55,7 +55,7 @@ void fillto(int n);
  */
 void makelogline(void) {
     extern int trx_control;
-    extern float freq;
+    extern freq_t freq;
 
     static int lastbandinx = 0;
     char freq_buff[10];
@@ -93,7 +93,7 @@ void makelogline(void) {
 
     /* add freq to end of logline */
     if (trx_control == 1) {
-	snprintf(freq_buff, 8, "%7.1f", freq);
+	snprintf(freq_buff, 8, "%7.1f", freq / 1000.0);
 	strcat(logline4, freq_buff);
     }
     fillto(87);
@@ -124,10 +124,9 @@ void prepare_fixed_part(void) {
     extern char whichcontest[];
     extern int logfrequency;
     extern int trx_control;
-    extern float freq;
+    extern freq_t freq;
 
     static char time_buf[80];
-    char khz[5] = " 000";
 
     strcpy(logline4, band[bandinx]);
 
@@ -151,7 +150,8 @@ void prepare_fixed_part(void) {
 	    trx_control == 1 &&
 	    ((strcmp(whichcontest, "qso") == 0) ||
 	     (strcmp(whichcontest, "dxped") == 0))) {
-	sprintf(khz, " %3d", ((int)freq) % 1000);	// show freq.
+        char khz[5];
+	sprintf(khz, " %3d", ((int)(freq / 1000.0)) % 1000);	// show freq.
 	strcat(logline4, khz);
 
     } else {

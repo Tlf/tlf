@@ -77,7 +77,7 @@
 
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
 
-void send_bandswitch(int freq);
+void send_bandswitch(freq_t freq);
 int autosend(void);
 int plain_number(char *str);
 void handle_bandswitch(int direction);
@@ -88,9 +88,9 @@ extern int bandinx;
 extern char band[NBANDS][4];
 extern int contest;
 extern int dxped;
-extern float freq;
+extern freq_t freq;
 extern int trx_control;
-extern float bandfrequency[];
+extern freq_t bandfrequency[];
 
 
 /** callsign input loop
@@ -115,7 +115,7 @@ int callinput(void) {
     extern int cluster;
     extern int announcefilter;
     extern char ph_message[14][80];
-    extern float mem;
+    extern freq_t mem;
     extern SCREEN *mainscreen;
     extern int simulator;
     extern int simulator_mode;
@@ -141,7 +141,7 @@ int callinput(void) {
     extern int bmautograb;
     extern int digikeyer;
 
-    static float freqstore;		/* qrg during last callsign input
+    static freq_t freqstore;		/* qrg during last callsign input
 					   character, 0 if grabbed,
 					   used to decide if a call in input
 					   field was entered by hand or
@@ -151,7 +151,7 @@ int callinput(void) {
 
     struct grab_t {
 	enum grabstate_t state;
-	float spotfreq;
+	freq_t spotfreq;
 	char call[15];
     };
 
@@ -198,7 +198,7 @@ int callinput(void) {
 	     * from frequency and if so add call to spot list */
 	    if (bmautoadd != 0 && freqstore != 0) {
 		if (strlen(hiscall) >= 3) {
-		    if (fabsf(freq - freqstore) > 0.1) {
+		    if (fabsf(freq - freqstore) > 100) {
 			add_to_spots(hiscall, freqstore);
 			hiscall[0] = '\0';
 			HideSearchPanel();
@@ -226,7 +226,7 @@ int callinput(void) {
 
 	    /* wait till freq of grabbed spot is reported back from rig.
 	     * Then go to 'reached' state' */
-	    if (grab.state == IN_PROGRESS && fabs(freq - grab.spotfreq) <= 0.1)
+	    if (grab.state == IN_PROGRESS && fabs(freq - grab.spotfreq) <= 100)
 		grab.state = REACHED;
 
 	    /* Check if we tune away from old freq before a grabbed spot is
@@ -234,7 +234,7 @@ int callinput(void) {
 
 	    /* if we have grabbed a call from spot list and tune away
 	     * then forget about it */
-	    if (fabsf(freq - grab.spotfreq) > 0.1 && grab.state == REACHED) {
+	    if (fabsf(freq - grab.spotfreq) > 100 && grab.state == REACHED) {
 		grab.state = NONE;
 		hiscall[0] = '\0';
 		printcall();
@@ -549,7 +549,7 @@ int callinput(void) {
 		} else {
 		    freq = mem;
 
-		    set_outfreq(mem * 1000);
+		    set_outfreq(mem);
 
 		    mem = 0.0;
 		    mvprintw(14, 68, "            ");
@@ -919,10 +919,10 @@ int callinput(void) {
 
 	    // Ctrl-G (^G), grab next DX spot from bandmap.
 	    case 7: {
-		double f = grab_next();
+		freq_t f = grab_next();
 		if (f > 0.0) {
 		    grab.state = IN_PROGRESS;
-		    grab.spotfreq = f / 1000.;
+		    grab.spotfreq = f;
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 2, "%s", mode);
 		    freqstore = 0;
@@ -936,7 +936,7 @@ int callinput(void) {
 		double f = grabspot();
 		if (f > 0.0) {
 		    grab.state = IN_PROGRESS;
-		    grab.spotfreq = f / 1000.;
+		    grab.spotfreq = f;
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 2, "%s", mode);
 		    freqstore = 0;
@@ -1258,7 +1258,7 @@ int play_file(char *audiofile) {
 }
 
 
-void send_bandswitch(int freq) {
+void send_bandswitch(freq_t freq) {
 
     extern int use_bandoutput;
     extern int bandinx;
@@ -1267,44 +1267,47 @@ void send_bandswitch(int freq) {
     char outnibble[3];
     int bandswitch = 0;
 
-    if (use_bandoutput == 1) {
-	if (freq > 15) {	// cannot be a freq...
-	    switch ((int) freq) {
-		case 1800 ... 2000:
-		    bandswitch = 1;
-		    break;
-		case 3500 ... 4000:
-		    bandswitch = 2;
-		    break;
-		case 7000 ... 7300:
-		    bandswitch = 3;
-		    break;
-		case 10100 ... 10150:
-		    bandswitch = 4;
-		    break;
-		case 14000 ... 14350:
-		    bandswitch = 5;
-		    break;
-		case 18068 ... 18168:
-		    bandswitch = 6;
-		    break;
-		case 21000 ... 21450:
-		    bandswitch = 7;
-		    break;
-		case 24890 ... 24990:
-		    bandswitch = 8;
-		    break;
-		case 28000 ... 29700:
-		    bandswitch = 9;
-	    }
-	} else			// use the bandinx
-	    bandswitch = bandinx + 1;
-
-	bandswitch = bandindexarray[bandswitch];
-
-	sprintf(outnibble, "%d", bandswitch);
-	netkeyer(K_SWITCH, outnibble);
+    if (!use_bandoutput) {
+        return;
     }
+
+    const int khz = (int) (freq / 1000.0);
+    if (khz > 15) {	// looks like a freq...
+        switch (khz) {
+            case 1800 ... 2000:
+                bandswitch = 1;
+                break;
+            case 3500 ... 4000:
+                bandswitch = 2;
+                break;
+            case 7000 ... 7300:
+                bandswitch = 3;
+                break;
+            case 10100 ... 10150:
+                bandswitch = 4;
+                break;
+            case 14000 ... 14350:
+                bandswitch = 5;
+                break;
+            case 18068 ... 18168:
+                bandswitch = 6;
+                break;
+            case 21000 ... 21450:
+                bandswitch = 7;
+                break;
+            case 24890 ... 24990:
+                bandswitch = 8;
+                break;
+            case 28000 ... 29700:
+                bandswitch = 9;
+        }
+    } else			// use the bandinx
+        bandswitch = bandinx + 1;
+
+    bandswitch = bandindexarray[bandswitch];
+
+    sprintf(outnibble, "%d", bandswitch);
+    netkeyer(K_SWITCH, outnibble);
 }
 
 
@@ -1330,7 +1333,7 @@ void handle_bandswitch(int direction) {
 
     if (trx_control) {
 	freq = bandfrequency[bandinx]; // TODO: is this needed?
-	set_outfreq(bandfrequency[bandinx] * 1000);
+	set_outfreq(bandfrequency[bandinx]);
     }
 
     send_bandswitch(bandinx);

@@ -181,7 +181,7 @@ struct read_qtc_t qtc_line;	/* make global for testability */
 
 void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 
-    extern float freq;
+    extern freq_t freq;
     extern struct tm time_ptr_cabrillo;
     extern char call[];
 
@@ -256,8 +256,8 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 	pos++;		// space between fields
 	switch (item->tag) {
 	    case FREQ:
-		freq = atof(tempstr);
-		bandinx = freq2band((int)(freq * 1000));
+		freq = atof(tempstr) * 1000.0;
+		bandinx = freq2band(freq);
 		strcpy(qtc_line.band, band[bandinx]);
 		qtc_line.freq = freq;
 		break;

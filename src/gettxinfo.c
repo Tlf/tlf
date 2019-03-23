@@ -50,9 +50,9 @@ extern int rigmode;
 extern int digikeyer;
 extern rmode_t digi_mode;
 
-extern float freq;
+extern freq_t freq;
 extern int bandinx;
-extern float bandfrequency[];
+extern freq_t bandfrequency[];
 
 extern int trx_control;
 extern unsigned char rigptt;
@@ -73,9 +73,9 @@ static freq_t outfreq = 0;
 static pthread_mutex_t outfreq_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static double get_current_seconds();
-static void handle_trx_bandswitch(int freq);
+static void handle_trx_bandswitch(const freq_t freq);
 
-void set_outfreq(double hertz) {
+void set_outfreq(freq_t hertz) {
     if (!trx_control) {
 	hertz = 0;      // no rig control, ignore request
     }
@@ -84,13 +84,13 @@ void set_outfreq(double hertz) {
     pthread_mutex_unlock(&outfreq_mutex);
 }
 
-double get_outfreq() {
+freq_t get_outfreq() {
     return outfreq;
 }
 
-static double get_and_reset_outfreq() {
+static freq_t get_and_reset_outfreq() {
     pthread_mutex_lock(&outfreq_mutex);
-    double f = outfreq;
+    freq_t f = outfreq;
     outfreq = 0.0;
     pthread_mutex_unlock(&outfreq_mutex);
     return f;
@@ -139,7 +139,7 @@ void gettxinfo(void) {
 	rigptt &= ~(1 << 2);		/* 0x03 */
     }
 
-    double reqf = get_and_reset_outfreq();  // get actual request
+    freq_t reqf = get_and_reset_outfreq();  // get actual request
 
     if (reqf == 0) {
 
@@ -182,10 +182,10 @@ void gettxinfo(void) {
 
 
 	if (rigfreq >= 1800000.0) {
-	    freq = rigfreq / 1000.0;		/* kHz */
+	    freq = rigfreq; // Hz
 	}
 
-	bandinx = freq2band((unsigned int)(freq * 1000.0));
+	bandinx = freq2band((unsigned int)freq);
 
 	bandfrequency[bandinx] = freq;
 
@@ -277,7 +277,7 @@ static double get_current_seconds() {
 }
 
 
-static void handle_trx_bandswitch(int freq) {
+static void handle_trx_bandswitch(const freq_t freq) {
 
     send_bandswitch(freq);
 
@@ -285,7 +285,7 @@ static void handle_trx_bandswitch(int freq) {
     pbwidth_t width = TLF_DEFAULT_PASSBAND; // passband width, in Hz
 
     if (trxmode == SSBMODE) {
-	mode = (freq < 14000 ? RIG_MODE_LSB : RIG_MODE_USB);
+	mode = (freq < 14000000 ? RIG_MODE_LSB : RIG_MODE_USB);
     } else if (trxmode == DIGIMODE) {
 	if ((rigmode & (RIG_MODE_LSB | RIG_MODE_USB | RIG_MODE_RTTY | RIG_MODE_RTTYR))
 		!= rigmode) {

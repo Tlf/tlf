@@ -21,6 +21,7 @@
 #ifndef _BANDMAP_H
 #define _BANDMAP_H
 
+#include <hamlib/rig.h>
 #include "tlf.h"
 
 typedef struct {
@@ -92,7 +93,7 @@ int bm_isdupe(char *call, int band);
  * 			- own cluster announcement (Ctrl-B)
  * 			- just worked in S&P
  */
-void bandmap_addspot(char *call, unsigned int frequ, char node);
+void bandmap_addspot(char *call, freq_t frequ, char node);
 /*
  * - if call already on that band and mode replace old entry with new one and
  *   set age to 0 otherwise add it to collection
@@ -145,8 +146,8 @@ void bandmap_show();
 
 spot *bandmap_lookup(char *partialcall);
 
-spot *bandmap_next(unsigned int upwards, unsigned int freq);
+spot *bandmap_next(unsigned int upwards, freq_t freq);
 
-void get_spot_on_qrg(char *dest, float freq);
+void get_spot_on_qrg(char *dest, freq_t freq);
 
 #endif

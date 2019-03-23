@@ -56,12 +56,12 @@ void clusterinfo(void) {
 
     extern int cluster;
     extern char backgrnd_str[];
-    extern float freq;
+    extern freq_t freq;
     extern char band[NBANDS][4];
     extern int bandinx;
     extern int trx_control;
     extern char spot_ptr[MAX_SPOTS][82];
-    extern float node_frequencies[MAXNODES];
+    extern freq_t node_frequencies[MAXNODES];
     extern char thisnode;
 
     int f, j, k;
@@ -93,7 +93,7 @@ void clusterinfo(void) {
 	for (f = 0; f < MAXNODES; f++) {
 	    if (node_frequencies[f] != 0)
 		mvprintw(15 + f, 4, " Stn %c : %5.0f", 'A' + f,
-			 node_frequencies[f]);
+			 node_frequencies[f] / 1000.0);
 	}
 	nicebox(14, 3, 8, 27, "Frequencies");
     }
@@ -177,7 +177,7 @@ int loadbandmap(void) {
     int timediff = 0;
     int linepos;
     int spot_age[MAX_SPOTS];
-    float spot_freq[MAX_SPOTS];
+    freq_t spot_freq[MAX_SPOTS];
 
     char thisline[83];
     char spotcall[20];

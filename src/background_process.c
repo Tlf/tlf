@@ -54,7 +54,7 @@ extern int recv_error;
 extern char thisnode;
 extern int lanspotflg;
 extern char talkarray[5][62];
-extern float node_frequencies[MAXNODES];
+extern freq_t node_frequencies[MAXNODES];
 extern int qsonum;
 extern char qsonrstr[5];
 extern int lanqsos;

@@ -43,24 +43,23 @@ int sendqrg(void) {
     extern char hiscall[];
     extern int trx_control;
 
-    float trxqrg;
 
     if (!trx_control) {
 	return 0;               /* nothing to do here */
     }
 
-    trxqrg = atof(hiscall);
+    const freq_t trxqrg = atof(hiscall) * 1000.0;
 
-    int bandinx = freq2band((unsigned int)(trxqrg * 1000.0));
+    int bandinx = freq2band(trxqrg);
 
     if (bandinx == BANDINDEX_OOB) {
 	return 0;   // not a frequency or out of band
     }
 
-    set_outfreq(trxqrg * 1000);
-    send_bandswitch((int) trxqrg);
+    set_outfreq(trxqrg);
+    send_bandswitch(trxqrg);
 
-    return (int) trxqrg;
+    return trxqrg;
 }
 
 /**************************************************************************/

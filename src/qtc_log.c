@@ -33,7 +33,7 @@
 #include "tlf_curses.h"
 
 extern int trx_control;
-extern float freq;
+extern freq_t freq;
 
 int log_recv_qtc_to_disk(int qsonr) {
 
@@ -264,7 +264,7 @@ void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) {
 		qtc_line.date, qtc_line.time, nodemark, qtc_line.call, qtc_line.qtchead_serial,
 		qtc_line.qtchead_count,
 		qtc_line.qtc_time, qtc_line.qtc_call, padding, qtc_line.qtc_serial,
-		qtc_line.freq);
+		qtc_line.freq / 1000.0);
 	store_qtc(qtclogline, qtc_line.direction, fname);
 	if (lan_active == 1) {
 	    send_lan_message(QTCRENTRY, qtclogline);
@@ -277,7 +277,7 @@ void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) {
 		qtc_line.callpos, qtc_line.date, qtc_line.time, nodemark, qtc_line.call,
 		qtc_line.qtchead_serial, qtc_line.qtchead_count,
 		qtc_line.qtc_time, qtc_line.qtc_call, padding, qtc_line.qtc_serial,
-		qtc_line.freq);
+		qtc_line.freq / 1000.0);
 	store_qtc(qtclogline, qtc_line.direction, fname);
 	if (lan_active == 1) {
 	    send_lan_message(QTCSENTRY, qtclogline);

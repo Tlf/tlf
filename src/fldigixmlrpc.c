@@ -464,7 +464,7 @@ int fldigi_xmlrpc_get_carrier() {
     xmlrpc_env env;
     extern int rigmode;
     extern int trx_control;
-    extern float freq;
+    extern freq_t freq;
     int signum;
     int modeshift;
     char fldigi_mode[6] = "";
@@ -543,7 +543,7 @@ int fldigi_xmlrpc_get_carrier() {
 	    /* also set the freq value in Fldigi FREQ block */
 	    rc = fldigi_xmlrpc_query(&result, &env,
 				     "rig.set_frequency", "f",
-				     (xmlrpc_double)((freq * 1000.0) - (fldigi_var_carrier)));
+				     (xmlrpc_double)(freq - fldigi_var_carrier));
 	    if (rc != 0) {
 		return -1;
 	    }

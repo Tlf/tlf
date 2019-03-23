@@ -69,7 +69,7 @@ bm_config_t bm_config = {
 };
 short	bm_initialized = 0;
 
-extern float freq;
+extern freq_t freq;
 extern int trx_control;
 extern int bandinx;
 extern int trxmode;
@@ -207,7 +207,7 @@ void bm_init() {
  *
  * \return CWMODE, DIGIMODE or SSBMODE
  */
-int freq2mode(int freq, int band) {
+int freq2mode(freq_t freq, int band) {
     if (freq <= cwcorner[band])
 	return CWMODE;
     else if (freq < ssbcorner[band])
@@ -241,7 +241,7 @@ void bm_add(char *s) {
     if (strncmp(line + 6, "TLF-", 4) == 0)
 	node = line[10];		/* get sending node id */
 
-    bandmap_addspot(call, (unsigned int)(atof(line + 16) * 1000), node);
+    bandmap_addspot(call, atof(line + 16) * 1000, node);
     g_free(line);
 }
 
@@ -266,7 +266,7 @@ gint	cmp_freq(spot *a, spot *b) {
  * \param freq 		on which frequency heard
  * \param node		reporting node
  */
-void bandmap_addspot(char *call, unsigned int freq, char node) {
+void bandmap_addspot(char *call, freq_t freq, char node) {
     /* - if a spot on that band and mode is already in list replace old entry
      *   with new one and set timeout to SPOT_NEW,
      *   otherwise add it to the list as new
@@ -571,7 +571,7 @@ char *format_spot(spot *data) {
  */
 void show_spot(spot *data) {
     attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    printw("%7.1f %c ", (float)(data->freq / 1000.),
+    printw("%7.1f %c ", data->freq / 1000.,
 	   (data->node == thisnode ? '*' : data->node));
 
     char *temp = format_spot(data);
@@ -613,8 +613,8 @@ void next_spot_position(int *y, int *x) {
  * Otherwise calculate center frequency from band and mode
  * as middle value of the band/mode corners.
  */
-float bm_get_center(int band, int mode) {
-    float centerfrequency;
+freq_t bm_get_center(int band, int mode) {
+    freq_t centerfrequency;
 
     if (trx_control)
 	return freq;		/* return freq from rig */
@@ -627,7 +627,7 @@ float bm_get_center(int band, int mode) {
     } else {
 	centerfrequency = (cwcorner[band] + ssbcorner[band]) / 2.;
     }
-    return centerfrequency / 1000.;
+    return centerfrequency;
 }
 
 
@@ -671,7 +671,6 @@ void bandmap_show() {
     int bm_x, bm_y;
     int i, j;
     short dupe, multi;
-    float centerfrequency;
 
     if (!bm_initialized) {
 	bm_init();
@@ -760,13 +759,13 @@ void bandmap_show() {
     unsigned int on_qrg = 0;
     unsigned int startindex, stopindex;
 
-    centerfrequency = bm_get_center(bandinx, trxmode);
+    const freq_t centerfrequency = bm_get_center(bandinx, trxmode);
 
     /* calc number of spots below your current QRG */
     for (i = 0; i < spots->len; i++) {
 	data = g_ptr_array_index(spots, i);
 
-	if (data->freq <= (centerfrequency * 1000 - TOLERANCE))
+	if (data->freq <= centerfrequency - TOLERANCE)
 	    below_qrg++;
 	else
 	    break;
@@ -776,7 +775,7 @@ void bandmap_show() {
     if (below_qrg < spots->len) {
 	data = g_ptr_array_index(spots, below_qrg);
 
-	if (!(data->freq > centerfrequency * 1000 + TOLERANCE))
+	if (!(data->freq > centerfrequency + TOLERANCE))
 	    on_qrg = 1;
     }
 
@@ -822,7 +821,7 @@ void bandmap_show() {
 	move(bm_y, bm_x);
 	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	if (!on_qrg) {
-	    printw("%7.1f   %s", centerfrequency,  "============");
+	    printw("%7.1f   %s", centerfrequency / 1000.0,  "============");
 	} else {
 	    show_spot_on_qrg(g_ptr_array_index(spots, below_qrg));
 	}
@@ -955,7 +954,7 @@ spot *bandmap_lookup(char *partialcall) {
  * 		after use).
  */
 
-spot *bandmap_next(unsigned int upwards, unsigned int freq) {
+spot *bandmap_next(unsigned int upwards, freq_t freq) {
     spot *result = NULL;
 
     if (spots->len > 0) {
@@ -1041,7 +1040,7 @@ char *qtc_format(char *call) {
  * \param 	dest - place to put the call in
  * \param 	freq - the frequency where to look for a spot
  */
-void get_spot_on_qrg(char *dest, float freq) {
+void get_spot_on_qrg(char *dest, freq_t freq) {
 
     *dest = '\0';
 
@@ -1054,7 +1053,7 @@ void get_spot_on_qrg(char *dest, float freq) {
 	    spot *data;
 	    data = g_ptr_array_index(spots, i);
 
-	    if ((fabs(data->freq - freq * 1000) < TOLERANCE) &&
+	    if ((fabs(data->freq - freq) < TOLERANCE) &&
 		    (!bm_config.skipdupes || data->dupe == 0)) {
 		strcpy(dest, data->call);
 		break;
