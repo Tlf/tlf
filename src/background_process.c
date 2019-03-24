@@ -256,7 +256,7 @@ void *background_process(void *ptr) {
 			if ((lan_message[0] >= 'A')
 				&& (lan_message[0] <= 'A' + MAXNODES)) {
 			    node_frequencies[lan_message[0] - 'A'] =
-				atof(lan_message + 2);
+				atof(lan_message + 2) * 1000.0;
 			    break;
 			}
 		    case INCQSONUM:

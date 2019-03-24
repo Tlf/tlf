@@ -373,7 +373,7 @@ int send_freq(freq_t freq) {
 
     if (trx_control == 1) {
 
-	sprintf(fbuffer, "%7.1f", freq);
+	sprintf(fbuffer, "%7.1f", freq / 1000.0);
     } else {
 	switch (bandinx) {
 
