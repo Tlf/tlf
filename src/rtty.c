@@ -31,6 +31,7 @@
 #include <termios.h>
 #include <unistd.h>
 
+#include "err_utils.h"
 #include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "startmsg.h"
@@ -94,8 +95,7 @@ void ry_addchar(char c) {
     FILE *ry_fp;
 
     if ((ry_fp = fopen("RTTYlog", "a")) == NULL) {
-	mvprintw(24, 0, "cannot open RTTYlog");
-	refreshp();
+	TLF_LOG_INFO("cannot open RTTYlog");
 	return;
     } else {
 	fputc(c, ry_fp);

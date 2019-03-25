@@ -36,6 +36,7 @@
 
 #include <glib.h>
 
+#include "err_utils.h"
 #include "ignore_unused.h"
 #include "startmsg.h"
 #include "tlf.h"
@@ -231,9 +232,7 @@ void checklogfile(void) {
     FILE *fp;
 
     if ((fp = fopen(logfile, "a")) == NULL) {
-	mvprintw(24, 0, "I can not find the logfile ...");
-	refreshp();
-	sleep(2);
+	TLF_LOG_WARN("I can not find the logfile ...");
 
     } else {
 	fstat(fileno(fp), &statbuf);
@@ -244,16 +243,12 @@ void checklogfile(void) {
 	if ((qsobytes % LOGLINELEN) != 0) {
 
 	    if ((infile = fopen(logfile, "r")) == NULL) {
-		mvprintw(24, 0, "Unable to open logfile...");
-		refreshp();
-		sleep(2);
+		TLF_LOG_WARN("Unable to open logfile...");
 
 	    } else {
 		if ((outfile = fopen("./cpyfile", "w")) == NULL) {
-		    mvprintw(24, 0, "Unable to open cpyfile...");
-		    refreshp();
 		    fclose(infile);
-		    sleep(2);
+		    TLF_LOG_WARN("Unable to open cpyfile...");
 
 		} else {
 		    while (fgets(inputbuffer, 160, infile) != NULL) {

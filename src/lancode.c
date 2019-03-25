@@ -31,6 +31,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include "err_utils.h"
 #include "lancode.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -55,8 +56,8 @@ struct sockaddr_in bc_address[MAXNODES];
 struct hostent *bc_hostbyname[MAXNODES];
 /* host names and UDP ports to send notifications to */
 char bc_hostaddress[MAXNODES][16];
-char bc_hostservice[MAXNODES][16] = { 
-	[0 ... MAXNODES - 1] = { [0 ... 15] = 0 } 
+char bc_hostservice[MAXNODES][16] = {
+	[0 ... MAXNODES - 1] = { [0 ... 15] = 0 }
 };
 char sendbuffer[256];
 int nodes = 0;
@@ -260,8 +261,7 @@ int lan_send(char *lanbuffer) {
 
 	if (bc_sendto_rc == -1) {
 	    if (send_error[node] >= (send_error_limit[node] + 10)) {
-		mvprintw(24, 0, "LAN: send problem...!");
-		refreshp();
+		TLF_LOG_INFO("LAN: send problem...!");
 		send_error_limit[node] += 10;
 	    } else
 		send_error[node]++;

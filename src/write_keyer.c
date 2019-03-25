@@ -26,6 +26,7 @@
 #include <glib.h>
 
 #include "clear_display.h"
+#include "err_utils.h"
 #include "ignore_unused.h"
 #include "netkeyer.h"
 #include "tlf.h"
@@ -92,8 +93,7 @@ int write_keyer(void) {
 
 	} else if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 	    if ((bfp = fopen(controllerport, "a")) == NULL) {
-		mvprintw(24, 0, "1278 not active. Switching to SSB mode.");
-		sleep(1);
+		TLF_LOG_WARN("1278 not active. Switching to SSB mode.");
 		trxmode = SSBMODE;
 		clear_display();
 	    } else {
@@ -103,7 +103,7 @@ int write_keyer(void) {
 
 	} else if (digikeyer == GMFSK) {
 	    if (strlen(rttyoutput) < 2) {
-		mvprintw(24, 0, "No modem file specified!");
+		TLF_LOG_WARN("No modem file specified!");
 	    }
 	    // when GMFSK used (possible Fldigi interface), the trailing \n doesn't need
 	    if (tosend[strlen(tosend) - 1] == '\n') {

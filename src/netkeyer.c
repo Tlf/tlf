@@ -27,6 +27,7 @@
 
 #include <glib.h>
 
+#include "err_utils.h"
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -172,9 +173,7 @@ int netkeyer(int cw_op, char *cwmessage) {
 		       0, (struct sockaddr *) &address,
 		       sizeof(address));
     if (sendto_rc == -1) {
-	mvprintw(24, 0, "Keyer send failed...!");
-	refreshp();
-	sleep(2);
+	TLF_LOG_WARN("Keyer send failed...!");
 	return -1;
     }
 

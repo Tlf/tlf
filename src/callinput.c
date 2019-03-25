@@ -42,6 +42,7 @@
 #include "cleanup.h"
 #include "cw_utils.h"
 #include "edit_last.h"
+#include "err_utils.h"
 #include "deleteqso.h"
 #include "getctydata.h"
 #include "gettxinfo.h"
@@ -1224,7 +1225,7 @@ int play_file(char *audiofile) {
 	return (0);
 
     if ((fd = open(audiofile, O_RDONLY, 0664)) < 0) {
-	mvprintw(24, 0, "cannot open sound file %s!", audiofile);
+	TLF_LOG_INFO("cannot open sound file %s!", audiofile);
     } else {
 	close(fd);
 	if (access("./play_vk", X_OK) == 0) {

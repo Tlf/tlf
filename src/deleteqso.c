@@ -31,6 +31,7 @@
 
 #include "clear_display.h"
 #include "deleteqso.h"
+#include "err_utils.h"
 #include "ignore_unused.h"
 #include "printcall.h"
 #include "qtcutil.h"
@@ -143,9 +144,7 @@ void delete_qso(void) {
 
 	if ((lfile = open(logfile, O_RDWR)) < 0) {
 
-	    mvprintw(24, 0, "I can not find the logfile...");
-	    refreshp();
-	    sleep(2);
+	    TLF_LOG_WARN("I can not find the logfile...");
 	} else {
 
 	    fstat(lfile, &statbuf);

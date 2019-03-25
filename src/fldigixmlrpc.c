@@ -30,6 +30,7 @@
 
 #include <config.h>
 
+#include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "printcall.h"
 #include "ui_utils.h"
@@ -210,9 +211,7 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
     if (connerr == 1 && use_fldigi == 1) {
 	if (connerrcnt == 10) {
 	    use_fldigi = 0;
-	    mvprintw(24, 0, "Fldigi: lost connection!\n");
-	    refreshp();
-	    sleep(1);
+	    TLF_LOG_WARN("Fldigi: lost connection!");
 	} else {
 	    connerrcnt++;
 	}

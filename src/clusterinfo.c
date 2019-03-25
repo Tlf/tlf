@@ -32,6 +32,7 @@
 
 #include "bandmap.h"
 #include "dxcc.h"
+#include "err_utils.h"
 #include "get_time.h"
 #include "getctydata.h"
 #include "lancode.h"
@@ -138,7 +139,7 @@ void clusterinfo(void) {
 		if (spotarray[k] >= 0 && spotarray[k] < MAX_SPOTS)
 		    g_strlcpy(inputbuffer, spot_ptr[spotarray[k]], 79);
 		else {
-		    mvprintw(24, 0, "error in packet table");
+		    TLF_LOG_INFO("error in packet table");
 		}
 
 		if (strlen(inputbuffer) > 14) {
@@ -267,8 +268,7 @@ int loadbandmap(void) {
     if (xplanet > 0 && nofile == 0) {
 	if ((fp = fopen(markerfile, "w")) == NULL) {
 	    nofile = 1;			/* remember: no write possible */
-	    mvprintw(24, 0, "Opening marker file not possible.\n");
-	    refreshp();
+	    TLF_LOG_INFO("Opening marker file not possible.");
 	} else
 	    fclose(fp);
     }
@@ -294,7 +294,7 @@ int loadbandmap(void) {
 	    if (x != 0 && xplanet > 0 && nofile == 0) {
 
 		if ((fp = fopen(markerfile, "a")) == NULL) {
-		    mvprintw(24, 0, "Opening markerfile not possible.\n");
+		    TLF_LOG_INFO("Opening markerfile not possible.");
 		} else {
 
 		    /* show no callsign if MARKERDOTS */
@@ -371,7 +371,7 @@ int loadbandmap(void) {
 	strcat(xplanetmsg, "\"   color=Cyan\n");
 
 	if ((fp = fopen(markerfile, "a")) == NULL) {
-	    mvprintw(24, 0, "Opening markerfile not possible.\n");
+	    TLF_LOG_INFO("Opening markerfile not possible.");
 	} else {
 	    if (strlen(xplanetmsg) > 20)
 		fputs(xplanetmsg, fp);
