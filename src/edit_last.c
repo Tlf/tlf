@@ -29,6 +29,7 @@
 #include <unistd.h>
 
 #include "background_process.h"
+#include "err_utils.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "logview.h"
 #include "scroll_log.h"
@@ -78,9 +79,7 @@ void putback_qso(int nr, char *buffer) {
     assert(nr < nr_qsos);
 
     if ((fp = fopen(logfile, "r+")) == NULL) {
-	mvprintw(24, 0, "Can not open logfile...");
-	refreshp();
-	sleep(2);
+	TLF_LOG_WARN("Can not open logfile...");
     } else {
 	fseek(fp, (long)nr * LOGLINELEN, SEEK_SET);
 	fputs(buffer, fp);

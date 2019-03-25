@@ -24,6 +24,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "getctydata.h"
 #include "get_time.h"
@@ -190,10 +191,7 @@ void *background_process(void *ptr) {
 		}
 	    }
 	    if ((*lan_message != '\0') && (lan_message[0] == thisnode)) {
-		mvprintw(24, 0,
-			 "Warning: NODE ID CONFLICT ?! You should use another ID! ");
-		refreshp();
-		sleep(5);
+		TLF_LOG_WARN("%s","Warning: NODE ID CONFLICT ?! You should use another ID! ");
 	    }
 
 	    if ((*lan_message != '\0')
@@ -225,10 +223,7 @@ void *background_process(void *ptr) {
 		    case CLUSTERMSG:
 			strncpy(prmessage, lan_message + 2, 80);
 			if (strstr(prmessage, call) != NULL) {	// alert for cluster messages
-			    mvprintw(24, 0,
-				     "                                                                           ");
-			    mvprintw(24, 0, "%s", prmessage);
-			    refreshp();
+			    TLF_LOG_INFO(prmessage);
 			}
 
 			addtext(prmessage);
@@ -247,10 +242,7 @@ void *background_process(void *ptr) {
 			talkarray[4][1] = ':';
 			talkarray[4][2] = '\0';
 			strncat(talkarray[4], lan_message + 2, 60);
-			mvprintw(24, 0,
-				 "                                                                           ");
-			mvprintw(24, 0, " MSG from %s", talkarray[4]);
-			refreshp();
+			TLF_LOG_INFO(" MSG from %s", talkarray[4]);
 			break;
 		    case FREQMSG:
 			if ((lan_message[0] >= 'A')

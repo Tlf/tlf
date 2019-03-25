@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2019 Thomas Beierlein <tb@forth-ev.de>, <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,42 +16,42 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/* ------------------------------------------------------------
-*      Stop TX
-*
-*--------------------------------------------------------------*/
-
-
-#include "clear_display.h"
 #include "err_utils.h"
-#include "netkeyer.h"
-#include "tlf.h"
 #include "tlf_curses.h"
+#include "ui_utils.h"
+#include <glib.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#include "fldigixmlrpc.h"
+void handle_logging(enum log_lvl lvl, ...) {
+    char *fmt;
+    char *str;
+    va_list args;
 
-int stoptx(void) {
-    extern int trxmode;
-    extern int cwkeyer;
-    extern int digikeyer;
+    va_start(args, lvl);
+    fmt = va_arg(args, char *);
+    str = g_strdup_vprintf(fmt, args);
+    va_end(args);
 
+    move(24,0);
+    for (int i = 0; i < 80; i++)
+	printw(" ");
+    mvprintw(24, 0, str);
+    refreshp();
 
-    if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
-	fldigi_to_rx();
-    } else if (trxmode == CWMODE) {
-	if (cwkeyer == NET_KEYER) {
+    g_free(str);
 
-	    if (netkeyer(K_ABORT, NULL) < 0) {
-
-		TLF_LOG_WARN("keyer not active; switching to SSB");
-		trxmode = SSBMODE;
-		clear_display();
-
-	    }
-	}
-    } else {
-	return (1);
+    switch(lvl) {
+	case L_WARN:
+	    sleep(3);
+	    break;
+	case L_ERR:
+	    sleep(3);
+	    break;
+	default:
+	    break;
     }
-    return (0);
 }
+
 

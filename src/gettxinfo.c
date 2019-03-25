@@ -28,6 +28,7 @@
 #include <pthread.h>
 
 #include "bands.h"
+#include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
 #include "tlf.h"
@@ -207,9 +208,7 @@ void gettxinfo(void) {
 	}
 
 	if (retval != 0) {
-	    mvprintw(24, 0, "Problem with rig link!\n");
-	    refreshp();
-	    sleep(1);
+	    TLF_LOG_WARN("Problem with rig link!n");
 	}
 
     } else if (reqf == SETSSBMODE) {
@@ -223,9 +222,7 @@ void gettxinfo(void) {
 			     TLF_DEFAULT_PASSBAND);
 
 	if (retval != RIG_OK) {
-	    mvprintw(24, 0, "Problem with rig link!\n");
-	    refreshp();
-	    sleep(1);
+	    TLF_LOG_WARN("Problem with rig link!");
 	}
 
     } else if (reqf == SETDIGIMODE) {
@@ -241,18 +238,14 @@ void gettxinfo(void) {
 		TLF_DEFAULT_PASSBAND);
 
 	if (retval != RIG_OK) {
-	    mvprintw(24, 0, "Problem with rig link!\n");
-	    refreshp();
-	    sleep(1);
+	    TLF_LOG_WARN("Problem with rig link!");
 	}
 
     } else if (reqf == RESETRIT) {
 	retval = rig_set_rit(my_rig, RIG_VFO_CURR, 0);
 
 	if (retval != RIG_OK) {
-	    mvprintw(24, 0, "Problem with rig link!\n");
-	    refreshp();
-	    sleep(1);
+	    TLF_LOG_WARN("Problem with rig link!");
 	}
 
     } else {
@@ -260,9 +253,7 @@ void gettxinfo(void) {
 	retval = rig_set_freq(my_rig, RIG_VFO_CURR, (freq_t) reqf);
 
 	if (retval != RIG_OK) {
-	    mvprintw(24, 0, "Problem with rig link: set frequency!\n");
-	    refreshp();
-	    sleep(1);
+	    TLF_LOG_WARN("Problem with rig link: set frequency!");
 	}
 
     }
@@ -305,10 +296,7 @@ static void handle_trx_bandswitch(const freq_t freq) {
     int retval = rig_set_mode(my_rig, RIG_VFO_CURR, mode, width);
 
     if (retval != RIG_OK) {
-	mvprintw(24, 0,
-		 "Problem with rig link: set mode!\n");
-	refreshp();
-	sleep(1);
+	TLF_LOG_WARN("Problem with rig link: set mode!");
     }
 
 }

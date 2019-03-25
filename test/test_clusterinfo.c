@@ -8,8 +8,9 @@
 #include "../src/dxcc.h"
 
 // OBJECT ../src/clusterinfo.o
-
 // OBJECT ../src/get_time.o
+// OBJECT ../src/err_utils.o
+
 long timecorr;
 int getctynr(char *checkcall) {
     return 0;

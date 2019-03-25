@@ -25,6 +25,7 @@
 
 #include <stdlib.h>
 
+#include "err_utils.h"
 #include "netkeyer.h"
 #include "nicebox.h"	// Includes curses.h
 #include "set_tone.h"
@@ -60,7 +61,7 @@ void write_tone(void) {
     extern char sc_volume[];
 
     if (netkeyer(K_TONE, tonestr) < 0) {
-	mvprintw(24, 0, "keyer not active; switching to SSB");
+	TLF_LOG_INFO("keyer not active; switching to SSB");
 	trxmode = SSBMODE;
     }
 

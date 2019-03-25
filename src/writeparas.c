@@ -29,6 +29,7 @@
 
 #include "background_process.h"
 #include "cw_utils.h"
+#include "err_utils.h"
 #include "globalvars.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -56,18 +57,12 @@ int writeparas_file(void) {
     int i;
 
     if (strlen(call) <= 3) {
-	mvprintw(24, 0, "Cannot write parameters file: data corrupt... ");
-	refreshp();
-	sleep(1);
+	TLF_LOG_WARN("Cannot write parameters file: data corrupt... ");
 	return (-1);
     }
 
     if ((fp = fopen(".paras", "w")) == NULL) {
-	mvprintw(24, 0, "writeparas.c: Error opening file.\n");
-	refreshp();
-	sleep(1);
-	endwin();
-	exit(1);
+	TLF_LOG_ERR("writeparas.c: Error opening file.");
     }
     fputs("# Call  ----------------------------------\n", fp);
     fputs(call, fp);

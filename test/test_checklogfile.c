@@ -9,6 +9,7 @@
 #include "../src/checklogfile.h"
 
 // OBJECT ../src/checklogfile.o
+// OBJECT ../src/err_utils.o
 
 // dummy
 void shownr(char *msg, int x) {

@@ -15,6 +15,7 @@
 // OBJECT ../src/nicebox.o
 // OBJECT ../src/qtcutil.o
 // OBJECT ../src/printcall.o
+// OBJECT ../src/err_utils.o
 
 extern WINDOW *search_win;
 extern PANEL *search_panel;

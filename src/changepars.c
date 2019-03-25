@@ -35,6 +35,7 @@
 #include "changepars.h"
 #include "clear_display.h"
 #include "editlog.h"
+#include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
 #include "ignore_unused.h"
@@ -364,8 +365,7 @@ int changepars(void) {
 	    read_logcfg();
 	    read_rules();	/* also reread rules file */
 	    writeparas();
-	    mvprintw(24, 0, "Logcfg.dat loaded, parameters written..");
-	    refreshp();
+	    TLF_LOG_INFO("Logcfg.dat loaded, parameters written.");
 	    clear_display();
 	    break;
 	}
@@ -452,8 +452,7 @@ int changepars(void) {
 		if (cwkeyer == NET_KEYER) {
 
 		    if (netkeyer(K_WORDMODE, NULL) < 0) {
-			mvprintw(24, 0,
-				 "keyer not active; switching to SSB");
+			TLF_LOG_INFO("keyer not active; switching to SSB");
 			trxmode = SSBMODE;
 			clear_display();
 		    }
@@ -466,8 +465,7 @@ int changepars(void) {
 		if (cwkeyer == NET_KEYER) {
 
 		    if (netkeyer(K_RESET, NULL) < 0) {
-			mvprintw(24, 0,
-				 "keyer not active; switching to SSB");
+			TLF_LOG_INFO("keyer not active; switching to SSB");
 			trxmode = SSBMODE;
 			clear_display();
 		    }

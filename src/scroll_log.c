@@ -27,6 +27,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include"err_utils.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "ignore_unused.h"
 #include "qsonr_to_str.h"
@@ -43,10 +44,7 @@ void scroll_log(void) {
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 
-	mvprintw(24, 0, "Error opening logfile.\n");
-	refreshp();
-	sleep(2);
-	exit(1);
+	TLF_LOG_ERR("Error opening logfile.");
     }
     for (ii = 5; ii >= 1; ii--) {
 

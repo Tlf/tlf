@@ -27,6 +27,7 @@
 
 #include "clear_display.h"
 #include "cw_utils.h"
+#include "err_utils.h"
 #include "netkeyer.h"
 #include "sendbuf.h"
 #include "tlf.h"
@@ -47,9 +48,8 @@ void setspeed(void) {
 	retval = netkeyer(K_SPEED, buff);
 
 	if (retval < 0) {
-	    mvprintw(24, 0, "keyer not active");
+	    TLF_LOG_WARN("keyer not active");
 //                      trxmode = SSBMODE;
-	    sleep(1);
 	    clear_display();
 	}
     }
@@ -127,8 +127,7 @@ int setweight(int weight) {
 	retval = netkeyer(K_WEIGHT, buff);
 
 	if (retval < 0) {
-	    mvprintw(24, 0, "keyer not active ?");
-	    sleep(1);
+	    TLF_LOG_INFO("keyer not active ?");
 	    clear_display();
 	}
     }

@@ -29,6 +29,7 @@
 #include <unistd.h>
 
 #include "dxcc.h"
+#include "err_utils.h"
 #include "getctydata.h"
 #include "getpx.h"
 #include "nicebox.h"		// Includes curses.h
@@ -768,10 +769,7 @@ int load_callmaster(void) {
 	strcat(callmaster_location, callmaster_filename);
 
 	if ((cfp = fopen(callmaster_location, "r")) == NULL) {
-	    mvprintw(24, 0, "Error opening callmaster file.\n");
-	    refreshp();
-	    sleep(2);
-
+	    TLF_LOG_WARN("Error opening callmaster file.");
 	    return 0;
 	}
     }

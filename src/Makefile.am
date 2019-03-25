@@ -11,7 +11,7 @@ tlf_SOURCES = \
 	checkparameters.c cleanup.c clear_display.c clusterinfo.c cw_utils.c \
 	dxcc.c \
 	deleteqso.c displayit.c \
-	edit_last.c editlog.c \
+	edit_last.c editlog.c err_utils.c \
 	fldigixmlrpc.c freq_display.c focm.c \
 	genqtclist.c \
 	get_time.c getctydata.c getexchange.c getmessages.c getpx.c \
@@ -47,7 +47,7 @@ noinst_HEADERS = \
 	cw_utils.h \
 	dxcc.h \
 	deleteqso.h displayit.h \
-	edit_last.h editlog.h \
+	edit_last.h editlog.h  err_utils.h \
 	fldigixmlrpc.h freq_display.h focm.h \
 	genqtclist.h \
 	get_time.h  getctydata.h getexchange.h getmessages.h getpx.h \
