@@ -29,6 +29,7 @@
 
 
 extern int use_rxvt;
+extern int ymax, xmax;
 
 int key_kNXT3 = 0;
 int key_kPRV3 = 0;
@@ -140,6 +141,9 @@ static int getkey(int wait) {
     nodelay(stdscr, wait ? FALSE : TRUE);
 
     x = onechar();
+
+    if (x == KEY_RESIZE)
+	getmaxyx(stdscr, ymax, xmax);
 
     nodelay(stdscr, FALSE);
 
