@@ -23,12 +23,15 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#include "bandmap.h"
+#include "clear_display.h"
 #include "stoptx.h"
 #include "tlf_panel.h"
 #include "startmsg.h"
 
 
 extern int use_rxvt;
+extern int ymax, xmax;
 
 int key_kNXT3 = 0;
 int key_kPRV3 = 0;
@@ -140,6 +143,12 @@ static int getkey(int wait) {
     nodelay(stdscr, wait ? FALSE : TRUE);
 
     x = onechar();
+
+    if (x == KEY_RESIZE) {
+	getmaxyx(stdscr, ymax, xmax);
+	clear_display();
+	bandmap_show();
+    }
 
     nodelay(stdscr, FALSE);
 
