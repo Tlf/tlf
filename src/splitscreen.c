@@ -48,6 +48,9 @@
 #include "tlf_curses.h"
 #include "tlf_panel.h"
 #include "ui_utils.h"
+#include "err_utils.h"
+
+extern char backgrnd_str[];
 
 struct tln_logline {
     struct tln_logline *next;
@@ -109,7 +112,7 @@ void addlog(char *s) {
 
 	if (clusterlog == 1) {
 	    if ((fp = fopen("clusterlog", "a")) == NULL) {
-		mvprintw(24, 0, "Opening clusterlog not possible.");
+		TLF_LOG_INFO("Opening clusterlog not possible.");
 	    } else {
 		if (strlen(lastmsg) > 20) {
 		    fputs(lastmsg, fp);
@@ -607,14 +610,13 @@ void addtext(char *s) {
     if (strncmp(s, call, strlen(call) - 1) == 0
 	    && strlen(s) < 81 && strchr(s, '>') == NULL) {
 
-	mvprintw(24, 0,
-		 "                                                                                ");
+	mvprintw(LINES - 1, 0, backgrnd_str);
 
 	if ((strlen(s) + strlen(call) + 3) < 80) {
 	    strcpy(dxtext, s + strlen(call) + 3);
 	    if (dxtext[strlen(dxtext) - 1] == '\n')
 		dxtext[strlen(dxtext) - 1] = '\0';	// remove the newline
-	    mvprintw(24, 0, dxtext);
+	    mvprintw(LINES - 1, 0, dxtext);
 	    mvprintw(12, 29, hiscall);
 	}
 	refreshp();
@@ -1209,9 +1211,8 @@ int send_cluster(void) {
     char line[MAX_CMD_LEN + 2] = "";
 
     cluster = CLUSTER;
-    mvprintw(24, 0,
-	     "                                                                           ");
-    mvprintw(24, 0, ">");
+    mvprintw(LINES - 1, 0, backgrnd_str);
+    mvprintw(LINES - 1, 0, ">");
     refreshp();
     echo();
     getnstr(line, MAX_CMD_LEN);
@@ -1231,8 +1232,7 @@ int send_cluster(void) {
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-    mvprintw(24, 0,
-	     "                                                                           ");
+    mvprintw(LINES - 1, 0, backgrnd_str);
     refreshp();
     line[0] = '\0';	/* not needed */
 

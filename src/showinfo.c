@@ -43,6 +43,7 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
+#define LINELENGTH 80
 
 void showinfo(int x) {
 
@@ -123,25 +124,22 @@ void showinfo(int x) {
     getyx(stdscr, cury, curx);
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
+    mvprintw(LINES - 1, 0, backgrnd_str);
+
     if (contstr[0] != '-') {
+	mvprintw(LINES - 1, 0, " %s  %s", pxstr, countrystr);
 
-        mvprintw(24, 0, " %-2s  %s             ", pxstr, countrystr);
-
-        mvprintw(24, 26,
-                 " %s %s                                           ",
-                 contstr, zonestr);
+	mvprintw(LINES - 1, 26,
+	     " %s %s",
+	     contstr, zonestr);
 
         if (x != 0 && x != mycountrynr && 0 == get_qrb(&range, &bearing)) {
-            mvprintw(24, 35, "%.0f km/%.0f deg ", range, bearing);
-        }
+	    mvprintw(LINES - 1, 35, "%.0f km/%.0f deg ", range, bearing);
+	}
 
-        mvprintw(24, 64, "  DX time: %s", timebuff);
-
-    } else {
-        mvprintw(24, 0, backgrnd_str);      // no valid info, clear line
+	mvprintw(LINES - 1, LINELENGTH-17, "   DX time: %s", timebuff);
     }
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-
     mvprintw(cury, curx, "");
 }
