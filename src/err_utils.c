@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define YPOS (LINES - 1)
+
 void handle_logging(enum log_lvl lvl, ...) {
     char *fmt;
     char *str;
@@ -34,10 +36,10 @@ void handle_logging(enum log_lvl lvl, ...) {
     str = g_strdup_vprintf(fmt, args);
     va_end(args);
 
-    move(24,0);
+    move(YPOS, 0);
     for (int i = 0; i < 80; i++)
 	printw(" ");
-    mvprintw(24, 0, str);
+    mvprintw(YPOS, 0, str);
     refreshp();
 
     g_free(str);
