@@ -67,7 +67,7 @@ int get_qrb(double *range, double *bearing) {
     extern char hiscall[];
 
     if (*hiscall == '\0')
-	return 0;
+	return -1;
 
     return qrb(-1.0 * QTH_Long, QTH_Lat, -1.0 * DEST_Long, DEST_Lat,
 	       range, bearing);
