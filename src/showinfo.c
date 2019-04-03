@@ -44,7 +44,7 @@
 #include "ui_utils.h"
 
 
-int showinfo(int x) {
+void showinfo(int x) {
 
     extern char cqzone[];
     extern char ituzone[];
@@ -54,12 +54,13 @@ int showinfo(int x) {
     extern long timecorr;
     extern char itustr[];
     extern int mycountrynr;
+    extern char backgrnd_str[];
 
     int cury, curx;
     char pxstr[16];
     char countrystr[26];
     char zonestr[3];
-    char contstr[3] = "";
+    char contstr[3];
     double bearing;
     double range;
 
@@ -109,7 +110,7 @@ int showinfo(int x) {
     else
 	DEST_Lat = dx->lat;				/* where is he? */
     if (pfx->lon != INFINITY)
-	DEST_Lat = pfx->lon;
+	DEST_Long = pfx->lon;
     else
 	DEST_Long = dx->lon;
 
@@ -122,22 +123,25 @@ int showinfo(int x) {
     getyx(stdscr, cury, curx);
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-    mvprintw(24, 0, " %s  %s             ", pxstr, countrystr);
+    if (contstr[0] != '-') {
 
-    mvprintw(24, 26,
-	     " %s %s                                           ",
-	     contstr, zonestr);
+        mvprintw(24, 0, " %-2s  %s             ", pxstr, countrystr);
 
-    if (x != 0 && x != mycountrynr) {
-	qrb_(&range, &bearing);
-	mvprintw(24, 35, "%.0f km/%.0f deg ", range, bearing);
+        mvprintw(24, 26,
+                 " %s %s                                           ",
+                 contstr, zonestr);
+
+        if (x != 0 && x != mycountrynr && 0 == get_qrb(&range, &bearing)) {
+            mvprintw(24, 35, "%.0f km/%.0f deg ", range, bearing);
+        }
+
+        mvprintw(24, 64, "  DX time: %s", timebuff);
+
+    } else {
+        mvprintw(24, 0, backgrnd_str);      // no valid info, clear line
     }
-
-    mvprintw(24, 64, "  DX time: %s", timebuff);
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvprintw(cury, curx, "");
-
-    return (0);
 }
