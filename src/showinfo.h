@@ -23,6 +23,6 @@
 
 #define SHOWINFO_DUMMY	-1
 
-int showinfo(int x);
+void showinfo(int x);
 
 #endif /* end of include guard: SHOWINFO_H */
