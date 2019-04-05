@@ -151,7 +151,7 @@ void clear_display(void) {
     printcall();
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-    mvprintw(24, 0, backgrnd_str);
+    mvprintw(LINES - 1, 0, backgrnd_str);
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     mvprintw(cury, curx, "");
