@@ -27,6 +27,10 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
+extern int ymax;
+
+#define YPOS (ymax -1)
+#define LINELENGTH 80
 
 int getwwv(void) {
 
@@ -45,9 +49,6 @@ int getwwv(void) {
 
     time_t now;
     struct tm *ptr1;
-
-    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-    mvprintw(24, 0, backgrnd_str);
 
     if (strlen(lastwwv) >= 2) {
 
@@ -97,7 +98,13 @@ int getwwv(void) {
 		strcat(printbuffer, "   AURORA!");
 
 	    strcpy(lastwwv, printbuffer);
-	    mvprintw(24, 0, lastwwv);	/* print WWV info  */
+
+
+	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+	    mvprintw(YPOS, 0, backgrnd_str);
+
+	    mvprintw(YPOS, 0, printbuffer);	/* print WWV info  */
+	    printw(" ");
 
 	    d = dxcc_by_index(mycountrynr) -> timezone;
 
@@ -105,8 +112,7 @@ int getwwv(void) {
 	    ptr1 = gmtime(&now);
 	    strftime(timebuff, 80, "%H:%M", ptr1);
 
-	    printbuffer[0] = '\0';
-	    mvprintw(24, 64, "local time %s", timebuff);
+	    mvprintw(YPOS, LINELENGTH - 17, " local time %s", timebuff);
 	}
 
 	printcall();
