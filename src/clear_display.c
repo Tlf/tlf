@@ -37,6 +37,7 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
+extern int ymax;
 
 void clear_display(void) {
     extern char mode[];
@@ -151,7 +152,7 @@ void clear_display(void) {
     printcall();
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-    mvprintw(24, 0, backgrnd_str);
+    mvprintw(ymax-1, 0, backgrnd_str);
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     mvprintw(cury, curx, "");
