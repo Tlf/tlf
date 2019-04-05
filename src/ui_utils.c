@@ -23,6 +23,8 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#include "bandmap.h"
+#include "clear_display.h"
 #include "stoptx.h"
 #include "tlf_panel.h"
 #include "startmsg.h"
@@ -142,8 +144,11 @@ static int getkey(int wait) {
 
     x = onechar();
 
-    if (x == KEY_RESIZE)
+    if (x == KEY_RESIZE) {
 	getmaxyx(stdscr, ymax, xmax);
+	clear_display();
+	bandmap_show();
+    }
 
     nodelay(stdscr, FALSE);
 
