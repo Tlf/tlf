@@ -30,7 +30,7 @@
 #include "globalvars.h"
 
 
-void send_bandswitch(int trxqrg);
+void send_bandswitch(freq_t trxqrg);
 
 static int parse_rigconf();
 static void debug_tlf_rig();

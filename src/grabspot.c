@@ -31,7 +31,7 @@
 #include "tlf_curses.h"
 #include "gettxinfo.h"
 
-void send_bandswitch(int outfreq);
+void send_bandswitch(freq_t outfreq);
 
 static freq_t execute_grab(spot *data);
 
@@ -97,7 +97,7 @@ static freq_t execute_grab(spot *data) {
 
     freq_t f = data->freq - fldigi_get_carrier();
     set_outfreq(f);
-    send_bandswitch((int) f);
+    send_bandswitch(f);
 
     strcpy(hiscall, data->call);
 
