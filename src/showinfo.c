@@ -125,7 +125,6 @@ void showinfo(int x) {
     getyx(stdscr, cury, curx);
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-#if 1
     mvprintw(YPOS, 0, backgrnd_str);
 
     if (contstr[0] != '-') {
@@ -141,27 +140,7 @@ void showinfo(int x) {
 
 	mvprintw(YPOS, LINELENGTH-17, "   DX time: %s", timebuff);
     }
-#else
-    if (contstr[0] != '-') {
-
-        mvprintw(YPOS, 0, " %-2s  %s             ", pxstr, countrystr);
-
-        mvprintw(YPOS, 26,
-                 " %s %s                                           ",
-                 contstr, zonestr);
-
-        if (x != 0 && x != mycountrynr && 0 == get_qrb(&range, &bearing)) {
-            mvprintw(YPOS, 35, "%.0f km/%.0f deg ", range, bearing);
-        }
-
-        mvprintw(YPOS, 64, "  DX time: %s", timebuff);
-
-    } else {
-        mvprintw(YPOS, 0, backgrnd_str);      // no valid info, clear line
-    }
-#endif
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-
     mvprintw(cury, curx, "");
 }
