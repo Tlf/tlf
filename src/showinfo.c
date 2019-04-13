@@ -46,7 +46,7 @@
 #define YPOS (LINES - 1)
 #define LINELENGTH 80
 
-int showinfo(int x) {
+void showinfo(int x) {
 
     extern char cqzone[];
     extern char ituzone[];
@@ -56,12 +56,13 @@ int showinfo(int x) {
     extern long timecorr;
     extern char itustr[];
     extern int mycountrynr;
+    extern char backgrnd_str[];
 
     int cury, curx;
     char pxstr[16];
     char countrystr[26];
     char zonestr[3];
-    char contstr[3] = "";
+    char contstr[3];
     double bearing;
     double range;
 
@@ -111,7 +112,7 @@ int showinfo(int x) {
     else
 	DEST_Lat = dx->lat;				/* where is he? */
     if (pfx->lon != INFINITY)
-	DEST_Lat = pfx->lon;
+	DEST_Long = pfx->lon;
     else
 	DEST_Long = dx->lon;
 
@@ -124,26 +125,43 @@ int showinfo(int x) {
     getyx(stdscr, cury, curx);
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-    move(YPOS, 0);
-    for (int i = 0; i < LINELENGTH; i++)
-	printw(" ");
+#if 1
+    mvprintw(YPOS, 0, backgrnd_str);
 
-    mvprintw(YPOS, 0, " %s  %s", pxstr, countrystr);
+    if (contstr[0] != '-') {
+	mvprintw(YPOS, 0, " %s  %s", pxstr, countrystr);
 
-    mvprintw(YPOS, 26,
+	mvprintw(YPOS, 26,
 	     " %s %s",
 	     contstr, zonestr);
 
-    if (x != 0 && x != mycountrynr) {
-	qrb_(&range, &bearing);
-	mvprintw(YPOS, 35, "%.0f km/%.0f deg ", range, bearing);
-    }
+        if (x != 0 && x != mycountrynr && 0 == get_qrb(&range, &bearing)) {
+	    mvprintw(YPOS, 35, "%.0f km/%.0f deg ", range, bearing);
+	}
 
-    mvprintw(YPOS, LINELENGTH-17, "   DX time: %s", timebuff);
+	mvprintw(YPOS, LINELENGTH-17, "   DX time: %s", timebuff);
+    }
+#else
+    if (contstr[0] != '-') {
+
+        mvprintw(YPOS, 0, " %-2s  %s             ", pxstr, countrystr);
+
+        mvprintw(YPOS, 26,
+                 " %s %s                                           ",
+                 contstr, zonestr);
+
+        if (x != 0 && x != mycountrynr && 0 == get_qrb(&range, &bearing)) {
+            mvprintw(YPOS, 35, "%.0f km/%.0f deg ", range, bearing);
+        }
+
+        mvprintw(YPOS, 64, "  DX time: %s", timebuff);
+
+    } else {
+        mvprintw(YPOS, 0, backgrnd_str);      // no valid info, clear line
+    }
+#endif
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvprintw(cury, curx, "");
-
-    return (0);
 }
