@@ -11,6 +11,9 @@
 // OBJECT ../src/get_time.o
 // OBJECT ../src/err_utils.o
 
+
+int LINES=25;   /* test for 25 lines */
+
 long timecorr;
 int getctynr(char *checkcall) {
     return 0;
