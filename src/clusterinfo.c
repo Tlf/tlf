@@ -74,6 +74,15 @@ void clusterinfo(void) {
 
     mvprintw(12, 0, "");
 
+    if (cluster == NOCLUSTER) {
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+
+	for (int i = 14; i < LINES-1; i++)
+	    mvprintw(i, 0, backgrnd_str);
+	refreshp();
+
+    }
+
     if (cluster == MAP) {
 
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
@@ -105,7 +114,7 @@ void clusterinfo(void) {
 
 	g_strlcpy(inputbuffer, backgrnd_str, 79);
 
-	for (j = 15; j <= 22; j++) {
+	for (j = 15; j <= LINES-3; j++) {
 	    mvprintw(j, 1, "%s", inputbuffer);
 	}
 
@@ -113,24 +122,20 @@ void clusterinfo(void) {
 	/** \todo minimize lock time */
 	pthread_mutex_lock(&spot_ptr_mutex);
 
-	getclusterinfo();
+	k = getclusterinfo();
 
-	k = 0;
-
-	while (spotarray[k] > -1) {
-	    k++;
-	    if (k > (MAX_SPOTS - 2))
-		break;
+	if (k > (MAX_SPOTS - 1)) {
+		k = MAX_SPOTS - 1;
 	}
 
-	k -= 9;
+	k -= (LINES-3 - 14) + 1;
 	if (k < 0)
 	    k = -1;
 
 
-	for (j = 15; j <= 22; j++) {
-
-	    if (k < (MAX_SPOTS - 2) && spotarray[++k] > -1) {
+	for (j = 15; j <= LINES-3; j++) {
+	    k++;
+	    if (k < (MAX_SPOTS - 1) && spotarray[k] > -1) {
 		if (k > MAX_SPOTS - 1)
 		    k = MAX_SPOTS - 1;
 
@@ -150,7 +155,7 @@ void clusterinfo(void) {
 
 	pthread_mutex_unlock(&spot_ptr_mutex);
 
-	nicebox(14, 0, 8, 78, "Cluster");
+	nicebox(14, 0, LINES-3 - 14, 78, "Cluster");
 	refreshp();
     }
     printcall();
@@ -414,43 +419,34 @@ int getclusterinfo(void) {
     while (1) {
 
 	if (strstr(spot_ptr[i], "DX de") != NULL) {
-
 	    spotarray[si] = i;
 	    si++;
-	    i++;
 
 	} else if (strstr(spot_ptr[i], calldupe) != NULL) {
 	    if ((announcefilter <= 2)) {
 		spotarray[si] = i;
 		si++;
-		i++;
-	    } else
-		i++;
+	    }
 
 	} else if (strstr(spot_ptr[i], "To ALL") != NULL) {
 	    if ((announcefilter <= 1)) {
 		spotarray[si] = i;
 		si++;
 	    }
-	    i++;
 
 	} else if ((announcefilter == 0)
 		   && (strlen(spot_ptr[i]) > 20)) {
-
 	    spotarray[si] = i;
 	    si++;
+	}
 
-	    i++;
-
-	} else
-	    i++;
+	i++;
 
 	if (i > (nr_of_spots - 1))
 	    break;
-
     }
 
-    return (si - 1);
+    return si;
 }
 
 
