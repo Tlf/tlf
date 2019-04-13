@@ -154,6 +154,7 @@ int muf(void) {
     extern int mycountrynr;
     extern int countrynr;
     extern char lastwwv[];
+    extern char backgrnd_str[];
 
     dxcc_data *dx;
     int row;
@@ -171,7 +172,7 @@ int muf(void) {
     PANEL *pan;
     WINDOW *win;
 
-    win = newwin(25, 80, 0, 0);
+    win = newwin(LINES, 80, 0, 0);
     pan = new_panel(win);
 
     n = 0.0;
@@ -228,9 +229,8 @@ int muf(void) {
     wclear(win);
     wattron(win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
-    for (i = 0; i < 25; i++)
-	mvwprintw(win, i, 0,
-		  "                                                                                ");
+    for (i = 0; i < LINES; i++)
+	mvwprintw(win, i, 0, backgrnd_str);
 
     mvwprintw(win, 1, 40, "%s", country);
     mvwprintw(win, 1, 0, "        SSN: %3.0f ", r);
@@ -322,7 +322,6 @@ int muf(void) {
     }
     mvwprintw(win, 23, 0, " --- Press a key to continue --- ");
     refreshp();
-
     (void)key_get();
 
     hide_panel(pan);
