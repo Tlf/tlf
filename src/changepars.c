@@ -64,6 +64,7 @@
 
 
 int debug_tty(void);
+void wipe_display();
 
 int changepars(void) {
 
@@ -716,7 +717,7 @@ int changepars(void) {
 
 /* -------------------------------------------------------------- */
 
-int networkinfo(void) {
+void networkinfo(void) {
 
     extern int use_bandoutput;
     extern int recv_packets;
@@ -733,15 +734,9 @@ int networkinfo(void) {
     extern char *rigportname;
     extern char logfile[];
 
-    int i, j, inode;
+    int inode;
 
-    clear();
-
-    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
-
-    for (j = 0; j <= 24; j++)
-	mvprintw(j, 0,
-		 "                                                                                ");
+    wipe_display();
 
     if (lan_active == 1)
 	mvprintw(1, 10, "Network status: on");
@@ -779,20 +774,13 @@ int networkinfo(void) {
 
     (void)key_get();
 
-    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
-    for (i = 0; i <= 24; i++)
-	mvprintw(i, 0,
-		 "                                                                                ");
-
     clear_display();
-
-    return (0);
-
+    return;
 }
 
 /* -------------------------------------------------------------- */
 
-int multiplierinfo(void) {
+void multiplierinfo(void) {
 
     extern int arrlss;
     extern int serial_section_mult;
@@ -803,13 +791,7 @@ int multiplierinfo(void) {
     int j, k, vert, hor, cnt, found;
     char mprint[50];
 
-    clear();
-
-    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
-
-    for (j = 0; j <= 24; j++)
-	mvprintw(j, 0,
-		 "                                                                                ");
+    wipe_display();
 
     if (arrlss == 1) {
 	int attributes;
@@ -904,16 +886,8 @@ int multiplierinfo(void) {
 
     (void)key_get();
 
-    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
-
-    for (j = 0; j <= 24; j++)
-	mvprintw(j, 0,
-		 "                                                                                ");
-
     clear_display();
-
-    return (0);
-
+    return;
 }
 
 /* ------------------------- radio link debug ------------------------------ */
@@ -1078,4 +1052,15 @@ int debug_tty(void) {
 	close(fdSertnc);
 
     return (0);
+}
+
+
+void wipe_display() {
+    int j;
+    extern char backgrnd_str[];
+
+    attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
+
+    for (j = 0; j < LINES; j++)
+	mvprintw(j, 0, backgrnd_str);
 }
