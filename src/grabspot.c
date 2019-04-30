@@ -30,6 +30,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "gettxinfo.h"
+#include "callinput.h"
 
 void send_bandswitch(freq_t outfreq);
 
@@ -90,9 +91,10 @@ freq_t grab_next(void) {
  */
 static freq_t execute_grab(spot *data) {
     extern char hiscall[];
-    extern char mode[];
     extern int cqmode;
     extern freq_t mem;
+    extern int mem_cqmode;
+    extern int mem_grab;
     extern freq_t freq;
 
     freq_t f = data->freq - fldigi_get_carrier();
@@ -106,10 +108,11 @@ static freq_t execute_grab(spot *data) {
 
     /* if in CQ mode switch to S&P and remember QRG */
     if (cqmode == CQ) {
-	cqmode = S_P;
-	strcpy(mode, "S&P     ");
 	mem = freq;
+        mem_cqmode = CQ;
+        mem_grab = 1;   // stored due to a grab
 	mvprintw(14, 68, "MEM: %7.1f", mem/1000.);
+        change_mode();
     }
 
     refreshp();

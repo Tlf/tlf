@@ -82,6 +82,7 @@ void send_bandswitch(freq_t freq);
 int autosend(void);
 int plain_number(char *str);
 void handle_bandswitch(int direction);
+void revert_grab();
 
 extern int no_arrows;
 extern char hiscall[];
@@ -92,6 +93,13 @@ extern int dxped;
 extern freq_t freq;
 extern int trx_control;
 extern freq_t bandfrequency[];
+extern int cqmode;
+extern char mode[];
+extern freq_t freq;
+extern freq_t mem;
+extern int mem_cqmode;
+extern int mem_grab;
+
 
 
 /** callsign input loop
@@ -106,9 +114,7 @@ int callinput(void) {
     extern int early_started;
     extern char hiscall_sent[];
     extern char comment[];
-    extern int cqmode;
     extern int trxmode;
-    extern char mode[];
     extern char lastcall[];
     extern int cqdelay;
     extern char his_rst[];
@@ -116,7 +122,6 @@ int callinput(void) {
     extern int cluster;
     extern int announcefilter;
     extern char ph_message[14][80];
-    extern freq_t mem;
     extern SCREEN *mainscreen;
     extern int simulator;
     extern int simulator_mode;
@@ -253,23 +258,9 @@ int callinput(void) {
 
 	/* special handling of some keycodes if call field is empty */
 	if (*hiscall == '\0') {
-	    if ((x == '+') && (*hiscall == '\0') && (ctcomp == 0)) {
+	    if (x == '+' && *hiscall == '\0' && !ctcomp) {
 		/* switch to other mode */
-		if (cqmode == CQ) {
-		    cqmode = S_P;
-		} else
-		    cqmode = CQ;
-
-		/* and show new mode */
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-
-		if (cqmode == CQ) {
-		    mvprintw(0, 2, "Log     ");
-		    strcpy(mode, "Log     ");
-		} else {
-		    mvprintw(0, 2, "S&P     ");
-		    strcpy(mode, "S&P     ");
-		}
+                change_mode();
 		cleanup();
 
 	    }
@@ -515,9 +506,8 @@ int callinput(void) {
 
 	    // <Insert>, send exchange in CT mode
 	    case KEY_IC: {
-		if (ctcomp != 0) {
+		if (ctcomp) {
 		    send_standard_message(1);		// F2
-
 		}
 		break;
 	    }
@@ -544,20 +534,7 @@ int callinput(void) {
 
 	    // Hash, save xcvr freq to mem or restore mem to xcvr.
 	    case '#': {
-		if (mem == 0.0) {
-		    mem = freq;
-		    mvprintw(14, 68, "MEM: %7.1f", mem/1000.);
-		} else {
-		    freq = mem;
-
-		    set_outfreq(mem);
-
-		    mem = 0.0;
-		    mvprintw(14, 68, "            ");
-		}
-		mvprintw(29, 12, " ");
-		mvprintw(29, 12, "");
-		refreshp();
+                swap_mem();
 		break;
 	    }
 
@@ -836,6 +813,7 @@ int callinput(void) {
 		if (early_started == 0) {
 		    /* if CW not started early drop call and start anew */
 		    cleanup();
+                    revert_grab();
 		    clear_display();
 		} else {
 		    /* otherwise just stop sending */
@@ -934,7 +912,7 @@ int callinput(void) {
 
 	    // Alt-g (M-g), grab first spot matching call field chars.
 	    case 231: {
-		double f = grabspot();
+		freq_t f = grabspot();
 		if (f > 0.0) {
 		    grab.state = IN_PROGRESS;
 		    grab.spotfreq = f;
@@ -1338,4 +1316,62 @@ void handle_bandswitch(int direction) {
     }
 
     send_bandswitch(bandinx);
+}
+
+
+/** VFO <-> MEM
+ *
+ **/
+void swap_mem() {
+    if (mem == 0.0) {
+        mem = freq;
+        mem_cqmode = cqmode;
+        mem_grab = 0;       // it wasn't a grab
+        mvprintw(14, 68, "MEM: %7.1f", mem/1000.);
+    } else {
+        freq = mem;
+        cqmode = mem_cqmode;
+
+        set_outfreq(mem);
+
+        mem = 0.0;
+        mvprintw(14, 68, "            ");
+    }
+
+    update_mode();
+    refreshp();
+}
+
+// fill mode[] according to the current cqmode
+void update_mode() {
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+
+    if (cqmode == CQ) {
+        strcpy(mode, "Log     ");
+    } else {
+        strcpy(mode, "S&P     ");
+    }
+    mvprintw(0, 2, mode);
+}
+
+// revert to stored CQ frequency after a grab
+void revert_grab() {
+    if (mem != 0.0 && mem_grab && mem_cqmode == CQ) {
+        swap_mem();
+    }
+}
+
+/** CQ <-> S_P
+ *
+ **/
+void change_mode() {
+    /* switch to other mode */
+    if (cqmode == CQ) {
+	cqmode = S_P;
+    } else {
+	cqmode = CQ;
+    }
+
+    /* and show new mode */
+    update_mode();
 }

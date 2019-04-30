@@ -411,6 +411,8 @@ struct tm *time_ptr, time_ptr_cabrillo;
 
 freq_t freq;
 freq_t mem;
+int mem_cqmode = CQ;    // cqmode of the stored frequency
+int mem_grab = 0;       // frequency was stored due to a grab
 int logfrequency = 0;
 int rit;
 int trx_control = 0;
