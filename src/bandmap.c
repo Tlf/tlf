@@ -498,21 +498,21 @@ void bm_show_info() {
     /* show info field on the right */
     attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
     move(TOPLINE, 66);
-    vline(ACS_VLINE, 10);
+    vline(ACS_VLINE, LINES - TOPLINE -1);
 
-    mvprintw(18, 68, "bands: %s", bm_config.allband ? "all" : "own");
-    mvprintw(19, 68, "modes: %s", bm_config.allmode ? "all" : "own");
-    mvprintw(20, 68, "dupes: %s", bm_config.showdupes ? "yes" : "no");
-    mvprintw(21, 68, "onl.ml: %s", bm_config.onlymults ? "yes" : "no");
+    mvprintw(LASTLINE - 5, 67, " bands: %s", bm_config.allband ? "all" : "own");
+    mvprintw(LASTLINE - 4, 67, " modes: %s", bm_config.allmode ? "all" : "own");
+    mvprintw(LASTLINE - 3, 67, " dupes: %s", bm_config.showdupes ? "yes" : "no");
+    mvprintw(LASTLINE - 2, 67, " onl.ml: %s", bm_config.onlymults ? "yes" : "no");
 
     attrset(COLOR_PAIR(CB_NEW) | A_STANDOUT);
-    mvprintw(22, 69, "MULTI");
+    mvprintw(LASTLINE - 1, 67, "  MULTI");
 
     attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
     printw(" NEW");
 
     attrset(COLOR_PAIR(CB_NORMAL));
-    mvprintw(23, 67, "SPOT");
+    mvprintw(LASTLINE, 67, "SPOT");
 
     attrset(COLOR_PAIR(CB_OLD));
     printw(" OLD");
@@ -862,7 +862,7 @@ void bm_menu() {
 
     attrset(COLOR_PAIR(C_LOG) | A_STANDOUT);
     mvprintw(13, 0, "  Toggle <B>and, <M>ode, <D>upes or <O>nly multi filter");
-    printw(" | any other - leave");
+    printw(" | any other - leave ");
 
     c = toupper(key_get());
     switch (c) {
