@@ -28,6 +28,7 @@
 #include "stoptx.h"
 #include "tlf_panel.h"
 #include "startmsg.h"
+#include "splitscreen.h"
 
 
 extern int use_rxvt;
@@ -42,7 +43,7 @@ pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static int getkey(int wait);
 static int onechar(void);
-
+void resize_layout(void);
 
 /** fake refresh code to use update logic for panels */
 void refreshp() {
@@ -145,9 +146,7 @@ static int getkey(int wait) {
     x = onechar();
 
     if (x == KEY_RESIZE) {
-	getmaxyx(stdscr, ymax, xmax);
-	clear_display();
-	clusterinfo();
+	resize_layout();
     }
 
     nodelay(stdscr, FALSE);
@@ -326,4 +325,16 @@ static int onechar(void) {
     }
 
     return x;
+}
+
+
+/* Handles resizing of windows
+ * As ncurses handles most of it itself, it just redraws the main
+ * display and resizes only the packet panel windows
+ */
+void resize_layout(void) {
+    	getmaxyx(stdscr, ymax, xmax);
+	clear_display();
+	clusterinfo();
+	refresh_splitlayout();
 }

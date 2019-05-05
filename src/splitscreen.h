@@ -26,6 +26,7 @@ int packet(void);
 int send_cluster(void);
 void addtext(char *s);
 int receive_packet(void);
+void refresh_splitlayout();
 
 
 #ifdef SPLITSCREEN_H_PRIVATE
