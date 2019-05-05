@@ -36,6 +36,7 @@ void lookup_keys();
 
 int key_get();
 int key_poll();
+void resize_layout();
 
 
 #endif /* UI_UTILS_H */

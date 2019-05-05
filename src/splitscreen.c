@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 
 #define SPLITSCREEN_H_PRIVATE
+#include "splitscreen.h"
 
 #include "bandmap.h"
 #include "clear_display.h"
@@ -43,7 +44,6 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "ignore_unused.h"
 #include "lancode.h"
-#include "splitscreen.h"
 #include "sockserv.h"
 #include "tlf_curses.h"
 #include "tlf_panel.h"
@@ -62,6 +62,8 @@ pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;
 int prsock = 0;
 int fdFIFO = 0;
 
+WINDOW *packet_win;
+PANEL  *packet_panel;
 WINDOW *sclwin, *entwin;
 static int initialized = 0;
 
@@ -85,6 +87,8 @@ struct tln_logline *viewing = NULL;
 
 int view_state = STATE_EDITING;
 char tln_input_buffer[2 * BUFFERSIZE];
+
+void setup_splitlayout();
 
 void addlog(char *s) {
     extern char lastwwv[];
@@ -444,6 +448,12 @@ void viewlog(void) {
 
 int litflag = FALSE;
 int edit_line(int c) {
+    if (c == KEY_RESIZE) {
+	resize_layout();
+	resume_editing();
+	return 0;
+    }
+
     if (view_state != STATE_EDITING) {
 	if (c == '\n')
 	    resume_editing();
@@ -540,6 +550,33 @@ void sanitize(char *s) {
 	    *t++ = *s;
     }
     *t = '\0';
+}
+
+void setup_splitlayout() {
+    sclwin = derwin(packet_win, LINES - ENTRYROWS, COLS, 0, 0);
+    entwin = derwin(packet_win, ENTRYROWS, COLS, LINES - ENTRYROWS, 0);
+    scrollok(sclwin, TRUE);
+    scrollok(entwin, FALSE);
+    keypad(entwin, TRUE);
+    intrflush(entwin, FALSE);
+    wattrset(sclwin, attr[NORMAL_ATTR]);
+    wattrset(entwin, attr[ENTRY_ATTR]);
+
+    wtimeout(entwin, 30);
+    curattr = attr[NORMAL_ATTR];
+}
+
+void refresh_splitlayout() {
+    WINDOW* oldwin = packet_win;
+
+    packet_win = newwin(LINES, COLS, 0, 0);
+    replace_panel(packet_panel, packet_win);
+
+    delwin(entwin);
+    delwin(sclwin);
+    delwin(oldwin);
+
+    setup_splitlayout();
 }
 
 void addtext(char *s) {
@@ -711,8 +748,6 @@ void addtext(char *s) {
 =             This initializes the packet windows
 =
 ===========================================*/
-WINDOW *packet_win;
-PANEL  *packet_panel;
 
 int init_packet(void) {
     extern int portnum;
@@ -760,23 +795,13 @@ int init_packet(void) {
 	    init_pair(7, 7, 0);
 	}
 #endif
-	sclwin = derwin(packet_win, LINES - ENTRYROWS, COLS, 0, 0);
-	entwin = derwin(packet_win, ENTRYROWS, COLS, LINES - ENTRYROWS, 0);
-	scrollok(sclwin, TRUE);
-	scrollok(entwin, FALSE);
-	keypad(entwin, TRUE);
-	intrflush(entwin, FALSE);
-	wattrset(sclwin, attr[NORMAL_ATTR]);
-	wattrset(entwin, attr[ENTRY_ATTR]);
+	setup_splitlayout();
+	noecho();
+	cbreak();
 
 	initialized = 1;
 
-	noecho();
-	cbreak();
-	wtimeout(entwin, 30);
-	wrefresh(sclwin);
 	start_editing();
-	curattr = attr[NORMAL_ATTR];
     }
 
     if (packetinterface == TELNET_INTERFACE) {
@@ -1018,6 +1043,8 @@ int packet() {
     }
     if ((tln_loglines == 0) && (packetinterface == TNC_INTERFACE))
 	addtext("Welcome to TLF tnc terminal\n\n");
+
+    resume_editing();
 
     while (1) {
 	wrefresh(entwin);
