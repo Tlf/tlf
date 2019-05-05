@@ -101,12 +101,12 @@ void show_freq(void) {
 	attron(modify_attr(COLOR_PAIR(C_LOG)));
 
 	if ((showfreq == 0) || (showscore_flag == 1))
-	    mvprintw(13, 68, "TRX: %7.1f", freq / 1000.0);
+	    mvprintw(13, 67, " TRX: %7.1f", freq / 1000.0);
 
 	if (mem > 0.0)
-	    mvprintw(14, 68, "MEM: %7.1f", mem / 1000.0);
+	    mvprintw(14, 67, " MEM: %7.1f", mem / 1000.0);
 	else
-	    mvprintw(14, 68, "            ");
+	    mvprintw(14, 67, "             ");
 
 	if ((showfreq == 1) && (showscore_flag == 0)) {
 

@@ -546,14 +546,14 @@ int callinput(void) {
 	    case '#': {
 		if (mem == 0.0) {
 		    mem = freq;
-		    mvprintw(14, 68, "MEM: %7.1f", mem/1000.);
+		    mvprintw(14, 67, " MEM: %7.1f", mem/1000.);
 		} else {
 		    freq = mem;
 
 		    set_outfreq(mem);
 
 		    mem = 0.0;
-		    mvprintw(14, 68, "            ");
+		    mvprintw(14, 67, "             ");
 		}
 		mvprintw(29, 12, " ");
 		mvprintw(29, 12, "");
