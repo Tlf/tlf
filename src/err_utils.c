@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+extern char backgrnd_str[];
+
 void handle_logging(enum log_lvl lvl, ...) {
     char *fmt;
     char *str;
@@ -34,9 +36,7 @@ void handle_logging(enum log_lvl lvl, ...) {
     str = g_strdup_vprintf(fmt, args);
     va_end(args);
 
-    move(24,0);
-    for (int i = 0; i < 80; i++)
-	printw(" ");
+    mvprintw(24,0, backgrnd_str);
     mvprintw(24, 0, str);
     refreshp();
 
