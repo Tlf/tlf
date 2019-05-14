@@ -26,6 +26,8 @@
 
 #define YPOS (LINES - 1)
 
+extern char backgrnd_str[];
+
 void handle_logging(enum log_lvl lvl, ...) {
     char *fmt;
     char *str;
@@ -36,10 +38,8 @@ void handle_logging(enum log_lvl lvl, ...) {
     str = g_strdup_vprintf(fmt, args);
     va_end(args);
 
-    move(YPOS, 0);
-    for (int i = 0; i < 80; i++)
-	printw(" ");
     mvprintw(YPOS, 0, str);
+    mvprintw(YPOS, 0, backgrnd_str);
     refreshp();
 
     g_free(str);
