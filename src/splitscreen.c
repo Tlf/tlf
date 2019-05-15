@@ -567,6 +567,10 @@ void setup_splitlayout() {
 }
 
 void refresh_splitlayout() {
+    if (!initialized) {
+	return;
+    }
+
     WINDOW* oldwin = packet_win;
 
     packet_win = newwin(LINES, COLS, 0, 0);
