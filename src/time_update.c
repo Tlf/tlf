@@ -96,9 +96,9 @@ void show_freq(void) {
     extern int trx_control;
     extern freq_t freq;
 
-    if (trx_control == 1) {
+    attron(modify_attr(COLOR_PAIR(C_LOG)));
 
-	attron(modify_attr(COLOR_PAIR(C_LOG)));
+    if (trx_control == 1) {
 
 	if ((showfreq == 0) || (showscore_flag == 1))
 	    mvprintw(13, 67, " TRX: %7.1f", freq / 1000.0);
@@ -112,6 +112,10 @@ void show_freq(void) {
 
 	    freq_display();
 	}
+    }
+    else {
+	mvprintw(13, 67, "             ");
+	mvprintw(14, 67, "             ");
     }
 }
 
