@@ -43,7 +43,7 @@ int lan_send_init(void);
 int lan_send_close(void);
 int lan_send(char *buffer) ;
 int send_lan_message(int opcode, char *message);
-int talk(void);
+void talk(void);
 int send_freq(freq_t freq);
 int send_time(void) ;
 

@@ -88,6 +88,8 @@ int time_master;
 char thisnode = 'A'; 		/*  start with 'A' if not defined in
 				    logcfg.dat */
 
+extern char backgrnd_str[];
+
 //---------------------end lan globals --------------
 
 int resolveService(const char *service) {
@@ -336,14 +338,12 @@ int send_lan_message(int opcode, char *message) {
 }
 
 /* ----------------- send talk message ----------*/
-
-int talk(void) {
+void talk(void) {
 
     char talkline[61] = "";
 
-    mvprintw(24, 0,
-	     "                                                                           ");
-    mvprintw(24, 0, "T>");
+    mvprintw(LINES-1, 0, backgrnd_str);
+    mvprintw(LINES - 1, 0, "T>");
     refreshp();
     echo();
     getnstr(talkline, 60);
@@ -355,11 +355,8 @@ int talk(void) {
 
     talkline[0] = '\0';
     attron(COLOR_PAIR(C_HEADER));
-    mvprintw(24, 0,
-	     "                                                                               ");
+    mvprintw(LINES-1, 0, backgrnd_str);
     refreshp();
-
-    return (0);
 }
 
 /* ----------------- send freq. message ----------*/
