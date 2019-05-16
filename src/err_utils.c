@@ -38,8 +38,8 @@ void handle_logging(enum log_lvl lvl, ...) {
     str = g_strdup_vprintf(fmt, args);
     va_end(args);
 
-    mvprintw(YPOS, 0, str);
     mvprintw(YPOS, 0, backgrnd_str);
+    mvprintw(YPOS, 0, str);
     refreshp();
 
     g_free(str);
