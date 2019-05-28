@@ -199,7 +199,7 @@ int callinput(void) {
 	     * from frequency and if so add call to spot list */
 	    if (bmautoadd != 0 && freqstore != 0) {
 		if (strlen(hiscall) >= 3) {
-		    if (fabsf(freq - freqstore) > 100) {
+		    if (fabsf(freq - freqstore) > 500) {
 			add_to_spots(hiscall, freqstore);
 			hiscall[0] = '\0';
 			HideSearchPanel();
@@ -235,7 +235,7 @@ int callinput(void) {
 
 	    /* if we have grabbed a call from spot list and tune away
 	     * then forget about it */
-	    if (fabsf(freq - grab.spotfreq) > 100 && grab.state == REACHED) {
+	    if (fabsf(freq - grab.spotfreq) > 500 && grab.state == REACHED) {
 		grab.state = NONE;
 		hiscall[0] = '\0';
 		printcall();
