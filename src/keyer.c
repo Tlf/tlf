@@ -59,8 +59,8 @@ int keyer(void) {
     extern int weight;
     extern int keyer_backspace;
 
-    WINDOW *win = NULL;
-    PANEL *panel = NULL;
+    static WINDOW *win = NULL;
+    static PANEL *panel = NULL;
 
     int x = 0, j = 0;
     int cury, curx;
