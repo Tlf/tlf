@@ -48,6 +48,13 @@
 #define DISTANCE(x, y) \
     ( x < y ? y - x : x -y )
 
+#define TOPLINE 14
+#define LASTLINE (LINES - 2)
+
+#define LINELENGTH 80
+#define COLUMNS ((LINELENGTH - 14) / SPOT_COLUMN_WIDTH)
+#define NR_SPOTS ((LASTLINE - TOPLINE + 1) * COLUMNS)
+
 pthread_mutex_t bm_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /** \brief sorted list of all recent DX spots
@@ -488,22 +495,22 @@ void bm_show_info() {
 
     /* show info field on the right */
     attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    move(14, 66);
-    vline(ACS_VLINE, 10);
+    move(TOPLINE, 66);
+    vline(ACS_VLINE, LINES - TOPLINE -1);
 
-    mvprintw(18, 68, "bands: %s", bm_config.allband ? "all" : "own");
-    mvprintw(19, 68, "modes: %s", bm_config.allmode ? "all" : "own");
-    mvprintw(20, 68, "dupes: %s", bm_config.showdupes ? "yes" : "no");
-    mvprintw(21, 68, "onl.ml: %s", bm_config.onlymults ? "yes" : "no");
+    mvprintw(LASTLINE - 5, 67, " bands: %s", bm_config.allband ? "all" : "own");
+    mvprintw(LASTLINE - 4, 67, " modes: %s", bm_config.allmode ? "all" : "own");
+    mvprintw(LASTLINE - 3, 67, " dupes: %s", bm_config.showdupes ? "yes" : "no");
+    mvprintw(LASTLINE - 2, 67, " onl.ml: %s", bm_config.onlymults ? "yes" : "no");
 
     attrset(COLOR_PAIR(CB_NEW) | A_STANDOUT);
-    mvprintw(22, 69, "MULTI");
+    mvprintw(LASTLINE - 1, 67, "  MULTI");
 
     attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
     printw(" NEW");
 
     attrset(COLOR_PAIR(CB_NORMAL));
-    mvprintw(23, 67, "SPOT");
+    mvprintw(LASTLINE, 67, "SPOT");
 
     attrset(COLOR_PAIR(CB_OLD));
     printw(" OLD");
@@ -600,8 +607,8 @@ void show_spot_on_qrg(spot *data) {
  */
 void next_spot_position(int *y, int *x) {
     *y += 1;
-    if (*y == 24) {
-	*y = 14;
+    if (*y == LASTLINE + 1) {
+	*y = TOPLINE;
 	*x += SPOT_COLUMN_WIDTH;
     }
 }
@@ -727,8 +734,8 @@ void bandmap_show() {
 
     getyx(stdscr, cury, curx);		/* remember cursor */
 
-    /* start in line 14, column 0 */
-    bm_y = 14;
+    /* start in TOPLINE, column 0 */
+    bm_y = TOPLINE;
     bm_x = 0;
 
     /* clear space for bandmap */
@@ -738,7 +745,7 @@ void bandmap_show() {
     for (j = 0; j < 67; j++)
 	addch(' ');
 
-    for (i = bm_y + 1; i < bm_y + 10; i++) {
+    for (i = bm_y + 1; i < LASTLINE + 1; i++) {
 	move(i, 0);
 	for (j = 0; j < 80; j++)
 	    addch(' ');
@@ -784,18 +791,18 @@ void bandmap_show() {
 	unsigned int max_below;
 	unsigned int above_qrg = spots->len - below_qrg - on_qrg;
 
-	if (above_qrg < 14) {
-	    max_below = 30 - above_qrg - 1;
+	if (above_qrg < ((NR_SPOTS - 1)/2) ) {
+	    max_below = NR_SPOTS - above_qrg - 1;
 	} else
-	    max_below = 15;
+	    max_below = NR_SPOTS/2;
 
 	startindex = (below_qrg < max_below) ? 0 : (below_qrg - max_below);
     }
 
     /* calculate the index+1 of the last spot to show */
-    stopindex  = (spots->len < startindex + 30 - (1 - on_qrg))
+    stopindex  = (spots->len < startindex + NR_SPOTS - (1 - on_qrg))
 		 ? spots->len
-		 : (startindex + 30 - (1 - on_qrg));
+		 : (startindex + NR_SPOTS - (1 - on_qrg));
 
     /* correct calculations if we have no rig frequency to show */
     if (trx_control == 0) {
@@ -853,7 +860,7 @@ void bm_menu() {
 
     attrset(COLOR_PAIR(C_LOG) | A_STANDOUT);
     mvprintw(13, 0, "  Toggle <B>and, <M>ode, <D>upes or <O>nly multi filter");
-    printw(" | any other - leave");
+    printw(" | any other - leave ");
 
     c = toupper(key_get());
     switch (c) {

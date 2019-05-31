@@ -161,7 +161,7 @@ int callinput(void) {
 
 
     int cury, curx;
-    int j, ii, t, x = 0;
+    int j, t, x = 0;
     char instring[2] = { '\0', '\0' };
     static int lastwindow;
 
@@ -674,20 +674,8 @@ int callinput(void) {
 		    cluster = CLUSTER;	// alt-A
 		    announcefilter = FILTER_ALL;
 		} else if (cluster == CLUSTER) {
-		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-		    for (ii = 14; ii < 24; ii++)
-			mvprintw(ii, 0, backgrnd_str);
-		    refreshp();
-
 		    cluster = MAP;
 		} else if (cluster == MAP) {
-		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-		    for (ii = 14; ii < 24; ii++)
-			mvprintw(ii, 0, backgrnd_str);
-		    refreshp();
-
 		    cluster = NOCLUSTER;
 		}
 

@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 
 #define SPLITSCREEN_H_PRIVATE
+#include "splitscreen.h"
 
 #include "bandmap.h"
 #include "clear_display.h"
@@ -43,11 +44,13 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "ignore_unused.h"
 #include "lancode.h"
-#include "splitscreen.h"
 #include "sockserv.h"
 #include "tlf_curses.h"
 #include "tlf_panel.h"
 #include "ui_utils.h"
+#include "err_utils.h"
+
+extern char backgrnd_str[];
 
 struct tln_logline {
     struct tln_logline *next;
@@ -62,6 +65,8 @@ pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;
 int prsock = 0;
 int fdFIFO = 0;
 
+WINDOW *packet_win;
+PANEL  *packet_panel;
 WINDOW *sclwin, *entwin;
 static int initialized = 0;
 
@@ -86,6 +91,8 @@ struct tln_logline *viewing = NULL;
 int view_state = STATE_EDITING;
 char tln_input_buffer[2 * BUFFERSIZE];
 
+void setup_splitlayout();
+
 void addlog(char *s) {
     extern char lastwwv[];
     extern char spot_ptr[MAX_SPOTS][82];
@@ -109,7 +116,7 @@ void addlog(char *s) {
 
 	if (clusterlog == 1) {
 	    if ((fp = fopen("clusterlog", "a")) == NULL) {
-		mvprintw(24, 0, "Opening clusterlog not possible.");
+		TLF_LOG_INFO("Opening clusterlog not possible.");
 	    } else {
 		if (strlen(lastmsg) > 20) {
 		    fputs(lastmsg, fp);
@@ -444,6 +451,12 @@ void viewlog(void) {
 
 int litflag = FALSE;
 int edit_line(int c) {
+    if (c == KEY_RESIZE) {
+	resize_layout();
+	resume_editing();
+	return 0;
+    }
+
     if (view_state != STATE_EDITING) {
 	if (c == '\n')
 	    resume_editing();
@@ -542,6 +555,37 @@ void sanitize(char *s) {
     *t = '\0';
 }
 
+void setup_splitlayout() {
+    sclwin = derwin(packet_win, LINES - ENTRYROWS, COLS, 0, 0);
+    entwin = derwin(packet_win, ENTRYROWS, COLS, LINES - ENTRYROWS, 0);
+    scrollok(sclwin, TRUE);
+    scrollok(entwin, FALSE);
+    keypad(entwin, TRUE);
+    intrflush(entwin, FALSE);
+    wattrset(sclwin, attr[NORMAL_ATTR]);
+    wattrset(entwin, attr[ENTRY_ATTR]);
+
+    wtimeout(entwin, 30);
+    curattr = attr[NORMAL_ATTR];
+}
+
+void refresh_splitlayout() {
+    if (!initialized) {
+	return;
+    }
+
+    WINDOW* oldwin = packet_win;
+
+    packet_win = newwin(LINES, COLS, 0, 0);
+    replace_panel(packet_panel, packet_win);
+
+    delwin(entwin);
+    delwin(sclwin);
+    delwin(oldwin);
+
+    setup_splitlayout();
+}
+
 void addtext(char *s) {
     extern int lan_active;
     extern char call[];
@@ -607,14 +651,13 @@ void addtext(char *s) {
     if (strncmp(s, call, strlen(call) - 1) == 0
 	    && strlen(s) < 81 && strchr(s, '>') == NULL) {
 
-	mvprintw(24, 0,
-		 "                                                                                ");
+	mvprintw(LINES - 1, 0, backgrnd_str);
 
 	if ((strlen(s) + strlen(call) + 3) < 80) {
 	    strcpy(dxtext, s + strlen(call) + 3);
 	    if (dxtext[strlen(dxtext) - 1] == '\n')
 		dxtext[strlen(dxtext) - 1] = '\0';	// remove the newline
-	    mvprintw(24, 0, dxtext);
+	    mvprintw(LINES - 1, 0, dxtext);
 	    mvprintw(12, 29, hiscall);
 	}
 	refreshp();
@@ -711,8 +754,6 @@ void addtext(char *s) {
 =             This initializes the packet windows
 =
 ===========================================*/
-WINDOW *packet_win;
-PANEL  *packet_panel;
 
 int init_packet(void) {
     extern int portnum;
@@ -760,23 +801,13 @@ int init_packet(void) {
 	    init_pair(7, 7, 0);
 	}
 #endif
-	sclwin = derwin(packet_win, LINES - ENTRYROWS, COLS, 0, 0);
-	entwin = derwin(packet_win, ENTRYROWS, COLS, LINES - ENTRYROWS, 0);
-	scrollok(sclwin, TRUE);
-	scrollok(entwin, FALSE);
-	keypad(entwin, TRUE);
-	intrflush(entwin, FALSE);
-	wattrset(sclwin, attr[NORMAL_ATTR]);
-	wattrset(entwin, attr[ENTRY_ATTR]);
+	setup_splitlayout();
+	noecho();
+	cbreak();
 
 	initialized = 1;
 
-	noecho();
-	cbreak();
-	wtimeout(entwin, 30);
-	wrefresh(sclwin);
 	start_editing();
-	curattr = attr[NORMAL_ATTR];
     }
 
     if (packetinterface == TELNET_INTERFACE) {
@@ -1019,6 +1050,8 @@ int packet() {
     if ((tln_loglines == 0) && (packetinterface == TNC_INTERFACE))
 	addtext("Welcome to TLF tnc terminal\n\n");
 
+    resume_editing();
+
     while (1) {
 	wrefresh(entwin);
 
@@ -1209,9 +1242,8 @@ int send_cluster(void) {
     char line[MAX_CMD_LEN + 2] = "";
 
     cluster = CLUSTER;
-    mvprintw(24, 0,
-	     "                                                                           ");
-    mvprintw(24, 0, ">");
+    mvprintw(LINES - 1, 0, backgrnd_str);
+    mvprintw(LINES - 1, 0, ">");
     refreshp();
     echo();
     getnstr(line, MAX_CMD_LEN);
@@ -1231,8 +1263,7 @@ int send_cluster(void) {
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-    mvprintw(24, 0,
-	     "                                                                           ");
+    mvprintw(LINES - 1, 0, backgrnd_str);
     refreshp();
     line[0] = '\0';	/* not needed */
 

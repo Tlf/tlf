@@ -36,8 +36,8 @@ void handle_logging(enum log_lvl lvl, ...) {
     str = g_strdup_vprintf(fmt, args);
     va_end(args);
 
-    mvprintw(24,0, backgrnd_str);
-    mvprintw(24, 0, str);
+    mvprintw(LINES - 1, 0, backgrnd_str);
+    mvprintw(LINES - 1, 0, str);
     refreshp();
 
     g_free(str);

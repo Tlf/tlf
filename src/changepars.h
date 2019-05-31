@@ -24,8 +24,8 @@
 #define RITCLEAR 1
 
 int changepars(void);
-int networkinfo(void);
-int multiplierinfo(void);
+void networkinfo(void);
+void multiplierinfo(void);
 
 
 #endif /* end of include guard: CHANGEPARS_H */
