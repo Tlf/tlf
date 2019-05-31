@@ -2,9 +2,9 @@ Planned improvements for TLF-1.4 release
 ----------------------------------------
 
 [x] make hamlib mandatory (finished Oct 2018, tnx Zoli)
-[x] switch to hamlib's freq_t for frequencies i(tnx Zoli)
+[x] switch to hamlib's freq_t for frequencies (tnx Zoli)
     ( and maybe factor out hamlib stuff to a separate module ) 
-[ ] allow vertical resizing of tlf (more room for cluster messages)
+[x] allow vertical resizing of tlf (more room for cluster messages)
 [x] drop 'SCAN' menu with noise bridge, panorama scan and smeter
     display (It did not work for a long time and I think no one is
     using it)

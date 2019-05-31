@@ -10,6 +10,8 @@ New features since tlf-1.3.2:
       working.
     - Added CALLMASTER= keywords to allow naming the callmaster database file
       (default is still 'callmaster')
+    - Allow vertical resizing of TLF window (before start and/or during use)
+      
 
 Bug fixes:
     - Fix possible segfaults in readcabrillo() function
