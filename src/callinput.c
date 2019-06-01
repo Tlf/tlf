@@ -375,7 +375,7 @@ int callinput(void) {
 
 		nicebox(1, 1, 2, 12, "Cw");
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-		mvprintw(2, 2, "Speed:   %2d ", GetCWSpeed());
+		mvprintw(2, 2, "Speed:   %2u ", GetCWSpeed());
 		mvprintw(3, 2, "Weight: %3d ", weight);
 		refreshp();
 
@@ -410,7 +410,7 @@ int callinput(void) {
 		    while (x != 27) {	//escape
 			nicebox(1, 1, 2, 12, "Cw");
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-			mvprintw(2, 2, "Speed:   %2d ", GetCWSpeed());
+			mvprintw(2, 2, "Speed:   %2u ", GetCWSpeed());
 			mvprintw(3, 2, "Weight: %3d ", weight);
 			printcall();
 			refreshp();
@@ -420,12 +420,12 @@ int callinput(void) {
 			    speedup();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-			    mvprintw(0, 14, "%2d", GetCWSpeed());
+			    mvprintw(0, 14, "%2u", GetCWSpeed());
 
 			} else if (x == KEY_DOWN) {
 			    speeddown();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-			    mvprintw(0, 14, "%2d", GetCWSpeed());
+			    mvprintw(0, 14, "%2u", GetCWSpeed());
 
 			} else
 			    x = 27;	// <Escape>
@@ -457,7 +457,7 @@ int callinput(void) {
 		    speedup();
 
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2d", GetCWSpeed());
+		    mvprintw(0, 14, "%2u", GetCWSpeed());
 		}
 
 		break;
@@ -481,7 +481,7 @@ int callinput(void) {
 		    speeddown();
 
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2d", GetCWSpeed());
+		    mvprintw(0, 14, "%2u", GetCWSpeed());
 		}
 		break;
 	    }

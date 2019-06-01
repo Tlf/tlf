@@ -1493,7 +1493,7 @@ int parse_logcfg(char *inputbuffer) {
 	    PARAMETER_NEEDED(teststring);
 	    strcpy(myqra, fields[1]);
 
-	    if (check_qra(myqra) > 0) {
+	    if (check_qra(myqra) == 0) {
 		showmsg
 		("WARNING: Invalid MYQRA parameters! exiting...");
 		sleep(5);

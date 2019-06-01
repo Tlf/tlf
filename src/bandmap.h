@@ -87,13 +87,13 @@ int bm_isdupe(char *call, int band);
 
 /** add a new spot to bandmap data
  * \param call  	the call to add
- * \param frequ 	on which frequency heard
+ * \param freq	 	on which frequency heard
  * \param reason	- new cluster spot
  * 			- local announcement (Ctrl-A)
  * 			- own cluster announcement (Ctrl-B)
  * 			- just worked in S&P
  */
-void bandmap_addspot(char *call, freq_t frequ, char node);
+void bandmap_addspot(char *call, freq_t freq, char node);
 /*
  * - if call already on that band and mode replace old entry with new one and
  *   set age to 0 otherwise add it to collection

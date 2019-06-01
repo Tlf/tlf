@@ -804,7 +804,7 @@ void keyer_init() {
 
 	    write_tone();
 
-	    snprintf(keyerbuff, 3, "%2d", GetCWSpeed());
+	    snprintf(keyerbuff, 3, "%2u", GetCWSpeed());
 	    netkeyer(K_SPEED, keyerbuff);		// set speed
 
 	    netkeyer(K_WEIGHT, weightbuf);		// set weight

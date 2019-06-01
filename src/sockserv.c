@@ -206,7 +206,7 @@ static int initialize(void) {
 
 }
 
-int startup(int portnum, void (*newin)(int)) {
+int startup(int portnum, void (*loginp)(int)) {
     struct sockaddr_in sin;
 
     initialize();
@@ -235,7 +235,7 @@ int startup(int portnum, void (*newin)(int)) {
 	}
     }
 
-    login[nlsock] = newin;
+    login[nlsock] = loginp;
     FD_SET(lsock[nlsock], &openfds);
     sockbuf[lsock[nlsock]].buf = (char *) malloc(sizeof(char) * SOBUF);
     sockbuf[lsock[nlsock]].buflen = 0;

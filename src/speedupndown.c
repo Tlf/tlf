@@ -41,7 +41,7 @@ void setspeed(void) {
     int retval = 0;
     char buff[3];
 
-    snprintf(buff, 3, "%2d", GetCWSpeed());
+    snprintf(buff, 3, "%2u", GetCWSpeed());
 
     if (cwkeyer == NET_KEYER) {
 

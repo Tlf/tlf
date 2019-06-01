@@ -107,7 +107,7 @@ void *background_process(void *ptr) {
     extern int landebug;
     extern struct tm *time_ptr;
 
-    static int i, t;
+    static int i;
     static char prmessage[256];
     static int lantimesync = 0;
     static int fldigi_rpc_cnt = 0;
@@ -235,7 +235,7 @@ void *background_process(void *ptr) {
 			lanspotflg = 0;
 			break;
 		    case TLFMSG:
-			for (t = 0; t < 4; t++)
+			for (int t = 0; t < 4; t++)
 			    strcpy(talkarray[t], talkarray[t + 1]);
 
 			talkarray[4][0] = lan_message[0];

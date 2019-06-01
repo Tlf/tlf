@@ -39,12 +39,12 @@ extern int close_s(int s);
 /*
    ** Startup a server program
    ** portnum = TCP port to listen to
-   ** login   = procedure to be called when a new socket is accepted;
+   ** loginp  = procedure to be called when a new socket is accepted;
    **           should be declared as:  void login(int s);
    **           where: s is the new socket number
    ** The logout condition is detected by a -1 returned from recvline().
  */
-extern int startup(int portnum, void (*login)(int));
+extern int startup(int portnum, void (*loginp)(int));
 
 /*
    ** Set timeout for recvline call
@@ -61,14 +61,14 @@ void setlinemode(int s, int tf);
 
 /*
    ** Receive a line from a socket
-   ** s      = [OUT] the socket data was received on;
+   ** fd     = [OUT] the socket data was received on;
    ** buf    = [OUT] character buffer containing socket data;
    **                if linemode = TRUE, buffer is terminated with null character
    ** buflen = [IN]  length of the character buffer;
    ** returns the number of bytes read, or -1 indicating EOF on the socket.
    **         or -2 indicating timeout (if enabled).
  */
-extern int recvline(int *s, char *buf, int buflen);
+extern int recvline(int *fd, char *buf, int buflen);
 extern int startcli(void);
 extern int startcliaddr(int family, unsigned long int addr,
 			unsigned short int portnum);

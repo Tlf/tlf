@@ -29,7 +29,7 @@
 #include "qtcvars.h"		// Includes globalvars.h
 
 
-void genqtcline(char *qtc, char *line);
+void genqtcline(char *qtc, char *qsoline);
 
 /** generate list of QTCs to send
  *

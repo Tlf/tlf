@@ -57,7 +57,7 @@ static int bi_warc[6] = {
 static int bandnr[NBANDS] =
 { 160, 80, 40, 30, 20, 17, 15, 12, 10, 0 };
 
-void printfield(int x, int y, int number);
+void printfield(int y, int x, int number);
 void stewperry_show_summary(int points, float fixedmult);
 
 

@@ -1107,14 +1107,14 @@ void qtc_main_panel(int direction) {
 	    case KEY_PPAGE:
 		speedup();
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 14, "%2d", GetCWSpeed());
+		mvprintw(0, 14, "%2u", GetCWSpeed());
 		break;
 
 	    // <Page-Down>
 	    case KEY_NPAGE:
 		speeddown();
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 14, "%2d", GetCWSpeed());
+		mvprintw(0, 14, "%2u", GetCWSpeed());
 		break;
 
 	    // Comma or Ctrl-K (^K), keyboard window

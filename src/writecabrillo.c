@@ -48,9 +48,9 @@ struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection);
 void free_qso(struct qso_t *ptr);
 
 /** check if logline is only a comment */
-int is_comment(char *buf) {
+int is_comment(char *buffer) {
 
-    if (buf[0] != ';' && strlen(buf) > 60) /** \todo better check */
+    if (buffer[0] != ';' && strlen(buffer) > 60) /** \todo better check */
 	return 0;
     else
 	return 1;

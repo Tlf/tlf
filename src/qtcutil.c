@@ -201,7 +201,8 @@ int parse_qtc_flagstr(char *lineptr, char *callsign, char *flag) {
 
 void parse_qtc_flagline(char *lineptr) {
     int rc;
-    char callsign[15], flag[2], msg[18];
+    char callsign[15], msg[18];
+    char flag[2] = "";
 
     rc = parse_qtc_flagstr(lineptr, callsign, flag);
     if (rc == 0 && (flag[0] == 'N')) {

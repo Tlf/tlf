@@ -67,7 +67,7 @@ void clear_display(void) {
     char speedbuf[4] = "  ";
     int cury, curx;
 
-    snprintf(speedbuf, 3, "%2d", GetCWSpeed());
+    snprintf(speedbuf, 3, "%2u", GetCWSpeed());
 
     getyx(stdscr, cury, curx);
 

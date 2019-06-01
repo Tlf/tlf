@@ -289,7 +289,7 @@ int getexchange(void) {
 		    speedup();
 
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2d", GetCWSpeed());
+		    mvprintw(0, 14, "%2u", GetCWSpeed());
 		}
 		break;
 
@@ -307,7 +307,7 @@ int getexchange(void) {
 		    speeddown();
 
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2d", GetCWSpeed());
+		    mvprintw(0, 14, "%2u", GetCWSpeed());
 		}
 		break;
 
@@ -457,7 +457,7 @@ int getexchange(void) {
 //                              x = 0; //##debug
 
 	    } else if (stewperry_flg == 1) {
-		if (check_qra(comment) > 0) {
+		if (check_qra(comment) == 0) {
 		    mvprintw(13, 54, "locator?");
 		    mvprintw(12, 54, comment);
 		    break;
