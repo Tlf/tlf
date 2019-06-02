@@ -402,6 +402,10 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 	item_count = desc->item_count;
 	item_array = desc->item_array;
     } else {
+	if (desc->qtc_item_array == NULL) {
+	    strcpy(buf, "");		/* no QTC format description */
+	    return;
+	}
 	strcpy(buf, "QTC:");		/* start the line */
 	item_count = desc->qtc_item_count;
 	item_array = desc->qtc_item_array;
