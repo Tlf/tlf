@@ -745,7 +745,7 @@ void fldigi_init() {
 
 void lan_init() {
     if (lan_active == 1) {
-	if (lanrecv_init() < 0)	/* set up the network */
+	if (lan_recv_init() < 0)	/* set up the network */
 	    showmsg("LAN receive  init failed");
 	else
 	    showmsg("LAN receive  initialized");
