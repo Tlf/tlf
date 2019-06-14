@@ -48,8 +48,10 @@ int cleanup(void) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvprintw(12, 29, "            ");
-    mvprintw(12, 54, "                        ");
     mvprintw(12, 29, "");
+
+    attron(COLOR_PAIR(C_WINDOW));
+    mvprintw(12, 54, "                        ");
 
     attron(COLOR_PAIR(C_LOG | A_STANDOUT));
 
