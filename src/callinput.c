@@ -253,27 +253,6 @@ int callinput(void) {
 
 	/* special handling of some keycodes if call field is empty */
 	if (*hiscall == '\0') {
-	    if ((x == '+') && (*hiscall == '\0') && (ctcomp == 0)) {
-		/* switch to other mode */
-		if (cqmode == CQ) {
-		    cqmode = S_P;
-		} else
-		    cqmode = CQ;
-
-		/* and show new mode */
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-
-		if (cqmode == CQ) {
-		    mvprintw(0, 2, "Log     ");
-		    strcpy(mode, "Log     ");
-		} else {
-		    mvprintw(0, 2, "S&P     ");
-		    strcpy(mode, "S&P     ");
-		}
-		cleanup();
-
-	    }
-
 	    // <Enter>, sends CQ message (F1), starts autoCQ, or sends S&P message.
 	    if ((x == '\n' || x == KEY_ENTER) && *hiscall == '\0') {
 		if (cqmode == CQ) {
@@ -302,20 +281,44 @@ int callinput(void) {
 
 	switch (x) {
 
-	    // Plus, in CT mode send exchange, log QSO, no message sent.
+	    // Plus (+)
+            // - in non-CT mode switch to other mode (CQ <-> S&P)
+            // - in CT mode send exchange, log QSO, no message sent.
 	    case '+': {
-		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
-		    send_standard_message(2);
+                if (!ctcomp) {
 
-		    if (((cqww == 1) || (wazmult == 1))
-			    && (*comment == '\0'))
-			strcpy(comment, cqzone);
+                    /* switch to other mode */
+                    if (cqmode == CQ) {
+                        cqmode = S_P;
+                    } else
+                        cqmode = CQ;
 
-		    if ((itumult == 1) && (*comment == '\0'))
-			strcpy(comment, ituzone);
-		    x = 92;	// '\'
+                    /* and show new mode */
+                    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-		}
+                    if (cqmode == CQ) {
+                        mvprintw(0, 2, "Log     ");
+                        strcpy(mode, "Log     ");
+                    } else {
+                        mvprintw(0, 2, "S&P     ");
+                        strcpy(mode, "S&P     ");
+                    }
+
+                } else {
+
+                    if (strlen(hiscall) > 2) {
+                        send_standard_message(2);
+
+                        if (((cqww == 1) || (wazmult == 1))
+                                && (*comment == '\0'))
+                            strcpy(comment, cqzone);
+
+                        if ((itumult == 1) && (*comment == '\0'))
+                            strcpy(comment, ituzone);
+                        x = '\\';   // key for logging QSO without message
+
+                    }
+                }
 		break;
 	    }
 
