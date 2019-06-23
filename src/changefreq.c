@@ -33,7 +33,6 @@ void change_freq(void) {
     extern int trx_control;
 
     int brkflg = 0;
-    int x;
 
     if (trx_control == 0)
 	return;
@@ -46,7 +45,7 @@ void change_freq(void) {
 
 	if (get_outfreq() == 0) {
             // last request has been processed, check keys again
-	    x = key_get();
+	    int x = key_poll();
 
 	    int deltaf = 0;
 
@@ -88,6 +87,11 @@ void change_freq(void) {
 		    break;
 		}
 
+                // no key
+                case ERR: {
+		    break;
+                }
+
                 // any other key: exit frequency change mode
 		default: {
 		    brkflg = 1;
@@ -105,9 +109,10 @@ void change_freq(void) {
 	    break;
 	}
 
-	freq_display();
 
 	time_update();
+
+	freq_display();
 
 	usleep(100 * 1000);
 

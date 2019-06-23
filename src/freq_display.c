@@ -24,38 +24,38 @@
 #include "tlf.h"
 #include "ui_utils.h"
 
+static void print_dot(int y, int x);
+static void clear_freq_display(int y, int x);
+static void print_big_number(int number, int y_position, int x_position, int location);
 
-int freq_display(void) {
+void freq_display(void) {
 
     extern freq_t freq;
     extern int trxmode;
 
-    int x_position = 40;
-    int y_position = 17;
-    char fbuffer[8];
+    const int x_position = 40;
+    const int y_position = 17;
 
-    print_space(y_position, x_position);
-    print_space(y_position + 1, x_position);
-    print_space(y_position + 2, x_position);
-    print_space(y_position + 3, x_position);
-    print_space(y_position + 4, x_position);
+    clear_freq_display(y_position, x_position);
     nicebox(16, 39, 5, 35, "TRX");
     print_dot(y_position + 4, 28 + x_position + 1);
 
+    char fbuffer[8];
     sprintf(fbuffer, "%7.1f", freq / 1000.0);
 
-    if (fbuffer[0] != ' ')
-	print_big_number(fbuffer[0] - 48, y_position, x_position, 4);
-    if (fbuffer[1] != ' ')
-	print_big_number(fbuffer[1] - 48, y_position, x_position, 9);
-    if (fbuffer[2] != ' ')
-	print_big_number(fbuffer[2] - 48, y_position, x_position, 14);
-    if (fbuffer[3] != ' ')
-	print_big_number(fbuffer[3] - 48, y_position, x_position, 19);
-    if (fbuffer[4] != ' ')
-	print_big_number(fbuffer[4] - 48, y_position, x_position, 24);
-    if (fbuffer[6] != ' ')
-	print_big_number(fbuffer[6] - 48, y_position, x_position, 31);
+    // display the digits
+    int x_offset = 4;
+    for(int i = 0; i <= 6; ++i) {
+        if (i == 5) {   // skip decimal dot
+            x_offset += 2;
+            continue;
+        }
+        const int digit = fbuffer[i] - '0';
+        if (digit >= 0) {
+            print_big_number(digit, y_position, x_position, x_offset);
+        }
+        x_offset += 5;
+    }
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
@@ -67,11 +67,10 @@ int freq_display(void) {
 	mvprintw(19, 41, "DIG");
 
     refreshp();
-
-    return (0);
 }
 
-int print_big_number(int number, int y_position, int x_position,
+
+void print_big_number(int number, int y_position, int x_position,
 		     int location) {
 
     switch (number) {
@@ -254,25 +253,23 @@ int print_big_number(int number, int y_position, int x_position,
 	}
 
     }
-    refreshp();
 
-    return (0);
 }
 
-int print_dot(int y, int x) {
+void print_dot(int y, int x) {
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(y, x, " ");
 
-    return (0);
 }
 
-int print_space(int y, int x) {
+void clear_freq_display(int y, int x) {
 
     attroff(A_STANDOUT);
     attron(modify_attr(COLOR_PAIR(C_LOG)));
 
-    mvprintw(y, x, "                                   ");
+    for(int i = 0; i < 5; ++i) {
+        mvprintw(y + i, x, "                                   ");
+    }
 
-    return (0);
 }

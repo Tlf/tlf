@@ -21,9 +21,6 @@
 #ifndef FREQ_DISPLAY_H
 #define FREQ_DISPLAY_H
 
-int freq_display(void);
-int print_dot(int y, int x);
-int print_space(int y, int x);
-int print_big_number(int number, int y_position, int x_position, int location);
+void freq_display(void);
 
 #endif /* FREQ_DISPLAY_H */
