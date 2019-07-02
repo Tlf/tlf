@@ -411,7 +411,7 @@ int unique_call_multi = 0;          /* do we count calls as multiplier */
 //////////////////
 char ssexchange[30] = "";   // defined in getexchange.c
 char section[8] = "";       // defined in getexchange.c
-char lan_logline[256];      // defined in lancode.c
+char lan_logline[256];	    // defined in log_to_disk.c
 
 //////////////////
 

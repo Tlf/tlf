@@ -41,7 +41,6 @@
 
 int lan_socket_descriptor;
 char lan_message[256];
-char lan_logline[256];
 //--------------------------------------
 int bc_socket_descriptor[MAXNODES];
 ssize_t bc_sendto_rc;
