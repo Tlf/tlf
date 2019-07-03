@@ -98,7 +98,7 @@ int lan_recv_init(void) {
     struct sockaddr_in lan_sin;
 
     if (lan_active == 0)
-	return 1;
+	return 0;
 
     sprintf(default_lan_service, "%d", lan_port);
     bzero(&lan_sin, sizeof(lan_sin));
@@ -133,7 +133,7 @@ int lan_recv_close(void) {
     int lan_close_rc;
 
     if (lan_active == 0)
-	return -1;
+	return 0;
 
     lan_close_rc = close(lan_socket_descriptor);
     if (lan_close_rc == -1) {
@@ -151,7 +151,7 @@ int lan_recv(void) {
     char lan_recv_message[256];
 
     if (lan_active == 0)
-	return -1;
+	return 0;
 
     lan_recv_message[0] = '\0';
 
@@ -184,7 +184,7 @@ int lan_send_init(void) {
     struct hostent *bc_hostbyname[MAXNODES];
 
     if (!lan_active)
-	return 1;
+	return 0;
 
     for (int node = 0; node < nodes; node++) {
 
@@ -223,7 +223,7 @@ int lan_send_close(void) {
     int bc_close_rc;
 
     if (!lan_active)
-	return -1;
+	return 0;
 
     for (int node = 0; node < nodes; node++) {
 
@@ -240,7 +240,7 @@ int lan_send_close(void) {
 static int lan_send(char *lanbuffer) {
 
     if (!lan_active)
-	return -1;
+	return 0;
 
     if (lanbuffer[0] == 0) {
 	return 0;       // nothing to send
