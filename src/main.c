@@ -26,6 +26,7 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <argp.h>
 
 #include "addmult.h"
 #include "background_process.h"
@@ -254,7 +255,7 @@ char *digi_message[sizeof(message) / sizeof(message[0])];
 char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   * See description of message[]
 			   */
-    { "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+{ "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 
 char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
 char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
@@ -279,7 +280,7 @@ int early_started = 0;			/**< 1 if sending call started early,
 char lastcall[20];
 char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
-    { "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
+{ "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
 char comment[80];
 char mode[20] = "Log     ";
 char cqzone[3] = "";
@@ -460,62 +461,62 @@ int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 pthread_t background_thread;
 static struct termios oldt, newt;
 
-/** parse program options
- */
-void parse_options(int argc, char *argv[]) {
-    while ((argc > 1) && (argv[1][0] == '-')) {
-	switch (argv[1][1]) {
-	    /* verbose option */
-	    case 'f':
-		if (strlen(argv[1] + 2) > 0) {
-		    if ((*(argv[1] + 2) == '~') && (*(argv[1] + 3) == '/')) {
-			/* tilde expansion */
-			config_file = g_strconcat(g_get_home_dir(),
-						  argv[1] + 3, NULL);
-		    } else {
-			config_file = g_strdup(argv[1] + 2);
-		    }
-		}
-		break;
-	    case 's':
-		if (strlen(argv[1] + 2) > 0)
-		    strcpy(synclogfile, argv[1] + 2);
-		break;
-	    case 'd':		// debug rigctl
-		debugflag = 1;
-		break;
-	    case 'v':		// verbose startup
-		verbose = 1;
-		break;
-	    case 'V':		// output version
-		printf("Version: tlf-%s\n", VERSION);
-		exit(0);
-		break;
-	    case 'n':		// disable packet
-		nopacket = 1;
-		break;
-	    case 'r':
-		no_trx_control = 1; // disable radio control
-		break;
-	    case 'i':
-		convert_cabrillo = 1;
-		break;
-	    default:
-		printf("Use: tlf [-v] Verbose\n");
-		printf("         [-V] Version\n");
-		printf("         [-f] Configuration file\n");
-		printf("         [-d] Debug mode\n");
-		printf("         [-h] This message\n");
-		printf("         [-n] Start without cluster hookup\n");
-		printf("         [-r] Start without radio control\n");
-		printf("         [-i] Import cabrillo file to Tlf format\n");
-		exit(0);
-		break;
-	}
-	--argc;
-	++argv;
+/*-------------------------parse program options---------------------------*/
+const char *argp_program_version = "tlf-" VERSION;
+const char *argp_program_bug_address = "<tlf-devel@nongnu.org>";
+const static char program_description[] =
+    "tlf - contest logging program for amateur radio operators";
+const static struct argp_option options[] = {
+    {
+	"config",   'f', "FILE", 0,
+	"Use FILE as configuration file instead of logcfg.dat in the current directory"
+    },
+    {"import",      'i', 0, 0,  "Import cabrillo file to Tlf format"},
+    {"nocluster",   'n', 0, 0,  "Start without cluster hookup" },
+    {"norig",       'r', 0, 0,  "Start without radio control" },
+    {"sync",        's', "URL", 0,  "Synchronize log with other node" },
+    {"debug",       'd', 0, 0,  "Debug mode" },
+    {"verbose",     'v', 0, 0,  "Produce verbose output" },
+    { 0 }
+};
+
+/* parse a single option */
+static error_t parse_opt(int key, char *arg, struct argp_state *state) {
+    switch (key) {
+	case 'f':		// config file
+	    config_file = g_strdup(arg);
+	    break;
+	case 'n':		// disable packet
+	    nopacket = 1;
+	    break;
+	case 'r':
+	    no_trx_control = 1; // disable radio control
+	    break;
+	case 'i':
+	    convert_cabrillo = 1;
+	    break;
+	case 's':
+	    if (strlen(arg) >= 120) {
+		printf("Argument too long for sync\n");
+		exit(EXIT_FAILURE);
+	    }
+	    strcpy(synclogfile, arg);
+	    break;
+	case 'd':		// debug rigctl
+	    debugflag = 1;
+	    break;
+	case 'v':		// verbose startup
+	    verbose = 1;
+	    break;
+
+	default:
+	    return ARGP_ERR_UNKNOWN;
     }
+    return 0;
 }
+
+
+const static struct argp argp = { options, parse_opt, NULL, program_description };
 
 
 /** initialize user interface */
@@ -873,9 +874,10 @@ void tlf_cleanup() {
 int main(int argc, char *argv[]) {
     int j;
     int ret;
-    char tlfversion[80] = "";
+    char welcome[80];
+    sprintf(welcome, "        Welcome to %s by PA0R!!", argp_program_version);
 
-    parse_options(argc, argv);
+    argp_parse(&argp, argc, argv, 0, 0, NULL);  // parse options
 
     ui_init();
 
@@ -895,9 +897,7 @@ int main(int argc, char *argv[]) {
     hiscall[0] = '\0';
 
 
-    sprintf(tlfversion,
-	    "        Welcome to tlf-%s by PA0R!!", VERSION);
-    showmsg(tlfversion);
+    showmsg(welcome);
     showmsg("");
 
     total = 0;
@@ -935,7 +935,7 @@ int main(int argc, char *argv[]) {
     keyer_init();
 
     clear();
-    mvprintw(0, 0, "        Welcome to tlf-%s by PA0R!!\n\n", VERSION);
+    mvprintw(0, 0, welcome);
     refreshp();
 
     checkparameters();		/* check .paras file */
