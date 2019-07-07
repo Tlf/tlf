@@ -464,16 +464,16 @@ static struct termios oldt, newt;
 /*-------------------------parse program options---------------------------*/
 const char *argp_program_version = "tlf-" VERSION;
 const char *argp_program_bug_address = "<tlf-devel@nongnu.org>";
-const static char program_description[] =
+const char program_description[] =
     "tlf - contest logging program for amateur radio operators";
-const static struct argp_option options[] = {
+const struct argp_option options[] = {
     {
 	"config",   'f', "FILE", 0,
 	"Use FILE as configuration file instead of logcfg.dat in the current directory"
     },
     {"import",      'i', 0, 0,  "Import cabrillo file to Tlf format"},
-    {"nocluster",   'n', 0, 0,  "Start without cluster hookup" },
-    {"norig",       'r', 0, 0,  "Start without radio control" },
+    {"no-cluster",  'n', 0, 0,  "Start without cluster hookup" },
+    {"no-rig",      'r', 0, 0,  "Start without radio control" },
     {"sync",        's', "URL", 0,  "Synchronize log with other node" },
     {"debug",       'd', 0, 0,  "Debug mode" },
     {"verbose",     'v', 0, 0,  "Produce verbose output" },
