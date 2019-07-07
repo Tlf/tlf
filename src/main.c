@@ -464,9 +464,9 @@ static struct termios oldt, newt;
 /*-------------------------parse program options---------------------------*/
 const char *argp_program_version = "tlf-" VERSION;
 const char *argp_program_bug_address = "<tlf-devel@nongnu.org>";
-const char program_description[] =
+static const char program_description[] =
     "tlf - contest logging program for amateur radio operators";
-const struct argp_option options[] = {
+static const struct argp_option options[] = {
     {
 	"config",   'f', "FILE", 0,
 	"Use FILE as configuration file instead of logcfg.dat in the current directory"
