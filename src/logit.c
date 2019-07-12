@@ -111,6 +111,7 @@ void logit(void) {
 
 		if ((cqmode == CQ) && (contest == CONTEST)
 			&& (defer_store == 0)) {	/* CQ mode */
+
 		    send_standard_message(2);
 		    if (trxmode != CWMODE && trxmode != DIGIMODE) {
 			if (exchange_serial == 1)
@@ -140,11 +141,7 @@ void logit(void) {
 		    }
 
 		    if (recall_mult == 1) {
-			if (recall_exchange() == -1) {	/* get the power */
-			    comment[0] = '\0';
-
-			    refresh_comment();
-			}
+			recall_exchange();
 		    }
 
 		    defer_store = 1;
@@ -161,11 +158,7 @@ void logit(void) {
 			refresh_comment();
 
 		    } else if (recall_mult == 1) {
-			if (recall_exchange() == -1) {	/* get the mult */
-			    comment[0] = '\0';
-
-			    refresh_comment();
-			}
+			recall_exchange();
 		    }
 
 		    if (trxmode == CWMODE || trxmode == DIGIMODE)
@@ -176,8 +169,9 @@ void logit(void) {
 			    mvprintw(13, 29, "Serial number: %d", qsonum);
 			refreshp();
 		    }
-		    callreturn = 0;
+
 		    defer_store = 1;
+		    callreturn = 0;
 		}
 
 		if (defer_store == 1) {

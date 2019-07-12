@@ -47,7 +47,11 @@ int recall_exchange(void) {
     struct ie_list *current_ie;
 
     if (strlen(hiscall) == 0)
-	return (0);
+	return 0;
+
+    /* respect content which is already in comment field */
+    if (strlen(comment) != 0)
+	return 0;
 
     l = strlen(hiscall);
 
