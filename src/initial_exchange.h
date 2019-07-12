@@ -41,5 +41,6 @@ struct ie_list {
 *	Returns pointer to the top of the list.
 */
 struct ie_list *make_ie_list(char *file);
+void free_ie_list(struct ie_list *head);
 
 #endif /* INITIAL_EXCHANGE_H */

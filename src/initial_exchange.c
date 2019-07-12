@@ -39,7 +39,7 @@
 * 	to by 'head'.
 */
 
-static void free_ie_list(struct ie_list *head) {
+void free_ie_list(struct ie_list *head) {
     struct ie_list *next;
 
     while (head) {

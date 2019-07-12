@@ -4,12 +4,19 @@
 
 // OBJECT ../src/initial_exchange.o
 
+struct ie_list *data = NULL;
+
 int setup_default(void **state) {
     int result;
     showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
     result = chdir(SRCDIR);
     if (result == -1)
 	perror("chdir");
+    return 0;
+}
+
+int teardown_default(void **state) {
+    free_ie_list(data);
     return 0;
 }
 
@@ -44,7 +51,7 @@ static void check_data(struct ie_list *data) {
 }
 
 void test_ok(void **state) {
-    struct ie_list *data = make_ie_list("data/ie_ok.txt");
+    data = make_ie_list("data/ie_ok.txt");
     assert_string_equal(showmsg_spy, STRING_NOT_SET);
     assert_string_equal(showstring_spy1, "Using initial exchange file");
     assert_string_equal(showstring_spy2, "data/ie_ok.txt");
@@ -52,7 +59,7 @@ void test_ok(void **state) {
 }
 
 void test_ok_dos(void **state) {
-    struct ie_list *data = make_ie_list("data/ie_ok_dos.txt");
+    data = make_ie_list("data/ie_ok_dos.txt");
     assert_string_equal(showmsg_spy, STRING_NOT_SET);
     assert_string_equal(showstring_spy1, "Using initial exchange file");
     assert_string_equal(showstring_spy2, "data/ie_ok_dos.txt");
@@ -60,7 +67,7 @@ void test_ok_dos(void **state) {
 }
 
 void test_long_line(void **state) {
-    struct ie_list *data = make_ie_list("data/ie_long_line.txt");
+    data = make_ie_list("data/ie_long_line.txt");
     assert_string_equal(showmsg_spy, "Line 1: too long");
     assert_string_equal(showstring_spy1, "Using initial exchange file");
     assert_string_equal(showstring_spy2, "data/ie_long_line.txt");
@@ -68,7 +75,7 @@ void test_long_line(void **state) {
 }
 
 void test_no_comma(void **state) {
-    struct ie_list *data = make_ie_list("data/ie_no_comma.txt");
+    data = make_ie_list("data/ie_no_comma.txt");
     assert_string_equal(showmsg_spy, "Line 2: no comma found");
     assert_string_equal(showstring_spy1, "Using initial exchange file");
     assert_string_equal(showstring_spy2, "data/ie_no_comma.txt");
@@ -76,7 +83,7 @@ void test_no_comma(void **state) {
 }
 
 void test_ok_tab(void **state) {
-    struct ie_list *data = make_ie_list("data/ie_ok_tab.txt");
+    data = make_ie_list("data/ie_ok_tab.txt");
     assert_string_equal(showmsg_spy, STRING_NOT_SET);
     assert_string_equal(showstring_spy1, "Using initial exchange file");
     assert_string_equal(showstring_spy2, "data/ie_ok_tab.txt");
@@ -84,7 +91,7 @@ void test_ok_tab(void **state) {
 }
 
 void test_empty_call(void **state) {
-    struct ie_list *data = make_ie_list("data/ie_empty_call.txt");
+    data = make_ie_list("data/ie_empty_call.txt");
     assert_string_equal(showmsg_spy,
 			"Line 1: 0 or more than one token before comma");
     assert_string_equal(showstring_spy1, "Using initial exchange file");
@@ -93,7 +100,7 @@ void test_empty_call(void **state) {
 }
 
 void test_ok_multi_column(void **state) {
-    struct ie_list *data = make_ie_list("data/ie_ok_multi_column.txt");
+    data = make_ie_list("data/ie_ok_multi_column.txt");
     assert_string_equal(showmsg_spy, STRING_NOT_SET);
     assert_string_equal(showstring_spy1, "Using initial exchange file");
     assert_string_equal(showstring_spy2, "data/ie_ok_multi_column.txt");
