@@ -297,6 +297,25 @@ void *background_process(void *ptr) {
     return (NULL);
 }
 
+/* CW Simulator
+ * works only for RUN mode in CQWW */
+
+static void twoSpaces() {
+	sendmessage("  ");
+	write_keyer();
+}
+
+void setSimulatorState(int n) {
+    extern int simulator;
+    extern int simulator_mode;
+
+    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+        if (simulator != 0)
+	    simulator_mode = n;
+    }
+}
+
+
 int cw_simulator(void) {
 
     extern int simulator;
@@ -312,7 +331,7 @@ int cw_simulator(void) {
     char callcpy[80];
 
     if (simulator == 0)
-	return (-1);
+	return -1;
 
     if (simulator_mode == 1) {
 
@@ -322,44 +341,44 @@ int cw_simulator(void) {
 
 	strcpy(tonecpy, tonestr);
 
-	switch (this_second) {
-	    case 48:
+	switch (this_second % 10) {
+	    case 0:
 		strcpy(simulator_tone, "625");
 		break;
 
-	    case 49:
+	    case 1:
 		strcpy(simulator_tone, "800");
 		break;
 
-	    case 50:
+	    case 2:
 		strcpy(simulator_tone, "650");
 		break;
 
-	    case 51:
+	    case 3:
 		strcpy(simulator_tone, "750");
 		break;
 
-	    case 52:
+	    case 4:
 		strcpy(simulator_tone, "700");
 		break;
 
-	    case 53:
+	    case 5:
 		strcpy(simulator_tone, "725");
 		break;
 
-	    case 54:
+	    case 6:
 		strcpy(simulator_tone, "675");
 		break;
 
-	    case 55:
+	    case 7:
 		strcpy(simulator_tone, "775");
 		break;
 
-	    case 56:
+	    case 8:
 		strcpy(simulator_tone, "600");
 		break;
 
-	    case 57:
+	    case 9:
 		strcpy(simulator_tone, "640");
 		break;
 
@@ -370,8 +389,9 @@ int cw_simulator(void) {
 	}
 
 	strcpy(tonestr, simulator_tone);
-
 	write_tone();
+
+	twoSpaces();
 
 	callnumber =
 	    callnumber + simulator_seed + system_secs -
@@ -382,6 +402,7 @@ int cw_simulator(void) {
 
 	sendmessage(CALLMASTERARRAY(callnumber));
 	write_keyer();
+
 	simulator_mode = 0;
 
 	strcpy(tonestr, tonecpy);
@@ -395,16 +416,17 @@ int cw_simulator(void) {
 	strcpy(tonestr, simulator_tone);
 	write_tone();
 
-	strcpy(callcpy, CALLMASTERARRAY(callnumber));
+	twoSpaces();
 
+	strcpy(callcpy, CALLMASTERARRAY(callnumber));
 	getctydata(callcpy);
 
 	str = g_strdup_printf("TU 5NN %2s", zone_export);
 	sendmessage(str);
+	write_keyer();
 	g_free(str);
 
 	simulator_mode = 0;
-	write_keyer();
 
 	strcpy(tonestr, tonecpy);
 	write_tone();
@@ -418,21 +440,23 @@ int cw_simulator(void) {
 	strcpy(tonestr, simulator_tone);
 	write_tone();
 
+	twoSpaces();
+
 	strcpy(callcpy, CALLMASTERARRAY(callnumber));
 	getctydata(callcpy);
 
 	str = g_strdup_printf("DE %s TU 5NN %s",
 			      CALLMASTERARRAY(callnumber), zone_export);
 	sendmessage(str);
+	write_keyer();
 	g_free(str);
 
 	simulator_mode = 0;
-	write_keyer();
 
 	strcpy(tonestr, tonecpy);
 	write_tone();
 
     }
 
-    return (0);
+    return 0;
 }

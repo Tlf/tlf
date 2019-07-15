@@ -51,6 +51,7 @@
 #include "readqtccalls.h"
 #include "rules.h"
 #include "scroll_log.h"
+#include "searchlog.h"
 #include "sendbuf.h"
 #include "set_tone.h"
 #include "show_help.h"
@@ -94,6 +95,7 @@ int changepars(void) {
     extern char sc_volume[];
     extern int cwstart;
     extern int digikeyer;
+    extern int cqmode;
 
     char parameterstring[20] = "";
     char parameters[52][19];
@@ -439,16 +441,31 @@ int changepars(void) {
 	    break;
 	}
 	case 34: {		/* SIMULATOR  */
-	    if (simulator == 0) {
-		simulator = 1;
-		if (ctcomp == 1) {
-		    mvprintw(13, 19,
-			     "The simulator only works in TRmode. Switching to TRmode");
-		    ctcomp = 0;
-		} else
-		    mvprintw(13, 29, "Simulator on");
+	    if (cqww != 1) {
+		TLF_LOG_INFO(
+			"Simulator mode is only supported for CQWW contest!");
+		break;
+	    }
 
-		refreshp();
+	    if (callmaster == NULL) {
+		TLF_LOG_INFO(
+			"Simulator mode needs callmaster database");
+		break;
+	    }
+
+	    if (simulator == 0) {
+
+		simulator = 1;
+		cqmode = CQ;
+		if (ctcomp == 1) {
+		    TLF_LOG_INFO(
+		    "The simulator only works in TRmode. Switching to TRmode");
+		    ctcomp = 0;
+		} else {
+		    mvprintw(13, 29, "Simulator on");
+		    refreshp();
+		    sleep(1);
+		}
 
 		if (cwkeyer == NET_KEYER) {
 
@@ -462,6 +479,7 @@ int changepars(void) {
 		simulator = 0;
 		mvprintw(13, 29, "Simulator off");
 		refreshp();
+		sleep(1);
 
 		if (cwkeyer == NET_KEYER) {
 
@@ -471,7 +489,6 @@ int changepars(void) {
 			clear_display();
 		    }
 		}
-
 	    }
 	    break;
 	}

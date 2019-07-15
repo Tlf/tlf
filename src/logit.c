@@ -61,14 +61,11 @@ void logit(void) {
     extern char itustr[];
     extern int defer_store;
     extern int recall_mult;
-    extern int simulator;
-    extern int simulator_mode;
     extern int ctcomp;
     extern int wazmult;
     extern int itumult;
     extern int qsonum;
     extern int exchange_serial;
-    extern char tonestr[];
     extern int dxped;
     extern int sprint_mode;
 
@@ -119,13 +116,10 @@ void logit(void) {
 			refreshp();
 		    }
 
-		    if (simulator != 0) {
-			strcpy(tonestr, "700");
-			write_tone();
-			if (strstr(hiscall, "?") != NULL)
-			    simulator_mode = 3;
-			else
-			    simulator_mode = 2;
+		    if (strstr(hiscall, "?") != NULL) {
+			setSimulatorState(3);
+		    } else {
+			setSimulatorState(2);
 		    }
 
 		    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
@@ -180,12 +174,7 @@ void logit(void) {
 		} else if (defer_store > 1) {
 		    if ((cqmode == CQ) && (contest == CONTEST)) {
 			send_standard_message(CQ_TU_MSG);	/* send cq return */
-			if (trxmode == CWMODE || trxmode == DIGIMODE) {
-			    if (simulator != 0)
-				simulator_mode = 1;
-			    if (simulator != 0)
-				write_tone();
-			}
+			setSimulatorState(1);
 
 			defer_store = 0;
 
