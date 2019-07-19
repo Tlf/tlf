@@ -769,6 +769,8 @@ int load_callmaster(void) {
 	strcat(callmaster_location, callmaster_filename);
 
 	if ((cfp = fopen(callmaster_location, "r")) == NULL) {
+	    g_ptr_array_free(callmaster, TRUE);
+	    callmaster = NULL;
 	    TLF_LOG_WARN("Error opening callmaster file.");
 	    return 0;
 	}
