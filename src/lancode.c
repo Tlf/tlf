@@ -97,7 +97,7 @@ int resolveService(const char *service) {
     service_ent = getservbyname(service, "udp");
     int port = 0;
     if (service_ent != NULL) {
-	port = service_ent->s_port;
+	port = ntohs(service_ent->s_port);
     } else if (strlen(service) > 0) {
 	port = atoi(service);
     }
