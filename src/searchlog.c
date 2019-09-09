@@ -380,7 +380,6 @@ void displaySearchResults(void) {
     struct t_qtc_store_obj *qtc_temp_ptr;
 
 
-    z = 0;
     dupe = NODUPE;
 
     /* print resulting call in line according to band in check window */

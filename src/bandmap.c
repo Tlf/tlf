@@ -138,7 +138,6 @@ void bmdata_read_file() {
 
     if ((fp = fopen(".bmdata.dat", "r")) != NULL && bmdata_parsed == 0) {
 	bmdata_parsed = 1;
-	timediff = 0;
 	if (fgets(line, 50, fp)) {
 	    sscanf(line, "%d", &last_bm_save_time);
 	    gettimeofday(&tv, NULL);

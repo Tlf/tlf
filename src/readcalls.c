@@ -59,9 +59,9 @@ int readcalls(void) {
     char zonebuf[3];
     char checkcall[20];
     int i = 0, l = 0, n = 0, r = 0, s = 0;
-    unsigned int k = 0;
+    unsigned int k;
     int m = 0;
-    int t = 0;
+    int t;
     int z = 0;
     int add_ok;
     char multbuffer[40];
@@ -133,11 +133,9 @@ int readcalls(void) {
 	exit(1);
     }
     i = 0;
-    k = 0;
     l = 0;
 
     s = 0;
-    t = 0;
 
     while (fgets(inputbuffer, 90, fp) != NULL) {
 	pfxnumcntidx = -1;

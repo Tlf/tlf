@@ -64,8 +64,6 @@ int auto_cq(void) {
 
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-	delayval = cqdelay;
-
 	if (trxmode == CWMODE) {
 	    realspeed = GetCWSpeed();
 	    strncpy(cwmessage, message[11], 79);

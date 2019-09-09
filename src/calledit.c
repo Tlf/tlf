@@ -39,7 +39,7 @@ void calledit(void) {
     extern char hiscall[];
     extern int block_part;
 
-    int i = 0, l, b = 0;
+    int i = 0, l, b;
     int j = 0;
     int x = 0;
     int cnt = 0, insertflg = 0;
@@ -84,8 +84,7 @@ void calledit(void) {
 
 	// Ctrl-E (^E) or <End>, move to end of callsign field, exit edit mode.
 	if (i == 5 || i == KEY_END) {
-	    b = strlen(hiscall);
-	    break;
+	    break;		/* stop edit */
 	}
 
 	// Left arrow
@@ -193,8 +192,8 @@ void calledit(void) {
     attroff(A_STANDOUT);
     attron(COLOR_PAIR(C_HEADER));
 
-    mvprintw(12, 29, hiscall);
     mvprintw(12, 29, "            ");
+    mvprintw(12, 29, hiscall);
     refreshp();
 
     attron(A_STANDOUT);

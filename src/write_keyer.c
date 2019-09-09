@@ -73,7 +73,7 @@ int write_keyer(void) {
     char *tosend = NULL;
 
     if (trxmode != CWMODE && trxmode != DIGIMODE)
-	return (1);
+	return 1;
 
     pthread_mutex_lock(&keybuffer_mutex);
     if (data_ready == 1) {
@@ -115,7 +115,6 @@ int write_keyer(void) {
 	}
 
 	g_free(tosend);
-	tosend = NULL;
     }
-    return (0);
+    return 0;
 }

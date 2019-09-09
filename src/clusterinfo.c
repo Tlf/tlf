@@ -212,8 +212,6 @@ int loadbandmap(void) {
 	spot_freq[i] = 0.;
     }
 
-    j = 0;
-
     i = 0;
 
     get_time();
@@ -403,17 +401,16 @@ int getclusterinfo(void) {
     extern char call[];
 
     int i;
-    int si = 0;
+    int si;
     char calldupe[12];
 
     strcpy(calldupe, call);
     calldupe[strlen(call) - 1] = '\0';
 
-    i = 0;
-    si = 0;
-
     for (si = 0; si < (MAX_SPOTS - 2); si++)
 	spotarray[si] = -1;
+
+    i = 0;
     si = 0;
 
     while (1) {

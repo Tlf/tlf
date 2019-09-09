@@ -109,11 +109,7 @@ int add_callarea(void) {
     }
 
     if (addarea == 1) {
-
-	addarea = 0;
-
 	multscore[bandinx]++;
-
     }
 
     return (found);

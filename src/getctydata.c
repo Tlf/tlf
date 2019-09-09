@@ -234,7 +234,6 @@ static int getctydata_internal(char *checkcallptr, bool get_country) {
 	getpx(normalized_call);
 
     free(normalized_call);
-    normalized_call = NULL;
 
     if (w >= 0) {
 	x = prefix_by_index(w)->dxcc_index;

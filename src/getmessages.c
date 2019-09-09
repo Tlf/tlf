@@ -72,13 +72,9 @@ int getmessages(void) {
 
     int i, ii;
     char logline[5][82];
-    char printcall[12] = "";
 
     printw("\n     Call = ");
-
-    printcall[0] = '\0';
-    strncat(printcall, call, sizeof(printcall) - 1);
-    printw(printcall);
+    printw(call);
 
     getstationinfo();
 
