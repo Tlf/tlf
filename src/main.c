@@ -533,7 +533,8 @@ void ui_init() {
     char *term = getenv("TERM");
     if (strcasecmp(term, "rxvt") == 0) {
 	use_rxvt = 1;
-    } else if (strcasecmp(term, "xterm") == 0) {
+    } else if ((strcasecmp(term, "xterm") == 0) ||
+	    (strcasecmp(term, "xterm-256color") == 0)) {
 	use_xterm = 1;
 	use_rxvt = 1;
     }
