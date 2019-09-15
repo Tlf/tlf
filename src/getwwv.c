@@ -112,9 +112,9 @@ int getwwv(void) {
 	    strftime(timebuff, 80, "%H:%M", ptr1);
 
 	    mvprintw(LINES - 1, LINELENGTH - 17, " local time %s", timebuff);
-	}
 
-	printcall();
+	    refreshp();
+	}
     }
-    return (0);
+    return 0;
 }
