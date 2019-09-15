@@ -833,6 +833,44 @@ void keyer_init() {
 }
 
 
+void show_GPL() {
+    printw("\n\n\n");
+    printw("           TTTTT  L      FFFFF\n");
+    printw("             T    L      F    \n");
+    printw("             T    L      FFFFF\n");
+    printw("             T    L      F    \n");
+    printw("             T    LLLLL  F    \n");
+    printw
+	("\n\nThis program is copyright 2002, 2003, 2004 by Rein Couperus, PA0R\n\n");
+    printw
+	("It is free software; you can redistribute it and/or modify it under the terms\n");
+    printw
+	("of the GNU General Public License as published by the Free Software Foundation;\n");
+    printw
+	("either version 2 of the License, or (at your option) any later version.\n\n");
+    printw
+	("This program is distributed in the hope that it will be useful, but\n");
+    printw
+	("WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY\n");
+    printw
+	("or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License\n");
+    printw
+	("for more details.\n");
+
+    refreshp();
+}
+
+
+int isFirstStart() {
+    FILE *fp;
+
+    if ((fp = fopen(".paras", "r")) == NULL) {
+	return 1;
+    }
+    fclose(fp);
+
+    return 0;
+}
 
 /** cleanup function
  *
@@ -896,6 +934,15 @@ int main(int argc, char *argv[]) {
     termbuf[0] = '\0';
     hiscall[0] = '\0';
 
+
+    if (isFirstStart()) {
+	/* first time called in this directory */
+	verbose = 1;
+	printw(welcome);
+	show_GPL();
+	sleep(5);
+	clear();
+    }
 
     showmsg(welcome);
     showmsg("");
