@@ -29,17 +29,11 @@
 
 
 int checkparameters(void) {
-
-    extern int emptydir;
-
     FILE *fp;
 
     if ((fp = fopen(".paras", "r")) == NULL) {
 	writeparas_file();
-	emptydir = 1;
-
     } else {
-
 	fclose(fp);
     }
 

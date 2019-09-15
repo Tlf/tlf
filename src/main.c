@@ -158,7 +158,6 @@ int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
 int nob4 = 0;			// allow auto b4
 int ignoredupe = 0;
 int noautocq = 0;
-int emptydir = 0;
 int verbose = 0;
 int no_rst = 0;			/* 1 - do not use RS/RST */
 char myqra[7] = "";
