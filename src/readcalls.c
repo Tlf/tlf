@@ -79,8 +79,7 @@ int readcalls(void) {
 
     FILE *fp;
 
-    clear();
-    mvprintw(4, 0, "Reading logfile...\n");
+    showmsg("Reading logfile... ");
     refreshp();
 
     /* reset counter and score anew */
@@ -127,7 +126,7 @@ int readcalls(void) {
     }
 
     if ((fp = fopen(logfile, "r")) == NULL) {
-	mvprintw(5, 0, "Error opening logfile.\n");
+	showmsg("Error opening logfile ");
 	refreshp();
 	sleep(2);
 	exit(1);
@@ -330,7 +329,7 @@ int readcalls(void) {
 	} else if (strncmp("DIG", inputbuffer + 3, 3) == 0) {
 	    qsomode = DIGIMODE;
 	} else {
-	    mvprintw(5, 0, "Invalid line format in line %d.\n", linenr);
+	    shownr("Invalid line format in line %d.\n", linenr);
 	    refreshp();
 	    sleep(2);
 	    exit(1);
