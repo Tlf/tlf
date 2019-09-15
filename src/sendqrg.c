@@ -165,7 +165,6 @@ int init_tlf_rig(void) {
 	    break;
     }
 
-    sleep(1);
     return 0;
 }
 
