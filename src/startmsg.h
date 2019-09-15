@@ -22,6 +22,8 @@
 #define STARTMSG_H
 
 
+void clearmsg(void);
+void clearmsg_wait(void);
 void showmsg(char *message);	// output text
 void shownr(char *message, int nr); // output text + number
 void showstring(char *message1, char *message2);  // output 2 strings

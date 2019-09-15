@@ -570,7 +570,7 @@ void ui_init() {
 	char c;
 
 	showmsg("!! TLF needs at least 25 lines and 80 columns !!");
-	showmsg("   Continue anyway? Y/(N)");
+	showmsg("   Continue anyway? Y/(N) ");
 	c = toupper(key_get());
 	if (c != 'Y') {
 	    showmsg("73 es cuagn");
@@ -578,17 +578,16 @@ void ui_init() {
 	    endwin();
 	    exit(EXIT_FAILURE);
 	}
-	showmsg("");
+	clearmsg();
     }
 
     if (!has_colors() || (start_color() == ERR)) {
 	showmsg("Sorry, terminal does not support color");
 	showmsg("Try TERM=linux  or use a text console !!");
-	sleep(2);
+	sleep(1);
 	endwin();
 	exit(EXIT_FAILURE);
     }
-
 
     refreshp();
 
@@ -981,19 +980,15 @@ int main(int argc, char *argv[]) {
     lan_init();
     keyer_init();
 
-    clear();
-    mvprintw(0, 0, welcome);
-    refreshp();
+    nr_qsos = readcalls();	/* read the logfile for score and dupe */
 
     checkparameters();		/* check .paras file */
     getmessages();		/* read .paras file */
-
-    packet_init();
-    getwwv();			/* get the latest wwv info from packet */
-
     scroll_log();		/* read the last 5  log lines and set the qso number */
 
-    nr_qsos = readcalls();	/* read the logfile for score and dupe */
+    clearmsg_wait();
+
+    packet_init();
 
     clear_display();		/* tidy up the display */
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -1002,6 +997,7 @@ int main(int argc, char *argv[]) {
     }
     refreshp();
 
+    getwwv();			/* get the latest wwv info from packet */
     bm_init();			/* initialize bandmap */
 
     atexit(tlf_cleanup); 	/* register cleanup function */
