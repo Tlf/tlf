@@ -496,7 +496,7 @@ int fldigi_xmlrpc_get_carrier() {
 
 	if (rigmode != RIG_MODE_NONE) {
 	    switch (rigmode) {
-                case RIG_MODE_USB:
+		case RIG_MODE_USB:
 		    signum = 1;
 		    modeshift = 85;
 		    strcpy(fldigi_mode, "USB");

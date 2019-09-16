@@ -226,7 +226,7 @@ unsigned int get_matching_length(char *str, unsigned int n) {
     }
 
     for (int i = 0; i < g_slist_length(get_aliases(n)); i++) {
-	char *tmp =g_slist_nth_data(get_aliases(n), i);
+	char *tmp = g_slist_nth_data(get_aliases(n), i);
 	if (strstr(str, tmp) != NULL) {
 	    if (strlen(tmp) >= len)
 		len = strlen(tmp);
@@ -237,7 +237,7 @@ unsigned int get_matching_length(char *str, unsigned int n) {
 
 
 /* function to free mults_possible entries */
-void free_possible_mult (gpointer data) {
+void free_possible_mult(gpointer data) {
     possible_mult_t *tmp = (possible_mult_t *)data;
     g_free(tmp -> name);	/* free the name of the multi */
     g_slist_free_full(tmp -> aliases, g_free);
@@ -264,11 +264,11 @@ gint	cmp_size(char **a, char **b) {
  * that multi */
 void add_mult_line(char *line) {
     possible_mult_t *multi;
-    gchar ** list;
+    gchar **list;
     char *mult = NULL;
     int index = -1;
 
-    list = g_strsplit(line,":",2);
+    list = g_strsplit(line, ":", 2);
     mult = g_strstrip(list[0]);
 
     /* find mult in already defined ones */
@@ -283,7 +283,7 @@ void add_mult_line(char *line) {
 	/* not found -> prepare new one */
 	multi = g_new0(possible_mult_t, 1);
 	multi->name = g_strdup(mult);
-        multi->aliases = NULL;
+	multi->aliases = NULL;
 	g_ptr_array_add(mults_possible, multi);
     }
     else
@@ -291,12 +291,12 @@ void add_mult_line(char *line) {
 	multi = get_mult_base(index);
 
     if (list[1] != NULL) {	    /* parse aliases if present */
-	gchar ** aliaslist;
+	gchar **aliaslist;
 	aliaslist = g_strsplit(list[1], ",", 0);
 	for (int i = 0; aliaslist[i] != NULL; i++) {
 	    multi->aliases =
 		g_slist_append(multi->aliases,
-			g_strdup(g_strstrip(aliaslist[i])));
+			       g_strdup(g_strstrip(aliaslist[i])));
 	}
 	g_strfreev(aliaslist);
     }

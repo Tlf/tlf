@@ -353,8 +353,7 @@ void sendmessage(const char *msg) {
     }
 }
 
-void send_standard_message(int msg)
-{
+void send_standard_message(int msg) {
     switch (trxmode) {
 	case CWMODE:
 	    sendmessage(message[msg]);
@@ -369,8 +368,7 @@ void send_standard_message(int msg)
     }
 }
 
-void send_keyer_message(int msg)
-{
+void send_keyer_message(int msg) {
     switch (trxmode) {
 	case DIGIMODE:
 	    sendmessage(digi_message[msg]);

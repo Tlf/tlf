@@ -99,7 +99,7 @@ int read_logcfg(void) {
 	if (digi_message[i] != NULL) {
 	    free(digi_message[i]);
 	    digi_message[i] = NULL;
-        }
+	}
     }
     if (cabrillo != NULL) {
 	free(cabrillo);
@@ -574,7 +574,7 @@ int parse_logcfg(char *inputbuffer) {
 	"ALT_DK9",
 	"ALT_DK10",
 	"CALLMASTER",
-        "LAN_PORT"                     /* 264 */
+	"LAN_PORT"                     /* 264 */
     };
 
     char **fields;
@@ -1168,8 +1168,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char country_list_raw[50] = ""; 	/* use only first
-						       COUNTRY_LIST
-						       definition */
+						   	COUNTRY_LIST
+						   	definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
@@ -1551,8 +1551,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char cont_multiplier_list[50] = ""; 	/* use only first
-						       CONTINENT_LIST
-						       definition */
+						   	CONTINENT_LIST
+						   	definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
@@ -1987,7 +1987,7 @@ int parse_logcfg(char *inputbuffer) {
 
 	    break;
 	}
-        case 264: {
+	case 264: {
 	    PARAMETER_NEEDED(teststring);
 	    lan_port = atoi(fields[1]);
 	    break;

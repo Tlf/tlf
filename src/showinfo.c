@@ -130,14 +130,14 @@ void showinfo(int x) {
 	mvprintw(LINES - 1, 0, " %s  %s", pxstr, countrystr);
 
 	mvprintw(LINES - 1, 26,
-	     " %s %s",
-	     contstr, zonestr);
+		 " %s %s",
+		 contstr, zonestr);
 
-        if (x != 0 && x != mycountrynr && 0 == get_qrb(&range, &bearing)) {
+	if (x != 0 && x != mycountrynr && 0 == get_qrb(&range, &bearing)) {
 	    mvprintw(LINES - 1, 35, "%.0f km/%.0f deg ", range, bearing);
 	}
 
-	mvprintw(LINES - 1, LINELENGTH-17, "   DX time: %s", timebuff);
+	mvprintw(LINES - 1, LINELENGTH - 17, "   DX time: %s", timebuff);
     }
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));

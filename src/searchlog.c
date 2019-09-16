@@ -109,13 +109,13 @@ void drawSearchWin(void) {
 
     wnicebox(search_win, 0, 0, nr_bands, 37, "Worked");
     if (qtcdirection > 0) {
-        mvwprintw(search_win, 0, 35, "Q");
+	mvwprintw(search_win, 0, 35, "Q");
     }
 
     wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (i = 0; i < nr_bands; i++)
-        mvwprintw(search_win, i + 1, 1,
-                      "                                     ");
+	mvwprintw(search_win, i + 1, 1,
+		  "                                     ");
 
     mvwprintw(search_win, 1, 1, " 10");
     mvwprintw(search_win, 2, 1, " 15");
@@ -124,13 +124,13 @@ void drawSearchWin(void) {
     mvwprintw(search_win, 5, 1, " 80");
     mvwprintw(search_win, 6, 1, "160");
     if (IsAllBand()) {
-        mvwprintw(search_win, 7, 1, " 12");
-        mvwprintw(search_win, 8, 1, " 17");
-        mvwprintw(search_win, 9, 1, " 30");
+	mvwprintw(search_win, 7, 1, " 12");
+	mvwprintw(search_win, 8, 1, " 17");
+	mvwprintw(search_win, 9, 1, " 30");
     }
 }
 
-void displayCallInfo (dxcc_data* dx, int z, char *pxstr) {
+void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
     int i;
 
     wattroff(search_win, A_STANDOUT);
@@ -271,11 +271,11 @@ void handlePartials(void) {
     }
     nr_suggested += srch_index;
 
-     /* If only one partial call found and USEPARTIALS set,
-     * use that call for auto-completion. Can be blocked by
-     * pressing tab in calledit() function
-     */
-    if ((nr_suggested == 1 ) && (use_part == 1) && (block_part == 0)) {
+    /* If only one partial call found and USEPARTIALS set,
+    * use that call for auto-completion. Can be blocked by
+    * pressing tab in calledit() function
+    */
+    if ((nr_suggested == 1) && (use_part == 1) && (block_part == 0)) {
 	if (strlen(suggested_call) > strlen(hiscall)) {
 	    strcpy(hiscall, suggested_call);
 	    beep();
@@ -291,9 +291,9 @@ void extractData(int index) {
     g_strlcpy(result[index], searchresult[index], 7);    /* band + mode */
 
     if (show_time == 1) // show qso time
-        strncat(result[index], searchresult[index] + 17, 5);
+	strncat(result[index], searchresult[index] + 17, 5);
     else                // show qso number
-        strncat(result[index], searchresult[index] + 22, 5);
+	strncat(result[index], searchresult[index] + 22, 5);
 
     strncat(result[index], searchresult[index] + 28, 12); /* call */
     strncat(result[index], searchresult[index] + 52, 16); /* exch */
@@ -301,7 +301,7 @@ void extractData(int index) {
 
 
 /* find band from bandstring and choose line 'j' for display */
-int bandstr2line(char *buffer){
+int bandstr2line(char *buffer) {
     int j = 0;
 
     if (buffer[1] == '1' && buffer[2] == '0')
@@ -347,7 +347,7 @@ void filterLog() {
 		mixedmode == 0) {
 	    // ist letzterTest korrekt?
 
-	    g_strlcpy(s_inputbuffer, qsos[qso_index]+29, 13); /* call */
+	    g_strlcpy(s_inputbuffer, qsos[qso_index] + 29, 13); /* call */
 	    if (strstr(s_inputbuffer, hiscall) != 0) {
 
 		g_strlcpy(searchresult[srch_index], qsos[qso_index], 81);
@@ -478,8 +478,7 @@ int getZone() {
 
 	if (z1 != 0) {
 	    z = z1;
-	} else
-	{
+	} else {
 	    if (strlen(zone_fix) > 1) {
 		g_strlcpy(zonebuffer, zone_fix, 3);
 	    } else

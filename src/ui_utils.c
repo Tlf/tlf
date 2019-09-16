@@ -333,8 +333,8 @@ static int onechar(void) {
  * display and resizes only the packet panel windows
  */
 void resize_layout(void) {
-    	getmaxyx(stdscr, ymax, xmax);
-	clear_display();
-	clusterinfo();
-	refresh_splitlayout();
+    getmaxyx(stdscr, ymax, xmax);
+    clear_display();
+    clusterinfo();
+    refresh_splitlayout();
 }

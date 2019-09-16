@@ -173,7 +173,7 @@ void record(void) {
 		IGNORE(system("echo " " > ~/.VRlock"));;
 
 		IGNORE(system
-		     ("cd ~/tlf/soundlogs; ./soundlog  > /dev/null 2> /dev/null &"));
+		       ("cd ~/tlf/soundlogs; ./soundlog  > /dev/null 2> /dev/null &"));
 
 		mvprintw(15, 20, "Contest recording enabled...");
 		refreshp();

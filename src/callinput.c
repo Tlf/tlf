@@ -282,43 +282,43 @@ int callinput(void) {
 	switch (x) {
 
 	    // Plus (+)
-            // - in non-CT mode switch to other mode (CQ <-> S&P)
-            // - in CT mode send exchange, log QSO, no message sent.
+	    // - in non-CT mode switch to other mode (CQ <-> S&P)
+	    // - in CT mode send exchange, log QSO, no message sent.
 	    case '+': {
-                if (!ctcomp) {
+		if (!ctcomp) {
 
-                    /* switch to other mode */
-                    if (cqmode == CQ) {
-                        cqmode = S_P;
-                    } else
-                        cqmode = CQ;
+		    /* switch to other mode */
+		    if (cqmode == CQ) {
+			cqmode = S_P;
+		    } else
+			cqmode = CQ;
 
-                    /* and show new mode */
-                    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    /* and show new mode */
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-                    if (cqmode == CQ) {
-                        mvprintw(0, 2, "Log     ");
-                        strcpy(mode, "Log     ");
-                    } else {
-                        mvprintw(0, 2, "S&P     ");
-                        strcpy(mode, "S&P     ");
-                    }
+		    if (cqmode == CQ) {
+			mvprintw(0, 2, "Log     ");
+			strcpy(mode, "Log     ");
+		    } else {
+			mvprintw(0, 2, "S&P     ");
+			strcpy(mode, "S&P     ");
+		    }
 
-                } else {
+		} else {
 
-                    if (strlen(hiscall) > 2) {
-                        send_standard_message(2);
+		    if (strlen(hiscall) > 2) {
+			send_standard_message(2);
 
-                        if (((cqww == 1) || (wazmult == 1))
-                                && (*comment == '\0'))
-                            strcpy(comment, cqzone);
+			if (((cqww == 1) || (wazmult == 1))
+				&& (*comment == '\0'))
+			    strcpy(comment, cqzone);
 
-                        if ((itumult == 1) && (*comment == '\0'))
-                            strcpy(comment, ituzone);
-                        x = '\\';   // key for logging QSO without message
+			if ((itumult == 1) && (*comment == '\0'))
+			    strcpy(comment, ituzone);
+			x = '\\';   // key for logging QSO without message
 
-                    }
-                }
+		    }
+		}
 		break;
 	    }
 
@@ -549,7 +549,7 @@ int callinput(void) {
 	    case '#': {
 		if (mem == 0.0) {
 		    mem = freq;
-		    mvprintw(14, 67, " MEM: %7.1f", mem/1000.);
+		    mvprintw(14, 67, " MEM: %7.1f", mem / 1000.);
 		} else {
 		    freq = mem;
 
@@ -1260,41 +1260,41 @@ void send_bandswitch(freq_t freq) {
     int bandswitch = 0;
 
     if (!use_bandoutput) {
-        return;
+	return;
     }
 
-    const int khz = (int) (freq / 1000.0);
+    const int khz = (int)(freq / 1000.0);
     if (khz > 15) {	// looks like a freq...
-        switch (khz) {
-            case 1800 ... 2000:
-                bandswitch = 1;
-                break;
-            case 3500 ... 4000:
-                bandswitch = 2;
-                break;
-            case 7000 ... 7300:
-                bandswitch = 3;
-                break;
-            case 10100 ... 10150:
-                bandswitch = 4;
-                break;
-            case 14000 ... 14350:
-                bandswitch = 5;
-                break;
-            case 18068 ... 18168:
-                bandswitch = 6;
-                break;
-            case 21000 ... 21450:
-                bandswitch = 7;
-                break;
-            case 24890 ... 24990:
-                bandswitch = 8;
-                break;
-            case 28000 ... 29700:
-                bandswitch = 9;
-        }
+	switch (khz) {
+	    case 1800 ... 2000:
+		bandswitch = 1;
+		break;
+	    case 3500 ... 4000:
+		bandswitch = 2;
+		break;
+	    case 7000 ... 7300:
+		bandswitch = 3;
+		break;
+	    case 10100 ... 10150:
+		bandswitch = 4;
+		break;
+	    case 14000 ... 14350:
+		bandswitch = 5;
+		break;
+	    case 18068 ... 18168:
+		bandswitch = 6;
+		break;
+	    case 21000 ... 21450:
+		bandswitch = 7;
+		break;
+	    case 24890 ... 24990:
+		bandswitch = 8;
+		break;
+	    case 28000 ... 29700:
+		bandswitch = 9;
+	}
     } else			// use the bandinx
-        bandswitch = bandinx + 1;
+	bandswitch = bandinx + 1;
 
     bandswitch = bandindexarray[bandswitch];
 

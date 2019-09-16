@@ -801,12 +801,12 @@ int write_adif(void) {
 
 	    /* FREQ if available */
 	    if (strlen(buf) > 81) {
-                // read kHz and write MHz
+		// read kHz and write MHz
 		const double mhz = atof(buf + 80) / 1000.0;
 		freq_buf[0] = '\0';
 		if (mhz > 1.799) {
-                    sprintf(freq_buf, "<FREQ:%d>%.4f",
-                        mhz < 10 ? 6 : 7, mhz);
+		    sprintf(freq_buf, "<FREQ:%d>%.4f",
+			    mhz < 10 ? 6 : 7, mhz);
 		}
 		strcat(buffer, freq_buf);
 	    }

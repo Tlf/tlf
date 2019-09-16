@@ -44,7 +44,7 @@ void change_freq(void) {
 	freq_display();
 
 	if (get_outfreq() == 0) {
-            // last request has been processed, check keys again
+	    // last request has been processed, check keys again
 	    int x = key_poll();
 
 	    int deltaf = 0;
@@ -87,12 +87,12 @@ void change_freq(void) {
 		    break;
 		}
 
-                // no key
-                case ERR: {
+		// no key
+		case ERR: {
 		    break;
-                }
+		}
 
-                // any other key: exit frequency change mode
+		// any other key: exit frequency change mode
 		default: {
 		    brkflg = 1;
 		    break;

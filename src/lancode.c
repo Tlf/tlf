@@ -57,7 +57,7 @@ struct hostent *bc_hostbyname[MAXNODES];
 /* host names and UDP ports to send notifications to */
 char bc_hostaddress[MAXNODES][16];
 char bc_hostservice[MAXNODES][16] = {
-	[0 ... MAXNODES - 1] = { [0 ... 15] = 0 }
+    [0 ... MAXNODES - 1] = { [0 ... 15] = 0 }
 };
 char sendbuffer[256];
 int nodes = 0;
@@ -342,7 +342,7 @@ void talk(void) {
 
     char talkline[61] = "";
 
-    mvprintw(LINES-1, 0, backgrnd_str);
+    mvprintw(LINES - 1, 0, backgrnd_str);
     mvprintw(LINES - 1, 0, "T>");
     refreshp();
     echo();
@@ -355,7 +355,7 @@ void talk(void) {
 
     talkline[0] = '\0';
     attron(COLOR_PAIR(C_HEADER));
-    mvprintw(LINES-1, 0, backgrnd_str);
+    mvprintw(LINES - 1, 0, backgrnd_str);
     refreshp();
 }
 

@@ -495,7 +495,7 @@ void bm_show_info() {
     /* show info field on the right */
     attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
     move(TOPLINE, 66);
-    vline(ACS_VLINE, LINES - TOPLINE -1);
+    vline(ACS_VLINE, LINES - TOPLINE - 1);
 
     mvprintw(LASTLINE - 5, 67, " bands: %s", bm_config.allband ? "all" : "own");
     mvprintw(LASTLINE - 4, 67, " modes: %s", bm_config.allmode ? "all" : "own");
@@ -790,10 +790,10 @@ void bandmap_show() {
 	unsigned int max_below;
 	unsigned int above_qrg = spots->len - below_qrg - on_qrg;
 
-	if (above_qrg < ((NR_SPOTS - 1)/2) ) {
+	if (above_qrg < ((NR_SPOTS - 1) / 2)) {
 	    max_below = NR_SPOTS - above_qrg - 1;
 	} else
-	    max_below = NR_SPOTS/2;
+	    max_below = NR_SPOTS / 2;
 
 	startindex = (below_qrg < max_below) ? 0 : (below_qrg - max_below);
     }

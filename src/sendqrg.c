@@ -125,7 +125,7 @@ int init_tlf_rig(void) {
 
     // parse RIGCONF parameters
     if (parse_rigconf() < 0) {
-        return -1;
+	return -1;
     }
 
     retcode = rig_open(my_rig);

@@ -170,7 +170,7 @@ int changepars(void) {
     mvprintw(12, 29, "            ");
 
     echo();
-    mvgetnstr(12, 29, parameterstring,19);
+    mvgetnstr(12, 29, parameterstring, 19);
     noecho();
 
     for (k = 0; parameterstring[k]; k++)
@@ -443,13 +443,13 @@ int changepars(void) {
 	case 34: {		/* SIMULATOR  */
 	    if (cqww != 1) {
 		TLF_LOG_INFO(
-			"Simulator mode is only supported for CQWW contest!");
+		    "Simulator mode is only supported for CQWW contest!");
 		break;
 	    }
 
 	    if (callmaster == NULL) {
 		TLF_LOG_INFO(
-			"Simulator mode needs callmaster database");
+		    "Simulator mode needs callmaster database");
 		break;
 	    }
 
@@ -459,7 +459,7 @@ int changepars(void) {
 		cqmode = CQ;
 		if (ctcomp == 1) {
 		    TLF_LOG_INFO(
-		    "The simulator only works in TRmode. Switching to TRmode");
+			"The simulator only works in TRmode. Switching to TRmode");
 		    ctcomp = 0;
 		} else {
 		    mvprintw(13, 29, "Simulator on");
@@ -694,7 +694,7 @@ int changepars(void) {
 	    break;
 
 	}
-        case 51: {              /* FLDIGI - turn on/off */
+	case 51: {              /* FLDIGI - turn on/off */
 	    if (digikeyer == FLDIGI) {
 		if (fldigi_toggle()) {
 		    fldigi_clear_connerr();

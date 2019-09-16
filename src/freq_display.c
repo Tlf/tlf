@@ -26,7 +26,8 @@
 
 static void print_dot(int y, int x);
 static void clear_freq_display(int y, int x);
-static void print_big_number(int number, int y_position, int x_position, int location);
+static void print_big_number(int number, int y_position, int x_position,
+			     int location);
 
 void freq_display(void) {
 
@@ -45,16 +46,16 @@ void freq_display(void) {
 
     // display the digits
     int x_offset = 4;
-    for(int i = 0; i <= 6; ++i) {
-        if (i == 5) {   // skip decimal dot
-            x_offset += 2;
-            continue;
-        }
-        const int digit = fbuffer[i] - '0';
-        if (digit >= 0) {
-            print_big_number(digit, y_position, x_position, x_offset);
-        }
-        x_offset += 5;
+    for (int i = 0; i <= 6; ++i) {
+	if (i == 5) {   // skip decimal dot
+	    x_offset += 2;
+	    continue;
+	}
+	const int digit = fbuffer[i] - '0';
+	if (digit >= 0) {
+	    print_big_number(digit, y_position, x_position, x_offset);
+	}
+	x_offset += 5;
     }
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
@@ -71,7 +72,7 @@ void freq_display(void) {
 
 
 void print_big_number(int number, int y_position, int x_position,
-		     int location) {
+		      int location) {
 
     switch (number) {
 
@@ -268,8 +269,8 @@ void clear_freq_display(int y, int x) {
     attroff(A_STANDOUT);
     attron(modify_attr(COLOR_PAIR(C_LOG)));
 
-    for(int i = 0; i < 5; ++i) {
-        mvprintw(y + i, x, "                                   ");
+    for (int i = 0; i < 5; ++i) {
+	mvprintw(y + i, x, "                                   ");
     }
 
 }

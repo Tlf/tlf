@@ -77,7 +77,7 @@ void clusterinfo(void) {
     if (cluster == NOCLUSTER) {
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-	for (int i = 14; i < LINES-1; i++)
+	for (int i = 14; i < LINES - 1; i++)
 	    mvprintw(i, 0, backgrnd_str);
 	refreshp();
 
@@ -114,7 +114,7 @@ void clusterinfo(void) {
 
 	g_strlcpy(inputbuffer, backgrnd_str, 79);
 
-	for (j = 15; j <= LINES-3; j++) {
+	for (j = 15; j <= LINES - 3; j++) {
 	    mvprintw(j, 1, "%s", inputbuffer);
 	}
 
@@ -125,15 +125,15 @@ void clusterinfo(void) {
 	k = getclusterinfo();
 
 	if (k > (MAX_SPOTS - 1)) {
-		k = MAX_SPOTS - 1;
+	    k = MAX_SPOTS - 1;
 	}
 
-	k -= (LINES-3 - 14) + 1;
+	k -= (LINES - 3 - 14) + 1;
 	if (k < 0)
 	    k = -1;
 
 
-	for (j = 15; j <= LINES-3; j++) {
+	for (j = 15; j <= LINES - 3; j++) {
 	    k++;
 	    if (k < (MAX_SPOTS - 1) && spotarray[k] > -1) {
 		if (k > MAX_SPOTS - 1)
@@ -155,7 +155,7 @@ void clusterinfo(void) {
 
 	pthread_mutex_unlock(&spot_ptr_mutex);
 
-	nicebox(14, 0, LINES-3 - 14, 78, "Cluster");
+	nicebox(14, 0, LINES - 3 - 14, 78, "Cluster");
 	refreshp();
     }
     printcall();

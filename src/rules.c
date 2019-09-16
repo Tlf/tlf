@@ -125,8 +125,7 @@ int read_rules() {
 		showmsg("Out of memory: unable to create digi message!");
 		sleep(2);
 		exit(EXIT_FAILURE);
-	    }
-	    else {
+	    } else {
 		char *c = strrchr(digi_message[i], '\n');
 		if (c)
 		    *c = ' ';

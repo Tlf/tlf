@@ -77,29 +77,28 @@ static pthread_cond_t backgrnd_process_stopped_cond = PTHREAD_COND_INITIALIZER;
 int cw_simulator(void);
 
 void stop_background_process(void) {
-	pthread_mutex_lock(&stop_backgrnd_process_mutex);
-	assert(stop_backgrnd_process == 0);
-	stop_backgrnd_process = 1;
-	pthread_cond_wait(&backgrnd_process_stopped_cond, &stop_backgrnd_process_mutex);
-	pthread_mutex_unlock(&stop_backgrnd_process_mutex);
+    pthread_mutex_lock(&stop_backgrnd_process_mutex);
+    assert(stop_backgrnd_process == 0);
+    stop_backgrnd_process = 1;
+    pthread_cond_wait(&backgrnd_process_stopped_cond, &stop_backgrnd_process_mutex);
+    pthread_mutex_unlock(&stop_backgrnd_process_mutex);
 }
 
 void start_background_process(void) {
-	pthread_mutex_lock(&stop_backgrnd_process_mutex);
-	assert(stop_backgrnd_process == 1);
-	stop_backgrnd_process = 0;
-	pthread_cond_broadcast(&start_backgrnd_process_cond);
-	pthread_mutex_unlock(&stop_backgrnd_process_mutex);
+    pthread_mutex_lock(&stop_backgrnd_process_mutex);
+    assert(stop_backgrnd_process == 1);
+    stop_backgrnd_process = 0;
+    pthread_cond_broadcast(&start_backgrnd_process_cond);
+    pthread_mutex_unlock(&stop_backgrnd_process_mutex);
 }
 
-static void background_process_wait(void)
-{
-	pthread_mutex_lock(&stop_backgrnd_process_mutex);
-	if (stop_backgrnd_process) {
-		pthread_cond_broadcast(&backgrnd_process_stopped_cond);
-		pthread_cond_wait(&start_backgrnd_process_cond, &stop_backgrnd_process_mutex);
-	}
-	pthread_mutex_unlock(&stop_backgrnd_process_mutex);
+static void background_process_wait(void) {
+    pthread_mutex_lock(&stop_backgrnd_process_mutex);
+    if (stop_backgrnd_process) {
+	pthread_cond_broadcast(&backgrnd_process_stopped_cond);
+	pthread_cond_wait(&start_backgrnd_process_cond, &stop_backgrnd_process_mutex);
+    }
+    pthread_mutex_unlock(&stop_backgrnd_process_mutex);
 }
 
 void *background_process(void *ptr) {
@@ -191,7 +190,7 @@ void *background_process(void *ptr) {
 		}
 	    }
 	    if ((*lan_message != '\0') && (lan_message[0] == thisnode)) {
-		TLF_LOG_WARN("%s","Warning: NODE ID CONFLICT ?! You should use another ID! ");
+		TLF_LOG_WARN("%s", "Warning: NODE ID CONFLICT ?! You should use another ID! ");
 	    }
 
 	    if ((*lan_message != '\0')
@@ -301,8 +300,8 @@ void *background_process(void *ptr) {
  * works only for RUN mode in CQWW */
 
 static void twoSpaces() {
-	sendmessage("  ");
-	write_keyer();
+    sendmessage("  ");
+    write_keyer();
 }
 
 void setSimulatorState(int n) {
@@ -310,7 +309,7 @@ void setSimulatorState(int n) {
     extern int simulator_mode;
 
     if (trxmode == CWMODE || trxmode == DIGIMODE) {
-        if (simulator != 0)
+	if (simulator != 0)
 	    simulator_mode = n;
     }
 }

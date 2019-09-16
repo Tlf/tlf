@@ -42,7 +42,7 @@ void handle_logging(enum log_lvl lvl, ...) {
 
     g_free(str);
 
-    switch(lvl) {
+    switch (lvl) {
 	case L_INFO:
 	    sleep(1);
 	    break;

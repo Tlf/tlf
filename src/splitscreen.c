@@ -574,7 +574,7 @@ void refresh_splitlayout() {
 	return;
     }
 
-    WINDOW* oldwin = packet_win;
+    WINDOW *oldwin = packet_win;
 
     packet_win = newwin(LINES, COLS, 0, 0);
     replace_panel(packet_panel, packet_win);

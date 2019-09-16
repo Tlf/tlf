@@ -109,7 +109,7 @@ static freq_t execute_grab(spot *data) {
 	cqmode = S_P;
 	strcpy(mode, "S&P     ");
 	mem = freq;
-	mvprintw(14, 67, " MEM: %7.1f", mem/1000.);
+	mvprintw(14, 67, " MEM: %7.1f", mem / 1000.);
     }
 
     refreshp();
