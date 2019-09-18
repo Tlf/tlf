@@ -97,6 +97,16 @@ static freq_t get_and_reset_outfreq() {
     return f;
 }
 
+static rmode_t get_ssb_mode() {
+    // LSB below 14 MHz, USB above it
+    return (freq < bandcorner[BANDINDEX_20][0] ? RIG_MODE_LSB : RIG_MODE_USB);
+}
+
+static pbwidth_t get_cw_bandwidth() {
+    // use specified bandwidth (CWBANDWIDTH) if available
+    return (cw_bandwidth > 0 ? cw_bandwidth : TLF_DEFAULT_PASSBAND);
+}
+
 
 void gettxinfo(void) {
 
@@ -182,7 +192,7 @@ void gettxinfo(void) {
 	}
 
 
-	if (rigfreq >= 1800000.0) {
+	if (rigfreq >= bandcorner[0][0]) {
 	    freq = rigfreq; // Hz
 	}
 
@@ -197,29 +207,16 @@ void gettxinfo(void) {
 
     } else if (reqf == SETCWMODE) {
 
-	if (cw_bandwidth == 0) {
-	    retval =
-		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
-			     TLF_DEFAULT_PASSBAND);
-	} else {
-	    retval =
-		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW,
-			     cw_bandwidth);
-	}
+	retval = rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW, get_cw_bandwidth());
 
-	if (retval != 0) {
-	    TLF_LOG_WARN("Problem with rig link!n");
+	if (retval != RIG_OK) {
+	    TLF_LOG_WARN("Problem with rig link!");
 	}
 
     } else if (reqf == SETSSBMODE) {
-	if (freq > 13999.9)
-	    retval =
-		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_USB,
-			     TLF_DEFAULT_PASSBAND);
-	else
-	    retval =
-		rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_LSB,
-			     TLF_DEFAULT_PASSBAND);
+
+	retval = rig_set_mode(my_rig, RIG_VFO_CURR, get_ssb_mode(),
+			      TLF_DEFAULT_PASSBAND);
 
 	if (retval != RIG_OK) {
 	    TLF_LOG_WARN("Problem with rig link!");
@@ -233,9 +230,8 @@ void gettxinfo(void) {
 	    else
 		new_mode = RIG_MODE_LSB;
 	}
-	retval =
-	    rig_set_mode(my_rig, RIG_VFO_CURR, new_mode,
-		TLF_DEFAULT_PASSBAND);
+	retval = rig_set_mode(my_rig, RIG_VFO_CURR, new_mode,
+			      TLF_DEFAULT_PASSBAND);
 
 	if (retval != RIG_OK) {
 	    TLF_LOG_WARN("Problem with rig link!");
@@ -276,7 +272,7 @@ static void handle_trx_bandswitch(const freq_t freq) {
     pbwidth_t width = TLF_DEFAULT_PASSBAND; // passband width, in Hz
 
     if (trxmode == SSBMODE) {
-	mode = (freq < 14000000 ? RIG_MODE_LSB : RIG_MODE_USB);
+	mode = get_ssb_mode();
     } else if (trxmode == DIGIMODE) {
 	if ((rigmode & (RIG_MODE_LSB | RIG_MODE_USB | RIG_MODE_RTTY | RIG_MODE_RTTYR))
 		!= rigmode) {
@@ -284,9 +280,7 @@ static void handle_trx_bandswitch(const freq_t freq) {
 	}
     } else {
 	mode = RIG_MODE_CW;
-	if (cw_bandwidth != 0) {
-	    width = cw_bandwidth;
-	}
+	width = get_cw_bandwidth();
     }
 
     if (mode == RIG_MODE_NONE) {
@@ -296,7 +290,7 @@ static void handle_trx_bandswitch(const freq_t freq) {
     int retval = rig_set_mode(my_rig, RIG_VFO_CURR, mode, width);
 
     if (retval != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig link: set mode!");
+	TLF_LOG_WARN("Problem with rig link!");
     }
 
 }
