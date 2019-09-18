@@ -147,7 +147,7 @@ int init_tlf_rig(void) {
 	    return -1;
     }
 
-    shownr("freq =", (int) rigfreq);
+    shownr("Freq =", (int) rigfreq);
 
     if (debugflag) {	// debug rig control
 	debug_tlf_rig();

@@ -54,14 +54,14 @@ int read_rules() {
     /* If no contest is given, whichcontest is set to default "qso"
        (PA0R, Sep 24 2003)*/
     if (strlen(whichcontest) == 0) {
-	showmsg("contest name is empty! Assuming general qso mode!! ");
+	showmsg("Contest name is empty! Assuming general qso mode!! ");
 	strcpy(whichcontest, "qso");
 	return (PARSE_ERROR);
     }
 
     if (strlen(whichcontest) >= 40) {
-	showmsg("contest name is too long!");
-	showmsg("exiting...");
+	showmsg("Contest name is too long!");
+	showmsg("Exiting...");
 	exit(1);
     }
 
@@ -75,7 +75,7 @@ int read_rules() {
 
     if ((mit_contest_file = fopen(contest_conf, "r")) != NULL) {
 
-	showstring("reading contest rules file:", contest_conf);
+	showstring("Reading contest rules file:", contest_conf);
 
 	while (fgets(mit_contest_rule, sizeof(mit_contest_rule),
 		     mit_contest_file) != NULL) {
@@ -89,7 +89,7 @@ int read_rules() {
 	showstring("Using contest rules file: ", contest_conf);
     } else if ((mit_contest_file = fopen(basic_contest_conf, "r")) != NULL) {
 
-	showstring("reading contest rules file:", basic_contest_conf);
+	showstring("Reading contest rules file:", basic_contest_conf);
 
 	while (fgets(mit_contest_rule, sizeof(mit_contest_rule),
 		     mit_contest_file) != NULL) {

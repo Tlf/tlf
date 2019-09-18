@@ -307,6 +307,7 @@ int parse_logcfg(char *inputbuffer) {
     extern int minitest;
     extern int unique_call_multi;
     extern int lan_port;
+    extern int verbose;
 
     char *commands[] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -1284,10 +1285,13 @@ int parse_logcfg(char *inputbuffer) {
 	case 103 ... 116: {	// get phone messages
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(ph_message[ii - 103], g_strchomp(fields[1]), 71);
-	    mvprintw(15, 5, "A: Phone message #%d is %s", ii - 103,
+	    if (verbose) {
+		gchar *tmp;
+		tmp = g_strdup_printf("  Phone message #%d is %s", ii - 103,
 		     ph_message[ii - 103]);	// (W9WI)
-	    refreshp();
-	    //                             system ("sleep 2");
+		showmsg(tmp);
+		g_free(tmp);
+	    }
 	    break;
 	}
 	case 117: {		// WAZ Zone is a Multiplier
@@ -1726,17 +1730,25 @@ int parse_logcfg(char *inputbuffer) {
 	case 194 ... 207: {	// get QTC recv phone messages
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(qtc_phrecv_message[ii - 194], g_strchomp(fields[1]), 71);
-	    mvprintw(15, 5, "A: QTC RECV phone message #%d is %s", ii - 194,
-		     qtc_phrecv_message[ii - 194]);
-	    refreshp();
+	    if (verbose) {
+		gchar *tmp;
+		tmp = g_strdup_printf("  QTC RECV phone message #%d is %s",
+		    ii - 194, qtc_phrecv_message[ii - 194]);
+		showmsg(tmp);
+		g_free(tmp);
+	    }
 	    break;
 	}
 	case 208 ... 221: {	// get QTC send phone messages
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(qtc_phsend_message[ii - 208], g_strchomp(fields[1]), 71);
-	    mvprintw(15, 5, "A: QTC SEND phone message #%d is %s", ii - 208,
-		     qtc_phrecv_message[ii - 208]);
-	    refreshp();
+	    if (verbose) {
+		gchar *tmp;
+		tmp = g_strdup_printf("  QTC SEND phone message #%d is %s",
+		    ii - 208, qtc_phrecv_message[ii - 208]);
+		showmsg(tmp);
+		g_free(tmp);
+	    }
 	    break;
 	}
 	case 222: {

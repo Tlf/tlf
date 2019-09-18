@@ -640,10 +640,10 @@ void ui_color_init() {
 int databases_load() {
     int status;
 
-    showmsg("reading country data");
+    showmsg("Reading country data");
     readctydata();		/* read ctydb.dat */
 
-    showmsg("reading configuration data");
+    showmsg("Reading configuration data");
     status = read_logcfg(); 	/* read the configuration file */
     status |= read_rules();	/* read the additional contest rules
 				   in "rules/contestname" */
@@ -657,27 +657,25 @@ int databases_load() {
 
     if (*call == '\0') {
 	showmsg
-	("WARNING: No callsign defined in logcfg.dat! exiting...\n\n\n");
+	    ("WARNING: No callsign defined in logcfg.dat! exiting...\n");
 	return EXIT_FAILURE;
     }
 
 
     if (multlist == 1) {
-	showmsg("reading multiplier data      ");
+	showmsg("Reading multiplier data      ");
 	if (strlen(multsfile) == 0) {
-	    mvprintw(9, 0, "No multiplier file specified, exiting.. !!\n");
-	    refreshp();
-	    sleep(5);
-	    exit(1);
+	    showmsg("No multiplier file specified, exiting.. !!");
+	    return EXIT_FAILURE;
 	}
     }
     init_and_load_multipliers();
 
-    showmsg("reading callmaster data");
+    showmsg("Reading callmaster data");
     load_callmaster();
 
     if (*exchange_list != '\0') {
-	showmsg("reading initial exchange file");
+	showmsg("Reading initial exchange file");
 	main_ie_list = make_ie_list(exchange_list);
 
 	if (main_ie_list == NULL) {
