@@ -120,11 +120,11 @@ int read_logcfg(void) {
 	    endwin();
 	    exit(1);
 	} else {
-	    showstring("Using (Read Only) file", defltconf);
+	    showstring("Using default (Read Only) config file:", defltconf);
 	}
 
     } else
-	showstring("Opening config file", config_file);
+	showstring("Reading config file:", config_file);
 
     while (fgets(inputbuffer, 120, fp) != NULL) {
 

@@ -86,7 +86,6 @@ int read_rules() {
 	    }
 	}
 	fclose(mit_contest_file);
-	showstring("Using contest rules file: ", contest_conf);
     } else if ((mit_contest_file = fopen(basic_contest_conf, "r")) != NULL) {
 
 	showstring("Reading contest rules file:", basic_contest_conf);
@@ -100,17 +99,15 @@ int read_rules() {
 	    }
 	}
 	fclose(mit_contest_file);
-	showstring("Using contest rules file:", basic_contest_conf);
     }
 
     else {
-	showstring("There is no contest rules file", contest_conf);
+	showstring("There is no contest rules file:", contest_conf);
 	showmsg("Assuming regular QSO operation. Logfile is qso.log");
 	strcpy(whichcontest, "qso");	/* default use general qso mode...
 					   (PA0R, 24 Sept. 2003) */
 	setcontest();
 	strcpy(logfile, "qso.log");
-	refreshp();
     }
 
     /*
