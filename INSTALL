@@ -16,7 +16,8 @@ If you are using a distribution of the _Debian_ family make sure to install
 also the needed header files with
 
 ----
-sudo apt install libglib2.0-dev libhamlib-dev libncurses5-dev libtinfo-dev libxmlrpc-core-c3
+sudo apt install libglib2.0-dev libhamlib-dev libncurses5-dev libtinfo-dev
+libxmlrpc-core-c3-dev
 ----
 
 While not a strict build dependency installing the following packages is
