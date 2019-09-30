@@ -183,7 +183,7 @@ char multsfile[80] = "";	/* name of file with a list of allowed
 char exchange_list[40] = "";
 int timeoffset = 0;
 int trxmode = CWMODE;
-int rigmode = RIG_MODE_NONE;
+rmode_t  rigmode = RIG_MODE_NONE;
 
 int mixedmode = 0;
 char his_rst[4] = "599";

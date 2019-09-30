@@ -461,7 +461,7 @@ int fldigi_xmlrpc_get_carrier() {
     int rc;
     xmlrpc_res result;
     xmlrpc_env env;
-    extern int rigmode;
+    extern rmode_t rigmode;
     extern int trx_control;
     extern freq_t freq;
     int signum;

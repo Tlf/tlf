@@ -96,7 +96,7 @@ extern int highqsonr;
 
 
 extern int trxmode;
-extern int rigmode;
+extern rmode_t rigmode;
 extern char lastqsonr[];
 extern int cqwwm2;
 extern char thisnode;

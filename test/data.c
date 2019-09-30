@@ -135,7 +135,7 @@ int timeoffset = 0;
 int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
 /* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
-int rigmode = 0;
+rmode_t rigmode = 0;
 int mixedmode = 0;
 char his_rst[4] = "599";
 char my_rst[4] = "599";

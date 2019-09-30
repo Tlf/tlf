@@ -47,7 +47,7 @@
 extern RIG *my_rig;
 extern int cw_bandwidth;
 extern int trxmode;
-extern int rigmode;
+extern rmode_t rigmode;
 extern int digikeyer;
 extern rmode_t digi_mode;
 
@@ -167,7 +167,7 @@ void gettxinfo(void) {
 	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 	    if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)
 		    && retval == RIG_OK) {
-		retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, (rmode_t *)&rigmode, &bwidth);
+		retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, &rigmode, &bwidth);
 		if (retvalmode != RIG_OK) {
 		    rigmode = RIG_MODE_NONE;
 		}
