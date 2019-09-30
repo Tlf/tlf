@@ -28,6 +28,7 @@ enum {
 };
 
 int read_logcfg(void);
+int parse_configfile(FILE *fp);
 int parse_logcfg(char *inputbuffer);
 
 #endif // PARSE_LOGCFG_H

@@ -37,6 +37,7 @@
 #include "ignore_unused.h"
 #include "tlf_curses.h"
 
+
 /* get countrynumber, QTH, CQ zone and continent for myself */
 void getstationinfo() {
     extern char call[];
@@ -57,7 +58,8 @@ void getstationinfo() {
     QTH_Long = mydx->lon;
 }
 
-int getmessages(void) {
+
+void getmessages(void) {
 
     extern char call[];
     extern char mycqzone[];
@@ -66,7 +68,6 @@ int getmessages(void) {
     extern int qsonum;
     extern char qsonrstr[];
     extern char backgrnd_str[];
-    extern int emptydir;
 
     FILE *fp;
 
@@ -91,6 +92,7 @@ int getmessages(void) {
 	printw("\nError opening logfile.\nExiting...\n");
 	refreshp();
 	sleep(5);
+	endwin();
 	exit(1);
     }
 
@@ -99,7 +101,6 @@ int getmessages(void) {
 	ii = 5 - i;
 
 	if (fseek(fp, -1L * i * LOGLINELEN, SEEK_END) == 0) {
-
 	    IGNORE(fgets(logline[ii], 85, fp));;
 	} else {
 	    strncpy(logline[ii], backgrnd_str, 81);
@@ -109,6 +110,9 @@ int getmessages(void) {
 	logline[ii][78] = 32;
 	logline[ii][79] = 32;
     }
+
+    fclose(fp);
+
 
     strncpy(qsonrstr, logline[4] + 23, 4);
     qsonrstr[4] = '\0';
@@ -146,41 +150,4 @@ int getmessages(void) {
 	strncpy(logline4, logline[4], 80);
     else
 	strcpy(logline4, backgrnd_str);
-
-    refreshp();
-
-    fclose(fp);
-
-    if (emptydir == 1) {
-
-	printw("\n");
-	printw("           TTTTT  L      FFFFF\n");
-	printw("             T    L      F    \n");
-	printw("             T    L      FFFFF\n");
-	printw("             T    L      F    \n");
-	printw("             T    LLLLL  F    \n");
-	printw
-	("\n\n This program is copyright 2002, 2003, 2004 by Rein Couperus, PA0R\n\n");
-	printw
-	(" It is free software; you can redistribute it and/or modify");
-	printw
-	(" it under the terms of the GNU General Public License as published by");
-	printw
-	(" the Free Software Foundation; either version 2 of the License, or");
-	printw(" (at your option) any later version.\n\n");
-	printw
-	(" This program is distributed in the hope that it will be useful,");
-	printw
-	(" but WITHOUT ANY WARRANTY; without even the implied warranty of");
-	printw
-	(" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. �See the");
-	printw(" GNU General Public License for more details.\n");
-
-	refreshp();
-
-	sleep(5);
-    }
-
-    return (0);
-
 }

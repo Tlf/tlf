@@ -20,46 +20,67 @@
 
 #include <unistd.h>
 
+#include "ignore_unused.h"
 #include "tlf.h"
 #include "tlf_curses.h"
+#include "ui_utils.h"
 
 
-static int linectr; // global
+extern int verbose;
+static int linectr = 0;
+
+void clearmsg() {
+    clear();
+    linectr = 0;
+    refreshp();
+}
+
+
+void clearmsg_wait(void) {
+    if (verbose) {
+	move(LINES-3, 0);
+	clrtoeol();
+	mvprintw(LINES-2, 0, "Press any key to continue!");
+	move(LINES-1, 0);
+	clrtoeol();
+	refreshp();
+	IGNORE(key_get());
+    } else {
+	sleep(1);
+    }
+    clearmsg();
+}
+
+
+static int has_room_for_message() {
+    if (linectr < LINES-3)
+	return 1;
+    else
+	return 0;
+}
 
 void showmsg(char *message) {
-
-    extern int verbose;
-
-    if (linectr == 24) linectr = 1;
-
+    if (!has_room_for_message())
+	clearmsg_wait();
     mvprintw(linectr, 0, message);
     refreshp();
-    if (verbose == 1) sleep(1);
     linectr++;
 }
 //---------------------------------------------------------------
 
 void shownr(char *message, int nr) {
-
-    extern int verbose;
-
-    if (linectr == 24) linectr = 1;
-
+    if (!has_room_for_message())
+	clearmsg_wait();
     mvprintw(linectr, 0, "%s %d", message, nr);
     refreshp();
-    if (verbose == 1) sleep(1);
     linectr++;
 }
 //----------------------------------------------------------------
 
 void showstring(char *message1, char *message2) {
-
-    extern int verbose;
-
-    if (linectr == 24) linectr = 1;
-
+    if (!has_room_for_message())
+	clearmsg_wait();
     mvprintw(linectr, 0, "%s %s", message1, message2);
     refreshp();
-    if (verbose == 1) sleep(1);
     linectr++;
 }

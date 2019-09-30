@@ -29,6 +29,7 @@
 
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
+#include "startmsg.h"
 #include "tlf_curses.h"
 
 
@@ -46,13 +47,10 @@ int readqtccalls() {
     int last_qtc = 0;
     int i;
 
-    clear();
-
     qtc_init();
 
     if (qtcdirection & SEND) {
-	mvprintw(4, 0, "Reading QTC sent logfile...\n");
-	refreshp();
+	showmsg("Reading QTC sent logfile...");
 
 	/* mark all qso lines as not used for QTC */
 	for (s = 0; s < MAX_QSOS; s++) {
@@ -60,8 +58,7 @@ int readqtccalls() {
 	}
 
 	if ((fp = fopen(QTC_SENT_LOG, "r")) == NULL) {
-	    mvprintw(5, 0, "Error opening QTC sent logfile.\n");
-	    refreshp();
+	    showmsg("Error opening QTC sent logfile.");
 	    sleep(2);
 	    return -1;
 	}
@@ -107,12 +104,10 @@ int readqtccalls() {
     }
 
     if (qtcdirection & RECV) {
-	mvprintw(4, 0, "Reading QTC recv logfile...\n");
-	refreshp();
+	showmsg("Reading QTC recv logfile...");
 
 	if ((fp = fopen(QTC_RECV_LOG, "r")) == NULL) {
-	    mvprintw(5, 0, "Error opening QTC received logfile.\n");
-	    refreshp();
+	    showmsg("Error opening QTC received logfile.");
 	    sleep(2);
 	    return -1;
 	}
@@ -130,12 +125,10 @@ int readqtccalls() {
     }
 
     if (strlen(qtc_cap_calls) > 0) {
-	mvprintw(4, 0, "Reading QTC callsigns file...\n");
-	refreshp();
+	showmsg("Reading QTC callsigns file...");
 
 	if ((fp = fopen(qtc_cap_calls, "r")) == NULL) {
-	    mvprintw(5, 0, "Error opening QTC callsigns file.\n");
-	    refreshp();
+	    showmsg("Error opening QTC callsigns file.");
 	    sleep(2);
 	    return -1;
 	}
@@ -149,12 +142,10 @@ int readqtccalls() {
 	fclose(fp);
     }
 
-    mvprintw(4, 0, "Reading QTC meta logfile...\n");
-    refreshp();
+    showmsg("Reading QTC meta logfile...");
 
     if ((fp = fopen(QTC_META_LOG, "r")) == NULL) {
-	mvprintw(5, 0, "QTC meta logfile missing, skipping this step.\n");
-	refreshp();
+	showmsg("QTC meta logfile missing, skipping this step.");
     } else {
 	while (fgets(inputbuffer, 100, fp) != NULL) {
 	    /* remember callsign, set marked QTC states */

@@ -1,7 +1,7 @@
 /*
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
-* 		2011-2015           Thomas Beierlein <tb@forth-ev.de>
+* 		2011-2019           Thomas Beierlein <tb@forth-ev.de>
 * 		2013 		    Fred DH5FS
 *               2013-2016           Ervin Hegedus - HA2OS <airween@gmail.com>
 *
@@ -24,6 +24,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <unistd.h>
 
 #include "bandmap.h"
@@ -61,9 +62,6 @@ extern rmode_t digi_mode;
 int exist_in_country_list();
 int continent_found();
 
-char inputbuffer[160];
-FILE *fp;
-
 void KeywordRepeated(char *keyword);
 void KeywordNotSupported(char *keyword);
 void ParameterNeeded(char *keyword);
@@ -80,8 +78,9 @@ int read_logcfg(void) {
 
     char defltconf[80];
 
-    int status = PARSE_OK;
+    int status;
     int i;
+    FILE *fp;
 
     contest = 0;
     partials = 0;
@@ -120,24 +119,38 @@ int read_logcfg(void) {
 	    endwin();
 	    exit(1);
 	} else {
-	    showstring("Using (Read Only) file", defltconf);
+	    showstring("Using default (Read Only) config file:", defltconf);
 	}
 
     } else
-	showstring("Opening config file", config_file);
+	showstring("Reading config file:", config_file);
 
-    while (fgets(inputbuffer, 120, fp) != NULL) {
+    status = parse_configfile(fp);
+    fclose(fp);
 
-	if ((inputbuffer[0] != '#') && (strlen(inputbuffer) > 1)) {
-	    /* skip comments and
-	     * empty lines */
-	    status |= parse_logcfg(inputbuffer);
+    return status;
+}
+
+static bool isCommentLine(char *buffer) {
+    if ((buffer[0] != '#') && (buffer[0] != ';') && (strlen(buffer) > 1)) {
+	return false;
+    } else {
+	return true;
+    }
+}
+
+int parse_configfile(FILE *fp) {
+    int status = PARSE_OK;
+    char buffer[160];
+
+    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+	/* skip comments and empty lines */
+	if (!isCommentLine(buffer)) {
+	    status |= parse_logcfg(buffer);
 	}
     }
 
-    fclose(fp);
-
-    return (status);
+    return status;
 }
 
 /** convert band string into index number (0..NBANDS-1) */
@@ -307,6 +320,7 @@ int parse_logcfg(char *inputbuffer) {
     extern int minitest;
     extern int unique_call_multi;
     extern int lan_port;
+    extern int verbose;
 
     char *commands[] = {
 	"enable",		/* 0 */		/* deprecated */
@@ -1284,10 +1298,13 @@ int parse_logcfg(char *inputbuffer) {
 	case 103 ... 116: {	// get phone messages
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(ph_message[ii - 103], g_strchomp(fields[1]), 71);
-	    mvprintw(15, 5, "A: Phone message #%d is %s", ii - 103,
+	    if (verbose) {
+		gchar *tmp;
+		tmp = g_strdup_printf("  Phone message #%d is %s", ii - 103,
 		     ph_message[ii - 103]);	// (W9WI)
-	    refreshp();
-	    //                             system ("sleep 2");
+		showmsg(tmp);
+		g_free(tmp);
+	    }
 	    break;
 	}
 	case 117: {		// WAZ Zone is a Multiplier
@@ -1726,17 +1743,25 @@ int parse_logcfg(char *inputbuffer) {
 	case 194 ... 207: {	// get QTC recv phone messages
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(qtc_phrecv_message[ii - 194], g_strchomp(fields[1]), 71);
-	    mvprintw(15, 5, "A: QTC RECV phone message #%d is %s", ii - 194,
-		     qtc_phrecv_message[ii - 194]);
-	    refreshp();
+	    if (verbose) {
+		gchar *tmp;
+		tmp = g_strdup_printf("  QTC RECV phone message #%d is %s",
+		    ii - 194, qtc_phrecv_message[ii - 194]);
+		showmsg(tmp);
+		g_free(tmp);
+	    }
 	    break;
 	}
 	case 208 ... 221: {	// get QTC send phone messages
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(qtc_phsend_message[ii - 208], g_strchomp(fields[1]), 71);
-	    mvprintw(15, 5, "A: QTC SEND phone message #%d is %s", ii - 208,
-		     qtc_phrecv_message[ii - 208]);
-	    refreshp();
+	    if (verbose) {
+		gchar *tmp;
+		tmp = g_strdup_printf("  QTC SEND phone message #%d is %s",
+		    ii - 208, qtc_phrecv_message[ii - 208]);
+		showmsg(tmp);
+		g_free(tmp);
+	    }
 	    break;
 	}
 	case 222: {

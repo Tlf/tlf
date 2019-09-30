@@ -171,6 +171,7 @@ void time_update(void) {
 
 		m = 0;
 		getwwv();
+		printcall();
 
 	    } else {
 		m++;

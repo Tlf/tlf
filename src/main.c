@@ -158,7 +158,6 @@ int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
 int nob4 = 0;			// allow auto b4
 int ignoredupe = 0;
 int noautocq = 0;
-int emptydir = 0;
 int verbose = 0;
 int no_rst = 0;			/* 1 - do not use RS/RST */
 char myqra[7] = "";
@@ -571,7 +570,7 @@ void ui_init() {
 	char c;
 
 	showmsg("!! TLF needs at least 25 lines and 80 columns !!");
-	showmsg("   Continue anyway? Y/(N)");
+	showmsg("   Continue anyway? Y/(N) ");
 	c = toupper(key_get());
 	if (c != 'Y') {
 	    showmsg("73 es cuagn");
@@ -579,17 +578,16 @@ void ui_init() {
 	    endwin();
 	    exit(EXIT_FAILURE);
 	}
-	showmsg("");
+	clearmsg();
     }
 
     if (!has_colors() || (start_color() == ERR)) {
 	showmsg("Sorry, terminal does not support color");
 	showmsg("Try TERM=linux  or use a text console !!");
-	sleep(2);
+	sleep(1);
 	endwin();
 	exit(EXIT_FAILURE);
     }
-
 
     refreshp();
 
@@ -642,10 +640,10 @@ void ui_color_init() {
 int databases_load() {
     int status;
 
-    showmsg("reading country data");
+    showmsg("Reading country data");
     readctydata();		/* read ctydb.dat */
 
-    showmsg("reading configuration data");
+    showmsg("Reading configuration data");
     status = read_logcfg(); 	/* read the configuration file */
     status |= read_rules();	/* read the additional contest rules
 				   in "rules/contestname" */
@@ -659,27 +657,25 @@ int databases_load() {
 
     if (*call == '\0') {
 	showmsg
-	("WARNING: No callsign defined in logcfg.dat! exiting...\n\n\n");
+	    ("WARNING: No callsign defined in logcfg.dat! exiting...\n");
 	return EXIT_FAILURE;
     }
 
 
     if (multlist == 1) {
-	showmsg("reading multiplier data      ");
+	showmsg("Reading multiplier data      ");
 	if (strlen(multsfile) == 0) {
-	    mvprintw(9, 0, "No multiplier file specified, exiting.. !!\n");
-	    refreshp();
-	    sleep(5);
-	    exit(1);
+	    showmsg("No multiplier file specified, exiting.. !!");
+	    return EXIT_FAILURE;
 	}
     }
     init_and_load_multipliers();
 
-    showmsg("reading callmaster data");
+    showmsg("Reading callmaster data");
     load_callmaster();
 
     if (*exchange_list != '\0') {
-	showmsg("reading initial exchange file");
+	showmsg("Reading initial exchange file");
 	main_ie_list = make_ie_list(exchange_list);
 
 	if (main_ie_list == NULL) {
@@ -834,6 +830,44 @@ void keyer_init() {
 }
 
 
+void show_GPL() {
+    printw("\n\n\n");
+    printw("           TTTTT  L      FFFFF\n");
+    printw("             T    L      F    \n");
+    printw("             T    L      FFFFF\n");
+    printw("             T    L      F    \n");
+    printw("             T    LLLLL  F    \n");
+    printw
+	("\n\nThis program is copyright 2002, 2003, 2004 by Rein Couperus, PA0R\n\n");
+    printw
+	("It is free software; you can redistribute it and/or modify it under the terms\n");
+    printw
+	("of the GNU General Public License as published by the Free Software Foundation;\n");
+    printw
+	("either version 2 of the License, or (at your option) any later version.\n\n");
+    printw
+	("This program is distributed in the hope that it will be useful, but\n");
+    printw
+	("WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY\n");
+    printw
+	("or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License\n");
+    printw
+	("for more details.\n");
+
+    refreshp();
+}
+
+
+int isFirstStart() {
+    FILE *fp;
+
+    if ((fp = fopen(".paras", "r")) == NULL) {
+	return 1;
+    }
+    fclose(fp);
+
+    return 0;
+}
 
 /** cleanup function
  *
@@ -898,6 +932,15 @@ int main(int argc, char *argv[]) {
     hiscall[0] = '\0';
 
 
+    if (isFirstStart()) {
+	/* first time called in this directory */
+	verbose = 1;
+	printw(welcome);
+	show_GPL();
+	sleep(5);
+	clear();
+    }
+
     showmsg(welcome);
     showmsg("");
 
@@ -935,19 +978,15 @@ int main(int argc, char *argv[]) {
     lan_init();
     keyer_init();
 
-    clear();
-    mvprintw(0, 0, welcome);
-    refreshp();
+    nr_qsos = readcalls();	/* read the logfile for score and dupe */
 
     checkparameters();		/* check .paras file */
     getmessages();		/* read .paras file */
-
-    packet_init();
-    getwwv();			/* get the latest wwv info from packet */
-
     scroll_log();		/* read the last 5  log lines and set the qso number */
 
-    nr_qsos = readcalls();	/* read the logfile for score and dupe */
+    clearmsg_wait();
+
+    packet_init();
 
     clear_display();		/* tidy up the display */
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -956,6 +995,7 @@ int main(int argc, char *argv[]) {
     }
     refreshp();
 
+    getwwv();			/* get the latest wwv info from packet */
     bm_init();			/* initialize bandmap */
 
     atexit(tlf_cleanup); 	/* register cleanup function */
