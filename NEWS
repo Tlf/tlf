@@ -1,22 +1,41 @@
-tlf-1.4git
-==========
+tlf-1.4
+=======
 
-New features since tlf-1.3.2:
-    - Allow using of aliases in multiplier file (Tnx for suggesting to N0NB)
+Major release
+
+Besides some fixed bugs and a lot of internal improvements it provides 
+some new features:
+
+Major changes:
     - Make compiling with hamlib library mandatory and change all internal 
-      frequency rpresentation to freq_t type.
-    - Correct transposition of check and section for arrlss (Tnx N0NB)
+      frequency representation to freq_t type.
     - Old SCAN functionality got dropped from code, as it was no longer
       working.
+    - Correct color display for TERM=xterm-256color 
+
+New features:
+    - Allow using of aliases in multiplier file (Tnx for suggesting to N0NB).
+      See discussion of MULT_FILE in man page for details.
     - Added CALLMASTER= keywords to allow naming the callmaster database file
       (default is still 'callmaster')
+    - Repaired old CQWW simulator code (see :sim in man page)
+    - Keep the content of the exchange field if not empty even if RECALL_MULTS
+      is set - actual input gets precedence over stored 'old' data.
     - Allow vertical resizing of TLF window (before start and/or during use)
-      
+    - Rework the startup code for better readability by users
+      * 'verbose' startup waits for key press before clearing the screen
+      * If started in empty directory (new contest or first start) switch to
+        verbose mode automatically.
 
 Bug fixes:
-    - Fix possible segfaults in readcabrillo() function
+    - Correct transposition of check and section for arrlss (Tnx N0NB)
     - Added some more test programs
     - Fix bug when calling editlog(), 
+    - Adapt to new 'rigmode' interface in hamlib library
+    - Correct some problem in sideband selection when switching CW <-> SSB
+    - Fix segfault on missing RIGPORT definition (tnx N0NB)
+    - Fix possible segfaults in readcabrillo() function
+    
 
 
 tlf-1.3.2
