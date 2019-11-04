@@ -1,3 +1,392 @@
+2019-10-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * NEWS, ToDo: Update NEWS and ToDo files
+
+2019-09-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/fldigixmlrpc.c, src/gettxinfo.c, src/globalvars.h, src/main.c,
+  test/data.c: Fix definition of 'rigmode' variable  Newest version of hamlib
+  has an extended range of modei definitions and therefore defined it as
+  UInt64. That conflicts with the former definition of 'rigmode' as 32 bit int.
+
+2019-09-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * INSTALL: Fix dependencies for Debian like distributions  Thx to Juajo EA8BGO
+  for reporting.
+
+2019-09-18  zcsahok <ha5cqz@freemail.hu>
+
+  * src/gettxinfo.c: Fix sideband selection  An unnoticed constant caused wrong
+  sideband selection when switching to SSB. Moved SSB and CW settings to
+  functions.
+
+2019-09-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, src/parse_logcfg.h, src/rules.c: Refactor parsing of
+  config files
+
+  * src/parse_logcfg.c, src/rules.c: rewording of startup messages
+
+2019-09-18  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/parse_logcfg.c, src/readqtccalls.c, src/rules.c,
+  src/sendqrg.c: Fix some minor display problems (Tnx HA5CQZ)  - unify
+  capitalisation - do not use fixed display positions - show voice keyer
+  messages only in verbose mode
+
+2019-09-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/audio.c, src/background_process.c, src/bandmap.c,
+  src/bands.c, src/callinput.c, src/changefreq.c, src/changepars.c,
+  src/clusterinfo.c, src/err_utils.c, src/fldigixmlrpc.c, src/freq_display.c,
+  src/grabspot.c, src/lancode.c, src/main.c, src/parse_logcfg.c, src/rules.c,
+  src/searchlog.c, src/sendbuf.c, src/sendqrg.c, src/showinfo.c,
+  src/splitscreen.c, src/ui_utils.c, src/writecabrillo.c: apply astylerc rules
+
+2019-09-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c, src/startmsg.c, src/startmsg.h: Change handling of verbose
+  startup  * Do no longer slow down display of infos. Instead ask for
+  continuation before clearing the screen. That gives time to read the
+  messages.  * Message display checks for enough room to display. If screen
+  gets full clear and start enew from above (after a small delay or
+  confirmation).
+
+  * src/getmessages.c, src/getmessages.h, src/main.c: Refactor check for first
+  run of TLf in new directory  * Test it quite early. Show GPL and set
+  'verbose' mode.
+
+2019-09-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/main.c: Fix color settings for TERM=xterm-256color
+
+2019-09-09  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/lancode.c: fix missing ntoh conversion
+
+2019-07-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/background_process.c, src/background_process.h, src/changepars.c,
+  src/logit.c: Fix Simulator mode for CQWW contest.  - Fix sidetone management
+  (Do not change own frequency during QSO and make random change of sidetone
+  for other station  working  - Add a little timing space before getting called
+  by other station  - Refactor managment of simulation stages  - Improve logic
+  to turn on/off of simulator mode
+
+2019-07-19  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/err_utils.c: Make sure INFO messages can be read at least 1 second
+
+2019-07-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/logit.c, src/recall_exchange.c: Recall old exchange only if exchange
+  field is empty  If RECALL_MULTS is set keep the content of the exchange field
+  if not empty.  Also do not empty the exchange field if no old exchange could
+  be found.
+
+2019-07-06  zcsahok <ha5cqz@freemail.hu>
+
+  * src/main.c: improve command line argument handling  Switched to Argp as it
+  provides a number of features (usage, version, error messages, long
+  arguments, ...) out of the box.  The original issue was that argument option
+  had to be written without space (-fmyfile.dat). Now both this, the "normal'
+  format (-f myfile.dat), and the long format (--config=myfile.dat) are also
+  supported.
+
+2019-06-23  zcsahok <ha5cqz@freemail.hu>
+
+  * src/changefreq.c, src/freq_display.c, src/freq_display.h: fix frequency
+  adjustment function (Ctrl-F)  Replace key_get() with key_poll(). In order to
+  avoid flickering the order of freq_display() and time_update() was reversed.
+  Minor code cleanup was done in freq_display.c.  Ctrl-F is now completely live
+  in the sense that it also takes over freq changes from the rig. The cluster
+  display below Ctrl-F is also updated and the displayed values are all in
+  sync. For TRX there is a delay of 1 sec but that's tolerable as it's the
+  normal behavior.
+
+2019-06-17  zcsahok <ha5cqz@freemail.hu>
+
+  * src/callinput.c: allow CQ<->S&P switch even if call input field is
+  non-empty
+
+2019-06-14  zcsahok <ha5cqz@freemail.hu>
+
+  * src/cleanup.c: do not highlight exch field on CQ<->S&P
+
+2019-06-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/writecabrillo.c: Fix possible use of NULL pointer
+
+2019-05-28  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c: Allow wider adjustment QRG of grabbed station  The
+  reported QRG of spotted stations may not be exact. So after a grab of it from
+  the bandmap list you may want to adjust the QRG a little.  On the other side
+  after a grab if you just tune away you would like the call input field to
+  become empty automatically.  The patch widens the allowed adjustment to
+  +/-500 Hz. That should hopefully be enough.  Problem reported by Fred DH5FS.
+
+2019-05-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/err_utils.c, src/splitscreen.c, src/splitscreen.h, src/ui_utils.c,
+  src/ui_utils.h: Respect screensize for packet interface  As panels do not
+  support screen resize we need some additional code to renew the packet window
+  and setup the split display.
+
+2019-04-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/changepars.c, src/changepars.h, src/clusterinfo.c,
+  src/muf.c, src/ui_utils.c, test/test_clusterinfo.c: Respect vertical screen
+  size for informational pop up windows  - propagation window - cluster info -
+  network info - multiplier info
+
+2019-04-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: Use full vertical screen size for bandmap display  Fix
+  display of bandmap info and menu. Position adapts to size of screen
+  * src/clear_display.c, src/main.c: Respect vertical screen size for main
+  window
+
+2019-03-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/err_utils.c, src/getwwv.c, src/lancode.c, src/lancode.h,
+  src/showinfo.c, src/splitscreen.c: Display of infos and errors always on
+  bottom line of window.  Fix the display position for the following items:  -
+  error messages - infoline with country informations - new WWV/WCY
+  announcements - talk command input - send cluster command
+
+2019-05-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/grabspot.c, src/time_update.c: Fixup display of TRX
+  and MEM info  - Remove arbitrary remnants just before the displayed values -
+  Erase fields if not rig control is available.
+
+2019-03-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/ui_utils.c: Handle KEY_RESIZE  Pick up new screen size after resize of
+  terminal window and redraw display
+
+2019-05-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/err_utils.c: Simplify wipe of info line
+
+2019-04-13  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/callinput.c, src/grabspot.c: Fix display of MEM frequency
+  * src/grabspot.c, src/sendqrg.c: Fix wrong prototyp declarations  After the
+  switch to use freq_t for all frequency values there was a type mismatch for
+  send_bandswitch parameter.
+
+2019-04-03  zcsahok <ha5cqz@freemail.hu>
+
+  * src/qrb.c: fix get_qrb return value
+  * src/qrb.c, src/qrb.h, src/showinfo.c, src/showinfo.h: show only valid DX
+  info
+
+2019-03-25  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * Refactor handling of warnings, errors and informational messages  * Factor
+  out common sequences for better readability * Allows to change place and
+  mode of display in an easy way. That will be needed for resizing the
+  display.
+
+2019-03-28  zcsahok <ha5cqz@freemail.hu>
+
+  * test/data.c: fix bandfrequency in test/data.c
+
+2019-03-24  zcsahok <ha5cqz@freemail.hu>
+
+  * src/background_process.c, src/lancode.c: fix FREQMSG
+  * switch to use of freq_t
+
+2019-02-17  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * tlf.1.in: Add documentation for Multiplier aliases
+
+2019-02-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/getexchange.c, src/makelogline.c, src/readcalls.c: Fix mult handling
+  for SECTION_MULT and SERIAL+SECTION  With the possibility to use aliases for
+  section entries we need to record the original entered comment in log. The
+  recognized section gets recorded in the section column.  Tlf now use the
+  recorded section for building the reached multiplier list during read of an
+  existing log file.  Respect also alias settings for parsing of QSO sections
+  in getexchange() and checkexchange().
+
+2019-01-27  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/addmult.h, test/test_addmult.c: Add new function to look
+  for best match in given possible mult  The function check if mult name or one
+  of its aliases is a substring of the searchstring and returns the best
+  matching length.  If the returned length is equal the searchsting length then
+  we have an exact match.
+
+2019-01-26  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, test/test_addmult.c: Add parsing of alias list
+
+2019-01-21  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/addmult.c, src/addmult.h: Change internal representation of possible
+  multipliers  The change allows to associate each multiplier with a list of
+  aliases. If the alias is used it will be counted for the according
+  multiplier.
+
+  * src/addmult.c, src/addmult.h, src/changepars.c, src/getexchange.c,
+  src/globalvars.h, src/searchlog.c, test/test_addmult.c: Make handling of
+  possible mults opaque  Concentrate implementation dateils in addmult.c.
+  Introduce getter functions for access to mult number and to mult name.
+
+2018-10-11  Eric Tamme <eric.tamme@onsip.com>
+
+  * src/lancode.c, src/parse_logcfg.c, tlf.1.in: Add lan port config directive 
+  - Allows to specify on which port number TLF is listening for incoming
+  broadcasts from other instances.  - Allows even to run multiple instances of
+  TLF  on teh same server.
+
+2019-01-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * share/help.txt, src/changepars.c, src/main.c, src/parse_logcfg.c, tlf.1.in:
+  Drop SCAN related data  - S-METER keyword and variables - clean up man page
+  and help.txt
+
+2019-01-12  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/parse_logcfg.c, tlf.1.in: Add CALLMASTER= keyword to parser and man
+  page.  Allow loading from different callmaster database file
+
+2019-01-05  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * ToDo, share/logcfg.dat: Add ToDo list for version 1.4
+
+2019-01-03  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/searchlog.c, test/test_searchlog.c: Refactor lookup of zonenumber  -
+
+2019-01-02  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * test/test_searchlog.c: Add tests for USEPARTIAL call suggestions  If
+  USEPARTIAL is set and there is only one matching call in already worked
+  stations or in callmaster database use it as suggestion for callinput.
+
+2018-12-30  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/searchlog.c: Fix zone display for old behaviour  If multiplier is WAZ
+  or ITU zone the following algorithmus is used:  - First try to pick up the
+  zone from the comment string of the selected QSOs. Use the last one found. -
+  If no QSO with zoneinfo is found use zone_export (set by getctydata()
+  according to the country information.  - If there are a zoneinfo field, but
+  it is not readable as zonenumber use either the zone from zone_fix
+  (calculated from the actual exchange field) or again from zone_export. That
+  allows an override of the calculated zone.  NOTE: The algorithm has some
+  drawbacks. * If a single station has a different zone number than the normal
+  ones i it is not guaranteed, that we use this number. * If a zonenumber is
+  found during scan of former QSOs it is no longer possible to use the override
+  for searchlog operation.  Show that zone number on lower line of search
+  window and use it to check for already worked zones.
+
+2018-12-29  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/searchlog.c: Factor out display of search results
+  * src/searchlog.c: Factor out display of partials
+  * src/searchlog.c: fix display for WARC bands
+
+2018-12-15  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/searchlog.c, test/test_searchlog.c: Factor out display related code  -
+  Drawing of search window - Display of call info for 'hiscall' fragment -
+  converting bandstring to display line  Add testcode for last function
+
+  * src/searchlog.c, test/test_searchlog.c: Factor out filtering of Log for
+  relevant QSOs
+
+  * src/searchlog.c, test/test_searchlog.c: Add first testcode for searchlog()
+  function  Test basics of filtering relevant QSOs from log file based on
+  'hiscall'.  Factor out preparation of display results for search window.
+  Simplify.
+
+  * src/searchlog.c: Drop DL1YFK "worked window" patch.  The dropped code did
+  not change anything relevant. The lookup for qsos in question before was
+  always exact, so a 'best match' makes no sense.
+
+  * src/checklogfile.c, test/test_checklogfile.c: extend test_checklogfile()
+  and adapt tested code  checklogfile() now guarantees that the logline is
+  terminated by \n
+
+2018-12-14  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/checklogfile.c, test/test_checklogfile.c: added test_checklogline.c and
+  fix handling of wrong line length  Prepares for refactoring and tightens
+  requests to the checking  As a first step checklogfile should guarantee a
+  correct linelength of each log line.
+
+2018-12-06  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/checklogfile.c, src/editlog.c, src/getmessages.c, src/setparameters.c:
+  Refactor logedit() function  - Drop use of checklogfile() in not needed
+  places.  - Adapt checklogfile() for use with logedit() Do not exit program if
+  file not found. Use ncurses for all text output.  - Use existing
+  checklogfile() to check the log after editing Original code was a copy of
+  that funtion with small adaption wrt text output and errror handling.  Be
+  aware that the functionality is still broken as before.
+
+2018-12-05  zcsahok <ha5cqz@freemail.hu>
+
+  * configure.ac: switch to C99 mode  Gives us more room for better coding,
+  e.g. 'bool' type, for-loop variables on the fly and other useful things.
+
+2018-11-28  Thomas Beierlein <tb@forth-ev.de>
+
+  * src/editlog.c: Fix assertion after edit of logfile  Stop background
+  processing also during edit of log file
+
+2018-11-20  Thomas Beierlein <tb@forth-ev.de>
+
+  * test/Makefile.am: Use CMOCKA_LIBS for locating library
+
+2018-11-10  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * src/bandmap.c: Fix compiler warning from clang  Calculation the difference
+  of two unsigned numbers gives an unsigned result. clang warns that doing an
+  abs() of it makes no sense. Thansk nate N0NB for reporting.
+
+2018-11-03  Nate Bargmann <n0nb@n0nb.us>
+
+  * src/clear_display.c, src/log_to_disk.c: Show blanks instead of '---' in
+  NO_RST mode  It looks like this patch only replaces the '---' string seen on
+  the log entry line with '   ' and does not replace those characters in the
+  log file where they are needed for proper Cabrillo generation.  Testing is
+  necessary.
+
+  * rules/arrlss: Correct transposition of check and section rules/arrlss  Per
+  http://www.arrl.org/sweepstakes the proper format for the sent exchange is: 
+  # A % 83 CT  where sending my call is also a required part of the exchange. 
+  Added commented ALT macros that were available in CT.  Added NO_RST as it is
+  not used in ARRL SS.
+
+2018-11-01  zcsahok <ha5cqz@freemail.hu>
+
+  * src/sendqrg.c: fix SegV on missing RIGPORT
+
+2018-10-22  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * add tests for reading QTC lines - make qtc_line global to ease test
+
+2018-10-20  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * configure.ac: Fix requested cmocka version. Check for cmocka test framework 
+    and warn if not installed
+
+2018-10-18  zcsahok <ha5cqz@freemail.hu>
+
+  * fix config.h usage
+  * make hamlib mandatory
+
+2018-10-16  Thomas Beierlein <tomjbe@gentoo.org>
+
+  * INSTALL: add build dependencies to install instructions
+  * NEWS: Fix typo
+
 2018-10-13  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/callinput.c, src/fldigixmlrpc.c, src/fldigixmlrpc.h, src/main.c: move
