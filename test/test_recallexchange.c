@@ -14,6 +14,7 @@ extern struct worked_t worked[];
 extern int nr_worked;
 
 int setup_default(void **state) {
+    int result;
     strcpy(hiscall, "N0ONE");
     strcpy(comment, "");
 
@@ -21,6 +22,9 @@ int setup_default(void **state) {
     strcpy(worked[0].exchange, "51N13E");
     nr_worked = 1;
 
+    result = chdir(SRCDIR);
+    if (result == -1)
+	perror("chdir");
     return 0;
 }
 

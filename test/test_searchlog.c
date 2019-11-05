@@ -143,6 +143,7 @@ static void write_callmaster(const char *filename, const char *content) {
 
 static void remove_callmaster() {
     unlink("callmaster");   // no need to check if file exists
+    unlink("master.scp");
 }
 
 int teardown_default(void **state) {
