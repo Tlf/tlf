@@ -978,11 +978,11 @@ int main(int argc, char *argv[]) {
     lan_init();
     keyer_init();
 
+    scroll_log();		/* read the last 5  log lines and set the qso number */
     nr_qsos = readcalls();	/* read the logfile for score and dupe */
 
     checkparameters();		/* check .paras file */
     getmessages();		/* read .paras file */
-    scroll_log();		/* read the last 5  log lines and set the qso number */
 
     clearmsg_wait();
 
