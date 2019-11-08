@@ -40,6 +40,7 @@
 #include "tlf_curses.h"
 #include "scroll_log.h"
 #include "ui_utils.h"
+#include "addcall.h"
 
 #define QTCRECVCALLPOS 30
 #define QTCSENTCALLPOS 35
@@ -168,8 +169,9 @@ void delete_qso(void) {
 	    fsync(lfile);
 	    close(lfile);
 
-	    if (qsos[nr_qsos][0] != ';') {
-		band_score[bandinx]--;
+	    if (qsos[nr_qsos-1][0] != ';') {
+		int band = get_band(qsos[nr_qsos-1]);
+		band_score[band]--;
 		qsonum--;
 		qsonr_to_str();
 	    }
