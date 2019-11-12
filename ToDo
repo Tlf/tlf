@@ -9,12 +9,17 @@ Planned improvements for TLF-1.4 release
     display (It did not work for a long time and I think no one is
     using it)
 [x] Handling multiplier aliases (see thread started by Nate in June)
-[ ] automatically switch back to 'Run' mode from "grab spot" after QSO
 [x] Allow other callmaster databases (hardcoded or by CALLMASTER= keyword)
 [x] Rework startup display for better readability by user
 
 Planned for later versions
 --------------------------
+
+[ ] automatically switch back to 'Run' mode from "grab spot" after QSO
+[ ] Add contest name to Header of ADIF file (suggested by SP3RXO)
+[ ] Fix arrlsections, paccmults and spdxmults (drop '-end-' marker)
+[ ] Do a complete rescore after delete of QSO automatically
+[ ] Factor out helper functions to parse parts of logline (band, mode, ...)
 
 [ ] Do a complete rewrite of display related code in the long term to
     allow vertical AND horizontal resizing.
