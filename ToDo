@@ -17,7 +17,7 @@ Planned for later versions
 
 [ ] automatically switch back to 'Run' mode from "grab spot" after QSO
 [ ] Add contest name to Header of ADIF file (suggested by SP3RXO)
-[ ] Fix arrlsections, paccmults and spdxmults (drop '-end-' marker)
+[x] Fix arrlsections, paccmults and spdxmults (drop '-end-' marker)
 [ ] Do a complete rescore after delete of QSO automatically
 [ ] Factor out helper functions to parse parts of logline (band, mode, ...)
 
