@@ -21,6 +21,6 @@
 #ifndef SHOWPXMAP_H
 #define SHOWPXMAP_H
 
-int show_mults(void);
+void show_mults(void);
 
 #endif /* SHOWPXMAP_H */

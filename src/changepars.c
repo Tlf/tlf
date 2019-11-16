@@ -858,7 +858,7 @@ void multiplierinfo(void) {
 
 	mvprintw(0, 30, "REMAINING SECTIONS");
 	cnt = 0;
-	for (vert = 2; vert < 22; vert++) {
+	for (vert = 2; vert < LINES - 2; vert++) {
 	    if (cnt >= get_mult_count())
 		break;
 
@@ -897,7 +897,7 @@ void multiplierinfo(void) {
 
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
-    mvprintw(23, 22, " --- Press a key to continue --- ");
+    mvprintw(LINES - 2, 22, " --- Press a key to continue --- ");
 
     refreshp();
 

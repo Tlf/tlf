@@ -33,7 +33,7 @@
 #include "bands.h"
 
 
-int show_mults(void) {
+void show_mults(void) {
 
     extern int countries[MAX_DATALINES];
     extern int bandinx;
@@ -50,7 +50,7 @@ int show_mults(void) {
 
     if (focm == 1) {
 	foc_show_cty();
-	return 0;
+	return;
     }
 
     if (cqww == 1) {
@@ -145,5 +145,4 @@ int show_mults(void) {
 
 	multiplierinfo();
 
-    return (0);
 }
