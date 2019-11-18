@@ -21,6 +21,6 @@
 #ifndef KEYER_H
 #define KEYER_H
 
-int keyer(void);
+void keyer(void);
 
 #endif /* end of include guard: KEYER_H */

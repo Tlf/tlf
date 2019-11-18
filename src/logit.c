@@ -49,10 +49,9 @@ void refresh_comment(void);
 void change_mode(void);
 
 void logit(void) {
-    extern char mode[];
     extern int trxmode;
     extern char hiscall[];
-    extern int cqmode;
+    extern cqmode_t cqmode;
     extern int contest;
     extern char ph_message[14][80];
     extern char comment[];
@@ -73,7 +72,6 @@ void logit(void) {
     int cury, curx;
     int qrg_out = 0;
 
-    strcpy(mode, "Log     ");
     clear_display();
     defer_store = 0;
 
@@ -230,8 +228,7 @@ void refresh_comment(void) {
 }
 
 void change_mode(void) {
-    extern char mode[];
-    extern int cqmode;
+    extern cqmode_t cqmode;
 
     /* switch to other mode */
     if (cqmode == CQ) {
@@ -241,13 +238,5 @@ void change_mode(void) {
     }
 
     /* and show new mode */
-    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-
-    if (cqmode == CQ) {
-	mvprintw(0, 2, "Log     ");
-	strcpy(mode, "Log     ");
-    } else {
-	mvprintw(0, 2, "S&P     ");
-	strcpy(mode, "S&P     ");
-    }
+    show_header_line();
 }

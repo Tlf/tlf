@@ -47,6 +47,12 @@ void keyer_append(const char *string) {
     pthread_mutex_unlock(&keybuffer_mutex);
 }
 
+/** append char to key buffer*/
+void keyer_append_char(const char c) {
+    const char buf[] = {c, 0};
+    keyer_append(buf);
+}
+
 /** flush key buffer */
 void keyer_flush() {
     pthread_mutex_lock(&keybuffer_mutex);
@@ -59,7 +65,7 @@ void keyer_flush() {
 /** write key buffer to keying device
  *
  * should be called periodically from the background task */
-int write_keyer(void) {
+void write_keyer(void) {
 
     extern int trxmode;
     extern int cwkeyer;
@@ -73,48 +79,48 @@ int write_keyer(void) {
     char *tosend = NULL;
 
     if (trxmode != CWMODE && trxmode != DIGIMODE)
-	return 1;
+	return;
 
     pthread_mutex_lock(&keybuffer_mutex);
-    if (data_ready == 1) {
-	/* allocate a copy of the data and free the buffer */
+    if (data_ready && wkeyerbuffer[0] != 0) {
+	/* allocate a copy of the data and clear the buffer */
 	tosend = g_strdup(wkeyerbuffer);
 	wkeyerbuffer[0] = '\0';
-	data_ready = 0;
     }
+    data_ready = 0;
     pthread_mutex_unlock(&keybuffer_mutex);
 
-    if (tosend != NULL) {
+    if (tosend == NULL) {
+	return;     // nothing to do
+    }
 
-	if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
-	    fldigi_send_text(tosend);
-	} else if (cwkeyer == NET_KEYER) {
-	    netkeyer(K_MESSAGE, tosend);
+    if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
+	fldigi_send_text(tosend);
+    } else if (cwkeyer == NET_KEYER) {
+	netkeyer(K_MESSAGE, tosend);
 
-	} else if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
-	    if ((bfp = fopen(controllerport, "a")) == NULL) {
-		TLF_LOG_WARN("1278 not active. Switching to SSB mode.");
-		trxmode = SSBMODE;
-		clear_display();
-	    } else {
-		fputs(tosend, bfp);
-		fclose(bfp);
-	    }
-
-	} else if (digikeyer == GMFSK) {
-	    if (strlen(rttyoutput) < 2) {
-		TLF_LOG_WARN("No modem file specified!");
-	    }
-	    // when GMFSK used (possible Fldigi interface), the trailing \n doesn't need
-	    if (tosend[strlen(tosend) - 1] == '\n') {
-		tosend[strlen(tosend) - 1] = '\0';
-	    }
-	    sprintf(outstring, "echo -n \"\n%s\" >> %s",
-		    tosend, rttyoutput);
-	    IGNORE(system(outstring));;
+    } else if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
+	if ((bfp = fopen(controllerport, "a")) == NULL) {
+	    TLF_LOG_WARN("1278 not active. Switching to SSB mode.");
+	    trxmode = SSBMODE;
+	    clear_display();
+	} else {
+	    fputs(tosend, bfp);
+	    fclose(bfp);
 	}
 
-	g_free(tosend);
+    } else if (digikeyer == GMFSK) {
+	if (strlen(rttyoutput) < 2) {
+	    TLF_LOG_WARN("No modem file specified!");
+	}
+	// when GMFSK used (possible Fldigi interface), the trailing \n doesn't need
+	if (tosend[strlen(tosend) - 1] == '\n') {
+	    tosend[strlen(tosend) - 1] = '\0';
+	}
+	sprintf(outstring, "echo -n \"\n%s\" >> %s",
+		tosend, rttyoutput);
+	IGNORE(system(outstring));;
     }
-    return 0;
+
+    g_free(tosend);
 }

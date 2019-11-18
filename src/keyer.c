@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "clear_display.h"
 #include "netkeyer.h"
@@ -49,10 +50,9 @@
 
 void mfj1278_control(int x);
 
-int keyer(void) {
+void keyer(void) {
 
-    extern int cqmode;
-    extern char mode[20];
+    extern cqmode_t cqmode;
     extern int trxmode;
     extern int cwkeyer;
     extern int digikeyer;
@@ -64,7 +64,6 @@ int keyer(void) {
 
     int x = 0, j = 0;
     int cury, curx;
-    char nkbuffer[2];
     char keyerstring[KEYER_LINE_WIDTH + 1] = "";
     int keyerstringpos = 0;
     char weightbuf[15];
@@ -74,21 +73,24 @@ int keyer(void) {
     const char ctl_c_controlstring[2] = { 92, '\0' };	// '\'
 
     if ((trxmode == CWMODE && cwkeyer == NO_KEYER) ||
-	    (trxmode == DIGIMODE && digikeyer == NO_KEYER)) /* no keyer present */
-	return 1;
+	    (trxmode == DIGIMODE && digikeyer == NO_KEYER)) {
+	return; /* no keyer present */
+    }
 
-    strcpy(mode, "Keyboard");
-    clear_display();
+    const cqmode_t cqmode_save = cqmode;
+    cqmode = KEYBOARD;
+    show_header_line();
+
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     if (panel == NULL) {
 	win = newwin(KEYER_WIN_HEIGHT, KEYER_WIN_WIDTH, KEYER_Y, KEYER_Y);
 	if (win == NULL)
-	    return 1;
+	    return;
 	panel = new_panel(win);
 	if (panel == NULL) {
 	    delwin(win);
-	    return 1;
+	    return;
 	}
     }
 
@@ -113,13 +115,14 @@ int keyer(void) {
 	x = key_get();
 
 	// Send space instead of double quote.
-	if (x == 34) {
-	    x = 32;
+	if (x == '"') {
+	    x = ' ';
 	}
 
 	// Send space instead of newline or return.
-	if (x == '\n' || x == KEY_ENTER)
-	    x = 32;
+	if (x == '\n' || x == KEY_ENTER) {
+	    x = ' ';
+	}
 
 	// <Escape>, Ctrl-K (^K), Alt-k (M-k)
 	if (x == 27 || x == 11 || x == 235) {
@@ -150,31 +153,26 @@ int keyer(void) {
 	    }
 	}
 
-	// Promote lower case to upper case.
-	if (x > 96 && x < 123)
-	    x = x - 32;
+	x = toupper(x);
 
-	if (x > 9 && x < 91) { 	/* drop all other control char... */
-	    if (x > 31 || x == 10) {
-		if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
-		    mfj1278_control(x);
-		} else if (cwkeyer == NET_KEYER) {
-		    nkbuffer[0] = x;	// 1 char at the time !
-		    nkbuffer[1] = '\0';
-		    keyer_append(nkbuffer);
-		}
-
-		/* if display field is full move text one left */
-		if (keyerstringpos == KEYER_LINE_WIDTH - 1) {
-		    for (j = 0; j < KEYER_LINE_WIDTH - 1; j++) {
-			keyerstring[j] = keyerstring[j + 1];
-		    }
-		    keyerstringpos--;
-		}
-		/* add new character for display */
-		keyerstring[keyerstringpos++] = x;
-		keyerstring[keyerstringpos] = '\0';
+	if ((x >= ' ' && x <= 'Z') || x == 10) {    /* ~printable or LF */
+	    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
+		mfj1278_control(x);
+	    } else if (cwkeyer == NET_KEYER) {
+		keyer_append_char(x);
 	    }
+
+	    /* if display field is full move text one left */
+	    if (keyerstringpos == KEYER_LINE_WIDTH - 1) {
+		for (j = 0; j < KEYER_LINE_WIDTH - 1; j++) {
+		    keyerstring[j] = keyerstring[j + 1];
+		}
+		keyerstringpos--;
+	    }
+	    /* add new character for display */
+	    keyerstring[keyerstringpos++] = x;
+	    keyerstring[keyerstringpos] = '\0';
+
 	} else {
 
 	    switch (x) {
@@ -189,21 +187,21 @@ int keyer(void) {
 		    break;
 		}
 
-		case 123: {	/* { */
+		case '{': {
 		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(txcontrolstring);
 		    }
 		    break;
 		}
-		case 125: {	/* } */
+		case '}': {
 		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(rxcontrolstring);
 		    }
 		    break;
 		}
-		case 92: {	/* \ */
+		case '\\': {
 		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(ctl_c_controlstring);
@@ -227,14 +225,14 @@ int keyer(void) {
 		// <Page-Up>, increase CW speed.
 		case KEY_PPAGE: {
 		    speedup();
-		    clear_display();
+		    show_header_line();
 		    break;
 		}
 
 		// <Page-Down>, decrease CW speed.
 		case KEY_NPAGE: {
 		    speeddown();
-		    clear_display();
+		    show_header_line();
 		    break;
 		}
 
@@ -281,34 +279,28 @@ int keyer(void) {
 		    send_keyer_message(9);	/* F10 */
 		    break;
 		}
-
 		case KEY_F(11): {
 		    send_keyer_message(10);	/* F11 */
 		    break;
 		}
 		case KEY_F(12): {
-
 		    send_keyer_message(11);	/* F12 */
 		    break;
 		}
 		case KEY_BACKSPACE: {
-		    sendmessage("\b");          /* ASCII BS */
+		    keyer_append_char('\b');    /* ASCII BS */
 		    break;
 		}
 	    }
 
+	    show_panel(panel);
 	}
     }
     hide_panel(panel);
 
-    if (cqmode == CQ)
-	strcpy(mode, "Log     ");
-    else
-	strcpy(mode, "S&P     ");
+    cqmode = cqmode_save;
 
     clear_display();
-
-    return 0;			/* show end of keyer  routine */
 }
 
 /* ----------------  convert input for 1278 ctrl -----------------------*/
@@ -316,16 +308,12 @@ int keyer(void) {
 void mfj1278_control(int x) {
     extern int trxmode;
 
-    char buffer[2];
-
     if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
 	if (trxmode == DIGIMODE) {
 	    if (x == 10)
 		x = 13;		// tnc needs CR instead of LF
 	}
-	buffer[0] = x;		// 1 char at the time !
-	buffer[1] = '\0';
-	keyer_append(buffer);
+	keyer_append_char(x);
     }
 }

@@ -31,7 +31,7 @@
 void printcall(void) {
     extern char hiscall[];
     extern int miniterm;
-    extern int cqmode;
+    extern cqmode_t cqmode;
     extern int cwstart;
 
     int currentterm;
@@ -58,8 +58,8 @@ void printcall(void) {
  */
 void highlightCall(unsigned int n) {
     attr_t attrib = modify_attr(A_NORMAL);
-				/* use NORMAL here as normal display
-				   uses STANDOUT */
+    /* use NORMAL here as normal display
+       uses STANDOUT */
 
     mvchgat(12, 29, n, attrib, C_INPUT, NULL);
 }

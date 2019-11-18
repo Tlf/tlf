@@ -59,7 +59,7 @@ int log_to_disk(int from_lan) {
     extern char lan_logline[];
     extern int rit;
     extern int trx_control;
-    extern int cqmode;
+    extern cqmode_t cqmode;
     extern int block_part;
     extern char lan_message[];
     extern char thisnode;
@@ -84,7 +84,7 @@ int log_to_disk(int from_lan) {
 	    addspot();		/* add call to bandmap if in S&P and
 				   no need to ask for frequency */
 
-	strncpy(last_rst, his_rst, sizeof(last_rst)); /* remember last report */
+	strcpy(last_rst, his_rst); /* remember last report */
 
 	cleanup_qso();		/* reset qso related parameters */
     } else {			// qso from lan

@@ -38,10 +38,35 @@
 #include "ui_utils.h"
 
 
-void clear_display(void) {
-    extern char mode[];
+void show_header_line() {
+    extern cqmode_t cqmode;
     extern int cqdelay;
     extern char headerline[];
+
+    char *mode = "";
+    switch (cqmode) {
+	case CQ:
+	    mode = "Log";
+	    break;
+	case S_P:
+	    mode = "S&P";
+	    break;
+	case AUTO_CQ:
+	    mode = "AUTO_CQ";
+	    break;
+	case KEYBOARD:
+	    mode = "Keyboard";
+	    break;
+    }
+
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+    mvprintw(0, 0, "                             ");
+    mvprintw(0, 0, "  %-8s  S=%2i D=%i ", mode, GetCWSpeed(), cqdelay);
+    mvprintw(0, 21, headerline);
+}
+
+
+void clear_display(void) {
     extern char terminal1[];
     extern char terminal2[];
     extern char terminal3[];
@@ -64,17 +89,11 @@ void clear_display(void) {
     extern int no_rst;
 
     char time_buf[80];
-    char speedbuf[4] = "  ";
     int cury, curx;
-
-    snprintf(speedbuf, 3, "%2u", GetCWSpeed());
 
     getyx(stdscr, cury, curx);
 
-    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-    mvprintw(0, 0, "                             ");
-    mvprintw(0, 0, "  %s  S=%s D=%i ", mode, speedbuf, cqdelay);
-    mvprintw(0, 21, headerline);
+    show_header_line();
 
     attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
     mvaddstr(1, 0, terminal1);

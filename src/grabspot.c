@@ -73,7 +73,7 @@ freq_t grab_next(void) {
     data = bandmap_next(dir, freq);
 
     if (data == NULL) {		/* nothing in that direction */
-				/* try other one */
+	/* try other one */
 	dir = 1 - dir;
 	data = bandmap_next(dir, freq);
     }
@@ -90,8 +90,7 @@ freq_t grab_next(void) {
  */
 static freq_t execute_grab(spot *data) {
     extern char hiscall[];
-    extern char mode[];
-    extern int cqmode;
+    extern cqmode_t cqmode;
     extern freq_t mem;
     extern freq_t freq;
 
@@ -107,7 +106,6 @@ static freq_t execute_grab(spot *data) {
     /* if in CQ mode switch to S&P and remember QRG */
     if (cqmode == CQ) {
 	cqmode = S_P;
-	strcpy(mode, "S&P     ");
 	mem = freq;
 	mvprintw(14, 67, " MEM: %7.1f", mem / 1000.);
     }

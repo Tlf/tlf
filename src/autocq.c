@@ -23,8 +23,8 @@
  *--------------------------------------------------------------*/
 
 
-#include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include "clear_display.h"
 #include "cw_utils.h"
@@ -40,85 +40,86 @@
 
 int play_file(char *audiofile);
 
-/* FIXME: Needs refactorization and cleanup of logic */
+//
+// get estimated CQ length in milliseconds
+// returns 0 if can't be determined
+//
+static int get_autocq_time() {
+    if (trxmode != CWMODE) {
+	return 0;   // unknown
+    }
+    const int cw_message_len = cw_message_length(message[11]);
+    return (int)(1200.0 / GetCWSpeed()) * cw_message_len;
+}
+
+
 int auto_cq(void) {
-    extern char mode[];
     extern char message[][80];
     extern int cqdelay;
-    extern int cqmode;
-    extern int trxmode;
-    extern char hiscall[];
+    extern cqmode_t cqmode;
 
-    int inchar = -1, delayval = 0, cw_message_len = 0, realspeed = 0,
-	j = 0;
-    long message_time = 0;
-    char cwmessage[80];
-    int letter = 0;
+#define NO_KEY -1
 
-    strcpy(mode, "AUTO_CQ ");
-    clear_display();
-    while (delayval == 0) {
+    int key = NO_KEY;
+
+    const cqmode_t cqmode_save = cqmode;
+    cqmode = AUTO_CQ;
+    show_header_line();
+
+    const long message_time = get_autocq_time();
+
+    while (key == NO_KEY) {
+
 	send_standard_message(11);
 
-	mvprintw(12, 29 + strlen(hiscall), "");
+	mvprintw(12, 29, "");
 
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-	if (trxmode == CWMODE) {
-	    realspeed = GetCWSpeed();
-	    strncpy(cwmessage, message[11], 79);
-	    cw_message_len = cw_message_length(cwmessage);
-	    message_time = (long)(1200.0 / realspeed) * cw_message_len;
-	    for (j = 0; j < 10; j++) {
+	// if length of message is known then wait until its end
+	// key press terminates auto CQ loop
+	if (message_time > 0) {
+	    for (int j = 0; j < 10 && key == NO_KEY; j++) {
 		usleep(message_time * 100);
 		time_update();
-		inchar = key_poll();
+		const int inchar = key_poll();
 		if (inchar > 0) {
-		    letter = inchar;
-		    stoptx();
-		    break;
+		    key = inchar;
 		}
 	    }
 	}
-	for (delayval = cqdelay; delayval > 0; delayval--) {
-	    if (inchar < 0) {
-		mvprintw(12, 29, "Auto cq  %d  ", delayval - 1);
-		refreshp();
-	    } else {
-		break;
-	    }
-	    usleep(500000);
+
+	// wait between calls
+	for (int delayval = cqdelay; delayval > 0 && key == NO_KEY; delayval--) {
+
+	    mvprintw(12, 29, "Auto CQ  %-2d ", delayval - 1);
+	    refreshp();
+
+	    usleep(500000); // 500 ms
 	    time_update();
 
-	    if (inchar < 0)
-		inchar = key_poll();
-	    letter = inchar;
-	    if (inchar > 0)
-		break;
+	    const int inchar = key_poll();
+	    if (inchar > 0) {
+		key = inchar;
+	    }
 	}
+
 	mvprintw(12, 29, "            ");
 	mvprintw(12, 29, "");
 	refreshp();
     }
-    if (cqmode == CQ)
-	strcpy(mode, "Log     ");
-    else
-	strcpy(mode, "S&P     ");
 
-    clear_display();
+    stoptx();
+
+    cqmode = cqmode_save;
+    show_header_line();
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    // Promote lower case letters to uppercase.
-    if (letter > 96 && letter < 123)
-	letter -= 32;
-
     mvprintw(12, 29, "             ");
     printcall();
-    if (inchar == 27)
-	return (27);
-    else
-	return (letter);
+
+    return toupper(key);
 }
 
 

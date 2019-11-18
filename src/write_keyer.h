@@ -22,7 +22,8 @@
 #define WRITE_KEYER_H
 
 void keyer_append(const char *string);
+void keyer_append_char(const char c);
 void keyer_flush();
-int write_keyer(void);
+void write_keyer(void);
 
 #endif /* WRITE_KEYER_H */

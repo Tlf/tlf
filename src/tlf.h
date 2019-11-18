@@ -49,8 +49,12 @@
 
 #define SEARCHWINDOW 1  /* searchflg on */
 
-#define CQ 1			/* cqmode   on */
-#define S_P 0			/* S&P mode  on  */
+typedef enum {
+    CQ,         // Run
+    S_P,        // Search and Pounce
+    AUTO_CQ,    // temporary, used in autocq.c
+    KEYBOARD    // temporary, used in keyer.c
+} cqmode_t;
 
 #define SEND_DE 1		/* de_mode on */
 #define CONTEST 1		/* contest mode on */
@@ -126,8 +130,8 @@ enum {
 #define LOGLINELEN (88)		/* Length of logline in logfile
 				   (including linefeed) */
 #define MINITEST_DEFAULT_PERIOD 600
-				/* ignore dupe state when MINITEST is set
-				 * and last QSO was not in actual period */
+/* ignore dupe state when MINITEST is set
+ * and last QSO was not in actual period */
 
 /* special message numbers */
 enum {

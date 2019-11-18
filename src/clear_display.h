@@ -21,6 +21,7 @@
 #ifndef CLEAR_DISPLAY_H
 #define CLEAR_DISPLAY_H
 
+void show_header_line(void);
 void clear_display(void);
 
 #endif /* CLEAR_DISPLAY_H */

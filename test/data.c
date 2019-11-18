@@ -146,7 +146,7 @@ int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
 int clusterlog = 0;		/* clusterlog on/off */
 int searchflg = 0;		/* 1  = display search  window */
 int show_time = 0;
-int cqmode = CQ;		/* 1  = CQ  0 = S&P  */
+cqmode_t cqmode = CQ;
 int demode = 0;			/* 1 =  send DE  before s&p call  */
 int contest = 0;		/* 0 =  General,  1  = contest */
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */

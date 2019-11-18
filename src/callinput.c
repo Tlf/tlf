@@ -106,9 +106,8 @@ int callinput(void) {
     extern int early_started;
     extern char hiscall_sent[];
     extern char comment[];
-    extern int cqmode;
+    extern cqmode_t cqmode;
     extern int trxmode;
-    extern char mode[];
     extern char lastcall[];
     extern int cqdelay;
     extern char his_rst[];
@@ -294,15 +293,7 @@ int callinput(void) {
 			cqmode = CQ;
 
 		    /* and show new mode */
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-
-		    if (cqmode == CQ) {
-			mvprintw(0, 2, "Log     ");
-			strcpy(mode, "Log     ");
-		    } else {
-			mvprintw(0, 2, "S&P     ");
-			strcpy(mode, "S&P     ");
-		    }
+		    show_header_line();
 
 		} else {
 
@@ -589,7 +580,7 @@ int callinput(void) {
 	    case KEY_F(1): {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
-		    if (cqmode == 0) {
+		    if (cqmode == S_P) {
 			sendspcall();
 		    } else {
 			send_standard_message(0);	/* CQ */
@@ -601,7 +592,7 @@ int callinput(void) {
 		    }
 		} else {
 
-		    if (cqmode == 0)
+		    if (cqmode == S_P)
 			play_file(ph_message[5]);	/* S&P */
 		    else
 			play_file(ph_message[0]);
@@ -746,7 +737,7 @@ int callinput(void) {
 		    if (x == 240)	// Alt-P (M-p)
 			netkeyer(K_PTT, "0");	// ptt off
 		    k_ptt = 0;
-		    mvprintw(0, 2, "%s", mode);
+		    show_header_line();
 		    refreshp();
 		} else
 		    netkeyer(K_PTT, "0");	// ptt off in any case.
@@ -772,14 +763,14 @@ int callinput(void) {
 
 		while (count != 0) {
 		    usleep(250000);
-		    if ((key_poll()) != -1)	// any key pressed ?
+		    if (key_poll() != -1)	// any key pressed ?
 			break;
 		    count--;
 		}
 
 		netkeyer(K_ABORT, "");	// cw abort
 
-		mvprintw(0, 2, "%s", mode);
+		show_header_line();
 		refreshp();
 
 		break;
@@ -915,8 +906,7 @@ int callinput(void) {
 		if (f > 0.0) {
 		    grab.state = IN_PROGRESS;
 		    grab.spotfreq = f;
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 2, "%s", mode);
+		    show_header_line();
 		    freqstore = 0;
 		}
 
@@ -929,8 +919,7 @@ int callinput(void) {
 		if (f > 0.0) {
 		    grab.state = IN_PROGRESS;
 		    grab.spotfreq = f;
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 2, "%s", mode);
+		    show_header_line();
 		    freqstore = 0;
 		}
 

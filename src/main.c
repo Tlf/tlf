@@ -197,7 +197,7 @@ int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
 int clusterlog = 0;		/* clusterlog on/off */
 int searchflg = 0;		/* 1  = display search  window */
 int show_time = 0;
-int cqmode = CQ;		/* 1  = CQ  0 = S&P  */
+cqmode_t cqmode = CQ;
 int demode = 0;			/* 1 =  send DE  before s&p call  */
 int contest = 0;		/* 0 =  General,  1  = contest */
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
@@ -281,7 +281,6 @@ char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
 { "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
 char comment[80];
-char mode[20] = "Log     ";
 char cqzone[3] = "";
 char mycqzone[3] = "";
 char ituzone[3] = "";
@@ -420,9 +419,9 @@ freq_t bandfrequency[NBANDS] = {
     28025000, 0.
 };
 
-char headerline[81] =
-    "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  \n";
-char backgrnd_str[81] =
+const char headerline[] =
+    "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  ";
+const char backgrnd_str[81] =
     "                                                                                ";
 
 char logline_edit[5][LOGLINELEN + 1];
@@ -657,7 +656,7 @@ int databases_load() {
 
     if (*call == '\0') {
 	showmsg
-	    ("WARNING: No callsign defined in logcfg.dat! exiting...\n");
+	("WARNING: No callsign defined in logcfg.dat! exiting...\n");
 	return EXIT_FAILURE;
     }
 
@@ -837,22 +836,14 @@ void show_GPL() {
     printw("             T    L      FFFFF\n");
     printw("             T    L      F    \n");
     printw("             T    LLLLL  F    \n");
-    printw
-	("\n\nThis program is copyright 2002, 2003, 2004 by Rein Couperus, PA0R\n\n");
-    printw
-	("It is free software; you can redistribute it and/or modify it under the terms\n");
-    printw
-	("of the GNU General Public License as published by the Free Software Foundation;\n");
-    printw
-	("either version 2 of the License, or (at your option) any later version.\n\n");
-    printw
-	("This program is distributed in the hope that it will be useful, but\n");
-    printw
-	("WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY\n");
-    printw
-	("or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License\n");
-    printw
-	("for more details.\n");
+    printw("\n\nThis program is copyright 2002, 2003, 2004 by Rein Couperus, PA0R\n\n");
+    printw("It is free software; you can redistribute it and/or modify it under the terms\n");
+    printw("of the GNU General Public License as published by the Free Software Foundation;\n");
+    printw("either version 2 of the License, or (at your option) any later version.\n\n");
+    printw("This program is distributed in the hope that it will be useful, but\n");
+    printw("WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY\n");
+    printw("or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License\n");
+    printw("for more details.\n");
 
     refreshp();
 }

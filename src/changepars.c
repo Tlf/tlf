@@ -95,7 +95,7 @@ int changepars(void) {
     extern char sc_volume[];
     extern int cwstart;
     extern int digikeyer;
-    extern int cqmode;
+    extern cqmode_t cqmode;
 
     char parameterstring[20] = "";
     char parameters[52][19];
