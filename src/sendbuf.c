@@ -202,9 +202,9 @@ void ExpandMacro(void) {
     }
 
 
-    strncpy(rst_out, his_rst, 4);
-    rst_out[1] = short_number(rst_out[1]);
-    rst_out[2] = short_number(rst_out[2]);
+    rst_out[0] = his_rst[0];
+    rst_out[1] = short_number(his_rst[1]);
+    rst_out[2] = short_number(his_rst[2]);
     rst_out[3] = '\0';
 
     replace_all(buffer, BUFSIZE, "[", rst_out);   /* his RST */
