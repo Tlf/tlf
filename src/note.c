@@ -55,8 +55,6 @@ int include_note(void) {
     getnstr(buffer, 78);
     noecho();
 
-    buffer2[0] = '\0';
-
     if (lan_active == 1) {
 	sprintf(buffer2, "; Node %c, %d : ", thisnode, atoi(qsonrstr) - 1);
     } else
@@ -78,11 +76,11 @@ int include_note(void) {
 
 	fclose(fp);
 
-	strncpy(qsos[nr_qsos], buffer2, LOGLINELEN - 1);
+	g_strlcpy(qsos[nr_qsos], buffer2, LOGLINELEN);
 	nr_qsos++;
 
 	scroll_log();
-	strncpy(logline4, buffer2, 80);  /* max. 80 columns */
+	g_strlcpy(logline4, buffer2, 81);  /* max. 80 columns */
 	clear_display();
 
     }

@@ -272,10 +272,7 @@ void sendbuf(void) {
 //              }
 	}
 
-	if (simulator == 0)
-	    strncat(printlinebuffer, termbuf, strlen(termbuf));
-	else
-	    strncat(printlinebuffer, termbuf, strlen(termbuf));
+	g_strlcpy(printlinebuffer, termbuf, sizeof(printlinebuffer));
 
 	if (searchflg == 0 && simulator == 0)
 	    strncat(printlinebuffer, backgrnd_str,

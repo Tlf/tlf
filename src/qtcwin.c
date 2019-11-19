@@ -369,8 +369,7 @@ void prepare_for_recv() {
     }
 
     /* save the previous qtc callsign */
-    strncpy(prevqtccall, qtcreclist.callsign, strlen(qtcreclist.callsign));
-    prevqtccall[strlen(qtcreclist.callsign)] = '\0';
+    g_strlcpy(prevqtccall, qtcreclist.callsign, sizeof(prevqtccall));
     qtccallsign = qtcreclist.callsign;
 
     /* save the address of the counter of receive QTC block */
@@ -396,8 +395,7 @@ void prepare_for_send() {
     }
 
     /* save the current callsign to previous call variable */
-    strncpy(prevqtccall, qtclist.callsign, strlen(qtclist.callsign));
-    prevqtccall[strlen(qtclist.callsign)] = '\0';
+    g_strlcpy(prevqtccall, qtclist.callsign, sizeof(prevqtccall));
     qtccallsign = qtclist.callsign;
 
     /* save the address of the counter of SEND qtc structure */
@@ -1590,7 +1588,7 @@ int parse_ry_line(char *line) {
 	nr_parsed_line = 1;
     }
 
-    strncpy(lline, line, strlen(line));
+    g_strlcpy(lline, line, sizeof(lline));
     tactivefield = activefield;
     if (nr_parsed_line == 0) {		// 1st line: SERIAL/NR
 	wtoken = strtok_r(lline, " ", &saveptr1);
@@ -1949,7 +1947,6 @@ void recalc_qtclist() {
 	    put_qtc();
 	}
     }
-    strncpy(prevqtccall, qtccallsign, strlen(qtccallsign));
-    prevqtccall[strlen(qtccallsign)] = '\0';
+    g_strlcpy(prevqtccall, qtccallsign, sizeof(prevqtccall));
 }
 

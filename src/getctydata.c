@@ -126,7 +126,7 @@ int getpfxindex(char *checkcallptr, char **normalized_call) {
     int w = 0, abnormal_call = 0;
     size_t loc;
 
-    g_strlcpy(strippedcall, checkcallptr, 17);
+    g_strlcpy(strippedcall, checkcallptr, sizeof(strippedcall));
 
     if (strstr(strippedcall, "/QRP") ==
 	    (strippedcall + strlen(strippedcall) - 4))
@@ -137,7 +137,7 @@ int getpfxindex(char *checkcallptr, char **normalized_call) {
     if (location_unknown(strippedcall))
 	strippedcall[0] = '\0';
 
-    strncpy(checkcall, strippedcall, 16);
+    g_strlcpy(checkcall, strippedcall, sizeof(checkcall));
 
     loc = strcspn(checkcall, "/");
 

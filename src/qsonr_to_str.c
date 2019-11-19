@@ -22,18 +22,19 @@
  *--------------------------------------------------------------*/
 
 
+#include <glib.h>
 #include <string.h>
 
 
-int qsonr_to_str(void) {
+void qsonr_to_str(void) {
     extern int qsonum;
     extern char qsonrstr[5];
 
-    static int x;
-    static int thousands;
-    static int hundreds;
-    static int tens;
-    static char buffer[5];
+    int x;
+    int thousands;
+    int hundreds;
+    int tens;
+    char buffer[5];
 
     x = qsonum;
     thousands = (x / 1000);
@@ -48,7 +49,5 @@ int qsonr_to_str(void) {
     buffer[2] = tens + 48;
     buffer[3] = x + 48;
     buffer[4] = '\0';
-    strncpy(qsonrstr, buffer, 4);
-
-    return (0);
+    g_strlcpy(qsonrstr, buffer, sizeof(qsonrstr));
 }

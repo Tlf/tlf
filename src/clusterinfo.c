@@ -225,7 +225,7 @@ int loadbandmap(void) {
 
     for (j = 0; j < nr_of_spots; j++) {
 
-	strncpy(thisline, spot_ptr[j], 82);
+	g_strlcpy(thisline, spot_ptr[j], sizeof(thisline));
 	if (strncmp(thisline, "DX de ", 6) == 0) {
 
 	    g_strlcpy(spotcall, thisline + 26, 6);

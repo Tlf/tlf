@@ -79,8 +79,7 @@ int message_change(int x) {
     else
 	msg = message[bufnr];
 
-    printbuf[0] = '\0';
-    strncat(printbuf, msg, strlen(msg) - 1);
+    g_strlcpy(printbuf, msg, sizeof(printbuf));
     mvprintw(15, 4, "%s", printbuf);
     refreshp();
 

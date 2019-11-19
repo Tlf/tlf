@@ -52,7 +52,7 @@ int genqtclist(char *callsign, int nrofqtc) {
     qtclist.marked = 0;
     qtclist.totalsent = 0;
     qtclist.count = 0;
-    strncpy(qtclist.callsign, callsign, strlen(callsign));
+    g_strlcpy(qtclist.callsign, callsign, sizeof(qtclist.callsign));
     for (s = 0; s < qtclistlen; s++) {
 	qtclist.qtclines[s].qtc[0] = '\0';
 	qtclist.qtclines[s].flag = 0;
