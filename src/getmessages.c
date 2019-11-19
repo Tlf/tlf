@@ -67,7 +67,7 @@ void getmessages(void) {
     extern char logfile[];
     extern int qsonum;
     extern char qsonrstr[];
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
 
     FILE *fp;
 

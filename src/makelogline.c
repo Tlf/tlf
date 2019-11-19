@@ -151,7 +151,7 @@ void prepare_fixed_part(void) {
 	    ((strcmp(whichcontest, "qso") == 0) ||
 	     (strcmp(whichcontest, "dxped") == 0))) {
         char khz[5];
-	sprintf(khz, " %3d", ((int)(freq / 1000.0)) % 1000);	// show freq.
+	sprintf(khz, " %3d", ((unsigned int)(freq / 1000.0)) % 1000);	// show freq.
 	strcat(logline4, khz);
 
     } else {
@@ -168,8 +168,9 @@ void prepare_fixed_part(void) {
 	strcat(logline4, " ");
     } else
 	strcat(logline4, "  ");
+    /* goes till 29 */
 
-    strncat(logline4, hiscall, 15);	/*  29 */
+    g_strlcat(logline4, hiscall, 44 + 1);
 
     fillto(44);
 

@@ -34,7 +34,7 @@ extern int ymax;
 int getwwv(void) {
 
     extern char lastwwv[];
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
     extern double r;
     extern int mycountrynr;
     extern int timeoffset;

@@ -68,31 +68,26 @@ void scroll_log(void) {
 
 	switch (kk) {
 	    case 0: {
-		strncpy(logline0, inputbuffer, 80);
-		logline0[80] = '\0';
+		strcpy(logline0, inputbuffer);
 		break;
 	    }
 	    case 1: {
-		strncpy(logline1, inputbuffer, 80);
-		logline1[80] = '\0';
+		strcpy(logline1, inputbuffer);
 		break;
 	    }
 
 	    case 2: {
-		strncpy(logline2, inputbuffer, 80);
-		logline2[80] = '\0';
+		strcpy(logline2, inputbuffer);
 		break;
 
 	    }
 	    case 3: {
-		strncpy(logline3, inputbuffer, 80);
-		logline3[80] = '\0';
+		strcpy(logline3, inputbuffer);
 		break;
 
 	    }
 	    case 4: {
-		strncpy(logline4, inputbuffer, 80);
-		logline4[80] = '\0';
+		strcpy(logline4, inputbuffer);
 		break;
 	    }
 	}

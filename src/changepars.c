@@ -1074,7 +1074,7 @@ int debug_tty(void) {
 
 void wipe_display() {
     int j;
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
 
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 

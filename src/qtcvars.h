@@ -36,6 +36,8 @@
 #define QTC_LATER 8	// QTC LATER
 #define QTC_NO 16	// NO QTC for/from this station
 
+#define QTC_CALL_SIZE 15
+
 typedef struct {
     int qsoline;	// qsos[INDEX]
     int flag;	// flag to mark for send
@@ -50,14 +52,14 @@ typedef struct {
     int count;	// nr of qtc line in block
     int marked;	// nr of marked to send
     int totalsent; // nr of sent qtc's
-    char callsign[15];  // current callsign; helps to detect if QSO has dropped
+    char callsign[QTC_CALL_SIZE];  // current callsign; helps to detect if QSO has dropped
     t_qtcline qtclines[QTC_LINES];
 } t_qtclist;
 
 typedef struct {
     int status;	// received, failed, nothing
     char time[5];	// time of qso
-    char callsign[15]; // callsign
+    char callsign[QTC_CALL_SIZE]; // callsign
     char serial[5]; // qso serial
     int confirmed; // qtc had confirmed
     char receivedtime[16]; // received time: YY-Mon-dd HH:MM\0
@@ -68,7 +70,7 @@ typedef struct {
     int count;
     int confirmed;
     int sentcfmall;
-    char callsign[15];
+    char callsign[QTC_CALL_SIZE];
     t_qtcrecline qtclines[QTC_LINES];
 } t_qtcreclist;
 

@@ -111,7 +111,7 @@ int callinput(void) {
     extern char lastcall[];
     extern int cqdelay;
     extern char his_rst[];
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
     extern int cluster;
     extern int announcefilter;
     extern char ph_message[14][80];

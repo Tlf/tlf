@@ -42,7 +42,7 @@ char  printbuffer[160];
 
 char *formatMessage(int i) {
     extern char message[][80];
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
 
     /* copy the message string WITHOUT trailing newline/space */
     if (trxmode == DIGIMODE)
@@ -57,7 +57,7 @@ char *formatMessage(int i) {
 }
 
 void listmessages(void) {
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
 
     int i;
 

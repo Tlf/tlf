@@ -35,7 +35,7 @@
 void displayit(void) {
 
     extern char termbuf[];
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
     extern char terminal1[];
     extern char terminal2[];
     extern char terminal3[];

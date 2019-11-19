@@ -22,33 +22,18 @@
  *--------------------------------------------------------------*/
 
 
+#include <glib.h>
 #include <string.h>
+#include <stdio.h>
 
 
-int qsonr_to_str(void) {
+void qsonr_to_str(void) {
     extern int qsonum;
     extern char qsonrstr[5];
 
-    static int x;
-    static int thousands;
-    static int hundreds;
-    static int tens;
-    static char buffer[5];
-
-    x = qsonum;
-    thousands = (x / 1000);
-    x = x - (thousands * 1000);
-    hundreds = (x / 100);
-    x = x - (hundreds * 100);
-    tens = (x / 10);
-    x = x - (tens * 10);
-
-    buffer[0] = thousands + 48;
-    buffer[1] = hundreds + 48;
-    buffer[2] = tens + 48;
-    buffer[3] = x + 48;
-    buffer[4] = '\0';
-    strncpy(qsonrstr, buffer, 4);
-
-    return (0);
+    if (qsonum < 0 || qsonum > 9999) { // should in fact never happen ...
+	strcpy(qsonrstr, "????");
+	return;
+    }
+    sprintf(qsonrstr, "%04d", qsonum);
 }

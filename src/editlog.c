@@ -41,7 +41,7 @@
 int logedit(void) {
 
     extern char logfile[];
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
     extern int editor;
 
     char comstr[40] = "";

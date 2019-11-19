@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-extern char backgrnd_str[];
+extern const char backgrnd_str[];
 
 void handle_logging(enum log_lvl lvl, ...) {
     char *fmt;
