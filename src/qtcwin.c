@@ -618,8 +618,7 @@ void qtc_main_panel(int direction) {
 			    get_time();
 			    tempc[0] = '\0';
 			    strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
-			    strncpy(qtcreclist.qtclines[currqtc].receivedtime, tempc, 15);
-			    qtcreclist.qtclines[currqtc].receivedtime[15] = '\0';
+			    g_strlcpy(qtcreclist.qtclines[currqtc].receivedtime, tempc, 16);
 			    qtcreclist.qtclines[currqtc].status = 2;
 			    show_status(currqtc);
 			    if (currqtc < *qtccount) {
@@ -686,7 +685,7 @@ void qtc_main_panel(int direction) {
 			    get_time();
 			    tempc[0] = '\0';
 			    strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
-			    strncpy(qtclist.qtclines[activefield - 3].senttime, tempc, 15);
+			    g_strlcpy(qtclist.qtclines[activefield - 3].senttime, tempc, 16);
 			    qtclist.qtclines[activefield - 3].senttime[15] = '\0';
 			    qtclist.totalsent++;
 			}
@@ -745,10 +744,9 @@ void qtc_main_panel(int direction) {
 			int ql;
 			tmess[0] = '\0';
 			if (tlen > 0 && strncmp(qtc_send_msgs[1] + tlen, "sr/nr", 5) == 0) {
-			    tempc[0] = '\0';
-			    strncpy(tempc, qtc_send_msgs[1], tlen - 1);
-			    tempc[tlen - 1] = '\0';
-			    sprintf(tmess, "%s %d/%d %s %d/%d\n", tempc, qtclist.serial, *qtccount, tempc,
+			    g_strlcpy(tempc, qtc_send_msgs[1], tlen);
+			    sprintf(tmess, "%s %d/%d %s %d/%d\n",
+				    tempc, qtclist.serial, *qtccount, tempc,
 				    qtclist.serial, *qtccount);
 			}
 			timec[0] = '\0';
@@ -757,8 +755,7 @@ void qtc_main_panel(int direction) {
 
 			for (ql = 0; ql < *qtccount; ql++) {
 			    qtclist.qtclines[ql].sent = 1;
-			    strncpy(qtclist.qtclines[ql].senttime, timec, 15);
-			    qtclist.qtclines[ql].senttime[15] = '\0';
+			    g_strlcpy(qtclist.qtclines[ql].senttime, timec, 16);
 			    qtclist.totalsent++;
 
 			    tempc[0] = '\0';
@@ -871,12 +868,10 @@ void qtc_main_panel(int direction) {
 			    qtc_send_msgs[x - KEY_F(1)][strlen(qtc_send_msgs[x - KEY_F(1)]) - 1] = 0;
 			}
 			tlen = strlen(qtc_send_msgs[x - KEY_F(1)]) - 5; // len("sr/nr") = 5
-			char tmess[40];
+			char tmess[60];
 			tmess[0] = '\0';
 			if (tlen > 0 && strncmp(qtc_send_msgs[x - KEY_F(1)] + tlen, "sr/nr", 5) == 0) {
-			    tempc[0] = '\0';
-			    strncpy(tempc, qtc_send_msgs[x - KEY_F(1)], tlen - 1);
-			    tempc[tlen - 1] = '\0';
+			    g_strlcpy(tempc, qtc_send_msgs[x - KEY_F(1)], tlen);
 			    sprintf(tmess, "%s %d/%d ", tempc, qtclist.serial, *qtccount);
 			    sendmessage(tmess);
 			} else if ((activefield - 3) >= 0) {
@@ -1353,7 +1348,7 @@ void delete_from_field(int dir) {
 	if (strlen(qtccallsign) > 0) {
 	    sprintf(fieldval, "%s", qtccallsign);
 	    shift_left(fieldval, dir);
-	    strncpy(qtccallsign, fieldval, strlen(fieldval));
+	    g_strlcpy(qtccallsign, fieldval, QTC_CALL_SIZE);
 	    qtccallsign[strlen(fieldval)] = '\0';
 	    recalc_qtclist();
 	    showfield(0);
@@ -1545,8 +1540,7 @@ void show_help_msg(int msgidx) {
     for (i = 0; i < 12 && j < 12; i++) {
 	if (qtccurrdirection == RECV) {
 	    if (strlen(qtc_recv_msgs[i]) > 0) {
-		strncpy(buff, qtc_recv_msgs[i], strlen(qtc_recv_msgs[i]) - 1);
-		buff[strlen(qtc_recv_msgs[i]) - 1] = '\0';
+		g_strlcpy(buff, qtc_recv_msgs[i], sizeof(buff));
 		mvwprintw(qtcwin, ++j, 36, "F%-2d: %s", (i + 1), buff);
 	    }
 	    if (i == 1) {
@@ -1558,8 +1552,7 @@ void show_help_msg(int msgidx) {
 	}
 	if (qtccurrdirection == SEND) {
 	    if (strlen(qtc_send_msgs[i]) > 0) {
-		strncpy(buff, qtc_send_msgs[i], strlen(qtc_send_msgs[i]) - 1);
-		buff[strlen(qtc_send_msgs[i]) - 1] = '\0';
+		g_strlcpy(buff, qtc_send_msgs[i], sizeof(buff));
 		mvwprintw(qtcwin, ++j, 36, "F%-2d: %s", (i + 1), buff);
 	    }
 	}
