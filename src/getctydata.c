@@ -152,7 +152,9 @@ int getpfxindex(char *checkcallptr, char **normalized_call) {
 
 	if (strlen(call2) < strlen(call1)
 		&& strlen(call2) > 1) {
-	    sprintf(checkcall, "%s/%s", call2, call1);
+	    strcpy(checkcall, call2);
+	    g_strlcat(checkcall, "/", sizeof(checkcall));
+	    g_strlcat(checkcall, call1, sizeof(checkcall));
 	    abnormal_call = 1;
 	    loc = strcspn(checkcall, "/");
 	}
@@ -171,9 +173,6 @@ int getpfxindex(char *checkcallptr, char **normalized_call) {
 
 	    if (loc < 5)
 		checkcall[loc] = '\0';	/*  "PA/DJ0LN/P   */
-	    else {		/*  DJ0LN/P       */
-		strncpy(checkcall, checkcall, loc + 1);
-	    }
 	}
 
 	/* ------------------------------------------------------------ */

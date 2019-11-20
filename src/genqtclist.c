@@ -118,17 +118,21 @@ void genqtcline(char *qtc, char *qsoline) {
     }
 
     /* add finally 3 or 4 digit exchange */
-    strncpy(tstring, qsoline + 54, 4);
+    g_strlcpy(tstring, qsoline + 54, sizeof(tstring));
     nr = atoi(tstring);
     // 3 digit
-    if (nr < 1000) {
+    if ((nr >= 0) && (nr < 1000)) {
 	sprintf(tstring, "%03d ", nr);
     }
     // 4 digit
-    else {
+    else if ((nr >= 0) && (nr < 10000)) {
 	sprintf(tstring, "%d", nr);
+    } else {
+    // ignore all other exchange values
+	strcpy(tstring, "    ");
     }
-    strncpy(qtc + qpos, tstring, strlen(tstring));
+
+    strcpy(qtc + qpos, tstring);
     qpos += 4;
     qtc[qpos] = '\0';
 }

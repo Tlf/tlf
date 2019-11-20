@@ -189,10 +189,10 @@ int loadbandmap(void) {
     char spotcall[20];
     char spottime[6];
     char spotline[38];
-    char callcopy[81];
+    char callcopy[20];
     FILE *fp;
     char marker_out[60];
-    char color[20];
+    char color[sizeof("Magenta")];
     int lon;
     int lat;
     int zz;

@@ -31,6 +31,7 @@
  */
 
 
+#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -83,7 +84,8 @@ void showinfo(int x) {
     strcpy(countrystr, dx->countryname);	/* country */
 
     if (strlen(cqzone) < 2) {
-	sprintf(zonestr, "%02d", dx->cq); 	/* cqzone */
+	if (dx->cq > MAX_ZONES) dx->cq = MAX_ZONES;
+	snprintf(zonestr, sizeof(zonestr), "%02d", dx->cq); 	/* cqzone */
 	strcpy(cqzone, zonestr);
     } else {
 	strncpy(zonestr, cqzone, 2);
