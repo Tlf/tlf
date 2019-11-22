@@ -24,6 +24,7 @@
 
 
 #include <fcntl.h>
+#include <glib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -42,24 +43,18 @@ int logedit(void) {
 
     extern char logfile[];
     extern char backgrnd_str[];
-    extern int editor;
+    extern char *editor_name;
 
-    char comstr[40] = "";
+    char *comstr;
     int j;
 
-    if (editor == EDITOR_JOE)
-	strcat(comstr, "joe  ");	/*   my favorite editor   */
-    else if (editor == EDITOR_VI)
-	strcat(comstr, "vi  ");
-    else if (editor == EDITOR_MC)
-	strcat(comstr, "mcedit  ");
-    else
-	strcat(comstr, "e3  ");
+    comstr = g_strdup_printf("%s %s", editor_name, logfile);
 
     stop_background_process();
-    strcat(comstr, logfile);
     IGNORE(system(comstr));;
     start_background_process();
+
+    g_free(comstr);
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();
