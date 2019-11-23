@@ -33,28 +33,45 @@
 #include "background_process.h"
 #include "checklogfile.h"
 #include "clear_display.h"
+#include "err_utils.h"
 #include "ignore_unused.h"
 #include "scroll_log.h"
 #include "tlf.h"
 #include "tlf_curses.h"
+
+void edit(char *filename) {
+    extern char *editor_name;
+    char *cmdstr;
+    char *editor = NULL;
+    int retval;
+
+    if (editor_name != NULL)
+	editor = g_strdup(editor_name);
+    else
+	editor = g_strdup(g_getenv("EDITOR"));
+
+    if (editor != NULL) {
+        cmdstr = g_strdup_printf("%s %s", editor, filename);
+	retval = (system(cmdstr));;
+	if (WEXITSTATUS(retval) == 127) {
+	    TLF_LOG_WARN("Can not start editor, check EDITOR= command");
+	}
+        g_free(cmdstr);
+	g_free(editor);
+    }
+}
 
 
 int logedit(void) {
 
     extern char logfile[];
     extern char backgrnd_str[];
-    extern char *editor_name;
 
-    char *comstr;
     int j;
 
-    comstr = g_strdup_printf("%s %s", editor_name, logfile);
-
     stop_background_process();
-    IGNORE(system(comstr));;
+    edit(logfile);
     start_background_process();
-
-    g_free(comstr);
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();

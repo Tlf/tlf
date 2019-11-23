@@ -279,9 +279,7 @@ Debug routine for rig communication links.
 .
 .TP
 .BR :EDI t
-Edit the log with your favourite editor (the editor (vi[m]|joe|e3|mcedit)
-can be set in
-.IR logcfg.dat ).
+Edit the log with your favourite editor. Be careful!
 .
 .TP
 .BR :EXI t
@@ -972,7 +970,7 @@ file can be edited from within @PACKAGE_NAME@ by the
 .BR :CFG \ or \ :SET
 commands (or with any other plain text editor before starting @PACKAGE_NAME@).
 .P
-You can set your favourite editor (joe | vi[m] | e3 | mcedit) in the
+You can set your favourite editor in the 
 .IR logcfg.dat \ file.
 .P
 You connect the rules file by using the statement
@@ -1044,7 +1042,7 @@ via the
 file.
 .
 .TP
-\fBEDITOR\fR=\fIjoe\fR | \fIvi\fR[\fIm\fR] | \fIe3\fR | \fImcedit\fR
+\fBEDITOR\fR=\fInano\fR | \fIvi\fR[\fIm\fR] | \fI<your_favorite_editor>\fR
 Editor used to modify the QSO log or logcfg.dat.
 .
 .TP
