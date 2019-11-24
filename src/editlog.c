@@ -35,18 +35,20 @@
 #include "clear_display.h"
 #include "err_utils.h"
 #include "ignore_unused.h"
+#include "readqtccalls.h"
+#include "readcalls.h"
 #include "scroll_log.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 
 void edit(char *filename) {
-    extern char *editor_name;
+    extern char *editor_cmd;
     char *cmdstr;
     char *editor = NULL;
     int retval;
 
-    if (editor_name != NULL)
-	editor = g_strdup(editor_name);
+    if (editor_cmd != NULL)
+	editor = g_strdup(editor_cmd);
     else
 	editor = g_strdup(g_getenv("EDITOR"));
 
@@ -64,30 +66,35 @@ void edit(char *filename) {
 
 int logedit(void) {
 
+    extern int total;
     extern char logfile[];
     extern char backgrnd_str[];
+    extern int qtcdirection;
 
     int j;
 
     stop_background_process();
     edit(logfile);
+    checklogfile();
+
+    total = 0;
+    readcalls();
+    if (qtcdirection > 0) {
+        readqtccalls();
+    }
+
     start_background_process();
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();
     refreshp();
+    scroll_log();
     clear_display();
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-    for (j = 13; j <= 23; j++) {
+    for (j = 13; j < LINES - 1; j++) {
 	mvprintw(j, 0, backgrnd_str);
     }
-
-    stop_background_process();
-    checklogfile();
-    start_background_process();
-
-    scroll_log();
     refreshp();
 
     return (0);

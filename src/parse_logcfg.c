@@ -212,7 +212,7 @@ int parse_logcfg(char *inputbuffer) {
     extern int txdelay;
     extern char tonestr[];
     extern int showfreq;
-    extern char *editor_name;
+    extern char *editor_cmd;
     extern int partials;
     extern int use_part;
     extern int mixedmode;
@@ -916,7 +916,7 @@ int parse_logcfg(char *inputbuffer) {
 	case 45: {
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    editor_name = g_strdup(g_strchomp(fields[1]));
+	    editor_cmd = g_strdup(g_strchomp(fields[1]));
 	}
 	case 46: {
 	    partials = 1;
