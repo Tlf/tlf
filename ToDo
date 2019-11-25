@@ -19,7 +19,54 @@ Planned for later versions
 [ ] Add contest name to Header of ADIF file (suggested by SP3RXO)
 [x] Fix arrlsections, paccmults and spdxmults (drop '-end-' marker)
 [ ] Do a complete rescore after delete of QSO automatically
-[ ] Factor out helper functions to parse parts of logline (band, mode, ...)
+[ ] document use of CT9.91 CTY.DAT files in FAQ
+[ ] Have a template for cabrillo file header  (Joop PG4I)
+[ ] Add a keyword to startup TLF in S&P mode (should be an easy one)
+[ ] switch between ESM and CT mode during contest (Nate N0NB)
+[ ] Send Morse via Hamlib for radios that support it.
 
 [ ] Do a complete rewrite of display related code in the long term to
     allow vertical AND horizontal resizing.
+
+
+Internals
+~~~~~~~~~
+[ ] Factor out helper functions to parse parts of logline (band, mode, ...)
+[ ] change internal QSO representation to structs (makes coding much
+    simpler and will enable migration of log file to a different format
+    later)
+
+[ ] Switch the logfile to a database. The actual TR-Log format has some
+    limitations. Log as a database will enable easy statistics, make
+    removal of QSOs easier and allows us to store more information about
+    the contest. (Long term goal)
+
+[ ] Do a major rework of scoring of multis and points (That is already 
+    overdue for some time now). As contests developed in last years there
+    are more and more complex scoring schemes. To code a special contest
+    module for each contest will not be possible with our limited man
+    power. So we need a flexible and programmable scoring which will
+    allow us to handle most of the contests by a rule file.
+    I fear it will break compatibility with existing TLF rules
+    completely and would sure be a major version bump to TLF-2.0 or
+    similar.
+
+[ ] Rework (and repair) the voice keyer so that Esc could stop the 
+    voice keyer. At the moment the voice file is passed to a script 
+    so once that happens Tlf loses control.  Perhaps even something as simple
+    as getting the PID of the script, if possible, and killing it directly.
+    This may have unintended side effects so would require much testing.
+    Another thought is to deliver the file to ALSA or Pulse Audio directly and
+    be able to stop playback at will.
+
+WISHLIST (N0NB)
+~~~~~~~~
+[ ] Incorporate some method of pull-down menus for configuration.  i
+    Doing so might encourage more use of Tlf?  I don't know if that amount
+    of work would be productive or not.  I'm certain it can probably 
+    generate a lot of discussion. ;-)
+
+[ ] Along with the above, move away from log_cfg.dat and 
+    the rules files toward configuration through the UI and a common
+    config file that doesn't require hand editing.
+
