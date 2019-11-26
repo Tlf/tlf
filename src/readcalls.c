@@ -37,6 +37,7 @@
 #include "getpx.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "ignore_unused.h"
+#include "log_utils.h"
 #include "paccdx.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
@@ -161,8 +162,8 @@ int readcalls(void) {
 	strncpy(qsos[s], inputbuffer, LOGLINELEN);
 	s++;
 
-	if (inputbuffer[0] == ';')
-	    continue;		/*  note in  log  */
+	if (log_is_comment(inputbuffer))
+	    continue;		/* skip note in  log  */
 
 	strncpy(presentcall, inputbuffer + 29, 13);
 	presentcall[13] = '\0';
@@ -609,21 +610,6 @@ int readcalls(void) {
 		    countryscore[BANDINDEX_10]++;
 	    }
 	}
-    }
-
-    if (qsonum == 1) {
-	InitPfx();
-
-	total = 0;
-	for (i = 0; i < NBANDS; i++)
-	    band_score[i] = 0;
-
-	for (i = 0; i < NBANDS; i++)
-	    countryscore[i] = 0;
-
-	for (i = 0; i < NBANDS; i++)
-	    multscore[i] = 0;
-
     }
 
     return (s);			// nr of lines in log
