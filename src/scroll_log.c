@@ -22,108 +22,55 @@
 ---------------------------------------------------------------------------*/
 
 
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include"err_utils.h"
+#include "err_utils.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "log_utils.h"
 #include "ignore_unused.h"
 #include "qsonr_to_str.h"
 #include "tlf_curses.h"
 
-
-void scroll_log(void) {
-
-    char inputbuffer[800];
-    static int ii, kk;
+/** find out highest used serial number and prepare next one in qsonum
+ * and qsonumstr
+ *
+ * \Todo needs to be cleaned up, to make more clear how it works, especially
+ * if LAN is active*/
+void get_next_serial(void) {
     int mm;
-
-    FILE *fp;
-
-    if ((fp = fopen(logfile, "r")) == NULL) {
-
-	TLF_LOG_ERR("Error opening logfile.");
-    }
-    for (ii = 5; ii >= 1; ii--) {
-
-	inputbuffer[0] = '\0';
-
-	if (fseek(fp, -1L * ii * LOGLINELEN, SEEK_END) == 0)
-	    IGNORE(fgets(inputbuffer, 90, fp));
-	else
-	    strcpy(inputbuffer,
-		   "                                                                                ");
-
-	kk = 5 - ii;
-
-	if (strlen(inputbuffer) <= 10)	/* log repair */
-	    IGNORE(fgets(inputbuffer, 90, fp));;
-
-//              if (strlen(inputbuffer) != LOGLINELEN)
-//                      strcat (inputbuffer, backgrnd_str);
-
-	inputbuffer[80] = '\0';
-
-	switch (kk) {
-	    case 0: {
-		strcpy(logline0, inputbuffer);
-		break;
-	    }
-	    case 1: {
-		strcpy(logline1, inputbuffer);
-		break;
-	    }
-
-	    case 2: {
-		strcpy(logline2, inputbuffer);
-		break;
-
-	    }
-	    case 3: {
-		strcpy(logline3, inputbuffer);
-		break;
-
-	    }
-	    case 4: {
-		strcpy(logline4, inputbuffer);
-		break;
-	    }
-	}
-
-    }
-
-    fclose(fp);
 
     mm = qsonum - 1;
 
-    if (logline4[0] != ';') {
+    if (!log_is_comment(logline4)) {
 	strncpy(qsonrstr, logline4 + 23, 4);
 	mm = atoi(qsonrstr);
     }
-    if (logline3[0] != ';') {
+    if (!log_is_comment(logline3)) {
 	if (atoi(logline3 + 23) > mm) {
-	    mm = atoi(logline3 + 23);
 	    strncpy(qsonrstr, logline3 + 23, 4);
+	    mm = atoi(qsonrstr);
 	}
     }
-    if (logline2[0] != ';') {
+    if (!log_is_comment(logline2)) {
 	if (atoi(logline2 + 23) > mm) {
-	    mm = atoi(logline2 + 23);
 	    strncpy(qsonrstr, logline2 + 23, 4);
+	    mm = atoi(qsonrstr);
 	}
     }
-    if (logline1[0] != ';') {
+    if (!log_is_comment(logline1)) {
 	if (atoi(logline1 + 23) > mm) {
-	    mm = atoi(logline1 + 23);
 	    strncpy(qsonrstr, logline1 + 23, 4);
+	    mm = atoi(qsonrstr);
 	}
     }
 
     if ((lan_active == 1) && (exchange_serial == 1)) {
 
-	if (lan_mutex == 2) {	/* last mesagge from lan */
+	if (lan_mutex == 2) {	/* last stored message is from lan */
 
 	    if (atoi(qsonrstr) <= highqsonr) {
 		qsonum = highqsonr;
@@ -138,13 +85,39 @@ void scroll_log(void) {
     } else
 	qsonum = atoi(qsonrstr);
 
-    if (logline4[0] != ';')
+    if (!log_is_comment(logline4))
 	qsonum++;
     else
 	qsonum = mm + 1;
 
-//              if((qsonum > highqsonr) && (lan_mutex == 2)) highqsonr++;
-
     qsonr_to_str();
+}
 
+/** read the last 5  log lines and set the next qso number */
+void scroll_log(void) {
+
+    char inputbuffer[800];
+    FILE *fp;
+
+    if ((fp = fopen(logfile, "r")) == NULL) {
+	TLF_LOG_ERR("Error opening logfile.");
+    }
+
+    for (int i = 5; i >= 1; i--) {
+
+	if (fseek(fp, -1L * i * LOGLINELEN, SEEK_END) == 0)
+	    IGNORE(fgets(inputbuffer, 90, fp));
+	else
+	    strcpy(inputbuffer,
+		   "                                                                                ");
+
+	if (strlen(inputbuffer) <= 10)	/* log repair */
+	    IGNORE(fgets(inputbuffer, 90, fp));;
+
+	g_strlcpy(logline_edit[5 - i], inputbuffer, 81);
+    }
+
+    fclose(fp);
+
+    get_next_serial();
 }

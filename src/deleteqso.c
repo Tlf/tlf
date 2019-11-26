@@ -24,6 +24,7 @@
  *--------------------------------------------------------------*/
 
 
+#include <ctype.h>
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
@@ -132,16 +133,14 @@ void delete_last_qtcs(char *call, char *bandmode) {
 
 void delete_qso(void) {
 
-    int x;
     struct stat statbuf;
     int lfile;
     char logline[100];
     char call[15], bandmode[6];
 
     mvprintw(13, 29, "OK to delete last qso (y/n)?");
-    x = key_get();
 
-    if ((x == 'y') || (x == 'Y')) {
+    if (toupper(key_get()) == 'Y') {
 
 	if ((lfile = open(logfile, O_RDWR)) < 0) {
 
