@@ -15,9 +15,14 @@ Q: Where can I find an actual CTY.DAT file for TLF?
 
 A: Try http://www.country-files.com/ Make sure to save it as 'cty.dat' in 
    lower case letters.
-   Be aware that there a two different file formats. Make sure to download 
-   the file for TLF. 
-
+   Be aware that there a two different file formats:
+   * For version before TLF-1.3.1 you have to use the old style CTY.DAT file
+     with no embedded '=' character.
+   * For newer versions you can also use the newer file format also used by
+     >=CT9.91. It allows to give informations not only for call areas but
+     for single stations with a call sign preceded by a '=' character. (See
+     http://www.country-files.com/cty-dat-format/ for details).
+     
 Q: TLF thinks that I am in cq zone 5 but in fact I am in another one. How can 
    I fix that?
 
@@ -30,9 +35,19 @@ A: At the moment you have to modify your cty.dat file. Look for the entry
    which counts also for Canada. Add yourself (VE3XYZ in the following
    example) to the list with the correct CQ zone appended in parentheses, e.g.
 
-   VE2IM(2)[4],VY0PW(4)[3],VE3XYZ(3);
+   =VE2IM(2)[4],=VY0PW(4)[3],=VE3XYZ(3);
 
    That would override the default setting for the CQ zone (5 for VE) 
    with your one (3). See also http://www.country-files.com/cty-dat-format/ 
    for a detailed description.
 
+Q: How can I use a K1EL series of Winkeyers or similar devices (e.g. the K3NG
+   arduino based ones)?
+
+A: Yes. You can use one of the UDP related keying daemons out there for it.
+   At the moment there are at least three different versions:
+   * The Perl based 'Winkeydaemon' at https://github.com/N0NB/winkeydaemon
+   * CQRLOG comes with 'Winkeyer USB' (see the link at
+     https://github.com/ok2cqr/winkeyer_server)
+   * The Python based 'pywinkeyerdaemon' at 
+     https://github.com/drewarnett/pywinkeyerdaemon

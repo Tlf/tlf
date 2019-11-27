@@ -63,8 +63,10 @@ WISHLIST (N0NB)
 ~~~~~~~~
 [ ] Incorporate some method of pull-down menus for configuration.  i
     Doing so might encourage more use of Tlf?  I don't know if that amount
-    of work would be productive or not.  I'm certain it can probably 
-    generate a lot of discussion. ;-)
+    of work would be productive or not.
+    ALTERNATIVE (suggested by N7DA)
+    What about a 2nd application, 'tlf-config' or 'easy-tlf-config', which
+    would have the pulldown menus etc for setting up config files.  
 
 [ ] Along with the above, move away from log_cfg.dat and 
     the rules files toward configuration through the UI and a common
