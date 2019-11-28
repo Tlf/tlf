@@ -1044,6 +1044,15 @@ file.
 .TP
 \fBEDITOR\fR=\fInano\fR | \fIvi\fR[\fIm\fR] | \fI<your_favorite_editor>\fR
 Editor used to modify the QSO log or logcfg.dat.
+The command specified receives the file name as an argument. 
+.
+.IP
+When using a GUI editor that runs in the background (e.g. gvim) make sure to
+exit the editor before logging new stations. You also have to use :RES command
+to reread the log and correct scoring.
+.
+.IP 
+Best is to force the editor to stay in foreground (e.g. with 'gvim -f').
 .
 .TP
 \fBCALL\fR=\fIPA0R\fR

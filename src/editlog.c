@@ -44,23 +44,23 @@
 void edit(char *filename) {
     extern char *editor_cmd;
     char *cmdstr;
-    char *editor = NULL;
+    const char *editor = editor_cmd;
     int retval;
 
-    if (editor_cmd != NULL)
-	editor = g_strdup(editor_cmd);
-    else
-	editor = g_strdup(g_getenv("EDITOR"));
-
-    if (editor != NULL) {
-        cmdstr = g_strdup_printf("%s %s", editor, filename);
-	retval = (system(cmdstr));;
-	if (WEXITSTATUS(retval) == 127) {
-	    TLF_LOG_WARN("Can not start editor, check EDITOR= command");
-	}
-        g_free(cmdstr);
-	g_free(editor);
+    if (editor_cmd == NULL) {
+	editor = g_getenv("EDITOR");
     }
+
+    if (editor == NULL) {
+	return;
+    }
+
+    cmdstr = g_strdup_printf("%s %s", editor, filename);
+    retval = (system(cmdstr));;
+    if (WEXITSTATUS(retval) == 127) {
+	TLF_LOG_WARN("Can not start editor, check EDITOR= command");
+    }
+    g_free(cmdstr);
 }
 
 
