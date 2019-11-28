@@ -21,6 +21,7 @@
 #ifndef EDITLOG_H
 #define EDITLOG_H
 
+void edit(char *filename);
 int logedit(void);
 
 #endif /* EDITLOG_H */

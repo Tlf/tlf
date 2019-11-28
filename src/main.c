@@ -86,7 +86,7 @@ int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
     {COLOR_WHITE, COLOR_BLACK}
 };
 int debugflag = 0;
-int editor = EDITOR_JOE;
+char *editor_cmd = NULL;
 int tune_val = 0;
 int use_bandoutput = 0;
 int no_arrows = 0;

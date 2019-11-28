@@ -24,6 +24,7 @@
 
 
 #include <fcntl.h>
+#include <glib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -32,50 +33,68 @@
 #include "background_process.h"
 #include "checklogfile.h"
 #include "clear_display.h"
+#include "err_utils.h"
 #include "ignore_unused.h"
+#include "readqtccalls.h"
+#include "readcalls.h"
 #include "scroll_log.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 
+void edit(char *filename) {
+    extern char *editor_cmd;
+    char *cmdstr;
+    const char *editor = editor_cmd;
+    int retval;
+
+    if (editor_cmd == NULL) {
+	editor = g_getenv("EDITOR");
+    }
+
+    if (editor == NULL) {
+	return;
+    }
+
+    cmdstr = g_strdup_printf("%s %s", editor, filename);
+    retval = (system(cmdstr));;
+    if (WEXITSTATUS(retval) == 127) {
+	TLF_LOG_WARN("Can not start editor, check EDITOR= command");
+    }
+    g_free(cmdstr);
+}
+
 
 int logedit(void) {
 
+    extern int total;
     extern char logfile[];
     extern const char backgrnd_str[];
-    extern int editor;
+    extern int qtcdirection;
 
-    char comstr[40] = "";
     int j;
 
-    if (editor == EDITOR_JOE)
-	strcat(comstr, "joe  ");	/*   my favorite editor   */
-    else if (editor == EDITOR_VI)
-	strcat(comstr, "vi  ");
-    else if (editor == EDITOR_MC)
-	strcat(comstr, "mcedit  ");
-    else
-	strcat(comstr, "e3  ");
-
     stop_background_process();
-    strcat(comstr, logfile);
-    IGNORE(system(comstr));;
+    edit(logfile);
+    checklogfile();
+
+    total = 0;
+    readcalls();
+    if (qtcdirection > 0) {
+        readqtccalls();
+    }
+
     start_background_process();
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();
     refreshp();
+    scroll_log();
     clear_display();
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-    for (j = 13; j <= 23; j++) {
+    for (j = 13; j < LINES - 1; j++) {
 	mvprintw(j, 0, backgrnd_str);
     }
-
-    stop_background_process();
-    checklogfile();
-    start_background_process();
-
-    scroll_log();
     refreshp();
 
     return (0);
