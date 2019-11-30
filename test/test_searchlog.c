@@ -276,7 +276,7 @@ void test_UsePartialFromCallmaster(void **state) {
 }
 
 void test_UsePartialNotUnique(void **state) {
-    write_callmaster("callmaster", "# data\nA1AA\nA2BB\nA3BB\n");
+    write_callmaster("callmaster", "# data\nA1AA\nLA3AA\nA3BB\n");
     load_callmaster();
     use_part = 1;
     strcpy(hiscall, "A3");
@@ -285,6 +285,40 @@ void test_UsePartialNotUnique(void **state) {
     assert_string_equal( hiscall, "A3");
 }
 
+void test_UsePartialNotUnique_only_callmaster(void **state) {
+    // 2 matches for HG
+    write_callmaster("callmaster", "# data\nA1AA\nA2HG\nHG3BB\n");
+    load_callmaster();
+    use_part = 1;
+    strcpy(hiscall, "HG");  // not in log yet
+    filterLog();
+    handlePartials();
+    assert_string_equal( hiscall, "HG");
+}
+
+/* test if partials display overflows */
+void test_displayPartials(void **state) {
+    // add a bunch of UA QSOs so that they fill up available space
+    for (int i = 0; i <= 'Z' - 'A'; ++i) {
+	sprintf(qsos[6 + i],
+		" 80CW  12-Jan-18 16:34 0009  UA9%cA          599  599  17            UA9 17   3         ",
+		'A' + i);
+    }
+
+    // callmaster has also some UAs
+    write_callmaster("callmaster", "# data\nA1AA\nF2UAA\nGW3UAB\n");
+    load_callmaster();
+    strcpy(hiscall, "UA");
+
+    filterLog();
+    handlePartials();
+
+    // check selected displayed values only (F2UAA must not be shown)
+    // (note the trailing space)
+    check_mvprintw_output(24, 1, 1, "OE3UAI "); // first
+    check_mvprintw_output(23, 1, 8, "UA3JK ");  // second
+    check_mvprintw_output(0, 5, 25, "UA9VA ");  // last
+}
 
 /* test lookup of zone - will be used for display if already worked
  * - normally determined from countryinformation
