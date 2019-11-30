@@ -54,8 +54,6 @@ int srch_index = 0;
 
 char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
 
-static const int xwin = 1;
-static const int ywin = 1;
 PANEL *search_panel;
 WINDOW *search_win;
 static int initialized = 0;
@@ -150,23 +148,63 @@ void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
     }
 }
 
+
+#define PARTIALS_ROWS   5
+#define PARTIALS_COLS   40      // including margins (1+1 columns)
+#define PARTIALS_X0     1
+#define PARTIALS_Y0     0
+
+//
+// return: true if display is full
+//
+static int show_partial(int *row, int *col, char *call,
+			GHashTable *callset,
+			int *nr_suggested, char *suggested_call) {
+
+    if (!g_hash_table_add(callset, call)) {
+	return 0;   // already shown
+    }
+
+    mvprintw(PARTIALS_X0 + *row, PARTIALS_Y0 + *col, "%s ", call);
+
+    *col += strlen(call) + 1;
+    if (*col >= PARTIALS_COLS - 10) {
+	*row += 1;
+	*col = 1;
+    }
+
+    // remember first partial call
+    if (*nr_suggested == 0) {
+	strcpy(suggested_call, call);
+    }
+    *nr_suggested += 1;
+
+    return *row >= PARTIALS_ROWS;
+}
+
 int displayPartials(char *suggested_call) {
     extern int dupe;
 
-    int l, j, k;
+    int row, col, k;
     char *loc;
     char printres[14] = "";
     int suggested = 0;
 
-    l = 0;
-    j = 0;
+    const int hislen = strlen(hiscall);
+
+    if (hislen < 2) {
+	return 0;   // input too short
+    }
+
+    row = 0;
+    col = 1;        // 1 column left margin
 
     attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
-    for (k = 1; k <= 5; k++) {
-	mvprintw(k, 0, "%s",
-		 "                                        ");
+    for (k = 0; k < PARTIALS_ROWS; k++) {
+	mvprintw(PARTIALS_X0 + k, 0, "%*s", PARTIALS_COLS, "");
     }
+
     attrset(COLOR_PAIR(C_DUPE));
     mvprintw(1, 1, "??");
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -182,75 +220,78 @@ int displayPartials(char *suggested_call) {
      * be aware of the problem of marking it dupe only for a complete
      * match.
      */
-    for (k = 0; k < srch_index; k++) {
-	if (strlen(hiscall) >= 2 && strlen(searchresult[k]) > 2) {
-	    if (strstr(searchresult[k], hiscall) != NULL) {
-		printres[0] = '\0';
-		strncat(printres, searchresult[k] + 29, 12);
+    if (dupe == ISDUPE) {
+	attrset(COLOR_PAIR(C_DUPE));
+    } else {
+	attron(modify_attr(COLOR_PAIR(C_BORDER) | A_STANDOUT));
+    }
 
-		/* cut string just at first space after call */
-		loc = strchr(printres, ' ');
-		if (loc)
-		    *loc = '\0';
+    GHashTable *callset = g_hash_table_new(g_str_hash, g_str_equal);
+    int full = 0;
 
-		if (dupe == ISDUPE) {
-		    attrset(COLOR_PAIR(C_DUPE));
-		} else {
-		    attron(modify_attr(COLOR_PAIR(C_BORDER) |
-				       A_STANDOUT));
-		}
-		mvprintw(xwin + l, ywin + j, "%s ", printres);
-		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    for (k = 0; k < srch_index && !full; k++) {
+	if (strlen(searchresult[k]) <= 2) {
+	    continue;   // too short (unlikely)
+	}
+	if (strstr(searchresult[k], hiscall) == NULL) {
+	    continue;   // not matching
+	}
 
-		attroff(A_BOLD);
+	printres[0] = '\0';
+	strncat(printres, searchresult[k] + 29, 12);
 
-		j += (strlen(printres) + 1);
+	/* cut string just at first space after call */
+	loc = strchr(printres, ' ');
+	if (loc)
+	    *loc = '\0';
 
-		if (j >= 30) {
-		    l++;
-		    j = 0;
+	full = show_partial(&row, &col, printres, callset,
+			    &suggested, suggested_call);
 
-		}
-		if (l > 4)
-		    break;
+    }
+
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    attroff(A_BOLD);
+
+    // no callmaster check if exact match was found in the log
+    if (strcmp(hiscall, printres) == 0) {
+	return suggested;
+    }
+
+    /* and now check callmaster database */
+
+    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
+
+    // make 2 runs: fist look for calls starting with
+    // then the ones containing 'hiscall'
+    for (int run = 1; run <= 2; run++) {
+	for (k = 0; k < callmaster->len && !full; k++) {
+
+	    char *mastercall = CALLMASTERARRAY(k);
+
+	    int match;
+	    if (run == 1) { // starts with
+		match = (strncmp(mastercall, hiscall, hislen) == 0);
+	    } else {        // contains
+		match = (strstr(mastercall, hiscall) != NULL);
 	    }
+
+	    if (!match) {
+		continue;   // not matching
+	    }
+
+	    full = show_partial(&row, &col, mastercall, callset,
+				&suggested, suggested_call);
+
 	}
     }
 
-    if (strcmp(hiscall, printres) != 0) {
+    g_hash_table_destroy(callset);
 
-	/* and now check callmaster database */
-	for (k = 0; k < callmaster->len; k++) {
-
-	    if (strstr(CALLMASTERARRAY(k), hiscall) != NULL) {
-
-		attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
-
-		mvprintw(xwin + l, ywin + j, "%s  ",
-			 CALLMASTERARRAY(k));
-
-		if (strlen(suggested_call) == 0) {
-		    strcpy(suggested_call, CALLMASTERARRAY(k));
-		    suggested++;
-		}
-
-		j += strlen(CALLMASTERARRAY(k)) + 1;
-
-		if (j >= 30) {
-		    l++;
-		    j = 0;
-
-		}
-		if (l > 4)
-		    break;
-
-	    }
-	}
-    }
     return suggested;
 }
 
-/* Display list of partials and handle USEPARTIAL auto-completion */
+/* Display list of partials and handle USEPARTIALS auto-completion */
 void handlePartials(void) {
     extern int use_part;
     extern int block_part;
@@ -261,25 +302,15 @@ void handlePartials(void) {
     /* print list of partials in upper left region */
     nr_suggested = displayPartials(suggested_call);
 
-    /* pick call from log if unique there */
-    if ((nr_suggested == 0) && (srch_index == 1)) {
-	gchar **list = g_strsplit(result[0] + 12, " ", 2);
-	if (list != NULL) {
-	    g_strlcpy(suggested_call, list[0], 13);
-	    g_strfreev(list);
-	}
-    }
-    nr_suggested += srch_index;
-
     /* If only one partial call found and USEPARTIALS set,
     * use that call for auto-completion. Can be blocked by
     * pressing tab in calledit() function
     */
-    if ((nr_suggested == 1) && (use_part == 1) && (block_part == 0)) {
-	if (strlen(suggested_call) > strlen(hiscall)) {
-	    strcpy(hiscall, suggested_call);
-	    beep();
-	}
+    if ((nr_suggested == 1) && use_part && !block_part
+	    && strlen(suggested_call) > strlen(hiscall)) {
+
+	strcpy(hiscall, suggested_call);
+	beep();
     }
 }
 
@@ -410,10 +441,10 @@ void displaySearchResults(void) {
 
 		    if (display_dupe == 1) {
 			if ((mixedmode == 0) ||
-			    ((s_inputbuffer[3] == 'C') &&
-				    (trxmode == CWMODE)) ||
-			    ((s_inputbuffer[3] == 'S') &&
-				    (trxmode == SSBMODE))) {
+				((s_inputbuffer[3] == 'C') &&
+				 (trxmode == CWMODE)) ||
+				((s_inputbuffer[3] == 'S') &&
+				 (trxmode == SSBMODE))) {
 			    wattrset(search_win, COLOR_PAIR(C_DUPE));
 			    dupe = ISDUPE;
 			    beep();
