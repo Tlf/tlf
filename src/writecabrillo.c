@@ -688,6 +688,27 @@ int write_cabrillo(void) {
 }
 
 
+/* write ADIF header to open file */
+void write_adif_header(FILE* fp) {
+    extern char whichcontest[];
+
+    fputs
+    ("################################################################################\n",
+     fp);
+    fputs ("#                     ADIF v1.00 data file exported by TLF\n", fp);
+    fputs ("#              according to specifications on http://www.adif.org\n", fp);
+    fputs
+    ("################################################################################\n",
+     fp);
+
+    /* Write contest name */
+    gchar *tmp = g_strconcat("Contest Name: ", whichcontest, "\n", NULL);
+    fputs(tmp, fp);
+    g_free(tmp);
+
+    fputs("<adif_ver:4>1.00\n<eoh>\n", fp);
+}
+
 
 /*
     The ADIF function has been written according ADIF v1.00 specifications
@@ -746,21 +767,7 @@ int write_adif(void) {
 
     info("Writing ADIF file");
 
-    /* write header */
-    fputs
-    ("################################################################################\n",
-     fp2);
-    fputs
-    ("#                     ADIF v1.00 data file exported by TLF\n",
-     fp2);
-    fputs
-    ("#              according to specifications on http://www.adif.org\n",
-     fp2);
-    fputs("#\n", fp2);
-    fputs
-    ("################################################################################\n",
-     fp2);
-    fputs("<adif_ver:4>1.00\n<eoh>\n", fp2);
+    write_adif_header(fp2);
 
     while (fgets(buf, sizeof(buf), fp1)) {
 
