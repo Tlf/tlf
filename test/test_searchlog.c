@@ -161,7 +161,7 @@ int teardown_default(void **state) {
 //}
 
 void test_callmaster_ok(void **state) {
-    write_callmaster("callmaster", "# data\nA1AA\nA2BB\n\n");
+    write_callmaster("callmaster", "# data\nA1AA\na1aa\na2bb\n\n");
     int n = load_callmaster();
     assert_int_equal(n, 2);
     assert_string_equal(CALLMASTERARRAY(0), "A1AA");

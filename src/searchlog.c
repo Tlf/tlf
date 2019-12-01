@@ -158,8 +158,8 @@ void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
 // return: true if display is full
 //
 static bool show_partial(int *row, int *col, char *call,
-			GHashTable *callset,
-			int *nr_suggested, char *suggested_call) {
+			 GHashTable *callset,
+			 int *nr_suggested, char *suggested_call) {
 
     const int len = strlen(call);
     bool space = (*col > 1);         // whether to put leading space
@@ -809,6 +809,8 @@ int load_callmaster(void) {
 	}
     }
 
+    GHashTable *callset = g_hash_table_new(g_str_hash, g_str_equal);
+
     while (fgets(s_inputbuffer, 85, cfp) != NULL) {
 
 	g_strstrip(s_inputbuffer);
@@ -818,17 +820,27 @@ int load_callmaster(void) {
 	    continue;
 	}
 
-	s_inputbuffer[12] = '\0';		/* terminate line length */
+	char *call = g_ascii_strup(s_inputbuffer, 11);
 
 	if (arrlss) {
 	    /* keep only NA stations */
-	    if (strchr("AKWVCN", s_inputbuffer[0]) == NULL) {
+	    if (strchr("AKWVCN", call[0]) == NULL) {
+		g_free(call);
 		continue;
 	    }
 	}
 
-	g_ptr_array_add(callmaster, g_strdup(s_inputbuffer));
+	if (g_hash_table_contains(callset, call)) { // already have this call
+	    g_free(call);
+	    continue;
+	}
+
+	g_hash_table_add(callset, call);
+
+	g_ptr_array_add(callmaster, call);
     }
+
+    g_hash_table_destroy(callset);
 
     fclose(cfp);
     return callmaster->len;
