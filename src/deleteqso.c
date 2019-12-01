@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include "addcall.h"
 #include "clear_display.h"
 #include "deleteqso.h"
 #include "err_utils.h"
@@ -38,10 +39,11 @@
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "qsonr_to_str.h"
-#include "tlf_curses.h"
+#include "readcalls.h"
+#include "readqtccalls.h"
 #include "scroll_log.h"
+#include "tlf_curses.h"
 #include "ui_utils.h"
-#include "addcall.h"
 
 #define QTCRECVCALLPOS 30
 #define QTCSENTCALLPOS 35
@@ -168,25 +170,17 @@ void delete_qso(void) {
 	    fsync(lfile);
 	    close(lfile);
 
-	    if (qsos[nr_qsos-1][0] != ';') {
-		int band = get_band(qsos[nr_qsos-1]);
-		band_score[band]--;
-		qsonum--;
-		qsonr_to_str();
+	    total = 0;
+	    nr_qsos = readcalls();
+	    if (qtcdirection > 0) {
+		readqtccalls();
 	    }
-
-	    nr_qsos--;
-	    qsos[nr_qsos][0] = '\0';
 	}
-
 	scroll_log();
-
     }
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     mvprintw(13, 29, "                            ");
-
-    printcall();
 
     clear_display();
 }
