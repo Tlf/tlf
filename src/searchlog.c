@@ -253,11 +253,6 @@ int displayPartials(char *suggested_call) {
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     attroff(A_BOLD);
 
-    // no callmaster check if exact match was found in the log
-    if (strcmp(hiscall, printres) == 0) {
-	return suggested;
-    }
-
     /* and now check callmaster database */
 
     attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
