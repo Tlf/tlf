@@ -702,9 +702,7 @@ void write_adif_header(FILE* fp) {
      fp);
 
     /* Write contest name */
-    gchar *tmp = g_strconcat("Contest Name: ", whichcontest, "\n", NULL);
-    fputs(tmp, fp);
-    g_free(tmp);
+    fprintf(fp, "Contest Name: %s\n", whichcontest);
 
     fputs("<adif_ver:4>1.00\n<eoh>\n", fp);
 }
