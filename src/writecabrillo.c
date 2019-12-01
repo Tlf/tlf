@@ -34,6 +34,7 @@
 #include <unistd.h>
 
 #include "getsummary.h"
+#include "log_utils.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "cabrillo_utils.h"
@@ -43,19 +44,9 @@ extern char call[];
 /* conversion table between tag name in format file and internal tag */
 extern struct tag_conv tag_tbl[];
 
-int is_comment(char *buffer);
 struct qso_t *get_next_record(FILE *fp);
 struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection);
 void free_qso(struct qso_t *ptr);
-
-/** check if logline is only a comment */
-int is_comment(char *buffer) {
-
-    if (buffer[0] != ';' && strlen(buffer) > 60) /** \todo better check */
-	return 0;
-    else
-	return 1;
-}
 
 /** get next qso record from log
  *
@@ -75,7 +66,7 @@ struct qso_t *get_next_record(FILE *fp) {
 
     while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
 
-	if (!is_comment(buffer)) {
+	if (!log_is_comment(buffer)) {
 
 	    ptr = g_malloc0(sizeof(struct qso_t));
 
