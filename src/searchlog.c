@@ -151,8 +151,8 @@ void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
 
 #define PARTIALS_ROWS   5
 #define PARTIALS_COLS   40      // including margins (1+1 columns)
-#define PARTIALS_X0     1
-#define PARTIALS_Y0     0
+#define PARTIALS_Y0     1
+#define PARTIALS_X0     0
 
 //
 // return: true if display is full
@@ -165,7 +165,7 @@ static int show_partial(int *row, int *col, char *call,
 	return 0;   // already shown
     }
 
-    mvprintw(PARTIALS_X0 + *row, PARTIALS_Y0 + *col, "%s ", call);
+    mvprintw(PARTIALS_Y0 + *row, PARTIALS_X0 + *col, "%s ", call);
 
     *col += strlen(call) + 1;
     if (*col >= PARTIALS_COLS - 10) {
@@ -202,7 +202,7 @@ int displayPartials(char *suggested_call) {
     attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
     for (k = 0; k < PARTIALS_ROWS; k++) {
-	mvprintw(PARTIALS_X0 + k, 0, "%*s", PARTIALS_COLS, "");
+	mvprintw(PARTIALS_Y0 + k, 0, "%*s", PARTIALS_COLS, "");
     }
 
     attrset(COLOR_PAIR(C_DUPE));
