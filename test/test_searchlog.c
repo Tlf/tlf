@@ -296,6 +296,22 @@ void test_UsePartialNotUnique_only_callmaster(void **state) {
     assert_string_equal( hiscall, "HG");
 }
 
+/* test if partials display checks callmaster even if match was found in log */
+void test_displayPartials_exact_callmaster(void **state) {
+
+    // callmaster has also some UA3JKx calls
+    write_callmaster("callmaster", "# data\nA1AA\nUA3JK\nUA3JKA\nUA3JKB\n");
+    load_callmaster();
+    strcpy(hiscall, "UA3JK");   // already in log
+
+    filterLog();
+    handlePartials();
+
+    check_mvprintw_output(2, 1, 1, "UA3JK ");   // first - from log
+    check_mvprintw_output(1, 1, 7, "UA3JKA ");  // second - from callmaster
+    check_mvprintw_output(0, 1, 14, "UA3JKB "); // third - from callmaster
+}
+
 /* test if partials display overflows */
 void test_displayPartials(void **state) {
     // add a bunch of UA QSOs so that they fill up available space
