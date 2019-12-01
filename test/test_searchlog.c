@@ -307,9 +307,9 @@ void test_displayPartials_exact_callmaster(void **state) {
     filterLog();
     handlePartials();
 
-    check_mvprintw_output(2, 1, 1, "UA3JK ");   // first - from log
-    check_mvprintw_output(1, 1, 7, "UA3JKA ");  // second - from callmaster
-    check_mvprintw_output(0, 1, 14, "UA3JKB "); // third - from callmaster
+    check_mvprintw_output(2, 1, 1, "UA3JK");    // first - from log
+    check_mvprintw_output(1, 1, 6, " UA3JKA");  // second - from callmaster
+    check_mvprintw_output(0, 1, 13, " UA3JKB"); // third - from callmaster
 }
 
 /* test if partials display overflows */
@@ -317,7 +317,7 @@ void test_displayPartials(void **state) {
     // add a bunch of UA QSOs so that they fill up available space
     for (int i = 0; i <= 'Z' - 'A'; ++i) {
 	sprintf(qsos[6 + i],
-		" 80CW  12-Jan-18 16:34 0009  UA9%cA          599  599  17            UA9 17   3         ",
+		" 80CW  12-Jan-18 16:34 0009  UA9%cAA         599  599  17            UA9 17   3         ",
 		'A' + i);
     }
 
@@ -330,10 +330,10 @@ void test_displayPartials(void **state) {
     handlePartials();
 
     // check selected displayed values only (F2UAA must not be shown)
-    // (note the trailing space)
-    check_mvprintw_output(24, 1, 1, "OE3UAI "); // first
-    check_mvprintw_output(23, 1, 8, "UA3JK ");  // second
-    check_mvprintw_output(0, 5, 25, "UA9VA ");  // last
+    // (note the leading space)
+    check_mvprintw_output(24, 1, 1, "OE3UAI");  // first
+    check_mvprintw_output(23, 1, 7, " UA3JK");  // second
+    check_mvprintw_output(0, 5, 28, " UA9VAA"); // last
 }
 
 /* test lookup of zone - will be used for display if already worked

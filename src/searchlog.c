@@ -157,29 +157,38 @@ void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
 //
 // return: true if display is full
 //
-static int show_partial(int *row, int *col, char *call,
+static bool show_partial(int *row, int *col, char *call,
 			GHashTable *callset,
 			int *nr_suggested, char *suggested_call) {
 
-    if (!g_hash_table_add(callset, call)) {
-	return 0;   // already shown
-    }
-
-    mvprintw(PARTIALS_Y0 + *row, PARTIALS_X0 + *col, "%s ", call);
-
-    *col += strlen(call) + 1;
-    if (*col >= PARTIALS_COLS - 10) {
-	*row += 1;
+    const int len = strlen(call);
+    bool space = (*col > 1);         // whether to put leading space
+    int new_col = *col + (space ? 1 : 0) + len;
+    if (new_col >= PARTIALS_COLS) { // doesn't fit on this line
+	*row += 1;                  // start next one
 	*col = 1;
+	space = false;
+	new_col = *col + len;
+    }
+    if (*row >= PARTIALS_ROWS) {
+	return true;    // display full
     }
 
-    // remember first partial call
-    if (*nr_suggested == 0) {
+    if (!g_hash_table_add(callset, call)) {
+	return false;   // already shown
+    }
+
+    mvprintw(PARTIALS_Y0 + *row, PARTIALS_X0 + *col, "%s%s",
+	     (space ? " " : ""), call);
+
+    *col = new_col;
+
+    if (*nr_suggested == 0) {   // remember first partial call
 	strcpy(suggested_call, call);
     }
     *nr_suggested += 1;
 
-    return *row >= PARTIALS_ROWS;
+    return false;   // assume it's not full yet
 }
 
 int displayPartials(char *suggested_call) {
