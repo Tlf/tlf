@@ -282,7 +282,7 @@ int callinput(void) {
 
 	    // Plus (+)
 	    // - in non-CT mode switch to other mode (CQ <-> S&P)
-	    // - in CT mode send exchange, log QSO, no message sent.
+	    // - in CT mode send TU and log QSO.
 	    case '+': {
 		if (!ctcomp) {
 
@@ -298,7 +298,8 @@ int callinput(void) {
 		} else {
 
 		    if (strlen(hiscall) > 2) {
-			send_standard_message(2);
+	                /* F4 (TU macro) */
+			send_standard_message(3);
 
 			if (((cqww == 1) || (wazmult == 1))
 				&& (*comment == '\0'))
@@ -507,11 +508,15 @@ int callinput(void) {
 		break;
 	    }
 
-	    // <Insert>, send exchange in CT mode
+	    /* <Insert>, send exchange in CT mode */
 	    case KEY_IC: {
 		if (ctcomp != 0) {
-		    send_standard_message(1);		// F2
-
+	            /* F3 (RST macro) */
+		    send_standard_message(2);
+	            /* Set to space to move cursor to exchange field
+	             * which will trigger autofill if available.
+	             */
+	            x = ' ';
 		}
 		break;
 	    }
