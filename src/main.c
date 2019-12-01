@@ -969,7 +969,7 @@ int main(int argc, char *argv[]) {
     lan_init();
     keyer_init();
 
-    scroll_log();		/* read the last 5  log lines and set the qso number */
+    scroll_log();		/* read the last 5  log lines and set the next serial number */
     nr_qsos = readcalls();	/* read the logfile for score and dupe */
 
     checkparameters();		/* check .paras file */
