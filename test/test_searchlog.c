@@ -24,6 +24,7 @@ extern int searchflg;
 extern int use_part;
 extern int partials;
 extern int cqww;
+extern int mixedmode;
 
 extern char zone_export[];
 extern char zone_fix[];
@@ -108,6 +109,7 @@ int setup_default(void **state) {
     search_win = NULL;
     searchflg = SEARCHWINDOW;
     trxmode = CWMODE;
+    mixedmode = 0;
 
     callmaster_filename = NULL;
 
@@ -225,11 +227,27 @@ void test_searchlog_pickup_call(void **state) {
     strcpy (hiscall, "UA");
     filterLog("");
     assert_int_equal (strncmp(searchresult[0], QSO3, 80), 0);
+    assert_int_equal (strncmp(searchresult[1], QSO5, 80), 0);
+}
+
+void test_searchlog_pickup_call_mixedmode(void **state) {
+    mixedmode = 1;
+    strcpy (hiscall, "UA");
+    filterLog("");
+    assert_int_equal (strncmp(searchresult[0], QSO3, 80), 0);
     assert_int_equal (strncmp(searchresult[1], QSO4, 80), 0);
     assert_int_equal (strncmp(searchresult[2], QSO5, 80), 0);
 }
 
 void test_searchlog_extract_data(void **state) {
+    strcpy (hiscall, "UA");
+    filterLog("");
+    assert_string_equal (result[0], " 40CW  0007 OE3UAI       15            ");
+    assert_string_equal (result[1], " 80CW  0009 UA9LM        17            ");
+}
+
+void test_searchlog_extract_data_mixedmode(void **state) {
+    mixedmode = 1;
     strcpy (hiscall, "UA");
     filterLog("");
     assert_string_equal (result[0], " 40CW  0007 OE3UAI       15            ");
@@ -332,8 +350,8 @@ void test_displayPartials(void **state) {
     // check selected displayed values only (F2UAA must not be shown)
     // (note the leading space)
     check_mvprintw_output(24, 1, 1, "OE3UAI");  // first
-    check_mvprintw_output(23, 1, 7, " UA3JK");  // second
-    check_mvprintw_output(0, 5, 28, " UA9VAA"); // last
+    check_mvprintw_output(23, 1, 7, " UA9LM");  // second
+    check_mvprintw_output(0, 5, 28, " UA9WAA"); // last
 }
 
 /* test lookup of zone - will be used for display if already worked
@@ -358,6 +376,15 @@ void test_ZoneFromExchange(void **state) {
 }
 
 void test_ZoneFromLog(void **state) {
+    cqww = 1;
+    strcpy(zone_export, "14");
+    strcpy( hiscall, "K4D");
+    filterLog();
+    assert_int_equal (getZone(), 5);
+}
+
+void test_ZoneFromLog_mixedmode(void **state) {
+    mixedmode = 1;
     cqww = 1;
     strcpy(zone_export, "14");
     strcpy( hiscall, "SP9");

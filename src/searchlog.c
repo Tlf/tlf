@@ -360,39 +360,54 @@ int bandstr2line(char *buffer) {
     return j;
 }
 
+//
+// return true if the qso was in the same mode as the current one
+//
+static bool is_current_mode(const char *qso) {
+    extern int trxmode;
+    extern int mixedmode;
+
+    if (mixedmode) {
+        return true;    // always true in mixed mode
+    }
+
+    if (qso[3] == 'S') {
+        return trxmode == SSBMODE;
+    }
+    if (qso[3] == 'D') {
+        return trxmode == DIGIMODE;
+    }
+    return trxmode == CWMODE;   // default
+}
+
 
 /* search complete Log for 'hiscall' as substring in callsign field and
  * copy found QSO to 'searchresults'. Extract relevant data to 'result'.
  * */
 void filterLog() {
-    extern int mixedmode;
-    extern int trxmode;
     extern char qsos[MAX_QSOS][LOGLINELEN + 1];
 
-    int qso_index = 0;
     char s_inputbuffer[LOGLINELEN + 1] = "";
 
     srch_index = 0;
 
-    while (strlen(qsos[qso_index]) > 4) {
+    for (int qso_index = 0; strlen(qsos[qso_index]) > 4; qso_index++) {
 
-	if (((qsos[qso_index][3] == 'C' && trxmode == CWMODE) ||
-		(qsos[qso_index][3] == 'S' && trxmode == SSBMODE) ||
-		(qsos[qso_index][3] == 'D' && trxmode == DIGIMODE)) ||
-		mixedmode == 0) {
-	    // ist letzterTest korrekt?
+        if (!is_current_mode(qsos[qso_index])) {
+            continue;   // different mode
+        }
 
-	    g_strlcpy(s_inputbuffer, qsos[qso_index] + 29, 13); /* call */
-	    if (strstr(s_inputbuffer, hiscall) != 0) {
+        g_strlcpy(s_inputbuffer, qsos[qso_index] + 29, 13); /* call */
+	if (strstr(s_inputbuffer, hiscall) == 0) {
+            continue;   // no match
+        }
 
-		g_strlcpy(searchresult[srch_index], qsos[qso_index], 81);
-		extractData(srch_index);
+        g_strlcpy(searchresult[srch_index], qsos[qso_index], 81);
+        extractData(srch_index);
 
-		if (srch_index++ > MAX_CALLS - 1)
-		    break;
-	    }
+        if (srch_index++ > MAX_CALLS - 1) {
+            break;
 	}
-	qso_index++;
     }
 }
 
@@ -443,16 +458,10 @@ void displaySearchResults(void) {
 			}
 		    }
 
-		    if (display_dupe == 1) {
-			if ((mixedmode == 0) ||
-				((s_inputbuffer[3] == 'C') &&
-				 (trxmode == CWMODE)) ||
-				((s_inputbuffer[3] == 'S') &&
-				 (trxmode == SSBMODE))) {
-			    wattrset(search_win, COLOR_PAIR(C_DUPE));
-			    dupe = ISDUPE;
-			    beep();
-			}
+		    if (display_dupe && is_current_mode(s_inputbuffer)) {
+                        wattrset(search_win, COLOR_PAIR(C_DUPE));
+                        dupe = ISDUPE;
+                        beep();
 		    }
 		}		// end ignoredupe
 	    }
