@@ -33,7 +33,7 @@
 
 int logview(void) {
     extern char logfile[];
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
 
     char comstr[40]  = "";
     int j;

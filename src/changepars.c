@@ -81,7 +81,6 @@ int changepars(void) {
     extern char hiscall[];
     extern int rit;
     extern int trx_control;
-    extern int editor;
     extern int packetinterface;
     extern int nopacket;
     extern int cqdelay;
@@ -99,7 +98,6 @@ int changepars(void) {
 
     char parameterstring[20] = "";
     char parameters[52][19];
-    char cmdstring[80];
     int i, k, x, nopar = 0;
     int maxpar = 50;
     int volumebuffer;
@@ -352,18 +350,8 @@ int changepars(void) {
 	case 24:		/* SET PARAMETERS */
 	case 29: {		/* CFG PARAMETERS */
 	    clear();
-	    if (editor == EDITOR_JOE) {
-		strcpy(cmdstring, "joe ");
-	    } else if (editor == EDITOR_VI) {
-		strcpy(cmdstring, "vi ");
-	    } else if (editor == EDITOR_MC) {
-		strcpy(cmdstring, "mcedit ");
-	    } else {
-		strcpy(cmdstring, "e3 ");
-	    }
 
-	    strcat(cmdstring, config_file);
-	    IGNORE(system(cmdstring));;
+	    edit(config_file);
 
 	    read_logcfg();
 	    read_rules();	/* also reread rules file */
@@ -1074,7 +1062,7 @@ int debug_tty(void) {
 
 void wipe_display() {
     int j;
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
 
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 

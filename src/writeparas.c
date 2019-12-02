@@ -39,7 +39,7 @@ int writeparas_file(void) {
 
     extern char call[];
     extern char message[][80];
-    extern char headerline[];
+    extern const char headerline[];
     extern char logfile[];
     extern char whichcontest[];
     extern int shortqsonr;

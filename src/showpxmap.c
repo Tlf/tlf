@@ -22,6 +22,7 @@
  *--------------------------------------------------------------*/
 
 
+#include <glib.h>
 #include <string.h>
 
 #include "dxcc.h"
@@ -105,10 +106,8 @@ void show_mults(void) {
 		    bandmask = inxes[bandinx];
 
 		    if ((countries[i] & bandmask) == 0) {
-			prefix[0] = '\0';
-			strncat(prefix, dxcc_by_index(i)->pfx, 3);
-
-			strncat(prefix, "     ", 4 - strlen(prefix));
+			strncpy(prefix, dxcc_by_index(i)->pfx, 3);
+			g_strlcat(prefix, "     ", sizeof(prefix));
 
 			attron(modify_attr(COLOR_PAIR(C_INPUT)));
 

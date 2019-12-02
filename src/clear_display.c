@@ -41,7 +41,7 @@
 void show_header_line() {
     extern cqmode_t cqmode;
     extern int cqdelay;
-    extern char headerline[];
+    extern const char headerline[];
 
     char *mode = "";
     switch (cqmode) {
@@ -71,7 +71,7 @@ void clear_display(void) {
     extern char terminal2[];
     extern char terminal3[];
     extern char terminal4[];
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
     extern char band[NBANDS][4];
     extern int bandinx;
     extern int trxmode;

@@ -100,7 +100,7 @@ int init_tlf_rig(void) {
 
     rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
     strncpy(my_rig->state.rigport.pathname, rigportname,
-	    FILPATHLEN);
+	    FILPATHLEN - 1);
 
     caps = my_rig->caps;
 

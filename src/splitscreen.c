@@ -50,7 +50,7 @@
 #include "ui_utils.h"
 #include "err_utils.h"
 
-extern char backgrnd_str[];
+extern const char backgrnd_str[];
 
 struct tln_logline {
     struct tln_logline *next;

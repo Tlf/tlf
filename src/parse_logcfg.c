@@ -216,7 +216,7 @@ int parse_logcfg(char *inputbuffer) {
     extern int txdelay;
     extern char tonestr[];
     extern int showfreq;
-    extern int editor;
+    extern char *editor_cmd;
     extern int partials;
     extern int use_part;
     extern int mixedmode;
@@ -599,7 +599,6 @@ int parse_logcfg(char *inputbuffer) {
     char buff[40];
     char outputbuff[80];
     int ii;
-    char *j;
     int jj, hh;
     char *tk_ptr;
 
@@ -920,27 +919,7 @@ int parse_logcfg(char *inputbuffer) {
 	case 45: {
 	    PARAMETER_NEEDED(teststring);
 	    buff[0] = '\0';
-	    strcat(buff, fields[1]);
-	    if ((strncmp(buff, "mcedit", 6) == 0)
-		    || (strncmp(buff, "mc", 2) == 0)
-		    || (strncmp(buff, "MC", 2) == 0)) {
-		editor = EDITOR_MC;
-		break;
-	    }
-
-	    j = strstr(fields[1], "joe");
-	    if (j != NULL) {
-		editor = EDITOR_JOE;
-		break;
-	    }
-	    j = strstr(fields[1], "vi");
-	    if (j != NULL) {
-		editor = EDITOR_VI;
-		break;
-	    } else {
-		editor = EDITOR_E3;
-		break;
-	    }
+	    editor_cmd = g_strdup(g_strchomp(fields[1]));
 	}
 	case 46: {
 	    partials = 1;

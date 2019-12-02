@@ -26,6 +26,7 @@
 
 #include <dirent.h>
 #include <errno.h>
+#include <glib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -214,7 +215,7 @@ void record(void) {
 				i = 10;
 				j++;
 			    }
-			    strncpy(printname, soundfilename->d_name, 6);
+			    g_strlcpy(printname, soundfilename->d_name, 7);
 			    mvprintw(j, i, "%s", printname);
 			    refreshp();
 

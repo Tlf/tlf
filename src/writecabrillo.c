@@ -615,7 +615,7 @@ int write_cabrillo(void) {
     /* ask for exchange and header information */
     ask(buffer,
 	"Your exchange (e.g. State, province, age etc... (# if serial number)): ");
-    strncpy(exchange, buffer, 10);
+    g_strlcpy(exchange, buffer, 11);
     getsummary(fp2);
 
     info("Writing cabrillo file");
@@ -741,7 +741,7 @@ int write_adif(void) {
     if ((strlen(standardexchange) == 0) && (exchange_serial != 1)) {
 	ask(buffer,
 	    "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
-	strncpy(standardexchange, buffer, 10);
+	g_strlcpy(standardexchange, buffer, 11);
     }
 
     info("Writing ADIF file");

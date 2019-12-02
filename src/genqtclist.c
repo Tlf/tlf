@@ -52,7 +52,7 @@ int genqtclist(char *callsign, int nrofqtc) {
     qtclist.marked = 0;
     qtclist.totalsent = 0;
     qtclist.count = 0;
-    strncpy(qtclist.callsign, callsign, strlen(callsign));
+    g_strlcpy(qtclist.callsign, callsign, sizeof(qtclist.callsign));
     for (s = 0; s < qtclistlen; s++) {
 	qtclist.qtclines[s].qtc[0] = '\0';
 	qtclist.qtclines[s].flag = 0;
@@ -118,17 +118,21 @@ void genqtcline(char *qtc, char *qsoline) {
     }
 
     /* add finally 3 or 4 digit exchange */
-    strncpy(tstring, qsoline + 54, 4);
+    g_strlcpy(tstring, qsoline + 54, sizeof(tstring));
     nr = atoi(tstring);
     // 3 digit
-    if (nr < 1000) {
+    if ((nr >= 0) && (nr < 1000)) {
 	sprintf(tstring, "%03d ", nr);
     }
     // 4 digit
-    else {
+    else if ((nr >= 0) && (nr < 10000)) {
 	sprintf(tstring, "%d", nr);
+    } else {
+    // ignore all other exchange values
+	strcpy(tstring, "    ");
     }
-    strncpy(qtc + qpos, tstring, strlen(tstring));
+
+    strcpy(qtc + qpos, tstring);
     qpos += 4;
     qtc[qpos] = '\0';
 }

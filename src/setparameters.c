@@ -23,6 +23,7 @@
  *--------------------------------------------------------------*/
 
 
+#include <glib.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -55,7 +56,7 @@ int setparameters(void) {
     extern char whichcontest[];
 
     int i = '9';
-    char callcpy[12] = "";
+    char callcpy[15] = "";
     char logbuffer[20];
 
     stop_background_process();	/* to prevent race condition */
@@ -99,7 +100,8 @@ int setparameters(void) {
 
 	mvprintw(20, 2, "7: Logfile: %s", logfile);
 
-	strncpy(callcpy, call, strlen(call) - 1);
+	g_strlcpy(callcpy, call, sizeof(callcpy));
+	g_strchomp(callcpy);
 	mvprintw(21, 2, "8: Call:    %s", callcpy);
 	mvprintw(22, 2, "9: Contest: %s", whichcontest);
 

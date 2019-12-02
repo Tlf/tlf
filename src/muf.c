@@ -154,7 +154,7 @@ int muf(void) {
     extern int mycountrynr;
     extern int countrynr;
     extern char lastwwv[];
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
 
     dxcc_data *dx;
     int row;

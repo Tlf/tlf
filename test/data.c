@@ -39,7 +39,7 @@ int use_rxvt = 0;
 int use_xterm = 0;
 
 int debugflag = 0;
-int editor = EDITOR_JOE;
+char *editor_name = NULL;
 char rttyoutput[120];
 int tune_val = 0;
 int use_bandoutput = 0;

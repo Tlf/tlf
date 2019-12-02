@@ -56,7 +56,7 @@ int getclusterinfo(void);
 void clusterinfo(void) {
 
     extern int cluster;
-    extern char backgrnd_str[];
+    extern const char backgrnd_str[];
     extern freq_t freq;
     extern char band[NBANDS][4];
     extern int bandinx;
@@ -189,10 +189,10 @@ int loadbandmap(void) {
     char spotcall[20];
     char spottime[6];
     char spotline[38];
-    char callcopy[81];
+    char callcopy[20];
     FILE *fp;
     char marker_out[60];
-    char color[20];
+    char color[sizeof("Magenta")];
     int lon;
     int lat;
     int zz;
@@ -225,7 +225,7 @@ int loadbandmap(void) {
 
     for (j = 0; j < nr_of_spots; j++) {
 
-	strncpy(thisline, spot_ptr[j], 82);
+	g_strlcpy(thisline, spot_ptr[j], sizeof(thisline));
 	if (strncmp(thisline, "DX de ", 6) == 0) {
 
 	    g_strlcpy(spotcall, thisline + 26, 6);

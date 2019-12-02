@@ -21,6 +21,6 @@
 #ifndef QSONR_TO_STR_H
 #define QSONR_TO_STR_H
 
-int qsonr_to_str(void);
+void qsonr_to_str(void);
 
 #endif /* QSONR_TO_STR_H */

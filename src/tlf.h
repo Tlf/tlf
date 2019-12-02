@@ -119,11 +119,6 @@ enum {
 #define ITU_ZONES 90
 #define MAX_ZONES (ITU_ZONES + 1) /* size of zones array */
 
-#define EDITOR_JOE 0
-#define EDITOR_VI 1
-#define EDITOR_E3 2
-#define EDITOR_MC 3
-
 #define UNIQUECALL_ALL      1
 #define UNIQUECALL_BAND     2
 

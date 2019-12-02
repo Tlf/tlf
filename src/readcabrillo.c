@@ -389,10 +389,10 @@ int readcabrillo(int mode) {
 
     char *cab_dfltfile;
     struct cabrillo_desc *cabdesc;
-    char input_logfile[80];
+    char input_logfile[24];
     char output_logfile[80], temp_logfile[80];
     char logline[MAX_CABRILLO_LEN];
-    char tempstr[80];
+    char *tempstrp;
 
     char t_qsonrstr[5];
     int t_qsonum;
@@ -426,10 +426,13 @@ int readcabrillo(int mode) {
 	do_cabrillo = 0;
 	return (2);
     } else {
-	sprintf(tempstr, "CABRILLO format: %s", cabrillo);
-	show_readcab_msg(mode, tempstr);
+	tempstrp = g_strdup_printf("CABRILLO format: %s", cabrillo);
+	show_readcab_msg(mode, tempstrp);
+	g_free (tempstrp);
 	sleep(1);
     }
+
+    strcpy(temp_logfile, logfile);
 
     strcpy(input_logfile, call);
     g_strchomp(input_logfile); /* drop \n */
@@ -437,12 +440,13 @@ int readcabrillo(int mode) {
 
     strcpy(output_logfile, "IMPORT_");
     strcat(output_logfile, logfile);
-    strcpy(temp_logfile, logfile);
     strcpy(logfile, output_logfile);
 
     if ((fp2 = fopen(output_logfile, "w")) == NULL) {
-	sprintf(tempstr, "Can't open output logfile: %s.", output_logfile);
-	show_readcab_msg(mode, tempstr);
+	tempstrp = g_strdup_printf("Can't open output logfile: %s.",
+							output_logfile);
+	show_readcab_msg(mode, tempstrp);
+	g_free (tempstrp);
 	sleep(2);
 	do_cabrillo = 0;
 	free_cabfmt(cabdesc);
@@ -451,8 +455,10 @@ int readcabrillo(int mode) {
     fclose(fp2);
 
     if ((fp1 = fopen(input_logfile, "r")) == NULL) {
-	sprintf(tempstr, "Can't open input logfile: %s.", input_logfile);
-	show_readcab_msg(mode, tempstr);
+	tempstrp = g_strdup_printf("Can't open input logfile: %s.",
+							input_logfile);
+	show_readcab_msg(mode, tempstrp);
+	g_free (tempstrp);
 	sleep(2);
 	do_cabrillo = 0;
 	free_cabfmt(cabdesc);

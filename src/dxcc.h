@@ -25,8 +25,8 @@
 
 typedef struct {
     char *pfx;
-    short cq;
-    short itu;
+    unsigned short cq;
+    unsigned short itu;
     short dxcc_index;
     float lat;
     float lon;
@@ -37,8 +37,8 @@ typedef struct {
 
 typedef struct {
     char *countryname;
-    short cq;
-    short itu;
+    unsigned short cq;
+    unsigned short itu;
     char *continent;
     float lat;
     float lon;
