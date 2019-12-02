@@ -338,9 +338,15 @@ int getexchange(void) {
 	    case KEY_ENTER: {
 		/* log QSO immediately if CT compatible
 		 * or not in contest */
-		if ((ctcomp == 1) || (contest != 1))
-		    x = 92;	// '\'
-//                            if (dxped == 1) x = 92;
+		if ((ctcomp == 1) || (contest != 1)) {
+		    /* Don't log if exchange field is empty. */
+		    if (comment[0] == '\0') {
+			x = -1;
+		    }
+		    else {
+			x = 92;	// '\'
+		    }
+		}
 		break;
 	    }
 	}	// End switch

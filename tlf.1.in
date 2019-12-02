@@ -989,7 +989,16 @@ The following keys differ in behavior in CT Compatible mode.
 .
 .TP
 .B Enter
-Log the complete QSO without sending any message.
+Log the complete QSO without sending any message macro.
+.
+.IP
+If the callsign field is empty, pressing
+.B Enter
+will activate the
+.B Auto-CQ
+function.  If the exchange field is empty, pressing
+.B Enter
+in either the callsign or exchange field will result in no action.
 .
 .TP
 .B Insert
@@ -998,7 +1007,7 @@ Send the
 (F3) macro.
 .
 .IP
-N.B. Since the
+Since the
 .B RST
 macro includes the other station's callsign by default, the
 .B HIS
@@ -1009,7 +1018,7 @@ use the default @PACKAGE_NAME@ macros.
 .BR + \ (Plus)
 Send the
 .B TU
-macro and logs the QSO.
+macro and log the QSO.
 .
 .TP
 .B Alt-V

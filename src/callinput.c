@@ -485,10 +485,17 @@ int callinput(void) {
 	    case '\n':
 	    case KEY_ENTER: {
 		if (strlen(hiscall) > 2 && ctcomp == 1) {
-		    /* there seems to be a call
-		     * means: log it (in CT mode */
-		    x = 92;	// '\' log without sending message
-		    break;
+		    /* There seems to be a call, log it in CT mode but only if
+		     * the exchange field is not empty.
+		     */
+		    if (comment[0] == '\0') {
+			x = -1;
+			break;
+		    }
+		    else {
+			x = 92; // '\' log without sending message
+			break;
+		    }
 		}
 
 		if (strlen(hiscall) < 3 || nob4 == 1)
