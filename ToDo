@@ -19,7 +19,7 @@ Planned for later versions
 [ ] Add contest name to Header of ADIF file (suggested by SP3RXO)
 [x] Fix arrlsections, paccmults and spdxmults (drop '-end-' marker)
 [ ] Do a complete rescore after delete of QSO automatically
-[ ] document use of CT9.91 CTY.DAT files in FAQ
+[x] document use of CT9.91 CTY.DAT files in FAQ
 [ ] Have a template for cabrillo file header  (Joop PG4I)
 [ ] Add a keyword to startup TLF in S&P mode (should be an easy one)
 [ ] switch between ESM and CT mode during contest (Nate N0NB)

@@ -55,8 +55,13 @@ void edit(char *filename) {
 	return;
     }
 
+    endwin();
+
     cmdstr = g_strdup_printf("%s %s", editor, filename);
     retval = (system(cmdstr));;
+
+    refreshp();
+
     if (WEXITSTATUS(retval) == 127) {
 	TLF_LOG_WARN("Can not start editor, check EDITOR= command");
     }
