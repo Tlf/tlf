@@ -945,7 +945,7 @@ seconds.  Stop tuning by pressing any key.
 .
 .TP
 .B Alt-V
-Band down (Change speed in CT compatibility mode).
+Band down.
 .
 .TP
 .B Alt-W
@@ -954,6 +954,85 @@ Set CW weight.
 .TP
 .B Alt-Z
 Show zones worked.
+.
+.SS CT Compatible Mode
+.
+@PACKAGE_NAME@ has limited support for the logging sequence keys used in the
+once popular CT logging program.  Unlike the default
+.I Enter \ Sends \ Message
+.RI ( ESM )
+mode, the CT Compatible mode uses the
+.B Insert
+and
+.B +
+keys in the logging sequence and
+.B Enter
+logs a complete QSO.  Unlike ESM mode, CT mode does not have separate
+.B CQ
+or
+.B S&P
+modes.
+.
+.P
+CT Compatible mode is enabled with the
+.B CTCOMPATIBLE
+keyword in
+.I logcfg.dat
+(see the
+.B PREFERENCES
+section below).
+.
+.P
+The following keys differ in behavior in CT Compatible mode.
+.
+.TP
+.B Enter
+Log the complete QSO without sending any message macro.
+.
+.IP
+If the callsign field is empty, pressing
+.B Enter
+will activate the
+.B Auto-CQ
+function.  If the exchange field is empty, pressing
+.B Enter
+in either the callsign or exchange field will result in no action.
+.
+.TP
+.B Insert
+Send the
+.B RST
+(F3) macro.
+.
+.IP
+Since the
+.B RST
+macro includes the other station's callsign by default, the
+.B HIS
+macro is not sent first.  This differs from classic CT, but is a compromise to
+use the default @PACKAGE_NAME@ macros.
+.
+.TP
+.BR + \ (Plus)
+Send the
+.B TU
+macro and log the QSO.
+.
+.IP
+The
+.B +
+key checks if the exchange field is empty and if it is nothing is sent or
+logged.  In rare cases where nothing needs to be entered in the exchange
+field, e.g. working DX from USA in ARRL 160, simply enter a space to allow the
+.B +
+key to send the
+.B TU
+message and log the QSO.
+.
+.TP
+.B Alt-V
+Change CW speed.
+.
 .
 .SH PREFERENCES
 .
@@ -970,7 +1049,7 @@ file can be edited from within @PACKAGE_NAME@ by the
 .BR :CFG \ or \ :SET
 commands (or with any other plain text editor before starting @PACKAGE_NAME@).
 .P
-You can set your favourite editor in the 
+You can set your favourite editor in the
 .IR logcfg.dat \ file.
 .P
 You connect the rules file by using the statement
@@ -1044,14 +1123,14 @@ file.
 .TP
 \fBEDITOR\fR=\fInano\fR | \fIvi\fR[\fIm\fR] | \fI<your_favorite_editor>\fR
 Editor used to modify the QSO log or logcfg.dat.
-The command specified receives the file name as an argument. 
+The command specified receives the file name as an argument.
 .
 .IP
 When using a GUI editor that runs in the background (e.g. gvim) make sure to
 exit the editor before logging new stations. You also have to use :RES command
 to reread the log and correct scoring.
 .
-.IP 
+.IP
 Best is to force the editor to stay in foreground (e.g. with 'gvim -f').
 .
 .TP
@@ -1081,7 +1160,7 @@ A\(enH.
 .
 .TP
 \fBLAN_PORT\fR=\fIPortnumber\fR
-Specifies on which portnumber (default \(lq6788\(rq) @PACKAGE_NAME@ is 
+Specifies on which portnumber (default \(lq6788\(rq) @PACKAGE_NAME@ is
 listening for broadcasts from other instances.
 .
 .TP
@@ -1682,15 +1761,15 @@ Multiplier is the DXCC entity (per band).
 \fBMULT_LIST\fR=\fIfile_name\fR
 Name of multipliers file (often sections, provinces, states, counties).  May
 contain comment lines starting with \(lq#\(rq in the first column. Each
-multiplier resides on a single line by itself. 
+multiplier resides on a single line by itself.
 .IP
 Starting from Tlf-1.4 on you can also use aliases for the multipliers. Define
-the aliases as 
+the aliases as
 .IP
     \fImultiplier:alias1,alias2,alias3\fR
 .IP
 If you log a QSO with one of the aliases  it will be counted
-for as the according multiplier. You can have more 
+for as the according multiplier. You can have more
 than one line for the same multiplier.
 .
 .TP
@@ -1742,7 +1821,7 @@ calls (CT3/PA0R/QRP).
 .
 .TP
 .B CALLMASTER\fR=\fIcallmaster\fR
-Allow to name a different file used as callmaster database 
+Allow to name a different file used as callmaster database
 (default is '\fIcallmaster\fR'). See FILES section.
 .
 .TP
@@ -1990,14 +2069,14 @@ Save the
 file as
 .I callmaster
 in the working directory (or use \fBCALLMASTER\fR=\fImaster.scp\fR to use
-that file).  
+that file).
 It will take precedence over the system installed
 .IR callmaster .
 .
 .P
 \fISection files\fR contain a flat ASCII database of multpliers like states,
 sections, provinces, districts, names, ages, etc.  They are invoked by
-including \fBMULT_LIST\fR=\fIsection_file_name\fR in the rules file. 
+including \fBMULT_LIST\fR=\fIsection_file_name\fR in the rules file.
 .
 .SH DOCUMENTATION
 .

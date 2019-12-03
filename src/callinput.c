@@ -282,7 +282,7 @@ int callinput(void) {
 
 	    // Plus (+)
 	    // - in non-CT mode switch to other mode (CQ <-> S&P)
-	    // - in CT mode send exchange, log QSO, no message sent.
+	    // - in CT mode send TU and log QSO.
 	    case '+': {
 		if (!ctcomp) {
 
@@ -298,16 +298,22 @@ int callinput(void) {
 		} else {
 
 		    if (strlen(hiscall) > 2) {
-			send_standard_message(2);
-
 			if (((cqww == 1) || (wazmult == 1))
 				&& (*comment == '\0'))
 			    strcpy(comment, cqzone);
 
 			if ((itumult == 1) && (*comment == '\0'))
 			    strcpy(comment, ituzone);
-			x = '\\';   // key for logging QSO without message
 
+			if (*comment == '\0') {
+			    x = -1;
+			}
+			else {
+			    /* F4 (TU macro) */
+			    send_standard_message(3);
+
+			    x = '\\';   // key for logging QSO without message
+			}
 		    }
 		}
 		break;
@@ -484,10 +490,17 @@ int callinput(void) {
 	    case '\n':
 	    case KEY_ENTER: {
 		if (strlen(hiscall) > 2 && ctcomp == 1) {
-		    /* there seems to be a call
-		     * means: log it (in CT mode */
-		    x = 92;	// '\' log without sending message
-		    break;
+		    /* There seems to be a call, log it in CT mode but only if
+		     * the exchange field is not empty.
+		     */
+		    if (comment[0] == '\0') {
+			x = -1;
+			break;
+		    }
+		    else {
+			x = 92; // '\' log without sending message
+			break;
+		    }
 		}
 
 		if (strlen(hiscall) < 3 || nob4 == 1)
@@ -507,11 +520,15 @@ int callinput(void) {
 		break;
 	    }
 
-	    // <Insert>, send exchange in CT mode
+	    /* <Insert>, send exchange in CT mode */
 	    case KEY_IC: {
 		if (ctcomp != 0) {
-		    send_standard_message(1);		// F2
-
+	            /* F3 (RST macro) */
+		    send_standard_message(2);
+	            /* Set to space to move cursor to exchange field
+	             * which will trigger autofill if available.
+	             */
+	            x = ' ';
 		}
 		break;
 	    }

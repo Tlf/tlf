@@ -219,19 +219,44 @@ int getexchange(void) {
 		break;
 	    }
 
-	    case 160: {	// For CT compatibility Meta-<Space> (M- )
-		if (ctcomp != 0) {
-		    send_standard_message(1);		// F2
+	    /* I cannot find any reference for this key combination in my
+	     * CT ver 9 documentation.  As it is, most X window managers
+	     * will trap this combination for the window menu so would
+	     * only be useful on the console.
+	     *
+	     * - N0NB
+	     */
+	    /* case 160: {	// For CT compatibility Meta-<Space> (M- ) */
+	    /*     if (ctcomp != 0) { */
+	    /*         send_standard_message(1);		// F2 */
 
+	    /*     } */
+	    /*     break; */
+	    /* } */
+
+	    /* '+', send TU and log in CT mode */
+	    case '+': {
+		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
+		    if (comment[0] == '\0') {
+			x = -1;
+		    }
+		    else {
+			/* F4 (TU macro) */
+			send_standard_message(3);
+
+			/* '\' log without additional message */
+			x = 92;
+		    }
 		}
 		break;
 	    }
 
-	    case '+': {	// for CT compatibility
-		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
-		    send_standard_message(2);		/* F3 */
+	    /* <Insert>, send exchange in CT mode */
+	    case KEY_IC: {
+		if (ctcomp != 0) {
+                    /* F3 (RST macro) */
+		    send_standard_message(2);
 
-		    x = 92;	// '\'
 		}
 		break;
 	    }
@@ -251,16 +276,11 @@ int getexchange(void) {
 
 		break;
 	    }
-//	case KEY_F(11):
-//            {
-//                send_standard_message(10);        /* F11 */
 
-//                break;
-//            }
 	    case 176 ... 185: {	/* Alt-0 to Alt-9 */
-		send_standard_message(x - 162);	/* Messages 15-24 */
+	        send_standard_message(x - 162);	/* Messages 15-24 */
 
-		break;
+	        break;
 	    }
 
 	    /* <Home>--edit exchange field, position cursor to left end of field.
@@ -323,9 +343,15 @@ int getexchange(void) {
 	    case KEY_ENTER: {
 		/* log QSO immediately if CT compatible
 		 * or not in contest */
-		if ((ctcomp == 1) || (contest != 1))
-		    x = 92;	// '\'
-//                            if (dxped == 1) x = 92;
+		if ((ctcomp == 1) || (contest != 1)) {
+		    /* Don't log if exchange field is empty. */
+		    if (comment[0] == '\0') {
+			x = -1;
+		    }
+		    else {
+			x = 92;	// '\'
+		    }
+		}
 		break;
 	    }
 	}	// End switch

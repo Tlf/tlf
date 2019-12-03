@@ -58,6 +58,7 @@ extern int tncport;
 extern int shortqsonr;
 extern char *cabrillo;
 extern rmode_t digi_mode;
+extern int ctcomp;
 
 int exist_in_country_list();
 int continent_found();
@@ -93,6 +94,9 @@ int read_logcfg(void) {
     nodes = 0;
     node = 0;
     shortqsonr = 0;
+
+    /* Disable CT Mode until CTCOMPATIBLE is defined. */
+    ctcomp = 0;
 
     for (i = 0; i < 25; i++) {
 	if (digi_message[i] != NULL) {
@@ -242,7 +246,6 @@ int parse_logcfg(char *inputbuffer) {
     extern int call_update;
     extern int timeoffset;
     extern int time_master;
-    extern int ctcomp;
     extern char multsfile[];
     extern int multlist;
     extern int universal;
@@ -2026,7 +2029,7 @@ void Complain(char *msg) {
 
 /** Complain about duplicate keyword */
 void KeywordRepeated(char *keyword) {
-    char msgbuffer[100];
+    char msgbuffer[128];
     sprintf(msgbuffer,
 	    "Keyword '%s' repeated more than once.\n",
 	    keyword);
@@ -2035,7 +2038,7 @@ void KeywordRepeated(char *keyword) {
 
 /** Complain about not supported keyword */
 void KeywordNotSupported(char *keyword) {
-    char msgbuffer[100];
+    char msgbuffer[192];
     sprintf(msgbuffer,
 	    "Keyword '%s' not supported. See man page.\n",
 	    keyword);
@@ -2044,7 +2047,7 @@ void KeywordNotSupported(char *keyword) {
 
 /** Complain about missing parameter */
 void ParameterNeeded(char *keyword) {
-    char msgbuffer[100];
+    char msgbuffer[192];
     sprintf(msgbuffer,
 	    "Keyword '%s' must be followed by an parameter ('=....'). See man page.\n",
 	    keyword);
@@ -2053,7 +2056,7 @@ void ParameterNeeded(char *keyword) {
 
 /** Complain about wrong parameter format */
 void WrongFormat(char *keyword) {
-    char msgbuffer[100];
+    char msgbuffer[192];
     sprintf(msgbuffer,
 	    "Wrong parameter format for keyword '%s'. See man page.\n",
 	    keyword);
