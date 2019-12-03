@@ -298,17 +298,22 @@ int callinput(void) {
 		} else {
 
 		    if (strlen(hiscall) > 2) {
-	                /* F4 (TU macro) */
-			send_standard_message(3);
-
 			if (((cqww == 1) || (wazmult == 1))
 				&& (*comment == '\0'))
 			    strcpy(comment, cqzone);
 
 			if ((itumult == 1) && (*comment == '\0'))
 			    strcpy(comment, ituzone);
-			x = '\\';   // key for logging QSO without message
 
+			if (*comment == '\0') {
+			    x = -1;
+			}
+			else {
+			    /* F4 (TU macro) */
+			    send_standard_message(3);
+
+			    x = '\\';   // key for logging QSO without message
+			}
 		    }
 		}
 		break;

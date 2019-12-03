@@ -1018,6 +1018,17 @@ Send the
 .B TU
 macro and log the QSO.
 .
+.IP
+The
+.B +
+key checks if the exchange field is empty and if it is nothing is sent or
+logged.  In rare cases where nothing needs to be entered in the exchange
+field, e.g. working DX from USA in ARRL 160, simply enter a space to allow the
+.B +
+key to send the
+.B TU
+message and log the QSO.
+.
 .TP
 .B Alt-V
 Change CW speed.
@@ -1038,7 +1049,7 @@ file can be edited from within @PACKAGE_NAME@ by the
 .BR :CFG \ or \ :SET
 commands (or with any other plain text editor before starting @PACKAGE_NAME@).
 .P
-You can set your favourite editor in the 
+You can set your favourite editor in the
 .IR logcfg.dat \ file.
 .P
 You connect the rules file by using the statement
@@ -1112,14 +1123,14 @@ file.
 .TP
 \fBEDITOR\fR=\fInano\fR | \fIvi\fR[\fIm\fR] | \fI<your_favorite_editor>\fR
 Editor used to modify the QSO log or logcfg.dat.
-The command specified receives the file name as an argument. 
+The command specified receives the file name as an argument.
 .
 .IP
 When using a GUI editor that runs in the background (e.g. gvim) make sure to
 exit the editor before logging new stations. You also have to use :RES command
 to reread the log and correct scoring.
 .
-.IP 
+.IP
 Best is to force the editor to stay in foreground (e.g. with 'gvim -f').
 .
 .TP

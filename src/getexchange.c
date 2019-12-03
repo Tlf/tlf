@@ -237,11 +237,16 @@ int getexchange(void) {
 	    /* '+', send TU and log in CT mode */
 	    case '+': {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
-	            /* F4 (TU macro) */
-		    send_standard_message(3);
+		    if (comment[0] == '\0') {
+			x = -1;
+		    }
+		    else {
+			/* F4 (TU macro) */
+			send_standard_message(3);
 
-	            /* '\' log without additional message */
-		    x = 92;
+			/* '\' log without additional message */
+			x = 92;
+		    }
 		}
 		break;
 	    }
