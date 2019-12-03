@@ -43,7 +43,7 @@ noinst_HEADERS = \
 	background_process.h bandmap.h bands.h \
 	cabrillo_utils.h calledit.h callinput.h changefreq.h changepars.h \
 	checklogfile.h checkqtclogfile.h \
-	checkparameters.h cleanup.h clear_display.h clusterinfo.h cwkeyer.h \
+	checkparameters.h cleanup.h clear_display.h clusterinfo.h \
 	cw_utils.h \
 	dxcc.h \
 	deleteqso.h displayit.h \
