@@ -16,7 +16,9 @@ Planned for later versions
 --------------------------
 
 [ ] automatically switch back to 'Run' mode from "grab spot" after QSO
-[ ] Add contest name to Header of ADIF file (suggested by SP3RXO)
+[x] Add contest name to Header of ADIF file (suggested by SP3RXO)
+[ ] Refactor write_adif function. Use an add_adif_field() helper and also 
+    already existing get_next_record() function.
 [x] Fix arrlsections, paccmults and spdxmults (drop '-end-' marker)
 [ ] Do a complete rescore after delete of QSO automatically
 [x] document use of CT9.91 CTY.DAT files in FAQ
