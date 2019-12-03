@@ -51,3 +51,13 @@ A: Yes. You can use one of the UDP related keying daemons out there for it.
      https://github.com/ok2cqr/winkeyer_server)
    * The Python based 'pywinkeyerdaemon' at 
      https://github.com/drewarnett/pywinkeyerdaemon
+
+Q: The generated ADIF file misses some entries, e.g. the CONTEST_ID which is
+   used by my log program during import. Any idea to work around it?
+
+A: You can use 'adifmerg' from OH7BF for it. It allows to post process the
+   ADIF file.
+   For instance you can add the missing CONTEST_ID with
+      adifmerg -f qso.adi -A CONTEST_ID=<my contest name> -o > file.adi
+   Have a look at www.adif.org for the already standardized contest IDs.
+
