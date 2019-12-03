@@ -219,21 +219,6 @@ int getexchange(void) {
 		break;
 	    }
 
-	    /* I cannot find any reference for this key combination in my
-	     * CT ver 9 documentation.  As it is, most X window managers
-	     * will trap this combination for the window menu so would
-	     * only be useful on the console.
-	     *
-	     * - N0NB
-	     */
-	    /* case 160: {	// For CT compatibility Meta-<Space> (M- ) */
-	    /*     if (ctcomp != 0) { */
-	    /*         send_standard_message(1);		// F2 */
-
-	    /*     } */
-	    /*     break; */
-	    /* } */
-
 	    /* '+', send TU and log in CT mode */
 	    case '+': {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
@@ -251,13 +236,15 @@ int getexchange(void) {
 		break;
 	    }
 
-	    /* <Insert>, send exchange in CT mode */
+	    /* ; or <Insert>, send exchange in CT mode */
+	    case ';':
 	    case KEY_IC: {
 		if (ctcomp != 0) {
                     /* F3 (RST macro) */
 		    send_standard_message(2);
 
 		}
+                x = -1;
 		break;
 	    }
 

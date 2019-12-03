@@ -999,6 +999,8 @@ function.  If the exchange field is empty, pressing
 in either the callsign or exchange field will result in no action.
 .
 .TP
+.BR ; \ (Semicolon)
+.TQ
 .B Insert
 Send the
 .B RST
@@ -1011,6 +1013,13 @@ macro includes the other station's callsign by default, the
 .B HIS
 macro is not sent first.  This differs from classic CT, but is a compromise to
 use the default @PACKAGE_NAME@ macros.
+.
+.IP
+Use of the
+.B ;
+as an alias for
+.B Insert
+is borrowed from the N1MM+ logger.
 .
 .TP
 .BR + \ (Plus)

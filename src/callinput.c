@@ -520,15 +520,30 @@ int callinput(void) {
 		break;
 	    }
 
-	    /* <Insert>, send exchange in CT mode */
+	    /* Semicolon or Alt-n (M-n), insert note in log.
+	     * In CT Compatible mode semicolon is an alias for Insert.
+	     * <Insert>, send exchange in CT mode, inactive otherwise.
+	     */
+	    case ';':
+	    case 238:
 	    case KEY_IC: {
-		if (ctcomp != 0) {
-	            /* F3 (RST macro) */
+		/* Semicolon is an alias for Insert in CT Compat mode. */
+		if (ctcomp != 0 && (x == KEY_IC || x == ';')) {
+		    /* F3 (RST macro) */
 		    send_standard_message(2);
-	            /* Set to space to move cursor to exchange field
-	             * which will trigger autofill if available.
-	             */
-	            x = ' ';
+
+		    /* Set to space to move cursor to exchange
+		     * field which will trigger autofill if available.
+		     */
+		    x = ' ';
+		}
+		/* When in ESM mode, semicolon opens the note dialog.
+		 * In all modes, Alt-N opens the note dialog.
+		 */
+		else if ((ctcomp == 0 && (x == ';' || x == 238))
+		          || ((ctcomp != 0) && (x == 238))) {
+		    include_note();
+		    x = -1;
 		}
 		break;
 	    }
@@ -575,14 +590,6 @@ int callinput(void) {
 	    // Minus, delete previous QSO from log.
 	    case '-': {
 		delete_qso();
-		break;
-	    }
-
-	    // Semicolon or Alt-n (M-n), insert note in log.
-	    case ';':
-	    case 238: {
-		include_note();
-		x = -1;
 		break;
 	    }
 
