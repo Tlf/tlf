@@ -24,6 +24,7 @@ extern int searchflg;
 extern int use_part;
 extern int partials;
 extern int cqww;
+extern int mixedmode;
 
 extern char zone_export[];
 extern char zone_fix[];
@@ -108,6 +109,7 @@ int setup_default(void **state) {
     search_win = NULL;
     searchflg = SEARCHWINDOW;
     trxmode = CWMODE;
+    mixedmode = 0;
 
     callmaster_filename = NULL;
 
@@ -161,7 +163,7 @@ int teardown_default(void **state) {
 //}
 
 void test_callmaster_ok(void **state) {
-    write_callmaster("callmaster", "# data\nA1AA\nA2BB\n\n");
+    write_callmaster("callmaster", "# data\nA1AA\na1aa\na2bb\n\n");
     int n = load_callmaster();
     assert_int_equal(n, 2);
     assert_string_equal(CALLMASTERARRAY(0), "A1AA");
@@ -225,11 +227,27 @@ void test_searchlog_pickup_call(void **state) {
     strcpy (hiscall, "UA");
     filterLog("");
     assert_int_equal (strncmp(searchresult[0], QSO3, 80), 0);
+    assert_int_equal (strncmp(searchresult[1], QSO5, 80), 0);
+}
+
+void test_searchlog_pickup_call_mixedmode(void **state) {
+    mixedmode = 1;
+    strcpy (hiscall, "UA");
+    filterLog("");
+    assert_int_equal (strncmp(searchresult[0], QSO3, 80), 0);
     assert_int_equal (strncmp(searchresult[1], QSO4, 80), 0);
     assert_int_equal (strncmp(searchresult[2], QSO5, 80), 0);
 }
 
 void test_searchlog_extract_data(void **state) {
+    strcpy (hiscall, "UA");
+    filterLog("");
+    assert_string_equal (result[0], " 40CW  0007 OE3UAI       15            ");
+    assert_string_equal (result[1], " 80CW  0009 UA9LM        17            ");
+}
+
+void test_searchlog_extract_data_mixedmode(void **state) {
+    mixedmode = 1;
     strcpy (hiscall, "UA");
     filterLog("");
     assert_string_equal (result[0], " 40CW  0007 OE3UAI       15            ");
@@ -276,7 +294,7 @@ void test_UsePartialFromCallmaster(void **state) {
 }
 
 void test_UsePartialNotUnique(void **state) {
-    write_callmaster("callmaster", "# data\nA1AA\nA2BB\nA3BB\n");
+    write_callmaster("callmaster", "# data\nA1AA\nLA3AA\nA3BB\n");
     load_callmaster();
     use_part = 1;
     strcpy(hiscall, "A3");
@@ -285,6 +303,56 @@ void test_UsePartialNotUnique(void **state) {
     assert_string_equal( hiscall, "A3");
 }
 
+void test_UsePartialNotUnique_only_callmaster(void **state) {
+    // 2 matches for HG
+    write_callmaster("callmaster", "# data\nA1AA\nA2HG\nHG3BB\n");
+    load_callmaster();
+    use_part = 1;
+    strcpy(hiscall, "HG");  // not in log yet
+    filterLog();
+    handlePartials();
+    assert_string_equal( hiscall, "HG");
+}
+
+/* test if partials display checks callmaster even if match was found in log */
+void test_displayPartials_exact_callmaster(void **state) {
+
+    // callmaster has also some UA3JKx calls
+    write_callmaster("callmaster", "# data\nA1AA\nUA3JK\nUA3JKA\nUA3JKB\n");
+    load_callmaster();
+    strcpy(hiscall, "UA3JK");   // already in log
+
+    filterLog();
+    handlePartials();
+
+    check_mvprintw_output(2, 1, 1, "UA3JK");    // first - from log
+    check_mvprintw_output(1, 1, 6, " UA3JKA");  // second - from callmaster
+    check_mvprintw_output(0, 1, 13, " UA3JKB"); // third - from callmaster
+}
+
+/* test if partials display overflows */
+void test_displayPartials(void **state) {
+    // add a bunch of UA QSOs so that they fill up available space
+    for (int i = 0; i <= 'Z' - 'A'; ++i) {
+	sprintf(qsos[6 + i],
+		" 80CW  12-Jan-18 16:34 0009  UA9%cAA         599  599  17            UA9 17   3         ",
+		'A' + i);
+    }
+
+    // callmaster has also some UAs
+    write_callmaster("callmaster", "# data\nA1AA\nF2UAA\nGW3UAB\n");
+    load_callmaster();
+    strcpy(hiscall, "UA");
+
+    filterLog();
+    handlePartials();
+
+    // check selected displayed values only (F2UAA must not be shown)
+    // (note the leading space)
+    check_mvprintw_output(24, 1, 1, "OE3UAI");  // first
+    check_mvprintw_output(23, 1, 7, " UA9LM");  // second
+    check_mvprintw_output(0, 5, 28, " UA9WAA"); // last
+}
 
 /* test lookup of zone - will be used for display if already worked
  * - normally determined from countryinformation
@@ -308,6 +376,15 @@ void test_ZoneFromExchange(void **state) {
 }
 
 void test_ZoneFromLog(void **state) {
+    cqww = 1;
+    strcpy(zone_export, "14");
+    strcpy( hiscall, "K4D");
+    filterLog();
+    assert_int_equal (getZone(), 5);
+}
+
+void test_ZoneFromLog_mixedmode(void **state) {
+    mixedmode = 1;
     cqww = 1;
     strcpy(zone_export, "14");
     strcpy( hiscall, "SP9");
