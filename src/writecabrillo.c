@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "getsummary.h"
@@ -688,6 +689,34 @@ int write_cabrillo(void) {
 }
 
 
+/* write ADIF header to open file */
+void write_adif_header(FILE* fp) {
+    extern char whichcontest[];
+
+    time_t now = time(0);
+    struct tm *time_ptr = gmtime(&now);
+    char timebuf[100];
+
+    fputs
+    ("################################################################################\n",
+     fp);
+    fputs ("#                     ADIF v3.10 data file exported by TLF\n", fp);
+    fputs ("#              according to specifications on http://www.adif.org\n", fp);
+    fputs
+    ("################################################################################\n",
+     fp);
+
+    strftime(timebuf, sizeof(timebuf), "%d-%b-%y at %H:%Mz", time_ptr);
+    fprintf(fp, "Created %s for %s\n", timebuf, call);
+
+    /* Write contest name */
+    fprintf(fp, "Contest Name: %s\n", whichcontest);
+    fputs("<adif_ver:4>3.10\n", fp);
+    fputs("<programid:3>TLF\n", fp);
+    fprintf(fp, "<programversion:%ld>%s\n", strlen(VERSION), VERSION);
+    fputs("<eoh>\n", fp);
+}
+
 
 /*
     The ADIF function has been written according ADIF v1.00 specifications
@@ -746,21 +775,7 @@ int write_adif(void) {
 
     info("Writing ADIF file");
 
-    /* write header */
-    fputs
-    ("################################################################################\n",
-     fp2);
-    fputs
-    ("#                     ADIF v1.00 data file exported by TLF\n",
-     fp2);
-    fputs
-    ("#              according to specifications on http://www.adif.org\n",
-     fp2);
-    fputs("#\n", fp2);
-    fputs
-    ("################################################################################\n",
-     fp2);
-    fputs("<adif_ver:4>1.00\n<eoh>\n", fp2);
+    write_adif_header(fp2);
 
     while (fgets(buf, sizeof(buf), fp1)) {
 
