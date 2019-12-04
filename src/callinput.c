@@ -283,8 +283,10 @@ int callinput(void) {
 	    // Plus (+)
 	    // - in non-CT mode switch to other mode (CQ <-> S&P)
 	    // - in CT mode send TU and log QSO.
+	    // ' is an alias for + in CT mode.
+	    case '\'':
 	    case '+': {
-		if (!ctcomp) {
+		if (!ctcomp && x == '+') {
 
 		    /* switch to other mode */
 		    if (cqmode == CQ) {
@@ -296,8 +298,11 @@ int callinput(void) {
 		    show_header_line();
 
 		} else {
-
-		    if (strlen(hiscall) > 2) {
+		    if (!ctcomp && x == '\'') {
+			x = -1;
+			break;
+		    }
+		    else if (strlen(hiscall) > 2) {
 			if (((cqww == 1) || (wazmult == 1))
 				&& (*comment == '\0'))
 			    strcpy(comment, cqzone);

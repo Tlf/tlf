@@ -1015,13 +1015,15 @@ macro is not sent first.  This differs from classic CT, but is a compromise to
 use the default @PACKAGE_NAME@ macros.
 .
 .IP
-Use of the
+Use of
 .B ;
 as an alias for
 .B Insert
 is borrowed from the N1MM+ logger.
 .
 .TP
+.BR ' \ (Single\ quote)
+.TQ
 .BR + \ (Plus)
 Send the
 .B TU
@@ -1037,6 +1039,13 @@ field, e.g. working DX from USA in ARRL 160, simply enter a space to allow the
 key to send the
 .B TU
 message and log the QSO.
+.
+.IP
+Use of
+.B '
+as an alias for
+.B +
+is borrowed from the N1MM+ logger.
 .
 .TP
 .B Alt-V

@@ -219,7 +219,8 @@ int getexchange(void) {
 		break;
 	    }
 
-	    /* '+', send TU and log in CT mode */
+	    /* ' or +, send TU and log in CT mode */
+	    case '\'':
 	    case '+': {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
 		    if (comment[0] == '\0') {
