@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "getctydata.h"
+#include "keystroke_names.h"
 #include "searchlog.h"		// Includes glib.h
 #include "showinfo.h"
 #include "tlf.h"
@@ -71,19 +72,19 @@ void calledit(void) {
 	}
 
 	// <Tab>
-	if (i == 9)
+	if (i == TAB)
 	    block_part = 1;
 	else
 	    block_part = 0;
 
 	// Ctrl-A (^A) or <Home>, move to head of callsign field.
-	if (i == 1 || i == KEY_HOME) {
+	if (i == CTRL_A || i == KEY_HOME) {
 	    b = 0;
 	    x = 0;
 	}
 
 	// Ctrl-E (^E) or <End>, move to end of callsign field, exit edit mode.
-	if (i == 5 || i == KEY_END) {
+	if (i == CTRL_E || i == KEY_END) {
 	    break;		/* stop edit */
 	}
 
@@ -218,7 +219,7 @@ int insert_char(int curposition) {
 	ichr = key_get();
 
 	// Leave insert mode if <Tab>, <Enter>, or <Backspace> are received.
-	if ((ichr == 9) || (ichr == '\n') || (ichr == KEY_ENTER) || (ichr == 127))
+	if ((ichr == TAB) || (ichr == '\n') || (ichr == KEY_ENTER) || (ichr == 127))
 	    break;
 
 	// Promote lower case to upper case.

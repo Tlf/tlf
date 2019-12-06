@@ -32,6 +32,7 @@
 #include "addspot.h"
 #include "cw_utils.h"
 #include "keyer.h"
+#include "keystroke_names.h"
 #include "lancode.h"
 #include "locator2longlat.h"
 #include "logit.h"
@@ -174,7 +175,7 @@ int getexchange(void) {
 
 	switch (x) {
 
-	    case 17: {	// Ctl-q (^Q)--Open QTC panel for receiving or sending QTCs
+	    case CTRL_Q: {	// Ctl-q (^Q)--Open QTC panel for receiving or sending QTCs
 		if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
 		    qtc_main_panel(RECV);
 		}
@@ -191,10 +192,10 @@ int getexchange(void) {
 		x = KEY_LEFT;
 		continue;
 	    }
-	    case 1: {	// Ctl-a (^A)
+	    case CTRL_A: {	// Ctrl-A (^A)
 		addspot();
 		*comment = '\0';
-		x = 9;	// <Tab>
+		x = TAB;	// <Tab>
 		break;
 	    }
 
@@ -214,7 +215,7 @@ int getexchange(void) {
 		    i = 0;
 		} else {
 		    /* back to callinput */
-		    x = 9;	// <Tab>
+		    x = TAB;	// <Tab>
 		}
 		break;
 	    }
@@ -244,8 +245,8 @@ int getexchange(void) {
 			/* F4 (TU macro) */
 			send_standard_message(3);
 
-			/* '\' log without additional message */
-			x = 92;
+			/* log without additional message */
+			x = BACKSLASH;
 		    }
 		}
 		break;
@@ -254,7 +255,7 @@ int getexchange(void) {
 	    /* <Insert>, send exchange in CT mode */
 	    case KEY_IC: {
 		if (ctcomp != 0) {
-                    /* F3 (RST macro) */
+		    /* F3 (RST macro) */
 		    send_standard_message(2);
 
 		}
@@ -333,7 +334,7 @@ int getexchange(void) {
 
 	    }
 	    case ',':		// Keyboard Morse
-	    case 11: {	// Ctrl-K
+	    case CTRL_K: {	// Ctrl-K
 		mvprintw(5, 0, "");
 		keyer();
 		x = 0;
@@ -349,7 +350,8 @@ int getexchange(void) {
 			x = -1;
 		    }
 		    else {
-			x = 92;	// '\'
+			/* Log without sending a message. */
+			x = BACKSLASH;
 		    }
 		}
 		break;
@@ -380,7 +382,8 @@ int getexchange(void) {
 	}
 
 	/* <Enter>, <Tab>, Ctl-K, '\' */
-	if (x == '\n' || x == KEY_ENTER || x == 9 || x == 11 || x == 92) {
+	if (x == '\n' || x == KEY_ENTER || x == TAB
+	    || x == CTRL_K || x == BACKSLASH) {
 
 	    if ((exchange_serial == 1 && comment[0] >= '0'
 		    && comment[0] <= '9')) {	/* align serial nr. */
@@ -457,12 +460,12 @@ int getexchange(void) {
 
 	    }
 
-	    if ((arrlss == 1) && (x != 9) && (strlen(section) < 2)) {
+	    if ((arrlss == 1) && (x != TAB) && (strlen(section) < 2)) {
 		mvprintw(13, 54, "section?");
 		mvprintw(12, 54, comment);
 		x = 0;
 	    } else if (((serial_section_mult == 1) || (sectn_mult == 1))
-		       && ((x != 9) && (strlen(section) < 1))) {
+		       && ((x != TAB) && (strlen(section) < 1))) {
 		if (serial_or_section == 0 || (serial_or_section == 1
 					       && country_found(hiscall) == 1)) {
 		    mvprintw(13, 54, "section?", section);
@@ -495,7 +498,7 @@ int getexchange(void) {
 		if (strlen(comment) < 5) {
 		    mvprintw(13, 54, "state/prov?");
 		    mvprintw(12, 54, comment);
-		    if (x == '\n' || x == KEY_ENTER || x == 92) {
+		    if (x == '\n' || x == KEY_ENTER || x == BACKSLASH) {
 			x = 0;
 		    } else {
 			refreshp();
@@ -1132,12 +1135,12 @@ void exchange_edit(void) {
 	i = key_get();
 
 	// Ctrl-A (^A) or <Home>, move to beginning of comment field.
-	if (i == 1 || i == KEY_HOME) {
+	if (i == CTRL_A || i == KEY_HOME) {
 
 	    b = 0;
 
 	    // Ctrl-E (^E) or <End>, move to end of comment field, exit edit mode.
-	} else if (i == 5 || i == KEY_END) {
+	} else if (i == CTRL_E || i == KEY_END) {
 
 	    b = strlen(comment);
 	    break;

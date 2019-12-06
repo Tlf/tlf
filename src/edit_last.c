@@ -31,6 +31,7 @@
 #include "background_process.h"
 #include "err_utils.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "keystroke_names.h"
 #include "logview.h"
 #include "scroll_log.h"
 #include "tlf_curses.h"
@@ -114,15 +115,15 @@ void edit_last(void) {
 	j = key_get();
 
 	// Ctrl-A (^A) or <Home>, beginning of line.
-	if (j == 1 || j == KEY_HOME) {
+	if (j == CTRL_A || j == KEY_HOME) {
 	    b = 1;
 
 	    // Ctrl-E (^E) or <End>, end of line.
-	} else if (j == 5 || j == KEY_END) {
+	} else if (j == CTRL_E || j == KEY_END) {
 	    b = 77;
 
 	    // <Tab>, next field.
-	} else if (j == 9) {
+	} else if (j == TAB) {
 	    if (b < 17)
 		b = 17;
 	    else if (b < 29)

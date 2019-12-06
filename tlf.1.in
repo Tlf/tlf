@@ -926,9 +926,9 @@ Toggle PTT (via cwdaemon).
 Exit @PACKAGE_NAME@ (synonym to
 .BR :EXI "t ,"
 .BR :QUI "t ,"
-.BR Ctl-C ,
+.BR Ctrl-C ,
 and
-.BR Ctl-D ")."
+.BR Ctrl-D ")."
 .
 .TP
 .B Alt-R

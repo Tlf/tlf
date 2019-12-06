@@ -48,6 +48,7 @@
 #include "gettxinfo.h"
 #include "grabspot.h"
 #include "ignore_unused.h"
+#include "keystroke_names.h"
 #include "lancode.h"
 #include "muf.h"
 #include "netkeyer.h"
@@ -320,7 +321,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-Q (^Q), open QTC window for receiving or sending QTCs.
-	    case 17: {
+	    case CTRL_Q: {
 		if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
 		    qtc_main_panel(RECV);
 		}
@@ -332,7 +333,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-S (^S), open QTC window for sending QTCs.
-	    case 19: {
+	    case CTRL_S: {
 		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
@@ -498,7 +499,8 @@ int callinput(void) {
 			break;
 		    }
 		    else {
-			x = 92; // '\' log without sending message
+			/* Log without sending message. */
+			x = BACKSLASH;
 			break;
 		    }
 		}
@@ -580,7 +582,7 @@ int callinput(void) {
 
 	    // Semicolon or Alt-n (M-n), insert note in log.
 	    case ';':
-	    case 238: {
+	    case ALT_N: {
 		include_note();
 		x = -1;
 		break;
@@ -675,7 +677,7 @@ int callinput(void) {
 
 	    // Alt-k (M-k), synonym for Ctrl-K (^K).
 	    case 235: {
-		x = 11;		// Ctrl-K
+		x = CTRL_K;		// Ctrl-K
 		break;
 	    }
 
@@ -871,7 +873,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-L (^L), resets screen.
-	    case 12: {
+	    case CTRL_L: {
 		endwin();
 		set_term(mainscreen);
 		clear_display();
@@ -880,7 +882,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-P (^P), show MUF display.
-	    case 16: {
+	    case CTRL_P: {
 		int currentterm = miniterm;
 		miniterm = 0;
 		muf();
@@ -891,7 +893,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-A (^A), add a spot and share on LAN.
-	    case 1: {
+	    case CTRL_A: {
 		addspot();
 		HideSearchPanel();
 		showinfo(SHOWINFO_DUMMY);
@@ -902,7 +904,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-B (^B), send spot to DX cluster.
-	    case 2: {
+	    case CTRL_B: {
 		announcefilter = 0;
 		cluster = CLUSTER;
 		send_cluster();
@@ -911,14 +913,14 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-F (^F), change frequency dialog.
-	    case 6: {
+	    case CTRL_F: {
 		change_freq();
 
 		break;
 	    }
 
 	    // Ctrl-G (^G), grab next DX spot from bandmap.
-	    case 7: {
+	    case CTRL_G: {
 		freq_t f = grab_next();
 		if (f > 0.0) {
 		    grab.state = IN_PROGRESS;
@@ -952,7 +954,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-R (^R), toogle trx1, trx2 via lp0 pin 14.
-	    case 18: {
+	    case CTRL_R: {
 		if (k_pin14 == 0) {
 		    k_pin14 = 1;
 		    netkeyer(K_SET14, "1");
@@ -964,7 +966,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-T (^T) or Alt-i (M-i), show talk messages.
-	    case 20:
+	    case CTRL_T:
 	    case 233: {
 		if (lan_active != 0) {
 
@@ -1069,8 +1071,8 @@ int callinput(void) {
 	    }
 	}
 
-	if ((x == '\n' || x == KEY_ENTER) || x == 32 || x == 9 || x == 11
-		|| x == 44 || x == 92) {
+	if ((x == '\n' || x == KEY_ENTER) || x == 32 || x == TAB || x == CTRL_K
+		|| x == 44 || x == BACKSLASH) {
 	    break;
 	}
 

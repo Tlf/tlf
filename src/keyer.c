@@ -30,6 +30,7 @@
 #include <ctype.h>
 
 #include "clear_display.h"
+#include "keystroke_names.h"
 #include "netkeyer.h"
 #include "nicebox.h"		// Includes curses.h
 #include "sendbuf.h"
@@ -68,9 +69,9 @@ void keyer(void) {
     int keyerstringpos = 0;
     char weightbuf[15];
     const char txcontrolstring[2] = { 20, '\0' };	// ^t
-    const char rxcontrolstring[2] = { 18, '\0' };	// ^r
-    const char crcontrolstring[2] = { 13, '\0' };	// cr
-    const char ctl_c_controlstring[2] = { 92, '\0' };	// '\'
+    const char rxcontrolstring[2] = { CTRL_R, '\0' };	// ^r
+    const char crcontrolstring[2] = { RETURN, '\0' };	// cr
+    const char ctl_c_controlstring[2] = { BACKSLASH, '\0' };	// '\'
 
     if ((trxmode == CWMODE && cwkeyer == NO_KEYER) ||
 	    (trxmode == DIGIMODE && digikeyer == NO_KEYER)) {
@@ -125,7 +126,7 @@ void keyer(void) {
 	}
 
 	// <Escape>, Ctrl-K (^K), Alt-k (M-k)
-	if (x == 27 || x == 11 || x == 235) {
+	if (x == 27 || x == CTRL_K || x == 235) {
 	    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 		/* switch back to rx */
 		keyer_append(rxcontrolstring);
@@ -155,7 +156,7 @@ void keyer(void) {
 
 	x = toupper(x);
 
-	if ((x >= ' ' && x <= 'Z') || x == 10) {    /* ~printable or LF */
+	if ((x >= ' ' && x <= 'Z') || x == LINEFEED) { /* ~printable or LF */
 	    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 		mfj1278_control(x);
 	    } else if (cwkeyer == NET_KEYER) {
@@ -177,8 +178,8 @@ void keyer(void) {
 
 	    switch (x) {
 		case '|':
-		case '\n':		// Note that '\n', KEY_ENTER, and usually 13
-		case 13:		// Will never happen (converted to space above)
+		case '\n':		// Note that '\n', KEY_ENTER, and usually RETURN
+		case RETURN:		// Will never happen (converted to space above)
 		case KEY_ENTER: {
 		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
@@ -311,8 +312,8 @@ void mfj1278_control(int x) {
     if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
 	if (trxmode == DIGIMODE) {
-	    if (x == 10)
-		x = 13;		// tnc needs CR instead of LF
+	    if (x == LINEFEED)
+		x = RETURN;     // tnc needs CR instead of LF
 	}
 	keyer_append_char(x);
     }

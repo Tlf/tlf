@@ -25,6 +25,7 @@
 
 #include "clear_display.h"
 #include "clusterinfo.h"
+#include "keystroke_names.h"
 #include "stoptx.h"
 #include "tlf_panel.h"
 #include "startmsg.h"
@@ -167,7 +168,7 @@ static int onechar(void) {
     x = getch();
 
     /* Replace Ctl-H and Backspace with KEY_BACKSPACE */
-    if (x == 8 || x == 127)
+    if (x == CTRL_H || x == 127)
 	x = KEY_BACKSPACE;
 
     if (x == 27) {

@@ -33,6 +33,7 @@
 #include "callinput.h"
 #include "displayit.h"
 #include "globalvars.h"
+#include "keystroke_names.h"
 #include "lancode.h"
 #include "netkeyer.h"
 #include "tlf.h"
@@ -305,13 +306,13 @@ void sendbuf(void) {
 		int i = 0;
 		for (i = 0; i < strlen(buffer); i++)
 		    if (buffer[i] == '\n')
-			buffer[i] = 13;
+			buffer[i] = RETURN;
 		for (i = 0; i < strlen(buffer); i++)
 		    if (buffer[i] == 123)
 			buffer[i] = 20;	/* ctrl-t */
 		for (i = 0; i < strlen(buffer); i++)
 		    if (buffer[i] == 125)
-			buffer[i] = 18;	/* ctrl-r */
+			buffer[i] = CTRL_R;	/* ctrl-r */
 	    }
 	    keyer_append(buffer);
 	}
@@ -322,7 +323,7 @@ void sendbuf(void) {
 		int i = 0;
 		for (i = 0; i < strlen(buffer); i++)
 		    if (buffer[i] == '\n')
-			buffer[i] = 13;
+			buffer[i] = RETURN;
 	    }
 	    keyer_append(buffer);
 	}
