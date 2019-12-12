@@ -560,21 +560,13 @@ int changepars(void) {
 		synclog(synclogfile);
 	    scroll_log();
 	    /** \todo register return value */
-	    total = 0;
-	    readcalls();
-	    if (qtcdirection > 0) {
-		readqtccalls();
-	    }
+	    log_read_n_score();
 	    clear_display();
 	    break;
 	}
 	case 42: {		/* RESCORE */
 	    /** \todo register return value */
-	    total = 0;
-	    readcalls();
-	    if (qtcdirection > 0) {
-		readqtccalls();
-	    }
+	    log_read_n_score();
 	    clear_display();
 	    break;
 	}

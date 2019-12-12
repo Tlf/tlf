@@ -170,11 +170,7 @@ void delete_qso(void) {
 	    fsync(lfile);
 	    close(lfile);
 
-	    total = 0;
-	    nr_qsos = readcalls();
-	    if (qtcdirection > 0) {
-		readqtccalls();
-	    }
+	    nr_qsos = log_read_n_score();
 	}
 	scroll_log();
     }

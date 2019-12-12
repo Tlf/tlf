@@ -23,6 +23,7 @@
 #define READCALLS_H
 
 int readcalls(void);
+int log_read_n_score();
 int synclog(char *synclogfile);
 
 #endif /* READCALLS_H */
