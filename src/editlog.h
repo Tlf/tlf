@@ -22,6 +22,6 @@
 #define EDITLOG_H
 
 void edit(char *filename);
-int logedit(void);
+void logedit(void);
 
 #endif /* EDITLOG_H */

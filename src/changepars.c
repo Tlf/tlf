@@ -88,7 +88,6 @@ int changepars(void) {
     extern int ctcomp;
     extern char *config_file;
     extern int miniterm;
-    extern int total;
     extern int simulator;
     extern int cwkeyer;
     extern char synclogfile[];
@@ -561,21 +560,13 @@ int changepars(void) {
 		synclog(synclogfile);
 	    scroll_log();
 	    /** \todo register return value */
-	    total = 0;
-	    readcalls();
-	    if (qtcdirection > 0) {
-		readqtccalls();
-	    }
+	    log_read_n_score();
 	    clear_display();
 	    break;
 	}
 	case 42: {		/* RESCORE */
 	    /** \todo register return value */
-	    total = 0;
-	    readcalls();
-	    if (qtcdirection > 0) {
-		readqtccalls();
-	    }
+	    log_read_n_score();
 	    clear_display();
 	    break;
 	}

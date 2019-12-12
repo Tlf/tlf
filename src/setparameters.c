@@ -147,8 +147,8 @@ int setparameters(void) {
 	    getwwv();		/* get the latest wwv info from packet */
 
 	    scroll_log();	/* read the last 5  log lines and set the qso number */
-
-	    readcalls();	/* read the logfile for score and dupe */
+				/* read the logfile for score and dupe */
+	    log_read_n_score();
 
 	    clear_display();	/* tidy up the display */
 

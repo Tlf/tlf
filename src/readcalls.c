@@ -32,6 +32,8 @@
 
 #include "addmult.h"
 #include "addpfx.h"
+#include "bands.h"
+#include "cabrillo_utils.h"
 #include "get_time.h"
 #include "getctydata.h"
 #include "getpx.h"
@@ -39,10 +41,10 @@
 #include "ignore_unused.h"
 #include "log_utils.h"
 #include "paccdx.h"
+#include "readqtccalls.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
 #include "zone_nr.h"
-#include "bands.h"
 
 
 int readcalls(void) {
@@ -613,6 +615,17 @@ int readcalls(void) {
     }
 
     return (s);			// nr of lines in log
+}
+
+int log_read_n_score() {
+    int nr_qsolines;
+
+    total = 0;
+    nr_qsolines = readcalls();
+    if (qtcdirection > 0) {
+	readqtccalls();
+    }
+    return nr_qsolines;
 }
 
 //------------------------------------------------------------------------

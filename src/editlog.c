@@ -69,12 +69,10 @@ void edit(char *filename) {
 }
 
 
-int logedit(void) {
+void logedit(void) {
 
-    extern int total;
     extern char logfile[];
     extern const char backgrnd_str[];
-    extern int qtcdirection;
 
     int j;
 
@@ -82,11 +80,7 @@ int logedit(void) {
     edit(logfile);
     checklogfile();
 
-    total = 0;
-    readcalls();
-    if (qtcdirection > 0) {
-        readqtccalls();
-    }
+    log_read_n_score();
 
     start_background_process();
 
@@ -101,6 +95,4 @@ int logedit(void) {
 	mvprintw(j, 0, backgrnd_str);
     }
     refreshp();
-
-    return (0);
 }
