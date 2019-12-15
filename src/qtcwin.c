@@ -458,8 +458,6 @@ void qtc_main_panel(int direction) {
 	}
 
 	switch (x) {
-	    //case 227:		// ALT-c
-
 	    // Ctrl-T (^T)
 	    case CTRL_T:
 		if (trxmode == DIGIMODE) {

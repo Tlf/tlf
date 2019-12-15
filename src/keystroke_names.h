@@ -41,8 +41,30 @@
 #define CTRL_R    18
 #define CTRL_S    19
 #define CTRL_T    20
+
+/* Keyboard characters */
 #define BACKSLASH 92
+
+#define ALT_A     225
+#define ALT_B     226
+#define ALT_C     227
+#define ALT_E     229
+#define ALT_G     231
+#define ALT_H     232
+#define ALT_I     233
+#define ALT_J     234
+#define ALT_K     235
+#define ALT_M     237
 #define ALT_N     238
+#define ALT_P     240
+#define ALT_Q     241
+#define ALT_R     242
+#define ALT_S     243
+#define ALT_T     244
+#define ALT_V     246
+#define ALT_W     247
+#define ALT_X     248
+#define ALT_Z     250
 
 /* Common name macros. */
 #define TAB       CTRL_I

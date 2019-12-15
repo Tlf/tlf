@@ -126,7 +126,7 @@ void keyer(void) {
 	}
 
 	// <Escape>, Ctrl-K (^K), Alt-k (M-k)
-	if (x == 27 || x == CTRL_K || x == 235) {
+	if (x == 27 || x == CTRL_K || x == ALT_K) {
 	    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 		/* switch back to rx */
 		keyer_append(rxcontrolstring);
@@ -210,7 +210,7 @@ void keyer(void) {
 		    break;
 		}
 
-		case 247: {	// Alt-w, set weight
+		case ALT_W: {	// Alt-w, set weight
 		    mvprintw(1, 0, "Weight=   ");
 		    mvprintw(1, 7, "");
 		    refreshp();
