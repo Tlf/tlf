@@ -167,11 +167,11 @@ static int onechar(void) {
 
     x = getch();
 
-    /* Replace Ctl-H and Backspace with KEY_BACKSPACE */
-    if (x == CTRL_H || x == 127)
+    /* Replace Ctl-H (Backspace) and Delete with KEY_BACKSPACE */
+    if (x == CTRL_H || x == DELETE)
 	x = KEY_BACKSPACE;
 
-    if (x == 27) {
+    if (x == ESCAPE) {
 	nodelay(stdscr, TRUE);
 
 	x = getch();
@@ -180,7 +180,7 @@ static int onechar(void) {
 	if (x == ERR) {
 	    stoptx();
 
-	    return x = 27;
+	    return x = ESCAPE;
 
 	} else if (x != 91) {
 

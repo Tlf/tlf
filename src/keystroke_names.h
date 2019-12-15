@@ -43,7 +43,10 @@
 #define CTRL_T    20
 
 /* Keyboard characters */
+#define ESCAPE    27
+#define SPACE     32
 #define BACKSLASH 92
+#define DELETE    127
 
 #define ALT_A     225
 #define ALT_B     226

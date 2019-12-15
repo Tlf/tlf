@@ -444,7 +444,7 @@ void qtc_main_panel(int direction) {
 
     x = -1;
     /* main loop */
-    while (x != 27) {
+    while (x != ESCAPE) {
 
 	while (x < 1) {
 
@@ -675,7 +675,7 @@ void qtc_main_panel(int direction) {
 				    play_file(qtc_phrecv_message[9]);
 				}
 			    }
-			    x = 27;	// <Escape> close the window
+			    x = ESCAPE;	// <Escape> close the window
 			}
 		    }
 		    if (direction == SEND && trxmode != DIGIMODE) {
@@ -803,7 +803,7 @@ void qtc_main_panel(int direction) {
 		    qtccallsign[0] = '\0';
 		    refreshp();
 		    sleep(1);
-		    x = 27;	// <Escape> close the window
+		    x = ESCAPE;	// <Escape> close the window
 
 		}
 		if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
@@ -931,7 +931,7 @@ void qtc_main_panel(int direction) {
 		break;
 
 	    // <Tab>
-	    case 9:
+	    case TAB:
 		if (direction == RECV) {
 		    if (trxmode == DIGIMODE) {
 			if (activefield == 32) {
@@ -1014,7 +1014,7 @@ void qtc_main_panel(int direction) {
 		break;
 
 	    // <Space>
-	    case ' ':
+	    case SPACE:
 		if (DIRCLAUSE) {
 		    if (direction == RECV) {
 			if (activefield > 2) {
@@ -1155,7 +1155,7 @@ void qtc_main_panel(int direction) {
 		}
 	}
 	refreshp();
-	if (x != 27) {
+	if (x != ESCAPE) {
 	    x = 0;
 	}
     }
@@ -1739,7 +1739,7 @@ void show_rtty_lines() {
     x = -1; j = 1;
     prevline = -1;
     curs_set(0);
-    while (x != 27) {
+    while (x != ESCAPE) {
 
 	while (x < 1) {
 
@@ -1846,7 +1846,7 @@ void show_rtty_lines() {
 		break;
 	}
 	refreshp();
-	if (x != 27) {
+	if (x != ESCAPE) {
 	    x = -1;
 	}
 	if (*qtccount > 0 && qtc_ry_copied == qtcreclist.count) {

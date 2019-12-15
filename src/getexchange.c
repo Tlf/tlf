@@ -207,7 +207,7 @@ int getexchange(void) {
 		break;
 	    }
 
-	    case 27: {	// <Escape>
+	    case ESCAPE: {                // <Escape>
 		stoptx();			/* stop sending CW */
 		if (comment[0] != '\0') {	/* if comment not empty */
 		    /* drop exchange so far */
@@ -1124,7 +1124,7 @@ void exchange_edit(void) {
     l = strlen(comment);
     b = l - 1;
 
-    while ((i != 27) && (b <= strlen(comment))) {
+    while ((i != ESCAPE) && (b <= strlen(comment))) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
@@ -1184,7 +1184,7 @@ void exchange_edit(void) {
 	    }
 
 	    // <Escape> not received.
-	} else if (i != 27) {
+	} else if (i != ESCAPE) {
 
 	    // Promote lower case to upper case.
 	    if ((i >= 'a') && (i <= 'z'))
@@ -1205,7 +1205,7 @@ void exchange_edit(void) {
 		}
 
 	    } else if (i != 0)
-		i = 27;
+		i = ESCAPE;
 	}
     }
 

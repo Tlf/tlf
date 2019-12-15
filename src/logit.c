@@ -96,7 +96,7 @@ void logit(void) {
 		strcpy(comment, cqzone);
 	    }
 
-	    if ((callreturn == TAB || callreturn == 32)) {
+	    if ((callreturn == TAB || callreturn == SPACE)) {
 		callreturn = getexchange();
 	    }
 

@@ -126,7 +126,7 @@ void keyer(void) {
 	}
 
 	// <Escape>, Ctrl-K (^K), Alt-k (M-k)
-	if (x == 27 || x == CTRL_K || x == ALT_K) {
+	if (x == ESCAPE || x == CTRL_K || x == ALT_K) {
 	    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 		/* switch back to rx */
 		keyer_append(rxcontrolstring);

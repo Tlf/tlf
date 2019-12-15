@@ -408,7 +408,7 @@ int callinput(void) {
 	    // Alt-v (M-v), change Morse speed in CW mode, else band down.
 	    case ALT_V: {
 		if (ctcomp == 1) {
-		    while (x != 27) {	//escape
+		    while (x != ESCAPE) {
 			nicebox(1, 1, 2, 12, "Cw");
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 			mvprintw(2, 2, "Speed:   %2u ", GetCWSpeed());
@@ -429,7 +429,7 @@ int callinput(void) {
 			    mvprintw(0, 14, "%2u", GetCWSpeed());
 
 			} else
-			    x = 27;	// <Escape>
+			    x = ESCAPE;
 
 			clear_display();
 		    }
@@ -828,12 +828,12 @@ int callinput(void) {
 			exit(0);
 		    }
 		}
-		x = 27;		// <Escape>
+		x = ESCAPE;
 		break;
 	    }
 
 	    // <Escape>, clear call input or stop sending.
-	    case 27: {
+	    case ESCAPE: {
 		if (early_started == 0) {
 		    /* if CW not started early drop call and start anew */
 		    cleanup();
@@ -1071,8 +1071,8 @@ int callinput(void) {
 	    }
 	}
 
-	if ((x == '\n' || x == KEY_ENTER) || x == 32 || x == TAB || x == CTRL_K
-		|| x == 44 || x == BACKSLASH) {
+	if ((x == '\n' || x == KEY_ENTER) || x == SPACE || x == TAB
+		|| x == CTRL_K || x == 44 || x == BACKSLASH) {
 	    break;
 	}
 
@@ -1142,7 +1142,7 @@ int autosend() {
     timeout = (1.2 / GetCWSpeed()) * cw_message_length(hiscall);
 
     x = -1;
-    while ((x != 27) && (x != '\n' && x != KEY_ENTER)) {
+    while ((x != ESCAPE) && (x != '\n' && x != KEY_ENTER)) {
 	x = -1;
 	while ((x == -1) && (g_timer_elapsed(timer, NULL) < timeout)) {
 
@@ -1171,7 +1171,7 @@ int autosend() {
 	}
 
 	// <Escape>
-	if (x == 27) {
+	if (x == ESCAPE) {
 	    stoptx();
 	    *hiscall_sent = '\0';
 	    early_started = 0;

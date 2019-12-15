@@ -32,6 +32,7 @@
 #include <unistd.h>
 
 #include "ignore_unused.h"
+#include "keystroke_names.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -78,7 +79,7 @@ void do_record(int message_nr) {
     IGNORE(system(commands));;
     //G4KNO: Loop until <esc> keypress
     while (1) {
-	if (key_get() == 27) {
+	if (key_get() == ESCAPE) {
 	    //kill process (SIGINT=Ctrl-C).
 	    IGNORE(system("pkill -SIGINT -n rec"));;
 	    break;
@@ -253,7 +254,7 @@ void record(void) {
 		IGNORE(system(commands));;
 		runnit = 0;
 		break;
-	    case 27:
+	    case ESCAPE:
 		runnit = 0;
 	}
     }

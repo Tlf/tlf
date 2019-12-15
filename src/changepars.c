@@ -39,6 +39,7 @@
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
 #include "ignore_unused.h"
+#include "keystroke_names.h"
 #include "lancode.h"
 #include "listmessages.h"
 #include "logview.h"
@@ -656,13 +657,13 @@ int changepars(void) {
 	    /* wait for correct input or ESC */
 	    while ((x != 0) && !((x >= 2) && (x <= 5)) && !(x == 'm' - '0')) {
 		x = key_get();
-		if (x == 27)
+		if (x == ESCAPE)
 		    break;
 		x = x - '0';
 	    }
 
 	    /* remember new setting */
-	    if (x != 27) {
+	    if (x != ESCAPE) {
 		if (x == 0 || (x >= 2 && x <= 5))
 		    cwstart = x;
 		else

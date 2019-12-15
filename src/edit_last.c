@@ -109,7 +109,7 @@ void edit_last(void) {
     /* start with last QSO */
     get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 
-    while (j != 27 && j != '\n' && j != KEY_ENTER) {
+    while (j != ESCAPE && j != '\n' && j != KEY_ENTER) {
 	highlight_line(editline, editbuffer, b);
 
 	j = key_get();
@@ -146,7 +146,7 @@ void edit_last(void) {
 		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 	    } else {
 		logview();
-		j = 27;
+		j = ESCAPE;
 	    }
 
 	    // Down arrow, move to next line.
@@ -158,7 +158,7 @@ void edit_last(void) {
 		editline++;
 		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 	    } else
-		j = 27;		/* escape */
+		j = ESCAPE;
 
 	    // Left arrow, move cursor one position left.
 	} else if (j == KEY_LEFT) {
@@ -214,7 +214,7 @@ void edit_last(void) {
 	    for (k = b; k < 64; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	} else if (j != 27) {
+	} else if (j != ESCAPE) {
 
 	    // Promote lower case to upper case.
 	    if ((j >= 97) && (j <= 122))
