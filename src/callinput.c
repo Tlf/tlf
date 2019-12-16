@@ -48,6 +48,7 @@
 #include "gettxinfo.h"
 #include "grabspot.h"
 #include "ignore_unused.h"
+#include "keystroke_names.h"
 #include "lancode.h"
 #include "muf.h"
 #include "netkeyer.h"
@@ -264,7 +265,7 @@ int callinput(void) {
 	    }
 
 	    // Up Arrow or Alt-e, edit last QSO
-	    if (x == KEY_UP || x == 229) {
+	    if (x == KEY_UP || x == ALT_E) {
 		edit_last();
 		break;
 	    }
@@ -320,7 +321,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-Q (^Q), open QTC window for receiving or sending QTCs.
-	    case 17: {
+	    case CTRL_Q: {
 		if (qtcdirection == 1 || qtcdirection == 3) {	// in case of QTC=RECV or QTC=BOTH
 		    qtc_main_panel(RECV);
 		}
@@ -332,7 +333,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-S (^S), open QTC window for sending QTCs.
-	    case 19: {
+	    case CTRL_S: {
 		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
@@ -367,7 +368,7 @@ int callinput(void) {
 	    }
 
 	    // Alt-w (M-w), set Morse weight.
-	    case 247: {
+	    case ALT_W: {
 		char weightbuf[5] = "";
 		char *end;
 
@@ -405,9 +406,9 @@ int callinput(void) {
 	    }
 
 	    // Alt-v (M-v), change Morse speed in CW mode, else band down.
-	    case 246: {
+	    case ALT_V: {
 		if (ctcomp == 1) {
-		    while (x != 27) {	//escape
+		    while (x != ESCAPE) {
 			nicebox(1, 1, 2, 12, "Cw");
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 			mvprintw(2, 2, "Speed:   %2u ", GetCWSpeed());
@@ -428,7 +429,7 @@ int callinput(void) {
 			    mvprintw(0, 14, "%2u", GetCWSpeed());
 
 			} else
-			    x = 27;	// <Escape>
+			    x = ESCAPE;
 
 			clear_display();
 		    }
@@ -498,7 +499,8 @@ int callinput(void) {
 			break;
 		    }
 		    else {
-			x = 92; // '\' log without sending message
+			/* Log without sending message. */
+			x = BACKSLASH;
 			break;
 		    }
 		}
@@ -580,7 +582,7 @@ int callinput(void) {
 
 	    // Semicolon or Alt-n (M-n), insert note in log.
 	    case ';':
-	    case 238: {
+	    case ALT_N: {
 		include_note();
 		x = -1;
 		break;
@@ -662,8 +664,8 @@ int callinput(void) {
 	    }
 
 	    // Alt-r (M-r) or Alt-s (M-s), toggle score window.
-	    case 242:
-	    case 243: {
+	    case ALT_R:
+	    case ALT_S: {
 		if (showscore_flag == 0)
 		    showscore_flag = 1;
 		else {
@@ -674,13 +676,13 @@ int callinput(void) {
 	    }
 
 	    // Alt-k (M-k), synonym for Ctrl-K (^K).
-	    case 235: {
-		x = 11;		// Ctrl-K
+	    case ALT_K: {
+		x = CTRL_K;		// Ctrl-K
 		break;
 	    }
 
 	    // Alt-a (M-a), cycle cluster window.
-	    case 225: {
+	    case ALT_A: {
 		if (cluster == NOCLUSTER) {
 		    cluster = CLUSTER;	// alt-A
 		    announcefilter = FILTER_ALL;
@@ -694,7 +696,7 @@ int callinput(void) {
 	    }
 
 	    // Alt-b (M-b), band-up for TR-Log mode.
-	    case 226: {
+	    case ALT_B: {
 		if (ctcomp == 0) {
 		    handle_bandswitch(BAND_UP);
 		}
@@ -702,7 +704,7 @@ int callinput(void) {
 	    }
 
 	    // Alt-j (M-j), show station frequencies.
-	    case 234: {
+	    case ALT_J: {
 		if (cluster != FREQWINDOW) {
 		    lastwindow = cluster;
 		    cluster = FREQWINDOW;
@@ -713,7 +715,7 @@ int callinput(void) {
 	    }
 
 	    // Alt-h (M-h), show help.
-	    case 232: {
+	    case ALT_H: {
 		show_help();
 		break;
 	    }
@@ -726,7 +728,7 @@ int callinput(void) {
 	    }
 
 	    // Alt-c (M-c), toggle check window.
-	    case 227: {
+	    case ALT_C: {
 		if (searchflg != SEARCHWINDOW)
 		    searchflg = SEARCHWINDOW;
 		else
@@ -735,14 +737,14 @@ int callinput(void) {
 	    }
 
 	    // Alt-m (M-m), show multipliers.
-	    case 237: {
+	    case ALT_M: {
 		show_mults();
 		refreshp();
 		break;
 	    }
 
 	    // Alt-p (M-p), toggle PTT via cwdaemon
-	    case 240: {
+	    case ALT_P: {
 		if (k_ptt == 0) {
 		    k_ptt = 1;
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
@@ -751,7 +753,7 @@ int callinput(void) {
 		    refreshp();
 		    netkeyer(K_PTT, "1");	// ptt on
 		    x = key_get();	// any character to stop tuning
-		    if (x == 240)	// Alt-P (M-p)
+		    if (x == ALT_P)	// Alt-P (M-p)
 			netkeyer(K_PTT, "0");	// ptt off
 		    k_ptt = 0;
 		    show_header_line();
@@ -763,7 +765,7 @@ int callinput(void) {
 	    }
 
 	    // Alt-t (M-t), tune xcvr via cwdaemon.
-	    case 244: {
+	    case ALT_T: {
 		int count;
 		gchar *buff;
 
@@ -794,7 +796,7 @@ int callinput(void) {
 	    }
 
 	    // Alt-z (M-z), show zones worked.
-	    case 250: {
+	    case ALT_Z: {
 		if (cqww == 1) {
 		    if (zonedisplay == 0)
 			zonedisplay = 1;
@@ -810,8 +812,8 @@ int callinput(void) {
 	    }
 
 	    // Alt-q (M-q) or Alt-x (M-x), Exit
-	    case 241:
-	    case 248: {
+	    case ALT_Q:
+	    case ALT_X: {
 		mvprintw(13, 29, "You want to leave tlf? (y/n): ");
 		while (x != 'n' && x != 'N') {
 
@@ -826,12 +828,12 @@ int callinput(void) {
 			exit(0);
 		    }
 		}
-		x = 27;		// <Escape>
+		x = ESCAPE;
 		break;
 	    }
 
 	    // <Escape>, clear call input or stop sending.
-	    case 27: {
+	    case ESCAPE: {
 		if (early_started == 0) {
 		    /* if CW not started early drop call and start anew */
 		    cleanup();
@@ -871,7 +873,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-L (^L), resets screen.
-	    case 12: {
+	    case CTRL_L: {
 		endwin();
 		set_term(mainscreen);
 		clear_display();
@@ -880,7 +882,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-P (^P), show MUF display.
-	    case 16: {
+	    case CTRL_P: {
 		int currentterm = miniterm;
 		miniterm = 0;
 		muf();
@@ -891,7 +893,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-A (^A), add a spot and share on LAN.
-	    case 1: {
+	    case CTRL_A: {
 		addspot();
 		HideSearchPanel();
 		showinfo(SHOWINFO_DUMMY);
@@ -902,7 +904,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-B (^B), send spot to DX cluster.
-	    case 2: {
+	    case CTRL_B: {
 		announcefilter = 0;
 		cluster = CLUSTER;
 		send_cluster();
@@ -911,14 +913,14 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-F (^F), change frequency dialog.
-	    case 6: {
+	    case CTRL_F: {
 		change_freq();
 
 		break;
 	    }
 
 	    // Ctrl-G (^G), grab next DX spot from bandmap.
-	    case 7: {
+	    case CTRL_G: {
 		freq_t f = grab_next();
 		if (f > 0.0) {
 		    grab.state = IN_PROGRESS;
@@ -931,7 +933,7 @@ int callinput(void) {
 	    }
 
 	    // Alt-g (M-g), grab first spot matching call field chars.
-	    case 231: {
+	    case ALT_G: {
 		double f = grabspot();
 		if (f > 0.0) {
 		    grab.state = IN_PROGRESS;
@@ -952,7 +954,7 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-R (^R), toogle trx1, trx2 via lp0 pin 14.
-	    case 18: {
+	    case CTRL_R: {
 		if (k_pin14 == 0) {
 		    k_pin14 = 1;
 		    netkeyer(K_SET14, "1");
@@ -964,8 +966,8 @@ int callinput(void) {
 	    }
 
 	    // Ctrl-T (^T) or Alt-i (M-i), show talk messages.
-	    case 20:
-	    case 233: {
+	    case CTRL_T:
+	    case ALT_I: {
 		if (lan_active != 0) {
 
 		    for (t = 0; t <= 5; t++)
@@ -1069,8 +1071,8 @@ int callinput(void) {
 	    }
 	}
 
-	if ((x == '\n' || x == KEY_ENTER) || x == 32 || x == 9 || x == 11
-		|| x == 44 || x == 92) {
+	if ((x == '\n' || x == KEY_ENTER) || x == SPACE || x == TAB
+		|| x == CTRL_K || x == 44 || x == BACKSLASH) {
 	    break;
 	}
 
@@ -1140,7 +1142,7 @@ int autosend() {
     timeout = (1.2 / GetCWSpeed()) * cw_message_length(hiscall);
 
     x = -1;
-    while ((x != 27) && (x != '\n' && x != KEY_ENTER)) {
+    while ((x != ESCAPE) && (x != '\n' && x != KEY_ENTER)) {
 	x = -1;
 	while ((x == -1) && (g_timer_elapsed(timer, NULL) < timeout)) {
 
@@ -1169,7 +1171,7 @@ int autosend() {
 	}
 
 	// <Escape>
-	if (x == 27) {
+	if (x == ESCAPE) {
 	    stoptx();
 	    *hiscall_sent = '\0';
 	    early_started = 0;

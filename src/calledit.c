@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "getctydata.h"
+#include "keystroke_names.h"
 #include "searchlog.h"		// Includes glib.h
 #include "showinfo.h"
 #include "tlf.h"
@@ -49,7 +50,7 @@ void calledit(void) {
     b = l - 1;
 
 
-    while ((i != 27) && (b <= strlen(hiscall))) {
+    while ((i != ESCAPE) && (b <= strlen(hiscall))) {
 
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
@@ -66,24 +67,24 @@ void calledit(void) {
 	if ((i == KEY_DC) || (i == KEY_IC))
 	    cnt++;
 	else {
-	    if (i != 27)
+	    if (i != ESCAPE)
 		cnt = 0;
 	}
 
 	// <Tab>
-	if (i == 9)
+	if (i == TAB)
 	    block_part = 1;
 	else
 	    block_part = 0;
 
 	// Ctrl-A (^A) or <Home>, move to head of callsign field.
-	if (i == 1 || i == KEY_HOME) {
+	if (i == CTRL_A || i == KEY_HOME) {
 	    b = 0;
 	    x = 0;
 	}
 
 	// Ctrl-E (^E) or <End>, move to end of callsign field, exit edit mode.
-	if (i == 5 || i == KEY_END) {
+	if (i == CTRL_E || i == KEY_END) {
 	    break;		/* stop edit */
 	}
 
@@ -141,7 +142,7 @@ void calledit(void) {
 		insertflg = 0;
 
 	    // Any character left other than <Escape>.
-	} else if (i != 27) {
+	} else if (i != ESCAPE) {
 
 	    // Promote lower case to upper case.
 	    if ((i >= 97) && (i <= 122))
@@ -182,10 +183,10 @@ void calledit(void) {
 		searchlog(hiscall);
 
 	    } else if (x != 0)
-		i = 27;
+		i = ESCAPE;
 
 	} else
-	    i = 27;
+	    i = ESCAPE;
 
     }
 
@@ -213,12 +214,12 @@ int insert_char(int curposition) {
     call1[0] = '\0';
     call2[0] = '\0';
 
-    while (ichr != 27) {
+    while (ichr != ESCAPE) {
 
 	ichr = key_get();
 
-	// Leave insert mode if <Tab>, <Enter>, or <Backspace> are received.
-	if ((ichr == 9) || (ichr == '\n') || (ichr == KEY_ENTER) || (ichr == 127))
+	// Leave insert mode if <Tab>, <Enter>, or <Delete> are received.
+	if ((ichr == TAB) || (ichr == '\n') || (ichr == KEY_ENTER) || (ichr == DELETE))
 	    break;
 
 	// Promote lower case to upper case.
@@ -261,7 +262,7 @@ int insert_char(int curposition) {
 	refreshp();
 
     }
-    ichr = 27;
+    ichr = ESCAPE;
 
     return (ichr);
 }

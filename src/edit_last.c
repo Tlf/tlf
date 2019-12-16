@@ -31,6 +31,7 @@
 #include "background_process.h"
 #include "err_utils.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "keystroke_names.h"
 #include "logview.h"
 #include "scroll_log.h"
 #include "tlf_curses.h"
@@ -108,21 +109,21 @@ void edit_last(void) {
     /* start with last QSO */
     get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 
-    while (j != 27 && j != '\n' && j != KEY_ENTER) {
+    while (j != ESCAPE && j != '\n' && j != KEY_ENTER) {
 	highlight_line(editline, editbuffer, b);
 
 	j = key_get();
 
 	// Ctrl-A (^A) or <Home>, beginning of line.
-	if (j == 1 || j == KEY_HOME) {
+	if (j == CTRL_A || j == KEY_HOME) {
 	    b = 1;
 
 	    // Ctrl-E (^E) or <End>, end of line.
-	} else if (j == 5 || j == KEY_END) {
+	} else if (j == CTRL_E || j == KEY_END) {
 	    b = 77;
 
 	    // <Tab>, next field.
-	} else if (j == 9) {
+	} else if (j == TAB) {
 	    if (b < 17)
 		b = 17;
 	    else if (b < 29)
@@ -145,7 +146,7 @@ void edit_last(void) {
 		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 	    } else {
 		logview();
-		j = 27;
+		j = ESCAPE;
 	    }
 
 	    // Down arrow, move to next line.
@@ -157,7 +158,7 @@ void edit_last(void) {
 		editline++;
 		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 	    } else
-		j = 27;		/* escape */
+		j = ESCAPE;
 
 	    // Left arrow, move cursor one position left.
 	} else if (j == KEY_LEFT) {
@@ -213,7 +214,7 @@ void edit_last(void) {
 	    for (k = b; k < 64; k++)
 		editbuffer[k] = editbuffer[k + 1];
 
-	} else if (j != 27) {
+	} else if (j != ESCAPE) {
 
 	    // Promote lower case to upper case.
 	    if ((j >= 97) && (j <= 122))

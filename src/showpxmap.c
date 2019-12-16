@@ -28,6 +28,7 @@
 #include "dxcc.h"
 #include "focm.h"
 #include "changepars.h"
+#include "keystroke_names.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -64,7 +65,7 @@ void show_mults(void) {
 
 	while (ch != '\n' && ch != KEY_ENTER) {
 
-	    if (ch == 27)
+	    if (ch == ESCAPE)
 		break;
 
 	    zonecmp[0] = '\0';

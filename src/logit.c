@@ -31,6 +31,7 @@
 #include "clear_display.h"
 #include "getexchange.h"
 #include "keyer.h"
+#include "keystroke_names.h"
 #include "log_to_disk.h"
 #include "printcall.h"
 #include "recall_exchange.h"
@@ -91,11 +92,11 @@ void logit(void) {
 
 	    if ((trxmode == CWMODE || trxmode == DIGIMODE)
 		    && (callreturn == '\n') && ctcomp == 1) {
-		callreturn = 92; 	/* '\' */
+		callreturn = BACKSLASH;
 		strcpy(comment, cqzone);
 	    }
 
-	    if ((callreturn == 9 || callreturn == 32)) {
+	    if ((callreturn == TAB || callreturn == SPACE)) {
 		callreturn = getexchange();
 	    }
 
@@ -193,7 +194,7 @@ void logit(void) {
 		}
 	    }
 
-	    if ((callreturn == 92) && (*hiscall != '\0')) {
+	    if ((callreturn == BACKSLASH) && (*hiscall != '\0')) {
 		defer_store = 0;
 
 		log_to_disk(false);
@@ -203,7 +204,7 @@ void logit(void) {
 		HideSearchPanel();
 	    }
 
-	    if (callreturn == 11 || callreturn == 44) {	/*  CTRL K  */
+	    if (callreturn == CTRL_K || callreturn == 44) {	/*  CTRL K  */
 		getyx(stdscr, cury, curx);
 		mvprintw(5, 0, "");
 		keyer();

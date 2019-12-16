@@ -33,6 +33,7 @@
 #include "get_time.h"
 #include "ignore_unused.h"
 #include "keyer.h"
+#include "keystroke_names.h"
 #include "lancode.h"
 #include "nicebox.h"		// Includes curses.h
 #include "qtc_log.h"
@@ -443,7 +444,7 @@ void qtc_main_panel(int direction) {
 
     x = -1;
     /* main loop */
-    while (x != 27) {
+    while (x != ESCAPE) {
 
 	while (x < 1) {
 
@@ -457,10 +458,8 @@ void qtc_main_panel(int direction) {
 	}
 
 	switch (x) {
-	    //case 227:		// ALT-c
-
 	    // Ctrl-T (^T)
-	    case 20:
+	    case CTRL_T:
 		if (trxmode == DIGIMODE) {
 		    show_rtty_lines();
 		}
@@ -676,7 +675,7 @@ void qtc_main_panel(int direction) {
 				    play_file(qtc_phrecv_message[9]);
 				}
 			    }
-			    x = 27;	// <Escape> close the window
+			    x = ESCAPE;	// <Escape> close the window
 			}
 		    }
 		    if (direction == SEND && trxmode != DIGIMODE) {
@@ -794,7 +793,7 @@ void qtc_main_panel(int direction) {
 		break;
 
 	    // Ctrl-S (^S), save QTC
-	    case 19:
+	    case CTRL_S:
 		if (qtccurrdirection == SEND && *qtccount > 0
 			&& qtclist.totalsent == *qtccount) {
 		    log_sent_qtc_to_disk(nr_qsos);
@@ -804,7 +803,7 @@ void qtc_main_panel(int direction) {
 		    qtccallsign[0] = '\0';
 		    refreshp();
 		    sleep(1);
-		    x = 27;	// <Escape> close the window
+		    x = ESCAPE;	// <Escape> close the window
 
 		}
 		if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
@@ -820,7 +819,7 @@ void qtc_main_panel(int direction) {
 		break;
 
 	    // Ctrl-E (^E), end capture
-	    case 5:
+	    case CTRL_E:
 		if (qtccurrdirection == RECV && trxmode == DIGIMODE) {
 		    qtc_ry_capture = 0;
 		    wattr_get(qtcwin, &attributes, &cpair, NULL);
@@ -932,7 +931,7 @@ void qtc_main_panel(int direction) {
 		break;
 
 	    // <Tab>
-	    case 9:
+	    case TAB:
 		if (direction == RECV) {
 		    if (trxmode == DIGIMODE) {
 			if (activefield == 32) {
@@ -1015,7 +1014,7 @@ void qtc_main_panel(int direction) {
 		break;
 
 	    // <Space>
-	    case ' ':
+	    case SPACE:
 		if (DIRCLAUSE) {
 		    if (direction == RECV) {
 			if (activefield > 2) {
@@ -1119,7 +1118,7 @@ void qtc_main_panel(int direction) {
 		break;
 
 	    // Ctrl-L (^L), mark callsign for late QTC
-	    case 12:
+	    case CTRL_L:
 		if (strlen(g_strstrip(qtccallsign)) > 3) {
 		    qtc_inc(g_strstrip(qtccallsign), QTC_LATER);
 		    sprintf(tempc, "%s;L\n", qtccallsign);
@@ -1128,7 +1127,7 @@ void qtc_main_panel(int direction) {
 		break;
 
 	    // Ctrl-N (^N), mark callsign for explicit NO QTC
-	    case 14:
+	    case CTRL_N:
 		if (strlen(g_strstrip(qtccallsign)) > 3) {
 		    qtc_inc(g_strstrip(qtccallsign), QTC_NO);
 		    sprintf(tempc, "%s;N\n", qtccallsign);
@@ -1137,7 +1136,7 @@ void qtc_main_panel(int direction) {
 		break;
 
 	    // Ctrl-F (^F), fill time fields with first 2 chars
-	    case 6:
+	    case CTRL_F:
 		if (activefield > 2) {
 		    fill_qtc_times(qtcreclist.qtclines[(activefield - 3) / 3].time);
 		    showfield(activefield);
@@ -1145,7 +1144,7 @@ void qtc_main_panel(int direction) {
 		break;
 
 	    // Ctrl-R (^R), start/stop recording
-	    case 18:
+	    case CTRL_R:
 		if (direction == RECV) {
 		    if (record_run < 0) {
 			start_qtc_recording();
@@ -1156,7 +1155,7 @@ void qtc_main_panel(int direction) {
 		}
 	}
 	refreshp();
-	if (x != 27) {
+	if (x != ESCAPE) {
 	    x = 0;
 	}
     }
@@ -1740,7 +1739,7 @@ void show_rtty_lines() {
     x = -1; j = 1;
     prevline = -1;
     curs_set(0);
-    while (x != 27) {
+    while (x != ESCAPE) {
 
 	while (x < 1) {
 
@@ -1811,7 +1810,7 @@ void show_rtty_lines() {
 		break;
 
 	    // Ctrl-R (^R)
-	    case 18:
+	    case CTRL_R:
 		for (j = 0; j < 12; j++) {
 		    qtc_ry_lines[j].content[0] = '\0';
 		    qtc_ry_lines[j].attr = 0;
@@ -1824,19 +1823,19 @@ void show_rtty_lines() {
 		break;
 
 	    // Ctrl-S (^S), start capture
-	    case 19:
+	    case CTRL_S:
 		qtc_ry_capture = 1;
 		mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
 		break;
 
 	    // Ctrl-E (^E), end capture
-	    case 5:
+	    case CTRL_E:
 		qtc_ry_capture = 0;
 		mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
 		break;
 
 	    // <Enter>, add to qtc
-	    case 10:
+	    case LINEFEED:
 		if (qtc_ry_lines[actline - 1].attr == 0) {
 		    parse_ry_line(qtc_ry_lines[actline - 1].content);
 		    qtc_ry_lines[actline - 1].attr = 1;
@@ -1847,7 +1846,7 @@ void show_rtty_lines() {
 		break;
 	}
 	refreshp();
-	if (x != 27) {
+	if (x != ESCAPE) {
 	    x = -1;
 	}
 	if (*qtccount > 0 && qtc_ry_copied == qtcreclist.count) {
@@ -1942,4 +1941,3 @@ void recalc_qtclist() {
     }
     g_strlcpy(prevqtccall, qtccallsign, sizeof(prevqtccall));
 }
-
