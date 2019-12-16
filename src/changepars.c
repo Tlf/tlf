@@ -87,7 +87,6 @@ int changepars(void) {
     extern int ctcomp;
     extern char *config_file;
     extern int miniterm;
-    extern int total;
     extern int simulator;
     extern int cwkeyer;
     extern char synclogfile[];
