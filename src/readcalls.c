@@ -80,6 +80,8 @@ int readcalls(void) {
     int qsomode;
     int linenr = 0;
 
+    int bandindex;
+
     FILE *fp;
 
     showmsg("Reading logfile... ");
@@ -170,27 +172,29 @@ int readcalls(void) {
 	strncpy(presentcall, inputbuffer + 29, 13);
 	presentcall[13] = '\0';
 
+	bandindex = BANDINDEX_OOB;
+
 	strncpy(bndbuf, inputbuffer + 1, 2);
 	bndbuf[2] = '\0';
 
 	if (bndbuf[0] == '1' && bndbuf[1] == '0')
-	    bandinx = BANDINDEX_10;
+	    bandindex = BANDINDEX_10;
 	if (bndbuf[0] == '1' && bndbuf[1] == '5')
-	    bandinx = BANDINDEX_15;
+	    bandindex = BANDINDEX_15;
 	if (bndbuf[0] == '2')
-	    bandinx = BANDINDEX_20;
+	    bandindex = BANDINDEX_20;
 	if (bndbuf[0] == '4')
-	    bandinx = BANDINDEX_40;
+	    bandindex = BANDINDEX_40;
 	if (bndbuf[0] == '8')
-	    bandinx = BANDINDEX_80;
+	    bandindex = BANDINDEX_80;
 	if (bndbuf[0] == '6')
-	    bandinx = BANDINDEX_160;
+	    bandindex = BANDINDEX_160;
 	if (bndbuf[0] == '1' && bndbuf[1] == '2')
-	    bandinx = BANDINDEX_12;
+	    bandindex = BANDINDEX_12;
 	if (bndbuf[0] == '1' && bndbuf[1] == '7')
-	    bandinx = BANDINDEX_17;
+	    bandindex = BANDINDEX_17;
 	if (bndbuf[0] == '3')
-	    bandinx = BANDINDEX_30;
+	    bandindex = BANDINDEX_30;
 
 	/* get the country number, not known at this point */
 	tmpptr = strchr(presentcall, ' ');
@@ -209,7 +213,7 @@ int readcalls(void) {
 		ci++;
 	    }
 	    if (cont_in_list == 0) {
-		band_score[bandinx]++;
+		band_score[bandindex]++;
 		continue;
 	    }
 	}
@@ -285,7 +289,7 @@ int readcalls(void) {
 
 		}
 
-		remember_multi(multbuffer, bandinx, 0);
+		remember_multi(multbuffer, bandindex, 0);
 
 	    }			// end wysiwig
 
@@ -301,7 +305,7 @@ int readcalls(void) {
 		if (multbuffer[1] == ' ')
 		    multbuffer[1] = '\0';
 
-		remember_multi(multbuffer, bandinx, 0);
+		remember_multi(multbuffer, bandindex, 0);
 	    }
 
 	}
@@ -343,7 +347,7 @@ int readcalls(void) {
 	strncpy(date_and_time, inputbuffer + 7, 15);
 	strptime(date_and_time, "%d-%b-%y %H:%M", &qsotime);
 	qsotimets = mktime(&qsotime);
-	worked[l].qsotime[qsomode][bandinx] = qsotimets;
+	worked[l].qsotime[qsomode][bandindex] = qsotimets;
 
 	add_ok = 1;		/* look if calls are excluded */
 
@@ -358,7 +362,7 @@ int readcalls(void) {
 	    add_ok = pacc_pa();
 
 	    if (add_ok == 0) {
-		band_score[bandinx]++;
+		band_score[bandindex]++;
 	    }
 
 	    hiscall[0] = '\0';
@@ -366,7 +370,7 @@ int readcalls(void) {
 
 	if (pfxmultab == 1) {
 	    getpx(presentcall);
-	    add_pfx(pxstr, bandinx);
+	    add_pfx(pxstr, bandindex);
 	}
 
 	if (pfxnummultinr > 0) {
@@ -416,17 +420,17 @@ int readcalls(void) {
 
 	if (add_ok == 1) {
 
-	    worked[l].band |= inxes[bandinx];	/* mark band as worked */
+	    worked[l].band |= inxes[bandindex];	/* mark band as worked */
 
-	    band_score[bandinx]++;	/*  qso counter  per band */
+	    band_score[bandindex]++;	/*  qso counter  per band */
 	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1))
-		zones[z] |= inxes[bandinx];
+		zones[z] |= inxes[bandindex];
 	    if (pfxnumcntidx < 0) {
 		if (excl_add_veto == 0) {
-		    countries[countrynr] |= inxes[bandinx];
+		    countries[countrynr] |= inxes[bandindex];
 		}
 	    } else {
-		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
+		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandindex];
 	    }
 
 	}			/* end add_ok */
@@ -448,7 +452,7 @@ int readcalls(void) {
 	for (n = 0; n < i; n++) {
 	    strcpy(checkcall, worked[n].call);
 	    getpx(checkcall);
-	    add_pfx(pxstr, bandinx);
+	    add_pfx(pxstr, bandindex);
 	}
     }
 
