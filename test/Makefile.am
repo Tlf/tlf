@@ -18,6 +18,7 @@ AM_CPPFLAGS += -DSRCDIR=\"$(abs_srcdir)\"
 DATA_FILES = data/ie_empty_call.txt data/ie_long_line.txt \
 	     data/ie_no_comma.txt data/ie_ok.txt \
 	     data/ie_ok_dos.txt data/ie_ok_multi_column.txt \
-	     data/ie_ok_tab.txt
+	     data/ie_ok_tab.txt \
+	     generate_defs.pl
 
 EXTRA_DIST = $(DATA_FILES)
