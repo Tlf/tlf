@@ -112,8 +112,7 @@ void drawSearchWin(void) {
 
     wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (i = 0; i < nr_bands; i++)
-	mvwprintw(search_win, i + 1, 1,
-		  "                                     ");
+	mvwprintw(search_win, i + 1, 1, spaces(37));
 
     mvwprintw(search_win, 1, 1, " 10");
     mvwprintw(search_win, 2, 1, " 15");
@@ -871,7 +870,7 @@ void show_needed_sections(void) {
 	wattron(search_win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 	for (j = 1; j < 7; j++)
-	    mvwprintw(search_win, j, 1, "                                     ");
+	    mvwprintw(search_win, j, 1, spaces(37));
 
 	for (vert = 1; vert < 7; vert++) {
 	    if (cnt >= get_mult_count())

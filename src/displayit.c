@@ -28,6 +28,7 @@
 
 #include <glib.h>
 
+#include "tlf.h"
 #include "clear_display.h"
 #include "tlf_curses.h"
 
@@ -35,7 +36,6 @@
 void displayit(void) {
 
     extern char termbuf[];
-    extern const char backgrnd_str[];
     extern char terminal1[];
     extern char terminal2[];
     extern char terminal3[];

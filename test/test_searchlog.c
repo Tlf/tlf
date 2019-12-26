@@ -16,6 +16,7 @@
 // OBJECT ../src/qtcutil.o
 // OBJECT ../src/printcall.o
 // OBJECT ../src/err_utils.o
+// OBJECT ../src/ui_utils.o
 
 extern WINDOW *search_win;
 extern PANEL *search_panel;
@@ -45,9 +46,16 @@ int stoptx() {
     return 0;
 }
 
-// ui_utils.c
-int modify_attr(int attr) {
-    return attr;
+// clear_display.c
+void clear_display() {
+}
+
+// clusterinfo.c
+void clusterinfo() {
+}
+
+// splitscreen.c
+void refresh_splitlayout() {
 }
 
 // get_time.c

@@ -374,7 +374,7 @@ freq_t bandfrequency[9] = {
 
 char headerline[81] =
     "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  \n";
-char backgrnd_str[81] =
+const char *backgrnd_str =
     "                                                                                ";
 
 char logline_edit[5][LOGLINELEN + 1];

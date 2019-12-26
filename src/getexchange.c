@@ -1128,7 +1128,7 @@ void exchange_edit(void) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
-	mvprintw(12, 54, "                          ");
+	mvprintw(12, 54, spaces(80 - 54));
 	mvprintw(12, 54, comment);
 	mvprintw(12, 54 + b, "");
 

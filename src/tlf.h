@@ -165,5 +165,7 @@ typedef struct {
 
 void refreshp();
 
+extern const char *backgrnd_str;
+
 #endif /* TLF_H */
 

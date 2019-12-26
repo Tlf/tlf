@@ -51,7 +51,7 @@ pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
  *
  * \param from_lan true - Log lanmessage, false - normal message
  */
-int log_to_disk(int from_lan) {
+void log_to_disk(int from_lan) {
     extern char my_rst[];
     extern char his_rst[];
     extern char last_rst[4];
@@ -90,8 +90,7 @@ int log_to_disk(int from_lan) {
     } else {			// qso from lan
 
 	strncpy(lan_logline, lan_message + 2, 87);
-	strcat(lan_logline,
-	       "                                                                              ");
+	strcat(lan_logline, spaces(78));
 
 	if (cqwwm2 == 1) {
 	    if (lan_logline[0] != thisnode)
@@ -120,7 +119,7 @@ int log_to_disk(int from_lan) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));	/* erase comment  field */
 
     if (!from_lan)
-	mvprintw(12, 54, "                          ");
+	mvprintw(12, 54, spaces(80 - 54));
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     if (!from_lan) {
@@ -154,5 +153,4 @@ int log_to_disk(int from_lan) {
 
     pthread_mutex_unlock(&disk_mutex);
 
-    return (0);
 }

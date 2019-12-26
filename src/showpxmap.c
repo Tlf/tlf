@@ -87,8 +87,7 @@ void show_mults(void) {
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	    for (l = 1; l < 6; l++)
-		mvprintw(l, 0,
-			 "                                                                                ");
+		mvprintw(l, 0, backgrnd_str);
 
 	    i = 0;
 
@@ -139,8 +138,7 @@ void show_mults(void) {
 
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	for (l = 1; l < 6; l++)
-	    mvprintw(l, 0,
-		     "                                                                                ");
+	    mvprintw(l, 0, backgrnd_str);
     } else
 
 	multiplierinfo();

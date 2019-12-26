@@ -36,6 +36,7 @@
 #include "splitscreen.h"
 #include "tlf.h"
 #include "tlf_curses.h"
+#include "ui_utils.h"
 
 
 /** add call to list of spots
@@ -53,7 +54,7 @@ void add_to_spots(char *call, freq_t freq) {
     char spottime[6];
 
     sprintf(spotline, "DX de TLF-%c:     %9.3f  %s", thisnode, freq / 1000.0, call);
-    strcat(spotline, "                                           ");
+    strcat(spotline, spaces(43));
 
     get_time();
 
@@ -68,15 +69,16 @@ void add_to_spots(char *call, freq_t freq) {
 }
 
 
-int addspot(void) {
+void addspot(void) {
     extern freq_t freq;
     extern char hiscall[];
     extern int trx_control;
 
     char frequency[8];
 
-    if (strlen(hiscall) < 3)
-	return (0);
+    if (strlen(hiscall) < 3) {
+	return;
+    }
 
     if (trx_control == 0) {
 
@@ -93,5 +95,4 @@ int addspot(void) {
 
     hiscall[0] = '\0';
 
-    return (0);
 }

@@ -29,6 +29,7 @@
 #include <unistd.h>
 
 #include "err_utils.h"
+#include "ui_utils.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "log_utils.h"
 #include "ignore_unused.h"
@@ -108,8 +109,7 @@ void scroll_log(void) {
 	if (fseek(fp, -1L * i * LOGLINELEN, SEEK_END) == 0)
 	    IGNORE(fgets(inputbuffer, 90, fp));
 	else
-	    strcpy(inputbuffer,
-		   "                                                                                ");
+	    strcpy(inputbuffer, spaces(80));
 
 	if (strlen(inputbuffer) <= 10)	/* log repair */
 	    IGNORE(fgets(inputbuffer, 90, fp));;

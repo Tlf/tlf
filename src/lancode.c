@@ -88,8 +88,6 @@ int time_master;
 char thisnode = 'A'; 		/*  start with 'A' if not defined in
 				    logcfg.dat */
 
-extern const char backgrnd_str[];
-
 //---------------------end lan globals --------------
 
 int resolveService(const char *service) {

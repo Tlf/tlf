@@ -47,8 +47,7 @@ void recordmenue(void) {
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j <= 24; j++)
-	mvprintw(j, 0,
-		 "                                                                                ");
+	mvprintw(j, 0, backgrnd_str);
 
     mvprintw(1, 20, "--- TLF SOUND RECORDER UTILITY ---");
     mvprintw(6, 20, "F1 ... F12, S, C: Record Messages");

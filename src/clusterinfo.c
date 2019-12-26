@@ -56,7 +56,6 @@ int getclusterinfo(void);
 void clusterinfo(void) {
 
     extern int cluster;
-    extern const char backgrnd_str[];
     extern freq_t freq;
     extern char band[NBANDS][4];
     extern int bandinx;

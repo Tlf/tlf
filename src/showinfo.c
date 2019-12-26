@@ -56,7 +56,6 @@ void showinfo(int x) {
     extern long timecorr;
     extern char itustr[];
     extern int mycountrynr;
-    extern const char backgrnd_str[];
 
     int cury, curx;
     char pxstr[16];
@@ -131,9 +130,7 @@ void showinfo(int x) {
     if (contstr[0] != '-') {
 	mvprintw(LINES - 1, 0, " %s  %s", pxstr, countrystr);
 
-	mvprintw(LINES - 1, 26,
-		 " %s %s",
-		 contstr, zonestr);
+	mvprintw(LINES - 1, 26, " %s %s", contstr, zonestr);
 
 	if (x != 0 && x != mycountrynr && 0 == get_qrb(&range, &bearing)) {
 	    mvprintw(LINES - 1, 35, "%.0f km/%.0f deg ", range, bearing);

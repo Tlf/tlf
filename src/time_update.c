@@ -106,7 +106,7 @@ void show_freq(void) {
 	if (mem > 0.0)
 	    mvprintw(14, 67, " MEM: %7.1f", mem / 1000.0);
 	else
-	    mvprintw(14, 67, "             ");
+	    mvprintw(14, 67, spaces(80 - 67));
 
 	if ((showfreq == 1) && (showscore_flag == 0)) {
 
@@ -114,8 +114,8 @@ void show_freq(void) {
 	}
     }
     else {
-	mvprintw(13, 67, "             ");
-	mvprintw(14, 67, "             ");
+	mvprintw(13, 67, spaces(80 - 67));
+	mvprintw(14, 67, spaces(80 - 67));
     }
 }
 
@@ -190,8 +190,7 @@ void time_update(void) {
 	    mvprintw(9, 0, logline2);
 	    mvprintw(10, 0, logline3);
 	    mvprintw(11, 0, logline4);
-	    mvprintw(13, 0,
-		     "                                                                    ");
+	    mvprintw(13, 0, spaces(67));
 	    attron(COLOR_PAIR(C_WINDOW));
 	    mvprintw(12, 23, qsonrstr);
 	    printcall();
