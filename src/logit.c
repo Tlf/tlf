@@ -224,7 +224,7 @@ void refresh_comment(void) {
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    mvprintw(12, 54, "                          ");
+    mvprintw(12, 54, spaces(80 - 54));
     mvprintw(12, 54, comment);
 }
 

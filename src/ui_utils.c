@@ -22,6 +22,7 @@
 
 #include <pthread.h>
 #include <unistd.h>
+#include <glib.h>
 
 #include "clear_display.h"
 #include "clusterinfo.h"
@@ -338,4 +339,23 @@ void resize_layout(void) {
     clear_display();
     clusterinfo();
     refresh_splitlayout();
+}
+
+#define MAX_SPACES  1000
+
+static char *spaces_buffer = NULL;
+
+const char *spaces(int n) {
+
+    if (spaces_buffer == NULL) {
+	spaces_buffer = g_strnfill(MAX_SPACES, ' ');
+    }
+
+    if (n < 0) {
+	n = 0;
+    } else if (n > MAX_SPACES) {
+	n = MAX_SPACES;
+    }
+
+    return spaces_buffer + (MAX_SPACES - n);
 }

@@ -37,12 +37,10 @@
 #define LIST_UPPER  7
 #define LIST_LEFT   0
 
-
 char  printbuffer[160];
 
 char *formatMessage(int i) {
     extern char message[][80];
-    extern const char backgrnd_str[];
 
     /* copy the message string WITHOUT trailing newline/space */
     if (trxmode == DIGIMODE)
@@ -57,7 +55,6 @@ char *formatMessage(int i) {
 }
 
 void listmessages(void) {
-    extern const char backgrnd_str[];
 
     int i;
 

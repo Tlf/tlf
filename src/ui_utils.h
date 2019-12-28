@@ -38,5 +38,6 @@ int key_get();
 int key_poll();
 void resize_layout();
 
+const char *spaces(int);
 
 #endif /* UI_UTILS_H */

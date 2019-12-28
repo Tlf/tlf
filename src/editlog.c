@@ -72,7 +72,6 @@ void edit(char *filename) {
 void logedit(void) {
 
     extern char logfile[];
-    extern const char backgrnd_str[];
 
     int j;
 

@@ -33,7 +33,6 @@
 
 int include_note(void) {
 
-    extern const char backgrnd_str[];
     extern char logfile[];
     extern char qsonrstr[];
     extern char thisnode;

@@ -35,7 +35,6 @@
 
 
 int message_change(int x) {
-    extern const char backgrnd_str[];
     extern char message[][80];
 
     int j;

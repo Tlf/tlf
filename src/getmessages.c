@@ -37,16 +37,16 @@
 #include "ignore_unused.h"
 #include "tlf_curses.h"
 
+extern char call[];
+extern int mycountrynr;
+extern char mycqzone[];
+extern char mycontinent[];
+extern double QTH_Lat;
+extern double QTH_Long;
+
 
 /* get countrynumber, QTH, CQ zone and continent for myself */
 void getstationinfo() {
-    extern char call[];
-    extern int mycountrynr;
-    extern char mycqzone[];
-    extern char mycontinent[];
-    extern double QTH_Lat;
-    extern double QTH_Long;
-
     dxcc_data *mydx;
 
     mycountrynr = getctydata(call);	/* whoami? */
@@ -61,23 +61,10 @@ void getstationinfo() {
 
 void getmessages(void) {
 
-    extern char call[];
-    extern char mycqzone[];
-    extern char mycontinent[];
-    extern char logfile[];
-    extern int qsonum;
-    extern char qsonrstr[];
-    extern const char backgrnd_str[];
-
-    FILE *fp;
-
-    int i, ii;
-    char logline[5][82];
+    getstationinfo();
 
     printw("\n     Call = ");
     printw(call);
-
-    getstationinfo();
 
     printw("     My Zone = ");
     printw(mycqzone);
@@ -87,67 +74,4 @@ void getmessages(void) {
 
     printw("\n\n");
     refreshp();
-
-    if ((fp = fopen(logfile, "r")) == NULL) {
-	printw("\nError opening logfile.\nExiting...\n");
-	refreshp();
-	sleep(5);
-	endwin();
-	exit(1);
-    }
-
-    for (i = 5; i >= 1; i--) {
-
-	ii = 5 - i;
-
-	if (fseek(fp, -1L * i * LOGLINELEN, SEEK_END) == 0) {
-	    IGNORE(fgets(logline[ii], 85, fp));;
-	} else {
-	    strncpy(logline[ii], backgrnd_str, 81);
-	}
-
-	logline[ii][80] = '\0';
-	logline[ii][78] = 32;
-	logline[ii][79] = 32;
-    }
-
-    fclose(fp);
-
-
-    strncpy(qsonrstr, logline[4] + 23, 4);
-    qsonrstr[4] = '\0';
-
-    qsonum = atoi(qsonrstr) + 1;
-
-    if (qsonum == 1) {
-	strncpy(qsonrstr, logline[3] + 23, 4);
-	qsonrstr[4] = '\0';
-	qsonum = atoi(qsonrstr) + 1;
-	qsonr_to_str();
-    }
-
-    if (strlen(logline[0]) >= 75)
-	strncpy(logline0, logline[0], 80);
-    else
-	strcpy(logline0, backgrnd_str);
-
-    if (strlen(logline[1]) >= 75)
-	strncpy(logline1, logline[1], 80);
-    else
-	strcpy(logline1, backgrnd_str);
-
-    if (strlen(logline[2]) >= 75)
-	strncpy(logline2, logline[2], 80);
-    else
-	strcpy(logline2, backgrnd_str);
-
-    if (strlen(logline[3]) >= 75)
-	strncpy(logline3, logline[3], 80);
-    else
-	strcpy(logline3, backgrnd_str);
-
-    if (strlen(logline[4]) >= 75)
-	strncpy(logline4, logline[4], 80);
-    else
-	strcpy(logline4, backgrnd_str);
 }

@@ -248,7 +248,6 @@ void sendbuf(void) {
     extern int trxmode;
     extern int searchflg;
     extern char termbuf[];
-    extern const char backgrnd_str[];
     extern int cwkeyer;
     extern int digikeyer;
     extern int simulator;

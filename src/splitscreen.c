@@ -50,8 +50,6 @@
 #include "ui_utils.h"
 #include "err_utils.h"
 
-extern const char backgrnd_str[];
-
 struct tln_logline {
     struct tln_logline *next;
     struct tln_logline *prev;
@@ -692,10 +690,8 @@ void addtext(char *s) {
 			spotline[m] -= 32;
 		}
 
-		strcat(spotline,
-		       "                                           ");
+		strcat(spotline, spaces(43));
 		get_time();
-//                                              strftime(spottime, 80, "%H%MZ", time_ptr);      ### bug fix
 		strftime(spottime, sizeof(spottime), "%H%MZ", time_ptr);
 		strcpy(spotline + 70, spottime);
 		spotline[75] = '\0';

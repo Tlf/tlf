@@ -421,8 +421,7 @@ freq_t bandfrequency[NBANDS] = {
 
 const char headerline[] =
     "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  ";
-const char backgrnd_str[81] =
-    "                                                                                ";
+const char *backgrnd_str;
 
 char logline_edit[5][LOGLINELEN + 1];
 
@@ -896,11 +895,13 @@ void tlf_cleanup() {
 /* ------------------------------------------------------------------------*/
 /*     Main loop of the program			                           */
 /* ------------------------------------------------------------------------*/
-
 int main(int argc, char *argv[]) {
     int j;
     int ret;
     char welcome[80];
+
+    backgrnd_str = spaces(80);
+
     sprintf(welcome, "        Welcome to %s by PA0R!!", argp_program_version);
 
     argp_parse(&argp, argc, argv, 0, 0, NULL);  // parse options

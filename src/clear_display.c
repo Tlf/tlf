@@ -71,7 +71,6 @@ void clear_display(void) {
     extern char terminal2[];
     extern char terminal3[];
     extern char terminal4[];
-    extern const char backgrnd_str[];
     extern char band[NBANDS][4];
     extern int bandinx;
     extern int trxmode;
