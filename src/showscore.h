@@ -28,6 +28,6 @@ int get_nr_of_mults();
 /* calculate total score */
 int get_total_score();
 
-int  showscore(void);
+void  showscore(void);
 
 #endif /* SHOWSCORE_H */
