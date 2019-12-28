@@ -56,18 +56,17 @@ static void enter_message(int bufnr) {
     noecho();
 
     if (printbuf[0] == ESCAPE) {
-        return; // user didn't wish to change the message
+	return; // user didn't wish to change the message
     }
 
     for (char *p = printbuf; *p; p++) {
-        *p = toupper(*p);
+	*p = toupper(*p);
     }
 
     if (trxmode == DIGIMODE) {
 	free(digi_message[bufnr]);
 	digi_message[bufnr] = strdup(printbuf);
-    }
-    else
+    } else
 	strcpy(message[bufnr], printbuf);
 }
 
@@ -80,7 +79,7 @@ void message_change() {
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (int y = 13; y < LINES - 1; y++) {
-        mvprintw(y, 0, backgrnd_str);
+	mvprintw(y, 0, backgrnd_str);
     }
 
     nicebox(14, 3, 2, 60, "Enter message (F1-12, C, S)");
@@ -94,8 +93,8 @@ void message_change() {
 	if (bufnr >= KEY_F(1) && bufnr <= KEY_F(12))
 	    break;
 
-        if (bufnr == ESCAPE)
-            break;
+	if (bufnr == ESCAPE)
+	    break;
     }
 
     if (bufnr == 'S') {
@@ -109,7 +108,7 @@ void message_change() {
     }
 
     if (bufnr >= 0) {
-        enter_message(bufnr);
+	enter_message(bufnr);
     }
 
     mvprintw(12, 29, "");
