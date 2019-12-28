@@ -610,7 +610,7 @@ int fldigi_get_log_call() {
 			strcpy(thiscall, hiscall);
 			printcall();
 			getctydata_pfx(hiscall);
-			searchlog(hiscall);
+			searchlog();
 			fldigi_set_callfield = 1;
 		    }
 		}

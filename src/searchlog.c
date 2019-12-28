@@ -710,7 +710,7 @@ void displayWorkedZonesCountries(int z) {
 }
 
 
-void searchlog(char *searchstring) {
+void searchlog() {
 
     extern int isdupe;		// LZ3NY auto-b4 patch
     extern int searchflg;

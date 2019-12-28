@@ -22,7 +22,9 @@
  *
  *--------------------------------------------------------------*/
 
+#ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,6 +46,7 @@
 #include "readqtccalls.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
+#include "ui_utils.h"
 #include "zone_nr.h"
 
 
@@ -62,7 +65,6 @@ int readcalls(void) {
     char zonebuf[3];
     char checkcall[20];
     int i = 0, l = 0, n = 0, r = 0, s = 0;
-    unsigned int k;
     int m = 0;
     int t;
     int z = 0;
@@ -154,8 +156,7 @@ int readcalls(void) {
 	    refreshp();
 	}
 
-	strcat(inputbuffer,
-	       "                                                  ");	/* repair the logfile */
+	strcat(inputbuffer, spaces(50)); /* repair the logfile */
 	inputbuffer[LOGLINELEN - 1] = '\0';
 
 	for (t = 0; t <= strlen(inputbuffer); t++) {
@@ -310,7 +311,7 @@ int readcalls(void) {
 
 	}
 	/*  once  per call !  */
-	for (k = 0; k < i; k++) {	// changed k=< i
+	for (int k = 0; k < i; k++) {
 	    m = strcmp(worked[k].call, presentcall);
 
 	    if (m == 0) {

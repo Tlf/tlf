@@ -101,7 +101,7 @@ static freq_t execute_grab(spot *data) {
     strcpy(hiscall, data->call);
 
     showinfo(getctydata_pfx(hiscall));
-    searchlog(hiscall);
+    searchlog();
 
     /* if in CQ mode switch to S&P and remember QRG */
     if (cqmode == CQ) {

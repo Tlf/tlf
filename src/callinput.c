@@ -168,7 +168,7 @@ int callinput(void) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     printcall();	/* print call input field */
-    searchlog(hiscall);
+    searchlog();
 
     while (strlen(hiscall) <= 13) {
 
@@ -219,7 +219,7 @@ int callinput(void) {
 
 		    showinfo(getctydata_pfx(hiscall));
 		    printcall();
-		    searchlog(hiscall);
+		    searchlog();
 		    freqstore = 0;
 		}
 	    }
@@ -307,8 +307,7 @@ int callinput(void) {
 
 			if (*comment == '\0') {
 			    x = -1;
-			}
-			else {
+			} else {
 			    /* F4 (TU macro) */
 			    send_standard_message(3);
 
@@ -496,8 +495,7 @@ int callinput(void) {
 		    if (comment[0] == '\0') {
 			x = -1;
 			break;
-		    }
-		    else {
+		    } else {
 			/* Log without sending message. */
 			x = BACKSLASH;
 			break;
@@ -510,7 +508,7 @@ int callinput(void) {
 		/* check b4 QSO if call is long enough and 'nob4' off */
 		isdupe = 0;	// LZ3NY  auto-b4 patch
 
-		searchlog(hiscall);
+		searchlog();
 
 		if (isdupe != 0) {
 		    // XXX: Before digi_message, SSB mode sent CW here. - W8BSD
@@ -524,12 +522,12 @@ int callinput(void) {
 	    /* <Insert>, send exchange in CT mode */
 	    case KEY_IC: {
 		if (ctcomp != 0) {
-	            /* F3 (RST macro) */
+		    /* F3 (RST macro) */
 		    send_standard_message(2);
-	            /* Set to space to move cursor to exchange field
-	             * which will trigger autofill if available.
-	             */
-	            x = ' ';
+		    /* Set to space to move cursor to exchange field
+		     * which will trigger autofill if available.
+		     */
+		    x = ' ';
 		}
 		break;
 	    }
@@ -652,7 +650,7 @@ int callinput(void) {
 
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */
 			showinfo(getctydata_pfx(hiscall));
-			searchlog(hiscall);
+			searchlog();
 			refreshp();
 		    }
 
@@ -1050,7 +1048,7 @@ int callinput(void) {
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
 		showinfo(getctydata_pfx(hiscall));
-		searchlog(hiscall);
+		searchlog();
 	    }
 
 	    refreshp();

@@ -80,7 +80,6 @@ void clear_display(void) {
     extern int cqww;
     extern int arrldx_usa;
     extern char comment[];
-    extern char hiscall[];
     extern int searchflg;
     extern int m;
     extern struct tm *time_ptr;
@@ -164,7 +163,7 @@ void clear_display(void) {
     }
 
     if (searchflg == SEARCHWINDOW)
-	searchlog(hiscall);
+	searchlog();
 
     printcall();
 
