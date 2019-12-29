@@ -1,51 +1,115 @@
-! Sample Xresources for Xterm.
-! Copy to your home directory as $HOME/.Xresources and
-! run xrdb -merge ~/.Xresources to make these settings visible
-! to a running X instance
+! Sample Xresources for Xterm and URxvt.
 
-!Xcursor*theme: DMZ-White
+! Copy this file to your home directory as $HOME/.Xresources and run
+! 'xrdb -merge ~/.Xresources' to make these settings visible to a running X
+! instance.
+!
+! These themes for Xterm and URxvt consist of colors as used in the Gnome
+! Terminal's Linux Console color palette.  You can also use this file as the
+! starting point for your own custom Xterm or URxvt theme.  Have fun!
 
-!xterm*font:     *-fixed-*-*-*-20-*
-!xterm*font:     10x20
+! A custom cursor color is provided for Xterm and URxvt.
 
-! Adjust the size parameter to your preference
-xterm*faceName: DejaVu Sans Mono:size=18:antialias=false
-XTerm*allowBoldFonts: true
 
-! terminal colors ------------------------------------------------------------
+! ---------------------------------------------------------------------
+! Xterm settings.
 
-! Linux terminal scheme
-xterm*background: #000000
-xterm*foreground: #c0c0c0
+! A mouse cursor theme may be set.  In this case the dmz-cursor-theme package
+! can be installed on Debian and derivatives (Ubuntu, Mint, etc.)
+!Xcursor*theme:          DMZ-White
 
-! Black + DarkGrey
-xterm*color0:  #000000
-xterm*color8:  #808080
+! Traditional ways to set a font or font size for Xterm.
+!xterm*font:             *-fixed-*-*-*-20-*
+!xterm*font:             10x20
 
-! DarkRed + Red
-xterm*color1:  #800000
-xterm*color9:  #ff0000
+! Fonts are a matter of personal taste.  A good terminal/monospace font will
+! show a definite difference between O and 0 or l and 1.  Later Xterm and
+! URxvt versions support anti-aliasing so try it each way and see which looks
+! better to you.
 
-! DarkGreen + Green
-xterm*color2:  #008000
-xterm*color10: #00ff00
+! TrueType fonts with a slashed zero can be found at:
+! http://www.g0hwc.com/ham_radio_fonts.html
+! https://github.com/AlbertoDorado/droid-sans-mono-zeromod
+! install using your desktop's/distributions's font installer.
 
-! Brown + Yellow
-xterm*color3:  #808000
-xterm*color11: #ffff00
+! Adjust the size parameter to your preference.
+xterm*faceName:         DejaVu Sans Mono:size=18:antialias=true
+!xterm*faceName:         Droid Sans Mono Slashed:size=18:antialias=true
 
-! DarkBlue + Blue
-xterm*color4:  #000080
-xterm*color12: #0000ff
+! Tlf uses bold fonts, so enable them.
+XTerm*allowBoldFonts:   true
 
-! DarkMagenta + Magenta
-xterm*color5:  #800080
-xterm*color13: #ff00ff
+! ---------------------------------------------------------------------
+! Linux terminal scheme from Gnome Terminal Linux Console color palette
+! Black & Gray
+xterm*background:       #000000
+xterm*foreground:       #aaaaaa
+! Black & DarkGray
+xterm*color0:           #000000
+xterm*color8:           #555555
+! DarkRed & Red
+xterm*color1:           #aa0000
+xterm*color9:           #ff5555
+! DarkGreen & Green
+xterm*color2:           #00aa00
+xterm*color10:          #55ff55
+! DarkYellow & Yellow
+xterm*color3:           #aa5500
+xterm*color11:          #ffff55
+! DarkBlue & Blue
+xterm*color4:           #0000aa
+xterm*color12:          #5555ff
+! DarkMagenta & Magenta
+xterm*color5:           #aa00aa
+xterm*color13:          #ff55ff
+!DarkCyan & Cyan
+xterm*color6:           #00aaaa
+xterm*color14:          #55ffff
+! LightGray & White
+xterm*color7:           #aaaaaa
+xterm*color15:          #ffffff
 
-!DarkCyan + Cyan
-xterm*color6:  #008080
-xterm*color14: #00ffff
+! ---------------------------------------------------------------------
+! Custom cursor color.  Change to suit taste.
+! Orange
+xterm*cursorColor:      #ffa530
 
-! LightGrey + White
-xterm*color7:  #c0c0c0
-xterm*color15: #ffffff
+
+! ---------------------------------------------------------------------
+! URxvt settings.
+
+URxvt.geometry:         80x25
+URxvt.font:             xft:Droid Sans Mono Slashed:size=16:antialias=true
+!URxvt.font:             xft:DejaVu Sans Mono:size=18:antialias=true
+
+! Orange
+URxvt.cursorColor:      #ffa530
+
+! URxvt VGA colors
+! Black & Gray
+URxvt.background:       #000000
+URxvt.foreground:       #aaaaaa
+! Black & DarkGray
+URxvt.color0:           #000000
+URxvt.color8:           #555555
+! DarkRed & Red
+URxvt.color1:           #AA0000
+URxvt.color9:           #FF5555
+! DarkGreen & Green
+URxvt.color2:           #00AA00
+URxvt.color10:          #55FF55
+! DarkYellow & Yellow
+URxvt.color3:           #AA5500
+URxvt.color11:          #FFFF55
+! DarkBlue & Blue
+URxvt.color4:           #0000AA
+URxvt.color12:          #5555FF
+! DarkMagenta & Magenta
+URxvt.color5:           #AA00AA
+URxvt.color13:          #FF55FF
+!DarkCyan & Cyan
+URxvt.color6:           #00AAAA
+URxvt.color14:          #55FFFF
+! LightGray & White
+URxvt.color7:           #AAAAAA
+URxvt.color15:          #FFFFFF
