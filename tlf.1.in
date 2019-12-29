@@ -494,11 +494,11 @@ for @PACKAGE_NAME@ use.
 Some desktop terminal emulators are capable of being configured to allow the
 application running in them to get all of the keys the desktop environment
 does not consume.  In testing good choices seem to be Gnome Terminal, Rox
-Terminal, or the classic Xterm (although its color representation differs from
-the Linux console and other terminal emulators).  Xfce Terminal is known to
-consume F11 and Ctrl-PageUp and Ctrl-PageDown.  The @PACKAGE_NAME@ developers
-have implemented Alt-PageUp and Alt-PageDown as a work-around for the Ctrl
-counterparts.  Reports of success with other terminals are welcome.
+Terminal, or the classic Xterm or URxvt which seem to consume the fewest
+keystrokes for their own use.  Xfce Terminal is known to consume F11 and
+Ctrl-PageUp and Ctrl-PageDown.  The @PACKAGE_NAME@ developers have implemented
+Alt-PageUp and Alt-PageDown as a work-around for the Ctrl counterparts.
+Reports of success with other terminals are welcome.
 .
 .SS Call Input and Exchange Fields
 .
@@ -1064,9 +1064,9 @@ for a default one.  Make sure you edit the
 .I logcfg.dat
 file at least to hold your call and your preferred system configuration.
 .
-.SH LOGCFG.DAT STATEMENTS
+.SS logcfg.dat STATEMENTS
 .
-Configuration parameters set in
+Configuration parameters are set in
 .I logcfg.dat
 located in the working directory (where @PACKAGE_NAME@ is started).
 .
@@ -1092,7 +1092,7 @@ switch between CQ and S&P modes, in which \(oqEnter\(cq is the sole key used
 to call the other station, send the exchange, and log the QSO.
 .
 .TP
-\fBTLFCOLOR\fIn\fR=\fIFG\fR/\fIBG\fR
+\fBTLFCOLOR\fIn\fR=\fIBF\fR
 Defaults:
 .RS 14
 \fBTLFCOLOR1\fR=\fI23\fR (Header and footer)
@@ -1109,8 +1109,36 @@ Defaults:
 .RE
 .
 .IP
-The numbers are given in octal, FG/BG or BG/FG (some experimentation likely
-required).
+The numbers are given in octal with each digit standing for
+.IR B ackground
+and
+.IR F oreground.
+No space is given between the values.
+.
+.IP
+The color values are:
+.RS 14
+Black           0
+.br
+Red             1
+.br
+Green           2
+.br
+Yellow          3
+.br
+Blue            4
+.br
+Magenta         5
+.br
+Cyan            6
+.br
+White           7
+.RE
+.
+.IP
+Some sections of the screen are coded to show the bright version of these
+colors so some combinations may be unreadable!  Some experimentation is
+required.
 .
 .IP
 You should only specify these if you wish to modify the standard colours of
@@ -1118,7 +1146,17 @@ You should only specify these if you wish to modify the standard colours of
 @PACKAGE_NAME@ with your own colours.  Another way is to define the colours
 via the
 .I $HOME/.Xresources
-file.
+file for
+.BR xterm (1)
+or
+.BR urxvt (1).
+.
+.IP
+A sample
+.B Xresources
+file with color values matching the Linux console is provided in
+.IR @prefix@/share/doc/@PACKAGE@/Xresources .
+Comments in the file provide instructions for its use.
 .
 .TP
 \fBEDITOR\fR=\fInano\fR | \fIvi\fR[\fIm\fR] | \fI<your_favorite_editor>\fR
@@ -2074,6 +2112,15 @@ It will take precedence over the system installed
 .IR callmaster .
 .
 .P
+.I @prefix@/share/doc/@PACKAGE@/Xresources
+contains a set of font and color settings for
+.BR xterm (1)
+and
+.BR urxvt (1)
+that are very close to the colors of the Linux console.  These terminals may
+be preferred as they consume the fewest key combinations for their own use.
+.
+.P
 \fISection files\fR contain a flat ASCII database of multpliers like states,
 sections, provinces, districts, names, ages, etc.  They are invoked by
 including \fBMULT_LIST\fR=\fIsection_file_name\fR in the rules file.
@@ -2081,13 +2128,13 @@ including \fBMULT_LIST\fR=\fIsection_file_name\fR in the rules file.
 .SH DOCUMENTATION
 .
 An operation manual (a little bit outdated) is available in HTML format at
-.UR http://sharon.esrac.ele.tue.nl/pub/linux/ham/tlf/
-the old @PACKAGE_NAME@ project page
+.UR https://tlf.github.io/tlfdoc.old/tlfdoc.html
+the @PACKAGE_NAME@ project page
 .UE .
 .
 .P
 An FAQ and other useful tips are installed in the system doc directory under
-\fI@PACKAGE_TARNAME@\fR.
+.IR @prefix@/share/doc/@PACKAGE@/ .
 .
 .SH BUGS
 Please send bug reports to
