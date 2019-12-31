@@ -38,6 +38,18 @@ extern const unsigned int bandcorner[NBANDS][2];
 extern const unsigned int cwcorner[NBANDS];
 extern const unsigned int ssbcorner[NBANDS];
 
+/** \brief converts bandnumber to bandindex
+ *
+ * \parameter   bandnumber
+ * \return	bandindex or BANDINDEX_OOB if no ham radio band
+ */
+int bandnr2index(int nr);
+
+
+/** \brief converts bandindex to bandnumber */
+int bandindex2nr(int index);
+
+
 /** Switch to next band
  *
  * Switch to next ham radio band up or down. Wrap around if lowest or highest

@@ -32,6 +32,36 @@ void test_IsWarcIndex(void **state) {
     assert_int_equal(IsWarcIndex(BANDINDEX_10), 0);
 }
 
+/* test conversion from bandnumber to bandindex */
+void test_bandnr2index(void **state) {
+    assert_int_equal(bandnr2index(160), BANDINDEX_160);
+    assert_int_equal(bandnr2index(80), BANDINDEX_80);
+    assert_int_equal(bandnr2index(40), BANDINDEX_40);
+    assert_int_equal(bandnr2index(30), BANDINDEX_30);
+    assert_int_equal(bandnr2index(20), BANDINDEX_20);
+    assert_int_equal(bandnr2index(17), BANDINDEX_17);
+    assert_int_equal(bandnr2index(15), BANDINDEX_15);
+    assert_int_equal(bandnr2index(12), BANDINDEX_12);
+    assert_int_equal(bandnr2index(10), BANDINDEX_10);
+    assert_int_equal(bandnr2index(99), BANDINDEX_OOB);
+    assert_int_equal(bandnr2index(0), BANDINDEX_OOB);
+}
+
+/* test conversion from bandindex to bandnumber */
+void test_bandindex2nr(void **state) {
+    assert_int_equal(bandindex2nr(BANDINDEX_160), 160);
+    assert_int_equal(bandindex2nr(BANDINDEX_80), 80);
+    assert_int_equal(bandindex2nr(BANDINDEX_40), 40);
+    assert_int_equal(bandindex2nr(BANDINDEX_30), 30);
+    assert_int_equal(bandindex2nr(BANDINDEX_20), 20);
+    assert_int_equal(bandindex2nr(BANDINDEX_17), 17);
+    assert_int_equal(bandindex2nr(BANDINDEX_15), 15);
+    assert_int_equal(bandindex2nr(BANDINDEX_12), 12);
+    assert_int_equal(bandindex2nr(BANDINDEX_10), 10);
+    assert_int_equal(bandindex2nr(BANDINDEX_OOB), 0);
+}
+
+
 /* test switch to next band UP or DOWN */
 void test_nextBandUp(void **state) {
     bandinx = BANDINDEX_12;

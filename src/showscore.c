@@ -27,6 +27,7 @@
 #include <math.h>
 
 #include "addpfx.h"
+#include "bands.h"
 #include "focm.h"
 #include "globalvars.h"		// Includes tlf.h
 #include "last10.h"
@@ -54,9 +55,6 @@ static int bi_warc[6] = {
     BANDINDEX_30,  BANDINDEX_17, BANDINDEX_12
 };
 
-/* bands as numbers */
-static int bandnr[NBANDS] =
-{ 160, 80, 40, 30, 20, 17, 15, 12, 10, 0 };
 
 void printfield(int y, int x, int number);
 void stewperry_show_summary(int points, float fixedmult);
@@ -103,7 +101,7 @@ void display_header(int *bi) {
 	if (bandinx == bi[i]) {		/* highlight active band */
 	    attrset(COLOR_PAIR(C_DUPE));
 	}
-	printw("%3d", bandnr[bi[i]]);
+	printw("%3d", bandindex2nr(bi[i]));
     }
 
     /* show number of QSO */

@@ -8,11 +8,12 @@
 // OBJECT ../src/addcall.o
 // OBJECT ../src/addmult.o
 // OBJECT ../src/bands.o
-// OBJECT ../src/searchcallarray.o
+// OBJECT ../src/dxcc.o
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
-// OBJECT ../src/dxcc.o
 // OBJECT ../src/get_time.o
+// OBJECT ../src/log_utils.o
+// OBJECT ../src/searchcallarray.o
 // OBJECT ../src/zone_nr.o
 
 
