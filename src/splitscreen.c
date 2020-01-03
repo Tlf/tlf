@@ -545,10 +545,9 @@ void sanitize(char *s) {
 	if (*s == '\007')
 	    beep();
 	else if (*s == '\015');
-	else if (*s < 0)
-	    *t++ = *s - 128;
-	else
-	    *t++ = *s;
+	else {
+	    *t++ = *s & 0x7f;
+        }
     }
     *t = '\0';
 }

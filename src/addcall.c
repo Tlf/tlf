@@ -26,7 +26,9 @@
 #define _GNU_SOURCE
 #endif
 
+#ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
+#endif
 
 #include <stdlib.h>
 #include <string.h>

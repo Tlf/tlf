@@ -27,8 +27,6 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
-extern int ymax;
-
 #define LINELENGTH 80
 
 int getwwv(void) {

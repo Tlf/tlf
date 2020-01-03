@@ -17,8 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /* ------------------------------------------------------------
- *         Change CW messages
- *         last change: 25.2.02 11:50
+ *         Change CW/DIGI messages
  *--------------------------------------------------------------*/
 
 
@@ -32,28 +31,58 @@
 #include "tlf.h"
 #include "ui_utils.h"
 #include "writeparas.h"
+#include "keystroke_names.h"
 
+static void enter_message(int bufnr) {
 
-int message_change(int x) {
-    extern char message[][80];
-
-    int j;
-    int count;
-    int mes_length;
-    int bufnr = 0;
     char printbuf[80];
     char *msg;
 
-    clear_display();
-    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    if (trxmode == DIGIMODE)
+	msg = digi_message[bufnr];
+    else
+	msg = message[bufnr];
 
-    for (j = 13; j <= 23; j++) {
-	mvprintw(j, 0, backgrnd_str);
+    g_strlcpy(printbuf, msg, sizeof(printbuf));
+    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+    mvaddstr(15, 4, printbuf);
+    refreshp();
+
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    mvprintw(16, 4, "");
+
+    echo();
+    getnstr(printbuf, 60);
+    noecho();
+
+    if (printbuf[0] == ESCAPE) {
+	return; // user didn't wish to change the message
+    }
+
+    for (char *p = printbuf; *p; p++) {
+	*p = toupper(*p);
+    }
+
+    if (trxmode == DIGIMODE) {
+	free(digi_message[bufnr]);
+	digi_message[bufnr] = strdup(printbuf);
+    } else
+	strcpy(message[bufnr], printbuf);
+}
+
+
+void message_change() {
+
+    int bufnr;
+
+    clear_display();
+
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+    for (int y = 13; y < LINES - 1; y++) {
+	mvprintw(y, 0, backgrnd_str);
     }
 
     nicebox(14, 3, 2, 60, "Enter message (F1-12, C, S)");
-
-    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     while (1) {
 	bufnr = toupper(key_get());
@@ -63,81 +92,30 @@ int message_change(int x) {
 
 	if (bufnr >= KEY_F(1) && bufnr <= KEY_F(12))
 	    break;
+
+	if (bufnr == ESCAPE)
+	    break;
     }
 
     if (bufnr == 'S') {
 	bufnr = 12;
     } else if (bufnr == 'C') {
 	bufnr = 13;
+    } else if (bufnr == ESCAPE) {
+	bufnr = -1;
     } else {
 	bufnr = bufnr - KEY_F(1);
     }
 
-    if (trxmode == DIGIMODE)
-	msg = digi_message[bufnr];
-    else
-	msg = message[bufnr];
-
-    g_strlcpy(printbuf, msg, sizeof(printbuf));
-    mvprintw(15, 4, "%s", printbuf);
-    refreshp();
-
-    mvprintw(16, 4, "");
-    msg[0] = '\0';
-
-    echo();
-    getnstr(printbuf, 60);
-    noecho();
-
-    if (trxmode == DIGIMODE)
-	strcat(printbuf, " ");
-    else
-	strcat(printbuf, "\n");
-    mes_length = strlen(printbuf);
-
-    if (mes_length < 2) {
-	clear_display();
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-	for (j = 13; j <= 23; j++) {
-	    mvprintw(j, 0, backgrnd_str);
-	}
-
-	if (trxmode == DIGIMODE) {
-	    strcat(printbuf, " ");
-	    free(digi_message[bufnr]);
-	    digi_message[bufnr] = strdup(printbuf);
-        }
-	else
-	    strcpy(message[bufnr], printbuf);
-
-	return (1);
+    if (bufnr >= 0) {
+	enter_message(bufnr);
     }
-
-    for (count = 0; count <= mes_length; count++) {
-	if ((printbuf[count] > 96)
-		&& (printbuf[count] < 123))
-	    printbuf[count] = printbuf[count] - 32;
-    }
-
-    if (trxmode == DIGIMODE) {
-	strcat(printbuf, " ");
-	free(digi_message[bufnr]);
-	digi_message[bufnr] = strdup(printbuf);
-    }
-    else
-	strcpy(message[bufnr], printbuf);
 
     mvprintw(12, 29, "");
     refreshp();
     clear_display();
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-    for (j = 13; j <= 23; j++) {
-	mvprintw(j, 0, backgrnd_str);
-    }
-
     writeparas();
 
-    return (0);
 }

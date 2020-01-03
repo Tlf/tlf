@@ -21,6 +21,6 @@
 #ifndef MESSAGECHANGE_H
 #define MESSAGECHANGE_H
 
-int message_change(int x);
+void message_change(void);
 
 #endif /* MESSAGECHANGE_H */

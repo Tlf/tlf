@@ -209,7 +209,7 @@ int changepars(void) {
 	    break;
 	}
 	case 6: {		/* MESSAGE  */
-	    message_change(i);
+	    message_change();
 	    break;
 	}
 

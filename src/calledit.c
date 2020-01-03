@@ -113,7 +113,7 @@ void calledit(void) {
 	    showinfo(getctydata_pfx(hiscall));
 
 	    if (cnt > 1)
-		searchlog(hiscall);
+		searchlog();
 
 	    // <Backspace>
 	} else if (i == KEY_BACKSPACE) {
@@ -131,7 +131,7 @@ void calledit(void) {
 		showinfo(getctydata_pfx(hiscall));
 
 		if (cnt > 1)
-		    searchlog(hiscall);
+		    searchlog();
 	    }
 
 	    // <Insert>
@@ -180,7 +180,7 @@ void calledit(void) {
 
 		showinfo(getctydata_pfx(hiscall));
 
-		searchlog(hiscall);
+		searchlog();
 
 	    } else if (x != 0)
 		i = ESCAPE;
@@ -198,7 +198,7 @@ void calledit(void) {
     refreshp();
 
     attron(A_STANDOUT);
-    searchlog(hiscall);
+    searchlog();
 }
 
 int insert_char(int curposition) {

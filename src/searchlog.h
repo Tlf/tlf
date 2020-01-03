@@ -33,7 +33,8 @@ extern char *callmaster_filename;
 
 int load_callmaster(void);
 
-void searchlog(char *searchstring);
+/* search 'hiscall' in the log */
+void searchlog(void);
 
 void InitSearchPanel(void);
 void ShowSearchPanel(void);
