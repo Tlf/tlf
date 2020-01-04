@@ -49,6 +49,12 @@
 #include "ui_utils.h"
 #include "zone_nr.h"
 
+void show_progress(int linenr) {
+    if (((linenr + 1) % 100) == 0) {
+	printw("*");
+	refreshp();
+    }
+}
 
 int readcalls(void) {
 
@@ -64,7 +70,7 @@ int readcalls(void) {
     char bndbuf[20];
     char zonebuf[3];
     char checkcall[20];
-    int i = 0, l = 0, n = 0, r = 0, s = 0;
+    int i = 0, l = 0, n = 0;
     int m = 0;
     int t;
     int z = 0;
@@ -82,7 +88,7 @@ int readcalls(void) {
     int qsomode;
     int linenr = 0;
 
-    int bandindex;
+    int bandindex = BANDINDEX_OOB;
 
     FILE *fp;
 
@@ -90,8 +96,8 @@ int readcalls(void) {
     refreshp();
 
     /* reset counter and score anew */
-    for (s = 0; s < MAX_QSOS; s++)
-	qsos[s][0] = '\0';
+    for (i = 0; i < MAX_QSOS; i++)
+	qsos[i][0] = '\0';
 
     for (i = 0; i < MAX_CALLS; i++) {
 	*worked[i].exchange = '\0';
@@ -141,21 +147,9 @@ int readcalls(void) {
     i = 0;
     l = 0;
 
-    s = 0;
-
     while (fgets(inputbuffer, 90, fp) != NULL) {
-	pfxnumcntidx = -1;
-	pxnr = 0;
-	excl_add_veto = 0;
-	linenr++;
-	r++;
 
-	if (r >= 100) {
-	    r = 0;
-	    printw("*");
-	    refreshp();
-	}
-
+	// sanitize input line
 	strcat(inputbuffer, spaces(50)); /* repair the logfile */
 	inputbuffer[LOGLINELEN - 1] = '\0';
 
@@ -164,15 +158,21 @@ int readcalls(void) {
 		inputbuffer[t] = ' ';
 	}
 
-	strncpy(qsos[s], inputbuffer, LOGLINELEN);
-	s++;
+	// remember logline in qsos[] field
+	strncpy(qsos[linenr], inputbuffer, LOGLINELEN);
+	linenr++;
+
+	show_progress(linenr);
 
 	if (log_is_comment(inputbuffer))
 	    continue;		/* skip note in  log  */
 
-	strncpy(presentcall, inputbuffer + 29, 13);
-	presentcall[13] = '\0';
+	// prepare helper variables
+	pfxnumcntidx = -1;
+	pxnr = 0;
+	excl_add_veto = 0;
 
+	// get bandindex
 	bandindex = BANDINDEX_OOB;
 
 	strncpy(bndbuf, inputbuffer + 1, 2);
@@ -198,6 +198,9 @@ int readcalls(void) {
 	    bandindex = BANDINDEX_30;
 
 	/* get the country number, not known at this point */
+	strncpy(presentcall, inputbuffer + 29, 13);
+	presentcall[13] = '\0';
+
 	tmpptr = strchr(presentcall, ' ');
 	if (tmpptr)
 	    *tmpptr = '\0';
@@ -310,7 +313,8 @@ int readcalls(void) {
 	    }
 
 	}
-	/*  once  per call !  */
+
+	/*  lookup worked stations */
 	for (int k = 0; k < i; k++) {
 	    m = strcmp(worked[k].call, presentcall);
 
@@ -322,6 +326,7 @@ int readcalls(void) {
 
 	}
 
+	/* and fill in according entry */
 	strncpy(worked[l].call, inputbuffer + 29, 19);
 	worked[l].call[19] = 0;
 	strtok(worked[l].call, " \r");	/* delimit first word */
@@ -350,7 +355,8 @@ int readcalls(void) {
 	qsotimets = mktime(&qsotime);
 	worked[l].qsotime[qsomode][bandindex] = qsotimets;
 
-	add_ok = 1;		/* look if calls are excluded */
+	/* look if calls are excluded */
+	add_ok = 1;
 
 	if ((arrldx_usa == 1)
 		&& ((countrynr == w_cty) || (countrynr == ve_cty)))
@@ -434,7 +440,7 @@ int readcalls(void) {
 		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandindex];
 	    }
 
-	}			/* end add_ok */
+	}
 
 	if (l == i)
 	    i++;
@@ -453,7 +459,14 @@ int readcalls(void) {
 	for (n = 0; n < i; n++) {
 	    strcpy(checkcall, worked[n].call);
 	    getpx(checkcall);
-	    add_pfx(pxstr, bandindex);
+	    /* FIXME: wpx is counting pfx only once so bandindex is not
+	     * really needed here. If you have wpx and pfxmultab set the
+	     * count for the last read band wil be wrong as all pfx will be
+	     * counted for that band.
+	     * Maybe better use BANDINDEX_OOB here:
+	     * - Will count pfx for wpx correctly
+	     * - but will not change counts for pfxmultab on contest bands */
+	    add_pfx(pxstr, BANDINDEX_OOB);
 	}
     }
 
@@ -621,7 +634,7 @@ int readcalls(void) {
 	}
     }
 
-    return (s);			// nr of lines in log
+    return linenr;			// nr of lines in log
 }
 
 int log_read_n_score() {
