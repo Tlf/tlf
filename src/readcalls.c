@@ -50,6 +50,60 @@
 #include "ui_utils.h"
 #include "zone_nr.h"
 
+extern char continent_multiplier_list[7][3];
+extern int continentlist_only;
+extern int pfxnummultinr;
+extern t_pfxnummulti pfxnummulti[];
+extern int exclude_multilist_type;
+extern char countrylist[][6];
+
+
+void init_scoring(void) {
+    /* reset counter and score anew */
+    for (int i = 0; i < MAX_QSOS; i++)
+	qsos[i][0] = '\0';
+
+    for (int i = 0; i < MAX_CALLS; i++) {
+	*worked[i].exchange = '\0';
+	*worked[i].call = '\0';
+	worked[i].band = 0;
+	worked[i].country = -1;
+	for (int l = 0; l < 3; l++) {
+	    for (int n = 0; n < NBANDS; n++) {
+		worked[i].qsotime[l][n] = 0;
+	    }
+	}
+    }
+    nr_worked = 0;
+
+    for (int i = 1; i <= MAX_DATALINES - 1; i++)
+	countries[i] = 0;
+
+    for (int i = 0; i < NBANDS; i++)
+	band_score[i] = 0;
+
+    for (int i = 0; i < NBANDS; i++)
+	countryscore[i] = 0;
+
+    for (int n = 1; n < MAX_ZONES; n++)
+	zones[n] = 0;
+
+    for (int n = 0; n < NBANDS; n++)
+	zonescore[n] = 0;
+
+    init_mults();
+
+    InitPfx();
+
+    if (pfxnummultinr > 0) {
+	for (int i = 0; i < pfxnummultinr; i++) {
+	    for (int n = 0; n < NBANDS; n++) {
+		pfxnummulti[i].qsos[n] = 0;
+	    }
+	}
+    }
+}
+
 void show_progress(int linenr) {
     if (((linenr + 1) % 100) == 0) {
 	printw("*");
@@ -59,20 +113,11 @@ void show_progress(int linenr) {
 
 int readcalls(void) {
 
-    extern char continent_multiplier_list[7][3];
-    extern int continentlist_only;
-    extern int pfxnummultinr;
-    extern t_pfxnummulti pfxnummulti[];
-    extern int exclude_multilist_type;
-    extern char countrylist[][6];
-
     char inputbuffer[160];
     char tmpbuf[20];
     char bndbuf[20];
     char zonebuf[3];
     char checkcall[20];
-    int i = 0, l = 0, n = 0;
-    int t;
     int z = 0;
     int add_ok;
     char multbuffer[40];
@@ -95,49 +140,7 @@ int readcalls(void) {
     showmsg("Reading logfile... ");
     refreshp();
 
-    /* reset counter and score anew */
-    for (i = 0; i < MAX_QSOS; i++)
-	qsos[i][0] = '\0';
-
-    for (i = 0; i < MAX_CALLS; i++) {
-	*worked[i].exchange = '\0';
-	*worked[i].call = '\0';
-	worked[i].band = 0;
-	worked[i].country = -1;
-	for (l = 0; l < 3; l++) {
-	    for (n = 0; n < NBANDS; n++) {
-		worked[i].qsotime[l][n] = 0;
-	    }
-	}
-    }
-    nr_worked = 0;
-
-    for (i = 1; i <= MAX_DATALINES - 1; i++)
-	countries[i] = 0;
-
-    for (i = 0; i < NBANDS; i++)
-	band_score[i] = 0;
-
-    for (i = 0; i < NBANDS; i++)
-	countryscore[i] = 0;
-
-    for (n = 1; n < MAX_ZONES; n++)
-	zones[n] = 0;
-
-    for (n = 0; n < NBANDS; n++)
-	zonescore[n] = 0;
-
-    init_mults();
-
-    InitPfx();
-
-    if (pfxnummultinr > 0) {
-	for (i = 0; i < pfxnummultinr; i++) {
-	    for (n = 0; n < NBANDS; n++) {
-		pfxnummulti[i].qsos[n] = 0;
-	    }
-	}
-    }
+    init_scoring();
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 	showmsg("Error opening logfile ");
@@ -145,16 +148,15 @@ int readcalls(void) {
 	sleep(2);
 	exit(1);
     }
-    i = 0;
-    l = 0;
 
     while (fgets(inputbuffer, 90, fp) != NULL) {
+	int l = 0;
 
 	// sanitize input line
 	strcat(inputbuffer, spaces(50)); /* repair the logfile */
 	inputbuffer[LOGLINELEN - 1] = '\0';
 
-	for (t = 0; t <= strlen(inputbuffer); t++) {
+	for (int t = 0; t <= strlen(inputbuffer); t++) {
 	    if (inputbuffer[t] == '\n')
 		inputbuffer[t] = ' ';
 	}
@@ -274,7 +276,7 @@ int readcalls(void) {
 
 		    memset(multbuffer, 0, 39);
 
-		    for (t = 0; t < 4; t++) {
+		    for (int t = 0; t < 4; t++) {
 
 			multbuffer[t] = inputbuffer[t + 59];
 		    }
@@ -446,7 +448,7 @@ int readcalls(void) {
 	/* build prefixes_worked array from list of worked stations */
 	InitPfx();
 
-	for (n = 0; n < nr_worked; n++) {
+	for (int n = 0; n < nr_worked; n++) {
 	    strcpy(checkcall, worked[n].call);
 	    getpx(checkcall);
 	    /* FIXME: wpx is counting pfx only once so bandindex is not
@@ -461,7 +463,7 @@ int readcalls(void) {
     }
 
     if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
-	for (n = 1; n < MAX_ZONES; n++) {
+	for (int n = 1; n < MAX_ZONES; n++) {
 	    if ((zones[n] & BAND160) != 0)
 		zonescore[BANDINDEX_160]++;
 	    if ((zones[n] & BAND80) != 0)
@@ -478,7 +480,7 @@ int readcalls(void) {
     }
 
     if (cqww == 1) {
-	for (n = 1; n <= MAX_DATALINES - 1; n++) {
+	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
 	    if ((countries[n] & BAND160) != 0)
 		countryscore[BANDINDEX_160]++;
 	    if ((countries[n] & BAND80) != 0)
@@ -542,7 +544,7 @@ int readcalls(void) {
 
     if (pacc_pa_flg == 1) {
 
-	for (n = 1; n < MAX_DATALINES; n++) {
+	for (int n = 1; n < MAX_DATALINES; n++) {
 	    if ((countries[n] & BAND160) != 0)
 		countryscore[BANDINDEX_160]++;
 	    if ((countries[n] & BAND80) != 0)
@@ -560,7 +562,7 @@ int readcalls(void) {
 
     if (country_mult == 1 || pfxnummultinr > 0) {
 
-	for (n = 1; n <= MAX_DATALINES - 1; n++) {
+	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
 
 	    // first, check pfxnummultinr array, the country 'n' exists
 	    int pfxnumcntnr = -1;
