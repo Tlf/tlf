@@ -115,7 +115,6 @@ int readcalls(void) {
 
     char inputbuffer[160];
     char tmpbuf[20];
-    char bndbuf[20];
     char zonebuf[3];
     char checkcall[20];
     int z = 0;
@@ -127,9 +126,7 @@ int readcalls(void) {
     int pfxnumcntidx;
     int pxnr;
     int excl_add_veto;
-    char date_and_time[16];
     struct tm qsotime;
-    time_t qsotimets;
     int qsomode;
     int linenr = 0;
 
@@ -175,30 +172,8 @@ int readcalls(void) {
 	pxnr = 0;
 	excl_add_veto = 0;
 
-	// get bandindex
-	bandindex = BANDINDEX_OOB;
-
-	strncpy(bndbuf, inputbuffer + 1, 2);
-	bndbuf[2] = '\0';
-
-	if (bndbuf[0] == '1' && bndbuf[1] == '0')
-	    bandindex = BANDINDEX_10;
-	if (bndbuf[0] == '1' && bndbuf[1] == '5')
-	    bandindex = BANDINDEX_15;
-	if (bndbuf[0] == '2')
-	    bandindex = BANDINDEX_20;
-	if (bndbuf[0] == '4')
-	    bandindex = BANDINDEX_40;
-	if (bndbuf[0] == '8')
-	    bandindex = BANDINDEX_80;
-	if (bndbuf[0] == '6')
-	    bandindex = BANDINDEX_160;
-	if (bndbuf[0] == '1' && bndbuf[1] == '2')
-	    bandindex = BANDINDEX_12;
-	if (bndbuf[0] == '1' && bndbuf[1] == '7')
-	    bandindex = BANDINDEX_17;
-	if (bndbuf[0] == '3')
-	    bandindex = BANDINDEX_30;
+	/* get bandindex */
+	bandindex = log_get_band(inputbuffer);
 
 	/* get the country number, not known at this point */
 	strncpy(presentcall, inputbuffer + 29, 13);
@@ -333,13 +308,8 @@ int readcalls(void) {
 	g_strlcpy(worked[l].exchange, inputbuffer + 54, 12);
 	g_strchomp(worked[l].exchange);	/* strip trailing spaces */
 
-	if (strncmp("CW ", inputbuffer + 3, 3) == 0) {
-	    qsomode = CWMODE;
-	} else if (strncmp("SSB", inputbuffer + 3, 3) == 0) {
-	    qsomode = SSBMODE;
-	} else if (strncmp("DIG", inputbuffer + 3, 3) == 0) {
-	    qsomode = DIGIMODE;
-	} else {
+	qsomode = log_get_mode(inputbuffer);
+	if (qsomode == -1) {
 	    shownr("Invalid line format in line %d.\n", linenr);
 	    refreshp();
 	    sleep(2);
@@ -348,10 +318,8 @@ int readcalls(void) {
 
 	/* calculate QSO timestamp from logline */
 	memset(&qsotime, 0, sizeof(struct tm));
-	strncpy(date_and_time, inputbuffer + 7, 15);
-	strptime(date_and_time, "%d-%b-%y %H:%M", &qsotime);
-	qsotimets = mktime(&qsotime);
-	worked[l].qsotime[qsomode][bandindex] = qsotimets;
+	strptime(inputbuffer+7, "%d-%b-%y %H:%M", &qsotime);
+	worked[l].qsotime[qsomode][bandindex] = mktime(&qsotime);
 
 	/* look if calls are excluded */
 	add_ok = 1;
