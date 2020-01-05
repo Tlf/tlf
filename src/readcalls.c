@@ -44,6 +44,7 @@
 #include "log_utils.h"
 #include "paccdx.h"
 #include "readqtccalls.h"
+#include "searchcallarray.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -71,7 +72,6 @@ int readcalls(void) {
     char zonebuf[3];
     char checkcall[20];
     int i = 0, l = 0, n = 0;
-    int m = 0;
     int t;
     int z = 0;
     int add_ok;
@@ -110,6 +110,7 @@ int readcalls(void) {
 	    }
 	}
     }
+    nr_worked = 0;
 
     for (i = 1; i <= MAX_DATALINES - 1; i++)
 	countries[i] = 0;
@@ -315,15 +316,10 @@ int readcalls(void) {
 	}
 
 	/*  lookup worked stations */
-	for (int k = 0; k < i; k++) {
-	    m = strcmp(worked[k].call, presentcall);
-
-	    if (m == 0) {
-		l = k;
-		break;
-	    } else
-		l = i;
-
+	l = searchcallarray(presentcall);
+	if (l == -1) {		    /* if not found, use next free slot */
+	    l = nr_worked;
+	    nr_worked++;
 	}
 
 	/* and fill in according entry */
@@ -441,22 +437,16 @@ int readcalls(void) {
 	    }
 
 	}
-
-	if (l == i)
-	    i++;
     }
 
     fclose(fp);
-
-    /* remember nuber of callarray entries */
-    nr_worked = i;
 
     if (wpx == 1) {
 
 	/* build prefixes_worked array from list of worked stations */
 	InitPfx();
 
-	for (n = 0; n < i; n++) {
+	for (n = 0; n < nr_worked; n++) {
 	    strcpy(checkcall, worked[n].call);
 	    getpx(checkcall);
 	    /* FIXME: wpx is counting pfx only once so bandindex is not
