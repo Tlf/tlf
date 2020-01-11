@@ -16,14 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "err_utils.h"
-#include "tlf.h"
-#include "tlf_curses.h"
-#include "ui_utils.h"
 #include <glib.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "err_utils.h"
+#include "tlf.h"
+#include "tlf_curses.h"
+#include "ui_utils.h"
 
 void handle_logging(enum log_lvl lvl, ...) {
     char *fmt;
