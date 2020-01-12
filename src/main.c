@@ -409,11 +409,9 @@ pid_t pid;
 struct tm *time_ptr, time_ptr_cabrillo;
 
 freq_t freq;
-freq_t mem;
 int logfrequency = 0;
 int rit;
 int trx_control = 0;
-int showfreq = 0;
 freq_t bandfrequency[NBANDS] = {
     1830000, 3525000, 7010000, 10105000, 14025000, 18070000, 21025000, 24900000,
     28025000, 0.

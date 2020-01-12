@@ -73,3 +73,5 @@
 #define TAB       CTRL_I
 #define LINEFEED  CTRL_J
 #define RETURN    CTRL_M
+
+#define SHIFT_F(n)  (KEY_F(n) + 12)

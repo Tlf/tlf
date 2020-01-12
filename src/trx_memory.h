@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2020 Zoltan Csahok <ha5cqz@freemail.hu>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef TRX_MEMORY_H
+#define TRX_MEMORY_H
 
-#ifndef TIME_UPDATE_H
-#define TIME_UPDATE_H
+#include "time_update.h"
+#include "tlf.h"
 
-#include <stdbool.h>
+extern freq_t memory_get_freq();        // returns 0 if memory is empty
+extern cqmode_t memory_get_cqmode();    // returns NONE if memory is empty
 
-extern bool force_show_freq;
+extern void memory_store_or_pop();
+extern void memory_store();
+extern void memory_pop();
+extern void memory_swap();
 
-void time_update(void);
+#endif
 
-#endif /* TIME_UPDATE_H */

@@ -215,7 +215,6 @@ int parse_logcfg(char *inputbuffer) {
     extern int weight;
     extern int txdelay;
     extern char tonestr[];
-    extern int showfreq;
     extern char *editor_cmd;
     extern int partials;
     extern int use_part;
@@ -370,7 +369,7 @@ int parse_logcfg(char *inputbuffer) {
 	"TXDELAY",
 	"SUNSPOTS",
 	"SFI",
-	"SHOW_FREQUENCY",
+	"SHOW_FREQUENCY",                       /* deprecated */
 	"EDITOR",		/* 45 */
 	"PARTIALS",
 	"USEPARTIALS",
@@ -910,10 +909,6 @@ int parse_logcfg(char *inputbuffer) {
 	    outputbuff[0] = '\0';
 	    sprintf(outputbuff, "WWV SFI=%d\n", atoi(buff));
 	    strcpy(lastwwv, outputbuff);
-	    break;
-	}
-	case 44: {
-	    showfreq = 1;
 	    break;
 	}
 	case 45: {

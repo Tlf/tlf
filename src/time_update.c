@@ -26,6 +26,7 @@
 
 
 #include <string.h>
+#include <math.h>
 
 #include "bandmap.h"
 #include "clusterinfo.h"
@@ -37,8 +38,8 @@
 #include "printcall.h"
 #include "showscore.h"
 #include "tlf_curses.h"
+#include "trx_memory.h"
 #include "ui_utils.h"
-
 
 /** broadcast to LAN
  *
@@ -47,7 +48,6 @@
 void broadcast_lan(void) {
 
     extern int time_master;
-    extern freq_t freq;
     static int frcounter = 0;
 
     frcounter++;
@@ -86,37 +86,32 @@ void update_line(char *timestr) {
     }
 }
 
+const char *FREQ_DISPLAY_FORMAT = " %s: %7.1f";
 
-/** show frequency and frequency memory if rig control is active */
+bool force_show_freq = false;
+
+/** show frequency and memory if rig control is active */
 void show_freq(void) {
 
-    extern int showfreq;
-    extern int showscore_flag;
-    extern freq_t mem;
     extern int trx_control;
-    extern freq_t freq;
 
     attron(modify_attr(COLOR_PAIR(C_LOG)));
 
-    if (trx_control == 1) {
+    freq_t memfreq = 0;
 
-	if ((showfreq == 0) || (showscore_flag == 1))
-	    mvprintw(13, 67, " TRX: %7.1f", freq / 1000.0);
-
-	if (mem > 0.0)
-	    mvprintw(14, 67, " MEM: %7.1f", mem / 1000.0);
-	else
-	    mvprintw(14, 67, spaces(80 - 67));
-
-	if ((showfreq == 1) && (showscore_flag == 0)) {
-
-	    freq_display();
-	}
-    }
-    else {
+    if (trx_control) {
+	mvprintw(13, 67, FREQ_DISPLAY_FORMAT, "TRX", freq / 1000.0);
+	memfreq = memory_get_freq();
+    } else {
 	mvprintw(13, 67, spaces(80 - 67));
+    }
+
+    if (memfreq > 0) {
+	mvprintw(14, 67, FREQ_DISPLAY_FORMAT, "MEM", memfreq / 1000.0);
+    } else {
 	mvprintw(14, 67, spaces(80 - 67));
     }
+
 }
 
 
@@ -138,65 +133,84 @@ void time_update(void) {
 
     get_time();
     this_second = time_ptr->tm_sec;		/* seconds */
+    // used in background_process
     system_secs = time_ptr->tm_min * 60 + time_ptr->tm_sec;
 
-    if (this_second != oldsecs) {
-	/* do it every second */
-	oldsecs = this_second;
+    // force frequency display if it has changed (don't wait until next second)
+    static freq_t old_freq = 0;
+    if (freq > 0 && fabs(freq - old_freq) >= 100) {
+	force_show_freq = true;
+	old_freq = freq;
+    }
 
-	if (wpx == 1) {
-	    if (minute_timer > 0)
-		minute_timer--;
-	}
-
+    if (force_show_freq) {
 	show_freq();
+	clusterinfo();
+    }
 
-	bandmap_age();		/* age bandmap spots every second */
-	clusterinfo();		/* update cluster and bandmap display */
+    if (this_second == oldsecs) {   // still in the same second, no action
+	force_show_freq = false;
+	return;
+    }
 
-	/* write bandmap spots to file every 10s */
-	bm_timeout = (bm_timeout + 1) % 10;
-	if (bm_timeout == 0) {
+    /* do it every second */
+    oldsecs = this_second;
 
-	    bmdata_write_file();
-	}
+    if (wpx == 1) {
+	if (minute_timer > 0)
+	    minute_timer--;
+    }
 
-	s = (s + 1) % 2;
-	if (s > 0) {		/* every 2 seconds */
+    if (!force_show_freq) {     // do not show again if it was forced
+	show_freq();
+    }
+    force_show_freq = false;
 
-	    strftime(time_buf, 10, "%H:%M:%S", time_ptr);
-	    time_buf[5] = '\0';
+    bandmap_age();		/* age bandmap spots every second */
+    clusterinfo();		/* update cluster and bandmap display */
 
-	    if ((time_buf[6] == '1') && (m >= 30)) {
+    /* write bandmap spots to file every 10s */
+    bm_timeout = (bm_timeout + 1) % 10;
+    if (bm_timeout == 0) {
 
-		m = 0;
-		getwwv();
-		printcall();
+	bmdata_write_file();
+    }
 
-	    } else {
-		m++;
-	    }
+    s = (s + 1) % 2;
+    if (s > 0) {		/* every 2 seconds */
 
-	    currentterm = miniterm;
-	    miniterm = 0;
+	strftime(time_buf, 10, "%H:%M:%S", time_ptr);
+	time_buf[5] = '\0';
 
-	    broadcast_lan();
-	    update_line(time_buf);
+	if ((time_buf[6] == '1') && (m >= 30)) {
 
-	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-	    mvprintw(7, 0, logline0);
-	    mvprintw(8, 0, logline1);
-	    mvprintw(9, 0, logline2);
-	    mvprintw(10, 0, logline3);
-	    mvprintw(11, 0, logline4);
-	    mvprintw(13, 0, spaces(67));
-	    attron(COLOR_PAIR(C_WINDOW));
-	    mvprintw(12, 23, qsonrstr);
+	    m = 0;
+	    getwwv();
 	    printcall();
 
-	    showscore();	/* update  score  window every 2 seconds */
-	    miniterm = currentterm;
+	} else {
+	    m++;
 	}
+
+	currentterm = miniterm;
+	miniterm = 0;
+
+	broadcast_lan();
+	update_line(time_buf);
+
+	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+
+	mvprintw(7, 0, logline0);
+	mvprintw(8, 0, logline1);
+	mvprintw(9, 0, logline2);
+	mvprintw(10, 0, logline3);
+	mvprintw(11, 0, logline4);
+	mvprintw(13, 0, spaces(67));
+	attron(COLOR_PAIR(C_WINDOW));
+	mvprintw(12, 23, qsonrstr);
+	printcall();
+
+	showscore();	/* update  score  window every 2 seconds */
+	miniterm = currentterm;
     }
 }
