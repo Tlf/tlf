@@ -30,6 +30,7 @@ tlf_SOURCES = \
 	setparameters.c show_help.c showinfo.c showpxmap.c \
 	showscore.c showzones.c sockserv.c speedupndown.c   \
 	stoptx.c store_qso.c sunup.c splitscreen.c startmsg.c\
+	trx_memory.c \
 	rtty.c time_update.c ui_utils.c \
 	write_keyer.c writecabrillo.c writeparas.c \
 	zone_nr.c

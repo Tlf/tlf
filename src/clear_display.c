@@ -57,6 +57,8 @@ void show_header_line() {
 	case KEYBOARD:
 	    mode = "Keyboard";
 	    break;
+	default:
+	    ;   // should not happen
     }
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);

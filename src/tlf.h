@@ -53,7 +53,8 @@ typedef enum {
     CQ,         // Run
     S_P,        // Search and Pounce
     AUTO_CQ,    // temporary, used in autocq.c
-    KEYBOARD    // temporary, used in keyer.c
+    KEYBOARD,   // temporary, used in keyer.c
+    NONE        // used in trx_memory to signal empty memory
 } cqmode_t;
 
 #define SEND_DE 1		/* de_mode on */

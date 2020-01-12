@@ -409,7 +409,6 @@ pid_t pid;
 struct tm *time_ptr, time_ptr_cabrillo;
 
 freq_t freq;
-freq_t mem;
 int logfrequency = 0;
 int rit;
 int trx_control = 0;

@@ -21,6 +21,10 @@
 #ifndef TIME_UPDATE_H
 #define TIME_UPDATE_H
 
+#include <stdbool.h>
+
+extern bool force_show_freq;
+
 void time_update(void);
 
 #endif /* TIME_UPDATE_H */

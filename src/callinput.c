@@ -27,6 +27,7 @@
 
 #include <ctype.h>
 #include <fcntl.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -69,20 +70,22 @@
 #include "splitscreen.h"
 #include "stoptx.h"
 #include "time_update.h"
+#include "trx_memory.h"
 #include "ui_utils.h"
 #include "writeparas.h"
 #include "showzones.h"
 #include "bands.h"
 #include "fldigixmlrpc.h"
 
-#include <math.h>
-
 #define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
+
+typedef enum { STORE_OR_POP, POP, SWAP } memory_op_t;
 
 void send_bandswitch(freq_t freq);
 int autosend(void);
 int plain_number(char *str);
 void handle_bandswitch(int direction);
+void handle_memory_operation(memory_op_t op);
 
 extern int no_arrows;
 extern char hiscall[];
@@ -115,7 +118,6 @@ int callinput(void) {
     extern int cluster;
     extern int announcefilter;
     extern char ph_message[14][80];
-    extern freq_t mem;
     extern SCREEN *mainscreen;
     extern int simulator;
     extern int simulator_mode;
@@ -158,7 +160,6 @@ int callinput(void) {
     static struct grab_t grab =  { .state = NONE };
 
 
-
     int cury, curx;
     int j, t, x = 0;
     char instring[2] = { '\0', '\0' };
@@ -198,7 +199,7 @@ int callinput(void) {
 	     * from frequency and if so add call to spot list */
 	    if (bmautoadd != 0 && freqstore != 0) {
 		if (strlen(hiscall) >= 3) {
-		    if (fabsf(freq - freqstore) > 500) {
+		    if (fabs(freq - freqstore) > 500) {
 			add_to_spots(hiscall, freqstore);
 			hiscall[0] = '\0';
 			HideSearchPanel();
@@ -234,7 +235,7 @@ int callinput(void) {
 
 	    /* if we have grabbed a call from spot list and tune away
 	     * then forget about it */
-	    if (fabsf(freq - grab.spotfreq) > 500 && grab.state == REACHED) {
+	    if (fabs(freq - grab.spotfreq) > 500 && grab.state == REACHED) {
 		grab.state = NONE;
 		hiscall[0] = '\0';
 		printcall();
@@ -276,6 +277,16 @@ int callinput(void) {
 		g_free(str);
 		break;
 	    }
+	}
+
+	// Shift-F1: switch back (swap) to CQ frequency if it's in memory
+	//           and start a CQ
+	if (x == SHIFT_F(1)) {
+	    if (cqmode == S_P && memory_get_cqmode() == CQ) {
+		handle_memory_operation(SWAP);
+	    }
+
+	    x = KEY_F(1);   // continue as F1
 	}
 
 	switch (x) {
@@ -554,20 +565,17 @@ int callinput(void) {
 
 	    // Hash, save xcvr freq to mem or restore mem to xcvr.
 	    case '#': {
-		if (mem == 0.0) {
-		    mem = freq;
-		    mvprintw(14, 67, " MEM: %7.1f", mem / 1000.);
-		} else {
-		    freq = mem;
-
-		    set_outfreq(mem);
-
-		    mem = 0.0;
-		    mvprintw(14, 67, "             ");
-		}
-		mvprintw(29, 12, " ");
-		mvprintw(29, 12, "");
-		refreshp();
+		handle_memory_operation(STORE_OR_POP);
+		break;
+	    }
+	    // Dollar, pop memory (MEM -> TRX)
+	    case '$': {
+		handle_memory_operation(POP);
+		break;
+	    }
+	    // Percent, swap memory (MEM <-> TRX)
+	    case '%': {
+		handle_memory_operation(SWAP);
 		break;
 	    }
 
@@ -1334,4 +1342,40 @@ void handle_bandswitch(int direction) {
     }
 
     send_bandswitch(bandinx);
+}
+
+/** handle TRX memory operation and update screen
+ *
+ **/
+void handle_memory_operation(memory_op_t op) {
+    const freq_t newfreq = memory_get_freq();
+
+    switch (op) {
+	case STORE_OR_POP:
+	    memory_store_or_pop();
+	    break;
+	case POP:
+	    memory_pop();
+	    break;
+	case SWAP:
+	    memory_swap();
+	    break;
+    }
+
+    show_header_line();
+    showinfo(getctydata_pfx(hiscall));
+    searchlog();
+    move(12, 29 + strlen(hiscall));
+
+    if (newfreq <= 0) {
+	return;     // freq not changed
+    }
+
+    // wait until change is reported back from the rig (timeout: 1 sec)
+    for (int i = 0; i < 20; i++) {
+	if (fabs(freq - newfreq) < 100) {
+	    break;
+	}
+	usleep(50000);
+    }
 }

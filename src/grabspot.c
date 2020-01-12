@@ -25,11 +25,13 @@
 #include "bandmap.h"
 #include "fldigixmlrpc.h"
 #include "getctydata.h"
+#include "gettxinfo.h"
+#include "globalvars.h"
 #include "searchlog.h"		// Includes glib.h
 #include "showinfo.h"
 #include "tlf.h"
 #include "tlf_curses.h"
-#include "gettxinfo.h"
+#include "trx_memory.h"
 
 void send_bandswitch(freq_t outfreq);
 
@@ -60,7 +62,6 @@ freq_t grabspot(void) {
 
 freq_t grab_next(void) {
     extern int trx_control;
-    extern freq_t freq;
 
     static int dir = 1;		/* start scanning up */
 
@@ -91,8 +92,6 @@ freq_t grab_next(void) {
 static freq_t execute_grab(spot *data) {
     extern char hiscall[];
     extern cqmode_t cqmode;
-    extern freq_t mem;
-    extern freq_t freq;
 
     freq_t f = data->freq - fldigi_get_carrier();
     set_outfreq(f);
@@ -105,9 +104,8 @@ static freq_t execute_grab(spot *data) {
 
     /* if in CQ mode switch to S&P and remember QRG */
     if (cqmode == CQ) {
+	memory_store();
 	cqmode = S_P;
-	mem = freq;
-	mvprintw(14, 67, " MEM: %7.1f", mem / 1000.);
     }
 
     refreshp();
