@@ -412,7 +412,6 @@ freq_t freq;
 int logfrequency = 0;
 int rit;
 int trx_control = 0;
-int showfreq = 0;
 freq_t bandfrequency[NBANDS] = {
     1830000, 3525000, 7010000, 10105000, 14025000, 18070000, 21025000, 24900000,
     28025000, 0.
