@@ -176,12 +176,11 @@ int readcalls(void) {
 	bandindex = log_get_band(inputbuffer);
 
 	/* get the country number, not known at this point */
-	strncpy(presentcall, inputbuffer + 29, 13);
-	presentcall[13] = '\0';
-
+	g_strlcpy(presentcall, inputbuffer + 29, 14);
 	tmpptr = strchr(presentcall, ' ');
 	if (tmpptr)
 	    *tmpptr = '\0';
+
 	strcpy(tmpbuf, presentcall);
 	countrynr = getctydata(tmpbuf);
 
@@ -201,14 +200,12 @@ int readcalls(void) {
 	}
 
 	if (contest == 1) {
-	    strncpy(tmpbuf, inputbuffer + 76, 2);	/* get the points */
-	    tmpbuf[2] = '\0';
+	    g_strlcpy(tmpbuf, inputbuffer + 76, 3);	/* get the points */
 	    points = atoi(tmpbuf);
 	    total = total + points;
 
 	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
-		strncpy(zonebuf, inputbuffer + 54, 2);	/* get the zone */
-		zonebuf[2] = '\0';
+		g_strlcpy(zonebuf, inputbuffer + 54, 3); /* get the zone */
 		z = zone_nr(zonebuf);
 	    }
 
@@ -300,9 +297,7 @@ int readcalls(void) {
 	}
 
 	/* and fill in according entry */
-	strncpy(worked[l].call, inputbuffer + 29, 19);
-	worked[l].call[19] = 0;
-	strtok(worked[l].call, " \r");	/* delimit first word */
+	g_strlcpy(worked[l].call, presentcall, sizeof(worked[0].call));
 
 	worked[l].country = countrynr;
 	g_strlcpy(worked[l].exchange, inputbuffer + 54, 12);
