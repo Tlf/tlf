@@ -19,25 +19,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "startmsg.h"
+#include <ctype.h>
+#include <glib.h>
+#include <pthread.h>
 #include <stdlib.h>	// need for abs()
 #include <string.h>
 #include <stdarg.h>	// need for va_list...
 #include <unistd.h>
-#include <pthread.h>
-#include <glib.h>
-#include <ctype.h>
 
 #include <config.h>
-
-#include "err_utils.h"
-#include "fldigixmlrpc.h"
-#include "printcall.h"
-#include "ui_utils.h"
-#include "logit.h"
-#include "tlf_curses.h"
-#include "getctydata.h"
-#include "searchlog.h"
 
 #ifdef HAVE_LIBXMLRPC
 # include <xmlrpc-c/base.h>
@@ -46,6 +36,16 @@
 #endif
 
 #include <hamlib/rig.h>
+
+#include "err_utils.h"
+#include "fldigixmlrpc.h"
+#include "getctydata.h"
+#include "logit.h"
+#include "printcall.h"
+#include "searchlog.h"
+#include "startmsg.h"
+#include "tlf_curses.h"
+#include "ui_utils.h"
 
 #define NAME "Tlf"
 #define XMLRPCVERSION "1.0"

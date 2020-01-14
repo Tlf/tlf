@@ -20,13 +20,14 @@
  */
 
 
+#include <argp.h>
 #include <ctype.h>
+#include <hamlib/rig.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
-#include <argp.h>
 
 #include "addmult.h"
 #include "background_process.h"
@@ -62,7 +63,6 @@
 #include "readcabrillo.h"
 
 #include <config.h>
-#include <hamlib/rig.h>
 
 
 SCREEN *mainscreen;

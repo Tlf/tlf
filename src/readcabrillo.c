@@ -20,14 +20,11 @@
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
 #endif
-#include "readcabrillo.h"
-#include "globalvars.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
-#include "tlf_curses.h"
 
 #include "addcall.h"
 #include "addmult.h"
@@ -35,10 +32,13 @@
 #include "cabrillo_utils.h"
 #include "cleanup.h"
 #include "getexchange.h"
+#include "globalvars.h"
 #include "makelogline.h"
 #include "qtc_log.h"
+#include "readcabrillo.h"
 #include "startmsg.h"
 #include "store_qso.h"
+#include "tlf_curses.h"
 
 #define MAX_CABRILLO_LEN 255
 

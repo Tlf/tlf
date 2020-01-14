@@ -22,6 +22,7 @@
 
 
 #include <ctype.h>
+#include <hamlib/rig.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -42,7 +43,6 @@
 #include "searchlog.h"
 
 #include <config.h>
-#include <hamlib/rig.h>
 
 
 extern int cwkeyer;
