@@ -18,6 +18,7 @@
  */
 
 #include <stdbool.h>
+#include <string.h>
 
 #include "callinput.h"
 #include "gettxinfo.h"
