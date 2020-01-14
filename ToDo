@@ -15,7 +15,9 @@ Planned improvements for TLF-1.4 release
 Planned for later versions
 --------------------------
 
-[ ] automatically switch back to 'Run' mode from "grab spot" after QSO
+[x] automatically switch back to 'Run' mode from "grab spot" after QSO (tnx
+    Zoli)
+[ ] document new behaviour in man page aftre tests
 [x] Add contest name to Header of ADIF file (suggested by SP3RXO)
 [ ] Refactor write_adif function. Use an add_adif_field() helper and also 
     already existing get_next_record() function.
