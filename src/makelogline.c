@@ -49,7 +49,7 @@ void fillto(int n);
  * The structure of a logline entry is as follows:
  * - each logline contains exactly 87 characters followed by a newline.
  * - it consists of 3 parts
- *   | fixed part (54 chars) | contest dependent part (26 chars) | frequ (8 chars)
+ *   fixed part (54 chars) | contest dependent part (26 chars) | freq (7 chars)
  *
  *   See function definitions below
  */

@@ -93,7 +93,7 @@ void log_to_disk(int from_lan) {
 	strcat(lan_logline, spaces(78));
 
 	if (cqwwm2 == 1) {
-	    if (lan_logline[0] != thisnode)
+	    if (lan_message[0] != thisnode)
 		lan_logline[79] = '*';
 	}
 
