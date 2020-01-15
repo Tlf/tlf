@@ -115,14 +115,12 @@ int readcalls(void) {
 
     char inputbuffer[160];
     char tmpbuf[20];
-    char zonebuf[3];
     char checkcall[20];
     int z = 0;
     int add_ok;
     char multbuffer[40];
     char presentcall[20];	// copy of call..
     char *tmpptr;
-    int points;
     int pfxnumcntidx;
     int pxnr;
     int excl_add_veto;
@@ -200,13 +198,12 @@ int readcalls(void) {
 	}
 
 	if (contest == 1) {
-	    g_strlcpy(tmpbuf, inputbuffer + 76, 3);	/* get the points */
-	    points = atoi(tmpbuf);
-	    total = total + points;
+	    // get points
+	    total = total + log_get_points(inputbuffer);
 
 	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
-		g_strlcpy(zonebuf, inputbuffer + 54, 3); /* get the zone */
-		z = zone_nr(zonebuf);
+		// get the zone
+		z = zone_nr(inputbuffer + 54);
 	    }
 
 	    if (wysiwyg_once == 1 ||
