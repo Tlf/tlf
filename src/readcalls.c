@@ -219,7 +219,6 @@ int readcalls(void) {
 		multbuffer[0] = '\0';
 
 		if (arrlss == 1) {
-		    other_flg = 0;
 
 		    if (inputbuffer[63] == ' ')
 			strncpy(multbuffer, inputbuffer + 64, 3);
@@ -267,23 +266,7 @@ int readcalls(void) {
 
 		remember_multi(multbuffer, bandindex, 0);
 
-	    }			// end wysiwig
-
-	    if (other_flg == 1) {	/* mult = max 3 characters */
-
-		strncpy(multbuffer, inputbuffer + 54, 3);
-		multbuffer[3] = '\0';
-
-		if (multbuffer[3] == ' ')
-		    multbuffer[3] = '\0';
-		if (multbuffer[2] == ' ')
-		    multbuffer[2] = '\0';
-		if (multbuffer[1] == ' ')
-		    multbuffer[1] = '\0';
-
-		remember_multi(multbuffer, bandindex, 0);
 	    }
-
 	}
 
 	/*  lookup worked stations */

@@ -47,7 +47,6 @@ void setcontest(void) {
     extern int pacc_pa_flg;
     extern int stewperry_flg;
     extern int universal;
-    extern int other_flg;
     extern int exchange_serial;
     extern int wysiwyg_multi;
     extern int w_cty;
@@ -156,7 +155,6 @@ void setcontest(void) {
     }
     if (strcmp(whichcontest, "arrl_ss") == 0) {
 	arrlss = 1;
-	other_flg = 1;
 	two_point = 1;
 	qso_once = 1;
 	exchange_serial = 1;
@@ -207,7 +205,6 @@ void setcontest(void) {
     }
 
     if (strcmp(whichcontest, "other") == 0) {
-	other_flg = 1;
 	one_point = 1;
 	recall_mult = 1;
 	wysiwyg_multi = 1;

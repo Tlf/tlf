@@ -38,7 +38,6 @@ extern int cqww;
 extern int arrldx_usa;
 extern int pacc_pa_flg;
 extern int country_mult;
-extern int other_flg;
 extern char hiscall[20];
 extern int total;
 extern int band_score[NBANDS];		// QSO/band

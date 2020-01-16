@@ -115,7 +115,6 @@ int pfxmult = 0;
 int pfxmultab = 0;
 int exc_cont = 0;
 int manise80;
-int other_flg;
 int one_point = 0;
 int two_point = 0;
 int three_point = 0;
