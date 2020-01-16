@@ -117,40 +117,28 @@ void show_progress(int linenr) {
  * ATTENTION! return value needs to be freed
  */
 char *get_multi_from_line(char *logline) {
-    char *multbuffer = g_malloc(40);
-
-    multbuffer[0] = '\0';
+    char *multbuffer = g_malloc(20);
 
     if (arrlss == 1) {
 
 	if (logline[63] == ' ')
-	    strncpy(multbuffer, logline + 64, 3);
+	    g_strlcpy(multbuffer, logline + 64, 4);
 	else
-	    strncpy(multbuffer, logline + 63, 3);
-
-	multbuffer[3] = '\0';
+	    g_strlcpy(multbuffer, logline + 63, 4);
 
     } else if (serial_section_mult == 1) {
 
-	memset(multbuffer, 0, 39);
-
-	strncpy(multbuffer, logline + 68, 3);
+	g_strlcpy(multbuffer, logline + 68, 4);
 	g_strchomp(multbuffer);
 
     } else if (sectn_mult == 1) {
-	memset(multbuffer, 0, 39);
 
-	strncpy(multbuffer, logline + 68, 3);
+	g_strlcpy(multbuffer, logline + 68, 4);
 	g_strchomp(multbuffer);
 
     } else if (serial_grid4_mult == 1) {
 
-	memset(multbuffer, 0, 39);
-
-	for (int t = 0; t < 4; t++) {
-
-	    multbuffer[t] = logline[t + 59];
-	}
+	g_strlcpy(multbuffer, logline + 59, 5);
 
     } else if (unique_call_multi != 0) {
 
@@ -159,10 +147,7 @@ char *get_multi_from_line(char *logline) {
 
     } else {
 
-	strncpy(multbuffer, logline + 54, 10);	// normal case
-
-	multbuffer[10] = '\0';
-
+	g_strlcpy(multbuffer, logline + 54, 11);	// normal case
 	g_strchomp(multbuffer);
 
     }
