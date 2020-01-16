@@ -111,6 +111,66 @@ void show_progress(int linenr) {
     }
 }
 
+
+/* pick up multi string from logline
+ *
+ * ATTENTION! return value needs to be freed
+ */
+char *get_multi_from_line(char *logline) {
+    char *multbuffer = g_malloc(40);
+
+    multbuffer[0] = '\0';
+
+    if (arrlss == 1) {
+
+	if (logline[63] == ' ')
+	    strncpy(multbuffer, logline + 64, 3);
+	else
+	    strncpy(multbuffer, logline + 63, 3);
+
+	multbuffer[3] = '\0';
+
+    } else if (serial_section_mult == 1) {
+
+	memset(multbuffer, 0, 39);
+
+	strncpy(multbuffer, logline + 68, 3);
+	g_strchomp(multbuffer);
+
+    } else if (sectn_mult == 1) {
+	memset(multbuffer, 0, 39);
+
+	strncpy(multbuffer, logline + 68, 3);
+	g_strchomp(multbuffer);
+
+    } else if (serial_grid4_mult == 1) {
+
+	memset(multbuffer, 0, 39);
+
+	for (int t = 0; t < 4; t++) {
+
+	    multbuffer[t] = logline[t + 59];
+	}
+
+    } else if (unique_call_multi != 0) {
+
+	g_strlcpy(multbuffer, logline + 68, 10);
+	g_strchomp(multbuffer);
+
+    } else {
+
+	strncpy(multbuffer, logline + 54, 10);	// normal case
+
+	multbuffer[10] = '\0';
+
+	g_strchomp(multbuffer);
+
+    }
+
+    return multbuffer;
+}
+
+
 int readcalls(void) {
 
     char inputbuffer[160];
@@ -118,7 +178,6 @@ int readcalls(void) {
     char checkcall[20];
     int z = 0;
     int add_ok;
-    char multbuffer[40];
     char presentcall[20];	// copy of call..
     char *tmpptr;
     int pfxnumcntidx;
@@ -207,65 +266,18 @@ int readcalls(void) {
 	    }
 
 	    if (wysiwyg_once == 1 ||
-		    wysiwyg_multi == 1 ||
-		    unique_call_multi != 0 ||
-		    arrlss == 1 ||
-		    serial_section_mult == 1 ||
-		    serial_grid4_mult == 1 ||
-		    sectn_mult == 1 ||
-		    ((dx_arrlsections == 1)
+		wysiwyg_multi == 1 ||
+		unique_call_multi != 0 ||
+		arrlss == 1 ||
+		serial_section_mult == 1 ||
+		serial_grid4_mult == 1 ||
+		sectn_mult == 1 ||
+		((dx_arrlsections == 1)
 		     && ((countrynr == w_cty) || (countrynr == ve_cty)))) {
-
-		multbuffer[0] = '\0';
-
-		if (arrlss == 1) {
-
-		    if (inputbuffer[63] == ' ')
-			strncpy(multbuffer, inputbuffer + 64, 3);
-		    else
-			strncpy(multbuffer, inputbuffer + 63, 3);
-
-		    multbuffer[3] = '\0';
-
-		} else if (serial_section_mult == 1) {
-
-		    memset(multbuffer, 0, 39);
-
-		    strncpy(multbuffer, inputbuffer + 68, 3);
-		    g_strchomp(multbuffer);
-
-		} else if (sectn_mult == 1) {
-		    memset(multbuffer, 0, 39);
-
-		    strncpy(multbuffer, inputbuffer + 68, 3);
-		    g_strchomp(multbuffer);
-
-		} else if (serial_grid4_mult == 1) {
-
-		    memset(multbuffer, 0, 39);
-
-		    for (int t = 0; t < 4; t++) {
-
-			multbuffer[t] = inputbuffer[t + 59];
-		    }
-
-		} else if (unique_call_multi != 0) {
-
-		    g_strlcpy(multbuffer, inputbuffer + 68, 10);
-		    g_strchomp(multbuffer);
-
-		} else {
-
-		    strncpy(multbuffer, inputbuffer + 54, 10);	// normal case
-
-		    multbuffer[10] = '\0';
-
-		    g_strchomp(multbuffer);
-
-		}
-
+		// get multi info
+		char *multbuffer = get_multi_from_line(inputbuffer);
 		remember_multi(multbuffer, bandindex, 0);
-
+		g_free(multbuffer);
 	    }
 	}
 
