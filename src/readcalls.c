@@ -158,7 +158,7 @@ char *get_multi_from_line(char *logline) {
 
 int readcalls(void) {
 
-    char inputbuffer[160];
+    char inputbuffer[LOGLINELEN + 1];
     char tmpbuf[20];
     char checkcall[20];
     int z = 0;
@@ -188,20 +188,14 @@ int readcalls(void) {
 	exit(1);
     }
 
-    while (fgets(inputbuffer, 90, fp) != NULL) {
+    while (fgets(inputbuffer, LOGLINELEN + 1, fp) != NULL) {
 	int l = 0;
 
-	// sanitize input line
-	strcat(inputbuffer, spaces(50)); /* repair the logfile */
+	// drop trailing newline
 	inputbuffer[LOGLINELEN - 1] = '\0';
 
-	for (int t = 0; t <= strlen(inputbuffer); t++) {
-	    if (inputbuffer[t] == '\n')
-		inputbuffer[t] = ' ';
-	}
-
 	// remember logline in qsos[] field
-	strncpy(qsos[linenr], inputbuffer, LOGLINELEN);
+	g_strlcpy(qsos[linenr], inputbuffer, sizeof(qsos[0]));
 	linenr++;
 
 	show_progress(linenr);
