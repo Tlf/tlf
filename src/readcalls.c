@@ -44,6 +44,7 @@
 #include "log_utils.h"
 #include "paccdx.h"
 #include "readqtccalls.h"
+#include "score.h"
 #include "searchcallarray.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
@@ -110,6 +111,16 @@ void show_progress(int linenr) {
     }
 }
 
+bool is_in_countrylist(int countrynr) {
+    int ci = 0;
+    while (strlen(countrylist[ci]) != 0) {
+	if (getctynr(countrylist[ci]) == countrynr) {
+	    return true;
+	}
+	ci++;
+    }
+    return false;
+}
 
 /* pick up multi string from logline
  *
@@ -161,12 +172,12 @@ int readcalls(void) {
     char tmpbuf[20];
     char checkcall[20];
     int z = 0;
-    int add_ok;
+    bool add_ok;
     char presentcall[20];	// copy of call..
     char *tmpptr;
     int pfxnumcntidx;
     int pxnr;
-    int excl_add_veto;
+    bool excl_add_veto;
     struct tm qsotime;
     int qsomode;
     int linenr = 0;
@@ -205,7 +216,6 @@ int readcalls(void) {
 	// prepare helper variables
 	pfxnumcntidx = -1;
 	pxnr = 0;
-	excl_add_veto = 0;
 
 	/* get bandindex */
 	bandindex = log_get_band(inputbuffer);
@@ -220,15 +230,7 @@ int readcalls(void) {
 	countrynr = getctydata(tmpbuf);
 
 	if (continentlist_only == 1) {
-	    int ci = 0;
-	    int cont_in_list = 0;
-	    while (strlen(continent_multiplier_list[ci]) != 0) {
-		if (strcmp(continent, continent_multiplier_list[ci]) == 0) {
-		    cont_in_list = 1;
-		}
-		ci++;
-	    }
-	    if (cont_in_list == 0) {
+	    if (!continent_found()) {
 		band_score[bandindex]++;
 		continue;
 	    }
@@ -286,12 +288,13 @@ int readcalls(void) {
 	strptime(inputbuffer+7, "%d-%b-%y %H:%M", &qsotime);
 	worked[l].qsotime[qsomode][bandindex] = mktime(&qsotime);
 
+
 	/* look if calls are excluded */
-	add_ok = 1;
+	add_ok = true;
 
 	if ((arrldx_usa == 1)
 		&& ((countrynr == w_cty) || (countrynr == ve_cty)))
-	    add_ok = 0;
+	    add_ok = false;
 
 	if (pacc_pa_flg == 1) {
 
@@ -299,7 +302,7 @@ int readcalls(void) {
 
 	    add_ok = pacc_pa();
 
-	    if (add_ok == 0) {
+	    if (add_ok == false) {
 		band_score[bandindex]++;
 	    }
 
@@ -325,56 +328,46 @@ int readcalls(void) {
 		}
 		pfxi++;
 	    }
-	    add_ok = 1;
+	    add_ok = true;
 	}
 
-	if (continentlist_only == 0 && exclude_multilist_type == 1) {
-	    int ci = 0;
-	    int cont_in_list = 0;
 
-	    while (strlen(continent_multiplier_list[ci]) != 0) {
-		if (strcmp(continent, continent_multiplier_list[ci]) == 0) {
-		    cont_in_list = 1;
-		}
-		ci++;
-	    }
-	    if (cont_in_list == 1) {
-		excl_add_veto = 1;
+	excl_add_veto = false;
+
+	if (continentlist_only == 0 && exclude_multilist_type == 1) {
+	    if (continent_found()) {
+		excl_add_veto = true;
 	    }
 	}
 
 	if (exclude_multilist_type == 2) {
-	    int ci = 0;
-	    int countrynr_tocheck = countrynr;
-	    while (strlen(countrylist[ci]) != 0) {
-		if (getctynr(countrylist[ci]) == countrynr_tocheck) {
-		    excl_add_veto = 1;
-		    break;
-		}
-		ci++;
+	    if (is_in_countrylist(countrynr)) {
+		excl_add_veto = true;
 	    }
 	}
 
-	if (add_ok == 1) {
+	if (add_ok) {
 
 	    worked[l].band |= inxes[bandindex];	/* mark band as worked */
 
 	    band_score[bandindex]++;	/*  qso counter  per band */
+
 	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1))
 		zones[z] |= inxes[bandindex];
+
 	    if (pfxnumcntidx < 0) {
-		if (excl_add_veto == 0) {
+		if (!excl_add_veto) {
 		    countries[countrynr] |= inxes[bandindex];
 		}
 	    } else {
 		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandindex];
 	    }
-
 	}
     }
 
     fclose(fp);
 
+    /* all lines red, now build other statistics */
     if (wpx == 1) {
 
 	/* build prefixes_worked array from list of worked stations */

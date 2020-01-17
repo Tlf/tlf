@@ -25,5 +25,6 @@
 int score(void);
 int score2(char *line);
 int country_found(char prefix[]);
+int continent_found();
 
 #endif /* end of include guard: _SCORE_H */

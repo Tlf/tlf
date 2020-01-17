@@ -29,7 +29,7 @@
 #include "bands.h"
 
 /* for the following code we assume that we have well formatted log lines,
- * which has to be checked separatley if needed */
+ * which has to be checked separately if needed */
 
 /** check if logline is only a comment */
 bool log_is_comment(char *buffer) {
