@@ -47,7 +47,6 @@
 #include "searchcallarray.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
-#include "ui_utils.h"
 #include "zone_nr.h"
 
 extern char continent_multiplier_list[7][3];
@@ -339,8 +338,7 @@ int readcalls(void) {
 		}
 		ci++;
 	    }
-	    if (cont_in_list == 1 && continentlist_only == 0
-		    && exclude_multilist_type == 1) {
+	    if (cont_in_list == 1) {
 		excl_add_veto = 1;
 	    }
 	}
