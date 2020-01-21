@@ -83,7 +83,7 @@ int countrylist_points = -1;
 char continent_multiplier_list[7][3]; // SA, NA, EU, AF, AS and OC
 int continentlist_points = -1;
 int continentlist_only = 0;
-int exclude_multilist_type = 0;
+int exclude_multilist_type = EXCLUDE_NONE;
 int mult_side = 0;
 /* end LZ3NY mods */
 

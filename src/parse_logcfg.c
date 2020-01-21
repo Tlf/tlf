@@ -1785,7 +1785,7 @@ int parse_logcfg(char *inputbuffer) {
 		    sleep(5);
 		    exit(1);
 		}
-		exclude_multilist_type = 1;
+		exclude_multilist_type = EXCLUDE_CONTINENT;
 	    } else if (strcmp(g_strchomp(fields[1]), "COUNTRYLIST") == 0) {
 		if (strlen(countrylist[0]) == 0) {
 		    showmsg
@@ -1793,7 +1793,7 @@ int parse_logcfg(char *inputbuffer) {
 		    sleep(5);
 		    exit(1);
 		}
-		exclude_multilist_type = 2;
+		exclude_multilist_type = EXCLUDE_COUNTRY;
 	    } else {
 		showmsg
 		("WARNING: choose one of these for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST");

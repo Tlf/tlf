@@ -122,6 +122,26 @@ bool is_in_countrylist(int countrynr) {
     return false;
 }
 
+
+bool check_veto() {
+    bool excl_add_veto = false;
+
+    if (continentlist_only == 0 &&
+	    exclude_multilist_type == EXCLUDE_CONTINENT) {
+	if (continent_found()) {
+	    excl_add_veto = true;
+	}
+    }
+
+    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
+	if (is_in_countrylist(countrynr)) {
+	    excl_add_veto = true;
+	}
+    }
+
+    return excl_add_veto;
+}
+
 /* pick up multi string from logline
  *
  * ATTENTION! return value needs to be freed
@@ -331,20 +351,7 @@ int readcalls(void) {
 	    add_ok = true;
 	}
 
-
-	excl_add_veto = false;
-
-	if (continentlist_only == 0 && exclude_multilist_type == 1) {
-	    if (continent_found()) {
-		excl_add_veto = true;
-	    }
-	}
-
-	if (exclude_multilist_type == 2) {
-	    if (is_in_countrylist(countrynr)) {
-		excl_add_veto = true;
-	    }
-	}
+	excl_add_veto = check_veto();
 
 	if (add_ok) {
 
