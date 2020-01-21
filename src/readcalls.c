@@ -186,6 +186,25 @@ char *get_multi_from_line(char *logline) {
 }
 
 
+void count_if_worked(int check, unsigned int bandindex, int *count) {
+    if (bandindex >= NBANDS)
+	return;
+
+    if ((check & inxes[bandindex]) != 0)
+	count[bandindex]++;
+}
+
+void count_contest_bands(int check, int *count) {
+    count_if_worked(check, BANDINDEX_160, count);
+    count_if_worked(check, BANDINDEX_80, count);
+    count_if_worked(check, BANDINDEX_40, count);
+    count_if_worked(check, BANDINDEX_20, count);
+    count_if_worked(check, BANDINDEX_15, count);
+    count_if_worked(check, BANDINDEX_10, count);
+}
+
+
+
 int readcalls(void) {
 
     char inputbuffer[LOGLINELEN + 1];
@@ -396,106 +415,41 @@ int readcalls(void) {
 
     if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
 	for (int n = 1; n < MAX_ZONES; n++) {
-	    if ((zones[n] & BAND160) != 0)
-		zonescore[BANDINDEX_160]++;
-	    if ((zones[n] & BAND80) != 0)
-		zonescore[BANDINDEX_80]++;
-	    if ((zones[n] & BAND40) != 0)
-		zonescore[BANDINDEX_40]++;
-	    if ((zones[n] & BAND20) != 0)
-		zonescore[BANDINDEX_20]++;
-	    if ((zones[n] & BAND15) != 0)
-		zonescore[BANDINDEX_15]++;
-	    if ((zones[n] & BAND10) != 0)
-		zonescore[BANDINDEX_10]++;
+	    count_contest_bands(zones[n], zonescore);
 	}
     }
 
     if (cqww == 1) {
 	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
-	    if ((countries[n] & BAND160) != 0)
-		countryscore[BANDINDEX_160]++;
-	    if ((countries[n] & BAND80) != 0)
-		countryscore[BANDINDEX_80]++;
-	    if ((countries[n] & BAND40) != 0)
-		countryscore[BANDINDEX_40]++;
-	    if ((countries[n] & BAND20) != 0)
-		countryscore[BANDINDEX_20]++;
-	    if ((countries[n] & BAND15) != 0)
-		countryscore[BANDINDEX_15]++;
-	    if ((countries[n] & BAND10) != 0)
-		countryscore[BANDINDEX_10]++;
+	    count_contest_bands(countries[n], countryscore);
 	}
     }
-    /* end cqww */
+
     if (dx_arrlsections == 1) {
-
-	int cntr;
-
-	for (cntr = 1; cntr < MAX_DATALINES; cntr++) {
-
+	for (int cntr = 1; cntr < MAX_DATALINES; cntr++) {
 	    if (cntr != w_cty && cntr != ve_cty) {	// W and VE don't count here...
-		if ((countries[cntr] & BAND160) != 0)
-		    countryscore[BANDINDEX_160]++;
-		if ((countries[cntr] & BAND80) != 0)
-		    countryscore[BANDINDEX_80]++;
-		if ((countries[cntr] & BAND40) != 0)
-		    countryscore[BANDINDEX_40]++;
-		if ((countries[cntr] & BAND20) != 0)
-		    countryscore[BANDINDEX_20]++;
-		if ((countries[cntr] & BAND15) != 0)
-		    countryscore[BANDINDEX_15]++;
-		if ((countries[cntr] & BAND10) != 0)
-		    countryscore[BANDINDEX_10]++;
+		count_contest_bands(countries[cntr], countryscore);
 	    }
 	}
-    }				// end dx_arrlsections
+    }
 
     if (arrldx_usa == 1) {
-
-	int cntr;
-	for (cntr = 1; cntr < MAX_DATALINES; cntr++) {
+	for (int cntr = 1; cntr < MAX_DATALINES; cntr++) {
 	    if (cntr != w_cty && cntr != ve_cty) {	// W and VE don't count here...
-		if ((countries[cntr] & BAND160) != 0)
-		    countryscore[BANDINDEX_160]++;
-		if ((countries[cntr] & BAND80) != 0)
-		    countryscore[BANDINDEX_80]++;
-		if ((countries[cntr] & BAND40) != 0)
-		    countryscore[BANDINDEX_40]++;
-		if ((countries[cntr] & BAND20) != 0)
-		    countryscore[BANDINDEX_20]++;
-		if ((countries[cntr] & BAND15) != 0)
-		    countryscore[BANDINDEX_15]++;
-		if ((countries[cntr] & BAND10) != 0)
-		    countryscore[BANDINDEX_10]++;
+		count_contest_bands(countries[cntr], countryscore);
 	    }
 	}
-
     }
-    /* end arrldx_usa */
 
     if (pacc_pa_flg == 1) {
-
 	for (int n = 1; n < MAX_DATALINES; n++) {
-	    if ((countries[n] & BAND160) != 0)
-		countryscore[BANDINDEX_160]++;
-	    if ((countries[n] & BAND80) != 0)
-		countryscore[BANDINDEX_80]++;
-	    if ((countries[n] & BAND40) != 0)
-		countryscore[BANDINDEX_40]++;
-	    if ((countries[n] & BAND20) != 0)
-		countryscore[BANDINDEX_20]++;
-	    if ((countries[n] & BAND15) != 0)
-		countryscore[BANDINDEX_15]++;
-	    if ((countries[n] & BAND10) != 0)
-		countryscore[BANDINDEX_10]++;
+	    count_contest_bands(countries[n], countryscore);
 	}
     }
 
     if (country_mult == 1 || pfxnummultinr > 0) {
 
 	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
-
 	    // first, check pfxnummultinr array, the country 'n' exists
 	    int pfxnumcntnr = -1;
 	    // pfxnummultinr is length of pfxnummulti array
@@ -521,39 +475,12 @@ int readcalls(void) {
 		// each element represent a number of the country code
 		// eg: K0, K1, K2, ..., K9
 		for (pfxnum = 0; pfxnum < 10; pfxnum++) {
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND160) != 0) {
-			countryscore[BANDINDEX_160]++;
-		    }
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND80) != 0) {
-			countryscore[BANDINDEX_80]++;
-		    }
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND40) != 0) {
-			countryscore[BANDINDEX_40]++;
-		    }
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND20) != 0) {
-			countryscore[BANDINDEX_20]++;
-		    }
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND15) != 0) {
-			countryscore[BANDINDEX_15]++;
-		    }
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND10) != 0) {
-			countryscore[BANDINDEX_10]++;
-		    }
+		    count_contest_bands(pfxnummulti[pfxnumcntnr].qsos[pfxnum],
+			    countryscore);
 		}
 	    } else {
-		// simple 'country_mult', but it's works together with pfxnummultinr
-		if ((countries[n] & BAND160) != 0)
-		    countryscore[BANDINDEX_160]++;
-		if ((countries[n] & BAND80) != 0)
-		    countryscore[BANDINDEX_80]++;
-		if ((countries[n] & BAND40) != 0)
-		    countryscore[BANDINDEX_40]++;
-		if ((countries[n] & BAND20) != 0)
-		    countryscore[BANDINDEX_20]++;
-		if ((countries[n] & BAND15) != 0)
-		    countryscore[BANDINDEX_15]++;
-		if ((countries[n] & BAND10) != 0)
-		    countryscore[BANDINDEX_10]++;
+		// simple 'country_mult', but works together with pfxnummultinr
+		count_contest_bands(countries[n], countryscore);
 	    }
 	}
     }
