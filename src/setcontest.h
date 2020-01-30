@@ -21,6 +21,6 @@
 #ifndef SETCONTEST_H
 #define SETCONTEST_H
 
-int setcontest(void);
+void setcontest(void);
 
 #endif /* SETCONTEST_H */

@@ -411,7 +411,7 @@ int readcalls(void) {
 	    int ci = 0;
 	    int countrynr_tocheck = countrynr;
 	    while (strlen(countrylist[ci]) != 0) {
-		if (getctydata(countrylist[ci]) == countrynr_tocheck) {
+		if (getctynr(countrylist[ci]) == countrynr_tocheck) {
 		    excl_add_veto = 1;
 		    break;
 		}
@@ -514,22 +514,24 @@ int readcalls(void) {
 	}
     }				// end dx_arrlsections
 
-    if ((arrldx_usa == 1) && (countrynr != w_cty) && (countrynr != ve_cty)) {
+    if (arrldx_usa == 1) {
 
 	int cntr;
 	for (cntr = 1; cntr < MAX_DATALINES; cntr++) {
-	    if ((countries[cntr] & BAND160) != 0)
-		countryscore[BANDINDEX_160]++;
-	    if ((countries[cntr] & BAND80) != 0)
-		countryscore[BANDINDEX_80]++;
-	    if ((countries[cntr] & BAND40) != 0)
-		countryscore[BANDINDEX_40]++;
-	    if ((countries[cntr] & BAND20) != 0)
-		countryscore[BANDINDEX_20]++;
-	    if ((countries[cntr] & BAND15) != 0)
-		countryscore[BANDINDEX_15]++;
-	    if ((countries[cntr] & BAND10) != 0)
-		countryscore[BANDINDEX_10]++;
+	    if (cntr != w_cty && cntr != ve_cty) {	// W and VE don't count here...
+		if ((countries[cntr] & BAND160) != 0)
+		    countryscore[BANDINDEX_160]++;
+		if ((countries[cntr] & BAND80) != 0)
+		    countryscore[BANDINDEX_80]++;
+		if ((countries[cntr] & BAND40) != 0)
+		    countryscore[BANDINDEX_40]++;
+		if ((countries[cntr] & BAND20) != 0)
+		    countryscore[BANDINDEX_20]++;
+		if ((countries[cntr] & BAND15) != 0)
+		    countryscore[BANDINDEX_15]++;
+		if ((countries[cntr] & BAND10) != 0)
+		    countryscore[BANDINDEX_10]++;
+	    }
 	}
 
     }
