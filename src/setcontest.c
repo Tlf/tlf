@@ -31,7 +31,7 @@
 #include "tlf.h"
 
 
-int setcontest(void) {
+void setcontest(void) {
 
     extern int focm;
     extern int wpx;
@@ -103,6 +103,9 @@ int setcontest(void) {
     sectn_mult = 0;
     noleadingzeros = 0;
 
+    w_cty = getctynr(wcall);
+    ve_cty = getctynr(vecall);
+
     if (strcmp(whichcontest, "wpx") == 0) {
 	wpx = 1;
 	contest = 1;
@@ -116,8 +119,6 @@ int setcontest(void) {
 	contest = 1;
 	showscore_flag = 1;
 	searchflg = 1;
-	w_cty = getctynr(wcall);
-	ve_cty = getctynr(vecall);
     }
 
     if (strcmp(whichcontest, "dxped") == 0) {
@@ -184,8 +185,6 @@ int setcontest(void) {
 	showscore_flag = 1;
 	searchflg = 1;
 
-	ve_cty = getctynr(vecall);
-	w_cty = getctynr(wcall);
 	zl_cty = getctynr(zlcall);
 	ja_cty = getctynr(jacall);
 	py_cty = getctynr(pycall);
@@ -228,8 +227,6 @@ int setcontest(void) {
 //      universal = 1;
 	showscore_flag = 1;
 	searchflg = 1;
-	w_cty = getctynr(wcall);
-	ve_cty = getctynr(vecall);
     }
 
     if (strcmp(whichcontest, "qso") == 0) {
@@ -241,6 +238,4 @@ int setcontest(void) {
 	showscore_flag = 1;
 	universal = 1;
     }
-
-    return (0);
 }
