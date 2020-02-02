@@ -23,6 +23,8 @@
 // OBJECT ../src/zone_nr.o
 
 /* missing from globalvar.h */
+extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+extern int pfxnummultinr;
 extern char continent_multiplier_list[7][3];
 extern char countrylist[][6];
 
@@ -58,8 +60,15 @@ int setup_default (void **state) {
     strcpy(countrylist[0], "DL");
     strcpy(countrylist[1], "CE");
     strcpy(countrylist[2], "");
+
+    memset(pfxnummulti, 0, sizeof(pfxnummulti));
+    pfxnummulti[0].countrynr = 12;
+    pfxnummulti[1].countrynr = 42;
+    pfxnummultinr = 2;
+
     return 0;
 }
+
 
 /* test is_in_countrylist() */
 void test_in_countrylist(void **state) {
@@ -75,4 +84,15 @@ void test_in_countrylist_keeps_countrynr(void **state) {
     assert_int_equal(is_in_countrylist(getctynr("DL")), true);
     assert_int_equal(is_in_countrylist(getctynr("OE")), false);
     assert_int_equal(countrynr, 42);
+}
+
+
+/* test lookup country in pfxnummult */
+void test_lookup_not_in_pfxnummult(void **state) {
+    assert_int_equal(lookup_country_in_pfxnummult_array(1), -1);
+}
+
+
+void test_lookup_in_pfxnummult(void **state) {
+    assert_int_equal(lookup_country_in_pfxnummult_array(42), 1);
 }

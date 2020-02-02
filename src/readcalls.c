@@ -122,6 +122,24 @@ bool is_in_countrylist(int countrynr) {
     return false;
 }
 
+// lookup the current country 'n' from the outer loop
+// pfxnummulti[I].countrynr contains the country codes,
+// I:=[0..pfxnummultinr]
+// according to the order of prefixes in rules, eg:
+// PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
+// pfxnummulti[0].countrynr will be nr of USA
+// pfxnummulti[1].countrynr will be nr of Canada
+int lookup_country_in_pfxnummult_array(int n) {
+    int found = -1;
+    for (int i = 0; i < pfxnummultinr; i++) {
+	if (pfxnummulti[i].countrynr == n) {
+	    found = i;
+	    break;
+	}
+    }
+    return found;
+}
+
 
 bool check_veto() {
     bool excl_add_veto = false;
@@ -328,6 +346,12 @@ int readcalls(void) {
 	worked[l].qsotime[qsomode][bandindex] = mktime(&qsotime);
 
 
+	if (pfxmultab == 1) {
+	    getpx(presentcall);
+	    add_pfx(pxstr, bandindex);
+	}
+
+
 	/* look if calls are excluded */
 	add_ok = true;
 
@@ -348,25 +372,14 @@ int readcalls(void) {
 	    hiscall[0] = '\0';
 	}
 
-	if (pfxmultab == 1) {
-	    getpx(presentcall);
-	    add_pfx(pxstr, bandindex);
-	}
-
 	if (pfxnummultinr > 0) {
 	    getpx(presentcall);
 	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
 
 	    getctydata(presentcall);
 
-	    int pfxi = 0;
-	    while (pfxi < pfxnummultinr) {
-		if (pfxnummulti[pfxi].countrynr == countrynr) {
-		    pfxnumcntidx = pfxi;
-		    break;
-		}
-		pfxi++;
-	    }
+	    pfxnumcntidx = lookup_country_in_pfxnummult_array(countrynr);
+
 	    add_ok = true;
 	}
 
@@ -450,36 +463,21 @@ int readcalls(void) {
     if (country_mult == 1 || pfxnummultinr > 0) {
 
 	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
-	    // first, check pfxnummultinr array, the country 'n' exists
-	    int pfxnumcntnr = -1;
-	    // pfxnummultinr is length of pfxnummulti array
+
+	    pfxnumcntidx = -1;
 	    if (pfxnummultinr > 0) {
-		int pcntnr;
-		// find the current country
-		// n is the country in the external loop
-		// pfxnummulti[I].countrynr contains the country codes, I:=[0..pfxnummultinr]
-		// it depends from the order of prefixes in rules, eg:
-		// PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
-		// pfxnummulti[0].countrynr will be nr of USA
-		// pfxnummulti[1].countrynr will be nr of Canada
-		for (pcntnr = 0; pcntnr < pfxnummultinr; pcntnr++) {
-		    if (pfxnummulti[pcntnr].countrynr == n) {
-			pfxnumcntnr = pcntnr;
-			pcntnr = pfxnummultinr; // end loop
-		    }
-		}
+		pfxnumcntidx = lookup_country_in_pfxnummult_array(n);
 	    }
-	    if (pfxnummultinr > 0 && pfxnumcntnr >= 0) {
-		int pfxnum;
-		// walking pfxnummulti[N].qsos, which is a 10 element array
-		// each element represent a number of the country code
-		// eg: K0, K1, K2, ..., K9
-		for (pfxnum = 0; pfxnum < 10; pfxnum++) {
-		    count_contest_bands(pfxnummulti[pfxnumcntnr].qsos[pfxnum],
+
+	    if (pfxnumcntidx >= 0) { /* found in array */
+		/* count all possible pfx numbers
+		 * eg: K0, K1, K2, ..., K9 */
+		for (int pfxnr = 0; pfxnr < 10; pfxnr++) {
+		    count_contest_bands(pfxnummulti[pfxnumcntidx].qsos[pfxnr],
 			    countryscore);
 		}
 	    } else {
-		// simple 'country_mult', but works together with pfxnummultinr
+		// simple 'country_mult', but works together with pfxnummulti
 		count_contest_bands(countries[n], countryscore);
 	    }
 	}
