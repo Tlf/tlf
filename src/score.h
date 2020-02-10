@@ -21,10 +21,12 @@
 
 #ifndef _SCORE_H
 #define _SCORE_H
+#include <stdbool.h>
 
 int score(void);
 int score2(char *line);
 int country_found(char prefix[]);
+bool is_in_countrylist(int countrynr);
 int continent_found();
 
 #endif /* end of include guard: _SCORE_H */

@@ -70,23 +70,6 @@ int setup_default (void **state) {
 }
 
 
-/* test is_in_countrylist() */
-void test_in_countrylist(void **state) {
-    assert_int_equal(is_in_countrylist(getctynr("DL")), true);
-}
-
-void test_not_in_countrylist(void **state) {
-    assert_int_equal(is_in_countrylist(getctynr("OE")), false);
-}
-
-void test_in_countrylist_keeps_countrynr(void **state) {
-    countrynr = 42;
-    assert_int_equal(is_in_countrylist(getctynr("DL")), true);
-    assert_int_equal(is_in_countrylist(getctynr("OE")), false);
-    assert_int_equal(countrynr, 42);
-}
-
-
 /* test lookup country in pfxnummult */
 void test_lookup_not_in_pfxnummult(void **state) {
     assert_int_equal(lookup_country_in_pfxnummult_array(1), -1);

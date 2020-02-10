@@ -111,16 +111,6 @@ void show_progress(int linenr) {
     }
 }
 
-bool is_in_countrylist(int countrynr) {
-    int ci = 0;
-    while (strlen(countrylist[ci]) != 0) {
-	if (getctynr(countrylist[ci]) == countrynr) {
-	    return true;
-	}
-	ci++;
-    }
-    return false;
-}
 
 // lookup the current country 'n' from the outer loop
 // pfxnummulti[I].countrynr contains the country codes,

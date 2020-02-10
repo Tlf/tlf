@@ -26,6 +26,7 @@
 
 
 #include <math.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -35,8 +36,22 @@
 #include "qrb.h"
 #include "tlf.h"
 
+extern char countrylist[][6];
 
 int calc_continent(int zone);
+
+/* check if countrynr is in countrylist */
+bool is_in_countrylist(int countrynr) {
+    int i = 0;
+    while (strlen(countrylist[i]) != 0) {
+	if (getctynr(countrylist[i]) == countrynr) {
+	    return true;
+	}
+	i++;
+    }
+    return false;
+}
+
 
 /* check if hiscall is in COUNTRY_LIST from logcfg.dat */
 int country_found(char prefix[]) {
@@ -44,7 +59,6 @@ int country_found(char prefix[]) {
     extern int countrynr;
     extern char hiscall[];
     extern char call[];
-    extern char countrylist[][6];
 
     char tmpcall[15];
     int counter = 0;

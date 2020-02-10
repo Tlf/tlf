@@ -1,8 +1,9 @@
 #include "test.h"
 
+#include "../src/dxcc.h"
+#include "../src/getctydata.h"
 #include "../src/score.h"
 #include "../src/tlf.h"
-#include "../src/dxcc.h"
 
 #include "../src/globalvars.h"
 
@@ -12,9 +13,9 @@
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/focm.o
 // OBJECT ../src/getctydata.o
-// OBJECT ../src/qrb.o
-// OBJECT ../src/locator2longlat.o
 // OBJECT ../src/getpx.o
+// OBJECT ../src/locator2longlat.o
+// OBJECT ../src/qrb.o
 
 // ===========
 // these are missing from globalvars
@@ -253,6 +254,27 @@ static void init_countrylist() {
     strcpy(countrylist[3], "");
 }
 
+
+/* test is_in_countrylist() */
+void test_in_countrylist(void **state) {
+    init_countrylist();
+    assert_int_equal(is_in_countrylist(getctynr("DL")), true);
+}
+
+void test_not_in_countrylist(void **state) {
+    init_countrylist();
+    assert_int_equal(is_in_countrylist(getctynr("CE")), false);
+}
+
+void test_in_countrylist_keeps_countrynr(void **state) {
+    init_countrylist();
+    countrynr = 42;
+    assert_int_equal(is_in_countrylist(getctynr("DL")), true);
+    assert_int_equal(is_in_countrylist(getctynr("CE")), false);
+    assert_int_equal(countrynr, 42);
+}
+
+
 void test_country_found(void **state) {
     /* nothing to find in empty list */
     strcpy(hiscall, "LZ1AB");
@@ -268,6 +290,8 @@ void test_country_found(void **state) {
     strcpy(hiscall, "K3LA");
     assert_int_equal(country_found(""), 1);
 }
+
+
 
 void test_scoreByCorC_listOnly(void **state) {
     countrylist_only = 1;
