@@ -37,12 +37,14 @@
 #include "tlf.h"
 
 extern char countrylist[][6];
+extern char continent_multiplier_list[7][3];
 
 int calc_continent(int zone);
 
 /* check if countrynr is in countrylist */
 bool is_in_countrylist(int countrynr) {
     int i = 0;
+
     while (strlen(countrylist[i]) != 0) {
 	if (getctynr(countrylist[i]) == countrynr) {
 	    return true;
@@ -111,20 +113,24 @@ int exist_in_country_list() {
 }
 
 
+bool is_in_continentlist(char *continent) {
+    int i = 0;
+
+    while (strlen(continent_multiplier_list[i]) != 0) {
+	if (strcmp(continent_multiplier_list[i], continent) == 0) {
+	    return true;
+	}
+	i++;
+    }
+    return false;
+}
+
+
 /* HA2OS - check if continent is in CONTINENT_LIST from logcfg.dat */
 int continent_found() {
     extern char continent[];
-    extern char continent_multiplier_list[7][3];
 
-    int mit_fg = 0;
-
-    while (strlen(continent_multiplier_list[mit_fg]) != 0) {
-	if (strcmp(continent_multiplier_list[mit_fg], continent) == 0) {
-	    return 1;
-	}
-	mit_fg++;
-    }
-    return 0;
+    return (is_in_continentlist(continent));
 }
 
 

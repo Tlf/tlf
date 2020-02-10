@@ -61,7 +61,6 @@ extern rmode_t digi_mode;
 extern int ctcomp;
 
 int exist_in_country_list();
-int continent_found();
 
 void KeywordRepeated(char *keyword);
 void KeywordNotSupported(char *keyword);

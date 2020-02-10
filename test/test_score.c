@@ -292,6 +292,40 @@ void test_country_found(void **state) {
 }
 
 
+static void init_continentlist() {
+    strcpy(continent_multiplier_list[0], "AS");
+    strcpy(continent_multiplier_list[1], "NA");
+    strcpy(continent_multiplier_list[2], "");
+}
+
+void test_empty_continentlist(void **state) {
+    assert_int_equal(is_in_continentlist(""), false);
+    assert_int_equal(is_in_continentlist("SA"), false);
+}
+
+void test_not_in_continnetlist(void ** state) {
+    init_continentlist();
+    assert_int_equal(is_in_continentlist("SA"), false);
+}
+
+void test_in_continentlist(void **state) {
+    init_continentlist();
+    assert_int_equal(is_in_continentlist("NA"), true);
+}
+
+
+int continent_found();
+void test_continent_found(void **state) {
+    init_continentlist();
+    strcpy(continent, "NA");
+    assert_int_equal(continent_found(), true);
+}
+
+void test_continent_not_found(void **state) {
+    init_continentlist();
+    strcpy(continent, "EU");
+    assert_int_equal(continent_found(), false);
+}
 
 void test_scoreByCorC_listOnly(void **state) {
     countrylist_only = 1;
