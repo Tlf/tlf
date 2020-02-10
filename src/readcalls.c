@@ -50,12 +50,10 @@
 #include "tlf_curses.h"
 #include "zone_nr.h"
 
-extern char continent_multiplier_list[7][3];
 extern int continentlist_only;
 extern int pfxnummultinr;
 extern t_pfxnummulti pfxnummulti[];
 extern int exclude_multilist_type;
-extern char countrylist[][6];
 
 
 void init_scoring(void) {
@@ -130,13 +128,12 @@ int lookup_country_in_pfxnummult_array(int n) {
     return found;
 }
 
-
 bool check_veto() {
     bool excl_add_veto = false;
 
     if (continentlist_only == 0 &&
 	    exclude_multilist_type == EXCLUDE_CONTINENT) {
-	if (continent_found()) {
+	if (is_in_continentlist(continent)) {
 	    excl_add_veto = true;
 	}
     }
@@ -277,7 +274,7 @@ int readcalls(void) {
 	countrynr = getctydata(tmpbuf);
 
 	if (continentlist_only == 1) {
-	    if (!continent_found()) {
+	    if (!is_in_continentlist(continent)) {
 		band_score[bandindex]++;
 		continue;
 	    }

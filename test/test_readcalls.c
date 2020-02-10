@@ -27,6 +27,8 @@ extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
 extern int pfxnummultinr;
 extern char continent_multiplier_list[7][3];
 extern char countrylist[][6];
+extern int exclude_multilist_type;
+extern int continentlist_only;
 
 // dummy functions
 void get_time(void) {}
@@ -47,7 +49,7 @@ int pacc_pa(void) {
 }
 
 /* private prototypes */
-bool is_in_countrylist(int x);
+bool check_veto();
 
 
 int setup_default (void **state) {
@@ -60,6 +62,13 @@ int setup_default (void **state) {
     strcpy(countrylist[0], "DL");
     strcpy(countrylist[1], "CE");
     strcpy(countrylist[2], "");
+
+    strcpy(continent_multiplier_list[0], "EU");
+    strcpy(continent_multiplier_list[1], "NA");
+    strcpy(continent_multiplier_list[2], "");
+
+    exclude_multilist_type = EXCLUDE_NONE;
+    continentlist_only = 0;
 
     memset(pfxnummulti, 0, sizeof(pfxnummulti));
     pfxnummulti[0].countrynr = 12;
@@ -78,4 +87,35 @@ void test_lookup_not_in_pfxnummult(void **state) {
 
 void test_lookup_in_pfxnummult(void **state) {
     assert_int_equal(lookup_country_in_pfxnummult_array(42), 1);
+}
+
+
+/* test check_veto() */
+void test_veto_eclude_none (void **state) {
+    assert_int_equal(check_veto(), false);
+}
+
+void test_veto_exclude_country (void **state) {
+    exclude_multilist_type = EXCLUDE_COUNTRY;
+    countrynr = getctynr("HB9ABC");
+    assert_int_equal(check_veto(), false);
+    countrynr = getctynr("DL1AAA");
+    assert_int_equal(check_veto(), true);
+}
+
+void test_veto_exclude_continent_contlist_only (void **state) {
+    continentlist_only = 1;
+    exclude_multilist_type = EXCLUDE_CONTINENT;
+    strcpy(continent, "EU");
+    assert_int_equal(check_veto(), false);
+    strcpy(continent, "AF");
+    assert_int_equal(check_veto(), false);
+}
+
+void test_veto_exclude_continent (void **state) {
+    exclude_multilist_type = EXCLUDE_CONTINENT;
+    strcpy(continent, "EU");
+    assert_int_equal(check_veto(), true);
+    strcpy(continent, "AF");
+    assert_int_equal(check_veto(), false);
 }

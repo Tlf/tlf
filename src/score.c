@@ -113,6 +113,7 @@ int exist_in_country_list() {
 }
 
 
+/* HA2OS - check if continent is in CONTINENT_LIST from logcfg.dat */
 bool is_in_continentlist(char *continent) {
     int i = 0;
 
@@ -123,14 +124,6 @@ bool is_in_continentlist(char *continent) {
 	i++;
     }
     return false;
-}
-
-
-/* HA2OS - check if continent is in CONTINENT_LIST from logcfg.dat */
-int continent_found() {
-    extern char continent[];
-
-    return (is_in_continentlist(continent));
 }
 
 
@@ -238,10 +231,10 @@ int scoreByContinentOrCountry() {
     }
 
     /* HA2OS mods */
-    // only continent list allowed
     if (continentlist_only == 1) {
-	if (continent_found() == 1) {
-	    // if we are on DX continent
+	// only continent list allowed
+	if (is_in_continentlist(continent)) {
+	    // are we are on DX continent or not
 	    if (strcmp(continent, mycontinent) == 0) {
 		points = my_cont_points;
 	    } else if (continentlist_points != -1) {

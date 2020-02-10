@@ -293,7 +293,7 @@ void test_country_found(void **state) {
 
 
 static void init_continentlist() {
-    strcpy(continent_multiplier_list[0], "AS");
+    strcpy(continent_multiplier_list[0], "EU");
     strcpy(continent_multiplier_list[1], "NA");
     strcpy(continent_multiplier_list[2], "");
 }
@@ -314,20 +314,7 @@ void test_in_continentlist(void **state) {
 }
 
 
-int continent_found();
-void test_continent_found(void **state) {
-    init_continentlist();
-    strcpy(continent, "NA");
-    assert_int_equal(continent_found(), true);
-}
-
-void test_continent_not_found(void **state) {
-    init_continentlist();
-    strcpy(continent, "EU");
-    assert_int_equal(continent_found(), false);
-}
-
-void test_scoreByCorC_listOnly(void **state) {
+void test_scoreByCorC_countrylistOnly(void **state) {
     countrylist_only = 1;
     check_call_points("LZ1AB", 0);
     check_call_points("DL3XYZ", 0);
@@ -339,6 +326,17 @@ void test_scoreByCorC_listOnly(void **state) {
     countrylist_points = 4;
     check_call_points("LZ1AB", 0);
     check_call_points("DL3XYZ", 4);
+}
+
+void test_scoreByCorC_continentlistOnly(void **state) {
+    continentlist_only = 1;
+    check_call_points("LZ1AB", 0);
+
+    init_continentlist();
+    my_cont_points = 1;
+    check_call_points("LZ1AB", 1);
+    continentlist_points = 2;
+    check_call_points("XE2AAA", 2);
 }
 
 void test_scoreByCorC_notInList(void **state) {
