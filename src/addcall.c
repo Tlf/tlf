@@ -46,6 +46,7 @@
 #include "get_time.h"
 #include "log_utils.h"
 #include "paccdx.h"
+#include "score.h"
 #include "searchcallarray.h"
 #include "tlf.h"
 #include "zone_nr.h"
@@ -57,8 +58,7 @@ int excl_add_veto;
  * which came from lan_logline the Tlf scoring logic is totally completely
  * different in local and LAN source the addcall() function doesn't increment
  * the band_score[] array, that maintains the score() function. Here, the
- * addcall2() is need to separate the points and multipliers.  This variable
- * is used in readcall() too.
+ * addcall2() is need to separate the points and multipliers.
  */
 
 int addcall(void) {
@@ -89,10 +89,8 @@ int addcall(void) {
     extern int pfxnummultinr;
     extern int addcallarea;
     extern int continentlist_only;
-    extern char continent_multiplier_list[7][3];
     extern char continent[];
     extern int exclude_multilist_type;
-    extern char countrylist[][6];
     extern int trxmode;
     extern struct tm *time_ptr;
 
@@ -164,20 +162,8 @@ int addcall(void) {
 	}
     }
 
-    if (continentlist_only == 1 || (continentlist_only == 0
-				    && exclude_multilist_type == 1)) {
-	int ci = 0;
-	int cont_in_list = 0;
-
-	while (strlen(continent_multiplier_list[ci]) != 0) {
-	    if (strcmp(continent, continent_multiplier_list[ci]) == 0) {
-		cont_in_list = 1;
-	    }
-	    ci++;
-	}
-
-	if ((cont_in_list == 0 && continentlist_only == 1) || (cont_in_list == 1
-		&& continentlist_only == 0 && exclude_multilist_type == 1)) {
+    if (continentlist_only == 1) {
+	if (!is_in_continentlist(continent)) {
 	    add_ok = 0;
 	    addcty = 0;
 	    addcallarea = 0;
@@ -185,16 +171,22 @@ int addcall(void) {
 	}
     }
 
-    if (exclude_multilist_type == 2) {
-	int ci = 0;
-	while (strlen(countrylist[ci]) != 0) {
-	    if (getctynr(countrylist[ci]) == j) {
-		add_ok = 0;
-		addcty = 0;
-		addcallarea = 0;
-		excl_add_veto = 1;
-	    }
-	    ci++;
+    if (continentlist_only == 0
+	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
+        if (is_in_continentlist(continent)) {
+	    add_ok = 0;
+	    addcty = 0;
+	    addcallarea = 0;
+	    excl_add_veto = 1;
+	}
+    }
+
+    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
+	if (is_in_countrylist(j)) {
+	    add_ok = 0;
+	    addcty = 0;
+	    addcallarea = 0;
+	    excl_add_veto = 1;
 	}
     }
 
@@ -256,7 +248,7 @@ int addcall(void) {
     return j;
 }
 
-/* -------------------------for network qso's-----------------------------------------*/
+/* ----------------------for network qso's-----------------------------------*/
 
 int addcall2(void) {
 
@@ -281,12 +273,10 @@ int addcall2(void) {
     extern int addcallarea;
     extern int countrynr;
     extern int continentlist_only;
-    extern char continent_multiplier_list[7][3];
     extern char continent[];
 
     extern int pfxmultab;
     extern int exclude_multilist_type;
-    extern char countrylist[][6];
     extern int trxmode;
 
     int found = 0;
@@ -370,32 +360,23 @@ int addcall2(void) {
 	add_ok = 1;
     }
 
-    if (continentlist_only == 1 || (continentlist_only == 0
-				    && exclude_multilist_type == 1)) {
-	int ci = 0;
-	int cont_in_list = 0;
 
-	while (strlen(continent_multiplier_list[ci]) != 0) {
-	    if (strcmp(dxcc_by_index(j)->continent, continent_multiplier_list[ci])
-		    == 0) {
-		cont_in_list = 1;
-	    }
-	    ci++;
-	}
-
-	if ((cont_in_list == 0 && continentlist_only == 1) || (cont_in_list == 1
-		&& continentlist_only == 0 && exclude_multilist_type == 1)) {
+    if (continentlist_only == 1) {
+	if (!is_in_continentlist(dxcc_by_index(j)->continent)) {
 	    excl_add_veto = 1;
 	}
     }
 
-    if (exclude_multilist_type == 2) {
-	int ci = 0;
-	while (strlen(countrylist[ci]) != 0) {
-	    if (getctynr(countrylist[ci]) == j) {
-		excl_add_veto = 1;
-	    }
-	    ci++;
+    if (continentlist_only == 0
+	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
+	if (is_in_continentlist(dxcc_by_index(j)->continent)) {
+	    excl_add_veto = 1;
+	}
+    }
+
+    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
+	if (is_in_countrylist(j)) {
+	    excl_add_veto = 1;
 	}
     }
 
