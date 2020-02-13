@@ -9,10 +9,11 @@
 
 /* test stubs and dummies */
 int do_cabrillo = 0;	/* actually converting cabrillo file to Tlf log */
-struct tm *time_ptr, time_ptr_cabrillo;
+extern struct tm *time_ptr;
+struct tm time_ptr_cabrillo;
 
 int qsoflags_for_qtc[MAX_QSOS];
-freq_t freq;
+extern freq_t freq;
 
 void addcall() { }
 void store_qso() { }

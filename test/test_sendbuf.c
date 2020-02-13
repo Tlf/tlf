@@ -22,13 +22,13 @@ void replace_all(char *buf, int size, const char *what,
 int digikeyer = NO_KEYER;
 int cwkeyer = NO_KEYER;
 
-char call[20];
-char message[25][80];
+extern char call[20];
+extern char message[25][80];
 extern char buffer[];
-char wkeyerbuffer[400];
-int demode;
+extern char wkeyerbuffer[400];
+extern int demode;
 char *SPcall;
-int sending_call, simulator, data_ready, shortqsonr;
+extern int sending_call, simulator, data_ready, shortqsonr;
 
 void keyer_append(const char *string) { }
 int play_file(char *file) { return 0; }
