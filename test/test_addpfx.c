@@ -6,7 +6,7 @@
 // OBJECT ../src/addpfx.o
 // OBJECT ../src/bands.o
 
-int pfxmultab;
+extern int pfxmultab;
 
 int setup_default(void **state) {
     pfxmultab = 0;

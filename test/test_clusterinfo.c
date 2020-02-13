@@ -28,8 +28,8 @@ extern freq_t freq;
 
 char thisnode = 'A';
 freq_t node_frequencies[MAXNODES];
-char call[20];
-int cluster;
+extern char call[20];
+extern int cluster;
 
 #include <pthread.h>
 pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;

@@ -15,7 +15,7 @@
 int location_unknown(char *call);
 int getpfxindex(char *checkcallptr, char **normalized_call);
 
-char countrylist[255][6];
+extern char countrylist[255][6];
 
 
 int setup_default(void **state) {

@@ -10,8 +10,8 @@
 // OBJECT ../src/addmult.o
 // OBJECT ../src/bands.o
 
-struct mults_t multis[MAX_MULTS];
-int nr_multis;
+extern struct mults_t multis[MAX_MULTS];
+extern int nr_multis;
 
 extern char multsfile[];	/* name of file with a list of allowed
 				   multipliers */
