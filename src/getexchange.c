@@ -467,7 +467,7 @@ int getexchange(void) {
 	    } else if (((serial_section_mult == 1) || (sectn_mult == 1))
 		       && ((x != TAB) && (strlen(section) < 1))) {
 		if (serial_or_section == 0 || (serial_or_section == 1
-					       && country_found(hiscall) == 1)) {
+					       && country_found(hiscall))) {
 		    mvprintw(13, 54, "section?", section);
 		    mvprintw(12, 54, comment);
 		    refreshp();

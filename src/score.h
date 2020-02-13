@@ -25,7 +25,7 @@
 
 int score(void);
 int score2(char *line);
-int country_found(char prefix[]);
+bool country_found(char prefix[]);
 bool is_in_countrylist(int countrynr);
 bool is_in_continentlist(char *continent);
 

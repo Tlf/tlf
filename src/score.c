@@ -56,14 +56,13 @@ bool is_in_countrylist(int countrynr) {
 
 
 /* check if hiscall is in COUNTRY_LIST from logcfg.dat */
-int country_found(char prefix[]) {
+bool country_found(char prefix[]) {
 
     extern int countrynr;
     extern char hiscall[];
     extern char call[];
 
     char tmpcall[15];
-    int counter = 0;
 
     if (strlen(hiscall) == 0) {
 	strcpy(tmpcall, call);
@@ -72,13 +71,7 @@ int country_found(char prefix[]) {
 
     countrynr = getctydata(tmpcall);
 
-    while (strlen(countrylist[counter]) != 0) {
-	if (getctydata(countrylist[counter]) == getctydata(tmpcall)) {
-	    return 1;
-	}
-	counter++;
-    }
-    return 0;
+    return is_in_countrylist(countrynr);
 }
 
 int exist_in_country_list() {
@@ -88,22 +81,22 @@ int exist_in_country_list() {
 
     strcpy(prefix, pxstr);
 
-    if (country_found(prefix) == 1) {
-	return (1);
+    if (country_found(prefix)) {
+	return 1;
     } else {
 	if ((prefix[strlen(prefix) - 1] < 58)	/* last char '0'..'9' */
 		&& (prefix[strlen(prefix) - 1] > 47)) {
 	    prefix[strlen(prefix) - 1] = '\0';  /* strip number */
-	    if (country_found(prefix) == 1) {
+	    if (country_found(prefix)) {
 		return 1;
 	    } else {
 		if ((prefix[strlen(prefix) - 1] < 58) /* see above */
 			&& (prefix[strlen(prefix) - 1] > 47)) {
 		    prefix[strlen(prefix) - 1] = '\0';
-		    if (country_found(prefix) == 1)
-			return (1);
+		    if (country_found(prefix))
+			return 1;
 		    else
-			return (0);
+			return 0;
 		} else
 		    return 0;
 	    }
@@ -490,6 +483,6 @@ int calc_continent(int zone) {
 	default:
 	    strncpy(continent, "??", 3);
     }
-    return (0);
+    return 0;
 }
 
