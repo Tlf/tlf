@@ -60,7 +60,7 @@ extern char *cabrillo;
 extern rmode_t digi_mode;
 extern int ctcomp;
 
-int exist_in_country_list();
+bool exist_in_country_list();
 
 void KeywordRepeated(char *keyword);
 void KeywordNotSupported(char *keyword);
@@ -277,7 +277,6 @@ int parse_logcfg(char *inputbuffer) {
     extern int serial_or_section;
 
     /* LZ3NY mods */
-    extern int mult_side;
     extern int my_country_points;
     extern int my_cont_points;
     extern int dx_cont_points;
@@ -286,11 +285,8 @@ int parse_logcfg(char *inputbuffer) {
     extern int continentlist_points;
     extern int continentlist_only;
     char c_temp[11];
-    extern int my_cont_points;
-    extern int dx_cont_points;
-    extern int mult_side;
+    extern bool mult_side;
     extern char countrylist[][6];
-
     extern char continent_multiplier_list[7][3];
     extern int exclude_multilist_type;
 

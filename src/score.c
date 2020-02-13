@@ -25,6 +25,7 @@
  *--------------------------------------------------------------*/
 
 
+#include <ctype.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -74,7 +75,7 @@ bool country_found(char prefix[]) {
     return is_in_countrylist(countrynr);
 }
 
-int exist_in_country_list() {
+bool exist_in_country_list() {
 
     extern char pxstr[];
     char prefix[10];
@@ -82,27 +83,24 @@ int exist_in_country_list() {
     strcpy(prefix, pxstr);
 
     if (country_found(prefix)) {
-	return 1;
-    } else {
-	if ((prefix[strlen(prefix) - 1] < 58)	/* last char '0'..'9' */
-		&& (prefix[strlen(prefix) - 1] > 47)) {
-	    prefix[strlen(prefix) - 1] = '\0';  /* strip number */
-	    if (country_found(prefix)) {
-		return 1;
-	    } else {
-		if ((prefix[strlen(prefix) - 1] < 58) /* see above */
-			&& (prefix[strlen(prefix) - 1] > 47)) {
-		    prefix[strlen(prefix) - 1] = '\0';
-		    if (country_found(prefix))
-			return 1;
-		    else
-			return 0;
-		} else
-		    return 0;
-	    }
-	} else
-	    return 0;
+	return true;
     }
+
+    if (!isdigit(prefix[strlen(prefix) - 1])) { /* last char '0'..'9' */
+	return false;
+    }
+
+    prefix[strlen(prefix) - 1] = '\0';  /* strip trailing digit */
+    if (country_found(prefix)) {	/* and try again */
+	return true;
+    }
+
+    if (!isdigit(prefix[strlen(prefix) - 1])) {
+	return false;
+    }
+
+    prefix[strlen(prefix) - 1] = '\0';	/* last try */
+    return country_found(prefix);
 }
 
 
