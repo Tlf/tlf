@@ -23,40 +23,31 @@
  *--------------------------------------------------------------*/
 
 
-#include "tlf.h"
+#include "globalvars.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "write_keyer.h"
 
 void cleanup_qso(void) {
-    extern char hiscall[];
-    extern char comment[];
-    extern char my_rst[];
-    extern char his_rst[];
-
     hiscall[0] = '\0';	    /* reset hiscall and comment */
     comment[0] = '\0';
     his_rst[1] = '9';	    /* reset to 599 */
     my_rst[1] = '9';
+    countrynr = 0;
 }
 
-int cleanup(void) {
+void cleanup(void) {
     extern int defer_store;
 
-    int k = 0;
-
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-
-    mvprintw(12, 29, "            ");
-    mvprintw(12, 29, "");
+    mvaddstr(12, 29, spaces(12));
 
     attron(COLOR_PAIR(C_WINDOW));
-    mvprintw(12, 54, "                        ");
+    mvaddstr(12, 54, spaces(24));
 
     attron(COLOR_PAIR(C_LOG | A_STANDOUT));
-
-    for (k = 1; k <= 5; k++) {
-	mvprintw(k, 0, "%s", "                                        ");
+    for (int k = 1; k <= 5; k++) {
+	mvaddstr(k, 0, spaces(40));
     }
 
     refreshp();
@@ -64,5 +55,4 @@ int cleanup(void) {
     defer_store = 0;
     keyer_flush();
 
-    return (0);
 }

@@ -38,6 +38,7 @@
 #include <time.h>
 
 #include "dxcc.h"
+#include "getwwv.h"
 #include "qrb.h"
 #include "showinfo.h"
 #include "tlf.h"
@@ -125,7 +126,7 @@ void showinfo(int x) {
     getyx(stdscr, cury, curx);
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-    mvprintw(LINES - 1, 0, backgrnd_str);
+    mvaddstr(LINES - 1, 0, backgrnd_str);
 
     if (contstr[0] != '-') {
 	mvprintw(LINES - 1, 0, " %s  %s", pxstr, countrystr);
@@ -137,8 +138,10 @@ void showinfo(int x) {
 	}
 
 	mvprintw(LINES - 1, LINELENGTH - 17, "   DX time: %s", timebuff);
+    } else {
+        wwv_show_footer();
     }
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-    mvprintw(cury, curx, "");
+    move(cury, curx);
 }

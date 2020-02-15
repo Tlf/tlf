@@ -68,22 +68,16 @@ void update_line(char *timestr) {
 
     extern struct tm *time_ptr;
 
-    static int daysecs = 0;
-    char time_buf[40] = "";
+    char time_buf[40];
 
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-    strncpy(time_buf, timestr, 8);
+
     mvaddstr(12, 0, band[bandinx]);
-    mvprintw(12, 17, time_buf);
 
-    daysecs++;
-
-    if (daysecs >= 60) {		// update the date 1x per minute
-	daysecs = 0;
-	get_time();
-	strftime(time_buf, 60, "%d-%b-%y", time_ptr);
-	mvprintw(12, 7, time_buf);
-    }
+    strncpy(time_buf, timestr, 8);
+    mvaddstr(12, 17, time_buf);
+    strftime(time_buf, 60, "%d-%b-%y", time_ptr);
+    mvaddstr(12, 7, time_buf);
 }
 
 const char *FREQ_DISPLAY_FORMAT = " %s: %7.1f";
@@ -127,7 +121,6 @@ void time_update(void) {
     char time_buf[11];
     int currentterm = 0;
     static int s = 0;
-    static int m = 0;
     static int bm_timeout = 0;
     static int oldsecs = -1;  	/* trigger immediate update */
 
@@ -182,14 +175,12 @@ void time_update(void) {
 	strftime(time_buf, 10, "%H:%M:%S", time_ptr);
 	time_buf[5] = '\0';
 
-	if ((time_buf[6] == '1') && (m >= 30)) {
-
-	    m = 0;
-	    getwwv();
-	    printcall();
-
-	} else {
-	    m++;
+	static time_t prev_wwv_time = 0;
+	if (lastwwv_time > prev_wwv_time) { // is there a newer WWV message?
+	    prev_wwv_time = lastwwv_time;
+	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+	    mvprintw(LINES - 1, 0, backgrnd_str);
+	    wwv_show_footer();              // print WWV info
 	}
 
 	currentterm = miniterm;

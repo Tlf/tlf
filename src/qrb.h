@@ -21,6 +21,8 @@
 #ifndef QRB_H
 #define QRB_H
 
+#define ARC_IN_KM 111.2
+#define RADIAN  (180.0 / M_PI)
 
 int qrb(double lon1, double lat1, double lon2, double lat2,
 	double *distance, double *azimuth);
