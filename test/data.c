@@ -279,7 +279,6 @@ int commentfield = 0;		/* 1 if we are in comment/excahnge input */
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
 int nr_of_spots;			/* Anzahl Lines in spot_ptr array */
-char lastwwv[120] = "";
 int packetinterface = 0;
 int fdSertnc = 0;
 int fdFIFO = 0;
@@ -391,8 +390,6 @@ double QTH_Long = -7.;
 double DEST_Lat = 51.;
 double DEST_Long = 1.;
 
-double r = 50;
-int m = 1;
 char hiscountry[40];
 
 int this_second;

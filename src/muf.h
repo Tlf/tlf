@@ -21,6 +21,8 @@
 #ifndef MUF_H
 #define MUF_H
 
-int muf(void);
+extern int month;
+
+void muf(void);
 
 #endif /* end of include guard: MUF_H */

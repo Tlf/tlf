@@ -33,6 +33,7 @@
 #include "fldigixmlrpc.h"
 #include "getctydata.h"
 #include "getpx.h"
+#include "getwwv.h"
 #include "lancode.h"
 #include "locator2longlat.h"
 #include "parse_logcfg.h"
@@ -224,7 +225,6 @@ int parse_logcfg(char *inputbuffer) {
     extern int packetinterface;
     extern int tncport;
     extern int tnc_serial_rate;
-    extern char lastwwv[];
     extern int serial_rate;
     extern rig_model_t myrig_model;
     extern char *rigportname;
@@ -596,7 +596,6 @@ int parse_logcfg(char *inputbuffer) {
     char **fields;
     char teststring[80];
     char buff[40];
-    char outputbuff[80];
     int ii;
     int jj, hh;
     char *tk_ptr;
@@ -895,20 +894,12 @@ int parse_logcfg(char *inputbuffer) {
 	}
 	case 42: {
 	    PARAMETER_NEEDED(teststring);
-	    buff[0] = '\0';
-	    strcat(buff, fields[1]);
-	    outputbuff[0] = '\0';
-	    sprintf(outputbuff, "WWV R=%d\n", atoi(buff));
-	    strcpy(lastwwv, outputbuff);
+            wwv_set_r(atoi(fields[1]));
 	    break;
 	}
 	case 43: {
 	    PARAMETER_NEEDED(teststring);
-	    buff[0] = '\0';
-	    strcat(buff, fields[1]);
-	    outputbuff[0] = '\0';
-	    sprintf(outputbuff, "WWV SFI=%d\n", atoi(buff));
-	    strcpy(lastwwv, outputbuff);
+            wwv_set_sfi(atoi(fields[1]));
 	    break;
 	}
 	case 45: {

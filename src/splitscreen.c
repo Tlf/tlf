@@ -41,6 +41,7 @@
 #include "bandmap.h"
 #include "clear_display.h"
 #include "get_time.h"
+#include "getwwv.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "ignore_unused.h"
 #include "lancode.h"
@@ -92,7 +93,6 @@ char tln_input_buffer[2 * BUFFERSIZE];
 void setup_splitlayout();
 
 void addlog(char *s) {
-    extern char lastwwv[];
     extern char spot_ptr[MAX_SPOTS][82];
     extern char lastmsg[];
     extern int nr_of_spots;
@@ -142,8 +142,7 @@ void addlog(char *s) {
     // \todo drop it later tb mar11
     bm_add(s);
 
-    if ((strncmp(s, "WWV", 3) == 0) || strncmp(s, "WCY", 3) == 0)
-	strncpy(lastwwv, s, 82);
+    wwv_add(s);
 
     if (tln_loglines >= maxtln_loglines) {
 	temp = loghead;

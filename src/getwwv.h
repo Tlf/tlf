@@ -21,6 +21,16 @@
 #ifndef GETWWV_H
 #define GETWWV_H
 
-int getwwv(void);
+#include <time.h>
+
+extern double ssn_r;        // sunspot number for MUF calculation
+extern char lastwwv[];      // processed WWV message
+extern char lastwwv_raw[];  // raw WWV message
+extern time_t lastwwv_time;
+
+void wwv_add(char *s);
+void wwv_set_r(double r);
+void wwv_set_sfi(double sfi);
+void wwv_show_footer();
 
 #endif /* GETWWV_H */

@@ -29,7 +29,9 @@
 
 #include "cw_utils.h"
 #include "get_time.h"
+#include "getwwv.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "muf.h"
 #include "printcall.h"
 #include "qsonr_to_str.h"
 #include "searchlog.h"		// Includes glib.h
@@ -62,9 +64,9 @@ void show_header_line() {
     }
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-    mvprintw(0, 0, "                             ");
+    mvaddstr(0, 0, spaces(29));
     mvprintw(0, 0, "  %-8s  S=%2i D=%i ", mode, GetCWSpeed(), cqdelay);
-    mvprintw(0, 21, headerline);
+    mvaddstr(0, 21, headerline);
 }
 
 
@@ -83,7 +85,6 @@ void clear_display(void) {
     extern int arrldx_usa;
     extern char comment[];
     extern int searchflg;
-    extern int m;
     extern struct tm *time_ptr;
     extern char whichcontest[];
     extern int no_rst;
@@ -129,21 +130,19 @@ void clear_display(void) {
     else
 	strftime(time_buf, 60, "DIG %d-%b-%y %H:%M ", time_ptr);
 
-    m = time_ptr->tm_mon;	/* month for muf calc */
+    month = time_ptr->tm_mon;	/* month for muf calc */
 
-    mvprintw(12, 3, time_buf);
+    mvaddstr(12, 3, time_buf);
 
     qsonr_to_str();
     mvaddstr(12, 23, qsonrstr);
 
     if (trxmode != SSBMODE) {
-
 	my_rst[2] = '9';
 	his_rst[2] = '9';
     } else {
 	my_rst[2] = ' ';
 	his_rst[2] = ' ';
-
     }
 
     if (no_rst) {
@@ -170,9 +169,10 @@ void clear_display(void) {
     printcall();
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-    mvprintw(LINES - 1, 0, backgrnd_str);
+    mvaddstr(LINES - 1, 0, backgrnd_str);
+    wwv_show_footer();
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-    mvprintw(cury, curx, "");
+    move(cury, curx);
     refreshp();
 }

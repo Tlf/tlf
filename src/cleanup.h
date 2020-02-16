@@ -22,6 +22,6 @@
 #define CLEANUP_H
 
 void cleanup_qso(void);
-int cleanup(void);
+void cleanup(void);
 
 #endif /* CLEANUP_H */

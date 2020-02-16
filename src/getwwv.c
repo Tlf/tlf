@@ -27,91 +27,89 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
-#define LINELENGTH 80
+double ssn_r = 50;
+time_t lastwwv_time = 0;
+char lastwwv[100] = "";
+char lastwwv_raw[100] = "";
 
-int getwwv(void) {
+void wwv_set_r(double r) {
+    ssn_r = (r > 0 ? r : 0);
+}
 
-    extern char lastwwv[];
-    extern double r;
-    extern int mycountrynr;
-    extern int timeoffset;
+void wwv_set_sfi(double sfi) {
+    wwv_set_r((sfi - 70.0) * (200.0 / 180.0));
+}
 
-    char printbuffer[81] = "";
-    char *i;
-    char r_value[6];
-    char sf_value[6];
-    char timebuff[80];
-    double sfi, d;
-
-    time_t now;
-    struct tm *ptr1;
-
-    if (strlen(lastwwv) >= 2) {
-
-	lastwwv[78] = '\0';	/* cut the bell chars */
-
-	if ((strncmp(lastwwv, "WCY", 3) == 0)
-		|| (strncmp(lastwwv, "WWV", 3) == 0)) {
-
-	    strcat(printbuffer, "Condx: ");
-
-	    i = strstr(lastwwv, "<");
-
-	    if (i != NULL) {
-		strncat(printbuffer, i + 1, 2);
-		strcat(printbuffer, " GMT              ");
-	    }
-
-	    i = strstr(lastwwv, "R=");
-	    if (i != NULL) {
-		strncat(printbuffer, i, 5);
-		r_value[0] = '\0';
-		strncat(r_value, i + 2, 3);
-		r = atof(r_value);
-	    }
-	    strcat(printbuffer, "    ");
-
-	    i = strstr(lastwwv, "SFI=");
-	    if (i != NULL) {
-		strncat(printbuffer, i, 7);
-
-		sf_value[0] = '\0';
-		strncat(sf_value, i + 4, 3);
-		sfi = atof(sf_value);
-		r = ((sfi - 70.0) * (200.0 / 180.0));
-	    }
-
-	    i = strstr(lastwwv, "eru");
-	    if (i != NULL)
-		strcat(printbuffer, "     eruptive  ");
-
-	    i = strstr(lastwwv, "act");
-	    if (i != NULL)
-		strcat(printbuffer, " act  ");
-
-	    i = strstr(lastwwv, "Au=au");
-	    if (i != NULL)
-		strcat(printbuffer, "   AURORA!");
-
-	    strcpy(lastwwv, printbuffer);
-
-
-	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	    mvprintw(LINES - 1, 0, backgrnd_str);
-
-	    mvprintw(LINES - 1, 0, printbuffer);	/* print WWV info  */
-	    printw(" ");
-
-	    d = dxcc_by_index(mycountrynr) -> timezone;
-
-	    now = (time(0) + (long)((timeoffset - d) * 3600));
-	    ptr1 = gmtime(&now);
-	    strftime(timebuff, 80, "%H:%M", ptr1);
-
-	    mvprintw(LINES - 1, LINELENGTH - 17, " local time %s", timebuff);
-
-	    refreshp();
-	}
+void wwv_add(const char *s) {
+    if (strncmp(s, "WWV", 3) != 0 && strncmp(s, "WCY", 3) != 0) {
+	return;     // not a WWV message
     }
-    return 0;
+
+    // save message skipping control chars
+    char *dest = lastwwv_raw;
+    while (*s) {
+	if (*s >= ' ') {*dest = *s; ++dest;}
+	++s;
+    }
+    *dest = 0;
+
+    lastwwv_time = time(NULL);
+
+    char gmt[10] = "";
+    char *p = strstr(lastwwv_raw, "<");
+    if (p != NULL) {
+	sprintf(gmt, "%02d GMT", atoi(p + 1));
+    }
+
+    // Sunspot Number
+    char rstr[10] = "";
+    p = strstr(lastwwv_raw, "R=");
+    if (p != NULL) {
+	wwv_set_r(atof(p + 2));
+	sprintf(rstr, "R=%.0f", ssn_r);
+    }
+
+    // Solar Flux Index
+    char sfistr[20] = "";
+    p = strstr(lastwwv_raw, "SFI=");
+    if (p != NULL) {
+	double sfi = atof(p + 4);
+	sprintf(sfistr, "SFI=%.0f", sfi);
+	wwv_set_sfi(sfi);
+    }
+
+    // Solar Activity (SA)
+    char *sa = "";
+    p = strstr(lastwwv_raw, "eru");
+    if (p != NULL) {
+	sa = "eruptive";
+    }
+
+    // Geomagnetic Field (GMF)
+    char *gmf = "";
+    p = strstr(lastwwv_raw, "act");
+    if (p != NULL) {
+	gmf = "act";
+    }
+
+    // Aurora
+    char *au = "";
+    p = strstr(lastwwv_raw, "Au=au");
+    if (p != NULL) {
+	au = "AURORA!";
+    }
+
+    sprintf(lastwwv, "Condx: %-18s  %-8s %-10s %-9s %-5s %s",
+	    gmt, rstr, sfistr,
+	    sa, gmf, au);
+
+}
+
+//
+// show footer if WWV was received not later than 3 mins ago
+//
+void wwv_show_footer() {
+    if (lastwwv_time > time(NULL) - 3 * 60) {
+	mvprintw(LINES - 1, 0, lastwwv);
+    }
 }

@@ -32,7 +32,6 @@
 #include "clear_display.h"
 #include "checklogfile.h"
 #include "getmessages.h"
-#include "getwwv.h"
 #include "readcalls.h"
 #include "scroll_log.h"
 #include "setcontest.h"
@@ -143,8 +142,6 @@ int setparameters(void) {
 	    }
 
 	    setcontest();	/* set contest parameters */
-
-	    getwwv();		/* get the latest wwv info from packet */
 
 	    scroll_log();	/* read the last 5  log lines and set the qso number */
 				/* read the logfile for score and dupe */

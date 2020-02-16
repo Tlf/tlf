@@ -1,10 +1,8 @@
-#ifndef TLF_H
-# include "tlf.h"
-#endif
 
 #include <glib.h>
-
 #include <hamlib/rig.h>
+
+#include "tlf.h"
 
 extern char qsos[MAX_QSOS][LOGLINELEN + 1];
 					// array of log lines of QSOs so far;

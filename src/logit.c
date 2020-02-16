@@ -73,6 +73,7 @@ void logit(void) {
     int cury, curx;
     int qrg_out = 0;
 
+    cleanup();
     clear_display();
     defer_store = 0;
 
