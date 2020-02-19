@@ -173,7 +173,7 @@ int addcall(void) {
 
     if (continentlist_only == 0
 	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
-        if (is_in_continentlist(continent)) {
+	if (is_in_continentlist(continent)) {
 	    add_ok = 0;
 	    addcty = 0;
 	    addcallarea = 0;

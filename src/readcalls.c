@@ -290,13 +290,13 @@ int readcalls(void) {
 	    }
 
 	    if (wysiwyg_once == 1 ||
-		wysiwyg_multi == 1 ||
-		unique_call_multi != 0 ||
-		arrlss == 1 ||
-		serial_section_mult == 1 ||
-		serial_grid4_mult == 1 ||
-		sectn_mult == 1 ||
-		((dx_arrlsections == 1)
+		    wysiwyg_multi == 1 ||
+		    unique_call_multi != 0 ||
+		    arrlss == 1 ||
+		    serial_section_mult == 1 ||
+		    serial_grid4_mult == 1 ||
+		    sectn_mult == 1 ||
+		    ((dx_arrlsections == 1)
 		     && ((countrynr == w_cty) || (countrynr == ve_cty)))) {
 		// get multi info
 		char *multbuffer = get_multi_from_line(inputbuffer);
@@ -329,7 +329,7 @@ int readcalls(void) {
 
 	/* calculate QSO timestamp from logline */
 	memset(&qsotime, 0, sizeof(struct tm));
-	strptime(inputbuffer+7, "%d-%b-%y %H:%M", &qsotime);
+	strptime(inputbuffer + 7, "%d-%b-%y %H:%M", &qsotime);
 	worked[l].qsotime[qsomode][bandindex] = mktime(&qsotime);
 
 
@@ -461,7 +461,7 @@ int readcalls(void) {
 		 * eg: K0, K1, K2, ..., K9 */
 		for (int pfxnr = 0; pfxnr < 10; pfxnr++) {
 		    count_contest_bands(pfxnummulti[pfxnumcntidx].qsos[pfxnr],
-			    countryscore);
+					countryscore);
 		}
 	    } else {
 		// simple 'country_mult', but works together with pfxnummulti

@@ -1154,8 +1154,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char country_list_raw[50] = ""; 	/* use only first
-						   	COUNTRY_LIST
-						   	definition */
+						       COUNTRY_LIST
+						       definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
@@ -1273,7 +1273,7 @@ int parse_logcfg(char *inputbuffer) {
 	    if (verbose) {
 		gchar *tmp;
 		tmp = g_strdup_printf("  Phone message #%d is %s", ii - 103,
-		     ph_message[ii - 103]);	// (W9WI)
+				      ph_message[ii - 103]);	// (W9WI)
 		showmsg(tmp);
 		g_free(tmp);
 	    }
@@ -1540,8 +1540,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char cont_multiplier_list[50] = ""; 	/* use only first
-						   	CONTINENT_LIST
-						   	definition */
+						       CONTINENT_LIST
+						       definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
@@ -1718,7 +1718,7 @@ int parse_logcfg(char *inputbuffer) {
 	    if (verbose) {
 		gchar *tmp;
 		tmp = g_strdup_printf("  QTC RECV phone message #%d is %s",
-		    ii - 194, qtc_phrecv_message[ii - 194]);
+				      ii - 194, qtc_phrecv_message[ii - 194]);
 		showmsg(tmp);
 		g_free(tmp);
 	    }
@@ -1730,7 +1730,7 @@ int parse_logcfg(char *inputbuffer) {
 	    if (verbose) {
 		gchar *tmp;
 		tmp = g_strdup_printf("  QTC SEND phone message #%d is %s",
-		    ii - 208, qtc_phrecv_message[ii - 208]);
+				      ii - 208, qtc_phrecv_message[ii - 208]);
 		showmsg(tmp);
 		g_free(tmp);
 	    }
