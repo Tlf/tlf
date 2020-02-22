@@ -9,6 +9,7 @@
 void test_toBandMask(void **state) {
     assert_int_equal(inxes[BANDINDEX_160], BAND160);
     assert_int_equal(inxes[BANDINDEX_80], BAND80);
+    assert_int_equal(inxes[BANDINDEX_60], BAND60);
     assert_int_equal(inxes[BANDINDEX_40], BAND40);
     assert_int_equal(inxes[BANDINDEX_30], BAND30);
     assert_int_equal(inxes[BANDINDEX_20], BAND20);
@@ -23,6 +24,7 @@ void test_toBandMask(void **state) {
 void test_IsWarcIndex(void **state) {
     assert_int_equal(IsWarcIndex(BANDINDEX_160), 0);
     assert_int_equal(IsWarcIndex(BANDINDEX_80), 0);
+    assert_int_equal(IsWarcIndex(BANDINDEX_60), 1);
     assert_int_equal(IsWarcIndex(BANDINDEX_40), 0);
     assert_int_equal(IsWarcIndex(BANDINDEX_30), 1);
     assert_int_equal(IsWarcIndex(BANDINDEX_20), 0);

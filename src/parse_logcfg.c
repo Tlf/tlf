@@ -159,7 +159,7 @@ int parse_configfile(FILE *fp) {
 
 /** convert band string into index number (0..NBANDS-1) */
 int getidxbybandstr(char *confband) {
-    static char bands_strings[NBANDS][4] = {"160", "80", "40", "30", "20", "17", "15", "12", "10"};
+    static char bands_strings[NBANDS][4] = {"160", "60", "80", "40", "30", "20", "17", "15", "12", "10"};
     int i;
 
     g_strchomp(confband);

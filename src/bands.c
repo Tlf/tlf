@@ -26,6 +26,7 @@
 const unsigned int bandcorner[NBANDS][2] = {
     { 1800000, 2000000 },	// band bottom, band top
     { 3500000, 4000000 },
+    { 5250000, 5450000 },       // 5351500-5356500 worldwide
     { 7000000, 7300000 },
     { 10100000, 10150000 },
     { 14000000, 14350000 },
@@ -39,6 +40,7 @@ const unsigned int bandcorner[NBANDS][2] = {
 const unsigned int cwcorner[NBANDS] = {
     1838000,
     3580000,
+    5354000,
     7040000,
     10140000,
     14070000,
@@ -52,6 +54,7 @@ const unsigned int cwcorner[NBANDS] = {
 const unsigned int ssbcorner[NBANDS] = {
     1840000,
     3600000,
+    5354000,
     7040000,
     10150000,
     14100000,
@@ -65,7 +68,7 @@ const unsigned int ssbcorner[NBANDS] = {
 /** Converts bandindex to bandmask */
 int inxes[NBANDS] = \
 {
-    BAND160, BAND80, BAND40, BAND30, BAND20, BAND17, BAND15, BAND12, BAND10,
+    BAND160, BAND80, BAND60, BAND40, BAND30, BAND20, BAND17, BAND15, BAND12, BAND10,
     BANDOOB
 };
 
@@ -82,6 +85,9 @@ int bandnr2index(int nr) {
 
 	case 40:
 	    return BANDINDEX_40;
+
+	case 60:
+	    return BANDINDEX_60;
 
 	case 20:
 	    return BANDINDEX_20;
@@ -108,7 +114,7 @@ int bandnr2index(int nr) {
 
 /* converts bandindex to bandnumber */
 static int bandnr[NBANDS] =
-{ 160, 80, 40, 30, 20, 17, 15, 12, 10, 0 };
+{ 160, 80, 60, 40, 30, 20, 17, 15, 12, 10, 0 };
 
 int bandindex2nr(int index) {
     return bandnr[index];
