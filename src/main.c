@@ -279,7 +279,7 @@ int early_started = 0;			/**< 1 if sending call started early,
 char lastcall[20];
 char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
-{ "160", " 80", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
+{ "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
 char comment[80];
 char cqzone[3] = "";
 char mycqzone[3] = "";
@@ -412,7 +412,7 @@ int logfrequency = 0;
 int rit;
 int trx_control = 0;
 freq_t bandfrequency[NBANDS] = {
-    1830000, 3525000, 7010000, 10105000, 14025000, 18070000, 21025000, 24900000,
+    1830000, 3525000, 5352000, 7010000, 10105000, 14025000, 18070000, 21025000, 24900000,
     28025000, 0.
 };
 
@@ -447,8 +447,8 @@ int no_trx_control = 0;		/* set if tlf is called with '-r' */
 int convert_cabrillo = 0;       /* set if the arg input is a cabrillo */
 int do_cabrillo = 0;		/* actually converting cabrillo file to Tlf log */
 
-int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
-int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
+int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
+int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 
 pthread_t background_thread;
 static struct termios oldt, newt;
