@@ -69,6 +69,7 @@ typedef enum {
 #define SSBMODE 1
 #define DIGIMODE 2
 
+#define  BAND60 512
 #define  BAND30 256
 #define  BAND17 128
 #define  BAND12 64
@@ -84,6 +85,7 @@ typedef enum {
 enum {
     BANDINDEX_160 = 0,
     BANDINDEX_80,
+    BANDINDEX_60,
     BANDINDEX_40,
     BANDINDEX_30,
     BANDINDEX_20,
