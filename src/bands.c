@@ -111,7 +111,7 @@ int bandnr2index(int nr) {
 
 /* converts bandindex to bandnumber */
 static int bandnr[NBANDS] =
-{ 160, 80, 40, 30, 20, 17, 15, 12, 10, 0 };
+{ 160, 80, 60, 40, 30, 20, 17, 15, 12, 10, 0 };
 
 int bandindex2nr(int index) {
     return bandnr[index];

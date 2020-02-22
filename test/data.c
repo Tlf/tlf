@@ -366,8 +366,8 @@ int logfrequency = 0;
 int rit;
 int trx_control = 0;
 int showfreq = 0;
-freq_t bandfrequency[9] = {
-    1830000.0, 3525000.0, 7010000.0, 10105000.0, 14025000.0, 18070000.0, 21025000.0, 24900000.0,
+freq_t bandfrequency[10] = {
+    1830000.0, 3525000.0, 5352000.0, 7010000.0, 10105000.0, 14025000.0, 18070000.0, 21025000.0, 24900000.0,
     28025000.0
 };
 
@@ -402,8 +402,8 @@ char itustr[3];
 int nopacket = 0;		/* set if tlf is called with '-n' */
 int no_trx_control = 0;		/* set if tlf is called with '-r' */
 
-int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
-int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 struct mults_t multis[MAX_MULTS]; /**< worked multis */
 int nr_multis = 0;      /**< number of multis in multis[] */
