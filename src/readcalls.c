@@ -175,26 +175,28 @@ int readcalls(void) {
 
 	bandindex = BANDINDEX_OOB;
 
-	strncpy(bndbuf, inputbuffer + 1, 2);
-	bndbuf[2] = '\0';
+	strncpy(bndbuf, inputbuffer, 3);
+	bndbuf[3] = '\0';
 
-	if (bndbuf[0] == '1' && bndbuf[1] == '0')
+	if (bndbuf[1] == '1' && bndbuf[2] == '0')
 	    bandindex = BANDINDEX_10;
-	if (bndbuf[0] == '1' && bndbuf[1] == '5')
+	if (bndbuf[1] == '1' && bndbuf[2] == '5')
 	    bandindex = BANDINDEX_15;
-	if (bndbuf[0] == '2')
-	    bandindex = BANDINDEX_20;
-	if (bndbuf[0] == '4')
-	    bandindex = BANDINDEX_40;
-	if (bndbuf[0] == '8')
-	    bandindex = BANDINDEX_80;
-	if (bndbuf[0] == '6')
+	if (bndbuf[0] == '1' && bndbuf[1] == '6')
 	    bandindex = BANDINDEX_160;
-	if (bndbuf[0] == '1' && bndbuf[1] == '2')
+	if (bndbuf[1] == '2')
+	    bandindex = BANDINDEX_20;
+	if (bndbuf[1] == '4')
+	    bandindex = BANDINDEX_40;
+	if (bndbuf[1] == '8')
+	    bandindex = BANDINDEX_80;
+	if (bndbuf[0] != '1' && bndbuf[1] == '6')
+	    bandindex = BANDINDEX_60;
+	if (bndbuf[1] == '1' && bndbuf[1] == '2')
 	    bandindex = BANDINDEX_12;
-	if (bndbuf[0] == '1' && bndbuf[1] == '7')
+	if (bndbuf[1] == '1' && bndbuf[1] == '7')
 	    bandindex = BANDINDEX_17;
-	if (bndbuf[0] == '3')
+	if (bndbuf[1] == '3')
 	    bandindex = BANDINDEX_30;
 
 	/* get the country number, not known at this point */
