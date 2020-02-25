@@ -77,7 +77,7 @@ int IsAllBand() {
 
 void InitSearchPanel() {
     if (IsAllBand())
-	nr_bands = 10;
+	nr_bands = 9;
     else
 	nr_bands = 6;
 
@@ -124,7 +124,6 @@ void drawSearchWin(void) {
 	mvwprintw(search_win, 7, 1, " 12");
 	mvwprintw(search_win, 8, 1, " 17");
 	mvwprintw(search_win, 9, 1, " 30");
-	mvwprintw(search_win, 10, 1, " 60");
     }
 }
 
@@ -604,10 +603,6 @@ void displayWorkedZonesCountries(int z) {
 	    if ((countries[countrynr] & BAND30) != 0) {
 		mvwprintw(search_win, 9, 1, " 30");
 		mvwprintw(search_win, 9, 36, "C");
-	    }
-	    if ((countries[countrynr] & BAND60) != 0) {
-		mvwprintw(search_win, 10, 1, " 60");
-		mvwprintw(search_win, 10, 36, "C");
 	    }
 	}
     }
