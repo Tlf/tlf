@@ -163,6 +163,7 @@ int checklogfile_new(char *filename) {
 
 	if ((band == 160) ||
 		(band == 80) ||
+		(band == 60) ||
 		(band == 40) ||
 		(band == 30) ||
 		(band == 20) ||
