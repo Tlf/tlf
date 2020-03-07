@@ -410,5 +410,5 @@ void test_OnLowerSearchPanel_contest(void **state) {
 void test_OnLowerSearchPanel_AllBand(void **state) {
     dxped = 1;
     OnLowerSearchPanel(4, "test");
-    check_mvprintw_output(0, 10, 4, "test");
+    check_mvprintw_output(0, 11, 4, "test");
 }
