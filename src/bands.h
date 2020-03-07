@@ -27,7 +27,8 @@
 #include "tlf.h"
 
 #define IsWarcIndex(index) ((index == BANDINDEX_12) || \
-			(index == BANDINDEX_17) || (index == BANDINDEX_30))
+			(index == BANDINDEX_17) || (index == BANDINDEX_30) || \
+			(index == BANDINDEX_60))
 
 /* Direction for switch to next band */
 #define BAND_UP      +1
