@@ -156,7 +156,7 @@ void test_cabToTlf_ParseQSO(void **state) {
     bandinx_spy = 0;
     cab_qso_to_tlf("QSO:  7002 RY 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
 		   desc);
-    assert_int_equal(bandinx_spy, 2);
+    assert_int_equal(bandinx_spy, 3);
     assert_int_equal((int)freq, 7002000);
     assert_int_equal(trxmode, DIGIMODE);
     assert_string_equal(hiscall, "K6ND");
@@ -176,7 +176,7 @@ void test_cabToTlf_ParseXQSO(void **state) {
     bandinx_spy = 0;
     cab_qso_to_tlf("X-QSO:  7002 PH 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
 		   desc);
-    assert_int_equal(bandinx_spy, 2);
+    assert_int_equal(bandinx_spy, 3);
     assert_int_equal((int)freq, 7002000);
     assert_int_equal(trxmode, SSBMODE);
     assert_string_equal(hiscall, "K6ND");

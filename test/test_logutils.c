@@ -8,7 +8,8 @@
 
 
 #define QSO1 " 40SSB 12-Jan-18 16:34 0006  SP9ABC         599  599  15                    10         "
-#define QSO_BAD1 " 60SSB 12-Jan-18 16:34 0006  SP9ABC         599  599  15                     1         "
+#define QSO2 " 60SSB 12-Jan-18 16:34 0006  SP9ABC         599  599  15                     1         "
+#define QSO_BAD1 "180SSB 12-Jan-18 16:34 0006  SP9ABC         599  599  15                     1         "
 
 
 /* check test for commented logline */
@@ -24,6 +25,7 @@ void test_isnocomment(void **state) {
 /* test reading used band index */
 void test_getband_ok(void **state) {
     assert_int_equal(log_get_band(QSO1), BANDINDEX_40);
+    assert_int_equal(log_get_band(QSO2), BANDINDEX_60);
 }
 
 void test_getband_wrongband(void **state) {
