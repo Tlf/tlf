@@ -72,48 +72,37 @@ int inxes[NBANDS] = \
 
 /** Converts bandnumber to bandindex */
 int bandnr2index(int nr) {
-    int j = BANDINDEX_OOB;
-
     switch (nr) {
 
 	case 160:
-	    j = BANDINDEX_160;
-	    break;
+	    return BANDINDEX_160;
 
 	case 80:
-	    j = BANDINDEX_80;
-	    break;
+	    return BANDINDEX_80;
 
 	case 40:
-	    j = BANDINDEX_40;
-	    break;
+	    return BANDINDEX_40;
 
 	case 20:
-	    j = BANDINDEX_20;
-	    break;
+	    return BANDINDEX_20;
 
 	case 15:
-	    j = BANDINDEX_15;
-	    break;
+	    return BANDINDEX_15;
 
 	case 10:
-	    j = BANDINDEX_10;
-	    break;
+	    return BANDINDEX_10;
 
 	case 12:
-	    j = BANDINDEX_12;
-	    break;
+	    return BANDINDEX_12;
 
 	case 17:
-	    j = BANDINDEX_17;
-	    break;
+	    return BANDINDEX_17;
 
 	case 30:
-	    j = BANDINDEX_30;
-	    break;
-
+	    return BANDINDEX_30;
+	default:
+	    return BANDINDEX_OOB;
     }
-    return j;
 }
 
 
