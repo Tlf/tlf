@@ -28,7 +28,7 @@ extern int pfxnummultinr;
 extern char continent_multiplier_list[7][3];
 extern char countrylist[][6];
 extern int exclude_multilist_type;
-extern int continentlist_only;
+extern bool continentlist_only;
 
 // dummy functions
 void get_time(void) {}
@@ -68,7 +68,7 @@ int setup_default (void **state) {
     strcpy(continent_multiplier_list[2], "");
 
     exclude_multilist_type = EXCLUDE_NONE;
-    continentlist_only = 0;
+    continentlist_only = false;
 
     memset(pfxnummulti, 0, sizeof(pfxnummulti));
     pfxnummulti[0].countrynr = 12;
@@ -104,7 +104,7 @@ void test_veto_exclude_country (void **state) {
 }
 
 void test_veto_exclude_continent_contlist_only (void **state) {
-    continentlist_only = 1;
+    continentlist_only = true;
     exclude_multilist_type = EXCLUDE_CONTINENT;
     strcpy(continent, "EU");
     assert_int_equal(check_veto(), false);

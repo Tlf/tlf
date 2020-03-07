@@ -29,8 +29,8 @@ extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
 extern int pfxnummultinr;
 extern char continent_multiplier_list[7][3];
 extern char countrylist[][6];
-extern int continentlist_only;
-extern int countrylist_only;
+extern bool continentlist_only;
+extern bool countrylist_only;
 extern int exclude_multilist_type;
 
 int add_pfx(char *call) {
@@ -61,13 +61,13 @@ int setup_default(void **state) {
     strcpy(countrylist[1], "CE");
     strcpy(countrylist[2], "");
 
-    countrylist_only = 0;
+    countrylist_only = false;
 
     strcpy(continent_multiplier_list[0], "EU");
     strcpy(continent_multiplier_list[1], "NA");
     strcpy(continent_multiplier_list[2], "");
 
-    continentlist_only = 0;
+    continentlist_only = false;
 
     exclude_multilist_type = EXCLUDE_NONE;
 
@@ -130,7 +130,7 @@ void test_addcall_pfxnum_notinList(void **state) {
 }
 
 void test_addcall_continentlistonly(void **state) {
-    continentlist_only = 1;
+    continentlist_only = true;
     strcpy(hiscall, "LZ1AB");
     addcall();
     assert_int_equal(excl_add_veto, false);
@@ -429,7 +429,7 @@ void test_add2_warc(void **state) {
 
 
 void test_addcall2_continentlistonly(void **state) {
-    continentlist_only = 1;
+    continentlist_only = true;
     strcpy(lan_logline, logline_PY);
     addcall2();
     assert_int_equal(excl_add_veto, true);

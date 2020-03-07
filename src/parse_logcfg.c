@@ -281,9 +281,9 @@ int parse_logcfg(char *inputbuffer) {
     extern int my_cont_points;
     extern int dx_cont_points;
     extern int countrylist_points;
-    extern int countrylist_only;
+    extern bool countrylist_only;
     extern int continentlist_points;
-    extern int continentlist_only;
+    extern bool continentlist_only;
     char c_temp[11];
     extern bool mult_side;
     extern char countrylist[][6];
@@ -1228,9 +1228,9 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 97: {		// COUNTRY_LIST_ONLY
-	    countrylist_only = 1;
+	    countrylist_only = true;
 	    if (mult_side == 1)
-		countrylist_only = 0;
+		countrylist_only = false;
 
 	    break;
 	}
@@ -1603,7 +1603,7 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 165: {		// CONTINENT_LIST_ONLY
-	    continentlist_only = 1;
+	    continentlist_only = true;
 	    break;
 	}
 

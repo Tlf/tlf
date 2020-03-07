@@ -26,10 +26,10 @@ extern int mycountrynr;
 extern int my_country_points;
 extern int my_cont_points;
 extern int dx_cont_points;
-extern int countrylist_only;
+extern bool countrylist_only;
 extern int countrylist_points;
 extern char countrylist[][6];
-extern int continentlist_only;
+extern bool continentlist_only;
 extern int continentlist_points;
 extern char mycontinent[];
 extern char continent_multiplier_list[7][3];
@@ -84,11 +84,11 @@ int setup_default(void **state) {
     my_cont_points = -1;
     dx_cont_points = -1;
 
-    countrylist_only = 0;
+    countrylist_only = false;
     countrylist_points = -1;
     strcpy(countrylist[0], "");
 
-    continentlist_only = 0;
+    continentlist_only = false;
     continentlist_points = -1;
     strcpy(continent_multiplier_list[0], "");
 
@@ -315,7 +315,7 @@ void test_in_continentlist(void **state) {
 
 
 void test_scoreByCorC_countrylistOnly(void **state) {
-    countrylist_only = 1;
+    countrylist_only = true;
     check_call_points("LZ1AB", 0);
     check_call_points("DL3XYZ", 0);
 
@@ -329,7 +329,7 @@ void test_scoreByCorC_countrylistOnly(void **state) {
 }
 
 void test_scoreByCorC_continentlistOnly(void **state) {
-    continentlist_only = 1;
+    continentlist_only = true;
     check_call_points("LZ1AB", 0);
 
     init_continentlist();

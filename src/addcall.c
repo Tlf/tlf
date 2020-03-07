@@ -88,7 +88,7 @@ int addcall(void) {
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int addcallarea;
-    extern int continentlist_only;
+    extern bool continentlist_only;
     extern char continent[];
     extern int exclude_multilist_type;
     extern int trxmode;
@@ -162,7 +162,7 @@ int addcall(void) {
 	}
     }
 
-    if (continentlist_only == 1) {
+    if (continentlist_only) {
 	if (!is_in_continentlist(continent)) {
 	    add_ok = 0;
 	    addcty = 0;
@@ -171,7 +171,7 @@ int addcall(void) {
 	}
     }
 
-    if (continentlist_only == 0
+    if (!continentlist_only
 	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
 	if (is_in_continentlist(continent)) {
 	    add_ok = 0;
@@ -272,7 +272,7 @@ int addcall2(void) {
     extern int pfxnummultinr;
     extern int addcallarea;
     extern int countrynr;
-    extern int continentlist_only;
+    extern bool continentlist_only;
     extern char continent[];
 
     extern int pfxmultab;
@@ -361,13 +361,13 @@ int addcall2(void) {
     }
 
 
-    if (continentlist_only == 1) {
+    if (continentlist_only) {
 	if (!is_in_continentlist(dxcc_by_index(j)->continent)) {
 	    excl_add_veto = 1;
 	}
     }
 
-    if (continentlist_only == 0
+    if (!continentlist_only
 	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
 	if (is_in_continentlist(dxcc_by_index(j)->continent)) {
 	    excl_add_veto = 1;

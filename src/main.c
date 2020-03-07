@@ -128,11 +128,11 @@ int my_country_points = -1;
 int my_cont_points = -1;
 int dx_cont_points = -1;
 char countrylist[255][6];
-int countrylist_only = 0;
+bool countrylist_only = false;
 int countrylist_points = -1;
 char continent_multiplier_list[7][3]; // SA, NA, EU, AF, AS and OC
 int continentlist_points = -1;
-int continentlist_only = 0;
+bool continentlist_only = false;
 int exclude_multilist_type = EXCLUDE_NONE;
 bool mult_side = false;
 /* end LZ3NY mods */
