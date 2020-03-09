@@ -39,23 +39,26 @@
 #include "addcall.h"
 #include "addmult.h"
 #include "addpfx.h"
+#include "bands.h"
+#include "dxcc.h"
 #include "getctydata.h"
 #include "getpx.h"
+#include "get_time.h"
+#include "log_utils.h"
 #include "paccdx.h"
+#include "score.h"
 #include "searchcallarray.h"
 #include "tlf.h"
 #include "zone_nr.h"
-#include "get_time.h"
-#include "dxcc.h"
-#include "bands.h"
 
 int excl_add_veto;
-/* This variable helps to handle in other modules, that station is multiplier or not */
-/* In addcall2(), this variable helps to handle the excluded multipliers, which came from lan_logline
- * the Tlf scoring logic is totally completely different in local and LAN source
- * the addcall() function doesn't increment the band_score[] array, that maintains the score()
- * function. Here, the addcall2() is need to separate the points and multipliers.
- * This variable is used in readcall() too.
+/* This variable helps to handle in other modules, that station is multiplier
+ * or not */
+/* In addcall2(), this variable helps to handle the excluded multipliers,
+ * which came from lan_logline the Tlf scoring logic is totally completely
+ * different in local and LAN source the addcall() function doesn't increment
+ * the band_score[] array, that maintains the score() function. Here, the
+ * addcall2() is need to separate the points and multipliers.
  */
 
 int addcall(void) {
@@ -85,11 +88,9 @@ int addcall(void) {
     extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int addcallarea;
-    extern int continentlist_only;
-    extern char continent_multiplier_list[7][3];
+    extern bool continentlist_only;
     extern char continent[];
     extern int exclude_multilist_type;
-    extern char countrylist[][6];
     extern int trxmode;
     extern struct tm *time_ptr;
 
@@ -161,20 +162,8 @@ int addcall(void) {
 	}
     }
 
-    if (continentlist_only == 1 || (continentlist_only == 0
-				    && exclude_multilist_type == 1)) {
-	int ci = 0;
-	int cont_in_list = 0;
-
-	while (strlen(continent_multiplier_list[ci]) != 0) {
-	    if (strcmp(continent, continent_multiplier_list[ci]) == 0) {
-		cont_in_list = 1;
-	    }
-	    ci++;
-	}
-
-	if ((cont_in_list == 0 && continentlist_only == 1) || (cont_in_list == 1
-		&& continentlist_only == 0 && exclude_multilist_type == 1)) {
+    if (continentlist_only) {
+	if (!is_in_continentlist(continent)) {
 	    add_ok = 0;
 	    addcty = 0;
 	    addcallarea = 0;
@@ -182,16 +171,22 @@ int addcall(void) {
 	}
     }
 
-    if (exclude_multilist_type == 2) {
-	int ci = 0;
-	while (strlen(countrylist[ci]) != 0) {
-	    if (getctynr(countrylist[ci]) == j) {
-		add_ok = 0;
-		addcty = 0;
-		addcallarea = 0;
-		excl_add_veto = 1;
-	    }
-	    ci++;
+    if (!continentlist_only
+	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
+	if (is_in_continentlist(continent)) {
+	    add_ok = 0;
+	    addcty = 0;
+	    addcallarea = 0;
+	    excl_add_veto = 1;
+	}
+    }
+
+    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
+	if (is_in_countrylist(j)) {
+	    add_ok = 0;
+	    addcty = 0;
+	    addcallarea = 0;
+	    excl_add_veto = 1;
 	}
     }
 
@@ -250,10 +245,10 @@ int addcall(void) {
 
     addmult();			/* for wysiwyg */
 
-    return (j);
+    return j;
 }
 
-/* -------------------------for network qso's-----------------------------------------*/
+/* ----------------------for network qso's-----------------------------------*/
 
 int addcall2(void) {
 
@@ -277,13 +272,11 @@ int addcall2(void) {
     extern int pfxnummultinr;
     extern int addcallarea;
     extern int countrynr;
-    extern int continentlist_only;
-    extern char continent_multiplier_list[7][3];
+    extern bool continentlist_only;
     extern char continent[];
 
     extern int pfxmultab;
     extern int exclude_multilist_type;
-    extern char countrylist[][6];
     extern int trxmode;
 
     int found = 0;
@@ -320,7 +313,7 @@ int addcall2(void) {
 
     j = getctynr(hiscall);
 
-    bandinx = get_band(lan_logline);
+    bandinx = log_get_band(lan_logline);
 
     /* calculate QSO timestamp from lan_logline */
     memset(&qsotime, 0, sizeof(struct tm));
@@ -367,38 +360,29 @@ int addcall2(void) {
 	add_ok = 1;
     }
 
-    if (continentlist_only == 1 || (continentlist_only == 0
-				    && exclude_multilist_type == 1)) {
-	int ci = 0;
-	int cont_in_list = 0;
 
-	while (strlen(continent_multiplier_list[ci]) != 0) {
-	    if (strcmp(dxcc_by_index(j)->continent, continent_multiplier_list[ci])
-		    == 0) {
-		cont_in_list = 1;
-	    }
-	    ci++;
-	}
-
-	if ((cont_in_list == 0 && continentlist_only == 1) || (cont_in_list == 1
-		&& continentlist_only == 0 && exclude_multilist_type == 1)) {
+    if (continentlist_only) {
+	if (!is_in_continentlist(dxcc_by_index(j)->continent)) {
 	    excl_add_veto = 1;
 	}
     }
 
-    if (exclude_multilist_type == 2) {
-	int ci = 0;
-	while (strlen(countrylist[ci]) != 0) {
-	    if (getctynr(countrylist[ci]) == j) {
-		excl_add_veto = 1;
-	    }
-	    ci++;
+    if (!continentlist_only
+	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
+	if (is_in_continentlist(dxcc_by_index(j)->continent)) {
+	    excl_add_veto = 1;
+	}
+    }
+
+    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
+	if (is_in_countrylist(j)) {
+	    excl_add_veto = 1;
 	}
     }
 
     if (add_ok == 1) {
 
-	bandinx = get_band(lan_logline);
+	bandinx = log_get_band(lan_logline);
 	band_score[bandinx]++;
 
 	worked[i].band |= inxes[bandinx];	/* worked on this band */
@@ -467,7 +451,7 @@ int addcall2(void) {
 		}
 	    }
 
-	    bandinx = get_band(lan_logline);
+	    bandinx = log_get_band(lan_logline);
 
 	    add_pfx(lancopy, bandinx);
 	}
@@ -475,52 +459,6 @@ int addcall2(void) {
 
     addmult2();			/* for wysiwyg from LAN */
 
-    return (j);
+    return j;
 }
 
-int get_band(char *logline) {
-
-    int j = 0;
-
-    switch (atoi(logline)) {
-
-	case 160:
-	    j = BANDINDEX_160;
-	    break;
-
-	case 80:
-	    j = BANDINDEX_80;
-	    break;
-
-	case 40:
-	    j = BANDINDEX_40;
-	    break;
-
-	case 20:
-	    j = BANDINDEX_20;
-	    break;
-
-	case 15:
-	    j = BANDINDEX_15;
-	    break;
-
-	case 10:
-	    j = BANDINDEX_10;
-	    break;
-
-	case 12:
-	    j = BANDINDEX_12;
-	    break;
-
-	case 17:
-	    j = BANDINDEX_17;
-	    break;
-
-	case 30:
-	    j = BANDINDEX_30;
-	    break;
-
-    }
-
-    return (j);
-}

@@ -69,6 +69,52 @@ int inxes[NBANDS] = \
     BANDOOB
 };
 
+
+/** Converts bandnumber to bandindex */
+int bandnr2index(int nr) {
+    switch (nr) {
+
+	case 160:
+	    return BANDINDEX_160;
+
+	case 80:
+	    return BANDINDEX_80;
+
+	case 40:
+	    return BANDINDEX_40;
+
+	case 20:
+	    return BANDINDEX_20;
+
+	case 15:
+	    return BANDINDEX_15;
+
+	case 10:
+	    return BANDINDEX_10;
+
+	case 12:
+	    return BANDINDEX_12;
+
+	case 17:
+	    return BANDINDEX_17;
+
+	case 30:
+	    return BANDINDEX_30;
+	default:
+	    return BANDINDEX_OOB;
+    }
+}
+
+
+/* converts bandindex to bandnumber */
+static int bandnr[NBANDS] =
+{ 160, 80, 40, 30, 20, 17, 15, 12, 10, 0 };
+
+int bandindex2nr(int index) {
+    return bandnr[index];
+}
+
+
 extern int bandinx;
 
 void next_band(int direction) {

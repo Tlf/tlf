@@ -240,8 +240,7 @@ int getexchange(void) {
 		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
 		    if (comment[0] == '\0') {
 			x = -1;
-		    }
-		    else {
+		    } else {
 			/* F4 (TU macro) */
 			send_standard_message(3);
 
@@ -279,9 +278,9 @@ int getexchange(void) {
 	    }
 
 	    case 176 ... 185: {	/* Alt-0 to Alt-9 */
-	        send_standard_message(x - 162);	/* Messages 15-24 */
+		send_standard_message(x - 162);	/* Messages 15-24 */
 
-	        break;
+		break;
 	    }
 
 	    /* <Home>--edit exchange field, position cursor to left end of field.
@@ -348,8 +347,7 @@ int getexchange(void) {
 		    /* Don't log if exchange field is empty. */
 		    if (comment[0] == '\0') {
 			x = -1;
-		    }
-		    else {
+		    } else {
 			/* Log without sending a message. */
 			x = BACKSLASH;
 		    }
@@ -383,7 +381,7 @@ int getexchange(void) {
 
 	/* <Enter>, <Tab>, Ctl-K, '\' */
 	if (x == '\n' || x == KEY_ENTER || x == TAB
-	    || x == CTRL_K || x == BACKSLASH) {
+		|| x == CTRL_K || x == BACKSLASH) {
 
 	    if ((exchange_serial == 1 && comment[0] >= '0'
 		    && comment[0] <= '9')) {	/* align serial nr. */
@@ -467,7 +465,7 @@ int getexchange(void) {
 	    } else if (((serial_section_mult == 1) || (sectn_mult == 1))
 		       && ((x != TAB) && (strlen(section) < 1))) {
 		if (serial_or_section == 0 || (serial_or_section == 1
-					       && country_found(hiscall) == 1)) {
+					       && country_found(hiscall))) {
 		    mvprintw(13, 54, "section?", section);
 		    mvprintw(12, 54, comment);
 		    refreshp();

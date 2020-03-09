@@ -61,8 +61,7 @@ extern char *cabrillo;
 extern rmode_t digi_mode;
 extern int ctcomp;
 
-int exist_in_country_list();
-int continent_found();
+bool exist_in_country_list();
 
 void KeywordRepeated(char *keyword);
 void KeywordNotSupported(char *keyword);
@@ -278,20 +277,16 @@ int parse_logcfg(char *inputbuffer) {
     extern int serial_or_section;
 
     /* LZ3NY mods */
-    extern int mult_side;
     extern int my_country_points;
     extern int my_cont_points;
     extern int dx_cont_points;
     extern int countrylist_points;
-    extern int countrylist_only;
+    extern bool countrylist_only;
     extern int continentlist_points;
-    extern int continentlist_only;
+    extern bool continentlist_only;
     char c_temp[11];
-    extern int my_cont_points;
-    extern int dx_cont_points;
-    extern int mult_side;
+    extern bool mult_side;
     extern char countrylist[][6];
-
     extern char continent_multiplier_list[7][3];
     extern int exclude_multilist_type;
 
@@ -1150,8 +1145,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char country_list_raw[50] = ""; 	/* use only first
-						   	COUNTRY_LIST
-						   	definition */
+						       COUNTRY_LIST
+						       definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
@@ -1224,9 +1219,9 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 97: {		// COUNTRY_LIST_ONLY
-	    countrylist_only = 1;
+	    countrylist_only = true;
 	    if (mult_side == 1)
-		countrylist_only = 0;
+		countrylist_only = false;
 
 	    break;
 	}
@@ -1269,7 +1264,7 @@ int parse_logcfg(char *inputbuffer) {
 	    if (verbose) {
 		gchar *tmp;
 		tmp = g_strdup_printf("  Phone message #%d is %s", ii - 103,
-		     ph_message[ii - 103]);	// (W9WI)
+				      ph_message[ii - 103]);	// (W9WI)
 		showmsg(tmp);
 		g_free(tmp);
 	    }
@@ -1536,8 +1531,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char cont_multiplier_list[50] = ""; 	/* use only first
-						   	CONTINENT_LIST
-						   	definition */
+						       CONTINENT_LIST
+						       definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
@@ -1599,7 +1594,7 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 165: {		// CONTINENT_LIST_ONLY
-	    continentlist_only = 1;
+	    continentlist_only = true;
 	    break;
 	}
 
@@ -1714,7 +1709,7 @@ int parse_logcfg(char *inputbuffer) {
 	    if (verbose) {
 		gchar *tmp;
 		tmp = g_strdup_printf("  QTC RECV phone message #%d is %s",
-		    ii - 194, qtc_phrecv_message[ii - 194]);
+				      ii - 194, qtc_phrecv_message[ii - 194]);
 		showmsg(tmp);
 		g_free(tmp);
 	    }
@@ -1726,7 +1721,7 @@ int parse_logcfg(char *inputbuffer) {
 	    if (verbose) {
 		gchar *tmp;
 		tmp = g_strdup_printf("  QTC SEND phone message #%d is %s",
-		    ii - 208, qtc_phrecv_message[ii - 208]);
+				      ii - 208, qtc_phrecv_message[ii - 208]);
 		showmsg(tmp);
 		g_free(tmp);
 	    }
@@ -1776,7 +1771,7 @@ int parse_logcfg(char *inputbuffer) {
 		    sleep(5);
 		    exit(1);
 		}
-		exclude_multilist_type = 1;
+		exclude_multilist_type = EXCLUDE_CONTINENT;
 	    } else if (strcmp(g_strchomp(fields[1]), "COUNTRYLIST") == 0) {
 		if (strlen(countrylist[0]) == 0) {
 		    showmsg
@@ -1784,7 +1779,7 @@ int parse_logcfg(char *inputbuffer) {
 		    sleep(5);
 		    exit(1);
 		}
-		exclude_multilist_type = 2;
+		exclude_multilist_type = EXCLUDE_COUNTRY;
 	    } else {
 		showmsg
 		("WARNING: choose one of these for EXCLUDE_MULTILIST: CONTINENTLIST, COUNTRYLIST");

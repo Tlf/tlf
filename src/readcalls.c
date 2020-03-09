@@ -44,80 +44,49 @@
 #include "log_utils.h"
 #include "paccdx.h"
 #include "readqtccalls.h"
+#include "score.h"
+#include "searchcallarray.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
-#include "ui_utils.h"
 #include "zone_nr.h"
 
+extern bool continentlist_only;
+extern int pfxnummultinr;
+extern t_pfxnummulti pfxnummulti[];
+extern int exclude_multilist_type;
 
-int readcalls(void) {
 
-    extern char continent_multiplier_list[7][3];
-    extern int continentlist_only;
-    extern int pfxnummultinr;
-    extern t_pfxnummulti pfxnummulti[];
-    extern int exclude_multilist_type;
-    extern char countrylist[][6];
-
-    char inputbuffer[160];
-    char tmpbuf[20];
-    char bndbuf[20];
-    char zonebuf[3];
-    char checkcall[20];
-    int i = 0, l = 0, n = 0, r = 0, s = 0;
-    int m = 0;
-    int t;
-    int z = 0;
-    int add_ok;
-    char multbuffer[40];
-    char presentcall[20];	// copy of call..
-    char *tmpptr;
-    int points;
-    int pfxnumcntidx;
-    int pxnr;
-    int excl_add_veto;
-    char date_and_time[16];
-    struct tm qsotime;
-    time_t qsotimets;
-    int qsomode;
-    int linenr = 0;
-
-    int bandindex;
-
-    FILE *fp;
-
-    showmsg("Reading logfile... ");
-    refreshp();
-
+void init_scoring(void) {
     /* reset counter and score anew */
-    for (s = 0; s < MAX_QSOS; s++)
-	qsos[s][0] = '\0';
+    for (int i = 0; i < MAX_QSOS; i++)
+	qsos[i][0] = '\0';
 
-    for (i = 0; i < MAX_CALLS; i++) {
+    for (int i = 0; i < MAX_CALLS; i++) {
 	*worked[i].exchange = '\0';
 	*worked[i].call = '\0';
 	worked[i].band = 0;
 	worked[i].country = -1;
-	for (l = 0; l < 3; l++) {
-	    for (n = 0; n < NBANDS; n++) {
+	for (int l = 0; l < 3; l++) {
+	    for (int n = 0; n < NBANDS; n++) {
 		worked[i].qsotime[l][n] = 0;
 	    }
 	}
     }
+    nr_worked = 0;
 
-    for (i = 1; i <= MAX_DATALINES - 1; i++)
+    for (int i = 1; i <= MAX_DATALINES - 1; i++)
 	countries[i] = 0;
 
-    for (i = 0; i < NBANDS; i++)
+    for (int i = 0; i < NBANDS; i++)
 	band_score[i] = 0;
 
-    for (i = 0; i < NBANDS; i++)
+    for (int i = 0; i < NBANDS; i++)
 	countryscore[i] = 0;
 
-    for (n = 1; n < MAX_ZONES; n++)
+    for (int n = 1; n < MAX_ZONES; n++)
 	zones[n] = 0;
 
-    for (n = 0; n < NBANDS; n++)
+    for (int n = 0; n < NBANDS; n++)
 	zonescore[n] = 0;
 
     init_mults();
@@ -125,12 +94,146 @@ int readcalls(void) {
     InitPfx();
 
     if (pfxnummultinr > 0) {
-	for (i = 0; i < pfxnummultinr; i++) {
-	    for (n = 0; n < NBANDS; n++) {
+	for (int i = 0; i < pfxnummultinr; i++) {
+	    for (int n = 0; n < NBANDS; n++) {
 		pfxnummulti[i].qsos[n] = 0;
 	    }
 	}
     }
+}
+
+void show_progress(int linenr) {
+    if (((linenr + 1) % 100) == 0) {
+	printw("*");
+	refreshp();
+    }
+}
+
+
+// lookup the current country 'n' from the outer loop
+// pfxnummulti[I].countrynr contains the country codes,
+// I:=[0..pfxnummultinr]
+// according to the order of prefixes in rules, eg:
+// PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
+// pfxnummulti[0].countrynr will be nr of USA
+// pfxnummulti[1].countrynr will be nr of Canada
+int lookup_country_in_pfxnummult_array(int n) {
+    int found = -1;
+    for (int i = 0; i < pfxnummultinr; i++) {
+	if (pfxnummulti[i].countrynr == n) {
+	    found = i;
+	    break;
+	}
+    }
+    return found;
+}
+
+bool check_veto() {
+    bool excl_add_veto = false;
+
+    if (!continentlist_only &&
+	    exclude_multilist_type == EXCLUDE_CONTINENT) {
+	if (is_in_continentlist(continent)) {
+	    excl_add_veto = true;
+	}
+    }
+
+    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
+	if (is_in_countrylist(countrynr)) {
+	    excl_add_veto = true;
+	}
+    }
+
+    return excl_add_veto;
+}
+
+/* pick up multi string from logline
+ *
+ * ATTENTION! return value needs to be freed
+ */
+char *get_multi_from_line(char *logline) {
+    char *multbuffer = g_malloc(20);
+
+    if (arrlss == 1) {
+
+	if (logline[63] == ' ')
+	    g_strlcpy(multbuffer, logline + 64, 4);
+	else
+	    g_strlcpy(multbuffer, logline + 63, 4);
+
+    } else if (serial_section_mult == 1) {
+
+	g_strlcpy(multbuffer, logline + 68, 4);
+	g_strchomp(multbuffer);
+
+    } else if (sectn_mult == 1) {
+
+	g_strlcpy(multbuffer, logline + 68, 4);
+	g_strchomp(multbuffer);
+
+    } else if (serial_grid4_mult == 1) {
+
+	g_strlcpy(multbuffer, logline + 59, 5);
+
+    } else if (unique_call_multi != 0) {
+
+	g_strlcpy(multbuffer, logline + 68, 10);
+	g_strchomp(multbuffer);
+
+    } else {
+
+	g_strlcpy(multbuffer, logline + 54, 11);	// normal case
+	g_strchomp(multbuffer);
+
+    }
+
+    return multbuffer;
+}
+
+
+void count_if_worked(int check, unsigned int bandindex, int *count) {
+    if (bandindex >= NBANDS)
+	return;
+
+    if ((check & inxes[bandindex]) != 0)
+	count[bandindex]++;
+}
+
+void count_contest_bands(int check, int *count) {
+    count_if_worked(check, BANDINDEX_160, count);
+    count_if_worked(check, BANDINDEX_80, count);
+    count_if_worked(check, BANDINDEX_40, count);
+    count_if_worked(check, BANDINDEX_20, count);
+    count_if_worked(check, BANDINDEX_15, count);
+    count_if_worked(check, BANDINDEX_10, count);
+}
+
+
+
+int readcalls(void) {
+
+    char inputbuffer[LOGLINELEN + 1];
+    char tmpbuf[20];
+    char checkcall[20];
+    int z = 0;
+    bool add_ok;
+    char presentcall[20];	// copy of call..
+    char *tmpptr;
+    int pfxnumcntidx;
+    int pxnr;
+    bool excl_add_veto;
+    struct tm qsotime;
+    int qsomode;
+    int linenr = 0;
+
+    int bandindex = BANDINDEX_OOB;
+
+    FILE *fp;
+
+    showmsg("Reading logfile... ");
+    refreshp();
+
+    init_scoring();
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 	showmsg("Error opening logfile ");
@@ -138,97 +241,52 @@ int readcalls(void) {
 	sleep(2);
 	exit(1);
     }
-    i = 0;
-    l = 0;
 
-    s = 0;
+    while (fgets(inputbuffer, LOGLINELEN + 1, fp) != NULL) {
+	int l = 0;
 
-    while (fgets(inputbuffer, 90, fp) != NULL) {
-	pfxnumcntidx = -1;
-	pxnr = 0;
-	excl_add_veto = 0;
-	linenr++;
-	r++;
-
-	if (r >= 100) {
-	    r = 0;
-	    printw("*");
-	    refreshp();
-	}
-
-	strcat(inputbuffer, spaces(50)); /* repair the logfile */
+	// drop trailing newline
 	inputbuffer[LOGLINELEN - 1] = '\0';
 
-	for (t = 0; t <= strlen(inputbuffer); t++) {
-	    if (inputbuffer[t] == '\n')
-		inputbuffer[t] = ' ';
-	}
+	// remember logline in qsos[] field
+	g_strlcpy(qsos[linenr], inputbuffer, sizeof(qsos[0]));
+	linenr++;
 
-	strncpy(qsos[s], inputbuffer, LOGLINELEN);
-	s++;
+	show_progress(linenr);
 
 	if (log_is_comment(inputbuffer))
 	    continue;		/* skip note in  log  */
 
-	strncpy(presentcall, inputbuffer + 29, 13);
-	presentcall[13] = '\0';
+	// prepare helper variables
+	pfxnumcntidx = -1;
+	pxnr = 0;
 
-	bandindex = BANDINDEX_OOB;
-
-	strncpy(bndbuf, inputbuffer + 1, 2);
-	bndbuf[2] = '\0';
-
-	if (bndbuf[0] == '1' && bndbuf[1] == '0')
-	    bandindex = BANDINDEX_10;
-	if (bndbuf[0] == '1' && bndbuf[1] == '5')
-	    bandindex = BANDINDEX_15;
-	if (bndbuf[0] == '2')
-	    bandindex = BANDINDEX_20;
-	if (bndbuf[0] == '4')
-	    bandindex = BANDINDEX_40;
-	if (bndbuf[0] == '8')
-	    bandindex = BANDINDEX_80;
-	if (bndbuf[0] == '6')
-	    bandindex = BANDINDEX_160;
-	if (bndbuf[0] == '1' && bndbuf[1] == '2')
-	    bandindex = BANDINDEX_12;
-	if (bndbuf[0] == '1' && bndbuf[1] == '7')
-	    bandindex = BANDINDEX_17;
-	if (bndbuf[0] == '3')
-	    bandindex = BANDINDEX_30;
+	/* get bandindex */
+	bandindex = log_get_band(inputbuffer);
 
 	/* get the country number, not known at this point */
+	g_strlcpy(presentcall, inputbuffer + 29, 14);
 	tmpptr = strchr(presentcall, ' ');
 	if (tmpptr)
 	    *tmpptr = '\0';
+
 	strcpy(tmpbuf, presentcall);
 	countrynr = getctydata(tmpbuf);
 
-	if (continentlist_only == 1) {
-	    int ci = 0;
-	    int cont_in_list = 0;
-	    while (strlen(continent_multiplier_list[ci]) != 0) {
-		if (strcmp(continent, continent_multiplier_list[ci]) == 0) {
-		    cont_in_list = 1;
-		}
-		ci++;
-	    }
-	    if (cont_in_list == 0) {
+	if (continentlist_only) {
+	    if (!is_in_continentlist(continent)) {
 		band_score[bandindex]++;
 		continue;
 	    }
 	}
 
 	if (contest == 1) {
-	    strncpy(tmpbuf, inputbuffer + 76, 2);	/* get the points */
-	    tmpbuf[2] = '\0';
-	    points = atoi(tmpbuf);
-	    total = total + points;
+	    // get points
+	    total = total + log_get_points(inputbuffer);
 
 	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
-		strncpy(zonebuf, inputbuffer + 54, 2);	/* get the zone */
-		zonebuf[2] = '\0';
-		z = zone_nr(zonebuf);
+		// get the zone
+		z = zone_nr(inputbuffer + 54);
 	    }
 
 	    if (wysiwyg_once == 1 ||
@@ -240,103 +298,29 @@ int readcalls(void) {
 		    sectn_mult == 1 ||
 		    ((dx_arrlsections == 1)
 		     && ((countrynr == w_cty) || (countrynr == ve_cty)))) {
-
-		multbuffer[0] = '\0';
-
-		if (arrlss == 1) {
-		    other_flg = 0;
-
-		    if (inputbuffer[63] == ' ')
-			strncpy(multbuffer, inputbuffer + 64, 3);
-		    else
-			strncpy(multbuffer, inputbuffer + 63, 3);
-
-		    multbuffer[3] = '\0';
-
-		} else if (serial_section_mult == 1) {
-
-		    memset(multbuffer, 0, 39);
-
-		    strncpy(multbuffer, inputbuffer + 68, 3);
-		    g_strchomp(multbuffer);
-
-		} else if (sectn_mult == 1) {
-		    memset(multbuffer, 0, 39);
-
-		    strncpy(multbuffer, inputbuffer + 68, 3);
-		    g_strchomp(multbuffer);
-
-		} else if (serial_grid4_mult == 1) {
-
-		    memset(multbuffer, 0, 39);
-
-		    for (t = 0; t < 4; t++) {
-
-			multbuffer[t] = inputbuffer[t + 59];
-		    }
-
-		} else if (unique_call_multi != 0) {
-
-		    g_strlcpy(multbuffer, inputbuffer + 68, 10);
-		    g_strchomp(multbuffer);
-
-		} else {
-
-		    strncpy(multbuffer, inputbuffer + 54, 10);	// normal case
-
-		    multbuffer[10] = '\0';
-
-		    g_strchomp(multbuffer);
-
-		}
-
+		// get multi info
+		char *multbuffer = get_multi_from_line(inputbuffer);
 		remember_multi(multbuffer, bandindex, 0);
-
-	    }			// end wysiwig
-
-	    if (other_flg == 1) {	/* mult = max 3 characters */
-
-		strncpy(multbuffer, inputbuffer + 54, 3);
-		multbuffer[3] = '\0';
-
-		if (multbuffer[3] == ' ')
-		    multbuffer[3] = '\0';
-		if (multbuffer[2] == ' ')
-		    multbuffer[2] = '\0';
-		if (multbuffer[1] == ' ')
-		    multbuffer[1] = '\0';
-
-		remember_multi(multbuffer, bandindex, 0);
+		g_free(multbuffer);
 	    }
-
-	}
-	/*  once  per call !  */
-	for (int k = 0; k < i; k++) {
-	    m = strcmp(worked[k].call, presentcall);
-
-	    if (m == 0) {
-		l = k;
-		break;
-	    } else
-		l = i;
-
 	}
 
-	strncpy(worked[l].call, inputbuffer + 29, 19);
-	worked[l].call[19] = 0;
-	strtok(worked[l].call, " \r");	/* delimit first word */
+	/*  lookup worked stations */
+	l = searchcallarray(presentcall);
+	if (l == -1) {		    /* if not found, use next free slot */
+	    l = nr_worked;
+	    nr_worked++;
+	}
+
+	/* and fill in according entry */
+	g_strlcpy(worked[l].call, presentcall, sizeof(worked[0].call));
 
 	worked[l].country = countrynr;
 	g_strlcpy(worked[l].exchange, inputbuffer + 54, 12);
 	g_strchomp(worked[l].exchange);	/* strip trailing spaces */
 
-	if (strncmp("CW ", inputbuffer + 3, 3) == 0) {
-	    qsomode = CWMODE;
-	} else if (strncmp("SSB", inputbuffer + 3, 3) == 0) {
-	    qsomode = SSBMODE;
-	} else if (strncmp("DIG", inputbuffer + 3, 3) == 0) {
-	    qsomode = DIGIMODE;
-	} else {
+	qsomode = log_get_mode(inputbuffer);
+	if (qsomode == -1) {
 	    shownr("Invalid line format in line %d.\n", linenr);
 	    refreshp();
 	    sleep(2);
@@ -345,16 +329,22 @@ int readcalls(void) {
 
 	/* calculate QSO timestamp from logline */
 	memset(&qsotime, 0, sizeof(struct tm));
-	strncpy(date_and_time, inputbuffer + 7, 15);
-	strptime(date_and_time, "%d-%b-%y %H:%M", &qsotime);
-	qsotimets = mktime(&qsotime);
-	worked[l].qsotime[qsomode][bandindex] = qsotimets;
+	strptime(inputbuffer + 7, "%d-%b-%y %H:%M", &qsotime);
+	worked[l].qsotime[qsomode][bandindex] = mktime(&qsotime);
 
-	add_ok = 1;		/* look if calls are excluded */
+
+	if (pfxmultab == 1) {
+	    getpx(presentcall);
+	    add_pfx(pxstr, bandindex);
+	}
+
+
+	/* look if calls are excluded */
+	add_ok = true;
 
 	if ((arrldx_usa == 1)
 		&& ((countrynr == w_cty) || (countrynr == ve_cty)))
-	    add_ok = 0;
+	    add_ok = false;
 
 	if (pacc_pa_flg == 1) {
 
@@ -362,16 +352,11 @@ int readcalls(void) {
 
 	    add_ok = pacc_pa();
 
-	    if (add_ok == 0) {
+	    if (add_ok == false) {
 		band_score[bandindex]++;
 	    }
 
 	    hiscall[0] = '\0';
-	}
-
-	if (pfxmultab == 1) {
-	    getpx(presentcall);
-	    add_pfx(pxstr, bandindex);
 	}
 
 	if (pfxnummultinr > 0) {
@@ -380,248 +365,112 @@ int readcalls(void) {
 
 	    getctydata(presentcall);
 
-	    int pfxi = 0;
-	    while (pfxi < pfxnummultinr) {
-		if (pfxnummulti[pfxi].countrynr == countrynr) {
-		    pfxnumcntidx = pfxi;
-		    break;
-		}
-		pfxi++;
-	    }
-	    add_ok = 1;
+	    pfxnumcntidx = lookup_country_in_pfxnummult_array(countrynr);
+
+	    add_ok = true;
 	}
 
-	if (continentlist_only == 0 && exclude_multilist_type == 1) {
-	    int ci = 0;
-	    int cont_in_list = 0;
+	excl_add_veto = check_veto();
 
-	    while (strlen(continent_multiplier_list[ci]) != 0) {
-		if (strcmp(continent, continent_multiplier_list[ci]) == 0) {
-		    cont_in_list = 1;
-		}
-		ci++;
-	    }
-	    if (cont_in_list == 1 && continentlist_only == 0
-		    && exclude_multilist_type == 1) {
-		excl_add_veto = 1;
-	    }
-	}
-
-	if (exclude_multilist_type == 2) {
-	    int ci = 0;
-	    int countrynr_tocheck = countrynr;
-	    while (strlen(countrylist[ci]) != 0) {
-		if (getctynr(countrylist[ci]) == countrynr_tocheck) {
-		    excl_add_veto = 1;
-		    break;
-		}
-		ci++;
-	    }
-	}
-
-	if (add_ok == 1) {
+	if (add_ok) {
 
 	    worked[l].band |= inxes[bandindex];	/* mark band as worked */
 
 	    band_score[bandindex]++;	/*  qso counter  per band */
+
 	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1))
 		zones[z] |= inxes[bandindex];
+
 	    if (pfxnumcntidx < 0) {
-		if (excl_add_veto == 0) {
+		if (!excl_add_veto) {
 		    countries[countrynr] |= inxes[bandindex];
 		}
 	    } else {
 		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandindex];
 	    }
-
-	}			/* end add_ok */
-
-	if (l == i)
-	    i++;
+	}
     }
 
     fclose(fp);
 
-    /* remember nuber of callarray entries */
-    nr_worked = i;
-
+    /* all lines red, now build other statistics */
     if (wpx == 1) {
 
 	/* build prefixes_worked array from list of worked stations */
 	InitPfx();
 
-	for (n = 0; n < i; n++) {
+	for (int n = 0; n < nr_worked; n++) {
 	    strcpy(checkcall, worked[n].call);
 	    getpx(checkcall);
-	    add_pfx(pxstr, bandindex);
+	    /* FIXME: wpx is counting pfx only once so bandindex is not
+	     * really needed here. If you have wpx and pfxmultab set the
+	     * count for the last read band wil be wrong as all pfx will be
+	     * counted for that band.
+	     * Maybe better use BANDINDEX_OOB here:
+	     * - Will count pfx for wpx correctly
+	     * - but will not change counts for pfxmultab on contest bands */
+	    add_pfx(pxstr, BANDINDEX_OOB);
 	}
     }
 
     if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
-	for (n = 1; n < MAX_ZONES; n++) {
-	    if ((zones[n] & BAND160) != 0)
-		zonescore[BANDINDEX_160]++;
-	    if ((zones[n] & BAND80) != 0)
-		zonescore[BANDINDEX_80]++;
-	    if ((zones[n] & BAND40) != 0)
-		zonescore[BANDINDEX_40]++;
-	    if ((zones[n] & BAND20) != 0)
-		zonescore[BANDINDEX_20]++;
-	    if ((zones[n] & BAND15) != 0)
-		zonescore[BANDINDEX_15]++;
-	    if ((zones[n] & BAND10) != 0)
-		zonescore[BANDINDEX_10]++;
+	for (int n = 1; n < MAX_ZONES; n++) {
+	    count_contest_bands(zones[n], zonescore);
 	}
     }
 
     if (cqww == 1) {
-	for (n = 1; n <= MAX_DATALINES - 1; n++) {
-	    if ((countries[n] & BAND160) != 0)
-		countryscore[BANDINDEX_160]++;
-	    if ((countries[n] & BAND80) != 0)
-		countryscore[BANDINDEX_80]++;
-	    if ((countries[n] & BAND40) != 0)
-		countryscore[BANDINDEX_40]++;
-	    if ((countries[n] & BAND20) != 0)
-		countryscore[BANDINDEX_20]++;
-	    if ((countries[n] & BAND15) != 0)
-		countryscore[BANDINDEX_15]++;
-	    if ((countries[n] & BAND10) != 0)
-		countryscore[BANDINDEX_10]++;
+	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
+	    count_contest_bands(countries[n], countryscore);
 	}
     }
-    /* end cqww */
+
     if (dx_arrlsections == 1) {
-
-	int cntr;
-
-	for (cntr = 1; cntr < MAX_DATALINES; cntr++) {
-
+	for (int cntr = 1; cntr < MAX_DATALINES; cntr++) {
 	    if (cntr != w_cty && cntr != ve_cty) {	// W and VE don't count here...
-		if ((countries[cntr] & BAND160) != 0)
-		    countryscore[BANDINDEX_160]++;
-		if ((countries[cntr] & BAND80) != 0)
-		    countryscore[BANDINDEX_80]++;
-		if ((countries[cntr] & BAND40) != 0)
-		    countryscore[BANDINDEX_40]++;
-		if ((countries[cntr] & BAND20) != 0)
-		    countryscore[BANDINDEX_20]++;
-		if ((countries[cntr] & BAND15) != 0)
-		    countryscore[BANDINDEX_15]++;
-		if ((countries[cntr] & BAND10) != 0)
-		    countryscore[BANDINDEX_10]++;
+		count_contest_bands(countries[cntr], countryscore);
 	    }
 	}
-    }				// end dx_arrlsections
+    }
 
     if (arrldx_usa == 1) {
-
-	int cntr;
-	for (cntr = 1; cntr < MAX_DATALINES; cntr++) {
+	for (int cntr = 1; cntr < MAX_DATALINES; cntr++) {
 	    if (cntr != w_cty && cntr != ve_cty) {	// W and VE don't count here...
-		if ((countries[cntr] & BAND160) != 0)
-		    countryscore[BANDINDEX_160]++;
-		if ((countries[cntr] & BAND80) != 0)
-		    countryscore[BANDINDEX_80]++;
-		if ((countries[cntr] & BAND40) != 0)
-		    countryscore[BANDINDEX_40]++;
-		if ((countries[cntr] & BAND20) != 0)
-		    countryscore[BANDINDEX_20]++;
-		if ((countries[cntr] & BAND15) != 0)
-		    countryscore[BANDINDEX_15]++;
-		if ((countries[cntr] & BAND10) != 0)
-		    countryscore[BANDINDEX_10]++;
+		count_contest_bands(countries[cntr], countryscore);
 	    }
 	}
-
     }
-    /* end arrldx_usa */
 
     if (pacc_pa_flg == 1) {
-
-	for (n = 1; n < MAX_DATALINES; n++) {
-	    if ((countries[n] & BAND160) != 0)
-		countryscore[BANDINDEX_160]++;
-	    if ((countries[n] & BAND80) != 0)
-		countryscore[BANDINDEX_80]++;
-	    if ((countries[n] & BAND40) != 0)
-		countryscore[BANDINDEX_40]++;
-	    if ((countries[n] & BAND20) != 0)
-		countryscore[BANDINDEX_20]++;
-	    if ((countries[n] & BAND15) != 0)
-		countryscore[BANDINDEX_15]++;
-	    if ((countries[n] & BAND10) != 0)
-		countryscore[BANDINDEX_10]++;
+	for (int n = 1; n < MAX_DATALINES; n++) {
+	    count_contest_bands(countries[n], countryscore);
 	}
     }
 
     if (country_mult == 1 || pfxnummultinr > 0) {
 
-	for (n = 1; n <= MAX_DATALINES - 1; n++) {
+	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
 
-	    // first, check pfxnummultinr array, the country 'n' exists
-	    int pfxnumcntnr = -1;
-	    // pfxnummultinr is length of pfxnummulti array
+	    pfxnumcntidx = -1;
 	    if (pfxnummultinr > 0) {
-		int pcntnr;
-		// find the current country
-		// n is the country in the external loop
-		// pfxnummulti[I].countrynr contains the country codes, I:=[0..pfxnummultinr]
-		// it depends from the order of prefixes in rules, eg:
-		// PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
-		// pfxnummulti[0].countrynr will be nr of USA
-		// pfxnummulti[1].countrynr will be nr of Canada
-		for (pcntnr = 0; pcntnr < pfxnummultinr; pcntnr++) {
-		    if (pfxnummulti[pcntnr].countrynr == n) {
-			pfxnumcntnr = pcntnr;
-			pcntnr = pfxnummultinr; // end loop
-		    }
-		}
+		pfxnumcntidx = lookup_country_in_pfxnummult_array(n);
 	    }
-	    if (pfxnummultinr > 0 && pfxnumcntnr >= 0) {
-		int pfxnum;
-		// walking pfxnummulti[N].qsos, which is a 10 element array
-		// each element represent a number of the country code
-		// eg: K0, K1, K2, ..., K9
-		for (pfxnum = 0; pfxnum < 10; pfxnum++) {
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND160) != 0) {
-			countryscore[BANDINDEX_160]++;
-		    }
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND80) != 0) {
-			countryscore[BANDINDEX_80]++;
-		    }
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND40) != 0) {
-			countryscore[BANDINDEX_40]++;
-		    }
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND20) != 0) {
-			countryscore[BANDINDEX_20]++;
-		    }
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND15) != 0) {
-			countryscore[BANDINDEX_15]++;
-		    }
-		    if ((pfxnummulti[pfxnumcntnr].qsos[pfxnum] & BAND10) != 0) {
-			countryscore[BANDINDEX_10]++;
-		    }
+
+	    if (pfxnumcntidx >= 0) { /* found in array */
+		/* count all possible pfx numbers
+		 * eg: K0, K1, K2, ..., K9 */
+		for (int pfxnr = 0; pfxnr < 10; pfxnr++) {
+		    count_contest_bands(pfxnummulti[pfxnumcntidx].qsos[pfxnr],
+					countryscore);
 		}
 	    } else {
-		// simple 'country_mult', but it's works together with pfxnummultinr
-		if ((countries[n] & BAND160) != 0)
-		    countryscore[BANDINDEX_160]++;
-		if ((countries[n] & BAND80) != 0)
-		    countryscore[BANDINDEX_80]++;
-		if ((countries[n] & BAND40) != 0)
-		    countryscore[BANDINDEX_40]++;
-		if ((countries[n] & BAND20) != 0)
-		    countryscore[BANDINDEX_20]++;
-		if ((countries[n] & BAND15) != 0)
-		    countryscore[BANDINDEX_15]++;
-		if ((countries[n] & BAND10) != 0)
-		    countryscore[BANDINDEX_10]++;
+		// simple 'country_mult', but works together with pfxnummulti
+		count_contest_bands(countries[n], countryscore);
 	    }
 	}
     }
 
-    return (s);			// nr of lines in log
+    return linenr;			// nr of lines in log
 }
 
 int log_read_n_score() {

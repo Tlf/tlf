@@ -19,6 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../src/globalvars.h"
@@ -65,7 +66,6 @@ int pfxmult = 0;
 int pfxmultab = 0;
 int exc_cont = 0;
 int manise80;
-int other_flg;
 int one_point = 0;
 int two_point = 0;
 int three_point = 0;
@@ -79,13 +79,13 @@ int my_country_points = -1;
 int my_cont_points = -1;
 int dx_cont_points = -1;
 char countrylist[255][6];
-int countrylist_only = 0;
+bool countrylist_only = false;
 int countrylist_points = -1;
 char continent_multiplier_list[7][3]; // SA, NA, EU, AF, AS and OC
 int continentlist_points = -1;
-int continentlist_only = 0;
-int exclude_multilist_type = 0;
-int mult_side = 0;
+bool continentlist_only = false;
+int exclude_multilist_type = EXCLUDE_NONE;
+bool mult_side = false;
 /* end LZ3NY mods */
 
 int portable_x2 = 0;

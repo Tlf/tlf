@@ -25,7 +25,9 @@
  *--------------------------------------------------------------*/
 
 
+#include <ctype.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -35,19 +37,33 @@
 #include "qrb.h"
 #include "tlf.h"
 
+extern char countrylist[][6];
+extern char continent_multiplier_list[7][3];
 
 int calc_continent(int zone);
 
+/* check if countrynr is in countrylist */
+bool is_in_countrylist(int countrynr) {
+    int i = 0;
+
+    while (strlen(countrylist[i]) != 0) {
+	if (getctynr(countrylist[i]) == countrynr) {
+	    return true;
+	}
+	i++;
+    }
+    return false;
+}
+
+
 /* check if hiscall is in COUNTRY_LIST from logcfg.dat */
-int country_found(char prefix[]) {
+bool country_found(char prefix[]) {
 
     extern int countrynr;
     extern char hiscall[];
     extern char call[];
-    extern char countrylist[][6];
 
     char tmpcall[15];
-    int counter = 0;
 
     if (strlen(hiscall) == 0) {
 	strcpy(tmpcall, call);
@@ -56,61 +72,49 @@ int country_found(char prefix[]) {
 
     countrynr = getctydata(tmpcall);
 
-    while (strlen(countrylist[counter]) != 0) {
-	if (getctydata(countrylist[counter]) == getctydata(tmpcall)) {
-	    return 1;
-	}
-	counter++;
-    }
-    return 0;
+    return is_in_countrylist(countrynr);
 }
 
-int exist_in_country_list() {
+bool exist_in_country_list() {
 
     extern char pxstr[];
     char prefix[10];
 
     strcpy(prefix, pxstr);
 
-    if (country_found(prefix) == 1) {
-	return (1);
-    } else {
-	if ((prefix[strlen(prefix) - 1] < 58)	/* last char '0'..'9' */
-		&& (prefix[strlen(prefix) - 1] > 47)) {
-	    prefix[strlen(prefix) - 1] = '\0';  /* strip number */
-	    if (country_found(prefix) == 1) {
-		return 1;
-	    } else {
-		if ((prefix[strlen(prefix) - 1] < 58) /* see above */
-			&& (prefix[strlen(prefix) - 1] > 47)) {
-		    prefix[strlen(prefix) - 1] = '\0';
-		    if (country_found(prefix) == 1)
-			return (1);
-		    else
-			return (0);
-		} else
-		    return 0;
-	    }
-	} else
-	    return 0;
+    if (country_found(prefix)) {
+	return true;
     }
+
+    if (!isdigit(prefix[strlen(prefix) - 1])) { /* last char '0'..'9' */
+	return false;
+    }
+
+    prefix[strlen(prefix) - 1] = '\0';  /* strip trailing digit */
+    if (country_found(prefix)) {	/* and try again */
+	return true;
+    }
+
+    if (!isdigit(prefix[strlen(prefix) - 1])) {
+	return false;
+    }
+
+    prefix[strlen(prefix) - 1] = '\0';	/* last try */
+    return country_found(prefix);
 }
 
 
 /* HA2OS - check if continent is in CONTINENT_LIST from logcfg.dat */
-int continent_found() {
-    extern char continent[];
-    extern char continent_multiplier_list[7][3];
+bool is_in_continentlist(char *continent) {
+    int i = 0;
 
-    int mit_fg = 0;
-
-    while (strlen(continent_multiplier_list[mit_fg]) != 0) {
-	if (strcmp(continent_multiplier_list[mit_fg], continent) == 0) {
-	    return 1;
+    while (strlen(continent_multiplier_list[i]) != 0) {
+	if (strcmp(continent_multiplier_list[i], continent) == 0) {
+	    return true;
 	}
-	mit_fg++;
+	i++;
     }
-    return 0;
+    return false;
 }
 
 
@@ -169,9 +173,9 @@ int scoreByContinentOrCountry() {
     extern char hiscall[];
 
     extern int countrylist_points;
-    extern int countrylist_only;
+    extern bool countrylist_only;
 
-    extern int continentlist_only;
+    extern bool continentlist_only;
     extern int continentlist_points;
 
     extern int my_country_points;
@@ -187,7 +191,7 @@ int scoreByContinentOrCountry() {
     int inList = 0;
 
     inList = exist_in_country_list();
-    if (countrylist_only == 1) {
+    if (countrylist_only) {
 	if (inList == 1 && countrylist_points != -1)
 	    points = countrylist_points;
     } else {
@@ -218,10 +222,10 @@ int scoreByContinentOrCountry() {
     }
 
     /* HA2OS mods */
-    // only continent list allowed
-    if (continentlist_only == 1) {
-	if (continent_found() == 1) {
-	    // if we are on DX continent
+    if (continentlist_only) {
+	// only continent list allowed
+	if (is_in_continentlist(continent)) {
+	    // are we are on DX continent or not
 	    if (strcmp(continent, mycontinent) == 0) {
 		points = my_cont_points;
 	    } else if (continentlist_points != -1) {
@@ -477,6 +481,6 @@ int calc_continent(int zone) {
 	default:
 	    strncpy(continent, "??", 3);
     }
-    return (0);
+    return 0;
 }
 

@@ -1,27 +1,37 @@
 #include "test.h"
 
 #include "../src/addcall.h"
-#include "../src/globalvars.h"
 #include "../src/dxcc.h"
 #include "../src/getctydata.h"
+#include "../src/globalvars.h"
+#include "../src/score.h"
 
 // OBJECT ../src/addcall.o
 // OBJECT ../src/addmult.o
 // OBJECT ../src/bands.o
-// OBJECT ../src/searchcallarray.o
+// OBJECT ../src/dxcc.o
+// OBJECT ../src/focm.o
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
-// OBJECT ../src/dxcc.o
 // OBJECT ../src/get_time.o
+// OBJECT ../src/locator2longlat.o
+// OBJECT ../src/log_utils.o
+// OBJECT ../src/qrb.o
+// OBJECT ../src/score.o
+// OBJECT ../src/searchcallarray.o
 // OBJECT ../src/zone_nr.o
 
 
 /* these are missing from globalvars */
+extern int excl_add_veto;
 extern int dupe;
 extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
 extern int pfxnummultinr;
 extern char continent_multiplier_list[7][3];
 extern char countrylist[][6];
+extern bool continentlist_only;
+extern bool countrylist_only;
+extern int exclude_multilist_type;
 
 int add_pfx(char *call) {
     return 0;
@@ -32,7 +42,6 @@ int pacc_pa(void) {
 }
 
 long timecorr = 0;
-
 
 /* setups */
 int setup_default(void **state) {
@@ -48,9 +57,19 @@ int setup_default(void **state) {
     /* it may be a bug that addcall does not initialize addcallarea */
     addcallarea = 0;
 
-    strcpy(countrylist[0], "");
+    strcpy(countrylist[0], "DL");
+    strcpy(countrylist[1], "CE");
+    strcpy(countrylist[2], "");
 
-    strcpy(continent_multiplier_list[0], "");
+    countrylist_only = false;
+
+    strcpy(continent_multiplier_list[0], "EU");
+    strcpy(continent_multiplier_list[1], "NA");
+    strcpy(continent_multiplier_list[2], "");
+
+    continentlist_only = false;
+
+    exclude_multilist_type = EXCLUDE_NONE;
 
     pfxnummultinr = 0;
     memset(pfxnummulti, 0, sizeof(pfxnummulti));
@@ -64,6 +83,7 @@ int setup_default(void **state) {
     strcpy(filename, TOP_SRCDIR);
     strcat(filename, "/share/cty.dat");
     assert_int_equal(load_ctydata(filename), 0);
+
 
     return 0;
 }
@@ -109,11 +129,49 @@ void test_addcall_pfxnum_notinList(void **state) {
     assert_int_equal(addcallarea, 0);
 }
 
+void test_addcall_continentlistonly(void **state) {
+    continentlist_only = true;
+    strcpy(hiscall, "LZ1AB");
+    addcall();
+    assert_int_equal(excl_add_veto, false);
+    strcpy(hiscall, "PY2BBB");
+    addcall();
+    assert_int_equal(excl_add_veto, true);
+}
+
+void test_addcall_exclude_continent(void **state) {
+    exclude_multilist_type = EXCLUDE_CONTINENT;
+    strcpy(hiscall, "LZ1AB");
+    addcall();
+    assert_int_equal(excl_add_veto, true);
+    strcpy(hiscall, "PY2BBB");
+    addcall();
+    assert_int_equal(excl_add_veto, false);
+}
+
+void test_addcall_exclude_country (void **state) {
+    exclude_multilist_type = EXCLUDE_COUNTRY;
+    strcpy(hiscall, "LZ1AB");
+    addcall();
+    assert_int_equal(excl_add_veto, false);
+    strcpy(hiscall, "DL1AAA");
+    addcall();
+    assert_int_equal(excl_add_veto, true);
+}
+
+
+/* addcall2 */
 char logline[] =
     "160CW  08-Feb-11 17:06 0025  LZ1AB          599  599  20            LZ  20   1  ";
 
-char logline_2[] =
+char logline_HA[] =
     "160CW  08-Feb-11 17:06 0025  HA1AB          599  599  19            LZ  20   1  ";
+
+char logline_PY[] =
+    "160CW  08-Feb-11 17:06 0025  PY1AB          599  599  19            PY  20   1  ";
+
+char logline_DL[] =
+    "160CW  08-Feb-11 17:06 0025  DL1AB          599  599  19            PY  20   1  ";
 
 void test_addcall2_nopfxnum(void **state) {
     strcpy(lan_logline, logline);
@@ -142,7 +200,7 @@ void test_addcall2_pfxnum_inList(void **state) {
 }
 
 void test_addcall2_pfxnum_notinList(void **state) {
-    strcpy(lan_logline, logline_2);
+    strcpy(lan_logline, logline_HA);
     addcall2();
     assert_int_equal(addcallarea, 0);
 }
@@ -294,7 +352,7 @@ void test_add2_country_2_stations(void **state) {
 void test_add2_2_countries(void **state) {
     strcpy(lan_logline, logline);
     addcall2();
-    strcpy(lan_logline, logline_2);
+    strcpy(lan_logline, logline_HA);
     addcall2();
     assert_int_equal(countryscore[BANDINDEX_160], 2);
     assert_int_equal(countries[getctynr("LZ0AA")], BAND160);
@@ -342,7 +400,7 @@ void test_add2_zone_2_stations(void **state) {
 void test_add2_2_zones(void **state) {
     strcpy(lan_logline, logline);
     addcall2();
-    strcpy(lan_logline, logline_2);
+    strcpy(lan_logline, logline_HA);
     addcall2();
     assert_int_equal(zonescore[BANDINDEX_160], 2);
     assert_int_equal(zones[19], BAND160);
@@ -367,5 +425,36 @@ void test_add2_warc(void **state) {
     addcall2();
     assert_int_equal(countries[getctynr("LZ0AA")], BAND30);
     assert_int_equal(zones[20], BAND30);
+}
+
+
+void test_addcall2_continentlistonly(void **state) {
+    continentlist_only = true;
+    strcpy(lan_logline, logline_PY);
+    addcall2();
+    assert_int_equal(excl_add_veto, true);
+    strcpy(lan_logline, logline);
+    addcall2();
+    assert_int_equal(excl_add_veto, false);
+}
+
+void test_addcall2_exclude_continent(void **state) {
+    exclude_multilist_type = EXCLUDE_CONTINENT;
+    strcpy(lan_logline, logline);
+    addcall2();
+    assert_int_equal(excl_add_veto, true);
+    strcpy(lan_logline, logline_PY);
+    addcall2();
+    assert_int_equal(excl_add_veto, false);
+}
+
+void test_addcall2_exclude_country (void **state) {
+    exclude_multilist_type = EXCLUDE_COUNTRY;
+    strcpy(lan_logline, logline);
+    addcall2();
+    assert_int_equal(excl_add_veto, false);
+    strcpy(lan_logline, logline_DL);
+    addcall2();
+    assert_int_equal(excl_add_veto, true);
 }
 

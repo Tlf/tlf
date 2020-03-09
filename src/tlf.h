@@ -123,6 +123,10 @@ enum {
 #define UNIQUECALL_ALL      1
 #define UNIQUECALL_BAND     2
 
+#define EXCLUDE_NONE 0
+#define EXCLUDE_CONTINENT 1
+#define EXCLUDE_COUNTRY 2
+
 #define LOGLINELEN (88)		/* Length of logline in logfile
 				   (including linefeed) */
 #define MINITEST_DEFAULT_PERIOD 600

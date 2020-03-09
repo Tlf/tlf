@@ -20,16 +20,61 @@
 *    util functions to work with lines from log
 *
 ---------------------------------------------------------------------------*/
+#include <ctype.h>
+#include <glib.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
+#include "bands.h"
+
+/* for the following code we assume that we have well formatted log lines,
+ * which has to be checked separately if needed */
 
 /** check if logline is only a comment */
 bool log_is_comment(char *buffer) {
 
-    if (buffer[0] != ';' && strlen(buffer) > 60) /** \todo better check */
+    if (buffer[0] != ';')
 	return 0;
     else
 	return 1;
 }
 
+
+/** read bandindex from logline */
+int log_get_band(char *logline) {
+
+    int nr = 0;
+    char band[4];
+
+    g_strlcpy(band, logline, 4);
+
+    nr = atoi(band);
+
+    return bandnr2index(nr);
+}
+
+
+/** read mode from logline
+ * -1 if no recognized mode */
+int log_get_mode(char *logline) {
+    if (strncasecmp("CW ", logline + 3, 3) == 0) {
+	return CWMODE;
+    }
+    if (strncasecmp("SSB", logline + 3, 3) == 0) {
+	return SSBMODE;
+    }
+    if (strncasecmp("DIG", logline + 3, 3) == 0) {
+	return DIGIMODE;
+    }
+    return -1;
+}
+
+/** read points from logline */
+int log_get_points(char *logline) {
+    char tmpbuf[3];
+
+    g_strlcpy(tmpbuf, logline + 76, 3);
+    return atoi(tmpbuf);
+}
 
