@@ -86,6 +86,9 @@ int bandnr2index(int nr) {
 	case 40:
 	    return BANDINDEX_40;
 
+	case 60:
+	    return BANDINDEX_60;
+
 	case 20:
 	    return BANDINDEX_20;
 
