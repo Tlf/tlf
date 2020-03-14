@@ -159,14 +159,14 @@ struct worked_t {
  * all information about worked multis */
 struct mults_t {
     char name[12];		/**< Multiplier */
-    int band;			/**< bitmap with abnds the multi was worked */
+    int band;			/**< bitmap with bands the multi was worked */
 };
 
 
 #define MAXPFXNUMMULT 30
 typedef struct {
     int countrynr;
-    int qsos[10];
+    int qsos[NBANDS];
 } t_pfxnummulti;
 
 

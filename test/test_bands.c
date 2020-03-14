@@ -38,6 +38,7 @@ void test_IsWarcIndex(void **state) {
 void test_bandnr2index(void **state) {
     assert_int_equal(bandnr2index(160), BANDINDEX_160);
     assert_int_equal(bandnr2index(80), BANDINDEX_80);
+    assert_int_equal(bandnr2index(60), BANDINDEX_60);
     assert_int_equal(bandnr2index(40), BANDINDEX_40);
     assert_int_equal(bandnr2index(30), BANDINDEX_30);
     assert_int_equal(bandnr2index(20), BANDINDEX_20);
@@ -53,6 +54,7 @@ void test_bandnr2index(void **state) {
 void test_bandindex2nr(void **state) {
     assert_int_equal(bandindex2nr(BANDINDEX_160), 160);
     assert_int_equal(bandindex2nr(BANDINDEX_80), 80);
+    assert_int_equal(bandindex2nr(BANDINDEX_60), 60);
     assert_int_equal(bandindex2nr(BANDINDEX_40), 40);
     assert_int_equal(bandindex2nr(BANDINDEX_30), 30);
     assert_int_equal(bandindex2nr(BANDINDEX_20), 20);
