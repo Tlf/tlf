@@ -1780,6 +1780,11 @@ Multiplier is section from multipliers file.
 .B SERIAL+SECTION
 Exchange is serial number and section, multiplier is section from multiplier
 file.  Mults count per band.
+.UE .
+
+In some cases, you need to set up the first QSO number with a simple assignment,
+(eg. more periods with continuous serial):
+\fBSERIAL+SECTION\fR=\fI42\fR
 .
 .TP
 .B SERIAL_OR_SECTION
@@ -1787,11 +1792,22 @@ Exchange is serial number or section.  This option is similar to
 SERIAL+SECTION, except the exchange could be a serial OR the section.  The
 options was introduced for HA-DX, where HA stations give the shortest form of
 their county, other stations give serial.
+.UE .
+
+In some cases, you need to set up the first QSO number with a simple assignment,
+(eg. more periods with continuous serial):
+\fBSERIAL_OR_SECTION\fR=\fI42\fR
 .
 .TP
 .B SERIAL+GRID4
 Exchange is serial number and grid (e.g. JO21QI), multipler is 4-character
 grid (JO21).  Mults count per band.
+.UE .
+
+In some cases, you need to set up the first QSO number with a simple assignment,
+(eg. more periods with continuous serial):
+\fBSERIAL+GRID4\fR=\fI42\fR
+.
 .
 .TP
 .B DX_&_SECTIONS
@@ -1831,6 +1847,11 @@ Exchange is continent (NA, SA, EU, AS, AF, OC).
 .TP
 .B SERIAL_EXCHANGE
 Exchange is serial number (formats exchange field).
+.UE .
+
+In some cases, you need to set up the first QSO number with a simple assignment,
+(eg. more periods with continuous serial):
+\fBSERIAL_EXCHANGE\fR=\fI42\fR
 .
 .TP
 .B MIXED
