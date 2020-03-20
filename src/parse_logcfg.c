@@ -172,6 +172,17 @@ int getidxbybandstr(char *confband) {
     return -1;
 }
 
+void setnext_qsonumber(char * field) {
+    if (field != NULL) {
+	if (atoi(field) > 0) {
+	    highqsonr = atoi(field);
+	}
+	else {
+	    showmsg("WARNING: serial could be a positive integer...\n");
+	    exit(1);
+	}
+    }
+}
 
 static int confirmation_needed;
 
@@ -928,6 +939,7 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 52: {
+	    setnext_qsonumber(fields[1]);
 	    exchange_serial = 1;
 	    break;
 	}
@@ -1104,6 +1116,7 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 88: {
+	    setnext_qsonumber(fields[1]);
 	    serial_section_mult = 1;
 	    break;
 	}
@@ -1418,6 +1431,7 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 147: {
+	    setnext_qsonumber(fields[1]);
 	    serial_grid4_mult = 1;
 	    break;
 	}
@@ -1489,6 +1503,7 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 161: {
+	    setnext_qsonumber(fields[1]);
 	    serial_or_section = 1;
 	    break;
 	}

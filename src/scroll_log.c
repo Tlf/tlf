@@ -91,6 +91,10 @@ void get_next_serial(void) {
     else
 	qsonum = mm + 1;
 
+    // modify last qso if it set in logcfg.dat (SERIAL_EXCHANGE=NN)
+    if (highqsonr > qsonum) {
+	qsonum = highqsonr;
+    }
     qsonr_to_str();
 }
 
