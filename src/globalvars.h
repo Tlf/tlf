@@ -115,6 +115,7 @@ extern int dxped;
 extern int addzone;
 extern int do_cabrillo;
 extern rmode_t digi_mode;
+extern int minitest;    // minitest period length in seconds, 0 if not used
 
 extern char message[][80];
 extern char *digi_message[];
