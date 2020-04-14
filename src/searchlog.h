@@ -21,6 +21,7 @@
 #ifndef SEARCHLOG_H
 #define SEARCHLOG_H
 
+#include <stdbool.h>
 #include <glib.h>
 
 #define CALLMASTER_SIZE 16000
@@ -35,6 +36,8 @@ int load_callmaster(void);
 
 /* search 'hiscall' in the log */
 void searchlog(void);
+
+bool worked_in_current_minitest_period(int found);
 
 void InitSearchPanel(void);
 void ShowSearchPanel(void);

@@ -71,20 +71,6 @@ void bm_add(char *s);
 
 void bm_menu();
 
-/** check if call is new multi
- *
- * \return true if new multi
- */
-int bm_ismulti(char *call, spot *data, int band);
-
-
-/** check if call is a dupe
- *
- * \return true if is dupe
- */
-int bm_isdupe(char *call, int band);
-
-
 /** add a new spot to bandmap data
  * \param call  	the call to add
  * \param freq	 	on which frequency heard

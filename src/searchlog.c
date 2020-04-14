@@ -24,6 +24,7 @@
  *--------------------------------------------------------------*/
 
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -367,14 +368,14 @@ static bool is_current_mode(const char *qso) {
     extern int mixedmode;
 
     if (mixedmode) {
-        return true;    // always true in mixed mode
+	return true;    // always true in mixed mode
     }
 
     if (qso[3] == 'S') {
-        return trxmode == SSBMODE;
+	return trxmode == SSBMODE;
     }
     if (qso[3] == 'D') {
-        return trxmode == DIGIMODE;
+	return trxmode == DIGIMODE;
     }
     return trxmode == CWMODE;   // default
 }
@@ -392,22 +393,40 @@ void filterLog() {
 
     for (int qso_index = 0; strlen(qsos[qso_index]) > 4; qso_index++) {
 
-        if (!is_current_mode(qsos[qso_index])) {
-            continue;   // different mode
-        }
+	if (!is_current_mode(qsos[qso_index])) {
+	    continue;   // different mode
+	}
 
-        g_strlcpy(s_inputbuffer, qsos[qso_index] + 29, 13); /* call */
+	g_strlcpy(s_inputbuffer, qsos[qso_index] + 29, 13); /* call */
 	if (strstr(s_inputbuffer, hiscall) == 0) {
-            continue;   // no match
-        }
+	    continue;   // no match
+	}
 
-        g_strlcpy(searchresult[srch_index], qsos[qso_index], 81);
-        extractData(srch_index);
+	g_strlcpy(searchresult[srch_index], qsos[qso_index], 81);
+	extractData(srch_index);
 
-        if (srch_index++ > MAX_CALLS - 1) {
-            break;
+	if (srch_index++ > MAX_CALLS - 1) {
+	    break;
 	}
     }
+}
+
+//
+// check if station was worked in the current minitest period
+// it takes into account actual mode/band info
+//
+bool worked_in_current_minitest_period(int found) {
+
+    if (found < 0) {
+	return false;
+    }
+    if (!minitest) {
+	return true;    // minitest is off, so the answer is yes
+    }
+
+    long currtime = (long) mktime(time_ptr);
+    long period_start = (currtime / minitest) * minitest;
+    return worked[found].qsotime[trxmode][bandinx] >= period_start;
 }
 
 void displaySearchResults(void) {
@@ -416,16 +435,14 @@ void displaySearchResults(void) {
     extern int qso_once;
     extern int mixedmode;
     extern int ignoredupe;
-    extern int minitest;
     extern int bandinx;
     extern char band[NBANDS][4];
 
     int r_index;
     char s_inputbuffer[LOGLINELEN + 1] = "";
     char qtccall[15];	// temp str for qtc search
-    int found, display_dupe, mod;
+    bool display_dupe;
     int z, l, j;
-    time_t currtime;
     struct t_qtc_store_obj *qtc_temp_ptr;
 
 
@@ -445,22 +462,13 @@ void displaySearchResults(void) {
 		/* band matches */
 		if (ignoredupe == 0) { /* do we ignore dupes? */
 
-		    display_dupe = 1;
-		    if (minitest > 0) {
-			found = searchcallarray(hiscall);
-			if (found > -1) {
-			    currtime = mktime(time_ptr);
-			    mod = ((long)currtime) % minitest;	/* how many secods passed till last period */
-			    if (worked[found].qsotime[trxmode][bandinx] < (((long)currtime) - mod)) {
-				display_dupe = 0;
-			    }
-			}
-		    }
+		    int found = searchcallarray(hiscall);
+		    display_dupe = worked_in_current_minitest_period(found);
 
 		    if (display_dupe && is_current_mode(s_inputbuffer)) {
-                        wattrset(search_win, COLOR_PAIR(C_DUPE));
-                        dupe = ISDUPE;
-                        beep();
+			wattrset(search_win, COLOR_PAIR(C_DUPE));
+			dupe = ISDUPE;
+			beep();
 		    }
 		}		// end ignoredupe
 	    }

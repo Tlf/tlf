@@ -30,6 +30,7 @@
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "searchcallarray.h"
+#include "searchlog.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "getctydata.h"
@@ -42,8 +43,7 @@
 
 #define SPOT_COLUMN_WIDTH 22
 #define SPOT_FREQ_WIDTH 7
-#define SPOT_CALL_WIDTH SPOT_COLUMN_WIDTH-SPOT_FREQ_WIDTH-4
-				/* 3 space before and 1 after call */
+#define SPOT_CALL_WIDTH SPOT_COLUMN_WIDTH-SPOT_FREQ_WIDTH-4     // 3 spaces before and 1 after call
 
 #define DISTANCE(x, y) \
     ( x < y ? y - x : x -y )
@@ -440,49 +440,59 @@ void bandmap_age() {
 }
 
 
-int bm_ismulti(char *call, spot *data, int band) {
+/** check if call is new multi
+ *
+ * \return true if new multi
+ */
+bool bm_ismulti(char *call, spot *data, int band) {
 
-    if (data != NULL && data->cqzone > 0 && data->ctynr > 0) {
-	if (cqww == 1) {
-	    if ((zones[data->cqzone] & inxes[band]) == 0
-		    || (countries[data->ctynr] & inxes[band]) == 0) {
-		return 1;
-	    }
+    if (data == NULL || data->cqzone <= 0 || data->ctynr <= 0) {
+	return false;   // no data
+    }
+
+    if (cqww == 1) {
+	if ((zones[data->cqzone] & inxes[band]) == 0
+		|| (countries[data->ctynr] & inxes[band]) == 0) {
+	    return true;
 	}
     }
-    return 0;
+
+    return false;
 }
 
 
+/** check if call is a dupe
+ *
+ * \return true if is dupe
+ */
 /** \todo should check band AND mode if already worked.... */
 
-int bm_isdupe(char *call, int band) {
-    int found = -1;
-    struct t_qtc_store_obj *qtc_obj;
+bool bm_isdupe(char *call, int band) {
 
-    /* spot for warc bands are never dupes */
+    /* spots for warc bands are never dupes */
     if (IsWarcIndex(band))
-	return 0;
+	return false;
 
-    found = searchcallarray(call);
+    int found = searchcallarray(call);
 
     if (found == -1)		/* new call */
-	return 0;
+	return false;
 
     if (qtcdirection > 0) {
-	qtc_obj = qtc_get(call);
+	struct t_qtc_store_obj *qtc_obj = qtc_get(call);
 	if (qtc_obj->total > 0 && qtc_obj->total < 10) {
-	    return 0;
+	    return false;
 	}
-	if (qtc_obj->total == 0 && (qtc_obj->capable > 0)) {
-	    return 0;
+	if (qtc_obj->total == 0 && qtc_obj->capable > 0) {
+	    return false;
 	}
     }
+
     if (worked[found].band & inxes[band]) {
-	return 1;
-    } else {
-	return 0;
+	return worked_in_current_minitest_period(found);
     }
+
+    return false;
 }
 
 
@@ -676,7 +686,7 @@ void bandmap_show() {
     int curx, cury;
     int bm_x, bm_y;
     int i, j;
-    short dupe, multi;
+    bool dupe, multi;
 
     if (!bm_initialized) {
 	bm_init();
