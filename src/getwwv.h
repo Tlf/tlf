@@ -28,7 +28,7 @@ extern char lastwwv[];      // processed WWV message
 extern char lastwwv_raw[];  // raw WWV message
 extern time_t lastwwv_time;
 
-void wwv_add(char *s);
+void wwv_add(const char *s);
 void wwv_set_r(double r);
 void wwv_set_sfi(double sfi);
 void wwv_show_footer();
