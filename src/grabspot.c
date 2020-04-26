@@ -93,7 +93,7 @@ static freq_t execute_grab(spot *data) {
     extern char hiscall[];
     extern cqmode_t cqmode;
 
-    freq_t f = data->freq - fldigi_get_carrier();
+    freq_t f = data->freq;
     set_outfreq(f);
     send_bandswitch(f);
 
