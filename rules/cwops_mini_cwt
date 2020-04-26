@@ -1,0 +1,54 @@
+CONTEST=cwops_mini_cwt
+LOGFILE=cwops_mini_cwt.log
+CONTEST_MODE
+CABRILLO=UNIVERSAL
+#
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CQ_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = call                      #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#                                #
+##################################
+#
+F1=TEST % % CWT
+F2=@ DE %
+F3=@ JO 2225
+F4=TU 73
+F5= @
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9= ?
+F10= QRZ?
+F11= PSE K
+F12= TEST % % CWT
+#
+CQ_TU_MSG=TU %
+S&P_TU_MSG=TU JO 2225
+#################################
+#                               #
+#  POINTS LIST	                #
+#                               #
+#################################
+ONE_POINT
+#################################
+#                               #
+#  MULIPLIER                    #
+#                               #
+#################################
+UNIQUE_CALL_MULTI=ALL
+RECALL_MULTS
+#################################
+#                               #
+#  EXCHANGE                     #
+#                               #
+#################################
+INITIAL_EXCHANGE=cwops.txt

@@ -1,4 +1,5 @@
-TLF_FILES = cabrillo.fmt callmaster cty.dat logcfg.dat arrl10m_mults \
+TLF_FILES = cabrillo.fmt callmaster cty.dat cwops.txt \
+	    logcfg.dat arrl10m_mults \
 	    arrldx_mults arrlsections ea_sections okommults ok_om.txt \
 	    paccmults spdxmults ssamults help.txt darcmults
 
