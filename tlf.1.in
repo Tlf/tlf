@@ -77,7 +77,7 @@ data, frequency data, local talk, serial numbers, time sync etc.
 .SH OPTIONS
 Options given to @PACKAGE_NAME@ on the command line.
 .TP
-.B \-h
+.B \-?
 Show summary of options and exit.
 .TP
 .BI \-f\  config_file
@@ -240,7 +240,7 @@ Turn the dupe check window On|Off.
 .
 .TP
 .BR :CQD elay
-Change Auto_CQ delay (in 1/2 seconds, with Up/Down arrow keys).
+Change Auto_CQ delay (in 1/2 seconds, with PageUp/PageDown keys).
 .
 .TP
 .BR :CLO ff
@@ -639,6 +639,10 @@ In CQ mode, send message F1 (CQ).
 In S&P mode send message F6 (MY).
 .
 .TP
+.B Shift-F1
+Restore previous CQ frequency from MEM and send message F1 (CQ).
+.
+.TP
 .B F2-F11
 Send CW, RTTY or VOICE messages 2 through 11.
 .
@@ -752,7 +756,15 @@ In RTTY (DIGIMODE), keyboard mode switch controller to command mode
 .
 .TP
 .BR #\  (Hash)
-Transceiver VFO frequency \(-> mem, mem \(-> transceiver VFO frequency.
+Transceiver VFO frequency \(-> MEM, MEM \(-> transceiver VFO frequency.
+.
+.TP
+.BR $\  (Dollar)
+Pop MEM frequency: MEM \(-> transceiver VFO frequency and clear MEM.
+.
+.TP
+.BR %\  (Percent)
+Swap transceiver VFO frequency and MEM.
 .
 .TP
 .BR !\  (Exclamation)

@@ -169,7 +169,7 @@ int netkeyer(int cw_op, char *cwmessage) {
 	g_strlcat(buf, cwmessage, BUFSIZE);
     }
 
-    sendto_rc = sendto(socket_descriptor, buf, strlen(buf) + 1,
+    sendto_rc = sendto(socket_descriptor, buf, strlen(buf),
 		       0, (struct sockaddr *) &address,
 		       sizeof(address));
     if (sendto_rc == -1) {
