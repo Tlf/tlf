@@ -17,7 +17,6 @@ Planned for later versions
 
 [x] automatically switch back to 'Run' mode from "grab spot" after QSO (tnx
     Zoli)
-[ ] document new behaviour in man page after tests
 [x] Add contest name to Header of ADIF file (suggested by SP3RXO)
 [ ] Refactor write_adif function. Use an add_adif_field() helper and also 
     already existing get_next_record() function.
@@ -32,6 +31,7 @@ Planned for later versions
     599 if CHANGE_RST is active. Extend keywords so that you can prepare a 
     list of most used RST values which will then be used for scrolling,
     e.g. CHANGE_RST=339,479,599 or similar.
+[ ] Rework audio handling (recording and playback of contest and messages).
 
 [ ] Do a complete rewrite of display related code in the long term to
     allow vertical AND horizontal resizing.

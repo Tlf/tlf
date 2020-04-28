@@ -1,3 +1,61 @@
+tlf-1.4.1
+=========
+
+Bug fixes and minor improvements. 
+
+Changes:
+    - From TLF-1.3.1 on we can use the CT9 cty.dat files with full call sign
+      exceptions (marked by =<call>).
+      Starting from Jan2020 Jim reiser AD1C presents the CT9 format file as
+      default file format for TLF. If you use TLF-1.3.0 or older you should
+      look for the old format files.
+    - Rework display of partials - more stations displayed, bugs fixed
+      (tnx HA5CQZ)
+    - Log will automatically be rescored after deleting a QSO 
+    - Update ADIF write function to V3.10
+
+New features:
+    - Add rules, multipliers and initial exchange for OKOM contest (tnx
+      SP3RXO)
+    - Add rules and initial exchange for CWOPS minitest (tnx Joop PG4I)
+    - TLF supports now the 60m band (Tnx Joerg DL8DTL).
+    - Drop hard coded editor programs. You can name any editor program 
+      to use in the EDITOR= keyword. If none set TLF uses the $EDITOR 
+      from environment.
+      The Logfile gets automaticlly reloaded after editing.
+    - HA5CQZ provided a good solution to extend the memory TX functionality.
+      Besides frequency the memory now also remembers the working mode.
+      That allows to just grab a announced station, work it in S&P mode and
+      switch back to running CQ on your old QRG with very few key strokes.
+      From the commit message:
+        "In addition to the frequency memory now holds the mode (CQ/SP) and
+         the entered call (if any)
+	    - % swaps TRX and MEM (swap)
+	    - $ moves MEM to TRX (pop)
+	    - in SP mode Shift-F1 makes a swap if memory holds a 
+	      previous CQ frequency and then executes F1 (calls CQ).  
+ 	Mode and entered call are also restored.  
+
+	After the "switch back" using Shift-F1 the previous frequency and
+	entered call are not lost, pressing % restores the state, so one can
+	continue SP and also move around or grab new stations."
+
+Bug fixes:
+    - There are two major fixes for bugs in the scoring logic:
+      - For US/VE stations runnin ARRLDX contest intra W/VE qso were counted
+	which was wrong. New code correctly scores these contacts with 0
+	points and does not count it as multi.
+      - If you running TLF in CQWW 2 TX mode QSO from other stations on LAN
+	would be counted wrong. Fixed.
+    - Fix a lot of minor inconsistencies in handling of keyer, partial display
+      and other (Mostly done by HA5CQZ)
+    - Fix handling of CT compatible keys and correct handling of CTCOMPATIBLE
+      keyword (tnx N0NB) 
+    - Add missing generated_defs.pl to distributed files. Need for
+      regeneration of test code.
+    - Fix compile errors with GCC-10.
+
+      
 tlf-1.4.0
 =========
 
