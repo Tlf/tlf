@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "../src/tlf.h"
+#include "../src/ignore_unused.h"
 
 #include "../src/checklogfile.h"
 
@@ -22,7 +23,7 @@ void append_tofile (char *file, char * msg) {
     int fd;
 
     fd = open(file, O_WRONLY | O_APPEND );
-    (void)write (fd, msg, strlen(msg));
+    IGNORE(write (fd, msg, strlen(msg)));
     close(fd);
 }
 
@@ -30,7 +31,7 @@ void append_tofile (char *file, char * msg) {
 #define COMMENT "; Node A, 110 : comment                                                                \n"
 
 void append_line (int fd, char *msg) {
-    (void)write (fd, msg, strlen(msg));
+    IGNORE(write (fd, msg, strlen(msg)));
 }
 
 void write_log(char * file) {

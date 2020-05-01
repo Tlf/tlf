@@ -1,4 +1,5 @@
 #include "test.h"
+#include <glib.h>
 
 #include "../src/getwwv.h"
 
