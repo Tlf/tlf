@@ -47,7 +47,6 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
-#define NAME "Tlf"
 #define XMLRPCVERSION "1.0"
 
 int fldigi_set_callfield = 0;
@@ -87,6 +86,7 @@ pthread_mutex_t xmlrpc_get_rx_mutex = PTHREAD_MUTEX_INITIALIZER;
  main.get_trx_state     s:n  - get RX/TX state, 's' could be "RX" | "TX"
    rx.get_data          6:n (bytes:) - get content of RX window since last query
  text.add_tx            n:s  - add content to TX window
+modem.get_name          s:n  - Returns the name of the current modem
 modem.get_carrier       i:n  - get carrier of modem
 modem.set_carrier       i:i  - set carrier of modem
   log.get_call          s:n  - Returns the Call field contents
@@ -103,8 +103,6 @@ modem.set_carrier       i:i  - set carrier of modem
  text.get_rx_length  i:n  - get length of content of RX window
  text.get_rx         6:ii - (bytes:int|int) - get part content of RX window
 			    [start:length]
- undocumented functions
- ======================
    tx.get_data       6:n  - (bytes:) - get content of TX window since last query
 */
 
@@ -149,7 +147,7 @@ void xmlrpc_res_init(xmlrpc_res *res) {
 int fldigi_xmlrpc_init() {
 #ifdef HAVE_LIBXMLRPC
     pthread_mutex_lock(&xmlrpc_mutex);
-    xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME,
+    xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, PACKAGE_NAME,
 			XMLRPCVERSION, NULL, 0);
     serverInfoP = xmlrpc_server_info_new(&env, fldigi_url);
     if (env.fault_occurred != 0) {
@@ -420,9 +418,9 @@ int fldigi_get_rx_text(char *line, int len) {
     } else {
 	if (lastpos < textlen) {
 	    rc = fldigi_xmlrpc_query(&result, &env, "text.get_rx", "dd",
-				    lastpos,
-				    textlen - lastpos >= len ?
-					len - 1 : textlen - lastpos);
+				     lastpos,
+				     textlen - lastpos >= len ?
+				     len - 1 : textlen - lastpos);
 	    if (rc != 0) {
 		pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
 		return -1;
@@ -454,18 +452,13 @@ int fldigi_get_rx_text(char *line, int len) {
 
 /* get the carrier value of Fldigi waterfall window */
 int fldigi_xmlrpc_get_carrier() {
-#ifndef HAVE_LIBXMLRPC
-    return 0;
-#else
-
+#ifdef HAVE_LIBXMLRPC
     int rc;
     xmlrpc_res result;
     xmlrpc_env env;
     extern rmode_t rigmode;
     extern int trx_control;
     extern freq_t freq;
-    int signum;
-    int modeshift;
     char fldigi_mode[6] = "";
 
     rc = fldigi_xmlrpc_query(&result, &env, "modem.get_carrier", "");
@@ -475,86 +468,96 @@ int fldigi_xmlrpc_get_carrier() {
 
     fldigi_var_carrier = (int)result.intval;
 
+    if (!trx_control || rigmode == RIG_MODE_NONE) {
+	return 0;
+    }
+
     /* if mode == RTTY(R), and Hamlib configured, set VFO to new freq where the signal
      * will placed on 2210 Hz - the FSK center freq
      */
-    if (trx_control > 0) {
-	if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {
-	    if (fldigi_var_carrier != CENTER_FREQ &&
-		    abs(CENTER_FREQ - fldigi_var_carrier) > MAXSHIFT) {
-		if (fldigi_var_shift_freq == 0) {
-		    rc = fldigi_xmlrpc_query(&result, &env,
-					     "modem.set_carrier", "d",
-					     (xmlrpc_int32) CENTER_FREQ);
-		    if (rc != 0) {
-			return -1;
-		    }
-		    fldigi_var_shift_freq = CENTER_FREQ - fldigi_var_carrier;
+
+    if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {
+	if (fldigi_var_carrier != CENTER_FREQ &&
+		abs(CENTER_FREQ - fldigi_var_carrier) > MAXSHIFT) {
+	    if (fldigi_var_shift_freq == 0) {
+		rc = fldigi_xmlrpc_query(&result, &env,
+					 "modem.set_carrier", "d",
+					 (xmlrpc_int32) CENTER_FREQ);
+		if (rc != 0) {
+		    return -1;
 		}
-	    }
-	}
-
-	if (rigmode != RIG_MODE_NONE) {
-	    switch (rigmode) {
-		case RIG_MODE_USB:
-		    signum = 1;
-		    modeshift = 85;
-		    strcpy(fldigi_mode, "USB");
-		    break;
-		case RIG_MODE_LSB:
-		    signum = -1;
-		    modeshift = 85;
-		    strcpy(fldigi_mode, "LSB");
-		    break;
-		case RIG_MODE_RTTY:
-		    signum = 0;
-		    modeshift = 0;
-		    strcpy(fldigi_mode, "RTTY");
-		    break;
-		case RIG_MODE_RTTYR:
-		    signum = 0;		// not checked - I don't have RTTY-REV mode on my RIG
-		    modeshift = 0;
-		    strcpy(fldigi_mode, "RTTYR");
-		    break;
-		case RIG_MODE_CW:
-		    signum = 0;
-		    modeshift = 0;
-		    strcpy(fldigi_mode, "CW");
-		    break;
-		case RIG_MODE_CWR:
-		    signum = -1;	// not checked - I don't have CW-REV mode on my RIG
-		    modeshift = 0;
-		    strcpy(fldigi_mode, "CWR");
-		    break;
-		default:
-		    signum = 0;	// this is the "normal"
-		    modeshift = 0;
-		    strcpy(fldigi_mode, "CW");
-	    }
-
-	    /* set the mode in Fldigi */
-	    rc = fldigi_xmlrpc_query(&result, &env, "rig.set_mode", "s", fldigi_mode);
-	    if (rc != 0) {
-		return -1;
-	    }
-	    fldigi_var_carrier = ((signum) * fldigi_var_carrier) + modeshift;
-
-	    /* also set the freq value in Fldigi FREQ block */
-	    rc = fldigi_xmlrpc_query(&result, &env,
-				     "rig.set_frequency", "f",
-				     (xmlrpc_double)(freq - fldigi_var_carrier));
-	    if (rc != 0) {
-		return -1;
+		fldigi_var_shift_freq = CENTER_FREQ - fldigi_var_carrier;
 	    }
 	}
     }
 
-    return 0;
-#endif
+    // determine mode shift (currently for plain RTTY only)
+    int modeshift = 0;
+    int signum = 0;
+    rc = fldigi_xmlrpc_query(&result, &env, "modem.get_name", "");
+    if (rc != 0) {
+	return -1;
+    }
 
+    if (strcmp(result.stringval, "RTTY") == 0) {
+	modeshift = 170 / 2;
+    }
+    free((void *)result.stringval);
+
+    switch (rigmode) {
+	case RIG_MODE_USB:
+	    signum = 1;
+	    strcpy(fldigi_mode, "USB");
+	    break;
+	case RIG_MODE_LSB:
+	    signum = -1;
+	    strcpy(fldigi_mode, "LSB");
+	    break;
+	case RIG_MODE_RTTY:
+	    signum = 0;
+	    modeshift = 0;
+	    strcpy(fldigi_mode, "RTTY");
+	    break;
+	case RIG_MODE_RTTYR:
+	    signum = 0;		// not checked - I don't have RTTY-REV mode on my RIG
+	    modeshift = 0;
+	    strcpy(fldigi_mode, "RTTYR");
+	    break;
+	case RIG_MODE_CW:
+	    signum = 0;
+	    modeshift = 0;
+	    strcpy(fldigi_mode, "CW");
+	    break;
+	case RIG_MODE_CWR:
+	    signum = -1;	// not checked - I don't have CW-REV mode on my RIG
+	    modeshift = 0;
+	    strcpy(fldigi_mode, "CWR");
+	    break;
+	default:
+	    signum = 0;	// this is the "normal"
+	    modeshift = 0;
+	    strcpy(fldigi_mode, "CW");
+    }
+
+    /* set the mode in Fldigi */
+    rc = fldigi_xmlrpc_query(&result, &env, "rig.set_mode", "s", fldigi_mode);
+    if (rc != 0) {
+	return -1;
+    }
+    fldigi_var_carrier = signum * fldigi_var_carrier + modeshift;
+
+    /* also set the freq value in Fldigi FREQ block */
+    rc = fldigi_xmlrpc_query(&result, &env,
+			     "rig.set_frequency", "f",
+			     (xmlrpc_double)(freq - fldigi_var_carrier));
+    if (rc != 0) {
+	return -1;
+    }
+#endif
+    return 0;
 }
 
-/* give back the crrent carrier value, which stored in variable */
+/* give back the current carrier value, which stored in variable */
 int fldigi_get_carrier() {
 #ifdef HAVE_LIBXMLRPC
     return fldigi_var_carrier;

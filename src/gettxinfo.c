@@ -115,11 +115,10 @@ void gettxinfo(void) {
     pbwidth_t bwidth;
     int retval;
     int retvalmode;
-    static double last_freq_time = 0.0;
+    int fldigi_shift_freq;
 
+    static double last_freq_time = 0.0;
     static int oldbandinx;
-    static int fldigi_carrier;
-    static int fldigi_shift_freq;
 
     if (!trx_control)
 	return;
@@ -175,8 +174,7 @@ void gettxinfo(void) {
 	}
 
 	if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)) {
-	    fldigi_carrier = fldigi_get_carrier();
-	    rigfreq += (freq_t)fldigi_carrier;
+	    rigfreq += (freq_t)fldigi_get_carrier();
 	    if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {
 		fldigi_shift_freq = fldigi_get_shift_freq();
 		if (fldigi_shift_freq != 0) {
@@ -245,7 +243,8 @@ void gettxinfo(void) {
 	}
 
     } else {
-	// set rig frequency to `reqf'
+	// set rig frequency (or carrier) to `reqf'
+	reqf -= fldigi_get_carrier();
 	retval = rig_set_freq(my_rig, RIG_VFO_CURR, (freq_t) reqf);
 
 	if (retval != RIG_OK) {
