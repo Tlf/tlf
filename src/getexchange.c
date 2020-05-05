@@ -31,6 +31,7 @@
 
 #include "addspot.h"
 #include "cw_utils.h"
+#include "change_rst.h"
 #include "keyer.h"
 #include "keystroke_names.h"
 #include "lancode.h"
@@ -299,12 +300,11 @@ int getexchange(void) {
 
 	    case KEY_PPAGE: {	/* Page-Up--change MY RST */
 		if (change_rst == 1) {
-		    if (my_rst[1] <= 56) {
-			my_rst[1]++;
+		    rst_r_up();
 
-			if (!no_rst)
-			    mvprintw(12, 49, my_rst);
-		    }
+		    if (!no_rst)
+			mvprintw(12, 49, my_rst);
+
 		} else {	/* speed up */
 		    speedup();
 
@@ -317,12 +317,11 @@ int getexchange(void) {
 	    case KEY_NPAGE: {	/* Page-Down--change MY RST */
 		if (change_rst == 1) {
 
-		    if (my_rst[1] > 49) {
-			my_rst[1]--;
+		    rst_r_down();
 
-			if (!no_rst)
-			    mvprintw(12, 49, my_rst);
-		    }
+		    if (!no_rst)
+			mvprintw(12, 49, my_rst);
+
 		} else {	/* speed down */
 		    speeddown();
 

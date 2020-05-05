@@ -37,6 +37,7 @@
 #include "bandmap.h"
 #include "calledit.h"
 #include "callinput.h"
+#include "change_rst.h"
 #include "changefreq.h"
 #include "changepars.h"
 #include "clear_display.h"
@@ -454,14 +455,11 @@ int callinput(void) {
 	    case KEY_PPAGE: {
 		if ((change_rst == 1) && (strlen(hiscall) != 0)) {	// change RST
 
-		    if (his_rst[1] <= 56) {
+		    rst_s_up();
 
-			his_rst[1]++;
-
-			if (!no_rst)
-			    mvprintw(12, 44, his_rst);
-			mvprintw(12, 29, hiscall);
-		    }
+		    if (!no_rst)
+			mvprintw(12, 44, his_rst);
+		    mvprintw(12, 29, hiscall);
 
 		} else {	// change cw speed
 		    speedup();
@@ -478,13 +476,11 @@ int callinput(void) {
 	    case KEY_NPAGE: {
 		if ((change_rst == 1) && (strlen(hiscall) != 0)) {
 
-		    if (his_rst[1] > 49) {
-			his_rst[1]--;
+		    rst_s_down();
 
-			if (!no_rst)
-			    mvprintw(12, 44, his_rst);
-			mvprintw(12, 29, hiscall);
-		    }
+		    if (!no_rst)
+			mvprintw(12, 44, his_rst);
+		    mvprintw(12, 29, hiscall);
 
 		} else {
 

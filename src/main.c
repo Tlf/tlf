@@ -32,6 +32,7 @@
 #include "addmult.h"
 #include "background_process.h"
 #include "bandmap.h"
+#include "change_rst.h"
 #include "checkparameters.h"
 #include "clear_display.h"
 #include "checklogfile.h"
@@ -902,6 +903,7 @@ int main(int argc, char *argv[]) {
 
     ui_init();
 
+    rst_init(NULL);
 
     strcat(logline0, backgrnd_str);
     strcat(logline1, backgrnd_str);
