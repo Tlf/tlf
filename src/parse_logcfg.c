@@ -1,7 +1,7 @@
 /*
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
-* 		2011-2019           Thomas Beierlein <tb@forth-ev.de>
+* 		2011-2020           Thomas Beierlein <tb@forth-ev.de>
 * 		2013 		    Fred DH5FS
 *               2013-2016           Ervin Hegedus - HA2OS <airween@gmail.com>
 *
@@ -29,6 +29,7 @@
 #include <unistd.h>
 
 #include "bandmap.h"
+#include "change_rst.h"
 #include "cw_utils.h"
 #include "fldigixmlrpc.h"
 #include "getctydata.h"
@@ -1423,6 +1424,12 @@ int parse_logcfg(char *inputbuffer) {
 	}
 	case 148: {
 	    change_rst = 1;
+	    if (g_strv_length(fields) == 2) {
+		/* TODO: check fields[1] for only RST values */
+		rst_init(fields[1]);
+	    } else {
+		rst_init(NULL);
+	    }
 	    break;
 	}
 	case 149: {
