@@ -19,6 +19,7 @@
 
 
 #include <glib.h>
+#include <string.h>
 #include "change_rst.h"
 #include "globalvars.h"
 
