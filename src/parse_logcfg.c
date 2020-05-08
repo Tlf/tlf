@@ -1425,7 +1425,15 @@ int parse_logcfg(char *inputbuffer) {
 	case 148: {
 	    change_rst = 1;
 	    if (g_strv_length(fields) == 2) {
-		/* TODO: check fields[1] for only RST values */
+		/* comma separated list of RS(T) vaules 33..39, 43..39, 53..59
+		 * allowed.
+		 */
+		if (!g_regex_match_simple(
+			"^([3-5][3-9]\\d?\\s*,\\s*)*[3-5][3-9]\\d?$",
+		        g_strstrip(fields[1]), G_REGEX_CASELESS,
+			(GRegexMatchFlags)0)) {
+		    WrongFormat(teststring);
+		}
 		rst_init(fields[1]);
 	    } else {
 		rst_init(NULL);
