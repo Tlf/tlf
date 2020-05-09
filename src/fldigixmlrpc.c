@@ -39,7 +39,9 @@
 
 #include "err_utils.h"
 #include "fldigixmlrpc.h"
+#include "globalvars.h"
 #include "getctydata.h"
+#include "keystroke_names.h"
 #include "logit.h"
 #include "printcall.h"
 #include "searchlog.h"
@@ -63,14 +65,14 @@ typedef struct xmlrpc_res_s {
 				   it back to RIG carrier */
 
 extern char fldigi_url[50];
-static int use_fldigi;
+static bool use_fldigi = false;
 
 int fldigi_var_carrier = 0;
 int fldigi_var_shift_freq = 0;
 #ifdef HAVE_LIBXMLRPC
-static int initialized = 0;
+static bool initialized = false;
 #endif
-static int connerr = 0;
+static bool connerr = false;
 
 char thiscall[20] = "";
 char tcomment[20] = "";
@@ -113,12 +115,12 @@ xmlrpc_server_info *serverInfoP = NULL;
 
 void fldigi_clear_connerr() {
     pthread_mutex_lock(&xmlrpc_mutex);
-    connerr = 0;
+    connerr = false;
     pthread_mutex_unlock(&xmlrpc_mutex);
 }
 
-int fldigi_toggle(void) {
-    int ret;
+bool fldigi_toggle(void) {
+    bool ret;
 
     pthread_mutex_lock(&xmlrpc_mutex);
     use_fldigi = !use_fldigi;
@@ -127,8 +129,8 @@ int fldigi_toggle(void) {
     return ret;
 }
 
-int fldigi_isenabled(void) {
-    int ret;
+bool fldigi_isenabled(void) {
+    bool ret;
 
     pthread_mutex_lock(&xmlrpc_mutex);
     ret = use_fldigi;
@@ -152,12 +154,12 @@ int fldigi_xmlrpc_init() {
     serverInfoP = xmlrpc_server_info_new(&env, fldigi_url);
     if (env.fault_occurred != 0) {
 	serverInfoP = NULL;
-	initialized = 0;
+	initialized = false;
 	pthread_mutex_unlock(&xmlrpc_mutex);
 	return -1;
     }
 
-    initialized = 1;
+    initialized = true;
     pthread_mutex_unlock(&xmlrpc_mutex);
 #endif
     return 0;
@@ -169,7 +171,7 @@ int fldigi_xmlrpc_cleanup() {
     if (serverInfoP != NULL) {
 	xmlrpc_server_info_free(serverInfoP);
 	serverInfoP = NULL;
-	initialized = 0;
+	initialized = false;
     }
     pthread_mutex_unlock(&xmlrpc_mutex);
 #endif
@@ -192,7 +194,7 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 
     pthread_mutex_lock(&xmlrpc_mutex);
 
-    if (initialized == 0) {
+    if (!initialized) {
 	pthread_mutex_unlock(&xmlrpc_mutex);
 	return -1;
     }
@@ -206,9 +208,9 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
     unreacheable, but it will check again and again, not
     need to restart Tlf, or type ":FLDIGI" to turn on again
     */
-    if (connerr == 1 && use_fldigi == 1) {
+    if (connerr && use_fldigi) {
 	if (connerrcnt == 10) {
-	    use_fldigi = 0;
+	    use_fldigi = false;
 	    TLF_LOG_WARN("Fldigi: lost connection!");
 	} else {
 	    connerrcnt++;
@@ -219,7 +221,8 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 
     local_result->stringval = NULL;
     local_result->byteval = NULL;
-    if (connerr == 0 && use_fldigi == 1) {
+
+    if (!connerr && use_fldigi) {
 	va_start(argptr, format);
 	xmlrpc_env_init(local_env);
 	pcall_array = xmlrpc_array_new(local_env);
@@ -229,14 +232,14 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 		va_param = xmlrpc_string_new(local_env, s);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
-		    connerr = 1;
+		    connerr = true;
 		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    return -1;
 		}
 		xmlrpc_array_append_item(local_env, pcall_array, va_param);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
-		    connerr = 1;
+		    connerr = true;
 		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    return -1;
 		}
@@ -247,7 +250,7 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 		xmlrpc_array_append_item(local_env, pcall_array, va_param);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
-		    connerr = 1;
+		    connerr = true;
 		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    return -1;
 		}
@@ -258,7 +261,7 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 		xmlrpc_array_append_item(local_env, pcall_array, va_param);
 		if (local_env->fault_occurred) {
 		    va_end(argptr);
-		    connerr = 1;
+		    connerr = true;
 		    pthread_mutex_unlock(&xmlrpc_mutex);
 		    return -1;
 		}
@@ -273,46 +276,47 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 		     methodname, pcall_array);
 	if (local_env->fault_occurred) {
 	    // error till xmlrpc_call
-	    connerr = 1;
+	    connerr = true;
 	    xmlrpc_DECREF(pcall_array);
 	    xmlrpc_env_clean(local_env);
 	    pthread_mutex_unlock(&xmlrpc_mutex);
 	    return -1;
-	} else {
-	    restype = xmlrpc_value_type(callresult);
-	    if (restype == 0xDEAD) {
-		xmlrpc_DECREF(callresult);
-		xmlrpc_DECREF(pcall_array);
-		xmlrpc_env_clean(local_env);
-		pthread_mutex_unlock(&xmlrpc_mutex);
-		return -1;
-	    } else {
-		local_result->intval = 0;
-	    }
-	    switch (restype) {
-		// int
-		case XMLRPC_TYPE_INT:
-		    xmlrpc_read_int(local_env, callresult,
-				    &local_result->intval);
-		    break;
-		// string
-		case XMLRPC_TYPE_STRING:
-		    xmlrpc_read_string(local_env, callresult,
-				       &local_result->stringval);
-		    break;
-		// byte stream
-		case XMLRPC_TYPE_BASE64:
-		    xmlrpc_read_base64(local_env, callresult,
-				       &bytesize, &local_result->byteval);
-		    local_result->intval = (int)bytesize;
-		    break;
-	    }
-	    xmlrpc_DECREF(callresult);
 	}
 
+	restype = xmlrpc_value_type(callresult);
+	if (restype == 0xDEAD) {
+	    xmlrpc_DECREF(callresult);
+	    xmlrpc_DECREF(pcall_array);
+	    xmlrpc_env_clean(local_env);
+	    pthread_mutex_unlock(&xmlrpc_mutex);
+	    return -1;
+	}
+
+	local_result->intval = 0;
+
+	switch (restype) {
+	    // int
+	    case XMLRPC_TYPE_INT:
+		xmlrpc_read_int(local_env, callresult,
+				&local_result->intval);
+		break;
+	    // string
+	    case XMLRPC_TYPE_STRING:
+		xmlrpc_read_string(local_env, callresult,
+				   &local_result->stringval);
+		break;
+	    // byte stream
+	    case XMLRPC_TYPE_BASE64:
+		xmlrpc_read_base64(local_env, callresult,
+				   &bytesize, &local_result->byteval);
+		local_result->intval = (int)bytesize;
+		break;
+	}
+
+	xmlrpc_DECREF(callresult);
 	xmlrpc_DECREF(pcall_array);
     }
-    if (connerr == 0 && use_fldigi)
+    if (!connerr && use_fldigi)
 	ret = 0;
     else
 	ret = -1;
@@ -327,22 +331,17 @@ void fldigi_to_rx() {
     xmlrpc_res result;
     xmlrpc_env env;
     fldigi_xmlrpc_query(&result, &env, "main.rx", "");
-    if (result.stringval != NULL) {
-	free((void *)result.stringval);
-    }
+    fldigi_xmlrpc_query(&result, &env, "text.clear_tx", "");
 #endif
 }
 
-/* send message to Fldigi TX window, transmit it */
-int fldigi_send_text(char *line) {
-    int rc = 0;
-
 #ifdef HAVE_LIBXMLRPC
+static int cancel_tx() {
     xmlrpc_res result;
     xmlrpc_env env;
 
     // check the RX/TX status
-    rc = fldigi_xmlrpc_query(&result, &env, "main.get_trx_state", "");
+    int rc = fldigi_xmlrpc_query(&result, &env, "main.get_trx_state", "");
     if (rc != 0) {
 	return -1;
     }
@@ -352,39 +351,75 @@ int fldigi_send_text(char *line) {
     if (strcmp(result.stringval, "TX") == 0) {
 	free((void *)result.stringval);
 	result.stringval = NULL;
-	rc = fldigi_xmlrpc_query(&result, &env, "main.rx", "");
-	if (rc != 0) {
-	    return -1;
-	}
-	rc = fldigi_xmlrpc_query(&result, &env, "text.clear_tx", "");
-	if (rc != 0) {
-	    return -1;
-	}
+
+	fldigi_to_rx();
+
 	sleep(2);
     }
     if (result.stringval != NULL) {
 	free((void *)result.stringval);
     }
+    return 0;
+}
+#endif
 
-    // add message to
-    rc = fldigi_xmlrpc_query(&result, &env, "text.add_tx", "s", line);
+/* send message to Fldigi TX window, transmit it */
+int fldigi_send_text(char *line) {
+    int rc = 0;
+
+#ifdef HAVE_LIBXMLRPC
+    const int len = strlen(line);
+    if (len == 0) {
+	return 0;   // nothing to send
+    }
+
+    xmlrpc_res result;
+    xmlrpc_env env;
+
+    char *message = g_malloc0(len + 1 + 2);  // worst case: "^r" added, +2 chars
+
+    // scan line for Ctrl-T/Ctrl-R, remove them and set flags accordingly
+    // start_tx = Ctrl-T found, switch_to_rx = Ctrl-R found
+    bool start_tx = false;
+    bool switch_to_rx = false;
+    char *dst = message;
+    for (char *src = line; *src; ++src) {
+	switch (*src) {
+	    case CTRL_R:
+		switch_to_rx = true;
+		break;
+	    case CTRL_T:
+		start_tx = true;
+		break;
+	    default:
+		*dst++ = *src;
+	}
+    }
+
+    if (cqmode != KEYBOARD) {   // normal mode, override flags
+	start_tx = true;
+	switch_to_rx = true;
+	rc = cancel_tx();
+	if (rc != 0) {
+	    g_free(message);
+	    return -1;
+	}
+    }
+
+    if (switch_to_rx) {
+	strcat(message, "^r");  // append buffered switch to RX
+    }
+
+    // add message to TX window
+    rc = fldigi_xmlrpc_query(&result, &env, "text.add_tx", "s", message);
+    g_free(message);
     if (rc != 0) {
 	return -1;
     }
-    /* switch to rx afterwards */
-    rc = fldigi_xmlrpc_query(&result, &env, "text.add_tx", "s", "^r");
-    if (rc != 0) {
-	return -1;
-    }
 
-    if (result.stringval != NULL) {
-	free((void *)result.stringval);
-    }
-    /* switch to tx */
-    rc = fldigi_xmlrpc_query(&result, &env, "main.tx", "");
-
-    if (result.stringval != NULL) {
-	free((void *)result.stringval);
+    if (start_tx) {
+	/* switch to TX (immediate) */
+	rc = fldigi_xmlrpc_query(&result, &env, "main.tx", "");
     }
 #endif
     return rc;
