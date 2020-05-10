@@ -69,7 +69,6 @@ int getexchange(void) {
     extern char cqzone[];
     extern char ituzone[];
     extern char my_rst[];
-    extern int change_rst;
     extern char ph_message[14][80];
     extern char hiscall[];
     extern char qsonrstr[];
@@ -299,8 +298,8 @@ int getexchange(void) {
 	    }
 
 	    case KEY_PPAGE: {	/* Page-Up--change MY RST */
-		if (change_rst == 1) {
-		    rst_r_up();
+		if (change_rst) {
+		    rst_recv_up();
 
 		    if (!no_rst)
 			mvprintw(12, 49, my_rst);
@@ -315,9 +314,9 @@ int getexchange(void) {
 
 	    }
 	    case KEY_NPAGE: {	/* Page-Down--change MY RST */
-		if (change_rst == 1) {
+		if (change_rst) {
 
-		    rst_r_down();
+		    rst_recv_down();
 
 		    if (!no_rst)
 			mvprintw(12, 49, my_rst);

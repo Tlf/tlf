@@ -298,7 +298,6 @@ int parse_logcfg(char *inputbuffer) {
     extern char controllerport[80];	// port for multi-mode controller
     extern char clusterlogin[];
     extern int cw_bandwidth;
-    extern int change_rst;
     extern char rttyoutput[];
     extern int logfrequency;
     extern int ignoredupe;
@@ -1423,9 +1422,9 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 148: {
-	    change_rst = 1;
+	    change_rst = true;
 	    if (g_strv_length(fields) == 2) {
-		/* comma separated list of RS(T) vaules 33..39, 43..39, 53..59
+		/* comma separated list of RS(T) values 33..39, 43..39, 53..59
 		 * allowed.
 		 */
 		if (!g_regex_match_simple(

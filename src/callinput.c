@@ -132,7 +132,6 @@ int callinput(void) {
     extern char ituzone[];
     extern int ctcomp;
     extern int nob4;
-    extern int change_rst;
     extern int weight;
     extern int k_pin14;
     extern int k_ptt;
@@ -453,9 +452,9 @@ int callinput(void) {
 
 	    // <Page-Up>, change RST if call field not empty, else increase CW speed.
 	    case KEY_PPAGE: {
-		if ((change_rst == 1) && (strlen(hiscall) != 0)) {	// change RST
+		if (change_rst && (strlen(hiscall) != 0)) {	// change RST
 
-		    rst_s_up();
+		    rst_sent_up();
 
 		    if (!no_rst)
 			mvprintw(12, 44, his_rst);
@@ -474,9 +473,9 @@ int callinput(void) {
 
 	    // <Page-Down>, change RST if call field not empty, else decrease CW speed.
 	    case KEY_NPAGE: {
-		if ((change_rst == 1) && (strlen(hiscall) != 0)) {
+		if (change_rst && (strlen(hiscall) != 0)) {
 
-		    rst_s_down();
+		    rst_sent_down();
 
 		    if (!no_rst)
 			mvprintw(12, 44, his_rst);

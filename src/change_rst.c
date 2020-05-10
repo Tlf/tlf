@@ -20,8 +20,11 @@
 
 #include <glib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "change_rst.h"
 #include "globalvars.h"
+
+bool change_rst = false;
 
 GPtrArray *rst_sent = NULL;
 GPtrArray *rst_recv = NULL;
@@ -80,28 +83,28 @@ void rst_reset(void) {
     memcpy(my_rst, g_ptr_array_index(rst_recv, recv_index), 2);
 }
 
-void rst_r_up() {
+void rst_recv_up() {
     if (recv_index < rst_recv->len - 1) {
 	recv_index++;
 	memcpy(my_rst, g_ptr_array_index(rst_recv, recv_index), 2);
     }
 }
 
-void rst_r_down() {
+void rst_recv_down() {
     if (recv_index > 0) {
 	recv_index--;
 	memcpy(my_rst, g_ptr_array_index(rst_recv, recv_index), 2);
     }
 }
 
-void rst_s_up() {
+void rst_sent_up() {
     if (sent_index < rst_sent->len - 1) {
 	sent_index++;
 	memcpy(his_rst, g_ptr_array_index(rst_sent, sent_index), 2);
     }
 }
 
-void rst_s_down() {
+void rst_sent_down() {
     if (sent_index > 0) {
 	sent_index--;
 	memcpy(his_rst, g_ptr_array_index(rst_sent, sent_index), 2);

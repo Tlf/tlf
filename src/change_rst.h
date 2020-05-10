@@ -20,11 +20,15 @@
 #ifndef CHANGE_RST_H
 #define CHANGE_RST_H
 
+#include <stdbool.h>
+
+extern bool change_rst;
+
 void rst_init(char *init) ;
 void rst_reset(void);
-void rst_r_up();
-void rst_r_down();
-void rst_s_up();
-void rst_s_down();
+void rst_recv_up();
+void rst_recv_down();
+void rst_sent_up();
+void rst_sent_down();
 
 #endif
