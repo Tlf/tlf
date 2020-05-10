@@ -663,20 +663,20 @@ Toggle between the CQ and S&P modes.
 Increase CW (Morse Code) speed (from call and exchange fields).
 .IP
 If the cursor is in the call input field and it is not empty and CHANGE_RST is
-set: increase his S value (the leftmost of the RST pair).
+set: increase his RST.
 .IP
 If the cursor is in the exchange field and it is not empty and CHANGE_RST is
-set: increase my S value (the rightmost of the RST pair).
+set: increase my RST.
 .
 .TP
 .B PgDown
 Decrease CW (Morse Code) speed (from call input and exchange fields).
 .IP
 If the cursor is in the call input field and it is not empty and CHANGE_RST is
-set: decrease his S value (the leftmost of the RST pair).
+set: decrease his RST.
 .IP
 If the cursor is in the exchange field and it is not empty and CHANGE_RST is
-set: decrease my S value (the rightmost of the RST pair).
+set: decrease my RST.
 .
 .TP
 .B Ctrl-PgUp
@@ -1445,10 +1445,18 @@ updated by WWV or WCY messages.
 .
 .TP
 .B CHANGE_RST
-If set in logcfg.dat, PgUp and PgDown will change RST instead of CW speed if
-field is not empty.
+If set in logcfg.dat, PgUp and PgDown will change his/my RST instead of 
+CW speed if you are in call/exchange field and call field is not empty.
 .br
 Default is Off.
+.
+.TP
+\fBCHANGE_RST\fR=\fI33, 43, 47, 499, ...\fR
+Provide a comma separated list of RS(T) values which are used for his RST. Own
+RST will always be 33..39,43..49,53..59. 
+.br
+Providing a value for T is optional but will be ignored. 
+In CW and digi mode T will always be 9.
 .
 .TP
 .B NOB4
