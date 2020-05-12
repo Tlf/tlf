@@ -24,8 +24,9 @@
 
 extern bool change_rst;
 
-void rst_init(char *init) ;
+void rst_init(char *init_string) ;
 void rst_reset(void);
+void rst_set_strings();
 void rst_recv_up();
 void rst_recv_down();
 void rst_sent_up();

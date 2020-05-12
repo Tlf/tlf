@@ -26,87 +26,100 @@
 
 bool change_rst = false;
 
-GPtrArray *rst_sent = NULL;
-GPtrArray *rst_recv = NULL;
-int sent_index, recv_index;
+struct rst {
+    GPtrArray *array;
+    int index;
+};
 
+static struct rst rst_sent = {NULL, 0};
+static struct rst rst_recv = {NULL, 0};
+
+/* sorter for RST values */
 static int cmp_rst (char **a, char **b) {
     return g_ascii_strcasecmp(*a, *b);
 }
 
-void rst_init(char *init) {
+/* Create a new GPtrarray holding allowed RS(T) values,
+ * parses initstr and add elements to new GPtrArray,
+ * finally sort elements */
+static void init_array(struct rst *rst, const char *initstr) {
+    gchar **list;
 
+    if (rst->array != NULL)
+	g_ptr_array_free(rst->array, TRUE);
+    rst->array = g_ptr_array_new_full(25, g_free);
+
+    list = g_strsplit(initstr, ",", 0);
+    for (int i = 0; list[i] != NULL; i++) {
+	char *tmp = g_strdup(list[i]);
+	g_ptr_array_add(rst->array, g_strdup(g_strstrip(tmp)));
+	g_free(tmp);
+    }
+    g_strfreev(list);
+    g_ptr_array_sort(rst->array, (GCompareFunc)cmp_rst);
+}
+
+/* Initialize RS(T) tables for sent and received rapports,
+ * sent rapports can be specified by init_string */
+void rst_init(char *init_string) {
     char *default_rst = "33, 34, 35, 36, 37, 38, 39, \
 		      43, 44, 45, 46, 47, 48, 49, \
 		      53, 54, 55, 56, 57, 58, 59";
 
-    gchar **list;
-
-    if (rst_sent != NULL)
-	g_ptr_array_free(rst_sent, TRUE);
-    if (rst_recv != NULL)
-	g_ptr_array_free(rst_recv,TRUE);
-
-    rst_sent = g_ptr_array_new_full(25, g_free);
-    rst_recv = g_ptr_array_new_full(25, g_free);
-
-    list = g_strsplit(default_rst, ",", 0);
-    for (int i = 0; list[i] != NULL; i++) {
-	char *tmp = g_strdup(list[i]);
-	g_ptr_array_add(rst_recv, g_strdup(g_strstrip(tmp)));
-	g_free(tmp);
-    }
-    g_strfreev(list);
-    g_ptr_array_sort(rst_recv, (GCompareFunc)cmp_rst);
-
-    if (init != NULL) {
-	list = g_strsplit(init, ",", 0);
-    } else {
-	list = g_strsplit(default_rst, ",", 0);
-    }
-    for (int i = 0; list[i] != NULL; i++) {
-	char *tmp = g_strdup(list[i]);
-	g_ptr_array_add(rst_sent, g_strdup(g_strstrip(tmp)));
-	g_free(tmp);
-    }
-    g_strfreev(list);
-    g_ptr_array_sort(rst_sent, (GCompareFunc)cmp_rst);
+    init_array(&rst_recv, default_rst);
+    init_array(&rst_sent, (init_string != NULL) ? init_string : default_rst);
 
     rst_reset();
 }
 
+/* reset RS(T) values for start of new QSO to highest available value */
 void rst_reset(void) {
-    sent_index = rst_sent->len - 1;
-    memcpy(his_rst, g_ptr_array_index(rst_sent, sent_index), 2);
+    rst_sent.index = rst_sent.array->len - 1;
+    memcpy(his_rst, g_ptr_array_index(rst_sent.array, rst_sent.index), 2);
 
-    recv_index = rst_recv->len - 1;
-    memcpy(my_rst, g_ptr_array_index(rst_recv, recv_index), 2);
+    rst_recv.index = rst_recv.array->len - 1;
+    memcpy(my_rst, g_ptr_array_index(rst_recv.array, rst_recv.index), 2);
 }
 
+
+/* initialize 'my_rst' and 'his_rst' */
+void rst_set_strings() {
+    memcpy(my_rst, g_ptr_array_index(rst_recv.array, rst_recv.index), 2);
+    memcpy(his_rst, g_ptr_array_index(rst_sent.array, rst_sent.index), 2);
+   if (trxmode != SSBMODE) {
+        my_rst[2] = '9';
+        his_rst[2] = '9';
+    } else {
+        my_rst[2] = ' ';
+        his_rst[2] = ' ';
+    }
+}
+
+
 void rst_recv_up() {
-    if (recv_index < rst_recv->len - 1) {
-	recv_index++;
-	memcpy(my_rst, g_ptr_array_index(rst_recv, recv_index), 2);
+    if (rst_recv.index < rst_recv.array->len - 1) {
+	rst_recv.index++;
+	rst_set_strings();
     }
 }
 
 void rst_recv_down() {
-    if (recv_index > 0) {
-	recv_index--;
-	memcpy(my_rst, g_ptr_array_index(rst_recv, recv_index), 2);
+    if (rst_recv.index > 0) {
+	rst_recv.index--;
+	rst_set_strings();
     }
 }
 
 void rst_sent_up() {
-    if (sent_index < rst_sent->len - 1) {
-	sent_index++;
-	memcpy(his_rst, g_ptr_array_index(rst_sent, sent_index), 2);
+    if (rst_sent.index < rst_sent.array->len - 1) {
+	rst_sent.index++;
+	rst_set_strings();
     }
 }
 
 void rst_sent_down() {
-    if (sent_index > 0) {
-	sent_index--;
-	memcpy(his_rst, g_ptr_array_index(rst_sent, sent_index), 2);
+    if (rst_sent.index > 0) {
+	rst_sent.index--;
+	rst_set_strings();
     }
 }

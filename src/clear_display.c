@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "cw_utils.h"
+#include "change_rst.h"
 #include "get_time.h"
 #include "getwwv.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
@@ -137,18 +138,11 @@ void clear_display(void) {
     qsonr_to_str();
     mvaddstr(12, 23, qsonrstr);
 
-    if (trxmode != SSBMODE) {
-	my_rst[2] = '9';
-	his_rst[2] = '9';
-    } else {
-	my_rst[2] = ' ';
-	his_rst[2] = ' ';
-    }
-
     if (no_rst) {
 	mvaddstr(12, 44, "   ");
 	mvaddstr(12, 49, "   ");
     } else {
+	rst_set_strings();
 	mvaddstr(12, 44, his_rst);
 	mvaddstr(12, 49, my_rst);
     }
