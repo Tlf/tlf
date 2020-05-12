@@ -37,6 +37,7 @@
 #include "bandmap.h"
 #include "calledit.h"
 #include "callinput.h"
+#include "change_rst.h"
 #include "changefreq.h"
 #include "changepars.h"
 #include "clear_display.h"
@@ -131,7 +132,6 @@ int callinput(void) {
     extern char ituzone[];
     extern int ctcomp;
     extern int nob4;
-    extern int change_rst;
     extern int weight;
     extern int k_pin14;
     extern int k_ptt;
@@ -452,16 +452,13 @@ int callinput(void) {
 
 	    // <Page-Up>, change RST if call field not empty, else increase CW speed.
 	    case KEY_PPAGE: {
-		if ((change_rst == 1) && (strlen(hiscall) != 0)) {	// change RST
+		if (change_rst && (strlen(hiscall) != 0)) {	// change RST
 
-		    if (his_rst[1] <= 56) {
+		    rst_sent_up();
 
-			his_rst[1]++;
-
-			if (!no_rst)
-			    mvprintw(12, 44, his_rst);
-			mvprintw(12, 29, hiscall);
-		    }
+		    if (!no_rst)
+			mvprintw(12, 44, his_rst);
+		    mvprintw(12, 29, hiscall);
 
 		} else {	// change cw speed
 		    speedup();
@@ -476,15 +473,13 @@ int callinput(void) {
 
 	    // <Page-Down>, change RST if call field not empty, else decrease CW speed.
 	    case KEY_NPAGE: {
-		if ((change_rst == 1) && (strlen(hiscall) != 0)) {
+		if (change_rst && (strlen(hiscall) != 0)) {
 
-		    if (his_rst[1] > 49) {
-			his_rst[1]--;
+		    rst_sent_down();
 
-			if (!no_rst)
-			    mvprintw(12, 44, his_rst);
-			mvprintw(12, 29, hiscall);
-		    }
+		    if (!no_rst)
+			mvprintw(12, 44, his_rst);
+		    mvprintw(12, 29, hiscall);
 
 		} else {
 

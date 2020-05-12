@@ -24,6 +24,7 @@
 
 
 #include "globalvars.h"
+#include "change_rst.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "write_keyer.h"
@@ -31,8 +32,7 @@
 void cleanup_qso(void) {
     hiscall[0] = '\0';	    /* reset hiscall and comment */
     comment[0] = '\0';
-    his_rst[1] = '9';	    /* reset to 599 */
-    my_rst[1] = '9';
+    rst_reset();;	    /* reset to 599 */
     countrynr = 0;
 }
 

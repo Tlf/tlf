@@ -32,6 +32,7 @@
 #include "addmult.h"
 #include "background_process.h"
 #include "bandmap.h"
+#include "change_rst.h"
 #include "checkparameters.h"
 #include "clear_display.h"
 #include "checklogfile.h"
@@ -201,7 +202,6 @@ int demode = 0;			/* 1 =  send DE  before s&p call  */
 int contest = 0;		/* 0 =  General,  1  = contest */
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 int showscore_flag = 0;		/* show  score window */
-int change_rst = 0;
 char exchange[40];
 char whichcontest[40] = "qso";
 int defer_store = 0;
@@ -902,6 +902,7 @@ int main(int argc, char *argv[]) {
 
     ui_init();
 
+    rst_init(NULL);
 
     strcat(logline0, backgrnd_str);
     strcat(logline1, backgrnd_str);

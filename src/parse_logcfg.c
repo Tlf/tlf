@@ -1,7 +1,7 @@
 /*
 * Tlf - contest logging program for amateur radio operators
 * Copyright (C) 2001-2002-2003-2004 Rein Couperus <pa0rct@amsat.org>
-* 		2011-2019           Thomas Beierlein <tb@forth-ev.de>
+* 		2011-2020           Thomas Beierlein <tb@forth-ev.de>
 * 		2013 		    Fred DH5FS
 *               2013-2016           Ervin Hegedus - HA2OS <airween@gmail.com>
 *
@@ -29,6 +29,7 @@
 #include <unistd.h>
 
 #include "bandmap.h"
+#include "change_rst.h"
 #include "cw_utils.h"
 #include "fldigixmlrpc.h"
 #include "getctydata.h"
@@ -297,7 +298,6 @@ int parse_logcfg(char *inputbuffer) {
     extern char controllerport[80];	// port for multi-mode controller
     extern char clusterlogin[];
     extern int cw_bandwidth;
-    extern int change_rst;
     extern char rttyoutput[];
     extern int logfrequency;
     extern int ignoredupe;
@@ -1422,7 +1422,21 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 148: {
-	    change_rst = 1;
+	    change_rst = true;
+	    if (g_strv_length(fields) == 2) {
+		/* comma separated list of RS(T) values 33..39, 43..39, 53..59
+		 * allowed.
+		 */
+		if (!g_regex_match_simple(
+			"^([3-5][3-9]\\d?\\s*,\\s*)*[3-5][3-9]\\d?$",
+		        g_strstrip(fields[1]), G_REGEX_CASELESS,
+			(GRegexMatchFlags)0)) {
+		    WrongFormat(teststring);
+		}
+		rst_init(fields[1]);
+	    } else {
+		rst_init(NULL);
+	    }
 	    break;
 	}
 	case 149: {
