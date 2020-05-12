@@ -92,6 +92,7 @@ extern int exchange_serial;
 extern int highqsonr;
 
 
+extern cqmode_t cqmode;
 extern int trxmode;
 extern rmode_t rigmode;
 extern freq_t freq;

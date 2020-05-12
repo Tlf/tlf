@@ -22,8 +22,7 @@
 #ifndef FLDIGIXMLRPC_H
 #define FLDIGIXMLRPC_H
 
-#define FLDIGI_TX   1
-#define FLDIGI_RX   2
+#include <stdbool.h>
 
 extern int fldigi_set_callfield;
 
@@ -40,7 +39,7 @@ void xmlrpc_showinfo();
 int fldigi_get_log_call();
 int fldigi_get_log_serial_number();
 void fldigi_clear_connerr();
-int fldigi_toggle(void);
-int fldigi_isenabled(void);
+bool fldigi_toggle(void);
+bool fldigi_isenabled(void);
 
 #endif /* end of include guard: FLDIGIXMLRPC_H */

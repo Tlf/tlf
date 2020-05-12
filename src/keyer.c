@@ -68,7 +68,7 @@ void keyer(void) {
     char keyerstring[KEYER_LINE_WIDTH + 1] = "";
     int keyerstringpos = 0;
     char weightbuf[15];
-    const char txcontrolstring[2] = { 20, '\0' };	// ^t
+    const char txcontrolstring[2] = { CTRL_T, '\0' };	// ^t
     const char rxcontrolstring[2] = { CTRL_R, '\0' };	// ^r
     const char crcontrolstring[2] = { RETURN, '\0' };	// cr
     const char ctl_c_controlstring[2] = { BACKSLASH, '\0' };	// '\'
@@ -131,7 +131,9 @@ void keyer(void) {
 		/* switch back to rx */
 		keyer_append(rxcontrolstring);
 	    } else {
-		stoptx();
+		if (x == ESCAPE) {
+		    stoptx();
+		}
 	    }
 
 	    break;
@@ -144,13 +146,15 @@ void keyer(void) {
 
 	    x = 0;  // default: no operation
 
-	    if (keyer_backspace && keyerstringpos > 0) {
-		//
-		// remove last char
-		//
-		--keyerstringpos;
-		keyerstring[keyerstringpos] = '\0';
+	    if (keyer_backspace) {
 		x = KEY_BACKSPACE;
+		if (keyerstringpos > 0) {
+		    //
+		    // remove last char
+		    //
+		    --keyerstringpos;
+		    keyerstring[keyerstringpos] = '\0';
+		}
 	    }
 	}
 
@@ -177,28 +181,32 @@ void keyer(void) {
 	} else {
 
 	    switch (x) {
-		case '|':
-		case '\n':		// Note that '\n', KEY_ENTER, and usually RETURN
-		case RETURN:		// Will never happen (converted to space above)
-		case KEY_ENTER: {
+		case '|': { // new line
 		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(crcontrolstring);
+		    } else if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
+			keyer_append_char('\n');
 		    }
 		    break;
 		}
 
-		case '{': {
+		case '{': { // start TX
 		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(txcontrolstring);
+		    } else if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
+			keyer_append_char(CTRL_T);
 		    }
 		    break;
 		}
-		case '}': {
+
+		case '}': { // switch to RX
 		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(rxcontrolstring);
+		    } else if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
+			keyer_append_char(CTRL_R);
 		    }
 		    break;
 		}
@@ -210,7 +218,7 @@ void keyer(void) {
 		    break;
 		}
 
-		case ALT_W: {	// Alt-w, set weight
+		case ALT_W: {	// Alt-W, set weight
 		    mvprintw(1, 0, "Weight=   ");
 		    mvprintw(1, 7, "");
 		    refreshp();
