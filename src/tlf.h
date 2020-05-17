@@ -117,7 +117,6 @@ enum {
 #define  MAX_CALLS 5000      /*  max nr of calls in dupe array */
 #define  MAX_MULTS 1000        /* max nr of mults in mults array */
 #define	MAX_SPOTS 200		/* max nr. of spots in spotarray */
-#define MAX_CALLMASTER 50000 /* max number of calls in callmaster array */
 #define CQ_ZONES 40
 #define ITU_ZONES 90
 #define MAX_ZONES (ITU_ZONES + 1) /* size of zones array */
