@@ -9,7 +9,6 @@
 
 /* test stubs and dummies */
 int do_cabrillo = 0;	/* actually converting cabrillo file to Tlf log */
-extern struct tm *time_ptr;
 struct tm time_ptr_cabrillo;
 
 int qsoflags_for_qtc[MAX_QSOS];
@@ -154,7 +153,7 @@ void test_cabToTlf_ParseQSO(void **state) {
     struct cabrillo_desc *desc;
     desc = read_cabrillo_format(formatfile, "UNIVERSAL");
     bandinx_spy = 0;
-    cab_qso_to_tlf("QSO:  7002 RY 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
+    cab_qso_to_tlf("QSO:  7002 RY 2016-02-13 2033 HA2OS         589 0008   K6ND          599 044",
 		   desc);
     assert_int_equal(bandinx_spy, 3);
     assert_int_equal((int)freq, 7002000);
@@ -163,10 +162,10 @@ void test_cabToTlf_ParseQSO(void **state) {
     assert_string_equal(my_rst, "589");
     assert_string_equal(his_rst, "599");
     assert_string_equal(comment, "044");
-    assert_int_equal(time_ptr_cabrillo.tm_hour, 00);
+    assert_int_equal(time_ptr_cabrillo.tm_hour, 20);
     assert_int_equal(time_ptr_cabrillo.tm_min, 33);
     assert_int_equal(time_ptr_cabrillo.tm_year, 2016 - 1900); /* year-1900 */
-    assert_int_equal(time_ptr_cabrillo.tm_mon, 8 - 1);	  /* 0-11 */
+    assert_int_equal(time_ptr_cabrillo.tm_mon, 2 - 1);	  /* 0-11 */
     assert_int_equal(time_ptr_cabrillo.tm_mday, 13);
 }
 

@@ -16,6 +16,7 @@
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
+// OBJECT ../src/get_time.o
 // OBJECT ../src/locator2longlat.o
 // OBJECT ../src/readcalls.o
 // OBJECT ../src/searchcallarray.o
@@ -31,7 +32,6 @@ extern int exclude_multilist_type;
 extern bool continentlist_only;
 
 // dummy functions
-void get_time(void) {}
 void readqtccalls() {}
 void shownr(char *msg, int x) {}
 void spaces(int n) {} /* needs more care */

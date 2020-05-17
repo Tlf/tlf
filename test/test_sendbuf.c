@@ -5,6 +5,7 @@
 #include "../src/sendspcall.h"
 #include "../src/tlf.h"
 #include "../src/globalvars.h"
+#include "../src/cqww_simulator.h"
 
 // OBJECT ../src/sendbuf.o
 // OBJECT ../src/sendspcall.o
@@ -28,10 +29,14 @@ extern char buffer[];
 extern char wkeyerbuffer[400];
 extern int demode;
 char *SPcall;
-extern int sending_call, simulator, data_ready, shortqsonr;
+extern int sending_call, data_ready, shortqsonr;
 
 void keyer_append(const char *string) { }
 int play_file(char *file) { return 0; }
+
+bool simulator;
+void set_simulator_state(simstate_t s) { }
+simstate_t get_simulator_state() { return IDLE; }
 
 
 /* test helpers */
@@ -72,7 +77,7 @@ void check_ExpandMacro(const char *input, const char *exp) {
 int setup_default(void **state) {
     wkeyerbuffer[0] = '\0';
     data_ready = 0;
-    simulator = 0;
+    simulator = false;
     sending_call = 0;
     trxmode = CWMODE;
     cwkeyer = 1;

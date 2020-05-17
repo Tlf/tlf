@@ -4,6 +4,7 @@
 #include "../src/getwwv.h"
 
 // OBJECT ../src/getwwv.o
+// OBJECT ../src/get_time.o
 
 int setup_default(void **state) {
 

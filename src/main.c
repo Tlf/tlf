@@ -319,7 +319,6 @@ rmode_t digi_mode = RIG_MODE_NONE;
 int txdelay = 0;
 int weight = 0;
 char weightbuf[4];
-char tonestr[5] = "600";
 int cqdelay = 8;
 int k_tune;
 int k_pin14;
@@ -360,14 +359,6 @@ int rig_comm_success = 0;
 /*----------------------------------fldigi---------------------------------*/
 char fldigi_url[50] = "http://localhost:7362/RPC2";
 
-/*---------------------------------simulator-------------------------------*/
-int simulator = 0;
-int simulator_mode = 0;
-int simulator_seed = 8327;
-int system_secs;
-char tonecpy[5];
-char simulator_tone[5];
-
 /*-------------------------------the log lines-----------------------------*/
 char qsos[MAX_QSOS][LOGLINELEN + 1];
 int nr_qsos = 0;
@@ -403,8 +394,7 @@ int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;			/* nr of next QSO */
 int ymax, xmax;			/* screen size */
 
-pid_t pid;
-struct tm *time_ptr, time_ptr_cabrillo;
+struct tm time_ptr_cabrillo;
 
 freq_t freq;
 int logfrequency = 0;
@@ -434,8 +424,6 @@ double DEST_Lat = 51.;
 double DEST_Long = 1.;
 
 char hiscountry[40];
-
-int this_second;
 
 int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
 int itumult = 0;		/* to add the ability of ITU zones to be multiplier */

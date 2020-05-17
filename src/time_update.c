@@ -64,20 +64,12 @@ void broadcast_lan(void) {
 
 
 /** update band, date and time */
-void update_line(char *timestr) {
-
-    extern struct tm *time_ptr;
-
-    char time_buf[40];
+void update_line(const char *timestr) {
 
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
     mvaddstr(12, 0, band[bandinx]);
-
-    strncpy(time_buf, timestr, 8);
-    mvaddstr(12, 17, time_buf);
-    strftime(time_buf, 60, "%d-%b-%y", time_ptr);
-    mvaddstr(12, 7, time_buf);
+    mvaddstr(12, 7, timestr);
 }
 
 const char *FREQ_DISPLAY_FORMAT = " %s: %7.1f";
@@ -111,23 +103,17 @@ void show_freq(void) {
 
 void time_update(void) {
 
-    extern struct tm *time_ptr;
     extern char qsonrstr[];
     extern int bandinx;
-    extern int this_second;
-    extern int system_secs;
     extern int miniterm;
 
-    char time_buf[11];
-    int currentterm = 0;
     static int s = 0;
     static int bm_timeout = 0;
     static int oldsecs = -1;  	/* trigger immediate update */
 
-    get_time();
-    this_second = time_ptr->tm_sec;		/* seconds */
-    // used in background_process
-    system_secs = time_ptr->tm_min * 60 + time_ptr->tm_sec;
+    char time_buf[20];
+    time_t now = format_time(time_buf, sizeof(time_buf), DATE_TIME_FORMAT);
+    int this_second = now % 60;		/* seconds */
 
     // force frequency display if it has changed (don't wait until next second)
     static freq_t old_freq = 0;
@@ -172,9 +158,6 @@ void time_update(void) {
     s = (s + 1) % 2;
     if (s > 0) {		/* every 2 seconds */
 
-	strftime(time_buf, 10, "%H:%M:%S", time_ptr);
-	time_buf[5] = '\0';
-
 	static time_t prev_wwv_time = 0;
 	if (lastwwv_time > prev_wwv_time) { // is there a newer WWV message?
 	    prev_wwv_time = lastwwv_time;
@@ -183,7 +166,7 @@ void time_update(void) {
 	    wwv_show_footer();              // print WWV info
 	}
 
-	currentterm = miniterm;
+	int currentterm = miniterm;
 	miniterm = 0;
 
 	broadcast_lan();

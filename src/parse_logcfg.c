@@ -50,7 +50,6 @@
 extern int cwkeyer;
 extern int digikeyer;
 extern int keyer_backspace;
-extern char tonestr[];
 extern int partials;
 extern int use_part;
 extern int contest;

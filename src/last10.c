@@ -66,9 +66,7 @@ int last10(void) {
     input[17 + 2] = '\0';
     minsbefore += (atoi(input + 17) * 60);
 
-    get_time();
-
-    minsnow = time_ptr->tm_hour * 60 + time_ptr->tm_min;
+    minsnow = get_minutes();
 
     if ((minsnow - minsbefore) <= 0)
 	minsnow += 1440;

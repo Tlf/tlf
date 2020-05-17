@@ -34,7 +34,6 @@
 #include <string.h>
 
 #include <glib.h>
-#include <time.h>
 
 #include "addcall.h"
 #include "addmult.h"
@@ -92,16 +91,16 @@ int addcall(void) {
     extern char continent[];
     extern int exclude_multilist_type;
     extern int trxmode;
-    extern struct tm *time_ptr;
 
     static int found = 0;
     static int i, j, z = 0;
     static int add_ok;
     int pfxnumcntidx = -1;
     int pxnr = 0;
+
     excl_add_veto = 0;
 
-    get_time();
+    time_t now = get_time();
 
     found = searchcallarray(hiscall);
 
@@ -113,7 +112,7 @@ int addcall(void) {
     } else
 	i = found;
 
-    worked[i].qsotime[trxmode][bandinx] = (long)mktime(time_ptr);
+    worked[i].qsotime[trxmode][bandinx] = now;
     j = getctydata(hiscall);
     worked[i].country = j;
     if (strlen(comment) >= 1) {		/* remember last exchange */
@@ -291,7 +290,6 @@ int addcall2(void) {
     int pxnr = 0;
     excl_add_veto = 0;
     char date_and_time[16];
-    struct tm qsotime;
     time_t qsotimets;
 
     g_strlcpy(hiscall, lan_logline + 29, 20);
@@ -316,10 +314,8 @@ int addcall2(void) {
     bandinx = log_get_band(lan_logline);
 
     /* calculate QSO timestamp from lan_logline */
-    memset(&qsotime, 0, sizeof(struct tm));
     strncpy(date_and_time, lan_logline + 7, 15);
-    strptime(date_and_time, "%d-%b-%y %H:%M", &qsotime);
-    qsotimets = mktime(&qsotime);
+    qsotimets = parse_time(date_and_time, DATE_TIME_FORMAT);
 
     worked[i].qsotime[trxmode][bandinx] = qsotimets;
     worked[i].country = j;

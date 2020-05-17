@@ -21,24 +21,62 @@
 *  First get the local time from the kernel, apply corrections
 *  - TIME_OFFSET setting from logcfg.dat and
 *  - time synchronistation from LAN.
-*  Finally convert time to UTC put it into global buffer (time_ptr)
-*  for use by other routines
+*
+*  All functions operate on UTC dates/times.
 ---------------------------------------------------------------------------*/
 
-
 #include <time.h>
+#include <string.h>
 
-
-void get_time(void) {
-
-    extern struct tm *time_ptr;
+/*
+ * returns current UTC as seconds since 1970-01-01
+ */
+time_t get_time() {
     extern int timeoffset;
     extern long timecorr;
 
-    time_t now;
+    return time(NULL) + (timeoffset * 3600L) + timecorr;
+}
 
-    now = (time(0) + (timeoffset * 3600L) + timecorr);
+int get_minutes() {
+    time_t now = get_time();
+    struct tm time_tm;
+    gmtime_r(&now, &time_tm);
+    return 60 * time_tm.tm_hour + time_tm.tm_min;
+}
 
-    time_ptr =  gmtime(&now);
+
+/*
+ * formats now-offset using format into buffer
+ * returns the formatted time (now-offset) as UTC seconds
+ * note: timeoffset and offset are in hours
+ */
+time_t format_time_with_offset(char *buffer, size_t size, const char *format,
+			       double offset) {
+
+    time_t t = get_time() - offset * 3600L;
+
+    struct tm time_tm;
+    memset(&time_tm, 0, sizeof(struct tm));
+    gmtime_r(&t, &time_tm);
+
+    strftime(buffer, size, format, &time_tm);
+
+    return t;
+}
+
+time_t format_time(char *buffer, size_t size, const char *format) {
+    return format_time_with_offset(buffer, size, format, 0);
+}
+
+/*
+ * parses buffer according to format
+ * returns the parsed time as UTC seconds
+ */
+time_t parse_time(const char *buffer, const char *format) {
+    struct tm time_tm;
+    memset(&time_tm, 0, sizeof(time_tm));
+    strptime(buffer, format, &time_tm);
+    return timegm(&time_tm);
 }
 

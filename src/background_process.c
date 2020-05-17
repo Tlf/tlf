@@ -24,9 +24,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "background_process.h"
+#include "cqww_simulator.h"
 #include "err_utils.h"
 #include "fldigixmlrpc.h"
-#include "getctydata.h"
 #include "get_time.h"
 #include "gettxinfo.h"
 #include "lancode.h"
@@ -34,23 +35,17 @@
 #include "qsonr_to_str.h"
 #include "qtc_log.h"
 #include "qtcutil.h"
+#include "qtcvars.h"
 #include "rtty.h"
-#include "searchlog.h"		// Includes glib.h
-#include "sendbuf.h"
-#include "set_tone.h"
 #include "splitscreen.h"
 #include "tlf.h"
-#include "tlf_curses.h"
 #include "write_keyer.h"
-#include "qtcvars.h"
 
 
-extern int this_second;
 extern int cluster;
 extern int packetinterface;
 extern int lan_active;
 extern char lan_message[];
-extern char lan_recv_message[];
 extern int recv_error;
 extern char thisnode;
 extern int lanspotflg;
@@ -61,7 +56,6 @@ extern char qsonrstr[5];
 extern int lanqsos;
 extern int highqsonr;
 extern char zone_export[];
-extern long lantime;
 extern long timecorr;
 extern int timeoffset;
 extern char call[];
@@ -69,25 +63,25 @@ extern int trxmode;
 extern int digikeyer;
 extern int trx_control;
 
-static int stop_backgrnd_process = 1;	/* dont start until we know what we are doing */
+// don't start until we know what we are doing
+static bool stop_backgrnd_process = true;
+
 static pthread_mutex_t stop_backgrnd_process_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t start_backgrnd_process_cond = PTHREAD_COND_INITIALIZER;
 static pthread_cond_t backgrnd_process_stopped_cond = PTHREAD_COND_INITIALIZER;
 
-int cw_simulator(void);
-
 void stop_background_process(void) {
     pthread_mutex_lock(&stop_backgrnd_process_mutex);
-    assert(stop_backgrnd_process == 0);
-    stop_backgrnd_process = 1;
+    assert(!stop_backgrnd_process);
+    stop_backgrnd_process = true;
     pthread_cond_wait(&backgrnd_process_stopped_cond, &stop_backgrnd_process_mutex);
     pthread_mutex_unlock(&stop_backgrnd_process_mutex);
 }
 
 void start_background_process(void) {
     pthread_mutex_lock(&stop_backgrnd_process_mutex);
-    assert(stop_backgrnd_process == 1);
-    stop_backgrnd_process = 0;
+    assert(stop_backgrnd_process);
+    stop_backgrnd_process = false;
     pthread_cond_broadcast(&start_backgrnd_process_cond);
     pthread_mutex_unlock(&stop_backgrnd_process_mutex);
 }
@@ -104,9 +98,7 @@ static void background_process_wait(void) {
 void *background_process(void *ptr) {
 
     extern int landebug;
-    extern struct tm *time_ptr;
 
-    static int i;
     static char prmessage[256];
     static int lantimesync = 0;
     static int fldigi_rpc_cnt = 0;
@@ -116,12 +108,9 @@ void *background_process(void *ptr) {
     char debugbuffer[160];
     FILE *fp;
 
-    i = 1;
-
-    while (i) {
+    while (1) {
 
 	background_process_wait();
-
 
 	usleep(10000);
 
@@ -156,9 +145,9 @@ void *background_process(void *ptr) {
 	    fldigi_rpc_cnt = 1 - fldigi_rpc_cnt;
 	}
 
-	if (stop_backgrnd_process == 0) {
+	if (!stop_backgrnd_process) {
 	    write_keyer();
-	    cw_simulator();
+	    cqww_simulator();
 	}
 
 	if (lan_active == 1) {
@@ -168,24 +157,17 @@ void *background_process(void *ptr) {
 		    recv_error++;
 		} else {
 		    lan_message[strlen(lan_message) - 1] = '\0';
-
 		}
 	    }
 
-	    if (landebug == 1) {
+	    if (landebug == 1 && strlen(lan_message) > 2) {
 		if ((fp = fopen("debuglog", "a")) == NULL) {
-		    fprintf(stdout,
-			    "store_qso.c: Error opening debug file.\n");
-
+		    printf("store_qso.c: Error opening debug file.\n");
 		} else {
-		    get_time();
-		    strftime(debugbuffer, 80, "%H:%M:%S-", time_ptr);
-		    if (strlen(lan_message) > 2) {
-			strcat(debugbuffer, lan_message);
-			strcat(debugbuffer, "\n");
-			fputs(debugbuffer, fp);
-		    }
-
+		    format_time(debugbuffer, sizeof(debugbuffer), "%H:%M:%S-");
+		    fputs(debugbuffer, fp);
+		    fputs(lan_message, fp);
+		    fputs("\n", fp);
 		    fclose(fp);
 		}
 	    }
@@ -195,7 +177,7 @@ void *background_process(void *ptr) {
 
 	    if ((*lan_message != '\0')
 		    && (lan_message[0] != thisnode)
-		    && (stop_backgrnd_process != 1)) {
+		    && !stop_backgrnd_process) {
 
 		switch (lan_message[1]) {
 
@@ -266,15 +248,14 @@ void *background_process(void *ptr) {
 		    case TIMESYNC:
 			if ((lan_message[0] >= 'A')
 				&& (lan_message[0] <= 'A' + MAXNODES)) {
-			    lantime = atoi(lan_message + 2);
+			    time_t lantime = atoi(lan_message + 2);
 
-			    if (lantimesync == 1)
-				timecorr =
-				    ((4 * timecorr) + lantime -
-				     (time(0) + (timeoffset * 3600L))) / 5;
-			    else {
-				timecorr =
-				    lantime - (time(0) + (timeoffset * 3600L));
+			    time_t delta = lantime - (get_time() - timecorr);
+
+			    if (lantimesync == 1) {
+				timecorr = (4 * timecorr + delta) / 5;
+			    } else {
+				timecorr = delta;
 				lantimesync = 1;
 			    }
 
@@ -293,169 +274,5 @@ void *background_process(void *ptr) {
 
     }
 
-    return (NULL);
 }
 
-/* CW Simulator
- * works only for RUN mode in CQWW */
-
-static void twoSpaces() {
-    sendmessage("  ");
-    write_keyer();
-}
-
-void setSimulatorState(int n) {
-    extern int simulator;
-    extern int simulator_mode;
-
-    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-	if (simulator != 0)
-	    simulator_mode = n;
-    }
-}
-
-
-int cw_simulator(void) {
-
-    extern int simulator;
-    extern int simulator_mode;
-    extern int simulator_seed;
-    extern char simulator_tone[5];
-    extern char tonestr[5];
-    extern char tonecpy[5];
-    extern int system_secs;
-    extern int this_second;
-
-    static int callnumber;
-    char callcpy[80];
-
-    if (simulator == 0)
-	return -1;
-
-    if (simulator_mode == 1) {
-
-	attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	mvprintw(0, 3, "Sim");
-	refreshp();
-
-	strcpy(tonecpy, tonestr);
-
-	switch (this_second % 10) {
-	    case 0:
-		strcpy(simulator_tone, "625");
-		break;
-
-	    case 1:
-		strcpy(simulator_tone, "800");
-		break;
-
-	    case 2:
-		strcpy(simulator_tone, "650");
-		break;
-
-	    case 3:
-		strcpy(simulator_tone, "750");
-		break;
-
-	    case 4:
-		strcpy(simulator_tone, "700");
-		break;
-
-	    case 5:
-		strcpy(simulator_tone, "725");
-		break;
-
-	    case 6:
-		strcpy(simulator_tone, "675");
-		break;
-
-	    case 7:
-		strcpy(simulator_tone, "775");
-		break;
-
-	    case 8:
-		strcpy(simulator_tone, "600");
-		break;
-
-	    case 9:
-		strcpy(simulator_tone, "640");
-		break;
-
-	    default:
-		strcpy(simulator_tone, "750");
-		break;
-
-	}
-
-	strcpy(tonestr, simulator_tone);
-	write_tone();
-
-	twoSpaces();
-
-	callnumber =
-	    callnumber + simulator_seed + system_secs -
-	    (60 * (int)(system_secs / 60));
-
-	if (callnumber >= 27000)
-	    callnumber -= 27000;
-
-	sendmessage(CALLMASTERARRAY(callnumber));
-	write_keyer();
-
-	simulator_mode = 0;
-
-	strcpy(tonestr, tonecpy);
-	write_tone();
-    }
-
-    if (simulator_mode == 2) {
-
-	char *str;
-	strcpy(tonecpy, tonestr);
-	strcpy(tonestr, simulator_tone);
-	write_tone();
-
-	twoSpaces();
-
-	strcpy(callcpy, CALLMASTERARRAY(callnumber));
-	getctydata(callcpy);
-
-	str = g_strdup_printf("TU 5NN %2s", zone_export);
-	sendmessage(str);
-	write_keyer();
-	g_free(str);
-
-	simulator_mode = 0;
-
-	strcpy(tonestr, tonecpy);
-	write_tone();
-
-    }
-    if (simulator_mode == 3) {
-
-	char *str;
-
-	strcpy(tonecpy, tonestr);
-	strcpy(tonestr, simulator_tone);
-	write_tone();
-
-	twoSpaces();
-
-	strcpy(callcpy, CALLMASTERARRAY(callnumber));
-	getctydata(callcpy);
-
-	str = g_strdup_printf("DE %s TU 5NN %s",
-			      CALLMASTERARRAY(callnumber), zone_export);
-	sendmessage(str);
-	write_keyer();
-	g_free(str);
-
-	simulator_mode = 0;
-
-	strcpy(tonestr, tonecpy);
-	write_tone();
-
-    }
-
-    return 0;
-}

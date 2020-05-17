@@ -42,6 +42,7 @@
 #include "changepars.h"
 #include "clear_display.h"
 #include "cleanup.h"
+#include "cqww_simulator.h"
 #include "cw_utils.h"
 #include "edit_last.h"
 #include "err_utils.h"
@@ -120,8 +121,6 @@ int callinput(void) {
     extern int announcefilter;
     extern char ph_message[14][80];
     extern SCREEN *mainscreen;
-    extern int simulator;
-    extern int simulator_mode;
     extern char talkarray[5][62];
     extern int lan_active;
     extern int zonedisplay;
@@ -605,10 +604,8 @@ int callinput(void) {
 			send_standard_message(0);	/* CQ */
 		    }
 
+		    set_simulator_state(CALL);
 
-		    if (simulator != 0) {
-			simulator_mode = 1;
-		    }
 		} else {
 
 		    if (cqmode == S_P)

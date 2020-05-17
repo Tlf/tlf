@@ -32,6 +32,7 @@
 #include "cabrillo_utils.h"
 #include "cleanup.h"
 #include "getexchange.h"
+#include "get_time.h"
 #include "globalvars.h"
 #include "makelogline.h"
 #include "qtc_log.h"
@@ -275,7 +276,7 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 		break;
 	    case DATE:
 		strptime(tempstr, "%Y-%m-%d", &time_ptr_cabrillo);
-		strftime(qtc_line.date, 60, "%d-%b-%y", &time_ptr_cabrillo);
+		strftime(qtc_line.date, sizeof(qtc_line.date), DATE_FORMAT, &time_ptr_cabrillo);
 		break;
 	    case TIME:
 		timestr[0] = tempstr[0];
@@ -428,7 +429,7 @@ int readcabrillo(int mode) {
     } else {
 	tempstrp = g_strdup_printf("CABRILLO format: %s", cabrillo);
 	show_readcab_msg(mode, tempstrp);
-	g_free (tempstrp);
+	g_free(tempstrp);
 	sleep(1);
     }
 
@@ -444,9 +445,9 @@ int readcabrillo(int mode) {
 
     if ((fp2 = fopen(output_logfile, "w")) == NULL) {
 	tempstrp = g_strdup_printf("Can't open output logfile: %s.",
-							output_logfile);
+				   output_logfile);
 	show_readcab_msg(mode, tempstrp);
-	g_free (tempstrp);
+	g_free(tempstrp);
 	sleep(2);
 	do_cabrillo = 0;
 	free_cabfmt(cabdesc);
@@ -456,9 +457,9 @@ int readcabrillo(int mode) {
 
     if ((fp1 = fopen(input_logfile, "r")) == NULL) {
 	tempstrp = g_strdup_printf("Can't open input logfile: %s.",
-							input_logfile);
+				   input_logfile);
 	show_readcab_msg(mode, tempstrp);
-	g_free (tempstrp);
+	g_free(tempstrp);
 	sleep(2);
 	do_cabrillo = 0;
 	free_cabfmt(cabdesc);

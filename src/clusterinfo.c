@@ -167,7 +167,6 @@ void clusterinfo(void) {
 int loadbandmap(void) {
 
     extern char *bandmap[MAX_SPOTS];
-    extern struct tm *time_ptr;
     extern int xplanet;
     extern char markerfile[];
     extern char lastmsg[];
@@ -213,8 +212,7 @@ int loadbandmap(void) {
 
     i = 0;
 
-    get_time();
-    sysminutes = 60 * time_ptr->tm_hour + time_ptr->tm_min;
+    sysminutes = get_minutes();
 
     /* parse log of cluster output and find DX announcements.
      * Copy them to bandmap array and find spot_age and spot_freq

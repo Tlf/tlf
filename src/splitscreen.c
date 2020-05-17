@@ -546,7 +546,7 @@ void sanitize(char *s) {
 	else if (*s == '\015');
 	else {
 	    *t++ = *s & 0x7f;
-        }
+	}
     }
     *t = '\0';
 }
@@ -586,7 +586,6 @@ void addtext(char *s) {
     extern int lan_active;
     extern char call[];
     extern char hiscall[];
-    extern struct tm *time_ptr;
     extern char talkarray[5][62];
 
     char lan_out[256];
@@ -689,8 +688,7 @@ void addtext(char *s) {
 		}
 
 		strcat(spotline, spaces(43));
-		get_time();
-		strftime(spottime, sizeof(spottime), "%H%MZ", time_ptr);
+		format_time(spottime, sizeof(spottime), "%H%MZ");
 		strcpy(spotline + 70, spottime);
 		spotline[75] = '\0';
 		strcat(spotline, " <<\n");

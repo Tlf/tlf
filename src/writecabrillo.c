@@ -34,6 +34,7 @@
 #include <unistd.h>
 
 #include "getsummary.h"
+#include "get_time.h"
 #include "log_utils.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -94,8 +95,8 @@ struct qso_t *get_next_record(FILE *fp) {
 	    /* date & time */
 	    memset(&date_n_time, 0, sizeof(struct tm));
 
-	    strptime(strtok_r(NULL, " \t", &sp), "%d-%b-%y", &date_n_time);
-	    strptime(strtok_r(NULL, " \t", &sp), "%H:%M", &date_n_time);
+	    strptime(strtok_r(NULL, " \t", &sp), DATE_FORMAT, &date_n_time);
+	    strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
 
 	    ptr->year = date_n_time.tm_year + 1900;	/* convert to
 							   1968..2067 */
@@ -200,8 +201,8 @@ struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 	/* date & time */
 	memset(&date_n_time, 0, sizeof(struct tm));
 
-	strptime(strtok_r(NULL, " \t", &sp), "%d-%b-%y", &date_n_time);
-	strptime(strtok_r(NULL, " \t", &sp), "%H:%M", &date_n_time);
+	strptime(strtok_r(NULL, " \t", &sp), DATE_FORMAT, &date_n_time);
+	strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
 
 	ptr->qsots = timegm(&date_n_time);
 
@@ -681,23 +682,22 @@ int write_cabrillo(void) {
 
 
 /* write ADIF header to open file */
-void write_adif_header(FILE* fp) {
+void write_adif_header(FILE *fp) {
     extern char whichcontest[];
 
-    time_t now = time(0);
-    struct tm *time_ptr = gmtime(&now);
     char timebuf[100];
 
     fputs
     ("################################################################################\n",
      fp);
-    fputs ("#                     ADIF v3.10 data file exported by TLF\n", fp);
-    fputs ("#              according to specifications on http://www.adif.org\n", fp);
+    fputs("#                     ADIF v3.10 data file exported by TLF\n", fp);
+    fputs("#              according to specifications on http://www.adif.org\n",
+	  fp);
     fputs
     ("################################################################################\n",
      fp);
 
-    strftime(timebuf, sizeof(timebuf), "%d-%b-%y at %H:%Mz", time_ptr);
+    format_time(timebuf, sizeof(timebuf), "%d-%b-%y at %H:%Mz");
     fprintf(fp, "Created %s for %s\n", timebuf, call);
 
     /* Write contest name */
