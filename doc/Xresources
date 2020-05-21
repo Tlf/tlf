@@ -1,51 +1,123 @@
-! Sample Xresources for Xterm.
-! Copy to your home directory as $HOME/.Xresources and
-! run xrdb -merge ~/.Xresources to make these settings visible
-! to a running X instance
+! Sample Xresources for Xterm and URxvt.
 
-!Xcursor*theme: DMZ-White
+! Copy to your home directory as $HOME/.Xresources and run
+! 'xrdb -merge ~/.Xresources'
+! to make these settings visible to a running X instance.  Either XTerm or
+! URxvt will need to be restarted for merged changes to take effect.
 
-!xterm*font:     *-fixed-*-*-*-20-*
-!xterm*font:     10x20
+! If running Wayland, the following command will need to be run manually each
+! session before either XTerm or URxvt is opened for these settings to take
+! effect:
+! 'xrdb -load ~/.Xresources'
+! Any changes made to this file will require merging as for X above for those
+! changes to take effect.
 
+! Set the default X cursor (requires the dmz-cursor-theme package (Debian)).
+!Xcursor*theme:          DMZ-White
+
+! Set the font using a classic X font.
+!xterm*font:             *-fixed-*-*-*-20-*
+!xterm*font:             10x20
+
+! Set the font to a TrueType font with antialiasing.
 ! Adjust the size parameter to your preference
-xterm*faceName: DejaVu Sans Mono:size=18:antialias=false
-XTerm*allowBoldFonts: true
+xterm*faceName:         DejaVu Sans Mono:size=18:antialias=true
+XTerm*allowBoldFonts:   true
 
-! terminal colors ------------------------------------------------------------
+! Set minimum size for Tlf
+xterm*geometry:         80x25
 
-! Linux terminal scheme
-xterm*background: #000000
-xterm*foreground: #c0c0c0
+! Allow access to the larger color palette available.
+XTerm*termName:         xterm-256color
+UXTerm*termName:        xterm-256color
 
-! Black + DarkGrey
-xterm*color0:  #000000
-xterm*color8:  #808080
+!----------------------------------------------------------------------
+! Linux terminal scheme from Gnome Terminal Linux Console color palette
 
-! DarkRed + Red
-xterm*color1:  #800000
-xterm*color9:  #ff0000
+! Lighter Black & Gray
+xterm*background:       #0c0c0c
+xterm*foreground:       #aaaaaa
 
-! DarkGreen + Green
-xterm*color2:  #008000
-xterm*color10: #00ff00
+! Black & DarkGray
+xterm*color0:           #000000
+xterm*color8:           #555555
 
-! Brown + Yellow
-xterm*color3:  #808000
-xterm*color11: #ffff00
+! DarkRed & Red
+xterm*color1:           #aa0000
+xterm*color9:           #ff5555
 
-! DarkBlue + Blue
-xterm*color4:  #000080
-xterm*color12: #0000ff
+! DarkGreen & Green
+xterm*color2:           #00aa00
+xterm*color10:          #55ff55
 
-! DarkMagenta + Magenta
-xterm*color5:  #800080
-xterm*color13: #ff00ff
+! DarkYellow & Yellow
+xterm*color3:           #aa5500
+xterm*color11:          #ffff55
 
-!DarkCyan + Cyan
-xterm*color6:  #008080
-xterm*color14: #00ffff
+! DarkBlue & Blue
+xterm*color4:           #0000aa
+xterm*color12:          #5555ff
 
-! LightGrey + White
-xterm*color7:  #c0c0c0
-xterm*color15: #ffffff
+! DarkMagenta & Magenta
+xterm*color5:           #aa00aa
+xterm*color13:          #ff55ff
+
+! DarkCyan & Cyan
+xterm*color6:           #00aaaa
+xterm*color14:          #55ffff
+
+! LightGray + White
+xterm*color7:           #aaaaaa
+xterm*color15:          #ffffff
+
+! Orange
+xterm*cursorColor:      #ffa530
+
+
+!----------------------------------------------------------------------
+! URxvt settings
+
+URxvt.geometry:         80x25
+URxvt.font:             xft:DejaVu Sans Mono:size=18:antialias=true
+
+! URxvt VGA colors
+
+! Orange
+URxvt.cursorColor:      #ffa530
+!URxvt.pointerColor:    #dc74d1
+
+! Lighter Black & Gray
+URxvt.background:       #0c0c0c
+URxvt.foreground:       #aaaaaa
+
+! Black & DarkGray
+URxvt.color0:           #000000
+URxvt.color8:           #555555
+
+! DarkRed & Red
+URxvt.color1:           #AA0000
+URxvt.color9:           #FF5555
+
+! DarkGreen & Green
+URxvt.color2:           #00AA00
+URxvt.color10:          #55FF55
+
+! DarkYellow & Yellow
+URxvt.color3:           #AA5500
+URxvt.color11:          #FFFF55
+
+! DarkBlue & Blue
+URxvt.color4:           #0000AA
+URxvt.color12:          #5555FF
+
+! DarkMagenta & Magenta
+URxvt.color5:           #AA00AA
+URxvt.color13:          #FF55FF
+
+! DarkCyan & Cyan
+URxvt.color6:           #00AAAA
+URxvt.color14:          #55FFFF
+
+! LightGray + White
+URxvt.color7:           #AAAAAA
+URxvt.color15:          #FFFFFF
