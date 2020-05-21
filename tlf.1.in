@@ -139,20 +139,24 @@ will be created.
 @PACKAGE_NAME@ has been written for
 .BR "console mode" \.
 If you want to run @PACKAGE_NAME@ from a terminal in
-.BR X ,
+.B X
+or
+.BR Wayland ,
 you will probably get the best results if you set \fBTERM\fR=\fIlinux\fR and
 use a Linux console terminal.  Both KDE and GNOME terminals have a facility to
 start a Linux console in an X terminal as does Xfce-terminal.
 .P
 By default,
 .BR xterm (1)
-may give unreadable colours.  If so, you will have to set
-different colours in
+or
+.BR urxvt (1)
+may give unreadable colours.  If so, you will have to set different colours in
 .I logcfg.dat
 or prepare
 .I $HOME/.Xresources
-to the preferred colour scheme.  One advantage of xterm is that it doesn't
-consume the
+to the preferred colour scheme (a sample Xresources file that contains usage
+instructions is included in the doc directory).  One advantage of xterm or urxvt
+are that they do not consume the
 .B F11
 key which other terminal emulators reserve for full screen mode nor
 .BR Ctrl\-PgUp / Ctrl\-PgDn
@@ -492,13 +496,14 @@ combinations are used for various desktop features and are unavailable
 for @PACKAGE_NAME@ use.
 .P
 Some desktop terminal emulators are capable of being configured to allow the
-application running in them to get all of the keys the desktop environment
-does not consume.  In testing good choices seem to be Gnome Terminal, Rox
-Terminal, or the classic Xterm (although its color representation differs from
-the Linux console and other terminal emulators).  Xfce Terminal is known to
-consume F11 and Ctrl-PageUp and Ctrl-PageDown.  The @PACKAGE_NAME@ developers
-have implemented Alt-PageUp and Alt-PageDown as a work-around for the Ctrl
-counterparts.  Reports of success with other terminals are welcome.
+application running in them to get all of the keys the desktop environment does
+not consume.  In testing good choices seem to be Gnome Terminal, Rox Terminal,
+or the classic Xterm (although its default color representation differs slightly
+from the Linux console and other terminal emulators) or URxvt (with a very
+distinct default color palette).  Xfce Terminal is known to consume F11 and
+Ctrl-PageUp and Ctrl-PageDown.  The @PACKAGE_NAME@ developers have implemented
+Alt-PageUp and Alt-PageDown as a work-around for the Ctrl counterparts.  Reports
+of success with other terminals are welcome.
 .
 .SS Call Input and Exchange Fields
 .
@@ -1455,7 +1460,7 @@ Default is Off.
 Provide a comma separated list of RS(T) values which are used for the sent RST.
 Received RST will always be 33..39,43..49,53..59.
 .br
-Providing a value for T is optional but will be ignored. 
+Providing a value for T is optional but will be ignored.
 In CW and digi mode T will always be 9.
 .
 .TP
