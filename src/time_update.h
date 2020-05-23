@@ -25,6 +25,7 @@
 
 extern bool force_show_freq;
 
+void update_line(const char *timebuf);
 void time_update(void);
 
 #endif /* TIME_UPDATE_H */

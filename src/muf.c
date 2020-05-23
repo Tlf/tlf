@@ -184,7 +184,6 @@ September 26, 1986.
 
 int month;
 
-extern struct tm *time_ptr;
 
 double yt;
 double xt;
@@ -322,9 +321,12 @@ void muf(void) {
     dx = dxcc_by_index(countrynr);
     strncpy(country, dx->countryname, 25);
 
+    time_t now = format_time(time_buf, sizeof(time_buf),
+			     "    " DATE_TIME_FORMAT " ");
 
-    get_time();
-    strftime(time_buf, sizeof(time_buf), "    %d-%b-%Y %H:%M ", time_ptr);
+    struct tm time_tm;
+    gmtime_r(&now, &time_tm);
+    month = time_tm.tm_mon;
 
     q = sin(xt / RADIAN) * sin(xr / RADIAN);
     x = q + cos(xt / RADIAN) * cos(xr / RADIAN) * cos(yt / RADIAN - yr / RADIAN);

@@ -138,10 +138,10 @@ void prepare_fixed_part(void) {
 	strcat(logline4, "DIG");
 
     if (do_cabrillo == 0) {
-	get_time();
-	strftime(time_buf, 60, " %d-%b-%y %H:%M ", time_ptr);
+	format_time(time_buf, sizeof(time_buf), " "DATE_TIME_FORMAT" ");
     } else {
-	strftime(time_buf, 60, " %d-%b-%y %H:%M ", &time_ptr_cabrillo);
+	strftime(time_buf, sizeof(time_buf), " "DATE_TIME_FORMAT" ",
+		 &time_ptr_cabrillo);
     }
     strcat(logline4, time_buf);
 
@@ -150,7 +150,7 @@ void prepare_fixed_part(void) {
 	    trx_control == 1 &&
 	    ((strcmp(whichcontest, "qso") == 0) ||
 	     (strcmp(whichcontest, "dxped") == 0))) {
-        char khz[5];
+	char khz[5];
 	sprintf(khz, " %3d", ((unsigned int)(freq / 1000.0)) % 1000);	// show freq.
 	strcat(logline4, khz);
 
@@ -270,12 +270,12 @@ void prepare_specific_part(void) {
 
     } else if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 	//-------------------------cqww----------------
-/*
-	if (strlen(zone_fix) > 1) {
-		strcat (logline4, zone_fix);
-	} else
-		strcat (logline4, zone_export);
-*/
+	/*
+		if (strlen(zone_fix) > 1) {
+			strcat (logline4, zone_fix);
+		} else
+			strcat (logline4, zone_export);
+	*/
 	if (trxmode == DIGIMODE && cqww == 1 && strlen(comment) < 5) {
 	    comment[2] = ' ';
 	    comment[3] = 'D';
@@ -324,12 +324,12 @@ void prepare_specific_part(void) {
 	fillto(73);
 
 	if (addzone != 0) {
-/*
-		if (strlen(zone_fix) > 1) {
-			strncat (logline4, zone_fix, 2);
-		} else
-			strncat (logline4, zone_export, 2);
-*/
+	    /*
+	    		if (strlen(zone_fix) > 1) {
+	    			strncat (logline4, zone_fix, 2);
+	    		} else
+	    			strncat (logline4, zone_export, 2);
+	    */
 	    if (strlen(comment) < 2) {
 		strcat(logline4, "0");
 		strncat(logline4, comment, 1);

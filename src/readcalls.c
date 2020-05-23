@@ -222,7 +222,6 @@ int readcalls(void) {
     int pfxnumcntidx;
     int pxnr;
     bool excl_add_veto;
-    struct tm qsotime;
     int qsomode;
     int linenr = 0;
 
@@ -328,9 +327,7 @@ int readcalls(void) {
 	}
 
 	/* calculate QSO timestamp from logline */
-	memset(&qsotime, 0, sizeof(struct tm));
-	strptime(inputbuffer + 7, "%d-%b-%y %H:%M", &qsotime);
-	worked[l].qsotime[qsomode][bandindex] = mktime(&qsotime);
+	worked[l].qsotime[qsomode][bandindex] = parse_time(inputbuffer + 7, DATE_TIME_FORMAT);
 
 
 	if (pfxmultab == 1) {
@@ -489,13 +486,11 @@ int log_read_n_score() {
 int synclog(char *synclogfile) {
 
     extern char logfile[];
-    extern struct tm *time_ptr;
 
     char wgetcmd[120] = "wget ftp://";	//user:password@hst/dir/file
     char date_buf[60];
 
-    get_time();
-    strftime(date_buf, 9, "%d%H%M", time_ptr);
+    format_time(date_buf, sizeof(date_buf), "%d%H%M");
 
     if (strlen(synclogfile) < 80)
 	strcat(wgetcmd, synclogfile);

@@ -35,10 +35,10 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 
 #include "dxcc.h"
 #include "getwwv.h"
+#include "get_time.h"
 #include "qrb.h"
 #include "showinfo.h"
 #include "tlf.h"
@@ -53,8 +53,6 @@ void showinfo(int x) {
     extern char ituzone[];
     extern double DEST_Lat;
     extern double DEST_Long;
-    extern int timeoffset;
-    extern long timecorr;
     extern char itustr[];
     extern int mycountrynr;
 
@@ -71,8 +69,6 @@ void showinfo(int x) {
     dxcc_data *dx;
     prefix_data *pfx;
     double d;
-    time_t now;
-    struct tm *ptr1;
 
     if (x == SHOWINFO_DUMMY)
 	pfx = prefix_by_index(prefix_count());
@@ -104,9 +100,7 @@ void showinfo(int x) {
     else
 	d = dx->timezone;				/* GMT difference */
 
-    now = (time(0) + (long)((timeoffset - d) * 3600) + timecorr);
-    ptr1 = gmtime(&now);
-    strftime(timebuff, 80, "%H:%M", ptr1);
+    format_time_with_offset(timebuff, sizeof(timebuff), TIME_FORMAT, d);
 
     if (pfx->lat != INFINITY)
 	DEST_Lat = pfx->lat;
@@ -139,7 +133,7 @@ void showinfo(int x) {
 
 	mvprintw(LINES - 1, LINELENGTH - 17, "   DX time: %s", timebuff);
     } else {
-        wwv_show_footer();
+	wwv_show_footer();
     }
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));

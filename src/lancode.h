@@ -45,6 +45,6 @@ int lan_send(char *lanbuffer) ;
 int send_lan_message(int opcode, char *message);
 void talk(void);
 int send_freq(freq_t freq);
-int send_time(void) ;
+void send_time(void) ;
 
 #endif /* LANCODE_H */

@@ -424,7 +424,7 @@ bool worked_in_current_minitest_period(int found) {
 	return true;    // minitest is off, so the answer is yes
     }
 
-    long currtime = (long) mktime(time_ptr);
+    long currtime = get_time();
     long period_start = (currtime / minitest) * minitest;
     return worked[found].qsotime[trxmode][bandinx] >= period_start;
 }
@@ -737,8 +737,6 @@ void searchlog() {
 
     dxcc_data *dx;
     int zone;
-
-    get_time();
 
     if (!initialized) {
 	InitSearchPanel();

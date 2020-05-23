@@ -12,6 +12,8 @@
 #include <setjmp.h>
 #include <string.h>
 
+#include <glib.h>
+
 #include <cmocka.h>
 
 extern const char STRING_NOT_SET[];

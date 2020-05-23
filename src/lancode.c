@@ -32,6 +32,7 @@
 #include <netinet/in.h>
 
 #include "err_utils.h"
+#include "get_time.h"
 #include "lancode.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -82,7 +83,6 @@ int lanqsos;
 char lastqsonr[5];
 int highqsonr;
 int landebug = 0;
-long lantime;
 long timecorr;
 int time_master;
 char thisnode = 'A'; 		/*  start with 'A' if not defined in
@@ -420,18 +420,12 @@ int send_freq(freq_t freq) {
 
 /* ----------------- send time message ----------*/
 
-int send_time(void) {
+void send_time(void) {
 
-    extern int timeoffset;
-
-    long now;
     char timebuffer[14];
 
-    now = (long)(time(0) + (timeoffset * 3600L));
+    time_t now = get_time();    // note: time master send UTC (timecorr=0)
 
-    sprintf(timebuffer, "%ld", now);
-    strcat(timebuffer, " ");
+    sprintf(timebuffer, "%ld ", now);
     send_lan_message(TIMESYNC, timebuffer);
-
-    return (0);
 }

@@ -260,8 +260,7 @@ void start_qtc_recording() {
     if (record_run < 0 && qtcrec_record == 1
 	    && strlen((char *)qtcrec_record_command) > 0) {
 	strcpy(reccommand, qtcrec_record_command[0]);
-	get_time();
-	strftime(tempc, 60, "%y%m%d%H%M%S.wav", time_ptr);
+	format_time(tempc, sizeof(tempc), "%y%m%d%H%M%S.wav");
 	strcat(reccommand, tempc);
 	strcat(reccommand, qtcrec_record_command[1]);
 	record_run = system(reccommand);
@@ -614,9 +613,7 @@ void qtc_main_panel(int direction) {
 				showfield((3 * (currqtc + 1)) + 2);
 			    }
 
-			    get_time();
-			    tempc[0] = '\0';
-			    strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
+			    format_time(tempc, sizeof(tempc), DATE_TIME_FORMAT);
 			    g_strlcpy(qtcreclist.qtclines[currqtc].receivedtime, tempc, 16);
 			    qtcreclist.qtclines[currqtc].status = 2;
 			    show_status(currqtc);
@@ -681,9 +678,7 @@ void qtc_main_panel(int direction) {
 		    if (direction == SEND && trxmode != DIGIMODE) {
 			if (qtclist.qtclines[activefield - 3].sent == 0) {
 			    qtclist.qtclines[activefield - 3].sent = 1;
-			    get_time();
-			    tempc[0] = '\0';
-			    strftime(tempc, 40, "%d-%b-%y %H:%M", time_ptr);
+			    format_time(tempc, sizeof(tempc), DATE_TIME_FORMAT);
 			    g_strlcpy(qtclist.qtclines[activefield - 3].senttime, tempc, 16);
 			    qtclist.qtclines[activefield - 3].senttime[15] = '\0';
 			    qtclist.totalsent++;
@@ -748,9 +743,7 @@ void qtc_main_panel(int direction) {
 				    tempc, qtclist.serial, *qtccount, tempc,
 				    qtclist.serial, *qtccount);
 			}
-			timec[0] = '\0';
-			get_time();
-			strftime(timec, 40, "%d-%b-%y %H:%M", time_ptr);
+			format_time(timec, sizeof(timec), DATE_TIME_FORMAT);
 
 			for (ql = 0; ql < *qtccount; ql++) {
 			    qtclist.qtclines[ql].sent = 1;

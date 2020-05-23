@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "cqww_simulator.h"
 #include "cw_utils.h"
 #include "change_rst.h"
 #include "get_time.h"
@@ -37,6 +38,7 @@
 #include "qsonr_to_str.h"
 #include "searchlog.h"		// Includes glib.h
 #include "showscore.h"
+#include "time_update.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
@@ -49,7 +51,7 @@ void show_header_line() {
     char *mode = "";
     switch (cqmode) {
 	case CQ:
-	    mode = "Log";
+	    mode = (simulator ? "Sim" : "Log");
 	    break;
 	case S_P:
 	    mode = "S&P";
@@ -86,11 +88,9 @@ void clear_display(void) {
     extern int arrldx_usa;
     extern char comment[];
     extern int searchflg;
-    extern struct tm *time_ptr;
     extern char whichcontest[];
     extern int no_rst;
 
-    char time_buf[80];
     int cury, curx;
 
     getyx(stdscr, cury, curx);
@@ -125,15 +125,15 @@ void clear_display(void) {
     get_time();
 
     if (trxmode == CWMODE)
-	strftime(time_buf, 60, "CW  %d-%b-%y %H:%M ", time_ptr);
+	mvaddstr(12, 3, "CW");
     else if (trxmode == SSBMODE)
-	strftime(time_buf, 60, "SSB %d-%b-%y %H:%M ", time_ptr);
+	mvaddstr(12, 3, "SSB");
     else
-	strftime(time_buf, 60, "DIG %d-%b-%y %H:%M ", time_ptr);
+	mvaddstr(12, 3, "DIG");
 
-    month = time_ptr->tm_mon;	/* month for muf calc */
-
-    mvaddstr(12, 3, time_buf);
+    char time_buf[20];
+    format_time(time_buf, sizeof(time_buf), DATE_TIME_FORMAT);
+    update_line(time_buf);
 
     qsonr_to_str();
     mvaddstr(12, 23, qsonrstr);

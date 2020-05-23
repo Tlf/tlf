@@ -21,6 +21,19 @@
 #ifndef GET_TIME_H
 #define GET_TIME_H
 
-void get_time(void);
+#include <time.h>
+
+#define DATE_FORMAT         "%d-%b-%y"  // 23-Apr-20
+#define TIME_FORMAT         "%H:%M"
+#define DATE_TIME_FORMAT    DATE_FORMAT " " TIME_FORMAT
+
+time_t get_time();
+int get_minutes();
+
+time_t format_time(char *buffer, size_t size, const char *format);
+time_t format_time_with_offset(char *buffer, size_t size, const char *format,
+			       double offset);
+
+time_t parse_time(const char *buffer, const char *format);
 
 #endif /* GET_TIME_H */

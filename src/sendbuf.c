@@ -30,6 +30,7 @@
 
 #include <glib.h>
 
+#include "cqww_simulator.h"
 #include "callinput.h"
 #include "displayit.h"
 #include "globalvars.h"
@@ -250,8 +251,6 @@ void sendbuf(void) {
     extern char termbuf[];
     extern int cwkeyer;
     extern int digikeyer;
-    extern int simulator;
-    extern int simulator_mode;
     extern int sending_call;
 
     static char printlinebuffer[82] = "";
@@ -264,7 +263,7 @@ void sendbuf(void) {
 	ExpandMacro();
 
 	if ((strlen(buffer) + strlen(termbuf)) < 80) {
-	    if (simulator == 0)
+	    if (!simulator)
 		strcat(termbuf, buffer);
 //              if (sending_call == 1) {
 //                      strcat (termbuf, " ");
@@ -274,7 +273,7 @@ void sendbuf(void) {
 
 	g_strlcpy(printlinebuffer, termbuf, sizeof(printlinebuffer));
 
-	if (searchflg == 0 && simulator == 0)
+	if (!searchflg && !simulator)
 	    strncat(printlinebuffer, backgrnd_str,
 		    80 - strlen(printlinebuffer));
 	else {
@@ -293,9 +292,8 @@ void sendbuf(void) {
 
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-	if (simulator_mode == 0) {
+	if (get_simulator_state() == IDLE) {
 	    mvprintw(5, 0, printlinebuffer);
-	    refreshp();
 	}
 	refreshp();
 
@@ -327,11 +325,13 @@ void sendbuf(void) {
 	    keyer_append(buffer);
 	}
 
-	if (simulator == 0) {
+	if (!simulator) {
 	    if (sending_call == 0)
 		displayit();
 	    refreshp();
-	}
+	} else {
+            set_simulator_state(REPEAT);
+        }
 
 	buffer[0] = '\0';
     }

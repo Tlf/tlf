@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2014           Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +19,17 @@
  */
 
 
-#ifndef SET_TONE_H
-#define SET_TONE_H
+#ifndef CQWW_SIMULATOR_H
+#define CQWW_SIMULATOR_H
 
-extern char tonestr[];
+#include <stdbool.h>
 
-void set_tone(void);
-void write_tone(void);
+extern bool simulator;
 
+typedef enum {IDLE, CALL, REPEAT, FINAL} simstate_t;
 
-#endif /* end of include guard: SET_TONE_H */
+simstate_t get_simulator_state();
+void set_simulator_state(simstate_t s);
+void cqww_simulator(void);
+
+#endif

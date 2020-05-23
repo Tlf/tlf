@@ -32,6 +32,7 @@
 #include <unistd.h>
 
 #include "audio.h"
+#include "cqww_simulator.h"
 #include "changepars.h"
 #include "clear_display.h"
 #include "editlog.h"
@@ -88,7 +89,6 @@ int changepars(void) {
     extern int ctcomp;
     extern char *config_file;
     extern int miniterm;
-    extern int simulator;
     extern int cwkeyer;
     extern char synclogfile[];
     extern char sc_volume[];
@@ -259,7 +259,7 @@ int changepars(void) {
 		contest = CONTEST;
 		searchflg = SEARCHWINDOW;
 	    }
-	    mvprintw(13, 29, "CONTEST-mode is %d", contest);
+	    mvprintw(13, 29, "CONTEST-mode is %s", contest ? "on" : "off");
 	    refreshp();
 	    sleep(1);
 
@@ -441,9 +441,9 @@ int changepars(void) {
 		break;
 	    }
 
-	    if (simulator == 0) {
+	    if (!simulator) {
 
-		simulator = 1;
+		simulator = true;
 		cqmode = CQ;
 		if (ctcomp == 1) {
 		    TLF_LOG_INFO(
@@ -464,7 +464,7 @@ int changepars(void) {
 		    }
 		}
 	    } else {
-		simulator = 0;
+		simulator = false;
 		mvprintw(13, 29, "Simulator off");
 		refreshp();
 		sleep(1);
@@ -679,8 +679,7 @@ int changepars(void) {
 		if (fldigi_toggle()) {
 		    fldigi_clear_connerr();
 		    mvprintw(13, 29, "FLDIGI ON");
-	        }
-	        else {
+		} else {
 		    mvprintw(13, 29, "FLDIGI OFF");
 		}
 		refreshp();

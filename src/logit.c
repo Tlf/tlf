@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "background_process.h"
+#include "cqww_simulator.h"
 #include "callinput.h"
 #include "clear_display.h"
 #include "getexchange.h"
@@ -116,11 +117,7 @@ void logit(void) {
 			refreshp();
 		    }
 
-		    if (strstr(hiscall, "?") != NULL) {
-			setSimulatorState(3);
-		    } else {
-			setSimulatorState(2);
-		    }
+		    set_simulator_state(FINAL);
 
 		    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
 
@@ -174,7 +171,7 @@ void logit(void) {
 		} else if (defer_store > 1) {
 		    if ((cqmode == CQ) && (contest == CONTEST)) {
 			send_standard_message(CQ_TU_MSG);	/* send cq return */
-			setSimulatorState(1);
+			set_simulator_state(CALL);
 
 			defer_store = 0;
 

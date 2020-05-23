@@ -41,12 +41,12 @@ int pacc_pa(void) {
     return 0;
 }
 
-long timecorr = 0;
-
 /* setups */
 int setup_default(void **state) {
     char filename[100];
 
+    nr_worked = 0;
+    memset(&worked, 0, sizeof(worked));
     bandinx = BANDINDEX_10;
     cqww = 1;   /* trigger zone evaluation */
     wpx = 0;
@@ -114,12 +114,16 @@ void test_addcall_nopfxnum(void **state) {
 void test_addcall_pfxnum_inList(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "LZ1AB");
+    time_t now = time(NULL);
 
     addcall();
     assert_int_equal(addcallarea, 1);
     assert_int_equal(pfxnummulti[1].qsos[1], BAND10);
     assert_int_equal(countryscore[BANDINDEX_10], 1);
     assert_int_equal(zonescore[BANDINDEX_10], 1);
+
+    assert_int_equal(nr_worked, 1);
+    assert_in_range(worked[0].qsotime[trxmode][BANDINDEX_10], now, now + 1);
 }
 
 
@@ -165,7 +169,7 @@ char logline[] =
     "160CW  08-Feb-11 17:06 0025  LZ1AB          599  599  20            LZ  20   1  ";
 
 char logline_HA[] =
-    "160CW  08-Feb-11 17:06 0025  HA1AB          599  599  19            LZ  20   1  ";
+    "160CW  08-Aug-11 17:06 0025  HA1AB          599  599  19            LZ  20   1  ";
 
 char logline_PY[] =
     "160CW  08-Feb-11 17:06 0025  PY1AB          599  599  19            PY  20   1  ";
@@ -177,6 +181,10 @@ void test_addcall2_nopfxnum(void **state) {
     strcpy(lan_logline, logline);
     addcall2();
     assert_int_equal(addcallarea, 0);
+
+    assert_int_equal(nr_worked, 1);
+    // 2011-02-08 17:06 UTC
+    assert_int_equal(worked[0].qsotime[trxmode][BANDINDEX_160], 1297184760);
 }
 
 int setup_addcall2_pfxnum_inList(void **state) {
@@ -203,6 +211,10 @@ void test_addcall2_pfxnum_notinList(void **state) {
     strcpy(lan_logline, logline_HA);
     addcall2();
     assert_int_equal(addcallarea, 0);
+
+    assert_int_equal(nr_worked, 1);
+    // 2011-08-08 17:06 UTC
+    assert_int_equal(worked[0].qsotime[trxmode][BANDINDEX_160], 1312823160);
 }
 
 

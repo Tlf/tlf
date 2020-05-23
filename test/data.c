@@ -132,6 +132,7 @@ char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
 char exchange_list[40] = "";
 int timeoffset = 0;
+long timecorr = 0;  // from lancode.c
 int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
 /* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
@@ -310,14 +311,6 @@ char rigportname[40];
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;
-
-/*---------------------------------simulator-------------------------------*/
-int simulator = 0;
-int simulator_mode = 0;
-int simulator_seed = 8327;
-int system_secs;
-char tonecpy[5];
-char simulator_tone[5];
 
 /*-------------------------------the log lines-----------------------------*/
 char qsos[MAX_QSOS][LOGLINELEN + 1];

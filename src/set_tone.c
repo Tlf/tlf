@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /* ------------------------------------------------------------
- *        Set Cw sidetone
+ *        Set CW sidetone
  *
  *--------------------------------------------------------------*/
 
@@ -26,19 +26,18 @@
 #include <stdlib.h>
 
 #include "err_utils.h"
+#include "globalvars.h"
 #include "netkeyer.h"
 #include "nicebox.h"	// Includes curses.h
 #include "set_tone.h"
 #include "tlf.h"
 
+char tonestr[5] = "600";
 
-int set_tone(void) {
-
-    extern char tonestr[];
-    extern int trxmode;
+void set_tone(void) {
 
     if (trxmode != CWMODE)
-	return (1);
+	return;
 
     nicebox(4, 40, 1, 6, "Tone");
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -50,14 +49,10 @@ int set_tone(void) {
     tonestr[3] = '\0';
 
     write_tone();
-
-    return (0);
 }
 
 void write_tone(void) {
 
-    extern int trxmode;
-    extern char tonestr[];
     extern char sc_volume[];
 
     if (netkeyer(K_TONE, tonestr) < 0) {

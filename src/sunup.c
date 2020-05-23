@@ -35,7 +35,6 @@
 
 void sunup(double DEST_Lat, double *sunrise, double *sundown) {
 
-    extern struct tm *time_ptr;
 
     double lat;
     double sun_lat;
@@ -44,8 +43,10 @@ void sunup(double DEST_Lat, double *sunrise, double *sundown) {
 
     lat = DEST_Lat / RADIAN;
 
-    get_time();
-    total_days = time_ptr->tm_yday + 10; /* days after lower culmination
+    time_t now = get_time();
+    struct tm time_tm;
+    gmtime_r(&now, &time_tm);
+    total_days = time_tm.tm_yday + 10; /* days after lower culmination
 						   of the sun */
     if (total_days >= 365.25)
 	total_days -= 365.25;

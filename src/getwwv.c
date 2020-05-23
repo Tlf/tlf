@@ -20,9 +20,9 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include "dxcc.h"
+#include "get_time.h"
 #include "printcall.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -53,7 +53,7 @@ void wwv_add(const char *s) {
     }
     *dest = 0;
 
-    lastwwv_time = time(NULL);
+    lastwwv_time = get_time();
 
     char gmt[10] = "";
     char *p = strstr(lastwwv_raw, "<");
@@ -109,7 +109,7 @@ void wwv_add(const char *s) {
 // show footer if WWV was received not later than 3 mins ago
 //
 void wwv_show_footer() {
-    if (lastwwv_time > time(NULL) - 3 * 60) {
+    if (lastwwv_time > get_time() - 3 * 60) {
 	mvprintw(LINES - 1, 0, lastwwv);
     }
 }

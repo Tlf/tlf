@@ -47,7 +47,6 @@
 void add_to_spots(char *call, freq_t freq) {
 
     extern int lanspotflg;
-    extern struct tm *time_ptr;
     extern char thisnode;
 
     char spotline[160];
@@ -56,9 +55,7 @@ void add_to_spots(char *call, freq_t freq) {
     sprintf(spotline, "DX de TLF-%c:     %9.3f  %s", thisnode, freq / 1000.0, call);
     strcat(spotline, spaces(43));
 
-    get_time();
-
-    strftime(spottime, sizeof(spottime), "%H%MZ", time_ptr);
+    format_time(spottime, sizeof(spottime), "%H%MZ");
     strcpy(spotline + 70, spottime);
     strcat(spotline, "\n\n");
 
