@@ -296,10 +296,10 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 		strcpy(hiscall, tempstr);
 		break;
 	    case RST_S:
-		strcpy(my_rst, tempstr);
+		strcpy(recvd_rst, tempstr);
 		break;
 	    case RST_R:
-		strcpy(his_rst, tempstr);
+		strcpy(sent_rst, tempstr);
 		break;
 	    case EXCH:
 		strcpy(comment, tempstr);

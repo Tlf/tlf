@@ -81,8 +81,6 @@ void clear_display(void) {
     extern char band[NBANDS][4];
     extern int bandinx;
     extern int trxmode;
-    extern char my_rst[];
-    extern char his_rst[];
     extern char qsonrstr[];
     extern int cqww;
     extern int arrldx_usa;
@@ -143,8 +141,8 @@ void clear_display(void) {
 	mvaddstr(12, 49, "   ");
     } else {
 	rst_set_strings();
-	mvaddstr(12, 44, his_rst);
-	mvaddstr(12, 49, my_rst);
+	mvaddstr(12, 44, sent_rst);
+	mvaddstr(12, 49, recvd_rst);
     }
 
     if (cqww == 1) {

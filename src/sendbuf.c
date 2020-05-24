@@ -171,7 +171,6 @@ void ExpandMacro(void) {
     extern char call[20];
     extern char hiscall[20];
     extern char hiscall_sent[];
-    extern char his_rst[];
     extern char qsonrstr[5];
     extern char comment[];
     extern char lastqsonr[];
@@ -204,9 +203,9 @@ void ExpandMacro(void) {
     }
 
 
-    rst_out[0] = his_rst[0];
-    rst_out[1] = short_number(his_rst[1]);
-    rst_out[2] = short_number(his_rst[2]);
+    rst_out[0] = sent_rst[0];
+    rst_out[1] = short_number(sent_rst[1]);
+    rst_out[2] = short_number(sent_rst[2]);
     rst_out[3] = '\0';
 
     replace_all(buffer, BUFSIZE, "[", rst_out);   /* his RST */

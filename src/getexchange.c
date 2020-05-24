@@ -68,7 +68,6 @@ int getexchange(void) {
     extern char comment[];
     extern char cqzone[];
     extern char ituzone[];
-    extern char my_rst[];
     extern char ph_message[14][80];
     extern char hiscall[];
     extern char qsonrstr[];
@@ -302,7 +301,7 @@ int getexchange(void) {
 		    rst_recv_up();
 
 		    if (!no_rst)
-			mvprintw(12, 49, my_rst);
+			mvprintw(12, 49, recvd_rst);
 
 		} else {	/* speed up */
 		    speedup();
@@ -319,7 +318,7 @@ int getexchange(void) {
 		    rst_recv_down();
 
 		    if (!no_rst)
-			mvprintw(12, 49, my_rst);
+			mvprintw(12, 49, recvd_rst);
 
 		} else {	/* speed down */
 		    speeddown();

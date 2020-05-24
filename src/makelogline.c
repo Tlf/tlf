@@ -178,16 +178,16 @@ void prepare_fixed_part(void) {
 	strcat(logline4, "---  ---  ");	/* instead of RST */
     } else {
 	if ((trxmode == CWMODE) || (trxmode == DIGIMODE)) {
-	    his_rst[2] = '9';
-	    my_rst[2] = '9';
+	    sent_rst[2] = '9';
+	    recvd_rst[2] = '9';
 	} else {
-	    his_rst[2] = ' ';
-	    my_rst[2] = ' ';
+	    sent_rst[2] = ' ';
+	    recvd_rst[2] = ' ';
 	}
 
-	strcat(logline4, his_rst);	/* till 54 */
+	strcat(logline4, sent_rst);	/* till 54 */
 	strcat(logline4, "  ");
-	strcat(logline4, my_rst);
+	strcat(logline4, recvd_rst);
 	strcat(logline4, "  ");
     }
 }

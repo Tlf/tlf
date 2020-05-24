@@ -185,8 +185,8 @@ int trxmode = CWMODE;
 rmode_t  rigmode = RIG_MODE_NONE;
 
 int mixedmode = 0;
-char his_rst[4] = "599";
-char my_rst[4] = "599";
+char sent_rst[4] = "599";
+char recvd_rst[4] = "599";
 char last_rst[4] = "599";       /* Report for last QSO */
 
 /* TODO Maybe we can use the following */

@@ -138,8 +138,8 @@ int trxmode = CWMODE;
 /* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
 rmode_t rigmode = 0;
 int mixedmode = 0;
-char his_rst[4] = "599";
-char my_rst[4] = "599";
+char sent_rst[4] = "599";
+char recvd_rst[4] = "599";
 char last_rst[4] = "599";       /* Report for last QSO */
 int mults_per_band = 1;		/* mults count per band */
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
