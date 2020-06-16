@@ -84,7 +84,7 @@ int setup_default(void **state) {
     digikeyer = 1;
     strcpy(call, "dl1jbe\n"); 		// !!! do not forget trailing \n
     strcpy(hiscall, "lz1ab");
-    strcpy(his_rst, "579");
+    strcpy(sent_rst, "579");
     shortqsonr = LONGCW;
     strcpy(qsonrstr, "0309");
     strcpy(comment, "Alex");

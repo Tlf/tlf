@@ -116,7 +116,6 @@ int callinput(void) {
     extern int trxmode;
     extern char lastcall[];
     extern int cqdelay;
-    extern char his_rst[];
     extern int cluster;
     extern int announcefilter;
     extern char ph_message[14][80];
@@ -456,7 +455,7 @@ int callinput(void) {
 		    rst_sent_up();
 
 		    if (!no_rst)
-			mvprintw(12, 44, his_rst);
+			mvprintw(12, 44, sent_rst);
 		    mvprintw(12, 29, hiscall);
 
 		} else {	// change cw speed
@@ -477,7 +476,7 @@ int callinput(void) {
 		    rst_sent_down();
 
 		    if (!no_rst)
-			mvprintw(12, 44, his_rst);
+			mvprintw(12, 44, sent_rst);
 		    mvprintw(12, 29, hiscall);
 
 		} else {

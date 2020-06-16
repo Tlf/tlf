@@ -159,8 +159,8 @@ void test_cabToTlf_ParseQSO(void **state) {
     assert_int_equal((int)freq, 7002000);
     assert_int_equal(trxmode, DIGIMODE);
     assert_string_equal(hiscall, "K6ND");
-    assert_string_equal(my_rst, "589");
-    assert_string_equal(his_rst, "599");
+    assert_string_equal(recvd_rst, "589");
+    assert_string_equal(sent_rst, "599");
     assert_string_equal(comment, "044");
     assert_int_equal(time_ptr_cabrillo.tm_hour, 20);
     assert_int_equal(time_ptr_cabrillo.tm_min, 33);
@@ -179,8 +179,8 @@ void test_cabToTlf_ParseXQSO(void **state) {
     assert_int_equal((int)freq, 7002000);
     assert_int_equal(trxmode, SSBMODE);
     assert_string_equal(hiscall, "K6ND");
-    assert_string_equal(my_rst, "589");
-    assert_string_equal(his_rst, "599");
+    assert_string_equal(recvd_rst, "589");
+    assert_string_equal(sent_rst, "599");
     assert_string_equal(comment, "044");
     assert_int_equal(time_ptr_cabrillo.tm_hour, 00);
     assert_int_equal(time_ptr_cabrillo.tm_min, 33);

@@ -75,23 +75,23 @@ void rst_init(char *init_string) {
 /* reset RS(T) values for start of new QSO to highest available value */
 void rst_reset(void) {
     rst_sent.index = rst_sent.array->len - 1;
-    memcpy(his_rst, g_ptr_array_index(rst_sent.array, rst_sent.index), 2);
+    memcpy(sent_rst, g_ptr_array_index(rst_sent.array, rst_sent.index), 2);
 
     rst_recv.index = rst_recv.array->len - 1;
-    memcpy(my_rst, g_ptr_array_index(rst_recv.array, rst_recv.index), 2);
+    memcpy(recvd_rst, g_ptr_array_index(rst_recv.array, rst_recv.index), 2);
 }
 
 
 /* initialize 'my_rst' and 'his_rst' */
 void rst_set_strings() {
-    memcpy(my_rst, g_ptr_array_index(rst_recv.array, rst_recv.index), 2);
-    memcpy(his_rst, g_ptr_array_index(rst_sent.array, rst_sent.index), 2);
+    memcpy(recvd_rst, g_ptr_array_index(rst_recv.array, rst_recv.index), 2);
+    memcpy(sent_rst, g_ptr_array_index(rst_sent.array, rst_sent.index), 2);
    if (trxmode != SSBMODE) {
-        my_rst[2] = '9';
-        his_rst[2] = '9';
+        recvd_rst[2] = '9';
+        sent_rst[2] = '9';
     } else {
-        my_rst[2] = ' ';
-        his_rst[2] = ' ';
+        recvd_rst[2] = ' ';
+        sent_rst[2] = ' ';
     }
 }
 
