@@ -721,6 +721,7 @@ int write_adif(void) {
     extern char whichcontest[];
     extern int exchange_serial;
     extern char modem_mode[];
+    extern int no_rst;
 
     char buf[181] = "";
     char buffer[181] = "";
@@ -881,12 +882,14 @@ int write_adif(void) {
 		adif_mode_dep = 3;
 
 	    /* RST_SENT */
-	    strcat(buffer, "<RST_SENT:");
-	    adif_tmp_str[1] = '\0';	/*       PA0R 02/10/2003  */
-	    adif_tmp_str[0] = adif_mode_dep + 48;
-	    strcat(buffer, adif_tmp_str);
-	    strcat(buffer, ">");
-	    strncat(buffer, buf + 44, adif_mode_dep);
+	    if (!no_rst ) {
+		strcat(buffer, "<RST_SENT:");
+		adif_tmp_str[1] = '\0';	/*       PA0R 02/10/2003  */
+		adif_tmp_str[0] = adif_mode_dep + 48;
+		strcat(buffer, adif_tmp_str);
+		strcat(buffer, ">");
+		strncat(buffer, buf + 44, adif_mode_dep);
+	    }
 
 	    /* STX - sent contest number */
 	    strcat(buffer, "<STX:");
@@ -903,14 +906,16 @@ int write_adif(void) {
 	    }
 
 	    /* RST_RCVD */
-	    strncpy(adif_tmp_rr, buf + 49, 4);
-	    strcpy(adif_tmp_rr, g_strstrip(adif_tmp_rr));
-	    strcat(buffer, "<RST_RCVD:");
-	    snprintf(resultat, sizeof(resultat), "%zd",
-		     strlen(adif_tmp_rr));
-	    strcat(buffer, resultat);
-	    strcat(buffer, ">");
-	    strncat(buffer, buf + 49, adif_mode_dep);
+	    if (!no_rst) {
+		strncpy(adif_tmp_rr, buf + 49, 4);
+		strcpy(adif_tmp_rr, g_strstrip(adif_tmp_rr));
+		strcat(buffer, "<RST_RCVD:");
+		snprintf(resultat, sizeof(resultat), "%zd",
+			 strlen(adif_tmp_rr));
+		strcat(buffer, resultat);
+		strcat(buffer, ">");
+		strncat(buffer, buf + 49, adif_mode_dep);
+	    }
 
 	    /* SRX - received contest number */
 	    strncpy(adif_rcvd_num, buf + 54, 14);
