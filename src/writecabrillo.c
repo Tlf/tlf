@@ -891,13 +891,12 @@ int write_adif(void) {
 		strncat(buffer, buf + 44, adif_mode_dep);
 	    }
 
-	    /* STX - sent contest number */
-	    strcat(buffer, "<STX:");
-
+	    /* Sent contest serial number or exchange */
 	    if ((exchange_serial == 1) || (standardexchange[0] == '#')) {
-		strcat(buffer, "4>");
+		strcat(buffer, "<STX:4>");
 		strncat(buffer, buf + 23, 4);
 	    } else {
+		strcat(buffer, "<STX_STRING:");
 		snprintf(resultat, sizeof(resultat), "%zd",
 			 strlen(standardexchange));
 		strcat(buffer, resultat);
@@ -917,12 +916,15 @@ int write_adif(void) {
 		strncat(buffer, buf + 49, adif_mode_dep);
 	    }
 
-	    /* SRX - received contest number */
+	    /* Received contest serial number or exchange */
 	    strncpy(adif_rcvd_num, buf + 54, 14);
 	    strcpy(adif_rcvd_num, g_strstrip(adif_rcvd_num));
 	    snprintf(resultat, sizeof(resultat), "%zd",
 		     strlen(adif_rcvd_num));
-	    strcat(buffer, "<SRX:");
+	    if ((exchange_serial == 1) || (standardexchange[0] == '#'))
+		strcat(buffer, "<SRX:");
+	    else
+		strcat(buffer, "<SRX_STRING:");
 	    strcat(buffer, resultat);
 	    strcat(buffer, ">");
 	    if (strcmp(buf + 54, " ") != 0)
