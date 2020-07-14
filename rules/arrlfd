@@ -7,6 +7,7 @@
 CONTEST=arrl_fd
 LOGFILE=fd.log
 CONTEST_MODE
+CABRILLO=ARRL-FD
 NO_RST
 ##################################
 #                                #
