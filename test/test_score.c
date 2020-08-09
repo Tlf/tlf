@@ -298,10 +298,10 @@ static void init_continentlist() {
 
 void test_empty_continentlist(void **state) {
     assert_int_equal(is_in_continentlist(""), false);
-    assert_int_equal(is_in_continentlist("SA"), false);
+    assert_int_equal(is_in_continentlist("NA"), false);
 }
 
-void test_not_in_continnetlist(void ** state) {
+void test_not_in_continentlist(void ** state) {
     init_continentlist();
     assert_int_equal(is_in_continentlist("SA"), false);
 }
@@ -328,14 +328,45 @@ void test_scoreByCorC_countrylistOnly(void **state) {
 
 void test_scoreByCorC_continentlistOnly(void **state) {
     continentlist_only = true;
+    /* empty list */
     check_call_points("LZ1AB", 0);
 
     init_continentlist();
+
+    /* no list points given */ 
+    check_call_points("LZ1AB", 0);
+    check_call_points("JA4BB", 0);
+
+    /* same, but my_cont_points set */
     my_cont_points = 1;
     check_call_points("LZ1AB", 1);
+    check_call_points("XE2AAA", 0);
+    check_call_points("JA4BB", 0);
+
+    /* my_cont_points, cont_list_points given */
     continentlist_points = 2;
+    check_call_points("LZ1AB", 1);
     check_call_points("XE2AAA", 2);
+    check_call_points("JA4BB", 0);
+
+    /* only cont_list_points given */
+    my_cont_points = -1;
+    check_call_points("LZ1AB", 2);
+    check_call_points("XE2AAA", 2);
+    check_call_points("JA4BB", 0);
 }
+
+
+void test_scoreByCorC_continentlistOnly_ignoreDxContPoints(void **state) {
+    continentlist_only = true;
+    check_call_points("LZ1AB", 0);
+
+    dx_cont_points = 2;
+    init_continentlist();
+    check_call_points("LZ1AB", 0);
+    check_call_points("XE2AAA", 0);
+}
+
 
 void test_scoreByCorC_notInList(void **state) {
 

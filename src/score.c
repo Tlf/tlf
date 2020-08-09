@@ -186,15 +186,14 @@ int scoreByContinentOrCountry() {
     extern char continent[];
 
     int points = 0;
-    int inList = 0;
+    bool inList = false;
 
     inList = exist_in_country_list();
     if (countrylist_only) {
-	if (inList == 1 && countrylist_points != -1)
+	if (inList && countrylist_points != -1)
 	    points = countrylist_points;
     } else {
-
-	if (inList == 1) {
+	if (inList) {
 	    if (countrylist_points != -1)
 		points = countrylist_points;
 
@@ -221,16 +220,16 @@ int scoreByContinentOrCountry() {
 
     /* HA2OS mods */
     if (continentlist_only) {
+	points = 0;
 	// only continent list allowed
 	if (is_in_continentlist(continent)) {
 	    // are we are on DX continent or not
-	    if (strcmp(continent, my.continent) == 0) {
+	    if ((strcmp(continent, my.continent) == 0) &&
+		(my_cont_points != -1)) {
 		points = my_cont_points;
 	    } else if (continentlist_points != -1) {
 		points = continentlist_points;
 	    }
-	} else {
-	    points = 0;
 	}
     }
 
