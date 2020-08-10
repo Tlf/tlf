@@ -2,7 +2,8 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedus <airween@gmail.com>
- *               2013-2015      Thomas Beierlein <tb@forth-ev.de>
+ *               2013-2015, 2020
+ *               		Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,13 +168,16 @@ int scoreByMode() {
     }
 }
 
+/* Overwrite points with x if set */
+#define USE_IF_SET(x) do { \
+			if (x != -1) \
+			    points = x; \
+			} while(0);
 
 int scoreByContinentOrCountry() {
 
-    extern char hiscall[];
-
-    extern int countrylist_points;
     extern bool countrylist_only;
+    extern int countrylist_points;
 
     extern bool continentlist_only;
     extern int continentlist_points;
@@ -186,36 +190,16 @@ int scoreByContinentOrCountry() {
     extern char continent[];
 
     int points = 0;
-    bool inList = false;
+    bool inCountryList = false;
 
-    inList = exist_in_country_list();
+    inCountryList = exist_in_country_list();
+
     if (countrylist_only) {
-	if (inList && countrylist_points != -1)
-	    points = countrylist_points;
-    } else {
-	if (inList) {
-	    if (countrylist_points != -1)
-		points = countrylist_points;
+	points = 0;
+	if (inCountryList)
+	    USE_IF_SET(countrylist_points);
 
-	    if (countrynr == my.countrynr) {
-		if (my_country_points != -1)
-		    points = my_country_points;
-		else if (my_cont_points != -1)
-		    points = my_cont_points;
-		else
-		    points = 0;
-	    }
-
-	} else if (countrynr == my.countrynr) {
-	    if (my_country_points != -1)
-		points = my_country_points;
-	    else if (my_cont_points != -1)
-		points = my_cont_points;
-	} else if (strcmp(continent, my.continent) == 0) {
-	    if (my_cont_points != -1)
-		points = my_cont_points;
-	} else if (dx_cont_points != -1)
-	    points = dx_cont_points;
+	return points;
     }
 
     /* HA2OS mods */
@@ -223,15 +207,26 @@ int scoreByContinentOrCountry() {
 	points = 0;
 	// only continent list allowed
 	if (is_in_continentlist(continent)) {
-	    // are we are on DX continent or not
-	    if ((strcmp(continent, my.continent) == 0) &&
-		(my_cont_points != -1)) {
-		points = my_cont_points;
-	    } else if (continentlist_points != -1) {
-		points = continentlist_points;
+	    USE_IF_SET(continentlist_points);
+	    // overwrite if own continent and my_cont_points set
+	    if (strcmp(continent, my.continent) == 0) {
+		USE_IF_SET(my_cont_points);
 	    }
 	}
+	return points;
     }
+
+    // default
+    if (countrynr == my.countrynr) {
+	points = 0;
+	USE_IF_SET(my_cont_points);
+	USE_IF_SET(my_country_points);
+    } else if (inCountryList) {
+	USE_IF_SET(countrylist_points);
+    } else if (strcmp(continent, my.continent) == 0) {
+	USE_IF_SET(my_cont_points);
+    } else
+	USE_IF_SET(dx_cont_points);
 
     return points;
 }
