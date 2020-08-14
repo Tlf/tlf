@@ -11,7 +11,7 @@ extern char qsos[MAX_QSOS][LOGLINELEN + 1];
 					// comment, starting with a semicolon
 extern int nr_qsos;			// number of lines in qsos[]
 
-extern struct mults_t multis[MAX_MULTS]; // array of multipliers worked so far
+extern mults_t multis[MAX_MULTS]; 	// array of multipliers worked so far
 extern int nr_multis;			// number of entries in mults[]
 extern int multscore[NBANDS];		// number of multipliers worked per
 					// band; index is
@@ -22,7 +22,7 @@ extern int multscore[NBANDS];		// number of multipliers worked per
 
 extern int nr_worked;			// number of worked station
 					// entries in worked[]
-extern struct worked_t worked[MAX_CALLS]; // worked stations
+extern worked_t worked[MAX_CALLS]; 	// worked stations
 
 extern int countries[MAX_DATALINES];	// for every country, a bitfield
 					// indicating bands on which it has

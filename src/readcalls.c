@@ -52,7 +52,7 @@
 
 extern bool continentlist_only;
 extern int pfxnummultinr;
-extern t_pfxnummulti pfxnummulti[];
+extern pfxnummulti_t pfxnummulti[];
 extern int exclude_multilist_type;
 
 

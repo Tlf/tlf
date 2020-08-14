@@ -781,7 +781,7 @@ void multiplierinfo(void) {
     extern int arrlss;
     extern int serial_section_mult;
     extern int sectn_mult;
-    extern struct mults_t multis[MAX_MULTS];
+    extern mults_t multis[MAX_MULTS];
     extern int nr_multis;
 
     int j, k, vert, hor, cnt, found;

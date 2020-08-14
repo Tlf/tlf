@@ -100,7 +100,7 @@ static int nr_of_bands(int x) {
 static void count_56_banders() {
     int i, nr;
 
-    extern struct worked_t worked[];
+    extern worked_t worked[];
     extern int nr_worked;
 
     five_banders = 0;
@@ -118,7 +118,7 @@ static void count_56_banders() {
 
 static int search_g4foc_in_callarray(void) {
     extern int nr_worked;
-    extern struct worked_t worked[];
+    extern worked_t worked[];
 
     int found = -1;
     int i;
@@ -153,7 +153,7 @@ static int get_nr_cntry() {
 
 /* count number of continents worked on all bands */
 static int get_nr_cont() {
-    extern struct worked_t worked[];
+    extern worked_t worked[];
     extern int nr_worked;
 
     GHashTable *cont;
@@ -179,7 +179,7 @@ static int get_nr_cont() {
  * \return number of points
  */
 int foc_total_score() {
-    extern struct worked_t worked[];
+    extern worked_t worked[];
 
     int points;
 

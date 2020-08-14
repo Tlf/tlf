@@ -144,29 +144,29 @@ enum {
 /** worked station
  *
  * contains all informations about an already worked station */
-struct worked_t {
+typedef struct {
     char call[20]; 		/**< call of the station */
     char exchange[12]; 		/**< the last exchange */
     int band; 			/**< bitmap for worked bands */
     int country; 		/**< its country number */
     long qsotime[3][NBANDS];	/**< last timestamp of qso in gmtime
 				  for all modes and bands */
-};
+} worked_t;
 
 /** worked mults
  *
  * all information about worked multis */
-struct mults_t {
+typedef struct {
     char name[12];		/**< Multiplier */
     int band;			/**< bitmap with bands the multi was worked */
-};
+} mults_t;
 
 
 #define MAXPFXNUMMULT 30
 typedef struct {
     int countrynr;
     int qsos[NBANDS];
-} t_pfxnummulti;
+} pfxnummulti_t;
 
 
 void refreshp();

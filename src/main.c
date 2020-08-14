@@ -174,7 +174,7 @@ int vk_cty;
 int zs_cty;
 int ua9_cty;
 
-t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
 int pfxnummultinr = 0;
 
 char multsfile[80] = "";	/* name of file with a list of allowed
@@ -365,14 +365,14 @@ int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/**< number of calls in worked[] */
-struct worked_t worked[MAX_CALLS]; /**< worked stations */
+worked_t worked[MAX_CALLS]; 	/**< worked stations */
 
 /*----------------------statistic of worked countries,zones ... -----------*/
 int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */
 int zones[MAX_ZONES];		/* same for cq zones or itu zones;
 				   using 1 - 40 or 1 - 90 */
 
-struct mults_t multis[MAX_MULTS]; /**< worked multis */
+mults_t multis[MAX_MULTS]; 	/**< worked multis */
 int nr_multis = 0;		/**< number of multis in multis[] */
 
 int multlist = 0;
