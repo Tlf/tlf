@@ -36,7 +36,7 @@
 int recall_exchange(void) {
 
     extern int nr_worked;
-    extern struct worked_t worked[];
+    extern worked_t worked[];
     extern char hiscall[];
     extern char comment[];
     extern struct ie_list *main_ie_list;

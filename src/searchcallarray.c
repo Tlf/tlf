@@ -36,7 +36,7 @@
  */
 int searchcallarray(char *hiscall) {
     extern int nr_worked;
-    extern struct worked_t worked[];
+    extern worked_t worked[];
 
     int found = -1;
     int i;

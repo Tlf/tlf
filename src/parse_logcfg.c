@@ -303,7 +303,7 @@ int parse_logcfg(char *inputbuffer) {
     extern char myqra[7];
     extern int bandweight_points[NBANDS];
     extern int bandweight_multis[NBANDS];
-    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int pfxmultab;
     extern int bmautoadd;

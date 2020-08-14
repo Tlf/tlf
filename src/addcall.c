@@ -63,7 +63,7 @@ int excl_add_veto;
 int addcall(void) {
     extern char hiscall[];
     extern int nr_worked;
-    extern struct worked_t worked[];
+    extern worked_t worked[];
     extern char comment[];
     extern int cqww;
     extern int bandinx;
@@ -84,7 +84,7 @@ int addcall(void) {
     extern int wazmult;
     extern int itumult;
     extern char pxstr[];
-    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int addcallarea;
     extern bool continentlist_only;
@@ -252,7 +252,7 @@ int addcall(void) {
 int addcall2(void) {
 
     extern int nr_worked;
-    extern struct worked_t worked[];
+    extern worked_t worked[];
     extern int cqww;
     extern int countries[MAX_DATALINES];
     extern int zones[];
@@ -267,7 +267,7 @@ int addcall2(void) {
     extern int wazmult;
     extern int itumult;
     extern char pxstr[];
-    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int addcallarea;
     extern int countrynr;

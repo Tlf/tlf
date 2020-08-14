@@ -10,7 +10,7 @@
 // OBJECT ../src/addmult.o
 // OBJECT ../src/bands.o
 
-extern struct mults_t multis[MAX_MULTS];
+extern mults_t multis[MAX_MULTS];
 extern int nr_multis;
 
 extern char multsfile[];	/* name of file with a list of allowed

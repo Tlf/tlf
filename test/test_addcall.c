@@ -25,7 +25,7 @@
 /* these are missing from globalvars */
 extern int excl_add_veto;
 extern int dupe;
-extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
 extern int pfxnummultinr;
 extern char continent_multiplier_list[7][3];
 extern char countrylist[][6];

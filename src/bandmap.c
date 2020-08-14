@@ -81,7 +81,7 @@ extern int trx_control;
 extern int bandinx;
 extern int trxmode;
 extern char thisnode;
-extern struct worked_t worked[];
+extern worked_t worked[];
 extern int contest;
 extern char whichcontest[];
 

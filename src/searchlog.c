@@ -542,7 +542,7 @@ int getZone() {
 }
 
 void displayWorkedZonesCountries(int z) {
-    extern t_pfxnummulti pfxnummulti[MAXPFXNUMMULT];
+    extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int countries[MAX_DATALINES];
     extern int zones[MAX_ZONES];
@@ -865,7 +865,7 @@ int load_callmaster(void) {
 void show_needed_sections(void) {
     extern int arrlss;
     extern int nr_multis;
-    extern struct mults_t multis[MAX_MULTS];
+    extern mults_t multis[MAX_MULTS];
 
     int j, vert, hor, cnt, found;
     char mprint[50];
