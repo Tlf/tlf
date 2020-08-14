@@ -300,7 +300,6 @@ int parse_logcfg(char *inputbuffer) {
     extern char rttyoutput[];
     extern int logfrequency;
     extern int ignoredupe;
-    extern char myqra[7];
     extern int bandweight_points[NBANDS];
     extern int bandweight_multis[NBANDS];
     extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
@@ -1484,9 +1483,9 @@ int parse_logcfg(char *inputbuffer) {
 	}
 	case 159: {
 	    PARAMETER_NEEDED(teststring);
-	    strcpy(myqra, fields[1]);
+	    strcpy(my.qra, fields[1]);
 
-	    if (check_qra(myqra) == 0) {
+	    if (check_qra(my.qra) == 0) {
 		showmsg
 		("WARNING: Invalid MYQRA parameters! exiting...");
 		sleep(5);

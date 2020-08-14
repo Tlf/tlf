@@ -50,6 +50,7 @@
 
 #include <math.h>
 
+#include "globalvars.h"
 #include "qrb.h"
 
 
@@ -57,8 +58,6 @@
 
 int get_qrb(double *range, double *bearing) {
 
-    extern double QTH_Lat;
-    extern double QTH_Long;
     extern double DEST_Lat;
     extern double DEST_Long;
     extern char hiscall[];
@@ -66,7 +65,7 @@ int get_qrb(double *range, double *bearing) {
     if (*hiscall == '\0')
 	return -1;
 
-    return qrb(-1.0 * QTH_Long, QTH_Lat, -1.0 * DEST_Long, DEST_Lat,
+    return qrb(-1.0 * my.Long, my.Lat, -1.0 * DEST_Long, DEST_Lat,
 	       range, bearing);
 }
 

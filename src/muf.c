@@ -292,8 +292,6 @@ static void e_layer() {
 }
 
 void muf(void) {
-    extern double QTH_Lat;
-    extern double QTH_Long;
     extern double DEST_Lat;
     extern double DEST_Long;
     double sunrise;
@@ -313,8 +311,8 @@ void muf(void) {
 
     n = 0.0;
 
-    xt = QTH_Lat;
-    yt = QTH_Long;
+    xt = my.Lat;
+    yt = my.Long;
     xr = DEST_Lat;
     yr = DEST_Long;
 

@@ -111,7 +111,6 @@ int noautocq = 0;
 int emptydir = 0;
 int verbose = 0;
 int no_rst = 0;			/* 1 - do not use RS/RST */
-char myqra[7] = "";
 
 int pacc_qsos[10][10];
 int ve_cty;
@@ -230,10 +229,8 @@ char band[NBANDS][4] =
 char comment[80];
 char mode[20] = "Log     ";
 char cqzone[3] = "";
-char mycqzone[3] = "";
 char ituzone[3] = "";
 char continent[3] = "";
-char mycontinent[3] = "";
 char pxstr[11] = "";
 int bandindex = 0;
 int totalmults = 0;
@@ -377,8 +374,6 @@ char terminal4[88] = "";
 char termbuf[88] = "";
 int termbufcount = 0;
 
-double QTH_Lat = 51.;
-double QTH_Long = -7.;
 double DEST_Lat = 51.;
 double DEST_Long = 1.;
 

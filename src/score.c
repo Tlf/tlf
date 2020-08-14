@@ -184,7 +184,6 @@ int scoreByContinentOrCountry() {
 
     extern int countrynr;
     extern char continent[];
-    extern char mycontinent[];
 
     int points = 0;
     int inList = 0;
@@ -213,7 +212,7 @@ int scoreByContinentOrCountry() {
 		points = my_country_points;
 	    else if (my_cont_points != -1)
 		points = my_cont_points;
-	} else if (strcmp(continent, mycontinent) == 0) {
+	} else if (strcmp(continent, my.continent) == 0) {
 	    if (my_cont_points != -1)
 		points = my_cont_points;
 	} else if (dx_cont_points != -1)
@@ -225,7 +224,7 @@ int scoreByContinentOrCountry() {
 	// only continent list allowed
 	if (is_in_continentlist(continent)) {
 	    // are we are on DX continent or not
-	    if (strcmp(continent, mycontinent) == 0) {
+	    if (strcmp(continent, my.continent) == 0) {
 		points = my_cont_points;
 	    } else if (continentlist_points != -1) {
 		points = continentlist_points;
@@ -292,7 +291,6 @@ int score() {
     extern int pfxmult;
     extern int countrynr;
     extern char continent[];
-    extern char mycontinent[];
     extern char comment[];
     extern int cqww;
     extern int arrl_fd;
@@ -301,7 +299,6 @@ int score() {
     extern int ve_cty;
     extern int trxmode;
     extern char hiscall[];
-    extern char myqra[7];
     extern int stewperry_flg;
 
     int points;
@@ -332,9 +329,9 @@ int score() {
 	    return points;
 	}
 
-	if ((strcmp(continent, mycontinent) == 0)
+	if ((strcmp(continent, my.continent) == 0)
 		&& (bandinx > BANDINDEX_30)) {
-	    if (strstr(mycontinent, "NA") != NULL) {
+	    if (strstr(my.continent, "NA") != NULL) {
 		points = 2;
 	    } else {
 		points = 1;
@@ -343,22 +340,22 @@ int score() {
 	    return points;
 	}
 
-	if ((strcmp(continent, mycontinent) == 0)
+	if ((strcmp(continent, my.continent) == 0)
 		&& (bandinx < BANDINDEX_30)) {
-	    if (strstr(mycontinent, "NA") != NULL) {
+	    if (strstr(my.continent, "NA") != NULL) {
 		points = 4;
 	    } else {
 		points = 2;
 	    }
 	    return points;
 	}
-	if ((strcmp(continent, mycontinent) != 0)
+	if ((strcmp(continent, my.continent) != 0)
 		&& (bandinx > BANDINDEX_30)) {
 	    points = 3;
 
 	    return points;
 	}
-	if ((strcmp(continent, mycontinent) != 0)
+	if ((strcmp(continent, my.continent) != 0)
 		&& (bandinx < BANDINDEX_30)) {
 	    points = 6;
 
@@ -379,8 +376,8 @@ int score() {
 	    return points;
 	}
 
-	if (strcmp(continent, mycontinent) == 0) {
-	    if (strstr(mycontinent, "NA") != NULL) {
+	if (strcmp(continent, my.continent) == 0) {
+	    if (strstr(my.continent, "NA") != NULL) {
 		points = 2;
 	    } else {
 		points = 1;
@@ -428,7 +425,7 @@ int score() {
 
 	if (strlen(comment) > 3) {
 	    locator2longlat(&s1long, &s1lat, comment);
-	    locator2longlat(&s2long, &s2lat, myqra);
+	    locator2longlat(&s2long, &s2lat, my.qra);
 
 	    qrb(s1long, s1lat, s2long, s2lat, &distance, &azimuth);
 
