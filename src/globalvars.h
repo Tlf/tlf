@@ -4,6 +4,8 @@
 
 #include "tlf.h"
 
+extern mystation_t my;			// all about my station
+
 extern char qsos[MAX_QSOS][LOGLINELEN + 1];
 					// array of log lines of QSOs so far;
 					// note that not every log line needs

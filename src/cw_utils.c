@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
+#include "globalvars.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -297,8 +297,6 @@ unsigned int getCWdots(char ch) {
  */
 unsigned int cw_message_length(char *message) {
 
-    extern char call[];
-
     int i;
     int message_length = 0;
     char cwmessage[80];
@@ -311,8 +309,8 @@ unsigned int cw_message_length(char *message) {
 
 	testchar = cwmessage[i];
 	if (testchar == '%') {
-	    for (j = 0; j < strlen(call); j++) {
-		testchar = call[j];
+	    for (j = 0; j < strlen(my.call); j++) {
+		testchar = my.call[j];
 		message_length += getCWdots(testchar);
 	    }
 

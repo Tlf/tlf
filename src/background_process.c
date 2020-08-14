@@ -58,7 +58,7 @@ extern int highqsonr;
 extern char zone_export[];
 extern long timecorr;
 extern int timeoffset;
-extern char call[];
+extern mystation_t my;
 extern int trxmode;
 extern int digikeyer;
 extern int trx_control;
@@ -203,7 +203,7 @@ void *background_process(void *ptr) {
 
 		    case CLUSTERMSG:
 			strncpy(prmessage, lan_message + 2, 80);
-			if (strstr(prmessage, call) != NULL) {	// alert for cluster messages
+			if (strstr(prmessage, my.call) != NULL) {	// alert for cluster messages
 			    TLF_LOG_INFO(prmessage);
 			}
 

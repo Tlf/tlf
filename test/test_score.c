@@ -22,7 +22,6 @@
 extern int dupe;
 extern int cwpoints;
 extern int ssbpoints;
-extern int mycountrynr;
 extern int my_country_points;
 extern int my_cont_points;
 extern int dx_cont_points;
@@ -59,7 +58,7 @@ int setup(void **state) {
 
     strcpy(mycontinent, "EU");
 
-    mycountrynr = 95;   /* DL */
+    my.countrynr = 95;   /* DL */
     w_cty = 184;        /* W */
     ve_cty = 283;       /* VE */
 
@@ -129,7 +128,7 @@ void test_wpx(void **state) {
     pfxmult = 0;
 
     /* same country */
-    countrynr = mycountrynr;
+    countrynr = my.countrynr;
     check_points(1);
 
     /* different continents */
@@ -164,7 +163,7 @@ void test_wpx(void **state) {
 void test_cqww(void **state) {
     cqww = 1;
 
-    countrynr = mycountrynr;
+    countrynr = my.countrynr;
     check_points(0);
 
     countrynr = 2;
@@ -215,7 +214,7 @@ void test_arrldx_usa(void **state) {
     countrynr = ve_cty;
     check_points(0);
 
-    countrynr = mycountrynr;
+    countrynr = my.countrynr;
     check_points(3);
 }
 

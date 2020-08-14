@@ -94,7 +94,6 @@ void write_log_fm_cabr() {
 
 /* write a new line to the qtc log */
 void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
-    extern char call[];
 
     static int qtc_curr_call_nr = 0;
     static int qtc_last_call_nr = 0;
@@ -105,7 +104,7 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
     char thiscall[15] = "", ttime[5] = "";
     int found_call = 0, found_empty = 0;
 
-    if (strcmp(qtcrcall, call) == 0) {  // RECV
+    if (strcmp(qtcrcall, my.call) == 0) {  // RECV
 	qtc_line.direction = RECV;
 	qtc_line.qsonr = cablinecnt;
 	make_qtc_logline(qtc_line, qtcrecv_logfile_import);
@@ -184,7 +183,6 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 
     extern freq_t freq;
     extern struct tm time_ptr_cabrillo;
-    extern char call[];
 
 
     int item_count;
@@ -386,7 +384,6 @@ void show_readcab_msg(int mode, char *msg) {
 int readcabrillo(int mode) {
 
     extern char *cabrillo;
-    extern char call[];
 
     char *cab_dfltfile;
     struct cabrillo_desc *cabdesc;
@@ -435,7 +432,7 @@ int readcabrillo(int mode) {
 
     strcpy(temp_logfile, logfile);
 
-    strcpy(input_logfile, call);
+    strcpy(input_logfile, my.call);
     g_strchomp(input_logfile); /* drop \n */
     strcat(input_logfile, ".cbr");
 

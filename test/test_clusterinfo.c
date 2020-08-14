@@ -28,7 +28,6 @@ extern freq_t freq;
 
 char thisnode = 'A';
 freq_t node_frequencies[MAXNODES];
-extern char call[20];
 extern int cluster;
 
 #include <pthread.h>
@@ -105,7 +104,7 @@ static void put_short_line(char *p, int index) {
 }
 
 int setup_default(void **state) {
-    strcpy(call, "N0CALL\n"); 		// !!! do not forget trailing \n
+    strcpy(my.call, "N0CALL\n"); 		// !!! do not forget trailing \n
 
     xplanet = 0;
 

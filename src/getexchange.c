@@ -32,6 +32,7 @@
 #include "addspot.h"
 #include "cw_utils.h"
 #include "change_rst.h"
+#include "globalvars.h"
 #include "keyer.h"
 #include "keystroke_names.h"
 #include "lancode.h"
@@ -79,7 +80,6 @@ int getexchange(void) {
     extern int arrl_fd;
     extern int exchange_serial;
     extern int countrynr;
-    extern int mycountrynr;
     extern int sprint;
     extern int trxmode;
     extern int recall_mult;
@@ -87,7 +87,6 @@ int getexchange(void) {
     extern int lan_active;
     extern char lastqsonr[];
     extern char qsonrstr[];
-    extern char call[];
     extern char section[];
     extern int serial_section_mult;
     extern int serial_grid4_mult;
@@ -262,7 +261,7 @@ int getexchange(void) {
 
 	    case KEY_F(1): {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    sendmessage(call);		/* F1 */
+		    sendmessage(my.call);		/* F1 */
 		} else
 		    play_file(ph_message[5]);	// call
 
@@ -438,7 +437,7 @@ int getexchange(void) {
 
 	    }
 
-	    if ((pacc_pa_flg == 1) && (countrynr != mycountrynr)) {
+	    if ((pacc_pa_flg == 1) && (countrynr != my.countrynr)) {
 		if (strlen(comment) == 1) {
 		    strcpy(commentbuf, comment);
 		    comment[0] = '\0';

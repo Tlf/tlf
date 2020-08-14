@@ -40,6 +40,7 @@
 
 #include "bandmap.h"
 #include "clear_display.h"
+#include "globalvars.h"
 #include "get_time.h"
 #include "getwwv.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
@@ -584,7 +585,6 @@ void refresh_splitlayout() {
 
 void addtext(char *s) {
     extern int lan_active;
-    extern char call[];
     extern char hiscall[];
     extern char talkarray[5][62];
 
@@ -643,13 +643,13 @@ void addtext(char *s) {
     }
 
     // Cluster private spotting interface
-    if (strncmp(s, call, strlen(call) - 1) == 0
+    if (strncmp(s, my.call, strlen(my.call) - 1) == 0
 	    && strlen(s) < 81 && strchr(s, '>') == NULL) {
 
 	mvprintw(LINES - 1, 0, backgrnd_str);
 
-	if ((strlen(s) + strlen(call) + 3) < 80) {
-	    strcpy(dxtext, s + strlen(call) + 3);
+	if ((strlen(s) + strlen(my.call) + 3) < 80) {
+	    strcpy(dxtext, s + strlen(my.call) + 3);
 	    if (dxtext[strlen(dxtext) - 1] == '\n')
 		dxtext[strlen(dxtext) - 1] = '\0';	// remove the newline
 	    mvprintw(LINES - 1, 0, dxtext);

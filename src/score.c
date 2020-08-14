@@ -32,6 +32,7 @@
 #include <string.h>
 
 #include "focm.h"
+#include "globalvars.h"
 #include "getctydata.h"
 #include "locator2longlat.h"
 #include "qrb.h"
@@ -61,12 +62,11 @@ bool country_found(char prefix[]) {
 
     extern int countrynr;
     extern char hiscall[];
-    extern char call[];
 
     char tmpcall[15];
 
     if (strlen(hiscall) == 0) {
-	strcpy(tmpcall, call);
+	strcpy(tmpcall, my.call);
     } else
 	strcpy(tmpcall, hiscall);
 
@@ -183,7 +183,6 @@ int scoreByContinentOrCountry() {
     extern int dx_cont_points;
 
     extern int countrynr;
-    extern int mycountrynr;
     extern char continent[];
     extern char mycontinent[];
 
@@ -200,7 +199,7 @@ int scoreByContinentOrCountry() {
 	    if (countrylist_points != -1)
 		points = countrylist_points;
 
-	    if (countrynr == mycountrynr) {
+	    if (countrynr == my.countrynr) {
 		if (my_country_points != -1)
 		    points = my_country_points;
 		else if (my_cont_points != -1)
@@ -209,7 +208,7 @@ int scoreByContinentOrCountry() {
 		    points = 0;
 	    }
 
-	} else if (countrynr == mycountrynr) {
+	} else if (countrynr == my.countrynr) {
 	    if (my_country_points != -1)
 		points = my_country_points;
 	    else if (my_cont_points != -1)
@@ -292,7 +291,6 @@ int score() {
     extern int wpx;
     extern int pfxmult;
     extern int countrynr;
-    extern int mycountrynr;
     extern char continent[];
     extern char mycontinent[];
     extern char comment[];
@@ -328,7 +326,7 @@ int score() {
     }
 
     if (wpx == 1 && pfxmult == 0) {
-	if (countrynr == mycountrynr) {
+	if (countrynr == my.countrynr) {
 	    points = 1;
 
 	    return points;
@@ -375,7 +373,7 @@ int score() {
 	    calc_continent(zone);	// sets continent
 	}
 
-	if (countrynr == mycountrynr) {
+	if (countrynr == my.countrynr) {
 	    points = 0;
 
 	    return points;

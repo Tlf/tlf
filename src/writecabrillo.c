@@ -34,13 +34,12 @@
 #include <unistd.h>
 
 #include "getsummary.h"
+#include "globalvars.h"
 #include "get_time.h"
 #include "log_utils.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "cabrillo_utils.h"
-
-extern char call[];
 
 /* conversion table between tag name in format file and internal tag */
 extern struct tag_conv tag_tbl[];
@@ -424,7 +423,7 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 		add_lpadded(buf, tmp, item->len);
 		break;
 	    case MYCALL:
-		strcpy(tmp, call);
+		strcpy(tmp, my.call);
 		add_rpadded(buf, g_strchomp(tmp), item->len);
 		break;
 	    case HISCALL:
@@ -488,7 +487,7 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 		break;
 	    case QTCRCALL:
 		if (qso->qtcdirection == 1) {	// RECV
-		    strcpy(tmp, call);
+		    strcpy(tmp, my.call);
 		}
 		if (qso->qtcdirection == 2) {	// SEND
 		    strcpy(tmp, qso->call);
@@ -505,7 +504,7 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 		    strcpy(tmp, qso->call);
 		}
 		if (qso->qtcdirection == 2) {	// SEND
-		    strcpy(tmp, call);
+		    strcpy(tmp, my.call);
 		}
 		add_rpadded(buf, g_strchomp(tmp), item->len);
 		break;
@@ -526,7 +525,6 @@ int write_cabrillo(void) {
     extern char *cabrillo;
     extern char logfile[];
     extern char exchange[];
-    extern char call[];
 
     char *cab_dfltfile;
     struct cabrillo_desc *cabdesc;
@@ -561,7 +559,7 @@ int write_cabrillo(void) {
     }
 
     /* open logfile and create a cabrillo file */
-    strcpy(cabrillo_tmp_name, call);
+    strcpy(cabrillo_tmp_name, my.call);
     g_strstrip(cabrillo_tmp_name); /* drop \n */
     strcat(cabrillo_tmp_name, ".cbr");
 
@@ -698,7 +696,7 @@ void write_adif_header(FILE *fp) {
      fp);
 
     format_time(timebuf, sizeof(timebuf), "%d-%b-%y at %H:%Mz");
-    fprintf(fp, "Created %s for %s\n", timebuf, call);
+    fprintf(fp, "Created %s for %s\n", timebuf, my.call);
 
     /* Write contest name */
     fprintf(fp, "Contest Name: %s\n", whichcontest);

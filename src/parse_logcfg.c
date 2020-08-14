@@ -32,6 +32,7 @@
 #include "change_rst.h"
 #include "cw_utils.h"
 #include "fldigixmlrpc.h"
+#include "globalvars.h"
 #include "getctydata.h"
 #include "getpx.h"
 #include "getwwv.h"
@@ -190,7 +191,6 @@ int parse_logcfg(char *inputbuffer) {
     extern int use_rxvt;
     extern char message[][80];
     extern char ph_message[14][80];
-    extern char call[];
     extern char whichcontest[];
     extern char logfile[];
     extern int recall_mult;
@@ -680,11 +680,11 @@ int parse_logcfg(char *inputbuffer) {
 
 	    /* strip NL and trailing whitespace, convert to upper case */
 	    tmpcall = g_ascii_strup(g_strchomp(fields[1]), -1);
-	    g_strlcpy(call, tmpcall, 20);
+	    g_strlcpy(my.call, tmpcall, 20);
 	    g_free(tmpcall);
 	    /* as other code parts rely on a trailing NL on the call
 	     * we add back such a NL for now */
-	    strcat(call, "\n");
+	    strcat(my.call, "\n");
 	    // check that call sign can be found in cty database !!
 	    break;
 	}
@@ -1203,7 +1203,7 @@ int parse_logcfg(char *inputbuffer) {
 	    }
 
 	    /* on which multiplier side of the rules we are */
-	    getpx(call);
+	    getpx(my.call);
 	    mult_side = exist_in_country_list();
 	    setcontest();
 	    break;

@@ -395,14 +395,14 @@ int getclusterinfo(void) {
     extern char spot_ptr[MAX_SPOTS][82];
     extern int nr_of_spots;
     extern int announcefilter;
-    extern char call[];
+    extern mystation_t my;
 
     int i;
     int si;
     char calldupe[12];
 
-    strcpy(calldupe, call);
-    calldupe[strlen(call) - 1] = '\0';
+    strcpy(calldupe, my.call);
+    calldupe[strlen(my.call) - 1] = '\0';
 
     for (si = 0; si < (MAX_SPOTS - 2); si++)
 	spotarray[si] = -1;

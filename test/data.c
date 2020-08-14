@@ -156,7 +156,7 @@ int change_rst = 0;
 char exchange[40];
 char whichcontest[40] = "qso";
 int defer_store = 0;
-char call[20];
+mystation_t my;
 char logfile[120] = "general.log";
 char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
 char synclogfile[120];
@@ -241,7 +241,6 @@ int totalcountries = 0;
 int totalzones = 0;
 int secs = 0;
 int countrynr;
-int mycountrynr = 215;
 int total = 0; 		/**< total number of qso points */
 int band_score[NBANDS];
 int dupe = 0;

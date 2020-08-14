@@ -31,6 +31,7 @@
 #include "background_process.h"
 #include "clear_display.h"
 #include "checklogfile.h"
+#include "globalvars.h"
 #include "getmessages.h"
 #include "readcalls.h"
 #include "scroll_log.h"
@@ -50,7 +51,6 @@ int setparameters(void) {
     extern int contest;
     extern int announcefilter;
     extern int showscore_flag;
-    extern char call[];
     extern char logfile[];
     extern char whichcontest[];
 
@@ -99,7 +99,7 @@ int setparameters(void) {
 
 	mvprintw(20, 2, "7: Logfile: %s", logfile);
 
-	g_strlcpy(callcpy, call, sizeof(callcpy));
+	g_strlcpy(callcpy, my.call, sizeof(callcpy));
 	g_strchomp(callcpy);
 	mvprintw(21, 2, "8: Call:    %s", callcpy);
 	mvprintw(22, 2, "9: Contest: %s", whichcontest);
@@ -157,9 +157,9 @@ int setparameters(void) {
 	    mvprintw(21, 14, "");
 
 	    echo();
-	    getnstr(call, 20);
+	    getnstr(my.call, 20);
 	    noecho();
-	    strcat(call, "\n");
+	    strcat(my.call, "\n");
 	}
 	if (i == '9') {
 

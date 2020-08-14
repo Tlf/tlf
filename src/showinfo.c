@@ -39,6 +39,7 @@
 #include "dxcc.h"
 #include "getwwv.h"
 #include "get_time.h"
+#include "globalvars.h"
 #include "qrb.h"
 #include "showinfo.h"
 #include "tlf.h"
@@ -54,7 +55,6 @@ void showinfo(int x) {
     extern double DEST_Lat;
     extern double DEST_Long;
     extern char itustr[];
-    extern int mycountrynr;
 
     int cury, curx;
     char pxstr[16];
@@ -127,7 +127,7 @@ void showinfo(int x) {
 
 	mvprintw(LINES - 1, 26, " %s %s", contstr, zonestr);
 
-	if (x != 0 && x != mycountrynr && 0 == get_qrb(&range, &bearing)) {
+	if (x != 0 && x != my.countrynr && 0 == get_qrb(&range, &bearing)) {
 	    mvprintw(LINES - 1, 35, "%.0f km/%.0f deg ", range, bearing);
 	}
 
