@@ -168,7 +168,6 @@ void replace_all(char *buf, int size, const char *what, const char *rep) {
 
 void ExpandMacro(void) {
 
-    extern char call[20];
     extern char hiscall[20];
     extern char hiscall_sent[];
     extern char qsonrstr[5];
@@ -185,8 +184,8 @@ void ExpandMacro(void) {
     static char rst_out[4] = "";
 
 
-    strcpy(comstr, call);
-    comstr[strlen(call) - 1] = '\0'; // skip trailing \n
+    strcpy(comstr, my.call);
+    comstr[strlen(my.call) - 1] = '\0'; // skip trailing \n
     replace_all(buffer, BUFSIZE, "%", comstr);   /* mycall */
 
 

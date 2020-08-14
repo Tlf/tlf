@@ -205,7 +205,8 @@ int showscore_flag = 0;		/* show  score window */
 char exchange[40];
 char whichcontest[40] = "qso";
 int defer_store = 0;
-char call[20];
+mystation_t my;			/* all info about me */
+//char call[20];
 char logfile[120] = "general.log";
 char *cabrillo = NULL;		/**< Name of the cabrillo format definition */
 char synclogfile[120];
@@ -291,7 +292,6 @@ int totalcountries = 0;
 int totalzones = 0;
 int secs = 0;
 int countrynr;
-int mycountrynr = 215;
 int total = 0; 		/**< total number of qso points */
 int band_score[NBANDS];
 int dupe = 0;
@@ -636,7 +636,7 @@ int databases_load() {
 	}
     }
 
-    if (*call == '\0') {
+    if (*my.call == '\0') {
 	showmsg
 	("WARNING: No callsign defined in logcfg.dat! exiting...\n");
 	return EXIT_FAILURE;
@@ -930,7 +930,7 @@ int main(int argc, char *argv[]) {
     if (convert_cabrillo == 1) {
 	char tstring[100] = "";
 	sprintf(tstring, "Converting cabrillo for contest %s from file %s.cbr",
-		whichcontest, g_strstrip(call));
+		whichcontest, g_strstrip(my.call));
 	showmsg(tstring);
 	showmsg("");
 	getstationinfo();

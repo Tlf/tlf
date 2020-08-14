@@ -141,6 +141,14 @@ enum {
     SP_CALL_MSG = 24
 };
 
+/** my station info
+ *
+ * contains all informations about my station */
+typedef struct {
+    char call[20];
+    int countrynr;
+} mystation_t;
+
 /** worked station
  *
  * contains all informations about an already worked station */

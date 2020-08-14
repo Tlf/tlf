@@ -37,7 +37,6 @@
 /* write a .paras file */
 int writeparas_file(void) {
 
-    extern char call[];
     extern char message[][80];
     extern const char headerline[];
     extern char logfile[];
@@ -56,7 +55,7 @@ int writeparas_file(void) {
     FILE *fp;
     int i;
 
-    if (strlen(call) <= 3) {
+    if (strlen(my.call) <= 3) {
 	TLF_LOG_WARN("Cannot write parameters file: data corrupt... ");
 	return (-1);
     }
@@ -65,7 +64,7 @@ int writeparas_file(void) {
 	TLF_LOG_ERR("writeparas.c: Error opening file.");
     }
     fputs("# Call  ----------------------------------\n", fp);
-    fputs(call, fp);
+    fputs(my.call, fp);
     fputs("# Messages  F1...F12 ---------------------\n", fp);
 
     for (i = 0; i <= 13; i++) {

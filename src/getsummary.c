@@ -28,11 +28,10 @@
 
 #include <glib.h>
 
+#include "globalvars.h"
 #include "nicebox.h"		// Includes curses.h
 #include "showscore.h"
 
-
-extern char call[];
 
 void ask(char *buffer, char *what) {
 
@@ -59,7 +58,7 @@ int getsummary(FILE *fp) {
     ask(buffer, "Contest: (CQ-WW-CW/SSB, CQ-WPX-CW/SSB, ARRL-DX-CW/SSB)");
     fprintf(fp, "CONTEST: %s\n", buffer);
 
-    fprintf(fp, "CALLSIGN: %s", call);		/* !!! trailing \n at call */
+    fprintf(fp, "CALLSIGN: %s", my.call);	/* !!! trailing \n at call */
 
     ask(buffer, "Category-Assisted: (ASSISTED, NON-ASSISTED");
     fprintf(fp, "CATEGORY-ASSISTED: %s\n", buffer);

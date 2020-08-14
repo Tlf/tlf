@@ -27,6 +27,7 @@
 
 #include <glib.h>
 
+#include "globalvars.h"
 #include "sendbuf.h"
 #include "tlf.h"
 
@@ -41,7 +42,6 @@ int play_file(char *audiofile);
  */
 char *PrepareSPcall() {
     extern int demode;
-    extern char call[];
     extern int trxmode;
     extern int digikeyer;
     extern char hiscall[];
@@ -55,7 +55,7 @@ char *PrepareSPcall() {
 	if (demode == SEND_DE)
 	    strcat(buf, "DE ");
 
-	strcat(buf, call);
+	strcat(buf, my.call);
 
     } else if (trxmode == DIGIMODE) {
 
@@ -66,7 +66,7 @@ char *PrepareSPcall() {
 		strcat(buf, hiscall);
 		strcat(buf, " DE ");
 	    }
-	    strcat(buf, call);
+	    strcat(buf, my.call);
 	    if ((c = strchr(buf, '\n')) == NULL)
 		strcat(buf, " ");
 	    else
@@ -78,7 +78,7 @@ char *PrepareSPcall() {
 		strcat(buf, hiscall);
 		strcat(buf, " DE ");
 	    }
-	    strcat(buf, call);
+	    strcat(buf, my.call);
 	    if ((c = strchr(buf, '\n')) == NULL)
 		strcat(buf, " ");
 	    else

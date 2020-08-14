@@ -23,7 +23,6 @@ void replace_all(char *buf, int size, const char *what,
 int digikeyer = NO_KEYER;
 int cwkeyer = NO_KEYER;
 
-extern char call[20];
 extern char message[25][80];
 extern char buffer[];
 extern char wkeyerbuffer[400];
@@ -82,7 +81,7 @@ int setup_default(void **state) {
     trxmode = CWMODE;
     cwkeyer = 1;
     digikeyer = 1;
-    strcpy(call, "dl1jbe\n"); 		// !!! do not forget trailing \n
+    strcpy(my.call, "dl1jbe\n"); 		// !!! do not forget trailing \n
     strcpy(hiscall, "lz1ab");
     strcpy(sent_rst, "579");
     shortqsonr = LONGCW;
