@@ -37,11 +37,6 @@
 #include "ignore_unused.h"
 #include "tlf_curses.h"
 
-extern char mycqzone[];
-extern char mycontinent[];
-extern double QTH_Lat;
-extern double QTH_Long;
-
 
 /* get countrynumber, QTH, CQ zone and continent for myself */
 void getstationinfo() {
@@ -50,10 +45,10 @@ void getstationinfo() {
     my.countrynr = getctydata(my.call);	/* whoami? */
     mydx = dxcc_by_index(my.countrynr);
 
-    sprintf(mycqzone, "%02d", mydx -> cq);
-    strcpy(mycontinent, mydx->continent);
-    QTH_Lat = mydx->lat; 	/* whereami? */
-    QTH_Long = mydx->lon;
+    sprintf(my.cqzone, "%02d", mydx -> cq);
+    strcpy(my.continent, mydx->continent);
+    my.Lat = mydx->lat; 	/* whereami? */
+    my.Long = mydx->lon;
 }
 
 
@@ -65,10 +60,10 @@ void getmessages(void) {
     printw(my.call);
 
     printw("     My Zone = ");
-    printw(mycqzone);
+    printw(my.cqzone);
 
     printw("     My Continent = ");
-    printw(mycontinent);
+    printw(my.continent);
 
     printw("\n\n");
     refreshp();

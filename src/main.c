@@ -160,7 +160,6 @@ int ignoredupe = 0;
 int noautocq = 0;
 int verbose = 0;
 int no_rst = 0;			/* 1 - do not use RS/RST */
-char myqra[7] = "";
 
 int pacc_qsos[10][10];
 int ve_cty;
@@ -282,10 +281,8 @@ char band[NBANDS][4] =
 { "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
 char comment[80];
 char cqzone[3] = "";
-char mycqzone[3] = "";
 char ituzone[3] = "";
 char continent[3] = "";
-char mycontinent[3] = "";
 char pxstr[11] = "";
 int totalmults = 0;
 int totalcountries = 0;
@@ -418,8 +415,6 @@ char terminal4[88] = "";
 char termbuf[88] = "";
 int termbufcount = 0;
 
-double QTH_Lat = 51.;
-double QTH_Long = -7.;
 double DEST_Lat = 51.;
 double DEST_Long = 1.;
 
@@ -919,6 +914,10 @@ int main(int argc, char *argv[]) {
 
     showmsg(welcome);
     showmsg("");
+
+    memset(&my, 0, sizeof(my));
+    my.Lat = 51.;
+    my.Long = -7.;
 
     total = 0;
     if (databases_load() == EXIT_FAILURE) {

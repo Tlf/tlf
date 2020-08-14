@@ -30,7 +30,6 @@ extern int countrylist_points;
 extern char countrylist[][6];
 extern bool continentlist_only;
 extern int continentlist_points;
-extern char mycontinent[];
 extern char continent_multiplier_list[7][3];
 extern int lowband_point_mult;
 extern int portable_x2;
@@ -54,9 +53,9 @@ int __wrap_foc_score() {
 
 int setup(void **state) {
 
-    strcpy(myqra, "jo60lx");
+    strcpy(my.qra, "jo60lx");
 
-    strcpy(mycontinent, "EU");
+    strcpy(my.continent, "EU");
 
     my.countrynr = 95;   /* DL */
     w_cty = 184;        /* W */
@@ -91,7 +90,7 @@ int setup_default(void **state) {
     continentlist_points = -1;
     strcpy(continent_multiplier_list[0], "");
 
-    strcpy(mycontinent, "EU");
+    strcpy(my.continent, "EU");
 
     lowband_point_mult = 0;
     portable_x2 = 0;
@@ -141,7 +140,7 @@ void test_wpx(void **state) {
     check_points(6);
 
     /* same continent, not NA */
-    strcpy(continent, mycontinent);
+    strcpy(continent, my.continent);
     bandinx = BANDINDEX_20;
     check_points(1);
 
@@ -149,8 +148,8 @@ void test_wpx(void **state) {
     check_points(2);
 
     /* same continent, NA */
-    strcpy(mycontinent, "NA");
-    strcpy(continent, mycontinent);
+    strcpy(my.continent, "NA");
+    strcpy(continent, my.continent);
     bandinx = BANDINDEX_20;
     check_points(2);
 
@@ -168,15 +167,15 @@ void test_cqww(void **state) {
 
     countrynr = 2;
     strcpy(continent, "EU");
-    strcpy(mycontinent, "EU");
+    strcpy(my.continent, "EU");
     check_points(1);
 
     strcpy(continent, "NA");
-    strcpy(mycontinent, "NA");
+    strcpy(my.continent, "NA");
     check_points(2);
 
     strcpy(continent, "EU");
-    strcpy(mycontinent, "NA");
+    strcpy(my.continent, "NA");
     check_points(3);
 }
 

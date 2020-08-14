@@ -147,6 +147,11 @@ enum {
 typedef struct {
     char call[20];
     int countrynr;
+    char continent[3];
+    char cqzone[3];
+    char qra[7];
+    double Lat;
+    double Long;
 } mystation_t;
 
 /** worked station

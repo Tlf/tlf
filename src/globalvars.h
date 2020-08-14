@@ -61,7 +61,6 @@ extern int pfxmult;
 extern int pfxmultab;
 extern int minute_timer;
 extern int stewperry_flg;
-extern char myqra[7];
 extern int unique_call_multi;
 
 extern char logline_edit[5][LOGLINELEN + 1];
