@@ -706,6 +706,179 @@ void write_adif_header(FILE *fp) {
     fputs("<eoh>\n", fp);
 }
 
+/* format QSO line from buf according to ADIF format description
+ * and put it into buffer */
+void prepare_adif_line(char *buffer, char *buf, char *standardexchange) {
+    extern char modem_mode[];
+    extern int no_rst;
+
+    char adif_tmp_call[13] = "";
+    char adif_tmp_str[2] = "";
+    char adif_year_check[3] = "";
+    char adif_rcvd_num[16] = "";
+    char resultat[16];
+    char adif_tmp_rr[5] = "";
+    char freq_buf[16];
+
+    int adif_mode_dep = 0;
+
+    /* CALLSIGN */
+    strcat(buffer, "<CALL:");
+    strncpy(adif_tmp_call, buf + 29, 12);
+    strcpy(adif_tmp_call, g_strstrip(adif_tmp_call));
+    snprintf(resultat, sizeof(resultat), "%zd",
+		 strlen(adif_tmp_call));
+    strcat(buffer, resultat);
+    strcat(buffer, ">");
+    strcat(buffer, adif_tmp_call);
+
+    /* BAND */
+    if (buf[1] == '6')
+	strcat(buffer, "<BAND:4>160M");
+    else if (buf[1] == '8')
+	strcat(buffer, "<BAND:3>80M");
+    else if (buf[1] == '4')
+	strcat(buffer, "<BAND:3>40M");
+    else if (buf[1] == '3')
+	strcat(buffer, "<BAND:3>30M");
+    else if (buf[1] == '2')
+	strcat(buffer, "<BAND:3>20M");
+    else if (buf[1] == '1' && buf[2] == '5')
+	strcat(buffer, "<BAND:3>15M");
+    else if (buf[1] == '1' && buf[2] == '7')
+	strcat(buffer, "<BAND:3>17M");
+    else if (buf[1] == '1' && buf[2] == '2')
+	strcat(buffer, "<BAND:3>12M");
+    else if (buf[1] == '1' && buf[2] == '0')
+	strcat(buffer, "<BAND:3>10M");
+
+    /* FREQ if available */
+    if (strlen(buf) > 81) {
+	// read kHz and write MHz
+	const double mhz = atof(buf + 80) / 1000.0;
+	freq_buf[0] = '\0';
+	if (mhz > 1.799) {
+	    sprintf(freq_buf, "<FREQ:%d>%.4f",
+		    mhz < 10 ? 6 : 7, mhz);
+	}
+	strcat(buffer, freq_buf);
+    }
+
+    /* QSO MODE */
+    if (buf[3] == 'C')
+	strcat(buffer, "<MODE:2>CW");
+    else if (buf[3] == 'S')
+	strcat(buffer, "<MODE:3>SSB");
+    else if (strcmp(modem_mode, "RTTY") == 0)
+	strcat(buffer, "<MODE:4>RTTY");
+    else
+	/* \todo DIGI is no allowed mode */
+	strcat(buffer, "<MODE:4>DIGI");
+
+    /* QSO_DATE */
+    /* Y2K :) */
+    adif_year_check[0] = '\0';
+    strncpy(adif_year_check, buf + 14, 2);
+    if (atoi(adif_year_check) <= 70)
+	strcat(buffer, "<QSO_DATE:8>20");
+    else
+	strcat(buffer, "<QSO_DATE:8>19");
+
+    /* year */
+    strncat(buffer, buf + 14, 2);
+
+    /*month */
+    if (buf[10] == 'J' && buf[11] == 'a')
+	strcat(buffer, "01");
+    if (buf[10] == 'F')
+	strcat(buffer, "02");
+    if (buf[10] == 'M' && buf[12] == 'r')
+	strcat(buffer, "03");
+    if (buf[10] == 'A' && buf[12] == 'r')
+	strcat(buffer, "04");
+    if (buf[10] == 'M' && buf[12] == 'y')
+	strcat(buffer, "05");
+    if (buf[10] == 'J' && buf[11] == 'u' && buf[12] == 'n')
+	strcat(buffer, "06");
+    if (buf[10] == 'J' && buf[12] == 'l')
+	strcat(buffer, "07");
+    if (buf[10] == 'A' && buf[12] == 'g')
+	strcat(buffer, "08");
+    if (buf[10] == 'S')
+	strcat(buffer, "09");
+    if (buf[10] == 'O')
+	strcat(buffer, "10");
+    if (buf[10] == 'N')
+	strcat(buffer, "11");
+    if (buf[10] == 'D')
+	strcat(buffer, "12");
+
+    /*date */
+    strncat(buffer, buf + 7, 2);
+
+    /* TIME_ON */
+    strcat(buffer, "<TIME_ON:4>");
+    strncat(buffer, buf + 17, 2);
+    strncat(buffer, buf + 20, 2);
+
+    /* RS(T) flag */
+    if (buf[3] == 'S')		/* check for SSB */
+	adif_mode_dep = 2;
+    else
+	adif_mode_dep = 3;
+
+    /* RST_SENT */
+    if (!no_rst ) {
+	strcat(buffer, "<RST_SENT:");
+	adif_tmp_str[1] = '\0';	/*       PA0R 02/10/2003  */
+	adif_tmp_str[0] = adif_mode_dep + 48;
+	strcat(buffer, adif_tmp_str);
+	strcat(buffer, ">");
+	strncat(buffer, buf + 44, adif_mode_dep);
+    }
+
+    /* Sent contest serial number or exchange */
+    if ((exchange_serial == 1) || (standardexchange[0] == '#')) {
+	strcat(buffer, "<STX:4>");
+	strncat(buffer, buf + 23, 4);
+    } else {
+	strcat(buffer, "<STX_STRING:");
+	snprintf(resultat, sizeof(resultat), "%zd",
+		 strlen(standardexchange));
+	strcat(buffer, resultat);
+	strcat(buffer, ">");
+	strcat(buffer, g_strstrip(standardexchange));
+    }
+
+    /* RST_RCVD */
+    if (!no_rst) {
+	strncpy(adif_tmp_rr, buf + 49, 4);
+	strcpy(adif_tmp_rr, g_strstrip(adif_tmp_rr));
+	strcat(buffer, "<RST_RCVD:");
+	snprintf(resultat, sizeof(resultat), "%zd",
+		 strlen(adif_tmp_rr));
+	strcat(buffer, resultat);
+	strcat(buffer, ">");
+	strncat(buffer, buf + 49, adif_mode_dep);
+    }
+
+    /* Received contest serial number or exchange */
+    strncpy(adif_rcvd_num, buf + 54, 14);
+    strcpy(adif_rcvd_num, g_strstrip(adif_rcvd_num));
+    snprintf(resultat, sizeof(resultat), "%zd",
+	     strlen(adif_rcvd_num));
+    if ((exchange_serial == 1) || (standardexchange[0] == '#'))
+	strcat(buffer, "<SRX:");
+    else
+	strcat(buffer, "<SRX_STRING:");
+    strcat(buffer, resultat);
+    strcat(buffer, ">");
+    if (strcmp(buf + 54, " ") != 0)
+	strcat(buffer, adif_rcvd_num);
+
+    /* <EOR> */
+    strcat(buffer, "<eor>\n");	//end of ADIF row
+}
 
 /*
     The ADIF function has been written according ADIF v1.00 specifications
@@ -725,15 +898,6 @@ int write_adif(void) {
     char buffer[181] = "";
     char standardexchange[70] = "";
     char adif_tmp_name[40] = "";
-    char adif_tmp_call[13] = "";
-    char adif_tmp_str[2] = "";
-    char adif_year_check[3] = "";
-    char adif_rcvd_num[16] = "";
-    char resultat[16];
-    char adif_tmp_rr[5] = "";
-    char freq_buf[16];
-
-    int adif_mode_dep = 0;
 
     FILE *fp1, *fp2;
 
@@ -774,163 +938,7 @@ int write_adif(void) {
 	if ((buf[0] != ';') && ((buf[0] != ' ') || (buf[1] != ' '))
 		&& (buf[0] != '#') && (buf[0] != '\n') && (buf[0] != '\r')) {
 
-	    /* CALLSIGN */
-	    strcat(buffer, "<CALL:");
-	    strncpy(adif_tmp_call, buf + 29, 12);
-	    strcpy(adif_tmp_call, g_strstrip(adif_tmp_call));
-	    snprintf(resultat, sizeof(resultat), "%zd",
-		     strlen(adif_tmp_call));
-	    strcat(buffer, resultat);
-	    strcat(buffer, ">");
-	    strcat(buffer, adif_tmp_call);
-
-	    /* BAND */
-	    if (buf[1] == '6')
-		strcat(buffer, "<BAND:4>160M");
-	    else if (buf[1] == '8')
-		strcat(buffer, "<BAND:3>80M");
-	    else if (buf[1] == '4')
-		strcat(buffer, "<BAND:3>40M");
-	    else if (buf[1] == '3')
-		strcat(buffer, "<BAND:3>30M");
-	    else if (buf[1] == '2')
-		strcat(buffer, "<BAND:3>20M");
-	    else if (buf[1] == '1' && buf[2] == '5')
-		strcat(buffer, "<BAND:3>15M");
-	    else if (buf[1] == '1' && buf[2] == '7')
-		strcat(buffer, "<BAND:3>17M");
-	    else if (buf[1] == '1' && buf[2] == '2')
-		strcat(buffer, "<BAND:3>12M");
-	    else if (buf[1] == '1' && buf[2] == '0')
-		strcat(buffer, "<BAND:3>10M");
-
-	    /* FREQ if available */
-	    if (strlen(buf) > 81) {
-		// read kHz and write MHz
-		const double mhz = atof(buf + 80) / 1000.0;
-		freq_buf[0] = '\0';
-		if (mhz > 1.799) {
-		    sprintf(freq_buf, "<FREQ:%d>%.4f",
-			    mhz < 10 ? 6 : 7, mhz);
-		}
-		strcat(buffer, freq_buf);
-	    }
-
-	    /* QSO MODE */
-	    if (buf[3] == 'C')
-		strcat(buffer, "<MODE:2>CW");
-	    else if (buf[3] == 'S')
-		strcat(buffer, "<MODE:3>SSB");
-	    else if (strcmp(modem_mode, "RTTY") == 0)
-		strcat(buffer, "<MODE:4>RTTY");
-	    else
-		/* \todo DIGI is no allowed mode */
-		strcat(buffer, "<MODE:4>DIGI");
-
-	    /* QSO_DATE */
-	    /* Y2K :) */
-	    adif_year_check[0] = '\0';
-	    strncpy(adif_year_check, buf + 14, 2);
-	    if (atoi(adif_year_check) <= 70)
-		strcat(buffer, "<QSO_DATE:8>20");
-	    else
-		strcat(buffer, "<QSO_DATE:8>19");
-
-	    /* year */
-	    strncat(buffer, buf + 14, 2);
-
-	    /*month */
-	    if (buf[10] == 'J' && buf[11] == 'a')
-		strcat(buffer, "01");
-	    if (buf[10] == 'F')
-		strcat(buffer, "02");
-	    if (buf[10] == 'M' && buf[12] == 'r')
-		strcat(buffer, "03");
-	    if (buf[10] == 'A' && buf[12] == 'r')
-		strcat(buffer, "04");
-	    if (buf[10] == 'M' && buf[12] == 'y')
-		strcat(buffer, "05");
-	    if (buf[10] == 'J' && buf[11] == 'u' && buf[12] == 'n')
-		strcat(buffer, "06");
-	    if (buf[10] == 'J' && buf[12] == 'l')
-		strcat(buffer, "07");
-	    if (buf[10] == 'A' && buf[12] == 'g')
-		strcat(buffer, "08");
-	    if (buf[10] == 'S')
-		strcat(buffer, "09");
-	    if (buf[10] == 'O')
-		strcat(buffer, "10");
-	    if (buf[10] == 'N')
-		strcat(buffer, "11");
-	    if (buf[10] == 'D')
-		strcat(buffer, "12");
-
-	    /*date */
-	    strncat(buffer, buf + 7, 2);
-
-	    /* TIME_ON */
-	    strcat(buffer, "<TIME_ON:4>");
-	    strncat(buffer, buf + 17, 2);
-	    strncat(buffer, buf + 20, 2);
-
-	    /* RS(T) flag */
-	    if (buf[3] == 'S')		/* check for SSB */
-		adif_mode_dep = 2;
-	    else
-		adif_mode_dep = 3;
-
-	    /* RST_SENT */
-	    if (!no_rst ) {
-		strcat(buffer, "<RST_SENT:");
-		adif_tmp_str[1] = '\0';	/*       PA0R 02/10/2003  */
-		adif_tmp_str[0] = adif_mode_dep + 48;
-		strcat(buffer, adif_tmp_str);
-		strcat(buffer, ">");
-		strncat(buffer, buf + 44, adif_mode_dep);
-	    }
-
-	    /* Sent contest serial number or exchange */
-	    if ((exchange_serial == 1) || (standardexchange[0] == '#')) {
-		strcat(buffer, "<STX:4>");
-		strncat(buffer, buf + 23, 4);
-	    } else {
-		strcat(buffer, "<STX_STRING:");
-		snprintf(resultat, sizeof(resultat), "%zd",
-			 strlen(standardexchange));
-		strcat(buffer, resultat);
-		strcat(buffer, ">");
-		strcat(buffer, g_strstrip(standardexchange));
-	    }
-
-	    /* RST_RCVD */
-	    if (!no_rst) {
-		strncpy(adif_tmp_rr, buf + 49, 4);
-		strcpy(adif_tmp_rr, g_strstrip(adif_tmp_rr));
-		strcat(buffer, "<RST_RCVD:");
-		snprintf(resultat, sizeof(resultat), "%zd",
-			 strlen(adif_tmp_rr));
-		strcat(buffer, resultat);
-		strcat(buffer, ">");
-		strncat(buffer, buf + 49, adif_mode_dep);
-	    }
-
-	    /* Received contest serial number or exchange */
-	    strncpy(adif_rcvd_num, buf + 54, 14);
-	    strcpy(adif_rcvd_num, g_strstrip(adif_rcvd_num));
-	    snprintf(resultat, sizeof(resultat), "%zd",
-		     strlen(adif_rcvd_num));
-	    if ((exchange_serial == 1) || (standardexchange[0] == '#'))
-		strcat(buffer, "<SRX:");
-	    else
-		strcat(buffer, "<SRX_STRING:");
-	    strcat(buffer, resultat);
-	    strcat(buffer, ">");
-	    if (strcmp(buf + 54, " ") != 0)
-		strcat(buffer, adif_rcvd_num);
-
-	    /* <EOR> */
-	    strcat(buffer, "<eor>\n");	//end of ADIF row
-
+	    prepare_adif_line(buffer, buf, standardexchange);
 	    fputs(buffer, fp2);
 	}
     }				// end fgets() loop
