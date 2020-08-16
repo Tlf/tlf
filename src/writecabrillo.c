@@ -881,9 +881,8 @@ void prepare_adif_line(char *buffer, char *logline, char *exchange) {
 }
 
 /*
-    The ADIF function has been written according ADIF v1.00 specifications
+    The ADIF function has been written according ADIF v3.10 specifications
     as shown on http://www.adif.org
-    LZ3NY
 */
 int write_adif(void) {
 
