@@ -722,6 +722,8 @@ void prepare_adif_line(char *buffer, char *logline, char *exchange) {
 
     int adif_mode_dep = 0;
 
+    strcpy(buffer, "");
+ 
     /* CALLSIGN */
     strcat(buffer, "<CALL:");
     strncpy(adif_tmp_call, logline + 29, 12);
@@ -932,7 +934,6 @@ int write_adif(void) {
 
     while (fgets(buf, sizeof(buf), fp1)) {
 
-	buffer[0] = '\0';
 
 	if ((buf[0] != ';') && ((buf[0] != ' ') || (buf[1] != ' '))
 		&& (buf[0] != '#') && (buf[0] != '\n') && (buf[0] != '\r')) {

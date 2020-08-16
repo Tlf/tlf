@@ -42,11 +42,9 @@ char logline[181];
 void test_keep_old_format(void **state) {
     char exch[4] = "14";
 
-    strcpy(buffer, "");
     strcpy(logline, LOGLINE1);
     prepare_adif_line(buffer, logline, exch);
     assert_string_equal(buffer, RESULT1);
-    strcpy(buffer, "");
     strcpy(logline, LOGLINE2);
     prepare_adif_line(buffer, logline, exch);
     assert_string_equal(buffer, RESULT2);
