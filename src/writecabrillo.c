@@ -48,6 +48,75 @@ struct qso_t *get_next_record(FILE *fp);
 struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection);
 void free_qso(struct qso_t *ptr);
 
+
+struct qso_t *parse_logline(char *buffer) {
+    char *tmp;
+    char *sp;
+    struct qso_t *ptr;
+    struct tm date_n_time;
+
+    ptr = g_malloc0(sizeof(struct qso_t));
+
+    /* remember whole line */
+    ptr->logline = g_strdup(buffer);
+    ptr->qtcdirection = 0;
+    ptr->qsots = 0;
+
+    /* split buffer into parts for qso_t record and parse
+     * them accordingly */
+    tmp = strtok_r(buffer, " \t", &sp);
+
+    /* band */
+    ptr->band = atoi(tmp);
+
+
+    /* mode */
+    if (strcasestr(tmp, "CW"))
+	ptr->mode = CWMODE;
+    else if (strcasestr(tmp, "SSB"))
+	ptr->mode = SSBMODE;
+    else
+	ptr->mode = DIGIMODE;
+
+    /* date & time */
+    memset(&date_n_time, 0, sizeof(struct tm));
+
+    strptime(strtok_r(NULL, " \t", &sp), DATE_FORMAT, &date_n_time);
+    strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
+
+    ptr->year = date_n_time.tm_year + 1900;	/* convert to
+						   1968..2067 */
+    ptr->month = date_n_time.tm_mon + 1;	/* tm_mon = 0..11 */
+    ptr->day   = date_n_time.tm_mday;
+
+    ptr->hour  = date_n_time.tm_hour;
+    ptr->min   = date_n_time.tm_min;
+
+    /* qso number */
+    ptr->qso_nr = atoi(strtok_r(NULL, " \t", &sp));
+
+    /* his call */
+    ptr->call = g_strdup(strtok_r(NULL, " \t", &sp));
+
+    /* RST send and received */
+    ptr->rst_s = atoi(strtok_r(NULL, " \t", &sp));
+    ptr->rst_r = atoi(strtok_r(NULL, " \t", &sp));
+
+    /* comment (exchange) */
+    ptr->comment = g_strndup(buffer + 54, 13);
+
+    /* tx */
+    ptr->tx = (buffer[79] == '*') ? 1 : 0;
+
+    /* frequency (kHz) */
+    ptr->freq = atof(buffer + 80) * 1000.0;
+    if ((ptr->freq < 1800000.) || (ptr->freq >= 30000000.)) {
+	ptr->freq = 0.;
+    }
+
+    return ptr;
+}
+
 /** get next qso record from log
  *
  * Read next line from logfile until it is no comment.
@@ -59,74 +128,12 @@ void free_qso(struct qso_t *ptr);
 struct qso_t *get_next_record(FILE *fp) {
 
     char buffer[160];
-    char *tmp;
-    char *sp;
     struct qso_t *ptr;
-    struct tm date_n_time;
 
     while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
 
 	if (!log_is_comment(buffer)) {
-
-	    ptr = g_malloc0(sizeof(struct qso_t));
-
-	    /* remember whole line */
-	    ptr->logline = g_strdup(buffer);
-	    ptr->qtcdirection = 0;
-	    ptr->qsots = 0;
-
-	    /* split buffer into parts for qso_t record and parse
-	     * them accordingly */
-	    tmp = strtok_r(buffer, " \t", &sp);
-
-	    /* band */
-	    ptr->band = atoi(tmp);
-
-
-	    /* mode */
-	    if (strcasestr(tmp, "CW"))
-		ptr->mode = CWMODE;
-	    else if (strcasestr(tmp, "SSB"))
-		ptr->mode = SSBMODE;
-	    else
-		ptr->mode = DIGIMODE;
-
-	    /* date & time */
-	    memset(&date_n_time, 0, sizeof(struct tm));
-
-	    strptime(strtok_r(NULL, " \t", &sp), DATE_FORMAT, &date_n_time);
-	    strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
-
-	    ptr->year = date_n_time.tm_year + 1900;	/* convert to
-							   1968..2067 */
-	    ptr->month = date_n_time.tm_mon + 1;	/* tm_mon = 0..11 */
-	    ptr->day   = date_n_time.tm_mday;
-
-	    ptr->hour  = date_n_time.tm_hour;
-	    ptr->min   = date_n_time.tm_min;
-
-	    /* qso number */
-	    ptr->qso_nr = atoi(strtok_r(NULL, " \t", &sp));
-
-	    /* his call */
-	    ptr->call = g_strdup(strtok_r(NULL, " \t", &sp));
-
-	    /* RST send and received */
-	    ptr->rst_s = atoi(strtok_r(NULL, " \t", &sp));
-	    ptr->rst_r = atoi(strtok_r(NULL, " \t", &sp));
-
-	    /* comment (exchange) */
-	    ptr->comment = g_strndup(buffer + 54, 13);
-
-	    /* tx */
-	    ptr->tx = (buffer[79] == '*') ? 1 : 0;
-
-	    /* frequency (kHz) */
-	    ptr->freq = atof(buffer + 80) * 1000.0;
-	    if ((ptr->freq < 1800000.) || (ptr->freq >= 30000000.)) {
-		ptr->freq = 0.;
-	    }
-
+	    ptr = parse_logline(buffer);
 	    return ptr;
 	}
     }
