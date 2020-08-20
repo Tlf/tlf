@@ -10,7 +10,9 @@
 // OBJECT ../src/bands.o
 
 /* test stubs and dummies */
-void prepare_adif_line(char *buffer, char *logline, char *standardexchange);
+struct qso_t *parse_logline(char *buffer);
+void prepare_adif_line(char *buffer, struct qso_t *qso, char *standardexchange);
+void free_qso(struct qso_t *ptr);
 void free_cabfmt();
 void nicebox();
 
@@ -42,10 +44,16 @@ char logline[181];
 void test_keep_old_format(void **state) {
     char exch[4] = "14";
 
-    strcpy(logline, LOGLINE1);
-    prepare_adif_line(buffer, logline, exch);
+    struct qso_t *qso;
+    strcpy(buffer, LOGLINE1);
+    qso = parse_logline(buffer);
+    prepare_adif_line(buffer, qso, exch);
     assert_string_equal(buffer, RESULT1);
-    strcpy(logline, LOGLINE2);
-    prepare_adif_line(buffer, logline, exch);
+    free_qso(qso);
+
+    strcpy(buffer, LOGLINE2);
+    qso = parse_logline(buffer);
+    prepare_adif_line(buffer, qso, exch);
     assert_string_equal(buffer, RESULT2);
+    free_qso(qso);
 }
