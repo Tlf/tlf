@@ -686,6 +686,27 @@ int write_cabrillo(void) {
 }
 
 
+/* Writing Log as ADIF file */
+
+
+void add_adif_field(char *adif_line, char *field, char *value) {
+	char *tmp;
+
+	if (strlen(field) == 0)
+		return;
+
+	if (value == NULL) {
+		tmp = g_strdup_printf("<%s>", field);
+	}
+	else {
+		tmp = g_strdup_printf("<%s:%zd>%s", 
+			field, strlen(value), value);
+	}
+	strcat(adif_line, tmp);
+	g_free(tmp);
+}
+
+
 /* write ADIF header to open file */
 void write_adif_header(FILE *fp) {
     extern char whichcontest[];
