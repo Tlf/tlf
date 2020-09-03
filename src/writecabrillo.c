@@ -699,7 +699,7 @@ void add_adif_field(char *adif_line, char *field, char *value) {
 		tmp = g_strdup_printf("<%s>", field);
 	}
 	else {
-		tmp = g_strdup_printf("<%s:%zd>%s", 
+		tmp = g_strdup_printf("<%s:%zd>%s",
 			field, strlen(value), value);
 	}
 	strcat(adif_line, tmp);
@@ -740,174 +740,81 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
     extern char modem_mode[];
     extern int no_rst;
 
-    char adif_tmp_call[13] = "";
-    char adif_tmp_str[2] = "";
-    char adif_year_check[3] = "";
-    char adif_rcvd_num[16] = "";
-    char resultat[16];
-    char adif_tmp_rr[5] = "";
-    char freq_buf[16];
-
-    int adif_mode_dep = 0;
+    char *tmp;
 
     strcpy(buffer, "");
- 
+
     /* CALLSIGN */
-    strcat(buffer, "<CALL:");
-    strncpy(adif_tmp_call, qso->logline + 29, 12);
-    strcpy(adif_tmp_call, g_strstrip(adif_tmp_call));
-    snprintf(resultat, sizeof(resultat), "%zd",
-		 strlen(adif_tmp_call));
-    strcat(buffer, resultat);
-    strcat(buffer, ">");
-    strcat(buffer, adif_tmp_call);
+    add_adif_field(buffer, "CALL", qso->call);
 
     /* BAND */
-    if (qso->logline[1] == '6')
-	strcat(buffer, "<BAND:4>160M");
-    else if (qso->logline[1] == '8')
-	strcat(buffer, "<BAND:3>80M");
-    else if (qso->logline[1] == '4')
-	strcat(buffer, "<BAND:3>40M");
-    else if (qso->logline[1] == '3')
-	strcat(buffer, "<BAND:3>30M");
-    else if (qso->logline[1] == '2')
-	strcat(buffer, "<BAND:3>20M");
-    else if (qso->logline[1] == '1' && qso->logline[2] == '5')
-	strcat(buffer, "<BAND:3>15M");
-    else if (qso->logline[1] == '1' && qso->logline[2] == '7')
-	strcat(buffer, "<BAND:3>17M");
-    else if (qso->logline[1] == '1' && qso->logline[2] == '2')
-	strcat(buffer, "<BAND:3>12M");
-    else if (qso->logline[1] == '1' && qso->logline[2] == '0')
-	strcat(buffer, "<BAND:3>10M");
+    tmp = g_strdup_printf("%dM", qso->band);
+    add_adif_field(buffer, "BAND", tmp);
+    g_free(tmp);
 
     /* FREQ if available */
-    if (strlen(qso->logline) > 81) {
-	// read kHz and write MHz
-	const double mhz = atof(qso->logline + 80) / 1000.0;
-	freq_buf[0] = '\0';
-	if (mhz > 1.799) {
-	    sprintf(freq_buf, "<FREQ:%d>%.4f",
-		    mhz < 10 ? 6 : 7, mhz);
-	}
-	strcat(buffer, freq_buf);
+    if (qso->freq > 1799000) {
+	// write MHz
+    	tmp = g_strdup_printf("%.4f", qso->freq);
+	add_adif_field(buffer, "FREQ", tmp);
+	g_free(tmp);
     }
 
     /* QSO MODE */
-    if (qso->logline[3] == 'C')
-	strcat(buffer, "<MODE:2>CW");
-    else if (qso->logline[3] == 'S')
-	strcat(buffer, "<MODE:3>SSB");
+    if (qso->mode == CWMODE)
+    	tmp = "CW";
+    else if (qso->mode == SSBMODE)
+	tmp = "SSB";
     else if (strcmp(modem_mode, "RTTY") == 0)
-	strcat(buffer, "<MODE:4>RTTY");
+	tmp = "RTTY";
     else
 	/* \todo DIGI is no allowed mode */
-	strcat(buffer, "<MODE:4>DIGI");
+    	tmp = "DIGI";
+    add_adif_field(buffer, "MODE", tmp);
 
     /* QSO_DATE */
-    /* Y2K :) */
-    adif_year_check[0] = '\0';
-    strncpy(adif_year_check, qso->logline + 14, 2);
-    if (atoi(adif_year_check) <= 70)
-	strcat(buffer, "<QSO_DATE:8>20");
-    else
-	strcat(buffer, "<QSO_DATE:8>19");
-
-    /* year */
-    strncat(buffer, qso->logline + 14, 2);
-
-    /*month */
-    if (qso->logline[10] == 'J' && qso->logline[11] == 'a')
-	strcat(buffer, "01");
-    if (qso->logline[10] == 'F')
-	strcat(buffer, "02");
-    if (qso->logline[10] == 'M' && qso->logline[12] == 'r')
-	strcat(buffer, "03");
-    if (qso->logline[10] == 'A' && qso->logline[12] == 'r')
-	strcat(buffer, "04");
-    if (qso->logline[10] == 'M' && qso->logline[12] == 'y')
-	strcat(buffer, "05");
-    if (qso->logline[10] == 'J' && qso->logline[11] == 'u' && qso->logline[12] == 'n')
-	strcat(buffer, "06");
-    if (qso->logline[10] == 'J' && qso->logline[12] == 'l')
-	strcat(buffer, "07");
-    if (qso->logline[10] == 'A' && qso->logline[12] == 'g')
-	strcat(buffer, "08");
-    if (qso->logline[10] == 'S')
-	strcat(buffer, "09");
-    if (qso->logline[10] == 'O')
-	strcat(buffer, "10");
-    if (qso->logline[10] == 'N')
-	strcat(buffer, "11");
-    if (qso->logline[10] == 'D')
-	strcat(buffer, "12");
-
-    /*date */
-    strncat(buffer, qso->logline + 7, 2);
+    tmp = g_strdup_printf("%4d%02d%02d", qso->year, qso->month, qso->day);
+    add_adif_field(buffer, "QSO_DATE", tmp);
+    g_free(tmp);
 
     /* TIME_ON */
-    strcat(buffer, "<TIME_ON:4>");
-    strncat(buffer, qso->logline + 17, 2);
-    strncat(buffer, qso->logline + 20, 2);
-
-    /* RS(T) flag */
-    if (qso->logline[3] == 'S')		/* check for SSB */
-	adif_mode_dep = 2;
-    else
-	adif_mode_dep = 3;
+    tmp = g_strdup_printf("%02d%02d", qso->hour, qso->min);
+    add_adif_field(buffer, "TIME_ON", tmp);
+    g_free(tmp);
 
     /* RST_SENT */
     if (!no_rst ) {
-	strcat(buffer, "<RST_SENT:");
-	adif_tmp_str[1] = '\0';	/*       PA0R 02/10/2003  */
-	adif_tmp_str[0] = adif_mode_dep + 48;
-	strcat(buffer, adif_tmp_str);
-	strcat(buffer, ">");
-	strncat(buffer, qso->logline + 44, adif_mode_dep);
+	tmp = g_strdup_printf("%d", qso->rst_s);
+	add_adif_field(buffer, "RST_SENT", tmp);
+	g_free(tmp);
     }
 
     /* Sent contest serial number or exchange */
     if ((exchange_serial == 1) || (exchange[0] == '#')) {
-	strcat(buffer, "<STX:4>");
-	strncat(buffer, qso->logline + 23, 4);
+    	tmp = g_strdup_printf("%04d", qso->qso_nr);
+	add_adif_field(buffer, "STX", tmp);
+	g_free(tmp);
     } else {
-	strcat(buffer, "<STX_STRING:");
-	snprintf(resultat, sizeof(resultat), "%zd",
-		 strlen(exchange));
-	strcat(buffer, resultat);
-	strcat(buffer, ">");
-	strcat(buffer, g_strstrip(exchange));
+	add_adif_field(buffer, "STX_STRING", g_strstrip(exchange));
     }
 
     /* RST_RCVD */
     if (!no_rst) {
-	strncpy(adif_tmp_rr, qso->logline + 49, 4);
-	strcpy(adif_tmp_rr, g_strstrip(adif_tmp_rr));
-	strcat(buffer, "<RST_RCVD:");
-	snprintf(resultat, sizeof(resultat), "%zd",
-		 strlen(adif_tmp_rr));
-	strcat(buffer, resultat);
-	strcat(buffer, ">");
-	strncat(buffer, qso->logline + 49, adif_mode_dep);
+	tmp = g_strdup_printf("%d", qso->rst_r);
+	add_adif_field(buffer, "RST_RCVD", tmp);
+	g_free(tmp);
     }
 
     /* Received contest serial number or exchange */
-    strncpy(adif_rcvd_num, qso->logline + 54, 14);
-    strcpy(adif_rcvd_num, g_strstrip(adif_rcvd_num));
-    snprintf(resultat, sizeof(resultat), "%zd",
-	     strlen(adif_rcvd_num));
+    tmp = g_strdup(qso->comment);
+    g_strstrip(tmp);
     if ((exchange_serial == 1) || (exchange[0] == '#'))
-	strcat(buffer, "<SRX:");
+	add_adif_field(buffer, "SRX", tmp);
     else
-	strcat(buffer, "<SRX_STRING:");
-    strcat(buffer, resultat);
-    strcat(buffer, ">");
-    if (strcmp(qso->logline + 54, " ") != 0)
-	strcat(buffer, adif_rcvd_num);
+	add_adif_field(buffer, "SRX_STRING",tmp);
 
-    /* <EOR> */
-    strcat(buffer, "<eor>\n");	//end of ADIF row
+    /* <EOR> - end of ADIF row */
+    strcat(buffer, "<eor>\n");
 }
 
 /*
@@ -960,8 +867,7 @@ int write_adif(void) {
 
     write_adif_header(fp2);
 
- //   while (fgets(buf, sizeof(buf), fp1)) {
-    while ((qso = get_next_record(fp1))) { 
+    while ((qso = get_next_record(fp1))) {
 
 	prepare_adif_line(buffer, qso, standardexchange);
 	fputs(buffer, fp2);

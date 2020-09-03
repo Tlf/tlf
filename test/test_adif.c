@@ -46,12 +46,12 @@ int setup_default(void **state) {
 }
 
 #define LOGLINE1 " 20CW  23-Dec-15 13:16 0135  SV5K           599  599  20            SV5      1         "
-#define LOGLINE2 " 20CW  23-Dec-15 13:16 0134  OE3NKJ         599  599  15                     1         "
+#define LOGLINE2 " 20SSB 23-Dec-15 13:16 0134  OE3NKJ         59   59   15                     1         "
 #define RESULT1 "<CALL:4>SV5K<BAND:3>20M<MODE:2>CW<QSO_DATE:8>20151223<TIME_ON:4>1316<RST_SENT:3>599<STX_STRING:2>14<RST_RCVD:3>599<SRX_STRING:2>20<eor>\n"
-#define RESULT2 "<CALL:6>OE3NKJ<BAND:3>20M<MODE:2>CW<QSO_DATE:8>20151223<TIME_ON:4>1316<RST_SENT:3>599<STX_STRING:2>14<RST_RCVD:3>599<SRX_STRING:2>15<eor>\n"
+#define RESULT2 "<CALL:6>OE3NKJ<BAND:3>20M<MODE:3>SSB<QSO_DATE:8>20151223<TIME_ON:4>1316<RST_SENT:2>59<STX_STRING:2>14<RST_RCVD:2>59<SRX_STRING:2>15<eor>\n"
 
 
-/* prepare:adif_line */
+/* prepare_adif_line */
 void test_keep_old_format(void **state) {
     char exch[4] = "14";
 
