@@ -20,10 +20,13 @@
  *   get zone number
  *
  *--------------------------------------------------------------*/
-
+#include "string.h"
 
 int zone_nr(char *comment) {
     int z = 0;
+
+    if (strlen(comment) < 2)
+	return z;
 
     if (comment[0] <= 57 && comment[0] >= 48)
 	z = (comment[0] - 48) * 10;
