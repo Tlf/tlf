@@ -85,6 +85,23 @@ int addmult(void) {
 	}
     }
 
+    // --------------------------- section_mult_once--------------------------
+    if (sectn_mult_once == 1) {
+
+	/* is it a possible mult? */
+	for (i = 0; i < mults_possible->len; i++) {
+	    if (get_matching_length(ssexchange, i) == strlen(ssexchange)) {
+		idx = i;
+		break;
+	    }
+	}
+
+	if (idx >= 0) {
+	    shownewmult =
+		remember_multi(get_mult(idx), bandinx, ALL_BAND);
+	}
+    }
+
     // ------------------------------- section ----------------------------
     if ((dx_arrlsections == 1) &&
 	    ((countrynr == w_cty) || (countrynr == ve_cty))) {

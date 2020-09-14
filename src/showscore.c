@@ -188,6 +188,7 @@ int get_nr_of_mults() {
 
 	return totalcountries;
     } else if ((wysiwyg_once == 1)
+	       || (sectn_mult_once == 1)
 	       || (unique_call_multi == UNIQUECALL_ALL)) {
 
 	return nr_multis;

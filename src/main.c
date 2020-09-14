@@ -146,6 +146,7 @@ int wysiwyg_multi = 0;
 int country_mult = 0;
 float fixedmult = 0.0;
 int sectn_mult = 0;
+int sectn_mult_once = 0;
 int dx_arrlsections = 0;
 int serial_section_mult = 0;
 int serial_or_section = 0;	/* exchange is serial OR section, like HA-DX */

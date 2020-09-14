@@ -368,6 +368,7 @@ int getexchange(void) {
 	if ((serial_section_mult == 1) ||
 		(dx_arrlsections == 1) ||
 		(sectn_mult == 1) ||
+		(sectn_mult_once == 1) ||
 		(arrlss == 1) ||
 		(cqww == 1) ||
 		(stewperry_flg == 1)) {
@@ -886,6 +887,7 @@ int checkexchange(int x) {
 
     // ----------------------serial+section--------------------------
     if ((serial_section_mult == 1) || (sectn_mult == 1)
+	    || (sectn_mult_once == 1)
 	    || (dx_arrlsections == 1)) {
 
 	if (serial_section_mult == 1) {
@@ -938,7 +940,7 @@ int checkexchange(int x) {
 		}
 	    }
 	}			// end serial_section_mult
-	if (sectn_mult == 1) {
+	if ((sectn_mult == 1) || (sectn_mult_once)) {
 
 	    for (ii = 0; ii < LEN(sectionpats); ii++) {
 

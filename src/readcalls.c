@@ -161,12 +161,9 @@ char *get_multi_from_line(char *logline) {
 	else
 	    g_strlcpy(multbuffer, logline + 63, 4);
 
-    } else if (serial_section_mult == 1) {
-
-	g_strlcpy(multbuffer, logline + 68, 4);
-	g_strchomp(multbuffer);
-
-    } else if (sectn_mult == 1) {
+    } else if ((serial_section_mult == 1)
+		|| (sectn_mult == 1)
+		|| (sectn_mult_once == 1)) {
 
 	g_strlcpy(multbuffer, logline + 68, 4);
 	g_strchomp(multbuffer);
@@ -295,6 +292,7 @@ int readcalls(void) {
 		    serial_section_mult == 1 ||
 		    serial_grid4_mult == 1 ||
 		    sectn_mult == 1 ||
+		    sectn_mult_once == 1 ||
 		    ((dx_arrlsections == 1)
 		     && ((countrynr == w_cty) || (countrynr == ve_cty)))) {
 		// get multi info

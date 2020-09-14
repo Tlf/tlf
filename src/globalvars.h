@@ -47,6 +47,7 @@ extern int arrlss;
 extern int serial_section_mult;
 extern int serial_grid4_mult;
 extern int sectn_mult;
+extern int sectn_mult_once;
 extern int dx_arrlsections;
 extern int wysiwyg_multi;
 extern int wysiwyg_once;

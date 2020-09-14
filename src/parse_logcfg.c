@@ -250,6 +250,7 @@ int parse_logcfg(char *inputbuffer) {
     extern int serial_section_mult;
     extern int serial_grid4_mult;
     extern int sectn_mult;
+    extern int sectn_mult_once;
     extern int dx_arrlsections;
     extern int pfxmult;
     extern int exc_cont;
@@ -583,7 +584,8 @@ int parse_logcfg(char *inputbuffer) {
 	"ALT_DK9",
 	"ALT_DK10",
 	"CALLMASTER",
-	"LAN_PORT"                     /* 264 */
+	"LAN_PORT",                     /* 264 */
+	"SECTION_MULT_ONCE"
     };
 
     char **fields;
@@ -1990,6 +1992,10 @@ int parse_logcfg(char *inputbuffer) {
 	case 264: {
 	    PARAMETER_NEEDED(teststring);
 	    lan_port = atoi(fields[1]);
+	    break;
+	}
+	case 265: {
+	    sectn_mult_once = 1;
 	    break;
 	}
 	default: {

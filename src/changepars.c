@@ -831,7 +831,8 @@ void multiplierinfo(void) {
 	}
     }
 
-    if (serial_section_mult == 1 || (sectn_mult == 1 && arrlss != 1)) {
+    if (serial_section_mult == 1 || sectn_mult_once
+	    || (sectn_mult == 1 && arrlss != 1)) {
 	char *tmp;
 	int worked_at;
 

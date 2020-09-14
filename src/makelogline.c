@@ -371,6 +371,7 @@ void prepare_specific_part(void) {
 	       || (unique_call_multi != 0)
 	       || (serial_section_mult == 1)
 	       || (sectn_mult == 1)
+	       || (sectn_mult_once == 1)
 	       || (serial_grid4_mult)) {
 
 	logline4[68] = '\0';
