@@ -23,6 +23,10 @@
  *
  *--------------------------------------------------------------*/
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -33,11 +37,13 @@
 #include "err_utils.h"
 #include "getctydata.h"
 #include "getpx.h"
+#include "log_utils.h"
 #include "nicebox.h"		// Includes curses.h
 #include "printcall.h"
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "searchlog.h"		// Includes glib.h
+#include "string.h"
 #include "tlf_panel.h"
 #include "ui_utils.h"
 #include "zone_nr.h"
@@ -368,16 +374,10 @@ static bool is_current_mode(const char *qso) {
     extern bool mixedmode;
 
     if (!mixedmode) {
-	return true;    // always true in mixed mode
+	return true;    // always true if not in mixed mode
     }
 
-    if (qso[3] == 'S') {
-	return trxmode == SSBMODE;
-    }
-    if (qso[3] == 'D') {
-	return trxmode == DIGIMODE;
-    }
-    return trxmode == CWMODE;   // default
+    return log_get_mode(qso) == trxmode;
 }
 
 
@@ -429,18 +429,44 @@ bool worked_in_current_minitest_period(int found) {
     return worked[found].qsotime[trxmode][bandinx] >= period_start;
 }
 
+/* helper functions to check filtered lines for match with
+ * hiscall or actual band */
+static bool call_matches(const char * line) {
+    char buffer[20];
+
+    g_strlcpy(buffer,  line + 12, 20);
+    *strchrnul(buffer, ' ') = '\0';
+
+    return (strcmp(buffer, hiscall) == 0);
+}
+
+static bool band_matches(const char * line) {
+    return log_get_band(line) == bandinx;
+}
+
+static bool line_matches_actual_qso(const char *line) {
+    extern bool qso_once;
+
+    if (call_matches(line)
+	&& (band_matches(line) || qso_once)
+	&& is_current_mode(line)) {
+
+	int found = searchcallarray(hiscall);
+	if (worked_in_current_minitest_period(found)) {
+	    return true;
+	}
+    }
+    return false;
+}
+
+
 void displaySearchResults(void) {
     extern int dupe;
-    extern int ignoredupe;
-    extern int qso_once;
-    extern int ignoredupe;
-    extern int bandinx;
-    extern char band[NBANDS][4];
+    extern bool ignoredupe;
 
     int r_index;
-    char s_inputbuffer[LOGLINELEN + 1] = "";
+    char buffer[LOGLINELEN + 1] = "";
     char qtccall[15];	// temp str for qtc search
-    bool display_dupe;
     int z, l, j;
     struct t_qtc_store_obj *qtc_temp_ptr;
 
@@ -449,35 +475,20 @@ void displaySearchResults(void) {
 
     /* print resulting call in line according to band in check window */
     for (r_index = 0; r_index < srch_index; r_index++) {
+	g_strlcpy(buffer, result[r_index], 38);
+
 	wattrset(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-	g_strlcpy(s_inputbuffer, result[r_index], 38);
-
-	if ((hiscall[0] == s_inputbuffer[12]) &&
-		(strlen(hiscall) >= 3 &&
-		 (s_inputbuffer[12 + strlen(hiscall)] == ' '))) {
-	    /* full call match */
-	    if ((strncmp(band[bandinx], s_inputbuffer, 3) == 0)
-		    || (qso_once == 1)) {
-		/* band matches */
-		if (ignoredupe == 0) { /* do we ignore dupes? */
-
-		    int found = searchcallarray(hiscall);
-		    display_dupe = worked_in_current_minitest_period(found);
-
-		    if (display_dupe && is_current_mode(s_inputbuffer)) {
-			wattrset(search_win, COLOR_PAIR(C_DUPE));
-			dupe = ISDUPE;
-			beep();
-		    }
-		}		// end ignoredupe
-	    }
+	if (!ignoredupe && line_matches_actual_qso(buffer)) {
+	    wattrset(search_win, COLOR_PAIR(C_DUPE));
+	    dupe = ISDUPE;
+	    beep();
 	}
 
 	/* display line in search window */
-	j = bandstr2line(s_inputbuffer);
+	j = bandstr2line(buffer);
 
 	if ((j < 7) || IsAllBand()) {
-	    mvwprintw(search_win, j, 1, "%s", s_inputbuffer);
+	    mvwprintw(search_win, j, 1, "%s", buffer);
 	}
 
 
@@ -487,9 +498,9 @@ void displaySearchResults(void) {
 		z = 12;	// first pos of callsign
 		l = 0;
 		do {
-		    qtccall[l] = s_inputbuffer[z];
+		    qtccall[l] = buffer[z];
 		    z++; l++;
-		} while (s_inputbuffer[z] != ' ');
+		} while (buffer[z] != ' ');
 		qtccall[l] = '\0';
 
 		qtc_temp_ptr = qtc_get(qtccall);
@@ -497,7 +508,7 @@ void displaySearchResults(void) {
 	    }
 	}
 
-	s_inputbuffer[0] = '\0';
+	buffer[0] = '\0';
     }
 }
 
@@ -719,7 +730,6 @@ void displayWorkedZonesCountries(int z) {
 
 void searchlog() {
 
-    extern int isdupe;		// LZ3NY auto-b4 patch
     extern int searchflg;
     extern int dupe;
     extern int partials;
@@ -770,13 +780,11 @@ void searchlog() {
 	    show_needed_sections();
 
 	if (dupe == ISDUPE) {
-	    isdupe = 1;		// LZ3NY auto-b4 patch
 	    attrset(COLOR_PAIR(C_DUPE));
 	    mvprintw(12, 29, hiscall);
 	    refreshp();
 	    usleep(500000);
-	} else
-	    isdupe = 0;		// LZ3NY auto-b4 patch
+	}
 
 	printcall();
 

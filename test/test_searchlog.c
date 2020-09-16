@@ -10,6 +10,7 @@
 // OBJECT ../src/addmult.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/get_time.o
+// OBJECT ../src/log_utils.o
 // OBJECT ../src/searchlog.o
 // OBJECT ../src/zone_nr.o
 // OBJECT ../src/searchcallarray.o

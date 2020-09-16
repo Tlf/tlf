@@ -299,7 +299,7 @@ int parse_logcfg(char *inputbuffer) {
     extern int cw_bandwidth;
     extern char rttyoutput[];
     extern int logfrequency;
-    extern int ignoredupe;
+    extern bool ignoredupe;
     extern int bandweight_points[NBANDS];
     extern int bandweight_multis[NBANDS];
     extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
@@ -1459,7 +1459,7 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 153: {
-	    ignoredupe = 1;
+	    ignoredupe = true;
 	    break;
 	}
 	case 154: {		/* read name of cabrillo format to use */

@@ -107,7 +107,6 @@ int callinput(void) {
 
     extern int itumult;
     extern int wazmult;
-    extern int isdupe;		// LZ3NY auto-b4 patch
     extern int cwstart;
     extern int early_started;
     extern char hiscall_sent[];
@@ -130,6 +129,7 @@ int callinput(void) {
     extern char ituzone[];
     extern int ctcomp;
     extern int nob4;
+    extern int dupe;
     extern int weight;
     extern int k_pin14;
     extern int k_ptt;
@@ -510,11 +510,10 @@ int callinput(void) {
 		    break;
 
 		/* check b4 QSO if call is long enough and 'nob4' off */
-		isdupe = 0;	// LZ3NY  auto-b4 patch
 
 		searchlog();
 
-		if (isdupe != 0) {
+		if (dupe == ISDUPE) {
 		    // XXX: Before digi_message, SSB mode sent CW here. - W8BSD
 		    send_standard_message(6);	/* as with F7 */
 		    cleanup();

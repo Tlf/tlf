@@ -150,13 +150,13 @@ int dx_arrlsections = 0;
 int serial_section_mult = 0;
 int serial_or_section = 0;	/* exchange is serial OR section, like HA-DX */
 int serial_grid4_mult = 0;
-int qso_once = 0;
+bool qso_once = false;
 int addcallarea_once = 0;
 int noleadingzeros;
 int ctcomp = 0;
-int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
 int nob4 = 0;			// allow auto b4
-int ignoredupe = 0;
+bool ignoredupe = false;
+int dupe = 0;
 int noautocq = 0;
 int verbose = 0;
 int no_rst = 0;			/* 1 - do not use RS/RST */
@@ -291,7 +291,6 @@ int secs = 0;
 int countrynr;
 int total = 0; 		/**< total number of qso points */
 int band_score[NBANDS];
-int dupe = 0;
 int callfound = 0;
 int partials = 0;	/**< show partial calls */
 int use_part = 0;	/**< if 1 use automatically found partial call */

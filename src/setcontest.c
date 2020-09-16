@@ -28,6 +28,7 @@
 #include "focm.h"
 #include "getctydata.h"
 #include "setcontest.h"
+#include "stdbool.h"
 #include "tlf.h"
 
 
@@ -66,7 +67,7 @@ void setcontest(void) {
     extern int one_point;
     extern int two_point;
     extern int three_point;
-    extern int qso_once;
+    extern bool qso_once;
     extern int sectn_mult;
     extern int recall_mult;
     extern int noleadingzeros;
@@ -156,7 +157,7 @@ void setcontest(void) {
     if (strcmp(whichcontest, "arrl_ss") == 0) {
 	arrlss = 1;
 	two_point = 1;
-	qso_once = 1;
+	qso_once = true;
 	exchange_serial = 1;
 	multlist = 1;
 	recall_mult = 0;
