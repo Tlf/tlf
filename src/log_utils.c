@@ -32,7 +32,7 @@
  * which has to be checked separately if needed */
 
 /** check if logline is only a comment */
-bool log_is_comment(char *buffer) {
+bool log_is_comment(const char *buffer) {
 
     if (buffer[0] != ';')
 	return 0;
@@ -42,7 +42,7 @@ bool log_is_comment(char *buffer) {
 
 
 /** read bandindex from logline */
-int log_get_band(char *logline) {
+int log_get_band(const char *logline) {
 
     int nr = 0;
     char band[4];
@@ -57,7 +57,7 @@ int log_get_band(char *logline) {
 
 /** read mode from logline
  * -1 if no recognized mode */
-int log_get_mode(char *logline) {
+int log_get_mode(const char *logline) {
     if (strncasecmp("CW ", logline + 3, 3) == 0) {
 	return CWMODE;
     }
@@ -71,7 +71,7 @@ int log_get_mode(char *logline) {
 }
 
 /** read points from logline */
-int log_get_points(char *logline) {
+int log_get_points(const char *logline) {
     char tmpbuf[3];
 
     g_strlcpy(tmpbuf, logline + 76, 3);

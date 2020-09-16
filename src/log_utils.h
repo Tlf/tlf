@@ -25,9 +25,9 @@
 
 #include <stdbool.h>
 
-bool log_is_comment(char *buffer);
-int log_get_band(char *logline);
-int log_get_mode(char *logline);
-int log_get_points(char *logline);
+bool log_is_comment(const char *buffer);
+int log_get_band(const char *logline);
+int log_get_mode(const char *logline);
+int log_get_points(const char *logline);
 
 #endif
