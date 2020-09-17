@@ -218,7 +218,7 @@ int parse_logcfg(char *inputbuffer) {
     extern char *editor_cmd;
     extern int partials;
     extern int use_part;
-    extern int mixedmode;
+    extern bool mixedmode;
     extern char pr_hostaddress[];
     extern int portnum;
     extern int packetinterface;
@@ -942,7 +942,7 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 56: {
-	    mixedmode = 1;
+	    mixedmode = true;
 	    break;
 	}
 	case 57: {

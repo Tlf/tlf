@@ -365,9 +365,9 @@ int bandstr2line(char *buffer) {
 //
 static bool is_current_mode(const char *qso) {
     extern int trxmode;
-    extern int mixedmode;
+    extern bool mixedmode;
 
-    if (mixedmode) {
+    if (!mixedmode) {
 	return true;    // always true in mixed mode
     }
 
@@ -433,7 +433,6 @@ void displaySearchResults(void) {
     extern int dupe;
     extern int ignoredupe;
     extern int qso_once;
-    extern int mixedmode;
     extern int ignoredupe;
     extern int bandinx;
     extern char band[NBANDS][4];

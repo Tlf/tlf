@@ -107,6 +107,9 @@ static void write_qsos() {
 }
 
 int setup_default(void **state) {
+    for (int i = 0; i < MAX_CALLS; i++)
+	strcpy(searchresult[i], "");
+
     showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
     arrlss = 0;
     dxped = 0;
@@ -232,7 +235,8 @@ void test_searchlog_pickup_call(void **state) {
     strcpy (hiscall, "UA");
     filterLog("");
     assert_int_equal (strncmp(searchresult[0], QSO3, 80), 0);
-    assert_int_equal (strncmp(searchresult[1], QSO5, 80), 0);
+    assert_int_equal (strncmp(searchresult[1], QSO4, 80), 0);
+    assert_int_equal (strncmp(searchresult[2], QSO5, 80), 0);
 }
 
 void test_searchlog_pickup_call_mixedmode(void **state) {
@@ -240,15 +244,14 @@ void test_searchlog_pickup_call_mixedmode(void **state) {
     strcpy (hiscall, "UA");
     filterLog("");
     assert_int_equal (strncmp(searchresult[0], QSO3, 80), 0);
-    assert_int_equal (strncmp(searchresult[1], QSO4, 80), 0);
-    assert_int_equal (strncmp(searchresult[2], QSO5, 80), 0);
+    assert_int_equal (strncmp(searchresult[1], QSO5, 80), 0);
 }
 
 void test_searchlog_extract_data(void **state) {
     strcpy (hiscall, "UA");
     filterLog("");
     assert_string_equal (result[0], " 40CW  0007 OE3UAI       15            ");
-    assert_string_equal (result[1], " 80CW  0009 UA9LM        17            ");
+    assert_string_equal (result[1], " 80SSB 0008 UA3JK        16            ");
 }
 
 void test_searchlog_extract_data_mixedmode(void **state) {
@@ -256,7 +259,7 @@ void test_searchlog_extract_data_mixedmode(void **state) {
     strcpy (hiscall, "UA");
     filterLog("");
     assert_string_equal (result[0], " 40CW  0007 OE3UAI       15            ");
-    assert_string_equal (result[1], " 80SSB 0008 UA3JK        16            ");
+    assert_string_equal (result[1], " 80CW  0009 UA9LM        17            ");
 }
 
 void test_bandstr2line(void **state) {
@@ -355,8 +358,8 @@ void test_displayPartials(void **state) {
     // check selected displayed values only (F2UAA must not be shown)
     // (note the leading space)
     check_mvprintw_output(24, 1, 1, "OE3UAI");  // first
-    check_mvprintw_output(23, 1, 7, " UA9LM");  // second
-    check_mvprintw_output(0, 5, 28, " UA9WAA"); // last
+    check_mvprintw_output(23, 1, 7, " UA3JK");  // second
+    check_mvprintw_output(0, 5, 28, " UA9VAA"); // last
 }
 
 /* test lookup of zone - will be used for display if already worked
@@ -380,7 +383,8 @@ void test_ZoneFromExchange(void **state) {
     assert_int_equal (getZone(), 14);
 }
 
-void test_ZoneFromLog(void **state) {
+void test_ZoneFromLog_mixedmode(void **state) {
+    mixedmode = 1;
     cqww = 1;
     strcpy(zone_export, "14");
     strcpy( hiscall, "K4D");
@@ -388,8 +392,7 @@ void test_ZoneFromLog(void **state) {
     assert_int_equal (getZone(), 5);
 }
 
-void test_ZoneFromLog_mixedmode(void **state) {
-    mixedmode = 1;
+void test_ZoneFromLog(void **state) {
     cqww = 1;
     strcpy(zone_export, "14");
     strcpy( hiscall, "SP9");

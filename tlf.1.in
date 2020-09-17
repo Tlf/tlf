@@ -1859,7 +1859,8 @@ Exchange is serial number (formats exchange field).
 .
 .TP
 .B MIXED
-Station can be worked both in SSB and CW.
+Station can be worked both in any mode (CW,SSB and DIG) on a given band
+without being counted as DUPE.
 .
 .TP
 .B SSBMODE

@@ -183,7 +183,7 @@ int timeoffset = 0;
 int trxmode = CWMODE;
 rmode_t  rigmode = RIG_MODE_NONE;
 
-int mixedmode = 0;
+bool mixedmode = false;
 char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
 char last_rst[4] = "599";       /* Report for last QSO */
