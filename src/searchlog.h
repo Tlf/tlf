@@ -37,8 +37,6 @@ int load_callmaster(void);
 /* search 'hiscall' in the log */
 void searchlog(void);
 
-bool worked_in_current_minitest_period(int found);
-
 void InitSearchPanel(void);
 void ShowSearchPanel(void);
 void HideSearchPanel(void);

@@ -411,23 +411,6 @@ void filterLog() {
     }
 }
 
-//
-// check if station was worked in the current minitest period
-// it takes into account actual mode/band info
-//
-bool worked_in_current_minitest_period(int found) {
-
-    if (found < 0) {
-	return false;
-    }
-    if (!minitest) {
-	return true;    // minitest is off, so the answer is yes
-    }
-
-    long currtime = get_time();
-    long period_start = (currtime / minitest) * minitest;
-    return worked[found].qsotime[trxmode][bandinx] >= period_start;
-}
 
 /* helper functions to check filtered lines for match with
  * hiscall or actual band */

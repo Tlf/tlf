@@ -6,6 +6,8 @@
 // OBJECT ../src/cabrillo_utils.o
 // OBJECT ../src/readcabrillo.o
 // OBJECT ../src/bands.o
+// OBJECT ../src/searchcallarray.o
+// OBJECT ../src/get_time.o
 
 /* test stubs and dummies */
 int do_cabrillo = 0;	/* actually converting cabrillo file to Tlf log */

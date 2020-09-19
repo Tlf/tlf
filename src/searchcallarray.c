@@ -25,6 +25,9 @@
 
 #include <string.h>
 
+#include "get_time.h"
+#include "globalvars.h"
+#include "stdbool.h"
 #include "tlf.h"
 
 
@@ -35,8 +38,6 @@
  *      \return index in callarray where hiscall was found (-1 if not found)
  */
 int searchcallarray(char *hiscall) {
-    extern int nr_worked;
-    extern worked_t worked[];
 
     int found = -1;
     int i;
@@ -52,3 +53,22 @@ int searchcallarray(char *hiscall) {
 
     return (found);
 }
+
+//
+// check if station was worked in the current minitest period
+// it takes into account actual mode/band info
+//
+bool worked_in_current_minitest_period(int found) {
+
+    if (found < 0) {
+	return false;
+    }
+    if (!minitest) {
+	return true;    // minitest is off, so the answer is yes
+    }
+
+    long currtime = get_time();
+    long period_start = (currtime / minitest) * minitest;
+    return worked[found].qsotime[trxmode][bandinx] >= period_start;
+}
+
