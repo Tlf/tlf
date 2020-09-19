@@ -62,6 +62,7 @@
 #include "qtcvars.h"		// Includes globalvars.h
 #include "qtcwin.h"
 #include "rtty.h"
+#include "searchcallarray.h"
 #include "searchlog.h"		// Includes glib.h
 #include "sendbuf.h"
 #include "sendspcall.h"
@@ -511,7 +512,7 @@ int callinput(void) {
 
 		/* check b4 QSO if call is long enough and 'nob4' off */
 
-		searchlog();
+		dupe = is_dupe(hiscall, bandinx, trxmode);
 
 		if (dupe == ISDUPE) {
 		    // XXX: Before digi_message, SSB mode sent CW here. - W8BSD

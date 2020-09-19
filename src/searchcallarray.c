@@ -25,6 +25,7 @@
 
 #include <string.h>
 
+#include "bands.h"
 #include "get_time.h"
 #include "globalvars.h"
 #include "stdbool.h"
@@ -71,4 +72,31 @@ bool worked_in_current_minitest_period(int found) {
     long period_start = (currtime / minitest) * minitest;
     return worked[found].qsotime[trxmode][bandinx] >= period_start;
 }
+
+
+bool is_dupe(char *call, int bandindex, int mode) {
+    extern bool qso_once;
+    extern bool mixedmode;
+
+    int index;
+
+    index = searchcallarray(call);
+    if (index == -1)	/* new station */
+	return false;
+
+    if (!qso_once	/* check band only if qso_once not set */
+	    && ((worked[index].band & inxes[bandindex]) == 0))
+	return false;
+
+    if (mixedmode	/* check mode only if MIXED is allowed */
+	    && (worked[index].qsotime[trxmode][bandindex] == 0))
+	return false;
+
+    if (!worked_in_current_minitest_period(index))
+	return false;
+
+    return true;
+
+}
+
 

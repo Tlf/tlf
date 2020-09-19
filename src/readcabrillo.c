@@ -37,6 +37,7 @@
 #include "makelogline.h"
 #include "qtc_log.h"
 #include "readcabrillo.h"
+#include "searchcallarray.h"
 #include "startmsg.h"
 #include "store_qso.h"
 #include "tlf_curses.h"
@@ -58,6 +59,8 @@ extern char qsos[MAX_QSOS][LOGLINELEN +
 extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs
 extern int nr_qsos;
 
+extern int dupe;
+
 
 void concat_comment(char *exchstr) {
     if (strlen(comment) > 0) {
@@ -75,6 +78,7 @@ int starts_with(char *line, char *start) {
     return (strncmp(line, start, strlen(start)) == 0);
 }
 
+
 /* write a new line to the qso log */
 void write_log_fm_cabr() {
     qsonum = cablinecnt;
@@ -85,7 +89,8 @@ void write_log_fm_cabr() {
     }
 
     checkexchange(0);
-    addcall();		/* add call to dupe list */
+    dupe = is_dupe(hiscall, bandinx, trxmode);
+    addcall();		/* add call to worked list and check it for dupe */
     makelogline();	/* format logline */
     store_qso(logline4);
     cleanup_qso();

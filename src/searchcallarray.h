@@ -25,5 +25,6 @@
 
 int searchcallarray(char *hiscall);
 bool worked_in_current_minitest_period(int found);
+bool is_dupe(char *call, int bandindex, int mode);
 
 #endif /* SEARCHCALLARRAY_H */
