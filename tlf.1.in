@@ -1799,7 +1799,12 @@ than one line for the same multiplier.
 .
 .TP
 .B SECTION_MULT
-Multiplier is section from multipliers file.
+Multiplier is section from multipliers file. Counts per band.
+.
+.TP
+.B SECTION_MULT_ONCE
+Multiplier is section from multipliers file. Counts only once independent of
+band.
 .
 .TP
 .B SERIAL+SECTION
