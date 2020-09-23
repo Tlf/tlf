@@ -23,12 +23,12 @@
  *--------------------------------------------------------------*/
 
 
+#include <stdbool.h>
 #include <string.h>
 
 #include "focm.h"
 #include "getctydata.h"
 #include "setcontest.h"
-#include "stdbool.h"
 #include "tlf.h"
 
 

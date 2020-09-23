@@ -22,13 +22,12 @@
  *
  *--------------------------------------------------------------*/
 
-
+#include <stdbool.h>
 #include <string.h>
 
 #include "bands.h"
 #include "get_time.h"
 #include "globalvars.h"
-#include "stdbool.h"
 #include "tlf.h"
 
 
