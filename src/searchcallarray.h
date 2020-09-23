@@ -21,7 +21,7 @@
 #ifndef SEARCHCALLARRAY_H
 #define SEARCHCALLARRAY_H
 
-#include "stdbool.h"
+#include <stdbool.h>
 
 int searchcallarray(char *hiscall);
 bool worked_in_current_minitest_period(int found);
