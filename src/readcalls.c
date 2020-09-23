@@ -57,18 +57,7 @@ void init_scoring(void) {
     for (int i = 0; i < MAX_QSOS; i++)
 	qsos[i][0] = '\0';
 
-    for (int i = 0; i < MAX_CALLS; i++) {
-	*worked[i].exchange = '\0';
-	*worked[i].call = '\0';
-	worked[i].band = 0;
-	worked[i].country = -1;
-	for (int l = 0; l < 3; l++) {
-	    for (int n = 0; n < NBANDS; n++) {
-		worked[i].qsotime[l][n] = 0;
-	    }
-	}
-    }
-    nr_worked = 0;
+    init_worked();
 
     for (int i = 1; i <= MAX_DATALINES - 1; i++)
 	countries[i] = 0;

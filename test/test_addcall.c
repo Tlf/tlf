@@ -4,6 +4,7 @@
 #include "../src/dxcc.h"
 #include "../src/getctydata.h"
 #include "../src/globalvars.h"
+#include "../src/searchcallarray.h"
 #include "../src/score.h"
 #include "../src/setcontest.h"
 
@@ -37,8 +38,7 @@ int setup_default(void **state) {
     static char filename[] =  TOP_SRCDIR "/share/cty.dat";
     assert_int_equal(load_ctydata(filename), 0);
 
-    nr_worked = 0;
-    memset(&worked, 0, sizeof(worked));
+    init_worked();
     bandinx = BANDINDEX_10;
 
     setcontest("CQWW");

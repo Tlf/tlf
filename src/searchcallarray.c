@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /* ------------------------------------------------------------
- *      search array of worked stations
+ *      utilities to work with worked stations
  *
  *--------------------------------------------------------------*/
 
@@ -30,6 +30,15 @@
 #include "globalvars.h"
 #include "tlf.h"
 
+/**	\brief empty collection of worked stations
+ */
+void init_worked(void) {
+    memset(worked, 0, sizeof(worked));
+    for (int i = 0; i < sizeof(worked)/sizeof(worked[0]); i++) {
+	worked[i].country = -1;
+    }
+    nr_worked = 0;
+}
 
 /**	\brief lookup 'hiscall' in array of worked stations
  *
