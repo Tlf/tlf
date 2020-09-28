@@ -74,7 +74,7 @@ int addcall(void) {
 
     time_t now = get_time();
 
-    found = searchcallarray(hiscall);
+    found = lookup_worked(hiscall);
 
     if (found == -1) {
 
@@ -245,7 +245,7 @@ int addcall2(void) {
     *strchrnul(comment, ' ') = '\0';	/* terminate on first blank */
 
     /* FIXME: worked array needs mutex protection */
-    found = searchcallarray(hiscall);
+    found = lookup_worked(hiscall);
 
     if (found == -1) {
 

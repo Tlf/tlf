@@ -47,25 +47,38 @@ int setup_default(void **state) {
     return 0;
 }
 
+
+/* test initialization */
 void test_init(void **state) {
     init_worked();
     assert_int_equal(nr_worked, 0);
     assert_int_equal(worked[0].country, -1);
 }
 
-void test_lookup_emptylist(void **state) {
+/* test index lookup entry*/
+void test_lookup_empty_list(void **state) {
     init_worked();
-    assert_int_equal(searchcallarray("DL1ABC"),-1);
+    assert_int_equal(lookup_worked("DL1ABC"), -1);
 }
 
-void test_lookup_notfound(void **state) {
-    assert_int_equal(searchcallarray("DL1ABC"),-1);
+void test_lookup_not_found(void **state) {
+    assert_ptr_equal(lookup_worked("DL1ABC"), -1);
+    assert_int_equal(nr_worked, 2);
 }
 
 void test_lookup_found(void **state) {
-    assert_int_equal(nr_worked,2);
-    assert_int_equal(searchcallarray("W1AA"),0);
-    assert_int_equal(searchcallarray("OE3XYZ"),1);
+    assert_ptr_equal(lookup_worked("OE3XYZ"), 1);
+    assert_int_equal(nr_worked, 2);
+}
+
+void test_lookup_and_add_found(void **state) {
+    assert_ptr_equal(lookup_or_add_worked("OE3XYZ"), 1);
+    assert_int_equal(nr_worked, 2);
+}
+
+void test_lookup_and_add_not_found(void **state) {
+    assert_ptr_equal(lookup_or_add_worked("DL1ABC"), 2);
+    assert_int_equal(nr_worked, 2 + 1);
 }
 
 
@@ -75,12 +88,12 @@ void test_not_found(void **state) {
 }
 
 void test_no_minitest(void **state) {
-    int index = searchcallarray("OE3XYZ");
+    int index = lookup_worked("OE3XYZ");
     assert_int_equal(worked_in_current_minitest_period(index), true);
 }
 
 void test_minitest_in_period(void **state) {
-    int index = searchcallarray("OE3XYZ");
+    int index = lookup_worked("OE3XYZ");
     minitest = 500;
 
     will_return(get_time, 80500 + minitest - 1);
@@ -88,7 +101,7 @@ void test_minitest_in_period(void **state) {
 }
 
 void test_minitest_not_in_period(void **state) {
-    int index = searchcallarray("OE3XYZ");
+    int index = lookup_worked("OE3XYZ");
     minitest = 500;
 
     will_return(get_time, 80500 + minitest);

@@ -62,6 +62,10 @@ int modify_attr(int attr) { // FIXME: remove once info() moved to UI code
     return 0;
 }
 
+int getctynr(char *call) {
+    return 42;
+}
+
 /* some spies */
 int bandinx_spy;
 

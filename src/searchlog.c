@@ -428,7 +428,7 @@ static bool line_matches_actual_qso(const char *line) {
 	    && (band_matches(line) || qso_once)
 	    && is_current_mode(line)) {
 
-	int found = searchcallarray(hiscall);
+	int found = lookup_worked(hiscall);
 	if (worked_in_current_minitest_period(found)) {
 	    return true;
 	}

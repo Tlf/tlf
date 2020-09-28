@@ -286,7 +286,7 @@ int readcalls(void) {
 	}
 
 	/*  lookup worked stations */
-	l = searchcallarray(presentcall);
+	l = lookup_worked(presentcall);
 	if (l == -1) {		    /* if not found, use next free slot */
 	    l = nr_worked;
 	    nr_worked++;
