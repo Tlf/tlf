@@ -89,7 +89,7 @@ bool is_dupe(char *call, int bandindex, int mode) {
 	return false;
 
     if (mixedmode	/* check mode only if MIXED is allowed */
-	    && (worked[index].qsotime[trxmode][bandindex] == 0))
+	    && (worked[index].qsotime[mode][bandindex] == 0))
 	return false;
 
     if (!worked_in_current_minitest_period(index))
