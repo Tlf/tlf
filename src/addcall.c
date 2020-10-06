@@ -64,40 +64,32 @@ int excl_add_veto;
 
 int addcall(void) {
 
-    static int found = 0;
-    static int i, j, z = 0;
-    static int add_ok;
+    int cty, zone = 0;
+    int add_ok;
     int pfxnumcntidx = -1;
     int pxnr = 0;
 
     excl_add_veto = 0;
 
-    time_t now = get_time();
+    int station = lookup_or_add_worked(hiscall);
+    worked[station].qsotime[trxmode][bandinx] = get_time();
 
-    found = lookup_worked(hiscall);
+    // can we get the ctydata from countrynr?
+    cty = getctydata(hiscall);
 
-    if (found == -1) {
 
-	i = nr_worked;
-	g_strlcpy(worked[i].call, hiscall, 20);
-	nr_worked++;
-    } else
-	i = found;
-
-    worked[i].qsotime[trxmode][bandinx] = now;
-    j = getctydata(hiscall);
-    worked[i].country = j;
     if (strlen(comment) >= 1) {		/* remember last exchange */
-	g_strlcpy(worked[i].exchange, comment, sizeof(worked[i].exchange));
+	g_strlcpy(worked[station].exchange, comment,
+		sizeof(worked[0].exchange));
 
 	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1) {
 	    /*
 	    			if (strlen(zone_fix) > 1) {
-	    				z = zone_nr(zone_fix);
+	    				zone = zone_nr(zone_fix);
 	    			} else
-	    				z = zone_nr(zone_export);
+	    				zone = zone_nr(zone_export);
 	    */
-	    z = zone_nr(comment);
+	    zone = zone_nr(comment);
 
 	}
     }
@@ -125,7 +117,7 @@ int addcall(void) {
 
 	int pfxi = 0;
 	while (pfxi < pfxnummultinr) {
-	    if (pfxnummulti[pfxi].countrynr == j) {
+	    if (pfxnummulti[pfxi].countrynr == cty) {
 		pfxnumcntidx = pfxi;
 		break;
 	    }
@@ -153,7 +145,7 @@ int addcall(void) {
     }
 
     if (exclude_multilist_type == EXCLUDE_COUNTRY) {
-	if (is_in_countrylist(j)) {
+	if (is_in_countrylist(cty)) {
 	    add_ok = 0;
 	    new_cty = 0;
 	    addcallarea = 0;
@@ -162,8 +154,7 @@ int addcall(void) {
     }
 
     if (add_ok == 1) {
-
-	worked[i].band |= inxes[bandinx];	/* worked on this band */
+	worked[station].band |= inxes[bandinx];	/* worked on this band */
 
 	switch (bandinx) {
 
@@ -175,15 +166,15 @@ int addcall(void) {
 	    case BANDINDEX_10:
 
 		if (pfxnumcntidx < 0) {
-		    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
-			countries[j] |= inxes[bandinx];
+		    if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
+			countries[cty] |= inxes[bandinx];
 			countryscore[bandinx]++;
-			new_cty = j;
+			new_cty = cty;
 		    }
-		    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
-			zones[z] |= inxes[bandinx];
+		    if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
+			zones[zone] |= inxes[bandinx];
 			zonescore[bandinx]++;
-			new_zone = z;
+			new_zone = zone;
 		    }
 		} else {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[bandinx])
@@ -201,13 +192,13 @@ int addcall(void) {
 	    case BANDINDEX_17:
 	    case BANDINDEX_30:
 
-		if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
-		    countries[j] |= inxes[bandinx];
-		    new_cty = j;
+		if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
+		    countries[cty] |= inxes[bandinx];
+		    new_cty = cty;
 		}
-		if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
-		    zones[z] |= inxes[bandinx];
-		    new_zone = z;
+		if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
+		    zones[zone] |= inxes[bandinx];
+		    new_zone = zone;
 		}
 		break;
 
@@ -216,16 +207,14 @@ int addcall(void) {
 
     addmult();			/* for wysiwyg */
 
-    return j;
+    return cty;
 }
 
 /* ----------------------for network qso's-----------------------------------*/
 
 int addcall2(void) {
 
-
-    int found = 0;
-    int i, j, p, z = 0;
+    int cty, zone = 0;
     int add_ok;
     char lancopy[6];
 
@@ -245,17 +234,9 @@ int addcall2(void) {
     *strchrnul(comment, ' ') = '\0';	/* terminate on first blank */
 
     /* FIXME: worked array needs mutex protection */
-    found = lookup_worked(hiscall);
+    int station = lookup_or_add_worked(hiscall);
 
-    if (found == -1) {
-
-	i = nr_worked;
-	g_strlcpy(worked[i].call, hiscall, 20);
-	nr_worked++;
-    } else
-	i = found;
-
-    j = getctynr(hiscall);
+    cty = worked[station].country;
 
     bandinx = log_get_band(lan_logline);
 
@@ -263,18 +244,18 @@ int addcall2(void) {
     strncpy(date_and_time, lan_logline + 7, 15);
     qsotimets = parse_time(date_and_time, DATE_TIME_FORMAT);
 
-    worked[i].qsotime[trxmode][bandinx] = qsotimets;
-    worked[i].country = j;
+    worked[station].qsotime[trxmode][bandinx] = qsotimets;
+
     if (strlen(comment) >= 1) {
-//              strcpy(worked[i].exchange,comment);
+// 		strcpy(station->exchange, comment);
 
 	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1)
-	    z = zone_nr(comment);
+	    zone = zone_nr(comment);
     }
 
     add_ok = 1;			/* look if certain calls are excluded */
 
-    /* 	     if ((arrldx_usa ==1) && ((j == w_cty) || (j == ve_cty)))
+    /* 	     if ((arrldx_usa ==1) && ((cty == w_cty) || (cty == ve_cty)))
      	     	add_ok = 0;
     */
     if ((country_mult == 1) && iscontest)
@@ -293,7 +274,7 @@ int addcall2(void) {
 
 	int pfxi = 0;
 	while (pfxi < pfxnummultinr) {
-	    if (pfxnummulti[pfxi].countrynr == j) {
+	    if (pfxnummulti[pfxi].countrynr == cty) {
 		pfxnumcntidx = pfxi;
 		break;
 	    }
@@ -304,20 +285,20 @@ int addcall2(void) {
 
 
     if (continentlist_only) {
-	if (!is_in_continentlist(dxcc_by_index(j)->continent)) {
+	if (!is_in_continentlist(dxcc_by_index(cty)->continent)) {
 	    excl_add_veto = 1;
 	}
     }
 
     if (!continentlist_only
 	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
-	if (is_in_continentlist(dxcc_by_index(j)->continent)) {
+	if (is_in_continentlist(dxcc_by_index(cty)->continent)) {
 	    excl_add_veto = 1;
 	}
     }
 
     if (exclude_multilist_type == EXCLUDE_COUNTRY) {
-	if (is_in_countrylist(j)) {
+	if (is_in_countrylist(cty)) {
 	    excl_add_veto = 1;
 	}
     }
@@ -327,7 +308,7 @@ int addcall2(void) {
 	bandinx = log_get_band(lan_logline);
 	qsos_per_band[bandinx]++;
 
-	worked[i].band |= inxes[bandinx];	/* worked on this band */
+	worked[station].band |= inxes[bandinx];	/* worked on this band */
 
 	if (excl_add_veto == 0) {
 
@@ -341,15 +322,15 @@ int addcall2(void) {
 		case BANDINDEX_10:
 
 		    if (pfxnumcntidx < 0) {
-			if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
-			    countries[j] |= inxes[bandinx];
+			if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
+			    countries[cty] |= inxes[bandinx];
 			    countryscore[bandinx]++;
-//                              new_cty = j;
+//                              new_cty = cty;
 			}
-			if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
-			    zones[z] |= inxes[bandinx];
+			if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
+			    zones[zone] |= inxes[bandinx];
 			    zonescore[bandinx]++;
-//                              new_zone = z;
+//                              new_zone = zone;
 			}
 		    } else {
 			if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
@@ -365,11 +346,11 @@ int addcall2(void) {
 		case BANDINDEX_17:
 		case BANDINDEX_12:
 
-		    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
-			countries[j] |= inxes[bandinx];
+		    if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
+			countries[cty] |= inxes[bandinx];
 		    }
-		    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
-			zones[z] |= inxes[bandinx];
+		    if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
+			zones[zone] |= inxes[bandinx];
 		    }
 		    break;
 
@@ -385,10 +366,10 @@ int addcall2(void) {
 	    /* max 5 char for prefix written in makelogline */
 	    strncpy(lancopy, lan_logline + 68, 5);
 
-	    for (p = 0; p <= 5; p++) {	// terminate at first space
+	    for (int i = 0; i <= 5; i++) {	// terminate at first space
 
-		if (lancopy[p] == ' ') {
-		    lancopy[p] = '\0';
+		if (lancopy[i] == ' ') {
+		    lancopy[i] = '\0';
 		    break;
 		}
 	    }
@@ -401,6 +382,6 @@ int addcall2(void) {
 
     addmult2();			/* for wysiwyg from LAN */
 
-    return j;
+    return cty;
 }
 
