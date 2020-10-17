@@ -121,6 +121,8 @@ enum {
 #define ITU_ZONES 90
 #define MAX_ZONES (ITU_ZONES + 1) /* size of zones array */
 
+#define MAX_SECTION_LENGTH 4
+
 #define UNIQUECALL_ALL      1
 #define UNIQUECALL_BAND     2
 
