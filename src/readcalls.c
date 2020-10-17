@@ -165,7 +165,7 @@ char *get_multi_from_line(char *logline) {
 		|| (sectn_mult == 1)
 		|| (sectn_mult_once == 1)) {
 
-	g_strlcpy(multbuffer, logline + 68, 4);
+	g_strlcpy(multbuffer, logline + 68, MAX_SECTION_LENGTH+1);
 	g_strchomp(multbuffer);
 
     } else if (serial_grid4_mult == 1) {

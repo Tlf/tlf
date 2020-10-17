@@ -195,7 +195,7 @@ void prepare_fixed_part(void) {
 
 /** Construct contest dependent part of logline
  *
- * - contest dependent part (list may not complete):\n
+ * - contest dependent part (list may not be complete):\n
  *   - QSO mode
  *     \verbatim
  *     5    6         7         8

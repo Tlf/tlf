@@ -234,7 +234,7 @@ int get_mult_count(void) {
     return mults_possible->len;
 }
 
-/* get best matching lenght of of name or aliaslist of mult 'n' in 'str' */
+/* get best matching lenght of name or aliaslist of mult 'n' in 'str' */
 unsigned int get_matching_length(char *str, unsigned int n) {
     unsigned len = 0;
 

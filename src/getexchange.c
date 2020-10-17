@@ -590,16 +590,19 @@ int checkexchange(int x) {
 	"affa",
 	"bffa"
     };
-    char secpats[10][6] = {
+    char secpats[13][7] = {
 	"fab",
 	"faab",
 	"faaab",
+	"faaaab",
 	"bab",
 	"baab",
 	"baaab",
+	"baaaab",
 	"bau",
 	"baau",
 	"baaau",
+	"baaaau",
 	"baafb"
     };
     char callpats[5][9] = {
@@ -617,16 +620,19 @@ int checkexchange(int x) {
 	"bffu",
 	"bfu"
     };
-    char sectionpats[9][6] = {
+    char sectionpats[12][7] = {
 	"uab",
 	"uaab",
 	"uaaab",
+	"uaaaab",
 	"uau",
 	"uaau",
 	"uaaau",
+	"uaiaaau",
 	"bab",
 	"baab",
-	"baaab"
+	"baaab",
+	"baaaab"
     };
 
     int i, s, hr, ii, pr, jj;
@@ -654,6 +660,7 @@ int checkexchange(int x) {
 
 		case ' ': {
 		    cmpattern[i + 1] = 'b';
+		    // TODO: check if add 'u' is missing
 		    break;
 		}
 
@@ -925,7 +932,7 @@ int checkexchange(int x) {
 		if (hr > 0) {
 
 		    memset(checksection, 0, 29);
-		    strncpy(checksection, comment + (hr), 3);
+		    strncpy(checksection, comment + (hr), MAX_SECTION_LENGTH);
 		    if (checksection[strlen(checksection) - 1] == ' ') {
 			checksection[strlen(checksection) - 1] = '\0';
 		    }
@@ -946,8 +953,7 @@ int checkexchange(int x) {
 
 		hr = getlastpattern(sectionpats[ii]);
 
-		strncpy(checksection, comment, 3);
-		checksection[3] = '\0';
+		g_strlcpy(checksection, comment, MAX_SECTION_LENGTH+1);
 
 		int best_len = 0;
 		int idx = -1;
