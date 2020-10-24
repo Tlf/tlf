@@ -755,7 +755,7 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
     /* FREQ if available */
     if (qso->freq > 1799000) {
 	// write MHz
-    	tmp = g_strdup_printf("%.4f", qso->freq);
+    	tmp = g_strdup_printf("%.4f", qso->freq / 1000000.0);
 	add_adif_field(buffer, "FREQ", tmp);
 	g_free(tmp);
     }
