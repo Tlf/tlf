@@ -61,3 +61,9 @@ A: You can use 'adifmerg' from OH7BF for it. It allows to post process the
       adifmerg -f qso.adi -A CONTEST_ID=<my contest name> -o > file.adi
    Have a look at www.adif.org for the already standardized contest IDs.
 
+Q: I am using TLF in an XTerm. How can I configure used colors, fonts and
+   window size?
+
+A: You can  can use a .Xressources file in your home directory. See the
+   Xressources example file in the doc directory. Follow the instructions
+   given there to install it. You can use it also for URxvt terminals.
