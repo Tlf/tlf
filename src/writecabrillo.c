@@ -706,6 +706,17 @@ void add_adif_field(char *adif_line, char *field, char *value) {
 	g_free(tmp);
 }
 
+void add_adif_field_formated(char *buffer, char *field, char *fmt, ...) {
+    va_list args;
+    char *value;
+
+    va_start(args, fmt);
+    value = g_strdup_vprintf(fmt, args);
+    va_end(args);
+
+    add_adif_field(buffer, field, value);
+    g_free(value);
+}
 
 /* write ADIF header to open file */
 void write_adif_header(FILE *fp) {
@@ -748,16 +759,13 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
     add_adif_field(buffer, "CALL", qso->call);
 
     /* BAND */
-    tmp = g_strdup_printf("%dM", qso->band);
-    add_adif_field(buffer, "BAND", tmp);
-    g_free(tmp);
+    add_adif_field_formated(buffer, "BAND", "%dM", qso->band);
 
     /* FREQ if available */
     if (qso->freq > 1799000) {
 	// write MHz
-    	tmp = g_strdup_printf("%.4f", qso->freq / 1000000.0);
-	add_adif_field(buffer, "FREQ", tmp);
-	g_free(tmp);
+	add_adif_field_formated(buffer, "FREQ", "%.4f",
+		qso->freq / 1000000.0);
     }
 
     /* QSO MODE */
@@ -773,36 +781,28 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
     add_adif_field(buffer, "MODE", tmp);
 
     /* QSO_DATE */
-    tmp = g_strdup_printf("%4d%02d%02d", qso->year, qso->month, qso->day);
-    add_adif_field(buffer, "QSO_DATE", tmp);
-    g_free(tmp);
+    add_adif_field_formated(buffer, "QSO_DATE", "%4d%02d%02d",
+	    qso->year, qso->month, qso->day);
 
     /* TIME_ON */
-    tmp = g_strdup_printf("%02d%02d", qso->hour, qso->min);
-    add_adif_field(buffer, "TIME_ON", tmp);
-    g_free(tmp);
+    add_adif_field_formated(buffer, "TIME_ON", "%02d%02d",
+	    qso->hour, qso->min);
 
     /* RST_SENT */
     if (!no_rst ) {
-	tmp = g_strdup_printf("%d", qso->rst_s);
-	add_adif_field(buffer, "RST_SENT", tmp);
-	g_free(tmp);
+	add_adif_field_formated(buffer, "RST_SENT", "%d", qso->rst_s);
     }
 
     /* Sent contest serial number or exchange */
     if ((exchange_serial == 1) || (exchange[0] == '#')) {
-    	tmp = g_strdup_printf("%04d", qso->qso_nr);
-	add_adif_field(buffer, "STX", tmp);
-	g_free(tmp);
+	add_adif_field_formated(buffer, "STX", "%04d", qso->qso_nr);
     } else {
 	add_adif_field(buffer, "STX_STRING", g_strstrip(exchange));
     }
 
     /* RST_RCVD */
     if (!no_rst) {
-	tmp = g_strdup_printf("%d", qso->rst_r);
-	add_adif_field(buffer, "RST_RCVD", tmp);
-	g_free(tmp);
+	add_adif_field_formated(buffer, "RST_RCVD", "%d", qso->rst_r);
     }
 
     /* Received contest serial number or exchange */
