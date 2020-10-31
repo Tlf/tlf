@@ -18,19 +18,19 @@ Planned for later versions
 [x] automatically switch back to 'Run' mode from "grab spot" after QSO (tnx
     Zoli)
 [x] Add contest name to Header of ADIF file (suggested by SP3RXO)
-[ ] Refactor write_adif function. Use an add_adif_field() helper and also 
+[x] Refactor write_adif function. Use an add_adif_field() helper and also 
     already existing get_next_record() function.
 [x] Fix arrlsections, paccmults and spdxmults (drop '-end-' marker)
 [x] Do a complete rescore after delete of QSO automatically
 [x] document use of CT9.91 CTY.DAT files in FAQ
-[ ] Have a template for cabrillo file header  (Joop PG4I)
-[ ] Add a keyword to startup TLF in S&P mode (should be an easy one)
-[ ] switch between ESM and CT mode during contest (Nate N0NB)
-[ ] Send Morse via Hamlib for radios that support it.
 [x] Allow scrolling up  and down received and sent rapport between 339 and
     599 if CHANGE_RST is active. Extend keywords so that you can prepare a 
     list of most used RST values which will then be used for scrolling,
     e.g. CHANGE_RST=339,479,599 or similar.
+[ ] Have a template for cabrillo file header  (Joop PG4I)
+[ ] Add a keyword to startup TLF in S&P mode (should be an easy one)
+[ ] switch between ESM and CT mode during contest (Nate N0NB)
+[ ] Send Morse via Hamlib for radios that support it.
 [ ] Rework audio handling (recording and playback of contest and messages).
 
 [ ] Do a complete rewrite of display related code in the long term to
