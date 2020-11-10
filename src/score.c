@@ -170,7 +170,7 @@ int scoreByMode() {
 
 /* Overwrite points with x if set */
 #define USE_IF_SET(x) do { \
-			if (x != -1) \
+			if (x >= 0) \
 			    points = x; \
 			} while(0);
 
