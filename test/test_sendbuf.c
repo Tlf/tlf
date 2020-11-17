@@ -20,8 +20,8 @@ void replace_all(char *buf, int size, const char *what,
 
 
 /* break dependencies */
-int digikeyer = NO_KEYER;
-int cwkeyer = NO_KEYER;
+extern int digikeyer;
+extern int cwkeyer;
 
 extern char message[25][80];
 extern char buffer[];

@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <setjmp.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <glib.h>
 

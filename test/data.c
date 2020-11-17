@@ -24,6 +24,7 @@
 #include <string.h>
 #include "../src/globalvars.h"
 #include "../src/tlf.h"
+#include "../src/tlf_curses.h"
 
 #include "test.h"
 
@@ -38,15 +39,28 @@ int portnum = 0;
 
 int use_rxvt = 0;
 int use_xterm = 0;
+int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
+    {COLOR_GREEN, COLOR_YELLOW},
+    {COLOR_WHITE, COLOR_RED},
+    {COLOR_CYAN, COLOR_WHITE},
+    {COLOR_WHITE, COLOR_BLACK},
+    {COLOR_WHITE, COLOR_MAGENTA},
+    {COLOR_BLUE, COLOR_YELLOW},
+    {COLOR_WHITE, COLOR_BLACK}
+};
+
 
 int debugflag = 0;
-char *editor_name = NULL;
+char *editor_cmd = NULL;
 char rttyoutput[120];
 int tune_val = 0;
 int use_bandoutput = 0;
 int no_arrows = 0;
 int bandindexarray[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 int cqwwm2 = 0;
+
+int cwkeyer = NO_KEYER;
+int digikeyer = NO_KEYER;
 
 /* predefined contests */
 int cqww = 0;
@@ -112,6 +126,8 @@ int noautocq = 0;
 int emptydir = 0;
 int verbose = 0;
 int no_rst = 0;			/* 1 - do not use RS/RST */
+int sprint_mode = 0;
+int qtc_recv_lazy = 0;
 
 int pacc_qsos[10][10];
 int ve_cty;
@@ -137,6 +153,7 @@ int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
 /* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
 rmode_t rigmode = 0;
+rmode_t digi_mode = 0;
 int mixedmode = 0;
 char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
@@ -162,6 +179,7 @@ char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
 char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = 0;
+char fldigi_url[50] = "http://localhost:7362/RPC2";
 
 char sp_return[80] = " \n";
 char cq_return[80] = " \n";
@@ -266,6 +284,7 @@ int cqdelay = 8;
 char wkeyerbuffer[400];
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
+int keyer_backspace = 0;
 int k_tune;
 int k_pin14;
 int k_ptt;
@@ -308,6 +327,7 @@ char rigportname[40];
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;
+unsigned char rigptt = 0;
 
 /*-------------------------------the log lines-----------------------------*/
 char qsos[MAX_QSOS][LOGLINELEN + 1];
