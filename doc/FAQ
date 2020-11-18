@@ -64,6 +64,6 @@ A: You can use 'adifmerg' from OH7BF for it. It allows to post process the
 Q: I am using TLF in an XTerm. How can I configure used colors, fonts and
    window size?
 
-A: You can  can use a .Xressources file in your home directory. See the
-   Xressources example file in the doc directory. Follow the instructions
+A: You can  can use a .Xresources file in your home directory. See the
+   Xresources example file in the doc directory. Follow the instructions
    given there to install it. You can use it also for URxvt terminals.

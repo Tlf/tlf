@@ -272,7 +272,7 @@
 2018-12-30  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/searchlog.c: Fix zone display for old behaviour  If multiplier is WAZ
-  or ITU zone the following algorithmus is used:  - First try to pick up the
+  or ITU zone the following algorithm is used:  - First try to pick up the
   zone from the comment string of the selected QSOs. Use the last one found. -
   If no QSO with zoneinfo is found use zone_export (set by getctydata()
   according to the country information.  - If there are a zoneinfo field, but
@@ -327,7 +327,7 @@
   places.  - Adapt checklogfile() for use with logedit() Do not exit program if
   file not found. Use ncurses for all text output.  - Use existing
   checklogfile() to check the log after editing Original code was a copy of
-  that funtion with small adaption wrt text output and errror handling.  Be
+  that funtion with small adaption wrt text output and error handling.  Be
   aware that the functionality is still broken as before.
 
 2018-12-05  zcsahok <ha5cqz@freemail.hu>
@@ -348,7 +348,7 @@
 
   * src/bandmap.c: Fix compiler warning from clang  Calculation the difference
   of two unsigned numbers gives an unsigned result. clang warns that doing an
-  abs() of it makes no sense. Thansk nate N0NB for reporting.
+  abs() of it makes no sense. Thanks Nate N0NB for reporting.
 
 2018-11-03  Nate Bargmann <n0nb@n0nb.us>
 
@@ -741,7 +741,7 @@
 2017-12-02  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/callinput.c, src/showzones.c, src/time_update.c: move zones display to
-  using panels  Old code blinks zone display in 2s intervall. Tnx for reporting
+  using panels  Old code blinks zone display in 2s interval. Tnx for reporting
   Fred DH5FS.
 
 2017-12-01  zcsahok <ha5cqz@freemail.hu>
@@ -774,7 +774,7 @@
   src/paccdx.c, src/score.c, src/searchlog.c, src/showscore.c, src/tlf.h: Add a
   special OOB out_of_band entry  
   * Tlf normally recognizes the band in use from
-  rigs frequency. If the rig is outside of any band there is a indetermined
+  rigs frequency. If the rig is outside of any band there is a indeterminate
   state resulting in irregular characters on display and possible wrong entries
   into the contest statistics. Tnx to Zoltan Csahok HA5CQZ for pointing out the
   problem. 
@@ -883,11 +883,11 @@
   * src/addcall.c, src/main.c, src/parse_logcfg.c, src/readcalls.c,
   src/searchlog.c, src/tlf.h, tlf.1.in: Added new feature: MINITEST keyword to
   support the Mini CW test  
-  Optional an argument may passed to MINITEST, instean of hardcoded value
+  Optional an argument may passed to MINITEST, instead of hardcoded value
 
 2017-01-30  Thomas Beierlein <tomjbe@gentoo.org>
 
-  * macros/ax_with_curses_extra.m4: Better regocnition of <panel.h>  
+  * macros/ax_with_curses_extra.m4: Better recognition of <panel.h>
   
   If ax_with_ncurses finds a ncursesw instance the former code checks only for
   <ncursesw/panelh>. If not there the search fails. That lead to problems at
@@ -930,7 +930,7 @@
   * src/getpx.c: better implementation of getpx()  
   
   - handles callsigns with only letters 
-  - correct handling of callsigns with long nummbers, e.g. DR2006Q or 9A800VZ
+  - correct handling of callsigns with long numbers, e.g. DR2006Q or 9A800VZ
 
 2017-01-06  Ervin Hegedus <airween@gmail.com>
 
@@ -1028,7 +1028,7 @@
   * src/fldigixmlrpc.c, src/fldigixmlrpc.h, src/stoptx.c: minor changes  
   - rename to 'fldigi_to_rx()' 
   - do not add to a string of unknown length. Send '^r' on separate call 
-    afterwars.
+    afterwards.
 
 2016-11-23  Thomas Beierlein <tomjbe@gentoo.org>
 
@@ -1096,7 +1096,7 @@
 2016-07-18  zcsahok <ha5cqz@freemail.hu>
 
   * src/netkeyer.c, src/netkeyer.h: netkeyer: streamlined (part 2)  - add
-  synthactic sugar - fix buffer overflow
+  syntactic sugar - fix buffer overflow
 
 2016-07-03  zcsahok <ha5cqz@freemail.hu>
 
@@ -1346,7 +1346,7 @@
 
   * src/addmult.c: Tests for empty strings are already handled in
   remember_multi().  Furthermore for-loops tests themself if endcondition is
-  already fullfilled when entered. So we can drop some needless tests.
+  already fulfilled when entered. So we can drop some needless tests.
 
 2015-12-19  Nate Bargmann <n0nb@n0nb.us>
 
@@ -1368,7 +1368,7 @@
   Define
   PACKAGE_DATA_DIR in src/Makefile.am  Automake provides the predefined
   'pkgdatadir' Makefile variable which is the same path as the previously
-  caclulated PACKAGE_DATA_DIR value in configure.ac.  Use it to set
+  calculated PACKAGE_DATA_DIR value in configure.ac.  Use it to set
   PACKAGE_DATA_DIR as a -D value to the preprocessor via AM_CPPFLAGS in
   src/Makefile.am which is passed to the source files during preprocessing. 
   This conforms with current Autotools convention.  As PACKAGE_DATA_DIR is
@@ -1527,7 +1527,7 @@
   WARC) and counting zones and countries for contest bands only. The handling
   can be simplified if we unify the handling and count zones and countries for
   ALL bands. We can then ignore the non WARC entries for contest scoring.
-  Furthermore it is more easy to add additionla bands later.
+  Furthermore it is more easy to add additional bands later.
 
 
 2015-11-28  Nate Bargmann <n0nb@n0nb.us>
@@ -1563,7 +1563,7 @@
 
   * src/bandmap.c: fix calculation of remaining time during bandmap read 
   Lastly spot->timeout got changed to unsigned. We must take care that we do
-  not get a wrap ariund if the diff between writing und reading the bandmap
+  not get a wrap around if the diff between writing und reading the bandmap
   data ist to big.
 
   * src/bandmap.c, src/bandmap.h, src/time_update.c: Fix saving of bandmap data
@@ -1612,7 +1612,7 @@
 
 2015-10-27  Ervin Hegedus <airween@gmail.com>
 
-  * src/callinput.c: Fixed immediated auto_cq bug: if Tlf sends CQ in auto
+  * src/callinput.c: Fixed immediate auto_cq bug: if Tlf sends CQ in auto
   mode, and op press the first letter of callsign, that will be lost
 
 2015-10-25  Thomas Beierlein <tomjbe@gentoo.org>
@@ -1629,7 +1629,7 @@
 2015-10-13  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/bandmap.c: Cleanup bmdata_read_file  - fix memory leak - close file
-  pointer - restructre parsing loop - simplify
+  pointer - restructure parsing loop - simplify
 
   * src/writecabrillo.c: Close opened file pointers in case of error
 
@@ -1772,7 +1772,7 @@
 
   * src/sendbuf.c, src/sendbuf.h: factor out conversion to short cw numbers
 
-  * src/sendbuf.c, src/setcontest.c: drop contradictionary setting of
+  * src/sendbuf.c, src/setcontest.c: drop contradictory setting of
   shortqsonr for ARLL_SS
 
 2015-05-31  dh5fs <dh5fs@users.noreply.github.com>
@@ -1992,7 +1992,7 @@
   * src/logit.c: Modified automatic cq zone nr copy to comment variable, if
   that's not empty  - If the user modified the exchange field, which was filled
   out by Tlf from cty.dat, then Tlf rewrite the original value if switching
-  bqack forth between call input and comemtn field.
+  back forth between call input and comment field.
 
   * src/getexchange.c, src/makelogline.c: Added extra check for exchange field
   for CQ-WW-RTTY
@@ -2058,7 +2058,7 @@
 2014-08-23  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/displayit.c, src/displayit.h, src/sendbuf.c, src/sendbuf.h: fix
-  displayit()  - functions relied on termbuf temrinated with newline. Dropped
+  displayit()  - functions relied on termbuf terminated with newline. Dropped
   last character in display if not present.
 
 2014-06-20  Thomas Beierlein <tb@forth-ev.de>
@@ -2586,7 +2586,7 @@
   - In case of errors ask if user want to continue without rig control. 
     Otherwise exit tlf. 
   - If get_frequency fails (maybe because rig is switched off) report
-    frequency as 0.0. Do not change band settings from tranceiver. 
+    frequency as 0.0. Do not change band settings from transceiver.
     (Show and log the actual frequency as 0, meaning no rig control available 
     at the moment)
   - writecabrillo() will insert start-of-band frequency in log calculated from
@@ -2623,7 +2623,7 @@
   included in the tlf directory, and all other documentation references the
   GPL, the reference to 'Library' is presumed to be incorrect.   With the
   concurrance of Tom and Rein, this patch set removes the word 'Library' from
-  the boilerplate in all .c and .h files where it occured.  Include minor Free
+  the boilerplate in all .c and .h files where it occurred.  Include minor Free
   Software Foundation mailing address correction with this patch set.
 
 2013-06-29  Thomas Beierlein <tomjbe@gentoo.org>
@@ -2773,7 +2773,7 @@
 
   * src/parse_logcfg.c: Fix parsing of CALL in logcfg.dat  - drop trailing
   whitespace - for now keep the trailing NL as a lot of code in other parts of
-  tlf rely on that NL cahracter
+  tlf rely on that NL character
 
 2013-01-05  Thomas Beierlein <tomjbe@gentoo.org>
 
@@ -2882,7 +2882,7 @@
     SOUNDCARD was se in logcfg.dat which switches to a soundcard for sidetone 
     output. 
   - Fix for recognition of SIDETONE_VOLUME value (drop trailing \n) 
-  - Allow volume setting independent of choosen sidetone device. 
+  - Allow volume setting independent of chosen sidetone device. 
   - Add information to man page.
 
   * src/callinput.c: Cleanup old code
@@ -3018,7 +3018,7 @@
 
 2012-09-10  Thomas Beierlein <tb@forth-ev.de>
 
-  * src/writecabrillo.c: Basic implemention of 'prepare_line' function  
+  * src/writecabrillo.c: Basic implementation of 'prepare_line' function  
   - format entries according to list of items from QSO: line definition 
   - add entry by entry to linebuffer 
   - !! atm not complete
@@ -3073,7 +3073,7 @@
   - 'read_cabrillo_format' lookup file with needed cabrillo format 
     description in local dir or datadir and parses some keys 
     (atm only 'QSO:') 
-  - QSO: key is splitted into separate items each describing one entry 
+  - QSO: key is split into separate items each describing one entry 
     in cabrillos QSO: line.
     Be aware !! Keywords have to be case sensitive
 
@@ -3142,7 +3142,7 @@
   * doc/Makefile.am, doc/README.cab, share/Makefile.am, share/cabrillo.fmt,
   tlf.1.in: add rudimental files with description of new cabrillo mechanism and
   format specification (needs to be completed). Document new CABRILLO=
-  statement for ruls file.
+  statement for rules file.
 
 2012-08-09  Thomas Beierlein <tb@forth-ev.de>
 
@@ -3194,7 +3194,7 @@
   New log line format in use! At the moment that is incompatible with old log
   files. Back them up before experimenting. Code to migrate old log to new
   format will follow in next days.  
-  - make logline 7 characters longer to accomodate the QRG with one decimal 
+  - make logline 7 characters longer to accommodate the QRG with one decimal
     precision. 
   - record QRG at end of logline if you have the rig online
 
@@ -3297,7 +3297,7 @@
 
 2012-02-28  Thomas Beierlein <tomjbe@gentoo.org>
 
-  * src/parse_logcfg.c: better regognition of unknown keywords in logcfg.dat
+  * src/parse_logcfg.c: better recognition of unknown keywords in logcfg.dat
   and rules file
 
 2012-02-27  Thomas Beierlein <tomjbe@gentoo.org>
@@ -3490,7 +3490,7 @@
 
 2011-11-06  Thomas Beierlein <tomjbe@gentoo.org>
 
-  * src/changefreq.c, src/changefreq.h: hide cursor during frequnecy change
+  * src/changefreq.c, src/changefreq.h: hide cursor during frequency change
 
   * src/callinput.c: Allow edit of old QSO's only if call field is empty
 
@@ -3959,7 +3959,7 @@
 	* fix bug in cty.dat and in the routine which reads in the file
 
 2011-01-08  thomas beierlein <tb@forth-ev.de>
-	* fix logfile read error. Last QSO got reead twice.
+	* fix logfile read error. Last QSO got read twice.
 	* Optimize searchlog() for speed and also optimize partial call
 	  lookup.
 
@@ -3996,7 +3996,7 @@
 2010-01-xx  thomas beierlein <tb@forth-ev.de>
 	* better recognition of hamlib install (tnx F8FCE)
 	* fix a lot of buffer overrun for string handling (as glibc and gcc
-	  use -D_FORTIFY_SOURCE for stricter checking of buffer overuns)
+	  use -D_FORTIFY_SOURCE for stricter checking of buffer overruns)
 	* rewrote handling of initial exchange file. It now allows empty 
 	  and comment lines (#) and spaces around the callsign. Leading 
 	  space before comment gets ignored.
@@ -4036,7 +4036,7 @@
 
 	* fixed bug in callinput.c allowing input of too many characters in call field
 
-	* added TIME_OFFSET to allow running PC on local time instaead of UTC
+	* added TIME_OFFSET to allow running PC on local time instead of UTC
 
 	* added arrl sweepstakes contest with flexible exchange input
 
@@ -4168,7 +4168,7 @@
 
 2002-07-14  Rein Couperus   <rein@couperus.com>
 
-	* edit_last.c:	added instert and delete
+	* edit_last.c:	added insert and delete
 
 	* removed call to tlf_deletelogline
 

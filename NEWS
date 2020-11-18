@@ -6,7 +6,7 @@ Bug fixes and minor improvements.
 Changes:
     - From TLF-1.3.1 on we can use the CT9 cty.dat files with full call sign
       exceptions (marked by =<call>).
-      Starting from Jan2020 Jim reiser AD1C presents the CT9 format file as
+      Starting from Jan2020 Jim Reiser AD1C presents the CT9 format file as
       default file format for TLF. If you use TLF-1.3.0 or older you should
       look for the old format files.
     - Rework display of partials - more stations displayed, bugs fixed
@@ -111,7 +111,7 @@ Minor corrections:
     - Minor syntax cleanup in code and documentation
 
 Bug fixes:
-    - Fix segement violation if RIGPORT is undefined in logcfg.dat
+    - Fix segmentation violation if RIGPORT is undefined in logcfg.dat
     - Fixes some test programs
     - fix warnigns from clang about taking an abs() from an unsigned number
 
@@ -132,10 +132,10 @@ New features since tlf-1.3.0:
     - Use $SHELL environment setting when opening a shell using '!'
     - Tlf can now reread its own cabrillo files. Tnx HA2OS
     - Changed BMAUTOGRAB to work only in S&P mode 
-    - Most configuration files allow now DOS line endingss. Tnx HA5CQZ
+    - Most configuration files allow now DOS line endings. Tnx HA5CQZ
     - Added documentation for using winkeydaemon. Tnx N0NB
     - Clarify man page text. Tnx N0NB.
-    - Added a Xressource sample file to set colors for xterm. Tnx N0NB
+    - Added a Xresource sample file to set colors for xterm. Tnx N0NB
     - Using fldigi for DIGI mode allows you to pick up call and exchange from
       fldigi program - see doc/README.RTTY. Tnx HA2OS
     - Tlf supports nanoIO interface (https://github.com/w1hkj/nanoIO). Tnx
@@ -156,12 +156,12 @@ Bug fixes:
     - WAE: when QTC was set up as BOTH directions the CABRILLO file was
       created with wrong format
     - Fix parsing of QTC= keyword 
-    - Fix zones display. Old code blinks display in 2s intervalls. 
+    - Fix zones display. Old code blinks display in 2s intervals.
       Tnx Fred DH5FS.
     - Fix a bug during sending a longer series of unanswered CQ's. 
       The cursor sometimes jumped to the exchange field. Tnx Zoltan HA5CQZ
     - Fix bug in BMAUTOGRAB and BMAUTOADD
-    - Do not fallback to 'rxvt' TERM value if tmerinal setting is 
+    - Do not fallback to 'rxvt' TERM value if terminal setting is
       not recognized. xterm-256color should now work. TnX K6BSD
 
 
@@ -183,7 +183,7 @@ New features:
       but will be dropped in next versions).
     - New keyword MINITEST to support Minitest like contests, where you can
       operate the same station each time in one of two or more time
-      intervalls. Tnx HA2OS.
+      intervals. Tnx HA2OS.
     - New multi keyword UNIQUE_CALL_MULTI for Minitest or CWops CWT contest.
       Allows to count unique call signs as multi for all band or per band.
       Tnx HA2OS.
@@ -235,7 +235,7 @@ tlf-1.2.4.2
 Bugfix release.
 
 Bug fixes:
-    - fix some memory and ressource leaks in seldom used functions
+    - fix some memory and resource leaks in seldom used functions
 
 Enhancements:
     - Update and fix spelling errors in man page
@@ -257,7 +257,7 @@ Maintenance and bugfix release.
 
 New features since tlf-1.2.3:
     - Switch hardcoded keyboard handling which supported only xterm, linux 
-      terminal and rxvt to use of ncruses keypad(). That way other terminal
+      terminal and rxvt to use of ncurses keypad(). That way other terminal
       settings should be supported as well (Tnx to Nate N0NB for the work).
     - Extend bandmap functionality. See man page for details
       (tnx to Ervin HA2OS).
@@ -271,7 +271,7 @@ New features since tlf-1.2.3:
 	in S&P by pressing ENTER. 
 
 Bug fixes:
-    - Cleanup some valgrind warnng about possible memory leaks.
+    - Cleanup some valgrind warnings about possible memory leaks.
     - Fix autoconf settings for new lookup of ncurses include files
     - Fix a segmentation fault if we have unexpected long call sign prefixes
 
@@ -281,7 +281,7 @@ Maintenance and bugfix release.
 
 New features since tlf-1.2.2:
     - Support for ARRL 160m contest (tnx N0NB)
-    - Search MULT_LIST file not only in working direxctory but also in 
+    - Search MULT_LIST file not only in working directory but also in
       install directory, e.g. /wusr/local/share/tlf (tnx N0NB)
     - Better calculation of working QRG for RTTY qso's according to the used 
       rig modulations (USB/LSB/FSK) (tnx HA2OS)
@@ -338,7 +338,7 @@ New features:
     - allow a list of stations known to give QTC's (maybe from last year)
 	  QTC_CAP_CALLS=QTC_calls.txt
       If you use this option, then Tlf will put a "P" flag (means "previous") 
-      near known station ifrom the list on bandmap, and in worked window. 
+      near known station from the list on bandmap, and in worked window.
       Eg: 7001.0 * R9AA P
     - new QTC capable flags: 'L': 'later', 'N': 'NO' 
       You can mark a station on the bandmap for QTC "L"ater or "N"o QTC 
@@ -685,7 +685,7 @@ Minor maintenance release.
 
 New features:
     - New doc/README.ssb gives some good hints how to use TLF on SSB contest.
-      Thansk Andy, G4KNO for contributing.
+      Thanks Andy, G4KNO for contributing.
 
 Bug fixes:
     - Fix spelling of unmute command in scripts/play_vk. Tnx G4KNO
@@ -775,7 +775,7 @@ maintenance release
     * fixes some nasty racing condition between bandmap code and 
       checkwindow. In result prefix in lower line of checkwindow
       got displayed wrong, but country was right.
-      Thansk Martin OK1RR for reporting.
+      Thanks Martin OK1RR for reporting.
 
 tlf-1.0.4
 =========
@@ -835,12 +835,12 @@ Bugfixes:
  * make Backspace and Delete-Keys the same to allow some more terminal 
    input encodings
 
-tfl-0.9.31-2
+tlf-0.9.31-2
 ============
 
 'Possible calls' are now in top left corner, and share the space with 
 the keyer. The 'possible calls' routine first checks the own log 
-and then the callmasterdatabase.
+and then the callmaster database.
 Calls can now be up to 12 characters
 
 tlf-0.9.31
@@ -996,7 +996,7 @@ tlf-0.9.18
 ==========
 
 Version 0.9.18 only adds native support for the ten tec ORION, to bridge 
-the time until Hamlib has an approriate driver.
+the time until Hamlib has an appropriate driver.
 Use RIGMODEL=ORION if you have one. This works with or without Hamlib installed.
 Set RIGSPEED=57600.
 The driver uses the internal keyer of the ORION, so you don't need cwdaemon i
@@ -1074,7 +1074,7 @@ tlf-0.9.15
 	This will only work in DIG mode.
 
 - Added experimental :SCAnner function (an idea of OK1RR)
-	The SCAnner funtion combines the Frequency Control function of Hamlib
+	The SCAnner function combines the Frequency Control function of Hamlib
 	with a rudimentary Audio S-Meter/plotter via the sound card. Just 
 	connect the rx output to the soundcard input and you are o.k.
 	Two functions are supported by version 0.9.15:
@@ -1085,7 +1085,7 @@ tlf-0.9.15
 	values are plotted.
 
 	SWR scan function - with a simple noise bridge and a computer 
-	controlled rx as a frequenzy-stepped detector you can plot antenna 
+	controlled rx as a frequency-stepped detector you can plot antenna
 	swr or filter transfer characteristic.
 
 	New parameters for logcfg.dat:
@@ -1142,7 +1142,7 @@ tlf-0.9.8
 - Changed time-to-live default for DX spots to 30 minutes. This can be changed 
   at compile time with the MAXMINUTES constant in cluster_bg.h
 
-- Added station ID to log line when logging from differentl nodes in the 
+- Added station ID to log line when logging from different nodes in the
   network.
   This enables post-contest analysis and log massage after the contest.
   CQWW_M2 must be set in logcfg.dat for this.
@@ -1607,7 +1607,7 @@ Bug/unwanted feature fixes:
 - when call field is empty, is TAB suposed to give a zone?
 
 - when editing last QSO '@', if I go right (with -> key) till end of line,
-  I'm stuck on next line. Acutally, If you enter "ggggggggggggggggggggggggg"
+  I'm stuck on next line. Actually, If you enter "ggggggggggggggggggggggggg"
   past the end of line, it will overflow to the next line. And there's no
   solution to go back (ESC and :edit to fix it though) But the screen looks
   ugly in the mean time.
@@ -1795,7 +1795,7 @@ tlf-0.7.0 beta test version with hamlib-1.1.3 integration
 
  - mode switch :SSB now gives right side band (USB, LSB)
 
- - I need reports on tlf/rig compatability (see Hamlib on source forge for lists)      !!
+ - I need reports on tlf/rig compatibility (see Hamlib on source forge for lists)      !!
 
 
 tlf-0.6.1  beta test version of telnet / tnc support

@@ -1405,7 +1405,7 @@ Show cluster bandmap on startup and set start values for filtering.
 .br
 	\(lqO\(rq - show only multiplier (CQWW only)
 .br
-<number> livetime for new spots in seconds (number >= 30)
+<number> lifetime for new spots in seconds (number >= 30)
 .
 .TP
 .B SCOREWINDOW
@@ -1933,7 +1933,7 @@ Bands not in list are weighted by 1.
 .
 .TP
 .B BANDWEIGHT_MULTIS
-Allow a weigthing factor for multipliers on different bands. E.g.
+Allow a weighting factor for multipliers on different bands. E.g.
 .br
 \fBBANDWEIGHT_MULTIS\fR=\fI80:4,40:3,20:2,15:2,10:2\fR
 .br
@@ -1954,7 +1954,7 @@ list the affected countries:
 \fBPFX_NUM_MULTIS\fR=\fIW,VE,VK,ZL,ZS,JA,PY,UA9\fR.  @PACKAGE_NAME@ will read
 these items, make a lookup in a countrylist for a country code, and that code
 will be used.  If you include the UA9 prefix and then make a QSO with a
-station from Asiatic Russia, the PFX number will evaulated with a new
+station from Asiatic Russia, the PFX number will evaluated with a new
 multiplier, but European Russia will not.
 .
 .TP
@@ -2022,7 +2022,7 @@ If you run Fldigi's xmlrpc server on an different port use
 .TP
 \fBMINITEST \fR[=\fINNN\fR]
 Use this option when the contest is a minitest like contest. In that contests
-the full contest intervall is divided into shorter sections (e.g. 6 * 10
+the full contest interval is divided into shorter sections (e.g. 6 * 10
 minute sections in an hour).  Any station can be worked once in each of the
 time sections without counting as dupe.  The default length of the sections is
 600 seconds (10 minutes), but you can pass another value (in seconds) after
@@ -2040,7 +2040,7 @@ Example:
 The argument tells @PACKAGE_NAME@, how to score the callsigns as multipliers:
 .br
 .B ALL
-means the callsign is a multiplier, independet of band.
+means the callsign is a multiplier, independent of band.
 .br
 .B BAND
 means the callsign counts as multiplier on different bands.
@@ -2105,7 +2105,7 @@ It will take precedence over the system installed
 .IR callmaster .
 .
 .P
-\fISection files\fR contain a flat ASCII database of multpliers like states,
+\fISection files\fR contain a flat ASCII database of multipliers like states,
 sections, provinces, districts, names, ages, etc.  They are invoked by
 including \fBMULT_LIST\fR=\fIsection_file_name\fR in the rules file.
 .
