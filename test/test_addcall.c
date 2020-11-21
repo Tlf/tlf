@@ -153,7 +153,7 @@ void test_addcall_exclude_continent(void **state) {
     assert_int_equal(excl_add_veto, false);
 }
 
-void test_addcall_exclude_country (void **state) {
+void test_addcall_exclude_country(void **state) {
     exclude_multilist_type = EXCLUDE_COUNTRY;
     strcpy(hiscall, "LZ1AB");
     addcall();
@@ -460,7 +460,7 @@ void test_addcall2_exclude_continent(void **state) {
     assert_int_equal(excl_add_veto, false);
 }
 
-void test_addcall2_exclude_country (void **state) {
+void test_addcall2_exclude_country(void **state) {
     exclude_multilist_type = EXCLUDE_COUNTRY;
     strcpy(lan_logline, logline);
     addcall2();

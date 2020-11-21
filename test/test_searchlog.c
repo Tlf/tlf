@@ -97,14 +97,14 @@ int getctydata(char *checkcallptr) {
 static void write_qsos() {
     int i;
     for (i = 0; i < MAX_QSOS; i++) {
-	strcpy (qsos[i], "");
+	strcpy(qsos[i], "");
     }
-    strcpy (qsos[0], QSO1);
-    strcpy (qsos[1], QSO2);
-    strcpy (qsos[2], QSO3);
-    strcpy (qsos[3], QSO4);
-    strcpy (qsos[4], QSO5);
-    strcpy (qsos[5], QSO6);
+    strcpy(qsos[0], QSO1);
+    strcpy(qsos[1], QSO2);
+    strcpy(qsos[2], QSO3);
+    strcpy(qsos[3], QSO4);
+    strcpy(qsos[4], QSO5);
+    strcpy(qsos[5], QSO6);
 }
 
 int setup_default(void **state) {
@@ -233,63 +233,63 @@ void test_init_search_panel_dxped(void **state) {
 
 /* testing searchlog for refactoring */
 void test_searchlog_pickup_call(void **state) {
-    strcpy (hiscall, "UA");
+    strcpy(hiscall, "UA");
     filterLog("");
-    assert_int_equal (strncmp(searchresult[0], QSO3, 80), 0);
-    assert_int_equal (strncmp(searchresult[1], QSO4, 80), 0);
-    assert_int_equal (strncmp(searchresult[2], QSO5, 80), 0);
+    assert_int_equal(strncmp(searchresult[0], QSO3, 80), 0);
+    assert_int_equal(strncmp(searchresult[1], QSO4, 80), 0);
+    assert_int_equal(strncmp(searchresult[2], QSO5, 80), 0);
 }
 
 void test_searchlog_pickup_call_mixedmode(void **state) {
     mixedmode = 1;
-    strcpy (hiscall, "UA");
+    strcpy(hiscall, "UA");
     filterLog("");
-    assert_int_equal (strncmp(searchresult[0], QSO3, 80), 0);
-    assert_int_equal (strncmp(searchresult[1], QSO5, 80), 0);
+    assert_int_equal(strncmp(searchresult[0], QSO3, 80), 0);
+    assert_int_equal(strncmp(searchresult[1], QSO5, 80), 0);
 }
 
 void test_searchlog_extract_data(void **state) {
-    strcpy (hiscall, "UA");
+    strcpy(hiscall, "UA");
     filterLog("");
-    assert_string_equal (result[0], " 40CW  0007 OE3UAI       15            ");
-    assert_string_equal (result[1], " 80SSB 0008 UA3JK        16            ");
+    assert_string_equal(result[0], " 40CW  0007 OE3UAI       15            ");
+    assert_string_equal(result[1], " 80SSB 0008 UA3JK        16            ");
 }
 
 void test_searchlog_extract_data_mixedmode(void **state) {
     mixedmode = 1;
-    strcpy (hiscall, "UA");
+    strcpy(hiscall, "UA");
     filterLog("");
-    assert_string_equal (result[0], " 40CW  0007 OE3UAI       15            ");
-    assert_string_equal (result[1], " 80CW  0009 UA9LM        17            ");
+    assert_string_equal(result[0], " 40CW  0007 OE3UAI       15            ");
+    assert_string_equal(result[1], " 80CW  0009 UA9LM        17            ");
 }
 
 void test_bandstr2line(void **state) {
-    assert_int_equal( bandstr2line( " 10"), 1);
-    assert_int_equal( bandstr2line( " 15"), 2);
-    assert_int_equal( bandstr2line( " 20"), 3);
-    assert_int_equal( bandstr2line( " 40"), 4);
-    assert_int_equal( bandstr2line( " 80"), 5);
-    assert_int_equal( bandstr2line( "160"), 6);
-    assert_int_equal( bandstr2line( " 12"), 7);
-    assert_int_equal( bandstr2line( " 17"), 8);
-    assert_int_equal( bandstr2line( " 30"), 9);
+    assert_int_equal(bandstr2line(" 10"), 1);
+    assert_int_equal(bandstr2line(" 15"), 2);
+    assert_int_equal(bandstr2line(" 20"), 3);
+    assert_int_equal(bandstr2line(" 40"), 4);
+    assert_int_equal(bandstr2line(" 80"), 5);
+    assert_int_equal(bandstr2line("160"), 6);
+    assert_int_equal(bandstr2line(" 12"), 7);
+    assert_int_equal(bandstr2line(" 17"), 8);
+    assert_int_equal(bandstr2line(" 30"), 9);
 }
 
 /* testing pickup call suggestion for USEPARTIAL */
-void test_UsePartialFromLog (void **state) {
+void test_UsePartialFromLog(void **state) {
     use_part = 1;
     strcpy(hiscall, "K4DE");
     filterLog();
     handlePartials();
-    assert_string_equal( hiscall, "K4DEF");
+    assert_string_equal(hiscall, "K4DEF");
 }
 
-void test_UsePartialFromLogNotUnique (void **state) {
+void test_UsePartialFromLogNotUnique(void **state) {
     use_part = 1;
     strcpy(hiscall, "UA");
     filterLog();
     handlePartials();
-    assert_string_equal( hiscall, "UA");
+    assert_string_equal(hiscall, "UA");
 }
 
 void test_UsePartialFromCallmaster(void **state) {
@@ -299,7 +299,7 @@ void test_UsePartialFromCallmaster(void **state) {
     strcpy(hiscall, "A1");
     filterLog();
     handlePartials();
-    assert_string_equal( hiscall, "A1AA");
+    assert_string_equal(hiscall, "A1AA");
 }
 
 void test_UsePartialNotUnique(void **state) {
@@ -309,7 +309,7 @@ void test_UsePartialNotUnique(void **state) {
     strcpy(hiscall, "A3");
     filterLog();
     handlePartials();
-    assert_string_equal( hiscall, "A3");
+    assert_string_equal(hiscall, "A3");
 }
 
 void test_UsePartialNotUnique_only_callmaster(void **state) {
@@ -320,7 +320,7 @@ void test_UsePartialNotUnique_only_callmaster(void **state) {
     strcpy(hiscall, "HG");  // not in log yet
     filterLog();
     handlePartials();
-    assert_string_equal( hiscall, "HG");
+    assert_string_equal(hiscall, "HG");
 }
 
 /* test if partials display checks callmaster even if match was found in log */
@@ -370,35 +370,35 @@ void test_displayPartials(void **state) {
 void test_ZoneFromCountry(void **state) {
     cqww = 1;
     strcpy(zone_export, "15");
-    strcpy( hiscall, "OH2");
+    strcpy(hiscall, "OH2");
     filterLog();
-    assert_int_equal (getZone(), 15);
+    assert_int_equal(getZone(), 15);
 }
 
 void test_ZoneFromExchange(void **state) {
     cqww = 1;
     strcpy(zone_fix, "14");
     strcpy(zone_export, "15");
-    strcpy( hiscall, "OH2");
+    strcpy(hiscall, "OH2");
     filterLog();
-    assert_int_equal (getZone(), 14);
+    assert_int_equal(getZone(), 14);
 }
 
 void test_ZoneFromLog_mixedmode(void **state) {
     mixedmode = 1;
     cqww = 1;
     strcpy(zone_export, "14");
-    strcpy( hiscall, "K4D");
+    strcpy(hiscall, "K4D");
     filterLog();
-    assert_int_equal (getZone(), 5);
+    assert_int_equal(getZone(), 5);
 }
 
 void test_ZoneFromLog(void **state) {
     cqww = 1;
     strcpy(zone_export, "14");
-    strcpy( hiscall, "SP9");
+    strcpy(hiscall, "SP9");
     filterLog();
-    assert_int_equal (getZone(), 15);
+    assert_int_equal(getZone(), 15);
 }
 
 /* test position of output on lower border of search window */

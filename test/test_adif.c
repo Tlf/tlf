@@ -30,7 +30,7 @@ int getsummary(FILE fp) {
     return 0;
 }
 
-void ask(char* buffer, char *what) {
+void ask(char *buffer, char *what) {
 }
 
 char buffer[181];
@@ -40,9 +40,9 @@ char adif_line[400];
 #define ADIF "Test"
 
 int setup_default(void **state) {
-	strcpy(adif_line, ADIF);
+    strcpy(adif_line, ADIF);
 
-	return 0;
+    return 0;
 }
 
 #define LOGLINE1 " 20CW  23-Dec-15 13:16 0135  SV5K           599  599  20            SV5      1         "
@@ -71,22 +71,22 @@ void test_keep_old_format(void **state) {
 
 /* test add_adif_field and co */
 void test_add_adif_noField(void **state) {
-	add_adif_field(adif_line, "", "Hi");
-	assert_string_equal(adif_line, ADIF);
+    add_adif_field(adif_line, "", "Hi");
+    assert_string_equal(adif_line, ADIF);
 }
 
 
 void test_add_adif_noValue(void **state) {
-	add_adif_field(adif_line, "Field1", NULL);
-	assert_string_equal(adif_line, ADIF"<Field1>");
+    add_adif_field(adif_line, "Field1", NULL);
+    assert_string_equal(adif_line, ADIF"<Field1>");
 }
 
 void test_add_adif_emptyValue(void **state) {
-	add_adif_field(adif_line, "Field1", "");
-	assert_string_equal(adif_line, ADIF"<Field1:0>");
+    add_adif_field(adif_line, "Field1", "");
+    assert_string_equal(adif_line, ADIF"<Field1:0>");
 }
 
 void test_add_adif_Value(void **state) {
-	add_adif_field(adif_line, "Field1", "Hi");
-	assert_string_equal(adif_line, ADIF"<Field1:2>Hi");
+    add_adif_field(adif_line, "Field1", "Hi");
+    assert_string_equal(adif_line, ADIF"<Field1:2>Hi");
 }

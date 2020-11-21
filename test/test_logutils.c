@@ -33,18 +33,18 @@ void test_getband_wrongband(void **state) {
 }
 
 /* test reading mode */
-void test_getmode_ok (void **state) {
+void test_getmode_ok(void **state) {
     assert_int_equal(log_get_mode(QSO1), SSBMODE);
 }
 
-void test_getmode_ignores_case (void **state) {
+void test_getmode_ignores_case(void **state) {
     char *tmp = g_strdup(QSO1);
     memcpy(tmp + 3, "ssb", 3);
     assert_int_equal(log_get_mode(tmp), SSBMODE);
     g_free(tmp);
 }
 
-void test_getmode_error (void **state) {
+void test_getmode_error(void **state) {
     char *tmp = g_strdup(QSO1);
     memcpy(tmp + 3, "x y", 3);
     assert_int_equal(log_get_mode(tmp), -1);
@@ -53,6 +53,6 @@ void test_getmode_error (void **state) {
 
 
 /* test reading points */
-void test_getpoints (void **state) {
+void test_getpoints(void **state) {
     assert_int_equal(log_get_points(QSO1), 10);
 }

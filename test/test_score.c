@@ -301,7 +301,7 @@ void test_empty_continentlist(void **state) {
     assert_int_equal(is_in_continentlist("NA"), false);
 }
 
-void test_not_in_continentlist(void ** state) {
+void test_not_in_continentlist(void **state) {
     init_continentlist();
     assert_int_equal(is_in_continentlist("SA"), false);
 }
@@ -333,7 +333,7 @@ void test_scoreByCorC_continentlistOnly(void **state) {
 
     init_continentlist();
 
-    /* no list points given */ 
+    /* no list points given */
     check_call_points("LZ1AB", 0);
     check_call_points("JA4BB", 0);
 

@@ -19,22 +19,22 @@ void shownr(char *msg, int x) {
 extern char logfile[];
 
 /* setup / teardown */
-void append_tofile (char *file, char * msg) {
+void append_tofile(char *file, char *msg) {
     int fd;
 
-    fd = open(file, O_WRONLY | O_APPEND );
-    IGNORE(write (fd, msg, strlen(msg)));
+    fd = open(file, O_WRONLY | O_APPEND);
+    IGNORE(write(fd, msg, strlen(msg)));
     close(fd);
 }
 
 #define LOGLINE " 20CW  18-Jan-14 16:04 0111  N0CALL         599  599  33            W        3  14025.0\n"
 #define COMMENT "; Node A, 110 : comment                                                                \n"
 
-void append_line (int fd, char *msg) {
-    IGNORE(write (fd, msg, strlen(msg)));
+void append_line(int fd, char *msg) {
+    IGNORE(write(fd, msg, strlen(msg)));
 }
 
-void write_log(char * file) {
+void write_log(char *file) {
     int fd;
 
     fd = creat(file, 0644);
@@ -49,7 +49,7 @@ void write_log(char * file) {
 
 int setup_default(void **state) {
 
-    strcpy (logfile, "test.log");
+    strcpy(logfile, "test.log");
     write_log(logfile);
 
     return 0;
@@ -64,7 +64,7 @@ int teardown_default(void **state) {
 /* verify that all log lines have correct length */
 int check_log(char *file) {
     FILE *fp;
-    char buffer[LOGLINELEN+5];
+    char buffer[LOGLINELEN + 5];
     int result = 0;
 
     fp = fopen(file, "r");
