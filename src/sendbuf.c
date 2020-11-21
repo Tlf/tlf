@@ -328,8 +328,8 @@ void sendbuf(void) {
 		displayit();
 	    refreshp();
 	} else {
-            set_simulator_state(REPEAT);
-        }
+	    set_simulator_state(REPEAT);
+	}
 
 	buffer[0] = '\0';
     }

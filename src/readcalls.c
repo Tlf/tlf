@@ -162,10 +162,10 @@ char *get_multi_from_line(char *logline) {
 	    g_strlcpy(multbuffer, logline + 63, 4);
 
     } else if ((serial_section_mult == 1)
-		|| (sectn_mult == 1)
-		|| (sectn_mult_once == 1)) {
+	       || (sectn_mult == 1)
+	       || (sectn_mult_once == 1)) {
 
-	g_strlcpy(multbuffer, logline + 68, MAX_SECTION_LENGTH+1);
+	g_strlcpy(multbuffer, logline + 68, MAX_SECTION_LENGTH + 1);
 	g_strchomp(multbuffer);
 
     } else if (serial_grid4_mult == 1) {
@@ -325,7 +325,8 @@ int readcalls(void) {
 	}
 
 	/* calculate QSO timestamp from logline */
-	worked[l].qsotime[qsomode][bandindex] = parse_time(inputbuffer + 7, DATE_TIME_FORMAT);
+	worked[l].qsotime[qsomode][bandindex] = parse_time(inputbuffer + 7,
+						DATE_TIME_FORMAT);
 
 
 	if (pfxmultab == 1) {

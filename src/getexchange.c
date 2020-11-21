@@ -953,7 +953,7 @@ int checkexchange(int x) {
 
 		hr = getlastpattern(sectionpats[ii]);
 
-		g_strlcpy(checksection, comment, MAX_SECTION_LENGTH+1);
+		g_strlcpy(checksection, comment, MAX_SECTION_LENGTH + 1);
 
 		int best_len = 0;
 		int idx = -1;

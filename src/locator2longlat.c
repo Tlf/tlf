@@ -120,8 +120,7 @@ int check_qra(char *qra) {
 	return 0;
     }
     if (qra[0] < 'A' || qra[0] > 'R' ||	qra[1] < 'A' || qra[1] > 'R' ||
-	qra[2] < '0' || qra[2] > '9' ||	qra[3] < '0' || qra[3] > '9')
-    {
+	    qra[2] < '0' || qra[2] > '9' ||	qra[3] < '0' || qra[3] > '9') {
 	return 0;
     }
     return 1;

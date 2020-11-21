@@ -77,15 +77,13 @@ int read_rules() {
 
 	status = parse_configfile(fp);
 	fclose(fp);
-    }
-    else if ((fp = fopen(basic_contest_conf, "r")) != NULL) {
+    } else if ((fp = fopen(basic_contest_conf, "r")) != NULL) {
 
 	showstring("Reading contest rules file:", basic_contest_conf);
 
 	status = parse_configfile(fp);
 	fclose(fp);
-    }
-    else {
+    } else {
 	showstring("There is no contest rules file:", contest_conf);
 	showmsg("Assuming regular QSO operation. Logfile is qso.log");
 	strcpy(whichcontest, "qso");	/* default use general qso mode...

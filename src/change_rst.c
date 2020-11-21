@@ -35,7 +35,7 @@ static struct rst rst_sent = {NULL, 0};
 static struct rst rst_recv = {NULL, 0};
 
 /* sorter for RST values */
-static int cmp_rst (char **a, char **b) {
+static int cmp_rst(char **a, char **b) {
     return g_ascii_strcasecmp(*a, *b);
 }
 
@@ -86,12 +86,12 @@ void rst_reset(void) {
 void rst_set_strings() {
     memcpy(recvd_rst, g_ptr_array_index(rst_recv.array, rst_recv.index), 2);
     memcpy(sent_rst, g_ptr_array_index(rst_sent.array, rst_sent.index), 2);
-   if (trxmode != SSBMODE) {
-        recvd_rst[2] = '9';
-        sent_rst[2] = '9';
+    if (trxmode != SSBMODE) {
+	recvd_rst[2] = '9';
+	sent_rst[2] = '9';
     } else {
-        recvd_rst[2] = ' ';
-        sent_rst[2] = ' ';
+	recvd_rst[2] = ' ';
+	sent_rst[2] = ' ';
     }
 }
 

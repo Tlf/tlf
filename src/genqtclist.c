@@ -128,7 +128,7 @@ void genqtcline(char *qtc, char *qsoline) {
     else if ((nr >= 0) && (nr < 10000)) {
 	sprintf(tstring, "%d", nr);
     } else {
-    // ignore all other exchange values
+	// ignore all other exchange values
 	strcpy(tstring, "    ");
     }
 

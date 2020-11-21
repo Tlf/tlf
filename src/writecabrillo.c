@@ -690,20 +690,19 @@ int write_cabrillo(void) {
 
 
 void add_adif_field(char *adif_line, char *field, char *value) {
-	char *tmp;
+    char *tmp;
 
-	if (strlen(field) == 0)
-		return;
+    if (strlen(field) == 0)
+	return;
 
-	if (value == NULL) {
-		tmp = g_strdup_printf("<%s>", field);
-	}
-	else {
-		tmp = g_strdup_printf("<%s:%zd>%s",
-			field, strlen(value), value);
-	}
-	strcat(adif_line, tmp);
-	g_free(tmp);
+    if (value == NULL) {
+	tmp = g_strdup_printf("<%s>", field);
+    } else {
+	tmp = g_strdup_printf("<%s:%zd>%s",
+			      field, strlen(value), value);
+    }
+    strcat(adif_line, tmp);
+    g_free(tmp);
 }
 
 void add_adif_field_formated(char *buffer, char *field, char *fmt, ...) {
@@ -765,31 +764,31 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
     if (qso->freq > 1799000) {
 	// write MHz
 	add_adif_field_formated(buffer, "FREQ", "%.4f",
-		qso->freq / 1000000.0);
+				qso->freq / 1000000.0);
     }
 
     /* QSO MODE */
     if (qso->mode == CWMODE)
-    	tmp = "CW";
+	tmp = "CW";
     else if (qso->mode == SSBMODE)
 	tmp = "SSB";
     else if (strcmp(modem_mode, "RTTY") == 0)
 	tmp = "RTTY";
     else
 	/* \todo DIGI is no allowed mode */
-    	tmp = "DIGI";
+	tmp = "DIGI";
     add_adif_field(buffer, "MODE", tmp);
 
     /* QSO_DATE */
     add_adif_field_formated(buffer, "QSO_DATE", "%4d%02d%02d",
-	    qso->year, qso->month, qso->day);
+			    qso->year, qso->month, qso->day);
 
     /* TIME_ON */
     add_adif_field_formated(buffer, "TIME_ON", "%02d%02d",
-	    qso->hour, qso->min);
+			    qso->hour, qso->min);
 
     /* RST_SENT */
-    if (!no_rst ) {
+    if (!no_rst) {
 	add_adif_field_formated(buffer, "RST_SENT", "%d", qso->rst_s);
     }
 
@@ -811,7 +810,7 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
     if ((exchange_serial == 1) || (exchange[0] == '#'))
 	add_adif_field(buffer, "SRX", tmp);
     else
-	add_adif_field(buffer, "SRX_STRING",tmp);
+	add_adif_field(buffer, "SRX_STRING", tmp);
 
     /* <EOR> - end of ADIF row */
     strcat(buffer, "<eor>\n");

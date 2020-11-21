@@ -889,12 +889,12 @@ int parse_logcfg(char *inputbuffer) {
 	}
 	case 42: {
 	    PARAMETER_NEEDED(teststring);
-            wwv_set_r(atoi(fields[1]));
+	    wwv_set_r(atoi(fields[1]));
 	    break;
 	}
 	case 43: {
 	    PARAMETER_NEEDED(teststring);
-            wwv_set_sfi(atoi(fields[1]));
+	    wwv_set_sfi(atoi(fields[1]));
 	    break;
 	}
 	case 45: {
@@ -1145,8 +1145,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char country_list_raw[50] = ""; 	/* use only first
-						       COUNTRY_LIST
-						       definition */
+						   	COUNTRY_LIST
+						   	definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
@@ -1428,9 +1428,9 @@ int parse_logcfg(char *inputbuffer) {
 		 * allowed.
 		 */
 		if (!g_regex_match_simple(
-			"^([3-5][3-9]\\d?\\s*,\\s*)*[3-5][3-9]\\d?$",
-		        g_strstrip(fields[1]), G_REGEX_CASELESS,
-			(GRegexMatchFlags)0)) {
+			    "^([3-5][3-9]\\d?\\s*,\\s*)*[3-5][3-9]\\d?$",
+			    g_strstrip(fields[1]), G_REGEX_CASELESS,
+			    (GRegexMatchFlags)0)) {
 		    WrongFormat(teststring);
 		}
 		rst_init(fields[1]);
@@ -1545,8 +1545,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char cont_multiplier_list[50] = ""; 	/* use only first
-						       CONTINENT_LIST
-						       definition */
+						   	CONTINENT_LIST
+						   	definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
