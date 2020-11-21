@@ -414,7 +414,7 @@ void filterLog() {
 
 /* helper functions to check filtered lines for match with
  * hiscall or actual band */
-static bool call_matches(const char * line) {
+static bool call_matches(const char *line) {
     char buffer[20];
 
     g_strlcpy(buffer,  line + 12, 20);
@@ -423,7 +423,7 @@ static bool call_matches(const char * line) {
     return (strcmp(buffer, hiscall) == 0);
 }
 
-static bool band_matches(const char * line) {
+static bool band_matches(const char *line) {
     return log_get_band(line) == bandinx;
 }
 
@@ -431,8 +431,8 @@ static bool line_matches_actual_qso(const char *line) {
     extern bool qso_once;
 
     if (call_matches(line)
-	&& (band_matches(line) || qso_once)
-	&& is_current_mode(line)) {
+	    && (band_matches(line) || qso_once)
+	    && is_current_mode(line)) {
 
 	int found = searchcallarray(hiscall);
 	if (worked_in_current_minitest_period(found)) {

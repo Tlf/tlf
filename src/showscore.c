@@ -257,107 +257,107 @@ void showscore(void) {
     float p;
 
     if (!showscore_flag) {
-        return;
+	return;
     }
 
     /* show header with active band and number of QSOs */
     if (!IsWarcIndex(bandinx)) {
 
-        display_header(bi_normal);
+	display_header(bi_normal);
 
     } else {
 
-        display_header(bi_warc);
+	display_header(bi_warc);
     }
 
     /* show score per band */
     if ((wysiwyg_multi == 1)
-            || (serial_section_mult == 1)
-            || (serial_grid4_mult == 1)
-            || (sectn_mult == 1)) {
+	    || (serial_section_mult == 1)
+	    || (serial_grid4_mult == 1)
+	    || (sectn_mult == 1)) {
 
-        mvprintw(3, START_COL, "Mult ");
-        for (i = 0; i < 6; i++) {
-            printfield(3, band_cols[i], multscore[bi_normal[i]]);
-        }
+	mvprintw(3, START_COL, "Mult ");
+	for (i = 0; i < 6; i++) {
+	    printfield(3, band_cols[i], multscore[bi_normal[i]]);
+	}
     }
 
     if ((itumult == 1) || (wazmult == 1)) {
 
-        mvprintw(3, START_COL, "Mult ");
-        for (i = 0; i < 6; i++) {
-            printfield(3, band_cols[i], zonescore[bi_normal[i]]);
-        }
+	mvprintw(3, START_COL, "Mult ");
+	for (i = 0; i < 6; i++) {
+	    printfield(3, band_cols[i], zonescore[bi_normal[i]]);
+	}
     }
 
     if (pfxmultab == 1) {
-        mvprintw(3, START_COL, "Mult ");
-        for (i = 0; i < 6; i++) {
-            printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
-        }
+	mvprintw(3, START_COL, "Mult ");
+	for (i = 0; i < 6; i++) {
+	    printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
+	}
     }
 
     if (dx_arrlsections == 1) {
 
-        mvprintw(3, START_COL, "Cty  ");
-        for (i = 0; i < 6; i++) {
-            printfield(3, band_cols[i], countryscore[bi_normal[i]]);
-        }
+	mvprintw(3, START_COL, "Cty  ");
+	for (i = 0; i < 6; i++) {
+	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	}
 
-        mvprintw(4, START_COL, "Sect");
-        for (i = 0; i < 6; i++) {
-            printfield(4, band_cols[i], multscore[bi_normal[i]]);
-        }
+	mvprintw(4, START_COL, "Sect");
+	for (i = 0; i < 6; i++) {
+	    printfield(4, band_cols[i], multscore[bi_normal[i]]);
+	}
     }
 
     if (cqww == 1) {
 
-        mvprintw(3, START_COL, "Cty  ");
-        for (i = 0; i < 6; i++) {
-            printfield(3, band_cols[i], countryscore[bi_normal[i]]);
-        }
+	mvprintw(3, START_COL, "Cty  ");
+	for (i = 0; i < 6; i++) {
+	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	}
 
-        mvprintw(4, START_COL, "Zone ");
-        for (i = 0; i < 6; i++) {
-            printfield(4, band_cols[i], zonescore[bi_normal[i]]);
-        }
+	mvprintw(4, START_COL, "Zone ");
+	for (i = 0; i < 6; i++) {
+	    printfield(4, band_cols[i], zonescore[bi_normal[i]]);
+	}
     }
 
     if (arrldx_usa == 1) {
 
-        mvprintw(3, START_COL, "Cty  ");
-        for (i = 0; i < 6; i++) {
-            printfield(3, band_cols[i], countryscore[bi_normal[i]]);
-        }
+	mvprintw(3, START_COL, "Cty  ");
+	for (i = 0; i < 6; i++) {
+	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	}
     }
 
     if (universal == 1 && country_mult == 1) {
 
-        mvprintw(3, START_COL, "Cty  ");
-        for (i = 0; i < 6; i++) {
-            printfield(3, band_cols[i], countryscore[bi_normal[i]]);
-        }
+	mvprintw(3, START_COL, "Cty  ");
+	for (i = 0; i < 6; i++) {
+	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	}
     }
 
     if (pacc_pa_flg == 1) {
 
-        mvprintw(3, START_COL, "Cty  ");
-        for (i = 0; i < 6; i++) {
-            printfield(3, band_cols[i], countryscore[bi_normal[i]]);
-        }
+	mvprintw(3, START_COL, "Cty  ");
+	for (i = 0; i < 6; i++) {
+	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	}
     }
 
     /* show score summary */
     if (sprint == 1) {
 
-        mvprintw(5, START_COL, "Score: %d", get_nr_of_points());
+	mvprintw(5, START_COL, "Score: %d", get_nr_of_points());
     } else if (focm == 1) {
-        foc_show_scoring(START_COL);
+	foc_show_scoring(START_COL);
     } else if (stewperry_flg == 1) {
-        /* no normal multis, but may have POWERMULT set (fixedmult != 0.) */
-        stewperry_show_summary(get_nr_of_points(), fixedmult);
+	/* no normal multis, but may have POWERMULT set (fixedmult != 0.) */
+	stewperry_show_summary(get_nr_of_points(), fixedmult);
     } else {
-        show_summary(get_nr_of_points(), get_nr_of_mults());
+	show_summary(get_nr_of_points(), get_nr_of_mults());
     }
 
 
@@ -366,21 +366,21 @@ void showscore(void) {
     mvprintw(6, 55, spaces(19));
 
     if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1)
-            || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
+	    || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
 
-        totalmults = get_nr_of_mults();
-        totalmults = totalmults ? totalmults : 1;	/* at least one */
-        p = ((qsonum - 1) / (float)totalmults);
+	totalmults = get_nr_of_mults();
+	totalmults = totalmults ? totalmults : 1;	/* at least one */
+	p = ((qsonum - 1) / (float)totalmults);
 
-        if ((l10 = last10()) >= 1)
-            mvprintw(6, 55, "Q/M %.1f  Rate %d ", p, (60 * 10) / l10);
-        else
-            mvprintw(6, 55, "Q/M %.1f ", p);
+	if ((l10 = last10()) >= 1)
+	    mvprintw(6, 55, "Q/M %.1f  Rate %d ", p, (60 * 10) / l10);
+	else
+	    mvprintw(6, 55, "Q/M %.1f ", p);
     }
 
     if (wpx == 1) {
-        if (minute_timer > 0)
-            mvprintw(6, 75, "%d", minute_timer);
+	if (minute_timer > 0)
+	    mvprintw(6, 75, "%d", minute_timer);
     }
 
     printcall();

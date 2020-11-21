@@ -92,8 +92,7 @@ void prefix_add(char *pfxstr) {
     if (loc != NULL) {
 	new_prefix -> timezone = atof(loc + 1);
 	*loc = '\0';
-    }
-    else
+    } else
 	new_prefix -> timezone = INFINITY;
 
     loc = strchr(pfxstr, '{');
@@ -103,8 +102,7 @@ void prefix_add(char *pfxstr) {
 	loc = strchr(new_prefix -> continent, '}');
 	if (loc != NULL)
 	    *loc = '\0';
-    }
-    else
+    } else
 	new_prefix -> continent = NULL;
 
     loc = strchr(pfxstr, '<');
@@ -115,8 +113,7 @@ void prefix_add(char *pfxstr) {
 	    new_prefix -> lon = atof(loc + 1);
 	else
 	    new_prefix -> lon = INFINITY;
-    }
-    else
+    } else
 	new_prefix -> lat = new_prefix -> lon = INFINITY;
 
     loc = strchr(pfxstr, '[');

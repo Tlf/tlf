@@ -302,8 +302,7 @@ void add_mult_line(char *line) {
 	multi->name = g_strdup(mult);
 	multi->aliases = NULL;
 	g_ptr_array_add(mults_possible, multi);
-    }
-    else
+    } else
 	/* else use existing one */
 	multi = get_mult_base(index);
 

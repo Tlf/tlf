@@ -52,7 +52,7 @@ int pacc_pa(void) {
 bool check_veto();
 
 
-int setup_default (void **state) {
+int setup_default(void **state) {
     char filename[100];
 
     strcpy(filename, TOP_SRCDIR);
@@ -91,11 +91,11 @@ void test_lookup_in_pfxnummult(void **state) {
 
 
 /* test check_veto() */
-void test_veto_eclude_none (void **state) {
+void test_veto_eclude_none(void **state) {
     assert_int_equal(check_veto(), false);
 }
 
-void test_veto_exclude_country (void **state) {
+void test_veto_exclude_country(void **state) {
     exclude_multilist_type = EXCLUDE_COUNTRY;
     countrynr = getctynr("HB9ABC");
     assert_int_equal(check_veto(), false);
@@ -103,7 +103,7 @@ void test_veto_exclude_country (void **state) {
     assert_int_equal(check_veto(), true);
 }
 
-void test_veto_exclude_continent_contlist_only (void **state) {
+void test_veto_exclude_continent_contlist_only(void **state) {
     continentlist_only = true;
     exclude_multilist_type = EXCLUDE_CONTINENT;
     strcpy(continent, "EU");
@@ -112,7 +112,7 @@ void test_veto_exclude_continent_contlist_only (void **state) {
     assert_int_equal(check_veto(), false);
 }
 
-void test_veto_exclude_continent (void **state) {
+void test_veto_exclude_continent(void **state) {
     exclude_multilist_type = EXCLUDE_CONTINENT;
     strcpy(continent, "EU");
     assert_int_equal(check_veto(), true);

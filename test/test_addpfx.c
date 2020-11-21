@@ -20,13 +20,13 @@ void test_initPfx(void **state) {
     assert_int_equal(GetNrOfPfx_once(), 0);
     assert_int_equal(GetNrOfPfx_multiband(), 0);
     int i, temp = 0;
-    for (i = 0; i<NBANDS; i++)
+    for (i = 0; i < NBANDS; i++)
 	temp += GetNrOfPfx_OnBand(i);
     assert_int_equal(temp, 0);
 }
 
-void test_outOfBand(void ** state){
-    assert_int_equal(GetNrOfPfx_OnBand(NBANDS) , 0);
+void test_outOfBand(void **state) {
+    assert_int_equal(GetNrOfPfx_OnBand(NBANDS), 0);
 }
 
 /* test adding prefixes */

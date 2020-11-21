@@ -38,10 +38,10 @@ void clearmsg() {
 
 void clearmsg_wait(void) {
     if (verbose) {
-	move(LINES-3, 0);
+	move(LINES - 3, 0);
 	clrtoeol();
-	mvprintw(LINES-2, 0, "Press any key to continue!");
-	move(LINES-1, 0);
+	mvprintw(LINES - 2, 0, "Press any key to continue!");
+	move(LINES - 1, 0);
 	clrtoeol();
 	refreshp();
 	IGNORE(key_get());
@@ -53,7 +53,7 @@ void clearmsg_wait(void) {
 
 
 static int has_room_for_message() {
-    if (linectr < LINES-3)
+    if (linectr < LINES - 3)
 	return 1;
     else
 	return 0;
