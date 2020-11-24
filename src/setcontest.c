@@ -28,6 +28,7 @@
 
 #include "focm.h"
 #include "getctydata.h"
+#include "globalvars.h"
 #include "setcontest.h"
 #include "tlf.h"
 
@@ -60,7 +61,6 @@ void setcontest(void) {
     extern int vk_cty;
     extern int zs_cty;
     extern int ua9_cty;
-    extern int contest;
     extern int showscore_flag;
     extern int searchflg;
     extern char whichcontest[];
@@ -93,7 +93,7 @@ void setcontest(void) {
     pacc_pa_flg = 0;
     focm = 0;
     universal = 0;
-    contest = 0;
+    iscontest = false;
     showscore_flag = 0;
     searchflg = 0;
     one_point = 0;
@@ -108,7 +108,7 @@ void setcontest(void) {
 
     if (strcmp(whichcontest, "wpx") == 0) {
 	wpx = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
     }
@@ -116,7 +116,7 @@ void setcontest(void) {
     if (strcmp(whichcontest, "cqww") == 0) {
 	cqww = 1;
 	recall_mult = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
     }
@@ -124,14 +124,14 @@ void setcontest(void) {
     if (strcmp(whichcontest, "dxped") == 0) {
 	dxped = 1;
 	recall_mult = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "sprint") == 0) {
 	sprint = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
 	one_point = 1;
@@ -140,7 +140,7 @@ void setcontest(void) {
     if (strcmp(whichcontest, "arrldx_usa") == 0) {
 	arrldx_usa = 1;
 	recall_mult = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
     }
@@ -150,7 +150,7 @@ void setcontest(void) {
 	three_point = 1;
 	recall_mult = 1;
 	sectn_mult = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
     }
@@ -163,7 +163,7 @@ void setcontest(void) {
 	recall_mult = 0;
 //      sectn_mult = 1;
 	noleadingzeros = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
     }
@@ -171,7 +171,7 @@ void setcontest(void) {
     if (strcmp(whichcontest, "arrl_fd") == 0) {
 //      other_flg = 1;
 	recall_mult = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
 	arrl_fd = 1;
@@ -180,7 +180,7 @@ void setcontest(void) {
     if (strcmp(whichcontest, "pacc_pa") == 0) {
 	pacc_pa_flg = 1;
 	one_point = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
 
@@ -196,7 +196,7 @@ void setcontest(void) {
 
     if (strcmp(whichcontest, "stewperry") == 0) {
 	stewperry_flg = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
     }
@@ -209,30 +209,30 @@ void setcontest(void) {
 	one_point = 1;
 	recall_mult = 1;
 	wysiwyg_multi = 1;
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "universal") == 0) {
-	contest = 1;
+	iscontest = true;
 	showscore_flag = 1;
 	searchflg = 1;
     }
 
     if (dx_arrlsections == 1) {
-	contest = 1;
+	iscontest = true;
 //      universal = 1;
 	showscore_flag = 1;
 	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "qso") == 0) {
-	contest = 0;
+	iscontest = false;
 	searchflg = 1;
     } else {
 	searchflg = 1;		//dxpedition
-	contest = 1;
+	iscontest= true;
 	showscore_flag = 1;
 	universal = 1;
     }

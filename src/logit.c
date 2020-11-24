@@ -31,6 +31,7 @@
 #include "callinput.h"
 #include "clear_display.h"
 #include "getexchange.h"
+#include "globalvars.h"
 #include "keyer.h"
 #include "keystroke_names.h"
 #include "log_to_disk.h"
@@ -54,7 +55,6 @@ void logit(void) {
     extern int trxmode;
     extern char hiscall[];
     extern cqmode_t cqmode;
-    extern int contest;
     extern char ph_message[14][80];
     extern char comment[];
     extern int cqww;
@@ -103,11 +103,11 @@ void logit(void) {
 	    }
 
 	    if (callreturn == '\n' && strlen(hiscall) >= 3) {
-		if ((*comment == '\0') && contest == CONTEST
+		if ((*comment == '\0') && iscontest
 			&& !ctcomp && !dxped)
 		    defer_store = 0;
 
-		if ((cqmode == CQ) && (contest == CONTEST)
+		if ((cqmode == CQ) && iscontest
 			&& (defer_store == 0)) {	/* CQ mode */
 
 		    send_standard_message(2);
@@ -139,7 +139,7 @@ void logit(void) {
 		    callreturn = 0;
 		}
 
-		if ((cqmode == S_P) && (contest == CONTEST)
+		if ((cqmode == S_P) && iscontest
 			&& (defer_store == 0)) {	/* S&P mode */
 
 		    if (cqww == 1) {
@@ -169,7 +169,7 @@ void logit(void) {
 		    defer_store++;
 		    callreturn = 0;
 		} else if (defer_store > 1) {
-		    if ((cqmode == CQ) && (contest == CONTEST)) {
+		    if ((cqmode == CQ) && iscontest) {
 			send_standard_message(CQ_TU_MSG);	/* send cq return */
 			set_simulator_state(CALL);
 
@@ -177,7 +177,7 @@ void logit(void) {
 
 		    }
 
-		    if ((cqmode == S_P) && (contest == CONTEST)) {
+		    if ((cqmode == S_P) && iscontest) {
 			send_standard_message(SP_TU_MSG); /* send S&P return */
 
 			defer_store = 0;

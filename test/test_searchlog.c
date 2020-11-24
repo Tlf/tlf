@@ -114,7 +114,7 @@ int setup_default(void **state) {
     showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
     arrlss = 0;
     dxped = 0;
-    contest = 0;
+    iscontest = false;
     search_win = NULL;
     searchflg = SEARCHWINDOW;
     trxmode = CWMODE;
@@ -219,7 +219,7 @@ void test_init_search_panel_no_contest(void **state) {
 }
 
 void test_init_search_panel_contest(void **state) {
-    contest = 1;
+    iscontest = true;
     InitSearchPanel();
     assert_int_equal(nr_bands, 6);
 }
@@ -403,7 +403,7 @@ void test_ZoneFromLog(void **state) {
 
 /* test position of output on lower border of search window */
 void test_OnLowerSearchPanel_contest(void **state) {
-    contest = 1;
+    iscontest = true;
     OnLowerSearchPanel(4, "test");
     check_mvprintw_output(0, 7, 4, "test");
 }

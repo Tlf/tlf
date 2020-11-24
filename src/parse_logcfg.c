@@ -53,7 +53,6 @@ extern int digikeyer;
 extern int keyer_backspace;
 extern int partials;
 extern int use_part;
-extern int contest;
 extern int portnum;
 extern int packetinterface;
 extern int tncport;
@@ -84,7 +83,7 @@ int read_logcfg(void) {
     int i;
     FILE *fp;
 
-    contest = 0;
+    iscontest = false;
     partials = 0;
     use_part = 0;
     cwkeyer = NO_KEYER;
@@ -211,7 +210,7 @@ int parse_logcfg(char *inputbuffer) {
     extern int showscore_flag;
     extern int searchflg;
     extern int demode;
-    extern int contest;
+    extern bool iscontest;
     extern int weight;
     extern int txdelay;
     extern char tonestr[];
@@ -766,7 +765,7 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	case 30: {
-	    contest = 1;
+	    iscontest = true;
 	    break;
 	}
 	case 31: {

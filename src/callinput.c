@@ -94,7 +94,6 @@ extern int no_arrows;
 extern char hiscall[];
 extern int bandinx;
 extern char band[NBANDS][4];
-extern int contest;
 extern int dxped;
 extern freq_t freq;
 extern int trx_control;
@@ -1035,7 +1034,7 @@ int callinput(void) {
 		addch(x);
 		strcat(hiscall, instring);
 		if (cqmode == CQ && cwstart > 0 &&
-			trxmode == CWMODE && contest == 1) {
+			trxmode == CWMODE && iscontest) {
 		    /* early start keying after 'cwstart' characters but only
 		     * if input field contains at least one nondigit */
 		    if (strlen(hiscall) == cwstart && !plain_number(hiscall)) {
@@ -1056,8 +1055,7 @@ int callinput(void) {
 
 	}
 
-	if (cqmode == CQ && cwstart < 0 && trxmode == CWMODE &&
-		contest == 1) {
+	if (cqmode == CQ && cwstart < 0 && trxmode == CWMODE && iscontest) {
 	    if (x == '\n' || x == KEY_ENTER) {
 		/* early start keying after 'Enter' but only if input field
 		 * contains at least two chars, one or more of it nondigit */
@@ -1318,7 +1316,7 @@ void handle_bandswitch(int direction) {
 
     next_band(direction);
 
-    if (contest == 1 && dxped == 0) {
+    if (iscontest && dxped == 0) {
 	while (IsWarcIndex(bandinx)) {	/* loop till next contest band */
 	    next_band(direction);
 	}
