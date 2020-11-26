@@ -53,9 +53,6 @@ int cont;
 /** Initialize settings for FOC contest */
 void foc_init(void) {
     focm = 1;
-    iscontest = 1;
-    showscore_flag = 1;
-    searchflg = 1;
 }
 
 

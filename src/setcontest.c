@@ -93,9 +93,9 @@ void setcontest(void) {
     pacc_pa_flg = 0;
     focm = 0;
     universal = 0;
-    iscontest = false;
-    showscore_flag = 0;
-    searchflg = 0;
+    iscontest = true;
+    showscore_flag = 1;
+    searchflg = 1;
     one_point = 0;
     two_point = 0;
     three_point = 0;
@@ -108,52 +108,34 @@ void setcontest(void) {
 
     if (strcmp(whichcontest, "wpx") == 0) {
 	wpx = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "cqww") == 0) {
 	cqww = 1;
 	recall_mult = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "dxped") == 0) {
 	dxped = 1;
 	recall_mult = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "sprint") == 0) {
 	sprint = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
 	one_point = 1;
     }
 
     if (strcmp(whichcontest, "arrldx_usa") == 0) {
 	arrldx_usa = 1;
 	recall_mult = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "arrldx_dx") == 0) {
-//      other_flg = 1;
 	three_point = 1;
 	recall_mult = 1;
 	sectn_mult = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
     }
+
     if (strcmp(whichcontest, "arrl_ss") == 0) {
 	arrlss = 1;
 	two_point = 1;
@@ -163,26 +145,16 @@ void setcontest(void) {
 	recall_mult = 0;
 //      sectn_mult = 1;
 	noleadingzeros = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "arrl_fd") == 0) {
-//      other_flg = 1;
-	recall_mult = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
 	arrl_fd = 1;
+	recall_mult = 1;
     }
 
     if (strcmp(whichcontest, "pacc_pa") == 0) {
 	pacc_pa_flg = 1;
 	one_point = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
 
 	zl_cty = getctynr(zlcall);
 	ja_cty = getctynr(jacall);
@@ -196,9 +168,6 @@ void setcontest(void) {
 
     if (strcmp(whichcontest, "stewperry") == 0) {
 	stewperry_flg = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "focmarathon") == 0) {
@@ -209,31 +178,20 @@ void setcontest(void) {
 	one_point = 1;
 	recall_mult = 1;
 	wysiwyg_multi = 1;
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
     }
 
     if (strcmp(whichcontest, "universal") == 0) {
-	iscontest = true;
-	showscore_flag = 1;
-	searchflg = 1;
+	/* nothing special to do */
     }
 
     if (dx_arrlsections == 1) {
-	iscontest = true;
-//      universal = 1;
-	showscore_flag = 1;
-	searchflg = 1;
+	/* same here */
     }
 
     if (strcmp(whichcontest, "qso") == 0) {
 	iscontest = false;
-	searchflg = 1;
-    } else {
-	searchflg = 1;		//dxpedition
-	iscontest= true;
-	showscore_flag = 1;
+	showscore_flag = 0;
+    } else {		    //dxpedition
 	universal = 1;
     }
 }
