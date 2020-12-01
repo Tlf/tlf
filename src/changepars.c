@@ -75,7 +75,6 @@ int changepars(void) {
     extern int shortqsonr;
     extern int searchflg;
     extern int demode;
-    extern int contest;
     extern int announcefilter;
     extern int showscore_flag;
     extern int zonedisplay;
@@ -253,13 +252,13 @@ int changepars(void) {
 	    break;
 	}
 	case 15: {		/*  CONTEST   */
-	    if (contest == CONTEST)
-		contest = 0;
+	    if (iscontest)
+		iscontest = false;
 	    else {
-		contest = CONTEST;
+		iscontest = true;
 		searchflg = SEARCHWINDOW;
 	    }
-	    mvprintw(13, 29, "CONTEST-mode is %s", contest ? "on" : "off");
+	    mvprintw(13, 29, "CONTEST-mode is %s", iscontest ? "on" : "off");
 	    refreshp();
 	    sleep(1);
 

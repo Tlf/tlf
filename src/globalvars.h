@@ -1,6 +1,7 @@
 
 #include <glib.h>
 #include <hamlib/rig.h>
+#include <stdbool.h>
 
 #include "tlf.h"
 
@@ -33,7 +34,7 @@ extern int countries[MAX_DATALINES];	// for every country, a bitfield
 extern int bandinx;			// band we're currently working on
 
 extern char logfile[];
-extern int contest;
+extern bool iscontest;
 extern int cqww;
 extern int arrldx_usa;
 extern int pacc_pa_flg;

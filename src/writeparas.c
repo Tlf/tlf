@@ -46,7 +46,6 @@ int writeparas_file(void) {
     extern int cluster;
     extern int searchflg;
     extern int demode;
-    extern int contest;
     extern int announcefilter;
     extern int showscore_flag;
     extern int cqdelay;
@@ -125,7 +124,7 @@ int writeparas_file(void) {
     else
 	para_word[3] = 'N';	/*  DE mode off */
 
-    if (contest == 1)
+    if (iscontest)
 	para_word[4] = 'C';	/* contest  mode */
     else
 	para_word[4] = 'G';	/* general qso mode */

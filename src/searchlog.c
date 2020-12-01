@@ -75,10 +75,7 @@ void show_needed_sections(void);
  * \return - true if also WARC bands
  */
 int IsAllBand() {
-    extern int dxped;
-    extern int contest;
-
-    return ((dxped != 0) || (contest == 0));
+    return ((dxped != 0) || !iscontest);
 }
 
 
@@ -539,7 +536,6 @@ void displayWorkedZonesCountries(int z) {
     extern int pfxnummultinr;
     extern int countries[MAX_DATALINES];
     extern int zones[MAX_ZONES];
-    extern int contest;
     extern int pacc_qsos[10][10];
     extern int w_cty;
     extern int ve_cty;
@@ -566,7 +562,7 @@ void displayWorkedZonesCountries(int z) {
 	}
     }
 
-    if (cqww == 1 || contest == 0 || pacc_pa_flg == 1) {
+    if (cqww == 1 || !iscontest || pacc_pa_flg == 1) {
 
 	if ((countries[countrynr] & BAND10) != 0) {
 	    mvwprintw(search_win, 1, 36, "C");
@@ -665,7 +661,7 @@ void displayWorkedZonesCountries(int z) {
 	}
     }
 
-    if ((pfxnummultinr >= 0 || country_mult) && contest == 1) {
+    if ((pfxnummultinr >= 0 || country_mult) && iscontest) {
 	getpx(hiscall);
 	pxnr = pxstr[strlen(pxstr) - 1] - 48;
 

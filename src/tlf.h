@@ -58,7 +58,6 @@ typedef enum {
 } cqmode_t;
 
 #define SEND_DE 1		/* de_mode on */
-#define CONTEST 1		/* contest mode on */
 
 #define FILTER_ANN 1	/*  filter announcements */
 #define FILTER_DX 3

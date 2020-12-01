@@ -23,6 +23,7 @@
 #include "displayit.h"
 #include "dxcc.h"
 #include "getctydata.h"
+#include "globalvars.h"
 #include "initial_exchange.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -31,7 +32,6 @@
 
 
 extern int focm;
-extern int contest;
 extern int showscore_flag;
 extern int searchflg;
 extern int total;
@@ -53,9 +53,6 @@ int cont;
 /** Initialize settings for FOC contest */
 void foc_init(void) {
     focm = 1;
-    contest = 1;
-    showscore_flag = 1;
-    searchflg = 1;
 }
 
 

@@ -48,7 +48,6 @@ int setparameters(void) {
     extern int cluster;
     extern int shortqsonr;
     extern int searchflg;
-    extern int contest;
     extern int announcefilter;
     extern int showscore_flag;
     extern char logfile[];
@@ -82,7 +81,7 @@ int setparameters(void) {
 	else
 	    mvprintw(16, 2, "3: Duping OFF");
 
-	if (contest == CONTEST)
+	if (iscontest)
 	    mvprintw(17, 2, "4: CONTEST MODE");
 	else
 	    mvprintw(17, 2, "4: QSO MODE");

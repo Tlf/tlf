@@ -82,8 +82,6 @@ extern int bandinx;
 extern int trxmode;
 extern char thisnode;
 extern worked_t worked[];
-extern int contest;
-extern char whichcontest[];
 
 char *qtc_format(char *call);
 
@@ -722,7 +720,7 @@ void bandmap_show() {
 	multi = bm_ismulti(NULL, data, data->band);
 	dupe = bm_isdupe(data->call, data->band);
 
-	if ((!contest || !IsWarcIndex(data->band))         &&
+	if ((!iscontest || !IsWarcIndex(data->band))         &&
 		(bm_config.allband || (data->band == bandinx)) &&
 		(bm_config.allmode || (data->mode == trxmode)) &&
 		(bm_config.showdupes || !dupe) &&

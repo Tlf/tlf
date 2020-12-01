@@ -65,7 +65,6 @@ void exchange_edit(void);
 
 int getexchange(void) {
 
-    extern int contest;
     extern char comment[];
     extern char cqzone[];
     extern char ituzone[];
@@ -339,7 +338,7 @@ int getexchange(void) {
 	    case KEY_ENTER: {
 		/* log QSO immediately if CT compatible
 		 * or not in contest */
-		if ((ctcomp == 1) || (contest != 1)) {
+		if ((ctcomp == 1) || (!iscontest)) {
 		    /* Don't log if exchange field is empty. */
 		    if (comment[0] == '\0') {
 			x = -1;

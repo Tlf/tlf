@@ -276,7 +276,7 @@ int readcalls(void) {
 	    }
 	}
 
-	if (contest == 1) {
+	if (iscontest) {
 	    // get points
 	    total = total + log_get_points(inputbuffer);
 

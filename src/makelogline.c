@@ -85,7 +85,7 @@ void makelogline(void) {
     points = score();			/* update qso's per band and score */
     total = total + points;
 
-    if ((contest == 1) && (dxped == 0)) {
+    if (iscontest && (dxped == 0)) {
 	sprintf(logline4 + 76, "%2d", points);
     }
 
@@ -289,7 +289,7 @@ void prepare_specific_part(void) {
 
     fillto(77);
 
-    if (contest == 1) 		/* cut back to make room for mults */
+    if (iscontest) 		/* cut back to make room for mults */
 	logline4[68] = '\0';
 
     /* If WPX
