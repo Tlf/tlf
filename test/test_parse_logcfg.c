@@ -185,8 +185,7 @@ void test_unknown_keyword2(void **state) {
     int rc = call_parse_logcfg("F19=CQ\n");   // starts with an existing keyword
     assert_int_equal(rc, PARSE_CONFIRM);
     assert_string_equal(showmsg_spy,
-			"Keyword 'F19=CQ' not supported. See man page.\n");
-    // FIXME: show only keyword in error message
+			"Keyword 'F19' not supported. See man page.\n");
 }
 
 void test_deprecated_keyword(void **state) {
