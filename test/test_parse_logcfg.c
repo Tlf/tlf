@@ -153,6 +153,12 @@ int setup_default(void **state) {
     for (int i = 0; i < 14; ++i) {
 	ph_message[i][0] = 0;
     }
+    for (int i = 0; i < SP_CALL_MSG; ++i) {
+	if (digi_message[i] != NULL) {
+	    g_free(digi_message[i]);
+	    digi_message[i] = NULL;
+	}
+    }
 
     rigconf[0] = 0;
 
@@ -264,7 +270,7 @@ void test_bool_trues(void **state) {
     for (int i = 0; i < sizeof(bool_trues) / sizeof(bool_true_t); ++i) {
 	*bool_trues[i].var = false;
 	sprintf(line, "%s\n", bool_trues[i].keyword);
-	puts(line);
+	fputs(line, stdout);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
 	assert_true(*bool_trues[i].var);
@@ -374,7 +380,7 @@ void test_int_ones(void **state) {
     for (int i = 0; i < sizeof(int_ones) / sizeof(int_one_t); ++i) {
 	*int_ones[i].var = 0;
 	sprintf(line, "%s\n", int_ones[i].keyword);
-	puts(line);
+	fputs(line, stdout);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
 	assert_int_equal(*int_ones[i].var, 1);
@@ -423,5 +429,59 @@ void test_vkcqm(void **state) {
     int rc = call_parse_logcfg("VKCQM=b.wav\n");
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(ph_message[CQ_TU_MSG], "b.wav");
+}
+
+void test_dkfn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 12; ++i) {
+	int j = i - 1;
+	ph_message[j][0] = 0;
+	sprintf(msg, "DMSG%d JKL", i);
+	sprintf(line, "DKF%d = %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_non_null(digi_message[j]);
+	sprintf(msg, "DMSG%d JKL  ", i);    // FIXME converts NL to space...
+	assert_string_equal(digi_message[j], msg);
+    }
+}
+
+void test_alt_dkn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 10; ++i) { // FIXME why DK1..DK10 ??
+	int j = CQ_TU_MSG + i;
+	sprintf(msg, "ADMSG%d JKL", i);
+	sprintf(line, "ALT_DK%d = %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_non_null(digi_message[j]);
+	sprintf(msg, "ADMSG%d JKL  ", i);    // FIXME converts NL to space...
+	assert_string_equal(digi_message[j], msg);
+    }
+}
+
+
+void test_dkcqm(void **state) {
+    int rc = call_parse_logcfg("DKCQM=DCQM\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_non_null(digi_message[CQ_TU_MSG]);
+    assert_string_equal(digi_message[CQ_TU_MSG],
+			"DCQM "); // FIXME converts NL to space...
+}
+
+void test_dkspm(void **state) {
+    int rc = call_parse_logcfg("DKSPM=DSPM\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_non_null(digi_message[SP_TU_MSG]);
+    assert_string_equal(digi_message[SP_TU_MSG],
+			"DSPM "); // FIXME converts NL to space...
+}
+
+void test_dkspc(void **state) {
+    int rc = call_parse_logcfg("DKSPC=DSPC\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_non_null(digi_message[SP_CALL_MSG]);
+    assert_string_equal(digi_message[SP_CALL_MSG],
+			"DSPC "); // FIXME converts NL to space...
 }
 
