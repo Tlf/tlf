@@ -73,6 +73,7 @@ extern int keyer_backspace;
 extern int sectn_mult_once;
 extern int lan_port;
 extern char rigconf[];
+extern char ph_message[14][80];
 
 // lancode.c
 int nodes = 0;
@@ -148,6 +149,9 @@ int setup_default(void **state) {
 
     for (int i = 0; i < SP_CALL_MSG; ++i) {
 	message[i][0] = 0;
+    }
+    for (int i = 0; i < 14; ++i) {
+	ph_message[i][0] = 0;
     }
 
     rigconf[0] = 0;
@@ -260,7 +264,7 @@ void test_bool_trues(void **state) {
     for (int i = 0; i < sizeof(bool_trues) / sizeof(bool_true_t); ++i) {
 	*bool_trues[i].var = false;
 	sprintf(line, "%s\n", bool_trues[i].keyword);
-	printf(line);
+	puts(line);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
 	assert_true(*bool_trues[i].var);
@@ -370,7 +374,7 @@ void test_int_ones(void **state) {
     for (int i = 0; i < sizeof(int_ones) / sizeof(int_one_t); ++i) {
 	*int_ones[i].var = 0;
 	sprintf(line, "%s\n", int_ones[i].keyword);
-	printf(line);
+	puts(line);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
 	assert_int_equal(*int_ones[i].var, 1);
@@ -395,3 +399,29 @@ void test_callmaster(void **state) {
     assert_string_equal(callmaster_filename, "calls.txt");
     g_free(callmaster_filename);
 }
+
+void test_vkmn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 12; ++i) {
+	int j = i - 1;
+	ph_message[j][0] = 0;
+	sprintf(msg, "MSG%d.wav", i);
+	sprintf(line, "VKM%d = %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_string_equal(ph_message[j], msg);
+    }
+}
+
+void test_vkspm(void **state) {
+    int rc = call_parse_logcfg("VKSPM=a.wav\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(ph_message[SP_TU_MSG], "a.wav");
+}
+
+void test_vkcqm(void **state) {
+    int rc = call_parse_logcfg("VKCQM=b.wav\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(ph_message[CQ_TU_MSG], "b.wav");
+}
+
