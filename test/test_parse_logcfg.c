@@ -20,8 +20,60 @@
 // OBJECT ../src/score.o
 // OBJECT ../src/qrb.o
 
+extern char keyer_device[10];
+extern int partials;
+extern int use_part;
 extern char *editor_cmd;
 extern int weight;
+extern bool mixedmode;
+extern bool ignoredupe;
+extern bool continentlist_only;
+extern int recall_mult;
+extern int wysiwyg_multi;
+extern int wysiwyg_once;
+extern int trx_control;
+extern int rit;
+extern int shortqsonr;
+extern int showscore_flag;
+extern int searchflg;
+extern int demode;
+extern int exchange_serial;
+extern int country_mult;
+extern int portable_x2;
+extern int cqwwm2;
+extern int landebug;
+extern int call_update;
+extern int time_master;
+extern int ctcomp;
+extern int serial_section_mult;
+extern int sectn_mult;
+extern int nob4;
+extern int show_time;
+extern int use_rxvt;
+extern int wazmult;
+extern int itumult;
+extern int exc_cont;
+extern int noautocq;
+extern int no_arrows;
+extern int sc_sidetone;
+extern int lowband_point_mult;
+extern int clusterlog;
+extern int serial_grid4_mult;
+extern int logfrequency;
+extern int no_rst;
+extern int serial_or_section;
+extern int pfxmultab;
+extern int qtcrec_record;
+extern int qtc_auto_filltime;
+extern int bmautograb;
+extern int bmautoadd;
+extern int qtc_recv_lazy;
+extern int sprint_mode;
+extern int keyer_backspace;
+extern int sectn_mult_once;
+extern int lan_port;
+extern char rigconf[];
+extern char ph_message[14][80];
 
 // lancode.c
 int nodes = 0;
@@ -49,10 +101,6 @@ char *callmaster_filename = NULL;
 int call_update = 0;
 
 t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
-
-extern char keyer_device[10];
-extern int partials;
-extern int use_part;
 
 void setcontest() {
     // TBD
@@ -94,6 +142,27 @@ int setup_default(void **state) {
     *keyer_device = 0;
     partials = 0;
     use_part = 0;
+    mixedmode = false;
+    ignoredupe = false;
+    continentlist_only = false;
+    lan_port = 0;
+
+    for (int i = 0; i < SP_CALL_MSG; ++i) {
+	message[i][0] = 0;
+    }
+    for (int i = 0; i < 14; ++i) {
+	ph_message[i][0] = 0;
+    }
+    for (int i = 0; i < SP_CALL_MSG; ++i) {
+	if (digi_message[i] != NULL) {
+	    g_free(digi_message[i]);
+	    digi_message[i] = NULL;
+	}
+    }
+
+    rigconf[0] = 0;
+
+    callmaster_filename = NULL;
 
     showmsg_spy = STRING_NOT_SET;
 
@@ -120,6 +189,20 @@ void test_unknown_keyword(void **state) {
     assert_int_equal(rc, PARSE_CONFIRM);
     assert_string_equal(showmsg_spy,
 			"Keyword 'UNKNOWN' not supported. See man page.\n");
+}
+
+void test_unknown_keyword2(void **state) {
+    int rc = call_parse_logcfg("F19=CQ\n");   // starts with an existing keyword
+    assert_int_equal(rc, PARSE_CONFIRM);
+    assert_string_equal(showmsg_spy,
+			"Keyword 'F19' not supported. See man page.\n");
+}
+
+void test_deprecated_keyword(void **state) {
+    int rc = call_parse_logcfg("CW_TU_MSG=TU\n");
+    assert_int_equal(rc, PARSE_CONFIRM);
+    assert_string_equal(showmsg_spy,
+			"Keyword 'CW_TU_MSG' not supported. See man page.\n");
 }
 
 void test_logfile(void **state) {
@@ -170,4 +253,235 @@ void test_usepartials_with_arg(void **state) {
     assert_int_equal(rc, 0); // FIXME: this should be 1
 }
 
+typedef struct {
+    char *keyword;
+    bool *var;
+} bool_true_t;
+
+static bool_true_t bool_trues[] = {
+    {"CONTEST_MODE", &iscontest},
+    {"MIXED", &mixedmode},
+    {"IGNOREDUPE", &ignoredupe},
+    {"USE_CONTINENTLIST_ONLY", &continentlist_only},
+};
+
+void test_bool_trues(void **state) {
+    char line[80];
+    for (int i = 0; i < sizeof(bool_trues) / sizeof(bool_true_t); ++i) {
+	*bool_trues[i].var = false;
+	sprintf(line, "%s\n", bool_trues[i].keyword);
+	fputs(line, stdout);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_true(*bool_trues[i].var);
+    }
+}
+
+// F1 .. F12
+void test_fn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 12; ++i) {
+	int j = i - 1;
+	message[j][0] = 0;
+	sprintf(msg, "MSG%d ABC", i);
+	sprintf(line, "F%d= %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	sprintf(msg, "MSG%d ABC \n", i);   // trailing space+NL are kept, FIXME
+	assert_string_equal(message[j], msg);
+    }
+}
+
+void test_alt_n(void **state) {
+    char line[80], msg[30];
+    for (int i = 0; i <= 9; ++i) {
+	int j = CQ_TU_MSG + 1 + i;
+	message[j][0] = 0;
+	sprintf(msg, "MSG%d ALT", i);
+	sprintf(line, "ALT_%d= %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	sprintf(msg, "MSG%d ALT \n", i);   // trailing space+NL are kept, FIXME
+	assert_string_equal(message[j], msg);
+    }
+}
+
+void test_sp_tu_msg(void **state) {
+    int rc = call_parse_logcfg("S&P_TU_MSG=TU\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(message[SP_TU_MSG], "TU\n");
+}
+
+void test_cq_tu_msg(void **state) {
+    int rc = call_parse_logcfg("CQ_TU_MSG=TU QRZ?\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(message[CQ_TU_MSG], "TU QRZ?\n");
+}
+
+void test_sp_call_msg(void **state) {
+    int rc = call_parse_logcfg("S&P_CALL_MSG=DE AB1CD\r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(message[SP_CALL_MSG], "DE AB1CD\r\n");  // FIXME line end...
+}
+
+typedef struct {
+    char *keyword;
+    int *var;
+} int_one_t;
+
+static int_one_t int_ones[] = {
+    {"RECALL_MULTS", &recall_mult},
+    {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
+    {"WYSIWYG_ONCE", &wysiwyg_once},
+    {"RADIO_CONTROL", &trx_control},
+    {"RIT_CLEAR", &rit},
+    {"SHORT_SERIAL", &shortqsonr},
+    {"SCOREWINDOW", &showscore_flag},
+    {"CHECKWINDOW", &searchflg},
+    {"SEND_DE", &demode},
+    {"SERIAL_EXCHANGE", &exchange_serial},
+    {"COUNTRY_MULT", &country_mult},
+    {"PORTABLE_MULT_2", &portable_x2},
+    {"CQWW_M2", &cqwwm2},
+    {"LAN_DEBUG", &landebug},
+    {"CALLUPDATE", &call_update},
+    {"TIME_MASTER", &time_master},
+    {"CTCOMPATIBLE", &ctcomp},
+    {"SERIAL+SECTION", &serial_section_mult},
+    {"SECTION_MULT", &sectn_mult},
+    {"NOB4", &nob4},
+    {"SHOW_TIME", &show_time},
+    {"RXVT", &use_rxvt},
+    {"WAZMULT", &wazmult},
+    {"ITUMULT", &itumult},
+    {"CONTINENT_EXCHANGE", &exc_cont},
+    {"NOAUTOCQ", &noautocq},
+    {"NO_BANDSWITCH_ARROWKEYS", &no_arrows},
+    {"SOUNDCARD", &sc_sidetone},
+    {"LOWBAND_DOUBLE", &lowband_point_mult},
+    {"CLUSTER_LOG", &clusterlog},
+    {"SERIAL+GRID4", &serial_grid4_mult},
+    {"LOGFREQUENCY", &logfrequency},
+    {"NO_RST", &no_rst},
+    {"SERIAL_OR_SECTION", &serial_or_section},
+    {"PFX_MULT_MULTIBAND", &pfxmultab},
+    {"QTCREC_RECORD", &qtcrec_record},
+    {"QTC_AUTO_FILLTIME", &qtc_auto_filltime},
+    {"BMAUTOGRAB", &bmautograb},
+    {"BMAUTOADD", &bmautoadd},
+    {"QTC_RECV_LAZY", &qtc_recv_lazy},
+    {"SPRINTMODE", &sprint_mode},
+    {"KEYER_BACKSPACE", &keyer_backspace},
+    {"SECTION_MULT_ONCE", &sectn_mult_once},
+};
+
+void test_int_ones(void **state) {
+    char line[80];
+    for (int i = 0; i < sizeof(int_ones) / sizeof(int_one_t); ++i) {
+	*int_ones[i].var = 0;
+	sprintf(line, "%s\n", int_ones[i].keyword);
+	fputs(line, stdout);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_int_equal(*int_ones[i].var, 1);
+    }
+}
+
+void test_lan_port(void **state) {
+    int rc = call_parse_logcfg("LAN_PORT=1234\n");
+    assert_int_equal(rc, 0);
+    assert_int_equal(lan_port, 1234);
+}
+
+void test_rigconf(void **state) {
+    int rc = call_parse_logcfg("RIGCONF= ABCD\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(rigconf, "ABCD");
+}
+
+void test_callmaster(void **state) {
+    int rc = call_parse_logcfg("CALLMASTER=calls.txt\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(callmaster_filename, "calls.txt");
+    g_free(callmaster_filename);
+}
+
+void test_vkmn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 12; ++i) {
+	int j = i - 1;
+	ph_message[j][0] = 0;
+	sprintf(msg, "MSG%d.wav", i);
+	sprintf(line, "VKM%d = %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_string_equal(ph_message[j], msg);
+    }
+}
+
+void test_vkspm(void **state) {
+    int rc = call_parse_logcfg("VKSPM=a.wav\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(ph_message[SP_TU_MSG], "a.wav");
+}
+
+void test_vkcqm(void **state) {
+    int rc = call_parse_logcfg("VKCQM=b.wav\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(ph_message[CQ_TU_MSG], "b.wav");
+}
+
+void test_dkfn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 12; ++i) {
+	int j = i - 1;
+	ph_message[j][0] = 0;
+	sprintf(msg, "DMSG%d JKL", i);
+	sprintf(line, "DKF%d = %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_non_null(digi_message[j]);
+	sprintf(msg, "DMSG%d JKL  ", i);    // FIXME converts NL to space...
+	assert_string_equal(digi_message[j], msg);
+    }
+}
+
+void test_alt_dkn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 10; ++i) { // FIXME why DK1..DK10 ??
+	int j = CQ_TU_MSG + i;
+	sprintf(msg, "ADMSG%d JKL", i);
+	sprintf(line, "ALT_DK%d = %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_non_null(digi_message[j]);
+	sprintf(msg, "ADMSG%d JKL  ", i);    // FIXME converts NL to space...
+	assert_string_equal(digi_message[j], msg);
+    }
+}
+
+
+void test_dkcqm(void **state) {
+    int rc = call_parse_logcfg("DKCQM=DCQM\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_non_null(digi_message[CQ_TU_MSG]);
+    assert_string_equal(digi_message[CQ_TU_MSG],
+			"DCQM "); // FIXME converts NL to space...
+}
+
+void test_dkspm(void **state) {
+    int rc = call_parse_logcfg("DKSPM=DSPM\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_non_null(digi_message[SP_TU_MSG]);
+    assert_string_equal(digi_message[SP_TU_MSG],
+			"DSPM "); // FIXME converts NL to space...
+}
+
+void test_dkspc(void **state) {
+    int rc = call_parse_logcfg("DKSPC=DSPC\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_non_null(digi_message[SP_CALL_MSG]);
+    assert_string_equal(digi_message[SP_CALL_MSG],
+			"DSPC "); // FIXME converts NL to space...
+}
 

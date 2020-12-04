@@ -318,8 +318,8 @@ int parse_logcfg(char *inputbuffer) {
     extern int verbose;
 
     char *commands[] = {
-	"enable",		/* 0 */		/* deprecated */
-	"disable",				/* deprecated */
+	NULL,   //"enable",		/* 0 */		/* deprecated */
+	NULL,   //"disable",				/* deprecated */
 	"F1",
 	"F2",
 	"F3",
@@ -351,10 +351,10 @@ int parse_logcfg(char *inputbuffer) {
 	"CONTEST_MODE",		/* 30 */
 	"CLUSTER",
 	"BANDMAP",
-	"SPOTLIST",				/* deprecated */
+	NULL,   //"SPOTLIST",				/* deprecated */
 	"SCOREWINDOW",
 	"CHECKWINDOW",		/* 35 */
-	"FILTER",				/* deprecated */
+	NULL,   //"FILTER",				/* deprecated */
 	"SEND_DE",
 	"CWSPEED",
 	"CWTONE",
@@ -362,14 +362,14 @@ int parse_logcfg(char *inputbuffer) {
 	"TXDELAY",
 	"SUNSPOTS",
 	"SFI",
-	"SHOW_FREQUENCY",                       /* deprecated */
+	NULL,   //"SHOW_FREQUENCY",                       /* deprecated */
 	"EDITOR",		/* 45 */
 	"PARTIALS",
 	"USEPARTIALS",
-	"POWERMULT_5",				/* deprecated */
-	"POWERMULT_2",				/* deprecated */
-	"POWERMULT_1",		/* 50 */	/* deprecated */
-	"MANY_CALLS",				/* deprecated */
+	NULL,   //"POWERMULT_5",				/* deprecated */
+	NULL,   //"POWERMULT_2",				/* deprecated */
+	NULL,   //"POWERMULT_1",		/* 50 */	/* deprecated */
+	NULL,   //"MANY_CALLS",				/* deprecated */
 	"SERIAL_EXCHANGE",
 	"COUNTRY_MULT",
 	"2EU3DX_POINTS",
@@ -457,7 +457,7 @@ int parse_logcfg(char *inputbuffer) {
 	"CWPOINTS",		/* 135 */
 	"SOUNDCARD",
 	"SIDETONE_VOLUME",
-	"S_METER",				/* deprecated */
+	NULL,   //"S_METER",				/* deprecated */
 	"SC_DEVICE",
 	"MFJ1278_KEYER",	/* 140 */
 	"CLUSTERLOGIN",
@@ -474,9 +474,9 @@ int parse_logcfg(char *inputbuffer) {
 	"LOGFREQUENCY",
 	"IGNOREDUPE",
 	"CABRILLO",
-	"CW_TU_MSG",		/* 155 */	/* deprecated */
-	"VKCWR",				/* deprecated */
-	"VKSPR",				/* deprecated */
+	NULL,   //"CW_TU_MSG",		/* 155 */	/* deprecated */
+	NULL,   //"VKCWR",				/* deprecated */
+	NULL,   //"VKSPR",				/* deprecated */
 	"NO_RST",
 	"MYQRA",
 	"POWERMULT",		/* 160 */
@@ -627,7 +627,7 @@ int parse_logcfg(char *inputbuffer) {
     g_strlcpy(teststring, fields[0], sizeof(teststring));
 
     for (ii = 0; ii < MAX_COMMANDS; ii++) {
-	if (strcmp(teststring, commands[ii]) == 0) {
+	if (g_strcmp0(teststring, commands[ii]) == 0) {
 	    break;
 	}
     }
@@ -1998,7 +1998,7 @@ int parse_logcfg(char *inputbuffer) {
 	    break;
 	}
 	default: {
-	    KeywordNotSupported(g_strstrip(inputbuffer));
+	    KeywordNotSupported(teststring);
 	    break;
 	}
     }
