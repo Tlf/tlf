@@ -32,6 +32,16 @@
 #include "setcontest.h"
 #include "tlf.h"
 
+/* configurations for supported contest */
+contest_config_t config_qso = {
+    .id = QSO,
+    .name = "QSO"
+};
+
+/* table with pointers to all supported contests */
+contest_config_t *contest_configs[] = {
+    &config_qso,
+};
 
 void setcontest(void) {
 

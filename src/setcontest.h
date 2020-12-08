@@ -21,6 +21,8 @@
 #ifndef SETCONTEST_H
 #define SETCONTEST_H
 
+extern contest_config_t config_qso;
+
 void setcontest(void);
 
 #endif /* SETCONTEST_H */

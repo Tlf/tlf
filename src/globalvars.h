@@ -6,6 +6,7 @@
 #include "tlf.h"
 
 extern mystation_t my;			// all about my station
+extern contest_config_t *contest;	// contest configuration
 
 extern char qsos[MAX_QSOS][LOGLINELEN + 1];
 					// array of log lines of QSOs so far;
@@ -86,7 +87,7 @@ extern char ssexchange[];
 extern int shownewmult;
 extern char comment[];
 
-extern char  lan_logline[];
+extern char lan_logline[];
 extern char logfile[];
 extern char qsonrstr[];
 extern int lan_mutex;

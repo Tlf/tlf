@@ -187,5 +187,30 @@ void refreshp();
 
 extern const char *backgrnd_str;
 
+typedef enum {
+    QSO,
+    DXPED,
+    WPX,
+    CQWW,
+    SPRINT,
+    ARRLDX_USA,
+    ARRLDX_DX,
+    ARRL_SS,
+    ARRL_FD,
+    PACC_PA,
+    STEWPERRY,
+    FOCMARATHON,
+    OTHER,
+    UNIVERSAL
+} contest_type_t;
+
+/** contest configuration
+ *
+ */
+typedef struct {
+    contest_type_t	id;
+    char		*name;
+} contest_config_t;
+
 #endif /* TLF_H */
 
