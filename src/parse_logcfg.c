@@ -690,13 +690,12 @@ int parse_logcfg(char *inputbuffer) {
 	case 17:
 	case 122: {
 	    PARAMETER_NEEDED(teststring);
-	    strcpy(whichcontest, g_strchomp(fields[1]));
-	    if (strlen(whichcontest) > 40) {
+	    if (strlen(g_strchomp(fields[1])) > 39) {
 		showmsg
-		("WARNING: contest name is too long! exiting...");
+		    ("WARNING: contest name is too long! exiting...");
 		exit(1);
 	    }
-	    setcontest();
+	    setcontest(fields[1]);
 	    break;
 	}
 	case 18: {
@@ -1117,7 +1116,7 @@ int parse_logcfg(char *inputbuffer) {
 	}
 	case 91: {
 	    dx_arrlsections = 1;
-	    setcontest();
+	    setcontest(whichcontest);
 	    break;
 	}
 	case 92: {
@@ -1204,7 +1203,7 @@ int parse_logcfg(char *inputbuffer) {
 	    /* on which multiplier side of the rules we are */
 	    getpx(my.call);
 	    mult_side = exist_in_country_list();
-	    setcontest();
+	    setcontest(whichcontest);
 	    break;
 	}
 
@@ -1590,7 +1589,7 @@ int parse_logcfg(char *inputbuffer) {
 		}
 	    }
 
-	    setcontest();
+	    setcontest(whichcontest);
 	    break;
 	}
 
@@ -1696,7 +1695,7 @@ int parse_logcfg(char *inputbuffer) {
 		}
 	    }
 	    pfxnummultinr = counter;
-	    setcontest();
+	    setcontest(whichcontest);
 	    break;
 	}
 	case 169: {		/* wpx style prefixes mult */

@@ -102,7 +102,7 @@ int call_update = 0;
 
 t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
 
-void setcontest() {
+void setcontest(char * name) {
     // TBD
 }
 

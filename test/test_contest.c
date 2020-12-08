@@ -25,6 +25,7 @@ int setup_default(void **state) {
     assert_int_equal(load_ctydata(filename), 0);
 
     contest = NULL;
+    strcpy(whichcontest, "");
 
     return 0;
 }
@@ -42,4 +43,15 @@ void test_lookup_contest_ignore_case(void **state) {
 void test_lookup_contest_not_found(void **state){
     contest = lookup_contest("A23b9");
     assert_int_equal(contest->id, UNKNOWN);
+}
+
+void test_lookup_contest_ignore_incomplete(void **state) {
+    config_qso.name = NULL;
+    contest = lookup_contest("A23b9");
+    assert_int_equal(contest->id, UNKNOWN);
+}
+
+void test_set_whichcontest(void **state) {
+    setcontest("Hello");
+    assert_string_equal(whichcontest, "Hello");
 }

@@ -65,15 +65,17 @@ contest_config_t *contest_configs[] = {
 /* lookup contest config by name in config table */
 contest_config_t *lookup_contest(char *name) {
     for (int i = 0; i < NR_CONTESTS; i++) {
-	if (strcasecmp(contest_configs[i]->name, name) == 0) {
-	    return contest_configs[i];
+	if (contest_configs[i]->name != NULL) {
+	    if (strcasecmp(contest_configs[i]->name, name) == 0) {
+		return contest_configs[i];
+	    }
 	}
     }
     return &config_unknown;
 }
 
-
-void setcontest(void) {
+/* setup standard configuration for contest 'name' */
+void setcontest(char *name) {
 
     extern int focm;
     extern int wpx;
@@ -143,6 +145,8 @@ void setcontest(void) {
 
     w_cty = getctynr(wcall);
     ve_cty = getctynr(vecall);
+
+    strcpy(whichcontest, name);
 
     if (strcmp(whichcontest, "wpx") == 0) {
 	wpx = 1;

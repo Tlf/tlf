@@ -140,7 +140,7 @@ int setparameters(void) {
 		return EXIT_FAILURE;
 	    }
 
-	    setcontest();	/* set contest parameters */
+	    setcontest(whichcontest);	/* set contest parameters */
 
 	    scroll_log();	/* read the last 5  log lines and set the qso number */
 				/* read the logfile for score and dupe */
@@ -184,7 +184,7 @@ int setparameters(void) {
 	    getnstr(whichcontest, 20);
 	    noecho();
 
-	    setcontest();
+	    setcontest(whichcontest);
 
 	}
 

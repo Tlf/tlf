@@ -26,6 +26,6 @@
 extern contest_config_t config_qso;
 
 contest_config_t *lookup_contest(char *name);
-void setcontest(void);
+void setcontest(char *name);
 
 #endif /* SETCONTEST_H */
