@@ -33,15 +33,45 @@
 #include "tlf.h"
 
 /* configurations for supported contest */
+contest_config_t config_unknown = {
+    .id = UNKNOWN,
+    .name = "Unknown"
+};
+
 contest_config_t config_qso = {
     .id = QSO,
     .name = "QSO"
 };
 
+contest_config_t config_cqww = {
+    .id = CQWW,
+    .name = "CQWW"
+};
+
+contest_config_t config_wpx = {
+    .id = WPX,
+    .name = "WPX"
+};
+
+
 /* table with pointers to all supported contests */
 contest_config_t *contest_configs[] = {
     &config_qso,
+    &config_cqww,
 };
+
+#define NR_CONTESTS (sizeof(contest_configs)/sizeof(contest_config_t*))
+
+/* lookup contest config by name in config table */
+contest_config_t *lookup_contest(char *name) {
+    for (int i = 0; i < NR_CONTESTS; i++) {
+	if (strcasecmp(contest_configs[i]->name, name) == 0) {
+	    return contest_configs[i];
+	}
+    }
+    return &config_unknown;
+}
+
 
 void setcontest(void) {
 

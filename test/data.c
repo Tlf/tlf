@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../src/globalvars.h"
+#include "../src/setcontest.h"
 #include "../src/tlf.h"
 #include "../src/tlf_curses.h"
 
@@ -61,6 +62,10 @@ int cqwwm2 = 0;
 
 int cwkeyer = NO_KEYER;
 int digikeyer = NO_KEYER;
+
+char whichcontest[40] = "qso";
+bool iscontest = false;		/* false =  General,  true  = contest */
+contest_config_t *contest;	/* contest configuration */
 
 /* predefined contests */
 int cqww = 0;
@@ -166,12 +171,10 @@ int searchflg = 0;		/* 1  = display search  window */
 int show_time = 0;
 cqmode_t cqmode = CQ;
 int demode = 0;			/* 1 =  send DE  before s&p call  */
-bool iscontest = false;		/* false =  General,  true  = contest */
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 int showscore_flag = 0;		/* show  score window */
 int change_rst = 0;
 char exchange[40];
-char whichcontest[40] = "qso";
 int defer_store = 0;
 mystation_t my;
 char logfile[120] = "general.log";

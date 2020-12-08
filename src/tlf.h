@@ -201,7 +201,8 @@ typedef enum {
     STEWPERRY,
     FOCMARATHON,
     OTHER,
-    UNIVERSAL
+    UNIVERSAL,
+    UNKNOWN
 } contest_type_t;
 
 /** contest configuration
