@@ -37,7 +37,6 @@ void setcontest(void) {
 
     extern int focm;
     extern int wpx;
-    extern int pfxmult;
     extern int cqww;
     extern int dxped;
     extern int sprint;
@@ -84,8 +83,7 @@ void setcontest(void) {
     char zscall[] = "ZS6AA";
     char ua9call[] = "UA9AA";
 
-    if (pfxmult == 0 && wpx == 1)
-	wpx = 0;
+    wpx = 0;
     cqww = 0;
     dxped = 0;
     sprint = 0;

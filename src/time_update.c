@@ -135,7 +135,7 @@ void time_update(void) {
     /* do it every second */
     oldsecs = this_second;
 
-    if (wpx == 1) {
+    if (wpx == 1 || pfxmult == 1) {
 	if (minute_timer > 0)
 	    minute_timer--;
     }

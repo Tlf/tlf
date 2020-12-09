@@ -43,6 +43,7 @@
 #include "getctydata.h"
 #include "getpx.h"
 #include "get_time.h"
+#include "globalvars.h"
 #include "log_utils.h"
 #include "paccdx.h"
 #include "score.h"
@@ -61,36 +62,11 @@ int excl_add_veto;
  */
 
 int addcall(void) {
-    extern char hiscall[];
-    extern int nr_worked;
-    extern worked_t worked[];
-    extern char comment[];
-    extern int cqww;
-    extern int bandinx;
-    extern int countries[MAX_DATALINES];
-    extern int zones[];
-    extern int countryscore[];
-    extern int addcty;
-    extern int zonescore[];
-    extern int addzone;
-    extern int countrynr;
-    extern int arrldx_usa;
-    extern int pacc_pa_flg;
-    extern int universal;
-    extern int country_mult;
-    extern int w_cty;
-    extern int ve_cty;
-    extern int dx_arrlsections;
-    extern int wazmult;
-    extern int itumult;
-    extern char pxstr[];
     extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int addcallarea;
     extern bool continentlist_only;
-    extern char continent[];
     extern int exclude_multilist_type;
-    extern int trxmode;
 
     static int found = 0;
     static int i, j, z = 0;
@@ -251,28 +227,10 @@ int addcall(void) {
 
 int addcall2(void) {
 
-    extern int nr_worked;
-    extern worked_t worked[];
-    extern int cqww;
-    extern int countries[MAX_DATALINES];
-    extern int zones[];
-    extern int countryscore[];
-    extern int zonescore[];
-    extern int pacc_pa_flg;
-    extern int universal;
-    extern int country_mult;
-    extern char lan_logline[];
-    extern int band_score[];
-    extern int wpx;
-    extern int wazmult;
-    extern int itumult;
-    extern char pxstr[];
     extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
     extern int pfxnummultinr;
     extern int addcallarea;
-    extern int countrynr;
     extern bool continentlist_only;
-    extern char continent[];
 
     extern int pfxmultab;
     extern int exclude_multilist_type;
@@ -430,7 +388,7 @@ int addcall2(void) {
 	    }
 	}
     }
-    if (wpx == 1 || pfxmultab == 1) {
+    if (wpx == 1 || pfxmult == 1 || pfxmultab == 1) {
 
 	if (lan_logline[68] != ' ') {
 

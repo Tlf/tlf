@@ -62,7 +62,7 @@ void makelogline(void) {
     int points;
 
     /* restart band timer if qso on new band */
-    if (wpx == 1) {		// 10 minute timer
+    if (wpx == 1 || pfxmult == 1) {		// 10 minute timer
 	if (lastbandinx != bandinx) {
 	    lastbandinx = bandinx;
 	    minute_timer = 600;	// 10 minutes
@@ -299,7 +299,7 @@ void prepare_specific_part(void) {
 	new_pfx = (add_pfx(pxstr, bandinx) == 0);	/* add prefix, remember if new */
     }
 
-    if (wpx == 1 || pfxmultab == 1) {			/* wpx */
+    if (wpx == 1 || pfxmult == 1 || pfxmultab == 1) {			/* wpx */
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, pxstr, 5);
