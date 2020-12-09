@@ -63,6 +63,11 @@ contest_config_t config_sprint = {
     .name = "SPRINT"
 };
 
+contest_config_t config_stewperry = {
+    .id = STEWPERRY,
+    .name = "STEWPERRY"
+};
+
 
 /* table with pointers to all supported contests */
 contest_config_t *contest_configs[] = {
@@ -71,6 +76,7 @@ contest_config_t *contest_configs[] = {
     &config_wpx,
     &config_cqww,
     &config_sprint,
+    &config_stewperry,
 };
 
 #define NR_CONTESTS (sizeof(contest_configs)/sizeof(contest_config_t*))
@@ -98,7 +104,6 @@ void setcontest(char *name) {
     extern int arrlss;
     extern int multlist;
     extern int pacc_pa_flg;
-    extern int stewperry_flg;
     extern int universal;
     extern int exchange_serial;
     extern int wysiwyg_multi;
@@ -212,10 +217,6 @@ void setcontest(char *name) {
 	vk_cty = getctynr(vkcall);
 	zs_cty = getctynr(zscall);
 	ua9_cty = getctynr(ua9call);
-    }
-
-    if (strcmp(whichcontest, "stewperry") == 0) {
-	stewperry_flg = 1;
     }
 
     if (strcmp(whichcontest, "focmarathon") == 0) {

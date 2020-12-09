@@ -292,7 +292,6 @@ int score() {
     extern int ve_cty;
     extern int trxmode;
     extern char hiscall[];
-    extern int stewperry_flg;
 
     int points;
     int zone;
@@ -410,7 +409,7 @@ int score() {
 	return points;
     }
 
-    if (stewperry_flg == 1) {
+    if (IS_CONTEST(STEWPERRY)) {
 
 	double s1long, s1lat, s2long, s2lat, distance, azimuth;
 

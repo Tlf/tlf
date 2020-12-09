@@ -351,7 +351,7 @@ void showscore(void) {
 	mvprintw(5, START_COL, "Score: %d", get_nr_of_points());
     } else if (focm == 1) {
 	foc_show_scoring(START_COL);
-    } else if (stewperry_flg == 1) {
+    } else if (IS_CONTEST(STEWPERRY)) {
 	/* no normal multis, but may have POWERMULT set (fixedmult != 0.) */
 	stewperry_show_summary(get_nr_of_points(), fixedmult);
     } else {

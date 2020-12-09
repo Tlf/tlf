@@ -74,7 +74,6 @@ int getexchange(void) {
     extern char qsonrstr[];
     extern int cqww;
     extern int pacc_pa_flg;
-    extern int stewperry_flg;
     extern int arrldx_usa;
     extern int arrl_fd;
     extern int exchange_serial;
@@ -135,7 +134,7 @@ int getexchange(void) {
 	strcpy(comment, continent);
     }
 
-    if (stewperry_flg == 1) {
+    if (IS_CONTEST(STEWPERRY)) {
 	recall_exchange();
     }
 
@@ -368,7 +367,7 @@ int getexchange(void) {
 		(sectn_mult_once == 1) ||
 		(arrlss == 1) ||
 		(cqww == 1) ||
-		(stewperry_flg == 1)) {
+		IS_CONTEST(STEWPERRY)) {
 
 	    x = checkexchange(x);
 	}
@@ -477,7 +476,7 @@ int getexchange(void) {
 		break;
 //                              x = 0; //##debug
 
-	    } else if (stewperry_flg == 1) {
+	    } else if (IS_CONTEST(STEWPERRY)) {
 		if (check_qra(comment) == 0) {
 		    mvprintw(13, 54, "locator?");
 		    mvprintw(12, 54, comment);
@@ -532,7 +531,6 @@ int checkexchange(int x) {
     extern char ssexchange[];
     extern int cqww;
     extern int arrlss;
-    extern int stewperry_flg;
     extern char section[];
     extern char callupdate[];
     extern char hiscall[];

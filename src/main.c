@@ -105,7 +105,6 @@ int arrldx_usa = 0;
 int arrl_fd = 0;
 int arrlss = 0;
 int pacc_pa_flg = 0;
-int stewperry_flg = 0;
 int focm = 0;
 int sprint_mode = 0;
 int minitest = 0;	/**< if set, length of minitest period in seconds */
