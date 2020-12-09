@@ -116,7 +116,6 @@ extern int arrl_fd;
 extern int one_point;
 extern int two_point;
 extern int three_point;
-extern int dxped;
 extern int addzone;
 extern int do_cabrillo;
 extern rmode_t digi_mode;

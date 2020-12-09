@@ -5,6 +5,7 @@
 #include "../src/tlf_curses.h"
 #include "../src/tlf_panel.h"
 #include "../src/searchlog.h"
+#include "../src/setcontest.h"
 #include "../src/dxcc.h"
 
 // OBJECT ../src/addmult.o
@@ -17,6 +18,7 @@
 // OBJECT ../src/nicebox.o
 // OBJECT ../src/qtcutil.o
 // OBJECT ../src/printcall.o
+// OBJECT ../src/setcontest.o
 // OBJECT ../src/err_utils.o
 // OBJECT ../src/ui_utils.o
 
@@ -86,6 +88,14 @@ int getctydata(char *checkcallptr) {
     return 0;
 }
 
+
+void foc_init() {
+}
+
+int getctynr(void) {
+    return 42;
+}
+
 /*********************/
 #define QSO1 " 40SSB 12-Jan-18 16:34 0006  SP9ABC         599  599  15                     1         "
 #define QSO2 " 40CW  12-Jan-18 11:42 0127  K4DEF          599  599  05                     3   7026.1"
@@ -112,9 +122,11 @@ int setup_default(void **state) {
 	strcpy(searchresult[i], "");
 
     showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
+
+    contest = &config_qso;
     arrlss = 0;
-    dxped = 0;
     iscontest = false;
+
     search_win = NULL;
     searchflg = SEARCHWINDOW;
     trxmode = CWMODE;
@@ -225,7 +237,7 @@ void test_init_search_panel_contest(void **state) {
 }
 
 void test_init_search_panel_dxped(void **state) {
-    dxped = 1;
+    contest = lookup_contest("dxped");
     InitSearchPanel();
     assert_int_equal(nr_bands, 9);
 }
@@ -409,7 +421,7 @@ void test_OnLowerSearchPanel_contest(void **state) {
 }
 
 void test_OnLowerSearchPanel_AllBand(void **state) {
-    dxped = 1;
+    contest = lookup_contest("dxped");
     OnLowerSearchPanel(4, "test");
     check_mvprintw_output(0, 11, 4, "test");
 }

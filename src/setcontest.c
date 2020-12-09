@@ -43,9 +43,9 @@ contest_config_t config_qso = {
     .name = "QSO"
 };
 
-contest_config_t config_cqww = {
-    .id = CQWW,
-    .name = "CQWW"
+contest_config_t config_dxped = {
+    .id = DXPED,
+    .name = "DXPED"
 };
 
 contest_config_t config_wpx = {
@@ -53,12 +53,18 @@ contest_config_t config_wpx = {
     .name = "WPX"
 };
 
+contest_config_t config_cqww = {
+    .id = CQWW,
+    .name = "CQWW"
+};
+
 
 /* table with pointers to all supported contests */
 contest_config_t *contest_configs[] = {
     &config_qso,
-    &config_cqww,
+    &config_dxped,
     &config_wpx,
+    &config_cqww,
 };
 
 #define NR_CONTESTS (sizeof(contest_configs)/sizeof(contest_config_t*))
@@ -80,7 +86,6 @@ void setcontest(char *name) {
 
     extern int focm;
     extern int cqww;
-    extern int dxped;
     extern int sprint;
     extern int arrldx_usa;
     extern int dx_arrlsections;
@@ -126,7 +131,6 @@ void setcontest(char *name) {
     char ua9call[] = "UA9AA";
 
     cqww = 0;
-    dxped = 0;
     sprint = 0;
     arrldx_usa = 0;
     arrl_fd = 0;
@@ -156,8 +160,7 @@ void setcontest(char *name) {
 	recall_mult = 1;
     }
 
-    if (strcmp(whichcontest, "dxped") == 0) {
-	dxped = 1;
+    if (IS_CONTEST(DXPED)) {
 	recall_mult = 1;
     }
 
@@ -189,6 +192,7 @@ void setcontest(char *name) {
     }
 
     if (strcmp(whichcontest, "arrl_fd") == 0) {
+
 	arrl_fd = 1;
 	recall_mult = 1;
     }

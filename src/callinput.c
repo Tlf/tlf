@@ -66,6 +66,7 @@
 #include "searchlog.h"		// Includes glib.h
 #include "sendbuf.h"
 #include "sendspcall.h"
+#include "setcontest.h"
 #include "show_help.h"
 #include "showinfo.h"
 #include "showpxmap.h"
@@ -94,7 +95,6 @@ extern int no_arrows;
 extern char hiscall[];
 extern int bandinx;
 extern char band[NBANDS][4];
-extern int dxped;
 extern freq_t freq;
 extern int trx_control;
 extern freq_t bandfrequency[];
@@ -1316,7 +1316,7 @@ void handle_bandswitch(int direction) {
 
     next_band(direction);
 
-    if (iscontest && dxped == 0) {
+    if (iscontest && !IS_CONTEST(DXPED)) {
 	while (IsWarcIndex(bandinx)) {	/* loop till next contest band */
 	    next_band(direction);
 	}

@@ -38,6 +38,7 @@
 #include "printcall.h"
 #include "recall_exchange.h"
 #include "searchlog.h"		// Includes glib.h
+#include "setcontest.h"
 #include "sendbuf.h"
 #include "sendqrg.h"
 #include "sendspcall.h"
@@ -67,7 +68,6 @@ void logit(void) {
     extern int itumult;
     extern int qsonum;
     extern int exchange_serial;
-    extern int dxped;
     extern int sprint_mode;
 
     int callreturn = 0;
@@ -104,7 +104,7 @@ void logit(void) {
 
 	    if (callreturn == '\n' && strlen(hiscall) >= 3) {
 		if ((*comment == '\0') && iscontest
-			&& !ctcomp && !dxped)
+			&& !ctcomp && !IS_CONTEST(DXPED))
 		    defer_store = 0;
 
 		if ((cqmode == CQ) && iscontest

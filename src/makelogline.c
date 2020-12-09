@@ -86,7 +86,7 @@ void makelogline(void) {
     points = score();			/* update qso's per band and score */
     total = total + points;
 
-    if (iscontest && (dxped == 0)) {
+    if (iscontest && !IS_CONTEST(DXPED)) {
 	sprintf(logline4 + 76, "%2d", points);
     }
 

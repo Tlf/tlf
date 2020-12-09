@@ -76,7 +76,7 @@ void show_needed_sections(void);
  * \return - true if also WARC bands
  */
 int IsAllBand() {
-    return ((dxped != 0) || !iscontest);
+    return (IS_CONTEST(DXPED) || !iscontest);
 }
 
 
