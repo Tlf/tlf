@@ -21,14 +21,103 @@
 #ifndef PARSE_LOGCFG_H
 #define PARSE_LOGCFG_H
 
+#include <stdbool.h>
+
 enum {
     PARSE_OK,
-    PARSE_ERROR,
-    PARSE_CONFIRM
+    PARSE_ERROR,    //?
+    PARSE_CONFIRM,  //?
+    PARSE_NO_MATCH,
+    PARSE_MISSING_PARAMETER,
+    PARSE_EXTRA_PARAMETER,
+    PARSE_WRONG_PARAMETER,
+    PARSE_INVALID_INTEGER,
+    PARSE_INTEGER_OUT_OF_RANGE,
+    PARSE_STRING_TOO_LONG,
 };
 
 int read_logcfg(void);
 int parse_configfile(FILE *fp);
 int parse_logcfg(char *inputbuffer);
+
+////////////////////////////////////
+// config parsing definitions
+
+enum {
+    NO_PARAM,
+    NEED_PARAM,
+    OPTIONAL_PARAM,
+};
+
+enum {
+    DYNAMIC,
+    STATIC,
+    MESSAGE,
+};
+
+typedef struct {
+    union {     // targets
+	int *int_p;
+	bool *bool_p;
+	char *char_p;
+	char **char_pp;
+	char (*msg)[80];
+    };
+    union {     // extra info
+	int int_value;
+	bool bool_value;
+	struct {
+	    int string_type;
+	    int base, size;
+	    bool chomp, strip, nl_to_space;
+	};
+	struct {
+	    int min, max;
+	};
+    };
+} cfg_arg_t;
+
+typedef struct {
+    char *regex;
+    int param_kind;
+    int (*func)(const cfg_arg_t arg);
+    cfg_arg_t arg;
+} config_t;
+
+#define CFG_BOOL_TRUE(var)  NO_PARAM, cfg_bool_const, \
+        (cfg_arg_t){.bool_p=&var, .bool_value=true}
+
+#define CFG_INT_CONST(var,n)    NO_PARAM, cfg_int_const, \
+        (cfg_arg_t){.int_p=&var, .int_value=n}
+
+#define CFG_INT_ONE(var)    CFG_INT_CONST(var, 1)
+
+#define CFG_INT(var,minval,maxval)  NEED_PARAM, cfg_integer, \
+        (cfg_arg_t){.int_p=&var, .min=minval, .max=maxval}
+
+#define CFG_STRING_STATIC(var,bufsize)  NEED_PARAM, cfg_string, \
+        (cfg_arg_t){.char_p=var, .size=bufsize, .chomp=true, \
+                    .string_type=STATIC}
+
+#define CFG_STRING(var)         NEED_PARAM, cfg_string, \
+        (cfg_arg_t){.char_pp=&var, .chomp=true, \
+                    .string_type=DYNAMIC}
+
+#define CFG_STRING_NOCHOMP(var) NEED_PARAM, cfg_string, \
+        (cfg_arg_t){.char_pp=&var, \
+                    .string_type=DYNAMIC}
+
+#define CFG_MESSAGE(var, i)     NEED_PARAM, cfg_string, \
+        (cfg_arg_t){.msg=var, .base=i, .size=80, \
+                    .string_type=MESSAGE}
+
+#define CFG_MESSAGE_CHOMP(var, i)   NEED_PARAM, cfg_string, \
+        (cfg_arg_t){.msg=var, .base=i, .size=80, .chomp=true, \
+                    .string_type=MESSAGE}
+
+#define CFG_MESSAGE_DYNAMIC(var, i) NEED_PARAM, cfg_string, \
+        (cfg_arg_t){.char_pp=var, .base=i, .size=80, .nl_to_space=true, \
+                    .string_type=DYNAMIC}
+
 
 #endif // PARSE_LOGCFG_H
