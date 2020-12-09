@@ -282,7 +282,6 @@ int score() {
     extern int bandinx;
     extern int focm;
     extern int wpx;
-    extern int pfxmult;
     extern int countrynr;
     extern char continent[];
     extern char comment[];
@@ -316,7 +315,7 @@ int score() {
 	return points;
     }
 
-    if (wpx == 1 && pfxmult == 0) {
+    if (wpx == 1) {
 	if (countrynr == my.countrynr) {
 	    points = 1;
 

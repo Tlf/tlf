@@ -145,7 +145,7 @@ void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
     else
 	mvwprintw(search_win, nr_bands + 1, 28, "ITU:%02d", z);
 
-    if (wpx == 1) {
+    if (wpx == 1 || pfxmult == 1) {
 	i = strlen(dx->countryname);
 	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, pxstr);
     }

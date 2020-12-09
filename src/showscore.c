@@ -199,7 +199,7 @@ int get_nr_of_mults() {
 	       || (sectn_mult == 1)) {
 
 	return totalmults;
-    } else if (wpx == 1) {
+    } else if (wpx == 1 || pfxmult == 1) {
 
 	return GetNrOfPfx_once();
     } else if (pfxmultab == 1) {
@@ -365,8 +365,8 @@ void showscore(void) {
     attron(COLOR_PAIR(C_HEADER));
     mvprintw(6, 55, spaces(19));
 
-    if ((cqww == 1) || (wpx == 1) || (arrldx_usa == 1) || (pacc_pa_flg == 1)
-	    || (wysiwyg_once == 1) || (universal == 1)) {	/* cqww or wpx */
+    if (cqww == 1 || pfxmult == 1 || wpx == 1 || arrldx_usa == 1 || pacc_pa_flg == 1
+	    || wysiwyg_once == 1 || universal == 1) {	/* cqww or wpx */
 
 	totalmults = get_nr_of_mults();
 	totalmults = totalmults ? totalmults : 1;	/* at least one */

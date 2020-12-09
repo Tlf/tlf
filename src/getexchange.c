@@ -94,7 +94,6 @@ int getexchange(void) {
     extern int ctcomp;
     extern int wazmult;
     extern int itumult;
-    extern int pfxmult;
     extern int exc_cont;
     extern char continent[];
     extern int commentfield;
@@ -397,7 +396,7 @@ int getexchange(void) {
 
 	    }
 
-	    if (wpx == 1 && pfxmult == 0) {	/* align serial nr. */
+	    if (wpx == 1) {	/* align serial nr. */
 
 		if ((strlen(comment) == 1) || (comment[1] == ' ')) {
 		    strcpy(commentbuf, comment);

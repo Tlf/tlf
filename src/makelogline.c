@@ -299,7 +299,7 @@ void prepare_specific_part(void) {
 	new_pfx = (add_pfx(pxstr, bandinx) == 0);	/* add prefix, remember if new */
     }
 
-    if (wpx == 1 || pfxmultab == 1) {			/* wpx */
+    if (wpx == 1 || pfxmult == 1 || pfxmultab == 1) {			/* wpx */
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, pxstr, 5);

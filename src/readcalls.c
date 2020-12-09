@@ -390,7 +390,7 @@ int readcalls(void) {
     fclose(fp);
 
     /* all lines red, now build other statistics */
-    if (wpx == 1) {
+    if (wpx == 1 || pfxmult == 1) {
 
 	/* build prefixes_worked array from list of worked stations */
 	InitPfx();

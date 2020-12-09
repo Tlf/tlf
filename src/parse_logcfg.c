@@ -253,7 +253,6 @@ int parse_logcfg(char *inputbuffer) {
     extern int dx_arrlsections;
     extern int pfxmult;
     extern int exc_cont;
-    extern int wpx;
     extern char markerfile[];
     extern int xplanet;
     extern int nob4;
@@ -1289,7 +1288,6 @@ int parse_logcfg(char *inputbuffer) {
 	}
 	case 120: {		// wpx style prefixes mult
 	    pfxmult = 1;	// enable set points
-	    wpx = 1;	// handle like wpx
 	    break;
 	}
 	case 121: {		// exchange continent abbrev
@@ -1701,7 +1699,7 @@ int parse_logcfg(char *inputbuffer) {
 	    setcontest();
 	    break;
 	}
-	case 169: {		       /* wpx style prefixes mult */
+	case 169: {		/* wpx style prefixes mult */
 	    pfxmultab = 1;	/* enable pfx on all band */
 	    break;
 	}
