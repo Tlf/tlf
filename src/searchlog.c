@@ -48,6 +48,7 @@
 #include "ui_utils.h"
 #include "zone_nr.h"
 #include "searchcallarray.h"
+#include "setcontest.h"
 #include "get_time.h"
 #include "addmult.h"
 
@@ -145,7 +146,7 @@ void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
     else
 	mvwprintw(search_win, nr_bands + 1, 28, "ITU:%02d", z);
 
-    if (wpx == 1 || pfxmult == 1) {
+    if (IS_CONTEST(WPX) || pfxmult == 1) {
 	i = strlen(dx->countryname);
 	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, pxstr);
     }
@@ -714,7 +715,6 @@ void searchlog() {
     extern int partials;
     extern int cqww;
     extern int countrynr;
-    extern int wpx;
     extern int arrlss;
     extern char pxstr[];
     extern char hiscall[];

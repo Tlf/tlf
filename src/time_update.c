@@ -36,6 +36,7 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "lancode.h"
 #include "printcall.h"
+#include "setcontest.h"
 #include "showscore.h"
 #include "tlf_curses.h"
 #include "trx_memory.h"
@@ -135,7 +136,7 @@ void time_update(void) {
     /* do it every second */
     oldsecs = this_second;
 
-    if (wpx == 1) {
+    if (IS_CONTEST(WPX)) {
 	if (minute_timer > 0)
 	    minute_timer--;
     }

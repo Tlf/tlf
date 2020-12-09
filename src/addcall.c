@@ -48,6 +48,7 @@
 #include "paccdx.h"
 #include "score.h"
 #include "searchcallarray.h"
+#include "setcontest.h"
 #include "tlf.h"
 #include "zone_nr.h"
 
@@ -388,7 +389,7 @@ int addcall2(void) {
 	    }
 	}
     }
-    if (wpx == 1 || pfxmult == 1 || pfxmultab == 1) {
+    if (IS_CONTEST(WPX) || pfxmult == 1 || pfxmultab == 1) {
 
 	if (lan_logline[68] != ' ') {
 

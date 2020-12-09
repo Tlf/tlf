@@ -58,6 +58,7 @@ contest_config_t config_wpx = {
 contest_config_t *contest_configs[] = {
     &config_qso,
     &config_cqww,
+    &config_wpx,
 };
 
 #define NR_CONTESTS (sizeof(contest_configs)/sizeof(contest_config_t*))
@@ -78,7 +79,6 @@ contest_config_t *lookup_contest(char *name) {
 void setcontest(char *name) {
 
     extern int focm;
-    extern int wpx;
     extern int cqww;
     extern int dxped;
     extern int sprint;
@@ -125,11 +125,11 @@ void setcontest(char *name) {
     char zscall[] = "ZS6AA";
     char ua9call[] = "UA9AA";
 
-    wpx = 0;
     cqww = 0;
     dxped = 0;
     sprint = 0;
     arrldx_usa = 0;
+    arrl_fd = 0;
     pacc_pa_flg = 0;
     focm = 0;
     universal = 0;
@@ -148,9 +148,8 @@ void setcontest(char *name) {
 
     strcpy(whichcontest, name);
 
-    if (strcmp(whichcontest, "wpx") == 0) {
-	wpx = 1;
-    }
+    contest = lookup_contest(name);
+
 
     if (strcmp(whichcontest, "cqww") == 0) {
 	cqww = 1;

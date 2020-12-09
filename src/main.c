@@ -101,7 +101,6 @@ contest_config_t *contest = &config_qso;	/* contest configuration */
 
 /* predefined contests */
 int cqww = 0;
-int wpx = 0;
 int dxped = 0;
 int sprint = 0;
 int arrldx_usa = 0;

@@ -46,6 +46,7 @@
 #include "readqtccalls.h"
 #include "score.h"
 #include "searchcallarray.h"
+#include "setcontest.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
 #include "zone_nr.h"
@@ -390,7 +391,7 @@ int readcalls(void) {
     fclose(fp);
 
     /* all lines red, now build other statistics */
-    if (wpx == 1 || pfxmult == 1) {
+    if (IS_CONTEST(WPX) || pfxmult == 1) {
 
 	/* build prefixes_worked array from list of worked stations */
 	InitPfx();

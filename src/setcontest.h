@@ -23,6 +23,8 @@
 
 #include "globalvars.h"
 
+#define IS_CONTEST(cid) (contest->id == cid)
+
 extern contest_config_t config_qso;
 
 contest_config_t *lookup_contest(char *name);

@@ -34,6 +34,7 @@
 #include "nicebox.h"		// Includes curses.h
 #include "printcall.h"
 #include "bands.h"
+#include "setcontest.h"
 #include "ui_utils.h"
 
 #define START_COL 45	/* start display in these column */
@@ -199,7 +200,7 @@ int get_nr_of_mults() {
 	       || (sectn_mult == 1)) {
 
 	return totalmults;
-    } else if (wpx == 1 || pfxmult == 1) {
+    } else if (IS_CONTEST(WPX) || pfxmult == 1) {
 
 	return GetNrOfPfx_once();
     } else if (pfxmultab == 1) {
@@ -244,7 +245,6 @@ void showscore(void) {
     extern int totalmults;
     extern int qsonum;
     extern int total;
-    extern int wpx;
     extern int sprint;
     extern int bandinx;
     extern int multscore[];
@@ -365,8 +365,9 @@ void showscore(void) {
     attron(COLOR_PAIR(C_HEADER));
     mvprintw(6, 55, spaces(19));
 
-    if (cqww == 1 || pfxmult == 1 || wpx == 1 || arrldx_usa == 1 || pacc_pa_flg == 1
-	    || wysiwyg_once == 1 || universal == 1) {	/* cqww or wpx */
+    if ((cqww == 1) || IS_CONTEST(WPX) || pfxmult == 1
+	    || (arrldx_usa == 1) || (pacc_pa_flg == 1)
+	    || (wysiwyg_once == 1) || (universal == 1)) {   /* cqww or wpx */
 
 	totalmults = get_nr_of_mults();
 	totalmults = totalmults ? totalmults : 1;	/* at least one */
@@ -378,7 +379,7 @@ void showscore(void) {
 	    mvprintw(6, 55, "Q/M %.1f ", p);
     }
 
-    if (wpx == 1) {
+    if (IS_CONTEST(WPX)) {
 	if (minute_timer > 0)
 	    mvprintw(6, 75, "%d", minute_timer);
     }

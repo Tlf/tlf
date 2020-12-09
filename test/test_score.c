@@ -3,6 +3,7 @@
 #include "../src/dxcc.h"
 #include "../src/getctydata.h"
 #include "../src/score.h"
+#include "../src/setcontest.h"
 #include "../src/tlf.h"
 
 #include "../src/globalvars.h"
@@ -16,6 +17,7 @@
 // OBJECT ../src/getpx.o
 // OBJECT ../src/locator2longlat.o
 // OBJECT ../src/qrb.o
+// OBJECT ../src/setcontest.o
 
 // ===========
 // these are missing from globalvars
@@ -67,16 +69,18 @@ int setup(void **state) {
 }
 
 int setup_default(void **state) {
+    char filename[100];
 
-    cqww = 0;
-    wpx = 0;
+    /* TODO */
+    /* load_ctydata needs means to destroy the database */
+    strcpy(filename, TOP_SRCDIR);
+    strcat(filename, "/share/cty.dat");
+    assert_int_equal(load_ctydata(filename), 0);
+
+    setcontest("qso");
+
     pfxmult = 0;
-    arrl_fd = 0;
     dupe = 0;
-    arrldx_usa = 0;
-    one_point = 0;
-    two_point = 0;
-    three_point = 0;
 
     my_country_points = -1;
     my_cont_points = -1;
@@ -123,7 +127,7 @@ int teardown_default(void **state) {
 
 
 void test_wpx(void **state) {
-    wpx = 1;
+    setcontest("wpx");
     pfxmult = 0;
 
     /* same country */

@@ -45,6 +45,7 @@
 #include "score.h"
 #include "searchlog.h"		// Includes glib.h
 #include "sendbuf.h"
+#include "setcontest.h"
 #include "speedupndown.h"
 #include "stoptx.h"
 #include "time_update.h"
@@ -72,7 +73,6 @@ int getexchange(void) {
     extern char hiscall[];
     extern char qsonrstr[];
     extern int cqww;
-    extern int wpx;
     extern int pacc_pa_flg;
     extern int stewperry_flg;
     extern int arrldx_usa;
@@ -396,7 +396,7 @@ int getexchange(void) {
 
 	    }
 
-	    if (wpx == 1) {	/* align serial nr. */
+	    if (IS_CONTEST(WPX)) {	/* align serial nr. */
 
 		if ((strlen(comment) == 1) || (comment[1] == ' ')) {
 		    strcpy(commentbuf, comment);

@@ -37,6 +37,7 @@
 #include "getctydata.h"
 #include "locator2longlat.h"
 #include "qrb.h"
+#include "setcontest.h"
 #include "tlf.h"
 
 extern char countrylist[][6];
@@ -281,7 +282,6 @@ int score() {
     extern int band_score[NBANDS];
     extern int bandinx;
     extern int focm;
-    extern int wpx;
     extern int countrynr;
     extern char continent[];
     extern char comment[];
@@ -315,7 +315,7 @@ int score() {
 	return points;
     }
 
-    if (wpx == 1) {
+    if (IS_CONTEST(WPX)) {
 	if (countrynr == my.countrynr) {
 	    points = 1;
 
