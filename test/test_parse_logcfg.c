@@ -74,6 +74,19 @@ extern int sectn_mult_once;
 extern int lan_port;
 extern char rigconf[];
 extern char ph_message[14][80];
+extern char *cabrillo;
+extern int timeoffset;
+extern int cwkeyer;
+extern char *rigportname;
+extern int tnc_serial_rate;
+extern int serial_rate;
+extern int packetinterface;
+extern char pr_hostaddress[];
+extern int portnum;
+extern int cluster;
+extern int cqdelay;
+extern int ssbpoints;
+extern int cwpoints;
 
 // lancode.c
 int nodes = 0;
@@ -137,8 +150,13 @@ int foc_score(char *a) {
     return 0;
 }
 
+#define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
+
+
 /* setup/teardown */
 int setup_default(void **state) {
+    memset(&my, 0, sizeof(my));
+
     *keyer_device = 0;
     partials = 0;
     use_part = 0;
@@ -146,23 +164,39 @@ int setup_default(void **state) {
     ignoredupe = false;
     continentlist_only = false;
     lan_port = 0;
+    timeoffset = 0;
+    cwkeyer = 0;
+    packetinterface = 0;
+    portnum = 0;
+    shortqsonr = 0;
+    cluster = 0;
+    cqdelay = 8;
+    ssbpoints = 1;
+    cwpoints = 1;
 
     for (int i = 0; i < SP_CALL_MSG; ++i) {
 	message[i][0] = 0;
     }
-    for (int i = 0; i < 14; ++i) {
+    for (int i = 0; i < CQ_TU_MSG; ++i) {
 	ph_message[i][0] = 0;
+	qtc_phrecv_message[i][0] = 0;
+	qtc_phsend_message[i][0] = 0;
     }
-    for (int i = 0; i < SP_CALL_MSG; ++i) {
-	if (digi_message[i] != NULL) {
-	    g_free(digi_message[i]);
-	    digi_message[i] = NULL;
-	}
+    for (int i = 0; i < SP_TU_MSG; ++i) {
+	qtc_send_msgs[i][0] = 0;
+	qtc_recv_msgs[i][0] = 0;
+    }
+    for (int i = 0; i < 12; ++i) {
+	FREE_DYNAMIC_STRING(digi_message[i]);
     }
 
     rigconf[0] = 0;
+    pr_hostaddress[0] = 0;
 
-    callmaster_filename = NULL;
+    FREE_DYNAMIC_STRING(editor_cmd);
+    FREE_DYNAMIC_STRING(cabrillo);
+    FREE_DYNAMIC_STRING(callmaster_filename);
+    FREE_DYNAMIC_STRING(rigportname);
 
     showmsg_spy = STRING_NOT_SET;
 
@@ -403,7 +437,6 @@ void test_callmaster(void **state) {
     int rc = call_parse_logcfg("CALLMASTER=calls.txt\n");
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(callmaster_filename, "calls.txt");
-    g_free(callmaster_filename);
 }
 
 void test_vkmn(void **state) {
@@ -431,6 +464,7 @@ void test_vkcqm(void **state) {
     assert_string_equal(ph_message[CQ_TU_MSG], "b.wav");
 }
 
+// DKF1..DKF12
 void test_dkfn(void **state) {
     char line[80], msg[30];
     for (int i = 1; i <= 12; ++i) {
@@ -485,3 +519,195 @@ void test_dkspc(void **state) {
 			"DSPC "); // FIXME converts NL to space...
 }
 
+// QR_F1..QR_F12
+void test_qr_fn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 12; ++i) {
+	int j = i - 1;
+	qtc_recv_msgs[j][0] = 0;
+	sprintf(msg, "QRMSG%d MNO", i);
+	sprintf(line, "QR_F%d = %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	sprintf(msg, "QRMSG%d MNO \n", i);    // FIXME NL is kept
+	assert_string_equal(qtc_recv_msgs[j], msg);
+    }
+}
+
+// QS_F1..QS_F12
+void test_qs_fn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 12; ++i) {
+	int j = i - 1;
+	qtc_send_msgs[j][0] = 0;
+	sprintf(msg, "QSMSG%d MNO", i);
+	sprintf(line, "QS_F%d = %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	sprintf(msg, "QSMSG%d MNO \n", i);    // FIXME NL is kept
+	assert_string_equal(qtc_send_msgs[j], msg);
+    }
+}
+
+// QR_VKM1..QR_VKM12
+void test_qr_vkmn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 12; ++i) {
+	int j = i - 1;
+	qtc_phrecv_message[j][0] = 0;
+	sprintf(msg, "QRVK%d.wav", i);
+	sprintf(line, "QR_VKM%d = %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_string_equal(qtc_phrecv_message[j], msg);
+    }
+}
+
+// QS_VKM1..QS_VKM12
+void test_qs_vkmn(void **state) {
+    char line[80], msg[30];
+    for (int i = 1; i <= 12; ++i) {
+	int j = i - 1;
+	qtc_phsend_message[j][0] = 0;
+	sprintf(msg, "QSVK%d.wav", i);
+	sprintf(line, "QS_VKM%d = %s \n", i, msg);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_string_equal(qtc_phsend_message[j], msg);
+    }
+}
+
+void test_qr_vkspm(void **state) {
+    int rc = call_parse_logcfg("QR_VKSPM=a.wav\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(qtc_phrecv_message[SP_TU_MSG], "a.wav");
+}
+
+void test_qr_vkcqm(void **state) {
+    int rc = call_parse_logcfg("QR_VKCQM=b.wav\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(qtc_phrecv_message[CQ_TU_MSG], "b.wav");
+}
+
+void test_qs_vkspm(void **state) {
+    int rc = call_parse_logcfg("QS_VKSPM=a.wav\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(qtc_phsend_message[SP_TU_MSG], "a.wav");
+}
+
+void test_qs_vkcqm(void **state) {
+    int rc = call_parse_logcfg("QS_VKCQM=b.wav\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(qtc_phsend_message[CQ_TU_MSG], "b.wav");
+}
+
+void test_call(void **state) {
+    int rc = call_parse_logcfg("CALL = AB1CD\r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(my.call, "AB1CD\n");  // FIXME line end...
+}
+
+void test_cabrillo(void **state) {
+    int rc = call_parse_logcfg("CABRILLO = test.cab \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(cabrillo, "test.cab");
+}
+
+void test_time_offset(void **state) {
+    int rc = call_parse_logcfg("TIME_OFFSET = -4\r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(timeoffset, -4);
+}
+
+void test_netkeyer(void **state) {
+    int rc = call_parse_logcfg("NETKEYER\r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(cwkeyer, NET_KEYER);
+}
+
+void test_netkeyerport(void **state) {
+    int rc = call_parse_logcfg("NETKEYERPORT = 16789\r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(netkeyer_port, 16789);
+}
+
+void test_netkeyerhost(void **state) {
+    int rc = call_parse_logcfg("NETKEYERHOST = host.net \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(netkeyer_hostaddress, "host.net");
+}
+
+void test_rigport(void **state) {
+    int rc = call_parse_logcfg("RIGPORT = /dev/rigport \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_non_null(rigportname);
+    assert_string_equal(rigportname, "/dev/rigport \r\n");  // FIXME...
+}
+
+void test_tncspeed(void **state) {
+    int rc = call_parse_logcfg("TNCSPEED = 1200\r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(tnc_serial_rate, 1200);
+}
+
+void test_rigspeed(void **state) {
+    int rc = call_parse_logcfg("RIGSPEED = 38400\r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(serial_rate, 38400);
+}
+
+void test_fifo_interface(void **state) {
+    int rc = call_parse_logcfg("FIFO_INTERFACE\r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(packetinterface, FIFO_INTERFACE);
+}
+
+void test_telnethost(void **state) {
+    int rc = call_parse_logcfg("TELNETHOST = host.net \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(pr_hostaddress, "host.net");
+}
+
+void test_telnetport(void **state) {
+    int rc = call_parse_logcfg("TELNETPORT = 12345 \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(portnum, 12345);
+    assert_int_equal(packetinterface, TELNET_INTERFACE);
+}
+
+void test_long_serial(void **state) {
+    shortqsonr = 1;
+    int rc = call_parse_logcfg("LONG_SERIAL  \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(shortqsonr, 0);
+}
+
+void test_cluster(void **state) {
+    int rc = call_parse_logcfg("CLUSTER\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(cluster, CLUSTER);
+}
+
+void test_qtc_cap_calls(void **state) {
+    int rc = call_parse_logcfg(" QTC_CAP_CALLS = abc \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(qtc_cap_calls, "abc");
+}
+
+void test_cqdelay(void **state) {
+    int rc = call_parse_logcfg("CQDELAY=12\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(cqdelay, 12);
+}
+
+void test_ssbpoints(void **state) {
+    int rc = call_parse_logcfg("SSBPOINTS=2\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(ssbpoints, 2);
+}
+
+void test_cwpoints(void **state) {
+    int rc = call_parse_logcfg("CWPOINTS=3\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(cwpoints, 3);
+}

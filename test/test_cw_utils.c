@@ -8,7 +8,7 @@
 void test_SetSpeed_success(void **state) {
     for (int i = 4; i <= 66; ++i) {
 	speed = -1;
-	printf("%d\n", i);
+
 	SetCWSpeed(i);
 
 	int expected = (i - 9) / 2;     // for 11..50
