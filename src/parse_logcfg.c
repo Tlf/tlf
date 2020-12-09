@@ -48,6 +48,12 @@
 #include <config.h>
 
 
+extern bool mixedmode;
+extern bool ignoredupe;
+extern bool continentlist_only;
+extern int lan_port;
+extern char rigconf[];
+extern char ph_message[14][80];
 extern int cwkeyer;
 extern int digikeyer;
 extern int keyer_backspace;
@@ -60,13 +66,52 @@ extern int shortqsonr;
 extern char *cabrillo;
 extern rmode_t digi_mode;
 extern int ctcomp;
+extern int recall_mult;
+extern int trx_control;
+extern int rit;
+extern int showscore_flag;
+extern int searchflg;
+extern int demode;
+extern int portable_x2;
+extern int landebug;
+extern int call_update;
+extern int nob4;
+extern int time_master;
+extern int show_time;
+extern int use_rxvt;
+extern int exc_cont;
+extern int noautocq;
+extern int bmautoadd;
+extern int bmautograb;
+extern int logfrequency;
+extern int no_rst;
+extern int serial_or_section;
+extern int sprint_mode;
+extern int sc_sidetone;
+extern int no_arrows;
+extern int lowband_point_mult;
+extern int cluster;
+extern int clusterlog;
+extern char keyer_device[10];
+extern int timeoffset;
+extern int netkeyer_port;
+extern char netkeyer_hostaddress[];
+extern char *rigportname;
+extern int tnc_serial_rate;
+extern int serial_rate;
+extern char pr_hostaddress[];
+extern char *editor_cmd;
+extern int cqdelay;
+extern int ssbpoints;
+extern int cwpoints;
 
 bool exist_in_country_list();
 
 void KeywordRepeated(char *keyword);
 void KeywordNotSupported(char *keyword);
-void ParameterNeeded(char *keyword);
-void WrongFormat(char *keyword);
+void ParameterNeeded(const char *keyword);
+void WrongFormat(const char *keyword);
+void WrongFormat_details(const char *keyword, const char *details);
 
 #define  MAX_COMMANDS (sizeof(commands) / sizeof(*commands))	/* commands in list */
 
@@ -172,6 +217,293 @@ int getidxbybandstr(char *confband) {
     return -1;
 }
 
+////////////////////
+// global variables for matcher functions:
+GMatchInfo *match_info;
+const char *parameter;
+
+static int parse_int(const char *string, gint64 min, gint64 max, int *result) {
+
+    gchar *str = g_strdup(string);
+    g_strstrip(str);
+
+    gint64 value;
+    GError *error = NULL;
+    gboolean ok = g_ascii_string_to_signed(str, 10, min, max, &value, &error);
+
+    g_free(str);
+
+    if (ok) {
+	*result = (int)value;
+	return PARSE_OK;
+    }
+
+    int rc = PARSE_INVALID_INTEGER;
+    if (error != NULL) {
+	if (error->code == G_NUMBER_PARSER_ERROR_OUT_OF_BOUNDS) {
+	    rc = PARSE_INTEGER_OUT_OF_RANGE;
+	}
+	g_free(error);
+    }
+
+    return rc;
+}
+
+int cfg_bool_const(const cfg_arg_t arg) {
+    *arg.bool_p = arg.bool_value;
+    return PARSE_OK;
+}
+
+int cfg_int_const(const cfg_arg_t arg) {
+    *arg.int_p  = arg.int_value;
+    return PARSE_OK;
+}
+
+int cfg_integer(const cfg_arg_t arg) {
+    return parse_int(parameter, (gint64)arg.min, (gint64)arg.max, arg.int_p);
+}
+
+//
+// static: char_p, size > 0, base not used
+// dynamic: char_pp, size optional, base optional
+// message: msg, size > 0, base used
+//
+int cfg_string(const cfg_arg_t arg) {
+    gchar *index = g_match_info_fetch(match_info, 1);
+    int n = 0;
+    if (NULL != index) {
+	n = atoi(index);    // use provided index
+	g_free(index);
+    }
+
+    char *str = g_strdup(parameter);
+    // chomp/strip
+    if (arg.chomp) {
+	g_strchomp(str);
+    }
+    if (arg.strip) {
+	g_strstrip(str);
+    }
+    // check length
+    if (arg.size > 0 && strlen(str) >= arg.size) {
+	g_free(str);
+	return PARSE_STRING_TOO_LONG;
+    }
+    // replace trailing newline with a space
+    if (arg.nl_to_space) {
+	char *nl = strrchr(str, '\n');
+	if (nl) {
+	    *nl = ' ';
+	}
+    }
+
+    // store value
+    switch (arg.string_type) {
+	case STATIC:
+	    g_strlcpy(arg.char_p, str, arg.size);
+	    g_free(str);
+	    break;
+	case MESSAGE:
+	    g_strlcpy(arg.msg[arg.base + n], str, arg.size);
+	    g_free(str);
+	    break;
+	case DYNAMIC:
+	    if (arg.char_pp[arg.base + n] != NULL) {
+		g_free(arg.char_pp[arg.base + n]);
+	    }
+	    arg.char_pp[arg.base + n] = str;
+    }
+    return PARSE_OK;
+}
+
+static int cfg_telnetport(const cfg_arg_t arg) {
+    int rc = cfg_integer((cfg_arg_t) {.int_p = &portnum, .min = 1, .max = INT32_MAX});
+    if (rc != PARSE_OK) {
+	return rc;
+    }
+    packetinterface = TELNET_INTERFACE;
+    return PARSE_OK;
+}
+
+static config_t logcfg_configs[] = {
+    {"CONTEST_MODE",        CFG_BOOL_TRUE(iscontest)},
+    {"MIXED",               CFG_BOOL_TRUE(mixedmode)},
+    {"IGNOREDUPE",          CFG_BOOL_TRUE(ignoredupe)},
+    {"USE_CONTINENTLIST_ONLY",  CFG_BOOL_TRUE(continentlist_only)},
+
+    {"USEPARTIALS",     CFG_INT_ONE(use_part)},
+    {"PARTIALS",        CFG_INT_ONE(partials)},
+    {"RECALL_MULTS",    CFG_INT_ONE(recall_mult)},
+    {"WYSIWYG_MULTIBAND",   CFG_INT_ONE(wysiwyg_multi)},
+    {"WYSIWYG_ONCE",    CFG_INT_ONE(wysiwyg_once)},
+    {"RADIO_CONTROL",   CFG_INT_ONE(trx_control)},
+    {"RIT_CLEAR",       CFG_INT_ONE(rit)},
+    {"SHORT_SERIAL",    CFG_INT_ONE(shortqsonr)},
+    {"SCOREWINDOW",     CFG_INT_ONE(showscore_flag)},
+    {"CHECKWINDOW",     CFG_INT_ONE(searchflg)},
+    {"SEND_DE",         CFG_INT_ONE(demode)},
+    {"SERIAL_EXCHANGE", CFG_INT_ONE(exchange_serial)},
+    {"COUNTRY_MULT",    CFG_INT_ONE(country_mult)},
+    {"PORTABLE_MULT_2", CFG_INT_ONE(portable_x2)},
+    {"CQWW_M2",         CFG_INT_ONE(cqwwm2)},
+    {"LAN_DEBUG",       CFG_INT_ONE(landebug)},
+    {"CALLUPDATE",      CFG_INT_ONE(call_update)},
+    {"TIME_MASTER",     CFG_INT_ONE(time_master)},
+    {"CTCOMPATIBLE",    CFG_INT_ONE(ctcomp)},
+    {"SERIAL\\+SECTION",    CFG_INT_ONE(serial_section_mult)},
+    {"SECTION_MULT",    CFG_INT_ONE(sectn_mult)},
+    {"NOB4",            CFG_INT_ONE(nob4)},
+    {"SHOW_TIME",       CFG_INT_ONE(show_time)},
+    {"RXVT",            CFG_INT_ONE(use_rxvt)},
+    {"WAZMULT",         CFG_INT_ONE(wazmult)},
+    {"ITUMULT",         CFG_INT_ONE(itumult)},
+    {"CONTINENT_EXCHANGE",  CFG_INT_ONE(exc_cont)},
+    {"NOAUTOCQ",        CFG_INT_ONE(noautocq)},
+    {"NO_BANDSWITCH_ARROWKEYS", CFG_INT_ONE(no_arrows)},
+    {"SOUNDCARD",       CFG_INT_ONE(sc_sidetone)},
+    {"LOWBAND_DOUBLE",  CFG_INT_ONE(lowband_point_mult)},
+    {"CLUSTER_LOG",     CFG_INT_ONE(clusterlog)},
+    {"SERIAL\\+GRID4",  CFG_INT_ONE(serial_grid4_mult)},
+    {"LOGFREQUENCY",    CFG_INT_ONE(logfrequency)},
+    {"NO_RST",          CFG_INT_ONE(no_rst)},
+    {"SERIAL_OR_SECTION",   CFG_INT_ONE(serial_or_section)},
+    {"PFX_MULT_MULTIBAND",  CFG_INT_ONE(pfxmultab)},
+    {"QTCREC_RECORD",   CFG_INT_ONE(qtcrec_record)},
+    {"QTC_AUTO_FILLTIME",   CFG_INT_ONE(qtc_auto_filltime)},
+    {"BMAUTOGRAB",      CFG_INT_ONE(bmautograb)},
+    {"BMAUTOADD",       CFG_INT_ONE(bmautoadd)},
+    {"QTC_RECV_LAZY",   CFG_INT_ONE(qtc_recv_lazy)},
+    {"SPRINTMODE",      CFG_INT_ONE(sprint_mode)},
+    {"KEYER_BACKSPACE", CFG_INT_ONE(keyer_backspace)},
+    {"SECTION_MULT_ONCE",   CFG_INT_ONE(sectn_mult_once)},
+
+    {"F([1-9]|1[0-2])", CFG_MESSAGE(message, -1)},  // index is 1-based
+    {"S&P_TU_MSG",      CFG_MESSAGE(message, SP_TU_MSG)},
+    {"CQ_TU_MSG",       CFG_MESSAGE(message, CQ_TU_MSG)},
+    {"ALT_([0-9])",     CFG_MESSAGE(message, CQ_TU_MSG + 1)},
+    {"S&P_CALL_MSG",    CFG_MESSAGE(message, SP_CALL_MSG)},
+
+    {"VKM([1-9]|1[0-2])",   CFG_MESSAGE_CHOMP(ph_message, -1)},
+    {"VKCQM",               CFG_MESSAGE_CHOMP(ph_message, CQ_TU_MSG)},
+    {"VKSPM",               CFG_MESSAGE_CHOMP(ph_message, SP_TU_MSG)},
+
+    {"DKF([1-9]|1[0-2])",   CFG_MESSAGE_DYNAMIC(digi_message, -1)},
+    {"DKCQM",               CFG_MESSAGE_DYNAMIC(digi_message, CQ_TU_MSG)},
+    {"DKSPM",               CFG_MESSAGE_DYNAMIC(digi_message, SP_TU_MSG)},
+    {"DKSPC",               CFG_MESSAGE_DYNAMIC(digi_message, SP_CALL_MSG)},
+    {"ALT_DK([1-9]|10)",    CFG_MESSAGE_DYNAMIC(digi_message, CQ_TU_MSG)},
+
+    {"QR_F([1-9]|1[0-2])",      CFG_MESSAGE(qtc_recv_msgs, -1) },
+    {"QR_VKM([1-9]|1[0-2])",    CFG_MESSAGE_CHOMP(qtc_phrecv_message, -1) },
+    {"QR_VKCQM",                CFG_MESSAGE_CHOMP(qtc_phrecv_message, CQ_TU_MSG) },
+    {"QR_VKSPM",                CFG_MESSAGE_CHOMP(qtc_phrecv_message, SP_TU_MSG) },
+
+    {"QS_F([1-9]|1[0-2])",      CFG_MESSAGE(qtc_send_msgs, -1) },
+    {"QS_VKM([1-9]|1[0-2])",    CFG_MESSAGE_CHOMP(qtc_phsend_message, -1) },
+    {"QS_VKCQM",                CFG_MESSAGE_CHOMP(qtc_phsend_message, CQ_TU_MSG) },
+    {"QS_VKSPM",                CFG_MESSAGE_CHOMP(qtc_phsend_message, SP_TU_MSG) },
+
+    {"LAN_PORT",        CFG_INT(lan_port, 1000, INT32_MAX)},
+    {"TIME_OFFSET",     CFG_INT(timeoffset, -23, 23)},
+    {"NETKEYERPORT",    CFG_INT(netkeyer_port, 1, INT32_MAX)},
+    {"TNCSPEED",        CFG_INT(tnc_serial_rate, 0, INT32_MAX)},
+    {"RIGSPEED",        CFG_INT(serial_rate, 0, INT32_MAX)},
+    {"CQDELAY",         CFG_INT(cqdelay, 3, 60)},
+    {"SSBPOINTS",       CFG_INT(ssbpoints, 0, INT32_MAX)},
+    {"CWPOINTS",        CFG_INT(cwpoints, 0, INT32_MAX)},
+
+    {"NETKEYER",        CFG_INT_CONST(cwkeyer, NET_KEYER)},
+    {"FIFO_INTERFACE",  CFG_INT_CONST(packetinterface, FIFO_INTERFACE)},
+    {"LONG_SERIAL",     CFG_INT_CONST(shortqsonr, 0)},
+    {"CLUSTER",         CFG_INT_CONST(cluster, CLUSTER)},
+
+//    {"CALL",        CFG_STRING_STATIC(my.call, 20) },
+    {"RIGCONF",         CFG_STRING_STATIC(rigconf, 80)},
+    {"LOGFILE",         CFG_STRING_STATIC(logfile, 120)},
+    {"KEYER_DEVICE",    CFG_STRING_STATIC(keyer_device, 10)},
+    {"NETKEYERHOST",    CFG_STRING_STATIC(netkeyer_hostaddress, 16)},
+    {"TELNETHOST",      CFG_STRING_STATIC(pr_hostaddress, 48)},
+    {"QTC_CAP_CALLS",   CFG_STRING_STATIC(qtc_cap_calls, 40)},
+
+    {"CABRILLO",    CFG_STRING(cabrillo)},
+    {"CALLMASTER",  CFG_STRING(callmaster_filename)},
+    {"EDITOR",      CFG_STRING(editor_cmd)},
+
+    {"RIGPORT",  CFG_STRING_NOCHOMP(rigportname)},
+
+    {"TELNETPORT",  NEED_PARAM, cfg_telnetport},
+
+    {NULL}  // end marker
+};
+
+
+static int check_match(const config_t *cfg, const char *keyword) {
+    gchar *pattern = g_strdup_printf("^%s$", cfg->regex);
+    GRegex *regex = g_regex_new(pattern, 0, 0, NULL);
+    g_free(pattern);
+
+    int result = PARSE_NO_MATCH;    // default: not found
+
+    g_regex_match(regex, keyword, 0, &match_info);
+    if (g_match_info_matches(match_info)) {
+
+	if (cfg->param_kind == NEED_PARAM && parameter == NULL) {
+	    result = PARSE_MISSING_PARAMETER;
+// -- no error at the moment
+//        } else if (cfg->param_kind == NO_PARAM && parameter != NULL) {
+//            result = PARSE_EXTRA_PARAMETER;
+	} else {
+	    result = cfg->func(cfg->arg);
+	}
+    }
+    g_match_info_free(match_info);
+    g_regex_unref(regex);
+
+    return result;
+}
+
+static int apply_config(const char *keyword, const char *param,
+			const config_t *configs) {
+
+    parameter = param;  // save for matcher functions
+
+    int result = PARSE_NO_MATCH;
+
+    for (const config_t *cfg = configs; cfg->regex ; ++cfg) {
+	result = check_match(cfg, keyword);
+	if (result != PARSE_NO_MATCH) {
+	    break;
+	}
+    }
+
+    switch (result) {
+	case PARSE_OK:
+	    return PARSE_OK;
+
+	case PARSE_NO_MATCH:
+	    return PARSE_NO_MATCH;
+	//KeywordNotSupported(keyword);
+	//break;
+
+	case PARSE_MISSING_PARAMETER:
+	    ParameterNeeded(keyword);
+	    break;
+
+	case PARSE_INVALID_INTEGER:
+	    WrongFormat_details(keyword, "invalid number");
+	    break;
+
+	case PARSE_INTEGER_OUT_OF_RANGE:
+	    WrongFormat_details(keyword, "value out of range");
+	    break;
+
+	default:
+	    WrongFormat(keyword);
+    }
+
+    return PARSE_CONFIRM;
+}
+////////////////////
 
 static int confirmation_needed;
 
@@ -319,42 +651,42 @@ int parse_logcfg(char *inputbuffer) {
     char *commands[] = {
 	NULL,   //"enable",		/* 0 */		/* deprecated */
 	NULL,   //"disable",				/* deprecated */
-	"F1",
-	"F2",
-	"F3",
-	"F4",			/* 5 */
-	"F5",
-	"F6",
-	"F7",
-	"F8",
-	"F9",			/* 10 */
-	"F10",
-	"F11",
-	"F12",
-	"S&P_TU_MSG",
-	"CQ_TU_MSG",		/* 15 */
+	NULL,   //"F1",
+	NULL,   //"F2",
+	NULL,   //"F3",
+	NULL,   //"F4",			/* 5 */
+	NULL,   //"F5",
+	NULL,   //"F6",
+	NULL,   //"F7",
+	NULL,   //"F8",
+	NULL,   //"F9",			/* 10 */
+	NULL,   //"F10",
+	NULL,   //"F11",
+	NULL,   //"F12",
+	NULL,   //"S&P_TU_MSG",
+	NULL,   //"CQ_TU_MSG",		/* 15 */
 	"CALL",
 	"CONTEST",
-	"LOGFILE",
-	"KEYER_DEVICE",
+	NULL,   //"LOGFILE",
+	NULL,   //"KEYER_DEVICE",
 	"BANDOUTPUT",		/* 20 */
-	"RECALL_MULTS",
+	NULL,   //"RECALL_MULTS",
 	"ONE_POINT",
 	"THREE_POINTS",
-	"WYSIWYG_MULTIBAND",
-	"WYSIWYG_ONCE",		/* 25 */
-	"RADIO_CONTROL",
-	"RIT_CLEAR",
-	"SHORT_SERIAL",
-	"LONG_SERIAL",
-	"CONTEST_MODE",		/* 30 */
-	"CLUSTER",
+	NULL,   //"WYSIWYG_MULTIBAND",
+	NULL,   //"WYSIWYG_ONCE",		/* 25 */
+	NULL,   //"RADIO_CONTROL",
+	NULL,   //"RIT_CLEAR",
+	NULL,   //"SHORT_SERIAL",
+	NULL,   //"LONG_SERIAL",
+	NULL,   //"CONTEST_MODE",		/* 30 */
+	NULL,   //"CLUSTER",
 	"BANDMAP",
 	NULL,   //"SPOTLIST",				/* deprecated */
-	"SCOREWINDOW",
-	"CHECKWINDOW",		/* 35 */
+	NULL,   //"SCOREWINDOW",
+	NULL,   //"CHECKWINDOW",		/* 35 */
 	NULL,   //"FILTER",				/* deprecated */
-	"SEND_DE",
+	NULL,   //"SEND_DE",
 	"CWSPEED",
 	"CWTONE",
 	"WEIGHT",		/* 40 */
@@ -362,56 +694,56 @@ int parse_logcfg(char *inputbuffer) {
 	"SUNSPOTS",
 	"SFI",
 	NULL,   //"SHOW_FREQUENCY",                       /* deprecated */
-	"EDITOR",		/* 45 */
-	"PARTIALS",
-	"USEPARTIALS",
+	NULL,   //"EDITOR",		/* 45 */
+	NULL,   //"PARTIALS",
+	NULL,   //"USEPARTIALS",
 	NULL,   //"POWERMULT_5",				/* deprecated */
 	NULL,   //"POWERMULT_2",				/* deprecated */
 	NULL,   //"POWERMULT_1",		/* 50 */	/* deprecated */
 	NULL,   //"MANY_CALLS",				/* deprecated */
-	"SERIAL_EXCHANGE",
-	"COUNTRY_MULT",
+	NULL,   //"SERIAL_EXCHANGE",
+	NULL,   //"COUNTRY_MULT",
 	"2EU3DX_POINTS",
-	"PORTABLE_MULT_2",	/* 55 */
-	"MIXED",
-	"TELNETHOST",
-	"TELNETPORT",
+	NULL,   //"PORTABLE_MULT_2",	/* 55 */
+	NULL,   //"MIXED",
+	NULL,   //"TELNETHOST",
+	NULL,   //"TELNETPORT",
 	"TNCPORT",
-	"FIFO_INTERFACE",	/* 60 */
+	NULL,   //"FIFO_INTERFACE",	/* 60 */
 	"RIGMODEL",
-	"RIGSPEED",
-	"TNCSPEED",
-	"RIGPORT",
-	"NETKEYER",		/* 65 */
-	"NETKEYERPORT",
-	"NETKEYERHOST",
+	NULL,   //"RIGSPEED",
+	NULL,   //"TNCSPEED",
+	NULL,   //"RIGPORT",
+	NULL,   //"NETKEYER",		/* 65 */
+	NULL,   //"NETKEYERPORT",
+	NULL,   //"NETKEYERHOST",
 	"ADDNODE",
 	"THISNODE",
-	"CQWW_M2",		/* 70 */
-	"LAN_DEBUG",
-	"ALT_0",
-	"ALT_1",
-	"ALT_2",
-	"ALT_3",		/* 75 */
-	"ALT_4",
-	"ALT_5",
-	"ALT_6",
-	"ALT_7",
-	"ALT_8",		/* 80 */
-	"ALT_9",
-	"CALLUPDATE",
-	"TIME_OFFSET",
-	"TIME_MASTER",
-	"CTCOMPATIBLE",		/*  85  */
+	NULL,   //"CQWW_M2",		/* 70 */
+	NULL,   //"LAN_DEBUG",
+	NULL,   //"A/LT_0",
+	NULL,   //"A/LT_1",
+	NULL,   //"A/LT_2",
+	NULL,   //"A/LT_3",		/* 75 */
+	NULL,   //"A/LT_4",
+	NULL,   //"A/LT_5",
+	NULL,   //"A/LT_6",
+	NULL,   //"A/LT_7",
+	NULL,   //"A/LT_8",		/* 80 */
+	NULL,   //"ALT_9",
+	NULL,   //"CALLUPDATE",
+	NULL,   //"TIME_OFFSET",
+	NULL,   //"TIME_MASTER",
+	NULL,   //"CTCOMPATIBLE",		/*  85  */
 	"TWO_POINTS",
 	"MULT_LIST",
-	"SERIAL+SECTION",
-	"SECTION_MULT",
+	NULL,   //"SERIAL+SECTION",
+	NULL,   //"SECTION_MULT",
 	"MARKERS",		/* 90 */
 	"DX_&_SECTIONS",
 	"MARKERDOTS",
 	"MARKERCALLS",
-	"NOB4",
+	NULL,   //"NOB4",
 	/*LZ3NY */
 	"COUNTRYLIST",		//by lz3ny      /* 95 */
 	"COUNTRY_LIST_POINTS",	//by lz3ny
@@ -419,31 +751,31 @@ int parse_logcfg(char *inputbuffer) {
 	"MY_COUNTRY_POINTS",	//by lz3ny
 	"MY_CONTINENT_POINTS",	//by lz3ny
 	"DX_POINTS",		//by lz3ny                 /* 100 */
-	"SHOW_TIME",
-	"RXVT",
-	"VKM1",
-	"VKM2",
-	"VKM3",		/* 105 */
-	"VKM4",
-	"VKM5",
-	"VKM6",
-	"VKM7",
-	"VKM8",		/* 110 */
-	"VKM9",
-	"VKM10",
-	"VKM11",
-	"VKM12",
-	"VKSPM",		/* 115 */
-	"VKCQM",
-	"WAZMULT",
-	"ITUMULT",
-	"CQDELAY",
+	NULL,   //"SHOW_TIME",
+	NULL,   //"RXVT",
+	NULL,   //"VKM1",
+	NULL,   //"VKM2",
+	NULL,   //"VKM3",		/* 105 */
+	NULL,   //"VKM4",
+	NULL,   //"VKM5",
+	NULL,   //"VKM6",
+	NULL,   //"VKM7",
+	NULL,   //"VKM8",		/* 110 */
+	NULL,   //"VKM9",
+	NULL,   //"VKM10",
+	NULL,   //"VKM11",
+	NULL,   //"VKM12",
+	NULL,   //"VKSPM",		/* 115 */
+	NULL,   //"VKCQM",
+	NULL,   //"WAZMULT",
+	NULL,   //"ITUMULT",
+	NULL,   //"CQDELAY",
 	"PFX_MULT",		/* 120 */
-	"CONTINENT_EXCHANGE",
+	NULL,   //"CONTINENT_EXCHANGE",
 	"RULES",
-	"NOAUTOCQ",
+	NULL,   //"NOAUTOCQ",
 	"SSBMODE",
-	"NO_BANDSWITCH_ARROWKEYS",	/* 125 */
+	NULL,   //"NO_BANDSWITCH_ARROWKEYS",	/* 125 */
 	"RIGCONF",
 	"TLFCOLOR1",
 	"TLFCOLOR2",
@@ -452,9 +784,9 @@ int parse_logcfg(char *inputbuffer) {
 	"TLFCOLOR5",
 	"TLFCOLOR6",
 	"SYNCFILE",
-	"SSBPOINTS",
-	"CWPOINTS",		/* 135 */
-	"SOUNDCARD",
+	NULL,   //"SSBPOINTS",
+	NULL,   //"CWPOINTS",		/* 135 */
+	NULL,   //"SOUNDCARD",
 	"SIDETONE_VOLUME",
 	NULL,   //"S_METER",				/* deprecated */
 	"SC_DEVICE",
@@ -463,127 +795,127 @@ int parse_logcfg(char *inputbuffer) {
 	"ORION_KEYER",
 	"INITIAL_EXCHANGE",
 	"CWBANDWIDTH",
-	"LOWBAND_DOUBLE",	/* 145 */
-	"CLUSTER_LOG",
-	"SERIAL+GRID4",
+	NULL,   //"LOWBAND_DOUBLE",	/* 145 */
+	NULL,   //"CLUSTER_LOG",
+	NULL,   //"SERIAL+GRID4",
 	"CHANGE_RST",
 	"GMFSK",
 	"RTTYMODE",		/* 150 */
 	"DIGIMODEM",
-	"LOGFREQUENCY",
-	"IGNOREDUPE",
-	"CABRILLO",
+	NULL,   //"LOGFREQUENCY",
+	NULL,   //"IGNOREDUPE",
+	NULL,   //"CABRILLO",
 	NULL,   //"CW_TU_MSG",		/* 155 */	/* deprecated */
 	NULL,   //"VKCWR",				/* deprecated */
 	NULL,   //"VKSPR",				/* deprecated */
-	"NO_RST",
+	NULL,   //"NO_RST",
 	"MYQRA",
 	"POWERMULT",		/* 160 */
-	"SERIAL_OR_SECTION",
+	NULL,   //"SERIAL_OR_SECTION",
 	"QTC",
 	"CONTINENTLIST",
 	"CONTINENT_LIST_POINTS",
-	"USE_CONTINENTLIST_ONLY",  /* 165 */
+	NULL,   //"USE_CONTINENTLIST_ONLY",  /* 165 */
 	"BANDWEIGHT_POINTS",
 	"BANDWEIGHT_MULTIS",
 	"PFX_NUM_MULTIS",
-	"PFX_MULT_MULTIBAND",
-	"QR_F1",		/* 170 */
-	"QR_F2",
-	"QR_F3",
-	"QR_F4",
-	"QR_F5",
-	"QR_F6",		/* 175 */
-	"QR_F7",
-	"QR_F8",
-	"QR_F9",
-	"QR_F10",
-	"QR_F11",		/* 180 */
-	"QR_F12",
-	"QS_F1",
-	"QS_F2",
-	"QS_F3",
-	"QS_F4",
-	"QS_F5",
-	"QS_F6",
-	"QS_F7",
-	"QS_F8",
-	"QS_F9",		/* 190 */
-	"QS_F10",
-	"QS_F11",
-	"QS_F12",
-	"QR_VKM1",
-	"QR_VKM2",
-	"QR_VKM3",
-	"QR_VKM4",
-	"QR_VKM5",
-	"QR_VKM6",
-	"QR_VKM7",			/* 200 */
-	"QR_VKM8",
-	"QR_VKM9",
-	"QR_VKM10",
-	"QR_VKM11",
-	"QR_VKM12",
-	"QR_VKSPM",
-	"QR_VKCQM",
-	"QS_VKM1",
-	"QS_VKM2",
-	"QS_VKM3",			/* 210 */
-	"QS_VKM4",
-	"QS_VKM5",
-	"QS_VKM6",
-	"QS_VKM7",
-	"QS_VKM8",
-	"QS_VKM9",
-	"QS_VKM10",
-	"QS_VKM11",
-	"QS_VKM12",
-	"QS_VKSPM",		/* 220 */
-	"QS_VKCQM",
-	"QTCREC_RECORD",
+	NULL,   //"PFX_MULT_MULTIBAND",
+	NULL,   //"QR_F1",		/* 170 */
+	NULL,   //"QR_F2",
+	NULL,   //"QR_F3",
+	NULL,   //"QR_F4",
+	NULL,   //"QR_F5",
+	NULL,   //"QR_F6",		/* 175 */
+	NULL,   //"QR_F7",
+	NULL,   //"QR_F8",
+	NULL,   //"QR_F9",
+	NULL,   //"QR_F10",
+	NULL,   //"QR_F11",		/* 180 */
+	NULL,   //"QR_F12",
+	NULL,   //"QS_F1",
+	NULL,   //"QS_F2",
+	NULL,   //"QS_F3",
+	NULL,   //"QS_F4",
+	NULL,   //"QS_F5",
+	NULL,   //"QS_F6",
+	NULL,   //"QS_F7",
+	NULL,   //"QS_F8",
+	NULL,   //"QS_F9",		/* 190 */
+	NULL,   //"QS_F10",
+	NULL,   //"QS_F11",
+	NULL,   //"QS_F12",
+	NULL,   //"QR_VKM1",
+	NULL,   //"QR_VKM2",
+	NULL,   //"QR_VKM3",
+	NULL,   //"QR_VKM4",
+	NULL,   //"QR_VKM5",
+	NULL,   //"QR_VKM6",
+	NULL,   //"QR_VKM7",			/* 200 */
+	NULL,   //"QR_VKM8",
+	NULL,   //"QR_VKM9",
+	NULL,   //"QR_VKM10",
+	NULL,   //"QR_VKM11",
+	NULL,   //"QR_VKM12",
+	NULL,   //"QR_VKSPM",
+	NULL,   //"QR_VKCQM",
+	NULL,   //"QS_VKM1",
+	NULL,   //"QS_VKM2",
+	NULL,   //"QS_VKM3",			/* 210 */
+	NULL,   //"QS_VKM4",
+	NULL,   //"QS_VKM5",
+	NULL,   //"QS_VKM6",
+	NULL,   //"QS_VKM7",
+	NULL,   //"QS_VKM8",
+	NULL,   //"QS_VKM9",
+	NULL,   //"QS_VKM10",
+	NULL,   //"QS_VKM11",
+	NULL,   //"QS_VKM12",
+	NULL,   //"QS_VKSPM",		/* 220 */
+	NULL,   //"QS_VKCQM",
+	NULL,   //"QTCREC_RECORD",
 	"QTCREC_RECORD_COMMAND",
 	"EXCLUDE_MULTILIST",
-	"S&P_CALL_MSG",		/* 225 */
-	"QTC_CAP_CALLS",
-	"QTC_AUTO_FILLTIME",
-	"BMAUTOGRAB",
-	"BMAUTOADD",
-	"QTC_RECV_LAZY",		/* 230 */
-	"SPRINTMODE",
+	NULL,   //"S&P_CALL_MSG",		/* 225 */
+	NULL,   //"QTC_CAP_CALLS",
+	NULL,   //"QTC_AUTO_FILLTIME",
+	NULL,   //"BMAUTOGRAB",
+	NULL,   //"BMAUTOADD",
+	NULL,   //"QTC_RECV_LAZY",		/* 230 */
+	NULL,   //"SPRINTMODE",
 	"FLDIGI",
 	"RIGPTT",
 	"MINITEST",
 	"UNIQUE_CALL_MULTI",		/* 235 */
-	"KEYER_BACKSPACE",
+	NULL,   //"KEYER_BACKSPACE",
 	"DIGI_RIG_MODE",
-	"DKF1",				/* 238 */
-	"DKF2",
-	"DKF3",
-	"DKF4",
-	"DKF5",
-	"DKF6",
-	"DKF7",
-	"DKF8",
-	"DKF9",
-	"DKF10",
-	"DKF11",
-	"DKF12",
-	"DKCQM",			/* 250 */
-	"DKSPM",
-	"DKSPC",
-	"ALT_DK1",			/* 253 */
-	"ALT_DK2",
-	"ALT_DK3",
-	"ALT_DK4",
-	"ALT_DK5",
-	"ALT_DK6",
-	"ALT_DK7",
-	"ALT_DK8",			/* 260 */
-	"ALT_DK9",
-	"ALT_DK10",
-	"CALLMASTER",
-	"LAN_PORT",                     /* 264 */
-	"SECTION_MULT_ONCE"
+	NULL,   //"DKF1",				/* 238 */
+	NULL,   //"DKF2",
+	NULL,   //"DKF3",
+	NULL,   //"DKF4",
+	NULL,   //"DKF5",
+	NULL,   //"DKF6",
+	NULL,   //"DKF7",
+	NULL,   //"DKF8",
+	NULL,   //"DKF9",
+	NULL,   //"DKF10",
+	NULL,   //"DKF11",
+	NULL,   //"DKF12",
+	NULL,   //"DKCQM",			/* 250 */
+	NULL,   //"DKSPM",
+	NULL,   //"DKSPC",
+	NULL,   //"ALT_DK1",			/* 253 */
+	NULL,   //"ALT_DK2",
+	NULL,   //"ALT_DK3",
+	NULL,   //"ALT_DK4",
+	NULL,   //"ALT_DK5",
+	NULL,   //"ALT_DK6",
+	NULL,   //"ALT_DK7",
+	NULL,   //"ALT_DK8",			/* 260 */
+	NULL,   //"ALT_DK9",
+	NULL,   //"ALT_DK10",
+	NULL,   //"CALLMASTER",
+	NULL,   //"LAN_PORT",                     /* 264 */
+	NULL,   //"SECTION_MULT_ONCE"
     };
 
     char **fields;
@@ -621,6 +953,12 @@ int parse_logcfg(char *inputbuffer) {
 
     if (g_strv_length(fields) == 2) {   /* strip leading whitespace */
 	g_strchug(fields[1]);		/* from parameters */
+    }
+
+    int result = apply_config(fields[0], fields[1], logcfg_configs);
+    if (result != PARSE_NO_MATCH) { // we got a match
+	g_strfreev(fields);
+	return result;
     }
 
     g_strlcpy(teststring, fields[0], sizeof(teststring));
@@ -1143,8 +1481,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char country_list_raw[50] = ""; 	/* use only first
-						   	COUNTRY_LIST
-						   	definition */
+				   COUNTRY_LIST
+				   definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
@@ -1542,8 +1880,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char cont_multiplier_list[50] = ""; 	/* use only first
-						   	CONTINENT_LIST
-						   	definition */
+				   CONTINENT_LIST
+				   definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
@@ -1699,7 +2037,7 @@ int parse_logcfg(char *inputbuffer) {
 	    setcontest();
 	    break;
 	}
-	case 169: {		/* wpx style prefixes mult */
+	case 169: {             /* wpx style prefixes mult */
 	    pfxmultab = 1;	/* enable pfx on all band */
 	    break;
 	}
@@ -2042,7 +2380,7 @@ void KeywordNotSupported(char *keyword) {
 }
 
 /** Complain about missing parameter */
-void ParameterNeeded(char *keyword) {
+void ParameterNeeded(const char *keyword) {
     char msgbuffer[192];
     sprintf(msgbuffer,
 	    "Keyword '%s' must be followed by an parameter ('=....'). See man page.\n",
@@ -2051,10 +2389,18 @@ void ParameterNeeded(char *keyword) {
 }
 
 /** Complain about wrong parameter format */
-void WrongFormat(char *keyword) {
+void WrongFormat(const char *keyword) {
     char msgbuffer[192];
     sprintf(msgbuffer,
 	    "Wrong parameter format for keyword '%s'. See man page.\n",
 	    keyword);
+    Complain(msgbuffer);
+}
+
+void WrongFormat_details(const char *keyword, const char *details) {
+    char msgbuffer[192];
+    sprintf(msgbuffer,
+	    "Wrong parameter for keyword '%s': %s.\n",
+	    keyword, details);
     Complain(msgbuffer);
 }
