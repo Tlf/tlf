@@ -62,7 +62,7 @@ void makelogline(void) {
     int points;
 
     /* restart band timer if qso on new band */
-    if (wpx == 1 || pfxmult == 1) {		// 10 minute timer
+    if (wpx == 1) {		// 10 minute timer
 	if (lastbandinx != bandinx) {
 	    lastbandinx = bandinx;
 	    minute_timer = 600;	// 10 minutes

@@ -378,7 +378,7 @@ void showscore(void) {
 	    mvprintw(6, 55, "Q/M %.1f ", p);
     }
 
-    if (wpx == 1 || pfxmult == 1) {
+    if (wpx == 1) {
 	if (minute_timer > 0)
 	    mvprintw(6, 75, "%d", minute_timer);
     }
