@@ -131,7 +131,6 @@ int get_nr_of_points() {
 /* get total number of multis */
 int get_nr_of_mults() {
     extern float fixedmult;
-    extern int sprint;
     extern int multlist;
     extern int multscore[];
     extern int bandweight_multis[NBANDS];
@@ -156,7 +155,7 @@ int get_nr_of_mults() {
 		       bandweight_multis[bi_normal[n]]);
     }
 
-    if (sprint == 1) {
+    if (IS_CONTEST(SPRINT)) {
 	/* no multis used */
 	return 1;
     } else if (arrlss == 1) {
@@ -245,7 +244,6 @@ void showscore(void) {
     extern int totalmults;
     extern int qsonum;
     extern int total;
-    extern int sprint;
     extern int bandinx;
     extern int multscore[];
     extern int serial_section_mult;
@@ -348,7 +346,7 @@ void showscore(void) {
     }
 
     /* show score summary */
-    if (sprint == 1) {
+    if (IS_CONTEST(SPRINT)) {
 
 	mvprintw(5, START_COL, "Score: %d", get_nr_of_points());
     } else if (focm == 1) {

@@ -79,7 +79,6 @@ int getexchange(void) {
     extern int arrl_fd;
     extern int exchange_serial;
     extern int countrynr;
-    extern int sprint;
     extern int trxmode;
     extern int recall_mult;
     extern int arrlss;
@@ -414,7 +413,7 @@ int getexchange(void) {
 
 	    }
 
-	    if (sprint == 1) {
+	    if (IS_CONTEST(SPRINT)) {
 
 		if ((comment[1] == ' ') && (comment[0] != ' ')) {
 

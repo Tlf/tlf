@@ -58,6 +58,11 @@ contest_config_t config_cqww = {
     .name = "CQWW"
 };
 
+contest_config_t config_sprint = {
+    .id = SPRINT,
+    .name = "SPRINT"
+};
+
 
 /* table with pointers to all supported contests */
 contest_config_t *contest_configs[] = {
@@ -65,6 +70,7 @@ contest_config_t *contest_configs[] = {
     &config_dxped,
     &config_wpx,
     &config_cqww,
+    &config_sprint,
 };
 
 #define NR_CONTESTS (sizeof(contest_configs)/sizeof(contest_config_t*))
@@ -86,7 +92,6 @@ void setcontest(char *name) {
 
     extern int focm;
     extern int cqww;
-    extern int sprint;
     extern int arrldx_usa;
     extern int dx_arrlsections;
     extern int arrl_fd;
@@ -131,7 +136,6 @@ void setcontest(char *name) {
     char ua9call[] = "UA9AA";
 
     cqww = 0;
-    sprint = 0;
     arrldx_usa = 0;
     arrl_fd = 0;
     pacc_pa_flg = 0;
@@ -164,8 +168,7 @@ void setcontest(char *name) {
 	recall_mult = 1;
     }
 
-    if (strcmp(whichcontest, "sprint") == 0) {
-	sprint = 1;
+    if (IS_CONTEST(SPRINT)) {
 	one_point = 1;
     }
 
