@@ -57,7 +57,7 @@ AS_IF([test "x$PKG_CONFIG" = x],
 
 dnl From /usr/share/aclocal/glib-2.0.m4 on Debian 8.0.
 dnl Provides compilation testing of the found glib library for suitability.
-AM_PATH_GLIB_2_0(2.54.0,,[AC_MSG_ERROR([GLib 2.54 or later not found])])
+AM_PATH_GLIB_2_0(2.40.0,,[AC_MSG_ERROR([GLib 2.40 or later not found])])
 
 dnl check for cmocka test framework and warn if not installed
 have_cmocka="yes"
