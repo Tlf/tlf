@@ -1,3 +1,5 @@
+dist: bionic
+
 language: C
 
 before_install:
