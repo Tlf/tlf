@@ -14,8 +14,7 @@ int getctynr() {
     return 42;
 }
 
-void foc_init() {
-}
+contest_config_t config_focm;
 
 int setup_default(void **state) {
     char filename[100];

@@ -73,7 +73,6 @@ int arrldx_usa = 0;
 int arrl_fd = 0;
 int arrlss = 0;
 int pacc_pa_flg = 0;
-int focm = 0;
 
 int universal = 0;
 int addcallarea;

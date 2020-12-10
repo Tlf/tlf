@@ -19,8 +19,7 @@ int getpfxindex(char *checkcallptr, char **normalized_call);
 
 extern char countrylist[255][6];
 
-void foc_init() {
-}
+contest_config_t config_focm;
 
 int setup_default(void **state) {
     char filename[100];

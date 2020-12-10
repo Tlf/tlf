@@ -77,6 +77,7 @@ contest_config_t *contest_configs[] = {
     &config_cqww,
     &config_sprint,
     &config_stewperry,
+    &config_focm,
 };
 
 #define NR_CONTESTS (sizeof(contest_configs)/sizeof(contest_config_t*))
@@ -96,7 +97,6 @@ contest_config_t *lookup_contest(char *name) {
 /* setup standard configuration for contest 'name' */
 void setcontest(char *name) {
 
-    extern int focm;
     extern int cqww;
     extern int arrldx_usa;
     extern int dx_arrlsections;
@@ -144,7 +144,6 @@ void setcontest(char *name) {
     arrldx_usa = 0;
     arrl_fd = 0;
     pacc_pa_flg = 0;
-    focm = 0;
     universal = 0;
     iscontest = true;
     showscore_flag = 1;
@@ -217,10 +216,6 @@ void setcontest(char *name) {
 	vk_cty = getctynr(vkcall);
 	zs_cty = getctynr(zscall);
 	ua9_cty = getctynr(ua9call);
-    }
-
-    if (strcmp(whichcontest, "focmarathon") == 0) {
-	foc_init();
     }
 
     if (strcmp(whichcontest, "other") == 0) {

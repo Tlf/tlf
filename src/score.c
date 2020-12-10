@@ -281,7 +281,6 @@ int score() {
     extern int dupe;
     extern int band_score[NBANDS];
     extern int bandinx;
-    extern int focm;
     extern int countrynr;
     extern char continent[];
     extern char comment[];
@@ -308,7 +307,7 @@ int score() {
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	band_score[bandinx]--;
 
-    if (focm == 1) {
+    if (IS_CONTEST(FOCMARATHON)) {
 	points = foc_score(hiscall);
 
 	return points;

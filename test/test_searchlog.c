@@ -89,8 +89,7 @@ int getctydata(char *checkcallptr) {
 }
 
 
-void foc_init() {
-}
+contest_config_t config_focm;
 
 int getctynr(void) {
     return 42;

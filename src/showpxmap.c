@@ -29,6 +29,7 @@
 #include "focm.h"
 #include "changepars.h"
 #include "keystroke_names.h"
+#include "setcontest.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -41,8 +42,6 @@ void show_mults(void) {
     extern int bandinx;
     extern int cqww;
 
-    extern int focm;
-
     int i, j, k, l, bandmask = 0;
     static char prefix[5];
     static char zonecmp[3] = "";
@@ -50,7 +49,7 @@ void show_mults(void) {
 
     int iMax = dxcc_count();
 
-    if (focm == 1) {
+    if (IS_CONTEST(FOCMARATHON)) {
 	foc_show_cty();
 	return;
     }

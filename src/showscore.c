@@ -119,9 +119,6 @@ void display_header(int *bi) {
 }
 
 
-extern int focm;
-extern int foc_get_nr_of_points();
-
 /* get total number of points */
 int get_nr_of_points() {
     return total;
@@ -218,7 +215,7 @@ int get_nr_of_mults() {
 
 /* calculate total score */
 int get_total_score() {
-    if (focm == 1)
+    if (IS_CONTEST(FOCMARATHON))
 	return foc_total_score();
     else
 	return get_nr_of_points() * get_nr_of_mults();
@@ -349,7 +346,7 @@ void showscore(void) {
     if (IS_CONTEST(SPRINT)) {
 
 	mvprintw(5, START_COL, "Score: %d", get_nr_of_points());
-    } else if (focm == 1) {
+    } else if (IS_CONTEST(FOCMARATHON)) {
 	foc_show_scoring(START_COL);
     } else if (IS_CONTEST(STEWPERRY)) {
 	/* no normal multis, but may have POWERMULT set (fixedmult != 0.) */
