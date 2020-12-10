@@ -281,7 +281,7 @@ int readcalls(void) {
 	    // get points
 	    total = total + log_get_points(inputbuffer);
 
-	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
+	    if (IS_CONTEST(CQWW) || (itumult == 1) || (wazmult == 1)) {
 		// get the zone
 		z = zone_nr(inputbuffer + 54);
 	    }
@@ -375,7 +375,7 @@ int readcalls(void) {
 
 	    band_score[bandindex]++;	/*  qso counter  per band */
 
-	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1))
+	    if (IS_CONTEST(CQWW) || (itumult == 1) || (wazmult == 1))
 		zones[z] |= inxes[bandindex];
 
 	    if (pfxnumcntidx < 0) {
@@ -410,13 +410,13 @@ int readcalls(void) {
 	}
     }
 
-    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
+    if (IS_CONTEST(CQWW) || (itumult == 1) || (wazmult == 1)) {
 	for (int n = 1; n < MAX_ZONES; n++) {
 	    count_contest_bands(zones[n], zonescore);
 	}
     }
 
-    if (cqww == 1) {
+    if (IS_CONTEST(CQWW)) {
 	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
 	    count_contest_bands(countries[n], countryscore);
 	}

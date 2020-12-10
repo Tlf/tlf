@@ -58,7 +58,6 @@ void logit(void) {
     extern cqmode_t cqmode;
     extern char ph_message[14][80];
     extern char comment[];
-    extern int cqww;
     extern char cqzone[];
     extern char itustr[];
     extern int defer_store;
@@ -119,7 +118,7 @@ void logit(void) {
 
 		    set_simulator_state(FINAL);
 
-		    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+		    if (IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1)) {
 
 			if (recall_exchange() == -1) {
 			    if (itumult == 1)
@@ -142,7 +141,7 @@ void logit(void) {
 		if ((cqmode == S_P) && iscontest
 			&& (defer_store == 0)) {	/* S&P mode */
 
-		    if (cqww == 1) {
+		    if (IS_CONTEST(CQWW)) {
 			if (strlen(comment) == 0 && recall_exchange() == -1)
 			    strcpy(comment, cqzone);	/* fill in the zone */
 

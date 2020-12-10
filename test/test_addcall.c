@@ -56,7 +56,6 @@ int setup_default(void **state) {
     bandinx = BANDINDEX_10;
 
     setcontest("CQWW");
-    cqww = 1;
 
     pfxmult = 0;
     dupe = 0;

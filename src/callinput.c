@@ -124,7 +124,6 @@ int callinput(void) {
     extern int zonedisplay;
     extern int showscore_flag;
     extern int searchflg;
-    extern int cqww;
     extern char cqzone[];
     extern char ituzone[];
     extern int ctcomp;
@@ -307,7 +306,7 @@ int callinput(void) {
 		} else {
 
 		    if (strlen(hiscall) > 2) {
-			if (((cqww == 1) || (wazmult == 1))
+			if ((IS_CONTEST(CQWW) || (wazmult == 1))
 				&& (*comment == '\0'))
 			    strcpy(comment, cqzone);
 
@@ -792,7 +791,7 @@ int callinput(void) {
 
 	    // Alt-z (M-z), show zones worked.
 	    case ALT_Z: {
-		if (cqww == 1) {
+		if (IS_CONTEST(CQWW)) {
 		    if (zonedisplay == 0)
 			zonedisplay = 1;
 		    else {

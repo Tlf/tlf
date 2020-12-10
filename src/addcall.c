@@ -95,7 +95,7 @@ int addcall(void) {
     if (strlen(comment) >= 1) {		/* remember last exchange */
 	strcpy(worked[i].exchange, comment);
 
-	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+	if (IS_CONTEST(CQWW) || wazmult == 1 || itumult == 1) {
 	    /*
 	    			if (strlen(zone_fix) > 1) {
 	    				z = zone_nr(zone_fix);
@@ -281,7 +281,7 @@ int addcall2(void) {
     if (strlen(comment) >= 1) {
 //              strcpy(worked[i].exchange,comment);
 
-	if ((cqww == 1) || (wazmult == 1) || (itumult == 1))
+	if (IS_CONTEST(CQWW) || wazmult == 1 || itumult == 1)
 	    z = zone_nr(comment);
     }
 

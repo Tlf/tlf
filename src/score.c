@@ -284,7 +284,6 @@ int score() {
     extern int countrynr;
     extern char continent[];
     extern char comment[];
-    extern int cqww;
     extern int arrl_fd;
     extern int arrldx_usa;
     extern int w_cty;
@@ -354,7 +353,7 @@ int score() {
 	}
     }				// end wpx
 
-    if (cqww == 1) {
+    if (IS_CONTEST(CQWW)) {
 
 	if (countrynr == 0) {
 	    zone = atoi(comment);

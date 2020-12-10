@@ -82,7 +82,10 @@ contest_config_t *contest_configs[] = {
 
 #define NR_CONTESTS (sizeof(contest_configs)/sizeof(contest_config_t*))
 
-/* lookup contest config by name in config table */
+/** lookup contest config by name in config table
+ *
+ * ignore configs where .name is not set
+ */
 contest_config_t *lookup_contest(char *name) {
     for (int i = 0; i < NR_CONTESTS; i++) {
 	if (contest_configs[i]->name != NULL) {
@@ -94,10 +97,9 @@ contest_config_t *lookup_contest(char *name) {
     return &config_unknown;
 }
 
-/* setup standard configuration for contest 'name' */
+/** setup standard configuration for contest 'name' */
 void setcontest(char *name) {
 
-    extern int cqww;
     extern int arrldx_usa;
     extern int dx_arrlsections;
     extern int arrl_fd;
@@ -140,7 +142,6 @@ void setcontest(char *name) {
     char zscall[] = "ZS6AA";
     char ua9call[] = "UA9AA";
 
-    cqww = 0;
     arrldx_usa = 0;
     arrl_fd = 0;
     pacc_pa_flg = 0;
@@ -163,8 +164,7 @@ void setcontest(char *name) {
     contest = lookup_contest(name);
 
 
-    if (strcmp(whichcontest, "cqww") == 0) {
-	cqww = 1;
+    if (IS_CONTEST(CQWW)) {
 	recall_mult = 1;
     }
 

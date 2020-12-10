@@ -28,7 +28,7 @@ extern int nr_bands;
 extern int searchflg;
 extern int use_part;
 extern int partials;
-extern int cqww;
+//extern int cqww;
 extern int mixedmode;
 
 extern char zone_export[];
@@ -379,7 +379,7 @@ void test_displayPartials(void **state) {
  * - can be picked up from previous qso if we have full match
  * - or overwritten in exchange field */
 void test_ZoneFromCountry(void **state) {
-    cqww = 1;
+    setcontest("cqww");
     strcpy(zone_export, "15");
     strcpy(hiscall, "OH2");
     filterLog();
@@ -387,7 +387,7 @@ void test_ZoneFromCountry(void **state) {
 }
 
 void test_ZoneFromExchange(void **state) {
-    cqww = 1;
+    setcontest("cqww");
     strcpy(zone_fix, "14");
     strcpy(zone_export, "15");
     strcpy(hiscall, "OH2");
@@ -396,8 +396,8 @@ void test_ZoneFromExchange(void **state) {
 }
 
 void test_ZoneFromLog_mixedmode(void **state) {
+    setcontest("cqww");
     mixedmode = 1;
-    cqww = 1;
     strcpy(zone_export, "14");
     strcpy(hiscall, "K4D");
     filterLog();
@@ -405,7 +405,7 @@ void test_ZoneFromLog_mixedmode(void **state) {
 }
 
 void test_ZoneFromLog(void **state) {
-    cqww = 1;
+    setcontest("cqww");
     strcpy(zone_export, "14");
     strcpy(hiscall, "SP9");
     filterLog();

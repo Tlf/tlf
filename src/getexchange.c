@@ -72,7 +72,6 @@ int getexchange(void) {
     extern char ph_message[14][80];
     extern char hiscall[];
     extern char qsonrstr[];
-    extern int cqww;
     extern int pacc_pa_flg;
     extern int arrldx_usa;
     extern int arrl_fd;
@@ -122,7 +121,7 @@ int getexchange(void) {
     if (arrl_fd == 1)
 	recall_exchange();
 
-    if (((cqww == 1) || (wazmult == 1) || (itumult == 1))
+    if ((IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1))
 	    && (*comment == '\0') && (strlen(hiscall) != 0)) {
 	if (itumult == 1)
 	    strcpy(comment, ituzone);
@@ -366,7 +365,7 @@ int getexchange(void) {
 		(sectn_mult == 1) ||
 		(sectn_mult_once == 1) ||
 		(arrlss == 1) ||
-		(cqww == 1) ||
+		IS_CONTEST(CQWW) ||
 		IS_CONTEST(STEWPERRY)) {
 
 	    x = checkexchange(x);
@@ -484,7 +483,7 @@ int getexchange(void) {
 		}
 		refreshp();
 		break;
-	    } else if (cqww == 1 && trxmode == DIGIMODE && ((countrynr == w_cty)
+	    } else if (IS_CONTEST(CQWW) && trxmode == DIGIMODE && ((countrynr == w_cty)
 		       || (countrynr == ve_cty))) {
 		if (strlen(comment) < 5) {
 		    mvprintw(13, 54, "state/prov?");
@@ -529,7 +528,6 @@ int checkexchange(int x) {
 
     extern char comment[];
     extern char ssexchange[];
-    extern int cqww;
     extern int arrlss;
     extern char section[];
     extern char callupdate[];
@@ -666,7 +664,7 @@ int checkexchange(int x) {
     }
 
     // -----------------------------------cqww-----------------------
-    if (cqww == 1) {
+    if (IS_CONTEST(CQWW)) {
 
 	s = atoi(comment);
 	snprintf(zone, sizeof(zone), "%02d", s);

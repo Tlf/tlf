@@ -164,7 +164,7 @@ void test_wpx(void **state) {
 
 
 void test_cqww(void **state) {
-    cqww = 1;
+    setcontest("cqww");
 
     countrynr = my.countrynr;
     check_points(0);

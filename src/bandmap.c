@@ -31,6 +31,7 @@
 #include "qtcvars.h"		// Includes globalvars.h
 #include "searchcallarray.h"
 #include "searchlog.h"
+#include "setcontest.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "getctydata.h"
@@ -343,7 +344,7 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 
 	lastexch = NULL;
 	dxccindex = getctynr(entry->call);
-	if (cqww == 1) {
+	if (IS_CONTEST(CQWW)) {
 	    // check if the callsign exists in worked list
 	    wi = searchcallarray(call);
 	    if (wi >= 0) {
@@ -448,7 +449,7 @@ bool bm_ismulti(char *call, spot *data, int band) {
 	return false;   // no data
     }
 
-    if (cqww == 1) {
+    if (IS_CONTEST(CQWW)) {
 	if ((zones[data->cqzone] & inxes[band]) == 0
 		|| (countries[data->ctynr] & inxes[band]) == 0) {
 	    return true;

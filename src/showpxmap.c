@@ -40,7 +40,6 @@ void show_mults(void) {
 
     extern int countries[MAX_DATALINES];
     extern int bandinx;
-    extern int cqww;
 
     int i, j, k, l, bandmask = 0;
     static char prefix[5];
@@ -54,7 +53,7 @@ void show_mults(void) {
 	return;
     }
 
-    if (cqww == 1) {
+    if (IS_CONTEST(CQWW)) {
 
 	mvprintw(12, 29, "E,A,F,N,S,O");
 

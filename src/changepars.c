@@ -54,6 +54,7 @@
 #include "rules.h"
 #include "scroll_log.h"
 #include "searchlog.h"
+#include "setcontest.h"
 #include "sendbuf.h"
 #include "set_tone.h"
 #include "show_help.h"
@@ -428,7 +429,7 @@ int changepars(void) {
 	    break;
 	}
 	case 34: {		/* SIMULATOR  */
-	    if (cqww != 1) {
+	    if (!IS_CONTEST(CQWW)) {
 		TLF_LOG_INFO(
 		    "Simulator mode is only supported for CQWW contest!");
 		break;

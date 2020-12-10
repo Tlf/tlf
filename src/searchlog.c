@@ -504,7 +504,7 @@ int getZone() {
     if (strlen(hiscall) == 2)
 	z1 = 0;
 
-    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+    if (IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1)) {
 	for (int i = 0; i < srch_index; i++) {
 
 	    /* get zone nr from previous QSO */
@@ -563,7 +563,7 @@ void displayWorkedZonesCountries(int z) {
 	}
     }
 
-    if (cqww == 1 || !iscontest || pacc_pa_flg == 1) {
+    if (IS_CONTEST(CQWW) || !iscontest || pacc_pa_flg == 1) {
 
 	if ((countries[countrynr] & BAND10) != 0) {
 	    mvwprintw(search_win, 1, 36, "C");
@@ -604,7 +604,7 @@ void displayWorkedZonesCountries(int z) {
 	    }
 	}
     }
-    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+    if (IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1)) {
 	if ((zones[z] & BAND10) != 0) {
 	    mvwprintw(search_win, 1, 37, "Z");
 	}
@@ -713,7 +713,6 @@ void searchlog() {
     extern int searchflg;
     extern int dupe;
     extern int partials;
-    extern int cqww;
     extern int countrynr;
     extern int arrlss;
     extern char pxstr[];

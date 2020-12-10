@@ -37,6 +37,7 @@
 #include "printcall.h"
 #include "qsonr_to_str.h"
 #include "searchlog.h"		// Includes glib.h
+#include "setcontest.h"
 #include "showscore.h"
 #include "time_update.h"
 #include "tlf_curses.h"
@@ -82,7 +83,6 @@ void clear_display(void) {
     extern int bandinx;
     extern int trxmode;
     extern char qsonrstr[];
-    extern int cqww;
     extern int arrldx_usa;
     extern char comment[];
     extern int searchflg;
@@ -145,7 +145,7 @@ void clear_display(void) {
 	mvaddstr(12, 49, recvd_rst);
     }
 
-    if (cqww == 1) {
+    if (IS_CONTEST(CQWW)) {
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 	mvaddstr(12, 54, comment);
     }

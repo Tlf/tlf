@@ -269,7 +269,7 @@ void prepare_specific_part(void) {
 	strncat(logline4, comment, 22);
 	section[0] = '\0';
 
-    } else if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+    } else if (IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1)) {
 	//-------------------------cqww----------------
 	/*
 		if (strlen(zone_fix) > 1) {
@@ -277,7 +277,7 @@ void prepare_specific_part(void) {
 		} else
 			strcat (logline4, zone_export);
 	*/
-	if (trxmode == DIGIMODE && cqww == 1 && strlen(comment) < 5) {
+	if (trxmode == DIGIMODE && IS_CONTEST(CQWW) && strlen(comment) < 5) {
 	    comment[2] = ' ';
 	    comment[3] = 'D';
 	    comment[4] = 'X';
@@ -309,7 +309,7 @@ void prepare_specific_part(void) {
 	fillto(73);
     }
 
-    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+    if (IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1)) {
 	/* ------------cqww --------------------- */
 	logline4[68] = '\0';
 
