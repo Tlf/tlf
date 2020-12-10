@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "bandmap.h"
 #include "change_rst.h"
@@ -227,26 +228,30 @@ static int parse_int(const char *string, gint64 min, gint64 max, int *result) {
     gchar *str = g_strdup(string);
     g_strstrip(str);
 
-    gint64 value;
-    GError *error = NULL;
-    gboolean ok = g_ascii_string_to_signed(str, 10, min, max, &value, &error);
+    if (str[0] == 0) {  // empty input
+	g_free(str);
+	return PARSE_INVALID_INTEGER;
+    }
+
+    gchar *end_ptr = NULL;
+    errno = 0;
+    gint64 value = g_ascii_strtoll(str, &end_ptr, 10);
+
+    if ((errno != 0 && errno != ERANGE)
+	    || end_ptr == NULL || *end_ptr != 0) {
+
+	g_free(str);
+	return PARSE_INVALID_INTEGER;
+    }
 
     g_free(str);
 
-    if (ok) {
-	*result = (int)value;
-	return PARSE_OK;
+    if (errno == ERANGE || value < min || value > max) {
+	return PARSE_INTEGER_OUT_OF_RANGE;
     }
 
-    int rc = PARSE_INVALID_INTEGER;
-    if (error != NULL) {
-	if (error->code == G_NUMBER_PARSER_ERROR_OUT_OF_BOUNDS) {
-	    rc = PARSE_INTEGER_OUT_OF_RANGE;
-	}
-	g_free(error);
-    }
-
-    return rc;
+    *result = (int)value;
+    return PARSE_OK;
 }
 
 int cfg_bool_const(const cfg_arg_t arg) {
@@ -1481,8 +1486,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char country_list_raw[50] = ""; 	/* use only first
-				   COUNTRY_LIST
-				   definition */
+		       COUNTRY_LIST
+		       definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
@@ -1880,8 +1885,8 @@ int parse_logcfg(char *inputbuffer) {
 
 	    int counter = 0;
 	    static char cont_multiplier_list[50] = ""; 	/* use only first
-				   CONTINENT_LIST
-				   definition */
+		       CONTINENT_LIST
+		       definition */
 	    char temp_buffer[255] = "";
 	    char buffer[255] = "";
 	    FILE *fp;
