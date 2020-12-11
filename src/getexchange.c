@@ -77,7 +77,6 @@ int getexchange(void) {
     extern int countrynr;
     extern int trxmode;
     extern int recall_mult;
-    extern int arrlss;
     extern int lan_active;
     extern char lastqsonr[];
     extern char qsonrstr[];
@@ -362,7 +361,7 @@ int getexchange(void) {
 		(dx_arrlsections == 1) ||
 		(sectn_mult == 1) ||
 		(sectn_mult_once == 1) ||
-		(arrlss == 1) ||
+		IS_CONTEST(ARRL_SS) ||
 		IS_CONTEST(CQWW) ||
 		IS_CONTEST(STEWPERRY)) {
 
@@ -448,7 +447,7 @@ int getexchange(void) {
 
 	    }
 
-	    if ((arrlss == 1) && (x != TAB) && (strlen(section) < 2)) {
+	    if (IS_CONTEST(ARRL_SS) && (x != TAB) && (strlen(section) < 2)) {
 		mvprintw(13, 54, "section?");
 		mvprintw(12, 54, comment);
 		x = 0;
@@ -526,7 +525,6 @@ int checkexchange(int x) {
 
     extern char comment[];
     extern char ssexchange[];
-    extern int arrlss;
     extern char section[];
     extern char callupdate[];
     extern char hiscall[];
@@ -724,7 +722,7 @@ int checkexchange(int x) {
     }
 
     // ---------------------------arrls------------------------------
-    if (arrlss == 1) {
+    if (IS_CONTEST(ARRL_SS)) {
 
 	// get serial nr.
 

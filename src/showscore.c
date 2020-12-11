@@ -155,7 +155,7 @@ int get_nr_of_mults() {
     if (IS_CONTEST(SPRINT)) {
 	/* no multis used */
 	return 1;
-    } else if (arrlss == 1) {
+    } else if (IS_CONTEST(ARRL_SS)) {
 
 	return nr_multis;
     } else if (IS_CONTEST(CQWW)) {
@@ -178,7 +178,7 @@ int get_nr_of_mults() {
     } else if (universal == 1 && country_mult == 1) {
 
 	return totalcountries;
-    } else if (universal == 1 && multlist == 1 && arrlss != 1) {
+    } else if (universal == 1 && multlist == 1 && !IS_CONTEST(ARRL_SS)) {
 
 	return totalmults ;
     } else if (pacc_pa_flg == 1) {
@@ -229,7 +229,6 @@ int get_total_score() {
 void showscore(void) {
 
     extern int showscore_flag;
-    extern int arrlss;
     extern int pacc_pa_flg;
     extern int universal;
     extern int country_mult;

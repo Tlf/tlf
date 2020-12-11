@@ -100,7 +100,6 @@ bool iscontest = false;		/* false =  General,  true  = contest */
 contest_config_t *contest = &config_qso;	/* contest configuration */
 
 /* predefined contests */
-int arrlss = 0;
 int pacc_pa_flg = 0;
 int sprint_mode = 0;
 int minitest = 0;	/**< if set, length of minitest period in seconds */

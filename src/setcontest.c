@@ -68,6 +68,11 @@ contest_config_t config_arrldx_usa = {
     .name = "ARRLDX_USA"
 };
 
+contest_config_t config_arrl_ss = {
+    .id = ARRL_SS,
+    .name = "ARRL_SS"
+};
+
 contest_config_t config_arrl_fd = {
     .id = ARRL_FD,
     .name = "ARRL_FD"
@@ -87,6 +92,7 @@ contest_config_t *contest_configs[] = {
     &config_cqww,
     &config_sprint,
     &config_arrldx_usa,
+    &config_arrl_ss,
     &config_arrl_fd,
     &config_stewperry,
     &config_focm,
@@ -113,7 +119,6 @@ contest_config_t *lookup_contest(char *name) {
 void setcontest(char *name) {
 
     extern int dx_arrlsections;
-    extern int arrlss;
     extern int multlist;
     extern int pacc_pa_flg;
     extern int universal;
@@ -194,13 +199,11 @@ void setcontest(char *name) {
 	sectn_mult = 1;
     }
 
-    if (strcmp(whichcontest, "arrl_ss") == 0) {
-	arrlss = 1;
+    if (IS_CONTEST(ARRL_SS)) {
 	two_point = 1;
 	qso_once = true;
 	exchange_serial = 1;
 	multlist = 1;
-	recall_mult = 0;
 //      sectn_mult = 1;
 	noleadingzeros = 1;
     }

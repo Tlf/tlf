@@ -714,7 +714,6 @@ void searchlog() {
     extern int dupe;
     extern int partials;
     extern int countrynr;
-    extern int arrlss;
     extern char pxstr[];
     extern char hiscall[];
     extern char zone_export[];
@@ -754,7 +753,7 @@ void searchlog() {
 	}
 
 	/* show needed sections for ARRL_Sweep Stake*/
-	if (dupe == NODUPE && arrlss == 1)
+	if (dupe == NODUPE && IS_CONTEST(ARRL_SS))
 	    show_needed_sections();
 
 	if (dupe == ISDUPE) {
@@ -821,7 +820,7 @@ int load_callmaster(void) {
 
 	char *call = g_ascii_strup(s_inputbuffer, 11);
 
-	if (arrlss) {
+	if (IS_CONTEST(ARRL_SS)) {
 	    /* keep only NA stations */
 	    if (strchr("AKWVCN", call[0]) == NULL) {
 		g_free(call);
@@ -848,14 +847,13 @@ int load_callmaster(void) {
 
 /*  --------------------------------------------------------------  */
 void show_needed_sections(void) {
-    extern int arrlss;
     extern int nr_multis;
     extern mults_t multis[MAX_MULTS];
 
     int j, vert, hor, cnt, found;
     char mprint[50];
 
-    if (arrlss == 1) {
+    if (IS_CONTEST(ARRL_SS)) {
 	cnt = 0;
 
 	wattron(search_win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));

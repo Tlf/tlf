@@ -155,7 +155,7 @@ bool check_veto() {
 char *get_multi_from_line(char *logline) {
     char *multbuffer = g_malloc(20);
 
-    if (arrlss == 1) {
+    if (IS_CONTEST(ARRL_SS)) {
 
 	if (logline[63] == ' ')
 	    g_strlcpy(multbuffer, logline + 64, 4);
@@ -289,7 +289,7 @@ int readcalls(void) {
 	    if (wysiwyg_once == 1 ||
 		    wysiwyg_multi == 1 ||
 		    unique_call_multi != 0 ||
-		    arrlss == 1 ||
+		    IS_CONTEST(ARRL_SS) ||
 		    serial_section_mult == 1 ||
 		    serial_grid4_mult == 1 ||
 		    sectn_mult == 1 ||

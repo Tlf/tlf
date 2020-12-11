@@ -123,7 +123,6 @@ int setup_default(void **state) {
     showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
 
     contest = &config_qso;
-    arrlss = 0;
     iscontest = false;
 
     search_win = NULL;
@@ -207,8 +206,8 @@ void test_callmaster_ok_spaces(void **state) {
 }
 
 void test_callmaster_ok_arrlss(void **state) {
+    setcontest("arrl_ss");
     write_callmaster("callmaster", "# data\nA1AA\nG0CC\nN2BB\n\n");
-    arrlss = 1;
     int n = load_callmaster();
     assert_int_equal(n, 2);
     assert_string_equal(CALLMASTERARRAY(0), "A1AA");

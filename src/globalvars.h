@@ -44,7 +44,6 @@ extern char hiscall[20];
 extern int total;
 extern int band_score[NBANDS];		// QSO/band
 extern int zones[MAX_ZONES];
-extern int arrlss;
 extern int serial_section_mult;
 extern int serial_grid4_mult;
 extern int sectn_mult;

@@ -240,7 +240,7 @@ void prepare_specific_part(void) {
     char grid[7] = "";
     int i;
 
-    if (arrlss == 1) {
+    if (IS_CONTEST(ARRL_SS)) {
 	// ----------------------------arrlss----------------
 	strncat(logline4, ssexchange, 22);
 	section[0] = '\0';

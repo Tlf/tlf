@@ -778,7 +778,6 @@ void networkinfo(void) {
 
 void multiplierinfo(void) {
 
-    extern int arrlss;
     extern int serial_section_mult;
     extern int sectn_mult;
     extern mults_t multis[MAX_MULTS];
@@ -789,7 +788,7 @@ void multiplierinfo(void) {
 
     wipe_display();
 
-    if (arrlss == 1) {
+    if (IS_CONTEST(ARRL_SS)) {
 	int attributes;
 	char chmult[6];
 	char ch2mult[6];
@@ -832,7 +831,7 @@ void multiplierinfo(void) {
     }
 
     if (serial_section_mult == 1 || sectn_mult_once
-	    || (sectn_mult == 1 && arrlss != 1)) {
+	    || (sectn_mult == 1 && !IS_CONTEST(ARRL_SS))) {
 	char *tmp;
 	int worked_at;
 

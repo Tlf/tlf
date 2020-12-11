@@ -68,7 +68,6 @@ bool iscontest = false;		/* false =  General,  true  = contest */
 contest_config_t *contest;	/* contest configuration */
 
 /* predefined contests */
-int arrlss = 0;
 int pacc_pa_flg = 0;
 
 int universal = 0;
