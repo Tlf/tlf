@@ -164,7 +164,7 @@ int get_nr_of_mults() {
     } else if (IS_CONTEST(ARRLDX_USA)) {
 
 	return totalcountries;
-    } else if (arrl_fd == 1) {
+    } else if (IS_CONTEST(ARRL_FD)) {
 	/* arrl mults are always integers */
 	int mult = (int)floor(fixedmult + 0.5); 	/* round to nearest integer */
 	if (mult > 0) {
@@ -229,7 +229,6 @@ int get_total_score() {
 void showscore(void) {
 
     extern int showscore_flag;
-    extern int arrl_fd;
     extern int arrlss;
     extern int pacc_pa_flg;
     extern int universal;

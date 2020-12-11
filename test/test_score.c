@@ -184,7 +184,7 @@ void test_cqww(void **state) {
 }
 
 void test_arrl_fd(void **state) {
-    arrl_fd = 1;
+    setcontest("arrl_fd");
 
     trxmode = CWMODE;
     check_points(2);

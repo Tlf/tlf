@@ -73,7 +73,6 @@ int getexchange(void) {
     extern char hiscall[];
     extern char qsonrstr[];
     extern int pacc_pa_flg;
-    extern int arrl_fd;
     extern int exchange_serial;
     extern int countrynr;
     extern int trxmode;
@@ -117,7 +116,7 @@ int getexchange(void) {
     if (IS_CONTEST(ARRLDX_USA) && trxmode != CWMODE)
 	recall_exchange();
 
-    if (arrl_fd == 1)
+    if (IS_CONTEST(ARRL_FD))
 	recall_exchange();
 
     if ((IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1))

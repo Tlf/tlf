@@ -284,7 +284,6 @@ int score() {
     extern int countrynr;
     extern char continent[];
     extern char comment[];
-    extern int arrl_fd;
     extern int w_cty;
     extern int ve_cty;
     extern int trxmode;
@@ -382,7 +381,7 @@ int score() {
     }
 
     /* end cqww */
-    if (arrl_fd == 1) {
+    if (IS_CONTEST(ARRL_FD)) {
 
 	if (trxmode == SSBMODE) {
 	    points = 1;
