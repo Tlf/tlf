@@ -63,6 +63,11 @@ contest_config_t config_sprint = {
     .name = "SPRINT"
 };
 
+contest_config_t config_arrldx_usa = {
+    .id = ARRLDX_USA,
+    .name = "ARRLDX_USA"
+};
+
 contest_config_t config_stewperry = {
     .id = STEWPERRY,
     .name = "STEWPERRY"
@@ -76,6 +81,7 @@ contest_config_t *contest_configs[] = {
     &config_wpx,
     &config_cqww,
     &config_sprint,
+    &config_arrldx_usa,
     &config_stewperry,
     &config_focm,
 };
@@ -100,7 +106,6 @@ contest_config_t *lookup_contest(char *name) {
 /** setup standard configuration for contest 'name' */
 void setcontest(char *name) {
 
-    extern int arrldx_usa;
     extern int dx_arrlsections;
     extern int arrl_fd;
     extern int arrlss;
@@ -142,7 +147,6 @@ void setcontest(char *name) {
     char zscall[] = "ZS6AA";
     char ua9call[] = "UA9AA";
 
-    arrldx_usa = 0;
     arrl_fd = 0;
     pacc_pa_flg = 0;
     universal = 0;
@@ -176,8 +180,7 @@ void setcontest(char *name) {
 	one_point = 1;
     }
 
-    if (strcmp(whichcontest, "arrldx_usa") == 0) {
-	arrldx_usa = 1;
+    if (IS_CONTEST(ARRLDX_USA)) {
 	recall_mult = 1;
     }
 

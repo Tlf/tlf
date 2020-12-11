@@ -109,7 +109,7 @@ int addcall(void) {
 
     add_ok = 1;			/* look if certain calls are excluded */
 
-    if ((arrldx_usa == 1)
+    if (IS_CONTEST(ARRLDX_USA)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	add_ok = 0;
 

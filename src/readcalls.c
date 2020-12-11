@@ -339,7 +339,7 @@ int readcalls(void) {
 	/* look if calls are excluded */
 	add_ok = true;
 
-	if ((arrldx_usa == 1)
+	if (IS_CONTEST(ARRLDX_USA)
 		&& ((countrynr == w_cty) || (countrynr == ve_cty)))
 	    add_ok = false;
 
@@ -430,7 +430,7 @@ int readcalls(void) {
 	}
     }
 
-    if (arrldx_usa == 1) {
+    if (IS_CONTEST(ARRLDX_USA)) {
 	for (int cntr = 1; cntr < MAX_DATALINES; cntr++) {
 	    if (cntr != w_cty && cntr != ve_cty) {	// W and VE don't count here...
 		count_contest_bands(countries[cntr], countryscore);

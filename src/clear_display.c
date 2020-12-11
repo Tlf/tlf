@@ -83,7 +83,6 @@ void clear_display(void) {
     extern int bandinx;
     extern int trxmode;
     extern char qsonrstr[];
-    extern int arrldx_usa;
     extern char comment[];
     extern int searchflg;
     extern char whichcontest[];
@@ -150,7 +149,7 @@ void clear_display(void) {
 	mvaddstr(12, 54, comment);
     }
 
-    if (arrldx_usa == 1) {
+    if (IS_CONTEST(ARRLDX_USA)) {
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 	mvaddstr(12, 54, comment);
     }

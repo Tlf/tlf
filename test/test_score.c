@@ -209,7 +209,7 @@ void test_simple_points(void **state) {
 }
 
 void test_arrldx_usa(void **state) {
-    arrldx_usa = 1;
+    setcontest("arrldx_usa");
 
     countrynr = w_cty;
     check_points(0);

@@ -38,7 +38,6 @@ extern int bandinx;			// band we're currently working on
 extern char logfile[];
 extern bool iscontest;
 
-extern int arrldx_usa;
 extern int pacc_pa_flg;
 extern int country_mult;
 extern char hiscall[20];

@@ -285,7 +285,6 @@ int score() {
     extern char continent[];
     extern char comment[];
     extern int arrl_fd;
-    extern int arrldx_usa;
     extern int w_cty;
     extern int ve_cty;
     extern int trxmode;
@@ -302,7 +301,7 @@ int score() {
 
     band_score[bandinx]++;	/* qso's per band  */
 
-    if ((arrldx_usa == 1)
+    if (IS_CONTEST(ARRLDX_USA)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	band_score[bandinx]--;
 
@@ -395,7 +394,7 @@ int score() {
 
     }				// end arrl_fd
 
-    if (arrldx_usa == 1) {
+    if (IS_CONTEST(ARRLDX_USA)) {
 
 	if ((countrynr == w_cty) || (countrynr == ve_cty)) {
 	    points = 0;

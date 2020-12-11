@@ -346,7 +346,7 @@ void prepare_specific_part(void) {
 
 	//----------------------------------end cqww-----------------
 
-    } else if (arrldx_usa == 1) {
+    } else if (IS_CONTEST(ARRLDX_USA)) {
 	logline4[68] = '\0';
 	if (addcty != 0) {
 	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);

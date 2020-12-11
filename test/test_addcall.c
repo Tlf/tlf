@@ -59,7 +59,6 @@ int setup_default(void **state) {
 
     pfxmult = 0;
     dupe = 0;
-    arrldx_usa = 0;
 
     /* it may be a bug that addcall does not initialize addcallarea */
     addcallarea = 0;
