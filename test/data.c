@@ -67,8 +67,6 @@ char whichcontest[40] = "qso";
 bool iscontest = false;		/* false =  General,  true  = contest */
 contest_config_t *contest;	/* contest configuration */
 
-/* predefined contests */
-int pacc_pa_flg = 0;
 
 int universal = 0;
 int addcallarea;

@@ -343,7 +343,7 @@ int readcalls(void) {
 		&& ((countrynr == w_cty) || (countrynr == ve_cty)))
 	    add_ok = false;
 
-	if (pacc_pa_flg == 1) {
+	if (IS_CONTEST(PACC_PA)) {
 
 	    strcpy(hiscall, presentcall);
 
@@ -438,7 +438,7 @@ int readcalls(void) {
 	}
     }
 
-    if (pacc_pa_flg == 1) {
+    if (IS_CONTEST(PACC_PA)) {
 	for (int n = 1; n < MAX_DATALINES; n++) {
 	    count_contest_bands(countries[n], countryscore);
 	}

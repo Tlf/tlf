@@ -397,7 +397,7 @@ void prepare_specific_part(void) {
 
 	fillto(77);
 
-    } else if (pacc_pa_flg == 1 || pfxnummultinr > 0) {
+    } else if (IS_CONTEST(PACC_PA) || pfxnummultinr > 0) {
 
 	logline4[68] = '\0';
 

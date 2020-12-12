@@ -83,6 +83,11 @@ contest_config_t config_arrl_fd = {
     .name = "ARRL_FD"
 };
 
+contest_config_t config_pacc_pa = {
+    .id = PACC_PA,
+    .name = "PACC_PA"
+};
+
 contest_config_t config_stewperry = {
     .id = STEWPERRY,
     .name = "STEWPERRY"
@@ -100,7 +105,7 @@ contest_config_t *contest_configs[] = {
     &config_arrldx_dx,
     &config_arrl_ss,
     &config_arrl_fd,
-
+    &config_pacc_pa,
     &config_stewperry,
     &config_focm,
 };
@@ -127,7 +132,6 @@ void setcontest(char *name) {
 
     extern int dx_arrlsections;
     extern int multlist;
-    extern int pacc_pa_flg;
     extern int universal;
     extern int exchange_serial;
     extern int wysiwyg_multi;
@@ -164,7 +168,6 @@ void setcontest(char *name) {
     char zscall[] = "ZS6AA";
     char ua9call[] = "UA9AA";
 
-    pacc_pa_flg = 0;
     universal = 0;
     iscontest = true;
     showscore_flag = 1;
@@ -219,8 +222,7 @@ void setcontest(char *name) {
 	recall_mult = 1;
     }
 
-    if (strcmp(whichcontest, "pacc_pa") == 0) {
-	pacc_pa_flg = 1;
+    if (IS_CONTEST(PACC_PA)) {
 	one_point = 1;
 
 	zl_cty = getctynr(zlcall);

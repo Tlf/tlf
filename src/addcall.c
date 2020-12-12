@@ -120,7 +120,7 @@ int addcall(void) {
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	add_ok = 0;
 
-    if (pacc_pa_flg == 1)
+    if (IS_CONTEST(PACC_PA))
 	add_ok = pacc_pa();
 
     // if pfx number as multiplier
@@ -293,7 +293,7 @@ int addcall2(void) {
     if ((country_mult == 1) && (universal == 1))
 	add_ok = 1;
 
-    if (pacc_pa_flg == 1)
+    if (IS_CONTEST(PACC_PA))
 	/* FIXME: Does not work for LAN qso's as pacc_pa uses global variables
 	 * set from foreground task */
 	add_ok = pacc_pa();

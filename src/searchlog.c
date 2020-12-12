@@ -563,7 +563,7 @@ void displayWorkedZonesCountries(int z) {
 	}
     }
 
-    if (IS_CONTEST(CQWW) || !iscontest || pacc_pa_flg == 1) {
+    if (IS_CONTEST(CQWW) || !iscontest || IS_CONTEST(PACC_PA)) {
 
 	if ((countries[countrynr] & BAND10) != 0) {
 	    mvwprintw(search_win, 1, 36, "C");
@@ -625,7 +625,7 @@ void displayWorkedZonesCountries(int z) {
 	}
     }
 
-    if (pacc_pa_flg == 1) {
+    if (IS_CONTEST(PACC_PA)) {
 
 	getpx(hiscall);
 

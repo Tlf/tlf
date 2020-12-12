@@ -181,7 +181,7 @@ int get_nr_of_mults() {
     } else if (universal == 1 && multlist == 1 && !IS_CONTEST(ARRL_SS)) {
 
 	return totalmults ;
-    } else if (pacc_pa_flg == 1) {
+    } else if (IS_CONTEST(PACC_PA)) {
 
 	return totalcountries;
     } else if ((wysiwyg_once == 1)
@@ -229,7 +229,6 @@ int get_total_score() {
 void showscore(void) {
 
     extern int showscore_flag;
-    extern int pacc_pa_flg;
     extern int universal;
     extern int country_mult;
     extern int wysiwyg_once;
@@ -330,7 +329,7 @@ void showscore(void) {
 	}
     }
 
-    if (pacc_pa_flg == 1) {
+    if (IS_CONTEST(PACC_PA)) {
 
 	mvprintw(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -357,7 +356,7 @@ void showscore(void) {
     mvprintw(6, 55, spaces(19));
 
     if (IS_CONTEST(CQWW) || IS_CONTEST(WPX) || pfxmult == 1
-	    || IS_CONTEST(ARRLDX_USA) || (pacc_pa_flg == 1)
+	    || IS_CONTEST(ARRLDX_USA) || (IS_CONTEST(PACC_PA))
 	    || (wysiwyg_once == 1) || (universal == 1)) {   /* cqww or wpx */
 
 	totalmults = get_nr_of_mults();

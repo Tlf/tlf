@@ -72,7 +72,6 @@ int getexchange(void) {
     extern char ph_message[14][80];
     extern char hiscall[];
     extern char qsonrstr[];
-    extern int pacc_pa_flg;
     extern int exchange_serial;
     extern int countrynr;
     extern int trxmode;
@@ -430,7 +429,7 @@ int getexchange(void) {
 
 	    }
 
-	    if ((pacc_pa_flg == 1) && (countrynr != my.countrynr)) {
+	    if (IS_CONTEST(PACC_PA) && (countrynr != my.countrynr)) {
 		if (strlen(comment) == 1) {
 		    strcpy(commentbuf, comment);
 		    comment[0] = '\0';
