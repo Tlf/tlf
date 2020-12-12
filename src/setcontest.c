@@ -68,6 +68,11 @@ contest_config_t config_arrldx_usa = {
     .name = "ARRLDX_USA"
 };
 
+contest_config_t config_arrldx_dx = {
+    .id = ARRLDX_DX,
+    .name = "ARRLDX_DX"
+};
+
 contest_config_t config_arrl_ss = {
     .id = ARRL_SS,
     .name = "ARRL_SS"
@@ -92,8 +97,10 @@ contest_config_t *contest_configs[] = {
     &config_cqww,
     &config_sprint,
     &config_arrldx_usa,
+    &config_arrldx_dx,
     &config_arrl_ss,
     &config_arrl_fd,
+
     &config_stewperry,
     &config_focm,
 };
@@ -193,7 +200,7 @@ void setcontest(char *name) {
 	recall_mult = 1;
     }
 
-    if (strcmp(whichcontest, "arrldx_dx") == 0) {
+    if (IS_CONTEST(ARRLDX_DX)) {
 	three_point = 1;
 	recall_mult = 1;
 	sectn_mult = 1;
