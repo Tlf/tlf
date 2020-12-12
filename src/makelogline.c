@@ -414,7 +414,7 @@ void prepare_specific_part(void) {
 
 	fillto(77);
 
-    } else if ((universal == 1)
+    } else if (iscontest
 	       && ((country_mult == 1) || (dx_arrlsections == 1))) {
 
 	logline4[68] = '\0';

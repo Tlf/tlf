@@ -132,7 +132,6 @@ void setcontest(char *name) {
 
     extern int dx_arrlsections;
     extern int multlist;
-    extern int universal;
     extern int exchange_serial;
     extern int w_cty;
     extern int ve_cty;
@@ -167,7 +166,6 @@ void setcontest(char *name) {
     char zscall[] = "ZS6AA";
     char ua9call[] = "UA9AA";
 
-    universal = 0;
     iscontest = true;
     showscore_flag = 1;
     searchflg = 1;
@@ -241,7 +239,5 @@ void setcontest(char *name) {
     if (IS_CONTEST(QSO)) {
 	iscontest = false;
 	showscore_flag = 0;
-    } else {		    //dxpedition
-	universal = 1;
     }
 }

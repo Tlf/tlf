@@ -245,7 +245,6 @@ int parse_logcfg(char *inputbuffer) {
     extern int time_master;
     extern char multsfile[];
     extern int multlist;
-    extern int universal;
     extern int serial_section_mult;
     extern int serial_grid4_mult;
     extern int sectn_mult;
@@ -730,12 +729,10 @@ int parse_logcfg(char *inputbuffer) {
 	}
 	case 22: {
 	    one_point = 1;
-	    universal = 1;
 	    break;
 	}
 	case 23: {
 	    three_point = 1;
-	    universal = 1;
 	    break;
 	}
 	case 24: {
@@ -1090,14 +1087,12 @@ int parse_logcfg(char *inputbuffer) {
 	}
 	case 86: {
 	    two_point = 1;
-	    universal = 1;
 	    break;
 	}
 	case 87: {
 	    PARAMETER_NEEDED(teststring);
 	    g_strlcpy(multsfile, g_strchomp(fields[1]), 80);
 	    multlist = 1;
-	    universal = 1;
 	    break;
 	}
 	case 88: {

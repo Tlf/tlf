@@ -104,7 +104,6 @@ int sprint_mode = 0;
 int minitest = 0;	/**< if set, length of minitest period in seconds */
 int unique_call_multi = 0;          /* do we count calls as multiplier */
 
-int universal = 0;
 
 int addcallarea;
 int pfxmult = 0;

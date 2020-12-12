@@ -113,7 +113,7 @@ int addcall(void) {
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	add_ok = 0;
 
-    if ((country_mult == 1) && (universal == 1))
+    if (country_mult == 1 && iscontest)
 	add_ok = 1;
 
     if ((dx_arrlsections == 1)
@@ -290,7 +290,7 @@ int addcall2(void) {
     /* 	     if ((arrldx_usa ==1) && ((j == w_cty) || (j == ve_cty)))
      	     	add_ok = 0;
     */
-    if ((country_mult == 1) && (universal == 1))
+    if ((country_mult == 1) && iscontest)
 	add_ok = 1;
 
     if (IS_CONTEST(PACC_PA))

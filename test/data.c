@@ -68,7 +68,6 @@ bool iscontest = false;		/* false =  General,  true  = contest */
 contest_config_t *contest;	/* contest configuration */
 
 
-int universal = 0;
 int addcallarea;
 int pfxmult = 0;
 int pfxmultab = 0;

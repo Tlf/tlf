@@ -107,7 +107,6 @@ extern int wazmult;
 extern int addcallarea;
 extern int addcty;
 extern char zone_fix[];
-extern int universal;
 extern int one_point;
 extern int two_point;
 extern int three_point;
