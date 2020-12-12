@@ -134,7 +134,6 @@ void setcontest(char *name) {
     extern int multlist;
     extern int universal;
     extern int exchange_serial;
-    extern int wysiwyg_multi;
     extern int w_cty;
     extern int ve_cty;
     extern int zl_cty;
@@ -235,21 +234,11 @@ void setcontest(char *name) {
 	ua9_cty = getctynr(ua9call);
     }
 
-    if (strcmp(whichcontest, "other") == 0) {
-	one_point = 1;
-	recall_mult = 1;
-	wysiwyg_multi = 1;
-    }
-
-    if (strcmp(whichcontest, "universal") == 0) {
-	/* nothing special to do */
-    }
-
     if (dx_arrlsections == 1) {
 	/* same here */
     }
 
-    if (strcmp(whichcontest, "qso") == 0) {
+    if (IS_CONTEST(QSO)) {
 	iscontest = false;
 	showscore_flag = 0;
     } else {		    //dxpedition
