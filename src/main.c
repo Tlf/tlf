@@ -431,6 +431,7 @@ static const struct argp_option options[] = {
     {"import",      'i', 0, 0,  "Import cabrillo file to Tlf format"},
     {"no-cluster",  'n', 0, 0,  "Start without cluster hookup" },
     {"no-rig",      'r', 0, 0,  "Start without radio control" },
+    {"list",	    'l', 0, 0,  "List built-in contests" },
     {"sync",        's', "URL", 0,  "Synchronize log with other node" },
     {"debug",       'd', 0, 0,  "Debug mode" },
     {"verbose",     'v', 0, 0,  "Produce verbose output" },
@@ -451,6 +452,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	    break;
 	case 'i':
 	    convert_cabrillo = true;
+	    break;
+	case 'l':
+	    list_contests();
+	    exit(EXIT_SUCCESS);
 	    break;
 	case 's':
 	    if (strlen(arg) >= 120) {

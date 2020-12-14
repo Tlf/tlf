@@ -127,6 +127,22 @@ contest_config_t *lookup_contest(char *name) {
     return &config_unknown;
 }
 
+
+/** show a list of supported/hard-coded contests
+ *
+ * works out of ncurses context for 'tlf -l' i
+ */
+void list_contests() {
+    puts(
+	"\nTLF has built-in support for the following contest identifiers:"
+	);
+    for(int i = 0; i < NR_CONTESTS; i++) {
+	printf("\t%s\n", contest_configs[i]->name);
+    }
+    puts("");
+}
+
+
 /** setup standard configuration for contest 'name' */
 void setcontest(char *name) {
 
