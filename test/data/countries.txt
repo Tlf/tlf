@@ -1,0 +1,3 @@
+adx=G,GM,F
+BDX= EA, CT
+cdx= LY, YL, ES
