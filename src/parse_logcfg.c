@@ -155,63 +155,28 @@ bool exist_in_country_list();
 
 void KeywordNotSupported(const char *keyword);
 void ParameterNeeded(const char *keyword);
+void ParameterUnexpected(const char *keyword);
 void WrongFormat(const char *keyword);
 void WrongFormat_details(const char *keyword, const char *details);
 
-#define  MAX_COMMANDS (sizeof(commands) / sizeof(*commands))	/* commands in list */
+static char *error_details = NULL;
 
+#define LOGCFG_DAT_FILE    "logcfg.dat"
 
 int read_logcfg(void) {
 
-    extern int nodes;
-    extern int node;
     extern char *config_file;
 
-    char defltconf[80];
-
-    int status;
-    int i;
+    static char defltconf[] = PACKAGE_DATA_DIR "/" LOGCFG_DAT_FILE;
     FILE *fp;
 
-    iscontest = false;
-    partials = 0;
-    use_part = 0;
-    cwkeyer = NO_KEYER;
-    digikeyer = NO_KEYER;
-    portnum = 0;
-    packetinterface = 0;
-    tncport = 0;
-    nodes = 0;
-    node = 0;
-    shortqsonr = 0;
-
-    /* Disable CT Mode until CTCOMPATIBLE is defined. */
-    ctcomp = 0;
-
-    for (i = 0; i < 25; i++) {
-	if (digi_message[i] != NULL) {
-	    free(digi_message[i]);
-	    digi_message[i] = NULL;
-	}
-    }
-    if (cabrillo != NULL) {
-	free(cabrillo);
-	cabrillo = NULL;
-    }
-
-    strcpy(defltconf, PACKAGE_DATA_DIR);
-    strcat(defltconf, "/logcfg.dat");
-
     if (config_file == NULL)
-	config_file = g_strdup("logcfg.dat");
+	config_file = g_strdup(LOGCFG_DAT_FILE);
 
     if ((fp = fopen(config_file, "r")) == NULL) {
 	if ((fp = fopen(defltconf, "r")) == NULL) {
 	    showmsg("Error opening logcfg.dat file.");
-	    showmsg("Exiting...");
-	    sleep(5);
-	    endwin();
-	    exit(1);
+	    return PARSE_ERROR;
 	} else {
 	    showstring("Using default (Read Only) config file:", defltconf);
 	}
@@ -219,18 +184,14 @@ int read_logcfg(void) {
     } else
 	showstring("Reading config file:", config_file);
 
-    status = parse_configfile(fp);
+    int status = parse_configfile(fp);
     fclose(fp);
 
     return status;
 }
 
 static bool isCommentLine(char *buffer) {
-    if ((buffer[0] != '#') && (buffer[0] != ';') && (strlen(buffer) > 1)) {
-	return false;
-    } else {
-	return true;
-    }
+    return buffer[0] == 0 || buffer[0] == '#' || buffer[0] == ';';
 }
 
 int parse_configfile(FILE *fp) {
@@ -238,9 +199,14 @@ int parse_configfile(FILE *fp) {
     char buffer[160];
 
     while (fgets(buffer, sizeof(buffer), fp) != NULL) {
-	/* skip comments and empty lines */
-	if (!isCommentLine(buffer)) {
-	    status |= parse_logcfg(buffer);
+	g_strchug(buffer);              // remove leading space
+	if (isCommentLine(buffer)) {    // skip comments and empty lines
+	    continue;
+	}
+
+	status = parse_logcfg(buffer);
+	if (status != PARSE_OK) {
+	    break;
 	}
     }
 
@@ -393,6 +359,7 @@ static int cfg_tlfcolor(const cfg_arg_t arg) {
 	tlfcolors[n][0] = str[0] - '0';
 	tlfcolors[n][1] = str[1] - '0';
     } else {
+	error_details = g_strdup("must be a 2 digit octal number");
 	rc = PARSE_WRONG_PARAMETER;
     }
 
@@ -410,6 +377,7 @@ static int cfg_call(const cfg_arg_t arg) {
 	return rc;
     }
     if (strlen(my.call) <= 2) {
+	error_details = g_strdup("too short");
 	return PARSE_WRONG_PARAMETER;
     }
 
@@ -445,7 +413,10 @@ static int cfg_bandoutput(const cfg_arg_t arg) {
 	for (int i = 0; i <= 9; i++) {	// 10x
 	    bandindexarray[i] = str[i] - '0';
 	}
-    } else { rc = PARSE_WRONG_PARAMETER; }
+    } else {
+	error_details = g_strdup_printf("must be %d digits", NBANDS);
+	rc = PARSE_WRONG_PARAMETER;
+    }
 
 
     g_free(str);
@@ -580,6 +551,7 @@ static int cfg_tncport(const cfg_arg_t arg) {
 static int cfg_addnode(const cfg_arg_t arg) {
     // FIXME typo? node -> nodes
     if (node >= MAXNODES) {
+	error_details = g_strdup_printf("max %d nodes allowed", MAXNODES);
 	return PARSE_WRONG_PARAMETER;
     }
     /* split host name and port number, separated by colon */
@@ -606,9 +578,9 @@ static int cfg_thisnode(const cfg_arg_t arg) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
 
-    if (strlen(str) != 1
-	    || str[0] < 'A' || str[1] > 'A' + MAXNODES) {
+    if (strlen(str) != 1 || str[0] < 'A' || str[0] > 'A' + MAXNODES) {
 	g_free(str);
+	error_details = g_strdup_printf("name name is A..%c", 'A' + MAXNODES - 1);
 	return PARSE_WRONG_PARAMETER;
     }
 
@@ -928,6 +900,7 @@ static int cfg_change_rst(const cfg_arg_t arg) {
     if (!g_regex_match_simple("^([3-5][3-9]\\d?\\s*,\\s*)*[3-5][3-9]\\d?$",
 			      str, G_REGEX_CASELESS, (GRegexMatchFlags)0)) {
 	g_free(str);
+	error_details = g_strdup("must be a comma separated list of RS(T) values");
 	return PARSE_WRONG_PARAMETER;
     }
 
@@ -974,6 +947,7 @@ static int cfg_qtc(const cfg_arg_t arg) {
     } else if (strcmp(str, "BOTH") == 0) {
 	qtcdirection = RECV | SEND;
     } else {
+	error_details = g_strdup("must be RECV, SEND, or BOTH");
 	rc = PARSE_WRONG_PARAMETER;
     }
 
@@ -1020,23 +994,20 @@ static int cfg_exclude_multilist(const cfg_arg_t arg) {
     if (strcmp(str, "CONTINENTLIST") == 0) {
 	g_free(str);
 	if (strlen(continent_multiplier_list[0]) == 0) {
-	    showmsg
-	    ("WARNING: you need to set the CONTINENTLIST str...");
-	    sleep(5);
-	    exit(1);
+	    error_details = g_strdup("need to set the CONTINENTLIST first");
+	    return PARSE_WRONG_PARAMETER;
 	}
 	exclude_multilist_type = EXCLUDE_CONTINENT;
     } else if (strcmp(str, "COUNTRYLIST") == 0) {
 	g_free(str);
 	if (strlen(countrylist[0]) == 0) {
-	    showmsg
-	    ("WARNING: you need to set the COUNTRYLIST str...");
-	    sleep(5);
-	    exit(1);
+	    error_details = g_strdup("need to set the COUNTRYLIST first");
+	    return PARSE_WRONG_PARAMETER;
 	}
 	exclude_multilist_type = EXCLUDE_COUNTRY;
     } else {
 	g_free(str);
+	error_details = g_strdup("must be CONTINENTLIST or COUNTRYLIST");
 	return PARSE_WRONG_PARAMETER;
     }
 
@@ -1087,7 +1058,7 @@ static int cfg_minitest(const cfg_arg_t arg) {
     }
 
     if ((3600 % value) != 0) {
-	showmsg("must be an integral divider of 3600 seconds!");
+	error_details = g_strdup("must be an integral divider of 3600 seconds");
 	return PARSE_WRONG_PARAMETER;
     }
 
@@ -1106,7 +1077,7 @@ static int cfg_unique_call_multi(const cfg_arg_t arg) {
 	unique_call_multi = UNIQUECALL_BAND;
     } else {
 	g_free(str);
-	showmsg("must be ALL or BAND");
+	error_details = g_strdup("must be ALL or BAND");
 	return PARSE_WRONG_PARAMETER;
     }
 
@@ -1128,7 +1099,7 @@ static int cfg_digi_rig_mode(const cfg_arg_t arg) {
 	digi_mode = RIG_MODE_RTTYR;
     } else {
 	g_free(str);
-	showmsg("must be USB, LSB, RTTY, or RTTYR");
+	error_details = g_strdup("must be USB, LSB, RTTY, or RTTYR");
 	return PARSE_WRONG_PARAMETER;
     }
 
@@ -1313,9 +1284,8 @@ static int check_match(const config_t *cfg, const char *keyword) {
 
 	if (cfg->param_kind == NEED_PARAM && parameter == NULL) {
 	    result = PARSE_MISSING_PARAMETER;
-// -- no error at the moment
-//        } else if (cfg->param_kind == NO_PARAM && parameter != NULL) {
-//            result = PARSE_EXTRA_PARAMETER;
+	} else if (cfg->param_kind == NO_PARAM && parameter != NULL) {
+	    result = PARSE_EXTRA_PARAMETER;
 	} else {
 	    result = cfg->func(cfg->arg);
 	}
@@ -1352,6 +1322,10 @@ static int apply_config(const char *keyword, const char *param,
 	    ParameterNeeded(keyword);
 	    break;
 
+	case PARSE_EXTRA_PARAMETER:
+	    ParameterUnexpected(keyword);
+	    break;
+
 	case PARSE_INVALID_INTEGER:
 	    WrongFormat_details(keyword, "invalid number");
 	    break;
@@ -1361,10 +1335,15 @@ static int apply_config(const char *keyword, const char *param,
 	    break;
 
 	default:
-	    WrongFormat(keyword);
+	    if (error_details != NULL) {
+		WrongFormat_details(keyword, error_details);
+		g_free(error_details);
+	    } else {
+		WrongFormat(keyword);
+	    }
     }
 
-    return PARSE_CONFIRM;
+    return PARSE_ERROR;
 }
 ////////////////////
 
@@ -1431,7 +1410,15 @@ void KeywordNotSupported(const char *keyword) {
 void ParameterNeeded(const char *keyword) {
     char msgbuffer[192];
     sprintf(msgbuffer,
-	    "Keyword '%s' must be followed by an parameter ('=....'). See man page.\n",
+	    "Keyword '%s' must be followed by a parameter ('=....'). See man page.\n",
+	    keyword);
+    Complain(msgbuffer);
+}
+
+void ParameterUnexpected(const char *keyword) {
+    char msgbuffer[192];
+    sprintf(msgbuffer,
+	    "Keyword '%s' can't have a parameter. See man page.\n",
 	    keyword);
     Complain(msgbuffer);
 }

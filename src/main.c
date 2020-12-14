@@ -609,6 +609,37 @@ void ui_color_init() {
     }
 }
 
+static void init_variables() {
+    extern int nodes;
+    extern int node;
+
+    iscontest = false;
+    partials = 0;
+    use_part = 0;
+    cwkeyer = NO_KEYER;
+    digikeyer = NO_KEYER;
+    portnum = 0;
+    packetinterface = 0;
+    tncport = 0;
+    nodes = 0;
+    node = 0;
+    shortqsonr = 0;
+
+    /* Disable CT Mode until CTCOMPATIBLE is defined. */
+    ctcomp = 0;
+
+    for (int i = 0; i < 25; i++) {
+	if (digi_message[i] != NULL) {
+	    free(digi_message[i]);
+	    digi_message[i] = NULL;
+	}
+    }
+    if (cabrillo != NULL) {
+	free(cabrillo);
+	cabrillo = NULL;
+    }
+
+}
 
 /** load all databases
  *
@@ -619,21 +650,25 @@ int databases_load() {
     showmsg("Reading country data");
     readctydata();		/* read ctydb.dat */
 
+    init_variables();
+
     showmsg("Reading configuration data");
+
     status = read_logcfg(); 	/* read the configuration file */
+    if (status != PARSE_OK) {
+	showmsg("Problems parsing logcfg.dat!");
+	return EXIT_FAILURE;
+    }
+
     status |= read_rules();	/* read the additional contest rules
 				   in "rules/contestname" */
     if (status != PARSE_OK) {
-	showmsg("Problems in logcfg.dat or rule file detected! Continue Y/(N)?");
-	if (toupper(key_get()) != 'Y') {
-	    showmsg("73...");
-	    return EXIT_FAILURE;
-	}
+	showmsg("Problems parsing rule file!");
+	return EXIT_FAILURE;
     }
 
     if (*my.call == '\0') {
-	showmsg
-	("WARNING: No callsign defined in logcfg.dat! exiting...\n");
+	showmsg("ERROR: No callsign defined in logcfg.dat!\n");
 	return EXIT_FAILURE;
     }
 
@@ -641,7 +676,7 @@ int databases_load() {
     if (multlist == 1) {
 	showmsg("Reading multiplier data      ");
 	if (strlen(multsfile) == 0) {
-	    showmsg("No multiplier file specified, exiting.. !!");
+	    showmsg("No multiplier file specified!");
 	    return EXIT_FAILURE;
 	}
     }
@@ -655,11 +690,8 @@ int databases_load() {
 	main_ie_list = make_ie_list(exchange_list);
 
 	if (main_ie_list == NULL) {
-	    showmsg("Problems in initial exchange file detected! Continue Y/(N)?");
-	    if (toupper(key_get()) != 'Y') {
-		showmsg("73...");
-		return EXIT_FAILURE;
-	    }
+	    showmsg("Problems in initial exchange file detected!");
+	    return EXIT_FAILURE;
 	}
     }
 
@@ -680,7 +712,7 @@ int databases_load() {
     if (trxmode == DIGIMODE) {
 	qtc_recv_lazy = 0;
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void hamlib_init() {
@@ -921,6 +953,9 @@ int main(int argc, char *argv[]) {
 
     total = 0;
     if (databases_load() == EXIT_FAILURE) {
+	showmsg("**** Press any key to exit...");
+	key_get();
+	showmsg("73...");
 	sleep(2);
 	endwin();
 	exit(EXIT_FAILURE);
