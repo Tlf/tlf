@@ -103,10 +103,6 @@ typedef struct {
         (cfg_arg_t){.char_pp=&var, .chomp=true, \
                     .string_type=DYNAMIC}
 
-#define CFG_STRING_NOCHOMP(var) NEED_PARAM, cfg_string, \
-        (cfg_arg_t){.char_pp=&var, \
-                    .string_type=DYNAMIC}
-
 #define CFG_MESSAGE(var, i)     NEED_PARAM, cfg_string, \
         (cfg_arg_t){.msg=var, .base=i, .size=80, \
                     .string_type=MESSAGE}
@@ -117,6 +113,15 @@ typedef struct {
 
 #define CFG_MESSAGE_DYNAMIC(var, i) NEED_PARAM, cfg_string, \
         (cfg_arg_t){.char_pp=var, .base=i, .size=80, .nl_to_space=true, \
+                    .string_type=DYNAMIC}
+
+// FIXME: remove NOCHOMPs
+#define CFG_STRING_STATIC_NOCHOMP(var,bufsize) NEED_PARAM, cfg_string, \
+        (cfg_arg_t){.char_p=var, .size=bufsize, \
+                    .string_type=STATIC}
+
+#define CFG_STRING_NOCHOMP(var) NEED_PARAM, cfg_string, \
+        (cfg_arg_t){.char_pp=&var, \
                     .string_type=DYNAMIC}
 
 
