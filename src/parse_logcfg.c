@@ -1485,7 +1485,7 @@ int parse_logcfg(char *inputbuffer) {
 	     */
 
 	    int counter = 0;
-	    static char country_list_raw[50] = ""; 	/* use only first
+	    /*static*/ char country_list_raw[50] = ""; 	/* use only first
 		       COUNTRY_LIST
 		       definition */
 	    char temp_buffer[255] = "";
@@ -1884,7 +1884,7 @@ int parse_logcfg(char *inputbuffer) {
 	     */
 
 	    int counter = 0;
-	    static char cont_multiplier_list[50] = ""; 	/* use only first
+	    /*static*/ char cont_multiplier_list[50] = ""; 	/* use only first
 		       CONTINENT_LIST
 		       definition */
 	    char temp_buffer[255] = "";
