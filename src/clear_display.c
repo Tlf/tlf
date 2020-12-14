@@ -144,12 +144,12 @@ void clear_display(void) {
 	mvaddstr(12, 49, recvd_rst);
     }
 
-    if (IS_CONTEST(CQWW)) {
+    if (CONTEST_IS(CQWW)) {
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 	mvaddstr(12, 54, comment);
     }
 
-    if (IS_CONTEST(ARRLDX_USA)) {
+    if (CONTEST_IS(ARRLDX_USA)) {
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 	mvaddstr(12, 54, comment);
     }

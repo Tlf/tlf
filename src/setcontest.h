@@ -23,7 +23,7 @@
 
 #include "globalvars.h"
 
-#define IS_CONTEST(cid) (contest->id == cid)
+#define CONTEST_IS(cid) (contest->id == cid)
 
 extern contest_config_t config_qso;
 

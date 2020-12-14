@@ -111,13 +111,13 @@ int getexchange(void) {
     if (recall_mult == 1)
 	recall_exchange();
 
-    if (IS_CONTEST(ARRLDX_USA) && trxmode != CWMODE)
+    if (CONTEST_IS(ARRLDX_USA) && trxmode != CWMODE)
 	recall_exchange();
 
-    if (IS_CONTEST(ARRL_FD))
+    if (CONTEST_IS(ARRL_FD))
 	recall_exchange();
 
-    if ((IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1))
+    if ((CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1))
 	    && (*comment == '\0') && (strlen(hiscall) != 0)) {
 	if (itumult == 1)
 	    strcpy(comment, ituzone);
@@ -129,7 +129,7 @@ int getexchange(void) {
 	strcpy(comment, continent);
     }
 
-    if (IS_CONTEST(STEWPERRY)) {
+    if (CONTEST_IS(STEWPERRY)) {
 	recall_exchange();
     }
 
@@ -360,9 +360,9 @@ int getexchange(void) {
 		(dx_arrlsections == 1) ||
 		(sectn_mult == 1) ||
 		(sectn_mult_once == 1) ||
-		IS_CONTEST(ARRL_SS) ||
-		IS_CONTEST(CQWW) ||
-		IS_CONTEST(STEWPERRY)) {
+		CONTEST_IS(ARRL_SS) ||
+		CONTEST_IS(CQWW) ||
+		CONTEST_IS(STEWPERRY)) {
 
 	    x = checkexchange(x);
 	}
@@ -389,7 +389,7 @@ int getexchange(void) {
 
 	    }
 
-	    if (IS_CONTEST(WPX)) {	/* align serial nr. */
+	    if (CONTEST_IS(WPX)) {	/* align serial nr. */
 
 		if ((strlen(comment) == 1) || (comment[1] == ' ')) {
 		    strcpy(commentbuf, comment);
@@ -407,7 +407,7 @@ int getexchange(void) {
 
 	    }
 
-	    if (IS_CONTEST(SPRINT)) {
+	    if (CONTEST_IS(SPRINT)) {
 
 		if ((comment[1] == ' ') && (comment[0] != ' ')) {
 
@@ -429,7 +429,7 @@ int getexchange(void) {
 
 	    }
 
-	    if (IS_CONTEST(PACC_PA) && (countrynr != my.countrynr)) {
+	    if (CONTEST_IS(PACC_PA) && (countrynr != my.countrynr)) {
 		if (strlen(comment) == 1) {
 		    strcpy(commentbuf, comment);
 		    comment[0] = '\0';
@@ -446,7 +446,7 @@ int getexchange(void) {
 
 	    }
 
-	    if (IS_CONTEST(ARRL_SS) && (x != TAB) && (strlen(section) < 2)) {
+	    if (CONTEST_IS(ARRL_SS) && (x != TAB) && (strlen(section) < 2)) {
 		mvprintw(13, 54, "section?");
 		mvprintw(12, 54, comment);
 		x = 0;
@@ -471,7 +471,7 @@ int getexchange(void) {
 		break;
 //                              x = 0; //##debug
 
-	    } else if (IS_CONTEST(STEWPERRY)) {
+	    } else if (CONTEST_IS(STEWPERRY)) {
 		if (check_qra(comment) == 0) {
 		    mvprintw(13, 54, "locator?");
 		    mvprintw(12, 54, comment);
@@ -479,7 +479,7 @@ int getexchange(void) {
 		}
 		refreshp();
 		break;
-	    } else if (IS_CONTEST(CQWW) && trxmode == DIGIMODE && ((countrynr == w_cty)
+	    } else if (CONTEST_IS(CQWW) && trxmode == DIGIMODE && ((countrynr == w_cty)
 		       || (countrynr == ve_cty))) {
 		if (strlen(comment) < 5) {
 		    mvprintw(13, 54, "state/prov?");
@@ -659,7 +659,7 @@ int checkexchange(int x) {
     }
 
     // -----------------------------------cqww-----------------------
-    if (IS_CONTEST(CQWW)) {
+    if (CONTEST_IS(CQWW)) {
 
 	s = atoi(comment);
 	snprintf(zone, sizeof(zone), "%02d", s);
@@ -721,7 +721,7 @@ int checkexchange(int x) {
     }
 
     // ---------------------------arrls------------------------------
-    if (IS_CONTEST(ARRL_SS)) {
+    if (CONTEST_IS(ARRL_SS)) {
 
 	// get serial nr.
 

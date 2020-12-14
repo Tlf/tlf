@@ -136,7 +136,7 @@ void time_update(void) {
     /* do it every second */
     oldsecs = this_second;
 
-    if (IS_CONTEST(WPX)) {
+    if (CONTEST_IS(WPX)) {
 	if (minute_timer > 0)
 	    minute_timer--;
     }

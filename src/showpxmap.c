@@ -48,12 +48,12 @@ void show_mults(void) {
 
     int iMax = dxcc_count();
 
-    if (IS_CONTEST(FOCMARATHON)) {
+    if (CONTEST_IS(FOCMARATHON)) {
 	foc_show_cty();
 	return;
     }
 
-    if (IS_CONTEST(CQWW)) {
+    if (CONTEST_IS(CQWW)) {
 
 	mvprintw(12, 29, "E,A,F,N,S,O");
 

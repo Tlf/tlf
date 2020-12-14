@@ -155,19 +155,19 @@ int get_nr_of_mults() {
 		       bandweight_multis[bi_normal[n]]);
     }
 
-    if (IS_CONTEST(SPRINT)) {
+    if (CONTEST_IS(SPRINT)) {
 	/* no multis used */
 	return 1;
-    } else if (IS_CONTEST(ARRL_SS)) {
+    } else if (CONTEST_IS(ARRL_SS)) {
 
 	return nr_multis;
-    } else if (IS_CONTEST(CQWW)) {
+    } else if (CONTEST_IS(CQWW)) {
 
 	return totalcountries + totalzones;
-    } else if (IS_CONTEST(ARRLDX_USA)) {
+    } else if (CONTEST_IS(ARRLDX_USA)) {
 
 	return totalcountries;
-    } else if (IS_CONTEST(ARRL_FD)) {
+    } else if (CONTEST_IS(ARRL_FD)) {
 	/* arrl mults are always integers */
 	int mult = (int)floor(fixedmult + 0.5); 	/* round to nearest integer */
 	if (mult > 0) {
@@ -181,10 +181,10 @@ int get_nr_of_mults() {
     } else if (country_mult == 1) {
 
 	return totalcountries;
-    } else if (multlist == 1 && !IS_CONTEST(ARRL_SS)) {
+    } else if (multlist == 1 && !CONTEST_IS(ARRL_SS)) {
 
 	return totalmults ;
-    } else if (IS_CONTEST(PACC_PA)) {
+    } else if (CONTEST_IS(PACC_PA)) {
 
 	return totalcountries;
     } else if ((wysiwyg_once == 1)
@@ -199,7 +199,7 @@ int get_nr_of_mults() {
 	       || (sectn_mult == 1)) {
 
 	return totalmults;
-    } else if (IS_CONTEST(WPX) || pfxmult == 1) {
+    } else if (CONTEST_IS(WPX) || pfxmult == 1) {
 
 	return GetNrOfPfx_once();
     } else if (pfxmultab == 1) {
@@ -218,7 +218,7 @@ int get_nr_of_mults() {
 
 /* calculate total score */
 int get_total_score() {
-    if (IS_CONTEST(FOCMARATHON))
+    if (CONTEST_IS(FOCMARATHON))
 	return foc_total_score();
     else
 	return get_nr_of_points() * get_nr_of_mults();
@@ -302,7 +302,7 @@ void showscore(void) {
 	}
     }
 
-    if (IS_CONTEST(CQWW)) {
+    if (CONTEST_IS(CQWW)) {
 
 	mvprintw(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -315,7 +315,7 @@ void showscore(void) {
 	}
     }
 
-    if (IS_CONTEST(ARRLDX_USA)) {
+    if (CONTEST_IS(ARRLDX_USA)) {
 
 	mvprintw(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -331,7 +331,7 @@ void showscore(void) {
 	}
     }
 
-    if (IS_CONTEST(PACC_PA)) {
+    if (CONTEST_IS(PACC_PA)) {
 
 	mvprintw(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -340,12 +340,12 @@ void showscore(void) {
     }
 
     /* show score summary */
-    if (IS_CONTEST(SPRINT)) {
+    if (CONTEST_IS(SPRINT)) {
 
 	mvprintw(5, START_COL, "Score: %d", get_nr_of_points());
-    } else if (IS_CONTEST(FOCMARATHON)) {
+    } else if (CONTEST_IS(FOCMARATHON)) {
 	foc_show_scoring(START_COL);
-    } else if (IS_CONTEST(STEWPERRY)) {
+    } else if (CONTEST_IS(STEWPERRY)) {
 	/* no normal multis, but may have POWERMULT set (fixedmult != 0.) */
 	stewperry_show_summary(get_nr_of_points(), fixedmult);
     } else {
@@ -369,7 +369,7 @@ void showscore(void) {
 	    mvprintw(6, 55, "Q/M %.1f ", p);
     }
 
-    if (IS_CONTEST(WPX)) {
+    if (CONTEST_IS(WPX)) {
 	if (minute_timer > 0)
 	    mvprintw(6, 75, "%d", minute_timer);
     }

@@ -306,7 +306,7 @@ int callinput(void) {
 		} else {
 
 		    if (strlen(hiscall) > 2) {
-			if ((IS_CONTEST(CQWW) || (wazmult == 1))
+			if ((CONTEST_IS(CQWW) || (wazmult == 1))
 				&& (*comment == '\0'))
 			    strcpy(comment, cqzone);
 
@@ -791,7 +791,7 @@ int callinput(void) {
 
 	    // Alt-z (M-z), show zones worked.
 	    case ALT_Z: {
-		if (IS_CONTEST(CQWW)) {
+		if (CONTEST_IS(CQWW)) {
 		    if (zonedisplay == 0)
 			zonedisplay = 1;
 		    else {
@@ -1315,7 +1315,7 @@ void handle_bandswitch(int direction) {
 
     next_band(direction);
 
-    if (iscontest && !IS_CONTEST(DXPED)) {
+    if (iscontest && !CONTEST_IS(DXPED)) {
 	while (IsWarcIndex(bandinx)) {	/* loop till next contest band */
 	    next_band(direction);
 	}

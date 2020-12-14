@@ -103,7 +103,7 @@ void logit(void) {
 
 	    if (callreturn == '\n' && strlen(hiscall) >= 3) {
 		if ((*comment == '\0') && iscontest
-			&& !ctcomp && !IS_CONTEST(DXPED))
+			&& !ctcomp && !CONTEST_IS(DXPED))
 		    defer_store = 0;
 
 		if ((cqmode == CQ) && iscontest
@@ -118,7 +118,7 @@ void logit(void) {
 
 		    set_simulator_state(FINAL);
 
-		    if (IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1)) {
+		    if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
 
 			if (recall_exchange() == -1) {
 			    if (itumult == 1)
@@ -141,7 +141,7 @@ void logit(void) {
 		if ((cqmode == S_P) && iscontest
 			&& (defer_store == 0)) {	/* S&P mode */
 
-		    if (IS_CONTEST(CQWW)) {
+		    if (CONTEST_IS(CQWW)) {
 			if (strlen(comment) == 0 && recall_exchange() == -1)
 			    strcpy(comment, cqzone);	/* fill in the zone */
 

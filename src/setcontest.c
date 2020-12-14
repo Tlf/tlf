@@ -184,29 +184,29 @@ void setcontest(char *name) {
     contest = lookup_contest(name);
 
 
-    if (IS_CONTEST(CQWW)) {
+    if (CONTEST_IS(CQWW)) {
 	recall_mult = 1;
     }
 
-    if (IS_CONTEST(DXPED)) {
+    if (CONTEST_IS(DXPED)) {
 	recall_mult = 1;
     }
 
-    if (IS_CONTEST(SPRINT)) {
+    if (CONTEST_IS(SPRINT)) {
 	one_point = 1;
     }
 
-    if (IS_CONTEST(ARRLDX_USA)) {
+    if (CONTEST_IS(ARRLDX_USA)) {
 	recall_mult = 1;
     }
 
-    if (IS_CONTEST(ARRLDX_DX)) {
+    if (CONTEST_IS(ARRLDX_DX)) {
 	three_point = 1;
 	recall_mult = 1;
 	sectn_mult = 1;
     }
 
-    if (IS_CONTEST(ARRL_SS)) {
+    if (CONTEST_IS(ARRL_SS)) {
 	two_point = 1;
 	qso_once = true;
 	exchange_serial = 1;
@@ -215,11 +215,11 @@ void setcontest(char *name) {
 	noleadingzeros = 1;
     }
 
-    if (IS_CONTEST(ARRL_FD)) {
+    if (CONTEST_IS(ARRL_FD)) {
 	recall_mult = 1;
     }
 
-    if (IS_CONTEST(PACC_PA)) {
+    if (CONTEST_IS(PACC_PA)) {
 	one_point = 1;
 
 	zl_cty = getctynr(zlcall);
@@ -236,7 +236,7 @@ void setcontest(char *name) {
 	/* same here */
     }
 
-    if (IS_CONTEST(QSO)) {
+    if (CONTEST_IS(QSO)) {
 	iscontest = false;
 	showscore_flag = 0;
     }

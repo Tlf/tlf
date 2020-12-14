@@ -300,17 +300,17 @@ int score() {
 
     band_score[bandinx]++;	/* qso's per band  */
 
-    if (IS_CONTEST(ARRLDX_USA)
+    if (CONTEST_IS(ARRLDX_USA)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	band_score[bandinx]--;
 
-    if (IS_CONTEST(FOCMARATHON)) {
+    if (CONTEST_IS(FOCMARATHON)) {
 	points = foc_score(hiscall);
 
 	return points;
     }
 
-    if (IS_CONTEST(WPX)) {
+    if (CONTEST_IS(WPX)) {
 	if (countrynr == my.countrynr) {
 	    points = 1;
 
@@ -351,7 +351,7 @@ int score() {
 	}
     }				// end wpx
 
-    if (IS_CONTEST(CQWW)) {
+    if (CONTEST_IS(CQWW)) {
 
 	if (countrynr == 0) {
 	    zone = atoi(comment);
@@ -381,7 +381,7 @@ int score() {
     }
 
     /* end cqww */
-    if (IS_CONTEST(ARRL_FD)) {
+    if (CONTEST_IS(ARRL_FD)) {
 
 	if (trxmode == SSBMODE) {
 	    points = 1;
@@ -393,7 +393,7 @@ int score() {
 
     }				// end arrl_fd
 
-    if (IS_CONTEST(ARRLDX_USA)) {
+    if (CONTEST_IS(ARRLDX_USA)) {
 
 	if ((countrynr == w_cty) || (countrynr == ve_cty)) {
 	    points = 0;
@@ -405,7 +405,7 @@ int score() {
 	return points;
     }
 
-    if (IS_CONTEST(STEWPERRY)) {
+    if (CONTEST_IS(STEWPERRY)) {
 
 	double s1long, s1lat, s2long, s2lat, distance, azimuth;
 

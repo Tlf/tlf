@@ -429,7 +429,7 @@ int changepars(void) {
 	    break;
 	}
 	case 34: {		/* SIMULATOR  */
-	    if (!IS_CONTEST(CQWW)) {
+	    if (!CONTEST_IS(CQWW)) {
 		TLF_LOG_INFO(
 		    "Simulator mode is only supported for CQWW contest!");
 		break;
@@ -788,7 +788,7 @@ void multiplierinfo(void) {
 
     wipe_display();
 
-    if (IS_CONTEST(ARRL_SS)) {
+    if (CONTEST_IS(ARRL_SS)) {
 	int attributes;
 	char chmult[6];
 	char ch2mult[6];
@@ -831,7 +831,7 @@ void multiplierinfo(void) {
     }
 
     if (serial_section_mult == 1 || sectn_mult_once
-	    || (sectn_mult == 1 && !IS_CONTEST(ARRL_SS))) {
+	    || (sectn_mult == 1 && !CONTEST_IS(ARRL_SS))) {
 	char *tmp;
 	int worked_at;
 

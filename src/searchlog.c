@@ -76,7 +76,7 @@ void show_needed_sections(void);
  * \return - true if also WARC bands
  */
 int IsAllBand() {
-    return (IS_CONTEST(DXPED) || !iscontest);
+    return (CONTEST_IS(DXPED) || !iscontest);
 }
 
 
@@ -146,7 +146,7 @@ void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
     else
 	mvwprintw(search_win, nr_bands + 1, 28, "ITU:%02d", z);
 
-    if (IS_CONTEST(WPX) || pfxmult == 1) {
+    if (CONTEST_IS(WPX) || pfxmult == 1) {
 	i = strlen(dx->countryname);
 	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, pxstr);
     }
@@ -504,7 +504,7 @@ int getZone() {
     if (strlen(hiscall) == 2)
 	z1 = 0;
 
-    if (IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1)) {
+    if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
 	for (int i = 0; i < srch_index; i++) {
 
 	    /* get zone nr from previous QSO */
@@ -563,7 +563,7 @@ void displayWorkedZonesCountries(int z) {
 	}
     }
 
-    if (IS_CONTEST(CQWW) || !iscontest || IS_CONTEST(PACC_PA)) {
+    if (CONTEST_IS(CQWW) || !iscontest || CONTEST_IS(PACC_PA)) {
 
 	if ((countries[countrynr] & BAND10) != 0) {
 	    mvwprintw(search_win, 1, 36, "C");
@@ -604,7 +604,7 @@ void displayWorkedZonesCountries(int z) {
 	    }
 	}
     }
-    if (IS_CONTEST(CQWW) || (wazmult == 1) || (itumult == 1)) {
+    if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
 	if ((zones[z] & BAND10) != 0) {
 	    mvwprintw(search_win, 1, 37, "Z");
 	}
@@ -625,7 +625,7 @@ void displayWorkedZonesCountries(int z) {
 	}
     }
 
-    if (IS_CONTEST(PACC_PA)) {
+    if (CONTEST_IS(PACC_PA)) {
 
 	getpx(hiscall);
 
@@ -753,7 +753,7 @@ void searchlog() {
 	}
 
 	/* show needed sections for ARRL_Sweep Stake*/
-	if (dupe == NODUPE && IS_CONTEST(ARRL_SS))
+	if (dupe == NODUPE && CONTEST_IS(ARRL_SS))
 	    show_needed_sections();
 
 	if (dupe == ISDUPE) {
@@ -820,7 +820,7 @@ int load_callmaster(void) {
 
 	char *call = g_ascii_strup(s_inputbuffer, 11);
 
-	if (IS_CONTEST(ARRL_SS)) {
+	if (CONTEST_IS(ARRL_SS)) {
 	    /* keep only NA stations */
 	    if (strchr("AKWVCN", call[0]) == NULL) {
 		g_free(call);
@@ -853,7 +853,7 @@ void show_needed_sections(void) {
     int j, vert, hor, cnt, found;
     char mprint[50];
 
-    if (IS_CONTEST(ARRL_SS)) {
+    if (CONTEST_IS(ARRL_SS)) {
 	cnt = 0;
 
 	wattron(search_win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
