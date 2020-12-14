@@ -215,13 +215,13 @@ int parse_configfile(FILE *fp) {
 
 /** convert band string into index number (0..NBANDS-1) */
 int getidxbybandstr(char *confband) {
-    static char bands_strings[NBANDS][4] = {"160", "80", "60", "40", "30", "20", "17", "15", "12", "10"};
-    int i;
+    char buf[8];
 
     g_strchomp(confband);
 
-    for (i = 0; i < NBANDS; i++) {
-	if (strcmp(confband, g_strchomp(bands_strings[i])) == 0) {
+    for (int i = 0; i < NBANDS - 1; i++) {
+	strcpy(buf, band[i]);
+	if (strcmp(confband, g_strchug(buf)) == 0) {
 	    return i;
 	}
     }

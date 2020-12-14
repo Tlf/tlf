@@ -1221,6 +1221,7 @@ void test_bandweight_points(void **state) {
     assert_int_equal(bandweight_points[BANDINDEX_15], 1);
     assert_int_equal(bandweight_points[BANDINDEX_12], 0);
     assert_int_equal(bandweight_points[BANDINDEX_10], 2);
+    assert_int_equal(bandweight_points[BANDINDEX_OOB], 0);
 }
 
 void test_bandweight_multis(void **state) {
