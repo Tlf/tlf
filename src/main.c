@@ -660,7 +660,7 @@ int databases_load() {
 	return EXIT_FAILURE;
     }
 
-    status |= read_rules();	/* read the additional contest rules
+    status = read_rules();	/* read the additional contest rules
 				   in "rules/contestname" */
     if (status != PARSE_OK) {
 	showmsg("Problems parsing rule file!");

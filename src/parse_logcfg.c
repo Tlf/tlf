@@ -231,7 +231,6 @@ int getidxbybandstr(char *confband) {
 ////////////////////
 // global variables for matcher functions:
 GMatchInfo *match_info;
-//const char *keyword;
 const char *parameter;
 
 static int parse_int(const char *string, gint64 min, gint64 max, int *result) {

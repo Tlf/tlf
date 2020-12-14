@@ -341,21 +341,21 @@ static int call_parse_logcfg(const char *input) {
 
 void test_unknown_keyword(void **state) {
     int rc = call_parse_logcfg("UNKNOWN\r\n");   // DOS line ending
-    assert_int_equal(rc, PARSE_CONFIRM);
+    assert_int_equal(rc, PARSE_ERROR);
     assert_string_equal(showmsg_spy,
 			"Keyword 'UNKNOWN' not supported. See man page.\n");
 }
 
 void test_unknown_keyword2(void **state) {
     int rc = call_parse_logcfg("F19=CQ\n");   // starts with an existing keyword
-    assert_int_equal(rc, PARSE_CONFIRM);
+    assert_int_equal(rc, PARSE_ERROR);
     assert_string_equal(showmsg_spy,
 			"Keyword 'F19' not supported. See man page.\n");
 }
 
 void test_deprecated_keyword(void **state) {
     int rc = call_parse_logcfg("CW_TU_MSG=TU\n");
-    assert_int_equal(rc, PARSE_CONFIRM);
+    assert_int_equal(rc, PARSE_ERROR);
     assert_string_equal(showmsg_spy,
 			"Keyword 'CW_TU_MSG' not supported. See man page.\n");
 }
@@ -368,9 +368,9 @@ void test_logfile(void **state) {
 
 void test_logfile_no_arg(void **state) {
     int rc = call_parse_logcfg("LOGFILE\r\n");   // DOS line ending
-    assert_int_equal(rc, PARSE_CONFIRM);
+    assert_int_equal(rc, PARSE_ERROR);
     assert_string_equal(showmsg_spy,
-			"Keyword 'LOGFILE' must be followed by an parameter ('=....'). See man page.\n");
+			"Keyword 'LOGFILE' must be followed by a parameter ('=....'). See man page.\n");
 }
 
 void test_keyer_device(void **state) {
@@ -405,7 +405,9 @@ void test_usepartials(void **state) {
 
 void test_usepartials_with_arg(void **state) {
     int rc = call_parse_logcfg("USEPARTIALS=no\n");
-    assert_int_equal(rc, 0); // FIXME: this should be 1
+    assert_int_equal(rc, PARSE_ERROR);
+    assert_string_equal(showmsg_spy,
+			"Keyword 'USEPARTIALS' can't have a parameter. See man page.\n");
 }
 
 typedef struct {
