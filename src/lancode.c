@@ -33,6 +33,7 @@
 
 #include "err_utils.h"
 #include "get_time.h"
+#include "globalvars.h"
 #include "lancode.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -62,7 +63,6 @@ char bc_hostservice[MAXNODES][16] = {
 };
 char sendbuffer[256];
 int nodes = 0;
-int node;
 int send_error_limit[MAXNODES];
 //--------------------------------------
 /* default port to listen for incomming packets and to send packet to */
@@ -191,15 +191,15 @@ int lan_recv(void) {
 
 int lan_send_init(void) {
 
-    if (lan_active == 0)
-	return (1);
+    if (!lan_active)
+	return 1;
 
-    for (node = 0; node < nodes; node++) {
+    for (int node = 0; node < nodes; node++) {
 
 	bc_hostbyname[node] = gethostbyname(bc_hostaddress[node]);
 	if (bc_hostbyname[node] == NULL) {
 	    syslog(LOG_ERR, "%s\n", "LAN: gethostbyname failed");
-	    return (-1);
+	    return -1;
 	}
 
 	bzero(&bc_address[node], sizeof(bc_address[node]));	/* empty data structure */
@@ -220,44 +220,46 @@ int lan_send_init(void) {
 
 	if (bc_socket_descriptor[node] == -1) {
 	    syslog(LOG_ERR, "%s\n", "LAN: socket call failed");
-	    return (-1);
+	    return -1;
 	}
     }
 
-    return (0);
+    return 0;
 }
 
 int lan_send_close(void) {
 
-    if (lan_active == 0)
-	return (-1);
+    if (!lan_active)
+	return -1;
 
-    for (node = 0; node < nodes; node++) {
+    for (int node = 0; node < nodes; node++) {
 
 	bc_close_rc = close(bc_socket_descriptor[node]);
 	if (bc_close_rc == -1) {
 	    syslog(LOG_ERR, "%s\n", "LAN: close call failed");
-	    return (-1);
+	    return -1;
 	}
     }
 
-    return (0);
+    return 0;
 }
 
-int lan_send(char *lanbuffer) {
+static int lan_send(char *lanbuffer) {
 
-    if (lan_active == 0)
-	return (-1);
+    if (!lan_active)
+	return -1;
 
-    for (node = 0; node < nodes; node++) {
+    if (lanbuffer[0] == 0) {
+	return 0;       // nothing to send
+    }
 
-	if (lanbuffer[0] != '\0') {
-	    bc_sendto_rc = sendto(bc_socket_descriptor[node],
-				  lanbuffer, 256,
-				  0, (struct sockaddr *) &bc_address[node],
-				  sizeof(bc_address[node]));
+    for (int node = 0; node < nodes; node++) {
 
-	}
+	bc_sendto_rc = sendto(bc_socket_descriptor[node],
+			      lanbuffer, 256,
+			      0, (struct sockaddr *) &bc_address[node],
+			      sizeof(bc_address[node]));
+
 
 	if (bc_sendto_rc == -1) {
 	    if (send_error[node] >= (send_error_limit[node] + 10)) {
@@ -270,9 +272,7 @@ int lan_send(char *lanbuffer) {
 	    send_packets[node]++;
     }
 
-    lanbuffer[0] = '\0';
-
-    return (0);
+    return 0;
 }
 
 /* ----------------- send lan message ----------*/
@@ -332,7 +332,7 @@ int send_lan_message(int opcode, char *message) {
 	lan_send(sendbuffer);
     }
 
-    return (0);
+    return 0;
 }
 
 /* ----------------- send talk message ----------*/
@@ -366,56 +366,17 @@ int send_freq(freq_t freq) {
 
     char fbuffer[8];
 
-    if (trx_control == 1) {
-
+    if (trx_control) {
 	sprintf(fbuffer, "%7.1f", freq / 1000.0);
+    } else if (bandinx < BANDINDEX_OOB) {
+	sprintf(fbuffer, "  %s.0", band[bandinx]);
     } else {
-	switch (bandinx) {
-
-	    case 0:
-		sprintf(fbuffer, " 160.0");
-		break;
-
-	    case 1:
-		sprintf(fbuffer, "  80.0");
-		break;
-
-	    case 2:
-		sprintf(fbuffer, "  40.0");
-		break;
-
-	    case 3:
-		sprintf(fbuffer, "  30.0");
-		break;
-
-	    case 4:
-		sprintf(fbuffer, "  20.0");
-		break;
-
-	    case 5:
-		sprintf(fbuffer, "  17.0");
-		break;
-
-	    case 6:
-		sprintf(fbuffer, "  15.0");
-		break;
-
-	    case 7:
-		sprintf(fbuffer, "  12.0");
-		break;
-
-	    case 8:
-		sprintf(fbuffer, "  10.0");
-		break;
-
-	    default:
-		sprintf(fbuffer, "     ");
-	}
+	sprintf(fbuffer, "     ");
     }
 
     send_lan_message(FREQMSG, fbuffer);
 
-    return (0);
+    return 0;
 }
 
 /* ----------------- send time message ----------*/
