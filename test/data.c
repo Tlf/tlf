@@ -29,7 +29,6 @@
 #include "test.h"
 
 
-int lan_active = 0;
 char lastqsonr[5];
 
 int prsock = 0;
@@ -424,10 +423,6 @@ char section[8] = "";       // defined in getexchange.c
 char lan_logline[256];      // defined in lancode.c
 
 //////////////////
-
-int send_lan_message(int opcode, char *message) {
-    return 0;
-}
 
 #include <curses.h>
 NCURSES_EXPORT_VAR(WINDOW *) stdscr = NULL;
