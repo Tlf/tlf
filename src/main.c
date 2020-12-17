@@ -611,7 +611,6 @@ void ui_color_init() {
 
 static void init_variables() {
     extern int nodes;
-    extern int node;
 
     iscontest = false;
     partials = 0;
@@ -622,22 +621,16 @@ static void init_variables() {
     packetinterface = 0;
     tncport = 0;
     nodes = 0;
-    node = 0;
     shortqsonr = 0;
 
     /* Disable CT Mode until CTCOMPATIBLE is defined. */
     ctcomp = 0;
 
     for (int i = 0; i < 25; i++) {
-	if (digi_message[i] != NULL) {
-	    free(digi_message[i]);
-	    digi_message[i] = NULL;
-	}
+	FREE_DYNAMIC_STRING(digi_message[i]);
     }
-    if (cabrillo != NULL) {
-	free(cabrillo);
-	cabrillo = NULL;
-    }
+
+    FREE_DYNAMIC_STRING(cabrillo);
 
 }
 

@@ -28,6 +28,21 @@ int __wrap_wgetch(WINDOW *w) {
 void __wrap_refreshp() {
 }
 
+int sendto_call_count = 0;
+const char *sendto_last_message = NULL;
+int sendto_last_len = 0;
+
+ssize_t __wrap_sendto(int sockfd, const void *buf, size_t len, int flags,
+		      const struct sockaddr *dest_addr, socklen_t addrlen) {
+
+    FREE_DYNAMIC_STRING(sendto_last_message);
+    sendto_last_message = strdup(buf);
+    sendto_last_len = len;
+    ++sendto_call_count;
+
+    return len;
+}
+
 
 const char STRING_NOT_SET[] = "__NOT_SET__";
 

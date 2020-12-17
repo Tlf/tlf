@@ -115,7 +115,6 @@ extern int txdelay;
 extern char tonestr[];
 extern int weight;
 extern int nodes;
-extern int node;
 extern char bc_hostaddress[MAXNODES][16];
 extern char bc_hostservice[MAXNODES][16];
 extern rig_model_t myrig_model;
@@ -213,15 +212,16 @@ int parse_configfile(FILE *fp) {
     return status;
 }
 
-/** convert band string into index number (0..NBANDS-1) */
+/** convert band string into index number (0..NBANDS-2) */
+// note: NBANDS-1 is the OOB
 int getidxbybandstr(char *confband) {
-    static char bands_strings[NBANDS][4] = {"160", "80", "60", "40", "30", "20", "17", "15", "12", "10"};
-    int i;
+    char buf[8];
 
     g_strchomp(confband);
 
-    for (i = 0; i < NBANDS; i++) {
-	if (strcmp(confband, g_strchomp(bands_strings[i])) == 0) {
+    for (int i = 0; i < NBANDS - 1; i++) {
+	strcpy(buf, band[i]);
+	if (strcmp(confband, g_strchug(buf)) == 0) {
 	    return i;
 	}
     }
@@ -548,8 +548,7 @@ static int cfg_tncport(const cfg_arg_t arg) {
 }
 
 static int cfg_addnode(const cfg_arg_t arg) {
-    // FIXME typo? node -> nodes
-    if (node >= MAXNODES) {
+    if (nodes >= MAXNODES) {
 	error_details = g_strdup_printf("max %d nodes allowed", MAXNODES);
 	return PARSE_WRONG_PARAMETER;
     }
@@ -557,17 +556,16 @@ static int cfg_addnode(const cfg_arg_t arg) {
     char **an_fields;
     an_fields = g_strsplit(parameter, ":", 2);
     /* copy host name */
-    g_strlcpy(bc_hostaddress[node], g_strchomp(an_fields[0]),
+    g_strlcpy(bc_hostaddress[nodes], g_strchomp(an_fields[0]),
 	      sizeof(bc_hostaddress[0]));
     if (an_fields[1] != NULL) {
 	/* copy host port, if found */
-	g_strlcpy(bc_hostservice[node], g_strchomp(an_fields[1]),
+	g_strlcpy(bc_hostservice[nodes], g_strchomp(an_fields[1]),
 		  sizeof(bc_hostservice[0]));
     }
     g_strfreev(an_fields);
 
-    if (node++ < MAXNODES)
-	nodes++;
+    nodes++;
     lan_active = 1;
 
     return PARSE_OK;

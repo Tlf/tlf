@@ -10,6 +10,14 @@
 // OBJECT ../src/sendbuf.o
 // OBJECT ../src/sendspcall.o
 
+// lancode.c
+int lan_active = 0;
+
+int send_lan_message(int opcode, char *message) {
+    return 0;
+}
+
+
 char test_msg[1024];
 
 /* export internal function for test */
