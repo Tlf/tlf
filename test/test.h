@@ -45,7 +45,7 @@ extern void clear_mvprintw_history();
 
 // sendto()
 extern int sendto_call_count;
-extern const char *sendto_last_message;
+extern char *sendto_last_message;
 extern int sendto_last_len;
 
 

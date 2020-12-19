@@ -29,7 +29,7 @@ void __wrap_refreshp() {
 }
 
 int sendto_call_count = 0;
-const char *sendto_last_message = NULL;
+char *sendto_last_message = NULL;
 int sendto_last_len = 0;
 
 ssize_t __wrap_sendto(int sockfd, const void *buf, size_t len, int flags,
