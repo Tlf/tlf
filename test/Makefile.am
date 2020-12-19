@@ -7,6 +7,7 @@ LIBS = @LIBM_LIB@ @GLIB_LIBS@ @PANEL_LIBS@ @CURSES_LIBS@ @CMOCKA_LIBS@ \
         -Wl,-wrap=sleep \
         -Wl,-wrap=key_get \
         -Wl,-wrap=key_poll \
+        -Wl,-wrap=sendto \
         -Wl,-wrap=wgetch \
         -Wl,-wrap=refreshp
 

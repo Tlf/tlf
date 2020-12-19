@@ -12,10 +12,16 @@
 #include <setjmp.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #include <glib.h>
 
 #include <cmocka.h>
+
+#ifndef FREE_DYNAMIC_STRING
+#define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
+#endif
 
 extern const char STRING_NOT_SET[];
 
@@ -36,5 +42,11 @@ extern int __real_key_poll();
 #define LINESZ  100
 extern char mvprintw_history[NLAST][LINESZ];
 extern void clear_mvprintw_history();
+
+// sendto()
+extern int sendto_call_count;
+extern char *sendto_last_message;
+extern int sendto_last_len;
+
 
 #endif

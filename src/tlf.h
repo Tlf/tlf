@@ -187,5 +187,7 @@ void refreshp();
 
 extern const char *backgrnd_str;
 
+#define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
+
 #endif /* TLF_H */
 
