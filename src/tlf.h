@@ -213,5 +213,7 @@ typedef struct {
     char		*name;
 } contest_config_t;
 
+#define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
+
 #endif /* TLF_H */
 
