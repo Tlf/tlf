@@ -21,11 +21,8 @@
 #ifndef QRB_H
 #define QRB_H
 
-#define ARC_IN_KM 111.2
-#define RADIAN  (180.0 / M_PI)
+#include <hamlib/rotator.h>
 
-int qrb(double lon1, double lat1, double lon2, double lat2,
-	double *distance, double *azimuth);
 int get_qrb(double *range, double *bearing);
 
 #endif /* end of include guard: QRB_H */
