@@ -51,8 +51,8 @@
 #ifndef LOCATOR2LONGLAT_H
 #define LOCATOR2LONGLAT_H
 
+#include <hamlib/rotator.h>
 
-int locator2longlat(double *longitude, double *latitude, const char *locator);
 int check_qra(char *qra);
 
 #endif /* end of include guard: LOCATOR2LONGLAT_H */
