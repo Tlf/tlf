@@ -200,8 +200,6 @@ typedef enum {
     PACC_PA,
     STEWPERRY,
     FOCMARATHON,
-    OTHER,
-    UNIVERSAL,
     UNKNOWN
 } contest_type_t;
 
