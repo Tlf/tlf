@@ -19,6 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string.h>
+
 /* returns true if 'qra' is a valid QRA locator
  * note: only the first 4 characters are tested
  */
