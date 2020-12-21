@@ -51,10 +51,8 @@ void setup_multis(char *multstring) {
 
 
 int setup_default(void **state) {
-    char filename[100];
 
-    strcpy(filename, TOP_SRCDIR);
-    strcat(filename, "/share/cty.dat");
+    static char filename[] =  TOP_SRCDIR "/share/cty.dat";
     assert_int_equal(load_ctydata(filename), 0);
 
     setcontest("qso");

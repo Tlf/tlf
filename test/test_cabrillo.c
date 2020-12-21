@@ -30,11 +30,9 @@ void makelogline() {
     bandinx_spy = bandinx;
 }
 
-char formatfile[100];
+char formatfile[] = TOP_SRCDIR "/share/cabrillo.fmt" ;
 
 int setup(void **state) {
-    strcpy(formatfile, TOP_SRCDIR);
-    strcat(formatfile, "/share/cabrillo.fmt");
     return 0;
 }
 
@@ -136,10 +134,10 @@ void test_readCabrilloFormatWAE(void **state) {
 
 void test_readCabrilloFileNotFound(void **state) {
     struct cabrillo_desc *desc;
-    char formatfile1[100];
-    strcpy(formatfile1, TOP_SRCDIR);
-    strcat(formatfile1, "/share/cabrillo1.fmt");
+
+    static char formatfile1[] = TOP_SRCDIR "/share/cabrillo1.fmt";
     desc = read_cabrillo_format(formatfile1, "WAEDC");
+
     assert_null(desc);
 }
 

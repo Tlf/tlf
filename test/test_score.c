@@ -69,12 +69,8 @@ int setup(void **state) {
 }
 
 int setup_default(void **state) {
-    char filename[100];
 
-    /* TODO */
-    /* load_ctydata needs means to destroy the database */
-    strcpy(filename, TOP_SRCDIR);
-    strcat(filename, "/share/cty.dat");
+    static char filename[] =  TOP_SRCDIR "/share/cty.dat";
     assert_int_equal(load_ctydata(filename), 0);
 
     setcontest("qso");
@@ -103,13 +99,10 @@ int setup_default(void **state) {
 }
 
 int setup_ssbcw(void **state) {
-    char filename[100];
 
     setup_default(state);
-    /* TODO */
-    /* load_ctydata needs means to destroy the database */
-    strcpy(filename, TOP_SRCDIR);
-    strcat(filename, "/share/cty.dat");
+
+    static char filename[] =  TOP_SRCDIR "/share/cty.dat";
     assert_int_equal(load_ctydata(filename), 0);
 
     return 0;
