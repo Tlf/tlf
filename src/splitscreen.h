@@ -21,7 +21,7 @@
 #define SPLITSCREEN_H
 
 int init_packet(void) ;
-int cleanup_telnet(void);
+void cleanup_telnet(void);
 int packet(void);
 int send_cluster(void);
 void addtext(char *s);

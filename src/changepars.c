@@ -67,7 +67,6 @@
 #include "addmult.h"
 
 
-int debug_tty(void);
 void wipe_display();
 
 int changepars(void) {
@@ -150,7 +149,7 @@ int changepars(void) {
     strcpy(parameters[43], "SCVOLUME");
     //strcpy(parameters[44], "SCAN");	/* 05jan18 no longer supported */
     strcpy(parameters[44], "");
-    strcpy(parameters[45], "DEBUG");
+    strcpy(parameters[45], "");         //"DEBUG");
     strcpy(parameters[46], "MINITERM");
     strcpy(parameters[47], "RTTY");
     strcpy(parameters[48], "SOUND");
@@ -616,11 +615,6 @@ int changepars(void) {
 	    clear_display();
 	    break;
 	}
-	case 45: {		/* DEBUG */
-	    debug_tty();
-	    clear_display();
-	    break;
-	}
 	case 46: {		/* MINITERM ON/OFF */
 	    if (miniterm == 1)
 		miniterm = 0;
@@ -885,171 +879,6 @@ void multiplierinfo(void) {
     clear_display();
     return;
 }
-
-/* ------------------------- radio link debug ------------------------------ */
-
-int debug_tty(void) {
-
-    extern char *rigportname;
-    extern int serial_rate;
-
-    int fdSertnc;
-    int tncport = 0;
-    int i;
-    struct termios termattribs;
-    char line[20] = "?AF\015";
-    char inputline[80] = "";
-    const char eom[2] = { '\015', '\0' };
-
-    /* initialize ttyS0*/
-
-    for (i = 0; i < 24; i++)
-	mvprintw(i, 0,
-		 "                                                                                ");
-    refreshp();
-
-    if (rigportname[strlen(rigportname) - 1] == '\n')
-	rigportname[strlen(rigportname) - 1] = '\0';	// remove \n
-
-    mvprintw(4, 0, "Trying to open %s ", rigportname);
-    refreshp();
-
-    if (tncport == 1) {
-	if ((fdSertnc = open("/dev/ttyS2", O_RDWR | O_NONBLOCK)) < 0) {
-	    mvprintw(5, 0, "open of /dev/ttyS2 failed!!!");
-	    refreshp();
-	    sleep(2);
-	    return (-1);
-	}
-    } else if (tncport == 2) {
-
-	if ((fdSertnc = open("/dev/ttyS1", O_RDWR | O_NONBLOCK)) < 0) {
-	    mvprintw(5, 0, "open of /dev/ttyS1 failed!!!");
-	    refreshp();
-	    sleep(2);
-	    return (-1);
-	}
-    } else {
-	if ((fdSertnc = open(rigportname, O_RDWR | O_NONBLOCK)) < 0) {
-	    mvprintw(5, 0, "open of %s failed!!!", rigportname);
-	    refreshp();
-	    sleep(2);
-	    return (-1);
-	}
-
-    }
-
-    termattribs.c_iflag = IGNBRK | IGNPAR | IMAXBEL | IXOFF;
-    termattribs.c_oflag = 0;
-    termattribs.c_cflag = CS8 | CSTOPB | CREAD | CLOCAL;
-
-    termattribs.c_lflag = 0;	/* Set some term flags */
-
-    /*  The ensure there are no read timeouts (possibly writes?) */
-    termattribs.c_cc[VMIN] = 1;
-    termattribs.c_cc[VTIME] = 0;
-
-    switch (serial_rate) {
-
-	case 1200: {
-	    cfsetispeed(&termattribs, B1200);	/* Set input speed */
-	    cfsetospeed(&termattribs, B1200);	/* Set output speed */
-	    break;
-	}
-
-	case 2400: {
-	    cfsetispeed(&termattribs, B2400);	/* Set input speed */
-	    cfsetospeed(&termattribs, B2400);	/* Set output speed */
-	    break;
-	}
-
-	case 4800: {
-	    cfsetispeed(&termattribs, B4800);	/* Set input speed */
-	    cfsetospeed(&termattribs, B4800);	/* Set output speed */
-	    break;
-	}
-
-	case 9600: {
-	    cfsetispeed(&termattribs, B9600);	/* Set input speed */
-	    cfsetospeed(&termattribs, B9600);	/* Set output speed */
-	    break;
-	}
-	case 57600: {
-	    cfsetispeed(&termattribs, B57600);	/* Set input speed */
-	    cfsetospeed(&termattribs, B57600);	/* Set output speed */
-	    break;
-	}
-
-	default: {
-
-	    cfsetispeed(&termattribs, B9600);	/* Set input speed */
-	    cfsetospeed(&termattribs, B9600);	/* Set output speed */
-	}
-    }
-
-    tcsetattr(fdSertnc, TCSANOW, &termattribs);	/* Set the serial port */
-
-    mvprintw(6, 0, "%s opened...", rigportname);
-    refreshp();
-
-    mvprintw(13, 0, "Input command: ");
-    refreshp();
-    echo();
-    getnstr(line, 12);
-    noecho();
-    strcat(line, eom);
-
-    /* send message */
-    mvprintw(7, 0, "sending message to trx: %s", line);
-    mvprintw(7, 40, "Length = %d characters", strlen(line));
-    refreshp();
-
-    IGNORE(write(fdSertnc, line, strlen(line)));;
-
-    mvprintw(8, 0, "receiving message from trx");
-    refreshp();
-    usleep(30000);
-
-    if (fdSertnc > 0) {
-
-	int j = 0;
-
-//                      i = read (fdSertnc, inputline, BUFFERSIZE-1);   ### bug fix
-	i = read(fdSertnc, inputline, sizeof(inputline));
-
-	if (i > 0) {
-	    for (j = 0; j < i; j++) {
-		mvprintw(10, j * 10, "%#x", (char) inputline[j]);
-		mvprintw(11, j, "%c", (char) inputline[j]);
-		mvprintw(12, j * 10, "%d", (char) inputline[j] & 0xff);
-		refreshp();
-	    }
-	}
-	mvprintw(8, 40, "Length = %d characters", i);
-	if (inputline[0] == '@' && inputline[1] == 'A'
-		&& inputline[2] != 'F') {
-	    mvprintw(20, 0, "Frequency = %d Hz",
-		     ((inputline[3] & 0xff) * 65536) +
-		     ((inputline[4] & 0xff) * 256) +
-		     (inputline[5] & 0xff));
-	}
-
-	refreshp();
-	sleep(1);
-    }
-
-    mvprintw(23, 0, "done");
-    refreshp();
-    (void)key_get();
-
-    /* close the tty */
-
-    if (fdSertnc > 0)
-	close(fdSertnc);
-
-    return (0);
-}
-
 
 void wipe_display() {
     int j;

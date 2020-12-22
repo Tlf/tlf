@@ -63,7 +63,6 @@ extern int partials;
 extern int use_part;
 extern int portnum;
 extern int packetinterface;
-extern int tncport;
 extern char tncportname[];
 extern int shortqsonr;
 extern char *cabrillo;
@@ -536,11 +535,8 @@ static int cfg_sfi(const cfg_arg_t arg) {
 }
 
 static int cfg_tncport(const cfg_arg_t arg) {
-    // FIXME remove tncport, keep tncportname only
-    if (strlen(parameter) > 2) {
-	strncpy(tncportname, parameter, 39);
-    } else
-	tncport = atoi(parameter) + 1;
+
+    strncpy(tncportname, parameter, 39);
 
     packetinterface = TNC_INTERFACE;
     return PARSE_OK;
