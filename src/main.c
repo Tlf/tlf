@@ -323,7 +323,6 @@ char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
 int nr_of_spots;			/* Anzahl Lines in spot_ptr array */
 int packetinterface = 0;
 int fdSertnc = 0;
-int tncport = 1;
 char tncportname[40];
 char rigconf[80];
 int tnc_serial_rate = 2400;
@@ -612,7 +611,6 @@ static void init_variables() {
     digikeyer = NO_KEYER;
     portnum = 0;
     packetinterface = 0;
-    tncport = 0;
     nodes = 0;
     shortqsonr = 0;
 

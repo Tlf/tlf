@@ -751,7 +751,6 @@ int init_packet(void) {
     extern int portnum;
     extern char pr_hostaddress[];
     extern char spot_ptr[MAX_SPOTS][82];
-    extern int tncport;
     extern int fdSertnc;
     extern int packetinterface;
     extern int tnc_serial_rate;
@@ -823,33 +822,12 @@ int init_packet(void) {
 
     } else if (packetinterface == TNC_INTERFACE) {
 
-	if (strlen(tncportname) > 2) {
-	    tncportname[strlen(tncportname) - 1] = '\0';	// remove '\n'
-	    if ((fdSertnc = open(tncportname, O_RDWR | O_NONBLOCK)) < 0) {
-		wprintw(sclwin, "open of %s failed!!!\n", tncportname);
-		wrefresh(sclwin);
-		sleep(2);
-		return (-1);
-	    }
-	} else {
-	    if (tncport == 1) {
-		if ((fdSertnc =
-			    open("/dev/ttyS0", O_RDWR | O_NONBLOCK)) < 0) {
-		    wprintw(sclwin, "open of /dev/ttyS0 failed!!!\n");
-		    wrefresh(sclwin);
-		    sleep(2);
-		    return (-1);
-		}
-	    } else if (tncport == 2) {
-
-		if ((fdSertnc =
-			    open("/dev/ttyS1", O_RDWR | O_NONBLOCK)) < 0) {
-		    wprintw(sclwin, "open of /dev/ttyS1 failed!!!\n");
-		    wrefresh(sclwin);
-		    sleep(2);
-		    return (-1);
-		}
-	    }
+	tncportname[strlen(tncportname) - 1] = '\0';	// remove '\n'
+	if ((fdSertnc = open(tncportname, O_RDWR | O_NONBLOCK)) < 0) {
+	    wprintw(sclwin, "open of %s failed!!!\n", tncportname);
+	    wrefresh(sclwin);
+	    sleep(2);
+	    return -1;
 	}
 
 	termattribs.c_iflag = IGNBRK | IGNPAR | IMAXBEL | IXOFF;
@@ -895,7 +873,7 @@ int init_packet(void) {
 
 	tcsetattr(fdSertnc, TCSANOW, &termattribs);	/* Set the serial port */
 
-	wprintw(sclwin, "ttyS%d opened...\n", (tncport - 1));
+	wprintw(sclwin, "%s opened...\n", tncportname);
 	wrefresh(sclwin);
     } else if (packetinterface == FIFO_INTERFACE) {
 
@@ -946,13 +924,13 @@ int init_packet(void) {
 =
 ===========================================*/
 
-int cleanup_telnet(void) {
+void cleanup_telnet(void) {
 
     extern int packetinterface;
     extern int fdSertnc;
 
     if (!initialized) {
-	return 0;
+	return;
     }
 
     if (packetinterface == TELNET_INTERFACE) {
@@ -983,8 +961,6 @@ int cleanup_telnet(void) {
     clear();
     clear_display();
     keypad(stdscr, TRUE);
-
-    return (0);
 }
 
 /* =========================================
@@ -1068,7 +1044,7 @@ int packet() {
 
 		if (i == -1) {
 		    cleanup_telnet();
-		    return (-1);
+		    return -1;
 
 		} else if (i != -2) {
 		    line[i] = '\0';
@@ -1178,7 +1154,7 @@ int receive_packet(void) {
 	    view_state = STATE_EDITING;
 	    if (i == -1) {
 		cleanup_telnet();
-		return (-1);
+		return -1;
 	    } else if (i != -2) {
 		line[i] = '\0';
 		sanitize(line);

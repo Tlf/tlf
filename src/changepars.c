@@ -894,7 +894,6 @@ int debug_tty(void) {
     extern int serial_rate;
 
     int fdSertnc;
-    int tncport = 0;
     int i;
     struct termios termattribs;
     char line[20] = "?AF\015";
@@ -914,29 +913,11 @@ int debug_tty(void) {
     mvprintw(4, 0, "Trying to open %s ", rigportname);
     refreshp();
 
-    if (tncport == 1) {
-	if ((fdSertnc = open("/dev/ttyS2", O_RDWR | O_NONBLOCK)) < 0) {
-	    mvprintw(5, 0, "open of /dev/ttyS2 failed!!!");
-	    refreshp();
-	    sleep(2);
-	    return (-1);
-	}
-    } else if (tncport == 2) {
-
-	if ((fdSertnc = open("/dev/ttyS1", O_RDWR | O_NONBLOCK)) < 0) {
-	    mvprintw(5, 0, "open of /dev/ttyS1 failed!!!");
-	    refreshp();
-	    sleep(2);
-	    return (-1);
-	}
-    } else {
-	if ((fdSertnc = open(rigportname, O_RDWR | O_NONBLOCK)) < 0) {
-	    mvprintw(5, 0, "open of %s failed!!!", rigportname);
-	    refreshp();
-	    sleep(2);
-	    return (-1);
-	}
-
+    if ((fdSertnc = open(rigportname, O_RDWR | O_NONBLOCK)) < 0) {
+	mvprintw(5, 0, "open of %s failed!!!", rigportname);
+	refreshp();
+	sleep(2);
+	return (-1);
     }
 
     termattribs.c_iflag = IGNBRK | IGNPAR | IMAXBEL | IXOFF;
