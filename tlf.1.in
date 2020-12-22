@@ -278,10 +278,6 @@ the contest).
 Switch TRX to CW|SSB|Digimode mode.
 .
 .TP
-.BR :DEB ug_tty
-Debug routine for rig communication links.
-.
-.TP
 .BR :EDI t
 Edit the log with your favourite editor. Be careful!
 .
