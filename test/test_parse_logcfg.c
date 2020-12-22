@@ -13,6 +13,7 @@
 #include "../src/globalvars.h"
 #include "../src/getwwv.h"
 #include "../src/change_rst.h"
+#include "../src/setcontest.h"
 
 // OBJECT ../src/parse_logcfg.o
 // OBJECT ../src/get_time.o
@@ -21,6 +22,7 @@
 // OBJECT ../src/locator2longlat.o
 // OBJECT ../src/score.o
 // OBJECT ../src/qrb.o
+// OBJECT ../src/setcontest.o
 
 extern char keyer_device[10];
 extern int partials;
@@ -154,10 +156,7 @@ int call_update = 0;
 
 t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
 
-static bool setcontest_called;
-void setcontest() {
-    setcontest_called = true;
-}
+contest_config_t config_focm;
 
 static bool fldigi_on;
 bool fldigi_isenabled(void) {
@@ -235,7 +234,6 @@ int setup_default(void **state) {
     cwpoints = 1;
     trxmode = CWMODE;
     use_bandoutput = 0;
-    universal = 0;
     one_point = 0;
     two_point = 0;
     three_point = 0;
@@ -256,7 +254,8 @@ int setup_default(void **state) {
     rigptt = 0;
     minitest = 0;
 
-    strcpy(whichcontest, "qso");
+    setcontest(QSO_MODE);
+
     tonestr[0] = 0;
     multsfile[0] = 0;
     markerfile[0] = 0;
@@ -316,7 +315,6 @@ int setup_default(void **state) {
     FREE_DYNAMIC_STRING(rigportname);
 
     showmsg_spy = STRING_NOT_SET;
-    setcontest_called = false;
     rst_init_spy[0] = 0;
     fldigi_on = false;
 
@@ -860,14 +858,14 @@ void test_contest(void **state) {
     int rc = call_parse_logcfg("CONTEST= adx \n");
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(whichcontest, "adx");
-    assert_true(setcontest_called);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);	/* setcontest() called */
 }
 
 void test_rules(void **state) {
     int rc = call_parse_logcfg("RULES=bdx\n");
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(whichcontest, "bdx");
-    assert_true(setcontest_called);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
 void test_bandoutput(void **state) {
@@ -885,7 +883,6 @@ void test_one_points(void **state) {
     assert_int_equal(one_point, 1);
     assert_int_equal(two_point, 0);
     assert_int_equal(three_point, 0);
-    assert_int_equal(universal, 1);
 }
 void test_two_points(void **state) {
     int rc = call_parse_logcfg("TWO_POINTS\n");
@@ -893,7 +890,6 @@ void test_two_points(void **state) {
     assert_int_equal(one_point, 0);
     assert_int_equal(two_point, 1);
     assert_int_equal(three_point, 0);
-    assert_int_equal(universal, 1);
 }
 
 void test_three_points(void **state) {
@@ -902,7 +898,6 @@ void test_three_points(void **state) {
     assert_int_equal(one_point, 0);
     assert_int_equal(two_point, 0);
     assert_int_equal(three_point, 1);
-    assert_int_equal(universal, 1);
 }
 
 void test_bandmap(void **state) {
@@ -982,7 +977,6 @@ void test_mult_list(void **state) {
     int rc = call_parse_logcfg("MULT_LIST=mfile.txt\n");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(multlist, 1);
-    assert_int_equal(universal, 1);
     assert_string_equal(multsfile, "mfile.txt");
 }
 
@@ -1008,13 +1002,15 @@ void test_markercalls(void **state) {
 }
 
 void test_dx_n_sections(void **state) {
+    strcpy(whichcontest, "abc");
     int rc = call_parse_logcfg(" DX_&_SECTIONS \n");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(dx_arrlsections, 1);
-    assert_true(setcontest_called);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
 void test_countrylist(void **state) {
+    strcpy(whichcontest, "abc");
     strcpy(my.call, "GM1ABC");
     int rc = call_parse_logcfg("COUNTRYLIST=G, GM , F\n");
     assert_int_equal(rc, PARSE_OK);
@@ -1023,7 +1019,7 @@ void test_countrylist(void **state) {
     assert_string_equal(countrylist[2], "F");
     assert_string_equal(countrylist[3], "");
     assert_true(mult_side);
-    assert_true(setcontest_called);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
 void test_countrylist_from_file(void **state) {
@@ -1035,7 +1031,7 @@ void test_countrylist_from_file(void **state) {
     assert_string_equal(countrylist[1], "CT");
     assert_string_equal(countrylist[2], "");
     assert_true(mult_side);
-    assert_true(setcontest_called);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
 void test_countrylist_points(void **state) {
@@ -1190,12 +1186,13 @@ void test_continent_list_points(void **state) {
 }
 
 void test_continentlist(void **state) {
+    strcpy(whichcontest, "abc");
     int rc = call_parse_logcfg("CONTINENTLIST=NA, SA \n");
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(continent_multiplier_list[0], "NA");
     assert_string_equal(continent_multiplier_list[1], "SA");
     assert_string_equal(continent_multiplier_list[2], "");
-    assert_true(setcontest_called);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
 void test_continentlist_from_file(void **state) {
@@ -1204,7 +1201,7 @@ void test_continentlist_from_file(void **state) {
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(continent_multiplier_list[0], "AS");
     assert_string_equal(continent_multiplier_list[1], "");
-    assert_true(setcontest_called);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
 void test_bandweight_points(void **state) {
@@ -1239,6 +1236,7 @@ void test_bandweight_multis(void **state) {
 }
 
 void test_pfx_num_multis(void **state) {
+    strcpy(whichcontest, "abc");
     int rc = call_parse_logcfg("PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(pfxnummultinr, 8);
@@ -1251,7 +1249,7 @@ void test_pfx_num_multis(void **state) {
     assert_int_equal(pfxnummulti[6].countrynr, 12);
     assert_int_equal(pfxnummulti[7].countrynr, 11);
     assert_int_equal(pfxnummulti[8].countrynr, 0);
-    assert_true(setcontest_called);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
 void test_qtcrec_record_command(void **state) {

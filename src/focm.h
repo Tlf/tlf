@@ -21,7 +21,9 @@
 #ifndef _FOC_H
 #define _FOC_H
 
-extern int got_g4foc; 		/* did we got Gx4FOC on the air? */
+#include "tlf.h"
+
+extern contest_config_t config_focm;
 
 void foc_init(void);
 int foc_score(char *call);

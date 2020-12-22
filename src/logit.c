@@ -38,6 +38,7 @@
 #include "printcall.h"
 #include "recall_exchange.h"
 #include "searchlog.h"		// Includes glib.h
+#include "setcontest.h"
 #include "sendbuf.h"
 #include "sendqrg.h"
 #include "sendspcall.h"
@@ -57,7 +58,6 @@ void logit(void) {
     extern cqmode_t cqmode;
     extern char ph_message[14][80];
     extern char comment[];
-    extern int cqww;
     extern char cqzone[];
     extern char itustr[];
     extern int defer_store;
@@ -67,7 +67,6 @@ void logit(void) {
     extern int itumult;
     extern int qsonum;
     extern int exchange_serial;
-    extern int dxped;
     extern int sprint_mode;
 
     int callreturn = 0;
@@ -104,7 +103,7 @@ void logit(void) {
 
 	    if (callreturn == '\n' && strlen(hiscall) >= 3) {
 		if ((*comment == '\0') && iscontest
-			&& !ctcomp && !dxped)
+			&& !ctcomp && !CONTEST_IS(DXPED))
 		    defer_store = 0;
 
 		if ((cqmode == CQ) && iscontest
@@ -119,7 +118,7 @@ void logit(void) {
 
 		    set_simulator_state(FINAL);
 
-		    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+		    if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
 
 			if (recall_exchange() == -1) {
 			    if (itumult == 1)
@@ -142,7 +141,7 @@ void logit(void) {
 		if ((cqmode == S_P) && iscontest
 			&& (defer_store == 0)) {	/* S&P mode */
 
-		    if (cqww == 1) {
+		    if (CONTEST_IS(CQWW)) {
 			if (strlen(comment) == 0 && recall_exchange() == -1)
 			    strcpy(comment, cqzone);	/* fill in the zone */
 

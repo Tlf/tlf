@@ -37,6 +37,7 @@
 #include "getctydata.h"
 #include "locator2longlat.h"
 #include "qrb.h"
+#include "setcontest.h"
 #include "tlf.h"
 
 extern char countrylist[][6];
@@ -280,19 +281,13 @@ int score() {
     extern int dupe;
     extern int band_score[NBANDS];
     extern int bandinx;
-    extern int focm;
-    extern int wpx;
     extern int countrynr;
     extern char continent[];
     extern char comment[];
-    extern int cqww;
-    extern int arrl_fd;
-    extern int arrldx_usa;
     extern int w_cty;
     extern int ve_cty;
     extern int trxmode;
     extern char hiscall[];
-    extern int stewperry_flg;
 
     int points;
     int zone;
@@ -305,17 +300,17 @@ int score() {
 
     band_score[bandinx]++;	/* qso's per band  */
 
-    if ((arrldx_usa == 1)
+    if (CONTEST_IS(ARRLDX_USA)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	band_score[bandinx]--;
 
-    if (focm == 1) {
+    if (CONTEST_IS(FOCMARATHON)) {
 	points = foc_score(hiscall);
 
 	return points;
     }
 
-    if (wpx == 1) {
+    if (CONTEST_IS(WPX)) {
 	if (countrynr == my.countrynr) {
 	    points = 1;
 
@@ -356,7 +351,7 @@ int score() {
 	}
     }				// end wpx
 
-    if (cqww == 1) {
+    if (CONTEST_IS(CQWW)) {
 
 	if (countrynr == 0) {
 	    zone = atoi(comment);
@@ -386,7 +381,7 @@ int score() {
     }
 
     /* end cqww */
-    if (arrl_fd == 1) {
+    if (CONTEST_IS(ARRL_FD)) {
 
 	if (trxmode == SSBMODE) {
 	    points = 1;
@@ -398,7 +393,7 @@ int score() {
 
     }				// end arrl_fd
 
-    if (arrldx_usa == 1) {
+    if (CONTEST_IS(ARRLDX_USA)) {
 
 	if ((countrynr == w_cty) || (countrynr == ve_cty)) {
 	    points = 0;
@@ -410,7 +405,7 @@ int score() {
 	return points;
     }
 
-    if (stewperry_flg == 1) {
+    if (CONTEST_IS(STEWPERRY)) {
 
 	double s1long, s1lat, s2long, s2lat, distance, azimuth;
 

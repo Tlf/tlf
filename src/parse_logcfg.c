@@ -390,13 +390,14 @@ static int cfg_call(const cfg_arg_t arg) {
 }
 
 static int cfg_contest(const cfg_arg_t arg) {
+    char contest[41];
     int rc = cfg_string((cfg_arg_t) {
-	.char_p = whichcontest, .size = 40, .strip = true, .string_type = STATIC
+	.char_p = contest, .size = 40, .strip = true, .string_type = STATIC
     });
     if (rc != PARSE_OK) {
 	return rc;
     }
-    setcontest();
+    setcontest(contest);
     return PARSE_OK;
 }
 
@@ -435,8 +436,6 @@ static int cfg_n_points(const cfg_arg_t arg) {
     }
 
     g_free(keyword);
-
-    universal = 1;
 
     return PARSE_OK;
 }
@@ -595,7 +594,6 @@ static int cfg_mult_list(const cfg_arg_t arg) {
 	return rc;
     }
     multlist = 1;
-    universal = 1;
     return PARSE_OK;
 }
 
@@ -621,7 +619,7 @@ static int cfg_markers(const cfg_arg_t arg) {
 
 static int cfg_dx_n_sections(const cfg_arg_t arg) {
     dx_arrlsections = 1;
-    setcontest();
+    setcontest(whichcontest);
     return PARSE_OK;
 }
 
@@ -686,7 +684,7 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     /* on which multiplier side of the rules we are */
     getpx(my.call);
     mult_side = exist_in_country_list();
-    setcontest();
+    setcontest(whichcontest);
 
     return PARSE_OK;
 }
@@ -751,7 +749,7 @@ static int cfg_continentlist(const cfg_arg_t arg) {
 	}
     }
 
-    setcontest();
+    setcontest(whichcontest);
 
     return PARSE_OK;
 }
@@ -848,7 +846,7 @@ static int cfg_pfx_num_multis(const cfg_arg_t arg) {
 	}
     }
     pfxnummultinr = counter;
-    setcontest();
+    setcontest(whichcontest);
     return PARSE_OK;
 }
 

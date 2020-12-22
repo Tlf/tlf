@@ -5,6 +5,7 @@
 #include "../src/tlf_curses.h"
 #include "../src/tlf_panel.h"
 #include "../src/searchlog.h"
+#include "../src/setcontest.h"
 #include "../src/dxcc.h"
 
 // OBJECT ../src/addmult.o
@@ -17,6 +18,7 @@
 // OBJECT ../src/nicebox.o
 // OBJECT ../src/qtcutil.o
 // OBJECT ../src/printcall.o
+// OBJECT ../src/setcontest.o
 // OBJECT ../src/err_utils.o
 // OBJECT ../src/ui_utils.o
 
@@ -26,7 +28,7 @@ extern int nr_bands;
 extern int searchflg;
 extern int use_part;
 extern int partials;
-extern int cqww;
+//extern int cqww;
 extern int mixedmode;
 
 extern char zone_export[];
@@ -86,6 +88,13 @@ int getctydata(char *checkcallptr) {
     return 0;
 }
 
+
+contest_config_t config_focm;
+
+int getctynr(void) {
+    return 42;
+}
+
 /*********************/
 #define QSO1 " 40SSB 12-Jan-18 16:34 0006  SP9ABC         599  599  15                     1         "
 #define QSO2 " 40CW  12-Jan-18 11:42 0127  K4DEF          599  599  05                     3   7026.1"
@@ -112,9 +121,10 @@ int setup_default(void **state) {
 	strcpy(searchresult[i], "");
 
     showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
-    arrlss = 0;
-    dxped = 0;
+
+    contest = &config_qso;
     iscontest = false;
+
     search_win = NULL;
     searchflg = SEARCHWINDOW;
     trxmode = CWMODE;
@@ -196,8 +206,8 @@ void test_callmaster_ok_spaces(void **state) {
 }
 
 void test_callmaster_ok_arrlss(void **state) {
+    setcontest("arrl_ss");
     write_callmaster("callmaster", "# data\nA1AA\nG0CC\nN2BB\n\n");
-    arrlss = 1;
     int n = load_callmaster();
     assert_int_equal(n, 2);
     assert_string_equal(CALLMASTERARRAY(0), "A1AA");
@@ -225,7 +235,7 @@ void test_init_search_panel_contest(void **state) {
 }
 
 void test_init_search_panel_dxped(void **state) {
-    dxped = 1;
+    contest = lookup_contest("dxped");
     InitSearchPanel();
     assert_int_equal(nr_bands, 9);
 }
@@ -368,7 +378,7 @@ void test_displayPartials(void **state) {
  * - can be picked up from previous qso if we have full match
  * - or overwritten in exchange field */
 void test_ZoneFromCountry(void **state) {
-    cqww = 1;
+    setcontest("cqww");
     strcpy(zone_export, "15");
     strcpy(hiscall, "OH2");
     filterLog();
@@ -376,7 +386,7 @@ void test_ZoneFromCountry(void **state) {
 }
 
 void test_ZoneFromExchange(void **state) {
-    cqww = 1;
+    setcontest("cqww");
     strcpy(zone_fix, "14");
     strcpy(zone_export, "15");
     strcpy(hiscall, "OH2");
@@ -385,8 +395,8 @@ void test_ZoneFromExchange(void **state) {
 }
 
 void test_ZoneFromLog_mixedmode(void **state) {
+    setcontest("cqww");
     mixedmode = 1;
-    cqww = 1;
     strcpy(zone_export, "14");
     strcpy(hiscall, "K4D");
     filterLog();
@@ -394,7 +404,7 @@ void test_ZoneFromLog_mixedmode(void **state) {
 }
 
 void test_ZoneFromLog(void **state) {
-    cqww = 1;
+    setcontest("cqww");
     strcpy(zone_export, "14");
     strcpy(hiscall, "SP9");
     filterLog();
@@ -409,7 +419,7 @@ void test_OnLowerSearchPanel_contest(void **state) {
 }
 
 void test_OnLowerSearchPanel_AllBand(void **state) {
-    dxped = 1;
+    contest = lookup_contest("dxped");
     OnLowerSearchPanel(4, "test");
     check_mvprintw_output(0, 11, 4, "test");
 }

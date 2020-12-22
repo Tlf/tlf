@@ -32,24 +32,107 @@
 #include "setcontest.h"
 #include "tlf.h"
 
+/* configurations for supported contest */
+contest_config_t config_unknown = {
+    .id = UNKNOWN,
+    .name = "Unknown"
+};
 
-void setcontest(void) {
+contest_config_t config_qso = {
+    .id = QSO,
+    .name = QSO_MODE
+};
 
-    extern int focm;
-    extern int wpx;
-    extern int cqww;
-    extern int dxped;
-    extern int sprint;
-    extern int arrldx_usa;
+contest_config_t config_dxped = {
+    .id = DXPED,
+    .name = "DXPED"
+};
+
+contest_config_t config_wpx = {
+    .id = WPX,
+    .name = "WPX"
+};
+
+contest_config_t config_cqww = {
+    .id = CQWW,
+    .name = "CQWW"
+};
+
+contest_config_t config_sprint = {
+    .id = SPRINT,
+    .name = "SPRINT"
+};
+
+contest_config_t config_arrldx_usa = {
+    .id = ARRLDX_USA,
+    .name = "ARRLDX_USA"
+};
+
+contest_config_t config_arrldx_dx = {
+    .id = ARRLDX_DX,
+    .name = "ARRLDX_DX"
+};
+
+contest_config_t config_arrl_ss = {
+    .id = ARRL_SS,
+    .name = "ARRL_SS"
+};
+
+contest_config_t config_arrl_fd = {
+    .id = ARRL_FD,
+    .name = "ARRL_FD"
+};
+
+contest_config_t config_pacc_pa = {
+    .id = PACC_PA,
+    .name = "PACC_PA"
+};
+
+contest_config_t config_stewperry = {
+    .id = STEWPERRY,
+    .name = "STEWPERRY"
+};
+
+
+/* table with pointers to all supported contests */
+contest_config_t *contest_configs[] = {
+    &config_qso,
+    &config_dxped,
+    &config_wpx,
+    &config_cqww,
+    &config_sprint,
+    &config_arrldx_usa,
+    &config_arrldx_dx,
+    &config_arrl_ss,
+    &config_arrl_fd,
+    &config_pacc_pa,
+    &config_stewperry,
+    &config_focm,
+};
+
+#define NR_CONTESTS (sizeof(contest_configs)/sizeof(contest_config_t*))
+
+/** lookup contest config by name in config table
+ *
+ * ignore configs where .name is not set
+ */
+contest_config_t *lookup_contest(char *name) {
+    for (int i = 0; i < NR_CONTESTS; i++) {
+	if (contest_configs[i]->name != NULL) {
+	    if (strcasecmp(contest_configs[i]->name, name) == 0) {
+		return contest_configs[i];
+	    }
+	}
+    }
+    return &config_unknown;
+}
+
+/** setup standard configuration for contest 'name' */
+void setcontest(char *name) {
+
     extern int dx_arrlsections;
-    extern int arrl_fd;
-    extern int arrlss;
     extern int multlist;
-    extern int pacc_pa_flg;
-    extern int stewperry_flg;
-    extern int universal;
     extern int exchange_serial;
-    extern int wysiwyg_multi;
     extern int w_cty;
     extern int ve_cty;
     extern int zl_cty;
@@ -83,14 +166,6 @@ void setcontest(void) {
     char zscall[] = "ZS6AA";
     char ua9call[] = "UA9AA";
 
-    wpx = 0;
-    cqww = 0;
-    dxped = 0;
-    sprint = 0;
-    arrldx_usa = 0;
-    pacc_pa_flg = 0;
-    focm = 0;
-    universal = 0;
     iscontest = true;
     showscore_flag = 1;
     searchflg = 1;
@@ -104,54 +179,47 @@ void setcontest(void) {
     w_cty = getctynr(wcall);
     ve_cty = getctynr(vecall);
 
-    if (strcmp(whichcontest, "wpx") == 0) {
-	wpx = 1;
-    }
+    strcpy(whichcontest, name);
 
-    if (strcmp(whichcontest, "cqww") == 0) {
-	cqww = 1;
+    contest = lookup_contest(name);
+
+
+    if (CONTEST_IS(CQWW)) {
 	recall_mult = 1;
     }
 
-    if (strcmp(whichcontest, "dxped") == 0) {
-	dxped = 1;
+    if (CONTEST_IS(DXPED)) {
 	recall_mult = 1;
     }
 
-    if (strcmp(whichcontest, "sprint") == 0) {
-	sprint = 1;
+    if (CONTEST_IS(SPRINT)) {
 	one_point = 1;
     }
 
-    if (strcmp(whichcontest, "arrldx_usa") == 0) {
-	arrldx_usa = 1;
+    if (CONTEST_IS(ARRLDX_USA)) {
 	recall_mult = 1;
     }
 
-    if (strcmp(whichcontest, "arrldx_dx") == 0) {
+    if (CONTEST_IS(ARRLDX_DX)) {
 	three_point = 1;
 	recall_mult = 1;
 	sectn_mult = 1;
     }
 
-    if (strcmp(whichcontest, "arrl_ss") == 0) {
-	arrlss = 1;
+    if (CONTEST_IS(ARRL_SS)) {
 	two_point = 1;
 	qso_once = true;
 	exchange_serial = 1;
 	multlist = 1;
-	recall_mult = 0;
 //      sectn_mult = 1;
 	noleadingzeros = 1;
     }
 
-    if (strcmp(whichcontest, "arrl_fd") == 0) {
-	arrl_fd = 1;
+    if (CONTEST_IS(ARRL_FD)) {
 	recall_mult = 1;
     }
 
-    if (strcmp(whichcontest, "pacc_pa") == 0) {
-	pacc_pa_flg = 1;
+    if (CONTEST_IS(PACC_PA)) {
 	one_point = 1;
 
 	zl_cty = getctynr(zlcall);
@@ -164,32 +232,12 @@ void setcontest(void) {
 	ua9_cty = getctynr(ua9call);
     }
 
-    if (strcmp(whichcontest, "stewperry") == 0) {
-	stewperry_flg = 1;
-    }
-
-    if (strcmp(whichcontest, "focmarathon") == 0) {
-	foc_init();
-    }
-
-    if (strcmp(whichcontest, "other") == 0) {
-	one_point = 1;
-	recall_mult = 1;
-	wysiwyg_multi = 1;
-    }
-
-    if (strcmp(whichcontest, "universal") == 0) {
-	/* nothing special to do */
-    }
-
     if (dx_arrlsections == 1) {
 	/* same here */
     }
 
-    if (strcmp(whichcontest, "qso") == 0) {
+    if (CONTEST_IS(QSO)) {
 	iscontest = false;
 	showscore_flag = 0;
-    } else {		    //dxpedition
-	universal = 1;
     }
 }

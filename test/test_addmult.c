@@ -2,19 +2,31 @@
 
 #include "../src/tlf.h"
 #include "../src/addmult.h"
+#include "../src/dxcc.h"
 #include "../src/globalvars.h"
 #include "../src/bands.h"
+#include "../src/setcontest.h"
 #include <stdio.h>
 #include <unistd.h>
 
 // OBJECT ../src/addmult.o
 // OBJECT ../src/bands.o
+// OBJECT ../src/dxcc.o
+// OBJECT ../src/setcontest.o
 
 extern mults_t multis[MAX_MULTS];
 extern int nr_multis;
 
 extern char multsfile[];	/* name of file with a list of allowed
 				   multipliers */
+
+/* dummies */
+int getctynr() {
+    return 42;
+}
+
+contest_config_t config_focm;
+
 
 char *testfile = "mults";
 
@@ -39,13 +51,17 @@ void setup_multis(char *multstring) {
 
 
 int setup_default(void **state) {
+
+    static char filename[] =  TOP_SRCDIR "/share/cty.dat";
+    assert_int_equal(load_ctydata(filename), 0);
+
+    setcontest("qso");
+
     bandinx = BANDINDEX_80;
 
-    arrlss = 0;
     shownewmult = -1;
     wysiwyg_once = 0;
     wysiwyg_multi = 0;
-    arrlss = 0;
     serial_section_mult = 0;
     sectn_mult = 0;
     serial_grid4_mult = 0;
@@ -266,7 +282,8 @@ void test_serial_grid4_empty(void **state) {
 }
 
 void test_arrlss(void **state) {
-    arrlss = 1;
+    setcontest("arrl_ss");
+
     setup_multis("SC\nSCV\n");
     strcpy(ssexchange, "SCV");
     addmult();
@@ -319,7 +336,8 @@ char logline_2[] =
     " 20CW  08-Feb-11 17:06 0025  W3ND           599  599  WAC                     2 ";
 
 void test_arrlss_2(void **state) {
-    arrlss = 1;
+    setcontest("arrl_ss");
+
     setup_multis("SC\nSCV\n");
     strcpy(lan_logline, logline);
     addmult2();

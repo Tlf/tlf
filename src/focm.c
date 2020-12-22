@@ -31,7 +31,6 @@
 #include "bands.h"
 
 
-extern int focm;
 extern int showscore_flag;
 extern int searchflg;
 extern int total;
@@ -50,10 +49,11 @@ int cntry;
 int cont;
 
 
-/** Initialize settings for FOC contest */
-void foc_init(void) {
-    focm = 1;
-}
+/** FOC contest configuration */
+contest_config_t config_focm = {
+    .id = FOCMARATHON,
+    .name = "FOCMARATHON"
+};
 
 
 /** calculate score for last QSO

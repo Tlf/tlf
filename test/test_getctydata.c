@@ -4,12 +4,14 @@
 #include "../src/dxcc.h"
 #include "../src/readctydata.h"
 #include "../src/globalvars.h"
+#include "../src/setcontest.h"
 
 #include "../src/getctydata.h"
 
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
+// OBJECT ../src/setcontest.o
 
 /* export internal function */
 int location_unknown(char *call);
@@ -17,17 +19,17 @@ int getpfxindex(char *checkcallptr, char **normalized_call);
 
 extern char countrylist[255][6];
 
+contest_config_t config_focm;
 
 int setup_default(void **state) {
-    char filename[100];
 
-    wpx = 0;
+    static char filename[] =  TOP_SRCDIR "/share/cty.dat";
+    assert_int_equal(load_ctydata(filename), 0);
+
+    setcontest("qso");
     pfxmult = 0;
     strcpy(countrylist[0], "");
 
-    strcpy(filename, TOP_SRCDIR);
-    strcat(filename, "/share/cty.dat");
-    assert_int_equal(load_ctydata(filename), 0);
     return 0;
 }
 
@@ -91,7 +93,6 @@ void test_same_result(void **data) {
 
 void test_no_wpx(void **state) {
     int nr;
-    wpx = 0;
     pxstr[0] = '\0';
     nr = getctydata("DJ/PA3LM");
     assert_string_equal(pxstr, "");
@@ -100,7 +101,18 @@ void test_no_wpx(void **state) {
 
 void test_is_wpx(void **state) {
     int nr;
-    wpx = 1;
+
+    setcontest("wpx");
+    pxstr[0] = '\0';
+    nr = getctydata("DJ/PA3LM");
+    assert_string_equal(pxstr, "DJ0");
+    assert_int_equal(getctydata("DL"), nr);
+}
+
+void test_pfxmult_set(void **state) {
+    int nr;
+
+    pfxmult = 1;
     pxstr[0] = '\0';
     nr = getctydata("DJ/PA3LM");
     assert_string_equal(pxstr, "DJ0");

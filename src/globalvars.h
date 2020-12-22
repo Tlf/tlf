@@ -6,6 +6,8 @@
 #include "tlf.h"
 
 extern mystation_t my;			// all about my station
+extern char whichcontest[];
+extern contest_config_t *contest;	// contest configuration
 
 extern char qsos[MAX_QSOS][LOGLINELEN + 1];
 					// array of log lines of QSOs so far;
@@ -35,16 +37,12 @@ extern int bandinx;			// band we're currently working on
 
 extern char logfile[];
 extern bool iscontest;
-extern int cqww;
-extern int arrldx_usa;
-extern int pacc_pa_flg;
+
 extern int country_mult;
 extern char hiscall[20];
 extern int total;
 extern int band_score[NBANDS];		// QSO/band
 extern int zones[MAX_ZONES];
-extern int wpx;
-extern int arrlss;
 extern int serial_section_mult;
 extern int serial_grid4_mult;
 extern int sectn_mult;
@@ -62,7 +60,6 @@ extern int ve_cty;
 extern int pfxmult;
 extern int pfxmultab;
 extern int minute_timer;
-extern int stewperry_flg;
 extern int unique_call_multi;
 
 extern char logline_edit[5][LOGLINELEN + 1];
@@ -86,7 +83,7 @@ extern char ssexchange[];
 extern int shownewmult;
 extern char comment[];
 
-extern char  lan_logline[];
+extern char lan_logline[];
 extern char logfile[];
 extern char qsonrstr[];
 extern int lan_mutex;
@@ -110,12 +107,9 @@ extern int wazmult;
 extern int addcallarea;
 extern int addcty;
 extern char zone_fix[];
-extern int universal;
-extern int arrl_fd;
 extern int one_point;
 extern int two_point;
 extern int three_point;
-extern int dxped;
 extern int addzone;
 extern int do_cabrillo;
 extern rmode_t digi_mode;

@@ -66,6 +66,7 @@
 #include "searchlog.h"		// Includes glib.h
 #include "sendbuf.h"
 #include "sendspcall.h"
+#include "setcontest.h"
 #include "show_help.h"
 #include "showinfo.h"
 #include "showpxmap.h"
@@ -94,7 +95,6 @@ extern int no_arrows;
 extern char hiscall[];
 extern int bandinx;
 extern char band[NBANDS][4];
-extern int dxped;
 extern freq_t freq;
 extern int trx_control;
 extern freq_t bandfrequency[];
@@ -124,7 +124,6 @@ int callinput(void) {
     extern int zonedisplay;
     extern int showscore_flag;
     extern int searchflg;
-    extern int cqww;
     extern char cqzone[];
     extern char ituzone[];
     extern int ctcomp;
@@ -307,7 +306,7 @@ int callinput(void) {
 		} else {
 
 		    if (strlen(hiscall) > 2) {
-			if (((cqww == 1) || (wazmult == 1))
+			if ((CONTEST_IS(CQWW) || (wazmult == 1))
 				&& (*comment == '\0'))
 			    strcpy(comment, cqzone);
 
@@ -792,7 +791,7 @@ int callinput(void) {
 
 	    // Alt-z (M-z), show zones worked.
 	    case ALT_Z: {
-		if (cqww == 1) {
+		if (CONTEST_IS(CQWW)) {
 		    if (zonedisplay == 0)
 			zonedisplay = 1;
 		    else {
@@ -1316,7 +1315,7 @@ void handle_bandswitch(int direction) {
 
     next_band(direction);
 
-    if (iscontest && dxped == 0) {
+    if (iscontest && !CONTEST_IS(DXPED)) {
 	while (IsWarcIndex(bandinx)) {	/* loop till next contest band */
 	    next_band(direction);
 	}

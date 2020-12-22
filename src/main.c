@@ -56,12 +56,13 @@
 #include "scroll_log.h"
 #include "searchlog.h"		// Includes glib.h
 #include "sendqrg.h"
+#include "setcontest.h"
 #include "set_tone.h"
 #include "splitscreen.h"
 #include "startmsg.h"
 #include "tlf_panel.h"
-#include "ui_utils.h"
 #include "readcabrillo.h"
+#include "ui_utils.h"
 
 #include <config.h>
 
@@ -94,22 +95,15 @@ int no_arrows = 0;
 int bandindexarray[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 int cqwwm2 = 0;
 
+char whichcontest[40] = "qso";
+bool iscontest = false;		/* false =  General,  true  = contest */
+contest_config_t *contest = &config_qso;	/* contest configuration */
+
 /* predefined contests */
-int cqww = 0;
-int wpx = 0;
-int dxped = 0;
-int sprint = 0;
-int arrldx_usa = 0;
-int arrl_fd = 0;
-int arrlss = 0;
-int pacc_pa_flg = 0;
-int stewperry_flg = 0;
-int focm = 0;
 int sprint_mode = 0;
 int minitest = 0;	/**< if set, length of minitest period in seconds */
 int unique_call_multi = 0;          /* do we count calls as multiplier */
 
-int universal = 0;
 
 int addcallarea;
 int pfxmult = 0;
@@ -199,11 +193,10 @@ int searchflg = 0;		/* 1  = display search  window */
 int show_time = 0;
 cqmode_t cqmode = CQ;
 int demode = 0;			/* 1 =  send DE  before s&p call  */
-bool iscontest = false;		/* false =  General,  true  = contest */
+
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 int showscore_flag = 0;		/* show  score window */
 char exchange[40];
-char whichcontest[40] = "qso";
 int defer_store = 0;
 mystation_t my;			/* all info about me */
 //char call[20];

@@ -21,6 +21,13 @@
 #ifndef SETCONTEST_H
 #define SETCONTEST_H
 
-void setcontest(void);
+#include "globalvars.h"
+
+#define CONTEST_IS(cid) (contest->id == cid)
+
+extern contest_config_t config_qso;
+
+contest_config_t *lookup_contest(char *name);
+void setcontest(char *name);
 
 #endif /* SETCONTEST_H */

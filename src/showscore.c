@@ -34,6 +34,7 @@
 #include "nicebox.h"		// Includes curses.h
 #include "printcall.h"
 #include "bands.h"
+#include "setcontest.h"
 #include "ui_utils.h"
 
 #define START_COL 45	/* start display in these column */
@@ -118,9 +119,6 @@ void display_header(int *bi) {
 }
 
 
-extern int focm;
-extern int foc_get_nr_of_points();
-
 /* get total number of points */
 int get_nr_of_points() {
     return total;
@@ -130,7 +128,6 @@ int get_nr_of_points() {
 /* get total number of multis */
 int get_nr_of_mults() {
     extern float fixedmult;
-    extern int sprint;
     extern int multlist;
     extern int multscore[];
     extern int bandweight_multis[NBANDS];
@@ -140,6 +137,9 @@ int get_nr_of_mults() {
     int totalzones;
     int totalcountries;
     int totalmults;
+
+    if (!iscontest)
+	return 1;
 
     /* precalculate summaries */
     totalzones = 0;
@@ -155,19 +155,19 @@ int get_nr_of_mults() {
 		       bandweight_multis[bi_normal[n]]);
     }
 
-    if (sprint == 1) {
+    if (CONTEST_IS(SPRINT)) {
 	/* no multis used */
 	return 1;
-    } else if (arrlss == 1) {
+    } else if (CONTEST_IS(ARRL_SS)) {
 
 	return nr_multis;
-    } else if (cqww == 1) {
+    } else if (CONTEST_IS(CQWW)) {
 
 	return totalcountries + totalzones;
-    } else if (arrldx_usa == 1) {
+    } else if (CONTEST_IS(ARRLDX_USA)) {
 
 	return totalcountries;
-    } else if (arrl_fd == 1) {
+    } else if (CONTEST_IS(ARRL_FD)) {
 	/* arrl mults are always integers */
 	int mult = (int)floor(fixedmult + 0.5); 	/* round to nearest integer */
 	if (mult > 0) {
@@ -178,13 +178,13 @@ int get_nr_of_mults() {
     } else if (dx_arrlsections == 1) {
 
 	return totalmults + totalcountries;
-    } else if (universal == 1 && country_mult == 1) {
+    } else if (country_mult == 1) {
 
 	return totalcountries;
-    } else if (universal == 1 && multlist == 1 && arrlss != 1) {
+    } else if (multlist == 1 && !CONTEST_IS(ARRL_SS)) {
 
 	return totalmults ;
-    } else if (pacc_pa_flg == 1) {
+    } else if (CONTEST_IS(PACC_PA)) {
 
 	return totalcountries;
     } else if ((wysiwyg_once == 1)
@@ -199,7 +199,7 @@ int get_nr_of_mults() {
 	       || (sectn_mult == 1)) {
 
 	return totalmults;
-    } else if (wpx == 1 || pfxmult == 1) {
+    } else if (CONTEST_IS(WPX) || pfxmult == 1) {
 
 	return GetNrOfPfx_once();
     } else if (pfxmultab == 1) {
@@ -218,7 +218,7 @@ int get_nr_of_mults() {
 
 /* calculate total score */
 int get_total_score() {
-    if (focm == 1)
+    if (CONTEST_IS(FOCMARATHON))
 	return foc_total_score();
     else
 	return get_nr_of_points() * get_nr_of_mults();
@@ -232,20 +232,12 @@ int get_total_score() {
 void showscore(void) {
 
     extern int showscore_flag;
-    extern int cqww;
-    extern int arrldx_usa;
-    extern int arrl_fd;
-    extern int arrlss;
-    extern int pacc_pa_flg;
-    extern int universal;
     extern int country_mult;
     extern int wysiwyg_once;
     extern int wysiwyg_multi;
     extern int totalmults;
     extern int qsonum;
     extern int total;
-    extern int wpx;
-    extern int sprint;
     extern int bandinx;
     extern int multscore[];
     extern int serial_section_mult;
@@ -310,7 +302,7 @@ void showscore(void) {
 	}
     }
 
-    if (cqww == 1) {
+    if (CONTEST_IS(CQWW)) {
 
 	mvprintw(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -323,7 +315,7 @@ void showscore(void) {
 	}
     }
 
-    if (arrldx_usa == 1) {
+    if (CONTEST_IS(ARRLDX_USA)) {
 
 	mvprintw(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -331,7 +323,7 @@ void showscore(void) {
 	}
     }
 
-    if (universal == 1 && country_mult == 1) {
+    if (iscontest && country_mult == 1) {
 
 	mvprintw(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -339,7 +331,7 @@ void showscore(void) {
 	}
     }
 
-    if (pacc_pa_flg == 1) {
+    if (CONTEST_IS(PACC_PA)) {
 
 	mvprintw(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -348,12 +340,12 @@ void showscore(void) {
     }
 
     /* show score summary */
-    if (sprint == 1) {
+    if (CONTEST_IS(SPRINT)) {
 
 	mvprintw(5, START_COL, "Score: %d", get_nr_of_points());
-    } else if (focm == 1) {
+    } else if (CONTEST_IS(FOCMARATHON)) {
 	foc_show_scoring(START_COL);
-    } else if (stewperry_flg == 1) {
+    } else if (CONTEST_IS(STEWPERRY)) {
 	/* no normal multis, but may have POWERMULT set (fixedmult != 0.) */
 	stewperry_show_summary(get_nr_of_points(), fixedmult);
     } else {
@@ -365,8 +357,7 @@ void showscore(void) {
     attron(COLOR_PAIR(C_HEADER));
     mvprintw(6, 55, spaces(19));
 
-    if (cqww == 1 || pfxmult == 1 || wpx == 1 || arrldx_usa == 1 || pacc_pa_flg == 1
-	    || wysiwyg_once == 1 || universal == 1) {	/* cqww or wpx */
+    if (iscontest) {   /* show statistics in any contest */
 
 	totalmults = get_nr_of_mults();
 	totalmults = totalmults ? totalmults : 1;	/* at least one */
@@ -378,7 +369,7 @@ void showscore(void) {
 	    mvprintw(6, 55, "Q/M %.1f ", p);
     }
 
-    if (wpx == 1) {
+    if (CONTEST_IS(WPX)) {
 	if (minute_timer > 0)
 	    mvprintw(6, 75, "%d", minute_timer);
     }

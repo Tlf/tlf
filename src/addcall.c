@@ -48,6 +48,7 @@
 #include "paccdx.h"
 #include "score.h"
 #include "searchcallarray.h"
+#include "setcontest.h"
 #include "tlf.h"
 #include "zone_nr.h"
 
@@ -94,7 +95,7 @@ int addcall(void) {
     if (strlen(comment) >= 1) {		/* remember last exchange */
 	strcpy(worked[i].exchange, comment);
 
-	if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1) {
 	    /*
 	    			if (strlen(zone_fix) > 1) {
 	    				z = zone_nr(zone_fix);
@@ -108,18 +109,18 @@ int addcall(void) {
 
     add_ok = 1;			/* look if certain calls are excluded */
 
-    if ((arrldx_usa == 1)
+    if (CONTEST_IS(ARRLDX_USA)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	add_ok = 0;
 
-    if ((country_mult == 1) && (universal == 1))
+    if (country_mult == 1 && iscontest)
 	add_ok = 1;
 
     if ((dx_arrlsections == 1)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	add_ok = 0;
 
-    if (pacc_pa_flg == 1)
+    if (CONTEST_IS(PACC_PA))
 	add_ok = pacc_pa();
 
     // if pfx number as multiplier
@@ -280,7 +281,7 @@ int addcall2(void) {
     if (strlen(comment) >= 1) {
 //              strcpy(worked[i].exchange,comment);
 
-	if ((cqww == 1) || (wazmult == 1) || (itumult == 1))
+	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1)
 	    z = zone_nr(comment);
     }
 
@@ -289,10 +290,10 @@ int addcall2(void) {
     /* 	     if ((arrldx_usa ==1) && ((j == w_cty) || (j == ve_cty)))
      	     	add_ok = 0;
     */
-    if ((country_mult == 1) && (universal == 1))
+    if ((country_mult == 1) && iscontest)
 	add_ok = 1;
 
-    if (pacc_pa_flg == 1)
+    if (CONTEST_IS(PACC_PA))
 	/* FIXME: Does not work for LAN qso's as pacc_pa uses global variables
 	 * set from foreground task */
 	add_ok = pacc_pa();
@@ -388,7 +389,7 @@ int addcall2(void) {
 	    }
 	}
     }
-    if (wpx == 1 || pfxmult == 1 || pfxmultab == 1) {
+    if (CONTEST_IS(WPX) || pfxmult == 1 || pfxmultab == 1) {
 
 	if (lan_logline[68] != ' ') {
 

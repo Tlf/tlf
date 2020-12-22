@@ -46,6 +46,7 @@
 #include "readqtccalls.h"
 #include "score.h"
 #include "searchcallarray.h"
+#include "setcontest.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
 #include "zone_nr.h"
@@ -154,7 +155,7 @@ bool check_veto() {
 char *get_multi_from_line(char *logline) {
     char *multbuffer = g_malloc(20);
 
-    if (arrlss == 1) {
+    if (CONTEST_IS(ARRL_SS)) {
 
 	if (logline[63] == ' ')
 	    g_strlcpy(multbuffer, logline + 64, 4);
@@ -280,7 +281,7 @@ int readcalls(void) {
 	    // get points
 	    total = total + log_get_points(inputbuffer);
 
-	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
+	    if (CONTEST_IS(CQWW) || (itumult == 1) || (wazmult == 1)) {
 		// get the zone
 		z = zone_nr(inputbuffer + 54);
 	    }
@@ -288,7 +289,7 @@ int readcalls(void) {
 	    if (wysiwyg_once == 1 ||
 		    wysiwyg_multi == 1 ||
 		    unique_call_multi != 0 ||
-		    arrlss == 1 ||
+		    CONTEST_IS(ARRL_SS) ||
 		    serial_section_mult == 1 ||
 		    serial_grid4_mult == 1 ||
 		    sectn_mult == 1 ||
@@ -338,11 +339,11 @@ int readcalls(void) {
 	/* look if calls are excluded */
 	add_ok = true;
 
-	if ((arrldx_usa == 1)
+	if (CONTEST_IS(ARRLDX_USA)
 		&& ((countrynr == w_cty) || (countrynr == ve_cty)))
 	    add_ok = false;
 
-	if (pacc_pa_flg == 1) {
+	if (CONTEST_IS(PACC_PA)) {
 
 	    strcpy(hiscall, presentcall);
 
@@ -374,7 +375,7 @@ int readcalls(void) {
 
 	    band_score[bandindex]++;	/*  qso counter  per band */
 
-	    if ((cqww == 1) || (itumult == 1) || (wazmult == 1))
+	    if (CONTEST_IS(CQWW) || (itumult == 1) || (wazmult == 1))
 		zones[z] |= inxes[bandindex];
 
 	    if (pfxnumcntidx < 0) {
@@ -390,7 +391,7 @@ int readcalls(void) {
     fclose(fp);
 
     /* all lines red, now build other statistics */
-    if (wpx == 1 || pfxmult == 1) {
+    if (CONTEST_IS(WPX) || pfxmult == 1) {
 
 	/* build prefixes_worked array from list of worked stations */
 	InitPfx();
@@ -409,13 +410,13 @@ int readcalls(void) {
 	}
     }
 
-    if ((cqww == 1) || (itumult == 1) || (wazmult == 1)) {
+    if (CONTEST_IS(CQWW) || (itumult == 1) || (wazmult == 1)) {
 	for (int n = 1; n < MAX_ZONES; n++) {
 	    count_contest_bands(zones[n], zonescore);
 	}
     }
 
-    if (cqww == 1) {
+    if (CONTEST_IS(CQWW)) {
 	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
 	    count_contest_bands(countries[n], countryscore);
 	}
@@ -429,7 +430,7 @@ int readcalls(void) {
 	}
     }
 
-    if (arrldx_usa == 1) {
+    if (CONTEST_IS(ARRLDX_USA)) {
 	for (int cntr = 1; cntr < MAX_DATALINES; cntr++) {
 	    if (cntr != w_cty && cntr != ve_cty) {	// W and VE don't count here...
 		count_contest_bands(countries[cntr], countryscore);
@@ -437,7 +438,7 @@ int readcalls(void) {
 	}
     }
 
-    if (pacc_pa_flg == 1) {
+    if (CONTEST_IS(PACC_PA)) {
 	for (int n = 1; n < MAX_DATALINES; n++) {
 	    count_contest_bands(countries[n], countryscore);
 	}

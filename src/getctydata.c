@@ -31,6 +31,7 @@
 #include "dxcc.h"
 #include "getpx.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "setcontest.h"
 
 /* check for calls which have no assigned country and no assigned zone,
  * e.g. airborn mobile /AM or maritime mobile /MM
@@ -228,7 +229,7 @@ static int getctydata_internal(char *checkcallptr, bool get_country) {
 
     w = getpfxindex(checkcallptr, &normalized_call);
 
-    if (wpx == 1 || pfxmult == 1)
+    if (CONTEST_IS(WPX) || pfxmult == 1)
 	/* needed for wpx and other pfx contests */
 	getpx(normalized_call);
 

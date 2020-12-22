@@ -187,6 +187,32 @@ void refreshp();
 
 extern const char *backgrnd_str;
 
+typedef enum {
+    QSO,
+    DXPED,
+    WPX,
+    CQWW,
+    SPRINT,
+    ARRLDX_USA,
+    ARRLDX_DX,
+    ARRL_SS,
+    ARRL_FD,
+    PACC_PA,
+    STEWPERRY,
+    FOCMARATHON,
+    UNKNOWN
+} contest_type_t;
+
+#define QSO_MODE ("qso")
+
+/** contest configuration
+ *
+ */
+typedef struct {
+    contest_type_t	id;
+    char		*name;
+} contest_config_t;
+
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
 
 #endif /* TLF_H */

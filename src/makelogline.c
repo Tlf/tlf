@@ -34,6 +34,7 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "qsonr_to_str.h"
 #include "score.h"
+#include "setcontest.h"
 
 
 void prepare_fixed_part(void);
@@ -62,7 +63,7 @@ void makelogline(void) {
     int points;
 
     /* restart band timer if qso on new band */
-    if (wpx == 1) {		// 10 minute timer
+    if (CONTEST_IS(WPX)) {		// 10 minute timer
 	if (lastbandinx != bandinx) {
 	    lastbandinx = bandinx;
 	    minute_timer = 600;	// 10 minutes
@@ -85,7 +86,7 @@ void makelogline(void) {
     points = score();			/* update qso's per band and score */
     total = total + points;
 
-    if (iscontest && (dxped == 0)) {
+    if (iscontest && !CONTEST_IS(DXPED)) {
 	sprintf(logline4 + 76, "%2d", points);
     }
 
@@ -239,7 +240,7 @@ void prepare_specific_part(void) {
     char grid[7] = "";
     int i;
 
-    if (arrlss == 1) {
+    if (CONTEST_IS(ARRL_SS)) {
 	// ----------------------------arrlss----------------
 	strncat(logline4, ssexchange, 22);
 	section[0] = '\0';
@@ -268,7 +269,7 @@ void prepare_specific_part(void) {
 	strncat(logline4, comment, 22);
 	section[0] = '\0';
 
-    } else if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+    } else if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
 	//-------------------------cqww----------------
 	/*
 		if (strlen(zone_fix) > 1) {
@@ -276,7 +277,7 @@ void prepare_specific_part(void) {
 		} else
 			strcat (logline4, zone_export);
 	*/
-	if (trxmode == DIGIMODE && cqww == 1 && strlen(comment) < 5) {
+	if (trxmode == DIGIMODE && CONTEST_IS(CQWW) && strlen(comment) < 5) {
 	    comment[2] = ' ';
 	    comment[3] = 'D';
 	    comment[4] = 'X';
@@ -299,7 +300,7 @@ void prepare_specific_part(void) {
 	new_pfx = (add_pfx(pxstr, bandinx) == 0);	/* add prefix, remember if new */
     }
 
-    if (wpx == 1 || pfxmult == 1 || pfxmultab == 1) {			/* wpx */
+    if (CONTEST_IS(WPX) ||pfxmult == 1 || pfxmultab == 1) {	/* wpx */
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, pxstr, 5);
@@ -308,7 +309,7 @@ void prepare_specific_part(void) {
 	fillto(73);
     }
 
-    if ((cqww == 1) || (wazmult == 1) || (itumult == 1)) {
+    if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
 	/* ------------cqww --------------------- */
 	logline4[68] = '\0';
 
@@ -345,7 +346,7 @@ void prepare_specific_part(void) {
 
 	//----------------------------------end cqww-----------------
 
-    } else if (arrldx_usa == 1) {
+    } else if (CONTEST_IS(ARRLDX_USA)) {
 	logline4[68] = '\0';
 	if (addcty != 0) {
 	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
@@ -396,7 +397,7 @@ void prepare_specific_part(void) {
 
 	fillto(77);
 
-    } else if (pacc_pa_flg == 1 || pfxnummultinr > 0) {
+    } else if (CONTEST_IS(PACC_PA) || pfxnummultinr > 0) {
 
 	logline4[68] = '\0';
 
@@ -413,7 +414,7 @@ void prepare_specific_part(void) {
 
 	fillto(77);
 
-    } else if ((universal == 1)
+    } else if (iscontest
 	       && ((country_mult == 1) || (dx_arrlsections == 1))) {
 
 	logline4[68] = '\0';

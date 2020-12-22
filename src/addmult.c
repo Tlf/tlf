@@ -31,6 +31,7 @@
 
 #include "addmult.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "setcontest.h"
 #include "tlf_curses.h"
 #include "bands.h"
 
@@ -52,7 +53,7 @@ int addmult(void) {
     g_strchomp(stripped_comment);
 
     // --------------------------- arrlss ------------------------------------
-    if (arrlss == 1) {
+    if (CONTEST_IS(ARRL_SS)) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
@@ -163,7 +164,7 @@ int addmult2(void) {
     shownewmult = -1;
 
     // --------------------------- arrlss ------------------------------------
-    if (arrlss == 1) {
+    if (CONTEST_IS(ARRL_SS)) {
 	g_strlcpy(ssexchange, lan_logline + 54, 21);
 
 	/* check all possible mults for match and remember the longest one */

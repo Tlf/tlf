@@ -45,6 +45,7 @@
 #include "score.h"
 #include "searchlog.h"		// Includes glib.h
 #include "sendbuf.h"
+#include "setcontest.h"
 #include "speedupndown.h"
 #include "stoptx.h"
 #include "time_update.h"
@@ -71,18 +72,10 @@ int getexchange(void) {
     extern char ph_message[14][80];
     extern char hiscall[];
     extern char qsonrstr[];
-    extern int cqww;
-    extern int wpx;
-    extern int pacc_pa_flg;
-    extern int stewperry_flg;
-    extern int arrldx_usa;
-    extern int arrl_fd;
     extern int exchange_serial;
     extern int countrynr;
-    extern int sprint;
     extern int trxmode;
     extern int recall_mult;
-    extern int arrlss;
     extern int lan_active;
     extern char lastqsonr[];
     extern char qsonrstr[];
@@ -118,13 +111,13 @@ int getexchange(void) {
     if (recall_mult == 1)
 	recall_exchange();
 
-    if ((arrldx_usa == 1) && (trxmode != CWMODE))
+    if (CONTEST_IS(ARRLDX_USA) && trxmode != CWMODE)
 	recall_exchange();
 
-    if (arrl_fd == 1)
+    if (CONTEST_IS(ARRL_FD))
 	recall_exchange();
 
-    if (((cqww == 1) || (wazmult == 1) || (itumult == 1))
+    if ((CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1))
 	    && (*comment == '\0') && (strlen(hiscall) != 0)) {
 	if (itumult == 1)
 	    strcpy(comment, ituzone);
@@ -136,7 +129,7 @@ int getexchange(void) {
 	strcpy(comment, continent);
     }
 
-    if (stewperry_flg == 1) {
+    if (CONTEST_IS(STEWPERRY)) {
 	recall_exchange();
     }
 
@@ -367,9 +360,9 @@ int getexchange(void) {
 		(dx_arrlsections == 1) ||
 		(sectn_mult == 1) ||
 		(sectn_mult_once == 1) ||
-		(arrlss == 1) ||
-		(cqww == 1) ||
-		(stewperry_flg == 1)) {
+		CONTEST_IS(ARRL_SS) ||
+		CONTEST_IS(CQWW) ||
+		CONTEST_IS(STEWPERRY)) {
 
 	    x = checkexchange(x);
 	}
@@ -396,7 +389,7 @@ int getexchange(void) {
 
 	    }
 
-	    if (wpx == 1) {	/* align serial nr. */
+	    if (CONTEST_IS(WPX)) {	/* align serial nr. */
 
 		if ((strlen(comment) == 1) || (comment[1] == ' ')) {
 		    strcpy(commentbuf, comment);
@@ -414,7 +407,7 @@ int getexchange(void) {
 
 	    }
 
-	    if (sprint == 1) {
+	    if (CONTEST_IS(SPRINT)) {
 
 		if ((comment[1] == ' ') && (comment[0] != ' ')) {
 
@@ -436,7 +429,7 @@ int getexchange(void) {
 
 	    }
 
-	    if ((pacc_pa_flg == 1) && (countrynr != my.countrynr)) {
+	    if (CONTEST_IS(PACC_PA) && (countrynr != my.countrynr)) {
 		if (strlen(comment) == 1) {
 		    strcpy(commentbuf, comment);
 		    comment[0] = '\0';
@@ -453,7 +446,7 @@ int getexchange(void) {
 
 	    }
 
-	    if ((arrlss == 1) && (x != TAB) && (strlen(section) < 2)) {
+	    if (CONTEST_IS(ARRL_SS) && (x != TAB) && (strlen(section) < 2)) {
 		mvprintw(13, 54, "section?");
 		mvprintw(12, 54, comment);
 		x = 0;
@@ -478,7 +471,7 @@ int getexchange(void) {
 		break;
 //                              x = 0; //##debug
 
-	    } else if (stewperry_flg == 1) {
+	    } else if (CONTEST_IS(STEWPERRY)) {
 		if (check_qra(comment) == 0) {
 		    mvprintw(13, 54, "locator?");
 		    mvprintw(12, 54, comment);
@@ -486,7 +479,7 @@ int getexchange(void) {
 		}
 		refreshp();
 		break;
-	    } else if (cqww == 1 && trxmode == DIGIMODE && ((countrynr == w_cty)
+	    } else if (CONTEST_IS(CQWW) && trxmode == DIGIMODE && ((countrynr == w_cty)
 		       || (countrynr == ve_cty))) {
 		if (strlen(comment) < 5) {
 		    mvprintw(13, 54, "state/prov?");
@@ -531,9 +524,6 @@ int checkexchange(int x) {
 
     extern char comment[];
     extern char ssexchange[];
-    extern int cqww;
-    extern int arrlss;
-    extern int stewperry_flg;
     extern char section[];
     extern char callupdate[];
     extern char hiscall[];
@@ -669,7 +659,7 @@ int checkexchange(int x) {
     }
 
     // -----------------------------------cqww-----------------------
-    if (cqww == 1) {
+    if (CONTEST_IS(CQWW)) {
 
 	s = atoi(comment);
 	snprintf(zone, sizeof(zone), "%02d", s);
@@ -731,7 +721,7 @@ int checkexchange(int x) {
     }
 
     // ---------------------------arrls------------------------------
-    if (arrlss == 1) {
+    if (CONTEST_IS(ARRL_SS)) {
 
 	// get serial nr.
 
