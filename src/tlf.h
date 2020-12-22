@@ -203,6 +203,8 @@ typedef enum {
     UNKNOWN
 } contest_type_t;
 
+#define QSO_MODE ("qso")
+
 /** contest configuration
  *
  */

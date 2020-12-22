@@ -86,7 +86,7 @@ int read_rules() {
     } else {
 	showstring("There is no contest rules file:", contest_conf);
 	showmsg("Assuming regular QSO operation. Logfile is qso.log");
-	setcontest("qso");		 /* default use general qso mode...
+	setcontest(QSO_MODE);		 /* default use general qso mode...
 					   (PA0R, 24 Sept. 2003) */
 	strcpy(logfile, "qso.log");
     }

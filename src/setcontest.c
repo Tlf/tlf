@@ -40,7 +40,7 @@ contest_config_t config_unknown = {
 
 contest_config_t config_qso = {
     .id = QSO,
-    .name = "QSO"
+    .name = QSO_MODE
 };
 
 contest_config_t config_dxped = {
