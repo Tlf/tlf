@@ -35,6 +35,7 @@
 #include "fldigixmlrpc.h"
 #include "globalvars.h"
 #include "getctydata.h"
+#include "getexchange.h"
 #include "getpx.h"
 #include "getwwv.h"
 #include "lancode.h"
@@ -42,112 +43,10 @@
 #include "parse_logcfg.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "setcontest.h"
+#include "set_tone.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
 #include "searchlog.h"
-
-#include <config.h>
-
-
-extern bool mixedmode;
-extern bool ignoredupe;
-extern bool continentlist_only;
-extern int continentlist_points;
-extern int lan_port;
-extern char rigconf[];
-extern char ph_message[14][80];
-extern int cwkeyer;
-extern int digikeyer;
-extern int keyer_backspace;
-extern int partials;
-extern int use_part;
-extern int portnum;
-extern int packetinterface;
-extern char tncportname[];
-extern int shortqsonr;
-extern char *cabrillo;
-extern rmode_t digi_mode;
-extern int ctcomp;
-extern int recall_mult;
-extern int trx_control;
-extern int rit;
-extern int showscore_flag;
-extern int searchflg;
-extern int demode;
-extern int portable_x2;
-extern int landebug;
-extern int call_update;
-extern int nob4;
-extern int time_master;
-extern int show_time;
-extern int use_rxvt;
-extern int exc_cont;
-extern int noautocq;
-extern int bmautoadd;
-extern int bmautograb;
-extern int logfrequency;
-extern int no_rst;
-extern int serial_or_section;
-extern int sprint_mode;
-extern int sc_sidetone;
-extern int no_arrows;
-extern int lowband_point_mult;
-extern int cluster;
-extern int clusterlog;
-extern char keyer_device[10];
-extern int timeoffset;
-extern int netkeyer_port;
-extern char netkeyer_hostaddress[];
-extern char *rigportname;
-extern int tnc_serial_rate;
-extern int serial_rate;
-extern char pr_hostaddress[];
-extern char *editor_cmd;
-extern int cqdelay;
-extern int ssbpoints;
-extern int cwpoints;
-extern int tlfcolors[8][2];
-extern char whichcontest[];
-extern int use_bandoutput;
-extern int bandindexarray[];
-extern int txdelay;
-extern char tonestr[];
-extern int weight;
-extern int nodes;
-extern char bc_hostaddress[MAXNODES][16];
-extern char bc_hostservice[MAXNODES][16];
-extern rig_model_t myrig_model;
-extern int multlist;
-extern char multsfile[];
-extern char markerfile[];
-extern int xplanet;
-extern char countrylist[][6];
-extern bool mult_side;
-extern int countrylist_points;
-extern bool countrylist_only;
-extern int my_country_points;
-extern int my_cont_points;
-extern int dx_cont_points;
-extern char synclogfile[];
-extern char sc_device[40];
-extern char sc_volume[];
-extern char controllerport[80];	// port for multi-mode controller
-extern char clusterlogin[];
-extern int cw_bandwidth;
-extern char exchange_list[40];
-extern char modem_mode[];
-extern char rttyoutput[];
-extern float fixedmult;
-extern char continent_multiplier_list[7][3];
-extern int bandweight_points[NBANDS];
-extern int bandweight_multis[NBANDS];
-extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
-extern int pfxnummultinr;
-extern int exclude_multilist_type;
-#ifdef HAVE_LIBXMLRPC
-extern char fldigi_url[50];
-#endif
-extern unsigned char rigptt;
 
 bool exist_in_country_list();
 
@@ -162,8 +61,6 @@ static char *error_details = NULL;
 #define LOGCFG_DAT_FILE    "logcfg.dat"
 
 int read_logcfg(void) {
-
-    extern char *config_file;
 
     static char defltconf[] = PACKAGE_DATA_DIR "/" LOGCFG_DAT_FILE;
     FILE *fp;

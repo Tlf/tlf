@@ -25,15 +25,6 @@
 extern WINDOW *search_win;
 extern PANEL *search_panel;
 extern int nr_bands;
-extern int searchflg;
-extern int use_part;
-extern int partials;
-//extern int cqww;
-extern int mixedmode;
-
-extern char zone_export[];
-extern char zone_fix[];
-
 extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
 
