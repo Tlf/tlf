@@ -113,7 +113,7 @@ int noleadingzeros;
 int ctcomp = 0;
 int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
 int nob4 = 0;			// allow auto b4
-int ignoredupe = 0;
+bool ignoredupe = false;
 int noautocq = 0;
 int emptydir = 0;
 int verbose = 0;
@@ -146,7 +146,7 @@ int trxmode = CWMODE;
 /* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
 rmode_t rigmode = 0;
 rmode_t digi_mode = 0;
-int mixedmode = 0;
+bool mixedmode = false;
 char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
 char last_rst[4] = "599";       /* Report for last QSO */
@@ -313,7 +313,7 @@ int outfreq;			/* output  to rig */
 int ssb_bandwidth = 3000;
 int cw_bandwidth = 0;
 int serial_rate = 2400;
-char rigportname[40];
+char *rigportname;
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;

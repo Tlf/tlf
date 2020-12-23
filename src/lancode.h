@@ -36,6 +36,9 @@
 
 #include <hamlib/rig.h>
 
+extern char bc_hostaddress[MAXNODES][16];
+extern char bc_hostservice[MAXNODES][16];
+
 int lanrecv_init(void);
 int lan_recv_close(void);
 int lan_recv(void);

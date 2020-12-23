@@ -3,6 +3,8 @@
 #include <hamlib/rig.h>
 #include <stdbool.h>
 
+#include <config.h>
+
 #include "tlf.h"
 
 extern mystation_t my;			// all about my station
@@ -94,6 +96,7 @@ extern int highqsonr;
 
 extern cqmode_t cqmode;
 extern int trxmode;
+extern rig_model_t myrig_model;
 extern rmode_t rigmode;
 extern freq_t freq;
 extern char lastqsonr[];
@@ -112,8 +115,107 @@ extern int two_point;
 extern int three_point;
 extern int addzone;
 extern int do_cabrillo;
+extern int no_rst;
 extern rmode_t digi_mode;
 extern int minitest;    // minitest period length in seconds, 0 if not used
+extern int portnum;
+extern int lan_port;
+extern int txdelay;
+extern int weight;
+extern int cw_bandwidth;
+extern int cwpoints;
+extern int ssbpoints;
+extern int continentlist_points;
+extern int dx_cont_points;
+extern int my_cont_points;
+extern int packetinterface;
+extern int use_bandoutput;
+extern int cluster;
+extern int nodes;
+extern int multlist;
+extern int xplanet;
+extern int cwkeyer;
+extern int digikeyer;
+extern unsigned char rigptt;
+extern int exclude_multilist_type;
+extern int partials;
+extern int use_part;
+extern int shortqsonr;
+extern int recall_mult;
+extern int trx_control;
+extern int rit;
+extern int showscore_flag;
+extern int searchflg;
+extern int nob4;
+extern int demode;
+extern int ctcomp;
+extern int show_time;
+extern int use_rxvt;
+extern int time_master;
+extern int noautocq;
+extern int no_arrows;
+extern int exc_cont;
+extern int sc_sidetone;
+extern int logfrequency;
+extern int bmautoadd;
+extern int bmautograb;
+extern int serial_or_section;
+extern int portable_x2;
+extern int clusterlog;
+extern int sprint_mode;
+extern int timeoffset;
+extern int keyer_backspace;
+extern int netkeyer_port;
+extern int cqdelay;
+extern int serial_rate;
+extern int tnc_serial_rate;
+extern int countrylist_points;
+extern int my_country_points;
+extern int lowband_point_mult;
+extern int landebug;
+
+extern float fixedmult;
+
+extern int bandweight_points[NBANDS];
+extern int bandweight_multis[NBANDS];
+
+extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
+extern int pfxnummultinr;
 
 extern char message[][80];
 extern char *digi_message[];
+extern char ph_message[14][80];
+extern char tncportname[];
+extern char multsfile[];
+extern char markerfile[];
+extern char countrylist[][6];
+extern char continent_multiplier_list[7][3];
+extern char controllerport[];           // port for multi-mode controller
+extern char modem_mode[];
+extern char sc_volume[];
+extern char clusterlogin[];
+extern char rigconf[];
+extern char keyer_device[10];
+extern char netkeyer_hostaddress[];
+extern char pr_hostaddress[];
+extern char synclogfile[];
+extern char sc_device[];
+extern char exchange_list[40];
+extern char rttyoutput[];
+#ifdef HAVE_LIBXMLRPC
+extern char fldigi_url[50];
+#endif
+
+extern char *cabrillo;
+extern char *editor_cmd;
+extern char *rigportname;
+extern char *config_file;
+
+extern int bandindexarray[];
+extern int tlfcolors[8][2];
+
+extern bool mult_side;
+extern bool countrylist_only;
+extern bool mixedmode;
+extern bool ignoredupe;
+extern bool continentlist_only;
