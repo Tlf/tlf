@@ -79,7 +79,8 @@ contest_config_t config_arrldx_dx = {
 
 contest_config_t config_arrl_ss = {
     .id = ARRL_SS,
-    .name = "ARRL_SS"
+    .name = "ARRL_SS",
+    .exchange_serial = true,
 };
 
 contest_config_t config_arrl_fd = {
@@ -153,7 +154,6 @@ void setcontest(char *name) {
 
     extern int dx_arrlsections;
     extern int multlist;
-    extern int exchange_serial;
     extern int w_cty;
     extern int ve_cty;
     extern int zl_cty;
@@ -215,7 +215,6 @@ void setcontest(char *name) {
     if (CONTEST_IS(ARRL_SS)) {
 	two_point = 1;
 	qso_once = true;
-	exchange_serial = 1;
 	multlist = 1;
 //      sectn_mult = 1;
 	noleadingzeros = 1;

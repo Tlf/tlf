@@ -72,7 +72,6 @@ int getexchange(void) {
     extern char ph_message[14][80];
     extern char hiscall[];
     extern char qsonrstr[];
-    extern int exchange_serial;
     extern int countrynr;
     extern int trxmode;
     extern char lastqsonr[];
@@ -101,7 +100,7 @@ int getexchange(void) {
 
     instring[1] = '\0';
 
-    if (lan_active && (exchange_serial == 1)) {
+    if (lan_active && contest->exchange_serial) {
 	strncpy(lastqsonr, qsonrstr, 5);
 	send_lan_message(INCQSONUM, qsonrstr);
     }
@@ -369,7 +368,7 @@ int getexchange(void) {
 	if (x == '\n' || x == KEY_ENTER || x == TAB
 		|| x == CTRL_K || x == BACKSLASH) {
 
-	    if ((exchange_serial == 1 && comment[0] >= '0'
+	    if ((contest->exchange_serial && comment[0] >= '0'
 		    && comment[0] <= '9')) {	/* align serial nr. */
 		if (strlen(comment) == 1) {
 		    strcpy(commentbuf, comment);

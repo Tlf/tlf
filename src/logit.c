@@ -65,7 +65,6 @@ void logit(void) {
     extern int wazmult;
     extern int itumult;
     extern int qsonum;
-    extern int exchange_serial;
     extern int sprint_mode;
 
     int callreturn = 0;
@@ -110,7 +109,7 @@ void logit(void) {
 
 		    send_standard_message(2);
 		    if (trxmode != CWMODE && trxmode != DIGIMODE) {
-			if (exchange_serial == 1)
+			if (contest->exchange_serial)
 			    mvprintw(13, 29, "Serial number: %d", qsonum);
 			refreshp();
 		    }
@@ -154,7 +153,7 @@ void logit(void) {
 			sendspcall();
 		    else {
 			play_file(ph_message[5]);
-			if (exchange_serial == 1)
+			if (contest->exchange_serial)
 			    mvprintw(13, 29, "Serial number: %d", qsonum);
 			refreshp();
 		    }

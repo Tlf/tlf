@@ -307,7 +307,6 @@ typedef struct {
 } bool_true_t;
 
 static bool_true_t bool_trues[] = {
-    {"RECALL_MULTS", &recall_mult},
     {"CONTEST_MODE", &iscontest},
     {"MIXED", &mixedmode},
     {"IGNOREDUPE", &ignoredupe},
@@ -324,6 +323,33 @@ void test_bool_trues(void **state) {
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
 	assert_true(*bool_trues[i].var);
+    }
+}
+
+typedef struct {
+    char *keyword;
+    size_t offset;
+} bool_contest_true_t;
+
+static bool_contest_true_t bool_contest_trues[] = {
+    {"RECALL_MULTS", offsetof(contest_config_t, recall_mult)},
+    {"SERIAL_EXCHANGE", offsetof(contest_config_t, exchange_serial)},
+};
+
+
+void test_bool_contest_trues(void **state) {
+    char line[80];
+    for (int i = 0;
+	    i < sizeof(bool_contest_trues) / sizeof(bool_contest_true_t);
+	    ++i) {
+	bool *target = (bool *)((char *)contest +
+			bool_contest_trues[i].offset);
+	*target = false;
+	sprintf(line, "%s\n", bool_contest_trues[i].keyword);
+	fputs(line, stdout);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_true(*target);
     }
 }
 
@@ -387,7 +413,6 @@ static int_one_t int_ones[] = {
     {"SCOREWINDOW", &showscore_flag},
     {"CHECKWINDOW", &searchflg},
     {"SEND_DE", &demode},
-    {"SERIAL_EXCHANGE", &exchange_serial},
     {"COUNTRY_MULT", &country_mult},
     {"PORTABLE_MULT_2", &portable_x2},
     {"CQWW_M2", &cqwwm2},

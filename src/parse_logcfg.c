@@ -1011,7 +1011,7 @@ static config_t logcfg_configs[] = {
     {"SCOREWINDOW",     CFG_INT_ONE(showscore_flag)},
     {"CHECKWINDOW",     CFG_INT_ONE(searchflg)},
     {"SEND_DE",         CFG_INT_ONE(demode)},
-    {"SERIAL_EXCHANGE", CFG_INT_ONE(exchange_serial)},
+    {"SERIAL_EXCHANGE", CFG_CONTEST_BOOL_TRUE(exchange_serial)},
     {"COUNTRY_MULT",    CFG_INT_ONE(country_mult)},
     {"PORTABLE_MULT_2", CFG_INT_ONE(portable_x2)},
     {"CQWW_M2",         CFG_INT_ONE(cqwwm2)},

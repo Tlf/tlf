@@ -212,6 +212,7 @@ typedef struct {
     contest_type_t	id;
     char		*name;
     bool		recall_mult;
+    bool		exchange_serial;
 } contest_config_t;
 
 /**< Bitmask for Hamlib CAT PTT
