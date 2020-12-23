@@ -45,7 +45,8 @@ contest_config_t config_qso = {
 
 contest_config_t config_dxped = {
     .id = DXPED,
-    .name = "DXPED"
+    .name = "DXPED",
+    .recall_mult = true,
 };
 
 contest_config_t config_wpx = {
@@ -55,7 +56,8 @@ contest_config_t config_wpx = {
 
 contest_config_t config_cqww = {
     .id = CQWW,
-    .name = "CQWW"
+    .name = "CQWW",
+    .recall_mult = true,
 };
 
 contest_config_t config_sprint = {
@@ -65,12 +67,14 @@ contest_config_t config_sprint = {
 
 contest_config_t config_arrldx_usa = {
     .id = ARRLDX_USA,
-    .name = "ARRLDX_USA"
+    .name = "ARRLDX_USA",
+    .recall_mult =true,
 };
 
 contest_config_t config_arrldx_dx = {
     .id = ARRLDX_DX,
-    .name = "ARRLDX_DX"
+    .name = "ARRLDX_DX",
+    .recall_mult =true,
 };
 
 contest_config_t config_arrl_ss = {
@@ -80,7 +84,8 @@ contest_config_t config_arrl_ss = {
 
 contest_config_t config_arrl_fd = {
     .id = ARRL_FD,
-    .name = "ARRL_FD"
+    .name = "ARRL_FD",
+    .recall_mult =true,
 };
 
 contest_config_t config_pacc_pa = {
@@ -167,7 +172,6 @@ void setcontest(char *name) {
     extern int three_point;
     extern bool qso_once;
     extern int sectn_mult;
-    extern int recall_mult;
     extern int noleadingzeros;
 
     char wcall[] = "W1AW";
@@ -188,7 +192,6 @@ void setcontest(char *name) {
     one_point = 0;
     two_point = 0;
     three_point = 0;
-    recall_mult = 0;
     sectn_mult = 0;
     noleadingzeros = 0;
 
@@ -200,25 +203,12 @@ void setcontest(char *name) {
     contest = lookup_contest(name);
 
 
-    if (CONTEST_IS(CQWW)) {
-	recall_mult = 1;
-    }
-
-    if (CONTEST_IS(DXPED)) {
-	recall_mult = 1;
-    }
-
     if (CONTEST_IS(SPRINT)) {
 	one_point = 1;
     }
 
-    if (CONTEST_IS(ARRLDX_USA)) {
-	recall_mult = 1;
-    }
-
     if (CONTEST_IS(ARRLDX_DX)) {
 	three_point = 1;
-	recall_mult = 1;
 	sectn_mult = 1;
     }
 
@@ -229,10 +219,6 @@ void setcontest(char *name) {
 	multlist = 1;
 //      sectn_mult = 1;
 	noleadingzeros = 1;
-    }
-
-    if (CONTEST_IS(ARRL_FD)) {
-	recall_mult = 1;
     }
 
     if (CONTEST_IS(PACC_PA)) {

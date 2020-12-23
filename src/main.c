@@ -131,7 +131,6 @@ bool mult_side = false;
 /* end LZ3NY mods */
 
 int portable_x2 = 0;
-int recall_mult = 0;
 int exchange_serial = 0;
 int wysiwyg_once = 0;
 int wysiwyg_multi = 0;

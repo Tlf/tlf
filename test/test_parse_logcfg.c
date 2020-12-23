@@ -307,6 +307,7 @@ typedef struct {
 } bool_true_t;
 
 static bool_true_t bool_trues[] = {
+    {"RECALL_MULTS", &recall_mult},
     {"CONTEST_MODE", &iscontest},
     {"MIXED", &mixedmode},
     {"IGNOREDUPE", &ignoredupe},
@@ -379,7 +380,6 @@ typedef struct {
 } int_one_t;
 
 static int_one_t int_ones[] = {
-    {"RECALL_MULTS", &recall_mult},
     {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
     {"WYSIWYG_ONCE", &wysiwyg_once},
     {"RIT_CLEAR", &rit},

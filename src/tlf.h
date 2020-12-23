@@ -21,6 +21,8 @@
 #ifndef TLF_H
 #define TLF_H
 
+#include <stdbool.h>
+
 enum {
     NO_KEYER,
     NET_KEYER,
@@ -209,6 +211,7 @@ typedef enum {
 typedef struct {
     contest_type_t	id;
     char		*name;
+    bool		recall_mult;
 } contest_config_t;
 
 /**< Bitmask for Hamlib CAT PTT

@@ -165,6 +165,11 @@ int cfg_bool_const(const cfg_arg_t arg) {
     return PARSE_OK;
 }
 
+int cfg_contest_bool_const(const cfg_arg_t arg) {
+    *(bool *)((char *)contest + arg.offset) = arg.bool_value;
+    return PARSE_OK;
+}
+
 int cfg_int_const(const cfg_arg_t arg) {
     *arg.int_p  = arg.int_value;
     return PARSE_OK;
@@ -998,7 +1003,7 @@ static config_t logcfg_configs[] = {
 
     {"USEPARTIALS",     CFG_INT_ONE(use_part)},
     {"PARTIALS",        CFG_INT_ONE(partials)},
-    {"RECALL_MULTS",    CFG_INT_ONE(recall_mult)},
+    {"RECALL_MULTS",    CFG_CONTEST_BOOL_TRUE(recall_mult)},
     {"WYSIWYG_MULTIBAND",   CFG_INT_ONE(wysiwyg_multi)},
     {"WYSIWYG_ONCE",    CFG_INT_ONE(wysiwyg_once)},
     {"RIT_CLEAR",       CFG_INT_ONE(rit)},

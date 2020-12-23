@@ -75,7 +75,6 @@ int getexchange(void) {
     extern int exchange_serial;
     extern int countrynr;
     extern int trxmode;
-    extern int recall_mult;
     extern char lastqsonr[];
     extern char qsonrstr[];
     extern char section[];
@@ -107,7 +106,7 @@ int getexchange(void) {
 	send_lan_message(INCQSONUM, qsonrstr);
     }
 
-    if (recall_mult == 1)
+    if (contest->recall_mult)
 	recall_exchange();
 
     if (CONTEST_IS(ARRLDX_USA) && trxmode != CWMODE)

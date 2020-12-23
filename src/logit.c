@@ -61,7 +61,6 @@ void logit(void) {
     extern char cqzone[];
     extern char itustr[];
     extern int defer_store;
-    extern int recall_mult;
     extern int ctcomp;
     extern int wazmult;
     extern int itumult;
@@ -130,7 +129,7 @@ void logit(void) {
 			refresh_comment();
 		    }
 
-		    if (recall_mult == 1) {
+		    if (contest->recall_mult) {
 			recall_exchange();
 		    }
 
@@ -147,7 +146,7 @@ void logit(void) {
 
 			refresh_comment();
 
-		    } else if (recall_mult == 1) {
+		    } else if (contest->recall_mult) {
 			recall_exchange();
 		    }
 
