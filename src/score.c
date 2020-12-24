@@ -61,10 +61,6 @@ bool is_in_countrylist(int countrynr) {
 
 /* check if hiscall is in COUNTRY_LIST from logcfg.dat */
 bool country_found(char prefix[]) {
-
-    extern int countrynr;
-    extern char hiscall[];
-
     char tmpcall[15];
 
     if (strlen(hiscall) == 0) {
@@ -78,8 +74,6 @@ bool country_found(char prefix[]) {
 }
 
 bool exist_in_country_list() {
-
-    extern char pxstr[];
     char prefix[10];
 
     strcpy(prefix, pxstr);
@@ -140,7 +134,6 @@ int apply_bandweigth(int points) {
  * see PORTABLE_X2 */
 int portable_doubles(int points) {
     extern int portable_x2;
-    extern char hiscall[];
     char *loc;
 
     if (portable_x2 == 1) {	// portable x2
@@ -186,9 +179,6 @@ int scoreByContinentOrCountry() {
     extern int my_country_points;
     extern int my_cont_points;
     extern int dx_cont_points;
-
-    extern int countrynr;
-    extern char continent[];
 
     int points = 0;
     bool inCountryList = false;
@@ -243,9 +233,6 @@ int scoreDefault() {
 
     extern int cwpoints;
     extern int ssbpoints;
-    extern int one_point;
-    extern int two_point;
-    extern int three_point;
 
     int points;
 
@@ -275,22 +262,130 @@ int scoreDefault() {
     return points;
 }
 
+int score_wpx() {
+    int points;
+    if (countrynr == my.countrynr) {
+	points = 1;
 
-int score() {
+	return points;
+    }
 
-    extern int dupe;
-    extern int band_score[NBANDS];
-    extern int bandinx;
-    extern int countrynr;
-    extern char continent[];
-    extern char comment[];
-    extern int w_cty;
-    extern int ve_cty;
-    extern int trxmode;
-    extern char hiscall[];
+    if ((strcmp(continent, my.continent) == 0)
+	    && (bandinx > BANDINDEX_30)) {
+	if (strstr(my.continent, "NA") != NULL) {
+	    points = 2;
+	} else {
+	    points = 1;
+	}
 
+	return points;
+    }
+
+    if ((strcmp(continent, my.continent) == 0)
+	    && (bandinx < BANDINDEX_30)) {
+	if (strstr(my.continent, "NA") != NULL) {
+	    points = 4;
+	} else {
+	    points = 2;
+	}
+	return points;
+    }
+    if ((strcmp(continent, my.continent) != 0)
+	    && (bandinx > BANDINDEX_30)) {
+	points = 3;
+
+	return points;
+    }
+    if ((strcmp(continent, my.continent) != 0)
+	    && (bandinx < BANDINDEX_30)) {
+	points = 6;
+
+	return points;
+    }
+    return 0;
+}
+
+
+int score_cqww() {
     int points;
     int zone;
+
+    if (countrynr == 0) {
+	zone = atoi(comment);
+	calc_continent(zone);	// sets continent
+    }
+
+    if (countrynr == my.countrynr) {
+	points = 0;
+
+	return points;
+    }
+
+    if (strcmp(continent, my.continent) == 0) {
+	if (strstr(my.continent, "NA") != NULL) {
+	    points = 2;
+	} else {
+	    points = 1;
+	}
+
+	return points;
+    } else {
+	points = 3;
+
+	return points;
+    }
+    return 0;
+}
+
+
+
+int score_arrlfd() {
+    int points;
+
+    if (trxmode == SSBMODE) {
+        points = 1;
+    } else {
+        points = 2;
+    }
+    return points;
+}
+
+int score_arrldx_usa() {
+    int points;
+
+    if ((countrynr == w_cty) || (countrynr == ve_cty)) {
+        points = 0;
+    } else {
+        points = 3;
+    }
+
+    return points;
+}
+
+int score_stewperry() {
+    int points;
+    double s1long, s1lat, s2long, s2lat, distance, azimuth;
+
+    points = 0;
+
+    if (strlen(comment) > 3) {
+	locator2longlat(&s1long, &s1lat, comment);
+	locator2longlat(&s2long, &s2lat, my.qra);
+
+	qrb(s1long, s1lat, s2long, s2lat, &distance, &azimuth);
+
+	points = (int) ceil(distance / 500.0);
+    }
+
+    return points;
+}
+
+int score_old();
+
+int score() {
+    extern int dupe;
+
+    int points;
 
     if (dupe == ISDUPE) {
 	points = 0;
@@ -304,123 +399,9 @@ int score() {
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	band_score[bandinx]--;
 
-    if (CONTEST_IS(FOCMARATHON)) {
-	points = foc_score(hiscall);
 
-	return points;
-    }
-
-    if (CONTEST_IS(WPX)) {
-	if (countrynr == my.countrynr) {
-	    points = 1;
-
-	    return points;
-	}
-
-	if ((strcmp(continent, my.continent) == 0)
-		&& (bandinx > BANDINDEX_30)) {
-	    if (strstr(my.continent, "NA") != NULL) {
-		points = 2;
-	    } else {
-		points = 1;
-	    }
-
-	    return points;
-	}
-
-	if ((strcmp(continent, my.continent) == 0)
-		&& (bandinx < BANDINDEX_30)) {
-	    if (strstr(my.continent, "NA") != NULL) {
-		points = 4;
-	    } else {
-		points = 2;
-	    }
-	    return points;
-	}
-	if ((strcmp(continent, my.continent) != 0)
-		&& (bandinx > BANDINDEX_30)) {
-	    points = 3;
-
-	    return points;
-	}
-	if ((strcmp(continent, my.continent) != 0)
-		&& (bandinx < BANDINDEX_30)) {
-	    points = 6;
-
-	    return points;
-	}
-    }				// end wpx
-
-    if (CONTEST_IS(CQWW)) {
-
-	if (countrynr == 0) {
-	    zone = atoi(comment);
-	    calc_continent(zone);	// sets continent
-	}
-
-	if (countrynr == my.countrynr) {
-	    points = 0;
-
-	    return points;
-	}
-
-	if (strcmp(continent, my.continent) == 0) {
-	    if (strstr(my.continent, "NA") != NULL) {
-		points = 2;
-	    } else {
-		points = 1;
-	    }
-
-	    return points;
-	} else {
-	    points = 3;
-
-	    return points;
-	}
-
-    }
-
-    /* end cqww */
-    if (CONTEST_IS(ARRL_FD)) {
-
-	if (trxmode == SSBMODE) {
-	    points = 1;
-	} else {
-	    points = 2;
-
-	}
-	return points;
-
-    }				// end arrl_fd
-
-    if (CONTEST_IS(ARRLDX_USA)) {
-
-	if ((countrynr == w_cty) || (countrynr == ve_cty)) {
-	    points = 0;
-
-	} else {
-	    points = 3;
-	}
-
-	return points;
-    }
-
-    if (CONTEST_IS(STEWPERRY)) {
-
-	double s1long, s1lat, s2long, s2lat, distance, azimuth;
-
-	points = 0;
-
-	if (strlen(comment) > 3) {
-	    locator2longlat(&s1long, &s1lat, comment);
-	    locator2longlat(&s2long, &s2lat, my.qra);
-
-	    qrb(s1long, s1lat, s2long, s2lat, &distance, &azimuth);
-
-	    points = (int) ceil(distance / 500.0);
-	}
-
-	return points;
+    if (contest->points.type == FUNCTION) {
+	return contest->points.fn();
     }
 
     /* start of the universal scoring code */
@@ -437,7 +418,6 @@ int score2(char *line) {
 /* ----------------------------------------------------------------- */
 /* calculates continent from zone and sets 'continent' variable      */
 int calc_continent(int zone) {
-    extern char continent[];
 
     switch (zone) {
 	case 1 ... 8:

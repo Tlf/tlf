@@ -30,6 +30,7 @@
 #include "getctydata.h"
 #include "globalvars.h"
 #include "setcontest.h"
+#include "score.h"
 #include "tlf.h"
 
 /* configurations for supported contest */
@@ -51,13 +52,21 @@ contest_config_t config_dxped = {
 
 contest_config_t config_wpx = {
     .id = WPX,
-    .name = "WPX"
+    .name = "WPX",
+    .points = {
+	.type = FUNCTION,
+	.fn = score_wpx,
+    }
 };
 
 contest_config_t config_cqww = {
     .id = CQWW,
     .name = "CQWW",
     .recall_mult = true,
+    .points = {
+	.type = FUNCTION,
+	.fn = score_cqww,
+    }
 };
 
 contest_config_t config_sprint = {
@@ -69,6 +78,10 @@ contest_config_t config_arrldx_usa = {
     .id = ARRLDX_USA,
     .name = "ARRLDX_USA",
     .recall_mult =true,
+    .points = {
+	.type = FUNCTION,
+	.fn = score_arrldx_usa,
+    }
 };
 
 contest_config_t config_arrldx_dx = {
@@ -87,6 +100,10 @@ contest_config_t config_arrl_fd = {
     .id = ARRL_FD,
     .name = "ARRL_FD",
     .recall_mult =true,
+    .points = {
+	.type = FUNCTION,
+	.fn = score_arrlfd,
+    }
 };
 
 contest_config_t config_pacc_pa = {
@@ -96,7 +113,11 @@ contest_config_t config_pacc_pa = {
 
 contest_config_t config_stewperry = {
     .id = STEWPERRY,
-    .name = "STEWPERRY"
+    .name = "STEWPERRY",
+    .points = {
+	.type = FUNCTION,
+	.fn = score_stewperry
+    }
 };
 
 
@@ -152,10 +173,7 @@ void list_contests() {
 /** setup standard configuration for contest 'name' */
 void setcontest(char *name) {
 
-    extern int dx_arrlsections;
     extern int multlist;
-    extern int w_cty;
-    extern int ve_cty;
     extern int zl_cty;
     extern int ja_cty;
     extern int py_cty;
@@ -166,12 +184,7 @@ void setcontest(char *name) {
     extern int ua9_cty;
     extern int showscore_flag;
     extern int searchflg;
-    extern char whichcontest[];
-    extern int one_point;
-    extern int two_point;
-    extern int three_point;
     extern bool qso_once;
-    extern int sectn_mult;
     extern int noleadingzeros;
 
     char wcall[] = "W1AW";

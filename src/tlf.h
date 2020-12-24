@@ -205,14 +205,27 @@ typedef enum {
 
 #define QSO_MODE ("qso")
 
+typedef enum {
+    DEFAULT = 0,	/* undiefined -> DEFAULT */
+    FIXED,
+    FUNCTION
+} points_type_t;
+
 /** contest configuration
- *
  */
 typedef struct {
     contest_type_t	id;
     char		*name;
     bool		recall_mult;
     bool		exchange_serial;
+    struct {
+	points_type_t type;
+	union {
+	    int point;
+	    int (*fn)();
+	};
+    }			points;
+
 } contest_config_t;
 
 /**< Bitmask for Hamlib CAT PTT

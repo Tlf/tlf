@@ -21,6 +21,7 @@
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/err_utils.o
 // OBJECT ../src/ui_utils.o
+// OBJECT ../src/score.o
 
 extern WINDOW *search_win;
 extern PANEL *search_panel;
