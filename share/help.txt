@@ -86,7 +86,6 @@ $         Switch to MEM and clear it (pop)
 :INFo     Network status
 :TRXcont  Toggle TRX control on/off
 :CHAR     Autosend: number of chars before starting to send
-:DEBug_tty Test rig link
 :SOUnd    Record sound files
 :WRIte    Write cabrillo
 :ADIf     Write Adif
