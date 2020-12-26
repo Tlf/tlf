@@ -156,14 +156,14 @@ void prepare_fixed_part(void) {
 	strcat(logline4, khz);
 
     } else {
-	if ((lan_active == 1) && (exchange_serial == 1)) {	// show qso nr
+	if (lan_active && (exchange_serial == 1)) {	// show qso nr
 	    strcat(logline4, lastqsonr);
 	    lastqsonr[0] = '\0';
 	} else
 	    strcat(logline4, qsonrstr);
     }
 
-    if (lan_active == 1 && cqwwm2 == 1) {
+    if (lan_active && cqwwm2 == 1) {
 	logline4[27] = thisnode;	// set node ID...
 	logline4[28] = '\0';
 	strcat(logline4, " ");

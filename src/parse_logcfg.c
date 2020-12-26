@@ -458,7 +458,7 @@ static int cfg_addnode(const cfg_arg_t arg) {
     g_strfreev(an_fields);
 
     nodes++;
-    lan_active = 1;
+    lan_active = true;
 
     return PARSE_OK;
 }

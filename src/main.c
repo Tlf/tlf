@@ -69,7 +69,6 @@
 
 SCREEN *mainscreen;
 
-extern int lan_active;
 
 char pr_hostaddress[48] = "131.155.192.179";
 char *config_file = NULL;
@@ -744,7 +743,7 @@ void fldigi_init() {
 }
 
 void lan_init() {
-    if (lan_active == 1) {
+    if (lan_active) {
 	if (lan_recv_init() < 0)	/* set up the network */
 	    showmsg("LAN receive  init failed");
 	else

@@ -11,7 +11,7 @@
 // OBJECT ../src/sendspcall.o
 
 // lancode.c
-int lan_active = 0;
+bool lan_active = false;
 
 int send_lan_message(int opcode, char *message) {
     return 0;

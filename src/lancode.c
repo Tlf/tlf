@@ -58,7 +58,7 @@ char default_lan_service[16] = "6788";
 /* lan port parsed from config */
 int lan_port = 6788;
 
-int lan_active = 0;
+bool lan_active = false;
 int send_error[MAXNODES];
 int send_error_limit[MAXNODES];
 int lan_mutex = 0;
@@ -97,7 +97,7 @@ int lan_recv_init(void) {
     long lan_save_file_flags;
     struct sockaddr_in lan_sin;
 
-    if (lan_active == 0)
+    if (!lan_active)
 	return 0;
 
     sprintf(default_lan_service, "%d", lan_port);
@@ -132,7 +132,7 @@ int lan_recv_init(void) {
 int lan_recv_close(void) {
     int lan_close_rc;
 
-    if (lan_active == 0)
+    if (!lan_active)
 	return 0;
 
     lan_close_rc = close(lan_socket_descriptor);
@@ -150,7 +150,7 @@ int lan_recv(void) {
     unsigned int lan_sin_len = sizeof(lan_sin);
     char lan_recv_message[256];
 
-    if (lan_active == 0)
+    if (!lan_active)
 	return 0;
 
     lan_recv_message[0] = '\0';

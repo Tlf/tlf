@@ -76,7 +76,6 @@ int getexchange(void) {
     extern int countrynr;
     extern int trxmode;
     extern int recall_mult;
-    extern int lan_active;
     extern char lastqsonr[];
     extern char qsonrstr[];
     extern char section[];
@@ -103,7 +102,7 @@ int getexchange(void) {
 
     instring[1] = '\0';
 
-    if ((lan_active == 1) && (exchange_serial == 1)) {
+    if (lan_active && (exchange_serial == 1)) {
 	strncpy(lastqsonr, qsonrstr, 5);
 	send_lan_message(INCQSONUM, qsonrstr);
     }

@@ -247,7 +247,7 @@ void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) {
     char qtclogline[120];
     char padding[2] = " ";
 
-    if (lan_active == 1) {
+    if (lan_active) {
 	nodemark = thisnode;
     }
 
@@ -266,7 +266,7 @@ void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) {
 		qtc_line.qtc_time, qtc_line.qtc_call, padding, qtc_line.qtc_serial,
 		qtc_line.freq / 1000.0);
 	store_qtc(qtclogline, qtc_line.direction, fname);
-	if (lan_active == 1) {
+	if (lan_active) {
 	    send_lan_message(QTCRENTRY, qtclogline);
 	}
     }
@@ -279,7 +279,7 @@ void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) {
 		qtc_line.qtc_time, qtc_line.qtc_call, padding, qtc_line.qtc_serial,
 		qtc_line.freq / 1000.0);
 	store_qtc(qtclogline, qtc_line.direction, fname);
-	if (lan_active == 1) {
+	if (lan_active) {
 	    send_lan_message(QTCSENTRY, qtclogline);
 	}
     }

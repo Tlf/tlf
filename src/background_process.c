@@ -44,7 +44,7 @@
 
 extern int cluster;
 extern int packetinterface;
-extern int lan_active;
+extern bool lan_active;
 extern char lan_message[];
 extern int recv_error;
 extern char thisnode;
@@ -150,7 +150,7 @@ void *background_process(void *ptr) {
 	    cqww_simulator();
 	}
 
-	if (lan_active == 1) {
+	if (lan_active) {
 	    if (lan_message[0] == '\0') {
 
 		if (lan_recv() >= 0) {

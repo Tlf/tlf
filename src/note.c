@@ -54,7 +54,7 @@ int include_note(void) {
     getnstr(buffer, 78);
     noecho();
 
-    if (lan_active == 1) {
+    if (lan_active) {
 	sprintf(buffer2, "; Node %c, %d : ", thisnode, atoi(qsonrstr) - 1);
     } else
 	sprintf(buffer2, "; ");

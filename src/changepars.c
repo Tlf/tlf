@@ -714,7 +714,7 @@ void networkinfo(void) {
     extern int recv_error;
     extern int send_packets[];
     extern int send_error[];
-    extern int lan_active;
+    extern bool lan_active;
     extern int nodes;
     extern char bc_hostaddress[MAXNODES][16];
     extern char *config_file;
@@ -728,7 +728,7 @@ void networkinfo(void) {
 
     wipe_display();
 
-    if (lan_active == 1)
+    if (lan_active)
 	mvprintw(1, 10, "Network status: on");
     else
 	mvprintw(1, 10, "Network status: off");
