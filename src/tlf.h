@@ -21,15 +21,13 @@
 #ifndef TLF_H
 #define TLF_H
 
-#define NO_KEYER 0
-#define LPT_KEYER 1 	/* deprecated */
-#define COM1_KEYER 2	/* deprecated */
-#define NET_KEYER 3
-#define MFJ1278_KEYER 4
-#define ORION_KEYER 5 	/* deprecated */
-#define K2_KEYER 6 	/* deprecated */
-#define GMFSK 7
-#define FLDIGI 8
+enum {
+    NO_KEYER,
+    NET_KEYER,
+    MFJ1278_KEYER,
+    GMFSK,
+    FLDIGI,
+};
 
 #define SINGLE 0        /* single op */
 #define MULTI 1         /* multi op / single tx */
