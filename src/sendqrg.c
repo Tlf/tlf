@@ -73,8 +73,6 @@ int init_tlf_rig(void) {
     /*
      * allocate memory, setup & open port
      */
-    rig_set_debug(RIG_DEBUG_NONE);
-
     my_rig = rig_init(myrig_model);
 
     if (!my_rig) {
