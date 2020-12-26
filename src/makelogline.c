@@ -28,10 +28,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "addcall.h"
 #include "addpfx.h"
 #include "dxcc.h"
 #include "get_time.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "lancode.h"
 #include "qsonr_to_str.h"
 #include "score.h"
 #include "setcontest.h"
@@ -55,9 +57,6 @@ void fillto(int n);
  *   See function definitions below
  */
 void makelogline(void) {
-    extern int trx_control;
-    extern freq_t freq;
-
     static int lastbandinx = 0;
     char freq_buff[10];
     int points;
@@ -93,7 +92,7 @@ void makelogline(void) {
     fillto(80);
 
     /* add freq to end of logline */
-    if (trx_control == 1) {
+    if (trx_control) {
 	snprintf(freq_buff, 8, "%7.1f", freq / 1000.0);
 	strcat(logline4, freq_buff);
     }
@@ -121,12 +120,6 @@ void makelogline(void) {
  *                                                 his  my.\endverbatim
  */
 void prepare_fixed_part(void) {
-    extern int no_rst;
-    extern char whichcontest[];
-    extern int logfrequency;
-    extern int trx_control;
-    extern freq_t freq;
-
     static char time_buf[80];
 
     strcpy(logline4, band[bandinx]);
@@ -147,8 +140,7 @@ void prepare_fixed_part(void) {
     strcat(logline4, time_buf);
 
     qsonr_to_str();
-    if (logfrequency == 1 &&
-	    trx_control == 1 &&
+    if (logfrequency == 1 && trx_control &&
 	    ((strcmp(whichcontest, "qso") == 0) ||
 	     (strcmp(whichcontest, "dxped") == 0))) {
 	char khz[5];
@@ -233,8 +225,6 @@ void prepare_fixed_part(void) {
  *     class - TX count + operator class, sctn - ARRL/RAC section
  */
 void prepare_specific_part(void) {
-    extern int pfxnummultinr;
-    extern int excl_add_veto;
     int new_pfx;
     int sr_nr = 0;
     char grid[7] = "";
@@ -300,7 +290,7 @@ void prepare_specific_part(void) {
 	new_pfx = (add_pfx(pxstr, bandinx) == 0);	/* add prefix, remember if new */
     }
 
-    if (CONTEST_IS(WPX) ||pfxmult == 1 || pfxmultab == 1) {	/* wpx */
+    if (CONTEST_IS(WPX) || pfxmult == 1 || pfxmultab == 1) {	/* wpx */
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, pxstr, 5);

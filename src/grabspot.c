@@ -38,10 +38,6 @@ void send_bandswitch(freq_t outfreq);
 static freq_t execute_grab(spot *data);
 
 freq_t grabspot(void) {
-    extern char hiscall[];
-    extern int trx_control;
-
-    spot *data;
 
     if (!trx_control) {
 	return 0;   // no trx control
@@ -51,7 +47,7 @@ freq_t grabspot(void) {
 	return 0;   // call input is empty
     }
 
-    data = bandmap_lookup(hiscall);
+    spot *data = bandmap_lookup(hiscall);
 
     if (data == NULL) {
 	return 0;   // no spot found
@@ -61,17 +57,14 @@ freq_t grabspot(void) {
 }
 
 freq_t grab_next(void) {
-    extern int trx_control;
 
     static int dir = 1;		/* start scanning up */
-
-    spot *data;
 
     if (!trx_control) {
 	return 0;   // no trx control
     }
 
-    data = bandmap_next(dir, freq);
+    spot *data = bandmap_next(dir, freq);
 
     if (data == NULL) {		/* nothing in that direction */
 	/* try other one */
@@ -90,8 +83,6 @@ freq_t grab_next(void) {
  * \return frequency of the spot in Hz
  */
 static freq_t execute_grab(spot *data) {
-    extern char hiscall[];
-    extern cqmode_t cqmode;
 
     freq_t f = data->freq;
     set_outfreq(f);

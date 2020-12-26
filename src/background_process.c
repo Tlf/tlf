@@ -41,28 +41,6 @@
 #include "tlf.h"
 #include "write_keyer.h"
 
-
-extern int cluster;
-extern int packetinterface;
-extern bool lan_active;
-extern char lan_message[];
-extern int recv_error;
-extern char thisnode;
-extern int lanspotflg;
-extern char talkarray[5][62];
-extern freq_t node_frequencies[MAXNODES];
-extern int qsonum;
-extern char qsonrstr[5];
-extern int lanqsos;
-extern int highqsonr;
-extern char zone_export[];
-extern long timecorr;
-extern int timeoffset;
-extern mystation_t my;
-extern int trxmode;
-extern int digikeyer;
-extern int trx_control;
-
 // don't start until we know what we are doing
 static bool stop_backgrnd_process = true;
 
@@ -96,8 +74,6 @@ static void background_process_wait(void) {
 }
 
 void *background_process(void *ptr) {
-
-    extern int landebug;
 
     static char prmessage[256];
     static int lantimesync = 0;
@@ -135,8 +111,7 @@ void *background_process(void *ptr) {
 	 *   fldigi_get_log_call() reads the callsign, if user clicks to a string in Fldigi's RX window
 	 *   fldigi_get_log_serial_number() reads the exchange
 	 */
-	if (digikeyer == FLDIGI && fldigi_isenabled()
-		&& trx_control == 1) {
+	if (digikeyer == FLDIGI && fldigi_isenabled() && trx_control) {
 	    if (fldigi_rpc_cnt == 0) {
 		fldigi_xmlrpc_get_carrier();
 		fldigi_get_log_call();

@@ -22,6 +22,8 @@
 #ifndef ADDCALL_H
 #define ADDCALL_H
 
+extern int excl_add_veto;
+
 int addcall(void);
 int addcall2(void);
 int get_band(char *logline);

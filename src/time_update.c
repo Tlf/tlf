@@ -48,7 +48,6 @@
  * act as time master if allowed */
 void broadcast_lan(void) {
 
-    extern int time_master;
     static int frcounter = 0;
 
     frcounter++;
@@ -80,8 +79,6 @@ bool force_show_freq = false;
 /** show frequency and memory if rig control is active */
 void show_freq(void) {
 
-    extern int trx_control;
-
     attron(modify_attr(COLOR_PAIR(C_LOG)));
 
     freq_t memfreq = 0;
@@ -103,10 +100,6 @@ void show_freq(void) {
 
 
 void time_update(void) {
-
-    extern char qsonrstr[];
-    extern int bandinx;
-    extern int miniterm;
 
     static int s = 0;
     static int bm_timeout = 0;

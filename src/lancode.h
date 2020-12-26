@@ -38,6 +38,15 @@
 
 extern char bc_hostaddress[MAXNODES][16];
 extern char bc_hostservice[MAXNODES][16];
+extern char talkarray[5][62];
+extern char thisnode;
+extern char lan_message[256];
+extern int recv_error;
+extern freq_t node_frequencies[MAXNODES];
+extern long timecorr;
+extern int recv_packets;
+extern int send_packets[MAXNODES];
+extern int send_error[MAXNODES];
 
 int lan_recv_init(void);
 int lan_recv_close(void);

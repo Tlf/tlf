@@ -8,10 +8,6 @@
 
 // OBJECT ../src/lancode.o
 
-extern int trx_control;
-extern int nodes;
-
-
 void handle_logging(enum log_lvl lvl, ...) {
     // empty
 }
@@ -22,7 +18,7 @@ time_t get_time() {
 
 int setup_default(void **state) {
 
-    trx_control = 1;
+    trx_control = true;
     nodes = 1;
     lan_active = true;
 
@@ -52,7 +48,7 @@ void test_send_freq_10(void **state) {
 
 void test_send_freq_80_notrx(void **state) {
 
-    trx_control = 0;
+    trx_control = false;
 
     bandinx = BANDINDEX_80;
     send_freq(0);
@@ -64,7 +60,7 @@ void test_send_freq_80_notrx(void **state) {
 
 void test_send_freq_10_notrx(void **state) {
 
-    trx_control = 0;
+    trx_control = false;
 
     bandinx = BANDINDEX_10;
     send_freq(0);

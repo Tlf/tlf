@@ -32,10 +32,9 @@
 #include <time.h>
 
 #include "get_time.h"
+#include "globalvars.h"
 #include "lancode.h"
 #include "splitscreen.h"
-#include "tlf.h"
-#include "tlf_curses.h"
 #include "ui_utils.h"
 
 
@@ -45,9 +44,6 @@
  * and send it to other stations in the LAN
  */
 void add_to_spots(char *call, freq_t freq) {
-
-    extern int lanspotflg;
-    extern char thisnode;
 
     char spotline[160];
     char spottime[6];
@@ -60,16 +56,13 @@ void add_to_spots(char *call, freq_t freq) {
     strcat(spotline, "\n\n");
 
     send_lan_message(TLFSPOT, spotline);
-    lanspotflg = 1;
+    lanspotflg = true;
     addtext(spotline);
-    lanspotflg = 0;
+    lanspotflg = false;
 }
 
 
 void addspot(void) {
-    extern freq_t freq;
-    extern char hiscall[];
-    extern int trx_control;
 
     char frequency[8];
 
@@ -77,7 +70,7 @@ void addspot(void) {
 	return;
     }
 
-    if (trx_control == 0) {
+    if (!trx_control) {
 
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 

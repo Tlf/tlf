@@ -64,7 +64,6 @@ typedef struct xmlrpc_res_s {
 #define MAXSHIFT 20		/* max shift value in Fldigi, when Tlf set
 				   it back to RIG carrier */
 
-extern char fldigi_url[50];
 static bool use_fldigi = false;
 
 int fldigi_var_carrier = 0;
@@ -491,9 +490,6 @@ int fldigi_xmlrpc_get_carrier() {
     int rc;
     xmlrpc_res result;
     xmlrpc_env env;
-    extern rmode_t rigmode;
-    extern int trx_control;
-    extern freq_t freq;
     char fldigi_mode[6] = "";
 
     rc = fldigi_xmlrpc_query(&result, &env, "modem.get_carrier", "");
@@ -610,7 +606,6 @@ int fldigi_get_log_call() {
 
     xmlrpc_res_init(&result);
 
-    extern char hiscall[];
     char tempstr[20];
     int i, j;
 
@@ -672,7 +667,6 @@ int fldigi_get_log_serial_number() {
 
     xmlrpc_res_init(&result);
 
-    extern char comment[];
     char tempstr[20];
     int i, j;
 

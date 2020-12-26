@@ -40,10 +40,6 @@ static void debug_tlf_rig();
  */
 int sendqrg(void) {
 
-    extern char hiscall[];
-    extern int trx_control;
-
-
     if (!trx_control) {
 	return 0;               /* nothing to do here */
     }
@@ -65,13 +61,6 @@ int sendqrg(void) {
 /**************************************************************************/
 
 int init_tlf_rig(void) {
-    extern RIG *my_rig;
-    extern rig_model_t myrig_model;
-    extern int serial_rate;
-    extern char *rigportname;
-    extern int debugflag;
-    extern unsigned char rigptt;
-
     freq_t rigfreq;		/* frequency  */
     vfo_t vfo;
     int retcode;		/* generic return code from functions */
@@ -105,12 +94,12 @@ int init_tlf_rig(void) {
     caps = my_rig->caps;
 
     /* If CAT PTT is wanted, test for CAT capability of rig backend. */
-    if (rigptt & (1 << 0)) {
+    if (rigptt & CAT_PTT_WANTED) {
 	if (caps->ptt_type == RIG_PTT_RIG) {
-	    rigptt |= (1 << 1);		/* bit 1 set--CAT PTT available. */
+	    rigptt |= CAT_PTT_AVAILABLE;
 	} else {
 	    rigptt = 0;
-	    showmsg("Controlling PTT via hamlib is not supported for that rig!");
+	    showmsg("Controlling PTT via Hamlib is not supported for that rig!");
 	}
     }
 
@@ -168,21 +157,15 @@ int init_tlf_rig(void) {
     return 0;
 }
 
-int close_tlf_rig(RIG *my_rig) {
-    extern char *rigportname;
+void close_tlf_rig(RIG *my_rig) {
 
     rig_close(my_rig);		/* close port */
     rig_cleanup(my_rig);	/* if you care about memory */
 
-    printf("Rig port %s closed ok\n", rigportname);
-
-    return 0;
+    printf("Rig port %s closed\n", rigportname);
 }
 
 static int parse_rigconf() {
-    extern char rigconf[];
-    extern RIG *my_rig;
-
     char *cnfparm, *cnfval;
     const int rigconf_len = strlen(rigconf);
     int i;
@@ -222,7 +205,6 @@ static int parse_rigconf() {
 
 
 static void debug_tlf_rig() {
-    extern RIG *my_rig;
     freq_t rigfreq;
     int retcode;
 

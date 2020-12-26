@@ -71,30 +71,6 @@ void wipe_display();
 
 int changepars(void) {
 
-    extern int cluster;
-    extern int shortqsonr;
-    extern int searchflg;
-    extern int demode;
-    extern int announcefilter;
-    extern int showscore_flag;
-    extern int zonedisplay;
-    extern int trxmode;
-    extern char hiscall[];
-    extern int rit;
-    extern int trx_control;
-    extern int packetinterface;
-    extern int nopacket;
-    extern int cqdelay;
-    extern int ctcomp;
-    extern char *config_file;
-    extern int miniterm;
-    extern int cwkeyer;
-    extern char synclogfile[];
-    extern char sc_volume[];
-    extern int cwstart;
-    extern int digikeyer;
-    extern cqmode_t cqmode;
-
     char parameterstring[20] = "";
     char parameters[52][19];
     int i, k, x, nopar = 0;
@@ -387,13 +363,9 @@ int changepars(void) {
 	    break;
 	}
 	case 28: {		/*  trx ctl   */
-	    if (trx_control == 1)
-		trx_control = 0;
-	    else {
-		trx_control = 1;
+	    trx_control = !trx_control;
 
-	    }
-	    if (trx_control == 1) {
+	    if (trx_control) {
 		mvprintw(13, 29, "TRX control on");
 	    } else {
 		mvprintw(13, 29, "TRX control off");
@@ -423,7 +395,7 @@ int changepars(void) {
 	    break;
 	}
 	case 33: {		/* PACKET  */
-	    if ((nopacket == 0) && (packetinterface > 0))
+	    if (!nopacket && packetinterface > 0)
 		packet();
 	    break;
 	}
@@ -495,7 +467,7 @@ int changepars(void) {
 	}
 
 	case 37: {		/* RECONNECT  */
-	    if ((nopacket == 0) && (packetinterface > 0)) {
+	    if (!nopacket && packetinterface > 0) {
 		cleanup_telnet();
 		init_packet();
 		packet();
@@ -689,7 +661,7 @@ int changepars(void) {
 	mvprintw(12, 29, "OK !        ");
 	writeparas();
     } else {
-	if ((nopacket == 0) && (packetinterface > 0))
+	if (!nopacket && packetinterface > 0)
 	    packet();
     }
 
@@ -709,23 +681,6 @@ int changepars(void) {
 
 void networkinfo(void) {
 
-    extern int use_bandoutput;
-    extern int recv_packets;
-    extern int recv_error;
-    extern int send_packets[];
-    extern int send_error[];
-    extern bool lan_active;
-    extern int nodes;
-    extern char bc_hostaddress[MAXNODES][16];
-    extern char *config_file;
-    extern char whichcontest[];
-    extern char pr_hostaddress[];
-    extern char tncportname[];
-    extern char *rigportname;
-    extern char logfile[];
-
-    int inode;
-
     wipe_display();
 
     if (lan_active)
@@ -735,27 +690,27 @@ void networkinfo(void) {
 
     mvprintw(3, 28, "Packets rcvd: %d | %d", recv_packets, recv_error);
 
-    for (inode = 0; inode < nodes; inode++) {
-	mvprintw(4 + inode, 10, "%s", bc_hostaddress[inode]);
-	mvprintw(4 + inode, 28, "Packets sent: %d | %d ",
-		 send_packets[inode], send_error[inode], nodes);
+    for (int i = 0; i < nodes; i++) {
+	mvprintw(4 + i, 10, "%s", bc_hostaddress[i]);
+	mvprintw(4 + i, 28, "Packets sent: %d | %d ",
+		 send_packets[i], send_error[i]);
     }
 
     if (strlen(config_file) > 0)
-	mvprintw(6 + inode, 10, "Config file: %s", config_file);
+	mvprintw(6 + nodes, 10, "Config file: %s", config_file);
     else
-	mvprintw(6 + inode, 10,
-		 "Config file: /usr/local/share/tlf/logcfg.dat");
-    mvprintw(7 + inode, 10, "Contest    : %s", whichcontest);
-    mvprintw(8 + inode, 10, "Logfile    : %s", logfile);
+	mvprintw(6 + nodes, 10,
+		 "Config file: /usr/local/share/tlf/logcfg.dat");//FIXME
+    mvprintw(7 + nodes, 10, "Contest    : %s", whichcontest);
+    mvprintw(8 + nodes, 10, "Logfile    : %s", logfile);
 
-    mvprintw(9 + inode, 10, "Cluster    : %s", pr_hostaddress);
-    mvprintw(10 + inode, 10, "TNCport    : %s", tncportname);
-    mvprintw(11 + inode, 10, "RIGport    : %s", rigportname);
+    mvprintw(9 + nodes, 10, "Cluster    : %s", pr_hostaddress);
+    mvprintw(10 + nodes, 10, "TNCport    : %s", tncportname);
+    mvprintw(11 + nodes, 10, "RIGport    : %s", rigportname);
     if (use_bandoutput == 1)
-	mvprintw(12 + inode, 10, "Band output: on");
+	mvprintw(12 + nodes, 10, "Band output: on");
     else
-	mvprintw(12 + inode, 10, "Band output: off");
+	mvprintw(12 + nodes, 10, "Band output: off");
 
     refreshp();
 
@@ -771,11 +726,6 @@ void networkinfo(void) {
 /* -------------------------------------------------------------- */
 
 void multiplierinfo(void) {
-
-    extern int serial_section_mult;
-    extern int sectn_mult;
-    extern mults_t multis[MAX_MULTS];
-    extern int nr_multis;
 
     int j, k, vert, hor, cnt, found;
     char mprint[50];

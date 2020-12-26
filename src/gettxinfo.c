@@ -31,6 +31,7 @@
 #include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
+#include "globalvars.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "callinput.h"
@@ -43,20 +44,6 @@
 #else
 #define TLF_DEFAULT_PASSBAND RIG_PASSBAND_NORMAL
 #endif
-
-extern RIG *my_rig;
-extern int cw_bandwidth;
-extern int trxmode;
-extern rmode_t rigmode;
-extern int digikeyer;
-extern rmode_t digi_mode;
-
-extern freq_t freq;
-extern int bandinx;
-extern freq_t bandfrequency[];
-
-extern int trx_control;
-extern unsigned char rigptt;
 
 /* output frequency to rig or other rig-related request
  *
@@ -124,29 +111,27 @@ void gettxinfo(void) {
 	return;
 
     /* CAT PTT wanted, available, inactive, and PTT On requested
-     * bits 0, 1, and 3 set.
      */
-    if (rigptt == 0x0b) {
+    if (rigptt == (CAT_PTT_USE | CAT_PTT_ON)) {
 	retval = rig_set_ptt(my_rig, RIG_VFO_CURR, RIG_PTT_ON);
 
 	/* Set PTT active bit. */
-	rigptt |= (1 << 2);		/* 0x0f */
+	rigptt |= CAT_PTT_ACTIVE;
 
 	/* Clear PTT On requested bit. */
-	rigptt &= ~(1 << 3);		/* 0x07 */
+	rigptt &= ~CAT_PTT_ON;
     }
 
     /* CAT PTT wanted, available, active and PTT Off requested
-     * bits 0, 1, 2, and 4 set.
      */
-    if (rigptt == 0x17) {
+    if (rigptt == (CAT_PTT_USE | CAT_PTT_ACTIVE | CAT_PTT_OFF)) {
 	retval = rig_set_ptt(my_rig, RIG_VFO_CURR, RIG_PTT_OFF);
 
 	/* Clear PTT Off requested bit. */
-	rigptt &= ~(1 << 4);		/* 0x07 */
+	rigptt &= ~CAT_PTT_OFF;
 
 	/* Clear PTT active bit. */
-	rigptt &= ~(1 << 2);		/* 0x03 */
+	rigptt &= ~CAT_PTT_ACTIVE;
     }
 
     freq_t reqf = get_and_reset_outfreq();  // get actual request
