@@ -17,25 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ------------------------------------------------------------
- *        Get messages  from  -paras file
- *        and  gets  the last  5 qso records for  display
- *        also gets the nr of the last qso from  the logfile
- *--------------------------------------------------------------*/
-
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
-#include "checklogfile.h"
 #include "dxcc.h"
 #include "getctydata.h"
-#include "globalvars.h"		// Includes glib.h and tlf.h
-#include "qsonr_to_str.h"
-#include "ignore_unused.h"
-#include "tlf_curses.h"
+#include "globalvars.h"
+#include "locator2longlat.h"
 
 
 /* get countrynumber, QTH, CQ zone and continent for myself */
@@ -47,8 +35,14 @@ void getstationinfo() {
 
     sprintf(my.cqzone, "%02d", mydx -> cq);
     strcpy(my.continent, mydx->continent);
-    my.Lat = mydx->lat; 	/* whereami? */
-    my.Long = mydx->lon;
+
+    /* whereami? use QRA is possible */
+    if (RIG_OK == locator2longlat(&my.Long, &my.Lat, my.qra)) {
+	my.Long = -my.Long;     // W <-> E fix
+    } else {
+	my.Long = mydx->lon;
+	my.Lat = mydx->lat;
+    }
 }
 
 
