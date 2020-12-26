@@ -69,7 +69,7 @@ void get_next_serial(void) {
 	}
     }
 
-    if ((lan_active == 1) && (exchange_serial == 1)) {
+    if (lan_active && (exchange_serial == 1)) {
 
 	if (lan_mutex == 2) {	/* last stored message is from lan */
 

@@ -175,8 +175,6 @@ void ExpandMacro(void) {
     extern char lastqsonr[];
     extern int early_started;
     extern int noleadingzeros;
-    extern int lan_active;
-    extern int exchange_serial;
 
     int i;
     static char comstr[BUFSIZE] = "";
@@ -230,7 +228,7 @@ void ExpandMacro(void) {
 	replace_all(buffer, BUFSIZE, "#",
 		    qsonroutput + leading_zeros);   /* serial nr */
 
-	if ((lan_active == 1) && (exchange_serial == 1)) {
+	if (lan_active && (exchange_serial == 1)) {
 	    strncpy(lastqsonr, qsonrstr, 5);
 	    send_lan_message(INCQSONUM, qsonrstr);
 	}

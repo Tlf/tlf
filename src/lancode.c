@@ -40,46 +40,33 @@
 
 
 int lan_socket_descriptor;
-struct sockaddr_in lan_sin;
-int lan_bind_rc, lan_close_rc;
-ssize_t lan_recv_rc;
-long lan_save_file_flags;
-char lan_recv_message[256];
 char lan_message[256];
-char lan_logline[256];
-unsigned int lan_sin_len;
 //--------------------------------------
 int bc_socket_descriptor[MAXNODES];
 ssize_t bc_sendto_rc;
-int bc_close_rc;
 int cl_send_inhibit = 0;
-char lanbuffer[255];
 struct sockaddr_in bc_address[MAXNODES];
-struct hostent *bc_hostbyname[MAXNODES];
 /* host names and UDP ports to send notifications to */
 char bc_hostaddress[MAXNODES][16];
 char bc_hostservice[MAXNODES][16] = {
     [0 ... MAXNODES - 1] = { [0 ... 15] = 0 }
 };
-char sendbuffer[256];
 int nodes = 0;
-int send_error_limit[MAXNODES];
 //--------------------------------------
 /* default port to listen for incomming packets and to send packet to */
 char default_lan_service[16] = "6788";
 /* lan port parsed from config */
 int lan_port = 6788;
 
-int lan_active = 0;
+bool lan_active = false;
 int send_error[MAXNODES];
+int send_error_limit[MAXNODES];
 int lan_mutex = 0;
 int send_packets[MAXNODES];
 int recv_error;
 int recv_packets;
-int buflen;
 char talkarray[5][62];
 freq_t node_frequencies[MAXNODES];
-int lanqsos;
 char lastqsonr[5];
 int highqsonr;
 int landebug = 0;
@@ -105,21 +92,24 @@ int resolveService(const char *service) {
     return port;
 }
 
-int lanrecv_init(void) {
-    if (lan_active == 0)
-	return (1);
+int lan_recv_init(void) {
+    int lan_bind_rc;
+    long lan_save_file_flags;
+    struct sockaddr_in lan_sin;
+
+    if (!lan_active)
+	return 0;
 
     sprintf(default_lan_service, "%d", lan_port);
     bzero(&lan_sin, sizeof(lan_sin));
     lan_sin.sin_family = AF_INET;
     lan_sin.sin_addr.s_addr = htonl(INADDR_ANY);
     lan_sin.sin_port = htons(resolveService(default_lan_service));
-    lan_sin_len = sizeof(lan_sin);
 
     lan_socket_descriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (lan_socket_descriptor == -1) {
 	syslog(LOG_ERR, "%s\n", "LAN: socket");
-	return (-1);
+	return -1;
     }
 
     lan_bind_rc =
@@ -127,36 +117,41 @@ int lanrecv_init(void) {
 	     sizeof(lan_sin));
     if (lan_bind_rc == -1) {
 	syslog(LOG_ERR, "%s\n", "LAN: bind");
-	return (-2);
+	return -2;
     }
 
     lan_save_file_flags = fcntl(lan_socket_descriptor, F_GETFL);
     lan_save_file_flags |= O_NONBLOCK;
     if (fcntl(lan_socket_descriptor, F_SETFL, lan_save_file_flags) == -1) {
 	syslog(LOG_ERR, "%s\n", "trying non-blocking");
-	return (-3);
+	return -3;
     }
-    return (0);
+    return 0;
 }
 
 int lan_recv_close(void) {
+    int lan_close_rc;
 
-    if (lan_active == 0)
-	return (-1);
+    if (!lan_active)
+	return 0;
 
     lan_close_rc = close(lan_socket_descriptor);
     if (lan_close_rc == -1) {
 	syslog(LOG_ERR, "%s\n", "LAN: close call failed");
-	return (errno);
+	return errno;
     }
 
-    return (0);
+    return 0;
 }
 
 int lan_recv(void) {
+    ssize_t lan_recv_rc;
+    struct sockaddr_in lan_sin;
+    unsigned int lan_sin_len = sizeof(lan_sin);
+    char lan_recv_message[256];
 
-    if (lan_active == 0)
-	return (-1);
+    if (!lan_active)
+	return 0;
 
     lan_recv_message[0] = '\0';
 
@@ -167,9 +162,7 @@ int lan_recv(void) {
 
     if (lan_recv_rc == -1 && errno != EAGAIN) {
 	recv_error++;
-	return (errno);
-    } else if (lan_recv_rc == 0 || errno == EAGAIN) {	/* no data */
-	errno = 0;		/* clear the error */
+	return errno;
     }
 
     errno = 0;			/* clear the error */
@@ -181,18 +174,17 @@ int lan_recv(void) {
 	recv_packets++;
 
     strcpy(lan_message, lan_recv_message);
-    if (lan_recv_rc > buflen)
-	buflen = lan_recv_rc;
 
-    return (0);
+    return 0;
 }
 
 // ----------------send routines --------------------------
 
 int lan_send_init(void) {
+    struct hostent *bc_hostbyname[MAXNODES];
 
     if (!lan_active)
-	return 1;
+	return 0;
 
     for (int node = 0; node < nodes; node++) {
 
@@ -228,9 +220,10 @@ int lan_send_init(void) {
 }
 
 int lan_send_close(void) {
+    int bc_close_rc;
 
     if (!lan_active)
-	return -1;
+	return 0;
 
     for (int node = 0; node < nodes; node++) {
 
@@ -247,7 +240,7 @@ int lan_send_close(void) {
 static int lan_send(char *lanbuffer) {
 
     if (!lan_active)
-	return -1;
+	return 0;
 
     if (lanbuffer[0] == 0) {
 	return 0;       // nothing to send

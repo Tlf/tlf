@@ -120,7 +120,7 @@ int callinput(void) {
     extern char ph_message[14][80];
     extern SCREEN *mainscreen;
     extern char talkarray[5][62];
-    extern int lan_active;
+    extern bool lan_active;
     extern int zonedisplay;
     extern int showscore_flag;
     extern int searchflg;
@@ -941,7 +941,7 @@ int callinput(void) {
 
 	    // Double quote, send talk message to other nodes.
 	    case '\"': {
-		if (lan_active != 0)
+		if (lan_active)
 		    talk();
 
 		break;
@@ -962,7 +962,7 @@ int callinput(void) {
 	    // Ctrl-T (^T) or Alt-i (M-i), show talk messages.
 	    case CTRL_T:
 	    case ALT_I: {
-		if (lan_active != 0) {
+		if (lan_active) {
 
 		    for (t = 0; t <= 5; t++)
 			mvprintw(14 + t, 1,

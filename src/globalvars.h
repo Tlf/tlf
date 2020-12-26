@@ -89,7 +89,7 @@ extern char lan_logline[];
 extern char logfile[];
 extern char qsonrstr[];
 extern int lan_mutex;
-extern int lan_active;
+extern bool lan_active;
 extern int exchange_serial;
 extern int highqsonr;
 

@@ -55,7 +55,7 @@ void broadcast_lan(void) {
 
     if (frcounter >= 60) {	// every 60 calls
 	frcounter = 0;
-	if (lan_active != 0) {
+	if (lan_active) {
 	    send_freq(freq);
 	    if (time_master == 1)
 		send_time();

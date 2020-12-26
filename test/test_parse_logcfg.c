@@ -133,7 +133,7 @@ extern unsigned char rigptt;
 int nodes = 0;
 struct sockaddr_in bc_address[MAXNODES];
 int lan_port = 6788;
-int lan_active;
+bool lan_active;
 int landebug = 0;
 char thisnode = 'A';
 int time_master;
@@ -961,7 +961,7 @@ void test_rigmodel(void **state) {
 void test_addnode(void **state) {
     int rc = call_parse_logcfg("ADDNODE=hostx:1234\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(lan_active, 1);
+    assert_int_equal(lan_active, true);
     assert_int_equal(nodes, 1);
     assert_string_equal(bc_hostaddress[0], "hostx");
     assert_string_equal(bc_hostservice[0], "1234");

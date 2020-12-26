@@ -584,8 +584,6 @@ void refresh_splitlayout() {
 }
 
 void addtext(char *s) {
-    extern int lan_active;
-    extern char hiscall[];
     extern char talkarray[5][62];
 
     char lan_out[256];
@@ -715,7 +713,7 @@ void addtext(char *s) {
 
 	    addlog(tln_input_buffer);
 
-	    if (lan_active == 1 && lanspotflg == 0) {
+	    if (lan_active && lanspotflg == 0) {
 		if ((strlen(tln_input_buffer) > 0)
 			&& (tln_input_buffer[0] > 32)
 			&& (tln_input_buffer[0] < 126)) {

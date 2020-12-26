@@ -8,7 +8,6 @@
 
 // OBJECT ../src/lancode.o
 
-extern int lan_active;
 extern int trx_control;
 extern int nodes;
 
@@ -25,7 +24,7 @@ int setup_default(void **state) {
 
     trx_control = 1;
     nodes = 1;
-    lan_active = 1;
+    lan_active = true;
 
     sendto_call_count = 0;
     FREE_DYNAMIC_STRING(sendto_last_message);

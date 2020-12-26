@@ -45,6 +45,8 @@
 
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+char lan_logline[256];
+
 /** \brief logs one record to disk
  * Logs one record to disk which may come from different sources
  * (direct from tlf or from other instance via LAN)
@@ -54,7 +56,6 @@ pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 void log_to_disk(int from_lan) {
     extern char last_rst[4];
     extern char qsonrstr[5];
-    extern char lan_logline[];
     extern int rit;
     extern int trx_control;
     extern cqmode_t cqmode;
