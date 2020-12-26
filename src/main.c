@@ -711,6 +711,8 @@ static int databases_load() {
 
 static void hamlib_init() {
 
+    rig_set_debug(RIG_DEBUG_NONE);
+
     if (no_trx_control) {
 	trx_control = false;
     }
