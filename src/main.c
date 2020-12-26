@@ -921,8 +921,6 @@ int main(int argc, char *argv[]) {
     showmsg("");
 
     memset(&my, 0, sizeof(my));
-    my.Lat = 51.;
-    my.Long = -7.;
 
     total = 0;
     if (databases_load() == EXIT_FAILURE) {
