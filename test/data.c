@@ -50,7 +50,7 @@ int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
 };
 
 
-int debugflag = 0;
+bool debugflag = false;
 char *editor_cmd = NULL;
 char rttyoutput[120];
 int tune_val = 0;
@@ -116,7 +116,7 @@ int nob4 = 0;			// allow auto b4
 bool ignoredupe = false;
 int noautocq = 0;
 int emptydir = 0;
-int verbose = 0;
+bool verbose = false;
 int no_rst = 0;			/* 1 - do not use RS/RST */
 int sprint_mode = 0;
 int qtc_recv_lazy = 0;
@@ -317,7 +317,7 @@ char *rigportname;
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;
-unsigned char rigptt = 0;
+int rigptt = 0;
 
 /*-------------------------------the log lines-----------------------------*/
 char qsos[MAX_QSOS][LOGLINELEN + 1];
@@ -364,11 +364,11 @@ freq_t freq;
 freq_t mem;
 int logfrequency = 0;
 int rit;
-int trx_control = 0;
+bool trx_control = false;
 int showfreq = 0;
-freq_t bandfrequency[10] = {
+freq_t bandfrequency[NBANDS] = {
     1830000.0, 3525000.0, 5352000.0, 7010000.0, 10105000.0, 14025000.0, 18070000.0, 21025000.0, 24900000.0,
-    28025000.0
+    28025000.0, 0.0
 };
 
 char headerline[81] =
@@ -397,8 +397,7 @@ int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
 int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
 
-int nopacket = 0;		/* set if tlf is called with '-n' */
-int no_trx_control = 0;		/* set if tlf is called with '-r' */
+bool nopacket = false;		/* set if tlf is called with '-n' */
 
 int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};

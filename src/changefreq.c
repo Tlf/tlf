@@ -21,20 +21,17 @@
 #include <unistd.h>
 
 #include "freq_display.h"
+#include "globalvars.h"
 #include "time_update.h"
-#include "tlf_curses.h"
 #include "ui_utils.h"
 #include "gettxinfo.h"
 
 
 void change_freq(void) {
 
-    extern freq_t freq;
-    extern int trx_control;
-
     int brkflg = 0;
 
-    if (trx_control == 0)
+    if (!trx_control)
 	return;
 
     curs_set(0);

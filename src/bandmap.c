@@ -38,6 +38,7 @@
 #include "dxcc.h"
 #include "initial_exchange.h"
 #include "bands.h"
+#include "lancode.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted as the same QRG */
@@ -76,13 +77,6 @@ bm_config_t bm_config = {
     0  /* DO NOT show ONLY multipliers */
 };
 short	bm_initialized = 0;
-
-extern freq_t freq;
-extern int trx_control;
-extern int bandinx;
-extern int trxmode;
-extern char thisnode;
-extern worked_t worked[];
 
 char *qtc_format(char *call);
 
@@ -288,7 +282,6 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
     int dxccindex;
     int wi;
     char *lastexch;
-    extern struct ie_list *main_ie_list;
     struct ie_list *current_ie;
 
     /* add only HF spots */
@@ -813,7 +806,7 @@ void bandmap_show() {
 		 : (startindex + NR_SPOTS - (1 - on_qrg));
 
     /* correct calculations if we have no rig frequency to show */
-    if (trx_control == 0) {
+    if (!trx_control) {
 	if (on_qrg) {
 	    on_qrg = 0;
 	} else {
@@ -832,7 +825,7 @@ void bandmap_show() {
 
     /* show highlighted frequency marker or spot on QRG if rig control
      * is active */
-    if (trx_control != 0) {
+    if (trx_control) {
 	move(bm_y, bm_x);
 	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 	if (!on_qrg) {

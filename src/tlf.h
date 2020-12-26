@@ -111,10 +111,10 @@ enum {
 #define ISDUPE 1
 #define NODUPE 0
 
-#define  MAX_QSOS 20000       /* internal qso array */
-#define  MAX_DATALINES 1000   /* from ctydb.dat  */
-#define  MAX_CALLS 5000      /*  max nr of calls in dupe array */
-#define  MAX_MULTS 1000        /* max nr of mults in mults array */
+#define MAX_QSOS 20000          /* internal qso array */
+#define MAX_DATALINES 1000      /* from ctydb.dat  */
+#define MAX_CALLS 5000          /* max nr of calls in dupe array */
+#define MAX_MULTS 1000          /* max nr of mults in mults array */
 #define	MAX_SPOTS 200		/* max nr. of spots in spotarray */
 #define CQ_ZONES 40
 #define ITU_ZONES 90
@@ -212,6 +212,22 @@ typedef struct {
     contest_type_t	id;
     char		*name;
 } contest_config_t;
+
+/**< Bitmask for Hamlib CAT PTT
+ * bit 0 set: CAT PTT wanted--RIGPTT in logcfg.dat (set in parse_logcfg)
+ * bit 1 set: CAT PTT available--from rig caps (set in sendqrg)
+ * bit 2 set: PTT active (set/unset in gettxinfo)
+ * bit 3 set: PTT On (set/unset in callinput)
+ * bit 4 set: PTT Off (set/unset in callinput)
+ */
+enum {
+    CAT_PTT_WANTED      = (1 << 0),
+    CAT_PTT_AVAILABLE   = (1 << 1),
+    CAT_PTT_USE         = CAT_PTT_WANTED | CAT_PTT_AVAILABLE,
+    CAT_PTT_ACTIVE      = (1 << 2),
+    CAT_PTT_ON          = (1 << 3),
+    CAT_PTT_OFF         = (1 << 4),
+};
 
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
 

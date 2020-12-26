@@ -87,58 +87,15 @@ typedef enum { STORE_OR_POP, POP, SWAP } memory_op_t;
 
 void send_bandswitch(freq_t freq);
 int autosend(void);
-int plain_number(char *str);
+bool plain_number(char *str);
 void handle_bandswitch(int direction);
 void handle_memory_operation(memory_op_t op);
-
-extern int no_arrows;
-extern char hiscall[];
-extern int bandinx;
-extern char band[NBANDS][4];
-extern freq_t freq;
-extern int trx_control;
-extern freq_t bandfrequency[];
 
 
 /** callsign input loop
  *
  * \return code of last typed character */
 int callinput(void) {
-
-    extern int itumult;
-    extern int wazmult;
-    extern int cwstart;
-    extern int early_started;
-    extern char hiscall_sent[];
-    extern char comment[];
-    extern cqmode_t cqmode;
-    extern int trxmode;
-    extern char lastcall[];
-    extern int cqdelay;
-    extern int cluster;
-    extern int announcefilter;
-    extern char ph_message[14][80];
-    extern SCREEN *mainscreen;
-    extern char talkarray[5][62];
-    extern bool lan_active;
-    extern int zonedisplay;
-    extern int showscore_flag;
-    extern int searchflg;
-    extern char cqzone[];
-    extern char ituzone[];
-    extern int ctcomp;
-    extern int nob4;
-    extern int dupe;
-    extern int weight;
-    extern int k_pin14;
-    extern int k_ptt;
-    extern int noautocq;
-    extern int miniterm;
-    extern int no_rst;
-
-    extern int bmautoadd;
-    extern int bmautograb;
-    extern int digikeyer;
 
     static freq_t freqstore;		/* qrg during last callsign input
 					   character, 0 if grabbed,
@@ -1081,7 +1038,7 @@ int callinput(void) {
  * \return true  if only digits inside
  *         false at least one none digit
  */
-int plain_number(char *str) {
+bool plain_number(char *str) {
     int i;
 
     for (i = 0; i < strlen(str); i++) {
@@ -1111,11 +1068,6 @@ int plain_number(char *str) {
  *          \n  - timeout or CR pressed -> send exchange
  */
 int autosend() {
-
-    extern int early_started;
-    extern int sending_call;
-    extern char hiscall_sent[];
-    extern char hiscall[];
 
     GTimer *timer;
     double timeout, timeout_sent;
@@ -1205,57 +1157,48 @@ int autosend() {
 }
 
 
-int play_file(char *audiofile) {
+void play_file(char *audiofile) {
 
-    extern int txdelay;
-    extern unsigned char rigptt;
-
-    int fd;
-    char playcommand[120];
-
-    if (*audiofile == '\0')
-	return (0);
-
-    if ((fd = open(audiofile, O_RDONLY, 0664)) < 0) {
-	TLF_LOG_INFO("cannot open sound file %s!", audiofile);
-    } else {
-	close(fd);
-	if (access("./play_vk", X_OK) == 0) {
-	    sprintf(playcommand, "./play_vk %s", audiofile);
-	} else {
-	    sprintf(playcommand, "play_vk %s", audiofile);
-	}
-	/* CAT PTT wanted and available, use it. */
-	if (rigptt == 0x03) {
-	    /* Request PTT On */
-	    rigptt |= (1 << 3);		/* 0x0b */
-	} else {		/* Fall back to netkeyer interface */
-	    netkeyer(K_PTT, "1");	// ptt on
-	}
-
-	usleep(txdelay * 1000);
-	IGNORE(system(playcommand));;
-	printcall();
-
-	/* CAT PTT wanted, available, and active. */
-	if (rigptt == 0x07) {
-
-	    /* Request PTT Off */
-	    rigptt |= (1 << 4);		/* 0x17 */
-	} else {		/* Fall back to netkeyer interface */
-	    netkeyer(K_PTT, "0");	// ptt off
-	}
+    if (*audiofile == 0) {
+	return;
     }
 
-    return 0;
+    if (access(audiofile, R_OK) != 0) {
+	TLF_LOG_INFO("cannot open sound file %s!", audiofile);
+	return;
+    }
+
+    // use play_vk from current dir, if available
+    // note: this overrides PATH setting
+    bool has_local_play_vk = (access("./play_vk", X_OK) == 0);
+    char *playcommand = g_strdup_printf("%s %s",
+					(has_local_play_vk ? "./play_wk" : "play_vk"),
+					audiofile);
+
+    /* CAT PTT wanted and available, use it. */
+    if (rigptt == CAT_PTT_USE) {
+	/* Request PTT On */
+	rigptt |= CAT_PTT_ON;
+    } else {		/* Fall back to netkeyer interface */
+	netkeyer(K_PTT, "1");	// ptt on
+    }
+
+    usleep(txdelay * 1000);
+    IGNORE(system(playcommand));;
+    g_free(playcommand);
+    printcall();
+
+    /* CAT PTT wanted, available, and active. */
+    if (rigptt == (CAT_PTT_USE | CAT_PTT_ACTIVE)) {
+	/* Request PTT Off */
+	rigptt |= CAT_PTT_OFF;
+    } else {		/* Fall back to netkeyer interface */
+	netkeyer(K_PTT, "0");	// ptt off
+    }
 }
 
 
 void send_bandswitch(freq_t freq) {
-
-    extern int use_bandoutput;
-    extern int bandinx;
-    extern int bandindexarray[];
 
     char outnibble[3];
     int bandswitch = 0;

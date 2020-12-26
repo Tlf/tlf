@@ -20,10 +20,15 @@
 #ifndef SPLITSCREEN_H
 #define SPLITSCREEN_H
 
+#include <stdbool.h>
+
+extern bool lanspotflg;
+extern pthread_mutex_t spot_ptr_mutex;
+
 int init_packet(void) ;
 void cleanup_telnet(void);
 int packet(void);
-int send_cluster(void);
+void send_cluster(void);
 void addtext(char *s);
 int receive_packet(void);
 void refresh_splitlayout();

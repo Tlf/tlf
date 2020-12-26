@@ -32,9 +32,6 @@
 #include "qtcvars.h"		// Includes globalvars.h
 #include "tlf_curses.h"
 
-extern int trx_control;
-extern freq_t freq;
-
 int log_recv_qtc_to_disk(int qsonr) {
 
     int i;
@@ -73,7 +70,7 @@ int log_recv_qtc_to_disk(int qsonr) {
 	    qtc_line.qtc_call[strlen(qtcreclist.qtclines[i].callsign)] = '\0';
 	    qtc_line.qtc_serial = atoi(qtcreclist.qtclines[i].serial);
 
-	    if (trx_control == 1) {
+	    if (trx_control) {
 		qtc_line.freq = freq;
 	    } else {
 		qtc_line.freq = 0;
@@ -170,7 +167,7 @@ int log_sent_qtc_to_disk(int qsonr) {
 
 	    qtc_line.callpos = qtclist.qtclines[i].qsoline + 1;
 
-	    if (trx_control == 1) {
+	    if (trx_control) {
 		qtc_line.freq = freq;
 	    } else {
 		qtc_line.freq = 0;

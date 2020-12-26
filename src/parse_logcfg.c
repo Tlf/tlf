@@ -927,12 +927,6 @@ static int cfg_fldigi(const cfg_arg_t arg) {
     return PARSE_OK;
 }
 
-static int cfg_rigptt(const cfg_arg_t arg) {
-    // FIXME: use enums
-    rigptt |= (1 << 0);		/* bit 0 set--CAT PTT wanted (RIGPTT) */
-    return PARSE_OK;
-}
-
 static int cfg_minitest(const cfg_arg_t arg) {
     if (parameter == NULL) {
 	minitest = MINITEST_DEFAULT_PERIOD;
@@ -1000,13 +994,13 @@ static config_t logcfg_configs[] = {
     {"MIXED",               CFG_BOOL_TRUE(mixedmode)},
     {"IGNOREDUPE",          CFG_BOOL_TRUE(ignoredupe)},
     {"USE_CONTINENTLIST_ONLY",  CFG_BOOL_TRUE(continentlist_only)},
+    {"RADIO_CONTROL",           CFG_BOOL_TRUE(trx_control)},
 
     {"USEPARTIALS",     CFG_INT_ONE(use_part)},
     {"PARTIALS",        CFG_INT_ONE(partials)},
     {"RECALL_MULTS",    CFG_INT_ONE(recall_mult)},
     {"WYSIWYG_MULTIBAND",   CFG_INT_ONE(wysiwyg_multi)},
     {"WYSIWYG_ONCE",    CFG_INT_ONE(wysiwyg_once)},
-    {"RADIO_CONTROL",   CFG_INT_ONE(trx_control)},
     {"RIT_CLEAR",       CFG_INT_ONE(rit)},
     {"SHORT_SERIAL",    CFG_INT_ONE(shortqsonr)},
     {"SCOREWINDOW",     CFG_INT_ONE(showscore_flag)},
@@ -1099,6 +1093,7 @@ static config_t logcfg_configs[] = {
     {"LONG_SERIAL",     CFG_INT_CONST(shortqsonr, 0)},
     {"CLUSTER",         CFG_INT_CONST(cluster, CLUSTER)},
     {"SSBMODE",         CFG_INT_CONST(trxmode, SSBMODE)},
+    {"RIGPTT",          CFG_INT_CONST(rigptt, CAT_PTT_WANTED)},
 
     {"RIGCONF",         CFG_STRING_STATIC(rigconf, 80)},
     {"LOGFILE",         CFG_STRING_STATIC(logfile, 120)},
@@ -1151,7 +1146,6 @@ static config_t logcfg_configs[] = {
     {"QTCREC_RECORD_COMMAND",   NEED_PARAM, cfg_qtcrec_record_command},
     {"EXCLUDE_MULTILIST",   NEED_PARAM, cfg_exclude_multilist},
     {"FLDIGI",              OPTIONAL_PARAM, cfg_fldigi},
-    {"RIGPTT",              NO_PARAM, cfg_rigptt},
     {"MINITEST",            OPTIONAL_PARAM, cfg_minitest},
     {"UNIQUE_CALL_MULTI",   NEED_PARAM, cfg_unique_call_multi},
     {"DIGI_RIG_MODE",       NEED_PARAM, cfg_digi_rig_mode},

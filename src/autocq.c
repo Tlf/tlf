@@ -54,9 +54,6 @@ static int get_autocq_time() {
 
 
 int auto_cq(void) {
-    extern char message[][80];
-    extern int cqdelay;
-    extern cqmode_t cqmode;
 
 #define NO_KEY -1
 

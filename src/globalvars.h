@@ -6,6 +6,7 @@
 #include <config.h>
 
 #include "tlf.h"
+#include "tlf_curses.h"
 
 extern mystation_t my;			// all about my station
 extern char whichcontest[];
@@ -37,11 +38,14 @@ extern int countries[MAX_DATALINES];	// for every country, a bitfield
 
 extern int bandinx;			// band we're currently working on
 
+extern struct ie_list *main_ie_list;
+
 extern char logfile[];
 extern bool iscontest;
 
 extern int country_mult;
 extern char hiscall[20];
+extern char hiscall_sent[20];
 extern int total;
 extern int band_score[NBANDS];		// QSO/band
 extern int zones[MAX_ZONES];
@@ -72,6 +76,8 @@ extern char logline_edit[5][LOGLINELEN + 1];
 #define logline4 logline_edit[4]
 
 extern char band[NBANDS][4];
+extern freq_t bandfrequency[NBANDS];
+
 extern struct tm *time_ptr;
 extern struct tm time_ptr_cabrillo;
 
@@ -94,6 +100,7 @@ extern int exchange_serial;
 extern int highqsonr;
 
 
+extern RIG *my_rig;
 extern cqmode_t cqmode;
 extern int trxmode;
 extern rig_model_t myrig_model;
@@ -101,10 +108,10 @@ extern rmode_t rigmode;
 extern freq_t freq;
 extern char lastqsonr[];
 extern int cqwwm2;
-extern char thisnode;
 extern char lastcall[];
 extern char recvd_rst[];
 extern char sent_rst[];
+extern char last_rst[];
 extern char section[];
 extern int wazmult;
 extern int addcallarea;
@@ -136,13 +143,18 @@ extern int multlist;
 extern int xplanet;
 extern int cwkeyer;
 extern int digikeyer;
-extern unsigned char rigptt;
+extern int cwstart;
+extern int early_started;
+extern int zonedisplay;
+extern int rigptt;
+extern int k_ptt;
+extern int k_pin14;
+extern int sending_call;
 extern int exclude_multilist_type;
 extern int partials;
 extern int use_part;
 extern int shortqsonr;
 extern int recall_mult;
-extern int trx_control;
 extern int rit;
 extern int showscore_flag;
 extern int searchflg;
@@ -173,6 +185,12 @@ extern int countrylist_points;
 extern int my_country_points;
 extern int lowband_point_mult;
 extern int landebug;
+extern int dupe;
+extern int block_part;
+extern int miniterm;
+extern int announcefilter;
+extern int nr_of_spots;
+extern int fdSertnc;
 
 extern float fixedmult;
 
@@ -202,6 +220,8 @@ extern char synclogfile[];
 extern char sc_device[];
 extern char exchange_list[40];
 extern char rttyoutput[];
+extern char spot_ptr[MAX_SPOTS][82];
+extern char lastmsg[];
 #ifdef HAVE_LIBXMLRPC
 extern char fldigi_url[50];
 #endif
@@ -214,8 +234,14 @@ extern char *config_file;
 extern int bandindexarray[];
 extern int tlfcolors[8][2];
 
+extern SCREEN *mainscreen;
+
 extern bool mult_side;
 extern bool countrylist_only;
 extern bool mixedmode;
 extern bool ignoredupe;
 extern bool continentlist_only;
+extern bool debugflag;
+extern bool trx_control;
+extern bool nopacket;
+extern bool verbose;

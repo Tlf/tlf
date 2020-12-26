@@ -35,17 +35,15 @@
 #include "err_utils.h"
 #include "get_time.h"
 #include "getctydata.h"
+#include "globalvars.h"
 #include "lancode.h"
 #include "nicebox.h"		// Includes curses.h
 #include "printcall.h"
-#include "tlf.h"
+#include "splitscreen.h"
 #include "ui_utils.h"
 
 #define MAXMINUTES 30
 
-
-extern int bandinx;
-extern pthread_mutex_t spot_ptr_mutex;
 
 char *bandmap[MAX_SPOTS];
 int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
@@ -54,15 +52,6 @@ int loadbandmap(void);
 int getclusterinfo(void);
 
 void clusterinfo(void) {
-
-    extern int cluster;
-    extern freq_t freq;
-    extern char band[NBANDS][4];
-    extern int bandinx;
-    extern int trx_control;
-    extern char spot_ptr[MAX_SPOTS][82];
-    extern freq_t node_frequencies[MAXNODES];
-    extern char thisnode;
 
     int f, j, k;
     char inputbuffer[160] = "";
@@ -94,10 +83,10 @@ void clusterinfo(void) {
 	for (f = 0; f < 8; f++)
 	    mvprintw(15 + f, 4, "                           ");
 
-	if (trx_control == 0)
-	    node_frequencies[thisnode - 'A'] = atof(band[bandinx]);
-	else
+	if (trx_control)
 	    node_frequencies[thisnode - 'A'] = freq;
+	else
+	    node_frequencies[thisnode - 'A'] = atof(band[bandinx]);
 
 	for (f = 0; f < MAXNODES; f++) {
 	    if (node_frequencies[f] != 0)
@@ -165,14 +154,6 @@ void clusterinfo(void) {
 /* ----------------------------------------------------*/
 
 int loadbandmap(void) {
-
-    extern char *bandmap[MAX_SPOTS];
-    extern int xplanet;
-    extern char markerfile[];
-    extern char lastmsg[];
-    extern char spot_ptr[MAX_SPOTS][82];
-    extern int nr_of_spots;
-
 
     int i = 0, j, m, x;
     unsigned int k;
@@ -391,11 +372,6 @@ int loadbandmap(void) {
 
 
 int getclusterinfo(void) {
-
-    extern char spot_ptr[MAX_SPOTS][82];
-    extern int nr_of_spots;
-    extern int announcefilter;
-    extern mystation_t my;
 
     int i;
     int si;

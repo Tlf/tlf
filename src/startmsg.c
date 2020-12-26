@@ -21,12 +21,10 @@
 #include <unistd.h>
 
 #include "ignore_unused.h"
-#include "tlf.h"
-#include "tlf_curses.h"
+#include "globalvars.h"
 #include "ui_utils.h"
 
 
-extern int verbose;
 static int linectr = 0;
 
 void clearmsg() {

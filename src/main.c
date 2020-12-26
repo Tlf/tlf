@@ -69,7 +69,6 @@
 
 SCREEN *mainscreen;
 
-
 char pr_hostaddress[48] = "131.155.192.179";
 char *config_file = NULL;
 int portnum = 0;
@@ -86,7 +85,7 @@ int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
     {COLOR_BLUE, COLOR_YELLOW},
     {COLOR_WHITE, COLOR_BLACK}
 };
-int debugflag = 0;
+bool debugflag = false;
 char *editor_cmd = NULL;
 int tune_val = 0;
 int use_bandoutput = 0;
@@ -152,7 +151,7 @@ int nob4 = 0;			// allow auto b4
 bool ignoredupe = false;
 int dupe = 0;
 int noautocq = 0;
-int verbose = 0;
+bool verbose = false;
 int no_rst = 0;			/* 1 - do not use RS/RST */
 
 int pacc_qsos[10][10];
@@ -198,20 +197,13 @@ int showscore_flag = 0;		/* show  score window */
 char exchange[40];
 int defer_store = 0;
 mystation_t my;			/* all info about me */
-//char call[20];
+
 char logfile[120] = "general.log";
 char *cabrillo = NULL;		/**< Name of the cabrillo format definition */
 char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = 0;
-unsigned char rigptt = 0;
-/**< Bitmask for Hamlib CAT PTT
- * bit 0 set: CAT PTT wanted--RIGPTT in logcfg.dat (set in parse_logcfg)
- * bit 1 set: CAT PTT available--from rig caps (set in sendqrg)
- * bit 2 set: PTT active (set/unset in gettxinfo)
- * bit 3 set: PTT On (set/unset in callinput)
- * bit 4 set: PTT Off (set/unset in callinput)
- */
+int rigptt = 0;
 
 char message[25][80] = /**< Array of CW messages
  			*
@@ -387,7 +379,7 @@ struct tm time_ptr_cabrillo;
 freq_t freq;
 int logfrequency = 0;
 int rit;
-int trx_control = 0;
+bool trx_control = false;
 freq_t bandfrequency[NBANDS] = {
     1830000, 3525000, 5352000, 7010000, 10105000, 14025000, 18070000, 21025000, 24900000,
     28025000, 0.
@@ -415,9 +407,9 @@ int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
 int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
 
-int nopacket = 0;		/* set if tlf is called with '-n' */
-int no_trx_control = 0;		/* set if tlf is called with '-r' */
-int convert_cabrillo = 0;       /* set if the arg input is a cabrillo */
+bool nopacket = false;		/* set if tlf is called with '-n' */
+bool no_trx_control = false;	/* set if tlf is called with '-r' */
+bool convert_cabrillo = false;  /* set if the arg input is a cabrillo */
 int do_cabrillo = 0;		/* actually converting cabrillo file to Tlf log */
 
 int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
@@ -452,13 +444,13 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	    config_file = g_strdup(arg);
 	    break;
 	case 'n':		// disable packet
-	    nopacket = 1;
+	    nopacket = true;
 	    break;
 	case 'r':
-	    no_trx_control = 1; // disable radio control
+	    no_trx_control = true; // disable radio control
 	    break;
 	case 'i':
-	    convert_cabrillo = 1;
+	    convert_cabrillo = true;
 	    break;
 	case 's':
 	    if (strlen(arg) >= 120) {
@@ -468,10 +460,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	    strcpy(synclogfile, arg);
 	    break;
 	case 'd':		// debug rigctl
-	    debugflag = 1;
+	    debugflag = true;
 	    break;
 	case 'v':		// verbose startup
-	    verbose = 1;
+	    verbose = true;
 	    break;
 
 	default:
@@ -601,7 +593,6 @@ void ui_color_init() {
 }
 
 static void init_variables() {
-    extern int nodes;
 
     iscontest = false;
     partials = 0;
@@ -700,31 +691,30 @@ int databases_load() {
 
 void hamlib_init() {
 
-    int status;
-
-    if (no_trx_control == 1) {
-	trx_control = 0;
+    if (no_trx_control) {
+	trx_control = false;
     }
 
-    if (trx_control != 0) {
+    if (!trx_control) {
+	return;
+    }
 
-	shownr("Rignumber is", (int) myrig_model);
-	shownr("Rig speed is", serial_rate);
+    shownr("Rig model number is", (int) myrig_model);
+    shownr("Rig speed is", serial_rate);
 
-	showmsg("Trying to start rig ctrl");
+    showmsg("Trying to start rig control");
 
-	status = init_tlf_rig();
+    int status = init_tlf_rig();
 
-	if (status  != 0) {
-	    showmsg("Continue without rig control Y/(N)?");
-	    if (toupper(key_get()) != 'Y') {
-		endwin();
-		exit(1);
-	    }
-	    trx_control = 0;
-	    showmsg("Disabling rig control!");
-	    sleep(1);
+    if (status != 0) {
+	showmsg("Continue without rig control Y/(N)?");
+	if (toupper(key_get()) != 'Y') {
+	    endwin();
+	    exit(1);
 	}
+	trx_control = false;
+	showmsg("Disabling rig control!");
+	sleep(1);
     }
 }
 
@@ -758,7 +748,7 @@ void lan_init() {
 
 
 void packet_init() {
-    if (nopacket == 1)
+    if (nopacket)
 	packetinterface = 0;
 
     set_term(mainscreen);
@@ -766,7 +756,7 @@ void packet_init() {
     // really needed?
     refreshp();
 
-    if ((nopacket == 0) && (packetinterface != 0)) {
+    if (!nopacket && packetinterface > 0) {
 	if (init_packet() == 0)
 	    packet();
 	else
@@ -920,7 +910,7 @@ int main(int argc, char *argv[]) {
 
     if (isFirstStart()) {
 	/* first time called in this directory */
-	verbose = 1;
+	verbose = true;
 	printw(welcome);
 	show_GPL();
 	sleep(5);
@@ -944,7 +934,7 @@ int main(int argc, char *argv[]) {
 	exit(EXIT_FAILURE);
     }
 
-    if (convert_cabrillo == 1) {
+    if (convert_cabrillo) {
 	char tstring[100] = "";
 	sprintf(tstring, "Converting cabrillo for contest %s from file %s.cbr",
 		whichcontest, g_strstrip(my.call));

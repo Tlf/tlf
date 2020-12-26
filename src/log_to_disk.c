@@ -54,17 +54,6 @@ char lan_logline[256];
  * \param from_lan true - Log lanmessage, false - normal message
  */
 void log_to_disk(int from_lan) {
-    extern char last_rst[4];
-    extern char qsonrstr[5];
-    extern int rit;
-    extern int trx_control;
-    extern cqmode_t cqmode;
-    extern int block_part;
-    extern char lan_message[];
-    extern char thisnode;
-    extern int lan_mutex;
-    extern int cqwwm2;
-    extern int no_rst;
 
     pthread_mutex_lock(&disk_mutex);
 

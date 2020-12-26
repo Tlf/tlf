@@ -19,16 +19,8 @@ int getctynr(char *checkcall) {
     return 0;
 }
 
-extern char spot_ptr[MAX_SPOTS][82];
-extern int nr_of_spots;
-extern int announcefilter;
-extern int xplanet;
-extern int trx_control;
-extern freq_t freq;
-
 char thisnode = 'A';
 freq_t node_frequencies[MAXNODES];
-extern int cluster;
 
 #include <pthread.h>
 pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;

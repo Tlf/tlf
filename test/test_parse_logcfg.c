@@ -14,6 +14,7 @@
 #include "../src/getwwv.h"
 #include "../src/change_rst.h"
 #include "../src/setcontest.h"
+#include "../src/set_tone.h"
 
 // OBJECT ../src/parse_logcfg.o
 // OBJECT ../src/get_time.o
@@ -23,111 +24,6 @@
 // OBJECT ../src/score.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
-
-extern char keyer_device[10];
-extern int partials;
-extern int use_part;
-extern char *editor_cmd;
-extern int weight;
-extern bool mixedmode;
-extern bool ignoredupe;
-extern bool continentlist_only;
-extern int recall_mult;
-extern int wysiwyg_multi;
-extern int wysiwyg_once;
-extern int trx_control;
-extern int rit;
-extern int shortqsonr;
-extern int showscore_flag;
-extern int searchflg;
-extern int demode;
-extern int exchange_serial;
-extern int country_mult;
-extern int portable_x2;
-extern int cqwwm2;
-extern int landebug;
-extern int call_update;
-extern int time_master;
-extern int ctcomp;
-extern int serial_section_mult;
-extern int sectn_mult;
-extern int nob4;
-extern int show_time;
-extern int use_rxvt;
-extern int wazmult;
-extern int itumult;
-extern int exc_cont;
-extern int noautocq;
-extern int no_arrows;
-extern int sc_sidetone;
-extern int lowband_point_mult;
-extern int clusterlog;
-extern int serial_grid4_mult;
-extern int logfrequency;
-extern int no_rst;
-extern int serial_or_section;
-extern int pfxmultab;
-extern int qtcrec_record;
-extern int qtc_auto_filltime;
-extern int bmautograb;
-extern int bmautoadd;
-extern int qtc_recv_lazy;
-extern int sprint_mode;
-extern int keyer_backspace;
-extern int sectn_mult_once;
-extern int lan_port;
-extern char rigconf[];
-extern char ph_message[14][80];
-extern char *cabrillo;
-extern int timeoffset;
-extern int cwkeyer;
-extern int digikeyer;
-extern char *rigportname;
-extern int tnc_serial_rate;
-extern char tncportname[];
-extern int serial_rate;
-extern int packetinterface;
-extern char pr_hostaddress[];
-extern int portnum;
-extern int cluster;
-extern int cqdelay;
-extern int ssbpoints;
-extern int cwpoints;
-extern int tlfcolors[8][2];
-extern char whichcontest[40];
-extern int use_bandoutput;
-extern int bandindexarray[10];
-extern char tonestr[];
-extern int txdelay;
-extern int multlist;
-extern char multsfile[];
-extern int xplanet;
-extern char markerfile[];
-extern char countrylist[][6];
-extern bool mult_side;
-extern int countrylist_points;
-extern bool countrylist_only;
-extern int my_country_points;
-extern int my_cont_points;
-extern int dx_cont_points;
-extern char synclogfile[];
-extern char sc_volume[];
-extern char sc_device[];
-extern char modem_mode[];
-extern char controllerport[];
-extern char clusterlogin[];
-extern int cw_bandwidth;
-extern char exchange_list[40];
-extern char rttyoutput[];
-extern float fixedmult;
-extern int continentlist_points;
-extern char continent_multiplier_list[7][3];
-extern int bandweight_points[NBANDS];
-extern int bandweight_multis[NBANDS];
-extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
-extern int pfxnummultinr;
-extern int exclude_multilist_type;
-extern unsigned char rigptt;
 
 // lancode.c
 int nodes = 0;
@@ -147,8 +43,6 @@ char netkeyer_hostaddress[16] = "127.0.0.1";
 int netkeyer_port = 6789;
 
 bm_config_t bm_config;
-
-extern rig_model_t myrig_model;
 
 char *callmaster_filename = NULL;
 
@@ -417,6 +311,7 @@ static bool_true_t bool_trues[] = {
     {"MIXED", &mixedmode},
     {"IGNOREDUPE", &ignoredupe},
     {"USE_CONTINENTLIST_ONLY", &continentlist_only},
+    {"RADIO_CONTROL", &trx_control},
 };
 
 void test_bool_trues(void **state) {
@@ -487,7 +382,6 @@ static int_one_t int_ones[] = {
     {"RECALL_MULTS", &recall_mult},
     {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
     {"WYSIWYG_ONCE", &wysiwyg_once},
-    {"RADIO_CONTROL", &trx_control},
     {"RIT_CLEAR", &rit},
     {"SHORT_SERIAL", &shortqsonr},
     {"SCOREWINDOW", &showscore_flag},

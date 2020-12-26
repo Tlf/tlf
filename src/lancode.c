@@ -354,9 +354,6 @@ void talk(void) {
 
 int send_freq(freq_t freq) {
 
-    extern int bandinx;
-    extern int trx_control;
-
     char fbuffer[8];
 
     if (trx_control) {

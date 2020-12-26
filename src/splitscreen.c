@@ -68,7 +68,7 @@ int fdFIFO = 0;
 WINDOW *packet_win;
 PANEL  *packet_panel;
 WINDOW *sclwin, *entwin;
-static int initialized = 0;
+static bool initialized = false;
 
 int in_packetclient;
 
@@ -80,7 +80,7 @@ int curattr = 0;
 int insmode = TRUE;
 char outbuffer[82];
 char lanflag;
-int lanspotflg = 0;
+bool lanspotflg = false;
 
 int maxtln_loglines = DEFAULTTLN_LOGLINES;
 int tln_loglines = 0;
@@ -94,11 +94,6 @@ char tln_input_buffer[2 * BUFFERSIZE];
 void setup_splitlayout();
 
 void addlog(char *s) {
-    extern char spot_ptr[MAX_SPOTS][82];
-    extern char lastmsg[];
-    extern int nr_of_spots;
-    extern int clusterlog;
-
     int len;
     FILE *fp;
     struct tln_logline *temp;
@@ -584,8 +579,6 @@ void refresh_splitlayout() {
 }
 
 void addtext(char *s) {
-    extern char talkarray[5][62];
-
     char lan_out[256];
     static char convers_calls[50][6];
     static int ci, cl = 0, cc;
@@ -598,7 +591,7 @@ void addtext(char *s) {
     int i, l;
 
     l = strlen(tln_input_buffer);
-    if (initialized != 0 && view_state == STATE_EDITING) {
+    if (initialized && view_state == STATE_EDITING) {
 
 	if (s[0] == '<' && s[1] != '<') {	// must be convers
 	    for (ci = 0; ci <= cl; ci++) {
@@ -713,7 +706,7 @@ void addtext(char *s) {
 
 	    addlog(tln_input_buffer);
 
-	    if (lan_active && lanspotflg == 0) {
+	    if (lan_active && !lanspotflg) {
 		if ((strlen(tln_input_buffer) > 0)
 			&& (tln_input_buffer[0] > 32)
 			&& (tln_input_buffer[0] < 126)) {
@@ -746,15 +739,6 @@ void addtext(char *s) {
 ===========================================*/
 
 int init_packet(void) {
-    extern int portnum;
-    extern char pr_hostaddress[];
-    extern char spot_ptr[MAX_SPOTS][82];
-    extern int fdSertnc;
-    extern int packetinterface;
-    extern int tnc_serial_rate;
-    extern int verbose;
-    extern char tncportname[];
-
     struct termios termattribs;
 
     int iptr = 0;
@@ -765,7 +749,7 @@ int init_packet(void) {
     attr[MINE_ATTR] = modify_attr(A_NORMAL);
     attr[ENTRY_ATTR] = modify_attr(A_NORMAL);
 
-    if (initialized == 0) {
+    if (!initialized) {
 
 	packet_win = newwin(LINES, COLS, 0, 0);
 	packet_panel = new_panel(packet_win);
@@ -794,7 +778,7 @@ int init_packet(void) {
 	noecho();
 	cbreak();
 
-	initialized = 1;
+	initialized = true;
 
 	start_editing();
     }
@@ -881,12 +865,12 @@ int init_packet(void) {
 	if ((mkfifo("clfile", mode)) < 0) {
 	    wprintw(sclwin, "FIFO clfile exists...\n");
 	    wrefresh(sclwin);
-	    if (verbose == 1)
+	    if (verbose)
 		sleep(1);
 	} else {
 	    wprintw(sclwin, "FIFO clfile made\n");
 	    wrefresh(sclwin);
-	    if (verbose == 1)
+	    if (verbose)
 		sleep(1);
 
 	}
@@ -898,7 +882,7 @@ int init_packet(void) {
 	} else {
 	    wprintw(sclwin, "FIFO clfile open\n\n");
 	    wrefresh(sclwin);
-	    if (verbose == 1)
+	    if (verbose)
 		sleep(1);
 
 	}
@@ -923,9 +907,6 @@ int init_packet(void) {
 ===========================================*/
 
 void cleanup_telnet(void) {
-
-    extern int packetinterface;
-    extern int fdSertnc;
 
     if (!initialized) {
 	return;
@@ -954,7 +935,7 @@ void cleanup_telnet(void) {
     del_panel(packet_panel);
     delwin(packet_win);
 
-    initialized = 0;
+    initialized = false;
 
     clear();
     clear_display();
@@ -969,10 +950,6 @@ void cleanup_telnet(void) {
 ===========================================*/
 
 int packet() {
-
-    extern int fdSertnc;
-    extern int packetinterface;
-    extern char clusterlogin[];
 
     char line[BUFFERSIZE];
 
@@ -1009,7 +986,7 @@ int packet() {
 	    clear_display();
 	    keypad(stdscr, TRUE);
 	    in_packetclient = 0;
-	    return (0);
+	    return 0;
 	}
 
     }
@@ -1125,7 +1102,7 @@ int packet() {
 
     in_packetclient = 0;
 
-    return (0);
+    return 0;
 }
 
 /* ======================================================
@@ -1136,9 +1113,6 @@ int packet() {
 */
 
 int receive_packet(void) {
-    extern int packetinterface;
-    extern int fdSertnc;
-
     char line[BUFFERSIZE];
     int i = 0;
 
@@ -1200,11 +1174,7 @@ int receive_packet(void) {
 */
 #define MAX_CMD_LEN 60
 
-int send_cluster(void) {
-    extern int fdSertnc;
-    extern int packetinterface;
-    extern int cluster;
-
+void send_cluster(void) {
     char line[MAX_CMD_LEN + 2] = "";
 
     cluster = CLUSTER;
@@ -1231,7 +1201,4 @@ int send_cluster(void) {
 
     mvprintw(LINES - 1, 0, backgrnd_str);
     refreshp();
-    line[0] = '\0';	/* not needed */
-
-    return (0);
 }
