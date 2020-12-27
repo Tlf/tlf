@@ -206,7 +206,7 @@ typedef enum {
 #define QSO_MODE ("qso")
 
 typedef enum {
-    DEFAULT = 0,	/* undiefined -> DEFAULT */
+    DEFAULT = 0,	/* undefined -> DEFAULT */
     FIXED,
     FUNCTION
 } points_type_t;
