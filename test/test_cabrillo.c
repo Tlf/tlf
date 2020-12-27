@@ -14,7 +14,6 @@ int do_cabrillo = 0;	/* actually converting cabrillo file to Tlf log */
 struct tm time_ptr_cabrillo;
 
 int qsoflags_for_qtc[MAX_QSOS];
-extern freq_t freq;
 
 void addcall() { }
 void store_qso() { }
@@ -22,6 +21,13 @@ void cleanup_qso() { }
 void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) { }
 char *getgrid(char *comment) { return comment; }
 void checkexchange(int x) { }
+
+int get_total_score() {
+    return 123;
+}
+
+void ask(char *buffer, char *what) {
+}
 
 /* some spies */
 int bandinx_spy;

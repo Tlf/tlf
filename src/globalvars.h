@@ -8,6 +8,8 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
+extern const char *argp_program_version;
+
 extern mystation_t my;			// all about my station
 extern char whichcontest[];
 extern contest_config_t *contest;	// contest configuration
@@ -218,6 +220,7 @@ extern char exchange_list[40];
 extern char rttyoutput[];
 extern char spot_ptr[MAX_SPOTS][82];
 extern char lastmsg[];
+extern char exchange[40];
 #ifdef HAVE_LIBXMLRPC
 extern char fldigi_url[50];
 #endif

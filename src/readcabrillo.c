@@ -42,8 +42,6 @@
 #include "store_qso.h"
 #include "tlf_curses.h"
 
-#define MAX_CABRILLO_LEN 255
-
 enum {
     LOGPREF_NONE,
     LOGPREF_QSO,
@@ -54,12 +52,6 @@ enum {
 static int cablinecnt = 0;
 char qtcsend_logfile_import[] = "IMPORT_QTC_sent.log";
 char qtcrecv_logfile_import[] = "IMPORT_QTC_recv.log";
-extern char qsos[MAX_QSOS][LOGLINELEN +
-			   1]; // array of log lines of QSOs so far;
-extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs
-extern int nr_qsos;
-
-extern int dupe;
 
 
 void concat_comment(char *exchstr) {
@@ -185,10 +177,6 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 struct read_qtc_t qtc_line;	/* make global for testability */
 
 void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
-
-    extern freq_t freq;
-    extern struct tm time_ptr_cabrillo;
-
 
     int item_count;
     GPtrArray *item_array;
@@ -387,8 +375,6 @@ void show_readcab_msg(int mode, char *msg) {
  */
 
 int readcabrillo(int mode) {
-
-    extern char *cabrillo;
 
     char *cab_dfltfile;
     struct cabrillo_desc *cabdesc;

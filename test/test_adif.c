@@ -2,7 +2,7 @@
 #include <glib.h>
 
 #include "../src/log_utils.h"
-#include "../src/tlf.h"
+#include "../src/globalvars.h"
 
 // OBJECT ../src/writecabrillo.o
 // OBJECT ../src/cabrillo_utils.o
@@ -28,14 +28,13 @@ int modify_attr(int x) {
     return x;
 }
 
-int getsummary(FILE fp) {
-    return 0;
+int get_total_score() {
+    return 123;
 }
 
 void ask(char *buffer, char *what) {
 }
 
-extern contest_config_t *contest;
 contest_config_t empty = { };
 
 char buffer[181];

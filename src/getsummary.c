@@ -30,14 +30,13 @@
 
 #include "globalvars.h"
 #include "nicebox.h"		// Includes curses.h
-#include "showscore.h"
+#include "ui_utils.h"
 
 
 void ask(char *buffer, char *what) {
 
     attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
+    mvprintw(15, 1, spaces(78));
     nicebox(14, 0, 1, 78, what);
     attron(A_STANDOUT);
     mvprintw(15, 1, "");
@@ -48,85 +47,3 @@ void ask(char *buffer, char *what) {
     g_strstrip(buffer);
 }
 
-
-int getsummary(FILE *fp) {
-    char buffer[80];
-
-    fprintf(fp, "START-OF-LOG: 3.0\n");
-    fprintf(fp, "CREATED-BY: tlf-%s\n", VERSION);
-
-    ask(buffer, "Contest: (CQ-WW-CW/SSB, CQ-WPX-CW/SSB, ARRL-DX-CW/SSB)");
-    fprintf(fp, "CONTEST: %s\n", buffer);
-
-    fprintf(fp, "CALLSIGN: %s", my.call);	/* !!! trailing \n at call */
-
-    ask(buffer, "Category-Assisted: (ASSISTED, NON-ASSISTED");
-    fprintf(fp, "CATEGORY-ASSISTED: %s\n", buffer);
-
-    ask(buffer, "Bands: (ALL,160M,80M,40M,20M,15M,10M)");
-    fprintf(fp, "CATEGORY-BAND: %s\n", buffer);
-
-    ask(buffer, "Mode: (CW,SSB,RTTY,MIXED)");
-    fprintf(fp, "CATEGORY-MODE: %s\n", buffer);
-
-    ask(buffer, "Category-Operator:(SINGLE-OP, MULTI-OP, CHECKLOG)");
-    fprintf(fp, "CATEGORY-OPERATOR: %s\n", buffer);
-
-    ask(buffer, "POWER: (HIGH,LOW,QRP)");
-    fprintf(fp, "CATEGORY-POWER: %s\n", buffer);
-
-    ask(buffer,
-	"Category-Station: (FIXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL");
-    if (*buffer != '\0')
-	fprintf(fp, "CATEGORY-STATION: %s\n", buffer);
-
-    ask(buffer, "Category-Time: (6-HOURS, 12-HOURS, 24-HOURS)");
-    if (*buffer != '\0')
-	fprintf(fp, "CATEGORY-TIME: %s\n", buffer);
-
-    ask(buffer, "Transmitter: (ONE, TWO, LIMITED, UNLIMITED, SWL)");
-    if (*buffer != '\0')
-	fprintf(fp, "CATEGORY-TRANSMITTER: %s\n", buffer);
-
-    ask(buffer, "Category-Overlay: (ROOKIE, TB-WIRES, NOVICE-TECH, OVER-50)");
-    if (*buffer != '\0')
-	fprintf(fp, "CATEGORY-OVERLAY: %s\n", buffer);
-
-    fprintf(fp, "CLAIMED-SCORE: %d\n", get_total_score());
-
-    ask(buffer, "Club: ");
-    if (*buffer != '\0')
-	fprintf(fp, "CLUB: %s\n", buffer);
-
-    ask(buffer, "Location: (section, IOTA name, RDA, State/Province, ...)");
-    if (*buffer != '\0')
-	fprintf(fp, "LOCATION: %s\n", buffer);
-
-
-    ask(buffer, "Operator name: ");
-    fprintf(fp, "NAME: %s\n", buffer);
-
-    ask(buffer, "ADDRESS: ");
-    fprintf(fp, "ADDRESS: %s\n", buffer);
-
-    ask(buffer, "ADDRESS(2): ");
-    if (*buffer != '\0')
-	fprintf(fp, "ADDRESS: %s\n", buffer);
-
-    ask(buffer, "ADDRESS(3): (use any text editor to insert more ADDRESS lines)");
-    if (*buffer != '\0')
-	fprintf(fp, "ADDRESS: %s\n", buffer);
-
-    ask(buffer, "List of Operators: (space delimited)");
-    fprintf(fp, "OPERATORS: %s\n", buffer);
-
-    ask(buffer, "OFFTIME: (yyyy-mm-dd hhmm yyyy-mm-dd hhmm)");
-    if (*buffer != '\0')
-	fprintf(fp, "OFFTIME: %s\n", buffer);
-
-    ask(buffer, "SOAPBOX: (use any text editor to include more lines)");
-    if (*buffer != '\0')
-	fprintf(fp, "SOAPBOX: %s\n", buffer);
-
-    return 0;
-}

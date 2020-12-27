@@ -41,9 +41,6 @@
 #include "ui_utils.h"
 #include "cabrillo_utils.h"
 
-/* conversion table between tag name in format file and internal tag */
-extern struct tag_conv tag_tbl[];
-
 struct qso_t *get_next_record(FILE *fp);
 struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection);
 void free_qso(struct qso_t *ptr);
@@ -278,6 +275,7 @@ const char *to_mode[] = {
 };
 
 /* converts band to frequency of start of band */
+//FIXME move to band.c and add 60m
 static freq_t band2freq(int band) {
     freq_t freq;
 
@@ -377,8 +375,6 @@ gchar *get_nth_token(gchar *str, int n) {
  * and put it into buffer */
 void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 
-    extern char exchange[];
-
     freq_t freq;
     int i;
     char tmp[80];
@@ -393,7 +389,7 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
     }
 
     freq = qso->freq;
-    if (freq < 1800000.)
+    if (freq == 0)
 	freq = band2freq(qso->band);
 
     if (qso->qtcdirection == 0) {
@@ -409,6 +405,7 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 	item_count = desc->qtc_item_count;
 	item_array = desc->qtc_item_array;
     }
+
     for (i = 0; i < item_count; i++) {
 	item = g_ptr_array_index(item_array, i);
 	switch (item->tag) {
@@ -518,9 +515,10 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 	    case QTC:
 		sprintf(tmp, "%s %-13s %4s", qso->qtc_qtime, qso->qtc_qcall, qso->qtc_qserial);
 		add_rpadded(buf, g_strchomp(tmp), item->len);
+		break;
 	    case NO_ITEM:
 	    default:
-		tmp[0] = '\0';
+		; // no action
 	}
 
     }
@@ -528,10 +526,6 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 }
 
 int write_cabrillo(void) {
-
-    extern char *cabrillo;
-    extern char logfile[];
-    extern char exchange[];
 
     char *cab_dfltfile;
     struct cabrillo_desc *cabdesc;
@@ -545,7 +539,7 @@ int write_cabrillo(void) {
     if (cabrillo == NULL) {
 	info("Missing CABRILLO= keyword (see man page)");
 	sleep(2);
-	return (1);
+	return 1;
     }
 
     /* Try to read cabrillo format first from local directory.
@@ -611,10 +605,13 @@ int write_cabrillo(void) {
 
 
     /* ask for exchange and header information */
-    ask(buffer,
-	"Your exchange (e.g. State, province, age etc... (# if serial number)): ");
-    g_strlcpy(exchange, buffer, 11);
-    getsummary(fp2);
+    if (contest->exchange_serial) {
+	strcpy(exchange, "#");
+    } else {
+	get_cabrillo_field_value(find_cabrillo_field(CBR_EXCHANGE), exchange, 11);
+    }
+
+    write_cabrillo_header(fp2);
 
     info("Writing cabrillo file");
 
@@ -719,7 +716,6 @@ void add_adif_field_formated(char *buffer, char *field, char *fmt, ...) {
 
 /* write ADIF header to open file */
 void write_adif_header(FILE *fp) {
-    extern char whichcontest[];
 
     char timebuf[100];
 
@@ -747,8 +743,6 @@ void write_adif_header(FILE *fp) {
 /* format QSO line from buf according to ADIF format description
  * and put it into buffer */
 void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
-    extern char modem_mode[];
-    extern int no_rst;
 
     char *tmp;
 
@@ -822,12 +816,6 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
 */
 int write_adif(void) {
 
-    extern char logfile[];
-    extern char exchange[];
-    extern char whichcontest[];
-    extern char modem_mode[];
-    extern int no_rst;
-
     struct qso_t *qso;
     char buffer[181] = "";
     char standardexchange[70] = "";
@@ -856,9 +844,7 @@ int write_adif(void) {
     /* in case using write_adif() without write_cabrillo() before
      * just ask for the needed information */
     if ((strlen(standardexchange) == 0) && !contest->exchange_serial) {
-	ask(buffer,
-	    "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
-	g_strlcpy(standardexchange, buffer, 11);
+	get_cabrillo_field_value(find_cabrillo_field(CBR_EXCHANGE), exchange, 11);
     }
 
     info("Writing ADIF file");

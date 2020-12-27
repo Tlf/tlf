@@ -15,6 +15,7 @@
 #include "../src/change_rst.h"
 #include "../src/setcontest.h"
 #include "../src/set_tone.h"
+#include "../src/cabrillo_utils.h"
 
 // OBJECT ../src/parse_logcfg.o
 // OBJECT ../src/get_time.o
@@ -24,6 +25,7 @@
 // OBJECT ../src/score.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
+// OBJECT ../src/cabrillo_utils.o
 
 // lancode.c
 int nodes = 0;
@@ -59,6 +61,13 @@ bool fldigi_isenabled(void) {
 
 void fldigi_toggle() {
     fldigi_on = !fldigi_on;
+}
+
+int get_total_score() {
+    return 123;
+}
+
+void ask(char *buffer, char *what) {
 }
 
 static int wpm_spy;
@@ -340,7 +349,7 @@ void test_bool_contest_trues(void **state) {
 	    i < sizeof(bool_contest_trues) / sizeof(bool_contest_true_t);
 	    ++i) {
 	bool *target = (bool *)((char *)contest +
-			bool_contest_trues[i].offset);
+				bool_contest_trues[i].offset);
 	*target = false;
 	sprintf(line, "%s\n", bool_contest_trues[i].keyword);
 	fputs(line, stdout);
@@ -648,6 +657,56 @@ void test_cabrillo(void **state) {
     int rc = call_parse_logcfg("CABRILLO = test.cab \r\n");
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(cabrillo, "test.cab");
+}
+
+void test_cabrillo_power(void **state) {
+    cbr_field_t *power = find_cabrillo_field("CATEGORY-POWER");
+    FREE_DYNAMIC_STRING(power->value);
+    assert_int_equal(power->disabled, false);
+    assert_int_equal(power->value_is_hint, false);
+
+    int rc = call_parse_logcfg("CABRILLO-CATEGORY-POWER = HIGH \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_non_null(power->value);
+    assert_string_equal(power->value, "HIGH");
+    assert_int_equal(power->disabled, false);
+    assert_int_equal(power->value_is_hint, false);
+}
+
+void test_cabrillo_power_hint(void **state) {
+    cbr_field_t *power = find_cabrillo_field("CATEGORY-POWER");
+    FREE_DYNAMIC_STRING(power->value);
+    assert_int_equal(power->disabled, false);
+    assert_int_equal(power->value_is_hint, false);
+
+    int rc = call_parse_logcfg("CABRILLO-CATEGORY-POWER = (QRP, LOW) \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_non_null(power->value);
+    assert_string_equal(power->value, "(QRP, LOW)");
+    assert_int_equal(power->disabled, false);
+    assert_int_equal(power->value_is_hint, true);
+}
+
+void test_cabrillo_power_disable(void **state) {
+    cbr_field_t *power = find_cabrillo_field("CATEGORY-POWER");
+    FREE_DYNAMIC_STRING(power->value);
+    assert_int_equal(power->disabled, false);
+
+    int rc = call_parse_logcfg("CABRILLO-CATEGORY-POWER = - \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_null(power->value);
+    assert_int_equal(power->disabled, true);
+}
+
+void test_cabrillo_address3_enable(void **state) {
+    cbr_field_t *addr3 = find_cabrillo_field("ADDRESS(3)");
+    FREE_DYNAMIC_STRING(addr3->value);
+    assert_int_equal(addr3->disabled, true);
+
+    int rc = call_parse_logcfg("CABRILLO-ADDRESS(3)\r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_null(addr3->value);
+    assert_int_equal(addr3->disabled, false);
 }
 
 void test_time_offset(void **state) {

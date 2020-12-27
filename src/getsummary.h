@@ -21,7 +21,6 @@
 #ifndef GETSUMMARY_H
 #define GETSUMMARY_H
 
-int getsummary(FILE *fp);
 void ask(char *buffer, char *what);
 
 #endif /* GETSUMMARY_H */

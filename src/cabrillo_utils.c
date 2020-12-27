@@ -33,10 +33,13 @@
 #include <unistd.h>
 
 #include "cabrillo_utils.h"
+#include "getsummary.h"
+#include "parse_logcfg.h"
+#include "showscore.h"
 
 
 /* conversion table between tag name in format file and internal tag */
-struct tag_conv tag_tbl[] = {
+static struct tag_conv tag_tbl[] = {
     { "FREQ",	FREQ 	},
     { "MODE",	MODE 	},
     { "DATE",	DATE 	},
@@ -64,7 +67,7 @@ enum tag_t translate_item_name(char *name) {
     int i;
 
     /* lookup name in tag list */
-    for (i = 0; i < sizeof(tag_tbl) / sizeof(struct tag_conv); i++) {
+    for (i = 0; i < G_N_ELEMENTS(tag_tbl); i++) {
 	if (strcmp(tag_tbl[i].item_name, name) == 0) {
 	    /* and return corresponding tab */
 	    return tag_tbl[i].tag;
@@ -256,4 +259,300 @@ struct cabrillo_desc *read_cabrillo_format(char *filename, char *format) {
 
     /* return parsed cabrillo format description */
     return cabdesc;
+}
+
+cbr_field_t cabrillo_fields[] = {
+    // internals
+    {
+	.name = CBR_EXCHANGE, .text = "Your exchange",
+	.hint = "(e.g. State, province, age etc... (# if serial number))",
+	.internal = true
+    },
+    {
+	.name = CBR_QSO_FORMAT,
+	.internal = true
+    },
+    {
+	.name = CBR_TEMPLATE,
+	.internal = true
+    },
+    //
+    {
+	.name = "CONTEST", .text = "Contest",
+	.hint = "(CQ-WW-CW/SSB, CQ-WPX-CW/SSB, ARRL-DX-CW/SSB)",
+    },
+    {
+	.name = CBR_CALLSIGN,   // filled internally
+    },
+    {
+	.name = "CATEGORY-ASSISTED", .text = "Category-Assisted",
+	.hint = "(ASSISTED, NON-ASSISTED)",
+    },
+    {
+	.name = "CATEGORY-BAND", .text = "Bands",
+	.hint = "(ALL,160M,80M,40M,20M,15M,10M)",
+    },
+    {
+	.name = "CATEGORY-MODE", .text = "Mode",
+	.hint = "(CW,SSB,RTTY,MIXED)",
+    },
+    {
+	.name = "CATEGORY-OPERATOR", .text = "Category-Operator",
+	.hint = "(SINGLE-OP, MULTI-OP, CHECKLOG)",
+    },
+    {
+	.name = "CATEGORY-POWER", .text = "Power",
+	.hint = "(HIGH,LOW,QRP)",
+    },
+    {
+	.name = "CATEGORY-STATION", .text = "Category-Station",
+	.hint = "(FIXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL)",
+	.skip_empty = true
+    },
+    {
+	.name = "CATEGORY-TIME", .text = "Category-Time",
+	.hint = "(6-HOURS, 12-HOURS, 24-HOURS)",
+	.skip_empty = true
+    },
+    {
+	.name = "CATEGORY-TRANSMITTER", .text = "Transmitter",
+	.hint = "(ONE, TWO, LIMITED, UNLIMITED, SWL)",
+	.skip_empty = true
+    },
+    {
+	.name = "CATEGORY-OVERLAY", .text = "Category-Overlay",
+	.hint = "(ROOKIE, TB-WIRES, NOVICE-TECH, OVER-50)",
+	.skip_empty = true
+    },
+    {
+	.name = "CERTIFICATE", .text = "Certificate",
+	.hint = "(YES [default], NO)",
+	.disabled = true
+    },
+    {
+	.name = CBR_SCORE,      // filled internally
+    },
+    {
+	.name = "CLUB", .text = "Club",
+	.skip_empty = true
+    },
+    {
+	.name = "LOCATION", .text = "Location",
+	.hint = "(section, IOTA name, RDA, State/Province, ...)",
+	.skip_empty = true
+    },
+    {
+	.name = "GRID-LOCATOR", .text = "Locator:",
+	.disabled = true
+    },
+    {
+	.name = "NAME", .text = "Operator name",
+    },
+    {
+	.name = "EMAIL", .text = "E-mail",
+	.disabled = true
+    },
+    {
+	.name = "ADDRESS", .text = "Address",
+    },
+    {
+	.name = "ADDRESS(2)", .text = "Address(2)",
+	.disabled = true
+    },
+    {
+	.name = "ADDRESS(3)", .text = "Address(3)",
+	.disabled = true
+    },
+    {
+	.name = "OPERATORS", .text = "List of Operators",
+	.hint = "(space delimited)",
+    },
+    {
+	.name = "OFFTIME", .text = "Offtime",
+	.hint = "(yyyy-mm-dd hhmm yyyy-mm-dd hhmm)",
+	.skip_empty = true
+    },
+    {
+	.name = "SOAPBOX", .text = "Soapbox",
+	.hint = "(use any text editor to include more lines)",
+	.skip_empty = true
+    },
+    {
+	.name = "SOAPBOX(2)", .text = "Soapbox(2)",
+	.disabled = true
+    },
+    {
+	.name = "SOAPBOX(3)", .text = "Soapbox(3)",
+	.disabled = true
+    },
+};
+
+cbr_field_t *find_cabrillo_field(const char *name) {
+    for (int i = 0; i < G_N_ELEMENTS(cabrillo_fields); ++i) {
+	if (strcmp(cabrillo_fields[i].name, name) == 0) {
+	    return &cabrillo_fields[i];
+	}
+    }
+    return NULL;
+}
+
+int get_cabrillo_field_value(const cbr_field_t *field, char *buffer, int size) {
+    if (field == NULL || field->disabled) {
+	return -1;      // no such field or disabled
+    }
+    if (field->value != NULL && !field->value_is_hint) {
+	g_strlcpy(buffer, field->value, size);    // use specified value
+	return 0;
+    }
+
+    if (field->text == NULL) {
+	return -1;      // missing value, no text, don't ask
+    }
+
+    // ask if no value was provided
+    const char *hint;
+    if (field->value != NULL) {
+	hint = field->value;
+    } else if (field->hint != NULL) {
+	hint = field->hint;
+    } else {
+	hint = "";
+    }
+    char *prompt = g_strdup_printf("%s: %s", field->text, hint);
+    if (strlen(prompt) > 76) {
+	prompt[76] = 0;
+	prompt[75] = '.';
+	prompt[74] = '.';
+	prompt[73] = '.';
+    }
+
+    char input[80];
+    ask(input, prompt);
+    g_strstrip(input);
+    g_strlcpy(buffer, input, size);
+
+    g_free(prompt);
+    return 0;
+}
+
+
+void write_cabrillo_header(FILE *fp) {
+    char buffer[80];
+
+    // set CALLSIGN
+    cbr_field_t *call = find_cabrillo_field(CBR_CALLSIGN);
+    strcpy(buffer, my.call);
+    g_strstrip(buffer);     // remove trailing NL
+    FREE_DYNAMIC_STRING(call->value);
+    call->value = g_strdup(buffer);
+    call->disabled = false; // always enabled
+
+    // set CLAIMED-SCORE unless disabled
+    cbr_field_t *score = find_cabrillo_field(CBR_SCORE);
+    if (!score->disabled) {
+	FREE_DYNAMIC_STRING(score->value);
+	score->value = g_strdup_printf("%d", get_total_score());
+    }
+
+    // set GRID-LOCATOR if enabled and my.qra is not empty
+    cbr_field_t *locator = find_cabrillo_field(CBR_LOCATOR);
+    if (!locator->disabled && locator->value == NULL && my.qra[0] != 0) {
+	locator->value = g_strdup(my.qra);
+    }
+
+    fprintf(fp, "START-OF-LOG: 3.0\n");
+    fprintf(fp, "CREATED-BY: %s\n", argp_program_version);
+
+    for (int i = 0; i < G_N_ELEMENTS(cabrillo_fields); ++i) {
+	if (cabrillo_fields[i].internal) {
+	    continue;       // internal use only
+	}
+
+	if (get_cabrillo_field_value(&cabrillo_fields[i], buffer, 80) != 0) {
+	    continue;       // has no value
+	}
+
+	if (strlen(buffer) == 0 && cabrillo_fields[i].skip_empty) {
+	    continue;       // skip empty value
+	}
+
+	// cut index from name, e.g. ADDRESS(2)
+	char tag[40];
+	strcpy(tag, cabrillo_fields[i].name);
+	char *p = strchr(tag, '(');
+	if (p != NULL) {
+	    *p = 0;
+	}
+	fprintf(fp, "%s: %s\n", tag, buffer);
+    }
+}
+
+static int process_cabrillo_template_file(const char *file_name);
+
+// called from parse_logcfg.c and process_cabrillo_template_file()
+int add_cabrillo_field(const char *name, const char *value) {
+    cbr_field_t *field = find_cabrillo_field(name);
+    if (field == NULL) {
+	return PARSE_NO_MATCH;
+    }
+
+    // special cases:
+    //      1) QSO-FORMAT: set cabrillo variable
+    if (strcmp(name, CBR_QSO_FORMAT) == 0) {
+	FREE_DYNAMIC_STRING(cabrillo);
+	cabrillo = g_strdup(value);
+	return PARSE_OK;
+    }
+    //      2) TEMPLATE: read fields from Cabrillo file
+    if (strcmp(name, CBR_TEMPLATE) == 0) {
+	return process_cabrillo_template_file(value);
+    }
+
+    field->disabled = false;
+    FREE_DYNAMIC_STRING(field->value);
+
+    if (value == NULL) {
+	return PARSE_OK;    // missing value just enables field
+    }
+
+    int len = strlen(value);
+    field->value_is_hint = (len > 1 && value[0] == '(' && value[len - 1] == ')');
+    field->disabled = (len == 1 && value[0] == '-');
+    if (!field->disabled) {
+	field->value = g_strdup(value);
+    }
+
+    return PARSE_OK;
+}
+
+static int process_cabrillo_template_file(const char *file_name) {
+    FILE *fp = fopen(file_name, "r");
+    if (fp == NULL) {
+	return PARSE_WRONG_PARAMETER;
+    }
+
+    char logline[MAX_CABRILLO_LEN];
+
+    while (fgets(logline, MAX_CABRILLO_LEN, fp) != NULL) {
+	g_strstrip(logline);
+	if (logline[0] == 'X' || logline[0] == 0) {
+	    continue;   // Cabrillo comment (X-...) or empty line
+	}
+	char **fields = g_strsplit(logline, ":", 2);
+	g_strstrip(fields[0]);
+	if (g_strv_length(fields) == 2) {
+	    g_strstrip(fields[1]);
+	}
+
+	if (strcmp(fields[0], CBR_TEMPLATE) != 0) { // skip TEMPLATE, no recursion
+	    // note: result is not checked, errors are ignored
+	    add_cabrillo_field(fields[0], fields[1]);
+	}
+
+	g_strfreev(fields);
+    }
+
+    fclose(fp);
+
+    return PARSE_OK;
 }
