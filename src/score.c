@@ -236,21 +236,6 @@ int scoreDefault() {
 
     int points;
 
-    if (one_point == 1) {
-	points = 1;
-	return points;
-    }
-
-    if (two_point == 1) {
-	points = 2;
-	return points;
-    }
-
-    if (three_point == 1) {
-	points = 3;
-	return points;
-    }
-
     if (ssbpoints != 0 && cwpoints != 0)	//  e.g. arrl 10m contest
 	points = scoreByMode();
     else
@@ -338,7 +323,6 @@ int score_cqww() {
 }
 
 
-
 int score_arrlfd() {
     int points;
 
@@ -349,6 +333,7 @@ int score_arrlfd() {
     }
     return points;
 }
+
 
 int score_arrldx_usa() {
     int points;
@@ -361,6 +346,7 @@ int score_arrldx_usa() {
 
     return points;
 }
+
 
 int score_stewperry() {
     int points;
@@ -380,7 +366,6 @@ int score_stewperry() {
     return points;
 }
 
-int score_old();
 
 int score() {
     extern int dupe;
@@ -402,6 +387,10 @@ int score() {
 
     if (contest->points.type == FUNCTION) {
 	return contest->points.fn();
+    }
+
+    if (contest->points.type == FIXED) {
+	return contest->points.point;
     }
 
     /* start of the universal scoring code */

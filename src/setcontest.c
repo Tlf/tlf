@@ -71,7 +71,11 @@ contest_config_t config_cqww = {
 
 contest_config_t config_sprint = {
     .id = SPRINT,
-    .name = "SPRINT"
+    .name = "SPRINT",
+    .points = {
+	.type = FIXED,
+	.point = 1,
+    }
 };
 
 contest_config_t config_arrldx_usa = {
@@ -88,12 +92,20 @@ contest_config_t config_arrldx_dx = {
     .id = ARRLDX_DX,
     .name = "ARRLDX_DX",
     .recall_mult =true,
+    .points = {
+	.type = FIXED,
+	.point = 3,
+    }
 };
 
 contest_config_t config_arrl_ss = {
     .id = ARRL_SS,
     .name = "ARRL_SS",
     .exchange_serial = true,
+    .points = {
+	.type = FIXED,
+	.point = 2,
+    }
 };
 
 contest_config_t config_arrl_fd = {
@@ -108,7 +120,11 @@ contest_config_t config_arrl_fd = {
 
 contest_config_t config_pacc_pa = {
     .id = PACC_PA,
-    .name = "PACC_PA"
+    .name = "PACC_PA",
+    .points = {
+	.type = FIXED,
+	.point = 1,
+    }
 };
 
 contest_config_t config_stewperry = {
@@ -202,9 +218,6 @@ void setcontest(char *name) {
     iscontest = true;
     showscore_flag = 1;
     searchflg = 1;
-    one_point = 0;
-    two_point = 0;
-    three_point = 0;
     sectn_mult = 0;
     noleadingzeros = 0;
 
@@ -216,17 +229,11 @@ void setcontest(char *name) {
     contest = lookup_contest(name);
 
 
-    if (CONTEST_IS(SPRINT)) {
-	one_point = 1;
-    }
-
     if (CONTEST_IS(ARRLDX_DX)) {
-	three_point = 1;
 	sectn_mult = 1;
     }
 
     if (CONTEST_IS(ARRL_SS)) {
-	two_point = 1;
 	qso_once = true;
 	multlist = 1;
 //      sectn_mult = 1;
@@ -234,7 +241,6 @@ void setcontest(char *name) {
     }
 
     if (CONTEST_IS(PACC_PA)) {
-	one_point = 1;
 
 	zl_cty = getctynr(zlcall);
 	ja_cty = getctynr(jacall);

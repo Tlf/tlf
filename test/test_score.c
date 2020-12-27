@@ -189,15 +189,16 @@ void test_arrl_fd(void **state) {
 
 
 void test_simple_points(void **state) {
-    one_point = 1;
+    setcontest("pointtest");
+
+    contest->points.type = FIXED;
+    contest->points.point = 1;
     check_points(1);
-    one_point = 0;
 
-    two_point = 1;
+    contest->points.point = 2;
     check_points(2);
-    two_point = 0;
 
-    three_point = 1;
+    contest->points.point = 3;
     check_points(3);
 }
 

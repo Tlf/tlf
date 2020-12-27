@@ -128,9 +128,6 @@ int setup_default(void **state) {
     cwpoints = 1;
     trxmode = CWMODE;
     use_bandoutput = 0;
-    one_point = 0;
-    two_point = 0;
-    three_point = 0;
     thisnode = 'A';
     nodes = 0;
     xplanet = 0;
@@ -799,24 +796,21 @@ void test_bandoutput(void **state) {
 void test_one_points(void **state) {
     int rc = call_parse_logcfg("ONE_POINT\n");
     assert_int_equal(rc, 0);
-    assert_int_equal(one_point, 1);
-    assert_int_equal(two_point, 0);
-    assert_int_equal(three_point, 0);
+    assert_int_equal(contest->points.type, FIXED);
+    assert_int_equal(contest->points.point, 1);
 }
 void test_two_points(void **state) {
     int rc = call_parse_logcfg("TWO_POINTS\n");
     assert_int_equal(rc, 0);
-    assert_int_equal(one_point, 0);
-    assert_int_equal(two_point, 1);
-    assert_int_equal(three_point, 0);
+    assert_int_equal(contest->points.type, FIXED);
+    assert_int_equal(contest->points.point, 2);
 }
 
 void test_three_points(void **state) {
     int rc = call_parse_logcfg("THREE_POINTS\n");
     assert_int_equal(rc, 0);
-    assert_int_equal(one_point, 0);
-    assert_int_equal(two_point, 0);
-    assert_int_equal(three_point, 1);
+    assert_int_equal(contest->points.type, FIXED);
+    assert_int_equal(contest->points.point, 3);
 }
 
 void test_bandmap(void **state) {

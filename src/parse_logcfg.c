@@ -329,11 +329,14 @@ static int cfg_n_points(const cfg_arg_t arg) {
     gchar *keyword = g_match_info_fetch(match_info, 0);
 
     if (g_str_has_prefix(keyword, "ONE")) {
-	one_point = 1;
+	contest->points.type = FIXED;
+	contest->points.point = 1;
     } else if (g_str_has_prefix(keyword, "TWO")) {
-	two_point = 1;
+	contest->points.type = FIXED;
+	contest->points.point = 2;
     } else if (g_str_has_prefix(keyword, "THREE")) {
-	three_point = 1;
+	contest->points.type = FIXED;
+	contest->points.point = 3;
     }
 
     g_free(keyword);
