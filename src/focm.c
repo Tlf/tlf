@@ -22,6 +22,7 @@
 
 #include "displayit.h"
 #include "dxcc.h"
+#include "focm.h"
 #include "getctydata.h"
 #include "globalvars.h"
 #include "initial_exchange.h"
@@ -49,12 +50,19 @@ int cntry;
 int cont;
 
 
+int score_foc() {
+    return foc_score(hiscall);
+}
+
 /** FOC contest configuration */
 contest_config_t config_focm = {
     .id = FOCMARATHON,
-    .name = "FOCMARATHON"
+    .name = "FOCMARATHON",
+    .points = {
+	.type = FUNCTION,
+	.fn = &score_foc
+    }
 };
-
 
 /** calculate score for last QSO
  *
@@ -114,8 +122,6 @@ static void count_56_banders() {
 
 
 static int search_g4foc_in_callarray(void) {
-    extern int nr_worked;
-    extern worked_t worked[];
 
     int found = -1;
     int i;
@@ -150,8 +156,6 @@ static int get_nr_cntry() {
 
 /* count number of continents worked on all bands */
 static int get_nr_cont() {
-    extern worked_t worked[];
-    extern int nr_worked;
 
     GHashTable *cont;
     dxcc_data *data;
@@ -176,7 +180,6 @@ static int get_nr_cont() {
  * \return number of points
  */
 int foc_total_score() {
-    extern worked_t worked[];
 
     int points;
 

@@ -165,6 +165,11 @@ int cfg_bool_const(const cfg_arg_t arg) {
     return PARSE_OK;
 }
 
+int cfg_contest_bool_const(const cfg_arg_t arg) {
+    *(bool *)((char *)contest + arg.offset) = arg.bool_value;
+    return PARSE_OK;
+}
+
 int cfg_int_const(const cfg_arg_t arg) {
     *arg.int_p  = arg.int_value;
     return PARSE_OK;
@@ -324,11 +329,14 @@ static int cfg_n_points(const cfg_arg_t arg) {
     gchar *keyword = g_match_info_fetch(match_info, 0);
 
     if (g_str_has_prefix(keyword, "ONE")) {
-	one_point = 1;
+	contest->points.type = FIXED;
+	contest->points.point = 1;
     } else if (g_str_has_prefix(keyword, "TWO")) {
-	two_point = 1;
+	contest->points.type = FIXED;
+	contest->points.point = 2;
     } else if (g_str_has_prefix(keyword, "THREE")) {
-	three_point = 1;
+	contest->points.type = FIXED;
+	contest->points.point = 3;
     }
 
     g_free(keyword);
@@ -998,7 +1006,7 @@ static config_t logcfg_configs[] = {
 
     {"USEPARTIALS",     CFG_INT_ONE(use_part)},
     {"PARTIALS",        CFG_INT_ONE(partials)},
-    {"RECALL_MULTS",    CFG_INT_ONE(recall_mult)},
+    {"RECALL_MULTS",    CFG_CONTEST_BOOL_TRUE(recall_mult)},
     {"WYSIWYG_MULTIBAND",   CFG_INT_ONE(wysiwyg_multi)},
     {"WYSIWYG_ONCE",    CFG_INT_ONE(wysiwyg_once)},
     {"RIT_CLEAR",       CFG_INT_ONE(rit)},
@@ -1006,7 +1014,7 @@ static config_t logcfg_configs[] = {
     {"SCOREWINDOW",     CFG_INT_ONE(showscore_flag)},
     {"CHECKWINDOW",     CFG_INT_ONE(searchflg)},
     {"SEND_DE",         CFG_INT_ONE(demode)},
-    {"SERIAL_EXCHANGE", CFG_INT_ONE(exchange_serial)},
+    {"SERIAL_EXCHANGE", CFG_CONTEST_BOOL_TRUE(exchange_serial)},
     {"COUNTRY_MULT",    CFG_INT_ONE(country_mult)},
     {"PORTABLE_MULT_2", CFG_INT_ONE(portable_x2)},
     {"CQWW_M2",         CFG_INT_ONE(cqwwm2)},

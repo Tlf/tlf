@@ -13,17 +13,21 @@
 // OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/setcontest.o
+// OBJECT ../src/score.o
 
-extern mults_t multis[MAX_MULTS];
-extern int nr_multis;
 
 extern char multsfile[];	/* name of file with a list of allowed
 				   multipliers */
 
 /* dummies */
-int getctynr() {
+int getctynr(char *checkcall) {
     return 42;
 }
+
+int getctydata(char *checkcall) {
+    return 0;
+}
+
 
 contest_config_t config_focm;
 

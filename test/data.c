@@ -72,9 +72,6 @@ int pfxmult = 0;
 int pfxmultab = 0;
 int exc_cont = 0;
 int manise80;
-int one_point = 0;
-int two_point = 0;
-int three_point = 0;
 int ssbpoints;
 int cwpoints;
 int lowband_point_mult = 0;
@@ -96,7 +93,6 @@ bool mult_side = false;
 
 int portable_x2 = 0;
 int recall_mult = 0;
-int exchange_serial = 0;
 int wysiwyg_once = 0;
 int wysiwyg_multi = 0;
 int country_mult = 0;

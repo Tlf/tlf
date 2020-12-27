@@ -793,7 +793,7 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
     }
 
     /* Sent contest serial number or exchange */
-    if ((exchange_serial == 1) || (exchange[0] == '#')) {
+    if (contest->exchange_serial || (exchange[0] == '#')) {
 	add_adif_field_formated(buffer, "STX", "%04d", qso->qso_nr);
     } else {
 	add_adif_field(buffer, "STX_STRING", g_strstrip(exchange));
@@ -807,7 +807,7 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
     /* Received contest serial number or exchange */
     tmp = g_strdup(qso->comment);
     g_strstrip(tmp);
-    if ((exchange_serial == 1) || (exchange[0] == '#'))
+    if (contest->exchange_serial || (exchange[0] == '#'))
 	add_adif_field(buffer, "SRX", tmp);
     else
 	add_adif_field(buffer, "SRX_STRING", tmp);
@@ -825,7 +825,6 @@ int write_adif(void) {
     extern char logfile[];
     extern char exchange[];
     extern char whichcontest[];
-    extern int exchange_serial;
     extern char modem_mode[];
     extern int no_rst;
 
@@ -856,7 +855,7 @@ int write_adif(void) {
 
     /* in case using write_adif() without write_cabrillo() before
      * just ask for the needed information */
-    if ((strlen(standardexchange) == 0) && (exchange_serial != 1)) {
+    if ((strlen(standardexchange) == 0) && !contest->exchange_serial) {
 	ask(buffer,
 	    "Your exchange (e.g. State, province, age etc... (# if serial number)): ");
 	g_strlcpy(standardexchange, buffer, 11);

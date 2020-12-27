@@ -23,6 +23,11 @@
 #define _SCORE_H
 #include <stdbool.h>
 
+int score_wpx();
+int score_cqww();
+int score_arrlfd();
+int score_arrldx_usa();
+int score_stewperry();
 int score(void);
 int score2(char *line);
 bool country_found(char prefix[]);

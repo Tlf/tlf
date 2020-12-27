@@ -96,7 +96,6 @@ extern char logfile[];
 extern char qsonrstr[];
 extern int lan_mutex;
 extern bool lan_active;
-extern int exchange_serial;
 extern int highqsonr;
 
 
@@ -117,9 +116,6 @@ extern int wazmult;
 extern int addcallarea;
 extern int addcty;
 extern char zone_fix[];
-extern int one_point;
-extern int two_point;
-extern int three_point;
 extern int addzone;
 extern int do_cabrillo;
 extern int no_rst;

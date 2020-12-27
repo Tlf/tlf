@@ -61,12 +61,10 @@ void logit(void) {
     extern char cqzone[];
     extern char itustr[];
     extern int defer_store;
-    extern int recall_mult;
     extern int ctcomp;
     extern int wazmult;
     extern int itumult;
     extern int qsonum;
-    extern int exchange_serial;
     extern int sprint_mode;
 
     int callreturn = 0;
@@ -111,7 +109,7 @@ void logit(void) {
 
 		    send_standard_message(2);
 		    if (trxmode != CWMODE && trxmode != DIGIMODE) {
-			if (exchange_serial == 1)
+			if (contest->exchange_serial)
 			    mvprintw(13, 29, "Serial number: %d", qsonum);
 			refreshp();
 		    }
@@ -130,7 +128,7 @@ void logit(void) {
 			refresh_comment();
 		    }
 
-		    if (recall_mult == 1) {
+		    if (contest->recall_mult) {
 			recall_exchange();
 		    }
 
@@ -147,7 +145,7 @@ void logit(void) {
 
 			refresh_comment();
 
-		    } else if (recall_mult == 1) {
+		    } else if (contest->recall_mult) {
 			recall_exchange();
 		    }
 
@@ -155,7 +153,7 @@ void logit(void) {
 			sendspcall();
 		    else {
 			play_file(ph_message[5]);
-			if (exchange_serial == 1)
+			if (contest->exchange_serial)
 			    mvprintw(13, 29, "Serial number: %d", qsonum);
 			refreshp();
 		    }

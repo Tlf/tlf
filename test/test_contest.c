@@ -8,10 +8,15 @@
 
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/setcontest.o
+// OBJECT ../src/score.o
 
 /* dummys */
-int getctynr() {
+int getctynr(char *checkcall) {
     return 42;
+}
+
+int getctydata(char *checkcall) {
+    return 0;
 }
 
 contest_config_t config_focm;

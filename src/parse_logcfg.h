@@ -61,6 +61,7 @@ typedef struct {
 	char *char_p;
 	char **char_pp;
 	char (*msg)[80];
+	size_t offset;
     };
     union {     // extra info
 	int int_value;
@@ -85,6 +86,10 @@ typedef struct {
 
 #define CFG_BOOL_TRUE(var)  NO_PARAM, cfg_bool_const, \
         (cfg_arg_t){.bool_p=&var, .bool_value=true}
+
+#define CFG_CONTEST_BOOL_TRUE(var)  NO_PARAM, cfg_contest_bool_const, \
+	(cfg_arg_t){.offset=offsetof(contest_config_t, var), \
+	    .bool_value=true}
 
 #define CFG_INT_CONST(var,n)    NO_PARAM, cfg_int_const, \
         (cfg_arg_t){.int_p=&var, .int_value=n}

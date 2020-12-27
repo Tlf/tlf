@@ -228,7 +228,7 @@ void ExpandMacro(void) {
 	replace_all(buffer, BUFSIZE, "#",
 		    qsonroutput + leading_zeros);   /* serial nr */
 
-	if (lan_active && (exchange_serial == 1)) {
+	if (lan_active && contest->exchange_serial) {
 	    strncpy(lastqsonr, qsonrstr, 5);
 	    send_lan_message(INCQSONUM, qsonrstr);
 	}

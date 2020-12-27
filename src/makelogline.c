@@ -148,7 +148,7 @@ void prepare_fixed_part(void) {
 	strcat(logline4, khz);
 
     } else {
-	if (lan_active && (exchange_serial == 1)) {	// show qso nr
+	if (lan_active && (contest->exchange_serial)) {	// show qso nr
 	    strcat(logline4, lastqsonr);
 	    lastqsonr[0] = '\0';
 	} else

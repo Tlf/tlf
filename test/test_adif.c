@@ -2,6 +2,7 @@
 #include <glib.h>
 
 #include "../src/log_utils.h"
+#include "../src/tlf.h"
 
 // OBJECT ../src/writecabrillo.o
 // OBJECT ../src/cabrillo_utils.o
@@ -15,6 +16,7 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *standardexchange);
 void free_qso(struct qso_t *ptr);
 void free_cabfmt();
 void add_adif_field(char *adif_line, char *field, char *value);
+
 
 void nicebox();
 
@@ -33,6 +35,9 @@ int getsummary(FILE fp) {
 void ask(char *buffer, char *what) {
 }
 
+extern contest_config_t *contest;
+contest_config_t empty = { };
+
 char buffer[181];
 char logline[181];
 char adif_line[400];
@@ -40,6 +45,8 @@ char adif_line[400];
 #define ADIF "Test"
 
 int setup_default(void **state) {
+    contest = &empty;
+
     strcpy(adif_line, ADIF);
 
     return 0;

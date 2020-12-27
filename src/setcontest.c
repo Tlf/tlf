@@ -30,6 +30,7 @@
 #include "getctydata.h"
 #include "globalvars.h"
 #include "setcontest.h"
+#include "score.h"
 #include "tlf.h"
 
 /* configurations for supported contest */
@@ -45,52 +46,94 @@ contest_config_t config_qso = {
 
 contest_config_t config_dxped = {
     .id = DXPED,
-    .name = "DXPED"
+    .name = "DXPED",
+    .recall_mult = true,
 };
 
 contest_config_t config_wpx = {
     .id = WPX,
-    .name = "WPX"
+    .name = "WPX",
+    .points = {
+	.type = FUNCTION,
+	.fn = score_wpx,
+    }
 };
 
 contest_config_t config_cqww = {
     .id = CQWW,
-    .name = "CQWW"
+    .name = "CQWW",
+    .recall_mult = true,
+    .points = {
+	.type = FUNCTION,
+	.fn = score_cqww,
+    }
 };
 
 contest_config_t config_sprint = {
     .id = SPRINT,
-    .name = "SPRINT"
+    .name = "SPRINT",
+    .points = {
+	.type = FIXED,
+	.point = 1,
+    }
 };
 
 contest_config_t config_arrldx_usa = {
     .id = ARRLDX_USA,
-    .name = "ARRLDX_USA"
+    .name = "ARRLDX_USA",
+    .recall_mult =true,
+    .points = {
+	.type = FUNCTION,
+	.fn = score_arrldx_usa,
+    }
 };
 
 contest_config_t config_arrldx_dx = {
     .id = ARRLDX_DX,
-    .name = "ARRLDX_DX"
+    .name = "ARRLDX_DX",
+    .recall_mult =true,
+    .points = {
+	.type = FIXED,
+	.point = 3,
+    }
 };
 
 contest_config_t config_arrl_ss = {
     .id = ARRL_SS,
-    .name = "ARRL_SS"
+    .name = "ARRL_SS",
+    .exchange_serial = true,
+    .points = {
+	.type = FIXED,
+	.point = 2,
+    }
 };
 
 contest_config_t config_arrl_fd = {
     .id = ARRL_FD,
-    .name = "ARRL_FD"
+    .name = "ARRL_FD",
+    .recall_mult =true,
+    .points = {
+	.type = FUNCTION,
+	.fn = score_arrlfd,
+    }
 };
 
 contest_config_t config_pacc_pa = {
     .id = PACC_PA,
-    .name = "PACC_PA"
+    .name = "PACC_PA",
+    .points = {
+	.type = FIXED,
+	.point = 1,
+    }
 };
 
 contest_config_t config_stewperry = {
     .id = STEWPERRY,
-    .name = "STEWPERRY"
+    .name = "STEWPERRY",
+    .points = {
+	.type = FUNCTION,
+	.fn = score_stewperry
+    }
 };
 
 
@@ -127,14 +170,26 @@ contest_config_t *lookup_contest(char *name) {
     return &config_unknown;
 }
 
+
+/** show a list of supported/hard-coded contests
+ *
+ * works out of ncurses context for 'tlf -l' i
+ */
+void list_contests() {
+    puts(
+	"\nTLF has built-in support for the following contest identifiers:"
+	);
+    for(int i = 0; i < NR_CONTESTS; i++) {
+	printf("\t%s\n", contest_configs[i]->name);
+    }
+    puts("");
+}
+
+
 /** setup standard configuration for contest 'name' */
 void setcontest(char *name) {
 
-    extern int dx_arrlsections;
     extern int multlist;
-    extern int exchange_serial;
-    extern int w_cty;
-    extern int ve_cty;
     extern int zl_cty;
     extern int ja_cty;
     extern int py_cty;
@@ -145,13 +200,7 @@ void setcontest(char *name) {
     extern int ua9_cty;
     extern int showscore_flag;
     extern int searchflg;
-    extern char whichcontest[];
-    extern int one_point;
-    extern int two_point;
-    extern int three_point;
     extern bool qso_once;
-    extern int sectn_mult;
-    extern int recall_mult;
     extern int noleadingzeros;
 
     char wcall[] = "W1AW";
@@ -169,10 +218,6 @@ void setcontest(char *name) {
     iscontest = true;
     showscore_flag = 1;
     searchflg = 1;
-    one_point = 0;
-    two_point = 0;
-    three_point = 0;
-    recall_mult = 0;
     sectn_mult = 0;
     noleadingzeros = 0;
 
@@ -184,43 +229,18 @@ void setcontest(char *name) {
     contest = lookup_contest(name);
 
 
-    if (CONTEST_IS(CQWW)) {
-	recall_mult = 1;
-    }
-
-    if (CONTEST_IS(DXPED)) {
-	recall_mult = 1;
-    }
-
-    if (CONTEST_IS(SPRINT)) {
-	one_point = 1;
-    }
-
-    if (CONTEST_IS(ARRLDX_USA)) {
-	recall_mult = 1;
-    }
-
     if (CONTEST_IS(ARRLDX_DX)) {
-	three_point = 1;
-	recall_mult = 1;
 	sectn_mult = 1;
     }
 
     if (CONTEST_IS(ARRL_SS)) {
-	two_point = 1;
 	qso_once = true;
-	exchange_serial = 1;
 	multlist = 1;
 //      sectn_mult = 1;
 	noleadingzeros = 1;
     }
 
-    if (CONTEST_IS(ARRL_FD)) {
-	recall_mult = 1;
-    }
-
     if (CONTEST_IS(PACC_PA)) {
-	one_point = 1;
 
 	zl_cty = getctynr(zlcall);
 	ja_cty = getctynr(jacall);

@@ -108,9 +108,6 @@ int pfxmult = 0;
 int pfxmultab = 0;
 int exc_cont = 0;
 int manise80;
-int one_point = 0;
-int two_point = 0;
-int three_point = 0;
 int ssbpoints;
 int cwpoints;
 int lowband_point_mult = 0;
@@ -131,8 +128,6 @@ bool mult_side = false;
 /* end LZ3NY mods */
 
 int portable_x2 = 0;
-int recall_mult = 0;
-int exchange_serial = 0;
 int wysiwyg_once = 0;
 int wysiwyg_multi = 0;
 int country_mult = 0;
@@ -431,6 +426,7 @@ static const struct argp_option options[] = {
     {"import",      'i', 0, 0,  "Import cabrillo file to Tlf format"},
     {"no-cluster",  'n', 0, 0,  "Start without cluster hookup" },
     {"no-rig",      'r', 0, 0,  "Start without radio control" },
+    {"list",	    'l', 0, 0,  "List built-in contests" },
     {"sync",        's', "URL", 0,  "Synchronize log with other node" },
     {"debug",       'd', 0, 0,  "Debug mode" },
     {"verbose",     'v', 0, 0,  "Produce verbose output" },
@@ -451,6 +447,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	    break;
 	case 'i':
 	    convert_cabrillo = true;
+	    break;
+	case 'l':
+	    list_contests();
+	    exit(EXIT_SUCCESS);
 	    break;
 	case 's':
 	    if (strlen(arg) >= 120) {

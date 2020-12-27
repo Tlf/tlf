@@ -128,9 +128,6 @@ int setup_default(void **state) {
     cwpoints = 1;
     trxmode = CWMODE;
     use_bandoutput = 0;
-    one_point = 0;
-    two_point = 0;
-    three_point = 0;
     thisnode = 'A';
     nodes = 0;
     xplanet = 0;
@@ -326,6 +323,33 @@ void test_bool_trues(void **state) {
     }
 }
 
+typedef struct {
+    char *keyword;
+    size_t offset;
+} bool_contest_true_t;
+
+static bool_contest_true_t bool_contest_trues[] = {
+    {"RECALL_MULTS", offsetof(contest_config_t, recall_mult)},
+    {"SERIAL_EXCHANGE", offsetof(contest_config_t, exchange_serial)},
+};
+
+
+void test_bool_contest_trues(void **state) {
+    char line[80];
+    for (int i = 0;
+	    i < sizeof(bool_contest_trues) / sizeof(bool_contest_true_t);
+	    ++i) {
+	bool *target = (bool *)((char *)contest +
+			bool_contest_trues[i].offset);
+	*target = false;
+	sprintf(line, "%s\n", bool_contest_trues[i].keyword);
+	fputs(line, stdout);
+	int rc = call_parse_logcfg(line);
+	assert_int_equal(rc, PARSE_OK);
+	assert_true(*target);
+    }
+}
+
 // F1 .. F12
 void test_fn(void **state) {
     char line[80], msg[30];
@@ -379,7 +403,6 @@ typedef struct {
 } int_one_t;
 
 static int_one_t int_ones[] = {
-    {"RECALL_MULTS", &recall_mult},
     {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
     {"WYSIWYG_ONCE", &wysiwyg_once},
     {"RIT_CLEAR", &rit},
@@ -387,7 +410,6 @@ static int_one_t int_ones[] = {
     {"SCOREWINDOW", &showscore_flag},
     {"CHECKWINDOW", &searchflg},
     {"SEND_DE", &demode},
-    {"SERIAL_EXCHANGE", &exchange_serial},
     {"COUNTRY_MULT", &country_mult},
     {"PORTABLE_MULT_2", &portable_x2},
     {"CQWW_M2", &cqwwm2},
@@ -774,24 +796,21 @@ void test_bandoutput(void **state) {
 void test_one_points(void **state) {
     int rc = call_parse_logcfg("ONE_POINT\n");
     assert_int_equal(rc, 0);
-    assert_int_equal(one_point, 1);
-    assert_int_equal(two_point, 0);
-    assert_int_equal(three_point, 0);
+    assert_int_equal(contest->points.type, FIXED);
+    assert_int_equal(contest->points.point, 1);
 }
 void test_two_points(void **state) {
     int rc = call_parse_logcfg("TWO_POINTS\n");
     assert_int_equal(rc, 0);
-    assert_int_equal(one_point, 0);
-    assert_int_equal(two_point, 1);
-    assert_int_equal(three_point, 0);
+    assert_int_equal(contest->points.type, FIXED);
+    assert_int_equal(contest->points.point, 2);
 }
 
 void test_three_points(void **state) {
     int rc = call_parse_logcfg("THREE_POINTS\n");
     assert_int_equal(rc, 0);
-    assert_int_equal(one_point, 0);
-    assert_int_equal(two_point, 0);
-    assert_int_equal(three_point, 1);
+    assert_int_equal(contest->points.type, FIXED);
+    assert_int_equal(contest->points.point, 3);
 }
 
 void test_bandmap(void **state) {

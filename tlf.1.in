@@ -5,7 +5,7 @@
 Radiosport
 .SH SYNOPSIS
 .SY @PACKAGE@
-.OP \-dhnrvV
+.OP \-dhlnrvV
 .OP \-f config_file
 .OP \-s user:password@host/dir/logfilename
 .YS
@@ -118,6 +118,9 @@ Start without packet/cluster.
 Start without radio control when user wants to start @PACKAGE_NAME@ without
 modifying
 .IR logcfg.dat \.
+.TP
+.B \-l
+List all built-in contests.
 .TP
 .B \-i
 Import an existing CABRILLO file. When @PACKAGE_NAME@ starts, looks for the
