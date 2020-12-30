@@ -249,7 +249,7 @@ static int lan_send(char *lanbuffer) {
     for (int node = 0; node < nodes; node++) {
 
 	bc_sendto_rc = sendto(bc_socket_descriptor[node],
-			      lanbuffer, 256,
+			      lanbuffer, strlen(lanbuffer),
 			      0, (struct sockaddr *) &bc_address[node],
 			      sizeof(bc_address[node]));
 
