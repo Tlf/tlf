@@ -418,6 +418,7 @@ int get_cabrillo_field_value(const cbr_field_t *field, char *buffer, int size) {
     } else {
 	hint = "";
     }
+
     char *prompt = g_strdup_printf("%s: %s", field->text, hint);
     if (strlen(prompt) > 76) {
 	prompt[76] = 0;
@@ -428,10 +429,15 @@ int get_cabrillo_field_value(const cbr_field_t *field, char *buffer, int size) {
 
     char input[80];
     ask(input, prompt);
+    g_free(prompt);
+
     g_strstrip(input);
     g_strlcpy(buffer, input, size);
 
-    g_free(prompt);
+    if (strlen(buffer) == 0 && field->skip_empty) {
+	return -1;       // skip empty value
+    }
+
     return 0;
 }
 
@@ -470,10 +476,6 @@ void write_cabrillo_header(FILE *fp) {
 
 	if (get_cabrillo_field_value(&cabrillo_fields[i], buffer, 80) != 0) {
 	    continue;       // has no value
-	}
-
-	if (strlen(buffer) == 0 && cabrillo_fields[i].skip_empty) {
-	    continue;       // skip empty value
 	}
 
 	// cut index from name, e.g. ADDRESS(2)
