@@ -33,7 +33,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "getsummary.h"
 #include "globalvars.h"
 #include "get_time.h"
 #include "log_utils.h"

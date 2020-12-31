@@ -33,7 +33,7 @@
 #include <unistd.h>
 
 #include "cabrillo_utils.h"
-#include "getsummary.h"
+#include "nicebox.h"
 #include "parse_logcfg.h"
 #include "showscore.h"
 

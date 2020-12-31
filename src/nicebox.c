@@ -23,7 +23,7 @@
 
 
 #include "nicebox.h"		// Includes curses.h
-#include "tlf.h"
+#include "globalvars.h"
 #include "ui_utils.h"
 
 
@@ -51,3 +51,16 @@ void nicebox(int y, int x, int height, int width, char *boxname) {
     wnicebox(stdscr, y, x, height, width, boxname);
 }
 
+void ask(char *buffer, char *what) {
+
+    attron(A_STANDOUT);
+    mvprintw(15, 1, spaces(78));
+    nicebox(14, 0, 1, 78, what);
+    attron(A_STANDOUT);
+    mvprintw(15, 1, "");
+
+    echo();
+    getnstr(buffer, 78);
+    noecho();
+    g_strstrip(buffer);
+}

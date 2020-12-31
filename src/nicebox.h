@@ -25,5 +25,6 @@
 
 void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname);
 void nicebox(int y, int x, int height, int width, char *boxname);
+void ask(char *buffer, char *what);
 
 #endif /* NICEBOX_H */
