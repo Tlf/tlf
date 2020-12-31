@@ -22,6 +22,7 @@
 
 
 #include <ctype.h>
+#include <fcntl.h>
 #include <hamlib/rig.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,6 +40,7 @@
 #include "getexchange.h"
 #include "getpx.h"
 #include "getwwv.h"
+#include "ignore_unused.h"
 #include "lancode.h"
 #include "locator2longlat.h"
 #include "parse_logcfg.h"
@@ -66,19 +68,31 @@ int read_logcfg(void) {
     static char defltconf[] = PACKAGE_DATA_DIR "/" LOGCFG_DAT_FILE;
     FILE *fp;
 
-    if (config_file == NULL)
+    if (config_file != NULL) {
+	fp = fopen(config_file, "r");
+	if (fp == NULL) {
+	    showstring("Error opening config file: ", config_file);
+	    return PARSE_ERROR;
+	}
+    }else {
 	config_file = g_strdup(LOGCFG_DAT_FILE);
 
-    if ((fp = fopen(config_file, "r")) == NULL) {
-	if ((fp = fopen(defltconf, "r")) == NULL) {
+	if (access(config_file, R_OK) == -1) {
+	    showmsg("No logcfg.dat found. Copying default config file.");
+	    showmsg("Please leave and adapt your settings if needed!");
+	    char *cmd = g_strdup_printf("cp %s %s", defltconf,
+		    LOGCFG_DAT_FILE);
+	    IGNORE(system(cmd));
+	    g_free(cmd);
+	    sleep(2);
+	}
+	if ((fp = fopen(config_file, "r")) == NULL) {
 	    showmsg("Error opening logcfg.dat file.");
 	    return PARSE_ERROR;
-	} else {
-	    showstring("Using default (Read Only) config file:", defltconf);
 	}
 
-    } else
-	showstring("Reading config file:", config_file);
+    }
+    showstring("Reading config file:", config_file);
 
     int status = parse_configfile(fp);
     fclose(fp);
