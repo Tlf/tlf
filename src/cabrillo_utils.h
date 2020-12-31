@@ -3,8 +3,11 @@
 #define CABRILLOUTILS_H
 
 #include "qtcvars.h"		// Includes globalvars.h
+#include "get_time.h"
 
 #define MAX_CABRILLO_LEN    255
+
+#define CREATED_DATE_TIME_FORMAT    DATE_FORMAT " at " TIME_FORMAT "z"
 
 /* describes the cabrillo format to be used */
 struct cabrillo_desc {

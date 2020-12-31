@@ -468,6 +468,8 @@ void write_cabrillo_header(FILE *fp) {
 
     fprintf(fp, "START-OF-LOG: 3.0\n");
     fprintf(fp, "CREATED-BY: %s\n", argp_program_version);
+    format_time(buffer, sizeof(buffer), CREATED_DATE_TIME_FORMAT);
+    fprintf(fp, "X-CREATED-ON: %s\n", buffer);
 
     for (int i = 0; i < G_N_ELEMENTS(cabrillo_fields); ++i) {
 	if (cabrillo_fields[i].internal) {

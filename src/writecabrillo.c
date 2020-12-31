@@ -729,7 +729,7 @@ void write_adif_header(FILE *fp) {
     ("################################################################################\n",
      fp);
 
-    format_time(timebuf, sizeof(timebuf), "%d-%b-%y at %H:%Mz");
+    format_time(timebuf, sizeof(timebuf), CREATED_DATE_TIME_FORMAT);
     fprintf(fp, "Created %s for %s\n", timebuf, my.call);
 
     /* Write contest name */
