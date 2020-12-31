@@ -40,6 +40,7 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "cabrillo_utils.h"
+#include "sendbuf.h"
 
 struct qso_t *get_next_record(FILE *fp);
 struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection);
@@ -370,6 +371,13 @@ gchar *get_nth_token(gchar *str, int n) {
     return ptr;
 }
 
+static gchar *get_sent_exchage(int qso_nr) {
+    char number[6];
+    sprintf(number, "%04d", qso_nr);
+    gchar *result = g_strndup(exchange, 80);
+    replace_n(result, 80, "#", number, 99);
+    return result;
+}
 
 /* format QSO: line for actual qso according to cabrillo format description
  * and put it into buffer */
@@ -464,27 +472,11 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 		add_rpadded(buf, token, item->len);
 		g_free(token);
 		break;
-	    case EXC_S: {
-		int pos;
-		char *start = exchange;
-		tmp[0] = '\0';
-		pos = strcspn(start, "#");
-		strncat(tmp, start, pos);   /** \todo avoid buffer overflow */
-		while (pos < strlen(start)) {
-		    if (start[pos] == '#') {
-			/* format and add serial number */
-			char number[6];
-			sprintf(number, "%04d", qso->qso_nr);
-			strcat(tmp, number);
-		    }
-
-		    start = start + pos + 1; 	/* skip special character */
-		    pos = strcspn(start, "#");
-		    strncat(tmp, start, pos);
-		}
-		add_rpadded(buf, tmp, item->len);
-	    }
-	    break;
+	    case EXC_S:
+		token = get_sent_exchage(qso->qso_nr);
+		add_rpadded(buf, token, item->len);
+		g_free(token);
+		break;
 	    case TX:
 		sprintf(tmp, "%1d", qso->tx);
 		add_rpadded(buf, tmp, item->len);
@@ -524,6 +516,18 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
     }
     strcat(buf, "\n"); 		/* closing nl */
 }
+
+static void set_exchange_format() {
+    if (strlen(exchange) > 0) {
+	return;                 // it was set explicitly, use it
+    }
+    if (contest->exchange_serial) {
+	strcpy(exchange, "#");  // contest is using serial number
+	return;
+    }
+    get_cabrillo_field_value(find_cabrillo_field(CBR_EXCHANGE), exchange, 11);
+}
+
 
 int write_cabrillo(void) {
 
@@ -604,12 +608,8 @@ int write_cabrillo(void) {
     }
 
 
-    /* ask for exchange and header information */
-    if (contest->exchange_serial) {
-	strcpy(exchange, "#");
-    } else {
-	get_cabrillo_field_value(find_cabrillo_field(CBR_EXCHANGE), exchange, 11);
-    }
+    /* exchange and header information */
+    set_exchange_format();
 
     write_cabrillo_header(fp2);
 
@@ -742,7 +742,7 @@ void write_adif_header(FILE *fp) {
 
 /* format QSO line from buf according to ADIF format description
  * and put it into buffer */
-void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
+void prepare_adif_line(char *buffer, struct qso_t *qso) {
 
     char *tmp;
 
@@ -787,11 +787,11 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
     }
 
     /* Sent contest serial number or exchange */
-    if (contest->exchange_serial || (exchange[0] == '#')) {
-	add_adif_field_formated(buffer, "STX", "%04d", qso->qso_nr);
-    } else {
-	add_adif_field(buffer, "STX_STRING", g_strstrip(exchange));
-    }
+    bool serial_only = (strcmp(exchange, "#") == 0);
+    tmp = get_sent_exchage(qso->qso_nr);
+    g_strstrip(tmp);
+    add_adif_field(buffer, (serial_only ? "STX" : "STX_STRING"), tmp);
+    g_free(tmp);
 
     /* RST_RCVD */
     if (!no_rst) {
@@ -801,10 +801,8 @@ void prepare_adif_line(char *buffer, struct qso_t *qso, char *exchange) {
     /* Received contest serial number or exchange */
     tmp = g_strdup(qso->comment);
     g_strstrip(tmp);
-    if (contest->exchange_serial || (exchange[0] == '#'))
-	add_adif_field(buffer, "SRX", tmp);
-    else
-	add_adif_field(buffer, "SRX_STRING", tmp);
+    add_adif_field(buffer, (serial_only ? "SRX" : "SRX_STRING"), tmp);
+    g_free(tmp);
 
     /* <EOR> - end of ADIF row */
     strcat(buffer, "<eor>\n");
@@ -818,7 +816,6 @@ int write_adif(void) {
 
     struct qso_t *qso;
     char buffer[181] = "";
-    char standardexchange[70] = "";
     char adif_tmp_name[40] = "";
 
     FILE *fp1, *fp2;
@@ -826,7 +823,7 @@ int write_adif(void) {
     if ((fp1 = fopen(logfile, "r")) == NULL) {
 	info("Opening logfile not possible.");
 	sleep(2);
-	return (1);
+	return 1;
     }
     strcpy(adif_tmp_name, whichcontest);
     strcat(adif_tmp_name, ".adi");
@@ -835,17 +832,13 @@ int write_adif(void) {
 	info("Opening ADIF file not possible.");
 	sleep(2);
 	fclose(fp1);		//added by F8CFE
-	return (2);
+	return 2;
     }
 
-    if (strlen(exchange) > 0)
-	strcpy(standardexchange, exchange);
 
     /* in case using write_adif() without write_cabrillo() before
-     * just ask for the needed information */
-    if ((strlen(standardexchange) == 0) && !contest->exchange_serial) {
-	get_cabrillo_field_value(find_cabrillo_field(CBR_EXCHANGE), exchange, 11);
-    }
+     * just get the needed information */
+    set_exchange_format();
 
     info("Writing ADIF file");
 
@@ -853,14 +846,14 @@ int write_adif(void) {
 
     while ((qso = get_next_record(fp1))) {
 
-	prepare_adif_line(buffer, qso, standardexchange);
+	prepare_adif_line(buffer, qso);
 	fputs(buffer, fp2);
 
 	free_qso(qso);
-    }				// end fgets() loop
+    }
 
     fclose(fp1);
     fclose(fp2);
 
-    return (0);
+    return 0;
 }				// end write_adif

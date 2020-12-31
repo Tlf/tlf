@@ -27,4 +27,7 @@ void sendmessage(const char *msg);
 void send_standard_message(int msg);
 void send_keyer_message(int msg);
 
+void replace_n(char *buf, int size, const char *what, const char *rep,
+	       int count);
+
 #endif /*  SENDBUF_H */
