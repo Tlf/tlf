@@ -364,6 +364,22 @@ cbr_field_t cabrillo_fields[] = {
 	.disabled = true
     },
     {
+	.name = "ADDRESS-CITY", .text = "Address-City",
+	.disabled = true
+    },
+    {
+	.name = "ADDRESS-STATE-PROVINCE", .text = "Address-State/Province",
+	.disabled = true
+    },
+    {
+	.name = "ADDRESS-POSTALCODE", .text = "Address-PostalCode",
+	.disabled = true
+    },
+    {
+	.name = "ADDRESS-COUNTRY", .text = "Address-Country",
+	.disabled = true
+    },
+    {
 	.name = "OPERATORS", .text = "List of Operators",
 	.hint = "(space delimited)",
     },
