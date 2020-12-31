@@ -57,7 +57,7 @@ void ParameterUnexpected(const char *keyword);
 void WrongFormat(const char *keyword);
 void WrongFormat_details(const char *keyword, const char *details);
 
-static char *error_details = NULL;
+char *error_details = NULL;
 
 #define LOGCFG_DAT_FILE    "logcfg.dat"
 

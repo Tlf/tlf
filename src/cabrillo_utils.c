@@ -529,9 +529,29 @@ int add_cabrillo_field(const char *name, const char *value) {
     return PARSE_OK;
 }
 
+static bool skip_template_line(const char *line) {
+    static const char *skips[] = {
+	"^$", "^#", "^X-",      // empty line or comment
+	"^(START|END)-OF-LOG:",
+	"^CREATED-BY:",
+	"^CALLSIGN:",
+	"^QSO:",
+	"^" CBR_TEMPLATE ":"    // no recursion
+    };
+
+    for (int i = 0; i < G_N_ELEMENTS(skips); ++i) {
+	if (g_regex_match_simple(skips[i], line, 0, 0)) {
+	    return true;
+	}
+    }
+
+    return false;
+}
+
 static int process_cabrillo_template_file(const char *file_name) {
     FILE *fp = fopen(file_name, "r");
     if (fp == NULL) {
+	error_details = g_strdup_printf("can't open '%s'", file_name);
 	return PARSE_WRONG_PARAMETER;
     }
 
@@ -539,8 +559,8 @@ static int process_cabrillo_template_file(const char *file_name) {
 
     while (fgets(logline, MAX_CABRILLO_LEN, fp) != NULL) {
 	g_strstrip(logline);
-	if (logline[0] == 'X' || logline[0] == 0) {
-	    continue;   // Cabrillo comment (X-...) or empty line
+	if (skip_template_line(logline)) {
+	    continue;   // skip it
 	}
 	char **fields = g_strsplit(logline, ":", 2);
 	g_strstrip(fields[0]);
@@ -548,9 +568,10 @@ static int process_cabrillo_template_file(const char *file_name) {
 	    g_strstrip(fields[1]);
 	}
 
-	if (strcmp(fields[0], CBR_TEMPLATE) != 0) { // skip TEMPLATE, no recursion
-	    // note: result is not checked, errors are ignored
-	    add_cabrillo_field(fields[0], fields[1]);
+	int rc = add_cabrillo_field(fields[0], fields[1]);
+	if (rc != PARSE_OK) {
+	    error_details = g_strdup_printf("unknown tag '%s'", fields[0]);
+	    return PARSE_ERROR;
 	}
 
 	g_strfreev(fields);

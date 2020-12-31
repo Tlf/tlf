@@ -36,6 +36,8 @@ void makelogline() {
     bandinx_spy = bandinx;
 }
 
+char *error_details;
+
 char formatfile[] = TOP_SRCDIR "/share/cabrillo.fmt" ;
 
 int setup(void **state) {

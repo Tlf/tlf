@@ -56,6 +56,8 @@ void set_simulator_state(simstate_t s) {
 void keyer_append(const char *string) {
 }
 
+char *error_details;
+
 contest_config_t empty = { };
 
 char buffer[181];
