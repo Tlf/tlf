@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /* ------------------------------------------------------------
- *   write cabrillo  file
+ *   write Cabrillo  file
  *
  *--------------------------------------------------------------*/
 
@@ -378,7 +378,7 @@ static gchar *get_sent_exchage(int qso_nr) {
     return result;
 }
 
-/* format QSO: line for actual qso according to cabrillo format description
+/* format QSO: line for actual qso according to Cabrillo format description
  * and put it into buffer */
 void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 
@@ -545,7 +545,7 @@ int write_cabrillo(void) {
 	return 1;
     }
 
-    /* Try to read cabrillo format first from local directory.
+    /* Try to read Cabrillo format first from local directory.
      * Try also in default data dir if not found.
      */
     cabdesc = read_cabrillo_format("cabrillo.fmt", cabrillo);
@@ -562,7 +562,7 @@ int write_cabrillo(void) {
 	return (2);
     }
 
-    /* open logfile and create a cabrillo file */
+    /* open logfile and create a Cabrillo file */
     strcpy(cabrillo_tmp_name, my.call);
     g_strstrip(cabrillo_tmp_name); /* drop \n */
     strcat(cabrillo_tmp_name, ".cbr");
@@ -597,7 +597,7 @@ int write_cabrillo(void) {
 	}
     }
     if ((fp2 = fopen(cabrillo_tmp_name, "w")) == NULL) {
-	info("Can't create cabrillo file.");
+	info("Can't create Cabrillo file.");
 	sleep(2);
 	free_cabfmt(cabdesc);
 	fclose(fp1);

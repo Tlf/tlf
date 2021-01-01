@@ -166,7 +166,7 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
     }
 }
 
-/* cabrillo QSO to Tlf format
+/* Cabrillo QSO to Tlf format
  *
  * walk through the lines which starts with QSO/X-QSO, and
  * build a virtual QSO; then it calls the existing functions
@@ -369,7 +369,7 @@ void show_readcab_msg(int mode, char *msg) {
 
 /** readcabrillo
  *
- * Main routine to read the cabrillo lines, parses them, and
+ * Main routine to read the Cabrillo lines, parses them, and
  * creates a new Tlf compatible log.
  *
  */
@@ -398,7 +398,7 @@ int readcabrillo(int mode) {
 	return (1);
     }
 
-    /* Try to read cabrillo format first from local directory.
+    /* Try to read Cabrillo format first from local directory.
      * Try also in default data dir if not found.
      */
     cabdesc = read_cabrillo_format("cabrillo.fmt", cabrillo);
