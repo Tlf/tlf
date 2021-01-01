@@ -612,7 +612,8 @@ int write_cabrillo(void) {
 
     write_cabrillo_header(fp2);
 
-    info("Writing cabrillo file");
+    time_t start_time = get_time();
+    info("Writing Cabrillo file");
 
     qsonr = 0;
     qtcrecnr = 0;
@@ -677,6 +678,10 @@ int write_cabrillo(void) {
     }
 
     free_cabfmt(cabdesc);
+
+    if (get_time() == start_time) {
+	sleep(1);
+    }
 
     return 0;
 }
@@ -839,6 +844,7 @@ int write_adif(void) {
      * just get the needed information */
     set_exchange_format();
 
+    time_t start_time = get_time();
     info("Writing ADIF file");
 
     write_adif_header(fp2);
@@ -853,6 +859,10 @@ int write_adif(void) {
 
     fclose(fp1);
     fclose(fp2);
+
+    if (get_time() == start_time) {
+	sleep(1);
+    }
 
     return 0;
 }				// end write_adif
