@@ -40,6 +40,7 @@
 #include "ui_utils.h"
 #include "cabrillo_utils.h"
 #include "sendbuf.h"
+#include "bands.h"
 
 struct qso_t *get_next_record(FILE *fp);
 struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection);
@@ -274,47 +275,6 @@ const char *to_mode[] = {
     "RY"
 };
 
-/* converts band to frequency of start of band */
-//FIXME move to band.c and add 60m
-static freq_t band2freq(int band) {
-    freq_t freq;
-
-    switch (band) {
-	case 160:
-	    freq = 1800000.;
-	    break;
-	case 80:
-	    freq = 3500000.;
-	    break;
-	case 40:
-	    freq = 7000000.;
-	    break;
-	case 30:
-	    freq = 10100000.;
-	    break;
-	case 20:
-	    freq = 14000000.;
-	    break;
-	case 17:
-	    freq = 18068000.;
-	    break;
-	case 15:
-	    freq = 21000000.;
-	    break;
-	case 12:
-	    freq = 24890000.;
-	    break;
-	case 10:
-	    freq = 28000000.;
-	    break;
-	default:
-	    freq = 0.;
-	    break;
-    }
-
-    return freq;
-}
-
 /* add 'src' to 'dst' with max. 'len' chars left padded */
 void add_lpadded(char *dst, char *src, int len) {
     char *field;
@@ -397,7 +357,7 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 
     freq = qso->freq;
     if (freq == 0)
-	freq = band2freq(qso->band);
+	freq = (freq_t) band2freq(qso->band);
 
     if (qso->qtcdirection == 0) {
 	strcpy(buf, "QSO:");		/* start the line */

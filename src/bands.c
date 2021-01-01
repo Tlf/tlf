@@ -22,6 +22,11 @@
  */
 
 #include "bands.h"
+#include "globalvars.h"
+
+/* converts bandindex to bandnumber */
+const static int bandnr[NBANDS] =
+{ 160, 80, 60, 40, 30, 20, 17, 15, 12, 10, 0 };
 
 const unsigned int bandcorner[NBANDS][2] = {
     { 1800000, 2000000 },	// band bottom, band top
@@ -75,53 +80,25 @@ int inxes[NBANDS] = \
 
 /** Converts bandnumber to bandindex */
 int bandnr2index(int nr) {
-    switch (nr) {
-
-	case 160:
-	    return BANDINDEX_160;
-
-	case 80:
-	    return BANDINDEX_80;
-
-	case 40:
-	    return BANDINDEX_40;
-
-	case 60:
-	    return BANDINDEX_60;
-
-	case 20:
-	    return BANDINDEX_20;
-
-	case 15:
-	    return BANDINDEX_15;
-
-	case 10:
-	    return BANDINDEX_10;
-
-	case 12:
-	    return BANDINDEX_12;
-
-	case 17:
-	    return BANDINDEX_17;
-
-	case 30:
-	    return BANDINDEX_30;
-	default:
-	    return BANDINDEX_OOB;
+    for (int i = 0; i < NBANDS - 1; i++) {
+	if (bandnr[i] == nr) {
+	    return i;
+	}
     }
+
+    return BANDINDEX_OOB;   /* not in any band (out of band) */
 }
 
-
-/* converts bandindex to bandnumber */
-static int bandnr[NBANDS] =
-{ 160, 80, 60, 40, 30, 20, 17, 15, 12, 10, 0 };
 
 int bandindex2nr(int index) {
     return bandnr[index];
 }
 
 
-extern int bandinx;
+int band2freq(int band) {
+    int index = bandnr2index(band);
+    return (index != BANDINDEX_OOB ? bandcorner[index][0] : 0);
+}
 
 void next_band(int direction) {
     bandinx += direction;
