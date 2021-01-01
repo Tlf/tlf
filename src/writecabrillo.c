@@ -108,7 +108,7 @@ struct qso_t *parse_logline(char *buffer) {
 
     /* frequency (kHz) */
     ptr->freq = atof(buffer + 80) * 1000.0;
-    if ((ptr->freq < 1800000.) || (ptr->freq >= 30000000.)) {
+    if (freq2band(ptr->freq) == BANDINDEX_OOB) {
 	ptr->freq = 0.;
     }
 
@@ -160,89 +160,87 @@ struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 	return NULL;
     }
 
-    while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
-
-
-	ptr = g_malloc0(sizeof(struct qso_t));
-
-	/* remember whole line */
-	ptr->logline = g_strdup(buffer);
-	ptr->qtcdirection = qtcdirection;
-
-	/* tx */
-	if (qtcdirection == RECV) {
-	    pos = 28;
-	    shift = 0;
-	} else {
-	    pos = 33;
-	    shift = 5;
-	}
-	ptr->tx = (buffer[pos] == ' ') ? 0 : 1;
-
-	/* split buffer into parts for qso_t record and parse
-	  * them accordingly */
-	tmp = strtok_r(buffer, " \t", &sp);
-
-	/* band */
-	ptr->band = atoi(tmp);
-
-	/* mode */
-	if (strcasestr(tmp, "CW"))
-	    ptr->mode = CWMODE;
-	else if (strcasestr(tmp, "SSB"))
-	    ptr->mode = SSBMODE;
-	else
-	    ptr->mode = DIGIMODE;
-
-	/* qso number */
-	ptr->qso_nr = atoi(strtok_r(NULL, " \t", &sp));
-
-	/* in case of SEND direction, the 3rd field is the original number of sent QSO,
-	   but it doesn't need for QTC line */
-	if (qtcdirection & SEND) {
-	    tmp = strtok_r(NULL, " \t", &sp);
-	}
-	/* date & time */
-	memset(&date_n_time, 0, sizeof(struct tm));
-
-	strptime(strtok_r(NULL, " \t", &sp), DATE_FORMAT, &date_n_time);
-	strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
-
-	ptr->qsots = timegm(&date_n_time);
-
-	ptr->year = date_n_time.tm_year + 1900;	/* convert to
-							1968..2067 */
-	ptr->month = date_n_time.tm_mon + 1;	/* tm_mon = 0..11 */
-	ptr->day   = date_n_time.tm_mday;
-
-	ptr->hour  = date_n_time.tm_hour;
-	ptr->min   = date_n_time.tm_min;
-
-	if (ptr->tx == 1) {
-	    /* ignore TX if set */
-	    strtok_r(NULL, " \t", &sp);
-	}
-	/* his call */
-	ptr->call = g_strdup(strtok_r(NULL, " \t", &sp));
-
-	/* QTC serial and number */
-	ptr->qtc_serial = atoi(strtok_r(NULL, " \t", &sp));
-	ptr->qtc_number = atoi(strtok_r(NULL, " \t", &sp));
-
-	ptr->qtc_qtime = g_strdup(strtok_r(NULL, " \t", &sp));
-	ptr->qtc_qcall = g_strdup(strtok_r(NULL, " \t", &sp));
-	ptr->qtc_qserial = g_strdup(strtok_r(NULL, " \t", &sp));
-
-	/* frequency */
-	ptr->freq = atof(buffer + 80 + shift) * 1000.0;
-	if ((ptr->freq < 1800000.) || (ptr->freq >= 30000000.)) {
-	    ptr->freq = 0.;
-	}
-
-	return ptr;
+    if (fgets(buffer, sizeof(buffer), fp) == NULL) {
+	return NULL;
     }
 
-    return NULL;
+    ptr = g_malloc0(sizeof(struct qso_t));
+
+    /* remember whole line */
+    ptr->logline = g_strdup(buffer);
+    ptr->qtcdirection = qtcdirection;
+
+    /* tx */
+    if (qtcdirection == RECV) {
+	pos = 28;
+	shift = 0;
+    } else {
+	pos = 33;
+	shift = 5;
+    }
+    ptr->tx = (buffer[pos] == ' ') ? 0 : 1;
+
+    /* split buffer into parts for qso_t record and parse
+      * them accordingly */
+    tmp = strtok_r(buffer, " \t", &sp);
+
+    /* band */
+    ptr->band = atoi(tmp);
+
+    /* mode */
+    if (strcasestr(tmp, "CW"))
+	ptr->mode = CWMODE;
+    else if (strcasestr(tmp, "SSB"))
+	ptr->mode = SSBMODE;
+    else
+	ptr->mode = DIGIMODE;
+
+    /* qso number */
+    ptr->qso_nr = atoi(strtok_r(NULL, " \t", &sp));
+
+    /* in case of SEND direction, the 3rd field is the original number of sent QSO,
+       but it doesn't need for QTC line */
+    if (qtcdirection & SEND) {
+	tmp = strtok_r(NULL, " \t", &sp);
+    }
+    /* date & time */
+    memset(&date_n_time, 0, sizeof(struct tm));
+
+    strptime(strtok_r(NULL, " \t", &sp), DATE_FORMAT, &date_n_time);
+    strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
+
+    ptr->qsots = timegm(&date_n_time);
+
+    ptr->year = date_n_time.tm_year + 1900;	/* convert to
+							1968..2067 */
+    ptr->month = date_n_time.tm_mon + 1;	/* tm_mon = 0..11 */
+    ptr->day   = date_n_time.tm_mday;
+
+    ptr->hour  = date_n_time.tm_hour;
+    ptr->min   = date_n_time.tm_min;
+
+    if (ptr->tx == 1) {
+	/* ignore TX if set */
+	strtok_r(NULL, " \t", &sp);
+    }
+    /* his call */
+    ptr->call = g_strdup(strtok_r(NULL, " \t", &sp));
+
+    /* QTC serial and number */
+    ptr->qtc_serial = atoi(strtok_r(NULL, " \t", &sp));
+    ptr->qtc_number = atoi(strtok_r(NULL, " \t", &sp));
+
+    ptr->qtc_qtime = g_strdup(strtok_r(NULL, " \t", &sp));
+    ptr->qtc_qcall = g_strdup(strtok_r(NULL, " \t", &sp));
+    ptr->qtc_qserial = g_strdup(strtok_r(NULL, " \t", &sp));
+
+    /* frequency */
+    ptr->freq = atof(buffer + 80 + shift) * 1000.0;
+    if (freq2band(ptr->freq) == BANDINDEX_OOB) {
+	ptr->freq = 0.;
+    }
+
+    return ptr;
 }
 
 /** free qso record pointed to by ptr */
@@ -719,7 +717,7 @@ void prepare_adif_line(char *buffer, struct qso_t *qso) {
     add_adif_field_formated(buffer, "BAND", "%dM", qso->band);
 
     /* FREQ if available */
-    if (qso->freq > 1799000) {
+    if (qso->freq > 0) {
 	// write MHz
 	add_adif_field_formated(buffer, "FREQ", "%.4f",
 				qso->freq / 1000000.0);
