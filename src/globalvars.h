@@ -8,6 +8,8 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 
+extern const char *argp_program_version;
+
 extern mystation_t my;			// all about my station
 extern char whichcontest[];
 extern contest_config_t *contest;	// contest configuration
@@ -89,7 +91,7 @@ extern int itumult;
 
 extern char ssexchange[];
 extern int shownewmult;
-extern char comment[];
+extern char comment[80];
 
 extern char lan_logline[];
 extern char logfile[];
@@ -187,6 +189,7 @@ extern int miniterm;
 extern int announcefilter;
 extern int nr_of_spots;
 extern int fdSertnc;
+extern int commentfield;
 
 extern float fixedmult;
 
@@ -218,6 +221,7 @@ extern char exchange_list[40];
 extern char rttyoutput[];
 extern char spot_ptr[MAX_SPOTS][82];
 extern char lastmsg[];
+extern char exchange[40];
 #ifdef HAVE_LIBXMLRPC
 extern char fldigi_url[50];
 #endif

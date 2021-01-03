@@ -42,8 +42,6 @@
 #include "store_qso.h"
 #include "tlf_curses.h"
 
-#define MAX_CABRILLO_LEN 255
-
 enum {
     LOGPREF_NONE,
     LOGPREF_QSO,
@@ -54,19 +52,13 @@ enum {
 static int cablinecnt = 0;
 char qtcsend_logfile_import[] = "IMPORT_QTC_sent.log";
 char qtcrecv_logfile_import[] = "IMPORT_QTC_recv.log";
-extern char qsos[MAX_QSOS][LOGLINELEN +
-			   1]; // array of log lines of QSOs so far;
-extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs
-extern int nr_qsos;
-
-extern int dupe;
 
 
 void concat_comment(char *exchstr) {
     if (strlen(comment) > 0) {
-	strcat(comment, " ");
+	g_strlcat(comment, " ", sizeof(comment));
     }
-    strcat(comment, exchstr);
+    g_strlcat(comment, exchstr, sizeof(comment));
 }
 
 int qtcs_allowed(struct cabrillo_desc *cabdesc) {
@@ -88,7 +80,7 @@ void write_log_fm_cabr() {
 	strcpy(section, getgrid(comment));
     }
 
-    checkexchange(0);
+    checkexchange(-1);
     dupe = is_dupe(hiscall, bandinx, trxmode);
     addcall();		/* add call to worked list and check it for dupe */
     makelogline();	/* format logline */
@@ -174,7 +166,7 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
     }
 }
 
-/* cabrillo QSO to Tlf format
+/* Cabrillo QSO to Tlf format
  *
  * walk through the lines which starts with QSO/X-QSO, and
  * build a virtual QSO; then it calls the existing functions
@@ -185,10 +177,6 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 struct read_qtc_t qtc_line;	/* make global for testability */
 
 void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
-
-    extern freq_t freq;
-    extern struct tm time_ptr_cabrillo;
-
 
     int item_count;
     GPtrArray *item_array;
@@ -250,8 +238,10 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 	return;
     }
 
+    comment[0] = 0;
     qtcrcall[0] = '\0';
     qtcscall[0] = '\0';
+
     for (i = 0; i < item_count; i++) {
 	item = g_ptr_array_index(item_array, i);
 	g_strlcpy(tempstr, line + pos, item->len + 1);
@@ -362,6 +352,13 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 
     }
 
+    // strip trailing exchange separators and change them to the specfied value
+    // note: it assumes that exchanges do not contain spaces
+    g_strchomp(comment);
+    if (cabdesc->exchange_separator != NULL) {
+	// use the first separator char
+	g_strdelimit(comment, " ", cabdesc->exchange_separator[0]);
+    }
 
     if ((linetype == LOGPREF_QSO) || (linetype == LOGPREF_XQSO)) {
 	write_log_fm_cabr();
@@ -381,14 +378,12 @@ void show_readcab_msg(int mode, char *msg) {
 
 /** readcabrillo
  *
- * Main routine to read the cabrillo lines, parses them, and
+ * Main routine to read the Cabrillo lines, parses them, and
  * creates a new Tlf compatible log.
  *
  */
 
 int readcabrillo(int mode) {
-
-    extern char *cabrillo;
 
     char *cab_dfltfile;
     struct cabrillo_desc *cabdesc;
@@ -412,7 +407,7 @@ int readcabrillo(int mode) {
 	return (1);
     }
 
-    /* Try to read cabrillo format first from local directory.
+    /* Try to read Cabrillo format first from local directory.
      * Try also in default data dir if not found.
      */
     cabdesc = read_cabrillo_format("cabrillo.fmt", cabrillo);

@@ -65,6 +65,21 @@ void test_bandindex2nr(void **state) {
     assert_int_equal(bandindex2nr(BANDINDEX_OOB), 0);
 }
 
+/* test conversion from band to freq */
+void test_band2freq(void **state) {
+    assert_int_equal(band2freq(160), 1800000);
+    assert_int_equal(band2freq(80), 3500000);
+    assert_int_equal(band2freq(60), 5250000);
+    assert_int_equal(band2freq(40), 7000000);
+    assert_int_equal(band2freq(30), 10100000);
+    assert_int_equal(band2freq(20), 14000000);
+    assert_int_equal(band2freq(17), 18068000);
+    assert_int_equal(band2freq(15), 21000000);
+    assert_int_equal(band2freq(12), 24890000);
+    assert_int_equal(band2freq(10), 28000000);
+    assert_int_equal(band2freq(123), 0);
+}
+
 
 /* test switch to next band UP or DOWN */
 void test_nextBandUp(void **state) {

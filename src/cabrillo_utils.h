@@ -3,6 +3,11 @@
 #define CABRILLOUTILS_H
 
 #include "qtcvars.h"		// Includes globalvars.h
+#include "get_time.h"
+
+#define MAX_CABRILLO_LEN    255
+
+#define CREATED_DATE_TIME_FORMAT    DATE_FORMAT " at " TIME_FORMAT "z"
 
 /* describes the cabrillo format to be used */
 struct cabrillo_desc {
@@ -13,7 +18,28 @@ struct cabrillo_desc {
     int qtc_item_count;		/* number items in QTC: line */
     GPtrArray *qtc_item_array;	/* array of items in QTC: line
 				 * must be from left to right */
+    char *exchange_separator;
 };
+
+typedef struct {
+    const char *name;       // e.g. CATEGORY-POWER
+    const char *text;       // e.g. Power; don't ask if NULL
+    const char *hint;       // e.g. (HIGH,LOW,QRP)
+    const bool internal;    // not be written out
+    const bool skip_empty;  // skip empty value on interactive input
+    char *value;            // (dynamically allocated)
+    bool value_is_hint;
+    bool disabled;
+} cbr_field_t;
+
+extern cbr_field_t cabrillo_fields[];
+
+#define CBR_EXCHANGE    "EXCHANGE"
+#define CBR_CALLSIGN    "CALLSIGN"
+#define CBR_SCORE       "CLAIMED-SCORE"
+#define CBR_QSO_FORMAT  "QSO-FORMAT"
+#define CBR_TEMPLATE    "TEMPLATE"
+#define CBR_LOCATOR     "GRID-LOCATOR"
 
 
 /* represents different parts of a qso logline */
@@ -84,5 +110,10 @@ enum tag_t translate_item_name(char *name);
 void free_cabfmt(struct cabrillo_desc *desc);
 struct line_item *parse_line_entry(char *line_entry);
 struct cabrillo_desc *read_cabrillo_format(char *filename, char *format);
+
+void write_cabrillo_header(FILE *fp);
+cbr_field_t *find_cabrillo_field(const char *name);
+int get_cabrillo_field_value(const cbr_field_t *field, char *buffer, int size);
+int add_cabrillo_field(const char *name, const char *value);
 
 #endif

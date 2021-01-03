@@ -2,17 +2,19 @@
 #include <glib.h>
 
 #include "../src/log_utils.h"
-#include "../src/tlf.h"
+#include "../src/globalvars.h"
+#include "../src/cqww_simulator.h"
 
 // OBJECT ../src/writecabrillo.o
 // OBJECT ../src/cabrillo_utils.o
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/bands.o
+// OBJECT ../src/sendbuf.o
 
 /* test stubs and dummies */
 struct qso_t *parse_logline(char *buffer);
-void prepare_adif_line(char *buffer, struct qso_t *qso, char *standardexchange);
+void prepare_adif_line(char *buffer, struct qso_t *qso);
 void free_qso(struct qso_t *ptr);
 void free_cabfmt();
 void add_adif_field(char *adif_line, char *field, char *value);
@@ -28,14 +30,34 @@ int modify_attr(int x) {
     return x;
 }
 
-int getsummary(FILE fp) {
-    return 0;
+int get_total_score() {
+    return 123;
 }
 
 void ask(char *buffer, char *what) {
 }
 
-extern contest_config_t *contest;
+void play_file(char *audiofile) {
+}
+
+bool lan_active = false;
+
+int send_lan_message(int opcode, char *message) {
+    return 0;
+}
+
+simstate_t get_simulator_state() {
+    return IDLE;
+}
+
+void set_simulator_state(simstate_t s) {
+}
+
+void keyer_append(const char *string) {
+}
+
+char *error_details;
+
 contest_config_t empty = { };
 
 char buffer[181];
@@ -60,18 +82,18 @@ int setup_default(void **state) {
 
 /* prepare_adif_line */
 void test_keep_old_format(void **state) {
-    char exch[4] = "14";
+    strcpy(exchange, "14");
 
     struct qso_t *qso;
     strcpy(buffer, LOGLINE1);
     qso = parse_logline(buffer);
-    prepare_adif_line(buffer, qso, exch);
+    prepare_adif_line(buffer, qso);
     assert_string_equal(buffer, RESULT1);
     free_qso(qso);
 
     strcpy(buffer, LOGLINE2);
     qso = parse_logline(buffer);
-    prepare_adif_line(buffer, qso, exch);
+    prepare_adif_line(buffer, qso);
     assert_string_equal(buffer, RESULT2);
     free_qso(qso);
 }

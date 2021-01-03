@@ -66,32 +66,6 @@ void exchange_edit(void);
 
 int getexchange(void) {
 
-    extern char comment[];
-    extern char cqzone[];
-    extern char ituzone[];
-    extern char ph_message[14][80];
-    extern char hiscall[];
-    extern char qsonrstr[];
-    extern int countrynr;
-    extern int trxmode;
-    extern char lastqsonr[];
-    extern char qsonrstr[];
-    extern char section[];
-    extern int serial_section_mult;
-    extern int serial_grid4_mult;
-    extern int sectn_mult;
-    extern int dx_arrlsections;
-    extern int ctcomp;
-    extern int wazmult;
-    extern int itumult;
-    extern int exc_cont;
-    extern char continent[];
-    extern int commentfield;
-    extern int no_rst;
-    extern int serial_or_section;
-    extern int ve_cty;
-    extern int w_cty;
-
     int i;
     int x = 0;
     char instring[2];
@@ -518,18 +492,6 @@ char zone_fix[3] = "";
 /* ------------------------------------------------------------------------ */
 
 int checkexchange(int x) {
-
-    extern char comment[];
-    extern char ssexchange[];
-    extern char section[];
-    extern char callupdate[];
-    extern char hiscall[];
-    extern int call_update;
-    extern char zone_export[];
-    extern char zone_fix[];
-    extern int serial_section_mult;
-    extern int sectn_mult;
-    extern int dx_arrlsections;
 
     char precedent[] = " ";
     char serial[5] = "    ";
@@ -1037,10 +999,12 @@ int checkexchange(int x) {
     strcat(ssexchange, section);
 
     // ---------------------------end mults --------------------------
-    mvprintw(12, 54, comment);
-    refreshp();
+    if (x >= 0) {   // don't show comment when called from readcabrillo.c
+	mvprintw(12, 54, comment);
+	refreshp();
+    }
 
-    return (x);
+    return x;
 }
 
 
@@ -1054,7 +1018,6 @@ int checkexchange(int x) {
  */
 int getlastpattern(char *checkstring) {
 
-    extern char comment[];
     char newpat[80];
     int i, x = 0;
 
@@ -1102,7 +1065,6 @@ char *getgrid(char *comment) {
  */
 
 void exchange_edit(void) {
-    extern char comment[];
 
     int l, b;
     int i = 0, j;

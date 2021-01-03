@@ -116,6 +116,7 @@ bool verbose = false;
 int no_rst = 0;			/* 1 - do not use RS/RST */
 int sprint_mode = 0;
 int qtc_recv_lazy = 0;
+bool simulator = false;
 
 int pacc_qsos[10][10];
 int ve_cty;

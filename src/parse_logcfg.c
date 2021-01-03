@@ -30,6 +30,7 @@
 #include <errno.h>
 
 #include "bandmap.h"
+#include "cabrillo_utils.h"
 #include "change_rst.h"
 #include "cw_utils.h"
 #include "fldigixmlrpc.h"
@@ -56,7 +57,7 @@ void ParameterUnexpected(const char *keyword);
 void WrongFormat(const char *keyword);
 void WrongFormat_details(const char *keyword, const char *details);
 
-static char *error_details = NULL;
+char *error_details = NULL;
 
 #define LOGCFG_DAT_FILE    "logcfg.dat"
 
@@ -997,6 +998,21 @@ static int cfg_digi_rig_mode(const cfg_arg_t arg) {
     return PARSE_OK;
 }
 
+static int cfg_cabrillo_field(const cfg_arg_t arg) {
+    char *str = NULL;
+    if (parameter != NULL) {
+	str = g_strdup(parameter);
+	g_strstrip(str);
+    }
+    gchar *name = g_match_info_fetch(match_info, 1);
+
+    int rc = add_cabrillo_field(name, str);
+
+    FREE_DYNAMIC_STRING(name);
+    FREE_DYNAMIC_STRING(str);
+    return rc;
+}
+
 static config_t logcfg_configs[] = {
     {"CONTEST_MODE",        CFG_BOOL_TRUE(iscontest)},
     {"MIXED",               CFG_BOOL_TRUE(mixedmode)},
@@ -1157,6 +1173,7 @@ static config_t logcfg_configs[] = {
     {"MINITEST",            OPTIONAL_PARAM, cfg_minitest},
     {"UNIQUE_CALL_MULTI",   NEED_PARAM, cfg_unique_call_multi},
     {"DIGI_RIG_MODE",       NEED_PARAM, cfg_digi_rig_mode},
+    {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
 
     {NULL}  // end marker
 };

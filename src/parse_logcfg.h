@@ -39,6 +39,8 @@ int read_logcfg(void);
 int parse_configfile(FILE *fp);
 int parse_logcfg(char *inputbuffer);
 
+extern char *error_details;
+
 ////////////////////////////////////
 // config parsing definitions
 

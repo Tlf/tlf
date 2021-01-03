@@ -66,4 +66,10 @@ void next_band(int direction);
  */
 int freq2band(unsigned int freq);
 
+/** \brief convert band to frequency in Hz
+ *
+ * \return	lowest frequency of the band or 0 if band not found
+ */
+int band2freq(int band);
+
 #endif /* BANDS_H */

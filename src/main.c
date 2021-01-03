@@ -194,7 +194,7 @@ int defer_store = 0;
 mystation_t my;			/* all info about me */
 
 char logfile[120] = "general.log";
-char *cabrillo = NULL;		/**< Name of the cabrillo format definition */
+char *cabrillo = NULL;		/**< Name of the Cabrillo format definition */
 char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = 0;
@@ -423,7 +423,7 @@ static const struct argp_option options[] = {
 	"config",   'f', "FILE", 0,
 	"Use FILE as configuration file instead of logcfg.dat in the current directory"
     },
-    {"import",      'i', 0, 0,  "Import cabrillo file to Tlf format"},
+    {"import",      'i', 0, 0,  "Import Cabrillo file to Tlf format"},
     {"no-cluster",  'n', 0, 0,  "Start without cluster hookup" },
     {"no-rig",      'r', 0, 0,  "Start without radio control" },
     {"list",	    'l', 0, 0,  "List built-in contests" },
@@ -691,8 +691,6 @@ int databases_load() {
 
 void hamlib_init() {
 
-    rig_set_debug(RIG_DEBUG_NONE);
-
     if (no_trx_control) {
 	trx_control = false;
     }
@@ -934,11 +932,14 @@ int main(int argc, char *argv[]) {
 	exit(EXIT_FAILURE);
     }
 
+    rig_set_debug(RIG_DEBUG_NONE);
+
     if (convert_cabrillo) {
-	char tstring[100] = "";
-	sprintf(tstring, "Converting cabrillo for contest %s from file %s.cbr",
-		whichcontest, g_strstrip(my.call));
+	char *tstring =
+	    g_strdup_printf("Converting Cabrillo for contest %s from file %s.cbr",
+			    whichcontest, g_strstrip(my.call));
 	showmsg(tstring);
+	g_free(tstring);
 	showmsg("");
 	getstationinfo();
 	if (0 != readcabrillo(READCAB_MODE_CLI))

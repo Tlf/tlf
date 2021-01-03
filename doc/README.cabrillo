@@ -43,14 +43,17 @@ The format of cabrillo.fmt entries is as follows:
 * The file contains groups of lines which are interpreted as key-value pairs.
 * Each group describes a possible cabrillo format and has to be started by a
   line containing the <formatname> in square brackets.
-* At the moment only one keyword (QSO=...) is supported.
+* At the moment the following keywords are supported:
+    QSO=...
+    QTC=...
+    EXCHANGE-SEPARATOR=...
 * Lines beginning with a '#' are interpreted as comments.
 * The 'QSO=' key has to be followed by a list of string, number pairs
   separated by semicolons.
   Each pair specify one item to put into the QSO: line of the cabrillo file. 
   The name of the item has to be followed by a comma ',' and a number 
   specifying the character width of that field in the QSO: line. Items 
-  which are to wide will be truncated to that width. 
+  which are too wide will be truncated to that width.
 
   The following items names are supported:
 
@@ -65,7 +68,7 @@ The format of cabrillo.fmt entries is as follows:
   EXC_S   Exchange sent (May contain a '#' character, which gets replaced by 
           the QSO number).
   EXCH    The complete received exchange line
-  EXC1    First space separated word of the received exchange
+  EXC1    First word of the received exchange, see *Exchange Separator* below
   EXC2    Second word of the received exchange
   EXC3    Third word of the received exchange
   EXC4    Fourth word of the received exchange
@@ -73,6 +76,20 @@ The format of cabrillo.fmt entries is as follows:
 
   All items represent one column in the resulting cabrillo log file. All 
   entries are separated by an additional space character.
+
+Exchange Separator
+==================
+
+EXC1..EXC4 allow writing parts of the received exchange in separate columns.
+The exchange is split by default on white space (space or tab).
+Another separator(s) can be specified with the EXCHANGE-SEPARATOR keyword.
+If '/' (slash) is used to separate parts of the exchange (e.g. 002/1234)
+then this line has to be added to the format:
+
+EXCHANGE-SEPARATOR=/
+
+In the provided cabrillo.fmt file the formats for AGCW use this contruct.
+
 
 Example
 =======
@@ -99,12 +116,12 @@ You can import the existing cabrillo file, when you pass the "-i" argument at
 startup of Tlf. Logfile must be called YOURCALL.cbr, which is the standard name
 convention of Tlf. In this case, Tlf reads the configuration and rule files, so
 the scoring and multipliers will be used as your config describes. Your config also
-describes the CABRILLO format, what Tlf uses to parses the log to handle the fields
-as correctly.
+describes the CABRILLO format, that Tlf uses to parse the log to handle the fields
+correctly.
 
 The output file(s) will IMPORT_contest.log, where the contest is the name of
 contest in your rule/config file. Eg. my cabrillo is HA2OS.cbr, which must be
-exists in the current directory. After the import, the result is IMPORT_cqww.log
+in the current directory. After the import, the result is IMPORT_cqww.log
 (if the contest name is cqww), so the Tlf doesn't write over the existing logfile.
 
 If you want to use the new, imported file, you have to move the old one, and rename
