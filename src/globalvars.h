@@ -91,7 +91,7 @@ extern int itumult;
 
 extern char ssexchange[];
 extern int shownewmult;
-extern char comment[];
+extern char comment[80];
 
 extern char lan_logline[];
 extern char logfile[];
@@ -189,6 +189,7 @@ extern int miniterm;
 extern int announcefilter;
 extern int nr_of_spots;
 extern int fdSertnc;
+extern int commentfield;
 
 extern float fixedmult;
 

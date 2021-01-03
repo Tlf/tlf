@@ -19,7 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /* ------------------------------------------------------------
- *   cabrillo utils file
+ *   Cabrillo utils file
  *
  *--------------------------------------------------------------*/
 
@@ -39,7 +39,7 @@
 
 
 /* conversion table between tag name in format file and internal tag */
-static struct tag_conv tag_tbl[] = {
+static const struct tag_conv tag_tbl[] = {
     { "FREQ",	FREQ 	},
     { "MODE",	MODE 	},
     { "DATE",	DATE 	},
@@ -101,7 +101,8 @@ void free_cabfmt(struct cabrillo_desc *desc) {
 	g_ptr_array_free(desc->qtc_item_array, TRUE);
     }
 
-    if (desc->name) g_free(desc->name);
+    FREE_DYNAMIC_STRING(desc->name);
+    FREE_DYNAMIC_STRING(desc->exchange_separator);
     g_free(desc);
 }
 
@@ -220,6 +221,7 @@ struct cabrillo_desc *read_cabrillo_format(char *filename, char *format) {
 
 	/* if not found -> stop processing as that key is optional */
 	g_error_free(error);
+	error = NULL;
 
     } else {
 
@@ -247,6 +249,13 @@ struct cabrillo_desc *read_cabrillo_format(char *filename, char *format) {
     }
 
     g_strfreev(list);
+
+    cabdesc->exchange_separator = g_key_file_get_string(keyfile, format,
+				  "EXCHANGE-SEPARATOR", &error);
+    if (error) {
+	g_error_free(error);    // clear error
+	error = NULL;
+    }
 
     /* possible further entries in format specification may contain information
      * about allowed items for different categories:

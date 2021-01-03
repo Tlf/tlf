@@ -56,9 +56,9 @@ char qtcrecv_logfile_import[] = "IMPORT_QTC_recv.log";
 
 void concat_comment(char *exchstr) {
     if (strlen(comment) > 0) {
-	strcat(comment, " ");
+	g_strlcat(comment, " ", sizeof(comment));
     }
-    strcat(comment, exchstr);
+    g_strlcat(comment, exchstr, sizeof(comment));
 }
 
 int qtcs_allowed(struct cabrillo_desc *cabdesc) {
@@ -80,7 +80,7 @@ void write_log_fm_cabr() {
 	strcpy(section, getgrid(comment));
     }
 
-    checkexchange(0);
+    checkexchange(-1);
     dupe = is_dupe(hiscall, bandinx, trxmode);
     addcall();		/* add call to worked list and check it for dupe */
     makelogline();	/* format logline */
@@ -238,8 +238,10 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 	return;
     }
 
+    comment[0] = 0;
     qtcrcall[0] = '\0';
     qtcscall[0] = '\0';
+
     for (i = 0; i < item_count; i++) {
 	item = g_ptr_array_index(item_array, i);
 	g_strlcpy(tempstr, line + pos, item->len + 1);
@@ -350,6 +352,13 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 
     }
 
+    // strip trailing exchange separators and change them to the specfied value
+    // note: it assumes that exchanges do not contain spaces
+    g_strchomp(comment);
+    if (cabdesc->exchange_separator != NULL) {
+	// use the first separator char
+	g_strdelimit(comment, " ", cabdesc->exchange_separator[0]);
+    }
 
     if ((linetype == LOGPREF_QSO) || (linetype == LOGPREF_XQSO)) {
 	write_log_fm_cabr();

@@ -691,8 +691,6 @@ int databases_load() {
 
 void hamlib_init() {
 
-    rig_set_debug(RIG_DEBUG_NONE);
-
     if (no_trx_control) {
 	trx_control = false;
     }
@@ -934,11 +932,14 @@ int main(int argc, char *argv[]) {
 	exit(EXIT_FAILURE);
     }
 
+    rig_set_debug(RIG_DEBUG_NONE);
+
     if (convert_cabrillo) {
-	char tstring[100] = "";
-	sprintf(tstring, "Converting Cabrillo for contest %s from file %s.cbr",
-		whichcontest, g_strstrip(my.call));
+	char *tstring =
+	    g_strdup_printf("Converting Cabrillo for contest %s from file %s.cbr",
+			    whichcontest, g_strstrip(my.call));
 	showmsg(tstring);
+	g_free(tstring);
 	showmsg("");
 	getstationinfo();
 	if (0 != readcabrillo(READCAB_MODE_CLI))

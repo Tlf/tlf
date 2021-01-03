@@ -18,6 +18,7 @@ struct cabrillo_desc {
     int qtc_item_count;		/* number items in QTC: line */
     GPtrArray *qtc_item_array;	/* array of items in QTC: line
 				 * must be from left to right */
+    char *exchange_separator;
 };
 
 typedef struct {

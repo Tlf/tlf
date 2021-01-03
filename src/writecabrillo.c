@@ -306,15 +306,17 @@ void add_rpadded(char *dst, char *src, int len) {
 }
 
 /* get the n-th token of a string, return empty string if no n-th token */
-gchar *get_nth_token(gchar *str, int n) {
+/* default separator is whitespace (space or tab) */
+gchar *get_nth_token(gchar *str, int n, const char *separator) {
     gchar *string = g_strdup(str);
+    const char *delim = (separator != NULL ? separator : " \t");
     gchar *ptr;
     char *sp;
 
-    ptr = strtok_r(string, " \t", &sp);
+    ptr = strtok_r(string, delim, &sp);
 
     while (n > 0 && ptr != NULL) {
-	ptr = strtok_r(NULL, " \t", &sp);
+	ptr = strtok_r(NULL, delim, &sp);
 	n--;
     }
 
@@ -410,22 +412,22 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 		add_rpadded(buf, qso->comment, item->len);
 		break;
 	    case EXC1:
-		token = get_nth_token(qso->comment, 0);
+		token = get_nth_token(qso->comment, 0, desc->exchange_separator);
 		add_rpadded(buf, token, item->len);
 		g_free(token);
 		break;
 	    case EXC2:
-		token = get_nth_token(qso->comment, 1);
+		token = get_nth_token(qso->comment, 1, desc->exchange_separator);
 		add_rpadded(buf, token, item->len);
 		g_free(token);
 		break;
 	    case EXC3:
-		token = get_nth_token(qso->comment, 2);
+		token = get_nth_token(qso->comment, 2, desc->exchange_separator);
 		add_rpadded(buf, token, item->len);
 		g_free(token);
 		break;
 	    case EXC4:
-		token = get_nth_token(qso->comment, 3);
+		token = get_nth_token(qso->comment, 3, desc->exchange_separator);
 		add_rpadded(buf, token, item->len);
 		g_free(token);
 		break;

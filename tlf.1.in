@@ -127,7 +127,7 @@ Import an existing CABRILLO file. When @PACKAGE_NAME@ starts, looks for the
 .I YOURCALL.cab
 log, reads the configuration and rule files, and based on the
 current setup, generates the log(s). If the contest is WAE, and you have QTC's
-in cabrillo, then @PACKAGE_NAME@ makes the QTC logfiles too. @PACKAGE_NAME@
+in Cabrillo, then @PACKAGE_NAME@ makes the QTC logfiles too. @PACKAGE_NAME@
 doesn't write over the existing log(s).  The generated import will be
 .IR IMPORT_CONTEST.log ,
 where the CONTEST is the name of contest in the config. If
@@ -466,7 +466,7 @@ View the log with
 .
 .TP
 .BR :WRI te
-Write cabrillo file according to specified format (see
+Write Cabrillo file according to specified format (see
 .B CABRILLO
 statement in the
 .B RULES
@@ -1541,9 +1541,9 @@ Look for the relevant rules file in
 Mandatory!
 .
 .TP
-\fBCABRILLO\fR=\fIcabrillo_format\fR
-Specify the name of the cabrillo format to use (see
-.IR doc/README.cab ).
+\fBCABRILLO\fR=\fICabrillo_format\fR
+Specify the name of the Cabrillo format to use (see
+.IR doc/README.cabrillo).
 .
 .TP
 .B CONTEST_MODE
