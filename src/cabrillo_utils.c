@@ -582,6 +582,8 @@ static int process_cabrillo_template_file(const char *file_name) {
 
     char logline[MAX_CABRILLO_LEN];
 
+    int result = PARSE_OK;
+
     while (fgets(logline, MAX_CABRILLO_LEN, fp) != NULL) {
 	g_strstrip(logline);
 	if (skip_template_line(logline)) {
@@ -594,16 +596,20 @@ static int process_cabrillo_template_file(const char *file_name) {
 	}
 
 	int rc = add_cabrillo_field(fields[0], fields[1]);
-	g_strfreev(fields);
 
 	if (rc != PARSE_OK) {
-	    fclose(fp);
 	    error_details = g_strdup_printf("unknown tag '%s'", fields[0]);
-	    return PARSE_ERROR;
+	    result = PARSE_ERROR;
+	}
+
+	g_strfreev(fields);
+
+	if (result != PARSE_OK) {
+	    break;
 	}
     }
 
     fclose(fp);
 
-    return PARSE_OK;
+    return result;
 }
