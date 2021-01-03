@@ -594,12 +594,13 @@ static int process_cabrillo_template_file(const char *file_name) {
 	}
 
 	int rc = add_cabrillo_field(fields[0], fields[1]);
+	g_strfreev(fields);
+
 	if (rc != PARSE_OK) {
+	    fclose(fp);
 	    error_details = g_strdup_printf("unknown tag '%s'", fields[0]);
 	    return PARSE_ERROR;
 	}
-
-	g_strfreev(fields);
     }
 
     fclose(fp);
