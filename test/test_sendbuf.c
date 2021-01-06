@@ -17,6 +17,8 @@ int send_lan_message(int opcode, char *message) {
     return 0;
 }
 
+bool simulator = false;
+
 
 char test_msg[1024];
 

@@ -67,10 +67,8 @@ int recv_error;
 int recv_packets;
 char talkarray[5][62];
 freq_t node_frequencies[MAXNODES];
-char lastqsonr[5];
 int highqsonr;
 int landebug = 0;
-long timecorr;
 int time_master;
 char thisnode = 'A'; 		/*  start with 'A' if not defined in
 				    logcfg.dat */

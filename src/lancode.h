@@ -43,7 +43,6 @@ extern char thisnode;
 extern char lan_message[256];
 extern int recv_error;
 extern freq_t node_frequencies[MAXNODES];
-extern long timecorr;
 extern int recv_packets;
 extern int send_packets[MAXNODES];
 extern int send_error[MAXNODES];

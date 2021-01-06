@@ -116,7 +116,6 @@ bool verbose = false;
 int no_rst = 0;			/* 1 - do not use RS/RST */
 int sprint_mode = 0;
 int qtc_recv_lazy = 0;
-bool simulator = false;
 
 int pacc_qsos[10][10];
 int ve_cty;
@@ -137,7 +136,6 @@ char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
 char exchange_list[40] = "";
 int timeoffset = 0;
-long timecorr = 0;  // from lancode.c
 int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
 /* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */

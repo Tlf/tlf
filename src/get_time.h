@@ -27,6 +27,8 @@
 #define TIME_FORMAT         "%H:%M"
 #define DATE_TIME_FORMAT    DATE_FORMAT " " TIME_FORMAT
 
+extern long timecorr;
+
 time_t get_time();
 int get_minutes();
 

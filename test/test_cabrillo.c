@@ -14,6 +14,8 @@
 // OBJECT ../src/log_utils.o
 
 /* test stubs and dummies */
+bool simulator = false;
+
 int do_cabrillo = 0;	/* actually converting cabrillo file to Tlf log */
 struct tm time_ptr_cabrillo;
 

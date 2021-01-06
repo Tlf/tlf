@@ -19,6 +19,7 @@ void free_qso(struct qso_t *ptr);
 void free_cabfmt();
 void add_adif_field(char *adif_line, char *field, char *value);
 
+bool simulator = false;
 
 void nicebox();
 
@@ -60,7 +61,6 @@ char *error_details;
 
 contest_config_t empty = { };
 
-char buffer[181];
 char logline[181];
 char adif_line[400];
 
@@ -82,6 +82,8 @@ int setup_default(void **state) {
 
 /* prepare_adif_line */
 void test_keep_old_format(void **state) {
+    char buffer[181];
+
     strcpy(exchange, "14");
 
     struct qso_t *qso;
