@@ -22,7 +22,7 @@ struct tm time_ptr_cabrillo;
 int qsoflags_for_qtc[MAX_QSOS];
 
 void addcall() { }
-void store_qso() { }
+void store_qso() { nr_qsos++; }
 void cleanup_qso() { }
 void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) { }
 char *getgrid(char *comment) { return comment; }
@@ -204,6 +204,7 @@ void test_prepare_line_universal(void **state) {
 
     char buf[200];
     prepare_line(&qso, desc, buf);
+    free_cabfmt(desc);
 
     assert_string_equal(buf,
 			"QSO: 21012 CW 2021-01-02 0842 A1BCD         599 0711   A2XYZ         559 007   \n");
@@ -225,6 +226,7 @@ void test_prepare_line_agcw(void **state) {
 
     char buf[200];
     prepare_line(&qso, desc, buf);
+    free_cabfmt(desc);
 
     assert_string_equal(buf,
 			"QSO: 21012 CW 2021-01-02 0842 A1BCD         599 0711      A2XYZ         559 007  1234\n");
@@ -246,6 +248,7 @@ void test_prepare_line_agcw3(void **state) {
 
     char buf[200];
     prepare_line(&qso, desc, buf);
+    free_cabfmt(desc);
 
     assert_string_equal(buf,
 			"QSO: 21012 CW 2021-01-02 0842 A1BCD         599 0711      A2XYZ         559 007  HANS 1234\n");
@@ -259,14 +262,17 @@ void test_get_nth_token(void **state) {
     token = get_nth_token(str, 0, NULL);
     assert_non_null(token);
     assert_string_equal(token, "ab");
+    g_free(token);
 
     token = get_nth_token(str, 1, NULL);
     assert_non_null(token);
     assert_string_equal(token, "cDe");
+    g_free(token);
 
     token = get_nth_token(str, 2, NULL);
     assert_non_null(token);
     assert_string_equal(token, "f");
+    g_free(token);
 }
 
 void test_get_nth_token_slash(void **state) {
@@ -277,14 +283,17 @@ void test_get_nth_token_slash(void **state) {
     token = get_nth_token(str, 0, separator);
     assert_non_null(token);
     assert_string_equal(token, "ab");
+    g_free(token);
 
     token = get_nth_token(str, 1, separator);
     assert_non_null(token);
     assert_string_equal(token, "cDe");
+    g_free(token);
 
     token = get_nth_token(str, 2, separator);
     assert_non_null(token);
     assert_string_equal(token, "f");
+    g_free(token);
 }
 
 
@@ -295,6 +304,7 @@ void test_cabToTlf_ParseQSO(void **state) {
     bandinx_spy = 0;
     cab_qso_to_tlf("QSO:  7002 RY 2016-02-13 2033 HA2OS         589 0008   K6ND          599 044",
 		   desc);
+    free_cabfmt(desc);
     assert_int_equal(bandinx_spy, 3);
     assert_int_equal((int)freq, 7002000);
     assert_int_equal(trxmode, DIGIMODE);
@@ -315,6 +325,7 @@ void test_cabToTlf_ParseQSO_agcw(void **state) {
     bandinx_spy = 0;
     cab_qso_to_tlf("QSO:  7002 RY 2016-02-13 2033 HA2OS         589 0008      K6ND          599 044  ED",
 		   desc);
+    free_cabfmt(desc);
     assert_int_equal(bandinx_spy, 3);
     assert_int_equal((int)freq, 7002000);
     assert_int_equal(trxmode, DIGIMODE);
@@ -335,6 +346,7 @@ void test_cabToTlf_ParseXQSO(void **state) {
     bandinx_spy = 0;
     cab_qso_to_tlf("X-QSO:  7002 PH 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
 		   desc);
+    free_cabfmt(desc);
     assert_int_equal(bandinx_spy, 3);
     assert_int_equal((int)freq, 7002000);
     assert_int_equal(trxmode, SSBMODE);
@@ -356,6 +368,7 @@ void test_cabToTlf_ParseQTC(void **state) {
     bandinx_spy = 0;
     cab_qso_to_tlf("QTC: 14084 CW 2016-11-12 1214 HA2OS          13/10     K4GM          0230 DL6UHD         074",
 		   desc);
+    free_cabfmt(desc);
     assert_int_equal((int)qtc_line.freq, 14084000);
     assert_string_equal(qtc_line.mode, "CW ");
     assert_int_equal(time_ptr_cabrillo.tm_hour, 12);

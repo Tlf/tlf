@@ -82,6 +82,10 @@ bool exist_in_country_list() {
 	return true;
     }
 
+    if (strlen(prefix) == 0) {
+	return false;
+    }
+
     if (!isdigit(prefix[strlen(prefix) - 1])) { /* last char '0'..'9' */
 	return false;
     }
@@ -89,6 +93,10 @@ bool exist_in_country_list() {
     prefix[strlen(prefix) - 1] = '\0';  /* strip trailing digit */
     if (country_found(prefix)) {	/* and try again */
 	return true;
+    }
+
+    if (strlen(prefix) == 0) {
+	return false;
     }
 
     if (!isdigit(prefix[strlen(prefix) - 1])) {

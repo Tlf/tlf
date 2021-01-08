@@ -161,6 +161,10 @@ static void remove_callmaster() {
 
 int teardown_default(void **state) {
     remove_callmaster();
+    if (callmaster_filename) {
+	g_free(callmaster_filename);
+	callmaster_filename = NULL;
+    }
     return 0;
 }
 
@@ -209,7 +213,7 @@ void test_callmaster_ok_arrlss(void **state) {
 void test_use_different_callmaster(void **state) {
     write_callmaster("callmaster", " # data \n A1AA \n A2BB \n\n");
     write_callmaster("master.scp", " # data \n A1CC \n A2DD \n\n");
-    callmaster_filename = "master.scp";
+    callmaster_filename = g_strdup("master.scp");
     int n = load_callmaster();
     assert_int_equal(n, 2);
     assert_string_equal(CALLMASTERARRAY(0), "A1CC");

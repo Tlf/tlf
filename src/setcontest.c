@@ -224,7 +224,9 @@ void setcontest(char *name) {
     w_cty = getctynr(wcall);
     ve_cty = getctynr(vecall);
 
-    strcpy(whichcontest, name);
+    if (strcmp(whichcontest, name) != 0) {    /* remember name if new */
+        strcpy(whichcontest, name);
+    }
 
     contest = lookup_contest(name);
 
