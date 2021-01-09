@@ -26,13 +26,13 @@ tlf_SOURCES = \
 	paccdx.c parse_logcfg.c prevqso.c printcall.c \
 	qrb.c qsonr_to_str.c qtc_log.c qtcwin.c qtcutil.c readcabrillo.c \
 	readcalls.c readqtccalls.c readctydata.c recall_exchange.c rules.c \
+	rtty.c \
 	score.c scroll_log.c  searchcallarray.c searchlog.c sendbuf.c \
 	sendqrg.c sendspcall.c set_tone.c setcontest.c \
 	setparameters.c show_help.c showinfo.c showpxmap.c \
 	showscore.c showzones.c sockserv.c speedupndown.c   \
 	stoptx.c store_qso.c sunup.c splitscreen.c startmsg.c\
-	trx_memory.c \
-	rtty.c time_update.c ui_utils.c \
+	trx_memory.c time_update.c ui_utils.c utils.c \
 	write_keyer.c writecabrillo.c writeparas.c \
 	zone_nr.c
 
@@ -70,6 +70,6 @@ noinst_HEADERS = \
 	showzones.h sockserv.h speedupndown.h  \
 	splitscreen.h startmsg.h stoptx.h store_qso.h sunup.h \
 	time_update.h tlf.h tlf_curses.h tlf_panel.h trx_memory.h \
-	ui_utils.h \
+	ui_utils.h utils.h \
 	write_keyer.h writecabrillo.h writeparas.h \
 	zone_nr.h

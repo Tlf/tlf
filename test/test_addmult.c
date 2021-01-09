@@ -14,6 +14,7 @@
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
+// OBJECT ../src/utils.o
 
 
 extern char multsfile[];	/* name of file with a list of allowed

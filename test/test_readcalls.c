@@ -21,6 +21,7 @@
 // OBJECT ../src/readcalls.o
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/score.o
+// OBJECT ../src/utils.o
 // OBJECT ../src/zone_nr.o
 
 /* missing from globalvar.h */

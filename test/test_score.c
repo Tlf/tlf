@@ -18,6 +18,7 @@
 // OBJECT ../src/locator2longlat.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
+// OBJECT ../src/utils.o
 
 
 #define check_points(point) \

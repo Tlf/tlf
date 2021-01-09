@@ -32,8 +32,10 @@
 #include "clear_display.h"
 #include "ignore_unused.h"
 #include "tlf_curses.h"
+#include "utils.h"
 
 extern SCREEN *mainscreen;
+
 
 /** \brief Show help file
  *
@@ -42,20 +44,10 @@ extern SCREEN *mainscreen;
  * in PKG_DATA_DIR
  */
 int show_help(void) {
-    char filename[] = "help.txt";
     char *helpfile;
     char *cmdstr;
 
-    if (g_access(filename, R_OK) == 0) {
-	helpfile = g_strdup(filename);
-    } else {
-	helpfile = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
-			       filename, NULL);
-	if (g_access(helpfile, R_OK) != 0) {
-	    g_free(helpfile);
-	    return -1;
-	}
-    }
+    helpfile = find_available("help.txt");
 
     cmdstr = g_strdup_printf("less %s", helpfile);
 

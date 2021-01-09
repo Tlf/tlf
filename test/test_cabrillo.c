@@ -12,6 +12,7 @@
 // OBJECT ../src/get_time.o
 // OBJECT ../src/sendbuf.o
 // OBJECT ../src/log_utils.o
+// OBJECT ../src/utils.o
 
 /* test stubs and dummies */
 bool simulator = false;
