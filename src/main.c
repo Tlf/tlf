@@ -127,7 +127,7 @@ int exclude_multilist_type = EXCLUDE_NONE;
 bool mult_side = false;
 /* end LZ3NY mods */
 
-int portable_x2 = 0;
+bool portable_x2 = false;
 int wysiwyg_once = 0;
 int wysiwyg_multi = 0;
 int country_mult = 0;

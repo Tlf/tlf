@@ -19,23 +19,6 @@
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
 
-// ===========
-// these are missing from globalvars
-extern int dupe;
-extern int cwpoints;
-extern int ssbpoints;
-extern int my_country_points;
-extern int my_cont_points;
-extern int dx_cont_points;
-extern bool countrylist_only;
-extern int countrylist_points;
-extern char countrylist[][6];
-extern bool continentlist_only;
-extern int continentlist_points;
-extern char continent_multiplier_list[7][3];
-extern int lowband_point_mult;
-extern int portable_x2;
-// ===========
 
 #define check_points(point) \
     do{ assert_int_equal(score(), point); }while(0)
@@ -93,7 +76,7 @@ int setup_default(void **state) {
     strcpy(my.continent, "EU");
 
     lowband_point_mult = 0;
-    portable_x2 = 0;
+    portable_x2 = false;
 
     return 0;
 }
@@ -233,7 +216,7 @@ void test_ssbcw(void **state) {
     bandinx = BANDINDEX_40;
     check_points(6);
 
-    portable_x2 = 1;
+    portable_x2 = true;
     check_call_points("DL3XYZ", 6);
     check_call_points("DL3XYZ/P", 12);
 

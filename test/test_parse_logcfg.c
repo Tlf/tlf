@@ -318,6 +318,7 @@ static bool_true_t bool_trues[] = {
     {"IGNOREDUPE", &ignoredupe},
     {"USE_CONTINENTLIST_ONLY", &continentlist_only},
     {"RADIO_CONTROL", &trx_control},
+    {"PORTABLE_MULT_2", &portable_x2},
 };
 
 void test_bool_trues(void **state) {
@@ -420,7 +421,6 @@ static int_one_t int_ones[] = {
     {"CHECKWINDOW", &searchflg},
     {"SEND_DE", &demode},
     {"COUNTRY_MULT", &country_mult},
-    {"PORTABLE_MULT_2", &portable_x2},
     {"CQWW_M2", &cqwwm2},
     {"LAN_DEBUG", &landebug},
     {"CALLUPDATE", &call_update},

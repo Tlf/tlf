@@ -1019,6 +1019,7 @@ static config_t logcfg_configs[] = {
     {"IGNOREDUPE",          CFG_BOOL_TRUE(ignoredupe)},
     {"USE_CONTINENTLIST_ONLY",  CFG_BOOL_TRUE(continentlist_only)},
     {"RADIO_CONTROL",           CFG_BOOL_TRUE(trx_control)},
+    {"PORTABLE_MULT_2",     CFG_BOOL_TRUE(portable_x2)},
 
     {"USEPARTIALS",     CFG_INT_ONE(use_part)},
     {"PARTIALS",        CFG_INT_ONE(partials)},
@@ -1032,7 +1033,6 @@ static config_t logcfg_configs[] = {
     {"SEND_DE",         CFG_INT_ONE(demode)},
     {"SERIAL_EXCHANGE", CFG_CONTEST_BOOL_TRUE(exchange_serial)},
     {"COUNTRY_MULT",    CFG_INT_ONE(country_mult)},
-    {"PORTABLE_MULT_2", CFG_INT_ONE(portable_x2)},
     {"CQWW_M2",         CFG_INT_ONE(cqwwm2)},
     {"LAN_DEBUG",       CFG_INT_ONE(landebug)},
     {"CALLUPDATE",      CFG_INT_ONE(call_update)},
