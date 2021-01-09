@@ -93,8 +93,7 @@ int addcall(void) {
     j = getctydata(hiscall);
     worked[i].country = j;
     if (strlen(comment) >= 1) {		/* remember last exchange */
-	strncpy(worked[i].exchange, comment, 12);
-	worked[i].exchange[12] = 0;
+	g_strlcpy(worked[i].exchange, comment, 12);
 
 	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1) {
 	    /*
