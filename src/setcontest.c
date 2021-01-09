@@ -224,7 +224,7 @@ void setcontest(char *name) {
     w_cty = getctynr(wcall);
     ve_cty = getctynr(vecall);
 
-    if (strcmp(whichcontest, name) != 0) {    /* remember name if new */
+    if (whichcontest != name) {    /* avoid overlapping copy */
         strcpy(whichcontest, name);
     }
 
