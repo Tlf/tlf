@@ -170,7 +170,7 @@ extern int logfrequency;
 extern int bmautoadd;
 extern int bmautograb;
 extern int serial_or_section;
-extern int portable_x2;
+extern bool portable_x2;
 extern int clusterlog;
 extern int sprint_mode;
 extern int timeoffset;
