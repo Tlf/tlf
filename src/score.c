@@ -40,10 +40,7 @@
 #include "setcontest.h"
 #include "tlf.h"
 
-extern char countrylist[][6];
-extern char continent_multiplier_list[7][3];
-
-int calc_continent(int zone);
+void calc_continent(int zone);
 
 /* check if countrynr is in countrylist */
 bool is_in_countrylist(int countrynr) {
@@ -60,6 +57,7 @@ bool is_in_countrylist(int countrynr) {
 
 
 /* check if hiscall is in COUNTRY_LIST from logcfg.dat */
+// FIXME: *** this function does not use its argument ***
 bool country_found(char prefix[]) {
     char tmpcall[15];
 
@@ -74,37 +72,27 @@ bool country_found(char prefix[]) {
 }
 
 bool exist_in_country_list() {
-    char prefix[10];
+    char prefix[11];
 
     strcpy(prefix, pxstr);
+    int len = strlen(prefix);
 
-    if (country_found(prefix)) {
-	return true;
+    // make 3 iterations
+    for (int i = 1; i <= 3; ++i) {
+	if (country_found(prefix)) {
+	    return true;
+	}
+
+	/* try to strip trailing digit */
+	if (len == 0 || !isdigit(prefix[len - 1])) {
+	    return false;   // empty or not a digit
+	}
+
+	prefix[len - 1] = '\0';
+	--len;
     }
 
-    if (strlen(prefix) == 0) {
-	return false;
-    }
-
-    if (!isdigit(prefix[strlen(prefix) - 1])) { /* last char '0'..'9' */
-	return false;
-    }
-
-    prefix[strlen(prefix) - 1] = '\0';  /* strip trailing digit */
-    if (country_found(prefix)) {	/* and try again */
-	return true;
-    }
-
-    if (strlen(prefix) == 0) {
-	return false;
-    }
-
-    if (!isdigit(prefix[strlen(prefix) - 1])) {
-	return false;
-    }
-
-    prefix[strlen(prefix) - 1] = '\0';	/* last try */
-    return country_found(prefix);
+    return false;
 }
 
 
@@ -122,12 +110,9 @@ bool is_in_continentlist(char *continent) {
 }
 
 
-/* apply bandweigth scoring *
+/* apply bandweight scoring *
  * at the moment only LOWBAND_DOUBLES (<30m) can be active */
-int apply_bandweigth(int points) {
-    extern int lowband_point_mult;
-    extern int bandinx;
-    extern int bandweight_points[];
+int apply_bandweight(int points) {
 
     if (lowband_point_mult != 0 && (bandinx < BANDINDEX_30))
 	points *= 2;
@@ -141,14 +126,8 @@ int apply_bandweigth(int points) {
 /* portable stations may count double
  * see PORTABLE_X2 */
 int portable_doubles(int points) {
-    extern int portable_x2;
-    char *loc;
-
-    if (portable_x2 == 1) {	// portable x2
-	loc = strstr(hiscall, "/P");
-	if (loc == hiscall + strlen(hiscall) - 2) {
-	    points *= 2;
-	}
+    if (portable_x2 && g_str_has_suffix(hiscall, "/P")) {
+	points *= 2;
     }
     return points;
 }
@@ -156,9 +135,6 @@ int portable_doubles(int points) {
 
 /* apply points by mode */
 int scoreByMode() {
-    extern int cwpoints;
-    extern int ssbpoints;
-    extern int trxmode;
 
     switch (trxmode) {
 	case CWMODE:
@@ -178,20 +154,8 @@ int scoreByMode() {
 
 int scoreByContinentOrCountry() {
 
-    extern bool countrylist_only;
-    extern int countrylist_points;
-
-    extern bool continentlist_only;
-    extern int continentlist_points;
-
-    extern int my_country_points;
-    extern int my_cont_points;
-    extern int dx_cont_points;
-
     int points = 0;
-    bool inCountryList = false;
-
-    inCountryList = exist_in_country_list();
+    bool inCountryList = exist_in_country_list();
 
     if (countrylist_only) {
 	points = 0;
@@ -239,9 +203,6 @@ int scoreByContinentOrCountry() {
  */
 int scoreDefault() {
 
-    extern int cwpoints;
-    extern int ssbpoints;
-
     int points;
 
     if (ssbpoints != 0 && cwpoints != 0)	//  e.g. arrl 10m contest
@@ -249,7 +210,7 @@ int scoreDefault() {
     else
 	points = scoreByContinentOrCountry();
 
-    points = apply_bandweigth(points);
+    points = apply_bandweight(points);
     points = portable_doubles(points);
 
     return points;
@@ -335,9 +296,9 @@ int score_arrlfd() {
     int points;
 
     if (trxmode == SSBMODE) {
-        points = 1;
+	points = 1;
     } else {
-        points = 2;
+	points = 2;
     }
     return points;
 }
@@ -347,9 +308,9 @@ int score_arrldx_usa() {
     int points;
 
     if ((countrynr == w_cty) || (countrynr == ve_cty)) {
-        points = 0;
+	points = 0;
     } else {
-        points = 3;
+	points = 3;
     }
 
     return points;
@@ -376,7 +337,6 @@ int score_stewperry() {
 
 
 int score() {
-    extern int dupe;
 
     int points;
 
@@ -414,33 +374,32 @@ int score2(char *line) {
 
 /* ----------------------------------------------------------------- */
 /* calculates continent from zone and sets 'continent' variable      */
-int calc_continent(int zone) {
+void calc_continent(int zone) {
 
     switch (zone) {
 	case 1 ... 8:
-	    strncpy(continent, "NA", 3);
+	    strcpy(continent, "NA");
 	    break;
 	case 9 ... 13:
-	    strncpy(continent, "SA", 3);
+	    strcpy(continent, "SA");
 	    break;
 	case 14 ... 16:
-	    strncpy(continent, "EU", 3);
+	    strcpy(continent, "EU");
 	    break;
 	case 17 ... 26:
-	    strncpy(continent, "AS", 3);
+	    strcpy(continent, "AS");
 	    break;
 	case 27 ... 32:
-	    strncpy(continent, "AS", 3);
+	    strcpy(continent, "AS");
 	    break;
 	case 33 ... 39:
-	    strncpy(continent, "AF", 3);
+	    strcpy(continent, "AF");
 	    break;
 	case 40:
-	    strncpy(continent, "EU", 3);
+	    strcpy(continent, "EU");
 	    break;
 	default:
-	    strncpy(continent, "??", 3);
+	    strcpy(continent, "??");
     }
-    return 0;
 }
 
