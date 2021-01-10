@@ -79,7 +79,7 @@ int read_logcfg(void) {
 
 	if (access(config_file, R_OK) == -1) {
 	    showmsg("No logcfg.dat found. Copying default config file.");
-	    showmsg("Please leave and adapt your settings if needed!");
+	    showmsg("Please adapt the settings to your needs.");
 	    char *cmd = g_strdup_printf("cp %s %s", defltconf,
 		    LOGCFG_DAT_FILE);
 	    IGNORE(system(cmd));
