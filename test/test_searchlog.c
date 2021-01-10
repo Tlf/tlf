@@ -161,10 +161,7 @@ static void remove_callmaster() {
 
 int teardown_default(void **state) {
     remove_callmaster();
-    if (callmaster_filename) {
-	g_free(callmaster_filename);
-	callmaster_filename = NULL;
-    }
+    FREE_DYNAMIC_STRING (callmaster_filename);
     return 0;
 }
 
