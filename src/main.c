@@ -24,6 +24,7 @@
 #include <ctype.h>
 #include <hamlib/rig.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
@@ -842,6 +843,18 @@ int isFirstStart() {
     return 0;
 }
 
+/* write empty .paras file to remember that tlf got already started once
+ * in these directory and GPL has been shown
+ */
+void mark_GPL_seen() {
+
+    FILE *fp = fopen(".paras", "w");
+    if (fp) {
+	fclose(fp);
+    }
+}
+
+
 /** cleanup function
  *
  * Cleanup initialisations made by tlf. Will be called after exit() from
@@ -913,6 +926,7 @@ int main(int argc, char *argv[]) {
 	verbose = true;
 	printw(welcome);
 	show_GPL();
+	mark_GPL_seen();
 	sleep(5);
 	clear();
     }
@@ -965,7 +979,7 @@ int main(int argc, char *argv[]) {
     scroll_log();		/* read the last 5  log lines and set the next serial number */
     nr_qsos = readcalls();	/* read the logfile for score and dupe */
 
-    getmessages();		/* read .paras file */
+    show_station_info();
 
     clearmsg_wait();
 
