@@ -33,7 +33,6 @@
 #include "background_process.h"
 #include "bandmap.h"
 #include "change_rst.h"
-#include "checkparameters.h"
 #include "clear_display.h"
 #include "checklogfile.h"
 #include "checkqtclogfile.h"
@@ -966,7 +965,6 @@ int main(int argc, char *argv[]) {
     scroll_log();		/* read the last 5  log lines and set the next serial number */
     nr_qsos = readcalls();	/* read the logfile for score and dupe */
 
-    checkparameters();		/* check .paras file */
     getmessages();		/* read .paras file */
 
     clearmsg_wait();
