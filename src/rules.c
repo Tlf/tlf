@@ -33,6 +33,7 @@
 #include "setcontest.h"
 #include "startmsg.h"
 #include "tlf.h"
+#include "utils.h"
 
 
 extern char whichcontest[];
@@ -43,9 +44,8 @@ extern char logfile[];
 
 int read_rules() {
 
-    char contest_conf[80] = "";	/* contest_conf needs room
-				   for contest name... (PA0R) */
-    char basic_contest_conf[75] = PACKAGE_DATA_DIR;
+    char *contest_conf;
+    char *rules_file;
     FILE *fp;
 
     int status = PARSE_OK;
@@ -64,32 +64,28 @@ int read_rules() {
 	exit(1);
     }
 
-    strcat(contest_conf, "rules/");
-    strcat(contest_conf, whichcontest);
-    /* If rules are not found in local working directory,
-       look in /usr/local/share... (PA0R, Sep 24 2003)*/
-    strcat(basic_contest_conf, "/rules/");
-    strcat(basic_contest_conf, whichcontest);
+    contest_conf = g_strconcat("rules", G_DIR_SEPARATOR_S, whichcontest, NULL);
 
-    if ((fp = fopen(contest_conf, "r")) != NULL) {
+    rules_file = find_available(contest_conf);
 
-	showstring("Reading contest rules file:", contest_conf);
+
+    if ((fp = fopen(rules_file, "r")) != NULL) {
+
+	showstring("Reading contest rules file:", rules_file);
 
 	status = parse_configfile(fp);
 	fclose(fp);
-    } else if ((fp = fopen(basic_contest_conf, "r")) != NULL) {
 
-	showstring("Reading contest rules file:", basic_contest_conf);
-
-	status = parse_configfile(fp);
-	fclose(fp);
     } else {
+
 	showstring("There is no contest rules file:", contest_conf);
 	showmsg("Assuming regular QSO operation. Logfile is qso.log");
 	setcontest(QSO_MODE);		 /* default use general qso mode...
 					   (PA0R, 24 Sept. 2003) */
 	strcpy(logfile, "qso.log");
     }
+    g_free(rules_file);
+    g_free(contest_conf);
 
     /*
      * Now, for unspecified digi messages, copy from the CW message,

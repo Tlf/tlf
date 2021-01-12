@@ -38,6 +38,7 @@
 #include "log_utils.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+#include "utils.h"
 #include "cabrillo_utils.h"
 #include "sendbuf.h"
 #include "bands.h"
@@ -490,7 +491,6 @@ static void set_exchange_format() {
 
 int write_cabrillo(void) {
 
-    char *cab_dfltfile;
     struct cabrillo_desc *cabdesc;
     char cabrillo_tmp_name[80];
     char buffer[4000] = "";
@@ -505,21 +505,16 @@ int write_cabrillo(void) {
 	return 1;
     }
 
-    /* Try to read Cabrillo format first from local directory.
-     * Try also in default data dir if not found.
-     */
-    cabdesc = read_cabrillo_format("cabrillo.fmt", cabrillo);
-    if (!cabdesc) {
-	cab_dfltfile = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
-				   "cabrillo.fmt", NULL);
-	cabdesc = read_cabrillo_format(cab_dfltfile, cabrillo);
-	g_free(cab_dfltfile);
-    }
+    char *cab_file = find_available("cabrillo.fmt");
+
+    cabdesc = read_cabrillo_format(cab_file, cabrillo);
+
+    g_free(cab_file);
 
     if (!cabdesc) {
 	info("Cabrillo format specification not found!");
 	sleep(2);
-	return (2);
+	return 2;
     }
 
     /* open logfile and create a Cabrillo file */
@@ -531,7 +526,7 @@ int write_cabrillo(void) {
 	info("Can't open logfile.");
 	sleep(2);
 	free_cabfmt(cabdesc);
-	return (1);
+	return 1;
     }
     if (cabdesc->qtc_item_array != NULL) {
 	if (qtcdirection & 1) {
@@ -541,7 +536,7 @@ int write_cabrillo(void) {
 		sleep(2);
 		free_cabfmt(cabdesc);
 		fclose(fp1);
-		return (1);
+		return 1;
 	    }
 	}
 	if (qtcdirection & 2) {
@@ -552,7 +547,7 @@ int write_cabrillo(void) {
 		free_cabfmt(cabdesc);
 		fclose(fp1);
 		if (fpqtcrec != NULL) fclose(fpqtcrec);
-		return (1);
+		return 1;
 	    }
 	}
     }
@@ -563,7 +558,7 @@ int write_cabrillo(void) {
 	fclose(fp1);
 	if (fpqtcsent != NULL) fclose(fpqtcsent);
 	if (fpqtcrec != NULL) fclose(fpqtcrec);
-	return (2);
+	return 2;
     }
 
 

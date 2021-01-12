@@ -46,7 +46,7 @@ void getstationinfo() {
 }
 
 
-void getmessages(void) {
+void show_station_info(void) {
 
     getstationinfo();
 

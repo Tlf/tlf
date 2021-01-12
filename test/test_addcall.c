@@ -21,6 +21,7 @@
 // OBJECT ../src/score.o
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/setcontest.o
+// OBJECT ../src/utils.o
 // OBJECT ../src/zone_nr.o
 
 

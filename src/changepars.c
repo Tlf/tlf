@@ -63,7 +63,6 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "writecabrillo.h"
-#include "writeparas.h"
 #include "addmult.h"
 
 
@@ -276,7 +275,6 @@ int changepars(void) {
 	}
 	case 19:			/* EXIT */
 	case 38: {		/* QUIT */
-	    writeparas();
 	    clear();
 	    cleanup_telnet();
 	    endwin();
@@ -330,7 +328,6 @@ int changepars(void) {
 
 	    read_logcfg();
 	    read_rules();	/* also reread rules file */
-	    writeparas();
 	    TLF_LOG_INFO("Logcfg.dat loaded, parameters written.");
 	    clear_display();
 	    break;
@@ -659,7 +656,6 @@ int changepars(void) {
 
     if (nopar != 1) {
 	mvprintw(12, 29, "OK !        ");
-	writeparas();
     } else {
 	if (!nopacket && packetinterface > 0)
 	    packet();

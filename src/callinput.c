@@ -76,7 +76,6 @@
 #include "time_update.h"
 #include "trx_memory.h"
 #include "ui_utils.h"
-#include "writeparas.h"
 #include "showzones.h"
 #include "bands.h"
 #include "fldigixmlrpc.h"
@@ -771,7 +770,6 @@ int callinput(void) {
 		    x = key_get();
 
 		    if (x == 'y' || x == 'Y') {
-			writeparas();
 			cleanup_telnet();
 			endwin();
 

@@ -33,24 +33,21 @@
 #include "dxcc.h"
 #include "tlf.h"
 #include "tlf_curses.h"
+#include "utils.h"
 
 
-int readctydata(void) {
-    gchar *filename;
+void readctydata(void) {
 
-    if (load_ctydata("cty.dat") == -1) {
-	filename = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
-			       "cty.dat", NULL);
-	if (load_ctydata(filename) == -1) {
-	    g_free(filename);
-	    mvprintw(4, 0, "Error opening cty.dat file.\n");
-	    refreshp();
-	    sleep(5);
-	    endwin();
-	    exit(1);
-	}
+    gchar *filename = find_available("cty.dat");;
+
+    if (load_ctydata(filename) == -1) {
 	g_free(filename);
+	mvprintw(4, 0, "Error opening cty.dat file.\n");
+	refreshp();
+	sleep(5);
+	endwin();
+	exit(1);
     }
 
-    return (0);
+    g_free(filename);
 }

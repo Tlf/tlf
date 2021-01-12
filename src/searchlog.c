@@ -51,6 +51,7 @@
 #include "setcontest.h"
 #include "get_time.h"
 #include "addmult.h"
+#include "utils.h"
 
 
 char *callmaster_filename = NULL;
@@ -784,7 +785,7 @@ static void init_callmaster(void) {
 int load_callmaster(void) {
 
     FILE *cfp;
-    char callmaster_location[80];
+    char *callmaster_location;
     char s_inputbuffer[186] = "";
 
     init_callmaster();
@@ -792,20 +793,16 @@ int load_callmaster(void) {
     if (callmaster_filename == NULL)
 	callmaster_filename = g_strdup("callmaster");
 
-    strcpy(callmaster_location, callmaster_filename);
-    if ((cfp = fopen(callmaster_location, "r")) == NULL) {
-	callmaster_location[0] = '\0';
-	strcpy(callmaster_location, PACKAGE_DATA_DIR);
-	strcat(callmaster_location, "/");
-	strcat(callmaster_location, callmaster_filename);
+    callmaster_location = find_available(callmaster_filename);
 
-	if ((cfp = fopen(callmaster_location, "r")) == NULL) {
-	    g_ptr_array_free(callmaster, TRUE);
-	    callmaster = NULL;
-	    TLF_LOG_WARN("Error opening callmaster file.");
-	    return 0;
-	}
+    if ((cfp = fopen(callmaster_location, "r")) == NULL) {
+	g_free(callmaster_location);
+	g_ptr_array_free(callmaster, TRUE);
+	callmaster = NULL;
+	TLF_LOG_WARN("Error opening callmaster file.");
+	return 0;
     }
+    g_free(callmaster_location);
 
     GHashTable *callset = g_hash_table_new(g_str_hash, g_str_equal);
 

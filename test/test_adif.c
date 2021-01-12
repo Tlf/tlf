@@ -11,6 +11,7 @@
 // OBJECT ../src/get_time.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/sendbuf.o
+// OBJECT ../src/utils.o
 
 /* test stubs and dummies */
 struct qso_t *parse_logline(char *buffer);

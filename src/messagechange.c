@@ -30,7 +30,6 @@
 #include "nicebox.h"		// Includes curses.h
 #include "tlf.h"
 #include "ui_utils.h"
-#include "writeparas.h"
 #include "keystroke_names.h"
 
 static void enter_message(int bufnr) {
@@ -111,11 +110,7 @@ void message_change() {
 	enter_message(bufnr);
     }
 
-    mvprintw(12, 29, "");
-    refreshp();
     clear_display();
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-    writeparas();
 
 }

@@ -41,6 +41,7 @@
 #include "startmsg.h"
 #include "store_qso.h"
 #include "tlf_curses.h"
+#include "utils.h"
 
 enum {
     LOGPREF_NONE,
@@ -385,7 +386,6 @@ void show_readcab_msg(int mode, char *msg) {
 
 int readcabrillo(int mode) {
 
-    char *cab_dfltfile;
     struct cabrillo_desc *cabdesc;
     char input_logfile[24];
     char output_logfile[80], temp_logfile[80];
@@ -407,16 +407,11 @@ int readcabrillo(int mode) {
 	return (1);
     }
 
-    /* Try to read Cabrillo format first from local directory.
-     * Try also in default data dir if not found.
-     */
-    cabdesc = read_cabrillo_format("cabrillo.fmt", cabrillo);
-    if (!cabdesc) {
-	cab_dfltfile = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
-				   "cabrillo.fmt", NULL);
-	cabdesc = read_cabrillo_format(cab_dfltfile, cabrillo);
-	g_free(cab_dfltfile);
-    }
+    char *cab_file = find_available("cabrillo.fmt");
+
+    cabdesc = read_cabrillo_format(cab_file, cabrillo);
+
+    g_free(cab_file);
 
     if (!cabdesc) {
 	show_readcab_msg(mode, "Cabrillo format specification not found!");

@@ -33,6 +33,7 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "setcontest.h"
 #include "tlf_curses.h"
+#include "utils.h"
 #include "bands.h"
 
 
@@ -339,7 +340,7 @@ int init_and_load_multipliers(void) {
 
     FILE *cfp;
     char s_inputbuffer[186] = "";
-    char mults_location[_POSIX_PATH_MAX * 2];	// 512 chars.  Larger?
+    char *mults_location;
 
     if (mults_possible) {
 	/* free old array if exists */
@@ -352,25 +353,15 @@ int init_and_load_multipliers(void) {
 	return 0;
     }
 
-    // Check for mults file in working directory first
-    if ((cfp = fopen(multsfile, "r")) == NULL) {
-	// Check if multsfile is in installation directory
-	if ((strlen(PACKAGE_DATA_DIR) + strlen(multsfile) + 1) <=
-		(_POSIX_PATH_MAX * 2)) {
-	    sprintf(mults_location, "%s%s%s", PACKAGE_DATA_DIR, "/", multsfile);
+    mults_location = find_available(multsfile);
 
-	    if ((cfp = fopen(mults_location, "r")) == NULL) {
-		mvprintw(9, 0, "Error opening multiplier file %s.\n", multsfile);
-		refreshp();
-		sleep(5);
-	    }
-	} else {
-	    mvprintw(9, 0, "Multiplier file path length exceeds buffer size of %d.\n",
-		     _POSIX_PATH_MAX * 2);
-	    refreshp();
-	    sleep(5);
-	}
+    if ((cfp = fopen(mults_location, "r")) == NULL) {
+	mvprintw(9, 0, "Error opening multiplier file %s.\n", multsfile);
+	refreshp();
+	sleep(5);
     }
+
+    g_free(mults_location);
 
     if (cfp == NULL) {
 	return 0;       // couldn't open file
