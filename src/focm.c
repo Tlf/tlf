@@ -60,7 +60,7 @@ contest_config_t config_focm = {
     .name = "FOCMARATHON",
     .points = {
 	.type = FUNCTION,
-	.fn = &score_foc
+	.fn = score_foc
     }
 };
 
