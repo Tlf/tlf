@@ -25,9 +25,9 @@ typedef struct {
     const char *name;       // e.g. CATEGORY-POWER
     const char *text;       // e.g. Power; don't ask if NULL
     const char *hint;       // e.g. (HIGH,LOW,QRP)
+    char *value;            // (dynamically allocated)
     const bool internal;    // not be written out
     const bool skip_empty;  // skip empty value on interactive input
-    char *value;            // (dynamically allocated)
     bool value_is_hint;
     bool disabled;
 } cbr_field_t;
