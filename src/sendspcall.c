@@ -27,12 +27,11 @@
 
 #include <glib.h>
 
+#include "callinput.h"
 #include "globalvars.h"
 #include "sendbuf.h"
 #include "tlf.h"
 
-
-int play_file(char *audiofile);
 
 
 /** prepares your own call in S&P mode

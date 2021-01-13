@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <ctype.h>
 
+#include "callinput.h"
 #include "clear_display.h"
 #include "cw_utils.h"
 #include "globalvars.h"
@@ -37,8 +38,6 @@
 #include "ui_utils.h"
 #include "time_update.h"
 
-
-int play_file(char *audiofile);
 
 //
 // get estimated CQ length in milliseconds

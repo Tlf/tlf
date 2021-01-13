@@ -30,6 +30,7 @@
 #include <unistd.h>
 
 #include "addspot.h"
+#include "callinput.h"
 #include "cw_utils.h"
 #include "change_rst.h"
 #include "globalvars.h"
@@ -57,8 +58,6 @@
 
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
 
-
-int play_file(char *audiofile);
 
 
 int getlastpattern(char *checkstring);
