@@ -152,7 +152,6 @@ extern int exclude_multilist_type;
 extern int partials;
 extern int use_part;
 extern int shortqsonr;
-extern int recall_mult;
 extern int rit;
 extern int showscore_flag;
 extern int searchflg;
