@@ -186,7 +186,7 @@ struct cabrillo_desc *read_cabrillo_format(char *filename, char *format) {
     }
 
     /* construct new format descriptor and fill it in */
-    cabdesc = g_new(struct cabrillo_desc, 1);
+    cabdesc = g_new0(struct cabrillo_desc, 1);
     cabdesc->name = g_strdup(format);
     cabdesc->item_array = g_ptr_array_new();
     cabdesc->item_count = nrstrings;
