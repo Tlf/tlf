@@ -288,7 +288,6 @@ int score_cqww() {
 
 	return points;
     }
-    return 0;
 }
 
 
