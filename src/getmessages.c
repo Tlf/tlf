@@ -35,7 +35,7 @@ void getstationinfo() {
     my.countrynr = getctydata(my.call);	/* whoami? */
     mydx = dxcc_by_index(my.countrynr);
 
-    sprintf(my.cqzone, "%02d", mydx -> cq);
+    my.cqzone = mydx -> cq;
     strcpy(my.continent, mydx->continent);
 
     /* whereami? use QRA is possible */
@@ -55,8 +55,7 @@ void show_station_info(void) {
     printw("\n     Call = ");
     printw(my.call);
 
-    printw("     My Zone = ");
-    printw(my.cqzone);
+    printw("     My Zone = %d", my.cqzone);
 
     printw("     My Continent = ");
     printw(my.continent);
