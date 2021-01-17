@@ -32,6 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <hamlib/rotator.h>
+
 #include "focm.h"
 #include "globalvars.h"
 #include "getctydata.h"
@@ -401,4 +403,3 @@ void calc_continent(int zone) {
 	    strcpy(continent, "??");
     }
 }
-
