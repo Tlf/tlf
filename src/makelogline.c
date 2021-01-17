@@ -229,15 +229,20 @@ void prepare_specific_part(void) {
     int sr_nr = 0;
     char grid[7] = "";
     int i;
+    char *tmp;
 
     if (CONTEST_IS(ARRL_SS)) {
 	// ----------------------------arrlss----------------
-	strncat(logline4, ssexchange, 22);
+	tmp = g_strndup(ssexchange,22);
+	strcat(logline4, tmp);
+	g_free(tmp);
 	section[0] = '\0';
 
     } else if (serial_section_mult == 1) {
 	//-------------------------serial_section---------------
-	strncat(logline4, comment, 22);
+	tmp = g_strndup(comment,22);
+	strcat(logline4, tmp);
+	g_free(tmp);
 	section[0] = '\0';
 
     } else if (serial_grid4_mult == 1) {
@@ -256,7 +261,9 @@ void prepare_specific_part(void) {
 
     } else if (sectn_mult == 1) {
 	//-------------------------section only---------------
-	strncat(logline4, comment, 22);
+	tmp = g_strndup(comment,22);
+	strcat(logline4, tmp);
+	g_free(tmp);
 	section[0] = '\0';
 
     } else if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
@@ -273,9 +280,13 @@ void prepare_specific_part(void) {
 	    comment[4] = 'X';
 	    comment[5] = '\0';
 	}
-	strncat(logline4, comment, 22);
+	tmp = g_strndup(comment,22);
+	strcat(logline4, tmp);
+	g_free(tmp);
     } else {	//----------------------end cqww ---------------
-	strncat(logline4, comment, 22);
+	tmp = g_strndup(comment,22);
+	strcat(logline4, tmp);
+	g_free(tmp);
     }
 
     fillto(77);
