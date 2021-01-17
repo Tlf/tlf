@@ -19,6 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <hamlib/rotator.h>
+
 #include "globalvars.h"
 #include "qrb.h"
 
@@ -40,4 +42,3 @@ int get_qrb(double *range, double *bearing) {
     return qrb(-1.0 * my.Long, my.Lat, -1.0 * DEST_Long, DEST_Lat,
 	       range, bearing);
 }
-

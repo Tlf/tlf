@@ -21,8 +21,6 @@
 #ifndef QRB_H
 #define QRB_H
 
-#include <hamlib/rotator.h>
-
 int get_qrb(double *range, double *bearing);
 
 #endif /* end of include guard: QRB_H */

@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <hamlib/rotator.h>
+
 #include "dxcc.h"
 #include "getctydata.h"
 #include "globalvars.h"
