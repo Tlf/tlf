@@ -104,7 +104,7 @@ extern int highqsonr;
 extern RIG *my_rig;
 extern cqmode_t cqmode;
 extern int trxmode;
-extern rig_model_t myrig_model;
+extern int myrig_model;
 extern rmode_t rigmode;
 extern freq_t freq;
 extern char lastqsonr[];

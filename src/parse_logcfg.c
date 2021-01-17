@@ -74,14 +74,14 @@ int read_logcfg(void) {
 	    showstring("Error opening config file: ", config_file);
 	    return PARSE_ERROR;
 	}
-    }else {
+    } else {
 	config_file = g_strdup(LOGCFG_DAT_FILE);
 
 	if (access(config_file, R_OK) == -1) {
 	    showmsg("No logcfg.dat found. Copying default config file.");
 	    showmsg("Please adapt the settings to your needs.");
 	    char *cmd = g_strdup_printf("cp %s %s", defltconf,
-		    LOGCFG_DAT_FILE);
+					LOGCFG_DAT_FILE);
 	    IGNORE(system(cmd));
 	    g_free(cmd);
 	    sleep(2);
@@ -1118,7 +1118,7 @@ static config_t logcfg_configs[] = {
     {"CWPOINTS",        CFG_INT(cwpoints, 0, INT32_MAX)},
     {"WEIGHT",          CFG_INT(weight, -50, 50)},
     {"TXDELAY",         CFG_INT(txdelay, 0, 50)},
-    {"RIGMODEL",        CFG_INT(myrig_model, 0, 9999)},
+    {"RIGMODEL",        CFG_INT(myrig_model, 0, 99999)},
     {"COUNTRY_LIST_POINTS", CFG_INT(countrylist_points, 0, INT32_MAX)},
     {"MY_COUNTRY_POINTS",   CFG_INT(my_country_points, 0, INT32_MAX)},
     {"MY_CONTINENT_POINTS", CFG_INT(my_cont_points, 0, INT32_MAX)},
