@@ -1,5 +1,6 @@
 #include "test.h"
 
+#include <hamlib/rotator.h>
 #include "../src/locator2longlat.h"
 
 // OBJECT ../src/locator2longlat.o
