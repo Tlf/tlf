@@ -175,7 +175,7 @@ void *background_process(void *ptr) {
 			break;
 
 		    case CLUSTERMSG:
-			strncpy(prmessage, lan_message + 2, 80);
+			memcpy(prmessage, lan_message + 2, 80);
 			if (strstr(prmessage, my.call) != NULL) {	// alert for cluster messages
 			    TLF_LOG_INFO(prmessage);
 			}
@@ -183,7 +183,7 @@ void *background_process(void *ptr) {
 			addtext(prmessage);
 			break;
 		    case TLFSPOT:
-			strncpy(prmessage, lan_message + 2, 80);
+			memcpy(prmessage, lan_message + 2, 80);
 			lanspotflg = 1;
 			addtext(prmessage);
 			lanspotflg = 0;
@@ -248,4 +248,3 @@ void *background_process(void *ptr) {
     }
 
 }
-

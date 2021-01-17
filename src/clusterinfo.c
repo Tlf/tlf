@@ -208,7 +208,7 @@ int loadbandmap(void) {
 
 	    g_strlcpy(spotcall, thisline + 26, 6);
 
-	    strncpy(spottime, thisline + 70, 4);	// how old?
+	    memcpy(spottime, thisline + 70, 4);	// how old?
 	    spottime[4] = spottime[3];
 	    spottime[3] = spottime[2];
 	    spottime[2] = ':';
@@ -418,5 +418,3 @@ int getclusterinfo(void) {
 
     return si;
 }
-
-

@@ -77,7 +77,7 @@ void log_to_disk(int from_lan) {
 	cleanup_qso();		/* reset qso related parameters */
     } else {			// qso from lan
 
-	strncpy(lan_logline, lan_message + 2, 87);
+	memcpy(lan_logline, lan_message + 2, 87);
 	strcat(lan_logline, spaces(78));
 
 	if (cqwwm2 == 1) {
