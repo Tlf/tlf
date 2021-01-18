@@ -295,7 +295,7 @@ int bmautograb = 0;
 
 /*-------------------------------------rigctl-------------------------------*/
 #ifdef HAVE_LIBHAMLIB
-rig_model_t myrig_model = 351;
+int myrig_model = 351;
 RIG *my_rig;			/* handle to rig (instance) */
 freq_t outfreq;			/* output  to rig */
 rmode_t rmode;			/* radio mode of operation */
