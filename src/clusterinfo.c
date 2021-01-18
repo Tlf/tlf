@@ -48,7 +48,7 @@
 char *bandmap[MAX_SPOTS];
 int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
 
-int loadbandmap(void);
+void loadbandmap(void);
 int getclusterinfo(void);
 
 void clusterinfo(void) {
@@ -153,7 +153,7 @@ void clusterinfo(void) {
 
 /* ----------------------------------------------------*/
 
-int loadbandmap(void) {
+void loadbandmap(void) {
 
     int i = 0, j, m, x;
     unsigned int k;
@@ -208,12 +208,17 @@ int loadbandmap(void) {
 
 	    g_strlcpy(spotcall, thisline + 26, 6);
 
-	    strncpy(spottime, thisline + 70, 4);	// how old?
-	    spottime[4] = spottime[3];
-	    spottime[3] = spottime[2];
-	    spottime[2] = ':';
-	    spottime[5] = '\0';
-	    spotminutes = 60 * atoi(spottime) + atoi(spottime + 3);
+	    /* read and convert hours and minutes to spotminutes */
+	    spottime[0] = *(thisline + 70);
+	    spottime[1] = *(thisline + 71);
+	    spottime[2] = '\0';
+	    spotminutes = atoi(spottime);
+
+	    spottime[0] = *(thisline + 72);
+	    spottime[1] = *(thisline + 73);
+	    spottime[2] = '\0';
+	    spotminutes = 60 * spotminutes + atoi(spottime);
+
 	    timediff = (sysminutes - spotminutes) + 5;
 	    if (timediff + 30 < 0)
 		timediff += 1440;
@@ -240,8 +245,8 @@ int loadbandmap(void) {
 	}
     }
 
-
     pthread_mutex_unlock(&spot_ptr_mutex);
+
 
     linepos = (i < 8 ? 0 : i - 8);
 
@@ -365,8 +370,6 @@ int loadbandmap(void) {
     bandmap_show();
 
     refreshp();
-
-    return (i);			/* nr of found spot lines */
 }
 
 
