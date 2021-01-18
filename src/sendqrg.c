@@ -73,10 +73,10 @@ int init_tlf_rig(void) {
     /*
      * allocate memory, setup & open port
      */
-    my_rig = rig_init(myrig_model);
+    my_rig = rig_init((rig_model_t) myrig_model);
 
     if (!my_rig) {
-	shownr("Unknown rig model", (int) myrig_model);
+	shownr("Unknown rig model", myrig_model);
 	return -1;
     }
 

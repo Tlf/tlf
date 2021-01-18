@@ -318,7 +318,7 @@ int bmautoadd = 0;
 int bmautograb = 0;
 
 /*-------------------------------------rigctl-------------------------------*/
-rig_model_t myrig_model = 351;  /* Ten-Tec Omni VI Plus */
+int myrig_model = 0;            /* unset */
 RIG *my_rig;			/* handle to rig (instance) */
 rmode_t rmode;			/* radio mode of operation */
 pbwidth_t width;
@@ -700,7 +700,7 @@ void hamlib_init() {
 	return;
     }
 
-    shownr("Rig model number is", (int) myrig_model);
+    shownr("Rig model number is", myrig_model);
     shownr("Rig speed is", serial_rate);
 
     showmsg("Trying to start rig control");
