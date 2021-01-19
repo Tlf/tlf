@@ -48,23 +48,27 @@ void get_next_serial(void) {
 
     if (!log_is_comment(logline4)) {
 	memcpy(qsonrstr, logline4 + 23, 4);
+	qsonrstr[4] = '\0';
 	mm = atoi(qsonrstr);
     }
     if (!log_is_comment(logline3)) {
 	if (atoi(logline3 + 23) > mm) {
 	    memcpy(qsonrstr, logline3 + 23, 4);
+	    qsonrstr[4] = '\0';
 	    mm = atoi(qsonrstr);
 	}
     }
     if (!log_is_comment(logline2)) {
 	if (atoi(logline2 + 23) > mm) {
 	    memcpy(qsonrstr, logline2 + 23, 4);
+	    qsonrstr[4] = '\0';
 	    mm = atoi(qsonrstr);
 	}
     }
     if (!log_is_comment(logline1)) {
 	if (atoi(logline1 + 23) > mm) {
 	    memcpy(qsonrstr, logline1 + 23, 4);
+	    qsonrstr[4] = '\0';
 	    mm = atoi(qsonrstr);
 	}
     }

@@ -78,6 +78,8 @@ void log_to_disk(int from_lan) {
     } else {			// qso from lan
 
 	memcpy(lan_logline, lan_message + 2, 87);
+	lan_logline[87] = '\0';
+
 	strcat(lan_logline, spaces(78));
 
 	if (cqwwm2 == 1) {

@@ -176,6 +176,8 @@ void *background_process(void *ptr) {
 
 		    case CLUSTERMSG:
 			memcpy(prmessage, lan_message + 2, 80);
+			prmessage[80] = '\0';
+
 			if (strstr(prmessage, my.call) != NULL) {	// alert for cluster messages
 			    TLF_LOG_INFO(prmessage);
 			}
@@ -184,6 +186,7 @@ void *background_process(void *ptr) {
 			break;
 		    case TLFSPOT:
 			memcpy(prmessage, lan_message + 2, 80);
+			prmessage[80] = '\0';
 			lanspotflg = 1;
 			addtext(prmessage);
 			lanspotflg = 0;
