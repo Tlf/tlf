@@ -25,12 +25,6 @@
 // OBJECT ../src/zone_nr.o
 
 /* missing from globalvar.h */
-extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
-extern int pfxnummultinr;
-extern char continent_multiplier_list[7][3];
-extern char countrylist[][6];
-extern int exclude_multilist_type;
-extern bool continentlist_only;
 
 // dummy functions
 void readqtccalls() {}

@@ -204,7 +204,7 @@ extern char ph_message[14][80];
 extern char tncportname[];
 extern char multsfile[];
 extern char markerfile[];
-extern char countrylist[][6];
+extern char countrylist[255][6];
 extern char continent_multiplier_list[7][3];
 extern char controllerport[];           // port for multi-mode controller
 extern char modem_mode[];
