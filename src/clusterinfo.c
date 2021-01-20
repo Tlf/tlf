@@ -204,18 +204,18 @@ void loadbandmap(void) {
     for (j = 0; j < nr_of_spots; j++) {
 
 	g_strlcpy(thisline, spot_ptr[j], sizeof(thisline));
-	if (strncmp(thisline, "DX de ", 6) == 0) {
+	if (strncmp(thisline, "DX de ", 6) == 0 && strlen(thisline) >= 74) {
 
 	    g_strlcpy(spotcall, thisline + 26, 6);
 
 	    /* read and convert hours and minutes to spotminutes */
-	    spottime[0] = *(thisline + 70);
-	    spottime[1] = *(thisline + 71);
+	    spottime[0] = thisline[70];
+	    spottime[1] = thisline[71];
 	    spottime[2] = '\0';
 	    spotminutes = atoi(spottime);
 
-	    spottime[0] = *(thisline + 72);
-	    spottime[1] = *(thisline + 73);
+	    spottime[0] = thisline[72];
+	    spottime[1] = thisline[73];
 	    spottime[2] = '\0';
 	    spotminutes = 60 * spotminutes + atoi(spottime);
 
