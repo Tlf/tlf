@@ -149,7 +149,7 @@ typedef struct {
     char call[20];
     int countrynr;
     char continent[3];
-    char cqzone[3];
+    int cqzone;
     char qra[7];
     double Lat;
     double Long;

@@ -75,7 +75,7 @@ static void background_process_wait(void) {
 
 void *background_process(void *ptr) {
 
-    static char prmessage[256];
+    char *prmessage;
     static int lantimesync = 0;
     static int fldigi_rpc_cnt = 0;
 
@@ -175,18 +175,20 @@ void *background_process(void *ptr) {
 			break;
 
 		    case CLUSTERMSG:
-			strncpy(prmessage, lan_message + 2, 80);
+			prmessage = g_strndup(lan_message + 2, 80);
 			if (strstr(prmessage, my.call) != NULL) {	// alert for cluster messages
 			    TLF_LOG_INFO(prmessage);
 			}
 
 			addtext(prmessage);
+			g_free(prmessage);
 			break;
 		    case TLFSPOT:
-			strncpy(prmessage, lan_message + 2, 80);
-			lanspotflg = 1;
+			prmessage = g_strndup(lan_message + 2, 80);
+			lanspotflg = true;
 			addtext(prmessage);
-			lanspotflg = 0;
+			lanspotflg = false;
+			g_free(prmessage);
 			break;
 		    case TLFMSG:
 			for (int t = 0; t < 4; t++)
@@ -195,7 +197,8 @@ void *background_process(void *ptr) {
 			talkarray[4][0] = lan_message[0];
 			talkarray[4][1] = ':';
 			talkarray[4][2] = '\0';
-			strncat(talkarray[4], lan_message + 2, 60);
+			g_strlcat(talkarray[4], lan_message + 2,
+				sizeof(talkarray[4]));
 			TLF_LOG_INFO(" MSG from %s", talkarray[4]);
 			break;
 		    case FREQMSG:

@@ -42,10 +42,9 @@
 #include "ui_utils.h"
 #include "cleanup.h"
 
-
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-char lan_logline[256];
+char lan_logline[81];
 
 /** \brief logs one record to disk
  * Logs one record to disk which may come from different sources
@@ -75,17 +74,17 @@ void log_to_disk(int from_lan) {
 	strcpy(last_rst, sent_rst); /* remember last report */
 
 	cleanup_qso();		/* reset qso related parameters */
-    } else {			// qso from lan
+    } else {			/* qso from lan */
 
-	strncpy(lan_logline, lan_message + 2, 87);
-	strcat(lan_logline, spaces(78));
+	/* LOGENTRY contains 82 characters (node,command and logline */
+	g_strlcpy(lan_logline, lan_message + 2, 81);
+	char *fill = g_strnfill(80 - strlen(lan_logline), ' ');
+	g_strlcat(lan_logline, fill, 81);    /* fill with spaces if needed */
 
-	if (cqwwm2 == 1) {
+	if (cqwwm2 == 1) {	    /* mark as coming from other station */
 	    if (lan_message[0] != thisnode)
 		lan_logline[79] = '*';
 	}
-
-	lan_logline[87] = '\0';
 
 	total = total + score2(lan_logline);
 
@@ -140,5 +139,4 @@ void log_to_disk(int from_lan) {
     block_part = 0;		/* unblock use partials */
 
     pthread_mutex_unlock(&disk_mutex);
-
 }

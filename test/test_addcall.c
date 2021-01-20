@@ -26,15 +26,6 @@
 
 
 /* these are missing from globalvars */
-extern int excl_add_veto;
-extern int dupe;
-extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
-extern int pfxnummultinr;
-extern char continent_multiplier_list[7][3];
-extern char countrylist[][6];
-extern bool continentlist_only;
-extern bool countrylist_only;
-extern int exclude_multilist_type;
 
 int add_pfx(char *call) {
     return 0;
