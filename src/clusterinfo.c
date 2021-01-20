@@ -151,27 +151,16 @@ void clusterinfo(void) {
 
 void show_xplanet() {
 
-    int i = 0, j, m, x;
+    int i = 0, j;
     int sysminutes = 0;
-    int timediff = 0;
     int linepos;
     int spot_age[MAX_SPOTS];
     freq_t spot_freq[MAX_SPOTS];
 
-    char spotcall[20];
-    char spottime[6];
-    char spotline[38];
     char callcopy[20];
     FILE *fp;
-    char marker_out[60];
-    char color[sizeof("Magenta")];
-    int lon;
-    int lat;
-    int zz;
-    bool nofile = false;
-    int iswarc = 0;
-    char xplanetmsg[160];
     dxcc_data *dx;
+    static bool nofile = false;
 
 
     if (xplanet == 0 || nofile == true) {
@@ -185,32 +174,33 @@ void show_xplanet() {
 	return;
     }
 
-   for (i = 0; i < MAX_SPOTS; i++) {
+    memset (spot_age, '\0', sizeof(spot_age));
+    memset (spot_freq, '\0', sizeof(spot_freq));
+
+    for (i = 0; i < MAX_SPOTS; i++) {
 	if (bandmap[i] != NULL) {
 	    g_free(bandmap[i]);
 	    bandmap[i] = NULL;
 	}
-
-	spot_age[i] = 0;
-	spot_freq[i] = 0.;
     }
-
-    i = 0;
-
-    sysminutes = get_minutes();
 
     /* parse log of cluster output and find DX announcements.
      * Copy them to bandmap array and find spot_age and spot_freq
      */
+    sysminutes = get_minutes();
+    i = 0;
 
     pthread_mutex_lock(&spot_ptr_mutex);
 
     for (j = 0; j < nr_of_spots; j++) {
 	char thisline[83];
+	char spottime[6];
+	char spotcall[20];
 
 	g_strlcpy(thisline, spot_ptr[j], sizeof(thisline));
 	if (strncmp(thisline, "DX de ", 6) == 0 && strlen(thisline) >= 74) {
 	    int spotminutes;
+	    int timediff;
 
 	    g_strlcpy(spotcall, thisline + 26, 6);
 
@@ -230,7 +220,7 @@ void show_xplanet() {
 		timediff += 1440;
 
 	    /* is spot recent? */
-	    if ((timediff + 30) <= (MAXMINUTES + 30)) {
+	    if (timediff <= MAXMINUTES) {
 
 		/* look for duplicates already in bandmap
 		 * => kill older one and keep younger entry */
@@ -254,69 +244,70 @@ void show_xplanet() {
     pthread_mutex_unlock(&spot_ptr_mutex);
 
 
+    /* show last 8 spots via xplanet */
     linepos = (i < 8 ? 0 : i - 8);
 
     for (j = linepos; j < linepos + 8; j++) {
 
 	if (bandmap[j] != NULL) {
-	    g_strlcpy(spotline, bandmap[j] + 17, 23);	// freq and call
-	    g_strlcpy(spottime, bandmap[j] + 70, 6);	// time
-	    strcat(spotline, spottime);
+	    char marker_out[60];
+	    char color[sizeof("Magenta")];
+	    int lon;
+	    int lat;
+	    int ctynr;
+	    bool iswarc;
 
 	    strncpy(callcopy, bandmap[j] + 26, 16);	// call
-	    for (m = 0; m < 16; m++) {
+	    for (int m = 0; m < 16; m++) {
 		if (callcopy[m] == ' ') {
 		    callcopy[m] = '\0';
 		    break;
 		}	/* use strcspn? */
 	    }
 
-	    x = getctynr(callcopy);		// CTY of station
+	    ctynr = getctynr(callcopy);		// CTY of station
 
-
-	    if (x != 0 ) {
+	    if (ctynr != 0 ) {
 		/* show no callsign if MARKERDOTS */
 		if (xplanet == 2)
 		    callcopy[0] = '\0';
 
-		dx = dxcc_by_index(x);
+		dx = dxcc_by_index(ctynr);
 		lon = (int)(dx -> lon) * -1;
 		lat = (int)(dx -> lat);
-
-		*color = '\0';
 
 		if (spot_age[j] > 15)
 		    strcat(color, "Green");
 		else {
-		    iswarc = 0;
+		    iswarc = false;
 		    if (spot_freq[j] >= 10100.0 && spot_freq[j] <= 10150.0)
-			iswarc = 1;
+			iswarc = true;
 		    if (spot_freq[j] >= 18068.0 && spot_freq[j] <= 18168.0)
-			iswarc = 1;
+			iswarc = true;
 		    if (spot_freq[j] >= 24890.0 && spot_freq[j] <= 24990.0)
-			iswarc = 1;
+			iswarc = true;
 
-		    if (iswarc == 0) {
+		    if (!iswarc) {
 			if (spot_freq[j] < 3500.0)
-			    strcat(color, "Red");
+			    strcpy(color, "Red");
 			if (spot_freq[j] >= 3500.0
 				&& spot_freq[j] <= 4000.0)
-			    strcat(color, "Magenta");
+			    strcpy(color, "Magenta");
 			if (spot_freq[j] >= 7000.0
 				&& spot_freq[j] <= 7300.0)
-			    strcat(color, "Yellow");
+			    strcpy(color, "Yellow");
 			if (spot_freq[j] >= 14000.0
 				&& spot_freq[j] <= 14350.0)
-			    strcat(color, "Blue");
+			    strcpy(color, "Blue");
 			if (spot_freq[j] >= 21000.0
 				&& spot_freq[j] <= 21450.0)
-			    strcat(color, "White");
+			    strcpy(color, "White");
 			if (spot_freq[j] >= 28000.0
 				&& spot_freq[j] <= 29700.0)
-			    strcat(color, "Green");
+			    strcpy(color, "Green");
 
 		    } else {
-			strcat(color, "Cyan");
+			strcpy(color, "Cyan");
 		    }
 		}
 
@@ -333,16 +324,17 @@ void show_xplanet() {
     /* append last dx cluster message to markerfile;
      * will be shown at bottom */
     if (xplanet == 1) {
+	char xplanetmsg[160];
 
 	strcpy(xplanetmsg, " -82 -120 ");
 	strcat(xplanetmsg, "\"");
-	strcat(xplanetmsg, lastmsg);
+	g_strlcat(xplanetmsg, lastmsg, sizeof(xplanetmsg));
 
-	for (zz = 0; zz < strlen(lastmsg); zz++)
-	    if (lastmsg[zz] == 34)
-		lastmsg[zz] = ' ';
+	for (int i = 0; i < strlen(lastmsg); i++)
+	    if (lastmsg[i] == 34)
+		lastmsg[i] = ' ';
 
-	strcat(xplanetmsg, "\"   color=Cyan\n");
+	g_strlcat(xplanetmsg, "\"   color=Cyan\n", sizeof(xplanetmsg));
 
 	if (strlen(xplanetmsg) > 20){
 	    fputs(xplanetmsg, fp);
