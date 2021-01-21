@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2011-2014      Thomas Beierlein <tb@forth-ev.de>
+ *               2011-2021      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,8 @@
 char *bandmap[MAX_SPOTS];
 int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
 
-void loadbandmap(void);
 int getclusterinfo(void);
+void show_xplanet();
 
 void clusterinfo(void) {
 
@@ -69,15 +69,11 @@ void clusterinfo(void) {
 	for (int i = 14; i < LINES - 1; i++)
 	    mvprintw(i, 0, backgrnd_str);
 	refreshp();
-
     }
 
     if (cluster == MAP) {
-
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-
-	loadbandmap();
-
+	show_xplanet();
+	bandmap_show();
     }
 
     if (cluster == FREQWINDOW) {
@@ -98,6 +94,7 @@ void clusterinfo(void) {
     }
 
     if (cluster == CLUSTER) {
+	show_xplanet();
 
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
@@ -324,15 +321,6 @@ void show_xplanet() {
 
 
 /* ----------------------------------------------------*/
-
-void loadbandmap(void) {
-
-    show_xplanet();
-    bandmap_show();
-    refreshp();
-}
-
-
 
 int getclusterinfo(void) {
 
