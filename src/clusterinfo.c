@@ -31,6 +31,7 @@
 #include <glib.h>
 
 #include "bandmap.h"
+#include "bands.h"
 #include "dxcc.h"
 #include "err_utils.h"
 #include "get_time.h"
@@ -251,11 +252,14 @@ void show_xplanet() {
 
 	if (bandmap[j] != NULL) {
 	    char marker_out[60];
-	    char color[sizeof("Magenta")];
 	    int lon;
 	    int lat;
 	    int ctynr;
-	    bool iswarc;
+	    char *color;
+	    static char *bandcolor[NBANDS] = {"Red", "Magenta", "Cyan",
+		    "Yellow", "Cyan", "Blue",
+		    "Cyan", "White", "Cyan",
+		    "Green", NULL };
 
 	    strncpy(callcopy, bandmap[j] + 26, 16);	// call
 	    for (int m = 0; m < 16; m++) {
@@ -279,39 +283,10 @@ void show_xplanet() {
 		if (spot_age[j] > 15)
 		    strcat(color, "Green");
 		else {
-		    iswarc = false;
-		    if (spot_freq[j] >= 10100.0 && spot_freq[j] <= 10150.0)
-			iswarc = true;
-		    if (spot_freq[j] >= 18068.0 && spot_freq[j] <= 18168.0)
-			iswarc = true;
-		    if (spot_freq[j] >= 24890.0 && spot_freq[j] <= 24990.0)
-			iswarc = true;
-
-		    if (!iswarc) {
-			if (spot_freq[j] < 3500.0)
-			    strcpy(color, "Red");
-			if (spot_freq[j] >= 3500.0
-				&& spot_freq[j] <= 4000.0)
-			    strcpy(color, "Magenta");
-			if (spot_freq[j] >= 7000.0
-				&& spot_freq[j] <= 7300.0)
-			    strcpy(color, "Yellow");
-			if (spot_freq[j] >= 14000.0
-				&& spot_freq[j] <= 14350.0)
-			    strcpy(color, "Blue");
-			if (spot_freq[j] >= 21000.0
-				&& spot_freq[j] <= 21450.0)
-			    strcpy(color, "White");
-			if (spot_freq[j] >= 28000.0
-				&& spot_freq[j] <= 29700.0)
-			    strcpy(color, "Green");
-
-		    } else {
-			strcpy(color, "Cyan");
-		    }
+		    color = bandcolor[freq2band(spot_freq[j] * 1000)];
 		}
 
-		if (*color != '\0') {
+		if (color != NULL) {
 		    sprintf(marker_out, "%4d   %4d   \"%s\"   color=%s\n",
 			    lat, lon, callcopy, color);
 
