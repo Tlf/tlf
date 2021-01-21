@@ -24,6 +24,7 @@
 #include "globalvars.h"
 
 #define CONTEST_IS(cid) (contest->id == cid)
+#define IS_ALL_BAND (CONTEST_IS(QSO) || !iscontest)
 
 extern contest_config_t config_qso;
 

@@ -41,6 +41,7 @@
 #include "nicebox.h"		// Includes curses.h
 #include "printcall.h"
 #include "splitscreen.h"
+#include "setcontest.h"
 #include "ui_utils.h"
 
 #define MAXMINUTES 30
@@ -234,10 +235,13 @@ void show_xplanet() {
 		    }
 		}
 
-		bandmap[i] = g_strdup(thisline);
-		spot_age[i] = timediff;
-		spot_band[i] = freq2band(atof(thisline + 17) * 1000);
-		i++;
+		int band = freq2band(atof(thisline + 17) * 1000);
+		if (IS_ALL_BAND || !IsWarcIndex(band)) {
+		    bandmap[i] = g_strdup(thisline);
+		    spot_age[i] = timediff;
+		    spot_band[i] = band;
+		    i++;
+		}
 	    }
 	}
     }
