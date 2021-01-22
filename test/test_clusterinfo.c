@@ -8,6 +8,7 @@
 #include "../src/dxcc.h"
 
 // OBJECT ../src/clusterinfo.o
+// OBJECT ../src/bands.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/err_utils.o
 
