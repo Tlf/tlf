@@ -149,10 +149,19 @@ void cqww_simulator(void) {
 	strcpy(callcpy, CALLMASTERARRAY(callnumber));
 	getctydata(callcpy);
 
-	char *str = g_strdup_printf("%s%s%s",
-				    "---" + 3 - slow,
+	/* Use the precision format specifier to set the number of '-' or '+'
+	 * characters prepended and appended to the callsign.
+	 *
+	 * See https://stackoverflow.com/a/16299867
+	 * and "man 3 printf"
+	 * for format explanation.
+	 */
+	char *str = g_strdup_printf("%.*s%s%.*s",
+				    3 - slow,
+				    "---",
 				    CALLMASTERARRAY(callnumber),
-				    "+++" + 3 - slow);
+				    3 - slow,
+				    "+++");
 	sendmessage(str);
 	write_keyer();
 
