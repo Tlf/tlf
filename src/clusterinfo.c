@@ -281,7 +281,7 @@ void show_xplanet() {
 		lat = (int)(dx -> lat);
 
 		if (spot_age[j] > 15)
-		    strcat(color, "Green");
+		    color = "Brown";	/* old spot */
 		else {
 		    color = bandcolor[spot_band[j]];
 		}
