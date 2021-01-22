@@ -252,7 +252,6 @@ void show_xplanet() {
     for (j = linepos; j < linepos + 8; j++) {
 
 	if (bandmap[j] != NULL) {
-	    char marker_out[60];
 	    int lon;
 	    int lat;
 	    int ctynr;
@@ -288,10 +287,8 @@ void show_xplanet() {
 		}
 
 		if (color != NULL) {
-		    sprintf(marker_out, "%4d   %4d   \"%s\"   color=%s\n",
+		    fprintf(fp, "%4d   %4d   \"%s\"   color=%s\n",
 			    lat, lon, callcopy, color);
-
-		    fputs(marker_out, fp);
 		}
 	    }
 	}
@@ -299,22 +296,13 @@ void show_xplanet() {
 
     /* append last dx cluster message to markerfile;
      * will be shown at bottom */
-    if (xplanet == 1) {
-	char xplanetmsg[160];
-
-	strcpy(xplanetmsg, " -82 -120 ");
-	strcat(xplanetmsg, "\"");
-	g_strlcat(xplanetmsg, lastmsg, sizeof(xplanetmsg));
+    if (xplanet == 1 && strlen(lastmsg) > 0) {
 
 	for (int i = 0; i < strlen(lastmsg); i++)
 	    if (lastmsg[i] == 34)
 		lastmsg[i] = ' ';
 
-	g_strlcat(xplanetmsg, "\"   color=Cyan\n", sizeof(xplanetmsg));
-
-	if (strlen(xplanetmsg) > 20){
-	    fputs(xplanetmsg, fp);
-	}
+	fprintf(fp, " -82 -120 \"%s\"  color=Cyan\n", lastmsg);
     }
     fclose(fp);
 }
