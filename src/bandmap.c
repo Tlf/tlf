@@ -39,6 +39,7 @@
 #include "initial_exchange.h"
 #include "bands.h"
 #include "lancode.h"
+#include "grabspot.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted as the same QRG */
@@ -510,6 +511,12 @@ void bm_show_info() {
     move(TOPLINE, 66);
     vline(ACS_VLINE, LINES - TOPLINE - 1);
 
+    int x = (LINES - 1 + TOPLINE)/2;
+    int arrow = (grab_up ? ACS_DARROW : ACS_UARROW);
+    mvaddch(x-1, 66, arrow);
+    mvaddch(x, 66, arrow);
+    mvaddch(x+1, 66, arrow);
+
     mvprintw(LASTLINE - 5, 67, " bands: %s", bm_config.allband ? "all" : "own");
     mvprintw(LASTLINE - 4, 67, " modes: %s", bm_config.allmode ? "all" : "own");
     mvprintw(LASTLINE - 3, 67, " dupes: %s", bm_config.showdupes ? "yes" : "no");
@@ -970,7 +977,7 @@ spot *bandmap_lookup(char *partialcall) {
  * 		after use).
  */
 
-spot *bandmap_next(unsigned int upwards, freq_t freq) {
+spot *bandmap_next(bool upwards, freq_t freq) {
     spot *result = NULL;
 
     if (spots->len > 0) {
@@ -979,7 +986,6 @@ spot *bandmap_next(unsigned int upwards, freq_t freq) {
 	pthread_mutex_lock(&bm_mutex);
 
 	if (upwards) {
-
 	    for (i = 0; i < spots->len; i++) {
 		spot *data;
 		data = g_ptr_array_index(spots, i);

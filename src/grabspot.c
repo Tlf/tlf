@@ -56,20 +56,21 @@ freq_t grabspot(void) {
     return execute_grab(data);
 }
 
-freq_t grab_next(void) {
+bool grab_up = true;        /* start scanning up */
 
-    static int dir = 1;		/* start scanning up */
+
+freq_t grab_next(void) {
 
     if (!trx_control) {
 	return 0;   // no trx control
     }
 
-    spot *data = bandmap_next(dir, freq);
+    spot *data = bandmap_next(grab_up, freq);
 
     if (data == NULL) {		/* nothing in that direction */
 	/* try other one */
-	dir = 1 - dir;
-	data = bandmap_next(dir, freq);
+	grab_up = !grab_up;
+	data = bandmap_next(grab_up, freq);
     }
 
     if (data == NULL) {

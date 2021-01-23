@@ -21,7 +21,10 @@
 #ifndef GRABSPOT_H
 #define GRABSPOT_H
 
+#include <stdbool.h>
 #include <hamlib/rig.h>
+
+extern bool grab_up;
 
 freq_t grabspot(void);
 freq_t grab_next(void);

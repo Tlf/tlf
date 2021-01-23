@@ -243,6 +243,9 @@ int callinput(void) {
 	}
 
 	switch (x) {
+            case 22: // Ctrl-V
+                grab_up = !grab_up;
+                break;
 
 	    // Plus (+)
 	    // - in non-CT mode switch to other mode (CQ <-> S&P)
