@@ -127,10 +127,10 @@ void bmdata_read_file() {
     struct timeval tv;
     int timediff, last_bm_save_time, fc;
     char line[50], *token;
-    static int bmdata_parsed = 0;
+    static bool bmdata_parsed = false;
 
-    if ((fp = fopen(".bmdata.dat", "r")) != NULL && bmdata_parsed == 0) {
-	bmdata_parsed = 1;
+    if ((fp = fopen(".bmdata.dat", "r")) != NULL && bmdata_parsed) {
+	bmdata_parsed = true;
 	if (fgets(line, 50, fp)) {
 	    sscanf(line, "%d", &last_bm_save_time);
 	    gettimeofday(&tv, NULL);
