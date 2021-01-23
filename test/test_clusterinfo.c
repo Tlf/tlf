@@ -8,6 +8,7 @@
 #include "../src/dxcc.h"
 
 // OBJECT ../src/clusterinfo.o
+// OBJECT ../src/bands.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/err_utils.o
 
@@ -97,7 +98,7 @@ static void put_short_line(char *p, int index) {
 int setup_default(void **state) {
     strcpy(my.call, "N0CALL\n"); 		// !!! do not forget trailing \n
 
-    xplanet = 0;
+    xplanet = MARKER_NONE;
 
     clear_mvprintw_history();
 

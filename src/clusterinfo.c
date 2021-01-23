@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2011-2014      Thomas Beierlein <tb@forth-ev.de>
+ *               2011-2021      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <glib.h>
 
 #include "bandmap.h"
+#include "bands.h"
 #include "dxcc.h"
 #include "err_utils.h"
 #include "get_time.h"
@@ -40,16 +41,16 @@
 #include "nicebox.h"		// Includes curses.h
 #include "printcall.h"
 #include "splitscreen.h"
+#include "setcontest.h"
 #include "ui_utils.h"
 
 #define MAXMINUTES 30
 
-
 char *bandmap[MAX_SPOTS];
 int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
 
-void loadbandmap(void);
 int getclusterinfo(void);
+void show_xplanet();
 
 void clusterinfo(void) {
 
@@ -68,15 +69,11 @@ void clusterinfo(void) {
 	for (int i = 14; i < LINES - 1; i++)
 	    mvprintw(i, 0, backgrnd_str);
 	refreshp();
-
     }
 
     if (cluster == MAP) {
-
-	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-
-	loadbandmap();
-
+	show_xplanet();
+	bandmap_show();
     }
 
     if (cluster == FREQWINDOW) {
@@ -97,6 +94,7 @@ void clusterinfo(void) {
     }
 
     if (cluster == CLUSTER) {
+	show_xplanet();
 
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
@@ -150,61 +148,58 @@ void clusterinfo(void) {
 }
 
 
+void show_xplanet() {
 
-/* ----------------------------------------------------*/
-
-void loadbandmap(void) {
-
-    int i = 0, j, m, x;
-    unsigned int k;
-    int spotminutes = 0;
+    int i = 0, j;
     int sysminutes = 0;
-    int timediff = 0;
     int linepos;
     int spot_age[MAX_SPOTS];
-    freq_t spot_freq[MAX_SPOTS];
+    int spot_band[MAX_SPOTS];
 
-    char thisline[83];
-    char spotcall[20];
-    char spottime[6];
-    char spotline[38];
     char callcopy[20];
     FILE *fp;
-    char marker_out[60];
-    char color[sizeof("Magenta")];
-    int lon;
-    int lat;
-    int zz;
-    int nofile = 0;
-    int iswarc = 0;
-    char xplanetmsg[160];
     dxcc_data *dx;
+    static bool nofile = false;
 
+
+    if (xplanet == MARKER_NONE || nofile == true) {
+	return;
+    }
+
+    /* prune markerfile by opening it for write */
+    if ((fp = fopen(markerfile, "w")) == NULL) {
+	TLF_LOG_INFO("Opening marker file not possible.");
+	nofile = true;		/* remember: no write possible */
+	return;
+    }
+
+    memset (spot_age, '\0', sizeof(spot_age));
+    memset (spot_band, '\0', sizeof(spot_band));
 
     for (i = 0; i < MAX_SPOTS; i++) {
 	if (bandmap[i] != NULL) {
 	    g_free(bandmap[i]);
 	    bandmap[i] = NULL;
 	}
-
-	spot_age[i] = 0;
-	spot_freq[i] = 0.;
     }
 
-    i = 0;
-
-    sysminutes = get_minutes();
-
     /* parse log of cluster output and find DX announcements.
-     * Copy them to bandmap array and find spot_age and spot_freq
+     * Copy them to bandmap array and find spot_age and spot_band
      */
+    sysminutes = get_minutes();
+    i = 0;
 
     pthread_mutex_lock(&spot_ptr_mutex);
 
     for (j = 0; j < nr_of_spots; j++) {
+	char thisline[83];
+	char spottime[6];
+	char spotcall[20];
 
 	g_strlcpy(thisline, spot_ptr[j], sizeof(thisline));
 	if (strncmp(thisline, "DX de ", 6) == 0 && strlen(thisline) >= 74) {
+	    int spotminutes;
+	    int timediff;
 
 	    g_strlcpy(spotcall, thisline + 26, 6);
 
@@ -224,11 +219,11 @@ void loadbandmap(void) {
 		timediff += 1440;
 
 	    /* is spot recent? */
-	    if ((timediff + 30) <= (MAXMINUTES + 30)) {
+	    if (timediff <= MAXMINUTES) {
 
 		/* look for duplicates already in bandmap
 		 * => kill older one and keep younger entry */
-		for (k = 0; k < i; k++) {
+		for (int k = 0; k < i; k++) {
 		    g_strlcpy(callcopy, bandmap[k] + 26, 6);
 
 		    if (strncmp(callcopy, spotcall, 4) == 0) {
@@ -237,10 +232,13 @@ void loadbandmap(void) {
 		    }
 		}
 
-		bandmap[i] = g_strdup(thisline);
-		spot_age[i] = timediff;
-		spot_freq[i] = atof(thisline + 17);
-		i++;
+		int band = freq2band(atof(thisline + 17) * 1000);
+		if (IS_ALL_BAND || !IsWarcIndex(band)) {
+		    bandmap[i] = g_strdup(thisline);
+		    spot_age[i] = timediff;
+		    spot_band[i] = band;
+		    i++;
+		}
 	    }
 	}
     }
@@ -248,131 +246,69 @@ void loadbandmap(void) {
     pthread_mutex_unlock(&spot_ptr_mutex);
 
 
+    /* show last 8 spots via xplanet */
     linepos = (i < 8 ? 0 : i - 8);
-
-    /* prune markerfile by opening it for write */
-    if (xplanet > 0 && nofile == 0) {
-	if ((fp = fopen(markerfile, "w")) == NULL) {
-	    nofile = 1;			/* remember: no write possible */
-	    TLF_LOG_INFO("Opening marker file not possible.");
-	} else
-	    fclose(fp);
-    }
 
     for (j = linepos; j < linepos + 8; j++) {
 
 	if (bandmap[j] != NULL) {
-	    g_strlcpy(spotline, bandmap[j] + 17, 23);	// freq and call
-	    g_strlcpy(spottime, bandmap[j] + 70, 6);	// time
-	    strcat(spotline, spottime);
+	    int lon;
+	    int lat;
+	    int ctynr;
+	    char *color;
+	    static char *bandcolor[NBANDS] = {"Red", "Magenta", "Cyan",
+		    "Yellow", "Cyan", "Blue",
+		    "Cyan", "White", "Cyan",
+		    "Green", NULL };
 
 	    strncpy(callcopy, bandmap[j] + 26, 16);	// call
-	    for (m = 0; m < 16; m++) {
+	    for (int m = 0; m < 16; m++) {
 		if (callcopy[m] == ' ') {
 		    callcopy[m] = '\0';
 		    break;
 		}	/* use strcspn? */
 	    }
 
-	    x = getctynr(callcopy);		// CTY of station
+	    ctynr = getctynr(callcopy);		// CTY of station
 
+	    if (ctynr != 0 ) {
+		/* show no callsign if MARKERDOTS */
+		if (xplanet == MARKER_DOTS)
+		    callcopy[0] = '\0';
 
-	    if (x != 0 && xplanet > 0 && nofile == 0) {
+		dx = dxcc_by_index(ctynr);
+		lon = (int)(dx -> lon) * -1;
+		lat = (int)(dx -> lat);
 
-		if ((fp = fopen(markerfile, "a")) == NULL) {
-		    TLF_LOG_INFO("Opening markerfile not possible.");
-		} else {
+		if (spot_age[j] > 15)
+		    color = "Brown";	/* old spot */
+		else {
+		    color = bandcolor[spot_band[j]];
+		}
 
-		    /* show no callsign if MARKERDOTS */
-		    if (xplanet == 2)
-			callcopy[0] = '\0';
-
-		    dx = dxcc_by_index(x);
-		    lon = (int)(dx -> lon) * -1;
-		    lat = (int)(dx -> lat);
-
-		    *color = '\0';
-
-		    if (spot_age[j] > 15)
-			strcat(color, "Green");
-		    else {
-			iswarc = 0;
-			if (spot_freq[j] >= 10100.0 && spot_freq[j] <= 10150.0)
-			    iswarc = 1;
-			if (spot_freq[j] >= 18068.0 && spot_freq[j] <= 18168.0)
-			    iswarc = 1;
-			if (spot_freq[j] >= 24890.0 && spot_freq[j] <= 24990.0)
-			    iswarc = 1;
-
-			if (iswarc == 0) {
-			    if (spot_freq[j] < 3500.0)
-				strcat(color, "Red");
-			    if (spot_freq[j] >= 3500.0
-				    && spot_freq[j] <= 4000.0)
-				strcat(color, "Magenta");
-			    if (spot_freq[j] >= 7000.0
-				    && spot_freq[j] <= 7300.0)
-				strcat(color, "Yellow");
-			    if (spot_freq[j] >= 14000.0
-				    && spot_freq[j] <= 14350.0)
-				strcat(color, "Blue");
-			    if (spot_freq[j] >= 21000.0
-				    && spot_freq[j] <= 21450.0)
-				strcat(color, "White");
-			    if (spot_freq[j] >= 28000.0
-				    && spot_freq[j] <= 29700.0)
-				strcat(color, "Green");
-
-			} else {
-			    strcat(color, "Cyan");
-			}
-		    }
-
-		    if (*color != '\0') {
-			sprintf(marker_out, "%4d   %4d   \"%s\"   color=%s\n",
-				lat, lon, callcopy, color);
-
-			fputs(marker_out, fp);
-		    }
-
-
-		    fclose(fp);
+		if (color != NULL) {
+		    fprintf(fp, "%4d   %4d   \"%s\"   color=%s\n",
+			    lat, lon, callcopy, color);
 		}
 	    }
-
 	}
     }
 
-    /* append last dx cluster message to markerfile; will be shown at bottom */
-    if (xplanet == 1 && nofile == 0) {
+    /* append last dx cluster message to markerfile;
+     * will be shown at bottom */
+    if (xplanet == MARKER_ALL && strlen(lastmsg) > 0) {
 
-	strcpy(xplanetmsg, " -82 -120 ");
-	strcat(xplanetmsg, "\"");
-	strcat(xplanetmsg, lastmsg);
+	for (int i = 0; i < strlen(lastmsg); i++)
+	    if (lastmsg[i] == 34)
+		lastmsg[i] = ' ';
 
-	for (zz = 0; zz < strlen(lastmsg); zz++)
-	    if (lastmsg[zz] == 34)
-		lastmsg[zz] = ' ';
-
-	strcat(xplanetmsg, "\"   color=Cyan\n");
-
-	if ((fp = fopen(markerfile, "a")) == NULL) {
-	    TLF_LOG_INFO("Opening markerfile not possible.");
-	} else {
-	    if (strlen(xplanetmsg) > 20)
-		fputs(xplanetmsg, fp);
-
-	    fclose(fp);
-	}
+	fprintf(fp, " -82 -120 \"%s\"  color=Cyan\n", lastmsg);
     }
-
-
-    bandmap_show();
-
-    refreshp();
+    fclose(fp);
 }
 
 
+/* ----------------------------------------------------*/
 
 int getclusterinfo(void) {
 
