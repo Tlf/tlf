@@ -76,7 +76,8 @@ bm_config_t bm_config = {
     900,/* default livetime */
     0  /* DO NOT show ONLY multipliers */
 };
-short	bm_initialized = 0;
+
+static bool bm_initialized = false;
 
 char *qtc_format(char *call);
 
@@ -127,10 +128,13 @@ void bmdata_read_file() {
     struct timeval tv;
     int timediff, last_bm_save_time, fc;
     char line[50], *token;
-    static int bmdata_parsed = 0;
+    static bool bmdata_parsed = false;
 
-    if ((fp = fopen(".bmdata.dat", "r")) != NULL && bmdata_parsed == 0) {
-	bmdata_parsed = 1;
+    if (bmdata_parsed)
+	return;
+
+    if ((fp = fopen(".bmdata.dat", "r")) != NULL) {
+	bmdata_parsed = true;
 	if (fgets(line, 50, fp)) {
 	    sscanf(line, "%d", &last_bm_save_time);
 	    gettimeofday(&tv, NULL);
@@ -172,6 +176,8 @@ void bmdata_read_file() {
 		    entry->timeout -= timediff;	/* remaining time */
 		    allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
 		} else {
+		    g_free(entry->call);
+		    g_free(entry->pfx);
 		    g_free(entry);
 		}
 	    }
@@ -186,6 +192,9 @@ void bmdata_read_file() {
  */
 void bm_init() {
 
+    if (bm_initialized)
+	return;
+
     pthread_mutex_lock(&bm_mutex);
 
     init_pair(CB_NEW, COLOR_CYAN, COLOR_WHITE);
@@ -199,6 +208,8 @@ void bm_init() {
     bmdata_read_file();
 
     pthread_mutex_unlock(&bm_mutex);
+
+    bm_initialized = true;
 }
 
 
@@ -680,10 +691,7 @@ void bandmap_show() {
     int i, j;
     bool dupe, multi;
 
-    if (!bm_initialized) {
-	bm_init();
-	bm_initialized = 1;
-    }
+    bm_init();
 
     /* acquire mutex
      * do not add new spots to allspots during
