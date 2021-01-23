@@ -1027,6 +1027,18 @@ static int cfg_cabrillo_field(const cfg_arg_t arg) {
     return rc;
 }
 
+// 2021-01-23 HA5SE implementing HDRLINE_FKEYS=
+static int cfg_headerline(const cfg_arg_t arg) {
+    char *str = g_ascii_strup(parameter, -1);
+    if (strlen(str) >= 58) {
+	g_free(str);
+	return PARSE_STRING_TOO_LONG;
+    }
+    strcpy(headerline+3, str);
+    g_free(str);
+    return PARSE_OK;
+}
+
 static config_t logcfg_configs[] = {
     {"CONTEST_MODE",        CFG_BOOL_TRUE(iscontest)},
     {"MIXED",               CFG_BOOL_TRUE(mixedmode)},
@@ -1188,6 +1200,8 @@ static config_t logcfg_configs[] = {
     {"UNIQUE_CALL_MULTI",   NEED_PARAM, cfg_unique_call_multi},
     {"DIGI_RIG_MODE",       NEED_PARAM, cfg_digi_rig_mode},
     {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
+
+    {"HDRLINE_FKEYS",   NEED_PARAM, cfg_headerline},
 
     {NULL}  // end marker
 };

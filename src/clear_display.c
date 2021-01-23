@@ -45,8 +45,6 @@
 
 
 void show_header_line() {
-    extern const char headerline[];
-
     char *mode = "";
     switch (cqmode) {
 	case CQ:

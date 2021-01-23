@@ -381,7 +381,7 @@ freq_t bandfrequency[NBANDS] = {
     28025000, 0.
 };
 
-const char headerline[] =
+char headerline[] =
     "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  ";
 const char *backgrnd_str;
 

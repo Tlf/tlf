@@ -1595,6 +1595,13 @@ BK,
 = his serial (e.g. confirm exchange of station in DIGIMODE).
 .
 .TP
+\fBHDRLINE_FKEYS\fR=\fI"short description of your defined F-keys"\fR
+On the main logging screen, the actual F-key assignments can be shown in the header line.
+Maximum length is 58.
+The default is:
+   HDRLINE_FKEYS= 1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?
+.
+.TP
 \fBF1\fR=\fI"cw message 1"\fR
 CQ message, (e.g. CQ de PA0R TEST).
 .

@@ -233,6 +233,9 @@ extern char *config_file;
 extern int bandindexarray[];
 extern int tlfcolors[8][2];
 
+// 2021-01-23 HA5SE implementing HDRLINE_FKEYS=
+extern char headerline[];
+
 extern SCREEN *mainscreen;
 
 extern bool mult_side;

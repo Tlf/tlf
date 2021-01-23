@@ -1,3 +1,9 @@
+2021-01-14  Jeno Vago  <gse@ha5se.hu>
+
+  * src/clear_display.c src/globalvars.h src/main.c src/parse_logcfg.c
+  Implementing configuration statement HDRLINE_FKEYS= to allow the localized
+  F-key assignments shown on the header line, instead of the constant F-key info.
+
 2019-10-28  Thomas Beierlein <tomjbe@gentoo.org>
 
   * NEWS, ToDo: Update NEWS and ToDo files
