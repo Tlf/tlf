@@ -244,6 +244,14 @@ enum {
     CAT_PTT_OFF         = (1 << 4),
 };
 
+/* Enums for Xplanet interface */
+enum {
+    MARKER_NONE,
+    MARKER_ALL,		/* DOTS, CALLS, last cluster line */
+    MARKER_DOTS,	/* only DOTS */
+    MARKER_CALLS,	/* DOTS & CALLS */
+};
+
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
 
 #endif /* TLF_H */

@@ -163,7 +163,7 @@ char logfile[120] = "general.log";
 char *cabrillo = NULL;		/*< Name of the cabrillo format definition */
 char synclogfile[120];
 char markerfile[120] = "";
-int xplanet = 0;
+int xplanet = MARKER_NONE;
 char fldigi_url[50] = "http://localhost:7362/RPC2";
 
 char sp_return[80] = " \n";

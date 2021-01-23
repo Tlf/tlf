@@ -197,7 +197,7 @@ char logfile[120] = "general.log";
 char *cabrillo = NULL;		/**< Name of the Cabrillo format definition */
 char synclogfile[120];
 char markerfile[120] = "";
-int xplanet = 0;
+int xplanet = MARKER_NONE;
 int rigptt = 0;
 
 char message[25][80] = /**< Array of CW messages

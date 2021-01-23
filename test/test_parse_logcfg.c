@@ -139,7 +139,7 @@ int setup_default(void **state) {
     use_bandoutput = 0;
     thisnode = 'A';
     nodes = 0;
-    xplanet = 0;
+    xplanet = MARKER_NONE;
     dx_arrlsections = 0;
     mult_side = false;
     countrylist_points = -1;
@@ -955,21 +955,21 @@ void test_mult_list(void **state) {
 void test_markers(void **state) {
     int rc = call_parse_logcfg("MARKERS=m.txt\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(xplanet, 1);
+    assert_int_equal(xplanet, MARKER_ALL);
     assert_string_equal(markerfile, "m.txt");
 }
 
 void test_markerdots(void **state) {
     int rc = call_parse_logcfg("MARKERDOTS=md.txt\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(xplanet, 2);
+    assert_int_equal(xplanet, MARKER_DOTS);
     assert_string_equal(markerfile, "md.txt");
 }
 
 void test_markercalls(void **state) {
     int rc = call_parse_logcfg("MARKERCALLS=mc.txt\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(xplanet, 3);
+    assert_int_equal(xplanet, MARKER_CALLS);
     assert_string_equal(markerfile, "mc.txt");
 }
 

@@ -162,7 +162,7 @@ void show_xplanet() {
     static bool nofile = false;
 
 
-    if (xplanet == 0 || nofile == true) {
+    if (xplanet == MARKER_NONE || nofile == true) {
 	return;
     }
 
@@ -273,7 +273,7 @@ void show_xplanet() {
 
 	    if (ctynr != 0 ) {
 		/* show no callsign if MARKERDOTS */
-		if (xplanet == 2)
+		if (xplanet == MARKER_DOTS)
 		    callcopy[0] = '\0';
 
 		dx = dxcc_by_index(ctynr);
@@ -296,7 +296,7 @@ void show_xplanet() {
 
     /* append last dx cluster message to markerfile;
      * will be shown at bottom */
-    if (xplanet == 1 && strlen(lastmsg) > 0) {
+    if (xplanet == MARKER_ALL && strlen(lastmsg) > 0) {
 
 	for (int i = 0; i < strlen(lastmsg); i++)
 	    if (lastmsg[i] == 34)

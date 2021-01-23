@@ -523,11 +523,11 @@ static int cfg_markers(const cfg_arg_t arg) {
 
     gchar *type = g_match_info_fetch(match_info, 1);
     if (strcmp(type, "") == 0) {
-	xplanet = 1;
+	xplanet = MARKER_ALL;
     } else if (strcmp(type, "DOT") == 0) {
-	xplanet = 2;
+	xplanet = MARKER_DOTS;
     } else if (strcmp(type, "CALL") == 0) {
-	xplanet = 3;
+	xplanet = MARKER_CALLS;
     }
     g_free(type);
     return PARSE_OK;
