@@ -172,6 +172,8 @@ void bmdata_read_file() {
 		    entry->timeout -= timediff;	/* remaining time */
 		    allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
 		} else {
+		    g_free(entry->call);
+		    g_free(entry->pfx);
 		    g_free(entry);
 		}
 	    }
