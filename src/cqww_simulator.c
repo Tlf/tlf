@@ -150,9 +150,9 @@ void cqww_simulator(void) {
 	getctydata(callcpy);
 
 	char *str = g_strdup_printf("%s%s%s",
-				    "---" + 3 - slow,
+				    &"---"[3 - slow],
 				    CALLMASTERARRAY(callnumber),
-				    "+++" + 3 - slow);
+				    &"+++"[3 - slow]);
 	sendmessage(str);
 	write_keyer();
 
