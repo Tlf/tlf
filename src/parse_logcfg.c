@@ -415,7 +415,7 @@ static int cfg_bandmap(const cfg_arg_t arg) {
 }
 
 static int cfg_cwspeed(const cfg_arg_t arg) {
-    int value = 18;
+    int value = 0;
     int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 6, .max = 60});
     if (rc != PARSE_OK) {
 	return rc;
@@ -425,7 +425,7 @@ static int cfg_cwspeed(const cfg_arg_t arg) {
 }
 
 static int cfg_cwtone(const cfg_arg_t arg) {
-    int value = 700;
+    int value = 0;
     int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 0, .max = 999});
     if (rc != PARSE_OK) {
 	return rc;
@@ -445,7 +445,7 @@ static int cfg_sunspots(const cfg_arg_t arg) {
 }
 
 static int cfg_sfi(const cfg_arg_t arg) {
-    int value = 67;
+    int value = 0;
     int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 0, .max = 1000});
     if (rc != PARSE_OK) {
 	return rc;
@@ -956,7 +956,7 @@ static int cfg_minitest(const cfg_arg_t arg) {
 	return PARSE_OK;
     }
 
-    int value = 60;
+    int value = 0;
     int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 60, .max = 1800});
     if (rc != PARSE_OK) {
 	return rc;
