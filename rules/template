@@ -7,6 +7,11 @@ CONTEST=xxxxxxx
 LOGFILE=xxxxxxx
 CONTEST_MODE
 CABRILLO=xxxxxx
+CABRILLO-CONTEST=xxxxxx
+CABRILLO-EXCHANGE=xxxxxx
+CABRILLO-BAND=xxxxxx
+CABRILLO-MODE=xxxxxx
+CABRILLO-POWER=xxxxxx
 #
 ##################################
 #                                #

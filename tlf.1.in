@@ -1,7 +1,7 @@
 .\"
 .TH TLF 1 "version @VERSION@" TLF "Ham radio"
 .SH NAME
-@PACKAGE_NAME@ - amateur radio contest keyer/logging program for
+@PACKAGE_NAME@ \- amateur radio contest keyer/logging program for
 Radiosport
 .SH SYNOPSIS
 .SY @PACKAGE@
@@ -22,11 +22,12 @@ the
 .SM ARRL-DX,
 .SM ARRL-FD,
 .SM STEWPERRY,
-.SM PACC
+.SM PACC,
+.SM FOC Marathon
 and
 .SM EU SPRINT
 contests as well as a lot more basic contests, general QSO and DXpedition
-mode.  From version 1.2.0 onward there is also support for the FOC Marathon.
+mode.
 It interfaces with a Morse Code generator, a number of radios via the
 .B Hamlib
 library, and with a
@@ -40,7 +41,7 @@ program for DOS, the output file is TR-Log compatible.  The log can be
 exported in
 .SM ADIF
 or
-.B Cabrillo
+.B Cabrillo 3.0
 format.
 .P
 The program was written for console mode on purpose, which allows it to run on
@@ -48,9 +49,9 @@ smaller machines, or remotely via
 .SM SSH
 or a modem link.
 .P
-Since @PACKAGE_NAME@ version 0.9.21 the
+CW keying via
 .B cwdaemon
-0.9 is fully supported, featuring direct mode for the keyboard and output to
+is fully supported, featuring direct mode for the keyboard and output to
 parallel and serial ports and speed and weight control from the keyboard, and
 band info output on the parallel port.
 .P
@@ -60,7 +61,8 @@ is available from
 .UR https://github.com/N0NB/winkeydaemon
 GitHub
 .UE .
-Setup is the same as for the cwdaemon.
+Setup is the same as for
+.BR cwdaemon (1).
 .P
 For radio control @PACKAGE_NAME@ works with Hamlib (version >= 1.2.8), you
 can find it at
@@ -99,34 +101,21 @@ Synchronize log with other node
 .EX
 @PACKAGE@ \-s user:password@host/dir/logfilename
 .EE
-.
 .TP
-.B \-V
-Output version information and exit.
-.TP
-.B \-v
-Verbose startup.
-.TP
-.B \-d
-Debug
-.B rigctl.
-.TP
-.B \-n
+.B "\-n, --no-cluster"
 Start without packet/cluster.
 .TP
-.B \-r
-Start without radio control when user wants to start @PACKAGE_NAME@ without
-modifying
-.IR logcfg.dat \.
+.B "-r, --no-rig"
+Start without radio control.
 .TP
-.B \-l
+.B "-l, --list"
 List all built-in contests.
 .TP
-.B \-i
-Import an existing CABRILLO file. When @PACKAGE_NAME@ starts, looks for the
-.I YOURCALL.cab
-log, reads the configuration and rule files, and based on the
-current setup, generates the log(s). If the contest is WAE, and you have QTC's
+.B "-i, --import"
+Import an existing Cabrillo file. When @PACKAGE_NAME@ starts, it looks for
+.I YOURCALL.cbr
+file in the current directory, reads the configuration and rule files, and based on the
+current setup generates the log(s). If the contest is WAE and you have QTC's
 in Cabrillo, then @PACKAGE_NAME@ makes the QTC logfiles too. @PACKAGE_NAME@
 doesn't write over the existing log(s).  The generated import will be
 .IR IMPORT_CONTEST.log ,
@@ -136,6 +125,17 @@ QTC exists, then the files
 and
 .I IMPORT_QTC_recv.log
 will be created.
+.
+.TP
+.B "-v, --verbose"
+Verbose startup.
+.TP
+.B "-d, --debug"
+Debug
+.BR rigctl.
+.TP
+.B \-V
+Output version information and exit.
 .
 .SH USAGE
 .
@@ -183,7 +183,7 @@ Normally you start or restart @PACKAGE_NAME@ in fast mode with
 \(lq\fB@PACKAGE@\fR\(rq.  During debugging of a
 .I logcfg.dat
 file you can start in verbose mode, to have a look at the startup messages.
-From @PACKAGE_NAME@ version 0.9.3 you can load different config files with:
+The config file can also be specified on command line:
 .
 .IP
 .EX
@@ -289,8 +289,7 @@ Edit the log with your favourite editor. Be careful!
 .TQ
 .BR :QUI t
 Exit @PACKAGE_NAME@ (synonym to
-.BR Ctl\-C ,
-.BR Ctl\-D ,
+.BR Ctrl\-C ,
 .BR Alt\-Q ,
 and
 .BR Alt\-X ")."
@@ -301,7 +300,7 @@ Filter cluster info (announce, dx-spots, all).
 .
 .TP
 .BR :FRE q
-Show frequency or band/score information of your other stations.
+Show frequency or band/score information of your other @PACKAGE@ nodes.
 .
 .TP
 .BR :FLDIGI
@@ -312,7 +311,7 @@ Turn off/on Fldigi communication.
 Show online help (displays
 .I help.txt
 from working directory or from
-.I @prefix@/share
+.I @prefix@/share/@PACKAGE@
 if no local one exists).
 .
 .TP
@@ -352,10 +351,6 @@ Toggle the RIT reset after QSO On|Off.
 Edit various parameters in
 .I logcfg.dat
 file and reload it.
-.
-.TP
-.BR :SCA n
-Enter the SCAN function (return with \(oqEscape\(cq).
 .
 .TP
 .BR :SCO re
@@ -470,7 +465,8 @@ Write Cabrillo file according to specified format (see
 .B CABRILLO
 statement in the
 .B RULES
-section).
+section). The file is created in the current directory as
+.IR YOURCALL.cbr .
 .
 .SH KEYS
 .
@@ -792,8 +788,6 @@ Send a spot to the DX Cluster (a connection to a DX cluster must exit).
 .
 .TP
 .B Ctrl-C
-.TQ
-.B Ctrl-D
 Exit @PACKAGE_NAME@ (synonyms to
 .BR :EXI t,
 .BR :QUI t,
@@ -808,7 +802,7 @@ Ends modem capture for RTTY mode in QTC window (started with
 .
 .IP
 See
-.I @prefix@/share/doc/README_QTC_RTTY.txt
+.I @prefix@/share/doc/@PACKAGE@/README_QTC_RTTY.txt
 for more information.
 .
 .TP
@@ -843,9 +837,9 @@ if \fBQTC\fR=\fISEND\fR.
 .
 .IP
 See
-.I @prefix@/share/doc/README_QTC.txt
+.I @prefix@/share/doc/@PACKAGE@/README_QTC.txt
 and
-.I @prefix@/share/doc/README_QTC_RTTY.txt
+.I @prefix@/share/doc/@PACKAGE@/README_QTC_RTTY.txt
 for more information.
 .
 .TP
@@ -868,9 +862,9 @@ End capture with
 .
 .IP
 See
-.I @prefix@/share/doc/README_QTC.txt
+.I @prefix@/share/doc/@PACKAGE@/README_QTC.txt
 and
-.I @prefix@/share/doc/README_QTC_RTTY.txt
+.I @prefix@/share/doc/@PACKAGE@/README_QTC_RTTY.txt
 for more information.
 .
 .TP
@@ -933,7 +927,7 @@ Add Note to log.
 .
 .TP
 .B Alt-P
-Toggle PTT (via cwdaemon).
+Toggle PTT (via \fBcwdaemon\rR).
 .
 .TP
 .B Alt-Q
@@ -956,8 +950,8 @@ Toggle score window.
 .
 .TP
 .B Alt-T
-Tune your transceiver (via cwdaemon).  Activates PTT and Key output for 6
-seconds.  Stop tuning by pressing any key.
+Tune your transceiver (via \fBcwdaemon\fR).
+Activates PTT and Key output for 6 seconds. Stop tuning by pressing any key.
 .
 .TP
 .B Alt-V
@@ -1064,6 +1058,8 @@ The
 file can be edited from within @PACKAGE_NAME@ by the
 .BR :CFG \ or \ :SET
 commands (or with any other plain text editor before starting @PACKAGE_NAME@).
+It contains keyword-argument pairs, one per line.
+Lines starting with \(lq#\(rq and empty lines are interpreted as comments.
 .P
 You can set your favourite editor in the
 .IR logcfg.dat \ file.
@@ -1071,6 +1067,15 @@ You can set your favourite editor in the
 You connect the rules file by using the statement
 \fBRULES\fR=\fIcontest_rules_file_name\fR in
 .IR logcfg.dat .
+Note that both
+.I logcfg.dat
+and
+.I rules
+file support the same configuration parameters except \fBRULES\fR
+which is allowed in
+.I logcfg.dat
+only.
+
 .P
 @PACKAGE_NAME@ will first look in the working directory for a
 .I logcfg.dat
@@ -1322,10 +1327,9 @@ You can use
 .IR /dev/ttyUSB1 ,
 etc. anything that looks like a tty.
 .IP
-RPC rig daemon users should use \fBRIGMODEL\fR=\fI1901\fR and
-\fBRIGPORT\fR=\fIlocalhost\fR.  In this case RIGSPEED is ignored (\fBNB\fR: rig
-model 1901 is deprecated in Hamlib releases 3.0 and later and is replaced by
-\fBrigctld\fR(8) which is rig model 2).
+For \fBrigctld\fR(8) set
+\fBRIGPORT\fR=\fIlocalhost\fR and \fBRIGMODEL\fR=\fI2\fR.
+In this case \fBRIGSPEED\fR is ignored.
 .
 .TP
 \fBRIGCONF\fR=\fIrig_configuration_parameters\fR
@@ -1341,8 +1345,8 @@ Hamlib routine supports it (tested on the OMNI 6+).
 .TP
 .B RIGPTT
 Declares that Hamlib CAT PTT capability should be checked at startup and if
-available use it to activate the radio's PTT for sending voice messages instead
-of the NetKeyer PTT.
+available used to activate the radio's PTT for sending voice messages instead
+of the \fBcwdaemon\fR PTT.
 .
 .TP
 \fBCWBANDWIDTH\fR=\fIwidth\fR
@@ -1534,16 +1538,19 @@ Name of the contest (same as the file name
 .I contest_name
 referenced above).  Some contests, like CQWW and WPX, are pre-programmed.
 Look for the relevant rules file in
-.IR @prefix@/share/tlf/rules .
+.IR @prefix@/share/@PACKAGE@/rules .
 .
 .TP
 \fBLOGFILE\fR=\fIlog_file_name\fR
 Mandatory!
 .
 .TP
-\fBCABRILLO\fR=\fICabrillo_format\fR
-Specify the name of the Cabrillo format to use (see
-.IR doc/README.cabrillo).
+\fBCABRILLO\fR=\fIformat\fR
+Specify the name of the Cabrillo QSO and QTC line format.
+For most cases \fIUNIVERSAL\fR is a good choice.
+For further Cabrillo related information see
+.B CABRILLO CONFIGURATION
+below.
 .
 .TP
 .B CONTEST_MODE
@@ -2060,15 +2067,162 @@ Auto Exchange TU digi message in S&P mode (TR-Log mode)
 \fBDKSPC\fR=\fImessage\fR
 Auto Exchange call digi message in S&P mode (TR-Log mode)
 .
+.SH CABRILLO CONFIGURATION
+.
+This section covers the configuration of Cabrillo processing.
+
+The fields of the generated Cabrillo file can be either
+.RS 2
+.IP \(bu 2
+set to a fixed value,
+.IP \(bu
+input interactively,
+.IP \(bu
+or disabled.
+.P
+.
+.SS Using a Cabrillo template
+.BR
+.TP
+\fBCABRILLO-TEMPLATE\fR=\fIfile.cbr\fR
+.P
+The specified file is parsed and the values from relevant lines
+are taken the same way as if they were added via a config file.
+Header, footer, comment and QSO lines are ignored.
+One can for example re-use a file from a previous contest
+or use a sample file provided for the contest.
+Another possibility is to summarize the station-specific values
+in a \fIstation.cbr\fR file
+(see as an example \fI@prefix@/share/doc/@PACKAGE@/station-sample.cbr\fR).
+As multiple \fBCABRILLO-TEMPLATE\fRs can be specified
+it allows separating contest and station specific parts.
+
+This is an optional configuration as the same effect can be reached
+by plain configs (via \fIlogcfg.dat\fR and \fIrule\fR file).
+.
+.SS Internal configuration
+.
+Following parameters control the generation of QSO lines.
+.TP
+\fBCABRILLO-EXCHANGE\fR=\fIformat\fR
+.
+Specifies the sent exchange format.
+Hash mark (\(lq#\(rq) stands for QSO serial number.
+For a contest using fixed exchange enter the value here.
+.TP
+\fBCABRILLO\fR=\fIformat\fR (or alternatively \fBCABRILLO-QSO-FORMAT\fR=\fIformat\fR)
+.
+Set the format of QSO and QTC lines including separator for received exchange.
+The format descriptions are contained in \fIcabrillo.fmt\fR
+either in the current directory or in \fI@prefix@/share/@PACKAGE@\fR.
+The specified format is used both to generate Cabrillo output
+and also for Cabrillo import.
+For technical details see
+.IR @prefix@/share/doc/@PACKAGE@/README.Cabrillo .
+
+.
+.SS Configuring header information
+.
+Cabrillo header fields can be set using the keywords listed below.
+The value assigned to the keyword controls the processing of the field:
+.RS 2
+.IP \(bu 2
+value not in parentheses e.g. \(lq9ACW\(rq taken as-is,
+.IP \(bu
+value in parentheses e.g. \(lq(YES,NO)\(rq will be asked interactively,
+with the provided text as hint
+.IP \(bu
+a single dash \(rq-\(lq value disables the field (neither asked nor output)
+keeping its value,
+.IP \(bu
+no value (i.e. a keyword without equal sign) just enables the field
+without changing its value.
+.
+The order of fields in the output file is fixed
+and independent of the order they are present in config or template file.
+.
+.SS Header keywords
+Note: these keywords and the internal ones can also be used
+in a Cabrillo template just by removing the
+.I CABRILLO-
+prefix and using \(rq:\(lq as value separator.
+.
+.TP
+.B CABRILLO-CONTEST
+.TQ
+.B CABRILLO-CATEGORY-ASSISTED
+.TQ
+.B CABRILLO-CATEGORY-BAND
+.TQ
+.B CABRILLO-CATEGORY-MODE
+.TQ
+.B CABRILLO-CATEGORY-OPERATOR
+.TQ
+.B CABRILLO-CATEGORY-POWER
+.TQ
+.B CABRILLO-CATEGORY-STATION
+.TQ
+.B CABRILLO-CATEGORY-TIME
+.TQ
+.B CABRILLO-CATEGORY-TRANSMITTER
+.TQ
+.B CABRILLO-CATEGORY-OVERLAY
+.TQ
+.B CABRILLO-CERTIFICATE
+.TQ
+.B CABRILLO-CLAIMED-SCORE
+(Score value is replaced with the calculated score.
+It can be disabled but not set.)
+.TQ
+.B CABRILLO-CLUB
+.TQ
+.B CABRILLO-LOCATION
+(Locator automatically filled, if enabled and \fBMYQRA\fR is set.)
+.TQ
+.B CABRILLO-GRID-LOCATOR
+.TQ
+.B CABRILLO-NAME
+.TQ
+.B CABRILLO-EMAIL
+.TQ
+.B CABRILLO-ADDRESS
+(3 generic address lines available)
+.TQ
+.B CABRILLO-ADDRESS(2)
+.TQ
+.B CABRILLO-ADDRESS(3)
+.TQ
+.B CABRILLO-ADDRESS-CITY
+.TQ
+.B CABRILLO-ADDRESS-STATE-PROVINCE
+.TQ
+.B CABRILLO-ADDRESS-POSTALCODE
+.TQ
+.B CABRILLO-ADDRESS-COUNTRY
+.TQ
+.B CABRILLO-OPERATORS
+.TQ
+.B CABRILLO-OFFTIME
+.TQ
+.B CABRILLO-SOAPBOX
+(3 soapbox lines available)
+.TQ
+.B CABRILLO-SOAPBOX(2)
+.TQ
+.B CABRILLO-SOAPBOX(3)
+.
 .SH FILES
 .
-\fI@prefix@/share/@PACKAGE@/logcfg.dat\fR is a recent example of the
-configuration file @PACKAGE_NAME@ needs to know what to do.  @PACKAGE_NAME@
-won't start without one.  \fBCopy it into the working directory\fR and edit it
-before use.  You should do your experiments well \fIbefore\fR the contest.  It
-contains, amongst other settings, your call, name of the log file, info about
-ports for CW keying, packet or rig control, contest rules, points, multipliers
-etc.
+\fI@prefix@/share/@PACKAGE@/logcfg.dat\fR is a recent example of
+a generic configuration file.
+@PACKAGE_NAME@ will copy it into the current working directory
+if it does not find one there.
+It is recommended to \fBcopy it into the working directory\fR
+and edit it before first use.
+You should do your experiments well \fIbefore\fR the contest.
+It contains, amongst other settings, your call, name of the log file,
+info about ports for CW keying, packet or rig control,
+contest rules, points, multipliers etc.
 .
 .P
 \fI@prefix@/share/@PACKAGE@/rules/contestname\fR contains the rules of the
@@ -2087,6 +2241,8 @@ versions from Jim, AD1C, are available from:
 .UR http://www.country-files.com/
 Country Files
 .UE .
+@PACKAGE_NAME@ looks for this file first in the current working directory,
+so an update is possible without root rights.
 .
 .P
 \fI@prefix@/share/@PACKAGE@/callmaster\fR contains a flat ASCII database of
@@ -2110,10 +2266,11 @@ including \fBMULT_LIST\fR=\fIsection_file_name\fR in the rules file.
 .
 .SH DOCUMENTATION
 .
-An operation manual (a little bit outdated) is available in HTML format at
-.UR http://sharon.esrac.ele.tue.nl/pub/linux/ham/tlf/
-the old @PACKAGE_NAME@ project page
-.UE .
+The documentation page at
+.UR https://tlf.github.io/
+GitHub
+.UE
+contains some more information.
 .
 .P
 An FAQ and other useful tips are installed in the system doc directory under

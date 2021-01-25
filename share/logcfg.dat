@@ -83,7 +83,7 @@ NETKEYER
 CWSPEED=30
 #---weight (-5 ... 5 ms)
 WEIGHT=1
-#---cq delay (in 0,5 s)
+#---cq delay (in 0.5 s units)
 CQDELAY=10
 #---txdelay (ms)
 TXDELAY=2
@@ -94,8 +94,8 @@ CWTONE=800
 #  PACKET INTERFACE             #
 #                               #
 #################################
-# Cluster: PI4TUE (Eindhoven)
-#TELNETHOST=131.155.192.179
+# Check the web for DX cluster nodes with telnet access
+#TELNETHOST=aaa.bbb.ccc.ddd
 #TELNETPORT=8000
 # automatic login ###############
 #CLUSTERLOGIN=yourcall
@@ -136,7 +136,7 @@ CWTONE=800
 #################################
 #
 #CLUSTER
-BANDMAP=S,900  # skipdupes, 900s livetime
+BANDMAP=S,900  # skip dupes, 900s lifetime
 #FILTER
 #
 SCOREWINDOW
@@ -153,12 +153,89 @@ PARTIALS
 #
 #################################
 #                               #
+#  CABRILLO                     #
+#                               #
+#################################
+#
+# Note: some of these logically
+# belong to the rule file
+#
+#-------------------------------
+# Example values for internal configs.
+# These are not written to the Cabrillo file.
+# Default value for all 3 fields below is empty (unset).
+#
+# The sent exchange. # stands for QSO number
+CABRILLO-EXCHANGE= #
+# Example for fixed exchange (e.g. CQ WW):
+#CABRILLO-EXCHANGE= 14
+#
+# A template with fields having the semantics as below.
+# The template is processed when the config is evaluated.
+# Note that in Cabrillo file the separator is ':'.
+#CABRILLO-TEMPLATE= station.cbr
+#
+# Format of QSO/QTC lines.
+# Same as the CABRILLO keyword, but can also be used in a template.
+CABRILLO-QSO-FORMAT= UNIVERSAL
+# or alternatively
+#CABRILLO= UNIVERSAL
+
+# Cabrillo header fields
+#   * value not in parentheses e.g. "9ACW" taken as-is
+#   * value in parentheses e.g. "(YES,NO)" will be asked interactively with that hint
+#   * a single dash "-" value disables the field (neither asked nor output)
+#   * field name without equal sign just enables the field
+#
+# >>> The values below are the defaults. <<<
+# The order of the fields follows the fixed output order.
+#
+CABRILLO-CONTEST= (CQ-WW-CW/SSB, CQ-WPX-CW/SSB, ARRL-DX-CW/SSB)
+# Callsign is the same as the one given by CALL. Can't be set or disabled.
+CABRILLO-CATEGORY-ASSISTED= (ASSISTED, NON-ASSISTED)
+CABRILLO-CATEGORY-BAND= (ALL,160M,80M,40M,20M,15M,10M)
+CABRILLO-CATEGORY-MODE= (CW,SSB,RTTY,MIXED)
+CABRILLO-CATEGORY-OPERATOR= (SINGLE-OP, MULTI-OP, CHECKLOG)
+CABRILLO-CATEGORY-POWER= (HIGH,LOW,QRP)
+CABRILLO-CATEGORY-STATION= (FIXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL)
+CABRILLO-CATEGORY-TIME= (6-HOURS, 12-HOURS, 24-HOURS)
+CABRILLO-CATEGORY-TRANSMITTER= (ONE, TWO, LIMITED, UNLIMITED, SWL)
+CABRILLO-CATEGORY-OVERLAY= (ROOKIE, TB-WIRES, NOVICE-TECH, OVER-50)
+CABRILLO-CERTIFICATE= -
+# Score is replaced with the calculated score. It can be disabled but not set.
+CABRILLO-CLAIMED-SCORE= 0
+CABRILLO-CLUB=
+CABRILLO-LOCATION= (section, IOTA name, RDA, State/Province, ...)
+# Locator automatically filled, if enabled and MYQRA is set
+CABRILLO-GRID-LOCATOR= -
+CABRILLO-NAME=
+CABRILLO-EMAIL= -
+# 3 generic address lines available
+CABRILLO-ADDRESS=
+CABRILLO-ADDRESS(2)= -
+CABRILLO-ADDRESS(3)= -
+CABRILLO-ADDRESS-CITY= -
+CABRILLO-ADDRESS-STATE-PROVINCE= -
+CABRILLO-ADDRESS-POSTALCODE= -
+CABRILLO-ADDRESS-COUNTRY= -
+CABRILLO-OPERATORS= (space delimited)
+CABRILLO-OFFTIME= (yyyy-mm-dd hhmm yyyy-mm-dd hhmm)
+# 3 soapbox lines available
+CABRILLO-SOAPBOX= (use any text editor to include more lines)
+CABRILLO-SOAPBOX(2)= -
+CABRILLO-SOAPBOX(3)= -
+#
+#################################
+#                               #
 #  CONDX (info for muf calc.)   #
 #                               #
 #################################
 #
 SUNSPOTS=30
 SFI=100
+# Note: set only one of them, preferred is SUNSPOTS
+# These are initial values only,
+# they get updated by WWV or WCY messages.
 #
 #################################
 #                               #
@@ -176,5 +253,9 @@ NOB4
 #
 # Marker file for Xplanet
 MARKERS=tlfmarkers
+# or for just dots
+#MARKERDOTS=tlfmarkers
+# or for dots+calss
+#MARKERCALLS=tlfmarkers
 #
 #############END#################
