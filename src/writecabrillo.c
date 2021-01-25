@@ -695,7 +695,7 @@ void write_adif_header(FILE *fp) {
     fprintf(fp, "Contest Name: %s\n", whichcontest);
     fputs("<adif_ver:4>3.10\n", fp);
     fputs("<programid:3>TLF\n", fp);
-    fprintf(fp, "<programversion:%ld>%s\n", strlen(VERSION), VERSION);
+    fprintf(fp, "<programversion:%zu>%s\n", strlen(VERSION), VERSION);
     fputs("<eoh>\n", fp);
 }
 
