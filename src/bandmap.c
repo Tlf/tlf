@@ -511,11 +511,11 @@ void bm_show_info() {
     move(TOPLINE, 66);
     vline(ACS_VLINE, LINES - TOPLINE - 1);
 
-    int x = (LINES - 1 + TOPLINE)/2;
+    int middle = (LINES - 1 + TOPLINE) / 2;
     int arrow = (grab_up ? ACS_DARROW : ACS_UARROW);
-    mvaddch(x-1, 66, arrow);
-    mvaddch(x, 66, arrow);
-    mvaddch(x+1, 66, arrow);
+    mvaddch(middle - 1, 66, arrow);
+    mvaddch(middle, 66, arrow);
+    mvaddch(middle + 1, 66, arrow);
 
     mvprintw(LASTLINE - 5, 67, " bands: %s", bm_config.allband ? "all" : "own");
     mvprintw(LASTLINE - 4, 67, " modes: %s", bm_config.allmode ? "all" : "own");
@@ -978,43 +978,32 @@ spot *bandmap_lookup(char *partialcall) {
  */
 
 spot *bandmap_next(bool upwards, freq_t freq) {
+
+    if (spots->len == 0) {
+	return NULL;
+    }
+
     spot *result = NULL;
 
-    if (spots->len > 0) {
-	int i;
+    pthread_mutex_lock(&bm_mutex);
 
-	pthread_mutex_lock(&bm_mutex);
+    freq_t f0 = freq + (upwards ? 1 : -1) * (TOLERANCE / 2);
 
-	if (upwards) {
-	    for (i = 0; i < spots->len; i++) {
-		spot *data;
-		data = g_ptr_array_index(spots, i);
+    for (int i = 0; i < spots->len; i++) {
+	int index = (upwards ? i : spots->len - 1 - i);
+	spot *data = g_ptr_array_index(spots, index);
+	// spot must be above/below f0 depending on direction
+	bool freq_ok = (upwards ? data->freq > f0 : data->freq < f0);
 
-		if ((data->freq > freq + TOLERANCE / 2) &&
-			(!bm_config.skipdupes || data->dupe == 0)) {
-		    /* copy data into a new Spot structure */
-		    result = copy_spot(data);
-
-		    break;
-		}
-	    }
-	} else {
-	    for (i = spots->len - 1; i >= 0; i--) {
-		spot *data;
-		data = g_ptr_array_index(spots, i);
-
-		if ((data->freq < freq - TOLERANCE / 2) &&
-			(!bm_config.skipdupes || data->dupe == 0)) {
-		    /* copy data into a new Spot structure */
-		    result = copy_spot(data);
-
-		    break;
-		}
-	    }
+	if (freq_ok && (!bm_config.skipdupes || !data->dupe)) {
+	    /* copy data into a new Spot structure */
+	    result = copy_spot(data);
+	    break;
 	}
-	pthread_mutex_unlock(&bm_mutex);
-
     }
+
+    pthread_mutex_unlock(&bm_mutex);
+
     return result;
 }
 
