@@ -110,7 +110,7 @@ void bmdata_write_file() {
 	sp = found->data;
 	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s\n",
 		sp->call, sp->freq, sp->mode, sp->band,
-		sp->node, (int)sp->timeout, sp->dupe, sp->cqzone,
+		sp->node, sp->timeout, sp->dupe, sp->cqzone,
 		sp->ctynr, g_strchomp(sp->pfx));
 	found = found->next;
     }
@@ -162,9 +162,9 @@ void bmdata_read_file() {
 			    break;
 			case 6:		sscanf(token, "%hhd", &entry->dupe);
 			    break;
-			case 7:		sscanf(token, "%u", &entry->cqzone);
+			case 7:		sscanf(token, "%d", &entry->cqzone);
 			    break;
-			case 8:		sscanf(token, "%u", &entry->ctynr);
+			case 8:		sscanf(token, "%d", &entry->ctynr);
 			    break;
 			case 9:		entry->pfx = g_strdup(token);
 			    break;

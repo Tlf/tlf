@@ -161,16 +161,13 @@ void calledit(void) {
 		if (strlen(hiscall) + 1 == 12)
 		    break;	// leave insert mode
 
-		if (((i >= 65) && (i <= 90)) || ((i >= 47) && (i <= 57))) {
-		    call1[b] = i;
-		    call1[b + 1] = '\0';
-		    if ((strlen(call1) + strlen(call2)) < 12) {
-			strcat(call1, call2);
-//                      if (strlen(call1) + strlen(hiscall) >= 12) break;
-			if (strlen(call1) >= 12)
-			    break;
-			strcpy(hiscall, call1);
-		    }
+		call1[b] = i;
+		call1[b + 1] = '\0';
+		if ((strlen(call1) + strlen(call2)) < 12) {
+		    strcat(call1, call2);
+		    if (strlen(call1) >= 12)
+			break;
+		    strcpy(hiscall, call1);
 		}
 
 		if ((b < strlen(hiscall) - 1) && (b <= 12))
