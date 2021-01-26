@@ -812,7 +812,8 @@ steps.  Return to logging with \(oqEscape\(cq.
 .
 .TP
 .B Ctrl-G
-Grab next DX spot from bandmap.
+Grab next DX spot from bandmap. The indicator on the right of the bandmap
+shows the current grabbing direction. It can be toggled with Ctrl-V.
 .
 .TP
 .B Ctrl-K
@@ -870,6 +871,10 @@ for more information.
 .TP
 .B Ctrl-T
 Show talk messages.  In the QTC window shows RTTY lines.
+.
+.TP
+.B Ctrl-V
+Toggle grabbing direction in which Ctrl-G looks for a spot.
 .
 .TP
 .B Ctrl-Z
