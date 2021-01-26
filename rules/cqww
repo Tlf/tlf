@@ -8,6 +8,12 @@ CONTEST=cqww
 LOGFILE=cqww.log
 CONTEST_MODE
 CABRILLO=CQWW
+CABRILLO-EXCHANGE=14
+CABRILLO-CONTEST= CQ-WW-CW
+CABRILLO-MODE= CW
+# or
+#CABRILLO-CONTEST= CQ-WW-SSB
+#CABRILLO-MODE= SSB
 #
 ##################################
 #                                #
