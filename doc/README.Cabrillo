@@ -1,47 +1,36 @@
-New cabrillo handling
-=====================
+CABRILLO FILE HANDLING
+======================
 
-In last years the cabrillo format became the de facto standard to sent in your
-contest results. It showed that the cabrillo implementation in TLF before 1.2.x
-had some severe limitations:
-
-- The old code supported only some fixed cabrillo formats for some selected
-  contests. It was not always possible to use that code to support newer 
-  contests.
-- Only cabrillo v2.0 got supported.
-- There were some bugs in formatting the QSO: line entries (e.g. formatting
-  the qso number).
- 
-
-The new cabrillo code (in writecabrillo.c) tries to fix the problems. It is
-based on a textual description of the cabrillo format to use, which can be
-easily extended by the user to support newer contests. 
+Recently Cabrillo format became the de facto standard to submit contest results.
+Tlf's approach to handle QSO and QTC lines is based on a textual description
+and can be easily extended by the user to support newer contests.
+Header fields can be specified either in config file or using an existing
+Cabrillo file as a template.
 
 
 WORKING PRINCIPLE
 =================
 
-The format descriptions are contained in a file 'cabrillo.fmt' in the
-/usr(/local)/share directory. It provides cabrillo format descriptions for
+The QSO/QTC format descriptions are contained in 'cabrillo.fmt' file in the
+/usr(/local)/share/tlf directory. It provides format descriptions for
 common contests. All descriptions are named and you have to specify which one
-has to be used with a statement in logcfg.dat or (better) in the contest rule 
+has to be used with a statement in logcfg.dat or (better) in the contest rule
 file with the following syntax:
 
-CABRILLO=<formatname>
+CABRILLO-QSO-FORMAT=<formatname>
+(or simply CABRILLO=<formatname> )
 
-You can put your own format file 'cabrillo.fmt' in your actual working 
-directory which gets precedence over the central one. <formatname> will 
-be searched first in your local format file. If it is not found there the
-search continues in the central file provided by TLF itself. If it is not
-found at all TLF will complain with an error message.
+You can put your own format file 'cabrillo.fmt' in your actual working
+directory which gets precedence over the central one.
+
 
 CABILLO.FMT
 ===========
 
-The format of cabrillo.fmt entries is as follows: 
+The format of cabrillo.fmt entries is as follows:
 
 * The file contains groups of lines which are interpreted as key-value pairs.
-* Each group describes a possible cabrillo format and has to be started by a
+* Each group describes a possible Cabrillo format and starts by a
   line containing the <formatname> in square brackets.
 * At the moment the following keywords are supported:
     QSO=...
@@ -50,10 +39,10 @@ The format of cabrillo.fmt entries is as follows:
 * Lines beginning with a '#' are interpreted as comments.
 * The 'QSO=' key has to be followed by a list of string, number pairs
   separated by semicolons.
-  Each pair specify one item to put into the QSO: line of the cabrillo file. 
-  The name of the item has to be followed by a comma ',' and a number 
-  specifying the character width of that field in the QSO: line. Items 
-  which are too wide will be truncated to that width.
+  Each pair specifies one item to put into the QSO: line.
+  The name of the item has to be followed by a comma ',' and a number
+  specifying the character width of that field in the QSO: line.
+  Values which are too wide will be truncated to that width.
 
   The following items names are supported:
 
@@ -65,8 +54,8 @@ The format of cabrillo.fmt entries is as follows:
   HISCALL Other sides call
   RST_S   RST sent
   RST_R   RST received
-  EXC_S   Exchange sent (May contain a '#' character, which gets replaced by 
-          the QSO number).
+  EXC_S   Exchange sent (May contain a '#' character, which gets replaced by
+          the QSO number formatted to 4 digits).
   EXCH    The complete received exchange line
   EXC1    First word of the received exchange, see *Exchange Separator* below
   EXC2    Second word of the received exchange
@@ -74,8 +63,9 @@ The format of cabrillo.fmt entries is as follows:
   EXC4    Fourth word of the received exchange
   TX      Number of the TX (for cqww or other contests).
 
-  All items represent one column in the resulting cabrillo log file. All 
+  All items represent one column in the resulting Cabrillo log file. All
   entries are separated by an additional space character.
+
 
 Exchange Separator
 ==================
@@ -99,7 +89,7 @@ The following entry
 [cwo]
 QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;EXC_S,14;HISCALL,13;EXC1,4;EXC2,9
 
-will be selected if 
+will be selected if
 
 CABRILLO=cwo
 
@@ -109,25 +99,26 @@ as in the following example:
 QSO: 28000 CW 2012-09-23 0815 DL1JBE        0001 Tom       HB9XXX        0023 Joe
 QSO: .....
 
-IMPORT CABRILLO
-===============
 
-You can import the existing cabrillo file, when you pass the "-i" argument at
-startup of Tlf. Logfile must be called YOURCALL.cbr, which is the standard name
-convention of Tlf. In this case, Tlf reads the configuration and rule files, so
+IMPORTING CABRILLO
+==================
+
+An existing Cabrillo file can be imported by starting Tlf with the "-i" option.
+The Cabrillo file must be called YOURCALL.cbr, which is the standard naming
+convention for Tlf. In this case, Tlf reads the configuration and rule files, so
 the scoring and multipliers will be used as your config describes. Your config also
 describes the CABRILLO format, that Tlf uses to parse the log to handle the fields
 correctly.
 
 The output file(s) will IMPORT_contest.log, where the contest is the name of
-contest in your rule/config file. Eg. my cabrillo is HA2OS.cbr, which must be
+contest in your rule/config file. Eg. my Cabrillo is HA2OS.cbr, which must be
 in the current directory. After the import, the result is IMPORT_cqww.log
 (if the contest name is cqww), so the Tlf doesn't write over the existing logfile.
 
-If you want to use the new, imported file, you have to move the old one, and rename
-the imported file.
+If you want to use the new, imported file, you have to move the old one,
+and rename the imported file.
 
-When the contest is WAE, and the rule file contains a valid QTC setup, and cabrillo
+When the contest is WAE, and the rule file contains a valid QTC setup, and Cabrillo
 contains lines with begin of "QTC:", then you will have the IMPORT_QTC_sent.log and
 IMPORT_QTC_recv.log. In this case, the original files also kept, and you have to
 archive and rename the files.
