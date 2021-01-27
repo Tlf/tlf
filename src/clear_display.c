@@ -45,8 +45,6 @@
 
 
 void show_header_line() {
-    extern const char headerline[];
-
     char *mode = "";
     switch (cqmode) {
 	case CQ:
@@ -68,16 +66,11 @@ void show_header_line() {
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvaddstr(0, 0, spaces(29));
     mvprintw(0, 0, "  %-8s  S=%2i D=%i ", mode, GetCWSpeed(), cqdelay);
-    mvaddstr(0, 21, headerline);
+    mvaddstr(0, 21, fkey_header);
 }
 
 
 void clear_display(void) {
-    extern char terminal1[];
-    extern char terminal2[];
-    extern char terminal3[];
-    extern char terminal4[];
-
     int cury, curx;
 
     getyx(stdscr, cury, curx);

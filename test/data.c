@@ -196,6 +196,9 @@ char message[25][80] = /**< Array of CW/DigiMode messages
     "", "", "", "", "", "", "", "", "", "", ""
 };
 
+char fkey_header[60] =
+    "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  ";
+
 char *digi_message[sizeof(message) / sizeof(message[0])];
 
 char ph_message[14][80] = /**< Array of file names for voice keyer messages
@@ -270,7 +273,6 @@ char wkeyerbuffer[400];
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
 int keyer_backspace = 0;
-int k_tune;
 int k_pin14;
 int k_ptt;
 char controllerport[80] = "/dev/ttyS0";

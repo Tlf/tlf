@@ -647,6 +647,12 @@ void test_qs_vkcqm(void **state) {
     assert_string_equal(qtc_phsend_message[CQ_TU_MSG], "b.wav");
 }
 
+void test_fkey_header(void **state) {
+    int rc = call_parse_logcfg("FKEY-HEADER = F1=CQ F2=XYZ \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(fkey_header, "F1=CQ F2=XYZ");
+}
+
 void test_call(void **state) {
     int rc = call_parse_logcfg("CALL = AB1CD\r\n");
     assert_int_equal(rc, PARSE_OK);

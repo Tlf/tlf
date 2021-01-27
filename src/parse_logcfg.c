@@ -1143,6 +1143,7 @@ static config_t logcfg_configs[] = {
     {"SC_DEVICE",       CFG_STRING_STATIC(sc_device, 40)},
     {"INITIAL_EXCHANGE",       CFG_STRING_STATIC(exchange_list, 40)},
     {"DIGIMODEM",       CFG_STRING_STATIC(rttyoutput, 120)},
+    {"FKEY-HEADER",     CFG_STRING_STATIC(fkey_header, sizeof(fkey_header))},
 
     {"CABRILLO",    CFG_STRING(cabrillo)},
     {"CALLMASTER",  CFG_STRING(callmaster_filename)},

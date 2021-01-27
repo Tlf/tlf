@@ -297,9 +297,8 @@ int txdelay = 0;
 int weight = 0;
 char weightbuf[4];
 int cqdelay = 8;
-int k_tune;
-int k_pin14;
-int k_ptt;
+int k_pin14 = 0;
+int k_ptt = 0;
 
 int miniterm = 0;		/* is miniterm for digimode active? */
 char modem_mode[8];
@@ -381,7 +380,7 @@ freq_t bandfrequency[NBANDS] = {
     28025000, 0.
 };
 
-const char headerline[] =
+char fkey_header[60] =
     "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  ";
 const char *backgrnd_str;
 
@@ -591,6 +590,19 @@ void ui_color_init() {
 	init_pair(C_INPUT, tlfcolors[6][0], tlfcolors[6][1]);     // Bl/Y
 	init_pair(C_BORDER, tlfcolors[7][0], tlfcolors[7][1]);    // W/B
     }
+}
+
+static void center_fkey_header() {
+    int width = sizeof(fkey_header) - 1;
+    if (strlen(fkey_header) == width) {
+	return;     // already OK
+    }
+    int left_padding = (width - strlen(fkey_header)) / 2;
+    int right_padding = width - strlen(fkey_header) - left_padding;
+    char tmp[sizeof(fkey_header)];
+    strcpy(tmp, fkey_header);
+    sprintf(fkey_header, "%s%s%s",
+	    spaces(left_padding), tmp, spaces(right_padding));
 }
 
 static void init_variables() {
@@ -985,6 +997,7 @@ int main(int argc, char *argv[]) {
 
     packet_init();
 
+    center_fkey_header();
     clear_display();		/* tidy up the display */
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (j = 13; j <= LINES - 1; j++) {	/* wipe lower window */

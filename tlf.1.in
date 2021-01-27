@@ -1672,6 +1672,13 @@ message.
 Up to 10 additional messages.
 .
 .TP
+\fBFKEY-HEADER\fR=\fI"short description of your defined F-keys"\fR
+The actual F-key assignments shown on the top of the main logging screen.
+Maximum length is 59.
+The default is:
+\(lq1=CQ\ \ 2=DE\ \ 3=RST\ 4=73\ \ 5=HIS\ \ 6=MY\ \ 7=B4\ \ \ 8=AGN\ \ 9=?\(rq
+.
+.TP
 .B SHORT_SERIAL
 Uses short form for serial number (599=5NN, 001=TT1).
 .
