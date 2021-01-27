@@ -381,7 +381,7 @@ freq_t bandfrequency[NBANDS] = {
 };
 
 char fkey_header[60] =
-    "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  ";
+    "1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?";
 const char *backgrnd_str;
 
 char logline_edit[5][LOGLINELEN + 1];
@@ -597,8 +597,8 @@ static void center_fkey_header() {
     if (strlen(fkey_header) == width) {
 	return;     // already OK
     }
-    int left_padding = (width - strlen(fkey_header)) / 2;
-    int right_padding = width - strlen(fkey_header) - left_padding;
+    int right_padding = (width - strlen(fkey_header)) / 2;
+    int left_padding = width - strlen(fkey_header) - right_padding;
     char tmp[sizeof(fkey_header)];
     strcpy(tmp, fkey_header);
     sprintf(fkey_header, "%s%s%s",
