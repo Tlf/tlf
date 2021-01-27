@@ -7,19 +7,19 @@ Alt-A     Cluster info                  Alt-B   Band up
 Alt-T     Tune                          Alt-N   Note in log
 Alt-V     Band down (CW Speed?)         Alt-P   Turn PTT on/off
 Alt-H     Show help.txt                 Alt-W   CW Weight
-Alt-I     See talk messages             Alt-J   See QRG's
+Alt-I     Show talk messages            Alt-J   See QRG's
 Alt-K     CW from Keyboard              Alt-X   Exit program (Alt-q)
 Alt-M     Multi display (Alt-c)         Alt-S   Score window (Alt-r)
 Alt-,     Show bandmap                  Alt-J   Show frequency
 Alt-Z     Show worked zones             Alt-G   Grab call (min. 2 letters from bandmap)
 
 <CTRL+?>
-Ctrl-A      Add a spot to list
-Ctrl-C      Quit Tlf                    Ctrl-B    Cluster send
-Ctrl-G      Grab a bandmap spot         Ctrl-P    MUF display
+Ctrl-A      Add a spot to list          Ctrl-B    Cluster send
+Ctrl-C      Quit Tlf                    Ctrl-P    MUF display
+Ctrl-G      Grab a bandmap spot         Ctrl-V    Toggle grab direction
 Ctrl-PgUp   Auto CQ delay +             Ctrl-PgDn Auto CQ delay -
 Ctrl-K      CW from keyboard            Ctrl-F    Frequency control window
-Ctrl-T      Send message                Ctrl-R    LPT0 pin 14 on/off (SSB mic)
+Ctrl-T      Show talk messages          Ctrl-R    LPT0 pin 14 on/off (SSB mic)
 
 
 <direct keyboard commands>

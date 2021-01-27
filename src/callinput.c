@@ -243,6 +243,10 @@ int callinput(void) {
 	}
 
 	switch (x) {
+	    // Ctrl-V: toggle grab direction
+	    case CTRL_V:
+		grab_up = !grab_up;
+		break;
 
 	    // Plus (+)
 	    // - in non-CT mode switch to other mode (CQ <-> S&P)
@@ -504,7 +508,7 @@ int callinput(void) {
 
 		attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-		mvprintw(12, 29, "            ");
+		mvprintw(12, 29, spaces(12));
 		mvprintw(12, 29, "");
 		refreshp();
 		break;
@@ -920,8 +924,8 @@ int callinput(void) {
 		if (lan_active) {
 
 		    for (t = 0; t <= 5; t++)
-			mvprintw(14 + t, 1,
-				 "                                                            ");
+			mvprintw(14 + t, 1, spaces(60));
+
 		    for (t = 0; t <= 4; t++)
 			mvprintw(15 + t, 1, talkarray[t]);
 		    nicebox(14, 0, 5, 59, "Messages");
@@ -930,8 +934,7 @@ int callinput(void) {
 		    key_get();
 		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
-			mvprintw(14 + t, 0,
-				 "                                                             ");
+			mvprintw(14 + t, 0, spaces(61));
 
 		    clear_display();
 		}
