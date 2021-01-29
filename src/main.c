@@ -592,7 +592,7 @@ void ui_color_init() {
     }
 }
 
-static void center_fkey_header() {
+void center_fkey_header() {
     int width = sizeof(fkey_header) - 1;
     if (strlen(fkey_header) == width) {
 	return;     // already OK

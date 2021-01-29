@@ -65,6 +65,7 @@
 #include "writecabrillo.h"
 #include "addmult.h"
 
+void center_fkey_header();
 
 void wipe_display();
 
@@ -329,6 +330,7 @@ int changepars(void) {
 	    read_logcfg();
 	    read_rules();	/* also reread rules file */
 	    TLF_LOG_INFO("Logcfg.dat loaded, parameters written.");
+            center_fkey_header();
 	    clear_display();
 	    break;
 	}
