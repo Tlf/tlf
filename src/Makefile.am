@@ -4,7 +4,7 @@ AM_CFLAGS = @AM_CFLAGS@ @PTHREAD_CFLAGS@ @HAMLIB_CFLAGS@ @CURSES_CFLAGS@
 bin_PROGRAMS = tlf
 
 tlf_SOURCES = \
-	addarea.c addcall.c addmult.c addpfx.c addspot.c audio.c autocq.c \
+	addcall.c addmult.c addpfx.c addspot.c audio.c autocq.c \
 	background_process.c bandmap.c bands.c \
 	cabrillo_utils.c calledit.c callinput.c changefreq.c changepars.c \
 	change_rst.c checklogfile.c checkqtclogfile.c \
@@ -41,7 +41,7 @@ tlf_LDADD = @LIBM_LIB@ @PTHREAD_LIBS@ @GLIB_LIBS@ @PANEL_LIBS@ @CURSES_LIBS@ \
 	    @LIBXMLRPC_UTIL_LIB@
 
 noinst_HEADERS = \
-	addarea.h addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \
+	addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \
 	background_process.h bandmap.h bands.h \
 	cabrillo_utils.h calledit.h callinput.h changefreq.h changepars.h \
 	change_rst.h checklogfile.h checkqtclogfile.h \
