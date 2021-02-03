@@ -48,6 +48,7 @@ typedef struct {
 } dxcc_data;
 
 extern bool have_exact_matches;
+extern char cty_dat_version[12];
 
 void prefix_init(void);
 
