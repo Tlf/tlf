@@ -711,7 +711,9 @@ void networkinfo(void) {
     else
 	mvprintw(12 + nodes, 10, "Band output: off");
 
-    mvprintw(13 + nodes, 10, "cty.dat    : %s",
+    mvprintw(13 + nodes, 10, "callmaster : %s",
+	     (callmaster_version[0] != 0 ? callmaster_version : "n/a"));
+    mvprintw(14 + nodes, 10, "cty.dat    : %s",
 	     (cty_dat_version[0] != 0 ? cty_dat_version : "n/a"));
 
     refreshp();

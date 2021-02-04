@@ -53,9 +53,12 @@
 #include "addmult.h"
 #include "utils.h"
 
+#define CALLMASTER_DEFAULT "callmaster"
+#define CALLMASTER_SIZE 16000       // initial allocation size
 
 char *callmaster_filename = NULL;
 GPtrArray *callmaster = NULL;
+char callmaster_version[12];   // VERyyyymmdd
 
 char searchresult[MAX_CALLS][82];
 char result[MAX_CALLS][82];
@@ -773,6 +776,7 @@ void searchlog() {
 
 /* loading callmaster database */
 static void init_callmaster(void) {
+    callmaster_version[0] = 0;
     if (callmaster) {
 	g_ptr_array_free(callmaster, TRUE);
     }
@@ -791,7 +795,7 @@ int load_callmaster(void) {
     init_callmaster();
 
     if (callmaster_filename == NULL)
-	callmaster_filename = g_strdup("callmaster");
+	callmaster_filename = g_strdup(CALLMASTER_DEFAULT);
 
     callmaster_location = find_available(callmaster_filename);
 
@@ -813,6 +817,11 @@ int load_callmaster(void) {
 	/* skip comment lines and calls shorter than 3 chars */
 	if (s_inputbuffer[0] == '#' || strlen(s_inputbuffer) < 3) {
 	    continue;
+	}
+
+	/* store version */
+	if (strlen(s_inputbuffer) == 11 && strncmp(s_inputbuffer, "VER", 3) == 0) {
+	    strcpy(callmaster_version, s_inputbuffer);      // save it
 	}
 
 	char *call = g_ascii_strup(s_inputbuffer, 11);
