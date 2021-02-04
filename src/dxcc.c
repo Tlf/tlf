@@ -31,6 +31,7 @@
 GPtrArray *dxcc;
 GPtrArray *prefix;
 bool have_exact_matches;
+char cty_dat_version[12];   // VERyyyymmdd
 
 prefix_data dummy_pfx = {
     "No Prefix",
@@ -76,6 +77,12 @@ prefix_data *prefix_by_index(unsigned int index) {
 
 /* add a new prefix description */
 void prefix_add(char *pfxstr) {
+
+    char *ver = (*pfxstr == '=' ? pfxstr + 1 : pfxstr);
+    if (strlen(ver) == 11 && strncmp(ver, "VER", 3) == 0) {
+	strcpy(cty_dat_version, ver);    // save it
+    }
+
     gchar *loc;
     gint last_index = dxcc_count() - 1;
     dxcc_data *last_dx = dxcc_by_index(last_index);
@@ -148,6 +155,7 @@ void dxcc_free(gpointer data) {
 }
 
 void dxcc_init(void) {
+    cty_dat_version[0] = 0;
     if (dxcc) {
 	g_ptr_array_free(dxcc, TRUE);
     }
