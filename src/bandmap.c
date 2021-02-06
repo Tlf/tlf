@@ -178,9 +178,7 @@ void bmdata_read_file() {
 		    entry->timeout -= timediff;	/* remaining time */
 		    allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
 		} else {
-		    g_free(entry->call);
-		    g_free(entry->pfx);
-		    g_free(entry);
+		    free_spot(entry);
 		}
 	    }
 	}
@@ -402,18 +400,14 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	spot *olddata;
 	olddata = found->prev->data;
 	allspots = g_list_remove_link(allspots, found->prev);
-	g_free(olddata->call);
-	g_free(olddata->pfx);
-	g_free(olddata);
+	free_spot(olddata);
     }
     if (found->next &&
 	    (DISTANCE(((spot *)(found->next)->data)->freq, freq) < TOLERANCE)) {
 	spot *olddata;
 	olddata = found->next->data;
 	allspots = g_list_remove_link(allspots, found->next);
-	g_free(olddata->call);
-	g_free(olddata->pfx);
-	g_free(olddata);
+	free_spot(olddata);
     }
 
 
@@ -442,9 +436,7 @@ void bandmap_age() {
 	}
 	if (data->timeout == 0) {
 	    allspots = g_list_remove_link(allspots, temp);
-	    g_free(data->call);
-	    g_free(data->pfx);
-	    g_free(data);
+	    free_spot(data);
 	}
     }
 
