@@ -73,6 +73,8 @@ void test_best_match(void **state) {
     assert_string_equal(best_prefix("4U1U"), "");;
     assert_string_equal(best_prefix("EA3XYZ"), "EA");
     assert_string_equal(best_prefix("EA8XYZ"), "EA8");
+    assert_string_equal(best_prefix("W3A"), "W");
+    assert_string_equal(best_prefix("KL7ND"), "KL");
 }
 
 void test_location_known(void **state) {
