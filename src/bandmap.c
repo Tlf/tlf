@@ -81,8 +81,9 @@ bm_config_t bm_config = {
 static bool bm_initialized = false;
 
 char *qtc_format(char *call);
-
 gint cmp_freq(spot *a, spot *b);
+void free_spot(spot *data);
+spot *copy_spot(spot *data);
 
 /*
  * write bandmap spots to a file
@@ -204,7 +205,7 @@ void bm_init() {
     init_pair(CB_OLD, COLOR_YELLOW, COLOR_WHITE);
     init_pair(CB_MULTI, COLOR_WHITE, COLOR_BLUE);
 
-    spots = g_ptr_array_sized_new(128);
+    spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
 
     bmdata_read_file();
 
@@ -270,6 +271,13 @@ gint	cmp_freq(spot *a, spot *b) {
     if (af < bf)  return -1;
     if (af > bf)  return  1;
     return 0;
+}
+
+/* free an allocated spot */
+void free_spot(spot * data) {
+	g_free(data->call);
+	g_free(data->pfx);
+	g_free(data);
 }
 
 /** add a new spot to bandmap data
@@ -713,9 +721,9 @@ void bandmap_show() {
      * filter spotlist according to settings */
 
     if (spots)
-	g_ptr_array_free(spots, TRUE);		/* free array */
-
-    spots = g_ptr_array_sized_new(128);	/* allocate new one */
+	g_ptr_array_free(spots, TRUE);		/* free spot array */
+						/* allocate new one */
+    spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
 
     list = allspots;
 
@@ -736,7 +744,8 @@ void bandmap_show() {
 		(! bm_config.onlymults || multi)) {
 
 	    data -> dupe = dupe;
-	    g_ptr_array_add(spots, data);
+	    spot *copy = copy_spot(data);
+	    g_ptr_array_add(spots, copy);
 	}
 
 	list = list->next;
@@ -909,7 +918,7 @@ void bm_menu() {
 spot *copy_spot(spot *data) {
     spot *result = NULL;
 
-    result = g_new(spot, 1);
+    result = g_new0(spot, 1);
     result -> call = g_strdup(data -> call);
     result -> freq = data -> freq;
     result -> mode = data -> mode;
