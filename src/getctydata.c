@@ -42,22 +42,17 @@ int location_unknown(const char *call) {
 				(GRegexCompileFlags)0, (GRegexMatchFlags)0);
 }
 
+extern GHashTable *hashed_prefix;
+
 /* search for a full match of 'call' in the pfx table */
 int find_full_match(const char *call) {
-    int i, w;
-    prefix_data *pfx;
-    int pfxmax = prefix_count();
+    void *value;
+    int  w = -1;
 
-    w = -1;
-    for (i = 0; i < pfxmax; i++) {
-	pfx = prefix_by_index(i);
-	if (have_exact_matches && !pfx->exact)
-	    continue;
-	if (strcmp(call, pfx->pfx) == 0) {
-	    w = i;
-	    break;
-	}
+    if (g_hash_table_lookup_extended(hashed_prefix, call, NULL, &value)) {
+	w = GPOINTER_TO_INT(value);
     }
+
     return w;
 }
 
