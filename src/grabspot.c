@@ -102,8 +102,7 @@ static freq_t execute_grab(spot *data) {
 
     refreshp();
 
-    g_free(data->call);
-    g_free(data);
+    free_spot(data);
 
     return f;
 }

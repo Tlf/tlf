@@ -61,6 +61,9 @@ enum {
     CB_MULTI
 };
 
+/* free an allocated spot */
+void free_spot(spot * data);
+
 /*
  * write bandmap spots to a file
  */
