@@ -42,14 +42,12 @@ int location_unknown(const char *call) {
 				(GRegexCompileFlags)0, (GRegexMatchFlags)0);
 }
 
-extern GHashTable *hashed_prefix;
-
 /* search for a full match of 'call' in the pfx table */
 int find_full_match(const char *call) {
     void *value;
     int  w = -1;
 
-    if (g_hash_table_lookup_extended(hashed_prefix, call, NULL, &value)) {
+    if (lookup_hashed_prefix(call, &value)) {
 	w = GPOINTER_TO_INT(value);
     }
 
@@ -66,7 +64,7 @@ int find_best_match(const char *call) {
 	return w;
 
     /* first try full match */
-    if (g_hash_table_lookup_extended(hashed_prefix, call, NULL, &value)) {
+    if (lookup_hashed_prefix(call, &value)) {
 	w = GPOINTER_TO_INT(value);
 	return w;
     }
@@ -76,7 +74,7 @@ int find_best_match(const char *call) {
      */
     for (int i = strlen(call) - 1; i > 0; i--) {
 	char *temp = g_strndup(call, i);
-	if (g_hash_table_lookup_extended(hashed_prefix, temp, NULL, &value)) {
+	if (lookup_hashed_prefix(temp, &value)) {
 	    int idx = GPOINTER_TO_INT(value);
 	    if (!prefix_by_index(idx)->exact) {
 		w = idx;

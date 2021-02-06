@@ -22,6 +22,7 @@
 #define DXCC_H
 
 #include <stdbool.h>
+#include <glib.h>
 
 typedef struct {
     char *pfx;
@@ -55,6 +56,8 @@ void prefix_init(void);
 unsigned int prefix_count(void);
 
 prefix_data *prefix_by_index(unsigned int index);
+
+gboolean lookup_hashed_prefix(const char *key, void *value);
 
 void prefix_add(char *pfxstr);
 

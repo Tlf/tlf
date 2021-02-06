@@ -81,6 +81,15 @@ prefix_data *prefix_by_index(unsigned int index) {
     return (prefix_data *)g_ptr_array_index(prefix, index);
 }
 
+/* lookup key in table of hashed prefixes
+ * \return - true, if found in HashTable
+ * \param key - part of call to look up
+ * \param value - the corresponding prefix index
+ */
+gboolean lookup_hashed_prefix(const char *key, void *value) {
+    return g_hash_table_lookup_extended(hashed_prefix, key, NULL, value);
+}
+
 /* add a new prefix description */
 void prefix_add(char *pfxstr) {
 
