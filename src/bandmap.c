@@ -656,6 +656,54 @@ freq_t bm_get_center(int band, int mode) {
     return centerfrequency;
 }
 
+/*
+ * filter 'allspots' list according to settings and prepare 'spots' array with
+ * selected spots
+ */
+void filter_spots() {
+    GList *list;
+    spot *data;
+    bool dupe, multi;
+    /* acquire mutex
+     * do not add new spots to allspots during
+     * - aging and
+     * - filtering
+     * furthermore do not allow call lookup as long as
+     * filtered spot array is build anew */
+
+    pthread_mutex_lock(&bm_mutex);
+
+    if (spots)
+	g_ptr_array_free(spots, TRUE);		/* free spot array */
+						/* allocate new one */
+    spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
+
+    list = allspots;
+
+    while (list) {
+	data = list->data;
+
+	/* if spot is allband or allmode is set or band or mode matches
+	 * actual one than add it to the filtered 'spot' array
+	 * drop spots on WARC bands if in contest mode
+	 */
+	multi = bm_ismulti(NULL, data, data->band);
+	dupe = bm_isdupe(data->call, data->band);
+
+	if ((!iscontest || !IsWarcIndex(data->band))         &&
+		(bm_config.allband || (data->band == bandinx)) &&
+		(bm_config.allmode || (data->mode == trxmode)) &&
+		(bm_config.showdupes || !dupe) &&
+		(! bm_config.onlymults || multi)) {
+
+	    data -> dupe = dupe;
+	    spot *copy = copy_spot(data);
+	    g_ptr_array_add(spots, copy);
+	}
+	list = list->next;
+    }
+    pthread_mutex_unlock(&bm_mutex);
+}
 
 void bandmap_show() {
     /*
@@ -691,60 +739,13 @@ void bandmap_show() {
      * - 'B', 'D', 'M', 'O' switches filtering for band, dupes, mode and multiPlier on or off.
      */
 
-    GList *list;
     spot *data;
     int curx, cury;
     int bm_x, bm_y;
     int i, j;
-    bool dupe, multi;
 
     bm_init();
-
-    /* acquire mutex
-     * do not add new spots to allspots during
-     * - aging and
-     * - filtering
-     * furthermore do not allow call lookup as long as
-     * filtered spot array is build anew */
-
-    pthread_mutex_lock(&bm_mutex);
-
-    /* make array of spots to display
-     * filter spotlist according to settings */
-
-    if (spots)
-	g_ptr_array_free(spots, TRUE);		/* free spot array */
-						/* allocate new one */
-    spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
-
-    list = allspots;
-
-    while (list) {
-	data = list->data;
-
-	/* if spot is allband or allmode is set or band or mode matches
-	 * actual one than add it to the filtered 'spot' array
-	 * drop spots on WARC bands if in contest mode
-	 */
-	multi = bm_ismulti(NULL, data, data->band);
-	dupe = bm_isdupe(data->call, data->band);
-
-	if ((!iscontest || !IsWarcIndex(data->band))         &&
-		(bm_config.allband || (data->band == bandinx)) &&
-		(bm_config.allmode || (data->mode == trxmode)) &&
-		(bm_config.showdupes || !dupe) &&
-		(! bm_config.onlymults || multi)) {
-
-	    data -> dupe = dupe;
-	    spot *copy = copy_spot(data);
-	    g_ptr_array_add(spots, copy);
-	}
-
-	list = list->next;
-    }
-
-    pthread_mutex_unlock(&bm_mutex);
-
+    filter_spots();
 
     /* afterwards display filtered list around own QRG +/- some offest
      * (offset gets reset if we change frequency */
