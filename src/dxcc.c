@@ -30,6 +30,7 @@
 
 GPtrArray *dxcc;
 GPtrArray *prefix;
+GHashTable *hashed_prefix;
 bool have_exact_matches;
 char cty_dat_version[12];   // VERyyyymmdd
 
@@ -56,6 +57,11 @@ void prefix_free(gpointer data) {
 
 
 void prefix_init(void) {
+    if (hashed_prefix) {
+	g_hash_table_destroy(hashed_prefix);
+    }
+    hashed_prefix = g_hash_table_new(g_str_hash, g_str_equal);
+
     if (prefix) {
 	g_ptr_array_free(prefix, TRUE);
     }
@@ -73,6 +79,15 @@ prefix_data *prefix_by_index(unsigned int index) {
 	return &dummy_pfx;
 
     return (prefix_data *)g_ptr_array_index(prefix, index);
+}
+
+/* lookup key in table of hashed prefixes
+ * \return - true, if found in HashTable
+ * \param key - part of call to look up
+ * \param value - the corresponding prefix index
+ */
+gboolean lookup_hashed_prefix(const char *key, void *value) {
+    return g_hash_table_lookup_extended(hashed_prefix, key, NULL, value);
 }
 
 /* add a new prefix description */
@@ -141,6 +156,9 @@ void prefix_add(char *pfxstr) {
     new_prefix -> dxcc_index = last_index;
 
     g_ptr_array_add(prefix, new_prefix);
+    g_hash_table_insert(hashed_prefix,
+	    new_prefix->pfx,
+	    GINT_TO_POINTER(prefix_count() - 1));
 }
 
 
