@@ -657,11 +657,11 @@ freq_t bm_get_center(int band, int mode) {
 }
 
 /* small helpers for filter_spots() */
-bool band_matches(spot *data) {
+static bool band_matches(spot *data) {
     return (data->band == bandinx);
 }
 
-bool mode_matches(spot *data) {
+static bool mode_matches(spot *data) {
     return (data->mode == trxmode);
 }
 
