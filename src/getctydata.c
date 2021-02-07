@@ -62,6 +62,17 @@ int find_best_match(const char *call) {
 
     if (call == NULL)
 	return w;
+#if 1
+    extern int prefix_hash_key(const char *); // to be moved to .h
+    extern int two_char_prefix_index[];
+    /* first check if it has a unique 2-char prefix */
+    if (strlen(call) >= 2) {
+	int key = prefix_hash_key(call);
+	if (two_char_prefix_index[key] >= 0) {
+	    return two_char_prefix_index[key];
+	}
+    }
+#endif
 
     /* first try full match */
     if (lookup_hashed_prefix(call, &value)) {
@@ -72,18 +83,18 @@ int find_best_match(const char *call) {
     /* stepwise shorten the call and pick up first one -> maximum length
      * Be careful to not use entries which require an exact match
      */
-    for (int i = strlen(call) - 1; i > 0; i--) {
-	char *temp = g_strndup(call, i);
+    char *temp = g_strdup(call);
+    for (int len = strlen(call) - 1; len >= 1; len--) {
+	temp[len] = 0;  // truncate to len
 	if (lookup_hashed_prefix(temp, &value)) {
 	    int idx = GPOINTER_TO_INT(value);
 	    if (!prefix_by_index(idx)->exact) {
 		w = idx;
-		g_free(temp);
 		break;
 	    }
 	}
-	g_free(temp);
     }
+    g_free(temp);
 
     return w;
 }

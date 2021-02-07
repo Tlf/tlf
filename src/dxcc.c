@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include <glib.h>
 #include <math.h>
@@ -31,8 +32,14 @@
 GPtrArray *dxcc;
 GPtrArray *prefix;
 GHashTable *hashed_prefix;
+int two_char_prefix_index[36 * 36];
 bool have_exact_matches;
 char cty_dat_version[12];   // VERyyyymmdd
+
+enum {
+    TCPI_NONE = -1,
+    TCPI_AMB = -2,
+};
 
 prefix_data dummy_pfx = {
     "No Prefix",
@@ -66,6 +73,29 @@ void prefix_init(void) {
 	g_ptr_array_free(prefix, TRUE);
     }
     prefix = g_ptr_array_new_with_free_func(prefix_free);
+    have_exact_matches = false;
+    for (int i = 0; i < 36 * 36; i++) {
+	two_char_prefix_index[i] = TCPI_NONE;
+    }
+}
+
+/* convert char to base36 */
+int to_base36(char c) {
+    if (isdigit(c)) {
+	return c - '0';
+    }
+    if (isupper(c)) {
+	return 10 + c - 'A';
+    }
+    return 0;   // rest is mapped to zero
+}
+
+/* get hash key for a call/prefix */
+int prefix_hash_key(const char *call) {
+    if (call[0] == 0) { // normally call is never empty
+	return 0;
+    }
+    return to_base36(call[0]) + 36 * to_base36(call[1]);
 }
 
 /* return number of entries in prefix array */
@@ -156,9 +186,20 @@ void prefix_add(char *pfxstr) {
     new_prefix -> dxcc_index = last_index;
 
     g_ptr_array_add(prefix, new_prefix);
+    int index = prefix_count() - 1;
     g_hash_table_insert(hashed_prefix,
-	    new_prefix->pfx,
-	    GINT_TO_POINTER(prefix_count() - 1));
+			new_prefix->pfx,
+			GINT_TO_POINTER(index));
+
+    /* build 2-char prefix hash */
+    if (strlen(pfxstr) >= 2) {
+	int key = prefix_hash_key(pfxstr);
+	if (two_char_prefix_index[key] == TCPI_NONE) {
+	    two_char_prefix_index[key] = index;     // first one
+	} else {
+	    two_char_prefix_index[key] = TCPI_AMB;  // ambiguous
+	}
+    }
 }
 
 
