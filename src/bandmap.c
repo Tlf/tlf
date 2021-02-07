@@ -656,6 +656,15 @@ freq_t bm_get_center(int band, int mode) {
     return centerfrequency;
 }
 
+/* small helpers for filter_spots() */
+static bool band_matches(spot *data) {
+    return (data->band == bandinx);
+}
+
+static bool mode_matches(spot *data) {
+    return (data->mode == trxmode);
+}
+
 /*
  * filter 'allspots' list according to settings and prepare 'spots' array with
  * selected spots
@@ -678,29 +687,36 @@ void filter_spots() {
 						/* allocate new one */
     spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
 
-    list = allspots;
 
-    while (list) {
+    for(list = allspots; list; list = list->next)	{
 	data = list->data;
 
-	/* if spot is allband or allmode is set or band or mode matches
-	 * actual one than add it to the filtered 'spot' array
-	 * drop spots on WARC bands if in contest mode
-	 */
-	multi = bm_ismulti(NULL, data, data->band);
+	/* check and mark spot as dupe */
 	dupe = bm_isdupe(data->call, data->band);
+	data -> dupe = dupe;
 
-	if ((!iscontest || !IsWarcIndex(data->band))         &&
-		(bm_config.allband || (data->band == bandinx)) &&
-		(bm_config.allmode || (data->mode == trxmode)) &&
-		(bm_config.showdupes || !dupe) &&
-		(! bm_config.onlymults || multi)) {
+	/* ignore spots on WARC bands if in contest mode */
+	if (iscontest && IsWarcIndex(data->band))
+	    continue;
 
-	    data -> dupe = dupe;
+	/* ignore dupes if not forced */
+	if (dupe && !bm_config.showdupes)
+	    continue;
+
+	/* Ignore non-multis if we want to show only multis */
+	multi = bm_ismulti(NULL, data, data->band);
+	if (!multi && bm_config.onlymults)
+	    continue;
+
+	/* if spot is allband or allmode is set or band or mode matches
+	 * than add to the filtered 'spot' array
+	 */
+	if ( (bm_config.allband || band_matches(data)) &&
+	    (bm_config.allmode || mode_matches(data))) {
+
 	    spot *copy = copy_spot(data);
 	    g_ptr_array_add(spots, copy);
 	}
-	list = list->next;
     }
     pthread_mutex_unlock(&bm_mutex);
 }
