@@ -201,7 +201,6 @@ void bm_init() {
     init_pair(CB_NORMAL, COLOR_BLUE, COLOR_WHITE);
     init_pair(CB_DUPE, COLOR_BLACK, COLOR_WHITE);
     init_pair(CB_OLD, COLOR_YELLOW, COLOR_WHITE);
-    init_pair(CB_MULTI, COLOR_WHITE, COLOR_BLUE);
 
     spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
 
@@ -522,20 +521,22 @@ void bm_show_info() {
     mvprintw(LASTLINE - 3, 67, " dupes: %s", bm_config.showdupes ? "yes" : "no");
     mvprintw(LASTLINE - 2, 67, " onl.ml: %s", bm_config.onlymults ? "yes" : "no");
 
-    attrset(COLOR_PAIR(CB_NEW) | A_STANDOUT);
-    mvprintw(LASTLINE - 1, 67, "  MULTI");
-
     attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
-    printw(" NEW");
+    mvprintw(LASTLINE - 1, 67, " NEW");
 
     attrset(COLOR_PAIR(CB_NORMAL));
-    mvprintw(LASTLINE, 67, "SPOT");
+    printw(" SPOT");
 
     attrset(COLOR_PAIR(CB_OLD));
     printw(" OLD");
 
     attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    printw(" dupe");
+    mvprintw(LASTLINE, 67, " dupe");
+
+    attrset(COLOR_PAIR(CB_NORMAL));
+    printw(" M");
+    attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+    printw("-ulti");
 
     attroff(A_BOLD | A_STANDOUT);
 
@@ -550,6 +551,7 @@ void bm_show_info() {
  * - aged	brown
  * - worked	small caps */
 void colorize_spot(spot *data) {
+
     if (data -> timeout > SPOT_NORMAL)
 	attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
 
@@ -559,12 +561,7 @@ void colorize_spot(spot *data) {
     else
 	attrset(COLOR_PAIR(CB_OLD));
 
-    if (bm_ismulti(NULL, data, data->band)) {
-	attrset(COLOR_PAIR(CB_NEW) | A_STANDOUT);
-	attron(A_STANDOUT);
-    }
-
-    else if (data->dupe && bm_config.showdupes) {
+    if (data->dupe && bm_config.showdupes) {
 	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
 	attroff(A_STANDOUT);
     }
@@ -597,12 +594,20 @@ char *format_spot(spot *data) {
  */
 void show_spot(spot *data) {
     attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    printw("%7.1f %c ", data->freq / 1000.,
+    printw("%7.1f%c", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node));
+
+    if (bm_ismulti(NULL, data, data->band)) {
+	attrset(COLOR_PAIR(CB_NORMAL));
+	printw("M");
+	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+    } else {
+	printw(" ");
+    }
 
     char *temp = format_spot(data);
     colorize_spot(data);
-    printw("%-12s", temp);
+    printw(" %-12s", temp);
     g_free(temp);
 }
 
@@ -612,8 +617,9 @@ void show_spot(spot *data) {
  */
 void show_spot_on_qrg(spot *data) {
 
-    printw("%7.1f %c ", (data->freq / 1000.),
-	   (data->node == thisnode ? '*' : data->node));
+    printw("%7.1f%c%c ", (data->freq / 1000.),
+	   (data->node == thisnode ? '*' : data->node),
+	   bm_ismulti(NULL, data, data->band) ? 'M' : ' ');
 
     char *temp = format_spot(data);
     printw("%-12s", temp);
@@ -728,20 +734,20 @@ void bandmap_show() {
      * - all mode  on/off
      * - dupes     on/off
      *
-     * If more entries to show than room in window, show around current frequency
+     * If more entries to show than room in window, show around
+     * current frequency
      *
      * mark entries according to age, source and worked state. Mark new multis
      * - new 	brigth blue
      * - normal	blue
-     * - aged	black
+     * - aged	brown
      * - worked	small caps
-     * - new multi	underlined
+     * - new multi	mark with blue M between QRG and call
      * - self announced stations
      *   		small preceeding letter for reporting station
      *
-     * maybe show own frequency as dashline in other color
-     * (maybee green highlighted)
-     * - highligth actual spot if near its frequency
+     * show own frequency as dashline in green color
+     * - highligth actual spot if near own frequency
      *
      * Allow selection of one of the spots (switches to S&P)
      * - Ctrl-G as known
@@ -752,7 +758,8 @@ void bandmap_show() {
      * - cursormovement
      * - 'ESC' leaves mode
      * - 'Enter' selects spot
-     * - 'B', 'D', 'M', 'O' switches filtering for band, dupes, mode and multiPlier on or off.
+     * - 'B', 'D', 'M', 'O' switches filtering for band, dupes, mode
+     *   and multiPlier on or off.
      */
 
     spot *data;
