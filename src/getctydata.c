@@ -62,7 +62,7 @@ int find_best_match(const char *call) {
 
     if (call == NULL)
 	return w;
-#if 1
+
     extern int prefix_hash_key(const char *); // to be moved to .h
     extern int two_char_prefix_index[];
     /* first check if it has a unique 2-char prefix */
@@ -72,7 +72,6 @@ int find_best_match(const char *call) {
 	    return two_char_prefix_index[key];
 	}
     }
-#endif
 
     /* first try full match */
     if (lookup_hashed_prefix(call, &value)) {
