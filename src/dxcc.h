@@ -57,7 +57,9 @@ unsigned int prefix_count(void);
 
 prefix_data *prefix_by_index(unsigned int index);
 
-gboolean lookup_hashed_prefix(const char *key, void *value);
+int find_full_match(const char *call);
+
+int find_best_match(const char *call);
 
 void prefix_add(char *pfxstr);
 

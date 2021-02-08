@@ -42,61 +42,6 @@ int location_unknown(const char *call) {
 				(GRegexCompileFlags)0, (GRegexMatchFlags)0);
 }
 
-/* search for a full match of 'call' in the pfx table */
-int find_full_match(const char *call) {
-    void *value;
-    int  w = -1;
-
-    if (lookup_hashed_prefix(call, &value)) {
-	w = GPOINTER_TO_INT(value);
-    }
-
-    return w;
-}
-
-
-/* search for the best mach of 'call' in pfx table */
-int find_best_match(const char *call) {
-    void *value;
-    int w = -1;
-
-    if (call == NULL)
-	return w;
-
-    extern int prefix_hash_key(const char *); // to be moved to .h
-    extern int two_char_prefix_index[];
-    /* first check if it has a unique 2-char prefix */
-    if (strlen(call) >= 2) {
-	int key = prefix_hash_key(call);
-	if (two_char_prefix_index[key] >= 0) {
-	    return two_char_prefix_index[key];
-	}
-    }
-
-    /* first try full match */
-    if (lookup_hashed_prefix(call, &value)) {
-	w = GPOINTER_TO_INT(value);
-	return w;
-    }
-
-    /* stepwise shorten the call and pick up first one -> maximum length
-     * Be careful to not use entries which require an exact match
-     */
-    char *temp = g_strdup(call);
-    for (int len = strlen(call) - 1; len >= 1; len--) {
-	temp[len] = 0;  // truncate to len
-	if (lookup_hashed_prefix(temp, &value)) {
-	    int idx = GPOINTER_TO_INT(value);
-	    if (!prefix_by_index(idx)->exact) {
-		w = idx;
-		break;
-	    }
-	}
-    }
-    g_free(temp);
-
-    return w;
-}
 
 /* replace callsign area (K2ND/4 -> K4ND)
  *
