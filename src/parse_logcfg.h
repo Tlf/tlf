@@ -40,6 +40,7 @@ int parse_configfile(FILE *fp);
 int parse_logcfg(char *inputbuffer);
 
 extern char *error_details;
+extern int tune_seconds;
 
 ////////////////////////////////////
 // config parsing definitions

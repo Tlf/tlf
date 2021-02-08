@@ -932,7 +932,7 @@ Add Note to log.
 .
 .TP
 .B Alt-P
-Toggle PTT (via \fBcwdaemon\rR).
+Toggle PTT (via \fBcwdaemon\fR).
 .
 .TP
 .B Alt-Q
@@ -956,7 +956,9 @@ Toggle score window.
 .TP
 .B Alt-T
 Tune your transceiver (via \fBcwdaemon\fR).
-Activates PTT and Key output for 6 seconds. Stop tuning by pressing any key.
+Activates PTT and Key output, by default for 6 seconds. Stop tuning by pressing any key.
+You can override the default value using the \fBTUNE_SECONDS\fR= configuration statement.
+In addition to \fBcwdaemon\fR, tune also works with \fBwinkeydaemon\fR (tested 1.0.10 by ha5se).
 .
 .TP
 .B Alt-V
@@ -1677,6 +1679,13 @@ The actual F-key assignments shown on the top of the main logging screen.
 Maximum length is 59.
 The default is:
 \(lq1=CQ\ \ 2=DE\ \ 3=RST\ 4=73\ \ 5=HIS\ \ 6=MY\ \ 7=B4\ \ \ 8=AGN\ \ 9=?\(rq
+.
+.TP
+\fBTUNE_SECONDS\fR=\fItuning-seconds\fR
+Specify how many seconds you allow tune (Alt-T) remain active before automatically terminating transmit.
+Must be between 1 and 100. The default value is 6, to maintain compatibility with previous TLF versions.
+After 100 seconds, tuning will automatically be terminated, to allow your PA (and perhaps you too ;-) )
+to cool down a bit...
 .
 .TP
 .B SHORT_SERIAL

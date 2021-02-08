@@ -265,6 +265,7 @@ char sc_device[40] = "/dev/dsp";
 /*-------------------------------------keyer------------------------------*/
 int keyerport = NO_KEYER;
 int txdelay = 0;
+int tune_seconds = 16;
 int weight = 0;
 char weightbuf[4];
 char tonestr[5] = "600";
