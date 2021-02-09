@@ -61,7 +61,12 @@ char *full_prefix(char *call) {
     return pfx->pfx;
 }
 
+#undef TEST_LOOKUP_SPEED
+
 void test_xspeed(void **state) {
+#ifndef TEST_LOOKUP_SPEED
+    assert_true(1);
+#else
     static char callmaster[] =  TOP_SRCDIR "/share/callmaster";
     char call[36000][16];
 
@@ -97,6 +102,7 @@ void test_xspeed(void **state) {
     for (int i = 0; i < N; ++i) {
 	int j = (int)(n * drand48());
 	int w = find_best_match(call[j]);
+	w = w;				/* quell warning about unused var */
 #if 0
 	printf("%d -> %s: %d\n", j, call[j], w);
 	prefix_data *pfx = prefix_by_index(w);
@@ -112,6 +118,7 @@ void test_xspeed(void **state) {
 
     printf("took %" PRIu64 " us, rate is %g us/call\n",
 	   delta_us, (double)delta_us / N);
+#endif
 }
 
 void test_full_match(void **state) {
