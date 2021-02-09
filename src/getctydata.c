@@ -42,51 +42,6 @@ int location_unknown(const char *call) {
 				(GRegexCompileFlags)0, (GRegexMatchFlags)0);
 }
 
-/* search for a full match of 'call' in the pfx table */
-int find_full_match(const char *call) {
-    void *value;
-    int  w = -1;
-
-    if (lookup_hashed_prefix(call, &value)) {
-	w = GPOINTER_TO_INT(value);
-    }
-
-    return w;
-}
-
-
-/* search for the best mach of 'call' in pfx table */
-int find_best_match(const char *call) {
-    void *value;
-    int w = -1;
-
-    if (call == NULL)
-	return w;
-
-    /* first try full match */
-    if (lookup_hashed_prefix(call, &value)) {
-	w = GPOINTER_TO_INT(value);
-	return w;
-    }
-
-    /* stepwise shorten the call and pick up first one -> maximum length
-     * Be careful to not use entries which require an exact match
-     */
-    for (int i = strlen(call) - 1; i > 0; i--) {
-	char *temp = g_strndup(call, i);
-	if (lookup_hashed_prefix(temp, &value)) {
-	    int idx = GPOINTER_TO_INT(value);
-	    if (!prefix_by_index(idx)->exact) {
-		w = idx;
-		g_free(temp);
-		break;
-	    }
-	}
-	g_free(temp);
-    }
-
-    return w;
-}
 
 /* replace callsign area (K2ND/4 -> K4ND)
  *

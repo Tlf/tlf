@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include <glib.h>
 #include <math.h>
@@ -31,8 +32,14 @@
 GPtrArray *dxcc;
 GPtrArray *prefix;
 GHashTable *hashed_prefix;
+int two_char_prefix_index[36 * 36];
 bool have_exact_matches;
 char cty_dat_version[12];   // VERyyyymmdd
+
+enum {
+    TCPI_NONE = -1,
+    TCPI_AMB = -2,
+};
 
 prefix_data dummy_pfx = {
     "No Prefix",
@@ -66,6 +73,29 @@ void prefix_init(void) {
 	g_ptr_array_free(prefix, TRUE);
     }
     prefix = g_ptr_array_new_with_free_func(prefix_free);
+    have_exact_matches = false;
+    for (int i = 0; i < 36 * 36; i++) {
+	two_char_prefix_index[i] = TCPI_NONE;
+    }
+}
+
+/* convert char to base36 */
+static int to_base36(char c) {
+    if (isdigit(c)) {
+	return c - '0';
+    }
+    if (isupper(c)) {
+	return 10 + c - 'A';
+    }
+    return 0;   // rest is mapped to zero
+}
+
+/* get hash key for a call/prefix */
+static int prefix_hash_key(const char *call) {
+    if (call[0] == 0) { // normally call is never empty
+	return 0;
+    }
+    return to_base36(call[0]) + 36 * to_base36(call[1]);
 }
 
 /* return number of entries in prefix array */
@@ -81,14 +111,71 @@ prefix_data *prefix_by_index(unsigned int index) {
     return (prefix_data *)g_ptr_array_index(prefix, index);
 }
 
-/* lookup key in table of hashed prefixes
+/** lookup key in table of hashed prefixes
  * \return - true, if found in HashTable
  * \param key - part of call to look up
  * \param value - the corresponding prefix index
  */
-gboolean lookup_hashed_prefix(const char *key, void *value) {
+static gboolean lookup_hashed_prefix(const char *key, void *value) {
     return g_hash_table_lookup_extended(hashed_prefix, key, NULL, value);
 }
+
+
+/* search for a full match of 'call' in the pfx table */
+int find_full_match(const char *call) {
+    void *value;
+    int  w = -1;
+
+    if (lookup_hashed_prefix(call, &value)) {
+	w = GPOINTER_TO_INT(value);
+    }
+
+    return w;
+}
+
+
+
+/* search for the best mach of 'call' in pfx table */
+int find_best_match(const char *call) {
+    void *value;
+    int w = -1;
+
+    if (call == NULL)
+	return w;
+
+    /* first check if it has a unique 2-char prefix */
+    if (strlen(call) >= 2) {
+	int key = prefix_hash_key(call);
+	if (two_char_prefix_index[key] >= 0) {
+	    return two_char_prefix_index[key];
+	}
+    }
+
+    /* first try full match */
+    if (lookup_hashed_prefix(call, &value)) {
+	w = GPOINTER_TO_INT(value);
+	return w;
+    }
+
+    /* stepwise shorten the call and pick up first one -> maximum length
+     * Be careful to not use entries which require an exact match
+     */
+    char *temp = g_strdup(call);
+    for (int len = strlen(call) - 1; len >= 1; len--) {
+	temp[len] = 0;  // truncate to len
+	if (lookup_hashed_prefix(temp, &value)) {
+	    int idx = GPOINTER_TO_INT(value);
+	    if (!prefix_by_index(idx)->exact) {
+		w = idx;
+		break;
+	    }
+	}
+    }
+    g_free(temp);
+
+    return w;
+}
+
 
 /* add a new prefix description */
 void prefix_add(char *pfxstr) {
@@ -156,9 +243,20 @@ void prefix_add(char *pfxstr) {
     new_prefix -> dxcc_index = last_index;
 
     g_ptr_array_add(prefix, new_prefix);
+    int index = prefix_count() - 1;
     g_hash_table_insert(hashed_prefix,
-	    new_prefix->pfx,
-	    GINT_TO_POINTER(prefix_count() - 1));
+			new_prefix->pfx,
+			GINT_TO_POINTER(index));
+
+    /* build 2-char prefix hash */
+    if (strlen(pfxstr) >= 2) {
+	int key = prefix_hash_key(pfxstr);
+	if (two_char_prefix_index[key] == TCPI_NONE) {
+	    two_char_prefix_index[key] = index;     // first one
+	} else {
+	    two_char_prefix_index[key] = TCPI_AMB;  // ambiguous
+	}
+    }
 }
 
 
