@@ -32,7 +32,7 @@
 
 #include "cqww_simulator.h"
 #include "callinput.h"
-#include "displayit.h"
+#include "clear_display.h"
 #include "globalvars.h"
 #include "keystroke_names.h"
 #include "lancode.h"

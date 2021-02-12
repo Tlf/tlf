@@ -375,10 +375,6 @@ const char *backgrnd_str =
 
 char logline_edit[5][LOGLINELEN + 1];
 
-char terminal1[88] = "";
-char terminal2[88] = "";
-char terminal3[88] = "";
-char terminal4[88] = "";
 char termbuf[88] = "";
 int termbufcount = 0;
 

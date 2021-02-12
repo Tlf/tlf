@@ -20,7 +20,7 @@
 
 #include <glib.h>
 
-#include "displayit.h"
+#include "clear_display.h"
 #include "dxcc.h"
 #include "focm.h"
 #include "getctydata.h"
