@@ -28,6 +28,7 @@
 #include "dxcc.h"
 #include "focm.h"
 #include "changepars.h"
+#include "globalvars.h"
 #include "keystroke_names.h"
 #include "setcontest.h"
 #include "tlf.h"
@@ -37,9 +38,6 @@
 
 
 void show_mults(void) {
-
-    extern int countries[MAX_DATALINES];
-    extern int bandinx;
 
     int i, j, k, l, bandmask = 0;
     static char prefix[5];

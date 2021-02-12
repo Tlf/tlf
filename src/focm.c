@@ -32,10 +32,6 @@
 #include "bands.h"
 
 
-extern int showscore_flag;
-extern int searchflg;
-extern int total;
-extern int countries[];
 
 struct pos {
     int column;
@@ -104,9 +100,6 @@ static int nr_of_bands(int x) {
  */
 static void count_56_banders() {
     int i, nr;
-
-    extern worked_t worked[];
-    extern int nr_worked;
 
     five_banders = 0;
     six_banders = 0;
@@ -279,7 +272,6 @@ static gboolean show_it(gpointer key, gpointer val, gpointer data) {
 
 
 void foc_show_cty() {
-    extern struct ie_list *main_ie_list;
 
     GTree *tree;
     struct pos pos;

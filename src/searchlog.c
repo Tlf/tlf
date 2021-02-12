@@ -200,7 +200,6 @@ static bool show_partial(int *row, int *col, char *call,
 }
 
 int displayPartials(char *suggested_call) {
-    extern int dupe;
 
     int row, col, k;
     char *loc;
@@ -305,8 +304,6 @@ int displayPartials(char *suggested_call) {
 
 /* Display list of partials and handle USEPARTIALS auto-completion */
 void handlePartials(void) {
-    extern int use_part;
-    extern int block_part;
 
     char suggested_call[LOGLINELEN + 1] = "";
     int nr_suggested;
@@ -329,7 +326,6 @@ void handlePartials(void) {
 
 /* Parses searchresult and prepare string for searchwindow display from it */
 void extractData(int index) {
-    extern int show_time;
 
     g_strlcpy(result[index], searchresult[index], 7);    /* band + mode */
 
@@ -372,8 +368,6 @@ int bandstr2line(char *buffer) {
 // return true if the qso was in the same mode as the current one
 //
 static bool is_current_mode(const char *qso) {
-    extern int trxmode;
-    extern bool mixedmode;
 
     if (!mixedmode) {
 	return true;    // always true if not in mixed mode
@@ -387,7 +381,6 @@ static bool is_current_mode(const char *qso) {
  * copy found QSO to 'searchresults'. Extract relevant data to 'result'.
  * */
 void filterLog() {
-    extern char qsos[MAX_QSOS][LOGLINELEN + 1];
 
     char s_inputbuffer[LOGLINELEN + 1] = "";
 
@@ -430,7 +423,6 @@ static bool band_matches(const char *line) {
 }
 
 static bool line_matches_actual_qso(const char *line) {
-    extern bool qso_once;
 
     if (call_matches(line)
 	    && (band_matches(line) || qso_once)
@@ -446,8 +438,6 @@ static bool line_matches_actual_qso(const char *line) {
 
 
 void displaySearchResults(void) {
-    extern int dupe;
-    extern bool ignoredupe;
 
     int r_index;
     char buffer[LOGLINELEN + 1] = "";
@@ -537,13 +527,7 @@ int getZone() {
 }
 
 void displayWorkedZonesCountries(int z) {
-    extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
-    extern int pfxnummultinr;
-    extern int countries[MAX_DATALINES];
-    extern int zones[MAX_ZONES];
     extern int pacc_qsos[10][10];
-    extern int w_cty;
-    extern int ve_cty;
     extern int ja_cty;
     extern int zl_cty;
     extern int vk_cty;
@@ -714,17 +698,6 @@ void displayWorkedZonesCountries(int z) {
 
 void searchlog() {
 
-    extern int searchflg;
-    extern int dupe;
-    extern int partials;
-    extern int countrynr;
-    extern char pxstr[];
-    extern char hiscall[];
-    extern char zone_export[];
-    extern char zone_fix[];
-    extern int wazmult;
-    extern int itumult;
-
     dxcc_data *dx;
     int zone;
 
@@ -853,8 +826,6 @@ int load_callmaster(void) {
 
 /*  --------------------------------------------------------------  */
 void show_needed_sections(void) {
-    extern int nr_multis;
-    extern mults_t multis[MAX_MULTS];
 
     int j, vert, hor, cnt, found;
     char mprint[50];

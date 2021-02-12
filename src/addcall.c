@@ -63,11 +63,6 @@ int excl_add_veto;
  */
 
 int addcall(void) {
-    extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
-    extern int pfxnummultinr;
-    extern int addcallarea;
-    extern bool continentlist_only;
-    extern int exclude_multilist_type;
 
     static int found = 0;
     static int i, j, z = 0;
@@ -228,14 +223,6 @@ int addcall(void) {
 
 int addcall2(void) {
 
-    extern pfxnummulti_t pfxnummulti[MAXPFXNUMMULT];
-    extern int pfxnummultinr;
-    extern int addcallarea;
-    extern bool continentlist_only;
-
-    extern int pfxmultab;
-    extern int exclude_multilist_type;
-    extern int trxmode;
 
     int found = 0;
     int i, j, p, z = 0;

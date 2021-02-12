@@ -27,7 +27,7 @@ Planned for later versions
     599 if CHANGE_RST is active. Extend keywords so that you can prepare a 
     list of most used RST values which will then be used for scrolling,
     e.g. CHANGE_RST=339,479,599 or similar.
-[ ] Have a template for cabrillo file header  (Joop PG4I)
+[x] Have a template for cabrillo file header  (suggested by Joop PG4I)
 [ ] Add a keyword to startup TLF in S&P mode (should be an easy one)
 [ ] switch between ESM and CT mode during contest (Nate N0NB)
 [ ] Send Morse via Hamlib for radios that support it.

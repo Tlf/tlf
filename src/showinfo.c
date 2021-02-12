@@ -50,8 +50,6 @@
 
 void showinfo(int x) {
 
-    extern char cqzone[];
-    extern char ituzone[];
     extern double DEST_Lat;
     extern double DEST_Long;
     extern char itustr[];

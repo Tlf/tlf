@@ -21,6 +21,7 @@
 
 #include <string.h>
 
+#include "globalvars.h"
 #include "initial_exchange.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -34,12 +35,6 @@
  *
  * \return 1 - found, -1 - not found, 0 - call field was empty */
 int recall_exchange(void) {
-
-    extern int nr_worked;
-    extern worked_t worked[];
-    extern char hiscall[];
-    extern char comment[];
-    extern struct ie_list *main_ie_list;
 
     int i, l;
     int found = -1;

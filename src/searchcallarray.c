@@ -74,8 +74,6 @@ bool worked_in_current_minitest_period(int found) {
 
 
 bool is_dupe(char *call, int bandindex, int mode) {
-    extern bool qso_once;
-    extern bool mixedmode;
 
     int index;
 

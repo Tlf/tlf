@@ -103,7 +103,7 @@ int dx_arrlsections = 0;
 int serial_section_mult = 0;
 int serial_or_section = 0;	/* exchange is serial OR section, like HA-DX */
 int serial_grid4_mult = 0;
-int qso_once = 0;
+bool qso_once = false;
 int addcallarea_once = 0;
 int noleadingzeros;
 int ctcomp = 0;

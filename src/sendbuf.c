@@ -41,14 +41,12 @@
 #include "tlf_curses.h"
 #include "write_keyer.h"
 
-extern char ph_message[14][80];
 
 #define BUFSIZE   81
 char buffer[BUFSIZE];
 
 /** shorten CW numbers */
 char short_number(char c) {
-    extern int shortqsonr;
 
     if (shortqsonr == SHORTCW) {
 	if (c == '9')  return 'N';
@@ -168,12 +166,6 @@ void replace_all(char *buf, int size, const char *what, const char *rep) {
 
 void ExpandMacro(void) {
 
-    extern char hiscall[20];
-    extern char hiscall_sent[];
-    extern char qsonrstr[5];
-    extern char comment[];
-    extern char lastqsonr[];
-    extern int early_started;
     extern int noleadingzeros;
 
     int i;
@@ -242,12 +234,7 @@ void ExpandMacro(void) {
 
 
 void sendbuf(void) {
-    extern int trxmode;
-    extern int searchflg;
     extern char termbuf[];
-    extern int cwkeyer;
-    extern int digikeyer;
-    extern int sending_call;
 
     static char printlinebuffer[82] = "";
 

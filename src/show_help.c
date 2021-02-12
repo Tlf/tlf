@@ -30,11 +30,10 @@
 #include <glib/gstdio.h>
 
 #include "clear_display.h"
+#include "globalvars.h"
 #include "ignore_unused.h"
 #include "tlf_curses.h"
 #include "utils.h"
-
-extern SCREEN *mainscreen;
 
 
 /** \brief Show help file

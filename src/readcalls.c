@@ -51,11 +51,6 @@
 #include "tlf_curses.h"
 #include "zone_nr.h"
 
-extern bool continentlist_only;
-extern int pfxnummultinr;
-extern pfxnummulti_t pfxnummulti[];
-extern int exclude_multilist_type;
-
 
 void init_scoring(void) {
     /* reset counter and score anew */
@@ -484,8 +479,6 @@ int log_read_n_score() {
 //------------------------------------------------------------------------
 
 int synclog(char *synclogfile) {
-
-    extern char logfile[];
 
     char wgetcmd[120] = "wget ftp://";	//user:password@hst/dir/file
     char date_buf[60];

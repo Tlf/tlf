@@ -22,14 +22,13 @@
 
 #include "getctydata.h"
 #include "getpx.h"
+#include "globalvars.h"
 #include "tlf.h"
 #include "bands.h"
 
 
 int pacc_pa(void) {
 
-    extern int w_cty;
-    extern int ve_cty;
     extern int zl_cty;
     extern int ja_cty;
     extern int py_cty;
@@ -39,14 +38,7 @@ int pacc_pa(void) {
     extern int zs_cty;
     extern int ua9_cty;
 
-    extern char pxstr[];
-    extern int addcallarea;
-    extern char hiscall[];
-    extern int bandinx;
-    extern int countrynr;
-    extern int countryscore[];
     extern int pacc_qsos[10][10];
-//extern int band_score[];
 
     int pxnr;
     /* FIXME: Initialisation is wrong as 0 is bandindex for 160m */

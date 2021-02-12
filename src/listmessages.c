@@ -40,7 +40,6 @@
 char  printbuffer[160];
 
 char *formatMessage(int i) {
-    extern char message[][80];
 
     /* copy the message string WITHOUT trailing newline/space */
     if (trxmode == DIGIMODE)

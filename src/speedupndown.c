@@ -28,6 +28,7 @@
 #include "clear_display.h"
 #include "cw_utils.h"
 #include "err_utils.h"
+#include "globalvars.h"
 #include "netkeyer.h"
 #include "sendbuf.h"
 #include "tlf.h"
@@ -35,8 +36,6 @@
 
 
 void setspeed(void) {
-
-    extern int cwkeyer;
 
     int retval = 0;
     char buff[3];
@@ -75,7 +74,6 @@ void setspeed(void) {
  *
  *--------------------------------------------------------------*/
 int speedup(void) {
-    extern int trxmode;
 
     if (trxmode != CWMODE)
 	return (0);
@@ -96,7 +94,6 @@ int speedup(void) {
  *
  *--------------------------------------------------------------*/
 int speeddown(void) {
-    extern int trxmode;
 
     if (trxmode != CWMODE)	/* bail out, this is an SSB contest */
 	return (0);
@@ -114,8 +111,6 @@ int speeddown(void) {
 
 /*  write weight to netkeyer */
 int setweight(int weight) {
-
-    extern int cwkeyer;
 
     int retval;
     char buff[4];

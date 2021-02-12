@@ -30,6 +30,7 @@
 #include <ctype.h>
 
 #include "clear_display.h"
+#include "globalvars.h"
 #include "keystroke_names.h"
 #include "netkeyer.h"
 #include "nicebox.h"		// Includes curses.h
@@ -52,13 +53,6 @@
 void mfj1278_control(int x);
 
 void keyer(void) {
-
-    extern cqmode_t cqmode;
-    extern int trxmode;
-    extern int cwkeyer;
-    extern int digikeyer;
-    extern int weight;
-    extern int keyer_backspace;
 
     static WINDOW *win = NULL;
     static PANEL *panel = NULL;
@@ -315,7 +309,6 @@ void keyer(void) {
 /* ----------------  convert input for 1278 ctrl -----------------------*/
 
 void mfj1278_control(int x) {
-    extern int trxmode;
 
     if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
