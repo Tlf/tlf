@@ -152,6 +152,7 @@ extern int zonedisplay;
 extern int rigptt;
 extern int k_ptt;
 extern int k_pin14;
+extern int tune_seconds;
 extern int sending_call;
 extern int exclude_multilist_type;
 extern int partials;
