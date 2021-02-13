@@ -199,6 +199,7 @@ char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = MARKER_NONE;
 int rigptt = 0;
+int tune_seconds;               /* tune up time in seconds for Alt-T */
 
 char message[25][80] = /**< Array of CW messages
  			*
@@ -616,6 +617,7 @@ static void init_variables() {
     packetinterface = 0;
     nodes = 0;
     shortqsonr = 0;
+    tune_seconds = 6;   /* tune up for 6 s */
 
     /* Disable CT Mode until CTCOMPATIBLE is defined. */
     ctcomp = 0;

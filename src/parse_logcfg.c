@@ -1118,6 +1118,7 @@ static config_t logcfg_configs[] = {
     {"CWPOINTS",        CFG_INT(cwpoints, 0, INT32_MAX)},
     {"WEIGHT",          CFG_INT(weight, -50, 50)},
     {"TXDELAY",         CFG_INT(txdelay, 0, 50)},
+    {"TUNE_SECONDS",    CFG_INT(tune_seconds, 1, 100)},
     {"RIGMODEL",        CFG_INT(myrig_model, 0, 99999)},
     {"COUNTRY_LIST_POINTS", CFG_INT(countrylist_points, 0, INT32_MAX)},
     {"MY_COUNTRY_POINTS",   CFG_INT(my_country_points, 0, INT32_MAX)},
