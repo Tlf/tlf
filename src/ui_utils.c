@@ -26,6 +26,7 @@
 
 #include "clear_display.h"
 #include "clusterinfo.h"
+#include "globalvars.h"
 #include "keystroke_names.h"
 #include "stoptx.h"
 #include "tlf_panel.h"
@@ -33,7 +34,6 @@
 #include "splitscreen.h"
 
 
-extern int use_rxvt;
 extern int ymax, xmax;
 
 int key_kNXT3 = 0;

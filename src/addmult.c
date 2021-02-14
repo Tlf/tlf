@@ -336,7 +336,6 @@ void add_mult_line(char *line) {
  * \return number of loaded multipliers (nr of entries in mults_possible)
  * */
 int init_and_load_multipliers(void) {
-    extern char multsfile[];	// Set by parse_logcfg()
 
     FILE *cfp;
     char s_inputbuffer[186] = "";

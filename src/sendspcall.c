@@ -40,10 +40,6 @@
  *         after use
  */
 char *PrepareSPcall() {
-    extern int demode;
-    extern int trxmode;
-    extern int digikeyer;
-    extern char hiscall[];
 
     char *buf = g_malloc(80);
     char *c;
@@ -89,10 +85,6 @@ char *PrepareSPcall() {
 
 
 void sendspcall(void) {
-
-    extern int trxmode;
-    extern char message[][80];
-    extern char ph_message[14][80];
 
     if (trxmode == CWMODE || trxmode == DIGIMODE) {
 

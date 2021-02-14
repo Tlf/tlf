@@ -20,6 +20,7 @@
 #include <hamlib/rig.h>
 
 #include "freq_display.h"
+#include "globalvars.h"
 #include "nicebox.h"		// Includes curses.h
 #include "tlf.h"
 #include "ui_utils.h"
@@ -30,9 +31,6 @@ static void print_big_number(int number, int y_position, int x_position,
 			     int location);
 
 void freq_display(void) {
-
-    extern freq_t freq;
-    extern int trxmode;
 
     const int x_position = 40;
     const int y_position = 17;

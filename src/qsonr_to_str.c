@@ -26,10 +26,9 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "globalvars.h"
 
 void qsonr_to_str(void) {
-    extern int qsonum;
-    extern char qsonrstr[5];
 
     if (qsonum < 0 || qsonum > 9999) { // should in fact never happen ...
 	strcpy(qsonrstr, "????");

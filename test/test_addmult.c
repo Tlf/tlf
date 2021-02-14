@@ -17,9 +17,6 @@
 // OBJECT ../src/utils.o
 
 
-extern char multsfile[];	/* name of file with a list of allowed
-				   multipliers */
-
 /* dummies */
 int getctynr(char *checkcall) {
     return 42;

@@ -127,11 +127,6 @@ int get_nr_of_points() {
 
 /* get total number of multis */
 int get_nr_of_mults() {
-    extern float fixedmult;
-    extern int multlist;
-    extern int multscore[];
-    extern int bandweight_multis[NBANDS];
-    extern int pfxmultab;
 
     int n;
     int totalzones;
@@ -231,19 +226,7 @@ int get_total_score() {
  */
 void showscore(void) {
 
-    extern int showscore_flag;
-    extern int country_mult;
-    extern int wysiwyg_once;
-    extern int wysiwyg_multi;
     extern int totalmults;
-    extern int qsonum;
-    extern int total;
-    extern int bandinx;
-    extern int multscore[];
-    extern int serial_section_mult;
-    extern int sectn_mult;
-    extern int dx_arrlsections;
-    extern float fixedmult;
 
     int i, l10;
     float p;

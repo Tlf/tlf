@@ -103,7 +103,7 @@ int dx_arrlsections = 0;
 int serial_section_mult = 0;
 int serial_or_section = 0;	/* exchange is serial OR section, like HA-DX */
 int serial_grid4_mult = 0;
-int qso_once = 0;
+bool qso_once = false;
 int addcallarea_once = 0;
 int noleadingzeros;
 int ctcomp = 0;
@@ -376,10 +376,6 @@ const char *backgrnd_str =
 
 char logline_edit[5][LOGLINELEN + 1];
 
-char terminal1[88] = "";
-char terminal2[88] = "";
-char terminal3[88] = "";
-char terminal4[88] = "";
 char termbuf[88] = "";
 int termbufcount = 0;
 

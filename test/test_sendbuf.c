@@ -30,15 +30,11 @@ void replace_all(char *buf, int size, const char *what,
 
 
 /* break dependencies */
-extern int digikeyer;
-extern int cwkeyer;
 
-extern char message[25][80];
 extern char buffer[];
 extern char wkeyerbuffer[400];
-extern int demode;
 char *SPcall;
-extern int sending_call, data_ready, shortqsonr;
+extern int data_ready;
 
 void keyer_append(const char *string) { }
 int play_file(char *file) { return 0; }

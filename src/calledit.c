@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "getctydata.h"
+#include "globalvars.h"
 #include "keystroke_names.h"
 #include "searchlog.h"		// Includes glib.h
 #include "showinfo.h"
@@ -36,9 +37,6 @@
 
 
 void calledit(void) {
-
-    extern char hiscall[];
-    extern int block_part;
 
     int i = 0, l, b;
     int j = 0;
@@ -199,8 +197,6 @@ void calledit(void) {
 }
 
 int insert_char(int curposition) {
-
-    extern char hiscall[];
 
     char call1[30], call2[10];
     int ichr = 0;

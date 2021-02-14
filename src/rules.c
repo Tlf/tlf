@@ -36,9 +36,6 @@
 #include "utils.h"
 
 
-extern char whichcontest[];
-extern char logfile[];
-
 /* This function overrides the parse_logcfg() details */
 /* 10.09.2003 - LZ3NY */
 

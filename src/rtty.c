@@ -32,6 +32,7 @@
 #include <unistd.h>
 
 #include "err_utils.h"
+#include "globalvars.h"
 #include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "startmsg.h"
@@ -45,9 +46,6 @@ static char ry_term[5][50] = { "", "", "", "", "" };
 
 /* ----------------------- initialize  controller ------------------------ */
 int init_controller() {
-
-    extern char controllerport[];
-    extern int digikeyer;
 
     struct termios termattribs;
 
@@ -176,10 +174,6 @@ void ry_addchar(char c) {
 
 void show_rtty(void) {
 
-    extern int miniterm;
-    extern int commentfield;
-    extern char comment[];
-
     if (!miniterm) {
 	return;
     }
@@ -210,9 +204,6 @@ void show_rtty(void) {
 /* ---------------------  receive rtty ----------------------------------- */
 
 int rx_rtty() {
-
-    extern int miniterm;
-    extern int digikeyer;
 
     int i;
     int j;

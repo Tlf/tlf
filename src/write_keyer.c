@@ -28,6 +28,7 @@
 #include "clear_display.h"
 #include "err_utils.h"
 #include "ignore_unused.h"
+#include "globalvars.h"
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -66,12 +67,6 @@ void keyer_flush() {
  *
  * should be called periodically from the background task */
 void write_keyer(void) {
-
-    extern int trxmode;
-    extern int cwkeyer;
-    extern int digikeyer;
-    extern char controllerport[];
-    extern char rttyoutput[];
 
     FILE *bfp = NULL;
     char outstring[420] =

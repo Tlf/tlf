@@ -51,11 +51,6 @@
 #include "tlf_curses.h"
 #include "zone_nr.h"
 
-extern bool continentlist_only;
-extern int pfxnummultinr;
-extern pfxnummulti_t pfxnummulti[];
-extern int exclude_multilist_type;
-
 
 void init_scoring(void) {
     /* reset counter and score anew */
@@ -130,22 +125,22 @@ int lookup_country_in_pfxnummult_array(int n) {
 }
 
 bool check_veto() {
-    bool excl_add_veto = false;
+    bool veto = false;
 
     if (!continentlist_only &&
 	    exclude_multilist_type == EXCLUDE_CONTINENT) {
 	if (is_in_continentlist(continent)) {
-	    excl_add_veto = true;
+	    veto = true;
 	}
     }
 
     if (exclude_multilist_type == EXCLUDE_COUNTRY) {
 	if (is_in_countrylist(countrynr)) {
-	    excl_add_veto = true;
+	    veto = true;
 	}
     }
 
-    return excl_add_veto;
+    return veto;
 }
 
 /* pick up multi string from logline
@@ -219,7 +214,7 @@ int readcalls(void) {
     char *tmpptr;
     int pfxnumcntidx;
     int pxnr;
-    bool excl_add_veto;
+    bool veto;
     int qsomode;
     int linenr = 0;
 
@@ -367,7 +362,7 @@ int readcalls(void) {
 	    add_ok = true;
 	}
 
-	excl_add_veto = check_veto();
+	veto = check_veto();
 
 	if (add_ok) {
 
@@ -379,7 +374,7 @@ int readcalls(void) {
 		zones[z] |= inxes[bandindex];
 
 	    if (pfxnumcntidx < 0) {
-		if (!excl_add_veto) {
+		if (!veto) {
 		    countries[countrynr] |= inxes[bandindex];
 		}
 	    } else {
@@ -484,8 +479,6 @@ int log_read_n_score() {
 //------------------------------------------------------------------------
 
 int synclog(char *synclogfile) {
-
-    extern char logfile[];
 
     char wgetcmd[120] = "wget ftp://";	//user:password@hst/dir/file
     char date_buf[60];

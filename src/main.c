@@ -387,10 +387,6 @@ const char *backgrnd_str;
 
 char logline_edit[5][LOGLINELEN + 1];
 
-char terminal1[88] = "";
-char terminal2[88] = "";
-char terminal3[88] = "";
-char terminal4[88] = "";
 char termbuf[88] = "";
 int termbufcount = 0;
 
@@ -926,10 +922,7 @@ int main(int argc, char *argv[]) {
     strcat(logline3, backgrnd_str);
     strcat(logline4, backgrnd_str);
 
-    strcat(terminal1, backgrnd_str);
-    strcat(terminal2, backgrnd_str);
-    strcat(terminal3, backgrnd_str);
-    strcat(terminal4, backgrnd_str);
+    init_terminal_strings();
 
     termbuf[0] = '\0';
     hiscall[0] = '\0';

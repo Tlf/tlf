@@ -27,12 +27,11 @@
 
 #include <glib.h>
 
+#include "globalvars.h"
 #include "sendbuf.h"
 
 
 void prev_qso(void) {
-    extern int qsonum;
-    extern char last_rst[];
 
     int i;
     char *str;

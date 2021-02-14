@@ -77,11 +77,6 @@ extern char logline_edit[5][LOGLINELEN + 1];
 #define logline3 logline_edit[3]
 #define logline4 logline_edit[4]
 
-extern char terminal1[];
-extern char terminal2[];
-extern char terminal3[];
-extern char terminal4[];
-
 extern char band[NBANDS][4];
 extern freq_t bandfrequency[NBANDS];
 
@@ -246,6 +241,7 @@ extern SCREEN *mainscreen;
 extern bool mult_side;
 extern bool countrylist_only;
 extern bool mixedmode;
+extern bool qso_once;
 extern bool ignoredupe;
 extern bool continentlist_only;
 extern bool debugflag;

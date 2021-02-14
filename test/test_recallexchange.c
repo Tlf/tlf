@@ -2,16 +2,12 @@
 
 #include "../src/recall_exchange.h"
 #include "../src/initial_exchange.h"
+#include "../src/globalvars.h"
 #include "../src/tlf.h"
 
 // OBJECT ../src/recall_exchange.o
 // OBJECT ../src/initial_exchange.o
 
-extern char comment[];
-extern char hiscall[];
-extern struct ie_list *main_ie_list;
-extern worked_t worked[];
-extern int nr_worked;
 
 int setup_default(void **state) {
     int result;

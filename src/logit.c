@@ -53,19 +53,8 @@ void refresh_comment(void);
 void change_mode(void);
 
 void logit(void) {
-    extern int trxmode;
-    extern char hiscall[];
-    extern cqmode_t cqmode;
-    extern char ph_message[14][80];
-    extern char comment[];
-    extern char cqzone[];
     extern char itustr[];
     extern int defer_store;
-    extern int ctcomp;
-    extern int wazmult;
-    extern int itumult;
-    extern int qsonum;
-    extern int sprint_mode;
 
     int callreturn = 0;
     int cury, curx;
@@ -215,7 +204,6 @@ void logit(void) {
 
 /** reprint comment field */
 void refresh_comment(void) {
-    extern char comment[];
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
@@ -224,7 +212,6 @@ void refresh_comment(void) {
 }
 
 void change_mode(void) {
-    extern cqmode_t cqmode;
 
     /* switch to other mode */
     if (cqmode == CQ) {

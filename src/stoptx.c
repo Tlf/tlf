@@ -24,6 +24,7 @@
 
 #include "clear_display.h"
 #include "err_utils.h"
+#include "globalvars.h"
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -31,10 +32,6 @@
 #include "fldigixmlrpc.h"
 
 int stoptx(void) {
-    extern int trxmode;
-    extern int cwkeyer;
-    extern int digikeyer;
-
 
     if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
 	fldigi_to_rx();

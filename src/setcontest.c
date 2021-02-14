@@ -189,7 +189,6 @@ void list_contests() {
 /** setup standard configuration for contest 'name' */
 void setcontest(char *name) {
 
-    extern int multlist;
     extern int zl_cty;
     extern int ja_cty;
     extern int py_cty;
@@ -198,9 +197,6 @@ void setcontest(char *name) {
     extern int vk_cty;
     extern int zs_cty;
     extern int ua9_cty;
-    extern int showscore_flag;
-    extern int searchflg;
-    extern bool qso_once;
     extern int noleadingzeros;
 
     char wcall[] = "W1AW";

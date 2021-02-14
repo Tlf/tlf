@@ -31,13 +31,14 @@
 #include <time.h>
 #include <string.h>
 
+#include "globalvars.h"
+
 long timecorr;
 
 /*
  * returns current UTC as seconds since 1970-01-01
  */
 time_t get_time() {
-    extern int timeoffset;
 
     return time(NULL) + (timeoffset * 3600L) + timecorr;
 }

@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <glib.h>
 
 #include "cqww_simulator.h"
 #include "cw_utils.h"
@@ -40,8 +41,22 @@
 #include "setcontest.h"
 #include "showscore.h"
 #include "time_update.h"
+#include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
+
+static char terminal1[88] = "";
+static char terminal2[88] = "";
+static char terminal3[88] = "";
+static char terminal4[88] = "";
+
+
+void init_terminal_strings(void) {
+    strcat(terminal1, backgrnd_str);
+    strcat(terminal2, backgrnd_str);
+    strcat(terminal3, backgrnd_str);
+    strcat(terminal4, backgrnd_str);
+}
 
 
 void show_header_line() {
@@ -149,4 +164,26 @@ void clear_display(void) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     move(cury, curx);
     refreshp();
+}
+
+/*
+ *  scroll the loglines of the keyer terminal and show them
+ */
+void displayit(void) {
+    extern char termbuf[];
+
+    char term2buf[81] = "";
+
+    g_strlcpy(term2buf, termbuf, sizeof(term2buf));
+    g_strchomp(term2buf);
+    g_strlcat(term2buf, backgrnd_str, sizeof(term2buf));	/* fill with blanks */
+
+    strcpy(terminal1, terminal2);
+    strcpy(terminal2, terminal3);
+    strcpy(terminal3, terminal4);
+    strcpy(terminal4, term2buf);
+    termbuf[0] = '\0';
+    mvprintw(5, 0, "");
+
+    clear_display();
 }

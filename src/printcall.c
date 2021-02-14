@@ -23,16 +23,13 @@
  *--------------------------------------------------------------*/
 
 
+#include "globalvars.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
 
 void printcall(void) {
-    extern char hiscall[];
-    extern int miniterm;
-    extern cqmode_t cqmode;
-    extern int cwstart;
 
     int currentterm;
     attr_t attrib = modify_attr(A_STANDOUT);

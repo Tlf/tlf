@@ -33,8 +33,6 @@
 
 int include_note(void) {
 
-    extern char logfile[];
-    extern char qsonrstr[];
     extern char thisnode;
 
     char buffer[80] = "";

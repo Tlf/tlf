@@ -26,7 +26,6 @@
 #include "time_update.h"
 #include "tlf.h"
 
-extern cqmode_t cqmode;
 
 typedef struct {
     freq_t freq;
