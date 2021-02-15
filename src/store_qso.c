@@ -28,6 +28,7 @@
 
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "tlf_curses.h"
+#include "plugin.h"
 
 
 int store_qso(char *loglineptr) {
@@ -46,6 +47,10 @@ int store_qso(char *loglineptr) {
     fputs(loglineptr, fp);
 
     fclose(fp);
+
+    if (plugin_has_add_qso()) {
+        plugin_add_qso(loglineptr);
+    }
 
     return (0);
 }

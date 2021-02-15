@@ -40,6 +40,7 @@
 #include "bands.h"
 #include "lancode.h"
 #include "grabspot.h"
+#include "plugin.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted as the same QRG */
@@ -48,8 +49,8 @@
 #define SPOT_FREQ_WIDTH 7
 #define SPOT_CALL_WIDTH SPOT_COLUMN_WIDTH-SPOT_FREQ_WIDTH-4     // 3 spaces before and 1 after call
 
-#define DISTANCE(x, y) \
-    ( x < y ? y - x : x -y )
+#define DISTANCE(x, y) abs((x) - (y)) // stdlib.h 
+//    ( x < y ? y - x : x -y )
 
 #define TOPLINE 14
 #define LASTLINE (LINES - 2)
@@ -447,10 +448,15 @@ void bandmap_age() {
  *
  * \return true if new multi
  */
+// FIXME call is allways NULL
 bool bm_ismulti(char *call, spot *data, int band) {
 
     if (data == NULL || data->cqzone <= 0 || data->ctynr <= 0) {
 	return false;   // no data
+    }
+
+    if (plugin_has_is_multi()) {
+        return plugin_is_multi(data->band, data->call, data->mode);
     }
 
     if (CONTEST_IS(CQWW)) {

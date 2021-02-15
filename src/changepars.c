@@ -275,14 +275,9 @@ int changepars(void) {
 
 	    break;
 	}
-	case 19:			/* EXIT */
+	case 19:		/* EXIT */
 	case 38: {		/* QUIT */
-	    clear();
-	    cleanup_telnet();
-	    endwin();
-	    puts("\n\nThanks for using TLF.. 73\n");
 	    exit(0);
-	    break;
 	}
 	case 20: {		/*  TXFILE   */
 	    break;

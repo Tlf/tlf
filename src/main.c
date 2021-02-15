@@ -47,6 +47,7 @@
 #include "logit.h"
 #include "netkeyer.h"
 #include "parse_logcfg.h"
+#include "plugin.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "readctydata.h"
 #include "readcalls.h"
@@ -822,7 +823,7 @@ void keyer_init() {
 }
 
 
-void show_GPL() {
+static void show_GPL() {
     printw("\n\n\n");
     printw("           TTTTT  L      FFFFF\n");
     printw("             T    L      F    \n");
@@ -842,7 +843,7 @@ void show_GPL() {
 }
 
 
-int isFirstStart() {
+static int isFirstStart() {
     FILE *fp;
 
     if ((fp = fopen(".paras", "r")) == NULL) {
@@ -856,7 +857,7 @@ int isFirstStart() {
 /* write empty .paras file to remember that tlf got already started once
  * in these directory and GPL has been shown
  */
-void mark_GPL_seen() {
+static void mark_GPL_seen() {
 
     FILE *fp = fopen(".paras", "w");
     if (fp) {
@@ -870,7 +871,7 @@ void mark_GPL_seen() {
  * Cleanup initialisations made by tlf. Will be called after exit() from
  * logit() or background_process()
  */
-void tlf_cleanup() {
+static void tlf_cleanup() {
     if (pthread_self() != background_thread) {
 	pthread_cancel(background_thread);
 	pthread_join(background_thread, NULL);
@@ -895,8 +896,14 @@ void tlf_cleanup() {
 
     endwin();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+
+    puts("\n\nThanks for using TLF.. 73\n");
 }
 
+static void ignore(int sig)
+{
+    // no action except ignoring Ctrl-C
+}
 
 /* ------------------------------------------------------------------------*/
 /*     Main loop of the program			                           */
@@ -912,6 +919,7 @@ int main(int argc, char *argv[]) {
 
     argp_parse(&argp, argc, argv, 0, 0, NULL);  // parse options
 
+plugin_init("test");
     ui_init();
 
     rst_init(NULL);
@@ -1002,6 +1010,9 @@ int main(int argc, char *argv[]) {
 
     bm_init();			/* initialize bandmap */
 
+    if (signal(SIGINT, SIG_IGN) != SIG_IGN) {   /* ignore Ctrl-C */
+        signal(SIGINT, ignore);
+    }
     atexit(tlf_cleanup); 	/* register cleanup function */
 
     /* Create the background thread */

@@ -43,6 +43,7 @@
 #include "ignore_unused.h"
 #include "log_utils.h"
 #include "paccdx.h"
+#include "plugin.h"
 #include "readqtccalls.h"
 #include "score.h"
 #include "searchcallarray.h"
@@ -95,6 +96,10 @@ void init_scoring(void) {
 		pfxnummulti[i].qsos[n] = 0;
 	    }
 	}
+    }
+
+    if (plugin_has_setup()) {
+        plugin_setup();
     }
 }
 
@@ -274,7 +279,7 @@ int readcalls(void) {
 
 	if (iscontest) {
 	    // get points
-	    total = total + log_get_points(inputbuffer);
+	    total = total + 1; //log_get_points(inputbuffer);
 
 	    if (CONTEST_IS(CQWW) || (itumult == 1) || (wazmult == 1)) {
 		// get the zone
@@ -323,6 +328,10 @@ int readcalls(void) {
 	/* calculate QSO timestamp from logline */
 	worked[l].qsotime[qsomode][bandindex] = parse_time(inputbuffer + 7,
 						DATE_TIME_FORMAT);
+
+        if (plugin_has_add_qso()) {
+            plugin_add_qso(inputbuffer);
+        }
 
 
 	if (pfxmultab == 1) {
@@ -473,6 +482,7 @@ int log_read_n_score() {
     if (qtcdirection > 0) {
 	readqtccalls();
     }
+printf(" total=%d\n", total);
     return nr_qsolines;
 }
 
