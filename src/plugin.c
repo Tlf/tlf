@@ -9,7 +9,7 @@
 
 // 	python3-dev
 
-static PyObject *pModule, *pDict;
+static PyObject *pModule, *pDict, *pTlf;
 
 //== define pf_X pointer and plugin_has_X function
 #define PLUGIN_FUNC(name) \
@@ -126,6 +126,13 @@ void plugin_init(const char *name) {
     PyImport_AppendInittab("tlf", &PyModInit_tlf); // declare tlf module
     Py_Initialize();
 
+    pTlf = PyImport_ImportModule("tlf");
+    if (pTlf == NULL) {
+        PyErr_Print();
+        printf("Error: could not import module 'tlf'\n");
+        return;
+    }
+
     PyRun_SimpleString(set_path);   // set module search path
     g_free(set_path);
 
@@ -140,6 +147,8 @@ void plugin_init(const char *name) {
 	PyErr_Print(); //? show exception
 	return;
     }
+
+    PyModule_AddObject(pModule, "tlf", pTlf);
 
     // pDict is a borrowed reference
     pDict = PyModule_GetDict(pModule);
