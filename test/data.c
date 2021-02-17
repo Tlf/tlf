@@ -246,6 +246,7 @@ int totalzones = 0;
 int secs = 0;
 int countrynr;
 int total = 0; 		/**< total number of qso points */
+int qso_points;
 int band_score[NBANDS];
 int dupe = 0;
 int callfound = 0;

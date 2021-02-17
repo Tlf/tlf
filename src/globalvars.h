@@ -49,6 +49,7 @@ extern int country_mult;
 extern char hiscall[20];
 extern char hiscall_sent[20];
 extern int total;
+extern int qso_points;
 extern int band_score[NBANDS];		// QSO/band
 extern int zones[MAX_ZONES];
 extern int serial_section_mult;

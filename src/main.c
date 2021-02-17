@@ -272,6 +272,7 @@ int totalzones = 0;
 int secs = 0;
 int countrynr;
 int total = 0; 		/**< total number of qso points */
+int qso_points;		/**< number of points for last qso */
 int band_score[NBANDS];
 int callfound = 0;
 int partials = 0;	/**< show partial calls */
