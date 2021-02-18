@@ -474,7 +474,7 @@ const static struct argp argp = { options, parse_opt, NULL, program_description 
 
 
 /** initialize user interface */
-void ui_init() {
+static void ui_init() {
 
     /* modify stdin terminals attributes to allow Ctrl-Q/S key recognition */
     tcgetattr(STDIN_FILENO, &oldt);
@@ -557,7 +557,7 @@ void ui_init() {
 
 
 /* setup colors */
-void ui_color_init() {
+static void ui_color_init() {
 
     if (use_rxvt == 1) {	// use rxvt colours
 	init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_RED);
@@ -629,7 +629,7 @@ static void init_variables() {
 /** load all databases
  *
  * \return EXIT_FAILURE if not successful */
-int databases_load() {
+static int databases_load() {
     int status;
 
     showmsg("Reading country data");
@@ -700,7 +700,7 @@ int databases_load() {
     return EXIT_SUCCESS;
 }
 
-void hamlib_init() {
+static void hamlib_init() {
 
     if (no_trx_control) {
 	trx_control = false;
@@ -729,7 +729,7 @@ void hamlib_init() {
     }
 }
 
-void fldigi_init() {
+static void fldigi_init() {
 #ifdef HAVE_LIBXMLRPC
     int status;
 
@@ -743,7 +743,7 @@ void fldigi_init() {
 #endif
 }
 
-void lan_init() {
+static void lan_init() {
     if (lan_active) {
 	if (lan_recv_init() < 0)	/* set up the network */
 	    showmsg("LAN receive  init failed");
@@ -758,7 +758,7 @@ void lan_init() {
 }
 
 
-void packet_init() {
+static void packet_init() {
     if (nopacket)
 	packetinterface = 0;
 
@@ -776,7 +776,7 @@ void packet_init() {
 }
 
 
-void keyer_init() {
+static void keyer_init() {
     char keyerbuff[3];
 
     if (cwkeyer == NET_KEYER) {
@@ -822,7 +822,7 @@ void keyer_init() {
 }
 
 
-void show_GPL() {
+static void show_GPL() {
     printw("\n\n\n");
     printw("           TTTTT  L      FFFFF\n");
     printw("             T    L      F    \n");
@@ -842,7 +842,7 @@ void show_GPL() {
 }
 
 
-int isFirstStart() {
+static int isFirstStart() {
     FILE *fp;
 
     if ((fp = fopen(".paras", "r")) == NULL) {
@@ -856,7 +856,7 @@ int isFirstStart() {
 /* write empty .paras file to remember that tlf got already started once
  * in these directory and GPL has been shown
  */
-void mark_GPL_seen() {
+static void mark_GPL_seen() {
 
     FILE *fp = fopen(".paras", "w");
     if (fp) {
@@ -870,7 +870,7 @@ void mark_GPL_seen() {
  * Cleanup initialisations made by tlf. Will be called after exit() from
  * logit() or background_process()
  */
-void tlf_cleanup() {
+static void tlf_cleanup() {
     if (pthread_self() != background_thread) {
 	pthread_cancel(background_thread);
 	pthread_join(background_thread, NULL);
@@ -895,8 +895,13 @@ void tlf_cleanup() {
 
     endwin();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+
+    puts("\n\nThanks for using Tlf.. 73\n");
 }
 
+static void ignore(int sig) {
+    // no action except ignoring Ctrl-C
+}
 
 /* ------------------------------------------------------------------------*/
 /*     Main loop of the program			                           */
@@ -1002,6 +1007,9 @@ int main(int argc, char *argv[]) {
 
     bm_init();			/* initialize bandmap */
 
+    if (signal(SIGINT, SIG_IGN) != SIG_IGN) {   /* ignore Ctrl-C */
+	signal(SIGINT, ignore);
+    }
     atexit(tlf_cleanup); 	/* register cleanup function */
 
     /* Create the background thread */

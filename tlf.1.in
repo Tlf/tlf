@@ -205,8 +205,6 @@ You can exit and close @PACKAGE_NAME@ with the
 or
 .BR :QUI t
 commands or with
-.BR Ctrl\-C ,
-.BR Alt\-Q \ or
 .BR Alt\-X \.
 .P
 At restart @PACKAGE_NAME@ recalculates the score, which may take some time
@@ -289,10 +287,7 @@ Edit the log with your favourite editor. Be careful!
 .TQ
 .BR :QUI t
 Exit @PACKAGE_NAME@ (synonym to
-.BR Ctrl\-C ,
-.BR Alt\-Q ,
-and
-.BR Alt\-X ")."
+.BR Alt\-X ", but without asking for confirmation)."
 .
 .TP
 .BR :FIL ter
@@ -787,15 +782,6 @@ Add a spot to bandmap and broadcast it on the local network.
 Send a spot to the DX Cluster (a connection to a DX cluster must exit).
 .
 .TP
-.B Ctrl-C
-Exit @PACKAGE_NAME@ (synonyms to
-.BR :EXI t,
-.BR :QUI t,
-.BR Alt-Q ,
-and
-.BR Alt-X ")."
-.
-.TP
 .B Ctrl-E
 Ends modem capture for RTTY mode in QTC window (started with
 .BR Ctrl-S ).
@@ -935,15 +921,11 @@ Add Note to log.
 Toggle PTT (via \fBcwdaemon\fR).
 .
 .TP
-.B Alt-Q
-.TQ
 .B Alt-X
 Exit @PACKAGE_NAME@ (synonym to
-.BR :EXI "t ,"
-.BR :QUI "t ,"
-.BR Ctrl-C ,
+.BR :EXI "t "
 and
-.BR Ctrl-D ")."
+.BR :QUI "t, but asks for confirmation)."
 .
 .TP
 .B Alt-R

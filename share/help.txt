@@ -8,18 +8,18 @@ Alt-T     Tune                          Alt-N   Note in log
 Alt-V     Band down (CW Speed?)         Alt-P   Turn PTT on/off
 Alt-H     Show help.txt                 Alt-W   CW Weight
 Alt-I     Show talk messages            Alt-J   See QRG's
-Alt-K     CW from Keyboard              Alt-X   Exit program (Alt-q)
-Alt-M     Multi display (Alt-c)         Alt-S   Score window (Alt-r)
-Alt-,     Show bandmap                  Alt-J   Show frequency
+Alt-K     CW from Keyboard              Alt-X   Exit program
+Alt-M     Multi display (Alt-C)         Alt-S   Score window (Alt-R)
 Alt-Z     Show worked zones             Alt-G   Grab call (min. 2 letters from bandmap)
+Alt-,     Show bandmap
 
 <CTRL+?>
 Ctrl-A      Add a spot to list          Ctrl-B    Cluster send
-Ctrl-C      Quit Tlf                    Ctrl-P    MUF display
 Ctrl-G      Grab a bandmap spot         Ctrl-V    Toggle grab direction
 Ctrl-PgUp   Auto CQ delay +             Ctrl-PgDn Auto CQ delay -
 Ctrl-K      CW from keyboard            Ctrl-F    Frequency control window
 Ctrl-T      Show talk messages          Ctrl-R    LPT0 pin 14 on/off (SSB mic)
+Ctrl-P      MUF display
 
 
 <direct keyboard commands>
@@ -77,6 +77,7 @@ $         Switch to MEM and clear it (pop)
 :MAP      Filter band map content
 :SYNc     Synchronize log in network
 :EXIt     Exit program
+:QUIt     Exit program
 :MULt     Toggle remaining multi display
 :CONtest  Toggle contest mode on/off
 :SCOre    Toggle score window on/off
@@ -87,7 +88,6 @@ $         Switch to MEM and clear it (pop)
 :TRXcont  Toggle TRX control on/off
 :CHAR     Autosend: number of chars before starting to send
 :SOUnd    Record sound files
-:WRIte    Write cabrillo
-:ADIf     Write Adif
-:EXIt     Exit tlf
+:WRIte    Write Cabrillo
+:ADIf     Write ADIF
 :TONe     Set sidetone (0 = off)
