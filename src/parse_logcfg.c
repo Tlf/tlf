@@ -492,7 +492,7 @@ static int cfg_thisnode(const cfg_arg_t arg) {
 
     if (strlen(str) != 1 || str[0] < 'A' || str[0] > 'A' + MAXNODES) {
 	g_free(str);
-	error_details = g_strdup_printf("name name is A..%c", 'A' + MAXNODES - 1);
+	error_details = g_strdup_printf("name is A..%c", 'A' + MAXNODES - 1);
 	return PARSE_WRONG_PARAMETER;
     }
 
