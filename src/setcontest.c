@@ -54,13 +54,15 @@ contest_config_t config_unknown = {
 
 contest_config_t config_qso = {
     .id = QSO,
-    .name = QSO_MODE
+    .name = QSO_MODE,
+    .is_multi = NULL,
 };
 
 contest_config_t config_dxped = {
     .id = DXPED,
     .name = "DXPED",
     .recall_mult = true,
+    .is_multi = NULL,
 };
 
 contest_config_t config_wpx = {
@@ -69,7 +71,8 @@ contest_config_t config_wpx = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_wpx,
-    }
+    },
+    // .ismulti
 };
 
 contest_config_t config_cqww = {
@@ -89,7 +92,8 @@ contest_config_t config_sprint = {
     .points = {
 	.type = FIXED,
 	.point = 1,
-    }
+    },
+    .is_multi = NULL,
 };
 
 contest_config_t config_arrldx_usa = {
@@ -129,7 +133,8 @@ contest_config_t config_arrl_fd = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_arrlfd,
-    }
+    },
+    .is_multi = NULL,
 };
 
 contest_config_t config_pacc_pa = {
@@ -147,7 +152,8 @@ contest_config_t config_stewperry = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_stewperry
-    }
+    },
+    .is_multi = NULL,
 };
 
 

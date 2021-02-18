@@ -226,7 +226,7 @@ typedef struct {
 	    int (*fn)();
 	};
     }			points;
-    bool (*is_multi)(void *, int);
+    bool (*is_multi)();
 
 } contest_config_t;
 
