@@ -26,12 +26,25 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "bandmap.h"
+#include "bands.h"
 #include "focm.h"
 #include "getctydata.h"
 #include "globalvars.h"
 #include "setcontest.h"
 #include "score.h"
 #include "tlf.h"
+
+bool cqww_ismulti(spot *data, int band) {
+
+    if ((zones[data->cqzone] & inxes[band]) == 0
+	    || (countries[data->ctynr] & inxes[band]) == 0) {
+	return true;
+    }
+
+    return false;
+}
+
 
 /* configurations for supported contest */
 contest_config_t config_unknown = {
@@ -66,7 +79,8 @@ contest_config_t config_cqww = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_cqww,
-    }
+    },
+    .is_multi = cqww_ismulti,
 };
 
 contest_config_t config_sprint = {

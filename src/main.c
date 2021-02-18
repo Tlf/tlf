@@ -344,7 +344,7 @@ int nr_worked = 0;		/**< number of calls in worked[] */
 worked_t worked[MAX_CALLS]; 	/**< worked stations */
 
 /*----------------------statistic of worked countries,zones ... -----------*/
-int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */
+int countries[MAX_DATALINES];	/* per country field with worked bands set */
 int zones[MAX_ZONES];		/* same for cq zones or itu zones;
 				   using 1 - 40 or 1 - 90 */
 

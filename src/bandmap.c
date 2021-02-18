@@ -447,17 +447,14 @@ void bandmap_age() {
  *
  * \return true if new multi
  */
-bool bm_ismulti(char *call, spot *data, int band) {
+bool bm_ismulti(spot *data, int band) {
 
     if (data == NULL || data->cqzone <= 0 || data->ctynr <= 0) {
 	return false;   // no data
     }
 
-    if (CONTEST_IS(CQWW)) {
-	if ((zones[data->cqzone] & inxes[band]) == 0
-		|| (countries[data->ctynr] & inxes[band]) == 0) {
-	    return true;
-	}
+    if (contest->is_multi) {
+	return contest->is_multi(data, band);
     }
 
     return false;
@@ -597,7 +594,7 @@ void show_spot(spot *data) {
     printw("%7.1f%c", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node));
 
-    if (bm_ismulti(NULL, data, data->band)) {
+    if (bm_ismulti(data, data->band)) {
 	attrset(COLOR_PAIR(CB_NORMAL));
 	printw("M");
 	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
@@ -619,7 +616,7 @@ void show_spot_on_qrg(spot *data) {
 
     printw("%7.1f%c%c ", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node),
-	   bm_ismulti(NULL, data, data->band) ? 'M' : ' ');
+	   bm_ismulti(data, data->band) ? 'M' : ' ');
 
     char *temp = format_spot(data);
     printw("%-12s", temp);
@@ -710,7 +707,7 @@ void filter_spots() {
 	    continue;
 
 	/* Ignore non-multis if we want to show only multis */
-	multi = bm_ismulti(NULL, data, data->band);
+	multi = bm_ismulti(data, data->band);
 	if (!multi && bm_config.onlymults)
 	    continue;
 

@@ -211,6 +211,7 @@ typedef enum {
     FUNCTION
 } points_type_t;
 
+
 /** contest configuration
  */
 typedef struct {
@@ -225,6 +226,7 @@ typedef struct {
 	    int (*fn)();
 	};
     }			points;
+    bool (*is_multi)(void *, int);
 
 } contest_config_t;
 

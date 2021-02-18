@@ -340,7 +340,7 @@ int load_ctydata(char *filename) {
     dxcc_init();
     prefix_init();
 
-    // set default for empty country
+    // set default for empty country == country nr 0
     dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
     while (fgets(buf, sizeof(buf), fd) != NULL) {
