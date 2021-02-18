@@ -35,7 +35,14 @@
 #include "score.h"
 #include "tlf.h"
 
-bool cqww_ismulti(spot *data, int band) {
+/* No Multiplier mark in bandmap for multis determined from comment field;
+ * Code works also for modes with no multiplier at all */
+static bool no_multi(spot *data) {
+    return false;
+}
+
+static bool cqww_ismulti(spot *data) {
+    int band = data->band;
 
     if ((zones[data->cqzone] & inxes[band]) == 0
 	    || (countries[data->ctynr] & inxes[band]) == 0) {
@@ -44,6 +51,42 @@ bool cqww_ismulti(spot *data, int band) {
 
     return false;
 }
+
+static bool arrldx_usa_ismulti(spot *data)  {
+    int ctynr = data->ctynr;
+    int band = data->band;
+
+    if ((countries[ctynr] & inxes[band]) != 0)
+	return false;
+
+    if (ctynr == w_cty || ctynr == ve_cty)
+	return false;
+
+    return true;
+}
+
+
+bool general_ismulti(spot *data) {
+    int band = data->band;
+
+    if (dx_arrlsections == 1) {
+	/* no evaluation of sections, check only country */
+	return arrldx_usa_ismulti(data);
+    }
+
+    if (country_mult == 1) {
+	return ((countries[data->ctynr] & inxes[band]) == 0);
+    }
+
+    /* TODO: pfxmultab is missing */
+
+    if ((itumult == 1) || (wazmult == 1)) {
+	return ((zones[data->cqzone] & inxes[band]) == 0);
+    }
+
+    return false;
+}
+
 
 
 /* configurations for supported contest */
@@ -54,13 +97,15 @@ contest_config_t config_unknown = {
 
 contest_config_t config_qso = {
     .id = QSO,
-    .name = QSO_MODE
+    .name = QSO_MODE,
+    .is_multi = no_multi,
 };
 
 contest_config_t config_dxped = {
     .id = DXPED,
     .name = "DXPED",
     .recall_mult = true,
+    .is_multi = no_multi,
 };
 
 contest_config_t config_wpx = {
@@ -69,7 +114,8 @@ contest_config_t config_wpx = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_wpx,
-    }
+    },
+    // .ismulti
 };
 
 contest_config_t config_cqww = {
@@ -89,7 +135,8 @@ contest_config_t config_sprint = {
     .points = {
 	.type = FIXED,
 	.point = 1,
-    }
+    },
+    .is_multi = no_multi,
 };
 
 contest_config_t config_arrldx_usa = {
@@ -99,7 +146,8 @@ contest_config_t config_arrldx_usa = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_arrldx_usa,
-    }
+    },
+    .is_multi = arrldx_usa_ismulti,
 };
 
 contest_config_t config_arrldx_dx = {
@@ -109,7 +157,8 @@ contest_config_t config_arrldx_dx = {
     .points = {
 	.type = FIXED,
 	.point = 3,
-    }
+    },
+    .is_multi = no_multi,
 };
 
 contest_config_t config_arrl_ss = {
@@ -119,7 +168,8 @@ contest_config_t config_arrl_ss = {
     .points = {
 	.type = FIXED,
 	.point = 2,
-    }
+    },
+    .is_multi = no_multi,
 };
 
 contest_config_t config_arrl_fd = {
@@ -129,7 +179,8 @@ contest_config_t config_arrl_fd = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_arrlfd,
-    }
+    },
+    .is_multi = no_multi,
 };
 
 contest_config_t config_pacc_pa = {
@@ -138,7 +189,8 @@ contest_config_t config_pacc_pa = {
     .points = {
 	.type = FIXED,
 	.point = 1,
-    }
+    },
+    // .ismulti =
 };
 
 contest_config_t config_stewperry = {
@@ -147,7 +199,8 @@ contest_config_t config_stewperry = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_stewperry
-    }
+    },
+    .is_multi = no_multi,
 };
 
 

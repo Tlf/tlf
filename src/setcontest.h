@@ -28,6 +28,7 @@
 
 extern contest_config_t config_qso;
 
+bool general_ismulti();
 contest_config_t *lookup_contest(char *name);
 void list_contests();
 void setcontest(char *name);
