@@ -6,6 +6,7 @@
 
 
 
+// OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o

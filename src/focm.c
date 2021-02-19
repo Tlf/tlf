@@ -31,7 +31,9 @@
 #include "ui_utils.h"
 #include "bands.h"
 
-
+bool no_multi() {
+    return false;
+}
 
 struct pos {
     int column;
@@ -57,7 +59,8 @@ contest_config_t config_focm = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_foc
-    }
+    },
+    .is_multi = no_multi,
 };
 
 /** calculate score for last QSO

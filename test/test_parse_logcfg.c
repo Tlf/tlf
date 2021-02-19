@@ -17,6 +17,7 @@
 #include "../src/set_tone.h"
 #include "../src/cabrillo_utils.h"
 
+// OBJECT ../src/bands.o
 // OBJECT ../src/parse_logcfg.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/getpx.o

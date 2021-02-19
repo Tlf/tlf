@@ -457,7 +457,7 @@ bool bm_ismulti(spot *data, int band) {
 	return contest->is_multi(data, band);
     }
 
-    return false;
+    return general_ismulti(data, band);
 }
 
 
