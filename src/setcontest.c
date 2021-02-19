@@ -74,10 +74,10 @@ bool general_ismulti(spot *data, int band) {
 	return ((countries[data->ctynr] & inxes[band]) == 0);
     }
 
-    /* TODO: pfxmultab */
+    /* TODO: pfxmultab is missing */
 
     if ((itumult == 1) || (wazmult == 1)) {
-	return ((zones[data->cqzone] && inxes[band]) == 0);
+	return ((zones[data->cqzone] & inxes[band]) == 0);
     }
 
     return false;
