@@ -77,6 +77,11 @@ extern char logline_edit[5][LOGLINELEN + 1];
 #define logline3 logline_edit[3]
 #define logline4 logline_edit[4]
 
+extern char terminal1[];
+extern char terminal2[];
+extern char terminal3[];
+extern char terminal4[];
+
 extern char band[NBANDS][4];
 extern freq_t bandfrequency[NBANDS];
 
@@ -147,6 +152,7 @@ extern int zonedisplay;
 extern int rigptt;
 extern int k_ptt;
 extern int k_pin14;
+extern int tune_seconds;
 extern int sending_call;
 extern int exclude_multilist_type;
 extern int partials;
@@ -232,6 +238,8 @@ extern char *config_file;
 
 extern int bandindexarray[];
 extern int tlfcolors[8][2];
+
+extern char fkey_header[60];
 
 extern SCREEN *mainscreen;
 

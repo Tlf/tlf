@@ -39,6 +39,7 @@
 #include "initial_exchange.h"
 #include "bands.h"
 #include "lancode.h"
+#include "grabspot.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted as the same QRG */
@@ -80,8 +81,9 @@ bm_config_t bm_config = {
 static bool bm_initialized = false;
 
 char *qtc_format(char *call);
-
 gint cmp_freq(spot *a, spot *b);
+void free_spot(spot *data);
+spot *copy_spot(spot *data);
 
 /*
  * write bandmap spots to a file
@@ -110,7 +112,7 @@ void bmdata_write_file() {
 	sp = found->data;
 	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s\n",
 		sp->call, sp->freq, sp->mode, sp->band,
-		sp->node, (int)sp->timeout, sp->dupe, sp->cqzone,
+		sp->node, sp->timeout, sp->dupe, sp->cqzone,
 		sp->ctynr, g_strchomp(sp->pfx));
 	found = found->next;
     }
@@ -162,9 +164,9 @@ void bmdata_read_file() {
 			    break;
 			case 6:		sscanf(token, "%hhd", &entry->dupe);
 			    break;
-			case 7:		sscanf(token, "%u", &entry->cqzone);
+			case 7:		sscanf(token, "%d", &entry->cqzone);
 			    break;
-			case 8:		sscanf(token, "%u", &entry->ctynr);
+			case 8:		sscanf(token, "%d", &entry->ctynr);
 			    break;
 			case 9:		entry->pfx = g_strdup(token);
 			    break;
@@ -176,9 +178,7 @@ void bmdata_read_file() {
 		    entry->timeout -= timediff;	/* remaining time */
 		    allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
 		} else {
-		    g_free(entry->call);
-		    g_free(entry->pfx);
-		    g_free(entry);
+		    free_spot(entry);
 		}
 	    }
 	}
@@ -201,9 +201,8 @@ void bm_init() {
     init_pair(CB_NORMAL, COLOR_BLUE, COLOR_WHITE);
     init_pair(CB_DUPE, COLOR_BLACK, COLOR_WHITE);
     init_pair(CB_OLD, COLOR_YELLOW, COLOR_WHITE);
-    init_pair(CB_MULTI, COLOR_WHITE, COLOR_BLUE);
 
-    spots = g_ptr_array_sized_new(128);
+    spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
 
     bmdata_read_file();
 
@@ -269,6 +268,13 @@ gint	cmp_freq(spot *a, spot *b) {
     if (af < bf)  return -1;
     if (af > bf)  return  1;
     return 0;
+}
+
+/* free an allocated spot */
+void free_spot(spot * data) {
+	g_free(data->call);
+	g_free(data->pfx);
+	g_free(data);
 }
 
 /** add a new spot to bandmap data
@@ -393,18 +399,14 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	spot *olddata;
 	olddata = found->prev->data;
 	allspots = g_list_remove_link(allspots, found->prev);
-	g_free(olddata->call);
-	g_free(olddata->pfx);
-	g_free(olddata);
+	free_spot(olddata);
     }
     if (found->next &&
 	    (DISTANCE(((spot *)(found->next)->data)->freq, freq) < TOLERANCE)) {
 	spot *olddata;
 	olddata = found->next->data;
 	allspots = g_list_remove_link(allspots, found->next);
-	g_free(olddata->call);
-	g_free(olddata->pfx);
-	g_free(olddata);
+	free_spot(olddata);
     }
 
 
@@ -433,9 +435,7 @@ void bandmap_age() {
 	}
 	if (data->timeout == 0) {
 	    allspots = g_list_remove_link(allspots, temp);
-	    g_free(data->call);
-	    g_free(data->pfx);
-	    g_free(data);
+	    free_spot(data);
 	}
     }
 
@@ -510,25 +510,33 @@ void bm_show_info() {
     move(TOPLINE, 66);
     vline(ACS_VLINE, LINES - TOPLINE - 1);
 
+    int middle = (LINES - 1 + TOPLINE) / 2;
+    int arrow = (grab_up ? ACS_DARROW : ACS_UARROW);
+    mvaddch(middle - 1, 66, arrow);
+    mvaddch(middle, 66, arrow);
+    mvaddch(middle + 1, 66, arrow);
+
     mvprintw(LASTLINE - 5, 67, " bands: %s", bm_config.allband ? "all" : "own");
     mvprintw(LASTLINE - 4, 67, " modes: %s", bm_config.allmode ? "all" : "own");
     mvprintw(LASTLINE - 3, 67, " dupes: %s", bm_config.showdupes ? "yes" : "no");
     mvprintw(LASTLINE - 2, 67, " onl.ml: %s", bm_config.onlymults ? "yes" : "no");
 
-    attrset(COLOR_PAIR(CB_NEW) | A_STANDOUT);
-    mvprintw(LASTLINE - 1, 67, "  MULTI");
-
     attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
-    printw(" NEW");
+    mvprintw(LASTLINE - 1, 67, " NEW");
 
     attrset(COLOR_PAIR(CB_NORMAL));
-    mvprintw(LASTLINE, 67, "SPOT");
+    printw(" SPOT");
 
     attrset(COLOR_PAIR(CB_OLD));
     printw(" OLD");
 
     attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    printw(" dupe");
+    mvprintw(LASTLINE, 67, " dupe");
+
+    attrset(COLOR_PAIR(CB_NORMAL));
+    printw(" M");
+    attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+    printw("-ulti");
 
     attroff(A_BOLD | A_STANDOUT);
 
@@ -543,6 +551,7 @@ void bm_show_info() {
  * - aged	brown
  * - worked	small caps */
 void colorize_spot(spot *data) {
+
     if (data -> timeout > SPOT_NORMAL)
 	attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
 
@@ -552,12 +561,7 @@ void colorize_spot(spot *data) {
     else
 	attrset(COLOR_PAIR(CB_OLD));
 
-    if (bm_ismulti(NULL, data, data->band)) {
-	attrset(COLOR_PAIR(CB_NEW) | A_STANDOUT);
-	attron(A_STANDOUT);
-    }
-
-    else if (data->dupe && bm_config.showdupes) {
+    if (data->dupe && bm_config.showdupes) {
 	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
 	attroff(A_STANDOUT);
     }
@@ -590,12 +594,20 @@ char *format_spot(spot *data) {
  */
 void show_spot(spot *data) {
     attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    printw("%7.1f %c ", data->freq / 1000.,
+    printw("%7.1f%c", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node));
+
+    if (bm_ismulti(NULL, data, data->band)) {
+	attrset(COLOR_PAIR(CB_NORMAL));
+	printw("M");
+	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+    } else {
+	printw(" ");
+    }
 
     char *temp = format_spot(data);
     colorize_spot(data);
-    printw("%-12s", temp);
+    printw(" %-12s", temp);
     g_free(temp);
 }
 
@@ -605,8 +617,9 @@ void show_spot(spot *data) {
  */
 void show_spot_on_qrg(spot *data) {
 
-    printw("%7.1f %c ", (data->freq / 1000.),
-	   (data->node == thisnode ? '*' : data->node));
+    printw("%7.1f%c%c ", (data->freq / 1000.),
+	   (data->node == thisnode ? '*' : data->node),
+	   bm_ismulti(NULL, data, data->band) ? 'M' : ' ');
 
     char *temp = format_spot(data);
     printw("%-12s", temp);
@@ -649,6 +662,70 @@ freq_t bm_get_center(int band, int mode) {
     return centerfrequency;
 }
 
+/* small helpers for filter_spots() */
+static bool band_matches(spot *data) {
+    return (data->band == bandinx);
+}
+
+static bool mode_matches(spot *data) {
+    return (data->mode == trxmode);
+}
+
+/*
+ * filter 'allspots' list according to settings and prepare 'spots' array with
+ * selected spots
+ */
+void filter_spots() {
+    GList *list;
+    spot *data;
+    bool dupe, multi;
+    /* acquire mutex
+     * do not add new spots to allspots during
+     * - aging and
+     * - filtering
+     * furthermore do not allow call lookup as long as
+     * filtered spot array is build anew */
+
+    pthread_mutex_lock(&bm_mutex);
+
+    if (spots)
+	g_ptr_array_free(spots, TRUE);		/* free spot array */
+						/* allocate new one */
+    spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
+
+
+    for(list = allspots; list; list = list->next)	{
+	data = list->data;
+
+	/* check and mark spot as dupe */
+	dupe = bm_isdupe(data->call, data->band);
+	data -> dupe = dupe;
+
+	/* ignore spots on WARC bands if in contest mode */
+	if (iscontest && IsWarcIndex(data->band))
+	    continue;
+
+	/* ignore dupes if not forced */
+	if (dupe && !bm_config.showdupes)
+	    continue;
+
+	/* Ignore non-multis if we want to show only multis */
+	multi = bm_ismulti(NULL, data, data->band);
+	if (!multi && bm_config.onlymults)
+	    continue;
+
+	/* if spot is allband or allmode is set or band or mode matches
+	 * than add to the filtered 'spot' array
+	 */
+	if ( (bm_config.allband || band_matches(data)) &&
+	    (bm_config.allmode || mode_matches(data))) {
+
+	    spot *copy = copy_spot(data);
+	    g_ptr_array_add(spots, copy);
+	}
+    }
+    pthread_mutex_unlock(&bm_mutex);
+}
 
 void bandmap_show() {
     /*
@@ -657,20 +734,20 @@ void bandmap_show() {
      * - all mode  on/off
      * - dupes     on/off
      *
-     * If more entries to show than room in window, show around current frequency
+     * If more entries to show than room in window, show around
+     * current frequency
      *
      * mark entries according to age, source and worked state. Mark new multis
      * - new 	brigth blue
      * - normal	blue
-     * - aged	black
+     * - aged	brown
      * - worked	small caps
-     * - new multi	underlined
+     * - new multi	mark with blue M between QRG and call
      * - self announced stations
      *   		small preceeding letter for reporting station
      *
-     * maybe show own frequency as dashline in other color
-     * (maybee green highlighted)
-     * - highligth actual spot if near its frequency
+     * show own frequency as dashline in green color
+     * - highligth actual spot if near own frequency
      *
      * Allow selection of one of the spots (switches to S&P)
      * - Ctrl-G as known
@@ -681,62 +758,17 @@ void bandmap_show() {
      * - cursormovement
      * - 'ESC' leaves mode
      * - 'Enter' selects spot
-     * - 'B', 'D', 'M', 'O' switches filtering for band, dupes, mode and multiPlier on or off.
+     * - 'B', 'D', 'M', 'O' switches filtering for band, dupes, mode
+     *   and multiPlier on or off.
      */
 
-    GList *list;
     spot *data;
     int curx, cury;
     int bm_x, bm_y;
     int i, j;
-    bool dupe, multi;
 
     bm_init();
-
-    /* acquire mutex
-     * do not add new spots to allspots during
-     * - aging and
-     * - filtering
-     * furthermore do not allow call lookup as long as
-     * filtered spot array is build anew */
-
-    pthread_mutex_lock(&bm_mutex);
-
-    /* make array of spots to display
-     * filter spotlist according to settings */
-
-    if (spots)
-	g_ptr_array_free(spots, TRUE);		/* free array */
-
-    spots = g_ptr_array_sized_new(128);	/* allocate new one */
-
-    list = allspots;
-
-    while (list) {
-	data = list->data;
-
-	/* if spot is allband or allmode is set or band or mode matches
-	 * actual one than add it to the filtered 'spot' array
-	 * drop spots on WARC bands if in contest mode
-	 */
-	multi = bm_ismulti(NULL, data, data->band);
-	dupe = bm_isdupe(data->call, data->band);
-
-	if ((!iscontest || !IsWarcIndex(data->band))         &&
-		(bm_config.allband || (data->band == bandinx)) &&
-		(bm_config.allmode || (data->mode == trxmode)) &&
-		(bm_config.showdupes || !dupe) &&
-		(! bm_config.onlymults || multi)) {
-
-	    data -> dupe = dupe;
-	    g_ptr_array_add(spots, data);
-	}
-
-	list = list->next;
-    }
-
-    pthread_mutex_unlock(&bm_mutex);
-
+    filter_spots();
 
     /* afterwards display filtered list around own QRG +/- some offest
      * (offset gets reset if we change frequency */
@@ -902,7 +934,7 @@ void bm_menu() {
 spot *copy_spot(spot *data) {
     spot *result = NULL;
 
-    result = g_new(spot, 1);
+    result = g_new0(spot, 1);
     result -> call = g_strdup(data -> call);
     result -> freq = data -> freq;
     result -> mode = data -> mode;
@@ -970,45 +1002,33 @@ spot *bandmap_lookup(char *partialcall) {
  * 		after use).
  */
 
-spot *bandmap_next(unsigned int upwards, freq_t freq) {
+spot *bandmap_next(bool upwards, freq_t freq) {
+
+    if (spots->len == 0) {
+	return NULL;
+    }
+
     spot *result = NULL;
 
-    if (spots->len > 0) {
-	int i;
+    pthread_mutex_lock(&bm_mutex);
 
-	pthread_mutex_lock(&bm_mutex);
+    freq_t f0 = freq + (upwards ? 1 : -1) * (TOLERANCE / 2);
 
-	if (upwards) {
+    for (int i = 0; i < spots->len; i++) {
+	int index = (upwards ? i : spots->len - 1 - i);
+	spot *data = g_ptr_array_index(spots, index);
+	// spot must be above/below f0 depending on direction
+	bool freq_ok = (upwards ? data->freq > f0 : data->freq < f0);
 
-	    for (i = 0; i < spots->len; i++) {
-		spot *data;
-		data = g_ptr_array_index(spots, i);
-
-		if ((data->freq > freq + TOLERANCE / 2) &&
-			(!bm_config.skipdupes || data->dupe == 0)) {
-		    /* copy data into a new Spot structure */
-		    result = copy_spot(data);
-
-		    break;
-		}
-	    }
-	} else {
-	    for (i = spots->len - 1; i >= 0; i--) {
-		spot *data;
-		data = g_ptr_array_index(spots, i);
-
-		if ((data->freq < freq - TOLERANCE / 2) &&
-			(!bm_config.skipdupes || data->dupe == 0)) {
-		    /* copy data into a new Spot structure */
-		    result = copy_spot(data);
-
-		    break;
-		}
-	    }
+	if (freq_ok && (!bm_config.skipdupes || !data->dupe)) {
+	    /* copy data into a new Spot structure */
+	    result = copy_spot(data);
+	    break;
 	}
-	pthread_mutex_unlock(&bm_mutex);
-
     }
+
+    pthread_mutex_unlock(&bm_mutex);
+
     return result;
 }
 

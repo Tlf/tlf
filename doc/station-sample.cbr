@@ -1,0 +1,36 @@
+X-:
+X-: Sample station configuration Cabrillo template
+X-:
+X-: after editing and renaming add this line to logcfg.dat
+X-: CABRILLO-TEMPLATE = station.cbr
+X-:
+X-: (all lines starting with X- are comments)
+
+START-OF-LOG: 3.0
+X-: I always use cluster, work CW-only barefoot
+CATEGORY-ASSISTED: ASSISTED
+CATEGORY-MODE: CW
+CATEGORY-OPERATOR: SINGLE-OP
+CATEGORY-POWER: LOW
+CATEGORY-STATION: FIXED
+CATEGORY-TRANSMITTER: ONE
+X-: band info will be asked unless specified
+X-CATEGORY-BAND: 20M
+X-: no offtime, no overlay
+CATEGORY-TIME: -
+CATEGORY-OVERLAY: -
+CLUB: XYZ DX CLUB
+NAME: Joe Doe
+EMAIL: j.doe@xmail.com
+ADDRESS: 123 Main St.
+ADDRESS(2): c/o Max Mustermann
+ADDRESS-CITY: Mycity
+ADDRESS-COUNTRY: Mycountry
+X-: soapbox will be asked unless set ...
+X-SOAPBOX: 73
+X-: ... or disabled
+X-SOAPBOX: -
+
+QSO: << QSO lines are also ignored
+
+END-OF-LOG:

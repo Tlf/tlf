@@ -80,8 +80,6 @@
 #include "bands.h"
 #include "fldigixmlrpc.h"
 
-#define TUNE_UP 6	/* tune up for 6 s (no more than 10) */
-
 typedef enum { STORE_OR_POP, POP, SWAP } memory_op_t;
 
 void send_bandswitch(freq_t freq);
@@ -89,6 +87,38 @@ int autosend(void);
 bool plain_number(char *str);
 void handle_bandswitch(int direction);
 void handle_memory_operation(memory_op_t op);
+
+
+void tune() {
+    int count;
+    int count2;
+    gchar *buff;
+
+    count2 = tune_seconds;
+    while (count2 > 0) {
+	if (count2 >= 10) {
+	    count = 10;
+	} else {
+	    count = count2;
+	}
+	count2 -= count;
+	buff = g_strdup_printf("%d", count);
+	netkeyer(K_TUNE, buff);	// cw on
+	g_free(buff);
+
+	count = count * 4;    // sleeping 1/4 second units between keypress-checks
+	while (count > 0) {
+	    usleep(250000);
+	    if (key_poll() != -1) {	// any key pressed ?
+		count2 = 0;    // destroy outer loop as well
+		break;
+	    }
+	    count--;
+	}
+    }
+
+    netkeyer(K_ABORT, "");	// cw abort
+}
 
 
 /** callsign input loop
@@ -243,6 +273,10 @@ int callinput(void) {
 	}
 
 	switch (x) {
+	    // Ctrl-V: toggle grab direction
+	    case CTRL_V:
+		grab_up = !grab_up;
+		break;
 
 	    // Plus (+)
 	    // - in non-CT mode switch to other mode (CQ <-> S&P)
@@ -504,7 +538,7 @@ int callinput(void) {
 
 		attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-		mvprintw(12, 29, "            ");
+		mvprintw(12, 29, spaces(12));
 		mvprintw(12, 29, "");
 		refreshp();
 		break;
@@ -716,28 +750,12 @@ int callinput(void) {
 
 	    // Alt-t (M-t), tune xcvr via cwdaemon.
 	    case ALT_T: {
-		int count;
-		gchar *buff;
-
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(0, 2, "Tune     ");
 		mvprintw(12, 29, "");
 		refreshp();
 
-		buff = g_strdup_printf("%d", TUNE_UP);
-		netkeyer(K_TUNE, buff);	// cw on
-		g_free(buff);
-
-		count = (int)(TUNE_UP / 0.25);
-
-		while (count != 0) {
-		    usleep(250000);
-		    if (key_poll() != -1)	// any key pressed ?
-			break;
-		    count--;
-		}
-
-		netkeyer(K_ABORT, "");	// cw abort
+		tune();
 
 		show_header_line();
 		refreshp();
@@ -920,8 +938,8 @@ int callinput(void) {
 		if (lan_active) {
 
 		    for (t = 0; t <= 5; t++)
-			mvprintw(14 + t, 1,
-				 "                                                            ");
+			mvprintw(14 + t, 1, spaces(60));
+
 		    for (t = 0; t <= 4; t++)
 			mvprintw(15 + t, 1, talkarray[t]);
 		    nicebox(14, 0, 5, 59, "Messages");
@@ -930,8 +948,7 @@ int callinput(void) {
 		    key_get();
 		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
-			mvprintw(14 + t, 0,
-				 "                                                             ");
+			mvprintw(14 + t, 0, spaces(61));
 
 		    clear_display();
 		}

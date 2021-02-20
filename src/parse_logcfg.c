@@ -415,7 +415,7 @@ static int cfg_bandmap(const cfg_arg_t arg) {
 }
 
 static int cfg_cwspeed(const cfg_arg_t arg) {
-    int value;
+    int value = 0;	/* avoid warning about uninitialized variables */
     int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 6, .max = 60});
     if (rc != PARSE_OK) {
 	return rc;
@@ -425,7 +425,7 @@ static int cfg_cwspeed(const cfg_arg_t arg) {
 }
 
 static int cfg_cwtone(const cfg_arg_t arg) {
-    int value;
+    int value = 0;	/* avoid warning about uninitialized variables */
     int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 0, .max = 999});
     if (rc != PARSE_OK) {
 	return rc;
@@ -435,7 +435,7 @@ static int cfg_cwtone(const cfg_arg_t arg) {
 }
 
 static int cfg_sunspots(const cfg_arg_t arg) {
-    int value;
+    int value = 0;	/* avoid warning about uninitialized variables */
     int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 0, .max = 1000});
     if (rc != PARSE_OK) {
 	return rc;
@@ -445,7 +445,7 @@ static int cfg_sunspots(const cfg_arg_t arg) {
 }
 
 static int cfg_sfi(const cfg_arg_t arg) {
-    int value;
+    int value = 0;	/* avoid warning about uninitialized variables */
     int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 0, .max = 1000});
     if (rc != PARSE_OK) {
 	return rc;
@@ -767,7 +767,7 @@ static int cfg_pfx_num_multis(const cfg_arg_t arg) {
 }
 
 static int cfg_sc_volume(const cfg_arg_t arg) {
-    int value;
+    int value = 0;
     int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 0, .max = 100});
     if (rc != PARSE_OK) {
 	return rc;
@@ -956,7 +956,7 @@ static int cfg_minitest(const cfg_arg_t arg) {
 	return PARSE_OK;
     }
 
-    int value;
+    int value = 1;	/* avoid warning about divide by zero */
     int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 60, .max = 1800});
     if (rc != PARSE_OK) {
 	return rc;
@@ -1118,6 +1118,7 @@ static config_t logcfg_configs[] = {
     {"CWPOINTS",        CFG_INT(cwpoints, 0, INT32_MAX)},
     {"WEIGHT",          CFG_INT(weight, -50, 50)},
     {"TXDELAY",         CFG_INT(txdelay, 0, 50)},
+    {"TUNE_SECONDS",    CFG_INT(tune_seconds, 1, 100)},
     {"RIGMODEL",        CFG_INT(myrig_model, 0, 99999)},
     {"COUNTRY_LIST_POINTS", CFG_INT(countrylist_points, 0, INT32_MAX)},
     {"MY_COUNTRY_POINTS",   CFG_INT(my_country_points, 0, INT32_MAX)},
@@ -1143,6 +1144,7 @@ static config_t logcfg_configs[] = {
     {"SC_DEVICE",       CFG_STRING_STATIC(sc_device, 40)},
     {"INITIAL_EXCHANGE",       CFG_STRING_STATIC(exchange_list, 40)},
     {"DIGIMODEM",       CFG_STRING_STATIC(rttyoutput, 120)},
+    {"FKEY-HEADER",     CFG_STRING_STATIC(fkey_header, sizeof(fkey_header))},
 
     {"CABRILLO",    CFG_STRING(cabrillo)},
     {"CALLMASTER",  CFG_STRING(callmaster_filename)},

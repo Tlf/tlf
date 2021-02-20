@@ -22,6 +22,7 @@
 #define DXCC_H
 
 #include <stdbool.h>
+#include <glib.h>
 
 typedef struct {
     char *pfx;
@@ -48,12 +49,17 @@ typedef struct {
 } dxcc_data;
 
 extern bool have_exact_matches;
+extern char cty_dat_version[12];
 
 void prefix_init(void);
 
 unsigned int prefix_count(void);
 
 prefix_data *prefix_by_index(unsigned int index);
+
+int find_full_match(const char *call);
+
+int find_best_match(const char *call);
 
 void prefix_add(char *pfxstr);
 

@@ -199,6 +199,7 @@ char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = MARKER_NONE;
 int rigptt = 0;
+int tune_seconds;               /* tune up time in seconds for Alt-T */
 
 char message[25][80] = /**< Array of CW messages
  			*
@@ -297,9 +298,8 @@ int txdelay = 0;
 int weight = 0;
 char weightbuf[4];
 int cqdelay = 8;
-int k_tune;
-int k_pin14;
-int k_ptt;
+int k_pin14 = 0;
+int k_ptt = 0;
 
 int miniterm = 0;		/* is miniterm for digimode active? */
 char modem_mode[8];
@@ -381,8 +381,8 @@ freq_t bandfrequency[NBANDS] = {
     28025000, 0.
 };
 
-const char headerline[] =
-    "   1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?  ";
+char fkey_header[60] =
+    "1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?";
 const char *backgrnd_str;
 
 char logline_edit[5][LOGLINELEN + 1];
@@ -593,6 +593,19 @@ void ui_color_init() {
     }
 }
 
+void center_fkey_header() {
+    int width = sizeof(fkey_header) - 1;
+    if (strlen(fkey_header) == width) {
+	return;     // already OK
+    }
+    int right_padding = (width - strlen(fkey_header)) / 2;
+    int left_padding = width - strlen(fkey_header) - right_padding;
+    char tmp[sizeof(fkey_header)];
+    strcpy(tmp, fkey_header);
+    sprintf(fkey_header, "%s%s%s",
+	    spaces(left_padding), tmp, spaces(right_padding));
+}
+
 static void init_variables() {
 
     iscontest = false;
@@ -604,6 +617,7 @@ static void init_variables() {
     packetinterface = 0;
     nodes = 0;
     shortqsonr = 0;
+    tune_seconds = 6;   /* tune up for 6 s */
 
     /* Disable CT Mode until CTCOMPATIBLE is defined. */
     ctcomp = 0;
@@ -985,6 +999,7 @@ int main(int argc, char *argv[]) {
 
     packet_init();
 
+    center_fkey_header();
     clear_display();		/* tidy up the display */
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (j = 13; j <= LINES - 1; j++) {	/* wipe lower window */

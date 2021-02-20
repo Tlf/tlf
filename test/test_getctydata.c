@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include "test.h"
 
 #include "../src/tlf.h"
@@ -17,6 +18,8 @@
 /* export internal function */
 int location_unknown(char *call);
 int getpfxindex(char *checkcallptr, char **normalized_call);
+int find_full_match(const char *call);
+int find_best_match(const char *call);
 
 extern char countrylist[255][6];
 
@@ -32,6 +35,107 @@ int setup_default(void **state) {
     strcpy(countrylist[0], "");
 
     return 0;
+}
+
+char *best_prefix(char *call) {
+    prefix_data *pfx;
+    int index;
+
+    index = find_best_match(call);
+    if (index < 0)
+	return "";
+
+    pfx = prefix_by_index(index);
+    return pfx->pfx;
+}
+
+char *full_prefix(char *call) {
+    prefix_data *pfx;
+    int index;
+
+    index = find_full_match(call);
+    if (index < 0)
+	return "";
+
+    pfx = prefix_by_index(index);
+    return pfx->pfx;
+}
+
+#undef TEST_LOOKUP_SPEED
+
+void test_xspeed(void **state) {
+#ifndef TEST_LOOKUP_SPEED
+    assert_true(1);
+#else
+    static char callmaster[] =  TOP_SRCDIR "/share/callmaster";
+    char call[36000][16];
+
+    FILE *f = fopen(callmaster, "r");
+    char line[99];
+    int n = 0;
+    while (fgets(line, sizeof(line), f)) {
+	if (line[0] == '#' || strlen(line) < 3) {
+	    continue;
+	}
+	for (int i = 0; ; ++i) {
+	    if (line[i] <= ' ') {
+		call[n][i] = 0;
+		++n;
+		break;
+	    }
+	    call[n][i] = line[i];
+	}
+    }
+    fclose(f);
+
+    printf("got %d calls from %s\n", n, callmaster);
+    //printf("0: |%s|\n", call[0]);
+    //printf("5: |%s|\n", call[5]);
+
+
+    const int N =  20000000;
+    srand48(time(NULL));
+
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
+
+    for (int i = 0; i < N; ++i) {
+	int j = (int)(n * drand48());
+	int w = find_best_match(call[j]);
+	w = w;				/* quell warning about unused var */
+#if 0
+	printf("%d -> %s: %d\n", j, call[j], w);
+	prefix_data *pfx = prefix_by_index(w);
+	dxcc_data *dx = dxcc_by_index(pfx->dxcc_index);
+	printf("--> %s\n", dx->countryname);
+#endif
+    }
+
+    clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+
+    uint64_t delta_us = (end.tv_sec - start.tv_sec) * 1000000 +
+			(end.tv_nsec - start.tv_nsec) / 1000;
+
+    printf("took %" PRIu64 " us, rate is %g us/call\n",
+	   delta_us, (double)delta_us / N);
+#endif
+}
+
+void test_full_match(void **state) {
+    assert_string_equal(full_prefix("DL1XXX"), "");
+    assert_string_equal(full_prefix("4U1UN"), "4U1UN");
+    assert_string_equal(full_prefix("4U1U"), "");
+}
+
+void test_best_match(void **state) {
+    assert_string_equal(best_prefix("DL1XXX"), "DL");
+    assert_string_equal(best_prefix("4U1UN"), "4U1UN");
+    assert_string_equal(best_prefix("4U1UNA"), "");;
+    assert_string_equal(best_prefix("4U1U"), "");;
+    assert_string_equal(best_prefix("EA3XYZ"), "EA");
+    assert_string_equal(best_prefix("EA8XYZ"), "EA8");
+    assert_string_equal(best_prefix("W3A"), "W");
+    assert_string_equal(best_prefix("KL7ND"), "KL");
 }
 
 void test_location_known(void **state) {

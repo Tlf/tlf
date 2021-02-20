@@ -8,6 +8,12 @@ CONTEST=cqww
 LOGFILE=cqww.log
 CONTEST_MODE
 CABRILLO=CQWW
+CABRILLO-EXCHANGE=14
+CABRILLO-CONTEST= CQ-WW-CW
+CABRILLO-MODE= CW
+# or
+#CABRILLO-CONTEST= CQ-WW-SSB
+#CABRILLO-MODE= SSB
 #
 ##################################
 #                                #
@@ -39,6 +45,8 @@ F12=++++TEST---- % %
 #
 CQ_TU_MSG=TU %
 S&P_TU_MSG=TU 5NN 14
+#
+#FKEY-HEADER= 1=CQ  2=DE  3=RST 4=73  5=HIS  6=MY  7=B4   8=AGN  9=?
 #
 #ALT_0=
 #ALT_1=

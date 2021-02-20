@@ -21,6 +21,7 @@
 #ifndef _BANDMAP_H
 #define _BANDMAP_H
 
+#include <stdbool.h>
 #include <hamlib/rig.h>
 #include "tlf.h"
 
@@ -59,6 +60,9 @@ enum {
     CB_NEW,
     CB_MULTI
 };
+
+/* free an allocated spot */
+void free_spot(spot * data);
 
 /*
  * write bandmap spots to a file
@@ -132,7 +136,7 @@ void bandmap_show();
 
 spot *bandmap_lookup(char *partialcall);
 
-spot *bandmap_next(unsigned int upwards, freq_t freq);
+spot *bandmap_next(bool upwards, freq_t freq);
 
 void get_spot_on_qrg(char *dest, freq_t freq);
 

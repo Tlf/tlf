@@ -35,6 +35,7 @@
 #include "cqww_simulator.h"
 #include "changepars.h"
 #include "clear_display.h"
+#include "dxcc.h"
 #include "editlog.h"
 #include "err_utils.h"
 #include "fldigixmlrpc.h"
@@ -65,6 +66,7 @@
 #include "writecabrillo.h"
 #include "addmult.h"
 
+void center_fkey_header();
 
 void wipe_display();
 
@@ -329,6 +331,7 @@ int changepars(void) {
 	    read_logcfg();
 	    read_rules();	/* also reread rules file */
 	    TLF_LOG_INFO("Logcfg.dat loaded, parameters written.");
+	    center_fkey_header();
 	    clear_display();
 	    break;
 	}
@@ -707,6 +710,11 @@ void networkinfo(void) {
 	mvprintw(12 + nodes, 10, "Band output: on");
     else
 	mvprintw(12 + nodes, 10, "Band output: off");
+
+    mvprintw(13 + nodes, 10, "callmaster : %s",
+	     (callmaster_version[0] != 0 ? callmaster_version : "n/a"));
+    mvprintw(14 + nodes, 10, "cty.dat    : %s",
+	     (cty_dat_version[0] != 0 ? cty_dat_version : "n/a"));
 
     refreshp();
 
