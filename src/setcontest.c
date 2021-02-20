@@ -35,8 +35,8 @@
 #include "score.h"
 #include "tlf.h"
 
-/* contests where multiplier get determined from comment field can not be
- shown in bandmap works also for modes with no multiplier at all */
+/* No Multiplier mark in bandmap for multis determined from comment field;
+ * Code works also for modes with no multiplier at all */
 static bool no_multi(spot *data) {
     return false;
 }
