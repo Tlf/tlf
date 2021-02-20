@@ -37,11 +37,12 @@
 
 /* contests where multiplier get determined from comment field can not be
  shown in bandmap works also for modes with no multiplier at all */
-static bool no_multi(spot *data, int band) {
+static bool no_multi(spot *data) {
     return false;
 }
 
-static bool cqww_ismulti(spot *data, int band) {
+static bool cqww_ismulti(spot *data) {
+    int band = data->band;
 
     if ((zones[data->cqzone] & inxes[band]) == 0
 	    || (countries[data->ctynr] & inxes[band]) == 0) {
@@ -51,8 +52,9 @@ static bool cqww_ismulti(spot *data, int band) {
     return false;
 }
 
-static bool arrldx_usa_ismulti(spot *data, int band)  {
+static bool arrldx_usa_ismulti(spot *data)  {
     int ctynr = data->ctynr;
+    int band = data->band;
 
     if ((countries[ctynr] & inxes[band]) != 0)
 	return false;
@@ -64,10 +66,12 @@ static bool arrldx_usa_ismulti(spot *data, int band)  {
 }
 
 
-bool general_ismulti(spot *data, int band) {
+bool general_ismulti(spot *data) {
+    int band = data->band;
+
     if (dx_arrlsections == 1) {
-	/* no evaluation of sections, only country */
-	return arrldx_usa_ismulti(data, band);
+	/* no evaluation of sections, check only country */
+	return arrldx_usa_ismulti(data);
     }
 
     if (country_mult == 1) {
