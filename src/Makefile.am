@@ -1,4 +1,4 @@
-AM_CPPFLAGS = @GLIB_CFLAGS@ -DPACKAGE_DATA_DIR=\"$(pkgdatadir)\" $(shell python3-config --includes)
+AM_CPPFLAGS = @GLIB_CFLAGS@ -DPACKAGE_DATA_DIR=\"$(pkgdatadir)\" @PYTHON_INCLUDE@
 AM_CFLAGS = @AM_CFLAGS@ @PTHREAD_CFLAGS@ @HAMLIB_CFLAGS@ @CURSES_CFLAGS@
 
 bin_PROGRAMS = tlf
@@ -34,7 +34,7 @@ tlf_SOURCES = \
 	trx_memory.c time_update.c ui_utils.c utils.c \
 	write_keyer.c writecabrillo.c \
 	zone_nr.c
-LIBS = $(shell python3-config --libs)
+LIBS = @PYTHON_LIBS@
 tlf_LDADD = @LIBM_LIB@ @PTHREAD_LIBS@ @GLIB_LIBS@ @PANEL_LIBS@ @CURSES_LIBS@ \
 	    @HAMLIB_LIBS@ @LIBXMLRPC_LIB@ @LIBXMLRPC_CLIENT_LIB@ \
 	    @LIBXMLRPC_UTIL_LIB@ 
