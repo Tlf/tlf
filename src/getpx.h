@@ -21,6 +21,7 @@
 #ifndef GETPX_H
 #define GETPX_H
 
+char *get_pfx(char *checkcall);
 void getpx(char *checkcall);
 
 #endif /* GETPX_H */
