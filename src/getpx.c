@@ -60,17 +60,24 @@ int letters_only(const char *call) {
     return 1;
 }
 
-void getpx(char *checkcall) {
-    char pxbuffer[16] = "";
-    int i, len;
+/* parses checkcall string and returns new allocated buffer with
+ * separated prefix string
+ * ATTENTION: needs to be freed afterwards
+ */
+char *get_pfx(char *checkcall) {
+    int i;
     char portable = '\0';
+    char *pxbuffer;
+
+    int len = strlen(checkcall);
 
     if (letters_only(checkcall)) {
+	pxbuffer = g_malloc0(len + 1 + 1);
 	/* only characters in call */
 	strncpy(pxbuffer, checkcall, 2);
 	strcat(pxbuffer, "0");
     } else {
-	len = strlen(checkcall);
+	pxbuffer = g_malloc0(len + 1);
 	if (len >= 2) {
 	    if ((checkcall[len - 2] == '/') && isdigit(checkcall[len - 1]))
 		/*  portable /3 */
@@ -96,5 +103,11 @@ void getpx(char *checkcall) {
 	if (isalpha(pxbuffer[i - 1]))
 	    pxbuffer[i] = '0';
     }
-    strcpy(pxstr, pxbuffer);
+    return pxbuffer;
+}
+
+void getpx(char *checkcall) {
+    char *buffer = get_pfx(checkcall);
+    strcpy(pxstr, buffer);
+    g_free(buffer);
 }
