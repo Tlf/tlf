@@ -5,9 +5,10 @@
 #include "../src/setcontest.h"
 
 
-
+// OBJECT ../src/addpfx.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
+// OBJECT ../src/getpx.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
 

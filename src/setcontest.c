@@ -26,10 +26,12 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "addpfx.h"
 #include "bandmap.h"
 #include "bands.h"
 #include "focm.h"
 #include "getctydata.h"
+#include "getpx.h"
 #include "globalvars.h"
 #include "setcontest.h"
 #include "score.h"
@@ -40,6 +42,26 @@
 static bool no_multi(spot *data) {
     return false;
 }
+
+
+static bool pfx_on_band_ismulti(spot *data) {
+    int band = data->band;
+    char *call = data->call;
+
+    char *prefix = get_pfx(call);
+    bool multi = pfx_is_new_on(prefix, band);
+    g_free(prefix);
+    return multi;
+}
+
+
+static bool wpx_ismulti(spot *data) {
+    char *prefix = get_pfx(data->call);
+    bool multi = pfx_is_new(prefix);
+    g_free(prefix);
+    return multi;
+}
+
 
 static bool cqww_ismulti(spot *data) {
     int band = data->band;
@@ -78,7 +100,13 @@ bool general_ismulti(spot *data) {
 	return ((countries[data->ctynr] & inxes[band]) == 0);
     }
 
-    /* TODO: pfxmultab is missing */
+    if (pfxmult == 1) {
+	return wpx_ismulti(data);
+    }
+
+    if (pfxmultab == 1) {
+	return pfx_on_band_ismulti(data);
+    }
 
     if ((itumult == 1) || (wazmult == 1)) {
 	return ((zones[data->cqzone] & inxes[band]) == 0);
@@ -115,7 +143,7 @@ contest_config_t config_wpx = {
 	.type = FUNCTION,
 	.fn = score_wpx,
     },
-    // .ismulti
+    .is_multi = wpx_ismulti,
 };
 
 contest_config_t config_cqww = {

@@ -9,6 +9,7 @@
 
 #include "../src/getctydata.h"
 
+// OBJECT ../src/addpfx.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/getctydata.o

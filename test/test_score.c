@@ -8,6 +8,7 @@
 
 #include "../src/globalvars.h"
 
+// OBJECT ../src/addpfx.o
 // OBJECT ../src/score.o
 // OBJECT ../src/addmult.o
 // OBJECT ../src/bands.o

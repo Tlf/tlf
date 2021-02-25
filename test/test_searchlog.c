@@ -8,9 +8,11 @@
 #include "../src/setcontest.h"
 #include "../src/dxcc.h"
 
+// OBJECT ../src/addpfx.o
 // OBJECT ../src/addmult.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/get_time.o
+// OBJECT ../src/getpx.o
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/searchlog.o
 // OBJECT ../src/zone_nr.o
@@ -53,10 +55,6 @@ void clusterinfo() {
 
 // splitscreen.c
 void refresh_splitlayout() {
-}
-
-// getpx.c
-void getpx(char *checkcall) {
 }
 
 // dxcc.c

@@ -9,6 +9,7 @@
 
 // OBJECT ../src/addcall.o
 // OBJECT ../src/addmult.o
+// OBJECT ../src/addpfx.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/focm.o
@@ -26,10 +27,6 @@
 
 
 /* these are missing from globalvars */
-
-int add_pfx(char *call) {
-    return 0;
-}
 
 int pacc_pa(void) {
     return 0;
