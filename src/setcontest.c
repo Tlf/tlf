@@ -26,6 +26,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "addpfx.h"
 #include "bandmap.h"
 #include "bands.h"
 #include "focm.h"
@@ -42,14 +43,13 @@ static bool no_multi(spot *data) {
     return false;
 }
 
-
 static bool wpx_ismulti(spot *data) {
     bool multi = false;
     int band = data->band;
     char *call = data->call;
 
     char *prefix = get_pfx(call);
-    // lookup prefix and check if new on band
+    multi = pfx_is_new_on(prefix, band);
     g_free(prefix);
     return multi;
 }
@@ -128,7 +128,7 @@ contest_config_t config_wpx = {
 	.type = FUNCTION,
 	.fn = score_wpx,
     },
-    // .ismulti
+    .is_multi = wpx_ismulti,
 };
 
 contest_config_t config_cqww = {
