@@ -43,6 +43,44 @@ struct {
 
 unsigned int pfxs_per_band[NBANDS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
+/** lookup worked prefix and return index in prefixes_worked[] or
+ * -1 if not found
+ */
+int find_worked_pfx(char *prefix) {
+    int found = -1;
+
+    for (int i = 0; i < nr_of_px; i++) {
+	if (strcmp(prefix, prefixes_worked[i].pfx) == 0) {
+	    found = i;
+	    break;
+	}
+    }
+
+    return found;
+}
+
+bool pfx_is_new(char * prefix) {
+    return (find_worked_pfx(prefix) == -1);
+}
+
+
+bool pfx_is_new_on(char *prefix, int bandindex) {
+    int index;
+    int worked_bands;
+
+    index = find_worked_pfx(prefix);
+
+    if (index == -1)
+	return true;
+
+    worked_bands = prefixes_worked[index].bands;
+    if ((worked_bands & inxes[bandindex]) == 0)
+	return true;
+
+    return false;
+}
+
+
 int add_pfx(char *pxstr, unsigned int bandindex) {
     extern int pfxmultab;
     int q = 0, found = 0, bandfound = 0;

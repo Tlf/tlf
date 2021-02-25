@@ -30,6 +30,7 @@
 #include "bands.h"
 #include "focm.h"
 #include "getctydata.h"
+#include "getpx.h"
 #include "globalvars.h"
 #include "setcontest.h"
 #include "score.h"
@@ -39,6 +40,18 @@
  * Code works also for modes with no multiplier at all */
 static bool no_multi(spot *data) {
     return false;
+}
+
+
+static bool wpx_ismulti(spot *data) {
+    bool multi = false;
+    int band = data->band;
+    char *call = data->call;
+
+    char *prefix = get_pfx(call);
+    // lookup prefix and check if new on band
+    g_free(prefix);
+    return multi;
 }
 
 static bool cqww_ismulti(spot *data) {
