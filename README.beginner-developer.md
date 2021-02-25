@@ -42,7 +42,8 @@ please simply use a list in the header immediately below this introduction, like
 
     Recent code often uses different conventions.
 
-    Code is considered old when before ...
+    There is the possibility to find old, outdated conventions in old code before 200???? or V1???
+    It is better to use examples in more recent code.
 
     You can check the age of any line or block using
 
