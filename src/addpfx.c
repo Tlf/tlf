@@ -46,7 +46,7 @@ unsigned int pfxs_per_band[NBANDS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 /** lookup worked prefix and return index in prefixes_worked[] or
  * -1 if not found
  */
-int find_worked_pfx(char *prefix) {
+static int find_worked_pfx(char *prefix) {
     int found = -1;
 
     for (int i = 0; i < nr_of_px; i++) {
