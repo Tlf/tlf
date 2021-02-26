@@ -33,7 +33,7 @@ char *find_available(char *filename) {
 	path = g_strdup(filename);
     } else {
 	path = g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,
-			       filename, NULL);
+			   filename, NULL);
 	if (g_access(path, R_OK) != 0) {
 	    g_free(path);
 	    path = g_strdup("");

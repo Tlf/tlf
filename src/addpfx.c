@@ -59,7 +59,7 @@ int find_worked_pfx(char *prefix) {
     return found;
 }
 
-bool pfx_is_new(char * prefix) {
+bool pfx_is_new(char *prefix) {
     return (find_worked_pfx(prefix) == -1);
 }
 

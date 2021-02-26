@@ -170,7 +170,7 @@ contest_config_t config_sprint = {
 contest_config_t config_arrldx_usa = {
     .id = ARRLDX_USA,
     .name = "ARRLDX_USA",
-    .recall_mult =true,
+    .recall_mult = true,
     .points = {
 	.type = FUNCTION,
 	.fn = score_arrldx_usa,
@@ -181,7 +181,7 @@ contest_config_t config_arrldx_usa = {
 contest_config_t config_arrldx_dx = {
     .id = ARRLDX_DX,
     .name = "ARRLDX_DX",
-    .recall_mult =true,
+    .recall_mult = true,
     .points = {
 	.type = FIXED,
 	.point = 3,
@@ -203,7 +203,7 @@ contest_config_t config_arrl_ss = {
 contest_config_t config_arrl_fd = {
     .id = ARRL_FD,
     .name = "ARRL_FD",
-    .recall_mult =true,
+    .recall_mult = true,
     .points = {
 	.type = FUNCTION,
 	.fn = score_arrlfd,
@@ -273,8 +273,8 @@ contest_config_t *lookup_contest(char *name) {
 void list_contests() {
     puts(
 	"\nTLF has built-in support for the following contest identifiers:"
-	);
-    for(int i = 0; i < NR_CONTESTS; i++) {
+    );
+    for (int i = 0; i < NR_CONTESTS; i++) {
 	printf("\t%s\n", contest_configs[i]->name);
     }
     puts("");
@@ -316,7 +316,7 @@ void setcontest(char *name) {
     ve_cty = getctynr(vecall);
 
     if (whichcontest != name) {    /* avoid overlapping copy */
-        strcpy(whichcontest, name);
+	strcpy(whichcontest, name);
     }
 
     contest = lookup_contest(name);

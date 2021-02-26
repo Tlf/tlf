@@ -23,7 +23,7 @@
 
 #include <stdbool.h>
 
-bool pfx_is_new(char * prefix);
+bool pfx_is_new(char *prefix);
 bool pfx_is_new_on(char *prefix, int bandindex);
 int add_pfx(char *pxstr, unsigned int bandindex);
 unsigned int GetNrOfPfx_once();
