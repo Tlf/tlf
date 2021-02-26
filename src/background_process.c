@@ -198,7 +198,7 @@ void *background_process(void *ptr) {
 			talkarray[4][1] = ':';
 			talkarray[4][2] = '\0';
 			g_strlcat(talkarray[4], lan_message + 2,
-				sizeof(talkarray[4]));
+				  sizeof(talkarray[4]));
 			TLF_LOG_INFO(" MSG from %s", talkarray[4]);
 			break;
 		    case FREQMSG:

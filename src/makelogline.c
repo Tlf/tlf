@@ -233,14 +233,14 @@ void prepare_specific_part(void) {
 
     if (CONTEST_IS(ARRL_SS)) {
 	// ----------------------------arrlss----------------
-	tmp = g_strndup(ssexchange,22);
+	tmp = g_strndup(ssexchange, 22);
 	strcat(logline4, tmp);
 	g_free(tmp);
 	section[0] = '\0';
 
     } else if (serial_section_mult == 1) {
 	//-------------------------serial_section---------------
-	tmp = g_strndup(comment,22);
+	tmp = g_strndup(comment, 22);
 	strcat(logline4, tmp);
 	g_free(tmp);
 	section[0] = '\0';
@@ -261,7 +261,7 @@ void prepare_specific_part(void) {
 
     } else if (sectn_mult == 1) {
 	//-------------------------section only---------------
-	tmp = g_strndup(comment,22);
+	tmp = g_strndup(comment, 22);
 	strcat(logline4, tmp);
 	g_free(tmp);
 	section[0] = '\0';
@@ -280,11 +280,11 @@ void prepare_specific_part(void) {
 	    comment[4] = 'X';
 	    comment[5] = '\0';
 	}
-	tmp = g_strndup(comment,22);
+	tmp = g_strndup(comment, 22);
 	strcat(logline4, tmp);
 	g_free(tmp);
     } else {	//----------------------end cqww ---------------
-	tmp = g_strndup(comment,22);
+	tmp = g_strndup(comment, 22);
 	strcat(logline4, tmp);
 	g_free(tmp);
     }

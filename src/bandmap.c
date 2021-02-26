@@ -271,10 +271,10 @@ gint	cmp_freq(spot *a, spot *b) {
 }
 
 /* free an allocated spot */
-void free_spot(spot * data) {
-	g_free(data->call);
-	g_free(data->pfx);
-	g_free(data);
+void free_spot(spot *data) {
+    g_free(data->call);
+    g_free(data->pfx);
+    g_free(data);
 }
 
 /** add a new spot to bandmap data
@@ -691,7 +691,7 @@ void filter_spots() {
     spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
 
 
-    for(list = allspots; list; list = list->next)	{
+    for (list = allspots; list; list = list->next)	{
 	data = list->data;
 
 	/* check and mark spot as dupe */
@@ -714,8 +714,8 @@ void filter_spots() {
 	/* if spot is allband or allmode is set or band or mode matches
 	 * than add to the filtered 'spot' array
 	 */
-	if ( (bm_config.allband || band_matches(data)) &&
-	    (bm_config.allmode || mode_matches(data))) {
+	if ((bm_config.allband || band_matches(data)) &&
+		(bm_config.allmode || mode_matches(data))) {
 
 	    spot *copy = copy_spot(data);
 	    g_ptr_array_add(spots, copy);
