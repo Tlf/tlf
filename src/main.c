@@ -522,10 +522,10 @@ static void ui_init() {
 				   for refreshp() to work */
 
     getmaxyx(stdscr, ymax, xmax);
-    if ((ymax < 25) || (xmax < 80)) {
+    if ((ymax < 22) || (xmax < 80)) {
 	char c;
 
-	showmsg("!! TLF needs at least 25 lines and 80 columns !!");
+	showmsg("!! TLF works best with at least 22 lines and 80 columns !!");
 	showmsg("   Continue anyway? Y/(N) ");
 	c = toupper(key_get());
 	if (c != 'Y') {
