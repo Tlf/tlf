@@ -17,6 +17,7 @@
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/nicebox.o
 // OBJECT ../src/qtcutil.o
+// OBJECT ../src/plugin.o
 // OBJECT ../src/printcall.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/err_utils.o

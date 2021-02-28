@@ -16,6 +16,8 @@
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/locator2longlat.o
+// OBJECT ../src/plugin.o
+// OBJECT ../src/log_utils.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/utils.o

@@ -1,7 +1,13 @@
 #include <stdbool.h>
 #include <glib.h>
 
+#include <config.h>
+
+#ifdef HAVE_PYTHON
 #include <Python.h>
+#else
+#define PyObject    void
+#endif
 
 #include "tlf.h"
 #include "log_utils.h"
@@ -21,8 +27,9 @@ PLUGIN_FUNC(setup)
 PLUGIN_FUNC(add_qso)
 PLUGIN_FUNC(is_multi)
 PLUGIN_FUNC(nr_of_mults)
+PLUGIN_FUNC(get_multi)
 
-
+#ifdef HAVE_PYTHON
 //=============
 // example callback into C code
 static PyObject *say_hello(PyObject *self, PyObject *args) {
@@ -73,6 +80,7 @@ static PyStructSequence_Desc qso_descr = {
 };
 
 static PyTypeObject *qso_type;
+#endif
 
 //=============
 // forward declarations, to be removed
@@ -80,8 +88,10 @@ void plugin_setup();
 void plugin_add_qso(const char *logline);
 int plugin_nr_of_mults(int band);
 bool plugin_is_multi(int band, const char *call, int mode);
+char* plugin_get_multi(const char *call, int mode);
 //=============
 
+#ifdef HAVE_PYTHON
 static void lookup_function(const char *name, PyObject **pf_ptr) {
     // pf_ptr is a borrowed reference
     *pf_ptr = PyDict_GetItemString(pDict, name);
@@ -94,8 +104,10 @@ static void lookup_function(const char *name, PyObject **pf_ptr) {
 	printf("  no %s\n", name);
     }
 }
+#endif
 
 void plugin_init(const char *name) {
+#ifdef HAVE_PYTHON
     // determine directory containing the plugin
     char *py_name = g_strdup_printf("rules/%s.py", name);
     char *path = find_available(py_name);
@@ -159,6 +171,7 @@ void plugin_init(const char *name) {
     lookup_function("add_qso", &pf_add_qso);
     lookup_function("is_multi", &pf_is_multi);
     lookup_function("nr_of_mults", &pf_nr_of_mults);
+    lookup_function("get_multi", &pf_get_multi);
 
     if (pf_setup == NULL) {
 	printf("ERROR: missing setup\n");
@@ -191,20 +204,30 @@ void plugin_init(const char *name) {
     printf("S51Z multi: %d\n", plugin_is_multi(1, "S51Z", CWMODE));
     printf("9A1A multi: %d\n", plugin_is_multi(1, "9A1A", CWMODE));
 
+    char *m = plugin_get_multi("YT1W", CWMODE);
+    printf("multi: |%s|\n", m);
+    g_free(m);
+
     exit(0);
+#endif
+#else
+    return; // true/false
 #endif
 }
 
 void plugin_close() {
+#ifdef HAVE_PYTHON
     // Clean up
     Py_DECREF(pModule);
     //FIXME check other pointers
 
     // Finish the Python Interpreter
     Py_Finalize();
+#endif
 }
 
 void plugin_setup() {
+#ifdef HAVE_PYTHON
     PyObject *pValue = PyObject_CallObject(pf_setup, NULL);
     printf("after pf_setup, pValue %s NULL\n", pValue == NULL ? "is" : "not");
     Py_XDECREF(pValue);
@@ -213,8 +236,10 @@ void plugin_setup() {
 	PyErr_Print();
 	// FIXME: action?
     }
+#endif
 }
 
+#ifdef HAVE_PYTHON
 static PyObject *create_py_qso(int band, const char *call, int mode) {
     PyObject *qso = PyStructSequence_New(qso_type);
     PyStructSequence_SetItem(qso, 0, Py_BuildValue("i", band));
@@ -222,12 +247,14 @@ static PyObject *create_py_qso(int band, const char *call, int mode) {
     PyStructSequence_SetItem(qso, 2, Py_BuildValue("i", mode));
     return qso;
 }
+#endif
 
 //bool plugin_has_add_qso() {
 //    return (pf_add_qso != NULL);
 //}
 
 void plugin_add_qso(const char *logline) {
+#ifdef HAVE_PYTHON
 //    if (pf_add_qso == NULL) {
 //        return;
 //    }
@@ -252,9 +279,11 @@ void plugin_add_qso(const char *logline) {
 	//FIXME: action?
     }
     Py_XDECREF(pValue);
+#endif
 }
 
 bool plugin_is_multi(int band, const char *call, int mode) {
+#ifdef HAVE_PYTHON
     // call is_multi
     PyObject *qso = create_py_qso(band, call, mode);
     PyObject *args = Py_BuildValue("(O)", qso);
@@ -274,9 +303,39 @@ bool plugin_is_multi(int band, const char *call, int mode) {
 	//exit(1);
     }
     return result;
+#else
+    return false;
+#endif
+}
+
+// result has to be g_freed()'s
+char *plugin_get_multi(const char *call, int mode) {
+#ifdef HAVE_PYTHON
+    PyObject *qso = create_py_qso(-1, call, mode);
+    PyObject *args = Py_BuildValue("(O)", qso);
+    PyObject *pValue = PyObject_CallObject(pf_get_multi, args);
+    Py_DECREF(args);
+    Py_DECREF(qso);
+
+    char* result = NULL;
+    if (pValue != NULL) {
+        result = g_strdup(PyUnicode_AsUTF8(pValue));
+    }
+    Py_XDECREF(pValue);
+
+    if (NULL != PyErr_Occurred()) {
+	PyErr_Print();
+	sleep(2);
+	//exit(1);
+    }
+    return result;
+#else
+    return NULL;
+#endif
 }
 
 int plugin_nr_of_mults(int band) {
+#ifdef HAVE_PYTHON
     PyObject *args = Py_BuildValue("(i)", band);
     PyObject *pValue = PyObject_CallObject(pf_nr_of_mults, args);
     Py_DECREF(args);
@@ -291,5 +350,8 @@ int plugin_nr_of_mults(int band) {
 	PyErr_Print();
     }
     return result;
+#else
+    return 0;
+#endif
 }
 
