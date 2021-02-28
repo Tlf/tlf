@@ -191,6 +191,8 @@ AS_IF([test "x$wantpythonplugin" = xtrue], [
 	    AS_IF([test $python_sub_ver -gt 7], [pylibs=`$PYTHON_CONFIG --libs --embed`], [pylibs=`$PYTHON_CONFIG --libs`])
 	    AC_SUBST([PYTHON_LIBS], [$pylibs])
 	    AC_MSG_RESULT([$pylibs])
+            AC_DEFINE([HAVE_PYTHON], [1],
+			[Define to 1 if you have the Python3 libraries.])
 	])
 	], [
 	AC_MSG_RESULT([no])])

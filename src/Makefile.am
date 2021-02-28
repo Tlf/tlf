@@ -34,10 +34,10 @@ tlf_SOURCES = \
 	trx_memory.c time_update.c ui_utils.c utils.c \
 	write_keyer.c writecabrillo.c \
 	zone_nr.c
-LIBS = @PYTHON_LIBS@
+
 tlf_LDADD = @LIBM_LIB@ @PTHREAD_LIBS@ @GLIB_LIBS@ @PANEL_LIBS@ @CURSES_LIBS@ \
 	    @HAMLIB_LIBS@ @LIBXMLRPC_LIB@ @LIBXMLRPC_CLIENT_LIB@ \
-	    @LIBXMLRPC_UTIL_LIB@ 
+	    @LIBXMLRPC_UTIL_LIB@ @PYTHON_LIBS@
 
 noinst_HEADERS = \
 	addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \
