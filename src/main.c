@@ -47,6 +47,7 @@
 #include "logit.h"
 #include "netkeyer.h"
 #include "parse_logcfg.h"
+#include "plugin.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "readctydata.h"
 #include "readcalls.h"
@@ -697,6 +698,13 @@ static int databases_load() {
     if (trxmode == DIGIMODE) {
 	qtc_recv_lazy = 0;
     }
+
+    status = plugin_init(whichcontest);
+    if (status != PARSE_OK) {
+       showmsg("Problems loading plugin!");
+       return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 

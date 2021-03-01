@@ -44,6 +44,7 @@
 #include "log_utils.h"
 #include "paccdx.h"
 #include "readqtccalls.h"
+#include "plugin.h"
 #include "score.h"
 #include "searchcallarray.h"
 #include "setcontest.h"
@@ -95,6 +96,10 @@ void init_scoring(void) {
 		pfxnummulti[i].qsos[n] = 0;
 	    }
 	}
+    }
+
+    if (plugin_has_setup()) {
+        plugin_setup();
     }
 }
 
