@@ -151,8 +151,8 @@ typedef struct {
     char continent[3];
     int cqzone;
     char qra[7];
-    double Lat;
-    double Long;
+    double Lat;     // +: north, -: south
+    double Long;    // +: west,  -: east
 } mystation_t;
 
 /** worked station

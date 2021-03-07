@@ -11,6 +11,9 @@
 // OBJECT ../src/getpx.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
+// OBJECT ../src/plugin.o
+// OBJECT ../src/log_utils.o
+// OBJECT ../src/utils.o
 
 /* dummys */
 int getctynr(char *checkcall) {

@@ -39,6 +39,7 @@
 #include "getctydata.h"
 #include "locator2longlat.h"
 #include "qrb.h"
+#include "plugin.h"
 #include "setcontest.h"
 #include "tlf.h"
 
@@ -353,6 +354,9 @@ int score() {
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	band_score[bandinx]--;
 
+    if (plugin_has_score()) {
+	return plugin_score(bandinx, hiscall, trxmode, comment);
+    }
 
     if (contest->points.type == FUNCTION) {
 	return contest->points.fn();

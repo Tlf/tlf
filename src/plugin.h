@@ -5,6 +5,9 @@ int plugin_init(const char *name);
 bool plugin_has_setup();
 void plugin_setup();
 
+bool plugin_has_score();
+int plugin_score(int band, const char *call, int mode, const char *exchange);
+
 bool plugin_has_add_qso();
 void plugin_add_qso(const char *logline);
 

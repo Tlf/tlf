@@ -14,6 +14,8 @@
 // OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/getpx.o
+// OBJECT ../src/plugin.o
+// OBJECT ../src/log_utils.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
 // OBJECT ../src/utils.o

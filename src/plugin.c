@@ -10,6 +10,7 @@
 #endif
 
 #include "tlf.h"
+#include "globalvars.h"
 #include "log_utils.h"
 #include "startmsg.h"
 #include "utils.h"
@@ -32,6 +33,8 @@ static PyObject *pModule, *pDict, *pTlf;
 //==
 
 PLUGIN_FUNC(setup)
+PLUGIN_FUNC(score)
+
 PLUGIN_FUNC(add_qso)
 PLUGIN_FUNC(is_multi)
 PLUGIN_FUNC(nr_of_mults)
@@ -68,6 +71,8 @@ static PyMODINIT_FUNC PyModInit_tlf(void) {
     PyModule_AddIntMacro(tlf, CWMODE);
     PyModule_AddIntMacro(tlf, SSBMODE);
     PyModule_AddIntConstant(tlf, "BAND_ANY", BANDINDEX_ANY);
+    PyModule_AddObject(tlf, "MY_LAT", PyFloat_FromDouble(my.Lat));
+    PyModule_AddObject(tlf, "MY_LONG", PyFloat_FromDouble(my.Long));
     //...
 
     return tlf;
@@ -80,10 +85,11 @@ static PyStructSequence_Desc qso_descr = {
 	{.name = "band"},
 	{.name = "call"},
 	{.name = "mode"},
-        // utc, comment/exchange, ...
+	{.name = "exchange"},
+	// utc, ...
 	{.name = NULL}  // guard
     },
-    .n_in_sequence = 3
+    .n_in_sequence = 4
 };
 
 static PyTypeObject *qso_type;
@@ -91,11 +97,11 @@ static PyTypeObject *qso_type;
 
 //=============
 // forward declarations, to be removed
-void plugin_setup(); 
+void plugin_setup();
 void plugin_add_qso(const char *logline);
 int plugin_nr_of_mults(int band);
 bool plugin_is_multi(int band, const char *call, int mode);
-char* plugin_get_multi(const char *call, int mode);
+char *plugin_get_multi(const char *call, int mode);
 //=============
 
 #ifdef HAVE_PYTHON
@@ -139,8 +145,8 @@ int plugin_init(const char *name) {
 
     pTlf = PyImport_ImportModule("tlf");
     if (pTlf == NULL) {
-        PyErr_Print();
-        showmsg("Error: could not import module 'tlf'");
+	PyErr_Print();
+	showmsg("Error: could not import module 'tlf'");
 	return PARSE_ERROR;
     }
 
@@ -165,6 +171,7 @@ int plugin_init(const char *name) {
     PyObject *pf_init;
     lookup_function("init", &pf_init);
     lookup_function("setup", &pf_setup);
+    lookup_function("score", &pf_score);
     lookup_function("add_qso", &pf_add_qso);
     lookup_function("is_multi", &pf_is_multi);
     lookup_function("nr_of_mults", &pf_nr_of_mults);
@@ -239,18 +246,40 @@ void plugin_setup() {
 }
 
 #ifdef HAVE_PYTHON
-static PyObject *create_py_qso(int band, const char *call, int mode) {
+static PyObject *create_py_qso(int band, const char *call, int mode,
+			       const char *exchange) {
     PyObject *qso = PyStructSequence_New(qso_type);
     PyStructSequence_SetItem(qso, 0, Py_BuildValue("i", band));
     PyStructSequence_SetItem(qso, 1, Py_BuildValue("s", call));
     PyStructSequence_SetItem(qso, 2, Py_BuildValue("i", mode));
+    PyStructSequence_SetItem(qso, 3, Py_BuildValue("s", exchange));
     return qso;
 }
 #endif
 
-//bool plugin_has_add_qso() {
-//    return (pf_add_qso != NULL);
-//}
+int plugin_score(int band, const char *call, int mode,
+		 const char *exchange) {
+    int result = 0;
+#ifdef HAVE_PYTHON
+    PyObject *qso = create_py_qso(band, call, mode, exchange);
+    PyObject *args = Py_BuildValue("(O)", qso);
+    PyObject *pValue = PyObject_CallObject(pf_score, args);
+    Py_DECREF(args);
+    Py_DECREF(qso);
+
+    if (pValue != NULL) {
+	result =  PyLong_AsLong(pValue);
+    }
+    Py_XDECREF(pValue);
+
+    if (NULL != PyErr_Occurred()) {
+	PyErr_Print();
+	sleep(2);
+	//exit(1);
+    }
+#endif
+    return result;
+}
 
 void plugin_add_qso(const char *logline) {
 #ifdef HAVE_PYTHON
@@ -265,7 +294,7 @@ void plugin_add_qso(const char *logline) {
     int mode = log_get_mode(logline);
     int band = log_get_band(logline); //atoi(logline);
 
-    PyObject *qso = create_py_qso(band, call, mode);
+    PyObject *qso = create_py_qso(band, call, mode, "");
 
     // call add_qso
     PyObject *arg = Py_BuildValue("(O)", qso);
@@ -284,7 +313,7 @@ void plugin_add_qso(const char *logline) {
 bool plugin_is_multi(int band, const char *call, int mode) {
 #ifdef HAVE_PYTHON
     // call is_multi
-    PyObject *qso = create_py_qso(band, call, mode);
+    PyObject *qso = create_py_qso(band, call, mode, "");
     PyObject *args = Py_BuildValue("(O)", qso);
     PyObject *pValue = PyObject_CallObject(pf_is_multi, args);
     Py_DECREF(args);
@@ -310,15 +339,15 @@ bool plugin_is_multi(int band, const char *call, int mode) {
 // result has to be g_freed()'s
 char *plugin_get_multi(const char *call, int mode) {
 #ifdef HAVE_PYTHON
-    PyObject *qso = create_py_qso(-1, call, mode);
+    PyObject *qso = create_py_qso(-1, call, mode, "");
     PyObject *args = Py_BuildValue("(O)", qso);
     PyObject *pValue = PyObject_CallObject(pf_get_multi, args);
     Py_DECREF(args);
     Py_DECREF(qso);
 
-    char* result = NULL;
+    char *result = NULL;
     if (pValue != NULL) {
-        result = g_strdup(PyUnicode_AsUTF8(pValue));
+	result = g_strdup(PyUnicode_AsUTF8(pValue));
     }
     Py_XDECREF(pValue);
 

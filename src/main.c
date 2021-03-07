@@ -699,10 +699,12 @@ static int databases_load() {
 	qtc_recv_lazy = 0;
     }
 
+    getstationinfo();
+
     status = plugin_init(whichcontest);
     if (status != PARSE_OK) {
-       showmsg("Problems loading plugin!");
-       return EXIT_FAILURE;
+	showmsg("Problems loading plugin!");
+	return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;

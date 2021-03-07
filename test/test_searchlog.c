@@ -24,6 +24,7 @@
 // OBJECT ../src/err_utils.o
 // OBJECT ../src/ui_utils.o
 // OBJECT ../src/score.o
+// OBJECT ../src/plugin.o
 // OBJECT ../src/utils.o
 
 extern WINDOW *search_win;

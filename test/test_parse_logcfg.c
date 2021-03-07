@@ -25,6 +25,9 @@
 // OBJECT ../src/getwwv.o
 // OBJECT ../src/locator2longlat.o
 // OBJECT ../src/score.o
+// OBJECT ../src/plugin.o
+// OBJECT ../src/log_utils.o
+// OBJECT ../src/utils.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/cabrillo_utils.o
