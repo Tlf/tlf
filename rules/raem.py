@@ -28,7 +28,10 @@ def score(qso):
     if m.group(4) == 'O':
         lon = -lon
     points = points + abs(lat - int(tlf.MY_LAT))
-    points = points + abs(lon - int(tlf.MY_LONG))
+    diff_long = abs(lon - int(tlf.MY_LONG))
+    if diff_long > 180:
+        diff_long = 360 - diff_long
+    points = points + diff_long
 
     # 3. Every QSO with a polar amateur radio station (defined as a station
     # located within the Earth’s Polar Circles and sending a latitude
