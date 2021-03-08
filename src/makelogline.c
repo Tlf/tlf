@@ -295,18 +295,18 @@ void prepare_specific_part(void) {
 	/* ------------cqww --------------------- */
 	logline4[68] = '\0';
 
-	if (addcty != 0) {
-	    if (dxcc_by_index(addcty)->pfx[0] == '*')
-		strncat(logline4, dxcc_by_index(addcty) -> pfx + 1, 5);
+	if (new_cty != 0) {
+	    if (dxcc_by_index(new_cty)->pfx[0] == '*')
+		strncat(logline4, dxcc_by_index(new_cty) -> pfx + 1, 5);
 	    else
-		strncat(logline4, dxcc_by_index(addcty) -> pfx, 5);
+		strncat(logline4, dxcc_by_index(new_cty) -> pfx, 5);
 
-	    addcty = 0;
+	    new_cty = 0;
 	}
 
 	fillto(73);
 
-	if (addzone != 0) {
+	if (new_zone != 0) {
 	    /*
 	    		if (strlen(zone_fix) > 1) {
 	    			strncat (logline4, zone_fix, 2);
@@ -319,7 +319,7 @@ void prepare_specific_part(void) {
 	    } else
 		strncat(logline4, comment, 2);
 
-	    addzone = 0;
+	    new_zone = 0;
 	} else {
 	    zone_fix[0] = '\0';
 	}
@@ -330,10 +330,10 @@ void prepare_specific_part(void) {
 
     } else if (CONTEST_IS(ARRLDX_USA)) {
 	logline4[68] = '\0';
-	if (addcty != 0) {
-	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
+	if (new_cty != 0) {
+	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
 
-	    addcty = 0;
+	    new_cty = 0;
 	}
 
 	fillto(77);
@@ -342,10 +342,10 @@ void prepare_specific_part(void) {
 	       && (countrynr != ve_cty)) {
 	logline4[68] = '\0';
 
-	if (addcty != 0) {
-	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
+	if (new_cty != 0) {
+	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
 
-	    addcty = 0;
+	    new_cty = 0;
 	}
 
 	fillto(77);
@@ -359,10 +359,10 @@ void prepare_specific_part(void) {
 
 	logline4[68] = '\0';
 
-	if (shownewmult >= 0) {
-	    strncat(logline4, multis[shownewmult].name, 9);
+	if (new_mult >= 0) {
+	    strncat(logline4, multis[new_mult].name, 9);
 
-	    shownewmult = -1;
+	    new_mult = -1;
 	}
 
 	fillto(77);
@@ -371,10 +371,10 @@ void prepare_specific_part(void) {
 	       && ((countrynr == w_cty) || (countrynr == ve_cty))) {
 	logline4[68] = '\0';
 
-	if (shownewmult >= 0) {
-	    strncat(logline4, multis[shownewmult].name, 9);
+	if (new_mult >= 0) {
+	    strncat(logline4, multis[new_mult].name, 9);
 
-	    shownewmult = -1;
+	    new_mult = -1;
 	}
 
 	fillto(77);
@@ -383,10 +383,10 @@ void prepare_specific_part(void) {
 
 	logline4[68] = '\0';
 
-	if (addcty != 0) {
-	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
+	if (new_cty != 0) {
+	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
 
-	    addcty = 0;
+	    new_cty = 0;
 
 	} else if (addcallarea == 1) {
 	    strncat(logline4, wpx_prefix, 3);
@@ -401,10 +401,10 @@ void prepare_specific_part(void) {
 
 	logline4[68] = '\0';
 
-	if (addcty != 0) {
-	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
+	if (new_cty != 0) {
+	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
 
-	    addcty = 0;
+	    new_cty = 0;
 	}
 
 	fillto(77);

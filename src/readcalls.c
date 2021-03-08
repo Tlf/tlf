@@ -74,7 +74,7 @@ void init_scoring(void) {
 	countries[i] = 0;
 
     for (int i = 0; i < NBANDS; i++)
-	band_score[i] = 0;
+	qsos_per_band[i] = 0;
 
     for (int i = 0; i < NBANDS; i++)
 	countryscore[i] = 0;
@@ -206,7 +206,6 @@ void count_contest_bands(int check, int *count) {
 int readcalls(void) {
 
     char inputbuffer[LOGLINELEN + 1];
-    char tmpbuf[20];
     char checkcall[20];
     int z = 0;
     bool add_ok;
@@ -262,12 +261,11 @@ int readcalls(void) {
 	if (tmpptr)
 	    *tmpptr = '\0';
 
-	strcpy(tmpbuf, presentcall);
-	countrynr = getctydata(tmpbuf);
+	countrynr = getctydata(presentcall);
 
 	if (continentlist_only) {
 	    if (!is_in_continentlist(continent)) {
-		band_score[bandindex]++;
+		qsos_per_band[bandindex]++;
 		continue;
 	    }
 	}
@@ -345,7 +343,7 @@ int readcalls(void) {
 	    add_ok = pacc_pa();
 
 	    if (add_ok == false) {
-		band_score[bandindex]++;
+		qsos_per_band[bandindex]++;
 	    }
 
 	    hiscall[0] = '\0';
@@ -368,7 +366,7 @@ int readcalls(void) {
 
 	    worked[l].band |= inxes[bandindex];	/* mark band as worked */
 
-	    band_score[bandindex]++;	/*  qso counter  per band */
+	    qsos_per_band[bandindex]++;
 
 	    if (CONTEST_IS(CQWW) || (itumult == 1) || (wazmult == 1))
 		zones[z] |= inxes[bandindex];

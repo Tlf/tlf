@@ -48,7 +48,7 @@ int addmult(void) {
     int matching_len = 0, idx = -1;
     char *stripped_comment;
 
-    shownewmult = -1;
+    new_mult = -1;
 
     stripped_comment = strdup(comment);
     g_strchomp(stripped_comment);
@@ -82,7 +82,7 @@ int addmult(void) {
 	}
 
 	if (idx >= 0) {
-	    shownewmult =
+	    new_mult =
 		remember_multi(get_mult(idx), bandinx, PER_BAND);
 	}
     }
@@ -99,7 +99,7 @@ int addmult(void) {
 	}
 
 	if (idx >= 0) {
-	    shownewmult =
+	    new_mult =
 		remember_multi(get_mult(idx), bandinx, ALL_BAND);
 	}
     }
@@ -118,32 +118,32 @@ int addmult(void) {
 	}
 
 	if (idx >= 0) {
-	    shownewmult =
+	    new_mult =
 		remember_multi(get_mult(idx), bandinx, PER_BAND);
 	}
     }
 
     // --------------------wysiwyg----------------
     if (wysiwyg_once == 1) {
-	shownewmult = remember_multi(stripped_comment, bandinx, ALL_BAND);
+	new_mult = remember_multi(stripped_comment, bandinx, ALL_BAND);
     }
 
     if (wysiwyg_multi == 1) {
-	shownewmult = remember_multi(stripped_comment, bandinx, PER_BAND);
+	new_mult = remember_multi(stripped_comment, bandinx, PER_BAND);
     }
 
     if (serial_grid4_mult == 1) {
 	section[4] = '\0';
-	shownewmult = remember_multi(section, bandinx, PER_BAND);
+	new_mult = remember_multi(section, bandinx, PER_BAND);
     }
 
     /* -------------- unique call multi -------------- */
     if (unique_call_multi == UNIQUECALL_ALL) {
-	shownewmult = remember_multi(hiscall, bandinx, ALL_BAND);
+	new_mult = remember_multi(hiscall, bandinx, ALL_BAND);
     }
 
     if (unique_call_multi == UNIQUECALL_BAND) {
-	shownewmult = remember_multi(hiscall, bandinx, PER_BAND);
+	new_mult = remember_multi(hiscall, bandinx, PER_BAND);
     }
 
     free(stripped_comment);
@@ -162,7 +162,7 @@ int addmult2(void) {
     char stripped_comment[21];
     char multi_call[20];
 
-    shownewmult = -1;
+    new_mult = -1;
 
     // --------------------------- arrlss ------------------------------------
     if (CONTEST_IS(ARRL_SS)) {
@@ -187,14 +187,14 @@ int addmult2(void) {
 	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 
-	shownewmult = remember_multi(stripped_comment, bandinx, ALL_BAND);
+	new_mult = remember_multi(stripped_comment, bandinx, ALL_BAND);
     }
 
     if (wysiwyg_multi == 1) {
 	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 
-	shownewmult = remember_multi(stripped_comment, bandinx, PER_BAND);
+	new_mult = remember_multi(stripped_comment, bandinx, PER_BAND);
     }
 
     /* -------------- unique call multi -------------- */
@@ -202,11 +202,11 @@ int addmult2(void) {
     g_strchomp(multi_call);
 
     if (unique_call_multi == UNIQUECALL_ALL) {
-	shownewmult = remember_multi(multi_call, bandinx, ALL_BAND);
+	new_mult = remember_multi(multi_call, bandinx, ALL_BAND);
     }
 
     if (unique_call_multi == UNIQUECALL_BAND) {
-	shownewmult = remember_multi(multi_call, bandinx, PER_BAND);
+	new_mult = remember_multi(multi_call, bandinx, PER_BAND);
     }
 
 

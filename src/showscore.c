@@ -109,7 +109,7 @@ void display_header(int *bi) {
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     mvprintw(2, START_COL, "QSO's ");
     for (i = 0; i < 6; i++) {
-	printfield(2, band_cols[i], band_score[bi[i]]);
+	printfield(2, band_cols[i], qsos_per_band[bi[i]]);
     }
 
     mvprintw(3, START_COL, spaces(80 - START_COL));

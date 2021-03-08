@@ -413,9 +413,9 @@ void test_add_warc(void **state) {
     strcpy(comment, "15");
     addcall();
     assert_int_equal(countries[getctynr("LZ0AA")], BAND12);
-    assert_int_equal(addcty, getctynr("LZ1AB"));
+    assert_int_equal(new_cty, getctynr("LZ1AB"));
     assert_int_equal(zones[15], BAND12);
-    assert_int_equal(addzone, 15);
+    assert_int_equal(new_zone, 15);
 }
 
 void test_add2_warc(void **state) {

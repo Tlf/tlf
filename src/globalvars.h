@@ -50,7 +50,7 @@ extern char hiscall[20];
 extern char hiscall_sent[20];
 extern int total;
 extern int qso_points;
-extern int band_score[NBANDS];		// QSO/band
+extern int qsos_per_band[NBANDS];
 extern int zones[MAX_ZONES];
 extern int serial_section_mult;
 extern int serial_grid4_mult;
@@ -91,7 +91,7 @@ extern char zone_export[];
 extern int itumult;
 
 extern char ssexchange[];
-extern int shownewmult;
+extern int new_mult;
 extern char comment[80];
 
 extern char lan_logline[];
@@ -117,9 +117,9 @@ extern char last_rst[];
 extern char section[];
 extern int wazmult;
 extern int addcallarea;
-extern int addcty;
+extern int new_cty;
 extern char zone_fix[];
-extern int addzone;
+extern int new_zone;
 extern int do_cabrillo;
 extern int no_rst;
 extern rmode_t digi_mode;
