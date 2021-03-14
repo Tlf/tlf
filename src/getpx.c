@@ -64,7 +64,7 @@ int letters_only(const char *call) {
  * separated prefix string
  * ATTENTION: needs to be freed afterwards
  */
-char *get_pfx(char *checkcall) {
+char *get_wpx_pfx(char *checkcall) {
     int i;
     char portable = '\0';
     char *pxbuffer;
@@ -107,7 +107,12 @@ char *get_pfx(char *checkcall) {
 }
 
 void getpx(char *checkcall) {
-    char *buffer = get_pfx(checkcall);
-    strcpy(pxstr, buffer);
+    char *buffer = get_wpx_pfx(checkcall);
+    strcpy(wpx_prefix, buffer);
     g_free(buffer);
 }
+
+int districtnumber(char *prefix) {
+    return prefix[strlen(prefix) - 1] - '0';
+}
+

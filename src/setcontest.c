@@ -48,7 +48,7 @@ static bool pfx_on_band_ismulti(spot *data) {
     int band = data->band;
     char *call = data->call;
 
-    char *prefix = get_pfx(call);
+    char *prefix = get_wpx_pfx(call);
     bool multi = pfx_is_new_on(prefix, band);
     g_free(prefix);
     return multi;
@@ -56,7 +56,7 @@ static bool pfx_on_band_ismulti(spot *data) {
 
 
 static bool wpx_ismulti(spot *data) {
-    char *prefix = get_pfx(data->call);
+    char *prefix = get_wpx_pfx(data->call);
     bool multi = pfx_is_new(prefix);
     g_free(prefix);
     return multi;

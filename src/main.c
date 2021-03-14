@@ -265,7 +265,7 @@ char comment[80];
 char cqzone[3] = "";
 char ituzone[3] = "";
 char continent[3] = "";
-char pxstr[11] = "";
+char wpx_prefix[11] = "";
 int totalmults = 0;
 int totalcountries = 0;
 int totalzones = 0;

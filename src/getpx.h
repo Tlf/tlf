@@ -21,7 +21,8 @@
 #ifndef GETPX_H
 #define GETPX_H
 
-char *get_pfx(char *checkcall);
+char *get_wpx_pfx(char *checkcall);
 void getpx(char *checkcall);
+int  districtnumber(char *prefix);
 
 #endif /* GETPX_H */

@@ -58,7 +58,7 @@ extern int sectn_mult_once;
 extern int dx_arrlsections;
 extern int wysiwyg_multi;
 extern int wysiwyg_once;
-extern char pxstr[];
+extern char wpx_prefix[];
 extern int zonescore[NBANDS];
 extern int countryscore[NBANDS];
 extern int qsonum;

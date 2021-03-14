@@ -327,7 +327,7 @@ int readcalls(void) {
 
 	if (pfxmultab == 1) {
 	    getpx(presentcall);
-	    add_pfx(pxstr, bandindex);
+	    add_pfx(wpx_prefix, bandindex);
 	}
 
 
@@ -353,7 +353,7 @@ int readcalls(void) {
 
 	if (pfxnummultinr > 0) {
 	    getpx(presentcall);
-	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
+	    pxnr = districtnumber(wpx_prefix);
 
 	    getctydata(presentcall);
 
@@ -401,7 +401,7 @@ int readcalls(void) {
 	     * Maybe better use BANDINDEX_OOB here:
 	     * - Will count pfx for wpx correctly
 	     * - but will not change counts for pfxmultab on contest bands */
-	    add_pfx(pxstr, BANDINDEX_OOB);
+	    add_pfx(wpx_prefix, BANDINDEX_OOB);
 	}
     }
 

@@ -616,8 +616,7 @@ void displayWorkedZonesCountries(int z) {
     if (CONTEST_IS(PACC_PA)) {
 
 	getpx(hiscall);
-
-	pxnr = pxstr[strlen(pxstr) - 1] - 48;
+	pxnr = districtnumber(wpx_prefix);
 
 	if ((countrynr == w_cty) ||
 		(countrynr == ve_cty) ||
@@ -652,7 +651,7 @@ void displayWorkedZonesCountries(int z) {
 
     if ((pfxnummultinr >= 0 || country_mult) && iscontest) {
 	getpx(hiscall);
-	pxnr = pxstr[strlen(pxstr) - 1] - 48;
+	pxnr = districtnumber(wpx_prefix);
 
 	getctydata(hiscall);
 	pfxnumcntidx = -1;
@@ -719,7 +718,7 @@ void searchlog() {
 	/* prepare and print lower line of checkwindow */
 	dx = dxcc_by_index(countrynr);
 	zone = getZone();
-	displayCallInfo(dx, zone, pxstr);
+	displayCallInfo(dx, zone, wpx_prefix);
 	displayWorkedZonesCountries(zone);
 
 	refreshp();
