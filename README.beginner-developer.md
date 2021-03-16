@@ -2,14 +2,19 @@
 
 ## Summary
 
-This is some collection to help recently joined coders to start with contributing TLF.
+started by HA5SE
+
+This is some collection to help recently joined coders to start with 
+contributing to TLF.
 You can try the hard way. Then you just do not need to read any further.
-Beleive me, at least for me, added unnecessary frustration not knowing any such collection.
+Believe me, at least for me, it  added unnecessary frustration that there were 
+no such collection.
 You lean back, feeling (almost) on top of the World -- just to have to
 learn somewhat later when asking for merge your work, that you are far from done...
 
 In spite of every effort, this doc will (and can) never become complete.
-Any comments, critisisms, suggestions, improvement requests are _ W E L C O M E .
+Any comments, critisisms, suggestions, improvement requests are 
+_ W E L C O M E .
 
 To begin with, each project using any computer language, ususally is built upon
 * partly some project conventions
@@ -40,10 +45,8 @@ please simply use a list in the header immediately below this introduction, like
     Old code is as-is, you should never count on conventions in old
     code would still continue to be considered as current.
 
-    Recent code often uses different conventions.
-
-    There is the possibility to find old, outdated conventions in old code before 200???? or V1???
-    It is better to use examples in more recent code.
+    Recent code often uses different conventions. Try to adapt your code to
+    the modern ones.
 
     You can check the age of any line or block using
 
@@ -54,24 +57,32 @@ please simply use a list in the header immediately below this introduction, like
     per each single new release by the maintainer. [thanks to HA5CQZ]
 
 
-3)  In turn, it is your responsibility to update the manual page  **`  tlf.1.in  `**  if your contribution
-    brings in visible changes to end-users. Such changes include e.g. new config keywords.
+3)  In turn, it is your responsibility to update the manual page  
+    **`  tlf.1.in  `**  if your contribution
+    brings in visible changes to end-users. Such changes include e.g. new 
+    config keywords.
 
 
-4)  Do not include your callsign or reason or similar in your modification. [thanks to HA5CQZ]
-    No need to insert anything like
+4)  Do not include your callsign or reason or similar in your modification,
+    just add the ideas behind to the commit message and/or the pull request.
+    Git will take care for recording it together with your authorship.
+    [thanks to HA5CQZ]
+    So there is no need to insert anything like
 
     **`// 2021-02-01 HA5SE  implementing TUNE_LNG=`**
 
     Instead of comments like that, rather count on
 
-    **`git blame`**
+    **`git blame`** and/or **`git log`**
 
 
 5)  When defining global variables we have two choices: [thanks to DL1JBE]
 
-    * Variables which are only part of an module should be defined in the module itself
-    and made known to other modules by declaring them extern in the modules header file
-    * Alternatively if the variable is not clearly related to a functional module we have
-    concentrated them in one place - at the moment in  **`  main.c  `**  (with  **`  test/data.c  `**  a
-    shadow copy for testing purposes). The variable should then be declared in  **`  globalvars.h  `** .
+    * Variables which are only part of an module should be defined in 
+    the module itself and made known to other modules by declaring them 
+    `extern` in the modules header file.
+    * Alternatively if the variable is not clearly related to a 
+    functional module we have concentrated them in one place - at the 
+    moment in  **`  main.c  `**  (with  **`  test/data.c  `**  a
+    shadow copy for testing purposes). 
+    The variable should then be declared `extern` in  **`  globalvars.h  `** .
