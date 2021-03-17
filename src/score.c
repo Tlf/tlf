@@ -76,7 +76,7 @@ bool country_found(char prefix[]) {
 bool exist_in_country_list() {
     char prefix[11];
 
-    strcpy(prefix, pxstr);
+    strcpy(prefix, wpx_prefix);
     int len = strlen(prefix);
 
     // make 3 iterations

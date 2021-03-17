@@ -121,7 +121,7 @@ int addcall(void) {
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
 	getpx(hiscall);
-	pxnr = pxstr[strlen(pxstr) - 1] - 48;
+	pxnr = districtnumber(wpx_prefix);
 
 	int pfxi = 0;
 	while (pfxi < pfxnummultinr) {
@@ -287,9 +287,9 @@ int addcall2(void) {
 
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
-	getpx(hiscall);		/* FIXME: uses global 'pxstr' for background
-				   job */
-	pxnr = pxstr[strlen(pxstr) - 1] - 48;
+	getpx(hiscall);	    /* FIXME: uses global 'wpx_prefix' for background
+			       job */
+	pxnr = districtnumber(wpx_prefix);
 
 	int pfxi = 0;
 	while (pfxi < pfxnummultinr) {

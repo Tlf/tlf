@@ -298,13 +298,14 @@ void prepare_specific_part(void) {
      * -> add prefix to prefixes_worked and include new pfx in log line */
     new_pfx = 0;
     if (!(pfxmultab == 1 && excl_add_veto == 1)) {
-	new_pfx = (add_pfx(pxstr, bandinx) == 0);	/* add prefix, remember if new */
+	/* add prefix, remember if new */
+	new_pfx = (add_pfx(wpx_prefix, bandinx) == 0);
     }
 
     if (CONTEST_IS(WPX) || pfxmult == 1 || pfxmultab == 1) {	/* wpx */
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
-	    strncat(logline4, pxstr, 5);
+	    strncat(logline4, wpx_prefix, 5);
 	}
 
 	fillto(73);
@@ -408,7 +409,7 @@ void prepare_specific_part(void) {
 	    addcty = 0;
 
 	} else if (addcallarea == 1) {
-	    strncat(logline4, pxstr, 3);
+	    strncat(logline4, wpx_prefix, 3);
 
 	    addcallarea = 0;
 	}
