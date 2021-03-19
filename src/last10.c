@@ -46,7 +46,7 @@ int last10(void) {
     thisband = atoi(band[bandinx]);
 
     /* look backwards in actual band for QSOs */
-    for (counter = nr_qsos; counter >= 0; counter--) {
+    for (counter = nr_qsos - 1; counter >= 0; counter--) {
 
 	if (thisband == (atoi(qsos[counter]))) {
 	    qsocount++;
