@@ -92,7 +92,7 @@ int setup_addcall_pfxnum_notinList(void **state) {
     return setup_addcall_pfxnum_inList(state);
 }
 
-void test_addcall_into_worked(void **state) {
+void test_add_to_worked(void **state) {
     strcpy(hiscall, "LZ1AB");
     bandinx = BANDINDEX_10;
     time_t now = time(NULL);
@@ -107,6 +107,21 @@ void test_addcall_into_worked(void **state) {
     assert_int_equal(worked[0].country, getctynr("LZ1AB"));
 }
 
+void test_add_to_worked_continentlistonly(void **state) {
+    continentlist_only = true;
+
+    strcpy(hiscall, "LZ1AB");
+    bandinx = BANDINDEX_10;
+    strcpy(comment, "Hi");
+    addcall();
+
+    strcpy(hiscall, "PY2BBB");
+    addcall();
+
+    assert_int_equal(nr_worked, 2);
+    assert_string_equal(worked[0].call, "LZ1AB");
+    assert_string_equal(worked[1].call, "PY2BBB");
+}
 
 void test_addcall_nopfxnum(void **state) {
     strcpy(hiscall, "LZ1AB");
