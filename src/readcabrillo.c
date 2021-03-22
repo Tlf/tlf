@@ -34,6 +34,7 @@
 #include "getexchange.h"
 #include "get_time.h"
 #include "globalvars.h"
+#include "log_to_disk.h"
 #include "makelogline.h"
 #include "qtc_log.h"
 #include "readcabrillo.h"
@@ -84,6 +85,7 @@ void write_log_fm_cabr() {
     checkexchange(-1);
     dupe = is_dupe(hiscall, bandinx, trxmode);
     addcall();		/* add call to worked list and check it for dupe */
+    score_qso();
     makelogline();	/* format logline */
     store_qso(logline4);
     cleanup_qso();

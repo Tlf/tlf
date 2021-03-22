@@ -38,6 +38,7 @@
 #include "scroll_log.h"
 #include "score.h"
 #include "store_qso.h"
+#include "setcontest.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "cleanup.h"
@@ -45,6 +46,25 @@
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 char lan_logline[81];
+
+
+/* restart band timer if in wpx and qso on new band */
+void restart_band_timer(void) {
+    static int lastbandinx = 0;
+
+    if (CONTEST_IS(WPX)) {
+	if (lastbandinx != bandinx) {
+	    lastbandinx = bandinx;
+	    minute_timer = 600;		/* 10 minute timer */
+	}
+    }
+}
+
+/* score QSO and add to total points */
+void score_qso(void) {
+    qso_points = score();		/* update qso's per band and score */
+    total = total + qso_points;
+}
 
 /** \brief logs one record to disk
  * Logs one record to disk which may come from different sources
@@ -58,8 +78,15 @@ void log_to_disk(int from_lan) {
 
     if (!from_lan) {		// qso from this node
 
+	/* remember call and report for resend after qso (see callinput.c)  */
+	strcpy(lastcall, hiscall);
+	strcpy(last_rst, sent_rst);
+
+	restart_band_timer();
+
 	addcall();		/* add call to dupe list */
 
+	score_qso();
 	makelogline();
 
 	store_qso(logline4);
@@ -70,8 +97,6 @@ void log_to_disk(int from_lan) {
 	if (trx_control && (cqmode == S_P))
 	    addspot();		/* add call to bandmap if in S&P and
 				   no need to ask for frequency */
-
-	strcpy(last_rst, sent_rst); /* remember last report */
 
 	cleanup_qso();		/* reset qso related parameters */
     } else {			/* qso from lan */

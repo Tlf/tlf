@@ -347,11 +347,11 @@ int score() {
 	return points;
     }
 
-    band_score[bandinx]++;	/* qso's per band  */
+    qsos_per_band[bandinx]++;	/* qso's per band  */
 
     if (CONTEST_IS(ARRLDX_USA)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
-	band_score[bandinx]--;
+	qsos_per_band[bandinx]--;
 
 
     if (contest->points.type == FUNCTION) {

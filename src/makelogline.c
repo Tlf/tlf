@@ -35,15 +35,12 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "lancode.h"
 #include "qsonr_to_str.h"
-#include "score.h"
 #include "setcontest.h"
 
 
 void prepare_fixed_part(void);
 void prepare_specific_part(void);
 void fillto(int n);
-
-
 
 /** Construct a new line to add to the logfile.
  *
@@ -57,20 +54,7 @@ void fillto(int n);
  *   See function definitions below
  */
 void makelogline(void) {
-    static int lastbandinx = 0;
     char freq_buff[10];
-    int points;
-
-    /* restart band timer if qso on new band */
-    if (CONTEST_IS(WPX)) {		// 10 minute timer
-	if (lastbandinx != bandinx) {
-	    lastbandinx = bandinx;
-	    minute_timer = 600;	// 10 minutes
-	}
-    }
-
-    /* remember call for resend after qso (see callinput.c)  */
-    strcpy(lastcall, hiscall);
 
     /* first fixed (contest independent) part of logline */
     prepare_fixed_part();
@@ -80,13 +64,9 @@ void makelogline(void) {
     prepare_specific_part();
     assert(strlen(logline4) == 77);
 
-    /* score QSO and add to logline
-     * if not DXpedition or QSO mode */
-    points = score();			/* update qso's per band and score */
-    total = total + points;
-
+    /* add points to logline if in contest */
     if (iscontest && !CONTEST_IS(DXPED)) {
-	sprintf(logline4 + 76, "%2d", points);
+	sprintf(logline4 + 76, "%2d", qso_points);
     }
 
     fillto(80);
@@ -315,18 +295,18 @@ void prepare_specific_part(void) {
 	/* ------------cqww --------------------- */
 	logline4[68] = '\0';
 
-	if (addcty != 0) {
-	    if (dxcc_by_index(addcty)->pfx[0] == '*')
-		strncat(logline4, dxcc_by_index(addcty) -> pfx + 1, 5);
+	if (new_cty != 0) {
+	    if (dxcc_by_index(new_cty)->pfx[0] == '*')
+		strncat(logline4, dxcc_by_index(new_cty) -> pfx + 1, 5);
 	    else
-		strncat(logline4, dxcc_by_index(addcty) -> pfx, 5);
+		strncat(logline4, dxcc_by_index(new_cty) -> pfx, 5);
 
-	    addcty = 0;
+	    new_cty = 0;
 	}
 
 	fillto(73);
 
-	if (addzone != 0) {
+	if (new_zone != 0) {
 	    /*
 	    		if (strlen(zone_fix) > 1) {
 	    			strncat (logline4, zone_fix, 2);
@@ -339,7 +319,7 @@ void prepare_specific_part(void) {
 	    } else
 		strncat(logline4, comment, 2);
 
-	    addzone = 0;
+	    new_zone = 0;
 	} else {
 	    zone_fix[0] = '\0';
 	}
@@ -350,10 +330,10 @@ void prepare_specific_part(void) {
 
     } else if (CONTEST_IS(ARRLDX_USA)) {
 	logline4[68] = '\0';
-	if (addcty != 0) {
-	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
+	if (new_cty != 0) {
+	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
 
-	    addcty = 0;
+	    new_cty = 0;
 	}
 
 	fillto(77);
@@ -362,10 +342,10 @@ void prepare_specific_part(void) {
 	       && (countrynr != ve_cty)) {
 	logline4[68] = '\0';
 
-	if (addcty != 0) {
-	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
+	if (new_cty != 0) {
+	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
 
-	    addcty = 0;
+	    new_cty = 0;
 	}
 
 	fillto(77);
@@ -379,10 +359,10 @@ void prepare_specific_part(void) {
 
 	logline4[68] = '\0';
 
-	if (shownewmult >= 0) {
-	    strncat(logline4, multis[shownewmult].name, 9);
+	if (new_mult >= 0) {
+	    strncat(logline4, multis[new_mult].name, 9);
 
-	    shownewmult = -1;
+	    new_mult = -1;
 	}
 
 	fillto(77);
@@ -391,10 +371,10 @@ void prepare_specific_part(void) {
 	       && ((countrynr == w_cty) || (countrynr == ve_cty))) {
 	logline4[68] = '\0';
 
-	if (shownewmult >= 0) {
-	    strncat(logline4, multis[shownewmult].name, 9);
+	if (new_mult >= 0) {
+	    strncat(logline4, multis[new_mult].name, 9);
 
-	    shownewmult = -1;
+	    new_mult = -1;
 	}
 
 	fillto(77);
@@ -403,10 +383,10 @@ void prepare_specific_part(void) {
 
 	logline4[68] = '\0';
 
-	if (addcty != 0) {
-	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
+	if (new_cty != 0) {
+	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
 
-	    addcty = 0;
+	    new_cty = 0;
 
 	} else if (addcallarea == 1) {
 	    strncat(logline4, wpx_prefix, 3);
@@ -421,10 +401,10 @@ void prepare_specific_part(void) {
 
 	logline4[68] = '\0';
 
-	if (addcty != 0) {
-	    strncat(logline4, dxcc_by_index(addcty) -> pfx, 9);
+	if (new_cty != 0) {
+	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
 
-	    addcty = 0;
+	    new_cty = 0;
 	}
 
 	fillto(77);
