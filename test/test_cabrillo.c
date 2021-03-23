@@ -33,6 +33,9 @@ int get_total_score() {
     return 123;
 }
 
+void score_qso() {
+}
+
 void ask(char *buffer, char *what) {
 }
 

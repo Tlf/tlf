@@ -266,14 +266,15 @@ char comment[80];
 char cqzone[3] = "";
 char ituzone[3] = "";
 char continent[3] = "";
-char pxstr[11] = "";
+char wpx_prefix[11] = "";
 int totalmults = 0;
 int totalcountries = 0;
 int totalzones = 0;
 int secs = 0;
 int countrynr;
 int total = 0; 		/**< total number of qso points */
-int band_score[NBANDS];
+int qso_points;		/**< number of points for last qso */
+int qsos_per_band[NBANDS];
 int callfound = 0;
 int partials = 0;	/**< show partial calls */
 int use_part = 0;	/**< if 1 use automatically found partial call */
@@ -362,9 +363,9 @@ struct ie_list *main_ie_list = NULL;	/* head of initial exchange list */
 int zonescore[NBANDS];
 int countryscore[NBANDS];
 int zonedisplay = 0;
-int addzone = 0;		/* flag for new zone */
-int addcty = 0;			/* flag for new country */
-int shownewmult = -1;
+int new_zone = 0;		/* index of new zone */
+int new_cty = 0;		/* index of new country */
+int new_mult = -1;
 int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */
@@ -998,8 +999,9 @@ int main(int argc, char *argv[]) {
     lan_init();
     keyer_init();
 
-    scroll_log();		/* read the last 5  log lines and set the next serial number */
     nr_qsos = readcalls();	/* read the logfile for score and dupe */
+
+    scroll_log();		/* read the last 5  log lines and set the next serial number */
 
     show_station_info();
 

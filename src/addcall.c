@@ -121,7 +121,7 @@ int addcall(void) {
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
 	getpx(hiscall);
-	pxnr = pxstr[strlen(pxstr) - 1] - 48;
+	pxnr = districtnumber(wpx_prefix);
 
 	int pfxi = 0;
 	while (pfxi < pfxnummultinr) {
@@ -136,7 +136,7 @@ int addcall(void) {
     if (continentlist_only) {
 	if (!is_in_continentlist(continent)) {
 	    add_ok = 0;
-	    addcty = 0;
+	    new_cty = 0;
 	    addcallarea = 0;
 	    excl_add_veto = 1;
 	}
@@ -146,7 +146,7 @@ int addcall(void) {
 	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
 	if (is_in_continentlist(continent)) {
 	    add_ok = 0;
-	    addcty = 0;
+	    new_cty = 0;
 	    addcallarea = 0;
 	    excl_add_veto = 1;
 	}
@@ -155,7 +155,7 @@ int addcall(void) {
     if (exclude_multilist_type == EXCLUDE_COUNTRY) {
 	if (is_in_countrylist(j)) {
 	    add_ok = 0;
-	    addcty = 0;
+	    new_cty = 0;
 	    addcallarea = 0;
 	    excl_add_veto = 1;
 	}
@@ -178,12 +178,12 @@ int addcall(void) {
 		    if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
 			countries[j] |= inxes[bandinx];
 			countryscore[bandinx]++;
-			addcty = j;
+			new_cty = j;
 		    }
 		    if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
 			zones[z] |= inxes[bandinx];
 			zonescore[bandinx]++;
-			addzone = z;
+			new_zone = z;
 		    }
 		} else {
 		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[bandinx])
@@ -203,11 +203,11 @@ int addcall(void) {
 
 		if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
 		    countries[j] |= inxes[bandinx];
-		    addcty = j;
+		    new_cty = j;
 		}
 		if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
 		    zones[z] |= inxes[bandinx];
-		    addzone = z;
+		    new_zone = z;
 		}
 		break;
 
@@ -287,9 +287,9 @@ int addcall2(void) {
 
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
-	getpx(hiscall);		/* FIXME: uses global 'pxstr' for background
-				   job */
-	pxnr = pxstr[strlen(pxstr) - 1] - 48;
+	getpx(hiscall);	    /* FIXME: uses global 'wpx_prefix' for background
+			       job */
+	pxnr = districtnumber(wpx_prefix);
 
 	int pfxi = 0;
 	while (pfxi < pfxnummultinr) {
@@ -325,7 +325,7 @@ int addcall2(void) {
     if (add_ok == 1) {
 
 	bandinx = log_get_band(lan_logline);
-	band_score[bandinx]++;
+	qsos_per_band[bandinx]++;
 
 	worked[i].band |= inxes[bandinx];	/* worked on this band */
 
@@ -344,12 +344,12 @@ int addcall2(void) {
 			if (j != 0 && (countries[j] & inxes[bandinx]) == 0) {
 			    countries[j] |= inxes[bandinx];
 			    countryscore[bandinx]++;
-//                              addcty = j;
+//                              new_cty = j;
 			}
 			if (z != 0 && (zones[z] & inxes[bandinx]) == 0) {
 			    zones[z] |= inxes[bandinx];
 			    zonescore[bandinx]++;
-//                              addzone = z;
+//                              new_zone = z;
 			}
 		    } else {
 			if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {

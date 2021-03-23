@@ -21,6 +21,8 @@
 #ifndef LOG_TO_DISK_H
 #define LOG_TO_DISK_H
 
+void restart_band_timer(void);
+void score_qso(void);
 void log_to_disk(int from_lan);
 
 #endif /*  LOG_TO_DISK_H */

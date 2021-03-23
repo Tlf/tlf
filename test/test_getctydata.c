@@ -203,9 +203,9 @@ void test_same_result(void **data) {
 
 void test_no_wpx(void **state) {
     int nr;
-    pxstr[0] = '\0';
+    wpx_prefix[0] = '\0';
     nr = getctydata("DJ/PA3LM");
-    assert_string_equal(pxstr, "");
+    assert_string_equal(wpx_prefix, "");
     assert_int_equal(getctydata("DL"), nr);
 }
 
@@ -213,9 +213,9 @@ void test_is_wpx(void **state) {
     int nr;
 
     setcontest("wpx");
-    pxstr[0] = '\0';
+    wpx_prefix[0] = '\0';
     nr = getctydata("DJ/PA3LM");
-    assert_string_equal(pxstr, "DJ0");
+    assert_string_equal(wpx_prefix, "DJ0");
     assert_int_equal(getctydata("DL"), nr);
 }
 
@@ -223,9 +223,9 @@ void test_pfxmult_set(void **state) {
     int nr;
 
     pfxmult = 1;
-    pxstr[0] = '\0';
+    wpx_prefix[0] = '\0';
     nr = getctydata("DJ/PA3LM");
-    assert_string_equal(pxstr, "DJ0");
+    assert_string_equal(wpx_prefix, "DJ0");
     assert_int_equal(getctydata("DL"), nr);
 }
 

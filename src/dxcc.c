@@ -54,7 +54,7 @@ prefix_data dummy_pfx = {
 };
 
 
-void prefix_free(gpointer data) {
+static void prefix_free(gpointer data) {
     prefix_data *pfx_data = data;
 
     g_free(pfx_data -> pfx);
@@ -134,7 +134,6 @@ int find_full_match(const char *call) {
 }
 
 
-
 /* search for the best mach of 'call' in pfx table */
 int find_best_match(const char *call) {
     void *value;
@@ -177,7 +176,7 @@ int find_best_match(const char *call) {
 }
 
 
-/* add a new prefix description */
+/* add a new DXCC prefix description */
 void prefix_add(char *pfxstr) {
 
     char *ver = (*pfxstr == '=' ? pfxstr + 1 : pfxstr);
@@ -261,7 +260,7 @@ void prefix_add(char *pfxstr) {
 
 
 
-void dxcc_free(gpointer data) {
+static void dxcc_free(gpointer data) {
     dxcc_data *dxcc = data;
 
     g_free(dxcc -> countryname);

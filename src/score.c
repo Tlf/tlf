@@ -77,7 +77,7 @@ bool country_found(char prefix[]) {
 bool exist_in_country_list() {
     char prefix[11];
 
-    strcpy(prefix, pxstr);
+    strcpy(prefix, wpx_prefix);
     int len = strlen(prefix);
 
     // make 3 iterations
@@ -348,11 +348,11 @@ int score() {
 	return points;
     }
 
-    band_score[bandinx]++;	/* qso's per band  */
+    qsos_per_band[bandinx]++;	/* qso's per band  */
 
     if (CONTEST_IS(ARRLDX_USA)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
-	band_score[bandinx]--;
+	qsos_per_band[bandinx]--;
 
     if (plugin_has_score()) {
 	return plugin_score(bandinx, hiscall, trxmode, comment);

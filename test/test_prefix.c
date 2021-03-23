@@ -8,10 +8,10 @@
 int letters_only(const char *call);
 
 #define check(call, pfx) \
-    do{ getpx(call); assert_string_equal(pxstr, pfx); }while(0)
+    do{ getpx(call); assert_string_equal(wpx_prefix, pfx); }while(0)
 
 
-extern char pxstr[];
+extern char wpx_prefix[];
 
 void test_letters_only_yes(void **state) {
     assert_int_equal(letters_only("RAEM"), 1);

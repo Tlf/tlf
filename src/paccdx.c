@@ -61,7 +61,7 @@ int pacc_pa(void) {
 
     getpx(hiscall);
 
-    pxnr = pxstr[strlen(pxstr) - 1] - 48;
+    pxnr = districtnumber(wpx_prefix);
 
     getctydata(hiscall);
 
