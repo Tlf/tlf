@@ -49,10 +49,7 @@ void free_linedata(struct linedata_t *ptr);
 
 
 struct linedata_t *parse_logline(char *buffer) {
-    char *tmp;
-    char *sp;
     struct linedata_t *ptr;
-    struct tm date_n_time;
 
     ptr = g_malloc0(sizeof(struct linedata_t));
 
@@ -61,58 +58,26 @@ struct linedata_t *parse_logline(char *buffer) {
     ptr->qtcdirection = 0;
     ptr->qsots = 0;
 
-    /* split buffer into parts for linedata_t record and parse
-     * them accordingly */
-    tmp = strtok_r(buffer, " \t", &sp);
 
-    /* band */
-    ptr->band = atoi(tmp);
+    struct qso_t *qso = parse_qso(buffer);
 
+    ptr-> band = qso->band;
+    ptr-> mode = qso->mode;
+    ptr-> day  = qso->day;
+    ptr-> month = qso->month;
+    ptr-> year = qso->year;
+    ptr-> hour = qso->hour;
+    ptr-> min = qso->min;
+    ptr-> qso_nr = qso->qso_nr;
+    ptr-> call = qso->call;
+    ptr-> rst_s = qso->rst_s;
+    ptr-> rst_r = qso->rst_r;
+    ptr-> comment = qso->comment;
+    ptr-> freq = qso->freq;
+    ptr-> tx = qso->tx;
 
-    /* mode */
-    if (strcasestr(tmp, "CW"))
-	ptr->mode = CWMODE;
-    else if (strcasestr(tmp, "SSB"))
-	ptr->mode = SSBMODE;
-    else
-	ptr->mode = DIGIMODE;
-
-    /* date & time */
-    memset(&date_n_time, 0, sizeof(struct tm));
-
-    strptime(strtok_r(NULL, " \t", &sp), DATE_FORMAT, &date_n_time);
-    strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
-
-    ptr->year = date_n_time.tm_year + 1900;	/* convert to
-						   1968..2067 */
-    ptr->month = date_n_time.tm_mon + 1;	/* tm_mon = 0..11 */
-    ptr->day   = date_n_time.tm_mday;
-
-    ptr->hour  = date_n_time.tm_hour;
-    ptr->min   = date_n_time.tm_min;
-
-    /* qso number */
-    ptr->qso_nr = atoi(strtok_r(NULL, " \t", &sp));
-
-    /* his call */
-    ptr->call = g_strdup(strtok_r(NULL, " \t", &sp));
-
-    /* RST send and received */
-    ptr->rst_s = atoi(strtok_r(NULL, " \t", &sp));
-    ptr->rst_r = atoi(strtok_r(NULL, " \t", &sp));
-
-    /* comment (exchange) */
-    ptr->comment = g_strndup(buffer + 54, 13);
-
-    /* tx */
-    ptr->tx = (buffer[79] == '*') ? 1 : 0;
-
-    /* frequency (kHz) */
-    ptr->freq = atof(buffer + 80) * 1000.0;
-    if (freq2band(ptr->freq) == BANDINDEX_OOB) {
-	ptr->freq = 0.;
-    }
-
+    g_free(qso);	/* free qso_t struct but not the
+			   allocated string copies */
     return ptr;
 }
 
