@@ -42,7 +42,7 @@ extern cbr_field_t cabrillo_fields[];
 #define CBR_LOCATOR     "GRID-LOCATOR"
 
 
-/* represents different parts of a qso/qtc logline */
+/* represents different parts of a qso logline */
 struct linedata_t {
     char *logline;
     int band;
