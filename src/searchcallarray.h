@@ -23,7 +23,11 @@
 
 #include <stdbool.h>
 
-int searchcallarray(char *hiscall);
+#include "tlf.h"
+
+void init_worked(void);
+int lookup_worked(char *call);
+int lookup_or_add_worked(char *call);
 bool worked_in_current_minitest_period(int found);
 bool is_dupe(char *call, int bandindex, int mode);
 
