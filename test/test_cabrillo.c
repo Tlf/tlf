@@ -88,7 +88,8 @@ int starts_with(char *line, char *start);
 void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc);
 extern struct read_qtc_t qtc_line;	/* make global for testability */
 gchar *get_nth_token(gchar *str, int n, const char *separator);
-void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf);
+void prepare_line(struct linedata_t *qso,
+	struct cabrillo_desc *desc, char *buf);
 
 /* Test of helper functions */
 void test_starts_with_succeed(void **state) {
@@ -202,7 +203,7 @@ void test_prepare_line_universal(void **state) {
     desc = read_cabrillo_format(formatfile, "UNIVERSAL");
     assert_non_null(desc);
 
-    struct qso_t qso = {
+    struct linedata_t qso = {
 	.year = 2021, .month = 1, .day = 2, .hour = 8, .min = 42,
 	.qso_nr = 711, .mode = CWMODE,
 	.call = "A2XYZ", .freq = 21012845.6,
@@ -224,7 +225,7 @@ void test_prepare_line_agcw(void **state) {
     assert_non_null(desc);
     assert_string_equal(desc->exchange_separator, "/");
 
-    struct qso_t qso = {
+    struct linedata_t qso = {
 	.year = 2021, .month = 1, .day = 2, .hour = 8, .min = 42,
 	.qso_nr = 711, .mode = CWMODE,
 	.call = "A2XYZ", .freq = 21012845.6,
@@ -246,7 +247,7 @@ void test_prepare_line_agcw3(void **state) {
     assert_non_null(desc);
     assert_string_equal(desc->exchange_separator, " /");
 
-    struct qso_t qso = {
+    struct linedata_t qso = {
 	.year = 2021, .month = 1, .day = 2, .hour = 8, .min = 42,
 	.qso_nr = 711, .mode = CWMODE,
 	.call = "A2XYZ", .freq = 21012845.6,

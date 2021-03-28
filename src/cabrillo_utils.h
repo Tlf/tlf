@@ -43,7 +43,7 @@ extern cbr_field_t cabrillo_fields[];
 
 
 /* represents different parts of a qso logline */
-struct qso_t {
+struct linedata_t {
     char *logline;
     int band;
     int mode;
