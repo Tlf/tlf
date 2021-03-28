@@ -58,18 +58,7 @@ void init_scoring(void) {
     for (int i = 0; i < MAX_QSOS; i++)
 	qsos[i][0] = '\0';
 
-    for (int i = 0; i < MAX_CALLS; i++) {
-	*worked[i].exchange = '\0';
-	*worked[i].call = '\0';
-	worked[i].band = 0;
-	worked[i].country = -1;
-	for (int l = 0; l < 3; l++) {
-	    for (int n = 0; n < NBANDS; n++) {
-		worked[i].qsotime[l][n] = 0;
-	    }
-	}
-    }
-    nr_worked = 0;
+    init_worked();
 
     for (int i = 1; i <= MAX_DATALINES - 1; i++)
 	countries[i] = 0;
@@ -239,7 +228,6 @@ int readcalls(void) {
     }
 
     while (fgets(inputbuffer, LOGLINELEN + 1, fp) != NULL) {
-	int l = 0;
 
 	// drop trailing newline
 	inputbuffer[LOGLINELEN - 1] = '\0';
@@ -301,19 +289,12 @@ int readcalls(void) {
 	    }
 	}
 
-	/*  lookup worked stations */
-	l = searchcallarray(presentcall);
-	if (l == -1) {		    /* if not found, use next free slot */
-	    l = nr_worked;
-	    nr_worked++;
-	}
+	/*  lookup worked stations, add if new */
+	int station = lookup_or_add_worked(presentcall);
 
 	/* and fill in according entry */
-	g_strlcpy(worked[l].call, presentcall, sizeof(worked[0].call));
-
-	worked[l].country = countrynr;
-	g_strlcpy(worked[l].exchange, inputbuffer + 54, 12);
-	g_strchomp(worked[l].exchange);	/* strip trailing spaces */
+	g_strlcpy(worked[station].exchange, inputbuffer + 54, 12);
+	g_strchomp(worked[station].exchange);	/* strip trailing spaces */
 
 	qsomode = log_get_mode(inputbuffer);
 	if (qsomode == -1) {
@@ -324,8 +305,8 @@ int readcalls(void) {
 	}
 
 	/* calculate QSO timestamp from logline */
-	worked[l].qsotime[qsomode][bandindex] = parse_time(inputbuffer + 7,
-						DATE_TIME_FORMAT);
+	worked[station].qsotime[qsomode][bandindex] =
+	    parse_time(inputbuffer + 7,	DATE_TIME_FORMAT);
 
 
 	if (pfxmultab == 1) {
@@ -369,7 +350,7 @@ int readcalls(void) {
 
 	if (add_ok) {
 
-	    worked[l].band |= inxes[bandindex];	/* mark band as worked */
+	    worked[station].band |= inxes[bandindex];	/* mark band as worked */
 
 	    qsos_per_band[bandindex]++;
 

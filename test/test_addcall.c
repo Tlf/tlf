@@ -1,9 +1,11 @@
 #include "test.h"
 
 #include "../src/addcall.h"
+#include "../src/bands.h"
 #include "../src/dxcc.h"
 #include "../src/getctydata.h"
 #include "../src/globalvars.h"
+#include "../src/searchcallarray.h"
 #include "../src/score.h"
 #include "../src/setcontest.h"
 
@@ -38,8 +40,7 @@ int setup_default(void **state) {
     static char filename[] =  TOP_SRCDIR "/share/cty.dat";
     assert_int_equal(load_ctydata(filename), 0);
 
-    nr_worked = 0;
-    memset(&worked, 0, sizeof(worked));
+    init_worked();
     bandinx = BANDINDEX_10;
 
     setcontest("CQWW");
@@ -90,6 +91,37 @@ int setup_addcall_pfxnum_inList(void **state) {
 
 int setup_addcall_pfxnum_notinList(void **state) {
     return setup_addcall_pfxnum_inList(state);
+}
+
+void test_add_to_worked(void **state) {
+    strcpy(hiscall, "LZ1AB");
+    bandinx = BANDINDEX_10;
+    time_t now = time(NULL);
+    strcpy(comment, "Hi");
+
+    addcall();
+
+    assert_int_equal(nr_worked, 1);
+    assert_string_equal(worked[0].exchange, "Hi");
+    assert_int_equal(worked[0].band & inxes[BANDINDEX_10], inxes[BANDINDEX_10]);
+    assert_in_range(worked[0].qsotime[trxmode][BANDINDEX_10], now, now + 1);
+    assert_int_equal(worked[0].country, getctynr("LZ1AB"));
+}
+
+void test_add_to_worked_continentlistonly(void **state) {
+    continentlist_only = true;
+
+    strcpy(hiscall, "LZ1AB");
+    bandinx = BANDINDEX_10;
+    strcpy(comment, "Hi");
+    addcall();
+
+    strcpy(hiscall, "PY2BBB");
+    addcall();
+
+    assert_int_equal(nr_worked, 2);
+    assert_string_equal(worked[0].call, "LZ1AB");
+    assert_string_equal(worked[1].call, "PY2BBB");
 }
 
 void test_addcall_nopfxnum(void **state) {

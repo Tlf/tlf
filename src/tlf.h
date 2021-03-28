@@ -23,6 +23,8 @@
 
 #include <stdbool.h>
 
+#include "hamlib/rig.h"
+
 enum {
     NO_KEYER,
     NET_KEYER,
@@ -181,6 +183,27 @@ typedef struct {
     int countrynr;
     int qsos[NBANDS];
 } pfxnummulti_t;
+
+
+/* represents different parts of a qso line */
+struct qso_t {
+    char *logline;
+    int band;
+    int mode;
+    char day;
+    char month;
+    int year;
+    int hour;
+    int min;
+    int qso_nr;
+    char *call;
+    int rst_s;
+    int rst_r;
+    char *comment;
+    freq_t freq;
+    int tx;
+    int qsots;
+};
 
 
 void refreshp();

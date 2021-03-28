@@ -356,7 +356,7 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	dxccindex = getctynr(entry->call);
 	if (CONTEST_IS(CQWW)) {
 	    // check if the callsign exists in worked list
-	    wi = searchcallarray(call);
+	    wi = lookup_worked(call);
 	    if (wi >= 0) {
 		lastexch = g_strdup(worked[wi].exchange);
 	    }
@@ -473,7 +473,7 @@ bool bm_isdupe(char *call, int band) {
     if (IsWarcIndex(band))
 	return false;
 
-    int found = searchcallarray(call);
+    int found = lookup_worked(call);
 
     if (found == -1)		/* new call */
 	return false;

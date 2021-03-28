@@ -76,6 +76,10 @@ dxcc_data *dxcc_by_index(unsigned int index) {
 }
 
 // getctydata.c
+int getctynr(char *checkcallptr) {
+    return 42;
+}
+
 int getctydata(char *checkcallptr) {
     return 0;
 }
@@ -83,9 +87,6 @@ int getctydata(char *checkcallptr) {
 
 contest_config_t config_focm;
 
-int getctynr(void) {
-    return 42;
-}
 
 /*********************/
 #define QSO1 " 40SSB 12-Jan-18 16:34 0006  SP9ABC         599  599  15                     1         "
