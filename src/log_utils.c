@@ -33,6 +33,7 @@
 
 #include "bands.h"
 #include "get_time.h"
+#include "setcontest.h"
 #include "tlf.h"
 
 
@@ -140,7 +141,7 @@ struct qso_t *parse_qso(char *buffer) {
     ptr->rst_r = atoi(strtok_r(NULL, " \t", &sp));
 
     /* comment (exchange) */
-    ptr->comment = g_strndup(buffer + 54, 13);
+    ptr->comment = g_strndup(buffer + 54, contest->exchange_width);
 
     /* tx */
     ptr->tx = (buffer[79] == '*') ? 1 : 0;
