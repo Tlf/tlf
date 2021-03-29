@@ -959,6 +959,8 @@ int main(int argc, char *argv[]) {
 
     memset(&my, 0, sizeof(my));
 
+    rig_set_debug(RIG_DEBUG_NONE);
+
     total = 0;
     if (databases_load() == EXIT_FAILURE) {
 	showmsg("**** Press any key to exit...");
@@ -968,8 +970,6 @@ int main(int argc, char *argv[]) {
 	endwin();
 	exit(EXIT_FAILURE);
     }
-
-    rig_set_debug(RIG_DEBUG_NONE);
 
     if (convert_cabrillo) {
 	char *tstring =
