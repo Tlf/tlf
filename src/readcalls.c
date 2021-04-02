@@ -251,6 +251,26 @@ int readcalls(const char *logfile) {
 
 	countrynr = getctydata(presentcall);
 
+	/*  lookup worked stations, add if new */
+	int station = lookup_or_add_worked(presentcall);
+
+	/* and fill in according entry */
+	g_strlcpy(worked[station].exchange, inputbuffer + 54, 12);
+	g_strchomp(worked[station].exchange);	/* strip trailing spaces */
+
+	qsomode = log_get_mode(inputbuffer);
+	if (qsomode == -1) {
+	    shownr("Invalid line format in line %d.\n", linenr);
+	    refreshp();
+	    sleep(2);
+	    exit(1);
+	}
+
+	/* calculate QSO timestamp from logline */
+	worked[station].qsotime[qsomode][bandindex] =
+	    parse_time(inputbuffer + 7,	DATE_TIME_FORMAT);
+
+
 	if (continentlist_only) {
 	    if (!is_in_continentlist(continent)) {
 		qsos_per_band[bandindex]++;
@@ -284,24 +304,6 @@ int readcalls(const char *logfile) {
 	    }
 	}
 
-	/*  lookup worked stations, add if new */
-	int station = lookup_or_add_worked(presentcall);
-
-	/* and fill in according entry */
-	g_strlcpy(worked[station].exchange, inputbuffer + 54, 12);
-	g_strchomp(worked[station].exchange);	/* strip trailing spaces */
-
-	qsomode = log_get_mode(inputbuffer);
-	if (qsomode == -1) {
-	    shownr("Invalid line format in line %d.\n", linenr);
-	    refreshp();
-	    sleep(2);
-	    exit(1);
-	}
-
-	/* calculate QSO timestamp from logline */
-	worked[station].qsotime[qsomode][bandindex] =
-	    parse_time(inputbuffer + 7,	DATE_TIME_FORMAT);
 
 
 	if (pfxmultab == 1) {

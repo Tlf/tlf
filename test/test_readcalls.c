@@ -8,6 +8,7 @@
 #include "../src/globalvars.h"
 #include "../src/getctydata.h"
 #include "../src/readcalls.h"
+#include "../src/setcontest.h"
 
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/addmult.o
@@ -20,6 +21,7 @@
 // OBJECT ../src/locator2longlat.o
 // OBJECT ../src/readcalls.o
 // OBJECT ../src/searchcallarray.o
+// OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
 // OBJECT ../src/utils.o
 // OBJECT ../src/zone_nr.o
@@ -39,6 +41,8 @@ int foc_score(char *a) {
     return 1;
 }
 
+contest_config_t config_focm;
+
 int pacc_pa(void) {
     return 0;
 }
@@ -46,11 +50,26 @@ int pacc_pa(void) {
 /* private prototypes */
 bool check_veto();
 
+#define QSO1 " 40SSB 12-Jan-18 16:34 0006  PY9BBB         599  599  15                    10         \n"
+
+#define LOGFILE "test.log"
+
+void write_log(char *logfile) {
+    FILE *fp = fopen(logfile, "w");
+    assert_non_null(fp);
+
+    fputs(QSO1,fp);
+
+    fclose(fp);
+}
+
 
 int setup_default(void **state) {
 
     static char filename[] =  TOP_SRCDIR "/share/cty.dat";
     assert_int_equal(load_ctydata(filename), 0);
+
+    setcontest("CQWW");
 
     strcpy(countrylist[0], "DL");
     strcpy(countrylist[1], "CE");
@@ -68,6 +87,11 @@ int setup_default(void **state) {
     pfxnummulti[1].countrynr = 42;
     pfxnummultinr = 2;
 
+    return 0;
+}
+
+int teardown_default(void **state) {
+    unlink(logfile);
     return 0;
 }
 
@@ -111,4 +135,18 @@ void test_veto_exclude_continent(void **state) {
     assert_int_equal(check_veto(), true);
     strcpy(continent, "AF");
     assert_int_equal(check_veto(), false);
+}
+
+/* test readcalls */
+void test_add_to_worked(void **state) {
+    write_log(LOGFILE);
+    readcalls(LOGFILE);
+    assert_int_equal(nr_worked, 1);
+}
+
+void test_add_to_worked_continentlistonly(void **state) {
+    continentlist_only = true;
+    write_log(LOGFILE);
+    readcalls(LOGFILE);
+    assert_int_equal(nr_worked, 1);
 }
