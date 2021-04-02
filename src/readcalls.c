@@ -192,7 +192,7 @@ void count_contest_bands(int check, int *count) {
 
 
 
-int readcalls(void) {
+int readcalls(const char *logfile) {
 
     char inputbuffer[LOGLINELEN + 1];
     char checkcall[20];
@@ -448,7 +448,7 @@ int log_read_n_score() {
     int nr_qsolines;
 
     total = 0;
-    nr_qsolines = readcalls();
+    nr_qsolines = readcalls(logfile);
     if (qtcdirection > 0) {
 	readqtccalls();
     }
