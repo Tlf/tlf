@@ -189,12 +189,14 @@ typedef struct {
 struct qso_t {
     char *logline;
     int band;
+    int bandindex;
     int mode;
     char day;
     char month;
     int year;
     int hour;
     int min;
+    time_t timestamp;
     int qso_nr;
     char *call;
     int rst_s;
