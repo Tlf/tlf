@@ -22,9 +22,12 @@
 #ifndef ADDCALL_H
 #define ADDCALL_H
 
+#include "tlf.h"
+
 extern int excl_add_veto;
 
 struct qso_t *collect_qso_data(void);
+bool check_veto(int countrynr);
 int lookup_country_in_pfxnummult_array(int n);
 int addcall(struct qso_t *qso);
 int addcall2(void);

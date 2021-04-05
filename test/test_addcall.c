@@ -113,6 +113,30 @@ void test_collect (void **state) {
     free_qso(qso);
 }
 
+/* test check_veto() */
+void test_veto_exclude_none(void **state) {
+    assert_int_equal(check_veto(getctynr("HB9ABC")), false);
+}
+
+void test_veto_exclude_country(void **state) {
+    exclude_multilist_type = EXCLUDE_COUNTRY;
+    assert_int_equal(check_veto(getctynr("HB9ABC")), false);
+    assert_int_equal(check_veto(getctynr("DL1AAA")), true);
+}
+
+void test_veto_exclude_continent_contlist_only(void **state) {
+    continentlist_only = true;
+    exclude_multilist_type = EXCLUDE_CONTINENT;
+    assert_int_equal(check_veto(getctynr("DL1AAA")), false);
+    assert_int_equal(check_veto(getctynr("3B8AA")), false);
+}
+
+void test_veto_exclude_continent(void **state) {
+    exclude_multilist_type = EXCLUDE_CONTINENT;
+    assert_int_equal(check_veto(getctynr("DL1AAA")), true);
+    assert_int_equal(check_veto(getctynr("3B8AA")), false);
+}
+
 
 /* addcall */
 void test_add_to_worked(void **state) {

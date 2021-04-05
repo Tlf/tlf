@@ -96,25 +96,6 @@ void show_progress(int linenr) {
 }
 
 
-bool check_veto() {
-    bool veto = false;
-
-    if (!continentlist_only &&
-	    exclude_multilist_type == EXCLUDE_CONTINENT) {
-	if (is_in_continentlist(continent)) {
-	    veto = true;
-	}
-    }
-
-    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
-	if (is_in_countrylist(countrynr)) {
-	    veto = true;
-	}
-    }
-
-    return veto;
-}
-
 /* pick up multi string from logline
  *
  * ATTENTION! return value needs to be freed
@@ -326,7 +307,7 @@ int readcalls(const char *logfile) {
 	    add_ok = true;
 	}
 
-	veto = check_veto();
+	veto = check_veto(countrynr);
 
 	if (add_ok) {
 

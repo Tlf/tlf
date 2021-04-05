@@ -74,6 +74,28 @@ struct qso_t *collect_qso_data(void) {
     return qso;
 }
 
+
+bool check_veto(int countrynr) {
+    bool veto = false;
+
+    if (!continentlist_only &&
+	    exclude_multilist_type == EXCLUDE_CONTINENT) {
+	if (is_in_continentlist(dxcc_by_index(countrynr)->continent)) {
+	    veto = true;
+	}
+    }
+
+    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
+	if (is_in_countrylist(countrynr)) {
+	    veto = true;
+	}
+    }
+
+    return veto;
+}
+
+
+
 // lookup the current country 'n' from the outer loop
 // pfxnummulti[I].countrynr contains the country codes,
 // I:=[0..pfxnummultinr]
@@ -148,31 +170,16 @@ int addcall(struct qso_t *qso) {
     }
 
     if (continentlist_only) {
-	if (!is_in_continentlist(continent)) {
-	    add_ok = 0;
-	    new_cty = 0;
-	    addcallarea = 0;
+	if (!is_in_continentlist(dxcc_by_index(cty)->continent)) {
 	    excl_add_veto = 1;
 	}
     }
 
-    if (!continentlist_only
-	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
-	if (is_in_continentlist(continent)) {
-	    add_ok = 0;
-	    new_cty = 0;
-	    addcallarea = 0;
-	    excl_add_veto = 1;
-	}
-    }
-
-    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
-	if (is_in_countrylist(cty)) {
-	    add_ok = 0;
-	    new_cty = 0;
-	    addcallarea = 0;
-	    excl_add_veto = 1;
-	}
+    excl_add_veto |= check_veto(cty);
+    if (excl_add_veto) {
+	add_ok = 0;
+	new_cty = 0;
+	addcallarea = 0;
     }
 
     if (add_ok == 1) {
@@ -305,17 +312,11 @@ int addcall2(void) {
 	}
     }
 
-    if (!continentlist_only
-	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
-	if (is_in_continentlist(dxcc_by_index(cty)->continent)) {
-	    excl_add_veto = 1;
-	}
-    }
-
-    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
-	if (is_in_countrylist(cty)) {
-	    excl_add_veto = 1;
-	}
+    excl_add_veto |= check_veto(cty);
+    if (excl_add_veto) {
+	add_ok = 0;
+	new_cty = 0;
+	addcallarea = 0;
     }
 
     if (add_ok == 1) {
