@@ -247,33 +247,29 @@ int addcall2(void) {
     int add_ok;
     char lancopy[6];
 
-    char hiscall[20];
     char comment[40];
     int bandinx;
     int pfxnumcntidx = -1;
     int pxnr = 0;
     excl_add_veto = 0;
-    char date_and_time[16];
-    time_t qsotimets;
 
-    g_strlcpy(hiscall, lan_logline + 29, 20);
-    *strchrnul(hiscall, ' ') = '\0';	/* terminate on first blank */
+    /* parse copy of lan_logline */
+    struct qso_t *qso;
+    char *tmp = g_strdup(lan_logline);
+    qso = parse_qso(tmp);
+    g_free(tmp);
 
-    g_strlcpy(comment, lan_logline + 54, 31);
-    *strchrnul(comment, ' ') = '\0';	/* terminate on first blank */
+
+    g_strlcpy(comment, qso->comment, sizeof(comment));
+    qso->comment[0] = '\0';	/* Do not update station comment from lan */
 
     /* FIXME: worked array needs mutex protection */
-    int station = lookup_or_add_worked(hiscall);
+    int station = lookup_or_add_worked(qso->call);
+    update_worked(station, qso);
 
     cty = worked[station].country;
 
-    bandinx = log_get_band(lan_logline);
-
-    /* calculate QSO timestamp from lan_logline */
-    strncpy(date_and_time, lan_logline + 7, 15);
-    qsotimets = parse_time(date_and_time, DATE_TIME_FORMAT);
-
-    worked[station].qsotime[trxmode][bandinx] = qsotimets;
+    bandinx = qso->bandindex;
 
     if (strlen(comment) >= 1) {
 // 		strcpy(station->exchange, comment);
@@ -297,7 +293,7 @@ int addcall2(void) {
 
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
-	getpx(hiscall);	    /* FIXME: uses global 'wpx_prefix' for background
+	getpx(qso->call);    /* FIXME: uses global 'wpx_prefix' for background
 			       job */
 	pxnr = districtnumber(wpx_prefix);
 
@@ -321,7 +317,6 @@ int addcall2(void) {
 
     if (add_ok == 1) {
 
-	bandinx = log_get_band(lan_logline);
 	qsos_per_band[bandinx]++;
 
 	worked[station].band |= inxes[bandinx];	/* worked on this band */
@@ -396,7 +391,10 @@ int addcall2(void) {
 	}
     }
 
-    addmult2();			/* for wysiwyg from LAN */
+    addmult2();	/* for wysiwyg from LAN */
+
+    free_qso(qso);
+    qso = NULL;
 
     return cty;
 }
