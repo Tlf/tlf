@@ -25,6 +25,7 @@
 extern int excl_add_veto;
 
 struct qso_t *collect_qso_data(void);
+int lookup_country_in_pfxnummult_array(int n);
 int addcall(struct qso_t *qso);
 int addcall2(void);
 int get_band(char *logline);

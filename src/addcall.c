@@ -74,6 +74,25 @@ struct qso_t *collect_qso_data(void) {
     return qso;
 }
 
+// lookup the current country 'n' from the outer loop
+// pfxnummulti[I].countrynr contains the country codes,
+// I:=[0..pfxnummultinr]
+// according to the order of prefixes in rules, eg:
+// PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
+// pfxnummulti[0].countrynr will be nr of USA
+// pfxnummulti[1].countrynr will be nr of Canada
+int lookup_country_in_pfxnummult_array(int n) {
+    int found = -1;
+    for (int i = 0; i < pfxnummultinr; i++) {
+	if (pfxnummulti[i].countrynr == n) {
+	    found = i;
+	    break;
+	}
+    }
+    return found;
+}
+
+
 
 int addcall(struct qso_t *qso) {
 
@@ -125,14 +144,7 @@ int addcall(struct qso_t *qso) {
 	getpx(qso->call);
 	pxnr = districtnumber(wpx_prefix);
 
-	int pfxi = 0;
-	while (pfxi < pfxnummultinr) {
-	    if (pfxnummulti[pfxi].countrynr == cty) {
-		pfxnumcntidx = pfxi;
-		break;
-	    }
-	    pfxi++;
-	}
+	pfxnumcntidx = lookup_country_in_pfxnummult_array(cty);
     }
 
     if (continentlist_only) {
@@ -282,14 +294,7 @@ int addcall2(void) {
 			       job */
 	pxnr = districtnumber(wpx_prefix);
 
-	int pfxi = 0;
-	while (pfxi < pfxnummultinr) {
-	    if (pfxnummulti[pfxi].countrynr == cty) {
-		pfxnumcntidx = pfxi;
-		break;
-	    }
-	    pfxi++;
-	}
+	pfxnumcntidx = lookup_country_in_pfxnummult_array(cty);
 	add_ok = 1;
     }
 

@@ -11,6 +11,7 @@
 #include "../src/setcontest.h"
 
 // OBJECT ../src/log_utils.o
+// OBJECT ../src/addcall.o
 // OBJECT ../src/addmult.o
 // OBJECT ../src/addpfx.o
 // OBJECT ../src/bands.o

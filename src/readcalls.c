@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <time.h>
 
+#include "addcall.h"
 #include "addmult.h"
 #include "addpfx.h"
 #include "bands.h"
@@ -94,24 +95,6 @@ void show_progress(int linenr) {
     }
 }
 
-
-// lookup the current country 'n' from the outer loop
-// pfxnummulti[I].countrynr contains the country codes,
-// I:=[0..pfxnummultinr]
-// according to the order of prefixes in rules, eg:
-// PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
-// pfxnummulti[0].countrynr will be nr of USA
-// pfxnummulti[1].countrynr will be nr of Canada
-int lookup_country_in_pfxnummult_array(int n) {
-    int found = -1;
-    for (int i = 0; i < pfxnummultinr; i++) {
-	if (pfxnummulti[i].countrynr == n) {
-	    found = i;
-	    break;
-	}
-    }
-    return found;
-}
 
 bool check_veto() {
     bool veto = false;
