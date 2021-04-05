@@ -192,52 +192,25 @@ int addcall(struct qso_t *qso) {
     if (add_ok == 1) {
 	worked[station].band |= inxes[qso->bandindex];	/* worked on band */
 
-	switch (qso->bandindex) {
-
-	    case BANDINDEX_160:
-	    case BANDINDEX_80:
-	    case BANDINDEX_40:
-	    case BANDINDEX_20:
-	    case BANDINDEX_15:
-	    case BANDINDEX_10:
-
-		if (pfxnumcntidx < 0) {
-		    if (cty != 0 && (countries[cty] & inxes[qso->bandindex]) == 0) {
-			countries[cty] |= inxes[qso->bandindex];
-			countryscore[qso->bandindex]++;
-			new_cty = cty;
-		    }
-		    if (zone != 0 && (zones[zone] & inxes[qso->bandindex]) == 0) {
-			zones[zone] |= inxes[qso->bandindex];
-			zonescore[qso->bandindex]++;
-			new_zone = zone;
-		    }
-		} else {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[qso->bandindex])
-			    == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[qso->bandindex];
-			addcallarea = 1;
-			countryscore[qso->bandindex]++;
-			zonescore[qso->bandindex]++;
-		    }
-		}
-		break;
-
-
-	    case BANDINDEX_12:
-	    case BANDINDEX_17:
-	    case BANDINDEX_30:
-
-		if (cty != 0 && (countries[cty] & inxes[qso->bandindex]) == 0) {
-		    countries[cty] |= inxes[qso->bandindex];
-		    new_cty = cty;
-		}
-		if (zone != 0 && (zones[zone] & inxes[qso->bandindex]) == 0) {
-		    zones[zone] |= inxes[qso->bandindex];
-		    new_zone = zone;
-		}
-		break;
-
+	if (pfxnumcntidx < 0) {
+	    if (cty != 0 && (countries[cty] & inxes[qso->bandindex]) == 0) {
+		countries[cty] |= inxes[qso->bandindex];
+		countryscore[qso->bandindex]++;
+		new_cty = cty;
+	    }
+	    if (zone != 0 && (zones[zone] & inxes[qso->bandindex]) == 0) {
+		zones[zone] |= inxes[qso->bandindex];
+		zonescore[qso->bandindex]++;
+		new_zone = zone;
+	    }
+	} else {
+	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[qso->bandindex])
+		    == 0) {
+		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[qso->bandindex];
+		addcallarea = 1;
+		countryscore[qso->bandindex]++;
+		zonescore[qso->bandindex]++;
+	    }
 	}
     }
 
@@ -330,48 +303,24 @@ int addcall2(void) {
 
 	if (excl_add_veto == 0) {
 
-	    switch (bandinx) {
-
-		case BANDINDEX_160:
-		case BANDINDEX_80:
-		case BANDINDEX_40:
-		case BANDINDEX_20:
-		case BANDINDEX_15:
-		case BANDINDEX_10:
-
-		    if (pfxnumcntidx < 0) {
-			if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
-			    countries[cty] |= inxes[bandinx];
-			    countryscore[bandinx]++;
-//                              new_cty = cty;
-			}
-			if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
-			    zones[zone] |= inxes[bandinx];
-			    zonescore[bandinx]++;
-//                              new_zone = zone;
-			}
-		    } else {
-			if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
-			    pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
-			    addcallarea = 1;
-			    zonescore[bandinx]++;
-			    countryscore[bandinx]++;
-			}
-		    }
-		    break;
-
-		case BANDINDEX_30:
-		case BANDINDEX_17:
-		case BANDINDEX_12:
-
-		    if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
-			countries[cty] |= inxes[bandinx];
-		    }
-		    if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
-			zones[zone] |= inxes[bandinx];
-		    }
-		    break;
-
+	    if (pfxnumcntidx < 0) {
+		if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
+		    countries[cty] |= inxes[bandinx];
+		    countryscore[bandinx]++;
+//                  new_cty = cty;
+	    }
+		if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
+		    zones[zone] |= inxes[bandinx];
+		    zonescore[bandinx]++;
+//                  new_zone = zone;
+		}
+	    } else {
+		if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[bandinx]) == 0) {
+		    pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
+		    addcallarea = 1;
+		    zonescore[bandinx]++;
+		    countryscore[bandinx]++;
+		}
 	    }
 	}
     }
