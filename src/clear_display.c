@@ -34,6 +34,7 @@
 #include "get_time.h"
 #include "getwwv.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "logit.h"
 #include "muf.h"
 #include "printcall.h"
 #include "qsonr_to_str.h"
@@ -142,20 +143,11 @@ void clear_display(void) {
 	mvaddstr(12, 49, recvd_rst);
     }
 
-    if (CONTEST_IS(CQWW)) {
-	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-	mvaddstr(12, 54, comment);
-    }
-
-    if (CONTEST_IS(ARRLDX_USA)) {
-	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-	mvaddstr(12, 54, comment);
-    }
-
     if (searchflg == SEARCHWINDOW)
 	searchlog();
 
     printcall();
+    refresh_comment();
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvaddstr(LINES - 1, 0, backgrnd_str);
