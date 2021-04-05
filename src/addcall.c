@@ -62,6 +62,19 @@ int excl_add_veto;
  * addcall2() is need to separate the points and multipliers.
  */
 
+
+/* collect all relevant data for the actual QSO into a qso_t structure */
+struct qso_t *collect_qso_data(void) {
+    struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+    qso->call = g_strdup(hiscall);
+    qso->mode = trxmode;
+    qso->bandindex = bandinx;
+    qso->timestamp = get_time();
+    qso->comment = g_strdup(comment);
+    return qso;
+}
+
+
 int addcall(void) {
 
     int cty, zone = 0;

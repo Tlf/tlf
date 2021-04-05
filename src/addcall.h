@@ -24,6 +24,7 @@
 
 extern int excl_add_veto;
 
+struct qso_t *collect_qso_data(void);
 int addcall(void);
 int addcall2(void);
 int get_band(char *logline);

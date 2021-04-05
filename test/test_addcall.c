@@ -5,6 +5,7 @@
 #include "../src/dxcc.h"
 #include "../src/getctydata.h"
 #include "../src/globalvars.h"
+#include "../src/log_utils.h"
 #include "../src/searchcallarray.h"
 #include "../src/score.h"
 #include "../src/setcontest.h"
@@ -92,11 +93,34 @@ int setup_addcall_pfxnum_notinList(void **state) {
     return setup_addcall_pfxnum_inList(state);
 }
 
+/* collect_qso_data */
+void test_collect (void **state) {
+    struct qso_t *qso;
+    strcpy(hiscall, "LZ1AB");
+    strcpy(comment, "Hi");
+    time_t now = time(NULL);
+    bandinx = BANDINDEX_80;
+    trxmode = CWMODE;
+
+    qso = collect_qso_data();
+    assert_non_null(qso);
+
+    assert_string_equal(qso->call, hiscall);
+    assert_string_equal(qso->comment, comment);
+    assert_int_equal(qso->bandindex, bandinx);
+    assert_int_equal(qso->mode, CWMODE);
+    assert_in_range(qso->timestamp, now, now + 1);
+
+    free_qso(qso);
+}
+
+
+/* addcall */
 void test_add_to_worked(void **state) {
     strcpy(hiscall, "LZ1AB");
     bandinx = BANDINDEX_10;
-    time_t now = time(NULL);
     strcpy(comment, "Hi");
+    time_t now = time(NULL);
 
     addcall();
 
