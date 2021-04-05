@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *               2015-2021	Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -182,8 +183,14 @@ int addcall(struct qso_t *qso) {
 	addcallarea = 0;
     }
 
+    /* qso's per band  */
+    if (!(CONTEST_IS(ARRLDX_USA)
+	    && ((countrynr == w_cty) || (countrynr == ve_cty))))
+	qsos_per_band[qso->bandindex]++;
+
+
     if (add_ok == 1) {
-	worked[station].band |= inxes[qso->bandindex];	/* worked on this band */
+	worked[station].band |= inxes[qso->bandindex];	/* worked on band */
 
 	switch (qso->bandindex) {
 
