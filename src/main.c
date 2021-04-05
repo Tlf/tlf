@@ -247,6 +247,8 @@ char qtc_cap_calls[40] = "";
 int qtc_auto_filltime = 0;
 int qtc_recv_lazy = 0;
 
+struct qso_t *current_qso;
+
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */

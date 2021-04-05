@@ -34,6 +34,7 @@
 #include "gettxinfo.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "lancode.h"
+#include "log_utils.h"
 #include "makelogline.h"
 #include "scroll_log.h"
 #include "score.h"
@@ -84,7 +85,8 @@ void log_to_disk(int from_lan) {
 
 	restart_band_timer();
 
-	addcall();		/* add call to dupe list */
+	current_qso = collect_qso_data();
+	addcall(current_qso);		/* add call to dupe list */
 
 	score_qso();
 	makelogline();
@@ -99,6 +101,7 @@ void log_to_disk(int from_lan) {
 				   no need to ask for frequency */
 
 	cleanup_qso();		/* reset qso related parameters */
+	free_qso(current_qso);
     } else {			/* qso from lan */
 
 	/* LOGENTRY contains 82 characters (node,command and logline */

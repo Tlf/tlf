@@ -75,7 +75,7 @@ struct qso_t *collect_qso_data(void) {
 }
 
 
-int addcall(void) {
+int addcall(struct qso_t *qso) {
 
     int cty, zone = 0;
     int add_ok;
@@ -84,19 +84,15 @@ int addcall(void) {
 
     excl_add_veto = 0;
 
-    int station = lookup_or_add_worked(hiscall);
-    worked[station].qsotime[trxmode][bandinx] = get_time();
+    int station = lookup_or_add_worked(qso->call);
+    update_worked(station, qso);
 
-    if (strlen(comment) >= 1) {		/* remember last exchange */
-	g_strlcpy(worked[station].exchange, comment,
-		sizeof(worked[0].exchange));
-    }
 
     // can we get the ctydata from countrynr?
-    cty = getctydata(hiscall);
+    cty = getctydata(qso->call);
 
 
-    if (strlen(comment) >= 1) {		/* remember last exchange */
+    if (strlen(qso->comment) >= 1) {		/* remember last exchange */
 	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1) {
 	    /*
 	    			if (strlen(zone_fix) > 1) {
@@ -104,7 +100,7 @@ int addcall(void) {
 	    			} else
 	    				zone = zone_nr(zone_export);
 	    */
-	    zone = zone_nr(comment);
+	    zone = zone_nr(qso->comment);
 	}
     }
 
@@ -126,7 +122,7 @@ int addcall(void) {
 
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
-	getpx(hiscall);
+	getpx(qso->call);
 	pxnr = districtnumber(wpx_prefix);
 
 	int pfxi = 0;
@@ -168,9 +164,9 @@ int addcall(void) {
     }
 
     if (add_ok == 1) {
-	worked[station].band |= inxes[bandinx];	/* worked on this band */
+	worked[station].band |= inxes[qso->bandindex];	/* worked on this band */
 
-	switch (bandinx) {
+	switch (qso->bandindex) {
 
 	    case BANDINDEX_160:
 	    case BANDINDEX_80:
@@ -180,23 +176,23 @@ int addcall(void) {
 	    case BANDINDEX_10:
 
 		if (pfxnumcntidx < 0) {
-		    if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
-			countries[cty] |= inxes[bandinx];
-			countryscore[bandinx]++;
+		    if (cty != 0 && (countries[cty] & inxes[qso->bandindex]) == 0) {
+			countries[cty] |= inxes[qso->bandindex];
+			countryscore[qso->bandindex]++;
 			new_cty = cty;
 		    }
-		    if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
-			zones[zone] |= inxes[bandinx];
-			zonescore[bandinx]++;
+		    if (zone != 0 && (zones[zone] & inxes[qso->bandindex]) == 0) {
+			zones[zone] |= inxes[qso->bandindex];
+			zonescore[qso->bandindex]++;
 			new_zone = zone;
 		    }
 		} else {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[bandinx])
+		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[qso->bandindex])
 			    == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
+			pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[qso->bandindex];
 			addcallarea = 1;
-			countryscore[bandinx]++;
-			zonescore[bandinx]++;
+			countryscore[qso->bandindex]++;
+			zonescore[qso->bandindex]++;
 		    }
 		}
 		break;
@@ -206,12 +202,12 @@ int addcall(void) {
 	    case BANDINDEX_17:
 	    case BANDINDEX_30:
 
-		if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
-		    countries[cty] |= inxes[bandinx];
+		if (cty != 0 && (countries[cty] & inxes[qso->bandindex]) == 0) {
+		    countries[cty] |= inxes[qso->bandindex];
 		    new_cty = cty;
 		}
-		if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
-		    zones[zone] |= inxes[bandinx];
+		if (zone != 0 && (zones[zone] & inxes[qso->bandindex]) == 0) {
+		    zones[zone] |= inxes[qso->bandindex];
 		    new_zone = zone;
 		}
 		break;

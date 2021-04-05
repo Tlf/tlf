@@ -35,6 +35,7 @@
 #include "get_time.h"
 #include "globalvars.h"
 #include "log_to_disk.h"
+#include "log_utils.h"
 #include "makelogline.h"
 #include "qtc_log.h"
 #include "readcabrillo.h"
@@ -84,12 +85,14 @@ void write_log_fm_cabr() {
 
     checkexchange(-1);
     dupe = is_dupe(hiscall, bandinx, trxmode);
-    addcall();		/* add call to worked list and check it for dupe */
+    current_qso = collect_qso_data();
+    addcall(current_qso);		/* add call to worked list and check it for dupe */
     score_qso();
     makelogline();	/* format logline */
     store_qso(logline4);
     cleanup_qso();
     qsoflags_for_qtc[nr_qsos - 1] = 0;
+    free_qso(current_qso);
 }
 
 /* write a new line to the qtc log */

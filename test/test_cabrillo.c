@@ -22,7 +22,8 @@ struct tm time_ptr_cabrillo;
 
 int qsoflags_for_qtc[MAX_QSOS];
 
-void addcall() { }
+struct qso_t *collect_qso_data() { return NULL; }
+void addcall(struct qso_t *qso) { }
 void store_qso() { nr_qsos++; }
 void cleanup_qso() { }
 void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) { }
