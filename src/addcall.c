@@ -74,14 +74,16 @@ int addcall(void) {
     int station = lookup_or_add_worked(hiscall);
     worked[station].qsotime[trxmode][bandinx] = get_time();
 
+    if (strlen(comment) >= 1) {		/* remember last exchange */
+	g_strlcpy(worked[station].exchange, comment,
+		sizeof(worked[0].exchange));
+    }
+
     // can we get the ctydata from countrynr?
     cty = getctydata(hiscall);
 
 
     if (strlen(comment) >= 1) {		/* remember last exchange */
-	g_strlcpy(worked[station].exchange, comment,
-		sizeof(worked[0].exchange));
-
 	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1) {
 	    /*
 	    			if (strlen(zone_fix) > 1) {
@@ -90,7 +92,6 @@ int addcall(void) {
 	    				zone = zone_nr(zone_export);
 	    */
 	    zone = zone_nr(comment);
-
 	}
     }
 
