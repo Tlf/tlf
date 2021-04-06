@@ -120,13 +120,15 @@ bool general_ismulti(spot *data) {
 /* configurations for supported contest */
 contest_config_t config_unknown = {
     .id = UNKNOWN,
-    .name = "Unknown"
+    .name = "Unknown",
+    .exchange_width = 14,
 };
 
 contest_config_t config_qso = {
     .id = QSO,
     .name = QSO_MODE,
     .is_multi = no_multi,
+    .exchange_width = 77 - 55 + 1,  // full width
 };
 
 contest_config_t config_dxped = {
@@ -134,6 +136,7 @@ contest_config_t config_dxped = {
     .name = "DXPED",
     .recall_mult = true,
     .is_multi = no_multi,
+    .exchange_width = 77 - 55 + 1,  // full width
 };
 
 contest_config_t config_wpx = {
@@ -144,6 +147,7 @@ contest_config_t config_wpx = {
 	.fn = score_wpx,
     },
     .is_multi = wpx_ismulti,
+    .exchange_width = 5,    // serial nr
 };
 
 contest_config_t config_cqww = {
@@ -155,6 +159,7 @@ contest_config_t config_cqww = {
 	.fn = score_cqww,
     },
     .is_multi = cqww_ismulti,
+    .exchange_width = 3,    // zone nr
 };
 
 contest_config_t config_sprint = {
@@ -165,6 +170,7 @@ contest_config_t config_sprint = {
 	.point = 1,
     },
     .is_multi = no_multi,
+    .exchange_width = 77 - 55 + 1,  // full width
 };
 
 contest_config_t config_arrldx_usa = {
@@ -176,6 +182,7 @@ contest_config_t config_arrldx_usa = {
 	.fn = score_arrldx_usa,
     },
     .is_multi = arrldx_usa_ismulti,
+    .exchange_width = 5,    // 2 or 3 chars
 };
 
 contest_config_t config_arrldx_dx = {
@@ -187,6 +194,7 @@ contest_config_t config_arrldx_dx = {
 	.point = 3,
     },
     .is_multi = no_multi,
+    .exchange_width = 5,    // 2 or 3 chars
 };
 
 contest_config_t config_arrl_ss = {
@@ -198,6 +206,7 @@ contest_config_t config_arrl_ss = {
 	.point = 2,
     },
     .is_multi = no_multi,
+    .exchange_width = 77 - 55 + 1,  // full width
 };
 
 contest_config_t config_arrl_fd = {
@@ -209,6 +218,7 @@ contest_config_t config_arrl_fd = {
 	.fn = score_arrlfd,
     },
     .is_multi = no_multi,
+    .exchange_width = 13,
 };
 
 contest_config_t config_pacc_pa = {
@@ -219,6 +229,7 @@ contest_config_t config_pacc_pa = {
 	.point = 1,
     },
     // .ismulti =
+    .exchange_width = 5,    // province/serial
 };
 
 contest_config_t config_stewperry = {
@@ -229,6 +240,7 @@ contest_config_t config_stewperry = {
 	.fn = score_stewperry
     },
     .is_multi = no_multi,
+    .exchange_width = 5,    // 4 char grid square
 };
 
 

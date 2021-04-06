@@ -60,7 +60,7 @@ void keyer_append(const char *string) {
 
 char *error_details;
 
-contest_config_t empty = { };
+contest_config_t empty = { .exchange_width = 10 };
 
 char logline[181];
 char adif_line[400];
