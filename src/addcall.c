@@ -116,7 +116,6 @@ int lookup_country_in_pfxnummult_array(int n) {
 }
 
 
-
 int addcall(struct qso_t *qso) {
 
     int cty, zone = 0;
