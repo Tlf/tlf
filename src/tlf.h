@@ -179,9 +179,10 @@ typedef struct {
 
 
 #define MAXPFXNUMMULT 30
+#define PFXNUMBERS 10
 typedef struct {
     int countrynr;
-    int qsos[NBANDS];
+    int qsos[PFXNUMBERS];
 } pfxnummulti_t;
 
 

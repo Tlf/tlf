@@ -80,7 +80,7 @@ void init_scoring(void) {
 
     if (pfxnummultinr > 0) {
 	for (int i = 0; i < pfxnummultinr; i++) {
-	    for (int n = 0; n < NBANDS; n++) {
+	    for (int n = 0; n < PFXNUMBERS; n++) {
 		pfxnummulti[i].qsos[n] = 0;
 	    }
 	}
