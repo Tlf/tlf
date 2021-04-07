@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *               2012-2021      Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +38,7 @@
 #include "addpfx.h"
 #include "bands.h"
 #include "cabrillo_utils.h"
+#include "dxcc.h"
 #include "get_time.h"
 #include "getctydata.h"
 #include "getpx.h"
@@ -159,15 +161,12 @@ void count_contest_bands(int check, int *count) {
 int readcalls(const char *logfile) {
 
     char inputbuffer[LOGLINELEN + 1];
-    char checkcall[20];
     int z = 0;
     bool add_ok;
-    char presentcall[20];	// copy of call..
-    char *tmpptr;
     int pfxnumcntidx;
     int pxnr;
     bool veto;
-    int qsomode;
+    struct qso_t *qso;
     int linenr = 0;
 
     int bandindex = BANDINDEX_OOB;
@@ -204,40 +203,22 @@ int readcalls(const char *logfile) {
 	pfxnumcntidx = -1;
 	pxnr = 0;
 
-	/* get bandindex */
-	bandindex = log_get_band(inputbuffer);
+	qso = parse_qso(inputbuffer);
+	bandindex = qso->bandindex;
 
 	/* get the country number, not known at this point */
-	g_strlcpy(presentcall, inputbuffer + 29, 14);
-	tmpptr = strchr(presentcall, ' ');
-	if (tmpptr)
-	    *tmpptr = '\0';
-
-	countrynr = getctydata(presentcall);
+	countrynr = getctydata(qso->call);
 
 	/*  lookup worked stations, add if new */
-	int station = lookup_or_add_worked(presentcall);
-
-	/* and fill in according entry */
-	g_strlcpy(worked[station].exchange, inputbuffer + 54, 12);
-	g_strchomp(worked[station].exchange);	/* strip trailing spaces */
-
-	qsomode = log_get_mode(inputbuffer);
-	if (qsomode == -1) {
-	    shownr("Invalid line format in line %d.\n", linenr);
-	    refreshp();
-	    sleep(2);
-	    exit(1);
-	}
-
-	/* calculate QSO timestamp from logline */
-	worked[station].qsotime[qsomode][bandindex] =
-	    parse_time(inputbuffer + 7,	DATE_TIME_FORMAT);
+	int station = lookup_or_add_worked(qso->call);
+	update_worked(station, qso);
 
 
 	if (continentlist_only) {
-	    if (!is_in_continentlist(continent)) {
+	    if (!is_in_continentlist(dxcc_by_index(countrynr)->continent)) {
 		qsos_per_band[bandindex]++;
+		free_qso(qso);
+		qso = NULL;
 		continue;
 	    }
 	}
@@ -269,9 +250,8 @@ int readcalls(const char *logfile) {
 	}
 
 
-
 	if (pfxmultab == 1) {
-	    getpx(presentcall);
+	    getpx(qso->call);
 	    add_pfx(wpx_prefix, bandindex);
 	}
 
@@ -285,7 +265,7 @@ int readcalls(const char *logfile) {
 
 	if (CONTEST_IS(PACC_PA)) {
 
-	    strcpy(hiscall, presentcall);
+	    strcpy(hiscall, qso->call);
 
 	    add_ok = pacc_pa();
 
@@ -297,10 +277,10 @@ int readcalls(const char *logfile) {
 	}
 
 	if (pfxnummultinr > 0) {
-	    getpx(presentcall);
+	    getpx(qso->call);
 	    pxnr = districtnumber(wpx_prefix);
 
-	    getctydata(presentcall);
+	    getctydata(qso->call);
 
 	    pfxnumcntidx = lookup_country_in_pfxnummult_array(countrynr);
 
@@ -326,12 +306,15 @@ int readcalls(const char *logfile) {
 		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandindex];
 	    }
 	}
+	free_qso(qso);
+	qso = NULL;
     }
 
     fclose(fp);
 
     /* all lines red, now build other statistics */
     if (CONTEST_IS(WPX) || pfxmult == 1) {
+	char checkcall[20];
 
 	/* build prefixes_worked array from list of worked stations */
 	InitPfx();

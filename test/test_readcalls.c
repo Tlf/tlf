@@ -7,6 +7,7 @@
 #include "../src/readctydata.h"
 #include "../src/globalvars.h"
 #include "../src/getctydata.h"
+#include "../src/get_time.h"
 #include "../src/readcalls.h"
 #include "../src/setcontest.h"
 
@@ -113,6 +114,10 @@ void test_add_to_worked(void **state) {
     write_log(LOGFILE);
     readcalls(LOGFILE);
     assert_int_equal(nr_worked, 1);
+    assert_string_equal(worked[0].call, "PY9BBB");
+    assert_string_equal(worked[0].exchange, "15");
+    time_t ts = parse_time(QSO1+7, DATE_TIME_FORMAT);
+    assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_40], ts);
 }
 
 void test_add_to_worked_continentlistonly(void **state) {
@@ -120,4 +125,5 @@ void test_add_to_worked_continentlistonly(void **state) {
     write_log(LOGFILE);
     readcalls(LOGFILE);
     assert_int_equal(nr_worked, 1);
+    assert_string_equal(worked[0].exchange, "15");
 }

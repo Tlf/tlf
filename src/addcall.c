@@ -99,7 +99,7 @@ bool check_veto(int countrynr) {
 
 // lookup the current country 'n' from the outer loop
 // pfxnummulti[I].countrynr contains the country codes,
-// I:=[0..pfxnummultinr]
+// I:=[0..pfxnummultinr-1]
 // according to the order of prefixes in rules, eg:
 // PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
 // pfxnummulti[0].countrynr will be nr of USA
