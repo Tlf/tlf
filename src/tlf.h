@@ -22,6 +22,7 @@
 #define TLF_H
 
 #include <stdbool.h>
+#include <time.h>
 
 #include "hamlib/rig.h"
 
