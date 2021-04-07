@@ -134,7 +134,7 @@ void log_to_disk(int from_lan) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));	/* erase comment  field */
 
     if (!from_lan)
-	mvprintw(12, 54, spaces(80 - 54));
+	mvprintw(12, 54, spaces(contest->exchange_width));
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     if (!from_lan) {

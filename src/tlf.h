@@ -245,6 +245,7 @@ typedef struct {
     char		*name;
     bool		recall_mult;
     bool		exchange_serial;
+    int                 exchange_width;
     struct {
 	points_type_t type;
 	union {
