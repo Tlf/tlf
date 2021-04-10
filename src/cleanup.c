@@ -43,7 +43,7 @@ void cleanup(void) {
     mvaddstr(12, 29, spaces(12));
 
     attron(COLOR_PAIR(C_WINDOW));
-    mvaddstr(12, 54, spaces(24));
+    mvaddstr(12, 54, spaces(contest->exchange_width));
 
     attron(COLOR_PAIR(C_LOG | A_STANDOUT));
     for (int k = 1; k <= 5; k++) {

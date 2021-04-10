@@ -108,7 +108,6 @@ int getexchange(void) {
     commentfield = 1;
 
     i = strlen(comment);
-
     while (1) {
 
 	refresh_comment();
@@ -316,7 +315,7 @@ int getexchange(void) {
 	if (x >= 'a' && x <= 'z')
 	    x = x - 32;		// Promote to upper case
 
-	if (i < 25) {		/* normal character -> insert if space left */
+	if (i < contest->exchange_width) {  /* normal character -> insert if space left */
 	    if (x >= ' ' && x <= 'Z') {
 		instring[0] = x;
 		addch(x);
@@ -1071,12 +1070,11 @@ void exchange_edit(void) {
 
     l = strlen(comment);
     b = l - 1;
-
     while ((i != ESCAPE) && (b <= strlen(comment))) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
-	mvprintw(12, 54, spaces(80 - 54));
+	mvprintw(12, 54, spaces(contest->exchange_width));
 	mvprintw(12, 54, comment);
 	mvprintw(12, 54 + b, "");
 
@@ -1141,7 +1139,7 @@ void exchange_edit(void) {
 	    // Accept printable characters.
 	    if ((i >= ' ') && (i <= 'Z')) {
 
-		if (strlen(comment) <= 24) {
+		if (strlen(comment) < contest->exchange_width) {
 		    /* copy including trailing \0 */
 		    strncpy(comment2, comment + b, strlen(comment) - (b - 1));
 
