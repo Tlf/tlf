@@ -163,7 +163,7 @@ typedef struct {
  * contains all informations about an already worked station */
 typedef struct {
     char call[20]; 		/**< call of the station */
-    char exchange[13]; 		/**< the last exchange */
+    char exchange[24]; 		/**< the last exchange */
     int band; 			/**< bitmap for worked bands */
     int country; 		/**< its country number */
     long qsotime[3][NBANDS];	/**< last timestamp of qso in gmtime

@@ -307,7 +307,7 @@ int addcall2(void) {
 		    countries[cty] |= inxes[bandinx];
 		    countryscore[bandinx]++;
 //                  new_cty = cty;
-	    }
+		}
 		if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
 		    zones[zone] |= inxes[bandinx];
 		    zonescore[bandinx]++;
