@@ -119,7 +119,7 @@ int lookup_country_in_pfxnummult_array(int n) {
 int addcall(struct qso_t *qso) {
 
     int cty, zone = 0;
-    int add_ok;
+    bool add_ok;
     int pfxnumcntidx = -1;
     int pxnr = 0;
 
@@ -145,18 +145,18 @@ int addcall(struct qso_t *qso) {
 	}
     }
 
-    add_ok = 1;			/* look if certain calls are excluded */
+    add_ok = true;			/* look if certain calls are excluded */
 
     if (CONTEST_IS(ARRLDX_USA)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
-	add_ok = 0;
+	add_ok = false;
 
     if (country_mult == 1 && iscontest)
-	add_ok = 1;
+	add_ok = true;
 
     if ((dx_arrlsections == 1)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
-	add_ok = 0;
+	add_ok = false;
 
     if (CONTEST_IS(PACC_PA))
 	add_ok = pacc_pa();
@@ -177,7 +177,7 @@ int addcall(struct qso_t *qso) {
 
     excl_add_veto |= check_veto(cty);
     if (excl_add_veto) {
-	add_ok = 0;
+	add_ok = false;
 	new_cty = 0;
 	addcallarea = 0;
     }
@@ -188,7 +188,7 @@ int addcall(struct qso_t *qso) {
 	qsos_per_band[qso->bandindex]++;
 
 
-    if (add_ok == 1) {
+    if (add_ok) {
 	worked[station].band |= inxes[qso->bandindex];	/* worked on band */
 
 	if (pfxnumcntidx < 0) {
@@ -223,7 +223,7 @@ int addcall(struct qso_t *qso) {
 int addcall2(void) {
 
     int cty, zone = 0;
-    int add_ok;
+    bool add_ok;
     char lancopy[6];
 
     char comment[40];
@@ -257,13 +257,13 @@ int addcall2(void) {
 	    zone = zone_nr(comment);
     }
 
-    add_ok = 1;			/* look if certain calls are excluded */
+    add_ok = true;			/* look if certain calls are excluded */
 
     /* 	     if ((arrldx_usa ==1) && ((cty == w_cty) || (cty == ve_cty)))
      	     	add_ok = 0;
     */
     if ((country_mult == 1) && iscontest)
-	add_ok = 1;
+	add_ok = true;
 
     if (CONTEST_IS(PACC_PA))
 	/* FIXME: Does not work for LAN qso's as pacc_pa uses global variables
@@ -277,7 +277,7 @@ int addcall2(void) {
 	pxnr = districtnumber(wpx_prefix);
 
 	pfxnumcntidx = lookup_country_in_pfxnummult_array(cty);
-	add_ok = 1;
+	add_ok = true;
     }
 
 
@@ -289,12 +289,12 @@ int addcall2(void) {
 
     excl_add_veto |= check_veto(cty);
     if (excl_add_veto) {
-	add_ok = 0;
+	add_ok = false;
 	new_cty = 0;
 	addcallarea = 0;
     }
 
-    if (add_ok == 1) {
+    if (add_ok) {
 
 	qsos_per_band[bandinx]++;
 
