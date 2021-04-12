@@ -106,6 +106,7 @@ struct qso_t *parse_qso(char *buffer) {
 
     /* band */
     ptr->band = atoi(tmp);
+    ptr->bandindex = bandnr2index(ptr->band);
 
 
     /* mode */
@@ -121,6 +122,7 @@ struct qso_t *parse_qso(char *buffer) {
 
     strptime(strtok_r(NULL, " \t", &sp), DATE_FORMAT, &date_n_time);
     strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
+    ptr->timestamp = timegm(&date_n_time);
 
     ptr->year = date_n_time.tm_year + 1900;	/* convert to
 						   1968..2067 */

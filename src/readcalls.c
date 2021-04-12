@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *               2012-2021      Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,10 +33,12 @@
 #include <unistd.h>
 #include <time.h>
 
+#include "addcall.h"
 #include "addmult.h"
 #include "addpfx.h"
 #include "bands.h"
 #include "cabrillo_utils.h"
+#include "dxcc.h"
 #include "get_time.h"
 #include "getctydata.h"
 #include "getpx.h"
@@ -94,43 +97,6 @@ void show_progress(int linenr) {
     }
 }
 
-
-// lookup the current country 'n' from the outer loop
-// pfxnummulti[I].countrynr contains the country codes,
-// I:=[0..pfxnummultinr]
-// according to the order of prefixes in rules, eg:
-// PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
-// pfxnummulti[0].countrynr will be nr of USA
-// pfxnummulti[1].countrynr will be nr of Canada
-int lookup_country_in_pfxnummult_array(int n) {
-    int found = -1;
-    for (int i = 0; i < pfxnummultinr; i++) {
-	if (pfxnummulti[i].countrynr == n) {
-	    found = i;
-	    break;
-	}
-    }
-    return found;
-}
-
-bool check_veto() {
-    bool veto = false;
-
-    if (!continentlist_only &&
-	    exclude_multilist_type == EXCLUDE_CONTINENT) {
-	if (is_in_continentlist(continent)) {
-	    veto = true;
-	}
-    }
-
-    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
-	if (is_in_countrylist(countrynr)) {
-	    veto = true;
-	}
-    }
-
-    return veto;
-}
 
 /* pick up multi string from logline
  *
@@ -192,18 +158,15 @@ void count_contest_bands(int check, int *count) {
 
 
 
-int readcalls(void) {
+int readcalls(const char *logfile) {
 
     char inputbuffer[LOGLINELEN + 1];
-    char checkcall[20];
     int z = 0;
     bool add_ok;
-    char presentcall[20];	// copy of call..
-    char *tmpptr;
     int pfxnumcntidx;
     int pxnr;
     bool veto;
-    int qsomode;
+    struct qso_t *qso;
     int linenr = 0;
 
     int bandindex = BANDINDEX_OOB;
@@ -240,20 +203,22 @@ int readcalls(void) {
 	pfxnumcntidx = -1;
 	pxnr = 0;
 
-	/* get bandindex */
-	bandindex = log_get_band(inputbuffer);
+	qso = parse_qso(inputbuffer);
+	bandindex = qso->bandindex;
 
 	/* get the country number, not known at this point */
-	g_strlcpy(presentcall, inputbuffer + 29, 14);
-	tmpptr = strchr(presentcall, ' ');
-	if (tmpptr)
-	    *tmpptr = '\0';
+	countrynr = getctydata(qso->call);
 
-	countrynr = getctydata(presentcall);
+	/*  lookup worked stations, add if new */
+	int station = lookup_or_add_worked(qso->call);
+	update_worked(station, qso);
+
 
 	if (continentlist_only) {
-	    if (!is_in_continentlist(continent)) {
+	    if (!is_in_continentlist(dxcc_by_index(countrynr)->continent)) {
 		qsos_per_band[bandindex]++;
+		free_qso(qso);
+		qso = NULL;
 		continue;
 	    }
 	}
@@ -284,28 +249,9 @@ int readcalls(void) {
 	    }
 	}
 
-	/*  lookup worked stations, add if new */
-	int station = lookup_or_add_worked(presentcall);
-
-	/* and fill in according entry */
-	g_strlcpy(worked[station].exchange, inputbuffer + 54, 12);
-	g_strchomp(worked[station].exchange);	/* strip trailing spaces */
-
-	qsomode = log_get_mode(inputbuffer);
-	if (qsomode == -1) {
-	    shownr("Invalid line format in line %d.\n", linenr);
-	    refreshp();
-	    sleep(2);
-	    exit(1);
-	}
-
-	/* calculate QSO timestamp from logline */
-	worked[station].qsotime[qsomode][bandindex] =
-	    parse_time(inputbuffer + 7,	DATE_TIME_FORMAT);
-
 
 	if (pfxmultab == 1) {
-	    getpx(presentcall);
+	    getpx(qso->call);
 	    add_pfx(wpx_prefix, bandindex);
 	}
 
@@ -319,7 +265,7 @@ int readcalls(void) {
 
 	if (CONTEST_IS(PACC_PA)) {
 
-	    strcpy(hiscall, presentcall);
+	    strcpy(hiscall, qso->call);
 
 	    add_ok = pacc_pa();
 
@@ -331,17 +277,17 @@ int readcalls(void) {
 	}
 
 	if (pfxnummultinr > 0) {
-	    getpx(presentcall);
+	    getpx(qso->call);
 	    pxnr = districtnumber(wpx_prefix);
 
-	    getctydata(presentcall);
+	    getctydata(qso->call);
 
 	    pfxnumcntidx = lookup_country_in_pfxnummult_array(countrynr);
 
 	    add_ok = true;
 	}
 
-	veto = check_veto();
+	veto = check_veto(countrynr);
 
 	if (add_ok) {
 
@@ -360,12 +306,15 @@ int readcalls(void) {
 		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandindex];
 	    }
 	}
+	free_qso(qso);
+	qso = NULL;
     }
 
     fclose(fp);
 
     /* all lines red, now build other statistics */
     if (CONTEST_IS(WPX) || pfxmult == 1) {
+	char checkcall[20];
 
 	/* build prefixes_worked array from list of worked stations */
 	InitPfx();
@@ -448,7 +397,7 @@ int log_read_n_score() {
     int nr_qsolines;
 
     total = 0;
-    nr_qsolines = readcalls();
+    nr_qsolines = readcalls(logfile);
     if (qtcdirection > 0) {
 	readqtccalls();
     }

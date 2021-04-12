@@ -22,6 +22,7 @@
 #define TLF_H
 
 #include <stdbool.h>
+#include <time.h>
 
 #include "hamlib/rig.h"
 
@@ -162,7 +163,7 @@ typedef struct {
  * contains all informations about an already worked station */
 typedef struct {
     char call[20]; 		/**< call of the station */
-    char exchange[13]; 		/**< the last exchange */
+    char exchange[24]; 		/**< the last exchange */
     int band; 			/**< bitmap for worked bands */
     int country; 		/**< its country number */
     long qsotime[3][NBANDS];	/**< last timestamp of qso in gmtime
@@ -190,12 +191,14 @@ typedef struct {
 struct qso_t {
     char *logline;
     int band;
+    int bandindex;
     int mode;
     char day;
     char month;
     int year;
     int hour;
     int min;
+    time_t timestamp;
     int qso_nr;
     char *call;
     int rst_s;

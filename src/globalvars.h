@@ -46,6 +46,8 @@ extern char logfile[];
 extern bool iscontest;
 
 extern int country_mult;
+
+extern struct qso_t *current_qso;
 extern char hiscall[20];
 extern char hiscall_sent[20];
 extern int total;
