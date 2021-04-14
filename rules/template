@@ -9,9 +9,9 @@ CONTEST_MODE
 CABRILLO=xxxxxx
 CABRILLO-CONTEST=xxxxxx
 CABRILLO-EXCHANGE=xxxxxx
-CABRILLO-BAND=xxxxxx
-CABRILLO-MODE=xxxxxx
-CABRILLO-POWER=xxxxxx
+CABRILLO-CATEGORY-BAND=xxxxxx
+CABRILLO-CATEGORY-MODE=xxxxxx
+CABRILLO-CATEGORY-POWER=xxxxxx
 #
 ##################################
 #                                #

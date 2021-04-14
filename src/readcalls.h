@@ -23,7 +23,7 @@
 #define READCALLS_H
 
 int lookup_country_in_pfxnummult_array(int n);
-int readcalls(void);
+int readcalls(const char *logfile);
 int log_read_n_score();
 int synclog(char *synclogfile);
 

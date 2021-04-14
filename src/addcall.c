@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *               2015-2021	Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,26 +63,77 @@ int excl_add_veto;
  * addcall2() is need to separate the points and multipliers.
  */
 
-int addcall(void) {
+
+/* collect all relevant data for the actual QSO into a qso_t structure */
+struct qso_t *collect_qso_data(void) {
+    struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+    qso->call = g_strdup(hiscall);
+    qso->mode = trxmode;
+    qso->bandindex = bandinx;
+    qso->timestamp = get_time();
+    qso->comment = g_strdup(comment);
+    return qso;
+}
+
+
+bool check_veto(int countrynr) {
+    bool veto = false;
+
+    if (!continentlist_only &&
+	    exclude_multilist_type == EXCLUDE_CONTINENT) {
+	if (is_in_continentlist(dxcc_by_index(countrynr)->continent)) {
+	    veto = true;
+	}
+    }
+
+    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
+	if (is_in_countrylist(countrynr)) {
+	    veto = true;
+	}
+    }
+
+    return veto;
+}
+
+
+
+// lookup the current country 'n' from the outer loop
+// pfxnummulti[I].countrynr contains the country codes,
+// I:=[0..pfxnummultinr-1]
+// according to the order of prefixes in rules, eg:
+// PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
+// pfxnummulti[0].countrynr will be nr of USA
+// pfxnummulti[1].countrynr will be nr of Canada
+int lookup_country_in_pfxnummult_array(int n) {
+    int found = -1;
+    for (int i = 0; i < pfxnummultinr; i++) {
+	if (pfxnummulti[i].countrynr == n) {
+	    found = i;
+	    break;
+	}
+    }
+    return found;
+}
+
+
+int addcall(struct qso_t *qso) {
 
     int cty, zone = 0;
-    int add_ok;
+    bool add_ok;
     int pfxnumcntidx = -1;
     int pxnr = 0;
 
     excl_add_veto = 0;
 
-    int station = lookup_or_add_worked(hiscall);
-    worked[station].qsotime[trxmode][bandinx] = get_time();
+    int station = lookup_or_add_worked(qso->call);
+    update_worked(station, qso);
+
 
     // can we get the ctydata from countrynr?
-    cty = getctydata(hiscall);
+    cty = getctydata(qso->call);
 
 
-    if (strlen(comment) >= 1) {		/* remember last exchange */
-	g_strlcpy(worked[station].exchange, comment,
-		sizeof(worked[0].exchange));
-
+    if (strlen(qso->comment) >= 1) {		/* remember last exchange */
 	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1) {
 	    /*
 	    			if (strlen(zone_fix) > 1) {
@@ -89,119 +141,75 @@ int addcall(void) {
 	    			} else
 	    				zone = zone_nr(zone_export);
 	    */
-	    zone = zone_nr(comment);
-
+	    zone = zone_nr(qso->comment);
 	}
     }
 
-    add_ok = 1;			/* look if certain calls are excluded */
+    add_ok = true;			/* look if certain calls are excluded */
 
     if (CONTEST_IS(ARRLDX_USA)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
-	add_ok = 0;
+	add_ok = false;
 
     if (country_mult == 1 && iscontest)
-	add_ok = 1;
+	add_ok = true;
 
     if ((dx_arrlsections == 1)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
-	add_ok = 0;
+	add_ok = false;
 
     if (CONTEST_IS(PACC_PA))
 	add_ok = pacc_pa();
 
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
-	getpx(hiscall);
+	getpx(qso->call);
 	pxnr = districtnumber(wpx_prefix);
 
-	int pfxi = 0;
-	while (pfxi < pfxnummultinr) {
-	    if (pfxnummulti[pfxi].countrynr == cty) {
-		pfxnumcntidx = pfxi;
-		break;
-	    }
-	    pfxi++;
-	}
+	pfxnumcntidx = lookup_country_in_pfxnummult_array(cty);
     }
 
     if (continentlist_only) {
-	if (!is_in_continentlist(continent)) {
-	    add_ok = 0;
-	    new_cty = 0;
-	    addcallarea = 0;
+	if (!is_in_continentlist(dxcc_by_index(cty)->continent)) {
 	    excl_add_veto = 1;
 	}
     }
 
-    if (!continentlist_only
-	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
-	if (is_in_continentlist(continent)) {
-	    add_ok = 0;
-	    new_cty = 0;
-	    addcallarea = 0;
-	    excl_add_veto = 1;
-	}
+    excl_add_veto |= check_veto(cty);
+    if (excl_add_veto) {
+	add_ok = false;
+	new_cty = 0;
+	addcallarea = 0;
     }
 
-    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
-	if (is_in_countrylist(cty)) {
-	    add_ok = 0;
-	    new_cty = 0;
-	    addcallarea = 0;
-	    excl_add_veto = 1;
-	}
-    }
-
-    if (add_ok == 1) {
-	worked[station].band |= inxes[bandinx];	/* worked on this band */
-
-	switch (bandinx) {
-
-	    case BANDINDEX_160:
-	    case BANDINDEX_80:
-	    case BANDINDEX_40:
-	    case BANDINDEX_20:
-	    case BANDINDEX_15:
-	    case BANDINDEX_10:
-
-		if (pfxnumcntidx < 0) {
-		    if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
-			countries[cty] |= inxes[bandinx];
-			countryscore[bandinx]++;
-			new_cty = cty;
-		    }
-		    if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
-			zones[zone] |= inxes[bandinx];
-			zonescore[bandinx]++;
-			new_zone = zone;
-		    }
-		} else {
-		    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[bandinx])
-			    == 0) {
-			pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
-			addcallarea = 1;
-			countryscore[bandinx]++;
-			zonescore[bandinx]++;
-		    }
-		}
-		break;
+    /* qso's per band  */
+    if (!(CONTEST_IS(ARRLDX_USA)
+	    && ((countrynr == w_cty) || (countrynr == ve_cty))))
+	qsos_per_band[qso->bandindex]++;
 
 
-	    case BANDINDEX_12:
-	    case BANDINDEX_17:
-	    case BANDINDEX_30:
+    if (add_ok) {
+	worked[station].band |= inxes[qso->bandindex];	/* worked on band */
 
-		if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
-		    countries[cty] |= inxes[bandinx];
-		    new_cty = cty;
-		}
-		if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
-		    zones[zone] |= inxes[bandinx];
-		    new_zone = zone;
-		}
-		break;
-
+	if (pfxnumcntidx < 0) {
+	    if (cty != 0 && (countries[cty] & inxes[qso->bandindex]) == 0) {
+		countries[cty] |= inxes[qso->bandindex];
+		countryscore[qso->bandindex]++;
+		new_cty = cty;
+	    }
+	    if (zone != 0 && (zones[zone] & inxes[qso->bandindex]) == 0) {
+		zones[zone] |= inxes[qso->bandindex];
+		zonescore[qso->bandindex]++;
+		new_zone = zone;
+	    }
+	} else {
+	    if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[qso->bandindex])
+		    == 0) {
+		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[qso->bandindex];
+		addcallarea = 1;
+		countryscore[qso->bandindex]++;
+		zonescore[qso->bandindex]++;
+	    }
 	}
     }
 
@@ -215,36 +223,32 @@ int addcall(void) {
 int addcall2(void) {
 
     int cty, zone = 0;
-    int add_ok;
+    bool add_ok;
     char lancopy[6];
 
-    char hiscall[20];
     char comment[40];
     int bandinx;
     int pfxnumcntidx = -1;
     int pxnr = 0;
     excl_add_veto = 0;
-    char date_and_time[16];
-    time_t qsotimets;
 
-    g_strlcpy(hiscall, lan_logline + 29, 20);
-    *strchrnul(hiscall, ' ') = '\0';	/* terminate on first blank */
+    /* parse copy of lan_logline */
+    struct qso_t *qso;
+    char *tmp = g_strdup(lan_logline);
+    qso = parse_qso(tmp);
+    g_free(tmp);
 
-    g_strlcpy(comment, lan_logline + 54, 31);
-    *strchrnul(comment, ' ') = '\0';	/* terminate on first blank */
+
+    g_strlcpy(comment, qso->comment, sizeof(comment));
+    qso->comment[0] = '\0';	/* Do not update station comment from lan */
 
     /* FIXME: worked array needs mutex protection */
-    int station = lookup_or_add_worked(hiscall);
+    int station = lookup_or_add_worked(qso->call);
+    update_worked(station, qso);
 
     cty = worked[station].country;
 
-    bandinx = log_get_band(lan_logline);
-
-    /* calculate QSO timestamp from lan_logline */
-    strncpy(date_and_time, lan_logline + 7, 15);
-    qsotimets = parse_time(date_and_time, DATE_TIME_FORMAT);
-
-    worked[station].qsotime[trxmode][bandinx] = qsotimets;
+    bandinx = qso->bandindex;
 
     if (strlen(comment) >= 1) {
 // 		strcpy(station->exchange, comment);
@@ -253,13 +257,13 @@ int addcall2(void) {
 	    zone = zone_nr(comment);
     }
 
-    add_ok = 1;			/* look if certain calls are excluded */
+    add_ok = true;			/* look if certain calls are excluded */
 
     /* 	     if ((arrldx_usa ==1) && ((cty == w_cty) || (cty == ve_cty)))
      	     	add_ok = 0;
     */
     if ((country_mult == 1) && iscontest)
-	add_ok = 1;
+	add_ok = true;
 
     if (CONTEST_IS(PACC_PA))
 	/* FIXME: Does not work for LAN qso's as pacc_pa uses global variables
@@ -268,19 +272,12 @@ int addcall2(void) {
 
     // if pfx number as multiplier
     if (pfxnummultinr > 0) {
-	getpx(hiscall);	    /* FIXME: uses global 'wpx_prefix' for background
+	getpx(qso->call);    /* FIXME: uses global 'wpx_prefix' for background
 			       job */
 	pxnr = districtnumber(wpx_prefix);
 
-	int pfxi = 0;
-	while (pfxi < pfxnummultinr) {
-	    if (pfxnummulti[pfxi].countrynr == cty) {
-		pfxnumcntidx = pfxi;
-		break;
-	    }
-	    pfxi++;
-	}
-	add_ok = 1;
+	pfxnumcntidx = lookup_country_in_pfxnummult_array(cty);
+	add_ok = true;
     }
 
 
@@ -290,70 +287,39 @@ int addcall2(void) {
 	}
     }
 
-    if (!continentlist_only
-	    && exclude_multilist_type == EXCLUDE_CONTINENT) {
-	if (is_in_continentlist(dxcc_by_index(cty)->continent)) {
-	    excl_add_veto = 1;
-	}
+    excl_add_veto |= check_veto(cty);
+    if (excl_add_veto) {
+	add_ok = false;
+	new_cty = 0;
+	addcallarea = 0;
     }
 
-    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
-	if (is_in_countrylist(cty)) {
-	    excl_add_veto = 1;
-	}
-    }
+    if (add_ok) {
 
-    if (add_ok == 1) {
-
-	bandinx = log_get_band(lan_logline);
 	qsos_per_band[bandinx]++;
 
 	worked[station].band |= inxes[bandinx];	/* worked on this band */
 
 	if (excl_add_veto == 0) {
 
-	    switch (bandinx) {
-
-		case BANDINDEX_160:
-		case BANDINDEX_80:
-		case BANDINDEX_40:
-		case BANDINDEX_20:
-		case BANDINDEX_15:
-		case BANDINDEX_10:
-
-		    if (pfxnumcntidx < 0) {
-			if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
-			    countries[cty] |= inxes[bandinx];
-			    countryscore[bandinx]++;
-//                              new_cty = cty;
-			}
-			if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
-			    zones[zone] |= inxes[bandinx];
-			    zonescore[bandinx]++;
-//                              new_zone = zone;
-			}
-		    } else {
-			if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & BAND10) == 0) {
-			    pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
-			    addcallarea = 1;
-			    zonescore[bandinx]++;
-			    countryscore[bandinx]++;
-			}
-		    }
-		    break;
-
-		case BANDINDEX_30:
-		case BANDINDEX_17:
-		case BANDINDEX_12:
-
-		    if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
-			countries[cty] |= inxes[bandinx];
-		    }
-		    if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
-			zones[zone] |= inxes[bandinx];
-		    }
-		    break;
-
+	    if (pfxnumcntidx < 0) {
+		if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {
+		    countries[cty] |= inxes[bandinx];
+		    countryscore[bandinx]++;
+//                  new_cty = cty;
+		}
+		if (zone != 0 && (zones[zone] & inxes[bandinx]) == 0) {
+		    zones[zone] |= inxes[bandinx];
+		    zonescore[bandinx]++;
+//                  new_zone = zone;
+		}
+	    } else {
+		if ((pfxnummulti[pfxnumcntidx].qsos[pxnr] & inxes[bandinx]) == 0) {
+		    pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandinx];
+		    addcallarea = 1;
+		    zonescore[bandinx]++;
+		    countryscore[bandinx]++;
+		}
 	    }
 	}
     }
@@ -380,7 +346,10 @@ int addcall2(void) {
 	}
     }
 
-    addmult2();			/* for wysiwyg from LAN */
+    addmult2();	/* for wysiwyg from LAN */
+
+    free_qso(qso);
+    qso = NULL;
 
     return cty;
 }

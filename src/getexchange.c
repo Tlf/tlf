@@ -333,7 +333,7 @@ int getexchange(void) {
 		CONTEST_IS(CQWW) ||
 		CONTEST_IS(STEWPERRY)) {
 
-	    x = checkexchange(x);
+	    checkexchange(comment);
 	}
 
 	/* <Enter>, <Tab>, Ctl-K, '\' */
@@ -489,7 +489,7 @@ char zone_fix[3] = "";
 
 /* ------------------------------------------------------------------------ */
 
-int checkexchange(int x) {
+void checkexchange(char *comment) {
 
     char precedent[] = " ";
     char serial[5] = "    ";
@@ -669,12 +669,11 @@ int checkexchange(int x) {
 
 		    mvprintw(12, 29, "       ");
 		    mvprintw(12, 29, "%s", hiscall);
-		    mvprintw(12, 54, "%s", comment);
 		}
 	    }
 	}
 
-	return (x);
+	return;
     }
 
     // ---------------------------arrls------------------------------
@@ -765,7 +764,6 @@ int checkexchange(int x) {
 
 			mvprintw(12, 29, "       ");
 			mvprintw(12, 29, "%s", hiscall);
-			mvprintw(12, 54, "%s", comment);
 		    }
 
 		}
@@ -831,10 +829,7 @@ int checkexchange(int x) {
 	strcat(ssexchange, " ");
 	strcat(ssexchange, section);
 
-	mvprintw(12, 54, comment);
-	refreshp();
-
-	return (x);		// end arrlss
+	return;		// end arrlss
     }
 
     // ----------------------serial+section--------------------------
@@ -865,7 +860,6 @@ int checkexchange(int x) {
 		    snprintf(check, sizeof(check), "%2d",
 			     atoi(comment + hr + 2));
 		}
-
 	    }
 
 	    // get section
@@ -977,7 +971,6 @@ int checkexchange(int x) {
 
 		    mvprintw(12, 29, "       ");
 		    mvprintw(12, 29, "%s", hiscall);
-		    mvprintw(12, 54, "%s", comment);
 		}
 
 	    }
@@ -995,14 +988,6 @@ int checkexchange(int x) {
     	}
     */
     strcat(ssexchange, section);
-
-    // ---------------------------end mults --------------------------
-    if (x >= 0) {   // don't show comment when called from readcabrillo.c
-	mvprintw(12, 54, comment);
-	refreshp();
-    }
-
-    return x;
 }
 
 

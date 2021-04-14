@@ -133,4 +133,13 @@ bool is_dupe(char *call, int bandindex, int mode) {
 
 }
 
+/* update exchange and last worked time for given station */
+void update_worked(int station, struct qso_t *qso) {
+    if (strlen(qso->comment) > 0) {
+	g_strlcpy(worked[station].exchange, qso->comment,
+		sizeof(worked[0].exchange));
+	g_strchomp(worked[station].exchange);
+    }
+    worked[station].qsotime[qso->mode][qso->bandindex] = qso->timestamp;
+}
 

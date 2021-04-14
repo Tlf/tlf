@@ -30,5 +30,6 @@ int lookup_worked(char *call);
 int lookup_or_add_worked(char *call);
 bool worked_in_current_minitest_period(int found);
 bool is_dupe(char *call, int bandindex, int mode);
+void update_worked(int station, struct qso_t *qso);
 
 #endif /* SEARCHCALLARRAY_H */
