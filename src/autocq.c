@@ -79,7 +79,7 @@ int auto_cq(void) {
 		usleep(message_time * 100);
 		time_update();
 		const int inchar = key_poll();
-		if (inchar > 0) {
+		if (inchar > 0 && inchar != KEY_RESIZE) {
 		    key = inchar;
 		}
 	    }
@@ -95,7 +95,7 @@ int auto_cq(void) {
 	    time_update();
 
 	    const int inchar = key_poll();
-	    if (inchar > 0) {
+	    if (inchar > 0 && inchar != KEY_RESIZE) {
 		key = inchar;
 	    }
 	}
