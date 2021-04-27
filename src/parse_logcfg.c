@@ -296,11 +296,13 @@ static int cfg_call(const cfg_arg_t arg) {
 	return PARSE_WRONG_PARAMETER;
     }
 
+    for (char *p = my.call; *p; ++p) {
+	*p = g_ascii_toupper(*p);
+    }
+
     /* as other code parts rely on a trailing NL on the call
      * we add it back for now */
     strcat(my.call, "\n");
-
-    // TODO: look it up cty database and set lat/lon
 
     return PARSE_OK;
 }
