@@ -23,6 +23,14 @@
 
 #include <hamlib/rig.h>
 
+#ifdef HAMLIB_FILPATHLEN
+  #define TLFFILPATHLEN HAMLIB_FILPATHLEN
+#else
+  #ifdef FILPATHLEN
+  #define TLFFILPATHLEN FILPATHLEN
+  #endif
+#endif
+
 int init_tlf_rig(void);
 void close_tlf_rig(RIG *my_rig);
 
