@@ -28,6 +28,8 @@
 #else
   #ifdef FILPATHLEN
   #define TLFFILPATHLEN FILPATHLEN
+  #else
+  #error "FILPATHLEN macro not found"
   #endif
 #endif
 
