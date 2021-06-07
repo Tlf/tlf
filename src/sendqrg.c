@@ -87,7 +87,7 @@ int init_tlf_rig(void) {
 
     rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
     strncpy(my_rig->state.rigport.pathname, rigportname,
-	    FILPATHLEN - 1);
+	    TLFFILPATHLEN - 1);
 
     caps = my_rig->caps;
 
@@ -104,9 +104,9 @@ int init_tlf_rig(void) {
     if (dcd_type != RIG_DCD_NONE)
 	my_rig->state.dcdport.type.dcd = dcd_type;
     if (ptt_file)
-	strncpy(my_rig->state.pttport.pathname, ptt_file, FILPATHLEN);
+	strncpy(my_rig->state.pttport.pathname, ptt_file, TLFFILPATHLEN);
     if (dcd_file)
-	strncpy(my_rig->state.dcdport.pathname, dcd_file, FILPATHLEN);
+	strncpy(my_rig->state.dcdport.pathname, dcd_file, TLFFILPATHLEN);
 
     my_rig->state.rigport.parm.serial.rate = serial_rate;
 
