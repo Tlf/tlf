@@ -29,7 +29,7 @@
   #ifdef FILPATHLEN
   #define TLFFILPATHLEN FILPATHLEN
   #else
-  #error "FILPATHLEN macro not found"
+  #error "(HAMLIB_)FILPATHLEN macro not found"
   #endif
 #endif
 
