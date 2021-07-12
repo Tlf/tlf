@@ -432,9 +432,10 @@ int readcabrillo(int mode) {
 
     strcpy(temp_logfile, logfile);
 
-    strcpy(input_logfile, my.call);
-    g_strchomp(input_logfile); /* drop \n */
-    strcat(input_logfile, ".cbr");
+    get_cabrillo_file_name(input_logfile);
+    tempstrp = g_strdup_printf("Reading from %s", input_logfile);
+    show_readcab_msg(mode, tempstrp);
+    g_free(tempstrp);
 
     strcpy(output_logfile, "IMPORT_");
     strcat(output_logfile, logfile);

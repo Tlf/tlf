@@ -87,7 +87,7 @@ int setup_default(void **state) {
     trxmode = CWMODE;
     cwkeyer = 1;
     digikeyer = 1;
-    strcpy(my.call, "dl1jbe\n"); 		// !!! do not forget trailing \n
+    strcpy(my.call, "dl1jbe");
     strcpy(hiscall, "lz1ab");
     strcpy(sent_rst, "579");
     shortqsonr = LONGCW;
@@ -191,12 +191,12 @@ void test_expandHisNr(void **state) {
 /* Tests sendSPcall() */
 void test_prepareSPcallCWnoDeMode(void **state) {
     demode = 0;
-    assert_string_equal(SPcall = PrepareSPcall(), "dl1jbe\n");
+    assert_string_equal(SPcall = PrepareSPcall(), "dl1jbe");
 }
 
 void test_prepareSPcallCWDeMode(void **state) {
     demode = 1;
-    assert_string_equal(SPcall = PrepareSPcall(), "DE dl1jbe\n");
+    assert_string_equal(SPcall = PrepareSPcall(), "DE dl1jbe");
 }
 
 void test_prepareSPcallDIGInoDeMode(void **state) {

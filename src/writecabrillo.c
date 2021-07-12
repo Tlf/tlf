@@ -306,7 +306,8 @@ static gchar *get_sent_exchage(int qso_nr) {
 
 /* format QSO: or QTC: line according to Cabrillo format description
  * and put it into buffer */
-void prepare_line(struct linedata_t *qso, struct cabrillo_desc *desc, char *buf) {
+void prepare_line(struct linedata_t *qso, struct cabrillo_desc *desc,
+		  char *buf) {
 
     freq_t freq;
     int i;
@@ -360,8 +361,7 @@ void prepare_line(struct linedata_t *qso, struct cabrillo_desc *desc, char *buf)
 		add_lpadded(buf, tmp, item->len);
 		break;
 	    case MYCALL:
-		strcpy(tmp, my.call);
-		add_rpadded(buf, g_strchomp(tmp), item->len);
+		add_rpadded(buf, my.call, item->len);
 		break;
 	    case HISCALL:
 		add_rpadded(buf, qso->call, item->len);
@@ -457,7 +457,7 @@ static void set_exchange_format() {
 int write_cabrillo(void) {
 
     struct cabrillo_desc *cabdesc;
-    char cabrillo_tmp_name[80];
+    char cabrillo_file_name[80];
     char buffer[4000] = "";
 
     FILE *fp1, *fp2, *fpqtcrec = NULL, *fpqtcsent = NULL;
@@ -483,10 +483,6 @@ int write_cabrillo(void) {
     }
 
     /* open logfile and create a Cabrillo file */
-    strcpy(cabrillo_tmp_name, my.call);
-    g_strstrip(cabrillo_tmp_name); /* drop \n */
-    strcat(cabrillo_tmp_name, ".cbr");
-
     if ((fp1 = fopen(logfile, "r")) == NULL) {
 	info("Can't open logfile.");
 	sleep(2);
@@ -516,7 +512,9 @@ int write_cabrillo(void) {
 	    }
 	}
     }
-    if ((fp2 = fopen(cabrillo_tmp_name, "w")) == NULL) {
+
+    get_cabrillo_file_name(cabrillo_file_name);
+    if ((fp2 = fopen(cabrillo_file_name, "w")) == NULL) {
 	info("Can't create Cabrillo file.");
 	sleep(2);
 	free_cabfmt(cabdesc);
@@ -654,7 +652,7 @@ void write_adif_header(FILE *fp) {
      fp);
 
     format_time(timebuf, sizeof(timebuf), CREATED_DATE_TIME_FORMAT);
-    fprintf(fp, "Created %s for %s\n", timebuf, my.call);
+    fprintf(fp, "Created %s for %s\n\n", timebuf, my.call);
 
     /* Write contest name */
     fprintf(fp, "Contest Name: %s\n", whichcontest);

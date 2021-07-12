@@ -315,10 +315,6 @@ int getclusterinfo(void) {
 
     int i;
     int si;
-    char calldupe[12];
-
-    strcpy(calldupe, my.call);
-    calldupe[strlen(my.call) - 1] = '\0';
 
     for (si = 0; si < (MAX_SPOTS - 2); si++)
 	spotarray[si] = -1;
@@ -332,7 +328,7 @@ int getclusterinfo(void) {
 	    spotarray[si] = i;
 	    si++;
 
-	} else if (strstr(spot_ptr[i], calldupe) != NULL) {
+	} else if (strstr(spot_ptr[i], my.call) != NULL) {
 	    if ((announcefilter <= 2)) {
 		spotarray[si] = i;
 		si++;

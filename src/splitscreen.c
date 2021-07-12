@@ -634,7 +634,7 @@ void addtext(char *s) {
     }
 
     // Cluster private spotting interface
-    if (strncmp(s, my.call, strlen(my.call) - 1) == 0
+    if (strncmp(s, my.call, strlen(my.call)) == 0
 	    && strlen(s) < 81 && strchr(s, '>') == NULL) {
 
 	mvprintw(LINES - 1, 0, backgrnd_str);

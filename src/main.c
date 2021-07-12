@@ -965,8 +965,8 @@ int main(int argc, char *argv[]) {
 
     if (convert_cabrillo) {
 	char *tstring =
-	    g_strdup_printf("Converting Cabrillo for contest %s from file %s.cbr",
-			    whichcontest, g_strstrip(my.call));
+	    g_strdup_printf("Converting Cabrillo for contest %s for %s",
+			    whichcontest, my.call);
 	showmsg(tstring);
 	g_free(tstring);
 	showmsg("");

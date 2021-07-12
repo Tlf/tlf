@@ -96,7 +96,7 @@ static void put_short_line(char *p, int index) {
 }
 
 int setup_default(void **state) {
-    strcpy(my.call, "N0CALL\n"); 		// !!! do not forget trailing \n
+    strcpy(my.call, "N0CALL");
 
     xplanet = MARKER_NONE;
 
