@@ -285,7 +285,7 @@ static int cfg_tlfcolor(const cfg_arg_t arg) {
 
 static int cfg_call(const cfg_arg_t arg) {
     int rc = cfg_string((cfg_arg_t) {
-	.char_p = my.call, .size = 20 - 1, // keep space for NL
+	.char_p = my.call, .size = sizeof(my.call),
 	.strip = true, .string_type = STATIC
     });
     if (rc != PARSE_OK) {
@@ -299,10 +299,6 @@ static int cfg_call(const cfg_arg_t arg) {
     for (char *p = my.call; *p; ++p) {
 	*p = g_ascii_toupper(*p);
     }
-
-    /* as other code parts rely on a trailing NL on the call
-     * we add it back for now */
-    strcat(my.call, "\n");
 
     return PARSE_OK;
 }

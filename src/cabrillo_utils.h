@@ -116,4 +116,6 @@ cbr_field_t *find_cabrillo_field(const char *name);
 int get_cabrillo_field_value(const cbr_field_t *field, char *buffer, int size);
 int add_cabrillo_field(const char *name, const char *value);
 
+void get_cabrillo_file_name(char *buffer);
+
 #endif

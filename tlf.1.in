@@ -461,7 +461,8 @@ Write Cabrillo file according to specified format (see
 statement in the
 .B RULES
 section). The file is created in the current directory as
-.IR YOURCALL.cbr .
+.I YOURCALL.cbr
+(with slashes converted to underscore).
 .
 .SH KEYS
 .
