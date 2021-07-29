@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 /* Splitscreen telnet client */
@@ -634,7 +634,7 @@ void addtext(char *s) {
     }
 
     // Cluster private spotting interface
-    if (strncmp(s, my.call, strlen(my.call) - 1) == 0
+    if (strncmp(s, my.call, strlen(my.call)) == 0
 	    && strlen(s) < 81 && strchr(s, '>') == NULL) {
 
 	mvprintw(LINES - 1, 0, backgrnd_str);

@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 /* ------------------------------------------------------------
  *   Cabrillo utils file
@@ -472,10 +472,8 @@ void write_cabrillo_header(FILE *fp) {
 
     // set CALLSIGN
     cbr_field_t *call = find_cabrillo_field(CBR_CALLSIGN);
-    strcpy(buffer, my.call);
-    g_strstrip(buffer);     // remove trailing NL
     FREE_DYNAMIC_STRING(call->value);
-    call->value = g_strdup(buffer);
+    call->value = g_strdup(my.call);
     call->disabled = false; // always enabled
 
     // set CLAIMED-SCORE unless disabled
@@ -613,3 +611,14 @@ static int process_cabrillo_template_file(const char *file_name) {
 
     return result;
 }
+
+void get_cabrillo_file_name(char *buffer) {
+    strcpy(buffer, my.call);
+    for (char *p = buffer; *p; p++) {
+	if (*p == '/') {    // convert '/' to '_'
+	    *p = '_';
+	}
+    }
+    strcat(buffer, ".cbr");
+}
+

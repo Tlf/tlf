@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 
@@ -975,8 +975,8 @@ int main(int argc, char *argv[]) {
 
     if (convert_cabrillo) {
 	char *tstring =
-	    g_strdup_printf("Converting Cabrillo for contest %s from file %s.cbr",
-			    whichcontest, g_strstrip(my.call));
+	    g_strdup_printf("Converting Cabrillo for contest %s for %s",
+			    whichcontest, my.call);
 	showmsg(tstring);
 	g_free(tstring);
 	showmsg("");

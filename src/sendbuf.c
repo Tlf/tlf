@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /* ------------------------------------------------------------------------
 *    send the text buffer to the keyer  driver
@@ -169,14 +169,11 @@ void ExpandMacro(void) {
     extern int noleadingzeros;
 
     int i;
-    static char comstr[BUFSIZE] = "";
     static char qsonroutput[5] = "";
     static char rst_out[4] = "";
 
 
-    strcpy(comstr, my.call);
-    comstr[strlen(my.call) - 1] = '\0'; // skip trailing \n
-    replace_all(buffer, BUFSIZE, "%", comstr);   /* mycall */
+    replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
 
 
     if (NULL != strstr(buffer, "@")) {

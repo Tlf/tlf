@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 #ifndef _XOPEN_SOURCE
@@ -432,9 +432,10 @@ int readcabrillo(int mode) {
 
     strcpy(temp_logfile, logfile);
 
-    strcpy(input_logfile, my.call);
-    g_strchomp(input_logfile); /* drop \n */
-    strcat(input_logfile, ".cbr");
+    get_cabrillo_file_name(input_logfile);
+    tempstrp = g_strdup_printf("Reading from %s", input_logfile);
+    show_readcab_msg(mode, tempstrp);
+    g_free(tempstrp);
 
     strcpy(output_logfile, "IMPORT_");
     strcat(output_logfile, logfile);

@@ -661,7 +661,7 @@ void test_fkey_header(void **state) {
 void test_call(void **state) {
     int rc = call_parse_logcfg("CALL = AB1cd\r\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(my.call, "AB1CD\n");  // FIXME line end...
+    assert_string_equal(my.call, "AB1CD");
 }
 
 void test_cabrillo(void **state) {
