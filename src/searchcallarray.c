@@ -15,10 +15,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 /* ------------------------------------------------------------
- *      search array of worked stations
+ *      utilities to work with worked stations
  *
  *--------------------------------------------------------------*/
 
@@ -27,9 +27,19 @@
 
 #include "bands.h"
 #include "get_time.h"
+#include "getctydata.h"
 #include "globalvars.h"
 #include "tlf.h"
 
+/**	\brief empty collection of worked stations
+ */
+void init_worked(void) {
+    memset(worked, 0, sizeof(worked));
+    for (int i = 0; i < sizeof(worked)/sizeof(worked[0]); i++) {
+	worked[i].country = -1;
+    }
+    nr_worked = 0;
+}
 
 /**	\brief lookup 'hiscall' in array of worked stations
  *
@@ -37,27 +47,54 @@
  * 	\param hiscall 	callsign to lookup
  *      \return index in callarray where hiscall was found (-1 if not found)
  */
-int searchcallarray(char *hiscall) {
+int lookup_worked(char *call) {
 
     int found = -1;
     int i;
 
     for (i = 0; i < nr_worked; i++) {
 
-	if (strcmp(worked[i].call, hiscall) == 0) {
+	if (strcmp(worked[i].call, call) == 0) {
 	    found = i;
 	    break;
 	}
-
     }
-
     return (found);
 }
 
-//
-// check if station was worked in the current minitest period
-// it takes into account actual mode/band info
-//
+
+/* add a new entry for call to the collection */
+static int add_new(char *call) {
+    int i = nr_worked;
+
+    memset(&worked[i], 0, sizeof(worked_t));
+    g_strlcpy(worked[i].call, call, sizeof(worked[0].call));
+    worked[i].country = getctynr(call);
+    nr_worked++;
+
+    return nr_worked - 1;
+}
+
+
+/** Lookup given call
+ *
+ * Add new entry if not worked already.
+ *
+ * \return index to data structure */
+int lookup_or_add_worked(char *call) {
+
+    int index = lookup_worked(call);
+
+    if (index == -1) {
+	index = add_new(call);
+    }
+    return index;
+}
+
+
+/* check if station was worked in the current minitest period
+ * it takes into account actual mode/band info
+ */
 bool worked_in_current_minitest_period(int found) {
 
     if (found < 0) {
@@ -77,7 +114,7 @@ bool is_dupe(char *call, int bandindex, int mode) {
 
     int index;
 
-    index = searchcallarray(call);
+    index = lookup_worked(call);
     if (index == -1)	/* new station */
 	return false;
 
@@ -96,4 +133,13 @@ bool is_dupe(char *call, int bandindex, int mode) {
 
 }
 
+/* update exchange and last worked time for given station */
+void update_worked(int station, struct qso_t *qso) {
+    if (strlen(qso->comment) > 0) {
+	g_strlcpy(worked[station].exchange, qso->comment,
+		sizeof(worked[0].exchange));
+	g_strchomp(worked[station].exchange);
+    }
+    worked[station].qsotime[qso->mode][qso->bandindex] = qso->timestamp;
+}
 

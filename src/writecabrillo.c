@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 /* ------------------------------------------------------------
  *   write Cabrillo  file
@@ -43,76 +43,41 @@
 #include "sendbuf.h"
 #include "bands.h"
 
-struct qso_t *get_next_record(FILE *fp);
-struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection);
-void free_qso(struct qso_t *ptr);
+struct linedata_t *get_next_record(FILE *fp);
+struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection);
+void free_linedata(struct linedata_t *ptr);
 
 
-struct qso_t *parse_logline(char *buffer) {
-    char *tmp;
-    char *sp;
-    struct qso_t *ptr;
-    struct tm date_n_time;
+struct linedata_t *parse_logline(char *buffer) {
+    struct linedata_t *ptr;
 
-    ptr = g_malloc0(sizeof(struct qso_t));
+    ptr = g_malloc0(sizeof(struct linedata_t));
 
     /* remember whole line */
     ptr->logline = g_strdup(buffer);
     ptr->qtcdirection = 0;
     ptr->qsots = 0;
 
-    /* split buffer into parts for qso_t record and parse
-     * them accordingly */
-    tmp = strtok_r(buffer, " \t", &sp);
 
-    /* band */
-    ptr->band = atoi(tmp);
+    struct qso_t *qso = parse_qso(buffer);
 
+    ptr-> band = qso->band;
+    ptr-> mode = qso->mode;
+    ptr-> day  = qso->day;
+    ptr-> month = qso->month;
+    ptr-> year = qso->year;
+    ptr-> hour = qso->hour;
+    ptr-> min = qso->min;
+    ptr-> qso_nr = qso->qso_nr;
+    ptr-> call = qso->call;
+    ptr-> rst_s = qso->rst_s;
+    ptr-> rst_r = qso->rst_r;
+    ptr-> comment = qso->comment;
+    ptr-> freq = qso->freq;
+    ptr-> tx = qso->tx;
 
-    /* mode */
-    if (strcasestr(tmp, "CW"))
-	ptr->mode = CWMODE;
-    else if (strcasestr(tmp, "SSB"))
-	ptr->mode = SSBMODE;
-    else
-	ptr->mode = DIGIMODE;
-
-    /* date & time */
-    memset(&date_n_time, 0, sizeof(struct tm));
-
-    strptime(strtok_r(NULL, " \t", &sp), DATE_FORMAT, &date_n_time);
-    strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
-
-    ptr->year = date_n_time.tm_year + 1900;	/* convert to
-						   1968..2067 */
-    ptr->month = date_n_time.tm_mon + 1;	/* tm_mon = 0..11 */
-    ptr->day   = date_n_time.tm_mday;
-
-    ptr->hour  = date_n_time.tm_hour;
-    ptr->min   = date_n_time.tm_min;
-
-    /* qso number */
-    ptr->qso_nr = atoi(strtok_r(NULL, " \t", &sp));
-
-    /* his call */
-    ptr->call = g_strdup(strtok_r(NULL, " \t", &sp));
-
-    /* RST send and received */
-    ptr->rst_s = atoi(strtok_r(NULL, " \t", &sp));
-    ptr->rst_r = atoi(strtok_r(NULL, " \t", &sp));
-
-    /* comment (exchange) */
-    ptr->comment = g_strndup(buffer + 54, 13);
-
-    /* tx */
-    ptr->tx = (buffer[79] == '*') ? 1 : 0;
-
-    /* frequency (kHz) */
-    ptr->freq = atof(buffer + 80) * 1000.0;
-    if (freq2band(ptr->freq) == BANDINDEX_OOB) {
-	ptr->freq = 0.;
-    }
-
+    g_free(qso);	/* free qso_t struct but not the
+			   allocated string copies */
     return ptr;
 }
 
@@ -124,10 +89,10 @@ struct qso_t *parse_logline(char *buffer) {
  *
  * \return ptr to new qso record (or NULL if eof)
  */
-struct qso_t *get_next_record(FILE *fp) {
+struct linedata_t *get_next_record(FILE *fp) {
 
     char buffer[160];
-    struct qso_t *ptr;
+    struct linedata_t *ptr;
 
     while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
 
@@ -148,12 +113,12 @@ struct qso_t *get_next_record(FILE *fp) {
  *
  * \return ptr to new qtc record (or NULL if eof)
  */
-struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
+struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 
     char buffer[100];
     char *tmp;
     char *sp;
-    struct qso_t *ptr;
+    struct linedata_t *ptr;
     int pos, shift;
     struct tm date_n_time;
 
@@ -165,7 +130,7 @@ struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 	return NULL;
     }
 
-    ptr = g_malloc0(sizeof(struct qso_t));
+    ptr = g_malloc0(sizeof(struct linedata_t));
 
     /* remember whole line */
     ptr->logline = g_strdup(buffer);
@@ -181,7 +146,7 @@ struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
     }
     ptr->tx = (buffer[pos] == ' ') ? 0 : 1;
 
-    /* split buffer into parts for qso_t record and parse
+    /* split buffer into parts for linedata_t record and parse
       * them accordingly */
     tmp = strtok_r(buffer, " \t", &sp);
 
@@ -244,8 +209,8 @@ struct qso_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
     return ptr;
 }
 
-/** free qso record pointed to by ptr */
-void free_qso(struct qso_t *ptr) {
+/** free  linedata record pointed to by ptr */
+void free_linedata(struct linedata_t *ptr) {
 
     if (ptr != NULL) {
 	g_free(ptr->comment);
@@ -339,9 +304,10 @@ static gchar *get_sent_exchage(int qso_nr) {
     return result;
 }
 
-/* format QSO: line for actual qso according to Cabrillo format description
+/* format QSO: or QTC: line according to Cabrillo format description
  * and put it into buffer */
-void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
+void prepare_line(struct linedata_t *qso, struct cabrillo_desc *desc,
+		  char *buf) {
 
     freq_t freq;
     int i;
@@ -395,8 +361,7 @@ void prepare_line(struct qso_t *qso, struct cabrillo_desc *desc, char *buf) {
 		add_lpadded(buf, tmp, item->len);
 		break;
 	    case MYCALL:
-		strcpy(tmp, my.call);
-		add_rpadded(buf, g_strchomp(tmp), item->len);
+		add_rpadded(buf, my.call, item->len);
 		break;
 	    case HISCALL:
 		add_rpadded(buf, qso->call, item->len);
@@ -492,11 +457,11 @@ static void set_exchange_format() {
 int write_cabrillo(void) {
 
     struct cabrillo_desc *cabdesc;
-    char cabrillo_tmp_name[80];
+    char cabrillo_file_name[80];
     char buffer[4000] = "";
 
     FILE *fp1, *fp2, *fpqtcrec = NULL, *fpqtcsent = NULL;
-    struct qso_t *qso, *qtcrec = NULL, *qtcsent = NULL;
+    struct linedata_t *qso, *qtcrec = NULL, *qtcsent = NULL;
     int qsonr, qtcrecnr, qtcsentnr;
 
     if (cabrillo == NULL) {
@@ -518,10 +483,6 @@ int write_cabrillo(void) {
     }
 
     /* open logfile and create a Cabrillo file */
-    strcpy(cabrillo_tmp_name, my.call);
-    g_strstrip(cabrillo_tmp_name); /* drop \n */
-    strcat(cabrillo_tmp_name, ".cbr");
-
     if ((fp1 = fopen(logfile, "r")) == NULL) {
 	info("Can't open logfile.");
 	sleep(2);
@@ -551,7 +512,9 @@ int write_cabrillo(void) {
 	    }
 	}
     }
-    if ((fp2 = fopen(cabrillo_tmp_name, "w")) == NULL) {
+
+    get_cabrillo_file_name(cabrillo_file_name);
+    if ((fp2 = fopen(cabrillo_file_name, "w")) == NULL) {
 	info("Can't create Cabrillo file.");
 	sleep(2);
 	free_cabfmt(cabdesc);
@@ -598,7 +561,7 @@ int write_cabrillo(void) {
 		prepare_line(qtcrec, cabdesc, buffer);
 		if (strlen(buffer) > 5) {
 		    fputs(buffer, fp2);
-		    free_qso(qtcrec);
+		    free_linedata(qtcrec);
 		}
 		qtcrec = get_next_qtc_record(fpqtcrec, RECV);
 		if (qtcrec != NULL) {
@@ -610,7 +573,7 @@ int write_cabrillo(void) {
 		prepare_line(qtcsent, cabdesc, buffer);
 		if (strlen(buffer) > 5) {
 		    fputs(buffer, fp2);
-		    free_qso(qtcsent);
+		    free_linedata(qtcsent);
 		}
 		qtcsent = get_next_qtc_record(fpqtcsent, SEND);
 		if (qtcsent != NULL) {
@@ -621,7 +584,7 @@ int write_cabrillo(void) {
 	    }
 	}
 
-	free_qso(qso);
+	free_linedata(qso);
     }
 
     fclose(fp1);
@@ -689,7 +652,7 @@ void write_adif_header(FILE *fp) {
      fp);
 
     format_time(timebuf, sizeof(timebuf), CREATED_DATE_TIME_FORMAT);
-    fprintf(fp, "Created %s for %s\n", timebuf, my.call);
+    fprintf(fp, "Created %s for %s\n\n", timebuf, my.call);
 
     /* Write contest name */
     fprintf(fp, "Contest Name: %s\n", whichcontest);
@@ -701,7 +664,7 @@ void write_adif_header(FILE *fp) {
 
 /* format QSO line from buf according to ADIF format description
  * and put it into buffer */
-void prepare_adif_line(char *buffer, struct qso_t *qso) {
+void prepare_adif_line(char *buffer, struct linedata_t *qso) {
 
     char *tmp;
 
@@ -773,7 +736,7 @@ void prepare_adif_line(char *buffer, struct qso_t *qso) {
 */
 int write_adif(void) {
 
-    struct qso_t *qso;
+    struct linedata_t *qso;
     char buffer[181] = "";
     char adif_tmp_name[40] = "";
 
@@ -809,7 +772,7 @@ int write_adif(void) {
 	prepare_adif_line(buffer, qso);
 	fputs(buffer, fp2);
 
-	free_qso(qso);
+	free_linedata(qso);
     }
 
     fclose(fp1);

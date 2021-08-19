@@ -17,12 +17,17 @@
 #include "../src/set_tone.h"
 #include "../src/cabrillo_utils.h"
 
+// OBJECT ../src/addpfx.o
+// OBJECT ../src/bands.o
 // OBJECT ../src/parse_logcfg.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/getwwv.o
 // OBJECT ../src/locator2longlat.o
 // OBJECT ../src/score.o
+// OBJECT ../src/plugin.o
+// OBJECT ../src/log_utils.o
+// OBJECT ../src/utils.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/cabrillo_utils.o
@@ -654,9 +659,9 @@ void test_fkey_header(void **state) {
 }
 
 void test_call(void **state) {
-    int rc = call_parse_logcfg("CALL = AB1CD\r\n");
+    int rc = call_parse_logcfg("CALL = AB1cd\r\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(my.call, "AB1CD\n");  // FIXME line end...
+    assert_string_equal(my.call, "AB1CD");
 }
 
 void test_cabrillo(void **state) {

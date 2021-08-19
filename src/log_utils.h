@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /* ------------------------------------------------------------------------
 *    util functions to work with lines from log
@@ -29,5 +29,7 @@ bool log_is_comment(const char *buffer);
 int log_get_band(const char *logline);
 int log_get_mode(const char *logline);
 int log_get_points(const char *logline);
+struct qso_t *parse_qso(char * buffer);
+void free_qso(struct qso_t *ptr);
 
 #endif

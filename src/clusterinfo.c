@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 /* ------------------------------------------------------------
@@ -173,8 +173,8 @@ void show_xplanet() {
 	return;
     }
 
-    memset (spot_age, '\0', sizeof(spot_age));
-    memset (spot_band, '\0', sizeof(spot_band));
+    memset(spot_age, '\0', sizeof(spot_age));
+    memset(spot_band, '\0', sizeof(spot_band));
 
     for (i = 0; i < MAX_SPOTS; i++) {
 	if (bandmap[i] != NULL) {
@@ -257,9 +257,10 @@ void show_xplanet() {
 	    int ctynr;
 	    char *color;
 	    static char *bandcolor[NBANDS] = {"Red", "Magenta", "Cyan",
-		    "Yellow", "Cyan", "Blue",
-		    "Cyan", "White", "Cyan",
-		    "Green", NULL };
+					      "Yellow", "Cyan", "Blue",
+					      "Cyan", "White", "Cyan",
+					      "Green", NULL
+					     };
 
 	    strncpy(callcopy, bandmap[j] + 26, 16);	// call
 	    for (int m = 0; m < 16; m++) {
@@ -271,7 +272,7 @@ void show_xplanet() {
 
 	    ctynr = getctynr(callcopy);		// CTY of station
 
-	    if (ctynr != 0 ) {
+	    if (ctynr != 0) {
 		/* show no callsign if MARKERDOTS */
 		if (xplanet == MARKER_DOTS)
 		    callcopy[0] = '\0';
@@ -314,10 +315,6 @@ int getclusterinfo(void) {
 
     int i;
     int si;
-    char calldupe[12];
-
-    strcpy(calldupe, my.call);
-    calldupe[strlen(my.call) - 1] = '\0';
 
     for (si = 0; si < (MAX_SPOTS - 2); si++)
 	spotarray[si] = -1;
@@ -331,7 +328,7 @@ int getclusterinfo(void) {
 	    spotarray[si] = i;
 	    si++;
 
-	} else if (strstr(spot_ptr[i], calldupe) != NULL) {
+	} else if (strstr(spot_ptr[i], my.call) != NULL) {
 	    if ((announcefilter <= 2)) {
 		spotarray[si] = i;
 		si++;

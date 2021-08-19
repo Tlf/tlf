@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 /* ------------------------------------------------------------
@@ -60,17 +60,24 @@ int letters_only(const char *call) {
     return 1;
 }
 
-void getpx(char *checkcall) {
-    char pxbuffer[16] = "";
-    int i, len;
+/* parses checkcall string and returns new allocated buffer with
+ * separated prefix string
+ * ATTENTION: needs to be freed afterwards
+ */
+char *get_wpx_pfx(char *checkcall) {
+    int i;
     char portable = '\0';
+    char *pxbuffer;
+
+    int len = strlen(checkcall);
 
     if (letters_only(checkcall)) {
+	pxbuffer = g_malloc0(len + 1 + 1);
 	/* only characters in call */
 	strncpy(pxbuffer, checkcall, 2);
 	strcat(pxbuffer, "0");
     } else {
-	len = strlen(checkcall);
+	pxbuffer = g_malloc0(len + 1);
 	if (len >= 2) {
 	    if ((checkcall[len - 2] == '/') && isdigit(checkcall[len - 1]))
 		/*  portable /3 */
@@ -96,5 +103,16 @@ void getpx(char *checkcall) {
 	if (isalpha(pxbuffer[i - 1]))
 	    pxbuffer[i] = '0';
     }
-    strcpy(pxstr, pxbuffer);
+    return pxbuffer;
 }
+
+void getpx(char *checkcall) {
+    char *buffer = get_wpx_pfx(checkcall);
+    strcpy(wpx_prefix, buffer);
+    g_free(buffer);
+}
+
+int districtnumber(char *prefix) {
+    return prefix[strlen(prefix) - 1] - '0';
+}
+

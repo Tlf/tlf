@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /* ------------------------------------------------------------
  *     showscore
@@ -110,7 +110,7 @@ void display_header(int *bi) {
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     mvprintw(2, START_COL, "QSO's ");
     for (i = 0; i < 6; i++) {
-	printfield(2, band_cols[i], band_score[bi[i]]);
+	printfield(2, band_cols[i], qsos_per_band[bi[i]]);
     }
 
     if (plugin_has_nr_of_mults()) {

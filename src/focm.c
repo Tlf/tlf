@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 
@@ -31,7 +31,9 @@
 #include "ui_utils.h"
 #include "bands.h"
 
-
+bool no_multi() {
+    return false;
+}
 
 struct pos {
     int column;
@@ -57,7 +59,8 @@ contest_config_t config_focm = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_foc
-    }
+    },
+    .is_multi = no_multi,
 };
 
 /** calculate score for last QSO

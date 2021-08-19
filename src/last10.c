@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /* ------------------------------------------------------------
  *     last 10 - return time (in mins) for last 10 QSOs on
@@ -46,7 +46,7 @@ int last10(void) {
     thisband = atoi(band[bandinx]);
 
     /* look backwards in actual band for QSOs */
-    for (counter = nr_qsos; counter >= 0; counter--) {
+    for (counter = nr_qsos - 1; counter >= 0; counter--) {
 
 	if (thisband == (atoi(qsos[counter]))) {
 	    qsocount++;

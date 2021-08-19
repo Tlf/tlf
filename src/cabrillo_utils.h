@@ -43,7 +43,7 @@ extern cbr_field_t cabrillo_fields[];
 
 
 /* represents different parts of a qso logline */
-struct qso_t {
+struct linedata_t {
     char *logline;
     int band;
     int mode;
@@ -115,5 +115,7 @@ void write_cabrillo_header(FILE *fp);
 cbr_field_t *find_cabrillo_field(const char *name);
 int get_cabrillo_field_value(const cbr_field_t *field, char *buffer, int size);
 int add_cabrillo_field(const char *name, const char *value);
+
+void get_cabrillo_file_name(char *buffer);
 
 #endif

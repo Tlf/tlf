@@ -17,7 +17,7 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 */
 
 
@@ -285,7 +285,7 @@ static int cfg_tlfcolor(const cfg_arg_t arg) {
 
 static int cfg_call(const cfg_arg_t arg) {
     int rc = cfg_string((cfg_arg_t) {
-	.char_p = my.call, .size = 20 - 1, // keep space for NL
+	.char_p = my.call, .size = sizeof(my.call),
 	.strip = true, .string_type = STATIC
     });
     if (rc != PARSE_OK) {
@@ -296,11 +296,9 @@ static int cfg_call(const cfg_arg_t arg) {
 	return PARSE_WRONG_PARAMETER;
     }
 
-    /* as other code parts rely on a trailing NL on the call
-     * we add it back for now */
-    strcat(my.call, "\n");
-
-    // TODO: look it up cty database and set lat/lon
+    for (char *p = my.call; *p; ++p) {
+	*p = g_ascii_toupper(*p);
+    }
 
     return PARSE_OK;
 }
@@ -492,7 +490,7 @@ static int cfg_thisnode(const cfg_arg_t arg) {
 
     if (strlen(str) != 1 || str[0] < 'A' || str[0] > 'A' + MAXNODES) {
 	g_free(str);
-	error_details = g_strdup_printf("name name is A..%c", 'A' + MAXNODES - 1);
+	error_details = g_strdup_printf("name is A..%c", 'A' + MAXNODES - 1);
 	return PARSE_WRONG_PARAMETER;
     }
 

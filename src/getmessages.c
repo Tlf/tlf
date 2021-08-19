@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 #include <stdio.h>
@@ -32,13 +32,14 @@
 void getstationinfo() {
     dxcc_data *mydx;
 
-    my.countrynr = getctydata(my.call);	/* whoami? */
+    my.countrynr = getctydata(my.call);        /* whoami? */
+
     mydx = dxcc_by_index(my.countrynr);
 
     my.cqzone = mydx -> cq;
     strcpy(my.continent, mydx->continent);
 
-    /* whereami? use QRA is possible */
+    /* whereami? use QRA if possible */
     if (RIG_OK == locator2longlat(&my.Long, &my.Lat, my.qra)) {
 	my.Long = -my.Long;     // W <-> E fix
     } else {
@@ -52,14 +53,10 @@ void show_station_info(void) {
 
     getstationinfo();
 
-    printw("\n     Call = ");
-    printw(my.call);
-
+    printw("\n     Call = %s\n", my.call);
     printw("     My Zone = %d", my.cqzone);
-
-    printw("     My Continent = ");
-    printw(my.continent);
-
+    printw("     My Continent = %s", my.continent);
     printw("\n\n");
+
     refreshp();
 }

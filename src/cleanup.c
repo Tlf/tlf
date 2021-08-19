@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 /* ------------------------------------------------------------
@@ -43,7 +43,7 @@ void cleanup(void) {
     mvaddstr(12, 29, spaces(12));
 
     attron(COLOR_PAIR(C_WINDOW));
-    mvaddstr(12, 54, spaces(24));
+    mvaddstr(12, 54, spaces(contest->exchange_width));
 
     attron(COLOR_PAIR(C_LOG | A_STANDOUT));
     for (int k = 1; k <= 5; k++) {

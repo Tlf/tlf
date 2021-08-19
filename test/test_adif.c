@@ -14,9 +14,9 @@
 // OBJECT ../src/utils.o
 
 /* test stubs and dummies */
-struct qso_t *parse_logline(char *buffer);
-void prepare_adif_line(char *buffer, struct qso_t *qso);
-void free_qso(struct qso_t *ptr);
+struct linedata_t *parse_logline(char *buffer);
+void prepare_adif_line(char *buffer, struct linedata_t *qso);
+void free_linedata(struct linedata_t *ptr);
 void free_cabfmt();
 void add_adif_field(char *adif_line, char *field, char *value);
 
@@ -60,7 +60,7 @@ void keyer_append(const char *string) {
 
 char *error_details;
 
-contest_config_t empty = { };
+contest_config_t empty = { .exchange_width = 10 };
 
 char logline[181];
 char adif_line[400];
@@ -87,18 +87,18 @@ void test_keep_old_format(void **state) {
 
     strcpy(exchange, "14");
 
-    struct qso_t *qso;
+    struct linedata_t *qso;
     strcpy(buffer, LOGLINE1);
     qso = parse_logline(buffer);
     prepare_adif_line(buffer, qso);
     assert_string_equal(buffer, RESULT1);
-    free_qso(qso);
+    free_linedata(qso);
 
     strcpy(buffer, LOGLINE2);
     qso = parse_logline(buffer);
     prepare_adif_line(buffer, qso);
     assert_string_equal(buffer, RESULT2);
-    free_qso(qso);
+    free_linedata(qso);
 }
 
 /* test add_adif_field and co */

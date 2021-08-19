@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /* ------------------------------------------------------------
  *        Search log for calls / bands  /  countries
@@ -428,7 +428,7 @@ static bool line_matches_actual_qso(const char *line) {
 	    && (band_matches(line) || qso_once)
 	    && is_current_mode(line)) {
 
-	int found = searchcallarray(hiscall);
+	int found = lookup_worked(hiscall);
 	if (worked_in_current_minitest_period(found)) {
 	    return true;
 	}
@@ -616,8 +616,7 @@ void displayWorkedZonesCountries(int z) {
     if (CONTEST_IS(PACC_PA)) {
 
 	getpx(hiscall);
-
-	pxnr = pxstr[strlen(pxstr) - 1] - 48;
+	pxnr = districtnumber(wpx_prefix);
 
 	if ((countrynr == w_cty) ||
 		(countrynr == ve_cty) ||
@@ -652,7 +651,7 @@ void displayWorkedZonesCountries(int z) {
 
     if ((pfxnummultinr >= 0 || country_mult) && iscontest) {
 	getpx(hiscall);
-	pxnr = pxstr[strlen(pxstr) - 1] - 48;
+	pxnr = districtnumber(wpx_prefix);
 
 	getctydata(hiscall);
 	pfxnumcntidx = -1;
@@ -719,7 +718,7 @@ void searchlog() {
 	/* prepare and print lower line of checkwindow */
 	dx = dxcc_by_index(countrynr);
 	zone = getZone();
-	displayCallInfo(dx, zone, pxstr);
+	displayCallInfo(dx, zone, wpx_prefix);
 	displayWorkedZonesCountries(zone);
 
 	refreshp();
@@ -774,8 +773,6 @@ int load_callmaster(void) {
 
     if ((cfp = fopen(callmaster_location, "r")) == NULL) {
 	g_free(callmaster_location);
-	g_ptr_array_free(callmaster, TRUE);
-	callmaster = NULL;
 	TLF_LOG_WARN("Error opening callmaster file.");
 	return 0;
     }

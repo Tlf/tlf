@@ -170,8 +170,8 @@ AS_IF([test "x$wantpythonplugin" = xtrue], [
 
 	AM_PATH_PYTHON([3.0])
 
-	python_main_ver=`$PYTHON -c "import sys; ver = sys.version.split('.')[[0]]; print(ver)"`
-	python_sub_ver=`$PYTHON -c "import sys; ver = sys.version.split('.')[[1]]; print(ver)"`
+	python_main_ver=`$PYTHON -c "import sys; print(sys.version.split('.')[[0]])"`
+	python_sub_ver=`$PYTHON -c "import sys; print(sys.version.split('.')[[1]])"`
 
 	AC_ARG_VAR([PYTHON_INCLUDE], [Include flags for python, bypassing python-config])
 	AC_ARG_VAR([PYTHON_CONFIG], [Path to python-config])

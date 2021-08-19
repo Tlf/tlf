@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 
@@ -23,8 +23,13 @@
 
 #include <stdbool.h>
 
-int searchcallarray(char *hiscall);
+#include "tlf.h"
+
+void init_worked(void);
+int lookup_worked(char *call);
+int lookup_or_add_worked(char *call);
 bool worked_in_current_minitest_period(int found);
 bool is_dupe(char *call, int bandindex, int mode);
+void update_worked(int station, struct qso_t *qso);
 
 #endif /* SEARCHCALLARRAY_H */

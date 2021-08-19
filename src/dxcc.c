@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 
@@ -54,7 +54,7 @@ prefix_data dummy_pfx = {
 };
 
 
-void prefix_free(gpointer data) {
+static void prefix_free(gpointer data) {
     prefix_data *pfx_data = data;
 
     g_free(pfx_data -> pfx);
@@ -134,7 +134,6 @@ int find_full_match(const char *call) {
 }
 
 
-
 /* search for the best mach of 'call' in pfx table */
 int find_best_match(const char *call) {
     void *value;
@@ -177,7 +176,7 @@ int find_best_match(const char *call) {
 }
 
 
-/* add a new prefix description */
+/* add a new DXCC prefix description */
 void prefix_add(char *pfxstr) {
 
     char *ver = (*pfxstr == '=' ? pfxstr + 1 : pfxstr);
@@ -261,7 +260,7 @@ void prefix_add(char *pfxstr) {
 
 
 
-void dxcc_free(gpointer data) {
+static void dxcc_free(gpointer data) {
     dxcc_data *dxcc = data;
 
     g_free(dxcc -> countryname);
@@ -340,7 +339,7 @@ int load_ctydata(char *filename) {
     dxcc_init();
     prefix_init();
 
-    // set default for empty country
+    // set default for empty country == country nr 0
     dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
     while (fgets(buf, sizeof(buf), fd) != NULL) {

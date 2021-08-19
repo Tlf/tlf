@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 
@@ -198,7 +198,7 @@ void *background_process(void *ptr) {
 			talkarray[4][1] = ':';
 			talkarray[4][2] = '\0';
 			g_strlcat(talkarray[4], lan_message + 2,
-				sizeof(talkarray[4]));
+				  sizeof(talkarray[4]));
 			TLF_LOG_INFO(" MSG from %s", talkarray[4]);
 			break;
 		    case FREQMSG:

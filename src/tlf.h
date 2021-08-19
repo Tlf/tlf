@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 
@@ -22,6 +22,9 @@
 #define TLF_H
 
 #include <stdbool.h>
+#include <time.h>
+
+#include "hamlib/rig.h"
 
 enum {
     NO_KEYER,
@@ -152,8 +155,8 @@ typedef struct {
     char continent[3];
     int cqzone;
     char qra[7];
-    double Lat;
-    double Long;
+    double Lat;     // +: north, -: south
+    double Long;    // +: west,  -: east
 } mystation_t;
 
 /** worked station
@@ -161,7 +164,7 @@ typedef struct {
  * contains all informations about an already worked station */
 typedef struct {
     char call[20]; 		/**< call of the station */
-    char exchange[13]; 		/**< the last exchange */
+    char exchange[24]; 		/**< the last exchange */
     int band; 			/**< bitmap for worked bands */
     int country; 		/**< its country number */
     long qsotime[3][NBANDS];	/**< last timestamp of qso in gmtime
@@ -178,10 +181,34 @@ typedef struct {
 
 
 #define MAXPFXNUMMULT 30
+#define PFXNUMBERS 10
 typedef struct {
     int countrynr;
-    int qsos[NBANDS];
+    int qsos[PFXNUMBERS];
 } pfxnummulti_t;
+
+
+/* represents different parts of a qso line */
+struct qso_t {
+    char *logline;
+    int band;
+    int bandindex;
+    int mode;
+    char day;
+    char month;
+    int year;
+    int hour;
+    int min;
+    time_t timestamp;
+    int qso_nr;
+    char *call;
+    int rst_s;
+    int rst_r;
+    char *comment;
+    freq_t freq;
+    int tx;
+    int qsots;
+};
 
 
 void refreshp();
@@ -212,6 +239,7 @@ typedef enum {
     FUNCTION
 } points_type_t;
 
+
 /** contest configuration
  */
 typedef struct {
@@ -219,6 +247,7 @@ typedef struct {
     char		*name;
     bool		recall_mult;
     bool		exchange_serial;
+    int                 exchange_width;
     struct {
 	points_type_t type;
 	union {
@@ -226,6 +255,7 @@ typedef struct {
 	    int (*fn)();
 	};
     }			points;
+    bool (*is_multi)();
 
 } contest_config_t;
 

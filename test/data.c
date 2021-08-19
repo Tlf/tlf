@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 #include <stdbool.h>
@@ -220,6 +220,7 @@ int qtcdirection = 0;
 
 int minitest = 0;
 
+struct qso_t *current_qso;
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */
@@ -238,7 +239,7 @@ char mode[20] = "Log     ";
 char cqzone[3] = "";
 char ituzone[3] = "";
 char continent[3] = "";
-char pxstr[11] = "";
+char wpx_prefix[11] = "";
 int bandindex = 0;
 int totalmults = 0;
 int totalcountries = 0;
@@ -246,7 +247,8 @@ int totalzones = 0;
 int secs = 0;
 int countrynr;
 int total = 0; 		/**< total number of qso points */
-int band_score[NBANDS];
+int qso_points;
+int qsos_per_band[NBANDS];
 int dupe = 0;
 int callfound = 0;
 int partials = 0;	/**< show partial calls */
@@ -344,9 +346,9 @@ int zonescore[NBANDS];
 int countryscore[NBANDS];
 int zonedisplay = 0;
 char zone_fix[3] = "";
-int addzone = 0;		/* flag for new zone */
-int addcty = 0;			/* flag for new country */
-int shownewmult = -1;
+int new_zone = 0;		/* index of for new zone */
+int new_cty = 0;		/* index of new country */
+int new_mult = -1;
 int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */

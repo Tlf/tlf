@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /* ------------------------------------------------------------
  *      Set contest parameters
@@ -26,28 +26,117 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "addpfx.h"
+#include "bandmap.h"
+#include "bands.h"
 #include "focm.h"
 #include "getctydata.h"
+#include "getpx.h"
 #include "globalvars.h"
 #include "setcontest.h"
 #include "score.h"
 #include "tlf.h"
 
+/* No Multiplier mark in bandmap for multis determined from comment field;
+ * Code works also for modes with no multiplier at all */
+static bool no_multi(spot *data) {
+    return false;
+}
+
+
+static bool pfx_on_band_ismulti(spot *data) {
+    int band = data->band;
+    char *call = data->call;
+
+    char *prefix = get_wpx_pfx(call);
+    bool multi = pfx_is_new_on(prefix, band);
+    g_free(prefix);
+    return multi;
+}
+
+
+static bool wpx_ismulti(spot *data) {
+    char *prefix = get_wpx_pfx(data->call);
+    bool multi = pfx_is_new(prefix);
+    g_free(prefix);
+    return multi;
+}
+
+
+static bool cqww_ismulti(spot *data) {
+    int band = data->band;
+
+    if ((zones[data->cqzone] & inxes[band]) == 0
+	    || (countries[data->ctynr] & inxes[band]) == 0) {
+	return true;
+    }
+
+    return false;
+}
+
+static bool arrldx_usa_ismulti(spot *data)  {
+    int ctynr = data->ctynr;
+    int band = data->band;
+
+    if ((countries[ctynr] & inxes[band]) != 0)
+	return false;
+
+    if (ctynr == w_cty || ctynr == ve_cty)
+	return false;
+
+    return true;
+}
+
+
+bool general_ismulti(spot *data) {
+    int band = data->band;
+
+    if (dx_arrlsections == 1) {
+	/* no evaluation of sections, check only country */
+	return arrldx_usa_ismulti(data);
+    }
+
+    if (country_mult == 1) {
+	return ((countries[data->ctynr] & inxes[band]) == 0);
+    }
+
+    if (pfxmult == 1) {
+	return wpx_ismulti(data);
+    }
+
+    if (pfxmultab == 1) {
+	return pfx_on_band_ismulti(data);
+    }
+
+    if ((itumult == 1) || (wazmult == 1)) {
+	return ((zones[data->cqzone] & inxes[band]) == 0);
+    }
+
+    return false;
+}
+
+
+
 /* configurations for supported contest */
 contest_config_t config_unknown = {
     .id = UNKNOWN,
-    .name = "Unknown"
+    .name = "Unknown",
+    .exchange_width = 14,
 };
 
 contest_config_t config_qso = {
     .id = QSO,
-    .name = QSO_MODE
+    .name = QSO_MODE,
+    .is_multi = no_multi,
+    .exchange_width = 77 - 55 + 1,  // full width
 };
 
 contest_config_t config_dxped = {
     .id = DXPED,
     .name = "DXPED",
     .recall_mult = true,
+    .is_multi = no_multi,
+    .exchange_width = 77 - 55 + 1,  // full width
 };
 
 contest_config_t config_wpx = {
@@ -56,7 +145,9 @@ contest_config_t config_wpx = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_wpx,
-    }
+    },
+    .is_multi = wpx_ismulti,
+    .exchange_width = 5,    // serial nr
 };
 
 contest_config_t config_cqww = {
@@ -66,7 +157,9 @@ contest_config_t config_cqww = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_cqww,
-    }
+    },
+    .is_multi = cqww_ismulti,
+    .exchange_width = 3,    // zone nr
 };
 
 contest_config_t config_sprint = {
@@ -75,27 +168,33 @@ contest_config_t config_sprint = {
     .points = {
 	.type = FIXED,
 	.point = 1,
-    }
+    },
+    .is_multi = no_multi,
+    .exchange_width = 77 - 55 + 1,  // full width
 };
 
 contest_config_t config_arrldx_usa = {
     .id = ARRLDX_USA,
     .name = "ARRLDX_USA",
-    .recall_mult =true,
+    .recall_mult = true,
     .points = {
 	.type = FUNCTION,
 	.fn = score_arrldx_usa,
-    }
+    },
+    .is_multi = arrldx_usa_ismulti,
+    .exchange_width = 5,    // 2 or 3 chars
 };
 
 contest_config_t config_arrldx_dx = {
     .id = ARRLDX_DX,
     .name = "ARRLDX_DX",
-    .recall_mult =true,
+    .recall_mult = true,
     .points = {
 	.type = FIXED,
 	.point = 3,
-    }
+    },
+    .is_multi = no_multi,
+    .exchange_width = 5,    // 2 or 3 chars
 };
 
 contest_config_t config_arrl_ss = {
@@ -105,17 +204,21 @@ contest_config_t config_arrl_ss = {
     .points = {
 	.type = FIXED,
 	.point = 2,
-    }
+    },
+    .is_multi = no_multi,
+    .exchange_width = 77 - 55 + 1,  // full width
 };
 
 contest_config_t config_arrl_fd = {
     .id = ARRL_FD,
     .name = "ARRL_FD",
-    .recall_mult =true,
+    .recall_mult = true,
     .points = {
 	.type = FUNCTION,
 	.fn = score_arrlfd,
-    }
+    },
+    .is_multi = no_multi,
+    .exchange_width = 13,
 };
 
 contest_config_t config_pacc_pa = {
@@ -124,7 +227,9 @@ contest_config_t config_pacc_pa = {
     .points = {
 	.type = FIXED,
 	.point = 1,
-    }
+    },
+    // .ismulti =
+    .exchange_width = 5,    // province/serial
 };
 
 contest_config_t config_stewperry = {
@@ -133,7 +238,9 @@ contest_config_t config_stewperry = {
     .points = {
 	.type = FUNCTION,
 	.fn = score_stewperry
-    }
+    },
+    .is_multi = no_multi,
+    .exchange_width = 5,    // 4 char grid square
 };
 
 
@@ -178,8 +285,8 @@ contest_config_t *lookup_contest(char *name) {
 void list_contests() {
     puts(
 	"\nTLF has built-in support for the following contest identifiers:"
-	);
-    for(int i = 0; i < NR_CONTESTS; i++) {
+    );
+    for (int i = 0; i < NR_CONTESTS; i++) {
 	printf("\t%s\n", contest_configs[i]->name);
     }
     puts("");
@@ -221,7 +328,7 @@ void setcontest(char *name) {
     ve_cty = getctynr(vecall);
 
     if (whichcontest != name) {    /* avoid overlapping copy */
-        strcpy(whichcontest, name);
+	strcpy(whichcontest, name);
     }
 
     contest = lookup_contest(name);

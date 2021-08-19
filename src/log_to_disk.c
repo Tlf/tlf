@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /*------------------------------------------------------------------------
 
@@ -34,10 +34,12 @@
 #include "gettxinfo.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "lancode.h"
+#include "log_utils.h"
 #include "makelogline.h"
 #include "scroll_log.h"
 #include "score.h"
 #include "store_qso.h"
+#include "setcontest.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "cleanup.h"
@@ -45,6 +47,25 @@
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 char lan_logline[81];
+
+
+/* restart band timer if in wpx and qso on new band */
+void restart_band_timer(void) {
+    static int lastbandinx = 0;
+
+    if (CONTEST_IS(WPX)) {
+	if (lastbandinx != bandinx) {
+	    lastbandinx = bandinx;
+	    minute_timer = 600;		/* 10 minute timer */
+	}
+    }
+}
+
+/* score QSO and add to total points */
+void score_qso(void) {
+    qso_points = score();		/* update qso's per band and score */
+    total = total + qso_points;
+}
 
 /** \brief logs one record to disk
  * Logs one record to disk which may come from different sources
@@ -58,8 +79,16 @@ void log_to_disk(int from_lan) {
 
     if (!from_lan) {		// qso from this node
 
-	addcall();		/* add call to dupe list */
+	/* remember call and report for resend after qso (see callinput.c)  */
+	strcpy(lastcall, hiscall);
+	strcpy(last_rst, sent_rst);
 
+	restart_band_timer();
+
+	current_qso = collect_qso_data();
+	addcall(current_qso);		/* add call to dupe list */
+
+	score_qso();
 	makelogline();
 
 	store_qso(logline4);
@@ -71,9 +100,8 @@ void log_to_disk(int from_lan) {
 	    addspot();		/* add call to bandmap if in S&P and
 				   no need to ask for frequency */
 
-	strcpy(last_rst, sent_rst); /* remember last report */
-
 	cleanup_qso();		/* reset qso related parameters */
+	free_qso(current_qso);
     } else {			/* qso from lan */
 
 	/* LOGENTRY contains 82 characters (node,command and logline */
@@ -106,7 +134,7 @@ void log_to_disk(int from_lan) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));	/* erase comment  field */
 
     if (!from_lan)
-	mvprintw(12, 54, spaces(80 - 54));
+	mvprintw(12, 54, spaces(contest->exchange_width));
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     if (!from_lan) {

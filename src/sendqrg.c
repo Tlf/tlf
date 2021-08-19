@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 
@@ -87,7 +87,7 @@ int init_tlf_rig(void) {
 
     rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
     strncpy(my_rig->state.rigport.pathname, rigportname,
-	    FILPATHLEN - 1);
+	    TLFFILPATHLEN - 1);
 
     caps = my_rig->caps;
 
@@ -104,9 +104,9 @@ int init_tlf_rig(void) {
     if (dcd_type != RIG_DCD_NONE)
 	my_rig->state.dcdport.type.dcd = dcd_type;
     if (ptt_file)
-	strncpy(my_rig->state.pttport.pathname, ptt_file, FILPATHLEN);
+	strncpy(my_rig->state.pttport.pathname, ptt_file, TLFFILPATHLEN);
     if (dcd_file)
-	strncpy(my_rig->state.dcdport.pathname, dcd_file, FILPATHLEN);
+	strncpy(my_rig->state.dcdport.pathname, dcd_file, TLFFILPATHLEN);
 
     my_rig->state.rigport.parm.serial.rate = serial_rate;
 

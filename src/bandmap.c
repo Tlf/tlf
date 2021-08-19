@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 
@@ -40,7 +40,6 @@
 #include "bands.h"
 #include "lancode.h"
 #include "grabspot.h"
-#include "plugin.h"
 
 #define TOLERANCE 100 		/* spots with a QRG +/-TOLERANCE
 				   will be counted as the same QRG */
@@ -49,8 +48,8 @@
 #define SPOT_FREQ_WIDTH 7
 #define SPOT_CALL_WIDTH SPOT_COLUMN_WIDTH-SPOT_FREQ_WIDTH-4     // 3 spaces before and 1 after call
 
-#define DISTANCE(x, y) abs((x) - (y)) // stdlib.h 
-//    ( x < y ? y - x : x -y )
+#define DISTANCE(x, y) \
+    ( x < y ? y - x : x -y )
 
 #define TOPLINE 14
 #define LASTLINE (LINES - 2)
@@ -272,10 +271,10 @@ gint	cmp_freq(spot *a, spot *b) {
 }
 
 /* free an allocated spot */
-void free_spot(spot * data) {
-	g_free(data->call);
-	g_free(data->pfx);
-	g_free(data);
+void free_spot(spot *data) {
+    g_free(data->call);
+    g_free(data->pfx);
+    g_free(data);
 }
 
 /** add a new spot to bandmap data
@@ -357,7 +356,7 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	dxccindex = getctynr(entry->call);
 	if (CONTEST_IS(CQWW)) {
 	    // check if the callsign exists in worked list
-	    wi = searchcallarray(call);
+	    wi = lookup_worked(call);
 	    if (wi >= 0) {
 		lastexch = g_strdup(worked[wi].exchange);
 	    }
@@ -448,25 +447,17 @@ void bandmap_age() {
  *
  * \return true if new multi
  */
-// FIXME call is allways NULL
-bool bm_ismulti(char *call, spot *data, int band) {
+bool bm_ismulti(spot *data) {
 
     if (data == NULL || data->cqzone <= 0 || data->ctynr <= 0) {
 	return false;   // no data
     }
 
-    if (plugin_has_is_multi()) {
-        return plugin_is_multi(data->band, data->call, data->mode);
+    if (contest->is_multi) {
+	return contest->is_multi(data);
     }
 
-    if (CONTEST_IS(CQWW)) {
-	if ((zones[data->cqzone] & inxes[band]) == 0
-		|| (countries[data->ctynr] & inxes[band]) == 0) {
-	    return true;
-	}
-    }
-
-    return false;
+    return general_ismulti(data);
 }
 
 
@@ -482,7 +473,7 @@ bool bm_isdupe(char *call, int band) {
     if (IsWarcIndex(band))
 	return false;
 
-    int found = searchcallarray(call);
+    int found = lookup_worked(call);
 
     if (found == -1)		/* new call */
 	return false;
@@ -603,7 +594,7 @@ void show_spot(spot *data) {
     printw("%7.1f%c", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node));
 
-    if (bm_ismulti(NULL, data, data->band)) {
+    if (bm_ismulti(data)) {
 	attrset(COLOR_PAIR(CB_NORMAL));
 	printw("M");
 	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
@@ -625,7 +616,7 @@ void show_spot_on_qrg(spot *data) {
 
     printw("%7.1f%c%c ", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node),
-	   bm_ismulti(NULL, data, data->band) ? 'M' : ' ');
+	   bm_ismulti(data) ? 'M' : ' ');
 
     char *temp = format_spot(data);
     printw("%-12s", temp);
@@ -700,7 +691,7 @@ void filter_spots() {
     spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
 
 
-    for(list = allspots; list; list = list->next)	{
+    for (list = allspots; list; list = list->next)	{
 	data = list->data;
 
 	/* check and mark spot as dupe */
@@ -716,15 +707,15 @@ void filter_spots() {
 	    continue;
 
 	/* Ignore non-multis if we want to show only multis */
-	multi = bm_ismulti(NULL, data, data->band);
+	multi = bm_ismulti(data);
 	if (!multi && bm_config.onlymults)
 	    continue;
 
 	/* if spot is allband or allmode is set or band or mode matches
 	 * than add to the filtered 'spot' array
 	 */
-	if ( (bm_config.allband || band_matches(data)) &&
-	    (bm_config.allmode || mode_matches(data))) {
+	if ((bm_config.allband || band_matches(data)) &&
+		(bm_config.allmode || mode_matches(data))) {
 
 	    spot *copy = copy_spot(data);
 	    g_ptr_array_add(spots, copy);

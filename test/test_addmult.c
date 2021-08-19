@@ -10,8 +10,10 @@
 #include <unistd.h>
 
 // OBJECT ../src/addmult.o
+// OBJECT ../src/addpfx.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
+// OBJECT ../src/getpx.o
 // OBJECT ../src/plugin.o
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/setcontest.o
@@ -63,7 +65,7 @@ int setup_default(void **state) {
 
     bandinx = BANDINDEX_80;
 
-    shownewmult = -1;
+    new_mult = -1;
     wysiwyg_once = 0;
     wysiwyg_multi = 0;
     serial_section_mult = 0;
@@ -252,7 +254,7 @@ void test_wysiwyg_once(void **state) {
     strcpy(comment, "WAC   ");
     assert_int_equal(addmult(), 0);
     assert_string_equal(multis[0].name, "WAC");
-    assert_int_equal(shownewmult, 0);
+    assert_int_equal(new_mult, 0);
 }
 
 void test_wysiwyg_multi(void **state) {
@@ -260,14 +262,14 @@ void test_wysiwyg_multi(void **state) {
     strcpy(comment, "WAC   ");
     assert_int_equal(addmult(), 0);
     assert_string_equal(multis[0].name, "WAC");
-    assert_int_equal(shownewmult, 0);
+    assert_int_equal(new_mult, 0);
 }
 
 void test_wysiwyg_multi_empty(void **state) {
     wysiwyg_multi = 1;
     strcpy(comment, "   ");
     addmult();
-    assert_int_equal(shownewmult, -1);
+    assert_int_equal(new_mult, -1);
 }
 
 void test_serial_grid4(void **state) {
@@ -275,14 +277,14 @@ void test_serial_grid4(void **state) {
     strcpy(section, "JO60LX");
     assert_int_equal(addmult(), 0);
     assert_string_equal(multis[0].name, "JO60");
-    assert_int_equal(shownewmult, 0);
+    assert_int_equal(new_mult, 0);
 }
 
 
 void test_serial_grid4_empty(void **state) {
     serial_grid4_mult = 1;
     addmult();
-    assert_int_equal(shownewmult, -1);
+    assert_int_equal(new_mult, -1);
 }
 
 void test_arrlss(void **state) {
@@ -361,7 +363,7 @@ void test_wysiwyg_once_2(void **state) {
     strcpy(lan_logline, logline_2);
     assert_int_equal(addmult2(), 0);
     assert_string_equal(multis[0].name, "WAC");
-    assert_int_equal(shownewmult, 0);
+    assert_int_equal(new_mult, 0);
 }
 
 
@@ -370,7 +372,7 @@ void test_wysiwyg_multi_2(void **state) {
     strcpy(lan_logline, logline_2);
     assert_int_equal(addmult2(), 0);
     assert_string_equal(multis[0].name, "WAC");
-    assert_int_equal(shownewmult, 0);
+    assert_int_equal(new_mult, 0);
 }
 
 

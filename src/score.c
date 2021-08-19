@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 /* ------------------------------------------------------------
@@ -39,6 +39,7 @@
 #include "getctydata.h"
 #include "locator2longlat.h"
 #include "qrb.h"
+#include "plugin.h"
 #include "setcontest.h"
 #include "tlf.h"
 
@@ -76,7 +77,7 @@ bool country_found(char prefix[]) {
 bool exist_in_country_list() {
     char prefix[11];
 
-    strcpy(prefix, pxstr);
+    strcpy(prefix, wpx_prefix);
     int len = strlen(prefix);
 
     // make 3 iterations
@@ -347,12 +348,9 @@ int score() {
 	return points;
     }
 
-    band_score[bandinx]++;	/* qso's per band  */
-
-    if (CONTEST_IS(ARRLDX_USA)
-	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
-	band_score[bandinx]--;
-
+    if (plugin_has_score()) {
+	return plugin_score(bandinx, hiscall, trxmode, comment);
+    }
 
     if (contest->points.type == FUNCTION) {
 	return contest->points.fn();

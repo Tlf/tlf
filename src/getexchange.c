@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 /* ------------------------------------------------------------
@@ -108,7 +108,6 @@ int getexchange(void) {
     commentfield = 1;
 
     i = strlen(comment);
-
     while (1) {
 
 	refresh_comment();
@@ -316,7 +315,7 @@ int getexchange(void) {
 	if (x >= 'a' && x <= 'z')
 	    x = x - 32;		// Promote to upper case
 
-	if (i < 25) {		/* normal character -> insert if space left */
+	if (i < contest->exchange_width) {  /* normal character -> insert if space left */
 	    if (x >= ' ' && x <= 'Z') {
 		instring[0] = x;
 		addch(x);
@@ -334,7 +333,7 @@ int getexchange(void) {
 		CONTEST_IS(CQWW) ||
 		CONTEST_IS(STEWPERRY)) {
 
-	    x = checkexchange(x);
+	    checkexchange(comment);
 	}
 
 	/* <Enter>, <Tab>, Ctl-K, '\' */
@@ -490,7 +489,7 @@ char zone_fix[3] = "";
 
 /* ------------------------------------------------------------------------ */
 
-int checkexchange(int x) {
+void checkexchange(char *comment) {
 
     char precedent[] = " ";
     char serial[5] = "    ";
@@ -670,12 +669,11 @@ int checkexchange(int x) {
 
 		    mvprintw(12, 29, "       ");
 		    mvprintw(12, 29, "%s", hiscall);
-		    mvprintw(12, 54, "%s", comment);
 		}
 	    }
 	}
 
-	return (x);
+	return;
     }
 
     // ---------------------------arrls------------------------------
@@ -766,7 +764,6 @@ int checkexchange(int x) {
 
 			mvprintw(12, 29, "       ");
 			mvprintw(12, 29, "%s", hiscall);
-			mvprintw(12, 54, "%s", comment);
 		    }
 
 		}
@@ -832,10 +829,7 @@ int checkexchange(int x) {
 	strcat(ssexchange, " ");
 	strcat(ssexchange, section);
 
-	mvprintw(12, 54, comment);
-	refreshp();
-
-	return (x);		// end arrlss
+	return;		// end arrlss
     }
 
     // ----------------------serial+section--------------------------
@@ -866,7 +860,6 @@ int checkexchange(int x) {
 		    snprintf(check, sizeof(check), "%2d",
 			     atoi(comment + hr + 2));
 		}
-
 	    }
 
 	    // get section
@@ -978,7 +971,6 @@ int checkexchange(int x) {
 
 		    mvprintw(12, 29, "       ");
 		    mvprintw(12, 29, "%s", hiscall);
-		    mvprintw(12, 54, "%s", comment);
 		}
 
 	    }
@@ -996,14 +988,6 @@ int checkexchange(int x) {
     	}
     */
     strcat(ssexchange, section);
-
-    // ---------------------------end mults --------------------------
-    if (x >= 0) {   // don't show comment when called from readcabrillo.c
-	mvprintw(12, 54, comment);
-	refreshp();
-    }
-
-    return x;
 }
 
 
@@ -1071,12 +1055,11 @@ void exchange_edit(void) {
 
     l = strlen(comment);
     b = l - 1;
-
     while ((i != ESCAPE) && (b <= strlen(comment))) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
-	mvprintw(12, 54, spaces(80 - 54));
+	mvprintw(12, 54, spaces(contest->exchange_width));
 	mvprintw(12, 54, comment);
 	mvprintw(12, 54 + b, "");
 
@@ -1141,7 +1124,7 @@ void exchange_edit(void) {
 	    // Accept printable characters.
 	    if ((i >= ' ') && (i <= 'Z')) {
 
-		if (strlen(comment) <= 24) {
+		if (strlen(comment) < contest->exchange_width) {
 		    /* copy including trailing \0 */
 		    strncpy(comment2, comment + b, strlen(comment) - (b - 1));
 

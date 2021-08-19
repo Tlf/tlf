@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2021           Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,13 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 /* ------------------------------------------------------------------------
-*    scroll  the loglines of the keyer terminal 1 up
+*    scroll  the loglines of the terminal 1 up
 *
 ---------------------------------------------------------------------------*/
-
 
 #include <glib.h>
 #include <stdio.h>
@@ -98,30 +98,18 @@ void get_next_serial(void) {
     qsonr_to_str();
 }
 
-/** read the last 5  log lines and set the next qso number */
+#define LINELEN 80
+
+/** read the last 5 log lines from qsos[] array and set the next qso number */
 void scroll_log(void) {
 
-    char inputbuffer[800];
-    FILE *fp;
-
-    if ((fp = fopen(logfile, "r")) == NULL) {
-	TLF_LOG_ERR("Error opening logfile.");
+    for (int i = 5; i > 0; i--) {
+	if (nr_qsos < i) {
+	    g_strlcpy(logline_edit[5 - i], spaces(80), LINELEN + 1);
+	} else {
+	    g_strlcpy(logline_edit[5- i], qsos[nr_qsos - i], LINELEN + 1);
+	}
     }
-
-    for (int i = 5; i >= 1; i--) {
-
-	if (fseek(fp, -1L * i * LOGLINELEN, SEEK_END) == 0)
-	    IGNORE(fgets(inputbuffer, 90, fp));
-	else
-	    strcpy(inputbuffer, spaces(80));
-
-	if (strlen(inputbuffer) <= 10)	/* log repair */
-	    IGNORE(fgets(inputbuffer, 90, fp));;
-
-	g_strlcpy(logline_edit[5 - i], inputbuffer, 81);
-    }
-
-    fclose(fp);
 
     get_next_serial();
 }

@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *               2012-2021      Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /* ------------------------------------------------------------
  *        Initialize  call array for dupes
@@ -32,10 +33,12 @@
 #include <unistd.h>
 #include <time.h>
 
+#include "addcall.h"
 #include "addmult.h"
 #include "addpfx.h"
 #include "bands.h"
 #include "cabrillo_utils.h"
+#include "dxcc.h"
 #include "get_time.h"
 #include "getctydata.h"
 #include "getpx.h"
@@ -43,8 +46,8 @@
 #include "ignore_unused.h"
 #include "log_utils.h"
 #include "paccdx.h"
-#include "plugin.h"
 #include "readqtccalls.h"
+#include "plugin.h"
 #include "score.h"
 #include "searchcallarray.h"
 #include "setcontest.h"
@@ -58,24 +61,13 @@ void init_scoring(void) {
     for (int i = 0; i < MAX_QSOS; i++)
 	qsos[i][0] = '\0';
 
-    for (int i = 0; i < MAX_CALLS; i++) {
-	*worked[i].exchange = '\0';
-	*worked[i].call = '\0';
-	worked[i].band = 0;
-	worked[i].country = -1;
-	for (int l = 0; l < 3; l++) {
-	    for (int n = 0; n < NBANDS; n++) {
-		worked[i].qsotime[l][n] = 0;
-	    }
-	}
-    }
-    nr_worked = 0;
+    init_worked();
 
     for (int i = 1; i <= MAX_DATALINES - 1; i++)
 	countries[i] = 0;
 
     for (int i = 0; i < NBANDS; i++)
-	band_score[i] = 0;
+	qsos_per_band[i] = 0;
 
     for (int i = 0; i < NBANDS; i++)
 	countryscore[i] = 0;
@@ -92,7 +84,7 @@ void init_scoring(void) {
 
     if (pfxnummultinr > 0) {
 	for (int i = 0; i < pfxnummultinr; i++) {
-	    for (int n = 0; n < NBANDS; n++) {
+	    for (int n = 0; n < PFXNUMBERS; n++) {
 		pfxnummulti[i].qsos[n] = 0;
 	    }
 	}
@@ -110,43 +102,6 @@ void show_progress(int linenr) {
     }
 }
 
-
-// lookup the current country 'n' from the outer loop
-// pfxnummulti[I].countrynr contains the country codes,
-// I:=[0..pfxnummultinr]
-// according to the order of prefixes in rules, eg:
-// PFX_NUM_MULTIS=W,VE,VK,ZL,ZS,JA,PY,UA9
-// pfxnummulti[0].countrynr will be nr of USA
-// pfxnummulti[1].countrynr will be nr of Canada
-int lookup_country_in_pfxnummult_array(int n) {
-    int found = -1;
-    for (int i = 0; i < pfxnummultinr; i++) {
-	if (pfxnummulti[i].countrynr == n) {
-	    found = i;
-	    break;
-	}
-    }
-    return found;
-}
-
-bool check_veto() {
-    bool veto = false;
-
-    if (!continentlist_only &&
-	    exclude_multilist_type == EXCLUDE_CONTINENT) {
-	if (is_in_continentlist(continent)) {
-	    veto = true;
-	}
-    }
-
-    if (exclude_multilist_type == EXCLUDE_COUNTRY) {
-	if (is_in_countrylist(countrynr)) {
-	    veto = true;
-	}
-    }
-
-    return veto;
-}
 
 /* pick up multi string from logline
  *
@@ -208,19 +163,15 @@ void count_contest_bands(int check, int *count) {
 
 
 
-int readcalls(void) {
+int readcalls(const char *logfile) {
 
     char inputbuffer[LOGLINELEN + 1];
-    char tmpbuf[20];
-    char checkcall[20];
     int z = 0;
     bool add_ok;
-    char presentcall[20];	// copy of call..
-    char *tmpptr;
     int pfxnumcntidx;
     int pxnr;
     bool veto;
-    int qsomode;
+    struct qso_t *qso;
     int linenr = 0;
 
     int bandindex = BANDINDEX_OOB;
@@ -240,7 +191,6 @@ int readcalls(void) {
     }
 
     while (fgets(inputbuffer, LOGLINELEN + 1, fp) != NULL) {
-	int l = 0;
 
 	// drop trailing newline
 	inputbuffer[LOGLINELEN - 1] = '\0';
@@ -258,28 +208,29 @@ int readcalls(void) {
 	pfxnumcntidx = -1;
 	pxnr = 0;
 
-	/* get bandindex */
-	bandindex = log_get_band(inputbuffer);
+	qso = parse_qso(inputbuffer);
+	bandindex = qso->bandindex;
 
 	/* get the country number, not known at this point */
-	g_strlcpy(presentcall, inputbuffer + 29, 14);
-	tmpptr = strchr(presentcall, ' ');
-	if (tmpptr)
-	    *tmpptr = '\0';
+	countrynr = getctydata(qso->call);
 
-	strcpy(tmpbuf, presentcall);
-	countrynr = getctydata(tmpbuf);
+	/*  lookup worked stations, add if new */
+	int station = lookup_or_add_worked(qso->call);
+	update_worked(station, qso);
+
 
 	if (continentlist_only) {
-	    if (!is_in_continentlist(continent)) {
-		band_score[bandindex]++;
+	    if (!is_in_continentlist(dxcc_by_index(countrynr)->continent)) {
+		qsos_per_band[bandindex]++;
+		free_qso(qso);
+		qso = NULL;
 		continue;
 	    }
 	}
 
 	if (iscontest) {
 	    // get points
-	    total = total + 1; //log_get_points(inputbuffer);
+	    total = total + log_get_points(inputbuffer);
 
 	    if (CONTEST_IS(CQWW) || (itumult == 1) || (wazmult == 1)) {
 		// get the zone
@@ -303,40 +254,10 @@ int readcalls(void) {
 	    }
 	}
 
-	/*  lookup worked stations */
-	l = searchcallarray(presentcall);
-	if (l == -1) {		    /* if not found, use next free slot */
-	    l = nr_worked;
-	    nr_worked++;
-	}
-
-	/* and fill in according entry */
-	g_strlcpy(worked[l].call, presentcall, sizeof(worked[0].call));
-
-	worked[l].country = countrynr;
-	g_strlcpy(worked[l].exchange, inputbuffer + 54, 12);
-	g_strchomp(worked[l].exchange);	/* strip trailing spaces */
-
-	qsomode = log_get_mode(inputbuffer);
-	if (qsomode == -1) {
-	    shownr("Invalid line format in line %d.\n", linenr);
-	    refreshp();
-	    sleep(2);
-	    exit(1);
-	}
-
-	/* calculate QSO timestamp from logline */
-	worked[l].qsotime[qsomode][bandindex] = parse_time(inputbuffer + 7,
-						DATE_TIME_FORMAT);
-
-        if (plugin_has_add_qso()) {
-            plugin_add_qso(inputbuffer);
-        }
-
 
 	if (pfxmultab == 1) {
-	    getpx(presentcall);
-	    add_pfx(pxstr, bandindex);
+	    getpx(qso->call);
+	    add_pfx(wpx_prefix, bandindex);
 	}
 
 
@@ -349,35 +270,35 @@ int readcalls(void) {
 
 	if (CONTEST_IS(PACC_PA)) {
 
-	    strcpy(hiscall, presentcall);
+	    strcpy(hiscall, qso->call);
 
 	    add_ok = pacc_pa();
 
 	    if (add_ok == false) {
-		band_score[bandindex]++;
+		qsos_per_band[bandindex]++;
 	    }
 
 	    hiscall[0] = '\0';
 	}
 
 	if (pfxnummultinr > 0) {
-	    getpx(presentcall);
-	    pxnr = pxstr[strlen(pxstr) - 1] - 48;
+	    getpx(qso->call);
+	    pxnr = districtnumber(wpx_prefix);
 
-	    getctydata(presentcall);
+	    getctydata(qso->call);
 
 	    pfxnumcntidx = lookup_country_in_pfxnummult_array(countrynr);
 
 	    add_ok = true;
 	}
 
-	veto = check_veto();
+	veto = check_veto(countrynr);
 
 	if (add_ok) {
 
-	    worked[l].band |= inxes[bandindex];	/* mark band as worked */
+	    worked[station].band |= inxes[bandindex];	/* mark band as worked */
 
-	    band_score[bandindex]++;	/*  qso counter  per band */
+	    qsos_per_band[bandindex]++;
 
 	    if (CONTEST_IS(CQWW) || (itumult == 1) || (wazmult == 1))
 		zones[z] |= inxes[bandindex];
@@ -390,12 +311,15 @@ int readcalls(void) {
 		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandindex];
 	    }
 	}
+	free_qso(qso);
+	qso = NULL;
     }
 
     fclose(fp);
 
     /* all lines red, now build other statistics */
     if (CONTEST_IS(WPX) || pfxmult == 1) {
+	char checkcall[20];
 
 	/* build prefixes_worked array from list of worked stations */
 	InitPfx();
@@ -410,7 +334,7 @@ int readcalls(void) {
 	     * Maybe better use BANDINDEX_OOB here:
 	     * - Will count pfx for wpx correctly
 	     * - but will not change counts for pfxmultab on contest bands */
-	    add_pfx(pxstr, BANDINDEX_OOB);
+	    add_pfx(wpx_prefix, BANDINDEX_OOB);
 	}
     }
 
@@ -478,11 +402,10 @@ int log_read_n_score() {
     int nr_qsolines;
 
     total = 0;
-    nr_qsolines = readcalls();
+    nr_qsolines = readcalls(logfile);
     if (qtcdirection > 0) {
 	readqtccalls();
     }
-printf(" total=%d\n", total);
     return nr_qsolines;
 }
 

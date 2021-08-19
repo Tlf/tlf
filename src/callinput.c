@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 /* ------------------------------------------------------------
@@ -147,7 +147,6 @@ int callinput(void) {
     int j, t, x = 0;
     char instring[2] = { '\0', '\0' };
     static int lastwindow;
-
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
@@ -779,20 +778,15 @@ int callinput(void) {
 		break;
 	    }
 
-	    // Alt-q (M-q) or Alt-x (M-x), Exit
-	    case ALT_Q:
+	    // Alt-x (M-x), Exit
 	    case ALT_X: {
-		mvprintw(13, 29, "You want to leave tlf? (y/n): ");
-		while (x != 'n' && x != 'N') {
+		mvprintw(13, 29, "Do you want to leave Tlf? (y/n): ");
+		while (x != 'N') {
 
-		    x = key_get();
+		    x = toupper(key_get());
 
-		    if (x == 'y' || x == 'Y') {
-			cleanup_telnet();
-			endwin();
-
-			puts("\n\nThanks for using TLF.. 73\n");
-			exit(0);
+		    if (x == 'Y') {
+			exit(EXIT_SUCCESS);
 		    }
 		}
 		x = ESCAPE;

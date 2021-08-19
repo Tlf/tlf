@@ -8,9 +8,11 @@
 #include "../src/setcontest.h"
 #include "../src/dxcc.h"
 
+// OBJECT ../src/addpfx.o
 // OBJECT ../src/addmult.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/get_time.o
+// OBJECT ../src/getpx.o
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/searchlog.o
 // OBJECT ../src/zone_nr.o
@@ -23,6 +25,7 @@
 // OBJECT ../src/err_utils.o
 // OBJECT ../src/ui_utils.o
 // OBJECT ../src/score.o
+// OBJECT ../src/plugin.o
 // OBJECT ../src/utils.o
 
 extern WINDOW *search_win;
@@ -56,10 +59,6 @@ void clusterinfo() {
 void refresh_splitlayout() {
 }
 
-// getpx.c
-void getpx(char *checkcall) {
-}
-
 // dxcc.c
 static dxcc_data dummy_dxcc = {
     "Noland",
@@ -78,6 +77,10 @@ dxcc_data *dxcc_by_index(unsigned int index) {
 }
 
 // getctydata.c
+int getctynr(char *checkcallptr) {
+    return 42;
+}
+
 int getctydata(char *checkcallptr) {
     return 0;
 }
@@ -85,9 +88,6 @@ int getctydata(char *checkcallptr) {
 
 contest_config_t config_focm;
 
-int getctynr(void) {
-    return 42;
-}
 
 /*********************/
 #define QSO1 " 40SSB 12-Jan-18 16:34 0006  SP9ABC         599  599  15                     1         "

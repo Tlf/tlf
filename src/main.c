@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 
@@ -248,6 +248,8 @@ char qtc_cap_calls[40] = "";
 int qtc_auto_filltime = 0;
 int qtc_recv_lazy = 0;
 
+struct qso_t *current_qso;
+
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */
@@ -266,14 +268,15 @@ char comment[80];
 char cqzone[3] = "";
 char ituzone[3] = "";
 char continent[3] = "";
-char pxstr[11] = "";
+char wpx_prefix[11] = "";
 int totalmults = 0;
 int totalcountries = 0;
 int totalzones = 0;
 int secs = 0;
 int countrynr;
 int total = 0; 		/**< total number of qso points */
-int band_score[NBANDS];
+int qso_points;		/**< number of points for last qso */
+int qsos_per_band[NBANDS];
 int callfound = 0;
 int partials = 0;	/**< show partial calls */
 int use_part = 0;	/**< if 1 use automatically found partial call */
@@ -345,7 +348,7 @@ int nr_worked = 0;		/**< number of calls in worked[] */
 worked_t worked[MAX_CALLS]; 	/**< worked stations */
 
 /*----------------------statistic of worked countries,zones ... -----------*/
-int countries[MAX_DATALINES];	/* per country bit fieldwith worked bands set */
+int countries[MAX_DATALINES];	/* per country field with worked bands set */
 int zones[MAX_ZONES];		/* same for cq zones or itu zones;
 				   using 1 - 40 or 1 - 90 */
 
@@ -362,9 +365,9 @@ struct ie_list *main_ie_list = NULL;	/* head of initial exchange list */
 int zonescore[NBANDS];
 int countryscore[NBANDS];
 int zonedisplay = 0;
-int addzone = 0;		/* flag for new zone */
-int addcty = 0;			/* flag for new country */
-int shownewmult = -1;
+int new_zone = 0;		/* index of new zone */
+int new_cty = 0;		/* index of new country */
+int new_mult = -1;
 int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */
@@ -475,7 +478,7 @@ const static struct argp argp = { options, parse_opt, NULL, program_description 
 
 
 /** initialize user interface */
-void ui_init() {
+static void ui_init() {
 
     /* modify stdin terminals attributes to allow Ctrl-Q/S key recognition */
     tcgetattr(STDIN_FILENO, &oldt);
@@ -523,10 +526,10 @@ void ui_init() {
 				   for refreshp() to work */
 
     getmaxyx(stdscr, ymax, xmax);
-    if ((ymax < 25) || (xmax < 80)) {
+    if ((ymax < 22) || (xmax < 80)) {
 	char c;
 
-	showmsg("!! TLF needs at least 25 lines and 80 columns !!");
+	showmsg("!! TLF works best with at least 22 lines and 80 columns !!");
 	showmsg("   Continue anyway? Y/(N) ");
 	c = toupper(key_get());
 	if (c != 'Y') {
@@ -558,7 +561,7 @@ void ui_init() {
 
 
 /* setup colors */
-void ui_color_init() {
+static void ui_color_init() {
 
     if (use_rxvt == 1) {	// use rxvt colours
 	init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_RED);
@@ -630,7 +633,7 @@ static void init_variables() {
 /** load all databases
  *
  * \return EXIT_FAILURE if not successful */
-int databases_load() {
+static int databases_load() {
     int status;
 
     showmsg("Reading country data");
@@ -698,10 +701,19 @@ int databases_load() {
     if (trxmode == DIGIMODE) {
 	qtc_recv_lazy = 0;
     }
+
+    getstationinfo();
+
+    status = plugin_init(whichcontest);
+    if (status != PARSE_OK) {
+	showmsg("Problems loading plugin!");
+	return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 
-void hamlib_init() {
+static void hamlib_init() {
 
     if (no_trx_control) {
 	trx_control = false;
@@ -730,7 +742,7 @@ void hamlib_init() {
     }
 }
 
-void fldigi_init() {
+static void fldigi_init() {
 #ifdef HAVE_LIBXMLRPC
     int status;
 
@@ -744,7 +756,7 @@ void fldigi_init() {
 #endif
 }
 
-void lan_init() {
+static void lan_init() {
     if (lan_active) {
 	if (lan_recv_init() < 0)	/* set up the network */
 	    showmsg("LAN receive  init failed");
@@ -759,7 +771,7 @@ void lan_init() {
 }
 
 
-void packet_init() {
+static void packet_init() {
     if (nopacket)
 	packetinterface = 0;
 
@@ -777,7 +789,7 @@ void packet_init() {
 }
 
 
-void keyer_init() {
+static void keyer_init() {
     char keyerbuff[3];
 
     if (cwkeyer == NET_KEYER) {
@@ -897,11 +909,10 @@ static void tlf_cleanup() {
     endwin();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 
-    puts("\n\nThanks for using TLF.. 73\n");
+    puts("\n\nThanks for using Tlf.. 73\n");
 }
 
-static void ignore(int sig)
-{
+static void ignore(int sig) {
     // no action except ignoring Ctrl-C
 }
 
@@ -919,7 +930,6 @@ int main(int argc, char *argv[]) {
 
     argp_parse(&argp, argc, argv, 0, 0, NULL);  // parse options
 
-plugin_init("test");
     ui_init();
 
     rst_init(NULL);
@@ -951,6 +961,8 @@ plugin_init("test");
 
     memset(&my, 0, sizeof(my));
 
+    rig_set_debug(RIG_DEBUG_NONE);
+
     total = 0;
     if (databases_load() == EXIT_FAILURE) {
 	showmsg("**** Press any key to exit...");
@@ -961,12 +973,10 @@ plugin_init("test");
 	exit(EXIT_FAILURE);
     }
 
-    rig_set_debug(RIG_DEBUG_NONE);
-
     if (convert_cabrillo) {
 	char *tstring =
-	    g_strdup_printf("Converting Cabrillo for contest %s from file %s.cbr",
-			    whichcontest, g_strstrip(my.call));
+	    g_strdup_printf("Converting Cabrillo for contest %s for %s",
+			    whichcontest, my.call);
 	showmsg(tstring);
 	g_free(tstring);
 	showmsg("");
@@ -991,9 +1001,11 @@ plugin_init("test");
     lan_init();
     keyer_init();
 
-    scroll_log();		/* read the last 5  log lines and set the next serial number */
-    nr_qsos = readcalls();	/* read the logfile for score and dupe */
+    nr_qsos = readcalls(logfile);   /* read the logfile and rebuild
+				       point and multiplier scoring */
 
+    scroll_log();		/* show the last 5  log lines and
+				   set the next serial number */
     show_station_info();
 
     clearmsg_wait();
@@ -1011,7 +1023,7 @@ plugin_init("test");
     bm_init();			/* initialize bandmap */
 
     if (signal(SIGINT, SIG_IGN) != SIG_IGN) {   /* ignore Ctrl-C */
-        signal(SIGINT, ignore);
+	signal(SIGINT, ignore);
     }
     atexit(tlf_cleanup); 	/* register cleanup function */
 

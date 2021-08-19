@@ -9,11 +9,16 @@
 
 #include "../src/getctydata.h"
 
+// OBJECT ../src/addpfx.o
+// OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
+// OBJECT ../src/plugin.o
+// OBJECT ../src/log_utils.o
+// OBJECT ../src/utils.o
 
 /* export internal function */
 int location_unknown(char *call);
@@ -162,15 +167,18 @@ void test_location_unknown_used(void **state) {
 
 /* getctynr */
 void test_suffix_getctynr(void **state) {
-    assert_int_not_equal(getctynr("LA3BB"), 0);
-    assert_int_not_equal(getctynr("LA3BB/QRP"), 0);
-    assert_int_equal(getctynr("LA3BB/QRP"), getctynr("LA3BB"));
+    int cty_la = getctynr("LA3BB");
+    assert_int_not_equal(cty_la, 0);
+    assert_int_equal(getctynr("LA3BB/QRP"), cty_la);
+    assert_int_equal(getctynr("LA3BB/P"), cty_la);
 }
 
 /* getctydata */
 void test_suffix_getctydata(void **state) {
-    assert_int_not_equal(getctydata("LA3BB"), 0);
-    assert_int_not_equal(getctydata("LA3BB/QRP"), 0);
+    int cty_la = getctydata("LA3BB");
+    assert_int_not_equal(cty_la, 0);
+    assert_int_equal(getctydata("LA3BB/QRP"), cty_la);
+    assert_int_equal(getctydata("LA3BB/P"), cty_la);
 }
 
 void test_someidea(void **data) {
@@ -198,9 +206,9 @@ void test_same_result(void **data) {
 
 void test_no_wpx(void **state) {
     int nr;
-    pxstr[0] = '\0';
+    wpx_prefix[0] = '\0';
     nr = getctydata("DJ/PA3LM");
-    assert_string_equal(pxstr, "");
+    assert_string_equal(wpx_prefix, "");
     assert_int_equal(getctydata("DL"), nr);
 }
 
@@ -208,9 +216,9 @@ void test_is_wpx(void **state) {
     int nr;
 
     setcontest("wpx");
-    pxstr[0] = '\0';
+    wpx_prefix[0] = '\0';
     nr = getctydata("DJ/PA3LM");
-    assert_string_equal(pxstr, "DJ0");
+    assert_string_equal(wpx_prefix, "DJ0");
     assert_int_equal(getctydata("DL"), nr);
 }
 
@@ -218,9 +226,9 @@ void test_pfxmult_set(void **state) {
     int nr;
 
     pfxmult = 1;
-    pxstr[0] = '\0';
+    wpx_prefix[0] = '\0';
     nr = getctydata("DJ/PA3LM");
-    assert_string_equal(pxstr, "DJ0");
+    assert_string_equal(wpx_prefix, "DJ0");
     assert_int_equal(getctydata("DL"), nr);
 }
 
