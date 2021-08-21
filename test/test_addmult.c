@@ -2,12 +2,12 @@
 
 #include "../src/tlf.h"
 #include "../src/addmult.h"
+#include "../src/addcall.h"
 #include "../src/dxcc.h"
 #include "../src/globalvars.h"
 #include "../src/bands.h"
 #include "../src/setcontest.h"
-#include <stdio.h>
-#include <unistd.h>
+#include "../src/log_utils.h"
 
 // OBJECT ../src/addmult.o
 // OBJECT ../src/addpfx.o
@@ -19,6 +19,12 @@
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
 // OBJECT ../src/utils.o
+// OBJECT ../src/log_utils.o
+// OBJECT ../src/addcall.o
+// OBJECT ../src/get_time.o
+// OBJECT ../src/searchcallarray.o
+// OBJECT ../src/paccdx.o
+// OBJECT ../src/zone_nr.o
 
 
 /* dummies */
@@ -32,6 +38,7 @@ int getctydata(char *checkcall) {
 
 
 contest_config_t config_focm;
+struct qso_t *this_qso;
 
 
 char *testfile = "mults";
@@ -87,7 +94,19 @@ int setup_default(void **state) {
     return 0;
 }
 
-/* tewst initialization of 'multis' */
+void set_this_qso(char *exchange) {
+    strcpy(comment, exchange);
+    this_qso = collect_qso_data();
+}
+
+
+int teardown_default(void **state) {
+    free_qso(this_qso);
+    this_qso = NULL;
+    return 0;
+}
+
+/* test initialization of 'multis' */
 void test_init_mults(void **state) {
     nr_multis = 2;
     strcpy(multis[0].name, "abc");
@@ -251,31 +270,35 @@ void test_match_length_match_alias2(void **state) {
 /* addmult tests */
 void test_wysiwyg_once(void **state) {
     wysiwyg_once = 1;
-    strcpy(comment, "WAC   ");
-    assert_int_equal(addmult(), 0);
+    set_this_qso("WAC   ");
+    addmult(this_qso);
+    assert_true(new_mult >= 0);
     assert_string_equal(multis[0].name, "WAC");
     assert_int_equal(new_mult, 0);
 }
 
 void test_wysiwyg_multi(void **state) {
     wysiwyg_multi = 1;
-    strcpy(comment, "WAC   ");
-    assert_int_equal(addmult(), 0);
+    set_this_qso("WAC   ");
+    addmult(this_qso);
+    assert_true(new_mult >= 0);
     assert_string_equal(multis[0].name, "WAC");
     assert_int_equal(new_mult, 0);
 }
 
 void test_wysiwyg_multi_empty(void **state) {
     wysiwyg_multi = 1;
-    strcpy(comment, "   ");
-    addmult();
+    set_this_qso("   ");
+    addmult(this_qso);
     assert_int_equal(new_mult, -1);
 }
 
 void test_serial_grid4(void **state) {
     serial_grid4_mult = 1;
     strcpy(section, "JO60LX");
-    assert_int_equal(addmult(), 0);
+    set_this_qso("");   // NOTE: section is not part of qso_t
+    addmult(this_qso);
+    assert_true(new_mult >= 0);
     assert_string_equal(multis[0].name, "JO60");
     assert_int_equal(new_mult, 0);
 }
@@ -283,7 +306,8 @@ void test_serial_grid4(void **state) {
 
 void test_serial_grid4_empty(void **state) {
     serial_grid4_mult = 1;
-    addmult();
+    set_this_qso("");   // NOTE: section is not part of qso_t
+    addmult(this_qso);
     assert_int_equal(new_mult, -1);
 }
 
@@ -292,13 +316,14 @@ void test_arrlss(void **state) {
 
     setup_multis("SC\nSCV\n");
     strcpy(ssexchange, "SCV");
-    addmult();
+    set_this_qso("");   // NOTE: ssexchange is not part of qso_t
+    addmult(this_qso);
     strcpy(ssexchange, "97A23SCV");
-    addmult();
+    addmult(this_qso);
     strcpy(ssexchange, "KL");
-    addmult();
+    addmult(this_qso);
     strcpy(ssexchange, "SC");
-    addmult();
+    addmult(this_qso);
     assert_int_equal(nr_multis, 2);
     assert_string_equal(multis[0].name, "SCV");
     assert_string_equal(multis[1].name, "SC");
@@ -308,13 +333,14 @@ void test_serial_section_mult(void **state) {
     serial_section_mult = 1;
     setup_multis("NE\nONE\n");
     strcpy(ssexchange, "ONE");
-    addmult();
+    set_this_qso("");   // NOTE: ssexchange is not part of qso_t
+    addmult(this_qso);
     strcpy(ssexchange, "023");
-    addmult();
+    addmult(this_qso);
     strcpy(ssexchange, "NE");
-    addmult();
+    addmult(this_qso);
     strcpy(ssexchange, "SC");
-    addmult();
+    addmult(this_qso);
     assert_int_equal(nr_multis, 2);
 }
 
@@ -323,18 +349,19 @@ void test_dx_arrlsections(void **state) {
     countrynr = w_cty;
     setup_multis("NE\nONE\n");
     strcpy(ssexchange, "ONE");
-    addmult();
+    set_this_qso("");   // NOTE: ssexchange is not part of qso_t
+    addmult(this_qso);
     strcpy(ssexchange, "97A23SCV");
-    addmult();
+    addmult(this_qso);
     strcpy(ssexchange, "NE");
-    addmult();
+    addmult(this_qso);
     strcpy(ssexchange, "SC");
-    addmult();
+    addmult(this_qso);
     assert_int_equal(nr_multis, 2);
 }
 
 
-/* addmult2 tests */
+/* addmult_lan tests */
 char logline[] =
     " 20CW  08-Feb-11 17:06 0025  W3ND           599  599   95 A 12 SCV            2 ";
 
@@ -346,13 +373,13 @@ void test_arrlss_2(void **state) {
 
     setup_multis("SC\nSCV\n");
     strcpy(lan_logline, logline);
-    addmult2();
+    addmult_lan();
     memcpy(lan_logline + 54, " 97 A 23 SCV", 12);
-    addmult2();
+    addmult_lan();
     memcpy(lan_logline + 63, "KL ", 3);
-    addmult2();
+    addmult_lan();
     memcpy(lan_logline + 63, "SC ", 3);
-    addmult2();
+    addmult_lan();
     assert_int_equal(nr_multis, 2);
     assert_string_equal(multis[0].name, "SCV");
     assert_string_equal(multis[1].name, "SC");
@@ -361,7 +388,8 @@ void test_arrlss_2(void **state) {
 void test_wysiwyg_once_2(void **state) {
     wysiwyg_once = 1;
     strcpy(lan_logline, logline_2);
-    assert_int_equal(addmult2(), 0);
+    addmult_lan();
+    assert_true(new_mult >= 0);
     assert_string_equal(multis[0].name, "WAC");
     assert_int_equal(new_mult, 0);
 }
@@ -370,7 +398,8 @@ void test_wysiwyg_once_2(void **state) {
 void test_wysiwyg_multi_2(void **state) {
     wysiwyg_multi = 1;
     strcpy(lan_logline, logline_2);
-    assert_int_equal(addmult2(), 0);
+    addmult_lan();
+    assert_true(new_mult >= 0);
     assert_string_equal(multis[0].name, "WAC");
     assert_int_equal(new_mult, 0);
 }

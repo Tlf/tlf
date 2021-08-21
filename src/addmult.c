@@ -42,15 +42,14 @@ GPtrArray *mults_possible;
 enum { ALL_BAND, PER_BAND };
 
 
-int addmult(void) {
-    int found = 0;
+void addmult(struct qso_t *qso) {
     int i;
     int matching_len = 0, idx = -1;
     char *stripped_comment;
 
     new_mult = -1;
 
-    stripped_comment = strdup(comment);
+    stripped_comment = strdup(qso->comment);
     g_strchomp(stripped_comment);
 
     // --------------------------- arrlss ------------------------------------
@@ -139,23 +138,20 @@ int addmult(void) {
 
     /* -------------- unique call multi -------------- */
     if (unique_call_multi == UNIQUECALL_ALL) {
-	new_mult = remember_multi(hiscall, bandinx, ALL_BAND);
+	new_mult = remember_multi(qso->call, bandinx, ALL_BAND);
     }
 
     if (unique_call_multi == UNIQUECALL_BAND) {
-	new_mult = remember_multi(hiscall, bandinx, PER_BAND);
+	new_mult = remember_multi(qso->call, bandinx, PER_BAND);
     }
 
     free(stripped_comment);
-
-    return (found);
 }
 
 
 /* -------------------------------------------------------------------*/
 
-int addmult2(void) {
-    int found = 0;
+void addmult_lan(void) {
     int i;
     int matching_len = 0, idx = -1;
     char ssexchange[21];
@@ -209,8 +205,6 @@ int addmult2(void) {
 	new_mult = remember_multi(multi_call, bandinx, PER_BAND);
     }
 
-
-    return (found);
 }
 
 
