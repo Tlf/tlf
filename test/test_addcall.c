@@ -27,7 +27,7 @@
 // OBJECT ../src/utils.o
 // OBJECT ../src/zone_nr.o
 
-void addmult() {}
+void addmult(struct qso_t qso) {}
 void addmult_lan() {}
 int pacc_pa(void) {
     return 0;
