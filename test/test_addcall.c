@@ -27,8 +27,8 @@
 // OBJECT ../src/utils.o
 // OBJECT ../src/zone_nr.o
 
-void addmult() {}
-void addmult2() {}
+void addmult(struct qso_t qso) {}
+void addmult_lan() {}
 int pacc_pa(void) {
     return 0;
 }
@@ -93,7 +93,7 @@ int setup_addcall_pfxnum_notinList(void **state) {
 }
 
 /* collect_qso_data */
-void test_collect (void **state) {
+void test_collect(void **state) {
     struct qso_t *qso;
     strcpy(hiscall, "LZ1AB");
     strcpy(comment, "Hi");

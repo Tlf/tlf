@@ -70,6 +70,7 @@ struct qso_t *collect_qso_data(void) {
     qso->call = g_strdup(hiscall);
     qso->mode = trxmode;
     qso->bandindex = bandinx;
+    qso->freq = freq;
     qso->timestamp = get_time();
     qso->comment = g_strdup(comment);
     return qso;
@@ -213,7 +214,7 @@ int addcall(struct qso_t *qso) {
 	}
     }
 
-    addmult();			/* for wysiwyg */
+    addmult(current_qso);       /* for wysiwyg */
 
     return cty;
 }
@@ -346,7 +347,7 @@ int addcall2(void) {
 	}
     }
 
-    addmult2();	/* for wysiwyg from LAN */
+    addmult_lan();	/* for wysiwyg from LAN */
 
     free_qso(qso);
     qso = NULL;
