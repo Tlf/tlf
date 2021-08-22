@@ -1,22 +1,74 @@
 .\"
+.\" Tips for formatting with the roff man macros.  Borrowed from the Vim nroff
+.\" help text.
+.\"
+.\" In order to obtain the best formatted output g/troff can give you, you
+.\" should follow a few simple rules about spacing and punctuation.
+.\"
+.\" 1. Do not leave empty spaces at the end of lines.
+.\"
+.\" 2. Leave one space and one space only after an end-of-sentence period,
+.\"    exclamation mark, etc.
+.\"
+.\" 3. For reasons stated below, it is best to follow all period marks with a
+.\"    carriage return.
+.\"
+.\" The reason behind these unusual tips is that g/n/troff have a line breaking
+.\" algorithm that can be easily upset if you don't follow the rules given
+.\" above.
+.\"
+.\" In addition, these tips aid vertical spacing.
+.\"
+.\" 1. Start all sentences on a new line.
+.\"
+.\" 2. Use the empty request--a single dot on a line--to provide vertical
+.\"    spacing.
+.\"
+.\" 3. Use two empty requests before and one after all SH macros.
+.\"
+.\" 4. Use one empty request and one after all SS macros.
+.\"
+.\" 5. Use one request before all P, IP, and TP macros.
+.\"
+.\" The man(7) and groff_man(7) manual pages offer many more rules and tips.
+.
+.
 .TH TLF 1 "version @VERSION@" TLF "Ham radio"
+.
+.
 .SH NAME
-@PACKAGE_NAME@ \- amateur radio contest keyer/logging program for
-Radiosport
+.
+@PACKAGE_NAME@ \- amateur radio contest keyer/logging program for Radiosport
+.
+.
 .SH SYNOPSIS
+.
 .SY @PACKAGE@
-.OP \-dhlnrvV
+.OP \-?dilnrvV
 .OP \-f config_file
 .OP \-s user:password@host/dir/logfilename
+.OP \-\-debug
+.OP \-\-config=\fIconfig_file\fP
+.OP \-\-import
+.OP \-\-list
+.OP \-\-no-cluster
+.OP \-\-no-rig
+.OP \-\-sync=\fIuser:password@host/dir/logfilename\fP
+.OP \-\-verbose
+.OP \-\-version
+.OP \-\-help
+.OP \-\-usage
 .YS
+.
 .
 .SH DESCRIPTION
 .
 .B @PACKAGE_NAME@
 is a console (ncurses) mode general purpose
 .SM CW
-keyer, logging and contest program for amateur radio operators. It supports
-the
+keyer, logging and contest program for amateur radio operators.
+.
+It supports the
 .SM CQWW,
 .SM WPX,
 .SM ARRL-DX,
@@ -26,34 +78,41 @@ the
 .SM FOC Marathon
 and
 .SM EU SPRINT
-contests as well as a lot more basic contests, general QSO and DXpedition
-mode.
+contests as well as a lot more basic contests, general QSO and DXpedition mode.
+.
 It interfaces with a Morse Code generator, a number of radios via the
 .B Hamlib
 library, and with a
 .B "DX Cluster"
-via telnet or packet radio.  @PACKAGE_NAME@ can project DX cluster data into
-the excellent Xplanet program, written by Hari Nair.
+via telnet or packet radio.
+.
+@PACKAGE_NAME@ can project DX cluster data into the excellent Xplanet program,
+written by Hari Nair.
+.
 .P
 Contest operation mimics the popular
 .B TR-Log
-program for DOS, the output file is TR-Log compatible.  The log can be
-exported in
+program for DOS, the output file is TR-Log compatible.
+.
+The log can be exported in
 .SM ADIF
 or
 .B Cabrillo 3.0
 format.
+.
 .P
 The program was written for console mode on purpose, which allows it to run on
 smaller machines, or remotely via
 .SM SSH
 or a modem link.
+.
 .P
 CW keying via
 .B cwdaemon
 is fully supported, featuring direct mode for the keyboard and output to
 parallel and serial ports and speed and weight control from the keyboard, and
 band info output on the parallel port.
+.
 .P
 For users of the K1EL series of \(lqWin Keyers\(rq, the
 .B winkeydaemon
@@ -61,81 +120,113 @@ is available from
 .UR https://github.com/N0NB/winkeydaemon
 GitHub
 .UE .
+.
 Setup is the same as for
 .BR cwdaemon (1).
+.
 .P
 For radio control @PACKAGE_NAME@ works with Hamlib (version >= 1.2.8), you
 can find it at
 .UR https://www.hamlib.org/
 www.hamlib.org
 .UE .
+.
 .P
 @PACKAGE_NAME@ provides full
 .SM TCP/IP
 networking between @PACKAGE_NAME@ nodes, syncing/distributing log, packet
 data, frequency data, local talk, serial numbers, time sync etc.
-.P
+.
 .
 .SH OPTIONS
 Options given to @PACKAGE_NAME@ on the command line.
+.
 .TP
-.B \-?
-Show summary of options and exit.
+.BR \-? , \ \-\-help
+Print a summary of options to the screen and exit.
+.
 .TP
 .BI \-f\  config_file
-Start with non-default configuration file:
+.TQ
+.BI \-\-config= config_file
+Start with a non-default configuration file:
 .
 .IP
 .EX
 @PACKAGE@ \-f PA0R
 .EE
+.
 .IP
 Defaults to
 .I logcfg.dat
-in actual working directory.
+in the current working directory.
+.
 .TP
 .BI \-s\  user:password@host/dir/logfilename
+.TQ
+.BI \-\-sync= user:password@host/dir/logfilename
 Synchronize log with other node
 .
 .IP
 .EX
 @PACKAGE@ \-s user:password@host/dir/logfilename
 .EE
+.
 .TP
-.B "\-n, --no-cluster"
+.BR \-n , \ \-\-no-cluster
 Start without packet/cluster.
+.
 .TP
-.B "-r, --no-rig"
+.BR \-r , \ \-\-no-rig
 Start without radio control.
+.
 .TP
-.B "-l, --list"
+.BR \-l , \ \-\-list
 List all built-in contests.
+.
 .TP
-.B "-i, --import"
-Import an existing Cabrillo file. When @PACKAGE_NAME@ starts, it looks for
+.BR \-i , \ \-\-import
+Import an existing Cabrillo file and generate @PACKAGE_NAME@ log files.
+.
+.IP
+When @PACKAGE_NAME@ starts, it looks for
 .I YOURCALL.cbr
-file in the current directory, reads the configuration and rule files, and based on the
-current setup generates the log(s). If the contest is WAE and you have QTC's
-in Cabrillo, then @PACKAGE_NAME@ makes the QTC logfiles too. @PACKAGE_NAME@
-doesn't write over the existing log(s).  The generated import will be
+file in the current directory, reads the configuration and rule files, and
+based on the current setup generates the log(s).
+.
+If the contest is WAE and you have QTC's in Cabrillo, then @PACKAGE_NAME@
+generates the QTC logfiles.
+.
+@PACKAGE_NAME@ will not write over the existing log(s).
+.
+.IP
+The generated import will be
 .IR IMPORT_CONTEST.log ,
-where the CONTEST is the name of contest in the config. If
-QTC exists, then the files
+where the CONTEST is the name of contest in the config.
+.
+If QTC exists, then the files
 .I IMPORT_QTC_sent.log
 and
 .I IMPORT_QTC_recv.log
 will be created.
 .
 .TP
-.B "-v, --verbose"
+.BR \-v , \ \-\-verbose
 Verbose startup.
+.
 .TP
-.B "-d, --debug"
+.BR \-d , \ \-\-debug
 Debug
-.BR rigctl.
+.BR rigctld (1).
+.
 .TP
-.B \-V
-Output version information and exit.
+.BR \-V , \ \-\-version
+Print the version information to the screen and exit.
+.
+.TP
+.B \-\-usage
+Print a short usage message to the screen and exit.
+.
 .
 .SH USAGE
 .
