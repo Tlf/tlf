@@ -54,7 +54,7 @@ void recordmenue(void) {
 
     mvprintw(9, 20, "1.: Enable contest recorder");
     mvprintw(10, 20, "2.: Disable contest recorder");
-    mvprintw(11, 20, "3.: Play back file");
+    mvprintw(11, 20, "3.: List and Play contest file");
     mvprintw(13, 20, "ESC: Exit sound recorder function");
 
     refreshp();
