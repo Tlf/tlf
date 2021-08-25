@@ -7,6 +7,10 @@ do
 		then
 			sleep 10
 		else
-			rec -w  -r 8000 $filename > /dev/null 2> /dev/null
+			# Example command for OSS rec
+			# rec -w  -r 8000 $filename > /dev/null 2> /dev/null
+
+			# Example command for SoX rec
+			rec -c 1  -r 8000 -q $filename
 		fi
 done
