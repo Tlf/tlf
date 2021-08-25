@@ -194,10 +194,24 @@ void record(void) {
 
 	    // List contest recordings.
 	    case '3':
-		sounddir = opendir("$HOME/tlf/soundlogs/");	// (W9WI)
+		errno = 0;
 
-		if (sounddir == NULL)
+		/* Must query the environment for the value of $HOME
+		 * and build the path to the soundlogs.
+		 */
+		char *path = g_strdup_printf("%s%s",
+					     g_getenv("HOME"),
+					     "/tlf/soundlogs");
+
+		sounddir = opendir(path);
+
+		if (sounddir == NULL) {
+		    if (errno != 0) {
+			mvprintw(22, 1, "%s: %s", strerror(errno), path);
+			mvprintw(23, 1, "Press ESC to exit this screen");
+		    }
 		    break;
+		}
 
 		for (i = 4; i < 15; i++)
 		    mvprintw(i, 0,
@@ -223,6 +237,7 @@ void record(void) {
 			    i -= 10;
 		    }
 		}
+		g_free(path);
 		closedir(sounddir);
 
 	    // Play back contest recording.
