@@ -1181,7 +1181,7 @@ void play_file(char *audiofile) {
     // note: this overrides PATH setting
     bool has_local_play_vk = (access("./play_vk", X_OK) == 0);
     char *playcommand = g_strdup_printf("%s %s",
-					(has_local_play_vk ? "./play_wk" : "play_vk"),
+					(has_local_play_vk ? "./play_vk" : "play_vk"),
 					audiofile);
 
     /* CAT PTT wanted and available, use it. */
