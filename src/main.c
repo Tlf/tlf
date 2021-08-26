@@ -258,6 +258,9 @@ int cwstart = 0;			/**< number characters after which
 int sending_call = 0;
 int early_started = 0;			/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
+int escape_pressed = 0;	        	/**< 0. Escape not last key pressed.
+					 *   1. Escape pressed first time and stoptx() called.
+					 */
 char lastcall[20];
 char lastqsonr[5];
 char qsonrstr[5] = "0001";

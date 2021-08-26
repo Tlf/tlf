@@ -71,6 +71,8 @@ int getexchange(void) {
     char commentbuf[40] = "";
     char *gridmult = "";
 
+    extern int escape_pressed;
+
     instring[1] = '\0';
 
     if (lan_active && contest->exchange_serial) {
@@ -131,6 +133,10 @@ int getexchange(void) {
 	    x = key_poll();
 	}
 
+	if (x != ESCAPE) {
+		escape_pressed = 0;
+	}
+
 	switch (x) {
 
 	    case CTRL_Q: {	// Ctl-q (^Q)--Open QTC panel for receiving or sending QTCs
@@ -166,7 +172,12 @@ int getexchange(void) {
 	    }
 
 	    case ESCAPE: {                // <Escape>
-		stoptx();			/* stop sending CW */
+		if (escape_pressed == 0) {
+			stoptx();		/* stop sending CW */
+			escape_pressed = 1;
+			break;
+		}
+
 		if (comment[0] != '\0') {	/* if comment not empty */
 		    /* drop exchange so far */
 		    comment[0] = '\0';

@@ -147,6 +147,7 @@ int callinput(void) {
     int j, t, x = 0;
     char instring[2] = { '\0', '\0' };
     static int lastwindow;
+    extern int escape_pressed;
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
@@ -231,6 +232,10 @@ int callinput(void) {
 	    wmove(stdscr, 12, 29 + strlen(hiscall));
 	    x = key_poll();
 
+	}
+
+	if (x != ESCAPE) {
+		escape_pressed = 0;
 	}
 
 	/* special handling of some keycodes if call field is empty */
@@ -796,9 +801,15 @@ int callinput(void) {
 	    // <Escape>, clear call input or stop sending.
 	    case ESCAPE: {
 		if (early_started == 0) {
+			if (escape_pressed == 0) {
+				stoptx();
+				escape_pressed = 1;
+				break;
+			}
 		    /* if CW not started early drop call and start anew */
 		    cleanup();
 		    clear_display();
+		    escape_pressed = 0;
 		} else {
 		    /* otherwise just stop sending */
 		    stoptx();
