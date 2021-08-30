@@ -26,6 +26,11 @@
 // OBJECT ../src/score.o
 // OBJECT ../src/utils.o
 
+char ssexchange[30] = "";   // defined in getexchange.c
+char section[8] = "";       // defined in getexchange.c
+char zone_export[3] = "  ";
+char zone_fix[3] = "  ";
+
 extern WINDOW *search_win;
 extern PANEL *search_panel;
 extern int nr_bands;
@@ -161,7 +166,7 @@ static void remove_callmaster() {
 
 int teardown_default(void **state) {
     remove_callmaster();
-    FREE_DYNAMIC_STRING (callmaster_filename);
+    FREE_DYNAMIC_STRING(callmaster_filename);
     return 0;
 }
 

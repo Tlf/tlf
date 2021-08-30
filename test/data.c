@@ -345,7 +345,6 @@ struct ie_list *main_ie_list;	/* head of initial exchange list */
 int zonescore[NBANDS];
 int countryscore[NBANDS];
 int zonedisplay = 0;
-char zone_fix[3] = "";
 int new_zone = 0;		/* index of for new zone */
 int new_cty = 0;		/* index of new country */
 int new_mult = -1;
@@ -354,8 +353,6 @@ int minute_timer = 0;
 int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;			/* nr of next QSO */
 int ymax, xmax;			/* screen size */
-
-char zone_export[3] = "  ";
 
 pid_t pid;
 struct tm *time_ptr;
@@ -404,8 +401,6 @@ int nr_multis = 0;      	/**< number of multis in multis[] */
 int unique_call_multi = 0;          /* do we count calls as multiplier */
 
 //////////////////
-char ssexchange[30] = "";   // defined in getexchange.c
-char section[8] = "";       // defined in getexchange.c
 char lan_logline[256];	    // defined in log_to_disk.c
 
 //////////////////

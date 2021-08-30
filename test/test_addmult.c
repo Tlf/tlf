@@ -14,16 +14,18 @@
 // OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/getpx.o
+// OBJECT ../src/log_utils.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
 // OBJECT ../src/utils.o
-// OBJECT ../src/log_utils.o
 // OBJECT ../src/addcall.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/paccdx.o
 // OBJECT ../src/zone_nr.o
 
+char ssexchange[30] = "";   // defined in getexchange.c
+char section[8] = "";       // defined in getexchange.c
 
 /* dummies */
 int getctynr(char *checkcall) {
