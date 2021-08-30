@@ -23,6 +23,8 @@
 
 #include <glib.h>
 
+#include "tlf.h"
+
 /** possible multi
  *
  * name of possible multiplier and
@@ -33,8 +35,8 @@ typedef struct {
 } possible_mult_t;
 
 
-int addmult(void);
-int addmult2(void);
+void addmult(struct qso_t *qso);
+void addmult_lan(void);
 char *get_mult(int n);
 int get_mult_count(void);
 unsigned int get_matching_length(char *str, unsigned int n);
