@@ -489,11 +489,111 @@ char zone_fix[3] = "";
 
 /* ------------------------------------------------------------------------ */
 
+static void checkexchange_arrlss(char *comment, bool interactive) {
+    char serial[5];
+    char precedent[3];
+    char check[3];
+    char checksection[30];
+
+    static const char *PATTERN =
+	"\\s*(\\b\\d{1,4}\\b)?"     // serial
+	"\\s*(\\b[ABMSQU]\\b)?"     // precedent
+	"\\s*(\\b[AKNWVC][A-Z]?\\d+[A-Z]+(?:/\\d)?\\b)?"    // call
+	"\\s*(\\b\\d{2}\\b)?"       // check
+	"\\s*(\\b[A-Z]{2,3}\\b)?"   // section
+	"\\s*";
+    ;
+    static GRegex *regex = NULL;
+    if (regex == NULL) {
+	regex = g_regex_new(PATTERN, 0, 0, NULL);
+    }
+
+    GMatchInfo *match_info;
+    g_regex_match(regex, comment, 0, &match_info);
+    if (g_match_info_matches(match_info)) {
+	gchar *index;
+
+	// get serial nr.
+	index = g_match_info_fetch(match_info, 1);
+	if (index != NULL && index[0] != 0) {
+	    int s = atoi(index);
+	    if (s != 0)
+		snprintf(serial, sizeof(serial), "%4d", s);
+	} else {
+	    strcpy(serial, spaces(4));
+	}
+	g_free(index);
+
+	// get precedent
+	index = g_match_info_fetch(match_info, 2);
+	if (index != NULL && index[0] != 0) {
+	    strcpy(precedent, index);
+	} else {
+	    strcpy(precedent, spaces(1));
+	}
+	g_free(index);
+
+	// get call update
+	index = g_match_info_fetch(match_info, 3);
+	if (index != NULL && index[0] != 0) {
+	    strcpy(callupdate, index);
+	    if (interactive && call_update) {
+		strcpy(hiscall, callupdate);
+		mvprintw(12, 29, "       ");
+		mvprintw(12, 29, "%s", hiscall);
+	    }
+	} else {
+	    callupdate[0] = 0;
+	}
+	g_free(index);
+
+	// get check
+	index = g_match_info_fetch(match_info, 4);
+	if (index != NULL && index[0] != 0) {
+	    strcpy(check, index);
+	} else {
+	    strcpy(check, spaces(2));
+	}
+	g_free(index);
+
+	// get section
+	section[0] = 0;
+	index = g_match_info_fetch(match_info, 5);
+	if (index != NULL && index[0] != 0) {
+	    strcpy(checksection, index);
+
+	    for (int i = 0; i < get_mult_count(); i++) {
+		if (strcmp(checksection, get_mult(i)) == 0) {
+		    strcpy(section, checksection);
+		    break;
+		}
+	    }
+	}
+	g_free(index);
+
+    }
+    g_match_info_free(match_info);
+
+    if (interactive) {
+	char buf[40];
+	sprintf(buf, " %4s %1s %2s %2s ", serial, precedent,
+		check, section);
+	OnLowerSearchPanel(8, buf);
+    }
+
+    sprintf(ssexchange, "%s %s %s %s", serial, precedent, check, section);
+}
+
+/* ------------------------------------------------------------------------ */
+/*
+    input: comment, interactive
+    output (global vars): section, ssexchange, zone_fix, zone_export
+    side effect: comment updated if interactive
+*/
+
 void checkexchange(char *comment) {
 
-    char precedent[] = " ";
     char serial[5] = "    ";
-    char check[3] = "  ";
     char checksection[30];
     char zone[4] = "";
 
@@ -516,24 +616,6 @@ void checkexchange(char *comment) {
 	"bffbffb",
 	"fff",
 	"ffff"
-    };
-    char precpats[8][4] = {
-	"faf",
-	"fab",
-	"bab",
-	"baf",
-	"fau",
-	"bau",
-	"uaf",
-	"uab"
-    };
-    char checkpats[6][5] = {
-	"bffb",
-	"bffu",
-	"affu",
-	"affb",
-	"affa",
-	"bffa"
     };
     char secpats[13][7] = {
 	"fab",
@@ -580,7 +662,7 @@ void checkexchange(char *comment) {
 	"baaaab"
     };
 
-    int i, s, hr, ii, pr, jj;
+    int i, s, hr, ii, jj;
 
     /* get the pattern sequence from comment string */
     strcpy(cmpattern, "u                    ");
@@ -679,156 +761,7 @@ void checkexchange(char *comment) {
     // ---------------------------arrls------------------------------
     if (CONTEST_IS(ARRL_SS)) {
 
-	// get serial nr.
-
-	s = atoi(comment);
-
-	if (s != 0)
-	    snprintf(serial, sizeof(serial), "%4d", s);
-
-	for (ii = 0; ii < LEN(serpats); ii++) {
-
-	    hr = getlastpattern(serpats[ii]);
-
-	    if (hr > 0)
-		snprintf(serial, sizeof(serial), "%4d",
-			 atoi(comment + hr - 1));
-
-	    if (ii == 5 && hr > 0) {
-		snprintf(serial, sizeof(serial), "%4d", atoi(comment + hr - 1));
-		snprintf(check, sizeof(check), "%2d", atoi(comment + hr + 2));
-	    }
-
-	}
-
-	// get precedent
-
-	if (((comment[0] == 'A')
-		|| (comment[0] == 'B')
-		|| (comment[0] == 'M')
-		|| (comment[0] == 'Q')
-		|| (comment[0] == 'S')
-		|| (comment[0] == 'U'))
-		&& ((comment[1] == ' ') || (cmpattern[2] == 'f'))) {
-
-	    precedent[0] = comment[0];
-	}
-
-
-	/* look for a single letter */
-	for (ii = 0; ii < LEN(precpats); ii++) {
-
-	    hr = getlastpattern(precpats[ii]);
-
-	    if (hr > 0) {
-		pr = comment[hr];
-		if ((pr == 'Q') || (pr == 'A') || (pr == 'B')
-			|| (pr == 'U') || (pr == 'M') || (pr == 'S')) {
-		    precedent[0] = pr;
-		    precedent[1] = '\0';
-		}
-	    }
-	}
-
-	// get call update
-
-	for (ii = 0; ii < LEN(callpats); ii++) {
-
-	    hr = getlastpattern(callpats[ii]);
-
-	    if (hr > 0) {
-		if (((comment[hr] == 'A') && (comment[hr + 1] > 59))
-			|| (comment[hr] == 'K') || (comment[hr] == 'N')
-			|| (comment[hr] == 'W')
-			|| (comment[hr] == 'V') || (comment[hr] == 'C')) {
-
-		    switch (ii) {
-
-			case 0 ... 1:
-			    strncpy(callupdate, comment + hr, 4);
-			    callupdate[4] = '\0';
-			    break;
-			case 2 ... 3:
-			    strncpy(callupdate, comment + hr, 5);
-			    callupdate[5] = '\0';
-			    break;
-			case 4:
-			    strncpy(callupdate, comment + hr, 6);
-			    callupdate[6] = '\0';
-
-		    }
-		    if (strlen(callupdate) > 3) {
-
-			if (call_update == 1)
-			    strcpy(hiscall, callupdate);
-
-			mvprintw(12, 29, "       ");
-			mvprintw(12, 29, "%s", hiscall);
-		    }
-
-		}
-	    }
-
-	}
-
-	// get check
-
-	for (ii = 0; ii < LEN(checkpats); ii++) {
-
-	    hr = getlastpattern(checkpats[ii]);
-	    if (hr > 0) {
-		check[0] = comment[hr];
-		check[1] = comment[hr + 1];
-		check[2] = '\0';
-	    }
-	}
-
-	// get section
-	*section = '\0';
-
-	for (ii = 0; ii < LEN(secpats); ii++) {
-
-	    hr = getlastpattern(secpats[ii]);
-
-	    if (hr > 0) {
-
-		g_strlcpy(checksection, comment + hr, 4);
-		g_strchomp(checksection);
-
-		for (jj = 0; jj < get_mult_count(); jj++) {
-
-		    char *multi = g_strdup(get_mult(jj));
-		    g_strchomp(multi);
-
-		    if ((strlen(multi) >= 1) &&
-			    (strcmp(checksection, multi) == 0)) {
-
-			strcpy(section, multi);
-			break;
-		    }
-		    g_free(multi);
-		}
-	    }
-	}
-
-	{
-	    char buf[40];
-	    sprintf(buf, " %4s %1s %2s %2s ", serial, precedent,
-		    check, section);
-	    OnLowerSearchPanel(8, buf);
-	}
-
-	/* \todo use sprintf */
-	ssexchange[0] = '\0';
-
-	strcat(ssexchange, serial);
-	strcat(ssexchange, " ");
-	strcat(ssexchange, precedent);
-	strcat(ssexchange, " ");
-	strcat(ssexchange, check);
-	strcat(ssexchange, " ");
-	strcat(ssexchange, section);
-
+	checkexchange_arrlss(comment, true /*FIXME*/);
 	return;		// end arrlss
     }
 
@@ -857,8 +790,8 @@ void checkexchange(char *comment) {
 		if (ii == 5 && hr > 0) {
 		    snprintf(serial, sizeof(serial), "%4d",
 			     atoi(comment + hr - 1));
-		    snprintf(check, sizeof(check), "%2d",
-			     atoi(comment + hr + 2));
+// NOT USED	    snprintf(check, sizeof(check), "%2d",
+//			     atoi(comment + hr + 2));
 		}
 	    }
 
@@ -1008,8 +941,7 @@ int getlastpattern(char *checkstring) {
 	for (i = 0; i < (strlen(cmpattern) - strlen(checkstring)) - 1; i++) {
 
 	    newpat[0] = '\0';
-	    strncat(newpat, cmpattern + i, strlen(comment));
-
+	    strncat(newpat, cmpattern + i, strlen(comment));    //FIXME: use parameter
 	    if (strncmp(newpat, checkstring, strlen(checkstring)) == 0) {
 		x = i;
 	    }
