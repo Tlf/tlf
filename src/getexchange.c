@@ -56,8 +56,6 @@
 
 #include "getexchange.h"
 
-#define LEN(array) (sizeof(array) / sizeof(array[0]))
-
 
 
 int getlastpattern(char *checkstring);
@@ -481,8 +479,8 @@ int getexchange(void) {
 
 char cmpattern[32] = "                               ";	// global
 char ssexchange[30] = "";
-char section[8] = "";
-char callupdate[7];
+char section[MAX_SECTION_LENGTH + 1] = "";
+char callupdate[MAX_CALL_LENGTH + 1];
 int call_update = 0;
 char zone_export[3] = "  ";
 char zone_fix[3] = "";
@@ -493,7 +491,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
     char serial[5];
     char precedent[3];
     char check[3];
-    char checksection[30];
+    char checksection[MAX_SECTION_LENGTH + 1];
 
     static const char *PATTERN =
 	"\\s*(\\b\\d{1,4}\\b)?"     // serial
@@ -536,10 +534,10 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 3);
 	if (index != NULL && index[0] != 0) {
-	    strcpy(callupdate, index);
-	    if (interactive && call_update) {
+	    g_strlcpy(callupdate, index, sizeof(callupdate));
+	    if (interactive && call_update) {   // FIXME move to input loop
 		strcpy(hiscall, callupdate);
-		mvprintw(12, 29, "       ");
+		mvprintw(12, 29, spaces(MAX_CALL_LENGTH));
 		mvprintw(12, 29, "%s", hiscall);
 	    }
 	} else {

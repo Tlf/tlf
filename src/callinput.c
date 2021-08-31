@@ -153,7 +153,7 @@ int callinput(void) {
     printcall();	/* print call input field */
     searchlog();
 
-    while (strlen(hiscall) <= 13) {
+    while (strlen(hiscall) <= MAX_CALL_LENGTH) {
 
 	show_zones(bandinx);
 	printcall();
@@ -993,7 +993,7 @@ int callinput(void) {
 	/* Add character to call input field. */
 	if (x >= '/' && x <= 'Z') {
 
-	    if (strlen(hiscall) < 13) {
+	    if (strlen(hiscall) < MAX_CALL_LENGTH) {
 		instring[0] = x;
 		instring[1] = '\0';
 		addch(x);
@@ -1137,7 +1137,7 @@ int autosend() {
 	    x = x - 32;
 
 	int len = strlen(hiscall);
-	if (len < 13 && x >= '/' && x <= 'Z') {
+	if (len < MAX_CALL_LENGTH && x >= '/' && x <= 'Z') {
 	    char append[2];
 
 	    /* insert into hiscall */
