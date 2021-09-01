@@ -38,6 +38,7 @@
 #include "ui_utils.h"
 #include "time_update.h"
 
+extern bool vk_running;
 
 //
 // get estimated CQ length in milliseconds
@@ -66,6 +67,32 @@ static int wait_50ms_for_key() {
 }
 
 #define TIME_UPDATE_MS  500
+
+
+/* wait till VK message is finished or key pressed.
+ * calling time_update() each 500 ms.
+ */
+int wait_vk_finish() {
+    int key = NO_KEY;
+    int update_timer = TIME_UPDATE_MS;
+
+    while (key == NO_KEY) {
+	key = wait_50ms_for_key();
+
+	if (vk_running == false)
+	    return NO_KEY;
+
+	update_timer -= 50;
+
+	if (update_timer <= 0) {
+	    time_update();
+	    update_timer = TIME_UPDATE_MS;
+	}
+    }
+
+    return key;
+}
+
 
 // Wait for given ms, polling each 50 ms for a key and calling time_update()
 // each 500 ms. Pressing a key terminates the waiting loop.
@@ -102,6 +129,7 @@ int auto_cq(void) {
 
     int key = NO_KEY;
 
+    // any key press terminates auto CQ loop
     while (key == NO_KEY) {
 
 	send_standard_message(11);
@@ -110,9 +138,13 @@ int auto_cq(void) {
 
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-	// if length of message is known then wait until its end
-	// key press terminates auto CQ loop
-	key = wait_ms(message_time);
+	// wait till message ends (calculated for CW, playtime for SSB)
+	// or any key press
+	if (trxmode == CWMODE || trxmode == DIGIMODE) {
+	    key = wait_ms(message_time);
+	} else {
+	    key = wait_vk_finish();
+	}
 
 	// wait between calls
 	for (int delayval = cqdelay; delayval > 0 && key == NO_KEY; delayval--) {
