@@ -25,6 +25,7 @@
 #include "clear_display.h"
 #include "err_utils.h"
 #include "globalvars.h"
+#include "ignore_unused.h"
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -46,9 +47,12 @@ int stoptx(void) {
 
 	    }
 	}
+    } else if (trxmode == SSBMODE) {
+	IGNORE(system("pkill -SIGTERM -n play_vk"));
+	return 0;
     } else {
-	return (1);
+	return 1;
     }
-    return (0);
+    return 0;
 }
 
