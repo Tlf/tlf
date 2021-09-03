@@ -28,7 +28,7 @@ trap 'kill -s INT $PID' TERM INT
 
 # play file on the default sound device in backgroudn, so signals can be catch
 # by the 'trap' instruction above
-play $1 -q 2>/dev/null &
+play -q $1 2>/dev/null &
 PID=$!
 wait $PID
 
