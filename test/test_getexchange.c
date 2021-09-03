@@ -80,7 +80,7 @@ static getex_arrlss_t getex_arrlss[] = {
 	"   8      ", "", "" // leading space added
     },
     {
-	"123 X",    // junk after serial
+	"123 X",    // junk after serial (invalid precedent)
 	" 123      ", "", ""  // junk dropped
     },
     {
@@ -112,11 +112,51 @@ static getex_arrlss_t getex_arrlss[] = {
 	" 123 M 73 AK", "AK", "N1XYZ"
     },
     {
-	"123 M 73 A",   // partial section w/o call
+	"123 M 2E0XYZ 73 IL",   // non-US/CA call
+	" 123 M 73 IL", "IL", ""
+    },
+    {
+	"123 M K/G1Q 73 GA",   // non recognized call
+	" 123 M    ", "", ""
+    },
+    {
+	"456M N1XYZ 73AK",   // less spaces
+	" 456 M 73 AK", "AK", "N1XYZ"
+    },
+    {
+	"9M73AK",            // squashed
+	"   9 M 73 AK", "AK", ""
+    },
+    {
+	"123AK1ABC73OH",     // squashed with call
+	" 123 A 73 OH", "OH", "K1ABC"
+    },
+    {
+	"123AK1ABC7KS",     // squashed with call, partial check
+	" 123 A    KS", "KS", "K1ABC"
+    },
+    {
+	"123AK1ABC/873OH",  // squashed with complex call
+	" 123 A 73 OH", "OH", "K1ABC/8"
+    },
+    {
+	"123AK1XBC/83LAX",  // squashed with complex call and partial check
+	" 123 A    LAX", "LAX", "K1XBC/8"
+    },
+    {
+	"123AL1ABC73NH",    // squashed with invalid call
+	" 123 A 73 NH", "NH", ""
+    },
+    {
+	"123AK1AUT",        // squashed with call only
+	" 123 A    ", "", "K1AUT"
+    },
+    {
+	"123 M 73 A",       // partial section w/o call
 	" 123 M 73 ", "", ""
     },
     {
-	"123 M 73 AS",   // invalid section
+	"123 M 73 AS",      // invalid section
 	" 123 M 73 ", "", ""    // section not considered
     },
     {
@@ -141,7 +181,7 @@ void test_getexchange_arrlss(void **state) {
 
     char *input;
 
-    for (int i = 0; i < sizeof(getex_arrlss) / sizeof(getex_arrlss_t); ++i) {
+    for (int i = 0; i < LEN(getex_arrlss); ++i) {
 	input = g_strdup_printf("%-20s", getex_arrlss[i].input);
 
 	strcpy(comment, input); //FIXME should not be needed
@@ -156,5 +196,4 @@ void test_getexchange_arrlss(void **state) {
 	g_free(input);
     }
 }
-
 

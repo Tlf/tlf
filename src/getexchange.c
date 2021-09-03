@@ -494,11 +494,11 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
     char checksection[MAX_SECTION_LENGTH + 1];
 
     static const char *PATTERN =
-	"\\s*(\\b\\d{1,4}\\b)?"     // serial
-	"\\s*(\\b[ABMSQU]\\b)?"     // precedent
-	"\\s*(\\b[AKNWVC][A-Z]?\\d+[A-Z]+(?:/\\d)?\\b)?"    // call
-	"\\s*(\\b\\d{2}\\b)?"       // check
-	"\\s*(\\b[A-Z]{2,3}\\b)?"   // section
+	"\\s*(\\d+)?"       // serial
+	"\\s*([ABMSQU])?"   // precedent
+	"\\s*([A-Z0-9]*?[A-Z]\\d+[A-Z]+(?:/\\d)?)?"  // call w/ optional region
+	"\\s*(\\d+)?"       // check
+	"\\s*([A-Z]{2,3})?" // section
 	"\\s*";
     ;
     static GRegex *regex = NULL;
@@ -513,7 +513,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 
 	// get serial nr.
 	index = g_match_info_fetch(match_info, 1);
-	if (index != NULL && index[0] != 0) {
+	if (index != NULL && strlen(index) >= 1 && strlen(index) <= 4) {
 	    int s = atoi(index);
 	    if (s != 0)
 		snprintf(serial, sizeof(serial), "%4d", s);
@@ -533,7 +533,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 
 	// get call update
 	index = g_match_info_fetch(match_info, 3);
-	if (index != NULL && index[0] != 0) {
+	if (index != NULL && strchr("AKNWVC", index[0]) != NULL) {  // US/CA only
 	    g_strlcpy(callupdate, index, sizeof(callupdate));
 	    if (interactive && call_update) {   // FIXME move to input loop
 		strcpy(hiscall, callupdate);
@@ -547,7 +547,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 
 	// get check
 	index = g_match_info_fetch(match_info, 4);
-	if (index != NULL && index[0] != 0) {
+	if (index != NULL && strlen(index) == 2) {  // only if 2 digits
 	    strcpy(check, index);
 	} else {
 	    strcpy(check, spaces(2));
@@ -560,7 +560,8 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	if (index != NULL && index[0] != 0) {
 	    strcpy(checksection, index);
 
-	    for (int i = 0; i < get_mult_count(); i++) {
+	    for (int i = 0; i < get_mult_count();
+		    i++) {    // FIXME use some common function
 		if (strcmp(checksection, get_mult(i)) == 0) {
 		    strcpy(section, checksection);
 		    break;
@@ -724,7 +725,6 @@ void checkexchange(char *comment) {
 	for (ii = 0; ii < LEN(callpats); ii++) {
 
 	    hr = getlastpattern(callpats[ii]);	// call update ?
-
 	    if (hr > 0) {
 
 		switch (ii) {
