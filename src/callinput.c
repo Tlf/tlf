@@ -88,6 +88,8 @@ bool plain_number(char *str);
 void handle_bandswitch(int direction);
 void handle_memory_operation(memory_op_t op);
 
+static pthread_t vk_thread;
+
 
 void tune() {
     int count;
@@ -1165,10 +1167,48 @@ int autosend() {
     return x;
 }
 
+void *play_thread(void *ptr) {
+    char *audiofile = (char *)ptr;
+
+    pthread_detach(pthread_self());
+
+    vk_running=true;
+
+    // use play_vk from current dir, if available
+    // note: this overrides PATH setting
+    bool has_local_play_vk = (access("./play_vk", X_OK) == 0);
+    char *playcommand = g_strdup_printf("%s %s",
+			(has_local_play_vk ? "./play_vk" : "play_vk"),
+				audiofile);
+
+    /* CAT PTT wanted and available, use it. */
+    if (rigptt == CAT_PTT_USE) {
+	/* Request PTT On */
+	rigptt |= CAT_PTT_ON;
+    } else {		/* Fall back to netkeyer interface */
+	netkeyer(K_PTT, "1");	// ptt on
+    }
+
+    usleep(txdelay * 1000);
+    IGNORE(system(playcommand));;
+    g_free(playcommand);
+
+    /* CAT PTT wanted, available, and active. */
+    if (rigptt == (CAT_PTT_USE | CAT_PTT_ACTIVE)) {
+	/* Request PTT Off */
+	rigptt |= CAT_PTT_OFF;
+    } else {		/* Fall back to netkeyer interface */
+	netkeyer(K_PTT, "0");	// ptt off
+    }
+
+    vk_running= false;
+
+    return NULL;
+}
 
 void play_file(char *audiofile) {
 
-    if (*audiofile == 0) {
+    if (audiofile == NULL || *audiofile == 0) {
 	return;
     }
 
@@ -1177,46 +1217,12 @@ void play_file(char *audiofile) {
 	return;
     }
 
-    /* play sound in separate process so it can be killed from the main one */
-    int pid = fork();
-    switch (pid) {
-	case -1:
-	    TLF_LOG_INFO("could not start soudn process!");
-	    break;
-	case 0: {
-	    // use play_vk from current dir, if available
-	    // note: this overrides PATH setting
-	    bool has_local_play_vk = (access("./play_vk", X_OK) == 0);
-	    char *playcommand = g_strdup_printf("%s %s",
-				(has_local_play_vk ? "./play_vk" : "play_vk"),
-					audiofile);
-
-	    /* CAT PTT wanted and available, use it. */
-	    if (rigptt == CAT_PTT_USE) {
-	    /* Request PTT On */
-		rigptt |= CAT_PTT_ON;
-	    } else {		/* Fall back to netkeyer interface */
-		netkeyer(K_PTT, "1");	// ptt on
-	    }
-
-	    usleep(txdelay * 1000);
-	    IGNORE(system(playcommand));;
-	    g_free(playcommand);
-
-	    /* CAT PTT wanted, available, and active. */
-	    if (rigptt == (CAT_PTT_USE | CAT_PTT_ACTIVE)) {
-		/* Request PTT Off */
-		rigptt |= CAT_PTT_OFF;
-	    } else {		/* Fall back to netkeyer interface */
-		netkeyer(K_PTT, "0");	// ptt off
-	    }
-	    _exit(0);	    /* avoid calling atexit() handlers */
-	}
-
-	default:
-	    break;
+    /* play sound in separate thread so it can be killed from the main one */
+    if (pthread_create(&vk_thread, NULL, play_thread, (void *)audiofile) != 0) {
+	    TLF_LOG_INFO("could not start sound thread!");
     }
 }
+
 
 
 void send_bandswitch(freq_t freq) {

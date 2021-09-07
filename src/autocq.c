@@ -38,11 +38,11 @@
 #include "ui_utils.h"
 #include "time_update.h"
 
+extern bool vk_running;
+#define NO_KEY -1
 
-//
 // get estimated CQ length in milliseconds
 // returns 0 if can't be determined
-//
 static int get_autocq_time() {
     if (trxmode != CWMODE) {
 	return 0;   // unknown
@@ -52,9 +52,38 @@ static int get_autocq_time() {
 }
 
 
-int auto_cq(void) {
+/* wait till CW message is finished or key pressed */
+int wait_cw_finish(int message_time) {
+	if (message_time > 0) {
+	    for (int j = 0; j < 10; j++) {
+		usleep(message_time * 100);
+		time_update();
+		const int inchar = key_poll();
+		if (inchar > 0 && inchar != KEY_RESIZE) {
+		    return inchar;
+		}
+	    }
+	}
+	return NO_KEY;
+}
 
-#define NO_KEY -1
+
+/* wait till VK message is finished or key pressed */
+int wait_vk_finish() {
+    while (1) {
+	usleep(100000);
+	time_update();
+	if (vk_running == false) {
+	    return NO_KEY;
+	}
+	const int inchar = key_poll();
+	if (inchar > 0 && inchar != KEY_RESIZE) {
+	    return inchar;
+	}
+    }
+}
+
+int auto_cq(void) {
 
     int key = NO_KEY;
 
@@ -64,25 +93,19 @@ int auto_cq(void) {
 
     const long message_time = get_autocq_time();
 
+    // any key press terminates auto CQ loop
     while (key == NO_KEY) {
 
 	send_standard_message(11);
 
 	mvprintw(12, 29, "");
-
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-	// if length of message is known then wait until its end
-	// key press terminates auto CQ loop
-	if (message_time > 0) {
-	    for (int j = 0; j < 10 && key == NO_KEY; j++) {
-		usleep(message_time * 100);
-		time_update();
-		const int inchar = key_poll();
-		if (inchar > 0 && inchar != KEY_RESIZE) {
-		    key = inchar;
-		}
-	    }
+	// wait till message ends (calculated for CW, playtime for SSB)
+	if (trxmode == CWMODE || trxmode == DIGIMODE) {
+	    key = wait_cw_finish(message_time);
+	} else {
+	    key = wait_vk_finish();
 	}
 
 	// wait between calls
