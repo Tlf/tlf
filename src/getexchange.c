@@ -57,6 +57,7 @@
 #include "getexchange.h"
 
 
+char callupdate[MAX_CALL_LENGTH + 1];
 
 int getlastpattern(char *checkstring);
 void exchange_edit(void);
@@ -332,6 +333,12 @@ int getexchange(void) {
 		CONTEST_IS(STEWPERRY)) {
 
 	    checkexchange(comment);
+
+	    if (call_update && strlen(callupdate) >= 3) {
+		strcpy(hiscall, callupdate);
+		mvprintw(12, 29, spaces(MAX_CALL_LENGTH));
+		mvprintw(12, 29, "%s", hiscall);
+	    }
 	}
 
 	/* <Enter>, <Tab>, Ctl-K, '\' */
@@ -480,7 +487,6 @@ int getexchange(void) {
 char cmpattern[32] = "                               ";	// global
 char ssexchange[30] = "";
 char section[MAX_SECTION_LENGTH + 1] = "";
-char callupdate[MAX_CALL_LENGTH + 1];
 int call_update = 0;
 char zone_export[3] = "  ";
 char zone_fix[3] = "";
@@ -535,13 +541,6 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	index = g_match_info_fetch(match_info, 3);
 	if (index != NULL && strchr("AKNWVC", index[0]) != NULL) {  // US/CA only
 	    g_strlcpy(callupdate, index, sizeof(callupdate));
-	    if (interactive && call_update) {   // FIXME move to input loop
-		strcpy(hiscall, callupdate);
-		mvprintw(12, 29, spaces(MAX_CALL_LENGTH));
-		mvprintw(12, 29, "%s", hiscall);
-	    }
-	} else {
-	    callupdate[0] = 0;
 	}
 	g_free(index);
 
@@ -663,6 +662,8 @@ void checkexchange(char *comment) {
 
     int i, s, hr, ii, jj;
 
+    callupdate[0] = 0;
+
     /* get the pattern sequence from comment string */
     strcpy(cmpattern, "u                    ");
 
@@ -742,14 +743,6 @@ void checkexchange(char *comment) {
 			callupdate[6] = '\0';
 		}
 
-		if (strlen(callupdate) > 3) {
-
-		    if (call_update == 1)
-			strcpy(hiscall, callupdate);
-
-		    mvprintw(12, 29, "       ");
-		    mvprintw(12, 29, "%s", hiscall);
-		}
 	    }
 	}
 
@@ -862,8 +855,6 @@ void checkexchange(char *comment) {
 
 	}			// end dx_arrlsections
 
-	callupdate[0] = '\0';
-
     }
 
 
@@ -894,16 +885,6 @@ void checkexchange(char *comment) {
 			callupdate[6] = '\0';
 
 		}
-
-		if (strlen(callupdate) > 3) {
-
-		    if (call_update == 1)
-			strcpy(hiscall, callupdate);
-
-		    mvprintw(12, 29, "       ");
-		    mvprintw(12, 29, "%s", hiscall);
-		}
-
 	    }
 	}
 
