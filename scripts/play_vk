@@ -25,7 +25,12 @@
 #amixer -c 0 set Mic mute -q
 
 # play file on the default sound device
-play $1 -q 2>/dev/null
+
+# OSS play utility syntax:
+#play $1 -q 2>/dev/null
+
+# SoX play utility syntax
+play -q $1
 
 #unmute mic
 #amixer -c 0 set Mic unmute -q
