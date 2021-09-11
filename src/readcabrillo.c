@@ -83,7 +83,7 @@ void write_log_fm_cabr() {
 	strcpy(section, getgrid(comment));
     }
 
-    checkexchange(comment);
+    checkexchange(comment, false);
     dupe = is_dupe(hiscall, bandinx, trxmode);
     current_qso = collect_qso_data();
     addcall(current_qso);   /* add call to worked list and check it for dupe */

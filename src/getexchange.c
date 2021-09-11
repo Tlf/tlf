@@ -332,13 +332,15 @@ int getexchange(void) {
 		CONTEST_IS(CQWW) ||
 		CONTEST_IS(STEWPERRY)) {
 
-	    checkexchange(comment);
+	    checkexchange(comment, true);
 
 	    if (call_update && strlen(callupdate) >= 3) {
 		strcpy(hiscall, callupdate);
 		mvprintw(12, 29, spaces(MAX_CALL_LENGTH));
 		mvprintw(12, 29, "%s", hiscall);
 	    }
+
+            refreshp();
 	}
 
 	/* <Enter>, <Tab>, Ctl-K, '\' */
@@ -591,7 +593,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
     side effect: comment updated if interactive
 */
 
-void checkexchange(char *comment) {
+void checkexchange(char *comment, bool interactive) {
 
     char serial[5] = "    ";
     char checksection[30];
@@ -755,7 +757,7 @@ void checkexchange(char *comment) {
     // ---------------------------arrls------------------------------
     if (CONTEST_IS(ARRL_SS)) {
 
-	checkexchange_arrlss(comment, true /*FIXME*/);
+	checkexchange_arrlss(comment, interactive);
 	return;		// end arrlss
     }
 
