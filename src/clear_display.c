@@ -32,6 +32,7 @@
 #include "cw_utils.h"
 #include "change_rst.h"
 #include "get_time.h"
+#include "getctydata.h"
 #include "getwwv.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "logit.h"
@@ -40,6 +41,7 @@
 #include "qsonr_to_str.h"
 #include "searchlog.h"		// Includes glib.h
 #include "setcontest.h"
+#include "showinfo.h"
 #include "showscore.h"
 #include "time_update.h"
 #include "tlf.h"
@@ -178,4 +180,9 @@ void displayit(void) {
     mvprintw(5, 0, "");
 
     clear_display();
+
+    // show DX info if available
+    if (strlen(hiscall) >= 3) {
+	showinfo(getctydata_pfx(hiscall));
+    }
 }
