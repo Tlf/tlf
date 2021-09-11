@@ -51,7 +51,7 @@ void refresh_splitlayout() {}
 
 
 int setup_default(void **state) {
-    ssexchange[0] = 0;
+    normalized_comment[0] = 0;
     section[0] = 0;
     callupdate[0] = 0;
     return 0;
@@ -59,8 +59,8 @@ int setup_default(void **state) {
 
 typedef struct {
     char *input;
-    char *expected_ssexchange;
-    char *expected_section;
+    char *expected_normalized_comment;
+    char *expected_mult1_value;
     char *expected_callupdate;
 } getex_arrlss_t;
 
@@ -184,16 +184,92 @@ void test_getexchange_arrlss(void **state) {
     for (int i = 0; i < LEN(getex_arrlss); ++i) {
 	input = g_strdup_printf("%-20s", getex_arrlss[i].input);
 
-	strcpy(comment, input); //FIXME should not be needed
-	callupdate[0] = 0;
-
 	checkexchange(input);
 
-	assert_string_equal(ssexchange, getex_arrlss[i].expected_ssexchange);
-	assert_string_equal(section, getex_arrlss[i].expected_section);
+	assert_string_equal(normalized_comment,
+			    getex_arrlss[i].expected_normalized_comment);
+	assert_string_equal(mult1_value, getex_arrlss[i].expected_mult1_value);
 	assert_string_equal(callupdate, getex_arrlss[i].expected_callupdate);
 
 	g_free(input);
     }
 }
 
+
+typedef struct {
+    char *input;
+    char *expected_zone_fix;
+    char *expected_zone_export;
+    char *expected_callupdate;
+} getex_cqww_t;
+
+static getex_cqww_t getex_cqww[] = {
+    // exchange format:
+    // <zone> <call_fix> <zone_fix>
+    {
+	"",     // empty
+	"", "00"/*FIXME*/, ""
+    },
+    {
+	"12",     // plain
+	"", "12", ""
+    },
+    {
+	"  12",     // leading space
+	"12", "12", ""
+    },
+    {
+	"  5",     // single digit
+	"05", "05", ""
+    },
+    {
+	"12 34",     // corrected
+	"34", "34", ""
+    },
+    {
+	"12 K1AB",     // with call
+	"", "12", "K1AB"
+    },
+    {
+	"12 F1AB 3",     // with call and correction
+	"03", "03", "F1AB"
+    },
+    {
+	"12 7 SK1AB",     // with correction and call
+	"07", "07", "SK1AB"
+    },
+#if 0
+    {
+	"12 K1AB/4",     // call with region
+	"", "", "K1AB/4"
+    },
+    {
+	"12 G/K1AB/QRP",    // complexer call
+	"", "", "G/K1AB/QRP"
+    },
+#endif
+};
+
+void test_getexchange_cqww(void **state) {
+    contest = lookup_contest("CQWW");
+
+    char *input;
+
+    for (int i = 0; i < LEN(getex_cqww); ++i) {
+	input = g_strdup_printf("%-20s", getex_cqww[i].input);
+	printf("%s{\n", input);
+	strcpy(comment, input); //FIXME should not be needed
+	callupdate[0] = 0;
+	zone_fix[0] = 0;
+	zone_export[0] = 0;
+
+	checkexchange(input);
+	printf("zone_fix=|%s| zone_export=|%s|\n", zone_fix, zone_export);
+
+	assert_string_equal(zone_fix, getex_cqww[i].expected_zone_fix);
+	assert_string_equal(zone_export, getex_cqww[i].expected_zone_export);
+	assert_string_equal(callupdate, getex_cqww[i].expected_callupdate);
+
+	g_free(input);
+    }
+}
