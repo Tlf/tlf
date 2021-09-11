@@ -213,7 +213,7 @@ void prepare_specific_part(void) {
 
     if (CONTEST_IS(ARRL_SS)) {
 	// ----------------------------arrlss----------------
-	tmp = g_strndup(ssexchange, 22);
+	tmp = g_strndup(comment, 22);
 	strcat(logline4, tmp);
 	g_free(tmp);
 	section[0] = '\0';
