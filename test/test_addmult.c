@@ -315,14 +315,14 @@ void test_arrlss(void **state) {
     setcontest("arrl_ss");
 
     setup_multis("SC\nSCV\n");
-    strcpy(ssexchange, "SCV");
-    set_this_qso("");   // NOTE: ssexchange is not part of qso_t
+    strcpy(mult1_value, "SCV");
+    set_this_qso("");   // NOTE: mult1_value is not part of qso_t
     addmult(this_qso);
-    strcpy(ssexchange, "97A23SCV");
+    strcpy(mult1_value, "S");   // incomplete value (normally doesn't happen)
     addmult(this_qso);
-    strcpy(ssexchange, "KL");
+    strcpy(mult1_value, "KL");
     addmult(this_qso);
-    strcpy(ssexchange, "SC");
+    strcpy(mult1_value, "SC");
     addmult(this_qso);
     assert_int_equal(nr_multis, 2);
     assert_string_equal(multis[0].name, "SCV");

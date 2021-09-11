@@ -93,8 +93,10 @@ extern char zone_export[];
 extern int itumult;
 
 extern char ssexchange[];
+extern char mult1_value[40];
 extern int new_mult;
 extern char comment[80];
+extern char normalized_comment[80];
 
 extern char lan_logline[];
 extern char logfile[];

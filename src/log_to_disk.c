@@ -83,6 +83,11 @@ void log_to_disk(int from_lan) {
 	strcpy(lastcall, hiscall);
 	strcpy(last_rst, sent_rst);
 
+	// use normalized comment if available
+	if (strlen(normalized_comment) > 0) {
+	    strcpy(comment, normalized_comment);
+	}
+
 	restart_band_timer();
 
 	current_qso = collect_qso_data();

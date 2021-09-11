@@ -41,6 +41,7 @@ GPtrArray *mults_possible;
 
 enum { ALL_BAND, PER_BAND };
 
+char mult1_value[40];
 
 void addmult(struct qso_t *qso) {
     int i;
@@ -57,7 +58,7 @@ void addmult(struct qso_t *qso) {
 
 	/* check all possible mults for match and remember the longest one */
 	for (i = 0; i < mults_possible->len; i++) {
-	    int len = get_matching_length(ssexchange, i);
+	    int len = get_matching_length(mult1_value, i);
 	    if (len > matching_len) {
 		matching_len = len;
 		idx = i;
@@ -66,6 +67,7 @@ void addmult(struct qso_t *qso) {
 
 	if (idx >= 0) {
 	    remember_multi(get_mult(idx), bandinx, ALL_BAND);
+	    // NOTE: return value not used, new mult is not marked in log
 	}
     }
 

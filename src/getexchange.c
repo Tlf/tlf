@@ -478,7 +478,7 @@ int getexchange(void) {
 
     commentfield = 0;
 
-    return (x);
+    return x;
 }
 
 
@@ -511,6 +511,8 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
     if (regex == NULL) {
 	regex = g_regex_new(PATTERN, 0, 0, NULL);
     }
+
+    section[0] = 0;
 
     GMatchInfo *match_info;
     g_regex_match(regex, comment, 0, &match_info);
@@ -554,13 +556,12 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	g_free(index);
 
 	// get section
-	section[0] = 0;
 	index = g_match_info_fetch(match_info, 5);
 	if (index != NULL && index[0] != 0) {
 	    strcpy(checksection, index);
 
-	    for (int i = 0; i < get_mult_count();
-		    i++) {    // FIXME use some common function
+	    // FIXME use some common function
+	    for (int i = 0; i < get_mult_count(); i++) {
 		if (strcmp(checksection, get_mult(i)) == 0) {
 		    strcpy(section, checksection);
 		    break;
@@ -579,13 +580,14 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	OnLowerSearchPanel(8, buf);
     }
 
-    sprintf(ssexchange, "%s %s %s %s", serial, precedent, check, section);
+    sprintf(normalized_comment, "%s %s %s %s", serial, precedent, check, section);
+    g_strlcpy(mult1_value, section, sizeof(section));   // multiplier: section
 }
 
 /* ------------------------------------------------------------------------ */
 /*
     input: comment, interactive
-    output (global vars): section, ssexchange, zone_fix, zone_export
+    output (global vars): section, ssexchange, mult1_value, zone_fix, zone_export
     side effect: comment updated if interactive
 */
 
@@ -663,6 +665,7 @@ void checkexchange(char *comment) {
     int i, s, hr, ii, jj;
 
     callupdate[0] = 0;
+    normalized_comment[0] = 0;
 
     /* get the pattern sequence from comment string */
     strcpy(cmpattern, "u                    ");

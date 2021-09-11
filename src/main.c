@@ -264,6 +264,7 @@ char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
 { "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
 char comment[80];
+char normalized_comment[80];
 char cqzone[3] = "";
 char ituzone[3] = "";
 char continent[3] = "";
@@ -997,7 +998,6 @@ int main(int argc, char *argv[]) {
     scroll_log();		/* show the last 5  log lines and
 				   set the next serial number */
     show_station_info();
-
     clearmsg_wait();
 
     packet_init();
