@@ -38,6 +38,7 @@
 #include "printcall.h"
 #include "setcontest.h"
 #include "showscore.h"
+#include "showinfo.h"
 #include "tlf_curses.h"
 #include "trx_memory.h"
 #include "ui_utils.h"
@@ -155,9 +156,7 @@ void time_update(void) {
 	static time_t prev_wwv_time = 0;
 	if (lastwwv_time > prev_wwv_time) { // is there a newer WWV message?
 	    prev_wwv_time = lastwwv_time;
-	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	    mvprintw(LINES - 1, 0, backgrnd_str);
-	    wwv_show_footer();              // print WWV info
+	    update_info_line(); // show it unless already showing country info
 	}
 
 	int currentterm = miniterm;

@@ -26,6 +26,7 @@
 
 #include <string.h>
 
+#include "callinput.h"
 #include "getctydata.h"
 #include "globalvars.h"
 #include "keystroke_names.h"
@@ -108,7 +109,7 @@ void calledit(void) {
 		hiscall[j] = hiscall[j + 1];	/* move to left incl. \0 */
 	    }
 
-	    showinfo(getctydata_pfx(hiscall));
+	    update_info_line();
 
 	    if (cnt > 1)
 		searchlog();
@@ -126,7 +127,7 @@ void calledit(void) {
 		    hiscall[j] = hiscall[j + 1];
 		}
 
-		showinfo(getctydata_pfx(hiscall));
+		update_info_line();
 
 		if (cnt > 1)
 		    searchlog();
@@ -143,11 +144,9 @@ void calledit(void) {
 	} else if (i != ESCAPE) {
 
 	    // Promote lower case to upper case.
-	    if ((i >= 97) && (i <= 122))
-		i = i - 32;
+	    i = g_ascii_toupper(i);
 
-	    // Accept A-Z or / and 1-9
-	    if (((i >= 65) && (i <= 90)) || ((i >= 47) && (i <= 57))) {
+	    if (valid_call_char(i)) {
 
 		call2[0] = '\0';
 
@@ -173,7 +172,7 @@ void calledit(void) {
 		else
 		    break;
 
-		showinfo(getctydata_pfx(hiscall));
+		update_info_line();
 
 		searchlog();
 
