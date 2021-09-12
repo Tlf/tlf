@@ -184,7 +184,7 @@ void test_getexchange_arrlss(void **state) {
     for (int i = 0; i < LEN(getex_arrlss); ++i) {
 	input = g_strdup_printf("%-20s", getex_arrlss[i].input);
 
-	checkexchange(input);
+	checkexchange(input, false);
 
 	assert_string_equal(normalized_comment,
 			    getex_arrlss[i].expected_normalized_comment);
@@ -263,7 +263,7 @@ void test_getexchange_cqww(void **state) {
 	zone_fix[0] = 0;
 	zone_export[0] = 0;
 
-	checkexchange(input);
+	checkexchange(input, false);
 	printf("zone_fix=|%s| zone_export=|%s|\n", zone_fix, zone_export);
 
 	assert_string_equal(zone_fix, getex_cqww[i].expected_zone_fix);
