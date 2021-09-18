@@ -66,14 +66,35 @@ void test_add_prefix_check_count(void **state) {
     assert_int_equal(2, prefix_count());
 }
 
-void test_add_prefix_check_parsed(void **state) {
+void test_add_prefix_check_defaults(void **state) {
     prefix_data *pfx;
     prefix_add("HW");
     pfx = prefix_by_index(0);
     assert_string_equal(pfx->pfx, "HW");
     assert_int_equal(pfx->dxcc_index, dxcc_count() - 1);
-    assert_int_equal(pfx->cq, dxcc_by_index(dxcc_count() - 1)->cq);
-    assert_int_equal(pfx->itu, dxcc_by_index(dxcc_count() - 1)->itu);
+    dxcc_data *mydx = dxcc_by_index(dxcc_count() - 1);
+    assert_int_equal(pfx->cq, mydx->cq);
+    assert_int_equal(pfx->itu, mydx->itu);
+    assert_string_equal(pfx->continent, mydx->continent);
+    assert_float_equal(pfx->lat, mydx->lat, 1e-6);
+    assert_float_equal(pfx->lon, mydx->lon, 1e-6);
+    assert_float_equal(pfx->timezone, mydx->timezone, 1e-6);
 }
 
+void test_add_prefix_check_overrides(void **state) {
+    prefix_data *pfx;
+    // NOTE: overrides must be in the order below
+    char *input = g_strdup("HW(11)[22]<33.3/44.4>{OC}~5.5~");
+    prefix_add(input);
+    g_free(input);
+    pfx = prefix_by_index(0);
+    assert_string_equal(pfx->pfx, "HW");
+    assert_int_equal(pfx->dxcc_index, dxcc_count() - 1);
+    assert_int_equal(pfx->cq, 11);
+    assert_int_equal(pfx->itu, 22);
+    assert_string_equal(pfx->continent, "OC");
+    assert_float_equal(pfx->lat, 33.3, 1e-6);
+    assert_float_equal(pfx->lon, 44.4, 1e-6);
+    assert_float_equal(pfx->timezone, 5.5, 1e-6);
+}
 
