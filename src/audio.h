@@ -35,5 +35,9 @@ void init_audio();
 int close_audio();
 int testaudio();
 void record(void);
+void play_file(char *audiofile);
+void stop_vk();
+int wait_vk_finish();
+
 
 #endif /* AUDIO_H */

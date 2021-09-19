@@ -24,7 +24,6 @@
 #include <hamlib/rig.h>
 
 int callinput(void);
-void play_file(char *audiofile);
 void send_bandswitch(freq_t freq);
 
 #endif /* CALLINPUT_H */

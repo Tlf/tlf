@@ -21,13 +21,14 @@
 # An executable copy of 'play_vk' in your contest directory (containing the
 # logcfg.dat file) can be adapted and has precedence over the standard install
 
+# accept SIGTERM and SIGINT signals and kill play command as soon as possible
 trap 'kill -s INT $PID' TERM INT
 
 # mute mic
 #amixer -c 0 set Mic mute -q
 
-# play file on the default sound device in backgroud, so signals can be caught
-# by the 'trap' instruction above
+# play file on the default sound device in backgroud, so signals can be 
+# caught by the 'trap' instruction above
 
 # OSS play utility syntax:
 #play $1 -q 2>/dev/null &

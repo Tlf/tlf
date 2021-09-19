@@ -27,6 +27,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "audio.h"
 #include "callinput.h"
 #include "cw_utils.h"
 #include "genqtclist.h"

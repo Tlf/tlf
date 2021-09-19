@@ -26,6 +26,7 @@
 
 #include <string.h>
 
+#include "audio.h"
 #include "background_process.h"
 #include "cqww_simulator.h"
 #include "callinput.h"

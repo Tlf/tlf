@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#include "callinput.h"
+#include "audio.h"
 #include "clear_display.h"
 #include "cw_utils.h"
 #include "globalvars.h"
@@ -67,21 +67,6 @@ int wait_cw_finish(int message_time) {
 	return NO_KEY;
 }
 
-
-/* wait till VK message is finished or key pressed */
-int wait_vk_finish() {
-    while (1) {
-	usleep(100000);
-	time_update();
-	if (vk_running == false) {
-	    return NO_KEY;
-	}
-	const int inchar = key_poll();
-	if (inchar > 0 && inchar != KEY_RESIZE) {
-	    return inchar;
-	}
-    }
-}
 
 int auto_cq(void) {
 

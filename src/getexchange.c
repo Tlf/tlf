@@ -30,7 +30,7 @@
 #include <unistd.h>
 
 #include "addspot.h"
-#include "callinput.h"
+#include "audio.h"
 #include "cw_utils.h"
 #include "change_rst.h"
 #include "globalvars.h"

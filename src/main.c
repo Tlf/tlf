@@ -413,8 +413,6 @@ int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 pthread_t background_thread;
 static struct termios oldt, newt;
 
-bool vk_running = false;
-
 
 /*-------------------------parse program options---------------------------*/
 const char *argp_program_version = "tlf-" VERSION;

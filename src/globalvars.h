@@ -251,4 +251,3 @@ extern bool debugflag;
 extern bool trx_control;
 extern bool nopacket;
 extern bool verbose;
-extern bool vk_running;
