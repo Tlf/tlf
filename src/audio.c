@@ -1,7 +1,8 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
- *                                   2012 Thomas Beierlein <tb@forth-ev.de>
+ *                              2012-2021 Thomas Beierlein <tb@forth-ev.de>
+ *                                   2021 Nate Bargman <n0nb@n0nb.us>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +20,7 @@
  */
 
 /* ------------------------------------------------------------
- *      audio.c   soundcard input routine
+ *      audio.c   recording and playing audio files
  *
  *--------------------------------------------------------------*/
 
@@ -27,21 +28,31 @@
 #include <dirent.h>
 #include <errno.h>
 #include <glib.h>
+#include <stdatomic.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 #include "clear_display.h"
+#include "err_utils.h"
+#include "globalvars.h"
 #include "ignore_unused.h"
 #include "keystroke_names.h"
+#include "netkeyer.h"
+#include "time_update.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
 
+static pthread_t vk_thread;
+static atomic_bool vk_running = false;
+
+
+
 extern char sc_device[];
 
-/* -------------------main test routine ------- */
 void recordmenue(void) {
     int j;
 
@@ -274,3 +285,75 @@ void record(void) {
 	}
     }
 }
+
+
+/* playing recorded voice keyer messages */
+void *play_thread(void *ptr) {
+    char *audiofile = (char *)ptr;
+
+    pthread_detach(pthread_self());
+
+    vk_running=true;
+
+    // use play_vk from current dir, if available
+    // note: this overrides PATH setting
+    bool has_local_play_vk = (access("./play_vk", X_OK) == 0);
+    char *playcommand = g_strdup_printf("%s %s",
+			(has_local_play_vk ? "./play_vk" : "play_vk"),
+				audiofile);
+
+    /* CAT PTT wanted and available, use it. */
+    if (rigptt == CAT_PTT_USE) {
+	/* Request PTT On */
+	rigptt |= CAT_PTT_ON;
+    } else {		/* Fall back to netkeyer interface */
+	netkeyer(K_PTT, "1");	// ptt on
+    }
+
+    usleep(txdelay * 1000);
+    IGNORE(system(playcommand));;
+    g_free(playcommand);
+
+    /* CAT PTT wanted, available, and active. */
+    if (rigptt == (CAT_PTT_USE | CAT_PTT_ACTIVE)) {
+	/* Request PTT Off */
+	rigptt |= CAT_PTT_OFF;
+    } else {		/* Fall back to netkeyer interface */
+	netkeyer(K_PTT, "0");	// ptt off
+    }
+
+    vk_running= false;
+
+    return NULL;
+}
+
+void play_file(char *audiofile) {
+
+    if (audiofile == NULL || *audiofile == 0) {
+	return;
+    }
+
+    if (access(audiofile, R_OK) != 0) {
+	TLF_LOG_INFO("cannot open sound file %s!", audiofile);
+	return;
+    }
+
+    /* play sound in separate thread so it can be killed from the main one */
+    if (pthread_create(&vk_thread, NULL, play_thread, (void *)audiofile) != 0) {
+	    TLF_LOG_INFO("could not start sound thread!");
+    }
+}
+
+#define NO_KEY -1
+
+void stop_vk() {
+    IGNORE(system("pkill -SIGTERM -n play_vk"));
+}
+
+
+/* wait till VK message is finished or key pressed */
+bool is_vk_finished() {
+	return (vk_running == false);
+}
+
+

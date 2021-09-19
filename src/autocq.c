@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#include "callinput.h"
+#include "audio.h"
 #include "clear_display.h"
 #include "cw_utils.h"
 #include "globalvars.h"
@@ -38,7 +38,6 @@
 #include "ui_utils.h"
 #include "time_update.h"
 
-extern bool vk_running;
 
 //
 // get estimated CQ length in milliseconds
@@ -79,7 +78,7 @@ int wait_vk_finish() {
     while (key == NO_KEY) {
 	key = wait_50ms_for_key();
 
-	if (vk_running == false)
+	if (is_vk_finished())
 	    return NO_KEY;
 
 	update_timer -= 50;

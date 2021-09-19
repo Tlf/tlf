@@ -21,8 +21,8 @@
 *
 *--------------------------------------------------------------*/
 
-
 #include <hamlib/rig.h>
+#include "audio.h"
 #include "clear_display.h"
 #include "err_utils.h"
 #include "globalvars.h"
@@ -55,7 +55,7 @@ int stoptx(void) {
 	    }
 	}
     } else if (trxmode == SSBMODE) {
-	IGNORE(system("pkill -SIGTERM -n play_vk"));
+	stop_vk();
 	return 0;
     } else {
 	return 1;
