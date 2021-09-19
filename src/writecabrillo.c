@@ -450,7 +450,7 @@ static void set_exchange_format() {
 	strcpy(exchange, "#");  // contest is using serial number
 	return;
     }
-    get_cabrillo_field_value(find_cabrillo_field(CBR_EXCHANGE), exchange, 11);
+    get_cabrillo_field_value(find_cabrillo_field(CBR_EXCHANGE), exchange, sizeof(exchange));
 }
 
 

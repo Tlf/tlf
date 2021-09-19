@@ -26,12 +26,16 @@ trap 'kill -s INT $PID' TERM INT
 # mute mic
 #amixer -c 0 set Mic mute -q
 
-# play file on the default sound device in backgroudn, so signals can be catch
+# play file on the default sound device in backgroud, so signals can be caught
 # by the 'trap' instruction above
-play -q $1 2>/dev/null &
+
+# OSS play utility syntax:
+#play $1 -q 2>/dev/null &
+
+# SoX play utility syntax
+play -q $1 &
 PID=$!
 wait $PID
-
 
 #unmute mic
 #amixer -c 0 set Mic unmute -q
