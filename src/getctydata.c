@@ -71,6 +71,9 @@ int getpfxindex(char *checkcallptr, char **normalized_call) {
     char checkcall[17] = "";
     char strippedcall[17] = "";
 
+    if (checkcallptr == NULL) {
+	return -1;
+    }
 
     int w = 0, abnormal_call = 0;
     size_t loc;

@@ -151,9 +151,7 @@ void clear_display(void) {
     printcall();
     refresh_comment();
 
-    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-    mvaddstr(LINES - 1, 0, backgrnd_str);
-    wwv_show_footer();
+    show_call_info(hiscall);
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     move(cury, curx);
@@ -180,9 +178,4 @@ void displayit(void) {
     mvprintw(5, 0, "");
 
     clear_display();
-
-    // show DX info if available
-    if (strlen(hiscall) >= 3) {
-	showinfo(getctydata_pfx(hiscall));
-    }
 }

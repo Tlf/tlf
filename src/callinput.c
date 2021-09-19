@@ -200,7 +200,7 @@ int callinput(void) {
 		    grab.state = REACHED;
 		    grab.spotfreq = freq;
 
-		    showinfo(getctydata_pfx(hiscall));
+		    show_call_info(hiscall);
 		    printcall();
 		    searchlog();
 		    freqstore = 0;
@@ -222,7 +222,7 @@ int callinput(void) {
 		hiscall[0] = '\0';
 		printcall();
 		HideSearchPanel();
-		showinfo(SHOWINFO_DUMMY);
+		show_call_info(hiscall);
 	    }
 
 
@@ -635,7 +635,7 @@ int callinput(void) {
 		    hiscall[strlen(hiscall) - 1] = '\0';
 
 		    if (atoi(hiscall) < 1800) {	/*  no frequency */
-			showinfo(getctydata_pfx(hiscall));
+			show_call_info(hiscall);
 			searchlog();
 			refreshp();
 		    }
@@ -855,9 +855,9 @@ int callinput(void) {
 
 	    // Ctrl-A (^A), add a spot and share on LAN.
 	    case CTRL_A: {
-		addspot();
+		addspot();      // note: clears call input field
 		HideSearchPanel();
-		showinfo(SHOWINFO_DUMMY);
+		show_call_info(hiscall);
 
 		grab.state = REACHED;
 		grab.spotfreq = freq;
@@ -1010,7 +1010,7 @@ int callinput(void) {
 
 	    if (atoi(hiscall) < 1800) {	/*  no frequency */
 
-		showinfo(getctydata_pfx(hiscall));
+		show_call_info(hiscall);
 		searchlog();
 	    }
 
@@ -1303,7 +1303,7 @@ void handle_memory_operation(memory_op_t op) {
     }
 
     show_header_line();
-    showinfo(getctydata_pfx(hiscall));
+    show_call_info(hiscall);
     searchlog();
     move(12, 29 + strlen(hiscall));
 

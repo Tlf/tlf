@@ -19,21 +19,13 @@
 /* ------------------------------------------------------------
  *
  *              Make info string for lower status line
- *		x - countrynumber
+ *
  *--------------------------------------------------------------*/
-
-/** Show infos for selected country on bottom of screen
- *
- * Prepares info string for the selected country and shows it on the
- * bottom line of the screen.
- *
- * /param x  Country number
- */
-
 
 #include "dxcc.h"
 #include "getwwv.h"
 #include "get_time.h"
+#include "getctydata.h"
 #include "globalvars.h"
 #include "qrb.h"
 #include "showinfo.h"
@@ -43,14 +35,27 @@
 
 #define LINELENGTH 80
 
-void showinfo(int x) {
+static pthread_mutex_t showinfo_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static bool showing_country = false;    // false: empty or showing WWV info
+
+/** Show infos for selected country on bottom of screen
+ *
+ * Prepares info string for the selected country and shows it on the
+ * bottom line of the screen.
+ * If no country is selected (e.g. index is -1), then recent WWV info is shown.
+ * If there is no WWV info available then the info line is cleared.
+ *
+ * /param pfx_index  Prefix number
+ */
+static void showinfo_internal(int pfx_index) {
     int cury, curx;
     double bearing;
     double range;
 
     char timebuff[80];
 
-    prefix_data *pfx = prefix_by_index(x);
+    prefix_data *pfx = prefix_by_index(pfx_index);
     dxcc_data *dx = dxcc_by_index(pfx -> dxcc_index);
 
     getyx(stdscr, cury, curx);
@@ -59,20 +64,36 @@ void showinfo(int x) {
     mvaddstr(LINES - 1, 0, backgrnd_str);
 
     if (pfx->dxcc_index > 0) {
+	showing_country = true;
 	mvprintw(LINES - 1, 0, " %s  %s", dx->pfx, dx->countryname);
 
 	mvprintw(LINES - 1, 26, " %s %02d", pfx->continent, pfx->cq);
 
-	if (x != 0 && x != my.countrynr && 0 == get_qrb(&range, &bearing)) {
+	if (pfx_index != my.countrynr && 0 == get_qrb(&range, &bearing)) {
 	    mvprintw(LINES - 1, 35, "%.0f km/%.0f deg ", range, bearing);
 	}
 
 	format_time_with_offset(timebuff, sizeof(timebuff), TIME_FORMAT, pfx->timezone);
 	mvprintw(LINES - 1, LINELENGTH - 17, "   DX time: %s", timebuff);
     } else {
+	showing_country = false;
 	wwv_show_footer();
     }
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     move(cury, curx);
+}
+
+void show_call_info(char *call) {
+    pthread_mutex_lock(&showinfo_mutex);
+    showinfo_internal(getctydata_pfx(call));
+    pthread_mutex_unlock(&showinfo_mutex);
+}
+
+void show_wwv_info() {
+    pthread_mutex_lock(&showinfo_mutex);
+    if (!showing_country) {
+	showinfo_internal(-1);
+    }
+    pthread_mutex_unlock(&showinfo_mutex);
 }
