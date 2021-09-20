@@ -34,7 +34,7 @@ trap 'kill -s INT $PID' TERM INT
 #play $1 -q 2>/dev/null &
 
 # SoX play utility syntax
-play -q $1 &
+play -q $1 2> /dev/null &
 PID=$!
 wait $PID
 
