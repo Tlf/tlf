@@ -346,7 +346,7 @@ void play_file(char *audiofile) {
 #define NO_KEY -1
 
 void stop_vk() {
-    IGNORE(system("pkill -SIGTERM -n play_vk2"));
+    IGNORE(system("pkill -SIGTERM -n play_vk"));
 }
 
 
