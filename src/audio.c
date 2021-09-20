@@ -328,6 +328,11 @@ void *play_thread(void *ptr) {
 
 void play_file(char *audiofile) {
 
+    /* do not play another message as long as the old one is still running */
+    if (vk_running) {
+	return;
+    }
+
     if (audiofile == NULL || *audiofile == 0) {
 	return;
     }
