@@ -21,10 +21,13 @@
 #ifndef CALLINPUT_H
 #define CALLINPUT_H
 
+#include <stdbool.h>
+
 #include <hamlib/rig.h>
 
 int callinput(void);
 void play_file(char *audiofile);
 void send_bandswitch(freq_t freq);
+bool valid_call_char(int ch);
 
 #endif /* CALLINPUT_H */

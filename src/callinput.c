@@ -150,13 +150,12 @@ int callinput(void) {
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    printcall();	/* print call input field */
-    searchlog();
-
     while (strlen(hiscall) <= 13) {
 
 	show_zones(bandinx);
-	printcall();
+	update_info_line();
+	searchlog();
+	printcall();    // note: calls refreshp()
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	/* main loop waiting for input */
@@ -184,8 +183,8 @@ int callinput(void) {
 		    if (fabs(freq - freqstore) > 500) {
 			add_to_spots(hiscall, freqstore);
 			hiscall[0] = '\0';
-			HideSearchPanel();
 			freqstore = 0;
+			break;
 		    }
 		}
 	    }
@@ -199,11 +198,8 @@ int callinput(void) {
 		    strncpy(hiscall, grab.call, sizeof(hiscall));
 		    grab.state = REACHED;
 		    grab.spotfreq = freq;
-
-		    show_call_info(hiscall);
-		    printcall();
-		    searchlog();
 		    freqstore = 0;
+		    break;
 		}
 	    }
 
@@ -220,9 +216,7 @@ int callinput(void) {
 	    if (fabs(freq - grab.spotfreq) > 500 && grab.state == REACHED) {
 		grab.state = NONE;
 		hiscall[0] = '\0';
-		printcall();
-		HideSearchPanel();
-		show_call_info(hiscall);
+		break;
 	    }
 
 
@@ -236,28 +230,28 @@ int callinput(void) {
 	/* special handling of some keycodes if call field is empty */
 	if (*hiscall == '\0') {
 	    // <Enter>, sends CQ message (F1), starts autoCQ, or sends S&P message.
-	    if ((x == '\n' || x == KEY_ENTER) && *hiscall == '\0') {
+	    if (x == '\n' || x == KEY_ENTER) {
 		if (cqmode == CQ) {
 		    if (noautocq != 1)
 			x = auto_cq();
 		} else {
 		    sendspcall();
-		    break;
+		    continue;
 		}
 	    }
 
 	    // Up Arrow or Alt-e, edit last QSO
 	    if (x == KEY_UP || x == ALT_E) {
 		edit_last();
-		break;
+		continue;
 	    }
 
 	    // Equals, confirms last callsign already logged if call field is empty.
-	    if (x == '=' && *hiscall == '\0') {
+	    if (x == '=' && lastcall[0] != 0) {
 		char *str = g_strdup_printf("%s TU ", lastcall);
 		sendmessage(str);
 		g_free(str);
-		break;
+		continue;
 	    }
 	}
 
@@ -395,7 +389,6 @@ int callinput(void) {
 		    }
 		}
 		clear_display();
-		printcall();
 
 		break;
 	    }
@@ -633,15 +626,6 @@ int callinput(void) {
 		    mvprintw(cury, curx - 1, " ");
 		    mvprintw(cury, curx - 1, "");
 		    hiscall[strlen(hiscall) - 1] = '\0';
-
-		    if (atoi(hiscall) < 1800) {	/*  no frequency */
-			show_call_info(hiscall);
-			searchlog();
-			refreshp();
-		    }
-
-		    x = -1;
-		    break;
 		}
 		break;
 	    }
@@ -856,9 +840,6 @@ int callinput(void) {
 	    // Ctrl-A (^A), add a spot and share on LAN.
 	    case CTRL_A: {
 		addspot();      // note: clears call input field
-		HideSearchPanel();
-		show_call_info(hiscall);
-
 		grab.state = REACHED;
 		grab.spotfreq = freq;
 		break;
@@ -987,11 +968,10 @@ int callinput(void) {
 
 
 	/* Convert to upper case */
-	if (x >= 'a' && x <= 'z')
-	    x = x - 32;
+	x = g_ascii_toupper(x);
 
 	/* Add character to call input field. */
-	if (x >= '/' && x <= 'Z') {
+	if (valid_call_char(x)) {
 
 	    if (strlen(hiscall) < 13) {
 		instring[0] = x;
@@ -1008,14 +988,6 @@ int callinput(void) {
 		}
 	    }
 
-	    if (atoi(hiscall) < 1800) {	/*  no frequency */
-
-		show_call_info(hiscall);
-		searchlog();
-	    }
-
-	    refreshp();
-
 	    freqstore = freq;
 
 	}
@@ -1030,14 +1002,21 @@ int callinput(void) {
 	    }
 	}
 
-	if ((x == '\n' || x == KEY_ENTER) || x == SPACE || x == TAB
-		|| x == CTRL_K || x == 44 || x == BACKSLASH) {
+	if (x == '\n' || x == KEY_ENTER || x == SPACE || x == TAB
+		|| x == CTRL_K || x == ',' || x == BACKSLASH) {
 	    break;
 	}
 
     }
 
-    return (x);
+    return x;
+}
+
+// accepts A-Z 0-9 /
+bool valid_call_char(int ch) {
+    return (ch >= 'A' && ch <= 'Z')
+	   || (ch >= '0' && ch <= '9')
+	   || ch == '/';
 }
 
 /** check if string is plain number
@@ -1133,11 +1112,10 @@ int autosend() {
 	}
 
 	/* convert to upper case */
-	if (x >= 'a' && x <= 'z')
-	    x = x - 32;
+	x = g_ascii_toupper(x);
 
 	int len = strlen(hiscall);
-	if (len < 13 && x >= '/' && x <= 'Z') {
+	if (len < 13 && valid_call_char(x)) {
 	    char append[2];
 
 	    /* insert into hiscall */
@@ -1303,9 +1281,6 @@ void handle_memory_operation(memory_op_t op) {
     }
 
     show_header_line();
-    show_call_info(hiscall);
-    searchlog();
-    move(12, 29 + strlen(hiscall));
 
     if (newfreq <= 0) {
 	return;     // freq not changed

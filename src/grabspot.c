@@ -91,16 +91,11 @@ static freq_t execute_grab(spot *data) {
 
     strcpy(hiscall, data->call);
 
-    show_call_info(hiscall);
-    searchlog();
-
     /* if in CQ mode switch to S&P and remember QRG */
     if (cqmode == CQ) {
 	memory_store();
 	cqmode = S_P;
     }
-
-    refreshp();
 
     free_spot(data);
 

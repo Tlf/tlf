@@ -21,7 +21,7 @@
 #ifndef SHOWINFO_H
 #define SHOWINFO_H
 
-void show_call_info(char *call);
-void show_wwv_info();
+void update_info_line();
+void show_wwv_info_line();
 
 #endif /* end of include guard: SHOWINFO_H */

@@ -84,13 +84,14 @@ static void showinfo_internal(int pfx_index) {
     move(cury, curx);
 }
 
-void show_call_info(char *call) {
+void update_info_line() {
+    int pfx_index  = getctydata_pfx(hiscall);
     pthread_mutex_lock(&showinfo_mutex);
-    showinfo_internal(getctydata_pfx(call));
+    showinfo_internal(pfx_index);
     pthread_mutex_unlock(&showinfo_mutex);
 }
 
-void show_wwv_info() {
+void show_wwv_info_line() {
     pthread_mutex_lock(&showinfo_mutex);
     if (!showing_country) {
 	showinfo_internal(-1);

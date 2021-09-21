@@ -151,7 +151,7 @@ void clear_display(void) {
     printcall();
     refresh_comment();
 
-    show_call_info(hiscall);
+    update_info_line();
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     move(cury, curx);
