@@ -35,10 +35,6 @@
 
 #define LINELENGTH 80
 
-static pthread_mutex_t showinfo_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-static bool showing_country = false;    // false: empty or showing WWV info
-
 /** Show infos for selected country on bottom of screen
  *
  * Prepares info string for the selected country and shows it on the
@@ -52,7 +48,6 @@ static void showinfo_internal(int pfx_index) {
     int cury, curx;
     double bearing;
     double range;
-
     char timebuff[80];
 
     prefix_data *pfx = prefix_by_index(pfx_index);
@@ -64,7 +59,6 @@ static void showinfo_internal(int pfx_index) {
     mvaddstr(LINES - 1, 0, backgrnd_str);
 
     if (pfx->dxcc_index > 0) {
-	showing_country = true;
 	mvprintw(LINES - 1, 0, " %s  %s", dx->pfx, dx->countryname);
 
 	mvprintw(LINES - 1, 26, " %s %02d", pfx->continent, pfx->cq);
@@ -76,7 +70,6 @@ static void showinfo_internal(int pfx_index) {
 	format_time_with_offset(timebuff, sizeof(timebuff), TIME_FORMAT, pfx->timezone);
 	mvprintw(LINES - 1, LINELENGTH - 17, "   DX time: %s", timebuff);
     } else {
-	showing_country = false;
 	wwv_show_footer();
     }
 
@@ -85,16 +78,7 @@ static void showinfo_internal(int pfx_index) {
 }
 
 void update_info_line() {
-    int pfx_index  = getctydata_pfx(hiscall);
-    pthread_mutex_lock(&showinfo_mutex);
+    int pfx_index = getctydata_pfx(hiscall);
     showinfo_internal(pfx_index);
-    pthread_mutex_unlock(&showinfo_mutex);
 }
 
-void show_wwv_info_line() {
-    pthread_mutex_lock(&showinfo_mutex);
-    if (!showing_country) {
-	showinfo_internal(-1);
-    }
-    pthread_mutex_unlock(&showinfo_mutex);
-}

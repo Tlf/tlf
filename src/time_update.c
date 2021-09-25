@@ -156,7 +156,7 @@ void time_update(void) {
 	static time_t prev_wwv_time = 0;
 	if (lastwwv_time > prev_wwv_time) { // is there a newer WWV message?
 	    prev_wwv_time = lastwwv_time;
-	    show_wwv_info_line();   // show it unless already showing country info
+	    update_info_line(); // show it unless already showing country info
 	}
 
 	int currentterm = miniterm;

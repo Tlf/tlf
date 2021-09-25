@@ -22,6 +22,5 @@
 #define SHOWINFO_H
 
 void update_info_line();
-void show_wwv_info_line();
 
 #endif /* end of include guard: SHOWINFO_H */
