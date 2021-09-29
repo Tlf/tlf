@@ -220,7 +220,6 @@ extern char keyer_device[10];
 extern char netkeyer_hostaddress[];
 extern char pr_hostaddress[];
 extern char synclogfile[];
-extern char sc_device[];
 extern char exchange_list[40];
 extern char rttyoutput[];
 extern char spot_ptr[MAX_SPOTS][82];

@@ -631,7 +631,7 @@ void qtc_main_panel(int direction) {
 					    sendmessage(qtc_recv_msgs[2]);
 					}
 					if (trxmode == SSBMODE) {
-					    play_file(qtc_phrecv_message[2]);
+					    vk_play_file(qtc_phrecv_message[2]);
 					}
 				    }
 				    tfi = (activefield - 3) % 3;
@@ -647,7 +647,7 @@ void qtc_main_panel(int direction) {
 				sendmessage(qtc_recv_msgs[7]);
 			    }
 			    if (trxmode == SSBMODE) {
-				play_file(qtc_phrecv_message[7]);
+				vk_play_file(qtc_phrecv_message[7]);
 			    }
 			    if (trxmode == DIGIMODE) {
 				char *str = g_strdup_printf("%s %02d %02d\n",
@@ -669,7 +669,7 @@ void qtc_main_panel(int direction) {
 				    sendmessage(qtc_recv_msgs[9]);
 				}
 				if (trxmode == SSBMODE) {
-				    play_file(qtc_phrecv_message[9]);
+				    vk_play_file(qtc_phrecv_message[9]);
 				}
 			    }
 			    x = ESCAPE;	// <Escape> close the window
@@ -720,7 +720,7 @@ void qtc_main_panel(int direction) {
 			    sendmessage(qtc_recv_msgs[1]);
 			}
 			if (trxmode == SSBMODE) {
-			    play_file(qtc_phrecv_message[1]);
+			    vk_play_file(qtc_phrecv_message[1]);
 			}
 			start_qtc_recording();
 			activefield++;
@@ -893,10 +893,10 @@ void qtc_main_panel(int direction) {
 			if (x == KEY_F(10) && record_run > -1) { // F10, "QSL ALL"
 			    stop_qtc_recording();
 			}
-			play_file(qtc_phrecv_message[x - KEY_F(1)]);
+			vk_play_file(qtc_phrecv_message[x - KEY_F(1)]);
 		    }
 		    if (direction == SEND) {
-			play_file(qtc_phsend_message[x - KEY_F(1)]);
+			vk_play_file(qtc_phsend_message[x - KEY_F(1)]);
 		    }
 		}
 
@@ -1023,7 +1023,7 @@ void qtc_main_panel(int direction) {
 				    sendmessage(qtc_recv_msgs[1]);
 				}
 				if (trxmode == SSBMODE) {
-				    play_file(qtc_phrecv_message[1]);
+				    vk_play_file(qtc_phrecv_message[1]);
 				}
 				start_qtc_recording();
 				activefield++;

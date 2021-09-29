@@ -55,7 +55,7 @@ int stoptx(void) {
 	    }
 	}
     } else if (trxmode == SSBMODE) {
-	stop_vk();
+	vk_stop();
 	return 0;
     } else {
 	return 1;

@@ -65,7 +65,7 @@ int speedup() { return 12; }
 int speeddown() { return 8; }
 void rst_recv_up() {}
 void rst_recv_down() {}
-void play_file(char *audiofile) {}
+void vk_play_file(char *audiofile) {}
 int send_lan_message(int opcode, char *message) { return 0; }
 
 int last10() { return 0; }

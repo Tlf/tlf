@@ -230,7 +230,7 @@ int getexchange(void) {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    sendmessage(my.call);		/* F1 */
 		} else
-		    play_file(ph_message[5]);	// call
+		    vk_play_file(ph_message[5]);	// call
 
 		break;
 	    }

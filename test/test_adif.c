@@ -40,7 +40,7 @@ int get_total_score() {
 void ask(char *buffer, char *what) {
 }
 
-void play_file(char *audiofile) {
+void vk_play_file(char *audiofile) {
 }
 
 bool lan_active = false;

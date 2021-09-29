@@ -71,7 +71,7 @@ static int wait_50ms_for_key() {
 /* wait till VK message is finished or key pressed.
  * calling time_update() each 500 ms.
  */
-int wait_vk_finish() {
+int vk_wait_finish() {
     int key = NO_KEY;
     int update_timer = TIME_UPDATE_MS;
 
@@ -142,7 +142,7 @@ int auto_cq(void) {
 	if (trxmode == CWMODE || trxmode == DIGIMODE) {
 	    key = wait_ms(message_time);
 	} else {
-	    key = wait_vk_finish();
+	    key = vk_wait_finish();
 	}
 
 	// wait between calls

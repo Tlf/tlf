@@ -28,8 +28,8 @@
 #include <stdbool.h>
 
 void record(void);
-void play_file(char *audiofile);
-void stop_vk();
+void vk_play_file(char *audiofile);
+void vk_stop();
 bool is_vk_finished();
 
 
