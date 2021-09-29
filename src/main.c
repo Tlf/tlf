@@ -284,7 +284,6 @@ int block_part = 0; 	/**< if 1 block the call autocompletion
 char para_word[80] = "LODNCFS:3C\n";	/* longcw, cluster, search, DE,
 					   contest, filter,  speed,  delay */
 char lastmsg[1000] = "";
-char sc_device[40] = "/dev/dsp";
 
 /*-------------------------------------keyer------------------------------*/
 int cwkeyer = NO_KEYER;

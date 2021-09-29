@@ -1792,26 +1792,6 @@ Support backspace key in keyer window.
 Use soundcard for CW sidetone output.
 .
 .TP
-\fBSC_DEVICE\fR=\fIdevice\fR
-Sound card device for CW sidetone and Sound menu.
-.
-.IP
-This is not required if your radio provides CW sidetone.
-.
-.IP
-For example, set \fBSC_DEVICE\fR=\fI/dev/dsp0\fR for Open Sound System drivers.
-.
-.IP
-.BR Note :
-For newer installations using the
-.B PulseAudio
-sound server, use of the
-.I pavucontrol
-GUI utility allows for directing input and output sound streams.
-.
-This is particularly useful with computer setups with multiple sound cards.
-.
-.TP
 \fBSIDETONE_VOLUME\fR=\fIsoundcard_volume\fR
 Set soundcard sidetone volume (default is
 .IR 70 ).

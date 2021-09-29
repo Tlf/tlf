@@ -163,7 +163,6 @@ int setup_default(void **state) {
     markerfile[0] = 0;
     synclogfile[0] = 0;
     sc_volume[0] = 0;
-    sc_device[0] = 0;
     modem_mode[0] = 0;
     controllerport[0] = 0;
     clusterlogin[0] = 0;
@@ -1061,12 +1060,6 @@ void test_sidetone_volume(void **state) {
     int rc = call_parse_logcfg("SIDETONE_VOLUME = 63\r\n");
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(sc_volume, "63");
-}
-
-void test_sc_device(void **state) {
-    int rc = call_parse_logcfg("SC_DEVICE = abc\r\n");
-    assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(sc_device, "abc");
 }
 
 void test_mfj1278_keyer(void **state) {
