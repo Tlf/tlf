@@ -50,9 +50,6 @@ static pthread_t vk_thread;
 static atomic_bool vk_running = false;
 
 
-
-extern char sc_device[];
-
 void recordmenue(void) {
     int j;
 
@@ -100,8 +97,6 @@ void do_record(int message_nr) {
 
 /*--------------------------------------------------------------------------*/
 void record(void) {
-
-    extern char ph_message[14][80];
 
     int runnit = 1, key, i = 0, j = 4;
     char commands[80] = "";
@@ -260,8 +255,7 @@ void record(void) {
 		echo();
 		getnstr(playbackfile, 8);
 		noecho();
-		strcpy(commands, "play -d ");
-		strcat(commands, sc_device);
+		strcpy(commands, "play -q ");
 		strcat(commands, " ~/tlf/soundlogs/");
 		if (strlen(playbackfile) > 6) {
 		    strncat(commands, playbackfile, 6);

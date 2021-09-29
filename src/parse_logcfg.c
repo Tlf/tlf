@@ -1140,7 +1140,6 @@ static config_t logcfg_configs[] = {
     {"TELNETHOST",      CFG_STRING_STATIC(pr_hostaddress, 48)},
     {"QTC_CAP_CALLS",   CFG_STRING_STATIC(qtc_cap_calls, 40)},
     {"SYNCFILE",        CFG_STRING_STATIC(synclogfile, 120)},
-    {"SC_DEVICE",       CFG_STRING_STATIC(sc_device, 40)},
     {"INITIAL_EXCHANGE",       CFG_STRING_STATIC(exchange_list, 40)},
     {"DIGIMODEM",       CFG_STRING_STATIC(rttyoutput, 120)},
     {"FKEY-HEADER",     CFG_STRING_STATIC(fkey_header, sizeof(fkey_header))},

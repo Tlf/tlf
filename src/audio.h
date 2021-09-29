@@ -27,15 +27,6 @@
 
 #include <stdbool.h>
 
-#define FS	11025
-#define S_BAR 0
-#define SPOT_BAR 1
-#define PAN_BAR 2
-
-
-void init_audio();
-int close_audio();
-int testaudio();
 void record(void);
 void play_file(char *audiofile);
 void stop_vk();
