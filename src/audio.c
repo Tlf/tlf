@@ -49,9 +49,6 @@ static pthread_t vk_thread;
 static atomic_bool vk_running = false;
 
 
-
-extern char sc_device[];
-
 void recordmenue(void) {
     int j;
 
