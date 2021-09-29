@@ -26,9 +26,10 @@
 #define AUDIO_H
 
 void record(void);
-void play_file(char *audiofile);
-void stop_vk();
-int wait_vk_finish();
+
+void vk_play_file(char *audiofile);
+void vk_stop();
+int vk_wait_finish();
 
 
 #endif /* AUDIO_H */

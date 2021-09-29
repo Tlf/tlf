@@ -341,7 +341,7 @@ void send_standard_message(int msg) {
 	    break;
 	default:
 	    if (msg < 14)
-		play_file(ph_message[msg]);
+		vk_play_file(ph_message[msg]);
 	    break;
     }
 }

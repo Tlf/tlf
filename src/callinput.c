@@ -596,9 +596,9 @@ int callinput(void) {
 		} else {
 
 		    if (cqmode == S_P)
-			play_file(ph_message[5]);	/* S&P */
+			vk_play_file(ph_message[5]);	/* S&P */
 		    else
-			play_file(ph_message[0]);
+			vk_play_file(ph_message[0]);
 		}
 		break;
 	    }

@@ -37,7 +37,7 @@ char *SPcall;
 extern int data_ready;
 
 void keyer_append(const char *string) { }
-int play_file(char *file) { return 0; }
+int vk_play_file(char *file) { return 0; }
 
 bool simulator;
 void set_simulator_state(simstate_t s) { }

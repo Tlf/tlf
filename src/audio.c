@@ -280,7 +280,7 @@ void record(void) {
 }
 
 
-/* playing recorded voice keyer messages */
+/* playing recorded voice keyer messages in background */
 void *play_thread(void *ptr) {
     char *audiofile = (char *)ptr;
 
@@ -320,7 +320,8 @@ void *play_thread(void *ptr) {
     return NULL;
 }
 
-void play_file(char *audiofile) {
+/* start playing voice keyer message file */
+void vk_play_file(char *audiofile) {
 
     /* do not play another message as long as the old one is still running */
     if (vk_running) {
@@ -344,13 +345,13 @@ void play_file(char *audiofile) {
 
 #define NO_KEY -1
 
-void stop_vk() {
+void vk_stop() {
     IGNORE(system("pkill -SIGTERM -n play_vk"));
 }
 
 
 /* wait till VK message is finished or key pressed */
-int wait_vk_finish() {
+int vk_wait_finish() {
     while (1) {
 	usleep(100000);
 	time_update();

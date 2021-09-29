@@ -90,7 +90,7 @@ int auto_cq(void) {
 	if (trxmode == CWMODE || trxmode == DIGIMODE) {
 	    key = wait_cw_finish(message_time);
 	} else {
-	    key = wait_vk_finish();
+	    key = vk_wait_finish();
 	}
 
 	// wait between calls

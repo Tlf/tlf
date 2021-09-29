@@ -99,5 +99,5 @@ void sendspcall(void) {
 
     } else
 
-	play_file(ph_message[5]);
+	vk_play_file(ph_message[5]);
 }
