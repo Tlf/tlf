@@ -100,8 +100,6 @@ void do_record(int message_nr) {
 /*--------------------------------------------------------------------------*/
 void record(void) {
 
-    extern char ph_message[14][80];
-
     int runnit = 1, key, i = 0, j = 4;
     char commands[80] = "";
     char playbackfile[40];
@@ -259,8 +257,7 @@ void record(void) {
 		echo();
 		getnstr(playbackfile, 8);
 		noecho();
-		strcpy(commands, "play -d ");
-		strcat(commands, sc_device);
+		strcpy(commands, "play -q ");
 		strcat(commands, " ~/tlf/soundlogs/");
 		if (strlen(playbackfile) > 6) {
 		    strncat(commands, playbackfile, 6);
