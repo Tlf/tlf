@@ -5,11 +5,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include "../src/audio.h"
 #include "../src/parse_logcfg.h"
 #include "../src/lancode.h"
 #include "../src/bandmap.h"
 #include "../src/qtcvars.h"
 #include "../src/tlf.h"
+#include "../src/err_utils.h"
 #include "../src/globalvars.h"
 #include "../src/getwwv.h"
 #include "../src/change_rst.h"
@@ -17,6 +19,7 @@
 #include "../src/set_tone.h"
 #include "../src/cabrillo_utils.h"
 
+// OBJECT ../src/audio.o
 // OBJECT ../src/addpfx.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/parse_logcfg.o
@@ -109,6 +112,18 @@ int foc_score(char *a) {
     return 0;
 }
 
+int modify_attr(int attr) {
+    // TBD
+    return 0;
+}
+
+void time_update(void) {
+    // empty
+}
+
+void handle_logging(enum log_lvl lvl, ...) {
+    // empty
+}
 
 /* setup/teardown */
 int setup_default(void **state) {
@@ -214,6 +229,8 @@ int setup_default(void **state) {
     FREE_DYNAMIC_STRING(cabrillo);
     FREE_DYNAMIC_STRING(callmaster_filename);
     FREE_DYNAMIC_STRING(rigportname);
+    FREE_DYNAMIC_STRING(vk_play_cmd);
+    FREE_DYNAMIC_STRING(vk_record_cmd);
 
     showmsg_spy = STRING_NOT_SET;
     rst_init_spy[0] = 0;
@@ -275,6 +292,18 @@ void test_keyer_device(void **state) {
     int rc = call_parse_logcfg("KEYER_DEVICE =/dev/tty0\r\n");   // space after keyword, DOS line ending
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(keyer_device, "/dev/tty0");
+}
+
+void test_vk_play_cmd(void **state) {
+    int rc = call_parse_logcfg("VK_PLAY_COMMAND= play -q $1\n");
+    assert_int_equal(rc,0);
+    assert_string_equal(vk_play_cmd, "play -q $1");
+}
+
+void test_vk_record_cmd(void **state) {
+    int rc = call_parse_logcfg("VK_RECORD_COMMAND= rec -r 8000 $1 -q &\n");
+    assert_int_equal(rc,0);
+    assert_string_equal(vk_record_cmd, "rec -r 8000 $1 -q &");
 }
 
 void test_editor(void **state) {

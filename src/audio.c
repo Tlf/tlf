@@ -48,6 +48,25 @@
 static pthread_t vk_thread;
 static atomic_bool vk_running = false;
 
+char* vk_record_cmd;
+char* vk_play_cmd;
+char* soundlog_record_cmd;
+char* soundlog_play_cmd;
+
+
+void vk_do_record(int message_nr);
+
+
+void sound_setup_default(void) {
+    if (vk_record_cmd) g_free (vk_record_cmd);
+    if (vk_play_cmd) g_free (vk_play_cmd);
+    if (soundlog_record_cmd) g_free (soundlog_record_cmd);
+    if (soundlog_play_cmd) g_free (soundlog_play_cmd);
+    vk_record_cmd = g_strdup("rec -r 8000 $1 -q &");
+    vk_play_cmd = g_strdup("play_vk $1");
+    soundlog_record_cmd = g_strdup("soundlog > /dev/null 2> /dev/null");
+    soundlog_play_cmd = g_strdup("play -q ~/tlf/soundlogs/$1 trim $2");
+}
 
 void recordmenue(void) {
     int j;
@@ -67,31 +86,6 @@ void recordmenue(void) {
 
     refreshp();
 
-}
-
-/*--------------------------------------------------------------------------*/
-void do_record(int message_nr) {
-
-    extern char ph_message[14][80];
-
-    char commands[80] = "";
-
-    mvprintw(15, 20, "recording %s", ph_message[message_nr]);
-    mvprintw(16, 20, "ESC to exit");
-    mvprintw(17, 20, "");
-    refreshp();
-    strcpy(commands, "rec -r 8000 ");	//G4KNO
-    strcat(commands, ph_message[message_nr]);
-    strcat(commands, " -q &");	//G4KNO
-    IGNORE(system(commands));;
-    //G4KNO: Loop until <esc> keypress
-    while (1) {
-	if (key_get() == ESCAPE) {
-	    //kill process (SIGINT=Ctrl-C).
-	    IGNORE(system("pkill -SIGINT -n rec"));;
-	    break;
-	}
-    }
 }
 
 /*--------------------------------------------------------------------------*/
@@ -115,61 +109,61 @@ void record(void) {
 
 	    /* Record voice keyer messages, F1-F12, s|S, c|C. */
 	    case KEY_F(1):
-		do_record(0);
+		vk_do_record(0);
 		runnit = 0;
 		break;
 	    case KEY_F(2):
-		do_record(1);
+		vk_do_record(1);
 		runnit = 0;
 		break;
 	    case KEY_F(3):
-		do_record(2);
+		vk_do_record(2);
 		runnit = 0;
 		break;
 	    case KEY_F(4):
-		do_record(3);
+		vk_do_record(3);
 		runnit = 0;
 		break;
 	    case KEY_F(5):
-		do_record(4);
+		vk_do_record(4);
 		runnit = 0;
 		break;
 	    case KEY_F(6):
-		do_record(5);
+		vk_do_record(5);
 		runnit = 0;
 		break;
 	    case KEY_F(7):
-		do_record(6);
+		vk_do_record(6);
 		runnit = 0;
 		break;
 	    case KEY_F(8):
-		do_record(7);
+		vk_do_record(7);
 		runnit = 0;
 		break;
 	    case KEY_F(9):
-		do_record(8);
+		vk_do_record(8);
 		runnit = 0;
 		break;
 	    case KEY_F(10):
-		do_record(9);
+		vk_do_record(9);
 		runnit = 0;
 		break;
 	    case KEY_F(11):
-		do_record(10);
+		vk_do_record(10);
 		runnit = 0;
 		break;
 	    case KEY_F(12):
-		do_record(11);
+		vk_do_record(11);
 		runnit = 0;
 		break;
 	    case 's':
 	    case 'S':
-		do_record(12);
+		vk_do_record(12);
 		runnit = 0;
 		break;
 	    case 'c':
 	    case 'C':
-		do_record(13);
+		vk_do_record(13);
 		runnit = 0;
 		break;
 
@@ -279,6 +273,41 @@ void record(void) {
     }
 }
 
+/* voice keyer handling - recording and playback */
+/*--------------------------------------------------------------------------*/
+void vk_do_record(int message_nr) {
+
+    extern char ph_message[14][80];
+
+    mvprintw(15, 20, "recording %s", ph_message[message_nr]);
+    mvprintw(16, 20, "ESC to exit");
+    mvprintw(17, 20, "");
+    refreshp();
+
+    GRegex *regex = g_regex_new("\\$1", 0, 0 , NULL);
+    char *reccommand = g_regex_replace(regex, vk_record_cmd, -1, 0,
+	    ph_message[message_nr], 0, NULL);
+    g_regex_unref(regex);
+
+    IGNORE(system(reccommand));;
+    g_free(reccommand);
+
+    //G4KNO: Loop until <esc> keypress
+    while (1) {
+	if (key_get() == ESCAPE) {
+	    //kill process (SIGINT=Ctrl-C).
+	    gchar **vector = g_strsplit_set(vk_record_cmd, " \t", 2);
+	    char *stopcommand =
+		g_strconcat("pkill -SIGINT -n ", vector[0], NULL);
+	    g_strfreev(vector);
+
+	    IGNORE(system(stopcommand));;
+	    g_free(stopcommand);
+	    break;
+	}
+    }
+}
+
 
 /* playing recorded voice keyer messages in background */
 void *play_thread(void *ptr) {
@@ -288,12 +317,10 @@ void *play_thread(void *ptr) {
 
     vk_running=true;
 
-    // use play_vk from current dir, if available
-    // note: this overrides PATH setting
-    bool has_local_play_vk = (access("./play_vk", X_OK) == 0);
-    char *playcommand = g_strdup_printf("%s %s",
-			(has_local_play_vk ? "./play_vk" : "play_vk"),
-				audiofile);
+    GRegex *regex = g_regex_new("\\$1", 0, 0, NULL);
+    char *playcommand = g_regex_replace(regex, vk_play_cmd, -1, 0,
+	    audiofile, 0, NULL);
+    g_regex_unref(regex);
 
     /* CAT PTT wanted and available, use it. */
     if (rigptt == CAT_PTT_USE) {
@@ -346,7 +373,12 @@ void vk_play_file(char *audiofile) {
 #define NO_KEY -1
 
 void vk_stop() {
-    IGNORE(system("pkill -SIGTERM -n play_vk"));
+    gchar **vector = g_strsplit(vk_play_cmd, " \t", 2);
+    char *stopcommand = g_strconcat("pkill -SIGTERM -n ", vector[0], NULL);
+    g_strfreev(vector);
+
+    IGNORE(system(stopcommand));
+    g_free(stopcommand);
 }
 
 

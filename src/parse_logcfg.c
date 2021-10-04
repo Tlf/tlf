@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "audio.h"
 #include "bandmap.h"
 #include "cabrillo_utils.h"
 #include "change_rst.h"
@@ -94,6 +95,7 @@ int read_logcfg(void) {
     }
     showstring("Reading config file:", config_file);
 
+    sound_setup_default();
     int status = parse_configfile(fp);
     fclose(fp);
 
@@ -1146,6 +1148,8 @@ static config_t logcfg_configs[] = {
     {"CABRILLO",    CFG_STRING(cabrillo)},
     {"CALLMASTER",  CFG_STRING(callmaster_filename)},
     {"EDITOR",      CFG_STRING(editor_cmd)},
+    {"VK_PLAY_COMMAND",	    CFG_STRING(vk_play_cmd)},
+    {"VK_RECORD_COMMAND",   CFG_STRING(vk_record_cmd)},
 
     {"RIGPORT",         CFG_STRING_NOCHOMP(rigportname)},
     {"CLUSTERLOGIN",    CFG_STRING_STATIC_NOCHOMP(clusterlogin, 80)},
