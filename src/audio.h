@@ -27,7 +27,14 @@
 
 #include <stdbool.h>
 
+extern char* vk_record_cmd;
+extern char* vk_play_cmd;
+extern char* soundlog_record_cmd;
+extern char* soundlog_play_cmd;
+
+void sound_setup_default(void);
 void record(void);
+
 void vk_play_file(char *audiofile);
 void vk_stop();
 bool is_vk_finished();
