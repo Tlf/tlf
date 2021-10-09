@@ -59,12 +59,15 @@ void vk_do_record(int message_nr);
 
 void sound_setup_default(void) {
     if (vk_record_cmd) g_free (vk_record_cmd);
+    vk_record_cmd = g_strdup("rec -r 8000 $1 -q");
+
     if (vk_play_cmd) g_free (vk_play_cmd);
-    if (soundlog_record_cmd) g_free (soundlog_record_cmd);
-    if (soundlog_play_cmd) g_free (soundlog_play_cmd);
-    vk_record_cmd = g_strdup("rec -r 8000 $1 -q &");
     vk_play_cmd = g_strdup("play_vk $1");
+
+    if (soundlog_record_cmd) g_free (soundlog_record_cmd);
     soundlog_record_cmd = g_strdup("soundlog > /dev/null 2> /dev/null");
+
+    if (soundlog_play_cmd) g_free (soundlog_play_cmd);
     soundlog_play_cmd = g_strdup("play -q ~/tlf/soundlogs/$1 trim $2");
 }
 
@@ -285,17 +288,22 @@ void vk_do_record(int message_nr) {
     refreshp();
 
     GRegex *regex = g_regex_new("\\$1", 0, 0 , NULL);
-    char *reccommand = g_regex_replace(regex, vk_record_cmd, -1, 0,
+    char *command = g_regex_replace(regex, vk_record_cmd, -1, 0,
 	    ph_message[message_nr], 0, NULL);
     g_regex_unref(regex);
 
+    /* let the command run in background so we can stop recording by
+     * <esc> key later */
+    char *reccommand = g_strconcat( command, " &", NULL);
+
     IGNORE(system(reccommand));;
+    g_free(command);
     g_free(reccommand);
 
-    //G4KNO: Loop until <esc> keypress
+    /* Loop until <esc> key pressed */
     while (1) {
 	if (key_get() == ESCAPE) {
-	    //kill process (SIGINT=Ctrl-C).
+	    /* kill process (first record command token) with SIGINT=Ctrl-C */
 	    gchar **vector = g_strsplit_set(vk_record_cmd, " \t", 2);
 	    char *stopcommand =
 		g_strconcat("pkill -SIGINT -n ", vector[0], NULL);
