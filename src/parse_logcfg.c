@@ -1148,8 +1148,10 @@ static config_t logcfg_configs[] = {
     {"CABRILLO",    CFG_STRING(cabrillo)},
     {"CALLMASTER",  CFG_STRING(callmaster_filename)},
     {"EDITOR",      CFG_STRING(editor_cmd)},
-    {"VK_PLAY_COMMAND",	    CFG_STRING(vk_play_cmd)},
-    {"VK_RECORD_COMMAND",   CFG_STRING(vk_record_cmd)},
+    {"VK_PLAY_COMMAND",	    	CFG_STRING(vk_play_cmd)},
+    {"VK_RECORD_COMMAND",   	CFG_STRING(vk_record_cmd)},
+    {"SOUNDLOG_PLAY_COMMAND",	CFG_STRING(soundlog_play_cmd)},
+    {"SOUNDLOG_RECORD_COMMAND",	CFG_STRING(soundlog_record_cmd)},
 
     {"RIGPORT",         CFG_STRING_NOCHOMP(rigportname)},
     {"CLUSTERLOGIN",    CFG_STRING_STATIC_NOCHOMP(clusterlogin, 80)},

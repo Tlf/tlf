@@ -231,6 +231,8 @@ int setup_default(void **state) {
     FREE_DYNAMIC_STRING(rigportname);
     FREE_DYNAMIC_STRING(vk_play_cmd);
     FREE_DYNAMIC_STRING(vk_record_cmd);
+    FREE_DYNAMIC_STRING(soundlog_play_cmd);
+    FREE_DYNAMIC_STRING(soundlog_record_cmd);
 
     showmsg_spy = STRING_NOT_SET;
     rst_init_spy[0] = 0;
@@ -295,15 +297,27 @@ void test_keyer_device(void **state) {
 }
 
 void test_vk_play_cmd(void **state) {
-    int rc = call_parse_logcfg("VK_PLAY_COMMAND= play -q $1\n");
+    int rc = call_parse_logcfg("VK_PLAY_COMMAND= sox -q $1 -d\n");
     assert_int_equal(rc,0);
-    assert_string_equal(vk_play_cmd, "play -q $1");
+    assert_string_equal(vk_play_cmd, "sox -q $1 -d");
 }
 
 void test_vk_record_cmd(void **state) {
-    int rc = call_parse_logcfg("VK_RECORD_COMMAND= rec -r 8000 $1 -q &\n");
+    int rc = call_parse_logcfg("VK_RECORD_COMMAND= sox -r 8000 -q -d $1 &\n");
     assert_int_equal(rc,0);
-    assert_string_equal(vk_record_cmd, "rec -r 8000 $1 -q &");
+    assert_string_equal(vk_record_cmd, "sox -r 8000 -q -d $1 &");
+}
+
+void test_soundlog_play_cmd(void **state) {
+    int rc = call_parse_logcfg("SOUNDLOG_PLAY_COMMAND= sox -q $1 -d\n");
+    assert_int_equal(rc,0);
+    assert_string_equal(soundlog_play_cmd, "sox -q $1 -d");
+}
+
+void test_soundlog_record_cmd(void **state) {
+    int rc = call_parse_logcfg("SOUNDLOG_RECORD_COMMAND= ./soundlog");
+    assert_int_equal(rc,0);
+    assert_string_equal(soundlog_record_cmd, "./soundlog");
 }
 
 void test_editor(void **state) {
