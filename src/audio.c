@@ -55,9 +55,10 @@ char *soundlog_play_cmd;
 char *soundlog_dir;
 
 
-void vk_do_record(int message_nr);
-void vr_start(void);
-void vr_stop(void);
+static void stop_command(char *string);
+static void vk_do_record(int message_nr);
+static void vr_start(void);
+static void vr_stop(void);
 
 
 void sound_setup_default(void) {
@@ -78,7 +79,7 @@ void sound_setup_default(void) {
 }
 
 
-void recordmenue(void) {
+static void recordmenue(void) {
     int j;
 
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
@@ -281,9 +282,21 @@ void record(void) {
     }
 }
 
+/* common tools */
+
+/* kill process (first command token in string) with SIGTERM */
+static void stop_command(char *string) {
+    gchar **vector = g_strsplit_set(string, " \t", 2);
+    char *command = g_strconcat("pkill -SIGTERM -n ", vector[0], NULL);
+    g_strfreev(vector);
+
+    IGNORE(system(command));
+    g_free(command);
+}
+
 
 /* voice recorder handling - recording and play back */
-void vr_start(void) {
+static void vr_start(void) {
     IGNORE(system("echo " " > ~/.VRlock"));
 
     char *command = g_strconcat("cd ", soundlog_dir, "; ",
@@ -294,20 +307,14 @@ void vr_start(void) {
 }
 
 
-void vr_stop() {
+static void vr_stop() {
     IGNORE(system("rm ~/.VRlock"));
-
-    gchar **vector = g_strsplit_set(soundlog_record_cmd, " \t", 2);
-    char *command = g_strconcat("pkill -SIGTERM -n ", vector[0], NULL);
-    g_strfreev(vector);
-
-    IGNORE(system(command));
-    g_free(command);
+    stop_command(soundlog_record_cmd);
 }
 
 /* voice keyer handling - recording and playback */
 /*--------------------------------------------------------------------------*/
-void vk_do_record(int message_nr) {
+static void vk_do_record(int message_nr) {
 
     extern char ph_message[14][80];
 
@@ -332,13 +339,7 @@ void vk_do_record(int message_nr) {
     /* Loop until <esc> key pressed */
     while (1) {
 	if (key_get() == ESCAPE) {
-	    /* kill process (first record command token) with SIGINT=Ctrl-C */
-	    gchar **vector = g_strsplit_set(vk_record_cmd, " \t", 2);
-	    char *command = g_strconcat("pkill -SIGINT -n ", vector[0], NULL);
-	    g_strfreev(vector);
-
-	    IGNORE(system(command));
-	    g_free(command);
+	    stop_command(vk_record_cmd);
 	    break;
 	}
     }
@@ -409,12 +410,7 @@ void vk_play_file(char *audiofile) {
 #define NO_KEY -1
 
 void vk_stop() {
-    gchar **vector = g_strsplit(vk_play_cmd, " \t", 2);
-    char *command = g_strconcat("pkill -SIGTERM -n ", vector[0], NULL);
-    g_strfreev(vector);
-
-    IGNORE(system(command));
-    g_free(command);
+    stop_command(vk_play_cmd);
 }
 
 
