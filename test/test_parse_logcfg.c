@@ -320,6 +320,12 @@ void test_soundlog_record_cmd(void **state) {
     assert_string_equal(soundlog_record_cmd, "./soundlog");
 }
 
+void test_soundlog_directory(void **state) {
+    int rc = call_parse_logcfg("SOUNDLOG_DIRECTORY= ~/soundlogs");
+    assert_int_equal(rc,0);
+    assert_string_equal(soundlog_dir, "~/soundlogs");
+}
+
 void test_editor(void **state) {
     int rc = call_parse_logcfg("EDITOR= pico \n");   // space around argument
     assert_int_equal(rc, 0);
