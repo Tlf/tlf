@@ -48,13 +48,16 @@
 static pthread_t vk_thread;
 static atomic_bool vk_running = false;
 
-char* vk_record_cmd;
-char* vk_play_cmd;
-char* soundlog_record_cmd;
-char* soundlog_play_cmd;
+char *vk_record_cmd;
+char *vk_play_cmd;
+char *soundlog_record_cmd;
+char *soundlog_play_cmd;
+char *soundlog_dir;
 
 
 void vk_do_record(int message_nr);
+void vr_start(void);
+void vr_stop(void);
 
 
 void sound_setup_default(void) {
@@ -65,11 +68,15 @@ void sound_setup_default(void) {
     vk_play_cmd = g_strdup("play_vk $1");
 
     if (soundlog_record_cmd) g_free (soundlog_record_cmd);
-    soundlog_record_cmd = g_strdup("soundlog > /dev/null 2> /dev/null");
+    soundlog_record_cmd = g_strdup("soundlog");
 
     if (soundlog_play_cmd) g_free (soundlog_play_cmd);
     soundlog_play_cmd = g_strdup("play -q ~/tlf/soundlogs/$1 trim $2");
+
+    if (soundlog_dir) g_free (soundlog_dir);
+    soundlog_dir = g_strdup("~/tlf/soundlogs");
 }
+
 
 void recordmenue(void) {
     int j;
@@ -174,10 +181,7 @@ void record(void) {
 
 	    // Start contest recording.
 	    case '1':
-		IGNORE(system("echo " " > ~/.VRlock"));;
-
-		IGNORE(system
-		       ("cd ~/tlf/soundlogs; soundlog  > /dev/null 2> /dev/null &"));
+		vr_start();
 
 		mvprintw(15, 20, "Contest recording enabled...");
 		refreshp();
@@ -190,8 +194,9 @@ void record(void) {
 		mvprintw(15, 20, "Contest recording disabled...");
 		refreshp();
 		sleep(1);
-		IGNORE(system("rm ~/.VRlock"));;
-		IGNORE(system("pkill -f soundlogs > /dev/null 2> /dev/null "));;
+
+		vr_stop();
+
 		runnit = 0;
 		break;
 
@@ -267,13 +272,37 @@ void record(void) {
 		mvprintw(16, 20, "Use Ctrl-c to stop and return to tlf");
 		mvprintw(18, 20, "");
 		refreshp();
-		IGNORE(system(commands));;
+		IGNORE(system(commands));
 		runnit = 0;
 		break;
 	    case ESCAPE:
 		runnit = 0;
 	}
     }
+}
+
+
+/* voice recorder handling - recording and play back */
+void vr_start(void) {
+    IGNORE(system("echo " " > ~/.VRlock"));
+
+    char *command = g_strconcat("cd ", soundlog_dir, "; ",
+	    soundlog_record_cmd, " >/dev/null 2>/dev/null &", NULL);
+
+    IGNORE(system(command));
+    g_free(command);
+}
+
+
+void vr_stop() {
+    IGNORE(system("rm ~/.VRlock"));
+
+    gchar **vector = g_strsplit_set(soundlog_record_cmd, " \t", 2);
+    char *command = g_strconcat("pkill -SIGTERM -n ", vector[0], NULL);
+    g_strfreev(vector);
+
+    IGNORE(system(command));
+    g_free(command);
 }
 
 /* voice keyer handling - recording and playback */
@@ -296,7 +325,7 @@ void vk_do_record(int message_nr) {
      * <esc> key later */
     char *reccommand = g_strconcat( command, " &", NULL);
 
-    IGNORE(system(reccommand));;
+    IGNORE(system(reccommand));
     g_free(command);
     g_free(reccommand);
 
@@ -305,12 +334,11 @@ void vk_do_record(int message_nr) {
 	if (key_get() == ESCAPE) {
 	    /* kill process (first record command token) with SIGINT=Ctrl-C */
 	    gchar **vector = g_strsplit_set(vk_record_cmd, " \t", 2);
-	    char *stopcommand =
-		g_strconcat("pkill -SIGINT -n ", vector[0], NULL);
+	    char *command = g_strconcat("pkill -SIGINT -n ", vector[0], NULL);
 	    g_strfreev(vector);
 
-	    IGNORE(system(stopcommand));;
-	    g_free(stopcommand);
+	    IGNORE(system(command));
+	    g_free(command);
 	    break;
 	}
     }
@@ -339,7 +367,7 @@ void *play_thread(void *ptr) {
     }
 
     usleep(txdelay * 1000);
-    IGNORE(system(playcommand));;
+    IGNORE(system(playcommand));
     g_free(playcommand);
 
     /* CAT PTT wanted, available, and active. */
@@ -382,11 +410,11 @@ void vk_play_file(char *audiofile) {
 
 void vk_stop() {
     gchar **vector = g_strsplit(vk_play_cmd, " \t", 2);
-    char *stopcommand = g_strconcat("pkill -SIGTERM -n ", vector[0], NULL);
+    char *command = g_strconcat("pkill -SIGTERM -n ", vector[0], NULL);
     g_strfreev(vector);
 
-    IGNORE(system(stopcommand));
-    g_free(stopcommand);
+    IGNORE(system(command));
+    g_free(command);
 }
 
 

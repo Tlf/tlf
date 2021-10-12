@@ -1,4 +1,6 @@
 #!/bin/sh
+# accept SIGTERM and SIGINT signals and kill play command as soon as possible
+trap 'kill -s INT $PID' TERM USR1
 
 while [ -f $HOME/.VRlock ]
 do
@@ -11,6 +13,8 @@ do
 			# rec -w  -r 8000 $filename > /dev/null 2> /dev/null
 
 			# Example command for SoX rec
-			rec -c 1  -r 8000 -q $filename
+			rec -c 1  -r 8000 -q $filename &
+			PID=$!
+			wait $PID
 		fi
 done
