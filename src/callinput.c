@@ -436,8 +436,8 @@ int callinput(void) {
 		    rst_sent_up();
 
 		    if (!no_rst)
-			mvprintw(12, 44, sent_rst);
-		    mvprintw(12, 29, hiscall);
+			mvprintw(12, 44, "%s", sent_rst);
+		    mvprintw(12, 29, "%s", hiscall);
 
 		} else {	// change cw speed
 		    speedup();
@@ -457,8 +457,8 @@ int callinput(void) {
 		    rst_sent_down();
 
 		    if (!no_rst)
-			mvprintw(12, 44, sent_rst);
-		    mvprintw(12, 29, hiscall);
+			mvprintw(12, 44, "%s", sent_rst);
+		    mvprintw(12, 29, "%s", hiscall);
 
 		} else {
 
@@ -525,12 +525,12 @@ int callinput(void) {
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		for (j = 13; j <= 23; j++) {
-		    mvprintw(j, 0, backgrnd_str);
+		    mvprintw(j, 0, "%s", backgrnd_str);
 		}
 
 		attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-		mvprintw(12, 29, spaces(12));
+		mvprintw(12, 29, "%s", spaces(12));
 		mvprintw(12, 29, "");
 		refreshp();
 		break;
@@ -913,17 +913,17 @@ int callinput(void) {
 		if (lan_active) {
 
 		    for (t = 0; t <= 5; t++)
-			mvprintw(14 + t, 1, spaces(60));
+			mvprintw(14 + t, 1, "%s", spaces(60));
 
 		    for (t = 0; t <= 4; t++)
-			mvprintw(15 + t, 1, talkarray[t]);
+			mvprintw(15 + t, 1, "%s", talkarray[t]);
 		    nicebox(14, 0, 5, 59, "Messages");
 
 		    refreshp();
 		    key_get();
 		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
-			mvprintw(14 + t, 0, spaces(61));
+			mvprintw(14 + t, 0, "%s", spaces(61));
 
 		    clear_display();
 		}
@@ -1252,7 +1252,7 @@ void handle_bandswitch(int direction) {
     }
 
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-    mvprintw(12, 0, band[bandinx]);
+    mvprintw(12, 0, "%s", band[bandinx]);
 
     if (trx_control) {
 	freq = bandfrequency[bandinx]; // TODO: is this needed?

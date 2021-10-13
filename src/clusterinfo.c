@@ -67,7 +67,7 @@ void clusterinfo(void) {
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	for (int i = 14; i < LINES - 1; i++)
-	    mvprintw(i, 0, backgrnd_str);
+	    mvprintw(i, 0, "%s", backgrnd_str);
 	refreshp();
     }
 

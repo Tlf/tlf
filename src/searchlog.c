@@ -121,7 +121,7 @@ void drawSearchWin(void) {
 
     wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (i = 0; i < nr_bands; i++)
-	mvwprintw(search_win, i + 1, 1, spaces(37));
+	mvwprintw(search_win, i + 1, 1, "%s", spaces(37));
 
     mvwprintw(search_win, 1, 1, " 10");
     mvwprintw(search_win, 2, 1, " 15");
@@ -142,7 +142,7 @@ void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
     wattroff(search_win, A_STANDOUT);
     wattron(search_win, COLOR_PAIR(C_BORDER));
 
-    mvwprintw(search_win, nr_bands + 1, 2, dx->countryname);
+    mvwprintw(search_win, nr_bands + 1, 2, "%s", dx->countryname);
     mvwprintw(search_win, nr_bands + 1, 32, "%02d", dx->cq);
 
     if (itumult != 1)
@@ -152,7 +152,7 @@ void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
 
     if (CONTEST_IS(WPX) || pfxmult == 1) {
 	i = strlen(dx->countryname);
-	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, pxstr);
+	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, "%s", pxstr);
     }
 }
 
@@ -734,7 +734,7 @@ void searchlog() {
 
 	if (dupe == ISDUPE) {
 	    attrset(COLOR_PAIR(C_DUPE));
-	    mvprintw(12, 29, hiscall);
+	    mvprintw(12, 29, "%s", hiscall);
 	    refreshp();
 	    usleep(500000);
 	}
@@ -833,7 +833,7 @@ void show_needed_sections(void) {
 	wattron(search_win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 	for (j = 1; j < 7; j++)
-	    mvwprintw(search_win, j, 1, spaces(37));
+	    mvwprintw(search_win, j, 1, "%s", spaces(37));
 
 	for (vert = 1; vert < 7; vert++) {
 	    if (cnt >= get_mult_count())
