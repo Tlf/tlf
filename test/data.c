@@ -448,9 +448,16 @@ int mvprintw(int y, int x, const char *fmt, ...) {
 }
 
 int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...) {
+
+    // shift history
+    for (int i = NLAST - 1; i >= 1; --i) {
+	strcpy(mvprintw_history[i], mvprintw_history[i - 1]);
+    }
+
     va_list args;
     va_start(args, fmt);
-    mvprintw(y, x, fmt, args);
+    sprintf(mvprintw_history[0], "%02d|%02d|", y, x);
+    vsnprintf(mvprintw_history[0] + 6, 100 - 6, fmt, args);
     va_end(args);
 
     return 0;

@@ -880,5 +880,5 @@ void OnLowerSearchPanel(int x, char *str) {
     int y = 1 + (IsAllBand() ? 10 : 6);
 
     wattrset(search_win, modify_attr(COLOR_PAIR(C_BORDER)));
-    mvwprintw(search_win, y, x, str);
+    mvwprintw(search_win, y, x, "%s", str);
 }
