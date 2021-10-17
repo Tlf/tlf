@@ -966,6 +966,9 @@ int callinput(void) {
 	    break;
 	}
 
+	/* skip further processing of non ascii values */
+	if (!isascii(x))
+		continue;
 
 	/* Convert to upper case */
 	x = g_ascii_toupper(x);
