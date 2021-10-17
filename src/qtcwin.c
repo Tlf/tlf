@@ -791,7 +791,7 @@ void qtc_main_panel(int direction) {
 			&& qtclist.totalsent == *qtccount) {
 		    log_sent_qtc_to_disk(nr_qsos);
 		    wattrset(qtcwin, LINE_INVERTED);
-		    mvwprintw(qtcwin, 2, 11, "QTC's have been saved!");
+		    mvwprintw(qtcwin, 2, 11, "QTCs have been saved!");
 		    prevqtccall[0] = '\0';
 		    qtccallsign[0] = '\0';
 		    refreshp();
