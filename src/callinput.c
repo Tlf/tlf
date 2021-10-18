@@ -966,15 +966,10 @@ int callinput(void) {
 	    break;
 	}
 
-	/* skip further processing of non ascii values */
-	if (!isascii(x))
-		continue;
-
-	/* Convert to upper case */
-	x = g_ascii_toupper(x);
 
 	/* Add character to call input field. */
 	if (valid_call_char(x)) {
+	    x = g_ascii_toupper(x);
 
 	    if (strlen(hiscall) < 13) {
 		instring[0] = x;
@@ -1018,6 +1013,7 @@ int callinput(void) {
 // accepts A-Z 0-9 /
 bool valid_call_char(int ch) {
     return (ch >= 'A' && ch <= 'Z')
+	   || (ch >= 'a' && ch <= 'z')
 	   || (ch >= '0' && ch <= '9')
 	   || ch == '/';
 }
@@ -1114,12 +1110,13 @@ int autosend() {
 	    continue;
 	}
 
-	/* convert to upper case */
-	x = g_ascii_toupper(x);
 
 	int len = strlen(hiscall);
 	if (len < 13 && valid_call_char(x)) {
 	    char append[2];
+
+	    /* convert to upper case */
+	    x = g_ascii_toupper(x);
 
 	    /* insert into hiscall */
 	    hiscall[len] = x;

@@ -143,12 +143,13 @@ void calledit(void) {
 	    // Any character left other than <Escape>.
 	} else if (i != ESCAPE) {
 
-	    // Promote lower case to upper case.
-	    i = g_ascii_toupper(i);
 
 	    if (valid_call_char(i)) {
 
 		call2[0] = '\0';
+
+		// Promote lower case to upper case.
+		i = g_ascii_toupper(i);
 
 		if (b <= 12) {
 		    strncpy(call1, hiscall, b);
