@@ -55,7 +55,7 @@ void calledit(void) {
 	attron(COLOR_PAIR(C_HEADER));
 
 	mvprintw(12, 29, "            ");
-	mvprintw(12, 29, hiscall);
+	mvprintw(12, 29, "%s", hiscall);
 	mvprintw(12, 29 + b, "");
 	/* no refreshp() here as getch() calls wrefresh() for the
 	 * panel with last output (whre the cursor should go */
@@ -188,7 +188,7 @@ void calledit(void) {
     attron(COLOR_PAIR(C_HEADER));
 
     mvprintw(12, 29, "            ");
-    mvprintw(12, 29, hiscall);
+    mvprintw(12, 29, "%s", hiscall);
     refreshp();
 
     attron(A_STANDOUT);
@@ -248,7 +248,7 @@ int insert_char(int curposition) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
-	mvprintw(12, 29, hiscall);
+	mvprintw(12, 29, "%s", hiscall);
 	curposition++;
 	mvprintw(12, 29 + curposition, "");
 	refreshp();

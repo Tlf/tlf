@@ -835,5 +835,5 @@ void wipe_display() {
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j < LINES; j++)
-	mvprintw(j, 0, backgrnd_str);
+	mvprintw(j, 0, "%s", backgrnd_str);
 }

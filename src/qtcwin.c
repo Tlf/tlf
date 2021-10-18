@@ -1209,7 +1209,7 @@ void showfield(int fidx) {
 	wattrset(qtcwin, LINE_NORMAL);
     }
 
-    mvwprintw(qtcwin, winrow, pos[posidx][0], filled);
+    mvwprintw(qtcwin, winrow, pos[posidx][0], "%s", filled);
     mvwprintw(qtcwin, winrow, pos[posidx][0], "%s", fieldval);
     if (fidx == activefield) {
 	show_help_msg(posidx);
@@ -1512,14 +1512,14 @@ void show_help_msg(int msgidx) {
 		mvwprintw(qtcwin, ++j, 36, "Press ENTER to mark as RCVD");
 	    }
 	} else {
-	    mvwprintw(qtcwin, ++j, 36, help_rec_msgs[msgidx]);
+	    mvwprintw(qtcwin, ++j, 36, "%s", help_rec_msgs[msgidx]);
 	}
     }
     if (qtccurrdirection == SEND) {
 	if (msgidx > 2 && msgidx < 6) {
 	    msgidx = 3;
 	}
-	mvwprintw(qtcwin, ++j, 36, help_send_msgs[msgidx]);
+	mvwprintw(qtcwin, ++j, 36, "%s", help_send_msgs[msgidx]);
     }
     wattrset(qtcwin, LINE_INVERTED);
     mvwprintw(qtcwin, ++j, 36, "PgUP/PgDW: QRQ/QRS      CTRL-N: NO QTC");
