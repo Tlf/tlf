@@ -28,6 +28,7 @@
 #include <pthread.h>
 
 #include "bands.h"
+#include "cw_utils.h"
 #include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
@@ -186,6 +187,23 @@ void gettxinfo(void) {
 	if (bandinx != oldbandinx) {	// band change on trx
 	    oldbandinx = bandinx;
 	    handle_trx_bandswitch((int) freq);
+	}
+
+	/* read speed from rig */
+	if (cwkeyer == HAMLIB_KEYER) {
+	    value_t rig_cwspeed;
+	    retval = rig_get_level(my_rig, RIG_VFO_CURR, RIG_LEVEL_KEYSPD, &rig_cwspeed); /* initialize RIG_VFO_CURR */
+
+	    if (retval == RIG_OK) {
+		if (GetCWSpeed() != rig_cwspeed.i) { // FIXME: doesn't work if rig speed is between the values from CW_SPEEDS
+		    SetCWSpeed(rig_cwspeed.i);
+
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 14, "%2u", GetCWSpeed());
+		}
+	    } else {
+		TLF_LOG_WARN("Problem with rig link!");
+	    }
 	}
 
     } else if (reqf == SETCWMODE) {

@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,44 +16,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
-/* ------------------------------------------------------------
-*      Stop TX
-*
-*--------------------------------------------------------------*/
 
+#include <hamlib/rig.h>
 
-#include "clear_display.h"
-#include "err_utils.h"
 #include "globalvars.h"
 #include "hamlib_keyer.h"
-#include "netkeyer.h"
-#include "tlf.h"
-#include "tlf_curses.h"
 
-#include "fldigixmlrpc.h"
-
-int stoptx(void) {
-
-    if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
-	fldigi_to_rx();
-    } else if (trxmode == CWMODE) {
-	if (cwkeyer == NET_KEYER) {
-
-	    if (netkeyer(K_ABORT, NULL) < 0) {
-
-		TLF_LOG_WARN("keyer not active; switching to SSB");
-		trxmode = SSBMODE;
-		clear_display();
-
-	    }
-	} else if (cwkeyer == HAMLIB_KEYER) {
-	    if (hamlib_keyer_stop() != RIG_OK) {
-		TLF_LOG_WARN("could not stop CW sending");
-	    }
-	}
-    } else {
-	return (1);
-    }
-    return (0);
+int hamlib_keyer_send(char *cwmessage) {
+    return rig_send_morse(my_rig, RIG_VFO_CURR, cwmessage);
 }
 
+int hamlib_keyer_set_speed(int cwspeed) {
+    value_t spd;
+    spd.i = cwspeed;
+
+    return rig_set_level(my_rig, RIG_VFO_CURR, RIG_LEVEL_KEYSPD, spd);
+}
+
+int hamlib_keyer_stop() {
+    return rig_stop_morse(my_rig, RIG_VFO_CURR);
+}

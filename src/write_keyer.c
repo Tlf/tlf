@@ -29,6 +29,7 @@
 #include "err_utils.h"
 #include "ignore_unused.h"
 #include "globalvars.h"
+#include "hamlib_keyer.h"
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -93,6 +94,8 @@ void write_keyer(void) {
 	fldigi_send_text(tosend);
     } else if (cwkeyer == NET_KEYER) {
 	netkeyer(K_MESSAGE, tosend);
+    } else if (cwkeyer == HAMLIB_KEYER) {
+	hamlib_keyer_send(tosend);
 
     } else if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 	if ((bfp = fopen(controllerport, "a")) == NULL) {

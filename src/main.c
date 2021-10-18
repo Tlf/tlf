@@ -815,6 +815,10 @@ static void keyer_init() {
 
     }
 
+    if (cwkeyer == HAMLIB_KEYER) {
+	showmsg("CW-Keyer is Hamlib");
+    }
+
     if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER ||
 	    digikeyer == GMFSK) {
 	init_controller();

@@ -1126,6 +1126,7 @@ static config_t logcfg_configs[] = {
     {"CONTINENT_LIST_POINTS",   CFG_INT(continentlist_points, 0, INT32_MAX)},
 
     {"NETKEYER",        CFG_INT_CONST(cwkeyer, NET_KEYER)},
+    {"HAMLIB_KEYER",    CFG_INT_CONST(cwkeyer, HAMLIB_KEYER)},
     {"FIFO_INTERFACE",  CFG_INT_CONST(packetinterface, FIFO_INTERFACE)},
     {"LONG_SERIAL",     CFG_INT_CONST(shortqsonr, 0)},
     {"CLUSTER",         CFG_INT_CONST(cluster, CLUSTER)},
