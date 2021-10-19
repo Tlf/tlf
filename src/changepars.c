@@ -471,7 +471,7 @@ int changepars(void) {
 	}
 
 	case 39: {		/* CQDELAY */
-	    mvprintw(12, 29, "CQD: pgup/dwn", cqdelay);
+	    mvprintw(12, 29, "CQD: pgup/dwn");
 	    refreshp();
 
 	    x = 1;
