@@ -1105,7 +1105,7 @@ void qtc_main_panel(int direction) {
 	    // Comma or Ctrl-K (^K), keyboard window
 	    case ',':
 	    case 11:
-		mvprintw(5, 0, "");
+		move(5, 0);
 		keyer();
 		x = 0;
 		break;

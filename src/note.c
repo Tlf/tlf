@@ -46,7 +46,7 @@ int include_note(void) {
 	     "                                                                              ");
     nicebox(14, 0, 1, 78, "Note");
     attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    move(15, 1);
 
     echo();
     getnstr(buffer, 78);

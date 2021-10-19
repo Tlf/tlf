@@ -49,7 +49,7 @@ static void highlight_line(int row, char *line, int column) {
     g_strlcpy(ln, line, NR_COLS + 1);
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvprintw(7 + row, 0, "%s", ln);
-    mvprintw(7 + row, column, "");
+    move(7 + row, column);
     refreshp();
 }
 

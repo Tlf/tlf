@@ -61,7 +61,7 @@ void clusterinfo(void) {
     /* cluster and bandmap display */
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    mvprintw(12, 0, "");
+    move(12, 0);
 
     if (cluster == NOCLUSTER) {
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);

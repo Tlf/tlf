@@ -57,7 +57,7 @@ void ask(char *buffer, char *what) {
     mvprintw(15, 1, "%s", spaces(78));
     nicebox(14, 0, 1, 78, what);
     attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    move(15, 1);
 
     echo();
     getnstr(buffer, 78);

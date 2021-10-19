@@ -70,7 +70,7 @@ void do_record(int message_nr) {
 
     mvprintw(15, 20, "recording %s", ph_message[message_nr]);
     mvprintw(16, 20, "ESC to exit");
-    mvprintw(17, 20, "");
+    move(17, 20);
     refreshp();
     strcpy(commands, "rec -r 8000 ");	//G4KNO
     strcat(commands, ph_message[message_nr]);
@@ -217,7 +217,7 @@ void record(void) {
 		    mvprintw(i, 0,
 			     "                                                                                ");
 
-		mvprintw(4, 10, "");
+		move(4, 10);
 
 		for (i = 10; i < 81; i += 10) {
 		    soundfilename = readdir(sounddir);
@@ -263,7 +263,7 @@ void record(void) {
 		    strcat(commands, ".au");
 		}
 		mvprintw(16, 20, "Use Ctrl-c to stop and return to tlf");
-		mvprintw(18, 20, "");
+		move(18, 20);
 		refreshp();
 		IGNORE(system(commands));;
 		runnit = 0;

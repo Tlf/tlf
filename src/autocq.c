@@ -68,7 +68,7 @@ int auto_cq(void) {
 
 	send_standard_message(11);
 
-	mvprintw(12, 29, "");
+	move(12, 29);
 
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
@@ -101,7 +101,7 @@ int auto_cq(void) {
 	}
 
 	mvprintw(12, 29, "%s", spaces(13));
-	mvprintw(12, 29, "");
+	move(12, 29);
 	refreshp();
     }
 
