@@ -1045,7 +1045,7 @@ void str_truncate(char *buffer, char *string, int n) {
 
 /*
  * format bandmap call output for WAE
- * - prepare and return a temporary string from call and number of QTC's
+ * - prepare and return a temporary string from call and number of QTCs
  *   (if any)
  */
 char *qtc_format(char *call) {

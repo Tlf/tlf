@@ -40,7 +40,7 @@ void printcall(void) {
     attron(COLOR_PAIR(C_INPUT) | attrib);
 
     mvprintw(12, 29, "            ");
-    mvprintw(12, 29, hiscall);
+    mvprintw(12, 29, "%s", hiscall);
     if ((cqmode == CQ) && (cwstart > 0))
 	mvchgat(12, 29 + cwstart, 12 - cwstart,
 		attrib | A_UNDERLINE, C_INPUT, NULL);

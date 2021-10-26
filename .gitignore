@@ -4,6 +4,7 @@ Makefile.in
 *.[oa]
 *.gcda
 *.gcno
+*.swp
 tlf
 tlf.1
 README

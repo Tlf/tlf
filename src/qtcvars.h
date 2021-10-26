@@ -51,7 +51,7 @@ typedef struct {
     int serial;	// qtc serial
     int count;	// nr of qtc line in block
     int marked;	// nr of marked to send
-    int totalsent; // nr of sent qtc's
+    int totalsent; // nr of sent QTCs
     char callsign[QTC_CALL_SIZE];  // current callsign; helps to detect if QSO has dropped
     t_qtcline qtclines[QTC_LINES];
 } t_qtclist;
@@ -82,7 +82,7 @@ typedef struct {
 extern int next_qtc_qso;		// the next non-sent QSO, which can
 					// be send next as QTC
 extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs
-					// for QTC's;  this is an array of
+					// for QTCs;  this is an array of
 					// flags, which marks when a QSO
 					// sent as QTC
 extern int qtcdirection;		// 1: RECV, 2: SEND, 3: BOTH

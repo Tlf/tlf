@@ -260,7 +260,7 @@ static gboolean show_it(gpointer key, gpointer val, gpointer data) {
 	attron(COLOR_PAIR(C_HEADER));
     }
 
-    mvprintw(pos->line, pos->column, "%-3s ", key);
+    mvprintw(pos->line, pos->column, "%-3s ", (char *)key);
 
     pos->column += 4;
     if (pos->column > 76) {

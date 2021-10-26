@@ -4,16 +4,16 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libhamlib-dev
   - sudo apt-get install -y libxmlrpc-core-c3-dev
-  - wget https://cmocka.org/files/1.0/cmocka-1.0.1.tar.xz
-  - tar -xvf cmocka-1.0.1.tar.xz
-  - cd cmocka-1.0.1
+  - wget https://cmocka.org/files/1.1/cmocka-1.1.5.tar.xz
+  - tar -xvf cmocka-1.1.5.tar.xz
+  - cd cmocka-1.1.5
   - mkdir build
   - cd build
   - cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug ..
   - make
   - sudo make install
   - cd ../..
-  - rm -rf cmocka-1.0.1 cmocka-1.0.1.tar.xz
+  - rm -rf cmocka-1.1.5 cmocka-1.1.5.tar.xz
   
 script: 
   - autoreconf -i && ./configure && make

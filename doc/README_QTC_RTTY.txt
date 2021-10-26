@@ -22,10 +22,10 @@ or received separately), but that method would be too slow in
 RTTY mode. In this mode, a complete QTC block exchanged in whole.
 That's the main different, but this divergence involves a few
 necessary modifications. Another important thing, that in
-RTTY mode everyone can send or receive QTC's, there isn't any
-limit (except the number of total QTC's between two stations).
-So, it happens that you sent 5 QTC's in a block, but to complete
-to 10, the second 5 QTC's you will receive from same station.
+RTTY mode everyone can send or receive QTCs, there isn't any
+limit (except the number of total QTCs between two stations).
+So, it happens that you sent 5 QTCs in a block, but to complete
+to 10, the second 5 QTCs you will receive from same station.
 That's why there is the third possible value of "QTC" option
 in logcfg.dat/rule file, which is "BOTH".
 
@@ -33,7 +33,7 @@ in logcfg.dat/rule file, which is "BOTH".
 Receiving QTC
 =============
 Even if you choose the two-way QTC handling, or you just want to
-receive QTC's, the CTRL-Q combinaton remaining to receive the
+receive QTCs, the CTRL-Q combinaton remaining to receive the
 QTC block. If you open the QTC receive window with CTRL-Q,
 apparently nothing has changed. The point is same than in another
 modes: fill the lines. Yes, the speed of RTTY is a little bit
@@ -128,13 +128,13 @@ Sending QTC
 =============
 
 As you can read the QTC=BOTH descriotion above, Tlf can send AND
-receive QTC's in same contest. To avoid the shortkey collosions, in
+receive QTCs in same contest. To avoid the shortkey collosions, in
 this case the only one combination can be used: CTRL+S.
 
 If you fill the callsign field (or that's filled when you open the
 QTC send window), then the QTC serial field is fixed - you can't
 change that, like CW/SSB modes. Only you can change the number of
-QTC's field, which could be maximum 10, or if you have QTC (received
+QTCs field, which could be maximum 10, or if you have QTC (received
 or sent) with the station, then Tlf calculates the possible number.
 
 Then if you press the ENTER, Tlf sends the complete QTC block to

@@ -331,7 +331,7 @@ void talk(void) {
 
     char talkline[61] = "";
 
-    mvprintw(LINES - 1, 0, backgrnd_str);
+    mvprintw(LINES - 1, 0, "%s", backgrnd_str);
     mvprintw(LINES - 1, 0, "T>");
     refreshp();
     echo();
@@ -344,7 +344,7 @@ void talk(void) {
 
     talkline[0] = '\0';
     attron(COLOR_PAIR(C_HEADER));
-    mvprintw(LINES - 1, 0, backgrnd_str);
+    mvprintw(LINES - 1, 0, "%s", backgrnd_str);
     refreshp();
 }
 

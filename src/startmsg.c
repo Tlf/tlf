@@ -60,7 +60,7 @@ static int has_room_for_message() {
 void showmsg(char *message) {
     if (!has_room_for_message())
 	clearmsg_wait();
-    mvprintw(linectr, 0, message);
+    mvprintw(linectr, 0, "%s", message);
     refreshp();
     linectr++;
 }

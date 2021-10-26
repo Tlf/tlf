@@ -91,7 +91,7 @@ void logedit(void) {
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     for (j = 13; j < LINES - 1; j++) {
-	mvprintw(j, 0, backgrnd_str);
+	mvprintw(j, 0, "%s", backgrnd_str);
     }
     refreshp();
 }
