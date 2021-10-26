@@ -190,9 +190,9 @@ void logit(void) {
 
 	    if (callreturn == CTRL_K || callreturn == 44) {	/*  CTRL K  */
 		getyx(stdscr, cury, curx);
-		mvprintw(5, 0, "");
+		move(5, 0);
 		keyer();
-		mvprintw(cury, curx, "");
+		move(cury, curx);
 	    }
 
 	} else {	/* user entered frequency -> clear input field */

@@ -290,7 +290,7 @@ int getexchange(void) {
 	    }
 	    case ',':		// Keyboard Morse
 	    case CTRL_K: {	// Ctrl-K
-		mvprintw(5, 0, "");
+		move(5, 0);
 		keyer();
 		x = 0;
 		break;
@@ -1061,7 +1061,7 @@ void exchange_edit(void) {
 
 	mvprintw(12, 54, "%s", spaces(contest->exchange_width));
 	mvprintw(12, 54, "%s", comment);
-	mvprintw(12, 54 + b, "");
+	move(12, 54 + b);
 
 	i = key_get();
 

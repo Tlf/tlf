@@ -48,7 +48,7 @@ static void enter_message(int bufnr) {
     refreshp();
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-    mvprintw(16, 4, "");
+    move(16, 4);
 
     echo();
     getnstr(printbuf, 60);

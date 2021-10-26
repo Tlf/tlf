@@ -175,7 +175,7 @@ void displayit(void) {
     strcpy(terminal3, terminal4);
     strcpy(terminal4, term2buf);
     termbuf[0] = '\0';
-    mvprintw(5, 0, "");
+    move(5, 0);
 
     clear_display();
 }

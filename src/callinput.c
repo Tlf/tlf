@@ -531,7 +531,7 @@ int callinput(void) {
 		attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
 		mvprintw(12, 29, "%s", spaces(12));
-		mvprintw(12, 29, "");
+		move(12, 29);
 		refreshp();
 		break;
 	    }
@@ -624,7 +624,7 @@ int callinput(void) {
 		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
 		    mvprintw(cury, curx - 1, " ");
-		    mvprintw(cury, curx - 1, "");
+		    move(cury, curx - 1);
 		    hiscall[strlen(hiscall) - 1] = '\0';
 		}
 		break;
@@ -716,7 +716,7 @@ int callinput(void) {
 		    k_ptt = 1;
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 2, "PTT on   ");
-		    mvprintw(12, 29, "");
+		    move(12, 29);
 		    refreshp();
 		    netkeyer(K_PTT, "1");	// ptt on
 		    x = key_get();	// any character to stop tuning
@@ -735,7 +735,7 @@ int callinput(void) {
 	    case ALT_T: {
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(0, 2, "Tune     ");
-		mvprintw(12, 29, "");
+		move(12, 29);
 		refreshp();
 
 		tune();

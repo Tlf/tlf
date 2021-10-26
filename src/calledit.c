@@ -56,7 +56,7 @@ void calledit(void) {
 
 	mvprintw(12, 29, "            ");
 	mvprintw(12, 29, "%s", hiscall);
-	mvprintw(12, 29 + b, "");
+	move(12, 29 + b);
 	/* no refreshp() here as getch() calls wrefresh() for the
 	 * panel with last output (whre the cursor should go */
 
@@ -251,7 +251,7 @@ int insert_char(int curposition) {
 
 	mvprintw(12, 29, "%s", hiscall);
 	curposition++;
-	mvprintw(12, 29 + curposition, "");
+	move(12, 29 + curposition);
 	refreshp();
 
     }

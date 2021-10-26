@@ -471,7 +471,7 @@ int changepars(void) {
 	}
 
 	case 39: {		/* CQDELAY */
-	    mvprintw(12, 29, "CQD: pgup/dwn", cqdelay);
+	    mvprintw(12, 29, "CQD: pgup/dwn");
 	    refreshp();
 
 	    x = 1;
@@ -512,7 +512,7 @@ int changepars(void) {
 
 	    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-	    mvprintw(12, 29 + strlen(hiscall), "");
+	    move(12, 29 + strlen(hiscall));
 	    break;
 
 	}
@@ -664,7 +664,7 @@ int changepars(void) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvprintw(12, 29, "            ");
-    mvprintw(12, 29, "");
+    move(12, 29);
     refreshp();
     hiscall[0] = '\0';
 
