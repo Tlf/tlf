@@ -30,7 +30,6 @@
 
 char ssexchange[30] = "";   // defined in getexchange.c
 char section[8] = "";       // defined in getexchange.c
-char zone_export[3] = "  ";
 
 // dummy functions
 void readqtccalls() {}

@@ -19,8 +19,6 @@
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/utils.o
 
-char zone_export[3] = "  ";
-
 /* export internal function */
 int location_unknown(char *call);
 int getpfxindex(char *checkcallptr, char **normalized_call);

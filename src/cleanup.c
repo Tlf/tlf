@@ -32,6 +32,8 @@
 void cleanup_qso(void) {
     hiscall[0] = '\0';	    /* reset hiscall and comment */
     comment[0] = '\0';
+    normalized_comment[0] = '\0';
+    proposed_exchange[0] = '\0';
     rst_reset();;	    /* reset to 599 */
     countrynr = 0;
 }

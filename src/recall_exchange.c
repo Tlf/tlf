@@ -25,6 +25,7 @@
 #include "initial_exchange.h"
 #include "tlf.h"
 #include "tlf_curses.h"
+#include "setcontest.h"
 
 
 /** \brief Recall former exchange or lookup initial exchange file
@@ -34,7 +35,8 @@
  * the according exchange into the 'comment' field.
  *
  * \return 1 - found, -1 - not found, 0 - call field was empty */
-int recall_exchange(void) {
+
+int get_proposed_exchange(void) {
 
     int i, l;
     int found = -1;
@@ -42,10 +44,6 @@ int recall_exchange(void) {
     struct ie_list *current_ie;
 
     if (strlen(hiscall) == 0)
-	return 0;
-
-    /* respect content which is already in comment field */
-    if (strlen(comment) != 0)
 	return 0;
 
     l = strlen(hiscall);
@@ -58,7 +56,7 @@ int recall_exchange(void) {
 	if ((strstr(worked[i].call, hiscall) == worked[i].call) &&
 		(*(worked[i].call + l) == '\0' || *(worked[i].call + l) == ' ')) {
 	    found = 1;
-	    strcpy(comment, worked[i].exchange);
+	    strcpy(proposed_exchange, worked[i].exchange);
 	    break;
 	}
     }
@@ -81,7 +79,7 @@ int recall_exchange(void) {
 			    ((*loc2 == '\0') || (*loc2 == '/'))) {
 
 			found = 1;
-			strcpy(comment, current_ie->exchange);
+			strcpy(proposed_exchange, current_ie->exchange);
 			break;
 		    }
 		}
@@ -91,10 +89,40 @@ int recall_exchange(void) {
 
     }
 
-    if (found) {
-	mvprintw(12, 54, comment);
-	refreshp();
+    if (found < 0) {
+	// get current zone for zone-based contest
+	if (CONTEST_IS(CQWW) || wazmult) {
+	    strcpy(proposed_exchange, cqzone);
+	} else if (itumult) {
+	    strcpy(proposed_exchange, ituzone);
+	}
+	if (proposed_exchange[0] != 0) {
+	    found = 1;
+	}
     }
 
     return found;
+}
+
+int recall_exchange(void) {
+    /* respect content which is already in comment field */
+    if (strlen(comment) != 0)
+	return 0;
+
+    if (strlen(proposed_exchange) == 0) {
+	int rc = get_proposed_exchange();
+	if (rc <= 0) {
+	    return rc;
+	}
+	if (strlen(proposed_exchange) == 0) {
+	    return -1;
+	}
+    }
+
+    strcpy(comment, proposed_exchange);
+
+    mvprintw(12, 54, comment);  //TODO move this to UI code
+    refreshp();
+
+    return 1;
 }

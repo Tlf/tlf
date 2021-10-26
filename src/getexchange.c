@@ -340,7 +340,7 @@ int getexchange(void) {
 		mvprintw(12, 29, "%s", hiscall);
 	    }
 
-            refreshp();
+	    refreshp();
 	}
 
 	/* <Enter>, <Tab>, Ctl-K, '\' */
@@ -490,10 +490,59 @@ char cmpattern[32] = "                               ";	// global
 char ssexchange[30] = "";
 char section[MAX_SECTION_LENGTH + 1] = "";
 int call_update = 0;
-char zone_export[3] = "  ";
-char zone_fix[3] = "";
 
 /* ------------------------------------------------------------------------ */
+
+
+static void checkexchange_cqww(char *comment, bool interactive) {
+    // <zone> [<call_fix>] [zone_fix]
+    static const char *PATTERN =
+	"\\s*(\\d+)?"       // zone
+	"\\s*([A-Z0-9/]*?[A-Z]\\d+[A-Z]+[A-Z0-9/]*)?"  // call fix
+	"\\s*(\\d+)?"       // zone fix
+	"\\s*";
+
+    static GRegex *regex = NULL;
+    if (regex == NULL) {
+	regex = g_regex_new(PATTERN, 0, 0, NULL);
+    }
+
+    int zone = 0;
+
+    GMatchInfo *match_info;
+    g_regex_match(regex, comment, 0, &match_info);
+    if (g_match_info_matches(match_info)) {
+	gchar *index;
+
+	// get zone nr, use fix if available
+	index = g_match_info_fetch(match_info, 1);
+	gchar *index_fix = g_match_info_fetch(match_info, 3);
+	if (index_fix != NULL) {
+	    g_free(index);
+	    index = index_fix;
+	}
+	if (index != NULL && strlen(index) >= 1 && strlen(index) <= 4) {
+	    zone = atoi(index);
+	}
+	g_free(index);
+
+	// get call fix
+	index = g_match_info_fetch(match_info, 2);
+	if (index != NULL) {
+	    g_strlcpy(callupdate, index, sizeof(callupdate));
+	}
+	g_free(index);
+    }
+    g_match_info_free(match_info);
+
+    // multiplier: zone
+    sprintf(normalized_comment, "%02d", zone);
+    g_strlcpy(mult1_value, normalized_comment, sizeof(normalized_comment));
+
+    if (interactive) {
+	OnLowerSearchPanel(32, normalized_comment); // show current zone
+    }
+}
 
 static void checkexchange_arrlss(char *comment, bool interactive) {
     char serial[5];
@@ -589,7 +638,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 /* ------------------------------------------------------------------------ */
 /*
     input: comment, interactive
-    output (global vars): section, ssexchange, mult1_value, zone_fix, zone_export
+    output (global vars): section, ssexchange, mult1_value, normalized_comment
     side effect: comment updated if interactive
 */
 
@@ -597,7 +646,6 @@ void checkexchange(char *comment, bool interactive) {
 
     char serial[5] = "    ";
     char checksection[30];
-    char zone[4] = "";
 
     /* field of allowed pattern sequences
      *
@@ -640,14 +688,6 @@ void checkexchange(char *comment, bool interactive) {
 	"baafaab",
 	"bafaaab",
 	"baafaaab"
-    };
-    char zonepats[6][6] = {
-	"ufb",
-	"uffb",
-	"bfb",
-	"bffb",
-	"bffu",
-	"bfu"
     };
     char sectionpats[12][7] = {
 	"uab",
@@ -702,55 +742,10 @@ void checkexchange(char *comment, bool interactive) {
 	}
     }
 
-    // -----------------------------------cqww-----------------------
+    // ----------------------------cqww------------------------------
     if (CONTEST_IS(CQWW)) {
 
-	s = atoi(comment);
-	snprintf(zone, sizeof(zone), "%02d", s);
-
-	for (ii = 0; ii < LEN(zonepats); ii++) {
-
-	    hr = getlastpattern(zonepats[ii]);
-
-//! \todo  logik und Verwendung zone_fix vs zone_export unklar
-//! Was passiert, falls zonenummer in comment zu groess ist?
-	    if ((hr > 1) && (atoi(comment + hr - 1) != 0)) {
-		sprintf(zone, "%02d", atoi(comment + hr - 1));
-		strncpy(zone_fix, zone, 2);
-		zone_fix[2] = '\0';
-	    } else {
-		strncpy(zone_export, zone, 2);
-		zone_export[2] = '\0';
-	    }
-	}
-
-	if (strlen(hiscall) >= 2)
-	    OnLowerSearchPanel(32, zone_export);
-
-
-	for (ii = 0; ii < LEN(callpats); ii++) {
-
-	    hr = getlastpattern(callpats[ii]);	// call update ?
-	    if (hr > 0) {
-
-		switch (ii) {
-
-		    case 0 ... 1:
-			strncpy(callupdate, comment + hr, 4);
-			callupdate[4] = '\0';
-			break;
-		    case 2 ... 3:
-			strncpy(callupdate, comment + hr, 5);
-			callupdate[5] = '\0';
-			break;
-		    case 4:
-			strncpy(callupdate, comment + hr, 6);
-			callupdate[6] = '\0';
-		}
-
-	    }
-	}
-
+	checkexchange_cqww(comment, interactive);
 	return;
     }
 
@@ -758,7 +753,7 @@ void checkexchange(char *comment, bool interactive) {
     if (CONTEST_IS(ARRL_SS)) {
 
 	checkexchange_arrlss(comment, interactive);
-	return;		// end arrlss
+	return;
     }
 
     // ----------------------serial+section--------------------------

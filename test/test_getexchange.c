@@ -198,8 +198,7 @@ void test_getexchange_arrlss(void **state) {
 
 typedef struct {
     char *input;
-    char *expected_zone_fix;
-    char *expected_zone_export;
+    char *expected_normalized_comment;
     char *expected_callupdate;
 } getex_cqww_t;
 
@@ -208,46 +207,46 @@ static getex_cqww_t getex_cqww[] = {
     // <zone> <call_fix> <zone_fix>
     {
 	"",     // empty
-	"", "00"/*FIXME*/, ""
+	"00", ""
     },
     {
 	"12",     // plain
-	"", "12", ""
+	"12", ""
     },
     {
 	"  12",     // leading space
-	"12", "12", ""
+	"12", ""
     },
     {
 	"  5",     // single digit
-	"05", "05", ""
+	"05", ""
     },
     {
 	"12 34",     // corrected
-	"34", "34", ""
+	"34", ""
     },
     {
 	"12 K1AB",     // with call
-	"", "12", "K1AB"
+	"12", "K1AB"
     },
     {
 	"12 F1AB 3",     // with call and correction
-	"03", "03", "F1AB"
-    },
-    {
-	"12 7 SK1AB",     // with correction and call
-	"07", "07", "SK1AB"
+	"03", "F1AB"
     },
 #if 0
     {
+	"12 7 SK1AB",     // with correction and call
+	"07", "SK1AB"
+    },
+#endif
+    {
 	"12 K1AB/4",     // call with region
-	"", "", "K1AB/4"
+	"12", "K1AB/4"
     },
     {
 	"12 G/K1AB/QRP",    // complexer call
-	"", "", "G/K1AB/QRP"
+	"12", "G/K1AB/QRP"
     },
-#endif
 };
 
 void test_getexchange_cqww(void **state) {
@@ -256,18 +255,13 @@ void test_getexchange_cqww(void **state) {
     char *input;
 
     for (int i = 0; i < LEN(getex_cqww); ++i) {
-	input = g_strdup_printf("%-20s", getex_cqww[i].input);
-	printf("%s{\n", input);
-	strcpy(comment, input); //FIXME should not be needed
+	input = g_strdup(getex_cqww[i].input);
 	callupdate[0] = 0;
-	zone_fix[0] = 0;
-	zone_export[0] = 0;
 
 	checkexchange(input, false);
-	printf("zone_fix=|%s| zone_export=|%s|\n", zone_fix, zone_export);
 
-	assert_string_equal(zone_fix, getex_cqww[i].expected_zone_fix);
-	assert_string_equal(zone_export, getex_cqww[i].expected_zone_export);
+	assert_string_equal(normalized_comment,
+			    getex_cqww[i].expected_normalized_comment);
 	assert_string_equal(callupdate, getex_cqww[i].expected_callupdate);
 
 	g_free(input);

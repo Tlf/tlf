@@ -52,12 +52,8 @@ void showinfo(int x) {
 
     extern double DEST_Lat;
     extern double DEST_Long;
-    extern char itustr[];
 
     int cury, curx;
-    char pxstr[16];
-    char countrystr[26];
-    char zonestr[3];
     char contstr[3];
     double bearing;
     double range;
@@ -73,25 +69,6 @@ void showinfo(int x) {
     else
 	pfx = prefix_by_index(x);
     dx = dxcc_by_index(pfx -> dxcc_index);
-
-    strcpy(pxstr, dx->pfx);
-    strcpy(countrystr, dx->countryname);	/* country */
-
-    if (strlen(cqzone) < 2) {
-	if (dx->cq > MAX_ZONES) dx->cq = MAX_ZONES;
-	snprintf(zonestr, sizeof(zonestr), "%02d", dx->cq); 	/* cqzone */
-	strcpy(cqzone, zonestr);
-    } else {
-	strncpy(zonestr, cqzone, 2);
-	zonestr[2] = '\0';
-    }
-
-    if (strlen(ituzone) < 2) {
-	sprintf(itustr, "%02d", dx->itu);	/* itu zone */
-    } else {
-	strncpy(itustr, ituzone, 2);
-	itustr[2] = '\0';
-    }
 
     if (pfx->timezone != INFINITY)
 	d = pfx->timezone;
@@ -121,9 +98,9 @@ void showinfo(int x) {
     mvaddstr(LINES - 1, 0, backgrnd_str);
 
     if (contstr[0] != '-') {
-	mvprintw(LINES - 1, 0, " %s  %s", pxstr, countrystr);
+	mvprintw(LINES - 1, 0, " %s  %s", dx->pfx, dx->countryname);
 
-	mvprintw(LINES - 1, 26, " %s %s", contstr, zonestr);
+	mvprintw(LINES - 1, 26, " %s %s", contstr, cqzone);
 
 	if (x != 0 && x != my.countrynr && 0 == get_qrb(&range, &bearing)) {
 	    mvprintw(LINES - 1, 35, "%.0f km/%.0f deg ", range, bearing);

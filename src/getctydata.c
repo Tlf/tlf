@@ -187,12 +187,10 @@ static int getctydata_internal(char *checkcallptr, bool get_country) {
 	x = prefix_by_index(w)->dxcc_index;
 	sprintf(cqzone, "%02d", prefix_by_index(w) -> cq);
 	sprintf(ituzone, "%02d", prefix_by_index(w) -> itu);
+    } else {
+	cqzone[0] = 0;
+	ituzone[0] = 0;
     }
-
-    if (itumult != 1)
-	strcpy(zone_export, cqzone);
-    else
-	strcpy(zone_export, ituzone);
 
     countrynr = x;
     if (prefix_by_index(w) -> continent != NULL)

@@ -293,7 +293,6 @@ void sendbuf(void) {
 	    }
 	    keyer_append(buffer);
 	}
-
 	if (trxmode == CWMODE) {
 
 	    if (cwkeyer == MFJ1278_KEYER) {
