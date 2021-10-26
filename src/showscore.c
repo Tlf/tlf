@@ -107,7 +107,7 @@ void display_header(int *bi) {
 
     /* show number of QSO */
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-    mvprintw(2, START_COL, "QSO's ");
+    mvprintw(2, START_COL, "QSO   ");
     for (i = 0; i < 6; i++) {
 	printfield(2, band_cols[i], qsos_per_band[bi[i]]);
     }

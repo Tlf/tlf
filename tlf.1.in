@@ -196,7 +196,7 @@ When @PACKAGE_NAME@ starts, it looks for
 file in the current directory, reads the configuration and rule files, and
 based on the current setup generates the log(s).
 .
-If the contest is WAE and you have QTC's in Cabrillo, then @PACKAGE_NAME@
+If the contest is WAE and you have QTCs in Cabrillo, then @PACKAGE_NAME@
 generates the QTC logfiles.
 .
 @PACKAGE_NAME@ will not write over the existing log(s).
@@ -2968,7 +2968,7 @@ Contest (WAEDC) exchange of QTCs.
 .
 .TP
 \fBQTC\fR=\fIdirection\fR
-Send or receive QTC's in a contest (usually on WAEDC).
+Send or receive QTCs in a contest (usually on WAEDC).
 .
 .IP
 .I direction
@@ -2994,10 +2994,10 @@ callsign per line, and give its name as an argument to this parameter.
 .TP
 .B QTC_AUTO_FILLTIME
 If you use the QTC feature and you are an EU station in CW or SSB modes, then
-you can only RECEIVE the QTC's.
+you can only RECEIVE the QTCs.
 .
 .IP
-Most sending stations send their QTC's as a short form.
+Most sending stations send their QTCs as a short form.
 .
 For example, after the first line the first two characters of time field are
 not sent.

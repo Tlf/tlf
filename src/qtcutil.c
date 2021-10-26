@@ -30,7 +30,7 @@
 #include "tlf_curses.h"
 
 
-GHashTable *qtc_store = NULL; 	/* stores number of QTC's per callsign */
+GHashTable *qtc_store = NULL; 	/* stores number of QTCs per callsign */
 struct t_qtc_store_obj *qtc_empty_obj = NULL;
 
 void qtc_init() {

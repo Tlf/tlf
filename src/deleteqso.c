@@ -161,7 +161,7 @@ void delete_qso(void) {
 		    g_strlcpy(call, logline + 29, 15);
 		    g_strchomp(call);
 
-		    // delete QTC's for that combination of band, mode and call
+		    // delete QTCs for that combination of band, mode and call
 		    delete_last_qtcs(call, bandmode);
 		}
 		IGNORE(ftruncate(lfile, statbuf.st_size - LOGLINELEN));
