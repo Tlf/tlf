@@ -92,7 +92,7 @@ int recall_exchange(void) {
     }
 
     if (found) {
-	mvprintw(12, 54, comment);
+	mvprintw(12, 54, "%s", comment);
 	refreshp();
     }
 

@@ -38,6 +38,7 @@
 #include "printcall.h"
 #include "setcontest.h"
 #include "showscore.h"
+#include "showinfo.h"
 #include "tlf_curses.h"
 #include "trx_memory.h"
 #include "ui_utils.h"
@@ -87,13 +88,13 @@ void show_freq(void) {
 	mvprintw(13, 67, FREQ_DISPLAY_FORMAT, "TRX", freq / 1000.0);
 	memfreq = memory_get_freq();
     } else {
-	mvprintw(13, 67, spaces(80 - 67));
+	mvprintw(13, 67, "%s", spaces(80 - 67));
     }
 
     if (memfreq > 0) {
 	mvprintw(14, 67, FREQ_DISPLAY_FORMAT, "MEM", memfreq / 1000.0);
     } else {
-	mvprintw(14, 67, spaces(80 - 67));
+	mvprintw(14, 67, "%s", spaces(80 - 67));
     }
 
 }
@@ -155,9 +156,7 @@ void time_update(void) {
 	static time_t prev_wwv_time = 0;
 	if (lastwwv_time > prev_wwv_time) { // is there a newer WWV message?
 	    prev_wwv_time = lastwwv_time;
-	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	    mvprintw(LINES - 1, 0, backgrnd_str);
-	    wwv_show_footer();              // print WWV info
+	    update_info_line(); // show it unless already showing country info
 	}
 
 	int currentterm = miniterm;
@@ -168,14 +167,14 @@ void time_update(void) {
 
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-	mvprintw(7, 0, logline0);
-	mvprintw(8, 0, logline1);
-	mvprintw(9, 0, logline2);
-	mvprintw(10, 0, logline3);
-	mvprintw(11, 0, logline4);
-	mvprintw(13, 0, spaces(67));
+	mvprintw(7, 0, "%s", logline0);
+	mvprintw(8, 0, "%s", logline1);
+	mvprintw(9, 0, "%s", logline2);
+	mvprintw(10, 0, "%s", logline3);
+	mvprintw(11, 0, "%s", logline4);
+	mvprintw(13, 0, "%s", spaces(67));
 	attron(COLOR_PAIR(C_WINDOW));
-	mvprintw(12, 23, qsonrstr);
+	mvprintw(12, 23, "%s", qsonrstr);
 	printcall();
 
 	showscore();	/* update  score  window every 2 seconds */

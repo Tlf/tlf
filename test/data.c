@@ -208,8 +208,8 @@ char ph_message[14][80] = /**< Array of file names for voice keyer messages
 
 char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
 char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
-char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTC's
-char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTC's
+char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTCs
+char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTCs
 int qtcrec_record = 0;
 char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
 char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
@@ -448,9 +448,16 @@ int mvprintw(int y, int x, const char *fmt, ...) {
 }
 
 int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...) {
+
+    // shift history
+    for (int i = NLAST - 1; i >= 1; --i) {
+	strcpy(mvprintw_history[i], mvprintw_history[i - 1]);
+    }
+
     va_list args;
     va_start(args, fmt);
-    mvprintw(y, x, fmt, args);
+    sprintf(mvprintw_history[0], "%02d|%02d|", y, x);
+    vsnprintf(mvprintw_history[0] + 6, 100 - 6, fmt, args);
     va_end(args);
 
     return 0;

@@ -71,6 +71,9 @@ int getpfxindex(char *checkcallptr, char **normalized_call) {
     char checkcall[17] = "";
     char strippedcall[17] = "";
 
+    if (checkcallptr == NULL) {
+	return -1;
+    }
 
     int w = 0, abnormal_call = 0;
     size_t loc;
@@ -172,10 +175,9 @@ int getctynr(char *checkcall) {
  * side effect: set up various global variables
  */
 static int getctydata_internal(char *checkcallptr, bool get_country) {
-    int w = 0, x = 0;
     char *normalized_call = NULL;
 
-    w = getpfxindex(checkcallptr, &normalized_call);
+    int w = getpfxindex(checkcallptr, &normalized_call);
 
     if (CONTEST_IS(WPX) || pfxmult == 1)
 	/* needed for wpx and other pfx contests */
@@ -183,26 +185,19 @@ static int getctydata_internal(char *checkcallptr, bool get_country) {
 
     free(normalized_call);
 
-    if (w >= 0) {
-	x = prefix_by_index(w)->dxcc_index;
-	sprintf(cqzone, "%02d", prefix_by_index(w) -> cq);
-	sprintf(ituzone, "%02d", prefix_by_index(w) -> itu);
-    }
+    // fill global variables
+    prefix_data *pfx = prefix_by_index(w);
+    countrynr = pfx->dxcc_index;
+    sprintf(cqzone, "%02d", pfx->cq);
+    sprintf(ituzone, "%02d", pfx->itu);
+    DEST_Lat = pfx->lat;
+    DEST_Long = pfx->lon;
+    strcpy(zone_export, itumult ? ituzone : cqzone);
 
-    if (itumult != 1)
-	strcpy(zone_export, cqzone);
-    else
-	strcpy(zone_export, ituzone);
+    g_strlcpy(continent, pfx->continent, 3);
 
-    countrynr = x;
-    if (prefix_by_index(w) -> continent != NULL)
-	g_strlcpy(continent, prefix_by_index(w) -> continent, 3);
-    else
-	g_strlcpy(continent, dxcc_by_index(countrynr) -> continent, 3);
 
-    if (get_country)
-	return (x);
-    return w;
+    return get_country ? countrynr : w;
 }
 
 int getctydata(char *checkcallptr) {

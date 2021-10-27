@@ -239,8 +239,8 @@ char ph_message[14][80] = /**< Array of file names for voice keyer messages
 
 char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
 char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
-char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTC's
-char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTC's
+char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTCs
+char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTCs
 int qtcrec_record = 0;
 char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
 char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
@@ -692,7 +692,7 @@ static int databases_load() {
 
     if (qtcdirection > 0) {
 	if (checkqtclogfile() != 0) {
-	    showmsg("QTC's giving up");
+	    showmsg("QTCs giving up");
 	    return EXIT_FAILURE;
 	}
 	readqtccalls();
@@ -949,7 +949,7 @@ int main(int argc, char *argv[]) {
     if (isFirstStart()) {
 	/* first time called in this directory */
 	verbose = true;
-	printw(welcome);
+	printw("%s", welcome);
 	show_GPL();
 	mark_GPL_seen();
 	sleep(5);
@@ -1016,7 +1016,7 @@ int main(int argc, char *argv[]) {
     clear_display();		/* tidy up the display */
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (j = 13; j <= LINES - 1; j++) {	/* wipe lower window */
-	mvprintw(j, 0, backgrnd_str);
+	mvprintw(j, 0, "%s", backgrnd_str);
     }
     refreshp();
 

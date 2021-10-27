@@ -214,8 +214,8 @@ void keyer(void) {
 
 		case ALT_W: {	// Alt-W, set weight
 		    mvprintw(1, 0, "Weight=   ");
-		    mvprintw(1, 7, "");
 		    refreshp();
+		    move(1, 7);
 		    echo();
 		    getnstr(weightbuf, 2);
 		    noecho();
@@ -241,9 +241,9 @@ void keyer(void) {
 
 		case KEY_F(1): {
 		    getyx(stdscr, cury, curx);
-		    mvprintw(5, 0, "");
+		    move(5, 0);
 		    send_keyer_message(0);	/* F1 */
-		    mvprintw(cury, curx, "");
+		    move(cury, curx);
 		    break;
 		}
 		case KEY_F(2): {

@@ -181,20 +181,20 @@ void show_rtty(void) {
     attroff(A_STANDOUT);
     attron(modify_attr(COLOR_PAIR(C_HEADER)));
 
-    mvprintw(1, 0, spaces(40));
+    mvprintw(1, 0, "%s", spaces(40));
     mvprintw(1, 0, "%s", ry_term[0]);
-    mvprintw(2, 0, spaces(40));
+    mvprintw(2, 0, "%s", spaces(40));
     mvprintw(2, 0, "%s", ry_term[1]);
-    mvprintw(3, 0, spaces(40));
+    mvprintw(3, 0, "%s", spaces(40));
     mvprintw(3, 0, "%s", ry_term[2]);
-    mvprintw(4, 0, spaces(40));
+    mvprintw(4, 0, "%s", spaces(40));
     mvprintw(4, 0, "%s", ry_term[3]);
-    mvprintw(5, 0, spaces(40));
+    mvprintw(5, 0, "%s", spaces(40));
     mvprintw(5, 0, "%s", ry_term[4]);
     if (commentfield == 0) {
 	printcall();
     } else {
-	mvprintw(12, 54, comment);
+	mvprintw(12, 54, "%s", comment);
     }
     refreshp();
     attron(A_STANDOUT);

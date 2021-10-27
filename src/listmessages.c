@@ -78,7 +78,7 @@ void listmessages(void) {
 
     attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
     for (i = 13 ;  i  <= 23 ; i++) {
-	mvprintw(i, 0, backgrnd_str);
+	mvprintw(i, 0, "%s", backgrnd_str);
     }
 
     refreshp();

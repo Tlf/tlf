@@ -19,26 +19,13 @@
 /* ------------------------------------------------------------
  *
  *              Make info string for lower status line
- *		x - countrynumber
+ *
  *--------------------------------------------------------------*/
-
-/** Show infos for selected country on bottom of screen
- *
- * Prepares info string for the selected country and shows it on the
- * bottom line of the screen.
- *
- * /param x  Country number
- */
-
-
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
 
 #include "dxcc.h"
 #include "getwwv.h"
 #include "get_time.h"
+#include "getctydata.h"
 #include "globalvars.h"
 #include "qrb.h"
 #include "showinfo.h"
@@ -48,87 +35,39 @@
 
 #define LINELENGTH 80
 
-void showinfo(int x) {
-
-    extern double DEST_Lat;
-    extern double DEST_Long;
-    extern char itustr[];
-
+/** Show infos for selected country on bottom of screen
+ *
+ * Prepares info string for the selected country and shows it on the
+ * bottom line of the screen.
+ * If no country is selected (e.g. index is -1), then recent WWV info is shown.
+ * If there is no WWV info available then the info line is cleared.
+ *
+ * /param pfx_index  Prefix number
+ */
+static void showinfo_internal(int pfx_index) {
     int cury, curx;
-    char pxstr[16];
-    char countrystr[26];
-    char zonestr[3];
-    char contstr[3];
     double bearing;
     double range;
-
     char timebuff[80];
 
-    dxcc_data *dx;
-    prefix_data *pfx;
-    double d;
-
-    if (x == SHOWINFO_DUMMY)
-	pfx = prefix_by_index(prefix_count());
-    else
-	pfx = prefix_by_index(x);
-    dx = dxcc_by_index(pfx -> dxcc_index);
-
-    strcpy(pxstr, dx->pfx);
-    strcpy(countrystr, dx->countryname);	/* country */
-
-    if (strlen(cqzone) < 2) {
-	if (dx->cq > MAX_ZONES) dx->cq = MAX_ZONES;
-	snprintf(zonestr, sizeof(zonestr), "%02d", dx->cq); 	/* cqzone */
-	strcpy(cqzone, zonestr);
-    } else {
-	strncpy(zonestr, cqzone, 2);
-	zonestr[2] = '\0';
-    }
-
-    if (strlen(ituzone) < 2) {
-	sprintf(itustr, "%02d", dx->itu);	/* itu zone */
-    } else {
-	strncpy(itustr, ituzone, 2);
-	itustr[2] = '\0';
-    }
-
-    if (pfx->timezone != INFINITY)
-	d = pfx->timezone;
-    else
-	d = dx->timezone;				/* GMT difference */
-
-    format_time_with_offset(timebuff, sizeof(timebuff), TIME_FORMAT, d);
-
-    if (pfx->lat != INFINITY)
-	DEST_Lat = pfx->lat;
-    else
-	DEST_Lat = dx->lat;				/* where is he? */
-    if (pfx->lon != INFINITY)
-	DEST_Long = pfx->lon;
-    else
-	DEST_Long = dx->lon;
-
-    if (pfx->continent != NULL)
-	strncpy(contstr, pfx->continent, 2);	/* continent */
-    else
-	strncpy(contstr, dx->continent, 2);	/* continent */
-    contstr[2] = '\0';
+    prefix_data *pfx = prefix_by_index(pfx_index);
+    dxcc_data *dx = dxcc_by_index(pfx -> dxcc_index);
 
     getyx(stdscr, cury, curx);
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
     mvaddstr(LINES - 1, 0, backgrnd_str);
 
-    if (contstr[0] != '-') {
-	mvprintw(LINES - 1, 0, " %s  %s", pxstr, countrystr);
+    if (pfx->dxcc_index > 0) {
+	mvprintw(LINES - 1, 0, " %s  %s", dx->pfx, dx->countryname);
 
-	mvprintw(LINES - 1, 26, " %s %s", contstr, zonestr);
+	mvprintw(LINES - 1, 26, " %s %02d", pfx->continent, pfx->cq);
 
-	if (x != 0 && x != my.countrynr && 0 == get_qrb(&range, &bearing)) {
+	if (pfx_index != my.countrynr && 0 == get_qrb(&range, &bearing)) {
 	    mvprintw(LINES - 1, 35, "%.0f km/%.0f deg ", range, bearing);
 	}
 
+	format_time_with_offset(timebuff, sizeof(timebuff), TIME_FORMAT, pfx->timezone);
 	mvprintw(LINES - 1, LINELENGTH - 17, "   DX time: %s", timebuff);
     } else {
 	wwv_show_footer();
@@ -137,3 +76,9 @@ void showinfo(int x) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     move(cury, curx);
 }
+
+void update_info_line() {
+    int pfx_index = getctydata_pfx(hiscall);
+    showinfo_internal(pfx_index);
+}
+
