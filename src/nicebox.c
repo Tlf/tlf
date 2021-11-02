@@ -42,7 +42,7 @@ void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname) {
     mvwaddch(win, y + height, x + width, ACS_LRCORNER);
     mvwvline(win, y + 1, x + width, ACS_VLINE, height - 1);
     mvwvline(win, y + 1, x, ACS_VLINE, height - 1);
-    mvwprintw(win, y, x + 2, boxname);
+    mvwprintw(win, y, x + 2, "%s", boxname);
 
     return;
 }
@@ -54,10 +54,10 @@ void nicebox(int y, int x, int height, int width, char *boxname) {
 void ask(char *buffer, char *what) {
 
     attron(A_STANDOUT);
-    mvprintw(15, 1, spaces(78));
+    mvprintw(15, 1, "%s", spaces(78));
     nicebox(14, 0, 1, 78, what);
     attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    move(15, 1);
 
     echo();
     getnstr(buffer, 78);

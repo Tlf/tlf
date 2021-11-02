@@ -151,6 +151,7 @@ void test_location_unknown(void **state) {
 }
 
 void test_suffix_empty(void **state) {
+    assert_int_equal(getpfxindex(NULL, NULL), -1);
     assert_int_equal(getpfxindex("", NULL), -1);
     assert_int_equal(getctynr(""), 0);
     assert_int_equal(getctydata(""), 0);

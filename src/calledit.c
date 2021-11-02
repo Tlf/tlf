@@ -26,6 +26,7 @@
 
 #include <string.h>
 
+#include "callinput.h"
 #include "getctydata.h"
 #include "globalvars.h"
 #include "keystroke_names.h"
@@ -54,8 +55,8 @@ void calledit(void) {
 	attron(COLOR_PAIR(C_HEADER));
 
 	mvprintw(12, 29, "            ");
-	mvprintw(12, 29, hiscall);
-	mvprintw(12, 29 + b, "");
+	mvprintw(12, 29, "%s", hiscall);
+	move(12, 29 + b);
 	/* no refreshp() here as getch() calls wrefresh() for the
 	 * panel with last output (whre the cursor should go */
 
@@ -108,7 +109,7 @@ void calledit(void) {
 		hiscall[j] = hiscall[j + 1];	/* move to left incl. \0 */
 	    }
 
-	    showinfo(getctydata_pfx(hiscall));
+	    update_info_line();
 
 	    if (cnt > 1)
 		searchlog();
@@ -126,7 +127,7 @@ void calledit(void) {
 		    hiscall[j] = hiscall[j + 1];
 		}
 
-		showinfo(getctydata_pfx(hiscall));
+		update_info_line();
 
 		if (cnt > 1)
 		    searchlog();
@@ -142,14 +143,13 @@ void calledit(void) {
 	    // Any character left other than <Escape>.
 	} else if (i != ESCAPE) {
 
-	    // Promote lower case to upper case.
-	    if ((i >= 97) && (i <= 122))
-		i = i - 32;
 
-	    // Accept A-Z or / and 1-9
-	    if (((i >= 65) && (i <= 90)) || ((i >= 47) && (i <= 57))) {
+	    if (valid_call_char(i)) {
 
 		call2[0] = '\0';
+
+		// Promote lower case to upper case.
+		i = g_ascii_toupper(i);
 
 		if (b <= 12) {
 		    strncpy(call1, hiscall, b);
@@ -173,7 +173,7 @@ void calledit(void) {
 		else
 		    break;
 
-		showinfo(getctydata_pfx(hiscall));
+		update_info_line();
 
 		searchlog();
 
@@ -189,7 +189,7 @@ void calledit(void) {
     attron(COLOR_PAIR(C_HEADER));
 
     mvprintw(12, 29, "            ");
-    mvprintw(12, 29, hiscall);
+    mvprintw(12, 29, "%s", hiscall);
     refreshp();
 
     attron(A_STANDOUT);
@@ -249,9 +249,9 @@ int insert_char(int curposition) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
-	mvprintw(12, 29, hiscall);
+	mvprintw(12, 29, "%s", hiscall);
 	curposition++;
-	mvprintw(12, 29 + curposition, "");
+	move(12, 29 + curposition);
 	refreshp();
 
     }

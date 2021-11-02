@@ -1,6 +1,6 @@
 # Tlf ham radio contest logger
 
-[![Build Status](https://travis-ci.org/Tlf/tlf.svg?branch=master)](https://travis-ci.org/Tlf/tlf)
+[![Build Status](https://github.com/Tlf/tlf/actions/workflows/ci-build.yml/badge.svg)](https://github.com/Tlf/tlf/actions/workflows/ci-build.yml)
 
 ## Summary
 

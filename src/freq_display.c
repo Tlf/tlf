@@ -268,7 +268,7 @@ void clear_freq_display(int y, int x) {
     attron(modify_attr(COLOR_PAIR(C_LOG)));
 
     for (int i = 0; i < 5; ++i) {
-	mvprintw(y + i, x, spaces(35));
+	mvprintw(y + i, x, "%s", spaces(35));
     }
 
 }

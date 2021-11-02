@@ -250,3 +250,6 @@ extern bool debugflag;
 extern bool trx_control;
 extern bool nopacket;
 extern bool verbose;
+
+extern double DEST_Lat;
+extern double DEST_Long;

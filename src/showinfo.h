@@ -21,8 +21,6 @@
 #ifndef SHOWINFO_H
 #define SHOWINFO_H
 
-#define SHOWINFO_DUMMY	-1
-
-void showinfo(int x);
+void update_info_line();
 
 #endif /* end of include guard: SHOWINFO_H */

@@ -85,7 +85,7 @@ static void recordmenue(void) {
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j <= 24; j++)
-	mvprintw(j, 0, backgrnd_str);
+	mvprintw(j, 0, "%s", backgrnd_str);
 
     mvprintw(1, 20, "--- TLF SOUND RECORDER UTILITY ---");
     mvprintw(6, 20, "F1 ... F12, S, C: Record Messages");
@@ -226,7 +226,7 @@ void record(void) {
 		    mvprintw(i, 0,
 			     "                                                                                ");
 
-		mvprintw(4, 10, "");
+		move(4, 10);
 
 		for (i = 10; i < 81; i += 10) {
 		    soundfilename = readdir(sounddir);
@@ -271,7 +271,7 @@ void record(void) {
 		    strcat(commands, ".au");
 		}
 		mvprintw(16, 20, "Use Ctrl-c to stop and return to tlf");
-		mvprintw(18, 20, "");
+		move(18, 20);
 		refreshp();
 		IGNORE(system(commands));
 		runnit = 0;
@@ -320,7 +320,7 @@ static void vk_do_record(int message_nr) {
 
     mvprintw(15, 20, "recording %s", ph_message[message_nr]);
     mvprintw(16, 20, "ESC to exit");
-    mvprintw(17, 20, "");
+    move(17, 20);
     refreshp();
 
     GRegex *regex = g_regex_new("\\$1", 0, 0 , NULL);

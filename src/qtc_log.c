@@ -194,7 +194,7 @@ int log_sent_qtc_to_disk(int qsonr) {
 }
 
 
-/* common code to store sent or received QTC's */
+/* common code to store sent or received QTCs */
 void store_qtc(char *loglineptr, int direction, char *filename) {
 
     FILE *fp;
@@ -233,7 +233,7 @@ void store_qtc(char *loglineptr, int direction, char *filename) {
 	    }
 	}
     }
-    /* remember callsign, build number of sent or received QTC's */
+    /* remember callsign, build number of sent or received QTCs */
     parse_qtcline(loglineptr, callsign, direction);
     qtc_inc(callsign, direction);
 }
