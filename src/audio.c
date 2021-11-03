@@ -24,15 +24,20 @@
  *
  *--------------------------------------------------------------*/
 
+#ifndef _XOPEN_SOURCE
+#define_XOPEN_SOURCE
+#endif
 
 #include <dirent.h>
 #include <errno.h>
+#include <fnmatch.h>
 #include <glib.h>
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <wordexp.h>
 
 #include "err_utils.h"
 #include "globalvars.h"
@@ -54,6 +59,7 @@ char *soundlog_record_cmd;
 char *soundlog_play_cmd;
 char *soundlog_dir;
 
+static int vr_listfiles();
 
 static void stop_command(char *string);
 static void vk_do_record(int message_nr);
@@ -102,12 +108,9 @@ static void recordmenue(void) {
 /*--------------------------------------------------------------------------*/
 void record(void) {
 
-    int runnit = 1, key, i = 0, j = 4;
+    int runnit = 1, key;
     char commands[80] = "";
     char playbackfile[40];
-    char printname[7];
-    DIR *sounddir;
-    struct dirent *soundfilename;
 
     recordmenue();
 
@@ -203,55 +206,15 @@ void record(void) {
 
 	    // List contest recordings.
 	    case '3':
-		errno = 0;
-
-		/* Must query the environment for the value of $HOME
-		 * and build the path to the soundlogs.
-		 */
-		char *path = g_strdup_printf("%s%s",
-					     g_getenv("HOME"),
-					     "/tlf/soundlogs");
-
-		sounddir = opendir(path);
-
-		if (sounddir == NULL) {
-		    if (errno != 0) {
-			mvprintw(22, 1, "%s: %s", strerror(errno), path);
-			mvprintw(23, 1, "Press ESC to exit this screen");
-		    }
+		if (vr_listfiles() == -1) {
+		    mvprintw(LINES - 1, 1, "Press ESC to exit this screen");
 		    break;
 		}
 
-		for (i = 4; i < 15; i++)
-		    mvprintw(i, 0,
-			     "                                                                                ");
-
-		move(4, 10);
-
-		for (i = 10; i < 81; i += 10) {
-		    soundfilename = readdir(sounddir);
-		    if (soundfilename == NULL)
-			break;
-		    else {
-			if (strstr(soundfilename->d_name, ".au") != NULL) {
-			    if (i > 60) {
-				i = 10;
-				j++;
-			    }
-			    g_strlcpy(printname, soundfilename->d_name, 7);
-			    mvprintw(j, i, "%s", printname);
-			    refreshp();
-
-			} else if (i >= 10)
-			    i -= 10;
-		    }
-		}
-		g_free(path);
-		closedir(sounddir);
 
 	    // Play back contest recording.
 	    case '4':
-		mvprintw(15, 20, "Play back file (ddhhmmxx): ");
+		mvprintw(17, 20, "Play back file (ddhhmmxx): ");
 		refreshp();
 
 		echo();
@@ -270,8 +233,7 @@ void record(void) {
 		    strcat(commands, playbackfile);
 		    strcat(commands, ".au");
 		}
-		mvprintw(16, 20, "Use Ctrl-c to stop and return to tlf");
-		move(18, 20);
+		mvprintw(18, 20, "Use Ctrl-c to stop and return to tlf");
 		refreshp();
 		IGNORE(system(commands));
 		runnit = 0;
@@ -283,6 +245,78 @@ void record(void) {
 }
 
 /* common tools */
+
+/* helper function to filter file by valid soundmode ending */
+static int is_soundfile(const struct dirent *entry) {
+    return !fnmatch("*.au", entry->d_name, 0);
+}
+
+/* expand ~ character for home directory if present in dir */
+static char *expand_directory(const char *dir) {
+    wordexp_t p;
+    char **w;
+    char *expanded;
+
+    wordexp(dir, &p, 0);
+
+    w = p.we_wordv;
+    expanded = g_strdup(w[0]);
+
+    wordfree(&p);
+
+    return expanded;
+}
+
+/* strip audio file suffix */
+static char* strip_suffix(char * filename) {
+    GRegex *regex = g_regex_new("\\.au$", 0, 0, NULL);
+    char *stripped_name = g_regex_replace(regex, filename, -1 , 0,
+	    "", 0, NULL);
+    g_regex_unref(regex);
+    return stripped_name;
+}
+
+/* show list of audio file from soundlog directory */
+static int vr_listfiles() {
+    struct dirent **nameList;
+    char *expanded_dir = expand_directory(soundlog_dir);
+
+    int n = scandir(expanded_dir, &nameList,
+		    is_soundfile, alphasort);
+
+    g_free(expanded_dir);
+
+    if (n == -1) {
+	mvprintw(LINES - 2, 1, "%s: %s", strerror(errno), expanded_dir);
+	return -1;
+    }
+
+    for (int i = 4; i < 15; i++)
+	mvprintw(i, 0, "%*s", 80, "");
+
+
+    if (n > 48) n = 48;	    /* limit number of file to display */
+
+    int i = 10;
+    int j = 4;
+    for (int k = 0; k < n; k ++) {
+
+	char *printname = strip_suffix(nameList[k] -> d_name);
+	mvprintw(j, i, "%s", printname);
+	g_free(printname);
+
+	i += 10;
+    	if (i > 60) {
+	    i = 10;
+	    j++;
+	}
+    }
+    refreshp();
+
+    return 0;
+}
+
+/* list voice recordings frm soundlog_dir */
 
 /* kill process (first command token in string) with SIGTERM */
 static void stop_command(char *string) {
