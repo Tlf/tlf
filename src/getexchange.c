@@ -445,7 +445,6 @@ int getexchange(void) {
 		section[4] = '\0';
 
 		break;
-//                              x = 0; //##debug
 
 	    } else if (CONTEST_IS(STEWPERRY)) {
 		if (check_qra(comment) == 0) {
@@ -495,7 +494,7 @@ int call_update = 0;
 
 
 static void checkexchange_cqww(char *comment, bool interactive) {
-    // <zone> [<call_fix>] [zone_fix]
+    // <zone> [call_fix] [zone_fix]
     static const char *PATTERN =
 	"\\s*(\\d+)?"       // zone
 	"\\s*([A-Z0-9/]*?[A-Z]\\d+[A-Z]+[A-Z0-9/]*)?"  // call fix
@@ -635,6 +634,74 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
     g_strlcpy(mult1_value, section, sizeof(section));   // multiplier: section
 }
 
+static void checkexchange_serial_section(char *comment, bool interactive) {
+    char serial[5] = "";
+    char checksection[MAX_SECTION_LENGTH + 1];
+
+    static const char *PATTERN =
+	"\\s*(\\d+)?"           // serial
+	"\\s*(\\d*[A-Z]+\\d*)?" // section ([digits] letters [digits])
+	"\\s*([A-Z0-9/]*?[A-Z]\\d+[A-Z]+[A-Z0-9/]*)?"  // call fix
+	"\\s*";
+    ;
+    static GRegex *regex = NULL;
+    if (regex == NULL) {
+	regex = g_regex_new(PATTERN, 0, 0, NULL);
+    }
+
+    section[0] = 0;
+
+    GMatchInfo *match_info;
+    g_regex_match(regex, comment, 0, &match_info);
+    if (g_match_info_matches(match_info)) {
+	gchar *index;
+
+	// get serial nr.
+	index = g_match_info_fetch(match_info, 1);
+	if (index != NULL && strlen(index) >= 1 && strlen(index) <= 4) {
+	    int s = atoi(index);
+	    if (s != 0) {
+		snprintf(serial, sizeof(serial), "%4d", s);
+	    }
+	}
+	g_free(index);
+
+	// get section
+	index = g_match_info_fetch(match_info, 2);
+	if (index != NULL && index[0] != 0) {
+	    g_strlcpy(checksection, index, sizeof(section));
+
+	    // FIXME use some common function
+	    for (int i = 0; i < get_mult_count(); i++) {
+		if (strcmp(checksection, get_mult(i)) == 0) {
+		    strcpy(section, checksection);
+		    break;
+		}
+	    }
+	}
+	g_free(index);
+
+	// get call update
+	index = g_match_info_fetch(match_info, 3);
+	if (index != NULL) {
+	    g_strlcpy(callupdate, index, sizeof(callupdate));
+	}
+	g_free(index);
+    }
+    g_match_info_free(match_info);
+
+    if (interactive && section[0]) {
+	char buf[40];
+	sprintf(buf, " %s ", section);
+	OnLowerSearchPanel(32, buf);
+    }
+
+    if (serial[0] && section[0]) {
+	sprintf(normalized_comment, "%s %s", serial, section);
+	g_strlcpy(mult1_value, section, sizeof(section));   // multiplier: section
+    }
+}
+
 /* ------------------------------------------------------------------------ */
 /*
     input: comment, interactive
@@ -644,7 +711,6 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 
 void checkexchange(char *comment, bool interactive) {
 
-    char serial[5] = "    ";
     char checksection[30];
 
     /* field of allowed pattern sequences
@@ -657,31 +723,6 @@ void checkexchange(char *comment, bool interactive) {
      *
      * e.g. faf means a character between two digits
      */
-    char serpats[8][8] = {
-	"bfb",
-	"afb",
-	"bfa",
-	"bffab",
-	"affab",
-	"bffbffb",
-	"fff",
-	"ffff"
-    };
-    char secpats[13][7] = {
-	"fab",
-	"faab",
-	"faaab",
-	"faaaab",
-	"bab",
-	"baab",
-	"baaab",
-	"baaaab",
-	"bau",
-	"baau",
-	"baaau",
-	"baaaau",
-	"baafb"
-    };
     char callpats[5][9] = {
 	"bafaab",
 	"baafab",
@@ -704,7 +745,7 @@ void checkexchange(char *comment, bool interactive) {
 	"baaaab"
     };
 
-    int i, s, hr, ii, jj;
+    int i, hr, ii, jj;
 
     callupdate[0] = 0;
     normalized_comment[0] = 0;
@@ -742,6 +783,9 @@ void checkexchange(char *comment, bool interactive) {
 	}
     }
 
+    normalized_comment[0] = 0;
+    mult1_value[0] = 0;
+
     // ----------------------------cqww------------------------------
     if (CONTEST_IS(CQWW)) {
 
@@ -757,59 +801,16 @@ void checkexchange(char *comment, bool interactive) {
     }
 
     // ----------------------serial+section--------------------------
+    if (serial_section_mult) {
+
+	checkexchange_serial_section(comment, interactive);
+	return;
+    }
+
     if ((serial_section_mult == 1) || (sectn_mult == 1)
 	    || (sectn_mult_once == 1)
 	    || (dx_arrlsections == 1)) {
 
-	if (serial_section_mult == 1) {
-
-	    // get serial nr.
-
-	    s = atoi(comment);
-
-	    if (s != 0)
-		snprintf(serial, sizeof(serial), "%4d", atoi(comment));
-
-	    for (ii = 0; ii < LEN(serpats); ii++) {
-
-		hr = getlastpattern(serpats[ii]);
-
-		if (hr > 0)
-		    snprintf(serial, sizeof(serial), "%4d",
-			     atoi(comment + hr - 1));
-
-		if (ii == 5 && hr > 0) {
-		    snprintf(serial, sizeof(serial), "%4d",
-			     atoi(comment + hr - 1));
-// NOT USED	    snprintf(check, sizeof(check), "%2d",
-//			     atoi(comment + hr + 2));
-		}
-	    }
-
-	    // get section
-
-	    for (ii = 0; ii < LEN(secpats); ii++) {
-
-		hr = getlastpattern(secpats[ii]);
-
-		if (hr > 0) {
-
-		    memset(checksection, 0, 29);
-		    strncpy(checksection, comment + (hr), MAX_SECTION_LENGTH);
-		    if (checksection[strlen(checksection) - 1] == ' ') {
-			checksection[strlen(checksection) - 1] = '\0';
-		    }
-
-		    for (jj = 0; jj < get_mult_count(); jj++) {
-			if (get_matching_length(checksection, jj) ==
-				strlen(checksection)) {
-			    strcpy(section, get_mult(jj));
-			    break;
-			}
-		    }
-		}
-	    }
-	}			// end serial_section_mult
 	if ((sectn_mult == 1) || (sectn_mult_once)) {
 
 	    for (ii = 0; ii < LEN(sectionpats); ii++) {

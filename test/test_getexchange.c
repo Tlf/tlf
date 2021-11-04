@@ -49,7 +49,6 @@ void clusterinfo(void) {}
 void clear_display(void) {}
 void refresh_splitlayout() {}
 
-
 int setup_default(void **state) {
     normalized_comment[0] = 0;
     section[0] = 0;
@@ -256,13 +255,92 @@ void test_getexchange_cqww(void **state) {
 
     for (int i = 0; i < LEN(getex_cqww); ++i) {
 	input = g_strdup(getex_cqww[i].input);
-	callupdate[0] = 0;
 
 	checkexchange(input, false);
 
 	assert_string_equal(normalized_comment,
 			    getex_cqww[i].expected_normalized_comment);
 	assert_string_equal(callupdate, getex_cqww[i].expected_callupdate);
+
+	g_free(input);
+    }
+}
+
+static getex_arrlss_t getex_serial_section[] = {
+    // exchange format:
+    // <serial> <section> [call_fix]
+    {
+	"",     // empty
+	"", "", ""
+    },
+    {
+	"123",  // only serial
+	"", "", ""
+    },
+    {
+	" 12 N",    // serial, leading space, partial section
+	"", "", ""
+    },
+    {
+	" 12  NA",  // serial, leading space, valid section
+	"  12 NA", "NA", ""
+    },
+    {
+	"12NA",     // valid section without delimiting space
+	"  12 NA", "NA", ""
+    },
+    {
+	"123  NA EA0XYZ",   // with call update
+	" 123 NA", "NA", "EA0XYZ"
+    },
+    {
+	"123S EA0XYZ",  // single letter section, no space, with call update
+	" 123 S", "S", "EA0XYZ"
+    },
+    {
+	"1234 K89",     // section with digits
+	"1234 K89", "K89", ""
+    },
+    {
+	"1234K89",      // section with digits, no space
+	"1234 K89", "K89", ""
+    },
+    {
+	"123 4K89",     // section starting with digit
+	" 123 4K89", "4K89", ""
+    },
+#if 0   // section too long
+    {
+	"8 67K89 DL/EA0XYZ",    // Sonder-DOK with call update
+	"   8 67K89", "67K89", "DL/EA0XYZ"
+    },
+#endif
+};
+
+void test_getexchange_serial_section(void **state) {
+    contest = lookup_contest("Unknown");
+    serial_section_mult = 1;
+    strcpy(multsfile, TOP_SRCDIR "/share/ea_sections");
+    init_and_load_multipliers();
+
+    // add some extra sections (DOKs)
+    extern void add_mult_line(char *line);
+    add_mult_line("K89");
+    add_mult_line("4K89");
+    add_mult_line("67K89");
+    add_mult_line("50ABCD");
+
+    char *input;
+
+    for (int i = 0; i < LEN(getex_serial_section); ++i) {
+	input = g_strdup(getex_serial_section[i].input);
+
+	checkexchange(input, false);
+
+	assert_string_equal(normalized_comment,
+			    getex_serial_section[i].expected_normalized_comment);
+	assert_string_equal(mult1_value, getex_serial_section[i].expected_mult1_value);
+	assert_string_equal(callupdate, getex_serial_section[i].expected_callupdate);
 
 	g_free(input);
     }
