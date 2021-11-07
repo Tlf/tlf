@@ -336,7 +336,7 @@ int getexchange(void) {
 
 	    if (call_update && strlen(callupdate) >= 3) {
 		strcpy(hiscall, callupdate);
-		mvprintw(12, 29, spaces(MAX_CALL_LENGTH));
+		mvprintw(12, 29, "%s", spaces(MAX_CALL_LENGTH));
 		mvprintw(12, 29, "%s", hiscall);
 	    }
 

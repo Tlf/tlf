@@ -121,7 +121,7 @@ int recall_exchange(void) {
 
     strcpy(comment, proposed_exchange);
 
-    mvprintw(12, 54, comment);  //TODO move this to UI code
+    mvprintw(12, 54, "%s", comment);  //TODO move this to UI code
     refreshp();
 
     return 1;
