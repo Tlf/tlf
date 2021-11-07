@@ -142,7 +142,7 @@ void displayCallInfo(dxcc_data *dx, char *pxstr) {
     wattroff(search_win, A_STANDOUT);
     wattron(search_win, COLOR_PAIR(C_BORDER));
 
-    mvwprintw(search_win, nr_bands + 1, 2, dx->countryname);
+    mvwprintw(search_win, nr_bands + 1, 2, "%s", dx->countryname);
     mvwprintw(search_win, nr_bands + 1, 32, "%02d", dx->cq);
 
     if (CONTEST_IS(CQWW) || wazmult || itumult) {
@@ -159,7 +159,7 @@ void displayCallInfo(dxcc_data *dx, char *pxstr) {
 
     if (CONTEST_IS(WPX) || pfxmult == 1) {
 	int i = strlen(dx->countryname);
-	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, pxstr);
+	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, "%s", pxstr);
     }
 }
 
