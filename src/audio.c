@@ -275,12 +275,13 @@ static int vr_listfiles() {
     int n = scandir(expanded_dir, &nameList,
 		    is_soundfile, alphasort);
 
-    g_free(expanded_dir);
-
     if (n == -1) {
 	mvprintw(LINES - 2, 1, "%s: %s", strerror(errno), expanded_dir);
+	g_free(expanded_dir);
 	return -1;
     }
+
+    g_free(expanded_dir);
 
     for (int i = 4; i < 15; i++)
 	mvprintw(i, 0, "%*s", 80, "");
