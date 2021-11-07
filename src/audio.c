@@ -31,7 +31,6 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <wordexp.h>
 
@@ -58,6 +57,8 @@ char *soundlog_dir;
 
 static int vr_listfiles();
 
+static char *expand_directory(const char *dir);
+static char *prepare_playback_command(char *filename);
 static void stop_command(char *string);
 static void vk_do_record(int message_nr);
 static void vr_start(void);
@@ -75,7 +76,7 @@ void sound_setup_default(void) {
     soundlog_record_cmd = g_strdup("soundlog");
 
     if (soundlog_play_cmd) g_free (soundlog_play_cmd);
-    soundlog_play_cmd = g_strdup("play -q ~/tlf/soundlogs/$1 trim $2");
+    soundlog_play_cmd = g_strdup("play -q $1");
 
     if (soundlog_dir) g_free (soundlog_dir);
     soundlog_dir = g_strdup("./soundlogs");
@@ -106,7 +107,6 @@ static void recordmenue(void) {
 void record(void) {
 
     int runnit = 1, key;
-    char commands[80] = "";
     char playbackfile[40];
 
     recordmenue();
@@ -211,30 +211,24 @@ void record(void) {
 
 	    // Play back contest recording.
 	    case '4':
-		mvprintw(17, 20, "Play back file (ddhhmmxx): ");
+		mvprintw(17, 20, "Play back file (ddhhmm): ");
 		refreshp();
 
 		echo();
 		getnstr(playbackfile, 8);
 		noecho();
-		strcpy(commands, "play -q ");
-		strcat(commands, " ~/tlf/soundlogs/");
-		if (strlen(playbackfile) > 6) {
-		    strncat(commands, playbackfile, 6);
-		    strcat(commands, ".au trim ");
-		    strcat(commands, playbackfile + 6);
-		} else if (strlen(playbackfile) < 5) {
-		    strcat(commands, playbackfile);
-		    strcat(commands, "00.au");
-		} else {
-		    strcat(commands, playbackfile);
-		    strcat(commands, ".au");
-		}
+
+		char *command = prepare_playback_command(playbackfile);
+
 		mvprintw(18, 20, "Use Ctrl-c to stop and return to tlf");
 		refreshp();
-		IGNORE(system(commands));
+
+		IGNORE(system(command));
+		g_free(command);
+
 		runnit = 0;
 		break;
+
 	    case ESCAPE:
 		runnit = 0;
 	}
@@ -342,6 +336,26 @@ static void vr_start(void) {
 static void vr_stop() {
     IGNORE(system("rm ~/.VRlock"));
     stop_command(soundlog_record_cmd);
+}
+
+
+/* substitute filename with appended file type suffix in play command and
+ * prepare for running the command in the soundlog directory
+ */
+static char *prepare_playback_command(char *filename) {
+    char *file = g_strconcat(filename, ".au", NULL);
+
+    GRegex *regex = g_regex_new("\\$1", 0, 0 , NULL);
+    char *play_command = g_regex_replace(regex, soundlog_play_cmd, -1, 0,
+	    file, 0, NULL);
+    g_regex_unref(regex);
+    g_free(file);
+
+    char *full_command = g_strconcat("cd ", soundlog_dir, "; ",
+		play_command, NULL);
+    g_free (play_command);
+
+    return full_command;
 }
 
 /* voice keyer handling - recording and playback */
