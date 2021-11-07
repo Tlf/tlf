@@ -547,7 +547,6 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
     char serial[5];
     char precedent[3];
     char check[3];
-    char checksection[MAX_SECTION_LENGTH + 1];
 
     static const char *PATTERN =
 	"\\s*(\\d+)?"       // serial
@@ -608,14 +607,8 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	// get section
 	index = g_match_info_fetch(match_info, 5);
 	if (index != NULL && index[0] != 0) {
-	    strcpy(checksection, index);
-
-	    // FIXME use some common function
-	    for (int i = 0; i < get_mult_count(); i++) {
-		if (strcmp(checksection, get_mult(i)) == 0) {
-		    strcpy(section, checksection);
-		    break;
-		}
+	    if (get_exact_mult_index(index) >= 0) {
+		g_strlcpy(section, index, sizeof(section));
 	    }
 	}
 	g_free(index);
@@ -636,7 +629,6 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 
 static void checkexchange_serial_section(char *comment, bool interactive) {
     char serial[5] = "";
-    char checksection[MAX_SECTION_LENGTH + 1];
 
     static const char *PATTERN =
 	"\\s*(\\d+)?"           // serial
@@ -669,14 +661,8 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	// get section
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL && index[0] != 0) {
-	    g_strlcpy(checksection, index, sizeof(section));
-
-	    // FIXME use some common function
-	    for (int i = 0; i < get_mult_count(); i++) {
-		if (strcmp(checksection, get_mult(i)) == 0) {
-		    strcpy(section, checksection);
-		    break;
-		}
+	    if (get_exact_mult_index(index) >= 0) {
+		g_strlcpy(section, index, sizeof(section));
 	    }
 	}
 	g_free(index);
@@ -690,9 +676,9 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
     }
     g_match_info_free(match_info);
 
-    if (interactive && section[0]) {
+    if (interactive) {
 	char buf[40];
-	sprintf(buf, " %s ", section);
+	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, section);
 	OnLowerSearchPanel(32, buf);
     }
 
@@ -705,7 +691,7 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 /* ------------------------------------------------------------------------ */
 /*
     input: comment, interactive
-    output (global vars): section, ssexchange, mult1_value, normalized_comment
+    output (global vars): section, callupdate, mult1_value, normalized_comment
     side effect: comment updated if interactive
 */
 
@@ -749,6 +735,7 @@ void checkexchange(char *comment, bool interactive) {
 
     callupdate[0] = 0;
     normalized_comment[0] = 0;
+    mult1_value[0] = 0;
 
     /* get the pattern sequence from comment string */
     strcpy(cmpattern, "u                    ");

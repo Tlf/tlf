@@ -315,13 +315,22 @@ void test_arrlss(void **state) {
     setcontest("arrl_ss");
 
     setup_multis("SC\nSCV\n");
-    strcpy(mult1_value, "SCV");
+    strcpy(mult1_value, "S");   // incomplete value (normally doesn't happen)
     set_this_qso("");   // NOTE: mult1_value is not part of qso_t
     addmult(this_qso);
-    strcpy(mult1_value, "S");   // incomplete value (normally doesn't happen)
+    assert_int_equal(nr_multis, 0);
+#if 0
+    strcpy(mult1_value, "SCX"); // invalid mult
+    set_this_qso("");
     addmult(this_qso);
+    assert_int_equal(nr_multis, 0);
+#endif
+    strcpy(mult1_value, "SCV");
+    addmult(this_qso);
+    assert_int_equal(nr_multis, 1);
     strcpy(mult1_value, "KL");
     addmult(this_qso);
+    assert_int_equal(nr_multis, 1);
     strcpy(mult1_value, "SC");
     addmult(this_qso);
     assert_int_equal(nr_multis, 2);
@@ -332,14 +341,14 @@ void test_arrlss(void **state) {
 void test_serial_section_mult(void **state) {
     serial_section_mult = 1;
     setup_multis("NE\nONE\n");
-    strcpy(ssexchange, "ONE");
-    set_this_qso("");   // NOTE: ssexchange is not part of qso_t
+    strcpy(mult1_value, "ONE");
+    set_this_qso("");   // NOTE: mult1_value is not part of qso_t
     addmult(this_qso);
-    strcpy(ssexchange, "023");
+    strcpy(mult1_value, "023");
     addmult(this_qso);
-    strcpy(ssexchange, "NE");
+    strcpy(mult1_value, "NE");
     addmult(this_qso);
-    strcpy(ssexchange, "SC");
+    strcpy(mult1_value, "SC");
     addmult(this_qso);
     assert_int_equal(nr_multis, 2);
 }

@@ -143,7 +143,6 @@ void displayCallInfo(dxcc_data *dx, char *pxstr) {
     wattron(search_win, COLOR_PAIR(C_BORDER));
 
     mvwprintw(search_win, nr_bands + 1, 2, "%s", dx->countryname);
-    mvwprintw(search_win, nr_bands + 1, 32, "%02d", dx->cq);
 
     if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	char *zone_info = NULL;
