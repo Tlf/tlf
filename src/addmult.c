@@ -56,15 +56,7 @@ void addmult(struct qso_t *qso) {
     // --------------------------- arrlss ------------------------------------
     if (CONTEST_IS(ARRL_SS)) {
 
-	/* check all possible mults for match and remember the longest one */
-	for (i = 0; i < get_mult_count(); i++) {
-	    int len = get_matching_length(mult1_value, i);
-	    if (len > matching_len) {
-		matching_len = len;
-		idx = i;
-	    }
-	}
-
+	idx = get_exact_mult_index(mult1_value);
 	if (idx >= 0) {
 	    remember_multi(get_mult(idx), bandinx, ALL_BAND);
 	    // NOTE: return value not used, new mult is not marked in log
@@ -83,7 +75,7 @@ void addmult(struct qso_t *qso) {
     }
 
     // --------------------------- section_mult_once--------------------------
-    if (sectn_mult_once == 1) {
+    if (sectn_mult_once) {
 
 	/* is it a mult? */
 	idx = get_exact_mult_index(mult1_value);

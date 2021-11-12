@@ -319,12 +319,10 @@ void test_arrlss(void **state) {
     set_this_qso("");   // NOTE: mult1_value is not part of qso_t
     addmult(this_qso);
     assert_int_equal(nr_multis, 0);
-#if 0
     strcpy(mult1_value, "SCX"); // invalid mult
     set_this_qso("");
     addmult(this_qso);
     assert_int_equal(nr_multis, 0);
-#endif
     strcpy(mult1_value, "SCV");
     addmult(this_qso);
     assert_int_equal(nr_multis, 1);
