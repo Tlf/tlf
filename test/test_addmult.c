@@ -355,14 +355,14 @@ void test_dx_arrlsections(void **state) {
     dx_arrlsections = 1;
     countrynr = w_cty;
     setup_multis("NE\nONE\n");
-    strcpy(ssexchange, "ONE");
-    set_this_qso("");   // NOTE: ssexchange is not part of qso_t
+    strcpy(mult1_value, "ONE");
+    set_this_qso("");   // NOTE: mult1_value is not part of qso_t
     addmult(this_qso);
-    strcpy(ssexchange, "97A23SCV");
+    strcpy(mult1_value, "97A23SCV");
     addmult(this_qso);
-    strcpy(ssexchange, "NE");
+    strcpy(mult1_value, "NE");
     addmult(this_qso);
-    strcpy(ssexchange, "SC");
+    strcpy(mult1_value, "SC");
     addmult(this_qso);
     assert_int_equal(nr_multis, 2);
 }

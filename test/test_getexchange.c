@@ -11,6 +11,7 @@
 // OBJECT ../src/addmult.o
 // OBJECT ../src/addpfx.o
 // OBJECT ../src/dxcc.o
+// OBJECT ../src/printcall.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/focm.o
 // OBJECT ../src/getctydata.o
@@ -50,9 +51,8 @@ void clear_display(void) {}
 void refresh_splitlayout() {}
 
 int setup_default(void **state) {
-    normalized_comment[0] = 0;
-    section[0] = 0;
-    callupdate[0] = 0;
+    serial_section_mult = 0;
+    sectn_mult = 0;
     return 0;
 }
 
@@ -341,6 +341,78 @@ void test_getexchange_serial_section(void **state) {
 			    getex_serial_section[i].expected_normalized_comment);
 	assert_string_equal(mult1_value, getex_serial_section[i].expected_mult1_value);
 	assert_string_equal(callupdate, getex_serial_section[i].expected_callupdate);
+
+	g_free(input);
+    }
+}
+
+static getex_arrlss_t getex_sectn_mult[] = {
+    // exchange format:
+    // <section> [call_fix]
+    {
+	"",     // empty
+	"", "", ""
+    },
+    {
+	" N",    // leading space, partial section
+	"", "", ""
+    },
+    {
+	"   NA",  // leading space, valid section
+	"NA", "NA", ""
+    },
+    {
+	"NA",     // valid section without space
+	"NA", "NA", ""
+    },
+    {
+	"NA EA0XYZ",   // with call update
+	"NA", "NA", "EA0XYZ"
+    },
+    {
+	"S EA0XYZ",  // single letter section, no space, with call update
+	"S", "S", "EA0XYZ"
+    },
+    {
+	"K89",     // section with digits
+	"K89", "K89", ""
+    },
+    {
+	"4K89",     // section starting with digit
+	"4K89", "4K89", ""
+    },
+#if 0   // section too long
+    {
+	" 67K89 DL/EA0XYZ",    // Sonder-DOK with call update
+	"67K89", "67K89", "DL/EA0XYZ"
+    },
+#endif
+};
+
+void test_getexchange_sectn_mult(void **state) {
+    contest = lookup_contest("Unknown");
+    sectn_mult = 1;
+    strcpy(multsfile, TOP_SRCDIR "/share/ea_sections");
+    init_and_load_multipliers();
+
+    // add some extra sections (DOKs)
+    extern void add_mult_line(char *line);
+    add_mult_line("K89");
+    add_mult_line("4K89");
+    add_mult_line("67K89");
+    add_mult_line("50ABCD");
+
+    char *input;
+
+    for (int i = 0; i < LEN(getex_sectn_mult); ++i) {
+	input = g_strdup(getex_sectn_mult[i].input);
+
+	checkexchange(input, false);
+
+	assert_string_equal(normalized_comment,
+			    getex_sectn_mult[i].expected_normalized_comment);
+	assert_string_equal(mult1_value, getex_sectn_mult[i].expected_mult1_value);
+	assert_string_equal(callupdate, getex_sectn_mult[i].expected_callupdate);
 
 	g_free(input);
     }

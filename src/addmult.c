@@ -44,8 +44,7 @@ enum { ALL_BAND, PER_BAND };
 char mult1_value[40];
 
 void addmult(struct qso_t *qso) {
-    int i;
-    int matching_len = 0, idx = -1;
+    int idx;
     char *stripped_comment;
 
     new_mult = -1;
@@ -64,7 +63,7 @@ void addmult(struct qso_t *qso) {
     }
 
     // ---------------------------serial + section ---------------------------
-    if (serial_section_mult || sectn_mult) {
+    else if (serial_section_mult || sectn_mult) {
 
 	/* is it a mult? */
 	idx = get_exact_mult_index(mult1_value);
@@ -75,7 +74,7 @@ void addmult(struct qso_t *qso) {
     }
 
     // --------------------------- section_mult_once--------------------------
-    if (sectn_mult_once) {
+    else if (sectn_mult_once) {
 
 	/* is it a mult? */
 	idx = get_exact_mult_index(mult1_value);
@@ -86,18 +85,9 @@ void addmult(struct qso_t *qso) {
     }
 
     // ------------------------------- section ----------------------------
-    if ((dx_arrlsections == 1) &&
-	    ((countrynr == w_cty) || (countrynr == ve_cty))) {
+    else if (dx_arrlsections && (countrynr == w_cty || countrynr == ve_cty)) {
 
-	/* check all possible mults for match and remember the longest one */
-	for (i = 0; i < get_mult_count(); i++) {
-	    int len = get_matching_length(ssexchange, i);
-	    if (len > matching_len) {
-		matching_len = len;
-		idx = i;
-	    }
-	}
-
+	idx = get_exact_mult_index(mult1_value);
 	if (idx >= 0) {
 	    new_mult =
 		remember_multi(get_mult(idx), bandinx, PER_BAND);
@@ -105,25 +95,25 @@ void addmult(struct qso_t *qso) {
     }
 
     // --------------------wysiwyg----------------
-    if (wysiwyg_once == 1) {
+    else if (wysiwyg_once) {
 	new_mult = remember_multi(stripped_comment, bandinx, ALL_BAND);
     }
 
-    if (wysiwyg_multi == 1) {
+    else if (wysiwyg_multi) {
 	new_mult = remember_multi(stripped_comment, bandinx, PER_BAND);
     }
 
-    if (serial_grid4_mult == 1) {
+    else if (serial_grid4_mult) {
 	section[4] = '\0';
 	new_mult = remember_multi(section, bandinx, PER_BAND);
     }
 
     /* -------------- unique call multi -------------- */
-    if (unique_call_multi == UNIQUECALL_ALL) {
+    else if (unique_call_multi == UNIQUECALL_ALL) {
 	new_mult = remember_multi(qso->call, bandinx, ALL_BAND);
     }
 
-    if (unique_call_multi == UNIQUECALL_BAND) {
+    else if (unique_call_multi == UNIQUECALL_BAND) {
 	new_mult = remember_multi(qso->call, bandinx, PER_BAND);
     }
 

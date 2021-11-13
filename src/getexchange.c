@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include "addspot.h"
 #include "callinput.h"
@@ -39,6 +40,7 @@
 #include "lancode.h"
 #include "locator2longlat.h"
 #include "logit.h"
+#include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "qtcwin.h"
 #include "recall_exchange.h"
@@ -59,7 +61,6 @@
 
 char callupdate[MAX_CALL_LENGTH + 1];
 
-int getlastpattern(char *checkstring);
 void exchange_edit(void);
 
 int getexchange(void) {
@@ -110,6 +111,13 @@ int getexchange(void) {
     while (1) {
 
 	refresh_comment();
+
+	checkexchange(comment, true);
+
+	if (call_update && strlen(callupdate) >= 3) {
+	    strcpy(hiscall, callupdate);
+	    printcall();
+	}
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	/* main loop waiting for input */
@@ -324,25 +332,6 @@ int getexchange(void) {
 	    }
 	}
 
-	if ((serial_section_mult == 1) ||
-		(dx_arrlsections == 1) ||
-		(sectn_mult == 1) ||
-		(sectn_mult_once == 1) ||
-		CONTEST_IS(ARRL_SS) ||
-		CONTEST_IS(CQWW) ||
-		CONTEST_IS(STEWPERRY)) {
-
-	    checkexchange(comment, true);
-
-	    if (call_update && strlen(callupdate) >= 3) {
-		strcpy(hiscall, callupdate);
-		mvprintw(12, 29, "%s", spaces(MAX_CALL_LENGTH));
-		mvprintw(12, 29, "%s", hiscall);
-	    }
-
-	    refreshp();
-	}
-
 	/* <Enter>, <Tab>, Ctl-K, '\' */
 	if (x == '\n' || x == KEY_ENTER || x == TAB
 		|| x == CTRL_K || x == BACKSLASH) {
@@ -430,7 +419,7 @@ int getexchange(void) {
 		       && ((x != TAB) && (strlen(section) < 1))) {
 		if (serial_or_section == 0 || (serial_or_section == 1
 					       && country_found(hiscall))) {
-		    mvprintw(13, 54, "section?");
+		    mvprintw(13, 54, "section?X");
 		    mvprintw(12, 54, "%s", comment);
 		    refreshp();
 		}
@@ -684,7 +673,56 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 
     if (serial[0] && section[0]) {
 	sprintf(normalized_comment, "%s %s", serial, section);
-	g_strlcpy(mult1_value, section, sizeof(section));   // multiplier: section
+	g_strlcpy(mult1_value, section, sizeof(mult1_value));   // multiplier: section
+    }
+}
+
+static void checkexchange_sectn_mult(char *comment, bool interactive) {
+    static const char *PATTERN =
+	"\\s*(\\d*[A-Z]+\\d*)?" // section ([digits] letters [digits])
+	"\\s*([A-Z0-9/]*?[A-Z]\\d+[A-Z]+[A-Z0-9/]*)?"  // call fix
+	"\\s*";
+    ;
+    static GRegex *regex = NULL;
+    if (regex == NULL) {
+	regex = g_regex_new(PATTERN, 0, 0, NULL);
+    }
+
+    section[0] = 0;
+
+    GMatchInfo *match_info;
+    g_regex_match(regex, comment, 0, &match_info);
+
+    if (g_match_info_matches(match_info)) {
+	gchar *index;
+
+	// get section
+	index = g_match_info_fetch(match_info, 1);
+	if (index != NULL && index[0] != 0) {
+	    if (get_exact_mult_index(index) >= 0) {
+		g_strlcpy(section, index, sizeof(section));
+	    }
+	}
+	g_free(index);
+
+	// get call update
+	index = g_match_info_fetch(match_info, 2);
+	if (index != NULL) {
+	    g_strlcpy(callupdate, index, sizeof(callupdate));
+	}
+	g_free(index);
+    }
+    g_match_info_free(match_info);
+
+    if (interactive) {
+	char buf[40];
+	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, section);
+	OnLowerSearchPanel(32, buf);
+    }
+
+    if (section[0]) {
+	g_strlcpy(normalized_comment, section, sizeof(normalized_comment));
+	g_strlcpy(mult1_value, section, sizeof(mult1_value));   // multiplier: section
     }
 }
 
@@ -692,84 +730,12 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 /*
     input: comment, interactive
     output (global vars): section, callupdate, mult1_value, normalized_comment
-    side effect: comment updated if interactive
+    side effect: lower line of search panel updated if interactive
 */
 
 void checkexchange(char *comment, bool interactive) {
 
-    char checksection[30];
-
-    /* field of allowed pattern sequences
-     *
-     * The characters have the following meaning:
-     * u - undefined (left or right delimiter)
-     * b - blank character
-     * a - ascii character
-     * f - a figure / digit
-     *
-     * e.g. faf means a character between two digits
-     */
-    char callpats[5][9] = {
-	"bafaab",
-	"baafab",
-	"baafaab",
-	"bafaaab",
-	"baafaaab"
-    };
-    char sectionpats[12][7] = {
-	"uab",
-	"uaab",
-	"uaaab",
-	"uaaaab",
-	"uau",
-	"uaau",
-	"uaaau",
-	"uaiaaau",
-	"bab",
-	"baab",
-	"baaab",
-	"baaaab"
-    };
-
-    int i, hr, ii, jj;
-
     callupdate[0] = 0;
-    normalized_comment[0] = 0;
-    mult1_value[0] = 0;
-
-    /* get the pattern sequence from comment string */
-    strcpy(cmpattern, "u                    ");
-
-    if (strlen(comment) > 0) {
-
-	for (i = 0; i < strlen(comment); i++) {
-
-	    switch ((int) comment[i]) {
-
-		case 'A'...'Z': {
-		    cmpattern[i + 1] = 'a';
-		    cmpattern[i + 2] = 'u';
-		    break;
-		}
-
-		case '0'...'9': {
-		    cmpattern[i + 1] = 'f';
-		    cmpattern[i + 2] = 'u';
-		    break;
-		}
-
-		case ' ': {
-		    cmpattern[i + 1] = 'b';
-		    // TODO: check if add 'u' is missing
-		    break;
-		}
-
-		default:
-		    cmpattern[i + 1] = 'u';
-	    }
-	}
-    }
-
     normalized_comment[0] = 0;
     mult1_value[0] = 0;
 
@@ -794,131 +760,17 @@ void checkexchange(char *comment, bool interactive) {
 	return;
     }
 
-    if ((serial_section_mult == 1) || (sectn_mult == 1)
-	    || (sectn_mult_once == 1)
-	    || (dx_arrlsections == 1)) {
+    // ----------------------section only----------------------------
+    if (sectn_mult || sectn_mult_once || dx_arrlsections) {
 
-	if ((sectn_mult == 1) || (sectn_mult_once)) {
-
-	    for (ii = 0; ii < LEN(sectionpats); ii++) {
-
-		hr = getlastpattern(sectionpats[ii]);
-
-		g_strlcpy(checksection, comment, MAX_SECTION_LENGTH + 1);
-
-		int best_len = 0;
-		int idx = -1;
-		for (jj = 0; jj < get_mult_count(); jj++) {
-		    int len = get_matching_length(checksection, jj);
-		    if (len > best_len) {
-			best_len = len;
-			idx = jj;
-		    }
-		}
-
-		if (idx >= 0) {
-		    strcpy(section, get_mult(idx));
-		}
-	    }
-
-	}			//  end sectn_mult
-	if (dx_arrlsections == 1) {
-
-	    for (ii = 0; ii < LEN(sectionpats); ii++) {
-
-		hr = getlastpattern(sectionpats[ii]);
-
-		strncpy(checksection, comment, 3);
-		checksection[3] = '\0';
-
-		for (jj = 0; jj < get_mult_count(); jj++) {
-		    if (get_matching_length(checksection, jj) == strlen(checksection)) {
-			strcpy(section, get_mult(jj));
-
-			// if (strlen(section) == strlen(mults_possible[jj])) break;
-		    }
-		}
-
-	    }
-
-	}			// end dx_arrlsections
-
+	checkexchange_sectn_mult(comment, interactive);
+	return;
     }
 
-
-    // get call update
-
-    for (ii = 0; ii < LEN(callpats); ii++) {
-
-	hr = getlastpattern(callpats[ii]);
-
-	if (hr > 0) {
-	    if (((comment[hr] == 'A') && (comment[hr + 1] > 59))
-		    || (comment[hr] == 'K') || (comment[hr] == 'N')
-		    || (comment[hr] == 'W')
-		    || (comment[hr] == 'V') || (comment[hr] == 'C')) {
-
-		switch (ii) {
-
-		    case 0 ... 1:
-			strncpy(callupdate, comment + hr, 4);
-			callupdate[4] = '\0';
-			break;
-		    case 2 ... 3:
-			strncpy(callupdate, comment + hr, 5);
-			callupdate[5] = '\0';
-			break;
-		    case 4:
-			strncpy(callupdate, comment + hr, 6);
-			callupdate[6] = '\0';
-
-		}
-	    }
-	}
-
-    }
-    OnLowerSearchPanel(32, "   ");
-    OnLowerSearchPanel(32, section);	/* show section on lower frame of
-					   Worked window */
-    ssexchange[0] = '\0';
-
-    /*	if (serial_section_mult == 1) {
-    		strcat (ssexchange,serial);
-    		strcat (ssexchange, " ");
-    	}
-    */
-    strcat(ssexchange, section);
 }
 
 
 /* ------------------------------------------------------------------------ */
-
-/** search checkstring in cmpattern
- *
- * find first occurence of checkstring in cmpattern
- * \parm checkstring - the pattern to be found
- * \return offset of checkstring in cmpattern (or 0 if not found)
- */
-int getlastpattern(char *checkstring) {
-
-    char newpat[80];
-    int i, x = 0;
-
-    if ((strlen(cmpattern) - strlen(checkstring)) > 0) {
-	for (i = 0; i < (strlen(cmpattern) - strlen(checkstring)) - 1; i++) {
-
-	    newpat[0] = '\0';
-	    strncat(newpat, cmpattern + i, strlen(comment));    //FIXME: use parameter
-	    if (strncmp(newpat, checkstring, strlen(checkstring)) == 0) {
-		x = i;
-	    }
-	}
-	if (x > strlen(comment))
-	    x = 0;
-    }
-    return (x);
-
-}
 
 /* ------------------------------------------------------------------------
  * return a pointer to the start of grid locator
@@ -926,20 +778,18 @@ int getlastpattern(char *checkstring) {
 
 char *getgrid(char *comment) {
 
-    char *gridmult = "";
     int multposition = 0;
     int i = 0;
 
     /* search for first letter, that should be the start of the Grid locator*/
     for (i = 0; i < strlen(comment); i++) {
-	if (comment[i] > 64 && comment[i] < 91) {
+	if (isalpha(comment[i])) {
 	    multposition = i;
 	    break;
 	}
     }
-    gridmult = comment + multposition;
 
-    return (gridmult);
+    return comment + multposition;
 }
 
 /* ------------------------------------------------------------------------ */
