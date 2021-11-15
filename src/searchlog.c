@@ -47,6 +47,7 @@
 #include "tlf_panel.h"
 #include "ui_utils.h"
 #include "zone_nr.h"
+#include "recall_exchange.h"
 #include "searchcallarray.h"
 #include "setcontest.h"
 #include "get_time.h"
@@ -121,7 +122,7 @@ void drawSearchWin(void) {
 
     wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (i = 0; i < nr_bands; i++)
-	mvwprintw(search_win, i + 1, 1, spaces(37));
+	mvwprintw(search_win, i + 1, 1, "%s", spaces(37));
 
     mvwprintw(search_win, 1, 1, " 10");
     mvwprintw(search_win, 2, 1, " 15");
@@ -136,23 +137,28 @@ void drawSearchWin(void) {
     }
 }
 
-void displayCallInfo(dxcc_data *dx, int z, char *pxstr) {
-    int i;
+void displayCallInfo(dxcc_data *dx, char *pxstr) {
 
     wattroff(search_win, A_STANDOUT);
     wattron(search_win, COLOR_PAIR(C_BORDER));
 
-    mvwprintw(search_win, nr_bands + 1, 2, dx->countryname);
-    mvwprintw(search_win, nr_bands + 1, 32, "%02d", dx->cq);
+    mvwprintw(search_win, nr_bands + 1, 2, "%s", dx->countryname);
 
-    if (itumult != 1)
-	mvwprintw(search_win, nr_bands + 1, 32, "%02d", z);
-    else
-	mvwprintw(search_win, nr_bands + 1, 28, "ITU:%02d", z);
+    if (CONTEST_IS(CQWW) || wazmult || itumult) {
+	char *zone_info = NULL;
+	if (normalized_comment[0] != 0) {
+	    zone_info = normalized_comment;
+	} else if (proposed_exchange[0] != 0) {
+	    zone_info = proposed_exchange;
+	}
+	if (zone_info != NULL) {
+	    mvwprintw(search_win, nr_bands + 1, 32, "%2s", zone_info);
+	}
+    }
 
     if (CONTEST_IS(WPX) || pfxmult == 1) {
-	i = strlen(dx->countryname);
-	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, pxstr);
+	int i = strlen(dx->countryname);
+	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, "%s", pxstr);
     }
 }
 
@@ -487,45 +493,6 @@ void displaySearchResults(void) {
     }
 }
 
-int getZone() {
-    char zonebuffer[3];
-    int z;
-
-    static int z1;
-
-    z = 0;
-
-    if (strlen(hiscall) == 2)
-	z1 = 0;
-
-    if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
-	for (int i = 0; i < srch_index; i++) {
-
-	    /* get zone nr from previous QSO */
-	    /* \FIXME use nr from last displayed entry
-	     * which is the right one if we have a full match
-	     */
-	    if (strlen(result[i]) >= 24) {
-		/* convert exchange back to zone nr */
-		g_strlcpy(zonebuffer, result[i] + 25, 3);
-		z1 = zone_nr(zonebuffer);
-	    }
-	}
-
-	if (z1 != 0) {
-	    z = z1;
-	} else {
-	    if (strlen(zone_fix) > 1) {
-		g_strlcpy(zonebuffer, zone_fix, 3);
-	    } else
-		g_strlcpy(zonebuffer, zone_export, 3);
-
-	    z = zone_nr(zonebuffer);
-	}
-    }
-    return z;
-}
-
 void displayWorkedZonesCountries(int z) {
     extern int pacc_qsos[10][10];
     extern int ja_cty;
@@ -717,8 +684,9 @@ void searchlog() {
 
 	/* prepare and print lower line of checkwindow */
 	dx = dxcc_by_index(countrynr);
-	zone = getZone();
-	displayCallInfo(dx, zone, wpx_prefix);
+	get_proposed_exchange();
+	displayCallInfo(dx, wpx_prefix);
+	zone = zone_nr(proposed_exchange); //TODO is this correct?
 	displayWorkedZonesCountries(zone);
 
 	refreshp();
@@ -734,7 +702,7 @@ void searchlog() {
 
 	if (dupe == ISDUPE) {
 	    attrset(COLOR_PAIR(C_DUPE));
-	    mvprintw(12, 29, hiscall);
+	    mvprintw(12, 29, "%s", hiscall);
 	    refreshp();
 	    usleep(500000);
 	}
@@ -833,7 +801,7 @@ void show_needed_sections(void) {
 	wattron(search_win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 	for (j = 1; j < 7; j++)
-	    mvwprintw(search_win, j, 1, spaces(37));
+	    mvwprintw(search_win, j, 1, "%s", spaces(37));
 
 	for (vert = 1; vert < 7; vert++) {
 	    if (cnt >= get_mult_count())
@@ -880,5 +848,5 @@ void OnLowerSearchPanel(int x, char *str) {
     int y = 1 + (IsAllBand() ? 10 : 6);
 
     wattrset(search_win, modify_attr(COLOR_PAIR(C_BORDER)));
-    mvwprintw(search_win, y, x, str);
+    mvwprintw(search_win, y, x, "%s", str);
 }

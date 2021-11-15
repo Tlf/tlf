@@ -370,7 +370,7 @@ void muf(void) {
     wattron(win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (i = 0; i < LINES; i++)
-	mvwprintw(win, i, 0, backgrnd_str);
+	mvwprintw(win, i, 0, "%s", backgrnd_str);
 
     mvwprintw(win, 1, 0, "        SSN: %3.0f ", ssn_r);
 
@@ -403,7 +403,7 @@ void muf(void) {
 	su_min = (int)((sunrise - su) * 60);
 	sd_min = (int)((sundown - sd) * 60);
 
-	mvwprintw(win, 3, 0, time_buf);
+	mvwprintw(win, 3, 0, "%s", time_buf);
 	mvwprintw(win, 7, 40, "Sun   : %02d:%02d-%02d:%02d UTC", su, su_min, sd,
 		  sd_min);
     }

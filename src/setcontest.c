@@ -159,7 +159,7 @@ contest_config_t config_cqww = {
 	.fn = score_cqww,
     },
     .is_multi = cqww_ismulti,
-    .exchange_width = 3,    // zone nr
+    .exchange_width = 12,    // zone nr + fixes
 };
 
 contest_config_t config_sprint = {

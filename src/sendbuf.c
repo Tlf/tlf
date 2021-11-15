@@ -273,7 +273,7 @@ void sendbuf(void) {
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	if (get_simulator_state() == IDLE) {
-	    mvprintw(5, 0, printlinebuffer);
+	    mvprintw(5, 0, "%s", printlinebuffer);
 	}
 	refreshp();
 
@@ -293,7 +293,6 @@ void sendbuf(void) {
 	    }
 	    keyer_append(buffer);
 	}
-
 	if (trxmode == CWMODE) {
 
 	    if (cwkeyer == MFJ1278_KEYER) {

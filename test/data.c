@@ -208,8 +208,8 @@ char ph_message[14][80] = /**< Array of file names for voice keyer messages
 
 char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
 char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
-char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTC's
-char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTC's
+char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTCs
+char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTCs
 int qtcrec_record = 0;
 char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
 char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
@@ -235,6 +235,8 @@ char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
 { "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
 char comment[80];
+char normalized_comment[80];
+char proposed_exchange[80];
 char mode[20] = "Log     ";
 char cqzone[3] = "";
 char ituzone[3] = "";
@@ -345,7 +347,6 @@ struct ie_list *main_ie_list;	/* head of initial exchange list */
 int zonescore[NBANDS];
 int countryscore[NBANDS];
 int zonedisplay = 0;
-char zone_fix[3] = "";
 int new_zone = 0;		/* index of for new zone */
 int new_cty = 0;		/* index of new country */
 int new_mult = -1;
@@ -354,8 +355,6 @@ int minute_timer = 0;
 int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;			/* nr of next QSO */
 int ymax, xmax;			/* screen size */
-
-char zone_export[3] = "  ";
 
 pid_t pid;
 struct tm *time_ptr;
@@ -404,8 +403,6 @@ int nr_multis = 0;      	/**< number of multis in multis[] */
 int unique_call_multi = 0;          /* do we count calls as multiplier */
 
 //////////////////
-char ssexchange[30] = "";   // defined in getexchange.c
-char section[8] = "";       // defined in getexchange.c
 char lan_logline[256];	    // defined in log_to_disk.c
 
 //////////////////
@@ -448,9 +445,16 @@ int mvprintw(int y, int x, const char *fmt, ...) {
 }
 
 int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...) {
+
+    // shift history
+    for (int i = NLAST - 1; i >= 1; --i) {
+	strcpy(mvprintw_history[i], mvprintw_history[i - 1]);
+    }
+
     va_list args;
     va_start(args, fmt);
-    mvprintw(y, x, fmt, args);
+    sprintf(mvprintw_history[0], "%02d|%02d|", y, x);
+    vsnprintf(mvprintw_history[0] + 6, 100 - 6, fmt, args);
     va_end(args);
 
     return 0;

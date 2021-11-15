@@ -83,6 +83,11 @@ void log_to_disk(int from_lan) {
 	strcpy(lastcall, hiscall);
 	strcpy(last_rst, sent_rst);
 
+	// use normalized comment if available
+	if (strlen(normalized_comment) > 0) {
+	    strcpy(comment, normalized_comment);
+	}
+
 	restart_band_timer();
 
 	current_qso = collect_qso_data();
@@ -134,21 +139,21 @@ void log_to_disk(int from_lan) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));	/* erase comment  field */
 
     if (!from_lan)
-	mvprintw(12, 54, spaces(contest->exchange_width));
+	mvprintw(12, 54, "%s", spaces(contest->exchange_width));
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     if (!from_lan) {
-	mvprintw(7, 0, logline0);
-	mvprintw(8, 0, logline1);
-	mvprintw(9, 0, logline2);
+	mvprintw(7, 0, "%s", logline0);
+	mvprintw(8, 0, "%s", logline1);
+	mvprintw(9, 0, "%s", logline2);
     }
-    mvprintw(10, 0, logline3);
-    mvprintw(11, 0, logline4);
+    mvprintw(10, 0, "%s", logline3);
+    mvprintw(11, 0, "%s", logline4);
     refreshp();
 
     attron(COLOR_PAIR(C_WINDOW));
 
-    mvprintw(12, 23, qsonrstr);
+    mvprintw(12, 23, "%s", qsonrstr);
 
     if (no_rst) {
 	mvaddstr(12, 44, "   ");

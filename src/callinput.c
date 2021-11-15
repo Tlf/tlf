@@ -153,10 +153,12 @@ int callinput(void) {
     printcall();	/* print call input field */
     searchlog();
 
-    while (strlen(hiscall) <= 13) {
+    while (strlen(hiscall) <= MAX_CALL_LENGTH) {
 
 	show_zones(bandinx);
-	printcall();
+	update_info_line();
+	searchlog();
+	printcall();    // note: calls refreshp()
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	/* main loop waiting for input */
@@ -184,8 +186,8 @@ int callinput(void) {
 		    if (fabs(freq - freqstore) > 500) {
 			add_to_spots(hiscall, freqstore);
 			hiscall[0] = '\0';
-			HideSearchPanel();
 			freqstore = 0;
+			break;
 		    }
 		}
 	    }
@@ -199,11 +201,8 @@ int callinput(void) {
 		    strncpy(hiscall, grab.call, sizeof(hiscall));
 		    grab.state = REACHED;
 		    grab.spotfreq = freq;
-
-		    showinfo(getctydata_pfx(hiscall));
-		    printcall();
-		    searchlog();
 		    freqstore = 0;
+		    break;
 		}
 	    }
 
@@ -220,9 +219,7 @@ int callinput(void) {
 	    if (fabs(freq - grab.spotfreq) > 500 && grab.state == REACHED) {
 		grab.state = NONE;
 		hiscall[0] = '\0';
-		printcall();
-		HideSearchPanel();
-		showinfo(SHOWINFO_DUMMY);
+		break;
 	    }
 
 
@@ -236,28 +233,28 @@ int callinput(void) {
 	/* special handling of some keycodes if call field is empty */
 	if (*hiscall == '\0') {
 	    // <Enter>, sends CQ message (F1), starts autoCQ, or sends S&P message.
-	    if ((x == '\n' || x == KEY_ENTER) && *hiscall == '\0') {
+	    if (x == '\n' || x == KEY_ENTER) {
 		if (cqmode == CQ) {
 		    if (noautocq != 1)
 			x = auto_cq();
 		} else {
 		    sendspcall();
-		    break;
+		    continue;
 		}
 	    }
 
 	    // Up Arrow or Alt-e, edit last QSO
 	    if (x == KEY_UP || x == ALT_E) {
 		edit_last();
-		break;
+		continue;
 	    }
 
 	    // Equals, confirms last callsign already logged if call field is empty.
-	    if (x == '=' && *hiscall == '\0') {
+	    if (x == '=' && lastcall[0] != 0) {
 		char *str = g_strdup_printf("%s TU ", lastcall);
 		sendmessage(str);
 		g_free(str);
-		break;
+		continue;
 	    }
 	}
 
@@ -395,7 +392,6 @@ int callinput(void) {
 		    }
 		}
 		clear_display();
-		printcall();
 
 		break;
 	    }
@@ -443,8 +439,8 @@ int callinput(void) {
 		    rst_sent_up();
 
 		    if (!no_rst)
-			mvprintw(12, 44, sent_rst);
-		    mvprintw(12, 29, hiscall);
+			mvprintw(12, 44, "%s", sent_rst);
+		    mvprintw(12, 29, "%s", hiscall);
 
 		} else {	// change cw speed
 		    speedup();
@@ -464,8 +460,8 @@ int callinput(void) {
 		    rst_sent_down();
 
 		    if (!no_rst)
-			mvprintw(12, 44, sent_rst);
-		    mvprintw(12, 29, hiscall);
+			mvprintw(12, 44, "%s", sent_rst);
+		    mvprintw(12, 29, "%s", hiscall);
 
 		} else {
 
@@ -532,13 +528,13 @@ int callinput(void) {
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		for (j = 13; j <= 23; j++) {
-		    mvprintw(j, 0, backgrnd_str);
+		    mvprintw(j, 0, "%s", backgrnd_str);
 		}
 
 		attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-		mvprintw(12, 29, spaces(12));
-		mvprintw(12, 29, "");
+		mvprintw(12, 29, "%s", spaces(12));
+		move(12, 29);
 		refreshp();
 		break;
 	    }
@@ -631,17 +627,8 @@ int callinput(void) {
 		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
 		    mvprintw(cury, curx - 1, " ");
-		    mvprintw(cury, curx - 1, "");
+		    move(cury, curx - 1);
 		    hiscall[strlen(hiscall) - 1] = '\0';
-
-		    if (atoi(hiscall) < 1800) {	/*  no frequency */
-			showinfo(getctydata_pfx(hiscall));
-			searchlog();
-			refreshp();
-		    }
-
-		    x = -1;
-		    break;
 		}
 		break;
 	    }
@@ -732,7 +719,7 @@ int callinput(void) {
 		    k_ptt = 1;
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		    mvprintw(0, 2, "PTT on   ");
-		    mvprintw(12, 29, "");
+		    move(12, 29);
 		    refreshp();
 		    netkeyer(K_PTT, "1");	// ptt on
 		    x = key_get();	// any character to stop tuning
@@ -751,7 +738,7 @@ int callinput(void) {
 	    case ALT_T: {
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(0, 2, "Tune     ");
-		mvprintw(12, 29, "");
+		move(12, 29);
 		refreshp();
 
 		tune();
@@ -855,10 +842,7 @@ int callinput(void) {
 
 	    // Ctrl-A (^A), add a spot and share on LAN.
 	    case CTRL_A: {
-		addspot();
-		HideSearchPanel();
-		showinfo(SHOWINFO_DUMMY);
-
+		addspot();      // note: clears call input field
 		grab.state = REACHED;
 		grab.spotfreq = freq;
 		break;
@@ -932,17 +916,17 @@ int callinput(void) {
 		if (lan_active) {
 
 		    for (t = 0; t <= 5; t++)
-			mvprintw(14 + t, 1, spaces(60));
+			mvprintw(14 + t, 1, "%s", spaces(60));
 
 		    for (t = 0; t <= 4; t++)
-			mvprintw(15 + t, 1, talkarray[t]);
+			mvprintw(15 + t, 1, "%s", talkarray[t]);
 		    nicebox(14, 0, 5, 59, "Messages");
 
 		    refreshp();
 		    key_get();
 		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
-			mvprintw(14 + t, 0, spaces(61));
+			mvprintw(14 + t, 0, "%s", spaces(61));
 
 		    clear_display();
 		}
@@ -986,14 +970,11 @@ int callinput(void) {
 	}
 
 
-	/* Convert to upper case */
-	if (x >= 'a' && x <= 'z')
-	    x = x - 32;
-
 	/* Add character to call input field. */
-	if (x >= '/' && x <= 'Z') {
+	if (valid_call_char(x)) {
+	    x = g_ascii_toupper(x);
 
-	    if (strlen(hiscall) < 13) {
+	    if (strlen(hiscall) < MAX_CALL_LENGTH) {
 		instring[0] = x;
 		instring[1] = '\0';
 		addch(x);
@@ -1007,14 +988,6 @@ int callinput(void) {
 		    }
 		}
 	    }
-
-	    if (atoi(hiscall) < 1800) {	/*  no frequency */
-
-		showinfo(getctydata_pfx(hiscall));
-		searchlog();
-	    }
-
-	    refreshp();
 
 	    freqstore = freq;
 
@@ -1030,14 +1003,22 @@ int callinput(void) {
 	    }
 	}
 
-	if ((x == '\n' || x == KEY_ENTER) || x == SPACE || x == TAB
-		|| x == CTRL_K || x == 44 || x == BACKSLASH) {
+	if (x == '\n' || x == KEY_ENTER || x == SPACE || x == TAB
+		|| x == CTRL_K || x == ',' || x == BACKSLASH) {
 	    break;
 	}
 
     }
 
-    return (x);
+    return x;
+}
+
+// accepts A-Z 0-9 /
+bool valid_call_char(int ch) {
+    return (ch >= 'A' && ch <= 'Z')
+	   || (ch >= 'a' && ch <= 'z')
+	   || (ch >= '0' && ch <= '9')
+	   || ch == '/';
 }
 
 /** check if string is plain number
@@ -1132,13 +1113,13 @@ int autosend() {
 	    continue;
 	}
 
-	/* convert to upper case */
-	if (x >= 'a' && x <= 'z')
-	    x = x - 32;
 
 	int len = strlen(hiscall);
-	if (len < 13 && x >= '/' && x <= 'Z') {
+	if (len < 13 && valid_call_char(x)) {
 	    char append[2];
+
+	    /* convert to upper case */
+	    x = g_ascii_toupper(x);
 
 	    /* insert into hiscall */
 	    hiscall[len] = x;
@@ -1181,7 +1162,7 @@ void play_file(char *audiofile) {
     // note: this overrides PATH setting
     bool has_local_play_vk = (access("./play_vk", X_OK) == 0);
     char *playcommand = g_strdup_printf("%s %s",
-					(has_local_play_vk ? "./play_wk" : "play_vk"),
+					(has_local_play_vk ? "./play_vk" : "play_vk"),
 					audiofile);
 
     /* CAT PTT wanted and available, use it. */
@@ -1274,7 +1255,7 @@ void handle_bandswitch(int direction) {
     }
 
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-    mvprintw(12, 0, band[bandinx]);
+    mvprintw(12, 0, "%s", band[bandinx]);
 
     if (trx_control) {
 	freq = bandfrequency[bandinx]; // TODO: is this needed?
@@ -1303,9 +1284,6 @@ void handle_memory_operation(memory_op_t op) {
     }
 
     show_header_line();
-    showinfo(getctydata_pfx(hiscall));
-    searchlog();
-    move(12, 29 + strlen(hiscall));
 
     if (newfreq <= 0) {
 	return;     // freq not changed

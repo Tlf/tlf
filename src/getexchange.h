@@ -23,7 +23,7 @@
 
 extern int call_update;
 
-void checkexchange(char *comment);
+void checkexchange(char *comment, bool interactive);
 char *getgrid(char *comment);
 int getexchange(void);
 

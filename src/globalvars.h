@@ -89,12 +89,13 @@ extern struct tm time_ptr_cabrillo;
 extern char cqzone[];
 extern char ituzone[];
 extern char continent[];
-extern char zone_export[];
 extern int itumult;
 
-extern char ssexchange[];
+extern char mult1_value[40];
 extern int new_mult;
 extern char comment[80];
+extern char normalized_comment[80];
+extern char proposed_exchange[80];
 
 extern char lan_logline[];
 extern char logfile[];
@@ -120,7 +121,6 @@ extern char section[];
 extern int wazmult;
 extern int addcallarea;
 extern int new_cty;
-extern char zone_fix[];
 extern int new_zone;
 extern int do_cabrillo;
 extern int no_rst;
@@ -251,3 +251,6 @@ extern bool debugflag;
 extern bool trx_control;
 extern bool nopacket;
 extern bool verbose;
+
+extern double DEST_Lat;
+extern double DEST_Long;

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 /* ------------------------------------------------------------
- *        Read sent QTC QSO's
+ *        Read sent QTC QSOs
  *
  *--------------------------------------------------------------*/
 
@@ -78,7 +78,7 @@ int readqtccalls() {
 	    tempi = atoi(temps) - 1;
 	    qsoflags_for_qtc[tempi] = 1;
 
-	    /* remember callsign, build number of sent QTC's */
+	    /* remember callsign, build number of sent QTCs */
 	    parse_qtcline(inputbuffer, callsign, SEND);
 	    qtc_inc(callsign, SEND);
 
@@ -114,7 +114,7 @@ int readqtccalls() {
 
 	while (fgets(inputbuffer, 100, fp) != NULL) {
 
-	    /* remember callsign, build number of received QTC's */
+	    /* remember callsign, build number of received QTCs */
 	    parse_qtcline(inputbuffer, callsign, RECV);
 	    qtc_inc(callsign, RECV);
 

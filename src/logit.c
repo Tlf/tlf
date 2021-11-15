@@ -52,6 +52,16 @@
 void refresh_comment(void);
 void change_mode(void);
 
+static void log_qso() {
+    log_to_disk(false);
+    if (sprint_mode) {
+	change_mode();
+    }
+    HideSearchPanel();
+    clear_display();
+    refreshp();
+}
+
 void logit(void) {
     extern char itustr[];
     extern int defer_store;
@@ -95,7 +105,6 @@ void logit(void) {
 
 		if ((cqmode == CQ) && iscontest
 			&& (defer_store == 0)) {	/* CQ mode */
-
 		    send_standard_message(2);
 		    if (trxmode != CWMODE && trxmode != DIGIMODE) {
 			if (contest->exchange_serial)
@@ -169,30 +178,21 @@ void logit(void) {
 			defer_store = 0;
 		    }
 
-		    log_to_disk(false);
-		    if (sprint_mode == 1) {
-			change_mode();
-		    }
-		    HideSearchPanel();
-
+		    log_qso();
 		}
 	    }
 
 	    if ((callreturn == BACKSLASH) && (*hiscall != '\0')) {
 		defer_store = 0;
 
-		log_to_disk(false);
-		if (sprint_mode == 1) {
-		    change_mode();
-		}
-		HideSearchPanel();
+		log_qso();
 	    }
 
 	    if (callreturn == CTRL_K || callreturn == 44) {	/*  CTRL K  */
 		getyx(stdscr, cury, curx);
-		mvprintw(5, 0, "");
+		move(5, 0);
 		keyer();
-		mvprintw(cury, curx, "");
+		move(cury, curx);
 	    }
 
 	} else {	/* user entered frequency -> clear input field */
@@ -207,8 +207,8 @@ void refresh_comment(void) {
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    mvprintw(12, 54, spaces(contest->exchange_width));
-    mvprintw(12, 54, comment);
+    mvprintw(12, 54, "%s", spaces(contest->exchange_width));
+    mvprintw(12, 54, "%s", comment);
 }
 
 void change_mode(void) {

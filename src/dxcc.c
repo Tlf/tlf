@@ -48,7 +48,7 @@ prefix_data dummy_pfx = {
     0,
     INFINITY,
     INFINITY,
-    NULL,
+    "",
     INFINITY,
     false
 };
@@ -105,7 +105,7 @@ unsigned int prefix_count(void) {
 
 /* give pointer to prefix struct at 'index' */
 prefix_data *prefix_by_index(unsigned int index) {
-    if (index >= prefix_count())
+    if (index < 0 || index >= prefix_count())
 	return &dummy_pfx;
 
     return (prefix_data *)g_ptr_array_index(prefix, index);
@@ -201,7 +201,7 @@ void prefix_add(char *pfxstr) {
 	new_prefix -> timezone = atof(loc + 1);
 	*loc = '\0';
     } else
-	new_prefix -> timezone = INFINITY;
+	new_prefix -> timezone = last_dx->timezone;
 
     loc = strchr(pfxstr, '{');
     if (loc != NULL) {
@@ -211,7 +211,7 @@ void prefix_add(char *pfxstr) {
 	if (loc != NULL)
 	    *loc = '\0';
     } else
-	new_prefix -> continent = NULL;
+	new_prefix -> continent = g_strdup(last_dx->continent);
 
     loc = strchr(pfxstr, '<');
     if (loc != NULL) {
@@ -221,8 +221,10 @@ void prefix_add(char *pfxstr) {
 	    new_prefix -> lon = atof(loc + 1);
 	else
 	    new_prefix -> lon = INFINITY;
-    } else
-	new_prefix -> lat = new_prefix -> lon = INFINITY;
+    } else {
+	new_prefix -> lat = last_dx->lat;
+	new_prefix -> lon = last_dx->lon;
+    }
 
     loc = strchr(pfxstr, '[');
     if (loc != NULL) {

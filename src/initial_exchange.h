@@ -25,7 +25,8 @@
 #ifndef INITIAL_EXCHANGE_H
 #define INITIAL_EXCHANGE_H
 
-#define MAX_CALL_LENGTH 13
+#include "tlf.h"
+
 #define MAX_IE_LENGTH 30
 
 /** Dataelement for one initial entry item */

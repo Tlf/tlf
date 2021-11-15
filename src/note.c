@@ -46,7 +46,7 @@ int include_note(void) {
 	     "                                                                              ");
     nicebox(14, 0, 1, 78, "Note");
     attron(A_STANDOUT);
-    mvprintw(15, 1, "");
+    move(15, 1);
 
     echo();
     getnstr(buffer, 78);
@@ -85,7 +85,7 @@ int include_note(void) {
     attron(COLOR_PAIR(C_LOG | A_STANDOUT));
 
     for (i = 14; i <= 16; i++)
-	mvprintw(i, 0, backgrnd_str);
+	mvprintw(i, 0, "%s", backgrnd_str);
 
     return (0);
 }

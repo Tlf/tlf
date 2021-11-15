@@ -83,7 +83,7 @@ void write_log_fm_cabr() {
 	strcpy(section, getgrid(comment));
     }
 
-    checkexchange(comment);
+    checkexchange(comment, false);
     dupe = is_dupe(hiscall, bandinx, trxmode);
     current_qso = collect_qso_data();
     addcall(current_qso);   /* add call to worked list and check it for dupe */
@@ -114,7 +114,7 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
     } else { // SENT
 
 	qtc_line.direction = SEND;
-	// search the sent callsign in list of QSO's
+	// search the sent callsign in list of QSOs
 
 	found_call = 0;	// indicates that the callsign found
 	found_empty = 0;// indicates that there is the "hole" in the list
