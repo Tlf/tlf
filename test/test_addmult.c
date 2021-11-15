@@ -24,7 +24,6 @@
 // OBJECT ../src/paccdx.o
 // OBJECT ../src/zone_nr.o
 
-char ssexchange[30] = "";   // defined in getexchange.c
 char section[8] = "";       // defined in getexchange.c
 
 /* dummies */

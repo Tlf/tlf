@@ -28,7 +28,6 @@
 // OBJECT ../src/utils.o
 // OBJECT ../src/zone_nr.o
 
-char ssexchange[30] = "";   // defined in getexchange.c
 char section[8] = "";       // defined in getexchange.c
 
 // dummy functions
