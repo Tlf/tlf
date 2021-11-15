@@ -91,7 +91,6 @@ extern char ituzone[];
 extern char continent[];
 extern int itumult;
 
-extern char ssexchange[];
 extern char mult1_value[40];
 extern int new_mult;
 extern char comment[80];

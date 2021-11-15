@@ -474,8 +474,6 @@ int getexchange(void) {
 
 /* ------------------------------------------------------------------------ */
 
-char cmpattern[32] = "                               ";	// global
-char ssexchange[30] = "";
 char section[MAX_SECTION_LENGTH + 1] = "";
 int call_update = 0;
 
