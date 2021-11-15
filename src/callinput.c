@@ -150,7 +150,10 @@ int callinput(void) {
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    while (strlen(hiscall) <= 13) {
+    printcall();	/* print call input field */
+    searchlog();
+
+    while (strlen(hiscall) <= MAX_CALL_LENGTH) {
 
 	show_zones(bandinx);
 	update_info_line();
@@ -971,7 +974,7 @@ int callinput(void) {
 	if (valid_call_char(x)) {
 	    x = g_ascii_toupper(x);
 
-	    if (strlen(hiscall) < 13) {
+	    if (strlen(hiscall) < MAX_CALL_LENGTH) {
 		instring[0] = x;
 		instring[1] = '\0';
 		addch(x);

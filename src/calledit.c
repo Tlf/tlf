@@ -229,7 +229,7 @@ int insert_char(int curposition) {
 	}
 
 	// Too long!
-	if (strlen(hiscall) + 1 == 13)
+	if (strlen(hiscall) + 1 == MAX_CALL_LENGTH)
 	    break;		// leave insert mode
 
 	// Accept A-Z or / and 1-9

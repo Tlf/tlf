@@ -134,16 +134,8 @@ int addcall(struct qso_t *qso) {
     cty = getctydata(qso->call);
 
 
-    if (strlen(qso->comment) >= 1) {		/* remember last exchange */
-	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1) {
-	    /*
-	    			if (strlen(zone_fix) > 1) {
-	    				zone = zone_nr(zone_fix);
-	    			} else
-	    				zone = zone_nr(zone_export);
-	    */
-	    zone = zone_nr(qso->comment);
-	}
+    if (CONTEST_IS(CQWW) || wazmult || itumult) {
+	zone = zone_nr(qso->comment);
     }
 
     add_ok = true;			/* look if certain calls are excluded */
@@ -251,11 +243,8 @@ int addcall2(void) {
 
     bandinx = qso->bandindex;
 
-    if (strlen(comment) >= 1) {
-// 		strcpy(station->exchange, comment);
-
-	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1)
-	    zone = zone_nr(comment);
+    if (CONTEST_IS(CQWW) || wazmult || itumult) {
+	zone = zone_nr(comment);
     }
 
     add_ok = true;			/* look if certain calls are excluded */

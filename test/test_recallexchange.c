@@ -2,21 +2,31 @@
 
 #include "../src/recall_exchange.h"
 #include "../src/initial_exchange.h"
+#include "../src/setcontest.h"
 #include "../src/globalvars.h"
 #include "../src/tlf.h"
 
 // OBJECT ../src/recall_exchange.o
 // OBJECT ../src/initial_exchange.o
 
+contest_config_t config_any = {
+    .id = 123,
+    .name = QSO_MODE,
+    .exchange_width = 10
+};
 
 int setup_default(void **state) {
     int result;
     strcpy(hiscall, "N0ONE");
     strcpy(comment, "");
+    strcpy(proposed_exchange, "");
 
     strcpy(worked[0].call, "DL1ABC");
     strcpy(worked[0].exchange, "51N13E");
     nr_worked = 1;
+
+    main_ie_list = NULL;
+    contest = &config_any;
 
     result = chdir(SRCDIR);
     if (result == -1)

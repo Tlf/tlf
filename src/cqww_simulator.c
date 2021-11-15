@@ -122,16 +122,16 @@ void cqww_simulator(void) {
 	strcpy(callcpy, CALLMASTERARRAY(callnumber));
 	getctydata(callcpy);
 
-	char save = zone_export[0];
+	char save = cqzone[0];
 	if (get_time() % 2 == 0) {  // use short numbers randomly
-	    zone_export[0] = short_number(zone_export[0]);
+	    cqzone[0] = short_number(cqzone[0]);
 	}
 
-	char *str = g_strdup_printf("TU 5NN %2s", zone_export);
+	char *str = g_strdup_printf("TU 5NN %s", cqzone);
 	sendmessage(str);
 	write_keyer();
 	g_free(str);
-	zone_export[0] = save;
+	cqzone[0] = save;
 
 	repeat_count = 0;
 	restore_tone();
@@ -155,6 +155,7 @@ void cqww_simulator(void) {
 				    &"+++"[3 - slow]);
 	sendmessage(str);
 	write_keyer();
+	g_free(str);
 
 	restore_tone();
     }

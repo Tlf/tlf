@@ -213,7 +213,7 @@ void prepare_specific_part(void) {
 
     if (CONTEST_IS(ARRL_SS)) {
 	// ----------------------------arrlss----------------
-	tmp = g_strndup(ssexchange, 22);
+	tmp = g_strndup(comment, 22);
 	strcat(logline4, tmp);
 	g_free(tmp);
 	section[0] = '\0';
@@ -248,12 +248,6 @@ void prepare_specific_part(void) {
 
     } else if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
 	//-------------------------cqww----------------
-	/*
-		if (strlen(zone_fix) > 1) {
-			strcat (logline4, zone_fix);
-		} else
-			strcat (logline4, zone_export);
-	*/
 	if (trxmode == DIGIMODE && CONTEST_IS(CQWW) && strlen(comment) < 5) {
 	    comment[2] = ' ';
 	    comment[3] = 'D';
@@ -307,12 +301,6 @@ void prepare_specific_part(void) {
 	fillto(73);
 
 	if (new_zone != 0) {
-	    /*
-	    		if (strlen(zone_fix) > 1) {
-	    			strncat (logline4, zone_fix, 2);
-	    		} else
-	    			strncat (logline4, zone_export, 2);
-	    */
 	    if (strlen(comment) < 2) {
 		strcat(logline4, "0");
 		strncat(logline4, comment, 1);
@@ -320,8 +308,6 @@ void prepare_specific_part(void) {
 		strncat(logline4, comment, 2);
 
 	    new_zone = 0;
-	} else {
-	    zone_fix[0] = '\0';
 	}
 
 	fillto(77);

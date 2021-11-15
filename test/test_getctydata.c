@@ -16,6 +16,8 @@
 // OBJECT ../src/getpx.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
+// OBJECT ../src/log_utils.o
+// OBJECT ../src/utils.o
 
 /* export internal function */
 int location_unknown(char *call);

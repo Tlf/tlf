@@ -22,5 +22,6 @@
 #define RECALL_EXCHANGE_H
 
 int recall_exchange(void);
+int get_proposed_exchange(void);
 
 #endif /* RECALL_EXCHANGE_H */

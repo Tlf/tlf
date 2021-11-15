@@ -17,6 +17,8 @@
 /* test stubs and dummies */
 bool simulator = false;
 
+char section[8] = "";       // defined in getexchange.c
+
 int do_cabrillo = 0;	/* actually converting cabrillo file to Tlf log */
 struct tm time_ptr_cabrillo;
 
@@ -90,7 +92,7 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc);
 extern struct read_qtc_t qtc_line;	/* make global for testability */
 gchar *get_nth_token(gchar *str, int n, const char *separator);
 void prepare_line(struct linedata_t *qso,
-	struct cabrillo_desc *desc, char *buf);
+		  struct cabrillo_desc *desc, char *buf);
 
 /* Test of helper functions */
 void test_starts_with_succeed(void **state) {

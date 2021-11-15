@@ -17,10 +17,12 @@
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/locator2longlat.o
+// OBJECT ../src/log_utils.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/utils.o
 
+char section[8] = "";       // defined in getexchange.c
 
 #define check_points(point) \
     do{ assert_int_equal(score(), point); }while(0)

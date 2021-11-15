@@ -14,16 +14,17 @@
 // OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/getpx.o
+// OBJECT ../src/log_utils.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
 // OBJECT ../src/utils.o
-// OBJECT ../src/log_utils.o
 // OBJECT ../src/addcall.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/paccdx.o
 // OBJECT ../src/zone_nr.o
 
+char section[8] = "";       // defined in getexchange.c
 
 /* dummies */
 int getctynr(char *checkcall) {
@@ -313,14 +314,21 @@ void test_arrlss(void **state) {
     setcontest("arrl_ss");
 
     setup_multis("SC\nSCV\n");
-    strcpy(ssexchange, "SCV");
-    set_this_qso("");   // NOTE: ssexchange is not part of qso_t
+    strcpy(mult1_value, "S");   // incomplete value (normally doesn't happen)
+    set_this_qso("");   // NOTE: mult1_value is not part of qso_t
     addmult(this_qso);
-    strcpy(ssexchange, "97A23SCV");
+    assert_int_equal(nr_multis, 0);
+    strcpy(mult1_value, "SCX"); // invalid mult
+    set_this_qso("");
     addmult(this_qso);
-    strcpy(ssexchange, "KL");
+    assert_int_equal(nr_multis, 0);
+    strcpy(mult1_value, "SCV");
     addmult(this_qso);
-    strcpy(ssexchange, "SC");
+    assert_int_equal(nr_multis, 1);
+    strcpy(mult1_value, "KL");
+    addmult(this_qso);
+    assert_int_equal(nr_multis, 1);
+    strcpy(mult1_value, "SC");
     addmult(this_qso);
     assert_int_equal(nr_multis, 2);
     assert_string_equal(multis[0].name, "SCV");
@@ -330,14 +338,14 @@ void test_arrlss(void **state) {
 void test_serial_section_mult(void **state) {
     serial_section_mult = 1;
     setup_multis("NE\nONE\n");
-    strcpy(ssexchange, "ONE");
-    set_this_qso("");   // NOTE: ssexchange is not part of qso_t
+    strcpy(mult1_value, "ONE");
+    set_this_qso("");   // NOTE: mult1_value is not part of qso_t
     addmult(this_qso);
-    strcpy(ssexchange, "023");
+    strcpy(mult1_value, "023");
     addmult(this_qso);
-    strcpy(ssexchange, "NE");
+    strcpy(mult1_value, "NE");
     addmult(this_qso);
-    strcpy(ssexchange, "SC");
+    strcpy(mult1_value, "SC");
     addmult(this_qso);
     assert_int_equal(nr_multis, 2);
 }
@@ -346,14 +354,14 @@ void test_dx_arrlsections(void **state) {
     dx_arrlsections = 1;
     countrynr = w_cty;
     setup_multis("NE\nONE\n");
-    strcpy(ssexchange, "ONE");
-    set_this_qso("");   // NOTE: ssexchange is not part of qso_t
+    strcpy(mult1_value, "ONE");
+    set_this_qso("");   // NOTE: mult1_value is not part of qso_t
     addmult(this_qso);
-    strcpy(ssexchange, "97A23SCV");
+    strcpy(mult1_value, "97A23SCV");
     addmult(this_qso);
-    strcpy(ssexchange, "NE");
+    strcpy(mult1_value, "NE");
     addmult(this_qso);
-    strcpy(ssexchange, "SC");
+    strcpy(mult1_value, "SC");
     addmult(this_qso);
     assert_int_equal(nr_multis, 2);
 }

@@ -114,6 +114,7 @@ enum {
 #define ISDUPE 1
 #define NODUPE 0
 
+#define MAX_CALL_LENGTH 13
 #define MAX_QSOS 20000          /* internal qso array */
 #define MAX_DATALINES 1000      /* from ctydb.dat  */
 #define MAX_CALLS 5000          /* max nr of calls in dupe array */
@@ -283,6 +284,8 @@ enum {
 };
 
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
+
+#define LEN(array) (sizeof(array) / sizeof(array[0]))
 
 #endif /* TLF_H */
 

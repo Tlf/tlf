@@ -20,11 +20,14 @@
 // OBJECT ../src/nicebox.o
 // OBJECT ../src/qtcutil.o
 // OBJECT ../src/printcall.o
+// OBJECT ../src/recall_exchange.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/err_utils.o
 // OBJECT ../src/ui_utils.o
 // OBJECT ../src/score.o
 // OBJECT ../src/utils.o
+
+char section[8] = "";       // defined in getexchange.c
 
 extern WINDOW *search_win;
 extern PANEL *search_panel;
@@ -127,9 +130,6 @@ int setup_default(void **state) {
     partials = 1;
     use_part = 0;
 
-    strcpy(zone_export, "");
-    strcpy(zone_fix, "");
-
     clear_mvprintw_history();
 
     write_qsos();
@@ -161,7 +161,7 @@ static void remove_callmaster() {
 
 int teardown_default(void **state) {
     remove_callmaster();
-    FREE_DYNAMIC_STRING (callmaster_filename);
+    FREE_DYNAMIC_STRING(callmaster_filename);
     return 0;
 }
 
@@ -364,44 +364,6 @@ void test_displayPartials(void **state) {
     check_mvprintw_output(24, 1, 1, "OE3UAI");  // first
     check_mvprintw_output(23, 1, 7, " UA3JK");  // second
     check_mvprintw_output(0, 5, 28, " UA9VAA"); // last
-}
-
-/* test lookup of zone - will be used for display if already worked
- * - normally determined from countryinformation
- * - can be picked up from previous qso if we have full match
- * - or overwritten in exchange field */
-void test_ZoneFromCountry(void **state) {
-    setcontest("cqww");
-    strcpy(zone_export, "15");
-    strcpy(hiscall, "OH2");
-    filterLog();
-    assert_int_equal(getZone(), 15);
-}
-
-void test_ZoneFromExchange(void **state) {
-    setcontest("cqww");
-    strcpy(zone_fix, "14");
-    strcpy(zone_export, "15");
-    strcpy(hiscall, "OH2");
-    filterLog();
-    assert_int_equal(getZone(), 14);
-}
-
-void test_ZoneFromLog_mixedmode(void **state) {
-    setcontest("cqww");
-    mixedmode = 1;
-    strcpy(zone_export, "14");
-    strcpy(hiscall, "K4D");
-    filterLog();
-    assert_int_equal(getZone(), 5);
-}
-
-void test_ZoneFromLog(void **state) {
-    setcontest("cqww");
-    strcpy(zone_export, "14");
-    strcpy(hiscall, "SP9");
-    filterLog();
-    assert_int_equal(getZone(), 15);
 }
 
 /* test position of output on lower border of search window */
