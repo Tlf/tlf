@@ -172,6 +172,7 @@ int addcall(struct qso_t *qso) {
     if (excl_add_veto) {
 	add_ok = false;
 	new_cty = 0;
+	new_zone = 0;
 	addcallarea = 0;
     }
 
