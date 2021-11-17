@@ -15,6 +15,8 @@
 // dummy
 void shownr(char *msg, int x) {
 }
+void clear_line(int row) {
+}
 
 extern char logfile[];
 

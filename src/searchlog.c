@@ -228,7 +228,7 @@ int displayPartials(char *suggested_call) {
     }
 
     attrset(COLOR_PAIR(C_DUPE));
-    mvprintw(1, 1, "??");
+    mvaddstr(1, 1, "??");
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     /* check what we have worked first */
@@ -702,7 +702,7 @@ void searchlog() {
 
 	if (dupe == ISDUPE) {
 	    attrset(COLOR_PAIR(C_DUPE));
-	    mvprintw(12, 29, "%s", hiscall);
+	    mvaddstr(12, 29, hiscall);
 	    refreshp();
 	    usleep(500000);
 	}

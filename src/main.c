@@ -1007,7 +1007,7 @@ int main(int argc, char *argv[]) {
     clear_display();		/* tidy up the display */
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (j = 13; j <= LINES - 1; j++) {	/* wipe lower window */
-	mvprintw(j, 0, "%s", backgrnd_str);
+	clear_line(j);
     }
     refreshp();
 

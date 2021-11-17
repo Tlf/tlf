@@ -213,7 +213,7 @@ void keyer(void) {
 		}
 
 		case ALT_W: {	// Alt-W, set weight
-		    mvprintw(1, 0, "Weight=   ");
+		    mvaddstr(1, 0, "Weight=   ");
 		    refreshp();
 		    move(1, 7);
 		    echo();

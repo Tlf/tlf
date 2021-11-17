@@ -31,6 +31,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "clear_display.h"
 #include "ignore_unused.h"
 #include "keystroke_names.h"
 #include "tlf.h"
@@ -47,15 +48,15 @@ void recordmenue(void) {
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j <= 24; j++)
-	mvprintw(j, 0, "%s", backgrnd_str);
+	clear_line(j);
 
-    mvprintw(1, 20, "--- TLF SOUND RECORDER UTILITY ---");
-    mvprintw(6, 20, "F1 ... F12, S, C: Record Messages");
+    mvaddstr(1, 20, "--- TLF SOUND RECORDER UTILITY ---");
+    mvaddstr(6, 20, "F1 ... F12, S, C: Record Messages");
 
-    mvprintw(9, 20, "1.: Enable contest recorder");
-    mvprintw(10, 20, "2.: Disable contest recorder");
-    mvprintw(11, 20, "3.: List and Play contest file");
-    mvprintw(13, 20, "ESC: Exit sound recorder function");
+    mvaddstr(9, 20, "1.: Enable contest recorder");
+    mvaddstr(10, 20, "2.: Disable contest recorder");
+    mvaddstr(11, 20, "3.: List and Play contest file");
+    mvaddstr(13, 20, "ESC: Exit sound recorder function");
 
     refreshp();
 
@@ -69,7 +70,7 @@ void do_record(int message_nr) {
     char commands[80] = "";
 
     mvprintw(15, 20, "recording %s", ph_message[message_nr]);
-    mvprintw(16, 20, "ESC to exit");
+    mvaddstr(16, 20, "ESC to exit");
     move(17, 20);
     refreshp();
     strcpy(commands, "rec -r 8000 ");	//G4KNO
@@ -176,7 +177,7 @@ void record(void) {
 		IGNORE(system
 		       ("cd ~/tlf/soundlogs; soundlog  > /dev/null 2> /dev/null &"));
 
-		mvprintw(15, 20, "Contest recording enabled...");
+		mvaddstr(15, 20, "Contest recording enabled...");
 		refreshp();
 		sleep(1);
 		runnit = 0;
@@ -184,7 +185,7 @@ void record(void) {
 
 	    // Stop contest recording.
 	    case '2':
-		mvprintw(15, 20, "Contest recording disabled...");
+		mvaddstr(15, 20, "Contest recording disabled...");
 		refreshp();
 		sleep(1);
 		IGNORE(system("rm ~/.VRlock"));;
@@ -208,7 +209,7 @@ void record(void) {
 		if (sounddir == NULL) {
 		    if (errno != 0) {
 			mvprintw(22, 1, "%s: %s", strerror(errno), path);
-			mvprintw(23, 1, "Press ESC to exit this screen");
+			mvaddstr(23, 1, "Press ESC to exit this screen");
 		    }
 		    break;
 		}
@@ -230,7 +231,7 @@ void record(void) {
 				j++;
 			    }
 			    g_strlcpy(printname, soundfilename->d_name, 7);
-			    mvprintw(j, i, "%s", printname);
+			    mvaddstr(j, i, printname);
 			    refreshp();
 
 			} else if (i >= 10)
@@ -242,7 +243,7 @@ void record(void) {
 
 	    // Play back contest recording.
 	    case '4':
-		mvprintw(15, 20, "Play back file (ddhhmmxx): ");
+		mvaddstr(15, 20, "Play back file (ddhhmmxx): ");
 		refreshp();
 
 		echo();
@@ -262,7 +263,7 @@ void record(void) {
 		    strcat(commands, playbackfile);
 		    strcat(commands, ".au");
 		}
-		mvprintw(16, 20, "Use Ctrl-c to stop and return to tlf");
+		mvaddstr(16, 20, "Use Ctrl-c to stop and return to tlf");
 		move(18, 20);
 		refreshp();
 		IGNORE(system(commands));;

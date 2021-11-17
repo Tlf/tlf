@@ -637,14 +637,14 @@ void addtext(char *s) {
     if (strncmp(s, my.call, strlen(my.call)) == 0
 	    && strlen(s) < 81 && strchr(s, '>') == NULL) {
 
-	mvprintw(LINES - 1, 0, "%s", backgrnd_str);
+	clear_line(LINES - 1);
 
 	if ((strlen(s) + strlen(my.call) + 3) < 80) {
 	    strcpy(dxtext, s + strlen(my.call) + 3);
 	    if (dxtext[strlen(dxtext) - 1] == '\n')
 		dxtext[strlen(dxtext) - 1] = '\0';	// remove the newline
-	    mvprintw(LINES - 1, 0, "%s", dxtext);
-	    mvprintw(12, 29, "%s", hiscall);
+	    mvaddstr(LINES - 1, 0, dxtext);
+	    mvaddstr(12, 29, hiscall);
 	}
 	refreshp();
 
@@ -1178,8 +1178,8 @@ void send_cluster(void) {
     char line[MAX_CMD_LEN + 2] = "";
 
     cluster = CLUSTER;
-    mvprintw(LINES - 1, 0, "%s", backgrnd_str);
-    mvprintw(LINES - 1, 0, ">");
+    clear_line(LINES - 1);
+    mvaddstr(LINES - 1, 0, ">");
     refreshp();
     echo();
     getnstr(line, MAX_CMD_LEN);
@@ -1199,6 +1199,6 @@ void send_cluster(void) {
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-    mvprintw(LINES - 1, 0, "%s", backgrnd_str);
+    clear_line(LINES - 1);
     refreshp();
 }

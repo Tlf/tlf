@@ -18,6 +18,9 @@ int LINES = 25; /* test for 25 lines */
 int getctynr(char *checkcall) {
     return 0;
 }
+void clear_line(int row) {
+    mvaddstr(row, 0, backgrnd_str);
+}
 
 char thisnode = 'A';
 freq_t node_frequencies[MAXNODES];
