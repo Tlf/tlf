@@ -117,23 +117,23 @@ void drawSearchWin(void) {
 
     wnicebox(search_win, 0, 0, nr_bands, 37, "Worked");
     if (qtcdirection > 0) {
-	mvwprintw(search_win, 0, 35, "Q");
+	mvwaddstr(search_win, 0, 35, "Q");
     }
 
     wattrset(search_win, COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (i = 0; i < nr_bands; i++)
-	mvwprintw(search_win, i + 1, 1, "%s", spaces(37));
+	mvwaddstr(search_win, i + 1, 1, spaces(37));
 
-    mvwprintw(search_win, 1, 1, " 10");
-    mvwprintw(search_win, 2, 1, " 15");
-    mvwprintw(search_win, 3, 1, " 20");
-    mvwprintw(search_win, 4, 1, " 40");
-    mvwprintw(search_win, 5, 1, " 80");
-    mvwprintw(search_win, 6, 1, "160");
+    mvwaddstr(search_win, 1, 1, " 10");
+    mvwaddstr(search_win, 2, 1, " 15");
+    mvwaddstr(search_win, 3, 1, " 20");
+    mvwaddstr(search_win, 4, 1, " 40");
+    mvwaddstr(search_win, 5, 1, " 80");
+    mvwaddstr(search_win, 6, 1, "160");
     if (IsAllBand()) {
-	mvwprintw(search_win, 7, 1, " 12");
-	mvwprintw(search_win, 8, 1, " 17");
-	mvwprintw(search_win, 9, 1, " 30");
+	mvwaddstr(search_win, 7, 1, " 12");
+	mvwaddstr(search_win, 8, 1, " 17");
+	mvwaddstr(search_win, 9, 1, " 30");
     }
 }
 
@@ -142,7 +142,7 @@ void displayCallInfo(dxcc_data *dx, char *pxstr) {
     wattroff(search_win, A_STANDOUT);
     wattron(search_win, COLOR_PAIR(C_BORDER));
 
-    mvwprintw(search_win, nr_bands + 1, 2, "%s", dx->countryname);
+    mvwaddstr(search_win, nr_bands + 1, 2, dx->countryname);
 
     if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	char *zone_info = NULL;
@@ -158,7 +158,7 @@ void displayCallInfo(dxcc_data *dx, char *pxstr) {
 
     if (CONTEST_IS(WPX) || pfxmult == 1) {
 	int i = strlen(dx->countryname);
-	mvwprintw(search_win, nr_bands + 1, 2 + i + 3, "%s", pxstr);
+	mvwaddstr(search_win, nr_bands + 1, 2 + i + 3, pxstr);
     }
 }
 
@@ -469,7 +469,7 @@ void displaySearchResults(void) {
 	j = bandstr2line(buffer);
 
 	if ((j < 7) || IsAllBand()) {
-	    mvwprintw(search_win, j, 1, "%s", buffer);
+	    mvwaddstr(search_win, j, 1, buffer);
 	}
 
 
@@ -521,62 +521,62 @@ void displayWorkedZonesCountries(int z) {
     if (CONTEST_IS(CQWW) || !iscontest || CONTEST_IS(PACC_PA)) {
 
 	if ((countries[countrynr] & BAND10) != 0) {
-	    mvwprintw(search_win, 1, 36, "C");
-	    mvwprintw(search_win, 1, 1, " 10");
+	    mvwaddstr(search_win, 1, 36, "C");
+	    mvwaddstr(search_win, 1, 1, " 10");
 	}
 	if ((countries[countrynr] & BAND15) != 0) {
-	    mvwprintw(search_win, 2, 36, "C");
-	    mvwprintw(search_win, 2, 1, " 15");
+	    mvwaddstr(search_win, 2, 36, "C");
+	    mvwaddstr(search_win, 2, 1, " 15");
 	}
 	if ((countries[countrynr] & BAND20) != 0) {
-	    mvwprintw(search_win, 3, 36, "C");
-	    mvwprintw(search_win, 3, 1, " 20");
+	    mvwaddstr(search_win, 3, 36, "C");
+	    mvwaddstr(search_win, 3, 1, " 20");
 	}
 	if ((countries[countrynr] & BAND40) != 0) {
-	    mvwprintw(search_win, 4, 36, "C");
-	    mvwprintw(search_win, 4, 1, " 40");
+	    mvwaddstr(search_win, 4, 36, "C");
+	    mvwaddstr(search_win, 4, 1, " 40");
 	}
 	if ((countries[countrynr] & BAND80) != 0) {
-	    mvwprintw(search_win, 5, 36, "C");
-	    mvwprintw(search_win, 5, 1, " 80");
+	    mvwaddstr(search_win, 5, 36, "C");
+	    mvwaddstr(search_win, 5, 1, " 80");
 	}
 	if ((countries[countrynr] & BAND160) != 0) {
-	    mvwprintw(search_win, 6, 1, "160");
-	    mvwprintw(search_win, 6, 36, "C");
+	    mvwaddstr(search_win, 6, 1, "160");
+	    mvwaddstr(search_win, 6, 36, "C");
 	}
 	if (IsAllBand()) {
 	    if ((countries[countrynr] & BAND12) != 0) {
-		mvwprintw(search_win, 7, 1, " 12");
-		mvwprintw(search_win, 7, 36, "C");
+		mvwaddstr(search_win, 7, 1, " 12");
+		mvwaddstr(search_win, 7, 36, "C");
 	    }
 	    if ((countries[countrynr] & BAND17) != 0) {
-		mvwprintw(search_win, 8, 1, " 17");
-		mvwprintw(search_win, 8, 36, "C");
+		mvwaddstr(search_win, 8, 1, " 17");
+		mvwaddstr(search_win, 8, 36, "C");
 	    }
 	    if ((countries[countrynr] & BAND30) != 0) {
-		mvwprintw(search_win, 9, 1, " 30");
-		mvwprintw(search_win, 9, 36, "C");
+		mvwaddstr(search_win, 9, 1, " 30");
+		mvwaddstr(search_win, 9, 36, "C");
 	    }
 	}
     }
     if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
 	if ((zones[z] & BAND10) != 0) {
-	    mvwprintw(search_win, 1, 37, "Z");
+	    mvwaddstr(search_win, 1, 37, "Z");
 	}
 	if ((zones[z] & BAND15) != 0) {
-	    mvwprintw(search_win, 2, 37, "Z");
+	    mvwaddstr(search_win, 2, 37, "Z");
 	}
 	if ((zones[z] & BAND20) != 0) {
-	    mvwprintw(search_win, 3, 37, "Z");
+	    mvwaddstr(search_win, 3, 37, "Z");
 	}
 	if ((zones[z] & BAND40) != 0) {
-	    mvwprintw(search_win, 4, 37, "Z");
+	    mvwaddstr(search_win, 4, 37, "Z");
 	}
 	if ((zones[z] & BAND80) != 0) {
-	    mvwprintw(search_win, 5, 37, "Z");
+	    mvwaddstr(search_win, 5, 37, "Z");
 	}
 	if ((zones[z] & BAND160) != 0) {
-	    mvwprintw(search_win, 6, 37, "Z");
+	    mvwaddstr(search_win, 6, 37, "Z");
 	}
     }
 
@@ -596,22 +596,22 @@ void displayWorkedZonesCountries(int z) {
 		(countrynr == zs_cty) ||
 		(countrynr == vk_cty)) {
 	    if ((pacc_qsos[0][pxnr] & BAND160) == BAND160)
-		mvwprintw(search_win, 6, 37, "M");
+		mvwaddstr(search_win, 6, 37, "M");
 
 	    if ((pacc_qsos[0][pxnr] & BAND80) == BAND80)
-		mvwprintw(search_win, 5, 37, "M");
+		mvwaddstr(search_win, 5, 37, "M");
 
 	    if ((pacc_qsos[0][pxnr] & BAND40) == BAND40)
-		mvwprintw(search_win, 4, 37, "M");
+		mvwaddstr(search_win, 4, 37, "M");
 
 	    if ((pacc_qsos[0][pxnr] & BAND20) == BAND20)
-		mvwprintw(search_win, 3, 37, "M");
+		mvwaddstr(search_win, 3, 37, "M");
 
 	    if ((pacc_qsos[0][pxnr] & BAND15) == BAND15)
-		mvwprintw(search_win, 2, 37, "M");
+		mvwaddstr(search_win, 2, 37, "M");
 
 	    if ((pacc_qsos[0][pxnr] & BAND10) == BAND10)
-		mvwprintw(search_win, 1, 37, "M");
+		mvwaddstr(search_win, 1, 37, "M");
 
 	}
     }
@@ -641,22 +641,22 @@ void displayWorkedZonesCountries(int z) {
 	}
 
 	if ((tbandidx & BAND160) == BAND160) {
-	    mvwprintw(search_win, 6, 37, "M");
+	    mvwaddstr(search_win, 6, 37, "M");
 	}
 	if ((tbandidx & BAND80) == BAND80) {
-	    mvwprintw(search_win, 5, 37, "M");
+	    mvwaddstr(search_win, 5, 37, "M");
 	}
 	if ((tbandidx & BAND40) == BAND40) {
-	    mvwprintw(search_win, 4, 37, "M");
+	    mvwaddstr(search_win, 4, 37, "M");
 	}
 	if ((tbandidx & BAND20) == BAND20) {
-	    mvwprintw(search_win, 3, 37, "M");
+	    mvwaddstr(search_win, 3, 37, "M");
 	}
 	if ((tbandidx & BAND15) == BAND15) {
-	    mvwprintw(search_win, 2, 37, "M");
+	    mvwaddstr(search_win, 2, 37, "M");
 	}
 	if ((tbandidx & BAND10) == BAND10) {
-	    mvwprintw(search_win, 1, 37, "M");
+	    mvwaddstr(search_win, 1, 37, "M");
 	}
     }
 }
@@ -801,7 +801,7 @@ void show_needed_sections(void) {
 	wattron(search_win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
 	for (j = 1; j < 7; j++)
-	    mvwprintw(search_win, j, 1, "%s", spaces(37));
+	    mvwaddstr(search_win, j, 1, spaces(37));
 
 	for (vert = 1; vert < 7; vert++) {
 	    if (cnt >= get_mult_count())
@@ -848,5 +848,5 @@ void OnLowerSearchPanel(int x, char *str) {
     int y = 1 + (IsAllBand() ? 10 : 6);
 
     wattrset(search_win, modify_attr(COLOR_PAIR(C_BORDER)));
-    mvwprintw(search_win, y, x, "%s", str);
+    mvwaddstr(search_win, y, x, str);
 }

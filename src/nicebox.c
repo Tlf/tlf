@@ -42,7 +42,7 @@ void wnicebox(WINDOW *win, int y, int x, int height, int width, char *boxname) {
     mvwaddch(win, y + height, x + width, ACS_LRCORNER);
     mvwvline(win, y + 1, x + width, ACS_VLINE, height - 1);
     mvwvline(win, y + 1, x, ACS_VLINE, height - 1);
-    mvwprintw(win, y, x + 2, "%s", boxname);
+    mvwaddstr(win, y, x + 2, boxname);
 
     return;
 }

@@ -364,7 +364,7 @@ int pagedn(int lines) {
 	}
 	scroll(sclwin);
 	wattrset(sclwin, logattr());
-	mvwprintw(sclwin, LINES - ENTRYROWS - 1, 0, "%s", s);
+	mvwaddstr(sclwin, LINES - ENTRYROWS - 1, 0, s);
     }
     wrefresh(sclwin);
     return (s != NULL);
@@ -422,7 +422,7 @@ void resume_editing(void) {
     viewbottom();
     wattrset(sclwin, curattr);
     werase(entwin);
-    mvwprintw(entwin, 0, 0, "%s", entry_text);
+    mvwaddstr(entwin, 0, 0, entry_text);
     wmove(entwin, currow, curcol);
     viewing = NULL;
     view_state = STATE_EDITING;
@@ -438,7 +438,7 @@ void viewlog(void) {
     }
     gather_input(entry_text);
     werase(entwin);
-    mvwprintw(entwin, 0, 0, "Viewing data... hit ENTER to return\n");
+    mvwaddstr(entwin, 0, 0, "Viewing data... hit ENTER to return\n");
     pageup(SCROLLSIZE);
 }
 
