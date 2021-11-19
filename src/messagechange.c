@@ -78,7 +78,7 @@ void message_change() {
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     for (int y = 13; y < LINES - 1; y++) {
-	mvprintw(y, 0, "%s", backgrnd_str);
+	clear_line(y);
     }
 
     nicebox(14, 3, 2, 60, "Enter message (F1-12, C, S)");

@@ -97,7 +97,7 @@ void bmdata_write_file() {
 
     if ((fp = fopen(".bmdata.dat", "w")) == NULL) {
 	attron(modify_attr(COLOR_PAIR(CB_DUPE) | A_BOLD));
-	mvprintw(13, 29, "can't open bandmap data file!");
+	mvaddstr(13, 29, "can't open bandmap data file!");
 	refreshp();
 	return;
     }
@@ -519,7 +519,7 @@ void bm_show_info() {
     mvprintw(LASTLINE - 2, 67, " onl.ml: %s", bm_config.onlymults ? "yes" : "no");
 
     attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
-    mvprintw(LASTLINE - 1, 67, " NEW");
+    mvaddstr(LASTLINE - 1, 67, " NEW");
 
     attrset(COLOR_PAIR(CB_NORMAL));
     printw(" SPOT");
@@ -528,7 +528,7 @@ void bm_show_info() {
     printw(" OLD");
 
     attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    mvprintw(LASTLINE, 67, " dupe");
+    mvaddstr(LASTLINE, 67, " dupe");
 
     attrset(COLOR_PAIR(CB_NORMAL));
     printw(" M");
@@ -897,7 +897,7 @@ void bm_menu() {
     getyx(stdscr, cury, curx);		/* remember cursor */
 
     attrset(COLOR_PAIR(C_LOG) | A_STANDOUT);
-    mvprintw(13, 0, "  Toggle <B>and, <M>ode, <D>upes or <O>nly multi filter");
+    mvaddstr(13, 0, "  Toggle <B>and, <M>ode, <D>upes or <O>nly multi filter");
     printw(" | any other - leave ");
 
     c = toupper(key_get());

@@ -69,7 +69,7 @@ void listmessages(void) {
     mvprintw(14 + LIST_UPPER + 1, 1, " SPCa: %s", formatMessage(SP_CALL_MSG));
 
     attroff(A_STANDOUT);
-    mvprintw(23, 30,  "Press any key");
+    mvaddstr(23, 30,  "Press any key");
     refreshp();
 
     (void)key_get();
@@ -78,7 +78,7 @@ void listmessages(void) {
 
     attron(COLOR_PAIR(C_LOG)  |  A_STANDOUT);
     for (i = 13 ;  i  <= 23 ; i++) {
-	mvprintw(i, 0, "%s", backgrnd_str);
+	clear_line(i);
     }
 
     refreshp();

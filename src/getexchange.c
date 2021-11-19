@@ -267,7 +267,7 @@ int getexchange(void) {
 		    rst_recv_up();
 
 		    if (!no_rst)
-			mvprintw(12, 49, "%s", recvd_rst);
+			mvaddstr(12, 49, recvd_rst);
 
 		} else {	/* speed up */
 		    speedup();
@@ -284,7 +284,7 @@ int getexchange(void) {
 		    rst_recv_down();
 
 		    if (!no_rst)
-			mvprintw(12, 49, "%s", recvd_rst);
+			mvaddstr(12, 49, recvd_rst);
 
 		} else {	/* speed down */
 		    speeddown();
@@ -412,22 +412,22 @@ int getexchange(void) {
 	    }
 
 	    if (CONTEST_IS(ARRL_SS) && (x != TAB) && (strlen(section) < 2)) {
-		mvprintw(13, 54, "section?");
-		mvprintw(12, 54, "%s", comment);
+		mvaddstr(13, 54, "section?");
+		mvaddstr(12, 54, comment);
 		x = 0;
 	    } else if (((serial_section_mult == 1) || (sectn_mult == 1))
 		       && ((x != TAB) && (strlen(section) < 1))) {
 		if (serial_or_section == 0 || (serial_or_section == 1
 					       && country_found(hiscall))) {
-		    mvprintw(13, 54, "section?X");
-		    mvprintw(12, 54, "%s", comment);
+		    mvaddstr(13, 54, "section?X");
+		    mvaddstr(12, 54, comment);
 		    refreshp();
 		}
 		break;
 
 	    } else if (serial_grid4_mult == 1) {
-		//      mvprintw(13,54, "section?");
-		mvprintw(12, 54, "%s", comment);
+		//      mvaddstr(13,54, "section?");
+		mvaddstr(12, 54, comment);
 		refreshp();
 		gridmult = getgrid(comment);
 		strcpy(section, gridmult);
@@ -437,8 +437,8 @@ int getexchange(void) {
 
 	    } else if (CONTEST_IS(STEWPERRY)) {
 		if (check_qra(comment) == 0) {
-		    mvprintw(13, 54, "locator?");
-		    mvprintw(12, 54, "%s", comment);
+		    mvaddstr(13, 54, "locator?");
+		    mvaddstr(12, 54, comment);
 		    break;
 		}
 		refreshp();
@@ -446,8 +446,8 @@ int getexchange(void) {
 	    } else if (CONTEST_IS(CQWW) && trxmode == DIGIMODE && ((countrynr == w_cty)
 		       || (countrynr == ve_cty))) {
 		if (strlen(comment) < 5) {
-		    mvprintw(13, 54, "state/prov?");
-		    mvprintw(12, 54, "%s", comment);
+		    mvaddstr(13, 54, "state/prov?");
+		    mvaddstr(12, 54, comment);
 		    if (x == '\n' || x == KEY_ENTER || x == BACKSLASH) {
 			x = 0;
 		    } else {
@@ -806,8 +806,8 @@ void exchange_edit(void) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
-	mvprintw(12, 54, "%s", spaces(contest->exchange_width));
-	mvprintw(12, 54, "%s", comment);
+	mvaddstr(12, 54, spaces(contest->exchange_width));
+	mvaddstr(12, 54, comment);
 	move(12, 54 + b);
 
 	i = key_get();

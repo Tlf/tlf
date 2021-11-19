@@ -104,7 +104,7 @@ void keyer(void) {
 	for (j = 0; j < KEYER_LINE_WIDTH; j++) {
 	    waddch(win, ' ');
 	}
-	mvwprintw(win, 1, 1, "%s", keyerstring);
+	mvwaddstr(win, 1, 1, keyerstring);
 	refreshp();
 
 	x = key_get();
@@ -213,7 +213,7 @@ void keyer(void) {
 		}
 
 		case ALT_W: {	// Alt-W, set weight
-		    mvprintw(1, 0, "Weight=   ");
+		    mvaddstr(1, 0, "Weight=   ");
 		    refreshp();
 		    move(1, 7);
 		    echo();

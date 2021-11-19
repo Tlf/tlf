@@ -58,7 +58,7 @@ void qtc_meta_write() {
 
     qtc_key_list = g_hash_table_get_keys(qtc_store);
     if ((fp = fopen(QTC_META_LOG, "w")) == NULL) {
-	mvprintw(5, 0, "Error opening QTC meta logfile.\n");
+	mvaddstr(5, 0, "Error opening QTC meta logfile.\n");
 	refreshp();
 	sleep(2);
     } else {

@@ -59,11 +59,11 @@ void freq_display(void) {
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
     if (trxmode == CWMODE)
-	mvprintw(18, 41, "CW");
+	mvaddstr(18, 41, "CW");
     else if (trxmode == SSBMODE)
-	mvprintw(19, 41, "SSB");
+	mvaddstr(19, 41, "SSB");
     else
-	mvprintw(19, 41, "DIG");
+	mvaddstr(19, 41, "DIG");
 
     refreshp();
 }
@@ -258,7 +258,7 @@ void print_big_number(int number, int y_position, int x_position,
 void print_dot(int y, int x) {
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-    mvprintw(y, x, " ");
+    mvaddstr(y, x, " ");
 
 }
 
@@ -268,7 +268,7 @@ void clear_freq_display(int y, int x) {
     attron(modify_attr(COLOR_PAIR(C_LOG)));
 
     for (int i = 0; i < 5; ++i) {
-	mvprintw(y + i, x, "%s", spaces(35));
+	mvaddstr(y + i, x, spaces(35));
     }
 
 }

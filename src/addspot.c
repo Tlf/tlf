@@ -74,7 +74,7 @@ void addspot(void) {
 
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-	mvprintw(13, 20, "freq.: ");
+	mvaddstr(13, 20, "freq.: ");
 	echo();
 	getnstr(frequency, 7);
 	noecho();

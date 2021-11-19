@@ -273,7 +273,7 @@ void sendbuf(void) {
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	if (get_simulator_state() == IDLE) {
-	    mvprintw(5, 0, "%s", printlinebuffer);
+	    mvaddstr(5, 0, printlinebuffer);
 	}
 	refreshp();
 

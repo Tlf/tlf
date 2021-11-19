@@ -25,6 +25,7 @@
 #include <glib.h>
 #include <string.h>
 
+#include "clear_display.h"
 #include "dxcc.h"
 #include "focm.h"
 #include "changepars.h"
@@ -53,7 +54,7 @@ void show_mults(void) {
 
     if (CONTEST_IS(CQWW)) {
 
-	mvprintw(12, 29, "E,A,F,N,S,O");
+	mvaddstr(12, 29, "E,A,F,N,S,O");
 
 	refreshp();
 
@@ -83,7 +84,7 @@ void show_mults(void) {
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	    for (l = 1; l < 6; l++)
-		mvprintw(l, 0, "%s", backgrnd_str);
+		clear_line(l);
 
 	    i = 0;
 
@@ -107,13 +108,13 @@ void show_mults(void) {
 
 			attron(modify_attr(COLOR_PAIR(C_INPUT)));
 
-			mvprintw(k, j * 4, "%s", prefix);
+			mvaddstr(k, j * 4, prefix);
 			refreshp();
 			i++;
 
 		    } else {
 
-			mvprintw(k, j * 4, "    ");
+			mvaddstr(k, j * 4, "    ");
 			refreshp();
 			i++;
 
@@ -134,7 +135,7 @@ void show_mults(void) {
 
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	for (l = 1; l < 6; l++)
-	    mvprintw(l, 0, "%s", backgrnd_str);
+	    clear_line(l);
     } else
 
 	multiplierinfo();

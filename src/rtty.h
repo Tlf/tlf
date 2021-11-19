@@ -28,7 +28,7 @@
 
 int init_controller() ;
 void deinit_controller();
-int rx_rtty() ;
+void  rx_rtty();
 void show_rtty(void);
 
 #endif /* end of include guard: RTTY_H */

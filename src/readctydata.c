@@ -42,7 +42,7 @@ void readctydata(void) {
 
     if (load_ctydata(filename) == -1) {
 	g_free(filename);
-	mvprintw(4, 0, "Error opening cty.dat file.\n");
+	mvaddstr(4, 0, "Error opening cty.dat file.\n");
 	refreshp();
 	sleep(5);
 	endwin();
