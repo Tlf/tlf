@@ -179,3 +179,7 @@ void displayit(void) {
 
     clear_display();
 }
+
+void clear_line(int row) {
+    mvaddstr(row, 0, backgrnd_str);
+}

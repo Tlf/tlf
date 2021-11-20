@@ -58,7 +58,7 @@ void delete_last_qtcs(char *call, char *bandmode) {
     // clean up received qtcs with same call and mode
     if (qtcdirection & RECV) {
 	if ((qtcfile = open(QTC_RECV_LOG, O_RDWR)) < 0) {
-	    mvprintw(5, 0, "Error opening QTC received logfile.\n");
+	    mvaddstr(5, 0, "Error opening QTC received logfile.\n");
 	    sleep(1);
 	}
 	fstat(qtcfile, &qstatbuf);
@@ -92,7 +92,7 @@ void delete_last_qtcs(char *call, char *bandmode) {
     // clean up sent qtcs with same call and mode
     if (qtcdirection & SEND) {
 	if ((qtcfile = open(QTC_SENT_LOG, O_RDWR)) < 0) {
-	    mvprintw(5, 0, "Error opening QTC sent logfile.\n");
+	    mvaddstr(5, 0, "Error opening QTC sent logfile.\n");
 	    sleep(1);
 	}
 	fstat(qtcfile, &qstatbuf);
@@ -140,7 +140,7 @@ void delete_qso(void) {
     char logline[100];
     char call[15], bandmode[6];
 
-    mvprintw(13, 29, "OK to delete last qso (y/n)?");
+    mvaddstr(13, 29, "OK to delete last qso (y/n)?");
 
     if (toupper(key_get()) == 'Y') {
 
@@ -176,7 +176,7 @@ void delete_qso(void) {
     }
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-    mvprintw(13, 29, "                            ");
+    mvaddstr(13, 29, "                            ");
 
     clear_display();
 }

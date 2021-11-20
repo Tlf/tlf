@@ -188,12 +188,12 @@ void draw_qtc_panel(int direction) {
     wbkgd(qtcwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVWINBG)));
 
     wattrset(qtcwin, LINE_INVERTED);
-    mvwprintw(qtcwin, 1, 1, "                                 ");
+    mvwaddstr(qtcwin, 1, 1, "                                 ");
     /* the first visible and used line is the qtc serial and count
      * it differs in RECV and SEND direction, these two lines sets them
      */
     if (direction == RECV) {
-	mvwprintw(qtcwin, 2, 1, "      /                          ");
+	mvwaddstr(qtcwin, 2, 1, "      /                          ");
     }
     if (direction == SEND) {
 	mvwprintw(qtcwin, 2, 1, "     %d/%2d                        ",
@@ -212,7 +212,7 @@ void draw_qtc_panel(int direction) {
     if (direction == RECV) {
 	for (i = 0; i < QTC_LINES; i++) {
 	    wattrset(qtcwin, LINE_INVERTED);
-	    mvwprintw(qtcwin, i + 3, 1, "                                 ");
+	    mvwaddstr(qtcwin, i + 3, 1, "                                 ");
 	    for (j = 0; j < 3; j++) {
 		showfield((i * 3) + j + 3);	// QTC fields...
 	    }
@@ -232,14 +232,14 @@ void draw_qtc_panel(int direction) {
 
 	if (trxmode == DIGIMODE) {
 	    if (qtc_ry_capture == 0) {
-		mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+		mvwaddstr(qtcwin, 2, 11, "CAPTURE OFF");
 	    } else {
-		mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+		mvwaddstr(qtcwin, 2, 11, "CAPTURE ON ");
 		show_rtty_lines();
 	    }
 	} else {
 	    if (qtcrec_record == 1) {
-		mvwprintw(qtcwin, 2, 11, "RECORD OFF  ");
+		mvwaddstr(qtcwin, 2, 11, "RECORD OFF  ");
 	    }
 	}
 	wattrset(qtcwin, LINE_NORMAL);
@@ -265,7 +265,7 @@ void start_qtc_recording() {
 	strcat(reccommand, qtcrec_record_command[1]);
 	record_run = system(reccommand);
 	if (record_run > -1 && qtcrec_record == 1) {
-	    mvwprintw(qtcwin, 2, 11, "RECORD ON   ");
+	    mvwaddstr(qtcwin, 2, 11, "RECORD ON   ");
 	}
     }
 }
@@ -280,7 +280,7 @@ void stop_qtc_recording() {
 	IGNORE(system(reccommand));;
 	record_run = -1;
 	if (qtcrec_record == 1) {
-	    mvwprintw(qtcwin, 2, 11, "RECORD OFF  ");
+	    mvwaddstr(qtcwin, 2, 11, "RECORD OFF  ");
 	}
     }
 }
@@ -491,7 +491,7 @@ void qtc_main_panel(int direction) {
 			    show_help_msg(activefield);
 			    showfield(0);
 			    wattrset(qtcwin, LINE_CURRINVERTED);
-			    mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[9].qtc);
+			    mvwaddstr(qtcwin, activefield, 4, qtclist.qtclines[9].qtc);
 			    break;
 			case 2:
 			    activefield = 0;
@@ -502,7 +502,7 @@ void qtc_main_panel(int direction) {
 			    activefield = 2;
 			    showfield(2);
 			    wattrset(qtcwin, LINE_NORMAL);
-			    mvwprintw(qtcwin, activefield + 1, 4, "%s", qtclist.qtclines[0].qtc);
+			    mvwaddstr(qtcwin, activefield + 1, 4, qtclist.qtclines[0].qtc);
 			    break;
 			case 4 ... 12:
 			    show_help_msg(activefield);
@@ -551,7 +551,7 @@ void qtc_main_panel(int direction) {
 			    show_help_msg(activefield);
 			    showfield(2);
 			    wattrset(qtcwin, LINE_CURRINVERTED);
-			    mvwprintw(qtcwin, activefield, 4, "%s", qtclist.qtclines[0].qtc);
+			    mvwaddstr(qtcwin, activefield, 4, qtclist.qtclines[0].qtc);
 			    break;
 			case 3 ... 11:
 			    show_help_msg(activefield);
@@ -566,7 +566,7 @@ void qtc_main_panel(int direction) {
 			case 12:
 			    activefield = 0;
 			    wattrset(qtcwin, LINE_NORMAL);
-			    mvwprintw(qtcwin, 14, 4, "%s", qtclist.qtclines[9].qtc);
+			    mvwaddstr(qtcwin, 14, 4, qtclist.qtclines[9].qtc);
 			    showfield(0);
 			    break;
 		    }
@@ -689,7 +689,7 @@ void qtc_main_panel(int direction) {
 			    sendmessage(tempc);
 			}
 
-			mvwprintw(qtcwin, activefield, 30, "*");
+			mvwaddstr(qtcwin, activefield, 30, "*");
 			qtclist.qtclines[activefield - 3].flag = 1;
 			// scroll down if not at end of qtclist:
 			if (activefield - 3 < *qtccount - 1) {
@@ -703,7 +703,7 @@ void qtc_main_panel(int direction) {
 			}
 			if (*qtccount > 0 && qtclist.totalsent == *qtccount) {
 			    wattrset(qtcwin, LINE_INVERTED);
-			    mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");
+			    mvwaddstr(qtcwin, 2, 11, "CTRL+S to SAVE!");
 			    refreshp();
 			    show_help_msg(6);
 			}
@@ -753,14 +753,14 @@ void qtc_main_panel(int direction) {
 			    tempc[0] = '\0';
 			    replace_spaces(qtclist.qtclines[ql].qtc, tempc);
 			    strcat(tmess, tempc);
-			    mvwprintw(qtcwin, ql + 3, 30, "*");
+			    mvwaddstr(qtcwin, ql + 3, 30, "*");
 			    qtclist.qtclines[ql].flag = 1;
 
 			}
 			keyer_append(tmess);
 			write_keyer();
 			wattrset(qtcwin, LINE_INVERTED);
-			mvwprintw(qtcwin, 2, 11, "CTRL+S to SAVE!");
+			mvwaddstr(qtcwin, 2, 11, "CTRL+S to SAVE!");
 			refreshp();
 			show_help_msg(6);
 
@@ -791,7 +791,7 @@ void qtc_main_panel(int direction) {
 			&& qtclist.totalsent == *qtccount) {
 		    log_sent_qtc_to_disk(nr_qsos);
 		    wattrset(qtcwin, LINE_INVERTED);
-		    mvwprintw(qtcwin, 2, 11, "QTCs have been saved!");
+		    mvwaddstr(qtcwin, 2, 11, "QTCs have been saved!");
 		    prevqtccall[0] = '\0';
 		    qtccallsign[0] = '\0';
 		    refreshp();
@@ -803,7 +803,7 @@ void qtc_main_panel(int direction) {
 		    qtc_ry_capture = 1;
 		    wattr_get(qtcwin, &attributes, &cpair, NULL);
 		    wattrset(qtcwin, LINE_INVERTED);
-		    mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+		    mvwaddstr(qtcwin, 2, 11, "CAPTURE ON ");
 		    wattrset(qtcwin, attributes);
 		    showfield(activefield);
 		    refreshp();
@@ -817,7 +817,7 @@ void qtc_main_panel(int direction) {
 		    qtc_ry_capture = 0;
 		    wattr_get(qtcwin, &attributes, &cpair, NULL);
 		    wattrset(qtcwin, LINE_INVERTED);
-		    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+		    mvwaddstr(qtcwin, 2, 11, "CAPTURE OFF");
 		    wattrset(qtcwin, attributes);
 		    showfield(activefield);
 		    refreshp();
@@ -846,7 +846,7 @@ void qtc_main_panel(int direction) {
 			    qtc_ry_capture = 1;
 			    wattr_get(qtcwin, &attributes, &cpair, NULL);
 			    wattrset(qtcwin, LINE_INVERTED);
-			    mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+			    mvwaddstr(qtcwin, 2, 11, "CAPTURE ON ");
 			    wattrset(qtcwin, attributes);
 			    showfield(activefield);
 			    refreshp();
@@ -918,7 +918,7 @@ void qtc_main_panel(int direction) {
 		    qtclist.qtclines[activefield - 3].sent = 0;
 		    qtclist.qtclines[activefield - 3].flag = 0;
 		    wattrset(qtcwin, LINE_CURRNORMAL);
-		    mvwprintw(qtcwin, activefield, 30, " ");
+		    mvwaddstr(qtcwin, activefield, 30, " ");
 		    qtclist.totalsent--;
 		}
 		break;
@@ -1209,8 +1209,8 @@ void showfield(int fidx) {
 	wattrset(qtcwin, LINE_NORMAL);
     }
 
-    mvwprintw(qtcwin, winrow, pos[posidx][0], "%s", filled);
-    mvwprintw(qtcwin, winrow, pos[posidx][0], "%s", fieldval);
+    mvwaddstr(qtcwin, winrow, pos[posidx][0], filled);
+    mvwaddstr(qtcwin, winrow, pos[posidx][0], fieldval);
     if (fidx == activefield) {
 	show_help_msg(posidx);
 	if (pos[posidx][0] == pos[posidx][1]) {
@@ -1477,7 +1477,7 @@ void number_fields() {
 
     wattrset(qtcwin, (chtype)(A_NORMAL | COLOR_PAIR(QTCRECVBG)));
     for (i = 0; i < QTC_LINES; i++) {
-	mvwprintw(qtcwin, i + 3, 1, "  ");
+	mvwaddstr(qtcwin, i + 3, 1, "  ");
     }
     for (i = 0; i < *qtccount; i++) {
 	mvwprintw(qtcwin, i + 3, 1, "%2d", i + 1);
@@ -1489,7 +1489,7 @@ void clear_help_block() {
 
     wattrset(qtcwin, LINE_INVERTED);
     for (i = 1; i < 13; i++) {
-	mvwprintw(qtcwin, i, 36, "                                      ");
+	mvwaddstr(qtcwin, i, 36, "                                      ");
     }
 }
 
@@ -1509,25 +1509,25 @@ void show_help_msg(int msgidx) {
 		    strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
 		    strlen(qtcreclist.qtclines[currqtc].serial) > 0
 	       ) {
-		mvwprintw(qtcwin, ++j, 36, "Press ENTER to mark as RCVD");
+		mvwaddstr(qtcwin, ++j, 36, "Press ENTER to mark as RCVD");
 	    }
 	} else {
-	    mvwprintw(qtcwin, ++j, 36, "%s", help_rec_msgs[msgidx]);
+	    mvwaddstr(qtcwin, ++j, 36, help_rec_msgs[msgidx]);
 	}
     }
     if (qtccurrdirection == SEND) {
 	if (msgidx > 2 && msgidx < 6) {
 	    msgidx = 3;
 	}
-	mvwprintw(qtcwin, ++j, 36, "%s", help_send_msgs[msgidx]);
+	mvwaddstr(qtcwin, ++j, 36, help_send_msgs[msgidx]);
     }
     wattrset(qtcwin, LINE_INVERTED);
-    mvwprintw(qtcwin, ++j, 36, "PgUP/PgDW: QRQ/QRS      CTRL-N: NO QTC");
+    mvwaddstr(qtcwin, ++j, 36, "PgUP/PgDW: QRQ/QRS      CTRL-N: NO QTC");
     if (qtccurrdirection == RECV) {
-	mvwprintw(qtcwin, ++j, 36, "ENTER: R & next OR AGN  CTRL-L: LATER ");
+	mvwaddstr(qtcwin, ++j, 36, "ENTER: R & next OR AGN  CTRL-L: LATER ");
     }
     if (qtccurrdirection == SEND) {
-	mvwprintw(qtcwin, ++j, 36, "ENTER: send QTC         CTRL-L: LATER ");
+	mvwaddstr(qtcwin, ++j, 36, "ENTER: send QTC         CTRL-L: LATER ");
     }
     for (i = 0; i < 12 && j < 12; i++) {
 	if (qtccurrdirection == RECV) {
@@ -1536,10 +1536,10 @@ void show_help_msg(int msgidx) {
 		mvwprintw(qtcwin, ++j, 36, "F%-2d: %s", (i + 1), buff);
 	    }
 	    if (i == 1) {
-		mvwprintw(qtcwin, j - 1, 56, "CTRL-F: FILL TIMES");
+		mvwaddstr(qtcwin, j - 1, 56, "CTRL-F: FILL TIMES");
 	    }
 	    if (i == 2) {
-		mvwprintw(qtcwin, j - 1, 56, "CTRL-R: RECORD");
+		mvwaddstr(qtcwin, j - 1, 56, "CTRL-R: RECORD");
 	    }
 	}
 	if (qtccurrdirection == SEND) {
@@ -1550,9 +1550,9 @@ void show_help_msg(int msgidx) {
 	}
     }
     if (trxmode == DIGIMODE && qtccurrdirection == RECV) {
-	mvwprintw(qtcwin, ++j, 36, "CTRL-T: Terminal window");
-	mvwprintw(qtcwin, ++j, 36, "CTRL-S: Start capture");
-	mvwprintw(qtcwin, ++j, 36, "CTRL-E: End capture");
+	mvwaddstr(qtcwin, ++j, 36, "CTRL-T: Terminal window");
+	mvwaddstr(qtcwin, ++j, 36, "CTRL-S: Start capture");
+	mvwaddstr(qtcwin, ++j, 36, "CTRL-E: End capture");
     }
 }
 
@@ -1719,14 +1719,14 @@ void show_rtty_lines() {
     wnicebox(ry_win, 0, 0, 12, 38, boxhead);
     wattrset(ry_win, LINE_NORMAL);
     for (j = 1; j < 13; j++) {
-	mvwprintw(ry_win, j, 1, "                                      ");
+	mvwaddstr(ry_win, j, 1, "                                      ");
     }
     refreshp();
 
     if (qtc_ry_capture == 1) {
-	mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+	mvwaddstr(qtcwin, 2, 11, "CAPTURE ON ");
     } else {
-	mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+	mvwaddstr(qtcwin, 2, 11, "CAPTURE OFF");
     }
 
     x = -1; j = 1;
@@ -1807,7 +1807,7 @@ void show_rtty_lines() {
 		for (j = 0; j < 12; j++) {
 		    qtc_ry_lines[j].content[0] = '\0';
 		    qtc_ry_lines[j].attr = 0;
-		    mvwprintw(ry_win, (j + 1), 1, "                                      ");
+		    mvwaddstr(ry_win, (j + 1), 1, "                                      ");
 		}
 		prevline = -1;
 		actline = 1;
@@ -1818,13 +1818,13 @@ void show_rtty_lines() {
 	    // Ctrl-S (^S), start capture
 	    case CTRL_S:
 		qtc_ry_capture = 1;
-		mvwprintw(qtcwin, 2, 11, "CAPTURE ON ");
+		mvwaddstr(qtcwin, 2, 11, "CAPTURE ON ");
 		break;
 
 	    // Ctrl-E (^E), end capture
 	    case CTRL_E:
 		qtc_ry_capture = 0;
-		mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+		mvwaddstr(qtcwin, 2, 11, "CAPTURE OFF");
 		break;
 
 	    // <Enter>, add to qtc
@@ -1844,7 +1844,7 @@ void show_rtty_lines() {
 	}
 	if (*qtccount > 0 && qtc_ry_copied == qtcreclist.count) {
 	    qtc_ry_capture = 0;
-	    mvwprintw(qtcwin, 2, 11, "CAPTURE OFF");
+	    mvwaddstr(qtcwin, 2, 11, "CAPTURE OFF");
 	}
     }
     hide_panel(ry_panel);
@@ -1863,7 +1863,7 @@ void put_qtc() {
 
     wattrset(qtcwin, LINE_NORMAL);
     if (qtc_temp_obj->capable == -1 && qtc_temp_obj->total == 0) {
-	mvwprintw(qtcwin, 1, 19, "FLAG: NO QTC");
+	mvwaddstr(qtcwin, 1, 19, "FLAG: NO QTC");
     } else {
 	mvwprintw(qtcwin, 1, 19, "%s %2d QTC", qtcdirstring[qtccurrdirection],
 		  qtc_temp_obj->total);
@@ -1904,20 +1904,20 @@ void show_sendto_lines() {
 
     wattrset(qtcwin, LINE_INVERTED);
     for (i = 0; i < QTC_LINES; i++) {
-	mvwprintw(qtcwin, i + 3, 1, "                                 ");
+	mvwaddstr(qtcwin, i + 3, 1, "                                 ");
     }
 
     wattrset(qtcwin, LINE_NORMAL);
     for (i = 0; i < qtclist.count; i++) {
-	mvwprintw(qtcwin, i + 3, 4, "%s", qtclist.qtclines[i].qtc);
+	mvwaddstr(qtcwin, i + 3, 4, qtclist.qtclines[i].qtc);
 	if (qtclist.qtclines[i].sent == 1) {
-	    mvwprintw(qtcwin, i + 3, 30, "*");
+	    mvwaddstr(qtcwin, i + 3, 30, "*");
 	}
     }
 
     wattrset(qtcwin, LINE_NORMAL);
     for (i = qtclist.count; i < QTC_LINES; i++) {
-	mvwprintw(qtcwin, i + 3, 4, "                        ");
+	mvwaddstr(qtcwin, i + 3, 4, "                        ");
     }
     number_fields();
 }

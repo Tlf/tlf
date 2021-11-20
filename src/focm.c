@@ -211,7 +211,7 @@ int foc_total_score() {
 void foc_show_scoring(int start_column) {
     int points = foc_total_score();
 
-    mvprintw(4, start_column, "%s", " QSO   Cty  Cont    5b    6b  Score");
+    mvaddstr(4, start_column, " QSO   Cty  Cont    5b    6b  Score");
     mvprintw(5, start_column, "%4d   %3d    %2d  %4d  %4d   %4d",
 	     total, cntry * 2, cont * 5,
 	     five_banders * 10, six_banders * 5, points);
@@ -293,7 +293,7 @@ void foc_show_cty() {
 
     g_tree_foreach(tree, (GTraverseFunc)show_it, &pos);
 
-    mvprintw(12, 29, "press a key...");
+    mvaddstr(12, 29, "press a key...");
     refreshp();
 
     key_get();

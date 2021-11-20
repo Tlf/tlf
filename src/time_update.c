@@ -88,13 +88,13 @@ void show_freq(void) {
 	mvprintw(13, 67, FREQ_DISPLAY_FORMAT, "TRX", freq / 1000.0);
 	memfreq = memory_get_freq();
     } else {
-	mvprintw(13, 67, "%s", spaces(80 - 67));
+	mvaddstr(13, 67, spaces(80 - 67));
     }
 
     if (memfreq > 0) {
 	mvprintw(14, 67, FREQ_DISPLAY_FORMAT, "MEM", memfreq / 1000.0);
     } else {
-	mvprintw(14, 67, "%s", spaces(80 - 67));
+	mvaddstr(14, 67, spaces(80 - 67));
     }
 
 }
@@ -167,14 +167,14 @@ void time_update(void) {
 
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-	mvprintw(7, 0, "%s", logline0);
-	mvprintw(8, 0, "%s", logline1);
-	mvprintw(9, 0, "%s", logline2);
-	mvprintw(10, 0, "%s", logline3);
-	mvprintw(11, 0, "%s", logline4);
-	mvprintw(13, 0, "%s", spaces(67));
+	mvaddstr(7, 0, logline0);
+	mvaddstr(8, 0, logline1);
+	mvaddstr(9, 0, logline2);
+	mvaddstr(10, 0, logline3);
+	mvaddstr(11, 0, logline4);
+	mvaddstr(13, 0, spaces(67));
 	attron(COLOR_PAIR(C_WINDOW));
-	mvprintw(12, 23, "%s", qsonrstr);
+	mvaddstr(12, 23, qsonrstr);
 	printcall();
 
 	showscore();	/* update  score  window every 2 seconds */

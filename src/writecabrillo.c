@@ -228,7 +228,7 @@ void free_linedata(struct linedata_t *ptr) {
 /** write out information */
 void info(char *s) {
     attron(modify_attr(COLOR_PAIR(C_INPUT) | A_STANDOUT));
-    mvprintw(13, 29, "%s", s);
+    mvaddstr(13, 29, s);
     refreshp();
 }
 

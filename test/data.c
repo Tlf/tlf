@@ -428,34 +428,43 @@ void clear_mvprintw_history() {
     }
 }
 
-int mvprintw(int y, int x, const char *fmt, ...) {
-
+void add_mvprintw_history(int y, int x, const char *fmt, va_list args) {
     // shift history
     for (int i = NLAST - 1; i >= 1; --i) {
 	strcpy(mvprintw_history[i], mvprintw_history[i - 1]);
     }
-
-    va_list args;
-    va_start(args, fmt);
+    // add new record
     sprintf(mvprintw_history[0], "%02d|%02d|", y, x);
     vsnprintf(mvprintw_history[0] + 6, 100 - 6, fmt, args);
-    va_end(args);
+}
 
-    return 0;
+int mvprintw(int y, int x, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    add_mvprintw_history(y, x, fmt, args);
+    va_end(args);
+    return OK;
 }
 
 int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...) {
-
-    // shift history
-    for (int i = NLAST - 1; i >= 1; --i) {
-	strcpy(mvprintw_history[i], mvprintw_history[i - 1]);
-    }
-
     va_list args;
     va_start(args, fmt);
-    sprintf(mvprintw_history[0], "%02d|%02d|", y, x);
-    vsnprintf(mvprintw_history[0] + 6, 100 - 6, fmt, args);
+    add_mvprintw_history(y, x, fmt, args);
     va_end(args);
-
-    return 0;
+    return OK;
 }
+
+// mvaddstr is defined as a macro composed of wmove+waddnstr
+
+static int last_y, last_x;
+
+int wmove(WINDOW *win, int y, int x) {
+    last_y = y;
+    last_x = x;
+    return OK;
+}
+
+int waddnstr(WINDOW *win, const char *str, int n) {
+    return mvprintw(last_y, last_x, "%s", str);
+}
+

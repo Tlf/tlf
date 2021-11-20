@@ -138,10 +138,10 @@ int changepars(void) {
 
     attroff(A_STANDOUT);
     attron(COLOR_PAIR(C_HEADER));
-    mvprintw(12, 29, "PARAMETER?  ");
+    mvaddstr(12, 29, "PARAMETER?  ");
     refreshp();
     usleep(400000);
-    mvprintw(12, 29, "            ");
+    mvaddstr(12, 29, "            ");
 
     echo();
     mvgetnstr(12, 29, parameterstring, 19);
@@ -307,11 +307,11 @@ int changepars(void) {
 		trxmode = CWMODE;
 
 	    if (trxmode == CWMODE) {
-		mvprintw(13, 29, "TRXMODE = CW");
+		mvaddstr(13, 29, "TRXMODE = CW");
 	    } else if (trxmode == SSBMODE)
-		mvprintw(13, 29, "TRXMODE = SSB");
+		mvaddstr(13, 29, "TRXMODE = SSB");
 	    else
-		mvprintw(13, 29, "TRXMODE = DIG");
+		mvaddstr(13, 29, "TRXMODE = DIG");
 	    refreshp();
 	    sleep(1);
 
@@ -348,9 +348,9 @@ int changepars(void) {
 
 	    }
 	    if (rit == RITCLEAR) {
-		mvprintw(13, 29, "RIT clear on");
+		mvaddstr(13, 29, "RIT clear on");
 	    } else {
-		mvprintw(13, 29, "RIT clear off");
+		mvaddstr(13, 29, "RIT clear off");
 	    }
 	    refreshp();
 	    sleep(1);
@@ -361,9 +361,9 @@ int changepars(void) {
 	    trx_control = !trx_control;
 
 	    if (trx_control) {
-		mvprintw(13, 29, "TRX control on");
+		mvaddstr(13, 29, "TRX control on");
 	    } else {
-		mvprintw(13, 29, "TRX control off");
+		mvaddstr(13, 29, "TRX control off");
 	    }
 	    refreshp();
 	    sleep(1);
@@ -416,7 +416,7 @@ int changepars(void) {
 			"The simulator only works in TRmode. Switching to TRmode");
 		    ctcomp = 0;
 		} else {
-		    mvprintw(13, 29, "Simulator on");
+		    mvaddstr(13, 29, "Simulator on");
 		    refreshp();
 		    sleep(1);
 		}
@@ -431,7 +431,7 @@ int changepars(void) {
 		}
 	    } else {
 		simulator = false;
-		mvprintw(13, 29, "Simulator off");
+		mvaddstr(13, 29, "Simulator off");
 		refreshp();
 		sleep(1);
 
@@ -471,7 +471,7 @@ int changepars(void) {
 	}
 
 	case 39: {		/* CQDELAY */
-	    mvprintw(12, 29, "CQD: pgup/dwn");
+	    mvaddstr(12, 29, "CQD: pgup/dwn");
 	    refreshp();
 
 	    x = 1;
@@ -485,7 +485,7 @@ int changepars(void) {
 			if (cqdelay <= 60) {
 			    cqdelay++;
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-			    mvprintw(0, 19, "  ");
+			    mvaddstr(0, 19, "  ");
 			    mvprintw(0, 19, "%i", cqdelay);
 			    break;
 
@@ -498,7 +498,7 @@ int changepars(void) {
 			    cqdelay--;
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-			    mvprintw(0, 19, "  ");
+			    mvaddstr(0, 19, "  ");
 			    mvprintw(0, 19, "%i", cqdelay);
 			    break;
 
@@ -538,10 +538,10 @@ int changepars(void) {
 	}
 	case 43: {		/* SCVOLUME - set soundcard volume */
 	    volumebuffer = atoi(sc_volume);
-	    mvprintw(12, 29, "Vol: pgup/dwn");
+	    mvaddstr(12, 29, "Vol: pgup/dwn");
 	    refreshp();
 	    usleep(500000);
-	    mvprintw(12, 29, "Vol:         ");
+	    mvaddstr(12, 29, "Vol:         ");
 	    mvprintw(12, 29, "Vol: %d", volumebuffer);
 
 	    x = 1;
@@ -570,7 +570,7 @@ int changepars(void) {
 		}
 
 		attron(COLOR_PAIR(COLOR_GREEN) | A_STANDOUT);
-		mvprintw(12, 34, "  ");
+		mvaddstr(12, 34, "  ");
 		mvprintw(12, 34, "%d", volumebuffer);
 
 		if (volumebuffer >= 0 && volumebuffer <= 99)
@@ -602,7 +602,7 @@ int changepars(void) {
 	    break;
 	}
 	case 50: {		/* CHARS */
-	    mvprintw(13, 29, "Autosend: (0, 2..5, m)?");
+	    mvaddstr(13, 29, "Autosend: (0, 2..5, m)?");
 	    refreshp();
 	    x = 1;
 
@@ -627,9 +627,9 @@ int changepars(void) {
 			 cwstart);
 	    else {
 		if (cwstart < 0)
-		    mvprintw(13, 29, "Autosend now: Manual   ");
+		    mvaddstr(13, 29, "Autosend now: Manual   ");
 		else
-		    mvprintw(13, 29, "Autosend now: OFF      ");
+		    mvaddstr(13, 29, "Autosend now: OFF      ");
 	    }
 	    refreshp();
 	    break;
@@ -639,9 +639,9 @@ int changepars(void) {
 	    if (digikeyer == FLDIGI) {
 		if (fldigi_toggle()) {
 		    fldigi_clear_connerr();
-		    mvprintw(13, 29, "FLDIGI ON");
+		    mvaddstr(13, 29, "FLDIGI ON");
 		} else {
-		    mvprintw(13, 29, "FLDIGI OFF");
+		    mvaddstr(13, 29, "FLDIGI OFF");
 		}
 		refreshp();
 	    }
@@ -653,7 +653,7 @@ int changepars(void) {
     }
 
     if (nopar != 1) {
-	mvprintw(12, 29, "OK !        ");
+	mvaddstr(12, 29, "OK !        ");
     } else {
 	if (!nopacket && packetinterface > 0)
 	    packet();
@@ -663,7 +663,7 @@ int changepars(void) {
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    mvprintw(12, 29, "            ");
+    mvaddstr(12, 29, "            ");
     move(12, 29);
     refreshp();
     hiscall[0] = '\0';
@@ -678,14 +678,14 @@ void networkinfo(void) {
     wipe_display();
 
     if (lan_active)
-	mvprintw(1, 10, "Network status: on");
+	mvaddstr(1, 10, "Network status: on");
     else
-	mvprintw(1, 10, "Network status: off");
+	mvaddstr(1, 10, "Network status: off");
 
     mvprintw(3, 28, "Packets rcvd: %d | %d", recv_packets, recv_error);
 
     for (int i = 0; i < nodes; i++) {
-	mvprintw(4 + i, 10, "%s", bc_hostaddress[i]);
+	mvaddstr(4 + i, 10, bc_hostaddress[i]);
 	mvprintw(4 + i, 28, "Packets sent: %d | %d ",
 		 send_packets[i], send_error[i]);
     }
@@ -702,9 +702,9 @@ void networkinfo(void) {
     mvprintw(10 + nodes, 10, "TNCport    : %s", tncportname);
     mvprintw(11 + nodes, 10, "RIGport    : %s", rigportname);
     if (use_bandoutput == 1)
-	mvprintw(12 + nodes, 10, "Band output: on");
+	mvaddstr(12 + nodes, 10, "Band output: on");
     else
-	mvprintw(12 + nodes, 10, "Band output: off");
+	mvaddstr(12 + nodes, 10, "Band output: off");
 
     mvprintw(13 + nodes, 10, "callmaster : %s",
 	     (callmaster_version[0] != 0 ? callmaster_version : "n/a"));
@@ -713,7 +713,7 @@ void networkinfo(void) {
 
     refreshp();
 
-    mvprintw(23, 22, " --- Press a key to continue --- ");
+    mvaddstr(23, 22, " --- Press a key to continue --- ");
     refreshp();
 
     (void)key_get();
@@ -736,7 +736,7 @@ void multiplierinfo(void) {
 	char chmult[6];
 	char ch2mult[6];
 
-	mvprintw(2, 20, "ARRL SWEEPSTAKES -- REMAINING SECTIONS");
+	mvaddstr(2, 20, "ARRL SWEEPSTAKES -- REMAINING SECTIONS");
 	cnt = 0;
 	for (vert = 9; vert < 18; vert++) {
 
@@ -766,7 +766,7 @@ void multiplierinfo(void) {
 		attron(modify_attr(attributes));
 
 		g_strlcpy(mprint, get_mult(cnt), 5);
-		mvprintw(vert, hor * 4, "%s", mprint);
+		mvaddstr(vert, hor * 4, mprint);
 
 		cnt++;
 	    }
@@ -778,7 +778,7 @@ void multiplierinfo(void) {
 	char *tmp;
 	int worked_at;
 
-	mvprintw(0, 30, "REMAINING SECTIONS");
+	mvaddstr(0, 30, "REMAINING SECTIONS");
 	cnt = 0;
 	for (vert = 2; vert < LINES - 2; vert++) {
 	    if (cnt >= get_mult_count())
@@ -810,7 +810,7 @@ void multiplierinfo(void) {
 		strcat(mprint, (worked_at & BAND10) ? "*" : "-");
 
 		mprint[11] = '\0';
-		mvprintw(vert, 2 + hor * 11, "%s", mprint);
+		mvaddstr(vert, 2 + hor * 11, mprint);
 
 		cnt++;
 	    }
@@ -819,7 +819,7 @@ void multiplierinfo(void) {
 
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
-    mvprintw(LINES - 2, 22, " --- Press a key to continue --- ");
+    mvaddstr(LINES - 2, 22, " --- Press a key to continue --- ");
 
     refreshp();
 
@@ -835,5 +835,5 @@ void wipe_display() {
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (j = 0; j < LINES; j++)
-	mvprintw(j, 0, "%s", backgrnd_str);
+	clear_line(j);
 }

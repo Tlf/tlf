@@ -364,7 +364,7 @@ int callinput(void) {
 		char weightbuf[5] = "";
 		char *end;
 
-		mvprintw(12, 29, "Wght: -50..50");
+		mvaddstr(12, 29, "Wght: -50..50");
 
 		nicebox(1, 1, 2, 12, "Cw");
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -373,7 +373,7 @@ int callinput(void) {
 		refreshp();
 
 		usleep(800000);
-		mvprintw(3, 10, "   ");
+		mvaddstr(3, 10, "   ");
 
 		echo();
 		mvgetnstr(3, 10, weightbuf, 3);
@@ -439,8 +439,8 @@ int callinput(void) {
 		    rst_sent_up();
 
 		    if (!no_rst)
-			mvprintw(12, 44, "%s", sent_rst);
-		    mvprintw(12, 29, "%s", hiscall);
+			mvaddstr(12, 44, sent_rst);
+		    mvaddstr(12, 29, hiscall);
 
 		} else {	// change cw speed
 		    speedup();
@@ -460,8 +460,8 @@ int callinput(void) {
 		    rst_sent_down();
 
 		    if (!no_rst)
-			mvprintw(12, 44, "%s", sent_rst);
-		    mvprintw(12, 29, "%s", hiscall);
+			mvaddstr(12, 44, sent_rst);
+		    mvaddstr(12, 29, hiscall);
 
 		} else {
 
@@ -528,12 +528,12 @@ int callinput(void) {
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		for (j = 13; j <= 23; j++) {
-		    mvprintw(j, 0, "%s", backgrnd_str);
+		    clear_line(j);
 		}
 
 		attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-		mvprintw(12, 29, "%s", spaces(12));
+		mvaddstr(12, 29, spaces(12));
 		move(12, 29);
 		refreshp();
 		break;
@@ -626,7 +626,7 @@ int callinput(void) {
 	    case KEY_BACKSPACE: {
 		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
-		    mvprintw(cury, curx - 1, " ");
+		    mvaddstr(cury, curx - 1, " ");
 		    move(cury, curx - 1);
 		    hiscall[strlen(hiscall) - 1] = '\0';
 		}
@@ -718,7 +718,7 @@ int callinput(void) {
 		if (k_ptt == 0) {
 		    k_ptt = 1;
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 2, "PTT on   ");
+		    mvaddstr(0, 2, "PTT on   ");
 		    move(12, 29);
 		    refreshp();
 		    netkeyer(K_PTT, "1");	// ptt on
@@ -737,7 +737,7 @@ int callinput(void) {
 	    // Alt-t (M-t), tune xcvr via cwdaemon.
 	    case ALT_T: {
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 2, "Tune     ");
+		mvaddstr(0, 2, "Tune     ");
 		move(12, 29);
 		refreshp();
 
@@ -767,7 +767,7 @@ int callinput(void) {
 
 	    // Alt-x (M-x), Exit
 	    case ALT_X: {
-		mvprintw(13, 29, "Do you want to leave Tlf? (y/n): ");
+		mvaddstr(13, 29, "Do you want to leave Tlf? (y/n): ");
 		while (x != 'N') {
 
 		    x = toupper(key_get());
@@ -916,17 +916,17 @@ int callinput(void) {
 		if (lan_active) {
 
 		    for (t = 0; t <= 5; t++)
-			mvprintw(14 + t, 1, "%s", spaces(60));
+			mvaddstr(14 + t, 1, spaces(60));
 
 		    for (t = 0; t <= 4; t++)
-			mvprintw(15 + t, 1, "%s", talkarray[t]);
+			mvaddstr(15 + t, 1, talkarray[t]);
 		    nicebox(14, 0, 5, 59, "Messages");
 
 		    refreshp();
 		    key_get();
 		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
-			mvprintw(14 + t, 0, "%s", spaces(61));
+			mvaddstr(14 + t, 0, spaces(61));
 
 		    clear_display();
 		}
@@ -945,7 +945,7 @@ int callinput(void) {
 		cqdelay++;
 
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 19, "  ");
+		mvaddstr(0, 19, "  ");
 		mvprintw(0, 19, "%i", cqdelay);
 	    }
 
@@ -962,7 +962,7 @@ int callinput(void) {
 		cqdelay--;
 
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 19, "  ");
+		mvaddstr(0, 19, "  ");
 		mvprintw(0, 19, "%i", cqdelay);
 	    }
 
@@ -1255,7 +1255,7 @@ void handle_bandswitch(int direction) {
     }
 
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-    mvprintw(12, 0, "%s", band[bandinx]);
+    mvaddstr(12, 0, band[bandinx]);
 
     if (trx_control) {
 	freq = bandfrequency[bandinx]; // TODO: is this needed?
