@@ -292,11 +292,11 @@ int callinput(void) {
 		} else {
 
 		    if (strlen(hiscall) > 2) {
-			if ((CONTEST_IS(CQWW) || (wazmult == 1))
+			if ((CONTEST_IS(CQWW) || wazmult)
 				&& (*comment == '\0'))
 			    strcpy(comment, cqzone);
 
-			if ((itumult == 1) && (*comment == '\0'))
+			if (itumult && (*comment == '\0'))
 			    strcpy(comment, ituzone);
 
 			if (*comment == '\0') {

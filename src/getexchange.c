@@ -87,14 +87,14 @@ int getexchange(void) {
     if (CONTEST_IS(ARRL_FD))
 	recall_exchange();
 
-    if ((CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1))
+    if ((CONTEST_IS(CQWW) || wazmult || itumult)
 	    && (*comment == '\0') && (strlen(hiscall) != 0)) {
-	if (itumult == 1)
+	if (itumult)
 	    strcpy(comment, ituzone);
 	else
 	    strcpy(comment, cqzone);
     }
-    if ((exc_cont == 1) && (*comment == '\0')
+    if ((exc_cont) && (*comment == '\0')
 	    && (strlen(hiscall) != 0)) {
 	strcpy(comment, continent);
     }
@@ -415,17 +415,17 @@ int getexchange(void) {
 		mvaddstr(13, 54, "section?");
 		mvaddstr(12, 54, comment);
 		x = 0;
-	    } else if (((serial_section_mult == 1) || (sectn_mult == 1))
+	    } else if ((serial_section_mult || sectn_mult)
 		       && ((x != TAB) && (strlen(section) < 1))) {
-		if (serial_or_section == 0 || (serial_or_section == 1
-					       && country_found(hiscall))) {
+		if (!serial_or_section
+			|| (serial_or_section && country_found(hiscall))) {
 		    mvaddstr(13, 54, "section?X");
 		    mvaddstr(12, 54, comment);
 		    refreshp();
 		}
 		break;
 
-	    } else if (serial_grid4_mult == 1) {
+	    } else if (serial_grid4_mult) {
 		//      mvaddstr(13,54, "section?");
 		mvaddstr(12, 54, comment);
 		refreshp();

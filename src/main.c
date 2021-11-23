@@ -98,19 +98,19 @@ bool iscontest = false;		/* false =  General,  true  = contest */
 contest_config_t *contest = &config_qso;	/* contest configuration */
 
 /* predefined contests */
-int sprint_mode = 0;
+bool sprint_mode = false;
 int minitest = 0;	/**< if set, length of minitest period in seconds */
 int unique_call_multi = 0;          /* do we count calls as multiplier */
 
 
 int addcallarea;
-int pfxmult = 0;
-int pfxmultab = 0;
-int exc_cont = 0;
+bool pfxmult = false;
+bool pfxmultab = false;
+bool exc_cont = false;
 int manise80;
 int ssbpoints;
 int cwpoints;
-int lowband_point_mult = 0;
+bool lowband_point_mult = false;
 int sc_sidetone;
 char sc_volume[4] = "";
 /* LZ3NY mods */
@@ -128,16 +128,16 @@ bool mult_side = false;
 /* end LZ3NY mods */
 
 bool portable_x2 = false;
-int wysiwyg_once = 0;
-int wysiwyg_multi = 0;
-int country_mult = 0;
+bool wysiwyg_once = false;
+bool wysiwyg_multi = false;
+bool country_mult = false;
 float fixedmult = 0.0;
-int sectn_mult = 0;
-int sectn_mult_once = 0;
-int dx_arrlsections = 0;
-int serial_section_mult = 0;
-int serial_or_section = 0;	/* exchange is serial OR section, like HA-DX */
-int serial_grid4_mult = 0;
+bool sectn_mult = false;
+bool sectn_mult_once = false;
+bool dx_arrlsections = false;
+bool serial_section_mult = false;
+bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
+bool serial_grid4_mult = false;
 bool qso_once = false;
 int addcallarea_once = 0;
 int noleadingzeros;
@@ -378,7 +378,7 @@ int ymax, xmax;			/* screen size */
 struct tm time_ptr_cabrillo;
 
 freq_t freq;
-int logfrequency = 0;
+bool logfrequency = false;
 int rit;
 bool trx_control = false;
 freq_t bandfrequency[NBANDS] = {
@@ -400,8 +400,8 @@ double DEST_Long = 1.;
 
 char hiscountry[40];
 
-int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
-int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
+bool wazmult = false;		/* to add the ability of WAZ zones to be multiplier */
+bool itumult = false;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
 
 bool nopacket = false;		/* set if tlf is called with '-n' */

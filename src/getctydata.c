@@ -179,7 +179,7 @@ static int getctydata_internal(char *checkcallptr, bool get_country) {
 
     int w = getpfxindex(checkcallptr, &normalized_call);
 
-    if (CONTEST_IS(WPX) || pfxmult == 1)
+    if (CONTEST_IS(WPX) || pfxmult)
 	/* needed for wpx and other pfx contests */
 	getpx(normalized_call);
 

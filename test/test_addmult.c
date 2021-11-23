@@ -72,12 +72,12 @@ int setup_default(void **state) {
     bandinx = BANDINDEX_80;
 
     new_mult = -1;
-    wysiwyg_once = 0;
-    wysiwyg_multi = 0;
-    serial_section_mult = 0;
-    sectn_mult = 0;
-    serial_grid4_mult = 0;
-    dx_arrlsections = 0;
+    wysiwyg_once = false;
+    wysiwyg_multi = false;
+    serial_section_mult = false;
+    sectn_mult = false;
+    serial_grid4_mult = false;
+    dx_arrlsections = false;
     ve_cty = 77;	/* random numbers just for test */
     w_cty = 78;
 
@@ -268,7 +268,7 @@ void test_match_length_match_alias2(void **state) {
 
 /* addmult tests */
 void test_wysiwyg_once(void **state) {
-    wysiwyg_once = 1;
+    wysiwyg_once = true;
     set_this_qso("WAC   ");
     addmult(this_qso);
     assert_true(new_mult >= 0);
@@ -277,7 +277,7 @@ void test_wysiwyg_once(void **state) {
 }
 
 void test_wysiwyg_multi(void **state) {
-    wysiwyg_multi = 1;
+    wysiwyg_multi = true;
     set_this_qso("WAC   ");
     addmult(this_qso);
     assert_true(new_mult >= 0);
@@ -286,14 +286,14 @@ void test_wysiwyg_multi(void **state) {
 }
 
 void test_wysiwyg_multi_empty(void **state) {
-    wysiwyg_multi = 1;
+    wysiwyg_multi = true;
     set_this_qso("   ");
     addmult(this_qso);
     assert_int_equal(new_mult, -1);
 }
 
 void test_serial_grid4(void **state) {
-    serial_grid4_mult = 1;
+    serial_grid4_mult = true;
     strcpy(section, "JO60LX");
     set_this_qso("");   // NOTE: section is not part of qso_t
     addmult(this_qso);
@@ -304,7 +304,7 @@ void test_serial_grid4(void **state) {
 
 
 void test_serial_grid4_empty(void **state) {
-    serial_grid4_mult = 1;
+    serial_grid4_mult = true;
     set_this_qso("");   // NOTE: section is not part of qso_t
     addmult(this_qso);
     assert_int_equal(new_mult, -1);
@@ -336,7 +336,7 @@ void test_arrlss(void **state) {
 }
 
 void test_serial_section_mult(void **state) {
-    serial_section_mult = 1;
+    serial_section_mult = true;
     setup_multis("NE\nONE\n");
     strcpy(mult1_value, "ONE");
     set_this_qso("");   // NOTE: mult1_value is not part of qso_t
@@ -351,7 +351,7 @@ void test_serial_section_mult(void **state) {
 }
 
 void test_dx_arrlsections(void **state) {
-    dx_arrlsections = 1;
+    dx_arrlsections = true;
     countrynr = w_cty;
     setup_multis("NE\nONE\n");
     strcpy(mult1_value, "ONE");
@@ -392,7 +392,7 @@ void test_arrlss_2(void **state) {
 }
 
 void test_wysiwyg_once_2(void **state) {
-    wysiwyg_once = 1;
+    wysiwyg_once = true;
     strcpy(lan_logline, logline_2);
     addmult_lan();
     assert_true(new_mult >= 0);
@@ -402,7 +402,7 @@ void test_wysiwyg_once_2(void **state) {
 
 
 void test_wysiwyg_multi_2(void **state) {
-    wysiwyg_multi = 1;
+    wysiwyg_multi = true;
     strcpy(lan_logline, logline_2);
     addmult_lan();
     assert_true(new_mult >= 0);

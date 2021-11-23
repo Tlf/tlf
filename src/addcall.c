@@ -144,10 +144,10 @@ int addcall(struct qso_t *qso) {
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	add_ok = false;
 
-    if (country_mult == 1 && iscontest)
+    if (country_mult && iscontest)
 	add_ok = true;
 
-    if ((dx_arrlsections == 1)
+    if ((dx_arrlsections)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	add_ok = false;
 
@@ -253,7 +253,7 @@ int addcall2(void) {
     /* 	     if ((arrldx_usa ==1) && ((cty == w_cty) || (cty == ve_cty)))
      	     	add_ok = 0;
     */
-    if ((country_mult == 1) && iscontest)
+    if (country_mult && iscontest)
 	add_ok = true;
 
     if (CONTEST_IS(PACC_PA))
@@ -314,7 +314,7 @@ int addcall2(void) {
 	    }
 	}
     }
-    if (CONTEST_IS(WPX) || pfxmult == 1 || pfxmultab == 1) {
+    if (CONTEST_IS(WPX) || pfxmult || pfxmultab) {
 
 	if (lan_logline[68] != ' ') {
 

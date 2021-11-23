@@ -68,13 +68,13 @@ contest_config_t *contest;	/* contest configuration */
 
 
 int addcallarea;
-int pfxmult = 0;
-int pfxmultab = 0;
-int exc_cont = 0;
+bool pfxmult = false;
+bool pfxmultab = false;
+bool exc_cont = false;
 int manise80;
 int ssbpoints;
 int cwpoints;
-int lowband_point_mult = 0;
+bool lowband_point_mult = false;
 int sc_sidetone;
 char sc_volume[4] = "";
 /* LZ3NY mods */
@@ -93,16 +93,16 @@ bool mult_side = false;
 
 bool portable_x2 = false;
 int recall_mult = 0;
-int wysiwyg_once = 0;
-int wysiwyg_multi = 0;
-int country_mult = 0;
+bool wysiwyg_once = false;
+bool wysiwyg_multi = false;
+bool country_mult = false;
 float fixedmult = 0.0;
-int sectn_mult = 0;
-int sectn_mult_once = 0;
-int dx_arrlsections = 0;
-int serial_section_mult = 0;
-int serial_or_section = 0;	/* exchange is serial OR section, like HA-DX */
-int serial_grid4_mult = 0;
+bool sectn_mult = false;
+bool sectn_mult_once = false;
+bool dx_arrlsections = false;
+bool serial_section_mult = false;
+bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
+bool serial_grid4_mult = false;
 bool qso_once = false;
 int addcallarea_once = 0;
 int noleadingzeros;
@@ -114,7 +114,7 @@ int noautocq = 0;
 int emptydir = 0;
 bool verbose = false;
 int no_rst = 0;			/* 1 - do not use RS/RST */
-int sprint_mode = 0;
+bool sprint_mode = false;
 int qtc_recv_lazy = 0;
 
 int pacc_qsos[10][10];
@@ -361,7 +361,7 @@ struct tm *time_ptr;
 
 freq_t freq;
 freq_t mem;
-int logfrequency = 0;
+bool logfrequency = false;
 int rit;
 bool trx_control = false;
 int showfreq = 0;
@@ -388,8 +388,8 @@ char hiscountry[40];
 int this_second;
 int stop_backgrnd_process = 1;	/* dont start until we know what we are doing */
 
-int wazmult = 0;		/* to add the ability of WAZ zones to be multiplier */
-int itumult = 0;		/* to add the ability of ITU zones to be multiplier */
+bool wazmult = false;		/* to add the ability of WAZ zones to be multiplier */
+bool itumult = false;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
 
 bool nopacket = false;		/* set if tlf is called with '-n' */

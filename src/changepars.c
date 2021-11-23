@@ -773,8 +773,8 @@ void multiplierinfo(void) {
 	}
     }
 
-    if (serial_section_mult == 1 || sectn_mult_once
-	    || (sectn_mult == 1 && !CONTEST_IS(ARRL_SS))) {
+    if (serial_section_mult || sectn_mult_once
+	    || (sectn_mult && !CONTEST_IS(ARRL_SS))) {
 	char *tmp;
 	int worked_at;
 

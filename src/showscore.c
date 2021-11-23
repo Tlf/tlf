@@ -170,10 +170,10 @@ int get_nr_of_mults() {
 	} else {
 	    return 1;
 	}
-    } else if (dx_arrlsections == 1) {
+    } else if (dx_arrlsections) {
 
 	return totalmults + totalcountries;
-    } else if (country_mult == 1) {
+    } else if (country_mult) {
 
 	return totalcountries;
     } else if (multlist == 1 && !CONTEST_IS(ARRL_SS)) {
@@ -182,25 +182,25 @@ int get_nr_of_mults() {
     } else if (CONTEST_IS(PACC_PA)) {
 
 	return totalcountries;
-    } else if ((wysiwyg_once == 1)
-	       || (sectn_mult_once == 1)
+    } else if ((wysiwyg_once)
+	       || sectn_mult_once
 	       || (unique_call_multi == UNIQUECALL_ALL)) {
 
 	return nr_multis;
-    } else if ((wysiwyg_multi == 1)
+    } else if (wysiwyg_multi
 	       || (unique_call_multi == UNIQUECALL_BAND)
-	       || (serial_section_mult == 1)
-	       || (serial_grid4_mult == 1)
-	       || (sectn_mult == 1)) {
+	       || serial_section_mult
+	       || serial_grid4_mult
+	       || sectn_mult) {
 
 	return totalmults;
-    } else if (CONTEST_IS(WPX) || pfxmult == 1) {
+    } else if (CONTEST_IS(WPX) || pfxmult) {
 
 	return GetNrOfPfx_once();
-    } else if (pfxmultab == 1) {
+    } else if (pfxmultab) {
 
 	return GetNrOfPfx_multiband();
-    } else if ((itumult == 1) || (wazmult == 1)) {
+    } else if (itumult || wazmult) {
 	return totalzones;
     } else
 	/* should never reach that point
@@ -246,10 +246,10 @@ void showscore(void) {
     }
 
     /* show score per band */
-    if ((wysiwyg_multi == 1)
-	    || (serial_section_mult == 1)
-	    || (serial_grid4_mult == 1)
-	    || (sectn_mult == 1)) {
+    if (wysiwyg_multi
+	    || serial_section_mult
+	    || serial_grid4_mult
+	    || sectn_mult) {
 
 	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
@@ -257,7 +257,7 @@ void showscore(void) {
 	}
     }
 
-    if ((itumult == 1) || (wazmult == 1)) {
+    if (itumult || wazmult) {
 
 	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
@@ -265,14 +265,14 @@ void showscore(void) {
 	}
     }
 
-    if (pfxmultab == 1) {
+    if (pfxmultab) {
 	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
 	}
     }
 
-    if (dx_arrlsections == 1) {
+    if (dx_arrlsections) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -306,7 +306,7 @@ void showscore(void) {
 	}
     }
 
-    if (iscontest && country_mult == 1) {
+    if (iscontest && country_mult) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {

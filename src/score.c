@@ -116,7 +116,7 @@ bool is_in_continentlist(char *continent) {
  * at the moment only LOWBAND_DOUBLES (<30m) can be active */
 int apply_bandweight(int points) {
 
-    if (lowband_point_mult != 0 && (bandinx < BANDINDEX_30))
+    if (lowband_point_mult && (bandinx < BANDINDEX_30))
 	points *= 2;
 
     points *= bandweight_points[bandinx];

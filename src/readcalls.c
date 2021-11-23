@@ -112,14 +112,14 @@ char *get_multi_from_line(char *logline) {
 	else
 	    g_strlcpy(multbuffer, logline + 63, 4);
 
-    } else if ((serial_section_mult == 1)
-	       || (sectn_mult == 1)
-	       || (sectn_mult_once == 1)) {
+    } else if (serial_section_mult
+	       || sectn_mult
+	       || sectn_mult_once) {
 
 	g_strlcpy(multbuffer, logline + 68, MAX_SECTION_LENGTH + 1);
 	g_strchomp(multbuffer);
 
-    } else if (serial_grid4_mult == 1) {
+    } else if (serial_grid4_mult) {
 
 	g_strlcpy(multbuffer, logline + 59, 5);
 
@@ -227,20 +227,19 @@ int readcalls(const char *logfile) {
 	    // get points
 	    total = total + log_get_points(inputbuffer);
 
-	    if (CONTEST_IS(CQWW) || (itumult == 1) || (wazmult == 1)) {
+	    if (CONTEST_IS(CQWW) || itumult || wazmult) {
 		// get the zone
 		z = zone_nr(inputbuffer + 54);
 	    }
 
-	    if (wysiwyg_once == 1 ||
-		    wysiwyg_multi == 1 ||
+	    if (wysiwyg_once || wysiwyg_multi ||
 		    unique_call_multi != 0 ||
 		    CONTEST_IS(ARRL_SS) ||
-		    serial_section_mult == 1 ||
-		    serial_grid4_mult == 1 ||
-		    sectn_mult == 1 ||
-		    sectn_mult_once == 1 ||
-		    ((dx_arrlsections == 1)
+		    serial_section_mult ||
+		    serial_grid4_mult ||
+		    sectn_mult ||
+		    sectn_mult_once ||
+		    (dx_arrlsections
 		     && ((countrynr == w_cty) || (countrynr == ve_cty)))) {
 		// get multi info
 		char *multbuffer = get_multi_from_line(inputbuffer);
@@ -250,7 +249,7 @@ int readcalls(const char *logfile) {
 	}
 
 
-	if (pfxmultab == 1) {
+	if (pfxmultab) {
 	    getpx(qso->call);
 	    add_pfx(wpx_prefix, bandindex);
 	}
@@ -295,7 +294,7 @@ int readcalls(const char *logfile) {
 
 	    qsos_per_band[bandindex]++;
 
-	    if (CONTEST_IS(CQWW) || (itumult == 1) || (wazmult == 1))
+	    if (CONTEST_IS(CQWW) || itumult || wazmult)
 		zones[z] |= inxes[bandindex];
 
 	    if (pfxnumcntidx < 0) {
@@ -313,7 +312,7 @@ int readcalls(const char *logfile) {
     fclose(fp);
 
     /* all lines red, now build other statistics */
-    if (CONTEST_IS(WPX) || pfxmult == 1) {
+    if (CONTEST_IS(WPX) || pfxmult) {
 	char checkcall[20];
 
 	/* build prefixes_worked array from list of worked stations */
@@ -333,7 +332,7 @@ int readcalls(const char *logfile) {
 	}
     }
 
-    if (CONTEST_IS(CQWW) || (itumult == 1) || (wazmult == 1)) {
+    if (CONTEST_IS(CQWW) || itumult || wazmult) {
 	for (int n = 1; n < MAX_ZONES; n++) {
 	    count_contest_bands(zones[n], zonescore);
 	}
@@ -345,7 +344,7 @@ int readcalls(const char *logfile) {
 	}
     }
 
-    if (dx_arrlsections == 1) {
+    if (dx_arrlsections) {
 	for (int cntr = 1; cntr < MAX_DATALINES; cntr++) {
 	    if (cntr != w_cty && cntr != ve_cty) {	// W and VE don't count here...
 		count_contest_bands(countries[cntr], countryscore);
@@ -367,7 +366,7 @@ int readcalls(const char *logfile) {
 	}
     }
 
-    if (country_mult == 1 || pfxnummultinr > 0) {
+    if (country_mult || pfxnummultinr > 0) {
 
 	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
 

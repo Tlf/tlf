@@ -156,7 +156,7 @@ void displayCallInfo(dxcc_data *dx, char *pxstr) {
 	}
     }
 
-    if (CONTEST_IS(WPX) || pfxmult == 1) {
+    if (CONTEST_IS(WPX) || pfxmult) {
 	int i = strlen(dx->countryname);
 	mvwaddstr(search_win, nr_bands + 1, 2 + i + 3, pxstr);
     }
@@ -559,7 +559,7 @@ void displayWorkedZonesCountries(int z) {
 	    }
 	}
     }
-    if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
+    if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	if ((zones[z] & BAND10) != 0) {
 	    mvwaddstr(search_win, 1, 37, "Z");
 	}
