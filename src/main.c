@@ -107,7 +107,6 @@ int addcallarea;
 bool pfxmult = false;
 bool pfxmultab = false;
 bool exc_cont = false;
-int manise80;
 int ssbpoints;
 int cwpoints;
 bool lowband_point_mult = false;
@@ -139,7 +138,6 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-int addcallarea_once = 0;
 int noleadingzeros;
 int ctcomp = 0;
 int nob4 = 0;			// allow auto b4
@@ -278,7 +276,6 @@ int countrynr;
 int total = 0; 		/**< total number of qso points */
 int qso_points;		/**< number of points for last qso */
 int qsos_per_band[NBANDS];
-int callfound = 0;
 int partials = 0;	/**< show partial calls */
 int use_part = 0;	/**< if 1 use automatically found partial call */
 int block_part = 0; 	/**< if 1 block the call autocompletion
