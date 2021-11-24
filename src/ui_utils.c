@@ -59,7 +59,7 @@ void refreshp() {
 /** add A_BOLD to attributes if 'use_rxvt' is not set */
 int modify_attr(int attr) {
 
-    if (use_rxvt == 0)
+    if (!use_rxvt)
 	attr |= A_BOLD;
 
     return attr;

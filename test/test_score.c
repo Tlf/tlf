@@ -62,7 +62,7 @@ int setup_default(void **state) {
 
     setcontest("qso");
 
-    pfxmult = 0;
+    pfxmult = false;
     dupe = 0;
 
     my_country_points = -1;
@@ -79,7 +79,7 @@ int setup_default(void **state) {
 
     strcpy(my.continent, "EU");
 
-    lowband_point_mult = 0;
+    lowband_point_mult = false;
     portable_x2 = false;
 
     return 0;
@@ -108,7 +108,7 @@ int teardown_default(void **state) {
 
 void test_wpx(void **state) {
     setcontest("wpx");
-    pfxmult = 0;
+    pfxmult = false;
 
     /* same country */
     countrynr = my.countrynr;
@@ -214,7 +214,7 @@ void test_ssbcw(void **state) {
     trxmode = SSBMODE;
     check_points(3);
 
-    lowband_point_mult = 1;
+    lowband_point_mult = true;
     bandinx = BANDINDEX_30;
     check_points(3);
     bandinx = BANDINDEX_40;

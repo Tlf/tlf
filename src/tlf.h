@@ -50,8 +50,6 @@ enum {
 #define SHORTCW 1       /*  short  cw characters in  exchange  (e.g. 0 = T,  9 = N) */
 #define LONGCW 0
 
-#define SEARCHWINDOW 1  /* searchflg on */
-
 typedef enum {
     CQ,         // Run
     S_P,        // Search and Pounce
@@ -60,7 +58,6 @@ typedef enum {
     NONE        // used in trx_memory to signal empty memory
 } cqmode_t;
 
-#define SEND_DE 1		/* de_mode on */
 
 #define FILTER_ANN 1	/*  filter announcements */
 #define FILTER_DX 3

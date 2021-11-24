@@ -151,14 +151,14 @@ void addmult_lan(void) {
     }
 
     // --------------------wysiwyg----------------
-    if (wysiwyg_once == 1) {
+    if (wysiwyg_once) {
 	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 
 	new_mult = remember_multi(stripped_comment, bandinx, ALL_BAND);
     }
 
-    if (wysiwyg_multi == 1) {
+    if (wysiwyg_multi) {
 	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 

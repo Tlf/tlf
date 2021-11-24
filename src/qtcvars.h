@@ -99,7 +99,7 @@ extern int qtc_ry_capture;		// enable or disable QTC RTTY capturing
 extern int qtc_ry_copied;		// stores the number of copied lines i
 					// from QTC RTTY terminal to QTC window
 
-extern int qtcrec_record;		// do we record the received QTCs
+extern bool qtcrec_record;		// do we record the received QTCs
 extern char qtcrec_record_command[2][50]; 	// command to start recording
 extern char qtcrec_record_command_shutdown[50]; // coomand to stop recording
 
@@ -111,7 +111,7 @@ extern char qtc_phrecv_message[14][80];
 extern char qtc_phsend_message[14][80];
 
 extern char qtc_cap_calls[40];
-extern int qtc_auto_filltime;		// set QTC auto filltime; when DX sent first
+extern bool qtc_auto_filltime;		// set QTC auto filltime; when DX sent first
 					// QTC line, the first two digits will be copied to others
-extern int qtc_recv_lazy;		// ignore check of received QTC lines
+extern bool qtc_recv_lazy;		// ignore check of received QTC lines
 #endif /* end of include guard: QTCVARS_H */

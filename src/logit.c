@@ -89,7 +89,7 @@ void logit(void) {
 	if (qrg_out == 0) {		/* no frequency entered? */
 
 	    if ((trxmode == CWMODE || trxmode == DIGIMODE)
-		    && (callreturn == '\n') && ctcomp == 1) {
+		    && (callreturn == '\n') && ctcomp) {
 		callreturn = BACKSLASH;
 		strcpy(comment, cqzone);
 	    }
@@ -114,10 +114,10 @@ void logit(void) {
 
 		    set_simulator_state(FINAL);
 
-		    if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
+		    if (CONTEST_IS(CQWW) || wazmult || itumult) {
 
 			if (recall_exchange() == -1) {
-			    if (itumult == 1)
+			    if (itumult)
 				strcpy(comment, itustr);	/* fill in the ITUzone */
 			    else
 				strcpy(comment, cqzone);	/* fill in the CQzone */

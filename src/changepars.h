@@ -21,7 +21,6 @@
 #ifndef CHANGEPARS_H
 #define CHANGEPARS_H
 
-#define RITCLEAR 1
 
 int changepars(void);
 void networkinfo(void);

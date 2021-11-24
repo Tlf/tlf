@@ -123,14 +123,14 @@ int setup_default(void **state) {
     iscontest = false;
 
     search_win = NULL;
-    searchflg = SEARCHWINDOW;
+    searchflg = true;
     trxmode = CWMODE;
     mixedmode = 0;
 
     callmaster_filename = NULL;
 
-    partials = 1;
-    use_part = 0;
+    partials = true;
+    use_part = false;
 
     clear_mvprintw_history();
 
@@ -282,7 +282,7 @@ void test_bandstr2line(void **state) {
 
 /* testing pickup call suggestion for USEPARTIAL */
 void test_UsePartialFromLog(void **state) {
-    use_part = 1;
+    use_part = true;
     strcpy(hiscall, "K4DE");
     filterLog();
     handlePartials();
@@ -290,7 +290,7 @@ void test_UsePartialFromLog(void **state) {
 }
 
 void test_UsePartialFromLogNotUnique(void **state) {
-    use_part = 1;
+    use_part = true;
     strcpy(hiscall, "UA");
     filterLog();
     handlePartials();
@@ -300,7 +300,7 @@ void test_UsePartialFromLogNotUnique(void **state) {
 void test_UsePartialFromCallmaster(void **state) {
     write_callmaster("callmaster", "# data\nA1AA\nA2BB\n\n");
     load_callmaster();
-    use_part = 1;
+    use_part = true;
     strcpy(hiscall, "A1");
     filterLog();
     handlePartials();
@@ -310,7 +310,7 @@ void test_UsePartialFromCallmaster(void **state) {
 void test_UsePartialNotUnique(void **state) {
     write_callmaster("callmaster", "# data\nA1AA\nLA3AA\nA3BB\n");
     load_callmaster();
-    use_part = 1;
+    use_part = true;
     strcpy(hiscall, "A3");
     filterLog();
     handlePartials();
@@ -321,7 +321,7 @@ void test_UsePartialNotUnique_only_callmaster(void **state) {
     // 2 matches for HG
     write_callmaster("callmaster", "# data\nA1AA\nA2HG\nHG3BB\n");
     load_callmaster();
-    use_part = 1;
+    use_part = true;
     strcpy(hiscall, "HG");  // not in log yet
     filterLog();
     handlePartials();
