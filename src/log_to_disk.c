@@ -61,12 +61,6 @@ void restart_band_timer(void) {
     }
 }
 
-/* score QSO and add to total points */
-void score_qso(void) {
-    qso_points = score();		/* update qso's per band and score */
-    total = total + qso_points;
-}
-
 /** \brief logs one record to disk
  * Logs one record to disk which may come from different sources
  * (direct from tlf or from other instance via LAN)

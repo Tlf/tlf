@@ -57,7 +57,7 @@ void addmult(struct qso_t *qso) {
 
 	idx = get_exact_mult_index(mult1_value);
 	if (idx >= 0) {
-	    remember_multi(get_mult(idx), bandinx, ALL_BAND);
+	    remember_multi(get_mult(idx), qso->bandindex, ALL_BAND);
 	    // NOTE: return value not used, new mult is not marked in log
 	}
     }
@@ -69,7 +69,7 @@ void addmult(struct qso_t *qso) {
 	idx = get_exact_mult_index(mult1_value);
 	if (idx >= 0) {
 	    new_mult =
-		remember_multi(get_mult(idx), bandinx, PER_BAND);
+		remember_multi(get_mult(idx), qso->bandindex, PER_BAND);
 	}
     }
 
@@ -80,7 +80,7 @@ void addmult(struct qso_t *qso) {
 	idx = get_exact_mult_index(mult1_value);
 	if (idx >= 0) {
 	    new_mult =
-		remember_multi(get_mult(idx), bandinx, ALL_BAND);
+		remember_multi(get_mult(idx), qso->bandindex, ALL_BAND);
 	}
     }
 
@@ -90,31 +90,31 @@ void addmult(struct qso_t *qso) {
 	idx = get_exact_mult_index(mult1_value);
 	if (idx >= 0) {
 	    new_mult =
-		remember_multi(get_mult(idx), bandinx, PER_BAND);
+		remember_multi(get_mult(idx), qso->bandindex, PER_BAND);
 	}
     }
 
     // --------------------wysiwyg----------------
     else if (wysiwyg_once) {
-	new_mult = remember_multi(stripped_comment, bandinx, ALL_BAND);
+	new_mult = remember_multi(stripped_comment, qso->bandindex, ALL_BAND);
     }
 
     else if (wysiwyg_multi) {
-	new_mult = remember_multi(stripped_comment, bandinx, PER_BAND);
+	new_mult = remember_multi(stripped_comment, qso->bandindex, PER_BAND);
     }
 
     else if (serial_grid4_mult) {
 	section[4] = '\0';
-	new_mult = remember_multi(section, bandinx, PER_BAND);
+	new_mult = remember_multi(section, qso->bandindex, PER_BAND);
     }
 
     /* -------------- unique call multi -------------- */
     else if (unique_call_multi == UNIQUECALL_ALL) {
-	new_mult = remember_multi(qso->call, bandinx, ALL_BAND);
+	new_mult = remember_multi(qso->call, qso->bandindex, ALL_BAND);
     }
 
     else if (unique_call_multi == UNIQUECALL_BAND) {
-	new_mult = remember_multi(qso->call, bandinx, PER_BAND);
+	new_mult = remember_multi(qso->call, qso->bandindex, PER_BAND);
     }
 
     free(stripped_comment);

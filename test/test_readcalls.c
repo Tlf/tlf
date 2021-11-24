@@ -10,6 +10,7 @@
 #include "../src/get_time.h"
 #include "../src/readcalls.h"
 #include "../src/setcontest.h"
+#include "../src/showscore.h"
 
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/addcall.o
@@ -18,6 +19,7 @@
 // OBJECT ../src/bands.o
 // OBJECT ../src/dxcc.o
 // OBJECT ../src/getctydata.o
+// OBJECT ../src/getexchange.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/locator2longlat.o
@@ -25,15 +27,40 @@
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
+// OBJECT ../src/showscore.o
 // OBJECT ../src/utils.o
 // OBJECT ../src/zone_nr.o
 
-char section[8] = "";       // defined in getexchange.c
+bool lan_active = false;
 
 // dummy functions
 void readqtccalls() {}
 void shownr(char *msg, int x) {}
-void spaces(int n) {} /* needs more care */
+const char *spaces(int n) { return "";} /* needs more care */
+void OnLowerSearchPanel(int x, char *str) {}
+int recall_exchange() { return -1; }
+void refresh_comment() {}
+void time_update() {}
+void show_rtty() {}
+void keyer() {}
+void send_standard_message(int msg) {}
+void stoptx() {}
+void qtc_main_panel(int direction) {}
+void addspot() {}
+void sendmessage(const char *msg) {}
+void printcall(const char *msg) {}
+unsigned int  GetCWSpeed() { return 10; }
+int speedup() { return 12; }
+int speeddown() { return 8; }
+void rst_recv_up() {}
+void rst_recv_down() {}
+void play_file(char *audiofile) {}
+int send_lan_message(int opcode, char *message) { return 0; }
+
+int last10() { return 0; }
+void foc_show_scoring(int start_column) {}
+int foc_total_score() { return 0; }
+
 
 int qrb(double a, double b, double c, double d) {
     return 1;
@@ -48,9 +75,6 @@ contest_config_t config_focm;
 int pacc_pa(void) {
     return 0;
 }
-
-/* private prototypes */
-bool check_veto();
 
 #define QSO1 " 40SSB 12-Jan-18 16:34 0006  PY9BBB         599  599  15                    10         \n"
 
@@ -89,6 +113,8 @@ int setup_default(void **state) {
     pfxnummulti[1].countrynr = 42;
     pfxnummultinr = 2;
 
+    strcpy(my.continent, "EU");
+
     return 0;
 }
 
@@ -118,6 +144,8 @@ void test_add_to_worked(void **state) {
     assert_string_equal(worked[0].exchange, "15");
     time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT);
     assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_40], ts);
+    assert_int_equal(get_nr_of_points(), 3);
+    assert_int_equal(get_nr_of_mults(), 2);
 }
 
 void test_add_to_worked_continentlistonly(void **state) {
@@ -125,5 +153,8 @@ void test_add_to_worked_continentlistonly(void **state) {
     write_log(LOGFILE);
     readcalls(LOGFILE);
     assert_int_equal(nr_worked, 1);
+    assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
+    assert_int_equal(get_nr_of_points(), 3);    // normal CQWW scoring
+    assert_int_equal(get_nr_of_mults(), 0);     // but no mult due to continent list
 }

@@ -359,6 +359,11 @@ int score() {
     return scoreDefault();
 }
 
+/* score QSO and add to total points */
+void score_qso(void) {
+    qso_points = score();		/* update qso's per band and score */
+    total = total + qso_points;
+}
 
 /* -----------------------------------------------------------------*/
 int score2(char *line) {

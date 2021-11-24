@@ -124,6 +124,9 @@ int addcall(struct qso_t *qso) {
     int pfxnumcntidx = -1;
     int pxnr = 0;
 
+    new_cty = 0;
+    new_zone = 0;
+
     excl_add_veto = 0;
 
     int station = lookup_or_add_worked(qso->call);
@@ -171,8 +174,6 @@ int addcall(struct qso_t *qso) {
     excl_add_veto |= check_veto(cty);
     if (excl_add_veto) {
 	add_ok = false;
-	new_cty = 0;
-	new_zone = 0;
 	addcallarea = 0;
     }
 
@@ -207,7 +208,7 @@ int addcall(struct qso_t *qso) {
 	}
     }
 
-    addmult(current_qso);       /* for wysiwyg */
+    addmult(qso);           /* for wysiwyg */
 
     return cty;
 }

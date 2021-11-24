@@ -989,12 +989,13 @@ int main(int argc, char *argv[]) {
     lan_init();
     keyer_init();
 
+    show_station_info();
+
     nr_qsos = readcalls(logfile);   /* read the logfile and rebuild
 				       point and multiplier scoring */
 
     scroll_log();		/* show the last 5  log lines and
 				   set the next serial number */
-    show_station_info();
     clearmsg_wait();
 
     packet_init();
