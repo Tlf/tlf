@@ -238,7 +238,7 @@ void draw_qtc_panel(int direction) {
 		show_rtty_lines();
 	    }
 	} else {
-	    if (qtcrec_record == 1) {
+	    if (qtcrec_record) {
 		mvwaddstr(qtcwin, 2, 11, "RECORD OFF  ");
 	    }
 	}
@@ -257,14 +257,14 @@ void start_qtc_recording() {
     char reccommand[100] = "";
     char tempc[40];
 
-    if (record_run < 0 && qtcrec_record == 1
+    if (record_run < 0 && qtcrec_record
 	    && strlen((char *)qtcrec_record_command) > 0) {
 	strcpy(reccommand, qtcrec_record_command[0]);
 	format_time(tempc, sizeof(tempc), "%y%m%d%H%M%S.wav");
 	strcat(reccommand, tempc);
 	strcat(reccommand, qtcrec_record_command[1]);
 	record_run = system(reccommand);
-	if (record_run > -1 && qtcrec_record == 1) {
+	if (record_run > -1 && qtcrec_record) {
 	    mvwaddstr(qtcwin, 2, 11, "RECORD ON   ");
 	}
     }
@@ -274,12 +274,12 @@ void start_qtc_recording() {
 void stop_qtc_recording() {
     char reccommand[100] = "";
 
-    if (qtcrec_record == 1 && strlen((char *)qtcrec_record_command_shutdown) > 0) {
+    if (qtcrec_record && strlen((char *)qtcrec_record_command_shutdown) > 0) {
 	strcpy(reccommand, "pkill -SIGINT -n ");
 	strcat(reccommand, qtcrec_record_command_shutdown);
 	IGNORE(system(reccommand));;
 	record_run = -1;
-	if (qtcrec_record == 1) {
+	if (qtcrec_record) {
 	    mvwaddstr(qtcwin, 2, 11, "RECORD OFF  ");
 	}
     }
@@ -603,10 +603,9 @@ void qtc_main_panel(int direction) {
 				strlen(qtcreclist.qtclines[currqtc].time) == 4 &&
 				strlen(qtcreclist.qtclines[currqtc].callsign) > 0 &&
 				strlen(qtcreclist.qtclines[currqtc].serial) > 0)
-				||
-				qtc_recv_lazy == 1
+				|| qtc_recv_lazy
 			   ) {
-			    if (qtc_recv_lazy == 1) {
+			    if (qtc_recv_lazy) {
 				fill_lazy_line(&qtcreclist.qtclines[currqtc]);
 				showfield(3 * (currqtc + 1));
 				showfield((3 * (currqtc + 1)) + 1);
@@ -1303,7 +1302,7 @@ void modify_field(int pressed) {
 	    switch (stridx) {
 		case 0:
 		    strcpy(qtcreclist.qtclines[qtcrow].time, fieldval);
-		    if (qtc_auto_filltime == 1) {
+		    if (qtc_auto_filltime) {
 			fill_qtc_times(fieldval);
 		    }
 		    break;

@@ -335,7 +335,7 @@ void extractData(int index) {
 
     g_strlcpy(result[index], searchresult[index], 7);    /* band + mode */
 
-    if (show_time == 1) // show qso time
+    if (show_time) 	// show qso time
 	strncat(result[index], searchresult[index] + 17, 5);
     else                // show qso number
 	strncat(result[index], searchresult[index] + 22, 5);
@@ -673,7 +673,7 @@ void searchlog() {
     }
 
     /* show checkwindow and partials */
-    if (strlen(hiscall) > 1 && searchflg == SEARCHWINDOW) {
+    if (strlen(hiscall) > 1 && searchflg) {
 
 	ShowSearchPanel();
 	drawSearchWin();
@@ -692,7 +692,7 @@ void searchlog() {
 	refreshp();
 
 
-	if (partials == 1) {
+	if (partials) {
 	    handlePartials();
 	}
 

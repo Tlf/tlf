@@ -135,7 +135,7 @@ void prepare_fixed_part(void) {
 	    strcat(logline4, qsonrstr);
     }
 
-    if (lan_active && cqwwm2 == 1) {
+    if (lan_active && cqwwm2) {
 	logline4[27] = thisnode;	// set node ID...
 	logline4[28] = '\0';
 	strcat(logline4, " ");

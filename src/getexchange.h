@@ -21,7 +21,7 @@
 #ifndef GETEXCHANGE_H
 #define GETEXCHANGE_H
 
-extern int call_update;
+extern bool call_update;
 
 void checkexchange(char *comment, bool interactive);
 char *getgrid(char *comment);

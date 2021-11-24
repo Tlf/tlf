@@ -202,7 +202,7 @@ int getexchange(void) {
 
 	    /* '+', send TU and log in CT mode */
 	    case '+': {
-		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
+		if (ctcomp && (strlen(hiscall) > 2)) {
 		    if (comment[0] == '\0') {
 			x = -1;
 		    } else {
@@ -218,7 +218,7 @@ int getexchange(void) {
 
 	    /* <Insert>, send exchange in CT mode */
 	    case KEY_IC: {
-		if (ctcomp != 0) {
+		if (ctcomp) {
 		    /* F3 (RST macro) */
 		    send_standard_message(2);
 
@@ -306,7 +306,7 @@ int getexchange(void) {
 	    case KEY_ENTER: {
 		/* log QSO immediately if CT compatible
 		 * or not in contest */
-		if ((ctcomp == 1) || (!iscontest)) {
+		if ((ctcomp) || (!iscontest)) {
 		    /* Don't log if exchange field is empty. */
 		    if (comment[0] == '\0') {
 			x = -1;
@@ -475,7 +475,7 @@ int getexchange(void) {
 /* ------------------------------------------------------------------------ */
 
 char section[MAX_SECTION_LENGTH + 1] = "";
-int call_update = 0;
+bool call_update = false;
 
 /* ------------------------------------------------------------------------ */
 

@@ -89,7 +89,7 @@ void logit(void) {
 	if (qrg_out == 0) {		/* no frequency entered? */
 
 	    if ((trxmode == CWMODE || trxmode == DIGIMODE)
-		    && (callreturn == '\n') && ctcomp == 1) {
+		    && (callreturn == '\n') && ctcomp) {
 		callreturn = BACKSLASH;
 		strcpy(comment, cqzone);
 	    }

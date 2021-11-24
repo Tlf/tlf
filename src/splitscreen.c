@@ -108,7 +108,7 @@ void addlog(char *s) {
 	    strncat(lastmsg, spot_ptr[nr_of_spots], 82);
 	}
 
-	if (clusterlog == 1) {
+	if (clusterlog) {
 	    if ((fp = fopen("clusterlog", "a")) == NULL) {
 		TLF_LOG_INFO("Opening clusterlog not possible.");
 	    } else {

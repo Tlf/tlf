@@ -57,7 +57,7 @@ void broadcast_lan(void) {
 	frcounter = 0;
 	if (lan_active) {
 	    send_freq(freq);
-	    if (time_master == 1)
+	    if (time_master)
 		send_time();
 	}
     }

@@ -133,7 +133,7 @@ void *background_process(void *ptr) {
 		}
 	    }
 
-	    if (landebug == 1 && strlen(lan_message) > 2) {
+	    if (landebug && strlen(lan_message) > 2) {
 		if ((fp = fopen("debuglog", "a")) == NULL) {
 		    printf("store_qso.c: Error opening debug file.\n");
 		} else {

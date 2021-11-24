@@ -319,8 +319,8 @@ void setcontest(char *name) {
     char ua9call[] = "UA9AA";
 
     iscontest = true;
-    showscore_flag = 1;
-    searchflg = 1;
+    showscore_flag = true;
+    searchflg = true;
     sectn_mult = false;
     noleadingzeros = 0;
 
@@ -363,6 +363,6 @@ void setcontest(char *name) {
 
     if (CONTEST_IS(QSO)) {
 	iscontest = false;
-	showscore_flag = 0;
+	showscore_flag = false;
     }
 }

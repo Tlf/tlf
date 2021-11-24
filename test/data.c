@@ -37,7 +37,7 @@ char pr_hostaddress[48] = "111.222.111.222";
 char *config_file = NULL;
 int portnum = 0;
 
-int use_rxvt = 0;
+bool use_rxvt = false;
 int use_xterm = 0;
 int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
     {COLOR_GREEN, COLOR_YELLOW},
@@ -55,9 +55,9 @@ char *editor_cmd = NULL;
 char rttyoutput[120];
 int tune_val = 0;
 int use_bandoutput = 0;
-int no_arrows = 0;
+bool no_arrows = false;
 int bandindexarray[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-int cqwwm2 = 0;
+bool cqwwm2 = false;
 
 int cwkeyer = NO_KEYER;
 int digikeyer = NO_KEYER;
@@ -74,7 +74,7 @@ bool exc_cont = false;
 int ssbpoints;
 int cwpoints;
 bool lowband_point_mult = false;
-int sc_sidetone;
+bool sc_sidetone;
 char sc_volume[4] = "";
 /* LZ3NY mods */
 int my_country_points = -1;
@@ -104,16 +104,14 @@ bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
 int noleadingzeros;
-int ctcomp = 0;
+bool ctcomp = false;
 int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
-int nob4 = 0;			// allow auto b4
+bool nob4 = false;			// allow auto b4
 bool ignoredupe = false;
-int noautocq = 0;
-int emptydir = 0;
+bool noautocq = false;
 bool verbose = false;
-int no_rst = 0;			/* 1 - do not use RS/RST */
+bool no_rst = false;		/* do not use RS/RST */
 bool sprint_mode = false;
-int qtc_recv_lazy = 0;
 
 int pacc_qsos[10][10];
 int ve_cty;
@@ -146,13 +144,13 @@ char last_rst[4] = "599";       /* Report for last QSO */
 int mults_per_band = 1;		/* mults count per band */
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
 int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
-int clusterlog = 0;		/* clusterlog on/off */
-int searchflg = 0;		/* 1  = display search  window */
-int show_time = 0;
+bool clusterlog = false;		/* clusterlog on/off */
+bool searchflg = false;		/* display search  window */
+bool show_time = false;
 cqmode_t cqmode = CQ;
-int demode = 0;			/* 1 =  send DE  before s&p call  */
+bool demode = false;		/* send DE  before s&p call  */
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
-int showscore_flag = 0;		/* show  score window */
+bool showscore_flag = false;	/* show  score window */
 int change_rst = 0;
 char exchange[40];
 int defer_store = 0;
@@ -208,11 +206,12 @@ char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n"
 char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
 char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTCs
 char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTCs
-int qtcrec_record = 0;
+bool qtcrec_record = false;
 char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
 char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
 char qtc_cap_calls[40] = "";
-int qtc_auto_filltime = 0;
+bool qtc_auto_filltime = false;
+bool qtc_recv_lazy = false;
 
 int qtcdirection = 0;
 
@@ -250,8 +249,8 @@ int total = 0; 		/**< total number of qso points */
 int qso_points;
 int qsos_per_band[NBANDS];
 int dupe = 0;
-int partials = 0;	/**< show partial calls */
-int use_part = 0;	/**< if 1 use automatically found partial call */
+bool partials = false;	/**< show partial calls */
+bool use_part = false;	/**< if 1 use automatically found partial call */
 int block_part = 0; 	/**< if 1 block the call autocompletion
 			  for these QSO */
 char para_word[80] =
@@ -274,7 +273,7 @@ int cqdelay = 8;
 char wkeyerbuffer[400];
 int data_ready = 0;
 char keyer_device[10] = "";	// ttyS0, ttyS1, lp0-2
-int keyer_backspace = 0;
+bool keyer_backspace = false;
 int k_pin14;
 int k_ptt;
 char controllerport[80] = "/dev/ttyS0";
@@ -294,8 +293,8 @@ char rigconf[80];
 int in_packetclient;
 int tnc_serial_rate = 2400;
 char clusterlogin[80] = "";
-int bmautoadd = 0;
-int bmautograb = 0;
+bool bmautoadd = false;
+bool bmautograb = false;
 
 /*-------------------------------------rigctl-------------------------------*/
 #ifdef HAVE_LIBHAMLIB
@@ -359,7 +358,7 @@ struct tm *time_ptr;
 freq_t freq;
 freq_t mem;
 bool logfrequency = false;
-int rit;
+bool rit;
 bool trx_control = false;
 int showfreq = 0;
 freq_t bandfrequency[NBANDS] = {
