@@ -80,13 +80,21 @@ int pacc_pa(void) {
 
 #define LOGFILE "test.log"
 
+void append_log_line(char *logfile, char *line) {
+    FILE *fp = fopen(logfile, "a");
+    assert_non_null(fp);
+
+    fputs(line, fp);
+
+    fclose(fp);
+}
+
 void write_log(char *logfile) {
     FILE *fp = fopen(logfile, "w");
     assert_non_null(fp);
-
-    fputs(QSO1, fp);
-
     fclose(fp);
+
+    append_log_line(logfile, QSO1);
 }
 
 
@@ -138,6 +146,19 @@ void test_lookup_in_pfxnummult(void **state) {
 /* test readcalls */
 void test_add_to_worked(void **state) {
     write_log(LOGFILE);
+    readcalls(LOGFILE);
+    assert_int_equal(nr_worked, 1);
+    assert_string_equal(worked[0].call, "PY9BBB");
+    assert_string_equal(worked[0].exchange, "15");
+    time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT);
+    assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_40], ts);
+    assert_int_equal(get_nr_of_points(), 3);
+    assert_int_equal(get_nr_of_mults(), 2);
+}
+
+void test_add_to_worked_dupe(void **state) {
+    write_log(LOGFILE);
+    append_log_line(LOGFILE, QSO1);     // add same line again
     readcalls(LOGFILE);
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");

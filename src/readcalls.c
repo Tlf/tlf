@@ -202,9 +202,10 @@ int readcalls(const char *logfile) {
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);
 
-        checkexchange(qso->comment, false);
-        addcall(qso);
-        score_qso();
+	checkexchange(qso->comment, false);
+	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
+	addcall(qso);
+	score_qso();
 
 	free_qso(qso);
 	qso = NULL;
