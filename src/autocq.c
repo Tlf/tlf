@@ -91,13 +91,17 @@ int auto_cq(void) {
 	    mvprintw(12, 29, "Auto CQ  %-2d ", delayval - 1);
 	    refreshp();
 
-	    usleep(500000); // 500 ms
-	    time_update();
+	    // sleep 10 * 50 = 500ms unless a key is pressed
+	    for (int i = 0; i < 10 && key == NO_KEY; i++) {
+		usleep(50000); // 50 ms
 
-	    const int inchar = key_poll();
-	    if (inchar > 0 && inchar != KEY_RESIZE) {
-		key = inchar;
+		const int inchar = key_poll();
+		if (inchar > 0 && inchar != KEY_RESIZE) {
+		    key = inchar;
+		}
 	    }
+
+	    time_update();
 	}
 
 	mvaddstr(12, 29, spaces(13));
