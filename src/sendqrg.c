@@ -24,6 +24,7 @@
 
 #include "bands.h"
 #include "cw_utils.h"
+#include "err_utils.h"
 #include "sendqrg.h"
 #include "startmsg.h"
 #include "gettxinfo.h"
@@ -120,7 +121,7 @@ int init_tlf_rig(void) {
     retcode = rig_open(my_rig);
 
     if (retcode != RIG_OK) {
-	showmsg("rig_open: error ");
+	TLF_LOG_WARN("rig_open: %s", rigerror(retcode));
 	return -1;
     }
 
@@ -131,7 +132,7 @@ int init_tlf_rig(void) {
 	retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 
     if (retcode != RIG_OK) {
-	showmsg("Problem with rig link!");
+	TLF_LOG_WARN("Problem with rig link: %s", rigerror(retcode));
 	if (!debugflag)
 	    return -1;
     }
@@ -235,8 +236,7 @@ static void debug_tlf_rig() {
     retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 
     if (retcode != RIG_OK) {
-	showmsg("Problem with rig get freq!");
-	sleep(1);
+	TLF_LOG_WARN("Problem with rig get freq: %s", rigerror(retcode));
     } else {
 	shownr("freq =", (int) rigfreq);
     }
@@ -247,8 +247,7 @@ static void debug_tlf_rig() {
     retcode = rig_set_freq(my_rig, RIG_VFO_CURR, testfreq);
 
     if (retcode != RIG_OK) {
-	showmsg("Problem with rig set freq!");
-	sleep(1);
+	TLF_LOG_WARN("Problem with rig set freq: %s", rigerror(retcode));
     } else {
 	showmsg("Rig set freq ok!");
     }
@@ -256,8 +255,7 @@ static void debug_tlf_rig() {
     retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);	// read qrg
 
     if (retcode != RIG_OK) {
-	showmsg("Problem with rig get freq!");
-	sleep(1);
+	TLF_LOG_WARN("Problem with rig get freq: %s", rigerror(retcode));
     } else {
 	shownr("freq =", (int) rigfreq);
 	if (rigfreq != testfreq) {
