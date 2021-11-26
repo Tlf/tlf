@@ -22,6 +22,7 @@
 *--------------------------------------------------------------*/
 
 
+#include <hamlib/rig.h>
 #include "clear_display.h"
 #include "err_utils.h"
 #include "globalvars.h"
@@ -45,6 +46,12 @@ int stoptx(void) {
 		clear_display();
 
 	    }
+	} else if (cwkeyer == HAMLIB_KEYER) {
+	    int error = rig_stop_morse(my_rig, RIG_VFO_CURR);
+	    if (error != RIG_OK) {
+		TLF_LOG_WARN("Stop error: %s", rigerror(error));
+	    }
+
 	}
     } else {
 	return (1);

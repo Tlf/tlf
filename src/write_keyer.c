@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <glib.h>
+#include <hamlib/rig.h>
 
 #include "clear_display.h"
 #include "err_utils.h"
@@ -94,6 +95,20 @@ void write_keyer(void) {
     } else if (cwkeyer == NET_KEYER) {
 	netkeyer(K_MESSAGE, tosend);
 
+    } else if (cwkeyer == HAMLIB_KEYER) {
+	// Ignore +/- speed up/slow down instructions
+	char *q = tosend;
+	for (char *p = q; *p; p++) {
+	    if (*p != '+' && *p != '-') {
+		*q++ = *p;
+	    }
+	}
+	*q = 0;
+
+	int error = rig_send_morse(my_rig, RIG_VFO_CURR, tosend);
+	if (error != RIG_OK) {
+	    TLF_LOG_WARN("Send error: %s", rigerror(error));
+	}
     } else if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 	if ((bfp = fopen(controllerport, "a")) == NULL) {
 	    TLF_LOG_WARN("1278 not active. Switching to SSB mode.");
