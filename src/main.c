@@ -816,6 +816,13 @@ static void keyer_init() {
     }
 
     if (cwkeyer == HAMLIB_KEYER) {
+	if (!trx_control) {
+	    showmsg("CW-Keyer is set to HAMLIB");
+	    showmsg("BUT hamlib is not working !!");
+	    sleep(1);
+	    endwin();
+	    exit(EXIT_FAILURE);
+	}
 	showmsg("CW-Keyer is Hamlib");
     }
 
