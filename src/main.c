@@ -183,7 +183,7 @@ bool clusterlog = false;	/* clusterlog on/off */
 bool searchflg = false;		/* display search  window */
 bool show_time = false;
 cqmode_t cqmode = CQ;
-bool demode = true;		/* send DE  before s&p call  */
+bool demode = false;		/* send DE  before s&p call  */
 
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 bool showscore_flag = false;	/* show  score window */

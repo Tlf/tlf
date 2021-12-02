@@ -503,7 +503,7 @@ static void checkexchange_cqww(char *comment, bool interactive) {
 	// get zone nr, use fix if available
 	index = g_match_info_fetch(match_info, 1);
 	gchar *index_fix = g_match_info_fetch(match_info, 3);
-	if (index_fix != NULL) {
+	if (index_fix != NULL && strlen(index_fix) >= 1 && strlen(index_fix) <= 4) {
 	    g_free(index);
 	    index = index_fix;
 	}
