@@ -365,6 +365,7 @@ int countryscore[NBANDS];
 int zonedisplay = 0;
 int new_zone = 0;		/* index of new zone */
 int new_cty = 0;		/* index of new country */
+bool new_pfx = false;           /* worked a new prefix */
 int new_mult = -1;
 int minute_timer = 0;
 

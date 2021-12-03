@@ -346,6 +346,7 @@ int zonedisplay = 0;
 int new_zone = 0;		/* index of for new zone */
 int new_cty = 0;		/* index of new country */
 int new_mult = -1;
+bool new_pfx = false;
 int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */

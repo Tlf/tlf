@@ -179,3 +179,16 @@ void test_add_to_worked_continentlistonly(void **state) {
     assert_int_equal(get_nr_of_points(), 3);    // normal CQWW scoring
     assert_int_equal(get_nr_of_mults(), 0);     // but no mult due to continent list
 }
+
+void test_add_to_worked_wpx(void **state) {
+    setcontest("wpx");
+    write_log(LOGFILE);
+    readcalls(LOGFILE);
+    assert_int_equal(nr_worked, 1);
+    assert_string_equal(worked[0].call, "PY9BBB");
+    assert_string_equal(worked[0].exchange, "15");
+    time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT);
+    assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_40], ts);
+    assert_int_equal(get_nr_of_points(), 6);    // different continent, below 10 MHz
+    assert_int_equal(get_nr_of_mults(), 1);
+}

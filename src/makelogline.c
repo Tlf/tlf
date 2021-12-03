@@ -205,7 +205,6 @@ void prepare_fixed_part(void) {
  *     class - TX count + operator class, sctn - ARRL/RAC section
  */
 void prepare_specific_part(void) {
-    int new_pfx;
     int sr_nr = 0;
     char grid[7] = "";
     int i;
@@ -268,15 +267,8 @@ void prepare_specific_part(void) {
     if (iscontest) 		/* cut back to make room for mults */
 	logline4[68] = '\0';
 
-    /* If WPX
-     * -> add prefix to prefixes_worked and include new pfx in log line */
-    new_pfx = 0;
-    if (!(pfxmultab && excl_add_veto == 1)) {
-	/* add prefix, remember if new */
-	new_pfx = (add_pfx(wpx_prefix, bandinx) == 0);
-    }
-
     if (CONTEST_IS(WPX) || pfxmult || pfxmultab) {	/* wpx */
+        // include new pfx in log line
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, wpx_prefix, 5);

@@ -122,6 +122,7 @@ extern bool wazmult;
 extern int addcallarea;
 extern int new_cty;
 extern int new_zone;
+extern bool new_pfx;
 extern int do_cabrillo;
 extern bool no_rst;
 extern rmode_t digi_mode;

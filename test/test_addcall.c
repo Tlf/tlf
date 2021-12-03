@@ -33,6 +33,8 @@ int pacc_pa(void) {
     return 0;
 }
 
+extern int excl_add_veto2;
+
 
 /* setups */
 int setup_default(void **state) {
@@ -220,29 +222,35 @@ void test_addcall_continentlistonly(void **state) {
     current_qso = collect_qso_data();
     addcall(current_qso);
 
-    assert_int_equal(excl_add_veto, false);
-    strcpy(hiscall, "PY2BBB");
+    assert_int_equal(nr_worked, 1);
+    assert_int_equal(countryscore[current_qso->bandindex], 1);
+
+    strcpy(hiscall, "PY2BBB");  // SA is not in the list
 
     current_qso = collect_qso_data();
     addcall(current_qso);
 
-    assert_int_equal(excl_add_veto, true);
+    assert_int_equal(nr_worked, 2);
+    assert_int_equal(countryscore[current_qso->bandindex], 1);  // not counted
 }
 
 void test_addcall_exclude_continent(void **state) {
     exclude_multilist_type = EXCLUDE_CONTINENT;
-    strcpy(hiscall, "LZ1AB");
+    strcpy(hiscall, "LZ1AB");       // EU is excluded
 
     current_qso = collect_qso_data();
     addcall(current_qso);
 
-    assert_int_equal(excl_add_veto, true);
+    assert_int_equal(nr_worked, 1);
+    assert_int_equal(countryscore[current_qso->bandindex], 0);  // not counted
+
     strcpy(hiscall, "PY2BBB");
 
     current_qso = collect_qso_data();
     addcall(current_qso);
 
-    assert_int_equal(excl_add_veto, false);
+    assert_int_equal(nr_worked, 2);
+    assert_int_equal(countryscore[current_qso->bandindex], 1);
 }
 
 void test_addcall_exclude_country(void **state) {
@@ -252,13 +260,16 @@ void test_addcall_exclude_country(void **state) {
     current_qso = collect_qso_data();
     addcall(current_qso);
 
-    assert_int_equal(excl_add_veto, false);
-    strcpy(hiscall, "DL1AAA");
+    assert_int_equal(nr_worked, 1);
+    assert_int_equal(countryscore[current_qso->bandindex], 1);
+
+    strcpy(hiscall, "DL1AAA");  // DL is excluded
 
     current_qso = collect_qso_data();
     addcall(current_qso);
 
-    assert_int_equal(excl_add_veto, true);
+    assert_int_equal(nr_worked, 2);
+    assert_int_equal(countryscore[current_qso->bandindex], 1);  // not counted
 }
 
 
@@ -593,29 +604,29 @@ void test_addcall2_continentlistonly(void **state) {
     continentlist_only = true;
     strcpy(lan_logline, logline_PY);
     addcall2();
-    assert_int_equal(excl_add_veto, true);
+    assert_int_equal(excl_add_veto2, true);
     strcpy(lan_logline, logline);
     addcall2();
-    assert_int_equal(excl_add_veto, false);
+    assert_int_equal(excl_add_veto2, false);
 }
 
 void test_addcall2_exclude_continent(void **state) {
     exclude_multilist_type = EXCLUDE_CONTINENT;
     strcpy(lan_logline, logline);
     addcall2();
-    assert_int_equal(excl_add_veto, true);
+    assert_int_equal(excl_add_veto2, true);
     strcpy(lan_logline, logline_PY);
     addcall2();
-    assert_int_equal(excl_add_veto, false);
+    assert_int_equal(excl_add_veto2, false);
 }
 
 void test_addcall2_exclude_country(void **state) {
     exclude_multilist_type = EXCLUDE_COUNTRY;
     strcpy(lan_logline, logline);
     addcall2();
-    assert_int_equal(excl_add_veto, false);
+    assert_int_equal(excl_add_veto2, false);
     strcpy(lan_logline, logline_DL);
     addcall2();
-    assert_int_equal(excl_add_veto, true);
+    assert_int_equal(excl_add_veto2, true);
 }
 
