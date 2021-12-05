@@ -309,8 +309,6 @@ void prepare_specific_part(void) {
 	    new_zone = 0;
 	}
 
-	FILL_TO(77);
-
 	//----------------------------------end cqww-----------------
 
     } else if (CONTEST_IS(ARRLDX_USA)) {
@@ -321,8 +319,6 @@ void prepare_specific_part(void) {
 	    new_cty = 0;
 	}
 
-	FILL_TO(77);
-
     } else if (dx_arrlsections && (countrynr != w_cty)
 	       && (countrynr != ve_cty)) {
 	logline4[68] = '\0';
@@ -332,8 +328,6 @@ void prepare_specific_part(void) {
 
 	    new_cty = 0;
 	}
-
-	FILL_TO(77);
 
     } else if (wysiwyg_multi
 	       || (unique_call_multi != 0)
@@ -350,8 +344,6 @@ void prepare_specific_part(void) {
 	    new_mult = -1;
 	}
 
-	FILL_TO(77);
-
     } else if (dx_arrlsections
 	       && ((countrynr == w_cty) || (countrynr == ve_cty))) {
 	logline4[68] = '\0';
@@ -361,8 +353,6 @@ void prepare_specific_part(void) {
 
 	    new_mult = -1;
 	}
-
-	FILL_TO(77);
 
     } else if (CONTEST_IS(PACC_PA) || pfxnummultinr > 0) {
 
@@ -379,8 +369,6 @@ void prepare_specific_part(void) {
 	    addcallarea = 0;
 	}
 
-	FILL_TO(77);
-
     } else if (iscontest
 	       && (country_mult || dx_arrlsections)) {
 
@@ -391,8 +379,6 @@ void prepare_specific_part(void) {
 
 	    new_cty = 0;
 	}
-
-	FILL_TO(77);
 
     }
 
