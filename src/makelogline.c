@@ -36,11 +36,18 @@
 #include "lancode.h"
 #include "qsonr_to_str.h"
 #include "setcontest.h"
+#include "ui_utils.h"
 
 
 void prepare_fixed_part(void);
 void prepare_specific_part(void);
-void fillto(int n);
+
+
+/*
+ * fill log line with spaces until column n
+ */
+#define FILL_TO(n)  strcat(logline4, spaces((n) - strlen(logline4)))
+
 
 /** Construct a new line to add to the logfile.
  *
@@ -69,14 +76,14 @@ void makelogline(void) {
 	sprintf(logline4 + 76, "%2d", qso_points);
     }
 
-    fillto(80);
+    FILL_TO(80);
 
     /* add freq to end of logline */
     if (trx_control) {
 	snprintf(freq_buff, 8, "%7.1f", freq / 1000.0);
 	strcat(logline4, freq_buff);
     }
-    fillto(87);
+    FILL_TO(87);
 
     assert(strlen(logline4) == 87);
 }
@@ -145,7 +152,7 @@ void prepare_fixed_part(void) {
 
     g_strlcat(logline4, hiscall, 44 + 1);
 
-    fillto(44);
+    FILL_TO(44);
 
     if (no_rst) {
 	strcat(logline4, "---  ---  ");	/* instead of RST */
@@ -262,19 +269,19 @@ void prepare_specific_part(void) {
 	g_free(tmp);
     }
 
-    fillto(77);
+    FILL_TO(77);
 
     if (iscontest) 		/* cut back to make room for mults */
 	logline4[68] = '\0';
 
     if (CONTEST_IS(WPX) || pfxmult || pfxmultab) {	/* wpx */
-        // include new pfx in log line
+	// include new pfx in log line
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, wpx_prefix, 5);
 	}
 
-	fillto(73);
+	FILL_TO(73);
     }
 
     if (CONTEST_IS(CQWW) || wazmult || itumult) {
@@ -290,7 +297,7 @@ void prepare_specific_part(void) {
 	    new_cty = 0;
 	}
 
-	fillto(73);
+	FILL_TO(73);
 
 	if (new_zone != 0) {
 	    if (strlen(comment) < 2) {
@@ -302,7 +309,7 @@ void prepare_specific_part(void) {
 	    new_zone = 0;
 	}
 
-	fillto(77);
+	FILL_TO(77);
 
 	//----------------------------------end cqww-----------------
 
@@ -314,7 +321,7 @@ void prepare_specific_part(void) {
 	    new_cty = 0;
 	}
 
-	fillto(77);
+	FILL_TO(77);
 
     } else if (dx_arrlsections && (countrynr != w_cty)
 	       && (countrynr != ve_cty)) {
@@ -326,7 +333,7 @@ void prepare_specific_part(void) {
 	    new_cty = 0;
 	}
 
-	fillto(77);
+	FILL_TO(77);
 
     } else if (wysiwyg_multi
 	       || (unique_call_multi != 0)
@@ -343,7 +350,7 @@ void prepare_specific_part(void) {
 	    new_mult = -1;
 	}
 
-	fillto(77);
+	FILL_TO(77);
 
     } else if (dx_arrlsections
 	       && ((countrynr == w_cty) || (countrynr == ve_cty))) {
@@ -355,7 +362,7 @@ void prepare_specific_part(void) {
 	    new_mult = -1;
 	}
 
-	fillto(77);
+	FILL_TO(77);
 
     } else if (CONTEST_IS(PACC_PA) || pfxnummultinr > 0) {
 
@@ -372,7 +379,7 @@ void prepare_specific_part(void) {
 	    addcallarea = 0;
 	}
 
-	fillto(77);
+	FILL_TO(77);
 
     } else if (iscontest
 	       && (country_mult || dx_arrlsections)) {
@@ -385,22 +392,9 @@ void prepare_specific_part(void) {
 	    new_cty = 0;
 	}
 
-	fillto(77);
+	FILL_TO(77);
 
     }
 
-    fillto(77);
-}
-
-
-/** fill logline4 with spaces
- *
- * fill logline4 with spaces until column n
- */
-void fillto(int n) {
-    char fillspaces[] = "                                                    ";
-    int len = strlen(logline4);
-
-    if (len < n)
-	strncat(logline4, fillspaces, n - len);
+    FILL_TO(77);
 }

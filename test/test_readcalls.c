@@ -34,6 +34,7 @@
 // OBJECT ../src/makelogline.o
 // OBJECT ../src/qsonr_to_str.o
 // OBJECT ../src/store_qso.o
+// OBJECT ../src/ui_utils.o
 
 char thisnode = 'A';
 struct tm time_ptr_cabrillo;
@@ -44,7 +45,11 @@ bool lan_active = false;
 // dummy functions
 void readqtccalls() {}
 void shownr(char *msg, int x) {}
-const char *spaces(int n) { return "";} /* needs more care */
+
+void clusterinfo(void) {}
+void clear_display(void) {}
+void refresh_splitlayout() {}
+
 void OnLowerSearchPanel(int x, char *str) {}
 int recall_exchange() { return -1; }
 void refresh_comment() {}
