@@ -992,8 +992,8 @@ int main(int argc, char *argv[]) {
 
     show_station_info();
 
-    nr_qsos = readcalls(logfile);   /* read the logfile and rebuild
-				       point and multiplier scoring */
+    nr_qsos = readcalls(logfile, true);   /* read the logfile and rebuild
+				            point and multiplier scoring */
 
     scroll_log();		/* show the last 5  log lines and
 				   set the next serial number */

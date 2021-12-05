@@ -31,6 +31,14 @@
 // OBJECT ../src/utils.o
 // OBJECT ../src/zone_nr.o
 
+// OBJECT ../src/makelogline.o
+// OBJECT ../src/qsonr_to_str.o
+// OBJECT ../src/store_qso.o
+
+char thisnode = 'A';
+struct tm time_ptr_cabrillo;
+int do_cabrillo = 0;
+
 bool lan_active = false;
 
 // dummy functions
@@ -76,7 +84,7 @@ int pacc_pa(void) {
     return 0;
 }
 
-#define QSO1 " 40SSB 12-Jan-18 16:34 0006  PY9BBB         599  599  15                    10         \n"
+#define QSO1 " 80SSB 12-Jan-18 16:34 0006  PY9BBB         59   59   15            PY   15  3  14025.0\n"
 
 #define LOGFILE "test.log"
 
@@ -123,6 +131,8 @@ int setup_default(void **state) {
 
     strcpy(my.continent, "EU");
 
+    showmsg_spy = STRING_NOT_SET;
+
     return 0;
 }
 
@@ -146,49 +156,56 @@ void test_lookup_in_pfxnummult(void **state) {
 /* test readcalls */
 void test_add_to_worked(void **state) {
     write_log(LOGFILE);
-    readcalls(LOGFILE);
+    readcalls(LOGFILE, true);
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
     time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT);
-    assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_40], ts);
+    assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_80], ts);
     assert_int_equal(get_nr_of_points(), 3);
     assert_int_equal(get_nr_of_mults(), 2);
+    assert_string_equal(showmsg_spy, STRING_NOT_SET);   // log didn't change
 }
 
 void test_add_to_worked_dupe(void **state) {
     write_log(LOGFILE);
     append_log_line(LOGFILE, QSO1);     // add same line again
-    readcalls(LOGFILE);
+    readcalls(LOGFILE, true);
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
     time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT);
-    assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_40], ts);
+    assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_80], ts);
     assert_int_equal(get_nr_of_points(), 3);
     assert_int_equal(get_nr_of_mults(), 2);
+    assert_string_equal(showmsg_spy,
+			"Log changed due to rescoring. Do you want to save it? Y/(N)");
 }
 
 void test_add_to_worked_continentlistonly(void **state) {
     continentlist_only = true;
     write_log(LOGFILE);
-    readcalls(LOGFILE);
+    readcalls(LOGFILE, false);      // non-interactive
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
     assert_int_equal(get_nr_of_points(), 3);    // normal CQWW scoring
     assert_int_equal(get_nr_of_mults(), 0);     // but no mult due to continent list
+    assert_string_equal(showmsg_spy,
+			STRING_NOT_SET);   // non-interactive, no message
 }
 
 void test_add_to_worked_wpx(void **state) {
     setcontest("wpx");
     write_log(LOGFILE);
-    readcalls(LOGFILE);
+    readcalls(LOGFILE, true);
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
     time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT);
-    assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_40], ts);
+    assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_80], ts);
     assert_int_equal(get_nr_of_points(), 6);    // different continent, below 10 MHz
     assert_int_equal(get_nr_of_mults(), 1);
+    assert_string_equal(showmsg_spy,
+			"Log changed due to rescoring. Do you want to save it? Y/(N)");
 }

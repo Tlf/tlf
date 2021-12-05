@@ -31,29 +31,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 #include <time.h>
 
 #include "addcall.h"
-#include "addmult.h"
 #include "addpfx.h"
-#include "bands.h"
+#include "addmult.h"
 #include "cabrillo_utils.h"
-#include "dxcc.h"
-#include "get_time.h"
 #include "getexchange.h"
 #include "getctydata.h"
-#include "getpx.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "ignore_unused.h"
 #include "log_utils.h"
-#include "paccdx.h"
+#include "makelogline.h"
 #include "readqtccalls.h"
 #include "score.h"
 #include "searchcallarray.h"
-#include "setcontest.h"
 #include "startmsg.h"
-#include "tlf_curses.h"
-#include "zone_nr.h"
+#include "store_qso.h"
+#include "ui_utils.h"
 
 
 void init_scoring(void) {
@@ -84,84 +80,29 @@ void init_scoring(void) {
 
     InitPfx();
 
-    if (pfxnummultinr > 0) {
-	for (int i = 0; i < pfxnummultinr; i++) {
-	    for (int n = 0; n < PFXNUMBERS; n++) {
-		pfxnummulti[i].qsos[n] = 0;
-	    }
+    for (int i = 0; i < pfxnummultinr; i++) {
+	for (int n = 0; n < PFXNUMBERS; n++) {
+	    pfxnummulti[i].qsos[n] = 0;
 	}
     }
 }
 
 static void show_progress(int linenr) {
+    if (linenr == 1) {
+	printw(spaces(2));  // leading separator after log file name
+	refreshp();
+    }
     if (((linenr + 1) % 100) == 0) {
 	printw("*");
 	refreshp();
     }
 }
 
-
-/* pick up multi string from logline
- *
- * ATTENTION! return value needs to be freed
- */
-char *get_multi_from_line(char *logline) {
-    char *multbuffer = g_malloc(20);
-
-    if (CONTEST_IS(ARRL_SS)) {
-
-	if (logline[63] == ' ')
-	    g_strlcpy(multbuffer, logline + 64, 4);
-	else
-	    g_strlcpy(multbuffer, logline + 63, 4);
-
-    } else if (serial_section_mult
-	       || sectn_mult
-	       || sectn_mult_once) {
-
-	g_strlcpy(multbuffer, logline + 68, MAX_SECTION_LENGTH + 1);
-	g_strchomp(multbuffer);
-
-    } else if (serial_grid4_mult) {
-
-	g_strlcpy(multbuffer, logline + 59, 5);
-
-    } else if (unique_call_multi != 0) {
-
-	g_strlcpy(multbuffer, logline + 68, 10);
-	g_strchomp(multbuffer);
-
-    } else {
-
-	g_strlcpy(multbuffer, logline + 54, 11);	// normal case
-	g_strchomp(multbuffer);
-
-    }
-
-    return multbuffer;
+static void qso_free(gpointer data) {
+    free_qso((struct qso_t *) data);
 }
 
-
-void count_if_worked(int check, unsigned int bandindex, int *count) {
-    if (bandindex >= NBANDS)
-	return;
-
-    if ((check & inxes[bandindex]) != 0)
-	count[bandindex]++;
-}
-
-void count_contest_bands(int check, int *count) {
-    count_if_worked(check, BANDINDEX_160, count);
-    count_if_worked(check, BANDINDEX_80, count);
-    count_if_worked(check, BANDINDEX_40, count);
-    count_if_worked(check, BANDINDEX_20, count);
-    count_if_worked(check, BANDINDEX_15, count);
-    count_if_worked(check, BANDINDEX_10, count);
-}
-
-
-
-int readcalls(const char *logfile) {
+int readcalls(const char *logfile, bool interactive) {
 
     char inputbuffer[LOGLINELEN + 1];
     struct qso_t *qso;
@@ -169,19 +110,23 @@ int readcalls(const char *logfile) {
 
     FILE *fp;
 
-    char *info = g_strdup_printf("Reading logfile: %s\n", logfile);
-    showmsg(info);
-    g_free(info);
-    refreshp();
+    if (interactive) {
+	showstring("Reading logfile:", logfile);
+    }
 
     init_scoring();
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 	showmsg("Error opening logfile ");
-	refreshp();
 	sleep(2);
 	exit(1);
     }
+
+    bool log_changed = false;
+    // array of qso's
+    // FIXME use this instead of qsos[] (make it global and don't free it here)
+    // FIXME also include comments/notes into qso_t
+    GPtrArray *qso_array = g_ptr_array_new_with_free_func(qso_free);
 
     while (fgets(inputbuffer, sizeof(inputbuffer), fp) != NULL) {
 
@@ -191,8 +136,11 @@ int readcalls(const char *logfile) {
 	// remember logline in qsos[] field
 	g_strlcpy(qsos[linenr], inputbuffer, sizeof(qsos[0]));
 	linenr++;
+	// FIXME check for overflow....
 
-	show_progress(linenr);
+	if (interactive) {
+	    show_progress(linenr);
+	}
 
 	if (log_is_comment(inputbuffer))
 	    continue;		/* skip note in log */
@@ -201,23 +149,80 @@ int readcalls(const char *logfile) {
 
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);
-
 	checkexchange(qso->comment, false);
 	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
 	addcall(qso);
 	score_qso();
 
-	free_qso(qso);
-	qso = NULL;
+	//=======================================================
+	// FIXME this block is to be replaced by makelogline(qso)
+	char *logline4_save = g_strdup(logline4);
+	int qsonum_save = qsonum;
+	int bandinx_save = bandinx;
+	strcpy(hiscall, qso->call);
+	trxmode = qso->mode;
+	memcpy(&time_ptr_cabrillo, gmtime(&qso->timestamp), sizeof(time_ptr_cabrillo));
+	qsonum = qso->qso_nr;
+	strcpy(comment, qso->comment);
+	trx_control = (qso->freq > 0);
+	if (trx_control) {
+	    freq = qso->freq;
+	}
+	bandinx = qso->bandindex;
+	do_cabrillo = 1;
+	makelogline();
+	//=======================================================
+
+	if (strcmp(logline4, qsos[linenr - 1]) != 0) {
+	    // different: update log line and mark change
+	    g_strlcpy(qsos[linenr - 1], logline4, sizeof(qsos[0]));
+	    g_free(qso->logline);
+	    qso->logline = g_strdup(logline4);
+	    log_changed = true;
+	}
+
+	//=======================================================
+	do_cabrillo = 0;
+	hiscall[0] = 0;
+	comment[0] = 0;
+	qsonum = qsonum_save;
+	bandinx = bandinx_save;
+	strcpy(logline4, logline4_save);
+	g_free(logline4_save);
+	//=======================================================
+
+	g_ptr_array_add(qso_array, qso);
     }
 
     fclose(fp);
+
+    if (log_changed && interactive) {
+	showmsg("Log changed due to rescoring. Do you want to save it? Y/(N)");
+	if (toupper(key_get()) == 'Y') {
+	    // save a backup
+	    char prefix[40];
+	    format_time(prefix, sizeof(prefix), "%Y%m%d_%H%M%S");
+	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
+	    rename(logfile, backup);
+	    // rewrite log
+	    remove(logfile);
+	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
+	    for (int i = 0 ; i < linenr; i++) {
+		store_qso(qsos[i]);
+	    }
+	    showstring("Log has been backed up as", backup);
+	    g_free(backup);
+	    sleep(1);
+	}
+    }
+
+    g_ptr_array_free(qso_array, TRUE);  // FIXME keep the array
 
     return linenr;			// nr of lines in log
 }
 
 int log_read_n_score() {
-    int nr_qsolines = readcalls(logfile);
+    int nr_qsolines = readcalls(logfile, false);
 
     if (qtcdirection > 0) {
 	readqtccalls();

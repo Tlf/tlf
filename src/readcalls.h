@@ -22,8 +22,10 @@
 #ifndef READCALLS_H
 #define READCALLS_H
 
+#include <stdbool.h>
+
 int lookup_country_in_pfxnummult_array(int n);
-int readcalls(const char *logfile);
+int readcalls(const char *logfile, bool interactive);
 int log_read_n_score();
 int synclog(char *synclogfile);
 
