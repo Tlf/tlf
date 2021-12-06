@@ -577,7 +577,7 @@ void test_qr_fn(void **state) {
 	sprintf(line, "QR_F%d = %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "QRMSG%d MNO \n", i);    // FIXME NL is kept
+	sprintf(msg, "QRMSG%d MNO", i);
 	assert_string_equal(qtc_recv_msgs[j], msg);
     }
 }
