@@ -411,7 +411,7 @@ void test_fn(void **state) {
 	sprintf(line, "F%d= %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "MSG%d ABC \n", i);   // trailing space+NL are kept, FIXME
+	sprintf(msg, "MSG%d ABC", i);
 	assert_string_equal(message[j], msg);
     }
 }
@@ -425,7 +425,7 @@ void test_alt_n(void **state) {
 	sprintf(line, "ALT_%d= %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "MSG%d ALT \n", i);   // trailing space+NL are kept, FIXME
+	sprintf(msg, "MSG%d ALT", i);
 	assert_string_equal(message[j], msg);
     }
 }
@@ -433,19 +433,19 @@ void test_alt_n(void **state) {
 void test_sp_tu_msg(void **state) {
     int rc = call_parse_logcfg("S&P_TU_MSG=TU\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(message[SP_TU_MSG], "TU\n");
+    assert_string_equal(message[SP_TU_MSG], "TU");
 }
 
 void test_cq_tu_msg(void **state) {
     int rc = call_parse_logcfg("CQ_TU_MSG=TU QRZ?\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(message[CQ_TU_MSG], "TU QRZ?\n");
+    assert_string_equal(message[CQ_TU_MSG], "TU QRZ?");
 }
 
 void test_sp_call_msg(void **state) {
     int rc = call_parse_logcfg("S&P_CALL_MSG=DE AB1CD\r\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(message[SP_CALL_MSG], "DE AB1CD\r\n");  // FIXME line end...
+    assert_string_equal(message[SP_CALL_MSG], "DE AB1CD");
 }
 
 typedef struct {

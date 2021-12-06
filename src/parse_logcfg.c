@@ -1078,11 +1078,11 @@ static config_t logcfg_configs[] = {
     {"KEYER_BACKSPACE", CFG_BOOL_TRUE(keyer_backspace)},
     {"SECTION_MULT_ONCE",   CFG_BOOL_TRUE(sectn_mult_once)},
 
-    {"F([1-9]|1[0-2])", CFG_MESSAGE(message, -1)},  // index is 1-based
-    {"S&P_TU_MSG",      CFG_MESSAGE(message, SP_TU_MSG)},
-    {"CQ_TU_MSG",       CFG_MESSAGE(message, CQ_TU_MSG)},
-    {"ALT_([0-9])",     CFG_MESSAGE(message, CQ_TU_MSG + 1)},
-    {"S&P_CALL_MSG",    CFG_MESSAGE(message, SP_CALL_MSG)},
+    {"F([1-9]|1[0-2])", CFG_MESSAGE_CHOMP(message, -1)},  // index is 1-based
+    {"S&P_TU_MSG",      CFG_MESSAGE_CHOMP(message, SP_TU_MSG)},
+    {"CQ_TU_MSG",       CFG_MESSAGE_CHOMP(message, CQ_TU_MSG)},
+    {"ALT_([0-9])",     CFG_MESSAGE_CHOMP(message, CQ_TU_MSG + 1)},
+    {"S&P_CALL_MSG",    CFG_MESSAGE_CHOMP(message, SP_CALL_MSG)},
 
     {"VKM([1-9]|1[0-2])",   CFG_MESSAGE_CHOMP(ph_message, -1)},
     {"VKCQM",               CFG_MESSAGE_CHOMP(ph_message, CQ_TU_MSG)},

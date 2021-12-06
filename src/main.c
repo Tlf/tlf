@@ -221,9 +221,9 @@ char message[25][80] = /**< Array of CW messages
 			* message[1]  (F2)  - insert pressed
  			*/
 {
-    "TEST %\n", "@ DE %\n", "@ [\n", "TU 73\n", " @\n", "%\n",
-    "@ SRI QSO B4 GL\n", "AGN\n",
-    " ?\n", " QRZ?\n", " PSE K\n", "TEST % %\n", "@ [\n", "TU %\n",
+    "TEST %", "@ DE %", "@ [", "TU 73", " @", "%",
+    "@ SRI QSO B4 GL", "AGN",
+    " ?", " QRZ?", " PSE K", "TEST % %", "@ [", "TU %",
     "", "", "", "", "", "", "", "", "", "", ""
 };
 
