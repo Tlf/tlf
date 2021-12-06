@@ -26,8 +26,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "globalvars.h"
-
 void qsonr_to_str(char *output, int number) {
 
     if (number <= 0 || number > 9999) { // should in fact never happen ...
