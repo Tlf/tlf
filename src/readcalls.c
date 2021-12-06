@@ -150,46 +150,24 @@ int readcalls(const char *logfile, bool interactive) {
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);
 	checkexchange(qso->comment, false);
+        if (strlen(normalized_comment) > 0) {   //FIXME global
+            strcpy(qso->comment, normalized_comment);
+        }
 	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
 	addcall(qso);
-	score_qso();
+	score_qso();    //FIXME argument?
 
-	//=======================================================
-	// FIXME this block is to be replaced by makelogline(qso)
-	char *logline4_save = g_strdup(logline4);
-	int qsonum_save = qsonum;
-	int bandinx_save = bandinx;
-	strcpy(hiscall, qso->call);
-	trxmode = qso->mode;
-	memcpy(&time_ptr_cabrillo, gmtime(&qso->timestamp), sizeof(time_ptr_cabrillo));
-	qsonum = qso->qso_nr;
-	strcpy(comment, qso->comment);
-	trx_control = (qso->freq > 0);
-	if (trx_control) {
-	    freq = qso->freq;
-	}
-	bandinx = qso->bandindex;
-	do_cabrillo = 1;
-	makelogline();
-	//=======================================================
+	char *logline = makelogline(qso);
 
-	if (strcmp(logline4, qsos[linenr - 1]) != 0) {
+	if (strcmp(logline, qsos[linenr - 1]) != 0) {
 	    // different: update log line and mark change
-	    g_strlcpy(qsos[linenr - 1], logline4, sizeof(qsos[0]));
+	    g_strlcpy(qsos[linenr - 1], logline, sizeof(qsos[0]));
 	    g_free(qso->logline);
-	    qso->logline = g_strdup(logline4);
+	    qso->logline = g_strdup(logline);
 	    log_changed = true;
 	}
 
-	//=======================================================
-	do_cabrillo = 0;
-	hiscall[0] = 0;
-	comment[0] = 0;
-	qsonum = qsonum_save;
-	bandinx = bandinx_save;
-	strcpy(logline4, logline4_save);
-	g_free(logline4_save);
-	//=======================================================
+        g_free(logline);
 
 	g_ptr_array_add(qso_array, qso);
     }

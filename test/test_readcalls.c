@@ -37,9 +37,6 @@
 // OBJECT ../src/ui_utils.o
 
 char thisnode = 'A';
-struct tm time_ptr_cabrillo;
-int do_cabrillo = 0;
-
 bool lan_active = false;
 
 // dummy functions

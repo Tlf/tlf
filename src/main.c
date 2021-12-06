@@ -373,8 +373,6 @@ int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;			/* nr of next QSO */
 int ymax, xmax;			/* screen size */
 
-struct tm time_ptr_cabrillo;
-
 freq_t freq;
 bool logfrequency = false;
 bool rit;
@@ -405,7 +403,6 @@ char itustr[3];
 bool nopacket = false;		/* set if tlf is called with '-n' */
 bool no_trx_control = false;	/* set if tlf is called with '-r' */
 bool convert_cabrillo = false;  /* set if the arg input is a cabrillo */
-int do_cabrillo = 0;		/* actually converting cabrillo file to Tlf log */
 
 int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};

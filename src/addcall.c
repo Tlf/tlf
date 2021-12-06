@@ -63,6 +63,9 @@ struct qso_t *collect_qso_data(void) {
     qso->freq = freq;
     qso->timestamp = get_time();
     qso->comment = g_strdup(comment);
+    qso->qso_nr = qsonum;
+    qso->rst_s = atoi(sent_rst);
+    qso->rst_r = atoi(recvd_rst);
     return qso;
 }
 
@@ -170,7 +173,7 @@ int addcall(struct qso_t *qso) {
     new_pfx = false;
     if (!excl_add_veto || !pfxmultab) {
 	/* add prefix, remember if new */
-	new_pfx = (add_pfx(wpx_prefix, bandinx) == 0);
+	new_pfx = (add_pfx(wpx_prefix, qso->bandindex) == 0);
     }
 
     /* qso's per band  */

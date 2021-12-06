@@ -39,19 +39,24 @@
 #include "ui_utils.h"
 
 
-void prepare_fixed_part(void);
-void prepare_specific_part(void);
+void prepare_fixed_part(char *logline, struct qso_t *qso);
+void prepare_specific_part(char *logline, struct qso_t *qso);
 
+
+static int default_rst(struct qso_t *qso) {
+    return qso->mode == SSBMODE ? 59 : 599;
+}
 
 /*
  * fill log line with spaces until column n
  */
-#define FILL_TO(n)  strcat(logline4, spaces((n) - strlen(logline4)))
+#define FILL_TO(n)  strcat(logline, spaces((n) - strlen(logline)))
 
 
 /** Construct a new line to add to the logfile.
  *
- * Prepare a logline for storage in log in 'logline4'
+ * Prepare a logline for storage in log
+ * Returned value must be g_free'd after use
  *
  * The structure of a logline entry is as follows:
  * - each logline contains exactly 87 characters followed by a newline.
@@ -60,32 +65,36 @@ void prepare_specific_part(void);
  *
  *   See function definitions below
  */
-void makelogline(void) {
+char *makelogline(struct qso_t *qso) {
     char freq_buff[10];
 
+    char *logline = g_malloc0(sizeof(logline4));
+
     /* first fixed (contest independent) part of logline */
-    prepare_fixed_part();
-    assert(strlen(logline4) == 54);
+    prepare_fixed_part(logline, qso);
+    assert(strlen(logline) == 54);
 
     /* second (contest dependent) part of logline */
-    prepare_specific_part();
-    assert(strlen(logline4) == 77);
+    prepare_specific_part(logline, qso);
+    assert(strlen(logline) == 77);
 
     /* add points to logline if in contest */
     if (iscontest && !CONTEST_IS(DXPED)) {
-	sprintf(logline4 + 76, "%2d", qso_points);
+	sprintf(logline + 76, "%2d", qso_points);   //FIXME qso->score
     }
 
     FILL_TO(80);
 
     /* add freq to end of logline */
-    if (trx_control) {
-	snprintf(freq_buff, 8, "%7.1f", freq / 1000.0);
-	strcat(logline4, freq_buff);
+    if (qso->freq > 0) {
+	snprintf(freq_buff, 8, "%7.1f", qso->freq / 1000.0);
+	strcat(logline, freq_buff);
     }
     FILL_TO(87);
 
-    assert(strlen(logline4) == 87);
+    assert(strlen(logline) == 87);
+
+    return logline;
 }
 
 
@@ -106,69 +115,58 @@ void makelogline(void) {
  *     bndmod dd-mmm-yy hh:mm  khz  call.......... rst  rst
  *                                                 his  my.\endverbatim
  */
-void prepare_fixed_part(void) {
-    static char time_buf[80];
+void prepare_fixed_part(char *logline, struct qso_t *qso) {
+    char buf[80];
 
-    strcpy(logline4, band[bandinx]);
+    strcpy(logline, band[qso->bandindex]);
 
-    if (trxmode == CWMODE)
-	strcat(logline4, "CW ");
-    else if (trxmode == SSBMODE)
-	strcat(logline4, "SSB");
+    if (qso->mode == CWMODE)
+	strcat(logline, "CW ");
+    else if (qso->mode == SSBMODE)
+	strcat(logline, "SSB");
     else
-	strcat(logline4, "DIG");
+	strcat(logline, "DIG");
 
-    if (do_cabrillo == 0) {
-	format_time(time_buf, sizeof(time_buf), " "DATE_TIME_FORMAT" ");
-    } else {
-	strftime(time_buf, sizeof(time_buf), " "DATE_TIME_FORMAT" ",
-		 &time_ptr_cabrillo);
-    }
-    strcat(logline4, time_buf);
+    struct tm time_tm;
+    gmtime_r(&qso->timestamp, &time_tm);
+    strftime(buf, sizeof(buf), " "DATE_TIME_FORMAT" ", &time_tm);
+    strcat(logline, buf);
 
-    qsonr_to_str();
-    if (logfrequency && trx_control &&
+    qsonr_to_str(buf, qso->qso_nr);
+    if (logfrequency && qso->freq > 0 &&
 	    ((strcmp(whichcontest, "qso") == 0) ||
 	     (strcmp(whichcontest, "dxped") == 0))) {
 	char khz[5];
 	sprintf(khz, " %3u", ((unsigned int)(freq / 1000.0)) % 1000);	// show freq.
-	strcat(logline4, khz);
+	strcat(logline, khz);
 
     } else {
-	if (lan_active && (contest->exchange_serial)) {	// show qso nr
-	    strcat(logline4, lastqsonr);
+	if (lan_active && contest->exchange_serial) {	// show qso nr
+	    strcat(logline, lastqsonr);
 	    lastqsonr[0] = '\0';
 	} else
-	    strcat(logline4, qsonrstr);
+	    strcat(logline, buf);
     }
 
     if (lan_active && cqwwm2) {
-	logline4[27] = thisnode;	// set node ID...
-	logline4[28] = '\0';
-	strcat(logline4, " ");
+	logline[27] = thisnode;	// set node ID...
+	logline[28] = '\0';
+	strcat(logline, spaces(1));
     } else
-	strcat(logline4, "  ");
+	strcat(logline, spaces(2));
     /* goes till 29 */
 
-    g_strlcat(logline4, hiscall, 44 + 1);
+    g_strlcat(logline, qso->call, 44 + 1);
 
     FILL_TO(44);
 
     if (no_rst) {
-	strcat(logline4, "---  ---  ");	/* instead of RST */
+	strcat(logline, "---  ---  ");	/* instead of RST */
     } else {
-	if ((trxmode == CWMODE) || (trxmode == DIGIMODE)) {
-	    sent_rst[2] = '9';
-	    recvd_rst[2] = '9';
-	} else {
-	    sent_rst[2] = ' ';
-	    recvd_rst[2] = ' ';
-	}
-
-	strcat(logline4, sent_rst);	/* till 54 */
-	strcat(logline4, "  ");
-	strcat(logline4, recvd_rst);
-	strcat(logline4, "  ");
+	sprintf(buf, "%-3d  %-3d  ",
+		qso->rst_s ? qso->rst_s : default_rst(qso),
+		qso->rst_r ? qso->rst_r : default_rst(qso));
+	strcat(logline, buf);
     }
 }
 
@@ -211,7 +209,7 @@ void prepare_fixed_part(void) {
  *     class         sctn    pp\endverbatim
  *     class - TX count + operator class, sctn - ARRL/RAC section
  */
-void prepare_specific_part(void) {
+void prepare_specific_part(char *logline, struct qso_t *qso) {
     int sr_nr = 0;
     char grid[7] = "";
     int i;
@@ -219,66 +217,68 @@ void prepare_specific_part(void) {
 
     if (CONTEST_IS(ARRL_SS)) {
 	// ----------------------------arrlss----------------
-	tmp = g_strndup(comment, 22);
-	strcat(logline4, tmp);
+	tmp = g_strndup(qso->comment, 22);
+	strcat(logline, tmp);
 	g_free(tmp);
 	section[0] = '\0';
 
     } else if (serial_section_mult) {
 	//-------------------------serial_section---------------
-	tmp = g_strndup(comment, 22);
-	strcat(logline4, tmp);
+	tmp = g_strndup(qso->comment, 22);
+	strcat(logline, tmp);
 	g_free(tmp);
 	section[0] = '\0';
 
     } else if (serial_grid4_mult) {
 	//-------------------------serial_grid 4 characters---------------
-	sr_nr = atoi(comment);
+	sr_nr = atoi(qso->comment);
 	for (i = 0; i < 11; i++) {
-	    if (comment[i] > 64 && comment[i] < 91) {
+	    if (qso->comment[i] > 64 && qso->comment[i] < 91) {
 		break;
 	    }
 	}
-	strncpy(grid, comment + i, 6);
+	strncpy(grid, qso->comment + i, 6);
 	grid[6] = '\0';
 
-	sprintf(logline4 + 54, "%4.0d %s", sr_nr, grid);
-	section[4] = '\0';
+	sprintf(logline + 54, "%4.0d %s", sr_nr, grid);
+	section[4] = '\0'; //FIXME global
 
     } else if (sectn_mult) {
 	//-------------------------section only---------------
-	tmp = g_strndup(comment, 22);
-	strcat(logline4, tmp);
+	tmp = g_strndup(qso->comment, 22);
+	strcat(logline, tmp);
 	g_free(tmp);
-	section[0] = '\0';
+	section[0] = '\0';  //FIXME global
 
     } else if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	//-------------------------cqww----------------
-	if (trxmode == DIGIMODE && CONTEST_IS(CQWW) && strlen(comment) < 5) {
-	    comment[2] = ' ';
-	    comment[3] = 'D';
-	    comment[4] = 'X';
-	    comment[5] = '\0';
+	char buf[80];
+	strcpy(buf, qso->comment);
+	if (qso->mode == DIGIMODE && CONTEST_IS(CQWW) && strlen(buf) < 5) {
+	    buf[2] = ' ';
+	    buf[3] = 'D';
+	    buf[4] = 'X';
+	    buf[5] = '\0';
 	}
-	tmp = g_strndup(comment, 22);
-	strcat(logline4, tmp);
+	tmp = g_strndup(buf, 22);
+	strcat(logline, tmp);
 	g_free(tmp);
     } else {	//----------------------end cqww ---------------
-	tmp = g_strndup(comment, 22);
-	strcat(logline4, tmp);
+	tmp = g_strndup(qso->comment, 22);
+	strcat(logline, tmp);
 	g_free(tmp);
     }
 
     FILL_TO(77);
 
     if (iscontest) 		/* cut back to make room for mults */
-	logline4[68] = '\0';
+	logline[68] = '\0';
 
     if (CONTEST_IS(WPX) || pfxmult || pfxmultab) {	/* wpx */
 	// include new pfx in log line
-	if (new_pfx) {
+	if (new_pfx) {  //FIXME global
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
-	    strncat(logline4, wpx_prefix, 5);
+	    strncat(logline, wpx_prefix, 5);    //FIXME global
 	}
 
 	FILL_TO(73);
@@ -286,25 +286,23 @@ void prepare_specific_part(void) {
 
     if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	/* ------------cqww --------------------- */
-	logline4[68] = '\0';
+	logline[68] = '\0';
 
-	if (new_cty != 0) {
+	if (new_cty != 0) {     //FIXME global
 	    if (dxcc_by_index(new_cty)->pfx[0] == '*')
-		strncat(logline4, dxcc_by_index(new_cty) -> pfx + 1, 5);
+		strncat(logline, dxcc_by_index(new_cty) -> pfx + 1, 5);
 	    else
-		strncat(logline4, dxcc_by_index(new_cty) -> pfx, 5);
+		strncat(logline, dxcc_by_index(new_cty) -> pfx, 5);
 
 	    new_cty = 0;
 	}
 
 	FILL_TO(73);
 
-	if (new_zone != 0) {
-	    if (strlen(comment) < 2) {
-		strcat(logline4, "0");
-		strncat(logline4, comment, 1);
-	    } else
-		strncat(logline4, comment, 2);
+	if (new_zone != 0) {    //FIXME global
+	    tmp = g_strdup_printf("%02d", new_zone);
+	    strcat(logline, tmp);
+	    g_free(tmp);
 
 	    new_zone = 0;
 	}
@@ -312,19 +310,19 @@ void prepare_specific_part(void) {
 	//----------------------------------end cqww-----------------
 
     } else if (CONTEST_IS(ARRLDX_USA)) {
-	logline4[68] = '\0';
+	logline[68] = '\0';
 	if (new_cty != 0) {
-	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
+	    strncat(logline, dxcc_by_index(new_cty) -> pfx, 9);
 
 	    new_cty = 0;
 	}
 
     } else if (dx_arrlsections && (countrynr != w_cty)
 	       && (countrynr != ve_cty)) {
-	logline4[68] = '\0';
+	logline[68] = '\0';
 
 	if (new_cty != 0) {
-	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
+	    strncat(logline, dxcc_by_index(new_cty) -> pfx, 9);
 
 	    new_cty = 0;
 	}
@@ -336,35 +334,35 @@ void prepare_specific_part(void) {
 	       || sectn_mult_once
 	       || serial_grid4_mult) {
 
-	logline4[68] = '\0';
+	logline[68] = '\0';
 
-	if (new_mult >= 0) {
-	    strncat(logline4, multis[new_mult].name, 9);
+	if (new_mult >= 0) {    //FIXME global
+	    strncat(logline, multis[new_mult].name, 9);
 
 	    new_mult = -1;
 	}
 
     } else if (dx_arrlsections
 	       && ((countrynr == w_cty) || (countrynr == ve_cty))) {
-	logline4[68] = '\0';
+	logline[68] = '\0';
 
 	if (new_mult >= 0) {
-	    strncat(logline4, multis[new_mult].name, 9);
+	    strncat(logline, multis[new_mult].name, 9);
 
 	    new_mult = -1;
 	}
 
     } else if (CONTEST_IS(PACC_PA) || pfxnummultinr > 0) {
 
-	logline4[68] = '\0';
+	logline[68] = '\0';
 
 	if (new_cty != 0) {
-	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
+	    strncat(logline, dxcc_by_index(new_cty) -> pfx, 9);
 
 	    new_cty = 0;
 
 	} else if (addcallarea == 1) {
-	    strncat(logline4, wpx_prefix, 3);
+	    strncat(logline, wpx_prefix, 3);
 
 	    addcallarea = 0;
 	}
@@ -372,10 +370,10 @@ void prepare_specific_part(void) {
     } else if (iscontest
 	       && (country_mult || dx_arrlsections)) {
 
-	logline4[68] = '\0';
+	logline[68] = '\0';
 
 	if (new_cty != 0) {
-	    strncat(logline4, dxcc_by_index(new_cty) -> pfx, 9);
+	    strncat(logline, dxcc_by_index(new_cty) -> pfx, 9);
 
 	    new_cty = 0;
 	}

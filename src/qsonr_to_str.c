@@ -28,11 +28,11 @@
 
 #include "globalvars.h"
 
-void qsonr_to_str(void) {
+void qsonr_to_str(char *output, int number) {
 
-    if (qsonum < 0 || qsonum > 9999) { // should in fact never happen ...
-	strcpy(qsonrstr, "????");
+    if (number <= 0 || number > 9999) { // should in fact never happen ...
+	strcpy(output, "????");
 	return;
     }
-    sprintf(qsonrstr, "%04d", qsonum);
+    sprintf(output, "%04d", number);
 }
