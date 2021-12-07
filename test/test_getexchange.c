@@ -16,6 +16,7 @@
 // OBJECT ../src/focm.o
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
+// OBJECT ../src/plugin.o
 // OBJECT ../src/score.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/log_utils.o
@@ -51,8 +52,8 @@ void clear_display(void) {}
 void refresh_splitlayout() {}
 
 int setup_default(void **state) {
-    serial_section_mult = 0;
-    sectn_mult = 0;
+    serial_section_mult = false;
+    sectn_mult = false;
     return 0;
 }
 
@@ -319,7 +320,7 @@ static getex_arrlss_t getex_serial_section[] = {
 
 void test_getexchange_serial_section(void **state) {
     contest = lookup_contest("Unknown");
-    serial_section_mult = 1;
+    serial_section_mult = true;
     strcpy(multsfile, TOP_SRCDIR "/share/ea_sections");
     init_and_load_multipliers();
 
@@ -391,7 +392,7 @@ static getex_arrlss_t getex_sectn_mult[] = {
 
 void test_getexchange_sectn_mult(void **state) {
     contest = lookup_contest("Unknown");
-    sectn_mult = 1;
+    sectn_mult = true;
     strcpy(multsfile, TOP_SRCDIR "/share/ea_sections");
     init_and_load_multipliers();
 

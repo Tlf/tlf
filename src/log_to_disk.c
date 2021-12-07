@@ -114,7 +114,7 @@ void log_to_disk(int from_lan) {
 	char *fill = g_strnfill(80 - strlen(lan_logline), ' ');
 	g_strlcat(lan_logline, fill, 81);    /* fill with spaces if needed */
 
-	if (cqwwm2 == 1) {	    /* mark as coming from other station */
+	if (cqwwm2) {	    /* mark as coming from other station */
 	    if (lan_message[0] != thisnode)
 		lan_logline[79] = '*';
 	}

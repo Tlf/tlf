@@ -145,7 +145,7 @@ void clear_display(void) {
 	mvaddstr(12, 49, recvd_rst);
     }
 
-    if (searchflg == SEARCHWINDOW)
+    if (searchflg)
 	searchlog();
 
     printcall();

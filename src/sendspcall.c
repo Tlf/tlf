@@ -47,7 +47,7 @@ char *PrepareSPcall() {
 
     if (trxmode == CWMODE) {
 
-	if (demode == SEND_DE)
+	if (demode)
 	    strcat(buf, "DE ");
 
 	strcat(buf, my.call);
@@ -57,7 +57,7 @@ char *PrepareSPcall() {
 	if (digikeyer == MFJ1278_KEYER) {
 	    strcat(buf, "{ ");	/* => ctrl-t */
 	    strcat(buf, "|");	/* => CR */
-	    if (demode ==  SEND_DE) {
+	    if (demode) {
 		strcat(buf, hiscall);
 		strcat(buf, " DE ");
 	    }
@@ -69,7 +69,7 @@ char *PrepareSPcall() {
 	    strcat(buf, "}");	/* => ctrl-r */
 	} else {
 	    strcat(buf, "|");	/* => CR */
-	    if (demode ==  SEND_DE) {
+	    if (demode) {
 		strcat(buf, hiscall);
 		strcat(buf, " DE ");
 	    }

@@ -194,11 +194,11 @@ int changepars(void) {
 	    break;
 	}
 	case 8: {		/* CHECK  */
-	    searchflg = SEARCHWINDOW;
+	    searchflg = true;
 	    break;
 	}
 	case 9: {		/* NOCHECK  */
-	    searchflg = 0;
+	    searchflg = false;
 	    break;
 	}
 	case 10: {		/*  TONE   */
@@ -218,10 +218,7 @@ int changepars(void) {
 	    break;
 	}
 	case 14: {		/*  DEMODE   */
-	    if (demode == SEND_DE)
-		demode = 0;
-	    else
-		demode = SEND_DE;
+	    demode = !demode;
 	    mvprintw(13, 29, "DE-mode is %d", demode);
 	    refreshp();
 	    sleep(1);
@@ -233,7 +230,7 @@ int changepars(void) {
 		iscontest = false;
 	    else {
 		iscontest = true;
-		searchflg = SEARCHWINDOW;
+		searchflg = true;
 	    }
 	    mvprintw(13, 29, "CONTEST-mode is %s", iscontest ? "on" : "off");
 	    refreshp();
@@ -252,12 +249,7 @@ int changepars(void) {
 	    break;
 	}
 	case 17: {		/*  SCORE   */
-	    if (showscore_flag == 0)
-		showscore_flag = 1;
-	    else {
-		showscore_flag = 0;
-
-	    }
+	    showscore_flag = !showscore_flag;
 	    mvprintw(13, 29, "Show score-mode is %d", showscore_flag);
 	    refreshp();
 	    sleep(1);
@@ -341,13 +333,9 @@ int changepars(void) {
 	    break;
 	}
 	case 27: {		/*  RITCLEAR   */
-	    if (rit == RITCLEAR)
-		rit = 0;
-	    else {
-		rit = RITCLEAR;
+	    rit = !rit;
 
-	    }
-	    if (rit == RITCLEAR) {
+	    if (rit) {
 		mvaddstr(13, 29, "RIT clear on");
 	    } else {
 		mvaddstr(13, 29, "RIT clear off");
@@ -411,10 +399,10 @@ int changepars(void) {
 
 		simulator = true;
 		cqmode = CQ;
-		if (ctcomp == 1) {
+		if (ctcomp) {
 		    TLF_LOG_INFO(
 			"The simulator only works in TRmode. Switching to TRmode");
-		    ctcomp = 0;
+		    ctcomp = false;
 		} else {
 		    mvaddstr(13, 29, "Simulator on");
 		    refreshp();
@@ -773,8 +761,8 @@ void multiplierinfo(void) {
 	}
     }
 
-    if (serial_section_mult == 1 || sectn_mult_once
-	    || (sectn_mult == 1 && !CONTEST_IS(ARRL_SS))) {
+    if (serial_section_mult || sectn_mult_once
+	    || (sectn_mult && !CONTEST_IS(ARRL_SS))) {
 	char *tmp;
 	int worked_at;
 

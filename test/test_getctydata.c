@@ -36,7 +36,7 @@ int setup_default(void **state) {
     assert_int_equal(load_ctydata(filename), 0);
 
     setcontest("qso");
-    pfxmult = 0;
+    pfxmult = false;
     strcpy(countrylist[0], "");
 
     return 0;
@@ -226,7 +226,7 @@ void test_is_wpx(void **state) {
 void test_pfxmult_set(void **state) {
     int nr;
 
-    pfxmult = 1;
+    pfxmult = true;
     wpx_prefix[0] = '\0';
     nr = getctydata("DJ/PA3LM");
     assert_string_equal(wpx_prefix, "DJ0");

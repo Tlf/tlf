@@ -181,7 +181,7 @@ int callinput(void) {
 	    /* if BMAUTOADD is active and user has input a call sign
 	     * (indicated by non-zero freqstore) check if he turns away
 	     * from frequency and if so add call to spot list */
-	    if (bmautoadd != 0 && freqstore != 0) {
+	    if (bmautoadd && freqstore != 0) {
 		if (strlen(hiscall) >= 3) {
 		    if (fabs(freq - freqstore) > 500) {
 			add_to_spots(hiscall, freqstore);
@@ -235,7 +235,7 @@ int callinput(void) {
 	    // <Enter>, sends CQ message (F1), starts autoCQ, or sends S&P message.
 	    if (x == '\n' || x == KEY_ENTER) {
 		if (cqmode == CQ) {
-		    if (noautocq != 1)
+		    if (!noautocq)
 			x = auto_cq();
 		} else {
 		    sendspcall();
@@ -292,11 +292,11 @@ int callinput(void) {
 		} else {
 
 		    if (strlen(hiscall) > 2) {
-			if ((CONTEST_IS(CQWW) || (wazmult == 1))
+			if ((CONTEST_IS(CQWW) || wazmult)
 				&& (*comment == '\0'))
 			    strcpy(comment, cqzone);
 
-			if ((itumult == 1) && (*comment == '\0'))
+			if (itumult && (*comment == '\0'))
 			    strcpy(comment, ituzone);
 
 			if (*comment == '\0') {
@@ -398,7 +398,7 @@ int callinput(void) {
 
 	    // Alt-v (M-v), change Morse speed in CW mode, else band down.
 	    case ALT_V: {
-		if (ctcomp == 1) {
+		if (ctcomp) {
 		    while (x != ESCAPE) {
 			nicebox(1, 1, 2, 12, "Cw");
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -476,7 +476,7 @@ int callinput(void) {
 	    // <Enter>, log QSO in CT mode, else test if B4 message should be sent.
 	    case '\n':
 	    case KEY_ENTER: {
-		if (strlen(hiscall) > 2 && ctcomp == 1) {
+		if (strlen(hiscall) > 2 && ctcomp) {
 		    /* There seems to be a call, log it in CT mode but only if
 		     * the exchange field is not empty.
 		     */
@@ -490,7 +490,7 @@ int callinput(void) {
 		    }
 		}
 
-		if (strlen(hiscall) < 3 || nob4 == 1)
+		if (strlen(hiscall) < 3 || nob4)
 		    break;
 
 		/* check b4 QSO if call is long enough and 'nob4' off */
@@ -508,7 +508,7 @@ int callinput(void) {
 
 	    /* <Insert>, send exchange in CT mode */
 	    case KEY_IC: {
-		if (ctcomp != 0) {
+		if (ctcomp) {
 		    /* F3 (RST macro) */
 		    send_standard_message(2);
 		    /* Set to space to move cursor to exchange field
@@ -636,11 +636,7 @@ int callinput(void) {
 	    // Alt-r (M-r) or Alt-s (M-s), toggle score window.
 	    case ALT_R:
 	    case ALT_S: {
-		if (showscore_flag == 0)
-		    showscore_flag = 1;
-		else {
-		    showscore_flag = 0;
-		}
+		showscore_flag = !showscore_flag;
 		clear_display();
 		break;
 	    }
@@ -667,7 +663,7 @@ int callinput(void) {
 
 	    // Alt-b (M-b), band-up for TR-Log mode.
 	    case ALT_B: {
-		if (ctcomp == 0) {
+		if (!ctcomp) {
 		    handle_bandswitch(BAND_UP);
 		}
 		break;
@@ -699,10 +695,7 @@ int callinput(void) {
 
 	    // Alt-c (M-c), toggle check window.
 	    case ALT_C: {
-		if (searchflg != SEARCHWINDOW)
-		    searchflg = SEARCHWINDOW;
-		else
-		    searchflg = 0;
+		searchflg = !searchflg;
 		break;
 	    }
 
