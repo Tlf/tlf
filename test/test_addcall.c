@@ -45,7 +45,7 @@ int setup_default(void **state) {
 
     setcontest("CQWW");
 
-    pfxmult = 0;
+    pfxmult = false;
     dupe = 0;
 
     /* it may be a bug that addcall does not initialize addcallarea */

@@ -15,6 +15,8 @@ void handle_logging(enum log_lvl lvl, ...) {
 time_t get_time() {
     return 0;   // TBD
 }
+void clear_line(int row) {
+}
 
 int setup_default(void **state) {
 

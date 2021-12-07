@@ -79,11 +79,11 @@ void write_log_fm_cabr() {
     qsonum = cablinecnt;
     sprintf(qsonrstr, "%04d", cablinecnt);
 
-    if (serial_grid4_mult == 1) {
+    if (serial_grid4_mult) {
 	strcpy(section, getgrid(comment));
     }
 
-    checkexchange(comment);
+    checkexchange(comment, false);
     dupe = is_dupe(hiscall, bandinx, trxmode);
     current_qso = collect_qso_data();
     addcall(current_qso);   /* add call to worked list and check it for dupe */

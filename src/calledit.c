@@ -54,8 +54,8 @@ void calledit(void) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
-	mvprintw(12, 29, "            ");
-	mvprintw(12, 29, "%s", hiscall);
+	mvaddstr(12, 29, "            ");
+	mvaddstr(12, 29, hiscall);
 	move(12, 29 + b);
 	/* no refreshp() here as getch() calls wrefresh() for the
 	 * panel with last output (whre the cursor should go */
@@ -188,8 +188,8 @@ void calledit(void) {
     attroff(A_STANDOUT);
     attron(COLOR_PAIR(C_HEADER));
 
-    mvprintw(12, 29, "            ");
-    mvprintw(12, 29, "%s", hiscall);
+    mvaddstr(12, 29, "            ");
+    mvaddstr(12, 29, hiscall);
     refreshp();
 
     attron(A_STANDOUT);
@@ -229,7 +229,7 @@ int insert_char(int curposition) {
 	}
 
 	// Too long!
-	if (strlen(hiscall) + 1 == 13)
+	if (strlen(hiscall) + 1 == MAX_CALL_LENGTH)
 	    break;		// leave insert mode
 
 	// Accept A-Z or / and 1-9
@@ -249,7 +249,7 @@ int insert_char(int curposition) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
-	mvprintw(12, 29, "%s", hiscall);
+	mvaddstr(12, 29, hiscall);
 	curposition++;
 	move(12, 29 + curposition);
 	refreshp();

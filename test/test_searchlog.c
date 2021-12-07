@@ -20,12 +20,15 @@
 // OBJECT ../src/nicebox.o
 // OBJECT ../src/qtcutil.o
 // OBJECT ../src/printcall.o
+// OBJECT ../src/recall_exchange.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/err_utils.o
 // OBJECT ../src/ui_utils.o
 // OBJECT ../src/score.o
 // OBJECT ../src/plugin.o
 // OBJECT ../src/utils.o
+
+char section[8] = "";       // defined in getexchange.c
 
 extern WINDOW *search_win;
 extern PANEL *search_panel;
@@ -48,6 +51,8 @@ int stoptx() {
 
 // clear_display.c
 void clear_display() {
+}
+void clear_line(int row) {
 }
 
 // clusterinfo.c
@@ -119,17 +124,14 @@ int setup_default(void **state) {
     iscontest = false;
 
     search_win = NULL;
-    searchflg = SEARCHWINDOW;
+    searchflg = true;
     trxmode = CWMODE;
     mixedmode = 0;
 
     callmaster_filename = NULL;
 
-    partials = 1;
-    use_part = 0;
-
-    strcpy(zone_export, "");
-    strcpy(zone_fix, "");
+    partials = true;
+    use_part = false;
 
     clear_mvprintw_history();
 
@@ -162,7 +164,7 @@ static void remove_callmaster() {
 
 int teardown_default(void **state) {
     remove_callmaster();
-    FREE_DYNAMIC_STRING (callmaster_filename);
+    FREE_DYNAMIC_STRING(callmaster_filename);
     return 0;
 }
 
@@ -281,7 +283,7 @@ void test_bandstr2line(void **state) {
 
 /* testing pickup call suggestion for USEPARTIAL */
 void test_UsePartialFromLog(void **state) {
-    use_part = 1;
+    use_part = true;
     strcpy(hiscall, "K4DE");
     filterLog();
     handlePartials();
@@ -289,7 +291,7 @@ void test_UsePartialFromLog(void **state) {
 }
 
 void test_UsePartialFromLogNotUnique(void **state) {
-    use_part = 1;
+    use_part = true;
     strcpy(hiscall, "UA");
     filterLog();
     handlePartials();
@@ -299,7 +301,7 @@ void test_UsePartialFromLogNotUnique(void **state) {
 void test_UsePartialFromCallmaster(void **state) {
     write_callmaster("callmaster", "# data\nA1AA\nA2BB\n\n");
     load_callmaster();
-    use_part = 1;
+    use_part = true;
     strcpy(hiscall, "A1");
     filterLog();
     handlePartials();
@@ -309,7 +311,7 @@ void test_UsePartialFromCallmaster(void **state) {
 void test_UsePartialNotUnique(void **state) {
     write_callmaster("callmaster", "# data\nA1AA\nLA3AA\nA3BB\n");
     load_callmaster();
-    use_part = 1;
+    use_part = true;
     strcpy(hiscall, "A3");
     filterLog();
     handlePartials();
@@ -320,7 +322,7 @@ void test_UsePartialNotUnique_only_callmaster(void **state) {
     // 2 matches for HG
     write_callmaster("callmaster", "# data\nA1AA\nA2HG\nHG3BB\n");
     load_callmaster();
-    use_part = 1;
+    use_part = true;
     strcpy(hiscall, "HG");  // not in log yet
     filterLog();
     handlePartials();
@@ -365,44 +367,6 @@ void test_displayPartials(void **state) {
     check_mvprintw_output(24, 1, 1, "OE3UAI");  // first
     check_mvprintw_output(23, 1, 7, " UA3JK");  // second
     check_mvprintw_output(0, 5, 28, " UA9VAA"); // last
-}
-
-/* test lookup of zone - will be used for display if already worked
- * - normally determined from countryinformation
- * - can be picked up from previous qso if we have full match
- * - or overwritten in exchange field */
-void test_ZoneFromCountry(void **state) {
-    setcontest("cqww");
-    strcpy(zone_export, "15");
-    strcpy(hiscall, "OH2");
-    filterLog();
-    assert_int_equal(getZone(), 15);
-}
-
-void test_ZoneFromExchange(void **state) {
-    setcontest("cqww");
-    strcpy(zone_fix, "14");
-    strcpy(zone_export, "15");
-    strcpy(hiscall, "OH2");
-    filterLog();
-    assert_int_equal(getZone(), 14);
-}
-
-void test_ZoneFromLog_mixedmode(void **state) {
-    setcontest("cqww");
-    mixedmode = 1;
-    strcpy(zone_export, "14");
-    strcpy(hiscall, "K4D");
-    filterLog();
-    assert_int_equal(getZone(), 5);
-}
-
-void test_ZoneFromLog(void **state) {
-    setcontest("cqww");
-    strcpy(zone_export, "14");
-    strcpy(hiscall, "SP9");
-    filterLog();
-    assert_int_equal(getZone(), 15);
 }
 
 /* test position of output on lower border of search window */

@@ -65,7 +65,7 @@ void stewperry_show_summary(int points, float fixedmult);
 void stewperry_show_summary(int points, float fixedmult) {
     float mult;
 
-    mvprintw(5, START_COL, "%s", spaces(80 - START_COL));
+    mvaddstr(5, START_COL, spaces(80 - START_COL));
     /* TODO: respect field boundaries for large numbers */
     mult = (fixedmult == 0.0) ? 1.0 : fixedmult;
 
@@ -76,7 +76,7 @@ void stewperry_show_summary(int points, float fixedmult) {
 
 /* show summary line */
 void show_summary(int points, int multi) {
-    mvprintw(5, START_COL, "%s", spaces(80 - START_COL));
+    mvaddstr(5, START_COL, spaces(80 - START_COL));
     /* TODO: respect field boundaries for large numbers */
     mvprintw(5, START_COL, "Pts: %d  Mul: %d Score: %d",
 	     points, multi, points * multi);
@@ -95,7 +95,7 @@ void display_header(int *bi) {
 
     /* prepare header line */
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-    mvprintw(1, START_COL, "Band ");
+    mvaddstr(1, START_COL, "Band ");
     for (i = 0; i < 6; i++) {
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 	addstr("  ");
@@ -107,14 +107,14 @@ void display_header(int *bi) {
 
     /* show number of QSO */
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-    mvprintw(2, START_COL, "QSO   ");
+    mvaddstr(2, START_COL, "QSO   ");
     for (i = 0; i < 6; i++) {
 	printfield(2, band_cols[i], qsos_per_band[bi[i]]);
     }
 
-    mvprintw(3, START_COL, "%s", spaces(80 - START_COL));
-    mvprintw(4, START_COL, "%s", spaces(80 - START_COL));
-    mvprintw(5, START_COL, "%s", spaces(80 - START_COL));
+    mvaddstr(3, START_COL, spaces(80 - START_COL));
+    mvaddstr(4, START_COL, spaces(80 - START_COL));
+    mvaddstr(5, START_COL, spaces(80 - START_COL));
 
 }
 
@@ -170,10 +170,10 @@ int get_nr_of_mults() {
 	} else {
 	    return 1;
 	}
-    } else if (dx_arrlsections == 1) {
+    } else if (dx_arrlsections) {
 
 	return totalmults + totalcountries;
-    } else if (country_mult == 1) {
+    } else if (country_mult) {
 
 	return totalcountries;
     } else if (multlist == 1 && !CONTEST_IS(ARRL_SS)) {
@@ -182,25 +182,25 @@ int get_nr_of_mults() {
     } else if (CONTEST_IS(PACC_PA)) {
 
 	return totalcountries;
-    } else if ((wysiwyg_once == 1)
-	       || (sectn_mult_once == 1)
+    } else if ((wysiwyg_once)
+	       || sectn_mult_once
 	       || (unique_call_multi == UNIQUECALL_ALL)) {
 
 	return nr_multis;
-    } else if ((wysiwyg_multi == 1)
+    } else if (wysiwyg_multi
 	       || (unique_call_multi == UNIQUECALL_BAND)
-	       || (serial_section_mult == 1)
-	       || (serial_grid4_mult == 1)
-	       || (sectn_mult == 1)) {
+	       || serial_section_mult
+	       || serial_grid4_mult
+	       || sectn_mult) {
 
 	return totalmults;
-    } else if (CONTEST_IS(WPX) || pfxmult == 1) {
+    } else if (CONTEST_IS(WPX) || pfxmult) {
 
 	return GetNrOfPfx_once();
-    } else if (pfxmultab == 1) {
+    } else if (pfxmultab) {
 
 	return GetNrOfPfx_multiband();
-    } else if ((itumult == 1) || (wazmult == 1)) {
+    } else if (itumult || wazmult) {
 	return totalzones;
     } else
 	/* should never reach that point
@@ -246,40 +246,40 @@ void showscore(void) {
     }
 
     /* show score per band */
-    if ((wysiwyg_multi == 1)
-	    || (serial_section_mult == 1)
-	    || (serial_grid4_mult == 1)
-	    || (sectn_mult == 1)) {
+    if (wysiwyg_multi
+	    || serial_section_mult
+	    || serial_grid4_mult
+	    || sectn_mult) {
 
-	mvprintw(3, START_COL, "Mult ");
+	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], multscore[bi_normal[i]]);
 	}
     }
 
-    if ((itumult == 1) || (wazmult == 1)) {
+    if (itumult || wazmult) {
 
-	mvprintw(3, START_COL, "Mult ");
+	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], zonescore[bi_normal[i]]);
 	}
     }
 
-    if (pfxmultab == 1) {
-	mvprintw(3, START_COL, "Mult ");
+    if (pfxmultab) {
+	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
 	}
     }
 
-    if (dx_arrlsections == 1) {
+    if (dx_arrlsections) {
 
-	mvprintw(3, START_COL, "Cty  ");
+	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	}
 
-	mvprintw(4, START_COL, "Sect");
+	mvaddstr(4, START_COL, "Sect");
 	for (i = 0; i < 6; i++) {
 	    printfield(4, band_cols[i], multscore[bi_normal[i]]);
 	}
@@ -287,12 +287,12 @@ void showscore(void) {
 
     if (CONTEST_IS(CQWW)) {
 
-	mvprintw(3, START_COL, "Cty  ");
+	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	}
 
-	mvprintw(4, START_COL, "Zone ");
+	mvaddstr(4, START_COL, "Zone ");
 	for (i = 0; i < 6; i++) {
 	    printfield(4, band_cols[i], zonescore[bi_normal[i]]);
 	}
@@ -300,15 +300,15 @@ void showscore(void) {
 
     if (CONTEST_IS(ARRLDX_USA)) {
 
-	mvprintw(3, START_COL, "Cty  ");
+	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	}
     }
 
-    if (iscontest && country_mult == 1) {
+    if (iscontest && country_mult) {
 
-	mvprintw(3, START_COL, "Cty  ");
+	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	}
@@ -316,7 +316,7 @@ void showscore(void) {
 
     if (CONTEST_IS(PACC_PA)) {
 
-	mvprintw(3, START_COL, "Cty  ");
+	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	}
@@ -338,7 +338,7 @@ void showscore(void) {
 
     /* show statistics */
     attron(COLOR_PAIR(C_HEADER));
-    mvprintw(6, 55, "%s", spaces(19));
+    mvaddstr(6, 55, spaces(19));
 
     if (iscontest) {   /* show statistics in any contest */
 

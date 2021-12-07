@@ -370,12 +370,12 @@ void muf(void) {
     wattron(win, modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
     for (i = 0; i < LINES; i++)
-	mvwprintw(win, i, 0, "%s", backgrnd_str);
+	mvwaddstr(win, i, 0, backgrnd_str);
 
     mvwprintw(win, 1, 0, "        SSN: %3.0f ", ssn_r);
 
     if (countrynr != 0) {
-	mvwprintw(win, 1, 40, "%s", country);
+	mvwaddstr(win, 1, 40, country);
 	mvwprintw(win, 3, 40, "Dist  : %5.0f km", l);
 	mvwprintw(win, 4, 40, "Azim  :   %3.0f degrees", u);
 	mvwprintw(win, 5, 40, "F-hops:    %2.0f", n);
@@ -403,7 +403,7 @@ void muf(void) {
 	su_min = (int)((sunrise - su) * 60);
 	sd_min = (int)((sundown - sd) * 60);
 
-	mvwprintw(win, 3, 0, "%s", time_buf);
+	mvwaddstr(win, 3, 0, time_buf);
 	mvwprintw(win, 7, 40, "Sun   : %02d:%02d-%02d:%02d UTC", su, su_min, sd,
 		  sd_min);
     }
@@ -423,9 +423,9 @@ void muf(void) {
 	q -= 2.0;
 	row++;
     }
-    mvwprintw(win, 20, 0, "---------------------------");	/* 27 dashes */
-    mvwprintw(win, 21, 0, " 0 2 4 6 8 10  14  18  22 H (UTC)");
-    mvwprintw(win, 4, 30, "MHz");
+    mvwaddstr(win, 20, 0, "---------------------------");	/* 27 dashes */
+    mvwaddstr(win, 21, 0, " 0 2 4 6 8 10  14  18  22 H (UTC)");
+    mvwaddstr(win, 4, 30, "MHz");
 
     if (countrynr != 0) {
 	for (t = 1; t <= 24; t++) {
@@ -446,7 +446,7 @@ void muf(void) {
 	    double ho = t + 1;
 	    if (ve < 4)
 		ve = 4;
-	    mvwprintw(win, (int) ve, (int) ho, "+");
+	    mvwaddstr(win, (int) ve, (int) ho, "+");
 
 	    while (k <= n - 0.25) {
 		interlat();
@@ -460,11 +460,11 @@ void muf(void) {
 	    if (ve > 20)
 		ve = 20;
 
-	    mvwprintw(win, (int) ve, (int) ho, "-");
+	    mvwaddstr(win, (int) ve, (int) ho, "-");
 	}
     }
 
-    mvwprintw(win, 23, 0, " --- Press a key to continue --- ");
+    mvwaddstr(win, 23, 0, " --- Press a key to continue --- ");
     refreshp();
     key_get();
 

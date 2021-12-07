@@ -91,24 +91,24 @@ static bool arrldx_usa_ismulti(spot *data)  {
 bool general_ismulti(spot *data) {
     int band = data->band;
 
-    if (dx_arrlsections == 1) {
+    if (dx_arrlsections) {
 	/* no evaluation of sections, check only country */
 	return arrldx_usa_ismulti(data);
     }
 
-    if (country_mult == 1) {
+    if (country_mult) {
 	return ((countries[data->ctynr] & inxes[band]) == 0);
     }
 
-    if (pfxmult == 1) {
+    if (pfxmult) {
 	return wpx_ismulti(data);
     }
 
-    if (pfxmultab == 1) {
+    if (pfxmultab) {
 	return pfx_on_band_ismulti(data);
     }
 
-    if ((itumult == 1) || (wazmult == 1)) {
+    if (itumult || wazmult) {
 	return ((zones[data->cqzone] & inxes[band]) == 0);
     }
 
@@ -159,7 +159,7 @@ contest_config_t config_cqww = {
 	.fn = score_cqww,
     },
     .is_multi = cqww_ismulti,
-    .exchange_width = 3,    // zone nr
+    .exchange_width = 12,    // zone nr + fixes
 };
 
 contest_config_t config_sprint = {
@@ -319,9 +319,9 @@ void setcontest(char *name) {
     char ua9call[] = "UA9AA";
 
     iscontest = true;
-    showscore_flag = 1;
-    searchflg = 1;
-    sectn_mult = 0;
+    showscore_flag = true;
+    searchflg = true;
+    sectn_mult = false;
     noleadingzeros = 0;
 
     w_cty = getctynr(wcall);
@@ -335,13 +335,13 @@ void setcontest(char *name) {
 
 
     if (CONTEST_IS(ARRLDX_DX)) {
-	sectn_mult = 1;
+	sectn_mult = true;
     }
 
     if (CONTEST_IS(ARRL_SS)) {
 	qso_once = true;
 	multlist = 1;
-//      sectn_mult = 1;
+//      sectn_mult = true;
 	noleadingzeros = 1;
     }
 
@@ -357,12 +357,12 @@ void setcontest(char *name) {
 	ua9_cty = getctynr(ua9call);
     }
 
-    if (dx_arrlsections == 1) {
+    if (dx_arrlsections) {
 	/* same here */
     }
 
     if (CONTEST_IS(QSO)) {
 	iscontest = false;
-	showscore_flag = 0;
+	showscore_flag = false;
     }
 }

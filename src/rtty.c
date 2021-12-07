@@ -43,6 +43,7 @@
 
 static int fdcont;		// global for this file: tty file descriptor
 static char ry_term[5][50] = { "", "", "", "", "" };
+static int pos = 0;
 
 /* ----------------------- initialize  controller ------------------------ */
 int init_controller() {
@@ -51,9 +52,9 @@ int init_controller() {
 
     if ((fdcont = open(controllerport, O_RDWR | O_NONBLOCK)) < 0) {
 	showstring(controllerport,
-		   ": Open  failed for controller port!!!\n");
+		   ": Open failed for controller port!!!\n");
 	sleep(1);
-	return (-1);
+	return -1;
     }
 
     termattribs.c_iflag = IGNBRK | IGNPAR | IMAXBEL | IXOFF;
@@ -76,97 +77,81 @@ int init_controller() {
 
     showstring(controllerport, " opened...\n");
 
-    return (fdcont);		// return file descriptor
+    return fdcont;		// return file descriptor
 }
 
 /* ------------------------- deinit controller -------------------------- */
 void deinit_controller() {
-    if (fdcont)
+    if (fdcont) {
 	close(fdcont);
+	fdcont = 0;
+    }
+}
+
+/* ---------------------- start new line ---------------------------------*/
+static void scroll_up() {
+    int i;
+    for (i = 0; i < 4; ++i) {
+	g_strlcpy(ry_term[i], ry_term[i + 1], 41);
+    }
+    ry_term[4][0] = '\0';
+    pos = 0;
+
+    if (qtc_ry_capture == 1) {
+	if (qtc_ry_currline == (QTC_RY_LINE_NR - 1)
+		&& qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
+	    for (i = 0; i < (QTC_RY_LINE_NR - 1); i++) {
+		g_strlcpy(qtc_ry_lines[i].content,
+			  qtc_ry_lines[i + 1].content, 41);
+		qtc_ry_lines[i].attr = qtc_ry_lines[i + 1].attr;
+	    }
+	} else {
+	    if (strlen(qtc_ry_lines[qtc_ry_currline].content) > 0) {
+		qtc_ry_currline++;
+	    }
+	}
+	qtc_ry_lines[qtc_ry_currline].content[0] = '\0';
+	qtc_ry_lines[qtc_ry_currline].attr = 0;
+    }
 }
 
 /* ------------------------  add text to terminal ------------------------ */
 void ry_addchar(char c) {
 
-    static int k = 0;
-    int i = 0;
     FILE *ry_fp;
 
+    // write to log file
     if ((ry_fp = fopen("RTTYlog", "a")) == NULL) {
 	TLF_LOG_INFO("cannot open RTTYlog");
 	return;
-    } else {
-	fputc(c, ry_fp);
-	fclose(ry_fp);
     }
+    fputc(c, ry_fp);
+    fclose(ry_fp);
 
     if ((c & 0x80) != 0)
-	return;			/* drop on ascii characters */
+	return;			/* drop non-ascii characters */
 
-    if ((c == '\n') || (c == '\r')) {
-	/* start new line */
-	g_strlcpy(ry_term[0], ry_term[1], 41);
-	g_strlcpy(ry_term[1], ry_term[2], 41);
-	g_strlcpy(ry_term[2], ry_term[3], 41);
-	g_strlcpy(ry_term[3], ry_term[4], 41);
-	ry_term[4][0] = '\0';
-	k = 0;
-
-	if (qtc_ry_capture == 1) {
-	    if (qtc_ry_currline == (QTC_RY_LINE_NR - 1)
-		    && qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
-		for (i = 0; i < (QTC_RY_LINE_NR - 1); i++) {
-		    g_strlcpy(qtc_ry_lines[i].content,
-			      qtc_ry_lines[i + 1].content, 41);
-		    qtc_ry_lines[i].attr = qtc_ry_lines[i + 1].attr;
-		}
-	    } else {
-		if (strlen(qtc_ry_lines[qtc_ry_currline].content) > 0) {
-		    qtc_ry_currline++;
-		}
-	    }
-	    qtc_ry_lines[qtc_ry_currline].content[0] = '\0';
-	    qtc_ry_lines[qtc_ry_currline].attr = 0;
-	}
-    } else {
-	if (iscntrl(c)) {
-	    /* replace all other control characters by space */
-	    c = ' ';
-	}
-
-	if (k >= 40) {
-	    // scroll line
-	    g_strlcpy(ry_term[0], ry_term[1], 41);
-	    g_strlcpy(ry_term[1], ry_term[2], 41);
-	    g_strlcpy(ry_term[2], ry_term[3], 41);
-	    g_strlcpy(ry_term[3], ry_term[4], 41);
-	    ry_term[4][0] = '\0';
-	    k = 0;
-
-	    if (qtc_ry_capture == 1) {
-		if (qtc_ry_currline == (QTC_RY_LINE_NR - 1)
-			&& qtc_ry_lines[qtc_ry_currline].content[0] != '\0') {
-		    for (i = 0; i < (QTC_RY_LINE_NR - 1); i++) {
-			g_strlcpy(qtc_ry_lines[i].content,
-				  qtc_ry_lines[i + 1].content, 41);
-			qtc_ry_lines[i].attr = qtc_ry_lines[i + 1].attr;
-		    }
-		} else {
-		    qtc_ry_currline++;
-		}
-		qtc_ry_lines[qtc_ry_currline].content[0] = '\0';
-		qtc_ry_lines[qtc_ry_currline].attr = 0;
-	    }
-	}
-
-	// add char to line
-	if (qtc_ry_capture == 1) {
-	    qtc_ry_lines[qtc_ry_currline].content[k] = c;
-	    qtc_ry_lines[qtc_ry_currline].content[k + 1] = '\0';
-	}
-	ry_term[4][k++] = c;
-	ry_term[4][k] = '\0';
+    if (c == '\n' || c == '\r') {   /* NL or CR */
+	scroll_up();
+	return;
     }
+
+    if (iscntrl(c)) { /* replace all other control characters by space */
+	c = ' ';
+    }
+
+    if (pos >= 40) {
+	scroll_up();
+    }
+
+    // add char to line
+    if (qtc_ry_capture == 1) {
+	qtc_ry_lines[qtc_ry_currline].content[pos] = c;
+	qtc_ry_lines[qtc_ry_currline].content[pos + 1] = '\0';
+    }
+    ry_term[4][pos] = c;
+    ry_term[4][pos + 1] = '\0';
+    ++pos;
 }
 
 
@@ -181,20 +166,14 @@ void show_rtty(void) {
     attroff(A_STANDOUT);
     attron(modify_attr(COLOR_PAIR(C_HEADER)));
 
-    mvprintw(1, 0, "%s", spaces(40));
-    mvprintw(1, 0, "%s", ry_term[0]);
-    mvprintw(2, 0, "%s", spaces(40));
-    mvprintw(2, 0, "%s", ry_term[1]);
-    mvprintw(3, 0, "%s", spaces(40));
-    mvprintw(3, 0, "%s", ry_term[2]);
-    mvprintw(4, 0, "%s", spaces(40));
-    mvprintw(4, 0, "%s", ry_term[3]);
-    mvprintw(5, 0, "%s", spaces(40));
-    mvprintw(5, 0, "%s", ry_term[4]);
+    for (int i = 0; i < 5; ++i) {
+	mvaddstr(i + 1, 0, spaces(40));
+	mvaddstr(i + 1, 0, ry_term[i]);
+    }
     if (commentfield == 0) {
 	printcall();
     } else {
-	mvprintw(12, 54, "%s", comment);
+	mvaddstr(12, 54, comment);
     }
     refreshp();
     attron(A_STANDOUT);
@@ -203,34 +182,34 @@ void show_rtty(void) {
 
 /* ---------------------  receive rtty ----------------------------------- */
 
-int rx_rtty() {
+void rx_rtty() {
 
     int i;
     int j;
     char line[40];
     char c;
-    static int miniterm_status = 0;	/* for one time initialization */
+    static bool initialized = false;	/* for one time initialization */
     static int state = 0;		/* 0 - line start found
 					   1 - ')' found
 					   2 - ':' found
 					   3 - additional space passed
 					 */
 
-    if (fdcont > 0) {
-
-	if (miniterm_status == 0 && miniterm == 1) {
-	    miniterm_status = 1;
-	    ry_term[0][0] = '\0';
-	    ry_term[1][0] = '\0';
-	    ry_term[2][0] = '\0';
-	    ry_term[3][0] = '\0';
-	    ry_term[4][0] = '\0';
+    if (!initialized) {
+	for (i = 0; i < 5; ++i) {
+	    ry_term[i][0] = '\0';
 	}
+	pos = 0;
+	initialized = true;
+    }
+
+
+    if (fdcont > 0) {
 
 	i = read(fdcont, line, 39);
 
 	if (i == 0)
-	    return 0;
+	    return;
 
 	if (digikeyer == GMFSK) {
 	    /* skip begin of line until '):' if keyer == GMFSK */
@@ -278,5 +257,4 @@ int rx_rtty() {
 	}
     }
 
-    return (0);
 }

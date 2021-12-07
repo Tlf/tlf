@@ -20,6 +20,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "clear_display.h"
 #include "err_utils.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -35,8 +36,8 @@ void handle_logging(enum log_lvl lvl, ...) {
     str = g_strdup_vprintf(fmt, args);
     va_end(args);
 
-    mvprintw(LINES - 1, 0, "%s", backgrnd_str);
-    mvprintw(LINES - 1, 0, "%s", str);
+    clear_line(LINES - 1);
+    mvaddstr(LINES - 1, 0, str);
     refreshp();
 
     g_free(str);

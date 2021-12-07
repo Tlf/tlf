@@ -150,7 +150,10 @@ int callinput(void) {
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    while (strlen(hiscall) <= 13) {
+    printcall();	/* print call input field */
+    searchlog();
+
+    while (strlen(hiscall) <= MAX_CALL_LENGTH) {
 
 	show_zones(bandinx);
 	update_info_line();
@@ -178,7 +181,7 @@ int callinput(void) {
 	    /* if BMAUTOADD is active and user has input a call sign
 	     * (indicated by non-zero freqstore) check if he turns away
 	     * from frequency and if so add call to spot list */
-	    if (bmautoadd != 0 && freqstore != 0) {
+	    if (bmautoadd && freqstore != 0) {
 		if (strlen(hiscall) >= 3) {
 		    if (fabs(freq - freqstore) > 500) {
 			add_to_spots(hiscall, freqstore);
@@ -232,7 +235,7 @@ int callinput(void) {
 	    // <Enter>, sends CQ message (F1), starts autoCQ, or sends S&P message.
 	    if (x == '\n' || x == KEY_ENTER) {
 		if (cqmode == CQ) {
-		    if (noautocq != 1)
+		    if (!noautocq)
 			x = auto_cq();
 		} else {
 		    sendspcall();
@@ -289,11 +292,11 @@ int callinput(void) {
 		} else {
 
 		    if (strlen(hiscall) > 2) {
-			if ((CONTEST_IS(CQWW) || (wazmult == 1))
+			if ((CONTEST_IS(CQWW) || wazmult)
 				&& (*comment == '\0'))
 			    strcpy(comment, cqzone);
 
-			if ((itumult == 1) && (*comment == '\0'))
+			if (itumult && (*comment == '\0'))
 			    strcpy(comment, ituzone);
 
 			if (*comment == '\0') {
@@ -361,7 +364,7 @@ int callinput(void) {
 		char weightbuf[5] = "";
 		char *end;
 
-		mvprintw(12, 29, "Wght: -50..50");
+		mvaddstr(12, 29, "Wght: -50..50");
 
 		nicebox(1, 1, 2, 12, "Cw");
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -370,7 +373,7 @@ int callinput(void) {
 		refreshp();
 
 		usleep(800000);
-		mvprintw(3, 10, "   ");
+		mvaddstr(3, 10, "   ");
 
 		echo();
 		mvgetnstr(3, 10, weightbuf, 3);
@@ -395,7 +398,7 @@ int callinput(void) {
 
 	    // Alt-v (M-v), change Morse speed in CW mode, else band down.
 	    case ALT_V: {
-		if (ctcomp == 1) {
+		if (ctcomp) {
 		    while (x != ESCAPE) {
 			nicebox(1, 1, 2, 12, "Cw");
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -436,8 +439,8 @@ int callinput(void) {
 		    rst_sent_up();
 
 		    if (!no_rst)
-			mvprintw(12, 44, "%s", sent_rst);
-		    mvprintw(12, 29, "%s", hiscall);
+			mvaddstr(12, 44, sent_rst);
+		    mvaddstr(12, 29, hiscall);
 
 		} else {	// change cw speed
 		    speedup();
@@ -457,8 +460,8 @@ int callinput(void) {
 		    rst_sent_down();
 
 		    if (!no_rst)
-			mvprintw(12, 44, "%s", sent_rst);
-		    mvprintw(12, 29, "%s", hiscall);
+			mvaddstr(12, 44, sent_rst);
+		    mvaddstr(12, 29, hiscall);
 
 		} else {
 
@@ -473,7 +476,7 @@ int callinput(void) {
 	    // <Enter>, log QSO in CT mode, else test if B4 message should be sent.
 	    case '\n':
 	    case KEY_ENTER: {
-		if (strlen(hiscall) > 2 && ctcomp == 1) {
+		if (strlen(hiscall) > 2 && ctcomp) {
 		    /* There seems to be a call, log it in CT mode but only if
 		     * the exchange field is not empty.
 		     */
@@ -487,7 +490,7 @@ int callinput(void) {
 		    }
 		}
 
-		if (strlen(hiscall) < 3 || nob4 == 1)
+		if (strlen(hiscall) < 3 || nob4)
 		    break;
 
 		/* check b4 QSO if call is long enough and 'nob4' off */
@@ -505,7 +508,7 @@ int callinput(void) {
 
 	    /* <Insert>, send exchange in CT mode */
 	    case KEY_IC: {
-		if (ctcomp != 0) {
+		if (ctcomp) {
 		    /* F3 (RST macro) */
 		    send_standard_message(2);
 		    /* Set to space to move cursor to exchange field
@@ -525,12 +528,12 @@ int callinput(void) {
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 		for (j = 13; j <= 23; j++) {
-		    mvprintw(j, 0, "%s", backgrnd_str);
+		    clear_line(j);
 		}
 
 		attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-		mvprintw(12, 29, "%s", spaces(12));
+		mvaddstr(12, 29, spaces(12));
 		move(12, 29);
 		refreshp();
 		break;
@@ -623,7 +626,7 @@ int callinput(void) {
 	    case KEY_BACKSPACE: {
 		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
-		    mvprintw(cury, curx - 1, " ");
+		    mvaddstr(cury, curx - 1, " ");
 		    move(cury, curx - 1);
 		    hiscall[strlen(hiscall) - 1] = '\0';
 		}
@@ -633,11 +636,7 @@ int callinput(void) {
 	    // Alt-r (M-r) or Alt-s (M-s), toggle score window.
 	    case ALT_R:
 	    case ALT_S: {
-		if (showscore_flag == 0)
-		    showscore_flag = 1;
-		else {
-		    showscore_flag = 0;
-		}
+		showscore_flag = !showscore_flag;
 		clear_display();
 		break;
 	    }
@@ -664,7 +663,7 @@ int callinput(void) {
 
 	    // Alt-b (M-b), band-up for TR-Log mode.
 	    case ALT_B: {
-		if (ctcomp == 0) {
+		if (!ctcomp) {
 		    handle_bandswitch(BAND_UP);
 		}
 		break;
@@ -696,10 +695,7 @@ int callinput(void) {
 
 	    // Alt-c (M-c), toggle check window.
 	    case ALT_C: {
-		if (searchflg != SEARCHWINDOW)
-		    searchflg = SEARCHWINDOW;
-		else
-		    searchflg = 0;
+		searchflg = !searchflg;
 		break;
 	    }
 
@@ -715,7 +711,7 @@ int callinput(void) {
 		if (k_ptt == 0) {
 		    k_ptt = 1;
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 2, "PTT on   ");
+		    mvaddstr(0, 2, "PTT on   ");
 		    move(12, 29);
 		    refreshp();
 		    netkeyer(K_PTT, "1");	// ptt on
@@ -734,7 +730,7 @@ int callinput(void) {
 	    // Alt-t (M-t), tune xcvr via cwdaemon.
 	    case ALT_T: {
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 2, "Tune     ");
+		mvaddstr(0, 2, "Tune     ");
 		move(12, 29);
 		refreshp();
 
@@ -764,7 +760,7 @@ int callinput(void) {
 
 	    // Alt-x (M-x), Exit
 	    case ALT_X: {
-		mvprintw(13, 29, "Do you want to leave Tlf? (y/n): ");
+		mvaddstr(13, 29, "Do you want to leave Tlf? (y/n): ");
 		while (x != 'N') {
 
 		    x = toupper(key_get());
@@ -913,17 +909,17 @@ int callinput(void) {
 		if (lan_active) {
 
 		    for (t = 0; t <= 5; t++)
-			mvprintw(14 + t, 1, "%s", spaces(60));
+			mvaddstr(14 + t, 1, spaces(60));
 
 		    for (t = 0; t <= 4; t++)
-			mvprintw(15 + t, 1, "%s", talkarray[t]);
+			mvaddstr(15 + t, 1, talkarray[t]);
 		    nicebox(14, 0, 5, 59, "Messages");
 
 		    refreshp();
 		    key_get();
 		    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 		    for (t = 0; t <= 6; t++)
-			mvprintw(14 + t, 0, "%s", spaces(61));
+			mvaddstr(14 + t, 0, spaces(61));
 
 		    clear_display();
 		}
@@ -942,7 +938,7 @@ int callinput(void) {
 		cqdelay++;
 
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 19, "  ");
+		mvaddstr(0, 19, "  ");
 		mvprintw(0, 19, "%i", cqdelay);
 	    }
 
@@ -959,7 +955,7 @@ int callinput(void) {
 		cqdelay--;
 
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 19, "  ");
+		mvaddstr(0, 19, "  ");
 		mvprintw(0, 19, "%i", cqdelay);
 	    }
 
@@ -971,7 +967,7 @@ int callinput(void) {
 	if (valid_call_char(x)) {
 	    x = g_ascii_toupper(x);
 
-	    if (strlen(hiscall) < 13) {
+	    if (strlen(hiscall) < MAX_CALL_LENGTH) {
 		instring[0] = x;
 		instring[1] = '\0';
 		addch(x);
@@ -1252,7 +1248,7 @@ void handle_bandswitch(int direction) {
     }
 
     attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-    mvprintw(12, 0, "%s", band[bandinx]);
+    mvaddstr(12, 0, band[bandinx]);
 
     if (trx_control) {
 	freq = bandfrequency[bandinx]; // TODO: is this needed?

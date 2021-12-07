@@ -190,40 +190,40 @@ void test_expandHisNr(void **state) {
 
 /* Tests sendSPcall() */
 void test_prepareSPcallCWnoDeMode(void **state) {
-    demode = 0;
+    demode = false;
     assert_string_equal(SPcall = PrepareSPcall(), "dl1jbe");
 }
 
 void test_prepareSPcallCWDeMode(void **state) {
-    demode = 1;
+    demode = true;
     assert_string_equal(SPcall = PrepareSPcall(), "DE dl1jbe");
 }
 
 void test_prepareSPcallDIGInoDeMode(void **state) {
     trxmode = DIGIMODE;
     digikeyer = NET_KEYER;
-    demode = 0;
+    demode = false;
     assert_string_equal(SPcall = PrepareSPcall(), "|dl1jbe ");
 }
 
 void test_prepareSPcallDIGIDeMode(void **state) {
     trxmode = DIGIMODE;
     digikeyer = NET_KEYER;
-    demode = 1;
+    demode = true;
     assert_string_equal(SPcall = PrepareSPcall(), "|lz1ab DE dl1jbe ");
 }
 
 void test_prepareSPcallMFJnoDeMode(void **state) {
     trxmode = DIGIMODE;
     digikeyer = MFJ1278_KEYER;
-    demode = 0;
+    demode = false;
     assert_string_equal(SPcall = PrepareSPcall(), "{ |dl1jbe }");
 }
 
 void test_prepareSPcallMFJDeMode(void **state) {
     trxmode = DIGIMODE;
     digikeyer = MFJ1278_KEYER;
-    demode = 1;
+    demode = true;
     assert_string_equal(SPcall = PrepareSPcall(), "{ |lz1ab DE dl1jbe }");
 }
 

@@ -50,8 +50,6 @@ enum {
 #define SHORTCW 1       /*  short  cw characters in  exchange  (e.g. 0 = T,  9 = N) */
 #define LONGCW 0
 
-#define SEARCHWINDOW 1  /* searchflg on */
-
 typedef enum {
     CQ,         // Run
     S_P,        // Search and Pounce
@@ -60,7 +58,6 @@ typedef enum {
     NONE        // used in trx_memory to signal empty memory
 } cqmode_t;
 
-#define SEND_DE 1		/* de_mode on */
 
 #define FILTER_ANN 1	/*  filter announcements */
 #define FILTER_DX 3
@@ -114,6 +111,7 @@ enum {
 #define ISDUPE 1
 #define NODUPE 0
 
+#define MAX_CALL_LENGTH 13
 #define MAX_QSOS 20000          /* internal qso array */
 #define MAX_DATALINES 1000      /* from ctydb.dat  */
 #define MAX_CALLS 5000          /* max nr of calls in dupe array */
@@ -283,6 +281,8 @@ enum {
 };
 
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
+
+#define LEN(array) (sizeof(array) / sizeof(array[0]))
 
 #endif /* TLF_H */
 

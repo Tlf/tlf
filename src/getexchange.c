@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include "addspot.h"
 #include "callinput.h"
@@ -39,6 +40,7 @@
 #include "lancode.h"
 #include "locator2longlat.h"
 #include "logit.h"
+#include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "qtcwin.h"
 #include "recall_exchange.h"
@@ -56,11 +58,9 @@
 
 #include "getexchange.h"
 
-#define LEN(array) (sizeof(array) / sizeof(array[0]))
 
+char callupdate[MAX_CALL_LENGTH + 1];
 
-
-int getlastpattern(char *checkstring);
 void exchange_edit(void);
 
 int getexchange(void) {
@@ -87,14 +87,14 @@ int getexchange(void) {
     if (CONTEST_IS(ARRL_FD))
 	recall_exchange();
 
-    if ((CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1))
+    if ((CONTEST_IS(CQWW) || wazmult || itumult)
 	    && (*comment == '\0') && (strlen(hiscall) != 0)) {
-	if (itumult == 1)
+	if (itumult)
 	    strcpy(comment, ituzone);
 	else
 	    strcpy(comment, cqzone);
     }
-    if ((exc_cont == 1) && (*comment == '\0')
+    if ((exc_cont) && (*comment == '\0')
 	    && (strlen(hiscall) != 0)) {
 	strcpy(comment, continent);
     }
@@ -111,6 +111,13 @@ int getexchange(void) {
     while (1) {
 
 	refresh_comment();
+
+	checkexchange(comment, true);
+
+	if (call_update && strlen(callupdate) >= 3) {
+	    strcpy(hiscall, callupdate);
+	    printcall();
+	}
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	/* main loop waiting for input */
@@ -195,7 +202,7 @@ int getexchange(void) {
 
 	    /* '+', send TU and log in CT mode */
 	    case '+': {
-		if ((ctcomp != 0) && (strlen(hiscall) > 2)) {
+		if (ctcomp && (strlen(hiscall) > 2)) {
 		    if (comment[0] == '\0') {
 			x = -1;
 		    } else {
@@ -211,7 +218,7 @@ int getexchange(void) {
 
 	    /* <Insert>, send exchange in CT mode */
 	    case KEY_IC: {
-		if (ctcomp != 0) {
+		if (ctcomp) {
 		    /* F3 (RST macro) */
 		    send_standard_message(2);
 
@@ -260,7 +267,7 @@ int getexchange(void) {
 		    rst_recv_up();
 
 		    if (!no_rst)
-			mvprintw(12, 49, "%s", recvd_rst);
+			mvaddstr(12, 49, recvd_rst);
 
 		} else {	/* speed up */
 		    speedup();
@@ -277,7 +284,7 @@ int getexchange(void) {
 		    rst_recv_down();
 
 		    if (!no_rst)
-			mvprintw(12, 49, "%s", recvd_rst);
+			mvaddstr(12, 49, recvd_rst);
 
 		} else {	/* speed down */
 		    speeddown();
@@ -299,7 +306,7 @@ int getexchange(void) {
 	    case KEY_ENTER: {
 		/* log QSO immediately if CT compatible
 		 * or not in contest */
-		if ((ctcomp == 1) || (!iscontest)) {
+		if ((ctcomp) || (!iscontest)) {
 		    /* Don't log if exchange field is empty. */
 		    if (comment[0] == '\0') {
 			x = -1;
@@ -323,17 +330,6 @@ int getexchange(void) {
 		i++;
 		refreshp();
 	    }
-	}
-
-	if ((serial_section_mult == 1) ||
-		(dx_arrlsections == 1) ||
-		(sectn_mult == 1) ||
-		(sectn_mult_once == 1) ||
-		CONTEST_IS(ARRL_SS) ||
-		CONTEST_IS(CQWW) ||
-		CONTEST_IS(STEWPERRY)) {
-
-	    checkexchange(comment);
 	}
 
 	/* <Enter>, <Tab>, Ctl-K, '\' */
@@ -416,34 +412,33 @@ int getexchange(void) {
 	    }
 
 	    if (CONTEST_IS(ARRL_SS) && (x != TAB) && (strlen(section) < 2)) {
-		mvprintw(13, 54, "section?");
-		mvprintw(12, 54, "%s", comment);
+		mvaddstr(13, 54, "section?");
+		mvaddstr(12, 54, comment);
 		x = 0;
-	    } else if (((serial_section_mult == 1) || (sectn_mult == 1))
+	    } else if ((serial_section_mult || sectn_mult)
 		       && ((x != TAB) && (strlen(section) < 1))) {
-		if (serial_or_section == 0 || (serial_or_section == 1
-					       && country_found(hiscall))) {
-		    mvprintw(13, 54, "section?");
-		    mvprintw(12, 54, "%s", comment);
+		if (!serial_or_section
+			|| (serial_or_section && country_found(hiscall))) {
+		    mvaddstr(13, 54, "section?X");
+		    mvaddstr(12, 54, comment);
 		    refreshp();
 		}
 		break;
 
-	    } else if (serial_grid4_mult == 1) {
-		//      mvprintw(13,54, "section?");
-		mvprintw(12, 54, "%s", comment);
+	    } else if (serial_grid4_mult) {
+		//      mvaddstr(13,54, "section?");
+		mvaddstr(12, 54, comment);
 		refreshp();
 		gridmult = getgrid(comment);
 		strcpy(section, gridmult);
 		section[4] = '\0';
 
 		break;
-//                              x = 0; //##debug
 
 	    } else if (CONTEST_IS(STEWPERRY)) {
 		if (check_qra(comment) == 0) {
-		    mvprintw(13, 54, "locator?");
-		    mvprintw(12, 54, "%s", comment);
+		    mvaddstr(13, 54, "locator?");
+		    mvaddstr(12, 54, comment);
 		    break;
 		}
 		refreshp();
@@ -451,8 +446,8 @@ int getexchange(void) {
 	    } else if (CONTEST_IS(CQWW) && trxmode == DIGIMODE && ((countrynr == w_cty)
 		       || (countrynr == ve_cty))) {
 		if (strlen(comment) < 5) {
-		    mvprintw(13, 54, "state/prov?");
-		    mvprintw(12, 54, "%s", comment);
+		    mvaddstr(13, 54, "state/prov?");
+		    mvaddstr(12, 54, comment);
 		    if (x == '\n' || x == KEY_ENTER || x == BACKSLASH) {
 			x = 0;
 		    } else {
@@ -473,553 +468,307 @@ int getexchange(void) {
 
     commentfield = 0;
 
-    return (x);
+    return x;
 }
 
 
 /* ------------------------------------------------------------------------ */
 
-char cmpattern[32] = "                               ";	// global
-char ssexchange[30] = "";
-char section[8] = "";
-char callupdate[7];
-int call_update = 0;
-char zone_export[3] = "  ";
-char zone_fix[3] = "";
+char section[MAX_SECTION_LENGTH + 1] = "";
+bool call_update = false;
 
 /* ------------------------------------------------------------------------ */
 
-void checkexchange(char *comment) {
 
-    char precedent[] = " ";
-    char serial[5] = "    ";
-    char check[3] = "  ";
-    char checksection[30];
-    char zone[4] = "";
+static void checkexchange_cqww(char *comment, bool interactive) {
+    // <zone> [call_fix] [zone_fix]
+    static const char *PATTERN =
+	"\\s*(\\d+)?"       // zone
+	"\\s*([A-Z0-9/]*?[A-Z]\\d+[A-Z]+[A-Z0-9/]*)?"  // call fix
+	"\\s*(\\d+)?"       // zone fix
+	"\\s*";
 
-    /* field of allowed pattern sequences
-     *
-     * The characters have the following meaning:
-     * u - undefined (left or right delimiter)
-     * b - blank character
-     * a - ascii character
-     * f - a figure / digit
-     *
-     * e.g. faf means a character between two digits
-     */
-    char serpats[8][8] = {
-	"bfb",
-	"afb",
-	"bfa",
-	"bffab",
-	"affab",
-	"bffbffb",
-	"fff",
-	"ffff"
-    };
-    char precpats[8][4] = {
-	"faf",
-	"fab",
-	"bab",
-	"baf",
-	"fau",
-	"bau",
-	"uaf",
-	"uab"
-    };
-    char checkpats[6][5] = {
-	"bffb",
-	"bffu",
-	"affu",
-	"affb",
-	"affa",
-	"bffa"
-    };
-    char secpats[13][7] = {
-	"fab",
-	"faab",
-	"faaab",
-	"faaaab",
-	"bab",
-	"baab",
-	"baaab",
-	"baaaab",
-	"bau",
-	"baau",
-	"baaau",
-	"baaaau",
-	"baafb"
-    };
-    char callpats[5][9] = {
-	"bafaab",
-	"baafab",
-	"baafaab",
-	"bafaaab",
-	"baafaaab"
-    };
-    char zonepats[6][6] = {
-	"ufb",
-	"uffb",
-	"bfb",
-	"bffb",
-	"bffu",
-	"bfu"
-    };
-    char sectionpats[12][7] = {
-	"uab",
-	"uaab",
-	"uaaab",
-	"uaaaab",
-	"uau",
-	"uaau",
-	"uaaau",
-	"uaiaaau",
-	"bab",
-	"baab",
-	"baaab",
-	"baaaab"
-    };
-
-    int i, s, hr, ii, pr, jj;
-
-    /* get the pattern sequence from comment string */
-    strcpy(cmpattern, "u                    ");
-
-    if (strlen(comment) > 0) {
-
-	for (i = 0; i < strlen(comment); i++) {
-
-	    switch ((int) comment[i]) {
-
-		case 'A'...'Z': {
-		    cmpattern[i + 1] = 'a';
-		    cmpattern[i + 2] = 'u';
-		    break;
-		}
-
-		case '0'...'9': {
-		    cmpattern[i + 1] = 'f';
-		    cmpattern[i + 2] = 'u';
-		    break;
-		}
-
-		case ' ': {
-		    cmpattern[i + 1] = 'b';
-		    // TODO: check if add 'u' is missing
-		    break;
-		}
-
-		default:
-		    cmpattern[i + 1] = 'u';
-	    }
-	}
+    static GRegex *regex = NULL;
+    if (regex == NULL) {
+	regex = g_regex_new(PATTERN, 0, 0, NULL);
     }
 
-    // -----------------------------------cqww-----------------------
+    int zone = 0;
+
+    GMatchInfo *match_info;
+    g_regex_match(regex, comment, 0, &match_info);
+    if (g_match_info_matches(match_info)) {
+	gchar *index;
+
+	// get zone nr, use fix if available
+	index = g_match_info_fetch(match_info, 1);
+	gchar *index_fix = g_match_info_fetch(match_info, 3);
+	if (index_fix != NULL && strlen(index_fix) >= 1 && strlen(index_fix) <= 4) {
+	    g_free(index);
+	    index = index_fix;
+	}
+	if (index != NULL && strlen(index) >= 1 && strlen(index) <= 4) {
+	    zone = atoi(index);
+	}
+	g_free(index);
+
+	// get call fix
+	index = g_match_info_fetch(match_info, 2);
+	if (index != NULL) {
+	    g_strlcpy(callupdate, index, sizeof(callupdate));
+	}
+	g_free(index);
+    }
+    g_match_info_free(match_info);
+
+    // multiplier: zone
+    sprintf(normalized_comment, "%02d", zone);
+    g_strlcpy(mult1_value, normalized_comment, sizeof(normalized_comment));
+
+    if (interactive) {
+	OnLowerSearchPanel(32, normalized_comment); // show current zone
+    }
+}
+
+static void checkexchange_arrlss(char *comment, bool interactive) {
+    char serial[5];
+    char precedent[3];
+    char check[3];
+
+    static const char *PATTERN =
+	"\\s*(\\d+)?"       // serial
+	"\\s*([ABMSQU])?"   // precedent
+	"\\s*([A-Z0-9]*?[A-Z]\\d+[A-Z]+(?:/\\d)?)?"  // call w/ optional region
+	"\\s*(\\d+)?"       // check
+	"\\s*([A-Z]{2,3})?" // section
+	"\\s*";
+    ;
+    static GRegex *regex = NULL;
+    if (regex == NULL) {
+	regex = g_regex_new(PATTERN, 0, 0, NULL);
+    }
+
+    section[0] = 0;
+
+    GMatchInfo *match_info;
+    g_regex_match(regex, comment, 0, &match_info);
+    if (g_match_info_matches(match_info)) {
+	gchar *index;
+
+	// get serial nr.
+	index = g_match_info_fetch(match_info, 1);
+	if (index != NULL && strlen(index) >= 1 && strlen(index) <= 4) {
+	    int s = atoi(index);
+	    if (s != 0)
+		snprintf(serial, sizeof(serial), "%4d", s);
+	} else {
+	    strcpy(serial, spaces(4));
+	}
+	g_free(index);
+
+	// get precedent
+	index = g_match_info_fetch(match_info, 2);
+	if (index != NULL && index[0] != 0) {
+	    strcpy(precedent, index);
+	} else {
+	    strcpy(precedent, spaces(1));
+	}
+	g_free(index);
+
+	// get call update
+	index = g_match_info_fetch(match_info, 3);
+	if (index != NULL && strchr("AKNWVC", index[0]) != NULL) {  // US/CA only
+	    g_strlcpy(callupdate, index, sizeof(callupdate));
+	}
+	g_free(index);
+
+	// get check
+	index = g_match_info_fetch(match_info, 4);
+	if (index != NULL && strlen(index) == 2) {  // only if 2 digits
+	    strcpy(check, index);
+	} else {
+	    strcpy(check, spaces(2));
+	}
+	g_free(index);
+
+	// get section
+	index = g_match_info_fetch(match_info, 5);
+	if (index != NULL && index[0] != 0) {
+	    if (get_exact_mult_index(index) >= 0) {
+		g_strlcpy(section, index, sizeof(section));
+	    }
+	}
+	g_free(index);
+
+    }
+    g_match_info_free(match_info);
+
+    if (interactive) {
+	char buf[40];
+	sprintf(buf, " %4s %1s %2s %2s ", serial, precedent,
+		check, section);
+	OnLowerSearchPanel(8, buf);
+    }
+
+    sprintf(normalized_comment, "%s %s %s %s", serial, precedent, check, section);
+    g_strlcpy(mult1_value, section, sizeof(section));   // multiplier: section
+}
+
+static void checkexchange_serial_section(char *comment, bool interactive) {
+    char serial[5] = "";
+
+    static const char *PATTERN =
+	"\\s*(\\d+)?"           // serial
+	"\\s*(\\d*[A-Z]+\\d*)?" // section ([digits] letters [digits])
+	"\\s*([A-Z0-9/]*?[A-Z]\\d+[A-Z]+[A-Z0-9/]*)?"  // call fix
+	"\\s*";
+    ;
+    static GRegex *regex = NULL;
+    if (regex == NULL) {
+	regex = g_regex_new(PATTERN, 0, 0, NULL);
+    }
+
+    section[0] = 0;
+
+    GMatchInfo *match_info;
+    g_regex_match(regex, comment, 0, &match_info);
+    if (g_match_info_matches(match_info)) {
+	gchar *index;
+
+	// get serial nr.
+	index = g_match_info_fetch(match_info, 1);
+	if (index != NULL && strlen(index) >= 1 && strlen(index) <= 4) {
+	    int s = atoi(index);
+	    if (s != 0) {
+		snprintf(serial, sizeof(serial), "%4d", s);
+	    }
+	}
+	g_free(index);
+
+	// get section
+	index = g_match_info_fetch(match_info, 2);
+	if (index != NULL && index[0] != 0) {
+	    if (get_exact_mult_index(index) >= 0) {
+		g_strlcpy(section, index, sizeof(section));
+	    }
+	}
+	g_free(index);
+
+	// get call update
+	index = g_match_info_fetch(match_info, 3);
+	if (index != NULL) {
+	    g_strlcpy(callupdate, index, sizeof(callupdate));
+	}
+	g_free(index);
+    }
+    g_match_info_free(match_info);
+
+    if (interactive) {
+	char buf[40];
+	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, section);
+	OnLowerSearchPanel(32, buf);
+    }
+
+    if (serial[0] && section[0]) {
+	sprintf(normalized_comment, "%s %s", serial, section);
+	g_strlcpy(mult1_value, section, sizeof(mult1_value));   // multiplier: section
+    }
+}
+
+static void checkexchange_sectn_mult(char *comment, bool interactive) {
+    static const char *PATTERN =
+	"\\s*(\\d*[A-Z]+\\d*)?" // section ([digits] letters [digits])
+	"\\s*([A-Z0-9/]*?[A-Z]\\d+[A-Z]+[A-Z0-9/]*)?"  // call fix
+	"\\s*";
+    ;
+    static GRegex *regex = NULL;
+    if (regex == NULL) {
+	regex = g_regex_new(PATTERN, 0, 0, NULL);
+    }
+
+    section[0] = 0;
+
+    GMatchInfo *match_info;
+    g_regex_match(regex, comment, 0, &match_info);
+
+    if (g_match_info_matches(match_info)) {
+	gchar *index;
+
+	// get section
+	index = g_match_info_fetch(match_info, 1);
+	if (index != NULL && index[0] != 0) {
+	    if (get_exact_mult_index(index) >= 0) {
+		g_strlcpy(section, index, sizeof(section));
+	    }
+	}
+	g_free(index);
+
+	// get call update
+	index = g_match_info_fetch(match_info, 2);
+	if (index != NULL) {
+	    g_strlcpy(callupdate, index, sizeof(callupdate));
+	}
+	g_free(index);
+    }
+    g_match_info_free(match_info);
+
+    if (interactive) {
+	char buf[40];
+	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, section);
+	OnLowerSearchPanel(32, buf);
+    }
+
+    if (section[0]) {
+	g_strlcpy(normalized_comment, section, sizeof(normalized_comment));
+	g_strlcpy(mult1_value, section, sizeof(mult1_value));   // multiplier: section
+    }
+}
+
+/* ------------------------------------------------------------------------ */
+/*
+    input: comment, interactive
+    output (global vars): section, callupdate, mult1_value, normalized_comment
+    side effect: lower line of search panel updated if interactive
+*/
+
+void checkexchange(char *comment, bool interactive) {
+
+    callupdate[0] = 0;
+    normalized_comment[0] = 0;
+    mult1_value[0] = 0;
+
+    // ----------------------------cqww------------------------------
     if (CONTEST_IS(CQWW)) {
 
-	s = atoi(comment);
-	snprintf(zone, sizeof(zone), "%02d", s);
-
-	for (ii = 0; ii < LEN(zonepats); ii++) {
-
-	    hr = getlastpattern(zonepats[ii]);
-
-//! \todo  logik und Verwendung zone_fix vs zone_export unklar
-//! Was passiert, falls zonenummer in comment zu groess ist?
-	    if ((hr > 1) && (atoi(comment + hr - 1) != 0)) {
-		sprintf(zone, "%02d", atoi(comment + hr - 1));
-		strncpy(zone_fix, zone, 2);
-		zone_fix[2] = '\0';
-	    } else {
-		strncpy(zone_export, zone, 2);
-		zone_export[2] = '\0';
-	    }
-	}
-
-	if (strlen(hiscall) >= 2)
-	    OnLowerSearchPanel(32, zone_export);
-
-
-	for (ii = 0; ii < LEN(callpats); ii++) {
-
-	    hr = getlastpattern(callpats[ii]);	// call update ?
-
-	    if (hr > 0) {
-
-		switch (ii) {
-
-		    case 0 ... 1:
-			strncpy(callupdate, comment + hr, 4);
-			callupdate[4] = '\0';
-			break;
-		    case 2 ... 3:
-			strncpy(callupdate, comment + hr, 5);
-			callupdate[5] = '\0';
-			break;
-		    case 4:
-			strncpy(callupdate, comment + hr, 6);
-			callupdate[6] = '\0';
-		}
-
-		if (strlen(callupdate) > 3) {
-
-		    if (call_update == 1)
-			strcpy(hiscall, callupdate);
-
-		    mvprintw(12, 29, "       ");
-		    mvprintw(12, 29, "%s", hiscall);
-		}
-	    }
-	}
-
+	checkexchange_cqww(comment, interactive);
 	return;
     }
 
     // ---------------------------arrls------------------------------
     if (CONTEST_IS(ARRL_SS)) {
 
-	// get serial nr.
-
-	s = atoi(comment);
-
-	if (s != 0)
-	    snprintf(serial, sizeof(serial), "%4d", s);
-
-	for (ii = 0; ii < LEN(serpats); ii++) {
-
-	    hr = getlastpattern(serpats[ii]);
-
-	    if (hr > 0)
-		snprintf(serial, sizeof(serial), "%4d",
-			 atoi(comment + hr - 1));
-
-	    if (ii == 5 && hr > 0) {
-		snprintf(serial, sizeof(serial), "%4d", atoi(comment + hr - 1));
-		snprintf(check, sizeof(check), "%2d", atoi(comment + hr + 2));
-	    }
-
-	}
-
-	// get precedent
-
-	if (((comment[0] == 'A')
-		|| (comment[0] == 'B')
-		|| (comment[0] == 'M')
-		|| (comment[0] == 'Q')
-		|| (comment[0] == 'S')
-		|| (comment[0] == 'U'))
-		&& ((comment[1] == ' ') || (cmpattern[2] == 'f'))) {
-
-	    precedent[0] = comment[0];
-	}
-
-
-	/* look for a single letter */
-	for (ii = 0; ii < LEN(precpats); ii++) {
-
-	    hr = getlastpattern(precpats[ii]);
-
-	    if (hr > 0) {
-		pr = comment[hr];
-		if ((pr == 'Q') || (pr == 'A') || (pr == 'B')
-			|| (pr == 'U') || (pr == 'M') || (pr == 'S')) {
-		    precedent[0] = pr;
-		    precedent[1] = '\0';
-		}
-	    }
-	}
-
-	// get call update
-
-	for (ii = 0; ii < LEN(callpats); ii++) {
-
-	    hr = getlastpattern(callpats[ii]);
-
-	    if (hr > 0) {
-		if (((comment[hr] == 'A') && (comment[hr + 1] > 59))
-			|| (comment[hr] == 'K') || (comment[hr] == 'N')
-			|| (comment[hr] == 'W')
-			|| (comment[hr] == 'V') || (comment[hr] == 'C')) {
-
-		    switch (ii) {
-
-			case 0 ... 1:
-			    strncpy(callupdate, comment + hr, 4);
-			    callupdate[4] = '\0';
-			    break;
-			case 2 ... 3:
-			    strncpy(callupdate, comment + hr, 5);
-			    callupdate[5] = '\0';
-			    break;
-			case 4:
-			    strncpy(callupdate, comment + hr, 6);
-			    callupdate[6] = '\0';
-
-		    }
-		    if (strlen(callupdate) > 3) {
-
-			if (call_update == 1)
-			    strcpy(hiscall, callupdate);
-
-			mvprintw(12, 29, "       ");
-			mvprintw(12, 29, "%s", hiscall);
-		    }
-
-		}
-	    }
-
-	}
-
-	// get check
-
-	for (ii = 0; ii < LEN(checkpats); ii++) {
-
-	    hr = getlastpattern(checkpats[ii]);
-	    if (hr > 0) {
-		check[0] = comment[hr];
-		check[1] = comment[hr + 1];
-		check[2] = '\0';
-	    }
-	}
-
-	// get section
-	*section = '\0';
-
-	for (ii = 0; ii < LEN(secpats); ii++) {
-
-	    hr = getlastpattern(secpats[ii]);
-
-	    if (hr > 0) {
-
-		g_strlcpy(checksection, comment + hr, 4);
-		g_strchomp(checksection);
-
-		for (jj = 0; jj < get_mult_count(); jj++) {
-
-		    char *multi = g_strdup(get_mult(jj));
-		    g_strchomp(multi);
-
-		    if ((strlen(multi) >= 1) &&
-			    (strcmp(checksection, multi) == 0)) {
-
-			strcpy(section, multi);
-			break;
-		    }
-		    g_free(multi);
-		}
-	    }
-	}
-
-	{
-	    char buf[40];
-	    sprintf(buf, " %4s %1s %2s %2s ", serial, precedent,
-		    check, section);
-	    OnLowerSearchPanel(8, buf);
-	}
-
-	/* \todo use sprintf */
-	ssexchange[0] = '\0';
-
-	strcat(ssexchange, serial);
-	strcat(ssexchange, " ");
-	strcat(ssexchange, precedent);
-	strcat(ssexchange, " ");
-	strcat(ssexchange, check);
-	strcat(ssexchange, " ");
-	strcat(ssexchange, section);
-
-	return;		// end arrlss
+	checkexchange_arrlss(comment, interactive);
+	return;
     }
 
     // ----------------------serial+section--------------------------
-    if ((serial_section_mult == 1) || (sectn_mult == 1)
-	    || (sectn_mult_once == 1)
-	    || (dx_arrlsections == 1)) {
+    if (serial_section_mult) {
 
-	if (serial_section_mult == 1) {
-
-	    // get serial nr.
-
-	    s = atoi(comment);
-
-	    if (s != 0)
-		snprintf(serial, sizeof(serial), "%4d", atoi(comment));
-
-	    for (ii = 0; ii < LEN(serpats); ii++) {
-
-		hr = getlastpattern(serpats[ii]);
-
-		if (hr > 0)
-		    snprintf(serial, sizeof(serial), "%4d",
-			     atoi(comment + hr - 1));
-
-		if (ii == 5 && hr > 0) {
-		    snprintf(serial, sizeof(serial), "%4d",
-			     atoi(comment + hr - 1));
-		    snprintf(check, sizeof(check), "%2d",
-			     atoi(comment + hr + 2));
-		}
-	    }
-
-	    // get section
-
-	    for (ii = 0; ii < LEN(secpats); ii++) {
-
-		hr = getlastpattern(secpats[ii]);
-
-		if (hr > 0) {
-
-		    memset(checksection, 0, 29);
-		    strncpy(checksection, comment + (hr), MAX_SECTION_LENGTH);
-		    if (checksection[strlen(checksection) - 1] == ' ') {
-			checksection[strlen(checksection) - 1] = '\0';
-		    }
-
-		    for (jj = 0; jj < get_mult_count(); jj++) {
-			if (get_matching_length(checksection, jj) ==
-				strlen(checksection)) {
-			    strcpy(section, get_mult(jj));
-			    break;
-			}
-		    }
-		}
-	    }
-	}			// end serial_section_mult
-	if ((sectn_mult == 1) || (sectn_mult_once)) {
-
-	    for (ii = 0; ii < LEN(sectionpats); ii++) {
-
-		hr = getlastpattern(sectionpats[ii]);
-
-		g_strlcpy(checksection, comment, MAX_SECTION_LENGTH + 1);
-
-		int best_len = 0;
-		int idx = -1;
-		for (jj = 0; jj < get_mult_count(); jj++) {
-		    int len = get_matching_length(checksection, jj);
-		    if (len > best_len) {
-			best_len = len;
-			idx = jj;
-		    }
-		}
-
-		if (idx >= 0) {
-		    strcpy(section, get_mult(idx));
-		}
-	    }
-
-	}			//  end sectn_mult
-	if (dx_arrlsections == 1) {
-
-	    for (ii = 0; ii < LEN(sectionpats); ii++) {
-
-		hr = getlastpattern(sectionpats[ii]);
-
-		strncpy(checksection, comment, 3);
-		checksection[3] = '\0';
-
-		for (jj = 0; jj < get_mult_count(); jj++) {
-		    if (get_matching_length(checksection, jj) == strlen(checksection)) {
-			strcpy(section, get_mult(jj));
-
-			// if (strlen(section) == strlen(mults_possible[jj])) break;
-		    }
-		}
-
-	    }
-
-	}			// end dx_arrlsections
-
-	callupdate[0] = '\0';
-
+	checkexchange_serial_section(comment, interactive);
+	return;
     }
 
+    // ----------------------section only----------------------------
+    if (sectn_mult || sectn_mult_once || dx_arrlsections) {
 
-    // get call update
-
-    for (ii = 0; ii < LEN(callpats); ii++) {
-
-	hr = getlastpattern(callpats[ii]);
-
-	if (hr > 0) {
-	    if (((comment[hr] == 'A') && (comment[hr + 1] > 59))
-		    || (comment[hr] == 'K') || (comment[hr] == 'N')
-		    || (comment[hr] == 'W')
-		    || (comment[hr] == 'V') || (comment[hr] == 'C')) {
-
-		switch (ii) {
-
-		    case 0 ... 1:
-			strncpy(callupdate, comment + hr, 4);
-			callupdate[4] = '\0';
-			break;
-		    case 2 ... 3:
-			strncpy(callupdate, comment + hr, 5);
-			callupdate[5] = '\0';
-			break;
-		    case 4:
-			strncpy(callupdate, comment + hr, 6);
-			callupdate[6] = '\0';
-
-		}
-
-		if (strlen(callupdate) > 3) {
-
-		    if (call_update == 1)
-			strcpy(hiscall, callupdate);
-
-		    mvprintw(12, 29, "       ");
-		    mvprintw(12, 29, "%s", hiscall);
-		}
-
-	    }
-	}
-
+	checkexchange_sectn_mult(comment, interactive);
+	return;
     }
-    OnLowerSearchPanel(32, "   ");
-    OnLowerSearchPanel(32, section);	/* show section on lower frame of
-					   Worked window */
-    ssexchange[0] = '\0';
 
-    /*	if (serial_section_mult == 1) {
-    		strcat (ssexchange,serial);
-    		strcat (ssexchange, " ");
-    	}
-    */
-    strcat(ssexchange, section);
 }
 
 
 /* ------------------------------------------------------------------------ */
-
-/** search checkstring in cmpattern
- *
- * find first occurence of checkstring in cmpattern
- * \parm checkstring - the pattern to be found
- * \return offset of checkstring in cmpattern (or 0 if not found)
- */
-int getlastpattern(char *checkstring) {
-
-    char newpat[80];
-    int i, x = 0;
-
-    if ((strlen(cmpattern) - strlen(checkstring)) > 0) {
-	for (i = 0; i < (strlen(cmpattern) - strlen(checkstring)) - 1; i++) {
-
-	    newpat[0] = '\0';
-	    strncat(newpat, cmpattern + i, strlen(comment));
-
-	    if (strncmp(newpat, checkstring, strlen(checkstring)) == 0) {
-		x = i;
-	    }
-	}
-	if (x > strlen(comment))
-	    x = 0;
-    }
-    return (x);
-
-}
 
 /* ------------------------------------------------------------------------
  * return a pointer to the start of grid locator
@@ -1027,20 +776,18 @@ int getlastpattern(char *checkstring) {
 
 char *getgrid(char *comment) {
 
-    char *gridmult = "";
     int multposition = 0;
     int i = 0;
 
     /* search for first letter, that should be the start of the Grid locator*/
     for (i = 0; i < strlen(comment); i++) {
-	if (comment[i] > 64 && comment[i] < 91) {
+	if (isalpha(comment[i])) {
 	    multposition = i;
 	    break;
 	}
     }
-    gridmult = comment + multposition;
 
-    return (gridmult);
+    return comment + multposition;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1059,8 +806,8 @@ void exchange_edit(void) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
-	mvprintw(12, 54, "%s", spaces(contest->exchange_width));
-	mvprintw(12, 54, "%s", comment);
+	mvaddstr(12, 54, spaces(contest->exchange_width));
+	mvaddstr(12, 54, comment);
 	move(12, 54 + b);
 
 	i = key_get();

@@ -110,6 +110,6 @@ void wwv_add(const char *s) {
 //
 void wwv_show_footer() {
     if (lastwwv_time > get_time() - 3 * 60) {
-	mvprintw(LINES - 1, 0, "%s", lastwwv);
+	mvaddstr(LINES - 1, 0, lastwwv);
     }
 }

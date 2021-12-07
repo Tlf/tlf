@@ -38,7 +38,7 @@ void clearmsg_wait(void) {
     if (verbose) {
 	move(LINES - 3, 0);
 	clrtoeol();
-	mvprintw(LINES - 2, 0, "Press any key to continue!");
+	mvaddstr(LINES - 2, 0, "Press any key to continue!");
 	move(LINES - 1, 0);
 	clrtoeol();
 	refreshp();
@@ -60,7 +60,7 @@ static int has_room_for_message() {
 void showmsg(char *message) {
     if (!has_room_for_message())
 	clearmsg_wait();
-    mvprintw(linectr, 0, "%s", message);
+    mvaddstr(linectr, 0, message);
     refreshp();
     linectr++;
 }

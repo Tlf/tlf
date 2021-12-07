@@ -32,6 +32,7 @@
 
 #include "bandmap.h"
 #include "bands.h"
+#include "clear_display.h"
 #include "dxcc.h"
 #include "err_utils.h"
 #include "get_time.h"
@@ -67,7 +68,7 @@ void clusterinfo(void) {
 	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
 	for (int i = 14; i < LINES - 1; i++)
-	    mvprintw(i, 0, "%s", backgrnd_str);
+	    clear_line(i);
 	refreshp();
     }
 
@@ -78,7 +79,7 @@ void clusterinfo(void) {
 
     if (cluster == FREQWINDOW) {
 	for (f = 0; f < 8; f++)
-	    mvprintw(15 + f, 4, "                           ");
+	    mvaddstr(15 + f, 4, "                           ");
 
 	if (trx_control)
 	    node_frequencies[thisnode - 'A'] = freq;
@@ -101,7 +102,7 @@ void clusterinfo(void) {
 	g_strlcpy(inputbuffer, backgrnd_str, 79);
 
 	for (j = 15; j <= LINES - 3; j++) {
-	    mvprintw(j, 1, "%s", inputbuffer);
+	    mvaddstr(j, 1, inputbuffer);
 	}
 
 
@@ -134,7 +135,7 @@ void clusterinfo(void) {
 		}
 
 		if (strlen(inputbuffer) > 14) {
-		    mvprintw(j, 1, "%s", inputbuffer);
+		    mvaddstr(j, 1, inputbuffer);
 		}
 	    }
 	}

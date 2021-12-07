@@ -37,9 +37,9 @@ int nodes = 0;
 struct sockaddr_in bc_address[MAXNODES];
 int lan_port = 6788;
 bool lan_active;
-int landebug = 0;
+bool landebug = false;
 char thisnode = 'A';
-int time_master;
+bool time_master;
 char bc_hostaddress[MAXNODES][16];
 char bc_hostservice[MAXNODES][16] = {
     [0 ... MAXNODES - 1] = { [0 ... 15] = 0 }
@@ -53,7 +53,7 @@ bm_config_t bm_config;
 
 char *callmaster_filename = NULL;
 
-int call_update = 0;
+bool call_update = false;
 
 t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
 
@@ -124,8 +124,8 @@ int setup_default(void **state) {
     memset(&pfxnummulti, 0, sizeof(pfxnummulti));
 
     *keyer_device = 0;
-    partials = 0;
-    use_part = 0;
+    partials = false;
+    use_part = false;
     mixedmode = false;
     ignoredupe = false;
     continentlist_only = false;
@@ -145,7 +145,7 @@ int setup_default(void **state) {
     thisnode = 'A';
     nodes = 0;
     xplanet = MARKER_NONE;
-    dx_arrlsections = 0;
+    dx_arrlsections = false;
     mult_side = false;
     countrylist_points = -1;
     my_country_points = -1;
@@ -318,12 +318,51 @@ typedef struct {
 } bool_true_t;
 
 static bool_true_t bool_trues[] = {
+    {"RIT_CLEAR", &rit},
+    {"SCOREWINDOW", &showscore_flag},
+    {"CHECKWINDOW", &searchflg},
     {"CONTEST_MODE", &iscontest},
+    {"CALLUPDATE", &call_update},
+    {"SOUNDCARD", &sc_sidetone},
+    {"TIME_MASTER", &time_master},
+    {"SEND_DE", &demode},
+    {"CTCOMPATIBLE", &ctcomp},
+    {"NOB4", &nob4},
+    {"SHOW_TIME", &show_time},
+    {"RXVT", &use_rxvt},
+    {"NOAUTOCQ", &noautocq},
+    {"NO_BANDSWITCH_ARROWKEYS", &no_arrows},
+    {"NO_RST", &no_rst},
+    {"KEYER_BACKSPACE", &keyer_backspace},
+    {"CLUSTER_LOG", &clusterlog},
+    {"LAN_DEBUG", &landebug},
+    {"BMAUTOGRAB", &bmautograb},
+    {"BMAUTOADD", &bmautoadd},
+    {"CQWW_M2", &cqwwm2},
+    {"CONTINENT_EXCHANGE", &exc_cont},
     {"MIXED", &mixedmode},
     {"IGNOREDUPE", &ignoredupe},
     {"USE_CONTINENTLIST_ONLY", &continentlist_only},
     {"RADIO_CONTROL", &trx_control},
     {"PORTABLE_MULT_2", &portable_x2},
+    {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
+    {"WYSIWYG_ONCE", &wysiwyg_once},
+    {"SERIAL+SECTION", &serial_section_mult},
+    {"SERIAL_OR_SECTION", &serial_or_section},
+    {"SECTION_MULT", &sectn_mult},
+    {"SECTION_MULT_ONCE", &sectn_mult_once},
+    {"SERIAL+GRID4", &serial_grid4_mult},
+    {"COUNTRY_MULT", &country_mult},
+    {"ITUMULT", &itumult},
+    {"WAZMULT", &wazmult},
+    {"SPRINTMODE", &sprint_mode},
+    {"PFX_MULT", &pfxmult},
+    {"PFX_MULT_MULTIBAND", &pfxmultab},
+    {"LOWBAND_DOUBLE", &lowband_point_mult},
+    {"LOGFREQUENCY", &logfrequency},
+    {"QTCREC_RECORD", &qtcrec_record},
+    {"QTC_AUTO_FILLTIME", &qtc_auto_filltime},
+    {"QTC_RECV_LAZY", &qtc_recv_lazy},
 };
 
 void test_bool_trues(void **state) {
@@ -418,46 +457,7 @@ typedef struct {
 } int_one_t;
 
 static int_one_t int_ones[] = {
-    {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
-    {"WYSIWYG_ONCE", &wysiwyg_once},
-    {"RIT_CLEAR", &rit},
     {"SHORT_SERIAL", &shortqsonr},
-    {"SCOREWINDOW", &showscore_flag},
-    {"CHECKWINDOW", &searchflg},
-    {"SEND_DE", &demode},
-    {"COUNTRY_MULT", &country_mult},
-    {"CQWW_M2", &cqwwm2},
-    {"LAN_DEBUG", &landebug},
-    {"CALLUPDATE", &call_update},
-    {"TIME_MASTER", &time_master},
-    {"CTCOMPATIBLE", &ctcomp},
-    {"SERIAL+SECTION", &serial_section_mult},
-    {"SECTION_MULT", &sectn_mult},
-    {"NOB4", &nob4},
-    {"SHOW_TIME", &show_time},
-    {"RXVT", &use_rxvt},
-    {"WAZMULT", &wazmult},
-    {"ITUMULT", &itumult},
-    {"CONTINENT_EXCHANGE", &exc_cont},
-    {"NOAUTOCQ", &noautocq},
-    {"NO_BANDSWITCH_ARROWKEYS", &no_arrows},
-    {"SOUNDCARD", &sc_sidetone},
-    {"LOWBAND_DOUBLE", &lowband_point_mult},
-    {"CLUSTER_LOG", &clusterlog},
-    {"SERIAL+GRID4", &serial_grid4_mult},
-    {"LOGFREQUENCY", &logfrequency},
-    {"NO_RST", &no_rst},
-    {"SERIAL_OR_SECTION", &serial_or_section},
-    {"PFX_MULT", &pfxmult},
-    {"PFX_MULT_MULTIBAND", &pfxmultab},
-    {"QTCREC_RECORD", &qtcrec_record},
-    {"QTC_AUTO_FILLTIME", &qtc_auto_filltime},
-    {"BMAUTOGRAB", &bmautograb},
-    {"BMAUTOADD", &bmautoadd},
-    {"QTC_RECV_LAZY", &qtc_recv_lazy},
-    {"SPRINTMODE", &sprint_mode},
-    {"KEYER_BACKSPACE", &keyer_backspace},
-    {"SECTION_MULT_ONCE", &sectn_mult_once},
 };
 
 void test_int_ones(void **state) {

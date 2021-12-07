@@ -145,7 +145,7 @@ void clear_display(void) {
 	mvaddstr(12, 49, recvd_rst);
     }
 
-    if (searchflg == SEARCHWINDOW)
+    if (searchflg)
 	searchlog();
 
     printcall();
@@ -178,4 +178,8 @@ void displayit(void) {
     move(5, 0);
 
     clear_display();
+}
+
+void clear_line(int row) {
+    mvaddstr(row, 0, backgrnd_str);
 }

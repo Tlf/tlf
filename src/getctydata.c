@@ -179,7 +179,7 @@ static int getctydata_internal(char *checkcallptr, bool get_country) {
 
     int w = getpfxindex(checkcallptr, &normalized_call);
 
-    if (CONTEST_IS(WPX) || pfxmult == 1)
+    if (CONTEST_IS(WPX) || pfxmult)
 	/* needed for wpx and other pfx contests */
 	getpx(normalized_call);
 
@@ -192,10 +192,8 @@ static int getctydata_internal(char *checkcallptr, bool get_country) {
     sprintf(ituzone, "%02d", pfx->itu);
     DEST_Lat = pfx->lat;
     DEST_Long = pfx->lon;
-    strcpy(zone_export, itumult ? ituzone : cqzone);
 
     g_strlcpy(continent, pfx->continent, 3);
-
 
     return get_country ? countrynr : w;
 }

@@ -100,7 +100,7 @@ int auto_cq(void) {
 	    }
 	}
 
-	mvprintw(12, 29, "%s", spaces(13));
+	mvaddstr(12, 29, spaces(13));
 	move(12, 29);
 	refreshp();
     }
@@ -112,7 +112,7 @@ int auto_cq(void) {
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    mvprintw(12, 29, "%s", spaces(13));
+    mvaddstr(12, 29, spaces(13));
     printcall();
 
     return toupper(key);

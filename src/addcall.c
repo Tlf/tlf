@@ -134,16 +134,8 @@ int addcall(struct qso_t *qso) {
     cty = getctydata(qso->call);
 
 
-    if (strlen(qso->comment) >= 1) {		/* remember last exchange */
-	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1) {
-	    /*
-	    			if (strlen(zone_fix) > 1) {
-	    				zone = zone_nr(zone_fix);
-	    			} else
-	    				zone = zone_nr(zone_export);
-	    */
-	    zone = zone_nr(qso->comment);
-	}
+    if (CONTEST_IS(CQWW) || wazmult || itumult) {
+	zone = zone_nr(qso->comment);
     }
 
     add_ok = true;			/* look if certain calls are excluded */
@@ -152,10 +144,10 @@ int addcall(struct qso_t *qso) {
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	add_ok = false;
 
-    if (country_mult == 1 && iscontest)
+    if (country_mult && iscontest)
 	add_ok = true;
 
-    if ((dx_arrlsections == 1)
+    if ((dx_arrlsections)
 	    && ((countrynr == w_cty) || (countrynr == ve_cty)))
 	add_ok = false;
 
@@ -180,6 +172,7 @@ int addcall(struct qso_t *qso) {
     if (excl_add_veto) {
 	add_ok = false;
 	new_cty = 0;
+	new_zone = 0;
 	addcallarea = 0;
     }
 
@@ -251,11 +244,8 @@ int addcall2(void) {
 
     bandinx = qso->bandindex;
 
-    if (strlen(comment) >= 1) {
-// 		strcpy(station->exchange, comment);
-
-	if (CONTEST_IS(CQWW) || wazmult == 1 || itumult == 1)
-	    zone = zone_nr(comment);
+    if (CONTEST_IS(CQWW) || wazmult || itumult) {
+	zone = zone_nr(comment);
     }
 
     add_ok = true;			/* look if certain calls are excluded */
@@ -263,7 +253,7 @@ int addcall2(void) {
     /* 	     if ((arrldx_usa ==1) && ((cty == w_cty) || (cty == ve_cty)))
      	     	add_ok = 0;
     */
-    if ((country_mult == 1) && iscontest)
+    if (country_mult && iscontest)
 	add_ok = true;
 
     if (CONTEST_IS(PACC_PA))
@@ -324,7 +314,7 @@ int addcall2(void) {
 	    }
 	}
     }
-    if (CONTEST_IS(WPX) || pfxmult == 1 || pfxmultab == 1) {
+    if (CONTEST_IS(WPX) || pfxmult || pfxmultab) {
 
 	if (lan_logline[68] != ' ') {
 

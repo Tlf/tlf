@@ -31,6 +31,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include "clear_display.h"
 #include "err_utils.h"
 #include "get_time.h"
 #include "globalvars.h"
@@ -68,8 +69,8 @@ int recv_packets;
 char talkarray[5][62];
 freq_t node_frequencies[MAXNODES];
 int highqsonr;
-int landebug = 0;
-int time_master;
+bool landebug = false;
+bool time_master;
 char thisnode = 'A'; 		/*  start with 'A' if not defined in
 				    logcfg.dat */
 
@@ -331,8 +332,8 @@ void talk(void) {
 
     char talkline[61] = "";
 
-    mvprintw(LINES - 1, 0, "%s", backgrnd_str);
-    mvprintw(LINES - 1, 0, "T>");
+    clear_line(LINES - 1);
+    mvaddstr(LINES - 1, 0, "T>");
     refreshp();
     echo();
     getnstr(talkline, 60);
@@ -344,7 +345,7 @@ void talk(void) {
 
     talkline[0] = '\0';
     attron(COLOR_PAIR(C_HEADER));
-    mvprintw(LINES - 1, 0, "%s", backgrnd_str);
+    clear_line(LINES - 1);
     refreshp();
 }
 

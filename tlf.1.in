@@ -2088,7 +2088,7 @@ or
 modes).
 .
 .TP
-.B IGNOREDUPES
+.B IGNOREDUPE
 Enables logging multiple QSOs in a contest with the same station (considered a
 good idea these days as contest bots that parse the submitted Cabrillo file
 will determine such dupes (duplicate contacts)).

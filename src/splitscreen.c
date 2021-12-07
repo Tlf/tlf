@@ -108,7 +108,7 @@ void addlog(char *s) {
 	    strncat(lastmsg, spot_ptr[nr_of_spots], 82);
 	}
 
-	if (clusterlog == 1) {
+	if (clusterlog) {
 	    if ((fp = fopen("clusterlog", "a")) == NULL) {
 		TLF_LOG_INFO("Opening clusterlog not possible.");
 	    } else {
@@ -364,7 +364,7 @@ int pagedn(int lines) {
 	}
 	scroll(sclwin);
 	wattrset(sclwin, logattr());
-	mvwprintw(sclwin, LINES - ENTRYROWS - 1, 0, "%s", s);
+	mvwaddstr(sclwin, LINES - ENTRYROWS - 1, 0, s);
     }
     wrefresh(sclwin);
     return (s != NULL);
@@ -422,7 +422,7 @@ void resume_editing(void) {
     viewbottom();
     wattrset(sclwin, curattr);
     werase(entwin);
-    mvwprintw(entwin, 0, 0, "%s", entry_text);
+    mvwaddstr(entwin, 0, 0, entry_text);
     wmove(entwin, currow, curcol);
     viewing = NULL;
     view_state = STATE_EDITING;
@@ -438,7 +438,7 @@ void viewlog(void) {
     }
     gather_input(entry_text);
     werase(entwin);
-    mvwprintw(entwin, 0, 0, "Viewing data... hit ENTER to return\n");
+    mvwaddstr(entwin, 0, 0, "Viewing data... hit ENTER to return\n");
     pageup(SCROLLSIZE);
 }
 
@@ -637,14 +637,14 @@ void addtext(char *s) {
     if (strncmp(s, my.call, strlen(my.call)) == 0
 	    && strlen(s) < 81 && strchr(s, '>') == NULL) {
 
-	mvprintw(LINES - 1, 0, "%s", backgrnd_str);
+	clear_line(LINES - 1);
 
 	if ((strlen(s) + strlen(my.call) + 3) < 80) {
 	    strcpy(dxtext, s + strlen(my.call) + 3);
 	    if (dxtext[strlen(dxtext) - 1] == '\n')
 		dxtext[strlen(dxtext) - 1] = '\0';	// remove the newline
-	    mvprintw(LINES - 1, 0, "%s", dxtext);
-	    mvprintw(12, 29, "%s", hiscall);
+	    mvaddstr(LINES - 1, 0, dxtext);
+	    mvaddstr(12, 29, hiscall);
 	}
 	refreshp();
 
@@ -1178,8 +1178,8 @@ void send_cluster(void) {
     char line[MAX_CMD_LEN + 2] = "";
 
     cluster = CLUSTER;
-    mvprintw(LINES - 1, 0, "%s", backgrnd_str);
-    mvprintw(LINES - 1, 0, ">");
+    clear_line(LINES - 1);
+    mvaddstr(LINES - 1, 0, ">");
     refreshp();
     echo();
     getnstr(line, MAX_CMD_LEN);
@@ -1199,6 +1199,6 @@ void send_cluster(void) {
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-    mvprintw(LINES - 1, 0, "%s", backgrnd_str);
+    clear_line(LINES - 1);
     refreshp();
 }

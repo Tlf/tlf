@@ -120,7 +120,7 @@ void prepare_fixed_part(void) {
     strcat(logline4, time_buf);
 
     qsonr_to_str();
-    if (logfrequency == 1 && trx_control &&
+    if (logfrequency && trx_control &&
 	    ((strcmp(whichcontest, "qso") == 0) ||
 	     (strcmp(whichcontest, "dxped") == 0))) {
 	char khz[5];
@@ -135,7 +135,7 @@ void prepare_fixed_part(void) {
 	    strcat(logline4, qsonrstr);
     }
 
-    if (lan_active && cqwwm2 == 1) {
+    if (lan_active && cqwwm2) {
 	logline4[27] = thisnode;	// set node ID...
 	logline4[28] = '\0';
 	strcat(logline4, " ");
@@ -213,19 +213,19 @@ void prepare_specific_part(void) {
 
     if (CONTEST_IS(ARRL_SS)) {
 	// ----------------------------arrlss----------------
-	tmp = g_strndup(ssexchange, 22);
+	tmp = g_strndup(comment, 22);
 	strcat(logline4, tmp);
 	g_free(tmp);
 	section[0] = '\0';
 
-    } else if (serial_section_mult == 1) {
+    } else if (serial_section_mult) {
 	//-------------------------serial_section---------------
 	tmp = g_strndup(comment, 22);
 	strcat(logline4, tmp);
 	g_free(tmp);
 	section[0] = '\0';
 
-    } else if (serial_grid4_mult == 1) {
+    } else if (serial_grid4_mult) {
 	//-------------------------serial_grid 4 characters---------------
 	sr_nr = atoi(comment);
 	for (i = 0; i < 11; i++) {
@@ -239,21 +239,15 @@ void prepare_specific_part(void) {
 	sprintf(logline4 + 54, "%4.0d %s", sr_nr, grid);
 	section[4] = '\0';
 
-    } else if (sectn_mult == 1) {
+    } else if (sectn_mult) {
 	//-------------------------section only---------------
 	tmp = g_strndup(comment, 22);
 	strcat(logline4, tmp);
 	g_free(tmp);
 	section[0] = '\0';
 
-    } else if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
+    } else if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	//-------------------------cqww----------------
-	/*
-		if (strlen(zone_fix) > 1) {
-			strcat (logline4, zone_fix);
-		} else
-			strcat (logline4, zone_export);
-	*/
 	if (trxmode == DIGIMODE && CONTEST_IS(CQWW) && strlen(comment) < 5) {
 	    comment[2] = ' ';
 	    comment[3] = 'D';
@@ -277,12 +271,12 @@ void prepare_specific_part(void) {
     /* If WPX
      * -> add prefix to prefixes_worked and include new pfx in log line */
     new_pfx = 0;
-    if (!(pfxmultab == 1 && excl_add_veto == 1)) {
+    if (!(pfxmultab && excl_add_veto == 1)) {
 	/* add prefix, remember if new */
 	new_pfx = (add_pfx(wpx_prefix, bandinx) == 0);
     }
 
-    if (CONTEST_IS(WPX) || pfxmult == 1 || pfxmultab == 1) {	/* wpx */
+    if (CONTEST_IS(WPX) || pfxmult || pfxmultab) {	/* wpx */
 	if (new_pfx) {
 	    /** \todo FIXME: prefix can be longer than 5 char, e.g. LY1000 */
 	    strncat(logline4, wpx_prefix, 5);
@@ -291,7 +285,7 @@ void prepare_specific_part(void) {
 	fillto(73);
     }
 
-    if (CONTEST_IS(CQWW) || (wazmult == 1) || (itumult == 1)) {
+    if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	/* ------------cqww --------------------- */
 	logline4[68] = '\0';
 
@@ -307,12 +301,6 @@ void prepare_specific_part(void) {
 	fillto(73);
 
 	if (new_zone != 0) {
-	    /*
-	    		if (strlen(zone_fix) > 1) {
-	    			strncat (logline4, zone_fix, 2);
-	    		} else
-	    			strncat (logline4, zone_export, 2);
-	    */
 	    if (strlen(comment) < 2) {
 		strcat(logline4, "0");
 		strncat(logline4, comment, 1);
@@ -320,8 +308,6 @@ void prepare_specific_part(void) {
 		strncat(logline4, comment, 2);
 
 	    new_zone = 0;
-	} else {
-	    zone_fix[0] = '\0';
 	}
 
 	fillto(77);
@@ -338,7 +324,7 @@ void prepare_specific_part(void) {
 
 	fillto(77);
 
-    } else if ((dx_arrlsections == 1) && (countrynr != w_cty)
+    } else if (dx_arrlsections && (countrynr != w_cty)
 	       && (countrynr != ve_cty)) {
 	logline4[68] = '\0';
 
@@ -350,12 +336,12 @@ void prepare_specific_part(void) {
 
 	fillto(77);
 
-    } else if ((wysiwyg_multi == 1)
+    } else if (wysiwyg_multi
 	       || (unique_call_multi != 0)
-	       || (serial_section_mult == 1)
-	       || (sectn_mult == 1)
-	       || (sectn_mult_once == 1)
-	       || (serial_grid4_mult)) {
+	       || serial_section_mult
+	       || sectn_mult
+	       || sectn_mult_once
+	       || serial_grid4_mult) {
 
 	logline4[68] = '\0';
 
@@ -367,7 +353,7 @@ void prepare_specific_part(void) {
 
 	fillto(77);
 
-    } else if ((dx_arrlsections == 1)
+    } else if (dx_arrlsections
 	       && ((countrynr == w_cty) || (countrynr == ve_cty))) {
 	logline4[68] = '\0';
 
@@ -397,7 +383,7 @@ void prepare_specific_part(void) {
 	fillto(77);
 
     } else if (iscontest
-	       && ((country_mult == 1) || (dx_arrlsections == 1))) {
+	       && (country_mult || dx_arrlsections)) {
 
 	logline4[68] = '\0';
 

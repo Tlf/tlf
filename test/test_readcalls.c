@@ -29,7 +29,7 @@
 // OBJECT ../src/utils.o
 // OBJECT ../src/zone_nr.o
 
-/* missing from globalvar.h */
+char section[8] = "";       // defined in getexchange.c
 
 // dummy functions
 void readqtccalls() {}
@@ -61,7 +61,7 @@ void write_log(char *logfile) {
     FILE *fp = fopen(logfile, "w");
     assert_non_null(fp);
 
-    fputs(QSO1,fp);
+    fputs(QSO1, fp);
 
     fclose(fp);
 }
@@ -117,7 +117,7 @@ void test_add_to_worked(void **state) {
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
-    time_t ts = parse_time(QSO1+7, DATE_TIME_FORMAT);
+    time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT);
     assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_40], ts);
 }
 
