@@ -1099,7 +1099,7 @@ static config_t logcfg_configs[] = {
     {"QR_VKCQM",                CFG_MESSAGE_CHOMP(qtc_phrecv_message, CQ_TU_MSG) },
     {"QR_VKSPM",                CFG_MESSAGE_CHOMP(qtc_phrecv_message, SP_TU_MSG) },
 
-    {"QS_F([1-9]|1[0-2])",      CFG_MESSAGE(qtc_send_msgs, -1) },
+    {"QS_F([1-9]|1[0-2])",      CFG_MESSAGE_CHOMP(qtc_send_msgs, -1) },
     {"QS_VKM([1-9]|1[0-2])",    CFG_MESSAGE_CHOMP(qtc_phsend_message, -1) },
     {"QS_VKCQM",                CFG_MESSAGE_CHOMP(qtc_phsend_message, CQ_TU_MSG) },
     {"QS_VKSPM",                CFG_MESSAGE_CHOMP(qtc_phsend_message, SP_TU_MSG) },

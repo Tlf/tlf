@@ -592,7 +592,7 @@ void test_qs_fn(void **state) {
 	sprintf(line, "QS_F%d = %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "QSMSG%d MNO \n", i);    // FIXME NL is kept
+	sprintf(msg, "QSMSG%d MNO", i);
 	assert_string_equal(qtc_send_msgs[j], msg);
     }
 }
