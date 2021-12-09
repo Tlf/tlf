@@ -1078,15 +1078,15 @@ static config_t logcfg_configs[] = {
     {"KEYER_BACKSPACE", CFG_BOOL_TRUE(keyer_backspace)},
     {"SECTION_MULT_ONCE",   CFG_BOOL_TRUE(sectn_mult_once)},
 
-    {"F([1-9]|1[0-2])", CFG_MESSAGE_CHOMP(message, -1)},  // index is 1-based
-    {"S&P_TU_MSG",      CFG_MESSAGE_CHOMP(message, SP_TU_MSG)},
-    {"CQ_TU_MSG",       CFG_MESSAGE_CHOMP(message, CQ_TU_MSG)},
-    {"ALT_([0-9])",     CFG_MESSAGE_CHOMP(message, CQ_TU_MSG + 1)},
-    {"S&P_CALL_MSG",    CFG_MESSAGE_CHOMP(message, SP_CALL_MSG)},
+    {"F([1-9]|1[0-2])", CFG_MESSAGE(message, -1)},  // index is 1-based
+    {"S&P_TU_MSG",      CFG_MESSAGE(message, SP_TU_MSG)},
+    {"CQ_TU_MSG",       CFG_MESSAGE(message, CQ_TU_MSG)},
+    {"ALT_([0-9])",     CFG_MESSAGE(message, CQ_TU_MSG + 1)},
+    {"S&P_CALL_MSG",    CFG_MESSAGE(message, SP_CALL_MSG)},
 
-    {"VKM([1-9]|1[0-2])",   CFG_MESSAGE_CHOMP(ph_message, -1)},
-    {"VKCQM",               CFG_MESSAGE_CHOMP(ph_message, CQ_TU_MSG)},
-    {"VKSPM",               CFG_MESSAGE_CHOMP(ph_message, SP_TU_MSG)},
+    {"VKM([1-9]|1[0-2])",   CFG_MESSAGE(ph_message, -1)},
+    {"VKCQM",               CFG_MESSAGE(ph_message, CQ_TU_MSG)},
+    {"VKSPM",               CFG_MESSAGE(ph_message, SP_TU_MSG)},
 
     {"DKF([1-9]|1[0-2])",   CFG_MESSAGE_DYNAMIC(digi_message, -1)},
     {"DKCQM",               CFG_MESSAGE_DYNAMIC(digi_message, CQ_TU_MSG)},
@@ -1094,15 +1094,15 @@ static config_t logcfg_configs[] = {
     {"DKSPC",               CFG_MESSAGE_DYNAMIC(digi_message, SP_CALL_MSG)},
     {"ALT_DK([1-9]|10)",    CFG_MESSAGE_DYNAMIC(digi_message, CQ_TU_MSG)},
 
-    {"QR_F([1-9]|1[0-2])",      CFG_MESSAGE_CHOMP(qtc_recv_msgs, -1) },
-    {"QR_VKM([1-9]|1[0-2])",    CFG_MESSAGE_CHOMP(qtc_phrecv_message, -1) },
-    {"QR_VKCQM",                CFG_MESSAGE_CHOMP(qtc_phrecv_message, CQ_TU_MSG) },
-    {"QR_VKSPM",                CFG_MESSAGE_CHOMP(qtc_phrecv_message, SP_TU_MSG) },
+    {"QR_F([1-9]|1[0-2])",      CFG_MESSAGE(qtc_recv_msgs, -1) },
+    {"QR_VKM([1-9]|1[0-2])",    CFG_MESSAGE(qtc_phrecv_message, -1) },
+    {"QR_VKCQM",                CFG_MESSAGE(qtc_phrecv_message, CQ_TU_MSG) },
+    {"QR_VKSPM",                CFG_MESSAGE(qtc_phrecv_message, SP_TU_MSG) },
 
-    {"QS_F([1-9]|1[0-2])",      CFG_MESSAGE_CHOMP(qtc_send_msgs, -1) },
-    {"QS_VKM([1-9]|1[0-2])",    CFG_MESSAGE_CHOMP(qtc_phsend_message, -1) },
-    {"QS_VKCQM",                CFG_MESSAGE_CHOMP(qtc_phsend_message, CQ_TU_MSG) },
-    {"QS_VKSPM",                CFG_MESSAGE_CHOMP(qtc_phsend_message, SP_TU_MSG) },
+    {"QS_F([1-9]|1[0-2])",      CFG_MESSAGE(qtc_send_msgs, -1) },
+    {"QS_VKM([1-9]|1[0-2])",    CFG_MESSAGE(qtc_phsend_message, -1) },
+    {"QS_VKCQM",                CFG_MESSAGE(qtc_phsend_message, CQ_TU_MSG) },
+    {"QS_VKSPM",                CFG_MESSAGE(qtc_phsend_message, SP_TU_MSG) },
 
     {"TLFCOLOR([1-6])",  NEED_PARAM, cfg_tlfcolor},
 
