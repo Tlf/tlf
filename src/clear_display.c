@@ -159,22 +159,21 @@ void clear_display(void) {
 }
 
 /*
- *  scroll the loglines of the keyer terminal and show them
+ * add 'buffer' to the keyer terminal while scrolling one line up
+ * and refreshing the display
  */
-void displayit(void) {
-    extern char termbuf[];
+void add_to_keyer_terminal(char *buffer) {
 
-    char term2buf[81] = "";
+    char term2buf[81];
 
-    g_strlcpy(term2buf, termbuf, sizeof(term2buf));
+    g_strlcpy(term2buf, buffer, sizeof(term2buf));
     g_strchomp(term2buf);
-    g_strlcat(term2buf, backgrnd_str, sizeof(term2buf));	/* fill with blanks */
+    g_strlcat(term2buf, backgrnd_str, sizeof(term2buf));  /* fill with blanks */
 
     strcpy(terminal1, terminal2);
     strcpy(terminal2, terminal3);
     strcpy(terminal3, terminal4);
     strcpy(terminal4, term2buf);
-    termbuf[0] = '\0';
     move(5, 0);
 
     clear_display();

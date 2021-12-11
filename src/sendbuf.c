@@ -232,20 +232,15 @@ void ExpandMacro(void) {
 
 
 void sendbuf(void) {
-    extern char termbuf[];
 
     if ((trxmode == CWMODE && cwkeyer != NO_KEYER) ||
 	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
 	ExpandMacro();
 
-	if ((strlen(buffer) + strlen(termbuf)) < 80) {
-	    if (!simulator)
-		strcat(termbuf, buffer);
-//              if (sending_call == 1) {
-//                      strcat (termbuf, " ");
-//                      sending_call = 0;
-//              }
+	if (!simulator) {
+	    if (sending_call == 0)
+		add_to_keyer_terminal(buffer);
 	}
 
 	if (trxmode == DIGIMODE) {
@@ -275,11 +270,7 @@ void sendbuf(void) {
 	    keyer_append(buffer);
 	}
 
-	if (!simulator) {
-	    if (sending_call == 0)
-		displayit();
-	    refreshp();
-	} else {
+	if (simulator) {
 	    set_simulator_state(REPEAT);
 	}
 

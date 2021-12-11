@@ -31,6 +31,8 @@ char section[8] = "";       // defined in getexchange.c
     do{ strcpy(hiscall, call); \
 	assert_int_equal(score(), point); }while(0)
 
+void clear_display() {}
+
 #if 0
 void __wrap_qrb(char *x, char *y, char *u, char *v, double *a, double *b) {
 }

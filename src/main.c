@@ -401,9 +401,6 @@ const char *backgrnd_str;
 
 char logline_edit[5][LOGLINELEN + 1];
 
-char termbuf[88] = "";
-int termbufcount = 0;
-
 double DEST_Lat = 51.;
 double DEST_Long = 1.;
 
@@ -942,7 +939,6 @@ int main(int argc, char *argv[]) {
 
     init_terminal_strings();
 
-    termbuf[0] = '\0';
     hiscall[0] = '\0';
 
 

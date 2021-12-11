@@ -24,7 +24,7 @@
 void init_terminal_strings(void);
 void show_header_line(void);
 void clear_display(void);
-void displayit(void);
+void add_to_keyer_terminal(char *buffer);
 void clear_line(int);
 
 #endif /* CLEAR_DISPLAY_H */
