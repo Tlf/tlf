@@ -236,10 +236,6 @@ void ExpandMacro(void) {
 void sendbuf(void) {
     extern char termbuf[];
 
-    static char printlinebuffer[82] = "";
-
-    printlinebuffer[0] = '\0';
-
     if ((trxmode == CWMODE && cwkeyer != NO_KEYER) ||
 	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
@@ -253,32 +249,6 @@ void sendbuf(void) {
 //                      sending_call = 0;
 //              }
 	}
-
-	g_strlcpy(printlinebuffer, termbuf, sizeof(printlinebuffer));
-
-	if (!searchflg && !simulator)
-	    strncat(printlinebuffer, backgrnd_str,
-		    80 - strlen(printlinebuffer));
-	else {
-	    int len = 40 - (int)strlen(printlinebuffer);
-	    if (len > 0) {
-		strncat(printlinebuffer, backgrnd_str, len);
-	    }
-	    if (strlen(printlinebuffer) > 45) {
-		printlinebuffer[42] = '.';
-		printlinebuffer[43] = '.';
-		printlinebuffer[44] = '.';
-		printlinebuffer[45] = '\0';
-	    }
-
-	}
-
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-	if (get_simulator_state() == IDLE) {
-	    mvaddstr(5, 0, printlinebuffer);
-	}
-	refreshp();
 
 	if (trxmode == DIGIMODE) {
 
