@@ -166,8 +166,6 @@ void replace_all(char *buf, int size, const char *what, const char *rep) {
 
 void ExpandMacro(void) {
 
-    extern int noleadingzeros;
-
     int i;
     static char qsonroutput[5] = "";
     static char rst_out[4] = "";
@@ -210,7 +208,7 @@ void ExpandMacro(void) {
 	}
 	qsonroutput[4] = '\0';
 
-	if (noleadingzeros != 1 && leading_zeros > 1) {
+	if (noleadingzeros && leading_zeros > 1) {
 	    leading_zeros = 1;
 	}
 
