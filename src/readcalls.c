@@ -111,7 +111,7 @@ int readcalls(const char *logfile, bool interactive) {
     FILE *fp;
 
     if (interactive) {
-	showstring("Reading logfile:", logfile);
+	showstring("Reading logfile:", (char *)logfile);
     }
 
     init_scoring();
@@ -150,9 +150,9 @@ int readcalls(const char *logfile, bool interactive) {
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);
 	checkexchange(qso->comment, false);
-        if (strlen(normalized_comment) > 0) {   //FIXME global
-            strcpy(qso->comment, normalized_comment);
-        }
+	if (strlen(normalized_comment) > 0) {   //FIXME global
+	    strcpy(qso->comment, normalized_comment);
+	}
 	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
 	addcall(qso);
 	score_qso();    //FIXME argument?
@@ -167,7 +167,7 @@ int readcalls(const char *logfile, bool interactive) {
 	    log_changed = true;
 	}
 
-        g_free(logline);
+	g_free(logline);
 
 	g_ptr_array_add(qso_array, qso);
     }
