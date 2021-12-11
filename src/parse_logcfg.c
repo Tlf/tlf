@@ -1255,6 +1255,10 @@ static int apply_config(const char *keyword, const char *param,
 	    WrongFormat_details(keyword, "value out of range");
 	    break;
 
+	case PARSE_STRING_TOO_LONG:
+	    WrongFormat_details(keyword, "value too long");
+	    break;
+
 	default:
 	    if (error_details != NULL) {
 		WrongFormat_details(keyword, error_details);

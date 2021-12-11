@@ -278,6 +278,13 @@ void test_keyer_device(void **state) {
     assert_string_equal(keyer_device, "/dev/tty0");
 }
 
+void test_keyer_device_too_long(void **state) {
+    int rc = call_parse_logcfg("KEYER_DEVICE=/dev/bus/usb/002/001");
+    assert_int_equal(rc, PARSE_ERROR);
+    assert_string_equal(showmsg_spy,
+			"Wrong parameter for keyword 'KEYER_DEVICE': value too long.\n");
+}
+
 void test_editor(void **state) {
     int rc = call_parse_logcfg("EDITOR= pico \n");   // space around argument
     assert_int_equal(rc, 0);
