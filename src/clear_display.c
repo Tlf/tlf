@@ -84,14 +84,12 @@ static void show_keyer_terminal() {
  */
 void add_to_keyer_terminal(char *buffer) {
 
-    char term2buf[81];
-
     strcpy(terminal1, terminal2);
     strcpy(terminal2, terminal3);
     strcpy(terminal3, terminal4);
 
-    g_strlcpy(terminal4, buffer, sizeof(term2buf));
-    g_strchomp(term2buf);
+    g_strlcpy(terminal4, buffer, sizeof(terminal4));
+    g_strchomp(terminal4);
 
     move(5, 0);
 
