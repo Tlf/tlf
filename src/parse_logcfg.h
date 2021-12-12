@@ -109,11 +109,7 @@ typedef struct {
         (cfg_arg_t){.char_pp=&var, .chomp=true, \
                     .string_type=DYNAMIC}
 
-#define CFG_MESSAGE(var, i)     NEED_PARAM, cfg_string, \
-        (cfg_arg_t){.msg=var, .base=i, .size=80, \
-                    .string_type=MESSAGE}
-
-#define CFG_MESSAGE_CHOMP(var, i)   NEED_PARAM, cfg_string, \
+#define CFG_MESSAGE(var, i)   NEED_PARAM, cfg_string, \
         (cfg_arg_t){.msg=var, .base=i, .size=80, .chomp=true, \
                     .string_type=MESSAGE}
 

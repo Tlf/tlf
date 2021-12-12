@@ -225,8 +225,11 @@ void ExpandMacro(void) {
 
 
     replace_all(buffer, BUFSIZE, "!", comment);
+
     if (trxmode == DIGIMODE)
-	replace_all(buffer, BUFSIZE, "|", "\r");   /* CR */
+	replace_all(buffer, BUFSIZE, "|", "\r");    /* CR */
+    else
+	replace_all(buffer, BUFSIZE, "|", "");	    /* drop it */
 }
 
 

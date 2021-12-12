@@ -2420,9 +2420,10 @@ pass another value (in seconds) after the \(oq=\(cq sign.
 .IP
 There must be an integral number of time sections per hour!
 .
-.SS CW and Voice Keyer Macros
+.SS CW, Digimode and Voice Keyer Macros
 .
-The following parameters configure the CW and voice mode keyer message macros.
+The following parameters configure the CW, Digimode and voice mode keyer
+message macros.
 .
 .TP
 .B Macro characters in the message strings
@@ -2450,11 +2451,17 @@ The following parameters configure the CW and voice mode keyer message macros.
 = SN,
 .B &
 = AS,
-.B > =
-BK,
+.B > 
+= BK,
 .B !
 = his serial (e.g. confirm exchange of station in
-.BR DIG imode).
+.BR DIG imode),
+.B |
+= carriage return (only in digi mode messages).
+.
+.P
+Be aware that unspecified digimode messages gets the value of their CW
+counterpart prepended with '|'.
 .
 .TP
 \fBF1\fR=\fI"cw message 1"\fR

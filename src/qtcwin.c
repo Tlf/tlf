@@ -729,9 +729,6 @@ void qtc_main_panel(int direction) {
 		if (trxmode == DIGIMODE) {
 		    if (direction == SEND && (activefield == 0 || activefield == 2)
 			    && qtclist.totalsent == 0) {
-			if (qtc_send_msgs[1][strlen(qtc_send_msgs[1]) - 1] == 10) {
-			    qtc_send_msgs[1][strlen(qtc_send_msgs[1]) - 1] = '\0';
-			}
 			tlen = strlen(qtc_send_msgs[1]) - 5; // len("sr/nr") = 5
 			char tmess[300], timec[40];
 			int ql;
@@ -854,10 +851,6 @@ void qtc_main_panel(int direction) {
 		    }
 
 		    if (direction == SEND && strlen(qtc_send_msgs[x - KEY_F(1)]) > 0) {
-			if (qtc_send_msgs[x - KEY_F(1)][strlen(qtc_send_msgs[x - KEY_F(
-				1)]) - 1] == '\n') {
-			    qtc_send_msgs[x - KEY_F(1)][strlen(qtc_send_msgs[x - KEY_F(1)]) - 1] = 0;
-			}
 			tlen = strlen(qtc_send_msgs[x - KEY_F(1)]) - 5; // len("sr/nr") = 5
 			char tmess[60];
 			tmess[0] = '\0';
