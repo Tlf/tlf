@@ -278,6 +278,13 @@ void test_keyer_device(void **state) {
     assert_string_equal(keyer_device, "/dev/tty0");
 }
 
+void test_keyer_device_too_long(void **state) {
+    int rc = call_parse_logcfg("KEYER_DEVICE=/dev/bus/usb/002/001");
+    assert_int_equal(rc, PARSE_ERROR);
+    assert_string_equal(showmsg_spy,
+			"Wrong parameter for keyword 'KEYER_DEVICE': value too long.\n");
+}
+
 void test_editor(void **state) {
     int rc = call_parse_logcfg("EDITOR= pico \n");   // space around argument
     assert_int_equal(rc, 0);
@@ -411,7 +418,7 @@ void test_fn(void **state) {
 	sprintf(line, "F%d= %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "MSG%d ABC \n", i);   // trailing space+NL are kept, FIXME
+	sprintf(msg, "MSG%d ABC", i);
 	assert_string_equal(message[j], msg);
     }
 }
@@ -425,7 +432,7 @@ void test_alt_n(void **state) {
 	sprintf(line, "ALT_%d= %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "MSG%d ALT \n", i);   // trailing space+NL are kept, FIXME
+	sprintf(msg, "MSG%d ALT", i);
 	assert_string_equal(message[j], msg);
     }
 }
@@ -433,19 +440,19 @@ void test_alt_n(void **state) {
 void test_sp_tu_msg(void **state) {
     int rc = call_parse_logcfg("S&P_TU_MSG=TU\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(message[SP_TU_MSG], "TU\n");
+    assert_string_equal(message[SP_TU_MSG], "TU");
 }
 
 void test_cq_tu_msg(void **state) {
     int rc = call_parse_logcfg("CQ_TU_MSG=TU QRZ?\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(message[CQ_TU_MSG], "TU QRZ?\n");
+    assert_string_equal(message[CQ_TU_MSG], "TU QRZ?");
 }
 
 void test_sp_call_msg(void **state) {
     int rc = call_parse_logcfg("S&P_CALL_MSG=DE AB1CD\r\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(message[SP_CALL_MSG], "DE AB1CD\r\n");  // FIXME line end...
+    assert_string_equal(message[SP_CALL_MSG], "DE AB1CD");
 }
 
 typedef struct {
@@ -577,7 +584,7 @@ void test_qr_fn(void **state) {
 	sprintf(line, "QR_F%d = %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "QRMSG%d MNO \n", i);    // FIXME NL is kept
+	sprintf(msg, "QRMSG%d MNO", i);
 	assert_string_equal(qtc_recv_msgs[j], msg);
     }
 }
@@ -592,7 +599,7 @@ void test_qs_fn(void **state) {
 	sprintf(line, "QS_F%d = %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "QSMSG%d MNO \n", i);    // FIXME NL is kept
+	sprintf(msg, "QSMSG%d MNO", i);
 	assert_string_equal(qtc_send_msgs[j], msg);
     }
 }

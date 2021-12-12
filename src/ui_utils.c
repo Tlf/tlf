@@ -95,7 +95,8 @@ int lookup_key(char *capability) {
 
 /** lookup all needed special keys not defined by ncurses */
 void lookup_keys() {
-    int not_ok = 0;
+    bool alt_not_ok = false;
+    bool ctrl_not_ok = false;
 
     key_kNXT3 = lookup_key("kNXT3");
     key_kPRV3 = lookup_key("kPRV3");
@@ -104,15 +105,15 @@ void lookup_keys() {
 
     if ((key_kNXT3 || key_kPRV3) == 0) {
 	showmsg("Terminal does not support Alt-PgUp/PgDn keys");
-	not_ok = 1;
+	alt_not_ok = true;
     }
 
     if ((key_kNXT5 || key_kPRV5) == 0) {
 	showmsg("Terminal does not support Ctrl-PgUp/PgDn keys");
-	not_ok = 1;
+	ctrl_not_ok = true;
     }
 
-    if (not_ok == 1) {
+    if (alt_not_ok && ctrl_not_ok) {
 	showmsg("See ':CQD' in man page for setting Auto_CQ delay");
 	showmsg("");
 	beep();

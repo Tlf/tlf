@@ -1084,9 +1084,9 @@ static config_t logcfg_configs[] = {
     {"ALT_([0-9])",     CFG_MESSAGE(message, CQ_TU_MSG + 1)},
     {"S&P_CALL_MSG",    CFG_MESSAGE(message, SP_CALL_MSG)},
 
-    {"VKM([1-9]|1[0-2])",   CFG_MESSAGE_CHOMP(ph_message, -1)},
-    {"VKCQM",               CFG_MESSAGE_CHOMP(ph_message, CQ_TU_MSG)},
-    {"VKSPM",               CFG_MESSAGE_CHOMP(ph_message, SP_TU_MSG)},
+    {"VKM([1-9]|1[0-2])",   CFG_MESSAGE(ph_message, -1)},
+    {"VKCQM",               CFG_MESSAGE(ph_message, CQ_TU_MSG)},
+    {"VKSPM",               CFG_MESSAGE(ph_message, SP_TU_MSG)},
 
     {"DKF([1-9]|1[0-2])",   CFG_MESSAGE_DYNAMIC(digi_message, -1)},
     {"DKCQM",               CFG_MESSAGE_DYNAMIC(digi_message, CQ_TU_MSG)},
@@ -1095,14 +1095,14 @@ static config_t logcfg_configs[] = {
     {"ALT_DK([1-9]|10)",    CFG_MESSAGE_DYNAMIC(digi_message, CQ_TU_MSG)},
 
     {"QR_F([1-9]|1[0-2])",      CFG_MESSAGE(qtc_recv_msgs, -1) },
-    {"QR_VKM([1-9]|1[0-2])",    CFG_MESSAGE_CHOMP(qtc_phrecv_message, -1) },
-    {"QR_VKCQM",                CFG_MESSAGE_CHOMP(qtc_phrecv_message, CQ_TU_MSG) },
-    {"QR_VKSPM",                CFG_MESSAGE_CHOMP(qtc_phrecv_message, SP_TU_MSG) },
+    {"QR_VKM([1-9]|1[0-2])",    CFG_MESSAGE(qtc_phrecv_message, -1) },
+    {"QR_VKCQM",                CFG_MESSAGE(qtc_phrecv_message, CQ_TU_MSG) },
+    {"QR_VKSPM",                CFG_MESSAGE(qtc_phrecv_message, SP_TU_MSG) },
 
     {"QS_F([1-9]|1[0-2])",      CFG_MESSAGE(qtc_send_msgs, -1) },
-    {"QS_VKM([1-9]|1[0-2])",    CFG_MESSAGE_CHOMP(qtc_phsend_message, -1) },
-    {"QS_VKCQM",                CFG_MESSAGE_CHOMP(qtc_phsend_message, CQ_TU_MSG) },
-    {"QS_VKSPM",                CFG_MESSAGE_CHOMP(qtc_phsend_message, SP_TU_MSG) },
+    {"QS_VKM([1-9]|1[0-2])",    CFG_MESSAGE(qtc_phsend_message, -1) },
+    {"QS_VKCQM",                CFG_MESSAGE(qtc_phsend_message, CQ_TU_MSG) },
+    {"QS_VKSPM",                CFG_MESSAGE(qtc_phsend_message, SP_TU_MSG) },
 
     {"TLFCOLOR([1-6])",  NEED_PARAM, cfg_tlfcolor},
 
@@ -1253,6 +1253,10 @@ static int apply_config(const char *keyword, const char *param,
 
 	case PARSE_INTEGER_OUT_OF_RANGE:
 	    WrongFormat_details(keyword, "value out of range");
+	    break;
+
+	case PARSE_STRING_TOO_LONG:
+	    WrongFormat_details(keyword, "value too long");
 	    break;
 
 	default:
