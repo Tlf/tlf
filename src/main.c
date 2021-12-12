@@ -937,7 +937,7 @@ int main(int argc, char *argv[]) {
     strcat(logline3, backgrnd_str);
     strcat(logline4, backgrnd_str);
 
-    init_terminal_strings();
+    init_keyer_terminal();
 
     hiscall[0] = '\0';
 

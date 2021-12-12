@@ -48,17 +48,54 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
-static char terminal1[88] = "";
-static char terminal2[88] = "";
-static char terminal3[88] = "";
-static char terminal4[88] = "";
+void clear_display(void);
 
 
-void init_terminal_strings(void) {
-    strcat(terminal1, backgrnd_str);
-    strcat(terminal2, backgrnd_str);
-    strcat(terminal3, backgrnd_str);
-    strcat(terminal4, backgrnd_str);
+void clear_line(int row) {
+    mvaddstr(row, 0, backgrnd_str);
+}
+
+static char terminal1[88];
+static char terminal2[88];
+static char terminal3[88];
+static char terminal4[88];
+
+void init_keyer_terminal(void) {
+    strcpy(terminal1, "");
+    strcpy(terminal2, "");
+    strcpy(terminal3, "");
+    strcpy(terminal4, "");
+}
+
+static void show_keyer_terminal() {
+    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
+    for (int i = 1; i < 6; i++)
+	clear_line(i);
+
+    mvaddstr(1, 0, terminal1);
+    mvaddstr(2, 0, terminal2);
+    mvaddstr(3, 0, terminal3);
+    mvaddstr(4, 0, terminal4);
+}
+
+/*
+ * add 'buffer' to the keyer terminal while scrolling one line up
+ * and refreshing the display
+ */
+void add_to_keyer_terminal(char *buffer) {
+
+    char term2buf[81];
+
+    strcpy(terminal1, terminal2);
+    strcpy(terminal2, terminal3);
+    strcpy(terminal3, terminal4);
+
+    g_strlcpy(terminal4, buffer, sizeof(term2buf));
+    g_strchomp(term2buf);
+
+    move(5, 0);
+
+    clear_display();
 }
 
 
@@ -87,7 +124,6 @@ void show_header_line() {
     mvaddstr(0, 21, fkey_header);
 }
 
-
 void clear_display(void) {
     int cury, curx;
 
@@ -95,12 +131,7 @@ void clear_display(void) {
 
     show_header_line();
 
-    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
-    mvaddstr(1, 0, terminal1);
-    mvaddstr(2, 0, terminal2);
-    mvaddstr(3, 0, terminal3);
-    mvaddstr(4, 0, terminal4);
-    mvaddstr(5, 0, backgrnd_str);
+    show_keyer_terminal();
 
     attron(COLOR_PAIR(C_HEADER));
     mvaddstr(6, 0, backgrnd_str);
@@ -156,29 +187,4 @@ void clear_display(void) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     move(cury, curx);
     refreshp();
-}
-
-/*
- * add 'buffer' to the keyer terminal while scrolling one line up
- * and refreshing the display
- */
-void add_to_keyer_terminal(char *buffer) {
-
-    char term2buf[81];
-
-    g_strlcpy(term2buf, buffer, sizeof(term2buf));
-    g_strchomp(term2buf);
-    g_strlcat(term2buf, backgrnd_str, sizeof(term2buf));  /* fill with blanks */
-
-    strcpy(terminal1, terminal2);
-    strcpy(terminal2, terminal3);
-    strcpy(terminal3, terminal4);
-    strcpy(terminal4, term2buf);
-    move(5, 0);
-
-    clear_display();
-}
-
-void clear_line(int row) {
-    mvaddstr(row, 0, backgrnd_str);
 }
