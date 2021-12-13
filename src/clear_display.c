@@ -55,16 +55,16 @@ void clear_line(int row) {
     mvaddstr(row, 0, backgrnd_str);
 }
 
-static char terminal1[88];
-static char terminal2[88];
-static char terminal3[88];
-static char terminal4[88];
+static char *terminal1;
+static char *terminal2;
+static char *terminal3;
+static char *terminal4;
 
 void init_keyer_terminal(void) {
-    strcpy(terminal1, "");
-    strcpy(terminal2, "");
-    strcpy(terminal3, "");
-    strcpy(terminal4, "");
+    terminal1 = g_strdup("");
+    terminal2 = g_strdup("");
+    terminal3 = g_strdup("");
+    terminal4 = g_strdup("");
 }
 
 static void show_keyer_terminal() {
@@ -84,11 +84,13 @@ static void show_keyer_terminal() {
  */
 void add_to_keyer_terminal(char *buffer) {
 
-    strcpy(terminal1, terminal2);
-    strcpy(terminal2, terminal3);
-    strcpy(terminal3, terminal4);
+    if (terminal1)
+	g_free(terminal1);
+    terminal1 = terminal2;
+    terminal2 = terminal3;
+    terminal3 = terminal4;
 
-    g_strlcpy(terminal4, buffer, sizeof(terminal4));
+    terminal4 = g_strdup(buffer);
     g_strchomp(terminal4);
 
     move(5, 0);
