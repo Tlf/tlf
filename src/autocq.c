@@ -66,42 +66,46 @@ int auto_cq(void) {
 
     while (key == NO_KEY) {
 
-	send_standard_message(11);
+	send_standard_message(11);  // F12
 
 	move(12, 29);
 
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-	// if length of message is known then wait until its end
+	// wait between calls:
+	// if length of message is known then wait until it ends
+	// then start CQ Delay
 	// key press terminates auto CQ loop
-	if (message_time > 0) {
-	    for (int j = 0; j < 10 && key == NO_KEY; j++) {
-		usleep(message_time * 100);
-		time_update();
+
+	int message_wait = message_time;    // message length in ms
+	int delayval = cqdelay;             // CQ Delay in 500 ms units
+
+	while (delayval > 0 && key == NO_KEY) {
+
+	    if (message_wait <= 0) {        // message is over, show countdown
+		mvprintw(12, 29, "Auto CQ  %-2d ", delayval);
+		--delayval;
+		refreshp();
+	    }
+
+	    // delay 10 * 50 = 500 ms unless a key is pressed
+	    // terminate delay when message has finished to start CQ Delay
+	    for (int i = 0; i < 10 && key == NO_KEY; i++) {
+		usleep(50000);          // 50 ms
 		const int inchar = key_poll();
 		if (inchar > 0 && inchar != KEY_RESIZE) {
 		    key = inchar;
 		}
-	    }
-	}
-
-	// wait between calls
-	for (int delayval = cqdelay; delayval > 0 && key == NO_KEY; delayval--) {
-
-	    mvprintw(12, 29, "Auto CQ  %-2d ", delayval - 1);
-	    refreshp();
-
-	    // sleep 10 * 50 = 500ms unless a key is pressed
-	    for (int i = 0; i < 10 && key == NO_KEY; i++) {
-		usleep(50000); // 50 ms
-
-		const int inchar = key_poll();
-		if (inchar > 0 && inchar != KEY_RESIZE) {
-		    key = inchar;
+		if (message_wait > 0) {
+		    message_wait -= 50; // reduce by 50 ms
+		    if (message_wait <= 0) {
+			break;          // message is over, now start CQ Delay
+		    }
 		}
 	    }
 
 	    time_update();
+
 	}
 
 	mvaddstr(12, 29, spaces(13));
