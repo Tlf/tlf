@@ -34,6 +34,7 @@
 #include "checklogfile.h"
 #include "clear_display.h"
 #include "err_utils.h"
+#include "globalvars.h"
 #include "ignore_unused.h"
 #include "readqtccalls.h"
 #include "readcalls.h"
@@ -71,15 +72,11 @@ void edit(char *filename) {
 
 void logedit(void) {
 
-    extern char logfile[];
-
-    int j;
-
     stop_background_process();
     edit(logfile);
     checklogfile();
 
-    log_read_n_score();
+    nr_qsos = log_read_n_score();
 
     start_background_process();
 
@@ -90,7 +87,7 @@ void logedit(void) {
     clear_display();
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-    for (j = 13; j < LINES - 1; j++) {
+    for (int j = 13; j < LINES - 1; j++) {
 	clear_line(j);
     }
     refreshp();
