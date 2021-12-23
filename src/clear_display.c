@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- * 		 2013           Thomas Beierlein <tb@forth-ev.de
+ * 		 2013-2021      Thomas Beierlein <tb@forth-ev.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ static void show_keyer_terminal() {
  * add 'buffer' to the keyer terminal while scrolling one line up
  * and refreshing the display
  */
-void add_to_keyer_terminal(char *buffer) {
+static void add_line_to_keyer_terminal(char *buffer) {
 
     if (terminal1)
 	g_free(terminal1);
@@ -97,6 +97,17 @@ void add_to_keyer_terminal(char *buffer) {
 
     clear_display();
 }
+
+/*
+ * add 'buffer' to keyer terminal, splitting it into separate lines if needed
+ */
+void add_to_keyer_terminal(char *buffer) {
+    gchar **lines = g_strsplit_set(buffer, "\n\r", 0);
+    for (int i = 0; lines[i] != NULL; i++)
+        add_line_to_keyer_terminal(lines[i]);
+    g_strfreev(lines);
+}
+
 
 
 void show_header_line() {
