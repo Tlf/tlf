@@ -84,8 +84,7 @@ static void show_keyer_terminal() {
  */
 static void add_line_to_keyer_terminal(char *buffer) {
 
-    if (terminal1)
-	g_free(terminal1);
+    g_free(terminal1);
     terminal1 = terminal2;
     terminal2 = terminal3;
     terminal3 = terminal4;
