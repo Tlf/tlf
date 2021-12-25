@@ -51,12 +51,48 @@ static int get_autocq_time() {
     return (int)(1200.0 / GetCWSpeed()) * cw_message_len;
 }
 
-
-int auto_cq(void) {
-
 #define NO_KEY -1
 
+static int wait_50ms_for_key() {
+
+    usleep(50 * 1000);
+
+    const int inchar = key_poll();
+    if (inchar > 0 && inchar != KEY_RESIZE) {
+	return inchar;
+    }
+
+    return NO_KEY;
+}
+
+#define TIME_UPDATE_MS  500
+
+// Wait for given ms, polling each 50 ms for a key and calling time_update()
+// each 500 ms. Pressing a key terminates the waiting loop.
+// Note: this works best if ms >= 500 (or ms = 0)
+static int wait_ms(int ms) {
     int key = NO_KEY;
+    int update_timer = TIME_UPDATE_MS;
+    int wait_timer = ms;
+
+    while (wait_timer > 0 && key == NO_KEY) {
+
+	key = wait_50ms_for_key();
+
+	wait_timer -= 50;
+	update_timer -= 50;
+
+	if (update_timer <= 0) {
+	    time_update();
+	    update_timer = TIME_UPDATE_MS;
+	}
+    }
+
+    return key;
+}
+
+
+int auto_cq(void) {
 
     const cqmode_t cqmode_save = cqmode;
     cqmode = AUTO_CQ;
@@ -64,48 +100,27 @@ int auto_cq(void) {
 
     const long message_time = get_autocq_time();
 
+    int key = NO_KEY;
+
     while (key == NO_KEY) {
 
-	send_standard_message(11);  // F12
+	send_standard_message(11);
 
 	move(12, 29);
 
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-	// wait between calls:
-	// if length of message is known then wait until it ends
-	// then start CQ Delay
+	// if length of message is known then wait until its end
 	// key press terminates auto CQ loop
+	key = wait_ms(message_time);
 
-	int message_wait = message_time;    // message length in ms
-	int delayval = cqdelay;             // CQ Delay in 500 ms units
+	// wait between calls
+	for (int delayval = cqdelay; delayval > 0 && key == NO_KEY; delayval--) {
 
-	while (delayval > 0 && key == NO_KEY) {
+	    mvprintw(12, 29, "Auto CQ  %-2d ", delayval);
+	    refreshp();
 
-	    if (message_wait <= 0) {        // message is over, show countdown
-		mvprintw(12, 29, "Auto CQ  %-2d ", delayval);
-		--delayval;
-		refreshp();
-	    }
-
-	    // delay 10 * 50 = 500 ms unless a key is pressed
-	    // terminate delay when message has finished to start CQ Delay
-	    for (int i = 0; i < 10 && key == NO_KEY; i++) {
-		usleep(50000);          // 50 ms
-		const int inchar = key_poll();
-		if (inchar > 0 && inchar != KEY_RESIZE) {
-		    key = inchar;
-		}
-		if (message_wait > 0) {
-		    message_wait -= 50; // reduce by 50 ms
-		    if (message_wait <= 0) {
-			break;          // message is over, now start CQ Delay
-		    }
-		}
-	    }
-
-	    time_update();
-
+	    key = wait_ms(500);
 	}
 
 	mvaddstr(12, 29, spaces(13));
