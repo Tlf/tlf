@@ -51,18 +51,56 @@ static int get_autocq_time() {
     return (int)(1200.0 / GetCWSpeed()) * cw_message_len;
 }
 
-
-int auto_cq(void) {
-
 #define NO_KEY -1
 
+static int wait_50ms_for_key() {
+
+    usleep(50 * 1000);
+
+    const int inchar = key_poll();
+    if (inchar > 0 && inchar != KEY_RESIZE) {
+	return inchar;
+    }
+
+    return NO_KEY;
+}
+
+#define TIME_UPDATE_MS  500
+
+// Wait for given ms, polling each 50 ms for a key and calling time_update()
+// each 500 ms. Pressing a key terminates the waiting loop.
+// Note: this works best if ms >= 500 (or ms = 0)
+static int wait_ms(int ms) {
     int key = NO_KEY;
+    int update_timer = TIME_UPDATE_MS;
+    int wait_timer = ms;
+
+    while (wait_timer > 0 && key == NO_KEY) {
+
+	key = wait_50ms_for_key();
+
+	wait_timer -= 50;
+	update_timer -= 50;
+
+	if (update_timer <= 0) {
+	    time_update();
+	    update_timer = TIME_UPDATE_MS;
+	}
+    }
+
+    return key;
+}
+
+
+int auto_cq(void) {
 
     const cqmode_t cqmode_save = cqmode;
     cqmode = AUTO_CQ;
     show_header_line();
 
     const long message_time = get_autocq_time();
+
+    int key = NO_KEY;
 
     while (key == NO_KEY) {
 
@@ -74,30 +112,15 @@ int auto_cq(void) {
 
 	// if length of message is known then wait until its end
 	// key press terminates auto CQ loop
-	if (message_time > 0) {
-	    for (int j = 0; j < 10 && key == NO_KEY; j++) {
-		usleep(message_time * 100);
-		time_update();
-		const int inchar = key_poll();
-		if (inchar > 0 && inchar != KEY_RESIZE) {
-		    key = inchar;
-		}
-	    }
-	}
+	key = wait_ms(message_time);
 
 	// wait between calls
 	for (int delayval = cqdelay; delayval > 0 && key == NO_KEY; delayval--) {
 
-	    mvprintw(12, 29, "Auto CQ  %-2d ", delayval - 1);
+	    mvprintw(12, 29, "Auto CQ  %-2d ", delayval);
 	    refreshp();
 
-	    usleep(500000); // 500 ms
-	    time_update();
-
-	    const int inchar = key_poll();
-	    if (inchar > 0 && inchar != KEY_RESIZE) {
-		key = inchar;
-	    }
+	    key = wait_ms(500);
 	}
 
 	mvaddstr(12, 29, spaces(13));
