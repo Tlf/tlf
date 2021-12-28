@@ -102,8 +102,10 @@ static void add_line_to_keyer_terminal(char *buffer) {
  */
 void add_to_keyer_terminal(char *buffer) {
     gchar **lines = g_strsplit_set(buffer, "\n\r", 0);
-    for (int i = 0; lines[i] != NULL; i++)
-        add_line_to_keyer_terminal(lines[i]);
+    for (int i = 0; lines[i] != NULL; i++) {
+	if (strlen(lines[i]) > 0)
+	    add_line_to_keyer_terminal(lines[i]);
+    }
     g_strfreev(lines);
 }
 
