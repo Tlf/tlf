@@ -16,7 +16,6 @@ tlf_SOURCES = \
 	genqtclist.c \
 	get_time.c getctydata.c getexchange.c getmessages.c getpx.c \
 	gettxinfo.c getwwv.c grabspot.c \
-	hamlib_keyer.c \
 	initial_exchange.c \
 	keyer.c \
 	lancode.c last10.c listmessages.c log_to_disk.c log_utils.c \
@@ -53,7 +52,6 @@ noinst_HEADERS = \
 	genqtclist.h \
 	get_time.h  getctydata.h getexchange.h getmessages.h getpx.h \
 	gettxinfo.h getwwv.h globalvars.h grabspot.h \
-	hamlib_keyer.h \
 	ignore_unused.h initial_exchange.h \
 	keyer.h keystroke_names.h \
 	lancode.h last10.h listmessages.h log_utils.h \

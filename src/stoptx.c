@@ -22,11 +22,9 @@
 *--------------------------------------------------------------*/
 
 
-#include <hamlib/rig.h>
 #include "clear_display.h"
 #include "err_utils.h"
 #include "globalvars.h"
-#include "hamlib_keyer.h"
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -46,11 +44,6 @@ int stoptx(void) {
 		trxmode = SSBMODE;
 		clear_display();
 
-	    }
-	} else if (cwkeyer == HAMLIB_KEYER) {
-	    int error = hamlib_keyer_stop();
-	    if (error != RIG_OK) {
-		TLF_LOG_WARN("CW stop error: %s", rigerror(error));
 	    }
 	}
     } else {
