@@ -32,6 +32,7 @@ enum {
     MFJ1278_KEYER,
     GMFSK,
     FLDIGI,
+    HAMLIB_KEYER,
 };
 
 #define SINGLE 0        /* single op */

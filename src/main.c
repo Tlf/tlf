@@ -42,6 +42,7 @@
 #include "getmessages.h"
 #include "getwwv.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "hamlib_keyer.h"
 #include "initial_exchange.h"
 #include "lancode.h"
 #include "logit.h"
@@ -827,6 +828,34 @@ static void keyer_init() {
 
     }
 
+    if (cwkeyer == HAMLIB_KEYER) {
+	showmsg("CW-Keyer is Hamlib");
+	if (!trx_control) {
+	    showmsg("Radio control is not activated!!");
+	    sleep(1);
+	    endwin();
+	    exit(EXIT_FAILURE);
+	}
+	if (!rig_has_send_morse()) {
+	    showmsg("Rig does not support CW via Hamlib");
+	    sleep(1);
+	    endwin();
+	    exit(EXIT_FAILURE);
+	}
+	if (!rig_has_stop_morse()) {
+#if HAMLIB_VERSION >= 400
+	    showmsg("Rig does not support stopping CW!!");
+#else
+	    showmsg("Hamlib version does not supprt stopping CW!!");
+#endif
+	    showmsg("Continue anyway Y/(N)?");
+	    if (toupper(key_get()) != 'Y') {
+		endwin();
+		exit(1);
+	    }
+	}
+    }
+
     if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER ||
 	    digikeyer == GMFSK) {
 	init_controller();
@@ -960,8 +989,6 @@ int main(int argc, char *argv[]) {
     showmsg("");
 
     memset(&my, 0, sizeof(my));
-
-    rig_set_debug(RIG_DEBUG_NONE);
 
     total = 0;
     if (databases_load() == EXIT_FAILURE) {
