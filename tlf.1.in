@@ -114,6 +114,10 @@ CW keying via
 is fully supported, featuring direct mode for the keyboard and output to
 parallel and serial ports and speed and weight control from the keyboard, and
 band info output on the parallel port.
+Likewise, CW keying via
+.B Hamlib
+is supported for rigs that feature the capability. Tlf can set the CW speed,
+and at the same time read back the speed if changed using the knob on the rig.
 .
 .P
 For users of the K1EL series of \(lqWin Keyers\(rq, the
@@ -1739,6 +1743,14 @@ Default port is 6789.
 .TP
 \fBNETKEYERHOST\fR=\fIhost_address\fR
 Default host is 127.0.0.1 (localhost).
+.
+.TP
+\fBHAMLIB_KEYER\fR
+Activate CW keying via Hamlib.
+.
+.IP
+.B Note:
+The + and - macros to control speed from within messages are not yet supported.
 .
 .TP
 \fBMFJ1278_KEYER\fR=\fIserial_port\fR

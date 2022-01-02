@@ -29,6 +29,7 @@
 #include "cw_utils.h"
 #include "err_utils.h"
 #include "globalvars.h"
+#include "hamlib_keyer.h"
 #include "netkeyer.h"
 #include "sendbuf.h"
 #include "tlf.h"
@@ -39,8 +40,9 @@ void setspeed(void) {
 
     int retval = 0;
     char buff[3];
+    int cwspeed = GetCWSpeed();
 
-    snprintf(buff, 3, "%2u", GetCWSpeed());
+    snprintf(buff, 3, "%2u", cwspeed);
 
     if (cwkeyer == NET_KEYER) {
 
@@ -49,6 +51,16 @@ void setspeed(void) {
 	if (retval < 0) {
 	    TLF_LOG_WARN("keyer not active");
 //                      trxmode = SSBMODE;
+	    clear_display();
+	}
+    }
+
+    if (cwkeyer == HAMLIB_KEYER) {
+
+	retval = hamlib_keyer_set_speed(cwspeed);
+
+	if (retval < 0) {
+	    TLF_LOG_WARN("Could not set CW speed: %s", rigerror(retval));
 	    clear_display();
 	}
     }

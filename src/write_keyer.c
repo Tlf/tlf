@@ -24,11 +24,13 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <glib.h>
+#include <hamlib/rig.h>
 
 #include "clear_display.h"
 #include "err_utils.h"
 #include "ignore_unused.h"
 #include "globalvars.h"
+#include "hamlib_keyer.h"
 #include "netkeyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
@@ -93,7 +95,20 @@ void write_keyer(void) {
 	fldigi_send_text(tosend);
     } else if (cwkeyer == NET_KEYER) {
 	netkeyer(K_MESSAGE, tosend);
+    } else if (cwkeyer == HAMLIB_KEYER) {
+	// Ignore +/- speed up/slow down instructions
+	char *q = tosend;
+	for (char *p = q; *p; p++) {
+	    if (*p != '+' && *p != '-') {
+		*q++ = *p;
+	    }
+	}
+	*q = 0;
 
+	int error = hamlib_keyer_send(tosend);
+	if (error != RIG_OK) {
+	    TLF_LOG_WARN("CW send error: %s", rigerror(error));
+	}
     } else if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 	if ((bfp = fopen(controllerport, "a")) == NULL) {
 	    TLF_LOG_WARN("1278 not active. Switching to SSB mode.");
