@@ -843,7 +843,7 @@ static void keyer_init() {
 #if HAMLIB_VERSION >= 400
 	    showmsg("Rig does not support stopping CW!!");
 #else
-	    showmsg("Hamlib version does not supprt stopping CW!!");
+	    showmsg("Hamlib version does not support stopping CW!!");
 #endif
 	    showmsg("Continue anyway Y/(N)?");
 	    if (toupper(key_get()) != 'Y') {
