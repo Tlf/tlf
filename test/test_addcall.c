@@ -29,6 +29,7 @@
 
 void addmult(struct qso_t qso) {}
 void addmult_lan() {}
+void clear_display() {}
 int pacc_pa(void) {
     return 0;
 }

@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- * 		 2013           Thomas Beierlein <tb@forth-ev.de
+ * 		 2013-2021      Thomas Beierlein <tb@forth-ev.de
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,18 +48,67 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
-static char terminal1[88] = "";
-static char terminal2[88] = "";
-static char terminal3[88] = "";
-static char terminal4[88] = "";
+void clear_display(void);
 
 
-void init_terminal_strings(void) {
-    strcat(terminal1, backgrnd_str);
-    strcat(terminal2, backgrnd_str);
-    strcat(terminal3, backgrnd_str);
-    strcat(terminal4, backgrnd_str);
+void clear_line(int row) {
+    mvaddstr(row, 0, backgrnd_str);
 }
+
+static char *terminal1;
+static char *terminal2;
+static char *terminal3;
+static char *terminal4;
+
+void init_keyer_terminal(void) {
+    terminal1 = g_strdup("");
+    terminal2 = g_strdup("");
+    terminal3 = g_strdup("");
+    terminal4 = g_strdup("");
+}
+
+static void show_keyer_terminal() {
+    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
+    for (int i = 1; i < 6; i++)
+	clear_line(i);
+
+    mvaddstr(1, 0, terminal1);
+    mvaddstr(2, 0, terminal2);
+    mvaddstr(3, 0, terminal3);
+    mvaddstr(4, 0, terminal4);
+}
+
+/*
+ * add 'buffer' to the keyer terminal while scrolling one line up
+ * and refreshing the display
+ */
+static void add_line_to_keyer_terminal(char *buffer) {
+
+    g_free(terminal1);
+    terminal1 = terminal2;
+    terminal2 = terminal3;
+    terminal3 = terminal4;
+
+    terminal4 = g_strdup(buffer);
+    g_strchomp(terminal4);
+
+    move(5, 0);
+
+    clear_display();
+}
+
+/*
+ * add 'buffer' to keyer terminal, splitting it into separate lines if needed
+ */
+void add_to_keyer_terminal(char *buffer) {
+    gchar **lines = g_strsplit_set(buffer, "\n\r", 0);
+    for (int i = 0; lines[i] != NULL; i++) {
+	if (strlen(lines[i]) > 0)
+	    add_line_to_keyer_terminal(lines[i]);
+    }
+    g_strfreev(lines);
+}
+
 
 
 void show_header_line() {
@@ -87,7 +136,6 @@ void show_header_line() {
     mvaddstr(0, 21, fkey_header);
 }
 
-
 void clear_display(void) {
     int cury, curx;
 
@@ -95,12 +143,7 @@ void clear_display(void) {
 
     show_header_line();
 
-    attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
-    mvaddstr(1, 0, terminal1);
-    mvaddstr(2, 0, terminal2);
-    mvaddstr(3, 0, terminal3);
-    mvaddstr(4, 0, terminal4);
-    mvaddstr(5, 0, backgrnd_str);
+    show_keyer_terminal();
 
     attron(COLOR_PAIR(C_HEADER));
     mvaddstr(6, 0, backgrnd_str);
@@ -156,30 +199,4 @@ void clear_display(void) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     move(cury, curx);
     refreshp();
-}
-
-/*
- *  scroll the loglines of the keyer terminal and show them
- */
-void displayit(void) {
-    extern char termbuf[];
-
-    char term2buf[81] = "";
-
-    g_strlcpy(term2buf, termbuf, sizeof(term2buf));
-    g_strchomp(term2buf);
-    g_strlcat(term2buf, backgrnd_str, sizeof(term2buf));	/* fill with blanks */
-
-    strcpy(terminal1, terminal2);
-    strcpy(terminal2, terminal3);
-    strcpy(terminal3, terminal4);
-    strcpy(terminal4, term2buf);
-    termbuf[0] = '\0';
-    move(5, 0);
-
-    clear_display();
-}
-
-void clear_line(int row) {
-    mvaddstr(row, 0, backgrnd_str);
 }

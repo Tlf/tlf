@@ -297,7 +297,7 @@ void foc_show_cty() {
     refreshp();
 
     key_get();
-    displayit();
+    clear_display();
 
     g_tree_destroy(tree);
 }

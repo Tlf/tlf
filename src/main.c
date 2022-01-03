@@ -139,7 +139,7 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-int noleadingzeros;
+bool noleadingzeros;
 bool ctcomp = false;
 bool nob4 = false;		// allow auto b4
 bool ignoredupe = false;
@@ -401,9 +401,6 @@ char fkey_header[60] =
 const char *backgrnd_str;
 
 char logline_edit[5][LOGLINELEN + 1];
-
-char termbuf[88] = "";
-int termbufcount = 0;
 
 double DEST_Lat = 51.;
 double DEST_Long = 1.;
@@ -969,9 +966,8 @@ int main(int argc, char *argv[]) {
     strcat(logline3, backgrnd_str);
     strcat(logline4, backgrnd_str);
 
-    init_terminal_strings();
+    init_keyer_terminal();
 
-    termbuf[0] = '\0';
     hiscall[0] = '\0';
 
 

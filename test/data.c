@@ -103,7 +103,7 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-int noleadingzeros;
+bool noleadingzeros;
 bool ctcomp = false;
 int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
 bool nob4 = false;			// allow auto b4
@@ -384,9 +384,6 @@ const char *backgrnd_str =
     "                                                                                ";
 
 char logline_edit[5][LOGLINELEN + 1];
-
-char termbuf[88] = "";
-int termbufcount = 0;
 
 double DEST_Lat = 51.;
 double DEST_Long = 1.;

@@ -42,6 +42,7 @@ int play_file(char *file) { return 0; }
 bool simulator;
 void set_simulator_state(simstate_t s) { }
 simstate_t get_simulator_state() { return IDLE; }
+void add_to_keyer_terminal(char *buffer) {}
 
 
 /* test helpers */
