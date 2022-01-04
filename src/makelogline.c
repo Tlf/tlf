@@ -43,7 +43,7 @@ void prepare_fixed_part(char *logline, struct qso_t *qso);
 void prepare_specific_part(char *logline, struct qso_t *qso);
 
 
-static int default_rst(struct qso_t *qso) {
+static int standard_rst(struct qso_t *qso) {
     return qso->mode == SSBMODE ? 59 : 599;
 }
 
@@ -164,8 +164,8 @@ void prepare_fixed_part(char *logline, struct qso_t *qso) {
 	strcat(logline, "---  ---  ");	/* instead of RST */
     } else {
 	sprintf(buf, "%-3d  %-3d  ",
-		qso->rst_s ? qso->rst_s : default_rst(qso),
-		qso->rst_r ? qso->rst_r : default_rst(qso));
+		qso->rst_s ? qso->rst_s : standard_rst(qso),
+		qso->rst_r ? qso->rst_r : standard_rst(qso));
 	strcat(logline, buf);
     }
 }

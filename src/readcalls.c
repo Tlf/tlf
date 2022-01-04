@@ -183,7 +183,6 @@ int readcalls(const char *logfile, bool interactive) {
 	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
 	    rename(logfile, backup);
 	    // rewrite log
-	    remove(logfile);
 	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
 	    for (int i = 0 ; i < linenr; i++) {
 		store_qso(qsos[i]);
