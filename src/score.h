@@ -29,6 +29,7 @@ int score_arrlfd();
 int score_arrldx_usa();
 int score_stewperry();
 int score(void);
+void score_qso(void);
 int score2(char *line);
 bool country_found(char prefix[]);
 bool is_in_countrylist(int countrynr);

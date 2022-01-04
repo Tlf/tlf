@@ -84,7 +84,6 @@ extern char band[NBANDS][4];
 extern freq_t bandfrequency[NBANDS];
 
 extern struct tm *time_ptr;
-extern struct tm time_ptr_cabrillo;
 
 extern char cqzone[];
 extern char ituzone[];
@@ -122,7 +121,7 @@ extern bool wazmult;
 extern int addcallarea;
 extern int new_cty;
 extern int new_zone;
-extern int do_cabrillo;
+extern bool new_pfx;
 extern bool no_rst;
 extern rmode_t digi_mode;
 extern int minitest;    // minitest period length in seconds, 0 if not used

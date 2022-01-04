@@ -378,14 +378,13 @@ int countryscore[NBANDS];
 int zonedisplay = 0;
 int new_zone = 0;		/* index of new zone */
 int new_cty = 0;		/* index of new country */
+bool new_pfx = false;           /* worked a new prefix */
 int new_mult = -1;
 int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;			/* nr of next QSO */
 int ymax, xmax;			/* screen size */
-
-struct tm time_ptr_cabrillo;
 
 freq_t freq;
 bool logfrequency = false;
@@ -414,7 +413,6 @@ char itustr[3];
 bool nopacket = false;		/* set if tlf is called with '-n' */
 bool no_trx_control = false;	/* set if tlf is called with '-r' */
 bool convert_cabrillo = false;  /* set if the arg input is a cabrillo */
-int do_cabrillo = 0;		/* actually converting cabrillo file to Tlf log */
 
 int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
@@ -1024,12 +1022,13 @@ int main(int argc, char *argv[]) {
     lan_init();
     keyer_init();
 
-    nr_qsos = readcalls(logfile);   /* read the logfile and rebuild
-				       point and multiplier scoring */
+    show_station_info();
+
+    nr_qsos = readcalls(logfile, true);   /* read the logfile and rebuild
+				            point and multiplier scoring */
 
     scroll_log();		/* show the last 5  log lines and
 				   set the next serial number */
-    show_station_info();
     clearmsg_wait();
 
     packet_init();

@@ -21,7 +21,8 @@
 #ifndef _MAKELOGLINE_H
 #define _MAKELOGLINE_H
 
+#include "tlf.h"
 
-void makelogline(void);
+char *makelogline(struct qso_t *qso);
 
 #endif /* end of include guard: _MAKELOGLINE_H */

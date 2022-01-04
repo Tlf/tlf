@@ -31,32 +31,31 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 #include <time.h>
 
 #include "addcall.h"
-#include "addmult.h"
 #include "addpfx.h"
-#include "bands.h"
+#include "addmult.h"
 #include "cabrillo_utils.h"
-#include "dxcc.h"
-#include "get_time.h"
+#include "getexchange.h"
 #include "getctydata.h"
-#include "getpx.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "ignore_unused.h"
 #include "log_utils.h"
-#include "paccdx.h"
+#include "makelogline.h"
 #include "readqtccalls.h"
 #include "score.h"
 #include "searchcallarray.h"
-#include "setcontest.h"
 #include "startmsg.h"
-#include "tlf_curses.h"
-#include "zone_nr.h"
+#include "store_qso.h"
+#include "ui_utils.h"
 
 
 void init_scoring(void) {
     /* reset counter and score anew */
+    total = 0;
+
     for (int i = 0; i < MAX_QSOS; i++)
 	qsos[i][0] = '\0';
 
@@ -81,111 +80,55 @@ void init_scoring(void) {
 
     InitPfx();
 
-    if (pfxnummultinr > 0) {
-	for (int i = 0; i < pfxnummultinr; i++) {
-	    for (int n = 0; n < PFXNUMBERS; n++) {
-		pfxnummulti[i].qsos[n] = 0;
-	    }
+    for (int i = 0; i < pfxnummultinr; i++) {
+	for (int n = 0; n < PFXNUMBERS; n++) {
+	    pfxnummulti[i].qsos[n] = 0;
 	}
     }
 }
 
-void show_progress(int linenr) {
+static void show_progress(int linenr) {
+    if (linenr == 1) {
+	printw(spaces(2));  // leading separator after log file name
+	refreshp();
+    }
     if (((linenr + 1) % 100) == 0) {
 	printw("*");
 	refreshp();
     }
 }
 
-
-/* pick up multi string from logline
- *
- * ATTENTION! return value needs to be freed
- */
-char *get_multi_from_line(char *logline) {
-    char *multbuffer = g_malloc(20);
-
-    if (CONTEST_IS(ARRL_SS)) {
-
-	if (logline[63] == ' ')
-	    g_strlcpy(multbuffer, logline + 64, 4);
-	else
-	    g_strlcpy(multbuffer, logline + 63, 4);
-
-    } else if (serial_section_mult
-	       || sectn_mult
-	       || sectn_mult_once) {
-
-	g_strlcpy(multbuffer, logline + 68, MAX_SECTION_LENGTH + 1);
-	g_strchomp(multbuffer);
-
-    } else if (serial_grid4_mult) {
-
-	g_strlcpy(multbuffer, logline + 59, 5);
-
-    } else if (unique_call_multi != 0) {
-
-	g_strlcpy(multbuffer, logline + 68, 10);
-	g_strchomp(multbuffer);
-
-    } else {
-
-	g_strlcpy(multbuffer, logline + 54, 11);	// normal case
-	g_strchomp(multbuffer);
-
-    }
-
-    return multbuffer;
+static void qso_free(gpointer data) {
+    free_qso((struct qso_t *) data);
 }
 
-
-void count_if_worked(int check, unsigned int bandindex, int *count) {
-    if (bandindex >= NBANDS)
-	return;
-
-    if ((check & inxes[bandindex]) != 0)
-	count[bandindex]++;
-}
-
-void count_contest_bands(int check, int *count) {
-    count_if_worked(check, BANDINDEX_160, count);
-    count_if_worked(check, BANDINDEX_80, count);
-    count_if_worked(check, BANDINDEX_40, count);
-    count_if_worked(check, BANDINDEX_20, count);
-    count_if_worked(check, BANDINDEX_15, count);
-    count_if_worked(check, BANDINDEX_10, count);
-}
-
-
-
-int readcalls(const char *logfile) {
+int readcalls(const char *logfile, bool interactive) {
 
     char inputbuffer[LOGLINELEN + 1];
-    int z = 0;
-    bool add_ok;
-    int pfxnumcntidx;
-    int pxnr;
-    bool veto;
     struct qso_t *qso;
     int linenr = 0;
 
-    int bandindex = BANDINDEX_OOB;
-
     FILE *fp;
 
-    showmsg("Reading logfile... ");
-    refreshp();
+    if (interactive) {
+	showstring("Reading logfile:", (char *)logfile);
+    }
 
     init_scoring();
 
     if ((fp = fopen(logfile, "r")) == NULL) {
 	showmsg("Error opening logfile ");
-	refreshp();
 	sleep(2);
 	exit(1);
     }
 
-    while (fgets(inputbuffer, LOGLINELEN + 1, fp) != NULL) {
+    bool log_changed = false;
+    // array of qso's
+    // FIXME use this instead of qsos[] (make it global and don't free it here)
+    // FIXME also include comments/notes into qso_t
+    GPtrArray *qso_array = g_ptr_array_new_with_free_func(qso_free);
+
+    while (fgets(inputbuffer, sizeof(inputbuffer), fp) != NULL) {
 
 	// drop trailing newline
 	inputbuffer[LOGLINELEN - 1] = '\0';
@@ -193,210 +136,71 @@ int readcalls(const char *logfile) {
 	// remember logline in qsos[] field
 	g_strlcpy(qsos[linenr], inputbuffer, sizeof(qsos[0]));
 	linenr++;
+	// FIXME check for overflow....
 
-	show_progress(linenr);
+	if (interactive) {
+	    show_progress(linenr);
+	}
 
 	if (log_is_comment(inputbuffer))
-	    continue;		/* skip note in  log  */
-
-	// prepare helper variables
-	pfxnumcntidx = -1;
-	pxnr = 0;
+	    continue;		/* skip note in log */
 
 	qso = parse_qso(inputbuffer);
-	bandindex = qso->bandindex;
 
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);
+	checkexchange(qso->comment, false);
+	if (strlen(normalized_comment) > 0) {   //FIXME global
+	    strcpy(qso->comment, normalized_comment);
+	}
+	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
+	addcall(qso);
+	score_qso();    //FIXME argument?
 
-	/*  lookup worked stations, add if new */
-	int station = lookup_or_add_worked(qso->call);
-	update_worked(station, qso);
+	char *logline = makelogline(qso);
 
-
-	if (continentlist_only) {
-	    if (!is_in_continentlist(dxcc_by_index(countrynr)->continent)) {
-		qsos_per_band[bandindex]++;
-		free_qso(qso);
-		qso = NULL;
-		continue;
-	    }
+	if (strcmp(logline, qsos[linenr - 1]) != 0) {
+	    // different: update log line and mark change
+	    g_strlcpy(qsos[linenr - 1], logline, sizeof(qsos[0]));
+	    g_free(qso->logline);
+	    qso->logline = g_strdup(logline);
+	    log_changed = true;
 	}
 
-	if (iscontest) {
-	    // get points
-	    total = total + log_get_points(inputbuffer);
+	g_free(logline);
 
-	    if (CONTEST_IS(CQWW) || itumult || wazmult) {
-		// get the zone
-		z = zone_nr(inputbuffer + 54);
-	    }
-
-	    if (wysiwyg_once || wysiwyg_multi ||
-		    unique_call_multi != 0 ||
-		    CONTEST_IS(ARRL_SS) ||
-		    serial_section_mult ||
-		    serial_grid4_mult ||
-		    sectn_mult ||
-		    sectn_mult_once ||
-		    (dx_arrlsections
-		     && ((countrynr == w_cty) || (countrynr == ve_cty)))) {
-		// get multi info
-		char *multbuffer = get_multi_from_line(inputbuffer);
-		remember_multi(multbuffer, bandindex, 0);
-		g_free(multbuffer);
-	    }
-	}
-
-
-	if (pfxmultab) {
-	    getpx(qso->call);
-	    add_pfx(wpx_prefix, bandindex);
-	}
-
-
-	/* look if calls are excluded */
-	add_ok = true;
-
-	if (CONTEST_IS(ARRLDX_USA)
-		&& ((countrynr == w_cty) || (countrynr == ve_cty)))
-	    add_ok = false;
-
-	if (CONTEST_IS(PACC_PA)) {
-
-	    strcpy(hiscall, qso->call);
-
-	    add_ok = pacc_pa();
-
-	    if (add_ok == false) {
-		qsos_per_band[bandindex]++;
-	    }
-
-	    hiscall[0] = '\0';
-	}
-
-	if (pfxnummultinr > 0) {
-	    getpx(qso->call);
-	    pxnr = districtnumber(wpx_prefix);
-
-	    getctydata(qso->call);
-
-	    pfxnumcntidx = lookup_country_in_pfxnummult_array(countrynr);
-
-	    add_ok = true;
-	}
-
-	veto = check_veto(countrynr);
-
-	if (add_ok) {
-
-	    worked[station].band |= inxes[bandindex];	/* mark band as worked */
-
-	    qsos_per_band[bandindex]++;
-
-	    if (CONTEST_IS(CQWW) || itumult || wazmult)
-		zones[z] |= inxes[bandindex];
-
-	    if (pfxnumcntidx < 0) {
-		if (!veto) {
-		    countries[countrynr] |= inxes[bandindex];
-		}
-	    } else {
-		pfxnummulti[pfxnumcntidx].qsos[pxnr] |= inxes[bandindex];
-	    }
-	}
-	free_qso(qso);
-	qso = NULL;
+	g_ptr_array_add(qso_array, qso);
     }
 
     fclose(fp);
 
-    /* all lines red, now build other statistics */
-    if (CONTEST_IS(WPX) || pfxmult) {
-	char checkcall[20];
-
-	/* build prefixes_worked array from list of worked stations */
-	InitPfx();
-
-	for (int n = 0; n < nr_worked; n++) {
-	    strcpy(checkcall, worked[n].call);
-	    getpx(checkcall);
-	    /* FIXME: wpx is counting pfx only once so bandindex is not
-	     * really needed here. If you have wpx and pfxmultab set the
-	     * count for the last read band wil be wrong as all pfx will be
-	     * counted for that band.
-	     * Maybe better use BANDINDEX_OOB here:
-	     * - Will count pfx for wpx correctly
-	     * - but will not change counts for pfxmultab on contest bands */
-	    add_pfx(wpx_prefix, BANDINDEX_OOB);
-	}
-    }
-
-    if (CONTEST_IS(CQWW) || itumult || wazmult) {
-	for (int n = 1; n < MAX_ZONES; n++) {
-	    count_contest_bands(zones[n], zonescore);
-	}
-    }
-
-    if (CONTEST_IS(CQWW)) {
-	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
-	    count_contest_bands(countries[n], countryscore);
-	}
-    }
-
-    if (dx_arrlsections) {
-	for (int cntr = 1; cntr < MAX_DATALINES; cntr++) {
-	    if (cntr != w_cty && cntr != ve_cty) {	// W and VE don't count here...
-		count_contest_bands(countries[cntr], countryscore);
+    if (log_changed && interactive) {
+	showmsg("Log changed due to rescoring. Do you want to save it? Y/(N)");
+	if (toupper(key_get()) == 'Y') {
+	    // save a backup
+	    char prefix[40];
+	    format_time(prefix, sizeof(prefix), "%Y%m%d_%H%M%S");
+	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
+	    rename(logfile, backup);
+	    // rewrite log
+	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
+	    for (int i = 0 ; i < linenr; i++) {
+		store_qso(qsos[i]);
 	    }
+	    showstring("Log has been backed up as", backup);
+	    g_free(backup);
+	    sleep(1);
 	}
     }
 
-    if (CONTEST_IS(ARRLDX_USA)) {
-	for (int cntr = 1; cntr < MAX_DATALINES; cntr++) {
-	    if (cntr != w_cty && cntr != ve_cty) {	// W and VE don't count here...
-		count_contest_bands(countries[cntr], countryscore);
-	    }
-	}
-    }
-
-    if (CONTEST_IS(PACC_PA)) {
-	for (int n = 1; n < MAX_DATALINES; n++) {
-	    count_contest_bands(countries[n], countryscore);
-	}
-    }
-
-    if (country_mult || pfxnummultinr > 0) {
-
-	for (int n = 1; n <= MAX_DATALINES - 1; n++) {
-
-	    pfxnumcntidx = -1;
-	    if (pfxnummultinr > 0) {
-		pfxnumcntidx = lookup_country_in_pfxnummult_array(n);
-	    }
-
-	    if (pfxnumcntidx >= 0) { /* found in array */
-		/* count all possible pfx numbers
-		 * eg: K0, K1, K2, ..., K9 */
-		for (int pfxnr = 0; pfxnr < 10; pfxnr++) {
-		    count_contest_bands(pfxnummulti[pfxnumcntidx].qsos[pfxnr],
-					countryscore);
-		}
-	    } else {
-		// simple 'country_mult', but works together with pfxnummulti
-		count_contest_bands(countries[n], countryscore);
-	    }
-	}
-    }
+    g_ptr_array_free(qso_array, TRUE);  // FIXME keep the array
 
     return linenr;			// nr of lines in log
 }
 
 int log_read_n_score() {
-    int nr_qsolines;
+    int nr_qsolines = readcalls(logfile, false);
 
-    total = 0;
-    nr_qsolines = readcalls(logfile);
     if (qtcdirection > 0) {
 	readqtccalls();
     }

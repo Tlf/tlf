@@ -19,14 +19,10 @@ bool simulator = false;
 
 char section[8] = "";       // defined in getexchange.c
 
-int do_cabrillo = 0;	/* actually converting cabrillo file to Tlf log */
-struct tm time_ptr_cabrillo;
-
 int qsoflags_for_qtc[MAX_QSOS];
 
-struct qso_t *collect_qso_data() { return NULL; }
 void addcall(struct qso_t *qso) { }
-void store_qso() { nr_qsos++; }
+void store_qso(char *logline) { nr_qsos++; }
 void cleanup_qso() { }
 void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) { }
 char *getgrid(char *comment) { return comment; }
@@ -71,10 +67,16 @@ int getctynr(char *call) {
 }
 
 /* some spies */
-int bandinx_spy;
+struct qso_t *qso_spy = NULL;
 
-void makelogline() {
-    bandinx_spy = bandinx;
+char *makelogline(struct qso_t *qso) {
+    qso_spy = g_malloc0(sizeof(struct qso_t));
+    memcpy(qso_spy, qso, sizeof(struct qso_t));
+    // make private copies of string members
+    qso_spy->call = g_strdup(qso->call);
+    qso_spy->comment = g_strdup(qso->comment);
+    qso_spy->logline = g_strdup(qso->logline);
+    return g_strdup("dummy");
 }
 
 char *error_details;
@@ -85,6 +87,19 @@ int setup(void **state) {
     strcpy(my.call, "A1BCD");
     strcpy(exchange, "#");
     return 0;
+}
+
+int teardown_default(void **state) {
+    g_free(qso_spy);
+    qso_spy = NULL;
+    return 0;
+}
+
+
+static char datetime_buf[80];
+static char *get_datetime(struct qso_t *qso) {
+    strftime(datetime_buf, sizeof(datetime_buf), DATE_TIME_FORMAT, gmtime(&qso->timestamp));
+    return datetime_buf;    // note: returns a static buffer
 }
 
 /* export non public protoypes for test */
@@ -314,81 +329,65 @@ void test_get_nth_token_slash(void **state) {
 void test_cabToTlf_ParseQSO(void **state) {
     struct cabrillo_desc *desc;
     desc = read_cabrillo_format(formatfile, "UNIVERSAL");
-    bandinx_spy = 0;
     cab_qso_to_tlf("QSO:  7002 RY 2016-02-13 2033 HA2OS         589 0008   K6ND          599 044",
 		   desc);
     free_cabfmt(desc);
-    assert_int_equal(bandinx_spy, 3);
-    assert_int_equal((int)freq, 7002000);
-    assert_int_equal(trxmode, DIGIMODE);
-    assert_string_equal(hiscall, "K6ND");
-    assert_string_equal(recvd_rst, "589");
-    assert_string_equal(sent_rst, "599");
-    assert_string_equal(comment, "044");
-    assert_int_equal(time_ptr_cabrillo.tm_hour, 20);
-    assert_int_equal(time_ptr_cabrillo.tm_min, 33);
-    assert_int_equal(time_ptr_cabrillo.tm_year, 2016 - 1900); /* year-1900 */
-    assert_int_equal(time_ptr_cabrillo.tm_mon, 2 - 1);	  /* 0-11 */
-    assert_int_equal(time_ptr_cabrillo.tm_mday, 13);
+    assert_non_null(qso_spy);
+    assert_int_equal(qso_spy->bandindex, 3);
+    assert_int_equal((int)qso_spy->freq, 7002000);
+    assert_int_equal(qso_spy->mode, DIGIMODE);
+    assert_string_equal(qso_spy->call, "K6ND");
+    assert_int_equal(qso_spy->rst_s, 589);
+    assert_int_equal(qso_spy->rst_r, 599);
+    assert_string_equal(qso_spy->comment, "044");
+    assert_string_equal(get_datetime(qso_spy), "13-Feb-16 20:33");
 }
 
 void test_cabToTlf_ParseQSO_agcw(void **state) {
     struct cabrillo_desc *desc;
     desc = read_cabrillo_format(formatfile, "AGCW");
-    bandinx_spy = 0;
     cab_qso_to_tlf("QSO:  7002 RY 2016-02-13 2033 HA2OS         589 0008      K6ND          599 044  ED",
 		   desc);
     free_cabfmt(desc);
-    assert_int_equal(bandinx_spy, 3);
-    assert_int_equal((int)freq, 7002000);
-    assert_int_equal(trxmode, DIGIMODE);
-    assert_string_equal(hiscall, "K6ND");
-    assert_string_equal(recvd_rst, "589");
-    assert_string_equal(sent_rst, "599");
-    assert_string_equal(comment, "044/ED");
-    assert_int_equal(time_ptr_cabrillo.tm_hour, 20);
-    assert_int_equal(time_ptr_cabrillo.tm_min, 33);
-    assert_int_equal(time_ptr_cabrillo.tm_year, 2016 - 1900); /* year-1900 */
-    assert_int_equal(time_ptr_cabrillo.tm_mon, 2 - 1);	  /* 0-11 */
-    assert_int_equal(time_ptr_cabrillo.tm_mday, 13);
+    assert_non_null(qso_spy);
+    assert_int_equal(qso_spy->bandindex, 3);
+    assert_int_equal((int)qso_spy->freq, 7002000);
+    assert_int_equal(qso_spy->mode, DIGIMODE);
+    assert_string_equal(qso_spy->call, "K6ND");
+    assert_int_equal(qso_spy->rst_s, 589);
+    assert_int_equal(qso_spy->rst_r, 599);
+    assert_string_equal(qso_spy->comment, "044/ED");
+    assert_string_equal(get_datetime(qso_spy), "13-Feb-16 20:33");
 }
 
 void test_cabToTlf_ParseXQSO(void **state) {
     struct cabrillo_desc *desc;
     desc = read_cabrillo_format(formatfile, "UNIVERSAL");
-    bandinx_spy = 0;
-    cab_qso_to_tlf("X-QSO:  7002 PH 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
+    cab_qso_to_tlf("X-QSO: 14002 PH 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
 		   desc);
     free_cabfmt(desc);
-    assert_int_equal(bandinx_spy, 3);
-    assert_int_equal((int)freq, 7002000);
-    assert_int_equal(trxmode, SSBMODE);
-    assert_string_equal(hiscall, "K6ND");
-    assert_string_equal(recvd_rst, "589");
-    assert_string_equal(sent_rst, "599");
-    assert_string_equal(comment, "044");
-    assert_int_equal(time_ptr_cabrillo.tm_hour, 00);
-    assert_int_equal(time_ptr_cabrillo.tm_min, 33);
-    assert_int_equal(time_ptr_cabrillo.tm_year, 2016 - 1900); /* year-1900 */
-    assert_int_equal(time_ptr_cabrillo.tm_mon, 8 - 1);	  /* 0-11 */
-    assert_int_equal(time_ptr_cabrillo.tm_mday, 13);
+    assert_non_null(qso_spy);
+    assert_int_equal(qso_spy->bandindex, 5);
+    assert_int_equal((int)qso_spy->freq, 14002000);
+    assert_int_equal(qso_spy->mode, SSBMODE);
+    assert_string_equal(qso_spy->call, "K6ND");
+    assert_int_equal(qso_spy->rst_s, 589);
+    assert_int_equal(qso_spy->rst_r, 599);
+    assert_string_equal(qso_spy->comment, "044");
+    assert_string_equal(get_datetime(qso_spy), "13-Aug-16 00:33");
 }
 
 void test_cabToTlf_ParseQTC(void **state) {
     struct cabrillo_desc *desc;
     desc = read_cabrillo_format(formatfile, "WAEDC");
     qtcdirection = SEND;
-    bandinx_spy = 0;
     cab_qso_to_tlf("QTC: 14084 CW 2016-11-12 1214 HA2OS          13/10     K4GM          0230 DL6UHD         074",
 		   desc);
     free_cabfmt(desc);
     assert_int_equal((int)qtc_line.freq, 14084000);
+    assert_string_equal(qtc_line.date, "12-Nov-16");
+    assert_string_equal(qtc_line.time, "12:14");
     assert_string_equal(qtc_line.mode, "CW ");
-    assert_int_equal(time_ptr_cabrillo.tm_hour, 12);
-    assert_int_equal(time_ptr_cabrillo.tm_min, 14);
-    assert_int_equal(time_ptr_cabrillo.tm_year, 2016 - 1900); /* year-1900 */
-    assert_int_equal(time_ptr_cabrillo.tm_mon, 11 - 1);	  /* 0-11 */
-    assert_int_equal(time_ptr_cabrillo.tm_mday, 12);
     assert_string_equal(qtc_line.call, "K4GM");
     assert_int_equal(qtc_line.qtchead_serial, 13);
     assert_int_equal(qtc_line.qtchead_count, 10);

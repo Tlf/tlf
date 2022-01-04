@@ -95,7 +95,7 @@ void get_next_serial(void) {
     else
 	qsonum = mm + 1;
 
-    qsonr_to_str();
+    qsonr_to_str(qsonrstr, qsonum);
 }
 
 #define LINELEN 80

@@ -419,7 +419,7 @@ int getexchange(void) {
 		       && ((x != TAB) && (strlen(section) < 1))) {
 		if (!serial_or_section
 			|| (serial_or_section && country_found(hiscall))) {
-		    mvaddstr(13, 54, "section?X");
+		    mvaddstr(13, 54, "section?");
 		    mvaddstr(12, 54, comment);
 		    refreshp();
 		}

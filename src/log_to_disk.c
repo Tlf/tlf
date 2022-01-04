@@ -61,12 +61,6 @@ void restart_band_timer(void) {
     }
 }
 
-/* score QSO and add to total points */
-void score_qso(void) {
-    qso_points = score();		/* update qso's per band and score */
-    total = total + qso_points;
-}
-
 /** \brief logs one record to disk
  * Logs one record to disk which may come from different sources
  * (direct from tlf or from other instance via LAN)
@@ -94,7 +88,9 @@ void log_to_disk(int from_lan) {
 	addcall(current_qso);		/* add call to dupe list */
 
 	score_qso();
-	makelogline();
+	char *logline = makelogline(current_qso);
+	strcpy(logline4, logline);
+	g_free(logline);
 
 	store_qso(logline4);
 
