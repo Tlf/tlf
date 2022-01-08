@@ -51,6 +51,12 @@
 #include "store_qso.h"
 #include "ui_utils.h"
 
+static void qso_free(gpointer data);
+
+// array of qso's
+// FIXME use this instead of qsos[]
+// FIXME also include comments/notes into qso_t
+GPtrArray *qso_array;
 
 void init_scoring(void) {
     /* reset counter and score anew */
@@ -102,6 +108,19 @@ static void qso_free(gpointer data) {
     free_qso((struct qso_t *) data);
 }
 
+
+void free_qso_array() {
+   if (qso_array != NULL) {
+	g_ptr_array_free(qso_array, TRUE);
+	qso_array = NULL;
+   }
+}
+
+void init_qso_array() {
+    free_qso_array();
+    qso_array = g_ptr_array_new_with_free_func(qso_free);
+}
+
 int readcalls(const char *logfile, bool interactive) {
 
     char inputbuffer[LOGLINELEN + 1];
@@ -123,10 +142,8 @@ int readcalls(const char *logfile, bool interactive) {
     }
 
     bool log_changed = false;
-    // array of qso's
-    // FIXME use this instead of qsos[] (make it global and don't free it here)
-    // FIXME also include comments/notes into qso_t
-    GPtrArray *qso_array = g_ptr_array_new_with_free_func(qso_free);
+
+    init_qso_array();
 
     while (fgets(inputbuffer, sizeof(inputbuffer), fp) != NULL) {
 
@@ -192,8 +209,6 @@ int readcalls(const char *logfile, bool interactive) {
 	    sleep(1);
 	}
     }
-
-    g_ptr_array_free(qso_array, TRUE);  // FIXME keep the array
 
     return linenr;			// nr of lines in log
 }

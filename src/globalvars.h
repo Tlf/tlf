@@ -21,6 +21,8 @@ extern char qsos[MAX_QSOS][LOGLINELEN + 1];
 					// comment, starting with a semicolon
 extern int nr_qsos;			// number of lines in qsos[]
 
+extern GPtrArray *qso_array;		// array of parsed QSOs
+
 extern mults_t multis[MAX_MULTS]; 	// array of multipliers worked so far
 extern int nr_multis;			// number of entries in mults[]
 extern int multscore[NBANDS];		// number of multipliers worked per
