@@ -74,8 +74,6 @@ int init_tlf_rig(void) {
     const struct rig_caps *caps;
     int rig_cwspeed;
 
-    rig_set_debug(RIG_DEBUG_NONE);
-
     /*
      * allocate memory, setup & open port
      */
