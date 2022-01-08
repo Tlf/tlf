@@ -55,7 +55,6 @@ static void qso_free(gpointer data);
 
 // array of qso's
 // FIXME use this instead of qsos[]
-// FIXME also include comments/notes into qso_t
 GPtrArray *qso_array;
 
 void init_scoring(void) {
@@ -159,10 +158,12 @@ int readcalls(const char *logfile, bool interactive) {
 	    show_progress(linenr);
 	}
 
-	if (log_is_comment(inputbuffer))
-	    continue;		/* skip note in log */
-
 	qso = parse_qso(inputbuffer);
+
+	if (log_is_comment(inputbuffer)) {
+	    g_ptr_array_add(qso_array, qso);
+	    continue;		/* skip further processing for note entry */
+	}
 
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);

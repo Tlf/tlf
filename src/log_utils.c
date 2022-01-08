@@ -100,6 +100,9 @@ struct qso_t *parse_qso(char *buffer) {
     ptr->logline = g_strdup(buffer);
     ptr->qsots = 0;
 
+    if (log_is_comment(buffer))
+	return ptr;
+
     /* split buffer into parts for linedata_t record and parse
      * them accordingly */
     tmp = strtok_r(buffer, " \t", &sp);
