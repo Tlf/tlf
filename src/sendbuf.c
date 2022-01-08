@@ -208,7 +208,7 @@ void ExpandMacro(void) {
 	}
 	qsonroutput[4] = '\0';
 
-	if (noleadingzeros && leading_zeros > 1) {
+	if (!noleadingzeros && leading_zeros > 1) {
 	    leading_zeros = 1;
 	}
 
