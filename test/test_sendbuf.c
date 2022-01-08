@@ -184,6 +184,30 @@ void test_expandQsoNrshort(void **state) {
     check_ExpandMacro("nr #", "nr 3TN");
 }
 
+void test_expandQsoNr_leadingzeros(void **state) {
+    noleadingzeros = false;
+    strcpy(qsonrstr, "0007");
+    check_ExpandMacro("nr #", "nr 007");
+    strcpy(qsonrstr, "0073");
+    check_ExpandMacro("nr #", "nr 073");
+    strcpy(qsonrstr, "0123");
+    check_ExpandMacro("nr #", "nr 123");
+    strcpy(qsonrstr, "4711");
+    check_ExpandMacro("nr #", "nr 4711");
+}
+
+void test_expandQsoNr_noleadingzeros(void **state) {
+    noleadingzeros = true;
+    strcpy(qsonrstr, "0007");
+    check_ExpandMacro("nr #", "nr 7");
+    strcpy(qsonrstr, "0073");
+    check_ExpandMacro("nr #", "nr 73");
+    strcpy(qsonrstr, "0123");
+    check_ExpandMacro("nr #", "nr 123");
+    strcpy(qsonrstr, "4711");
+    check_ExpandMacro("nr #", "nr 4711");
+}
+
 void test_expandHisNr(void **state) {
     check_ExpandMacro("was !", "was Alex");
 }
