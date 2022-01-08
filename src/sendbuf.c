@@ -197,18 +197,18 @@ void ExpandMacro(void) {
 
     if (NULL != strstr(buffer, "#")) {
 	int leading_zeros = 0;
-	int lead = 1;
+	bool lead = true;
 	for (i = 0; i <= 4; i++) {
 	    if (lead && qsonrstr[i] == '0') {
 		++leading_zeros;
 	    } else {
-		lead = 0;
+		lead = false;
 	    }
 	    qsonroutput[i] = short_number(qsonrstr[i]);
 	}
 	qsonroutput[4] = '\0';
 
-	if (noleadingzeros && leading_zeros > 1) {
+	if (!noleadingzeros && leading_zeros > 1) {
 	    leading_zeros = 1;
 	}
 
