@@ -88,6 +88,8 @@ int pacc_pa(void) {
 
 #define QSO1 " 80SSB 12-Jan-18 16:34 0006  PY9BBB         59   59   15            PY   15  3  14025.0\n"
 
+#define NOTE "; Test note handling in logfile                                                        \n"
+
 #define LOGFILE "test.log"
 
 void append_log_line(char *logfile, char *line) {
@@ -140,6 +142,7 @@ int setup_default(void **state) {
 
 int teardown_default(void **state) {
     unlink(logfile);
+    free_qso_array();
     return 0;
 }
 
@@ -152,6 +155,40 @@ void test_lookup_not_in_pfxnummult(void **state) {
 
 void test_lookup_in_pfxnummult(void **state) {
     assert_int_equal(lookup_country_in_pfxnummult_array(42), 1);
+}
+
+/* test qso_array handling */
+void test_qso_array_init(void **state) {
+    assert_null(qso_array);
+    init_qso_array();
+    assert_non_null(qso_array);
+    assert_int_equal(qso_array->len, 0);
+}
+
+void test_readcalls_simple_log(void **state) {
+    int lines;
+    gchar *qso = g_strdup(QSO1);
+    qso[LOGLINELEN - 1] = '\0';
+
+    write_log(LOGFILE);
+    lines = readcalls(LOGFILE, true);
+    assert_non_null(qso_array);
+    assert_int_equal(lines, qso_array->len);
+    assert_int_equal(lines, 1);
+    assert_string_equal(((struct qso_t *)g_ptr_array_index(qso_array, 0))->logline, qso);
+    assert_string_equal(((struct qso_t *)g_ptr_array_index(qso_array, 0))->call, "PY9BBB");
+    g_free(qso);
+}
+
+void test_readcalls_note(void **state) {
+    gchar *note = g_strdup(NOTE);
+    note[LOGLINELEN - 1] = '\0';
+
+    write_log(LOGFILE);
+    append_log_line(LOGFILE, NOTE);
+    assert_int_equal(readcalls(LOGFILE, true), 2);;
+    assert_string_equal(((struct qso_t *)g_ptr_array_index(qso_array, 1))->logline, note);
+    g_free(note);
 }
 
 
