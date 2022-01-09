@@ -285,5 +285,7 @@ enum {
 
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
 
+#define QSOS(n)    (((struct qso_t*)g_ptr_array_index(qso_array, n))->logline)
+
 #endif /* TLF_H */
 
