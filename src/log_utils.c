@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2019 Thomas Beierlein <dl1jbe@darc.de>
+ * Copyright (C) 2019-22 Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

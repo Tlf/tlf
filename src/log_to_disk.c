@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2013           Thomas Beierlein <tb@forth-ev.de>
+ *               2013-2022      Thomas Beierlein <tb@forth-ev.de>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -92,6 +92,7 @@ void log_to_disk(int from_lan) {
 	current_qso->logline = logline; /* remember formatted line in qso entry */
 
 	store_qso(logline);
+	g_ptr_array_add(qso_array, current_qso);
 
 	// send qso to other nodes......
 	send_lan_message(LOGENTRY, logline);
@@ -102,7 +103,6 @@ void log_to_disk(int from_lan) {
 
 	cleanup_qso();		/* reset qso related parameters */
 
-	g_ptr_array_add(qso_array, current_qso);
     } else {			/* qso from lan */
 
 	/* LOGENTRY contains 82 characters (node,command and logline */
@@ -117,9 +117,12 @@ void log_to_disk(int from_lan) {
 
 	total = total + score2(lan_logline);
 
+	struct qso_t *qso = parse_qso(lan_logline);
+
 	addcall2();
 
 	store_qso(lan_logline);
+	g_ptr_array_add(qso_array, qso);
     }
 
 
