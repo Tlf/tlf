@@ -33,6 +33,7 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "keystroke_names.h"
 #include "logview.h"
+#include "readcalls.h"
 #include "scroll_log.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -99,6 +100,7 @@ void putback_qso(int nr, char *buffer) {
 
 void edit_last(void) {
 
+    bool changed = false, needs_rescore = false;
     int j = 0, b, k;
     int editline = NR_LINES - 1;
     char editbuffer[LOGLINELEN + 1];
@@ -141,7 +143,11 @@ void edit_last(void) {
 	} else if (j == KEY_UP) {
 	    if (editline > (NR_LINES - nr_qsos) && (editline > 0)) {
 		unhighlight_line(editline, editbuffer);
-		putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+		if (changed) {
+		    putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+		    needs_rescore = true;
+		    changed = false;
+		}
 		editline--;
 		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 	    } else {
@@ -154,7 +160,11 @@ void edit_last(void) {
 
 	    if (editline < NR_LINES - 1) {
 		unhighlight_line(editline, editbuffer);
-		putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+		if (changed) {
+		    putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+		    needs_rescore = true;
+		    changed = false;
+		}
 		editline++;
 		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 	    } else
@@ -175,35 +185,41 @@ void edit_last(void) {
 	    for (k = 26; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
+	    changed = true;
 
 	    // <Insert>, positions 29 to 40.
 	} else if ((j == KEY_IC) && (b >= 29) && (b < 40)) {
 	    for (k = 40; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
+	    changed = true;
 
 	    // <Insert>, positions 54 to end of field.
 	} else if ((j == KEY_IC) && (b >= SOEXCH) && (b < EOEXCH - 1)) {
 	    for (k = EOEXCH - 1; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
+	    changed = true;
 
 	    // <Delete>, positions 1 to 27.
 	} else if ((j == KEY_DC) && (b >= 1) && (b < 28)) {
 	    for (k = b; k < 28; k++)
 		editbuffer[k] = editbuffer[k + 1];
+	    changed = true;
 
 	    // <Delete>, positions 29 to 40.
 	} else if ((j == KEY_DC) && (b >= 29) && (b < 41)) {
 	    for (k = b; k < 40; k++)
 		editbuffer[k] = editbuffer[k + 1];
 	    editbuffer[40] = ' ';
+	    changed = true;
 
 	    // <Delete>, positions 54 to 63.
 	} else if ((j == KEY_DC) && (b >= SOEXCH) && (b < EOEXCH)) {
 	    for (k = b; k < EOEXCH - 1; k++)
 		editbuffer[k] = editbuffer[k + 1];
 	    editbuffer[EOEXCH - 1] = ' ';
+	    changed = true;
 
 	} else if (j != ESCAPE) {
 
@@ -214,15 +230,22 @@ void edit_last(void) {
 	    // Accept most all printable characters.
 	    if ((j >= 32) && (j < 97)) {
 		editbuffer[b] = j;
-		if ((b < strlen(editbuffer) - 2) &&
-			(b < EOEXCH - 1))
+		if ((b < strlen(editbuffer) - 2) && (b < EOEXCH - 1))
 		    b++;
+		changed = true;
 	    }
 	}
     }
 
     unhighlight_line(editline, editbuffer);
-    putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+    if (changed) {
+	putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+	needs_rescore = true;
+	changed = false;
+    }
+    if (needs_rescore) {
+	log_read_n_score();
+    }
 
     scroll_log();
 
