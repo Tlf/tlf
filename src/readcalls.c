@@ -89,7 +89,7 @@ void init_scoring(void) {
 
 static void show_progress(int linenr) {
     if (linenr == 1) {
-	printw(spaces(2));  // leading separator after log file name
+	printw("  ");  // leading separator after log file name
 	refreshp();
     }
     if (((linenr + 1) % 100) == 0) {
