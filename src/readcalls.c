@@ -159,7 +159,7 @@ int readcalls(const char *logfile, bool interactive) {
 	g_strlcpy(hiscall, qso->call, sizeof(hiscall));
 
 	addcall(qso);
-	score_qso();    //FIXME argument?
+	score_qso(qso);
 
 	char *logline = makelogline(qso);
 

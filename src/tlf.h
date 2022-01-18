@@ -250,7 +250,7 @@ typedef struct {
 	points_type_t type;
 	union {
 	    int point;
-	    int (*fn)();
+	    int (*fn)(struct qso_t *);
 	};
     }			points;
     bool (*is_multi)();

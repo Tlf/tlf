@@ -154,7 +154,7 @@ int scoreByMode() {
 			    points = x; \
 			} while(0);
 
-int scoreByContinentOrCountry() {
+int scoreByContinentOrCountry(struct qso_t *qso) {
 
     int points = 0;
     bool inCountryList = exist_in_country_list();
@@ -203,14 +203,14 @@ int scoreByContinentOrCountry() {
  * are active
  * \return points for QSO
  */
-int scoreDefault() {
+int scoreDefault(struct qso_t *qso) {
 
     int points;
 
     if (ssbpoints != 0 && cwpoints != 0)	//  e.g. arrl 10m contest
 	points = scoreByMode();
     else
-	points = scoreByContinentOrCountry();
+	points = scoreByContinentOrCountry(qso);
 
     points = apply_bandweight(points);
     points = portable_doubles(points);
@@ -218,7 +218,7 @@ int scoreDefault() {
     return points;
 }
 
-int score_wpx() {
+int score_wpx(struct qso_t *qso) {
     int points;
     if (countrynr == my.countrynr) {
 	points = 1;
@@ -262,7 +262,7 @@ int score_wpx() {
 }
 
 
-int score_cqww() {
+int score_cqww(struct qso_t *qso) {
     int points;
     int zone;
 
@@ -293,7 +293,7 @@ int score_cqww() {
 }
 
 
-int score_arrlfd() {
+int score_arrlfd(struct qso_t *qso) {
     int points;
 
     if (trxmode == SSBMODE) {
@@ -305,7 +305,7 @@ int score_arrlfd() {
 }
 
 
-int score_arrldx_usa() {
+int score_arrldx_usa(struct qso_t *qso) {
     int points;
 
     if ((countrynr == w_cty) || (countrynr == ve_cty)) {
@@ -318,7 +318,7 @@ int score_arrldx_usa() {
 }
 
 
-int score_stewperry() {
+int score_stewperry(struct qso_t *qso) {
     int points;
     double s1long, s1lat, s2long, s2lat, distance, azimuth;
 
@@ -337,7 +337,7 @@ int score_stewperry() {
 }
 
 
-int score() {
+int score(struct qso_t *qso) {
 
     int points;
 
@@ -348,7 +348,7 @@ int score() {
     }
 
     if (contest->points.type == FUNCTION) {
-	return contest->points.fn();
+	return contest->points.fn(qso);
     }
 
     if (contest->points.type == FIXED) {
@@ -356,12 +356,12 @@ int score() {
     }
 
     /* start of the universal scoring code */
-    return scoreDefault();
+    return scoreDefault(qso);
 }
 
 /* score QSO and add to total points */
-void score_qso(void) {
-    qso_points = score();		/* update qso's per band and score */
+void score_qso(struct qso_t *qso) {
+    qso_points = score(qso);		/* update qso's per band and score */
     total = total + qso_points;
 }
 

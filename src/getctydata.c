@@ -63,7 +63,7 @@ void change_area(char *call, char area) {
 /* prepare and check callsign and look it up in dxcc data base
  *
  * returns index in data base or -1 if not found
- * if normalized_call ptr is not NULL retruns a copy of the normalized call
+ * if normalized_call ptr is not NULL returns a copy of the normalized call
  * e.g. DL1XYZ/PA gives PA/DL1XYZ
  * caller has to free the copy after use
  */

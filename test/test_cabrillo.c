@@ -33,7 +33,7 @@ int get_total_score() {
     return 123;
 }
 
-void score_qso() {
+void score_qso(struct qso_t *qso) {
 }
 
 void ask(char *buffer, char *what) {

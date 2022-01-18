@@ -24,12 +24,14 @@
 
 char section[8] = "";       // defined in getexchange.c
 
+struct qso_t qso = { };
+
 #define check_points(point) \
-    do{ assert_int_equal(score(), point); }while(0)
+    do{ assert_int_equal(score(&qso), point); }while(0)
 
 #define check_call_points(call,point) \
     do{ strcpy(hiscall, call); \
-	assert_int_equal(score(), point); }while(0)
+	assert_int_equal(score(&qso), point); }while(0)
 
 void clear_display() {}
 
