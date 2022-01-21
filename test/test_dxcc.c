@@ -71,7 +71,7 @@ void test_add_prefix_check_defaults(void **state) {
     prefix_add("HW");
     pfx = prefix_by_index(0);
     assert_string_equal(pfx->pfx, "HW");
-    assert_int_equal(pfx->dxcc_index, dxcc_count() - 1);
+    assert_int_equal(pfx->dxcc_ctynr, dxcc_count() - 1);
     dxcc_data *mydx = dxcc_by_index(dxcc_count() - 1);
     assert_int_equal(pfx->cq, mydx->cq);
     assert_int_equal(pfx->itu, mydx->itu);
@@ -89,7 +89,7 @@ void test_add_prefix_check_overrides(void **state) {
     g_free(input);
     pfx = prefix_by_index(0);
     assert_string_equal(pfx->pfx, "HW");
-    assert_int_equal(pfx->dxcc_index, dxcc_count() - 1);
+    assert_int_equal(pfx->dxcc_ctynr, dxcc_count() - 1);
     assert_int_equal(pfx->cq, 11);
     assert_int_equal(pfx->itu, 22);
     assert_string_equal(pfx->continent, "OC");

@@ -1,6 +1,7 @@
 #include "test.h"
 
 #include "../src/cabrillo_utils.h"
+#include "../src/dxcc.h"
 #include "../src/readcabrillo.h"
 #include "../src/cqww_simulator.h"
 
@@ -64,6 +65,10 @@ int modify_attr(int attr) { // FIXME: remove once info() moved to UI code
 
 int getctynr(char *call) {
     return 42;
+}
+
+prefix_data *getctyinfo(char *call) {
+    return NULL;
 }
 
 /* some spies */

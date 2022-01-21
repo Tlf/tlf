@@ -28,7 +28,7 @@ typedef struct {
     char *pfx;
     unsigned short cq;
     unsigned short itu;
-    short dxcc_index;
+    short dxcc_ctynr;	    /* cty number is index in dxcc table */
     float lat;
     float lon;
     char *continent;

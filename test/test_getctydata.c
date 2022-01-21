@@ -110,7 +110,7 @@ void test_xspeed(void **state) {
 #if 0
 	printf("%d -> %s: %d\n", j, call[j], w);
 	prefix_data *pfx = prefix_by_index(w);
-	dxcc_data *dx = dxcc_by_index(pfx->dxcc_index);
+	dxcc_data *dx = dxcc_by_index(pfx->dxcc_ctynr);
 	printf("--> %s\n", dx->countryname);
 #endif
     }

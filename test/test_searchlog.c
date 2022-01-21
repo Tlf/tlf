@@ -88,6 +88,9 @@ int getctydata(char *checkcallptr) {
     return 0;
 }
 
+prefix_data *getctyinfo(char *call) {
+    return NULL;
+}
 
 contest_config_t config_focm;
 
