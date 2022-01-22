@@ -33,6 +33,7 @@
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "keystroke_names.h"
 #include "logview.h"
+#include "readcalls.h"
 #include "scroll_log.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -40,6 +41,10 @@
 #define NR_LINES 5
 #define NR_COLS 80
 
+#define SOTIME 17	    /* start of time field */
+#define SOCALL 29	    /* start of call field */
+#define SOEXCH 54	    /* start of exchange field */
+#define EOEXCH (54 + contest->exchange_width) /* end of last field */
 
 /* highlight the edit line and set the cursor */
 static void highlight_line(int row, char *line, int column) {
@@ -95,6 +100,7 @@ void putback_qso(int nr, char *buffer) {
 
 void edit_last(void) {
 
+    bool changed = false, needs_rescore = false;
     int j = 0, b, k;
     int editline = NR_LINES - 1;
     char editbuffer[LOGLINELEN + 1];
@@ -104,7 +110,7 @@ void edit_last(void) {
 
     stop_background_process();
 
-    b = 29;
+    b = SOCALL;
 
     /* start with last QSO */
     get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
@@ -120,20 +126,16 @@ void edit_last(void) {
 
 	    // Ctrl-E (^E) or <End>, end of line.
 	} else if (j == CTRL_E || j == KEY_END) {
-	    b = 77;
+	    b = EOEXCH - 1;
 
 	    // <Tab>, next field.
 	} else if (j == TAB) {
-	    if (b < 17)
-		b = 17;
-	    else if (b < 29)
-		b = 29;
-	    else if (b < 54)
-		b = 54;
-	    else if (b < 68)
-		b = 68;
-	    else if (b < 77)
-		b = 77;
+	    if (b < SOTIME)
+		b = SOTIME;
+	    else if (b < SOCALL)
+		b = SOCALL;
+	    else if (b < SOEXCH)
+		b = SOEXCH;
 	    else
 		b = 1;
 
@@ -141,7 +143,11 @@ void edit_last(void) {
 	} else if (j == KEY_UP) {
 	    if (editline > (NR_LINES - nr_qsos) && (editline > 0)) {
 		unhighlight_line(editline, editbuffer);
-		putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+		if (changed) {
+		    putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+		    needs_rescore = true;
+		    changed = false;
+		}
 		editline--;
 		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 	    } else {
@@ -154,7 +160,11 @@ void edit_last(void) {
 
 	    if (editline < NR_LINES - 1) {
 		unhighlight_line(editline, editbuffer);
-		putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+		if (changed) {
+		    putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+		    needs_rescore = true;
+		    changed = false;
+		}
 		editline++;
 		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
 	    } else
@@ -167,52 +177,49 @@ void edit_last(void) {
 
 	    // Right arrow, move cursor one position right.
 	} else if (j == KEY_RIGHT) {
-	    if (b < 79)
+	    if (b < EOEXCH - 1)
 		b++;
 
-	    // <Insert>, positions 0 to 27.
-	} else if ((j == KEY_IC) && (b >= 0) && (b < 28)) {
-	    for (k = 28; k > b; k--)
+	    // <Insert>, positions 0 to 26.
+	} else if ((j == KEY_IC) && (b >= 0) && (b < 27)) {
+	    for (k = 26; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
+	    changed = true;
 
-	    // <Insert>, positions 29 to 38.
-	} else if ((j == KEY_IC) && (b >= 29) && (b < 39)) {
-	    for (k = 39; k > b; k--)
+	    // <Insert>, positions 29 to 40.
+	} else if ((j == KEY_IC) && (b >= 29) && (b < 40)) {
+	    for (k = 40; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
+	    changed = true;
 
-	    // <Insert>, positions 54 to 63.
-	} else if ((j == KEY_IC) && (b >= 54) && (b < 64)) {
-	    for (k = 64; k > b; k--)
+	    // <Insert>, positions 54 to end of field.
+	} else if ((j == KEY_IC) && (b >= SOEXCH) && (b < EOEXCH - 1)) {
+	    for (k = EOEXCH - 1; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
-
-	    // <Insert>, positions 68 to 75.
-	} else if ((j == KEY_IC) && (b >= 68) && (b < 76)) {
-	    for (k = 76; k > b; k--)
-		editbuffer[k] = editbuffer[k - 1];
-	    editbuffer[b] = ' ';
+	    changed = true;
 
 	    // <Delete>, positions 1 to 27.
 	} else if ((j == KEY_DC) && (b >= 1) && (b < 28)) {
 	    for (k = b; k < 28; k++)
 		editbuffer[k] = editbuffer[k + 1];
+	    changed = true;
 
-	    // <Delete>, positions 29 to 38.
-	} else if ((j == KEY_DC) && (b >= 29) && (b < 39)) {
-	    for (k = b; k < 39; k++)
+	    // <Delete>, positions 29 to 40.
+	} else if ((j == KEY_DC) && (b >= 29) && (b < 41)) {
+	    for (k = b; k < 40; k++)
 		editbuffer[k] = editbuffer[k + 1];
-
-	    // <Delete>, positions 68 to 75.
-	} else if ((j == KEY_DC) && (b >= 68) && (b < 76)) {
-	    for (k = b; k < 76; k++)
-		editbuffer[k] = editbuffer[k + 1];
+	    editbuffer[40] = ' ';
+	    changed = true;
 
 	    // <Delete>, positions 54 to 63.
-	} else if ((j == KEY_DC) && (b >= 54) && (b < 64)) {
-	    for (k = b; k < 64; k++)
+	} else if ((j == KEY_DC) && (b >= SOEXCH) && (b < EOEXCH)) {
+	    for (k = b; k < EOEXCH - 1; k++)
 		editbuffer[k] = editbuffer[k + 1];
+	    editbuffer[EOEXCH - 1] = ' ';
+	    changed = true;
 
 	} else if (j != ESCAPE) {
 
@@ -223,14 +230,22 @@ void edit_last(void) {
 	    // Accept most all printable characters.
 	    if ((j >= 32) && (j < 97)) {
 		editbuffer[b] = j;
-		if ((b < strlen(editbuffer) - 2) && (b < 80))
+		if ((b < strlen(editbuffer) - 2) && (b < EOEXCH - 1))
 		    b++;
+		changed = true;
 	    }
 	}
     }
 
     unhighlight_line(editline, editbuffer);
-    putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+    if (changed) {
+	putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+	needs_rescore = true;
+	changed = false;
+    }
+    if (needs_rescore) {
+	log_read_n_score();
+    }
 
     scroll_log();
 
