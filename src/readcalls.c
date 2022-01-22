@@ -195,26 +195,7 @@ int readcalls(const char *logfile, bool interactive) {
     }
 
     fclose(fp);
-#if 0
-    if (log_changed && interactive) {
-	showmsg("Log changed due to rescoring. Do you want to save it? Y/(N)");
-	if (toupper(key_get()) == 'Y') {
-	    // save a backup
-	    char prefix[40];
-	    format_time(prefix, sizeof(prefix), "%Y%m%d_%H%M%S");
-	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
-	    rename(logfile, backup);
-	    // rewrite log
-	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
-	    for (int i = 0 ; i < linenr; i++) {
-		store_qso(qsos[i]);
-	    }
-	    showstring("Log has been backed up as", backup);
-	    g_free(backup);
-	    sleep(1);
-	}
-    }
-#else
+
     if (log_changed) {
 	bool ok = false;
 	if(interactive) {
@@ -243,7 +224,6 @@ int readcalls(const char *logfile, bool interactive) {
 	    g_free(backup);
 	}
     }
-#endif
 
     return linenr;			// nr of lines in log
 }
