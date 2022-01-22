@@ -94,7 +94,7 @@ void init_scoring(void) {
 
 static void show_progress(int linenr) {
     if (linenr == 1) {
-	printw(spaces(2));  // leading separator after log file name
+	printw("  ");  // leading separator after log file name
 	refreshp();
     }
     if (((linenr + 1) % 100) == 0) {
@@ -172,6 +172,10 @@ int readcalls(const char *logfile, bool interactive) {
 	    strcpy(qso->comment, normalized_comment);
 	}
 	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
+
+	/* needed scoring in for country_found() */
+	g_strlcpy(hiscall, qso->call, sizeof(hiscall));
+
 	addcall(qso);
 	score_qso();    //FIXME argument?
 
@@ -191,7 +195,7 @@ int readcalls(const char *logfile, bool interactive) {
     }
 
     fclose(fp);
-
+#if 0
     if (log_changed && interactive) {
 	showmsg("Log changed due to rescoring. Do you want to save it? Y/(N)");
 	if (toupper(key_get()) == 'Y') {
@@ -210,6 +214,36 @@ int readcalls(const char *logfile, bool interactive) {
 	    sleep(1);
 	}
     }
+#else
+    if (log_changed) {
+	bool ok = false;
+	if(interactive) {
+	    showmsg("Log changed due to rescoring. Do you want to save it? Y/(N)");
+	    ok = toupper(key_get()) == 'Y';
+	} else {
+	    ok = true;
+	}
+
+	if (ok) {
+	    // save a backup
+	    char prefix[40];
+	    format_time(prefix, sizeof(prefix), "%Y%m%d_%H%M%S");
+	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
+	    rename(logfile, backup);
+	    // rewrite log
+	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
+			    // FIXME store_qso write also back to qsos[]
+	    for (int i = 0 ; i < linenr; i++) {
+		store_qso(qsos[i]);
+	    }
+	    if (interactive) {
+		showstring("Log has been backed up as", backup);
+		sleep(1);
+	    }
+	    g_free(backup);
+	}
+    }
+#endif
 
     return linenr;			// nr of lines in log
 }
