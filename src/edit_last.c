@@ -34,6 +34,7 @@
 #include "keystroke_names.h"
 #include "logview.h"
 #include "readcalls.h"
+#include "log_utils.h"
 #include "scroll_log.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -94,6 +95,10 @@ void putback_qso(int nr, char *buffer) {
 	fclose(fp);
 
 	strcpy(qsos[nr], buffer);
+	struct qso_t *qso = parse_qso(buffer);
+	struct qso_t *old_qso = g_ptr_array_index(qso_array, nr);
+	g_ptr_array_index(qso_array, nr) = qso;
+	free_qso(old_qso);
     }
 }
 
