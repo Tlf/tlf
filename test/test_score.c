@@ -30,8 +30,7 @@ struct qso_t qso = { };
     do{ assert_int_equal(score(&qso), point); }while(0)
 
 #define check_call_points(thecall,point) \
-    do{ strcpy(hiscall, thecall); \
-	qso.call = g_strdup(thecall); \
+    do{ qso.call = g_strdup(thecall); \
 	assert_int_equal(score(&qso), point); \
 	g_free(qso.call); \
 	qso.call = NULL; }while(0)

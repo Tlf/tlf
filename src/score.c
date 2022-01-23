@@ -157,7 +157,8 @@ int scoreByMode() {
 int scoreByContinentOrCountry(struct qso_t *qso) {
 
     int points = 0;
-    bool inCountryList = exist_in_country_list();
+    prefix_data *ctyinfo = getctyinfo(qso->call);
+    bool inCountryList = is_in_countrylist(ctyinfo->dxcc_ctynr);
 
     if (countrylist_only) {
 	points = 0;
@@ -171,10 +172,10 @@ int scoreByContinentOrCountry(struct qso_t *qso) {
     if (continentlist_only) {
 	points = 0;
 	// only continent list allowed
-	if (is_in_continentlist(continent)) {
+	if (is_in_continentlist(ctyinfo->continent)) {
 	    USE_IF_SET(continentlist_points);
 	    // overwrite if own continent and my_cont_points set
-	    if (strcmp(continent, my.continent) == 0) {
+	    if (strcmp(ctyinfo->continent, my.continent) == 0) {
 		USE_IF_SET(my_cont_points);
 	    }
 	}
@@ -182,13 +183,13 @@ int scoreByContinentOrCountry(struct qso_t *qso) {
     }
 
     // default
-    if (countrynr == my.countrynr) {
+    if (ctyinfo->dxcc_ctynr == my.countrynr) {
 	points = 0;
 	USE_IF_SET(my_cont_points);
 	USE_IF_SET(my_country_points);
     } else if (inCountryList) {
 	USE_IF_SET(countrylist_points);
-    } else if (strcmp(continent, my.continent) == 0) {
+    } else if (strcmp(ctyinfo->continent, my.continent) == 0) {
 	USE_IF_SET(my_cont_points);
     } else
 	USE_IF_SET(dx_cont_points);
