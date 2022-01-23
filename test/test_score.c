@@ -29,9 +29,12 @@ struct qso_t qso = { };
 #define check_points(point) \
     do{ assert_int_equal(score(&qso), point); }while(0)
 
-#define check_call_points(call,point) \
-    do{ strcpy(hiscall, call); \
-	assert_int_equal(score(&qso), point); }while(0)
+#define check_call_points(thecall,point) \
+    do{ strcpy(hiscall, thecall); \
+	qso.call = g_strdup(thecall); \
+	assert_int_equal(score(&qso), point); \
+	g_free(qso.call); \
+	qso.call = NULL; }while(0)
 
 void clear_display() {}
 
@@ -86,19 +89,11 @@ int setup_default(void **state) {
     lowband_point_mult = false;
     portable_x2 = false;
 
-    return 0;
-}
-
-int setup_ssbcw(void **state) {
-
-    setup_default(state);
-
-    static char filename[] =  TOP_SRCDIR "/share/cty.dat";
-    assert_int_equal(load_ctydata(filename), 0);
+    ssbpoints = 0;
+    cwpoints = 0;
 
     return 0;
 }
-
 
 void test_dupe(void **state) {
     dupe = 1;
@@ -227,6 +222,7 @@ void test_ssbcw(void **state) {
     portable_x2 = true;
     check_call_points("DL3XYZ", 6);
     check_call_points("DL3XYZ/P", 12);
+    portable_x2 = false;
 
     trxmode = DIGIMODE;
     check_points(0);

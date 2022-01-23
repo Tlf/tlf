@@ -127,8 +127,8 @@ int apply_bandweight(int points) {
 
 /* portable stations may count double
  * see PORTABLE_X2 */
-int portable_doubles(int points) {
-    if (portable_x2 && g_str_has_suffix(hiscall, "/P")) {
+int portable_doubles(int points, char *call) {
+    if (portable_x2 && g_str_has_suffix(call, "/P")) {
 	points *= 2;
     }
     return points;
@@ -213,7 +213,7 @@ int scoreDefault(struct qso_t *qso) {
 	points = scoreByContinentOrCountry(qso);
 
     points = apply_bandweight(points);
-    points = portable_doubles(points);
+    points = portable_doubles(points, qso->call);
 
     return points;
 }
