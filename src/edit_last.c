@@ -46,6 +46,26 @@
 #define SOEXCH 54	    /* start of exchange field */
 #define EOEXCH (54 + contest->exchange_width) /* end of last field */
 
+typedef struct {
+    int start;
+    int end;
+    bool tab;
+} field_t;
+
+static field_t fields[] = {
+    {.start = 0,  .end = 4,  .tab = true},  // band+mode
+    {.start = 7,  .end = 15},   // date
+    {.start = 17, .end = 21, .tab = true},  // time
+    {.start = 23, .end = 26},   // number
+    {.start = 29, .end = 29 + MAX_CALL_LENGTH - 1, .tab = true},   // call
+    {.start = 44, .end = 46},   // sent RST
+    {.start = 49, .end = 52},   // rcvd RST
+    {.start = 54,            .tab = true},  // exchange -- end set at runtime
+};
+
+#define FIELD_INDEX_CALL        4
+#define FIELD_INDEX_EXCHANGE    (G_N_ELEMENTS(fields) - 1)
+
 /* highlight the edit line and set the cursor */
 static void highlight_line(int row, char *line, int column) {
 
@@ -110,7 +130,10 @@ void edit_last(void) {
 
     stop_background_process();
 
-    b = SOCALL;
+    fields[FIELD_INDEX_EXCHANGE].end = EOEXCH - 1;  // set current end of exchange
+
+    int field_index = FIELD_INDEX_CALL;
+    b = fields[field_index].start;
 
     /* start with last QSO */
     get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
@@ -128,16 +151,14 @@ void edit_last(void) {
 	} else if (j == CTRL_E || j == KEY_END) {
 	    b = EOEXCH - 1;
 
-	    // <Tab>, next field.
+	    // <Tab>, switch to next tab field.
 	} else if (j == TAB) {
-	    if (b < SOTIME)
-		b = SOTIME;
-	    else if (b < SOCALL)
-		b = SOCALL;
-	    else if (b < SOEXCH)
-		b = SOEXCH;
-	    else
-		b = 1;
+            do {
+                field_index = (field_index + 1) % G_N_ELEMENTS(fields);
+            }
+            while (!fields[field_index].tab);
+
+            b = fields[field_index].start;
 
 	    // Up arrow, move to previous line.
 	} else if (j == KEY_UP) {
@@ -172,53 +193,34 @@ void edit_last(void) {
 
 	    // Left arrow, move cursor one position left.
 	} else if (j == KEY_LEFT) {
-	    if (b >= 1)
+	    if (b > fields[field_index].start) {
 		b--;
+            } else if (field_index > 0) {
+                --field_index;
+                b = fields[field_index].end;
+            }
 
 	    // Right arrow, move cursor one position right.
 	} else if (j == KEY_RIGHT) {
-	    if (b < EOEXCH - 1)
+	    if (b < fields[field_index].end) {
 		b++;
+            } else if (field_index < G_N_ELEMENTS(fields) - 1) {
+                ++field_index;
+                b = fields[field_index].start;
+            }
 
-	    // <Insert>, positions 0 to 26.
-	} else if ((j == KEY_IC) && (b >= 0) && (b < 27)) {
-	    for (k = 26; k > b; k--)
+	    // <Insert>, insert a space
+	} else if (j == KEY_IC) {
+	    for (k = fields[field_index].end; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 	    changed = true;
 
-	    // <Insert>, positions 29 to 40.
-	} else if ((j == KEY_IC) && (b >= 29) && (b < 40)) {
-	    for (k = 40; k > b; k--)
-		editbuffer[k] = editbuffer[k - 1];
-	    editbuffer[b] = ' ';
-	    changed = true;
-
-	    // <Insert>, positions 54 to end of field.
-	} else if ((j == KEY_IC) && (b >= SOEXCH) && (b < EOEXCH - 1)) {
-	    for (k = EOEXCH - 1; k > b; k--)
-		editbuffer[k] = editbuffer[k - 1];
-	    editbuffer[b] = ' ';
-	    changed = true;
-
-	    // <Delete>, positions 1 to 27.
-	} else if ((j == KEY_DC) && (b >= 1) && (b < 28)) {
-	    for (k = b; k < 28; k++)
+	    // <Delete>, shift rest left
+	} else if (j == KEY_DC) {
+	    for (k = b; k < fields[field_index].end; k++)
 		editbuffer[k] = editbuffer[k + 1];
-	    changed = true;
-
-	    // <Delete>, positions 29 to 40.
-	} else if ((j == KEY_DC) && (b >= 29) && (b < 41)) {
-	    for (k = b; k < 40; k++)
-		editbuffer[k] = editbuffer[k + 1];
-	    editbuffer[40] = ' ';
-	    changed = true;
-
-	    // <Delete>, positions 54 to 63.
-	} else if ((j == KEY_DC) && (b >= SOEXCH) && (b < EOEXCH)) {
-	    for (k = b; k < EOEXCH - 1; k++)
-		editbuffer[k] = editbuffer[k + 1];
-	    editbuffer[EOEXCH - 1] = ' ';
+	    editbuffer[fields[field_index].end] = ' ';
 	    changed = true;
 
 	} else if (j != ESCAPE) {
@@ -230,8 +232,9 @@ void edit_last(void) {
 	    // Accept most all printable characters.
 	    if ((j >= 32) && (j < 97)) {
 		editbuffer[b] = j;
-		if ((b < strlen(editbuffer) - 2) && (b < EOEXCH - 1))
+                if (b < fields[field_index].end) {
 		    b++;
+                }
 		changed = true;
 	    }
 	}
