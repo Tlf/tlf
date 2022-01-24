@@ -309,6 +309,8 @@ int score_arrlfd(struct qso_t *qso) {
 int score_arrldx_usa(struct qso_t *qso) {
     int points;
 
+    prefix_data *ctyinfo = getctyinfo(qso->call);
+    int countrynr = ctyinfo->dxcc_ctynr;
     if ((countrynr == w_cty) || (countrynr == ve_cty)) {
 	points = 0;
     } else {

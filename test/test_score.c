@@ -53,8 +53,6 @@ int setup(void **state) {
     strcpy(my.continent, "EU");
 
     my.countrynr = 95;   /* DL */
-    w_cty = 184;        /* W */
-    ve_cty = 283;       /* VE */
 
     trxmode = CWMODE;
 
@@ -190,14 +188,11 @@ void test_simple_points(void **state) {
 void test_arrldx_usa(void **state) {
     setcontest("arrldx_usa");
 
-    countrynr = w_cty;
-    check_points(0);
+    check_call_points("W3ABC",0);
 
-    countrynr = ve_cty;
-    check_points(0);
+    check_call_points("VE2ABC",0);
 
-    countrynr = my.countrynr;
-    check_points(3);
+    check_call_points("DL3ABC",3);
 }
 
 void test_ssbcw(void **state) {
