@@ -221,13 +221,17 @@ int scoreDefault(struct qso_t *qso) {
 
 int score_wpx(struct qso_t *qso) {
     int points;
+
+    prefix_data *ctyinfo = getctyinfo(qso->call);
+    int countrynr = ctyinfo->dxcc_ctynr;
+
     if (countrynr == my.countrynr) {
 	points = 1;
 
 	return points;
     }
 
-    if ((strcmp(continent, my.continent) == 0)
+    if ((strcmp(ctyinfo->continent, my.continent) == 0)
 	    && (bandinx > BANDINDEX_30)) {
 	if (strstr(my.continent, "NA") != NULL) {
 	    points = 2;
@@ -238,7 +242,7 @@ int score_wpx(struct qso_t *qso) {
 	return points;
     }
 
-    if ((strcmp(continent, my.continent) == 0)
+    if ((strcmp(ctyinfo->continent, my.continent) == 0)
 	    && (bandinx < BANDINDEX_30)) {
 	if (strstr(my.continent, "NA") != NULL) {
 	    points = 4;
@@ -247,13 +251,13 @@ int score_wpx(struct qso_t *qso) {
 	}
 	return points;
     }
-    if ((strcmp(continent, my.continent) != 0)
+    if ((strcmp(ctyinfo->continent, my.continent) != 0)
 	    && (bandinx > BANDINDEX_30)) {
 	points = 3;
 
 	return points;
     }
-    if ((strcmp(continent, my.continent) != 0)
+    if ((strcmp(ctyinfo->continent, my.continent) != 0)
 	    && (bandinx < BANDINDEX_30)) {
 	points = 6;
 

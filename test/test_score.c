@@ -107,34 +107,29 @@ void test_wpx(void **state) {
     pfxmult = false;
 
     /* same country */
-    countrynr = my.countrynr;
-    check_points(1);
+    check_call_points("DL3ABC",1);
 
     /* different continents */
-    countrynr = 2;
-    strcpy(continent, "AF");
     bandinx = BANDINDEX_20;
-    check_points(3);
+    check_call_points("ZS6ABC",3);
 
     bandinx = BANDINDEX_40;
-    check_points(6);
+    check_call_points("ZS6ABC",6);
 
     /* same continent, not NA */
-    strcpy(continent, my.continent);
     bandinx = BANDINDEX_20;
-    check_points(1);
+    check_call_points("HB9ABC",1);
 
     bandinx = BANDINDEX_40;
-    check_points(2);
+    check_call_points("HB9ABC",2);
 
     /* same continent, NA */
     strcpy(my.continent, "NA");
-    strcpy(continent, my.continent);
     bandinx = BANDINDEX_20;
-    check_points(2);
+    check_call_points("VE3ABC",2);
 
     bandinx = BANDINDEX_40;
-    check_points(4);
+    check_call_points("VE3ABC",4);
 
 }
 
