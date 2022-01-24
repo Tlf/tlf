@@ -327,8 +327,8 @@ int score_stewperry(struct qso_t *qso) {
 
     points = 0;
 
-    if (strlen(comment) > 3) {
-	locator2longlat(&s1long, &s1lat, comment);
+    if (strlen(qso->comment) > 3) {
+	locator2longlat(&s1long, &s1lat, qso->comment);
 	locator2longlat(&s2long, &s2lat, my.qra);
 
 	qrb(s1long, s1lat, s2long, s2lat, &distance, &azimuth);
