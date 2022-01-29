@@ -42,7 +42,7 @@
 #include "setcontest.h"
 #include "tlf.h"
 
-void calc_continent(int zone);
+char *calc_continent(int zone);
 
 /* check if countrynr is in countrylist */
 bool is_in_countrylist(int countrynr) {
@@ -271,9 +271,13 @@ int score_cqww(struct qso_t *qso) {
     int points;
     int zone;
 
+    prefix_data *ctyinfo = getctyinfo(qso->call);
+    int countrynr = ctyinfo->dxcc_ctynr;
+    char *continent = ctyinfo->continent;
+
     if (countrynr == 0) {
-	zone = atoi(comment);
-	calc_continent(zone);	// sets continent
+	zone = atoi(qso->comment);
+	continent = calc_continent(zone);	// sets continent
     }
 
     if (countrynr == my.countrynr) {
@@ -289,12 +293,11 @@ int score_cqww(struct qso_t *qso) {
 	    points = 1;
 	}
 
-	return points;
     } else {
 	points = 3;
-
-	return points;
     }
+
+    return points;
 }
 
 
@@ -315,6 +318,7 @@ int score_arrldx_usa(struct qso_t *qso) {
 
     prefix_data *ctyinfo = getctyinfo(qso->call);
     int countrynr = ctyinfo->dxcc_ctynr;
+
     if ((countrynr == w_cty) || (countrynr == ve_cty)) {
 	points = 0;
     } else {
@@ -380,31 +384,30 @@ int score2(char *line) {
 
 /* ----------------------------------------------------------------- */
 /* calculates continent from zone and sets 'continent' variable      */
-void calc_continent(int zone) {
+char *calc_continent(int zone) {
+    char *continent;
 
     switch (zone) {
 	case 1 ... 8:
-	    strcpy(continent, "NA");
+	    continent = "NA";
 	    break;
 	case 9 ... 13:
-	    strcpy(continent, "SA");
+	    continent = "SA";
 	    break;
 	case 14 ... 16:
-	    strcpy(continent, "EU");
+	    continent = "EU";
 	    break;
-	case 17 ... 26:
-	    strcpy(continent, "AS");
-	    break;
-	case 27 ... 32:
-	    strcpy(continent, "AS");
+	case 17 ... 32:
+	    continent = "AS";
 	    break;
 	case 33 ... 39:
-	    strcpy(continent, "AF");
+	    continent = "AF";
 	    break;
 	case 40:
-	    strcpy(continent, "EU");
+	    continent = "EU";
 	    break;
 	default:
-	    strcpy(continent, "??");
+	    continent = "??";
     }
+    return continent;
 }

@@ -22,7 +22,7 @@
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/utils.o
 
-void calc_continent(int zone);
+char *calc_continent(int zone);
 char section[8] = "";       // defined in getexchange.c
 
 struct qso_t qso = { };
@@ -103,9 +103,9 @@ int teardown_default(void **state) {
 }
 
 void check_score_to_continent(int i, char * cont) {
-    strcpy(continent, "");
-    calc_continent(i);
-    assert_string_equal(continent, cont);
+    strcpy(continent, "abc");
+    assert_string_equal(calc_continent(i), cont);
+    assert_string_equal(continent, "abc"); /* do not touch 'continent' */
 }
 
 void test_calc_continent(void **state) {
@@ -165,21 +165,19 @@ void test_wpx(void **state) {
 void test_cqww(void **state) {
     setcontest("cqww");
 
-    countrynr = my.countrynr;
-    check_points(0);
+    check_call_points("DL3ABC", 0);
 
-    countrynr = 2;
-    strcpy(continent, "EU");
     strcpy(my.continent, "EU");
-    check_points(1);
+    check_call_points("HB9ABC", 1);
 
-    strcpy(continent, "NA");
     strcpy(my.continent, "NA");
-    check_points(2);
+    check_call_points("XE1ABC", 2);
 
-    strcpy(continent, "EU");
     strcpy(my.continent, "NA");
-    check_points(3);
+    check_call_points("PY2ABC", 3);
+
+    qso.comment = "19";		    /* CQ Zone 19 => AS */
+    check_call_points("HB9ABC/mm", 3);
 }
 
 void test_arrl_fd(void **state) {
