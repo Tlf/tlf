@@ -41,11 +41,6 @@
 #define NR_LINES 5
 #define NR_COLS 80
 
-#define SOTIME 17	    /* start of time field */
-#define SOCALL 29	    /* start of call field */
-#define SOEXCH 54	    /* start of exchange field */
-#define EOEXCH (54 + contest->exchange_width) /* end of last field */
-
 typedef struct {
     int start;
     int end;
@@ -174,7 +169,8 @@ void edit_last(void) {
 
     const int topline = MAX(NR_LINES - nr_qsos, 0);
 
-    fields[FIELD_INDEX_EXCHANGE].end = EOEXCH - 1;  // set current end of exchange
+    // set current end of exchange field
+    fields[FIELD_INDEX_EXCHANGE].end = fields[FIELD_INDEX_EXCHANGE].start + contest->exchange_width - 1;
 
     field_index = FIELD_INDEX_CALL;
     current_field = &fields[field_index];
@@ -197,10 +193,10 @@ void edit_last(void) {
                 b = 0;
             }
 
-        // Ctrl-E (^E) or <End>, end of line.
+        // Ctrl-E (^E) or <End>, end of exchange field.
 	} else if (j == CTRL_E || j == KEY_END) {
             if (field_valid()) {
-                b = EOEXCH - 1;
+                b = fields[FIELD_INDEX_EXCHANGE].end;
             }
 
         // <Tab>, switch to next tab field.
@@ -269,14 +265,14 @@ void edit_last(void) {
 	    editbuffer[current_field->end] = ' ';
 	    changed = true;
 
-	} else if (j != ESCAPE) {
+	} else {
 
 	    // Promote lower case to upper case.
-	    if ((j >= 97) && (j <= 122))
-		j = j - 32;
+	    if (j >= 'a' && j <= 'z')
+		j = j - 'a' + 'A';
 
 	    // Accept most all printable characters.
-	    if ((j >= 32) && (j < 97)) {
+	    if (j >= ' ' && j < 'a') {
 		editbuffer[b] = j;
                 if (b < current_field->end) {
 		    b++;
