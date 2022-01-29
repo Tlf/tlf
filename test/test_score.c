@@ -22,6 +22,7 @@
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/utils.o
 
+void calc_continent(int zone);
 char section[8] = "";       // defined in getexchange.c
 
 struct qso_t qso = { };
@@ -99,6 +100,33 @@ void test_dupe(void **state) {
 
 int teardown_default(void **state) {
     return 0;
+}
+
+void check_score_to_continent(int i, char * cont) {
+    strcpy(continent, "");
+    calc_continent(i);
+    assert_string_equal(continent, cont);
+}
+
+void test_calc_continent(void **state) {
+    check_score_to_continent(0, "??");
+    for (int i = 1; i < 9; i++) {
+	check_score_to_continent(i, "NA");
+    }
+    for (int i = 9; i < 14; i++) {
+	check_score_to_continent(i, "SA");
+    }
+    for (int i = 14; i < 17; i++) {
+	check_score_to_continent(i, "EU");
+    }
+    for (int i = 17; i < 33; i++) {
+	check_score_to_continent(i, "AS");
+    }
+    for (int i = 33; i < 40; i++) {
+	check_score_to_continent(i, "AF");
+    }
+    check_score_to_continent(40, "EU");
+    check_score_to_continent(41, "??");
 }
 
 
