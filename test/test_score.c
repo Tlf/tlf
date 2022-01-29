@@ -47,23 +47,17 @@ int __wrap_foc_score() {
 }
 #endif
 
-int setup(void **state) {
-
-    strcpy(my.qra, "jo60lx");
-
-    strcpy(my.continent, "EU");
-
-    my.countrynr = 95;   /* DL */
-
-    trxmode = CWMODE;
-
-    return 0;
-}
 
 int setup_default(void **state) {
 
     static char filename[] =  TOP_SRCDIR "/share/cty.dat";
     assert_int_equal(load_ctydata(filename), 0);
+
+    strcpy(my.qra, "jo60lx");
+    strcpy(my.continent, "EU");
+    my.countrynr = getctynr("DL");
+
+    trxmode = CWMODE;
 
     setcontest("qso");
 
@@ -81,8 +75,6 @@ int setup_default(void **state) {
     continentlist_only = false;
     continentlist_points = -1;
     strcpy(continent_multiplier_list[0], "");
-
-    strcpy(my.continent, "EU");
 
     lowband_point_mult = false;
     portable_x2 = false;
