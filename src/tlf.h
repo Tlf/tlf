@@ -25,6 +25,7 @@
 #include <time.h>
 
 #include "hamlib/rig.h"
+#include "dxcc.h"
 
 enum {
     NO_KEYER,
@@ -164,7 +165,7 @@ typedef struct {
     char call[20]; 		/**< call of the station */
     char exchange[24]; 		/**< the last exchange */
     int band; 			/**< bitmap for worked bands */
-    int country; 		/**< its country number */
+    prefix_data *ctyinfo;	/**< pointer to country info from cty.dat */
     long qsotime[3][NBANDS];	/**< last timestamp of qso in gmtime
 				  for all modes and bands */
 } worked_t;
@@ -250,7 +251,7 @@ typedef struct {
 	points_type_t type;
 	union {
 	    int point;
-	    int (*fn)();
+	    int (*fn)(struct qso_t *);
 	};
     }			points;
     bool (*is_multi)();

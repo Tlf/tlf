@@ -241,7 +241,7 @@ void prefix_add(char *pfxstr) {
 	new_prefix -> cq = last_dx -> cq;
 
     new_prefix -> pfx = g_strdup(pfxstr);
-    new_prefix -> dxcc_index = last_index;
+    new_prefix -> dxcc_ctynr = last_index;
 
     g_ptr_array_add(prefix, new_prefix);
     int index = prefix_count() - 1;

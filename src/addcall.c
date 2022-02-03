@@ -241,7 +241,7 @@ int addcall2(void) {
     int station = lookup_or_add_worked(qso->call);
     update_worked(station, qso);
 
-    cty = worked[station].country;
+    cty = worked[station].ctyinfo->dxcc_ctynr;
 
     bandinx = qso->bandindex;
 

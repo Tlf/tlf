@@ -155,7 +155,7 @@ void test_add_to_worked(void **state) {
     assert_string_equal(worked[0].exchange, "Hi");
     assert_int_equal(worked[0].band & inxes[BANDINDEX_10], inxes[BANDINDEX_10]);
     assert_in_range(worked[0].qsotime[trxmode][BANDINDEX_10], now, now + 1);
-    assert_int_equal(worked[0].country, getctynr("LZ1AB"));
+    assert_int_equal(worked[0].ctyinfo->dxcc_ctynr, getctynr("LZ1AB"));
 }
 
 void test_add_to_worked_continentlistonly(void **state) {

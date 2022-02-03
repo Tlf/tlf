@@ -109,6 +109,10 @@ int foc_score(char *a) {
     return 0;
 }
 
+prefix_data *getctyinfo(char * call) {
+    return NULL;
+}
+
 
 /* setup/teardown */
 int setup_default(void **state) {

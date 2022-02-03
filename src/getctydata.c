@@ -63,7 +63,7 @@ void change_area(char *call, char area) {
 /* prepare and check callsign and look it up in dxcc data base
  *
  * returns index in data base or -1 if not found
- * if normalized_call ptr is not NULL retruns a copy of the normalized call
+ * if normalized_call ptr is not NULL returns a copy of the normalized call
  * e.g. DL1XYZ/PA gives PA/DL1XYZ
  * caller has to free the copy after use
  */
@@ -157,14 +157,20 @@ int getpfxindex(char *checkcallptr, char **normalized_call) {
     return w;
 }
 
+/* lookup dxcc country and prefix information from callsign */
+prefix_data *getctyinfo(char *call) {
+    int w = getpfxindex(call, NULL);
+    return prefix_by_index(w);
+}
+
 /* lookup dxcc cty number from callsign */
-int getctynr(char *checkcall) {
+int getctynr(char *call) {
     int w;
 
-    w = getpfxindex(checkcall, NULL);
+    w = getpfxindex(call, NULL);
 
     if (w >= 0)
-	return prefix_by_index(w)->dxcc_index;
+	return prefix_by_index(w)->dxcc_ctynr;
     else
 	return 0;	/* no country found */
 }
@@ -174,10 +180,10 @@ int getctynr(char *checkcall) {
  *
  * side effect: set up various global variables
  */
-static int getctydata_internal(char *checkcallptr, bool get_country) {
+static int getctydata_internal(char *call, bool get_country) {
     char *normalized_call = NULL;
 
-    int w = getpfxindex(checkcallptr, &normalized_call);
+    int w = getpfxindex(call, &normalized_call);
 
     if (CONTEST_IS(WPX) || pfxmult)
 	/* needed for wpx and other pfx contests */
@@ -187,7 +193,7 @@ static int getctydata_internal(char *checkcallptr, bool get_country) {
 
     // fill global variables
     prefix_data *pfx = prefix_by_index(w);
-    countrynr = pfx->dxcc_index;
+    countrynr = pfx->dxcc_ctynr;
     sprintf(cqzone, "%02d", pfx->cq);
     sprintf(ituzone, "%02d", pfx->itu);
     DEST_Lat = pfx->lat;
@@ -198,10 +204,10 @@ static int getctydata_internal(char *checkcallptr, bool get_country) {
     return get_country ? countrynr : w;
 }
 
-int getctydata(char *checkcallptr) {
-    return getctydata_internal(checkcallptr, true);
+int getctydata(char *call) {
+    return getctydata_internal(call, true);
 }
 
-int getctydata_pfx(char *checkcallptr) {
-    return getctydata_internal(checkcallptr, false);
+int getctydata_pfx(char *call) {
+    return getctydata_internal(call, false);
 }

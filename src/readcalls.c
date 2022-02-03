@@ -155,11 +155,8 @@ int readcalls(const char *logfile, bool interactive) {
 	}
 	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
 
-	/* needed scoring in for country_found() */
-	g_strlcpy(hiscall, qso->call, sizeof(hiscall));
-
 	addcall(qso);
-	score_qso();    //FIXME argument?
+	score_qso(qso);
 
 	char *logline = makelogline(qso);
 
