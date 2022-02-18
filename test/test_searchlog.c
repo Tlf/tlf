@@ -36,7 +36,7 @@ extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
 
 void handlePartials(void);
-void filterLog();
+void filterLog(const char * call);
 int bandstr2line(char *buffer);
 int getZone(void);
 
@@ -114,6 +114,7 @@ static void write_qsos() {
     strcpy(qsos[3], QSO4);
     strcpy(qsos[4], QSO5);
     strcpy(qsos[5], QSO6);
+    nr_qsos = 6;
 }
 
 int setup_default(void **state) {
@@ -241,8 +242,7 @@ void test_init_search_panel_dxped(void **state) {
 
 /* testing searchlog for refactoring */
 void test_searchlog_pickup_call(void **state) {
-    strcpy(hiscall, "UA");
-    filterLog("");
+    filterLog("UA");
     assert_int_equal(strncmp(searchresult[0], QSO3, 80), 0);
     assert_int_equal(strncmp(searchresult[1], QSO4, 80), 0);
     assert_int_equal(strncmp(searchresult[2], QSO5, 80), 0);
@@ -250,23 +250,20 @@ void test_searchlog_pickup_call(void **state) {
 
 void test_searchlog_pickup_call_mixedmode(void **state) {
     mixedmode = 1;
-    strcpy(hiscall, "UA");
-    filterLog("");
+    filterLog("UA");
     assert_int_equal(strncmp(searchresult[0], QSO3, 80), 0);
     assert_int_equal(strncmp(searchresult[1], QSO5, 80), 0);
 }
 
 void test_searchlog_extract_data(void **state) {
-    strcpy(hiscall, "UA");
-    filterLog("");
+    filterLog("UA");
     assert_string_equal(result[0], " 40CW  0007 OE3UAI       15            ");
     assert_string_equal(result[1], " 80SSB 0008 UA3JK        16            ");
 }
 
 void test_searchlog_extract_data_mixedmode(void **state) {
     mixedmode = 1;
-    strcpy(hiscall, "UA");
-    filterLog("");
+    filterLog("UA");
     assert_string_equal(result[0], " 40CW  0007 OE3UAI       15            ");
     assert_string_equal(result[1], " 80CW  0009 UA9LM        17            ");
 }
@@ -287,7 +284,7 @@ void test_bandstr2line(void **state) {
 void test_UsePartialFromLog(void **state) {
     use_part = true;
     strcpy(hiscall, "K4DE");
-    filterLog();
+    filterLog(hiscall);
     handlePartials();
     assert_string_equal(hiscall, "K4DEF");
 }
@@ -295,7 +292,7 @@ void test_UsePartialFromLog(void **state) {
 void test_UsePartialFromLogNotUnique(void **state) {
     use_part = true;
     strcpy(hiscall, "UA");
-    filterLog();
+    filterLog(hiscall);
     handlePartials();
     assert_string_equal(hiscall, "UA");
 }
@@ -305,7 +302,7 @@ void test_UsePartialFromCallmaster(void **state) {
     load_callmaster();
     use_part = true;
     strcpy(hiscall, "A1");
-    filterLog();
+    filterLog(hiscall);
     handlePartials();
     assert_string_equal(hiscall, "A1AA");
 }
@@ -315,7 +312,7 @@ void test_UsePartialNotUnique(void **state) {
     load_callmaster();
     use_part = true;
     strcpy(hiscall, "A3");
-    filterLog();
+    filterLog(hiscall);
     handlePartials();
     assert_string_equal(hiscall, "A3");
 }
@@ -326,7 +323,7 @@ void test_UsePartialNotUnique_only_callmaster(void **state) {
     load_callmaster();
     use_part = true;
     strcpy(hiscall, "HG");  // not in log yet
-    filterLog();
+    filterLog(hiscall);
     handlePartials();
     assert_string_equal(hiscall, "HG");
 }
@@ -339,7 +336,7 @@ void test_displayPartials_exact_callmaster(void **state) {
     load_callmaster();
     strcpy(hiscall, "UA3JK");   // already in log
 
-    filterLog();
+    filterLog(hiscall);
     handlePartials();
 
     check_mvprintw_output(2, 1, 1, "UA3JK");    // first - from log
@@ -354,6 +351,7 @@ void test_displayPartials(void **state) {
 	sprintf(qsos[6 + i],
 		" 80CW  12-Jan-18 16:34 0009  UA9%cAA         599  599  17            UA9 17   3         ",
 		'A' + i);
+	nr_qsos++;
     }
 
     // callmaster has also some UAs
@@ -361,7 +359,7 @@ void test_displayPartials(void **state) {
     load_callmaster();
     strcpy(hiscall, "UA");
 
-    filterLog();
+    filterLog(hiscall);
     handlePartials();
 
     // check selected displayed values only (F2UAA must not be shown)

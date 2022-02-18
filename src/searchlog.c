@@ -383,23 +383,23 @@ static bool is_current_mode(const char *qso) {
 }
 
 
-/* search complete Log for 'hiscall' as substring in callsign field and
+/* search complete Log for 'call' as substring in callsign field and
  * copy found QSO to 'searchresults'. Extract relevant data to 'result'.
  * */
-void filterLog() {
+void filterLog(const char *call) {
 
     char s_inputbuffer[LOGLINELEN + 1] = "";
 
     srch_index = 0;
 
-    for (int qso_index = 0; strlen(qsos[qso_index]) > 4; qso_index++) {
+    for (int qso_index = 0; qso_index < nr_qsos; qso_index++) {
 
 	if (!is_current_mode(qsos[qso_index])) {
 	    continue;   // different mode
 	}
 
 	g_strlcpy(s_inputbuffer, qsos[qso_index] + 29, 13); /* call */
-	if (strstr(s_inputbuffer, hiscall) == 0) {
+	if (strstr(s_inputbuffer, call) == 0) {
 	    continue;   // no match
 	}
 
@@ -678,7 +678,7 @@ void searchlog() {
 	ShowSearchPanel();
 	drawSearchWin();
 
-	filterLog();
+	filterLog(hiscall);
 	displaySearchResults();
 
 
