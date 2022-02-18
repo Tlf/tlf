@@ -22,7 +22,7 @@ New features:
     - Drop hard coded editor programs. You can name any editor program 
       to use in the EDITOR= keyword. If none set TLF uses the $EDITOR 
       from environment.
-      The Logfile gets automaticlly reloaded after editing.
+      The Logfile gets automatically reloaded after editing.
     - HA5CQZ provided a good solution to extend the memory TX functionality.
       Besides frequency the memory now also remembers the working mode.
       That allows to just grab a announced station, work it in S&P mode and
@@ -42,7 +42,7 @@ New features:
 
 Bug fixes:
     - There are two major fixes for bugs in the scoring logic:
-      - For US/VE stations runnin ARRLDX contest intra W/VE qso were counted
+      - For US/VE stations running ARRLDX contest intra W/VE qso were counted
 	which was wrong. New code correctly scores these contacts with 0
 	points and does not count it as multi.
       - If you running TLF in CQWW 2 TX mode QSO from other stations on LAN
@@ -113,7 +113,7 @@ Minor corrections:
 Bug fixes:
     - Fix segmentation violation if RIGPORT is undefined in logcfg.dat
     - Fixes some test programs
-    - fix warnigns from clang about taking an abs() from an unsigned number
+    - fix warnings from clang about taking an abs() from an unsigned number
 
 
 tlf-1.3.1
@@ -346,7 +346,7 @@ New features:
       as soon as you get at least one QTC from the station.
       The flags will be stored in a separated file, called
       QTC_meta.log. If you exit from Tlf, and you start it again
-      later, the marked informations will be available.
+      later, the marked information will be available.
     - stations which can give still more QTC's will not be marked as 
       dupe on the bandmap
     - Set QTC_AUTO_FILLTIME keyword in logcfg.dat to automatically fill in the 
@@ -478,7 +478,7 @@ New features:
         + backspace  delete char left from cursor 
         + any non control char   insert if string not to long
     - Reworked autosend feature
-      * starts sending call automatically after entereing 2..5 characters
+      * starts sending call automatically after entering 2..5 characters
         of the call in RUN mode
       * Enable it via ':char' command (accepts 0 (off) or 2..5 as 
         number of characters before autosend start).
@@ -517,7 +517,7 @@ tlf-1.1.6
 Minor maintenance and bugfix release.
 
 New features:
-    - Reduce minimal livetime for bandmap entries to 30s (requested by DH5YM)
+    - Reduce minimal lifetime for bandmap entries to 30s (requested by DH5YM)
     - Update ARRL Field Day rules and arrlsections file. Tnx Nate N0NB.
     - New NO_RST keyword (backported from from tlf-1.2.0 branch). Use it for
       contests which do not exchange and record RS/RST (e.g. ARRL Field Day 
@@ -561,7 +561,7 @@ New features:
     - Report line number for badly formatted lines in initial exchange file.
       That makes it easier to find the problem for files with a lot of entries.
       Thanks Mario DH5YM for reporting the problem.
-    - Allow to set SIDETONE_VOLUME to 0 independent from choosen sidetone
+    - Allow to set SIDETONE_VOLUME to 0 independent from chosen sidetone
       device. Due to a bug in cwdaemon-0.9.4 setting SIDETONE to 0 switches
       off the sidetone but also the keying. So please...
       !!! Set SIDETONE_VOLUME = 0 to switch off sidetone output !!!
@@ -673,7 +673,7 @@ Minor maintenance release.
 New features:
     - Add ARRL 10m Contest rules for DX stations.
     - Provide more actual multiplier files for arrldx and arrl10m contests.
-    - Add a better recognition of unkown keywords in config file.
+    - Add a better recognition of unknown keywords in config file.
 
 Bug fixes:
     - Fix recongnition of COUNTRY_LIST keyword.
@@ -1273,7 +1273,7 @@ tlf-0.9.4
 	tlf seg faults when switching from the NEEDED band map to the 
 	spot list with very large band maps (the 10m bandmap had 150 entries 
 	during cqwwssb sunday afternoon)
-	ce0y/sp9spt shows up as Poland instad of Easter Island...
+	ce0y/sp9spt shows up as Poland instead of Easter Island...
 
 tlf-0.9.3
 =========
@@ -1455,7 +1455,7 @@ tlf-0.8.21
 tlf-0.8.20
 ==========
 
-- Made tlf compatible wit hamlib-1.1.4 (new rig.h).
+- Made tlf compatible with hamlib-1.1.4 (new rig.h).
 
 - Added fast startup (now default).
 
@@ -1604,7 +1604,7 @@ Bug/unwanted feature fixes:
   QSO's in SCORE window is wrong (QSO's count decremented while it
   shouldn't)
 
-- when call field is empty, is TAB suposed to give a zone?
+- when call field is empty, is TAB supposed to give a zone?
 
 - when editing last QSO '@', if I go right (with -> key) till end of line,
   I'm stuck on next line. Actually, If you enter "ggggggggggggggggggggggggg"
@@ -1790,7 +1790,7 @@ tlf-0.7.0 beta test version with hamlib-1.1.3 integration
 
 - add spot (ctrl-A) adds call in call field to bandmap
 
-- frequency conrol (ctrl-F): up/down arrow for 100 Hz, left/right arrow 20 Hz steps.
+- frequency control (ctrl-F): up/down arrow for 100 Hz, left/right arrow 20 Hz steps.
 	escape goes back to normal mode
 
  - mode switch :SSB now gives right side band (USB, LSB)
@@ -1917,7 +1917,7 @@ Major changes with respect to version  tlf-0.5.0 are:
 It is now possible to create your own contest. E.g. for the r1fieldday you can
 enter the following in logcfg.dat:
 
-#dissable all standard contests
+#disable all standard contests
 CONTEST=fieldday
 COUNTRY_MULT 		(dxcc countries = multiplier)
 2EU3DX_POINTS 		(2 points for qso's in own continent, 3 for DX)

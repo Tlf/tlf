@@ -107,7 +107,7 @@ static char *get_datetime(struct qso_t *qso) {
     return datetime_buf;    // note: returns a static buffer
 }
 
-/* export non public protoypes for test */
+/* export non public prototypes for test */
 int starts_with(char *line, char *start);
 void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc);
 extern struct read_qtc_t qtc_line;	/* make global for testability */

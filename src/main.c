@@ -318,7 +318,7 @@ int k_ptt = 0;
 
 int miniterm = 0;		/* is miniterm for digimode active? */
 char modem_mode[8];
-int commentfield = 0;		/* 1 if we are in comment/excahnge input */
+int commentfield = 0;		/* 1 if we are in comment/exchange input */
 
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */

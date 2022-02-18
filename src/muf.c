@@ -158,7 +158,7 @@ http://www.classiccmp.org/cpmarchives/cpm/Software/WalnutCD/cpm/hamradio/micromu
   FO-E calculations.
 
 
-  For the L.U.F. a minimum useable fieldstrength of 30 DBUV at the
+  For the L.U.F. a minimum usable fieldstrength of 30 DBUV at the
   receiver and 250 KW of transmitter power (aerial gain: 18 DBI) are
   assumed.  The L.U.F. is derived from absorption calculations based
   on the work of Piggot, George, Samuel, and Bradley.  In spite of the
@@ -381,7 +381,7 @@ void muf(void) {
 	mvwprintw(win, 5, 40, "F-hops:    %2.0f", n);
 
 	sunup(xr, &sunrise, &sundown);	/* calculate local sunup and down
-                                               at destination lattitude */
+                                               at destination latitude */
 	/* transform to UTC based on longitude from country description */
 	td = (yr * 4) / 60 ; 	/* 4 degree/min */
 	sunrise += td;

@@ -576,7 +576,7 @@ void qtc_main_panel(int direction) {
 	    // Left Arrow
 	    case KEY_LEFT:
 		if (DIRCLAUSE) {
-		    if (curpos < curfieldlen) {	// curpos is a shift, means lenght - position
+		    if (curpos < curfieldlen) {	// curpos is a shift, means length - position
 			curpos++;
 			showfield(activefield);
 		    }

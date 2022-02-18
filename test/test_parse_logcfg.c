@@ -896,7 +896,7 @@ void test_bandmap(void **state) {
     assert_int_equal(rc, 0);
     assert_int_equal(cluster, MAP);
     assert_int_equal(bm_config.showdupes, 1);
-    assert_int_equal(bm_config.livetime, 900);
+    assert_int_equal(bm_config.lifetime, 900);
 }
 
 void test_bandmap_d100(void **state) {
@@ -904,7 +904,7 @@ void test_bandmap_d100(void **state) {
     assert_int_equal(rc, 0);
     assert_int_equal(cluster, MAP);
     assert_int_equal(bm_config.showdupes, 0);
-    assert_int_equal(bm_config.livetime, 100);
+    assert_int_equal(bm_config.lifetime, 100);
 }
 
 void test_cwspeed(void **state) {

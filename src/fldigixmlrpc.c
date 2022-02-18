@@ -199,12 +199,12 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
     }
     /*
     if connerr had been set up to 1, that means an error
-    occured at last xmlrpc_call() method
+    occurred at last xmlrpc_call() method
     if that true, then we count the number of calling this
     function (xmlrpc()), if counter reaches 10, then clear
     it, and try again
     this handles the xmlrpc_call() errors, eg. Fldigi is
-    unreacheable, but it will check again and again, not
+    unreachable, but it will check again and again, not
     need to restart Tlf, or type ":FLDIGI" to turn on again
     */
     if (connerr && use_fldigi) {
@@ -634,7 +634,7 @@ int fldigi_get_log_call() {
 		    return -1;
 		}
 	    }
-	    // otherways, fill the callsign field in Tlf
+	    // otherwise, fill the callsign field in Tlf
 	    else {
 		if (strlen(tempstr) >= 3) {
 		    if (hiscall[0] == '\0') {
@@ -693,7 +693,7 @@ int fldigi_get_log_serial_number() {
 		    return -1;
 		}
 	    }
-	    // otherways we need to fill the Tlf exchange field
+	    // otherwise we need to fill the Tlf exchange field
 	    else {
 		if (strlen(tempstr) > 0 && comment[0] == '\0') {
 		    strcpy(comment, tempstr);
