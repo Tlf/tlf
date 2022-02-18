@@ -2,16 +2,19 @@
 
 #include <time.h>
 
+#include "../src/dxcc.h"
 #include "../src/searchcallarray.h"
 #include "../src/bands.h"
 #include "../src/globalvars.h"
 
+// OBJECT ../src/dxcc.o
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/bands.o
 
+prefix_data pfx_dummy = { };
 
-int getctynr(char *call) {
-    return 42;
+prefix_data *getctyinfo(char * call) {
+    return &pfx_dummy;
 }
 
 time_t get_time() {
@@ -52,7 +55,7 @@ int setup_default(void **state) {
 void test_init(void **state) {
     init_worked();
     assert_int_equal(nr_worked, 0);
-    assert_int_equal(worked[0].country, -1);
+    assert_ptr_equal(worked[0].ctyinfo, NULL);
 }
 
 /* test index lookup entry*/

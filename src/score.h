@@ -22,14 +22,15 @@
 #ifndef _SCORE_H
 #define _SCORE_H
 #include <stdbool.h>
+#include "tlf.h"
 
 int score_wpx();
 int score_cqww();
 int score_arrlfd();
 int score_arrldx_usa();
 int score_stewperry();
-int score(void);
-void score_qso(void);
+int score(struct qso_t *qso);
+void score_qso(struct qso_t *qso);
 int score2(char *line);
 bool country_found(char prefix[]);
 bool is_in_countrylist(int countrynr);

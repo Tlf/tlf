@@ -87,7 +87,7 @@ void log_to_disk(int from_lan) {
 	current_qso = collect_qso_data();
 	addcall(current_qso);		/* add call to dupe list */
 
-	score_qso();
+	score_qso(current_qso);
 	char *logline = makelogline(current_qso);
 	current_qso->logline = logline; /* remember formatted line in qso entry */
 

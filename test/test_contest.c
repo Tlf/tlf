@@ -21,6 +21,10 @@ int getctydata(char *checkcall) {
     return 0;
 }
 
+prefix_data *getctyinfo(char * call) {
+    return NULL;
+}
+
 contest_config_t config_focm;
 
 int setup_default(void **state) {

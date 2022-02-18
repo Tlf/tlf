@@ -35,9 +35,6 @@
  */
 void init_worked(void) {
     memset(worked, 0, sizeof(worked));
-    for (int i = 0; i < sizeof(worked)/sizeof(worked[0]); i++) {
-	worked[i].country = -1;
-    }
     nr_worked = 0;
 }
 
@@ -66,10 +63,11 @@ int lookup_worked(char *call) {
 /* add a new entry for call to the collection */
 static int add_new(char *call) {
     int i = nr_worked;
+    prefix_data *prefix;
 
     memset(&worked[i], 0, sizeof(worked_t));
     g_strlcpy(worked[i].call, call, sizeof(worked[0].call));
-    worked[i].country = getctynr(call);
+    worked[i].ctyinfo = getctyinfo(call);
     nr_worked++;
 
     return nr_worked - 1;

@@ -21,9 +21,12 @@
 #ifndef GETCTYDATA_H
 #define GETCTYDATA_H
 
-int getctynr(char *checkcall);
-int getctydata(char *checkcall);
-int getctydata_pfx(char *checkcallptr);
+#include "dxcc.h"
+
+prefix_data *getctyinfo(char *call);
+int getctynr(char *call);
+int getctydata(char *call);
+int getctydata_pfx(char *call);
 
 
 #endif /* end of include guard: GETCTYDATA_H */

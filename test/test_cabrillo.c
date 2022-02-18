@@ -1,6 +1,7 @@
 #include "test.h"
 
 #include "../src/cabrillo_utils.h"
+#include "../src/dxcc.h"
 #include "../src/readcabrillo.h"
 #include "../src/cqww_simulator.h"
 
@@ -33,7 +34,7 @@ int get_total_score() {
     return 123;
 }
 
-void score_qso() {
+void score_qso(struct qso_t *qso) {
 }
 
 void ask(char *buffer, char *what) {
@@ -64,6 +65,10 @@ int modify_attr(int attr) { // FIXME: remove once info() moved to UI code
 
 int getctynr(char *call) {
     return 42;
+}
+
+prefix_data *getctyinfo(char *call) {
+    return NULL;
 }
 
 /* some spies */

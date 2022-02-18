@@ -42,10 +42,40 @@
 #define NR_LINES 5
 #define NR_COLS 80
 
-#define SOTIME 17	    /* start of time field */
-#define SOCALL 29	    /* start of call field */
-#define SOEXCH 54	    /* start of exchange field */
-#define EOEXCH (54 + contest->exchange_width) /* end of last field */
+typedef struct {
+    int start;
+    int end;
+    bool tab;
+    const char *pattern;
+} field_t;
+
+static field_t fields[] = {
+    {.start = 0,  .end = 5, .tab = true,    // band+mode
+        .pattern = "^[ 1]\\d{2}(CW |SSB|DIG)$"},
+    {.start = 7,  .end = 15,                // date
+        .pattern = "^\\d{2}-[A-Z]{3}-\\d{2}$"},
+    {.start = 17, .end = 21, .tab = true,   // time
+        .pattern = "^\\d{2}:\\d{2}$"},
+    {.start = 23, .end = 26,                // number
+        .pattern = "^\\s*\\d+\\s*$"},
+    {.start = 29, .end = 29 + MAX_CALL_LENGTH - 1, .tab = true,   // call
+        .pattern = "^\\s*\\S+\\s*$"},
+    {.start = 44, .end = 46,                // sent RST
+        .pattern = "^\\s*\\d+\\s*$"},
+    {.start = 49, .end = 52,                // rcvd RST
+        .pattern = "^\\s*\\d+\\s*$"},
+    {.start = 54,            .tab = true},  // exchange -- end set at runtime
+};
+
+#define FIELD_INDEX_CALL        4
+#define FIELD_INDEX_EXCHANGE    (G_N_ELEMENTS(fields) - 1)
+
+
+static char editbuffer[LOGLINELEN + 1];
+static bool changed, needs_rescore;
+static int editline;
+static int field_index;
+static field_t *current_field;  // points to fields[field_index]
 
 /* highlight the edit line and set the cursor */
 static void highlight_line(int row, char *line, int column) {
@@ -71,7 +101,7 @@ static void unhighlight_line(int row, char *line) {
 
 
 /* get a copy of selected QSO into the buffer */
-void get_qso(int nr, char *buffer) {
+static void get_qso(int nr, char *buffer) {
 
     assert(nr < nr_qsos);
     strcpy(buffer, qsos[nr]);
@@ -79,7 +109,7 @@ void get_qso(int nr, char *buffer) {
 }
 
 /* save editbuffer back to log */
-void putback_qso(int nr, char *buffer) {
+static void putback_qso(int nr, char *buffer) {
     FILE *fp;
 
     assert(strlen(buffer) == (LOGLINELEN - 1));
@@ -102,152 +132,170 @@ void putback_qso(int nr, char *buffer) {
     }
 }
 
+static bool field_valid() {
+    if (!changed || current_field->pattern == NULL) {
+        return true;
+    }
+
+    // extract current field value
+    char value[NR_COLS + 1];
+    int width = current_field->end - current_field->start + 1;
+    g_strlcpy(value, editbuffer + current_field->start, width + 1);
+
+    return g_regex_match_simple(current_field->pattern, value, G_REGEX_CASELESS, 0);
+}
+
+
+static void check_store_and_get_next_line(int direction) {
+    if (!field_valid()) {
+        return;     // field is not valid, no action needed
+    }
+    unhighlight_line(editline, editbuffer);
+    if (changed) {
+        putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+        needs_rescore = true;
+        changed = false;
+    }
+    if (direction != 0) {
+        editline += direction;
+        get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+    }
+}
+
 
 void edit_last(void) {
 
-    bool changed = false, needs_rescore = false;
-    int j = 0, b, k;
-    int editline = NR_LINES - 1;
-    char editbuffer[LOGLINELEN + 1];
+    int j, b, k;
 
     if (nr_qsos == 0)
 	return;			/* nothing to edit */
 
-    stop_background_process();
+    stop_background_process();  // note: this freezes nr_qsos, as network is paused
 
-    b = SOCALL;
+    const int topline = MAX(NR_LINES - nr_qsos, 0);
+
+    // set current end of exchange field
+    fields[FIELD_INDEX_EXCHANGE].end = fields[FIELD_INDEX_EXCHANGE].start + contest->exchange_width - 1;
+
+    field_index = FIELD_INDEX_CALL;
+    current_field = &fields[field_index];
+    b = current_field->start;
 
     /* start with last QSO */
+    editline = NR_LINES - 1;
     get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+    changed = false;
+    needs_rescore = false;
 
-    while (j != ESCAPE && j != '\n' && j != KEY_ENTER) {
+    while (true) {
 	highlight_line(editline, editbuffer, b);
 
 	j = key_get();
 
 	// Ctrl-A (^A) or <Home>, beginning of line.
 	if (j == CTRL_A || j == KEY_HOME) {
-	    b = 1;
+            if (field_valid()) {
+                b = 0;
+            }
 
-	    // Ctrl-E (^E) or <End>, end of line.
+        // Ctrl-E (^E) or <End>, end of exchange field.
 	} else if (j == CTRL_E || j == KEY_END) {
-	    b = EOEXCH - 1;
+            if (field_valid()) {
+                b = fields[FIELD_INDEX_EXCHANGE].end;
+            }
 
-	    // <Tab>, next field.
+        // <Tab>, switch to next tab field.
 	} else if (j == TAB) {
-	    if (b < SOTIME)
-		b = SOTIME;
-	    else if (b < SOCALL)
-		b = SOCALL;
-	    else if (b < SOEXCH)
-		b = SOEXCH;
-	    else
-		b = 1;
+            if (field_valid()) {
+                do {
+                    field_index = (field_index + 1) % G_N_ELEMENTS(fields);
+                }
+                while (!fields[field_index].tab);
 
-	    // Up arrow, move to previous line.
+                current_field = &fields[field_index];
+                b = current_field->start;
+            }
+
+        // Up arrow, move to previous line.
 	} else if (j == KEY_UP) {
-	    if (editline > (NR_LINES - nr_qsos) && (editline > 0)) {
-		unhighlight_line(editline, editbuffer);
-		if (changed) {
-		    putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
-		    needs_rescore = true;
-		    changed = false;
-		}
-		editline--;
-		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+	    if (editline > topline) {
+                check_store_and_get_next_line(-1);
 	    } else {
-		logview();
-		j = ESCAPE;
+                if (field_valid()) {
+                    logview();
+                    j = ESCAPE;     // signal exit
+                }
 	    }
 
-	    // Down arrow, move to next line.
+        // Down arrow, move to next line.
 	} else if (j == KEY_DOWN) {
 
 	    if (editline < NR_LINES - 1) {
-		unhighlight_line(editline, editbuffer);
-		if (changed) {
-		    putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
-		    needs_rescore = true;
-		    changed = false;
-		}
-		editline++;
-		get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
-	    } else
-		j = ESCAPE;
+                check_store_and_get_next_line(+1);
+	    } else {
+                j = ESCAPE;     // signal exit
+            }
 
-	    // Left arrow, move cursor one position left.
+        // Left arrow, move cursor one position left.
 	} else if (j == KEY_LEFT) {
-	    if (b >= 1)
+	    if (b > current_field->start) {
 		b--;
+            } else if (field_valid() && field_index > 0) {
+                --field_index;
+                current_field = &fields[field_index];
+                b = current_field->end;
+            }
 
-	    // Right arrow, move cursor one position right.
+        // Right arrow, move cursor one position right.
 	} else if (j == KEY_RIGHT) {
-	    if (b < EOEXCH - 1)
+	    if (b < current_field->end) {
 		b++;
+            } else if (field_valid() && field_index < G_N_ELEMENTS(fields) - 1) {
+                ++field_index;
+                current_field = &fields[field_index];
+                b = current_field->start;
+            }
 
-	    // <Insert>, positions 0 to 26.
-	} else if ((j == KEY_IC) && (b >= 0) && (b < 27)) {
-	    for (k = 26; k > b; k--)
+        // <Insert>, insert a space
+	} else if (j == KEY_IC) {
+	    for (k = current_field->end; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 	    changed = true;
 
-	    // <Insert>, positions 29 to 40.
-	} else if ((j == KEY_IC) && (b >= 29) && (b < 40)) {
-	    for (k = 40; k > b; k--)
-		editbuffer[k] = editbuffer[k - 1];
-	    editbuffer[b] = ' ';
-	    changed = true;
-
-	    // <Insert>, positions 54 to end of field.
-	} else if ((j == KEY_IC) && (b >= SOEXCH) && (b < EOEXCH - 1)) {
-	    for (k = EOEXCH - 1; k > b; k--)
-		editbuffer[k] = editbuffer[k - 1];
-	    editbuffer[b] = ' ';
-	    changed = true;
-
-	    // <Delete>, positions 1 to 27.
-	} else if ((j == KEY_DC) && (b >= 1) && (b < 28)) {
-	    for (k = b; k < 28; k++)
+        // <Delete>, shift rest left
+	} else if (j == KEY_DC) {
+	    for (k = b; k < current_field->end; k++)
 		editbuffer[k] = editbuffer[k + 1];
+	    editbuffer[current_field->end] = ' ';
 	    changed = true;
 
-	    // <Delete>, positions 29 to 40.
-	} else if ((j == KEY_DC) && (b >= 29) && (b < 41)) {
-	    for (k = b; k < 40; k++)
-		editbuffer[k] = editbuffer[k + 1];
-	    editbuffer[40] = ' ';
-	    changed = true;
-
-	    // <Delete>, positions 54 to 63.
-	} else if ((j == KEY_DC) && (b >= SOEXCH) && (b < EOEXCH)) {
-	    for (k = b; k < EOEXCH - 1; k++)
-		editbuffer[k] = editbuffer[k + 1];
-	    editbuffer[EOEXCH - 1] = ' ';
-	    changed = true;
-
-	} else if (j != ESCAPE) {
+	} else {
 
 	    // Promote lower case to upper case.
-	    if ((j >= 97) && (j <= 122))
-		j = j - 32;
+	    if (j >= 'a' && j <= 'z')
+		j = j - 'a' + 'A';
 
 	    // Accept most all printable characters.
-	    if ((j >= 32) && (j < 97)) {
+	    if (j >= ' ' && j < 'a') {
 		editbuffer[b] = j;
-		if ((b < strlen(editbuffer) - 2) && (b < EOEXCH - 1))
+                if (b < current_field->end) {
 		    b++;
+                }
 		changed = true;
 	    }
 	}
+
+        // Check exit
+        if (j == ESCAPE || j == '\n' || j == KEY_ENTER) {
+            if (field_valid()) {
+                break;      // exit loop
+            }
+        }
     }
 
-    unhighlight_line(editline, editbuffer);
-    if (changed) {
-	putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
-	needs_rescore = true;
-	changed = false;
-    }
+    check_store_and_get_next_line(0);
+
     if (needs_rescore) {
 	log_read_n_score();
     }
