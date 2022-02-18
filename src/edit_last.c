@@ -104,7 +104,7 @@ static void unhighlight_line(int row, char *line) {
 static void get_qso(int nr, char *buffer) {
 
     assert(nr < nr_qsos);
-    strcpy(buffer, qsos[nr]);
+    strcpy(buffer, QSOS(nr));
     assert(strlen(buffer) == (LOGLINELEN - 1));
 }
 
