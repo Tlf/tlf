@@ -2,6 +2,7 @@
 
 #include "../src/globalvars.h"
 
+#include "../src/log_utils.h"
 #include "../src/tlf_curses.h"
 #include "../src/tlf_panel.h"
 #include "../src/searchlog.h"
@@ -103,17 +104,36 @@ contest_config_t config_focm;
 #define QSO5 " 80CW  12-Jan-18 16:34 0009  UA9LM          599  599  17            UA9 17   3         "
 #define QSO6 " 80CW  12-Jan-18 16:36 0010  AA3BP          599  599  05            K   05   3         "
 
+/* helper to add string to pos n in qsos array, parse the string as qso
+ * and add it to qso_array
+ */
+void add_log(int n, char *string) {
+    struct qso_t *qso;
+    char *line;
+
+    strcpy(qsos[n], string);
+    line = g_strdup(string);
+    qso = parse_qso(line);
+    g_free(line);
+    g_ptr_array_add(qso_array, qso);
+}
+
 static void write_qsos() {
     int i;
+
+    init_qso_array();
+
     for (i = 0; i < MAX_QSOS; i++) {
 	strcpy(qsos[i], "");
     }
-    strcpy(qsos[0], QSO1);
-    strcpy(qsos[1], QSO2);
-    strcpy(qsos[2], QSO3);
-    strcpy(qsos[3], QSO4);
-    strcpy(qsos[4], QSO5);
-    strcpy(qsos[5], QSO6);
+
+    add_log(0, QSO1);
+    add_log(1, QSO2);
+    add_log(2, QSO3);
+    add_log(3, QSO4);
+    add_log(4, QSO5);
+    add_log(5, QSO6);
+
     nr_qsos = 6;
 }
 
@@ -348,9 +368,12 @@ void test_displayPartials_exact_callmaster(void **state) {
 void test_displayPartials(void **state) {
     // add a bunch of UA QSOs so that they fill up available space
     for (int i = 0; i <= 'Z' - 'A'; ++i) {
-	sprintf(qsos[6 + i],
-		" 80CW  12-Jan-18 16:34 0009  UA9%cAA         599  599  17            UA9 17   3         ",
+
+	char *line = g_strdup_printf(" 80CW  12-Jan-18 16:34 0009  UA9%cAA         599  599  17            UA9 17   3         ",
 		'A' + i);
+	add_log(6 + i, line);
+	g_free(line);
+
 	nr_qsos++;
     }
 
