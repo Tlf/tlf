@@ -26,8 +26,6 @@
 #include <stdbool.h>
 
 int lookup_country_in_pfxnummult_array(int n);
-void free_qso_array();
-void init_qso_array();
 int readcalls(const char *logfile, bool interactive);
 int log_read_n_score();
 int synclog(char *synclogfile);

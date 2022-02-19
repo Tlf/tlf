@@ -171,3 +171,22 @@ void free_qso(struct qso_t *ptr) {
 	g_free(ptr);
     }
 }
+
+
+static void qso_free(gpointer data) {
+    free_qso((struct qso_t *) data);
+}
+
+
+void free_qso_array() {
+   if (qso_array != NULL) {
+	g_ptr_array_free(qso_array, TRUE);
+	qso_array = NULL;
+   }
+}
+
+void init_qso_array() {
+    free_qso_array();
+    qso_array = g_ptr_array_new_with_free_func(qso_free);
+}
+

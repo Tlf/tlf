@@ -53,10 +53,6 @@
 
 static void qso_free(gpointer data);
 
-// array of qso's
-// FIXME use this instead of qsos[]
-GPtrArray *qso_array;
-
 void init_scoring(void) {
     /* reset counter and score anew */
     total = 0;
@@ -101,23 +97,6 @@ static void show_progress(int linenr) {
 	printw("*");
 	refreshp();
     }
-}
-
-static void qso_free(gpointer data) {
-    free_qso((struct qso_t *) data);
-}
-
-
-void free_qso_array() {
-   if (qso_array != NULL) {
-	g_ptr_array_free(qso_array, TRUE);
-	qso_array = NULL;
-   }
-}
-
-void init_qso_array() {
-    free_qso_array();
-    qso_array = g_ptr_array_new_with_free_func(qso_free);
 }
 
 int readcalls(const char *logfile, bool interactive) {
