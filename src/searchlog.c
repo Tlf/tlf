@@ -37,6 +37,7 @@
 #include "err_utils.h"
 #include "getctydata.h"
 #include "getpx.h"
+#include "globalvars.h"
 #include "log_utils.h"
 #include "nicebox.h"		// Includes curses.h
 #include "printcall.h"
@@ -73,6 +74,7 @@ static int initialized = 0;
 int nr_bands;
 
 void show_needed_sections(void);
+static bool is_current_mode(const char *line);
 
 /** Check for all band mode
  *
@@ -373,19 +375,19 @@ int bandstr2line(char *buffer) {
 //
 // return true if the qso was in the same mode as the current one
 //
-static bool is_current_mode(const char *qso) {
+static bool qso_has_current_mode(const struct qso_t *qso) {
 
     if (!mixedmode) {
 	return true;    // always true if not in mixed mode
     }
 
-    return log_get_mode(qso) == trxmode;
+    return qso->mode == trxmode;
 }
 
 
 /* search complete Log for 'call' as substring in callsign field and
  * copy found QSO to 'searchresults'. Extract relevant data to 'result'.
- * */
+ */
 void filterLog(const char *call) {
 
     char s_inputbuffer[LOGLINELEN + 1] = "";
@@ -394,16 +396,16 @@ void filterLog(const char *call) {
 
     for (int qso_index = 0; qso_index < nr_qsos; qso_index++) {
 
-	if (!is_current_mode(qsos[qso_index])) {
-	    continue;   // different mode
+	struct qso_t *qso = g_ptr_array_index(qso_array, qso_index);
+	if (!qso_has_current_mode(qso)) {
+	    continue;	// different mode
 	}
 
-	g_strlcpy(s_inputbuffer, qsos[qso_index] + 29, 13); /* call */
-	if (strstr(s_inputbuffer, call) == 0) {
+	if (strstr(qso->call, call) == 0) {
 	    continue;   // no match
 	}
 
-	g_strlcpy(searchresult[srch_index], qsos[qso_index], 81);
+	g_strlcpy(searchresult[srch_index], QSOS(qso_index), 81);
 	extractData(srch_index);
 
 	if (srch_index++ > MAX_CALLS - 1) {
@@ -427,6 +429,19 @@ static bool call_matches(const char *line) {
 static bool band_matches(const char *line) {
     return log_get_band(line) == bandinx;
 }
+
+//
+// return true if the qso was in the same mode as the current one
+//
+static bool is_current_mode(const char *line) {
+
+    if (!mixedmode) {
+	return true;    // always true if not in mixed mode
+    }
+
+    return log_get_mode(line) == trxmode;
+}
+
 
 static bool line_matches_actual_qso(const char *line) {
 
