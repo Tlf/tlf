@@ -81,7 +81,7 @@ isn't a mandatory order, but the navigation keys doesn't works in
 all cases. Normally, with TAB you can move to the next field,
 and Shift+TAB goes back. 
 There is an exception: TAB will notleave the current QSO line, 
-untill you confirm the line. Instead it takes you to the time field, 
+until you confirm the line. Instead it takes you to the time field, 
 if you are in the exchange field, and Shift+TAB does it in reverse order.
 With UP and DOWN cursor keys you can go to up or down.
 
@@ -96,7 +96,7 @@ Navigation in a field
 If you press an allowed character in a field, that will be
 displayed, and the cursor will go right to the next place. If you
 press a not allowed character, then nothing happens. The
-BACKSPACE key deletes the next charaters to left, and move the
+BACKSPACE key deletes the next characters to left, and move the
 right part to left. DELETE key deletes the current character as
 you're staying, and shifts the characters to left at the next to
 right. As I described above, the SPACE move the cursor to the next
@@ -174,7 +174,7 @@ When you received a QTC, the cursor goes to the start of the
 next line, and you can continue to receive QTC.
 
 If you received the last line, and all lines are complete,
-after teh last ENTER Tlf will close the QTC window, and send 
+after the last ENTER Tlf will close the QTC window, and send 
 "QSL ALL" message to the station.
 
 At this time the QTC data will be written to the logfile on 

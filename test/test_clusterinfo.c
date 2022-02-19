@@ -29,7 +29,7 @@ freq_t node_frequencies[MAXNODES];
 pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t bm_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-bm_config_t bm_config = { .livetime = 900 };
+bm_config_t bm_config = { .lifetime = 900 };
 
 GList *allspots = NULL; // not used yet
 

@@ -38,7 +38,7 @@ typedef struct {
     char 	*pfx; /* prefix */
 } spot;
 
-#define SPOT_NEW	(bm_config.livetime)
+#define SPOT_NEW	(bm_config.lifetime)
 #define SPOT_NORMAL	(SPOT_NEW * 95) / 100
 #define SPOT_OLD	(SPOT_NEW * 2)  / 3
 
@@ -47,7 +47,7 @@ typedef struct {
     short allmode;
     short showdupes;
     short skipdupes;
-    short livetime;
+    short lifetime;
     short onlymults;
 } bm_config_t;
 
@@ -111,16 +111,16 @@ void bandmap_show();
  * If more entries to show than place in window, show around current frequency
  *
  * mark entries according to age, source and worked state. Mark new multis
- * - new 	brigth blue
+ * - new 	bright blue
  * - normal	blue
  * - aged	black
  * - worked	small caps
  * - new multi	underlined
  * - self announced stations
- *   		small preceeding letter for repoting station
+ *   		small preceding letter for reporting station
  *
  * maybe show own frequency as dashline in other color
- * (maybee green highlighted)
+ * (maybe green highlighted)
  * - highligth actual spot if near its frequency
  *
  * Allow selection of one of the spots (switches to S&P)

@@ -151,7 +151,7 @@ int getexchange(void) {
 		continue;
 	    }
 	    case 19: {	// Ctl+s (^S)--Open QTC panel for sending QTCs
-		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
+		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND or QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
 		x = KEY_LEFT;

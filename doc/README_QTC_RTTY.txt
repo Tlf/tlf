@@ -33,7 +33,7 @@ in logcfg.dat/rule file, which is "BOTH".
 Receiving QTC
 =============
 Even if you choose the two-way QTC handling, or you just want to
-receive QTCs, the CTRL-Q combinaton remaining to receive the
+receive QTCs, the CTRL-Q combination remaining to receive the
 QTC block. If you open the QTC receive window with CTRL-Q,
 apparently nothing has changed. The point is same than in another
 modes: fill the lines. Yes, the speed of RTTY is a little bit
@@ -91,7 +91,7 @@ sign. That mean, you couldn't capture that anymore.
 
 STILL IMPORTANT!
 If you fill the serial and number fields in main QTC window, the first
-pattern WILL NOT recogized (SERIAL/NR).
+pattern WILL NOT be recognized (SERIAL/NR).
 If you didn't fill the serial AND number fields (with or without the
 capture process), you CAN'T capture the QTC lines! That mean, you press
 ENTER on a QTC line at right side vainly, the line will not copied to

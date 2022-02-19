@@ -749,7 +749,7 @@ should work.
 This also works under VNC.
 .
 .P
-Certain key combinations will probably not be useable as the Linux console
+Certain key combinations will probably not be usable as the Linux console
 consumes Alt-F1 through
 .RI Alt-F x
 (often F7, but could be greater) for switching its virtual consoles.
@@ -1281,7 +1281,7 @@ looks for a spot.
 Suspend @PACKAGE_NAME@ returning to shell prompt.
 .
 To return to @PACKAGE_NAME@ use the \(oqfg\(cq command (Bourne Shell) or the
-eqivalent command for your shell.
+equivalent command for your shell.
 .
 .TP
 .BR Alt-0 ... Alt-9

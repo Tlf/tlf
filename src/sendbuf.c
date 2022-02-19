@@ -56,7 +56,7 @@ char short_number(char c) {
 }
 
 /*
- * Replace occurences of 'what' in 'buf' by 'rep'.
+ * Replace occurrences of 'what' in 'buf' by 'rep'.
  * The amount of bytes assigned to 'buf' is 'size'.
  * This includes the terminating \0, i.e. max length of 'buf' is 'size'-1
  * Replacements are done in-place, no other memory area than 'buf' is used.
@@ -127,7 +127,7 @@ void replace_n(char *buf, int size, const char *what, const char *rep,
 		// would be longer than (size-1), shift only a part
 		n = buf + size - 1 - dst;
 		if (n <= 0) {
-		    // even a part wont fit; no operation
+		    // even a part won't fit; no operation
 		    n = 0;
 		    overflow = 1;
 		}
@@ -181,7 +181,7 @@ void ExpandMacro(void) {
 	    early_started = 0;
 //                              sending_call = 0;
 	}
-	replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurence */
+	replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurrence */
 	replace_all(buffer, BUFSIZE, "@",
 		    hiscall);   /* his call, further occurrences */
     }

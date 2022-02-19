@@ -147,7 +147,7 @@ enum {
 
 /** my station info
  *
- * contains all informations about my station */
+ * contains all information about my station */
 typedef struct {
     char call[20];
     int countrynr;
@@ -160,7 +160,7 @@ typedef struct {
 
 /** worked station
  *
- * contains all informations about an already worked station */
+ * contains all information about an already worked station */
 typedef struct {
     char call[20]; 		/**< call of the station */
     char exchange[24]; 		/**< the last exchange */
