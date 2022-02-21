@@ -700,7 +700,6 @@ static int databases_load() {
 	    showmsg("QTCs giving up");
 	    return EXIT_FAILURE;
 	}
-	readqtccalls();
     }
     // unset QTC_RECV_LAZY if mode is DIGIMODE
     if (trxmode == DIGIMODE) {
@@ -1028,6 +1027,9 @@ int main(int argc, char *argv[]) {
 
     nr_qsos = readcalls(logfile, true);   /* read the logfile and rebuild
 				            point and multiplier scoring */
+    if (qtcdirection > 0) {
+	readqtccalls();
+    }
 
     scroll_log();		/* show the last 5  log lines and
 				   set the next serial number */
