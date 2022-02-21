@@ -51,7 +51,6 @@
 #include "store_qso.h"
 #include "ui_utils.h"
 
-static void qso_free(gpointer data);
 
 void init_scoring(void) {
     /* reset counter and score anew */

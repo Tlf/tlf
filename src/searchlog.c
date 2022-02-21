@@ -390,8 +390,6 @@ static bool qso_has_current_mode(const struct qso_t *qso) {
  */
 void filterLog(const char *call) {
 
-    char s_inputbuffer[LOGLINELEN + 1] = "";
-
     srch_index = 0;
 
     for (int qso_index = 0; qso_index < nr_qsos; qso_index++) {
