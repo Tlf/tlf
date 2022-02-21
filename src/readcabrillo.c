@@ -87,8 +87,10 @@ void write_log_fm_cabr(struct qso_t *qso) {
     addcall(qso);           /* add call to worked list and check it for dupe */
     score_qso(qso);
     char *logline = makelogline(qso);	    /* format logline */
+    qso->logline = logline;
     store_qso(logline);
-    g_free(logline);
+    g_ptr_array_add(qso_array, qso);
+
     cleanup_qso();
     qsoflags_for_qtc[nr_qsos - 1] = 0;
 }
@@ -130,10 +132,10 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 
 	// look until not found and we're in list
 	while (found_call == 0 && qtc_curr_call_nr < nr_qsos) {
-	    strncpy(thiscall, qsos[qtc_curr_call_nr] + 29, 14);
+	    strncpy(thiscall, QSOS(qtc_curr_call_nr) + 29, 14);
 	    g_strchomp(thiscall);
-	    strncpy(ttime, qsos[qtc_curr_call_nr] + 17, 2);
-	    strncpy(ttime + 2, qsos[qtc_curr_call_nr] + 20, 2);
+	    strncpy(ttime, QSOS(qtc_curr_call_nr) + 17, 2);
+	    strncpy(ttime + 2, QSOS(qtc_curr_call_nr) + 20, 2);
 	    ttime[4] = '\0';
 	    // check the call was't sent, and call and time are equals
 	    if (qsoflags_for_qtc[qtc_curr_call_nr] == 0 &&
@@ -373,9 +375,8 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 	write_log_fm_cabr(qso);
     } else if (linetype == LOGPREF_QTC) {
 	write_qtclog_fm_cabr(qtcrcall, qtc_line);
+	free_qso(qso);
     }
-
-    free_qso(qso);
 }
 
 void show_readcab_msg(int mode, char *msg) {
@@ -477,6 +478,8 @@ int readcabrillo(int mode) {
     strcpy(t_qsonrstr, qsonrstr);
     t_qsonum = qsonum;
     t_bandinx = bandinx;
+
+    init_qso_array();
 
     while (fgets(logline, MAX_CABRILLO_LEN, fp1) != NULL) {
 	cab_qso_to_tlf(logline, cabdesc);

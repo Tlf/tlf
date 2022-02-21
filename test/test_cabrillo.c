@@ -4,6 +4,7 @@
 #include "../src/dxcc.h"
 #include "../src/readcabrillo.h"
 #include "../src/cqww_simulator.h"
+#include "../src/log_utils.h"
 
 // OBJECT ../src/cabrillo_utils.o
 // OBJECT ../src/readcabrillo.o
@@ -88,13 +89,19 @@ char *error_details;
 
 char formatfile[] = TOP_SRCDIR "/share/cabrillo.fmt" ;
 
-int setup(void **state) {
+int setup_default(void **state) {
     strcpy(my.call, "A1BCD");
     strcpy(exchange, "#");
+
+    init_qso_array();
+    nr_qsos = 0;
+
     return 0;
 }
 
 int teardown_default(void **state) {
+    free_qso_array();
+
     g_free(qso_spy);
     qso_spy = NULL;
     return 0;
