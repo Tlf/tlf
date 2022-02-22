@@ -1025,8 +1025,9 @@ int main(int argc, char *argv[]) {
 
     show_station_info();
 
-    nr_qsos = readcalls(logfile, true);   /* read the logfile and rebuild
-				            point and multiplier scoring */
+    /* read the logfile and rebuild point and multiplier scoring */
+    /* see also log_read_n_score() for non-interactive variant */
+    nr_qsos = readcalls(logfile, true);
     if (qtcdirection > 0) {
 	readqtccalls();
     }
