@@ -190,6 +190,7 @@ typedef struct {
 /* represents different parts of a qso line */
 struct qso_t {
     char *logline;
+    bool is_comment;
     int band;
     int bandindex;
     int mode;

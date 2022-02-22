@@ -8,6 +8,7 @@
 #include "../src/globalvars.h"
 #include "../src/getctydata.h"
 #include "../src/get_time.h"
+#include "../src/log_utils.h"
 #include "../src/readcalls.h"
 #include "../src/setcontest.h"
 #include "../src/showscore.h"
@@ -187,7 +188,11 @@ void test_readcalls_note(void **state) {
     write_log(LOGFILE);
     append_log_line(LOGFILE, NOTE);
     assert_int_equal(readcalls(LOGFILE, true), 2);;
-    assert_string_equal(((struct qso_t *)g_ptr_array_index(qso_array, 1))->logline, note);
+
+    struct qso_t *qso = g_ptr_array_index(qso_array, 1);
+    assert_string_equal(qso->logline, note);
+    assert_int_equal(qso->is_comment, true);
+
     g_free(note);
 }
 
