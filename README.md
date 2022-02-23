@@ -24,8 +24,8 @@ over 30 years of experience in CW contesting.
 The program was written for console mode on purpose, to make it run also on 
 smaller machines, or remotely via a modem link. 
 
-See `man tlf` for detailed documentation. See also doc/README for details, 
-and the INSTALL file for an quick installation guide.
+See `man tlf` for detailed documentation. See also doc/README for details and a guide to setting up, 
+and the INSTALL file for a quick installation guide.
 
 
 ## Contributing
@@ -33,5 +33,5 @@ and the INSTALL file for an quick installation guide.
 * See homepage at https://Tlf.github.io for more information
 * There is a mailing list at tlf-devel@nongnu.org (see 
   http://lists.nongnu.org/mailman/listinfo/tlf-devel)
-* If you want to contribute clone the repo, make changes and send us a patch 
+* If you want to contribute, clone the repo, make changes and send us a patch 
   or pull request.

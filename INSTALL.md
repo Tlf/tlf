@@ -1,8 +1,9 @@
+# Installation
+
 Tlf now comes with automake and autoconf.
 Starting with TLF-1.0.0 you need pkg-config too.
 
-Build Dependencies
-------------------
+## Build Dependencies
 
 Building TLF requires some other components to be installed first. 
 It depends on
@@ -15,10 +16,10 @@ It depends on
 If you are using a distribution of the _Debian_ family make sure to install
 the needed header files also with
 
-----
+```
 sudo apt install libglib2.0-dev libhamlib-dev libncurses5-dev libtinfo-dev
 libxmlrpc-core-c3-dev
-----
+```
 
 While not a strict build dependency installing the following packages is
 helpful too:
@@ -27,30 +28,29 @@ helpful too:
  * _xplanet_ which allows you to see the latest DX spots on the globe.
 
 
-Quick Install
--------------
+## Quick Install
 
 The easiest way to install tlf is by downloading the latest tarball, then navigating your Terminal to the directory where you unpacked it, and typing:
 
-----
+```
 ./configure
 make
 sudo make install
-----
+```
 
 If you are doing a lot of contesting in digimodes using Fldigi, there is support for reading the audio frequency via xmlrpc. In that case, start the sequence above with
 
-----
+```
 ./configure --enable-fldigi-xmlrpc
-----
+```
 
 followed by the make and make install commands.
 
 If you are compiling tlf from a clone of the repo, please do
 
-----
+```
 autoreconf --install
-----
+```
 
 before the above commands.
 
