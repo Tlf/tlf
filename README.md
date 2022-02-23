@@ -52,7 +52,7 @@ cp /usr/local/share/tlf/logcfg.dat .
 cp /usr/local/share/tlf/rules/arrldx_usa rules/
 ```
 
-Now we have a directory called `arrldx` with a logcfg.dat file in it, and a `arrldx/rules` directory with `arrldx_usa` in it. These will override the defaults when we launch TLF.
+Now we have a directory called `arrldx` with a `logcfg.dat` file in it, and a `arrldx/rules` directory with `arrldx_usa` in it. These will override the defaults when we launch TLF.
 
 Open the local `logcfg.dat` file in your favorite text editor. The comments in the file explain the features. Set `RULES=arrldx_usa`, uncomment any settings you want to enable, comment (#) any you want to disable, and enter specifics such as your callsign and preferred console-based text editor. The latter will be used to edit this file from inside TLF.
 
