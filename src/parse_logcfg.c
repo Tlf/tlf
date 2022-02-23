@@ -365,14 +365,14 @@ static int cfg_bandmap(const cfg_arg_t arg) {
     bm_config.allmode = 1;
     bm_config.showdupes = 1;
     bm_config.skipdupes = 0;
-    bm_config.livetime = 900;
+    bm_config.lifetime = 900;
     bm_config.onlymults = 0;
 
     /* Allow configuration of bandmap display if keyword
      * is followed by a '='
      * Parameter format is BANDMAP=<xxx>,<number>
      * <xxx> - string parsed for the letters B, M, D and S
-     * <number> - spot livetime in seconds (>=30)
+     * <number> - spot lifetime in seconds (>=30)
      */
     if (parameter != NULL) {
 	char **bm_fields = g_strsplit(parameter, ",", 2);
@@ -397,12 +397,12 @@ static int cfg_bandmap(const cfg_arg_t arg) {
 	}
 
 	if (bm_fields[1] != NULL) {
-	    int livetime;
+	    int lifetime;
 	    g_strstrip(bm_fields[1]);
-	    livetime = atoi(bm_fields[1]);
-	    if (livetime >= 30)
+	    lifetime = atoi(bm_fields[1]);
+	    if (lifetime >= 30)
 		/* aging called each second */
-		bm_config.livetime = livetime;
+		bm_config.lifetime = lifetime;
 	}
 
 
@@ -552,7 +552,7 @@ static int cfg_countrylist(const cfg_arg_t arg) {
 	case insensitive contest name, we copy the countries from
 	that line into country_list_raw.
 	If the input was not a file name we directly copy it into
-	country_list_raw (must not have a preceeding contest name). */
+	country_list_raw (must not have a preceding contest name). */
 
 	g_strlcpy(temp_buffer, parameter, sizeof(temp_buffer));
 	g_strchomp(temp_buffer);	/* drop trailing whitespace */
@@ -611,7 +611,7 @@ static int cfg_continentlist(const cfg_arg_t arg) {
        parsing the file. If we got our case insensitive contest name,
        we copy the multipliers from it into multipliers_list.
        If the input was not a file name we directly copy it into
-       cont_multiplier_list (must not have a preceeding contest name).
+       cont_multiplier_list (must not have a preceding contest name).
        The last step is to parse the multipliers_list into an array
        (continent_multiplier_list) for future use.
      */

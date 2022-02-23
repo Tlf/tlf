@@ -78,7 +78,7 @@ then this line has to be added to the format:
 
 EXCHANGE-SEPARATOR=/
 
-In the provided cabrillo.fmt file the formats for AGCW use this contruct.
+In the provided cabrillo.fmt file the formats for AGCW use this construct.
 
 
 Example

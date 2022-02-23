@@ -318,7 +318,7 @@ int k_ptt = 0;
 
 int miniterm = 0;		/* is miniterm for digimode active? */
 char modem_mode[8];
-int commentfield = 0;		/* 1 if we are in comment/excahnge input */
+int commentfield = 0;		/* 1 if we are in comment/exchange input */
 
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
@@ -700,7 +700,6 @@ static int databases_load() {
 	    showmsg("QTCs giving up");
 	    return EXIT_FAILURE;
 	}
-	readqtccalls();
     }
     // unset QTC_RECV_LAZY if mode is DIGIMODE
     if (trxmode == DIGIMODE) {
@@ -1026,8 +1025,12 @@ int main(int argc, char *argv[]) {
 
     show_station_info();
 
-    nr_qsos = readcalls(logfile, true);   /* read the logfile and rebuild
-				            point and multiplier scoring */
+    /* read the logfile and rebuild point and multiplier scoring */
+    /* see also log_read_n_score() for non-interactive variant */
+    nr_qsos = readcalls(logfile, true);
+    if (qtcdirection > 0) {
+	readqtccalls();
+    }
 
     scroll_log();		/* show the last 5  log lines and
 				   set the next serial number */

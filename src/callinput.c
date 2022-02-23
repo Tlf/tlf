@@ -326,7 +326,7 @@ int callinput(void) {
 
 	    // Ctrl-S (^S), open QTC window for sending QTCs.
 	    case CTRL_S: {
-		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
+		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND or QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
 		x = KEY_LEFT;
@@ -622,7 +622,7 @@ int callinput(void) {
 		break;
 	    }
 
-	    // <Backspace>, remove chracter left of cursor, move cursor left one position.
+	    // <Backspace>, remove character left of cursor, move cursor left one position.
 	    case KEY_BACKSPACE: {
 		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
@@ -891,7 +891,7 @@ int callinput(void) {
 		break;
 	    }
 
-	    // Ctrl-R (^R), toogle trx1, trx2 via lp0 pin 14.
+	    // Ctrl-R (^R), toggle trx1, trx2 via lp0 pin 14.
 	    case CTRL_R: {
 		if (k_pin14 == 0) {
 		    k_pin14 = 1;

@@ -48,12 +48,12 @@ If you have adopted the method that loops back the mic audio and you want to
 automatically mute the mic when voice keyer messages are played, copy the
 'play_vk' shell script found in the 'scripts' directory of your TLF release to
 the same directory. This will then be used in preference to the default.
-Uncomment the lines begining with 'amixer'.
+Uncomment the lines beginning with 'amixer'.
 
 Since tlf-1.1.0, (un)muting and playing voice messages has been devolved to this
 external script file, because not all soundcards offer the same interface. 'Mic'
 could be called something else. One way of finding this out is to run 'amixer'
-from a terminal whch returns its capabilities. An alternative method is to
+from a terminal which returns its capabilities. An alternative method is to
 install your distro's version of the 'alsamixergui' package and simply see
 what's available on the faders. This is probably a good idea anyway because it's
 likely sound won't work without some manual intervention.

@@ -101,12 +101,12 @@ extern int qtc_ry_copied;		// stores the number of copied lines i
 
 extern bool qtcrec_record;		// do we record the received QTCs
 extern char qtcrec_record_command[2][50]; 	// command to start recording
-extern char qtcrec_record_command_shutdown[50]; // coomand to stop recording
+extern char qtcrec_record_command_shutdown[50]; // command to stop recording
 
 /* arras of CW/Digimode messages for QTC receive and send */
 extern char qtc_recv_msgs[12][80];
 extern char qtc_send_msgs[12][80];
-/* arras of SSB fiel names for QTC receive and send */
+/* arras of SSB file names for QTC receive and send */
 extern char qtc_phrecv_message[14][80];
 extern char qtc_phsend_message[14][80];
 

@@ -251,12 +251,12 @@ gint	cmp_size(char **a, char **b) {
 }
 
 
-/* parse a mult line and add data to databse
+/* parse a mult line and add data to database
  *
  * multline consists of either
  *   multiplier
  * or
- *   multplier:followed,by,comma,separated,list,of,aliases
+ *   multiplier:followed,by,comma,separated,list,of,aliases
  *
  * There may be more than one alias line for a multi, so add all aliases to
  * that multi */
@@ -400,7 +400,7 @@ void init_mults() {
  *			(-1 if multiplier is an empty string or not new)
  */
 int remember_multi(char *multiplier, int band, int show_new_band) {
-    /* search multbuffer in mults arry */
+    /* search multbuffer in mults array */
     int found = 0, i, index = -1;
 
     if (*multiplier == '\0')

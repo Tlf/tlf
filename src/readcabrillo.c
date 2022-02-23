@@ -135,7 +135,7 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 	    strncpy(ttime, qsos[qtc_curr_call_nr] + 17, 2);
 	    strncpy(ttime + 2, qsos[qtc_curr_call_nr] + 20, 2);
 	    ttime[4] = '\0';
-	    // check the call was't sent, and call and time are equals
+	    // check the call wasn't sent, and call and time are equals
 	    if (qsoflags_for_qtc[qtc_curr_call_nr] == 0 &&
 		    (strcmp(thiscall, qtc_line.qtc_call) == 0) &&
 		    (strcmp(ttime, qtc_line.qtc_time)) == 0) {
@@ -174,7 +174,7 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
  *
  * walk through the lines which starts with QSO/X-QSO, and
  * build a virtual QSO; then it calls the existing functions
- * to add to the real log, used by the Cabrillo datas (eg. freq,
+ * to add to the real log, used by the Cabrillo data (eg. freq,
  * date, time, band, ...) instead of the real
  */
 
@@ -359,7 +359,7 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 
     }
 
-    // strip trailing exchange separators and change them to the specfied value
+    // strip trailing exchange separators and change them to the specified value
     // note: it assumes that exchanges do not contain spaces
     g_strchomp(qso->comment);
     if (cabdesc->exchange_separator != NULL) {

@@ -361,7 +361,7 @@ void showscore(void) {
 
 }
 
-/** formated print of integer number 0..9999 */
+/** formatted print of integer number 0..9999 */
 void printfield(int y, int x, int number) {
     attron(COLOR_PAIR(C_LOG));
 

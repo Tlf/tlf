@@ -4,7 +4,7 @@ New Bandmap in TLF-1.1
 One main poblem in old TLF versions is the very narrow space for cluster
 messages (only 8 entries plus some room in scrolling). Furthermore the code
 for looking up the messages was very inefficient and does not allow good
-filtering of the informations we need.
+filtering of the information we need.
 
 The new bandmap tries to fix some of the problems. The following principles
 were applied:
@@ -56,7 +56,7 @@ or both conditions are not met). Wait some moments until some spots shows up.
   If you reach the last station (highest frequency) the scan switches
   direction and following key presses goes downward (on lower boundary it
   switches to upwards again...).
-  !!! At the moment Ctrl-G requires a connected tranceiver to work correctly as 
+  !!! At the moment Ctrl-G requires a connected transceiver to work correctly as 
   it reads the actual starting frequency from the rig !!!
 - If you type some letters of a call in the map you are interested in and 
   then 'Alt-G' afterwards the first call with that letters gets grabbed. 
@@ -66,9 +66,9 @@ or both conditions are not met). Wait some moments until some spots shows up.
   You can switch back to your old running frequency by '+' (back to Run mode) 
   and '#' (back to old frequency)
 
-You can also configure bandmap filtering and spot livetime from logcfg.dat 
+You can also configure bandmap filtering and spot lifetime from logcfg.dat 
 
-- BANDMAP -> use default values (no filtering, livetime = 900 s)
+- BANDMAP -> use default values (no filtering, lifetime = 900 s)
 - BANDMAP=<xyz>,<number>
   <xyz> string parsed for
   'B' - only own band
@@ -76,6 +76,6 @@ You can also configure bandmap filtering and spot livetime from logcfg.dat
   'D' - do not show dupes
   'S' - skip dupes during grab_next (ctrl-g)
   'O' - only shows the multipliers (CQWW only)
-  <number> livetime for new spots in second (number >=300)
+  <number> lifetime for new spots in second (number >=300)
 
 
