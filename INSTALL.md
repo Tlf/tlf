@@ -64,4 +64,4 @@ You should have read and write permissions on `/tmp/tlf`. Everything else can be
 
 If you want to use cwdaemon for CW, make sure it's installed, and either set it up to start at system startup, or plan to manually start it before launching TLF. 
 
-If you want to use a K1EL Winkeyer for CW, download and install either [winkeyer_server](https://github.com/ok2cqr/winkeyer_server) from OK2CQR or N0NB's [winkeydaemon](https://github.com/N0NB/winkeydaemon), following the instructions on those pages.
+If you want to use a K1EL Winkeyer for CW, download and install either [winkeyer_server](https://github.com/ok2cqr/winkeyer_server) from OK2CQR or N0NB's [winkeydaemon](https://github.com/N0NB/winkeydaemon), following the instructions on those pages. You'll need to start the Winkeyer server (either one) before starting TLF. Both programs work by impersonating cwdaemon, which TLF will use automatically if you've enabled the NETKEYER settings in the `logcfg.dat` file.
