@@ -1,18 +1,41 @@
-# TLF: Full Documentation 
+# TLF, a Contest Logger for Linux
 
-This will be the updated version of the full documentation. Right now it contains TODO items and pasted text from the scattered README.* files on different topics. 
+There are two types of amateur radio logging programs: general-purpose loggers and contest loggers. A good general purpose logger has lots of features for lots of different activities within the hobby: chasing DX, keeping track of ragchewing buddies, managing incoming and outgoing QSLs, monitoring progress toward various awards, and managing a lifetime worth of amateur radio contacts. Ham Radio Deluxe on Windows, MacLoggerDX and RUMLogNG on Mac, and [CQRLog](https://www.cqrlog.com/) on Linux are excellent examples of general-purpose loggers.
 
-# CW 
+Contest loggers, in contrast, are laser-focused on making rapid-fire competitive radiosport contacts, either in a radio contest or on a DXpedition. A good contest logger maximizes operator efficiency and ergonomics for hams who want to make hundreds of QSOs per hour for hours on end. It will typically display just a minimal logging window for the essential contest exchange, the operator's current score, DX spots for Assisted or Multi-Operator competitors, and a few other tactically important bits of data. N1MM+ on Windows and Skookum Logger on Mac are excellent examples of contest loggers. 
+
+TLF is a contest logger for Linux.
+
+## Real contesters don't need windows
+
+The earliest contest loggers were built for DOS-based computers, and one of the best was [TR log](https://www.trlog.com/) by Larry "Tree" Tyree, N6TR. Larry's interface is so elegant that most modern contest loggers operate more or less the same way. Indeed, TLF can be considered a descendant of TR log, but rebuilt with modern code architecture. A separate group has made a more or less direct [Linux port of TR log](https://www.kkn.net/trlinux/) that some users may prefer. Fans of Perl might also want to look at [YFKtest](https://git.fkurz.net/yfktest/yfktest).
+
+While contest loggers on other platforms have adopted the standard windowed interface modern users expect, Linux contest loggers have all gravitated to console-based designs that operate in a terminal window. There are a couple of reasons for that. 
+
+First, Linux users tend to be relatively comfortable using the terminal. Second, if we take a step back and look at the design of a contest logger objectively, a windowed interface is actually a handicap. Ideally, a contester's hands never have to leave the keyboard - and what better way to ensure that than to put the whole logger in a console?
+
+Console-based loggers are also fast, computationally lightweight, and easy to configure for remote operation with limited bandwidth. TLF can run on anything from a high-end desktop to a headless Raspberry Pi Zero.
+
+The chief disadvantage of this design is that there's a steep learning curve for new users. TLF is a powerful and efficient tool for contest logging, but you can't just click through the menus and figure things out on your own. You need to read some documentation. This manual, plus the built-in man page (accessed in the terminal with `man tlf`) is that documentation. Once you've gotten familiar with TLF's operation, you may begin to wonder why anyone would design a contest logger any other way.
+
+## Getting started
+
+This manual assumes you've read the main `README.md` file and gotten through basic installation of TLF. To review the two most important concepts in that document:
+
+* TLF configuration happens entirely in the logcfg.dat and rules files, and local copies of those files will override the defaults.
+* Creating a new directory for each contest, with its own logcfg.dat and rules files, will help keep things organized.
+
+## CW 
 
 TODO: Write a complete description of CW options and usage. 
 
- # SSB 
+ ## SSB 
  
  From README.ssb 
 
 TLF provides a voice keyer facility using the PC's sound card. This readme provides additional information to help the user configure SSB operation. 
 
-## Radio Interfacing 
+### Radio Interfacing 
 
 For the purposes of CW and PTT control, TLF interfaces to the radio via cwdaemon, not hamlib. Therefore if you want voice keyer facilities cwdaemon must be running before starting TLF. 
 
@@ -28,7 +51,7 @@ One option for mic interfacing is to use PTT to control a relay that connects th
 
 Note that some radios (e.g. TenTec Orion) have only one port that becomes PTT in SSB mode and Key in CW mode. Wire-OR-ing the CW and PTT outputs from cwdaemon is not an ideal solution because in CW mode PTT is still asserted and results in key-down for the duration of the message. At present there is no satisfactory solution to this problem. 
 
-## Configuration Files 
+### Configuration Files 
 
 Normal practice is to create a new directory for each contest. Then a logcfg.dat file in that directory overrides the default. If you are using SSB only in a contest you can force TLF to start in SSB mode by uncommenting the SSBMODE keyword in logcfg.dat. 
 
@@ -46,13 +69,13 @@ Thus a common set of voice messages can be pointed to from different rule files.
 
 Paths that are not defined cannot be recorded to from within TLF. 
 
-## Distro Notes 
+### Distro Notes 
 
 TLF uses 'sox' to record and play audio, so you must have it installed. You can use the sox commands 'rec' and 'play' on the command line in case you need to debug any TLF issues. 
 
 Modern distros often use the 'pulseaudio' sound server, but this can cause unacceptably long delays at the beginning and end of recordings, and at the beginning and end of voice message playback. If you experience these problems try uninstalling just the pulseaudio alsa plugin. You lose the ability for alsa applications to play and record across a network, but for most TLF users this isn't a problem. 
 
-## Recording
+### Recording
 
 To record messages from within TLF, enter ':sou' at the call entry field to take you to the TLF Sound Recorder Utility page. Recording starts by hitting the relevant F-key for that message ('s' or 'c' for the VKSPM and VKCQM messages). Recording is terminated by hitting the **ESC** key. 
 
@@ -64,7 +87,7 @@ If you have the time, you can trim the audio clip and normalise the levels in an
 
 Andy, G4KNO 
 
-# RTTY 
+## RTTY 
 
 From README.RTTY: 
 
@@ -84,7 +107,7 @@ Starting with TLF-1.3 there are two ways to communicate with Fldigi - the old GM
 
 Note: Using the new interface is recommended. The old GMFSK interface  will be no longer maintained and will go away soon. 
 
-## XMLRPC interface 
+### XMLRPC interface 
 
 The only thing to do is to set the following command into your  logcfg.dat 
 
@@ -126,17 +149,17 @@ New features after 1.3: - Fldigi supports nanoIO software, which is a small Ardu
 
  73, Ervin HA2OS 
 
-# QTC Handling 
+## QTC Handling 
 
 From README_QTC.txt: 
 
  This is a short intro for Tlf QTC handling. Ervin Hegedus HA2OS, 2014. airween@gmail.com 
 
- ## Introduction
+ ### Introduction
 
 QTC handling was maded for WAEDC contest for Tlf. It doesn't need any external tool, Tlf supports it out of box. To enable that, you only needs to put a "QTC=" option to logcfg.dat. This parameter needs a value, which could be one of these: "RECV", "SEND", or "BOTH". These values means you only want to receive or send QTCs, or you want to send AND receive QTCs (for example, in RTTY mode). Note, that currently only RECV and SEND mode are implemented. BOTH will used for RTTY mode. 
 
-## QTC window 
+### QTC window 
 
 When you enabled the QTC handling in logcfg.dat, you can open the  QTC window from either field: callsign or exchange, it doesn't matter. To open it, just press CTRL+Q. If you want to close is, just simple press ESC. The window is divided to 2 side: the left side contains the QTCs data, the right side contains the help information. 
 
@@ -146,21 +169,21 @@ Note, that if you set up the QTC_RECV_LAZY option in RECV mode  (EU station in C
 
 This side contains many "meta" information: * at right of the QTC callsign field, Tlf shows the QTC info of   current station: how many QTC has it; if the callsign field   in main window is empty, the last callsign will be picked up.   When the station has not send or received any QTC yet, there    will be: "Received 0 QTC", or "Sent 0 QTC". If you had   exchanged any QTC with the station, the message will read   "Received 3 QTC" or "Sent 5 QTC". * if you type the number of QSO in the QTC block in RECV mode,   Tlf will show its number at the beginning of every line; if the   station indicates that it will send to you 6 QSO, and you type   it in that field, Tlf will put a digit to the begin of first 6   lines * if you type the number of QSO in the QTC block in SEND mode,   Tlf will find the next number QSO, which doesn't contain the   current callsign (see contest rules 7.2). Note, that if you   don't have eonugh QSO, you can't send the maximum (10), eg.   you have only 9 QSO. If you type greater number than available   QTC number, the field value will be aligned to maximum number! * in RECV mode, every QSO line has a status, which could be:   "invalid", "valid", "confirmed". This status is indicated by a   sign at the end of the line. When a line is invalid, you can   see a "?", if the line is valid, then there isn't any character,   and finally, if the QSO line had been confirmed, you can see   a "*" sign * in SEND mode, if you've sent a QTC line (with ENTER), at the   end of the line you will see a "*" character, which means,   you've sent that QTC 
 
- ## Navigation between the fields 
+### Navigation between the fields 
 
 You can move to any field as you want and when you want. There isn't a mandatory order, but the navigation keys doesn't works in all cases. Normally, with TAB you can move to the next field, and Shift+TAB goes back.  There is an exception: TAB will notleave the current QSO line,  until you confirm the line. Instead it takes you to the time field,  if you are in the exchange field, and Shift+TAB does it in reverse order. With UP and DOWN cursor keys you can go to up or down. 
 
 In RECV mode with SPACE, you can navigate between the fields in one line, for faster move, so that mean the SPACE and TAB are equals in this mode, in QTC line. 
 
-## Navigation in a field 
+### Navigation in a field 
 
 If you press an allowed character in a field, that will be displayed, and the cursor will go right to the next place. If you press a not allowed character, then nothing happens. The BACKSPACE key deletes the next characters to left, and move the right part to left. DELETE key deletes the current character as you're staying, and shifts the characters to left at the next to right. As I described above, the SPACE move the cursor to the next field (or first, if you are in last field) inside of QTC line, in RECV mode. 
 
-## Storing QTCs 
+### Storing QTCs 
 
 Tlf stores QTCs in two files. The received QTCs are stored in QTC_recv.log, sent QTCs are stored in QTC_sent.log. These logfiles will created automatically, when Tlf starts. 
 
-## Receiving QTC 
+### Receiving QTC 
 
 If the station asks you, if are you QRV for QTC, you can press CTRL+Q, it doesn't matter in which field are you: callsign or exchange. As another way, you an open the QTC window (CTRL+Q),  and press F1 to ask for QTC - it is configured in rule file to  send "QTC?". 
 
@@ -196,7 +219,7 @@ If you press ESC before you receive the QTC block, the data isn't lost. Tlf flus
 
 Note, that Tlf send the "QRV" message only in case the fields are empty. Keep in mind, if you've pressed ESC, and CTRL+Q again, all data remains, and "QRV" message will NOT be send. 
 
-## Sending QTC 
+### Sending QTC 
 
 If the other station asks you for QTCs, you can press CTRL+Q,  it doesn't matter in which field are you: callsign or exchange.  When the QTC window openes, you can press F2 and Tlf will send  the message: "QTC sr/nr" with "sr" and "nr" replaced with the i serial and number of lines in QTC, example: "QTC 3/8". 
 
@@ -218,7 +241,7 @@ On the other nodes, Tlf will also write the QTCs to its own logfiles.
 
 If you press ESC before you receive the QTC block, the data isn't lost. Tlf flushes the fields only in the following case: * you sent all QTCs, and saved them to disk 
 
-## Showing QTC capable stations 
+### Showing QTC capable stations 
 
 After you sent or received a QTC block from or to a station, Tlf writes it to the log, but stores it in memory too. If you meet that station on another bands, and use "Worked window", then you can see, how many QTCs had been exchanged with the station on each band. 
 
@@ -226,7 +249,7 @@ There is a "Q" letter on the upper border of "Worked window", and in that column
 
 This information also is visible in the cluster info, if you use that. At the end of the callsign in bandmap, you can see a "0", "Q" or any digit, which means same as above, eg "DL1A  Q", or "HA5A  3". 
 
-## Preparing CABRILLO 
+### Preparing CABRILLO 
 
 When you finished the contest, just use the ":wri" command to save  your log in Cabrillo format. (It's a good idea to exit from Tlf,  and start it again - this is only need to recalc correct points,  nothing else.) 
 
@@ -238,7 +261,7 @@ The script reads your saved Cabrillo file and your QTCs and  saves them to a new
 
 Note: You can find more info about the QTC cabrillo format here: http://dl0tud.tu-dresden.de/~dj1yfk/qtcs/ http://www.kkn.net/~trey/cabrillo/qso-template.html 
 
- ## Shortkey summary
+ ### Shortkey summary
 
 * CTRL+Q - open QTC window 
 * ESC - close QTC window 
@@ -256,21 +279,21 @@ If you have any question, just send an e-mail to me or the Tlf develop list.
 
 Ervin HA2OS 
 
-# QTCs on RTTY
+## QTCs on RTTY
 
 From README_QTC_RTTY.txt.
 
  This is a short intro for Tlf QTC handling in RTTY mode. Ervin Hegedus HA2OS, 2014. airween@gmail.com 
 
-## Introduction  
+### Introduction  
 
 The QTC base instructions described in README_QTC.txt, please read it CAREFULLY, before you start to read this readme. There you will find detailed information about how Tlf handles the QTC in CW and SSB mode. In this readme, I just write the differences. 
 
-## General 
+### General 
 
 The QTC window(s), fields, navigation is almost the same, like in CW and SSB modes. In CW/SSB modes every QTC line int the full QTC block exchanged by individually (every QTC line sent or received separately), but that method would be too slow in RTTY mode. In this mode, a complete QTC block exchanged in whole. That's the main different, but this divergence involves a few necessary modifications. Another important thing, that in RTTY mode everyone can send or receive QTCs, there isn't any limit (except the number of total QTCs between two stations). So, it happens that you sent 5 QTCs in a block, but to complete to 10, the second 5 QTCs you will receive from same station. That's why there is the third possible value of "QTC" option in logcfg.dat/rule file, which is "BOTH". 
 
-## Receiving QTC
+### Receiving QTC
 
 Even if you choose the two-way QTC handling, or you just want to receive QTCs, the CTRL-Q combination remaining to receive the QTC block. If you open the QTC receive window with CTRL-Q, apparently nothing has changed. The point is same than in another modes: fill the lines. Yes, the speed of RTTY is a little bit fast, and you have to know type as very quickly, if you want to copy from the terminal of your modem software. To help the copy operation, there is a new feature in Tlf: capturing the output of modem. Currently, only the gMFSK modem could be captured. 
 
@@ -312,7 +335,7 @@ You can send the last message by manually, if you press F10 - then Tlf also send
 
 If the all QTC lines are right, and Tlf sent "QTC ALL", then the QTC block will be saved automatically. 
 
-## Sending QTC
+### Sending QTC
 
 As you can read the QTC=BOTH descriotion above, Tlf can send AND receive QTCs in same contest. To avoid the shortkey collosions, in this case the only one combination can be used: CTRL+S. 
 
@@ -324,13 +347,13 @@ If station asks you to resend one or more QTC line again, just move the asked li
 
 If station confirms the QTC block, you have to save that with CTRL+S. 
 
-# Cabrillo File Handling
+## Cabrillo File Handling
 
 From the README.Cabrillo file.
 
 Recently Cabrillo format became the de facto standard to submit contest results. Tlf's approach to handle QSO and QTC lines is based on a textual description and can be easily extended by the user to support newer contests. Header fields can be specified either in config file or using an existing Cabrillo file as a template.  
 
-## WORKING PRINCIPLE  
+### WORKING PRINCIPLE  
 
 The QSO/QTC format descriptions are contained in 'cabrillo.fmt' file in the /usr(/local)/share/tlf directory. It provides format descriptions for common contests. All descriptions are named and you have to specify which one has to be used with a statement in logcfg.dat or (better) in the contest rule file with the following syntax:  
 
@@ -338,7 +361,7 @@ CABRILLO-QSO-FORMAT=*formatname* (or simply CABRILLO=*formatname* )
 
 You can put your own format file 'cabrillo.fmt' in your actual working directory which gets precedence over the central one.  
 
-## CABILLO.FMT  
+### CABILLO.FMT  
 
 The format of cabrillo.fmt entries is as follows:  
 
@@ -368,7 +391,7 @@ TX      Number of the TX (for cqww or other contests).
 
 All items represent one column in the resulting Cabrillo log file. All   entries are separated by an additional space character.  
 
-## Exchange Separator  
+### Exchange Separator  
 
 EXC1..EXC4 allow writing parts of the received exchange in separate columns. The exchange is split by default on white space (space or tab). Another separator(s) can be specified with the EXCHANGE-SEPARATOR keyword. If '/' (slash) is used to separate parts of the exchange (e.g. 002/1234) then this line has to be added to the format:  
 
@@ -376,7 +399,7 @@ EXCHANGE-SEPARATOR=/
 
 In the provided cabrillo.fmt file the formats for AGCW use this construct.  
 
-## Example  
+### Example  
 
 The following entry  
 
@@ -390,7 +413,7 @@ is in the rules file for the CW Open contest. All QSOs will then be formatted as
 
 QSO: 28000 CW 2012-09-23 0815 DL1JBE        0001 Tom       HB9XXX        0023 Joe QSO: .....  
 
-## Importing Cabrillo  
+### Importing Cabrillo  
 
 An existing Cabrillo file can be imported by starting Tlf with the "-i" option. The Cabrillo file must be called YOURCALL.cbr, which is the standard naming convention for Tlf. In this case, Tlf reads the configuration and rule files, so the scoring and multipliers will be used as your config describes. Your config also describes the CABRILLO format, that Tlf uses to parse the log to handle the fields correctly.  
 
@@ -400,7 +423,7 @@ If you want to use the new, imported file, you have to move the old one, and ren
 
 When the contest is WAE, and the rule file contains a valid QTC setup, and Cabrillo contains lines with begin of "QTC:", then you will have the IMPORT_QTC_sent.log and IMPORT_QTC_recv.log. In this case, the original files also kept, and you have to archive and rename the files.  
 
-# Alternative packet cluster setup 
+## Alternative packet cluster setup 
 
 From the original doc/README file. 
 
@@ -418,7 +441,7 @@ Activate "FIFOINTERFACE".
 
 Activate the cluster display in tlf with :cluster, :spot, or :map You can toggle the announcements filter with :filter 
 
-# Bandmap
+## Bandmap
 
 From New_Bandmap.txt.
 
@@ -449,7 +472,7 @@ The new bandmap tries to fix some of the problems. The following principles were
   * brown - older than 5 min 
 * Dupes (already worked stations) are show in lower case and grey
 
-## Usage
+### Usage
 
 Turn on rig control and connect to a cluster (experiment what happens if one or both conditions are not met). Wait some moments until some spots shows up.
 
@@ -480,7 +503,7 @@ You can also configure bandmap filtering and spot lifetime from logcfg.dat.
 * 'O' - only shows the multipliers (CQWW only)
 * *number* lifetime for new spots in second (number >=300)
 
-# FAQ
+## FAQ
 
 From the FAQ file.
 
