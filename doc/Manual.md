@@ -14,7 +14,7 @@ While contest loggers on other platforms have adopted the standard windowed inte
 
 First, Linux users tend to be relatively comfortable using the terminal. Second, if we take a step back and look at the design of a contest logger objectively, a windowed interface is actually a handicap. Ideally, a contester's hands never have to leave the keyboard - and what better way to ensure that than to put the whole logger in a console?
 
-Console-based loggers are also fast, computationally lightweight, and easy to configure for remote operation with limited bandwidth. TLF can run on anything from a high-end desktop to a headless Raspberry Pi Zero.
+Console-based loggers are also fast, computationally lightweight, and easy to configure for remote operation with limited bandwidth. TLF can run on anything from a high-end desktop with triple monitors to a headless Raspberry Pi Zero.
 
 The chief disadvantage of this design is that there's a steep learning curve for new users. TLF is a powerful and efficient tool for contest logging, but you can't just click through the menus and figure things out on your own. You need to read some documentation. This manual, plus the built-in man page (accessed in the terminal with `man tlf`) is that documentation. Once you've gotten familiar with TLF's operation, you may begin to wonder why anyone would design a contest logger any other way.
 
@@ -29,27 +29,56 @@ This manual assumes you've read the main `README.md` file and gotten through bas
 * TLF configuration happens entirely in the logcfg.dat and rules files, and local copies of those files will override the defaults.
 * Creating a new directory for each contest, with its own logcfg.dat and rules files, will help keep things organized.
 
-Note that the rules file has to be in a subdirectory called `rules` in order for TLF to recognize it. The rules file itself will be named for the contest, with no extension, e.g. `arrldx_usa` is the rules file for a USA-based station operating in the ARRL DX contest (either CW or SSB). In the image below, the arrltest.log and tlfmarkers files were created by TLF on its initial launch from this directory. The former is the working log file, and the latter is for mapping DX spots (optional). 
+Note that the rules file has to be in a subdirectory called `rules` in order for TLF to recognize it. The rules file itself will be named for the contest, with no extension, e.g. `arrldx_usa` is the rules file for a USA-based station operating in the ARRL DX contest (either CW or SSB). In the image below, the arrltest.log and tlfmarkers files were created by TLF on its initial launch from this directory. The former is the working log file, and the latter is for plotting DX spots on a grayline map displayed in a separate window (optional). 
 
 <img title="Screenshot" alt="Screenshot showing basic file structure." src="images/BasicFileStructure.png" />
 
-In general, `logcfg.dat` is for station-specific settings, while the rules file is for contest-specific settings. That means once you've gotten TLF set up to work with your particular setup, you can simply copy the same logcfg.dat into the folder for the next contest, and add a new rules file. Both files have comments explaining what the settings do, and as always `man tlf` can provide further information.
+In general, `logcfg.dat` is for station-specific settings, while the rules file is for contest-specific settings. That means once you've gotten TLF set up to work with your particular setup, you can simply copy the same `logcfg.dat` into a new directory for the next contest, and add a new rules file. Both files have comments explaining what the settings do, and as always `man tlf` can provide further information.
 
 Also take a look at `doc/station-sample.cbr` for Cabrillo export settings and how to use them. If you don't use a Cabrillo export settings file, TLF will just prompt you for the information when you use the `:write` command, so this is optional.
 
-As long as the window is set to 80 columns x 25 lines, TLF should launch and look fine in your default terminal window. Here it is on the default terminal in Ubuntu 20.04:
+## The TLF interface
+
+The normal way to start TLF is to open a terminal console, navigate to the directory from which you want to run the contest (where you put your local `logcfg.dat` and `rules/contestname` files), and type:
+
+```
+tlf
+```
+
+If you've enabled DX spots, you'll see the output as TLF tries to log into the cluster you've chosen. The first time it's started in a new directory (i.e. with no log file already there), TLF will then ask you some questions before opening the main screen.
+
+As long as the window is set to 80 columns x 25 lines, TLF should launch and look fine in your default terminal window. Here it is the main screen on the default terminal in Ubuntu 20.04:
 
 <img title="Terminal" alt="Screenshot showing TLF in a terminal window." src="images/DefaultTerminal.png" />
 
 The `doc` directory contains a sample `.Xresources` file to change the colors, and many TLF users also prefer non-default terminals such as `urxvt`. Console customization is a deep rabbit hole that goes beyond the scope of this manual. The one setting that's definitely worth playing with is the text size, which in the Ubuntu terminal can be changed from the "hamburger" menu in the top right of the window.
 
+On the top line of the console, you'll see the mode indicator ("Log" in the image). This is based on the TR logging standard that has since been adopted by virtually every other contest logger, which has a "Run" mode and a "Search and Pounce" mode. In "Run" mode (indicated by "Log" in TLF), you stay on one frequency, calling CQ and answering whoever responds. "Search and Pounce" ("Log" changes to "S&P" in the TLF interface) means tuning up and down the band answering the stations who are running. Switch between modes by hitting "+". The mode determines things like what the "Enter" key does.
+
+After the mode is the current CW speed if that's set ("S=26" above), the auto-CQ delay time in 500ms units, and short labels for the F1-F9 keys to remind you what macro each one will send ("F1=CQ" and so forth).
+
+The upper left section will list possible call completions if partial call checking is on, the top right is the scoreboard and a highlight indicating what band the radio is currently on, and the full-width section below that shows the last few contacts logged.
+
+The line across the middle of the console (starting with "40CW" above) has the current UTC time, QSO number, call entry field, RST (599 599), and the exchange entry field. Under the right-hand end of that line is the current frequency the transceiver is tuned to, if rig control is active.
+
+The bottom section of the screen has DXcluster spots, the band map, and related information.
+
+The spacebar moves between fields, the "Enter" key sends the appropriate message for the current stage of the QSO, and the "ESC" key backs out of whatever you just did. With the cursor in the callsign entry field, "Alt-h" brings up a help screen, while typing `:help` and hitting "Enter" will bring up a full list of commands. From that list, typing `:q` will return you to the main logging screen. Typing `:cfg` and hitting "Enter" will let you edit logcfg.dat in the text editor, and exiting that editor will return you to the main logging screen.
+
+The log is saved continuously in TLF's text-based native format. After the contest ends, typing `:write` in the call entry field will export the log in Cabrillo format as `<Yourcall>.cbr`, which is how most contest sponsors want it. If you haven't set the Cabrillo configuration in a file as described above, you'll be asked a series of questions for the file header, such as your category, power level, and so forth. You can also export an ADIF file by typing `:adif` in the callsign field. That's handy for importing your contest contacts into your general logging program, or uploading them to sites such as Clublog or Logbook of the World.
+
 ## CW 
 
-TODO: Write a complete description of CW options and usage. 
+CW contest setup is straightforward. Assuming you've installed either `cwdaemon` or one of the Winkeyer servers (`winkeydaemon` or `winkeyer_server`) as described in the installation guide, just start that before starting TLF. For example, in my current setup I make sure my rig is on and ready to go, navigate to the current contest directory (with my `logcfg.dat`and `rules/contestname` files in it), and type:
 
- ## SSB 
+```
+winkeydaemon -m -d /dev/ttyUSB1
+tlf
+```
+
+## SSB 
  
- From README.ssb 
+*Pasted from the original README.ssb - some information may be out of date.* 
 
 TLF provides a voice keyer facility using the PC's sound card. This readme provides additional information to help the user configure SSB operation. 
 
@@ -107,9 +136,7 @@ Andy, G4KNO
 
 ## RTTY 
 
-From README.RTTY: 
-
-Tlf RTTY howto 
+*Pasted from the original README.RTTY file; some information may be out of date.* 
 
 2016-2018, Ervin Hegedus, HA2OS 
 
@@ -169,7 +196,7 @@ New features after 1.3: - Fldigi supports nanoIO software, which is a small Ardu
 
 ## QTC Handling 
 
-From README_QTC.txt: 
+*Pasted from README_QTC.txt; some information may be out of date.* 
 
  This is a short intro for Tlf QTC handling. Ervin Hegedus HA2OS, 2014. airween@gmail.com 
 
@@ -267,7 +294,7 @@ There is a "Q" letter on the upper border of "Worked window", and in that column
 
 This information also is visible in the cluster info, if you use that. At the end of the callsign in bandmap, you can see a "0", "Q" or any digit, which means same as above, eg "DL1A  Q", or "HA5A  3". 
 
-### Preparing CABRILLO 
+### Preparing Cabrillo 
 
 When you finished the contest, just use the ":wri" command to save  your log in Cabrillo format. (It's a good idea to exit from Tlf,  and start it again - this is only need to recalc correct points,  nothing else.) 
 
@@ -293,15 +320,15 @@ Note: You can find more info about the QTC cabrillo format here: http://dl0tud.t
 
 If you have any question, just send an e-mail to me or the Tlf develop list. 
 
- 73, 
+73, 
 
 Ervin HA2OS 
 
 ## QTCs on RTTY
 
-From README_QTC_RTTY.txt.
+*Pasted from the original README_QTC_RTTY.txt; some information may be out of date.*
 
- This is a short intro for Tlf QTC handling in RTTY mode. Ervin Hegedus HA2OS, 2014. airween@gmail.com 
+This is a short intro for Tlf QTC handling in RTTY mode. Ervin Hegedus HA2OS, 2014. airween@gmail.com 
 
 ### Introduction  
 
@@ -367,7 +394,7 @@ If station confirms the QTC block, you have to save that with CTRL+S.
 
 ## Cabrillo File Handling
 
-From the README.Cabrillo file.
+*Pasted from the README.Cabrillo file*.
 
 Recently Cabrillo format became the de facto standard to submit contest results. Tlf's approach to handle QSO and QTC lines is based on a textual description and can be easily extended by the user to support newer contests. Header fields can be specified either in config file or using an existing Cabrillo file as a template.  
 
@@ -379,7 +406,7 @@ CABRILLO-QSO-FORMAT=*formatname* (or simply CABRILLO=*formatname* )
 
 You can put your own format file 'cabrillo.fmt' in your actual working directory which gets precedence over the central one.  
 
-### CABILLO.FMT  
+### Cabrillo formatting 
 
 The format of cabrillo.fmt entries is as follows:  
 
@@ -443,7 +470,7 @@ When the contest is WAE, and the rule file contains a valid QTC setup, and Cabri
 
 ## Alternative packet cluster setup 
 
-From the original doc/README file. 
+*Pasted from the original doc/README file; some information may be out of date.* 
 
 TLF can also run packet spots in a separate terminal. To link this to the tlf program start a telnet session from the working directory with: 
 
@@ -461,10 +488,9 @@ Activate the cluster display in tlf with :cluster, :spot, or :map You can toggle
 
 ## Bandmap
 
-From New_Bandmap.txt.
+*Pasted from the original New_Bandmap.txt file; some information may be out of date.*
 
-One main problem in old TLF versions is the very narrow space for cluster messages (only 8 entries plus some room in scrolling). Furthermore the code
-for looking up the messages was very inefficient and does not allow good filtering of the information we need.
+One main problem in old TLF versions is the very narrow space for cluster messages (only 8 entries plus some room in scrolling). Furthermore the code for looking up the messages was very inefficient and does not allow good filtering of the information we need.
 
 The new bandmap tries to fix some of the problems. The following principles were applied:
 
@@ -523,7 +549,7 @@ You can also configure bandmap filtering and spot lifetime from logcfg.dat.
 
 ## FAQ
 
-From the FAQ file.
+*Pasted from the original FAQ file*
 
 Q: Where can I download the latest callmaster call sign data file?
 

@@ -25,7 +25,7 @@ It depends on:
 
 * the `hamlib` library for controlling your radio,
 * `ncurses` and `tinfo` for text screen handling,
-* the `XMLRPC_C` library for communication with programs like `FlDigi`
+* the `XMLRPC_C` library for communication with programs like `Fldigi`
 * `Glib-2.0` for supporting C functions.
 
 If you are using a distribution of the Debian family (including Ubuntu) you can get all of these dependencies by opening a Terminal window and typing:
@@ -45,7 +45,7 @@ On Debian Linuxes:
 sudo apt install sox xplanet
 ```
 
-Once the dependencies are installed, the easiest way to install tlf is by downloading the latest tarball (version 1.4.1) from the [here](http://download.savannah.gnu.org/releases/tlf/tlf-1.4.1.tar.gz), then navigating your Terminal to the directory where you unpacked it, and typing:
+Once the dependencies are installed, the easiest way to install tlf is by downloading the latest tarball (version 1.4.1) from [here](http://download.savannah.gnu.org/releases/tlf/tlf-1.4.1.tar.gz), then navigating your Terminal to the directory where you unpacked it, and typing:
 
 ```
 ./configure
@@ -61,7 +61,7 @@ If you plan to do contests in digimodes using Fldigi, start the sequence above w
 
 followed by the `make` and `make install` commands.
 
-If you are compiling tlf from a clone of the repo instead of the tarball, please do
+If you are compiling tlf from a clone of the Github repository instead of the tarball, please do
 
 ```
 autoreconf --install
@@ -90,7 +90,7 @@ If you want to use a K1EL Winkeyer for CW, download and install either [winkeyer
 
 ## Quick start
 
-TLF can conrol the radio, generate CW, play audio files for SSB contests, and interface with Fldigi for digital modes. Regardless of the mode, much of the initial setup will be the same. This example will assume a USA-based station is setting up for the ARRL DX contest - simply substitute the appropriate rules file for whatever contest you're entering.
+TLF can be used in all types of contests, but regardless of the mode, much of the initial setup will be the same. This example will assume a USA-based station is setting up for the ARRL DX contest - simply substitute the appropriate rules file for whatever contest you're entering.
 
 The easiest way to keep things organized is to create a new directory for each contest, then copy the default configuration files into it. You can do this in your file manager, or at the command line:
 
@@ -132,7 +132,7 @@ To toggle between "Log" and "Search and Pounce" mode, hit "+", and note that the
 
 ## Manual
 
-For a complete walkthrough and more details on specific types of operations, see `Manual.md`, which we're in the process of revising. Answers to specific questions can usually be found in the manual:
+For a complete walkthrough and more details on specific types of operations, see `doc/Manual.md`, which we're in the process of revising. Answers to specific questions can usually be found in the built-in manual accessible from any console window:
 
 ```
 man tlf
