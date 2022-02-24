@@ -18,12 +18,30 @@ Console-based loggers are also fast, computationally lightweight, and easy to co
 
 The chief disadvantage of this design is that there's a steep learning curve for new users. TLF is a powerful and efficient tool for contest logging, but you can't just click through the menus and figure things out on your own. You need to read some documentation. This manual, plus the built-in man page (accessed in the terminal with `man tlf`) is that documentation. Once you've gotten familiar with TLF's operation, you may begin to wonder why anyone would design a contest logger any other way.
 
+## About the name
+
+Why "TLF?" It's an old joke about someone sending bad CW (Morse code) over the radio, as if stomping on the key with their foot. TLF is "try left foot instead."
+
 ## Getting started
 
-This manual assumes you've read the main `README.md` file and gotten through basic installation of TLF. To review the two most important concepts in that document:
+This manual assumes you've read the main `README.md` file and gotten through basic installation of TLF. Two important concepts from that document are:
 
 * TLF configuration happens entirely in the logcfg.dat and rules files, and local copies of those files will override the defaults.
 * Creating a new directory for each contest, with its own logcfg.dat and rules files, will help keep things organized.
+
+Note that the rules file has to be in a subdirectory called `rules` in order for TLF to recognize it. The rules file itself will be named for the contest, with no extension, e.g. `arrldx_usa` is the rules file for a USA-based station operating in the ARRL DX contest (either CW or SSB). In the image below, the arrltest.log and tlfmarkers files were created by TLF on its initial launch from this directory. The former is the working log file, and the latter is for mapping DX spots (optional). 
+
+<img title="Screenshot" alt="Screenshot showing basic file structure." src="images/BasicFileStructure.png" />
+
+In general, `logcfg.dat` is for station-specific settings, while the rules file is for contest-specific settings. That means once you've gotten TLF set up to work with your particular setup, you can simply copy the same logcfg.dat into the folder for the next contest, and add a new rules file. Both files have comments explaining what the settings do, and as always `man tlf` can provide further information.
+
+Also take a look at `doc/station-sample.cbr` for Cabrillo export settings and how to use them. If you don't use a Cabrillo export settings file, TLF will just prompt you for the information when you use the `:write` command, so this is optional.
+
+As long as the window is set to 80 columns x 25 lines, TLF should launch and look fine in your default terminal window. Here it is on the default terminal in Ubuntu 20.04:
+
+<img title="Terminal" alt="Screenshot showing TLF in a terminal window." src="images/DefaultTerminal.png" />
+
+The `doc` directory contains a sample `.Xresources` file to change the colors, and many TLF users also prefer non-default terminals such as `urxvt`. Console customization is a deep rabbit hole that goes beyond the scope of this manual. The one setting that's definitely worth playing with is the text size, which in the Ubuntu terminal can be changed from the "hamburger" menu in the top right of the window.
 
 ## CW 
 

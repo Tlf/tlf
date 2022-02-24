@@ -39,7 +39,7 @@ While not strict build dependencies, the following packages may be helpful too:
 * `sox` for audio signal handling during SSB contests and
 * `xplanet` which allows you to see the latest DX spots on the globe.
 
-On Debian Linuxes, simply proceed as above:
+On Debian Linuxes:
 
 ```
 sudo apt install sox xplanet
