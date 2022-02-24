@@ -6,6 +6,20 @@ Contest loggers, in contrast, are laser-focused on making rapid-fire competitive
 
 TLF is a contest logger for Linux.
 
+# Contents
+* [Background](#real-contesters-dont-need-windows)
+* [TLF?](#about-the-name)
+* [Getting started](#getting-started)
+* [The TLF interface](#the-tlf-interface)
+* [CW operation](#cw)
+* [SSB operation](#ssb)
+* [RTTY operation](#rtty)
+* [QTC handling](#qtc-handling)
+* [QTCs on RTTY](#qtcs-on-rtty)
+* [Cabrillo file handling](#cabrillo-file-handling)
+* [Bandmap](#bandmap)
+* [FAQ](#faq)
+
 ## Real contesters don't need windows
 
 The earliest contest loggers were built for DOS-based computers, and one of the best was [TR log](https://www.trlog.com/) by Larry "Tree" Tyree, N6TR. Larry's interface is so elegant that most modern contest loggers operate more or less the same way. Indeed, TLF can be considered a descendant of TR log, but rebuilt with modern code architecture. A separate group has made a more or less direct [Linux port of TR log](https://www.kkn.net/trlinux/) that some users may prefer. Fans of Perl might also want to look at [YFKtest](https://git.fkurz.net/yfktest/yfktest).
@@ -26,8 +40,8 @@ Why "TLF?" It's an old joke about someone sending bad CW (Morse code) over the r
 
 This manual assumes you've read the main `README.md` file and gotten through basic installation of TLF. Two important concepts from that document are:
 
-* TLF configuration happens entirely in the logcfg.dat and rules files, and local copies of those files will override the defaults.
-* Creating a new directory for each contest, with its own logcfg.dat and rules files, will help keep things organized.
+* TLF configuration happens entirely in the `logcfg.dat` and rules files, and local copies of those files will override the defaults.
+* Creating a new directory for each contest, with its own `logcfg.dat` and rules files, will help keep things organized.
 
 Note that the rules file has to be in a subdirectory called `rules` in order for TLF to recognize it. The rules file itself will be named for the contest, with no extension, e.g. `arrldx_usa` is the rules file for a USA-based station operating in the ARRL DX contest (either CW or SSB). In the image below, the arrltest.log and tlfmarkers files were created by TLF on its initial launch from this directory. The former is the working log file, and the latter is for plotting DX spots on a grayline map displayed in a separate window (optional). 
 
@@ -47,7 +61,7 @@ tlf
 
 If you've enabled DX spots, you'll see the output as TLF tries to log into the cluster you've chosen. The first time it's started in a new directory (i.e. with no log file already there), TLF will then ask you some questions before opening the main screen.
 
-As long as the window is set to 80 columns x 25 lines, TLF should launch and look fine in your default terminal window. Here it is the main screen on the default terminal in Ubuntu 20.04:
+As long as the window is set to 80 columns x 25 lines, TLF should launch and look okay in your default terminal window. Here is the main screen on the default terminal in Ubuntu 20.04:
 
 <img title="Terminal" alt="Screenshot showing TLF in a terminal window." src="images/DefaultTerminal.png" />
 
