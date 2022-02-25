@@ -179,13 +179,13 @@ It takes a bit of practice to time your speech within the starting and ending ke
 
 2016-2018, Ervin Hegedus, HA2OS 
 
-This is a guide for Tlf, how to use it with Fldigi in RTTY mode, especially in FSK, LSB or USB modulations. Tlf got a new Fldigi interface, here is what you need to know. 
+This is a guide for TLF, how to use it with Fldigi in RTTY mode, especially in FSK, LSB or USB modulations. TLF got a new Fldigi interface, here is what you need to know. 
 
 To work in RTTY, you need to solve two problems: read and demodulate RTTY signals (RX), and send your messages (TX). To demodulate the signals, we use the Fldigi, the most popular software for digital modes. Fldigi also can modulate, but there are several solutions, eg. MFJ 1278, or any other modems, which can be work through serial port. 
 
  Let's see, how works the TX direction with Fldigi. 
 
-Important: if you set up your Fldigi instance, don't set up your RIG! Tlf needs to handle the RIG, because it needs to tune the VFO, to use the bandmap. After the version 1.3, Tlf can controls Fldigi, then it can be show the QRG (frequency of RIG - see later), and mode of RIG (eg: LSB, USB, FSK). 
+Important: if you set up your Fldigi instance, don't set up your RIG! TLF needs to handle the RIG, because it needs to tune the VFO, to use the bandmap. After the version 1.3, TLF can controls Fldigi, then it can be show the QRG (frequency of RIG - see later), and mode of RIG (eg: LSB, USB, FSK). 
 
 Starting with TLF-1.3 there are two ways to communicate with Fldigi - the old GMFSK interface and the actual XMLRPC one. Note, that after version 1.3 the GMFSK works as standalone interface, but can't work with Fldigi. 
 
@@ -207,29 +207,29 @@ If you run fldigis XMLRPC on a different port (or machine) use
 FLDIGI=http://*host*:*portnumber*/RPC2 
 ```
 
-That's it. Tlf will realizes that you have Fldigi, and will communicate through XMLRPC. 
+That's it. TLF will realizes that you have Fldigi, and will communicate through XMLRPC. 
 
-You can still read of Fldigi RX window (top) in Tlf own terminal, just use ":miniterm" command in callsign field. 
+You can still read of Fldigi RX window (top) in TLF own terminal, just use ":miniterm" command in callsign field. 
 
 There is a new command: ":fldigi", which helps to you to turn on and off Fldigi communication. Then you don't need to modify the logcfg.dat to change your mode. 
 
-Note: in old versions of Tlf, you couldn't use NETKEYER and FLDIGI in same time. Now this restriction is gone, you can use them in same time. 
+Note: in old versions of TLF, you couldn't use NETKEYER and FLDIGI in same time. Now this restriction is gone, you can use them in same time. 
 
-The RX mode is a slightly difficult. I don't want to expose that here, I suppose that anybody knows that, if works in RTTY. I had a "big" problem with Tlf: when I've worked in AFSK, and I moved the Fldigi carrier, I couldn't know exactly, what is the correct QRG of my RIG. And it was the problem, because I couldn't use the cluster info, moreover the grabbed spots! So, when I grabbed a station, TLF stored it to the currently QRG, but it didn't stored the Fldigi carrier shift! So, now the Tlf follows this philosophy below. 
+The RX mode is a slightly difficult. I don't want to expose that here, I suppose that anybody knows that, if works in RTTY. I had a "big" problem with TLF: when I've worked in AFSK, and I moved the Fldigi carrier, I couldn't know exactly, what is the correct QRG of my RIG. And it was the problem, because I couldn't use the cluster info, moreover the grabbed spots! So, when I grabbed a station, TLF stored it to the currently QRG, but it didn't stored the Fldigi carrier shift! So, now the TLF follows this philosophy below. 
 
 The "native" mode is FSK. If you turn on your RIG, and switch to FSK mode, tune the VFO to an RTTY station. If you want to see its signals in Fldigi, you have to move the Fldigi carrier to 2210Hz. Note, that 2210Hz calculated from the space and mark frequency. The space is 2125Hz, the mark is 2295Hz. 2295-2125 = 170, 170/2 = 85, and 2125+85 = 2210. This value is indicated at bottom-middle of Fldigi window. 
 
 Note, that you have to switch the Fldigi to reverse mode, so you need to click the **Rv** button. 
 
-From now on if you find a station on the bandmap, and press the CTRL-G (grab the spot), Tlf will tune to VFO that frequency, and you can hear the station. That's it. Almost :). In FSK mode, there isn't too easy to tune the VFO to the correct QRG. But if Tlf can detect, that your RIG is in FSK mode (through CAT system), then if you move the Fldigi carrier to an another station (which exists eg. on 1000Hz), then Tlf calculates the new VFO frequency, tune the RIG to there, and tune Fldigi's carrier to back, 2210Hz. 
+From now on if you find a station on the bandmap, and press the CTRL-G (grab the spot), TLF will tune to VFO that frequency, and you can hear the station. That's it. Almost :). In FSK mode, there isn't too easy to tune the VFO to the correct QRG. But if TLF can detect, that your RIG is in FSK mode (through CAT system), then if you move the Fldigi carrier to an another station (which exists eg. on 1000Hz), then TLF calculates the new VFO frequency, tune the RIG to there, and tune Fldigi's carrier to back, 2210Hz. 
 
-If you're working in AFSK, then the used modulation is LSB (or USB). In this case, you can move the Fldigi's carrier anywhere you want (from 85Hz to 2915Hz), Tlf only catch's the Fldigi carrrier's value, and calculates the accurate QRG, which indicated on left-middle part in Tlf window. If you want to grab a spot (with CTRL-G), then leave the Fldigi carrier's as it exists, and grab the next spot. Tlf will calculates the requested QRG from the different of the spot and Fldigi carrier's frequency, and tune the RIG. That's it. 
+If you're working in AFSK, then the used modulation is LSB (or USB). In this case, you can move the Fldigi's carrier anywhere you want (from 85Hz to 2915Hz), TLF only catch's the Fldigi carrrier's value, and calculates the accurate QRG, which indicated on left-middle part in TLF window. If you want to grab a spot (with CTRL-G), then leave the Fldigi carrier's as it exists, and grab the next spot. TLF will calculates the requested QRG from the different of the spot and Fldigi carrier's frequency, and tune the RIG. That's it. 
 
-Error handling: if you forgot to start the Fldigi, or you close that till Tlf runs and wants to communicate with it, Tlf tries to connect. After ten (10) continuous unsuccessful attempt Tlf will show you the error message (at bottom left corner): "Fldigi: lost connection", and turns it off. If you want to turn on again, just type ":fldigi" command in CALLSIGN field. If Fldigi comes back after less, than ten attempt, the error counter cleared. 
+Error handling: if you forgot to start the Fldigi, or you close that till TLF runs and wants to communicate with it, TLF tries to connect. After ten (10) continuous unsuccessful attempt TLF will show you the error message (at bottom left corner): "Fldigi: lost connection", and turns it off. If you want to turn on again, just type ":fldigi" command in CALLSIGN field. If Fldigi comes back after less, than ten attempt, the error counter cleared. 
 
-More new feature in Fldigi interface: - when Tlf sends a message through Fldigi, it switches Fldigi to TX mode. - similar to CW mode, if you press ESC while Fldigi sends the message,   Tlf will stop it. - if the connection between Tlf and Fldigi breaks (eg. you close   Fldigi, or you start Tlf before Fldigi), then Tlf realizes it,   and handles as correctly. You will lost the Fldigi functions (no   TX/RX, QRG align), but Tlf runs away. If you start Fldigi again,   after a few seconds, Tlf will work with it again 
+More new feature in Fldigi interface: - when TLF sends a message through Fldigi, it switches Fldigi to TX mode. - similar to CW mode, if you press ESC while Fldigi sends the message,   TLF will stop it. - if the connection between TLF and Fldigi breaks (eg. you close   Fldigi, or you start TLF before Fldigi), then TLF realizes it,   and handles as correctly. You will lost the Fldigi functions (no   TX/RX, QRG align), but TLF runs away. If you start Fldigi again,   after a few seconds, TLF will work with it again 
 
-New features after 1.3: - Fldigi supports nanoIO software, which is a small Arduino project   Homepage: https://github.com/w1hkj/nanoIO   whit this, you can work in real FSK mode - Fldigi can catch the different strings as field values, eg:   CALLSIGN, EXCHANGE. If you click in RX window to a callsign, Fldigi   fills its CALL field, and Tlf will grab it. EXCHANGE field is similar. 
+New features after 1.3: - Fldigi supports nanoIO software, which is a small Arduino project   Homepage: https://github.com/w1hkj/nanoIO   whit this, you can work in real FSK mode - Fldigi can catch the different strings as field values, eg:   CALLSIGN, EXCHANGE. If you click in RX window to a callsign, Fldigi   fills its CALL field, and TLF will grab it. EXCHANGE field is similar. 
 
  73, Ervin HA2OS 
 
@@ -237,11 +237,11 @@ New features after 1.3: - Fldigi supports nanoIO software, which is a small Ardu
 
 *Pasted from README_QTC.txt; some information may be out of date.* 
 
- This is a short intro for Tlf QTC handling. Ervin Hegedus HA2OS, 2014. airween@gmail.com 
+ This is a short intro for TLF QTC handling. Ervin Hegedus HA2OS, 2014. airween@gmail.com 
 
  ### Introduction
 
-QTC handling was maded for WAEDC contest for Tlf. It doesn't need any external tool, Tlf supports it out of box. To enable that, you only needs to put a "QTC=" option to logcfg.dat. This parameter needs a value, which could be one of these: "RECV", "SEND", or "BOTH". These values means you only want to receive or send QTCs, or you want to send AND receive QTCs (for example, in RTTY mode). Note, that currently only RECV and SEND mode are implemented. BOTH will used for RTTY mode. 
+QTC handling was maded for WAEDC contest for TLF. It doesn't need any external tool, TLF supports it out of box. To enable that, you only needs to put a "QTC=" option to logcfg.dat. This parameter needs a value, which could be one of these: "RECV", "SEND", or "BOTH". These values means you only want to receive or send QTCs, or you want to send AND receive QTCs (for example, in RTTY mode). Note, that currently only RECV and SEND mode are implemented. BOTH will used for RTTY mode. 
 
 ### QTC window 
 
@@ -249,9 +249,9 @@ When you enabled the QTC handling in logcfg.dat, you can open the  QTC window fr
 
 The data side contains the following QTCs fields: * QTC callsign - 14 characters, allowed: alphanums, digits, / * QTC serial - 4 characters, allowed: digits, * number of QSO in current QTC block - 2 characters, allowed:   digits * 10 QSO lines in RECV mode:   * time - 4 characters, allowed: digits, ?   * callsign - 14 characters, allowed: alphanums, digits, /, ?   * serial - 4 characters, allowed: digits, ? * 10 QSO lines in SEND mode:   * every line generated by the QSOs, all of them are formatted     for three fields: time, callsign and serial 
 
-Note, that if you set up the QTC_RECV_LAZY option in RECV mode  (EU station in CW/SSB contest), then Tlf will skip to check  the restrictions above. 
+Note, that if you set up the QTC_RECV_LAZY option in RECV mode  (EU station in CW/SSB contest), then TLF will skip to check  the restrictions above. 
 
-This side contains many "meta" information: * at right of the QTC callsign field, Tlf shows the QTC info of   current station: how many QTC has it; if the callsign field   in main window is empty, the last callsign will be picked up.   When the station has not send or received any QTC yet, there    will be: "Received 0 QTC", or "Sent 0 QTC". If you had   exchanged any QTC with the station, the message will read   "Received 3 QTC" or "Sent 5 QTC". * if you type the number of QSO in the QTC block in RECV mode,   Tlf will show its number at the beginning of every line; if the   station indicates that it will send to you 6 QSO, and you type   it in that field, Tlf will put a digit to the begin of first 6   lines * if you type the number of QSO in the QTC block in SEND mode,   Tlf will find the next number QSO, which doesn't contain the   current callsign (see contest rules 7.2). Note, that if you   don't have eonugh QSO, you can't send the maximum (10), eg.   you have only 9 QSO. If you type greater number than available   QTC number, the field value will be aligned to maximum number! * in RECV mode, every QSO line has a status, which could be:   "invalid", "valid", "confirmed". This status is indicated by a   sign at the end of the line. When a line is invalid, you can   see a "?", if the line is valid, then there isn't any character,   and finally, if the QSO line had been confirmed, you can see   a "*" sign * in SEND mode, if you've sent a QTC line (with ENTER), at the   end of the line you will see a "*" character, which means,   you've sent that QTC 
+This side contains many "meta" information: * at right of the QTC callsign field, TLF shows the QTC info of   current station: how many QTC has it; if the callsign field   in main window is empty, the last callsign will be picked up.   When the station has not send or received any QTC yet, there    will be: "Received 0 QTC", or "Sent 0 QTC". If you had   exchanged any QTC with the station, the message will read   "Received 3 QTC" or "Sent 5 QTC". * if you type the number of QSO in the QTC block in RECV mode,   TLF will show its number at the beginning of every line; if the   station indicates that it will send to you 6 QSO, and you type   it in that field, TLF will put a digit to the begin of first 6   lines * if you type the number of QSO in the QTC block in SEND mode,   TLF will find the next number QSO, which doesn't contain the   current callsign (see contest rules 7.2). Note, that if you   don't have eonugh QSO, you can't send the maximum (10), eg.   you have only 9 QSO. If you type greater number than available   QTC number, the field value will be aligned to maximum number! * in RECV mode, every QSO line has a status, which could be:   "invalid", "valid", "confirmed". This status is indicated by a   sign at the end of the line. When a line is invalid, you can   see a "?", if the line is valid, then there isn't any character,   and finally, if the QSO line had been confirmed, you can see   a "*" sign * in SEND mode, if you've sent a QTC line (with ENTER), at the   end of the line you will see a "*" character, which means,   you've sent that QTC 
 
 ### Navigation between the fields 
 
@@ -265,69 +265,69 @@ If you press an allowed character in a field, that will be displayed, and the cu
 
 ### Storing QTCs 
 
-Tlf stores QTCs in two files. The received QTCs are stored in QTC_recv.log, sent QTCs are stored in QTC_sent.log. These logfiles will created automatically, when Tlf starts. 
+TLF stores QTCs in two files. The received QTCs are stored in QTC_recv.log, sent QTCs are stored in QTC_sent.log. These logfiles will created automatically, when TLF starts. 
 
 ### Receiving QTC 
 
 If the station asks you, if are you QRV for QTC, you can press CTRL+Q, it doesn't matter in which field are you: callsign or exchange. As another way, you an open the QTC window (CTRL+Q),  and press F1 to ask for QTC - it is configured in rule file to  send "QTC?". 
 
-If the callsign fields isn't empty, the content of that field will be copied. Otherwise the callsign of the last QSO will be copied. If the station sent you some QTC previously, you can  see the number of QTC QSOs, eg. "Received 3 QTC".  You can receive at maximum 10 QTC from every station. If you  have 3 QTC from a station, then you can receive 7 QTC more.  If you type more than 7, Tlf will replace the number to 7. 
+If the callsign fields isn't empty, the content of that field will be copied. Otherwise the callsign of the last QSO will be copied. If the station sent you some QTC previously, you can  see the number of QTC QSOs, eg. "Received 3 QTC".  You can receive at maximum 10 QTC from every station. If you  have 3 QTC from a station, then you can receive 7 QTC more.  If you type more than 7, TLF will replace the number to 7. 
 
-Afterwards you can fill the QTC serial, and number of QSOs.  What you type in as number of QSOs will be used by Tlf to number that many lines, to show you, how many lines remains. 
+Afterwards you can fill the QTC serial, and number of QSOs.  What you type in as number of QSOs will be used by TLF to number that many lines, to show you, how many lines remains. 
 
-If you filled the callsign, serial and number fields (all three fields are required), and then press ENTER, Tlf will send the  F2 message, which is "QRV" normally, so you don't need to send  it manually. 
+If you filled the callsign, serial and number fields (all three fields are required), and then press ENTER, TLF will send the  F2 message, which is "QRV" normally, so you don't need to send  it manually. 
 
 If you start to receive the QTCs, you need to fill 3 fields: time (HHMM, as hour and minutes), callsign and serial. If you only enters part of a line, that line will be marked as  "incomplete", which you can see by the "?" at the end of the line. 
 
-If you fill the time field (4 digits), the cursor will go to the callsign field. Fill that field, and press TAB to move the next one. If you put there at least 1 digit, Tlf recognize that line s complete and the "?" will disappear at the end of  the line. 
+If you fill the time field (4 digits), the cursor will go to the callsign field. Fill that field, and press TAB to move the next one. If you put there at least 1 digit, TLF recognize that line s complete and the "?" will disappear at the end of  the line. 
 
 If you press SPACE in any field, the cursor will go to the next field (or first, if the current is the exchange number). 
 
-Important: in any fields you can type "?", eg: "111?" in time field, or "W?" in callsign field. That mean, you couldn't receive that letter. Then you fill all fields vainly, the line remain as incomplete. Otherwise Tlf assumes the line is complete. 
+Important: in any fields you can type "?", eg: "111?" in time field, or "W?" in callsign field. That mean, you couldn't receive that letter. Then you fill all fields vainly, the line remain as incomplete. Otherwise TLF assumes the line is complete. 
 
-This is important, because when you press the ENTER, Tlf will send the answer to the station based the status of the line. If the line is incomplete, Tlf sends "AGN" message, but if it's complete, it sends "R". 
+This is important, because when you press the ENTER, TLF will send the answer to the station based the status of the line. If the line is incomplete, TLF sends "AGN" message, but if it's complete, it sends "R". 
 
-If you could receive the line, and pressed ENTER, and Tlf sent the "R" signal, then you will see a "*" at the end of the line. That means, you received the QTC line from the station. 
+If you could receive the line, and pressed ENTER, and TLF sent the "R" signal, then you will see a "*" at the end of the line. That means, you received the QTC line from the station. 
 
 If you want to ask only one field (eg. only callsign), then you need just press F5 (TIME?), F6 (CALL?), or F7 (NR?). If you want to ask the complete QTC line, you can press F8 (AGN). 
 
 When you received a QTC, the cursor goes to the start of the  next line, and you can continue to receive QTC. 
 
-If you received the last line, and all lines are complete, after the last ENTER Tlf will close the QTC window, and send  "QSL ALL" message to the station. 
+If you received the last line, and all lines are complete, after the last ENTER TLF will close the QTC window, and send  "QSL ALL" message to the station. 
 
 At this time the QTC data will be written to the logfile on  disk, fields will be flushed, and if there is configured any other node in logcfg.dat, the QTC lines will be sent to them. 
 
-On other nodes, Tlf will also write the QTCs to its own logfiles. 
+On other nodes, TLF will also write the QTCs to its own logfiles. 
 
-If you press ESC before you receive the QTC block, the data isn't lost. Tlf flushes the fields only in these cases: * you received all QSOs, and saved to disc * pressed ESC, and changed regular callsign field 
+If you press ESC before you receive the QTC block, the data isn't lost. TLF flushes the fields only in these cases: * you received all QSOs, and saved to disc * pressed ESC, and changed regular callsign field 
 
-Note, that Tlf send the "QRV" message only in case the fields are empty. Keep in mind, if you've pressed ESC, and CTRL+Q again, all data remains, and "QRV" message will NOT be send. 
+Note, that TLF send the "QRV" message only in case the fields are empty. Keep in mind, if you've pressed ESC, and CTRL+Q again, all data remains, and "QRV" message will NOT be send. 
 
 ### Sending QTC 
 
-If the other station asks you for QTCs, you can press CTRL+Q,  it doesn't matter in which field are you: callsign or exchange.  When the QTC window openes, you can press F2 and Tlf will send  the message: "QTC sr/nr" with "sr" and "nr" replaced with the i serial and number of lines in QTC, example: "QTC 3/8". 
+If the other station asks you for QTCs, you can press CTRL+Q,  it doesn't matter in which field are you: callsign or exchange.  When the QTC window openes, you can press F2 and TLF will send  the message: "QTC sr/nr" with "sr" and "nr" replaced with the i serial and number of lines in QTC, example: "QTC 3/8". 
 
-If the callsign fields isn't empty, the content of that field will be copied. Otherwise, the callsign of the last QSO will be  used. If the station received QTCs previously, you can see the  number of QTCs on the current band, eg. "Sent 3 QTC". You can send maximum 10 QTC to every station. If you sent 3 QTC to a station, you can send maximum 7 QTC in next block. If you type more, than 7, Tlf will replace the number to 7, and of course, only 7 QSO will be shown. If you don't have enough QSO, Tlf also will replace this value to the number of the available QSO. 
+If the callsign fields isn't empty, the content of that field will be copied. Otherwise, the callsign of the last QSO will be  used. If the station received QTCs previously, you can see the  number of QTCs on the current band, eg. "Sent 3 QTC". You can send maximum 10 QTC to every station. If you sent 3 QTC to a station, you can send maximum 7 QTC in next block. If you type more, than 7, TLF will replace the number to 7, and of course, only 7 QSO will be shown. If you don't have enough QSO, TLF also will replace this value to the number of the available QSO. 
 
-The QTC serial field will be filled automatically, you just need to set up, how many QTCs you want to send. Note, that Tlf looks  for the current callsign, and that will be excluded from the QTC list! If you modify the callsign field, Tlf will hide some lines, which matches the actually callsign, but don't afraid: if you finish the modification of field, you can see the available list. 
+The QTC serial field will be filled automatically, you just need to set up, how many QTCs you want to send. Note, that TLF looks  for the current callsign, and that will be excluded from the QTC list! If you modify the callsign field, TLF will hide some lines, which matches the actually callsign, but don't afraid: if you finish the modification of field, you can see the available list. 
 
-If you don't want to send the maximum available QTC lines, just edit the number field, and Tlf will gives only that many QTC lines. 
+If you don't want to send the maximum available QTC lines, just edit the number field, and TLF will gives only that many QTC lines. 
 
-Now, you can move to the 1st QTC line with DOWN cursor. If you press ENTER, Tlf will send the current QTC, and will put a "*" char to the end of the line. It shows you, that QTC line had been sent. 
+Now, you can move to the 1st QTC line with DOWN cursor. If you press ENTER, TLF will send the current QTC, and will put a "*" char to the end of the line. It shows you, that QTC line had been sent. 
 
 Now just press DOWN and ENTER, if the station gives "R" sign. If it asks to send the last QTC again, just simple press UP and ENTER again. With the DEL key you can delete the "SENT" flag from the end of the line. 
 
-If you sent all lines, and ithe station confirms them, you can press the CTRL+S (like in most software), and Tlf will save the block. After 2 seconds the window will be closed, and you can go away. 
+If you sent all lines, and ithe station confirms them, you can press the CTRL+S (like in most software), and TLF will save the block. After 2 seconds the window will be closed, and you can go away. 
 
 At this time the QTC data will be written to the logfile on the disk, callsign and number fields will be flushed, and if there is any other node configured in logcfg.dat, the QTC lines will be sent to them. 
 
-On the other nodes, Tlf will also write the QTCs to its own logfiles. 
+On the other nodes, TLF will also write the QTCs to its own logfiles. 
 
-If you press ESC before you receive the QTC block, the data isn't lost. Tlf flushes the fields only in the following case: * you sent all QTCs, and saved them to disk 
+If you press ESC before you receive the QTC block, the data isn't lost. TLF flushes the fields only in the following case: * you sent all QTCs, and saved them to disk 
 
 ### Showing QTC capable stations 
 
-After you sent or received a QTC block from or to a station, Tlf writes it to the log, but stores it in memory too. If you meet that station on another bands, and use "Worked window", then you can see, how many QTCs had been exchanged with the station on each band. 
+After you sent or received a QTC block from or to a station, TLF writes it to the log, but stores it in memory too. If you meet that station on another bands, and use "Worked window", then you can see, how many QTCs had been exchanged with the station on each band. 
 
 There is a "Q" letter on the upper border of "Worked window", and in that column there are the number of QTCs. If there is a "0" in a line, that means you sent to or received no QTC from that station. If there is a "Q", that means you sent to or received from the station the maximum number of QTC (10). 
 
@@ -335,9 +335,9 @@ This information also is visible in the cluster info, if you use that. At the en
 
 ### Preparing Cabrillo 
 
-When you finished the contest, just use the ":wri" command to save  your log in Cabrillo format. (It's a good idea to exit from Tlf,  and start it again - this is only need to recalc correct points,  nothing else.) 
+When you finished the contest, just use the ":wri" command to save  your log in Cabrillo format. (It's a good idea to exit from TLF,  and start it again - this is only need to recalc correct points,  nothing else.) 
 
-Now leave Tlf, and run the "qtcmerge.py" script, which is part of Tlf, and has been installed to your INSTALLDIR/share/tlf,  eg. /usr/local/share/tlf. The normal way to run this script  from the Tlf contest directory is: 
+Now leave TLF, and run the "qtcmerge.py" script, which is part of TLF, and has been installed to your INSTALLDIR/share/tlf,  eg. /usr/local/share/tlf. The normal way to run this script  from the TLF contest directory is: 
 
 /usr/local/share/tlf/qtcmerge.py YOURCALL.cbr 
 
@@ -357,7 +357,7 @@ Note: You can find more info about the QTC cabrillo format here: http://dl0tud.t
 * DELETE - delete the current position, shift left the rest of line 
 * ENTER - send "R" or "AGN" to station 
 
-If you have any question, just send an e-mail to me or the Tlf develop list. 
+If you have any question, just send an e-mail to me or the TLF develop list. 
 
 73, 
 
@@ -367,11 +367,11 @@ Ervin HA2OS
 
 *Pasted from the original README_QTC_RTTY.txt; some information may be out of date.*
 
-This is a short intro for Tlf QTC handling in RTTY mode. Ervin Hegedus HA2OS, 2014. airween@gmail.com 
+This is a short intro for TLF QTC handling in RTTY mode. Ervin Hegedus HA2OS, 2014. airween@gmail.com 
 
 ### Introduction  
 
-The QTC base instructions described in README_QTC.txt, please read it CAREFULLY, before you start to read this readme. There you will find detailed information about how Tlf handles the QTC in CW and SSB mode. In this readme, I just write the differences. 
+The QTC base instructions described in README_QTC.txt, please read it CAREFULLY, before you start to read this readme. There you will find detailed information about how TLF handles the QTC in CW and SSB mode. In this readme, I just write the differences. 
 
 ### General 
 
@@ -379,7 +379,7 @@ The QTC window(s), fields, navigation is almost the same, like in CW and SSB mod
 
 ### Receiving QTC
 
-Even if you choose the two-way QTC handling, or you just want to receive QTCs, the CTRL-Q combination remaining to receive the QTC block. If you open the QTC receive window with CTRL-Q, apparently nothing has changed. The point is same than in another modes: fill the lines. Yes, the speed of RTTY is a little bit fast, and you have to know type as very quickly, if you want to copy from the terminal of your modem software. To help the copy operation, there is a new feature in Tlf: capturing the output of modem. Currently, only the gMFSK modem could be captured. 
+Even if you choose the two-way QTC handling, or you just want to receive QTCs, the CTRL-Q combination remaining to receive the QTC block. If you open the QTC receive window with CTRL-Q, apparently nothing has changed. The point is same than in another modes: fill the lines. Yes, the speed of RTTY is a little bit fast, and you have to know type as very quickly, if you want to copy from the terminal of your modem software. To help the copy operation, there is a new feature in TLF: capturing the output of modem. Currently, only the gMFSK modem could be captured. 
 
 If you want to start the capture, just press CTRL+S, that means "Start capture". To finish the capture process, just press CTRL+E, that means "End capture". 
 
@@ -389,7 +389,7 @@ You can recognize two types of lines for QTC block: the serial/number line, or a
 
 "QTC 32/8 QTC 32/8" 
 
-and you scroll there, and pressing ENTER, Tlf recognizes this as the serial and number of the QTC block, and will fill those fields. 
+and you scroll there, and pressing ENTER, TLF recognizes this as the serial and number of the QTC block, and will fill those fields. 
 
 The QTC line formula could be: 
 
@@ -397,7 +397,7 @@ The QTC line formula could be:
 
 The "separator" character could be the "/" (slash) or "-" hyphen. 
 
-If you scroll to a line like one of these, and pressing ENTER, Tlf will fill the next empty QTC line in QTC block. Note, that the line starts with 4 number, and at the end is also a numeric character, and the length of leftover is less than 14, then Tlf also recognizes the QTC line. 
+If you scroll to a line like one of these, and pressing ENTER, TLF will fill the next empty QTC line in QTC block. Note, that the line starts with 4 number, and at the end is also a numeric character, and the length of leftover is less than 14, then TLF also recognizes the QTC line. 
 
 **IMPORTANT!** 
 
@@ -407,25 +407,25 @@ Only the complete received lines can be captured from right side to left side, a
 
 If you fill the serial and number fields in main QTC window, the first pattern WILL NOT be recognized (SERIAL/NR). If you didn't fill the serial AND number fields (with or without the capture process), you CAN'T capture the QTC lines! That mean, you press ENTER on a QTC line at right side vainly, the line will not copied to right side! 
 
-So, if you can copy one or more lines from right side to left with capture process, the result could be two types: Tlf thinks the line is a good, fail-safe QTC line, or isn't it: the line contains wrong character, eg. the time filed contains non-numeric character. In this case, the end of the line you can see a "?" (question mark) character. If the line doesn't contains wrong character, you can see a "+" (plus) character. 
+So, if you can copy one or more lines from right side to left with capture process, the result could be two types: TLF thinks the line is a good, fail-safe QTC line, or isn't it: the line contains wrong character, eg. the time filed contains non-numeric character. In this case, the end of the line you can see a "?" (question mark) character. If the line doesn't contains wrong character, you can see a "+" (plus) character. 
 
 **IMPORTANT!**
 
-You NEED to review ALL lines at the left side by press an ENTER. If the line has "+" character, then that will changed to "*" (asterisk), which means "line marked as confirmed". If line has "?" at the end, then Tlf will send an "AGN N AGN N" message, where the N is the number of the line. Then you can change the wrong character, till the status will goes to "+". 
+You NEED to review ALL lines at the left side by press an ENTER. If the line has "+" character, then that will changed to "*" (asterisk), which means "line marked as confirmed". If line has "?" at the end, then TLF will send an "AGN N AGN N" message, where the N is the number of the line. Then you can change the wrong character, till the status will goes to "+". 
 
-If all lines has "*" sign, and you press the ENTER at last line, Tlf will send the message "QSL ALL", or what you've configures for QR_F10 macro. 
+If all lines has "*" sign, and you press the ENTER at last line, TLF will send the message "QSL ALL", or what you've configures for QR_F10 macro. 
 
-You can send the last message by manually, if you press F10 - then Tlf also send that message, and it will save the received QTC block too. 
+You can send the last message by manually, if you press F10 - then TLF also send that message, and it will save the received QTC block too. 
 
-If the all QTC lines are right, and Tlf sent "QTC ALL", then the QTC block will be saved automatically. 
+If the all QTC lines are right, and TLF sent "QTC ALL", then the QTC block will be saved automatically. 
 
 ### Sending QTC
 
-As you can read the QTC=BOTH descriotion above, Tlf can send AND receive QTCs in same contest. To avoid the shortkey collosions, in this case the only one combination can be used: CTRL+S. 
+As you can read the QTC=BOTH descriotion above, TLF can send AND receive QTCs in same contest. To avoid the shortkey collosions, in this case the only one combination can be used: CTRL+S. 
 
-If you fill the callsign field (or that's filled when you open the QTC send window), then the QTC serial field is fixed - you can't change that, like CW/SSB modes. Only you can change the number of QTCs field, which could be maximum 10, or if you have QTC (received or sent) with the station, then Tlf calculates the possible number. 
+If you fill the callsign field (or that's filled when you open the QTC send window), then the QTC serial field is fixed - you can't change that, like CW/SSB modes. Only you can change the number of QTCs field, which could be maximum 10, or if you have QTC (received or sent) with the station, then TLF calculates the possible number. 
 
-Then if you press the ENTER, Tlf sends the complete QTC block to your modem (eg. gmfsk_autofile), and you can see the characters in the window of your modem (eg. Fldigi). 
+Then if you press the ENTER, TLF sends the complete QTC block to your modem (eg. gmfsk_autofile), and you can see the characters in the window of your modem (eg. Fldigi). 
 
 If station asks you to resend one or more QTC line again, just move the asked line, and press ENTER again. 
 
@@ -435,7 +435,7 @@ If station confirms the QTC block, you have to save that with CTRL+S.
 
 *Pasted from the README.Cabrillo file*.
 
-Recently Cabrillo format became the de facto standard to submit contest results. Tlf's approach to handle QSO and QTC lines is based on a textual description and can be easily extended by the user to support newer contests. Header fields can be specified either in config file or using an existing Cabrillo file as a template.  
+Recently Cabrillo format became the de facto standard to submit contest results. TLF's approach to handle QSO and QTC lines is based on a textual description and can be easily extended by the user to support newer contests. Header fields can be specified either in config file or using an existing Cabrillo file as a template.  
 
 ### WORKING PRINCIPLE  
 
@@ -499,9 +499,9 @@ QSO: 28000 CW 2012-09-23 0815 DL1JBE        0001 Tom       HB9XXX        0023 Jo
 
 ### Importing Cabrillo  
 
-An existing Cabrillo file can be imported by starting Tlf with the "-i" option. The Cabrillo file must be called YOURCALL.cbr, which is the standard naming convention for Tlf. In this case, Tlf reads the configuration and rule files, so the scoring and multipliers will be used as your config describes. Your config also describes the CABRILLO format, that Tlf uses to parse the log to handle the fields correctly.  
+An existing Cabrillo file can be imported by starting TLF with the "-i" option. The Cabrillo file must be called YOURCALL.cbr, which is the standard naming convention for TLF. In this case, TLF reads the configuration and rule files, so the scoring and multipliers will be used as your config describes. Your config also describes the CABRILLO format, that TLF uses to parse the log to handle the fields correctly.  
 
-The output file(s) will IMPORT_contest.log, where the contest is the name of contest in your rule/config file. Eg. my Cabrillo is HA2OS.cbr, which must be in the current directory. After the import, the result is IMPORT_cqww.log (if the contest name is cqww), so the Tlf doesn't write over the existing logfile.  
+The output file(s) will IMPORT_contest.log, where the contest is the name of contest in your rule/config file. Eg. my Cabrillo is HA2OS.cbr, which must be in the current directory. After the import, the result is IMPORT_cqww.log (if the contest name is cqww), so the TLF doesn't write over the existing logfile.  
 
 If you want to use the new, imported file, you have to move the old one, and rename the imported file.  
 

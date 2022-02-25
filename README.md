@@ -20,8 +20,19 @@ As a console program, there are no menus or pop-up windows in TLF. Instead, it u
 
 ## Installation
 
-Building TLF requires some other components to be installed first. 
-It depends on:
+The easiest way to install TLF is from your distribution's repo. On Debian-flavored distributions (including Ubuntu):
+
+```
+sudo apt install tlf
+```
+
+If you choose this route, you can skip the next section.
+
+### Building from source
+
+If you'd prefer to build TLF from source, or if it's not in your repo, it requires some other components to be installed first.
+
+Specifically, it depends on:
 
 * the `hamlib` library for controlling your radio,
 * `ncurses` and `tinfo` for text screen handling,
@@ -45,7 +56,7 @@ On Debian Linuxes:
 sudo apt install sox xplanet
 ```
 
-Once the dependencies are installed, the easiest way to install tlf is by downloading the latest tarball (version 1.4.1) from [here](http://download.savannah.gnu.org/releases/tlf/tlf-1.4.1.tar.gz), then navigating your Terminal to the directory where you unpacked it, and typing:
+Once the dependencies are installed, the easiest way to get TLF's source is by downloading the latest tarball (version 1.4.1) from [here](http://download.savannah.gnu.org/releases/tlf/tlf-1.4.1.tar.gz), then navigating your Terminal to the directory where you unpacked it, and typing:
 
 ```
 ./configure
