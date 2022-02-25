@@ -110,10 +110,12 @@ cd arrldx
 
 mkdir rules
 
-cp /usr/local/share/tlf/logcfg.dat .
+cp /usr/share/tlf/logcfg.dat .
 
-cp /usr/local/share/tlf/rules/arrldx_usa rules/
+cp /usr/share/tlf/rules/arrldx_usa rules/
 ```
+
+Note that the file paths above are based on a Debian installation from the repo. If you compiled from source instead of installing from your repo, your `share` directory may instead be `/usr/local/share/tlf`.
 
 Now we have a directory called `arrldx` with a `logcfg.dat` file in it, and an `arrldx/rules` directory with `arrldx_usa` in it. These will override the defaults when we launch TLF.
 
