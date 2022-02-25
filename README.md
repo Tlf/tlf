@@ -82,8 +82,6 @@ configure script too, e.g.
 
 will install TLF and scripts into `/usr/bin`, datafiles into `/usr/share/tlf`.
 
-You should have read and write permissions on `/tmp/tlf`. Everything else can be read-only.
-
 If you want to use [cwdaemon](https://github.com/acerion/cwdaemon) for CW, make sure it's installed, and either set it up to start at system startup, or plan to start it manually before launching TLF. 
 
 If you want to use a K1EL Winkeyer for CW, download and install either [winkeyer_server](https://github.com/ok2cqr/winkeyer_server) from OK2CQR or N0NB's [winkeydaemon](https://github.com/N0NB/winkeydaemon), following the instructions on those pages. You'll need to start the Winkeyer server (either one) before starting TLF. Both programs work by impersonating cwdaemon, which TLF will use automatically if you've enabled the NETKEYER settings in the `logcfg.dat` file.
