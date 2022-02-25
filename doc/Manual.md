@@ -77,7 +77,7 @@ The line across the middle of the console (starting with "40CW" above) has the c
 
 The bottom section of the screen has DXcluster spots, the band map, and related information.
 
-The spacebar moves between fields, the "Enter" key sends the appropriate message for the current stage of the QSO, and the "ESC" key backs out of whatever you just did. With the cursor in the callsign entry field, "Alt-h" brings up a help screen, while typing `:help` and hitting "Enter" will bring up a full list of commands. From that list, typing `:q` will return you to the main logging screen. Typing `:cfg` and hitting "Enter" will let you edit logcfg.dat in the text editor, and exiting that editor will return you to the main logging screen.
+The spacebar moves between fields, the "Enter" key sends the appropriate message for the current stage of the QSO, and the "ESC" key backs out of whatever you just did. With the cursor in the callsign entry field, "Alt-h" brings up a help screen, while typing `:help` and hitting "Enter" will bring up a full list of commands. From that list, typing `q` will return you to the main logging screen. Typing `:cfg` and hitting "Enter" will let you edit logcfg.dat in the text editor, and exiting that editor will return you to the main logging screen.
 
 The log is saved continuously in TLF's text-based native format. After the contest ends, typing `:write` in the call entry field will export the log in Cabrillo format as `<Yourcall>.cbr`, which is how most contest sponsors want it. If you haven't set the Cabrillo configuration in a file as described above, you'll be asked a series of questions for the file header, such as your category, power level, and so forth. You can also export an ADIF file by typing `:adif` in the callsign field. That's handy for importing your contest contacts into your general logging program, or uploading them to sites such as Clublog or Logbook of the World.
 
@@ -90,13 +90,25 @@ winkeydaemon -m -d /dev/ttyUSB1
 tlf
 ```
 
+The `-m` flag mutes the sidetone on my Winkeyer, as I prefer it off, and `-d /dev/ttyUSB1` sets the correct device name to access. If you're unsure where your Winkeyer connects, use
+
+```
+ls -l /dev/serial/by-id
+```
+
+which should list serial devices by somewhat readable names, and which ports they're on. 
+
+You can stop the CW server with `killall winkeydaemon`, which is handy for stopping and restarting it while trying different port configurations.
+
+TLF will start in CW mode by default. 
+
 ## SSB 
  
-*Pasted from the original README.ssb - some information may be out of date.* 
+*Pasted from the original README.ssb by Andy, G4KNO - some information may be out of date.* 
 
-TLF provides a voice keyer facility using the PC's sound card. This readme provides additional information to help the user configure SSB operation. 
+TLF provides a voice keyer facility using the PC's sound card. This section provides additional information to help the user configure SSB operation. 
 
-### Radio Interfacing 
+### Radio Interfacing (*may be outdated*)
 
 For the purposes of CW and PTT control, TLF interfaces to the radio via cwdaemon, not hamlib. Therefore if you want voice keyer facilities cwdaemon must be running before starting TLF. 
 
@@ -124,9 +136,24 @@ If you have something other than a 'Mic' source you could try replacing 'Mic' wi
 
 Similarly, a 'rules' sub-directory can contain a contest specific rule file. This rule file must contain the paths to the audio files corresponding to each F-key to be used. An example might be: 
 
-VKM1=/home/aham/tlf/audio/f1.wav VKM2=/home/aham/tlf/audio/f2.wav VKM3=/home/aham/tlf/audio/f3.wav VKM4=/home/aham/tlf/audio/f4.wav VKM5=/home/aham/tlf/audio/f5.wav VKM6=/home/aham/tlf/audio/f6.wav VKM7=/home/aham/tlf/audio/f7.wav VKM8=/home/aham/tlf/audio/f8.wav VKM9=/home/aham/tlf/audio/f9.wav VKM10=/home/aham/tlf/audio/f10.wav VKM11=/home/aham/tlf/audio/f11.wav VKM12=/home/aham/tlf/audio/f12.wav VKSPM=/home/aham/tlf/audio/vkspm.wav VKCQM=/home/aham/tlf/audio/vkcqm.wav 
+```
+VKM1=/home/aham/tlf/audio/f1.wav 
+VKM2=/home/aham/tlf/audio/f2.wav 
+VKM3=/home/aham/tlf/audio/f3.wav 
+VKM4=/home/aham/tlf/audio/f4.wav 
+VKM5=/home/aham/tlf/audio/f5.wav 
+VKM6=/home/aham/tlf/audio/f6.wav 
+VKM7=/home/aham/tlf/audio/f7.wav 
+VKM8=/home/aham/tlf/audio/f8.wav 
+VKM9=/home/aham/tlf/audio/f9.wav 
+VKM10=/home/aham/tlf/audio/f10.wav 
+VKM11=/home/aham/tlf/audio/f11.wav 
+VKM12=/home/aham/tlf/audio/f12.wav 
+VKSPM=/home/aham/tlf/audio/vkspm.wav 
+VKCQM=/home/aham/tlf/audio/vkcqm.wav 
+```
 
-Thus a common set of voice messages can be pointed to from different rule files. The VKCQM message is the auto-repeated CQ message for when the rate is low! The VKSPM and VKCQM messages are sent after a contact is logged, in S+P and CQ modes respectively. 
+Thus a common set of voice messages can be pointed to from different rule files. The f12 message is the auto-repeated CQ message for when the rate is low. The VKSPM and VKCQM messages are sent after a contact is logged, in S+P and CQ modes respectively. 
 
 Paths that are not defined cannot be recorded to from within TLF. 
 
@@ -138,15 +165,13 @@ Modern distros often use the 'pulseaudio' sound server, but this can cause unacc
 
 ### Recording
 
-To record messages from within TLF, enter ':sou' at the call entry field to take you to the TLF Sound Recorder Utility page. Recording starts by hitting the relevant F-key for that message ('s' or 'c' for the VKSPM and VKCQM messages). Recording is terminated by hitting the **ESC** key. 
+For the best sound quality, record voice messages with an external audio editor such as Audacity, which will also allow you to trim leading and trailing silence. Export each message in .wav format and add their paths to the rules file as described above.
+
+TLF also has a built-in sound recording feature for changing messages on the fly, or for those who don't want to use an external editor. To record messages from within TLF, enter ':sou' at the call entry field to take you to the TLF Sound Recorder Utility page. Recording starts by hitting the relevant F-key for that message ('s' or 'c' for the VKSPM and VKCQM messages). Terminate recording by hitting the **ESC** key. 
 
 Currently, recording messages does not key PTT. If you want to hear yourself via the radio's monitor function whilst recording, you will need to manually assert PTT, e.g. press your footswitch throughout. Obviously, this means your recording also goes out on-air, so you might want to minimise your transmitted power whilst setting up recordings. 
 
-It takes a bit of practice to time your speech within the starting and ending key presses. It's also quite easy to set the alsa Mic gain too high and end up with clipped audio. This will show up during playback as some black and white writing appearing over the top of the display colours. It's actually sox reporting warnings. You can fix this by adjusting the mic level using the alsa mixer. 
-
-If you have the time, you can trim the audio clip and normalise the levels in an audio editor, like audacity. That way you can avoid worrying too much about getting the recording perfect from TLF. Of course, you could initially record the messages using such an editor if preferred. 
-
-Andy, G4KNO 
+It takes a bit of practice to time your speech within the starting and ending key presses. It's also quite easy to set the alsa Mic gain too high and end up with clipped audio. This will show up during playback as some black and white writing appearing over the top of the display colours. It's actually sox reporting warnings. You can fix this by adjusting the mic level using the alsa mixer.  
 
 ## RTTY 
 
