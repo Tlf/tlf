@@ -24,10 +24,10 @@ the console fool you, though; this is a fully modern contest logger that can
 support everything from a part time single op effort to a large multi-multi
 "big gun" operation.
 
-See Manual.md for an explanation of the user interface and detailed
-descriptions of setups for CW, RTTY, and SSB contesting. For specific
-questions once you've started using TLF, simply type `man tlf` at the command
-line. 
+See [Manual.md](doc/Manual.md) for an explanation of the user interface
+and detailed descriptions of setups for CW, RTTY, and SSB contesting.
+For specific questions once you've started using TLF,
+simply type `man tlf` at the command line.
 
 ## Basic principles
 
@@ -37,7 +37,8 @@ Starting from an empty directory, it will read `<PREFIX>/logcfg.dat`, where
 `<PREFIX>` is the directory where the data files were installed
 (`/usr/local/share/tlf` by default). Any `logcfg.dat` or rules file stored in
 the local directory where TLF launches will override the default settings,
-which you probably want to do. See the **Quick Start** guide below for an
+which you probably want to do.
+See the [**Quick Start**](#quick-start) guide below for an
 example setup. The default `logcfg.dat` file has extensive comments
 documenting the settings, and can be opened in any text editor. At a minimum,
 you'll need to set your callsign.
@@ -176,8 +177,9 @@ be used to edit this file from inside TLF.
 
 If you plan to generate CW with TLF, you'll need either cwdaemon or a Winkeyer
 server running, and for digital modes you'll need Fldigi. Rig control requires
-hamlib. See `Manual.md` for details. If you want DXcluster spots to show up on
-a band map in TLF, enter your preferred settings in the "PACKET INTERFACE"
+hamlib. See [`Manual.md`](doc/Manual.md) for details.
+If you want DXcluster spots to show up on a band map in TLF,
+enter your preferred settings in the "PACKET INTERFACE"
 section and also uncomment the CLUSTER line under "INFORMATION WINDOWS." 
 
 When done with `logcfg.dat`, go to your local copy of `rules/arrldx_usa` and
@@ -226,11 +228,13 @@ flow will follow.
 ## Manual
 
 For a complete walkthrough and more details on specific types of operations,
-see `doc/Manual.md`, which we're in the process of revising. Answers to
-specific questions can usually be found in the built-in manual accessible from
-any console window:
+see [`doc/Manual.md`](doc/Manual.md), which we're in the process of revising.
+Answers to specific questions can usually be found
+in the built-in manual accessible from any console window:
 
-``` man tlf ``` A copy of the old TLF manual is also available in the Github
+``` man tlf ```
+
+A copy of the old TLF manual is also available in the Github
 repository [here](https://tlf.github.io/tlfdoc.old/tlfdoc.html). While many
 new features have been added, much of the old information will still work.
 
