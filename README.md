@@ -232,7 +232,9 @@ see [`doc/Manual.md`](doc/Manual.md), which we're in the process of revising.
 Answers to specific questions can usually be found
 in the built-in manual accessible from any console window:
 
-``` man tlf ```
+```
+man tlf
+```
 
 A copy of the old TLF manual is also available in the Github
 repository [here](https://tlf.github.io/tlfdoc.old/tlfdoc.html). While many
