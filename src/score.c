@@ -114,12 +114,12 @@ bool is_in_continentlist(char *continent) {
 
 /* apply bandweight scoring *
  * at the moment only LOWBAND_DOUBLES (<30m) can be active */
-int apply_bandweight(int points) {
+int apply_bandweight(int points, int bandindex) {
 
-    if (lowband_point_mult && (bandinx < BANDINDEX_30))
+    if (lowband_point_mult && (bandindex < BANDINDEX_30))
 	points *= 2;
 
-    points *= bandweight_points[bandinx];
+    points *= bandweight_points[bandindex];
 
     return points;
 }
@@ -213,7 +213,7 @@ int scoreDefault(struct qso_t *qso) {
     else
 	points = scoreByContinentOrCountry(qso);
 
-    points = apply_bandweight(points);
+    points = apply_bandweight(points, qso->bandindex);
     points = portable_doubles(points, qso->call);
 
     return points;
@@ -232,7 +232,7 @@ int score_wpx(struct qso_t *qso) {
     }
 
     if ((strcmp(ctyinfo->continent, my.continent) == 0)
-	    && (bandinx > BANDINDEX_30)) {
+	    && (qso->bandindex > BANDINDEX_30)) {
 	if (strstr(my.continent, "NA") != NULL) {
 	    points = 2;
 	} else {
@@ -243,7 +243,7 @@ int score_wpx(struct qso_t *qso) {
     }
 
     if ((strcmp(ctyinfo->continent, my.continent) == 0)
-	    && (bandinx < BANDINDEX_30)) {
+	    && (qso->bandindex < BANDINDEX_30)) {
 	if (strstr(my.continent, "NA") != NULL) {
 	    points = 4;
 	} else {
@@ -252,13 +252,13 @@ int score_wpx(struct qso_t *qso) {
 	return points;
     }
     if ((strcmp(ctyinfo->continent, my.continent) != 0)
-	    && (bandinx > BANDINDEX_30)) {
+	    && (qso->bandindex > BANDINDEX_30)) {
 	points = 3;
 
 	return points;
     }
     if ((strcmp(ctyinfo->continent, my.continent) != 0)
-	    && (bandinx < BANDINDEX_30)) {
+	    && (qso->bandindex < BANDINDEX_30)) {
 	points = 6;
 
 	return points;
