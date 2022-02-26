@@ -2,10 +2,11 @@ RULES=cqww
 #
 #################################
 #                               #
-#   TLF-LOGCFG.DAT v. 1.1.0     #
+#         LOGCFG.DAT            #
 #                               #
 #  Uncomment the options you    #
-#  want to enable. See tlf.doc  #
+#  want to enable.              #
+#  See 'man tlf'                #
 #  for a description of the     #
 #  options. You can keep diff-  #
 #  erent versions for different #
