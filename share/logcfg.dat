@@ -27,7 +27,8 @@ RULES=cqww
 #                               #
 #################################
 #
-EDITOR=joe
+EDITOR=nano
+#EDITOR=joe
 #EDITOR=vi
 #EDITOR=e3
 #EDITOR=mcedit

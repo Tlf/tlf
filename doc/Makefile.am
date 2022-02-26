@@ -1,6 +1,4 @@
-DOC_FILES = FAQ New_Bandmap.txt README README.Cabrillo README.ssb \
-	README_QTC.txt README_QTC_RTTY.txt README.RTTY Xresources \
-	station-sample.cbr
+DOC_FILES = Manual.md keynames.txt station-sample.cbr Xresources images/*
 
 doc_DATA = $(DOC_FILES)
 
