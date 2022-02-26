@@ -329,13 +329,10 @@ int rig_comm_error = 0;
 int rig_comm_success = 0;
 int rigptt = 0;
 
-/*-------------------------------the log lines-----------------------------*/
-char qsos[MAX_QSOS][LOGLINELEN + 1];
-int nr_qsos = 0;
-
+/*----------------------------the parsed log lines-------------------------*/
 // array of qso's
-// FIXME use this instead of qsos[]
 GPtrArray *qso_array;
+int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/*< number of calls in worked[] */

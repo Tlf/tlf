@@ -350,13 +350,10 @@ int rig_comm_success = 0;
 /*----------------------------------fldigi---------------------------------*/
 char fldigi_url[50] = "http://localhost:7362/RPC2";
 
-/*-------------------------------the log lines-----------------------------*/
-char qsos[MAX_QSOS][LOGLINELEN + 1];
-int nr_qsos = 0;
-
+/*----------------------------the parsed log lines-------------------------*/
 // array of qso's
-// FIXME use this instead of qsos[]
 GPtrArray *qso_array;
+int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/**< number of calls in worked[] */
