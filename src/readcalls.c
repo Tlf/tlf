@@ -56,9 +56,7 @@ void init_scoring(void) {
     /* reset counter and score anew */
     total = 0;
 
-    for (int i = 0; i < MAX_QSOS; i++)
-	qsos[i][0] = '\0';
-
+    init_qso_array();
     init_worked();
 
     for (int i = 1; i <= MAX_DATALINES - 1; i++)
@@ -120,17 +118,12 @@ int readcalls(const char *logfile, bool interactive) {
 
     bool log_changed = false;
 
-    init_qso_array();
-
     while (fgets(inputbuffer, sizeof(inputbuffer), fp) != NULL) {
 
 	// drop trailing newline
 	inputbuffer[LOGLINELEN - 1] = '\0';
 
-	// remember logline in qsos[] field
-	g_strlcpy(qsos[linenr], inputbuffer, sizeof(qsos[0]));
 	linenr++;
-	// FIXME check for overflow....
 
 	if (interactive) {
 	    show_progress(linenr);
@@ -156,9 +149,8 @@ int readcalls(const char *logfile, bool interactive) {
 
 	char *logline = makelogline(qso);
 
-	if (strcmp(logline, qsos[linenr - 1]) != 0) {
+	if (strcmp(logline, qso->logline) != 0) {
 	    // different: update log line and mark change
-	    g_strlcpy(qsos[linenr - 1], logline, sizeof(qsos[0]));
 	    g_free(qso->logline);
 	    qso->logline = g_strdup(logline);
 	    log_changed = true;
@@ -188,9 +180,8 @@ int readcalls(const char *logfile, bool interactive) {
 	    rename(logfile, backup);
 	    // rewrite log
 	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
-			    // FIXME store_qso write also back to qsos[]
 	    for (int i = 0 ; i < linenr; i++) {
-		store_qso(qsos[i]);
+		store_qso(QSOS(i));
 	    }
 	    if (interactive) {
 		showstring("Log has been backed up as", backup);
