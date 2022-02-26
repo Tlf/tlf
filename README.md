@@ -104,7 +104,7 @@ with
 
 followed by the `make` and `make install` commands.
 
-If you are compiling tlf from a clone of the Github repository instead of the
+If you are compiling TLF from a clone of the Github repository instead of the
 tarball, please do
 
 ```
