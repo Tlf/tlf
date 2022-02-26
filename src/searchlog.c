@@ -395,6 +395,10 @@ void filterLog(const char *call) {
     for (int qso_index = 0; qso_index < nr_qsos; qso_index++) {
 
 	struct qso_t *qso = g_ptr_array_index(qso_array, qso_index);
+	if (qso->is_comment) {
+	    continue;
+	}
+
 	if (!qso_has_current_mode(qso)) {
 	    continue;	// different mode
 	}
