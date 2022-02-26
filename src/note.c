@@ -75,7 +75,6 @@ void include_note(void) {
 
 	fclose(fp);
 
-	g_strlcpy(qsos[nr_qsos], buffer2, LOGLINELEN);
 	struct qso_t *qso = parse_qso(buffer2);
 	g_ptr_array_add(qso_array, qso);
 	nr_qsos++;

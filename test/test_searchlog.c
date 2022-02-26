@@ -111,7 +111,6 @@ void add_log(int n, char *string) {
     struct qso_t *qso;
     char *line;
 
-    strcpy(qsos[n], string);
     line = g_strdup(string);
     qso = parse_qso(line);
     g_free(line);
@@ -119,13 +118,7 @@ void add_log(int n, char *string) {
 }
 
 static void write_qsos() {
-    int i;
-
     init_qso_array();
-
-    for (i = 0; i < MAX_QSOS; i++) {
-	strcpy(qsos[i], "");
-    }
 
     add_log(0, QSO1);
     add_log(1, QSO2);

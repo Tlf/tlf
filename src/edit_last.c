@@ -124,7 +124,6 @@ static void putback_qso(int nr, char *buffer) {
 
 	fclose(fp);
 
-	strcpy(qsos[nr], buffer);
 	struct qso_t *qso = parse_qso(buffer);
 	struct qso_t *old_qso = g_ptr_array_index(qso_array, nr);
 	g_ptr_array_index(qso_array, nr) = qso;
