@@ -506,7 +506,10 @@ static void checkexchange_cqww(char *comment, bool interactive) {
 	if (index_fix != NULL && strlen(index_fix) >= 1 && strlen(index_fix) <= 4) {
 	    g_free(index);
 	    index = index_fix;
+	} else {
+	    g_free(index_fix);
 	}
+
 	if (index != NULL && strlen(index) >= 1 && strlen(index) <= 4) {
 	    zone = atoi(index);
 	}
