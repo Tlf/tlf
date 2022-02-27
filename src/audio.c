@@ -24,6 +24,7 @@
  *
  *--------------------------------------------------------------*/
 
+
 #include <dirent.h>
 #include <errno.h>
 #include <fnmatch.h>
@@ -308,7 +309,6 @@ static int vr_listfiles() {
     return 0;
 }
 
-/* list voice recordings frm soundlog_dir */
 
 /* kill process (first command token in string) with SIGTERM */
 static void stop_command(char *string) {
@@ -453,7 +453,6 @@ void vk_play_file(char *audiofile) {
     }
 }
 
-#define NO_KEY -1
 
 void vk_stop() {
     stop_command(vk_play_cmd);
