@@ -51,7 +51,7 @@ Debian-flavored distributions (including Ubuntu):
 sudo apt install tlf
 ```
 
-If you choose this route, you can skip the next section.
+If you choose this route, you can skip the "Building from source" section.
 
 If you want to use [cwdaemon](https://github.com/acerion/cwdaemon) for CW, make
 sure it's installed, and either set it up to start at system startup, or plan to
