@@ -130,25 +130,25 @@ void test_wpx(void **state) {
     check_call_points("DL3ABC",1);
 
     /* different continents */
-    bandinx = BANDINDEX_20;
+    qso.bandindex = BANDINDEX_20;
     check_call_points("ZS6ABC",3);
 
-    bandinx = BANDINDEX_40;
+    qso.bandindex = BANDINDEX_40;
     check_call_points("ZS6ABC",6);
 
     /* same continent, not NA */
-    bandinx = BANDINDEX_20;
+    qso.bandindex = BANDINDEX_20;
     check_call_points("HB9ABC",1);
 
-    bandinx = BANDINDEX_40;
+    qso.bandindex = BANDINDEX_40;
     check_call_points("HB9ABC",2);
 
     /* same continent, NA */
     strcpy(my.continent, "NA");
-    bandinx = BANDINDEX_20;
+    qso.bandindex = BANDINDEX_20;
     check_call_points("VE3ABC",2);
 
-    bandinx = BANDINDEX_40;
+    qso.bandindex = BANDINDEX_40;
     check_call_points("VE3ABC",4);
 
 }
@@ -221,9 +221,9 @@ void test_ssbcw(void **state) {
     check_points(3);
 
     lowband_point_mult = true;
-    bandinx = BANDINDEX_30;
+    qso.bandindex = BANDINDEX_30;
     check_points(3);
-    bandinx = BANDINDEX_40;
+    qso.bandindex = BANDINDEX_40;
     check_points(6);
 
     portable_x2 = true;

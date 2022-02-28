@@ -65,13 +65,13 @@ int genqtclist(char *callsign, int nrofqtc) {
 
     while (qtclist.count < qtclistlen && s < nr_qsos) {
 	if (strlen(callsign) == 0 ||
-		strncmp(qsos[s] + 29, callsign, strlen(callsign)) != 0) {
+		strncmp(QSOS(s) + 29, callsign, strlen(callsign)) != 0) {
 	    /* exclude current callsign */
 
 	    if (qsoflags_for_qtc[s] == 0) {
 		/* qso line not yet used for QTC */
 
-		genqtcline(qtclist.qtclines[i].qtc, qsos[s]);
+		genqtcline(qtclist.qtclines[i].qtc, QSOS(s));
 
 		if (trxmode == DIGIMODE) {
 		    qtclist.qtclines[i].flag = 1;

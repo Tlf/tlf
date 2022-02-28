@@ -34,6 +34,7 @@
 #include "keystroke_names.h"
 #include "logview.h"
 #include "readcalls.h"
+#include "log_utils.h"
 #include "scroll_log.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
@@ -103,7 +104,7 @@ static void unhighlight_line(int row, char *line) {
 static void get_qso(int nr, char *buffer) {
 
     assert(nr < nr_qsos);
-    strcpy(buffer, qsos[nr]);
+    strcpy(buffer, QSOS(nr));
     assert(strlen(buffer) == (LOGLINELEN - 1));
 }
 
@@ -123,7 +124,10 @@ static void putback_qso(int nr, char *buffer) {
 
 	fclose(fp);
 
-	strcpy(qsos[nr], buffer);
+	struct qso_t *qso = parse_qso(buffer);
+	struct qso_t *old_qso = g_ptr_array_index(qso_array, nr);
+	g_ptr_array_index(qso_array, nr) = qso;
+	free_qso(old_qso);
     }
 }
 
