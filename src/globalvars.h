@@ -14,12 +14,14 @@ extern mystation_t my;			// all about my station
 extern char whichcontest[];
 extern contest_config_t *contest;	// contest configuration
 
-extern char qsos[MAX_QSOS][LOGLINELEN + 1];
-					// array of log lines of QSOs so far;
+extern int nr_qsos;			// number of lines in qsos[]
+
+extern GPtrArray *qso_array;		// array of parsed QSOs
 					// note that not every log line needs
 					// to be a QSO, it could also be a
-					// comment, starting with a semicolon
-extern int nr_qsos;			// number of lines in qsos[]
+					// comment, starting with a semicolon.
+					// Than is_comment field in qso_t
+					// struct gets set
 
 extern mults_t multis[MAX_MULTS]; 	// array of multipliers worked so far
 extern int nr_multis;			// number of entries in mults[]

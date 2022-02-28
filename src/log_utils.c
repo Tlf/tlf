@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2019 Thomas Beierlein <dl1jbe@darc.de>
+ * Copyright (C) 2019-22 Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,13 @@ struct qso_t *parse_qso(char *buffer) {
     ptr->logline = g_strdup(buffer);
     ptr->qsots = 0;
 
+    if (log_is_comment(buffer)) {
+	ptr->is_comment = true;
+	return ptr;
+    }
+
+    ptr->is_comment = false;
+
     /* split buffer into parts for linedata_t record and parse
      * them accordingly */
     tmp = strtok_r(buffer, " \t", &sp);
@@ -168,3 +175,22 @@ void free_qso(struct qso_t *ptr) {
 	g_free(ptr);
     }
 }
+
+
+static void qso_free(gpointer data) {
+    free_qso((struct qso_t *) data);
+}
+
+
+void free_qso_array() {
+   if (qso_array != NULL) {
+	g_ptr_array_free(qso_array, TRUE);
+	qso_array = NULL;
+   }
+}
+
+void init_qso_array() {
+    free_qso_array();
+    qso_array = g_ptr_array_new_with_free_func(qso_free);
+}
+

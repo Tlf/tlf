@@ -2,7 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
- *               2012-2021      Thomas Beierlein <dl1jbe@darc.de>
+ *               2012-2022      Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,9 +56,7 @@ void init_scoring(void) {
     /* reset counter and score anew */
     total = 0;
 
-    for (int i = 0; i < MAX_QSOS; i++)
-	qsos[i][0] = '\0';
-
+    init_qso_array();
     init_worked();
 
     for (int i = 1; i <= MAX_DATALINES - 1; i++)
@@ -98,10 +96,6 @@ static void show_progress(int linenr) {
     }
 }
 
-static void qso_free(gpointer data) {
-    free_qso((struct qso_t *) data);
-}
-
 int readcalls(const char *logfile, bool interactive) {
 
     char inputbuffer[LOGLINELEN + 1];
@@ -123,29 +117,24 @@ int readcalls(const char *logfile, bool interactive) {
     }
 
     bool log_changed = false;
-    // array of qso's
-    // FIXME use this instead of qsos[] (make it global and don't free it here)
-    // FIXME also include comments/notes into qso_t
-    GPtrArray *qso_array = g_ptr_array_new_with_free_func(qso_free);
 
     while (fgets(inputbuffer, sizeof(inputbuffer), fp) != NULL) {
 
 	// drop trailing newline
 	inputbuffer[LOGLINELEN - 1] = '\0';
 
-	// remember logline in qsos[] field
-	g_strlcpy(qsos[linenr], inputbuffer, sizeof(qsos[0]));
 	linenr++;
-	// FIXME check for overflow....
 
 	if (interactive) {
 	    show_progress(linenr);
 	}
 
-	if (log_is_comment(inputbuffer))
-	    continue;		/* skip note in log */
-
 	qso = parse_qso(inputbuffer);
+
+	if (log_is_comment(inputbuffer)) {
+	    g_ptr_array_add(qso_array, qso);
+	    continue;		/* skip further processing for note entry */
+	}
 
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);
@@ -160,9 +149,8 @@ int readcalls(const char *logfile, bool interactive) {
 
 	char *logline = makelogline(qso);
 
-	if (strcmp(logline, qsos[linenr - 1]) != 0) {
+	if (strcmp(logline, qso->logline) != 0) {
 	    // different: update log line and mark change
-	    g_strlcpy(qsos[linenr - 1], logline, sizeof(qsos[0]));
 	    g_free(qso->logline);
 	    qso->logline = g_strdup(logline);
 	    log_changed = true;
@@ -192,9 +180,8 @@ int readcalls(const char *logfile, bool interactive) {
 	    rename(logfile, backup);
 	    // rewrite log
 	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
-			    // FIXME store_qso write also back to qsos[]
 	    for (int i = 0 ; i < linenr; i++) {
-		store_qso(qsos[i]);
+		store_qso(QSOS(i));
 	    }
 	    if (interactive) {
 		showstring("Log has been backed up as", backup);
@@ -203,8 +190,6 @@ int readcalls(const char *logfile, bool interactive) {
 	    g_free(backup);
 	}
     }
-
-    g_ptr_array_free(qso_array, TRUE);  // FIXME keep the array
 
     return linenr;			// nr of lines in log
 }

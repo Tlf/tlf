@@ -190,6 +190,7 @@ typedef struct {
 /* represents different parts of a qso line */
 struct qso_t {
     char *logline;
+    bool is_comment;
     int band;
     int bandindex;
     int mode;
@@ -285,6 +286,8 @@ enum {
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
 
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
+
+#define QSOS(n)    (((struct qso_t*)g_ptr_array_index(qso_array, n))->logline)
 
 #endif /* TLF_H */
 
