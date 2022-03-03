@@ -30,6 +30,7 @@
 
 #include <glib.h>
 
+#include "audio.h"
 #include "cqww_simulator.h"
 #include "callinput.h"
 #include "clear_display.h"

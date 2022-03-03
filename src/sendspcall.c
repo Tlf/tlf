@@ -27,7 +27,7 @@
 
 #include <glib.h>
 
-#include "callinput.h"
+#include "audio.h"
 #include "globalvars.h"
 #include "sendbuf.h"
 #include "tlf.h"
