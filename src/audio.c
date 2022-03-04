@@ -325,7 +325,8 @@ static void stop_command(char *string) {
 static void vr_start(void) {
     IGNORE(system("echo " " > ~/.VRlock"));
 
-    char *command = g_strconcat("cd ", soundlog_dir, "; ",
+    char *command = g_strconcat("mkdir -p ", soundlog_dir, "; ",
+	    "cd ", soundlog_dir, "; ",
 	    soundlog_record_cmd, " >/dev/null 2>/dev/null &", NULL);
 
     IGNORE(system(command));
