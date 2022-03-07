@@ -4,6 +4,7 @@
 #include "../src/log_utils.h"
 #include "../src/globalvars.h"
 #include "../src/cqww_simulator.h"
+#include "../src/getpx.h"
 
 // OBJECT ../src/writecabrillo.o
 // OBJECT ../src/cabrillo_utils.o
@@ -12,6 +13,7 @@
 // OBJECT ../src/bands.o
 // OBJECT ../src/sendbuf.o
 // OBJECT ../src/utils.o
+// OBJECT ../src/getpx.o
 
 /* test stubs and dummies */
 struct linedata_t *parse_logline(char *buffer);
