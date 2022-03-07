@@ -209,7 +209,7 @@ void record(void) {
 		    mvprintw(LINES - 1, 1, "Press ESC to exit this screen");
 		    break;
 		}
-                // fall though to '4' (play back)
+                // fall through to '4' (play back)
 
 	    // Play back contest recording.
 	    case '4':
