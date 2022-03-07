@@ -538,60 +538,78 @@ static int cfg_dx_n_sections(const cfg_arg_t arg) {
 }
 
 static int cfg_countrylist(const cfg_arg_t arg) {
-    /* FIXME: why "use only first COUNTRY_LIST definition" ? */
-    /*static*/ char country_list_raw[50] = "";
-    char temp_buffer[255] = "";
-    char buffer[255] = "";
+    char buffer[2000];
+    char *country_list_raw = NULL;  // will point somewhere into buffer
     FILE *fp;
 
-    if (strlen(country_list_raw) == 0) {/* only if first definition */
+    /* First of all we are checking if the parameter <xxx> in
+    COUNTRY_LIST=<xxx> is a file name.  If it is we start
+    parsing the file. If we  find a line starting with our
+    case insensitive contest name, we copy the countries from
+    that line into country_list_raw.
+    If the input was not a file name we directly copy it into
+    country_list_raw (must not have a preceding contest name). */
 
-	/* First of all we are checking if the parameter <xxx> in
-	COUNTRY_LIST=<xxx> is a file name.  If it is we start
-	parsing the file. If we  find a line starting with our
-	case insensitive contest name, we copy the countries from
-	that line into country_list_raw.
-	If the input was not a file name we directly copy it into
-	country_list_raw (must not have a preceding contest name). */
+    g_strlcpy(buffer, parameter, sizeof(buffer));
+    g_strchomp(buffer);	/* drop trailing whitespace */
 
-	g_strlcpy(temp_buffer, parameter, sizeof(temp_buffer));
-	g_strchomp(temp_buffer);	/* drop trailing whitespace */
+    if ((fp = fopen(buffer, "r")) != NULL) {
 
-	if ((fp = fopen(temp_buffer, "r")) != NULL) {
+	char *prefix = g_strdup_printf("%s:", whichcontest);
 
-	    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+	while (fgets(buffer, sizeof(buffer), fp) != NULL) {
 
-		g_strchomp(buffer);   /* no trailing whitespace*/
+	    g_strstrip(buffer);   /* no leading/trailing whitespace*/
 
-		/* accept only a line starting with the contest name
-		 * (CONTEST=) followed by ':' */
-		if (strncasecmp(buffer, whichcontest,
-				strlen(whichcontest) - 1) == 0) {
-
-		    strncpy(country_list_raw,
-			    buffer + strlen(whichcontest) + 1,
-			    strlen(buffer) - 1);
-		}
+	    /* accept only a line starting with the contest name
+	     * (CONTEST=) followed by ':' */
+	    if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
+		country_list_raw = buffer + strlen(prefix); // skip prefix
+		break;
 	    }
-
-	    fclose(fp);
-	} else {	/* not a file */
-
-	    if (strlen(temp_buffer) > 0)
-		strcpy(country_list_raw, temp_buffer);
 	}
+
+	g_free(prefix);
+	fclose(fp);
+    } else {	/* not a file */
+	char *colon = index(buffer, ':');
+	if (colon != NULL) {
+	    country_list_raw = colon + 1;   // skip optional contest name
+	} else {
+	    country_list_raw = buffer;
+	}
+    }
+
+    if (country_list_raw == NULL) {
+	return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
     }
 
     /* parse the country_list_raw string into an array
      * (countrylist) for future use. */
-    char *tk_ptr = strtok(country_list_raw, ":,.- \t");
+
+    char *tk_ptr = strtok(country_list_raw, ",");
     int counter = 0;
 
-    if (tk_ptr != NULL) {
-	while (tk_ptr) {
-	    strcpy(countrylist[counter], tk_ptr);
-	    tk_ptr = strtok(NULL, ":,.-_\t ");
-	    counter++;  //FIXME: check index and clean not touched records
+    memset(countrylist, 0, sizeof(countrylist));
+
+    while (tk_ptr) {
+	char *prefix = g_strdup(tk_ptr);
+	g_strstrip(prefix);
+	if (strlen(prefix) >= sizeof(countrylist[0])) {
+	    error_details = g_strdup_printf("prefix too long (%s)", prefix);
+	    g_free(prefix);
+	    return PARSE_WRONG_PARAMETER;
+	}
+
+	strcpy(countrylist[counter], prefix);
+	g_free(prefix);
+
+	tk_ptr = strtok(NULL, ",");
+	counter++;
+
+	if (counter == G_N_ELEMENTS(countrylist)) {
+	    error_details = g_strdup("too many prefixes");
+	    return PARSE_WRONG_PARAMETER;
 	}
     }
 
