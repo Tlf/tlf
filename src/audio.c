@@ -89,15 +89,15 @@ static void recordmenue(void) {
 
     attron(modify_attr(COLOR_PAIR(C_WINDOW) | A_STANDOUT));
 
-    for (j = 0; j <= 24; j++)
+    for (j = 0; j <= LINES - 1; j++)
 	clear_line(j);
 
     mvaddstr(1, 20, "--- TLF SOUND RECORDER UTILITY ---");
     mvaddstr(6, 20, "F1 ... F12, S, C: Record Messages");
 
-    mvaddstr(9, 20, "1.: Enable contest recorder");
-    mvaddstr(10, 20, "2.: Disable contest recorder");
-    mvaddstr(11, 20, "3.: List and Play contest file");
+    mvaddstr(9, 20, "1: Enable contest recorder");
+    mvaddstr(10, 20, "2: Disable contest recorder");
+    mvaddstr(11, 20, "3: List and Play contest file");
     mvaddstr(13, 20, "ESC: Exit sound recorder function");
 
     refreshp();
@@ -170,12 +170,12 @@ void record(void) {
 		break;
 	    case 's':
 	    case 'S':
-		vk_do_record(12);
+		vk_do_record(SP_TU_MSG);
 		runnit = 0;
 		break;
 	    case 'c':
 	    case 'C':
-		vk_do_record(13);
+		vk_do_record(CQ_TU_MSG);
 		runnit = 0;
 		break;
 
@@ -208,7 +208,7 @@ void record(void) {
 		    mvprintw(LINES - 1, 1, "Press ESC to exit this screen");
 		    break;
 		}
-
+                // fall though to '4' (play back)
 
 	    // Play back contest recording.
 	    case '4':
@@ -285,7 +285,7 @@ static int vr_listfiles() {
     g_free(expanded_dir);
 
     for (int i = 4; i < 15; i++)
-	mvprintw(i, 0, "%*s", 80, "");
+	clear_line(i);
 
 
     if (n > 48) n = 48;	    /* limit number of file to display */
