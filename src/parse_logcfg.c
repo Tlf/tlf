@@ -106,7 +106,7 @@ static bool isCommentLine(char *buffer) {
 
 int parse_configfile(FILE *fp) {
     int status = PARSE_OK;
-    char buffer[160];
+    char buffer[2000];
 
     while (fgets(buffer, sizeof(buffer), fp) != NULL) {
 	g_strchug(buffer);              // remove leading space
