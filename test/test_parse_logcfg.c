@@ -96,12 +96,16 @@ int getctydata(char *checkcallptr) {
     if (g_str_has_prefix(checkcallptr, "JA")) return 13;
     if (g_str_has_prefix(checkcallptr, "PY")) return 12;
     if (g_str_has_prefix(checkcallptr, "UA9")) return 11;
+    // used for COUNTRYLIST
+    if (g_str_has_prefix(checkcallptr, "GM")) return 100;
+    if (g_str_has_prefix(checkcallptr, "HG")) return 101;
+    if (g_str_has_prefix(checkcallptr, "EA")) return 102;
+    if (g_str_has_prefix(checkcallptr, "EB")) return 102;   // = EA
     return 0;
 }
 
 int getctynr(char *checkcall) {
-    // TBD
-    return 0;
+    return getctydata(checkcall);
 }
 
 int foc_score(char *a) {
@@ -1027,7 +1031,7 @@ void test_countrylist_long(void **state) {
     assert_string_equal(countrylist[128], "VU");
     assert_string_equal(countrylist[160], "ZS8");
     assert_string_equal(countrylist[161], "");
-    assert_true(mult_side);
+    assert_false(mult_side);
     assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
@@ -1044,7 +1048,7 @@ void test_countrylist_from_file(void **state) {
 }
 
 void test_countrylist_from_file_long(void **state) {
-    strcpy(my.call, "G1ABC");
+    strcpy(my.call, "ZL1ABC");
     strcpy(whichcontest, "beru");
     int rc = call_parse_logcfg("COUNTRYLIST= data/countries.txt \n");
     assert_int_equal(rc, PARSE_OK);
