@@ -50,6 +50,8 @@ extern bool country_mult;
 extern struct qso_t *current_qso;
 extern char hiscall[20];
 extern char hiscall_sent[20];
+extern int resend_call;
+extern char sentcall[20];
 extern int total;
 extern int qso_points;
 extern int qsos_per_band[NBANDS];

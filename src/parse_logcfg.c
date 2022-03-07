@@ -1025,6 +1025,24 @@ static int cfg_cabrillo_field(const cfg_arg_t arg) {
     return rc;
 }
 
+static int cfg_resend_call(const cfg_arg_t arg) {
+    char *str = g_ascii_strup(parameter, -1);
+    g_strstrip(str);
+
+    if (strcmp(str, "PARTIAL") == 0) {
+	resend_call = RESEND_PARTIAL;
+    } else if (strcmp(str, "FULL") == 0) {
+	resend_call = RESEND_FULL;
+    } else {
+	g_free(str);
+	error_details = g_strdup("must be PARTIAL or FULL");
+	return PARSE_WRONG_PARAMETER;
+    }
+
+    g_free(str);
+    return PARSE_OK;
+}
+
 static config_t logcfg_configs[] = {
     {"CONTEST_MODE",        CFG_BOOL_TRUE(iscontest)},
     {"MIXED",               CFG_BOOL_TRUE(mixedmode)},
@@ -1189,6 +1207,7 @@ static config_t logcfg_configs[] = {
     {"UNIQUE_CALL_MULTI",   NEED_PARAM, cfg_unique_call_multi},
     {"DIGI_RIG_MODE",       NEED_PARAM, cfg_digi_rig_mode},
     {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
+    {"RESENDCALL",          NEED_PARAM, cfg_resend_call},
 
     {NULL}  // end marker
 };

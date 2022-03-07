@@ -181,6 +181,9 @@ void ExpandMacro(void) {
 	    early_started = 0;
 //                              sending_call = 0;
 	}
+	if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
+	    strcpy(sentcall, hiscall);
+	}
 	replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurrence */
 	replace_all(buffer, BUFSIZE, "@",
 		    hiscall);   /* his call, further occurrences */

@@ -47,6 +47,7 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "cleanup.h"
+#include "utils.h"
 
 
 void refresh_comment(void);
@@ -165,6 +166,27 @@ void logit(void) {
 		    callreturn = 0;
 		} else if (defer_store > 1) {
 		    if ((cqmode == CQ) && iscontest) {
+			if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
+			    if (strcmp(hiscall, sentcall) != 0) {
+				char tempmsg[21] = "";
+				char partial_call[20];
+				switch (resend_call) {
+				    case RESEND_FULL:
+					sprintf(tempmsg, "%s ", hiscall);
+					break;
+				    case RESEND_PARTIAL:
+					get_partial_callsign(sentcall, hiscall, partial_call);
+					sprintf(tempmsg, "%s ", partial_call);
+					break;
+				    default:
+					break;
+				}
+				if (tempmsg[0] != '\0') {
+				    sendmessage(tempmsg);
+				}
+			    }
+			    sentcall[0] = '\0';
+			}
 			send_standard_message(CQ_TU_MSG);	/* send cq return */
 			set_simulator_state(CALL);
 
