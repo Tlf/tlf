@@ -49,7 +49,7 @@ char *find_available(char *filename) {
  *
  * \returns a substring based on the sent and corrected callsign
  */
-void get_partial_callsign(char *call1, char *call2, char *partial) {
+void get_partial_callsign(char * call1, char * call2, char * partial) {
 
     size_t len1 = strlen(call1), len2 = strlen(call2);
     unsigned int len = (len1 < len2) ? len1 : len2;
@@ -67,10 +67,10 @@ void get_partial_callsign(char *call1, char *call2, char *partial) {
     plen1 = strlen(pfx1);
     plen2 = strlen(pfx2);
 
-    plen = (plen1 > plen2) ? plen1 : plen2;
+    plen = (plen1 > plen2) ? plen1 :plen2;
 
-    for (i = 0; i < len; i++) {
-	if (call1[i] != call2[i]) {
+    for(i=0; i<len; i++) {
+	if(call1[i] != call2[i]) {
 	    if (min < 0) {
 		min = i;
 		max = i;
@@ -88,27 +88,27 @@ void get_partial_callsign(char *call1, char *call2, char *partial) {
 	if (len2 < len1) {  // if the new call is shorter
 	    plen--;         // include the last char of suffix
 	}
-	strncpy(tpartial, call2 + plen, len2 - plen + 1); // the full suffix
-	tpartial[len2 - plen + 1] = '\0';
+	strncpy(tpartial, call2+plen, len2-plen+1); // the full suffix
+	tpartial[len2-plen+1] = '\0';
     } else {
 	// if there is only 1 diff, and it's at the end
 	// AB1CD / AB1CE -> CE
-	if (min == max && max == len2 - 1) {
+	if (min == max && max == len2-1) {
 	    min--; // add the previous char too
 	}
 	if (len1 == len2) {
 	    // if the mismatch is in the prefix
 	    // AB1CD / AB2CD -> AB2
-	    if (max <= plen - 1) {
+	    if (max <= plen-1) {
 		strncpy(tpartial, call2, plen);
 		tpartial[plen] = '\0';
 	    } else {
-		strncpy(tpartial, call2 + min, len2 - min + 1);
-		tpartial[len2 - min + 1] = '\0';
+		strncpy(tpartial, call2+min, len2-min+1);
+		tpartial[len2-min+1] = '\0';
 	    }
 	} else {
-	    strncpy(tpartial, call2 + min, len2 - min + 1);
-	    tpartial[len2 - min + 1] = '\0';
+	    strncpy(tpartial, call2+min, len2-min+1);
+	    tpartial[len2-min+1] = '\0';
 	}
     }
 
