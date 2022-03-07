@@ -107,12 +107,13 @@ static void recordmenue(void) {
 /*--------------------------------------------------------------------------*/
 void record(void) {
 
-    int runnit = 1, key;
+    int key;
+    bool run = true;
     char playbackfile[40];
 
     recordmenue();
 
-    while (runnit == 1) {
+    while (run) {
 
 	key = key_poll();
 
@@ -122,61 +123,61 @@ void record(void) {
 	    /* Record voice keyer messages, F1-F12, s|S, c|C. */
 	    case KEY_F(1):
 		vk_do_record(0);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(2):
 		vk_do_record(1);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(3):
 		vk_do_record(2);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(4):
 		vk_do_record(3);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(5):
 		vk_do_record(4);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(6):
 		vk_do_record(5);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(7):
 		vk_do_record(6);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(8):
 		vk_do_record(7);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(9):
 		vk_do_record(8);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(10):
 		vk_do_record(9);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(11):
 		vk_do_record(10);
-		runnit = 0;
+		run = false;
 		break;
 	    case KEY_F(12):
 		vk_do_record(11);
-		runnit = 0;
+		run = false;
 		break;
 	    case 's':
 	    case 'S':
 		vk_do_record(SP_TU_MSG);
-		runnit = 0;
+		run = false;
 		break;
 	    case 'c':
 	    case 'C':
 		vk_do_record(CQ_TU_MSG);
-		runnit = 0;
+		run = false;
 		break;
 
 	    /* Contest recording and playback. */
@@ -188,7 +189,7 @@ void record(void) {
 		mvaddstr(15, 20, "Contest recording enabled...");
 		refreshp();
 		sleep(1);
-		runnit = 0;
+		run = false;
 		break;
 
 	    // Stop contest recording.
@@ -199,7 +200,7 @@ void record(void) {
 
 		vr_stop();
 
-		runnit = 0;
+		run = false;
 		break;
 
 	    // List contest recordings.
@@ -227,11 +228,11 @@ void record(void) {
 		IGNORE(system(command));
 		g_free(command);
 
-		runnit = 0;
+		run = false;
 		break;
 
 	    case ESCAPE:
-		runnit = 0;
+		run = false;
 	}
     }
 }
