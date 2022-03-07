@@ -109,7 +109,7 @@ int foc_score(char *a) {
     return 0;
 }
 
-prefix_data *getctyinfo(char * call) {
+prefix_data *getctyinfo(char *call) {
     return NULL;
 }
 
@@ -1013,6 +1013,24 @@ void test_countrylist(void **state) {
     assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
+void test_countrylist_long(void **state) {
+    strcpy(whichcontest, "abc");
+    strcpy(my.call, "HG1ABC");
+    int rc = call_parse_logcfg("COUNTRYLIST=beru:2D,2E,2I,2J,2M,2U,2W,3B6,3B7,3B8,3B9,3D2,3D2,3D2,3DA,4S ,5B,5H ,5N ,5W ,5X ,5Z ,6Y ,7P ,7Q ,8P ,8Q ,8R ,9G ,9H ,9J ,9L ,9M0,9M2,9M6,9M8,9V ,9X ,9Y ,A2 ,A3 ,AP ,C2 ,C4,C5 ,C6 ,C9 ,CY0,CY9,E5 ,E5 ,G,GD,GI,GJ,GM,GU,GW,H2,H40,H44,J3 ,J6 ,J7 ,J8 ,M,MD,MI,MJ,MM,MU,MW,P2 ,P3,S2 ,S7 ,T2 ,T30,T31,T32,T33,TJ ,V2 ,V3 ,V4 ,V5 ,V8 ,VE1,VE2,VE3,VE4,VE5,VE6,VE7,VE8,VE9,VK0,VK0,VK1,VK2,VK3,VK4,VK5,VK6,VK7,VK8,VK9,VK9,VK9M,VK9N,VK9W,VK9X,VO1,VO2,VP2M,VP2V,VP3E,VP5,VP6,VP6,VP8,VP8,VP8,VP8,VP8,VP8,VP9,VQ9,VU ,VU4,VU7,VY0,VY1,VY2,YJ ,Z2 ,ZB2,ZC4,ZD7,ZD8,ZD9,ZF ,ZK2,ZK3,ZL0,ZL1,ZL2,ZL3,ZL4,ZL6,ZL7,ZL8,ZL9,ZS0,ZS1,ZS2,ZS3,ZS4,ZS5,ZS6,ZS8");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(countrylist[0], "2D");
+    assert_string_equal(countrylist[1], "2E");
+    assert_string_equal(countrylist[2], "2I");
+    assert_string_equal(countrylist[3], "2J");
+    assert_string_equal(countrylist[22], "6Y");
+    assert_string_equal(countrylist[100], "VK3");
+    assert_string_equal(countrylist[128], "VU");
+    assert_string_equal(countrylist[160], "ZS8");
+    assert_string_equal(countrylist[161], "");
+    assert_true(mult_side);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
+}
+
 void test_countrylist_from_file(void **state) {
     strcpy(my.call, "EB1ABC");
     strcpy(whichcontest, "bdx");
@@ -1021,6 +1039,26 @@ void test_countrylist_from_file(void **state) {
     assert_string_equal(countrylist[0], "EA");
     assert_string_equal(countrylist[1], "CT");
     assert_string_equal(countrylist[2], "");
+    assert_true(mult_side);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
+}
+
+void test_countrylist_from_file_long(void **state) {
+    strcpy(my.call, "G1ABC");
+    strcpy(whichcontest, "beru");
+    int rc = call_parse_logcfg("COUNTRYLIST= data/countries.txt \n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(countrylist[0], "2D");
+    assert_string_equal(countrylist[1], "2E");
+    assert_string_equal(countrylist[0], "2D");
+    assert_string_equal(countrylist[1], "2E");
+    assert_string_equal(countrylist[2], "2I");
+    assert_string_equal(countrylist[3], "2J");
+    assert_string_equal(countrylist[22], "6Y");
+    assert_string_equal(countrylist[100], "VK3");
+    assert_string_equal(countrylist[128], "VU");
+    assert_string_equal(countrylist[160], "ZS8");
+    assert_string_equal(countrylist[161], "");
     assert_true(mult_side);
     assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
