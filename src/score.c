@@ -58,7 +58,7 @@ bool is_in_countrylist(int countrynr) {
 }
 
 
-/* check if hiscall is in COUNTRY_LIST from logcfg.dat */
+/* check if hiscall is in COUNTRYLIST from logcfg.dat */
 // FIXME: *** this function does not use its argument ***
 bool country_found(char prefix[]) {
     char tmpcall[15];

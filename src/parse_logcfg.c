@@ -543,7 +543,7 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     FILE *fp;
 
     /* First of all we are checking if the parameter <xxx> in
-    COUNTRY_LIST=<xxx> is a file name.  If it is we start
+    COUNTRYLIST=<xxx> is a file name.  If it is we start
     parsing the file. If we  find a line starting with our
     case insensitive contest name, we copy the countries from
     that line into country_list_raw.

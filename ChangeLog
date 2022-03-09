@@ -3276,9 +3276,9 @@
 
 2012-03-18  Thomas Beierlein <tomjbe@gentoo.org>
 
-  * src/parse_logcfg.c: fix recognition of COUNTRY_LIST= keyword 
+  * src/parse_logcfg.c: fix recognition of COUNTRYLIST= keyword
   - multiplier_list was uninitialized. If it was not empty 
-    COUNTRY_LIST definitions would not be recognized 
+    COUNTRYLIST definitions would not be recognized
   - use glib for better handling of string termination
 
 2012-03-19  Thomas Beierlein <tb@forth-ev.de>
