@@ -231,22 +231,21 @@ void change_mode(void) {
 }
 
 void resend_callsign() {
-    if (strcmp(hiscall, sentcall) != 0) {
-	char tempmsg[21] = "";
-	char partial_call[20];
+    if (sentcall[0] != 0 && strcmp(hiscall, sentcall) != 0) {
+	char partial_call[21] = "";
 	switch (resend_call) {
 	    case RESEND_FULL:
-		sprintf(tempmsg, "%s ", hiscall);
+		strcpy(partial_call, hiscall);
 		break;
 	    case RESEND_PARTIAL:
 		get_partial_callsign(sentcall, hiscall, partial_call);
-		sprintf(tempmsg, "%s ", partial_call);
 		break;
 	    default:
 		break;
 	}
-	if (tempmsg[0] != '\0') {
-	    sendmessage(tempmsg);
+	if (partial_call[0] != '\0') {
+	    strcat(partial_call, " ");  // append a space
+	    sendmessage(partial_call);
 	}
     }
     sentcall[0] = '\0';
