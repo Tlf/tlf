@@ -2187,7 +2187,7 @@ then the other station's callsign will be sent before \(lqDE\(rq, such as
 \(lqDL1A DE W1AW\(rq.
 .
 .TP
-.B RESENDCALL=\fIFULL\fR | \fIPARTIAL\fR
+.B RESEND_CALL=\fIFULL\fR | \fIPARTIAL\fR
 Sends the partial or the full callsign again in RUN mode, and if the first
 recording was wrong. In case of \fIFULL\fR, the whole callsign will send again.
 If the value is \fIPARTIAL\fR, then Tlf figures out which part of callsign has

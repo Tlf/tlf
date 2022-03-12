@@ -283,7 +283,7 @@ enum {
     MARKER_CALLS,	/* DOTS & CALLS */
 };
 
-/* Enums for RESENDCALL feature */
+/* Enums for RESEND_CALL feature */
 enum {
     RESEND_NOT_SET,		/* Resend feature not set */
     RESEND_PARTIAL,		/* Resend partial hiscall */

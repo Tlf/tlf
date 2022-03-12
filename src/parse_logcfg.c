@@ -1207,7 +1207,7 @@ static config_t logcfg_configs[] = {
     {"UNIQUE_CALL_MULTI",   NEED_PARAM, cfg_unique_call_multi},
     {"DIGI_RIG_MODE",       NEED_PARAM, cfg_digi_rig_mode},
     {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
-    {"RESENDCALL",          NEED_PARAM, cfg_resend_call},
+    {"RESEND_CALL",         NEED_PARAM, cfg_resend_call},
 
     {NULL}  // end marker
 };
