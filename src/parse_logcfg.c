@@ -1035,7 +1035,7 @@ static int cfg_resend_call(const cfg_arg_t arg) {
 	resend_call = RESEND_FULL;
     } else {
 	g_free(str);
-	error_details = g_strdup("must be PARTIAL or FULL");
+	error_details = g_strdup("must be FULL or PARTIAL");
 	return PARSE_WRONG_PARAMETER;
     }
 
