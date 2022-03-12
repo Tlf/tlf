@@ -25,6 +25,8 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
+#include <stdbool.h>
+
 #define FS	11025
 #define S_BAR 0
 #define SPOT_BAR 1
@@ -35,5 +37,9 @@ void init_audio();
 int close_audio();
 int testaudio();
 void record(void);
+void play_file(char *audiofile);
+void stop_vk();
+bool is_vk_finished();
+
 
 #endif /* AUDIO_H */

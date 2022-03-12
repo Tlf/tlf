@@ -21,16 +21,20 @@
 # An executable copy of 'play_vk' in your contest directory (containing the
 # logcfg.dat file) can be adapted and has precedence over the standard install
 
+# accept SIGTERM and SIGINT signals and kill play command as soon as possible
+trap 'kill -s KILL $PID' TERM INT
+
 # mute mic
 #amixer -c 0 set Mic mute -q
 
-# play file on the default sound device
-
-# OSS play utility syntax:
-#play $1 -q 2>/dev/null
+# play file on the default sound device in background, so signals can be catch
+# by the 'trap' instruction above
 
 # SoX play utility syntax
-play -q $1
+play -q $1 2> /dev/null &
+PID=$!
+wait $PID
+
 
 #unmute mic
 #amixer -c 0 set Mic unmute -q
