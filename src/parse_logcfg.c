@@ -622,62 +622,82 @@ static int cfg_countrylist(const cfg_arg_t arg) {
 }
 
 static int cfg_continentlist(const cfg_arg_t arg) {
-    /* based on LZ3NY code, by HA2OS
-       CONTINENT_LIST   (in file or listed in logcfg.dat),
+    char buffer[2000];
+    char *cont_multiplier_list = NULL;  // will point somewhere into buffer
+    FILE *fp;
+
+    /*
+       CONTINENTLIST   (in file or listed in logcfg.dat)
        First of all we are checking if inserted data in
-       CONTINENT_LIST= is a file name.  If it is we start
+       CONTINENTLIST= is a file name.  If it is we start
        parsing the file. If we got our case insensitive contest name,
        we copy the multipliers from it into multipliers_list.
        If the input was not a file name we directly copy it into
        cont_multiplier_list (must not have a preceding contest name).
        The last step is to parse the multipliers_list into an array
        (continent_multiplier_list) for future use.
-     */
+    */
 
-    /* use only first CONTINENT_LIST definition */
-    /*static*/ char cont_multiplier_list[50] = "";
-    char temp_buffer[255] = "";
-    char buffer[255] = "";
-    FILE *fp;
+    g_strlcpy(buffer, parameter, sizeof(buffer));
+    g_strchomp(buffer);	/* drop trailing whitespace */
 
-    if (strlen(cont_multiplier_list) == 0) {	/* if first definition */
-	g_strlcpy(temp_buffer, parameter, sizeof(temp_buffer));
-	g_strchomp(temp_buffer);	/* drop trailing whitespace */
+    if ((fp = fopen(buffer, "r")) != NULL) {
 
-	if ((fp = fopen(temp_buffer, "r")) != NULL) {
+	char *prefix = g_strdup_printf("%s:", whichcontest);
 
-	    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+	while (fgets(buffer, sizeof(buffer), fp) != NULL) {
 
-		g_strchomp(buffer);   /* no trailing whitespace*/
+	    g_strstrip(buffer);   /* no leading/trailing whitespace*/
 
-		/* accept only a line starting with the contest name
-		 * (CONTEST=) followed by ':' */
-		if (strncasecmp(buffer, whichcontest,
-				strlen(whichcontest) - 1) == 0) {
-
-		    strncpy(cont_multiplier_list,
-			    buffer + strlen(whichcontest) + 1,
-			    strlen(buffer) - 1);
-		}
+	    /* accept only a line starting with the contest name
+	     * (CONTEST=) followed by ':' */
+	    if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
+		cont_multiplier_list = buffer + strlen(prefix); // skip prefix
+		break;
 	    }
+	}
 
-	    fclose(fp);
-	} else {	/* not a file */
-
-	    if (strlen(temp_buffer) > 0)
-		strcpy(cont_multiplier_list, temp_buffer);
+	g_free(prefix);
+	fclose(fp);
+    } else {	/* not a file */
+	char *colon = index(buffer, ':');
+	if (colon != NULL) {
+	    cont_multiplier_list = colon + 1;   // skip optional contest name
+	} else {
+	    cont_multiplier_list = buffer;
 	}
     }
 
-    /* creating the array */
-    char *tk_ptr = strtok(cont_multiplier_list, ":,.- \t");
+    if (cont_multiplier_list == NULL) {
+	return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
+    }
+
+    /* parse the cont_multiplier_list string into an array
+     * (continent_multiplier_list) for future use. */
+
+    char *tk_ptr = strtok(cont_multiplier_list, ",");
     int counter = 0;
 
-    if (tk_ptr != NULL) {
-	while (tk_ptr) {
-	    strncpy(continent_multiplier_list[counter], tk_ptr, 2);
-	    tk_ptr = strtok(NULL, ":,.-_\t ");
-	    counter++;  // FIXME check range + clean + value length check
+    memset(continent_multiplier_list, 0, sizeof(continent_multiplier_list));
+
+    while (tk_ptr) {
+	char *entry = g_strdup(tk_ptr);
+	g_strstrip(entry);
+	if (strlen(entry) >= sizeof(continent_multiplier_list[0])) {
+	    error_details = g_strdup_printf("entry too long (%s)", entry);
+	    g_free(entry);
+	    return PARSE_WRONG_PARAMETER;
+	}
+
+	strcpy(continent_multiplier_list[counter], entry);
+	g_free(entry);
+
+	tk_ptr = strtok(NULL, ",");
+	counter++;
+
+	if (counter == G_N_ELEMENTS(continent_multiplier_list)) {
+	    error_details = g_strdup("too many continents");
+	    return PARSE_WRONG_PARAMETER;
 	}
     }
 
