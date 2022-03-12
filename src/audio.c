@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
- *                              2012-2021 Thomas Beierlein <tb@forth-ev.de>
+ *                              2012-2022 Thomas Beierlein <tb@forth-ev.de>
  *                                   2021 Nate Bargman <n0nb@n0nb.us>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -84,6 +84,20 @@ void sound_setup_default(void) {
 }
 
 
+/* check if Voice Recorder got started and is still running
+ *
+ * For simplicity check if ~/.VRlock is present. It gets created during start
+ * of VR and removed when <vr gets stopped
+ */
+static bool is_VR_running() {
+    char *lockfile = g_strconcat(g_get_home_dir(), G_DIR_SEPARATOR_S,
+		".VRlock", NULL);
+    bool exists = (access(lockfile, F_OK) == 0);
+    g_free(lockfile);
+    return exists;
+}
+
+
 static void recordmenue(void) {
     int j;
 
@@ -95,14 +109,16 @@ static void recordmenue(void) {
     mvaddstr(1, 20, "--- TLF SOUND RECORDER UTILITY ---");
     mvaddstr(6, 20, "F1 ... F12, S, C: Record Messages");
 
-    mvaddstr(9, 20, "1: Enable contest recorder");
-    mvaddstr(10, 20, "2: Disable contest recorder");
-    mvaddstr(11, 20, "3: List and Play contest file");
-    mvaddstr(13, 20, "ESC: Exit sound recorder function");
+    mvprintw(9, 20, "1; %s contest recorder",
+	    is_VR_running() ? "Disable" : "Enable");
+
+    mvaddstr(10, 20, "2: List and Play contest file");
+    mvaddstr(12, 20, "ESC: Exit sound recorder function");
 
     refreshp();
 
 }
+
 
 /*--------------------------------------------------------------------------*/
 void record(void) {
@@ -182,37 +198,33 @@ void record(void) {
 
 	    /* Contest recording and playback. */
 
-	    // Start contest recording.
+	    // Start/Stop contest recording.
 	    case '1':
-		vr_start();
+		if (is_VR_running()) {
+		    vr_stop();
 
-		mvaddstr(15, 20, "Contest recording enabled...");
-		refreshp();
-		sleep(1);
+		    mvaddstr(15, 20, "Contest recording disabled...");
+		    refreshp();
+		    sleep(1);
+		} else {
+		    vr_start();
+
+		    mvaddstr(15, 20, "Contest recording enabled...");
+		    refreshp();
+		    sleep(1);
+		}
 		run = false;
 		break;
 
-	    // Stop contest recording.
+
 	    case '2':
-		mvaddstr(15, 20, "Contest recording disabled...");
-		refreshp();
-		sleep(1);
-
-		vr_stop();
-
-		run = false;
-		break;
-
-	    // List contest recordings.
-	    case '3':
+		// List contest recordings
 		if (vr_listfiles() == -1) {
 		    mvprintw(LINES - 1, 1, "Press ESC to exit this screen");
 		    break;
 		}
-                // fall through to '4' (play back)
 
-	    // Play back contest recording.
-	    case '4':
+		// and play play back one recorded file.
 		mvprintw(17, 20, "Play back file (ddhhmm): ");
 		refreshp();
 
