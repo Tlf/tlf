@@ -167,10 +167,8 @@ void logit(void) {
 		    defer_store++;
 		    callreturn = 0;
 		} else if (defer_store > 1) {
-		    if ((cqmode == CQ) && iscontest) {
-			if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
-			    resend_callsign();
-			}
+		    if (cqmode == CQ && iscontest) {
+			resend_callsign();
 			send_standard_message(CQ_TU_MSG);	/* send cq return */
 			set_simulator_state(CALL);
 
