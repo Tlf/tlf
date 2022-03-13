@@ -167,10 +167,8 @@ void logit(void) {
 		    defer_store++;
 		    callreturn = 0;
 		} else if (defer_store > 1) {
-		    if ((cqmode == CQ) && iscontest) {
-			if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
-			    resend_callsign();
-			}
+		    if (cqmode == CQ && iscontest) {
+			resend_callsign();
 			send_standard_message(CQ_TU_MSG);	/* send cq return */
 			set_simulator_state(CALL);
 
@@ -231,22 +229,21 @@ void change_mode(void) {
 }
 
 void resend_callsign() {
-    if (strcmp(hiscall, sentcall) != 0) {
-	char tempmsg[21] = "";
-	char partial_call[20];
+    if (sentcall[0] != 0 && strcmp(hiscall, sentcall) != 0) {
+	char partial_call[21] = "";
 	switch (resend_call) {
 	    case RESEND_FULL:
-		sprintf(tempmsg, "%s ", hiscall);
+		strcpy(partial_call, hiscall);
 		break;
 	    case RESEND_PARTIAL:
 		get_partial_callsign(sentcall, hiscall, partial_call);
-		sprintf(tempmsg, "%s ", partial_call);
 		break;
 	    default:
 		break;
 	}
-	if (tempmsg[0] != '\0') {
-	    sendmessage(tempmsg);
+	if (partial_call[0] != '\0') {
+	    strcat(partial_call, " ");  // append a space
+	    sendmessage(partial_call);
 	}
     }
     sentcall[0] = '\0';

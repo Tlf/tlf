@@ -2188,15 +2188,17 @@ then the other station's callsign will be sent before \(lqDE\(rq, such as
 .
 .TP
 .B RESEND_CALL=\fIFULL\fR | \fIPARTIAL\fR
-Sends the partial or the full callsign again in RUN mode, and if the first
-recording was wrong. In case of \fIFULL\fR, the whole callsign will send again.
-If the value is \fIPARTIAL\fR, then Tlf figures out which part of callsign has
-to send. Eg.: if the received call in first case was
+Sends the full or partial callsign again at the end of the QSO
+in RUN mode if the call of the other station was corrected.
+In case of \fIFULL\fR the whole callsign will be sent again.
+If the value is \fIPARTIAL\fR, then TLF figures out which part of callsign
+has to be sent. Eg.: if the received call was
 .B AB1CD,
-but later hi corrects to
+but later it is corrected to
 .B AB1CB,
-then tlf sends 
+then
 .B CB.
+is sent.
 .
 .SH RULES
 .
