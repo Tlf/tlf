@@ -5,7 +5,6 @@
 #include "../src/readcabrillo.h"
 #include "../src/cqww_simulator.h"
 #include "../src/log_utils.h"
-#include "../src/getpx.h"
 
 // OBJECT ../src/cabrillo_utils.o
 // OBJECT ../src/readcabrillo.o
@@ -16,7 +15,6 @@
 // OBJECT ../src/sendbuf.o
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/utils.o
-// OBJECT ../src/getpx.o
 
 /* test stubs and dummies */
 bool simulator = false;
