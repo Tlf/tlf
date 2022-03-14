@@ -1,7 +1,6 @@
 # TLF ham radio contest logger
 
-[![Build
-Status](https://github.com/Tlf/tlf/actions/workflows/ci-build.yml/badge.svg)](https://github.com/Tlf/tlf/actions/workflows/ci-build.yml)
+[![Build Status](https://github.com/Tlf/tlf/actions/workflows/ci-build.yml/badge.svg)](https://github.com/Tlf/tlf/actions/workflows/ci-build.yml)
 
 ## Summary
 
