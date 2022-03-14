@@ -52,7 +52,18 @@ Debian-flavored distributions (including Ubuntu):
 sudo apt install tlf
 ```
 
-If you choose this route, you can skip the next section.
+If you choose this route, you can skip the "Building from source" section.
+
+If you want to use [cwdaemon](https://github.com/acerion/cwdaemon) for CW, make
+sure it's installed, and either set it up to start at system startup, or plan to
+start it manually before launching TLF. 
+
+If you want to use a K1EL Winkeyer for CW, download and install either
+[winkeyer_server](https://github.com/ok2cqr/winkeyer_server) or
+[winkeydaemon](https://github.com/N0NB/winkeydaemon), following the instructions
+on those pages. You'll need to start the Winkeyer server (either one) before
+starting TLF. Both programs work by impersonating cwdaemon, which TLF will use
+automatically if you've enabled the NETKEYER settings in the `logcfg.dat` file.
 
 ### Building from source
 
