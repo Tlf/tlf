@@ -1183,7 +1183,7 @@ Ends modem capture for RTTY mode in QTC window (started with
 .
 .IP
 See
-.I @prefix@/share/doc/@PACKAGE@/README_QTC_RTTY.txt
+.I @prefix@/share/doc/@PACKAGE@/Manual.md
 for more information.
 .
 .TP
@@ -1192,9 +1192,9 @@ Set frequency.
 .
 Use
 .BR Up / Down -Arrow
-for 100hz steps and
+for 100Hz steps and
 .BR Pg-Up / Pg-Down
-for 500hz steps.
+for 500Hz steps.
 .
 Return to logging with
 .BR Escape .
@@ -1232,9 +1232,9 @@ if \fBQTC\fR=\fISEND\fR.
 .
 .IP
 See
-.I @prefix@/share/doc/@PACKAGE@/README_QTC.txt
+.I @prefix@/share/doc/@PACKAGE@/Manual.md
 and
-.I @prefix@/share/doc/@PACKAGE@/README_QTC_RTTY.txt
+.I @prefix@/share/doc/@PACKAGE@/Manual.md
 for more information.
 .
 .TP
@@ -1259,9 +1259,9 @@ End capture with
 .
 .IP
 See
-.I @prefix@/share/doc/@PACKAGE@/README_QTC.txt
+.I @prefix@/share/doc/@PACKAGE@/Manual.md
 and
-.I @prefix@/share/doc/@PACKAGE@/README_QTC_RTTY.txt
+.I @prefix@/share/doc/@PACKAGE@/Manual.md
 for more information.
 .
 .TP
@@ -2998,7 +2998,7 @@ is one of: RECV, SEND, BOTH
 Currently just the RECV direction is implemented.
 .
 For more information, please see the
-.I @prefix@/share/doc/@PACKAGE@/README_QTC.txt
+.I @prefix@/share/doc/@PACKAGE@/Manual.md
 file.
 .
 .TP
@@ -3155,7 +3155,7 @@ The specified format file is used both to generate Cabrillo output and also
 for Cabrillo import.
 .
 For technical details see
-.IR @prefix@/share/doc/@PACKAGE@/README.Cabrillo .
+.IR @prefix@/share/doc/@PACKAGE@/Manual.md .
 .
 .IP
 A
