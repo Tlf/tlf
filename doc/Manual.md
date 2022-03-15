@@ -309,8 +309,8 @@ VKCQM=/home/aham/tlf/audio/vkcqm.wav
 ```
 
 Thus a common set of voice messages can be pointed to from different rule
-files. The f12 message is the auto-repeated CQ message for when the rate is
-low. The VKSPM and VKCQM messages are sent after a contact is logged, in S+P
+files. The F12 message is the auto-repeated CQ message for when the rate is
+low. The VKSPM and VKCQM messages are sent after a contact is logged, in S&P
 and CQ modes respectively. 
 
 Paths that are not defined cannot be recorded to from within TLF. 
@@ -963,8 +963,7 @@ CABRILLO=cwo
 is in the rules file for the CW Open contest. All QSOs will then be formatted
 as in the following example:  
 
-QSO: 28000 CW 2012-09-23 0815 DL1JBE        0001 Tom       HB9XXX        0023
-Joe QSO: .....  
+QSO: 28000 CW 2012-09-23 0815 DL1JBE    0001 Tom    HB9XXX    0023
 
 ### Importing Cabrillo  
 
