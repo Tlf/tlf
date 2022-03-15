@@ -1233,8 +1233,6 @@ if \fBQTC\fR=\fISEND\fR.
 .IP
 See
 .I @prefix@/share/doc/@PACKAGE@/Manual.md
-and
-.I @prefix@/share/doc/@PACKAGE@/Manual.md
 for more information.
 .
 .TP
@@ -1259,8 +1257,6 @@ End capture with
 .
 .IP
 See
-.I @prefix@/share/doc/@PACKAGE@/Manual.md
-and
 .I @prefix@/share/doc/@PACKAGE@/Manual.md
 for more information.
 .
