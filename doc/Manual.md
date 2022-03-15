@@ -62,11 +62,11 @@ from a high-end desktop with triple monitors to a headless Raspberry Pi Zero.
 
 The chief disadvantage of this design is that there's a steep learning curve
 for new users. TLF is a powerful and efficient tool for contest logging, but
-    you can't just click through the menus and figure things out on your own.
-    You need to read some documentation. This manual, plus the built-in man
-    page (accessed in the terminal with `man tlf`) is that documentation. Once
-    you've gotten familiar with TLF's operation, you may begin to wonder why
-    anyone would design a contest logger any other way.
+you can't just click through the menus and figure things out on your own. You
+need to read some documentation. This manual, plus the built-in man page
+(accessed in the terminal with `man tlf`) is that documentation. Once you've
+gotten familiar with TLF's operation, you may begin to wonder why anyone would
+design a contest logger any other way.
 
 ## About the name
 
@@ -86,14 +86,14 @@ basic installation of TLF. Two important concepts from that document are:
 
 Note that the rules file has to be in a subdirectory called `rules` in order
 for TLF to recognize it. The rules file itself will be named for the contest,
-with no extension, e.g. `arrldx_usa` is the rules file for a USA-based
-station operating in the ARRL DX contest (either CW or SSB). In the image
-below, the arrltest.log and tlfmarkers files were created by TLF on its
-initial launch from this directory. The former is the working log file,
-and the latter is for plotting DX spots on a grayline map displayed in a
-separate window (optional). 
+with no extension, e.g. `arrldx_usa` is the rules file for a USA-based station
+operating in the ARRL DX contest (either CW or SSB). In the image below, the
+arrltest.log and tlfmarkers files were created by TLF on its initial launch
+from this directory. The former is the working log file, and the latter is for
+plotting DX spots on a grayline map displayed in a separate window (optional). 
 
-<img title="Screenshot" alt="Screenshot showing basic file structure." src="images/BasicFileStructure.png" />
+<img title="Screenshot" alt="Screenshot showing basic file structure."
+src="images/BasicFileStructure.png" />
 
 In general, `logcfg.dat` is for station-specific settings, while the rules
 file is for contest-specific settings. That means once you've gotten TLF set
@@ -126,7 +126,8 @@ As long as the window is set to 80 columns x 25 lines, TLF should launch and
 look okay in your default terminal window. Here is the main screen on the
 default terminal in Ubuntu 20.04:
 
-<img title="Terminal" alt="Screenshot showing TLF in a terminal window." src="images/DefaultTerminal.png" />
+<img title="Terminal" alt="Screenshot showing TLF in a terminal window."
+src="images/DefaultTerminal.png" />
 
 The `doc` directory contains a sample `.Xresources` file to change the colors,
 and many TLF users also prefer non-default terminals such as `urxvt`. Console
@@ -211,76 +212,84 @@ stopping and restarting it while trying different port configurations.
 TLF will start in CW mode by default. 
 
 ## SSB 
- 
-*Pasted from the original README.ssb by Andy, G4KNO - some information may be
-out of date.* 
 
 TLF provides a voice keyer facility using the PC's sound card. This section
 provides additional information to help the user configure SSB operation. 
 
-### Radio Interfacing (*may be outdated*)
+### Radio Interfacing
 
-For the purposes of CW and PTT control, TLF interfaces to the radio via
-cwdaemon, not hamlib. Therefore if you want voice keyer facilities cwdaemon
-must be running before starting TLF. 
+Often, the biggest challenge in getting voice keying to work, whether with TLF
+or any other logging program, is connecting the computer audio to the radio in
+a way that triggers PTT correctly. We can't cover all possible configurations
+in this manual, but will offer some general pointers. If you've used sound
+card-based HF digital modes, you must already have a workable computer-to-rig
+connection, which should serve as a starting point for routing the voice keyer
+audio. A West Mountain Rigblaster interface or homebrew equivalent makes the
+process even more straightforward, and the manual for that device will cover
+the appropriate settings. Those with newer radios that offer direct USB,
+Bluetooth, or Wi-Fi connections may need to explore the menu settings.
 
-cwdaemon can be invoked for a serial port or a parallel port. The most likely
-modern scenario is to use a USB<->serial adaptor, in which case an example of
-starting cwdaemon (as root) might be: 
+If you decide you need TLF to trigger the PTT line and the hamlib PTT isn't
+working, you can try a workaround with `cwdaemon`, which can be invoked for a
+serial port or a parallel port. The most likely modern scenario is to use a
+USB<->serial adapter, in which case an example of starting cwdaemon (as root)
+might be: 
 
-cwdaemon -d ttyUSB0 
+```
+cwdaemon -d ttyUSB0
+```
 
-You can figure out which tty the adaptor is on by running 'dmesg' before and
-after plugging-in the USB. 
-
-Check 'man cwdaemon' for circuit suggestions on interfacing DTR/RTS to CW/PTT
-ports on your radio. 
+You can figure out which `tty` port the adapter is on by running `dmesg`
+before and after plugging in the USB. Check `man cwdaemon` for circuit
+suggestions on interfacing DTR/RTS to CW/PTT ports on your radio. 
 
 One option for mic interfacing is to use PTT to control a relay that connects
 the radio's mic input either to the mic or to the soundcard. An alternative
-solution, that is recommended by many other contest loggers, is instead to
-connect the mic to the soundcard's mic input and the soundcard's output to the
-radio's mic input. Most soundcards will loop-back the mic audio to the output,
-which is easily checked. The only issue here is that the mic is also live when
-playing voice keyer messages, but this can be avoided (see next section). 
+solution, recommended by many other contest loggers, is instead to connect the
+mic to the soundcard's mic input and the soundcard's output to the radio's mic
+input. Most soundcards will loop the mic audio back to the output, which is
+easily checked. The only issue here is that the mic is also live when playing
+voice keyer messages, but this can be avoided (see the next section). 
 
 Note that some radios (e.g. TenTec Orion) have only one port that becomes PTT
-in SSB mode and Key in CW mode. Wire-OR-ing the CW and PTT outputs from
-cwdaemon is not an ideal solution because in CW mode PTT is still asserted and
-results in key-down for the duration of the message. At present there is no
-satisfactory solution to this problem. 
+in SSB mode and Key in CW mode. Wire OR-ing the CW and PTT outputs from
+`cwdaemon` is not ideal, because in CW mode PTT is still asserted, resulting
+in key-down for the duration of the message. There is currently no
+satisfactory solution to this problem, so we don't recommend that approach.
 
 ### Configuration Files 
 
-Normal practice is to create a new directory for each contest. Then a
-logcfg.dat file in that directory overrides the default. If you are using SSB
-only in a contest you can force TLF to start in SSB mode by uncommenting the
-SSBMODE keyword in logcfg.dat. 
+The normal practice with TLF is to create a new directory for each contest, so
+a `logcfg.dat` file in that directory overrides the default. If you are using
+SSB only in a contest you can force TLF to start in SSB mode by uncommenting
+the SSBMODE keyword in `logcfg.dat`. 
 
 If you have adopted the method that loops back the mic audio and you want to
 automatically mute the mic when voice keyer messages are played, copy the
-'play_vk' shell script found in the 'scripts' directory of your TLF release to
+`play_vk` shell script found in the `scripts` directory of your TLF release to
 the same directory. This will then be used in preference to the default.
-Uncomment the lines beginning with 'amixer'. 
+Uncomment the lines beginning with `amixer`. 
 
-Since tlf-1.1.0, (un)muting and playing voice messages has been devolved to
-this external script file, because not all soundcards offer the same
-interface. 'Mic' could be called something else. One way of finding this out
-is to run 'amixer' from a terminal which returns its capabilities. An
-alternative method is to install your distro's version of the 'alsamixergui'
-package and simply see what's available on the faders. This is probably a good
-idea anyway because it's likely sound won't work without some manual
-intervention. 
+Since TLF version 1.1.0, (un)muting and playing voice messages has been
+devolved to this external script file, because not all soundcards offer the
+same interface. 'Mic' could be called something else. One way of finding this
+out is to run `amixer` from a terminal, which returns its capabilities. An
+alternative method is to install your distribution's version of the
+`alsamixergui` package and simply see what's available on the faders. This is
+probably a good idea anyway because it's likely sound won't work well without
+some manual intervention. 
 
-If you have something other than a 'Mic' source you could try replacing 'Mic'
-with what you think it should be in the local 'play_vk' file. The process of
-muting and unmuting the mic is displayed in alsamixergui, which is useful for
-debug purposes. Please share any information you discover with the TLF
-community. 
+If you have something other than a 'Mic' source, you could try replacing 'Mic'
+with what you think it should be in the local `play_vk` file. The process of
+muting and unmuting the mic is displayed in `alsamixergui`, which is useful
+for debug purposes. Please share any information you discover with the TLF
+community.
 
-Similarly, a 'rules' sub-directory can contain a contest specific rule file.
-This rule file must contain the paths to the audio files corresponding to each
-F-key to be used. An example might be: 
+A `rules` sub-directory within the local contest folder should contain a
+contest-specific rule file. As with `logcfg.dat`, this local copy will
+override the defaults, which you will want to do. This rule file must contain
+the paths to the audio files corresponding to each F-key to be used. An
+example might be: 
 
 ```
 VKM1=/home/aham/tlf/audio/f1.wav 
@@ -300,50 +309,50 @@ VKCQM=/home/aham/tlf/audio/vkcqm.wav
 ```
 
 Thus a common set of voice messages can be pointed to from different rule
-files. The f12 message is the auto-repeated CQ message for when the rate is
-low. The VKSPM and VKCQM messages are sent after a contact is logged, in S+P
+files. The F12 message is the auto-repeated CQ message for when the rate is
+low. The VKSPM and VKCQM messages are sent after a contact is logged, in S&P
 and CQ modes respectively. 
 
 Paths that are not defined cannot be recorded to from within TLF. 
 
-### Distro Notes 
+### Distribution-specific Notes 
 
-TLF uses 'sox' to record and play audio, so you must have it installed. You
-can use the sox commands 'rec' and 'play' on the command line in case you need
+TLF uses `sox` to record and play audio, so you must have it installed. You
+can use the sox commands `rec` and `play` on the command line in case you need
 to debug any TLF issues. 
 
-Modern distros often use the 'pulseaudio' sound server, but this can cause
+Modern distros often use the `pulseaudio` sound server, but this can cause
 unacceptably long delays at the beginning and end of recordings, and at the
-beginning and end of voice message playback. If you experience these problems
-try uninstalling just the pulseaudio alsa plugin. You lose the ability for
-alsa applications to play and record across a network, but for most TLF users
+beginning and end of voice message playback. If you experience these problems,
+try uninstalling just the `pulseaudio` ALSA plugin. You lose the ability for
+ALSA applications to play and record across a network, but for most TLF users
 this isn't a problem. 
 
 ### Recording
 
 For the best sound quality, record voice messages with an external audio
-editor such as Audacity, which will also allow you to trim leading and
-trailing silence. Export each message in .wav format and add their paths to
-the rules file as described above.
+editor such as [Audacity](https://www.audacityteam.org/), which will also
+allow you to trim leading and trailing silence. Export each message in .wav
+format and add their paths to the rules file as described above.
 
 TLF also has a built-in sound recording feature for changing messages on the
 fly, or for those who don't want to use an external editor. To record messages
-from within TLF, enter ':sou' at the call entry field to take you to the TLF
+from within TLF, enter `:sou` in the call entry field to take you to the TLF
 Sound Recorder Utility page. Recording starts by hitting the relevant F-key
 for that message ('s' or 'c' for the VKSPM and VKCQM messages). Terminate
-    recording by hitting the **ESC** key. 
+recording by hitting the **ESC** key. 
 
 Currently, recording messages does not key PTT. If you want to hear yourself
-via the radio's monitor function whilst recording, you will need to manually
+via the radio's monitor function while recording, you will need to manually
 assert PTT, e.g. press your footswitch throughout. Obviously, this means your
 recording also goes out on-air, so you might want to minimise your transmitted
-power whilst setting up recordings. 
+power and use a dummy load while doing this. 
 
 It takes a bit of practice to time your speech within the starting and ending
-key presses. It's also quite easy to set the alsa Mic gain too high and end up
+key presses. It's also quite easy to set the ALSA mic gain too high and end up
 with clipped audio. This will show up during playback as some black and white
-writing appearing over the top of the display colours. It's actually sox
-reporting warnings. You can fix this by adjusting the mic level using the alsa
+writing appearing over the top of the display colours. It's actually `sox`
+reporting warnings. You can fix this by adjusting the mic level using the ALSA
 mixer.  
 
 ## RTTY 
@@ -452,17 +461,16 @@ after less, than ten attempt, the error counter cleared.
 More new feature in Fldigi interface: - when TLF sends a message through
 Fldigi, it switches Fldigi to TX mode. - similar to CW mode, if you press ESC
 while Fldigi sends the message,   TLF will stop it. - if the connection
-between TLF and Fldigi breaks (eg. you close   Fldigi, or you start TLF
-before Fldigi), then TLF realizes it,   and handles as correctly. You will
-lost the Fldigi functions (no   TX/RX, QRG align), but TLF runs away. If
-you start Fldigi again,   after a few seconds, TLF will work with it again 
+between TLF and Fldigi breaks (eg. you close   Fldigi, or you start TLF before
+Fldigi), then TLF realizes it,   and handles as correctly. You will lost the
+Fldigi functions (no   TX/RX, QRG align), but TLF runs away. If you start
+Fldigi again,   after a few seconds, TLF will work with it again 
 
 New features after 1.3: - Fldigi supports nanoIO software, which is a small
 Arduino project   Homepage: https://github.com/w1hkj/nanoIO   whit this, you
 can work in real FSK mode - Fldigi can catch the different strings as field
 values, eg:   CALLSIGN, EXCHANGE. If you click in RX window to a callsign,
-Fldigi   fills its CALL field, and TLF will grab it. EXCHANGE field is
-similar. 
+Fldigi fills its CALL field, and TLF will grab it. EXCHANGE field is similar. 
 
  73, Ervin HA2OS 
 
@@ -506,24 +514,25 @@ CW/SSB contest), then TLF will skip to check  the restrictions above.
 This side contains many "meta" information: * at right of the QTC callsign
 field, TLF shows the QTC info of   current station: how many QTC has it; if
 the callsign field   in main window is empty, the last callsign will be picked
-up.   When the station has not send or received any QTC yet, there    will be:
+up. When the station has not send or received any QTC yet, there    will be:
 "Received 0 QTC", or "Sent 0 QTC". If you had   exchanged any QTC with the
 station, the message will read   "Received 3 QTC" or "Sent 5 QTC". * if you
 type the number of QSO in the QTC block in RECV mode,   TLF will show its
 number at the beginning of every line; if the   station indicates that it will
 send to you 6 QSO, and you type   it in that field, TLF will put a digit to
 the begin of first 6   lines * if you type the number of QSO in the QTC block
-in SEND mode,   TLF will find the next number QSO, which doesn't contain the
+in SEND mode, TLF will find the next number QSO, which doesn't contain the
 current callsign (see contest rules 7.2). Note, that if you   don't have
 eonugh QSO, you can't send the maximum (10), eg.   you have only 9 QSO. If you
 type greater number than available   QTC number, the field value will be
-aligned to maximum number! * in RECV mode, every QSO line has a status, which
-could be:   "invalid", "valid", "confirmed". This status is indicated by a
-sign at the end of the line. When a line is invalid, you can   see a "?", if
-the line is valid, then there isn't any character,   and finally, if the QSO
-line had been confirmed, you can see   a "*" sign * in SEND mode, if you've
-sent a QTC line (with ENTER), at the   end of the line you will see a "*"
-character, which means,   you've sent that QTC 
+aligned to maximum number!
+* in RECV mode, every QSO line has a status, which could be:   "invalid",
+"valid", "confirmed". This status is indicated by a sign at the end of the
+line. When a line is invalid, you can   see a "?", if the line is valid, then
+there isn't any character,   and finally, if the QSO line had been confirmed,
+you can see   a "*" sign * in SEND mode, if you've sent a QTC line (with
+ENTER), at the end of the line you will see a "*" character, which means,
+you've sent that QTC 
 
 ### Navigation between the fields 
 
@@ -565,9 +574,9 @@ configured in rule file to  send "QTC?".
 If the callsign fields isn't empty, the content of that field will be copied.
 Otherwise the callsign of the last QSO will be copied. If the station sent you
 some QTC previously, you can  see the number of QTC QSOs, eg. "Received 3
-QTC".  You can receive at maximum 10 QTC from every station. If you  have 3
-QTC from a station, then you can receive 7 QTC more.  If you type more than 7,
-TLF will replace the number to 7. 
+QTC". You can receive at maximum 10 QTC from every station. If you  have 3 QTC
+from a station, then you can receive 7 QTC more.  If you type more than 7, TLF
+will replace the number to 7. 
 
 Afterwards you can fill the QTC serial, and number of QSOs.  What you type in
 as number of QSOs will be used by TLF to number that many lines, to show you,
@@ -916,7 +925,8 @@ MYCALL  Own call
 HISCALL Other sides call   
 RST_S   RST sent   
 RST_R   RST received   
-EXC_S   Exchange sent (May contain a '#' character, which gets replaced by the QSO number formatted to 4 digits).   
+EXC_S   Exchange sent (May contain a '#' character, which gets replaced by the
+QSO number formatted to 4 digits).   
 EXCH    The complete received exchange line   
 EXC1    First word of the received exchange, see *Exchange Separator* below   
 EXC2    Second word of the received exchange   
@@ -924,8 +934,8 @@ EXC3    Third word of the received exchange
 EXC4    Fourth word of the received exchange   
 TX      Number of the TX (for cqww or other contests).  
 
-All items represent one column in the resulting Cabrillo log file. All
-entries are separated by an additional space character.  
+All items represent one column in the resulting Cabrillo log file. All entries
+are separated by an additional space character.  
 
 ### Exchange Separator  
 
@@ -943,7 +953,8 @@ In the provided cabrillo.fmt file the formats for AGCW use this construct.
 
 The following entry  
 
-[cwo] QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;EXC_S,14;HISCALL,13;EXC1,4;EXC2,9  
+[cwo]
+QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;EXC_S,14;HISCALL,13;EXC1,4;EXC2,9  
 
 will be selected if  
 
@@ -952,7 +963,7 @@ CABRILLO=cwo
 is in the rules file for the CW Open contest. All QSOs will then be formatted
 as in the following example:  
 
-QSO: 28000 CW 2012-09-23 0815 DL1JBE        0001 Tom       HB9XXX        0023 Joe QSO: .....  
+QSO: 28000 CW 2012-09-23 0815 DL1JBE    0001 Tom    HB9XXX    0023
 
 ### Importing Cabrillo  
 
@@ -991,8 +1002,8 @@ In case your packet program is on your own machine, use
 telnet localhost | tee -a clfile 
 
 Now you have a separate packet terminal where you can e.g. start "call",
-telnet  or or "minicom" and connect to your favorite dx cluster, or telnet to
-a cluster on the internet. 
+telnet or or "minicom" and connect to your favorite dx cluster, or telnet to a
+cluster on the internet. 
 
 Activate "FIFOINTERFACE". 
 
