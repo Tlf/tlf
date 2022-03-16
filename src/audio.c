@@ -56,15 +56,14 @@ char *soundlog_record_cmd;
 char *soundlog_play_cmd;
 char *soundlog_dir;
 
-static int vr_listfiles();
+static int sr_listfiles();
 
 static char *expand_directory(const char *dir);
 static char *prepare_playback_command(char *filename);
 static void stop_command(char *string);
 static void vk_do_record(int message_nr);
-static void vr_start(void);
-static void vr_stop(void);
-
+static void sr_start(void);
+static void sr_stop(void);
 
 void sound_setup_default(void) {
     if (vk_record_cmd) g_free (vk_record_cmd);
@@ -84,12 +83,12 @@ void sound_setup_default(void) {
 }
 
 
-/* check if Voice Recorder got started and is still running
+/* check if Sound Recorder got started and is still running
  *
  * For simplicity check if ~/.VRlock is present. It gets created during start
- * of VR and removed when <vr gets stopped
+ * of SR and removed when recording gets stopped
  */
-static bool is_VR_running() {
+static bool is_sr_running() {
     char *lockfile = g_strconcat(g_get_home_dir(), G_DIR_SEPARATOR_S,
 		".VRlock", NULL);
     bool exists = (access(lockfile, F_OK) == 0);
@@ -110,7 +109,7 @@ static void recordmenue(void) {
     mvaddstr(6, 20, "F1 ... F12, S, C: Record Messages");
 
     mvprintw(9, 20, "1; %s contest recorder",
-	    is_VR_running() ? "Disable" : "Enable");
+	    is_sr_running() ? "Disable" : "Enable");
 
     mvaddstr(10, 20, "2: List and Play contest file");
     mvaddstr(12, 20, "ESC: Exit sound recorder function");
@@ -200,14 +199,14 @@ void record(void) {
 
 	    // Start/Stop contest recording.
 	    case '1':
-		if (is_VR_running()) {
-		    vr_stop();
+		if (is_sr_running()) {
+		    sr_stop();
 
 		    mvaddstr(15, 20, "Contest recording disabled...");
 		    refreshp();
 		    sleep(1);
 		} else {
-		    vr_start();
+		    sr_start();
 
 		    mvaddstr(15, 20, "Contest recording enabled...");
 		    refreshp();
@@ -219,7 +218,7 @@ void record(void) {
 
 	    case '2':
 		// List contest recordings
-		if (vr_listfiles() == -1) {
+		if (sr_listfiles() == -1) {
 		    mvprintw(LINES - 1, 1, "Press ESC to exit this screen");
 		    break;
 		}
@@ -282,7 +281,7 @@ static char* strip_suffix(char * filename) {
 }
 
 /* show list of audio file from soundlog directory */
-static int vr_listfiles() {
+static int sr_listfiles() {
     struct dirent **nameList;
     char *expanded_dir = expand_directory(soundlog_dir);
 
@@ -335,7 +334,7 @@ static void stop_command(char *string) {
 
 
 /* voice recorder handling - recording and play back */
-static void vr_start(void) {
+static void sr_start(void) {
     IGNORE(system("echo " " > ~/.VRlock"));
 
     char *command = g_strconcat("mkdir -p ", soundlog_dir, "; ",
@@ -347,7 +346,7 @@ static void vr_start(void) {
 }
 
 
-static void vr_stop() {
+static void sr_stop() {
     IGNORE(system("rm ~/.VRlock"));
     stop_command(soundlog_record_cmd);
 }
@@ -362,7 +361,7 @@ static char *prepare_playback_command(char *filename) {
     GRegex *regex = g_regex_new("\\$1", 0, 0 , NULL);
     char *play_command = g_regex_replace(regex, soundlog_play_cmd, -1, 0,
 	    file, 0, NULL);
-    g_regex_unref(regex);
+	g_regex_unref(regex);
     g_free(file);
 
     char *full_command = g_strconcat("cd ", soundlog_dir, "; ",

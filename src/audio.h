@@ -35,6 +35,8 @@ extern char* soundlog_dir;
 
 void sound_setup_default(void);
 void record(void);
+bool is_vr_running();
+void vr_stop();
 
 void vk_play_file(char *audiofile);
 void vk_stop();
