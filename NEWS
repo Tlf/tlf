@@ -676,7 +676,7 @@ New features:
     - Add a better recognition of unknown keywords in config file.
 
 Bug fixes:
-    - Fix recongnition of COUNTRY_LIST keyword.
+    - Fix recongnition of COUNTRYLIST keyword.
     - fix a segfault problem in exchange handling.
 
 tlf-1.1.1
@@ -1478,10 +1478,10 @@ tlf-0.8.19
 - Added flexible point parameters for logcfg.dat (tnx for contribution Mitko,
   LZ3NY):
 
-	COUNTRYLIST=SP_DX:SP	List of countries that have exceptional points.
-			Format e.g. NRAUTEST:OH,OH0,OJ0M,SM,OZ,OY,OX etc...
+	COUNTRYLIST=SP	List of countries that have exceptional points.
+			Format e.g. OH,OH0,OJ0M,SM,OZ,OY,OX etc...
   You can also give a file name, and put the country information into a file 
-  (same format).
+  (prefixed with contest name, e.g. NRAUTEST:OH,OH0,...).
 		
 	COUNTRY_LIST_POINTS=5	All countries in the list get 5 points
 		

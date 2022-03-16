@@ -2630,12 +2630,15 @@ Points for countries in country list.
 Score zero points for countries not in the list.
 .
 .TP
-\fBCOUNTRYLIST\fR=\fI"comma separated list of prefixes starting with colon"\fR
-e.g. Scandinavia:SM,LA,OZ,OH.
+\fBCOUNTRYLIST\fR=\fI"comma separated list of prefixes"\fR
+e.g. SM,LA,OZ,OH.
 .
 .TP
 \fBCOUNTRYLIST\fR=\fIfile_name\fR
 File with a list of prefixes.
+It can contain multiple records (lines).
+The one starting with the current contest name is selected.
+E.g. Scandinavia:SM,LA,OZ,OH.
 .
 .IP
 Not to be confused with so-called "country" files maintained by AD1C.
@@ -2852,7 +2855,7 @@ In that case you can use this configuration:
 .
 .IP
     \fBCOUNTRY_MULT\fR
-    \fBCOUNTRYLIST\fR=\fIsac:JW,JX,LA,OF1,OF0,OJ1,OJ0,OX,OW,OZ,SM,TF\fR
+    \fBCOUNTRYLIST\fR=\fIJW,JX,LA,OF1,OF0,OJ1,OJ0,OX,OW,OZ,SM,TF\fR
     \fBEXCLUDE_MULTILIST\fR=\fICOUNTRYLIST\fR
 .
 .IP
