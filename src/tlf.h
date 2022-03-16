@@ -283,6 +283,13 @@ enum {
     MARKER_CALLS,	/* DOTS & CALLS */
 };
 
+/* Enums for RESEND_CALL feature */
+enum {
+    RESEND_NOT_SET,		/* Resend feature not set */
+    RESEND_PARTIAL,		/* Resend partial hiscall */
+    RESEND_FULL,		/* Resend full hiscall again */
+};
+
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
 
 #define LEN(array) (sizeof(array) / sizeof(array[0]))

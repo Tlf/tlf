@@ -441,6 +441,10 @@ static const struct argp_option options[] = {
     { 0 }
 };
 
+/* resend call option, can be 0 (do not use), 1 (partial), 2 (full) */
+int resend_call;
+char sentcall[20] = "";     // storing the call what already sent
+
 /* parse a single option */
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     switch (key) {
@@ -627,6 +631,7 @@ static void init_variables() {
     tune_seconds = 6;   /* tune up for 6 s */
 
     ctcomp = false;
+    resend_call = RESEND_NOT_SET;
 
     for (int i = 0; i < 25; i++) {
 	FREE_DYNAMIC_STRING(digi_message[i]);

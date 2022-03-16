@@ -2186,6 +2186,20 @@ and @PACKAGE_NAME@ if is in
 then the other station's callsign will be sent before \(lqDE\(rq, such as
 \(lqDL1A DE W1AW\(rq.
 .
+.TP
+.B RESEND_CALL=\fIFULL\fR | \fIPARTIAL\fR
+Sends the full or partial callsign again at the end of the QSO
+in RUN mode if the call of the other station was corrected.
+In case of \fIFULL\fR the whole callsign will be sent again.
+If the value is \fIPARTIAL\fR, then TLF figures out which part of callsign
+has to be sent. Eg.: if the received call was
+.B AB1CD,
+but later it is corrected to
+.B AB1CB,
+then
+.B CB.
+is sent.
+.
 .SH RULES
 .
 The contest rules can be put into separate files.
