@@ -586,20 +586,12 @@ Sound recorder menu:
 .IP
 .
 .BR 1 :
-Start contest recording to
+Enable/Disable contest recording to
 .IR ddhhmm .au.
 .
 .IP
 .BR 2 :
-Stop contest recording.
-.
-.IP
-.BR 3 :
-List contest recordings (automatically calls menu item 4).
-.
-.IP
-.BR 4 :
-(Hidden) Play back contest recording
+List contest recordings and play back selected recording
 .IR ddhhmm.
 .
 .IP
@@ -626,7 +618,12 @@ interval period in length.
 .IP
 Once started the recorder will run until the lock file
 .I $HOME/.VRlock
-is removed and the script gets stopped (performed by menu item 2).
+is removed and the script gets stopped (performed by menu item 1).
+.
+.IP
+If you leave TLF with the recorder running TLF will ask for confirmation.
+Depending on your answer TLF can stop it or keep it running. In the latter
+case just restart TLF and use :sound again to stop it.
 .
 .IP
 Cabling and setting up the radio to record both received and transmitted audio
@@ -1842,7 +1839,7 @@ Command to record contest audio stream. Runs out of the SOUNDLOG_DIRECTORY.
 .
 .IP
 The script \(lqsoundlog\(rq which is part of TLF is used by default. See
-:sound for details.
+:Sound for details.
 .
 .TP
 \fBSOUNDLOG_DIRECTORY\fR=\fIdirectory\fR
