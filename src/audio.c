@@ -109,7 +109,7 @@ static void recordmenue(void) {
     mvaddstr(1, 20, "--- TLF SOUND RECORDER UTILITY ---");
     mvaddstr(6, 20, "F1 ... F12, S, C: Record Messages");
 
-    mvprintw(9, 20, "1; %s contest recorder",
+    mvprintw(9, 20, "1: %s contest recorder",
 	    is_sr_running() ? "Disable" : "Enable");
 
     mvaddstr(10, 20, "2: List and Play contest file");
@@ -234,7 +234,7 @@ void record(void) {
 
 		char *command = prepare_playback_command(playbackfile);
 
-		mvprintw(18, 20, "Use Ctrl-c to stop and return to tlf");
+		mvprintw(18, 20, "Use Ctrl-C to stop and return to TLF");
 		refreshp();
 
 		IGNORE(system(command));
@@ -301,7 +301,7 @@ static int sr_listfiles() {
 	clear_line(i);
 
 
-    if (n > 48) n = 48;	    /* limit number of file to display */
+    if (n > 48) n = 48;	    /* limit number of files to display */
 
     int i = 10;
     int j = 4;
