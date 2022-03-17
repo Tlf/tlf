@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "addmult.h"
+#include "audio.h"
 #include "background_process.h"
 #include "bandmap.h"
 #include "change_rst.h"
@@ -934,6 +935,19 @@ static void tlf_cleanup() {
     endwin();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 
+    if (is_sr_running()) {
+	int c;
+	puts("ATTENTION: Sound recorder is still running!");
+	puts("           Do you want to stop it (y/n)?" );
+	c = getchar();
+	if (toupper(c) == 'Y') {
+	    sr_stop();
+	    puts("\nSound recording stopped\n");
+	} else {
+	    puts("\nSound recording still running");
+	    puts("You can stop it by restarting TLF and using ':sound' command\n");
+	}
+    }
     puts("\n\nThanks for using Tlf.. 73\n");
 }
 

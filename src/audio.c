@@ -63,7 +63,7 @@ static char *prepare_playback_command(char *filename);
 static void stop_command(char *string);
 static void vk_do_record(int message_nr);
 static void sr_start(void);
-static void sr_stop(void);
+void sr_stop();
 
 void sound_setup_default(void) {
     if (vk_record_cmd) g_free (vk_record_cmd);
@@ -88,7 +88,7 @@ void sound_setup_default(void) {
  * For simplicity check if ~/.VRlock is present. It gets created during start
  * of SR and removed when recording gets stopped
  */
-static bool is_sr_running() {
+bool is_sr_running() {
     char *lockfile = g_strconcat(g_get_home_dir(), G_DIR_SEPARATOR_S,
 		".VRlock", NULL);
     bool exists = (access(lockfile, F_OK) == 0);
@@ -346,7 +346,7 @@ static void sr_start(void) {
 }
 
 
-static void sr_stop() {
+void sr_stop() {
     IGNORE(system("rm ~/.VRlock"));
     stop_command(soundlog_record_cmd);
 }
