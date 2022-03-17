@@ -419,6 +419,7 @@ void *play_thread(void *ptr) {
     char *playcommand = g_regex_replace(regex, vk_play_cmd, -1, 0,
 	    audiofile, 0, NULL);
     g_regex_unref(regex);
+    g_free(ptr);
 
     /* CAT PTT wanted and available, use it. */
     if (rigptt == CAT_PTT_USE) {
@@ -462,8 +463,11 @@ void vk_play_file(char *audiofile) {
 	return;
     }
 
+    gchar *file = g_strdup(audiofile);	/* has to be freed in play_thread */
+
     /* play sound in separate thread so it can be killed from the main one */
-    if (pthread_create(&vk_thread, NULL, play_thread, (void *)audiofile) != 0) {
+    if (pthread_create(&vk_thread, NULL, play_thread, (void *)file) != 0) {
+	    g_free(file);
 	    TLF_LOG_INFO("could not start sound thread!");
     }
 }
