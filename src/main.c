@@ -945,7 +945,7 @@ static void tlf_cleanup() {
 	    puts("\nSound recording stopped\n");
 	} else {
 	    puts("\nSound recording still running");
-	    puts("You can stop it by restarting TLF and using ':sound' command\n");
+	    puts("You can stop it by restarting TLF and using the ':sound' command\n");
 	}
     }
     puts("\n\nThanks for using Tlf.. 73\n");

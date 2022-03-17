@@ -40,6 +40,7 @@
 #include "globalvars.h"
 #include "ignore_unused.h"
 #include "keystroke_names.h"
+#include "libgen.h"
 #include "netkeyer.h"
 #include "time_update.h"
 #include "tlf.h"
@@ -325,7 +326,8 @@ static int sr_listfiles() {
 /* kill process (first command token in string) with SIGTERM */
 static void stop_command(char *string) {
     gchar **vector = g_strsplit_set(string, " \t", 2);
-    char *command = g_strconcat("pkill -SIGTERM -n ", vector[0], NULL);
+    char *program = basename(vector[0]);
+    char *command = g_strconcat("pkill -SIGTERM -n ", program, NULL);
     g_strfreev(vector);
 
     IGNORE(system(command));
