@@ -586,7 +586,7 @@ Sound recorder menu:
 .IP
 .
 .BR 1 :
-Enable/Disable contest recording to
+Start/Stop contest recording to
 .IR ddhhmm .au.
 .
 .IP

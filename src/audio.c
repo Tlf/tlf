@@ -109,8 +109,8 @@ static void recordmenue(void) {
     mvaddstr(1, 20, "--- TLF SOUND RECORDER UTILITY ---");
     mvaddstr(6, 20, "F1 ... F12, S, C: Record Messages");
 
-    mvprintw(9, 20, "1: %s contest recorder",
-	    is_sr_running() ? "Disable" : "Enable");
+    mvprintw(9, 20, "1; %s contest recorder",
+	    is_sr_running() ? "Stop" : "Start");
 
     mvaddstr(10, 20, "2: List and Play contest file");
     mvaddstr(12, 20, "ESC: Exit sound recorder function");
@@ -203,13 +203,13 @@ void record(void) {
 		if (is_sr_running()) {
 		    sr_stop();
 
-		    mvaddstr(15, 20, "Contest recording disabled...");
+		    mvaddstr(15, 20, "Contest recording stopped...");
 		    refreshp();
 		    sleep(1);
 		} else {
 		    sr_start();
 
-		    mvaddstr(15, 20, "Contest recording enabled...");
+		    mvaddstr(15, 20, "Contest recording started...");
 		    refreshp();
 		    sleep(1);
 		}
