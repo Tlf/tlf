@@ -120,7 +120,6 @@ extern char lastcall[];
 extern char recvd_rst[];
 extern char sent_rst[];
 extern char last_rst[];
-extern char section[];
 extern bool wazmult;
 extern int addcallarea;
 extern int new_cty;

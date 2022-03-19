@@ -417,3 +417,20 @@ void test_getexchange_sectn_mult(void **state) {
 	g_free(input);
     }
 }
+
+void test_getexchange_serial_grid4(void **state) {
+    contest = lookup_contest("Unknown");
+    serial_grid4_mult = true;
+
+    char *input;
+
+    input = g_strdup("012 JN97AB");
+
+    checkexchange(input, false);
+
+    assert_string_equal(normalized_comment, "  12 JN97");
+    assert_string_equal(mult1_value, "JN97");
+    assert_string_equal(callupdate, "");
+
+    g_free(input);
+}
