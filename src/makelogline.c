@@ -212,25 +212,7 @@ void prepare_fixed_part(char *logline, struct qso_t *qso) {
 void prepare_specific_part(char *logline, struct qso_t *qso) {
     char *tmp;
 
-    if (CONTEST_IS(ARRL_SS)) {
-	// ----------------------------arrlss----------------
-	tmp = g_strndup(qso->comment, 22);
-	strcat(logline, tmp);
-	g_free(tmp);
-
-    } else if (serial_section_mult || serial_grid4_mult) {
-	//-------------------------serial_section---------------
-	tmp = g_strndup(qso->comment, 22);
-	strcat(logline, tmp);
-	g_free(tmp);
-
-    } else if (sectn_mult) {
-	//-------------------------section only---------------
-	tmp = g_strndup(qso->comment, 22);
-	strcat(logline, tmp);
-	g_free(tmp);
-
-    } else if (CONTEST_IS(CQWW) || wazmult || itumult) {
+    if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	//-------------------------cqww----------------
 	char buf[80];
 	strcpy(buf, qso->comment);
