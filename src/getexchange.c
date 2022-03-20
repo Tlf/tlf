@@ -655,6 +655,15 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
     }
     g_match_info_free(match_info);
 
+    if (serial_grid4_mult) {
+        if (!check_qra(section)) {
+            section[0] = 0;
+        }
+        if (strlen(section) > 4) {
+            section[4] = 0;     // mult is the first 4 chars only
+        }
+    }
+
     if (interactive) {
 	char buf[40];
 	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, section);
@@ -663,9 +672,6 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 
     if (serial[0] && section[0]) {
 	sprintf(normalized_comment, "%s %s", serial, section);
-	if (serial_grid4_mult && strlen(section) > 4) {
-	    section[4] = 0;     // mult is the first 4 chars only
-	}
 	g_strlcpy(mult1_value, section, sizeof(mult1_value));   // multiplier: section
     }
 }

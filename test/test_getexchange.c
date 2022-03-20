@@ -21,6 +21,7 @@
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/ui_utils.o
 // OBJECT ../src/utils.o
+// OBJECT ../src/locator2longlat.o
 
 extern char callupdate[];
 
@@ -45,7 +46,6 @@ void play_file() {}
 int recall_exchange(void) { return 0; }
 int GetCWSpeed(void) { return 0; }
 int send_lan_message(int opcode, char *message) { return 0; }
-int check_qra(char *qra) { return 0; }
 void clusterinfo(void) {}
 void clear_display(void) {}
 void refresh_splitlayout() {}
