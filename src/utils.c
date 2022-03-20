@@ -18,11 +18,23 @@
  */
 
 #include <unistd.h>
+#include <string.h>
+#include <stdbool.h>
 #include <glib.h>
 #include <glib/gstdio.h>
-#include <string.h>
 
-#include "getpx.h"
+/* returns true if 'qra' is a valid QRA locator
+ * note: only the first 4 characters are tested
+ */
+bool check_qra(char *qra) {
+
+    return strlen(qra) >= 4
+	   && qra[0] >= 'A' && qra[0] <= 'R'
+	   && qra[1] >= 'A' && qra[1] <= 'R'
+	   && qra[2] >= '0' && qra[2] <= '9'
+	   && qra[3] >= '0' && qra[3] <= '9';
+
+}
 
 #define ALT_PREFIX  1
 #define PREFIX      2

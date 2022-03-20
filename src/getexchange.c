@@ -38,7 +38,7 @@
 #include "keyer.h"
 #include "keystroke_names.h"
 #include "lancode.h"
-#include "locator2longlat.h"
+#include "utils.h"
 #include "logit.h"
 #include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h

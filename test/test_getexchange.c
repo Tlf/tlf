@@ -21,7 +21,6 @@
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/ui_utils.o
 // OBJECT ../src/utils.o
-// OBJECT ../src/locator2longlat.o
 
 extern char callupdate[];
 

@@ -23,7 +23,7 @@
 // OBJECT ../src/get_time.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/getwwv.o
-// OBJECT ../src/locator2longlat.o
+// OBJECT ../src/utils.o
 // OBJECT ../src/score.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o

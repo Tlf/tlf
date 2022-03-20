@@ -23,7 +23,6 @@
 // OBJECT ../src/getexchange.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/get_time.o
-// OBJECT ../src/locator2longlat.o
 // OBJECT ../src/readcalls.o
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/setcontest.o

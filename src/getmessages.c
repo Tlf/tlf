@@ -25,7 +25,6 @@
 #include "dxcc.h"
 #include "getctydata.h"
 #include "globalvars.h"
-#include "locator2longlat.h"
 #include "startmsg.h"
 
 
