@@ -36,20 +36,6 @@ bool check_qra(char *qra) {
 
 }
 
-#define ALT_PREFIX  1
-#define PREFIX      2
-#define AREA        4
-#define SUFFIX      8
-#define ALT_AREA    16
-
-typedef struct {
-    char *alt_prefix;
-    char *prefix;
-    char *area;
-    char *suffix;
-    char *alt_area;
-} call_parts_t;
-
 /* \brief find named file in actual directory or in share
  *
  * \returns filename of actual available file or NULL if not found
@@ -71,6 +57,20 @@ char *find_available(char *filename) {
     return path;
 }
 
+#define ALT_PREFIX  1
+#define PREFIX      2
+#define AREA        4
+#define SUFFIX      8
+#define ALT_AREA    16
+
+typedef struct {
+    char *alt_prefix;
+    char *prefix;
+    char *area;
+    char *suffix;
+    char *alt_area;
+} call_parts_t;
+
 static void free_call_parts(call_parts_t *cp) {
     if (cp == NULL) {
 	return;
@@ -87,14 +87,15 @@ static void free_call_parts(call_parts_t *cp) {
 // returns non-NULL on success with all pointers being also non-NULL
 static call_parts_t *split_call(char *call) {
 
-    static const char *PATTERN = "^"
-				 "([A-Z0-9]+/)?"     // alt_prefix (optional)
-				 "([A-Z0-9]*?[A-Z])" // prefix
-				 "(\\d+)"            // area
-				 "([A-Z]+)"          // suffix
-				 "(/[0-9A-Z])?"      // alt_area (optional)
-				 "$"
-				 ;
+    static const char *PATTERN =
+	"^"
+	"([A-Z0-9]+/)?"     // alt_prefix (optional)
+	"([A-Z0-9]*?[A-Z])" // prefix
+	"(\\d+)"            // area
+	"([A-Z]+)"          // suffix
+	"(/[0-9A-Z])?"      // alt_area (optional)
+	"$"
+	;
 
     static GRegex *regex = NULL;
     if (regex == NULL) {
