@@ -633,7 +633,7 @@ station configurations.
 .IP
 To ease the adaption to the local environment record and play back commands
 for voice keyer messages and contest audio can be configured by the following
-keywords 
+keywords:
 .I VK_RECORD_COMMAND,
 .I VK_PLAY_COMMAND,
 .I SOUNDLOG_RECORD_COMMAND
@@ -1831,7 +1831,8 @@ file to write during recording.
 .
 .TP
 \fBSOUNDLOG_PLAY_COMMAND\fR=\fIcommand\fR
-Playback command for soundlog recordings (default is \(lqplay -q $1\(rq):
+Playback command for soundlog recordings (default is \(lqplay -q $1 2>
+/dev/null\(rq):
 .
 .TP
 \fBSOUNDLOG_RECORD_COMMAND\fR=\fIcommand\fR

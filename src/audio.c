@@ -77,7 +77,7 @@ void sound_setup_default(void) {
     soundlog_record_cmd = g_strdup("soundlog");
 
     if (soundlog_play_cmd) g_free (soundlog_play_cmd);
-    soundlog_play_cmd = g_strdup("play -q $1");
+    soundlog_play_cmd = g_strdup("play -q $1 2> /dev/null");
 
     if (soundlog_dir) g_free (soundlog_dir);
     soundlog_dir = g_strdup("./soundlogs");
