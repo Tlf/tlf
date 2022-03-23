@@ -43,6 +43,8 @@ int get_proposed_exchange(void) {
     char *loc, *loc2;
     struct ie_list *current_ie;
 
+    proposed_exchange[0] = 0;   // default: empty (nothing found)
+
     if (strlen(hiscall) == 0)
 	return 0;
 
