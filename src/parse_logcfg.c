@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "audio.h"
 #include "bandmap.h"
 #include "cabrillo_utils.h"
 #include "change_rst.h"
@@ -94,6 +95,7 @@ int read_logcfg(void) {
     }
     showstring("Reading config file:", config_file);
 
+    sound_setup_default();
     int status = parse_configfile(fp);
     fclose(fp);
 
@@ -1196,7 +1198,6 @@ static config_t logcfg_configs[] = {
     {"TELNETHOST",      CFG_STRING_STATIC(pr_hostaddress, 48)},
     {"QTC_CAP_CALLS",   CFG_STRING_STATIC(qtc_cap_calls, 40)},
     {"SYNCFILE",        CFG_STRING_STATIC(synclogfile, 120)},
-    {"SC_DEVICE",       CFG_STRING_STATIC(sc_device, 40)},
     {"INITIAL_EXCHANGE",       CFG_STRING_STATIC(exchange_list, 40)},
     {"DIGIMODEM",       CFG_STRING_STATIC(rttyoutput, 120)},
     {"FKEY-HEADER",     CFG_STRING_STATIC(fkey_header, sizeof(fkey_header))},
@@ -1204,6 +1205,11 @@ static config_t logcfg_configs[] = {
     {"CABRILLO",    CFG_STRING(cabrillo)},
     {"CALLMASTER",  CFG_STRING(callmaster_filename)},
     {"EDITOR",      CFG_STRING(editor_cmd)},
+    {"VK_PLAY_COMMAND",	    	CFG_STRING(vk_play_cmd)},
+    {"VK_RECORD_COMMAND",   	CFG_STRING(vk_record_cmd)},
+    {"SOUNDLOG_PLAY_COMMAND",	CFG_STRING(soundlog_play_cmd)},
+    {"SOUNDLOG_RECORD_COMMAND",	CFG_STRING(soundlog_record_cmd)},
+    {"SOUNDLOG_DIRECTORY",	CFG_STRING(soundlog_dir)},
 
     {"RIGPORT",         CFG_STRING_NOCHOMP(rigportname)},
     {"CLUSTERLOGIN",    CFG_STRING_STATIC_NOCHOMP(clusterlogin, 80)},

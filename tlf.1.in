@@ -35,7 +35,7 @@
 .
 .
 .\" Update the date when this page is committed.
-.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2021-09-09" TLF "Ham radio"
+.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2022-03-04" TLF "Ham radio"
 .
 .
 .SH NAME
@@ -523,7 +523,7 @@ Using the sound recorder requires the installation of the
 .BR sox (1)
 package, which provides the
 .B rec
-utility used by the script.
+utilities used by the script.
 .
 .IP
 For recording voice messages, the keys
@@ -538,8 +538,8 @@ script which should already be installed to a location in the
 .IR $PATH .
 .
 The recording is written to the
-.I $HOME/@PACKAGE@/soundlogs
-directory.
+.I ./soundlogs
+directory by default.
 .
 .IP
 The
@@ -560,12 +560,6 @@ system used on Linux prior to ALSA).
 .
 Its default soundcard device is
 .IR /dev/dsp .
-.
-Use the
-.B SC_DEVICE
-parameter in the
-.I logcfg.dat
-file to specify the correct device.
 .
 To enable the OSS version uncomment the needed line in the
 .I soundlog
@@ -592,56 +586,13 @@ Sound recorder menu:
 .IP
 .
 .BR 1 :
-Start contest recording to
+Start/Stop contest recording to
 .IR ddhhmm .au.
 .
 .IP
 .BR 2 :
-Stop contest recording.
-.
-.IP
-.BR 3 :
-List contest recordings (automatically calls menu item 4).
-.
-.IP
-.BR 4 :
-(Hidden) Play back contest recording
-.IR ddhh [ mm ][ :xx ].
-.
-.RS
-.RS
-.
-.P
-.I xx
-is the offset from the start of the file, as follows:
-.P
-.I 2110
-will start playback from the beginning of the day
-.IR 21 ,
-hour
-.I 10
-file.
-.
-.P
-.I 21100013:00
-will start from day
-.IR 21 ,
-hour
-.IR 10 ,
-minute
-.IR 00 ,
-plus an offset of
-.I 13
-minutes
-.I 00
-seconds.
-.
-.\" FIXME: refactor this section based on the actions in the sources.
-.P
-.BR FIXME :
-This does not work as documented as the source code differs completely!
-.RE
-.RE
+List contest recordings and play back selected recording
+.IR ddhhmm.
 .
 .IP
 To create a new file every hour add a
@@ -667,12 +618,30 @@ interval period in length.
 .IP
 Once started the recorder will run until the lock file
 .I $HOME/.VRlock
-is removed (performed by menu item 2).
+is removed and the script gets stopped (performed by menu item 1).
+.
+.IP
+If you leave TLF with the recorder running TLF will ask for confirmation.
+Depending on your answer TLF can stop it or keep it running. In the latter
+case just restart TLF and use :sound again to stop it.
 .
 .IP
 Cabling and setting up the radio to record both received and transmitted audio
 is left as an exercise for the reader simply due to the variety of radios and
 station configurations.
+.
+.IP
+To ease the adaption to the local environment record and play back commands
+for voice keyer messages and contest audio can be configured by the following
+keywords:
+.I VK_RECORD_COMMAND,
+.I VK_PLAY_COMMAND,
+.I SOUNDLOG_RECORD_COMMAND
+and
+.I SOUNDLOG_PLAY_COMMAND. 
+The directory where soundlogs gets stored can be configured with 
+.I SOUNDLOG_DIRECTORY.
+See \(lqSound Commands\(rq section below.
 .
 .TP
 .BR :SYN c
@@ -1800,26 +1769,6 @@ Support backspace key in keyer window.
 Use soundcard for CW sidetone output.
 .
 .TP
-\fBSC_DEVICE\fR=\fIdevice\fR
-Sound card device for CW sidetone and Sound menu.
-.
-.IP
-This is not required if your radio provides CW sidetone.
-.
-.IP
-For example, set \fBSC_DEVICE\fR=\fI/dev/dsp0\fR for Open Sound System drivers.
-.
-.IP
-.BR Note :
-For newer installations using the
-.B PulseAudio
-sound server, use of the
-.I pavucontrol
-GUI utility allows for directing input and output sound streams.
-.
-This is particularly useful with computer setups with multiple sound cards.
-.
-.TP
 \fBSIDETONE_VOLUME\fR=\fIsoundcard_volume\fR
 Set soundcard sidetone volume (default is
 .IR 70 ).
@@ -1858,6 +1807,41 @@ Range: 0\(en999.
 tune function.
 .
 Use \fBSIDETONE_VOLUME\fR=\fI0\fR instead).
+.
+.TP
+\fBVK_PLAY_COMMAND\fR=\fIcommand\fR
+The command to play a voice keyer message file.
+.
+.IP 
+It default to \(lqplay_vk $1\(rq, where \(lq$1\(rq will be replaced by the file
+name to play.
+
+.
+.TP
+\fBVK_RECORD_COMMAND\fR=\fIcommand\fR
+Command to record voice keyer messages.
+.
+.IP
+\(lqrec -r 8000 $1 -q\(rq is used by default. Again \(lq$1\(rq stands for the
+file to write during recording.
+.
+.TP
+\fBSOUNDLOG_PLAY_COMMAND\fR=\fIcommand\fR
+Playback command for soundlog recordings (default is \(lqplay -q $1 2>
+/dev/null\(rq):
+.
+.TP
+\fBSOUNDLOG_RECORD_COMMAND\fR=\fIcommand\fR
+Command to record contest audio stream. Runs out of the SOUNDLOG_DIRECTORY.
+.
+.IP
+The script \(lqsoundlog\(rq which is part of TLF is used by default. See
+:Sound for details.
+.
+.TP
+\fBSOUNDLOG_DIRECTORY\fR=\fIdirectory\fR
+The directory in which recorded contest sound files are stored (default
+\(lq./soundlogs\(rq).
 .
 .SS Band Switching Commands
 .

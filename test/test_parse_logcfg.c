@@ -5,11 +5,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include "../src/audio.h"
 #include "../src/parse_logcfg.h"
 #include "../src/lancode.h"
 #include "../src/bandmap.h"
 #include "../src/qtcvars.h"
 #include "../src/tlf.h"
+#include "../src/err_utils.h"
 #include "../src/globalvars.h"
 #include "../src/getwwv.h"
 #include "../src/change_rst.h"
@@ -17,6 +19,7 @@
 #include "../src/set_tone.h"
 #include "../src/cabrillo_utils.h"
 
+// OBJECT ../src/audio.o
 // OBJECT ../src/addpfx.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/parse_logcfg.o
@@ -117,6 +120,22 @@ prefix_data *getctyinfo(char *call) {
     return NULL;
 }
 
+void clear_line() {
+    //empty
+}
+
+int modify_attr(int attr) {
+    // TBD
+    return 0;
+}
+
+void time_update(void) {
+    // empty
+}
+
+void handle_logging(enum log_lvl lvl, ...) {
+    // empty
+}
 
 /* setup/teardown */
 int setup_default(void **state) {
@@ -171,7 +190,6 @@ int setup_default(void **state) {
     markerfile[0] = 0;
     synclogfile[0] = 0;
     sc_volume[0] = 0;
-    sc_device[0] = 0;
     modem_mode[0] = 0;
     controllerport[0] = 0;
     clusterlogin[0] = 0;
@@ -223,6 +241,10 @@ int setup_default(void **state) {
     FREE_DYNAMIC_STRING(cabrillo);
     FREE_DYNAMIC_STRING(callmaster_filename);
     FREE_DYNAMIC_STRING(rigportname);
+    FREE_DYNAMIC_STRING(vk_play_cmd);
+    FREE_DYNAMIC_STRING(vk_record_cmd);
+    FREE_DYNAMIC_STRING(soundlog_play_cmd);
+    FREE_DYNAMIC_STRING(soundlog_record_cmd);
 
     showmsg_spy = STRING_NOT_SET;
     rst_init_spy[0] = 0;
@@ -291,6 +313,36 @@ void test_keyer_device_too_long(void **state) {
     assert_int_equal(rc, PARSE_ERROR);
     assert_string_equal(showmsg_spy,
 			"Wrong parameter for keyword 'KEYER_DEVICE': value too long.\n");
+}
+
+void test_vk_play_cmd(void **state) {
+    int rc = call_parse_logcfg("VK_PLAY_COMMAND= sox -q $1 -d\n");
+    assert_int_equal(rc,0);
+    assert_string_equal(vk_play_cmd, "sox -q $1 -d");
+}
+
+void test_vk_record_cmd(void **state) {
+    int rc = call_parse_logcfg("VK_RECORD_COMMAND= sox -r 8000 -q -d $1 &\n");
+    assert_int_equal(rc,0);
+    assert_string_equal(vk_record_cmd, "sox -r 8000 -q -d $1 &");
+}
+
+void test_soundlog_play_cmd(void **state) {
+    int rc = call_parse_logcfg("SOUNDLOG_PLAY_COMMAND= sox -q $1 -d\n");
+    assert_int_equal(rc,0);
+    assert_string_equal(soundlog_play_cmd, "sox -q $1 -d");
+}
+
+void test_soundlog_record_cmd(void **state) {
+    int rc = call_parse_logcfg("SOUNDLOG_RECORD_COMMAND= ./soundlog");
+    assert_int_equal(rc,0);
+    assert_string_equal(soundlog_record_cmd, "./soundlog");
+}
+
+void test_soundlog_directory(void **state) {
+    int rc = call_parse_logcfg("SOUNDLOG_DIRECTORY= ~/soundlogs");
+    assert_int_equal(rc,0);
+    assert_string_equal(soundlog_dir, "~/soundlogs");
 }
 
 void test_editor(void **state) {
@@ -1114,12 +1166,6 @@ void test_sidetone_volume(void **state) {
     int rc = call_parse_logcfg("SIDETONE_VOLUME = 63\r\n");
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(sc_volume, "63");
-}
-
-void test_sc_device(void **state) {
-    int rc = call_parse_logcfg("SC_DEVICE = abc\r\n");
-    assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(sc_device, "abc");
 }
 
 void test_mfj1278_keyer(void **state) {

@@ -153,7 +153,7 @@ void logit(void) {
 		    if (trxmode == CWMODE || trxmode == DIGIMODE)
 			sendspcall();
 		    else {
-			play_file(ph_message[5]);
+			vk_play_file(ph_message[5]);
 			if (contest->exchange_serial)
 			    mvprintw(13, 29, "Serial number: %d", qsonum);
 			refreshp();

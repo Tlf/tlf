@@ -1,8 +1,14 @@
 #!/bin/sh
+# accept SIGTERM and SIGINT signals and kill rec command as soon as possible
+trap 'kill -s INT $PID' TERM USR1
 
+# restart recording as long as ~/.VRlock exists;
+# to stop recording remove ~/.VRlock before terminating the script
+# (will be done by TLF automatically)
 while [ -f $HOME/.VRlock ]
 do
-		filename="$HOME/tlf/soundlogs/"`eval date +%d%H%M`".au"
+		# store recorded files in actual directory
+		filename=`eval date +%d%H%M`".au"
 		if test -f $filename
 		then
 			sleep 10
@@ -11,6 +17,8 @@ do
 			# rec -w  -r 8000 $filename > /dev/null 2> /dev/null
 
 			# Example command for SoX rec
-			rec -c 1  -r 8000 -q $filename
+			rec -c 1  -r 8000 -q $filename &
+			PID=$!
+			wait $PID
 		fi
 done
