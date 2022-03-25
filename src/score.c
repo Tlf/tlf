@@ -37,7 +37,6 @@
 #include "focm.h"
 #include "globalvars.h"
 #include "getctydata.h"
-#include "locator2longlat.h"
 #include "qrb.h"
 #include "setcontest.h"
 #include "tlf.h"

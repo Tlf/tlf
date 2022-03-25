@@ -43,7 +43,7 @@
 #include "getwwv.h"
 #include "ignore_unused.h"
 #include "lancode.h"
-#include "locator2longlat.h"
+#include "utils.h"
 #include "parse_logcfg.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "setcontest.h"

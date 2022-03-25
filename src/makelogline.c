@@ -210,47 +210,9 @@ void prepare_fixed_part(char *logline, struct qso_t *qso) {
  *     class - TX count + operator class, sctn - ARRL/RAC section
  */
 void prepare_specific_part(char *logline, struct qso_t *qso) {
-    int sr_nr = 0;
-    char grid[7] = "";
-    int i;
     char *tmp;
 
-    if (CONTEST_IS(ARRL_SS)) {
-	// ----------------------------arrlss----------------
-	tmp = g_strndup(qso->comment, 22);
-	strcat(logline, tmp);
-	g_free(tmp);
-	section[0] = '\0';
-
-    } else if (serial_section_mult) {
-	//-------------------------serial_section---------------
-	tmp = g_strndup(qso->comment, 22);
-	strcat(logline, tmp);
-	g_free(tmp);
-	section[0] = '\0';
-
-    } else if (serial_grid4_mult) {
-	//-------------------------serial_grid 4 characters---------------
-	sr_nr = atoi(qso->comment);
-	for (i = 0; i < 11; i++) {
-	    if (qso->comment[i] > 64 && qso->comment[i] < 91) {
-		break;
-	    }
-	}
-	strncpy(grid, qso->comment + i, 6);
-	grid[6] = '\0';
-
-	sprintf(logline + 54, "%4.0d %s", sr_nr, grid);
-	section[4] = '\0'; //FIXME global
-
-    } else if (sectn_mult) {
-	//-------------------------section only---------------
-	tmp = g_strndup(qso->comment, 22);
-	strcat(logline, tmp);
-	g_free(tmp);
-	section[0] = '\0';  //FIXME global
-
-    } else if (CONTEST_IS(CQWW) || wazmult || itumult) {
+    if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	//-------------------------cqww----------------
 	char buf[80];
 	strcpy(buf, qso->comment);

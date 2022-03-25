@@ -42,6 +42,7 @@ GPtrArray *mults_possible;
 enum { ALL_BAND, PER_BAND };
 
 char mult1_value[40];
+int mult1_mode = PER_BAND;  //FIXME configure
 
 void addmult(struct qso_t *qso) {
     int idx;
@@ -103,11 +104,6 @@ void addmult(struct qso_t *qso) {
 	new_mult = remember_multi(stripped_comment, qso->bandindex, PER_BAND);
     }
 
-    else if (serial_grid4_mult) {
-	section[4] = '\0';
-	new_mult = remember_multi(section, qso->bandindex, PER_BAND);
-    }
-
     /* -------------- unique call multi -------------- */
     else if (unique_call_multi == UNIQUECALL_ALL) {
 	new_mult = remember_multi(qso->call, qso->bandindex, ALL_BAND);
@@ -116,6 +112,13 @@ void addmult(struct qso_t *qso) {
     else if (unique_call_multi == UNIQUECALL_BAND) {
 	new_mult = remember_multi(qso->call, qso->bandindex, PER_BAND);
     }
+
+    // -----------   default: use mult1   -----------
+    else {
+	new_mult = remember_multi(mult1_value, qso->bandindex, mult1_mode);
+    }
+
+
 
     free(stripped_comment);
 }

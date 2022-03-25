@@ -16,7 +16,6 @@
 // OBJECT ../src/focm.o
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
-// OBJECT ../src/locator2longlat.o
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o

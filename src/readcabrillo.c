@@ -78,10 +78,6 @@ int starts_with(char *line, char *start) {
 void write_log_fm_cabr(struct qso_t *qso) {
     qso->qso_nr = cablinecnt;
 
-    if (serial_grid4_mult) {
-	strcpy(section, getgrid(comment));
-    }
-
     checkexchange(qso->comment, false);
     dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
     addcall(qso);           /* add call to worked list and check it for dupe */

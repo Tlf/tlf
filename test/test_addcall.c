@@ -18,7 +18,6 @@
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/get_time.o
-// OBJECT ../src/locator2longlat.o
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/score.o

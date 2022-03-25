@@ -38,7 +38,7 @@
 #include "keyer.h"
 #include "keystroke_names.h"
 #include "lancode.h"
-#include "locator2longlat.h"
+#include "utils.h"
 #include "logit.h"
 #include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h
@@ -60,6 +60,7 @@
 
 
 char callupdate[MAX_CALL_LENGTH + 1];
+static char section[MAX_SECTION_LENGTH + 1] = "";
 
 void exchange_edit(void);
 
@@ -69,7 +70,6 @@ int getexchange(void) {
     int x = 0;
     char instring[2];
     char commentbuf[40] = "";
-    char *gridmult = "";
 
     instring[1] = '\0';
 
@@ -425,16 +425,6 @@ int getexchange(void) {
 		}
 		break;
 
-	    } else if (serial_grid4_mult) {
-		//      mvaddstr(13,54, "section?");
-		mvaddstr(12, 54, comment);
-		refreshp();
-		gridmult = getgrid(comment);
-		strcpy(section, gridmult);
-		section[4] = '\0';
-
-		break;
-
 	    } else if (CONTEST_IS(STEWPERRY)) {
 		if (check_qra(comment) == 0) {
 		    mvaddstr(13, 54, "locator?");
@@ -474,7 +464,6 @@ int getexchange(void) {
 
 /* ------------------------------------------------------------------------ */
 
-char section[MAX_SECTION_LENGTH + 1] = "";
 bool call_update = false;
 
 /* ------------------------------------------------------------------------ */
@@ -651,7 +640,7 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	// get section
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL && index[0] != 0) {
-	    if (get_exact_mult_index(index) >= 0) {
+	    if (serial_grid4_mult || get_exact_mult_index(index) >= 0) {
 		g_strlcpy(section, index, sizeof(section));
 	    }
 	}
@@ -665,6 +654,15 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	g_free(index);
     }
     g_match_info_free(match_info);
+
+    if (serial_grid4_mult) {
+        if (!check_qra(section)) {
+            section[0] = 0;
+        }
+        if (strlen(section) > 4) {
+            section[4] = 0;     // mult is the first 4 chars only
+        }
+    }
 
     if (interactive) {
 	char buf[40];
@@ -755,7 +753,7 @@ void checkexchange(char *comment, bool interactive) {
     }
 
     // ----------------------serial+section--------------------------
-    if (serial_section_mult) {
+    if (serial_section_mult || serial_grid4_mult) {
 
 	checkexchange_serial_section(comment, interactive);
 	return;
@@ -770,28 +768,6 @@ void checkexchange(char *comment, bool interactive) {
 
 }
 
-
-/* ------------------------------------------------------------------------ */
-
-/* ------------------------------------------------------------------------
- * return a pointer to the start of grid locator
- */
-
-char *getgrid(char *comment) {
-
-    int multposition = 0;
-    int i = 0;
-
-    /* search for first letter, that should be the start of the Grid locator*/
-    for (i = 0; i < strlen(comment); i++) {
-	if (isalpha(comment[i])) {
-	    multposition = i;
-	    break;
-	}
-    }
-
-    return comment + multposition;
-}
 
 /* ------------------------------------------------------------------------ */
 /** Edit exchange field
