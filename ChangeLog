@@ -49,7 +49,7 @@
   startup  * Do no longer slow down display of infos. Instead ask for
   continuation before clearing the screen. That gives time to read the
   messages.  * Message display checks for enough room to display. If screen
-  gets full clear and start enew from above (after a small delay or
+  gets full clear and start anew from above (after a small delay or
   confirmation).
 
   * src/getmessages.c, src/getmessages.h, src/main.c: Refactor check for first
@@ -70,7 +70,7 @@
   src/logit.c: Fix Simulator mode for CQWW contest.  - Fix sidetone management
   (Do not change own frequency during QSO and make random change of sidetone
   for other station  working  - Add a little timing space before getting called
-  by other station  - Refactor managment of simulation stages  - Improve logic
+  by other station  - Refactor management of simulation stages  - Improve logic
   to turn on/off of simulator mode
 
 2019-07-19  Thomas Beierlein <tomjbe@gentoo.org>
@@ -152,7 +152,7 @@
   * src/err_utils.c, src/getwwv.c, src/lancode.c, src/lancode.h,
   src/showinfo.c, src/splitscreen.c: Display of infos and errors always on
   bottom line of window.  Fix the display position for the following items:  -
-  error messages - infoline with country informations - new WWV/WCY
+  error messages - infoline with country information - new WWV/WCY
   announcements - talk command input - send cluster command
 
 2019-05-05  Thomas Beierlein <tomjbe@gentoo.org>
@@ -242,7 +242,7 @@
   * src/lancode.c, src/parse_logcfg.c, tlf.1.in: Add lan port config directive 
   - Allows to specify on which port number TLF is listening for incoming
   broadcasts from other instances.  - Allows even to run multiple instances of
-  TLF  on teh same server.
+  TLF  on the same server.
 
 2019-01-05  Thomas Beierlein <tomjbe@gentoo.org>
 
@@ -327,7 +327,7 @@
   places.  - Adapt checklogfile() for use with logedit() Do not exit program if
   file not found. Use ncurses for all text output.  - Use existing
   checklogfile() to check the log after editing Original code was a copy of
-  that funtion with small adaption wrt text output and error handling.  Be
+  that function with small adaption wrt text output and error handling.  Be
   aware that the functionality is still broken as before.
 
 2018-12-05  zcsahok <ha5cqz@freemail.hu>
@@ -487,7 +487,7 @@
   offset. showinfo() now needs a prefix, so create add a getctydata_pfx()
   function which returns the prefix rather than the country.  If a callsign in
   cty.dat starts with an '=', it will only use exact matching, not prefix
-  matching.  To allow backward compatability, Tlf remembers if it saw any '='
+  matching.  To allow backward compatibility, Tlf remembers if it saw any '='
   prefixes and if so, find_full_match() will only match those.  If there were
   no '=' prefixes, the behaviour is as before, and it will match any prefix.
 
@@ -683,7 +683,7 @@
 2017-12-26  Ervin Hegedus <airween@gmail.com>
 
   * src/logit.c: Removed the cleanup() from the end of the change_mode()  In
-  case of SPRINTMODE the TU_MESSAGES was cutted by the cleanup(). That is
+  case of SPRINTMODE the TU_MESSAGES was cut by the cleanup(). That is
   wrong.
 
 2017-12-26  zcsahok <ha5cqz@freemail.hu>
@@ -847,7 +847,7 @@
 2017-02-09  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/dxcc.c, src/dxcc.h: make usage of function more secure  Only non
-  negativ indices allowed. Check for out of bounds index. Return empty dummy
+  negative indices allowed. Check for out of bounds index. Return empty dummy
   data if no element found.
 
 2017-02-19  Thomas Beierlein <tomjbe@gentoo.org>
@@ -1127,7 +1127,7 @@
 
 2016-05-04  Thomas Beierlein <tb@forth-ev.de>
 
-  * src/checklogfile.c: fix possible ressource leaks
+  * src/checklogfile.c: fix possible resource leaks
 
 2016-05-03  Thomas Beierlein <tomjbe@gentoo.org>
 
@@ -1169,7 +1169,7 @@
 2016-03-03  Thomas Beierlein <tomjbe@gentoo.org>
 
   * src/bandmap.c, src/bandmap.h, src/callinput.c: Implement BMAUTOGRAB  If set
-  callinput field will automatically grab an active spot from teh bandmap if
+  callinput field will automatically grab an active spot from the bandmap if
   TRX frequency is near spot frequency.  Works only in S&P mode.
 
 2016-02-10  Thomas Beierlein <tomjbe@gentoo.org>
@@ -1337,7 +1337,7 @@
 
   * src/addmult.c, src/addmult.h, src/main.c: cleanup logic 
   init_and_load_multipliers is now responsible for (freeing and new) allocation
-  of the mults_possible array. It now handles empty multplier filenames
+  of the mults_possible array. It now handles empty multiplier filenames
   gracefully by giving back an empty mults_possible array. The former check for
   naming the file is now the responsibility of the calling function (if
   needed).
@@ -1387,7 +1387,7 @@
 
   * configure.ac, src/Makefile.am: Update Fldigi XML RPC stanza in configure.ac
    The Autoconf documentation states that LIBS and CFLAGS are reserved for the
-  user.  Refactor the Fldigi XML RPC stanza to avoid assigment to those
+  user.  Refactor the Fldigi XML RPC stanza to avoid assignment to those
   precious variables.  Instead assign new LIBXMLRPC_LIB, LIBXMLRPC_CLIENT_LIB,
   and LIBXMLRPC_UTIL_LIB to tlf_LDDADD in src/Makefile.am.  Define the
   HAVE_LIBXMLRPC, HAVE_LIBXMLRPC_CLIENT, and HAVE_LIBXMLRPC_UTIL macros for
@@ -1396,7 +1396,7 @@
 
   * configure.ac, src/Makefile.am: Update Hamlib stanza in configure.ac  The
   Autoconf documentation states that LIBS and CFLAGS are reserved for the user.
-   Refactor the Hamlib stanza to avoid assigment to those precious variables. 
+   Refactor the Hamlib stanza to avoid assignment to those precious variables. 
   Instead assign the HAMLIB_CFLAGS and HAMLIB_LIBS generated by the pkg-config
   macro to AM_CFLAGS and tlf_LDDADD in src/Makefile.am respectively.  Also use
   standard Autoconf macros instead of raw shell if conditional and complete
@@ -1544,7 +1544,7 @@
   src/sendqrg.h:25:# include <config.h>
   src/sendqrg.h:29:# include <hamlib/rig.h>  
   
-  This minimizes, but doesn't entirely eliminate depedency chains when
+  This minimizes, but doesn't entirely eliminate dependency chains when
   including certain header files.  All local header files should have include
   guards so multiple include directives should not cause an error.
 
@@ -1564,7 +1564,7 @@
   * src/bandmap.c: fix calculation of remaining time during bandmap read 
   Lastly spot->timeout got changed to unsigned. We must take care that we do
   not get a wrap around if the diff between writing und reading the bandmap
-  data ist to big.
+  data is too big.
 
   * src/bandmap.c, src/bandmap.h, src/time_update.c: Fix saving of bandmap data
    Bandmap data are saved every 10s. It works now even if the bandmap is not
@@ -2078,7 +2078,7 @@
   * src/getmessages.c, src/main.c, src/muf.c, src/qrb.c, src/qrb.h,
   src/showinfo.c, src/showinfo.h: cleanup qrb calculation  - change internal
   representation of station coordinates from string to double numbers - drop
-  usage of global variables and make them local funtion parameters - cleaunp
+  usage of global variables and make them local function parameters - cleaunp
   include files - add include guard
 
 2014-06-17  Thomas Beierlein <tb@forth-ev.de>
@@ -2400,7 +2400,7 @@
 
   * src/gettxinfo.c, src/sendqrg.c: call 'rig_get_vfo' before using
   RIG_VFO_CURR  
-  - allows to switch VFO on the rig without loosing control by tlf. 
+  - allows to switch VFO on the rig without losing control by tlf. 
     Tnx HA2OS for help.
 
 2013-12-28  airween <airween@gmail.com>
@@ -2786,7 +2786,7 @@
 
 2013-01-06  Thomas Beierlein <tomjbe@gentoo.org>
 
-  * src/parse_logcfg.c, tlf.1.in: Reduce minimal livetime for bandmap entries
+  * src/parse_logcfg.c, tlf.1.in: Reduce minimal lifetime for bandmap entries
   to 30s (requested by DH5YM)
 
 2012-12-12  Thomas Beierlein <tomjbe@gentoo.org>
@@ -3205,7 +3205,7 @@
 
 2012-06-06  Thomas Beierlein <tb@forth-ev.de>
 
-  * configure.in: Abort configure if ncurses libs not vailable. Tnx Jens DK2AB
+  * configure.in: Abort configure if ncurses libs not available. Tnx Jens DK2AB
   for pointing it out.
 
 2012-05-19  Thomas Beierlein <tomjbe@gentoo.org>
@@ -3276,9 +3276,9 @@
 
 2012-03-18  Thomas Beierlein <tomjbe@gentoo.org>
 
-  * src/parse_logcfg.c: fix recognition of COUNTRY_LIST= keyword 
+  * src/parse_logcfg.c: fix recognition of COUNTRYLIST= keyword
   - multiplier_list was uninitialized. If it was not empty 
-    COUNTRY_LIST definitions would not be recognized 
+    COUNTRYLIST definitions would not be recognized
   - use glib for better handling of string termination
 
 2012-03-19  Thomas Beierlein <tb@forth-ev.de>
@@ -3390,7 +3390,7 @@
 
 2011-12-13  Thomas Beierlein <tomjbe@gentoo.org>
 
-  * src/parse_logcfg.c: divide livetime by 2 as aging is done every two seconds
+  * src/parse_logcfg.c: divide lifetime by 2 as aging is done every two seconds
 
   * src/parse_logcfg.c: allow configuration of bandmap filtering in logcfg.dat 
 
@@ -3421,7 +3421,7 @@
   Fix use of 'miniterm' variable  - clean old code - add comments - save and
   restore variable if temporary disabled
 
-  * New_Bandmap.txt: Add some additional informations describing the new
+  * New_Bandmap.txt: Add some additional information describing the new
   bandmap functions.
 
   * src/callinput.c, src/grabspot.c: Fix calculation of zone and prefix for
@@ -3453,7 +3453,7 @@
   results for ARRL SS  - displayed on lower line of Search panel again
 
   * src/searchlog.c: fix display of needed sections  - readcalls cuts always 3
-  char to worked mults[] fro some contests - ignore possible trailing spaces in
+  char to worked mults[] for some contests - ignore possible trailing spaces in
   compare
 
   * src/clear_display.c: display contest name on info line
@@ -4115,7 +4115,7 @@
 	* added command to logcfg.dat:
 		FIFO_INTERFACE
 	  this starts a FIFO called clfile in the working directory for
-		added flexibility and backward compatability with previous
+		added flexibility and backward compatibility with previous
 		versions
 
 2002-08-08  rein couperus   <rein@couperus.com>
@@ -4162,7 +4162,7 @@
 
 	* main.c:		added load partials from disk
 
-	* time_update.c		removed disk acces to logfile every 5 secs
+	* time_update.c		removed disk access to logfile every 5 secs
 
 	* score.c		changed cqww scoring (2 pts within NA)
 

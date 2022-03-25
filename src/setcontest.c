@@ -304,7 +304,6 @@ void setcontest(char *name) {
     extern int vk_cty;
     extern int zs_cty;
     extern int ua9_cty;
-    extern int noleadingzeros;
 
     char wcall[] = "W1AW";
     char vecall[] = "VE1AA";
@@ -322,7 +321,7 @@ void setcontest(char *name) {
     showscore_flag = true;
     searchflg = true;
     sectn_mult = false;
-    noleadingzeros = 0;
+    noleadingzeros = false;
 
     w_cty = getctynr(wcall);
     ve_cty = getctynr(vecall);
@@ -342,7 +341,7 @@ void setcontest(char *name) {
 	qso_once = true;
 	multlist = 1;
 //      sectn_mult = true;
-	noleadingzeros = 1;
+	noleadingzeros = true;
     }
 
     if (CONTEST_IS(PACC_PA)) {

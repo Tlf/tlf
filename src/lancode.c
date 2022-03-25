@@ -54,7 +54,7 @@ char bc_hostservice[MAXNODES][16] = {
 };
 int nodes = 0;
 //--------------------------------------
-/* default port to listen for incomming packets and to send packet to */
+/* default port to listen for incoming packets and to send packet to */
 char default_lan_service[16] = "6788";
 /* lan port parsed from config */
 int lan_port = 6788;

@@ -25,7 +25,7 @@
 #include "dxcc.h"
 #include "getctydata.h"
 #include "globalvars.h"
-#include "locator2longlat.h"
+#include "startmsg.h"
 
 
 /* get countrynumber, QTH, CQ zone and continent for myself */
@@ -53,10 +53,16 @@ void show_station_info(void) {
 
     getstationinfo();
 
-    printw("\n     Call = %s\n", my.call);
-    printw("     My Zone = %d", my.cqzone);
-    printw("     My Continent = %s", my.continent);
-    printw("\n\n");
+    showmsg("");
+    char *info;
+    info = g_strdup_printf("     Call = %s\n", my.call);
+    showmsg(info);
+    g_free(info);
+    info = g_strdup_printf("     My Zone = %02d     My Continent = %s\n",
+			   my.cqzone, my.continent);
+    showmsg(info);
+    g_free(info);
+    showmsg("");
 
     refreshp();
 }

@@ -43,6 +43,9 @@ static void enter_message(int bufnr) {
 	msg = message[bufnr];
 
     g_strlcpy(printbuf, msg, sizeof(printbuf));
+
+    g_strchomp(printbuf);
+
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvaddstr(15, 4, printbuf);
     refreshp();

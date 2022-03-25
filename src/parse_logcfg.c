@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "audio.h"
 #include "bandmap.h"
 #include "cabrillo_utils.h"
 #include "change_rst.h"
@@ -42,7 +43,7 @@
 #include "getwwv.h"
 #include "ignore_unused.h"
 #include "lancode.h"
-#include "locator2longlat.h"
+#include "utils.h"
 #include "parse_logcfg.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "setcontest.h"
@@ -94,6 +95,7 @@ int read_logcfg(void) {
     }
     showstring("Reading config file:", config_file);
 
+    sound_setup_default();
     int status = parse_configfile(fp);
     fclose(fp);
 
@@ -106,7 +108,7 @@ static bool isCommentLine(char *buffer) {
 
 int parse_configfile(FILE *fp) {
     int status = PARSE_OK;
-    char buffer[160];
+    char buffer[2000];
 
     while (fgets(buffer, sizeof(buffer), fp) != NULL) {
 	g_strchug(buffer);              // remove leading space
@@ -365,14 +367,14 @@ static int cfg_bandmap(const cfg_arg_t arg) {
     bm_config.allmode = 1;
     bm_config.showdupes = 1;
     bm_config.skipdupes = 0;
-    bm_config.livetime = 900;
+    bm_config.lifetime = 900;
     bm_config.onlymults = 0;
 
     /* Allow configuration of bandmap display if keyword
      * is followed by a '='
      * Parameter format is BANDMAP=<xxx>,<number>
      * <xxx> - string parsed for the letters B, M, D and S
-     * <number> - spot livetime in seconds (>=30)
+     * <number> - spot lifetime in seconds (>=30)
      */
     if (parameter != NULL) {
 	char **bm_fields = g_strsplit(parameter, ",", 2);
@@ -397,12 +399,12 @@ static int cfg_bandmap(const cfg_arg_t arg) {
 	}
 
 	if (bm_fields[1] != NULL) {
-	    int livetime;
+	    int lifetime;
 	    g_strstrip(bm_fields[1]);
-	    livetime = atoi(bm_fields[1]);
-	    if (livetime >= 30)
+	    lifetime = atoi(bm_fields[1]);
+	    if (lifetime >= 30)
 		/* aging called each second */
-		bm_config.livetime = livetime;
+		bm_config.lifetime = lifetime;
 	}
 
 
@@ -538,60 +540,78 @@ static int cfg_dx_n_sections(const cfg_arg_t arg) {
 }
 
 static int cfg_countrylist(const cfg_arg_t arg) {
-    /* FIXME: why "use only first COUNTRY_LIST definition" ? */
-    /*static*/ char country_list_raw[50] = "";
-    char temp_buffer[255] = "";
-    char buffer[255] = "";
+    char buffer[2000];
+    char *country_list_raw = NULL;  // will point somewhere into buffer
     FILE *fp;
 
-    if (strlen(country_list_raw) == 0) {/* only if first definition */
+    /* First of all we are checking if the parameter <xxx> in
+    COUNTRYLIST=<xxx> is a file name.  If it is we start
+    parsing the file. If we  find a line starting with our
+    case insensitive contest name, we copy the countries from
+    that line into country_list_raw.
+    If the input was not a file name we directly copy it into
+    country_list_raw (must not have a preceding contest name). */
 
-	/* First of all we are checking if the parameter <xxx> in
-	COUNTRY_LIST=<xxx> is a file name.  If it is we start
-	parsing the file. If we  find a line starting with our
-	case insensitive contest name, we copy the countries from
-	that line into country_list_raw.
-	If the input was not a file name we directly copy it into
-	country_list_raw (must not have a preceeding contest name). */
+    g_strlcpy(buffer, parameter, sizeof(buffer));
+    g_strchomp(buffer);	/* drop trailing whitespace */
 
-	g_strlcpy(temp_buffer, parameter, sizeof(temp_buffer));
-	g_strchomp(temp_buffer);	/* drop trailing whitespace */
+    if ((fp = fopen(buffer, "r")) != NULL) {
 
-	if ((fp = fopen(temp_buffer, "r")) != NULL) {
+	char *prefix = g_strdup_printf("%s:", whichcontest);
 
-	    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+	while (fgets(buffer, sizeof(buffer), fp) != NULL) {
 
-		g_strchomp(buffer);   /* no trailing whitespace*/
+	    g_strstrip(buffer);   /* no leading/trailing whitespace*/
 
-		/* accept only a line starting with the contest name
-		 * (CONTEST=) followed by ':' */
-		if (strncasecmp(buffer, whichcontest,
-				strlen(whichcontest) - 1) == 0) {
-
-		    strncpy(country_list_raw,
-			    buffer + strlen(whichcontest) + 1,
-			    strlen(buffer) - 1);
-		}
+	    /* accept only a line starting with the contest name
+	     * (CONTEST=) followed by ':' */
+	    if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
+		country_list_raw = buffer + strlen(prefix); // skip prefix
+		break;
 	    }
-
-	    fclose(fp);
-	} else {	/* not a file */
-
-	    if (strlen(temp_buffer) > 0)
-		strcpy(country_list_raw, temp_buffer);
 	}
+
+	g_free(prefix);
+	fclose(fp);
+    } else {	/* not a file */
+	char *colon = index(buffer, ':');
+	if (colon != NULL) {
+	    country_list_raw = colon + 1;   // skip optional contest name
+	} else {
+	    country_list_raw = buffer;
+	}
+    }
+
+    if (country_list_raw == NULL) {
+	return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
     }
 
     /* parse the country_list_raw string into an array
      * (countrylist) for future use. */
-    char *tk_ptr = strtok(country_list_raw, ":,.- \t");
+
+    char *tk_ptr = strtok(country_list_raw, ",");
     int counter = 0;
 
-    if (tk_ptr != NULL) {
-	while (tk_ptr) {
-	    strcpy(countrylist[counter], tk_ptr);
-	    tk_ptr = strtok(NULL, ":,.-_\t ");
-	    counter++;  //FIXME: check index and clean not touched records
+    memset(countrylist, 0, sizeof(countrylist));
+
+    while (tk_ptr) {
+	char *prefix = g_strdup(tk_ptr);
+	g_strstrip(prefix);
+	if (strlen(prefix) >= sizeof(countrylist[0])) {
+	    error_details = g_strdup_printf("prefix too long (%s)", prefix);
+	    g_free(prefix);
+	    return PARSE_WRONG_PARAMETER;
+	}
+
+	strcpy(countrylist[counter], prefix);
+	g_free(prefix);
+
+	tk_ptr = strtok(NULL, ",");
+	counter++;
+
+	if (counter == G_N_ELEMENTS(countrylist)) {
+	    error_details = g_strdup("too many prefixes");
+	    return PARSE_WRONG_PARAMETER;
 	}
     }
 
@@ -604,62 +624,82 @@ static int cfg_countrylist(const cfg_arg_t arg) {
 }
 
 static int cfg_continentlist(const cfg_arg_t arg) {
-    /* based on LZ3NY code, by HA2OS
-       CONTINENT_LIST   (in file or listed in logcfg.dat),
+    char buffer[2000];
+    char *cont_multiplier_list = NULL;  // will point somewhere into buffer
+    FILE *fp;
+
+    /*
+       CONTINENTLIST   (in file or listed in logcfg.dat)
        First of all we are checking if inserted data in
-       CONTINENT_LIST= is a file name.  If it is we start
+       CONTINENTLIST= is a file name.  If it is we start
        parsing the file. If we got our case insensitive contest name,
        we copy the multipliers from it into multipliers_list.
        If the input was not a file name we directly copy it into
-       cont_multiplier_list (must not have a preceeding contest name).
+       cont_multiplier_list (must not have a preceding contest name).
        The last step is to parse the multipliers_list into an array
        (continent_multiplier_list) for future use.
-     */
+    */
 
-    /* use only first CONTINENT_LIST definition */
-    /*static*/ char cont_multiplier_list[50] = "";
-    char temp_buffer[255] = "";
-    char buffer[255] = "";
-    FILE *fp;
+    g_strlcpy(buffer, parameter, sizeof(buffer));
+    g_strchomp(buffer);	/* drop trailing whitespace */
 
-    if (strlen(cont_multiplier_list) == 0) {	/* if first definition */
-	g_strlcpy(temp_buffer, parameter, sizeof(temp_buffer));
-	g_strchomp(temp_buffer);	/* drop trailing whitespace */
+    if ((fp = fopen(buffer, "r")) != NULL) {
 
-	if ((fp = fopen(temp_buffer, "r")) != NULL) {
+	char *prefix = g_strdup_printf("%s:", whichcontest);
 
-	    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+	while (fgets(buffer, sizeof(buffer), fp) != NULL) {
 
-		g_strchomp(buffer);   /* no trailing whitespace*/
+	    g_strstrip(buffer);   /* no leading/trailing whitespace*/
 
-		/* accept only a line starting with the contest name
-		 * (CONTEST=) followed by ':' */
-		if (strncasecmp(buffer, whichcontest,
-				strlen(whichcontest) - 1) == 0) {
-
-		    strncpy(cont_multiplier_list,
-			    buffer + strlen(whichcontest) + 1,
-			    strlen(buffer) - 1);
-		}
+	    /* accept only a line starting with the contest name
+	     * (CONTEST=) followed by ':' */
+	    if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
+		cont_multiplier_list = buffer + strlen(prefix); // skip prefix
+		break;
 	    }
+	}
 
-	    fclose(fp);
-	} else {	/* not a file */
-
-	    if (strlen(temp_buffer) > 0)
-		strcpy(cont_multiplier_list, temp_buffer);
+	g_free(prefix);
+	fclose(fp);
+    } else {	/* not a file */
+	char *colon = index(buffer, ':');
+	if (colon != NULL) {
+	    cont_multiplier_list = colon + 1;   // skip optional contest name
+	} else {
+	    cont_multiplier_list = buffer;
 	}
     }
 
-    /* creating the array */
-    char *tk_ptr = strtok(cont_multiplier_list, ":,.- \t");
+    if (cont_multiplier_list == NULL) {
+	return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
+    }
+
+    /* parse the cont_multiplier_list string into an array
+     * (continent_multiplier_list) for future use. */
+
+    char *tk_ptr = strtok(cont_multiplier_list, ",");
     int counter = 0;
 
-    if (tk_ptr != NULL) {
-	while (tk_ptr) {
-	    strncpy(continent_multiplier_list[counter], tk_ptr, 2);
-	    tk_ptr = strtok(NULL, ":,.-_\t ");
-	    counter++;  // FIXME check range + clean + value length check
+    memset(continent_multiplier_list, 0, sizeof(continent_multiplier_list));
+
+    while (tk_ptr) {
+	char *entry = g_strdup(tk_ptr);
+	g_strstrip(entry);
+	if (strlen(entry) >= sizeof(continent_multiplier_list[0])) {
+	    error_details = g_strdup_printf("entry too long (%s)", entry);
+	    g_free(entry);
+	    return PARSE_WRONG_PARAMETER;
+	}
+
+	strcpy(continent_multiplier_list[counter], entry);
+	g_free(entry);
+
+	tk_ptr = strtok(NULL, ",");
+	counter++;
+
+	if (counter == G_N_ELEMENTS(continent_multiplier_list)) {
+	    error_details = g_strdup("too many continents");
+	    return PARSE_WRONG_PARAMETER;
 	}
     }
 
@@ -1025,6 +1065,24 @@ static int cfg_cabrillo_field(const cfg_arg_t arg) {
     return rc;
 }
 
+static int cfg_resend_call(const cfg_arg_t arg) {
+    char *str = g_ascii_strup(parameter, -1);
+    g_strstrip(str);
+
+    if (strcmp(str, "PARTIAL") == 0) {
+	resend_call = RESEND_PARTIAL;
+    } else if (strcmp(str, "FULL") == 0) {
+	resend_call = RESEND_FULL;
+    } else {
+	g_free(str);
+	error_details = g_strdup("must be FULL or PARTIAL");
+	return PARSE_WRONG_PARAMETER;
+    }
+
+    g_free(str);
+    return PARSE_OK;
+}
+
 static config_t logcfg_configs[] = {
     {"CONTEST_MODE",        CFG_BOOL_TRUE(iscontest)},
     {"MIXED",               CFG_BOOL_TRUE(mixedmode)},
@@ -1084,9 +1142,9 @@ static config_t logcfg_configs[] = {
     {"ALT_([0-9])",     CFG_MESSAGE(message, CQ_TU_MSG + 1)},
     {"S&P_CALL_MSG",    CFG_MESSAGE(message, SP_CALL_MSG)},
 
-    {"VKM([1-9]|1[0-2])",   CFG_MESSAGE_CHOMP(ph_message, -1)},
-    {"VKCQM",               CFG_MESSAGE_CHOMP(ph_message, CQ_TU_MSG)},
-    {"VKSPM",               CFG_MESSAGE_CHOMP(ph_message, SP_TU_MSG)},
+    {"VKM([1-9]|1[0-2])",   CFG_MESSAGE(ph_message, -1)},
+    {"VKCQM",               CFG_MESSAGE(ph_message, CQ_TU_MSG)},
+    {"VKSPM",               CFG_MESSAGE(ph_message, SP_TU_MSG)},
 
     {"DKF([1-9]|1[0-2])",   CFG_MESSAGE_DYNAMIC(digi_message, -1)},
     {"DKCQM",               CFG_MESSAGE_DYNAMIC(digi_message, CQ_TU_MSG)},
@@ -1095,14 +1153,14 @@ static config_t logcfg_configs[] = {
     {"ALT_DK([1-9]|10)",    CFG_MESSAGE_DYNAMIC(digi_message, CQ_TU_MSG)},
 
     {"QR_F([1-9]|1[0-2])",      CFG_MESSAGE(qtc_recv_msgs, -1) },
-    {"QR_VKM([1-9]|1[0-2])",    CFG_MESSAGE_CHOMP(qtc_phrecv_message, -1) },
-    {"QR_VKCQM",                CFG_MESSAGE_CHOMP(qtc_phrecv_message, CQ_TU_MSG) },
-    {"QR_VKSPM",                CFG_MESSAGE_CHOMP(qtc_phrecv_message, SP_TU_MSG) },
+    {"QR_VKM([1-9]|1[0-2])",    CFG_MESSAGE(qtc_phrecv_message, -1) },
+    {"QR_VKCQM",                CFG_MESSAGE(qtc_phrecv_message, CQ_TU_MSG) },
+    {"QR_VKSPM",                CFG_MESSAGE(qtc_phrecv_message, SP_TU_MSG) },
 
     {"QS_F([1-9]|1[0-2])",      CFG_MESSAGE(qtc_send_msgs, -1) },
-    {"QS_VKM([1-9]|1[0-2])",    CFG_MESSAGE_CHOMP(qtc_phsend_message, -1) },
-    {"QS_VKCQM",                CFG_MESSAGE_CHOMP(qtc_phsend_message, CQ_TU_MSG) },
-    {"QS_VKSPM",                CFG_MESSAGE_CHOMP(qtc_phsend_message, SP_TU_MSG) },
+    {"QS_VKM([1-9]|1[0-2])",    CFG_MESSAGE(qtc_phsend_message, -1) },
+    {"QS_VKCQM",                CFG_MESSAGE(qtc_phsend_message, CQ_TU_MSG) },
+    {"QS_VKSPM",                CFG_MESSAGE(qtc_phsend_message, SP_TU_MSG) },
 
     {"TLFCOLOR([1-6])",  NEED_PARAM, cfg_tlfcolor},
 
@@ -1126,6 +1184,7 @@ static config_t logcfg_configs[] = {
     {"CONTINENT_LIST_POINTS",   CFG_INT(continentlist_points, 0, INT32_MAX)},
 
     {"NETKEYER",        CFG_INT_CONST(cwkeyer, NET_KEYER)},
+    {"HAMLIB_KEYER",    CFG_INT_CONST(cwkeyer, HAMLIB_KEYER)},
     {"FIFO_INTERFACE",  CFG_INT_CONST(packetinterface, FIFO_INTERFACE)},
     {"LONG_SERIAL",     CFG_INT_CONST(shortqsonr, 0)},
     {"CLUSTER",         CFG_INT_CONST(cluster, CLUSTER)},
@@ -1139,7 +1198,6 @@ static config_t logcfg_configs[] = {
     {"TELNETHOST",      CFG_STRING_STATIC(pr_hostaddress, 48)},
     {"QTC_CAP_CALLS",   CFG_STRING_STATIC(qtc_cap_calls, 40)},
     {"SYNCFILE",        CFG_STRING_STATIC(synclogfile, 120)},
-    {"SC_DEVICE",       CFG_STRING_STATIC(sc_device, 40)},
     {"INITIAL_EXCHANGE",       CFG_STRING_STATIC(exchange_list, 40)},
     {"DIGIMODEM",       CFG_STRING_STATIC(rttyoutput, 120)},
     {"FKEY-HEADER",     CFG_STRING_STATIC(fkey_header, sizeof(fkey_header))},
@@ -1147,6 +1205,11 @@ static config_t logcfg_configs[] = {
     {"CABRILLO",    CFG_STRING(cabrillo)},
     {"CALLMASTER",  CFG_STRING(callmaster_filename)},
     {"EDITOR",      CFG_STRING(editor_cmd)},
+    {"VK_PLAY_COMMAND",	    	CFG_STRING(vk_play_cmd)},
+    {"VK_RECORD_COMMAND",   	CFG_STRING(vk_record_cmd)},
+    {"SOUNDLOG_PLAY_COMMAND",	CFG_STRING(soundlog_play_cmd)},
+    {"SOUNDLOG_RECORD_COMMAND",	CFG_STRING(soundlog_record_cmd)},
+    {"SOUNDLOG_DIRECTORY",	CFG_STRING(soundlog_dir)},
 
     {"RIGPORT",         CFG_STRING_NOCHOMP(rigportname)},
     {"CLUSTERLOGIN",    CFG_STRING_STATIC_NOCHOMP(clusterlogin, 80)},
@@ -1188,6 +1251,7 @@ static config_t logcfg_configs[] = {
     {"UNIQUE_CALL_MULTI",   NEED_PARAM, cfg_unique_call_multi},
     {"DIGI_RIG_MODE",       NEED_PARAM, cfg_digi_rig_mode},
     {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
+    {"RESEND_CALL",         NEED_PARAM, cfg_resend_call},
 
     {NULL}  // end marker
 };
@@ -1253,6 +1317,10 @@ static int apply_config(const char *keyword, const char *param,
 
 	case PARSE_INTEGER_OUT_OF_RANGE:
 	    WrongFormat_details(keyword, "value out of range");
+	    break;
+
+	case PARSE_STRING_TOO_LONG:
+	    WrongFormat_details(keyword, "value too long");
 	    break;
 
 	default:

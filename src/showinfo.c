@@ -51,14 +51,14 @@ static void showinfo_internal(int pfx_index) {
     char timebuff[80];
 
     prefix_data *pfx = prefix_by_index(pfx_index);
-    dxcc_data *dx = dxcc_by_index(pfx -> dxcc_index);
+    dxcc_data *dx = dxcc_by_index(pfx -> dxcc_ctynr);
 
     getyx(stdscr, cury, curx);
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
     mvaddstr(LINES - 1, 0, backgrnd_str);
 
-    if (pfx->dxcc_index > 0) {
+    if (pfx->dxcc_ctynr > 0) {
 	mvprintw(LINES - 1, 0, " %s  %s", dx->pfx, dx->countryname);
 
 	mvprintw(LINES - 1, 26, " %s %02d", pfx->continent, pfx->cq);

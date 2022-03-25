@@ -21,6 +21,6 @@
 #ifndef STORE_QSO_H
 #define STORE_QSO_H
 
-int store_qso(char *loglineptr);
+void store_qso(char *loglineptr);
 
 #endif /* STORE_QSO_H */

@@ -41,11 +41,15 @@ char  printbuffer[160];
 
 char *formatMessage(int i) {
 
-    /* copy the message string WITHOUT trailing newline/space */
+    /* copy the message string */
     if (trxmode == DIGIMODE)
-	g_strlcpy(printbuffer,  digi_message[i],  strlen(digi_message[i]));
+	g_strlcpy(printbuffer,  digi_message[i],  sizeof(printbuffer));
     else
-	g_strlcpy(printbuffer,  message[i],  strlen(message[i]));
+	g_strlcpy(printbuffer,  message[i],  sizeof(printbuffer));
+
+    /* and strip off trailing newline/whitespace */
+    g_strchomp(printbuffer);
+
     /* and fill up with spaces */
     strcat(printbuffer, backgrnd_str);
     printbuffer[LIST_WIDTH - 7] = '\0';

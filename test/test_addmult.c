@@ -25,8 +25,6 @@
 // OBJECT ../src/paccdx.o
 // OBJECT ../src/zone_nr.o
 
-char section[8] = "";       // defined in getexchange.c
-
 /* dummies */
 int getctynr(char *checkcall) {
     return 42;
@@ -36,6 +34,9 @@ int getctydata(char *checkcall) {
     return 0;
 }
 
+prefix_data *getctyinfo(char *call) {
+    return NULL;
+}
 
 contest_config_t config_focm;
 struct qso_t *this_qso;
@@ -83,7 +84,6 @@ int setup_default(void **state) {
     w_cty = 78;
 
     strcpy(comment, "");
-    strcpy(section, "");
 
     strcpy(multsfile, "");
 
@@ -295,8 +295,9 @@ void test_wysiwyg_multi_empty(void **state) {
 
 void test_serial_grid4(void **state) {
     serial_grid4_mult = true;
-    strcpy(section, "JO60LX");
-    set_this_qso("");   // NOTE: section is not part of qso_t
+    // NOTE: locator is limited to 4 chars in checkexchange()
+    strcpy(mult1_value, "JO60");
+    set_this_qso("");
     addmult(this_qso);
     assert_true(new_mult >= 0);
     assert_string_equal(multis[0].name, "JO60");
@@ -306,7 +307,8 @@ void test_serial_grid4(void **state) {
 
 void test_serial_grid4_empty(void **state) {
     serial_grid4_mult = true;
-    set_this_qso("");   // NOTE: section is not part of qso_t
+    strcpy(mult1_value, "");
+    set_this_qso("");
     addmult(this_qso);
     assert_int_equal(new_mult, -1);
 }

@@ -5,11 +5,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include "../src/audio.h"
 #include "../src/parse_logcfg.h"
 #include "../src/lancode.h"
 #include "../src/bandmap.h"
 #include "../src/qtcvars.h"
 #include "../src/tlf.h"
+#include "../src/err_utils.h"
 #include "../src/globalvars.h"
 #include "../src/getwwv.h"
 #include "../src/change_rst.h"
@@ -17,13 +19,13 @@
 #include "../src/set_tone.h"
 #include "../src/cabrillo_utils.h"
 
+// OBJECT ../src/audio.o
 // OBJECT ../src/addpfx.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/parse_logcfg.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/getwwv.o
-// OBJECT ../src/locator2longlat.o
 // OBJECT ../src/score.o
 // OBJECT ../src/plugin.o
 // OBJECT ../src/log_utils.o
@@ -99,12 +101,16 @@ int getctydata(char *checkcallptr) {
     if (g_str_has_prefix(checkcallptr, "JA")) return 13;
     if (g_str_has_prefix(checkcallptr, "PY")) return 12;
     if (g_str_has_prefix(checkcallptr, "UA9")) return 11;
+    // used for COUNTRYLIST
+    if (g_str_has_prefix(checkcallptr, "GM")) return 100;
+    if (g_str_has_prefix(checkcallptr, "HG")) return 101;
+    if (g_str_has_prefix(checkcallptr, "EA")) return 102;
+    if (g_str_has_prefix(checkcallptr, "EB")) return 102;   // = EA
     return 0;
 }
 
 int getctynr(char *checkcall) {
-    // TBD
-    return 0;
+    return getctydata(checkcall);
 }
 
 int foc_score(char *a) {
@@ -112,6 +118,26 @@ int foc_score(char *a) {
     return 0;
 }
 
+prefix_data *getctyinfo(char *call) {
+    return NULL;
+}
+
+void clear_line() {
+    //empty
+}
+
+int modify_attr(int attr) {
+    // TBD
+    return 0;
+}
+
+void time_update(void) {
+    // empty
+}
+
+void handle_logging(enum log_lvl lvl, ...) {
+    // empty
+}
 
 /* setup/teardown */
 int setup_default(void **state) {
@@ -166,7 +192,6 @@ int setup_default(void **state) {
     markerfile[0] = 0;
     synclogfile[0] = 0;
     sc_volume[0] = 0;
-    sc_device[0] = 0;
     modem_mode[0] = 0;
     controllerport[0] = 0;
     clusterlogin[0] = 0;
@@ -218,6 +243,10 @@ int setup_default(void **state) {
     FREE_DYNAMIC_STRING(cabrillo);
     FREE_DYNAMIC_STRING(callmaster_filename);
     FREE_DYNAMIC_STRING(rigportname);
+    FREE_DYNAMIC_STRING(vk_play_cmd);
+    FREE_DYNAMIC_STRING(vk_record_cmd);
+    FREE_DYNAMIC_STRING(soundlog_play_cmd);
+    FREE_DYNAMIC_STRING(soundlog_record_cmd);
 
     showmsg_spy = STRING_NOT_SET;
     rst_init_spy[0] = 0;
@@ -279,6 +308,43 @@ void test_keyer_device(void **state) {
     int rc = call_parse_logcfg("KEYER_DEVICE =/dev/tty0\r\n");   // space after keyword, DOS line ending
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(keyer_device, "/dev/tty0");
+}
+
+void test_keyer_device_too_long(void **state) {
+    int rc = call_parse_logcfg("KEYER_DEVICE=/dev/bus/usb/002/001");
+    assert_int_equal(rc, PARSE_ERROR);
+    assert_string_equal(showmsg_spy,
+			"Wrong parameter for keyword 'KEYER_DEVICE': value too long.\n");
+}
+
+void test_vk_play_cmd(void **state) {
+    int rc = call_parse_logcfg("VK_PLAY_COMMAND= sox -q $1 -d\n");
+    assert_int_equal(rc,0);
+    assert_string_equal(vk_play_cmd, "sox -q $1 -d");
+}
+
+void test_vk_record_cmd(void **state) {
+    int rc = call_parse_logcfg("VK_RECORD_COMMAND= sox -r 8000 -q -d $1 &\n");
+    assert_int_equal(rc,0);
+    assert_string_equal(vk_record_cmd, "sox -r 8000 -q -d $1 &");
+}
+
+void test_soundlog_play_cmd(void **state) {
+    int rc = call_parse_logcfg("SOUNDLOG_PLAY_COMMAND= sox -q $1 -d\n");
+    assert_int_equal(rc,0);
+    assert_string_equal(soundlog_play_cmd, "sox -q $1 -d");
+}
+
+void test_soundlog_record_cmd(void **state) {
+    int rc = call_parse_logcfg("SOUNDLOG_RECORD_COMMAND= ./soundlog");
+    assert_int_equal(rc,0);
+    assert_string_equal(soundlog_record_cmd, "./soundlog");
+}
+
+void test_soundlog_directory(void **state) {
+    int rc = call_parse_logcfg("SOUNDLOG_DIRECTORY= ~/soundlogs");
+    assert_int_equal(rc,0);
+    assert_string_equal(soundlog_dir, "~/soundlogs");
 }
 
 void test_editor(void **state) {
@@ -414,7 +480,7 @@ void test_fn(void **state) {
 	sprintf(line, "F%d= %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "MSG%d ABC \n", i);   // trailing space+NL are kept, FIXME
+	sprintf(msg, "MSG%d ABC", i);
 	assert_string_equal(message[j], msg);
     }
 }
@@ -428,7 +494,7 @@ void test_alt_n(void **state) {
 	sprintf(line, "ALT_%d= %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "MSG%d ALT \n", i);   // trailing space+NL are kept, FIXME
+	sprintf(msg, "MSG%d ALT", i);
 	assert_string_equal(message[j], msg);
     }
 }
@@ -436,19 +502,19 @@ void test_alt_n(void **state) {
 void test_sp_tu_msg(void **state) {
     int rc = call_parse_logcfg("S&P_TU_MSG=TU\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(message[SP_TU_MSG], "TU\n");
+    assert_string_equal(message[SP_TU_MSG], "TU");
 }
 
 void test_cq_tu_msg(void **state) {
     int rc = call_parse_logcfg("CQ_TU_MSG=TU QRZ?\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(message[CQ_TU_MSG], "TU QRZ?\n");
+    assert_string_equal(message[CQ_TU_MSG], "TU QRZ?");
 }
 
 void test_sp_call_msg(void **state) {
     int rc = call_parse_logcfg("S&P_CALL_MSG=DE AB1CD\r\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(message[SP_CALL_MSG], "DE AB1CD\r\n");  // FIXME line end...
+    assert_string_equal(message[SP_CALL_MSG], "DE AB1CD");
 }
 
 typedef struct {
@@ -580,7 +646,7 @@ void test_qr_fn(void **state) {
 	sprintf(line, "QR_F%d = %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "QRMSG%d MNO \n", i);    // FIXME NL is kept
+	sprintf(msg, "QRMSG%d MNO", i);
 	assert_string_equal(qtc_recv_msgs[j], msg);
     }
 }
@@ -595,7 +661,7 @@ void test_qs_fn(void **state) {
 	sprintf(line, "QS_F%d = %s \n", i, msg);
 	int rc = call_parse_logcfg(line);
 	assert_int_equal(rc, PARSE_OK);
-	sprintf(msg, "QSMSG%d MNO \n", i);    // FIXME NL is kept
+	sprintf(msg, "QSMSG%d MNO", i);
 	assert_string_equal(qtc_send_msgs[j], msg);
     }
 }
@@ -888,7 +954,7 @@ void test_bandmap(void **state) {
     assert_int_equal(rc, 0);
     assert_int_equal(cluster, MAP);
     assert_int_equal(bm_config.showdupes, 1);
-    assert_int_equal(bm_config.livetime, 900);
+    assert_int_equal(bm_config.lifetime, 900);
 }
 
 void test_bandmap_d100(void **state) {
@@ -896,7 +962,7 @@ void test_bandmap_d100(void **state) {
     assert_int_equal(rc, 0);
     assert_int_equal(cluster, MAP);
     assert_int_equal(bm_config.showdupes, 0);
-    assert_int_equal(bm_config.livetime, 100);
+    assert_int_equal(bm_config.lifetime, 100);
 }
 
 void test_cwspeed(void **state) {
@@ -1005,6 +1071,24 @@ void test_countrylist(void **state) {
     assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
+void test_countrylist_long(void **state) {
+    strcpy(whichcontest, "abc");
+    strcpy(my.call, "HG1ABC");
+    int rc = call_parse_logcfg("COUNTRYLIST=beru:2D,2E,2I,2J,2M,2U,2W,3B6,3B7,3B8,3B9,3D2,3D2,3D2,3DA,4S ,5B,5H ,5N ,5W ,5X ,5Z ,6Y ,7P ,7Q ,8P ,8Q ,8R ,9G ,9H ,9J ,9L ,9M0,9M2,9M6,9M8,9V ,9X ,9Y ,A2 ,A3 ,AP ,C2 ,C4,C5 ,C6 ,C9 ,CY0,CY9,E5 ,E5 ,G,GD,GI,GJ,GM,GU,GW,H2,H40,H44,J3 ,J6 ,J7 ,J8 ,M,MD,MI,MJ,MM,MU,MW,P2 ,P3,S2 ,S7 ,T2 ,T30,T31,T32,T33,TJ ,V2 ,V3 ,V4 ,V5 ,V8 ,VE1,VE2,VE3,VE4,VE5,VE6,VE7,VE8,VE9,VK0,VK0,VK1,VK2,VK3,VK4,VK5,VK6,VK7,VK8,VK9,VK9,VK9M,VK9N,VK9W,VK9X,VO1,VO2,VP2M,VP2V,VP3E,VP5,VP6,VP6,VP8,VP8,VP8,VP8,VP8,VP8,VP9,VQ9,VU ,VU4,VU7,VY0,VY1,VY2,YJ ,Z2 ,ZB2,ZC4,ZD7,ZD8,ZD9,ZF ,ZK2,ZK3,ZL0,ZL1,ZL2,ZL3,ZL4,ZL6,ZL7,ZL8,ZL9,ZS0,ZS1,ZS2,ZS3,ZS4,ZS5,ZS6,ZS8");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(countrylist[0], "2D");
+    assert_string_equal(countrylist[1], "2E");
+    assert_string_equal(countrylist[2], "2I");
+    assert_string_equal(countrylist[3], "2J");
+    assert_string_equal(countrylist[22], "6Y");
+    assert_string_equal(countrylist[100], "VK3");
+    assert_string_equal(countrylist[128], "VU");
+    assert_string_equal(countrylist[160], "ZS8");
+    assert_string_equal(countrylist[161], "");
+    assert_false(mult_side);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
+}
+
 void test_countrylist_from_file(void **state) {
     strcpy(my.call, "EB1ABC");
     strcpy(whichcontest, "bdx");
@@ -1013,6 +1097,26 @@ void test_countrylist_from_file(void **state) {
     assert_string_equal(countrylist[0], "EA");
     assert_string_equal(countrylist[1], "CT");
     assert_string_equal(countrylist[2], "");
+    assert_true(mult_side);
+    assert_int_equal(CONTEST_IS(UNKNOWN), 1);
+}
+
+void test_countrylist_from_file_long(void **state) {
+    strcpy(my.call, "ZL1ABC");
+    strcpy(whichcontest, "beru");
+    int rc = call_parse_logcfg("COUNTRYLIST= data/countries.txt \n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(countrylist[0], "2D");
+    assert_string_equal(countrylist[1], "2E");
+    assert_string_equal(countrylist[0], "2D");
+    assert_string_equal(countrylist[1], "2E");
+    assert_string_equal(countrylist[2], "2I");
+    assert_string_equal(countrylist[3], "2J");
+    assert_string_equal(countrylist[22], "6Y");
+    assert_string_equal(countrylist[100], "VK3");
+    assert_string_equal(countrylist[128], "VU");
+    assert_string_equal(countrylist[160], "ZS8");
+    assert_string_equal(countrylist[161], "");
     assert_true(mult_side);
     assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
@@ -1064,12 +1168,6 @@ void test_sidetone_volume(void **state) {
     int rc = call_parse_logcfg("SIDETONE_VOLUME = 63\r\n");
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(sc_volume, "63");
-}
-
-void test_sc_device(void **state) {
-    int rc = call_parse_logcfg("SC_DEVICE = abc\r\n");
-    assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(sc_device, "abc");
 }
 
 void test_mfj1278_keyer(void **state) {

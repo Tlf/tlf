@@ -31,5 +31,7 @@ int log_get_mode(const char *logline);
 int log_get_points(const char *logline);
 struct qso_t *parse_qso(char * buffer);
 void free_qso(struct qso_t *ptr);
+void free_qso_array();
+void init_qso_array();
 
 #endif

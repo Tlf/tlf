@@ -33,6 +33,7 @@
 #include <unistd.h>
 
 #include "addspot.h"
+#include "audio.h"
 #include "autocq.h"
 #include "bandmap.h"
 #include "calledit.h"
@@ -326,7 +327,7 @@ int callinput(void) {
 
 	    // Ctrl-S (^S), open QTC window for sending QTCs.
 	    case CTRL_S: {
-		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
+		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND or QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
 		x = KEY_LEFT;
@@ -591,9 +592,9 @@ int callinput(void) {
 		} else {
 
 		    if (cqmode == S_P)
-			play_file(ph_message[5]);	/* S&P */
+			vk_play_file(ph_message[5]);	/* S&P */
 		    else
-			play_file(ph_message[0]);
+			vk_play_file(ph_message[0]);
 		}
 		break;
 	    }
@@ -622,7 +623,7 @@ int callinput(void) {
 		break;
 	    }
 
-	    // <Backspace>, remove chracter left of cursor, move cursor left one position.
+	    // <Backspace>, remove character left of cursor, move cursor left one position.
 	    case KEY_BACKSPACE: {
 		if (*hiscall != '\0') {
 		    getyx(stdscr, cury, curx);
@@ -891,7 +892,7 @@ int callinput(void) {
 		break;
 	    }
 
-	    // Ctrl-R (^R), toogle trx1, trx2 via lp0 pin 14.
+	    // Ctrl-R (^R), toggle trx1, trx2 via lp0 pin 14.
 	    case CTRL_R: {
 		if (k_pin14 == 0) {
 		    k_pin14 = 1;
@@ -1137,47 +1138,6 @@ int autosend() {
 
     g_timer_destroy(timer);
     return x;
-}
-
-
-void play_file(char *audiofile) {
-
-    if (*audiofile == 0) {
-	return;
-    }
-
-    if (access(audiofile, R_OK) != 0) {
-	TLF_LOG_INFO("cannot open sound file %s!", audiofile);
-	return;
-    }
-
-    // use play_vk from current dir, if available
-    // note: this overrides PATH setting
-    bool has_local_play_vk = (access("./play_vk", X_OK) == 0);
-    char *playcommand = g_strdup_printf("%s %s",
-					(has_local_play_vk ? "./play_vk" : "play_vk"),
-					audiofile);
-
-    /* CAT PTT wanted and available, use it. */
-    if (rigptt == CAT_PTT_USE) {
-	/* Request PTT On */
-	rigptt |= CAT_PTT_ON;
-    } else {		/* Fall back to netkeyer interface */
-	netkeyer(K_PTT, "1");	// ptt on
-    }
-
-    usleep(txdelay * 1000);
-    IGNORE(system(playcommand));;
-    g_free(playcommand);
-    printcall();
-
-    /* CAT PTT wanted, available, and active. */
-    if (rigptt == (CAT_PTT_USE | CAT_PTT_ACTIVE)) {
-	/* Request PTT Off */
-	rigptt |= CAT_PTT_OFF;
-    } else {		/* Fall back to netkeyer interface */
-	netkeyer(K_PTT, "0");	// ptt off
-    }
 }
 
 

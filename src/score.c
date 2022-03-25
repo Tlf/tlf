@@ -37,13 +37,12 @@
 #include "focm.h"
 #include "globalvars.h"
 #include "getctydata.h"
-#include "locator2longlat.h"
 #include "qrb.h"
 #include "plugin.h"
 #include "setcontest.h"
 #include "tlf.h"
 
-void calc_continent(int zone);
+char *calc_continent(int zone);
 
 /* check if countrynr is in countrylist */
 bool is_in_countrylist(int countrynr) {
@@ -59,7 +58,7 @@ bool is_in_countrylist(int countrynr) {
 }
 
 
-/* check if hiscall is in COUNTRY_LIST from logcfg.dat */
+/* check if hiscall is in COUNTRYLIST from logcfg.dat */
 // FIXME: *** this function does not use its argument ***
 bool country_found(char prefix[]) {
     char tmpcall[15];
@@ -115,12 +114,12 @@ bool is_in_continentlist(char *continent) {
 
 /* apply bandweight scoring *
  * at the moment only LOWBAND_DOUBLES (<30m) can be active */
-int apply_bandweight(int points) {
+int apply_bandweight(int points, int bandindex) {
 
-    if (lowband_point_mult && (bandinx < BANDINDEX_30))
+    if (lowband_point_mult && (bandindex < BANDINDEX_30))
 	points *= 2;
 
-    points *= bandweight_points[bandinx];
+    points *= bandweight_points[bandindex];
 
     return points;
 }
@@ -128,8 +127,8 @@ int apply_bandweight(int points) {
 
 /* portable stations may count double
  * see PORTABLE_X2 */
-int portable_doubles(int points) {
-    if (portable_x2 && g_str_has_suffix(hiscall, "/P")) {
+int portable_doubles(int points, char *call) {
+    if (portable_x2 && g_str_has_suffix(call, "/P")) {
 	points *= 2;
     }
     return points;
@@ -155,10 +154,11 @@ int scoreByMode() {
 			    points = x; \
 			} while(0);
 
-int scoreByContinentOrCountry() {
+int scoreByContinentOrCountry(struct qso_t *qso) {
 
     int points = 0;
-    bool inCountryList = exist_in_country_list();
+    prefix_data *ctyinfo = getctyinfo(qso->call);
+    bool inCountryList = is_in_countrylist(ctyinfo->dxcc_ctynr);
 
     if (countrylist_only) {
 	points = 0;
@@ -172,10 +172,10 @@ int scoreByContinentOrCountry() {
     if (continentlist_only) {
 	points = 0;
 	// only continent list allowed
-	if (is_in_continentlist(continent)) {
+	if (is_in_continentlist(ctyinfo->continent)) {
 	    USE_IF_SET(continentlist_points);
 	    // overwrite if own continent and my_cont_points set
-	    if (strcmp(continent, my.continent) == 0) {
+	    if (strcmp(ctyinfo->continent, my.continent) == 0) {
 		USE_IF_SET(my_cont_points);
 	    }
 	}
@@ -183,13 +183,13 @@ int scoreByContinentOrCountry() {
     }
 
     // default
-    if (countrynr == my.countrynr) {
+    if (ctyinfo->dxcc_ctynr == my.countrynr) {
 	points = 0;
 	USE_IF_SET(my_cont_points);
 	USE_IF_SET(my_country_points);
     } else if (inCountryList) {
 	USE_IF_SET(countrylist_points);
-    } else if (strcmp(continent, my.continent) == 0) {
+    } else if (strcmp(ctyinfo->continent, my.continent) == 0) {
 	USE_IF_SET(my_cont_points);
     } else
 	USE_IF_SET(dx_cont_points);
@@ -204,31 +204,35 @@ int scoreByContinentOrCountry() {
  * are active
  * \return points for QSO
  */
-int scoreDefault() {
+int scoreDefault(struct qso_t *qso) {
 
     int points;
 
     if (ssbpoints != 0 && cwpoints != 0)	//  e.g. arrl 10m contest
 	points = scoreByMode();
     else
-	points = scoreByContinentOrCountry();
+	points = scoreByContinentOrCountry(qso);
 
-    points = apply_bandweight(points);
-    points = portable_doubles(points);
+    points = apply_bandweight(points, qso->bandindex);
+    points = portable_doubles(points, qso->call);
 
     return points;
 }
 
-int score_wpx() {
+int score_wpx(struct qso_t *qso) {
     int points;
+
+    prefix_data *ctyinfo = getctyinfo(qso->call);
+    int countrynr = ctyinfo->dxcc_ctynr;
+
     if (countrynr == my.countrynr) {
 	points = 1;
 
 	return points;
     }
 
-    if ((strcmp(continent, my.continent) == 0)
-	    && (bandinx > BANDINDEX_30)) {
+    if ((strcmp(ctyinfo->continent, my.continent) == 0)
+	    && (qso->bandindex > BANDINDEX_30)) {
 	if (strstr(my.continent, "NA") != NULL) {
 	    points = 2;
 	} else {
@@ -238,8 +242,8 @@ int score_wpx() {
 	return points;
     }
 
-    if ((strcmp(continent, my.continent) == 0)
-	    && (bandinx < BANDINDEX_30)) {
+    if ((strcmp(ctyinfo->continent, my.continent) == 0)
+	    && (qso->bandindex < BANDINDEX_30)) {
 	if (strstr(my.continent, "NA") != NULL) {
 	    points = 4;
 	} else {
@@ -247,14 +251,14 @@ int score_wpx() {
 	}
 	return points;
     }
-    if ((strcmp(continent, my.continent) != 0)
-	    && (bandinx > BANDINDEX_30)) {
+    if ((strcmp(ctyinfo->continent, my.continent) != 0)
+	    && (qso->bandindex > BANDINDEX_30)) {
 	points = 3;
 
 	return points;
     }
-    if ((strcmp(continent, my.continent) != 0)
-	    && (bandinx < BANDINDEX_30)) {
+    if ((strcmp(ctyinfo->continent, my.continent) != 0)
+	    && (qso->bandindex < BANDINDEX_30)) {
 	points = 6;
 
 	return points;
@@ -263,13 +267,17 @@ int score_wpx() {
 }
 
 
-int score_cqww() {
+int score_cqww(struct qso_t *qso) {
     int points;
     int zone;
 
+    prefix_data *ctyinfo = getctyinfo(qso->call);
+    int countrynr = ctyinfo->dxcc_ctynr;
+    char *continent = ctyinfo->continent;
+
     if (countrynr == 0) {
-	zone = atoi(comment);
-	calc_continent(zone);	// sets continent
+	zone = atoi(qso->comment);
+	continent = calc_continent(zone);	// sets continent
     }
 
     if (countrynr == my.countrynr) {
@@ -285,16 +293,15 @@ int score_cqww() {
 	    points = 1;
 	}
 
-	return points;
     } else {
 	points = 3;
-
-	return points;
     }
+
+    return points;
 }
 
 
-int score_arrlfd() {
+int score_arrlfd(struct qso_t *qso) {
     int points;
 
     if (trxmode == SSBMODE) {
@@ -306,8 +313,11 @@ int score_arrlfd() {
 }
 
 
-int score_arrldx_usa() {
+int score_arrldx_usa(struct qso_t *qso) {
     int points;
+
+    prefix_data *ctyinfo = getctyinfo(qso->call);
+    int countrynr = ctyinfo->dxcc_ctynr;
 
     if ((countrynr == w_cty) || (countrynr == ve_cty)) {
 	points = 0;
@@ -319,14 +329,14 @@ int score_arrldx_usa() {
 }
 
 
-int score_stewperry() {
+int score_stewperry(struct qso_t *qso) {
     int points;
     double s1long, s1lat, s2long, s2lat, distance, azimuth;
 
     points = 0;
 
-    if (strlen(comment) > 3) {
-	locator2longlat(&s1long, &s1lat, comment);
+    if (strlen(qso->comment) > 3) {
+	locator2longlat(&s1long, &s1lat, qso->comment);
 	locator2longlat(&s2long, &s2lat, my.qra);
 
 	qrb(s1long, s1lat, s2long, s2lat, &distance, &azimuth);
@@ -338,7 +348,7 @@ int score_stewperry() {
 }
 
 
-int score() {
+int score(struct qso_t *qso) {
 
     int points;
 
@@ -353,7 +363,7 @@ int score() {
     }
 
     if (contest->points.type == FUNCTION) {
-	return contest->points.fn();
+	return contest->points.fn(qso);
     }
 
     if (contest->points.type == FIXED) {
@@ -361,9 +371,14 @@ int score() {
     }
 
     /* start of the universal scoring code */
-    return scoreDefault();
+    return scoreDefault(qso);
 }
 
+/* score QSO and add to total points */
+void score_qso(struct qso_t *qso) {
+    qso_points = score(qso);		/* update qso's per band and score */
+    total = total + qso_points;
+}
 
 /* -----------------------------------------------------------------*/
 int score2(char *line) {
@@ -373,31 +388,30 @@ int score2(char *line) {
 
 /* ----------------------------------------------------------------- */
 /* calculates continent from zone and sets 'continent' variable      */
-void calc_continent(int zone) {
+char *calc_continent(int zone) {
+    char *continent;
 
     switch (zone) {
 	case 1 ... 8:
-	    strcpy(continent, "NA");
+	    continent = "NA";
 	    break;
 	case 9 ... 13:
-	    strcpy(continent, "SA");
+	    continent = "SA";
 	    break;
 	case 14 ... 16:
-	    strcpy(continent, "EU");
+	    continent = "EU";
 	    break;
-	case 17 ... 26:
-	    strcpy(continent, "AS");
-	    break;
-	case 27 ... 32:
-	    strcpy(continent, "AS");
+	case 17 ... 32:
+	    continent = "AS";
 	    break;
 	case 33 ... 39:
-	    strcpy(continent, "AF");
+	    continent = "AF";
 	    break;
 	case 40:
-	    strcpy(continent, "EU");
+	    continent = "EU";
 	    break;
 	default:
-	    strcpy(continent, "??");
+	    continent = "??";
     }
+    return continent;
 }

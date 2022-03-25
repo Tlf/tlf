@@ -1,2 +1,2 @@
-xx=EU,OC
-aadx= AS
+xx:EU,OC
+aadx: AS

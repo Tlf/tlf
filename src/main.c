@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "addmult.h"
+#include "audio.h"
 #include "background_process.h"
 #include "bandmap.h"
 #include "change_rst.h"
@@ -42,6 +43,7 @@
 #include "getmessages.h"
 #include "getwwv.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "hamlib_keyer.h"
 #include "initial_exchange.h"
 #include "lancode.h"
 #include "logit.h"
@@ -139,7 +141,7 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-int noleadingzeros;
+bool noleadingzeros;
 bool ctcomp = false;
 bool nob4 = false;		// allow auto b4
 bool ignoredupe = false;
@@ -222,9 +224,9 @@ char message[25][80] = /**< Array of CW messages
 			* message[1]  (F2)  - insert pressed
  			*/
 {
-    "TEST %\n", "@ DE %\n", "@ [\n", "TU 73\n", " @\n", "%\n",
-    "@ SRI QSO B4 GL\n", "AGN\n",
-    " ?\n", " QRZ?\n", " PSE K\n", "TEST % %\n", "@ [\n", "TU %\n",
+    "TEST %", "@ DE %", "@ [", "TU 73", "@", "%",
+    "@ SRI QSO B4 GL", "AGN",
+    "?", "QRZ?", "PSE K", "TEST % %", "@ [", "TU %",
     "", "", "", "", "", "", "", "", "", "", ""
 };
 
@@ -233,12 +235,24 @@ char *digi_message[sizeof(message) / sizeof(message[0])];
 char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   * See description of message[]
 			   */
-{ "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+    { "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 
-char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
-char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
-char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTCs
-char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTCs
+char qtc_recv_msgs[12][80] = {
+    "QTC?", "QRV", "R", "", "TIME?", "CALL?",
+    "NR?", "AGN", "", "QSL ALL", "", ""};	// QTC receive windows Fx messages
+
+char qtc_send_msgs[12][80] = {
+    "QRV?", "QTC sr/nr", "", "", "TIME", "CALL",
+    "NR", "", "", "", "", ""};		    	// QTC send window Fx messages
+
+char qtc_phrecv_message[14][80] = {
+    "", "", "", "", "", "",
+    "", "", "", "", "", "" };			// voice keyer file names when receives QTCs
+
+char qtc_phsend_message[14][80] = {
+    "", "", "", "", "", "",
+    "", "", "", "", "", "" };			// voice keyer file names when send QTCs
+
 bool qtcrec_record = false;
 char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
 char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
@@ -284,7 +298,6 @@ int block_part = 0; 	/**< if 1 block the call autocompletion
 char para_word[80] = "LODNCFS:3C\n";	/* longcw, cluster, search, DE,
 					   contest, filter,  speed,  delay */
 char lastmsg[1000] = "";
-char sc_device[40] = "/dev/dsp";
 
 /*-------------------------------------keyer------------------------------*/
 int cwkeyer = NO_KEYER;
@@ -306,7 +319,7 @@ int k_ptt = 0;
 
 int miniterm = 0;		/* is miniterm for digimode active? */
 char modem_mode[8];
-int commentfield = 0;		/* 1 if we are in comment/excahnge input */
+int commentfield = 0;		/* 1 if we are in comment/exchange input */
 
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
@@ -338,8 +351,9 @@ int rig_comm_success = 0;
 /*----------------------------------fldigi---------------------------------*/
 char fldigi_url[50] = "http://localhost:7362/RPC2";
 
-/*-------------------------------the log lines-----------------------------*/
-char qsos[MAX_QSOS][LOGLINELEN + 1];
+/*----------------------------the parsed log lines-------------------------*/
+// array of qso's
+GPtrArray *qso_array;
 int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
@@ -366,14 +380,13 @@ int countryscore[NBANDS];
 int zonedisplay = 0;
 int new_zone = 0;		/* index of new zone */
 int new_cty = 0;		/* index of new country */
+bool new_pfx = false;           /* worked a new prefix */
 int new_mult = -1;
 int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */
 int qsonum = 1;			/* nr of next QSO */
 int ymax, xmax;			/* screen size */
-
-struct tm time_ptr_cabrillo;
 
 freq_t freq;
 bool logfrequency = false;
@@ -390,9 +403,6 @@ const char *backgrnd_str;
 
 char logline_edit[5][LOGLINELEN + 1];
 
-char termbuf[88] = "";
-int termbufcount = 0;
-
 double DEST_Lat = 51.;
 double DEST_Long = 1.;
 
@@ -405,7 +415,6 @@ char itustr[3];
 bool nopacket = false;		/* set if tlf is called with '-n' */
 bool no_trx_control = false;	/* set if tlf is called with '-r' */
 bool convert_cabrillo = false;  /* set if the arg input is a cabrillo */
-int do_cabrillo = 0;		/* actually converting cabrillo file to Tlf log */
 
 int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
@@ -432,6 +441,10 @@ static const struct argp_option options[] = {
     {"verbose",     'v', 0, 0,  "Produce verbose output" },
     { 0 }
 };
+
+/* resend call option, can be 0 (do not use), 1 (partial), 2 (full) */
+int resend_call;
+char sentcall[20] = "";     // storing the call what already sent
 
 /* parse a single option */
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
@@ -619,6 +632,7 @@ static void init_variables() {
     tune_seconds = 6;   /* tune up for 6 s */
 
     ctcomp = false;
+    resend_call = RESEND_NOT_SET;
 
     for (int i = 0; i < 25; i++) {
 	FREE_DYNAMIC_STRING(digi_message[i]);
@@ -693,7 +707,6 @@ static int databases_load() {
 	    showmsg("QTCs giving up");
 	    return EXIT_FAILURE;
 	}
-	readqtccalls();
     }
     // unset QTC_RECV_LAZY if mode is DIGIMODE
     if (trxmode == DIGIMODE) {
@@ -712,6 +725,8 @@ static int databases_load() {
 }
 
 static void hamlib_init() {
+
+    rig_set_debug(RIG_DEBUG_NONE);
 
     if (no_trx_control) {
 	trx_control = false;
@@ -825,6 +840,34 @@ static void keyer_init() {
 
     }
 
+    if (cwkeyer == HAMLIB_KEYER) {
+	showmsg("CW-Keyer is Hamlib");
+	if (!trx_control) {
+	    showmsg("Radio control is not activated!!");
+	    sleep(1);
+	    endwin();
+	    exit(EXIT_FAILURE);
+	}
+	if (!rig_has_send_morse()) {
+	    showmsg("Rig does not support CW via Hamlib");
+	    sleep(1);
+	    endwin();
+	    exit(EXIT_FAILURE);
+	}
+	if (!rig_has_stop_morse()) {
+#if HAMLIB_VERSION >= 400
+	    showmsg("Rig does not support stopping CW!!");
+#else
+	    showmsg("Hamlib version does not support stopping CW!!");
+#endif
+	    showmsg("Continue anyway Y/(N)?");
+	    if (toupper(key_get()) != 'Y') {
+		endwin();
+		exit(1);
+	    }
+	}
+    }
+
     if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER ||
 	    digikeyer == GMFSK) {
 	init_controller();
@@ -907,6 +950,19 @@ static void tlf_cleanup() {
     endwin();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 
+    if (is_sr_running()) {
+	int c;
+	puts("ATTENTION: Sound recorder is still running!");
+	puts("           Do you want to stop it (y/n)?" );
+	c = getchar();
+	if (toupper(c) == 'Y') {
+	    sr_stop();
+	    puts("\nSound recording stopped\n");
+	} else {
+	    puts("\nSound recording still running");
+	    puts("You can stop it by restarting TLF and using the ':sound' command\n");
+	}
+    }
     puts("\n\nThanks for using Tlf.. 73\n");
 }
 
@@ -938,9 +994,8 @@ int main(int argc, char *argv[]) {
     strcat(logline3, backgrnd_str);
     strcat(logline4, backgrnd_str);
 
-    init_terminal_strings();
+    init_keyer_terminal();
 
-    termbuf[0] = '\0';
     hiscall[0] = '\0';
 
 
@@ -958,8 +1013,6 @@ int main(int argc, char *argv[]) {
     showmsg("");
 
     memset(&my, 0, sizeof(my));
-
-    rig_set_debug(RIG_DEBUG_NONE);
 
     total = 0;
     if (databases_load() == EXIT_FAILURE) {
@@ -999,12 +1052,17 @@ int main(int argc, char *argv[]) {
     lan_init();
     keyer_init();
 
-    nr_qsos = readcalls(logfile);   /* read the logfile and rebuild
-				       point and multiplier scoring */
+    show_station_info();
+
+    /* read the logfile and rebuild point and multiplier scoring */
+    /* see also log_read_n_score() for non-interactive variant */
+    nr_qsos = readcalls(logfile, true);
+    if (qtcdirection > 0) {
+	readqtccalls();
+    }
 
     scroll_log();		/* show the last 5  log lines and
 				   set the next serial number */
-    show_station_info();
     clearmsg_wait();
 
     packet_init();

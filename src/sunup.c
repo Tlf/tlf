@@ -26,9 +26,9 @@
 #define RADIAN  (180.0 / M_PI)
 
 
-/** Compute sun up and down at given lattitude
+/** Compute sun up and down at given latitude
  *
- * \param lat - Lattitude
+ * \param lat - Latitude
  * \param sunrise - local sunrise in hours
  * \param sundown - local sundown in hours
  */
@@ -53,7 +53,7 @@ void sunup(double DEST_Lat, double *sunrise, double *sundown) {
     if (total_days <= 0.0)
 	total_days += 365.25;
 
-    /* calculate todays lattitude of the sun */
+    /* calculate todays latitude of the sun */
     sun_lat = asin(sin(23.439 / RADIAN) *
 		   sin(((total_days - 90.086) / 365.25) * 360 / RADIAN)) * RADIAN;
 

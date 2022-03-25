@@ -74,7 +74,7 @@ bm_config_t bm_config = {
     1,  /* show all mode */
     1,  /* show dupes */
     1,	/* skip dupes during grab */
-    900,/* default livetime */
+    900,/* default lifetime */
     0  /* DO NOT show ONLY multipliers */
 };
 
@@ -188,7 +188,7 @@ void bmdata_read_file() {
 
 /** \brief initialize bandmap
  *
- * initalize colors and data structures for bandmap operation
+ * initialize colors and data structures for bandmap operation
  */
 void bm_init() {
 
@@ -543,7 +543,7 @@ void bm_show_info() {
 
 /* helper function for bandmap display
  * mark entries according to age, source and worked state. Mark new multis
- * - new 	brigth blue
+ * - new 	bright blue
  * - normal	blue
  * - aged	brown
  * - worked	small caps */
@@ -735,13 +735,13 @@ void bandmap_show() {
      * current frequency
      *
      * mark entries according to age, source and worked state. Mark new multis
-     * - new 	brigth blue
+     * - new 	bright blue
      * - normal	blue
      * - aged	brown
      * - worked	small caps
      * - new multi	mark with blue M between QRG and call
      * - self announced stations
-     *   		small preceeding letter for reporting station
+     *   		small preceding letter for reporting station
      *
      * show own frequency as dashline in green color
      * - highligth actual spot if near own frequency
@@ -767,7 +767,7 @@ void bandmap_show() {
     bm_init();
     filter_spots();
 
-    /* afterwards display filtered list around own QRG +/- some offest
+    /* afterwards display filtered list around own QRG +/- some offset
      * (offset gets reset if we change frequency */
 
     getyx(stdscr, cury, curx);		/* remember cursor */
@@ -949,7 +949,7 @@ spot *copy_spot(spot *data) {
 /** Search partialcall in filtered bandmap
  *
  * Lookup given partial call in the list of filtered bandmap spots.
- * Return a copy of the first entry found (means with teh lowest frequency).
+ * Return a copy of the first entry found (means with the lowest frequency).
  *
  * \param 	partialcall - part of call to look up
  * \return 	spot * structure with a copy of the found spot

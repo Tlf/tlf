@@ -30,7 +30,8 @@ Planned for later versions
 [x] Have a template for cabrillo file header  (suggested by Joop PG4I)
 [ ] Add a keyword to startup TLF in S&P mode (should be an easy one)
 [ ] switch between ESM and CT mode during contest (Nate N0NB)
-[ ] Send Morse via Hamlib for radios that support it.
+[x] Send Morse via Hamlib for radios that support it.
+    Tnx Christoph DF7CB and others.
 [ ] Rework audio handling (recording and playback of contest and messages).
 
 [ ] Do a complete rewrite of display related code in the long term to
@@ -66,6 +67,10 @@ Internals
     This may have unintended side effects so would require much testing.
     Another thought is to deliver the file to ALSA or Pulse Audio directly and
     be able to stop playback at will.
+
+[ ] Fix out problems during enable/disable rig control related to reporting
+    the actual frequency. Especially enabling rig control should initialize
+    rig connection and disabling should clear the working frequency.
 
 WISHLIST (N0NB)
 ~~~~~~~~

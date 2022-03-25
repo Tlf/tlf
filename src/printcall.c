@@ -39,7 +39,7 @@ void printcall(void) {
 
     attron(COLOR_PAIR(C_INPUT) | attrib);
 
-    mvaddstr(12, 29, "            ");
+    mvaddstr(12, 29, spaces(MAX_CALL_LENGTH));
     mvaddstr(12, 29, hiscall);
     if ((cqmode == CQ) && (cwstart > 0))
 	mvchgat(12, 29 + cwstart, 12 - cwstart,

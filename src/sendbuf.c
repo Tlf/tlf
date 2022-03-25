@@ -30,6 +30,7 @@
 
 #include <glib.h>
 
+#include "audio.h"
 #include "cqww_simulator.h"
 #include "callinput.h"
 #include "clear_display.h"
@@ -56,7 +57,7 @@ char short_number(char c) {
 }
 
 /*
- * Replace occurences of 'what' in 'buf' by 'rep'.
+ * Replace occurrences of 'what' in 'buf' by 'rep'.
  * The amount of bytes assigned to 'buf' is 'size'.
  * This includes the terminating \0, i.e. max length of 'buf' is 'size'-1
  * Replacements are done in-place, no other memory area than 'buf' is used.
@@ -127,7 +128,7 @@ void replace_n(char *buf, int size, const char *what, const char *rep,
 		// would be longer than (size-1), shift only a part
 		n = buf + size - 1 - dst;
 		if (n <= 0) {
-		    // even a part wont fit; no operation
+		    // even a part won't fit; no operation
 		    n = 0;
 		    overflow = 1;
 		}
@@ -166,8 +167,6 @@ void replace_all(char *buf, int size, const char *what, const char *rep) {
 
 void ExpandMacro(void) {
 
-    extern int noleadingzeros;
-
     int i;
     static char qsonroutput[5] = "";
     static char rst_out[4] = "";
@@ -183,7 +182,10 @@ void ExpandMacro(void) {
 	    early_started = 0;
 //                              sending_call = 0;
 	}
-	replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurence */
+	if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
+	    strcpy(sentcall, hiscall);
+	}
+	replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurrence */
 	replace_all(buffer, BUFSIZE, "@",
 		    hiscall);   /* his call, further occurrences */
     }
@@ -199,18 +201,18 @@ void ExpandMacro(void) {
 
     if (NULL != strstr(buffer, "#")) {
 	int leading_zeros = 0;
-	int lead = 1;
+	bool lead = true;
 	for (i = 0; i <= 4; i++) {
 	    if (lead && qsonrstr[i] == '0') {
 		++leading_zeros;
 	    } else {
-		lead = 0;
+		lead = false;
 	    }
 	    qsonroutput[i] = short_number(qsonrstr[i]);
 	}
 	qsonroutput[4] = '\0';
 
-	if (noleadingzeros != 1 && leading_zeros > 1) {
+	if (!noleadingzeros && leading_zeros > 1) {
 	    leading_zeros = 1;
 	}
 
@@ -225,57 +227,25 @@ void ExpandMacro(void) {
 
 
     replace_all(buffer, BUFSIZE, "!", comment);
+
     if (trxmode == DIGIMODE)
-	replace_all(buffer, BUFSIZE, "|", "\r");   /* CR */
+	replace_all(buffer, BUFSIZE, "|", "\r");    /* CR */
+    else
+	replace_all(buffer, BUFSIZE, "|", "");	    /* drop it */
 }
 
 
 void sendbuf(void) {
-    extern char termbuf[];
-
-    static char printlinebuffer[82] = "";
-
-    printlinebuffer[0] = '\0';
 
     if ((trxmode == CWMODE && cwkeyer != NO_KEYER) ||
 	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
 	ExpandMacro();
 
-	if ((strlen(buffer) + strlen(termbuf)) < 80) {
-	    if (!simulator)
-		strcat(termbuf, buffer);
-//              if (sending_call == 1) {
-//                      strcat (termbuf, " ");
-//                      sending_call = 0;
-//              }
+	if (!simulator) {
+	    if (sending_call == 0)
+		add_to_keyer_terminal(buffer);
 	}
-
-	g_strlcpy(printlinebuffer, termbuf, sizeof(printlinebuffer));
-
-	if (!searchflg && !simulator)
-	    strncat(printlinebuffer, backgrnd_str,
-		    80 - strlen(printlinebuffer));
-	else {
-	    int len = 40 - (int)strlen(printlinebuffer);
-	    if (len > 0) {
-		strncat(printlinebuffer, backgrnd_str, len);
-	    }
-	    if (strlen(printlinebuffer) > 45) {
-		printlinebuffer[42] = '.';
-		printlinebuffer[43] = '.';
-		printlinebuffer[44] = '.';
-		printlinebuffer[45] = '\0';
-	    }
-
-	}
-
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-	if (get_simulator_state() == IDLE) {
-	    mvaddstr(5, 0, printlinebuffer);
-	}
-	refreshp();
 
 	if (trxmode == DIGIMODE) {
 
@@ -304,11 +274,7 @@ void sendbuf(void) {
 	    keyer_append(buffer);
 	}
 
-	if (!simulator) {
-	    if (sending_call == 0)
-		displayit();
-	    refreshp();
-	} else {
+	if (simulator) {
 	    set_simulator_state(REPEAT);
 	}
 
@@ -339,7 +305,7 @@ void send_standard_message(int msg) {
 	    break;
 	default:
 	    if (msg < 14)
-		play_file(ph_message[msg]);
+		vk_play_file(ph_message[msg]);
 	    break;
     }
 }

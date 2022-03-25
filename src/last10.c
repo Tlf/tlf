@@ -28,17 +28,15 @@
 #include "get_time.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
 
-
 int last10(void) {
-
-    char input[LOGLINELEN + 1];
 
     int minsbefore;
     int minsnow;
     int span;
-    int counter;
+    int index;
     int qsocount = 0;
     int thisband;
+    struct qso_t *qso;
 
     if (nr_qsos < 10)
 	return (-1);
@@ -46,31 +44,28 @@ int last10(void) {
     thisband = atoi(band[bandinx]);
 
     /* look backwards in actual band for QSOs */
-    for (counter = nr_qsos - 1; counter >= 0; counter--) {
+    for (index = nr_qsos - 1; index >= 0; index--) {
 
-	if (thisband == (atoi(qsos[counter]))) {
+	qso = g_ptr_array_index(qso_array, index);
+	if (thisband == qso->band) {
 	    qsocount++;
 	    if (qsocount >= 10)		/* stop after 10 QSOs found */
 		break;
 	}
     }
 
-    /* counter points to the first QSO */
-    if (counter < 0)
+    /* index points to the first QSO */
+    if (index < 0)
 	return (-1);			/* not 10 QSOs found */
 
-    strncpy(input, qsos[counter], LOGLINELEN + 1);
-
-    input[17 + 5] = '\0';
-    minsbefore = atoi(input + 17 + 3);
-    input[17 + 2] = '\0';
-    minsbefore += (atoi(input + 17) * 60);
+    minsbefore = qso->hour *60 + qso->min;
 
     minsnow = get_minutes();
 
     if ((minsnow - minsbefore) <= 0)
 	minsnow += 1440;
+
     span = minsnow - minsbefore;
 
-    return (span);
+    return span;
 }

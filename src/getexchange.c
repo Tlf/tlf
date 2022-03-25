@@ -31,14 +31,14 @@
 #include <ctype.h>
 
 #include "addspot.h"
-#include "callinput.h"
+#include "audio.h"
 #include "cw_utils.h"
 #include "change_rst.h"
 #include "globalvars.h"
 #include "keyer.h"
 #include "keystroke_names.h"
 #include "lancode.h"
-#include "locator2longlat.h"
+#include "utils.h"
 #include "logit.h"
 #include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h
@@ -60,6 +60,7 @@
 
 
 char callupdate[MAX_CALL_LENGTH + 1];
+static char section[MAX_SECTION_LENGTH + 1] = "";
 
 void exchange_edit(void);
 
@@ -69,7 +70,6 @@ int getexchange(void) {
     int x = 0;
     char instring[2];
     char commentbuf[40] = "";
-    char *gridmult = "";
 
     instring[1] = '\0';
 
@@ -151,7 +151,7 @@ int getexchange(void) {
 		continue;
 	    }
 	    case 19: {	// Ctl+s (^S)--Open QTC panel for sending QTCs
-		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND ot QTC=BOTH
+		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND or QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
 		x = KEY_LEFT;
@@ -230,7 +230,7 @@ int getexchange(void) {
 		if (trxmode == CWMODE || trxmode == DIGIMODE) {
 		    sendmessage(my.call);		/* F1 */
 		} else
-		    play_file(ph_message[5]);	// call
+		    vk_play_file(ph_message[5]);	// call
 
 		break;
 	    }
@@ -419,20 +419,10 @@ int getexchange(void) {
 		       && ((x != TAB) && (strlen(section) < 1))) {
 		if (!serial_or_section
 			|| (serial_or_section && country_found(hiscall))) {
-		    mvaddstr(13, 54, "section?X");
+		    mvaddstr(13, 54, "section?");
 		    mvaddstr(12, 54, comment);
 		    refreshp();
 		}
-		break;
-
-	    } else if (serial_grid4_mult) {
-		//      mvaddstr(13,54, "section?");
-		mvaddstr(12, 54, comment);
-		refreshp();
-		gridmult = getgrid(comment);
-		strcpy(section, gridmult);
-		section[4] = '\0';
-
 		break;
 
 	    } else if (CONTEST_IS(STEWPERRY)) {
@@ -474,7 +464,6 @@ int getexchange(void) {
 
 /* ------------------------------------------------------------------------ */
 
-char section[MAX_SECTION_LENGTH + 1] = "";
 bool call_update = false;
 
 /* ------------------------------------------------------------------------ */
@@ -506,7 +495,10 @@ static void checkexchange_cqww(char *comment, bool interactive) {
 	if (index_fix != NULL && strlen(index_fix) >= 1 && strlen(index_fix) <= 4) {
 	    g_free(index);
 	    index = index_fix;
+	} else {
+	    g_free(index_fix);
 	}
+
 	if (index != NULL && strlen(index) >= 1 && strlen(index) <= 4) {
 	    zone = atoi(index);
 	}
@@ -648,7 +640,7 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	// get section
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL && index[0] != 0) {
-	    if (get_exact_mult_index(index) >= 0) {
+	    if (serial_grid4_mult || get_exact_mult_index(index) >= 0) {
 		g_strlcpy(section, index, sizeof(section));
 	    }
 	}
@@ -662,6 +654,15 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	g_free(index);
     }
     g_match_info_free(match_info);
+
+    if (serial_grid4_mult) {
+        if (!check_qra(section)) {
+            section[0] = 0;
+        }
+        if (strlen(section) > 4) {
+            section[4] = 0;     // mult is the first 4 chars only
+        }
+    }
 
     if (interactive) {
 	char buf[40];
@@ -752,7 +753,7 @@ void checkexchange(char *comment, bool interactive) {
     }
 
     // ----------------------serial+section--------------------------
-    if (serial_section_mult) {
+    if (serial_section_mult || serial_grid4_mult) {
 
 	checkexchange_serial_section(comment, interactive);
 	return;
@@ -767,28 +768,6 @@ void checkexchange(char *comment, bool interactive) {
 
 }
 
-
-/* ------------------------------------------------------------------------ */
-
-/* ------------------------------------------------------------------------
- * return a pointer to the start of grid locator
- */
-
-char *getgrid(char *comment) {
-
-    int multposition = 0;
-    int i = 0;
-
-    /* search for first letter, that should be the start of the Grid locator*/
-    for (i = 0; i < strlen(comment); i++) {
-	if (isalpha(comment[i])) {
-	    multposition = i;
-	    break;
-	}
-    }
-
-    return comment + multposition;
-}
 
 /* ------------------------------------------------------------------------ */
 /** Edit exchange field
