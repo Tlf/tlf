@@ -1172,6 +1172,16 @@ int receive_packet(void) {
 
 ========================================================
 */
+void send_to_cluster(char *line) {
+    if (packetinterface == TNC_INTERFACE) {
+	line[strlen(line) - 1] = '\r';
+	line[strlen(line)] = '\0';	/* not needed */
+	IGNORE(write(fdSertnc, line, strlen(line)));;
+
+    } else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
+	usputs(prsock, line);
+}
+
 #define MAX_CMD_LEN 60
 
 void send_cluster(void) {
@@ -1188,13 +1198,7 @@ void send_cluster(void) {
     if (strlen(line) > 0) {
 	strcat(line, "\n");
 
-	if (packetinterface == TNC_INTERFACE) {
-	    line[strlen(line) - 1] = '\r';
-	    line[strlen(line)] = '\0';	/* not needed */
-
-	    IGNORE(write(fdSertnc, line, strlen(line)));;
-	} else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
-	    usputs(prsock, line);
+	send_to_cluster(line);
     }
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);

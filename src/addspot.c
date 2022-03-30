@@ -1,7 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2010-2016      Thomas Beierlein <tb@forth-ev.de>
+ *               2010-2022      Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +21,20 @@
 /* ------------------------------------------------------------
  *
  *              Add spot to bandmap
- *
+ *              and prepare spots for cluster
  *
  *--------------------------------------------------------------*/
-
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
+#include "clear_display.h"
 #include "get_time.h"
 #include "globalvars.h"
+#include "keystroke_names.h"
 #include "lancode.h"
 #include "splitscreen.h"
 #include "ui_utils.h"
@@ -61,28 +63,119 @@ void add_to_spots(char *call, freq_t freq) {
     lanspotflg = false;
 }
 
+static freq_t ask_frequency() {
+    char frequency[16];
+
+    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+
+    mvaddstr(13, 20, "freq.: ");
+    echo();
+    getnstr(frequency, 7);
+    noecho();
+    return atof(frequency) * 1000.0;
+}
 
 void addspot(void) {
 
-    char frequency[8];
 
     if (strlen(hiscall) < 3) {
 	return;
     }
 
     if (!trx_control) {
-
-	attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-
-	mvaddstr(13, 20, "freq.: ");
-	echo();
-	getnstr(frequency, 7);
-	noecho();
-	freq = atof(frequency) * 1000.0;
+	freq = ask_frequency();
     }
 
     add_to_spots(hiscall, freq);
 
     hiscall[0] = '\0';
+}
 
+/* send spot to cluster */
+
+#define MAX_SPOT_AGE 120
+
+/* find last qso record in qso_array, return NULL if no one found */
+static struct qso_t *find_last_qso() {
+    int i = nr_qsos;
+    while (i > 0) {
+	struct qso_t *last_qso = g_ptr_array_index(qso_array, nr_qsos-1);
+	if (!last_qso->is_comment) {
+	    return last_qso;
+	}
+	i--;
+    }
+    return NULL;
+}
+
+static bool spot_to_old(const struct qso_t *qso) {
+    return ((get_time() - qso->timestamp) > MAX_SPOT_AGE);
+}
+
+/* get call and frequency of spot,
+ * try first to use hiscall as spot call. If empty use data from last qso if
+ * not to old.
+ * Returns true if valid spot data found.
+ */
+bool get_spot_data(char **spot_call, freq_t *spot_freq) {
+    if (strlen(hiscall) > 2) {
+	*spot_call = g_strdup(hiscall);
+	if (trx_control) {
+	    *spot_freq = freq/1000.;
+	} else {
+	    *spot_freq = ask_frequency();
+	}
+    } else {
+	struct qso_t *last_qso = find_last_qso();
+	if (last_qso == NULL) {
+	    return false;
+	}
+	if (spot_to_old(last_qso)) {
+	    return false;
+	}
+	*spot_call = g_strdup(last_qso->call);
+	if (last_qso->freq < 1.) {	/* not set */
+	    *spot_freq = ask_frequency();
+	} else {
+	    *spot_freq = last_qso->freq;
+	}
+    }
+    return true;
+}
+
+gchar *prepare_spot(void) {
+    gchar *spot_line;
+    gchar *spot_call;
+    freq_t spot_freq;
+    if (get_spot_data(&spot_call, &spot_freq)) {
+	spot_line = g_strdup_printf("DX %.1f %s ", spot_freq,
+		spot_call);
+	g_free(spot_call);
+    } else {
+	beep();
+	spot_line = g_strdup("");
+    }
+    return spot_line;
+}
+
+
+void send_spot(void) {
+    gchar *spot_line = prepare_spot();
+    int c;
+
+    if (strlen(spot_line) > 0) {
+
+	clear_line(LINES - 1);
+	mvprintw(LINES - 1, 0, "> %s", spot_line);
+	refreshp();
+	move(LINES - 1, strlen(spot_line) + 2);
+	while ((c = key_get()) != ESCAPE && c != '\n' && c != KEY_ENTER)
+	    ;
+	if (c != ESCAPE) {
+	    gchar *line = g_strconcat(spot_line, "\n", NULL);
+	    send_to_cluster(line);
+	    g_free(line);
+	}
+    }
+    g_free (spot_line);
 }

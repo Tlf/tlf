@@ -846,7 +846,7 @@ int callinput(void) {
 	    case CTRL_B: {
 		announcefilter = 0;
 		cluster = CLUSTER;
-		send_cluster();
+		send_spot();
 
 		break;
 	    }
