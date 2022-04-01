@@ -100,7 +100,7 @@ void addspot(void) {
 static struct qso_t *find_last_qso() {
     int i = nr_qsos;
     while (i > 0) {
-	struct qso_t *last_qso = g_ptr_array_index(qso_array, nr_qsos-1);
+	struct qso_t *last_qso = g_ptr_array_index(qso_array, i-1);
 	if (!last_qso->is_comment) {
 	    return last_qso;
 	}
