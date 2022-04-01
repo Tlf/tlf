@@ -108,7 +108,7 @@ static struct qso_t *find_last_qso() {
     return NULL;
 }
 
-static bool spot_to_old(const struct qso_t *qso) {
+static bool spot_too_old(const struct qso_t *qso) {
     return ((get_time() - qso->timestamp) > MAX_SPOT_AGE);
 }
 
@@ -130,7 +130,7 @@ bool get_spot_data(char **spot_call, freq_t *spot_freq) {
 	if (last_qso == NULL) {
 	    return false;
 	}
-	if (spot_to_old(last_qso)) {
+	if (spot_too_old(last_qso)) {
 	    return false;
 	}
 	*spot_call = g_strdup(last_qso->call);
