@@ -1077,15 +1077,7 @@ int packet() {
 	    strcat(line, "\n");
 	    addtext(line);
 
-	    if ((packetinterface == TELNET_INTERFACE) && (prsock > 0)) {
-		usputs(prsock, line);
-	    }
-
-	    if (packetinterface == TNC_INTERFACE) {
-		line[strlen(line) - 1] = 13;
-		line[strlen(line)] = '\0';
-		IGNORE(write(fdSertnc, line, strlen(line)));;
-	    }
+	    send_to_cluster(line);
 
 	    curattr = attr[NORMAL_ATTR];
 	    wattrset(sclwin, curattr);
