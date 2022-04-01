@@ -57,7 +57,7 @@ void keyer() {}
 void send_standard_message(int msg) {}
 void stoptx() {}
 void qtc_main_panel(int direction) {}
-void addspot() {}
+void add_local_spot() {}
 void sendmessage(const char *msg) {}
 void printcall(const char *msg) {}
 unsigned int  GetCWSpeed() { return 10; }

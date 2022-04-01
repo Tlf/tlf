@@ -24,7 +24,7 @@
 #include <hamlib/rig.h>
 
 void add_to_spots(char *call, freq_t freq);
-void addspot(void);
-void send_spot(void);
+void add_local_spot(void);
+void add_cluster_spot(void);
 
 #endif /* ADDSPOT_H */

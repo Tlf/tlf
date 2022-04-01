@@ -76,7 +76,7 @@ static freq_t ask_frequency() {
     return atof(frequency) * 1000.0;
 }
 
-void addspot(void) {
+void add_local_spot(void) {
 
 
     if (strlen(hiscall) < 3) {
@@ -161,7 +161,7 @@ gchar *prepare_spot(void) {
 }
 
 
-void send_spot(void) {
+void add_cluster_spot(void) {
     gchar *spot_line = prepare_spot();
     int c;
 
