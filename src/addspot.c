@@ -63,12 +63,13 @@ void add_to_spots(char *call, freq_t freq) {
     lanspotflg = false;
 }
 
+/* ask for spot frequency in kHz  and convert it to Hz */
 static freq_t ask_frequency() {
     char frequency[16];
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
-    mvaddstr(13, 20, "freq.: ");
+    mvaddstr(13, 20, "freq. (kHz): ");
     echo();
     getnstr(frequency, 7);
     noecho();
@@ -112,16 +113,17 @@ static bool spot_too_old(const struct qso_t *qso) {
     return ((get_time() - qso->timestamp) > MAX_SPOT_AGE);
 }
 
-/* get call and frequency of spot,
- * try first to use hiscall as spot call. If empty use data from last qso if
+/* Get call and frequency in Hz of spot.
+ * First try to use hiscall as spot call. If empty use data from last qso if
  * not to old.
+ * If no frequency data available ask user.
  * Returns true if valid spot data found.
  */
 bool get_spot_data(char **spot_call, freq_t *spot_freq) {
     if (strlen(hiscall) > 2) {
 	*spot_call = g_strdup(hiscall);
 	if (trx_control) {
-	    *spot_freq = freq/1000.;
+	    *spot_freq = freq;
 	} else {
 	    *spot_freq = ask_frequency();
 	}
@@ -148,7 +150,7 @@ gchar *prepare_spot(void) {
     gchar *spot_call;
     freq_t spot_freq;
     if (get_spot_data(&spot_call, &spot_freq)) {
-	spot_line = g_strdup_printf("DX %.1f %s ", spot_freq,
+	spot_line = g_strdup_printf("DX %.1f %s ", spot_freq / 1000.,
 		spot_call);
 	g_free(spot_call);
     } else {
