@@ -95,19 +95,19 @@ void get_next_serial(void) {
     else
 	qsonum = mm + 1;
 
-    qsonr_to_str();
+    qsonr_to_str(qsonrstr, qsonum);
 }
 
 #define LINELEN 80
 
-/** read the last 5 log lines from qsos[] array and set the next qso number */
+/** read the last 5 log lines from qso_array and set the next qso number */
 void scroll_log(void) {
 
     for (int i = 5; i > 0; i--) {
 	if (nr_qsos < i) {
 	    g_strlcpy(logline_edit[5 - i], spaces(80), LINELEN + 1);
 	} else {
-	    g_strlcpy(logline_edit[5- i], qsos[nr_qsos - i], LINELEN + 1);
+	    g_strlcpy(logline_edit[5- i], QSOS(nr_qsos - i), LINELEN + 1);
 	}
     }
 

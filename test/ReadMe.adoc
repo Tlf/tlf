@@ -12,7 +12,7 @@ The setup is as follows
 *   Each test can have setup/teardown functions (*setup_AA()* and
     *teardown_AA()*) or there can be common (*_default*) s/t functions.
 **      These functions are used by *cmocka_unit_test_setup_teardown*
-*    A test group can have overall s/t funcions, they are used in
+*    A test group can have overall s/t functions, they are used in
     *cmocka_run_group_tests*
 *    A test group specifies which objects it has to be linked with using 
     *// OBJECT bbb.o* syntax

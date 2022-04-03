@@ -27,7 +27,7 @@
 
 #include <glib.h>
 
-#include "callinput.h"
+#include "audio.h"
 #include "globalvars.h"
 #include "sendbuf.h"
 #include "tlf.h"
@@ -99,5 +99,5 @@ void sendspcall(void) {
 
     } else
 
-	play_file(ph_message[5]);
+	vk_play_file(ph_message[5]);
 }

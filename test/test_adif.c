@@ -23,6 +23,7 @@ void add_adif_field(char *adif_line, char *field, char *value);
 bool simulator = false;
 
 void nicebox();
+void add_to_keyer_terminal(char *buffer) {}
 
 int stoptx() {
     return 0;
@@ -39,7 +40,7 @@ int get_total_score() {
 void ask(char *buffer, char *what) {
 }
 
-void play_file(char *audiofile) {
+void vk_play_file(char *audiofile) {
 }
 
 bool lan_active = false;

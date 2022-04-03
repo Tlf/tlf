@@ -160,7 +160,7 @@ static int get_nr_cont() {
     cont = g_hash_table_new(g_str_hash, g_str_equal);
 
     for (i = 0; i < nr_worked; i++) {
-	data = dxcc_by_index(worked[i].country);
+	data = dxcc_by_index(worked[i].ctyinfo->dxcc_ctynr);
 
 	g_hash_table_replace(cont, data->continent, data->continent);
     }
@@ -297,7 +297,7 @@ void foc_show_cty() {
     refreshp();
 
     key_get();
-    displayit();
+    clear_display();
 
     g_tree_destroy(tree);
 }

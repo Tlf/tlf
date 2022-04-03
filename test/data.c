@@ -103,7 +103,7 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-int noleadingzeros;
+bool noleadingzeros;
 bool ctcomp = false;
 int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
 bool nob4 = false;			// allow auto b4
@@ -134,7 +134,7 @@ char exchange_list[40] = "";
 int timeoffset = 0;
 int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
-/* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependecy */
+/* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependency */
 rmode_t rigmode = 0;
 rmode_t digi_mode = 0;
 bool mixedmode = false;
@@ -186,9 +186,9 @@ char message[25][80] = /**< Array of CW/DigiMode messages
 			* message[1]  (F2)  - insert pressed
  			*/
 {
-    "TEST %\n", "@ DE %\n", "@ [\n", "TU 73\n", " @\n", "%\n",
-    "@ SRI QSO B4 GL\n", "AGN\n",
-    " ?\n", " QRZ?\n", " PSE K\n", "TEST % %\n", "@ [\n", "TU %\n",
+    "TEST %", "@ DE %", "@ [", "TU 73", "@", "%",
+    "@ SRI QSO B4 GL", "AGN",
+    "?", "QRZ?", "PSE K", "TEST % %", "@ [", "TU %",
     "", "", "", "", "", "", "", "", "", "", ""
 };
 
@@ -200,12 +200,24 @@ char *digi_message[sizeof(message) / sizeof(message[0])];
 char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   * See description of message[]
 			   */
-{ "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+    { "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 
-char qtc_recv_msgs[12][80] = {"QTC?\n", "QRV\n", "R\n", "", "TIME?\n", "CALL?\n", "NR?\n", "AGN\n", "", "QSL ALL\n", "", ""}; // QTC receive windowS Fx messages
-char qtc_send_msgs[12][80] = {"QRV?\n", "QTC sr/nr\n", "", "", "TIME\n", "CALL\n", "NR\n", "", "", "", "", ""}; // QTC send window Fx messages
-char qtc_phrecv_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when receives QTCs
-char qtc_phsend_message[14][80] = { "", "", "", "", "", "", "", "", "", "", "", "" };	// voice keyer file names when send QTCs
+char qtc_recv_msgs[12][80] = {
+    "QTC?", "QRV", "R", "", "TIME?", "CALL?",
+    "NR?", "AGN", "", "QSL ALL", "", ""}; // QTC receive windows Fx messages
+
+char qtc_send_msgs[12][80] = {
+    "QRV?", "QTC sr/nr", "", "", "TIME", "CALL",
+    "NR", "", "", "", "", ""};		    	// QTC send window Fx messages
+
+char qtc_phrecv_message[14][80] = {
+    "", "", "", "", "", "",
+    "", "", "", "", "", "" };			// voice keyer file names when receives QTCs
+
+char qtc_phsend_message[14][80] = {
+    "", "", "", "", "", "",
+    "", "", "", "", "", "" };			// voice keyer file names when send QTCs
+
 bool qtcrec_record = false;
 char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
 char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
@@ -260,7 +272,6 @@ int scale_values[20] = {
     40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6,
     4, 2
 };
-char sc_device[40] = "/dev/dsp";
 
 /*-------------------------------------keyer------------------------------*/
 int keyerport = NO_KEYER;
@@ -279,7 +290,7 @@ int k_ptt;
 char controllerport[80] = "/dev/ttyS0";
 int miniterm = 0;		/* is miniterm for digimode active? */
 char modem_mode[8];
-int commentfield = 0;		/* 1 if we are in comment/excahnge input */
+int commentfield = 0;		/* 1 if we are in comment/exchange input */
 
 /*-------------------------------------packet-------------------------------*/
 char spot_ptr[MAX_SPOTS][82];		/* Array of cluster spot lines */
@@ -317,8 +328,9 @@ int rig_comm_error = 0;
 int rig_comm_success = 0;
 int rigptt = 0;
 
-/*-------------------------------the log lines-----------------------------*/
-char qsos[MAX_QSOS][LOGLINELEN + 1];
+/*----------------------------the parsed log lines-------------------------*/
+// array of qso's
+GPtrArray *qso_array;
 int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
@@ -346,6 +358,7 @@ int zonedisplay = 0;
 int new_zone = 0;		/* index of for new zone */
 int new_cty = 0;		/* index of new country */
 int new_mult = -1;
+bool new_pfx = false;
 int minute_timer = 0;
 
 int bandinx = BANDINDEX_40;	/* start with 40m */
@@ -373,9 +386,6 @@ const char *backgrnd_str =
 
 char logline_edit[5][LOGLINELEN + 1];
 
-char termbuf[88] = "";
-int termbufcount = 0;
-
 double DEST_Lat = 51.;
 double DEST_Long = 1.;
 
@@ -402,6 +412,10 @@ int unique_call_multi = 0;          /* do we count calls as multiplier */
 char lan_logline[256];	    // defined in log_to_disk.c
 
 //////////////////
+
+/* resend call option, can be 0 (do not use), 1 (partial), 2 (full) */
+int resend_call;
+char sentcall[20] = "";     // storing the call what already sent
 
 #include <curses.h>
 NCURSES_EXPORT_VAR(WINDOW *) stdscr = NULL;

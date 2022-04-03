@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#include "callinput.h"
+#include "audio.h"
 #include "clear_display.h"
 #include "cw_utils.h"
 #include "globalvars.h"
@@ -51,12 +51,74 @@ static int get_autocq_time() {
     return (int)(1200.0 / GetCWSpeed()) * cw_message_len;
 }
 
-
-int auto_cq(void) {
-
 #define NO_KEY -1
 
+static int wait_50ms_for_key() {
+
+    usleep(50 * 1000);
+
+    const int inchar = key_poll();
+    if (inchar > 0 && inchar != KEY_RESIZE) {
+	return inchar;
+    }
+
+    return NO_KEY;
+}
+
+#define TIME_UPDATE_MS  500
+
+
+/* wait till VK message is finished or key pressed.
+ * calling time_update() each 500 ms.
+ */
+int vk_wait_finish() {
     int key = NO_KEY;
+    int update_timer = TIME_UPDATE_MS;
+
+    while (key == NO_KEY) {
+	key = wait_50ms_for_key();
+
+	if (is_vk_finished())
+	    return NO_KEY;
+
+	update_timer -= 50;
+
+	if (update_timer <= 0) {
+	    time_update();
+	    update_timer = TIME_UPDATE_MS;
+	}
+    }
+
+    return key;
+}
+
+
+// Wait for given ms, polling each 50 ms for a key and calling time_update()
+// each 500 ms. Pressing a key terminates the waiting loop.
+// Note: this works best if ms >= 500 (or ms = 0)
+static int wait_ms(int ms) {
+    int key = NO_KEY;
+    int update_timer = TIME_UPDATE_MS;
+    int wait_timer = ms;
+
+    while (wait_timer > 0 && key == NO_KEY) {
+
+	key = wait_50ms_for_key();
+
+	wait_timer -= 50;
+	update_timer -= 50;
+
+	if (update_timer <= 0) {
+	    time_update();
+	    update_timer = TIME_UPDATE_MS;
+	}
+    }
+
+    return key;
+}
+
+
+int auto_cq(void) {
 
     const cqmode_t cqmode_save = cqmode;
     cqmode = AUTO_CQ;
@@ -64,6 +126,9 @@ int auto_cq(void) {
 
     const long message_time = get_autocq_time();
 
+    int key = NO_KEY;
+
+    // any key press terminates auto CQ loop
     while (key == NO_KEY) {
 
 	send_standard_message(11);
@@ -72,32 +137,21 @@ int auto_cq(void) {
 
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-	// if length of message is known then wait until its end
-	// key press terminates auto CQ loop
-	if (message_time > 0) {
-	    for (int j = 0; j < 10 && key == NO_KEY; j++) {
-		usleep(message_time * 100);
-		time_update();
-		const int inchar = key_poll();
-		if (inchar > 0 && inchar != KEY_RESIZE) {
-		    key = inchar;
-		}
-	    }
+	// wait till message ends (calculated for CW, playtime for SSB)
+	// or any key press
+	if (trxmode == CWMODE || trxmode == DIGIMODE) {
+	    key = wait_ms(message_time);
+	} else {
+	    key = vk_wait_finish();
 	}
 
 	// wait between calls
 	for (int delayval = cqdelay; delayval > 0 && key == NO_KEY; delayval--) {
 
-	    mvprintw(12, 29, "Auto CQ  %-2d ", delayval - 1);
+	    mvprintw(12, 29, "Auto CQ  %-2d ", delayval);
 	    refreshp();
 
-	    usleep(500000); // 500 ms
-	    time_update();
-
-	    const int inchar = key_poll();
-	    if (inchar > 0 && inchar != KEY_RESIZE) {
-		key = inchar;
-	    }
+	    key = wait_ms(500);
 	}
 
 	mvaddstr(12, 29, spaces(13));

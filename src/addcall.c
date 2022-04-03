@@ -53,16 +53,6 @@
 #include "tlf.h"
 #include "zone_nr.h"
 
-int excl_add_veto;
-/* This variable helps to handle in other modules, that station is multiplier
- * or not */
-/* In addcall2(), this variable helps to handle the excluded multipliers,
- * which came from lan_logline the Tlf scoring logic is totally completely
- * different in local and LAN source the addcall() function doesn't increment
- * the band_score[] array, that maintains the score() function. Here, the
- * addcall2() is need to separate the points and multipliers.
- */
-
 
 /* collect all relevant data for the actual QSO into a qso_t structure */
 struct qso_t *collect_qso_data(void) {
@@ -73,6 +63,9 @@ struct qso_t *collect_qso_data(void) {
     qso->freq = freq;
     qso->timestamp = get_time();
     qso->comment = g_strdup(comment);
+    qso->qso_nr = qsonum;
+    qso->rst_s = atoi(sent_rst);
+    qso->rst_r = atoi(recvd_rst);
     return qso;
 }
 
@@ -123,8 +116,10 @@ int addcall(struct qso_t *qso) {
     bool add_ok;
     int pfxnumcntidx = -1;
     int pxnr = 0;
+    bool excl_add_veto = false;
 
-    excl_add_veto = 0;
+    new_cty = 0;
+    new_zone = 0;
 
     int station = lookup_or_add_worked(qso->call);
     update_worked(station, qso);
@@ -164,16 +159,21 @@ int addcall(struct qso_t *qso) {
 
     if (continentlist_only) {
 	if (!is_in_continentlist(dxcc_by_index(cty)->continent)) {
-	    excl_add_veto = 1;
+	    excl_add_veto = true;
 	}
     }
 
     excl_add_veto |= check_veto(cty);
     if (excl_add_veto) {
 	add_ok = false;
-	new_cty = 0;
-	new_zone = 0;
 	addcallarea = 0;
+    }
+
+    /* If WPX -> add prefix to prefixes_worked */
+    new_pfx = false;
+    if (!excl_add_veto || !pfxmultab) {
+	/* add prefix, remember if new */
+	new_pfx = (add_pfx(wpx_prefix, qso->bandindex) == 0);
     }
 
     /* qso's per band  */
@@ -207,13 +207,14 @@ int addcall(struct qso_t *qso) {
 	}
     }
 
-    addmult(current_qso);       /* for wysiwyg */
+    addmult(qso);           /* for wysiwyg */
 
     return cty;
 }
 
 /* ----------------------for network qso's-----------------------------------*/
 
+int excl_add_veto2;
 int addcall2(void) {
 
     int cty, zone = 0;
@@ -224,7 +225,7 @@ int addcall2(void) {
     int bandinx;
     int pfxnumcntidx = -1;
     int pxnr = 0;
-    excl_add_veto = 0;
+    excl_add_veto2 = 0;
 
     /* parse copy of lan_logline */
     struct qso_t *qso;
@@ -240,7 +241,7 @@ int addcall2(void) {
     int station = lookup_or_add_worked(qso->call);
     update_worked(station, qso);
 
-    cty = worked[station].country;
+    cty = worked[station].ctyinfo->dxcc_ctynr;
 
     bandinx = qso->bandindex;
 
@@ -274,12 +275,12 @@ int addcall2(void) {
 
     if (continentlist_only) {
 	if (!is_in_continentlist(dxcc_by_index(cty)->continent)) {
-	    excl_add_veto = 1;
+	    excl_add_veto2 = 1;
 	}
     }
 
-    excl_add_veto |= check_veto(cty);
-    if (excl_add_veto) {
+    excl_add_veto2 |= check_veto(cty);
+    if (excl_add_veto2) {
 	add_ok = false;
 	new_cty = 0;
 	addcallarea = 0;
@@ -291,7 +292,7 @@ int addcall2(void) {
 
 	worked[station].band |= inxes[bandinx];	/* worked on this band */
 
-	if (excl_add_veto == 0) {
+	if (excl_add_veto2 == 0) {
 
 	    if (pfxnumcntidx < 0) {
 		if (cty != 0 && (countries[cty] & inxes[bandinx]) == 0) {

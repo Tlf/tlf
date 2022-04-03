@@ -37,11 +37,12 @@ char *SPcall;
 extern int data_ready;
 
 void keyer_append(const char *string) { }
-int play_file(char *file) { return 0; }
+int vk_play_file(char *file) { return 0; }
 
 bool simulator;
 void set_simulator_state(simstate_t s) { }
 simstate_t get_simulator_state() { return IDLE; }
+void add_to_keyer_terminal(char *buffer) {}
 
 
 /* test helpers */
@@ -181,6 +182,30 @@ void test_expandQsoNr(void **state) {
 void test_expandQsoNrshort(void **state) {
     shortqsonr = SHORTCW;
     check_ExpandMacro("nr #", "nr 3TN");
+}
+
+void test_expandQsoNr_leadingzeros(void **state) {
+    noleadingzeros = false;
+    strcpy(qsonrstr, "0007");
+    check_ExpandMacro("nr #", "nr 007");
+    strcpy(qsonrstr, "0073");
+    check_ExpandMacro("nr #", "nr 073");
+    strcpy(qsonrstr, "0123");
+    check_ExpandMacro("nr #", "nr 123");
+    strcpy(qsonrstr, "4711");
+    check_ExpandMacro("nr #", "nr 4711");
+}
+
+void test_expandQsoNr_noleadingzeros(void **state) {
+    noleadingzeros = true;
+    strcpy(qsonrstr, "0007");
+    check_ExpandMacro("nr #", "nr 7");
+    strcpy(qsonrstr, "0073");
+    check_ExpandMacro("nr #", "nr 73");
+    strcpy(qsonrstr, "0123");
+    check_ExpandMacro("nr #", "nr 123");
+    strcpy(qsonrstr, "4711");
+    check_ExpandMacro("nr #", "nr 4711");
 }
 
 void test_expandHisNr(void **state) {

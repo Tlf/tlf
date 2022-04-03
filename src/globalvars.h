@@ -14,12 +14,14 @@ extern mystation_t my;			// all about my station
 extern char whichcontest[];
 extern contest_config_t *contest;	// contest configuration
 
-extern char qsos[MAX_QSOS][LOGLINELEN + 1];
-					// array of log lines of QSOs so far;
+extern int nr_qsos;			// number of lines in qsos[]
+
+extern GPtrArray *qso_array;		// array of parsed QSOs
 					// note that not every log line needs
 					// to be a QSO, it could also be a
-					// comment, starting with a semicolon
-extern int nr_qsos;			// number of lines in qsos[]
+					// comment, starting with a semicolon.
+					// Than is_comment field in qso_t
+					// struct gets set
 
 extern mults_t multis[MAX_MULTS]; 	// array of multipliers worked so far
 extern int nr_multis;			// number of entries in mults[]
@@ -50,6 +52,8 @@ extern bool country_mult;
 extern struct qso_t *current_qso;
 extern char hiscall[20];
 extern char hiscall_sent[20];
+extern int resend_call;
+extern char sentcall[20];
 extern int total;
 extern int qso_points;
 extern int qsos_per_band[NBANDS];
@@ -84,7 +88,6 @@ extern char band[NBANDS][4];
 extern freq_t bandfrequency[NBANDS];
 
 extern struct tm *time_ptr;
-extern struct tm time_ptr_cabrillo;
 
 extern char cqzone[];
 extern char ituzone[];
@@ -117,12 +120,11 @@ extern char lastcall[];
 extern char recvd_rst[];
 extern char sent_rst[];
 extern char last_rst[];
-extern char section[];
 extern bool wazmult;
 extern int addcallarea;
 extern int new_cty;
 extern int new_zone;
-extern int do_cabrillo;
+extern bool new_pfx;
 extern bool no_rst;
 extern rmode_t digi_mode;
 extern int minitest;    // minitest period length in seconds, 0 if not used
@@ -219,7 +221,6 @@ extern char keyer_device[10];
 extern char netkeyer_hostaddress[];
 extern char pr_hostaddress[];
 extern char synclogfile[];
-extern char sc_device[];
 extern char exchange_list[40];
 extern char rttyoutput[];
 extern char spot_ptr[MAX_SPOTS][82];
@@ -245,6 +246,7 @@ extern bool mult_side;
 extern bool countrylist_only;
 extern bool mixedmode;
 extern bool qso_once;
+extern bool noleadingzeros;
 extern bool ignoredupe;
 extern bool continentlist_only;
 extern bool debugflag;

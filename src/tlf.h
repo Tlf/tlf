@@ -25,6 +25,7 @@
 #include <time.h>
 
 #include "hamlib/rig.h"
+#include "dxcc.h"
 
 enum {
     NO_KEYER,
@@ -32,6 +33,7 @@ enum {
     MFJ1278_KEYER,
     GMFSK,
     FLDIGI,
+    HAMLIB_KEYER,
 };
 
 #define SINGLE 0        /* single op */
@@ -146,7 +148,7 @@ enum {
 
 /** my station info
  *
- * contains all informations about my station */
+ * contains all information about my station */
 typedef struct {
     char call[20];
     int countrynr;
@@ -159,12 +161,12 @@ typedef struct {
 
 /** worked station
  *
- * contains all informations about an already worked station */
+ * contains all information about an already worked station */
 typedef struct {
     char call[20]; 		/**< call of the station */
     char exchange[24]; 		/**< the last exchange */
     int band; 			/**< bitmap for worked bands */
-    int country; 		/**< its country number */
+    prefix_data *ctyinfo;	/**< pointer to country info from cty.dat */
     long qsotime[3][NBANDS];	/**< last timestamp of qso in gmtime
 				  for all modes and bands */
 } worked_t;
@@ -189,6 +191,7 @@ typedef struct {
 /* represents different parts of a qso line */
 struct qso_t {
     char *logline;
+    bool is_comment;
     int band;
     int bandindex;
     int mode;
@@ -250,7 +253,7 @@ typedef struct {
 	points_type_t type;
 	union {
 	    int point;
-	    int (*fn)();
+	    int (*fn)(struct qso_t *);
 	};
     }			points;
     bool (*is_multi)();
@@ -281,9 +284,18 @@ enum {
     MARKER_CALLS,	/* DOTS & CALLS */
 };
 
+/* Enums for RESEND_CALL feature */
+enum {
+    RESEND_NOT_SET,		/* Resend feature not set */
+    RESEND_PARTIAL,		/* Resend partial hiscall */
+    RESEND_FULL,		/* Resend full hiscall again */
+};
+
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
 
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
+
+#define QSOS(n)    (((struct qso_t*)g_ptr_array_index(qso_array, n))->logline)
 
 #endif /* TLF_H */
 

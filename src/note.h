@@ -21,6 +21,6 @@
 #ifndef NOTE_H
 #define NOTE_H
 
-int include_note(void);
+void include_note(void);
 
 #endif /* NOTE_H */

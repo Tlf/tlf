@@ -1,6 +1,7 @@
 /*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+ *               2022	        Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,11 +28,12 @@
 
 #include "clear_display.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
+#include "log_utils.h"
 #include "nicebox.h"		// Includes curses.h
 #include "scroll_log.h"
 
 
-int include_note(void) {
+void include_note(void) {
 
     extern char thisnode;
 
@@ -73,13 +75,12 @@ int include_note(void) {
 
 	fclose(fp);
 
-	g_strlcpy(qsos[nr_qsos], buffer2, LOGLINELEN);
+	struct qso_t *qso = parse_qso(buffer2);
+	g_ptr_array_add(qso_array, qso);
 	nr_qsos++;
 
 	scroll_log();
-	g_strlcpy(logline4, buffer2, 81);  /* max. 80 columns */
 	clear_display();
-
     }
 
     attron(COLOR_PAIR(C_LOG | A_STANDOUT));
@@ -87,5 +88,5 @@ int include_note(void) {
     for (i = 14; i <= 16; i++)
 	clear_line(i);
 
-    return (0);
+    return;
 }

@@ -1,8 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2013           Ervin Hegedus <airween@gmail.com>
- *
+ * Copyright (C) 2001-2002-2003-2004-2005 Rein Couperus <pa0r@amsat.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +14,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <string.h>
-
-/* returns true if 'qra' is a valid QRA locator
- * note: only the first 4 characters are tested
- */
-int check_qra(char *qra) {
-
-    return strlen(qra) >= 4
-	   && qra[0] >= 'A' && qra[0] <= 'R'
-	   && qra[1] >= 'A' && qra[1] <= 'R'
-	   && qra[2] >= '0' && qra[2] <= '9'
-	   && qra[3] >= '0' && qra[3] <= '9';
-
-}
-
+bool rig_has_send_morse();
+bool rig_has_stop_morse();
+int hamlib_keyer_set_speed(int cwspeed);
+int hamlib_keyer_get_speed( int *cwspeed);
+int hamlib_keyer_send(char *cwmessage);
+int hamlib_keyer_stop();

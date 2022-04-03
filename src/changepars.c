@@ -512,16 +512,15 @@ int changepars(void) {
 	case 41: {		/* SYNC */
 	    if (strlen(synclogfile) > 0)
 		synclog(synclogfile);
+	    nr_qsos = log_read_n_score();
 	    scroll_log();
-	    /** \todo register return value */
-	    log_read_n_score();
 	    clear_display();
 	    break;
 	}
 	case 42: {		/* RESCORE */
-	    /** \todo register return value */
-	    log_read_n_score();
+	    nr_qsos = log_read_n_score();
 	    clear_display();
+	    scroll_log();
 	    break;
 	}
 	case 43: {		/* SCVOLUME - set soundcard volume */

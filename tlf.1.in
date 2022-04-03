@@ -35,7 +35,7 @@
 .
 .
 .\" Update the date when this page is committed.
-.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2021-09-09" TLF "Ham radio"
+.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2022-03-04" TLF "Ham radio"
 .
 .
 .SH NAME
@@ -114,6 +114,10 @@ CW keying via
 is fully supported, featuring direct mode for the keyboard and output to
 parallel and serial ports and speed and weight control from the keyboard, and
 band info output on the parallel port.
+Likewise, CW keying via
+.B Hamlib
+is supported for rigs that feature the capability. Tlf can set the CW speed,
+and at the same time read back the speed if changed using the knob on the rig.
 .
 .P
 For users of the K1EL series of \(lqWin Keyers\(rq, the
@@ -519,7 +523,7 @@ Using the sound recorder requires the installation of the
 .BR sox (1)
 package, which provides the
 .B rec
-utility used by the script.
+utilities used by the script.
 .
 .IP
 For recording voice messages, the keys
@@ -534,8 +538,8 @@ script which should already be installed to a location in the
 .IR $PATH .
 .
 The recording is written to the
-.I $HOME/@PACKAGE@/soundlogs
-directory.
+.I ./soundlogs
+directory by default.
 .
 .IP
 The
@@ -556,12 +560,6 @@ system used on Linux prior to ALSA).
 .
 Its default soundcard device is
 .IR /dev/dsp .
-.
-Use the
-.B SC_DEVICE
-parameter in the
-.I logcfg.dat
-file to specify the correct device.
 .
 To enable the OSS version uncomment the needed line in the
 .I soundlog
@@ -588,56 +586,13 @@ Sound recorder menu:
 .IP
 .
 .BR 1 :
-Start contest recording to
+Start/Stop contest recording to
 .IR ddhhmm .au.
 .
 .IP
 .BR 2 :
-Stop contest recording.
-.
-.IP
-.BR 3 :
-List contest recordings (automatically calls menu item 4).
-.
-.IP
-.BR 4 :
-(Hidden) Play back contest recording
-.IR ddhh [ mm ][ :xx ].
-.
-.RS
-.RS
-.
-.P
-.I xx
-is the offset from the start of the file, as follows:
-.P
-.I 2110
-will start playback from the beginning of the day
-.IR 21 ,
-hour
-.I 10
-file.
-.
-.P
-.I 21100013:00
-will start from day
-.IR 21 ,
-hour
-.IR 10 ,
-minute
-.IR 00 ,
-plus an offset of
-.I 13
-minutes
-.I 00
-seconds.
-.
-.\" FIXME: refactor this section based on the actions in the sources.
-.P
-.BR FIXME :
-This does not work as documented as the source code differs completely!
-.RE
-.RE
+List contest recordings and play back selected recording
+.IR ddhhmm.
 .
 .IP
 To create a new file every hour add a
@@ -663,12 +618,30 @@ interval period in length.
 .IP
 Once started the recorder will run until the lock file
 .I $HOME/.VRlock
-is removed (performed by menu item 2).
+is removed and the script gets stopped (performed by menu item 1).
+.
+.IP
+If you leave TLF with the recorder running TLF will ask for confirmation.
+Depending on your answer TLF can stop it or keep it running. In the latter
+case just restart TLF and use :sound again to stop it.
 .
 .IP
 Cabling and setting up the radio to record both received and transmitted audio
 is left as an exercise for the reader simply due to the variety of radios and
 station configurations.
+.
+.IP
+To ease the adaption to the local environment record and play back commands
+for voice keyer messages and contest audio can be configured by the following
+keywords:
+.I VK_RECORD_COMMAND,
+.I VK_PLAY_COMMAND,
+.I SOUNDLOG_RECORD_COMMAND
+and
+.I SOUNDLOG_PLAY_COMMAND. 
+The directory where soundlogs gets stored can be configured with 
+.I SOUNDLOG_DIRECTORY.
+See \(lqSound Commands\(rq section below.
 .
 .TP
 .BR :SYN c
@@ -745,7 +718,7 @@ should work.
 This also works under VNC.
 .
 .P
-Certain key combinations will probably not be useable as the Linux console
+Certain key combinations will probably not be usable as the Linux console
 consumes Alt-F1 through
 .RI Alt-F x
 (often F7, but could be greater) for switching its virtual consoles.
@@ -1179,7 +1152,7 @@ Ends modem capture for RTTY mode in QTC window (started with
 .
 .IP
 See
-.I @prefix@/share/doc/@PACKAGE@/README_QTC_RTTY.txt
+.I @prefix@/share/doc/@PACKAGE@/Manual.md
 for more information.
 .
 .TP
@@ -1188,9 +1161,9 @@ Set frequency.
 .
 Use
 .BR Up / Down -Arrow
-for 100hz steps and
+for 100Hz steps and
 .BR Pg-Up / Pg-Down
-for 500hz steps.
+for 500Hz steps.
 .
 Return to logging with
 .BR Escape .
@@ -1228,9 +1201,7 @@ if \fBQTC\fR=\fISEND\fR.
 .
 .IP
 See
-.I @prefix@/share/doc/@PACKAGE@/README_QTC.txt
-and
-.I @prefix@/share/doc/@PACKAGE@/README_QTC_RTTY.txt
+.I @prefix@/share/doc/@PACKAGE@/Manual.md
 for more information.
 .
 .TP
@@ -1255,9 +1226,7 @@ End capture with
 .
 .IP
 See
-.I @prefix@/share/doc/@PACKAGE@/README_QTC.txt
-and
-.I @prefix@/share/doc/@PACKAGE@/README_QTC_RTTY.txt
+.I @prefix@/share/doc/@PACKAGE@/Manual.md
 for more information.
 .
 .TP
@@ -1277,7 +1246,7 @@ looks for a spot.
 Suspend @PACKAGE_NAME@ returning to shell prompt.
 .
 To return to @PACKAGE_NAME@ use the \(oqfg\(cq command (Bourne Shell) or the
-eqivalent command for your shell.
+equivalent command for your shell.
 .
 .TP
 .BR Alt-0 ... Alt-9
@@ -1741,6 +1710,14 @@ Default port is 6789.
 Default host is 127.0.0.1 (localhost).
 .
 .TP
+\fBHAMLIB_KEYER\fR
+Activate CW keying via Hamlib.
+.
+.IP
+.B Note:
+The + and - macros to control speed from within messages are not yet supported.
+.
+.TP
 \fBMFJ1278_KEYER\fR=\fIserial_port\fR
 Activates support for the MFJ-1278B multi-mode controller.
 .
@@ -1792,26 +1769,6 @@ Support backspace key in keyer window.
 Use soundcard for CW sidetone output.
 .
 .TP
-\fBSC_DEVICE\fR=\fIdevice\fR
-Sound card device for CW sidetone and Sound menu.
-.
-.IP
-This is not required if your radio provides CW sidetone.
-.
-.IP
-For example, set \fBSC_DEVICE\fR=\fI/dev/dsp0\fR for Open Sound System drivers.
-.
-.IP
-.BR Note :
-For newer installations using the
-.B PulseAudio
-sound server, use of the
-.I pavucontrol
-GUI utility allows for directing input and output sound streams.
-.
-This is particularly useful with computer setups with multiple sound cards.
-.
-.TP
 \fBSIDETONE_VOLUME\fR=\fIsoundcard_volume\fR
 Set soundcard sidetone volume (default is
 .IR 70 ).
@@ -1850,6 +1807,41 @@ Range: 0\(en999.
 tune function.
 .
 Use \fBSIDETONE_VOLUME\fR=\fI0\fR instead).
+.
+.TP
+\fBVK_PLAY_COMMAND\fR=\fIcommand\fR
+The command to play a voice keyer message file.
+.
+.IP 
+It default to \(lqplay_vk $1\(rq, where \(lq$1\(rq will be replaced by the file
+name to play.
+
+.
+.TP
+\fBVK_RECORD_COMMAND\fR=\fIcommand\fR
+Command to record voice keyer messages.
+.
+.IP
+\(lqrec -r 8000 $1 -q\(rq is used by default. Again \(lq$1\(rq stands for the
+file to write during recording.
+.
+.TP
+\fBSOUNDLOG_PLAY_COMMAND\fR=\fIcommand\fR
+Playback command for soundlog recordings (default is \(lqplay -q $1 2>
+/dev/null\(rq):
+.
+.TP
+\fBSOUNDLOG_RECORD_COMMAND\fR=\fIcommand\fR
+Command to record contest audio stream. Runs out of the SOUNDLOG_DIRECTORY.
+.
+.IP
+The script \(lqsoundlog\(rq which is part of TLF is used by default. See
+:Sound for details.
+.
+.TP
+\fBSOUNDLOG_DIRECTORY\fR=\fIdirectory\fR
+The directory in which recorded contest sound files are stored (default
+\(lq./soundlogs\(rq).
 .
 .SS Band Switching Commands
 .
@@ -2174,6 +2166,20 @@ and @PACKAGE_NAME@ if is in
 then the other station's callsign will be sent before \(lqDE\(rq, such as
 \(lqDL1A DE W1AW\(rq.
 .
+.TP
+.B RESEND_CALL=\fIFULL\fR | \fIPARTIAL\fR
+Sends the full or partial callsign again at the end of the QSO
+in RUN mode if the call of the other station was corrected.
+In case of \fIFULL\fR the whole callsign will be sent again.
+If the value is \fIPARTIAL\fR, then TLF figures out which part of callsign
+has to be sent. Eg.: if the received call was
+.B AB1CD,
+but later it is corrected to
+.B AB1CB,
+then
+.B CB.
+is sent.
+.
 .SH RULES
 .
 The contest rules can be put into separate files.
@@ -2420,9 +2426,10 @@ pass another value (in seconds) after the \(oq=\(cq sign.
 .IP
 There must be an integral number of time sections per hour!
 .
-.SS CW and Voice Keyer Macros
+.SS CW, Digimode and Voice Keyer Macros
 .
-The following parameters configure the CW and voice mode keyer message macros.
+The following parameters configure the CW, Digimode and voice mode keyer
+message macros.
 .
 .TP
 .B Macro characters in the message strings
@@ -2450,11 +2457,17 @@ The following parameters configure the CW and voice mode keyer message macros.
 = SN,
 .B &
 = AS,
-.B > =
-BK,
+.B > 
+= BK,
 .B !
 = his serial (e.g. confirm exchange of station in
-.BR DIG imode).
+.BR DIG imode),
+.B |
+= carriage return (only in digi mode messages).
+.
+.P
+Be aware that unspecified digimode messages gets the value of their CW
+counterpart prepended with '|'.
 .
 .TP
 \fBF1\fR=\fI"cw message 1"\fR
@@ -2611,12 +2624,15 @@ Points for countries in country list.
 Score zero points for countries not in the list.
 .
 .TP
-\fBCOUNTRYLIST\fR=\fI"comma separated list of prefixes starting with colon"\fR
-e.g. Scandinavia:SM,LA,OZ,OH.
+\fBCOUNTRYLIST\fR=\fI"comma separated list of prefixes"\fR
+e.g. SM,LA,OZ,OH.
 .
 .TP
 \fBCOUNTRYLIST\fR=\fIfile_name\fR
 File with a list of prefixes.
+It can contain multiple records (lines).
+The one starting with the current contest name is selected.
+E.g. Scandinavia:SM,LA,OZ,OH.
 .
 .IP
 Not to be confused with so-called "country" files maintained by AD1C.
@@ -2833,7 +2849,7 @@ In that case you can use this configuration:
 .
 .IP
     \fBCOUNTRY_MULT\fR
-    \fBCOUNTRYLIST\fR=\fIsac:JW,JX,LA,OF1,OF0,OJ1,OJ0,OX,OW,OZ,SM,TF\fR
+    \fBCOUNTRYLIST\fR=\fIJW,JX,LA,OF1,OF0,OJ1,OJ0,OX,OW,OZ,SM,TF\fR
     \fBEXCLUDE_MULTILIST\fR=\fICOUNTRYLIST\fR
 .
 .IP
@@ -2979,7 +2995,7 @@ is one of: RECV, SEND, BOTH
 Currently just the RECV direction is implemented.
 .
 For more information, please see the
-.I @prefix@/share/doc/@PACKAGE@/README_QTC.txt
+.I @prefix@/share/doc/@PACKAGE@/Manual.md
 file.
 .
 .TP
@@ -3136,7 +3152,7 @@ The specified format file is used both to generate Cabrillo output and also
 for Cabrillo import.
 .
 For technical details see
-.IR @prefix@/share/doc/@PACKAGE@/README.Cabrillo .
+.IR @prefix@/share/doc/@PACKAGE@/Manual.md .
 .
 .IP
 A

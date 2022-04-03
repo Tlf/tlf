@@ -21,10 +21,10 @@
 #ifndef CLEAR_DISPLAY_H
 #define CLEAR_DISPLAY_H
 
-void init_terminal_strings(void);
+void init_keyer_terminal(void);
 void show_header_line(void);
 void clear_display(void);
-void displayit(void);
+void add_to_keyer_terminal(char *buffer);
 void clear_line(int);
 
 #endif /* CLEAR_DISPLAY_H */

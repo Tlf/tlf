@@ -42,6 +42,7 @@ GPtrArray *mults_possible;
 enum { ALL_BAND, PER_BAND };
 
 char mult1_value[40];
+int mult1_mode = PER_BAND;  //FIXME configure
 
 void addmult(struct qso_t *qso) {
     int idx;
@@ -57,7 +58,7 @@ void addmult(struct qso_t *qso) {
 
 	idx = get_exact_mult_index(mult1_value);
 	if (idx >= 0) {
-	    remember_multi(get_mult(idx), bandinx, ALL_BAND);
+	    remember_multi(get_mult(idx), qso->bandindex, ALL_BAND);
 	    // NOTE: return value not used, new mult is not marked in log
 	}
     }
@@ -69,7 +70,7 @@ void addmult(struct qso_t *qso) {
 	idx = get_exact_mult_index(mult1_value);
 	if (idx >= 0) {
 	    new_mult =
-		remember_multi(get_mult(idx), bandinx, PER_BAND);
+		remember_multi(get_mult(idx), qso->bandindex, PER_BAND);
 	}
     }
 
@@ -80,7 +81,7 @@ void addmult(struct qso_t *qso) {
 	idx = get_exact_mult_index(mult1_value);
 	if (idx >= 0) {
 	    new_mult =
-		remember_multi(get_mult(idx), bandinx, ALL_BAND);
+		remember_multi(get_mult(idx), qso->bandindex, ALL_BAND);
 	}
     }
 
@@ -90,32 +91,34 @@ void addmult(struct qso_t *qso) {
 	idx = get_exact_mult_index(mult1_value);
 	if (idx >= 0) {
 	    new_mult =
-		remember_multi(get_mult(idx), bandinx, PER_BAND);
+		remember_multi(get_mult(idx), qso->bandindex, PER_BAND);
 	}
     }
 
     // --------------------wysiwyg----------------
     else if (wysiwyg_once) {
-	new_mult = remember_multi(stripped_comment, bandinx, ALL_BAND);
+	new_mult = remember_multi(stripped_comment, qso->bandindex, ALL_BAND);
     }
 
     else if (wysiwyg_multi) {
-	new_mult = remember_multi(stripped_comment, bandinx, PER_BAND);
-    }
-
-    else if (serial_grid4_mult) {
-	section[4] = '\0';
-	new_mult = remember_multi(section, bandinx, PER_BAND);
+	new_mult = remember_multi(stripped_comment, qso->bandindex, PER_BAND);
     }
 
     /* -------------- unique call multi -------------- */
     else if (unique_call_multi == UNIQUECALL_ALL) {
-	new_mult = remember_multi(qso->call, bandinx, ALL_BAND);
+	new_mult = remember_multi(qso->call, qso->bandindex, ALL_BAND);
     }
 
     else if (unique_call_multi == UNIQUECALL_BAND) {
-	new_mult = remember_multi(qso->call, bandinx, PER_BAND);
+	new_mult = remember_multi(qso->call, qso->bandindex, PER_BAND);
     }
+
+    // -----------   default: use mult1   -----------
+    else {
+	new_mult = remember_multi(mult1_value, qso->bandindex, mult1_mode);
+    }
+
+
 
     free(stripped_comment);
 }
@@ -251,12 +254,12 @@ gint	cmp_size(char **a, char **b) {
 }
 
 
-/* parse a mult line and add data to databse
+/* parse a mult line and add data to database
  *
  * multline consists of either
  *   multiplier
  * or
- *   multplier:followed,by,comma,separated,list,of,aliases
+ *   multiplier:followed,by,comma,separated,list,of,aliases
  *
  * There may be more than one alias line for a multi, so add all aliases to
  * that multi */
@@ -400,7 +403,7 @@ void init_mults() {
  *			(-1 if multiplier is an empty string or not new)
  */
 int remember_multi(char *multiplier, int band, int show_new_band) {
-    /* search multbuffer in mults arry */
+    /* search multbuffer in mults array */
     int found = 0, i, index = -1;
 
     if (*multiplier == '\0')

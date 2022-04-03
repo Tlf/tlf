@@ -28,10 +28,12 @@
 #include <pthread.h>
 
 #include "bands.h"
+#include "cw_utils.h"
 #include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "gettxinfo.h"
 #include "globalvars.h"
+#include "hamlib_keyer.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "callinput.h"
@@ -188,12 +190,29 @@ void gettxinfo(void) {
 	    handle_trx_bandswitch((int) freq);
 	}
 
+	/* read speed from rig */
+	if (cwkeyer == HAMLIB_KEYER) {
+	    int rig_cwspeed;
+	    retval = hamlib_keyer_get_speed(&rig_cwspeed);
+
+	    if (retval == RIG_OK) {
+		if (GetCWSpeed() != rig_cwspeed) { // FIXME: doesn't work if rig speed is between the values from CW_SPEEDS
+		    SetCWSpeed(rig_cwspeed);
+
+		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		    mvprintw(0, 14, "%2u", GetCWSpeed());
+		}
+	    } else {
+		TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
+	    }
+	}
+
     } else if (reqf == SETCWMODE) {
 
 	retval = rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW, get_cw_bandwidth());
 
 	if (retval != RIG_OK) {
-	    TLF_LOG_WARN("Problem with rig link!");
+	    TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
 	}
 
     } else if (reqf == SETSSBMODE) {
@@ -202,7 +221,7 @@ void gettxinfo(void) {
 			      TLF_DEFAULT_PASSBAND);
 
 	if (retval != RIG_OK) {
-	    TLF_LOG_WARN("Problem with rig link!");
+	    TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
 	}
 
     } else if (reqf == SETDIGIMODE) {
@@ -217,14 +236,14 @@ void gettxinfo(void) {
 			      TLF_DEFAULT_PASSBAND);
 
 	if (retval != RIG_OK) {
-	    TLF_LOG_WARN("Problem with rig link!");
+	    TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
 	}
 
     } else if (reqf == RESETRIT) {
 	retval = rig_set_rit(my_rig, RIG_VFO_CURR, 0);
 
 	if (retval != RIG_OK) {
-	    TLF_LOG_WARN("Problem with rig link!");
+	    TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
 	}
 
     } else {
@@ -233,7 +252,7 @@ void gettxinfo(void) {
 	retval = rig_set_freq(my_rig, RIG_VFO_CURR, (freq_t) reqf);
 
 	if (retval != RIG_OK) {
-	    TLF_LOG_WARN("Problem with rig link: set frequency!");
+	    TLF_LOG_WARN("Problem with rig link: set frequency: %s", rigerror(retval));
 	}
 
     }
@@ -274,7 +293,7 @@ static void handle_trx_bandswitch(const freq_t freq) {
     int retval = rig_set_mode(my_rig, RIG_VFO_CURR, mode, width);
 
     if (retval != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig link!");
+	TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
     }
 
 }

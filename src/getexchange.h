@@ -24,7 +24,6 @@
 extern bool call_update;
 
 void checkexchange(char *comment, bool interactive);
-char *getgrid(char *comment);
 int getexchange(void);
 
 #endif /* GETEXCHANGE_H */

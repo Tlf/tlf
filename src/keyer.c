@@ -157,7 +157,7 @@ void keyer(void) {
 	if ((x >= ' ' && x <= 'Z') || x == LINEFEED) { /* ~printable or LF */
 	    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 		mfj1278_control(x);
-	    } else if (cwkeyer == NET_KEYER) {
+	    } else if (cwkeyer == NET_KEYER || cwkeyer == HAMLIB_KEYER) {
 		keyer_append_char(x);
 	    }
 

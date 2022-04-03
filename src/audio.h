@@ -25,15 +25,22 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-#define FS	11025
-#define S_BAR 0
-#define SPOT_BAR 1
-#define PAN_BAR 2
+#include <stdbool.h>
 
+extern char* vk_record_cmd;
+extern char* vk_play_cmd;
+extern char* soundlog_record_cmd;
+extern char* soundlog_play_cmd;
+extern char* soundlog_dir;
 
-void init_audio();
-int close_audio();
-int testaudio();
+void sound_setup_default(void);
 void record(void);
+bool is_sr_running();
+void sr_stop();
+
+void vk_play_file(char *audiofile);
+void vk_stop();
+bool is_vk_finished();
+
 
 #endif /* AUDIO_H */

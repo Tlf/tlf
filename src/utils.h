@@ -21,6 +21,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <stdbool.h>
+
+bool check_qra(char *qra);
 char *find_available(char *filename);
+void get_partial_callsign(char *call1, char *call2, char *partial);
 
 #endif /* UTILS_H */

@@ -16,21 +16,27 @@
 // OBJECT ../src/focm.o
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
-// OBJECT ../src/locator2longlat.o
 // OBJECT ../src/plugin.o
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/utils.o
 
+char *calc_continent(int zone);
 char section[8] = "";       // defined in getexchange.c
 
-#define check_points(point) \
-    do{ assert_int_equal(score(), point); }while(0)
+struct qso_t qso = { };
 
-#define check_call_points(call,point) \
-    do{ strcpy(hiscall, call); \
-	assert_int_equal(score(), point); }while(0)
+#define check_points(point) \
+    do{ assert_int_equal(score(&qso), point); }while(0)
+
+#define check_call_points(thecall,point) \
+    do{ qso.call = g_strdup(thecall); \
+	assert_int_equal(score(&qso), point); \
+	g_free(qso.call); \
+	qso.call = NULL; }while(0)
+
+void clear_display() {}
 
 #if 0
 void __wrap_qrb(char *x, char *y, char *u, char *v, double *a, double *b) {
@@ -41,25 +47,17 @@ int __wrap_foc_score() {
 }
 #endif
 
-int setup(void **state) {
-
-    strcpy(my.qra, "jo60lx");
-
-    strcpy(my.continent, "EU");
-
-    my.countrynr = 95;   /* DL */
-    w_cty = 184;        /* W */
-    ve_cty = 283;       /* VE */
-
-    trxmode = CWMODE;
-
-    return 0;
-}
 
 int setup_default(void **state) {
 
     static char filename[] =  TOP_SRCDIR "/share/cty.dat";
     assert_int_equal(load_ctydata(filename), 0);
+
+    strcpy(my.qra, "jo60lx");
+    strcpy(my.continent, "EU");
+    my.countrynr = getctynr("DL");
+
+    trxmode = CWMODE;
 
     setcontest("qso");
 
@@ -78,24 +76,14 @@ int setup_default(void **state) {
     continentlist_points = -1;
     strcpy(continent_multiplier_list[0], "");
 
-    strcpy(my.continent, "EU");
-
     lowband_point_mult = false;
     portable_x2 = false;
 
-    return 0;
-}
-
-int setup_ssbcw(void **state) {
-
-    setup_default(state);
-
-    static char filename[] =  TOP_SRCDIR "/share/cty.dat";
-    assert_int_equal(load_ctydata(filename), 0);
+    ssbpoints = 0;
+    cwpoints = 0;
 
     return 0;
 }
-
 
 void test_dupe(void **state) {
     dupe = 1;
@@ -106,40 +94,62 @@ int teardown_default(void **state) {
     return 0;
 }
 
+void check_score_to_continent(int i, char * cont) {
+    strcpy(continent, "abc");
+    assert_string_equal(calc_continent(i), cont);
+    assert_string_equal(continent, "abc"); /* do not touch 'continent' */
+}
+
+void test_calc_continent(void **state) {
+    check_score_to_continent(0, "??");
+    for (int i = 1; i < 9; i++) {
+	check_score_to_continent(i, "NA");
+    }
+    for (int i = 9; i < 14; i++) {
+	check_score_to_continent(i, "SA");
+    }
+    for (int i = 14; i < 17; i++) {
+	check_score_to_continent(i, "EU");
+    }
+    for (int i = 17; i < 33; i++) {
+	check_score_to_continent(i, "AS");
+    }
+    for (int i = 33; i < 40; i++) {
+	check_score_to_continent(i, "AF");
+    }
+    check_score_to_continent(40, "EU");
+    check_score_to_continent(41, "??");
+}
+
 
 void test_wpx(void **state) {
     setcontest("wpx");
     pfxmult = false;
 
     /* same country */
-    countrynr = my.countrynr;
-    check_points(1);
+    check_call_points("DL3ABC",1);
 
     /* different continents */
-    countrynr = 2;
-    strcpy(continent, "AF");
-    bandinx = BANDINDEX_20;
-    check_points(3);
+    qso.bandindex = BANDINDEX_20;
+    check_call_points("ZS6ABC",3);
 
-    bandinx = BANDINDEX_40;
-    check_points(6);
+    qso.bandindex = BANDINDEX_40;
+    check_call_points("ZS6ABC",6);
 
     /* same continent, not NA */
-    strcpy(continent, my.continent);
-    bandinx = BANDINDEX_20;
-    check_points(1);
+    qso.bandindex = BANDINDEX_20;
+    check_call_points("HB9ABC",1);
 
-    bandinx = BANDINDEX_40;
-    check_points(2);
+    qso.bandindex = BANDINDEX_40;
+    check_call_points("HB9ABC",2);
 
     /* same continent, NA */
     strcpy(my.continent, "NA");
-    strcpy(continent, my.continent);
-    bandinx = BANDINDEX_20;
-    check_points(2);
+    qso.bandindex = BANDINDEX_20;
+    check_call_points("VE3ABC",2);
 
-    bandinx = BANDINDEX_40;
-    check_points(4);
+    qso.bandindex = BANDINDEX_40;
+    check_call_points("VE3ABC",4);
 
 }
 
@@ -147,21 +157,19 @@ void test_wpx(void **state) {
 void test_cqww(void **state) {
     setcontest("cqww");
 
-    countrynr = my.countrynr;
-    check_points(0);
+    check_call_points("DL3ABC", 0);
 
-    countrynr = 2;
-    strcpy(continent, "EU");
     strcpy(my.continent, "EU");
-    check_points(1);
+    check_call_points("HB9ABC", 1);
 
-    strcpy(continent, "NA");
     strcpy(my.continent, "NA");
-    check_points(2);
+    check_call_points("XE1ABC", 2);
 
-    strcpy(continent, "EU");
     strcpy(my.continent, "NA");
-    check_points(3);
+    check_call_points("PY2ABC", 3);
+
+    qso.comment = "19";		    /* CQ Zone 19 => AS */
+    check_call_points("HB9ABC/mm", 3);
 }
 
 void test_arrl_fd(void **state) {
@@ -193,14 +201,11 @@ void test_simple_points(void **state) {
 void test_arrldx_usa(void **state) {
     setcontest("arrldx_usa");
 
-    countrynr = w_cty;
-    check_points(0);
+    check_call_points("W3ABC",0);
 
-    countrynr = ve_cty;
-    check_points(0);
+    check_call_points("VE2ABC",0);
 
-    countrynr = my.countrynr;
-    check_points(3);
+    check_call_points("DL3ABC",3);
 }
 
 void test_ssbcw(void **state) {
@@ -216,14 +221,15 @@ void test_ssbcw(void **state) {
     check_points(3);
 
     lowband_point_mult = true;
-    bandinx = BANDINDEX_30;
+    qso.bandindex = BANDINDEX_30;
     check_points(3);
-    bandinx = BANDINDEX_40;
+    qso.bandindex = BANDINDEX_40;
     check_points(6);
 
     portable_x2 = true;
     check_call_points("DL3XYZ", 6);
     check_call_points("DL3XYZ/P", 12);
+    portable_x2 = false;
 
     trxmode = DIGIMODE;
     check_points(0);

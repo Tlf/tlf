@@ -31,7 +31,7 @@
 #include "plugin.h"
 
 
-int store_qso(char *loglineptr) {
+void store_qso(char *loglineptr) {
     FILE *fp;
 
     if ((fp = fopen(logfile, "a"))  == NULL) {
@@ -39,19 +39,11 @@ int store_qso(char *loglineptr) {
 	endwin();
 	exit(1);
     }
-    strcpy(qsos[nr_qsos], loglineptr);
     nr_qsos++;
-    strcat(loglineptr, "\n");	/* pa3fwm, 20040113: this looks suspicious,
-				   repeated calls to store_qso() could
-				   add multiple \n's */
+
     fputs(loglineptr, fp);
+    fputc('\n', fp);
 
     fclose(fp);
-
-    if (plugin_has_add_qso()) {
-        plugin_add_qso(loglineptr);
-    }
-
-    return (0);
 }
 

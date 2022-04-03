@@ -2,6 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+ *               2012-2022      Thomas Beierlein <dl1jbe@darc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +23,10 @@
 #ifndef READCALLS_H
 #define READCALLS_H
 
+#include <stdbool.h>
+
 int lookup_country_in_pfxnummult_array(int n);
-int readcalls(const char *logfile);
+int readcalls(const char *logfile, bool interactive);
 int log_read_n_score();
 int synclog(char *synclogfile);
 
