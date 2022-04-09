@@ -17,6 +17,7 @@
 // OBJECT ../src/getctydata.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/plugin.o
+// OBJECT ../src/qrb.o
 // OBJECT ../src/score.o
 // OBJECT ../src/bands.o
 // OBJECT ../src/log_utils.o

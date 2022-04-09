@@ -14,6 +14,7 @@
 #include "log_utils.h"
 #include "startmsg.h"
 #include "utils.h"
+#include "qrb.h"
 
 // hacks:
 #define PARSE_OK    0
@@ -35,49 +36,11 @@ static PyObject *pModule, *pDict, *pTlf;
 PLUGIN_FUNC(setup)
 PLUGIN_FUNC(score)
 
-PLUGIN_FUNC(add_qso)
 PLUGIN_FUNC(is_multi)
 PLUGIN_FUNC(nr_of_mults)
 PLUGIN_FUNC(get_multi)
 
 #ifdef HAVE_PYTHON
-//=============
-// example callback into C code
-static PyObject *say_hello(PyObject *self, PyObject *args) {
-    const char *name;
-
-    if (!PyArg_ParseTuple(args, "s", &name))
-	return NULL;
-
-    printf("TLF: Hello %s!\r\n", name);
-
-    Py_RETURN_NONE;
-}
-
-static  PyMethodDef tlf_methods[] = {
-    { "say_hello", say_hello, METH_VARARGS, "Say hello to arg" },
-    { NULL, NULL, 0, NULL }
-};
-
-static struct PyModuleDef tlf_module = {
-    PyModuleDef_HEAD_INIT,
-    .m_name = "tlf",
-    .m_size = -1,
-    .m_methods = tlf_methods
-};
-
-static PyMODINIT_FUNC PyModInit_tlf(void) {
-    PyObject *tlf = PyModule_Create(&tlf_module);
-    PyModule_AddIntMacro(tlf, CWMODE);
-    PyModule_AddIntMacro(tlf, SSBMODE);
-    PyModule_AddIntConstant(tlf, "BAND_ANY", BANDINDEX_ANY);
-    PyModule_AddObject(tlf, "MY_LAT", PyFloat_FromDouble(my.Lat));
-    PyModule_AddObject(tlf, "MY_LONG", PyFloat_FromDouble(my.Long));
-    //...
-
-    return tlf;
-}
-
 static PyStructSequence_Desc qso_descr = {
     .name = "qso",
     .doc = "QSO data",
@@ -92,17 +55,64 @@ static PyStructSequence_Desc qso_descr = {
     .n_in_sequence = 4
 };
 
-static PyTypeObject *qso_type;
-#endif
+static PyStructSequence_Desc qrb_descr = {
+    .name = "qrb",
+    .doc = "QRB data",
+    .fields = (PyStructSequence_Field[]) {
+	{.name = "distance"},
+	{.name = "bearing"},
+	{.name = NULL}  // guard
+    },
+    .n_in_sequence = 2
+};
 
-//=============
-// forward declarations, to be removed
-void plugin_setup();
-void plugin_add_qso(const char *logline);
-int plugin_nr_of_mults(int band);
-bool plugin_is_multi(int band, const char *call, int mode);
-char *plugin_get_multi(const char *call, int mode);
-//=============
+static PyTypeObject *qso_type;
+static PyTypeObject *qrb_type;
+
+static PyObject *py_get_qrb_for_locator(PyObject *self, PyObject *args) {
+    const char *locator;
+
+    if (!PyArg_ParseTuple(args, "s", &locator))
+	return NULL;
+
+    double distance, bearing;
+    bool ok = get_qrb_for_locator(locator, &distance, &bearing);
+
+    if (!ok) {
+	Py_RETURN_NONE;
+    }
+
+    //return Py_BuildValue("{s:d,s:d}", "distance", distance, "bearing", bearing);
+    PyObject *py_qrb = PyStructSequence_New(qrb_type);
+    PyStructSequence_SetItem(py_qrb, 0, Py_BuildValue("d", distance));
+    PyStructSequence_SetItem(py_qrb, 1, Py_BuildValue("d", bearing));
+    return py_qrb;
+}
+
+static PyMethodDef tlf_methods[] = {
+    { "get_qrb_for_locator", py_get_qrb_for_locator, METH_VARARGS, "Get QRB for given locator" },
+    { NULL, NULL, 0, NULL }
+};
+
+static struct PyModuleDef tlf_module = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "tlf",
+    .m_size = -1,
+    .m_methods = tlf_methods
+};
+
+PyMODINIT_FUNC PyModInit_tlf(void) {
+    PyObject *tlf = PyModule_Create(&tlf_module);
+    PyModule_AddIntMacro(tlf, CWMODE);
+    PyModule_AddIntMacro(tlf, SSBMODE);
+    PyModule_AddIntConstant(tlf, "BAND_ANY", BANDINDEX_ANY);
+    PyModule_AddObject(tlf, "MY_LAT", PyFloat_FromDouble(my.Lat));
+    PyModule_AddObject(tlf, "MY_LONG", PyFloat_FromDouble(my.Long));
+    //...
+
+    return tlf;
+}
+#endif
 
 #ifdef HAVE_PYTHON
 static void lookup_function(const char *name, PyObject **pf_ptr) {
@@ -172,9 +182,7 @@ int plugin_init(const char *name) {
     lookup_function("init", &pf_init);
     lookup_function("setup", &pf_setup);
     lookup_function("score", &pf_score);
-    lookup_function("add_qso", &pf_add_qso);
     lookup_function("is_multi", &pf_is_multi);
-    lookup_function("nr_of_mults", &pf_nr_of_mults);
     lookup_function("get_multi", &pf_get_multi);
 
     if (pf_setup == NULL) {
@@ -192,8 +200,9 @@ int plugin_init(const char *name) {
 
     // check add_qso ?
 
-    // build qso type
+    // build interface types
     qso_type = PyStructSequence_NewType(&qso_descr);
+    qrb_type = PyStructSequence_NewType(&qrb_descr);
 
 #if 0
     plugin_setup();
@@ -246,26 +255,24 @@ void plugin_setup() {
 }
 
 #ifdef HAVE_PYTHON
-static PyObject *create_py_qso(int band, const char *call, int mode,
-			       const char *exchange) {
-    PyObject *qso = PyStructSequence_New(qso_type);
-    PyStructSequence_SetItem(qso, 0, Py_BuildValue("i", band));
-    PyStructSequence_SetItem(qso, 1, Py_BuildValue("s", call));
-    PyStructSequence_SetItem(qso, 2, Py_BuildValue("i", mode));
-    PyStructSequence_SetItem(qso, 3, Py_BuildValue("s", exchange));
-    return qso;
+static PyObject *create_py_qso(struct qso_t *qso) {
+    PyObject *py_qso = PyStructSequence_New(qso_type);
+    PyStructSequence_SetItem(py_qso, 0, Py_BuildValue("i", qso->band));
+    PyStructSequence_SetItem(py_qso, 1, Py_BuildValue("s", qso->call));
+    PyStructSequence_SetItem(py_qso, 2, Py_BuildValue("i", qso->mode));
+    PyStructSequence_SetItem(py_qso, 3, Py_BuildValue("s", qso->comment));
+    return py_qso;
 }
 #endif
 
-int plugin_score(int band, const char *call, int mode,
-		 const char *exchange) {
+int plugin_score(struct qso_t *qso) {
     int result = 0;
 #ifdef HAVE_PYTHON
-    PyObject *qso = create_py_qso(band, call, mode, exchange);
-    PyObject *args = Py_BuildValue("(O)", qso);
+    PyObject *py_qso = create_py_qso(qso);
+    PyObject *args = Py_BuildValue("(O)", py_qso);
     PyObject *pValue = PyObject_CallObject(pf_score, args);
     Py_DECREF(args);
-    Py_DECREF(qso);
+    Py_DECREF(py_qso);
 
     if (pValue != NULL) {
 	result =  PyLong_AsLong(pValue);
@@ -281,43 +288,20 @@ int plugin_score(int band, const char *call, int mode,
     return result;
 }
 
-void plugin_add_qso(const char *logline) {
-#ifdef HAVE_PYTHON
-//    if (pf_add_qso == NULL) {
-//        return;
-//    }
-//    printf("--- in add_qso |%s|\n", logline);
-// parse: call, ...
-    char call[14];
-    g_strlcpy(call, logline + 29, sizeof(call));
-    g_strchomp(call);
-    int mode = log_get_mode(logline);
-    int band = log_get_band(logline); //atoi(logline);
-
-    PyObject *qso = create_py_qso(band, call, mode, "");
-
-    // call add_qso
-    PyObject *arg = Py_BuildValue("(O)", qso);
-    PyObject *pValue = PyObject_CallObject(pf_add_qso, arg);
-    Py_DECREF(arg);
-    Py_DECREF(qso);
-
-    if (NULL != PyErr_Occurred()) {
-	PyErr_Print();
-	//FIXME: action?
-    }
-    Py_XDECREF(pValue);
-#endif
-}
-
 bool plugin_is_multi(int band, const char *call, int mode) {
 #ifdef HAVE_PYTHON
     // call is_multi
-    PyObject *qso = create_py_qso(band, call, mode, "");
-    PyObject *args = Py_BuildValue("(O)", qso);
+    struct qso_t qso;
+    qso.band = band;
+    qso.call = call;
+    qso.mode = mode;
+    qso.comment = "";
+
+    PyObject *py_qso = create_py_qso(&qso);
+    PyObject *args = Py_BuildValue("(O)", py_qso);
     PyObject *pValue = PyObject_CallObject(pf_is_multi, args);
     Py_DECREF(args);
-    Py_DECREF(qso);
+    Py_DECREF(py_qso);
 
     bool result = false;
     if (pValue != NULL) {
@@ -337,13 +321,13 @@ bool plugin_is_multi(int band, const char *call, int mode) {
 }
 
 // result has to be g_freed()'s
-char *plugin_get_multi(const char *call, int mode) {
+char *plugin_get_multi(struct qso_t *qso) {
 #ifdef HAVE_PYTHON
-    PyObject *qso = create_py_qso(-1, call, mode, "");
-    PyObject *args = Py_BuildValue("(O)", qso);
+    PyObject *py_qso = create_py_qso(qso);
+    PyObject *args = Py_BuildValue("(O)", py_qso);
     PyObject *pValue = PyObject_CallObject(pf_get_multi, args);
     Py_DECREF(args);
-    Py_DECREF(qso);
+    Py_DECREF(py_qso);
 
     char *result = NULL;
     if (pValue != NULL) {
