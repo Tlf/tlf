@@ -288,7 +288,7 @@ int plugin_score(struct qso_t *qso) {
     return result;
 }
 
-bool plugin_is_multi(int band, const char *call, int mode) {
+bool plugin_is_multi(int band, char *call, int mode) {
 #ifdef HAVE_PYTHON
     // call is_multi
     struct qso_t qso;
