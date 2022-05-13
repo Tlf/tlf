@@ -92,6 +92,7 @@ void add_local_spot(void) {
     hiscall[0] = '\0';
 }
 
+
 /* send spot to cluster */
 
 #define MAX_SPOT_AGE 120
@@ -119,7 +120,7 @@ static bool spot_too_old(const struct qso_t *qso) {
  * If no frequency data available ask user.
  * Returns true if valid spot data found.
  */
-bool get_spot_data(char **spot_call, freq_t *spot_freq) {
+static bool get_spot_data(char **spot_call, freq_t *spot_freq) {
     if (strlen(hiscall) > 2) {
 	*spot_call = g_strdup(hiscall);
 	if (trx_control) {
@@ -128,6 +129,7 @@ bool get_spot_data(char **spot_call, freq_t *spot_freq) {
 	    *spot_freq = ask_frequency();
 	}
     } else {
+
 	struct qso_t *last_qso = find_last_qso();
 	if (last_qso == NULL) {
 	    return false;
@@ -145,7 +147,7 @@ bool get_spot_data(char **spot_call, freq_t *spot_freq) {
     return true;
 }
 
-gchar *prepare_spot(void) {
+static gchar *prepare_spot(void) {
     gchar *spot_line;
     gchar *spot_call;
     freq_t spot_freq;
@@ -160,20 +162,27 @@ gchar *prepare_spot(void) {
     return spot_line;
 }
 
+static bool complete_spot(gchar *line) {
+    int c;
+
+    clear_line(LINES - 1);
+    mvprintw(LINES - 1, 0, "> %s", line);
+    refreshp();
+    move(LINES - 1, strlen(line) + 2);
+
+    while ((c = key_get()) != ESCAPE && c != '\n' && c != KEY_ENTER)
+	;
+    return c != ESCAPE;
+}
+
 
 void add_cluster_spot(void) {
     gchar *spot_line = prepare_spot();
-    int c;
+    bool ok;
 
     if (strlen(spot_line) > 0) {
-
-	clear_line(LINES - 1);
-	mvprintw(LINES - 1, 0, "> %s", spot_line);
-	refreshp();
-	move(LINES - 1, strlen(spot_line) + 2);
-	while ((c = key_get()) != ESCAPE && c != '\n' && c != KEY_ENTER)
-	    ;
-	if (c != ESCAPE) {
+	ok = complete_spot(spot_line);
+	if (ok) {
 	    gchar *line = g_strconcat(spot_line, "\n", NULL);
 	    send_to_cluster(line);
 	    g_free(line);
