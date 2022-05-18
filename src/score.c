@@ -359,7 +359,7 @@ int score(struct qso_t *qso) {
     }
 
     if (plugin_has_score()) {
-	return plugin_score(bandinx, hiscall, trxmode, comment);
+	return plugin_score(qso);
     }
 
     if (contest->points.type == FUNCTION) {

@@ -84,6 +84,7 @@ typedef enum {
 
 
 enum {
+    BANDINDEX_ANY = -1,
     BANDINDEX_160 = 0,
     BANDINDEX_80,
     BANDINDEX_60,

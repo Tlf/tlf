@@ -42,3 +42,14 @@ int get_qrb(double *range, double *bearing) {
     return qrb(-1.0 * my.Long, my.Lat, -1.0 * DEST_Long, DEST_Lat,
 	       range, bearing);
 }
+
+bool get_qrb_for_locator(const char *locator, double *range, double *bearing) {
+    double dest_long, dest_lat;
+
+    if (RIG_OK != locator2longlat(&dest_long, &dest_lat, locator)) {
+	return false;   // invalid locator
+    }
+
+    return RIG_OK == qrb(my.Long, my.Lat, -dest_long, dest_lat,
+			 range, bearing);
+}

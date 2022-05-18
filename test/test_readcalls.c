@@ -24,6 +24,7 @@
 // OBJECT ../src/getpx.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/plugin.o
+// OBJECT ../src/qrb.o
 // OBJECT ../src/readcalls.o
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/setcontest.o
