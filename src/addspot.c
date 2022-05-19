@@ -25,6 +25,7 @@
  *
  *--------------------------------------------------------------*/
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,7 +51,8 @@ void add_to_spots(char *call, freq_t freq) {
     char spotline[160];
     char spottime[6];
 
-    sprintf(spotline, "DX de TLF-%c:     %9.3f  %s", thisnode, freq / 1000.0, call);
+    sprintf(spotline, "DX de TLF-%c:     %9.3f  %s",
+	    thisnode, freq / 1000.0, call);
     strcat(spotline, spaces(43));
 
     format_time(spottime, sizeof(spottime), "%H%MZ");
@@ -77,7 +79,6 @@ static freq_t ask_frequency() {
 }
 
 void add_local_spot(void) {
-
 
     if (strlen(hiscall) < 3) {
 	return;
@@ -162,16 +163,51 @@ static gchar *prepare_spot(void) {
     return spot_line;
 }
 
-static bool complete_spot(gchar *line) {
-    int c;
+void show_spot_line(char *line) {
 
     clear_line(LINES - 1);
     mvprintw(LINES - 1, 0, "> %s", line);
-    refreshp();
     move(LINES - 1, strlen(line) + 2);
+    refreshp();
+}
 
-    while ((c = key_get()) != ESCAPE && c != '\n' && c != KEY_ENTER)
-	;
+#define MAX_SPOT_LEN 70
+
+/* allow simple editing of spot line (add, delete characters)
+ * \return   true  if ok to send
+ *           fasle if escaped
+ */
+static bool complete_spot(gchar **line) {
+    int c = 0;
+    int pos;
+    char buffer[MAX_SPOT_LEN + 1];
+    g_strlcpy(buffer, *line, MAX_SPOT_LEN + 1);
+    pos = strlen(buffer);
+
+    show_spot_line(buffer);
+    wmove(stdscr, LINES - 1, strlen(buffer) + 2);
+    while ((c = key_get()) != ESCAPE && c != '\n' && c != KEY_ENTER) {
+	/* eval key and change line */
+	switch (c) {
+	    case DELETE:
+	    case KEY_BACKSPACE:
+		if (pos > 0) {
+		    pos--;
+		    buffer[pos] = '\0';
+		}
+	    default:
+		if (isprint(c) && (pos < MAX_SPOT_LEN)) {
+		    buffer[pos++] = c;
+		    buffer[pos] = '\0';
+		}
+	}
+	show_spot_line(buffer);
+	wmove(stdscr, LINES - 1, strlen(buffer) + 2);
+    }
+
+    g_free (*line);
+    *line = g_strdup(buffer);
+
     return c != ESCAPE;
 }
 
@@ -181,7 +217,7 @@ void add_cluster_spot(void) {
     bool ok;
 
     if (strlen(spot_line) > 0) {
-	ok = complete_spot(spot_line);
+	ok = complete_spot(&spot_line);
 	if (ok) {
 	    gchar *line = g_strconcat(spot_line, "\n", NULL);
 	    send_to_cluster(line);
