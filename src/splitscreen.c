@@ -1173,28 +1173,3 @@ void send_to_cluster(char *line) {
     } else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
 	usputs(prsock, line);
 }
-
-#define MAX_CMD_LEN 60
-
-void send_cluster(void) {
-    char line[MAX_CMD_LEN + 2] = "";
-
-    cluster = CLUSTER;
-    clear_line(LINES - 1);
-    mvaddstr(LINES - 1, 0, ">");
-    refreshp();
-    echo();
-    getnstr(line, MAX_CMD_LEN);
-    noecho();
-
-    if (strlen(line) > 0) {
-	strcat(line, "\n");
-
-	send_to_cluster(line);
-    }
-
-    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-
-    clear_line(LINES - 1);
-    refreshp();
-}

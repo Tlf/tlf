@@ -29,7 +29,6 @@ int init_packet(void) ;
 void cleanup_telnet(void);
 int packet(void);
 void send_to_cluster(char *line);
-void send_cluster(void);
 void addtext(char *s);
 int receive_packet(void);
 void refresh_splitlayout();

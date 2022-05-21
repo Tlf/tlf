@@ -165,6 +165,7 @@ static gchar *prepare_spot(void) {
 
 void show_spot_line(char *line) {
 
+    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
     clear_line(LINES - 1);
     mvprintw(LINES - 1, 0, "> %s", line);
     move(LINES - 1, strlen(line) + 2);
