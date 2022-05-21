@@ -844,9 +844,11 @@ int callinput(void) {
 
 	    // Ctrl-B (^B), send spot to DX cluster.
 	    case CTRL_B: {
-		announcefilter = 0;
-		cluster = CLUSTER;
-		add_cluster_spot();
+		if (!nopacket && packetinterface > 0) {
+		    announcefilter = 0;
+		    cluster = CLUSTER;
+		    add_cluster_spot();
+		}
 
 		break;
 	    }
