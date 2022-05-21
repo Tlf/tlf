@@ -381,7 +381,7 @@ static void vk_do_record(int message_nr) {
 
     mvprintw(15, 20, "recording %s", ph_message[message_nr]);
     mvprintw(16, 20, "ESC to exit");
-    mvprintw(17, 20, "");
+    move(17, 20);
     refreshp();
 
     GRegex *regex = g_regex_new("\\$1", 0, 0 , NULL);
