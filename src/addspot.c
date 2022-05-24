@@ -176,7 +176,7 @@ void show_spot_line(char *line) {
 
 /* allow simple editing of spot line (add, delete characters)
  * \return   true  if ok to send
- *           fasle if escaped
+ *           false if escaped
  */
 static bool complete_spot(gchar **line) {
     int c = 0;
