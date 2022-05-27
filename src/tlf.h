@@ -61,10 +61,10 @@ typedef enum {
 } cqmode_t;
 
 
-#define FILTER_ANN 1	/*  filter announcements */
-#define FILTER_DX 3
-#define FILTER_ALL 0
+#define FILTER_ALL 0 	/*  filter announcements */
+#define FILTER_ANN 1
 #define FILTER_TALK 2
+#define FILTER_DX 3
 
 #define CWMODE 0
 #define SSBMODE 1

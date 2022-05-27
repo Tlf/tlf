@@ -836,7 +836,7 @@ int callinput(void) {
 
 	    // Ctrl-A (^A), add a spot and share on LAN.
 	    case CTRL_A: {
-		addspot();      // note: clears call input field
+		add_local_spot();      // note: clears call input field
 		grab.state = REACHED;
 		grab.spotfreq = freq;
 		break;
@@ -844,9 +844,9 @@ int callinput(void) {
 
 	    // Ctrl-B (^B), send spot to DX cluster.
 	    case CTRL_B: {
-		announcefilter = 0;
-		cluster = CLUSTER;
-		send_cluster();
+		if (!nopacket && packetinterface > 0) {
+		    add_cluster_spot();
+		}
 
 		break;
 	    }

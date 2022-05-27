@@ -1143,7 +1143,13 @@ Add a spot to bandmap and broadcast it on the local network.
 .
 .TP
 .B Ctrl-B
-Send a spot to the DX Cluster (a connection to a DX cluster must exist).
+Send a spot to the DX Cluster (a connection to a DX cluster must exist). TLF
+prepares a minimal spot line and allows you to edit it. Finish editing and
+send the spot with 
+.BR ENTER 
+or abort sending by pressing the 
+.BR ESCAPE 
+key.
 .
 .TP
 .B Ctrl-E

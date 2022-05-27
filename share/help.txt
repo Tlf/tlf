@@ -14,7 +14,7 @@ Alt-Z     Show worked zones             Alt-G   Grab call (min. 2 letters from b
 Alt-,     Show bandmap
 
 <CTRL+?>
-Ctrl-A      Add a spot to list          Ctrl-B    Cluster send
+Ctrl-A      Add a spot to list          Ctrl-B    Send a DX Cluster spot
 Ctrl-G      Grab a bandmap spot         Ctrl-V    Toggle grab direction
 Ctrl-PgUp   Auto CQ delay +             Ctrl-PgDn Auto CQ delay -
 Ctrl-K      CW from keyboard            Ctrl-F    Frequency control window

@@ -1077,15 +1077,7 @@ int packet() {
 	    strcat(line, "\n");
 	    addtext(line);
 
-	    if ((packetinterface == TELNET_INTERFACE) && (prsock > 0)) {
-		usputs(prsock, line);
-	    }
-
-	    if (packetinterface == TNC_INTERFACE) {
-		line[strlen(line) - 1] = 13;
-		line[strlen(line)] = '\0';
-		IGNORE(write(fdSertnc, line, strlen(line)));;
-	    }
+	    send_to_cluster(line);
 
 	    curattr = attr[NORMAL_ATTR];
 	    wattrset(sclwin, curattr);
@@ -1172,33 +1164,12 @@ int receive_packet(void) {
 
 ========================================================
 */
-#define MAX_CMD_LEN 60
+void send_to_cluster(char *line) {
+    if (packetinterface == TNC_INTERFACE) {
+	line[strlen(line) - 1] = '\r';
+	line[strlen(line)] = '\0';	/* not needed */
+	IGNORE(write(fdSertnc, line, strlen(line)));;
 
-void send_cluster(void) {
-    char line[MAX_CMD_LEN + 2] = "";
-
-    cluster = CLUSTER;
-    clear_line(LINES - 1);
-    mvaddstr(LINES - 1, 0, ">");
-    refreshp();
-    echo();
-    getnstr(line, MAX_CMD_LEN);
-    noecho();
-
-    if (strlen(line) > 0) {
-	strcat(line, "\n");
-
-	if (packetinterface == TNC_INTERFACE) {
-	    line[strlen(line) - 1] = '\r';
-	    line[strlen(line)] = '\0';	/* not needed */
-
-	    IGNORE(write(fdSertnc, line, strlen(line)));;
-	} else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
-	    usputs(prsock, line);
-    }
-
-    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-
-    clear_line(LINES - 1);
-    refreshp();
+    } else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
+	usputs(prsock, line);
 }

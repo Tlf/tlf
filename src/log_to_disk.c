@@ -98,7 +98,7 @@ void log_to_disk(int from_lan) {
 	send_lan_message(LOGENTRY, logline);
 
 	if (trx_control && (cqmode == S_P))
-	    addspot();		/* add call to bandmap if in S&P and
+	    add_local_spot();	/* add call to bandmap if in S&P and
 				   no need to ask for frequency */
 
 	cleanup_qso();		/* reset qso related parameters */
