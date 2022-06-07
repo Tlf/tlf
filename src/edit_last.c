@@ -62,7 +62,7 @@ static field_t fields[] = {
         .pattern = "^\\s*\\S+\\s*$"},
     {.start = 44, .end = 46,                // sent RST
         .pattern = "^\\s*\\d+\\s*$"},
-    {.start = 49, .end = 52,                // rcvd RST
+    {.start = 49, .end = 51,                // rcvd RST
         .pattern = "^\\s*\\d+\\s*$"},
     {.start = 54,            .tab = true},  // exchange -- end set at runtime
 };
