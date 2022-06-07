@@ -99,6 +99,17 @@ static void unhighlight_line(int row, char *line) {
     mvaddstr(7 + row, 0, ln);
 }
 
+/* flash a field */
+static void flash_field(int row, int column, char *value) {
+    attrset(COLOR_PAIR(C_DUPE));
+    mvaddstr(7 + row, column, value);
+    curs_set(0);        // hide cursor
+    refreshp();
+    usleep(200*1000);   // 200 ms
+    curs_set(1);        // show cursor
+    // note: line will be re-displayed in the main loop
+}
+
 
 /* get a copy of selected QSO into the buffer */
 static void get_qso(int nr, char *buffer) {
@@ -141,7 +152,11 @@ static bool field_valid() {
     int width = current_field->end - current_field->start + 1;
     g_strlcpy(value, editbuffer + current_field->start, width + 1);
 
-    return g_regex_match_simple(current_field->pattern, value, G_REGEX_CASELESS, 0);
+    bool valid = g_regex_match_simple(current_field->pattern, value, G_REGEX_CASELESS, 0);
+    if (!valid) {
+        flash_field(editline, current_field->start, value);
+    }
+    return valid;
 }
 
 
