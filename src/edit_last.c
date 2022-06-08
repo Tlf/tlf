@@ -49,6 +49,8 @@ typedef struct {
     const char *pattern;
 } field_t;
 
+#define RST_PATTERN     "^\\s*(\\d+|-+)\\s*$"
+
 static field_t fields[] = {
     {.start = 0,  .end = 5, .tab = true,    // band+mode
         .pattern = "^[ 1]\\d{2}(CW |SSB|DIG)$"},
@@ -61,9 +63,9 @@ static field_t fields[] = {
     {.start = 29, .end = 29 + MAX_CALL_LENGTH - 1, .tab = true,   // call
         .pattern = "^\\s*\\S+\\s*$"},
     {.start = 44, .end = 46,                // sent RST
-        .pattern = "^\\s*\\d+\\s*$"},
+        .pattern = RST_PATTERN},
     {.start = 49, .end = 51,                // rcvd RST
-        .pattern = "^\\s*\\d+\\s*$"},
+        .pattern = RST_PATTERN},
     {.start = 54,            .tab = true},  // exchange -- end set at runtime
 };
 
