@@ -49,6 +49,8 @@ typedef struct {
     const char *pattern;
 } field_t;
 
+#define RST_PATTERN     "^\\s*(\\d+|-+)\\s*$"
+
 static field_t fields[] = {
     {.start = 0,  .end = 5, .tab = true,    // band+mode
         .pattern = "^[ 1]\\d{2}(CW |SSB|DIG)$"},
@@ -61,9 +63,9 @@ static field_t fields[] = {
     {.start = 29, .end = 29 + MAX_CALL_LENGTH - 1, .tab = true,   // call
         .pattern = "^\\s*\\S+\\s*$"},
     {.start = 44, .end = 46,                // sent RST
-        .pattern = "^\\s*\\d+\\s*$"},
-    {.start = 49, .end = 52,                // rcvd RST
-        .pattern = "^\\s*\\d+\\s*$"},
+        .pattern = RST_PATTERN},
+    {.start = 49, .end = 51,                // rcvd RST
+        .pattern = RST_PATTERN},
     {.start = 54,            .tab = true},  // exchange -- end set at runtime
 };
 
@@ -97,6 +99,17 @@ static void unhighlight_line(int row, char *line) {
     g_strlcpy(ln, line, NR_COLS + 1);
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     mvaddstr(7 + row, 0, ln);
+}
+
+/* flash a field */
+static void flash_field(int row, int column, char *value) {
+    attrset(COLOR_PAIR(C_DUPE));
+    mvaddstr(7 + row, column, value);
+    curs_set(0);        // hide cursor
+    refreshp();
+    usleep(200*1000);   // 200 ms
+    curs_set(1);        // show cursor
+    // note: line will be re-displayed in the main loop
 }
 
 
@@ -141,7 +154,11 @@ static bool field_valid() {
     int width = current_field->end - current_field->start + 1;
     g_strlcpy(value, editbuffer + current_field->start, width + 1);
 
-    return g_regex_match_simple(current_field->pattern, value, G_REGEX_CASELESS, 0);
+    bool valid = g_regex_match_simple(current_field->pattern, value, G_REGEX_CASELESS, 0);
+    if (!valid) {
+        flash_field(editline, current_field->start, value);
+    }
+    return valid;
 }
 
 
