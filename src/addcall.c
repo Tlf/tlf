@@ -207,7 +207,7 @@ int addcall(struct qso_t *qso) {
 	}
     }
 
-    addmult(qso);           /* for wysiwyg */
+    new_mult = addmult(qso);           /* for wysiwyg */
 
     return cty;
 }
