@@ -106,10 +106,10 @@ contest_config_t config_focm;
 #define QSO5 " 80CW  12-Jan-18 16:34 0009  UA9LM          599  599  17            UA9 17   3         "
 #define QSO6 " 80CW  12-Jan-18 16:36 0010  AA3BP          599  599  05            K   05   3         "
 
-/* helper to add string to pos n in qsos array, parse the string as qso
+/* helper to add string in qsos array, parse the string as qso
  * and add it to qso_array
  */
-void add_log(int n, char *string) {
+void add_log(char *string) {
     struct qso_t *qso;
     char *line;
 
@@ -117,19 +117,21 @@ void add_log(int n, char *string) {
     qso = parse_qso(line);
     g_free(line);
     g_ptr_array_add(qso_array, qso);
+
+    nr_qsos++;
 }
 
 static void write_qsos() {
     init_qso_array();
 
-    add_log(0, QSO1);
-    add_log(1, QSO2);
-    add_log(2, QSO3);
-    add_log(3, QSO4);
-    add_log(4, QSO5);
-    add_log(5, QSO6);
+    nr_qsos = 0;
 
-    nr_qsos = 6;
+    add_log(QSO1);
+    add_log(QSO2);
+    add_log(QSO3);
+    add_log(QSO4);
+    add_log(QSO5);
+    add_log(QSO6);
 }
 
 int setup_default(void **state) {
@@ -187,6 +189,7 @@ int teardown_default(void **state) {
     FREE_DYNAMIC_STRING(callmaster_filename);
     return 0;
 }
+
 
 //void test_callmaster_no_file(void **state) {
 //    remove_callmaster();
@@ -368,10 +371,8 @@ void test_displayPartials(void **state) {
 
 	char *line = g_strdup_printf(" 80CW  12-Jan-18 16:34 0009  UA9%cAA         599  599  17            UA9 17   3         ",
 		'A' + i);
-	add_log(6 + i, line);
+	add_log(line);
 	g_free(line);
-
-	nr_qsos++;
     }
 
     // callmaster has also some UAs
