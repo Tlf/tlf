@@ -52,6 +52,25 @@
 #include "ui_utils.h"
 
 
+/* Backup original logfile and write a new one from internal database */
+void do_backup(const char *logfile, bool interactive) {
+	    // save a backup
+	    char prefix[40];
+	    format_time(prefix, sizeof(prefix), "%Y%m%d_%H%M%S");
+	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
+	    rename(logfile, backup);
+	    // rewrite log
+	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
+	    for (int i = 0 ; i < qso_array->len; i++) {
+		store_qso(QSOS(i));
+	    }
+	    if (interactive) {
+		showstring("Log has been backed up as", backup);
+		sleep(1);
+	    }
+	    g_free(backup);
+}
+
 void init_scoring(void) {
     /* reset counter and score anew */
     total = 0;
@@ -178,26 +197,13 @@ int readcalls(const char *logfile, bool interactive) {
 	}
 
 	if (ok) {
-	    // save a backup
-	    char prefix[40];
-	    format_time(prefix, sizeof(prefix), "%Y%m%d_%H%M%S");
-	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
-	    rename(logfile, backup);
-	    // rewrite log
-	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
-	    for (int i = 0 ; i < linenr; i++) {
-		store_qso(QSOS(i));
-	    }
-	    if (interactive) {
-		showstring("Log has been backed up as", backup);
-		sleep(1);
-	    }
-	    g_free(backup);
+	    do_backup(logfile, interactive);
 	}
     }
 
     return linenr;			// nr of lines in log
 }
+
 
 int log_read_n_score() {
     int nr_qsolines = readcalls(logfile, false);
