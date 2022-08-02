@@ -84,7 +84,7 @@ void write_log_fm_cabr(struct qso_t *qso) {
     score_qso(qso);
     char *logline = makelogline(qso);	    /* format logline */
     qso->logline = logline;
-    store_qso(logline);
+    store_qso(logfile, logline);
     g_ptr_array_add(qso_array, qso);
 
     cleanup_qso();

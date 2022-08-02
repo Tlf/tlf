@@ -62,7 +62,7 @@ void do_backup(const char *logfile, bool interactive) {
 	    // rewrite log
 	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
 	    for (int i = 0 ; i < qso_array->len; i++) {
-		store_qso(QSOS(i));
+		store_qso(logfile, QSOS(i));
 	    }
 	    if (interactive) {
 		showstring("Log has been backed up as", backup);

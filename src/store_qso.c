@@ -30,10 +30,10 @@
 #include "tlf_curses.h"
 
 
-void store_qso(char *loglineptr) {
+void store_qso(const char *file, char *loglineptr) {
     FILE *fp;
 
-    if ((fp = fopen(logfile, "a"))  == NULL) {
+    if ((fp = fopen(file, "a"))  == NULL) {
 	fprintf(stdout,  "store_qso.c: Error opening file.\n");
 	endwin();
 	exit(1);
