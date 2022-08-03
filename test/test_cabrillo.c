@@ -110,7 +110,8 @@ int teardown_default(void **state) {
 
 static char datetime_buf[80];
 static char *get_datetime(struct qso_t *qso) {
-    strftime(datetime_buf, sizeof(datetime_buf), DATE_TIME_FORMAT, gmtime(&qso->timestamp));
+    strftime(datetime_buf, sizeof(datetime_buf), DATE_TIME_FORMAT,
+	     gmtime(&qso->timestamp));
     return datetime_buf;    // note: returns a static buffer
 }
 
@@ -248,6 +249,26 @@ void test_prepare_line_universal(void **state) {
 
     assert_string_equal(buf,
 			"QSO: 21012 CW 2021-01-02 0842 A1BCD         599 0711   A2XYZ         559 007   \n");
+}
+
+void test_prepare_line_too_wide(void **state) {
+    struct cabrillo_desc *desc;
+    desc = read_cabrillo_format(formatfile, "UNIVERSAL");
+    assert_non_null(desc);
+
+    struct linedata_t qso = {
+	.year = 2021, .month = 1, .day = 2, .hour = 8, .min = 42,
+	.qso_nr = 711, .mode = CWMODE,
+	.call = "A2XYZ", .freq = 21012845.6,
+	.rst_s = 599, .rst_r = 559,
+	.comment = "007 ABC"    // longer than 6 chars
+    };
+
+    char buf[200];
+    prepare_line(&qso, desc, buf);
+    free_cabfmt(desc);
+
+    assert_string_equal(buf, "!ERROR: field too wide (007 ABC)\n");
 }
 
 void test_prepare_line_agcw(void **state) {
