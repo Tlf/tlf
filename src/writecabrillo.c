@@ -76,7 +76,7 @@ struct linedata_t *parse_logline(char *buffer) {
     ptr-> freq = qso->freq;
     ptr-> tx = qso->tx;
 
-    g_strstrip(ptr->comment);   // remove trailing spaces
+    g_strchomp(ptr->comment);   // remove trailing spaces
 
     g_free(qso);	/* free qso_t struct but not the
 			   allocated string copies */
@@ -485,6 +485,7 @@ static bool process_record(struct linedata_t *qso,
 
     bool ok = true;
     if (buffer[0] == '!') {
+        g_strchomp(buffer);
 	info(buffer + 1);   // show error message
 	sleep(2);
 	ok = false;
