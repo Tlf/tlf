@@ -259,7 +259,7 @@ char qtc_cap_calls[40] = "";
 bool qtc_auto_filltime = false;
 bool qtc_recv_lazy = false;
 
-struct qso_t *current_qso;
+struct qso_t current_qso;
 
 char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
@@ -275,7 +275,6 @@ char lastqsonr[5];
 char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
 { "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
-char comment[80];
 char normalized_comment[80];
 char proposed_exchange[80];
 char cqzone[3] = "";
@@ -632,6 +631,9 @@ static void init_variables() {
 
     ctcomp = false;
     resend_call = RESEND_NOT_SET;
+
+    g_free(current_qso.comment);
+    current_qso.comment = g_malloc0(COMMENT_SIZE);
 
     for (int i = 0; i < 25; i++) {
 	FREE_DYNAMIC_STRING(digi_message[i]);

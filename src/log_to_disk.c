@@ -79,20 +79,21 @@ void log_to_disk(int from_lan) {
 
 	// use normalized comment if available
 	if (strlen(normalized_comment) > 0) {
-	    strcpy(comment, normalized_comment);
+	    strcpy(current_qso.comment, normalized_comment);
 	}
 
 	restart_band_timer();
 
-	current_qso = collect_qso_data();
-	addcall(current_qso);		/* add call to dupe list */
+	struct qso_t *qso = collect_qso_data(); //TODO: move this after store_qso() call below
+	addcall(qso);		/* add call to dupe list */
 
-	score_qso(current_qso);
-	char *logline = makelogline(current_qso);
-	current_qso->logline = logline; /* remember formatted line in qso entry */
+	score_qso(qso);
+	char *logline = makelogline(qso);
+	qso->logline = logline; /* remember formatted line in qso entry */
 
 	store_qso(logline);
-	g_ptr_array_add(qso_array, current_qso);
+        //TODO: create a copy of current_qso
+	g_ptr_array_add(qso_array, qso);
 
 	// send qso to other nodes......
 	send_lan_message(LOGENTRY, logline);

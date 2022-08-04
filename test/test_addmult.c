@@ -82,7 +82,7 @@ int setup_default(void **state) {
     ve_cty = 77;	/* random numbers just for test */
     w_cty = 78;
 
-    strcpy(comment, "");
+    current_qso.comment = g_malloc0(COMMENT_SIZE);
 
     strcpy(multsfile, "");
 
@@ -94,7 +94,7 @@ int setup_default(void **state) {
 }
 
 void set_this_qso(char *exchange) {
-    strcpy(comment, exchange);
+    strcpy(current_qso.comment, exchange);
     this_qso = collect_qso_data();
 }
 

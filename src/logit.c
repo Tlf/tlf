@@ -50,7 +50,6 @@
 #include "cleanup.h"
 #include "utils.h"
 
-
 void refresh_comment(void);
 void change_mode(void);
 void resend_callsign(void);
@@ -94,7 +93,7 @@ void logit(void) {
 	    if ((trxmode == CWMODE || trxmode == DIGIMODE)
 		    && (callreturn == '\n') && ctcomp) {
 		callreturn = BACKSLASH;
-		strcpy(comment, cqzone);
+		strcpy(current_qso.comment, cqzone);
 	    }
 
 	    if ((callreturn == TAB || callreturn == SPACE)) {
@@ -102,7 +101,7 @@ void logit(void) {
 	    }
 
 	    if (callreturn == '\n' && strlen(hiscall) >= 3) {
-		if ((*comment == '\0') && iscontest
+		if ((current_qso.comment[0] == '\0') && iscontest
 			&& !ctcomp && !CONTEST_IS(DXPED))
 		    defer_store = 0;
 
@@ -121,9 +120,9 @@ void logit(void) {
 
 			if (recall_exchange() == -1) {
 			    if (itumult)
-				strcpy(comment, itustr);	/* fill in the ITUzone */
+				strcpy(current_qso.comment, itustr);	/* fill in the ITUzone */
 			    else
-				strcpy(comment, cqzone);	/* fill in the CQzone */
+				strcpy(current_qso.comment, cqzone);	/* fill in the CQzone */
 			}
 
 			refresh_comment();
@@ -141,8 +140,8 @@ void logit(void) {
 			&& (defer_store == 0)) {	/* S&P mode */
 
 		    if (CONTEST_IS(CQWW)) {
-			if (strlen(comment) == 0 && recall_exchange() == -1)
-			    strcpy(comment, cqzone);	/* fill in the zone */
+			if (strlen(current_qso.comment) == 0 && recall_exchange() == -1)
+			    strcpy(current_qso.comment, cqzone);	/* fill in the zone */
 
 			refresh_comment();
 
@@ -212,7 +211,7 @@ void refresh_comment(void) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvaddstr(12, 54, spaces(contest->exchange_width));
-    mvaddstr(12, 54, comment);
+    mvaddstr(12, 54, current_qso.comment);
 }
 
 void change_mode(void) {

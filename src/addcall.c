@@ -54,7 +54,8 @@
 #include "zone_nr.h"
 
 
-/* collect all relevant data for the actual QSO into a qso_t structure */
+/* collect all relevant data for the actual QSO into a new qso_t structure */
+//TODO rename this function to duplicate_current_qso()
 struct qso_t *collect_qso_data(void) {
     struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
     qso->call = g_strdup(hiscall);
@@ -62,7 +63,7 @@ struct qso_t *collect_qso_data(void) {
     qso->bandindex = bandinx;
     qso->freq = freq;
     qso->timestamp = get_time();
-    qso->comment = g_strdup(comment);
+    qso->comment = g_strdup(current_qso.comment);
     qso->qso_nr = qsonum;
     qso->rst_s = atoi(sent_rst);
     qso->rst_r = atoi(recvd_rst);

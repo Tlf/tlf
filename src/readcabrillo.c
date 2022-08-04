@@ -59,9 +59,9 @@ char qtcrecv_logfile_import[] = "IMPORT_QTC_recv.log";
 
 void concat_comment(char *dest, char *exchstr) {
     if (strlen(dest) > 0) {
-	g_strlcat(dest, " ", sizeof(comment));
+	g_strlcat(dest, " ", COMMENT_SIZE);
     }
-    g_strlcat(dest, exchstr, sizeof(comment));
+    g_strlcat(dest, exchstr, COMMENT_SIZE);
 }
 
 int qtcs_allowed(struct cabrillo_desc *cabdesc) {
@@ -242,7 +242,7 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
     }
 
     struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
-    qso->comment = g_malloc0(sizeof(comment));   // pre-allocate buffer for comment
+    qso->comment = g_malloc0(COMMENT_SIZE);   // pre-allocate buffer for comment
 
     qtcrcall[0] = '\0';
     qtcscall[0] = '\0';

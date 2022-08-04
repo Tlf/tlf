@@ -49,7 +49,7 @@ extern bool iscontest;
 
 extern bool country_mult;
 
-extern struct qso_t *current_qso;
+extern struct qso_t current_qso;
 extern char hiscall[20];
 extern char hiscall_sent[20];
 extern int resend_call;
@@ -96,7 +96,6 @@ extern bool itumult;
 
 extern char mult1_value[40];
 extern int new_mult;
-extern char comment[80];
 extern char normalized_comment[80];
 extern char proposed_exchange[80];
 

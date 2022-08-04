@@ -88,15 +88,15 @@ int getexchange(void) {
 	recall_exchange();
 
     if ((CONTEST_IS(CQWW) || wazmult || itumult)
-	    && (*comment == '\0') && (strlen(hiscall) != 0)) {
+	    && (current_qso.comment[0] == '\0') && (strlen(hiscall) != 0)) {
 	if (itumult)
-	    strcpy(comment, ituzone);
+	    strcpy(current_qso.comment, ituzone);
 	else
-	    strcpy(comment, cqzone);
+	    strcpy(current_qso.comment, cqzone);
     }
-    if ((exc_cont) && (*comment == '\0')
+    if ((exc_cont) && (current_qso.comment[0] == '\0')
 	    && (strlen(hiscall) != 0)) {
-	strcpy(comment, continent);
+	strcpy(current_qso.comment, continent);
     }
 
     if (CONTEST_IS(STEWPERRY)) {
@@ -107,12 +107,12 @@ int getexchange(void) {
 
     commentfield = 1;
 
-    i = strlen(comment);
+    i = strlen(current_qso.comment);
     while (1) {
 
 	refresh_comment();
 
-	checkexchange(comment, true);
+	checkexchange(current_qso.comment, true);
 
 	if (call_update && strlen(callupdate) >= 3) {
 	    strcpy(hiscall, callupdate);
@@ -134,7 +134,7 @@ int getexchange(void) {
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
-	    wmove(stdscr, 12, 54 + strlen(comment));
+	    wmove(stdscr, 12, 54 + strlen(current_qso.comment));
 	    x = key_poll();
 	}
 
@@ -159,14 +159,14 @@ int getexchange(void) {
 	    }
 	    case CTRL_A: {	// Ctrl-A (^A)
 		add_local_spot();
-		*comment = '\0';
+		current_qso.comment[0] = '\0';
 		x = TAB;	// <Tab>
 		break;
 	    }
 
 	    case KEY_BACKSPACE: {	// Erase (^H or <Backspace>)
 		if (i >= 1) {
-		    comment[strlen(comment) - 1] = '\0';
+		    current_qso.comment[strlen(current_qso.comment) - 1] = '\0';
 		    i -= 1;
 		}
 		break;
@@ -174,9 +174,9 @@ int getexchange(void) {
 
 	    case ESCAPE: {                // <Escape>
 		stoptx();			/* stop sending CW */
-		if (comment[0] != '\0') {	/* if comment not empty */
+		if (current_qso.comment[0] != '\0') {	/* if comment not empty */
 		    /* drop exchange so far */
-		    comment[0] = '\0';
+		    current_qso.comment[0] = '\0';
 		    i = 0;
 		} else {
 		    /* back to callinput */
@@ -203,7 +203,7 @@ int getexchange(void) {
 	    /* '+', send TU and log in CT mode */
 	    case '+': {
 		if (ctcomp && (strlen(hiscall) > 2)) {
-		    if (comment[0] == '\0') {
+		    if (current_qso.comment[0] == '\0') {
 			x = -1;
 		    } else {
 			/* F4 (TU macro) */
@@ -257,7 +257,7 @@ int getexchange(void) {
 	    }
 
 	    case KEY_LEFT: {	/* Left Arrow--edit exchange field */
-		if (*comment != '\0')
+		if (current_qso.comment[0] != '\0')
 		    exchange_edit();
 		break;
 	    }
@@ -308,7 +308,7 @@ int getexchange(void) {
 		 * or not in contest */
 		if ((ctcomp) || (!iscontest)) {
 		    /* Don't log if exchange field is empty. */
-		    if (comment[0] == '\0') {
+		    if (current_qso.comment[0] == '\0') {
 			x = -1;
 		    } else {
 			/* Log without sending a message. */
@@ -326,7 +326,7 @@ int getexchange(void) {
 	    if (x >= ' ' && x <= 'Z') {
 		instring[0] = x;
 		addch(x);
-		strcat(comment, instring);
+		strcat(current_qso.comment, instring);
 		i++;
 		refreshp();
 	    }
@@ -336,108 +336,108 @@ int getexchange(void) {
 	if (x == '\n' || x == KEY_ENTER || x == TAB
 		|| x == CTRL_K || x == BACKSLASH) {
 
-	    if ((contest->exchange_serial && comment[0] >= '0'
-		    && comment[0] <= '9')) {	/* align serial nr. */
-		if (strlen(comment) == 1) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "00");
-		    strcat(comment, commentbuf);
+	    if ((contest->exchange_serial && current_qso.comment[0] >= '0'
+		    && current_qso.comment[0] <= '9')) {	/* align serial nr. */
+		if (strlen(current_qso.comment) == 1) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "00");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
-		if (strlen(comment) == 2) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "0");
-		    strcat(comment, commentbuf);
+		if (strlen(current_qso.comment) == 2) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "0");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
 	    }
 
 	    if (CONTEST_IS(WPX)) {	/* align serial nr. */
 
-		if ((strlen(comment) == 1) || (comment[1] == ' ')) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "00");
-		    strcat(comment, commentbuf);
+		if ((strlen(current_qso.comment) == 1) || (current_qso.comment[1] == ' ')) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "00");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
-		if ((strlen(comment) == 2) || (comment[2] == ' ')) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "0");
-		    strcat(comment, commentbuf);
+		if ((strlen(current_qso.comment) == 2) || (current_qso.comment[2] == ' ')) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "0");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
 	    }
 
 	    if (CONTEST_IS(SPRINT)) {
 
-		if ((comment[1] == ' ') && (comment[0] != ' ')) {
+		if ((current_qso.comment[1] == ' ') && (current_qso.comment[0] != ' ')) {
 
 		    strcpy(commentbuf, "00");
-		    commentbuf[2] = comment[0];
+		    commentbuf[2] = current_qso.comment[0];
 		    commentbuf[3] = '\0';
-		    strcat(commentbuf, comment + 1);
-		    strcpy(comment, commentbuf);
+		    strcat(commentbuf, current_qso.comment + 1);
+		    strcpy(current_qso.comment, commentbuf);
 		}
-		if ((comment[2] == ' ') && (comment[1] != ' ')) {
+		if ((current_qso.comment[2] == ' ') && (current_qso.comment[1] != ' ')) {
 
 		    strcpy(commentbuf, "0");
-		    commentbuf[1] = comment[0];
-		    commentbuf[2] = comment[1];
+		    commentbuf[1] = current_qso.comment[0];
+		    commentbuf[2] = current_qso.comment[1];
 		    commentbuf[3] = '\0';
-		    strcat(commentbuf, comment + 2);
-		    strcpy(comment, commentbuf);
+		    strcat(commentbuf, current_qso.comment + 2);
+		    strcpy(current_qso.comment, commentbuf);
 		}
 
 	    }
 
 	    if (CONTEST_IS(PACC_PA) && (countrynr != my.countrynr)) {
-		if (strlen(comment) == 1) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "00");
-		    strcat(comment, commentbuf);
+		if (strlen(current_qso.comment) == 1) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "00");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
-		if (strlen(comment) == 2) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "0");
-		    strcat(comment, commentbuf);
+		if (strlen(current_qso.comment) == 2) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "0");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
 	    }
 
 	    if (CONTEST_IS(ARRL_SS) && (x != TAB) && (strlen(section) < 2)) {
 		mvaddstr(13, 54, "section?");
-		mvaddstr(12, 54, comment);
+		mvaddstr(12, 54, current_qso.comment);
 		x = 0;
 	    } else if ((serial_section_mult || sectn_mult)
 		       && ((x != TAB) && (strlen(section) < 1))) {
 		if (!serial_or_section
 			|| (serial_or_section && country_found(hiscall))) {
 		    mvaddstr(13, 54, "section?");
-		    mvaddstr(12, 54, comment);
+		    mvaddstr(12, 54, current_qso.comment);
 		    refreshp();
 		}
 		break;
 
 	    } else if (CONTEST_IS(STEWPERRY)) {
-		if (check_qra(comment) == 0) {
+		if (check_qra(current_qso.comment) == 0) {
 		    mvaddstr(13, 54, "locator?");
-		    mvaddstr(12, 54, comment);
+		    mvaddstr(12, 54, current_qso.comment);
 		    break;
 		}
 		refreshp();
 		break;
 	    } else if (CONTEST_IS(CQWW) && trxmode == DIGIMODE && ((countrynr == w_cty)
 		       || (countrynr == ve_cty))) {
-		if (strlen(comment) < 5) {
+		if (strlen(current_qso.comment) < 5) {
 		    mvaddstr(13, 54, "state/prov?");
-		    mvaddstr(12, 54, comment);
+		    mvaddstr(12, 54, current_qso.comment);
 		    if (x == '\n' || x == KEY_ENTER || x == BACKSLASH) {
 			x = 0;
 		    } else {
@@ -779,14 +779,14 @@ void exchange_edit(void) {
     int i = 0, j;
     char comment2[27];
 
-    l = strlen(comment);
+    l = strlen(current_qso.comment);
     b = l - 1;
-    while ((i != ESCAPE) && (b <= strlen(comment))) {
+    while ((i != ESCAPE) && (b <= strlen(current_qso.comment))) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
 	mvaddstr(12, 54, spaces(contest->exchange_width));
-	mvaddstr(12, 54, comment);
+	mvaddstr(12, 54, current_qso.comment);
 	move(12, 54 + b);
 
 	i = key_get();
@@ -799,7 +799,7 @@ void exchange_edit(void) {
 	    // Ctrl-E (^E) or <End>, move to end of comment field, exit edit mode.
 	} else if (i == CTRL_E || i == KEY_END) {
 
-	    b = strlen(comment);
+	    b = strlen(current_qso.comment);
 	    break;
 
 	    // Left arrow, move cursor left one position.
@@ -811,7 +811,7 @@ void exchange_edit(void) {
 	    // Right arrow, move cursor right one position.
 	} else if (i == KEY_RIGHT) {
 
-	    if (b < strlen(comment) - 1) {
+	    if (b < strlen(current_qso.comment) - 1) {
 		b++;
 	    } else
 		break;		/* stop edit */
@@ -820,10 +820,10 @@ void exchange_edit(void) {
 	    // shift all characters to the right of the cursor left one position.
 	} else if (i == KEY_DC) {
 
-	    l = strlen(comment);
+	    l = strlen(current_qso.comment);
 
 	    for (j = b; j <= l; j++) {
-		comment[j] = comment[j + 1];	/* move to left incl.\0 */
+		current_qso.comment[j] = current_qso.comment[j + 1];	/* move to left incl.\0 */
 	    }
 
 	    // <Backspace>, erase character to the left of the cursor,
@@ -833,10 +833,10 @@ void exchange_edit(void) {
 	    if (b > 0) {
 		b--;
 
-		l = strlen(comment);
+		l = strlen(current_qso.comment);
 
 		for (j = b; j <= l; j++) {
-		    comment[j] = comment[j + 1];
+		    current_qso.comment[j] = current_qso.comment[j + 1];
 		}
 	    }
 
@@ -850,13 +850,13 @@ void exchange_edit(void) {
 	    // Accept printable characters.
 	    if ((i >= ' ') && (i <= 'Z')) {
 
-		if (strlen(comment) < contest->exchange_width) {
+		if (strlen(current_qso.comment) < contest->exchange_width) {
 		    /* copy including trailing \0 */
-		    strncpy(comment2, comment + b, strlen(comment) - (b - 1));
+		    strncpy(comment2, current_qso.comment + b, strlen(current_qso.comment) - (b - 1));
 
-		    comment[b] = i;
-		    comment[b + 1] = '\0';
-		    strcat(comment, comment2);
+		    current_qso.comment[b] = i;
+		    current_qso.comment[b + 1] = '\0';
+		    strcat(current_qso.comment, comment2);
 
 		    b++;
 		}

@@ -186,6 +186,7 @@ typedef struct {
     int qsos[PFXNUMBERS];
 } pfxnummulti_t;
 
+#define COMMENT_SIZE    80
 
 /* represents different parts of a qso line */
 struct qso_t {

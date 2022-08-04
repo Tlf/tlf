@@ -294,13 +294,13 @@ int callinput(void) {
 
 		    if (strlen(hiscall) > 2) {
 			if ((CONTEST_IS(CQWW) || wazmult)
-				&& (*comment == '\0'))
-			    strcpy(comment, cqzone);
+				&& current_qso.comment[0] == '\0')
+			    strcpy(current_qso.comment, cqzone);
 
-			if (itumult && (*comment == '\0'))
-			    strcpy(comment, ituzone);
+			if (itumult && current_qso.comment[0] == '\0')
+			    strcpy(current_qso.comment, ituzone);
 
-			if (*comment == '\0') {
+			if (current_qso.comment[0] == '\0') {
 			    x = -1;
 			} else {
 			    /* F4 (TU macro) */
@@ -481,7 +481,7 @@ int callinput(void) {
 		    /* There seems to be a call, log it in CT mode but only if
 		     * the exchange field is not empty.
 		     */
-		    if (comment[0] == '\0') {
+		    if (current_qso.comment[0] == '\0') {
 			x = -1;
 			break;
 		    } else {

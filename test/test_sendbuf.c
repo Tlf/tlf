@@ -93,7 +93,8 @@ int setup_default(void **state) {
     strcpy(sent_rst, "579");
     shortqsonr = LONGCW;
     strcpy(qsonrstr, "0309");
-    strcpy(comment, "Alex");
+    current_qso.comment = g_malloc0(COMMENT_SIZE);
+    strcpy(current_qso.comment, "Alex");
     *message[SP_CALL_MSG] = '\0';
 
     return 0;

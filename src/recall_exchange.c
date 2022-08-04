@@ -67,7 +67,7 @@ int get_proposed_exchange(void) {
 
 	/* if no exchange could be recycled and no comment available
 	 * search initial exchange list (if available) */
-	if (strlen(comment) == 0 && main_ie_list != NULL) {
+	if (strlen(current_qso.comment) == 0 && main_ie_list != NULL) {
 
 	    current_ie = main_ie_list;
 
@@ -108,7 +108,7 @@ int get_proposed_exchange(void) {
 
 int recall_exchange(void) {
     /* respect content which is already in comment field */
-    if (strlen(comment) != 0)
+    if (strlen(current_qso.comment) != 0)
 	return 0;
 
     if (strlen(proposed_exchange) == 0) {
@@ -121,9 +121,9 @@ int recall_exchange(void) {
 	}
     }
 
-    strcpy(comment, proposed_exchange);
+    strcpy(current_qso.comment, proposed_exchange);
 
-    mvaddstr(12, 54, comment);  //TODO move this to UI code
+    mvaddstr(12, 54, current_qso.comment);  //TODO move this to UI code
     refreshp();
 
     return 1;

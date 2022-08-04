@@ -18,7 +18,7 @@ contest_config_t config_any = {
 int setup_default(void **state) {
     int result;
     strcpy(hiscall, "N0ONE");
-    strcpy(comment, "");
+    current_qso.comment = g_malloc0(COMMENT_SIZE);
     strcpy(proposed_exchange, "");
 
     strcpy(worked[0].call, "DL1ABC");
@@ -37,30 +37,30 @@ int setup_default(void **state) {
 void test_empty_call(void **state) {
     strcpy(hiscall, "");
     assert_int_equal(recall_exchange(), 0);
-    assert_string_equal(comment, "");
+    assert_string_equal(current_qso.comment, "");
 }
 
 void test_respect_nonempty_comment(void **state) {
-    strcpy(comment, "Hi");
+    strcpy(current_qso.comment, "Hi");
     assert_int_equal(recall_exchange(), 0);
-    assert_string_equal(comment, "Hi");
+    assert_string_equal(current_qso.comment, "Hi");
 }
 
 void test_not_found(void **state) {
     assert_int_equal(recall_exchange(), -1);
-    assert_string_equal(comment, "");
+    assert_string_equal(current_qso.comment, "");
 }
 
 void test_from_worked(void **state) {
     strcpy(hiscall, "DL1ABC");
     assert_int_equal(recall_exchange(), 1);
-    assert_string_equal(comment, "51N13E");
+    assert_string_equal(current_qso.comment, "51N13E");
 }
 
 void test_from_ielist(void **state) {
     main_ie_list = make_ie_list("data/ie_ok.txt");
     strcpy(hiscall, "2E0AAA");
     assert_int_equal(recall_exchange(), 1);
-    assert_string_equal(comment, "51N3W");
+    assert_string_equal(current_qso.comment, "51N3W");
 }
 

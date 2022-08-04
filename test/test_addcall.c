@@ -75,6 +75,8 @@ int setup_default(void **state) {
     memset(zones, 0, sizeof(zones));
     memset(zonescore, 0, sizeof(zonescore));
 
+    current_qso.comment = g_malloc0(COMMENT_SIZE);
+
     return 0;
 }
 
@@ -98,7 +100,7 @@ int setup_addcall_pfxnum_notinList(void **state) {
 void test_collect(void **state) {
     struct qso_t *qso;
     strcpy(hiscall, "LZ1AB");
-    strcpy(comment, "Hi");
+    strcpy(current_qso.comment, "Hi");
     time_t now = time(NULL);
     bandinx = BANDINDEX_80;
     trxmode = CWMODE;
@@ -107,7 +109,7 @@ void test_collect(void **state) {
     assert_non_null(qso);
 
     assert_string_equal(qso->call, hiscall);
-    assert_string_equal(qso->comment, comment);
+    assert_string_equal(qso->comment, current_qso.comment);
     assert_int_equal(qso->bandindex, bandinx);
     assert_int_equal(qso->mode, CWMODE);
     assert_in_range(qso->timestamp, now, now + 1);
@@ -144,11 +146,11 @@ void test_veto_exclude_continent(void **state) {
 void test_add_to_worked(void **state) {
     strcpy(hiscall, "LZ1AB");
     bandinx = BANDINDEX_10;
-    strcpy(comment, "Hi");
+    strcpy(current_qso.comment, "Hi");
     time_t now = time(NULL);
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].exchange, "Hi");
@@ -162,15 +164,15 @@ void test_add_to_worked_continentlistonly(void **state) {
 
     strcpy(hiscall, "LZ1AB");
     bandinx = BANDINDEX_10;
-    strcpy(comment, "Hi");
+    strcpy(current_qso.comment, "Hi");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     strcpy(hiscall, "PY2BBB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(nr_worked, 2);
     assert_string_equal(worked[0].call, "LZ1AB");
@@ -180,8 +182,8 @@ void test_add_to_worked_continentlistonly(void **state) {
 void test_addcall_nopfxnum(void **state) {
     strcpy(hiscall, "LZ1AB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(addcallarea, 0);
 }
@@ -192,9 +194,8 @@ void test_addcall_pfxnum_inList(void **state) {
     strcpy(hiscall, "LZ1AB");
     time_t now = time(NULL);
 
-
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(addcallarea, 1);
     assert_int_equal(pfxnummulti[1].qsos[1], BAND10);
@@ -209,8 +210,8 @@ void test_addcall_pfxnum_inList(void **state) {
 void test_addcall_pfxnum_notinList(void **state) {
     strcpy(hiscall, "HA2BNL");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(addcallarea, 0);
 }
@@ -219,57 +220,57 @@ void test_addcall_continentlistonly(void **state) {
     continentlist_only = true;
     strcpy(hiscall, "LZ1AB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(nr_worked, 1);
-    assert_int_equal(countryscore[current_qso->bandindex], 1);
+    assert_int_equal(countryscore[qso->bandindex], 1);
 
     strcpy(hiscall, "PY2BBB");  // SA is not in the list
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(nr_worked, 2);
-    assert_int_equal(countryscore[current_qso->bandindex], 1);  // not counted
+    assert_int_equal(countryscore[qso->bandindex], 1);  // not counted
 }
 
 void test_addcall_exclude_continent(void **state) {
     exclude_multilist_type = EXCLUDE_CONTINENT;
     strcpy(hiscall, "LZ1AB");       // EU is excluded
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(nr_worked, 1);
-    assert_int_equal(countryscore[current_qso->bandindex], 0);  // not counted
+    assert_int_equal(countryscore[qso->bandindex], 0);  // not counted
 
     strcpy(hiscall, "PY2BBB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(nr_worked, 2);
-    assert_int_equal(countryscore[current_qso->bandindex], 1);
+    assert_int_equal(countryscore[qso->bandindex], 1);
 }
 
 void test_addcall_exclude_country(void **state) {
     exclude_multilist_type = EXCLUDE_COUNTRY;
     strcpy(hiscall, "LZ1AB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(nr_worked, 1);
-    assert_int_equal(countryscore[current_qso->bandindex], 1);
+    assert_int_equal(countryscore[qso->bandindex], 1);
 
     strcpy(hiscall, "DL1AAA");  // DL is excluded
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(nr_worked, 2);
-    assert_int_equal(countryscore[current_qso->bandindex], 1);  // not counted
+    assert_int_equal(countryscore[qso->bandindex], 1);  // not counted
 }
 
 
@@ -332,8 +333,8 @@ void test_add_unknown_country(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "12345");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(countryscore[bandinx], 0);
     assert_int_equal(countries[getctynr("LZ1AB")], 0);
@@ -343,8 +344,8 @@ void test_add_country(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "LZ1AB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(countryscore[bandinx], 1);
     assert_int_equal(countries[getctynr("LZ0AA")], BAND10);
@@ -354,14 +355,14 @@ void test_add_country_2_band(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "LZ1AB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     bandinx = BANDINDEX_15;
     strcpy(hiscall, "LZ1AB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(countryscore[BANDINDEX_10], 1);
     assert_int_equal(countryscore[BANDINDEX_15], 1);
@@ -372,13 +373,13 @@ void test_add_country_2_stations(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "LZ1AB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     strcpy(hiscall, "LZ3CD");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(countryscore[bandinx], 1);
     assert_int_equal(countries[getctynr("LZ0AA")], BAND10);
@@ -388,13 +389,13 @@ void test_add_2_countries(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "LZ1AB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     strcpy(hiscall, "DL1YZ");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(countryscore[BANDINDEX_10], 2);
     assert_int_equal(countries[getctynr("LZ0AA")], BAND10);
@@ -405,10 +406,10 @@ void test_add_2_countries(void **state) {
 void test_add_unknown_zone(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "12345");
-    strcpy(comment, "0");
+    strcpy(current_qso.comment, "0");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(zonescore[bandinx], 0);
     assert_int_equal(zones[15], 0);
@@ -417,10 +418,10 @@ void test_add_unknown_zone(void **state) {
 void test_add_zone(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "LZ1AB");
-    strcpy(comment, "15");
+    strcpy(current_qso.comment, "15");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(zonescore[bandinx], 1);
     assert_int_equal(zones[15], BAND10);
@@ -429,16 +430,16 @@ void test_add_zone(void **state) {
 void test_add_zone_2_band(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "LZ1AB");
-    strcpy(comment, "15");
+    strcpy(current_qso.comment, "15");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     bandinx = BANDINDEX_15;
     strcpy(hiscall, "LZ1AB");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(zonescore[BANDINDEX_10], 1);
     assert_int_equal(zonescore[BANDINDEX_15], 1);
@@ -448,15 +449,15 @@ void test_add_zone_2_band(void **state) {
 void test_add_zone_2_stations(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "LZ1AB");
-    strcpy(comment, "15");
+    strcpy(current_qso.comment, "15");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     strcpy(hiscall, "LZ3CD");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(zonescore[bandinx], 1);
     assert_int_equal(zones[15], BAND10);
@@ -465,16 +466,16 @@ void test_add_zone_2_stations(void **state) {
 void test_add_2_zones(void **state) {
     bandinx = BANDINDEX_10;
     strcpy(hiscall, "LZ1AB");
-    strcpy(comment, "15");
+    strcpy(current_qso.comment, "15");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     strcpy(hiscall, "DL1YZ");
-    strcpy(comment, "14");
+    strcpy(current_qso.comment, "14");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(zonescore[BANDINDEX_10], 2);
     assert_int_equal(zones[14], BAND10);
@@ -580,10 +581,10 @@ void test_add2_2_zones(void **state) {
 void test_add_warc(void **state) {
     bandinx = BANDINDEX_12;
     strcpy(hiscall, "LZ1AB");
-    strcpy(comment, "15");
+    strcpy(current_qso.comment, "15");
 
-    current_qso = collect_qso_data();
-    addcall(current_qso);
+    struct qso_t *qso = collect_qso_data();
+    addcall(qso);
 
     assert_int_equal(countries[getctynr("LZ0AA")], BAND12);
     assert_int_equal(new_cty, getctynr("LZ1AB"));

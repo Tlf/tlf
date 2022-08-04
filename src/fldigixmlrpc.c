@@ -686,7 +686,7 @@ int fldigi_get_log_serial_number() {
 
 	    // if the previous exchange isn't empty, but the current value is it,
 	    // that means the OP cleaned up the field, so we need to clean up it in Fldigi
-	    if (comment[0] == '\0' && tcomment[0] != '\0') {
+	    if (current_qso.comment[0] == '\0' && tcomment[0] != '\0') {
 		tcomment[0] = '\0';
 		rc = fldigi_xmlrpc_query(&result, &env, "log.set_exchange", "s", "");
 		if (rc != 0) {
@@ -695,10 +695,10 @@ int fldigi_get_log_serial_number() {
 	    }
 	    // otherwise we need to fill the Tlf exchange field
 	    else {
-		if (strlen(tempstr) > 0 && comment[0] == '\0') {
-		    strcpy(comment, tempstr);
-		    comment[strlen(tempstr)] = '\0';
-		    strcpy(tcomment, comment);
+		if (strlen(tempstr) > 0 && current_qso.comment[0] == '\0') {
+		    strcpy(current_qso.comment, tempstr);
+		    current_qso.comment[strlen(tempstr)] = '\0';
+		    strcpy(tcomment, current_qso.comment);
 		    refresh_comment();
 		}
 	    }

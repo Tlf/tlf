@@ -226,7 +226,7 @@ void ExpandMacro(void) {
     }
 
 
-    replace_all(buffer, BUFSIZE, "!", comment);
+    replace_all(buffer, BUFSIZE, "!", current_qso.comment);
 
     if (trxmode == DIGIMODE)
 	replace_all(buffer, BUFSIZE, "|", "\r");    /* CR */
