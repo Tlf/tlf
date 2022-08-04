@@ -96,7 +96,6 @@ extern bool itumult;
 
 extern char mult1_value[40];
 extern int new_mult;
-extern char normalized_comment[80];
 extern char proposed_exchange[80];
 
 extern char lan_logline[];

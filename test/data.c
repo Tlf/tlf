@@ -243,7 +243,6 @@ char lastcall[20];
 char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
 { "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
-char normalized_comment[80];
 char proposed_exchange[80];
 char mode[20] = "Log     ";
 char cqzone[3] = "";

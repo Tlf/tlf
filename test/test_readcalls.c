@@ -135,6 +135,7 @@ int setup_default(void **state) {
 
     strcpy(my.continent, "EU");
     current_qso.callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
+    current_qso.normalized_comment = g_malloc0(COMMENT_SIZE);
 
     showmsg_spy = STRING_NOT_SET;
 

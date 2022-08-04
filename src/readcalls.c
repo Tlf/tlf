@@ -139,8 +139,8 @@ int readcalls(const char *logfile, bool interactive) {
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);
 	checkexchange(qso->comment, false);
-	if (strlen(normalized_comment) > 0) {   //FIXME global
-	    strcpy(qso->comment, normalized_comment);
+	if (qso->normalized_comment != NULL && strlen(qso->normalized_comment) > 0) {
+	    strcpy(qso->comment, qso->normalized_comment);
 	}
 	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
 
@@ -157,6 +157,10 @@ int readcalls(const char *logfile, bool interactive) {
 	}
 
 	g_free(logline);
+
+        // drop transient fields
+        g_free(qso->callupdate);
+        g_free(qso->normalized_comment);
 
 	g_ptr_array_add(qso_array, qso);
     }

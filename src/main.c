@@ -275,7 +275,6 @@ char lastqsonr[5];
 char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
 { "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
-char normalized_comment[80];
 char proposed_exchange[80];
 char cqzone[3] = "";
 char ituzone[3] = "";
@@ -636,6 +635,8 @@ static void init_variables() {
     current_qso.comment = g_malloc0(COMMENT_SIZE);
     g_free(current_qso.callupdate);
     current_qso.callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
+    g_free(current_qso.normalized_comment);
+    current_qso.normalized_comment = g_malloc0(COMMENT_SIZE);
 
     for (int i = 0; i < 25; i++) {
 	FREE_DYNAMIC_STRING(digi_message[i]);

@@ -513,11 +513,11 @@ static void checkexchange_cqww(char *comment, bool interactive) {
     g_match_info_free(match_info);
 
     // multiplier: zone
-    sprintf(normalized_comment, "%02d", zone);
-    g_strlcpy(mult1_value, normalized_comment, sizeof(normalized_comment));
+    sprintf(current_qso.normalized_comment, "%02d", zone);
+    g_strlcpy(mult1_value, current_qso.normalized_comment, COMMENT_SIZE);
 
     if (interactive) {
-	OnLowerSearchPanel(32, normalized_comment); // show current zone
+	OnLowerSearchPanel(32, current_qso.normalized_comment); // show current zone
     }
 }
 
@@ -601,7 +601,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	OnLowerSearchPanel(8, buf);
     }
 
-    sprintf(normalized_comment, "%s %s %s %s", serial, precedent, check, section);
+    sprintf(current_qso.normalized_comment, "%s %s %s %s", serial, precedent, check, section);
     g_strlcpy(mult1_value, section, sizeof(section));   // multiplier: section
 }
 
@@ -670,7 +670,7 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
     }
 
     if (serial[0] && section[0]) {
-	sprintf(normalized_comment, "%s %s", serial, section);
+	sprintf(current_qso.normalized_comment, "%s %s", serial, section);
 	g_strlcpy(mult1_value, section, sizeof(mult1_value));   // multiplier: section
     }
 }
@@ -719,7 +719,7 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
     }
 
     if (section[0]) {
-	g_strlcpy(normalized_comment, section, sizeof(normalized_comment));
+	g_strlcpy(current_qso.normalized_comment, section, COMMENT_SIZE);
 	g_strlcpy(mult1_value, section, sizeof(mult1_value));   // multiplier: section
     }
 }
@@ -727,15 +727,16 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 /* ------------------------------------------------------------------------ */
 /*
     input: comment, interactive
-    output (global vars): section, mult1_value, normalized_comment
-    output (current_qso): callupdate
+    output (global vars): section, mult1_value
+    output (current_qso): callupdate, normalized_comment
+    //FIXME use qso_t arg instead of comment
     side effect: lower line of search panel updated if interactive
 */
 
 void checkexchange(char *comment, bool interactive) {
 
     current_qso.callupdate[0] = 0;
-    normalized_comment[0] = 0;
+    current_qso.normalized_comment[0] = 0;
     mult1_value[0] = 0;
 
     // ----------------------------cqww------------------------------

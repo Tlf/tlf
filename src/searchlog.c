@@ -148,8 +148,8 @@ void displayCallInfo(dxcc_data *dx, char *pxstr) {
 
     if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	char *zone_info = NULL;
-	if (normalized_comment[0] != 0) {
-	    zone_info = normalized_comment;
+	if (current_qso.normalized_comment[0] != 0) {
+	    zone_info = current_qso.normalized_comment;
 	} else if (proposed_exchange[0] != 0) {
 	    zone_info = proposed_exchange;
 	}

@@ -51,6 +51,7 @@ int setup_default(void **state) {
     serial_section_mult = false;
     sectn_mult = false;
     current_qso.callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
+    current_qso.normalized_comment = g_malloc0(MAX_CALL_LENGTH + 1);
     return 0;
 }
 
@@ -183,7 +184,7 @@ void test_getexchange_arrlss(void **state) {
 
 	checkexchange(input, false);
 
-	assert_string_equal(normalized_comment,
+	assert_string_equal(current_qso.normalized_comment,
 			    getex_arrlss[i].expected_normalized_comment);
 	assert_string_equal(mult1_value, getex_arrlss[i].expected_mult1_value);
         assert_string_equal(current_qso.callupdate, getex_arrlss[i].expected_callupdate);
@@ -256,7 +257,7 @@ void test_getexchange_cqww(void **state) {
 
 	checkexchange(input, false);
 
-	assert_string_equal(normalized_comment,
+	assert_string_equal(current_qso.normalized_comment,
 			    getex_cqww[i].expected_normalized_comment);
 	assert_string_equal(current_qso.callupdate, getex_cqww[i].expected_callupdate);
 
@@ -335,7 +336,7 @@ void test_getexchange_serial_section(void **state) {
 
 	checkexchange(input, false);
 
-	assert_string_equal(normalized_comment,
+	assert_string_equal(current_qso.normalized_comment,
 			    getex_serial_section[i].expected_normalized_comment);
 	assert_string_equal(mult1_value, getex_serial_section[i].expected_mult1_value);
 	assert_string_equal(current_qso.callupdate, getex_serial_section[i].expected_callupdate);
@@ -407,7 +408,7 @@ void test_getexchange_sectn_mult(void **state) {
 
 	checkexchange(input, false);
 
-	assert_string_equal(normalized_comment,
+	assert_string_equal(current_qso.normalized_comment,
 			    getex_sectn_mult[i].expected_normalized_comment);
 	assert_string_equal(mult1_value, getex_sectn_mult[i].expected_mult1_value);
 	assert_string_equal(current_qso.callupdate, getex_sectn_mult[i].expected_callupdate);
@@ -426,7 +427,7 @@ void test_getexchange_serial_grid4(void **state) {
 
     checkexchange(input, false);
 
-    assert_string_equal(normalized_comment, "  12 JN97");
+    assert_string_equal(current_qso.normalized_comment, "  12 JN97");
     assert_string_equal(mult1_value, "JN97");
     assert_string_equal(current_qso.callupdate, "");
 
