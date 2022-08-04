@@ -161,6 +161,7 @@ int readcalls(const char *logfile, bool interactive) {
         // drop transient fields
         g_free(qso->callupdate);
         g_free(qso->normalized_comment);
+        g_free(qso->section);
 
 	g_ptr_array_add(qso_array, qso);
     }

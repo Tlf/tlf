@@ -211,6 +211,7 @@ struct qso_t {
     int qsots;
     char *callupdate;           // transient field, used in checkexchange
     char *normalized_comment;   // transient field
+    char *section;              // transient field
 };
 
 

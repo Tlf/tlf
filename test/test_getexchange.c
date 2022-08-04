@@ -52,6 +52,7 @@ int setup_default(void **state) {
     sectn_mult = false;
     current_qso.callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
     current_qso.normalized_comment = g_malloc0(MAX_CALL_LENGTH + 1);
+    current_qso.section = g_malloc0(MAX_SECTION_LENGTH + 1);
     return 0;
 }
 
