@@ -634,6 +634,8 @@ static void init_variables() {
 
     g_free(current_qso.comment);
     current_qso.comment = g_malloc0(COMMENT_SIZE);
+    g_free(current_qso.callupdate);
+    current_qso.callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
 
     for (int i = 0; i < 25; i++) {
 	FREE_DYNAMIC_STRING(digi_message[i]);

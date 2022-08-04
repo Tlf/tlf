@@ -59,7 +59,6 @@
 #include "getexchange.h"
 
 
-char callupdate[MAX_CALL_LENGTH + 1];
 static char section[MAX_SECTION_LENGTH + 1] = "";
 
 void exchange_edit(void);
@@ -114,8 +113,8 @@ int getexchange(void) {
 
 	checkexchange(current_qso.comment, true);
 
-	if (call_update && strlen(callupdate) >= 3) {
-	    strcpy(hiscall, callupdate);
+	if (call_update && strlen(current_qso.callupdate) >= 3) {
+	    strcpy(hiscall, current_qso.callupdate);
 	    printcall();
 	}
 
@@ -507,7 +506,7 @@ static void checkexchange_cqww(char *comment, bool interactive) {
 	// get call fix
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL) {
-	    g_strlcpy(callupdate, index, sizeof(callupdate));
+            g_strlcpy(current_qso.callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
@@ -570,7 +569,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 3);
 	if (index != NULL && strchr("AKNWVC", index[0]) != NULL) {  // US/CA only
-	    g_strlcpy(callupdate, index, sizeof(callupdate));
+            g_strlcpy(current_qso.callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
 
@@ -649,7 +648,7 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 3);
 	if (index != NULL) {
-	    g_strlcpy(callupdate, index, sizeof(callupdate));
+            g_strlcpy(current_qso.callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
@@ -707,7 +706,7 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL) {
-	    g_strlcpy(callupdate, index, sizeof(callupdate));
+            g_strlcpy(current_qso.callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
@@ -728,13 +727,14 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 /* ------------------------------------------------------------------------ */
 /*
     input: comment, interactive
-    output (global vars): section, callupdate, mult1_value, normalized_comment
+    output (global vars): section, mult1_value, normalized_comment
+    output (current_qso): callupdate
     side effect: lower line of search panel updated if interactive
 */
 
 void checkexchange(char *comment, bool interactive) {
 
-    callupdate[0] = 0;
+    current_qso.callupdate[0] = 0;
     normalized_comment[0] = 0;
     mult1_value[0] = 0;
 

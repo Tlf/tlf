@@ -209,6 +209,7 @@ struct qso_t {
     freq_t freq;
     int tx;
     int qsots;
+    char *callupdate;   // transient field used in checkexchange
 };
 
 

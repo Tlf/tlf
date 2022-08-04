@@ -134,6 +134,7 @@ int setup_default(void **state) {
     pfxnummultinr = 2;
 
     strcpy(my.continent, "EU");
+    current_qso.callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
 
     showmsg_spy = STRING_NOT_SET;
 
