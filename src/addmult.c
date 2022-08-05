@@ -41,7 +41,6 @@ GPtrArray *mults_possible;
 
 enum { ALL_BAND, PER_BAND };
 
-char mult1_value[40];       //FIXME move to qso_t
 int mult1_mode = PER_BAND;  //FIXME configure
 
 /*
@@ -59,7 +58,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
     // --------------------------- arrlss ------------------------------------
     if (CONTEST_IS(ARRL_SS)) {
 
-	idx = get_exact_mult_index(mult1_value);
+	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    remember_multi(get_mult(idx), qso->bandindex, ALL_BAND, check_only);
 	    // NOTE: return value not used, new mult is not marked in log
@@ -70,7 +69,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
     else if (serial_section_mult || sectn_mult) {
 
 	/* is it a mult? */
-	idx = get_exact_mult_index(mult1_value);
+	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    mult_index =
 		remember_multi(get_mult(idx), qso->bandindex, PER_BAND, check_only);
@@ -81,7 +80,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
     else if (sectn_mult_once) {
 
 	/* is it a mult? */
-	idx = get_exact_mult_index(mult1_value);
+	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    mult_index =
 		remember_multi(get_mult(idx), qso->bandindex, ALL_BAND, check_only);
@@ -91,7 +90,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
     // ------------------------------- section ----------------------------
     else if (dx_arrlsections && (countrynr == w_cty || countrynr == ve_cty)) {
 
-	idx = get_exact_mult_index(mult1_value);
+	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    mult_index =
 		remember_multi(get_mult(idx), qso->bandindex, PER_BAND, check_only);
@@ -120,7 +119,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 
     // -----------   default: use mult1   -----------
     else {
-	mult_index = remember_multi(mult1_value, qso->bandindex, mult1_mode,
+	mult_index = remember_multi(qso->mult1_value, qso->bandindex, mult1_mode,
 				    check_only);
     }
 
@@ -241,6 +240,9 @@ unsigned int get_matching_length(char *str, unsigned int n) {
 
 /* get mult index for exact match */
 int get_exact_mult_index(char *str) {
+    if (str == NULL) {
+	return -1;
+    }
     int len = strlen(str);
     if (len == 0) {
 	return -1;
@@ -426,7 +428,7 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
     bool found = false;
     int index = -1;
 
-    if (*multiplier == '\0')
+    if (multiplier == NULL || *multiplier == '\0')
 	return -1;			/* ignore empty string */
 
     pthread_mutex_lock(&mult_mutex);

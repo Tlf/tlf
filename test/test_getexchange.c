@@ -53,6 +53,7 @@ int setup_default(void **state) {
     current_qso.callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
     current_qso.normalized_comment = g_malloc0(MAX_CALL_LENGTH + 1);
     current_qso.section = g_malloc0(MAX_SECTION_LENGTH + 1);
+    current_qso.mult1_value = g_malloc0(MULT_SIZE);
     return 0;
 }
 
@@ -187,7 +188,7 @@ void test_getexchange_arrlss(void **state) {
 
 	assert_string_equal(current_qso.normalized_comment,
 			    getex_arrlss[i].expected_normalized_comment);
-	assert_string_equal(mult1_value, getex_arrlss[i].expected_mult1_value);
+	assert_string_equal(current_qso.mult1_value, getex_arrlss[i].expected_mult1_value);
         assert_string_equal(current_qso.callupdate, getex_arrlss[i].expected_callupdate);
 
 	g_free(input);
@@ -339,7 +340,7 @@ void test_getexchange_serial_section(void **state) {
 
 	assert_string_equal(current_qso.normalized_comment,
 			    getex_serial_section[i].expected_normalized_comment);
-	assert_string_equal(mult1_value, getex_serial_section[i].expected_mult1_value);
+	assert_string_equal(current_qso.mult1_value, getex_serial_section[i].expected_mult1_value);
 	assert_string_equal(current_qso.callupdate, getex_serial_section[i].expected_callupdate);
 
 	g_free(input);
@@ -411,7 +412,7 @@ void test_getexchange_sectn_mult(void **state) {
 
 	assert_string_equal(current_qso.normalized_comment,
 			    getex_sectn_mult[i].expected_normalized_comment);
-	assert_string_equal(mult1_value, getex_sectn_mult[i].expected_mult1_value);
+	assert_string_equal(current_qso.mult1_value, getex_sectn_mult[i].expected_mult1_value);
 	assert_string_equal(current_qso.callupdate, getex_sectn_mult[i].expected_callupdate);
 
 	g_free(input);
@@ -429,7 +430,7 @@ void test_getexchange_serial_grid4(void **state) {
     checkexchange(input, false);
 
     assert_string_equal(current_qso.normalized_comment, "  12 JN97");
-    assert_string_equal(mult1_value, "JN97");
+    assert_string_equal(current_qso.mult1_value, "JN97");
     assert_string_equal(current_qso.callupdate, "");
 
     g_free(input);

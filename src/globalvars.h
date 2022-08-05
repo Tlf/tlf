@@ -94,7 +94,6 @@ extern char ituzone[];
 extern char continent[];
 extern bool itumult;
 
-extern char mult1_value[40];
 extern int new_mult;
 extern char proposed_exchange[80];
 

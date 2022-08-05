@@ -512,7 +512,7 @@ static void checkexchange_cqww(char *comment, bool interactive) {
 
     // multiplier: zone
     sprintf(current_qso.normalized_comment, "%02d", zone);
-    g_strlcpy(mult1_value, current_qso.normalized_comment, COMMENT_SIZE);
+    g_strlcpy(current_qso.mult1_value, current_qso.normalized_comment, COMMENT_SIZE);
 
     if (interactive) {
 	OnLowerSearchPanel(32, current_qso.normalized_comment); // show current zone
@@ -600,7 +600,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
     }
 
     sprintf(current_qso.normalized_comment, "%s %s %s %s", serial, precedent, check, current_qso.section);
-    g_strlcpy(mult1_value, current_qso.section, MAX_SECTION_LENGTH + 1);   // multiplier: section
+    g_strlcpy(current_qso.mult1_value, current_qso.section, MAX_SECTION_LENGTH + 1);   // multiplier: section
 }
 
 static void checkexchange_serial_section(char *comment, bool interactive) {
@@ -669,7 +669,7 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 
     if (serial[0] && current_qso.section[0]) {
 	sprintf(current_qso.normalized_comment, "%s %s", serial, current_qso.section);
-	g_strlcpy(mult1_value, current_qso.section, sizeof(mult1_value));   // multiplier: section
+	g_strlcpy(current_qso.mult1_value, current_qso.section, MULT_SIZE);   // multiplier: section
     }
 }
 
@@ -718,15 +718,14 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 
     if (current_qso.section[0]) {
 	g_strlcpy(current_qso.normalized_comment, current_qso.section, COMMENT_SIZE);
-	g_strlcpy(mult1_value, current_qso.section, sizeof(mult1_value));   // multiplier: section
+	g_strlcpy(current_qso.mult1_value, current_qso.section, MULT_SIZE);   // multiplier: section
     }
 }
 
 /* ------------------------------------------------------------------------ */
 /*
     input: comment, interactive
-    output (global vars): section, mult1_value
-    output (current_qso): callupdate, normalized_comment
+    output (current_qso): callupdate, normalized_comment, section, mult1_value
     //FIXME use qso_t arg instead of comment
     side effect: lower line of search panel updated if interactive
 */
@@ -735,7 +734,7 @@ void checkexchange(char *comment, bool interactive) {
 
     current_qso.callupdate[0] = 0;
     current_qso.normalized_comment[0] = 0;
-    mult1_value[0] = 0;
+    current_qso.mult1_value[0] = 0;
 
     // ----------------------------cqww------------------------------
     if (CONTEST_IS(CQWW)) {

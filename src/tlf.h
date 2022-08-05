@@ -170,11 +170,12 @@ typedef struct {
 				  for all modes and bands */
 } worked_t;
 
+#define MULT_SIZE   12
 /** worked mults
  *
  * all information about worked multis */
 typedef struct {
-    char name[12];		/**< Multiplier */
+    char name[MULT_SIZE];	/**< Multiplier */
     int band;			/**< bitmap with bands the multi was worked */
 } mults_t;
 
@@ -209,6 +210,7 @@ struct qso_t {
     freq_t freq;
     int tx;
     int qsots;
+    char *mult1_value;
     char *callupdate;           // transient field, used in checkexchange
     char *normalized_comment;   // transient field
     char *section;              // transient field

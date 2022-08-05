@@ -639,6 +639,8 @@ static void init_variables() {
     current_qso.normalized_comment = g_malloc0(COMMENT_SIZE);
     g_free(current_qso.section);
     current_qso.section = g_malloc0(MAX_SECTION_LENGTH + 1);
+    g_free(current_qso.mult1_value);
+    current_qso.mult1_value = g_malloc0(MULT_SIZE);
 
     for (int i = 0; i < 25; i++) {
 	FREE_DYNAMIC_STRING(digi_message[i]);
