@@ -172,6 +172,10 @@ void free_qso(struct qso_t *ptr) {
 	g_free(ptr->comment);
 	g_free(ptr->logline);
 	g_free(ptr->call);
+	g_free(ptr->mult1_value);
+	g_free(ptr->callupdate);
+	g_free(ptr->normalized_comment);
+	g_free(ptr->section);
 	g_free(ptr);
     }
 }
