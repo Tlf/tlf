@@ -109,10 +109,11 @@ int getexchange(void) {
 
 	refresh_comment();
 
-	checkexchange(current_qso.comment, true);
+	checkexchange(&current_qso, true);
 
 	if (call_update && strlen(current_qso.callupdate) >= 3) {
 	    strcpy(hiscall, current_qso.callupdate);
+            current_qso.callupdate[0] = 0;
 	    printcall();
 	}
 
@@ -466,7 +467,7 @@ bool call_update = false;
 /* ------------------------------------------------------------------------ */
 
 
-static void checkexchange_cqww(char *comment, bool interactive) {
+static void checkexchange_cqww(struct qso_t *qso, bool interactive) {
     // <zone> [call_fix] [zone_fix]
     static const char *PATTERN =
 	"\\s*(\\d+)?"       // zone
@@ -482,7 +483,7 @@ static void checkexchange_cqww(char *comment, bool interactive) {
     int zone = 0;
 
     GMatchInfo *match_info;
-    g_regex_match(regex, comment, 0, &match_info);
+    g_regex_match(regex, qso->comment, 0, &match_info);
     if (g_match_info_matches(match_info)) {
 	gchar *index;
 
@@ -504,22 +505,22 @@ static void checkexchange_cqww(char *comment, bool interactive) {
 	// get call fix
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL) {
-            g_strlcpy(current_qso.callupdate, index, MAX_CALL_LENGTH + 1);
+            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
     g_match_info_free(match_info);
 
     // multiplier: zone
-    sprintf(current_qso.normalized_comment, "%02d", zone);
-    g_strlcpy(current_qso.mult1_value, current_qso.normalized_comment, COMMENT_SIZE);
+    sprintf(qso->normalized_comment, "%02d", zone);
+    g_strlcpy(qso->mult1_value, qso->normalized_comment, COMMENT_SIZE);
 
     if (interactive) {
-	OnLowerSearchPanel(32, current_qso.normalized_comment); // show current zone
+	OnLowerSearchPanel(32, qso->normalized_comment); // show current zone
     }
 }
 
-static void checkexchange_arrlss(char *comment, bool interactive) {
+static void checkexchange_arrlss(struct qso_t *qso, bool interactive) {
     char serial[5];
     char precedent[3];
     char check[3];
@@ -537,10 +538,10 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	regex = g_regex_new(PATTERN, 0, 0, NULL);
     }
 
-    current_qso.section[0] = 0;
+    qso->section[0] = 0;
 
     GMatchInfo *match_info;
-    g_regex_match(regex, comment, 0, &match_info);
+    g_regex_match(regex, qso->comment, 0, &match_info);
     if (g_match_info_matches(match_info)) {
 	gchar *index;
 
@@ -567,7 +568,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 3);
 	if (index != NULL && strchr("AKNWVC", index[0]) != NULL) {  // US/CA only
-            g_strlcpy(current_qso.callupdate, index, MAX_CALL_LENGTH + 1);
+            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
 
@@ -584,7 +585,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	index = g_match_info_fetch(match_info, 5);
 	if (index != NULL && index[0] != 0) {
 	    if (get_exact_mult_index(index) >= 0) {
-		g_strlcpy(current_qso.section, index, MAX_SECTION_LENGTH + 1);
+		g_strlcpy(qso->section, index, MAX_SECTION_LENGTH + 1);
 	    }
 	}
 	g_free(index);
@@ -595,15 +596,15 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
     if (interactive) {
 	char buf[40];
 	sprintf(buf, " %4s %1s %2s %2s ", serial, precedent,
-		check, current_qso.section);
+		check, qso->section);
 	OnLowerSearchPanel(8, buf);
     }
 
-    sprintf(current_qso.normalized_comment, "%s %s %s %s", serial, precedent, check, current_qso.section);
-    g_strlcpy(current_qso.mult1_value, current_qso.section, MAX_SECTION_LENGTH + 1);   // multiplier: section
+    sprintf(qso->normalized_comment, "%s %s %s %s", serial, precedent, check, qso->section);
+    g_strlcpy(qso->mult1_value, qso->section, MAX_SECTION_LENGTH + 1);   // multiplier: section
 }
 
-static void checkexchange_serial_section(char *comment, bool interactive) {
+static void checkexchange_serial_section(struct qso_t *qso, bool interactive) {
     char serial[5] = "";
 
     static const char *PATTERN =
@@ -617,10 +618,10 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	regex = g_regex_new(PATTERN, 0, 0, NULL);
     }
 
-    current_qso.section[0] = 0;
+    qso->section[0] = 0;
 
     GMatchInfo *match_info;
-    g_regex_match(regex, comment, 0, &match_info);
+    g_regex_match(regex, qso->comment, 0, &match_info);
     if (g_match_info_matches(match_info)) {
 	gchar *index;
 
@@ -638,7 +639,7 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL && index[0] != 0) {
 	    if (serial_grid4_mult || get_exact_mult_index(index) >= 0) {
-		g_strlcpy(current_qso.section, index, MAX_SECTION_LENGTH + 1);
+		g_strlcpy(qso->section, index, MAX_SECTION_LENGTH + 1);
 	    }
 	}
 	g_free(index);
@@ -646,34 +647,34 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 3);
 	if (index != NULL) {
-            g_strlcpy(current_qso.callupdate, index, MAX_CALL_LENGTH + 1);
+            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
     g_match_info_free(match_info);
 
     if (serial_grid4_mult) {
-        if (!check_qra(current_qso.section)) {
-            current_qso.section[0] = 0;
+        if (!check_qra(qso->section)) {
+            qso->section[0] = 0;
         }
-        if (strlen(current_qso.section) > 4) {
-            current_qso.section[4] = 0;     // mult is the first 4 chars only
+        if (strlen(qso->section) > 4) {
+            qso->section[4] = 0;     // mult is the first 4 chars only
         }
     }
 
     if (interactive) {
 	char buf[40];
-	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, current_qso.section);
+	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, qso->section);
 	OnLowerSearchPanel(32, buf);
     }
 
-    if (serial[0] && current_qso.section[0]) {
-	sprintf(current_qso.normalized_comment, "%s %s", serial, current_qso.section);
-	g_strlcpy(current_qso.mult1_value, current_qso.section, MULT_SIZE);   // multiplier: section
+    if (serial[0] && qso->section[0]) {
+	sprintf(qso->normalized_comment, "%s %s", serial, qso->section);
+	g_strlcpy(qso->mult1_value, qso->section, MULT_SIZE);   // multiplier: section
     }
 }
 
-static void checkexchange_sectn_mult(char *comment, bool interactive) {
+static void checkexchange_sectn_mult(struct qso_t *qso, bool interactive) {
     static const char *PATTERN =
 	"\\s*(\\d*[A-Z]+\\d*)?" // section ([digits] letters [digits])
 	"\\s*([A-Z0-9/]*?[A-Z]\\d+[A-Z]+[A-Z0-9/]*)?"  // call fix
@@ -684,10 +685,10 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 	regex = g_regex_new(PATTERN, 0, 0, NULL);
     }
 
-    current_qso.section[0] = 0;
+    qso->section[0] = 0;
 
     GMatchInfo *match_info;
-    g_regex_match(regex, comment, 0, &match_info);
+    g_regex_match(regex, qso->comment, 0, &match_info);
 
     if (g_match_info_matches(match_info)) {
 	gchar *index;
@@ -696,7 +697,7 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 	index = g_match_info_fetch(match_info, 1);
 	if (index != NULL && index[0] != 0) {
 	    if (get_exact_mult_index(index) >= 0) {
-		g_strlcpy(current_qso.section, index, MAX_SECTION_LENGTH + 1);
+		g_strlcpy(qso->section, index, MAX_SECTION_LENGTH + 1);
 	    }
 	}
 	g_free(index);
@@ -704,7 +705,7 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL) {
-            g_strlcpy(current_qso.callupdate, index, MAX_CALL_LENGTH + 1);
+            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
@@ -712,13 +713,13 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 
     if (interactive) {
 	char buf[40];
-	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, current_qso.section);
+	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, qso->section);
 	OnLowerSearchPanel(32, buf);
     }
 
-    if (current_qso.section[0]) {
-	g_strlcpy(current_qso.normalized_comment, current_qso.section, COMMENT_SIZE);
-	g_strlcpy(current_qso.mult1_value, current_qso.section, MULT_SIZE);   // multiplier: section
+    if (qso->section[0]) {
+	g_strlcpy(qso->normalized_comment, qso->section, COMMENT_SIZE);
+	g_strlcpy(qso->mult1_value, qso->section, MULT_SIZE);   // multiplier: section
     }
 }
 
@@ -730,37 +731,50 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
     side effect: lower line of search panel updated if interactive
 */
 
-void checkexchange(char *comment, bool interactive) {
+void checkexchange(struct qso_t *qso, bool interactive) {
+    // create fields
+    if (qso->callupdate == NULL) {
+        qso->callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
+    }
+    if (qso->normalized_comment == NULL) {
+        qso->normalized_comment = g_malloc0(COMMENT_SIZE);
+    }
+    if (qso->section == NULL) {
+        qso->section = g_malloc0(MAX_SECTION_LENGTH + 1);
+    }
+    if (qso->mult1_value == NULL) {
+        qso->mult1_value = g_malloc0(MULT_SIZE);
+    }
 
-    current_qso.callupdate[0] = 0;
-    current_qso.normalized_comment[0] = 0;
-    current_qso.mult1_value[0] = 0;
+    qso->callupdate[0] = 0;
+    qso->normalized_comment[0] = 0;
+    qso->mult1_value[0] = 0;
 
     // ----------------------------cqww------------------------------
     if (CONTEST_IS(CQWW)) {
 
-	checkexchange_cqww(comment, interactive);
+	checkexchange_cqww(qso, interactive);
 	return;
     }
 
     // ---------------------------arrls------------------------------
     if (CONTEST_IS(ARRL_SS)) {
 
-	checkexchange_arrlss(comment, interactive);
+	checkexchange_arrlss(qso, interactive);
 	return;
     }
 
     // ----------------------serial+section--------------------------
     if (serial_section_mult || serial_grid4_mult) {
 
-	checkexchange_serial_section(comment, interactive);
+	checkexchange_serial_section(qso, interactive);
 	return;
     }
 
     // ----------------------section only----------------------------
     if (sectn_mult || sectn_mult_once || dx_arrlsections) {
 
-	checkexchange_sectn_mult(comment, interactive);
+	checkexchange_sectn_mult(qso, interactive);
 	return;
     }
 

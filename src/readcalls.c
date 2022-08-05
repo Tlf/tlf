@@ -138,7 +138,7 @@ int readcalls(const char *logfile, bool interactive) {
 
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);
-	checkexchange(qso->comment, false);
+	checkexchange(qso, false);
 	if (qso->normalized_comment != NULL && strlen(qso->normalized_comment) > 0) {
 	    strcpy(qso->comment, qso->normalized_comment);
 	}
@@ -159,9 +159,10 @@ int readcalls(const char *logfile, bool interactive) {
 	g_free(logline);
 
         // drop transient fields
-        g_free(qso->callupdate);
-        g_free(qso->normalized_comment);
-        g_free(qso->section);
+        FREE_DYNAMIC_STRING(qso->callupdate);
+        FREE_DYNAMIC_STRING(qso->callupdate);
+        FREE_DYNAMIC_STRING(qso->normalized_comment);
+        FREE_DYNAMIC_STRING(qso->section);
 
 	g_ptr_array_add(qso_array, qso);
     }
