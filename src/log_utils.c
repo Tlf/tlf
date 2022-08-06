@@ -100,12 +100,10 @@ struct qso_t *parse_qso(char *buffer) {
     ptr->logline = g_strdup(buffer);
     ptr->qsots = 0;
 
-    if (log_is_comment(buffer)) {
-	ptr->is_comment = true;
+    ptr->is_comment = log_is_comment(buffer);
+    if (ptr->is_comment) {
 	return ptr;
     }
-
-    ptr->is_comment = false;
 
     /* split buffer into parts for linedata_t record and parse
      * them accordingly */
@@ -187,10 +185,10 @@ static void qso_free(gpointer data) {
 
 
 void free_qso_array() {
-   if (qso_array != NULL) {
+    if (qso_array != NULL) {
 	g_ptr_array_free(qso_array, TRUE);
 	qso_array = NULL;
-   }
+    }
 }
 
 void init_qso_array() {

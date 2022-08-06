@@ -131,7 +131,7 @@ int readcalls(const char *logfile, bool interactive) {
 
 	qso = parse_qso(inputbuffer);
 
-	if (log_is_comment(inputbuffer)) {
+	if (qso->is_comment) {
 	    g_ptr_array_add(qso_array, qso);
 	    continue;		/* skip further processing for note entry */
 	}
@@ -158,11 +158,10 @@ int readcalls(const char *logfile, bool interactive) {
 
 	g_free(logline);
 
-        // drop transient fields
-        FREE_DYNAMIC_STRING(qso->callupdate);
-        FREE_DYNAMIC_STRING(qso->callupdate);
-        FREE_DYNAMIC_STRING(qso->normalized_comment);
-        FREE_DYNAMIC_STRING(qso->section);
+	// drop transient fields
+	FREE_DYNAMIC_STRING(qso->callupdate);
+	FREE_DYNAMIC_STRING(qso->normalized_comment);
+	FREE_DYNAMIC_STRING(qso->section);
 
 	g_ptr_array_add(qso_array, qso);
     }
@@ -171,7 +170,7 @@ int readcalls(const char *logfile, bool interactive) {
 
     if (log_changed) {
 	bool ok = false;
-	if(interactive) {
+	if (interactive) {
 	    showmsg("Log changed due to rescoring. Do you want to save it? Y/(N)");
 	    ok = toupper(key_get()) == 'Y';
 	} else {
