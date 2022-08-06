@@ -99,7 +99,7 @@ void delete_last_qtcs(char *call, char *bandmode) {
 	if ((int)qstatbuf.st_size > QTCSENTCALLPOS) {
 	    look = 1;
 	    qtclen = 0;
-	    s = nr_qsos;
+	    s = NR_QSOS;
 	    while (s >= 0 && qsoflags_for_qtc[s] != 1) {
 		s--;
 	    }
@@ -170,7 +170,7 @@ void delete_qso(void) {
 	    fsync(lfile);
 	    close(lfile);
 
-	    nr_qsos = log_read_n_score();
+	    log_read_n_score();
 	}
 	scroll_log();
     }

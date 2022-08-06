@@ -60,8 +60,7 @@ void do_backup(const char *logfile, bool interactive) {
 	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
 	    rename(logfile, backup);
 	    // rewrite log
-	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
-	    for (int i = 0 ; i < qso_array->len; i++) {
+	    for (int i = 0 ; i < NR_QSOS; i++) {
 		store_qso(logfile, QSOS(i));
 	    }
 	    if (interactive) {

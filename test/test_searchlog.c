@@ -117,14 +117,10 @@ void add_log(char *string) {
     qso = parse_qso(line);
     g_free(line);
     g_ptr_array_add(qso_array, qso);
-
-    nr_qsos++;
 }
 
 static void write_qsos() {
     init_qso_array();
-
-    nr_qsos = 0;
 
     add_log(QSO1);
     add_log(QSO2);

@@ -38,7 +38,6 @@ void store_qso(const char *file, char *loglineptr) {
 	endwin();
 	exit(1);
     }
-    nr_qsos++;
 
     fputs(loglineptr, fp);
     fputc('\n', fp);

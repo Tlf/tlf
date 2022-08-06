@@ -348,7 +348,6 @@ char fldigi_url[50] = "http://localhost:7362/RPC2";
 /*----------------------------the parsed log lines-------------------------*/
 // array of qso's
 GPtrArray *qso_array;
-int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/**< number of calls in worked[] */
@@ -1053,7 +1052,7 @@ int main(int argc, char *argv[]) {
 
     /* read the logfile and rebuild point and multiplier scoring */
     /* see also log_read_n_score() for non-interactive variant */
-    nr_qsos = readcalls(logfile, true);
+    readcalls(logfile, true);
     if (qtcdirection > 0) {
 	readqtccalls();
     }

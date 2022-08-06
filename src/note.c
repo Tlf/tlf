@@ -77,7 +77,6 @@ void include_note(void) {
 
 	struct qso_t *qso = parse_qso(buffer2);
 	g_ptr_array_add(qso_array, qso);
-	nr_qsos++;
 
 	scroll_log();
 	clear_display();

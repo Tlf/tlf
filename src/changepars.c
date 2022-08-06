@@ -512,13 +512,13 @@ int changepars(void) {
 	case 41: {		/* SYNC */
 	    if (strlen(synclogfile) > 0)
 		synclog(synclogfile);
-	    nr_qsos = log_read_n_score();
+	    log_read_n_score();
 	    scroll_log();
 	    clear_display();
 	    break;
 	}
 	case 42: {		/* RESCORE */
-	    nr_qsos = log_read_n_score();
+	    log_read_n_score();
 	    clear_display();
 	    scroll_log();
 	    break;

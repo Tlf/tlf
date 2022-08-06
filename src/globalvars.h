@@ -14,8 +14,6 @@ extern mystation_t my;			// all about my station
 extern char whichcontest[];
 extern contest_config_t *contest;	// contest configuration
 
-extern int nr_qsos;			// number of lines in qsos[]
-
 extern GPtrArray *qso_array;		// array of parsed QSOs
 					// note that not every log line needs
 					// to be a QSO, it could also be a

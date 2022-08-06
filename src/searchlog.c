@@ -392,7 +392,7 @@ void filterLog(const char *call) {
 
     srch_index = 0;
 
-    for (int qso_index = 0; qso_index < nr_qsos; qso_index++) {
+    for (int qso_index = 0; qso_index < NR_QSOS; qso_index++) {
 
 	struct qso_t *qso = g_ptr_array_index(qso_array, qso_index);
 	if (qso->is_comment) {
