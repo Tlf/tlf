@@ -30,7 +30,7 @@
 #include "write_keyer.h"
 
 void cleanup_qso(void) {
-    hiscall[0] = '\0';	    /* reset hiscall and comment */
+    current_qso.call[0] = '\0';	    /* reset current call and comment */
     current_qso.comment[0] = '\0';
     current_qso.normalized_comment[0] = '\0';
     proposed_exchange[0] = '\0';

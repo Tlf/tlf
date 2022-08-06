@@ -58,7 +58,7 @@ char *PrepareSPcall() {
 	    strcat(buf, "{ ");	/* => ctrl-t */
 	    strcat(buf, "|");	/* => CR */
 	    if (demode) {
-		strcat(buf, hiscall);
+		strcat(buf, current_qso.call);
 		strcat(buf, " DE ");
 	    }
 	    strcat(buf, my.call);
@@ -70,7 +70,7 @@ char *PrepareSPcall() {
 	} else {
 	    strcat(buf, "|");	/* => CR */
 	    if (demode) {
-		strcat(buf, hiscall);
+		strcat(buf, current_qso.call);
 		strcat(buf, " DE ");
 	    }
 	    strcat(buf, my.call);

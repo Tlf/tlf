@@ -58,7 +58,7 @@
 //TODO rename this function to duplicate_current_qso()
 struct qso_t *collect_qso_data(void) {
     struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
-    qso->call = g_strdup(hiscall);
+    qso->call = g_strdup(current_qso.call);
     qso->mode = trxmode;
     qso->bandindex = bandinx;
     qso->freq = freq;

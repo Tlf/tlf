@@ -644,7 +644,7 @@ void addtext(char *s) {
 	    if (dxtext[strlen(dxtext) - 1] == '\n')
 		dxtext[strlen(dxtext) - 1] = '\0';	// remove the newline
 	    mvaddstr(LINES - 1, 0, dxtext);
-	    mvaddstr(12, 29, hiscall);
+	    mvaddstr(12, 29, current_qso.call);
 	}
 	refreshp();
 

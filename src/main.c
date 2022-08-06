@@ -631,6 +631,8 @@ static void init_variables() {
     ctcomp = false;
     resend_call = RESEND_NOT_SET;
 
+    g_free(current_qso.call);
+    current_qso.call = g_malloc0(CALL_SIZE);
     g_free(current_qso.comment);
     current_qso.comment = g_malloc0(COMMENT_SIZE);
     g_free(current_qso.callupdate);

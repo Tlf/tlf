@@ -81,6 +81,8 @@ void check_ExpandMacro(const char *input, const char *exp) {
 
 /* setup/teardown */
 int setup_default(void **state) {
+    current_qso.call = g_malloc0(CALL_SIZE);
+
     wkeyerbuffer[0] = '\0';
     data_ready = 0;
     simulator = false;
@@ -89,7 +91,7 @@ int setup_default(void **state) {
     cwkeyer = 1;
     digikeyer = 1;
     strcpy(my.call, "dl1jbe");
-    strcpy(hiscall, "lz1ab");
+    strcpy(current_qso.call, "lz1ab");
     strcpy(sent_rst, "579");
     shortqsonr = LONGCW;
     strcpy(qsonrstr, "0309");

@@ -47,7 +47,7 @@ int sendqrg(void) {
 	return 0;               /* nothing to do here */
     }
 
-    const freq_t trxqrg = atof(hiscall) * 1000.0;
+    const freq_t trxqrg = atof(current_qso.call) * 1000.0;
 
     int bandinx = freq2band(trxqrg);
 

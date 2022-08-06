@@ -85,14 +85,14 @@ int getexchange(void) {
 	recall_exchange();
 
     if ((CONTEST_IS(CQWW) || wazmult || itumult)
-	    && (current_qso.comment[0] == '\0') && (strlen(hiscall) != 0)) {
+	    && (current_qso.comment[0] == '\0') && (strlen(current_qso.call) != 0)) {
 	if (itumult)
 	    strcpy(current_qso.comment, ituzone);
 	else
 	    strcpy(current_qso.comment, cqzone);
     }
     if ((exc_cont) && (current_qso.comment[0] == '\0')
-	    && (strlen(hiscall) != 0)) {
+	    && (strlen(current_qso.call) != 0)) {
 	strcpy(current_qso.comment, continent);
     }
 
@@ -112,7 +112,7 @@ int getexchange(void) {
 	checkexchange(&current_qso, true);
 
 	if (call_update && strlen(current_qso.callupdate) >= 3) {
-	    strcpy(hiscall, current_qso.callupdate);
+	    strcpy(current_qso.call, current_qso.callupdate);
             current_qso.callupdate[0] = 0;
 	    printcall();
 	}
@@ -200,7 +200,7 @@ int getexchange(void) {
 
 	    /* '+', send TU and log in CT mode */
 	    case '+': {
-		if (ctcomp && (strlen(hiscall) > 2)) {
+		if (ctcomp && (strlen(current_qso.call) > 2)) {
 		    if (current_qso.comment[0] == '\0') {
 			x = -1;
 		    } else {
@@ -416,7 +416,7 @@ int getexchange(void) {
 	    } else if ((serial_section_mult || sectn_mult)
 		       && ((x != TAB) && (strlen(current_qso.section) < 1))) {
 		if (!serial_or_section
-			|| (serial_or_section && country_found(hiscall))) {
+			|| (serial_or_section && country_found(current_qso.call))) {
 		    mvaddstr(13, 54, "section?");
 		    mvaddstr(12, 54, current_qso.comment);
 		    refreshp();

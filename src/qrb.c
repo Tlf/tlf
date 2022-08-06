@@ -32,7 +32,7 @@ int get_qrb(double *range, double *bearing) {
     extern double DEST_Lat;
     extern double DEST_Long;
 
-    if (*hiscall == '\0')
+    if (*current_qso.call == '\0')
 	return -1;
 
     /* positive numbers are N and E

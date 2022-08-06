@@ -57,15 +57,15 @@ bool is_in_countrylist(int countrynr) {
 }
 
 
-/* check if hiscall is in COUNTRYLIST from logcfg.dat */
+/* check if current_qso.call is in COUNTRYLIST from logcfg.dat */
 // FIXME: *** this function does not use its argument ***
 bool country_found(char prefix[]) {
     char tmpcall[15];
 
-    if (strlen(hiscall) == 0) {
+    if (strlen(current_qso.call) == 0) {
 	strcpy(tmpcall, my.call);
     } else
-	strcpy(tmpcall, hiscall);
+	strcpy(tmpcall, current_qso.call);
 
     countrynr = getctydata(tmpcall);
 

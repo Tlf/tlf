@@ -188,6 +188,7 @@ typedef struct {
 } pfxnummulti_t;
 
 #define COMMENT_SIZE    80
+#define CALL_SIZE       20
 
 /* represents different parts of a qso line */
 struct qso_t {
@@ -292,8 +293,8 @@ enum {
 /* Enums for RESEND_CALL feature */
 enum {
     RESEND_NOT_SET,		/* Resend feature not set */
-    RESEND_PARTIAL,		/* Resend partial hiscall */
-    RESEND_FULL,		/* Resend full hiscall again */
+    RESEND_PARTIAL,		/* Resend partial call */
+    RESEND_FULL,		/* Resend full call again */
 };
 
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}

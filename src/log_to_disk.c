@@ -74,7 +74,7 @@ void log_to_disk(int from_lan) {
     if (!from_lan) {		// qso from this node
 
 	/* remember call and report for resend after qso (see callinput.c)  */
-	strcpy(lastcall, hiscall);
+	strcpy(lastcall, current_qso.call);
 	strcpy(last_rst, sent_rst);
 
 	// use normalized comment if available

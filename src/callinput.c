@@ -138,7 +138,7 @@ int callinput(void) {
     struct grab_t {
 	enum grabstate_t state;
 	freq_t spotfreq;
-	char call[15];
+	char call[CALL_SIZE];
     };
 
     static struct grab_t grab =  { .state = NONE };
@@ -154,7 +154,7 @@ int callinput(void) {
     printcall();	/* print call input field */
     searchlog();
 
-    while (strlen(hiscall) <= MAX_CALL_LENGTH) {
+    while (strlen(current_qso.call) <= MAX_CALL_LENGTH) {
 
 	show_zones(bandinx);
 	update_info_line();
@@ -174,7 +174,7 @@ int callinput(void) {
 		show_rtty();
 	    }
 
-	    if (digikeyer == FLDIGI && fldigi_set_callfield == 1 && hiscall[0] != '\0') {
+	    if (digikeyer == FLDIGI && fldigi_set_callfield == 1 && current_qso.call[0] != '\0') {
 		freqstore = freq;
 		fldigi_set_callfield = 0;
 	    }
@@ -183,10 +183,10 @@ int callinput(void) {
 	     * (indicated by non-zero freqstore) check if he turns away
 	     * from frequency and if so add call to spot list */
 	    if (bmautoadd && freqstore != 0) {
-		if (strlen(hiscall) >= 3) {
+		if (strlen(current_qso.call) >= 3) {
 		    if (fabs(freq - freqstore) > 500) {
-			add_to_spots(hiscall, freqstore);
-			hiscall[0] = '\0';
+			add_to_spots(current_qso.call, freqstore);
+			current_qso.call[0] = '\0';
 			freqstore = 0;
 			break;
 		    }
@@ -196,10 +196,10 @@ int callinput(void) {
 	    /* if BMAUTOGRAB is active in S&P mode and input field is empty and a spot has
 	     * not already been grabbed here check if a spot is on freq
 	     * and pick it up if one found */
-	    if (bmautograb && cqmode == S_P && *hiscall == '\0' && grab.state == NONE) {
+	    if (bmautograb && cqmode == S_P && *current_qso.call == '\0' && grab.state == NONE) {
 		get_spot_on_qrg(grab.call, freq);
 		if (strlen(grab.call) >= 3) {
-		    strncpy(hiscall, grab.call, sizeof(hiscall));
+		    g_strlcpy(current_qso.call, grab.call, CALL_SIZE);
 		    grab.state = REACHED;
 		    grab.spotfreq = freq;
 		    freqstore = 0;
@@ -219,20 +219,20 @@ int callinput(void) {
 	     * then forget about it */
 	    if (fabs(freq - grab.spotfreq) > 500 && grab.state == REACHED) {
 		grab.state = NONE;
-		hiscall[0] = '\0';
+		current_qso.call[0] = '\0';
 		break;
 	    }
 
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
-	    wmove(stdscr, 12, 29 + strlen(hiscall));
+	    wmove(stdscr, 12, 29 + strlen(current_qso.call));
 	    x = key_poll();
 
 	}
 
 	/* special handling of some keycodes if call field is empty */
-	if (*hiscall == '\0') {
+	if (*current_qso.call == '\0') {
 	    // <Enter>, sends CQ message (F1), starts autoCQ, or sends S&P message.
 	    if (x == '\n' || x == KEY_ENTER) {
 		if (cqmode == CQ) {
@@ -292,7 +292,7 @@ int callinput(void) {
 
 		} else {
 
-		    if (strlen(hiscall) > 2) {
+		    if (strlen(current_qso.call) > 2) {
 			if ((CONTEST_IS(CQWW) || wazmult)
 				&& current_qso.comment[0] == '\0')
 			    strcpy(current_qso.comment, cqzone);
@@ -336,7 +336,7 @@ int callinput(void) {
 
 	    // <Home>, enter call edit when call field is not empty.
 	    case KEY_HOME: {
-		if ((*hiscall != '\0') && (ungetch(x) == OK)) {
+		if ((*current_qso.call != '\0') && (ungetch(x) == OK)) {
 		    calledit();
 		}
 
@@ -345,7 +345,7 @@ int callinput(void) {
 
 	    // Left Arrow, enter call edit when call field is not empty, or band down.
 	    case KEY_LEFT: {
-		if (*hiscall != '\0') {
+		if (*current_qso.call != '\0') {
 		    calledit();
 		} else {
 		    handle_bandswitch(BAND_DOWN);
@@ -435,13 +435,13 @@ int callinput(void) {
 
 	    // <Page-Up>, change RST if call field not empty, else increase CW speed.
 	    case KEY_PPAGE: {
-		if (change_rst && (strlen(hiscall) != 0)) {	// change RST
+		if (change_rst && (strlen(current_qso.call) != 0)) {	// change RST
 
 		    rst_sent_up();
 
 		    if (!no_rst)
 			mvaddstr(12, 44, sent_rst);
-		    mvaddstr(12, 29, hiscall);
+		    mvaddstr(12, 29, current_qso.call);
 
 		} else {	// change cw speed
 		    speedup();
@@ -456,13 +456,13 @@ int callinput(void) {
 
 	    // <Page-Down>, change RST if call field not empty, else decrease CW speed.
 	    case KEY_NPAGE: {
-		if (change_rst && (strlen(hiscall) != 0)) {
+		if (change_rst && (strlen(current_qso.call) != 0)) {
 
 		    rst_sent_down();
 
 		    if (!no_rst)
 			mvaddstr(12, 44, sent_rst);
-		    mvaddstr(12, 29, hiscall);
+		    mvaddstr(12, 29, current_qso.call);
 
 		} else {
 
@@ -477,7 +477,7 @@ int callinput(void) {
 	    // <Enter>, log QSO in CT mode, else test if B4 message should be sent.
 	    case '\n':
 	    case KEY_ENTER: {
-		if (strlen(hiscall) > 2 && ctcomp) {
+		if (strlen(current_qso.call) > 2 && ctcomp) {
 		    /* There seems to be a call, log it in CT mode but only if
 		     * the exchange field is not empty.
 		     */
@@ -491,12 +491,12 @@ int callinput(void) {
 		    }
 		}
 
-		if (strlen(hiscall) < 3 || nob4)
+		if (strlen(current_qso.call) < 3 || nob4)
 		    break;
 
 		/* check b4 QSO if call is long enough and 'nob4' off */
 
-		dupe = is_dupe(hiscall, bandinx, trxmode);
+		dupe = is_dupe(current_qso.call, bandinx, trxmode);
 
 		if (dupe == ISDUPE) {
 		    // XXX: Before digi_message, SSB mode sent CW here. - W8BSD
@@ -523,7 +523,7 @@ int callinput(void) {
 	    // Colon, prefix for entering commands or changing parameters.
 	    case ':': {
 		changepars();
-		hiscall[0] = '\0';
+		current_qso.call[0] = '\0';
 		x = 0;
 		clear_display();
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -614,10 +614,10 @@ int callinput(void) {
 
 	    // Query, send call with " ?" appended or F5 message in voice mode.
 	    case '?': {
-		if (*hiscall != '\0') {
-		    strcat(hiscall, " ?");
+		if (*current_qso.call != '\0') {
+		    strcat(current_qso.call, " ?");
 		    send_standard_message(4);
-		    hiscall[strlen(hiscall) - 2] = '\0';
+		    current_qso.call[strlen(current_qso.call) - 2] = '\0';
 		}
 		x = -1;
 		break;
@@ -625,11 +625,11 @@ int callinput(void) {
 
 	    // <Backspace>, remove character left of cursor, move cursor left one position.
 	    case KEY_BACKSPACE: {
-		if (*hiscall != '\0') {
+		if (*current_qso.call != '\0') {
 		    getyx(stdscr, cury, curx);
 		    mvaddstr(cury, curx - 1, " ");
 		    move(cury, curx - 1);
-		    hiscall[strlen(hiscall) - 1] = '\0';
+		    current_qso.call[strlen(current_qso.call) - 1] = '\0';
 		}
 		break;
 	    }
@@ -968,16 +968,16 @@ int callinput(void) {
 	if (valid_call_char(x)) {
 	    x = g_ascii_toupper(x);
 
-	    if (strlen(hiscall) < MAX_CALL_LENGTH) {
+	    if (strlen(current_qso.call) < MAX_CALL_LENGTH) {
 		instring[0] = x;
 		instring[1] = '\0';
 		addch(x);
-		strcat(hiscall, instring);
+		strcat(current_qso.call, instring);
 		if (cqmode == CQ && cwstart > 0 &&
 			trxmode == CWMODE && iscontest) {
 		    /* early start keying after 'cwstart' characters but only
 		     * if input field contains at least one nondigit */
-		    if (strlen(hiscall) == cwstart && !plain_number(hiscall)) {
+		    if (strlen(current_qso.call) == cwstart && !plain_number(current_qso.call)) {
 			x = autosend();
 		    }
 		}
@@ -991,7 +991,7 @@ int callinput(void) {
 	    if (x == '\n' || x == KEY_ENTER) {
 		/* early start keying after 'Enter' but only if input field
 		 * contains at least two chars, one or more of it nondigit */
-		if (strlen(hiscall) >= 2 && !plain_number(hiscall)) {
+		if (strlen(current_qso.call) >= 2 && !plain_number(current_qso.call)) {
 		    x = autosend();
 		}
 	    }
@@ -1060,15 +1060,15 @@ int autosend() {
 
     early_started = 1;
     sending_call = 1;
-    sendmessage(hiscall);
+    sendmessage(current_qso.call);
     sending_call = 0;
-    strcpy(hiscall_sent, hiscall);
+    strcpy(hiscall_sent, current_qso.call);
 
     char_sent = 0; 			/* no char sent so far */
-    timeout_sent = (1.2 / GetCWSpeed()) * getCWdots(hiscall[char_sent]);
+    timeout_sent = (1.2 / GetCWSpeed()) * getCWdots(current_qso.call[char_sent]);
 
     timer = g_timer_new();
-    timeout = (1.2 / GetCWSpeed()) * cw_message_length(hiscall);
+    timeout = (1.2 / GetCWSpeed()) * cw_message_length(current_qso.call);
 
     x = -1;
     while ((x != ESCAPE) && (x != '\n' && x != KEY_ENTER)) {
@@ -1083,13 +1083,13 @@ int autosend() {
 		/* one char sent - display and set new timeout */
 		char_sent ++;
 		timeout_sent +=
-		    (1.2 / GetCWSpeed()) * getCWdots(hiscall[char_sent]);
+		    (1.2 / GetCWSpeed()) * getCWdots(current_qso.call[char_sent]);
 
 	    }
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
-	    wmove(stdscr, 12, 29 + strlen(hiscall));
+	    wmove(stdscr, 12, 29 + strlen(current_qso.call));
 	    x = key_poll();
 
 	}
@@ -1108,16 +1108,16 @@ int autosend() {
 	}
 
 
-	int len = strlen(hiscall);
+	int len = strlen(current_qso.call);
 	if (len < 13 && valid_call_char(x)) {
 	    char append[2];
 
 	    /* convert to upper case */
 	    x = g_ascii_toupper(x);
 
-	    /* insert into hiscall */
-	    hiscall[len] = x;
-	    hiscall[len + 1] = '\0';
+	    /* insert into current_qso.call */
+	    current_qso.call[len] = x;
+	    current_qso.call[len + 1] = '\0';
 
 	    /* display it  */
 	    printcall();
@@ -1195,7 +1195,7 @@ void send_bandswitch(freq_t freq) {
  **/
 void handle_bandswitch(int direction) {
     // make sure call field is empty and arrows are enabled
-    if (*hiscall != '\0' || no_arrows) {
+    if (*current_qso.call != '\0' || no_arrows) {
 	return;
     }
 

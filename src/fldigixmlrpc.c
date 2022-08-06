@@ -627,7 +627,7 @@ int fldigi_get_log_call() {
 
 	    // check the current call in Tlf; if the previous local callsign isn't empty,
 	    // that means the OP clean up the callsign field, so it needs to clean in Fldigi too
-	    if (hiscall[0] == '\0' && thiscall[0] != '\0') {
+	    if (current_qso.call[0] == '\0' && thiscall[0] != '\0') {
 		thiscall[0] = '\0';
 		rc = fldigi_xmlrpc_query(&result, &env, "log.set_call", "s", "");
 		if (rc != 0) {
@@ -637,12 +637,12 @@ int fldigi_get_log_call() {
 	    // otherwise, fill the callsign field in Tlf
 	    else {
 		if (strlen(tempstr) >= 3) {
-		    if (hiscall[0] == '\0') {
-			strcpy(hiscall, tempstr);
-			hiscall[strlen(tempstr)] = '\0';
-			strcpy(thiscall, hiscall);
+		    if (current_qso.call[0] == '\0') {
+			strcpy(current_qso.call, tempstr);
+			current_qso.call[strlen(tempstr)] = '\0';
+			strcpy(thiscall, current_qso.call);
 			printcall();
-			getctydata_pfx(hiscall);
+			getctydata_pfx(current_qso.call);
 			searchlog();
 			fldigi_set_callfield = 1;
 		    }

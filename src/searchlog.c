@@ -214,7 +214,7 @@ int displayPartials(char *suggested_call) {
     char printres[14] = "";
     int suggested = 0;
 
-    const int hislen = strlen(hiscall);
+    const int hislen = strlen(current_qso.call);
 
     if (hislen < 2) {
 	return 0;   // input too short
@@ -257,7 +257,7 @@ int displayPartials(char *suggested_call) {
 	if (strlen(searchresult[k]) <= 2) {
 	    continue;   // too short (unlikely)
 	}
-	if (strstr(searchresult[k], hiscall) == NULL) {
+	if (strstr(searchresult[k], current_qso.call) == NULL) {
 	    continue;   // not matching
 	}
 
@@ -282,7 +282,7 @@ int displayPartials(char *suggested_call) {
     attron(modify_attr(COLOR_PAIR(C_LOG) | A_STANDOUT));
 
     // make 2 runs: fist look for calls starting with
-    // then the ones containing 'hiscall'
+    // then the ones containing 'current_qso.call'
     for (int run = 1; run <= 2; run++) {
 	for (k = 0; k < callmaster->len && !full; k++) {
 
@@ -290,9 +290,9 @@ int displayPartials(char *suggested_call) {
 
 	    int match;
 	    if (run == 1) { // starts with
-		match = (strncmp(mastercall, hiscall, hislen) == 0);
+		match = (strncmp(mastercall, current_qso.call, hislen) == 0);
 	    } else {        // contains
-		match = (strstr(mastercall, hiscall) != NULL);
+		match = (strstr(mastercall, current_qso.call) != NULL);
 	    }
 
 	    if (!match) {
@@ -324,9 +324,9 @@ void handlePartials(void) {
     * pressing tab in calledit() function
     */
     if ((nr_suggested == 1) && use_part && !block_part
-	    && strlen(suggested_call) > strlen(hiscall)) {
+	    && strlen(suggested_call) > strlen(current_qso.call)) {
 
-	strcpy(hiscall, suggested_call);
+	strcpy(current_qso.call, suggested_call);
 	beep();
     }
 }
@@ -418,14 +418,14 @@ void filterLog(const char *call) {
 
 
 /* helper functions to check filtered lines for match with
- * hiscall or actual band */
+ * current_qso.call or actual band */
 static bool call_matches(const char *line) {
     char buffer[20];
 
     g_strlcpy(buffer,  line + 12, 20);
     *strchrnul(buffer, ' ') = '\0';
 
-    return (strcmp(buffer, hiscall) == 0);
+    return (strcmp(buffer, current_qso.call) == 0);
 }
 
 static bool band_matches(const char *line) {
@@ -451,7 +451,7 @@ static bool line_matches_actual_qso(const char *line) {
 	    && (band_matches(line) || qso_once)
 	    && is_current_mode(line)) {
 
-	int found = lookup_worked(hiscall);
+	int found = lookup_worked(current_qso.call);
 	if (worked_in_current_minitest_period(found)) {
 	    return true;
 	}
@@ -599,7 +599,7 @@ void displayWorkedZonesCountries(int z) {
 
     if (CONTEST_IS(PACC_PA)) {
 
-	getpx(hiscall);
+	getpx(current_qso.call);
 	pxnr = districtnumber(wpx_prefix);
 
 	if ((countrynr == w_cty) ||
@@ -634,10 +634,10 @@ void displayWorkedZonesCountries(int z) {
     }
 
     if ((pfxnummultinr >= 0 || country_mult) && iscontest) {
-	getpx(hiscall);
+	getpx(current_qso.call);
 	pxnr = districtnumber(wpx_prefix);
 
-	getctydata(hiscall);
+	getctydata(current_qso.call);
 	pfxnumcntidx = -1;
 	int tbandidx = -1;
 
@@ -690,12 +690,12 @@ void searchlog() {
     }
 
     /* show checkwindow and partials */
-    if (strlen(hiscall) > 1 && searchflg) {
+    if (strlen(current_qso.call) > 1 && searchflg) {
 
 	ShowSearchPanel();
 	drawSearchWin();
 
-	filterLog(hiscall);
+	filterLog(current_qso.call);
 	displaySearchResults();
 
 
@@ -719,7 +719,7 @@ void searchlog() {
 
 	if (dupe == ISDUPE) {
 	    attrset(COLOR_PAIR(C_DUPE));
-	    mvaddstr(12, 29, hiscall);
+	    mvaddstr(12, 29, current_qso.call);
 	    refreshp();
 	    usleep(500000);
 	}

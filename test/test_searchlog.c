@@ -136,6 +136,8 @@ int setup_default(void **state) {
 
     showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
 
+    current_qso.call = g_malloc0(CALL_SIZE);
+
     contest = &config_qso;
     iscontest = false;
 
@@ -296,38 +298,38 @@ void test_bandstr2line(void **state) {
 /* testing pickup call suggestion for USEPARTIAL */
 void test_UsePartialFromLog(void **state) {
     use_part = true;
-    strcpy(hiscall, "K4DE");
-    filterLog(hiscall);
+    strcpy(current_qso.call, "K4DE");
+    filterLog(current_qso.call);
     handlePartials();
-    assert_string_equal(hiscall, "K4DEF");
+    assert_string_equal(current_qso.call, "K4DEF");
 }
 
 void test_UsePartialFromLogNotUnique(void **state) {
     use_part = true;
-    strcpy(hiscall, "UA");
-    filterLog(hiscall);
+    strcpy(current_qso.call, "UA");
+    filterLog(current_qso.call);
     handlePartials();
-    assert_string_equal(hiscall, "UA");
+    assert_string_equal(current_qso.call, "UA");
 }
 
 void test_UsePartialFromCallmaster(void **state) {
     write_callmaster("callmaster", "# data\nA1AA\nA2BB\n\n");
     load_callmaster();
     use_part = true;
-    strcpy(hiscall, "A1");
-    filterLog(hiscall);
+    strcpy(current_qso.call, "A1");
+    filterLog(current_qso.call);
     handlePartials();
-    assert_string_equal(hiscall, "A1AA");
+    assert_string_equal(current_qso.call, "A1AA");
 }
 
 void test_UsePartialNotUnique(void **state) {
     write_callmaster("callmaster", "# data\nA1AA\nLA3AA\nA3BB\n");
     load_callmaster();
     use_part = true;
-    strcpy(hiscall, "A3");
-    filterLog(hiscall);
+    strcpy(current_qso.call, "A3");
+    filterLog(current_qso.call);
     handlePartials();
-    assert_string_equal(hiscall, "A3");
+    assert_string_equal(current_qso.call, "A3");
 }
 
 void test_UsePartialNotUnique_only_callmaster(void **state) {
@@ -335,10 +337,10 @@ void test_UsePartialNotUnique_only_callmaster(void **state) {
     write_callmaster("callmaster", "# data\nA1AA\nA2HG\nHG3BB\n");
     load_callmaster();
     use_part = true;
-    strcpy(hiscall, "HG");  // not in log yet
-    filterLog(hiscall);
+    strcpy(current_qso.call, "HG");  // not in log yet
+    filterLog(current_qso.call);
     handlePartials();
-    assert_string_equal(hiscall, "HG");
+    assert_string_equal(current_qso.call, "HG");
 }
 
 /* test if partials display checks callmaster even if match was found in log */
@@ -347,9 +349,9 @@ void test_displayPartials_exact_callmaster(void **state) {
     // callmaster has also some UA3JKx calls
     write_callmaster("callmaster", "# data\nA1AA\nUA3JK\nUA3JKA\nUA3JKB\n");
     load_callmaster();
-    strcpy(hiscall, "UA3JK");   // already in log
+    strcpy(current_qso.call, "UA3JK");   // already in log
 
-    filterLog(hiscall);
+    filterLog(current_qso.call);
     handlePartials();
 
     check_mvprintw_output(2, 1, 1, "UA3JK");    // first - from log
@@ -373,9 +375,9 @@ void test_displayPartials(void **state) {
     // callmaster has also some UAs
     write_callmaster("callmaster", "# data\nA1AA\nF2UAA\nGW3UAB\n");
     load_callmaster();
-    strcpy(hiscall, "UA");
+    strcpy(current_qso.call, "UA");
 
-    filterLog(hiscall);
+    filterLog(current_qso.call);
     handlePartials();
 
     // check selected displayed values only (F2UAA must not be shown)

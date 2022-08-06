@@ -143,6 +143,8 @@ int setup_default(void **state) {
     if (result == -1)
 	perror("chdir");
 
+    current_qso.call = g_malloc0(CALL_SIZE);
+
     memset(&my, 0, sizeof(my));
     memset(&bm_config, 0, sizeof(bm_config));
     memset(&pfxnummulti, 0, sizeof(pfxnummulti));
