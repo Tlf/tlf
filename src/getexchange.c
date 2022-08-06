@@ -726,8 +726,7 @@ static void checkexchange_sectn_mult(struct qso_t *qso, bool interactive) {
 /* ------------------------------------------------------------------------ */
 /*
     input: comment, interactive
-    output (current_qso): callupdate, normalized_comment, section, mult1_value
-    //FIXME use qso_t arg instead of comment
+    output (qso): callupdate, normalized_comment, section, mult1_value
     side effect: lower line of search panel updated if interactive
 */
 
