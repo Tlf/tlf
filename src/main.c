@@ -261,7 +261,6 @@ bool qtc_recv_lazy = false;
 
 struct qso_t current_qso;
 
-char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */
 int cwstart = 0;			/**< number characters after which
@@ -996,9 +995,6 @@ int main(int argc, char *argv[]) {
     strcat(logline4, backgrnd_str);
 
     init_keyer_terminal();
-
-    hiscall[0] = '\0';
-
 
     if (isFirstStart()) {
 	/* first time called in this directory */
