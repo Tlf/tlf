@@ -21,6 +21,8 @@
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/utils.o
 
+void checkexchange(struct qso_t *qso, bool interactive) {}
+
 char *calc_continent(int zone);
 
 struct qso_t qso = { };

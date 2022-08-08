@@ -64,6 +64,7 @@ struct qso_t *collect_qso_data(void) {
     qso->freq = freq;
     qso->timestamp = get_time();
     qso->comment = g_strdup(current_qso.comment);
+    qso->mult1_value = g_strdup(current_qso.mult1_value);
     qso->qso_nr = qsonum;
     qso->rst_s = atoi(sent_rst);
     qso->rst_r = atoi(recvd_rst);

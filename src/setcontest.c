@@ -37,6 +37,20 @@
 #include "score.h"
 #include "tlf.h"
 
+#include "getexchange.h"
+#include "addmult.h"
+#include "log_utils.h"
+
+// create a qso_t from a spot for multiplier checking
+static struct qso_t *qso_from_spot(spot *data) {
+    struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+    qso->call = g_strdup(data->call);
+    qso->comment = g_strdup("");    // TODO recall exchange if possible
+    qso->freq = data->freq;
+    qso->band = data->band;
+    return qso;
+}
+
 /* No Multiplier mark in bandmap for multis determined from comment field;
  * Code works also for modes with no multiplier at all */
 static bool no_multi(spot *data) {
@@ -112,7 +126,12 @@ bool general_ismulti(spot *data) {
 	return ((zones[data->cqzone] & inxes[band]) == 0);
     }
 
-    return false;
+    struct qso_t *qso = qso_from_spot(data);
+    checkexchange(qso, false);
+    bool new_mult = (check_mult(qso) >= 0);
+    free_qso(qso);
+
+    return new_mult;
 }
 
 

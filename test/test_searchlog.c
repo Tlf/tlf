@@ -28,6 +28,8 @@
 // OBJECT ../src/score.o
 // OBJECT ../src/utils.o
 
+void checkexchange(struct qso_t *qso, bool interactive) {}
+
 char section[8] = "";       // defined in getexchange.c
 
 extern WINDOW *search_win;

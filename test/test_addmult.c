@@ -37,6 +37,8 @@ prefix_data *getctyinfo(char *call) {
     return NULL;
 }
 
+void checkexchange(struct qso_t *qso, bool interactive) {}
+
 contest_config_t config_focm;
 struct qso_t *this_qso;
 

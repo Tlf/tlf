@@ -31,6 +31,7 @@
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/cabrillo_utils.o
+// OBJECT ../src/log_utils.o
 
 // lancode.c
 int nodes = 0;
@@ -56,6 +57,9 @@ char *callmaster_filename = NULL;
 bool call_update = false;
 
 t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
+
+void checkexchange(struct qso_t *qso, bool interactive) {}
+int check_mult(struct qso_t *qso) { return -1; }
 
 contest_config_t config_focm;
 
