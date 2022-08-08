@@ -233,8 +233,11 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
 
     FILL_TO(77);
 
-    if (iscontest) 		/* cut back to make room for mults */
-	logline[68] = '\0';
+    if (!iscontest) {
+        return;         // not a contest, we are done
+    }
+
+    logline[68] = '\0'; /* cut back to make room for mults */
 
     if (CONTEST_IS(WPX) || pfxmult || pfxmultab) {	/* wpx */
 	// include new pfx in log line
@@ -244,11 +247,9 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
 	}
 
 	FILL_TO(73);
-    }
 
-    if (CONTEST_IS(CQWW) || wazmult || itumult) {
+    } else if (CONTEST_IS(CQWW) || wazmult || itumult) {
 	/* ------------cqww --------------------- */
-	logline[68] = '\0';
 
 	if (new_cty != 0) {     //FIXME global
 	    if (dxcc_by_index(new_cty)->pfx[0] == '*')
@@ -272,7 +273,7 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
 	//----------------------------------end cqww-----------------
 
     } else if (CONTEST_IS(ARRLDX_USA)) {
-	logline[68] = '\0';
+
 	if (new_cty != 0) {
 	    strncat(logline, dxcc_by_index(new_cty) -> pfx, 9);
 
@@ -281,7 +282,6 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
 
     } else if (dx_arrlsections && (countrynr != w_cty)
 	       && (countrynr != ve_cty)) {
-	logline[68] = '\0';
 
 	if (new_cty != 0) {
 	    strncat(logline, dxcc_by_index(new_cty) -> pfx, 9);
@@ -296,8 +296,6 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
 	       || sectn_mult_once
 	       || serial_grid4_mult) {
 
-	logline[68] = '\0';
-
 	if (new_mult >= 0) {    //FIXME global
 	    strncat(logline, multis[new_mult].name, 9);
 
@@ -306,7 +304,6 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
 
     } else if (dx_arrlsections
 	       && ((countrynr == w_cty) || (countrynr == ve_cty))) {
-	logline[68] = '\0';
 
 	if (new_mult >= 0) {
 	    strncat(logline, multis[new_mult].name, 9);
@@ -315,8 +312,6 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
 	}
 
     } else if (CONTEST_IS(PACC_PA) || pfxnummultinr > 0) {
-
-	logline[68] = '\0';
 
 	if (new_cty != 0) {
 	    strncat(logline, dxcc_by_index(new_cty) -> pfx, 9);
@@ -329,10 +324,7 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
 	    addcallarea = 0;
 	}
 
-    } else if (iscontest
-	       && (country_mult || dx_arrlsections)) {
-
-	logline[68] = '\0';
+    } else if (country_mult || dx_arrlsections) {
 
 	if (new_cty != 0) {
 	    strncat(logline, dxcc_by_index(new_cty) -> pfx, 9);
