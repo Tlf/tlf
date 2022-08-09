@@ -1015,9 +1015,9 @@ static int cfg_unique_call_multi(const cfg_arg_t arg) {
     g_strstrip(str);
 
     if (strcmp(str, "ALL") == 0) {
-	unique_call_multi = UNIQUECALL_ALL;
+	unique_call_multi = MULT_ALL;
     } else if (strcmp(str, "BAND") == 0) {
-	unique_call_multi = UNIQUECALL_BAND;
+	unique_call_multi = MULT_BAND;
     } else {
 	g_free(str);
 	error_details = g_strdup("must be ALL or BAND");

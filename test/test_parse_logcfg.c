@@ -1395,13 +1395,13 @@ void test_tune_seconds(void **state) {
 void test_unique_call_multi_all(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=ALL");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(unique_call_multi, UNIQUECALL_ALL);
+    assert_int_equal(unique_call_multi, MULT_ALL);
 }
 
 void test_unique_call_multi_band(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=BAND");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(unique_call_multi, UNIQUECALL_BAND);
+    assert_int_equal(unique_call_multi, MULT_BAND);
 }
 
 void test_digi_rig_mode_usb(void **state) {

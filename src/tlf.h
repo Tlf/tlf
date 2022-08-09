@@ -125,8 +125,11 @@ enum {
 
 #define MAX_SECTION_LENGTH 4
 
-#define UNIQUECALL_ALL      1
-#define UNIQUECALL_BAND     2
+enum {
+    MULT_NONE,      // multiplier not used
+    MULT_ALL,       // multiplier counted once on all bands
+    MULT_BAND,      // multiplier counted once per each band
+};
 
 #define EXCLUDE_NONE 0
 #define EXCLUDE_CONTINENT 1

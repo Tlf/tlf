@@ -39,9 +39,7 @@
 
 GPtrArray *mults_possible;
 
-enum { ALL_BAND, PER_BAND };
-
-int mult1_mode = PER_BAND;  //FIXME configure
+int mult1_mode = MULT_BAND;  //FIXME configure
 
 /*
  * \return	      - index in mults[] array if new mult or new on band
@@ -60,7 +58,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 
 	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
-	    remember_multi(get_mult(idx), qso->bandindex, ALL_BAND, check_only);
+	    remember_multi(get_mult(idx), qso->bandindex, MULT_ALL, check_only);
 	    // NOTE: return value not used, new mult is not marked in log
 	}
     }
@@ -72,7 +70,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    mult_index =
-		remember_multi(get_mult(idx), qso->bandindex, PER_BAND, check_only);
+		remember_multi(get_mult(idx), qso->bandindex, MULT_BAND, check_only);
 	}
     }
 
@@ -83,7 +81,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    mult_index =
-		remember_multi(get_mult(idx), qso->bandindex, ALL_BAND, check_only);
+		remember_multi(get_mult(idx), qso->bandindex, MULT_ALL, check_only);
 	}
     }
 
@@ -93,28 +91,28 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    mult_index =
-		remember_multi(get_mult(idx), qso->bandindex, PER_BAND, check_only);
+		remember_multi(get_mult(idx), qso->bandindex, MULT_BAND, check_only);
 	}
     }
 
     // --------------------wysiwyg----------------
     else if (wysiwyg_once) {
-	mult_index = remember_multi(stripped_comment, qso->bandindex, ALL_BAND,
+	mult_index = remember_multi(stripped_comment, qso->bandindex, MULT_ALL,
 				    check_only);
     }
 
     else if (wysiwyg_multi) {
-	mult_index = remember_multi(stripped_comment, qso->bandindex, PER_BAND,
+	mult_index = remember_multi(stripped_comment, qso->bandindex, MULT_BAND,
 				    check_only);
     }
 
     /* -------------- unique call multi -------------- */
-    else if (unique_call_multi == UNIQUECALL_ALL) {
-	mult_index = remember_multi(qso->call, qso->bandindex, ALL_BAND, check_only);
+    else if (unique_call_multi == MULT_ALL) {
+	mult_index = remember_multi(qso->call, qso->bandindex, MULT_ALL, check_only);
     }
 
-    else if (unique_call_multi == UNIQUECALL_BAND) {
-	mult_index = remember_multi(qso->call, qso->bandindex, PER_BAND, check_only);
+    else if (unique_call_multi == MULT_BAND) {
+	mult_index = remember_multi(qso->call, qso->bandindex, MULT_BAND, check_only);
     }
 
     // -----------   default: use mult1   -----------
@@ -164,7 +162,7 @@ void addmult_lan(void) {
 	}
 
 	if (idx >= 0) {
-	    remember_multi(get_mult(idx), bandinx, ALL_BAND, check_only);
+	    remember_multi(get_mult(idx), bandinx, MULT_ALL, check_only);
 	}
     }
 
@@ -173,26 +171,26 @@ void addmult_lan(void) {
 	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 
-	new_mult = remember_multi(stripped_comment, bandinx, ALL_BAND, check_only);
+	new_mult = remember_multi(stripped_comment, bandinx, MULT_ALL, check_only);
     }
 
     if (wysiwyg_multi) {
 	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 
-	new_mult = remember_multi(stripped_comment, bandinx, PER_BAND, check_only);
+	new_mult = remember_multi(stripped_comment, bandinx, MULT_BAND, check_only);
     }
 
     /* -------------- unique call multi -------------- */
     g_strlcpy(multi_call, lan_logline + 68, 10);
     g_strchomp(multi_call);
 
-    if (unique_call_multi == UNIQUECALL_ALL) {
-	new_mult = remember_multi(multi_call, bandinx, ALL_BAND, check_only);
+    if (unique_call_multi == MULT_ALL) {
+	new_mult = remember_multi(multi_call, bandinx, MULT_ALL, check_only);
     }
 
-    if (unique_call_multi == UNIQUECALL_BAND) {
-	new_mult = remember_multi(multi_call, bandinx, PER_BAND, check_only);
+    if (unique_call_multi == MULT_BAND) {
+	new_mult = remember_multi(multi_call, bandinx, MULT_BAND, check_only);
     }
 
 }
@@ -418,7 +416,7 @@ static pthread_mutex_t mult_mutex = PTHREAD_MUTEX_INITIALIZER;
  *
  * \param multiplier  - the multiplier as a string
  * \param band	      - the bandindex we are on
- * \param mult_mode   - PER_BAND -> check also if new band
+ * \param mult_mode   - MULT_BAND -> check also if new band
  * \param check_only  - do not record mult, only check it
  * \return	      - index in mults[] array if new mult or new on band
  *			(-1 if multiplier is an empty string or not new)
@@ -447,7 +445,7 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
 		    multscore[band]++;
 		}
 
-		if (mult_mode == PER_BAND) {
+		if (mult_mode == MULT_BAND) {
 		    index = i;  // new band
 		}
 	    }

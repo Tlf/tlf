@@ -102,7 +102,7 @@ contest_config_t *contest = &config_qso;	/* contest configuration */
 /* predefined contests */
 bool sprint_mode = false;
 int minitest = 0;	/**< if set, length of minitest period in seconds */
-int unique_call_multi = 0;          /* do we count calls as multiplier */
+int unique_call_multi = MULT_NONE;  /* do we count calls as multiplier */
 
 
 int addcallarea;
@@ -626,6 +626,7 @@ static void init_variables() {
     nodes = 0;
     shortqsonr = 0;
     tune_seconds = 6;   /* tune up for 6 s */
+    unique_call_multi = MULT_NONE;
 
     ctcomp = false;
     resend_call = RESEND_NOT_SET;
