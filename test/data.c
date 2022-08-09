@@ -403,7 +403,8 @@ int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 mults_t multis[MAX_MULTS]; 	/**< worked multis */
 int nr_multis = 0;      	/**< number of multis in multis[] */
 
-int unique_call_multi = 0;          /* do we count calls as multiplier */
+int unique_call_multi = MULT_NONE;  /* do we count calls as multiplier */
+int generic_mult = MULT_NONE;
 
 //////////////////
 char lan_logline[256];	    // defined in log_to_disk.c

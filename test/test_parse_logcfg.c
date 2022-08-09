@@ -204,7 +204,8 @@ int setup_default(void **state) {
     qtcrec_record_command[0][0] = 0;
     qtcrec_record_command[1][0] = 0;
     qtcrec_record_command_shutdown[0] = 0;
-    unique_call_multi = 0;
+    unique_call_multi = MULT_NONE;
+    generic_mult = MULT_NONE;
     digi_mode = -1;
 
     for (int i = 0; i < SP_CALL_MSG; ++i) {
@@ -1409,6 +1410,25 @@ void test_unique_call_multi_band(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=BAND");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(unique_call_multi, MULT_BAND);
+}
+
+void test_generic_mult_none(void **state) {
+    generic_mult = MULT_ALL;
+    int rc = call_parse_logcfg("GENERIC_MULT=NONE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(generic_mult, MULT_NONE);
+}
+
+void test_generic_mult_all(void **state) {
+    int rc = call_parse_logcfg("GENERIC_MULT=ALL");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(generic_mult, MULT_ALL);
+}
+
+void test_generic_mult_band(void **state) {
+    int rc = call_parse_logcfg("GENERIC_MULT=BAND");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(generic_mult, MULT_BAND);
 }
 
 void test_digi_rig_mode_usb(void **state) {

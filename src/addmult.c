@@ -39,8 +39,6 @@
 
 GPtrArray *mults_possible;
 
-int mult1_mode = MULT_BAND;  //FIXME configure
-
 /*
  * \return	      - index in mults[] array if new mult or new on band
  *			-1 if not a (new) mult
@@ -111,9 +109,15 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 	mult_index = remember_multi(qso->call, qso->bandindex, unique_call_multi, check_only);
     }
 
-    // -----------   default: use mult1   -----------
-    else {
-	mult_index = remember_multi(qso->mult1_value, qso->bandindex, mult1_mode,
+    /* ------------ grid mult (per band) ------------- */
+    else if (serial_grid4_mult) {
+	mult_index = remember_multi(qso->mult1_value, qso->bandindex, MULT_BAND,
+				    check_only);
+    }
+
+    // -----------   generic: use mult1   -----------
+    else if (generic_mult != MULT_NONE) {
+	mult_index = remember_multi(qso->mult1_value, qso->bandindex, generic_mult,
 				    check_only);
     }
 

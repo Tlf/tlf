@@ -1034,6 +1034,10 @@ static int cfg_unique_call_multi(const cfg_arg_t arg) {
     return set_multi_mode(arg, &unique_call_multi);
 }
 
+static int cfg_generic_mult(const cfg_arg_t arg) {
+    return set_multi_mode(arg, &generic_mult);
+}
+
 static int cfg_digi_rig_mode(const cfg_arg_t arg) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
@@ -1258,6 +1262,7 @@ static config_t logcfg_configs[] = {
     {"DIGI_RIG_MODE",       NEED_PARAM, cfg_digi_rig_mode},
     {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
     {"RESEND_CALL",         NEED_PARAM, cfg_resend_call},
+    {"GENERIC_MULT",        NEED_PARAM, cfg_generic_mult},
 
     {NULL}  // end marker
 };

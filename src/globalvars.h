@@ -75,6 +75,7 @@ extern bool pfxmult;
 extern bool pfxmultab;
 extern int minute_timer;
 extern int unique_call_multi;
+extern int generic_mult;
 
 extern char logline_edit[5][LOGLINELEN + 1];
 #define logline0 logline_edit[0]
