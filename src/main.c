@@ -177,9 +177,6 @@ char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
 char last_rst[4] = "599";       /* Report for last QSO */
 
-/* TODO Maybe we can use the following */
-int mults_per_band = 1;		/* mults count per band */
-
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
 int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
 bool clusterlog = false;	/* clusterlog on/off */
