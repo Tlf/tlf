@@ -290,7 +290,7 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
 	}
 
     } else if (wysiwyg_multi
-	       || (unique_call_multi != 0)
+	       || unique_call_multi != MULT_NONE
 	       || serial_section_mult
 	       || sectn_mult
 	       || sectn_mult_once

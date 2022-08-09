@@ -107,12 +107,8 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
     }
 
     /* -------------- unique call multi -------------- */
-    else if (unique_call_multi == MULT_ALL) {
-	mult_index = remember_multi(qso->call, qso->bandindex, MULT_ALL, check_only);
-    }
-
-    else if (unique_call_multi == MULT_BAND) {
-	mult_index = remember_multi(qso->call, qso->bandindex, MULT_BAND, check_only);
+    else if (unique_call_multi != MULT_NONE) {
+	mult_index = remember_multi(qso->call, qso->bandindex, unique_call_multi, check_only);
     }
 
     // -----------   default: use mult1   -----------
