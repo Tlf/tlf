@@ -158,7 +158,7 @@ int getexchange(void) {
 		continue;
 	    }
 	    case CTRL_A: {	// Ctrl-A (^A)
-		addspot();
+		add_local_spot();
 		*comment = '\0';
 		x = TAB;	// <Tab>
 		break;

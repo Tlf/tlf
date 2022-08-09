@@ -35,7 +35,7 @@ void show_rtty(void) {}
 void OnLowerSearchPanel(int x, char *str) {}
 void sendmessage(const char *msg) {}
 void send_standard_message(int msg) {}
-void addspot(void) {}
+void add_local_spot(void) {}
 void keyer(void) {}
 void qtc_main_panel(int direction) {}
 void rst_recv_up() {}

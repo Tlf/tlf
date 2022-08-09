@@ -36,7 +36,7 @@ Planned for later versions
 
 [ ] Do a complete rewrite of display related code in the long term to
     allow vertical AND horizontal resizing.
-
+[ ] Add undo functionality to editing last 5 QSOs (see PR #333)
 
 Internals
 ~~~~~~~~~
