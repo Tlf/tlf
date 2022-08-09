@@ -422,8 +422,8 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
     bool found = false;
     int index = -1;
 
-    if (multiplier == NULL || *multiplier == '\0')
-	return -1;			/* ignore empty string */
+    if (multiplier == NULL || *multiplier == '\0' || mult_mode == MULT_NONE)
+	return -1;      /* ignore if empty string or disabled */
 
     pthread_mutex_lock(&mult_mutex);
 
