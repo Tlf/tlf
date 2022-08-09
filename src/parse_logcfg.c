@@ -1010,22 +1010,28 @@ static int cfg_minitest(const cfg_arg_t arg) {
     return PARSE_OK;
 }
 
-static int cfg_unique_call_multi(const cfg_arg_t arg) {
+static int set_multi_mode(const cfg_arg_t arg, int *config) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
 
     if (strcmp(str, "ALL") == 0) {
-	unique_call_multi = MULT_ALL;
+	*config = MULT_ALL;
     } else if (strcmp(str, "BAND") == 0) {
-	unique_call_multi = MULT_BAND;
+	*config = MULT_BAND;
+    } else if (strcmp(str, "NONE") == 0) {
+	*config = MULT_NONE;
     } else {
 	g_free(str);
-	error_details = g_strdup("must be ALL or BAND");
+	error_details = g_strdup("must be ALL, BAND or NONE");
 	return PARSE_WRONG_PARAMETER;
     }
 
     g_free(str);
     return PARSE_OK;
+}
+
+static int cfg_unique_call_multi(const cfg_arg_t arg) {
+    return set_multi_mode(arg, &unique_call_multi);
 }
 
 static int cfg_digi_rig_mode(const cfg_arg_t arg) {

@@ -1392,6 +1392,13 @@ void test_tune_seconds(void **state) {
     assert_int_equal(tune_seconds, 73);
 }
 
+void test_unique_call_multi_none(void **state) {
+    unique_call_multi = MULT_ALL;
+    int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=NONE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(unique_call_multi, MULT_NONE);
+}
+
 void test_unique_call_multi_all(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=ALL");
     assert_int_equal(rc, PARSE_OK);
