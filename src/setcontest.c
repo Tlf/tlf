@@ -47,7 +47,7 @@ static struct qso_t *qso_from_spot(spot *data) {
     qso->call = g_strdup(data->call);
     qso->comment = g_strdup("");    // TODO recall exchange if possible
     qso->freq = data->freq;
-    qso->band = data->band;
+    qso->bandindex = data->band;    //FIXME: naming
     return qso;
 }
 
