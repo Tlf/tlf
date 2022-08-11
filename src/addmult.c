@@ -418,14 +418,13 @@ static pthread_mutex_t mult_mutex = PTHREAD_MUTEX_INITIALIZER;
  * \param band	      - the bandindex we are on
  * \param mult_mode   - MULT_BAND -> check also if new band
  * \param check_only  - do not record mult, only check it
- * \return	      - index in mults[] array if new mult or new on band
+ * \return	      - index into mults[] array if new mult or on new band
  *			(-1 if multiplier is an empty string or not new)
  */
 int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
     /* search multbuffer in mults array */
     bool found = false;
     int index = -1;
-
     if (multiplier == NULL || *multiplier == '\0' || mult_mode == MULT_NONE)
 	return -1;      /* ignore if empty string or disabled */
 
