@@ -513,7 +513,7 @@ static void checkexchange_cqww(struct qso_t *qso, bool interactive) {
 
     // multiplier: zone
     sprintf(qso->normalized_comment, "%02d", zone);
-    g_strlcpy(qso->mult1_value, qso->normalized_comment, COMMENT_SIZE);
+    g_strlcpy(qso->mult1_value, qso->normalized_comment, MULT_SIZE);
 
     if (interactive) {
 	OnLowerSearchPanel(32, qso->normalized_comment); // show current zone
@@ -601,7 +601,7 @@ static void checkexchange_arrlss(struct qso_t *qso, bool interactive) {
     }
 
     sprintf(qso->normalized_comment, "%s %s %s %s", serial, precedent, check, qso->section);
-    g_strlcpy(qso->mult1_value, qso->section, MAX_SECTION_LENGTH + 1);   // multiplier: section
+    g_strlcpy(qso->mult1_value, qso->section, MULT_SIZE);   // multiplier: section
 }
 
 static void checkexchange_serial_section(struct qso_t *qso, bool interactive) {
