@@ -53,10 +53,9 @@ void nicebox(int y, int x, int height, int width, char *boxname) {
 
 void ask(char *buffer, char *what) {
 
-    attron(A_STANDOUT);
-    mvaddstr(15, 1, spaces(78));
     nicebox(14, 0, 1, 78, what);
     attron(A_STANDOUT);
+    mvaddstr(15, 1, spaces(78));
     move(15, 1);
 
     echo();
