@@ -257,8 +257,23 @@ int getexchange(void) {
 	    }
 
 	    case KEY_LEFT: {	/* Left Arrow--edit exchange field */
-		if (*comment != '\0')
+		if (*comment != '\0') {
 		    exchange_edit();
+		    i = strlen(comment);
+		}
+		break;
+	    }
+
+	    case KEY_UP:	/* Up/Down--increase/decrease serial number */
+	    case KEY_DOWN: {
+		if (i > 0 && i <= contest->exchange_width && strspn(comment, "0123456789") == i) { /* comment non-empty and only digits */
+		    int nr = atoi(comment);
+		    nr += (x == KEY_UP) ? 1 : -1;
+		    if (nr >= 0) {
+			sprintf(comment, "%0*d", i, nr); /* preserve leading zeros */
+			i = strlen(comment); /* length can change when overflowing 9 -> 10 */
+		    }
+		}
 		break;
 	    }
 
