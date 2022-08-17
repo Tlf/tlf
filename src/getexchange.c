@@ -266,17 +266,18 @@ int getexchange(void) {
 
 	    case KEY_UP:	/* Up/Down--increase/decrease serial number */
 	    case KEY_DOWN: {
-		if (i > 0 && i <= 5 && strspn(comment, "0123456789") == i) { /* comment non-empty and only digits */
-		    int nr = atoi(comment);
+		int nr_len = strspn(comment, "0123456789"); /* length of serial part in "001" or "001 EU-001" */
+		if (nr_len > 0 && nr_len <= 5) {
+		    int nr = atoi(comment); /* serial number, suffix ignored if any */
 		    nr += (x == KEY_UP) ? 1 : -1;
 		    if (nr >= 0 && nr <= 99999) {
-                        char buf[10];
-			sprintf(buf, "%0*d", i, nr); /* preserve leading zeros */
-			int len = strlen(buf);       /* length can change when overflowing 9 -> 10 */
-                        if (len <= contest->exchange_width) {
-                            strcpy(comment, buf);
-                            i = len;
-                        }
+			char buf[sizeof(comment) + 1];
+			sprintf(buf, "%0*d%s", nr_len, nr, comment+nr_len); /* preserve leading zeros, append old suffix */
+			int len = strlen(buf);
+			if (len <= contest->exchange_width) { /* length can change when overflowing 9 -> 10 */
+			    strcpy(comment, buf);
+			    i = len;
+			}
 		    }
 		}
 		break;
