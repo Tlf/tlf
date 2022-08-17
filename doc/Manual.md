@@ -136,8 +136,8 @@ src="images/DefaultTerminal.png" />
 > [QTerminal](https://github.com/lxqt/qterminal) (LXQt),
 > [Xfce Terminal](https://docs.xfce.org/apps/xfce4-terminal/start) (Xfce),
 > and so on, provide for configuration through their Graphical User Interface
-> (GUI).  Through their GUI configuration dialogs such things as the text font,
-> text size, and foreground and background color pallete may be modified.  The
+> (GUI).  Through their GUI configuration dialogues such things as the text font,
+> text size, and foreground and background color palette may be modified.  The
 > one setting that's definitely worth playing with is the text size, which in
 > the Ubuntu terminal can be changed from the "hamburger" menu in the top right
 > of the window.
@@ -145,12 +145,12 @@ src="images/DefaultTerminal.png" />
 > In contrast, the older terminal emulators
 > [**XTerm**](https://invisible-island.net/xterm/) and
 > [**rxvt-unicode**](http://software.schmorp.de/pkg/rxvt-unicode.html) are
-> configured through the classic X Window System resource databse.  The `doc`
+> configured through the classic X Window System resource database.  The `doc`
 > directory contains a sample `Xresources` file to change the colors to those
-> resembling the VGA pallete and the text font and its size from the defaults of
+> resembling the VGA palette and the text font and its size from the defaults of
 > each emulator.  Comments in this file explain how to use it in X and Wayland
 > sessions.  These emulators are useful since they do not reserve many of the
-> key combinations available in Tlf such as F11 or Ctrl-PgUp/Ctrl-PgDown as most
+> key combinations available in TLF such as F11 or Ctrl-PgUp/Ctrl-PgDown as most
 > desktop emulators do.  As usual, the Arch Linux Wiki provides good information
 > for both [XTerm](https://wiki.archlinux.org/title/Xterm) and
 > [rxvt-unicode](https://wiki.archlinux.org/title/Rxvt-unicode).
