@@ -1,8 +1,9 @@
 # Cabrillo format descriptions for various contests
 
 # used for ARRL and CQ contests, RDXC, Oceania DX Contest, AP Sprint and others
+# (using default 14-char wide exchanges)
 [UNIVERSAL]
-QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;RST_S,3;EXC_S,6;HISCALL,13;RST_R,3;EXCH,6
+QSO=FREQ,5;MODE,2;DATE,10;TIME,4;MYCALL,13;RST_S,3;EXC_S,14;HISCALL,13;RST_R,3;EXCH,14
 
 # used for CQWW (mostly as above but includes number of used TX)
 [CQWW]

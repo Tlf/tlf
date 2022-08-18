@@ -76,6 +76,8 @@ struct linedata_t *parse_logline(char *buffer) {
     ptr-> freq = qso->freq;
     ptr-> tx = qso->tx;
 
+    g_strchomp(ptr->comment);   // remove trailing spaces
+
     g_free(qso);	/* free qso_t struct but not the
 			   allocated string copies */
     return ptr;
@@ -241,14 +243,17 @@ const char *to_mode[] = {
 
 /* add 'src' to 'dst' with max. 'len' chars left padded */
 void add_lpadded(char *dst, char *src, int len) {
-    char *field;
-    int l;
 
-    field = g_malloc(len + 1);
-    strcat(dst, " ");
+    int l = strlen(src);
+    if (l > len) {
+	sprintf(dst, "!ERROR: field too wide (%s)", src);  // overwrites buffer
+	return;
+    }
+
+    strcat(dst, " ");   // add delimiter
+
+    char *field = g_malloc(len + 1);
     memset(field, ' ', len);
-    l = strlen(src);
-    if (l > len) l = len;
     memcpy(field + len - l, src, l);
     field[len] = '\0';
     strcat(dst, field);
@@ -257,17 +262,20 @@ void add_lpadded(char *dst, char *src, int len) {
 
 /* add 'src' to 'dst' with max. 'len' char right padded */
 void add_rpadded(char *dst, char *src, int len) {
-    char *field;
-    int l;
 
-    field = g_malloc(len + 1);
-    strcat(dst, " ");
+    int l = strlen(src);
+    if (l > len) {
+	sprintf(dst, "!ERROR: field too wide (%s)", src);  // overwrites buffer
+	return;
+    }
+
+    strcat(dst, " ");   // add delimiter
+
+    char *field = g_malloc(len + 1);
     memset(field, ' ', len);
-    l = strlen(src);
-    if (l > len) l = len;
     memcpy(field, src, l);
     field[len] = '\0';
-    strcat(dst, field);
+    strcat(dst, field); // add field
     g_free(field);
 }
 
@@ -437,7 +445,9 @@ void prepare_line(struct linedata_t *qso, struct cabrillo_desc *desc,
 	    default:
 		; // no action
 	}
-
+	if (buf[0] == '!') {
+	    break;      // there was an error
+	}
     }
     strcat(buf, "\n"); 		/* closing nl */
 }
@@ -450,9 +460,39 @@ static void set_exchange_format() {
 	strcpy(exchange, "#");  // contest is using serial number
 	return;
     }
-    get_cabrillo_field_value(find_cabrillo_field(CBR_EXCHANGE), exchange, sizeof(exchange));
+    get_cabrillo_field_value(find_cabrillo_field(CBR_EXCHANGE), exchange,
+			     sizeof(exchange));
 }
 
+//
+// process QSO/QTC data according to cabdesc
+//  - fills buffer and writes it into fp2
+//  - qso data is freed
+// returns true on success
+//         false on error, with buffer containing
+//               the error text starting with an exclamation mark
+//
+static bool process_record(struct linedata_t *qso,
+			   struct cabrillo_desc *cabdesc,
+			   char *buffer, FILE *fp2) {
+
+    prepare_line(qso, cabdesc, buffer);
+    free_linedata(qso);
+
+    if (strlen(buffer) > 5) {
+	fputs(buffer, fp2);
+    }
+
+    bool ok = true;
+    if (buffer[0] == '!') {
+	g_strchomp(buffer);
+	info(buffer + 1);   // show error message
+	sleep(2);
+	ok = false;
+    }
+
+    return ok;
+}
 
 int write_cabrillo(void) {
 
@@ -536,14 +576,15 @@ int write_cabrillo(void) {
     qsonr = 0;
     qtcrecnr = 0;
     qtcsentnr = 0;
-    while ((qso = get_next_record(fp1))) {
+    bool ok = true;
+    while (ok && (qso = get_next_record(fp1))) {
 
 	qsonr++;
-	prepare_line(qso, cabdesc, buffer);
-
-	if (strlen(buffer) > 5) {
-	    fputs(buffer, fp2);
+	ok = process_record(qso, cabdesc, buffer, fp2);
+	if (!ok) {
+	    break;      // stop processing immediately
 	}
+
 	if (fpqtcrec != NULL && qtcrec == NULL) {
 	    qtcrec = get_next_qtc_record(fpqtcrec, RECV);
 	    if (qtcrec != NULL) {
@@ -558,11 +599,8 @@ int write_cabrillo(void) {
 	}
 	while (qtcrecnr == qsonr || qtcsentnr == qsonr) {
 	    if (qtcsent == NULL || (qtcrec != NULL && qtcrec->qsots < qtcsent->qsots)) {
-		prepare_line(qtcrec, cabdesc, buffer);
-		if (strlen(buffer) > 5) {
-		    fputs(buffer, fp2);
-		    free_linedata(qtcrec);
-		}
+		ok = process_record(qtcrec, cabdesc, buffer, fp2);
+
 		qtcrec = get_next_qtc_record(fpqtcrec, RECV);
 		if (qtcrec != NULL) {
 		    qtcrecnr = qtcrec->qso_nr;
@@ -570,11 +608,8 @@ int write_cabrillo(void) {
 		    qtcrecnr = 0;
 		}
 	    } else {
-		prepare_line(qtcsent, cabdesc, buffer);
-		if (strlen(buffer) > 5) {
-		    fputs(buffer, fp2);
-		    free_linedata(qtcsent);
-		}
+		ok = process_record(qtcsent, cabdesc, buffer, fp2);
+
 		qtcsent = get_next_qtc_record(fpqtcsent, SEND);
 		if (qtcsent != NULL) {
 		    qtcsentnr = qtcsent->qso_nr;
@@ -582,9 +617,12 @@ int write_cabrillo(void) {
 		    qtcsentnr = 0;
 		}
 	    }
+
+	    if (!ok) {
+		break;      // stop QTC processing, will exit main loop later
+	    }
 	}
 
-	free_linedata(qso);
     }
 
     fclose(fp1);
