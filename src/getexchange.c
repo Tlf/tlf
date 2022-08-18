@@ -64,6 +64,29 @@ static char section[MAX_SECTION_LENGTH + 1] = "";
 
 void exchange_edit(void);
 
+static void serial_up_down(char *exchange, int delta) {
+    /* length of serial part in "001" or "001 EU-001" */
+    int nr_len = strspn(exchange, "0123456789");
+    if (nr_len == 0 && nr_len > 5) {
+	return;
+    }
+    /* serial number, suffix ignored if any */
+    int nr = atoi(exchange);
+    nr += delta;
+    if (nr < 0 || nr > 99999) {
+	return;
+    }
+    /* preserve leading zeros, append old suffix */
+    char *buf = g_strdup_printf("%0*d%s", nr_len, nr, exchange + nr_len);
+    int len = strlen(buf);
+    /* length can change when overflowing 9 -> 10 */
+    if (len <= contest->exchange_width) {
+	strcpy(exchange, buf);
+    }
+    g_free(buf);
+}
+
+
 int getexchange(void) {
 
     int i;
@@ -266,20 +289,8 @@ int getexchange(void) {
 
 	    case KEY_UP:	/* Up/Down--increase/decrease serial number */
 	    case KEY_DOWN: {
-		int nr_len = strspn(comment, "0123456789"); /* length of serial part in "001" or "001 EU-001" */
-		if (nr_len > 0 && nr_len <= 5) {
-		    int nr = atoi(comment); /* serial number, suffix ignored if any */
-		    nr += (x == KEY_UP) ? 1 : -1;
-		    if (nr >= 0 && nr <= 99999) {
-			char *buf = g_strdup_printf("%0*d%s", nr_len, nr, comment+nr_len); /* preserve leading zeros, append old suffix */
-			int len = strlen(buf);
-			if (len <= contest->exchange_width) { /* length can change when overflowing 9 -> 10 */
-			    strcpy(comment, buf);
-			    i = len;
-			}
-                        g_free(buf);
-		    }
-		}
+		serial_up_down(comment, (x == KEY_UP) ? 1 : -1);
+		i = strlen(comment);
 		break;
 	    }
 
