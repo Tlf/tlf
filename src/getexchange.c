@@ -271,13 +271,13 @@ int getexchange(void) {
 		    int nr = atoi(comment); /* serial number, suffix ignored if any */
 		    nr += (x == KEY_UP) ? 1 : -1;
 		    if (nr >= 0 && nr <= 99999) {
-			char buf[sizeof(comment) + 1];
-			sprintf(buf, "%0*d%s", nr_len, nr, comment+nr_len); /* preserve leading zeros, append old suffix */
+			char *buf = g_strdup_printf("%0*d%s", nr_len, nr, comment+nr_len); /* preserve leading zeros, append old suffix */
 			int len = strlen(buf);
 			if (len <= contest->exchange_width) { /* length can change when overflowing 9 -> 10 */
 			    strcpy(comment, buf);
 			    i = len;
 			}
+                        g_free(buf);
 		    }
 		}
 		break;
