@@ -67,7 +67,7 @@ void exchange_edit(void);
 static void serial_up_down(char *exchange, int delta) {
     /* length of serial part in "001" or "001 EU-001" */
     int nr_len = strspn(exchange, "0123456789");
-    if (nr_len == 0 && nr_len > 5) {
+    if (nr_len == 0 || nr_len > 5) {
 	return;
     }
     /* serial number, suffix ignored if any */
