@@ -124,17 +124,40 @@ opening the main screen.
 
 As long as the window is set to 80 columns x 25 lines, TLF should launch and
 look okay in your default terminal window. Here is the main screen on the
-default terminal in Ubuntu 20.04:
+default terminal (GNOME Terminal) in Ubuntu 20.04:
 
 <img title="Terminal" alt="Screenshot showing TLF in a terminal window."
 src="images/DefaultTerminal.png" />
 
-The `doc` directory contains a sample `.Xresources` file to change the colors,
-and many TLF users also prefer non-default terminals such as `urxvt`. Console
-customization is a deep rabbit hole that goes beyond the scope of this manual.
-The one setting that's definitely worth playing with is the text size, which
-in the Ubuntu terminal can be changed from the "hamburger" menu in the top
-right of the window.
+> **_Note:_** The terminal emulator programs provided with the various desktop
+> environments, i.e.
+> [GNOME Terminal](https://help.gnome.org/users/gnome-terminal/stable/) (GNOME),
+> [Konsole](https://konsole.kde.org) (KDE),
+> [QTerminal](https://github.com/lxqt/qterminal) (LXQt),
+> [Xfce Terminal](https://docs.xfce.org/apps/xfce4-terminal/start) (Xfce),
+> and so on, provide for configuration through their Graphical User Interface
+> (GUI).  Through their GUI configuration dialogues such things as the text font,
+> text size, and foreground and background color palette may be modified.  The
+> one setting that's definitely worth playing with is the text size, which in
+> the Ubuntu terminal can be changed from the "hamburger" menu in the top right
+> of the window.
+>
+> In contrast, the older terminal emulators
+> [**XTerm**](https://invisible-island.net/xterm/) and
+> [**rxvt-unicode**](http://software.schmorp.de/pkg/rxvt-unicode.html) are
+> configured through the classic X Window System resource database.  The `doc`
+> directory contains a sample `Xresources` file to change the colors to those
+> resembling the VGA palette and the text font and its size from the defaults of
+> each emulator.  Comments in this file explain how to use it in X and Wayland
+> sessions.  These emulators are useful since they do not reserve many of the
+> key combinations available in TLF such as F11 or Ctrl-PgUp/Ctrl-PgDown as most
+> desktop emulators do.  As usual, the Arch Linux Wiki provides good information
+> for both [XTerm](https://wiki.archlinux.org/title/Xterm) and
+> [rxvt-unicode](https://wiki.archlinux.org/title/Rxvt-unicode).
+>
+> Console customization is a [deep rabbit
+> hole](https://www.n0nb.us/blog/2020/02/coping-with-color-on-the-linux-console-and-xterm-and-friends/)
+> that goes beyond the scope of this manual.
 
 On the top line of the console, you'll see the mode indicator ("Log" in the
 image). This is based on the TR logging standard that has since been adopted

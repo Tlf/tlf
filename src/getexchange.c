@@ -61,6 +61,29 @@
 
 void exchange_edit(void);
 
+static void serial_up_down(char *exchange, int delta) {
+    /* length of serial part in "001" or "001 EU-001" */
+    int nr_len = strspn(exchange, "0123456789");
+    if (nr_len == 0 || nr_len > 5) {
+	return;
+    }
+    /* serial number, suffix ignored if any */
+    int nr = atoi(exchange);
+    nr += delta;
+    if (nr < 0 || nr > 99999) {
+	return;
+    }
+    /* preserve leading zeros, append old suffix */
+    char *buf = g_strdup_printf("%0*d%s", nr_len, nr, exchange + nr_len);
+    int len = strlen(buf);
+    /* length can change when overflowing 9 -> 10 */
+    if (len <= contest->exchange_width) {
+	strcpy(exchange, buf);
+    }
+    g_free(buf);
+}
+
+
 int getexchange(void) {
 
     int i;
@@ -257,6 +280,15 @@ int getexchange(void) {
 	    case KEY_LEFT: {	/* Left Arrow--edit exchange field */
 		if (current_qso.comment[0] != '\0')
 		    exchange_edit();
+		    i = strlen(current_qso.comment);
+		}
+		break;
+	    }
+
+	    case KEY_UP:	/* Up/Down--increase/decrease serial number */
+	    case KEY_DOWN: {
+		serial_up_down(current_qso.comment, (x == KEY_UP) ? 1 : -1);
+		i = strlen(current_qso.comment);
 		break;
 	    }
 

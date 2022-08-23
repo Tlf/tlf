@@ -1081,7 +1081,14 @@ to correct scoring afterward).
 .
 .TP
 .BR \[ua]\  (Up-Arrow)
-Edit last QSO: Insert, overwrite, and delete; + log view.
+In empty call input field: Edit last QSO: Insert, overwrite, and delete; + log view.
+.
+.IP
+Increment serial number in exchange input field.
+.
+.TP
+.BR \[da]\  (Down-Arrow)
+Decrement serial number in exchange input field.
 .
 .TP
 .BR =\  (Equals)
