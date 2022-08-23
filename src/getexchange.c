@@ -278,7 +278,7 @@ int getexchange(void) {
 	    }
 
 	    case KEY_LEFT: {	/* Left Arrow--edit exchange field */
-		if (current_qso.comment[0] != '\0')
+		if (current_qso.comment[0] != '\0') {
 		    exchange_edit();
 		    i = strlen(current_qso.comment);
 		}
