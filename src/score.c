@@ -135,9 +135,9 @@ int portable_doubles(int points, char *call) {
 
 
 /* apply points by mode */
-int scoreByMode() {
+int scoreByMode(struct qso_t *qso) {
 
-    switch (trxmode) {
+    switch (qso->mode) {
 	case CWMODE:
 	    return cwpoints;
 	case SSBMODE:
@@ -208,7 +208,7 @@ int scoreDefault(struct qso_t *qso) {
     int points;
 
     if (ssbpoints != 0 && cwpoints != 0)	//  e.g. arrl 10m contest
-	points = scoreByMode();
+	points = scoreByMode(qso);
     else
 	points = scoreByContinentOrCountry(qso);
 
@@ -303,7 +303,7 @@ int score_cqww(struct qso_t *qso) {
 int score_arrlfd(struct qso_t *qso) {
     int points;
 
-    if (trxmode == SSBMODE) {
+    if (qso->mode == SSBMODE) {
 	points = 1;
     } else {
 	points = 2;
