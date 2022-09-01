@@ -56,7 +56,7 @@ int setup_default(void **state) {
     strcpy(my.continent, "EU");
     my.countrynr = getctynr("DL");
 
-    trxmode = CWMODE;
+    qso.mode = CWMODE;
 
     setcontest("qso");
 
@@ -174,10 +174,10 @@ void test_cqww(void **state) {
 void test_arrl_fd(void **state) {
     setcontest("arrl_fd");
 
-    trxmode = CWMODE;
+    qso.mode = CWMODE;
     check_points(2);
 
-    trxmode = SSBMODE;
+    qso.mode = SSBMODE;
     check_points(1);
 
 }
@@ -214,9 +214,9 @@ void test_ssbcw(void **state) {
     check_points(0);
 
     cwpoints = 4;
-    trxmode = CWMODE;
+    qso.mode = CWMODE;
     check_points(4);
-    trxmode = SSBMODE;
+    qso.mode = SSBMODE;
     check_points(3);
 
     lowband_point_mult = true;
@@ -230,7 +230,7 @@ void test_ssbcw(void **state) {
     check_call_points("DL3XYZ/P", 12);
     portable_x2 = false;
 
-    trxmode = DIGIMODE;
+    qso.mode = DIGIMODE;
     check_points(0);
     ssbpoints = 0;
     check_points(0);
