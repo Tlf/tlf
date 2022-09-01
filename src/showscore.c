@@ -128,26 +128,20 @@ int get_nr_of_points() {
 /* get total number of multis */
 int get_nr_of_mults() {
 
-    int n;
-    int totalzones;
-    int totalcountries;
-    int totalmults;
-
     if (!iscontest)
 	return 1;
 
-    /* precalculate summaries */
-    totalzones = 0;
-    totalcountries = 0;
-    totalmults = 0;
+    /* precalculate weighted summaries */
+    int totalzones = 0;
+    int totalcountries = 0;
+    int totalmults = 0;
 
-    for (n = 0; n < 6; n++) {
-	totalzones += (zonescore[bi_normal[n]] *
-		       bandweight_multis[bi_normal[n]]);
-	totalcountries += (countryscore[bi_normal[n]] *
-			   bandweight_multis[bi_normal[n]]);
-	totalmults += (multscore[bi_normal[n]] *
-		       bandweight_multis[bi_normal[n]]);
+    for (int n = 0; n < 6; n++) {
+	int bandweight = bandweight_multis[bi_normal[n]];
+
+	totalzones += zonescore[bi_normal[n]] * bandweight;
+	totalcountries += countryscore[bi_normal[n]] * bandweight;
+	totalmults += multscore[bi_normal[n]] * bandweight;
     }
 
     if (CONTEST_IS(SPRINT)) {
@@ -176,9 +170,6 @@ int get_nr_of_mults() {
     } else if (country_mult) {
 
 	return totalcountries;
-    } else if (multlist == 1 && !CONTEST_IS(ARRL_SS)) {
-
-	return totalmults ;
     } else if (CONTEST_IS(PACC_PA)) {
 
 	return totalcountries;
@@ -202,6 +193,9 @@ int get_nr_of_mults() {
 	return GetNrOfPfx_multiband();
     } else if (itumult || wazmult) {
 	return totalzones;
+    } else if (multlist == 1 && !CONTEST_IS(ARRL_SS)) {
+
+	return totalmults ;
     } else
 	/* should never reach that point
 	 *
