@@ -35,7 +35,7 @@
 .
 .
 .\" Update the date when this page is committed.
-.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2022-03-04" TLF "Ham radio"
+.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2022-09-18" TLF "Ham radio"
 .
 .
 .SH NAME
@@ -2905,6 +2905,14 @@ means the callsign is a multiplier once per the contest, independent of band.
 .br
 .B BAND
 means the callsign counts as a multiplier per band.
+.
+.TP
+\fBGENERIC_MULT\fR=\fINONE\fR|\fIALL\fR|\fIBAND\fR
+Use generic multiplier determined by the contest plugin.
+.IP
+The argument specifies the multiplier counting rule (see above).
+Default value is NONE (disabled).
+.br
 .
 .SS Exchange
 The following parameters configure @PACKAGE_NAME@'s handling of the exchange.
