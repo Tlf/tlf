@@ -268,6 +268,8 @@ int cwstart = 0;			/**< number characters after which
 int sending_call = 0;
 int early_started = 0;			/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
+bool stop_tx_only = false;		/**< ESC should stop only tx */
+
 char lastcall[20];
 char lastqsonr[5];
 char qsonrstr[5] = "0001";

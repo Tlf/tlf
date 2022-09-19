@@ -786,18 +786,20 @@ int callinput(void) {
 
 	    // <Escape>, clear call input or stop sending.
 	    case ESCAPE: {
-		if (early_started == 0) {
-		    /* if CW not started early drop call and start anew */
-		    cleanup();
-		    clear_display();
-		} else {
-		    /* otherwise just stop sending */
-		    stoptx();
-		    *hiscall_sent = '\0';
-		    early_started = 0;
+		if (!stop_tx_only) {
+		    if (early_started == 0) {
+			/* if CW not started early drop call and start anew */
+			cleanup();
+			clear_display();
+		    } else {
+			/* otherwise just stop sending */
+			stoptx();
+			*hiscall_sent = '\0';
+			early_started = 0;
+		    }
+		    freqstore = 0;
 		}
 
-		freqstore = 0;
 		break;
 	    }
 
