@@ -420,8 +420,6 @@ int wattr_on(WINDOW *win, attr_t attrs, void *opts) {
     return 0;
 }
 
-void displayit() {
-}
 
 int netkeyer(int cw_op, char *cwmessage) {
     return 0;
