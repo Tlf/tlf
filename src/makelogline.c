@@ -141,10 +141,11 @@ void prepare_fixed_part(char *logline, struct qso_t *qso) {
 	strcat(logline, khz);
 
     } else {
-	if (lan_active && contest->exchange_serial) {	// show qso nr
-	    strcat(logline, lastqsonr);
-	    lastqsonr[0] = '\0';
-	} else
+//FIXME: review usage of lastqsonr
+//	if (lan_active && contest->exchange_serial) {	// show qso nr
+//	    strcat(logline, lastqsonr);
+//	    lastqsonr[0] = '\0';
+//	} else
 	    strcat(logline, buf);
     }
 
