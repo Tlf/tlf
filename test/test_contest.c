@@ -29,6 +29,9 @@ prefix_data *getctyinfo(char * call) {
     return NULL;
 }
 
+void checkexchange(struct qso_t *qso, bool interactive) {}
+int check_mult(struct qso_t *qso) { return -1; }
+
 contest_config_t config_focm;
 
 int setup_default(void **state) {

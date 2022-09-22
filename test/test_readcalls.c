@@ -169,28 +169,30 @@ void test_qso_array_init(void **state) {
 
 void test_readcalls_simple_log(void **state) {
     int lines;
-    gchar *qso = g_strdup(QSO1);
-    qso[LOGLINELEN - 1] = '\0';
+    gchar *qso_line = g_strndup(QSO1, LOGLINELEN - 1);
 
     write_log(LOGFILE);
     lines = readcalls(LOGFILE, true);
     assert_non_null(qso_array);
     assert_int_equal(lines, qso_array->len);
     assert_int_equal(lines, 1);
-    assert_string_equal(((struct qso_t *)g_ptr_array_index(qso_array, 0))->logline, qso);
-    assert_string_equal(((struct qso_t *)g_ptr_array_index(qso_array, 0))->call, "PY9BBB");
-    g_free(qso);
+    struct qso_t *qso = g_ptr_array_index(qso_array, 0);
+    assert_non_null(qso);
+    assert_string_equal(qso->logline, qso_line);
+    assert_string_equal(qso->call, "PY9BBB");
+    assert_null(qso->normalized_comment);
+    g_free(qso_line);
 }
 
 void test_readcalls_note(void **state) {
-    gchar *note = g_strdup(NOTE);
-    note[LOGLINELEN - 1] = '\0';
+    gchar *note = g_strndup(NOTE, LOGLINELEN - 1);
 
     write_log(LOGFILE);
     append_log_line(LOGFILE, NOTE);
     assert_int_equal(readcalls(LOGFILE, true), 2);;
 
     struct qso_t *qso = g_ptr_array_index(qso_array, 1);
+    assert_non_null(qso);
     assert_string_equal(qso->logline, note);
     assert_int_equal(qso->is_comment, true);
 

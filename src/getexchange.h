@@ -21,9 +21,11 @@
 #ifndef GETEXCHANGE_H
 #define GETEXCHANGE_H
 
+#include "tlf.h"
+
 extern bool call_update;
 
-void checkexchange(char *comment, bool interactive);
+void checkexchange(struct qso_t *qso, bool interactive);
 int getexchange(void);
 
 #endif /* GETEXCHANGE_H */

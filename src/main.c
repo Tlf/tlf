@@ -103,7 +103,8 @@ contest_config_t *contest = &config_qso;	/* contest configuration */
 /* predefined contests */
 bool sprint_mode = false;
 int minitest = 0;	/**< if set, length of minitest period in seconds */
-int unique_call_multi = 0;          /* do we count calls as multiplier */
+int unique_call_multi = MULT_NONE;  /* do we count calls as multiplier */
+int generic_mult = MULT_NONE;       /* whether to use mult1_value */
 
 
 int addcallarea;
@@ -176,9 +177,6 @@ bool mixedmode = false;
 char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
 char last_rst[4] = "599";       /* Report for last QSO */
-
-/* TODO Maybe we can use the following */
-int mults_per_band = 1;		/* mults count per band */
 
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
 int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
@@ -260,9 +258,8 @@ char qtc_cap_calls[40] = "";
 bool qtc_auto_filltime = false;
 bool qtc_recv_lazy = false;
 
-struct qso_t *current_qso;
+struct qso_t current_qso;
 
-char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */
 int cwstart = 0;			/**< number characters after which
@@ -276,8 +273,6 @@ char lastqsonr[5];
 char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
 { "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
-char comment[80];
-char normalized_comment[80];
 char proposed_exchange[80];
 char cqzone[3] = "";
 char ituzone[3] = "";
@@ -630,9 +625,24 @@ static void init_variables() {
     nodes = 0;
     shortqsonr = 0;
     tune_seconds = 6;   /* tune up for 6 s */
+    unique_call_multi = MULT_NONE;
+    generic_mult = MULT_NONE;
 
     ctcomp = false;
     resend_call = RESEND_NOT_SET;
+
+    g_free(current_qso.call);
+    current_qso.call = g_malloc0(CALL_SIZE);
+    g_free(current_qso.comment);
+    current_qso.comment = g_malloc0(COMMENT_SIZE);
+    g_free(current_qso.callupdate);
+    current_qso.callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
+    g_free(current_qso.normalized_comment);
+    current_qso.normalized_comment = g_malloc0(COMMENT_SIZE);
+    g_free(current_qso.section);
+    current_qso.section = g_malloc0(MAX_SECTION_LENGTH + 1);
+    g_free(current_qso.mult1_value);
+    current_qso.mult1_value = g_malloc0(MULT_SIZE);
 
     for (int i = 0; i < 25; i++) {
 	FREE_DYNAMIC_STRING(digi_message[i]);
@@ -995,9 +1005,6 @@ int main(int argc, char *argv[]) {
     strcat(logline4, backgrnd_str);
 
     init_keyer_terminal();
-
-    hiscall[0] = '\0';
-
 
     if (isFirstStart()) {
 	/* first time called in this directory */

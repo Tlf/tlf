@@ -173,7 +173,7 @@ void show_rtty(void) {
     if (commentfield == 0) {
 	printcall();
     } else {
-	mvaddstr(12, 54, comment);
+	mvaddstr(12, 54, current_qso.comment);
     }
     refreshp();
     attron(A_STANDOUT);

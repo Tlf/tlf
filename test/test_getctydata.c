@@ -26,6 +26,8 @@ int location_unknown(char *call);
 int getpfxindex(char *checkcallptr, char **normalized_call);
 int find_full_match(const char *call);
 int find_best_match(const char *call);
+void checkexchange(struct qso_t *qso, bool interactive) {}
+int check_mult(struct qso_t *qso) { return -1; }
 
 extern char countrylist[255][6];
 

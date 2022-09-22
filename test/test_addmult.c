@@ -39,6 +39,8 @@ prefix_data *getctyinfo(char *call) {
     return NULL;
 }
 
+void checkexchange(struct qso_t *qso, bool interactive) {}
+
 contest_config_t config_focm;
 struct qso_t *this_qso;
 
@@ -84,7 +86,8 @@ int setup_default(void **state) {
     ve_cty = 77;	/* random numbers just for test */
     w_cty = 78;
 
-    strcpy(comment, "");
+    current_qso.comment = g_malloc0(COMMENT_SIZE);
+    current_qso.mult1_value = g_malloc0(MULT_SIZE);
 
     strcpy(multsfile, "");
 
@@ -95,9 +98,11 @@ int setup_default(void **state) {
     return 0;
 }
 
-void set_this_qso(char *exchange) {
-    strcpy(comment, exchange);
+void set_this_qso(char *exchange, char *mult1) {
+    strcpy(current_qso.comment, exchange);
+    free_qso(this_qso);
     this_qso = collect_qso_data();
+    this_qso->mult1_value = g_strdup(mult1);
 }
 
 
@@ -124,19 +129,19 @@ void test_init_mults(void **state) {
 
 /* tests for remember_multi */
 void test_remember_mult_empty(void **state) {
-    assert_int_equal(remember_multi("", BANDINDEX_80, 0), -1);
+    assert_int_equal(remember_multi("", BANDINDEX_80, MULT_ALL, false), -1);
 }
 
 void test_remember_mult_one(void **state) {
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, 0), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_ALL, false), 0);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
 }
 
 void test_remember_mult_two(void **state) {
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, 0), 0);
-    assert_int_equal(remember_multi("def", BANDINDEX_80, 0), 1);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_ALL, false), 0);
+    assert_int_equal(remember_multi("def", BANDINDEX_80, MULT_ALL, false), 1);
     assert_int_equal(nr_multis, 2);
     assert_string_equal(multis[0].name, "abc");
     assert_string_equal(multis[1].name, "def");
@@ -145,21 +150,60 @@ void test_remember_mult_two(void **state) {
 }
 
 void test_remember_mult_same_2x(void **state) {
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, 0), 0);
-    assert_int_equal(remember_multi("abc", BANDINDEX_160, 0), -1);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_ALL, false), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_160, MULT_ALL, false), -1);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80] | inxes[BANDINDEX_160]);
 }
 
 void test_remember_mult_same_2x_newband(void **state) {
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, 0), 0);
-    assert_int_equal(remember_multi("abc", BANDINDEX_160, 1), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_ALL, false), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_160, MULT_BAND, false), 0);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80] | inxes[BANDINDEX_160]);
 }
 
+/* check_only mode */
+void test_remember_check_mult_one(void **state) {
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_ALL, true), 0);
+    assert_int_equal(nr_multis, 0);
+    assert_string_equal(multis[0].name, "");
+    assert_int_equal(multis[0].band, 0);
+}
+
+void test_remember_check_mult_two(void **state) {
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_ALL, true), 0);
+    assert_int_equal(remember_multi("def", BANDINDEX_80, MULT_ALL, true), 0);
+    assert_int_equal(nr_multis, 0);
+}
+
+void test_remember_check_mult_existing(void **state) {
+    // first add "abc"
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_ALL, false), 0);
+    assert_int_equal(nr_multis, 1);
+    assert_string_equal(multis[0].name, "abc");
+    assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
+    // then check it on another band
+    assert_int_equal(remember_multi("abc", BANDINDEX_160, MULT_ALL, true), -1);
+    assert_int_equal(nr_multis, 1);
+    assert_string_equal(multis[0].name, "abc");
+    assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
+}
+
+void test_remember_check_mult_existing_newband(void **state) {
+    // first add "abc"
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_ALL, false), 0);
+    assert_int_equal(nr_multis, 1);
+    assert_string_equal(multis[0].name, "abc");
+    assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
+    // then check it on another band in MULT_BAND mode
+    assert_int_equal(remember_multi("abc", BANDINDEX_160, MULT_BAND, true), 0);
+    assert_int_equal(nr_multis, 1);
+    assert_string_equal(multis[0].name, "abc");
+    assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
+}
 
 /* helpers for check of loading of possible mults */
 void test_write_mult(void **state) {
@@ -271,8 +315,8 @@ void test_match_length_match_alias2(void **state) {
 /* addmult tests */
 void test_wysiwyg_once(void **state) {
     wysiwyg_once = true;
-    set_this_qso("WAC   ");
-    addmult(this_qso);
+    set_this_qso("WAC   ", "");
+    new_mult = addmult(this_qso);
     assert_true(new_mult >= 0);
     assert_string_equal(multis[0].name, "WAC");
     assert_int_equal(new_mult, 0);
@@ -280,8 +324,8 @@ void test_wysiwyg_once(void **state) {
 
 void test_wysiwyg_multi(void **state) {
     wysiwyg_multi = true;
-    set_this_qso("WAC   ");
-    addmult(this_qso);
+    set_this_qso("WAC   ", "");
+    new_mult = addmult(this_qso);
     assert_true(new_mult >= 0);
     assert_string_equal(multis[0].name, "WAC");
     assert_int_equal(new_mult, 0);
@@ -289,17 +333,16 @@ void test_wysiwyg_multi(void **state) {
 
 void test_wysiwyg_multi_empty(void **state) {
     wysiwyg_multi = true;
-    set_this_qso("   ");
-    addmult(this_qso);
+    set_this_qso("   ", "");
+    new_mult = addmult(this_qso);
     assert_int_equal(new_mult, -1);
 }
 
 void test_serial_grid4(void **state) {
     serial_grid4_mult = true;
     // NOTE: locator is limited to 4 chars in checkexchange()
-    strcpy(mult1_value, "JO60");
-    set_this_qso("");
-    addmult(this_qso);
+    set_this_qso("", "JO60");
+    new_mult = addmult(this_qso);
     assert_true(new_mult >= 0);
     assert_string_equal(multis[0].name, "JO60");
     assert_int_equal(new_mult, 0);
@@ -308,9 +351,8 @@ void test_serial_grid4(void **state) {
 
 void test_serial_grid4_empty(void **state) {
     serial_grid4_mult = true;
-    strcpy(mult1_value, "");
-    set_this_qso("");
-    addmult(this_qso);
+    set_this_qso("", "");
+    new_mult = addmult(this_qso);
     assert_int_equal(new_mult, -1);
 }
 
@@ -318,21 +360,19 @@ void test_arrlss(void **state) {
     setcontest("arrl_ss");
 
     setup_multis("SC\nSCV\n");
-    strcpy(mult1_value, "S");   // incomplete value (normally doesn't happen)
-    set_this_qso("");   // NOTE: mult1_value is not part of qso_t
+    set_this_qso("", "S");      // incomplete value (normally doesn't happen)
     addmult(this_qso);
     assert_int_equal(nr_multis, 0);
-    strcpy(mult1_value, "SCX"); // invalid mult
-    set_this_qso("");
+    set_this_qso("", "SCX");    // invalid mult
     addmult(this_qso);
     assert_int_equal(nr_multis, 0);
-    strcpy(mult1_value, "SCV");
+    set_this_qso("", "SCV");
     addmult(this_qso);
     assert_int_equal(nr_multis, 1);
-    strcpy(mult1_value, "KL");
+    set_this_qso("", "KL");
     addmult(this_qso);
     assert_int_equal(nr_multis, 1);
-    strcpy(mult1_value, "SC");
+    set_this_qso("", "SC");
     addmult(this_qso);
     assert_int_equal(nr_multis, 2);
     assert_string_equal(multis[0].name, "SCV");
@@ -342,14 +382,13 @@ void test_arrlss(void **state) {
 void test_serial_section_mult(void **state) {
     serial_section_mult = true;
     setup_multis("NE\nONE\n");
-    strcpy(mult1_value, "ONE");
-    set_this_qso("");   // NOTE: mult1_value is not part of qso_t
+    set_this_qso("", "ONE");
     addmult(this_qso);
-    strcpy(mult1_value, "023");
+    set_this_qso("", "023");
     addmult(this_qso);
-    strcpy(mult1_value, "NE");
+    set_this_qso("", "NE");
     addmult(this_qso);
-    strcpy(mult1_value, "SC");
+    set_this_qso("", "SC");
     addmult(this_qso);
     assert_int_equal(nr_multis, 2);
 }
@@ -358,16 +397,26 @@ void test_dx_arrlsections(void **state) {
     dx_arrlsections = true;
     countrynr = w_cty;
     setup_multis("NE\nONE\n");
-    strcpy(mult1_value, "ONE");
-    set_this_qso("");   // NOTE: mult1_value is not part of qso_t
+    set_this_qso("", "ONE");
     addmult(this_qso);
-    strcpy(mult1_value, "97A23SCV");
+    set_this_qso("", "97A23SCV");
     addmult(this_qso);
-    strcpy(mult1_value, "NE");
+    set_this_qso("", "NE");
     addmult(this_qso);
-    strcpy(mult1_value, "SC");
+    set_this_qso("", "SC");
     addmult(this_qso);
     assert_int_equal(nr_multis, 2);
+}
+
+/* check_mult tests */
+void test_check_wysiwyg_once(void **state) {
+    wysiwyg_once = true;
+    set_this_qso("WAC   ", "");
+    new_mult = check_mult(this_qso);
+    assert_true(new_mult >= 0);
+    assert_string_equal(multis[0].name, "");
+    assert_int_equal(new_mult, 0);
+    assert_int_equal(nr_multis, 0);
 }
 
 

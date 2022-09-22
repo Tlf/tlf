@@ -110,7 +110,8 @@ int teardown_default(void **state) {
 
 static char datetime_buf[80];
 static char *get_datetime(struct qso_t *qso) {
-    strftime(datetime_buf, sizeof(datetime_buf), DATE_TIME_FORMAT, gmtime(&qso->timestamp));
+    strftime(datetime_buf, sizeof(datetime_buf), DATE_TIME_FORMAT,
+	     gmtime(&qso->timestamp));
     return datetime_buf;    // note: returns a static buffer
 }
 
@@ -247,7 +248,27 @@ void test_prepare_line_universal(void **state) {
     free_cabfmt(desc);
 
     assert_string_equal(buf,
-			"QSO: 21012 CW 2021-01-02 0842 A1BCD         599 0711   A2XYZ         559 007   \n");
+			"QSO: 21012 CW 2021-01-02 0842 A1BCD         599 0711           A2XYZ         559 007           \n");
+}
+
+void test_prepare_line_too_wide(void **state) {
+    struct cabrillo_desc *desc;
+    desc = read_cabrillo_format(formatfile, "UNIVERSAL");
+    assert_non_null(desc);
+
+    struct linedata_t qso = {
+	.year = 2021, .month = 1, .day = 2, .hour = 8, .min = 42,
+	.qso_nr = 711, .mode = CWMODE,
+	.call = "A2XYZ", .freq = 21012845.6,
+	.rst_s = 599, .rst_r = 559,
+	.comment = "007 ABCDEFGHIJK"    // longer than 14 chars
+    };
+
+    char buf[200];
+    prepare_line(&qso, desc, buf);
+    free_cabfmt(desc);
+
+    assert_string_equal(buf, "!ERROR: field too wide (007 ABCDEFGHIJK)\n");
 }
 
 void test_prepare_line_agcw(void **state) {
@@ -341,7 +362,7 @@ void test_get_nth_token_slash(void **state) {
 void test_cabToTlf_ParseQSO(void **state) {
     struct cabrillo_desc *desc;
     desc = read_cabrillo_format(formatfile, "UNIVERSAL");
-    cab_qso_to_tlf("QSO:  7002 RY 2016-02-13 2033 HA2OS         589 0008   K6ND          599 044",
+    cab_qso_to_tlf("QSO:  7002 RY 2016-02-13 2033 HA2OS         589 0008           K6ND          599 044",
 		   desc);
     free_cabfmt(desc);
     assert_non_null(qso_spy);
@@ -375,7 +396,7 @@ void test_cabToTlf_ParseQSO_agcw(void **state) {
 void test_cabToTlf_ParseXQSO(void **state) {
     struct cabrillo_desc *desc;
     desc = read_cabrillo_format(formatfile, "UNIVERSAL");
-    cab_qso_to_tlf("X-QSO: 14002 PH 2016-08-13 0033 HA2OS         589 0008   K6ND          599 044",
+    cab_qso_to_tlf("X-QSO: 14002 PH 2016-08-13 0033 HA2OS         589 0008           K6ND          599 044",
 		   desc);
     free_cabfmt(desc);
     assert_non_null(qso_spy);

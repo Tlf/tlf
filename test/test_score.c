@@ -22,8 +22,9 @@
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/utils.o
 
+void checkexchange(struct qso_t *qso, bool interactive) {}
+
 char *calc_continent(int zone);
-char section[8] = "";       // defined in getexchange.c
 
 struct qso_t qso = { };
 
@@ -53,11 +54,13 @@ int setup_default(void **state) {
     static char filename[] =  TOP_SRCDIR "/share/cty.dat";
     assert_int_equal(load_ctydata(filename), 0);
 
+    current_qso.call = g_malloc0(CALL_SIZE);
+
     strcpy(my.qra, "jo60lx");
     strcpy(my.continent, "EU");
     my.countrynr = getctynr("DL");
 
-    trxmode = CWMODE;
+    qso.mode = CWMODE;
 
     setcontest("qso");
 
@@ -175,10 +178,10 @@ void test_cqww(void **state) {
 void test_arrl_fd(void **state) {
     setcontest("arrl_fd");
 
-    trxmode = CWMODE;
+    qso.mode = CWMODE;
     check_points(2);
 
-    trxmode = SSBMODE;
+    qso.mode = SSBMODE;
     check_points(1);
 
 }
@@ -215,9 +218,9 @@ void test_ssbcw(void **state) {
     check_points(0);
 
     cwpoints = 4;
-    trxmode = CWMODE;
+    qso.mode = CWMODE;
     check_points(4);
-    trxmode = SSBMODE;
+    qso.mode = SSBMODE;
     check_points(3);
 
     lowband_point_mult = true;
@@ -231,7 +234,7 @@ void test_ssbcw(void **state) {
     check_call_points("DL3XYZ/P", 12);
     portable_x2 = false;
 
-    trxmode = DIGIMODE;
+    qso.mode = DIGIMODE;
     check_points(0);
     ssbpoints = 0;
     check_points(0);
@@ -267,17 +270,17 @@ void test_in_countrylist_keeps_countrynr(void **state) {
 
 void test_country_found(void **state) {
     /* nothing to find in empty list */
-    strcpy(hiscall, "LZ1AB");
+    strcpy(current_qso.call, "LZ1AB");
     assert_int_equal(country_found(""), 0);
-    strcpy(hiscall, "DL3XYZ");
+    strcpy(current_qso.call, "DL3XYZ");
     assert_int_equal(country_found(""), 0);
 
     init_countrylist();
-    strcpy(hiscall, "LZ1AB");
+    strcpy(current_qso.call, "LZ1AB");
     assert_int_equal(country_found(""), 0);
-    strcpy(hiscall, "DL3XYZ");
+    strcpy(current_qso.call, "DL3XYZ");
     assert_int_equal(country_found(""), 1);
-    strcpy(hiscall, "K3LA");
+    strcpy(current_qso.call, "K3LA");
     assert_int_equal(country_found(""), 1);
 }
 

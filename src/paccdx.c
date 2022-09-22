@@ -59,11 +59,11 @@ int pacc_pa(void) {
 	    break;
     }
 
-    getpx(hiscall);
+    getpx(current_qso.call);
 
     pxnr = districtnumber(wpx_prefix);
 
-    getctydata(hiscall);
+    getctydata(current_qso.call);
 
     if (countrynr == w_cty) {
 

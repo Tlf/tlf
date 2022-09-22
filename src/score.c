@@ -58,15 +58,15 @@ bool is_in_countrylist(int countrynr) {
 }
 
 
-/* check if hiscall is in COUNTRYLIST from logcfg.dat */
+/* check if current_qso.call is in COUNTRYLIST from logcfg.dat */
 // FIXME: *** this function does not use its argument ***
 bool country_found(char prefix[]) {
     char tmpcall[15];
 
-    if (strlen(hiscall) == 0) {
+    if (strlen(current_qso.call) == 0) {
 	strcpy(tmpcall, my.call);
     } else
-	strcpy(tmpcall, hiscall);
+	strcpy(tmpcall, current_qso.call);
 
     countrynr = getctydata(tmpcall);
 
@@ -136,9 +136,9 @@ int portable_doubles(int points, char *call) {
 
 
 /* apply points by mode */
-int scoreByMode() {
+int scoreByMode(struct qso_t *qso) {
 
-    switch (trxmode) {
+    switch (qso->mode) {
 	case CWMODE:
 	    return cwpoints;
 	case SSBMODE:
@@ -209,7 +209,7 @@ int scoreDefault(struct qso_t *qso) {
     int points;
 
     if (ssbpoints != 0 && cwpoints != 0)	//  e.g. arrl 10m contest
-	points = scoreByMode();
+	points = scoreByMode(qso);
     else
 	points = scoreByContinentOrCountry(qso);
 
@@ -304,7 +304,7 @@ int score_cqww(struct qso_t *qso) {
 int score_arrlfd(struct qso_t *qso) {
     int points;
 
-    if (trxmode == SSBMODE) {
+    if (qso->mode == SSBMODE) {
 	points = 1;
     } else {
 	points = 2;
