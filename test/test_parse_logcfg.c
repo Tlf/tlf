@@ -31,6 +31,7 @@
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/cabrillo_utils.o
+// OBJECT ../src/log_utils.o
 
 // lancode.c
 int nodes = 0;
@@ -56,6 +57,9 @@ char *callmaster_filename = NULL;
 bool call_update = false;
 
 t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
+
+void checkexchange(struct qso_t *qso, bool interactive) {}
+int check_mult(struct qso_t *qso) { return -1; }
 
 contest_config_t config_focm;
 
@@ -143,6 +147,8 @@ int setup_default(void **state) {
     if (result == -1)
 	perror("chdir");
 
+    current_qso.call = g_malloc0(CALL_SIZE);
+
     memset(&my, 0, sizeof(my));
     memset(&bm_config, 0, sizeof(bm_config));
     memset(&pfxnummulti, 0, sizeof(pfxnummulti));
@@ -198,7 +204,8 @@ int setup_default(void **state) {
     qtcrec_record_command[0][0] = 0;
     qtcrec_record_command[1][0] = 0;
     qtcrec_record_command_shutdown[0] = 0;
-    unique_call_multi = 0;
+    unique_call_multi = MULT_NONE;
+    generic_mult = MULT_NONE;
     digi_mode = -1;
 
     for (int i = 0; i < SP_CALL_MSG; ++i) {
@@ -1386,16 +1393,42 @@ void test_tune_seconds(void **state) {
     assert_int_equal(tune_seconds, 73);
 }
 
+void test_unique_call_multi_none(void **state) {
+    unique_call_multi = MULT_ALL;
+    int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=NONE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(unique_call_multi, MULT_NONE);
+}
+
 void test_unique_call_multi_all(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=ALL");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(unique_call_multi, UNIQUECALL_ALL);
+    assert_int_equal(unique_call_multi, MULT_ALL);
 }
 
 void test_unique_call_multi_band(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=BAND");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(unique_call_multi, UNIQUECALL_BAND);
+    assert_int_equal(unique_call_multi, MULT_BAND);
+}
+
+void test_generic_mult_none(void **state) {
+    generic_mult = MULT_ALL;
+    int rc = call_parse_logcfg("GENERIC_MULT=NONE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(generic_mult, MULT_NONE);
+}
+
+void test_generic_mult_all(void **state) {
+    int rc = call_parse_logcfg("GENERIC_MULT=ALL");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(generic_mult, MULT_ALL);
+}
+
+void test_generic_mult_band(void **state) {
+    int rc = call_parse_logcfg("GENERIC_MULT=BAND");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(generic_mult, MULT_BAND);
 }
 
 void test_digi_rig_mode_usb(void **state) {

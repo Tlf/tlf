@@ -173,13 +173,15 @@ int get_nr_of_mults() {
     } else if (CONTEST_IS(PACC_PA)) {
 
 	return totalcountries;
-    } else if ((wysiwyg_once)
-	       || sectn_mult_once
-	       || (unique_call_multi == UNIQUECALL_ALL)) {
+    } else if (wysiwyg_once
+	       || unique_call_multi == MULT_ALL
+	       || generic_mult == MULT_ALL
+	       || sectn_mult_once) {
 
 	return nr_multis;
     } else if (wysiwyg_multi
-	       || (unique_call_multi == UNIQUECALL_BAND)
+	       || unique_call_multi == MULT_BAND
+	       || generic_mult == MULT_BAND
 	       || serial_section_mult
 	       || serial_grid4_mult
 	       || sectn_mult) {

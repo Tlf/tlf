@@ -72,7 +72,6 @@ void recalc_qtclist();
 void show_rtty_lines();
 void fill_qtc_times(char *time);
 
-extern char hiscall[];
 extern char lastcall[];
 extern int trxmode;
 extern int digikeyer;
@@ -416,10 +415,10 @@ void qtc_main_panel(int direction) {
 
 
     /* fill the callsign fields of the current qtc direction structure
-     * with hiscall or the last call if hiscall is empty
+     * with current_qso.call or the last call if current_qso.call is empty
      */
-    if (strlen(hiscall) > 0) {
-	fill_qtc_callsign(direction, hiscall);
+    if (strlen(current_qso.call) > 0) {
+	fill_qtc_callsign(direction, current_qso.call);
     } else if (strlen(lastcall) > 0) {
 	fill_qtc_callsign(direction, lastcall);
     }

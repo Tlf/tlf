@@ -21,8 +21,9 @@
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/utils.o
 
+void checkexchange(struct qso_t *qso, bool interactive) {}
+
 char *calc_continent(int zone);
-char section[8] = "";       // defined in getexchange.c
 
 struct qso_t qso = { };
 
@@ -51,6 +52,8 @@ int setup_default(void **state) {
 
     static char filename[] =  TOP_SRCDIR "/share/cty.dat";
     assert_int_equal(load_ctydata(filename), 0);
+
+    current_qso.call = g_malloc0(CALL_SIZE);
 
     strcpy(my.qra, "jo60lx");
     strcpy(my.continent, "EU");
@@ -266,17 +269,17 @@ void test_in_countrylist_keeps_countrynr(void **state) {
 
 void test_country_found(void **state) {
     /* nothing to find in empty list */
-    strcpy(hiscall, "LZ1AB");
+    strcpy(current_qso.call, "LZ1AB");
     assert_int_equal(country_found(""), 0);
-    strcpy(hiscall, "DL3XYZ");
+    strcpy(current_qso.call, "DL3XYZ");
     assert_int_equal(country_found(""), 0);
 
     init_countrylist();
-    strcpy(hiscall, "LZ1AB");
+    strcpy(current_qso.call, "LZ1AB");
     assert_int_equal(country_found(""), 0);
-    strcpy(hiscall, "DL3XYZ");
+    strcpy(current_qso.call, "DL3XYZ");
     assert_int_equal(country_found(""), 1);
-    strcpy(hiscall, "K3LA");
+    strcpy(current_qso.call, "K3LA");
     assert_int_equal(country_found(""), 1);
 }
 

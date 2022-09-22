@@ -30,7 +30,7 @@
 typedef struct {
     freq_t freq;
     cqmode_t cqmode;
-    char hiscall[20];
+    char hiscall[CALL_SIZE];
 } mem_t;
 
 static mem_t trxmem = {.freq = 0, .cqmode = NONE};
@@ -39,7 +39,7 @@ static mem_t trxmem = {.freq = 0, .cqmode = NONE};
 void memory_store() {
     trxmem.freq = freq;
     trxmem.cqmode = cqmode;
-    strcpy(trxmem.hiscall, hiscall);
+    strcpy(trxmem.hiscall, current_qso.call);
 
     force_show_freq = true;
 }
@@ -52,7 +52,7 @@ void memory_recall() {
     set_outfreq(trxmem.freq);
     send_bandswitch(trxmem.freq);
     cqmode = trxmem.cqmode;
-    strcpy(hiscall, trxmem.hiscall);
+    strcpy(current_qso.call, trxmem.hiscall);
 
     force_show_freq = true;
 }
@@ -84,7 +84,7 @@ void memory_swap() {
     freq_t tmp_freq = freq;
     cqmode_t tmp_cqmode = cqmode;
     char tmp_hiscall[sizeof(trxmem.hiscall)];
-    strcpy(tmp_hiscall, hiscall);
+    strcpy(tmp_hiscall, current_qso.call);
 
     memory_recall();
 

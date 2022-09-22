@@ -141,7 +141,6 @@ bool mixedmode = false;
 char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
 char last_rst[4] = "599";       /* Report for last QSO */
-int mults_per_band = 1;		/* mults count per band */
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
 int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
 bool clusterlog = false;		/* clusterlog on/off */
@@ -229,8 +228,7 @@ int qtcdirection = 0;
 
 int minitest = 0;
 
-struct qso_t *current_qso;
-char hiscall[20];			/**< call of other station */
+struct qso_t current_qso;
 char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */
 int cwstart = 0;			/**< number characters after which
@@ -243,8 +241,6 @@ char lastcall[20];
 char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
 { "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
-char comment[80];
-char normalized_comment[80];
 char proposed_exchange[80];
 char mode[20] = "Log     ";
 char cqzone[3] = "";
@@ -406,7 +402,8 @@ int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 mults_t multis[MAX_MULTS]; 	/**< worked multis */
 int nr_multis = 0;      	/**< number of multis in multis[] */
 
-int unique_call_multi = 0;          /* do we count calls as multiplier */
+int unique_call_multi = MULT_NONE;  /* do we count calls as multiplier */
+int generic_mult = MULT_NONE;
 
 //////////////////
 char lan_logline[256];	    // defined in log_to_disk.c

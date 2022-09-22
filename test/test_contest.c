@@ -11,6 +11,7 @@
 // OBJECT ../src/getpx.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/score.o
+// OBJECT ../src/log_utils.o
 
 /* dummys */
 int getctynr(char *checkcall) {
@@ -24,6 +25,9 @@ int getctydata(char *checkcall) {
 prefix_data *getctyinfo(char * call) {
     return NULL;
 }
+
+void checkexchange(struct qso_t *qso, bool interactive) {}
+int check_mult(struct qso_t *qso) { return -1; }
 
 contest_config_t config_focm;
 

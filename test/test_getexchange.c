@@ -6,6 +6,7 @@
 #include "../src/setcontest.h"
 #include "../src/addmult.h"
 #include "../src/ui_utils.h"
+#include "../src/log_utils.h"
 
 // OBJECT ../src/getexchange.o
 // OBJECT ../src/addmult.o
@@ -21,8 +22,6 @@
 // OBJECT ../src/log_utils.o
 // OBJECT ../src/ui_utils.o
 // OBJECT ../src/utils.o
-
-extern char callupdate[];
 
 bool lan_active = false;
 
@@ -177,19 +176,18 @@ void test_getexchange_arrlss(void **state) {
     strcpy(multsfile, TOP_SRCDIR "/share/arrlsections");
     init_and_load_multipliers();
 
-    char *input;
-
     for (int i = 0; i < LEN(getex_arrlss); ++i) {
-	input = g_strdup_printf("%-20s", getex_arrlss[i].input);
+        struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+	qso->comment = g_strdup_printf("%-20s", getex_arrlss[i].input);
 
-	checkexchange(input, false);
+	checkexchange(qso, false);
 
-	assert_string_equal(normalized_comment,
+	assert_string_equal(qso->normalized_comment,
 			    getex_arrlss[i].expected_normalized_comment);
-	assert_string_equal(mult1_value, getex_arrlss[i].expected_mult1_value);
-	assert_string_equal(callupdate, getex_arrlss[i].expected_callupdate);
+	assert_string_equal(qso->mult1_value, getex_arrlss[i].expected_mult1_value);
+        assert_string_equal(qso->callupdate, getex_arrlss[i].expected_callupdate);
 
-	g_free(input);
+	free_qso(qso);
     }
 }
 
@@ -250,18 +248,17 @@ static getex_cqww_t getex_cqww[] = {
 void test_getexchange_cqww(void **state) {
     contest = lookup_contest("CQWW");
 
-    char *input;
-
     for (int i = 0; i < LEN(getex_cqww); ++i) {
-	input = g_strdup(getex_cqww[i].input);
+        struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+	qso->comment = g_strdup_printf("%-20s", getex_cqww[i].input);
 
-	checkexchange(input, false);
+	checkexchange(qso, false);
 
-	assert_string_equal(normalized_comment,
+	assert_string_equal(qso->normalized_comment,
 			    getex_cqww[i].expected_normalized_comment);
-	assert_string_equal(callupdate, getex_cqww[i].expected_callupdate);
+	assert_string_equal(qso->callupdate, getex_cqww[i].expected_callupdate);
 
-	g_free(input);
+	free_qso(qso);
     }
 }
 
@@ -329,19 +326,18 @@ void test_getexchange_serial_section(void **state) {
     add_mult_line("67K89");
     add_mult_line("50ABCD");
 
-    char *input;
-
     for (int i = 0; i < LEN(getex_serial_section); ++i) {
-	input = g_strdup(getex_serial_section[i].input);
+        struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+	qso->comment = g_strdup_printf("%-20s", getex_serial_section[i].input);
 
-	checkexchange(input, false);
+	checkexchange(qso, false);
 
-	assert_string_equal(normalized_comment,
+	assert_string_equal(qso->normalized_comment,
 			    getex_serial_section[i].expected_normalized_comment);
-	assert_string_equal(mult1_value, getex_serial_section[i].expected_mult1_value);
-	assert_string_equal(callupdate, getex_serial_section[i].expected_callupdate);
+	assert_string_equal(qso->mult1_value, getex_serial_section[i].expected_mult1_value);
+	assert_string_equal(qso->callupdate, getex_serial_section[i].expected_callupdate);
 
-	g_free(input);
+	free_qso(qso);
     }
 }
 
@@ -401,19 +397,18 @@ void test_getexchange_sectn_mult(void **state) {
     add_mult_line("67K89");
     add_mult_line("50ABCD");
 
-    char *input;
-
     for (int i = 0; i < LEN(getex_sectn_mult); ++i) {
-	input = g_strdup(getex_sectn_mult[i].input);
+        struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+	qso->comment = g_strdup_printf("%-20s", getex_sectn_mult[i].input);
 
-	checkexchange(input, false);
+	checkexchange(qso, false);
 
-	assert_string_equal(normalized_comment,
+	assert_string_equal(qso->normalized_comment,
 			    getex_sectn_mult[i].expected_normalized_comment);
-	assert_string_equal(mult1_value, getex_sectn_mult[i].expected_mult1_value);
-	assert_string_equal(callupdate, getex_sectn_mult[i].expected_callupdate);
+	assert_string_equal(qso->mult1_value, getex_sectn_mult[i].expected_mult1_value);
+	assert_string_equal(qso->callupdate, getex_sectn_mult[i].expected_callupdate);
 
-	g_free(input);
+	free_qso(qso);
     }
 }
 
@@ -421,15 +416,14 @@ void test_getexchange_serial_grid4(void **state) {
     contest = lookup_contest("Unknown");
     serial_grid4_mult = true;
 
-    char *input;
+    struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+    qso->comment = g_strdup("012 JN97AB");
 
-    input = g_strdup("012 JN97AB");
+    checkexchange(qso, false);
 
-    checkexchange(input, false);
+    assert_string_equal(qso->normalized_comment, "  12 JN97");
+    assert_string_equal(qso->mult1_value, "JN97");
+    assert_string_equal(qso->callupdate, "");
 
-    assert_string_equal(normalized_comment, "  12 JN97");
-    assert_string_equal(mult1_value, "JN97");
-    assert_string_equal(callupdate, "");
-
-    g_free(input);
+    free_qso(qso);
 }

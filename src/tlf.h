@@ -125,8 +125,11 @@ enum {
 
 #define MAX_SECTION_LENGTH 4
 
-#define UNIQUECALL_ALL      1
-#define UNIQUECALL_BAND     2
+enum {
+    MULT_NONE,      // multiplier not used
+    MULT_ALL,       // multiplier counted once on all bands
+    MULT_BAND,      // multiplier counted once per each band
+};
 
 #define EXCLUDE_NONE 0
 #define EXCLUDE_CONTINENT 1
@@ -170,11 +173,12 @@ typedef struct {
 				  for all modes and bands */
 } worked_t;
 
+#define MULT_SIZE   12
 /** worked mults
  *
  * all information about worked multis */
 typedef struct {
-    char name[12];		/**< Multiplier */
+    char name[MULT_SIZE];	/**< Multiplier */
     int band;			/**< bitmap with bands the multi was worked */
 } mults_t;
 
@@ -186,6 +190,8 @@ typedef struct {
     int qsos[PFXNUMBERS];
 } pfxnummulti_t;
 
+#define COMMENT_SIZE    80
+#define CALL_SIZE       20
 
 /* represents different parts of a qso line */
 struct qso_t {
@@ -208,6 +214,10 @@ struct qso_t {
     freq_t freq;
     int tx;
     int qsots;
+    char *mult1_value;
+    char *callupdate;           // transient field, used in checkexchange
+    char *normalized_comment;   // transient field
+    char *section;              // transient field
 };
 
 
@@ -286,8 +296,8 @@ enum {
 /* Enums for RESEND_CALL feature */
 enum {
     RESEND_NOT_SET,		/* Resend feature not set */
-    RESEND_PARTIAL,		/* Resend partial hiscall */
-    RESEND_FULL,		/* Resend full hiscall again */
+    RESEND_PARTIAL,		/* Resend partial call */
+    RESEND_FULL,		/* Resend full call again */
 };
 
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}

@@ -131,16 +131,16 @@ int readcalls(const char *logfile, bool interactive) {
 
 	qso = parse_qso(inputbuffer);
 
-	if (log_is_comment(inputbuffer)) {
+	if (qso->is_comment) {
 	    g_ptr_array_add(qso_array, qso);
 	    continue;		/* skip further processing for note entry */
 	}
 
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);
-	checkexchange(qso->comment, false);
-	if (strlen(normalized_comment) > 0) {   //FIXME global
-	    strcpy(qso->comment, normalized_comment);
+	checkexchange(qso, false);
+	if (qso->normalized_comment != NULL && strlen(qso->normalized_comment) > 0) {
+	    strcpy(qso->comment, qso->normalized_comment);
 	}
 	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
 
@@ -158,6 +158,11 @@ int readcalls(const char *logfile, bool interactive) {
 
 	g_free(logline);
 
+	// drop transient fields
+	FREE_DYNAMIC_STRING(qso->callupdate);
+	FREE_DYNAMIC_STRING(qso->normalized_comment);
+	FREE_DYNAMIC_STRING(qso->section);
+
 	g_ptr_array_add(qso_array, qso);
     }
 
@@ -165,7 +170,7 @@ int readcalls(const char *logfile, bool interactive) {
 
     if (log_changed) {
 	bool ok = false;
-	if(interactive) {
+	if (interactive) {
 	    showmsg("Log changed due to rescoring. Do you want to save it? Y/(N)");
 	    ok = toupper(key_get()) == 'Y';
 	} else {

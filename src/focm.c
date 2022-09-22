@@ -49,7 +49,7 @@ int cont;
 
 
 int score_foc() {
-    return foc_score(hiscall);
+    return foc_score(current_qso.call);
 }
 
 /** FOC contest configuration */

@@ -49,11 +49,10 @@ extern bool iscontest;
 
 extern bool country_mult;
 
-extern struct qso_t *current_qso;
-extern char hiscall[20];
-extern char hiscall_sent[20];
+extern struct qso_t current_qso;
+extern char hiscall_sent[CALL_SIZE];
 extern int resend_call;
-extern char sentcall[20];
+extern char sentcall[CALL_SIZE];
 extern int total;
 extern int qso_points;
 extern int qsos_per_band[NBANDS];
@@ -76,6 +75,7 @@ extern bool pfxmult;
 extern bool pfxmultab;
 extern int minute_timer;
 extern int unique_call_multi;
+extern int generic_mult;
 
 extern char logline_edit[5][LOGLINELEN + 1];
 #define logline0 logline_edit[0]
@@ -94,10 +94,7 @@ extern char ituzone[];
 extern char continent[];
 extern bool itumult;
 
-extern char mult1_value[40];
 extern int new_mult;
-extern char comment[80];
-extern char normalized_comment[80];
 extern char proposed_exchange[80];
 
 extern char lan_logline[];

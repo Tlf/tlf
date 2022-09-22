@@ -59,9 +59,6 @@
 #include "getexchange.h"
 
 
-char callupdate[MAX_CALL_LENGTH + 1];
-static char section[MAX_SECTION_LENGTH + 1] = "";
-
 void exchange_edit(void);
 
 static void serial_up_down(char *exchange, int delta) {
@@ -111,15 +108,15 @@ int getexchange(void) {
 	recall_exchange();
 
     if ((CONTEST_IS(CQWW) || wazmult || itumult)
-	    && (*comment == '\0') && (strlen(hiscall) != 0)) {
+	    && (current_qso.comment[0] == '\0') && (strlen(current_qso.call) != 0)) {
 	if (itumult)
-	    strcpy(comment, ituzone);
+	    strcpy(current_qso.comment, ituzone);
 	else
-	    strcpy(comment, cqzone);
+	    strcpy(current_qso.comment, cqzone);
     }
-    if ((exc_cont) && (*comment == '\0')
-	    && (strlen(hiscall) != 0)) {
-	strcpy(comment, continent);
+    if ((exc_cont) && (current_qso.comment[0] == '\0')
+	    && (strlen(current_qso.call) != 0)) {
+	strcpy(current_qso.comment, continent);
     }
 
     if (CONTEST_IS(STEWPERRY)) {
@@ -130,15 +127,16 @@ int getexchange(void) {
 
     commentfield = 1;
 
-    i = strlen(comment);
+    i = strlen(current_qso.comment);
     while (1) {
 
 	refresh_comment();
 
-	checkexchange(comment, true);
+	checkexchange(&current_qso, true);
 
-	if (call_update && strlen(callupdate) >= 3) {
-	    strcpy(hiscall, callupdate);
+	if (call_update && strlen(current_qso.callupdate) >= 3) {
+	    strcpy(current_qso.call, current_qso.callupdate);
+            current_qso.callupdate[0] = 0;
 	    printcall();
 	}
 
@@ -157,7 +155,7 @@ int getexchange(void) {
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
-	    wmove(stdscr, 12, 54 + strlen(comment));
+	    wmove(stdscr, 12, 54 + strlen(current_qso.comment));
 	    x = key_poll();
 	}
 
@@ -182,14 +180,14 @@ int getexchange(void) {
 	    }
 	    case CTRL_A: {	// Ctrl-A (^A)
 		add_local_spot();
-		*comment = '\0';
+		current_qso.comment[0] = '\0';
 		x = TAB;	// <Tab>
 		break;
 	    }
 
 	    case KEY_BACKSPACE: {	// Erase (^H or <Backspace>)
 		if (i >= 1) {
-		    comment[strlen(comment) - 1] = '\0';
+		    current_qso.comment[strlen(current_qso.comment) - 1] = '\0';
 		    i -= 1;
 		}
 		break;
@@ -197,9 +195,9 @@ int getexchange(void) {
 
 	    case ESCAPE: {                // <Escape>
 		stoptx();			/* stop sending CW */
-		if (comment[0] != '\0') {	/* if comment not empty */
+		if (current_qso.comment[0] != '\0') {	/* if comment not empty */
 		    /* drop exchange so far */
-		    comment[0] = '\0';
+		    current_qso.comment[0] = '\0';
 		    i = 0;
 		} else {
 		    /* back to callinput */
@@ -225,8 +223,8 @@ int getexchange(void) {
 
 	    /* '+', send TU and log in CT mode */
 	    case '+': {
-		if (ctcomp && (strlen(hiscall) > 2)) {
-		    if (comment[0] == '\0') {
+		if (ctcomp && (strlen(current_qso.call) > 2)) {
+		    if (current_qso.comment[0] == '\0') {
 			x = -1;
 		    } else {
 			/* F4 (TU macro) */
@@ -280,17 +278,17 @@ int getexchange(void) {
 	    }
 
 	    case KEY_LEFT: {	/* Left Arrow--edit exchange field */
-		if (*comment != '\0') {
+		if (current_qso.comment[0] != '\0') {
 		    exchange_edit();
-		    i = strlen(comment);
+		    i = strlen(current_qso.comment);
 		}
 		break;
 	    }
 
 	    case KEY_UP:	/* Up/Down--increase/decrease serial number */
 	    case KEY_DOWN: {
-		serial_up_down(comment, (x == KEY_UP) ? 1 : -1);
-		i = strlen(comment);
+		serial_up_down(current_qso.comment, (x == KEY_UP) ? 1 : -1);
+		i = strlen(current_qso.comment);
 		break;
 	    }
 
@@ -340,7 +338,7 @@ int getexchange(void) {
 		 * or not in contest */
 		if ((ctcomp) || (!iscontest)) {
 		    /* Don't log if exchange field is empty. */
-		    if (comment[0] == '\0') {
+		    if (current_qso.comment[0] == '\0') {
 			x = -1;
 		    } else {
 			/* Log without sending a message. */
@@ -358,7 +356,7 @@ int getexchange(void) {
 	    if (x >= ' ' && x <= 'Z') {
 		instring[0] = x;
 		addch(x);
-		strcat(comment, instring);
+		strcat(current_qso.comment, instring);
 		i++;
 		refreshp();
 	    }
@@ -368,108 +366,108 @@ int getexchange(void) {
 	if (x == '\n' || x == KEY_ENTER || x == TAB
 		|| x == CTRL_K || x == BACKSLASH) {
 
-	    if ((contest->exchange_serial && comment[0] >= '0'
-		    && comment[0] <= '9')) {	/* align serial nr. */
-		if (strlen(comment) == 1) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "00");
-		    strcat(comment, commentbuf);
+	    if ((contest->exchange_serial && current_qso.comment[0] >= '0'
+		    && current_qso.comment[0] <= '9')) {	/* align serial nr. */
+		if (strlen(current_qso.comment) == 1) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "00");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
-		if (strlen(comment) == 2) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "0");
-		    strcat(comment, commentbuf);
+		if (strlen(current_qso.comment) == 2) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "0");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
 	    }
 
 	    if (CONTEST_IS(WPX)) {	/* align serial nr. */
 
-		if ((strlen(comment) == 1) || (comment[1] == ' ')) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "00");
-		    strcat(comment, commentbuf);
+		if ((strlen(current_qso.comment) == 1) || (current_qso.comment[1] == ' ')) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "00");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
-		if ((strlen(comment) == 2) || (comment[2] == ' ')) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "0");
-		    strcat(comment, commentbuf);
+		if ((strlen(current_qso.comment) == 2) || (current_qso.comment[2] == ' ')) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "0");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
 	    }
 
 	    if (CONTEST_IS(SPRINT)) {
 
-		if ((comment[1] == ' ') && (comment[0] != ' ')) {
+		if ((current_qso.comment[1] == ' ') && (current_qso.comment[0] != ' ')) {
 
 		    strcpy(commentbuf, "00");
-		    commentbuf[2] = comment[0];
+		    commentbuf[2] = current_qso.comment[0];
 		    commentbuf[3] = '\0';
-		    strcat(commentbuf, comment + 1);
-		    strcpy(comment, commentbuf);
+		    strcat(commentbuf, current_qso.comment + 1);
+		    strcpy(current_qso.comment, commentbuf);
 		}
-		if ((comment[2] == ' ') && (comment[1] != ' ')) {
+		if ((current_qso.comment[2] == ' ') && (current_qso.comment[1] != ' ')) {
 
 		    strcpy(commentbuf, "0");
-		    commentbuf[1] = comment[0];
-		    commentbuf[2] = comment[1];
+		    commentbuf[1] = current_qso.comment[0];
+		    commentbuf[2] = current_qso.comment[1];
 		    commentbuf[3] = '\0';
-		    strcat(commentbuf, comment + 2);
-		    strcpy(comment, commentbuf);
+		    strcat(commentbuf, current_qso.comment + 2);
+		    strcpy(current_qso.comment, commentbuf);
 		}
 
 	    }
 
 	    if (CONTEST_IS(PACC_PA) && (countrynr != my.countrynr)) {
-		if (strlen(comment) == 1) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "00");
-		    strcat(comment, commentbuf);
+		if (strlen(current_qso.comment) == 1) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "00");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
-		if (strlen(comment) == 2) {
-		    strcpy(commentbuf, comment);
-		    comment[0] = '\0';
-		    strcat(comment, "0");
-		    strcat(comment, commentbuf);
+		if (strlen(current_qso.comment) == 2) {
+		    strcpy(commentbuf, current_qso.comment);
+		    current_qso.comment[0] = '\0';
+		    strcat(current_qso.comment, "0");
+		    strcat(current_qso.comment, commentbuf);
 		}
 
 	    }
 
-	    if (CONTEST_IS(ARRL_SS) && (x != TAB) && (strlen(section) < 2)) {
+	    if (CONTEST_IS(ARRL_SS) && (x != TAB) && (strlen(current_qso.section) < 2)) {
 		mvaddstr(13, 54, "section?");
-		mvaddstr(12, 54, comment);
+		mvaddstr(12, 54, current_qso.comment);
 		x = 0;
 	    } else if ((serial_section_mult || sectn_mult)
-		       && ((x != TAB) && (strlen(section) < 1))) {
+		       && ((x != TAB) && (strlen(current_qso.section) < 1))) {
 		if (!serial_or_section
-			|| (serial_or_section && country_found(hiscall))) {
+			|| (serial_or_section && country_found(current_qso.call))) {
 		    mvaddstr(13, 54, "section?");
-		    mvaddstr(12, 54, comment);
+		    mvaddstr(12, 54, current_qso.comment);
 		    refreshp();
 		}
 		break;
 
 	    } else if (CONTEST_IS(STEWPERRY)) {
-		if (check_qra(comment) == 0) {
+		if (check_qra(current_qso.comment) == 0) {
 		    mvaddstr(13, 54, "locator?");
-		    mvaddstr(12, 54, comment);
+		    mvaddstr(12, 54, current_qso.comment);
 		    break;
 		}
 		refreshp();
 		break;
 	    } else if (CONTEST_IS(CQWW) && trxmode == DIGIMODE && ((countrynr == w_cty)
 		       || (countrynr == ve_cty))) {
-		if (strlen(comment) < 5) {
+		if (strlen(current_qso.comment) < 5) {
 		    mvaddstr(13, 54, "state/prov?");
-		    mvaddstr(12, 54, comment);
+		    mvaddstr(12, 54, current_qso.comment);
 		    if (x == '\n' || x == KEY_ENTER || x == BACKSLASH) {
 			x = 0;
 		    } else {
@@ -501,7 +499,7 @@ bool call_update = false;
 /* ------------------------------------------------------------------------ */
 
 
-static void checkexchange_cqww(char *comment, bool interactive) {
+static void checkexchange_cqww(struct qso_t *qso, bool interactive) {
     // <zone> [call_fix] [zone_fix]
     static const char *PATTERN =
 	"\\s*(\\d+)?"       // zone
@@ -517,7 +515,7 @@ static void checkexchange_cqww(char *comment, bool interactive) {
     int zone = 0;
 
     GMatchInfo *match_info;
-    g_regex_match(regex, comment, 0, &match_info);
+    g_regex_match(regex, qso->comment, 0, &match_info);
     if (g_match_info_matches(match_info)) {
 	gchar *index;
 
@@ -539,22 +537,22 @@ static void checkexchange_cqww(char *comment, bool interactive) {
 	// get call fix
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL) {
-	    g_strlcpy(callupdate, index, sizeof(callupdate));
+            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
     g_match_info_free(match_info);
 
     // multiplier: zone
-    sprintf(normalized_comment, "%02d", zone);
-    g_strlcpy(mult1_value, normalized_comment, sizeof(normalized_comment));
+    sprintf(qso->normalized_comment, "%02d", zone);
+    g_strlcpy(qso->mult1_value, qso->normalized_comment, MULT_SIZE);
 
     if (interactive) {
-	OnLowerSearchPanel(32, normalized_comment); // show current zone
+	OnLowerSearchPanel(32, qso->normalized_comment); // show current zone
     }
 }
 
-static void checkexchange_arrlss(char *comment, bool interactive) {
+static void checkexchange_arrlss(struct qso_t *qso, bool interactive) {
     char serial[5];
     char precedent[3];
     char check[3];
@@ -572,10 +570,10 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	regex = g_regex_new(PATTERN, 0, 0, NULL);
     }
 
-    section[0] = 0;
+    qso->section[0] = 0;
 
     GMatchInfo *match_info;
-    g_regex_match(regex, comment, 0, &match_info);
+    g_regex_match(regex, qso->comment, 0, &match_info);
     if (g_match_info_matches(match_info)) {
 	gchar *index;
 
@@ -602,7 +600,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 3);
 	if (index != NULL && strchr("AKNWVC", index[0]) != NULL) {  // US/CA only
-	    g_strlcpy(callupdate, index, sizeof(callupdate));
+            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
 
@@ -619,7 +617,7 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
 	index = g_match_info_fetch(match_info, 5);
 	if (index != NULL && index[0] != 0) {
 	    if (get_exact_mult_index(index) >= 0) {
-		g_strlcpy(section, index, sizeof(section));
+		g_strlcpy(qso->section, index, MAX_SECTION_LENGTH + 1);
 	    }
 	}
 	g_free(index);
@@ -630,15 +628,15 @@ static void checkexchange_arrlss(char *comment, bool interactive) {
     if (interactive) {
 	char buf[40];
 	sprintf(buf, " %4s %1s %2s %2s ", serial, precedent,
-		check, section);
+		check, qso->section);
 	OnLowerSearchPanel(8, buf);
     }
 
-    sprintf(normalized_comment, "%s %s %s %s", serial, precedent, check, section);
-    g_strlcpy(mult1_value, section, sizeof(section));   // multiplier: section
+    sprintf(qso->normalized_comment, "%s %s %s %s", serial, precedent, check, qso->section);
+    g_strlcpy(qso->mult1_value, qso->section, MULT_SIZE);   // multiplier: section
 }
 
-static void checkexchange_serial_section(char *comment, bool interactive) {
+static void checkexchange_serial_section(struct qso_t *qso, bool interactive) {
     char serial[5] = "";
 
     static const char *PATTERN =
@@ -652,10 +650,10 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	regex = g_regex_new(PATTERN, 0, 0, NULL);
     }
 
-    section[0] = 0;
+    qso->section[0] = 0;
 
     GMatchInfo *match_info;
-    g_regex_match(regex, comment, 0, &match_info);
+    g_regex_match(regex, qso->comment, 0, &match_info);
     if (g_match_info_matches(match_info)) {
 	gchar *index;
 
@@ -673,7 +671,7 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL && index[0] != 0) {
 	    if (serial_grid4_mult || get_exact_mult_index(index) >= 0) {
-		g_strlcpy(section, index, sizeof(section));
+		g_strlcpy(qso->section, index, MAX_SECTION_LENGTH + 1);
 	    }
 	}
 	g_free(index);
@@ -681,34 +679,34 @@ static void checkexchange_serial_section(char *comment, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 3);
 	if (index != NULL) {
-	    g_strlcpy(callupdate, index, sizeof(callupdate));
+            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
     g_match_info_free(match_info);
 
     if (serial_grid4_mult) {
-        if (!check_qra(section)) {
-            section[0] = 0;
+        if (!check_qra(qso->section)) {
+            qso->section[0] = 0;
         }
-        if (strlen(section) > 4) {
-            section[4] = 0;     // mult is the first 4 chars only
+        if (strlen(qso->section) > 4) {
+            qso->section[4] = 0;     // mult is the first 4 chars only
         }
     }
 
     if (interactive) {
 	char buf[40];
-	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, section);
+	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, qso->section);
 	OnLowerSearchPanel(32, buf);
     }
 
-    if (serial[0] && section[0]) {
-	sprintf(normalized_comment, "%s %s", serial, section);
-	g_strlcpy(mult1_value, section, sizeof(mult1_value));   // multiplier: section
+    if (serial[0] && qso->section[0]) {
+	sprintf(qso->normalized_comment, "%s %s", serial, qso->section);
+	g_strlcpy(qso->mult1_value, qso->section, MULT_SIZE);   // multiplier: section
     }
 }
 
-static void checkexchange_sectn_mult(char *comment, bool interactive) {
+static void checkexchange_sectn_mult(struct qso_t *qso, bool interactive) {
     static const char *PATTERN =
 	"\\s*(\\d*[A-Z]+\\d*)?" // section ([digits] letters [digits])
 	"\\s*([A-Z0-9/]*?[A-Z]\\d+[A-Z]+[A-Z0-9/]*)?"  // call fix
@@ -719,10 +717,10 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 	regex = g_regex_new(PATTERN, 0, 0, NULL);
     }
 
-    section[0] = 0;
+    qso->section[0] = 0;
 
     GMatchInfo *match_info;
-    g_regex_match(regex, comment, 0, &match_info);
+    g_regex_match(regex, qso->comment, 0, &match_info);
 
     if (g_match_info_matches(match_info)) {
 	gchar *index;
@@ -731,7 +729,7 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 	index = g_match_info_fetch(match_info, 1);
 	if (index != NULL && index[0] != 0) {
 	    if (get_exact_mult_index(index) >= 0) {
-		g_strlcpy(section, index, sizeof(section));
+		g_strlcpy(qso->section, index, MAX_SECTION_LENGTH + 1);
 	    }
 	}
 	g_free(index);
@@ -739,7 +737,7 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL) {
-	    g_strlcpy(callupdate, index, sizeof(callupdate));
+            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
@@ -747,54 +745,67 @@ static void checkexchange_sectn_mult(char *comment, bool interactive) {
 
     if (interactive) {
 	char buf[40];
-	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, section);
+	sprintf(buf, " %*s ", -MAX_SECTION_LENGTH, qso->section);
 	OnLowerSearchPanel(32, buf);
     }
 
-    if (section[0]) {
-	g_strlcpy(normalized_comment, section, sizeof(normalized_comment));
-	g_strlcpy(mult1_value, section, sizeof(mult1_value));   // multiplier: section
+    if (qso->section[0]) {
+	g_strlcpy(qso->normalized_comment, qso->section, COMMENT_SIZE);
+	g_strlcpy(qso->mult1_value, qso->section, MULT_SIZE);   // multiplier: section
     }
 }
 
 /* ------------------------------------------------------------------------ */
 /*
     input: comment, interactive
-    output (global vars): section, callupdate, mult1_value, normalized_comment
+    output (qso): callupdate, normalized_comment, section, mult1_value
     side effect: lower line of search panel updated if interactive
 */
 
-void checkexchange(char *comment, bool interactive) {
+void checkexchange(struct qso_t *qso, bool interactive) {
+    // create fields
+    if (qso->callupdate == NULL) {
+        qso->callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
+    }
+    if (qso->normalized_comment == NULL) {
+        qso->normalized_comment = g_malloc0(COMMENT_SIZE);
+    }
+    if (qso->section == NULL) {
+        qso->section = g_malloc0(MAX_SECTION_LENGTH + 1);
+    }
+    if (qso->mult1_value == NULL) {
+        qso->mult1_value = g_malloc0(MULT_SIZE);
+    }
 
-    callupdate[0] = 0;
-    normalized_comment[0] = 0;
-    mult1_value[0] = 0;
+    qso->callupdate[0] = 0;
+    qso->normalized_comment[0] = 0;
+    qso->mult1_value[0] = 0;
 
     // ----------------------------cqww------------------------------
     if (CONTEST_IS(CQWW)) {
 
-	checkexchange_cqww(comment, interactive);
+	checkexchange_cqww(qso, interactive);
 	return;
     }
 
     // ---------------------------arrls------------------------------
     if (CONTEST_IS(ARRL_SS)) {
 
-	checkexchange_arrlss(comment, interactive);
+	checkexchange_arrlss(qso, interactive);
 	return;
     }
 
     // ----------------------serial+section--------------------------
     if (serial_section_mult || serial_grid4_mult) {
 
-	checkexchange_serial_section(comment, interactive);
+	checkexchange_serial_section(qso, interactive);
 	return;
     }
 
     // ----------------------section only----------------------------
     if (sectn_mult || sectn_mult_once || dx_arrlsections) {
 
-	checkexchange_sectn_mult(comment, interactive);
+	checkexchange_sectn_mult(qso, interactive);
 	return;
     }
 
@@ -811,14 +822,14 @@ void exchange_edit(void) {
     int i = 0, j;
     char comment2[27];
 
-    l = strlen(comment);
+    l = strlen(current_qso.comment);
     b = l - 1;
-    while ((i != ESCAPE) && (b <= strlen(comment))) {
+    while ((i != ESCAPE) && (b <= strlen(current_qso.comment))) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
 	mvaddstr(12, 54, spaces(contest->exchange_width));
-	mvaddstr(12, 54, comment);
+	mvaddstr(12, 54, current_qso.comment);
 	move(12, 54 + b);
 
 	i = key_get();
@@ -831,7 +842,7 @@ void exchange_edit(void) {
 	    // Ctrl-E (^E) or <End>, move to end of comment field, exit edit mode.
 	} else if (i == CTRL_E || i == KEY_END) {
 
-	    b = strlen(comment);
+	    b = strlen(current_qso.comment);
 	    break;
 
 	    // Left arrow, move cursor left one position.
@@ -843,7 +854,7 @@ void exchange_edit(void) {
 	    // Right arrow, move cursor right one position.
 	} else if (i == KEY_RIGHT) {
 
-	    if (b < strlen(comment) - 1) {
+	    if (b < strlen(current_qso.comment) - 1) {
 		b++;
 	    } else
 		break;		/* stop edit */
@@ -852,10 +863,10 @@ void exchange_edit(void) {
 	    // shift all characters to the right of the cursor left one position.
 	} else if (i == KEY_DC) {
 
-	    l = strlen(comment);
+	    l = strlen(current_qso.comment);
 
 	    for (j = b; j <= l; j++) {
-		comment[j] = comment[j + 1];	/* move to left incl.\0 */
+		current_qso.comment[j] = current_qso.comment[j + 1];	/* move to left incl.\0 */
 	    }
 
 	    // <Backspace>, erase character to the left of the cursor,
@@ -865,10 +876,10 @@ void exchange_edit(void) {
 	    if (b > 0) {
 		b--;
 
-		l = strlen(comment);
+		l = strlen(current_qso.comment);
 
 		for (j = b; j <= l; j++) {
-		    comment[j] = comment[j + 1];
+		    current_qso.comment[j] = current_qso.comment[j + 1];
 		}
 	    }
 
@@ -882,13 +893,13 @@ void exchange_edit(void) {
 	    // Accept printable characters.
 	    if ((i >= ' ') && (i <= 'Z')) {
 
-		if (strlen(comment) < contest->exchange_width) {
+		if (strlen(current_qso.comment) < contest->exchange_width) {
 		    /* copy including trailing \0 */
-		    strncpy(comment2, comment + b, strlen(comment) - (b - 1));
+		    strncpy(comment2, current_qso.comment + b, strlen(current_qso.comment) - (b - 1));
 
-		    comment[b] = i;
-		    comment[b + 1] = '\0';
-		    strcat(comment, comment2);
+		    current_qso.comment[b] = i;
+		    current_qso.comment[b + 1] = '\0';
+		    strcat(current_qso.comment, comment2);
 
 		    b++;
 		}
