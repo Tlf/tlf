@@ -29,32 +29,30 @@
 #include "ui_utils.h"
 #include "write_keyer.h"
 
-void cleanup_qso(void) {
-    current_qso.call[0] = '\0';	    /* reset current call and comment */
+/* reset comment */
+void cleanup_comment(void) {
     current_qso.comment[0] = '\0';
     current_qso.normalized_comment[0] = '\0';
+}
+
+/* reset hiscall */
+void cleanup_hiscall(void) {
+    current_qso.call[0] = '\0';	    /* reset current call and comment */
     proposed_exchange[0] = '\0';
-    rst_reset();;	    /* reset to 599 */
     countrynr = 0;
+}
+
+
+void cleanup_qso(void) {
+    cleanup_hiscall();
+    cleanup_comment();
+    rst_reset();;	    /* reset to 599 */
 }
 
 void cleanup(void) {
     extern int defer_store;
 
-    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-    mvaddstr(12, 29, spaces(12));
-
-    attron(COLOR_PAIR(C_WINDOW));
-    mvaddstr(12, 54, spaces(contest->exchange_width));
-
-    attron(COLOR_PAIR(C_LOG | A_STANDOUT));
-    for (int k = 1; k <= 5; k++) {
-	mvaddstr(k, 0, spaces(40));
-    }
-
-    refreshp();
     cleanup_qso();
     defer_store = 0;
     keyer_flush();
-
 }

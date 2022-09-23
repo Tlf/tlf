@@ -21,6 +21,8 @@
 #ifndef CLEANUP_H
 #define CLEANUP_H
 
+void cleanup_comment(void);
+void cleanup_hiscall(void);
 void cleanup_qso(void);
 void cleanup(void);
 
