@@ -41,7 +41,9 @@
 #define CTRL_R    18
 #define CTRL_S    19
 #define CTRL_T    20
+#define CTRL_U    21
 #define CTRL_V    22
+#define CTRL_W    23
 
 /* Keyboard characters */
 #define ESCAPE    27

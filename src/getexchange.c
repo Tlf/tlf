@@ -34,6 +34,7 @@
 #include "audio.h"
 #include "cw_utils.h"
 #include "change_rst.h"
+#include "cleanup.h"
 #include "globalvars.h"
 #include "keyer.h"
 #include "keystroke_names.h"
@@ -193,12 +194,20 @@ int getexchange(void) {
 		break;
 	    }
 
+	    case CTRL_W: {
+		/* wipe out exchange field */
+		cleanup_comment();
+		i = 0;
+		break;
+	    }
+
+
 	    case ESCAPE: {                // <Escape>
 		stoptx();			/* stop sending CW */
 		if (!stop_tx_only) {
 		    if (current_qso.comment[0] != '\0') {	/* if comment not empty */
 			/* drop exchange so far */
-			current_qso.comment[0] = '\0';
+			cleanup_comment();
 			i = 0;
 		    } else {
 			/* back to callinput */
