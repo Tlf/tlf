@@ -336,7 +336,7 @@ void add_mult_line(char *line) {
 int init_and_load_multipliers(void) {
 
     FILE *cfp;
-    char s_inputbuffer[186] = "";
+    char s_inputbuffer[700] = "";
     char *mults_location;
 
     if (mults_possible) {
@@ -364,7 +364,7 @@ int init_and_load_multipliers(void) {
 	return 0;       // couldn't open file
     }
 
-    while (fgets(s_inputbuffer, 85, cfp) != NULL) {
+    while (fgets(s_inputbuffer, 300, cfp) != NULL) {
 
 	/* strip leading and trailing whitespace */
 	g_strstrip(s_inputbuffer);
