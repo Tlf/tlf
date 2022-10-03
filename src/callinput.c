@@ -784,6 +784,24 @@ int callinput(void) {
 		break;
 	    }
 
+	    case CTRL_U:
+		/* wipe out or restore call input and comment field */
+		if (current_qso.call[0] != '\0' ||
+			current_qso.comment[0] != '\0') {
+		    /* wipe out any content */
+		    cleanup_hiscall();
+		    cleanup_comment();
+		    rst_reset();
+
+		} else {
+		    /* restore content */
+		    restore_hiscall();
+		    restore_comment();
+		}
+
+		clear_display();
+		break;
+
 	    case CTRL_W:
 		/* wipe out or restore call input field */
 		if (current_qso.call[0] != '\0') {
