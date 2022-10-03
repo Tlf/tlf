@@ -16,12 +16,17 @@
 #include "utils.h"
 #include "qrb.h"
 
-// hacks:
-#define PARSE_OK    0
-#define PARSE_ERROR 1
-#define BANDINDEX_ANY   (-1)
+#include "parse_logcfg.h"   // for PARSE_OK/PARSE_ERROR
 
-// 	python3-dev
+/*
+TODO:
+    - add mutex to plugin_* functions
+    - add PLUGIN_CONFIG parameter
+    - try adding Qso type to tlf module
+    - test plugin execution
+*/
+
+//  needs python3-dev
 
 #ifdef HAVE_PYTHON
 static PyObject *pModule, *pDict, *pTlf;
@@ -35,10 +40,7 @@ static PyObject *pModule, *pDict, *pTlf;
 
 PLUGIN_FUNC(setup)
 PLUGIN_FUNC(score)
-
-PLUGIN_FUNC(is_multi)
-PLUGIN_FUNC(nr_of_mults)
-PLUGIN_FUNC(get_multi)
+PLUGIN_FUNC(check_exchange)
 
 #ifdef HAVE_PYTHON
 static PyStructSequence_Desc qso_descr = {
@@ -105,16 +107,14 @@ PyMODINIT_FUNC PyModInit_tlf(void) {
     PyObject *tlf = PyModule_Create(&tlf_module);
     PyModule_AddIntMacro(tlf, CWMODE);
     PyModule_AddIntMacro(tlf, SSBMODE);
-    PyModule_AddIntConstant(tlf, "BAND_ANY", BANDINDEX_ANY);
     PyModule_AddObject(tlf, "MY_LAT", PyFloat_FromDouble(my.Lat));
     PyModule_AddObject(tlf, "MY_LONG", PyFloat_FromDouble(my.Long));
+// python3.9+ :    PyModule_AddType(tlf, "Qso", qso_type);
     //...
 
     return tlf;
 }
-#endif
 
-#ifdef HAVE_PYTHON
 static void lookup_function(const char *name, PyObject **pf_ptr) {
     // pf_ptr is a borrowed reference
     *pf_ptr = PyDict_GetItemString(pDict, name);
@@ -123,6 +123,27 @@ static void lookup_function(const char *name, PyObject **pf_ptr) {
 	*pf_ptr = NULL;
     }
 }
+
+//
+// copy a string out of a Python dict:
+//  *dest = dict[name]
+//
+// if *dest is NULL then it is allocated accordingly
+// and must be freed by the caller
+//
+static void copy_dict_string(PyObject *dict, const char *name,
+			     char **dest, int size) {
+    // po is a borrowed reference
+    PyObject *po = PyDict_GetItemString(dict, name);
+    if (po == NULL) {
+	return;     // no such entry
+    }
+    if (*dest == NULL) {
+	*dest = g_malloc0(size);
+    }
+    g_strlcpy(*dest, PyUnicode_AsUTF8(po), size);
+}
+
 #endif
 
 int plugin_init(const char *name) {
@@ -173,7 +194,7 @@ int plugin_init(const char *name) {
 	return PARSE_ERROR;
     }
 
-    PyModule_AddObject(pModule, "tlf", pTlf);
+    PyModule_AddObject(pModule, "tlf", pTlf);   // for 'import tlf'
 
     // pDict is a borrowed reference
     pDict = PyModule_GetDict(pModule);
@@ -182,47 +203,20 @@ int plugin_init(const char *name) {
     lookup_function("init", &pf_init);
     lookup_function("setup", &pf_setup);
     lookup_function("score", &pf_score);
-    lookup_function("is_multi", &pf_is_multi);
-    lookup_function("get_multi", &pf_get_multi);
-
-    if (pf_setup == NULL) {
-	showmsg("ERROR: missing setup() in plugin");
-	return PARSE_ERROR;
-    }
+    lookup_function("check_exchange", &pf_check_exchange);
 
     // call init if available
     if (pf_init != NULL) {
-	PyObject *pValue = PyObject_CallObject(pf_init, NULL);
-	// ...check exception....
+	PyObject *args = Py_BuildValue("(s)", "");  //FIXME configure argument
+	PyObject *pValue = PyObject_CallObject(pf_init, args);
+	Py_DECREF(args);
+	//FIXME ...check error/exception....
 	Py_XDECREF(pValue);
     }
-
-
-    // check add_qso ?
 
     // build interface types
     qso_type = PyStructSequence_NewType(&qso_descr);
     qrb_type = PyStructSequence_NewType(&qrb_descr);
-
-#if 0
-    plugin_setup();
-
-    plugin_add_qso(" 80CW  04-Jan-21 16:30 0001  OK1AY          599  599  003                    0   3540.0");
-    plugin_add_qso(" 80CW  04-Jan-21 16:30 0001  OK1Z           599  599  003                    0   3540.0");
-    plugin_add_qso(" 80CW  04-Jan-21 16:30 0001  HA8QSY         599  599  003                    0   3540.0");
-
-    int n = plugin_nr_of_mults(BANDINDEX_ANY);
-    printf("n=%d\n", n);
-
-    printf("S51Z multi: %d\n", plugin_is_multi(1, "S51Z", CWMODE));
-    printf("9A1A multi: %d\n", plugin_is_multi(1, "9A1A", CWMODE));
-
-    char *m = plugin_get_multi("YT1W", CWMODE);
-    printf("multi: |%s|\n", m);
-    g_free(m);
-
-    exit(0);
-#endif
 
     showmsg("Loaded plugin");
 
@@ -244,7 +238,6 @@ void plugin_close() {
 void plugin_setup() {
 #ifdef HAVE_PYTHON
     PyObject *pValue = PyObject_CallObject(pf_setup, NULL);
-    //printf("after pf_setup, pValue %s NULL\n", pValue == NULL ? "is" : "not");
     Py_XDECREF(pValue);
 
     if (NULL != PyErr_Occurred()) {
@@ -275,95 +268,39 @@ int plugin_score(struct qso_t *qso) {
     Py_DECREF(py_qso);
 
     if (pValue != NULL) {
-	result =  PyLong_AsLong(pValue);
-    }
-    Py_XDECREF(pValue);
-
-    if (NULL != PyErr_Occurred()) {
-	PyErr_Print();
-	sleep(2);
-	//exit(1);
-    }
-#endif
-    return result;
-}
-
-bool plugin_is_multi(int band, char *call, int mode) {
-#ifdef HAVE_PYTHON
-    // call is_multi
-    struct qso_t qso;
-    qso.band = band;
-    qso.call = call;
-    qso.mode = mode;
-    qso.comment = "";
-
-    PyObject *py_qso = create_py_qso(&qso);
-    PyObject *args = Py_BuildValue("(O)", py_qso);
-    PyObject *pValue = PyObject_CallObject(pf_is_multi, args);
-    Py_DECREF(args);
-    Py_DECREF(py_qso);
-
-    bool result = false;
-    if (pValue != NULL) {
-	result =  PyLong_AsLong(pValue);
-    }
-    Py_XDECREF(pValue);
-
-    if (NULL != PyErr_Occurred()) {
-	PyErr_Print();
-	sleep(2);
-	//exit(1);
-    }
-    return result;
-#else
-    return false;
-#endif
-}
-
-// result has to be g_freed()'s
-char *plugin_get_multi(struct qso_t *qso) {
-#ifdef HAVE_PYTHON
-    PyObject *py_qso = create_py_qso(qso);
-    PyObject *args = Py_BuildValue("(O)", py_qso);
-    PyObject *pValue = PyObject_CallObject(pf_get_multi, args);
-    Py_DECREF(args);
-    Py_DECREF(py_qso);
-
-    char *result = NULL;
-    if (pValue != NULL) {
-	result = g_strdup(PyUnicode_AsUTF8(pValue));
-    }
-    Py_XDECREF(pValue);
-
-    if (NULL != PyErr_Occurred()) {
-	PyErr_Print();
-	sleep(2);
-	//exit(1);
-    }
-    return result;
-#else
-    return NULL;
-#endif
-}
-
-int plugin_nr_of_mults(int band) {
-#ifdef HAVE_PYTHON
-    PyObject *args = Py_BuildValue("(i)", band);
-    PyObject *pValue = PyObject_CallObject(pf_nr_of_mults, args);
-    Py_DECREF(args);
-
-    int result = 0;
-    if (pValue != NULL) {
 	result = PyLong_AsLong(pValue);
     }
     Py_XDECREF(pValue);
 
     if (NULL != PyErr_Occurred()) {
 	PyErr_Print();
+	sleep(2);
+	//exit(1);
     }
+#endif
     return result;
-#else
-    return 0;
+}
+
+void plugin_check_exchange(struct qso_t *qso) {
+#ifdef HAVE_PYTHON
+    PyObject *py_qso = create_py_qso(qso);
+    PyObject *args = Py_BuildValue("(O)", py_qso);
+    PyObject *pValue = PyObject_CallObject(pf_check_exchange, args);
+    Py_DECREF(args);
+    Py_DECREF(py_qso);
+
+    if (pValue != NULL && PyDict_Check(pValue)) {
+	copy_dict_string(pValue, "mult1_value", &qso->mult1_value, MULT_SIZE);
+	copy_dict_string(pValue, "normalized_exchange", &qso->normalized_comment,
+			 COMMENT_SIZE);
+    }
+    Py_XDECREF(pValue);
+
+    if (NULL != PyErr_Occurred()) {
+	PyErr_Print();
+	sleep(2);
+	//exit(1);
+    }
 #endif
 }
 

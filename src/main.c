@@ -957,6 +957,8 @@ static void tlf_cleanup() {
     }
 #endif
 
+    plugin_close();
+
     endwin();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 

@@ -55,6 +55,7 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "addmult.h"
+#include "plugin.h"
 
 #include "getexchange.h"
 
@@ -809,6 +810,9 @@ void checkexchange(struct qso_t *qso, bool interactive) {
 	return;
     }
 
+    if (plugin_has_check_exchange()) {
+       plugin_check_exchange(qso);
+    }
 }
 
 
