@@ -785,7 +785,13 @@ int callinput(void) {
 	    }
 
 	    case CTRL_W:
-		cleanup_hiscall();
+		/* wipe out or restore call input field */
+		if (current_qso.call[0] != '\0') {
+		    cleanup_hiscall();
+		} else {
+		    restore_hiscall();
+		}
+
 		break;
 
 	    // <Escape>, clear call input or stop sending.

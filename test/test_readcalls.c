@@ -41,6 +41,7 @@ bool lan_active = false;
 
 // dummy functions
 void cleanup_comment() {}
+void restore_comment() {}
 void readqtccalls() {}
 void shownr(char *msg, int x) {}
 

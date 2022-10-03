@@ -27,6 +27,7 @@ bool lan_active = false;
 
 /* dummies */
 void cleanup_comment() {}
+void restore_comment() {}
 void refresh_comment(void) {}
 void time_update(void) {}
 void show_rtty(void) {}
