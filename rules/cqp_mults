@@ -1,0 +1,76 @@
+# This mult file is suitable for a California station.
+# Mults are states and counties are aliases for California.
+# If you operate outside of California your mults will be California counties.
+#########################
+## California Counties ##
+#########################
+CA:ALAM,ALPI,AMAD,BUTT,CALA,COLU,CCOS,DELN,ELDO,FRES,GLEN,HUMB,IMPE,INYO,KERN,KING,LAKE,LASS,LANG,MADE,MARN,MARP,MEND,MERC,MODO,MONO,MONT,NAPA,NEVA,ORAN,PLAC,PLUM,RIVE,SACR,SBEN,SBER,SDIE,SFRA,SJOA,SLUI,SMAT,SBAR,SCLA,SCRU,SHAS,SIER,SISK,SOLA,SONO,STAN,SUTT,TEHA,TRIN,TULA,TUOL,VENT,YOLO,YUBA
+###################
+## United States ##
+###################
+AL
+AK
+AZ
+AR
+CO
+CT
+DE
+FL
+GA
+HI
+ID
+IL
+IN
+IA
+KS
+KY
+LA
+ME
+MD
+MA
+MI
+MN
+MS
+MO
+MT
+NE
+NV
+NH
+NJ
+NM
+NY
+NC
+ND
+OH
+OK
+OR
+PA
+RI
+SC
+SD
+TN
+TX
+UT
+VT
+VA
+WA
+WV
+WI
+WY
+############
+## Canada ##
+############
+MR:NB,NL,NS,PE
+#   Maritimes (NB, NL, NS, PE)
+QC
+ON
+MB
+SK
+AB
+BC
+NT:NU,YT
+#   Northern Territories (NT, NU, YT)
+########
+## DX ##
+########
+#   All other locations
