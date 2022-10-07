@@ -2282,6 +2282,10 @@ Uses short form for serial number (9=N, 0=T).
 Uses long form for serial number (default).
 .
 .TP
+.B NO_LEADING_ZEROS_SERIAL
+Disables sending leading zeros in serial number.
+.
+.TP
 .B NO_RST
 Do not use RST in contest, such as for CW Open, ARRL Sweepstakes, ARRL Field
 Day, or various QSO parties and such events.

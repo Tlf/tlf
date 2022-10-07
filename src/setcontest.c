@@ -340,7 +340,6 @@ void setcontest(char *name) {
     showscore_flag = true;
     searchflg = true;
     sectn_mult = false;
-    noleadingzeros = false;
 
     w_cty = getctynr(wcall);
     ve_cty = getctynr(vecall);

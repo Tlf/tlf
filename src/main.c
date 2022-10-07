@@ -141,7 +141,7 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-bool noleadingzeros;
+bool noleadingzeros = false;
 bool ctcomp = false;
 bool nob4 = false;		// allow auto b4
 bool ignoredupe = false;

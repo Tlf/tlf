@@ -1108,6 +1108,7 @@ static config_t logcfg_configs[] = {
     {"WYSIWYG_ONCE",	    CFG_BOOL_TRUE(wysiwyg_once)},
     {"RIT_CLEAR",	    CFG_BOOL_TRUE(rit)},
     {"SHORT_SERIAL",	    CFG_INT_ONE(shortqsonr)},
+    {"NO_LEADING_ZEROS_SERIAL",	    CFG_BOOL_TRUE(noleadingzeros)},
     {"SCOREWINDOW",	    CFG_BOOL_TRUE(showscore_flag)},
     {"CHECKWINDOW",	    CFG_BOOL_TRUE(searchflg)},
     {"SEND_DE",		    CFG_BOOL_TRUE(demode)},
