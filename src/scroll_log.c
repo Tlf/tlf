@@ -104,10 +104,10 @@ void get_next_serial(void) {
 void scroll_log(void) {
 
     for (int i = 5; i > 0; i--) {
-	if (nr_qsos < i) {
+	if (NR_QSOS < i) {
 	    g_strlcpy(logline_edit[5 - i], spaces(80), LINELEN + 1);
 	} else {
-	    g_strlcpy(logline_edit[5- i], QSOS(nr_qsos - i), LINELEN + 1);
+	    g_strlcpy(logline_edit[5- i], QSOS(NR_QSOS - i), LINELEN + 1);
 	}
     }
 

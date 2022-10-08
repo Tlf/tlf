@@ -116,7 +116,7 @@ static void flash_field(int row, int column, char *value) {
 /* get a copy of selected QSO into the buffer */
 static void get_qso(int nr, char *buffer) {
 
-    assert(nr < nr_qsos);
+    assert(nr < NR_QSOS);
     strcpy(buffer, QSOS(nr));
     assert(strlen(buffer) == (LOGLINELEN - 1));
 }
@@ -126,7 +126,7 @@ static void putback_qso(int nr, char *buffer) {
     FILE *fp;
 
     assert(strlen(buffer) == (LOGLINELEN - 1));
-    assert(nr < nr_qsos);
+    assert(nr < NR_QSOS);
 
     if ((fp = fopen(logfile, "r+")) == NULL) {
 	TLF_LOG_WARN("Can not open logfile...");
@@ -168,13 +168,13 @@ static void check_store_and_get_next_line(int direction) {
     }
     unhighlight_line(editline, editbuffer);
     if (changed) {
-        putback_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+        putback_qso(NR_QSOS - (NR_LINES - editline), editbuffer);
         needs_rescore = true;
         changed = false;
     }
     if (direction != 0) {
         editline += direction;
-        get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+        get_qso(NR_QSOS - (NR_LINES - editline), editbuffer);
     }
 }
 
@@ -183,12 +183,12 @@ void edit_last(void) {
 
     int j, b, k;
 
-    if (nr_qsos == 0)
+    if (NR_QSOS == 0)
 	return;			/* nothing to edit */
 
     stop_background_process();  // note: this freezes nr_qsos, as network is paused
 
-    const int topline = MAX(NR_LINES - nr_qsos, 0);
+    const int topline = MAX(NR_LINES - NR_QSOS, 0);
 
     // set current end of exchange field
     fields[FIELD_INDEX_EXCHANGE].end = fields[FIELD_INDEX_EXCHANGE].start + contest->exchange_width - 1;
@@ -199,7 +199,7 @@ void edit_last(void) {
 
     /* start with last QSO */
     editline = NR_LINES - 1;
-    get_qso(nr_qsos - (NR_LINES - editline), editbuffer);
+    get_qso(NR_QSOS - (NR_LINES - editline), editbuffer);
     changed = false;
     needs_rescore = false;
 

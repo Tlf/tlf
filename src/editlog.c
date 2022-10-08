@@ -76,7 +76,7 @@ void logedit(void) {
     edit(logfile);
     checklogfile();
 
-    nr_qsos = log_read_n_score();
+    log_read_n_score();
 
     start_background_process();
 

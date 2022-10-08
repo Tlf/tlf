@@ -327,7 +327,6 @@ int rigptt = 0;
 /*----------------------------the parsed log lines-------------------------*/
 // array of qso's
 GPtrArray *qso_array;
-int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/*< number of calls in worked[] */
