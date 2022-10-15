@@ -28,7 +28,6 @@
 
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "tlf_curses.h"
-#include "plugin.h"
 
 
 void store_qso(char *loglineptr) {
