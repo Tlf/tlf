@@ -226,12 +226,10 @@ int plugin_init(const char *name) {
 
 void plugin_close() {
 #ifdef HAVE_PYTHON
-    // Clean up
-    Py_DECREF(pModule);
-    //FIXME check other pointers
-
-    // Finish the Python Interpreter
-    Py_Finalize();
+    if (pModule != NULL) {
+        // Finish the Python Interpreter
+        Py_Finalize();
+    }
 #endif
 }
 
