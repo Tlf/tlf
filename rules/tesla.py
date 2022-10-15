@@ -1,5 +1,4 @@
 import re
-import tlf
 
 # e.g. 023 KN03
 XCHG_PATTERN = re.compile('\d+\s*(\w{2}\d{2})')
