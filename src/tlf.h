@@ -220,6 +220,12 @@ struct qso_t {
     char *section;              // transient field
 };
 
+struct qso_macro_t {
+    char sent_rst[4];
+    char rcvd_rst[4];
+    char qsonrstr[5];
+    char hiscall[20];
+};
 
 void refreshp();
 
