@@ -102,6 +102,7 @@ extern int lan_mutex;
 extern bool lan_active;
 extern int highqsonr;
 
+extern struct qso_values_t current_qso_values;
 
 extern RIG *my_rig;
 extern cqmode_t cqmode;

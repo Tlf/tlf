@@ -94,7 +94,7 @@ int setup_default(void **state) {
     strcpy(current_qso.call, "lz1ab");
     strcpy(sent_rst, "579");
     shortqsonr = LONGCW;
-    strcpy(qsonrstr, "0309");
+    strcpy(current_qso_values.qsonrstr, "0309");
     current_qso.comment = g_malloc0(COMMENT_SIZE);
     strcpy(current_qso.comment, "Alex");
     *message[SP_CALL_MSG] = '\0';
@@ -189,25 +189,25 @@ void test_expandQsoNrshort(void **state) {
 
 void test_expandQsoNr_leadingzeros(void **state) {
     noleadingzeros = false;
-    strcpy(qsonrstr, "0007");
+    strcpy(current_qso_values.qsonrstr, "0007");
     check_ExpandMacro("nr #", "nr 007");
-    strcpy(qsonrstr, "0073");
+    strcpy(current_qso_values.qsonrstr, "0073");
     check_ExpandMacro("nr #", "nr 073");
-    strcpy(qsonrstr, "0123");
+    strcpy(current_qso_values.qsonrstr, "0123");
     check_ExpandMacro("nr #", "nr 123");
-    strcpy(qsonrstr, "4711");
+    strcpy(current_qso_values.qsonrstr, "4711");
     check_ExpandMacro("nr #", "nr 4711");
 }
 
 void test_expandQsoNr_noleadingzeros(void **state) {
     noleadingzeros = true;
-    strcpy(qsonrstr, "0007");
+    strcpy(current_qso_values.qsonrstr, "0007");
     check_ExpandMacro("nr #", "nr 7");
-    strcpy(qsonrstr, "0073");
+    strcpy(current_qso_values.qsonrstr, "0073");
     check_ExpandMacro("nr #", "nr 73");
-    strcpy(qsonrstr, "0123");
+    strcpy(current_qso_values.qsonrstr, "0123");
     check_ExpandMacro("nr #", "nr 123");
-    strcpy(qsonrstr, "4711");
+    strcpy(current_qso_values.qsonrstr, "4711");
     check_ExpandMacro("nr #", "nr 4711");
 }
 

@@ -153,7 +153,7 @@ void log_to_disk(int from_lan) {
 
     attron(COLOR_PAIR(C_WINDOW));
 
-    mvaddstr(12, 23, qsonrstr);
+    mvaddstr(12, 23, current_qso_values.qsonrstr);
 
     if (no_rst) {
 	mvaddstr(12, 44, "   ");

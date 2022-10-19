@@ -55,7 +55,7 @@ void include_note(void) {
     noecho();
 
     if (lan_active) {
-	sprintf(buffer2, "; Node %c, %d : ", thisnode, atoi(qsonrstr) - 1);
+	sprintf(buffer2, "; Node %c, %d : ", thisnode, atoi(current_qso_values.qsonrstr) - 1);
     } else
 	sprintf(buffer2, "; ");
 

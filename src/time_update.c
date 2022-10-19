@@ -174,7 +174,7 @@ void time_update(void) {
 	mvaddstr(11, 0, logline4);
 	mvaddstr(13, 0, spaces(67));
 	attron(COLOR_PAIR(C_WINDOW));
-	mvaddstr(12, 23, qsonrstr);
+	mvaddstr(12, 23, current_qso_values.qsonrstr);
 	printcall();
 
 	showscore();	/* update  score  window every 2 seconds */

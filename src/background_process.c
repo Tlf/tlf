@@ -217,7 +217,7 @@ void *background_process(void *ptr) {
 
 			if ((qsonum <= n) && (n > 0)) {
 			    qsonum = highqsonr + 1;
-			    qsonr_to_str(qsonrstr, qsonum);
+			    qsonr_to_str(current_qso_values.qsonrstr, qsonum);
 			}
 			lan_message[0] = '\0';
 

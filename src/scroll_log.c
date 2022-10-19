@@ -47,29 +47,29 @@ void get_next_serial(void) {
     mm = qsonum - 1;
 
     if (!log_is_comment(logline4)) {
-	memcpy(qsonrstr, logline4 + 23, 4);
-	qsonrstr[4] = '\0';
-	mm = atoi(qsonrstr);
+	memcpy(current_qso_values.qsonrstr, logline4 + 23, 4);
+	current_qso_values.qsonrstr[4] = '\0';
+	mm = atoi(current_qso_values.qsonrstr);
     }
     if (!log_is_comment(logline3)) {
 	if (atoi(logline3 + 23) > mm) {
-	    memcpy(qsonrstr, logline3 + 23, 4);
-	    qsonrstr[4] = '\0';
-	    mm = atoi(qsonrstr);
+	    memcpy(current_qso_values.qsonrstr, logline3 + 23, 4);
+	    current_qso_values.qsonrstr[4] = '\0';
+	    mm = atoi(current_qso_values.qsonrstr);
 	}
     }
     if (!log_is_comment(logline2)) {
 	if (atoi(logline2 + 23) > mm) {
-	    memcpy(qsonrstr, logline2 + 23, 4);
-	    qsonrstr[4] = '\0';
-	    mm = atoi(qsonrstr);
+	    memcpy(current_qso_values.qsonrstr, logline2 + 23, 4);
+	    current_qso_values.qsonrstr[4] = '\0';
+	    mm = atoi(current_qso_values.qsonrstr);
 	}
     }
     if (!log_is_comment(logline1)) {
 	if (atoi(logline1 + 23) > mm) {
-	    memcpy(qsonrstr, logline1 + 23, 4);
-	    qsonrstr[4] = '\0';
-	    mm = atoi(qsonrstr);
+	    memcpy(current_qso_values.qsonrstr, logline1 + 23, 4);
+	    current_qso_values.qsonrstr[4] = '\0';
+	    mm = atoi(current_qso_values.qsonrstr);
 	}
     }
 
@@ -77,25 +77,25 @@ void get_next_serial(void) {
 
 	if (lan_mutex == 2) {	/* last stored message is from lan */
 
-	    if (atoi(qsonrstr) <= highqsonr) {
+	    if (atoi(current_qso_values.qsonrstr) <= highqsonr) {
 		qsonum = highqsonr;
 	    }
 	} else {
-	    qsonum = atoi(qsonrstr);
+	    qsonum = atoi(current_qso_values.qsonrstr);
 	    if (qsonum < highqsonr)
 		qsonum = highqsonr;
 	    if (highqsonr < qsonum)
 		highqsonr = qsonum;
 	}
     } else
-	qsonum = atoi(qsonrstr);
+	qsonum = atoi(current_qso_values.qsonrstr);
 
     if (!log_is_comment(logline4))
 	qsonum++;
     else
 	qsonum = mm + 1;
 
-    qsonr_to_str(qsonrstr, qsonum);
+    qsonr_to_str(current_qso_values.qsonrstr, qsonum);
 }
 
 #define LINELEN 80

@@ -203,12 +203,12 @@ void ExpandMacro(void) {
 	int leading_zeros = 0;
 	bool lead = true;
 	for (i = 0; i <= 4; i++) {
-	    if (lead && qsonrstr[i] == '0') {
+	    if (lead && current_qso_values.qsonrstr[i] == '0') {
 		++leading_zeros;
 	    } else {
 		lead = false;
 	    }
-	    qsonroutput[i] = short_number(qsonrstr[i]);
+	    qsonroutput[i] = short_number(current_qso_values.qsonrstr[i]);
 	}
 	qsonroutput[4] = '\0';
 
@@ -220,8 +220,8 @@ void ExpandMacro(void) {
 		    qsonroutput + leading_zeros);   /* serial nr */
 
 	if (lan_active && contest->exchange_serial) {
-	    strncpy(lastqsonr, qsonrstr, 5);
-	    send_lan_message(INCQSONUM, qsonrstr);
+	    strncpy(lastqsonr, current_qso_values.qsonrstr, 5);
+	    send_lan_message(INCQSONUM, current_qso_values.qsonrstr);
 	}
     }
 

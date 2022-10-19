@@ -176,8 +176,8 @@ void clear_display(void) {
     format_time(time_buf, sizeof(time_buf), DATE_TIME_FORMAT);
     update_line(time_buf);
 
-    qsonr_to_str(qsonrstr, qsonum);
-    mvaddstr(12, 23, qsonrstr);
+    qsonr_to_str(current_qso_values.qsonrstr, qsonum);
+    mvaddstr(12, 23, current_qso_values.qsonrstr);
 
     if (no_rst) {
 	mvaddstr(12, 44, "   ");

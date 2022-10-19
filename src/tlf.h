@@ -220,7 +220,7 @@ struct qso_t {
     char *section;              // transient field
 };
 
-struct qso_macro_t {
+struct qso_values_t {
     char sent_rst[4];
     char rcvd_rst[4];
     char qsonrstr[5];

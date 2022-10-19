@@ -94,8 +94,8 @@ int getexchange(void) {
     instring[1] = '\0';
 
     if (lan_active && contest->exchange_serial) {
-	strncpy(lastqsonr, qsonrstr, 5);
-	send_lan_message(INCQSONUM, qsonrstr);
+	strncpy(lastqsonr, current_qso_values.qsonrstr, 5);
+	send_lan_message(INCQSONUM, current_qso_values.qsonrstr);
     }
 
     if (contest->recall_mult)

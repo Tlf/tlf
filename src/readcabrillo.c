@@ -471,7 +471,7 @@ int readcabrillo(int mode) {
 	}
     }
 
-    strcpy(t_qsonrstr, qsonrstr);
+    strcpy(t_qsonrstr, current_qso_values.qsonrstr);
     t_qsonum = qsonum;
     t_bandinx = bandinx;
 
@@ -481,7 +481,7 @@ int readcabrillo(int mode) {
 	cab_qso_to_tlf(logline, cabdesc);
     }
 
-    strcpy(qsonrstr, t_qsonrstr);
+    strcpy(current_qso_values.qsonrstr, t_qsonrstr);
     qsonum = t_qsonum;
     bandinx = t_bandinx;
 
