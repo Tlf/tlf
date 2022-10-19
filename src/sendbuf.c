@@ -220,7 +220,7 @@ void ExpandMacro(void) {
 		    qsonroutput + leading_zeros);   /* serial nr */
 
 	if (lan_active && contest->exchange_serial) {
-	    strncpy(lastqsonr, current_qso_values.qsonrstr, 5);
+	    strncpy(last_qso_values.qsonrstr, current_qso_values.qsonrstr, 5);
 	    send_lan_message(INCQSONUM, current_qso_values.qsonrstr);
 	}
     }

@@ -268,10 +268,11 @@ int sending_call = 0;
 int early_started = 0;			/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
 char lastcall[20];
-char lastqsonr[5];
 struct qso_values_t current_qso_values = {
 	.qsonrstr = "0001"
 };
+
+struct qso_values_t last_qso_values;
 
 //char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
