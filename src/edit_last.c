@@ -188,7 +188,7 @@ void edit_last(void) {
 
     stop_background_process();  // note: this freezes nr_qsos, as network is paused
 
-    const int topline = MAX(NR_LINES - NR_QSOS, 0);
+    const int topline = (NR_LINES > NR_QSOS ? NR_LINES - NR_QSOS : 0);
 
     // set current end of exchange field
     fields[FIELD_INDEX_EXCHANGE].end = fields[FIELD_INDEX_EXCHANGE].start + contest->exchange_width - 1;
