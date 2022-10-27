@@ -38,6 +38,7 @@ static PyObject *pModule, *pDict, *pTlf;
     bool plugin_has_##name() { return (pf_##name != NULL); }
 //==
 
+PLUGIN_FUNC(init)
 PLUGIN_FUNC(setup)
 PLUGIN_FUNC(score)
 PLUGIN_FUNC(check_exchange)
@@ -146,6 +147,114 @@ static void copy_dict_string(PyObject *dict, const char *name,
 
 #endif
 
+int parse_version(const char *version, int *major, int *minor) {
+    char *v = g_strdup(version);
+    g_strstrip(v);
+
+    if (v[0] == 0) {    // version is empty
+        g_free(v);
+        *major = 0;
+        *minor = 0;
+        return PARSE_OK;
+    }
+
+    int result = PARSE_ERROR;   // default: failure
+
+    // format: <digit(s)>.<digit(s)>[ignored_trailing_chars]
+    GRegex *regex = g_regex_new("^(\\d+)\\.(\\d+)", 0, 0, NULL);
+    GMatchInfo *match_info;
+    g_regex_match(regex, v, 0, &match_info);
+    if (g_match_info_matches(match_info)) {
+        char *major_str = g_match_info_fetch(match_info, 1);
+        char *minor_str = g_match_info_fetch(match_info, 2);
+        *major = atoi(major_str);
+        *minor = atoi(minor_str);
+        result = PARSE_OK;  // success
+        g_free(major_str);
+        g_free(minor_str);
+    }
+    g_match_info_free(match_info);
+    g_regex_unref(regex);
+    g_free(v);
+
+    return result;
+}
+
+
+#define ERROR_WRONG_VERSION1    10
+#define ERROR_WRONG_VERSION2    20
+// returns -1/0/+1, or one of the above error codes
+int compare_versions(const char *version1, const char *version2) {
+    int v1_major, v1_minor;
+    int v2_major, v2_minor;
+
+    if (parse_version(version1, &v1_major, &v1_minor) != PARSE_OK) {
+        return ERROR_WRONG_VERSION1;
+    }
+    if (parse_version(version2, &v2_major, &v2_minor) != PARSE_OK) {
+        return ERROR_WRONG_VERSION2;
+    }
+
+    if (v1_major > v2_major) {
+        return 1;
+    }
+    if (v1_major < v2_major) {
+        return -1;
+    }
+    if (v1_minor > v2_minor) {
+        return 1;
+    }
+    if (v1_minor < v2_minor) {
+        return -1;
+    }
+    return 0;
+}
+
+#ifdef HAVE_PYTHON
+// call init if available
+static int call_init() {
+    if (pf_init == NULL) {
+        return PARSE_OK;
+    }
+
+    PyObject *args = Py_BuildValue("(s)", "");  //FIXME configure argument
+    PyObject *pValue = PyObject_CallObject(pf_init, args);
+    Py_DECREF(args);
+
+    if (NULL != PyErr_Occurred()) {
+        showmsg("Error: ");
+        PyErr_Print();
+        return PARSE_ERROR;
+    }
+
+    if (pValue == NULL || pValue == Py_None)  {
+        // no check needed
+    } else if (PyUnicode_Check(pValue)) {
+        const char *required_version = PyUnicode_AsUTF8(pValue);
+        int rc = compare_versions(VERSION, required_version);
+        if (rc == ERROR_WRONG_VERSION2) {
+            showstring("Error: Unparseable required version:", required_version);
+            return PARSE_ERROR;
+        } else if (rc == ERROR_WRONG_VERSION1) {    // should not happen
+            showmsg("Error: Internal error parsing version: " VERSION);
+            return PARSE_ERROR;
+        } else if (rc < 0) {
+            char *msg = g_strdup_printf("Plugin requires version %s but you are running " VERSION ". Please upgrade TLF.",
+                    required_version);
+            showmsg(msg);
+            g_free(msg);
+            return PARSE_ERROR;
+        }
+    } else {
+        showmsg("Wrong return type for init()");
+        return PARSE_ERROR;
+    }
+
+    Py_XDECREF(pValue);
+    return PARSE_OK;
+}
+#endif
+
 int plugin_init(const char *name) {
 #ifdef HAVE_PYTHON
     // determine directory containing the plugin
@@ -199,19 +308,14 @@ int plugin_init(const char *name) {
     // pDict is a borrowed reference
     pDict = PyModule_GetDict(pModule);
 
-    PyObject *pf_init;
     lookup_function("init", &pf_init);
     lookup_function("setup", &pf_setup);
     lookup_function("score", &pf_score);
     lookup_function("check_exchange", &pf_check_exchange);
 
-    // call init if available
-    if (pf_init != NULL) {
-	PyObject *args = Py_BuildValue("(s)", "");  //FIXME configure argument
-	PyObject *pValue = PyObject_CallObject(pf_init, args);
-	Py_DECREF(args);
-	//FIXME ...check error/exception....
-	Py_XDECREF(pValue);
+    int rc = call_init();
+    if (rc != PARSE_OK) {
+        return rc;
     }
 
     // build interface types
