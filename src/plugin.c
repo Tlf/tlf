@@ -22,7 +22,6 @@
 TODO:
     - add mutex to plugin_* functions
     - add PLUGIN_CONFIG parameter
-    - try adding Qso type to tlf module
     - test plugin execution
 */
 
@@ -45,7 +44,7 @@ PLUGIN_FUNC(check_exchange)
 
 #ifdef HAVE_PYTHON
 static PyStructSequence_Desc qso_descr = {
-    .name = "qso",
+    .name = "Qso",
     .doc = "QSO data",
     .fields = (PyStructSequence_Field[]) {
 	{.name = "band"},
@@ -59,7 +58,7 @@ static PyStructSequence_Desc qso_descr = {
 };
 
 static PyStructSequence_Desc qrb_descr = {
-    .name = "qrb",
+    .name = "Qrb",
     .doc = "QRB data",
     .fields = (PyStructSequence_Field[]) {
 	{.name = "distance"},
@@ -85,7 +84,6 @@ static PyObject *py_get_qrb_for_locator(PyObject *self, PyObject *args) {
 	Py_RETURN_NONE;
     }
 
-    //return Py_BuildValue("{s:d,s:d}", "distance", distance, "bearing", bearing);
     PyObject *py_qrb = PyStructSequence_New(qrb_type);
     PyStructSequence_SetItem(py_qrb, 0, Py_BuildValue("d", distance));
     PyStructSequence_SetItem(py_qrb, 1, Py_BuildValue("d", bearing));
@@ -104,14 +102,14 @@ static struct PyModuleDef tlf_module = {
     .m_methods = tlf_methods
 };
 
-PyMODINIT_FUNC PyModInit_tlf(void) {
+PyMODINIT_FUNC pyModInit_tlf(void) {
     PyObject *tlf = PyModule_Create(&tlf_module);
     PyModule_AddIntMacro(tlf, CWMODE);
     PyModule_AddIntMacro(tlf, SSBMODE);
     PyModule_AddObject(tlf, "MY_LAT", PyFloat_FromDouble(my.Lat));
     PyModule_AddObject(tlf, "MY_LONG", PyFloat_FromDouble(my.Long));
-// python3.9+ :    PyModule_AddType(tlf, "Qso", qso_type);
-    //...
+    PyModule_AddType(tlf, qso_type);
+    PyModule_AddType(tlf, qrb_type);
 
     return tlf;
 }
@@ -152,10 +150,10 @@ int parse_version(const char *version, int *major, int *minor) {
     g_strstrip(v);
 
     if (v[0] == 0) {    // version is empty
-        g_free(v);
-        *major = 0;
-        *minor = 0;
-        return PARSE_OK;
+	g_free(v);
+	*major = 0;
+	*minor = 0;
+	return PARSE_OK;
     }
 
     int result = PARSE_ERROR;   // default: failure
@@ -165,13 +163,13 @@ int parse_version(const char *version, int *major, int *minor) {
     GMatchInfo *match_info;
     g_regex_match(regex, v, 0, &match_info);
     if (g_match_info_matches(match_info)) {
-        char *major_str = g_match_info_fetch(match_info, 1);
-        char *minor_str = g_match_info_fetch(match_info, 2);
-        *major = atoi(major_str);
-        *minor = atoi(minor_str);
-        result = PARSE_OK;  // success
-        g_free(major_str);
-        g_free(minor_str);
+	char *major_str = g_match_info_fetch(match_info, 1);
+	char *minor_str = g_match_info_fetch(match_info, 2);
+	*major = atoi(major_str);
+	*minor = atoi(minor_str);
+	result = PARSE_OK;  // success
+	g_free(major_str);
+	g_free(minor_str);
     }
     g_match_info_free(match_info);
     g_regex_unref(regex);
@@ -189,23 +187,23 @@ int compare_versions(const char *version1, const char *version2) {
     int v2_major, v2_minor;
 
     if (parse_version(version1, &v1_major, &v1_minor) != PARSE_OK) {
-        return ERROR_WRONG_VERSION1;
+	return ERROR_WRONG_VERSION1;
     }
     if (parse_version(version2, &v2_major, &v2_minor) != PARSE_OK) {
-        return ERROR_WRONG_VERSION2;
+	return ERROR_WRONG_VERSION2;
     }
 
     if (v1_major > v2_major) {
-        return 1;
+	return 1;
     }
     if (v1_major < v2_major) {
-        return -1;
+	return -1;
     }
     if (v1_minor > v2_minor) {
-        return 1;
+	return 1;
     }
     if (v1_minor < v2_minor) {
-        return -1;
+	return -1;
     }
     return 0;
 }
@@ -214,7 +212,7 @@ int compare_versions(const char *version1, const char *version2) {
 // call init if available
 static int call_init() {
     if (pf_init == NULL) {
-        return PARSE_OK;
+	return PARSE_OK;
     }
 
     PyObject *args = Py_BuildValue("(s)", "");  //FIXME configure argument
@@ -222,32 +220,33 @@ static int call_init() {
     Py_DECREF(args);
 
     if (NULL != PyErr_Occurred()) {
-        showmsg("Error: ");
-        PyErr_Print();
-        return PARSE_ERROR;
+	showmsg("Error: ");
+	PyErr_Print();
+	return PARSE_ERROR;
     }
 
     if (pValue == NULL || pValue == Py_None)  {
-        // no check needed
+	// no check needed
     } else if (PyUnicode_Check(pValue)) {
-        const char *required_version = PyUnicode_AsUTF8(pValue);
-        int rc = compare_versions(VERSION, required_version);
-        if (rc == ERROR_WRONG_VERSION2) {
-            showstring("Error: Unparseable required version:", required_version);
-            return PARSE_ERROR;
-        } else if (rc == ERROR_WRONG_VERSION1) {    // should not happen
-            showmsg("Error: Internal error parsing version: " VERSION);
-            return PARSE_ERROR;
-        } else if (rc < 0) {
-            char *msg = g_strdup_printf("Plugin requires version %s but you are running " VERSION ". Please upgrade TLF.",
-                    required_version);
-            showmsg(msg);
-            g_free(msg);
-            return PARSE_ERROR;
-        }
+	const char *required_version = PyUnicode_AsUTF8(pValue);
+	int rc = compare_versions(VERSION, required_version);
+	if (rc == ERROR_WRONG_VERSION2) {
+	    showstring("Error: Unparseable required version:", required_version);
+	    return PARSE_ERROR;
+	} else if (rc == ERROR_WRONG_VERSION1) {    // should not happen
+	    showmsg("Error: Internal error parsing version: " VERSION);
+	    return PARSE_ERROR;
+	} else if (rc < 0) {
+	    char *msg = g_strdup_printf("Plugin requires version %s but you are running "
+					VERSION ". Please upgrade TLF.",
+					required_version);
+	    showmsg(msg);
+	    g_free(msg);
+	    return PARSE_ERROR;
+	}
     } else {
-        showmsg("Wrong return type for init()");
-        return PARSE_ERROR;
+	showmsg("Wrong return type for init()");
+	return PARSE_ERROR;
     }
 
     Py_XDECREF(pValue);
@@ -280,8 +279,12 @@ int plugin_init(const char *name) {
     g_free(path);
 
     // Initialize the Python Interpreter
-    PyImport_AppendInittab("tlf", &PyModInit_tlf); // declare tlf module
+    PyImport_AppendInittab("tlf", &pyModInit_tlf); // declare tlf module
     Py_Initialize();
+
+    // build interface types
+    qso_type = PyStructSequence_NewType(&qso_descr);
+    qrb_type = PyStructSequence_NewType(&qrb_descr);
 
     pTlf = PyImport_ImportModule("tlf");
     if (pTlf == NULL) {
@@ -293,7 +296,7 @@ int plugin_init(const char *name) {
     PyRun_SimpleString(set_path);   // set module search path
     g_free(set_path);
 
-    // Load the module object
+    // Load the plugin module object
     PyObject *pName = PyUnicode_FromString(name);
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
@@ -315,12 +318,8 @@ int plugin_init(const char *name) {
 
     int rc = call_init();
     if (rc != PARSE_OK) {
-        return rc;
+	return rc;
     }
-
-    // build interface types
-    qso_type = PyStructSequence_NewType(&qso_descr);
-    qrb_type = PyStructSequence_NewType(&qrb_descr);
 
     showmsg("Loaded plugin");
 
@@ -331,8 +330,8 @@ int plugin_init(const char *name) {
 void plugin_close() {
 #ifdef HAVE_PYTHON
     if (pModule != NULL) {
-        // Finish the Python Interpreter
-        Py_Finalize();
+	// Finish the Python Interpreter
+	Py_Finalize();
     }
 #endif
 }
@@ -344,7 +343,8 @@ void plugin_setup() {
 
     if (NULL != PyErr_Occurred()) {
 	PyErr_Print();
-	// FIXME: action?
+	sleep(2);
+	exit(1);
     }
 #endif
 }
@@ -401,7 +401,7 @@ void plugin_check_exchange(struct qso_t *qso) {
     if (NULL != PyErr_Occurred()) {
 	PyErr_Print();
 	sleep(2);
-	//exit(1);
+	exit(1);
     }
 #endif
 }
