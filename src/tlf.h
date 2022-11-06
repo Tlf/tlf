@@ -224,8 +224,8 @@ struct qso_values_t {
     char sent_rst[4];
     char rcvd_rst[4];
     char qsonrstr[5];
-    char hiscall_first_occurence[20];
-    char hiscall_next_occurence[20];
+    char* hiscall_first_occurence;
+    char* hiscall_next_occurence;
 };
 
 void refreshp();

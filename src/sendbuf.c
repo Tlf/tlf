@@ -165,6 +165,19 @@ void replace_all(char *buf, int size, const char *what, const char *rep) {
     replace_n(buf, size, what, rep, 999);
 }
 
+void prepare_current_qso_values() {
+    char *p = current_qso.call + strlen(hiscall_sent);
+    if (strlen(hiscall_sent) != 0) {
+        hiscall_sent[0] = '\0';
+        early_started = 0;
+    }
+    if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
+        strcpy(sentcall, current_qso.call);
+    }
+    current_qso_values.hiscall_first_occurence = p;
+    current_qso_values.hiscall_next_occurence = current_qso.call;
+}
+
 void ExpandMacro(void) {
 
     int i;
@@ -176,18 +189,11 @@ void ExpandMacro(void) {
 
 
     if (NULL != strstr(buffer, "@")) {
-	char *p = current_qso.call + strlen(hiscall_sent);
-	if (strlen(hiscall_sent) != 0) {
-	    hiscall_sent[0] = '\0';
-	    early_started = 0;
-//                              sending_call = 0;
-	}
-	if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
-	    strcpy(sentcall, current_qso.call);
-	}
-	replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurrence */
-	replace_all(buffer, BUFSIZE, "@",
-		    current_qso.call);   /* his call, further occurrences */
+        prepare_current_qso_values();
+        replace_1(buffer, BUFSIZE, "@",
+                current_qso_values.hiscall_first_occurence);
+        replace_all(buffer, BUFSIZE, "@",
+                current_qso_values.hiscall_next_occurence);
     }
 
 
