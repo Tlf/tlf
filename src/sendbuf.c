@@ -178,6 +178,14 @@ void prepare_current_qso_values() {
     current_qso_values.hiscall_next_occurence = current_qso.call;
 }
 
+void update_qso_values() {
+    if (NULL != strstr(buffer, "#")) {
+	if (lan_active && contest->exchange_serial) {
+	    strncpy(last_qso_values.qsonrstr, current_qso_values.qsonrstr, 5);
+        }
+    }
+}
+
 void ExpandMacro(void) {
 
     int i;
@@ -226,8 +234,8 @@ void ExpandMacro(void) {
 		    qsonroutput + leading_zeros);   /* serial nr */
 
 	if (lan_active && contest->exchange_serial) {
-	    strncpy(last_qso_values.qsonrstr, current_qso_values.qsonrstr, 5);
-	    send_lan_message(INCQSONUM, current_qso_values.qsonrstr);
+            update_qso_values();
+            send_lan_message(INCQSONUM, current_qso_values.qsonrstr);
 	}
     }
 
