@@ -188,7 +188,7 @@ void update_qso_values() {
     }
 }
 
-void ExpandMacro(void) {
+void ExpandMacro(struct qso_values_t * qso_values) {
 
     int i;
     static char qsonroutput[5] = "";
@@ -200,9 +200,9 @@ void ExpandMacro(void) {
 
     if (NULL != strstr(buffer, "@")) {
         replace_1(buffer, BUFSIZE, "@",
-                current_qso_values.hiscall_first_occurence);
+                qso_values->hiscall_first_occurence);
         replace_all(buffer, BUFSIZE, "@",
-                current_qso_values.hiscall_next_occurence);
+                qso_values->hiscall_next_occurence);
     }
 
 
@@ -218,12 +218,12 @@ void ExpandMacro(void) {
 	int leading_zeros = 0;
 	bool lead = true;
 	for (i = 0; i <= 4; i++) {
-	    if (lead && current_qso_values.qsonrstr[i] == '0') {
+	    if (lead && qso_values->qsonrstr[i] == '0') {
 		++leading_zeros;
 	    } else {
 		lead = false;
 	    }
-	    qsonroutput[i] = short_number(current_qso_values.qsonrstr[i]);
+	    qsonroutput[i] = short_number(qso_values->qsonrstr[i]);
 	}
 	qsonroutput[4] = '\0';
 
@@ -235,7 +235,7 @@ void ExpandMacro(void) {
 		    qsonroutput + leading_zeros);   /* serial nr */
 
 	if (lan_active && contest->exchange_serial) {
-            send_lan_message(INCQSONUM, current_qso_values.qsonrstr);
+            send_lan_message(INCQSONUM, qso_values->qsonrstr);
 	}
     }
 
@@ -255,7 +255,7 @@ void sendbuf(void) {
 	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
         prepare_current_qso_values();
-	ExpandMacro();
+	ExpandMacro(&current_qso_values);
         update_qso_values();
 
 	if (!simulator) {
