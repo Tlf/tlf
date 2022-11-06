@@ -166,16 +166,18 @@ void replace_all(char *buf, int size, const char *what, const char *rep) {
 }
 
 void prepare_current_qso_values() {
-    char *p = current_qso.call + strlen(hiscall_sent);
-    if (strlen(hiscall_sent) != 0) {
-        hiscall_sent[0] = '\0';
-        early_started = 0;
+    if (NULL != strstr(buffer, "@")) {
+        char *p = current_qso.call + strlen(hiscall_sent);
+        if (strlen(hiscall_sent) != 0) {
+            hiscall_sent[0] = '\0';
+            early_started = 0;
+        }
+        if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
+            strcpy(sentcall, current_qso.call);
+        }
+        current_qso_values.hiscall_first_occurence = p;
+        current_qso_values.hiscall_next_occurence = current_qso.call;
     }
-    if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
-        strcpy(sentcall, current_qso.call);
-    }
-    current_qso_values.hiscall_first_occurence = p;
-    current_qso_values.hiscall_next_occurence = current_qso.call;
 }
 
 void update_qso_values() {
@@ -197,7 +199,6 @@ void ExpandMacro(void) {
 
 
     if (NULL != strstr(buffer, "@")) {
-        prepare_current_qso_values();
         replace_1(buffer, BUFSIZE, "@",
                 current_qso_values.hiscall_first_occurence);
         replace_all(buffer, BUFSIZE, "@",
@@ -234,7 +235,6 @@ void ExpandMacro(void) {
 		    qsonroutput + leading_zeros);   /* serial nr */
 
 	if (lan_active && contest->exchange_serial) {
-            update_qso_values();
             send_lan_message(INCQSONUM, current_qso_values.qsonrstr);
 	}
     }
@@ -254,7 +254,9 @@ void sendbuf(void) {
     if ((trxmode == CWMODE && cwkeyer != NO_KEYER) ||
 	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
+        prepare_current_qso_values();
 	ExpandMacro();
+        update_qso_values();
 
 	if (!simulator) {
 	    if (sending_call == 0)
