@@ -237,15 +237,57 @@ void ExpandMacro_CurrentQso(void) {
 }
 
 void ExpandMacro_PreviousQso(void) {
+    int i;
+    static char qsonroutput[5] = "";
+    static char rst_out[4] = "";
+
+
+    replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
+
+
+    if (NULL != strstr(buffer, "@")) {
+	replace_all(buffer, BUFSIZE, "@",
+		    lastcall);   /* his call, further occurrences */
+    }
+
+
+    rst_out[0] = last_rst[0];
+    rst_out[1] = short_number(last_rst[1]);
+    rst_out[2] = short_number(last_rst[2]);
+    rst_out[3] = '\0';
+
+    replace_all(buffer, BUFSIZE, "[", rst_out);   /* his RST */
+
+
+    if (NULL != strstr(buffer, "#")) {
+	int leading_zeros = 0;
+	bool lead = true;
+	for (i = 0; i <= 4; i++) {
+	    if (lead && lastqsonr[i] == '0') {
+		++leading_zeros;
+	    } else {
+		lead = false;
+	    }
+	    qsonroutput[i] = short_number(lastqsonr[i]);
+	}
+	qsonroutput[4] = '\0';
+
+	if (!noleadingzeros && leading_zeros > 1) {
+	    leading_zeros = 1;
+	}
+
+	replace_all(buffer, BUFSIZE, "#",
+		    qsonroutput + leading_zeros);   /* serial nr */
+    }
 }
 
 
-void sendbuf(void) {
+void sendbuf(ExpandMacro_t expandMacro) {
 
     if ((trxmode == CWMODE && cwkeyer != NO_KEYER) ||
 	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
-	ExpandMacro_CurrentQso();
+	expandMacro();
 
 	if (!simulator) {
 	    if (sending_call == 0)
@@ -296,7 +338,7 @@ void sendbuf(void) {
 void sendmessage(const char *msg) {
     if (strlen(msg) != 0) {
 	g_strlcpy(buffer, msg, sizeof(buffer));
-	sendbuf();
+	sendbuf(ExpandMacro_CurrentQso);
     }
 }
 
