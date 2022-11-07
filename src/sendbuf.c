@@ -165,7 +165,9 @@ void replace_all(char *buf, int size, const char *what, const char *rep) {
     replace_n(buf, size, what, rep, 999);
 }
 
-void ExpandMacro(void) {
+typedef void (*ExpandMacro_t) (void);
+
+void ExpandMacro_CurrentQso(void) {
 
     int i;
     static char qsonroutput[5] = "";
@@ -234,13 +236,16 @@ void ExpandMacro(void) {
 	replace_all(buffer, BUFSIZE, "|", "");	    /* drop it */
 }
 
+void ExpandMacro_PreviousQso(void) {
+}
+
 
 void sendbuf(void) {
 
     if ((trxmode == CWMODE && cwkeyer != NO_KEYER) ||
 	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
-	ExpandMacro();
+	ExpandMacro_CurrentQso();
 
 	if (!simulator) {
 	    if (sending_call == 0)
