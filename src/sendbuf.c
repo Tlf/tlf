@@ -165,8 +165,6 @@ void replace_all(char *buf, int size, const char *what, const char *rep) {
     replace_n(buf, size, what, rep, 999);
 }
 
-typedef void (*ExpandMacro_t) (void);
-
 void ExpandMacro_CurrentQso(void) {
 
     int i;
