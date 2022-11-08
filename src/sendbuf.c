@@ -166,10 +166,30 @@ void replace_all(char *buf, int size, const char *what, const char *rep) {
     replace_n(buf, size, what, rep, 999);
 }
 
+void ExpandQsoNumber(char *qsonr) {
+    static char qsonroutput[5] = "";
+    int leading_zeros = 0;
+    bool lead = true;
+    for (int i = 0; i <= 4; i++) {
+        if (lead && qsonr[i] == '0') {
+            ++leading_zeros;
+        } else {
+            lead = false;
+        }
+        qsonroutput[i] = short_number(qsonr[i]);
+    }
+    qsonroutput[4] = '\0';
+
+    if (!noleadingzeros && leading_zeros > 1) {
+        leading_zeros = 1;
+    }
+
+    replace_all(buffer, BUFSIZE, "#",
+            qsonroutput + leading_zeros);   /* serial nr */
+}
+
 void ExpandMacro_CurrentQso(void) {
 
-    int i;
-    static char qsonroutput[5] = "";
     static char rst_out[4] = "";
 
 
@@ -201,24 +221,7 @@ void ExpandMacro_CurrentQso(void) {
 
 
     if (NULL != strstr(buffer, "#")) {
-	int leading_zeros = 0;
-	bool lead = true;
-	for (i = 0; i <= 4; i++) {
-	    if (lead && qsonrstr[i] == '0') {
-		++leading_zeros;
-	    } else {
-		lead = false;
-	    }
-	    qsonroutput[i] = short_number(qsonrstr[i]);
-	}
-	qsonroutput[4] = '\0';
-
-	if (!noleadingzeros && leading_zeros > 1) {
-	    leading_zeros = 1;
-	}
-
-	replace_all(buffer, BUFSIZE, "#",
-		    qsonroutput + leading_zeros);   /* serial nr */
+        ExpandQsoNumber(qsonrstr);
 
 	if (lan_active && contest->exchange_serial) {
 	    strncpy(lastqsonr, qsonrstr, 5);
@@ -236,8 +239,6 @@ void ExpandMacro_CurrentQso(void) {
 }
 
 void ExpandMacro_PreviousQso(void) {
-    int i;
-    static char qsonroutput[5] = "";
     static char rst_out[4] = "";
 
     struct qso_t *prev_qso = g_ptr_array_index(qso_array, NR_QSOS - 1);
@@ -261,24 +262,7 @@ void ExpandMacro_PreviousQso(void) {
 
     if (NULL != strstr(buffer, "#")) {
         char *prevnr = g_strdup_printf("%03d ", prev_qso->qso_nr);
-	int leading_zeros = 0;
-	bool lead = true;
-	for (i = 0; i <= 4; i++) {
-	    if (lead && prevnr[i] == '0') {
-		++leading_zeros;
-	    } else {
-		lead = false;
-	    }
-	    qsonroutput[i] = short_number(prevnr[i]);
-	}
-	qsonroutput[4] = '\0';
-
-	if (!noleadingzeros && leading_zeros > 1) {
-	    leading_zeros = 1;
-	}
-
-	replace_all(buffer, BUFSIZE, "#",
-		    qsonroutput + leading_zeros);   /* serial nr */
+        ExpandQsoNumber(prevnr);
         g_free(prevnr);
     }
 }
