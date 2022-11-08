@@ -207,7 +207,6 @@ void ExpandMacro_CurrentQso(void) {
 	if (strlen(hiscall_sent) != 0) {
 	    hiscall_sent[0] = '\0';
 	    early_started = 0;
-//                              sending_call = 0;
 	}
 	if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
 	    strcpy(sentcall, current_qso.call);
@@ -244,7 +243,7 @@ void ExpandMacro_PreviousQso(void) {
 
     if (NULL != strstr(buffer, "@")) {
 	replace_all(buffer, BUFSIZE, "@",
-		    prev_qso->call);   /* his call, further occurrences */
+		    prev_qso->call);
     }
 
     ExpandRst(last_rst);
