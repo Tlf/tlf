@@ -335,11 +335,15 @@ void sendbuf(ExpandMacro_t expandMacro) {
  * Send the message via CW or DIGI mode, but only if not empty
  * \param msg message to send
  */
-void sendmessage(const char *msg) {
+void sendmessage_with_macro_expand(const char *msg, ExpandMacro_t expandMacro) {
     if (strlen(msg) != 0) {
 	g_strlcpy(buffer, msg, sizeof(buffer));
-	sendbuf(ExpandMacro_CurrentQso);
+	sendbuf(expandMacro);
     }
+}
+
+void sendmessage(const char *msg) {
+    sendmessage_with_macro_expand(msg, ExpandMacro_CurrentQso);
 }
 
 void send_standard_message(int msg) {
