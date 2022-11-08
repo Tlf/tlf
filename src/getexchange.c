@@ -258,7 +258,7 @@ int getexchange(void) {
 
 	    case KEY_F(2) ... KEY_F(11): {
 		/* F2...F11 - F1 = 1...10 */
-		send_standard_message(x - KEY_F(1));
+                send_standard_message(x - KEY_F(1));
 
 		break;
 	    }

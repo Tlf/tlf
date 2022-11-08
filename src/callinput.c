@@ -572,7 +572,11 @@ int callinput(void) {
 
 	    // Alt-0 to Alt-9 (M-0...M-9), send CW/Digimode messages 15-24.
 	    case 176 ... 185: {
-		send_standard_message(x - 162);	/* alt-0 to alt-9 */
+                if (*current_qso.call == '\0') {
+		    send_standard_message_with_macro_expand(x - 162, ExpandMacro_PreviousQso); // alt-0 to alt-9
+                } else {
+                    send_standard_message(x - 162); /* alt-0 to alt-9 */
+                }
 
 		break;
 	    }
@@ -601,7 +605,11 @@ int callinput(void) {
 
 	    // F2-F11, send messages 2 through 11.
 	    case KEY_F(2) ... KEY_F(11): {
-		send_standard_message(x - KEY_F(1));	// F2...F11 - F1 = 1...10
+                if (*current_qso.call == '\0') {
+		    send_standard_message_with_macro_expand(x - KEY_F(1), ExpandMacro_PreviousQso);	// F2...F11 - F1 = 1...10
+                } else {
+		    send_standard_message(x - KEY_F(1));	// F2...F11 - F1 = 1...10
+                }
 
 		break;
 	    }

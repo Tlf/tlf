@@ -42,6 +42,7 @@
 #include "tlf_curses.h"
 #include "write_keyer.h"
 
+#include "sendbuf.h"
 
 #define BUFSIZE   81
 char buffer[BUFSIZE];
@@ -239,13 +240,14 @@ void ExpandMacro_PreviousQso(void) {
     static char qsonroutput[5] = "";
     static char rst_out[4] = "";
 
+    struct qso_t *prev_qso = g_ptr_array_index(qso_array, NR_QSOS - 1);
 
     replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
 
 
     if (NULL != strstr(buffer, "@")) {
 	replace_all(buffer, BUFSIZE, "@",
-		    lastcall);   /* his call, further occurrences */
+		    prev_qso->call);   /* his call, further occurrences */
     }
 
 
@@ -258,15 +260,16 @@ void ExpandMacro_PreviousQso(void) {
 
 
     if (NULL != strstr(buffer, "#")) {
+        char *prevnr = g_strdup_printf("%03d ", prev_qso->qso_nr);
 	int leading_zeros = 0;
 	bool lead = true;
 	for (i = 0; i <= 4; i++) {
-	    if (lead && lastqsonr[i] == '0') {
+	    if (lead && prevnr[i] == '0') {
 		++leading_zeros;
 	    } else {
 		lead = false;
 	    }
-	    qsonroutput[i] = short_number(lastqsonr[i]);
+	    qsonroutput[i] = short_number(prevnr[i]);
 	}
 	qsonroutput[4] = '\0';
 
@@ -276,6 +279,7 @@ void ExpandMacro_PreviousQso(void) {
 
 	replace_all(buffer, BUFSIZE, "#",
 		    qsonroutput + leading_zeros);   /* serial nr */
+        g_free(prevnr);
     }
 }
 

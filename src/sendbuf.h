@@ -24,6 +24,9 @@
 
 typedef void (*ExpandMacro_t) (void);
 
+void ExpandMacro_CurrentQso(void);
+void ExpandMacro_PreviousQso(void);
+
 char short_number(char c);
 void sendmessage(const char *msg);
 void sendmessage_with_macro_expand(const char *msg, ExpandMacro_t expandMacro);
