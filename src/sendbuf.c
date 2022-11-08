@@ -237,9 +237,21 @@ void ExpandMacro_CurrentQso(void) {
 }
 
 void ExpandMacro_PreviousQso(void) {
-    struct qso_t *prev_qso = g_ptr_array_index(qso_array, NR_QSOS - 1);
-
     replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
+
+    struct qso_t *prev_qso;
+
+    struct qso_t empty_qso;
+    char empty_str[1];
+    empty_str[0] = '\0';
+    empty_qso.call = empty_str;
+    empty_qso.qso_nr = 0;
+
+    if (NR_QSOS == 0) {
+        prev_qso = &empty_qso;
+    } else {
+        prev_qso = g_ptr_array_index(qso_array, NR_QSOS - 1);
+    }
 
     if (NULL != strstr(buffer, "@")) {
 	replace_all(buffer, BUFSIZE, "@",
