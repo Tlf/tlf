@@ -188,13 +188,19 @@ void ExpandQsoNumber(char *qsonr) {
             qsonroutput + leading_zeros);   /* serial nr */
 }
 
+void ExpandRst(char rst[4]) {
+    static char rst_out[4] = "";
+    rst_out[0] = rst[0];
+    rst_out[1] = short_number(rst[1]);
+    rst_out[2] = short_number(rst[2]);
+    rst_out[3] = '\0';
+
+    replace_all(buffer, BUFSIZE, "[", rst_out);   /* his RST */
+}
+
 void ExpandMacro_CurrentQso(void) {
 
-    static char rst_out[4] = "";
-
-
     replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
-
 
     if (NULL != strstr(buffer, "@")) {
 	char *p = current_qso.call + strlen(hiscall_sent);
@@ -211,14 +217,7 @@ void ExpandMacro_CurrentQso(void) {
 		    current_qso.call);   /* his call, further occurrences */
     }
 
-
-    rst_out[0] = sent_rst[0];
-    rst_out[1] = short_number(sent_rst[1]);
-    rst_out[2] = short_number(sent_rst[2]);
-    rst_out[3] = '\0';
-
-    replace_all(buffer, BUFSIZE, "[", rst_out);   /* his RST */
-
+    ExpandRst(sent_rst);
 
     if (NULL != strstr(buffer, "#")) {
         ExpandQsoNumber(qsonrstr);
@@ -239,26 +238,16 @@ void ExpandMacro_CurrentQso(void) {
 }
 
 void ExpandMacro_PreviousQso(void) {
-    static char rst_out[4] = "";
-
     struct qso_t *prev_qso = g_ptr_array_index(qso_array, NR_QSOS - 1);
 
     replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
-
 
     if (NULL != strstr(buffer, "@")) {
 	replace_all(buffer, BUFSIZE, "@",
 		    prev_qso->call);   /* his call, further occurrences */
     }
 
-
-    rst_out[0] = last_rst[0];
-    rst_out[1] = short_number(last_rst[1]);
-    rst_out[2] = short_number(last_rst[2]);
-    rst_out[3] = '\0';
-
-    replace_all(buffer, BUFSIZE, "[", rst_out);   /* his RST */
-
+    ExpandRst(last_rst);
 
     if (NULL != strstr(buffer, "#")) {
         char *prevnr = g_strdup_printf("%03d ", prev_qso->qso_nr);
