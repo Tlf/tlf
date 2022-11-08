@@ -346,19 +346,23 @@ void sendmessage(const char *msg) {
     sendmessage_with_macro_expand(msg, ExpandMacro_CurrentQso);
 }
 
-void send_standard_message(int msg) {
+void send_standard_message_with_macro_expand(int msg, ExpandMacro_t expandMacro) {
     switch (trxmode) {
 	case CWMODE:
-	    sendmessage(message[msg]);
+	    sendmessage_with_macro_expand(message[msg], expandMacro);
 	    break;
 	case DIGIMODE:
-	    sendmessage(digi_message[msg]);
+	    sendmessage_with_macro_expand(digi_message[msg], expandMacro);
 	    break;
 	default:
 	    if (msg < 14)
 		vk_play_file(ph_message[msg]);
 	    break;
     }
+}
+
+void send_standard_message(int msg) {
+    send_standard_message_with_macro_expand(msg, ExpandMacro_CurrentQso);
 }
 
 void send_keyer_message(int msg) {
