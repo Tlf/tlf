@@ -254,14 +254,13 @@ void ExpandMacro_PreviousQso(void) {
     }
 
     if (NULL != strstr(buffer, "@")) {
-	replace_all(buffer, BUFSIZE, "@",
-		    prev_qso->call);
+	replace_all(buffer, BUFSIZE, "@", prev_qso->call);
     }
 
     ExpandRst(last_rst);
 
     if (NULL != strstr(buffer, "#")) {
-        char *prevnr = g_strdup_printf("%03d ", prev_qso->qso_nr);
+        char *prevnr = g_strdup_printf("%03d", prev_qso->qso_nr);
         ExpandQsoNumber(prevnr);
         g_free(prevnr);
     }
