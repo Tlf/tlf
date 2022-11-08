@@ -2297,8 +2297,9 @@ Uses short form for serial number (9=N, 0=T).
 Uses long form for serial number (default).
 .
 .TP
-\fBNO_LEADING_ZEROS_SERIAL\fR[=<\fION\fR|\fIOFF\fR>]
-Disables sending leading zeros in serial number.
+\fBLEADING_ZEROS_SERIAL\fR[=<\fION\fR|\fIOFF\fR>]
+Controls sending leading zeros in serial number. By default serial numbers
+are sent with (up to 2) leading zeros.
 .
 .TP
 \fBNO_RST\fR[=<\fION\fR|\fIOFF\fR>]

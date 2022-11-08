@@ -241,7 +241,7 @@ extern bool mult_side;
 extern bool countrylist_only;
 extern bool mixedmode;
 extern bool qso_once;
-extern bool noleadingzeros;
+extern bool leading_zeros_serial;
 extern bool ignoredupe;
 extern bool continentlist_only;
 extern bool debugflag;
