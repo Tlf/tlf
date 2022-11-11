@@ -206,6 +206,13 @@ int getexchange(void) {
 		break;
 	    }
 
+	    // Underscore, confirm last exchange.
+	    case '_': {
+                send_standard_message_with_macro_expand(2, ExpandMacro_PreviousQso);
+
+		break;
+	    }
+
 	    /* I cannot find any reference for this key combination in my
 	     * CT ver 9 documentation.  As it is, most X window managers
 	     * will trap this combination for the window menu so would
@@ -257,8 +264,12 @@ int getexchange(void) {
 	    }
 
 	    case KEY_F(2) ... KEY_F(11): {
-		/* F2...F11 - F1 = 1...10 */
-                send_standard_message(x - KEY_F(1));
+		 /* F2...F11 - F1 = 1...10 */
+                if (*current_qso.call == '\0') {
+		    send_standard_message_with_macro_expand(x - KEY_F(1), ExpandMacro_PreviousQso);
+                } else {
+		    send_standard_message(x - KEY_F(1));
+                }
 
 		break;
 	    }

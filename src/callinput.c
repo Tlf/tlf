@@ -605,10 +605,11 @@ int callinput(void) {
 
 	    // F2-F11, send messages 2 through 11.
 	    case KEY_F(2) ... KEY_F(11): {
+		 // F2...F11 - F1 = 1...10
                 if (*current_qso.call == '\0') {
-		    send_standard_message_with_macro_expand(x - KEY_F(1), ExpandMacro_PreviousQso);	// F2...F11 - F1 = 1...10
+		    send_standard_message_with_macro_expand(x - KEY_F(1), ExpandMacro_PreviousQso);
                 } else {
-		    send_standard_message(x - KEY_F(1));	// F2...F11 - F1 = 1...10
+		    send_standard_message(x - KEY_F(1));
                 }
 
 		break;
