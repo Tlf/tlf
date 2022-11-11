@@ -25,13 +25,19 @@
 
 bool lan_active = false;
 
+typedef void (*ExpandMacro_t) (void);
+
 /* dummies */
 void refresh_comment(void) {}
 void time_update(void) {}
 void show_rtty(void) {}
 void OnLowerSearchPanel(int x, char *str) {}
 void sendmessage(const char *msg) {}
+void sendmessage_with_macro_expand(const char *msg, ExpandMacro_t expandMacro) {}
 void send_standard_message(int msg) {}
+void send_standard_message_with_macro_expand(int msg, ExpandMacro_t expandMacro) {}
+void ExpandMacro_PreviousQso(void) {}
+void ExpandMacro_CurrentQso(void) {}
 void add_local_spot(void) {}
 void keyer(void) {}
 void qtc_main_panel(int direction) {}
