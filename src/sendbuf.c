@@ -236,22 +236,25 @@ void ExpandMacro_CurrentQso(void) {
 	replace_all(buffer, BUFSIZE, "|", "");	    /* drop it */
 }
 
-void ExpandMacro_PreviousQso(void) {
-    replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
-
-    struct qso_t *prev_qso;
-
-    struct qso_t empty_qso;
-    char empty_str[1];
+struct qso_t * get_previous_qso() {
+    static struct qso_t empty_qso;
+    static char empty_str[1];
     empty_str[0] = '\0';
     empty_qso.call = empty_str;
     empty_qso.qso_nr = 0;
 
     if (NR_QSOS == 0) {
-        prev_qso = &empty_qso;
+        return &empty_qso;
     } else {
-        prev_qso = g_ptr_array_index(qso_array, NR_QSOS - 1);
+	// TODO:lan for networked mode it will be incorrect. Previous qso may not be the last one in the log.
+        return g_ptr_array_index(qso_array, NR_QSOS - 1);
     }
+}
+
+void ExpandMacro_PreviousQso(void) {
+    replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
+
+    struct qso_t *prev_qso = get_previous_qso();
 
     if (NULL != strstr(buffer, "@")) {
 	replace_all(buffer, BUFSIZE, "@", prev_qso->call);
