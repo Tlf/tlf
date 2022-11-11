@@ -246,48 +246,12 @@ void keyer(void) {
 		    move(cury, curx);
 		    break;
 		}
-		case KEY_F(2): {
-		    send_keyer_message(1);	/* F2 */
-		    break;
-		}
-		case KEY_F(3): {
-		    send_keyer_message(2);	/* F3 */
-		    break;
-		}
-		case KEY_F(4): {
-		    send_keyer_message(3);	/* F4 */
-		    break;
-		}
-		case KEY_F(5): {
-		    send_keyer_message(4);	/* F5 */
-		    break;
-		}
-		case KEY_F(6): {
-		    send_keyer_message(5);	/* F6 */
-		    break;
-		}
-		case KEY_F(7): {
-		    send_keyer_message(6);	/* F7 */
-		    break;
-		}
-		case KEY_F(8): {
-		    send_keyer_message(7);	/* F8 */
-		    break;
-		}
-		case KEY_F(9): {
-		    send_keyer_message(8);	/* F9 */
-		    break;
-		}
-		case KEY_F(10): {
-		    send_keyer_message(9);	/* F10 */
-		    break;
-		}
-		case KEY_F(11): {
-		    send_keyer_message(10);	/* F11 */
-		    break;
-		}
-		case KEY_F(12): {
-		    send_keyer_message(11);	/* F12 */
+		case KEY_F(2) ... KEY_F(11): {
+		    if (*current_qso.call == '\0') {
+			send_standard_message_with_macro_expand(x - KEY_F(1), ExpandMacro_PreviousQso);
+		    } else {
+			send_standard_message(x - KEY_F(1));
+		    }
 		    break;
 		}
 		case KEY_BACKSPACE: {
