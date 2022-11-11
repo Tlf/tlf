@@ -260,7 +260,7 @@ void ExpandMacro_PreviousQso(void) {
     ExpandRst(last_rst);
 
     if (NULL != strstr(buffer, "#")) {
-        char *prevnr = g_strdup_printf("%03d", prev_qso->qso_nr);
+        char *prevnr = g_strdup_printf("%04d", prev_qso->qso_nr);
         ExpandQsoNumber(prevnr);
         g_free(prevnr);
     }
