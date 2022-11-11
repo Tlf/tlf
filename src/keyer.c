@@ -254,6 +254,14 @@ void keyer(void) {
 		    }
 		    break;
 		}
+
+		// Underscore, confirm last exchange.
+		case '_': {
+		    send_standard_message_with_macro_expand(2, ExpandMacro_PreviousQso);
+
+		    break;
+		}
+
 		case KEY_BACKSPACE: {
 		    keyer_append_char('\b');    /* ASCII BS */
 		    break;
