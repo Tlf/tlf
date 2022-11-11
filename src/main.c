@@ -421,7 +421,16 @@ static struct termios oldt, newt;
 const char *argp_program_version = "tlf-" VERSION;
 const char *argp_program_bug_address = "<tlf-devel@nongnu.org>";
 static const char program_description[] =
-    "tlf - contest logging program for amateur radio operators";
+    "tlf - contest logging program for amateur radio operators"
+    "\v"    // "post-doc" separator
+    "Features:"
+#ifdef HAVE_LIBXMLRPC
+    " fldigi-xmlrpc"
+#endif
+#ifdef HAVE_PYTHON
+    " python-plugin"
+#endif
+;
 static const struct argp_option options[] = {
     {
 	"config",   'f', "FILE", 0,
