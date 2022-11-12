@@ -91,7 +91,7 @@ void log_to_disk(int from_lan) {
 	char *logline = makelogline(qso);
 	qso->logline = logline; /* remember formatted line in qso entry */
 
-	store_qso(logline);
+	store_qso(logfile, logline);
         //TODO: create a copy of current_qso
 	g_ptr_array_add(qso_array, qso);
 
@@ -122,7 +122,7 @@ void log_to_disk(int from_lan) {
 
 	addcall2();
 
-	store_qso(lan_logline);
+	store_qso(logfile, lan_logline);
 	g_ptr_array_add(qso_array, qso);
     }
 

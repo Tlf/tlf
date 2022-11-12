@@ -103,7 +103,7 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-bool noleadingzeros;
+bool leading_zeros_serial;
 bool ctcomp = false;
 int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
 bool nob4 = false;			// allow auto b4
@@ -327,7 +327,6 @@ int rigptt = 0;
 /*----------------------------the parsed log lines-------------------------*/
 // array of qso's
 GPtrArray *qso_array;
-int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/*< number of calls in worked[] */

@@ -100,7 +100,7 @@ void add_local_spot(void) {
 
 /* find last qso record in qso_array, return NULL if no one found */
 static struct qso_t *find_last_qso() {
-    int i = nr_qsos;
+    int i = NR_QSOS;
     while (i > 0) {
 	struct qso_t *last_qso = g_ptr_array_index(qso_array, i-1);
 	if (!last_qso->is_comment) {

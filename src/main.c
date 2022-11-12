@@ -142,8 +142,8 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-bool noleadingzeros;
-bool ctcomp = false;
+bool leading_zeros_serial;
+bool ctcomp;
 bool nob4 = false;		// allow auto b4
 bool ignoredupe = false;
 int dupe = 0;
@@ -349,7 +349,6 @@ char fldigi_url[50] = "http://localhost:7362/RPC2";
 /*----------------------------the parsed log lines-------------------------*/
 // array of qso's
 GPtrArray *qso_array;
-int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/**< number of calls in worked[] */
@@ -637,6 +636,7 @@ static void init_variables() {
     unique_call_multi = MULT_NONE;
     generic_mult = MULT_NONE;
 
+    leading_zeros_serial = true;
     ctcomp = false;
     resend_call = RESEND_NOT_SET;
 
@@ -1074,7 +1074,7 @@ int main(int argc, char *argv[]) {
 
     /* read the logfile and rebuild point and multiplier scoring */
     /* see also log_read_n_score() for non-interactive variant */
-    nr_qsos = readcalls(logfile, true);
+    readcalls(logfile, true);
     if (qtcdirection > 0) {
 	readqtccalls();
     }

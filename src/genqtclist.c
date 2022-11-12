@@ -63,7 +63,7 @@ int genqtclist(char *callsign, int nrofqtc) {
 
     s = next_qtc_qso;
 
-    while (qtclist.count < qtclistlen && s < nr_qsos) {
+    while (qtclist.count < qtclistlen && s < NR_QSOS) {
 	if (strlen(callsign) == 0 ||
 		strncmp(QSOS(s) + 29, callsign, strlen(callsign)) != 0) {
 	    /* exclude current callsign */

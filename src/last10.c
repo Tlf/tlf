@@ -38,13 +38,13 @@ int last10(void) {
     int thisband;
     struct qso_t *qso;
 
-    if (nr_qsos < 10)
+    if (NR_QSOS < 10)
 	return (-1);
 
     thisband = atoi(band[bandinx]);
 
     /* look backwards in actual band for QSOs */
-    for (index = nr_qsos - 1; index >= 0; index--) {
+    for (index = NR_QSOS - 1; index >= 0; index--) {
 
 	qso = g_ptr_array_index(qso_array, index);
 	if (thisband == qso->band) {

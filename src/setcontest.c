@@ -340,7 +340,6 @@ void setcontest(char *name) {
     showscore_flag = true;
     searchflg = true;
     sectn_mult = false;
-    noleadingzeros = false;
 
     w_cty = getctynr(wcall);
     ve_cty = getctynr(vecall);
@@ -360,7 +359,7 @@ void setcontest(char *name) {
 	qso_once = true;
 	multlist = 1;
 //      sectn_mult = true;
-	noleadingzeros = true;
+	leading_zeros_serial = false;
     }
 
     if (CONTEST_IS(PACC_PA)) {
