@@ -58,7 +58,6 @@
 #include "netkeyer.h"
 #include "nicebox.h"		// Includes curses.h
 #include "note.h"
-#include "prevqso.h"
 #include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "qtcwin.h"
