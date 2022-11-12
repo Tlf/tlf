@@ -106,6 +106,7 @@ PyMODINIT_FUNC pyModInit_tlf(void) {
     PyObject *tlf = PyModule_Create(&tlf_module);
     PyModule_AddIntMacro(tlf, CWMODE);
     PyModule_AddIntMacro(tlf, SSBMODE);
+    PyModule_AddIntMacro(tlf, DIGIMODE);
     PyModule_AddObject(tlf, "MY_LAT", PyFloat_FromDouble(my.Lat));
     PyModule_AddObject(tlf, "MY_LONG", PyFloat_FromDouble(my.Long));
     PyModule_AddType(tlf, qso_type);
