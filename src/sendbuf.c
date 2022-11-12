@@ -352,6 +352,10 @@ void send_standard_message(int msg) {
     send_standard_message_with_macro_expand(msg, ExpandMacro_CurrentQso);
 }
 
+void send_standard_message_prev_qso(int msg) {
+    send_standard_message_with_macro_expand(msg, ExpandMacro_PreviousQso);
+}
+
 void send_keyer_message(int msg) {
     switch (trxmode) {
 	case DIGIMODE:

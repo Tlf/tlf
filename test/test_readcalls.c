@@ -36,8 +36,6 @@
 // OBJECT ../src/store_qso.o
 // OBJECT ../src/ui_utils.o
 
-typedef void (*ExpandMacro_t) (void);
-
 char thisnode = 'A';
 bool lan_active = false;
 
@@ -56,10 +54,7 @@ void time_update() {}
 void show_rtty() {}
 void keyer() {}
 void send_standard_message(int msg) {}
-void sendmessage_with_macro_expand(const char *msg, ExpandMacro_t expandMacro) {}
-void send_standard_message_with_macro_expand(int msg, ExpandMacro_t expandMacro) {}
-void ExpandMacro_PreviousQso(void) {}
-void ExpandMacro_CurrentQso(void) {}
+void send_standard_message_prev_qso(int msg) {}
 void stoptx() {}
 void qtc_main_panel(int direction) {}
 void add_local_spot() {}

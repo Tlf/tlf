@@ -29,9 +29,8 @@ void ExpandMacro_PreviousQso(void);
 
 char short_number(char c);
 void sendmessage(const char *msg);
-void sendmessage_with_macro_expand(const char *msg, ExpandMacro_t expandMacro);
 void send_standard_message(int msg);
-void send_standard_message_with_macro_expand(int msg, ExpandMacro_t expandMacro);
+void send_standard_message_prev_qso(int msg);
 void send_keyer_message(int msg);
 
 void replace_n(char *buf, int size, const char *what, const char *rep,

@@ -248,7 +248,7 @@ void keyer(void) {
 		}
 		case KEY_F(2) ... KEY_F(11): {
 		    if (*current_qso.call == '\0') {
-			send_standard_message_with_macro_expand(x - KEY_F(1), ExpandMacro_PreviousQso);
+			send_standard_message_prev_qso(x - KEY_F(1));
 		    } else {
 			send_standard_message(x - KEY_F(1));
 		    }
@@ -257,7 +257,7 @@ void keyer(void) {
 
 		// Underscore, confirm last exchange.
 		case '_': {
-		    send_standard_message_with_macro_expand(2, ExpandMacro_PreviousQso);
+		    send_standard_message_prev_qso(2);
 
 		    break;
 		}
