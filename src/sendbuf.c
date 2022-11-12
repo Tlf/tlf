@@ -237,11 +237,10 @@ void ExpandMacro_CurrentQso(void) {
 }
 
 struct qso_t * get_previous_qso() {
-    static struct qso_t empty_qso;
-    static char empty_str[1];
-    empty_str[0] = '\0';
-    empty_qso.call = empty_str;
-    empty_qso.qso_nr = 0;
+    static struct qso_t empty_qso = {
+	    .call = "",
+	    .qso_nr = 0
+    };
 
     if (NR_QSOS == 0) {
         return &empty_qso;
