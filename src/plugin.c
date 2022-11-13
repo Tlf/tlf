@@ -43,6 +43,9 @@ PLUGIN_FUNC(score)
 PLUGIN_FUNC(check_exchange)
 
 #ifdef HAVE_PYTHON
+
+char *plugin_config = NULL;
+
 static PyStructSequence_Desc qso_descr = {
     .name = "Qso",
     .doc = "QSO data",
@@ -217,7 +220,8 @@ static int call_init() {
 	return PARSE_OK;
     }
 
-    PyObject *args = Py_BuildValue("(s)", "");  //FIXME configure argument
+    char *cfg = (plugin_config != NULL ? plugin_config : "");
+    PyObject *args = Py_BuildValue("(s)", cfg);
     PyObject *pValue = PyObject_CallObject(pf_init, args);
     Py_DECREF(args);
 

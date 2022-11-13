@@ -658,7 +658,9 @@ static void init_variables() {
     }
 
     FREE_DYNAMIC_STRING(cabrillo);
-
+#ifdef HAVE_PYTHON
+    FREE_DYNAMIC_STRING(plugin_config);
+#endif
 }
 
 /** load all databases

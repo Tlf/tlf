@@ -1254,6 +1254,9 @@ static config_t logcfg_configs[] = {
     {"SOUNDLOG_PLAY_COMMAND",	CFG_STRING(soundlog_play_cmd)},
     {"SOUNDLOG_RECORD_COMMAND",	CFG_STRING(soundlog_record_cmd)},
     {"SOUNDLOG_DIRECTORY",	CFG_STRING(soundlog_dir)},
+#ifdef HAVE_PYTHON
+    {"PLUGIN_CONFIG",      CFG_STRING(plugin_config)},
+#endif
 
     {"RIGPORT",         CFG_STRING_NOCHOMP(rigportname)},
     {"CLUSTERLOGIN",    CFG_STRING_STATIC_NOCHOMP(clusterlogin, 80)},
