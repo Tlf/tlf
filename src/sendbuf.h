@@ -22,7 +22,7 @@
 #ifndef SENDBUF_H
 #define SENDBUF_H
 
-typedef void (*ExpandMacro_t) (void);
+typedef void (*ExpandMacro_t)(void);
 
 void ExpandMacro_CurrentQso(void);
 void ExpandMacro_PreviousQso(void);

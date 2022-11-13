@@ -171,21 +171,21 @@ void ExpandQsoNumber(char *qsonr) {
     int leading_zeros = 0;
     bool lead = true;
     for (int i = 0; i <= 4; i++) {
-        if (lead && qsonr[i] == '0') {
-            ++leading_zeros;
-        } else {
-            lead = false;
-        }
-        qsonroutput[i] = short_number(qsonr[i]);
+	if (lead && qsonr[i] == '0') {
+	    ++leading_zeros;
+	} else {
+	    lead = false;
+	}
+	qsonroutput[i] = short_number(qsonr[i]);
     }
     qsonroutput[4] = '\0';
 
     if (!noleadingzeros && leading_zeros > 1) {
-        leading_zeros = 1;
+	leading_zeros = 1;
     }
 
     replace_all(buffer, BUFSIZE, "#",
-            qsonroutput + leading_zeros);   /* serial nr */
+		qsonroutput + leading_zeros);   /* serial nr */
 }
 
 void ExpandRst(char rst[4]) {
@@ -219,7 +219,7 @@ void ExpandMacro_CurrentQso(void) {
     ExpandRst(sent_rst);
 
     if (NULL != strstr(buffer, "#")) {
-        ExpandQsoNumber(qsonrstr);
+	ExpandQsoNumber(qsonrstr);
 
 	if (lan_active && contest->exchange_serial) {
 	    strncpy(lastqsonr, qsonrstr, 5);
@@ -236,17 +236,17 @@ void ExpandMacro_CurrentQso(void) {
 	replace_all(buffer, BUFSIZE, "|", "");	    /* drop it */
 }
 
-struct qso_t * get_previous_qso() {
+struct qso_t *get_previous_qso() {
     static struct qso_t empty_qso = {
-	    .call = "",
-	    .qso_nr = 0
+	.call = "",
+	.qso_nr = 0
     };
 
     if (NR_QSOS == 0) {
-        return &empty_qso;
+	return &empty_qso;
     } else {
 	// TODO:lan for networked mode it will be incorrect. Previous qso may not be the last one in the log.
-        return g_ptr_array_index(qso_array, NR_QSOS - 1);
+	return g_ptr_array_index(qso_array, NR_QSOS - 1);
     }
 }
 
@@ -262,9 +262,9 @@ void ExpandMacro_PreviousQso(void) {
     ExpandRst(last_rst);
 
     if (NULL != strstr(buffer, "#")) {
-        char *prevnr = g_strdup_printf("%04d", prev_qso->qso_nr);
-        ExpandQsoNumber(prevnr);
-        g_free(prevnr);
+	char *prevnr = g_strdup_printf("%04d", prev_qso->qso_nr);
+	ExpandQsoNumber(prevnr);
+	g_free(prevnr);
     }
 }
 
@@ -333,7 +333,8 @@ void sendmessage(const char *msg) {
     sendmessage_with_macro_expand(msg, ExpandMacro_CurrentQso);
 }
 
-void send_standard_message_with_macro_expand(int msg, ExpandMacro_t expandMacro) {
+void send_standard_message_with_macro_expand(int msg,
+	ExpandMacro_t expandMacro) {
     switch (trxmode) {
 	case CWMODE:
 	    sendmessage_with_macro_expand(message[msg], expandMacro);

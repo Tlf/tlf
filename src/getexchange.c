@@ -136,7 +136,7 @@ int getexchange(void) {
 
 	if (call_update && strlen(current_qso.callupdate) >= 3) {
 	    strcpy(current_qso.call, current_qso.callupdate);
-            current_qso.callupdate[0] = 0;
+	    current_qso.callupdate[0] = 0;
 	    printcall();
 	}
 
@@ -208,7 +208,7 @@ int getexchange(void) {
 
 	    // Underscore, confirm last exchange.
 	    case '_': {
-                send_standard_message_prev_qso(2);
+		send_standard_message_prev_qso(2);
 
 		break;
 	    }
@@ -264,12 +264,12 @@ int getexchange(void) {
 	    }
 
 	    case KEY_F(2) ... KEY_F(11): {
-		 /* F2...F11 - F1 = 1...10 */
-                if (*current_qso.call == '\0') {
+		/* F2...F11 - F1 = 1...10 */
+		if (*current_qso.call == '\0') {
 		    send_standard_message_prev_qso(x - KEY_F(1));
-                } else {
+		} else {
 		    send_standard_message(x - KEY_F(1));
-                }
+		}
 
 		break;
 	    }
@@ -548,7 +548,7 @@ static void checkexchange_cqww(struct qso_t *qso, bool interactive) {
 	// get call fix
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL) {
-            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
+	    g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
@@ -611,7 +611,7 @@ static void checkexchange_arrlss(struct qso_t *qso, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 3);
 	if (index != NULL && strchr("AKNWVC", index[0]) != NULL) {  // US/CA only
-            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
+	    g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
 
@@ -643,7 +643,8 @@ static void checkexchange_arrlss(struct qso_t *qso, bool interactive) {
 	OnLowerSearchPanel(8, buf);
     }
 
-    sprintf(qso->normalized_comment, "%s %s %s %s", serial, precedent, check, qso->section);
+    sprintf(qso->normalized_comment, "%s %s %s %s", serial, precedent, check,
+	    qso->section);
     g_strlcpy(qso->mult1_value, qso->section, MULT_SIZE);   // multiplier: section
 }
 
@@ -690,19 +691,19 @@ static void checkexchange_serial_section(struct qso_t *qso, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 3);
 	if (index != NULL) {
-            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
+	    g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
     g_match_info_free(match_info);
 
     if (serial_grid4_mult) {
-        if (!check_qra(qso->section)) {
-            qso->section[0] = 0;
-        }
-        if (strlen(qso->section) > 4) {
-            qso->section[4] = 0;     // mult is the first 4 chars only
-        }
+	if (!check_qra(qso->section)) {
+	    qso->section[0] = 0;
+	}
+	if (strlen(qso->section) > 4) {
+	    qso->section[4] = 0;     // mult is the first 4 chars only
+	}
     }
 
     if (interactive) {
@@ -748,7 +749,7 @@ static void checkexchange_sectn_mult(struct qso_t *qso, bool interactive) {
 	// get call update
 	index = g_match_info_fetch(match_info, 2);
 	if (index != NULL) {
-            g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
+	    g_strlcpy(qso->callupdate, index, MAX_CALL_LENGTH + 1);
 	}
 	g_free(index);
     }
@@ -776,16 +777,16 @@ static void checkexchange_sectn_mult(struct qso_t *qso, bool interactive) {
 void checkexchange(struct qso_t *qso, bool interactive) {
     // create fields
     if (qso->callupdate == NULL) {
-        qso->callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
+	qso->callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
     }
     if (qso->normalized_comment == NULL) {
-        qso->normalized_comment = g_malloc0(COMMENT_SIZE);
+	qso->normalized_comment = g_malloc0(COMMENT_SIZE);
     }
     if (qso->section == NULL) {
-        qso->section = g_malloc0(MAX_SECTION_LENGTH + 1);
+	qso->section = g_malloc0(MAX_SECTION_LENGTH + 1);
     }
     if (qso->mult1_value == NULL) {
-        qso->mult1_value = g_malloc0(MULT_SIZE);
+	qso->mult1_value = g_malloc0(MULT_SIZE);
     }
 
     qso->callupdate[0] = 0;
@@ -906,7 +907,8 @@ void exchange_edit(void) {
 
 		if (strlen(current_qso.comment) < contest->exchange_width) {
 		    /* copy including trailing \0 */
-		    strncpy(comment2, current_qso.comment + b, strlen(current_qso.comment) - (b - 1));
+		    strncpy(comment2, current_qso.comment + b,
+			    strlen(current_qso.comment) - (b - 1));
 
 		    current_qso.comment[b] = i;
 		    current_qso.comment[b + 1] = '\0';
