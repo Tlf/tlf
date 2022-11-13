@@ -51,7 +51,8 @@ static PyStructSequence_Desc qso_descr = {
 	{.name = "call"},
 	{.name = "mode"},
 	{.name = "exchange"},
-	// utc, ...
+	{.name = "utc"},
+	// ...
 	{.name = NULL}  // guard
     },
     .n_in_sequence = 4
@@ -357,6 +358,7 @@ static PyObject *create_py_qso(struct qso_t *qso) {
     PyStructSequence_SetItem(py_qso, 1, Py_BuildValue("s", qso->call));
     PyStructSequence_SetItem(py_qso, 2, Py_BuildValue("i", qso->mode));
     PyStructSequence_SetItem(py_qso, 3, Py_BuildValue("s", qso->comment));
+    PyStructSequence_SetItem(py_qso, 4, Py_BuildValue("i", qso->timestamp));
     return py_qso;
 }
 #endif
