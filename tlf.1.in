@@ -975,7 +975,8 @@ Restore previous CQ frequency from MEM and send message
 .
 .TP
 .B F2-F11
-Send CW, RTTY or VOICE messages 2 through 11.
+Send CW, RTTY or VOICE messages 2 through 11. If the callsign field is empty
+the messages will be sent with the preceding qso data.
 .
 .TP
 .B F12
@@ -1263,7 +1264,8 @@ equivalent command for your shell.
 .
 .TP
 .BR Alt-0 ... Alt-9
-Send alternate CW (Morse code) messages.
+Send alternate CW (Morse code) messages. If the callsign field is empty the
+messages will be sent with the preceding qso data.
 .
 .TP
 .B Alt-A
