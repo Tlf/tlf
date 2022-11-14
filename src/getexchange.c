@@ -208,7 +208,11 @@ int getexchange(void) {
 
 	    // Underscore, confirm last exchange.
 	    case '_': {
-		send_standard_message_prev_qso(2);
+		if (S_P == cqmode) {
+		    send_standard_message_prev_qso(SP_TU_MSG);
+		} else {
+		    send_standard_message_prev_qso(2);
+		}
 
 		break;
 	    }
