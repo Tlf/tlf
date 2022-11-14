@@ -114,7 +114,6 @@ extern bool cqwwm2;
 extern char lastcall[];
 extern char recvd_rst[];
 extern char sent_rst[];
-extern char last_rst[];
 extern bool wazmult;
 extern int addcallarea;
 extern int new_cty;
