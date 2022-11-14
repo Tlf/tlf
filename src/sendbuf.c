@@ -259,7 +259,9 @@ void ExpandMacro_PreviousQso(void) {
 	replace_all(buffer, BUFSIZE, "@", prev_qso->call);
     }
 
-    ExpandRst(last_rst);
+    char *prevrst = g_strdup_printf("%03d", prev_qso->rst_s);
+    ExpandRst(prevrst);
+    g_free(prevrst);
 
     if (NULL != strstr(buffer, "#")) {
 	char *prevnr = g_strdup_printf("%04d", prev_qso->qso_nr);
