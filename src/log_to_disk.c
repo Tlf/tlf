@@ -75,7 +75,6 @@ void log_to_disk(int from_lan) {
 
 	/* remember call and report for resend after qso (see callinput.c)  */
 	strcpy(lastcall, current_qso.call);
-	strcpy(last_rst, sent_rst);
 
 	// use normalized comment if available
 	if (strlen(current_qso.normalized_comment) > 0) {

@@ -32,6 +32,7 @@ void show_rtty(void) {}
 void OnLowerSearchPanel(int x, char *str) {}
 void sendmessage(const char *msg) {}
 void send_standard_message(int msg) {}
+void send_standard_message_prev_qso(int msg) {}
 void add_local_spot(void) {}
 void keyer(void) {}
 void qtc_main_panel(int direction) {}
@@ -177,7 +178,7 @@ void test_getexchange_arrlss(void **state) {
     init_and_load_multipliers();
 
     for (int i = 0; i < LEN(getex_arrlss); ++i) {
-        struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+	struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
 	qso->comment = g_strdup_printf("%-20s", getex_arrlss[i].input);
 
 	checkexchange(qso, false);
@@ -185,7 +186,7 @@ void test_getexchange_arrlss(void **state) {
 	assert_string_equal(qso->normalized_comment,
 			    getex_arrlss[i].expected_normalized_comment);
 	assert_string_equal(qso->mult1_value, getex_arrlss[i].expected_mult1_value);
-        assert_string_equal(qso->callupdate, getex_arrlss[i].expected_callupdate);
+	assert_string_equal(qso->callupdate, getex_arrlss[i].expected_callupdate);
 
 	free_qso(qso);
     }
@@ -249,7 +250,7 @@ void test_getexchange_cqww(void **state) {
     contest = lookup_contest("CQWW");
 
     for (int i = 0; i < LEN(getex_cqww); ++i) {
-        struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+	struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
 	qso->comment = g_strdup_printf("%-20s", getex_cqww[i].input);
 
 	checkexchange(qso, false);
@@ -327,15 +328,17 @@ void test_getexchange_serial_section(void **state) {
     add_mult_line("50ABCD");
 
     for (int i = 0; i < LEN(getex_serial_section); ++i) {
-        struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+	struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
 	qso->comment = g_strdup_printf("%-20s", getex_serial_section[i].input);
 
 	checkexchange(qso, false);
 
 	assert_string_equal(qso->normalized_comment,
 			    getex_serial_section[i].expected_normalized_comment);
-	assert_string_equal(qso->mult1_value, getex_serial_section[i].expected_mult1_value);
-	assert_string_equal(qso->callupdate, getex_serial_section[i].expected_callupdate);
+	assert_string_equal(qso->mult1_value,
+			    getex_serial_section[i].expected_mult1_value);
+	assert_string_equal(qso->callupdate,
+			    getex_serial_section[i].expected_callupdate);
 
 	free_qso(qso);
     }
@@ -398,7 +401,7 @@ void test_getexchange_sectn_mult(void **state) {
     add_mult_line("50ABCD");
 
     for (int i = 0; i < LEN(getex_sectn_mult); ++i) {
-        struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+	struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
 	qso->comment = g_strdup_printf("%-20s", getex_sectn_mult[i].input);
 
 	checkexchange(qso, false);

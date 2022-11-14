@@ -54,6 +54,7 @@ void time_update() {}
 void show_rtty() {}
 void keyer() {}
 void send_standard_message(int msg) {}
+void send_standard_message_prev_qso(int msg) {}
 void stoptx() {}
 void qtc_main_panel(int direction) {}
 void add_local_spot() {}

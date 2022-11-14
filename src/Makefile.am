@@ -23,7 +23,7 @@ tlf_SOURCES = \
 	logit.c logview.c \
 	main.c makelogline.c messagechange.c muf.c \
 	nicebox.c note.c netkeyer.c\
-	paccdx.c parse_logcfg.c prevqso.c printcall.c \
+	paccdx.c parse_logcfg.c printcall.c \
 	qrb.c qsonr_to_str.c qtc_log.c qtcwin.c qtcutil.c readcabrillo.c \
 	readcalls.c readqtccalls.c readctydata.c recall_exchange.c rules.c \
 	rtty.c \
@@ -60,7 +60,7 @@ noinst_HEADERS = \
 	log_to_disk.h logit.h logview.h \
 	makelogline.h messagechange.h muf.h \
 	nicebox.h note.h netkeyer.h\
-	paccdx.h parse_logcfg.h prevqso.h printcall.h \
+	paccdx.h parse_logcfg.h printcall.h \
 	qrb.h qsonr_to_str.h qtc_log.h qtcvars.h qtcwin.h qtcutil.h \
 	readcalls.h readqtccalls.h readctydata.h recall_exchange.h \
 	rules.h readcabrillo.h rtty.h \
