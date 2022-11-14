@@ -141,7 +141,7 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-bool noleadingzeros;
+bool leading_zeros_serial;
 bool ctcomp;
 bool nob4 = false;		// allow auto b4
 bool ignoredupe = false;
@@ -625,7 +625,7 @@ static void init_variables() {
     unique_call_multi = MULT_NONE;
     generic_mult = MULT_NONE;
 
-    noleadingzeros = false;
+    leading_zeros_serial = true;
     ctcomp = false;
     resend_call = RESEND_NOT_SET;
 

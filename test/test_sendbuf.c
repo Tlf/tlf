@@ -187,7 +187,7 @@ void test_expandQsoNrshort(void **state) {
 }
 
 void test_expandQsoNr_leadingzeros(void **state) {
-    noleadingzeros = false;
+    leading_zeros_serial = true;
     strcpy(qsonrstr, "0007");
     check_ExpandMacro("nr #", "nr 007");
     strcpy(qsonrstr, "0073");
@@ -199,7 +199,7 @@ void test_expandQsoNr_leadingzeros(void **state) {
 }
 
 void test_expandQsoNr_noleadingzeros(void **state) {
-    noleadingzeros = true;
+    leading_zeros_serial = false;
     strcpy(qsonrstr, "0007");
     check_ExpandMacro("nr #", "nr 7");
     strcpy(qsonrstr, "0073");

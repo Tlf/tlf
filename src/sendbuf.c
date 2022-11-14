@@ -180,7 +180,7 @@ void ExpandQsoNumber(char *qsonr) {
     }
     qsonroutput[4] = '\0';
 
-    if (!noleadingzeros && leading_zeros > 1) {
+    if (leading_zeros_serial && leading_zeros > 1) {
 	leading_zeros = 1;
     }
 
@@ -226,7 +226,6 @@ void ExpandMacro_CurrentQso(void) {
 	    send_lan_message(INCQSONUM, qsonrstr);
 	}
     }
-
 
     replace_all(buffer, BUFSIZE, "!", current_qso.comment);
 

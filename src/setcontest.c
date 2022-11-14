@@ -359,7 +359,7 @@ void setcontest(char *name) {
 	qso_once = true;
 	multlist = 1;
 //      sectn_mult = true;
-	noleadingzeros = true;
+	leading_zeros_serial = false;
     }
 
     if (CONTEST_IS(PACC_PA)) {
