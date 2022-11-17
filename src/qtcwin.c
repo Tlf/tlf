@@ -54,11 +54,11 @@
 
 
 void init_qtc_panel();
-void draw_qtc_panel();
+void draw_qtc_panel(int direction);
 void start_qtc_recording();
 void stop_qtc_recording();
 void clear_help_block();
-void show_help_msg();
+void show_help_msg(int msgidx);
 void showfield(int fidx);
 void modify_field(int pressed);
 void delete_from_field(int dir);
