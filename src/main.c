@@ -196,6 +196,8 @@ char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = MARKER_NONE;
 int rigptt = 0;
+bool rigsendmorse;
+bool rigstopmorse;
 int tune_seconds;               /* tune up time in seconds for Alt-T */
 
 char message[25][80] = /**< Array of CW messages
@@ -848,13 +850,13 @@ static void keyer_init() {
 	    endwin();
 	    exit(EXIT_FAILURE);
 	}
-	if (!rig_has_send_morse()) {
+	if (!rigsendmorse) {
 	    showmsg("Rig does not support CW via Hamlib");
 	    sleep(1);
 	    endwin();
 	    exit(EXIT_FAILURE);
 	}
-	if (!rig_has_stop_morse()) {
+	if (!rigstopmorse) {
 #if HAMLIB_VERSION >= 400
 	    showmsg("Rig does not support stopping CW!!");
 #else

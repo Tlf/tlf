@@ -95,6 +95,13 @@ int init_tlf_rig(void) {
 
     caps = my_rig->caps;
 
+    rigsendmorse = my_rig->caps->send_morse != NULL;
+#if HAMLIB_VERSION >= 400
+    rigstopmorse = caps->stop_morse != NULL;
+#else
+    rigstopmorse = false;
+#endif
+
     /* If CAT PTT is wanted, test for CAT capability of rig backend. */
     if (rigptt & CAT_PTT_WANTED) {
 	if (caps->ptt_type == RIG_PTT_RIG) {

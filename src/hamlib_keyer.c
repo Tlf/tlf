@@ -23,20 +23,6 @@
 #include "globalvars.h"
 #include "hamlib_keyer.h"
 
-bool rig_has_send_morse() {
-   // SAFETY: should not be written after init
-   return (my_rig->caps->send_morse != NULL);
-}
-
-bool rig_has_stop_morse() {
-#if HAMLIB_VERSION >= 400
-    // SAFETY: should not be written after init
-    return (my_rig->caps->stop_morse != NULL);
-#else
-    return false;
-#endif
-}
-
 int hamlib_keyer_set_speed(int cwspeed) {
     value_t spd;
     spd.i = cwspeed;
@@ -71,7 +57,7 @@ int hamlib_keyer_send(char *cwmessage) {
 }
 
 int hamlib_keyer_stop() {
-    if (rig_has_stop_morse()) {
+    if (rigstopmorse) {
 	pthread_mutex_lock(&rig_lock);
 	int ret = rig_stop_morse(my_rig, RIG_VFO_CURR);
 	pthread_mutex_unlock(&rig_lock);
