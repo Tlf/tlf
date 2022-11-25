@@ -24,11 +24,13 @@
 #include "hamlib_keyer.h"
 
 bool rig_has_send_morse() {
+   // SAFETY: should not be written after init
    return (my_rig->caps->send_morse != NULL);
 }
 
 bool rig_has_stop_morse() {
 #if HAMLIB_VERSION >= 400
+    // SAFETY: should not be written after init
     return (my_rig->caps->stop_morse != NULL);
 #else
     return false;
@@ -39,26 +41,42 @@ int hamlib_keyer_set_speed(int cwspeed) {
     value_t spd;
     spd.i = cwspeed;
 
-    return rig_set_level(my_rig, RIG_VFO_CURR, RIG_LEVEL_KEYSPD, spd);
+    pthread_mutex_lock(&rig_lock);
+    int ret = rig_set_level(my_rig, RIG_VFO_CURR, RIG_LEVEL_KEYSPD, spd);
+    pthread_mutex_unlock(&rig_lock);
+
+    return ret;
 }
 
 int hamlib_keyer_get_speed( int *cwspeed) {
     value_t value;
 
     assert (cwspeed != NULL);
+
+    pthread_mutex_lock(&rig_lock);
     int ret = rig_get_level(my_rig, RIG_VFO_CURR, RIG_LEVEL_KEYSPD, &value);
+    pthread_mutex_unlock(&rig_lock);
+
     if (ret == RIG_OK)
 	*cwspeed = value.i;
     return ret;
 }
 
 int hamlib_keyer_send(char *cwmessage) {
-    return rig_send_morse(my_rig, RIG_VFO_CURR, cwmessage);
+    pthread_mutex_lock(&rig_lock);
+    int ret = rig_send_morse(my_rig, RIG_VFO_CURR, cwmessage);
+    pthread_mutex_unlock(&rig_lock);
+
+    return ret;
 }
 
 int hamlib_keyer_stop() {
     if (rig_has_stop_morse()) {
-	return rig_stop_morse(my_rig, RIG_VFO_CURR);
+	pthread_mutex_lock(&rig_lock);
+	int ret = rig_stop_morse(my_rig, RIG_VFO_CURR);
+	pthread_mutex_unlock(&rig_lock);
+
+	return ret;
     } else {
 	return RIG_OK;
     }
