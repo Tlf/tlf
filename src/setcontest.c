@@ -219,7 +219,6 @@ contest_config_t config_arrldx_dx = {
 contest_config_t config_arrl_ss = {
     .id = ARRL_SS,
     .name = "ARRL_SS",
-    .exchange_serial = true,
     .points = {
 	.type = FIXED,
 	.point = 2,
