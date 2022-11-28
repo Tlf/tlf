@@ -186,7 +186,6 @@ bool demode = false;		/* send DE  before s&p call  */
 
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 bool showscore_flag = false;	/* show  score window */
-char exchange[40];
 int defer_store = 0;
 mystation_t my;			/* all info about me */
 

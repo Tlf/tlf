@@ -91,6 +91,7 @@ char formatfile[] = TOP_SRCDIR "/share/cabrillo.fmt" ;
 
 int setup_default(void **state) {
     strcpy(my.call, "A1BCD");
+    extern char exchange[40];      // defined in writecabrillo.c
     strcpy(exchange, "#");
 
     init_qso_array();
