@@ -95,7 +95,7 @@ int init_tlf_rig(void) {
 
     caps = my_rig->caps;
 
-    rigsendmorse = my_rig->caps->send_morse != NULL;
+    rigsendmorse = caps->send_morse != NULL;
 #if HAMLIB_VERSION >= 400
     rigstopmorse = caps->stop_morse != NULL;
 #else
