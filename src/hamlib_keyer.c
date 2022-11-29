@@ -58,7 +58,7 @@ int hamlib_keyer_send(char *cwmessage) {
 
 int hamlib_keyer_stop() {
 #if HAMLIB_VERSION >= 400
-    if (rigstopmorse) {
+    if (rig_has_stop_morse) {
 	pthread_mutex_lock(&rig_lock);
 	int ret = rig_stop_morse(my_rig, RIG_VFO_CURR);
 	pthread_mutex_unlock(&rig_lock);

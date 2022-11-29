@@ -95,11 +95,11 @@ int init_tlf_rig(void) {
 
     caps = my_rig->caps;
 
-    rigsendmorse = caps->send_morse != NULL;
+    rig_has_send_morse = caps->send_morse != NULL;
 #if HAMLIB_VERSION >= 400
-    rigstopmorse = caps->stop_morse != NULL;
+    rig_has_stop_morse = caps->stop_morse != NULL;
 #else
-    rigstopmorse = false;
+    rig_has_stop_morse = false; // rig_stop_morse was introduced in Hamlib 4.0
 #endif
 
     /* If CAT PTT is wanted, test for CAT capability of rig backend. */
