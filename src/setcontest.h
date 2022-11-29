@@ -21,6 +21,7 @@
 #ifndef SETCONTEST_H
 #define SETCONTEST_H
 
+#include "bandmap.h"
 #include "globalvars.h"
 
 #define CONTEST_IS(cid) (contest->id == cid)
@@ -28,7 +29,7 @@
 
 extern contest_config_t config_qso;
 
-bool general_ismulti();
+bool general_ismulti(spot *data);
 contest_config_t *lookup_contest(char *name);
 void list_contests();
 void setcontest(char *name);
