@@ -1,0 +1,31 @@
+name: CI build for Ubuntu 20
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+    timeout-minutes: 3
+    env:
+      TERM: xterm
+      AM_COLOR_TESTS: always
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Show OS info
+      run: cat /etc/os-release
+    - name: Install dependencies
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get install -y libhamlib-dev libxmlrpc-core-c3-dev libcmocka-dev     
+    - name: Autoreconf and basic make
+      run: autoreconf -i && ./configure && make -j2
+    - name: Configure with xmlrpc
+      run: make clean && ./configure --enable-fldigi-xmlrpc && make -j2
+    - name: Run tests
+      run: make check; rc=$?; cat test/run_*.log; exit $rc
