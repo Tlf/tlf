@@ -13,7 +13,7 @@ SERIAL+SECTION
 MULT_LIST=cqp_mults
 SECTION_MULT_ONCE
 NO_RST
-NO_LEADING_ZEROS_SERIAL
+LEADING_ZEROS_SERIAL=OFF
 #
 ##################################
 #                                #
