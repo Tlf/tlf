@@ -3008,7 +3008,10 @@ Exchange is a continent (NA, SA, EU, AS, AF, OC).
 .
 .TP
 .B SERIAL_EXCHANGE
-Exchange is a serial number (formats exchange field).
+Exchange is a serial number (formats received exchange
+and configures Cabrillo exchange).
+Set this only if \fIboth\fR sent and received exchanges
+are plain serial numbers.
 .
 .TP
 .B MYQRA

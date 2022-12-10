@@ -222,7 +222,6 @@ extern char exchange_list[40];
 extern char rttyoutput[];
 extern char spot_ptr[MAX_SPOTS][82];
 extern char lastmsg[];
-extern char exchange[40];
 #ifdef HAVE_LIBXMLRPC
 extern char fldigi_url[50];
 #endif

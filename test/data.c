@@ -150,7 +150,6 @@ bool demode = false;		/* send DE  before s&p call  */
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 bool showscore_flag = false;	/* show  score window */
 int change_rst = 0;
-char exchange[40];
 int defer_store = 0;
 mystation_t my;
 char logfile[120] = "general.log";
