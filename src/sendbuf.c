@@ -206,7 +206,7 @@ void ExpandMacro_CurrentQso(void) {
 	char *p = current_qso.call + strlen(hiscall_sent);
 	if (strlen(hiscall_sent) != 0) {
 	    hiscall_sent[0] = '\0';
-	    early_started = 0;
+	    early_started = false;
 	}
 	if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
 	    strcpy(sentcall, current_qso.call);
@@ -278,7 +278,7 @@ void sendbuf(ExpandMacro_t expandMacro) {
 	expandMacro();
 
 	if (!simulator) {
-	    if (sending_call == 0)
+	    if (!sending_call)
 		add_to_keyer_terminal(buffer);
 	}
 

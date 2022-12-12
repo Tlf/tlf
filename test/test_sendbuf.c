@@ -85,7 +85,7 @@ int setup_default(void **state) {
     wkeyerbuffer[0] = '\0';
     data_ready = 0;
     simulator = false;
-    sending_call = 0;
+    sending_call = false;
     trxmode = CWMODE;
     cwkeyer = 1;
     digikeyer = 1;

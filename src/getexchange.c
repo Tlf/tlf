@@ -34,6 +34,7 @@
 #include "audio.h"
 #include "cw_utils.h"
 #include "change_rst.h"
+#include "cleanup.h"
 #include "globalvars.h"
 #include "keyer.h"
 #include "keystroke_names.h"
@@ -193,15 +194,45 @@ int getexchange(void) {
 		break;
 	    }
 
-	    case ESCAPE: {                // <Escape>
-		stoptx();			/* stop sending CW */
-		if (current_qso.comment[0] != '\0') {	/* if comment not empty */
-		    /* drop exchange so far */
-		    current_qso.comment[0] = '\0';
+	    case CTRL_U:
+		/* wipe out or restore call input and comment field */
+		if (current_qso.call[0] != '\0' ||
+			current_qso.comment[0] != '\0') {
+		    /* wipe out any content */
+		    cleanup_hiscall();
+		    cleanup_comment();
+		    rst_reset();
+
+		    x = TAB;	/* back to call input field */
+
+		}
+
+		break;
+
+	    case CTRL_W: {
+		/* wipe out or restore exchange field */
+		if (current_qso.comment[0] != '\0') {
+		    cleanup_comment();
 		    i = 0;
 		} else {
-		    /* back to callinput */
-		    x = TAB;	// <Tab>
+		    restore_comment();
+		    i = strlen(current_qso.comment);
+		}
+		break;
+	    }
+
+
+	    case ESCAPE: {                // <Escape>
+		stoptx();			/* stop sending CW */
+		if (!stop_tx_only) {
+		    if (current_qso.comment[0] != '\0') {	/* if comment not empty */
+			/* drop exchange so far */
+			cleanup_comment();
+			i = 0;
+		    } else {
+			/* back to callinput */
+			x = TAB;	// <Tab>
+		    }
 		}
 		break;
 	    }
