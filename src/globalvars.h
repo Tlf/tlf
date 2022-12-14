@@ -145,8 +145,6 @@ extern int cwstart;
 extern int early_started;
 extern int zonedisplay;
 extern int rigptt;
-extern bool rig_has_send_morse;
-extern bool rig_has_stop_morse;
 extern int k_ptt;
 extern int k_pin14;
 extern int tune_seconds;

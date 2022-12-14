@@ -21,6 +21,7 @@
 #include <hamlib/rig.h>
 
 #include "globalvars.h"
+#include "sendqrg.h"
 #include "hamlib_keyer.h"
 
 int hamlib_keyer_set_speed(int cwspeed) {
@@ -58,7 +59,7 @@ int hamlib_keyer_send(char *cwmessage) {
 
 int hamlib_keyer_stop() {
 #if HAMLIB_VERSION >= 400
-    if (rig_has_stop_morse) {
+    if (rig_has_stop_morse()) {
 	pthread_mutex_lock(&rig_lock);
 	int ret = rig_stop_morse(my_rig, RIG_VFO_CURR);
 	pthread_mutex_unlock(&rig_lock);
