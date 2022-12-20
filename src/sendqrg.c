@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "bands.h"
 #include "cw_utils.h"
@@ -32,6 +33,19 @@
 #include "bands.h"
 #include "globalvars.h"
 
+static bool init_called = false;
+static bool can_send_morse = false;
+static bool can_stop_morse = false;
+
+bool rig_has_send_morse() {
+    assert(init_called);
+    return can_send_morse;
+}
+
+bool rig_has_stop_morse() {
+    assert(init_called);
+    return can_stop_morse;
+}
 
 void send_bandswitch(freq_t trxqrg);
 
@@ -95,11 +109,11 @@ int init_tlf_rig(void) {
 
     caps = my_rig->caps;
 
-    rigsendmorse = my_rig->caps->send_morse != NULL;
+    can_send_morse = caps->send_morse != NULL;
 #if HAMLIB_VERSION >= 400
-    rigstopmorse = caps->stop_morse != NULL;
+    can_stop_morse = caps->stop_morse != NULL;
 #else
-    rigstopmorse = false;
+    can_stop_morse = false; // rig_stop_morse was introduced in Hamlib 4.0
 #endif
 
     /* If CAT PTT is wanted, test for CAT capability of rig backend. */
@@ -175,6 +189,8 @@ int init_tlf_rig(void) {
 	    set_outfreq(SETCWMODE);
 	    break;
     }
+
+    init_called = true;
 
     return 0;
 }

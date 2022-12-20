@@ -146,8 +146,6 @@ extern bool early_started;
 extern bool stop_tx_only;
 extern int zonedisplay;
 extern int rigptt;
-extern bool rigsendmorse;
-extern bool rigstopmorse;
 extern int k_ptt;
 extern int k_pin14;
 extern int tune_seconds;
