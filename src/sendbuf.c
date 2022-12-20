@@ -241,12 +241,14 @@ struct qso_t *get_previous_qso() {
 	.qso_nr = 0
     };
 
-    if (NR_QSOS == 0) {
-	return &empty_qso;
-    } else {
-	// TODO:lan for networked mode it will be incorrect. Previous qso may not be the last one in the log.
-	return g_ptr_array_index(qso_array, NR_QSOS - 1);
+    // TODO:lan for networked mode it will be incorrect. Previous qso may not be the last one in the log.
+    for(int i=NR_QSOS-1; i >= 0; i--) {
+        struct qso_t *out_qso = g_ptr_array_index(qso_array, i);
+        if(!out_qso->is_comment) {
+            return out_qso;
+        }
     }
+    return &empty_qso;
 }
 
 void ExpandMacro_PreviousQso(void) {
