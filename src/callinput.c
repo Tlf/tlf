@@ -58,7 +58,6 @@
 #include "netkeyer.h"
 #include "nicebox.h"		// Includes curses.h
 #include "note.h"
-#include "prevqso.h"
 #include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "qtcwin.h"
@@ -174,7 +173,8 @@ int callinput(void) {
 		show_rtty();
 	    }
 
-	    if (digikeyer == FLDIGI && fldigi_set_callfield == 1 && current_qso.call[0] != '\0') {
+	    if (digikeyer == FLDIGI && fldigi_set_callfield == 1
+		    && current_qso.call[0] != '\0') {
 		freqstore = freq;
 		fldigi_set_callfield = 0;
 	    }
@@ -196,7 +196,8 @@ int callinput(void) {
 	    /* if BMAUTOGRAB is active in S&P mode and input field is empty and a spot has
 	     * not already been grabbed here check if a spot is on freq
 	     * and pick it up if one found */
-	    if (bmautograb && cqmode == S_P && *current_qso.call == '\0' && grab.state == NONE) {
+	    if (bmautograb && cqmode == S_P && *current_qso.call == '\0'
+		    && grab.state == NONE) {
 		get_spot_on_qrg(grab.call, freq);
 		if (strlen(grab.call) >= 3) {
 		    g_strlcpy(current_qso.call, grab.call, CALL_SIZE);
@@ -572,7 +573,11 @@ int callinput(void) {
 
 	    // Alt-0 to Alt-9 (M-0...M-9), send CW/Digimode messages 15-24.
 	    case 176 ... 185: {
-		send_standard_message(x - 162);	/* alt-0 to alt-9 */
+		if (*current_qso.call == '\0') {
+		    send_standard_message_prev_qso(x - 162); // alt-0 to alt-9
+		} else {
+		    send_standard_message(x - 162); /* alt-0 to alt-9 */
+		}
 
 		break;
 	    }
@@ -601,7 +606,12 @@ int callinput(void) {
 
 	    // F2-F11, send messages 2 through 11.
 	    case KEY_F(2) ... KEY_F(11): {
-		send_standard_message(x - KEY_F(1));	// F2...F11 - F1 = 1...10
+		// F2...F11 - F1 = 1...10
+		if (*current_qso.call == '\0') {
+		    send_standard_message_prev_qso(x - KEY_F(1));
+		} else {
+		    send_standard_message(x - KEY_F(1));
+		}
 
 		break;
 	    }
@@ -774,26 +784,55 @@ int callinput(void) {
 		break;
 	    }
 
-	    // <Escape>, clear call input or stop sending.
-	    case ESCAPE: {
-		if (early_started == 0) {
-		    /* if CW not started early drop call and start anew */
-		    cleanup();
-		    clear_display();
+	    case CTRL_U:
+		/* wipe out or restore call input and comment field */
+		if (current_qso.call[0] != '\0' ||
+			current_qso.comment[0] != '\0') {
+		    /* wipe out any content */
+		    cleanup_hiscall();
+		    cleanup_comment();
+		    rst_reset();
+
 		} else {
-		    /* otherwise just stop sending */
-		    stoptx();
-		    *hiscall_sent = '\0';
-		    early_started = 0;
+		    /* restore content */
+		    restore_hiscall();
+		    restore_comment();
 		}
 
-		freqstore = 0;
+		clear_display();
+		break;
+
+	    case CTRL_W:
+		/* wipe out or restore call input field */
+		if (current_qso.call[0] != '\0') {
+		    cleanup_hiscall();
+		} else {
+		    restore_hiscall();
+		}
+
+		break;
+
+	    // <Escape>, clear call input or stop sending.
+	    case ESCAPE: {
+		if (!stop_tx_only) {
+		    if (!early_started) {
+			/* if CW not started early drop call and start anew */
+			cleanup();
+			clear_display();
+		    }
+		    freqstore = 0;
+		}
+
 		break;
 	    }
 
 	    // Underscore, confirm last exchange.
 	    case '_': {
-		prev_qso();
+		if (S_P == cqmode) {
+		    send_standard_message_prev_qso(SP_TU_MSG);
+		} else {
+		    send_standard_message_prev_qso(2);
+		}
 
 		break;
 	    }
@@ -1058,10 +1097,10 @@ int autosend() {
     int x;
     int char_sent;
 
-    early_started = 1;
-    sending_call = 1;
+    early_started = true;
+    sending_call = true;
     sendmessage(current_qso.call);
-    sending_call = 0;
+    sending_call = false;
     strcpy(hiscall_sent, current_qso.call);
 
     char_sent = 0; 			/* no char sent so far */
@@ -1103,7 +1142,7 @@ int autosend() {
 	if (x == ESCAPE) {
 	    stoptx();
 	    *hiscall_sent = '\0';
-	    early_started = 0;
+	    early_started = false;
 	    continue;
 	}
 

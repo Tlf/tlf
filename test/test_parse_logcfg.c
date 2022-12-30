@@ -451,6 +451,7 @@ static bool_true_t bool_trues[] = {
     {"QTC_AUTO_FILLTIME", &qtc_auto_filltime},
     {"QTC_RECV_LAZY", &qtc_recv_lazy},
     {"LEADING_ZEROS_SERIAL", &leading_zeros_serial},
+    {"ESC_STOPS_TX_ONLY", &stop_tx_only},
 };
 
 void test_bool_trues(void **state) {

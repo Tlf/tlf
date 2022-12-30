@@ -23,7 +23,6 @@ bool simulator = false;
 char test_msg[1024];
 
 /* export internal function for test */
-void ExpandMacro();
 char *PrepareSPcall();
 void replace_all(char *buf, int size, const char *what,
 		 const char *rep);
@@ -74,7 +73,7 @@ void check_replace_all(char *input, const char *what, char *rep,
 
 void check_ExpandMacro(const char *input, const char *exp) {
     strcpy(buffer, input);
-    ExpandMacro();
+    ExpandMacro_CurrentQso();
     assert_string_equal(buffer, exp);
 }
 
@@ -86,7 +85,7 @@ int setup_default(void **state) {
     wkeyerbuffer[0] = '\0';
     data_ready = 0;
     simulator = false;
-    sending_call = 0;
+    sending_call = false;
     trxmode = CWMODE;
     cwkeyer = 1;
     digikeyer = 1;

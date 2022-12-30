@@ -1179,6 +1179,7 @@ static config_t logcfg_configs[] = {
     {"SPRINTMODE",      CFG_BOOL(sprint_mode)},
     {"KEYER_BACKSPACE", CFG_BOOL(keyer_backspace)},
     {"SECTION_MULT_ONCE",   CFG_BOOL(sectn_mult_once)},
+    {"ESC_STOPS_TX_ONLY",   CFG_BOOL(stop_tx_only)},
 
     {"F([1-9]|1[0-2])", CFG_MESSAGE(message, -1)},  // index is 1-based
     {"S&P_TU_MSG",      CFG_MESSAGE(message, SP_TU_MSG)},

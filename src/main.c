@@ -176,7 +176,6 @@ rmode_t  rigmode = RIG_MODE_NONE;
 bool mixedmode = false;
 char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
-char last_rst[4] = "599";       /* Report for last QSO */
 
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
 int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
@@ -188,7 +187,6 @@ bool demode = false;		/* send DE  before s&p call  */
 
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 bool showscore_flag = false;	/* show  score window */
-char exchange[40];
 int defer_store = 0;
 mystation_t my;			/* all info about me */
 
@@ -265,9 +263,11 @@ char hiscall_sent[20] = "";		/**< part which was sent during early
 int cwstart = 0;			/**< number characters after which
 					   sending call started automatically,
 					   0 - off, -1 - manual start */
-int sending_call = 0;
-int early_started = 0;			/**< 1 if sending call started early,
+bool sending_call = false;
+bool early_started = false;		/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
+bool stop_tx_only = false;		/**< ESC should stop only tx */
+
 char lastcall[20];
 char lastqsonr[5];
 char qsonrstr[5] = "0001";
@@ -331,6 +331,7 @@ bool bmautograb = false;
 /*-------------------------------------rigctl-------------------------------*/
 int myrig_model = 0;            /* unset */
 RIG *my_rig;			/* handle to rig (instance) */
+pthread_mutex_t rig_lock = PTHREAD_MUTEX_INITIALIZER;
 rmode_t rmode;			/* radio mode of operation */
 pbwidth_t width;
 vfo_t vfo;			/* vfo selection */

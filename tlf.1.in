@@ -935,6 +935,11 @@ The third press of
 .B Escape
 will clear the call input field.
 .
+.IP
+You can disable the above described UNDO functionality by setting
+.BR ESC_STOPS_TX_ONLY
+(see below).
+.
 .TP
 .BR \(<-\  (Left-Arrow)
 Call input field is empty: change to next band lower in frequency or wrap to
@@ -975,7 +980,8 @@ Restore previous CQ frequency from MEM and send message
 .
 .TP
 .B F2-F11
-Send CW, RTTY or VOICE messages 2 through 11.
+Send CW, RTTY or VOICE messages 2 through 11. If the callsign field is empty
+the messages will be sent with the preceding qso data.
 .
 .TP
 .B F12
@@ -1249,10 +1255,27 @@ Show talk messages.
 In the QTC window shows RTTY lines.
 .
 .TP
+.B Ctrl-U
+Wipe out whole input line (call input and exchange), clear all
+information about current contact.
+.
+If entered by accident a second
+.BR Ctrl-U
+restores the line.
+.
+.TP
 .B Ctrl-V
 Toggle grabbing direction in which
 .B Ctrl-G
 looks for a spot.
+.
+.TP
+.B Ctrl-W
+Wipe actual field the cursor is in (call input OR exchange).
+.
+If entered by accident a second
+.BR Ctrl-W
+restores the field.
 .
 .TP
 .B Ctrl-Z
@@ -1263,7 +1286,8 @@ equivalent command for your shell.
 .
 .TP
 .BR Alt-0 ... Alt-9
-Send alternate CW (Morse code) messages.
+Send alternate CW (Morse code) messages. If the callsign field is empty the
+messages will be sent with the preceding qso data.
 .
 .TP
 .B Alt-A
@@ -2177,6 +2201,11 @@ in the
 section above).
 .
 .TP
+\fBESC_STOPS_TX_ONLY\fR[=<\fION\fR|\fIOFF\fR>]
+Pressing ESC key does only stop sending CW or voice macros. No further action
+is taken.
+.
+.TP
 \fBSEND_DE\fR[=<\fION\fR|\fIOFF\fR>]
 Sends a \(lqDE\(rq word before your callsign, as in \(lqDE W1AW\(rq.
 .
@@ -3012,7 +3041,10 @@ Exchange is a continent (NA, SA, EU, AS, AF, OC).
 .
 .TP
 .B SERIAL_EXCHANGE
-Exchange is a serial number (formats exchange field).
+Exchange is a serial number (formats received exchange
+and configures Cabrillo exchange).
+Set this only if \fIboth\fR sent and received exchanges
+are plain serial numbers.
 .
 .TP
 .B MYQRA

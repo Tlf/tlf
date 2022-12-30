@@ -25,6 +25,7 @@
 #include <time.h>
 
 #include "hamlib/rig.h"
+#include "bandmap.h"
 #include "dxcc.h"
 
 enum {
@@ -266,7 +267,7 @@ typedef struct {
 	    int (*fn)(struct qso_t *);
 	};
     }			points;
-    bool (*is_multi)();
+    bool (*is_multi)(spot *data);
 
 } contest_config_t;
 

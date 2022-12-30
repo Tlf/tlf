@@ -1,4 +1,4 @@
-name: CI build
+name: CI build for Ubuntu 20
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 3
     env:
       TERM: xterm
