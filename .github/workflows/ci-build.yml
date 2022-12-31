@@ -22,10 +22,12 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get -qq update
-        sudo apt-get install -y libhamlib-dev libxmlrpc-core-c3-dev libcmocka-dev     
+        sudo apt-get install -y libhamlib-dev libxmlrpc-core-c3-dev libcmocka-dev python3-dev
     - name: Autoreconf and basic make
       run: autoreconf -i && ./configure && make -j2
     - name: Configure with xmlrpc
       run: make clean && ./configure --enable-fldigi-xmlrpc && make -j2
+    - name: Configure with xmlrpc and Python plugin
+      run: make clean && ./configure --enable-fldigi-xmlrpc --enable-python-plugin && make -j2
     - name: Run tests
       run: make check; rc=$?; cat test/run_*.log; exit $rc
