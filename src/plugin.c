@@ -15,13 +15,13 @@
 #include "startmsg.h"
 #include "utils.h"
 #include "qrb.h"
+#include "getctydata.h"
 
 #include "parse_logcfg.h"   // for PARSE_OK/PARSE_ERROR
 
 /*
 TODO:
     - add mutex to plugin_* functions
-    - add PLUGIN_CONFIG parameter
     - test plugin execution
 */
 
@@ -72,8 +72,37 @@ static PyStructSequence_Desc qrb_descr = {
     .n_in_sequence = 2
 };
 
+static PyStructSequence_Desc dxcc_descr = {
+    .name = "Dxcc",
+    .doc = "DXCC data",
+    .fields = (PyStructSequence_Field[]) {
+	// dxcc_data fields:
+	{.name = "country_name"},
+	{.name = "main_prefix"},
+	{.name = "main_cq_zone"},
+	{.name = "main_itu_zone"},
+	{.name = "main_latitude"},
+	{.name = "main_longitude"},
+	{.name = "main_continent"},
+	{.name = "main_timezone"},
+	{.name = "starred"},
+	// prefix_data fields:
+	{.name = "prefix"},
+	{.name = "cq_zone"},
+	{.name = "itu_zone"},
+	{.name = "latitude"},
+	{.name = "longitude"},
+	{.name = "continent"},
+	{.name = "timezone"},
+	{.name = "exact"},
+	{.name = NULL}  // guard
+    },
+    .n_in_sequence = 9 + 8
+};
+
 static PyTypeObject *qso_type;
 static PyTypeObject *qrb_type;
+static PyTypeObject *dxcc_type;
 
 static PyObject *py_get_qrb_for_locator(PyObject *self, PyObject *args) {
     const char *locator;
@@ -94,8 +123,41 @@ static PyObject *py_get_qrb_for_locator(PyObject *self, PyObject *args) {
     return py_qrb;
 }
 
+static PyObject *py_get_dxcc(PyObject *self, PyObject *args) {
+    char *call;
+
+    if (!PyArg_ParseTuple(args, "s", &call))
+	return NULL;
+
+    prefix_data *prefix = getctyinfo(call);
+    dxcc_data *dxcc = dxcc_by_index(prefix->dxcc_ctynr);
+
+    PyObject *py_dxcc = PyStructSequence_New(dxcc_type);
+    PyStructSequence_SetItem(py_dxcc, 0, Py_BuildValue("s", dxcc->countryname));
+    PyStructSequence_SetItem(py_dxcc, 1, Py_BuildValue("s", dxcc->pfx));
+    PyStructSequence_SetItem(py_dxcc, 2, Py_BuildValue("i", dxcc->cq));
+    PyStructSequence_SetItem(py_dxcc, 3, Py_BuildValue("i", dxcc->itu));
+    PyStructSequence_SetItem(py_dxcc, 4, Py_BuildValue("d", dxcc->lat));
+    PyStructSequence_SetItem(py_dxcc, 5, Py_BuildValue("d", dxcc->lon));
+    PyStructSequence_SetItem(py_dxcc, 6, Py_BuildValue("s", dxcc->continent));
+    PyStructSequence_SetItem(py_dxcc, 7, Py_BuildValue("d", dxcc->timezone));
+    PyStructSequence_SetItem(py_dxcc, 8, Py_BuildValue("N",
+			     PyBool_FromLong(dxcc->starred)));
+    PyStructSequence_SetItem(py_dxcc, 9, Py_BuildValue("s", prefix->pfx));
+    PyStructSequence_SetItem(py_dxcc, 10, Py_BuildValue("i", prefix->cq));
+    PyStructSequence_SetItem(py_dxcc, 11, Py_BuildValue("i", prefix->itu));
+    PyStructSequence_SetItem(py_dxcc, 12, Py_BuildValue("d", prefix->lat));
+    PyStructSequence_SetItem(py_dxcc, 13, Py_BuildValue("d", prefix->lon));
+    PyStructSequence_SetItem(py_dxcc, 14, Py_BuildValue("s", prefix->continent));
+    PyStructSequence_SetItem(py_dxcc, 15, Py_BuildValue("d", prefix->timezone));
+    PyStructSequence_SetItem(py_dxcc, 16, Py_BuildValue("N",
+			     PyBool_FromLong(prefix->exact)));
+    return py_dxcc;
+}
+
 static PyMethodDef tlf_methods[] = {
     { "get_qrb_for_locator", py_get_qrb_for_locator, METH_VARARGS, "Get QRB for given locator" },
+    { "get_dxcc", py_get_dxcc, METH_VARARGS, "Get DXCC information for given call" },
     { NULL, NULL, 0, NULL }
 };
 
@@ -111,10 +173,12 @@ PyMODINIT_FUNC pyModInit_tlf(void) {
     PyModule_AddIntMacro(tlf, CWMODE);
     PyModule_AddIntMacro(tlf, SSBMODE);
     PyModule_AddIntMacro(tlf, DIGIMODE);
+    PyModule_AddObject(tlf, "MY_CALL", PyUnicode_FromString(my.call));
     PyModule_AddObject(tlf, "MY_LAT", PyFloat_FromDouble(my.Lat));
     PyModule_AddObject(tlf, "MY_LONG", PyFloat_FromDouble(my.Long));
     PyModule_AddType(tlf, qso_type);
     PyModule_AddType(tlf, qrb_type);
+    PyModule_AddType(tlf, dxcc_type);
 
     return tlf;
 }
@@ -291,6 +355,7 @@ int plugin_init(const char *name) {
     // build interface types
     qso_type = PyStructSequence_NewType(&qso_descr);
     qrb_type = PyStructSequence_NewType(&qrb_descr);
+    dxcc_type = PyStructSequence_NewType(&dxcc_descr);
 
     pTlf = PyImport_ImportModule("tlf");
     if (pTlf == NULL) {
