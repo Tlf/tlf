@@ -61,6 +61,7 @@ t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
 
 void checkexchange(struct qso_t *qso, bool interactive) {}
 int check_mult(struct qso_t *qso) { return -1; }
+dxcc_data *dxcc_by_index(unsigned int index) { return NULL; }
 
 contest_config_t config_focm;
 
