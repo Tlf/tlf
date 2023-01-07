@@ -748,8 +748,6 @@ static int databases_load() {
 
 static void hamlib_init() {
 
-    rig_set_debug(RIG_DEBUG_NONE);
-
     if (no_trx_control) {
 	trx_control = false;
     }
@@ -1034,6 +1032,7 @@ int main(int argc, char *argv[]) {
     showmsg("");
 
     memset(&my, 0, sizeof(my));
+    rig_set_debug(RIG_DEBUG_NONE);  // disable Hamlib messages
 
     total = 0;
     if (databases_load() == EXIT_FAILURE) {
