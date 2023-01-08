@@ -1,0 +1,59 @@
+##########################
+# HA-DX contest          #
+##########################
+# https://ha-dx.com/en/contest-rules
+#
+
+LOGFILE=hadx.log
+CONTEST_MODE
+
+CABRILLO-CONTEST= HA-DX
+CABRILLO-CATEGORY-BAND= (SOSB, SOAB, SO3BAND, YOUTH6H, MS)
+CABRILLO-CATEGORY-MODE= (CW, SSB, MIXED)
+CABRILLO-CATEGORY-TRANSMITTER= (ONE, MULTI)
+
+CABRILLO-CATEGORY-STATION=-
+CABRILLO-CATEGORY-OVERLAY=-
+CABRILLO-CATEGORY-TIME=-
+CABRILLO-LOCATION=-
+CABRILLO-OFFTIME=-
+
+#================================
+# Select one of following blocks:
+#--------------------------------
+#
+# non-HA stations send serial number
+#
+CABRILLO-EXCHANGE=#
+F3=@ ++5NN-- #
+S&P_TU_MSG=TU ++5NN-- #
+#--------------------------------
+#
+# magyar állomások megyét adnak
+#
+##CABRILLO-EXCHANGE=XX
+##F3=@ ++5NN-- XX
+##S&P_TU_MSG=TU ++5NN-- XX
+#================================
+
+INITIAL_EXCHANGE=hadx.txt
+RECALL_MULTS
+
+# Scoring:
+# Contact with a Hungarian station:             10 points
+# Contact with a station on your continent:     2 points
+# Contact with a station on another continent:  5 points
+#
+COUNTRY_LIST_POINTS=10
+COUNTRYLIST=HA
+
+MY_CONTINENT_POINTS=2
+DX_POINTS=5
+
+# Multipliers:
+# worked DXCC + WAE list countries (exception HA) and Hungarian counties
+# per band, regardless of mode.
+# (handled by hadx.py)
+
+GENERIC_MULT=BAND
+
