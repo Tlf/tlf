@@ -79,6 +79,11 @@ struct ie_list *make_ie_list(char *file) {
 	    continue;
 	}
 
+	/* skip control directives like !!Order!!,... */
+	if (inputbuffer[0] == '!') {
+	    continue;
+	}
+
 	if (strlen(inputbuffer) > 80) {
 	    /* line to long */
 	    char msg[80];
