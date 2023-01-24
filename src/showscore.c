@@ -32,7 +32,6 @@
 #include "globalvars.h"		// Includes tlf.h
 #include "last10.h"
 #include "nicebox.h"		// Includes curses.h
-#include "plugin.h"
 #include "printcall.h"
 #include "bands.h"
 #include "setcontest.h"
