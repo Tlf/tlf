@@ -27,6 +27,7 @@ CABRILLO-OFFTIME=-
 CABRILLO-EXCHANGE=#
 F3=@ ++5NN-- #
 S&P_TU_MSG=TU ++5NN-- #
+MY_COUNTRY_POINTS=2
 #--------------------------------
 #
 # magyar állomások megyét adnak
@@ -34,6 +35,7 @@ S&P_TU_MSG=TU ++5NN-- #
 ##CABRILLO-EXCHANGE=XX
 ##F3=@ ++5NN-- XX
 ##S&P_TU_MSG=TU ++5NN-- XX
+##MY_COUNTRY_POINTS=10
 #================================
 
 INITIAL_EXCHANGE=hadx.txt
