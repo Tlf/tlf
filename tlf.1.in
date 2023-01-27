@@ -3370,6 +3370,8 @@ the pre-imported \fItlf\fR module.
 .TQ
   \fBDIGIMODE\fR: \fIint\fR
 .TQ
+  \fBMY_CALL\fR: \fIstr\fR
+.TQ
   \fBMY_LAT\fR: \fIfloat\fR
 .TQ
   \fBMY_LONG\fR: \fIfloat\fR
@@ -3381,6 +3383,9 @@ the pre-imported \fItlf\fR module.
   \fBdef get_qrb_for_locator(locator: str) -> Qrb:\fR
 Returns the distance (in km) and bearing (in degrees)
 to the specified locator from the current location.
+.TQ
+  \fBdef get_dxcc(call: str) -> Dxcc:\fR
+Returns the DXCC information for the given call using the \fIcty.dat\fR file.
 .
 .SS Data structures
 .
@@ -3401,6 +3406,50 @@ one of \fItlf.CWMODE\fR, \fItlf.SSBMODE\fR or \fItlf.DIGIMODE\fR
 .TQ
   \fButc\fR: \fIint\fR
 time in integer seconds since epoch
+.TP 20
+.B Qrb
+.TQ
+  \fBdistance\fR: \fIfloat\fR
+distance in km
+.TQ
+  \fBbearing\fR: \fIfloat\fR
+bearing in degrees
+.TP 20
+.B Dxcc
+.TQ
+  \fBcountry_name\fR: \fIstr\fR
+.TQ
+  \fBmain_prefix\fR: \fIstr\fR
+.TQ
+  \fBmain_cq_zone\fR: \fIint\fR
+.TQ
+  \fBmain_itu_zone\fR: \fIint\fR
+.TQ
+  \fBmain_latitude\fR: \fIfloat\fR
+.TQ
+  \fBmain_longitude\fR: \fIfloat\fR
+.TQ
+  \fBmain_continent\fR: \fIstr\fR
+.TQ
+  \fBmain_timezone\fR: \fIfloat\fR
+.TQ
+  \fBstarred\fR: \fIbool\fR
+.TQ
+  \fBprefix\fR: \fIstr\fR
+.TQ
+  \fBcq_zone\fR: \fIint\fR
+.TQ
+  \fBitu_zone\fR: \fIint\fR
+.TQ
+  \fBlatitude\fR: \fIfloat\fR
+.TQ
+  \fBlongitude\fR: \fIfloat\fR
+.TQ
+  \fBcontinent\fR: \fIstr\fR
+.TQ
+  \fBtimezone\fR: \fIfloat\fR
+.TQ
+  \fBexact\fR: \fIbool\fR
 .
 .SS Functions
 .
@@ -3448,7 +3497,7 @@ From the returned dictionary these (optional) entries are evaluated:
           \fBnormalized_exchange\fR: \fIstr\fR
 .
 .IP
-\fBmult1_value\fR is used as multiplier without further conversion.
+\fBmult1_value\fR is used as a multiplier without further conversion.
 The handling of this multiplier is controlled by the GENERIC_MULT
 parameter.
 .IP
