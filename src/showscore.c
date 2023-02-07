@@ -241,8 +241,10 @@ void showscore(void) {
 	display_header(bi_warc);
     }
 
-    /* show score per band */
+    /* show mults per band, if applicable */
     if (wysiwyg_multi
+	    || unique_call_multi == MULT_BAND
+	    || generic_mult == MULT_BAND
 	    || serial_section_mult
 	    || serial_grid4_mult
 	    || sectn_mult) {
@@ -251,24 +253,22 @@ void showscore(void) {
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], multscore[bi_normal[i]]);
 	}
-    }
 
-    if (itumult || wazmult) {
+    } else if (itumult || wazmult) {
 
 	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], zonescore[bi_normal[i]]);
 	}
-    }
 
-    if (pfxmultab) {
+    } else if (pfxmultab) {
+
 	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
 	}
-    }
 
-    if (dx_arrlsections) {
+    } else if (dx_arrlsections) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -279,9 +279,8 @@ void showscore(void) {
 	for (i = 0; i < 6; i++) {
 	    printfield(4, band_cols[i], multscore[bi_normal[i]]);
 	}
-    }
 
-    if (CONTEST_IS(CQWW)) {
+    } else if (CONTEST_IS(CQWW)) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
@@ -292,25 +291,22 @@ void showscore(void) {
 	for (i = 0; i < 6; i++) {
 	    printfield(4, band_cols[i], zonescore[bi_normal[i]]);
 	}
-    }
 
-    if (CONTEST_IS(ARRLDX_USA)) {
-
-	mvaddstr(3, START_COL, "Cty  ");
-	for (i = 0; i < 6; i++) {
-	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
-	}
-    }
-
-    if (iscontest && country_mult) {
+    } else if (CONTEST_IS(ARRLDX_USA)) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
 	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
 	}
-    }
 
-    if (CONTEST_IS(PACC_PA)) {
+    } else if (iscontest && country_mult) {
+
+	mvaddstr(3, START_COL, "Cty  ");
+	for (i = 0; i < 6; i++) {
+	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	}
+
+    } else if (CONTEST_IS(PACC_PA)) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
