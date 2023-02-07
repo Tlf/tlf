@@ -135,6 +135,7 @@ void test_remember_mult_one(void **state) {
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
+    assert_int_equal(multscore[BANDINDEX_80], 1);
 }
 
 void test_remember_mult_two(void **state) {
@@ -145,6 +146,7 @@ void test_remember_mult_two(void **state) {
     assert_string_equal(multis[1].name, "def");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
     assert_int_equal(multis[1].band, inxes[BANDINDEX_80]);
+    assert_int_equal(multscore[BANDINDEX_80], 2);
 }
 
 void test_remember_mult_same_2x(void **state) {
@@ -153,14 +155,18 @@ void test_remember_mult_same_2x(void **state) {
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80] | inxes[BANDINDEX_160]);
+    assert_int_equal(multscore[BANDINDEX_80], 1);
+    assert_int_equal(multscore[BANDINDEX_160], 0);
 }
 
 void test_remember_mult_same_2x_newband(void **state) {
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_ALL, false), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_BAND, false), 0);
     assert_int_equal(remember_multi("abc", BANDINDEX_160, MULT_BAND, false), 0);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80] | inxes[BANDINDEX_160]);
+    assert_int_equal(multscore[BANDINDEX_80], 1);
+    assert_int_equal(multscore[BANDINDEX_160], 1);
 }
 
 /* check_only mode */
@@ -169,12 +175,14 @@ void test_remember_check_mult_one(void **state) {
     assert_int_equal(nr_multis, 0);
     assert_string_equal(multis[0].name, "");
     assert_int_equal(multis[0].band, 0);
+    assert_int_equal(multscore[BANDINDEX_80], 0);
 }
 
 void test_remember_check_mult_two(void **state) {
     assert_int_equal(remember_multi("abc", BANDINDEX_80, MULT_ALL, true), 0);
     assert_int_equal(remember_multi("def", BANDINDEX_80, MULT_ALL, true), 0);
     assert_int_equal(nr_multis, 0);
+    assert_int_equal(multscore[BANDINDEX_80], 0);
 }
 
 void test_remember_check_mult_existing(void **state) {
@@ -183,11 +191,13 @@ void test_remember_check_mult_existing(void **state) {
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
+    assert_int_equal(multscore[BANDINDEX_80], 1);
     // then check it on another band
     assert_int_equal(remember_multi("abc", BANDINDEX_160, MULT_ALL, true), -1);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
+    assert_int_equal(multscore[BANDINDEX_80], 1);
 }
 
 void test_remember_check_mult_existing_newband(void **state) {
@@ -196,11 +206,14 @@ void test_remember_check_mult_existing_newband(void **state) {
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
+    assert_int_equal(multscore[BANDINDEX_80], 1);
     // then check it on another band in MULT_BAND mode
     assert_int_equal(remember_multi("abc", BANDINDEX_160, MULT_BAND, true), 0);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
+    assert_int_equal(multscore[BANDINDEX_80], 1);
+    assert_int_equal(multscore[BANDINDEX_160], 0);
 }
 
 /* helpers for check of loading of possible mults */
