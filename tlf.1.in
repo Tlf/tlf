@@ -3370,7 +3370,7 @@ the default file name).
 .
 It will take precedence over the system installed
 .I callmaster
-file which islikely well out of date.
+file which is likely well out of date.
 .
 .P
 .I Section files

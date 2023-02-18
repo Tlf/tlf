@@ -121,7 +121,7 @@ void bandmap_show();
  *
  * maybe show own frequency as dashline in other color
  * (maybe green highlighted)
- * - highligth actual spot if near its frequency
+ * - highlight actual spot if near its frequency
  *
  * Allow selection of one of the spots (switches to S&P)
  * - Ctrl-G as known
