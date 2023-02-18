@@ -780,7 +780,7 @@ as ARRL Field Day and ARRL Sweepstakes.
 .
 .TP
 .B Space
-Switches from call input to exchange field.
+Switch from call input to exchange field.
 .
 .IP
 Separates exchange field elements when multiple exchange elements must be
@@ -890,7 +890,7 @@ answer the next call.
 .
 .TP
 .B Backspace
-Erases the character to the left of the cursor and moves the cursor one
+Erase the character to the left of the cursor and moves the cursor one
 position to the left.
 .
 .\" FIXME: Update Escape section when changes are made in source.
@@ -1160,7 +1160,7 @@ key.
 .
 .TP
 .B Ctrl-E
-Ends modem capture for RTTY mode in QTC window (started with
+End modem capture for RTTY mode in QTC window (started with
 .BR Ctrl-S ).
 .
 .IP
