@@ -5,13 +5,15 @@
 #
 CONTEST=focmarathon
 LOGFILE=marathon.log
-INITIAL_EXCHANGE=focmarathon.txt
-RECALL_MULTS
 CABRILLO=FOCMARATHON
+RECALL_MULTS
+
+# uncomment if initial exchange file exist
+#INITIAL_EXCHANGE=focmarathon.txt
 #
 ##################################
 #                                #
-#  Messages F1= to F12=          #
+#  CW Messages F1= to F12=       #
 #  Message CQ_TU_MSG=            #
 #  Message S&P_TU_MSG=           #
 #                                #
@@ -33,7 +35,8 @@ CABRILLO=FOCMARATHON
 #
 F1=CQ FOC % % FOC
 F2=@ DE %
-F3=@ ++5NN-- 1437
+# adapt 'xxxx' to your FOC number
+F3=@ ++5NN-- xxxx
 F4=TU % FOC
 F5= @
 F6=%
