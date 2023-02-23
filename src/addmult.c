@@ -272,7 +272,7 @@ gint	cmp_size(char **a, char **b) {
 
 /* parse a mult line and add data to database
  *
- * multline consists of either
+ * multiline consists of either
  *   multiplier
  * or
  *   multiplier:followed,by,comma,separated,list,of,aliases

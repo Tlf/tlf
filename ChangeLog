@@ -1817,7 +1817,7 @@
 
   * src/main.c, src/parse_logcfg.c, src/score.c: cleanup and fix COUNTRYLIST=
   handling  
-  - Fix initialisiation of countrynr
+  - Fix initialisation of countrynr
 
 2015-02-22  Nate Bargmann <n0nb@n0nb.us>
 
