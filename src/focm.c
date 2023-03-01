@@ -48,8 +48,8 @@ int cntry;
 int cont;
 
 
-int score_foc() {
-    return foc_score(current_qso.call);
+int score_foc(struct qso_t *qso) {
+    return foc_score(qso->call);
 }
 
 /** FOC contest configuration */
