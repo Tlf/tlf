@@ -146,7 +146,7 @@ int setup_default(void **state) {
 }
 
 int teardown_default(void **state) {
-    unlink(logfile);
+    unlink(LOGFILE);
     free_qso_array();
     return 0;
 }
@@ -235,14 +235,14 @@ void test_add_to_worked_dupe(void **state) {
 void test_add_to_worked_continentlistonly(void **state) {
     continentlist_only = true;
     write_log(LOGFILE);
-    readcalls(LOGFILE, false);      // non-interactive
+    readcalls(LOGFILE, true);
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
     assert_int_equal(get_nr_of_points(), 3);    // normal CQWW scoring
     assert_int_equal(get_nr_of_mults(), 0);     // but no mult due to continent list
     assert_string_equal(showmsg_spy,
-			STRING_NOT_SET);   // non-interactive, no message
+			"Log changed due to rescoring. Do you want to save it? Y/(N)");
 }
 
 void test_add_to_worked_wpx(void **state) {
