@@ -272,7 +272,7 @@ gint	cmp_size(char **a, char **b) {
 
 /* parse a mult line and add data to database
  *
- * multline consists of either
+ * multiline consists of either
  *   multiplier
  * or
  *   multiplier:followed,by,comma,separated,list,of,aliases
@@ -441,7 +441,6 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
 		if (!check_only) {
 		    // update band even if not strictly needed
 		    multis[i].band |= inxes[band];
-		    multscore[band]++;
 		}
 
 		if (mult_mode == MULT_BAND) {

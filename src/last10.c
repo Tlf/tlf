@@ -19,6 +19,7 @@
 /* ------------------------------------------------------------
  *     last 10 - return time (in mins) for last 10 QSOs on
  *		 actual band
+ *		 in case of not enough QSOs -1 is returned
  *--------------------------------------------------------------*/
 
 
@@ -30,16 +31,13 @@
 
 int last10(void) {
 
-    int minsbefore;
-    int minsnow;
-    int span;
     int index;
     int qsocount = 0;
     int thisband;
     struct qso_t *qso;
 
     if (NR_QSOS < 10)
-	return (-1);
+	return -1;
 
     thisband = atoi(band[bandinx]);
 
@@ -54,18 +52,9 @@ int last10(void) {
 	}
     }
 
-    /* index points to the first QSO */
+    /* index points to the 10th QSO */
     if (index < 0)
-	return (-1);			/* not 10 QSOs found */
+	return -1;			/* not 10 QSOs found */
 
-    minsbefore = qso->hour *60 + qso->min;
-
-    minsnow = get_minutes();
-
-    if ((minsnow - minsbefore) <= 0)
-	minsnow += 1440;
-
-    span = minsnow - minsbefore;
-
-    return span;
+    return (get_time() - qso->timestamp) / 60;  /* elapsed time in minutes */
 }
