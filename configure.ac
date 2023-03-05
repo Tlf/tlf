@@ -160,6 +160,14 @@ AS_IF([test "x$wantfldigixmlrpc" = xtrue], [
 	dnl else Fldigi XML RPC not wanted
 	AC_MSG_RESULT([no])])
 
+dnl Check if Python3 and pexpect are available
+AM_PATH_PYTHON([3.9])
+
+AC_MSG_CHECKING([for pexpect])
+AS_IF([$PYTHON -c "import pexpect" 2>/dev/null],
+        [AC_MSG_RESULT([yes])],
+        [AC_MSG_ERROR([Python module pexpect is not available])]
+)
 
 dnl Set warnings for compilation
 dnl CFLAGS is reserved for user, so set the AM_* counterpart.
