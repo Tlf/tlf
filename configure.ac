@@ -161,7 +161,7 @@ AS_IF([test "x$wantfldigixmlrpc" = xtrue], [
 	AC_MSG_RESULT([no])])
 
 dnl Check if Python3 and pexpect are available
-AM_PATH_PYTHON([3.9])
+AM_PATH_PYTHON([3.8])
 
 AC_MSG_CHECKING([for pexpect])
 AS_IF([$PYTHON -c "import pexpect" 2>/dev/null],
