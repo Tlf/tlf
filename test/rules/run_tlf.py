@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
 
 import sys
+import os
 import pexpect
 
-open('.paras', 'a').close()    # create .paras to skip first time greeting
+COMMAND = "../../../src/tlf -nrv"
+fout = None
+#fout = open("run.log", "wb")   # uncomment this line to get interaction log
+PARAS = '.paras'
+
+open(PARAS, 'a').close()    # create .paras to skip first time greeting
 
 rc = 0
 
-command = "../../../src/tlf -nrv"
-fout = open("run.log", "wb")
-
-p = pexpect.spawn(command)
-p.logfile = fout
+p = pexpect.spawn(COMMAND)
+if fout:
+    p.logfile = fout
 
 i = p.expect(["continue", "save it", pexpect.TIMEOUT], timeout=2);
 if i == 0:
@@ -23,7 +27,10 @@ elif i == 1:
 else:
     rc = 2
 
-fout.close()
+if fout:
+    fout.close()
+
+os.remove(PARAS)
 
 sys.exit(rc)
 
