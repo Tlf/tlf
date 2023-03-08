@@ -21,6 +21,10 @@
 #ifndef QRB_H
 #define QRB_H
 
+#include <stdbool.h>
+
 int get_qrb(double *range, double *bearing);
+
+bool get_qrb_for_locator(const char *locator, double *range, double *bearing);
 
 #endif /* end of include guard: QRB_H */

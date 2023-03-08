@@ -5,6 +5,7 @@ AM_CPPFLAGS = @GLIB_CFLAGS@ -DTOP_SRCDIR=\"$(abs_top_srcdir)\"
 
 LIBS = @LIBM_LIB@ @PTHREAD_LIBS@ @GLIB_LIBS@ @HAMLIB_LIBS@ \
        @PANEL_LIBS@ @CURSES_LIBS@ @CMOCKA_LIBS@ \
+       @PYTHON_LIBS@ \
         -Wl,-wrap=sleep \
         -Wl,-wrap=key_get \
         -Wl,-wrap=key_poll \

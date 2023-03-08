@@ -229,6 +229,9 @@ extern char *cabrillo;
 extern char *editor_cmd;
 extern char *rigportname;
 extern char *config_file;
+#ifdef HAVE_PYTHON
+extern char *plugin_config;
+#endif
 
 extern int bandindexarray[];
 extern int tlfcolors[8][2];

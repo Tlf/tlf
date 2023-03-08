@@ -49,6 +49,7 @@
 #include "logit.h"
 #include "netkeyer.h"
 #include "parse_logcfg.h"
+#include "plugin.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "readctydata.h"
 #include "readcalls.h"
@@ -420,7 +421,16 @@ static struct termios oldt, newt;
 const char *argp_program_version = "tlf-" VERSION;
 const char *argp_program_bug_address = "<tlf-devel@nongnu.org>";
 static const char program_description[] =
-    "tlf - contest logging program for amateur radio operators";
+    "tlf - contest logging program for amateur radio operators"
+    "\v"    // "post-doc" separator
+    "Features:"
+#ifdef HAVE_LIBXMLRPC
+    " fldigi-xmlrpc"
+#endif
+#ifdef HAVE_PYTHON
+    " python-plugin"
+#endif
+;
 static const struct argp_option options[] = {
     {
 	"config",   'f', "FILE", 0,
@@ -649,7 +659,9 @@ static void init_variables() {
     }
 
     FREE_DYNAMIC_STRING(cabrillo);
-
+#ifdef HAVE_PYTHON
+    FREE_DYNAMIC_STRING(plugin_config);
+#endif
 }
 
 /** load all databases
@@ -722,12 +734,19 @@ static int databases_load() {
     if (trxmode == DIGIMODE) {
 	qtc_recv_lazy = false;
     }
+
+    getstationinfo();
+
+    status = plugin_init(whichcontest);
+    if (status != PARSE_OK) {
+	showmsg("Problems loading plugin!");
+	return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 
 static void hamlib_init() {
-
-    rig_set_debug(RIG_DEBUG_NONE);
 
     if (no_trx_control) {
 	trx_control = false;
@@ -948,6 +967,8 @@ static void tlf_cleanup() {
     }
 #endif
 
+    plugin_close();
+
     endwin();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 
@@ -1011,6 +1032,7 @@ int main(int argc, char *argv[]) {
     showmsg("");
 
     memset(&my, 0, sizeof(my));
+    rig_set_debug(RIG_DEBUG_NONE);  // disable Hamlib messages
 
     total = 0;
     if (databases_load() == EXIT_FAILURE) {

@@ -56,6 +56,7 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "addmult.h"
+#include "plugin.h"
 
 #include "getexchange.h"
 
@@ -827,6 +828,11 @@ void checkexchange(struct qso_t *qso, bool interactive) {
     qso->callupdate[0] = 0;
     qso->normalized_comment[0] = 0;
     qso->mult1_value[0] = 0;
+
+    if (plugin_has_check_exchange()) {
+        plugin_check_exchange(qso);
+        return;
+    }
 
     // ----------------------------cqww------------------------------
     if (CONTEST_IS(CQWW)) {

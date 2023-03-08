@@ -19,6 +19,7 @@
 // OBJECT ../src/getpx.o
 // OBJECT ../src/get_time.o
 // OBJECT ../src/log_utils.o
+// OBJECT ../src/plugin.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/score.o
 // OBJECT ../src/searchcallarray.o
