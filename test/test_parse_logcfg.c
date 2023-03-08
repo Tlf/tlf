@@ -61,6 +61,7 @@ t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
 
 void checkexchange(struct qso_t *qso, bool interactive) {}
 int check_mult(struct qso_t *qso) { return -1; }
+dxcc_data *dxcc_by_index(unsigned int index) { return NULL; }
 
 contest_config_t config_focm;
 
@@ -377,11 +378,26 @@ void test_usepartials(void **state) {
     assert_int_equal(use_part, 1);
 }
 
-void test_usepartials_with_arg(void **state) {
-    int rc = call_parse_logcfg("USEPARTIALS=no\n");
+void test_usepartials_no(void **state) {
+    use_part = true;
+    int rc = call_parse_logcfg("USEPARTIALS = no\n");   // space around =
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(use_part, false);
+}
+
+void test_usepartials_yes(void **state) {
+    use_part = false;
+    int rc = call_parse_logcfg("USEPARTIALS=yes\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(use_part, true);
+}
+
+void test_usepartials_wrong_arg(void **state) {
+    int rc = call_parse_logcfg("USEPARTIALS=abc\n");
     assert_int_equal(rc, PARSE_ERROR);
     assert_string_equal(showmsg_spy,
-			"Keyword 'USEPARTIALS' can't have a parameter. See man page.\n");
+                       "Wrong parameter format for keyword 'USEPARTIALS'. See man page.\n");
+
 }
 
 typedef struct {
@@ -435,6 +451,8 @@ static bool_true_t bool_trues[] = {
     {"QTCREC_RECORD", &qtcrec_record},
     {"QTC_AUTO_FILLTIME", &qtc_auto_filltime},
     {"QTC_RECV_LAZY", &qtc_recv_lazy},
+    {"LEADING_ZEROS_SERIAL", &leading_zeros_serial},
+    {"ESC_STOPS_TX_ONLY", &stop_tx_only},
 };
 
 void test_bool_trues(void **state) {

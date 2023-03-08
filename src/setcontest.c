@@ -219,7 +219,6 @@ contest_config_t config_arrldx_dx = {
 contest_config_t config_arrl_ss = {
     .id = ARRL_SS,
     .name = "ARRL_SS",
-    .exchange_serial = true,
     .points = {
 	.type = FIXED,
 	.point = 2,
@@ -340,7 +339,6 @@ void setcontest(char *name) {
     showscore_flag = true;
     searchflg = true;
     sectn_mult = false;
-    noleadingzeros = false;
 
     w_cty = getctynr(wcall);
     ve_cty = getctynr(vecall);
@@ -360,7 +358,7 @@ void setcontest(char *name) {
 	qso_once = true;
 	multlist = 1;
 //      sectn_mult = true;
-	noleadingzeros = true;
+	leading_zeros_serial = false;
     }
 
     if (CONTEST_IS(PACC_PA)) {

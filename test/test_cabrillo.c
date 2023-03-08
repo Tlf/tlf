@@ -24,7 +24,7 @@ char section[8] = "";       // defined in getexchange.c
 int qsoflags_for_qtc[MAX_QSOS];
 
 void addcall(struct qso_t *qso) { }
-void store_qso(char *logline) { nr_qsos++; }
+void store_qso(const char *file, char *logline) { }
 void cleanup_qso() { }
 void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) { }
 char *getgrid(char *comment) { return comment; }
@@ -91,10 +91,10 @@ char formatfile[] = TOP_SRCDIR "/share/cabrillo.fmt" ;
 
 int setup_default(void **state) {
     strcpy(my.call, "A1BCD");
+    extern char exchange[40];      // defined in writecabrillo.c
     strcpy(exchange, "#");
 
     init_qso_array();
-    nr_qsos = 0;
 
     return 0;
 }

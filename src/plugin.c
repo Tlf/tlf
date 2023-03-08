@@ -15,13 +15,17 @@
 #include "startmsg.h"
 #include "utils.h"
 #include "qrb.h"
+#include "getctydata.h"
 
-// hacks:
-#define PARSE_OK    0
-#define PARSE_ERROR 1
-#define BANDINDEX_ANY   (-1)
+#include "parse_logcfg.h"   // for PARSE_OK/PARSE_ERROR
 
-// 	python3-dev
+/*
+TODO:
+    - add mutex to plugin_* functions
+    - test plugin execution
+*/
+
+//  needs python3-dev
 
 #ifdef HAVE_PYTHON
 static PyObject *pModule, *pDict, *pTlf;
@@ -33,30 +37,32 @@ static PyObject *pModule, *pDict, *pTlf;
     bool plugin_has_##name() { return (pf_##name != NULL); }
 //==
 
+PLUGIN_FUNC(init)
 PLUGIN_FUNC(setup)
 PLUGIN_FUNC(score)
-
-PLUGIN_FUNC(is_multi)
-PLUGIN_FUNC(nr_of_mults)
-PLUGIN_FUNC(get_multi)
+PLUGIN_FUNC(check_exchange)
 
 #ifdef HAVE_PYTHON
+
+char *plugin_config = NULL;
+
 static PyStructSequence_Desc qso_descr = {
-    .name = "qso",
+    .name = "Qso",
     .doc = "QSO data",
     .fields = (PyStructSequence_Field[]) {
 	{.name = "band"},
 	{.name = "call"},
 	{.name = "mode"},
 	{.name = "exchange"},
-	// utc, ...
+	{.name = "utc"},
+	// ...
 	{.name = NULL}  // guard
     },
     .n_in_sequence = 4
 };
 
 static PyStructSequence_Desc qrb_descr = {
-    .name = "qrb",
+    .name = "Qrb",
     .doc = "QRB data",
     .fields = (PyStructSequence_Field[]) {
 	{.name = "distance"},
@@ -66,8 +72,37 @@ static PyStructSequence_Desc qrb_descr = {
     .n_in_sequence = 2
 };
 
+static PyStructSequence_Desc dxcc_descr = {
+    .name = "Dxcc",
+    .doc = "DXCC data",
+    .fields = (PyStructSequence_Field[]) {
+	// dxcc_data fields:
+	{.name = "country_name"},
+	{.name = "main_prefix"},
+	{.name = "main_cq_zone"},
+	{.name = "main_itu_zone"},
+	{.name = "main_latitude"},
+	{.name = "main_longitude"},
+	{.name = "main_continent"},
+	{.name = "main_timezone"},
+	{.name = "starred"},
+	// prefix_data fields:
+	{.name = "prefix"},
+	{.name = "cq_zone"},
+	{.name = "itu_zone"},
+	{.name = "latitude"},
+	{.name = "longitude"},
+	{.name = "continent"},
+	{.name = "timezone"},
+	{.name = "exact"},
+	{.name = NULL}  // guard
+    },
+    .n_in_sequence = 9 + 8
+};
+
 static PyTypeObject *qso_type;
 static PyTypeObject *qrb_type;
+static PyTypeObject *dxcc_type;
 
 static PyObject *py_get_qrb_for_locator(PyObject *self, PyObject *args) {
     const char *locator;
@@ -82,15 +117,47 @@ static PyObject *py_get_qrb_for_locator(PyObject *self, PyObject *args) {
 	Py_RETURN_NONE;
     }
 
-    //return Py_BuildValue("{s:d,s:d}", "distance", distance, "bearing", bearing);
     PyObject *py_qrb = PyStructSequence_New(qrb_type);
     PyStructSequence_SetItem(py_qrb, 0, Py_BuildValue("d", distance));
     PyStructSequence_SetItem(py_qrb, 1, Py_BuildValue("d", bearing));
     return py_qrb;
 }
 
+static PyObject *py_get_dxcc(PyObject *self, PyObject *args) {
+    char *call;
+
+    if (!PyArg_ParseTuple(args, "s", &call))
+	return NULL;
+
+    prefix_data *prefix = getctyinfo(call);
+    dxcc_data *dxcc = dxcc_by_index(prefix->dxcc_ctynr);
+
+    PyObject *py_dxcc = PyStructSequence_New(dxcc_type);
+    PyStructSequence_SetItem(py_dxcc, 0, Py_BuildValue("s", dxcc->countryname));
+    PyStructSequence_SetItem(py_dxcc, 1, Py_BuildValue("s", dxcc->pfx));
+    PyStructSequence_SetItem(py_dxcc, 2, Py_BuildValue("i", dxcc->cq));
+    PyStructSequence_SetItem(py_dxcc, 3, Py_BuildValue("i", dxcc->itu));
+    PyStructSequence_SetItem(py_dxcc, 4, Py_BuildValue("d", dxcc->lat));
+    PyStructSequence_SetItem(py_dxcc, 5, Py_BuildValue("d", dxcc->lon));
+    PyStructSequence_SetItem(py_dxcc, 6, Py_BuildValue("s", dxcc->continent));
+    PyStructSequence_SetItem(py_dxcc, 7, Py_BuildValue("d", dxcc->timezone));
+    PyStructSequence_SetItem(py_dxcc, 8, Py_BuildValue("N",
+			     PyBool_FromLong(dxcc->starred)));
+    PyStructSequence_SetItem(py_dxcc, 9, Py_BuildValue("s", prefix->pfx));
+    PyStructSequence_SetItem(py_dxcc, 10, Py_BuildValue("i", prefix->cq));
+    PyStructSequence_SetItem(py_dxcc, 11, Py_BuildValue("i", prefix->itu));
+    PyStructSequence_SetItem(py_dxcc, 12, Py_BuildValue("d", prefix->lat));
+    PyStructSequence_SetItem(py_dxcc, 13, Py_BuildValue("d", prefix->lon));
+    PyStructSequence_SetItem(py_dxcc, 14, Py_BuildValue("s", prefix->continent));
+    PyStructSequence_SetItem(py_dxcc, 15, Py_BuildValue("d", prefix->timezone));
+    PyStructSequence_SetItem(py_dxcc, 16, Py_BuildValue("N",
+			     PyBool_FromLong(prefix->exact)));
+    return py_dxcc;
+}
+
 static PyMethodDef tlf_methods[] = {
     { "get_qrb_for_locator", py_get_qrb_for_locator, METH_VARARGS, "Get QRB for given locator" },
+    { "get_dxcc", py_get_dxcc, METH_VARARGS, "Get DXCC information for given call" },
     { NULL, NULL, 0, NULL }
 };
 
@@ -101,20 +168,21 @@ static struct PyModuleDef tlf_module = {
     .m_methods = tlf_methods
 };
 
-PyMODINIT_FUNC PyModInit_tlf(void) {
+PyMODINIT_FUNC pyModInit_tlf(void) {
     PyObject *tlf = PyModule_Create(&tlf_module);
     PyModule_AddIntMacro(tlf, CWMODE);
     PyModule_AddIntMacro(tlf, SSBMODE);
-    PyModule_AddIntConstant(tlf, "BAND_ANY", BANDINDEX_ANY);
+    PyModule_AddIntMacro(tlf, DIGIMODE);
+    PyModule_AddObject(tlf, "MY_CALL", PyUnicode_FromString(my.call));
     PyModule_AddObject(tlf, "MY_LAT", PyFloat_FromDouble(my.Lat));
     PyModule_AddObject(tlf, "MY_LONG", PyFloat_FromDouble(my.Long));
-    //...
+    PyModule_AddType(tlf, qso_type);
+    PyModule_AddType(tlf, qrb_type);
+    PyModule_AddType(tlf, dxcc_type);
 
     return tlf;
 }
-#endif
 
-#ifdef HAVE_PYTHON
 static void lookup_function(const char *name, PyObject **pf_ptr) {
     // pf_ptr is a borrowed reference
     *pf_ptr = PyDict_GetItemString(pDict, name);
@@ -122,6 +190,137 @@ static void lookup_function(const char *name, PyObject **pf_ptr) {
 	Py_DECREF(*pf_ptr);
 	*pf_ptr = NULL;
     }
+}
+
+//
+// copy a string out of a Python dict:
+//  *dest = dict[name]
+//
+// if *dest is NULL then it is allocated accordingly
+// and must be freed by the caller
+//
+static void copy_dict_string(PyObject *dict, const char *name,
+			     char **dest, int size) {
+    // po is a borrowed reference
+    PyObject *po = PyDict_GetItemString(dict, name);
+    if (po == NULL) {
+	return;     // no such entry
+    }
+    if (*dest == NULL) {
+	*dest = g_malloc0(size);
+    }
+    g_strlcpy(*dest, PyUnicode_AsUTF8(po), size);
+}
+
+#endif
+
+int parse_version(const char *version, int *major, int *minor) {
+    char *v = g_strdup(version);
+    g_strstrip(v);
+
+    if (v[0] == 0) {    // version is empty
+	g_free(v);
+	*major = 0;
+	*minor = 0;
+	return PARSE_OK;
+    }
+
+    int result = PARSE_ERROR;   // default: failure
+
+    // format: <digit(s)>.<digit(s)>[ignored_trailing_chars]
+    GRegex *regex = g_regex_new("^(\\d+)\\.(\\d+)", 0, 0, NULL);
+    GMatchInfo *match_info;
+    g_regex_match(regex, v, 0, &match_info);
+    if (g_match_info_matches(match_info)) {
+	char *major_str = g_match_info_fetch(match_info, 1);
+	char *minor_str = g_match_info_fetch(match_info, 2);
+	*major = atoi(major_str);
+	*minor = atoi(minor_str);
+	result = PARSE_OK;  // success
+	g_free(major_str);
+	g_free(minor_str);
+    }
+    g_match_info_free(match_info);
+    g_regex_unref(regex);
+    g_free(v);
+
+    return result;
+}
+
+
+#define ERROR_WRONG_VERSION1    10
+#define ERROR_WRONG_VERSION2    20
+// returns -1/0/+1, or one of the above error codes
+int compare_versions(const char *version1, const char *version2) {
+    int v1_major, v1_minor;
+    int v2_major, v2_minor;
+
+    if (parse_version(version1, &v1_major, &v1_minor) != PARSE_OK) {
+	return ERROR_WRONG_VERSION1;
+    }
+    if (parse_version(version2, &v2_major, &v2_minor) != PARSE_OK) {
+	return ERROR_WRONG_VERSION2;
+    }
+
+    if (v1_major > v2_major) {
+	return 1;
+    }
+    if (v1_major < v2_major) {
+	return -1;
+    }
+    if (v1_minor > v2_minor) {
+	return 1;
+    }
+    if (v1_minor < v2_minor) {
+	return -1;
+    }
+    return 0;
+}
+
+#ifdef HAVE_PYTHON
+// call init if available
+static int call_init() {
+    if (pf_init == NULL) {
+	return PARSE_OK;
+    }
+
+    char *cfg = (plugin_config != NULL ? plugin_config : "");
+    PyObject *args = Py_BuildValue("(s)", cfg);
+    PyObject *pValue = PyObject_CallObject(pf_init, args);
+    Py_DECREF(args);
+
+    if (NULL != PyErr_Occurred()) {
+	showmsg("Error: ");
+	PyErr_Print();
+	return PARSE_ERROR;
+    }
+
+    if (pValue == NULL || pValue == Py_None)  {
+	// no check needed
+    } else if (PyUnicode_Check(pValue)) {
+	const char *required_version = PyUnicode_AsUTF8(pValue);
+	int rc = compare_versions(VERSION, required_version);
+	if (rc == ERROR_WRONG_VERSION2) {
+	    showstring("Error: Unparseable required version:", required_version);
+	    return PARSE_ERROR;
+	} else if (rc == ERROR_WRONG_VERSION1) {    // should not happen
+	    showmsg("Error: Internal error parsing version: " VERSION);
+	    return PARSE_ERROR;
+	} else if (rc < 0) {
+	    char *msg = g_strdup_printf("Plugin requires version %s but you are running "
+					VERSION ". Please upgrade TLF.",
+					required_version);
+	    showmsg(msg);
+	    g_free(msg);
+	    return PARSE_ERROR;
+	}
+    } else {
+	showmsg("Wrong return type for init()");
+	return PARSE_ERROR;
+    }
+
+    Py_XDECREF(pValue);
+    return PARSE_OK;
 }
 #endif
 
@@ -150,8 +349,13 @@ int plugin_init(const char *name) {
     g_free(path);
 
     // Initialize the Python Interpreter
-    PyImport_AppendInittab("tlf", &PyModInit_tlf); // declare tlf module
+    PyImport_AppendInittab("tlf", &pyModInit_tlf); // declare tlf module
     Py_Initialize();
+
+    // build interface types
+    qso_type = PyStructSequence_NewType(&qso_descr);
+    qrb_type = PyStructSequence_NewType(&qrb_descr);
+    dxcc_type = PyStructSequence_NewType(&dxcc_descr);
 
     pTlf = PyImport_ImportModule("tlf");
     if (pTlf == NULL) {
@@ -163,7 +367,7 @@ int plugin_init(const char *name) {
     PyRun_SimpleString(set_path);   // set module search path
     g_free(set_path);
 
-    // Load the module object
+    // Load the plugin module object
     PyObject *pName = PyUnicode_FromString(name);
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
@@ -173,56 +377,20 @@ int plugin_init(const char *name) {
 	return PARSE_ERROR;
     }
 
-    PyModule_AddObject(pModule, "tlf", pTlf);
+    PyModule_AddObject(pModule, "tlf", pTlf);   // for 'import tlf'
 
     // pDict is a borrowed reference
     pDict = PyModule_GetDict(pModule);
 
-    PyObject *pf_init;
     lookup_function("init", &pf_init);
     lookup_function("setup", &pf_setup);
     lookup_function("score", &pf_score);
-    lookup_function("is_multi", &pf_is_multi);
-    lookup_function("get_multi", &pf_get_multi);
+    lookup_function("check_exchange", &pf_check_exchange);
 
-    if (pf_setup == NULL) {
-	showmsg("ERROR: missing setup() in plugin");
-	return PARSE_ERROR;
+    int rc = call_init();
+    if (rc != PARSE_OK) {
+	return rc;
     }
-
-    // call init if available
-    if (pf_init != NULL) {
-	PyObject *pValue = PyObject_CallObject(pf_init, NULL);
-	// ...check exception....
-	Py_XDECREF(pValue);
-    }
-
-
-    // check add_qso ?
-
-    // build interface types
-    qso_type = PyStructSequence_NewType(&qso_descr);
-    qrb_type = PyStructSequence_NewType(&qrb_descr);
-
-#if 0
-    plugin_setup();
-
-    plugin_add_qso(" 80CW  04-Jan-21 16:30 0001  OK1AY          599  599  003                    0   3540.0");
-    plugin_add_qso(" 80CW  04-Jan-21 16:30 0001  OK1Z           599  599  003                    0   3540.0");
-    plugin_add_qso(" 80CW  04-Jan-21 16:30 0001  HA8QSY         599  599  003                    0   3540.0");
-
-    int n = plugin_nr_of_mults(BANDINDEX_ANY);
-    printf("n=%d\n", n);
-
-    printf("S51Z multi: %d\n", plugin_is_multi(1, "S51Z", CWMODE));
-    printf("9A1A multi: %d\n", plugin_is_multi(1, "9A1A", CWMODE));
-
-    char *m = plugin_get_multi("YT1W", CWMODE);
-    printf("multi: |%s|\n", m);
-    g_free(m);
-
-    exit(0);
-#endif
 
     showmsg("Loaded plugin");
 
@@ -232,24 +400,22 @@ int plugin_init(const char *name) {
 
 void plugin_close() {
 #ifdef HAVE_PYTHON
-    // Clean up
-    Py_DECREF(pModule);
-    //FIXME check other pointers
-
-    // Finish the Python Interpreter
-    Py_Finalize();
+    if (pModule != NULL) {
+	// Finish the Python Interpreter
+	Py_Finalize();
+    }
 #endif
 }
 
 void plugin_setup() {
 #ifdef HAVE_PYTHON
     PyObject *pValue = PyObject_CallObject(pf_setup, NULL);
-    //printf("after pf_setup, pValue %s NULL\n", pValue == NULL ? "is" : "not");
     Py_XDECREF(pValue);
 
     if (NULL != PyErr_Occurred()) {
 	PyErr_Print();
-	// FIXME: action?
+	sleep(2);
+	exit(1);
     }
 #endif
 }
@@ -261,6 +427,7 @@ static PyObject *create_py_qso(struct qso_t *qso) {
     PyStructSequence_SetItem(py_qso, 1, Py_BuildValue("s", qso->call));
     PyStructSequence_SetItem(py_qso, 2, Py_BuildValue("i", qso->mode));
     PyStructSequence_SetItem(py_qso, 3, Py_BuildValue("s", qso->comment));
+    PyStructSequence_SetItem(py_qso, 4, Py_BuildValue("i", qso->timestamp));
     return py_qso;
 }
 #endif
@@ -275,95 +442,39 @@ int plugin_score(struct qso_t *qso) {
     Py_DECREF(py_qso);
 
     if (pValue != NULL) {
-	result =  PyLong_AsLong(pValue);
-    }
-    Py_XDECREF(pValue);
-
-    if (NULL != PyErr_Occurred()) {
-	PyErr_Print();
-	sleep(2);
-	//exit(1);
-    }
-#endif
-    return result;
-}
-
-bool plugin_is_multi(int band, char *call, int mode) {
-#ifdef HAVE_PYTHON
-    // call is_multi
-    struct qso_t qso;
-    qso.band = band;
-    qso.call = call;
-    qso.mode = mode;
-    qso.comment = "";
-
-    PyObject *py_qso = create_py_qso(&qso);
-    PyObject *args = Py_BuildValue("(O)", py_qso);
-    PyObject *pValue = PyObject_CallObject(pf_is_multi, args);
-    Py_DECREF(args);
-    Py_DECREF(py_qso);
-
-    bool result = false;
-    if (pValue != NULL) {
-	result =  PyLong_AsLong(pValue);
-    }
-    Py_XDECREF(pValue);
-
-    if (NULL != PyErr_Occurred()) {
-	PyErr_Print();
-	sleep(2);
-	//exit(1);
-    }
-    return result;
-#else
-    return false;
-#endif
-}
-
-// result has to be g_freed()'s
-char *plugin_get_multi(struct qso_t *qso) {
-#ifdef HAVE_PYTHON
-    PyObject *py_qso = create_py_qso(qso);
-    PyObject *args = Py_BuildValue("(O)", py_qso);
-    PyObject *pValue = PyObject_CallObject(pf_get_multi, args);
-    Py_DECREF(args);
-    Py_DECREF(py_qso);
-
-    char *result = NULL;
-    if (pValue != NULL) {
-	result = g_strdup(PyUnicode_AsUTF8(pValue));
-    }
-    Py_XDECREF(pValue);
-
-    if (NULL != PyErr_Occurred()) {
-	PyErr_Print();
-	sleep(2);
-	//exit(1);
-    }
-    return result;
-#else
-    return NULL;
-#endif
-}
-
-int plugin_nr_of_mults(int band) {
-#ifdef HAVE_PYTHON
-    PyObject *args = Py_BuildValue("(i)", band);
-    PyObject *pValue = PyObject_CallObject(pf_nr_of_mults, args);
-    Py_DECREF(args);
-
-    int result = 0;
-    if (pValue != NULL) {
 	result = PyLong_AsLong(pValue);
     }
     Py_XDECREF(pValue);
 
     if (NULL != PyErr_Occurred()) {
 	PyErr_Print();
+	sleep(2);
+	//exit(1);
     }
+#endif
     return result;
-#else
-    return 0;
+}
+
+void plugin_check_exchange(struct qso_t *qso) {
+#ifdef HAVE_PYTHON
+    PyObject *py_qso = create_py_qso(qso);
+    PyObject *args = Py_BuildValue("(O)", py_qso);
+    PyObject *pValue = PyObject_CallObject(pf_check_exchange, args);
+    Py_DECREF(args);
+    Py_DECREF(py_qso);
+
+    if (pValue != NULL && PyDict_Check(pValue)) {
+	copy_dict_string(pValue, "mult1_value", &qso->mult1_value, MULT_SIZE);
+	copy_dict_string(pValue, "normalized_exchange", &qso->normalized_comment,
+			 COMMENT_SIZE);
+    }
+    Py_XDECREF(pValue);
+
+    if (NULL != PyErr_Occurred()) {
+	PyErr_Print();
+	sleep(2);
+	exit(1);
+    }
 #endif
 }
 

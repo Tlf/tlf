@@ -32,7 +32,6 @@
 #include "globalvars.h"		// Includes tlf.h
 #include "last10.h"
 #include "nicebox.h"		// Includes curses.h
-#include "plugin.h"
 #include "printcall.h"
 #include "bands.h"
 #include "setcontest.h"
@@ -113,15 +112,7 @@ void display_header(int *bi) {
 	printfield(2, band_cols[i], qsos_per_band[bi[i]]);
     }
 
-    if (plugin_has_nr_of_mults()) {
-        mvaddstr(3, START_COL, "Mults ");
-        for (i = 0; i < 6; i++) {
-            printfield(3, band_cols[i], plugin_nr_of_mults(bi[i]));
-        }
-    } else {
-        mvaddstr(3, START_COL, spaces(80 - START_COL));
-    }
-
+    mvaddstr(3, START_COL, spaces(80 - START_COL));
     mvaddstr(4, START_COL, spaces(80 - START_COL));
     mvaddstr(5, START_COL, spaces(80 - START_COL));
 

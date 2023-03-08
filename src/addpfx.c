@@ -82,7 +82,7 @@ bool pfx_is_new_on(char *prefix, int bandindex) {
 
 
 int add_pfx(char *pxstr, unsigned int bandindex) {
-    extern int pfxmultab;
+    extern bool pfxmultab;
     int q = 0, found = 0, bandfound = 0;
 
     prefixes_worked[nr_of_px].pfx[0] = '\0';

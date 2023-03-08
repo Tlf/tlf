@@ -84,11 +84,11 @@ void write_log_fm_cabr(struct qso_t *qso) {
     score_qso(qso);
     char *logline = makelogline(qso);	    /* format logline */
     qso->logline = logline;
-    store_qso(logline);
+    store_qso(logfile, logline);
     g_ptr_array_add(qso_array, qso);
 
     cleanup_qso();
-    qsoflags_for_qtc[nr_qsos - 1] = 0;
+    qsoflags_for_qtc[NR_QSOS - 1] = 0;
 }
 
 /* write a new line to the qtc log */
@@ -127,7 +127,7 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 	}
 
 	// look until not found and we're in list
-	while (found_call == 0 && qtc_curr_call_nr < nr_qsos) {
+	while (found_call == 0 && qtc_curr_call_nr < NR_QSOS) {
 	    strncpy(thiscall, QSOS(qtc_curr_call_nr) + 29, 14);
 	    g_strchomp(thiscall);
 	    strncpy(ttime, QSOS(qtc_curr_call_nr) + 17, 2);

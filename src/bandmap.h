@@ -23,7 +23,6 @@
 
 #include <stdbool.h>
 #include <hamlib/rig.h>
-#include "tlf.h"
 
 typedef struct {
     char 	*call;

@@ -172,7 +172,7 @@ AS_IF([test "x$wantpythonplugin" = xtrue], [
 	dnl Look for Python
 	AC_MSG_RESULT([yes])
 
-	AM_PATH_PYTHON([3.0])
+	AM_PATH_PYTHON([3.9])
 
 	python_main_ver=`$PYTHON -c "import sys; print(sys.version.split('.')[[0]])"`
 	python_sub_ver=`$PYTHON -c "import sys; print(sys.version.split('.')[[1]])"`

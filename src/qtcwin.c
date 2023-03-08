@@ -54,11 +54,11 @@
 
 
 void init_qtc_panel();
-void draw_qtc_panel();
+void draw_qtc_panel(int direction);
 void start_qtc_recording();
 void stop_qtc_recording();
 void clear_help_block();
-void show_help_msg();
+void show_help_msg(int msgidx);
 void showfield(int fidx);
 void modify_field(int pressed);
 void delete_from_field(int dir);
@@ -75,7 +75,6 @@ void fill_qtc_times(char *time);
 extern char lastcall[];
 extern int trxmode;
 extern int digikeyer;
-extern int nr_qsos;
 
 static int record_run = -1;		/* was recording already started? */
 
@@ -660,7 +659,7 @@ void qtc_main_panel(int direction) {
 			if (*qtccount > 0 && qtcreclist.confirmed == *qtccount) {
 			    if (qtcreclist.sentcfmall == 0) {
 				qtcreclist.sentcfmall = 1;
-				log_recv_qtc_to_disk(nr_qsos);
+				log_recv_qtc_to_disk(NR_QSOS);
 				if (record_run > -1) {
 				    stop_qtc_recording();
 				}
@@ -785,7 +784,7 @@ void qtc_main_panel(int direction) {
 	    case CTRL_S:
 		if (qtccurrdirection == SEND && *qtccount > 0
 			&& qtclist.totalsent == *qtccount) {
-		    log_sent_qtc_to_disk(nr_qsos);
+		    log_sent_qtc_to_disk(NR_QSOS);
 		    wattrset(qtcwin, LINE_INVERTED);
 		    mvwaddstr(qtcwin, 2, 11, "QTCs have been saved!");
 		    prevqtccall[0] = '\0';

@@ -25,21 +25,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "globalvars.h"		// Includes glib.h and tlf.h
 #include "tlf_curses.h"
-#include "plugin.h"
 
 
-void store_qso(char *loglineptr) {
+void store_qso(const char *file, char *loglineptr) {
     FILE *fp;
 
-    if ((fp = fopen(logfile, "a"))  == NULL) {
+    if ((fp = fopen(file, "a"))  == NULL) {
 	fprintf(stdout,  "store_qso.c: Error opening file.\n");
+	sleep(1);
 	endwin();
 	exit(1);
     }
-    nr_qsos++;
 
     fputs(loglineptr, fp);
     fputc('\n', fp);

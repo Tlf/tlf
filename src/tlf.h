@@ -25,6 +25,7 @@
 #include <time.h>
 
 #include "hamlib/rig.h"
+#include "bandmap.h"
 #include "dxcc.h"
 
 enum {
@@ -266,7 +267,7 @@ typedef struct {
 	    int (*fn)(struct qso_t *);
 	};
     }			points;
-    bool (*is_multi)();
+    bool (*is_multi)(spot *data);
 
 } contest_config_t;
 
@@ -306,6 +307,7 @@ enum {
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
 
 #define QSOS(n)    (((struct qso_t*)g_ptr_array_index(qso_array, n))->logline)
+#define NR_QSOS	   (qso_array->len)
 
 #endif /* TLF_H */
 
