@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get -qq update
-        sudo apt-get install -y libhamlib-dev libxmlrpc-core-c3-dev libcmocka-dev python3-pexpect
+        sudo apt-get install -y libhamlib-dev libxmlrpc-core-c3-dev libcmocka-dev python3-pexpect python3-dev
     - name: Set up datadir
       run: mkdir datadir && ln -s $PWD/share datadir/tlf
     - name: Autoreconf and basic make
@@ -30,7 +30,7 @@ jobs:
         autoreconf -i && ./configure --datadir=$PWD/datadir && make -j2
     - name: Configure with xmlrpc
       run: |
-        make clean && ./configure --datadir=$PWD/datadir --enable-fldigi-xmlrpc && make -j2
+        make clean && ./configure --datadir=$PWD/datadir --enable-fldigi-xmlrpc --enable-python-plugin && make -j2
     - name: Run tests
       id: run_tests
       continue-on-error: true
