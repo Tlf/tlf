@@ -58,7 +58,7 @@ void calledit(void) {
 	mvaddstr(12, 29, current_qso.call);
 	move(12, 29 + b);
 	/* no refreshp() here as getch() calls wrefresh() for the
-	 * panel with last output (whre the cursor should go */
+	 * panel with last output (where the cursor should go */
 
 	i = key_get();
 

@@ -20,6 +20,8 @@
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/nicebox.o
 // OBJECT ../src/qtcutil.o
+// OBJECT ../src/plugin.o
+// OBJECT ../src/qrb.o
 // OBJECT ../src/printcall.o
 // OBJECT ../src/recall_exchange.o
 // OBJECT ../src/setcontest.o

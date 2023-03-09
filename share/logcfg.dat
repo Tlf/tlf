@@ -15,7 +15,7 @@ RULES=cqww
 #  each contest. If you enable  #
 #  more than 1 mutually exclu-  #
 #  sive options, the last one   #
-#  will be efective.            #
+#  will be effective.           #
 #                               #
 #                               #
 #################################
@@ -257,7 +257,7 @@ NOB4
 MARKERS=tlfmarkers
 # or for just dots
 #MARKERDOTS=tlfmarkers
-# or for dots+calss
+# or for dots+calls
 #MARKERCALLS=tlfmarkers
 #
 #############END#################

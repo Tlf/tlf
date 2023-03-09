@@ -30,6 +30,9 @@ jobs:
         autoreconf -i && ./configure --datadir=$PWD/datadir && make -j2
     - name: Configure with xmlrpc
       run: |
+        make clean && ./configure --datadir=$PWD/datadir --enable-fldigi-xmlrpc && make -j2
+    - name: Configure with xmlrpc and Python plugin
+      run: |
         make clean && ./configure --datadir=$PWD/datadir --enable-fldigi-xmlrpc --enable-python-plugin && make -j2
     - name: Run tests
       id: run_tests

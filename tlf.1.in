@@ -780,7 +780,7 @@ as ARRL Field Day and ARRL Sweepstakes.
 .
 .TP
 .B Space
-Switches from call input to exchange field.
+Switch from call input to exchange field.
 .
 .IP
 Separates exchange field elements when multiple exchange elements must be
@@ -890,7 +890,7 @@ answer the next call.
 .
 .TP
 .B Backspace
-Erases the character to the left of the cursor and moves the cursor one
+Erase the character to the left of the cursor and moves the cursor one
 position to the left.
 .
 .\" FIXME: Update Escape section when changes are made in source.
@@ -1166,7 +1166,7 @@ key.
 .
 .TP
 .B Ctrl-E
-Ends modem capture for RTTY mode in QTC window (started with
+End modem capture for RTTY mode in QTC window (started with
 .BR Ctrl-S ).
 .
 .IP
@@ -2961,7 +2961,13 @@ Use generic multiplier determined by the contest plugin.
 .IP
 The argument specifies the multiplier counting rule (see above).
 Default value is NONE (disabled).
-.br
+.
+.TP
+\fBPLUGIN_CONFIG\fR
+Specifies the argument to the contest plugin's \fBinit\fR function.
+See the
+.B PYTHON PLUGIN
+section below.
 .
 .SS Exchange
 The following parameters configure @PACKAGE_NAME@'s handling of the exchange.
@@ -3339,6 +3345,165 @@ It can be disabled but not set.)
 .TQ
 .B CABRILLO\-SOAPBOX(3)
 .
+.SH PYTHON PLUGIN
+.
+@PACKAGE_NAME@ uses Python plugins to customize or extend functions beyond
+the built-in features. Two notable use cases are adding a specific
+scoring logic and determining multipliers.
+.P
+.
+The Python plugin file is loaded the same way as the RULES
+file but the file must have \fIpy\fR extension.
+.
+.
+.SS tlf Python module
+.
+@PACKAGE_NAME@ core functionality and constants can be accessed via
+the pre-imported \fItlf\fR module.
+.
+.TP
+.B Constants
+.TQ
+  \fBCWMODE\fR: \fIint\fR
+.TQ
+  \fBSSBMODE\fR: \fIint\fR
+.TQ
+  \fBDIGIMODE\fR: \fIint\fR
+.TQ
+  \fBMY_CALL\fR: \fIstr\fR
+.TQ
+  \fBMY_LAT\fR: \fIfloat\fR
+.TQ
+  \fBMY_LONG\fR: \fIfloat\fR
+.
+.P
+.TP
+.B Functions
+.TQ
+  \fBdef get_qrb_for_locator(locator: str) -> Qrb:\fR
+Returns the distance (in km) and bearing (in degrees)
+to the specified locator from the current location.
+.TQ
+  \fBdef get_dxcc(call: str) -> Dxcc:\fR
+Returns the DXCC information for the given call using the \fIcty.dat\fR file.
+.
+.SS Data structures
+.
+.TP 20
+.B Qso
+.TQ
+  \fBcall\fR: \fIstr\fR
+callsign
+.TQ
+  \fBexchange\fR: \fIstr\fR
+received exchange
+.TQ
+  \fBband\fR: \fIint\fR
+band in meters
+.TQ
+  \fBmode\fR: \fIint\fR
+one of \fItlf.CWMODE\fR, \fItlf.SSBMODE\fR or \fItlf.DIGIMODE\fR
+.TQ
+  \fButc\fR: \fIint\fR
+time in integer seconds since epoch
+.TP 20
+.B Qrb
+.TQ
+  \fBdistance\fR: \fIfloat\fR
+distance in km
+.TQ
+  \fBbearing\fR: \fIfloat\fR
+bearing in degrees
+.TP 20
+.B Dxcc
+.TQ
+  \fBcountry_name\fR: \fIstr\fR
+.TQ
+  \fBmain_prefix\fR: \fIstr\fR
+.TQ
+  \fBmain_cq_zone\fR: \fIint\fR
+.TQ
+  \fBmain_itu_zone\fR: \fIint\fR
+.TQ
+  \fBmain_latitude\fR: \fIfloat\fR
+.TQ
+  \fBmain_longitude\fR: \fIfloat\fR
+.TQ
+  \fBmain_continent\fR: \fIstr\fR
+.TQ
+  \fBmain_timezone\fR: \fIfloat\fR
+.TQ
+  \fBstarred\fR: \fIbool\fR
+.TQ
+  \fBprefix\fR: \fIstr\fR
+.TQ
+  \fBcq_zone\fR: \fIint\fR
+.TQ
+  \fBitu_zone\fR: \fIint\fR
+.TQ
+  \fBlatitude\fR: \fIfloat\fR
+.TQ
+  \fBlongitude\fR: \fIfloat\fR
+.TQ
+  \fBcontinent\fR: \fIstr\fR
+.TQ
+  \fBtimezone\fR: \fIfloat\fR
+.TQ
+  \fBexact\fR: \fIbool\fR
+.
+.SS Functions
+.
+All plugin functions are optional.
+.
+.TP
+\fBdef init(cfg: str) -> str:\fR
+.
+Called once on @PACKAGE_NAME@ start up. It shall initialize the internal
+state of the plugin.
+.
+.IP
+The parameter \fIcfg\fR contains the value provided to
+PLUGIN_CONFIG. It can be used to control the internal
+logic of the plugin. If no PLUGIN_CONFIG is specified then
+an empty string is passed.
+.
+.IP
+The return value is a string specifying the minimal required
+@PACKAGE_NAME@ version (e.g. '1.5'). In case of no version dependency
+\fINone\fR shall be returned.
+.
+.TP
+\fBdef setup() -> None:\fR
+.
+Called whenever the QSO list is initialized (e.g. on inital loading of
+the log file or before rescoring it). It shall reset any internal
+structures related to QSOs.
+.
+.TP
+\fBdef score(qso: Qso) -> int:\fR
+.
+Called before actually logging a QSO.
+It shall return a non-negative score value.
+.
+.TP
+\fBdef check_exchange(qso: Qso) -> Dict[str, str]:\fR
+.
+Called when exchange is received or updated.
+From the returned dictionary these (optional) entries are evaluated:
+.TQ
+          \fBmult1_value\fR: \fIstr\fR
+.
+.TQ
+          \fBnormalized_exchange\fR: \fIstr\fR
+.
+.IP
+\fBmult1_value\fR is used as a multiplier without further conversion.
+The handling of this multiplier is controlled by the GENERIC_MULT
+parameter.
+.IP
+\fBnormalized_exchange\fR replaces the received exchange
+in the finally logged QSO.
+.
 .SH FILES
 .
 .I @prefix@/share/@PACKAGE@/logcfg.dat
@@ -3418,7 +3583,7 @@ the default file name).
 .
 It will take precedence over the system installed
 .I callmaster
-file which islikely well out of date.
+file which is likely well out of date.
 .
 .P
 .I Section files

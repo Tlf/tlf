@@ -744,7 +744,7 @@ void bandmap_show() {
      *   		small preceding letter for reporting station
      *
      * show own frequency as dashline in green color
-     * - highligth actual spot if near own frequency
+     * - highlight actual spot if near own frequency
      *
      * Allow selection of one of the spots (switches to S&P)
      * - Ctrl-G as known

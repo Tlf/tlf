@@ -399,7 +399,7 @@ which can be work through serial port.
 
 Important: if you set up your Fldigi instance, don't set up your RIG! TLF
 needs to handle the RIG, because it needs to tune the VFO, to use the bandmap.
-After the version 1.3, TLF can controls Fldigi, then it can be show the QRG
+After the version 1.3, TLF can control Fldigi, then it can show the QRG
 (frequency of RIG - see later), and mode of RIG (eg: LSB, USB, FSK). 
 
 Starting with TLF-1.3 there are two ways to communicate with Fldigi - the old
@@ -444,7 +444,7 @@ suppose that anybody knows that, if works in RTTY. I had a "big" problem with
 TLF: when I've worked in AFSK, and I moved the Fldigi carrier, I couldn't know
 exactly, what is the correct QRG of my RIG. And it was the problem, because I
 couldn't use the cluster info, moreover the grabbed spots! So, when I grabbed
-a station, TLF stored it to the currently QRG, but it didn't stored the Fldigi
+a station, TLF stored it to the currently QRG, but it didn't store the Fldigi
 carrier shift! So, now the TLF follows this philosophy below. 
 
 The "native" mode is FSK. If you turn on your RIG, and switch to FSK mode,
@@ -459,7 +459,7 @@ the **Rv** button.
 
 From now on if you find a station on the bandmap, and press the CTRL-G (grab
 the spot), TLF will tune to VFO that frequency, and you can hear the station.
-That's it. Almost :). In FSK mode, there isn't too easy to tune the VFO to the
+That's it. Almost :). In FSK mode, it isn't too easy to tune the VFO to the
 correct QRG. But if TLF can detect, that your RIG is in FSK mode (through CAT
 system), then if you move the Fldigi carrier to an another station (which
 exists eg. on 1000Hz), then TLF calculates the new VFO frequency, tune the RIG
@@ -467,25 +467,25 @@ to there, and tune Fldigi's carrier to back, 2210Hz.
 
 If you're working in AFSK, then the used modulation is LSB (or USB). In this
 case, you can move the Fldigi's carrier anywhere you want (from 85Hz to
-2915Hz), TLF only catch's the Fldigi carrrier's value, and calculates the
+2915Hz), TLF only catch's the Fldigi carrier's value, and calculates the
 accurate QRG, which indicated on left-middle part in TLF window. If you want
 to grab a spot (with CTRL-G), then leave the Fldigi carrier's as it exists,
-and grab the next spot. TLF will calculates the requested QRG from the
+and grab the next spot. TLF will calculate the requested QRG from the
 different of the spot and Fldigi carrier's frequency, and tune the RIG. That's
 it. 
 
 Error handling: if you forgot to start the Fldigi, or you close that till TLF
 runs and wants to communicate with it, TLF tries to connect. After ten (10)
-continuous unsuccessful attempt TLF will show you the error message (at bottom
+continuous unsuccessful attempts TLF will show you the error message (at bottom
 left corner): "Fldigi: lost connection", and turns it off. If you want to turn
 on again, just type ":fldigi" command in CALLSIGN field. If Fldigi comes back
-after less, than ten attempt, the error counter cleared. 
+after less than ten attempts, the error counter is cleared. 
 
 More new feature in Fldigi interface: - when TLF sends a message through
 Fldigi, it switches Fldigi to TX mode. - similar to CW mode, if you press ESC
 while Fldigi sends the message,   TLF will stop it. - if the connection
 between TLF and Fldigi breaks (eg. you close   Fldigi, or you start TLF before
-Fldigi), then TLF realizes it,   and handles as correctly. You will lost the
+Fldigi), then TLF realizes it, and handles as correctly. You will lose the
 Fldigi functions (no   TX/RX, QRG align), but TLF runs away. If you start
 Fldigi again,   after a few seconds, TLF will work with it again 
 
@@ -506,7 +506,7 @@ This is a short intro for TLF QTC handling. Ervin Hegedus HA2OS, 2014.
 
  ### Introduction
 
-QTC handling was maded for WAEDC contest for TLF. It doesn't need any external
+QTC handling was made for WAEDC contest for TLF. It doesn't need any external
 tool, TLF supports it out of box. To enable that, you only needs to put a
 "QTC=" option to logcfg.dat. This parameter needs a value, which could be one
 of these: "RECV", "SEND", or "BOTH". These values means you only want to
@@ -518,57 +518,60 @@ will used for RTTY mode.
 
 When you enabled the QTC handling in logcfg.dat, you can open the  QTC window
 from either field: callsign or exchange, it doesn't matter. To open it, just
-press CTRL+Q. If you want to close is, just simple press ESC. The window is
-divided to 2 side: the left side contains the QTCs data, the right side
+press CTRL+Q. If you want to close it, just simply press ESC. The window is
+divided to 2 sides: the left side contains the QTCs data, the right side
 contains the help information. 
 
-The data side contains the following QTCs fields: * QTC callsign - 14
-characters, allowed: alphanums, digits, / * QTC serial - 4 characters,
-allowed: digits, * number of QSO in current QTC block - 2 characters, allowed:
-digits * 10 QSO lines in RECV mode:   * time - 4 characters, allowed: digits,
-?   * callsign - 14 characters, allowed: alphanums, digits, /, ?   * serial -
-4 characters, allowed: digits, ? * 10 QSO lines in SEND mode:   * every line
-generated by the QSOs, all of them are formatted     for three fields: time,
-callsign and serial 
+The data side contains the following QTCs fields:
+* QTC callsign - 14 characters, allowed: alphanums, digits, /
+* QTC serial - 4 characters, allowed: digits, 
+* number of QSO in current QTC block - 2 characters, allowed: digits
+* 10 QSO lines in RECV mode:
+   * time - 4 characters, allowed: digits, ?
+   * callsign - 14 characters, allowed: alphanums, digits, /, ?
+   * serial - 4 characters, allowed: digits, ?
+* 10 QSO lines in SEND mode:
+   * every line generated by the QSOs, all of them are formatted
+     for three fields: time, callsign and serial 
 
 Note, that if you set up the QTC_RECV_LAZY option in RECV mode  (EU station in
 CW/SSB contest), then TLF will skip to check  the restrictions above. 
 
-This side contains many "meta" information: * at right of the QTC callsign
-field, TLF shows the QTC info of   current station: how many QTC has it; if
-the callsign field   in main window is empty, the last callsign will be picked
-up. When the station has not send or received any QTC yet, there    will be:
-"Received 0 QTC", or "Sent 0 QTC". If you had   exchanged any QTC with the
-station, the message will read   "Received 3 QTC" or "Sent 5 QTC". * if you
-type the number of QSO in the QTC block in RECV mode,   TLF will show its
+This side contains many "meta" information: 
+* at right of the QTC callsign field, TLF shows the QTC info of current station:
+how many QTC has it; if the callsign field in main window is empty, the last
+callsign will be picked up. When the station has not send or received any QTC yet,
+there will be: "Received 0 QTC", or "Sent 0 QTC". If you had   exchanged any QTC
+with the station, the message will read "Received 3 QTC" or "Sent 5 QTC". 
+* if you type the number of QSO in the QTC block in RECV mode,   TLF will show its
 number at the beginning of every line; if the   station indicates that it will
-send to you 6 QSO, and you type   it in that field, TLF will put a digit to
-the begin of first 6   lines * if you type the number of QSO in the QTC block
-in SEND mode, TLF will find the next number QSO, which doesn't contain the
-current callsign (see contest rules 7.2). Note, that if you   don't have
-eonugh QSO, you can't send the maximum (10), eg.   you have only 9 QSO. If you
-type greater number than available   QTC number, the field value will be
-aligned to maximum number!
+send to you 6 QSO, and you type it in that field, TLF will put a digit to
+the begin of first 6 lines 
+* if you type the number of QSO in the QTC block in SEND mode, TLF will find the
+next number QSO, which doesn't contain the current callsign (see contest rules 7.2).
+Note, that if you don't have eonugh QSOs, you can't send the maximum (10), eg. you
+have only 9 QSO. If you type greater number than available QTC number, the field
+value will be aligned to maximum number!
 * in RECV mode, every QSO line has a status, which could be:   "invalid",
 "valid", "confirmed". This status is indicated by a sign at the end of the
 line. When a line is invalid, you can   see a "?", if the line is valid, then
 there isn't any character,   and finally, if the QSO line had been confirmed,
 you can see   a "*" sign * in SEND mode, if you've sent a QTC line (with
 ENTER), at the end of the line you will see a "*" character, which means,
-you've sent that QTC 
+you've sent that QTC.
 
 ### Navigation between the fields 
 
 You can move to any field as you want and when you want. There isn't a
-mandatory order, but the navigation keys doesn't works in all cases. Normally,
+mandatory order, but the navigation keys don't work in all cases. Normally,
 with TAB you can move to the next field, and Shift+TAB goes back.  There is an
-exception: TAB will notleave the current QSO line,  until you confirm the
+exception: TAB will not leave the current QSO line,  until you confirm the
 line. Instead it takes you to the time field,  if you are in the exchange
 field, and Shift+TAB does it in reverse order. With UP and DOWN cursor keys
 you can go to up or down. 
 
 In RECV mode with SPACE, you can navigate between the fields in one line, for
-faster move, so that mean the SPACE and TAB are equals in this mode, in QTC
+faster move, so that means the SPACE and TAB are equals in this mode, in QTC
 line. 
 
 ### Navigation in a field 
@@ -610,13 +613,13 @@ required), and then press ENTER, TLF will send the  F2 message, which is "QRV"
 normally, so you don't need to send  it manually. 
 
 If you start to receive the QTCs, you need to fill 3 fields: time (HHMM, as
-hour and minutes), callsign and serial. If you only enters part of a line,
+hour and minutes), callsign and serial. If you only enter parts of a line,
 that line will be marked as  "incomplete", which you can see by the "?" at the
 end of the line. 
 
 If you fill the time field (4 digits), the cursor will go to the callsign
 field. Fill that field, and press TAB to move the next one. If you put there
-at least 1 digit, TLF recognize that line s complete and the "?" will
+at least 1 digit, TLF recognizes that line is complete and the "?" will
 disappear at the end of  the line. 
 
 If you press SPACE in any field, the cursor will go to the next field (or
@@ -653,22 +656,23 @@ lines will be sent to them.
 On other nodes, TLF will also write the QTCs to its own logfiles. 
 
 If you press ESC before you receive the QTC block, the data isn't lost. TLF
-flushes the fields only in these cases: * you received all QSOs, and saved to
-disc * pressed ESC, and changed regular callsign field 
+flushes the fields only in these cases:
+* you received all QSOs, and saved to disc
+* pressed ESC, and changed regular callsign field 
 
 Note, that TLF send the "QRV" message only in case the fields are empty. Keep
 in mind, if you've pressed ESC, and CTRL+Q again, all data remains, and "QRV"
-message will NOT be send. 
+message will NOT be sent. 
 
 ### Sending QTC 
 
 If the other station asks you for QTCs, you can press CTRL+Q,  it doesn't
 matter in which field are you: callsign or exchange.  When the QTC window
-openes, you can press F2 and TLF will send  the message: "QTC sr/nr" with "sr"
+opens, you can press F2 and TLF will send  the message: "QTC sr/nr" with "sr"
 and "nr" replaced with the i serial and number of lines in QTC, example: "QTC
 3/8". 
 
-If the callsign fields isn't empty, the content of that field will be copied.
+If the callsign fields isn't empty, the contents of that field will be copied.
 Otherwise, the callsign of the last QSO will be  used. If the station received
 QTCs previously, you can see the  number of QTCs on the current band, eg.
 "Sent 3 QTC". You can send maximum 10 QTC to every station. If you sent 3 QTC
@@ -680,7 +684,7 @@ of the available QSO.
 The QTC serial field will be filled automatically, you just need to set up,
 how many QTCs you want to send. Note, that TLF looks  for the current
 callsign, and that will be excluded from the QTC list! If you modify the
-callsign field, TLF will hide some lines, which matches the actually callsign,
+callsign field, TLF will hide some lines, which match the actual callsign,
 but don't afraid: if you finish the modification of field, you can see the
 available list. 
 
@@ -695,7 +699,7 @@ Now just press DOWN and ENTER, if the station gives "R" sign. If it asks to
 send the last QTC again, just simple press UP and ENTER again. With the DEL
 key you can delete the "SENT" flag from the end of the line. 
 
-If you sent all lines, and ithe station confirms them, you can press the
+If you sent all lines, and if the station confirms them, you can press the
 CTRL+S (like in most software), and TLF will save the block. After 2 seconds
 the window will be closed, and you can go away. 
 
@@ -706,8 +710,8 @@ in logcfg.dat, the QTC lines will be sent to them.
 On the other nodes, TLF will also write the QTCs to its own logfiles. 
 
 If you press ESC before you receive the QTC block, the data isn't lost. TLF
-flushes the fields only in the following case: * you sent all QTCs, and saved
-them to disk 
+flushes the fields only in the following case:
+* you sent all QTCs, and saved them to disk 
 
 ### Showing QTC capable stations 
 
@@ -812,8 +816,8 @@ If you've started the capture process, the new window will open, which is a
 "terminal" window - there you can see the gMFSK modem lines. At the top of the
 double-window, you can see a small HELP window, which contains all shortkeys
 these windows. If you press ESC (Escape), then terminal window will be hidden,
-but - this is very important! - the capture process doesn't finished! Now, if
-you press CTRL+S again, the terminal window will opens again, and you can see
+but - this is very important! - the capture process doesn't finish! Now, if
+you press CTRL+S again, the terminal window will open again, and you can see
 the characters in the meantime. 
 
 You can recognize two types of lines for QTC block: the serial/number line, or
@@ -841,9 +845,9 @@ is less than 14, then TLF also recognizes the QTC line.
 
 Only the complete received lines can be captured from right side to left side,
 and only once. You can't move that line, which increments horizontally -
-that's the current line. If the line has an NL (new-line) character, the you
+that's the current line. If the line has an NL (new-line) character, then you
 can capture that. If you've pressed the ENTER on a line, then it will be
-marked with an "*" (asterisk) sign. That mean, you couldn't capture that
+marked with an "*" (asterisk) sign. That means, you couldn't capture that
 anymore.  
 
 **STILL IMPORTANT!** 
@@ -851,14 +855,14 @@ anymore.
 If you fill the serial and number fields in main QTC window, the first pattern
 WILL NOT be recognized (SERIAL/NR). If you didn't fill the serial AND number
 fields (with or without the capture process), you CAN'T capture the QTC lines!
-That mean, you press ENTER on a QTC line at right side vainly, the line will
+That means, you press ENTER on a QTC line at right side vainly, the line will
 not copied to right side! 
 
 So, if you can copy one or more lines from right side to left with capture
 process, the result could be two types: TLF thinks the line is a good,
 fail-safe QTC line, or isn't it: the line contains wrong character, eg. the
 time filed contains non-numeric character. In this case, the end of the line
-you can see a "?" (question mark) character. If the line doesn't contains
+you can see a "?" (question mark) character. If the line doesn't contain
 wrong character, you can see a "+" (plus) character. 
 
 **IMPORTANT!**
@@ -869,19 +873,19 @@ marked as confirmed". If line has "?" at the end, then TLF will send an "AGN N
 AGN N" message, where the N is the number of the line. Then you can change the
 wrong character, till the status will goes to "+". 
 
-If all lines has "*" sign, and you press the ENTER at last line, TLF will send
+If all lines have "*" sign, and you press the ENTER at last line, TLF will send
 the message "QSL ALL", or what you've configures for QR_F10 macro. 
 
-You can send the last message by manually, if you press F10 - then TLF also
-send that message, and it will save the received QTC block too. 
+You can send the last message manually, if you press F10 - then TLF also
+sends that message, and it will save the received QTC block too. 
 
 If the all QTC lines are right, and TLF sent "QTC ALL", then the QTC block
 will be saved automatically. 
 
 ### Sending QTC
 
-As you can read the QTC=BOTH descriotion above, TLF can send AND receive QTCs
-in same contest. To avoid the shortkey collosions, in this case the only one
+As you can read the QTC=BOTH description above, TLF can send AND receive QTCs
+in same contest. To avoid the shortkey collisions, in this case the only one
 combination can be used: CTRL+S. 
 
 If you fill the callsign field (or that's filled when you open the QTC send

@@ -45,6 +45,7 @@
 #include "log_utils.h"
 #include "makelogline.h"
 #include "readqtccalls.h"
+#include "plugin.h"
 #include "score.h"
 #include "searchcallarray.h"
 #include "startmsg.h"
@@ -100,6 +101,10 @@ void init_scoring(void) {
 	for (int n = 0; n < PFXNUMBERS; n++) {
 	    pfxnummulti[i].qsos[n] = 0;
 	}
+    }
+
+    if (plugin_has_setup()) {
+        plugin_setup();
     }
 }
 

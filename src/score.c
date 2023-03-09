@@ -38,6 +38,7 @@
 #include "globalvars.h"
 #include "getctydata.h"
 #include "qrb.h"
+#include "plugin.h"
 #include "setcontest.h"
 #include "tlf.h"
 
@@ -355,6 +356,10 @@ int score(struct qso_t *qso) {
 	points = 0;
 	dupe = NODUPE;
 	return points;
+    }
+
+    if (plugin_has_score()) {
+	return plugin_score(qso);
     }
 
     if (contest->points.type == FUNCTION) {
