@@ -20,6 +20,9 @@
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
 #endif
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
