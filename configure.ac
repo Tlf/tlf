@@ -160,6 +160,15 @@ AS_IF([test "x$wantfldigixmlrpc" = xtrue], [
 	dnl else Fldigi XML RPC not wanted
 	AC_MSG_RESULT([no])])
 
+dnl Check if Python3 and pexpect are available
+AM_PATH_PYTHON([3.8])
+
+AC_MSG_CHECKING([for pexpect])
+AS_IF([$PYTHON -c "import pexpect" 2>/dev/null],
+        [AC_MSG_RESULT([yes])],
+        [AC_MSG_ERROR([Python module pexpect is not available])]
+)
+
 dnl Check if we want to use 'plugin' feature with Python3
 AC_MSG_CHECKING([whether to build Python plugin support])
 AC_ARG_ENABLE([python-plugin],
