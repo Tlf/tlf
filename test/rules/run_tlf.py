@@ -2,6 +2,7 @@
 
 import sys
 import os
+import shutil
 import pexpect
 
 COMMAND = "../../../src/tlf -nrv"
@@ -31,6 +32,7 @@ if fout:
     fout.close()
 
 os.remove(PARAS)
+shutil.rmtree("rules/__pycache__", ignore_errors=True)
 
 sys.exit(rc)
 
