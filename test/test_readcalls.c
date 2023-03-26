@@ -1,6 +1,7 @@
 #include "test.h"
 
 #include <stdbool.h>
+#include <glob.h>
 
 #include "../src/tlf.h"
 #include "../src/dxcc.h"
@@ -116,6 +117,22 @@ void write_log(char *logfile) {
     append_log_line(logfile, QSO1);
 }
 
+// returns the number of files removed
+int remove_backup_logs() {
+    int n = 0;
+    glob_t globbuf;
+    int rc = glob("2*_" LOGFILE, GLOB_ERR, NULL, &globbuf);
+    if (rc == 0) {
+	char **found = globbuf.gl_pathv;
+	while (found && *found) {
+	    unlink(*found);
+	    ++found;
+	    ++n;
+	}
+    }
+    globfree(&globbuf);
+    return n;
+}
 
 int setup_default(void **state) {
 
@@ -144,11 +161,15 @@ int setup_default(void **state) {
 
     showmsg_spy = STRING_NOT_SET;
 
+    remove_backup_logs();
+
     return 0;
 }
 
 int teardown_default(void **state) {
-    unlink(logfile);
+    assert_int_equal(remove_backup_logs(), 0);
+    unlink(LOGFILE);
+
     free_qso_array();
     return 0;
 }
@@ -234,17 +255,26 @@ void test_add_to_worked_dupe(void **state) {
 			"Log changed due to rescoring. Do you want to save it? Y/(N)");
 }
 
+void test_add_to_worked_dupe_non_interactive(void **state) {
+    write_log(LOGFILE);
+    append_log_line(LOGFILE, QSO1);     // add same line again
+    readcalls(LOGFILE, false);          // non-interactive mode
+    assert_int_equal(nr_worked, 1);
+    assert_string_equal(showmsg_spy, STRING_NOT_SET);
+    assert_int_equal(remove_backup_logs(), 1);
+}
+
 void test_add_to_worked_continentlistonly(void **state) {
     continentlist_only = true;
     write_log(LOGFILE);
-    readcalls(LOGFILE, false);      // non-interactive
+    readcalls(LOGFILE, true);
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
     assert_int_equal(get_nr_of_points(), 3);    // normal CQWW scoring
     assert_int_equal(get_nr_of_mults(), 0);     // but no mult due to continent list
     assert_string_equal(showmsg_spy,
-			STRING_NOT_SET);   // non-interactive, no message
+			"Log changed due to rescoring. Do you want to save it? Y/(N)");
 }
 
 void test_add_to_worked_wpx(void **state) {
