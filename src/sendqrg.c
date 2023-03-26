@@ -63,7 +63,7 @@ int sendqrg(void) {
 
     const freq_t trxqrg = atof(current_qso.call) * 1000.0;
 
-    int bandinx = freq2band(trxqrg);
+    int bandinx = freq2bandindex(trxqrg);
 
     if (bandinx == BANDINDEX_OOB) {
 	return 0;   // not a frequency or out of band

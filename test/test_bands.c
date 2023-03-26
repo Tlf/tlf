@@ -108,25 +108,25 @@ void test_nextBandWrapDownwards(void **state) {
 
 /* test conversion from bandmap.c */
 void test_conv_f2b_out_of_band(void **state) {
-    assert_int_equal(freq2band(5000000), BANDINDEX_OOB);
+    assert_int_equal(freq2bandindex(5000000), BANDINDEX_OOB);
 }
 
 void test_conv_f2b_borders(void **state) {
-    assert_int_equal(freq2band(1799999), BANDINDEX_OOB);
-    assert_int_equal(freq2band(2000001), BANDINDEX_OOB);
-    assert_int_equal(freq2band(1800000), 0);
-    assert_int_equal(freq2band(2000000), 0);
+    assert_int_equal(freq2bandindex(1799999), BANDINDEX_OOB);
+    assert_int_equal(freq2bandindex(2000001), BANDINDEX_OOB);
+    assert_int_equal(freq2bandindex(1800000), BANDINDEX_160);
+    assert_int_equal(freq2bandindex(2000000), BANDINDEX_160);
 }
 
 void test_conv_f2b(void **state) {
-    assert_int_equal(freq2band(1830000), 0);
-    assert_int_equal(freq2band(3510000), 1);
-    assert_int_equal(freq2band(5353500), 2);
-    assert_int_equal(freq2band(7020000), 3);
-    assert_int_equal(freq2band(10110000), 4);
-    assert_int_equal(freq2band(14100000), 5);
-    assert_int_equal(freq2band(18070000), 6);
-    assert_int_equal(freq2band(21200000), 7);
-    assert_int_equal(freq2band(24890000), 8);
-    assert_int_equal(freq2band(28300000), 9);
+    assert_int_equal(freq2bandindex(1830000), 0);
+    assert_int_equal(freq2bandindex(3510000), 1);
+    assert_int_equal(freq2bandindex(5353500), 2);
+    assert_int_equal(freq2bandindex(7020000), 3);
+    assert_int_equal(freq2bandindex(10110000), 4);
+    assert_int_equal(freq2bandindex(14100000), 5);
+    assert_int_equal(freq2bandindex(18070000), 6);
+    assert_int_equal(freq2bandindex(21200000), 7);
+    assert_int_equal(freq2bandindex(24890000), 8);
+    assert_int_equal(freq2bandindex(28300000), 9);
 }

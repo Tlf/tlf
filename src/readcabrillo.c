@@ -256,7 +256,7 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 	switch (item->tag) {
 	    case FREQ:
 		qso->freq = atof(tempstr) * 1000.0;
-		qso->bandindex = freq2band(qso->freq);   //FIXME check OOB, see log_utils
+		qso->bandindex = freq2bandindex(qso->freq);   //FIXME check OOB, see log_utils
 		strcpy(qtc_line.band, band[qso->bandindex]);
 		qtc_line.freq = qso->freq;
 		break;

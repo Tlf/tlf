@@ -155,7 +155,7 @@ struct qso_t *parse_qso(char *buffer) {
 
     /* frequency (kHz) */
     ptr->freq = atof(buffer + 80) * 1000.0;
-    if (freq2band(ptr->freq) == BANDINDEX_OOB) {
+    if (freq2bandindex(ptr->freq) == BANDINDEX_OOB) {
 	ptr->freq = 0.;
     }
 

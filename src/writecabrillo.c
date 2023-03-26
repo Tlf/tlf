@@ -206,7 +206,7 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 
     /* frequency */
     ptr->freq = atof(buffer + 80 + shift) * 1000.0;
-    if (freq2band(ptr->freq) == BANDINDEX_OOB) {
+    if (freq2bandindex(ptr->freq) == BANDINDEX_OOB) {
 	ptr->freq = 0.;
     }
 
