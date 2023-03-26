@@ -2,9 +2,20 @@
 
 import sys
 import os
+import shutil
+import glob
 import pexpect
 
-COMMAND = "../../../src/tlf -nrv"
+TLF = "../../../src/tlf"
+
+# first check if python plugin would be used and skip test if not compiled in
+if glob.glob('rules/*.py'):
+    rc = os.system(f"{TLF} -? | grep Features: | grep -q python-plugin")
+    if rc != 0:
+        sys.exit(3)     # skip this one
+
+
+COMMAND = f"{TLF} -nrv"
 fout = None
 #fout = open("run.log", "wb")   # uncomment this line to get interaction log
 PARAS = '.paras'
@@ -31,6 +42,7 @@ if fout:
     fout.close()
 
 os.remove(PARAS)
+shutil.rmtree("rules/__pycache__", ignore_errors=True)
 
 sys.exit(rc)
 

@@ -1,0 +1,1 @@
+../../../../rules/mwc/mwc.py

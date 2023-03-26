@@ -1,5 +1,7 @@
 # OK1WC Memorial (MWC)
 # https://memorial-ok1wc.cz/index.php?page=rules2l
+#
+# Provided by: HA5CQZ
 
 CONTEST=mwc
 LOGFILE=mwc.log
