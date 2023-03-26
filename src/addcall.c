@@ -61,6 +61,7 @@ struct qso_t *collect_qso_data(void) {
     qso->call = g_strdup(current_qso.call);
     qso->mode = trxmode;
     qso->bandindex = bandinx;
+    qso->band = bandindex2nr(bandinx);
     qso->freq = freq;
     qso->timestamp = get_time();
     qso->comment = g_strdup(current_qso.comment);

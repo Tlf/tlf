@@ -32,6 +32,7 @@
 
 #include "addspot.h"
 #include "audio.h"
+#include "bands.h"
 #include "cw_utils.h"
 #include "change_rst.h"
 #include "cleanup.h"
@@ -124,6 +125,8 @@ int getexchange(void) {
     if (CONTEST_IS(STEWPERRY)) {
 	recall_exchange();
     }
+
+    current_qso.band = bandindex2nr(bandinx); //FIXME drop global bandinx
 
     /* parse input and modify exchange field accordingly */
 
