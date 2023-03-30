@@ -2063,7 +2063,7 @@ Use
 (period) to change bandmap filtering.
 .
 .TP
-\fBBANDMAP\fR=\fIxyz,number\fR
+\fBBANDMAP\fR=\fIxyz[,number]\fR
 Show cluster bandmap on startup and set start values for filtering.
 .
 .IP
@@ -2079,7 +2079,7 @@ string parsed for:
 	\(lqS\(rq - skip dupes during grab_next
 .RB ( Ctrl-G )
 .br
-	\(lqO\(rq - show only needed multipliers (CQWW only)
+	\(lqO\(rq - show only new multipliers
 .br
 .RI < number >
 lifetime for new spots in seconds (number >=
