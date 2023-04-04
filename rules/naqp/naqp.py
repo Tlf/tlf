@@ -19,7 +19,7 @@ def score(qso):
     return 1
 
 def check_exchange(qso):
-    parts = qso.exchange.split()
+    parts = qso.exchange.strip().split()
 
     mult = ''
     if len(parts) == 2:
