@@ -1,0 +1,1 @@
+../../../../rules/naqp/naqp.py
