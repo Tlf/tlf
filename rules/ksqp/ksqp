@@ -47,7 +47,7 @@ CQ_TU_MSG=TU %
 S&P_TU_MSG=TU 5NN MSH
 #
 #ALT_0=
-ALT_1=DE N0N, DE N0NB OP
+ALT_1=DE N0CALL, DE N0CALL OP
 #ALT_2=
 #ALT_3=
 #ALT_4=
@@ -65,20 +65,20 @@ ALT_1=DE N0N, DE N0NB OP
 #    (F1 to F12)                #
 #################################
 #
-VKM1=/home/nate/logs/wav/N0N/kqp/F1.wav
-VKM2=/home/nate/logs/wav/N0N/kqp/F2.wav
-VKM3=/home/nate/logs/wav/N0N/kqp/F3.wav
-VKM4=/home/nate/logs/wav/N0N/kqp/F4.wav
+VKM1=/home/nate/logs/wav/N0CALL/kqp/F1.wav
+VKM2=/home/nate/logs/wav/N0CALL/kqp/F2.wav
+VKM3=/home/nate/logs/wav/N0CALL/kqp/F3.wav
+VKM4=/home/nate/logs/wav/N0CALL/kqp/F4.wav
 #VKM5=
-VKM6=/home/nate/logs/wav/N0N/kqp/F6.wav
+VKM6=/home/nate/logs/wav/N0CALL/kqp/F6.wav
 #VKM7=
-VKM8=/home/nate/logs/wav/N0N/kqp/F8.wav
+VKM8=/home/nate/logs/wav/N0CALL/kqp/F8.wav
 #VKM9=
-VKM10=/home/nate/logs/wav/N0N/kqp/F10.wav
-VKM11=/home/nate/logs/wav/N0N/kqp/F11.wav
-VKM12=/home/nate/logs/wav/N0N/kqp/F12.wav
-VKSPM=/home/nate/logs/wav/N0N/kqp/SPM.wav
-VKCQM=/home/nate/logs/wav/N0N/kqp/CQM.wav
+VKM10=/home/nate/logs/wav/N0CALL/kqp/F10.wav
+VKM11=/home/nate/logs/wav/N0CALL/kqp/F11.wav
+VKM12=/home/nate/logs/wav/N0CALL/kqp/F12.wav
+VKSPM=/home/nate/logs/wav/N0CALL/kqp/SPM.wav
+VKCQM=/home/nate/logs/wav/N0CALL/kqp/CQM.wav
 #
 #
 #################################
