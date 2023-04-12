@@ -1,0 +1,96 @@
+########################
+# Kansas QSO Party
+# Provided by: Nate Bargmann N0NB
+# Published by: Victor Denisov N6DVS
+# Last Verified: 2023-03-31
+#
+# If you are not from kansas
+# Comment out this line PLUGIN_CONFIG=kansas
+# and uncomment this line PLUGIN_CONFIG=nonkansas
+########################
+#
+CONTEST=ksqp
+LOGFILE=ksqp.log
+CONTEST_MODE
+CABRILLO=UNIVERSAL
+#CALLMASTER=MASTER.SCP
+#
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CQ_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = call                      #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#                                #
+##################################
+#
+F1=CQ KQP %
+F2=@ DE %
+F3=@ 5NN MSH
+F4= TU
+F5=@
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9=?
+F10=QRZ?
+F11=PSE K
+F12=CQ KQP %
+#
+CQ_TU_MSG=TU %
+S&P_TU_MSG=TU 5NN MSH
+#
+#ALT_0=
+ALT_1=DE N0CALL, DE N0CALL OP
+#ALT_2=
+#ALT_3=
+#ALT_4=
+#ALT_5=
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+#SEND_DE
+#
+#################################
+#                               #
+#  Voice Keyer Files            #
+#    (F1 to F12)                #
+#################################
+#
+VKM1=/home/nate/logs/wav/N0CALL/kqp/F1.wav
+VKM2=/home/nate/logs/wav/N0CALL/kqp/F2.wav
+VKM3=/home/nate/logs/wav/N0CALL/kqp/F3.wav
+VKM4=/home/nate/logs/wav/N0CALL/kqp/F4.wav
+#VKM5=
+VKM6=/home/nate/logs/wav/N0CALL/kqp/F6.wav
+#VKM7=
+VKM8=/home/nate/logs/wav/N0CALL/kqp/F8.wav
+#VKM9=
+VKM10=/home/nate/logs/wav/N0CALL/kqp/F10.wav
+VKM11=/home/nate/logs/wav/N0CALL/kqp/F11.wav
+VKM12=/home/nate/logs/wav/N0CALL/kqp/F12.wav
+VKSPM=/home/nate/logs/wav/N0CALL/kqp/SPM.wav
+VKCQM=/home/nate/logs/wav/N0CALL/kqp/CQM.wav
+#
+#
+#################################
+#      Scoring rules            #
+#################################
+#
+MIXED
+#RECALL_MULTS
+SSBPOINTS=2
+CWPOINTS=3
+#SECTION_MULT_ONCE
+PLUGIN_CONFIG=kansas
+#PLUGIN_CONFIG=nonkansas
+GENERIC_MULT=ALL
+####### END #####################
