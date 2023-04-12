@@ -400,12 +400,12 @@ void test_scoreByCorC_InList(void **state) {
      * my own country , otherwise 0 ??? */
     countrylist_points = 3;
     check_call_points("OE2BL", 3);
-    check_call_points("DL3XYZ", 0);
+    check_call_points("DL3XYZ", 3);
     check_call_points("K3XX", 3);
 
     my_cont_points = 2;
     check_call_points("OE2BL", 3);
-    check_call_points("DL3XYZ", 2);
+    check_call_points("DL3XYZ", 3);
     check_call_points("K3XX", 3);
 
     my_country_points = 1;

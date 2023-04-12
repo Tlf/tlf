@@ -154,6 +154,12 @@ int scoreByMode(struct qso_t *qso) {
 			    points = x; \
 			} while(0);
 
+/* return x points if set */
+#define RETURN_IF_SET(x) do { \
+			if (x >= 0) \
+			    return x; \
+			} while(0);
+
 int scoreByContinentOrCountry(struct qso_t *qso) {
 
     int points = 0;
@@ -184,17 +190,25 @@ int scoreByContinentOrCountry(struct qso_t *qso) {
 
     // default
     if (ctyinfo->dxcc_ctynr == my.countrynr) {
-	points = 0;
-	USE_IF_SET(my_cont_points);
-	USE_IF_SET(my_country_points);
-    } else if (inCountryList) {
-	USE_IF_SET(countrylist_points);
-    } else if (strcmp(ctyinfo->continent, my.continent) == 0) {
-	USE_IF_SET(my_cont_points);
-    } else
-	USE_IF_SET(dx_cont_points);
+	RETURN_IF_SET(my_country_points);
+    }
 
-    return points;
+    if (inCountryList) {
+	RETURN_IF_SET(countrylist_points);
+    }
+
+    if (strcmp(ctyinfo->continent, my.continent) == 0) {
+	RETURN_IF_SET(my_cont_points);
+    }
+
+    if (is_in_continentlist(ctyinfo->continent)) {
+	RETURN_IF_SET(continentlist_points);
+    }
+
+    if (strcmp(ctyinfo->continent, my.continent) != 0) {
+	RETURN_IF_SET(dx_cont_points);
+    }
+    return 0;
 }
 
 
