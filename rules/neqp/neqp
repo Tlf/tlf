@@ -1,0 +1,75 @@
+########################################
+#  New England QSO Party Rules         #
+#  Based on Victor's CQP rules file    #
+########################################
+#
+CONTEST=neqp
+LOGFILE=neqp.log
+CONTEST_MODE
+CABRILLO=UNIVERSAL
+#
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CQ_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = call                      #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#                                #
+##################################
+#
+F1=CQ % TEST
+F2=@ DE %
+F3=@ ++5NN-- HMD MA
+F4=TU 73
+F5=@
+F6=%
+F7=@ SRI DUPE
+F8=HMD MA
+F9=?
+F10=QRZ?
+F11=K
+F12=CQ % % ++TEST--
+#
+CQ_TU_MSG=TU %
+S&P_TU_MSG=TU ++5NN-- HMD MA
+#
+#ALT_0=
+#ALT_1=
+#ALT_2=
+#ALT_3=
+#ALT_4=
+#ALT_5=
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+#
+#################################
+#                               #
+#  CONTEST PARAMETERS           #
+#                               #
+#################################
+#
+# Mixed mode contest
+MIXED
+# Exchange can be recycled on another band
+RECALL_MULTS
+# The custom multiplier list should be stored in the tlf working directory
+MULT_LIST=neqp_mults
+# Each multiplier counts once only, not once per band
+SECTION_MULT_ONCE
+# Count DXCC countries and the mult list entities as multipliers
+DX_&_SECTIONS
+# Points for SSB and CW QSOs
+SSBPOINTS=1
+CWPOINTS=2
+#
+#
+####### END #####################
