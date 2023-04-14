@@ -1,6 +1,9 @@
 ########################################
-#  New England QSO Party Rules         #
-#  Based on Victor's CQP rules file    #
+#  New England QSO Party               #
+#  Published by Alan Dove, AB1XW       #
+#  Last verified 2023-04-14            #
+#  If outside New England, change:     #
+#  MULT_LIST=neqp_mults_outside        # 
 ########################################
 #
 CONTEST=neqp
