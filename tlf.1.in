@@ -2682,10 +2682,6 @@ instead.
 Points for countries in country list.
 .
 .TP
-\fBUSE_COUNTRYLIST_ONLY\fR[=<\fION\fR|\fIOFF\fR>]
-Score zero points for countries not in the list.
-.
-.TP
 \fBCOUNTRYLIST\fR=\fI"comma separated list of prefixes"\fR
 e.g. SM,LA,OZ,OH.
 .

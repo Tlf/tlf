@@ -166,14 +166,6 @@ int scoreByContinentOrCountry(struct qso_t *qso) {
     prefix_data *ctyinfo = getctyinfo(qso->call);
     bool inCountryList = is_in_countrylist(ctyinfo->dxcc_ctynr);
 
-    if (countrylist_only) {
-	points = 0;
-	if (inCountryList)
-	    USE_IF_SET(countrylist_points);
-
-	return points;
-    }
-
     /* HA2OS mods */
     if (continentlist_only) {
 	points = 0;

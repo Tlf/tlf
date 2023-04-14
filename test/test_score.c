@@ -71,7 +71,6 @@ int setup_default(void **state) {
     my_cont_points = -1;
     dx_cont_points = -1;
 
-    countrylist_only = false;
     countrylist_points = -1;
     strcpy(countrylist[0], "");
 
@@ -153,7 +152,6 @@ void test_wpx(void **state) {
 
     qso.bandindex = BANDINDEX_40;
     check_call_points("VE3ABC",4);
-
 }
 
 
@@ -183,7 +181,6 @@ void test_arrl_fd(void **state) {
 
     qso.mode = SSBMODE;
     check_points(1);
-
 }
 
 
@@ -306,20 +303,6 @@ void test_in_continentlist(void **state) {
     assert_int_equal(is_in_continentlist("NA"), true);
 }
 
-
-void test_scoreByCorC_countrylistOnly(void **state) {
-    countrylist_only = true;
-    check_call_points("LZ1AB", 0);
-    check_call_points("DL3XYZ", 0);
-
-    init_countrylist();
-    check_call_points("LZ1AB", 0);
-    check_call_points("DL3XYZ", 0);
-
-    countrylist_points = 4;
-    check_call_points("LZ1AB", 0);
-    check_call_points("DL3XYZ", 4);
-}
 
 void test_scoreByCorC_continentlistOnly(void **state) {
     continentlist_only = true;

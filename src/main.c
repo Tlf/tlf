@@ -121,7 +121,6 @@ int my_country_points = -1;
 int my_cont_points = -1;
 int dx_cont_points = -1;
 char countrylist[255][6];
-bool countrylist_only = false;
 int countrylist_points = -1;
 char continent_multiplier_list[7][3]; // SA, NA, EU, AF, AS and OC
 int continentlist_points = -1;

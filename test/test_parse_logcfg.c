@@ -1151,19 +1151,6 @@ void test_countrylist_points(void **state) {
     assert_int_equal(countrylist_points, 4);
 }
 
-void test_countrylist_only(void **state) {
-    int rc = call_parse_logcfg("USE_COUNTRYLIST_ONLY\n");
-    assert_int_equal(rc, PARSE_OK);
-    assert_true(countrylist_only);
-}
-
-void test_countrylist_only_mult_side(void **state) {
-    mult_side = true;
-    int rc = call_parse_logcfg("USE_COUNTRYLIST_ONLY\n");
-    assert_int_equal(rc, PARSE_OK);
-    assert_false(countrylist_only);
-}
-
 void test_my_country_points(void **state) {
     int rc = call_parse_logcfg("MY_COUNTRY_POINTS=4\n");
     assert_int_equal(rc, PARSE_OK);

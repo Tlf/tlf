@@ -741,14 +741,6 @@ static int cfg_continentlist(const cfg_arg_t arg) {
     return PARSE_OK;
 }
 
-static int cfg_country_list_only(const cfg_arg_t arg) {
-    countrylist_only = true;
-    if (mult_side) {
-	countrylist_only = false;
-    }
-    return PARSE_OK;
-}
-
 static int cfg_bandweight_points(const cfg_arg_t arg) {
     static char bwp_params_list[50] = "";
     int bandindex = -1;
@@ -1280,7 +1272,6 @@ static config_t logcfg_configs[] = {
     {"DX_&_SECTIONS",   NO_PARAM, cfg_dx_n_sections},
     {"COUNTRYLIST",     NEED_PARAM, cfg_countrylist},
     {"CONTINENTLIST",   NEED_PARAM, cfg_continentlist},
-    {"USE_COUNTRYLIST_ONLY",    NO_PARAM, cfg_country_list_only},
     {"SIDETONE_VOLUME", NEED_PARAM, cfg_sc_volume},
     {"MFJ1278_KEYER",   NEED_PARAM, cfg_mfj1278_keyer},
     {"CHANGE_RST",      OPTIONAL_PARAM, cfg_change_rst},
