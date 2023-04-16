@@ -648,9 +648,6 @@ static int cfg_countrylist(const cfg_arg_t arg) {
 	}
     }
 
-    /* on which multiplier side of the rules we are */
-    getpx(my.call);
-    mult_side = exist_in_country_list();
     setcontest(whichcontest);
 
     return PARSE_OK;

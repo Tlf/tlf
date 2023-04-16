@@ -240,7 +240,6 @@ extern char fkey_header[60];
 
 extern SCREEN *mainscreen;
 
-extern bool mult_side;
 extern bool mixedmode;
 extern bool qso_once;
 extern bool leading_zeros_serial;

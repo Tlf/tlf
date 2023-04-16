@@ -126,7 +126,6 @@ char continent_multiplier_list[7][3]; // SA, NA, EU, AF, AS and OC
 int continentlist_points = -1;
 bool continentlist_only = false;
 int exclude_multilist_type = EXCLUDE_NONE;
-bool mult_side = false;
 /* end LZ3NY mods */
 
 bool portable_x2 = false;
