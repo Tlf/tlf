@@ -3,6 +3,8 @@ UK/EI DX Contest
 https://ukeicc.com/dx-contest-rules.php
 """
 
+import time
+
 from enum import Flag, auto
 class Location(Flag):
     UK_EI = auto()
@@ -80,7 +82,10 @@ def score(qso):
     if qso.band >= 40:
         points *= 2 
 
-    # TODO: nightly bonus
+    if MY_LOCATION == Location.UK_EI:
+        hour = time.gmtime(qso.utc).tm_hour
+        if hour >= 1 and hour <= 4:
+            points *= 2
 
     return points
 
