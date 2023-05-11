@@ -117,7 +117,7 @@ void next_band(int direction) {
  *
  * \return	bandindex or BANDINDEX_OOB if not in any band
  */
-int freq2band(unsigned int freq) {
+int freq2bandindex(unsigned int freq) {
     int i;
 
     for (i = 0; i < NBANDS; i++) {

@@ -155,7 +155,7 @@ void show_xplanet() {
     int sysminutes = 0;
     int linepos;
     int spot_age[MAX_SPOTS];
-    int spot_band[MAX_SPOTS];
+    int spot_bandindex[MAX_SPOTS];
 
     char callcopy[20];
     FILE *fp;
@@ -175,7 +175,7 @@ void show_xplanet() {
     }
 
     memset(spot_age, '\0', sizeof(spot_age));
-    memset(spot_band, '\0', sizeof(spot_band));
+    memset(spot_bandindex, '\0', sizeof(spot_bandindex));
 
     for (i = 0; i < MAX_SPOTS; i++) {
 	if (bandmap[i] != NULL) {
@@ -233,11 +233,11 @@ void show_xplanet() {
 		    }
 		}
 
-		int band = freq2band(atof(thisline + 17) * 1000);
-		if (IS_ALL_BAND || !IsWarcIndex(band)) {
+		int bandindex = freq2bandindex(atof(thisline + 17) * 1000);
+		if (IS_ALL_BAND || !IsWarcIndex(bandindex)) {
 		    bandmap[i] = g_strdup(thisline);
 		    spot_age[i] = timediff;
-		    spot_band[i] = band;
+		    spot_bandindex[i] = bandindex;
 		    i++;
 		}
 	    }
@@ -285,7 +285,7 @@ void show_xplanet() {
 		if (spot_age[j] > 15)
 		    color = "Brown";	/* old spot */
 		else {
-		    color = bandcolor[spot_band[j]];
+		    color = bandcolor[spot_bandindex[j]];
 		}
 
 		if (color != NULL) {

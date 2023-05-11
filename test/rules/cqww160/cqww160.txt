@@ -1,0 +1,1 @@
+../../../rules/cqww160/cqww160.txt

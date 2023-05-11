@@ -47,7 +47,7 @@ static struct qso_t *qso_from_spot(spot *data) {
     qso->call = g_strdup(data->call);
     qso->comment = g_strdup("");    // TODO recall exchange if possible
     qso->freq = data->freq;
-    qso->bandindex = data->band;    //FIXME: naming
+    qso->band = bandindex2nr(data->bandindex);
     return qso;
 }
 
@@ -59,11 +59,11 @@ static bool no_multi(spot *data) {
 
 
 static bool pfx_on_band_ismulti(spot *data) {
-    int band = data->band;
+    int bandindex = data->bandindex;
     char *call = data->call;
 
     char *prefix = get_wpx_pfx(call);
-    bool multi = pfx_is_new_on(prefix, band);
+    bool multi = pfx_is_new_on(prefix, bandindex);
     g_free(prefix);
     return multi;
 }
@@ -78,10 +78,10 @@ static bool wpx_ismulti(spot *data) {
 
 
 static bool cqww_ismulti(spot *data) {
-    int band = data->band;
+    int bandindex = data->bandindex;
 
-    if ((zones[data->cqzone] & inxes[band]) == 0
-	    || (countries[data->ctynr] & inxes[band]) == 0) {
+    if ((zones[data->cqzone] & inxes[bandindex]) == 0
+	    || (countries[data->ctynr] & inxes[bandindex]) == 0) {
 	return true;
     }
 
@@ -90,9 +90,9 @@ static bool cqww_ismulti(spot *data) {
 
 static bool arrldx_usa_ismulti(spot *data)  {
     int ctynr = data->ctynr;
-    int band = data->band;
+    int bandindex = data->bandindex;
 
-    if ((countries[ctynr] & inxes[band]) != 0)
+    if ((countries[ctynr] & inxes[bandindex]) != 0)
 	return false;
 
     if (ctynr == w_cty || ctynr == ve_cty)
@@ -103,7 +103,7 @@ static bool arrldx_usa_ismulti(spot *data)  {
 
 
 bool general_ismulti(spot *data) {
-    int band = data->band;
+    int bandindex = data->bandindex;
 
     if (dx_arrlsections) {
 	/* no evaluation of sections, check only country */
@@ -111,7 +111,7 @@ bool general_ismulti(spot *data) {
     }
 
     if (country_mult) {
-	return ((countries[data->ctynr] & inxes[band]) == 0);
+	return ((countries[data->ctynr] & inxes[bandindex]) == 0);
     }
 
     if (pfxmult) {
@@ -123,7 +123,7 @@ bool general_ismulti(spot *data) {
     }
 
     if (itumult || wazmult) {
-	return ((zones[data->cqzone] & inxes[band]) == 0);
+	return ((zones[data->cqzone] & inxes[bandindex]) == 0);
     }
 
     struct qso_t *qso = qso_from_spot(data);

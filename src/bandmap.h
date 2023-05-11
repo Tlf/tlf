@@ -28,7 +28,7 @@ typedef struct {
     char 	*call;
     int 	freq;	/* freq in Hz */
     char 	mode;
-    short 	band;
+    short 	bandindex;
     char	node;
     unsigned int timeout;/* time (in seconds) left in bandmap */
     char 	dupe;	/* only used internal in bm_show() */

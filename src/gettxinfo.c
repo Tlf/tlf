@@ -197,7 +197,7 @@ void gettxinfo(void) {
 	    freq = rigfreq; // Hz
 	}
 
-	bandinx = freq2band((unsigned int)freq);
+	bandinx = freq2bandindex((unsigned int)freq);
 
 	bandfrequency[bandinx] = freq;
 
