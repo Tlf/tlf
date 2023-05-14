@@ -4,6 +4,7 @@ https://ukeicc.com/dx-contest-rules.php
 """
 
 import time
+import re
 
 from enum import Flag, auto
 class Location(Flag):
@@ -36,6 +37,8 @@ UKEI_DISTRICTS = {
     'GU': ['GY'],
     'GW': ['CF','LD','LL','NP','SA']
 }
+
+DISTRICT_PATTERN = re.compile('[A-Z]+$')    # last block of alphabetics
 
 def get_location(dxcc):
     if dxcc.main_prefix in UKEI_DISTRICTS:
@@ -91,20 +94,27 @@ def score(qso):
 
 
 def check_exchange(qso):
+    xchg = qso.exchange.strip()
     dxcc = tlf.get_dxcc(qso.call)
 
     if dxcc.main_prefix in UKEI_DISTRICTS:
 
-        district = qso.exchange.strip()[-2:]    # last 2 characters
+        m = DISTRICT_PATTERN.search(xchg)
+        if m:
+            district = m.group(0)
+        else:
+            district = ''
 
         if district in UKEI_DISTRICTS[dxcc.main_prefix]:
             mult = f'{dxcc.main_prefix}/{district}'
             if mult == 'GM/TD': # normalize TD as G/TD
                 mult = 'G/TD'
+            # normalize
+            xchg = xchg[:m.start(0)].strip() + ' ' + district
         else:
             mult = ''   # invalid district
     else:
         mult = dxcc.main_prefix
 
-    return {'mult1_value': mult}
+    return {'mult1_value': mult, 'normalized_exchange': xchg}
 
