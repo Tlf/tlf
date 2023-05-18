@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 
 #include "../src/audio.h"
+#include "../src/bands.h"
 #include "../src/parse_logcfg.h"
 #include "../src/lancode.h"
 #include "../src/bandmap.h"
@@ -1472,4 +1473,13 @@ void test_digi_rig_mode_rttyr(void **state) {
     int rc = call_parse_logcfg("DIGI_RIG_MODE=RTTYR");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(digi_mode, RIG_MODE_RTTYR);
+}
+
+void test_band40_ok(void **state) {
+    int rc = call_parse_logcfg("BAND_40=7000k,7040k,7050k,7200k");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(bandcorner[3][0], 7000*1000);
+    assert_int_equal(bandcorner[3][1], 7200*1000);
+    assert_int_equal(cwcorner[3], 7040*1000);
+    assert_int_equal(ssbcorner[3], 7050*1000);
 }
