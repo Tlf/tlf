@@ -467,6 +467,7 @@ static int cfg_bandmap(const cfg_arg_t arg) {
     bm_config.skipdupes = 0;
     bm_config.lifetime = 900;
     bm_config.onlymults = 0;
+    bm_config.show_out_of_band = false;
 
     /* Allow configuration of bandmap display if keyword
      * is followed by a '='
@@ -489,6 +490,8 @@ static int cfg_bandmap(const cfg_arg_t arg) {
 		    case 'S': bm_config.skipdupes = 1;
 			break;
 		    case 'O': bm_config.onlymults = 1;
+			break;
+		    case 'X': bm_config.show_out_of_band = true;
 			break;
 		    default:
 			break;

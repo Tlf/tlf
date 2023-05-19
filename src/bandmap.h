@@ -48,6 +48,7 @@ typedef struct {
     short skipdupes;
     short lifetime;
     short onlymults;
+    bool show_out_of_band;
 } bm_config_t;
 
 extern bm_config_t bm_config;

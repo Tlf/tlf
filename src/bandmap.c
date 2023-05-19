@@ -75,7 +75,8 @@ bm_config_t bm_config = {
     1,  /* show dupes */
     1,	/* skip dupes during grab */
     900,/* default lifetime */
-    0  /* DO NOT show ONLY multipliers */
+    0,  /* DO NOT show ONLY multipliers */
+    false, /* do not show out-of-band spots */
 };
 
 static bool bm_initialized = false;
@@ -156,7 +157,8 @@ void bmdata_read_file() {
 			    break;
 			case 2:		sscanf(token, "%hhd", &entry->mode);
 			    break;
-			case 3:		sscanf(token, "%hd", &entry->bandindex);
+			case 3:	        // re-evaluate band index
+                                        entry->bandindex = freq2bandindex(entry->freq);
 			    break;
 			case 4:		sscanf(token, "%c", &entry->node);
 			    break;
@@ -306,9 +308,6 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	return;
 
     bandindex = freq2bandindex(freq);
-    if (bandindex == BANDINDEX_OOB)  /* no ham band */
-	return;
-
     mode = freq2mode(freq, bandindex);
 
     /* acquire bandmap mutex */
@@ -585,6 +584,17 @@ char *format_spot(spot *data) {
     return temp;
 }
 
+static char get_spot_marker(spot *data) {
+    if (data->bandindex == BANDINDEX_OOB) {
+        return 'X';
+    }
+    if (bm_ismulti(data)) {
+        return 'M';
+    }
+
+    return ' ';
+}
+
 
 /* helper function for bandmap display
  * shows formatted spot on actual cursor position
@@ -594,12 +604,13 @@ void show_spot(spot *data) {
     printw("%7.1f%c", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node));
 
-    if (bm_ismulti(data)) {
+    char marker = get_spot_marker(data);
+    if (marker != ' ') {
 	attrset(COLOR_PAIR(CB_NORMAL));
-	printw("M");
+    }
+    addch(marker);
+    if (marker != ' ') {
 	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    } else {
-	printw(" ");
     }
 
     char *temp = format_spot(data);
@@ -616,7 +627,7 @@ void show_spot_on_qrg(spot *data) {
 
     printw("%7.1f%c%c ", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node),
-	   bm_ismulti(data) ? 'M' : ' ');
+	   get_spot_marker(data));
 
     char *temp = format_spot(data);
     printw("%-12s", temp);
@@ -710,6 +721,11 @@ void filter_spots() {
 	multi = bm_ismulti(data);
 	if (!multi && bm_config.onlymults)
 	    continue;
+
+        /* ignore out-of-band spots if configured so */
+        if (data->bandindex == BANDINDEX_OOB && !bm_config.show_out_of_band) {
+            continue;
+        }
 
 	/* if spot is allband or allmode is set or band or mode matches
 	 * than add to the filtered 'spot' array
