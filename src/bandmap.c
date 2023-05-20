@@ -70,13 +70,13 @@ GPtrArray *spots;
 
 
 bm_config_t bm_config = {
-    1,	/* show all bands */
-    1,  /* show all mode */
-    1,  /* show dupes */
-    1,	/* skip dupes during grab */
-    900,/* default lifetime */
-    0,  /* DO NOT show ONLY multipliers */
-    false, /* do not show out-of-band spots */
+    .allband = true,    /* show all bands */
+    .allmode = true,    /* show all mode */
+    .showdupes = true,  /* show dupes */
+    .skipdupes = true,	/* skip dupes during grab */
+    .lifetime = 900,    /* default lifetime */
+    .onlymults = false, /* DO NOT show ONLY multipliers */
+    .show_out_of_band = false,  /* do not show out-of-band spots */
 };
 
 static bool bm_initialized = false;
@@ -158,7 +158,7 @@ void bmdata_read_file() {
 			case 2:		sscanf(token, "%hhd", &entry->mode);
 			    break;
 			case 3:	        // re-evaluate band index
-                                        entry->bandindex = freq2bandindex(entry->freq);
+			    entry->bandindex = freq2bandindex(entry->freq);
 			    break;
 			case 4:		sscanf(token, "%c", &entry->node);
 			    break;
@@ -586,10 +586,10 @@ char *format_spot(spot *data) {
 
 static char get_spot_marker(spot *data) {
     if (data->bandindex == BANDINDEX_OOB) {
-        return 'X';
+	return 'X';
     }
     if (bm_ismulti(data)) {
-        return 'M';
+	return 'M';
     }
 
     return ' ';
@@ -698,7 +698,7 @@ void filter_spots() {
 
     if (spots)
 	g_ptr_array_free(spots, TRUE);		/* free spot array */
-						/* allocate new one */
+    /* allocate new one */
     spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
 
 
@@ -722,10 +722,10 @@ void filter_spots() {
 	if (!multi && bm_config.onlymults)
 	    continue;
 
-        /* ignore out-of-band spots if configured so */
-        if (data->bandindex == BANDINDEX_OOB && !bm_config.show_out_of_band) {
-            continue;
-        }
+	/* ignore out-of-band spots if configured so */
+	if (data->bandindex == BANDINDEX_OOB && !bm_config.show_out_of_band) {
+	    continue;
+	}
 
 	/* if spot is allband or allmode is set or band or mode matches
 	 * than add to the filtered 'spot' array
@@ -919,19 +919,19 @@ void bm_menu() {
     c = toupper(key_get());
     switch (c) {
 	case 'B':
-	    bm_config.allband = 1 - bm_config.allband;
+	    bm_config.allband = !bm_config.allband;
 	    break;
 
 	case 'M':
-	    bm_config.allmode = 1 - bm_config.allmode;
+	    bm_config.allmode = !bm_config.allmode;
 	    break;
 
 	case 'D':
-	    bm_config.showdupes = 1 - bm_config.showdupes;
+	    bm_config.showdupes = !bm_config.showdupes;
 	    break;
 
 	case 'O':
-	    bm_config.onlymults = 1 - bm_config.onlymults;
+	    bm_config.onlymults = !bm_config.onlymults;
 	    break;
     }
     bandmap_show();		/* refresh display */

@@ -461,12 +461,12 @@ static int cfg_bandmap(const cfg_arg_t arg) {
     cluster = MAP;
 
     /* init bandmap filtering */
-    bm_config.allband = 1;
-    bm_config.allmode = 1;
-    bm_config.showdupes = 1;
-    bm_config.skipdupes = 0;
+    bm_config.allband = true;
+    bm_config.allmode = true;
+    bm_config.showdupes = true;
+    bm_config.skipdupes = false;
     bm_config.lifetime = 900;
-    bm_config.onlymults = 0;
+    bm_config.onlymults = false;
     bm_config.show_out_of_band = false;
 
     /* Allow configuration of bandmap display if keyword
@@ -481,15 +481,15 @@ static int cfg_bandmap(const cfg_arg_t arg) {
 	    char *ptr = bm_fields[0];
 	    while (*ptr != '\0') {
 		switch (*ptr++) {
-		    case 'B': bm_config.allband = 0;
+		    case 'B': bm_config.allband = false;
 			break;
-		    case 'M': bm_config.allmode = 0;
+		    case 'M': bm_config.allmode = false;
 			break;
-		    case 'D': bm_config.showdupes = 0;
+		    case 'D': bm_config.showdupes = false;
 			break;
-		    case 'S': bm_config.skipdupes = 1;
+		    case 'S': bm_config.skipdupes = true;
 			break;
-		    case 'O': bm_config.onlymults = 1;
+		    case 'O': bm_config.onlymults = true;
 			break;
 		    case 'X': bm_config.show_out_of_band = true;
 			break;

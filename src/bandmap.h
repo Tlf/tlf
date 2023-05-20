@@ -42,12 +42,12 @@ typedef struct {
 #define SPOT_OLD	(SPOT_NEW * 2)  / 3
 
 typedef struct {
-    short allband;
-    short allmode;
-    short showdupes;
-    short skipdupes;
+    bool allband;
+    bool allmode;
+    bool showdupes;
+    bool skipdupes;
     short lifetime;
-    short onlymults;
+    bool onlymults;
     bool show_out_of_band;
 } bm_config_t;
 
