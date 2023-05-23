@@ -111,10 +111,10 @@ void bmdata_write_file() {
     fprintf(fp, "%d\n", (int)tv.tv_sec);
     while (found != NULL) {
 	sp = found->data;
-	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s\n",
+	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s;%d\n",
 		sp->call, sp->freq, sp->mode, sp->bandindex,
 		sp->node, sp->timeout, sp->dupe, sp->cqzone,
-		sp->ctynr, g_strchomp(sp->pfx));
+		sp->ctynr, g_strchomp(sp->pfx), sp->mult);
 	found = found->next;
     }
 
@@ -171,6 +171,9 @@ void bmdata_read_file() {
 			case 8:		sscanf(token, "%d", &entry->ctynr);
 			    break;
 			case 9:		entry->pfx = g_strdup(token);
+			    break;
+			case 10:    // mult is transient, not read back
+			    entry->mult = false;
 			    break;
 		    }
 		    fc++;
@@ -350,6 +353,7 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	entry -> node = node;
 	entry -> timeout = SPOT_NEW;
 	entry -> dupe = 0;	/* Dupe will be determined later. */
+	entry -> mult = false;	/* Mult will be determined later. */
 
 	lastexch = NULL;
 	dxccindex = getctynr(entry->call);
@@ -588,7 +592,7 @@ static char get_spot_marker(spot *data) {
     if (data->bandindex == BANDINDEX_OOB) {
 	return 'X';
     }
-    if (bm_ismulti(data)) {
+    if (data->mult) {
 	return 'M';
     }
 
@@ -719,6 +723,7 @@ void filter_spots() {
 
 	/* Ignore non-multis if we want to show only multis */
 	multi = bm_ismulti(data);
+	data->mult = multi;
 	if (!multi && bm_config.onlymults)
 	    continue;
 
@@ -955,6 +960,7 @@ spot *copy_spot(spot *data) {
     result -> node = data -> node;
     result -> timeout = data -> timeout;
     result -> dupe = data -> dupe;
+    result -> mult = data -> mult;
     result -> cqzone = data -> cqzone;
     result -> ctynr = data -> ctynr;
     result -> pfx = g_strdup(data -> pfx);
