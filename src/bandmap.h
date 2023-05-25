@@ -31,7 +31,7 @@ typedef struct {
     short 	bandindex;
     char	node;
     unsigned int timeout;/* time (in seconds) left in bandmap */
-    char 	dupe;	/* only used internally in bm_show() */
+    bool 	dupe;	/* only used internally in bm_show() */
     bool 	mult;	/* only used internally in bm_show() */
     int 	cqzone;	/* CQ zone */
     int 	ctynr;	/* Country nr */

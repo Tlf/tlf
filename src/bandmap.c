@@ -164,7 +164,8 @@ void bmdata_read_file() {
 			    break;
 			case 5:		sscanf(token, "%u", &entry->timeout);
 			    break;
-			case 6:		sscanf(token, "%hhd", &entry->dupe);
+			case 6:     // dupe is transient, not read back
+                            entry->dupe = false;
 			    break;
 			case 7:		sscanf(token, "%d", &entry->cqzone);
 			    break;
@@ -690,7 +691,6 @@ static bool mode_matches(spot *data) {
 void filter_spots() {
     GList *list;
     spot *data;
-    bool dupe, multi;
     /* acquire mutex
      * do not add new spots to allspots during
      * - aging and
@@ -710,21 +710,19 @@ void filter_spots() {
 	data = list->data;
 
 	/* check and mark spot as dupe */
-	dupe = bm_isdupe(data->call, data->bandindex);
-	data -> dupe = dupe;
+	data->dupe = bm_isdupe(data->call, data->bandindex);
 
 	/* ignore spots on WARC bands if in contest mode */
 	if (iscontest && IsWarcIndex(data->bandindex))
 	    continue;
 
 	/* ignore dupes if not forced */
-	if (dupe && !bm_config.showdupes)
+	if (data->dupe && !bm_config.showdupes)
 	    continue;
 
 	/* Ignore non-multis if we want to show only multis */
-	multi = bm_ismulti(data);
-	data->mult = multi;
-	if (!multi && bm_config.onlymults)
+	data->mult = bm_ismulti(data);
+	if (!data->mult && bm_config.onlymults)
 	    continue;
 
 	/* ignore out-of-band spots if configured so */
@@ -1109,7 +1107,7 @@ void get_spot_on_qrg(char *dest, freq_t freq) {
 	    data = g_ptr_array_index(spots, i);
 
 	    if ((fabs(data->freq - freq) < TOLERANCE) &&
-		    (!bm_config.skipdupes || data->dupe == 0)) {
+		    (!bm_config.skipdupes || !data->dupe)) {
 		strcpy(dest, data->call);
 		break;
 	    }
