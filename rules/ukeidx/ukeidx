@@ -1,0 +1,56 @@
+##########################
+# UK/EI DX Contest       #
+##########################
+# https://ukeicc.com/dx-contest-rules.php
+#
+# Provided by: Zoltan Csahok HA5CQZ
+#
+
+LOGFILE=ukeidx.log
+CONTEST_MODE
+
+#
+# change CW to SSB for the phone round
+#
+CABRILLO=UNIVERSAL
+CABRILLO-CONTEST= DX CW Contest
+CABRILLO-CATEGORY-BAND= ALL
+CABRILLO-CATEGORY-MODE= CW
+CABRILLO-CATEGORY-TRANSMITTER= (ONE, MULTI)
+CABRILLO-CATEGORY-TIME= (24-HOURS, 12-HOURS)
+
+CABRILLO-CATEGORY-STATION=-
+CABRILLO-CATEGORY-OVERLAY=-
+CABRILLO-LOCATION=-
+CABRILLO-OFFTIME=-
+
+#================================
+# Select one of following blocks:
+#--------------------------------
+#
+# non-UK/EI stations send serial number
+#
+CABRILLO-EXCHANGE=# --
+F3=@ ++5NN-- #
+S&P_TU_MSG=TU ++5NN-- #
+#--------------------------------
+#
+# UK/EI stations send serial number and district code
+#
+##CABRILLO-EXCHANGE=# XX
+##F3=@ ++5NN-- # XX
+##S&P_TU_MSG=TU ++5NN-- # XX
+#================================
+
+# Scoring:
+# (handled by ukeidx.py)
+
+
+# Multipliers:
+# The multiplier total is the total of different DXCC countries worked
+# on each band, (excluding the UK/EI DXCC countries
+# EI, G, GD, GI, GJ, GM, GU, GW) plus UK/EI District Codes worked on each band
+# (handled by ukeidx.py)
+
+GENERIC_MULT=BAND
+
