@@ -11,13 +11,8 @@ LOGFILE=mst.log
 CABRILLO=UNIVERSAL
 ONE_POINT
 UNIQUE_CALL_MULTI=ALL
-#SERIAL_OR_SECTION
-#GENERIC_MULT=BAND
-#MULT_LIST=naqp_mults
-#SECTION_MULT
 LEADING_ZEROS_SERIAL=OFF
 NO_RST
-PLUGIN_CONFIG=hello
 #
 ##################################
 #                                #
@@ -63,8 +58,5 @@ ALT_4=#
 #
 #SEND_DE
 #
-CABRILLO-QSO-FORMAT=SST
-CABRILLO-EXCHANGE=vic ca
-CABRILLO-CONTEST=
 ####### END #####################
 
