@@ -115,9 +115,9 @@ void gettxinfo(void) {
     /* CAT PTT wanted, available, inactive, and PTT On requested
      */
     if (rigptt == (CAT_PTT_USE | CAT_PTT_ON)) {
-	pthread_mutex_lock(&rig_lock);
+	pthread_mutex_lock(&rig_mutex);
 	retval = rig_set_ptt(my_rig, RIG_VFO_CURR, RIG_PTT_ON);
-	pthread_mutex_unlock(&rig_lock);
+	pthread_mutex_unlock(&rig_mutex);
 
 	/* Set PTT active bit. */
 	rigptt |= CAT_PTT_ACTIVE;
@@ -129,9 +129,9 @@ void gettxinfo(void) {
     /* CAT PTT wanted, available, active and PTT Off requested
      */
     if (rigptt == (CAT_PTT_USE | CAT_PTT_ACTIVE | CAT_PTT_OFF)) {
-	pthread_mutex_lock(&rig_lock);
+	pthread_mutex_lock(&rig_mutex);
 	retval = rig_set_ptt(my_rig, RIG_VFO_CURR, RIG_PTT_OFF);
-	pthread_mutex_unlock(&rig_lock);
+	pthread_mutex_unlock(&rig_mutex);
 
 	/* Clear PTT Off requested bit. */
 	rigptt &= ~CAT_PTT_OFF;
@@ -152,21 +152,21 @@ void gettxinfo(void) {
 	}
 	last_freq_time = now;
 
-	pthread_mutex_lock(&rig_lock);
+	pthread_mutex_lock(&rig_mutex);
 	retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
-	pthread_mutex_unlock(&rig_lock);
+	pthread_mutex_unlock(&rig_mutex);
 
 	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL) {
-	    pthread_mutex_lock(&rig_lock);
+	    pthread_mutex_lock(&rig_mutex);
 	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
-	    pthread_mutex_unlock(&rig_lock);
+	    pthread_mutex_unlock(&rig_mutex);
 
 	    if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)
 		    && retval == RIG_OK) {
 
-		pthread_mutex_lock(&rig_lock);
+		pthread_mutex_lock(&rig_mutex);
 		retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, &rigmode, &bwidth);
-		pthread_mutex_unlock(&rig_lock);
+		pthread_mutex_unlock(&rig_mutex);
 
 		if (retvalmode != RIG_OK) {
 		    rigmode = RIG_MODE_NONE;
@@ -179,10 +179,10 @@ void gettxinfo(void) {
 	    if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {
 		fldigi_shift_freq = fldigi_get_shift_freq();
 		if (fldigi_shift_freq != 0) {
-		    pthread_mutex_lock(&rig_lock);
+		    pthread_mutex_lock(&rig_mutex);
 		    retval = rig_set_freq(my_rig, RIG_VFO_CURR,
 					  ((freq_t)rigfreq + (freq_t)fldigi_shift_freq));
-		    pthread_mutex_unlock(&rig_lock);
+		    pthread_mutex_unlock(&rig_mutex);
 		}
 	    }
 	}
@@ -225,9 +225,9 @@ void gettxinfo(void) {
 
     } else if (reqf == SETCWMODE) {
 
-	pthread_mutex_lock(&rig_lock);
+	pthread_mutex_lock(&rig_mutex);
 	retval = rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW, get_cw_bandwidth());
-	pthread_mutex_unlock(&rig_lock);
+	pthread_mutex_unlock(&rig_mutex);
 
 	if (retval != RIG_OK) {
 	    TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
@@ -235,10 +235,10 @@ void gettxinfo(void) {
 
     } else if (reqf == SETSSBMODE) {
 
-	pthread_mutex_lock(&rig_lock);
+	pthread_mutex_lock(&rig_mutex);
 	retval = rig_set_mode(my_rig, RIG_VFO_CURR, get_ssb_mode(),
 			      TLF_DEFAULT_PASSBAND);
-	pthread_mutex_unlock(&rig_lock);
+	pthread_mutex_unlock(&rig_mutex);
 
 	if (retval != RIG_OK) {
 	    TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
@@ -252,19 +252,19 @@ void gettxinfo(void) {
 	    else
 		new_mode = RIG_MODE_LSB;
 	}
-	pthread_mutex_lock(&rig_lock);
+	pthread_mutex_lock(&rig_mutex);
 	retval = rig_set_mode(my_rig, RIG_VFO_CURR, new_mode,
 			      TLF_DEFAULT_PASSBAND);
-	pthread_mutex_unlock(&rig_lock);
+	pthread_mutex_unlock(&rig_mutex);
 
 	if (retval != RIG_OK) {
 	    TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
 	}
 
     } else if (reqf == RESETRIT) {
-	pthread_mutex_lock(&rig_lock);
+	pthread_mutex_lock(&rig_mutex);
 	retval = rig_set_rit(my_rig, RIG_VFO_CURR, 0);
-	pthread_mutex_unlock(&rig_lock);
+	pthread_mutex_unlock(&rig_mutex);
 
 	if (retval != RIG_OK) {
 	    TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
@@ -273,9 +273,9 @@ void gettxinfo(void) {
     } else {
 	// set rig frequency (or carrier) to `reqf'
 	reqf -= fldigi_get_carrier();
-	pthread_mutex_lock(&rig_lock);
+	pthread_mutex_lock(&rig_mutex);
 	retval = rig_set_freq(my_rig, RIG_VFO_CURR, (freq_t) reqf);
-	pthread_mutex_unlock(&rig_lock);
+	pthread_mutex_unlock(&rig_mutex);
 
 	if (retval != RIG_OK) {
 	    TLF_LOG_WARN("Problem with rig link: set frequency: %s", rigerror(retval));
@@ -316,9 +316,9 @@ static void handle_trx_bandswitch(const freq_t freq) {
 	return;     // no change was requested
     }
 
-    pthread_mutex_lock(&rig_lock);
+    pthread_mutex_lock(&rig_mutex);
     int retval = rig_set_mode(my_rig, RIG_VFO_CURR, mode, width);
-    pthread_mutex_unlock(&rig_lock);
+    pthread_mutex_unlock(&rig_mutex);
 
     if (retval != RIG_OK) {
 	TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
