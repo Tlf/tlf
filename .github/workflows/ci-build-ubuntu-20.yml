@@ -1,0 +1,44 @@
+name: CI build for Ubuntu 20
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+    timeout-minutes: 3
+    env:
+      TERM: xterm
+      AM_COLOR_TESTS: always
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Show OS info
+      run: cat /etc/os-release
+    - name: Install dependencies
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get install -y libhamlib-dev libxmlrpc-core-c3-dev libcmocka-dev python3-pexpect
+    - name: Set up datadir
+      run: mkdir datadir && ln -s $PWD/share datadir/tlf
+    - name: Autoreconf and basic make
+      run: |
+        autoreconf -i && ./configure --datadir=$PWD/datadir && make -j2
+    - name: Configure with xmlrpc
+      run: |
+        make clean && ./configure --datadir=$PWD/datadir --enable-fldigi-xmlrpc && make -j2
+    - name: Run tests
+      id: run_tests
+      continue-on-error: true
+      run: make check
+    - name: Show failed test results
+      if: ${{ steps.run_tests.outcome == 'failure' }}
+      run: |
+        for f in test/run_*.log; do
+            grep -q FAILED $f && echo -e "\n>>> $f:\n" && cat $f
+        done
+        exit 1

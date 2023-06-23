@@ -30,12 +30,12 @@
 
 /** \brief Recall former exchange or lookup initial exchange file
  *
- * First search 'hiscall' in already worked stations (callarray). If not found
- * there lookup 'hiscall' in initial exchange file. If found somewhere copy
+ * First search 'current_qso.call' in already worked stations (callarray). If not found
+ * there lookup 'current_qso.call' in initial exchange file. If found somewhere copy
  * the according exchange into the 'comment' field.
  *
  * \return 1 - found, -1 - not found, 0 - call field was empty */
-
+//TODO: use qso argument
 int get_proposed_exchange(void) {
 
     int i, l;
@@ -45,17 +45,17 @@ int get_proposed_exchange(void) {
 
     proposed_exchange[0] = 0;   // default: empty (nothing found)
 
-    if (strlen(hiscall) == 0)
+    if (strlen(current_qso.call) == 0)
 	return 0;
 
-    l = strlen(hiscall);
+    l = strlen(current_qso.call);
 
     /* search backwards through list of worked stations */
     for (i = nr_worked - 1; i >= 0; i--) {
 
 	/* first search call in already worked stations */
 	/* call has to be exact -> la/dl1jbe/p must be the same again */
-	if ((strstr(worked[i].call, hiscall) == worked[i].call) &&
+	if ((strstr(worked[i].call, current_qso.call) == worked[i].call) &&
 		(*(worked[i].call + l) == '\0' || *(worked[i].call + l) == ' ')) {
 	    found = 1;
 	    strcpy(proposed_exchange, worked[i].exchange);
@@ -67,17 +67,17 @@ int get_proposed_exchange(void) {
 
 	/* if no exchange could be recycled and no comment available
 	 * search initial exchange list (if available) */
-	if (strlen(comment) == 0 && main_ie_list != NULL) {
+	if (strlen(current_qso.comment) == 0 && main_ie_list != NULL) {
 
 	    current_ie = main_ie_list;
 
 	    while (current_ie) {
-		/* call from IE_List has to be a substring of hiscall
+		/* call from IE_List has to be a substring of current_qso.call
 		 * but must be delimited on both sides by '/' or eos */
-		if ((loc = strstr(hiscall, current_ie->call)) != NULL) {
+		if ((loc = strstr(current_qso.call, current_ie->call)) != NULL) {
 
 		    loc2 = loc + strlen(current_ie->call);
-		    if (((loc == hiscall) || (*(loc - 1) == '/')) &&
+		    if (((loc == current_qso.call) || (*(loc - 1) == '/')) &&
 			    ((*loc2 == '\0') || (*loc2 == '/'))) {
 
 			found = 1;
@@ -108,7 +108,7 @@ int get_proposed_exchange(void) {
 
 int recall_exchange(void) {
     /* respect content which is already in comment field */
-    if (strlen(comment) != 0)
+    if (strlen(current_qso.comment) != 0)
 	return 0;
 
     if (strlen(proposed_exchange) == 0) {
@@ -121,9 +121,9 @@ int recall_exchange(void) {
 	}
     }
 
-    strcpy(comment, proposed_exchange);
+    strcpy(current_qso.comment, proposed_exchange);
 
-    mvaddstr(12, 54, comment);  //TODO move this to UI code
+    mvaddstr(12, 54, current_qso.comment);  //TODO move this to UI code
     refreshp();
 
     return 1;

@@ -48,8 +48,8 @@ int cntry;
 int cont;
 
 
-int score_foc() {
-    return foc_score(hiscall);
+int score_foc(struct qso_t *qso) {
+    return foc_score(qso->call);
 }
 
 /** FOC contest configuration */
@@ -61,6 +61,7 @@ contest_config_t config_focm = {
 	.fn = score_foc
     },
     .is_multi = no_multi,
+    .exchange_width = 5,    // 4 digit member number
 };
 
 /** calculate score for last QSO

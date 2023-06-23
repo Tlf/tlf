@@ -35,7 +35,7 @@
 .
 .
 .\" Update the date when this page is committed.
-.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2022-03-04" TLF "Ham radio"
+.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2022-09-18" TLF "Ham radio"
 .
 .
 .SH NAME
@@ -780,7 +780,7 @@ as ARRL Field Day and ARRL Sweepstakes.
 .
 .TP
 .B Space
-Switches from call input to exchange field.
+Switch from call input to exchange field.
 .
 .IP
 Separates exchange field elements when multiple exchange elements must be
@@ -890,7 +890,7 @@ answer the next call.
 .
 .TP
 .B Backspace
-Erases the character to the left of the cursor and moves the cursor one
+Erase the character to the left of the cursor and moves the cursor one
 position to the left.
 .
 .\" FIXME: Update Escape section when changes are made in source.
@@ -935,6 +935,11 @@ The third press of
 .B Escape
 will clear the call input field.
 .
+.IP
+You can disable the above described UNDO functionality by setting
+.BR ESC_STOPS_TX_ONLY
+(see below).
+.
 .TP
 .BR \(<-\  (Left-Arrow)
 Call input field is empty: change to next band lower in frequency or wrap to
@@ -975,7 +980,8 @@ Restore previous CQ frequency from MEM and send message
 .
 .TP
 .B F2-F11
-Send CW, RTTY or VOICE messages 2 through 11.
+Send CW, RTTY or VOICE messages 2 through 11. If the callsign field is empty
+the messages will be sent with the preceding qso data.
 .
 .TP
 .B F12
@@ -1160,7 +1166,7 @@ key.
 .
 .TP
 .B Ctrl-E
-Ends modem capture for RTTY mode in QTC window (started with
+End modem capture for RTTY mode in QTC window (started with
 .BR Ctrl-S ).
 .
 .IP
@@ -1249,10 +1255,27 @@ Show talk messages.
 In the QTC window shows RTTY lines.
 .
 .TP
+.B Ctrl-U
+Wipe out whole input line (call input and exchange), clear all
+information about current contact.
+.
+If entered by accident a second
+.BR Ctrl-U
+restores the line.
+.
+.TP
 .B Ctrl-V
 Toggle grabbing direction in which
 .B Ctrl-G
 looks for a spot.
+.
+.TP
+.B Ctrl-W
+Wipe actual field the cursor is in (call input OR exchange).
+.
+If entered by accident a second
+.BR Ctrl-W
+restores the field.
 .
 .TP
 .B Ctrl-Z
@@ -1263,7 +1286,8 @@ equivalent command for your shell.
 .
 .TP
 .BR Alt-0 ... Alt-9
-Send alternate CW (Morse code) messages.
+Send alternate CW (Morse code) messages. If the callsign field is empty the
+messages will be sent with the preceding qso data.
 .
 .TP
 .B Alt-A
@@ -1507,6 +1531,13 @@ Make sure you edit the
 .I logcfg.dat
 file for at least your callsign and your preferred system configuration.
 .
+.P
+Parameters requiring a boolean value (like \fItrue\fR/\fIfalse\fR)
+can have an optional case-insensitive argument.
+Alternatively, both \fIyes\fR and \fIon\fR are treated as \fItrue\fR.
+Similarly instead of \fIfalse\fR also \fIno\fR or \fIoff\fR can be used.
+Without the argument the default assigned value is \fIyes\fR.
+.
 .
 .SH logcfg.dat STATEMENTS
 .
@@ -1534,7 +1565,7 @@ File on remote host you want to synchronize with (use
 syntax).
 .
 .TP
-.B CTCOMPATIBLE
+\fBCTCOMPATIBLE\fR[=<\fION\fR|\fIOFF\fR>]
 Do not use the TR-Log QSO sequence, but use
 .BR + ,
 .B Insert
@@ -1599,6 +1630,10 @@ to the same colour pallet as the Linux console.
 Most other terminals have their own way of setting the colour pallet.
 .
 .TP
+\fBRXVT\fR[=<\fION\fR|\fIOFF\fR>]
+Use \fBrxvt\fR's colours.
+.
+.TP
 \fBEDITOR\fR=\fInano\fR | \fIvi\fR[\fIm\fR] | \fI<your_favorite_editor>\fR
 Editor used to modify the QSO log or logcfg.dat.
 .
@@ -1630,7 +1665,7 @@ Normally 0.
 Range: 0\(en23.
 .
 .TP
-.B TIME_MASTER
+\fBTIME_MASTER\fR[=<\fION\fR|\fIOFF\fR>]
 This node transmits the time over the network (only one master allowed!).
 .
 .TP
@@ -1772,13 +1807,13 @@ Delay activation of the Push To Talk pin.
 Range: 0\(en50.
 .
 .TP
-.B KEYER_BACKSPACE
+\fBKEYER_BACKSPACE\fR[=<\fION\fR|\fIOFF\fR>]
 Support backspace key in keyer window.
 .
 .SS Sound Commands
 .
 .TP
-.B SOUNDCARD
+\fBSOUNDCARD\fR[=<\fION\fR|\fIOFF\fR>]
 Use soundcard for CW sidetone output.
 .
 .TP
@@ -1878,7 +1913,7 @@ for 20, 15 and 10.
 This comes in handy when you have 3 dipoles and a 3-band beam (...).
 .
 .TP
-.B NO_BANDSWITCH_ARROWKEYS
+\fBNO_BANDSWITCH_ARROWKEYS\fR[=<\fION\fR|\fIOFF\fR>]
 This will prevent unwanted band switching when you are not using rig control.
 .
 .IP
@@ -1904,7 +1939,7 @@ DX Clusters often use a non-standard port for Telnet, e.g. 8000.
 Automatic login for the telnet client.
 .
 .TP
-.B CLUSTER_LOG
+\fBCLUSTER_LOG\fR[=<\fION\fR|\fIOFF\fR>]
 Write clusterlog to disk.
 .
 .TP
@@ -1931,7 +1966,7 @@ Anything you dump into this FIFO will be displayed by the packet interface.
 .SS Radio Control Commands
 .
 .TP
-.B RADIO_CONTROL
+\fBRADIO_CONTROL\fR[=<\fION\fR|\fIOFF\fR>]
 Switches the radio interface on.
 .
 The rig interface makes use of the
@@ -1975,7 +2010,7 @@ Send rig configuration parameters to Hamlib.
 e.g. \fBRIGCONF\fR=\fIcivaddr=0x40,retry=3,rig_pathname=/dev/ttyS0\fR
 .
 .TP
-.B RIT_CLEAR
+\fBRIT_CLEAR\fR[=<\fION\fR|\fIOFF\fR>]
 Clears the RIT after logging the qso.
 .
 .IP
@@ -2028,7 +2063,7 @@ Use
 (period) to change bandmap filtering.
 .
 .TP
-\fBBANDMAP\fR=\fIxyz,number\fR
+\fBBANDMAP\fR=\fIxyz[,number]\fR
 Show cluster bandmap on startup and set start values for filtering.
 .
 .IP
@@ -2044,22 +2079,22 @@ string parsed for:
 	\(lqS\(rq - skip dupes during grab_next
 .RB ( Ctrl-G )
 .br
-	\(lqO\(rq - show only needed multipliers (CQWW only)
+	\(lqO\(rq - show only new multipliers
 .br
 .RI < number >
 lifetime for new spots in seconds (number >=
 .IR 30 )
 .
 .TP
-.B SCOREWINDOW
+\fBSCOREWINDOW\fR[=<\fION\fR|\fIOFF\fR>]
 Show the score window (same as \fBAlt-R\fR).
 .
 .TP
-.B CHECKWINDOW
+\fBCHECKWINDOW\fR[=<\fION\fR|\fIOFF\fR>]
 Show the country/call check window.
 .
 .TP
-.B PARTIALS
+\fBPARTIALS\fR[=<\fION\fR|\fIOFF\fR>]
 Show a list of possible contest calls.
 .
 .IP
@@ -2070,7 +2105,7 @@ in the
 section below for partials file specification.
 .
 .TP
-.B USEPARTIALS
+\fBUSEPARTIALS\fR[=<\fION\fR|\fIOFF\fR>]
 Use the auto-complete utility (takes some practice...).
 .
 .IP
@@ -2085,7 +2120,7 @@ Sometimes you must edit the call because it has locked on a unique call.
 Try it, and switch it off when you don't like it.
 .
 .TP
-.B LOGFREQUENCY
+\fBLOGFREQUENCY\fR[=<\fION\fR|\fIOFF\fR>]
 Put frequency (kHz) into QSO number to enable logging of frequency (only in
 .B QSO
 or
@@ -2093,7 +2128,7 @@ or
 modes).
 .
 .TP
-.B IGNOREDUPE
+\fBIGNOREDUPE\fR[=<\fION\fR|\fIOFF\fR>]
 Enables logging multiple QSOs in a contest with the same station (considered a
 good idea these days as contest bots that parse the submitted Cabrillo file
 will determine such dupes (duplicate contacts)).
@@ -2146,14 +2181,14 @@ Providing a value for T is optional but will be ignored.
 In CW and DIGI modes T will always be 9.
 .
 .TP
-.B NOB4
+\fBNOB4\fR[=<\fION\fR|\fIOFF\fR>]
 Do not send automatic \(lqQSO B4\(rq message.
 .
 .IP
 Default is to send such messages.
 .
 .TP
-.B NOAUTOCQ
+\fBNOAUTOCQ\fR[=<\fION\fR|\fIOFF\fR>]
 No automatic CQ when pressing
 .B Enter
 or
@@ -2166,7 +2201,12 @@ in the
 section above).
 .
 .TP
-.B SEND_DE
+\fBESC_STOPS_TX_ONLY\fR[=<\fION\fR|\fIOFF\fR>]
+Pressing ESC key does only stop sending CW or voice macros. No further action
+is taken.
+.
+.TP
+\fBSEND_DE\fR[=<\fION\fR|\fIOFF\fR>]
 Sends a \(lqDE\(rq word before your callsign, as in \(lqDE W1AW\(rq.
 .
 .IP
@@ -2190,8 +2230,12 @@ has to be sent. Eg.: if the received call was
 but later it is corrected to
 .B AB1CB,
 then
-.B CB.
+.B CB
 is sent.
+.
+.TP
+\fBSHOW_TIME\fR[=<\fION\fR|\fIOFF\fR>]
+Show last worked time instead of QSO number in the worked window.
 .
 .SH RULES
 .
@@ -2267,7 +2311,7 @@ For further Cabrillo related information see
 below.
 .
 .TP
-.B CONTEST_MODE
+\fBCONTEST_MODE\fR[=<\fION\fR|\fIOFF\fR>]
 Sets @PACKAGE_NAME@ into contest mode.
 .
 .IP
@@ -2282,7 +2326,12 @@ Uses short form for serial number (9=N, 0=T).
 Uses long form for serial number (default).
 .
 .TP
-.B NO_RST
+\fBLEADING_ZEROS_SERIAL\fR[=<\fION\fR|\fIOFF\fR>]
+Controls sending leading zeros in serial number. By default serial numbers
+are sent with (up to 2) leading zeros.
+.
+.TP
+\fBNO_RST\fR[=<\fION\fR|\fIOFF\fR>]
 Do not use RST in contest, such as for CW Open, ARRL Sweepstakes, ARRL Field
 Day, or various QSO parties and such events.
 .
@@ -2291,7 +2340,7 @@ In such a case when writing a Cabrillo log format template you must provide a
 conforming format definition without RST values.
 .
 .TP
-.B MIXED
+\fBMIXED\fR[=<\fION\fR|\fIOFF\fR>]
 Stations can be worked in any mode (CW, SSB and DIG) on a given band
 without being counted as a DUPE.
 .
@@ -2374,7 +2423,7 @@ section above and the
 section below for obtaining Supercheck Partials updates.
 .
 .TP
-.B BMAUTOGRAB
+\fBBMAUTOGRAB\fR[=<\fION\fR|\fIOFF\fR>]
 If set along with the
 .B RADIO_CONTROL
 and
@@ -2385,7 +2434,7 @@ bandmap frequency.
 .
 .\" FIXME: To what is the call added?
 .TP
-.B BMAUTOADD
+\fBBMAUTOADD\fR[=<\fION\fR|\fIOFF\fR>]
 If set along with the
 .B RADIO_CONTROL
 and
@@ -2398,7 +2447,7 @@ Use \(lqS\(rqkip dupes in BANDMAP settings to control if it should also grab
 dupes.
 .
 .TP
-.B SPRINTMODE
+\fBSPRINTMODE\fR[=<\fION\fR|\fIOFF\fR>]
 If set, @PACKAGE_NAME@ will automatically switch its mode between LOG and S&P
 after every QSO.
 .
@@ -2633,7 +2682,7 @@ instead.
 Points for countries in country list.
 .
 .TP
-.B USE_COUNTRYLIST_ONLY
+\fBUSE_COUNTRYLIST_ONLY\fR[=<\fION\fR|\fIOFF\fR>]
 Score zero points for countries not in the list.
 .
 .TP
@@ -2651,11 +2700,11 @@ E.g. Scandinavia:SM,LA,OZ,OH.
 Not to be confused with so-called "country" files maintained by AD1C.
 .
 .TP
-.B PORTABLE_MULT_2
+\fBPORTABLE_MULT_2\fR[=<\fION\fR|\fIOFF\fR>]
 Multiply points x2 for portable stations (e.g. R1 field day).
 .
 .TP
-.B LOWBAND_DOUBLE
+\fBLOWBAND_DOUBLE\fR[=<\fION\fR|\fIOFF\fR>]
 Double all points for lowband (40, 80, and 160m) QSOs (can be combined with
 any other value).
 .
@@ -2681,29 +2730,29 @@ function, which gives the largest integer value that is not greater than
 multiplied score.
 .
 .TP
-.B WYSIWYG_MULTIBAND
+\fBWYSIWYG_MULTIBAND\fR[=<\fION\fR|\fIOFF\fR>]
 Exchange is the multiplier, per band, whatever you enter.
 .
 .IP
 @PACKAGE_NAME@ builds its own list of multipliers as QSOs are logged.
 .
 .TP
-.B WYSIWYG_ONCE
+\fBWYSIWYG_ONCE\fR[=<\fION\fR|\fIOFF\fR>]
 Exchange is multiplier, whatever you enter.
 .
 .IP
 Counts once per contest, not per band.
 .
 .TP
-.B WAZMULT
+\fBWAZMULT\fR[=<\fION\fR|\fIOFF\fR>]
 Multiplier is the CQ zone (per band).
 .
 .TP
-.B ITUMULT
+\fBITUMULT\fR[=<\fION\fR|\fIOFF\fR>]
 Multiplier is the ITU zone (per band).
 .
 .TP
-.B PFX_MULT
+\fBPFX_MULT\fR[=<\fION\fR|\fIOFF\fR>]
 Multiplier is prefix (PA0, DA2, VE7, etc.).
 .
 .IP
@@ -2712,7 +2761,7 @@ Counts once per contest, not per band.
 .\" FIXME: Reference CQ WPX handling elsewhere.  CQ-WW-WPX is confusing as it
 .\" is not a parameter keyword and only appears here in the repository.
 .TP
-.B PFX_MULT_MULTIBAND
+\fBPFX_MULT_MULTIBAND\fR[=<\fION\fR|\fIOFF\fR>]
 Same as WPX, but the WPX only used CQ-WW-WPX, and there a single prefix
 multiplier only once, not all band.
 .
@@ -2722,7 +2771,7 @@ With this option, the PFX counts as multiplier on all band.
 This usable in the All Asia DX contest (AA-DX).
 .
 .TP
-.B COUNTRY_MULT
+\fBCOUNTRY_MULT\fR[=<\fION\fR|\fIOFF\fR>]
 Multiplier is the DXCC entity (per band).
 .
 .IP
@@ -2763,14 +2812,14 @@ operators exchange county abbreviations rather than the state but the state
 can only count once (Kansas QSO Party is once such example).
 .
 .TP
-.B SECTION_MULT
+\fBSECTION_MULT\fR[=<\fION\fR|\fIOFF\fR>]
 Multiplier is section from multipliers file.
 .
 .IP
 Counts per band.
 .
 .TP
-.B SECTION_MULT_ONCE
+\fBSECTION_MULT_ONCE\fR[=<\fION\fR|\fIOFF\fR>]
 Multiplier is section from multipliers file.
 .
 .IP
@@ -2906,11 +2955,25 @@ means the callsign is a multiplier once per the contest, independent of band.
 .B BAND
 means the callsign counts as a multiplier per band.
 .
+.TP
+\fBGENERIC_MULT\fR=\fINONE\fR|\fIALL\fR|\fIBAND\fR
+Use generic multiplier determined by the contest plugin.
+.IP
+The argument specifies the multiplier counting rule (see above).
+Default value is NONE (disabled).
+.
+.TP
+\fBPLUGIN_CONFIG\fR
+Specifies the argument to the contest plugin's \fBinit\fR function.
+See the
+.B PYTHON PLUGIN
+section below.
+.
 .SS Exchange
 The following parameters configure @PACKAGE_NAME@'s handling of the exchange.
 .
 .TP
-.B SERIAL+SECTION
+\fBSERIAL+SECTION\fR[=<\fION\fR|\fIOFF\fR>]
 Exchange is serial number and section, multiplier is section from multiplier
 file.
 .
@@ -2918,7 +2981,7 @@ file.
 Counts per band.
 .
 .TP
-.B SERIAL_OR_SECTION
+\fBSERIAL_OR_SECTION\fR[=<\fION\fR|\fIOFF\fR>]
 Exchange is serial number or section.
 .
 .IP
@@ -2929,7 +2992,7 @@ This option was introduced for HA-DX, where HA stations give the shortest form
 of their county, other stations give serial.
 .
 .TP
-.B SERIAL+GRID4
+\fBSERIAL+GRID4\fR[=<\fION\fR|\fIOFF\fR>]
 Exchange is serial number and grid (e.g. 001 JO21QI), multiplier is 4-character
 grid (JO21).
 .
@@ -2973,12 +3036,15 @@ Marathon.
 The module also recognises embedded calls (e.g. CT3/PA0R/QRP).
 .
 .TP
-.B CONTINENT_EXCHANGE
+\fBCONTINENT_EXCHANGE\fR[=<\fION\fR|\fIOFF\fR>]
 Exchange is a continent (NA, SA, EU, AS, AF, OC).
 .
 .TP
 .B SERIAL_EXCHANGE
-Exchange is a serial number (formats exchange field).
+Exchange is a serial number (formats received exchange
+and configures Cabrillo exchange).
+Set this only if \fIboth\fR sent and received exchanges
+are plain serial numbers.
 .
 .TP
 .B MYQRA
@@ -3021,7 +3087,7 @@ Put the callsigns of such stations in a file in the working directory, one
 callsign per line, and give its name as an argument to this parameter.
 .
 .TP
-.B QTC_AUTO_FILLTIME
+\fBQTC_AUTO_FILLTIME\fR[=<\fION\fR|\fIOFF\fR>]
 If you use the QTC feature and you are an EU station in CW or SSB modes, then
 you can only RECEIVE the QTCs.
 .
@@ -3039,7 +3105,7 @@ If you change the hour (e.g. if there is a time of 2059 and the next one is
 2100), then all next time fields will be changed.
 .
 .TP
-.B QTC_RECV_LAZY
+\fBQTC_RECV_LAZY\fR[=<\fION\fR|\fIOFF\fR>]
 If you use the QTC feature, and you are an EU station in CW or SSB modes, then
 you can use this feature.
 .
@@ -3279,6 +3345,165 @@ It can be disabled but not set.)
 .TQ
 .B CABRILLO\-SOAPBOX(3)
 .
+.SH PYTHON PLUGIN
+.
+@PACKAGE_NAME@ uses Python plugins to customize or extend functions beyond
+the built-in features. Two notable use cases are adding a specific
+scoring logic and determining multipliers.
+.P
+.
+The Python plugin file is loaded the same way as the RULES
+file but the file must have \fIpy\fR extension.
+.
+.
+.SS tlf Python module
+.
+@PACKAGE_NAME@ core functionality and constants can be accessed via
+the pre-imported \fItlf\fR module.
+.
+.TP
+.B Constants
+.TQ
+  \fBCWMODE\fR: \fIint\fR
+.TQ
+  \fBSSBMODE\fR: \fIint\fR
+.TQ
+  \fBDIGIMODE\fR: \fIint\fR
+.TQ
+  \fBMY_CALL\fR: \fIstr\fR
+.TQ
+  \fBMY_LAT\fR: \fIfloat\fR
+.TQ
+  \fBMY_LONG\fR: \fIfloat\fR
+.
+.P
+.TP
+.B Functions
+.TQ
+  \fBdef get_qrb_for_locator(locator: str) -> Qrb:\fR
+Returns the distance (in km) and bearing (in degrees)
+to the specified locator from the current location.
+.TQ
+  \fBdef get_dxcc(call: str) -> Dxcc:\fR
+Returns the DXCC information for the given call using the \fIcty.dat\fR file.
+.
+.SS Data structures
+.
+.TP 20
+.B Qso
+.TQ
+  \fBcall\fR: \fIstr\fR
+callsign
+.TQ
+  \fBexchange\fR: \fIstr\fR
+received exchange
+.TQ
+  \fBband\fR: \fIint\fR
+band in meters
+.TQ
+  \fBmode\fR: \fIint\fR
+one of \fItlf.CWMODE\fR, \fItlf.SSBMODE\fR or \fItlf.DIGIMODE\fR
+.TQ
+  \fButc\fR: \fIint\fR
+time in integer seconds since epoch
+.TP 20
+.B Qrb
+.TQ
+  \fBdistance\fR: \fIfloat\fR
+distance in km
+.TQ
+  \fBbearing\fR: \fIfloat\fR
+bearing in degrees
+.TP 20
+.B Dxcc
+.TQ
+  \fBcountry_name\fR: \fIstr\fR
+.TQ
+  \fBmain_prefix\fR: \fIstr\fR
+.TQ
+  \fBmain_cq_zone\fR: \fIint\fR
+.TQ
+  \fBmain_itu_zone\fR: \fIint\fR
+.TQ
+  \fBmain_latitude\fR: \fIfloat\fR
+.TQ
+  \fBmain_longitude\fR: \fIfloat\fR
+.TQ
+  \fBmain_continent\fR: \fIstr\fR
+.TQ
+  \fBmain_timezone\fR: \fIfloat\fR
+.TQ
+  \fBstarred\fR: \fIbool\fR
+.TQ
+  \fBprefix\fR: \fIstr\fR
+.TQ
+  \fBcq_zone\fR: \fIint\fR
+.TQ
+  \fBitu_zone\fR: \fIint\fR
+.TQ
+  \fBlatitude\fR: \fIfloat\fR
+.TQ
+  \fBlongitude\fR: \fIfloat\fR
+.TQ
+  \fBcontinent\fR: \fIstr\fR
+.TQ
+  \fBtimezone\fR: \fIfloat\fR
+.TQ
+  \fBexact\fR: \fIbool\fR
+.
+.SS Functions
+.
+All plugin functions are optional.
+.
+.TP
+\fBdef init(cfg: str) -> str:\fR
+.
+Called once on @PACKAGE_NAME@ start up. It shall initialize the internal
+state of the plugin.
+.
+.IP
+The parameter \fIcfg\fR contains the value provided to
+PLUGIN_CONFIG. It can be used to control the internal
+logic of the plugin. If no PLUGIN_CONFIG is specified then
+an empty string is passed.
+.
+.IP
+The return value is a string specifying the minimal required
+@PACKAGE_NAME@ version (e.g. '1.5'). In case of no version dependency
+\fINone\fR shall be returned.
+.
+.TP
+\fBdef setup() -> None:\fR
+.
+Called whenever the QSO list is initialized (e.g. on inital loading of
+the log file or before rescoring it). It shall reset any internal
+structures related to QSOs.
+.
+.TP
+\fBdef score(qso: Qso) -> int:\fR
+.
+Called before actually logging a QSO.
+It shall return a non-negative score value.
+.
+.TP
+\fBdef check_exchange(qso: Qso) -> Dict[str, str]:\fR
+.
+Called when exchange is received or updated.
+From the returned dictionary these (optional) entries are evaluated:
+.TQ
+          \fBmult1_value\fR: \fIstr\fR
+.
+.TQ
+          \fBnormalized_exchange\fR: \fIstr\fR
+.
+.IP
+\fBmult1_value\fR is used as a multiplier without further conversion.
+The handling of this multiplier is controlled by the GENERIC_MULT
+parameter.
+.IP
+\fBnormalized_exchange\fR replaces the received exchange
+in the finally logged QSO.
+.
 .SH FILES
 .
 .I @prefix@/share/@PACKAGE@/logcfg.dat
@@ -3358,7 +3583,7 @@ the default file name).
 .
 It will take precedence over the system installed
 .I callmaster
-file which islikely well out of date.
+file which is likely well out of date.
 .
 .P
 .I Section files

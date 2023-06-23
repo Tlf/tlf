@@ -31,6 +31,7 @@
 #include "log_utils.h"
 #include "nicebox.h"		// Includes curses.h
 #include "scroll_log.h"
+#include "store_qso.h"
 
 
 void include_note(void) {
@@ -41,7 +42,6 @@ void include_note(void) {
     char buffer2[LOGLINELEN + 1] = "";
 
     int i;
-    FILE *fp;
 
     attron(A_STANDOUT);
     mvprintw(15, 1,
@@ -65,19 +65,10 @@ void include_note(void) {
 	       (LOGLINELEN - 1) - strlen(buffer2)); /* fill spaces */
 	buffer2[LOGLINELEN - 1] = '\0';
 
-	if ((fp = fopen(logfile, "a")) == NULL) {
-	    endwin();
-	    fprintf(stdout, "\nnote.c: Error opening log file.\n");
-	    exit(1);
-	}
-	fputs(buffer2, fp);
-	fputs("\n", fp);
-
-	fclose(fp);
+	store_qso(logfile, buffer2);
 
 	struct qso_t *qso = parse_qso(buffer2);
 	g_ptr_array_add(qso_array, qso);
-	nr_qsos++;
 
 	scroll_log();
 	clear_display();

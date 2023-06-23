@@ -1,0 +1,53 @@
+# CQ World Wide 160-Meter Contest
+# https://www.cq160.com/
+#
+# Provided by: HA5CQZ
+
+CONTEST=cqww160
+LOGFILE=cqww160.log
+
+CONTEST_MODE
+
+INITIAL_EXCHANGE=cqww160.txt
+RECALL_MULTS
+
+# scoring handled by cqww160.py
+
+# mults handled by cqww160.py
+GENERIC_MULT = ALL
+
+PLUGIN_CONFIG=cqww160.txt
+
+#
+# Replace MA with your actual sent exchange here
+#
+CABRILLO-EXCHANGE=MA
+F3=@ ++5NN-- MA
+S&P_TU_MSG=TU ++5NN-- MA
+
+CABRILLO=UNIVERSAL
+#
+# NOTE: change CW to SSB for the phone contest
+# Be sure to use hyphens as shown.
+# DO NOT PUT THE YEAR OR USE PH INSTEAD OF SSB.
+#
+CABRILLO-CONTEST=CQ-160-CW
+CABRILLO-CATEGORY-MODE=CW
+CABRILLO-CATEGORY-BAND=160M
+CABRILLO-CATEGORY-POWER=(HIGH,LOW,QRP)
+CABRILLO-CATEGORY-OPERATOR=(SINGLE-OP,MULTI-OP,CHECKLOG)
+CABRILLO-OPERATORS=N0CALL
+CABRILLO-CLUB=FILL THIS IN
+
+#
+# Check the correct location below (see https://www.cq160.com/locations.htm)
+#
+CABRILLO-LOCATION=MA
+
+
+# fixed fields
+CABRILLO-CATEGORY-TRANSMITTER=ONE
+CABRILLO-CATEGORY-STATION=-
+CABRILLO-CATEGORY-TIME=-
+CABRILLO-CATEGORY-OVERLAY=-
+CABRILLO-OFFTIME=-

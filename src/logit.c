@@ -50,7 +50,6 @@
 #include "cleanup.h"
 #include "utils.h"
 
-
 void refresh_comment(void);
 void change_mode(void);
 void resend_callsign(void);
@@ -94,15 +93,15 @@ void logit(void) {
 	    if ((trxmode == CWMODE || trxmode == DIGIMODE)
 		    && (callreturn == '\n') && ctcomp) {
 		callreturn = BACKSLASH;
-		strcpy(comment, cqzone);
+		strcpy(current_qso.comment, cqzone);
 	    }
 
 	    if ((callreturn == TAB || callreturn == SPACE)) {
 		callreturn = getexchange();
 	    }
 
-	    if (callreturn == '\n' && strlen(hiscall) >= 3) {
-		if ((*comment == '\0') && iscontest
+	    if (callreturn == '\n' && strlen(current_qso.call) >= 3) {
+		if ((current_qso.comment[0] == '\0') && iscontest
 			&& !ctcomp && !CONTEST_IS(DXPED))
 		    defer_store = 0;
 
@@ -121,9 +120,9 @@ void logit(void) {
 
 			if (recall_exchange() == -1) {
 			    if (itumult)
-				strcpy(comment, itustr);	/* fill in the ITUzone */
+				strcpy(current_qso.comment, itustr);	/* fill in the ITUzone */
 			    else
-				strcpy(comment, cqzone);	/* fill in the CQzone */
+				strcpy(current_qso.comment, cqzone);	/* fill in the CQzone */
 			}
 
 			refresh_comment();
@@ -141,8 +140,8 @@ void logit(void) {
 			&& (defer_store == 0)) {	/* S&P mode */
 
 		    if (CONTEST_IS(CQWW)) {
-			if (strlen(comment) == 0 && recall_exchange() == -1)
-			    strcpy(comment, cqzone);	/* fill in the zone */
+			if (strlen(current_qso.comment) == 0 && recall_exchange() == -1)
+			    strcpy(current_qso.comment, cqzone);	/* fill in the zone */
 
 			refresh_comment();
 
@@ -186,7 +185,7 @@ void logit(void) {
 		}
 	    }
 
-	    if ((callreturn == BACKSLASH) && (*hiscall != '\0')) {
+	    if ((callreturn == BACKSLASH) && (*current_qso.call != '\0')) {
 		defer_store = 0;
 
 		log_qso();
@@ -200,7 +199,7 @@ void logit(void) {
 	    }
 
 	} else {	/* user entered frequency -> clear input field */
-	    hiscall[0] = '\0';
+	    current_qso.call[0] = '\0';
 	    HideSearchPanel();
 	}
     }
@@ -212,7 +211,7 @@ void refresh_comment(void) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     mvaddstr(12, 54, spaces(contest->exchange_width));
-    mvaddstr(12, 54, comment);
+    mvaddstr(12, 54, current_qso.comment);
 }
 
 void change_mode(void) {
@@ -229,14 +228,14 @@ void change_mode(void) {
 }
 
 void resend_callsign() {
-    if (sentcall[0] != 0 && strcmp(hiscall, sentcall) != 0) {
-	char partial_call[21] = "";
+    if (sentcall[0] != 0 && strcmp(current_qso.call, sentcall) != 0) {
+	char partial_call[CALL_SIZE + 1] = "";
 	switch (resend_call) {
 	    case RESEND_FULL:
-		strcpy(partial_call, hiscall);
+		strcpy(partial_call, current_qso.call);
 		break;
 	    case RESEND_PARTIAL:
-		get_partial_callsign(sentcall, hiscall, partial_call);
+		get_partial_callsign(sentcall, current_qso.call, partial_call);
 		break;
 	    default:
 		break;

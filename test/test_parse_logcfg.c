@@ -26,8 +26,10 @@
 // OBJECT ../src/get_time.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/getwwv.o
-// OBJECT ../src/utils.o
 // OBJECT ../src/score.o
+// OBJECT ../src/plugin.o
+// OBJECT ../src/log_utils.o
+// OBJECT ../src/utils.o
 // OBJECT ../src/qrb.o
 // OBJECT ../src/setcontest.o
 // OBJECT ../src/cabrillo_utils.o
@@ -56,6 +58,10 @@ char *callmaster_filename = NULL;
 bool call_update = false;
 
 t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];
+
+void checkexchange(struct qso_t *qso, bool interactive) {}
+int check_mult(struct qso_t *qso) { return -1; }
+dxcc_data *dxcc_by_index(unsigned int index) { return NULL; }
 
 contest_config_t config_focm;
 
@@ -143,6 +149,8 @@ int setup_default(void **state) {
     if (result == -1)
 	perror("chdir");
 
+    current_qso.call = g_malloc0(CALL_SIZE);
+
     memset(&my, 0, sizeof(my));
     memset(&bm_config, 0, sizeof(bm_config));
     memset(&pfxnummulti, 0, sizeof(pfxnummulti));
@@ -198,7 +206,8 @@ int setup_default(void **state) {
     qtcrec_record_command[0][0] = 0;
     qtcrec_record_command[1][0] = 0;
     qtcrec_record_command_shutdown[0] = 0;
-    unique_call_multi = 0;
+    unique_call_multi = MULT_NONE;
+    generic_mult = MULT_NONE;
     digi_mode = -1;
 
     for (int i = 0; i < SP_CALL_MSG; ++i) {
@@ -369,11 +378,26 @@ void test_usepartials(void **state) {
     assert_int_equal(use_part, 1);
 }
 
-void test_usepartials_with_arg(void **state) {
-    int rc = call_parse_logcfg("USEPARTIALS=no\n");
+void test_usepartials_no(void **state) {
+    use_part = true;
+    int rc = call_parse_logcfg("USEPARTIALS = no\n");   // space around =
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(use_part, false);
+}
+
+void test_usepartials_yes(void **state) {
+    use_part = false;
+    int rc = call_parse_logcfg("USEPARTIALS=yes\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(use_part, true);
+}
+
+void test_usepartials_wrong_arg(void **state) {
+    int rc = call_parse_logcfg("USEPARTIALS=abc\n");
     assert_int_equal(rc, PARSE_ERROR);
     assert_string_equal(showmsg_spy,
-			"Keyword 'USEPARTIALS' can't have a parameter. See man page.\n");
+                       "Wrong parameter format for keyword 'USEPARTIALS'. See man page.\n");
+
 }
 
 typedef struct {
@@ -427,6 +451,8 @@ static bool_true_t bool_trues[] = {
     {"QTCREC_RECORD", &qtcrec_record},
     {"QTC_AUTO_FILLTIME", &qtc_auto_filltime},
     {"QTC_RECV_LAZY", &qtc_recv_lazy},
+    {"LEADING_ZEROS_SERIAL", &leading_zeros_serial},
+    {"ESC_STOPS_TX_ONLY", &stop_tx_only},
 };
 
 void test_bool_trues(void **state) {
@@ -1386,16 +1412,42 @@ void test_tune_seconds(void **state) {
     assert_int_equal(tune_seconds, 73);
 }
 
+void test_unique_call_multi_none(void **state) {
+    unique_call_multi = MULT_ALL;
+    int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=NONE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(unique_call_multi, MULT_NONE);
+}
+
 void test_unique_call_multi_all(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=ALL");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(unique_call_multi, UNIQUECALL_ALL);
+    assert_int_equal(unique_call_multi, MULT_ALL);
 }
 
 void test_unique_call_multi_band(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=BAND");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(unique_call_multi, UNIQUECALL_BAND);
+    assert_int_equal(unique_call_multi, MULT_BAND);
+}
+
+void test_generic_mult_none(void **state) {
+    generic_mult = MULT_ALL;
+    int rc = call_parse_logcfg("GENERIC_MULT=NONE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(generic_mult, MULT_NONE);
+}
+
+void test_generic_mult_all(void **state) {
+    int rc = call_parse_logcfg("GENERIC_MULT=ALL");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(generic_mult, MULT_ALL);
+}
+
+void test_generic_mult_band(void **state) {
+    int rc = call_parse_logcfg("GENERIC_MULT=BAND");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(generic_mult, MULT_BAND);
 }
 
 void test_digi_rig_mode_usb(void **state) {

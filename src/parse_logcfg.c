@@ -141,6 +141,12 @@ int getidxbybandstr(char *confband) {
     return -1;
 }
 
+static void str_toupper(char *str) {
+    for (char *p = str; *p; ++p) {
+	*p = g_ascii_toupper(*p);
+    }
+}
+
 ////////////////////
 // global variables for matcher functions:
 GMatchInfo *match_info;
@@ -177,14 +183,43 @@ static int parse_int(const char *string, gint64 min, gint64 max, int *result) {
     return PARSE_OK;
 }
 
-int cfg_bool_const(const cfg_arg_t arg) {
-    *arg.bool_p = arg.bool_value;
+static int parse_bool(const char *string, bool *result) {
+
+    gchar *str = NULL;
+    if (string != NULL) {
+	str = g_strdup(string);
+	g_strstrip(str);
+	str_toupper(str);   // normalize to upper case
+    }
+
+    bool value;
+
+    if (str == NULL || str[0] == 0 // no or empty input is true
+	    || strcmp(str, "TRUE") == 0
+	    || strcmp(str, "YES") == 0
+	    || strcmp(str, "ON") == 0) {
+	value = true;
+    } else if (strcmp(str, "FALSE") == 0
+	       || strcmp(str, "NO") == 0
+	       || strcmp(str, "OFF") == 0) {
+	value = false;
+    } else {
+	g_free(str);
+	return PARSE_WRONG_PARAMETER;
+    }
+
+    g_free(str);
+
+    *result = value;
     return PARSE_OK;
 }
 
-int cfg_contest_bool_const(const cfg_arg_t arg) {
-    *(bool *)((char *)contest + arg.offset) = arg.bool_value;
-    return PARSE_OK;
+int cfg_bool(const cfg_arg_t arg) {
+    return parse_bool(parameter, arg.bool_p);
+}
+
+int cfg_contest_bool(const cfg_arg_t arg) {
+    return parse_bool(parameter, (bool *)((char *)contest + arg.offset));
 }
 
 int cfg_int_const(const cfg_arg_t arg) {
@@ -298,9 +333,7 @@ static int cfg_call(const cfg_arg_t arg) {
 	return PARSE_WRONG_PARAMETER;
     }
 
-    for (char *p = my.call; *p; ++p) {
-	*p = g_ascii_toupper(*p);
-    }
+    str_toupper(my.call);
 
     return PARSE_OK;
 }
@@ -1010,22 +1043,32 @@ static int cfg_minitest(const cfg_arg_t arg) {
     return PARSE_OK;
 }
 
-static int cfg_unique_call_multi(const cfg_arg_t arg) {
+static int set_multi_mode(const cfg_arg_t arg, int *config) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
 
     if (strcmp(str, "ALL") == 0) {
-	unique_call_multi = UNIQUECALL_ALL;
+	*config = MULT_ALL;
     } else if (strcmp(str, "BAND") == 0) {
-	unique_call_multi = UNIQUECALL_BAND;
+	*config = MULT_BAND;
+    } else if (strcmp(str, "NONE") == 0) {
+	*config = MULT_NONE;
     } else {
 	g_free(str);
-	error_details = g_strdup("must be ALL or BAND");
+	error_details = g_strdup("must be ALL, BAND or NONE");
 	return PARSE_WRONG_PARAMETER;
     }
 
     g_free(str);
     return PARSE_OK;
+}
+
+static int cfg_unique_call_multi(const cfg_arg_t arg) {
+    return set_multi_mode(arg, &unique_call_multi);
+}
+
+static int cfg_generic_mult(const cfg_arg_t arg) {
+    return set_multi_mode(arg, &generic_mult);
 }
 
 static int cfg_digi_rig_mode(const cfg_arg_t arg) {
@@ -1084,57 +1127,59 @@ static int cfg_resend_call(const cfg_arg_t arg) {
 }
 
 static config_t logcfg_configs[] = {
-    {"CONTEST_MODE",        CFG_BOOL_TRUE(iscontest)},
-    {"MIXED",               CFG_BOOL_TRUE(mixedmode)},
-    {"IGNOREDUPE",          CFG_BOOL_TRUE(ignoredupe)},
-    {"USE_CONTINENTLIST_ONLY",  CFG_BOOL_TRUE(continentlist_only)},
-    {"RADIO_CONTROL",           CFG_BOOL_TRUE(trx_control)},
-    {"PORTABLE_MULT_2",     CFG_BOOL_TRUE(portable_x2)},
+    {"CONTEST_MODE",        CFG_BOOL(iscontest)},
+    {"MIXED",               CFG_BOOL(mixedmode)},
+    {"IGNOREDUPE",          CFG_BOOL(ignoredupe)},
+    {"USE_CONTINENTLIST_ONLY",  CFG_BOOL(continentlist_only)},
+    {"RADIO_CONTROL",           CFG_BOOL(trx_control)},
+    {"PORTABLE_MULT_2",     CFG_BOOL(portable_x2)},
 
-    {"USEPARTIALS",	    CFG_BOOL_TRUE(use_part)},
-    {"PARTIALS",	    CFG_BOOL_TRUE(partials)},
-    {"RECALL_MULTS",	    CFG_CONTEST_BOOL_TRUE(recall_mult)},
-    {"WYSIWYG_MULTIBAND",   CFG_BOOL_TRUE(wysiwyg_multi)},
-    {"WYSIWYG_ONCE",	    CFG_BOOL_TRUE(wysiwyg_once)},
-    {"RIT_CLEAR",	    CFG_BOOL_TRUE(rit)},
+    {"USEPARTIALS",	    CFG_BOOL(use_part)},
+    {"PARTIALS",	    CFG_BOOL(partials)},
+    {"RECALL_MULTS",	    CFG_CONTEST_BOOL(recall_mult)},
+    {"WYSIWYG_MULTIBAND",   CFG_BOOL(wysiwyg_multi)},
+    {"WYSIWYG_ONCE",	    CFG_BOOL(wysiwyg_once)},
+    {"RIT_CLEAR",	    CFG_BOOL(rit)},
     {"SHORT_SERIAL",	    CFG_INT_ONE(shortqsonr)},
-    {"SCOREWINDOW",	    CFG_BOOL_TRUE(showscore_flag)},
-    {"CHECKWINDOW",	    CFG_BOOL_TRUE(searchflg)},
-    {"SEND_DE",		    CFG_BOOL_TRUE(demode)},
-    {"SERIAL_EXCHANGE",	    CFG_CONTEST_BOOL_TRUE(exchange_serial)},
-    {"COUNTRY_MULT",	    CFG_BOOL_TRUE(country_mult)},
-    {"CQWW_M2",		    CFG_BOOL_TRUE(cqwwm2)},
-    {"LAN_DEBUG",	    CFG_BOOL_TRUE(landebug)},
-    {"CALLUPDATE",	    CFG_BOOL_TRUE(call_update)},
-    {"TIME_MASTER",	    CFG_BOOL_TRUE(time_master)},
-    {"CTCOMPATIBLE",	    CFG_BOOL_TRUE(ctcomp)},
-    {"SERIAL\\+SECTION",    CFG_BOOL_TRUE(serial_section_mult)},
-    {"SECTION_MULT",	    CFG_BOOL_TRUE(sectn_mult)},
-    {"NOB4",		    CFG_BOOL_TRUE(nob4)},
-    {"SHOW_TIME",	    CFG_BOOL_TRUE(show_time)},
-    {"RXVT",		    CFG_BOOL_TRUE(use_rxvt)},
-    {"WAZMULT",		    CFG_BOOL_TRUE(wazmult)},
-    {"ITUMULT",		    CFG_BOOL_TRUE(itumult)},
-    {"CONTINENT_EXCHANGE",  CFG_BOOL_TRUE(exc_cont)},
-    {"NOAUTOCQ",	    CFG_BOOL_TRUE(noautocq)},
-    {"NO_BANDSWITCH_ARROWKEYS", CFG_BOOL_TRUE(no_arrows)},
-    {"SOUNDCARD",	    CFG_BOOL_TRUE(sc_sidetone)},
-    {"LOWBAND_DOUBLE",	    CFG_BOOL_TRUE(lowband_point_mult)},
-    {"CLUSTER_LOG",	    CFG_BOOL_TRUE(clusterlog)},
-    {"SERIAL\\+GRID4",	    CFG_BOOL_TRUE(serial_grid4_mult)},
-    {"LOGFREQUENCY",	    CFG_BOOL_TRUE(logfrequency)},
-    {"NO_RST",		    CFG_BOOL_TRUE(no_rst)},
-    {"SERIAL_OR_SECTION",   CFG_BOOL_TRUE(serial_or_section)},
-    {"PFX_MULT",            CFG_BOOL_TRUE(pfxmult)},
-    {"PFX_MULT_MULTIBAND",  CFG_BOOL_TRUE(pfxmultab)},
-    {"QTCREC_RECORD",	    CFG_BOOL_TRUE(qtcrec_record)},
-    {"QTC_AUTO_FILLTIME",   CFG_BOOL_TRUE(qtc_auto_filltime)},
-    {"QTC_RECV_LAZY",	    CFG_BOOL_TRUE(qtc_recv_lazy)},
-    {"BMAUTOGRAB",      CFG_BOOL_TRUE(bmautograb)},
-    {"BMAUTOADD",       CFG_BOOL_TRUE(bmautoadd)},
-    {"SPRINTMODE",      CFG_BOOL_TRUE(sprint_mode)},
-    {"KEYER_BACKSPACE", CFG_BOOL_TRUE(keyer_backspace)},
-    {"SECTION_MULT_ONCE",   CFG_BOOL_TRUE(sectn_mult_once)},
+    {"LEADING_ZEROS_SERIAL",	    CFG_BOOL(leading_zeros_serial)},
+    {"SCOREWINDOW",	    CFG_BOOL(showscore_flag)},
+    {"CHECKWINDOW",	    CFG_BOOL(searchflg)},
+    {"SEND_DE",		    CFG_BOOL(demode)},
+    {"SERIAL_EXCHANGE",	    CFG_CONTEST_BOOL(exchange_serial)},
+    {"COUNTRY_MULT",	    CFG_BOOL(country_mult)},
+    {"CQWW_M2",		    CFG_BOOL(cqwwm2)},
+    {"LAN_DEBUG",	    CFG_BOOL(landebug)},
+    {"CALLUPDATE",	    CFG_BOOL(call_update)},
+    {"TIME_MASTER",	    CFG_BOOL(time_master)},
+    {"CTCOMPATIBLE",	    CFG_BOOL(ctcomp)},
+    {"SERIAL\\+SECTION",    CFG_BOOL(serial_section_mult)},
+    {"SECTION_MULT",	    CFG_BOOL(sectn_mult)},
+    {"NOB4",		    CFG_BOOL(nob4)},
+    {"SHOW_TIME",	    CFG_BOOL(show_time)},
+    {"RXVT",		    CFG_BOOL(use_rxvt)},
+    {"WAZMULT",		    CFG_BOOL(wazmult)},
+    {"ITUMULT",		    CFG_BOOL(itumult)},
+    {"CONTINENT_EXCHANGE",  CFG_BOOL(exc_cont)},
+    {"NOAUTOCQ",	    CFG_BOOL(noautocq)},
+    {"NO_BANDSWITCH_ARROWKEYS", CFG_BOOL(no_arrows)},
+    {"SOUNDCARD",	    CFG_BOOL(sc_sidetone)},
+    {"LOWBAND_DOUBLE",	    CFG_BOOL(lowband_point_mult)},
+    {"CLUSTER_LOG",	    CFG_BOOL(clusterlog)},
+    {"SERIAL\\+GRID4",	    CFG_BOOL(serial_grid4_mult)},
+    {"LOGFREQUENCY",	    CFG_BOOL(logfrequency)},
+    {"NO_RST",		    CFG_BOOL(no_rst)},
+    {"SERIAL_OR_SECTION",   CFG_BOOL(serial_or_section)},
+    {"PFX_MULT",            CFG_BOOL(pfxmult)},
+    {"PFX_MULT_MULTIBAND",  CFG_BOOL(pfxmultab)},
+    {"QTCREC_RECORD",	    CFG_BOOL(qtcrec_record)},
+    {"QTC_AUTO_FILLTIME",   CFG_BOOL(qtc_auto_filltime)},
+    {"QTC_RECV_LAZY",	    CFG_BOOL(qtc_recv_lazy)},
+    {"BMAUTOGRAB",      CFG_BOOL(bmautograb)},
+    {"BMAUTOADD",       CFG_BOOL(bmautoadd)},
+    {"SPRINTMODE",      CFG_BOOL(sprint_mode)},
+    {"KEYER_BACKSPACE", CFG_BOOL(keyer_backspace)},
+    {"SECTION_MULT_ONCE",   CFG_BOOL(sectn_mult_once)},
+    {"ESC_STOPS_TX_ONLY",   CFG_BOOL(stop_tx_only)},
 
     {"F([1-9]|1[0-2])", CFG_MESSAGE(message, -1)},  // index is 1-based
     {"S&P_TU_MSG",      CFG_MESSAGE(message, SP_TU_MSG)},
@@ -1210,6 +1255,9 @@ static config_t logcfg_configs[] = {
     {"SOUNDLOG_PLAY_COMMAND",	CFG_STRING(soundlog_play_cmd)},
     {"SOUNDLOG_RECORD_COMMAND",	CFG_STRING(soundlog_record_cmd)},
     {"SOUNDLOG_DIRECTORY",	CFG_STRING(soundlog_dir)},
+#ifdef HAVE_PYTHON
+    {"PLUGIN_CONFIG",      CFG_STRING(plugin_config)},
+#endif
 
     {"RIGPORT",         CFG_STRING_NOCHOMP(rigportname)},
     {"CLUSTERLOGIN",    CFG_STRING_STATIC_NOCHOMP(clusterlogin, 80)},
@@ -1252,6 +1300,7 @@ static config_t logcfg_configs[] = {
     {"DIGI_RIG_MODE",       NEED_PARAM, cfg_digi_rig_mode},
     {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
     {"RESEND_CALL",         NEED_PARAM, cfg_resend_call},
+    {"GENERIC_MULT",        NEED_PARAM, cfg_generic_mult},
 
     {NULL}  // end marker
 };

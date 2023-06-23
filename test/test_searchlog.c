@@ -20,6 +20,8 @@
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/nicebox.o
 // OBJECT ../src/qtcutil.o
+// OBJECT ../src/plugin.o
+// OBJECT ../src/qrb.o
 // OBJECT ../src/printcall.o
 // OBJECT ../src/recall_exchange.o
 // OBJECT ../src/setcontest.o
@@ -27,6 +29,8 @@
 // OBJECT ../src/ui_utils.o
 // OBJECT ../src/score.o
 // OBJECT ../src/utils.o
+
+void checkexchange(struct qso_t *qso, bool interactive) {}
 
 char section[8] = "";       // defined in getexchange.c
 
@@ -104,10 +108,10 @@ contest_config_t config_focm;
 #define QSO5 " 80CW  12-Jan-18 16:34 0009  UA9LM          599  599  17            UA9 17   3         "
 #define QSO6 " 80CW  12-Jan-18 16:36 0010  AA3BP          599  599  05            K   05   3         "
 
-/* helper to add string to pos n in qsos array, parse the string as qso
+/* helper to add string in qsos array, parse the string as qso
  * and add it to qso_array
  */
-void add_log(int n, char *string) {
+void add_log(char *string) {
     struct qso_t *qso;
     char *line;
 
@@ -120,14 +124,12 @@ void add_log(int n, char *string) {
 static void write_qsos() {
     init_qso_array();
 
-    add_log(0, QSO1);
-    add_log(1, QSO2);
-    add_log(2, QSO3);
-    add_log(3, QSO4);
-    add_log(4, QSO5);
-    add_log(5, QSO6);
-
-    nr_qsos = 6;
+    add_log(QSO1);
+    add_log(QSO2);
+    add_log(QSO3);
+    add_log(QSO4);
+    add_log(QSO5);
+    add_log(QSO6);
 }
 
 int setup_default(void **state) {
@@ -135,6 +137,8 @@ int setup_default(void **state) {
 	strcpy(searchresult[i], "");
 
     showmsg_spy = showstring_spy1 = showstring_spy2 = STRING_NOT_SET;
+
+    current_qso.call = g_malloc0(CALL_SIZE);
 
     contest = &config_qso;
     iscontest = false;
@@ -183,6 +187,7 @@ int teardown_default(void **state) {
     FREE_DYNAMIC_STRING(callmaster_filename);
     return 0;
 }
+
 
 //void test_callmaster_no_file(void **state) {
 //    remove_callmaster();
@@ -296,38 +301,38 @@ void test_bandstr2line(void **state) {
 /* testing pickup call suggestion for USEPARTIAL */
 void test_UsePartialFromLog(void **state) {
     use_part = true;
-    strcpy(hiscall, "K4DE");
-    filterLog(hiscall);
+    strcpy(current_qso.call, "K4DE");
+    filterLog(current_qso.call);
     handlePartials();
-    assert_string_equal(hiscall, "K4DEF");
+    assert_string_equal(current_qso.call, "K4DEF");
 }
 
 void test_UsePartialFromLogNotUnique(void **state) {
     use_part = true;
-    strcpy(hiscall, "UA");
-    filterLog(hiscall);
+    strcpy(current_qso.call, "UA");
+    filterLog(current_qso.call);
     handlePartials();
-    assert_string_equal(hiscall, "UA");
+    assert_string_equal(current_qso.call, "UA");
 }
 
 void test_UsePartialFromCallmaster(void **state) {
     write_callmaster("callmaster", "# data\nA1AA\nA2BB\n\n");
     load_callmaster();
     use_part = true;
-    strcpy(hiscall, "A1");
-    filterLog(hiscall);
+    strcpy(current_qso.call, "A1");
+    filterLog(current_qso.call);
     handlePartials();
-    assert_string_equal(hiscall, "A1AA");
+    assert_string_equal(current_qso.call, "A1AA");
 }
 
 void test_UsePartialNotUnique(void **state) {
     write_callmaster("callmaster", "# data\nA1AA\nLA3AA\nA3BB\n");
     load_callmaster();
     use_part = true;
-    strcpy(hiscall, "A3");
-    filterLog(hiscall);
+    strcpy(current_qso.call, "A3");
+    filterLog(current_qso.call);
     handlePartials();
-    assert_string_equal(hiscall, "A3");
+    assert_string_equal(current_qso.call, "A3");
 }
 
 void test_UsePartialNotUnique_only_callmaster(void **state) {
@@ -335,10 +340,10 @@ void test_UsePartialNotUnique_only_callmaster(void **state) {
     write_callmaster("callmaster", "# data\nA1AA\nA2HG\nHG3BB\n");
     load_callmaster();
     use_part = true;
-    strcpy(hiscall, "HG");  // not in log yet
-    filterLog(hiscall);
+    strcpy(current_qso.call, "HG");  // not in log yet
+    filterLog(current_qso.call);
     handlePartials();
-    assert_string_equal(hiscall, "HG");
+    assert_string_equal(current_qso.call, "HG");
 }
 
 /* test if partials display checks callmaster even if match was found in log */
@@ -347,9 +352,9 @@ void test_displayPartials_exact_callmaster(void **state) {
     // callmaster has also some UA3JKx calls
     write_callmaster("callmaster", "# data\nA1AA\nUA3JK\nUA3JKA\nUA3JKB\n");
     load_callmaster();
-    strcpy(hiscall, "UA3JK");   // already in log
+    strcpy(current_qso.call, "UA3JK");   // already in log
 
-    filterLog(hiscall);
+    filterLog(current_qso.call);
     handlePartials();
 
     check_mvprintw_output(2, 1, 1, "UA3JK");    // first - from log
@@ -364,18 +369,16 @@ void test_displayPartials(void **state) {
 
 	char *line = g_strdup_printf(" 80CW  12-Jan-18 16:34 0009  UA9%cAA         599  599  17            UA9 17   3         ",
 		'A' + i);
-	add_log(6 + i, line);
+	add_log(line);
 	g_free(line);
-
-	nr_qsos++;
     }
 
     // callmaster has also some UAs
     write_callmaster("callmaster", "# data\nA1AA\nF2UAA\nGW3UAB\n");
     load_callmaster();
-    strcpy(hiscall, "UA");
+    strcpy(current_qso.call, "UA");
 
-    filterLog(hiscall);
+    filterLog(current_qso.call);
     handlePartials();
 
     // check selected displayed values only (F2UAA must not be shown)

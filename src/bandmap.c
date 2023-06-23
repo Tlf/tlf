@@ -111,7 +111,7 @@ void bmdata_write_file() {
     while (found != NULL) {
 	sp = found->data;
 	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s\n",
-		sp->call, sp->freq, sp->mode, sp->band,
+		sp->call, sp->freq, sp->mode, sp->bandindex,
 		sp->node, sp->timeout, sp->dupe, sp->cqzone,
 		sp->ctynr, g_strchomp(sp->pfx));
 	found = found->next;
@@ -156,7 +156,7 @@ void bmdata_read_file() {
 			    break;
 			case 2:		sscanf(token, "%hhd", &entry->mode);
 			    break;
-			case 3:		sscanf(token, "%hd", &entry->band);
+			case 3:		sscanf(token, "%hd", &entry->bandindex);
 			    break;
 			case 4:		sscanf(token, "%c", &entry->node);
 			    break;
@@ -293,7 +293,7 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
      *   but display only rounded to 100 Hz - sort exact
      */
     GList *found;
-    int band;
+    int bandindex;
     char mode;
     dxcc_data *dxccdata;
     int dxccindex;
@@ -305,11 +305,11 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
     if (freq > 30000000)
 	return;
 
-    band = freq2band(freq);
-    if (band == BANDINDEX_OOB)  /* no ham band */
+    bandindex = freq2bandindex(freq);
+    if (bandindex == BANDINDEX_OOB)  /* no ham band */
 	return;
 
-    mode = freq2mode(freq, band);
+    mode = freq2mode(freq, bandindex);
 
     /* acquire bandmap mutex */
     pthread_mutex_lock(&bm_mutex);
@@ -322,7 +322,7 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
     while (found != NULL) {
 
 	/* if same band and mode -> found spot already in list */
-	if (((spot *)found->data)->band == band &&
+	if (((spot *)found->data)->bandindex == bandindex &&
 		((spot *)found->data)->mode == mode)
 	    break;
 
@@ -347,7 +347,7 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	entry -> call = g_strdup(call);
 	entry -> freq = freq;
 	entry -> mode = mode;
-	entry -> band = band;
+	entry -> bandindex = bandindex;
 	entry -> node = node;
 	entry -> timeout = SPOT_NEW;
 	entry -> dupe = 0;	/* Dupe will be determined later. */
@@ -661,7 +661,7 @@ freq_t bm_get_center(int band, int mode) {
 
 /* small helpers for filter_spots() */
 static bool band_matches(spot *data) {
-    return (data->band == bandinx);
+    return (data->bandindex == bandinx);
 }
 
 static bool mode_matches(spot *data) {
@@ -695,11 +695,11 @@ void filter_spots() {
 	data = list->data;
 
 	/* check and mark spot as dupe */
-	dupe = bm_isdupe(data->call, data->band);
+	dupe = bm_isdupe(data->call, data->bandindex);
 	data -> dupe = dupe;
 
 	/* ignore spots on WARC bands if in contest mode */
-	if (iscontest && IsWarcIndex(data->band))
+	if (iscontest && IsWarcIndex(data->bandindex))
 	    continue;
 
 	/* ignore dupes if not forced */
@@ -744,7 +744,7 @@ void bandmap_show() {
      *   		small preceding letter for reporting station
      *
      * show own frequency as dashline in green color
-     * - highligth actual spot if near own frequency
+     * - highlight actual spot if near own frequency
      *
      * Allow selection of one of the spots (switches to S&P)
      * - Ctrl-G as known
@@ -935,7 +935,7 @@ spot *copy_spot(spot *data) {
     result -> call = g_strdup(data -> call);
     result -> freq = data -> freq;
     result -> mode = data -> mode;
-    result -> band = data -> band;
+    result -> bandindex = data -> bandindex;
     result -> node = data -> node;
     result -> timeout = data -> timeout;
     result -> dupe = data -> dupe;

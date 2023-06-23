@@ -160,6 +160,55 @@ AS_IF([test "x$wantfldigixmlrpc" = xtrue], [
 	dnl else Fldigi XML RPC not wanted
 	AC_MSG_RESULT([no])])
 
+dnl Check if Python3 and pexpect are available
+AM_PATH_PYTHON([3.8])
+
+AC_MSG_CHECKING([for pexpect])
+AS_IF([$PYTHON -c "import pexpect" 2>/dev/null],
+        [AC_MSG_RESULT([yes])],
+        [AC_MSG_ERROR([Python module pexpect is not available])]
+)
+
+dnl Check if we want to use 'plugin' feature with Python3
+AC_MSG_CHECKING([whether to build Python plugin support])
+AC_ARG_ENABLE([python-plugin],
+	[AS_HELP_STRING([--enable-python-plugin],
+		[Add Python support to use custom rules])],
+	[wantpythonplugin=true],
+	[wantpythonplugin=false])
+
+AS_IF([test "x$wantpythonplugin" = xtrue], [
+	dnl Look for Python
+	AC_MSG_RESULT([yes])
+
+	AM_PATH_PYTHON([3.9])
+
+	python_main_ver=`$PYTHON -c "import sys; print(sys.version.split('.')[[0]])"`
+	python_sub_ver=`$PYTHON -c "import sys; print(sys.version.split('.')[[1]])"`
+
+	AC_ARG_VAR([PYTHON_INCLUDE], [Include flags for python, bypassing python-config])
+	AC_ARG_VAR([PYTHON_CONFIG], [Path to python-config])
+	AS_IF([test -z "$PYTHON_INCLUDE"], [
+	    AS_IF([test -z "$PYTHON_CONFIG"], [
+		AC_PATH_PROGS([PYTHON_CONFIG],
+		    [python$PYTHON_VERSION-config python-config],
+		    [no],
+		    [`dirname $PYTHON`])
+		AS_IF([test "$PYTHON_CONFIG" = no], [AC_MSG_ERROR([cannot find python-config for $PYTHON.])])
+	    ])
+	    AC_MSG_CHECKING([python include flags])
+	    pyinc=`$PYTHON_CONFIG --includes`
+	    AC_SUBST([PYTHON_INCLUDE], [$pyinc])
+	    AC_MSG_RESULT([$pyinc])
+	    AC_MSG_CHECKING([python libs])
+	    AS_IF([test $python_sub_ver -gt 7], [pylibs=`$PYTHON_CONFIG --libs --embed`], [pylibs=`$PYTHON_CONFIG --libs`])
+	    AC_SUBST([PYTHON_LIBS], [$pylibs])
+	    AC_MSG_RESULT([$pylibs])
+            AC_DEFINE([HAVE_PYTHON], [1],
+			[Define to 1 if you have the Python3 libraries.])
+	])
+	], [
+	AC_MSG_RESULT([no])])
 
 dnl Set warnings for compilation
 dnl CFLAGS is reserved for user, so set the AM_* counterpart.
@@ -193,6 +242,7 @@ echo \
 
  Package features:
 
- With XML RPC	$wantfldigixmlrpc
+ With XML RPC		$wantfldigixmlrpc
+ With Python plugin	$wantpythonplugin
 
 -----------------------------------------------------------------------"

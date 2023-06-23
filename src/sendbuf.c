@@ -42,6 +42,7 @@
 #include "tlf_curses.h"
 #include "write_keyer.h"
 
+#include "sendbuf.h"
 
 #define BUFSIZE   81
 char buffer[BUFSIZE];
@@ -165,59 +166,60 @@ void replace_all(char *buf, int size, const char *what, const char *rep) {
     replace_n(buf, size, what, rep, 999);
 }
 
-void ExpandMacro(void) {
-
-    int i;
+void ExpandQsoNumber(char *qsonr) {
     static char qsonroutput[5] = "";
-    static char rst_out[4] = "";
-
-
-    replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
-
-
-    if (NULL != strstr(buffer, "@")) {
-	char *p = hiscall + strlen(hiscall_sent);
-	if (strlen(hiscall_sent) != 0) {
-	    hiscall_sent[0] = '\0';
-	    early_started = 0;
-//                              sending_call = 0;
+    int leading_zeros = 0;
+    bool lead = true;
+    for (int i = 0; i <= 4; i++) {
+	if (lead && qsonr[i] == '0') {
+	    ++leading_zeros;
+	} else {
+	    lead = false;
 	}
-	if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
-	    strcpy(sentcall, hiscall);
-	}
-	replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurrence */
-	replace_all(buffer, BUFSIZE, "@",
-		    hiscall);   /* his call, further occurrences */
+	qsonroutput[i] = short_number(qsonr[i]);
+    }
+    qsonroutput[4] = '\0';
+
+    if (leading_zeros_serial && leading_zeros > 1) {
+	leading_zeros = 1;
     }
 
+    replace_all(buffer, BUFSIZE, "#",
+		qsonroutput + leading_zeros);   /* serial nr */
+}
 
-    rst_out[0] = sent_rst[0];
-    rst_out[1] = short_number(sent_rst[1]);
-    rst_out[2] = short_number(sent_rst[2]);
+void ExpandRst(char rst[4]) {
+    static char rst_out[4] = "";
+    rst_out[0] = rst[0];
+    rst_out[1] = short_number(rst[1]);
+    rst_out[2] = short_number(rst[2]);
     rst_out[3] = '\0';
 
     replace_all(buffer, BUFSIZE, "[", rst_out);   /* his RST */
+}
 
+void ExpandMacro_CurrentQso(void) {
+
+    replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
+
+    if (NULL != strstr(buffer, "@")) {
+	char *p = current_qso.call + strlen(hiscall_sent);
+	if (strlen(hiscall_sent) != 0) {
+	    hiscall_sent[0] = '\0';
+	    early_started = false;
+	}
+	if (cqmode == CQ && resend_call != RESEND_NOT_SET) {
+	    strcpy(sentcall, current_qso.call);
+	}
+	replace_1(buffer, BUFSIZE, "@", p);   /* his call, 1st occurrence */
+	replace_all(buffer, BUFSIZE, "@",
+		    current_qso.call);   /* his call, further occurrences */
+    }
+
+    ExpandRst(sent_rst);
 
     if (NULL != strstr(buffer, "#")) {
-	int leading_zeros = 0;
-	bool lead = true;
-	for (i = 0; i <= 4; i++) {
-	    if (lead && qsonrstr[i] == '0') {
-		++leading_zeros;
-	    } else {
-		lead = false;
-	    }
-	    qsonroutput[i] = short_number(qsonrstr[i]);
-	}
-	qsonroutput[4] = '\0';
-
-	if (!noleadingzeros && leading_zeros > 1) {
-	    leading_zeros = 1;
-	}
-
-	replace_all(buffer, BUFSIZE, "#",
-		    qsonroutput + leading_zeros);   /* serial nr */
+	ExpandQsoNumber(qsonrstr);
 
 	if (lan_active && contest->exchange_serial) {
 	    strncpy(lastqsonr, qsonrstr, 5);
@@ -225,8 +227,7 @@ void ExpandMacro(void) {
 	}
     }
 
-
-    replace_all(buffer, BUFSIZE, "!", comment);
+    replace_all(buffer, BUFSIZE, "!", current_qso.comment);
 
     if (trxmode == DIGIMODE)
 	replace_all(buffer, BUFSIZE, "|", "\r");    /* CR */
@@ -234,16 +235,52 @@ void ExpandMacro(void) {
 	replace_all(buffer, BUFSIZE, "|", "");	    /* drop it */
 }
 
+struct qso_t *get_previous_qso() {
+    static struct qso_t empty_qso = {
+	.call = "",
+	.qso_nr = 0
+    };
 
-void sendbuf(void) {
+    // TODO:lan for networked mode it will be incorrect. Previous qso may not be the last one in the log.
+    for(int i=NR_QSOS-1; i >= 0; i--) {
+        struct qso_t *out_qso = g_ptr_array_index(qso_array, i);
+        if(!out_qso->is_comment) {
+            return out_qso;
+        }
+    }
+    return &empty_qso;
+}
+
+void ExpandMacro_PreviousQso(void) {
+    replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
+
+    struct qso_t *prev_qso = get_previous_qso();
+
+    if (NULL != strstr(buffer, "@")) {
+	replace_all(buffer, BUFSIZE, "@", prev_qso->call);
+    }
+
+    char *prevrst = g_strdup_printf("%03d", prev_qso->rst_s);
+    ExpandRst(prevrst);
+    g_free(prevrst);
+
+    if (NULL != strstr(buffer, "#")) {
+	char *prevnr = g_strdup_printf("%04d", prev_qso->qso_nr);
+	ExpandQsoNumber(prevnr);
+	g_free(prevnr);
+    }
+}
+
+
+void sendbuf(ExpandMacro_t expandMacro) {
 
     if ((trxmode == CWMODE && cwkeyer != NO_KEYER) ||
 	    (trxmode == DIGIMODE && digikeyer != NO_KEYER)) {
 
-	ExpandMacro();
+	expandMacro();
 
 	if (!simulator) {
-	    if (sending_call == 0)
+	    if (!sending_call)
 		add_to_keyer_terminal(buffer);
 	}
 
@@ -288,26 +325,39 @@ void sendbuf(void) {
  * Send the message via CW or DIGI mode, but only if not empty
  * \param msg message to send
  */
-void sendmessage(const char *msg) {
+void sendmessage_with_macro_expand(const char *msg, ExpandMacro_t expandMacro) {
     if (strlen(msg) != 0) {
 	g_strlcpy(buffer, msg, sizeof(buffer));
-	sendbuf();
+	sendbuf(expandMacro);
     }
 }
 
-void send_standard_message(int msg) {
+void sendmessage(const char *msg) {
+    sendmessage_with_macro_expand(msg, ExpandMacro_CurrentQso);
+}
+
+void send_standard_message_with_macro_expand(int msg,
+	ExpandMacro_t expandMacro) {
     switch (trxmode) {
 	case CWMODE:
-	    sendmessage(message[msg]);
+	    sendmessage_with_macro_expand(message[msg], expandMacro);
 	    break;
 	case DIGIMODE:
-	    sendmessage(digi_message[msg]);
+	    sendmessage_with_macro_expand(digi_message[msg], expandMacro);
 	    break;
 	default:
 	    if (msg < 14)
 		vk_play_file(ph_message[msg]);
 	    break;
     }
+}
+
+void send_standard_message(int msg) {
+    send_standard_message_with_macro_expand(msg, ExpandMacro_CurrentQso);
+}
+
+void send_standard_message_prev_qso(int msg) {
+    send_standard_message_with_macro_expand(msg, ExpandMacro_PreviousQso);
 }
 
 void send_keyer_message(int msg) {

@@ -49,6 +49,7 @@
 #include "logit.h"
 #include "netkeyer.h"
 #include "parse_logcfg.h"
+#include "plugin.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "readctydata.h"
 #include "readcalls.h"
@@ -102,7 +103,8 @@ contest_config_t *contest = &config_qso;	/* contest configuration */
 /* predefined contests */
 bool sprint_mode = false;
 int minitest = 0;	/**< if set, length of minitest period in seconds */
-int unique_call_multi = 0;          /* do we count calls as multiplier */
+int unique_call_multi = MULT_NONE;  /* do we count calls as multiplier */
+int generic_mult = MULT_NONE;       /* whether to use mult1_value */
 
 
 int addcallarea;
@@ -140,8 +142,8 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-bool noleadingzeros;
-bool ctcomp = false;
+bool leading_zeros_serial;
+bool ctcomp;
 bool nob4 = false;		// allow auto b4
 bool ignoredupe = false;
 int dupe = 0;
@@ -174,10 +176,6 @@ rmode_t  rigmode = RIG_MODE_NONE;
 bool mixedmode = false;
 char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
-char last_rst[4] = "599";       /* Report for last QSO */
-
-/* TODO Maybe we can use the following */
-int mults_per_band = 1;		/* mults count per band */
 
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
 int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
@@ -189,7 +187,6 @@ bool demode = false;		/* send DE  before s&p call  */
 
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 bool showscore_flag = false;	/* show  score window */
-char exchange[40];
 int defer_store = 0;
 mystation_t my;			/* all info about me */
 
@@ -259,24 +256,23 @@ char qtc_cap_calls[40] = "";
 bool qtc_auto_filltime = false;
 bool qtc_recv_lazy = false;
 
-struct qso_t *current_qso;
+struct qso_t current_qso;
 
-char hiscall[20];			/**< call of other station */
 char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */
 int cwstart = 0;			/**< number characters after which
 					   sending call started automatically,
 					   0 - off, -1 - manual start */
-int sending_call = 0;
-int early_started = 0;			/**< 1 if sending call started early,
+bool sending_call = false;
+bool early_started = false;		/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
+bool stop_tx_only = false;		/**< ESC should stop only tx */
+
 char lastcall[20];
 char lastqsonr[5];
 char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
 { "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
-char comment[80];
-char normalized_comment[80];
 char proposed_exchange[80];
 char cqzone[3] = "";
 char ituzone[3] = "";
@@ -335,6 +331,7 @@ bool bmautograb = false;
 /*-------------------------------------rigctl-------------------------------*/
 int myrig_model = 0;            /* unset */
 RIG *my_rig;			/* handle to rig (instance) */
+pthread_mutex_t rig_lock = PTHREAD_MUTEX_INITIALIZER;
 rmode_t rmode;			/* radio mode of operation */
 pbwidth_t width;
 vfo_t vfo;			/* vfo selection */
@@ -353,7 +350,6 @@ char fldigi_url[50] = "http://localhost:7362/RPC2";
 /*----------------------------the parsed log lines-------------------------*/
 // array of qso's
 GPtrArray *qso_array;
-int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/**< number of calls in worked[] */
@@ -425,7 +421,16 @@ static struct termios oldt, newt;
 const char *argp_program_version = "tlf-" VERSION;
 const char *argp_program_bug_address = "<tlf-devel@nongnu.org>";
 static const char program_description[] =
-    "tlf - contest logging program for amateur radio operators";
+    "tlf - contest logging program for amateur radio operators"
+    "\v"    // "post-doc" separator
+    "Features:"
+#ifdef HAVE_LIBXMLRPC
+    " fldigi-xmlrpc"
+#endif
+#ifdef HAVE_PYTHON
+    " python-plugin"
+#endif
+;
 static const struct argp_option options[] = {
     {
 	"config",   'f', "FILE", 0,
@@ -629,16 +634,34 @@ static void init_variables() {
     nodes = 0;
     shortqsonr = 0;
     tune_seconds = 6;   /* tune up for 6 s */
+    unique_call_multi = MULT_NONE;
+    generic_mult = MULT_NONE;
 
+    leading_zeros_serial = true;
     ctcomp = false;
     resend_call = RESEND_NOT_SET;
+
+    g_free(current_qso.call);
+    current_qso.call = g_malloc0(CALL_SIZE);
+    g_free(current_qso.comment);
+    current_qso.comment = g_malloc0(COMMENT_SIZE);
+    g_free(current_qso.callupdate);
+    current_qso.callupdate = g_malloc0(MAX_CALL_LENGTH + 1);
+    g_free(current_qso.normalized_comment);
+    current_qso.normalized_comment = g_malloc0(COMMENT_SIZE);
+    g_free(current_qso.section);
+    current_qso.section = g_malloc0(MAX_SECTION_LENGTH + 1);
+    g_free(current_qso.mult1_value);
+    current_qso.mult1_value = g_malloc0(MULT_SIZE);
 
     for (int i = 0; i < 25; i++) {
 	FREE_DYNAMIC_STRING(digi_message[i]);
     }
 
     FREE_DYNAMIC_STRING(cabrillo);
-
+#ifdef HAVE_PYTHON
+    FREE_DYNAMIC_STRING(plugin_config);
+#endif
 }
 
 /** load all databases
@@ -711,12 +734,19 @@ static int databases_load() {
     if (trxmode == DIGIMODE) {
 	qtc_recv_lazy = false;
     }
+
+    getstationinfo();
+
+    status = plugin_init(whichcontest);
+    if (status != PARSE_OK) {
+	showmsg("Problems loading plugin!");
+	return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 
 static void hamlib_init() {
-
-    rig_set_debug(RIG_DEBUG_NONE);
 
     if (no_trx_control) {
 	trx_control = false;
@@ -937,6 +967,8 @@ static void tlf_cleanup() {
     }
 #endif
 
+    plugin_close();
+
     endwin();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 
@@ -986,9 +1018,6 @@ int main(int argc, char *argv[]) {
 
     init_keyer_terminal();
 
-    hiscall[0] = '\0';
-
-
     if (isFirstStart()) {
 	/* first time called in this directory */
 	verbose = true;
@@ -1003,6 +1032,7 @@ int main(int argc, char *argv[]) {
     showmsg("");
 
     memset(&my, 0, sizeof(my));
+    rig_set_debug(RIG_DEBUG_NONE);  // disable Hamlib messages
 
     total = 0;
     if (databases_load() == EXIT_FAILURE) {
@@ -1046,7 +1076,7 @@ int main(int argc, char *argv[]) {
 
     /* read the logfile and rebuild point and multiplier scoring */
     /* see also log_read_n_score() for non-interactive variant */
-    nr_qsos = readcalls(logfile, true);
+    readcalls(logfile, true);
     if (qtcdirection > 0) {
 	readqtccalls();
     }

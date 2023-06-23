@@ -59,9 +59,9 @@ char qtcrecv_logfile_import[] = "IMPORT_QTC_recv.log";
 
 void concat_comment(char *dest, char *exchstr) {
     if (strlen(dest) > 0) {
-	g_strlcat(dest, " ", sizeof(comment));
+	g_strlcat(dest, " ", COMMENT_SIZE);
     }
-    g_strlcat(dest, exchstr, sizeof(comment));
+    g_strlcat(dest, exchstr, COMMENT_SIZE);
 }
 
 int qtcs_allowed(struct cabrillo_desc *cabdesc) {
@@ -78,17 +78,17 @@ int starts_with(char *line, char *start) {
 void write_log_fm_cabr(struct qso_t *qso) {
     qso->qso_nr = cablinecnt;
 
-    checkexchange(qso->comment, false);
+    checkexchange(qso, false);
     dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
     addcall(qso);           /* add call to worked list and check it for dupe */
     score_qso(qso);
     char *logline = makelogline(qso);	    /* format logline */
     qso->logline = logline;
-    store_qso(logline);
+    store_qso(logfile, logline);
     g_ptr_array_add(qso_array, qso);
 
     cleanup_qso();
-    qsoflags_for_qtc[nr_qsos - 1] = 0;
+    qsoflags_for_qtc[NR_QSOS - 1] = 0;
 }
 
 /* write a new line to the qtc log */
@@ -127,7 +127,7 @@ void write_qtclog_fm_cabr(char *qtcrcall, struct read_qtc_t  qtc_line) {
 	}
 
 	// look until not found and we're in list
-	while (found_call == 0 && qtc_curr_call_nr < nr_qsos) {
+	while (found_call == 0 && qtc_curr_call_nr < NR_QSOS) {
 	    strncpy(thiscall, QSOS(qtc_curr_call_nr) + 29, 14);
 	    g_strchomp(thiscall);
 	    strncpy(ttime, QSOS(qtc_curr_call_nr) + 17, 2);
@@ -242,7 +242,7 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
     }
 
     struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
-    qso->comment = g_malloc0(sizeof(comment));   // pre-allocate buffer for comment
+    qso->comment = g_malloc0(COMMENT_SIZE);   // pre-allocate buffer for comment
 
     qtcrcall[0] = '\0';
     qtcscall[0] = '\0';
@@ -256,7 +256,7 @@ void cab_qso_to_tlf(char *line, struct cabrillo_desc *cabdesc) {
 	switch (item->tag) {
 	    case FREQ:
 		qso->freq = atof(tempstr) * 1000.0;
-		qso->bandindex = freq2band(qso->freq);   //FIXME check OOB, see log_utils
+		qso->bandindex = freq2bandindex(qso->freq);   //FIXME check OOB, see log_utils
 		strcpy(qtc_line.band, band[qso->bandindex]);
 		qtc_line.freq = qso->freq;
 		break;

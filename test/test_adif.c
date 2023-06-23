@@ -86,6 +86,7 @@ int setup_default(void **state) {
 void test_keep_old_format(void **state) {
     char buffer[181];
 
+    extern char exchange[40];      // defined in writecabrillo.c
     strcpy(exchange, "14");
 
     struct linedata_t *qso;

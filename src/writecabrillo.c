@@ -43,6 +43,8 @@
 #include "sendbuf.h"
 #include "bands.h"
 
+char exchange[40];      // format of sent exchange
+
 struct linedata_t *get_next_record(FILE *fp);
 struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection);
 void free_linedata(struct linedata_t *ptr);
@@ -204,7 +206,7 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 
     /* frequency */
     ptr->freq = atof(buffer + 80 + shift) * 1000.0;
-    if (freq2band(ptr->freq) == BANDINDEX_OOB) {
+    if (freq2bandindex(ptr->freq) == BANDINDEX_OOB) {
 	ptr->freq = 0.;
     }
 
@@ -453,9 +455,6 @@ void prepare_line(struct linedata_t *qso, struct cabrillo_desc *desc,
 }
 
 static void set_exchange_format() {
-    if (strlen(exchange) > 0) {
-	return;                 // it was set explicitly, use it
-    }
     if (contest->exchange_serial) {
 	strcpy(exchange, "#");  // contest is using serial number
 	return;

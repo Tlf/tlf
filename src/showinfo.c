@@ -78,7 +78,7 @@ static void showinfo_internal(int pfx_index) {
 }
 
 void update_info_line() {
-    int pfx_index = getctydata_pfx(hiscall);
+    int pfx_index = getctydata_pfx(current_qso.call);
     showinfo_internal(pfx_index);
 }
 

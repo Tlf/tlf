@@ -37,6 +37,20 @@
 #include "score.h"
 #include "tlf.h"
 
+#include "getexchange.h"
+#include "addmult.h"
+#include "log_utils.h"
+
+// create a qso_t from a spot for multiplier checking
+static struct qso_t *qso_from_spot(spot *data) {
+    struct qso_t *qso = g_malloc0(sizeof(struct qso_t));
+    qso->call = g_strdup(data->call);
+    qso->comment = g_strdup("");    // TODO recall exchange if possible
+    qso->freq = data->freq;
+    qso->band = bandindex2nr(data->bandindex);
+    return qso;
+}
+
 /* No Multiplier mark in bandmap for multis determined from comment field;
  * Code works also for modes with no multiplier at all */
 static bool no_multi(spot *data) {
@@ -45,11 +59,11 @@ static bool no_multi(spot *data) {
 
 
 static bool pfx_on_band_ismulti(spot *data) {
-    int band = data->band;
+    int bandindex = data->bandindex;
     char *call = data->call;
 
     char *prefix = get_wpx_pfx(call);
-    bool multi = pfx_is_new_on(prefix, band);
+    bool multi = pfx_is_new_on(prefix, bandindex);
     g_free(prefix);
     return multi;
 }
@@ -64,10 +78,10 @@ static bool wpx_ismulti(spot *data) {
 
 
 static bool cqww_ismulti(spot *data) {
-    int band = data->band;
+    int bandindex = data->bandindex;
 
-    if ((zones[data->cqzone] & inxes[band]) == 0
-	    || (countries[data->ctynr] & inxes[band]) == 0) {
+    if ((zones[data->cqzone] & inxes[bandindex]) == 0
+	    || (countries[data->ctynr] & inxes[bandindex]) == 0) {
 	return true;
     }
 
@@ -76,9 +90,9 @@ static bool cqww_ismulti(spot *data) {
 
 static bool arrldx_usa_ismulti(spot *data)  {
     int ctynr = data->ctynr;
-    int band = data->band;
+    int bandindex = data->bandindex;
 
-    if ((countries[ctynr] & inxes[band]) != 0)
+    if ((countries[ctynr] & inxes[bandindex]) != 0)
 	return false;
 
     if (ctynr == w_cty || ctynr == ve_cty)
@@ -89,7 +103,7 @@ static bool arrldx_usa_ismulti(spot *data)  {
 
 
 bool general_ismulti(spot *data) {
-    int band = data->band;
+    int bandindex = data->bandindex;
 
     if (dx_arrlsections) {
 	/* no evaluation of sections, check only country */
@@ -97,7 +111,7 @@ bool general_ismulti(spot *data) {
     }
 
     if (country_mult) {
-	return ((countries[data->ctynr] & inxes[band]) == 0);
+	return ((countries[data->ctynr] & inxes[bandindex]) == 0);
     }
 
     if (pfxmult) {
@@ -109,10 +123,15 @@ bool general_ismulti(spot *data) {
     }
 
     if (itumult || wazmult) {
-	return ((zones[data->cqzone] & inxes[band]) == 0);
+	return ((zones[data->cqzone] & inxes[bandindex]) == 0);
     }
 
-    return false;
+    struct qso_t *qso = qso_from_spot(data);
+    checkexchange(qso, false);
+    bool new_mult = (check_mult(qso) >= 0);
+    free_qso(qso);
+
+    return new_mult;
 }
 
 
@@ -200,7 +219,6 @@ contest_config_t config_arrldx_dx = {
 contest_config_t config_arrl_ss = {
     .id = ARRL_SS,
     .name = "ARRL_SS",
-    .exchange_serial = true,
     .points = {
 	.type = FIXED,
 	.point = 2,
@@ -321,7 +339,6 @@ void setcontest(char *name) {
     showscore_flag = true;
     searchflg = true;
     sectn_mult = false;
-    noleadingzeros = false;
 
     w_cty = getctynr(wcall);
     ve_cty = getctynr(vecall);
@@ -341,7 +358,7 @@ void setcontest(char *name) {
 	qso_once = true;
 	multlist = 1;
 //      sectn_mult = true;
-	noleadingzeros = true;
+	leading_zeros_serial = false;
     }
 
     if (CONTEST_IS(PACC_PA)) {

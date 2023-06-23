@@ -1,0 +1,66 @@
+########################
+# North American QSO Party
+# Provided by: Victor Denisov N6DVS
+# Last Verified: 2023-03-19
+########################
+#
+CONTEST_MODE
+LOGFILE=naqp.log
+CABRILLO=UNIVERSAL
+#ONE_POINT
+#SERIAL_OR_SECTION
+GENERIC_MULT=BAND
+#MULT_LIST=naqp_mults
+#SECTION_MULT
+NO_RST
+PLUGIN_CONFIG=dummy
+#
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CQ_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = call                      #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#                                #
+##################################
+#
+F1=cq naqp %
+F2=@ DE %
+F3=vic ca
+F4=TU 
+F5=@
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9= ?
+F10= QRZ?
+F11= PSE K
+F12=cq naqp %
+#
+CQ_TU_MSG=TU %
+S&P_TU_MSG=vic ca
+#
+#ALT_0=
+ALT_1=ca
+ALT_2=qth?
+ALT_3=vic
+ALT_4=name?
+#ALT_5=
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+#SEND_DE
+#
+CABRILLO-QSO-FORMAT=NAQP
+CABRILLO-EXCHANGE=vic ca
+CABRILLO-CONTEST=
+####### END #####################
+

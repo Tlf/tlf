@@ -80,7 +80,7 @@ static freq_t ask_frequency() {
 
 void add_local_spot(void) {
 
-    if (strlen(hiscall) < 3) {
+    if (strlen(current_qso.call) < 3) {
 	return;
     }
 
@@ -88,9 +88,9 @@ void add_local_spot(void) {
 	freq = ask_frequency();
     }
 
-    add_to_spots(hiscall, freq);
+    add_to_spots(current_qso.call, freq);
 
-    hiscall[0] = '\0';
+    current_qso.call[0] = '\0';
 }
 
 
@@ -100,7 +100,7 @@ void add_local_spot(void) {
 
 /* find last qso record in qso_array, return NULL if no one found */
 static struct qso_t *find_last_qso() {
-    int i = nr_qsos;
+    int i = NR_QSOS;
     while (i > 0) {
 	struct qso_t *last_qso = g_ptr_array_index(qso_array, i-1);
 	if (!last_qso->is_comment) {
@@ -116,14 +116,14 @@ static bool spot_too_old(const struct qso_t *qso) {
 }
 
 /* Get call and frequency in Hz of spot.
- * First try to use hiscall as spot call. If empty use data from last qso if
+ * First try to use current_qso.call as spot call. If empty use data from last qso if
  * not to old.
  * If no frequency data available ask user.
  * Returns true if valid spot data found.
  */
 static bool get_spot_data(char **spot_call, freq_t *spot_freq) {
-    if (strlen(hiscall) > 2) {
-	*spot_call = g_strdup(hiscall);
+    if (strlen(current_qso.call) > 2) {
+	*spot_call = g_strdup(current_qso.call);
 	if (trx_control) {
 	    *spot_freq = freq;
 	} else {

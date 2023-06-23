@@ -1,6 +1,7 @@
 #include "test.h"
 
 #include <stdbool.h>
+#include <glob.h>
 
 #include "../src/tlf.h"
 #include "../src/dxcc.h"
@@ -23,6 +24,8 @@
 // OBJECT ../src/getexchange.o
 // OBJECT ../src/getpx.o
 // OBJECT ../src/get_time.o
+// OBJECT ../src/plugin.o
+// OBJECT ../src/qrb.o
 // OBJECT ../src/readcalls.o
 // OBJECT ../src/searchcallarray.o
 // OBJECT ../src/setcontest.o
@@ -40,6 +43,10 @@ char thisnode = 'A';
 bool lan_active = false;
 
 // dummy functions
+void cleanup_comment() {}
+void restore_comment() {}
+void cleanup_hiscall() {}
+void rst_reset() {}
 void readqtccalls() {}
 void shownr(char *msg, int x) {}
 
@@ -54,6 +61,7 @@ void time_update() {}
 void show_rtty() {}
 void keyer() {}
 void send_standard_message(int msg) {}
+void send_standard_message_prev_qso(int msg) {}
 void stoptx() {}
 void qtc_main_panel(int direction) {}
 void add_local_spot() {}
@@ -109,6 +117,22 @@ void write_log(char *logfile) {
     append_log_line(logfile, QSO1);
 }
 
+// returns the number of files removed
+int remove_backup_logs() {
+    int n = 0;
+    glob_t globbuf;
+    int rc = glob("2*_" LOGFILE, GLOB_ERR, NULL, &globbuf);
+    if (rc == 0) {
+	char **found = globbuf.gl_pathv;
+	while (found && *found) {
+	    unlink(*found);
+	    ++found;
+	    ++n;
+	}
+    }
+    globfree(&globbuf);
+    return n;
+}
 
 int setup_default(void **state) {
 
@@ -137,11 +161,15 @@ int setup_default(void **state) {
 
     showmsg_spy = STRING_NOT_SET;
 
+    remove_backup_logs();
+
     return 0;
 }
 
 int teardown_default(void **state) {
-    unlink(logfile);
+    assert_int_equal(remove_backup_logs(), 0);
+    unlink(LOGFILE);
+
     free_qso_array();
     return 0;
 }
@@ -167,28 +195,30 @@ void test_qso_array_init(void **state) {
 
 void test_readcalls_simple_log(void **state) {
     int lines;
-    gchar *qso = g_strdup(QSO1);
-    qso[LOGLINELEN - 1] = '\0';
+    gchar *qso_line = g_strndup(QSO1, LOGLINELEN - 1);
 
     write_log(LOGFILE);
     lines = readcalls(LOGFILE, true);
     assert_non_null(qso_array);
     assert_int_equal(lines, qso_array->len);
     assert_int_equal(lines, 1);
-    assert_string_equal(((struct qso_t *)g_ptr_array_index(qso_array, 0))->logline, qso);
-    assert_string_equal(((struct qso_t *)g_ptr_array_index(qso_array, 0))->call, "PY9BBB");
-    g_free(qso);
+    struct qso_t *qso = g_ptr_array_index(qso_array, 0);
+    assert_non_null(qso);
+    assert_string_equal(qso->logline, qso_line);
+    assert_string_equal(qso->call, "PY9BBB");
+    assert_null(qso->normalized_comment);
+    g_free(qso_line);
 }
 
 void test_readcalls_note(void **state) {
-    gchar *note = g_strdup(NOTE);
-    note[LOGLINELEN - 1] = '\0';
+    gchar *note = g_strndup(NOTE, LOGLINELEN - 1);
 
     write_log(LOGFILE);
     append_log_line(LOGFILE, NOTE);
     assert_int_equal(readcalls(LOGFILE, true), 2);;
 
     struct qso_t *qso = g_ptr_array_index(qso_array, 1);
+    assert_non_null(qso);
     assert_string_equal(qso->logline, note);
     assert_int_equal(qso->is_comment, true);
 
@@ -225,17 +255,26 @@ void test_add_to_worked_dupe(void **state) {
 			"Log changed due to rescoring. Do you want to save it? Y/(N)");
 }
 
+void test_add_to_worked_dupe_non_interactive(void **state) {
+    write_log(LOGFILE);
+    append_log_line(LOGFILE, QSO1);     // add same line again
+    readcalls(LOGFILE, false);          // non-interactive mode
+    assert_int_equal(nr_worked, 1);
+    assert_string_equal(showmsg_spy, STRING_NOT_SET);
+    assert_int_equal(remove_backup_logs(), 1);
+}
+
 void test_add_to_worked_continentlistonly(void **state) {
     continentlist_only = true;
     write_log(LOGFILE);
-    readcalls(LOGFILE, false);      // non-interactive
+    readcalls(LOGFILE, true);
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
     assert_int_equal(get_nr_of_points(), 3);    // normal CQWW scoring
     assert_int_equal(get_nr_of_mults(), 0);     // but no mult due to continent list
     assert_string_equal(showmsg_spy,
-			STRING_NOT_SET);   // non-interactive, no message
+			"Log changed due to rescoring. Do you want to save it? Y/(N)");
 }
 
 void test_add_to_worked_wpx(void **state) {

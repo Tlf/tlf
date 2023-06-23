@@ -43,11 +43,11 @@ freq_t grabspot(void) {
 	return 0;   // no trx control
     }
 
-    if (hiscall[0] == '\0') {
+    if (current_qso.call[0] == '\0') {
 	return 0;   // call input is empty
     }
 
-    spot *data = bandmap_lookup(hiscall);
+    spot *data = bandmap_lookup(current_qso.call);
 
     if (data == NULL) {
 	return 0;   // no spot found
@@ -89,7 +89,7 @@ static freq_t execute_grab(spot *data) {
     set_outfreq(f);
     send_bandswitch(f);
 
-    strcpy(hiscall, data->call);
+    strcpy(current_qso.call, data->call);
 
     /* if in CQ mode switch to S&P and remember QRG */
     if (cqmode == CQ) {

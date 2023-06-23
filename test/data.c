@@ -103,7 +103,7 @@ bool serial_section_mult = false;
 bool serial_or_section = false;	/* exchange is serial OR section, like HA-DX */
 bool serial_grid4_mult = false;
 bool qso_once = false;
-bool noleadingzeros;
+bool leading_zeros_serial;
 bool ctcomp = false;
 int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
 bool nob4 = false;			// allow auto b4
@@ -140,8 +140,6 @@ rmode_t digi_mode = 0;
 bool mixedmode = false;
 char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
-char last_rst[4] = "599";       /* Report for last QSO */
-int mults_per_band = 1;		/* mults count per band */
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
 int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
 bool clusterlog = false;		/* clusterlog on/off */
@@ -152,7 +150,6 @@ bool demode = false;		/* send DE  before s&p call  */
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
 bool showscore_flag = false;	/* show  score window */
 int change_rst = 0;
-char exchange[40];
 int defer_store = 0;
 mystation_t my;
 char logfile[120] = "general.log";
@@ -229,22 +226,21 @@ int qtcdirection = 0;
 
 int minitest = 0;
 
-struct qso_t *current_qso;
-char hiscall[20];			/**< call of other station */
+struct qso_t current_qso;
 char hiscall_sent[20] = "";		/**< part which was sent during early
 					  start */
 int cwstart = 0;			/**< number characters after which
 					   sending call started automatically,
 					   0 - off, -1 - manual start */
-int sending_call = 0;
-int early_started = 0;			/**< 1 if sending call started early,
+bool sending_call = false;
+bool early_started = false;		/**< 1 if sending call started early,
 					   strlen(hiscall)>cwstart or 'space' */
+bool stop_tx_only = false;		/**< ESC should stop only tx */
+
 char lastcall[20];
 char qsonrstr[5] = "0001";
 char band[NBANDS][4] =
 { "160", " 80", " 60", " 40", " 30", " 20", " 17", " 15", " 12", " 10", "???" };
-char comment[80];
-char normalized_comment[80];
 char proposed_exchange[80];
 char mode[20] = "Log     ";
 char cqzone[3] = "";
@@ -331,7 +327,6 @@ int rigptt = 0;
 /*----------------------------the parsed log lines-------------------------*/
 // array of qso's
 GPtrArray *qso_array;
-int nr_qsos = 0;
 
 /*------------------------------dupe array---------------------------------*/
 int nr_worked = 0;		/*< number of calls in worked[] */
@@ -406,7 +401,8 @@ int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 mults_t multis[MAX_MULTS]; 	/**< worked multis */
 int nr_multis = 0;      	/**< number of multis in multis[] */
 
-int unique_call_multi = 0;          /* do we count calls as multiplier */
+int unique_call_multi = MULT_NONE;  /* do we count calls as multiplier */
+int generic_mult = MULT_NONE;
 
 //////////////////
 char lan_logline[256];	    // defined in log_to_disk.c
@@ -423,8 +419,6 @@ int wattr_on(WINDOW *win, attr_t attrs, void *opts) {
     return 0;
 }
 
-void displayit() {
-}
 
 int netkeyer(int cw_op, char *cwmessage) {
     return 0;

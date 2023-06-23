@@ -500,7 +500,7 @@ int changepars(void) {
 
 	    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-	    move(12, 29 + strlen(hiscall));
+	    move(12, 29 + strlen(current_qso.call));
 	    break;
 
 	}
@@ -512,13 +512,13 @@ int changepars(void) {
 	case 41: {		/* SYNC */
 	    if (strlen(synclogfile) > 0)
 		synclog(synclogfile);
-	    nr_qsos = log_read_n_score();
+	    log_read_n_score();
 	    scroll_log();
 	    clear_display();
 	    break;
 	}
 	case 42: {		/* RESCORE */
-	    nr_qsos = log_read_n_score();
+	    log_read_n_score();
 	    clear_display();
 	    scroll_log();
 	    break;
@@ -653,7 +653,7 @@ int changepars(void) {
     mvaddstr(12, 29, "            ");
     move(12, 29);
     refreshp();
-    hiscall[0] = '\0';
+    current_qso.call[0] = '\0';
 
     return (0);
 }

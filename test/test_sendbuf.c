@@ -23,7 +23,6 @@ bool simulator = false;
 char test_msg[1024];
 
 /* export internal function for test */
-void ExpandMacro();
 char *PrepareSPcall();
 void replace_all(char *buf, int size, const char *what,
 		 const char *rep);
@@ -74,26 +73,29 @@ void check_replace_all(char *input, const char *what, char *rep,
 
 void check_ExpandMacro(const char *input, const char *exp) {
     strcpy(buffer, input);
-    ExpandMacro();
+    ExpandMacro_CurrentQso();
     assert_string_equal(buffer, exp);
 }
 
 
 /* setup/teardown */
 int setup_default(void **state) {
+    current_qso.call = g_malloc0(CALL_SIZE);
+
     wkeyerbuffer[0] = '\0';
     data_ready = 0;
     simulator = false;
-    sending_call = 0;
+    sending_call = false;
     trxmode = CWMODE;
     cwkeyer = 1;
     digikeyer = 1;
     strcpy(my.call, "dl1jbe");
-    strcpy(hiscall, "lz1ab");
+    strcpy(current_qso.call, "lz1ab");
     strcpy(sent_rst, "579");
     shortqsonr = LONGCW;
     strcpy(qsonrstr, "0309");
-    strcpy(comment, "Alex");
+    current_qso.comment = g_malloc0(COMMENT_SIZE);
+    strcpy(current_qso.comment, "Alex");
     *message[SP_CALL_MSG] = '\0';
 
     return 0;
@@ -185,7 +187,7 @@ void test_expandQsoNrshort(void **state) {
 }
 
 void test_expandQsoNr_leadingzeros(void **state) {
-    noleadingzeros = false;
+    leading_zeros_serial = true;
     strcpy(qsonrstr, "0007");
     check_ExpandMacro("nr #", "nr 007");
     strcpy(qsonrstr, "0073");
@@ -197,7 +199,7 @@ void test_expandQsoNr_leadingzeros(void **state) {
 }
 
 void test_expandQsoNr_noleadingzeros(void **state) {
-    noleadingzeros = true;
+    leading_zeros_serial = false;
     strcpy(qsonrstr, "0007");
     check_ExpandMacro("nr #", "nr 7");
     strcpy(qsonrstr, "0073");

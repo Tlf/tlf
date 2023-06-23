@@ -14,8 +14,6 @@ extern mystation_t my;			// all about my station
 extern char whichcontest[];
 extern contest_config_t *contest;	// contest configuration
 
-extern int nr_qsos;			// number of lines in qsos[]
-
 extern GPtrArray *qso_array;		// array of parsed QSOs
 					// note that not every log line needs
 					// to be a QSO, it could also be a
@@ -49,11 +47,10 @@ extern bool iscontest;
 
 extern bool country_mult;
 
-extern struct qso_t *current_qso;
-extern char hiscall[20];
-extern char hiscall_sent[20];
+extern struct qso_t current_qso;
+extern char hiscall_sent[CALL_SIZE];
 extern int resend_call;
-extern char sentcall[20];
+extern char sentcall[CALL_SIZE];
 extern int total;
 extern int qso_points;
 extern int qsos_per_band[NBANDS];
@@ -76,6 +73,7 @@ extern bool pfxmult;
 extern bool pfxmultab;
 extern int minute_timer;
 extern int unique_call_multi;
+extern int generic_mult;
 
 extern char logline_edit[5][LOGLINELEN + 1];
 #define logline0 logline_edit[0]
@@ -94,10 +92,7 @@ extern char ituzone[];
 extern char continent[];
 extern bool itumult;
 
-extern char mult1_value[40];
 extern int new_mult;
-extern char comment[80];
-extern char normalized_comment[80];
 extern char proposed_exchange[80];
 
 extern char lan_logline[];
@@ -109,6 +104,7 @@ extern int highqsonr;
 
 
 extern RIG *my_rig;
+extern pthread_mutex_t rig_lock;
 extern cqmode_t cqmode;
 extern int trxmode;
 extern int myrig_model;
@@ -119,7 +115,6 @@ extern bool cqwwm2;
 extern char lastcall[];
 extern char recvd_rst[];
 extern char sent_rst[];
-extern char last_rst[];
 extern bool wazmult;
 extern int addcallarea;
 extern int new_cty;
@@ -147,13 +142,14 @@ extern int xplanet;
 extern int cwkeyer;
 extern int digikeyer;
 extern int cwstart;
-extern int early_started;
+extern bool early_started;
+extern bool stop_tx_only;
 extern int zonedisplay;
 extern int rigptt;
 extern int k_ptt;
 extern int k_pin14;
 extern int tune_seconds;
-extern int sending_call;
+extern bool sending_call;
 extern int exclude_multilist_type;
 extern bool partials;
 extern bool use_part;
@@ -225,7 +221,6 @@ extern char exchange_list[40];
 extern char rttyoutput[];
 extern char spot_ptr[MAX_SPOTS][82];
 extern char lastmsg[];
-extern char exchange[40];
 #ifdef HAVE_LIBXMLRPC
 extern char fldigi_url[50];
 #endif
@@ -234,6 +229,9 @@ extern char *cabrillo;
 extern char *editor_cmd;
 extern char *rigportname;
 extern char *config_file;
+#ifdef HAVE_PYTHON
+extern char *plugin_config;
+#endif
 
 extern int bandindexarray[];
 extern int tlfcolors[8][2];
@@ -246,7 +244,7 @@ extern bool mult_side;
 extern bool countrylist_only;
 extern bool mixedmode;
 extern bool qso_once;
-extern bool noleadingzeros;
+extern bool leading_zeros_serial;
 extern bool ignoredupe;
 extern bool continentlist_only;
 extern bool debugflag;

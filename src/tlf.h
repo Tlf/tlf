@@ -25,6 +25,7 @@
 #include <time.h>
 
 #include "hamlib/rig.h"
+#include "bandmap.h"
 #include "dxcc.h"
 
 enum {
@@ -84,6 +85,7 @@ typedef enum {
 
 
 enum {
+    BANDINDEX_ANY = -1,
     BANDINDEX_160 = 0,
     BANDINDEX_80,
     BANDINDEX_60,
@@ -123,10 +125,13 @@ enum {
 #define ITU_ZONES 90
 #define MAX_ZONES (ITU_ZONES + 1) /* size of zones array */
 
-#define MAX_SECTION_LENGTH 4
+#define MAX_SECTION_LENGTH 5
 
-#define UNIQUECALL_ALL      1
-#define UNIQUECALL_BAND     2
+enum {
+    MULT_NONE,      // multiplier not used
+    MULT_ALL,       // multiplier counted once on all bands
+    MULT_BAND,      // multiplier counted once per each band
+};
 
 #define EXCLUDE_NONE 0
 #define EXCLUDE_CONTINENT 1
@@ -154,8 +159,8 @@ typedef struct {
     char continent[3];
     int cqzone;
     char qra[7];
-    double Lat;
-    double Long;
+    double Lat;     // +: north, -: south
+    double Long;    // +: west,  -: east
 } mystation_t;
 
 /** worked station
@@ -170,11 +175,12 @@ typedef struct {
 				  for all modes and bands */
 } worked_t;
 
+#define MULT_SIZE   12
 /** worked mults
  *
  * all information about worked multis */
 typedef struct {
-    char name[12];		/**< Multiplier */
+    char name[MULT_SIZE];	/**< Multiplier */
     int band;			/**< bitmap with bands the multi was worked */
 } mults_t;
 
@@ -186,6 +192,8 @@ typedef struct {
     int qsos[PFXNUMBERS];
 } pfxnummulti_t;
 
+#define COMMENT_SIZE    80
+#define CALL_SIZE       20
 
 /* represents different parts of a qso line */
 struct qso_t {
@@ -208,6 +216,10 @@ struct qso_t {
     freq_t freq;
     int tx;
     int qsots;
+    char *mult1_value;
+    char *callupdate;           // transient field, used in checkexchange
+    char *normalized_comment;   // transient field
+    char *section;              // transient field
 };
 
 
@@ -255,7 +267,7 @@ typedef struct {
 	    int (*fn)(struct qso_t *);
 	};
     }			points;
-    bool (*is_multi)();
+    bool (*is_multi)(spot *data);
 
 } contest_config_t;
 
@@ -286,8 +298,8 @@ enum {
 /* Enums for RESEND_CALL feature */
 enum {
     RESEND_NOT_SET,		/* Resend feature not set */
-    RESEND_PARTIAL,		/* Resend partial hiscall */
-    RESEND_FULL,		/* Resend full hiscall again */
+    RESEND_PARTIAL,		/* Resend partial call */
+    RESEND_FULL,		/* Resend full call again */
 };
 
 #define FREE_DYNAMIC_STRING(p)  if (p != NULL) {g_free(p); p = NULL;}
@@ -295,6 +307,7 @@ enum {
 #define LEN(array) (sizeof(array) / sizeof(array[0]))
 
 #define QSOS(n)    (((struct qso_t*)g_ptr_array_index(qso_array, n))->logline)
+#define NR_QSOS	   (qso_array->len)
 
 #endif /* TLF_H */
 

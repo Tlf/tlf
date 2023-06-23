@@ -25,6 +25,8 @@ for my $c (@files) {
 
     print "\n$c\n" if $opt_v;
 
+    @{$groups{$group_name}{OBJECTS}} = ();  # start with empty OBJECTS list
+
     open(my $SRC, $c) or die "Can't open $c: $!\n";
     while (<$SRC>) {
         if (/\/\/\s+OBJECT\s+(\S+)/) {

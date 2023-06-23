@@ -45,12 +45,31 @@
 #include "log_utils.h"
 #include "makelogline.h"
 #include "readqtccalls.h"
+#include "plugin.h"
 #include "score.h"
 #include "searchcallarray.h"
 #include "startmsg.h"
 #include "store_qso.h"
 #include "ui_utils.h"
 
+
+/* Backup original logfile and write a new one from internal database */
+void do_backup(const char *logfile, bool interactive) {
+	    // save a backup
+	    char prefix[40];
+	    format_time(prefix, sizeof(prefix), "%Y%m%d_%H%M%S");
+	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
+	    rename(logfile, backup);
+	    // rewrite log
+	    for (int i = 0 ; i < NR_QSOS; i++) {
+		store_qso(logfile, QSOS(i));
+	    }
+	    if (interactive) {
+		showstring("Log has been backed up as", backup);
+		sleep(1);
+	    }
+	    g_free(backup);
+}
 
 void init_scoring(void) {
     /* reset counter and score anew */
@@ -82,6 +101,10 @@ void init_scoring(void) {
 	for (int n = 0; n < PFXNUMBERS; n++) {
 	    pfxnummulti[i].qsos[n] = 0;
 	}
+    }
+
+    if (plugin_has_setup()) {
+        plugin_setup();
     }
 }
 
@@ -131,16 +154,16 @@ int readcalls(const char *logfile, bool interactive) {
 
 	qso = parse_qso(inputbuffer);
 
-	if (log_is_comment(inputbuffer)) {
+	if (qso->is_comment) {
 	    g_ptr_array_add(qso_array, qso);
 	    continue;		/* skip further processing for note entry */
 	}
 
 	/* get the country number, not known at this point */
 	countrynr = getctydata(qso->call);
-	checkexchange(qso->comment, false);
-	if (strlen(normalized_comment) > 0) {   //FIXME global
-	    strcpy(qso->comment, normalized_comment);
+	checkexchange(qso, false);
+	if (qso->normalized_comment != NULL && strlen(qso->normalized_comment) > 0) {
+	    strcpy(qso->comment, qso->normalized_comment);
 	}
 	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
 
@@ -158,6 +181,11 @@ int readcalls(const char *logfile, bool interactive) {
 
 	g_free(logline);
 
+	// drop transient fields
+	FREE_DYNAMIC_STRING(qso->callupdate);
+	FREE_DYNAMIC_STRING(qso->normalized_comment);
+	FREE_DYNAMIC_STRING(qso->section);
+
 	g_ptr_array_add(qso_array, qso);
     }
 
@@ -165,7 +193,7 @@ int readcalls(const char *logfile, bool interactive) {
 
     if (log_changed) {
 	bool ok = false;
-	if(interactive) {
+	if (interactive) {
 	    showmsg("Log changed due to rescoring. Do you want to save it? Y/(N)");
 	    ok = toupper(key_get()) == 'Y';
 	} else {
@@ -173,26 +201,13 @@ int readcalls(const char *logfile, bool interactive) {
 	}
 
 	if (ok) {
-	    // save a backup
-	    char prefix[40];
-	    format_time(prefix, sizeof(prefix), "%Y%m%d_%H%M%S");
-	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
-	    rename(logfile, backup);
-	    // rewrite log
-	    nr_qsos = 0;    // FIXME store_qso increments nr_qsos
-	    for (int i = 0 ; i < linenr; i++) {
-		store_qso(QSOS(i));
-	    }
-	    if (interactive) {
-		showstring("Log has been backed up as", backup);
-		sleep(1);
-	    }
-	    g_free(backup);
+	    do_backup(logfile, interactive);
 	}
     }
 
     return linenr;			// nr of lines in log
 }
+
 
 int log_read_n_score() {
     int nr_qsolines = readcalls(logfile, false);

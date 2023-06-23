@@ -23,13 +23,12 @@
 
 #include <stdbool.h>
 #include <hamlib/rig.h>
-#include "tlf.h"
 
 typedef struct {
     char 	*call;
     int 	freq;	/* freq in Hz */
     char 	mode;
-    short 	band;
+    short 	bandindex;
     char	node;
     unsigned int timeout;/* time (in seconds) left in bandmap */
     char 	dupe;	/* only used internal in bm_show() */
@@ -121,7 +120,7 @@ void bandmap_show();
  *
  * maybe show own frequency as dashline in other color
  * (maybe green highlighted)
- * - highligth actual spot if near its frequency
+ * - highlight actual spot if near its frequency
  *
  * Allow selection of one of the spots (switches to S&P)
  * - Ctrl-G as known

@@ -45,20 +45,20 @@ void calledit(void) {
     int cnt = 0, insertflg = 0;
     char call1[30], call2[10];
 
-    l = strlen(hiscall);
+    l = strlen(current_qso.call);
     b = l - 1;
 
 
-    while ((i != ESCAPE) && (b <= strlen(hiscall))) {
+    while ((i != ESCAPE) && (b <= strlen(current_qso.call))) {
 
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
 	mvaddstr(12, 29, "            ");
-	mvaddstr(12, 29, hiscall);
+	mvaddstr(12, 29, current_qso.call);
 	move(12, 29 + b);
 	/* no refreshp() here as getch() calls wrefresh() for the
-	 * panel with last output (whre the cursor should go */
+	 * panel with last output (where the cursor should go */
 
 	i = key_get();
 
@@ -95,7 +95,7 @@ void calledit(void) {
 
 	    // Right arrow
 	} else if (i == KEY_RIGHT) {
-	    if (b < strlen(hiscall) - 1) {
+	    if (b < strlen(current_qso.call) - 1) {
 		b++;
 	    } else
 		break;		/* stop edit */
@@ -103,10 +103,10 @@ void calledit(void) {
 	    // <Delete>
 	} else if (i == KEY_DC) {
 
-	    l = strlen(hiscall);
+	    l = strlen(current_qso.call);
 
 	    for (j = b; j <= l; j++) {
-		hiscall[j] = hiscall[j + 1];	/* move to left incl. \0 */
+		current_qso.call[j] = current_qso.call[j + 1];	/* move to left incl. \0 */
 	    }
 
 	    update_info_line();
@@ -121,10 +121,10 @@ void calledit(void) {
 
 		b--;
 
-		l = strlen(hiscall);
+		l = strlen(current_qso.call);
 
 		for (j = b; j <= l; j++) {
-		    hiscall[j] = hiscall[j + 1];
+		    current_qso.call[j] = current_qso.call[j + 1];
 		}
 
 		update_info_line();
@@ -152,11 +152,11 @@ void calledit(void) {
 		i = g_ascii_toupper(i);
 
 		if (b <= 12) {
-		    strncpy(call1, hiscall, b);
-		    strncpy(call2, hiscall + b, strlen(hiscall) - (b - 1));
+		    strncpy(call1, current_qso.call, b);
+		    strncpy(call2, current_qso.call + b, strlen(current_qso.call) - (b - 1));
 		}
 
-		if (strlen(hiscall) + 1 == 12)
+		if (strlen(current_qso.call) + 1 == 12)
 		    break;	// leave insert mode
 
 		call1[b] = i;
@@ -165,10 +165,10 @@ void calledit(void) {
 		    strcat(call1, call2);
 		    if (strlen(call1) >= 12)
 			break;
-		    strcpy(hiscall, call1);
+		    strcpy(current_qso.call, call1);
 		}
 
-		if ((b < strlen(hiscall) - 1) && (b <= 12))
+		if ((b < strlen(current_qso.call) - 1) && (b <= 12))
 		    b++;
 		else
 		    break;
@@ -189,7 +189,7 @@ void calledit(void) {
     attron(COLOR_PAIR(C_HEADER));
 
     mvaddstr(12, 29, "            ");
-    mvaddstr(12, 29, hiscall);
+    mvaddstr(12, 29, current_qso.call);
     refreshp();
 
     attron(A_STANDOUT);
@@ -220,16 +220,16 @@ int insert_char(int curposition) {
 	    ichr = ichr - 32;
 
 	if (curposition <= 10) {
-	    strncpy(call1, hiscall, curposition);
+	    strncpy(call1, current_qso.call, curposition);
 	}
 
 	if (curposition <= 10) {
-	    strncpy(call2, hiscall + curposition,
-		    strlen(hiscall) - (curposition - 1));
+	    strncpy(call2, current_qso.call + curposition,
+		    strlen(current_qso.call) - (curposition - 1));
 	}
 
 	// Too long!
-	if (strlen(hiscall) + 1 == MAX_CALL_LENGTH)
+	if (strlen(current_qso.call) + 1 == MAX_CALL_LENGTH)
 	    break;		// leave insert mode
 
 	// Accept A-Z or / and 1-9
@@ -239,9 +239,9 @@ int insert_char(int curposition) {
 	    call1[curposition + 1] = '\0';
 	    if ((strlen(call1) + strlen(call2)) < 12) {
 		strcat(call1, call2);
-		if (strlen(call1) + strlen(hiscall) >= 12)
+		if (strlen(call1) + strlen(current_qso.call) >= 12)
 		    break;
-		strcpy(hiscall, call1);
+		strcpy(current_qso.call, call1);
 	    }
 	} else
 	    break;
@@ -249,7 +249,7 @@ int insert_char(int curposition) {
 	attroff(A_STANDOUT);
 	attron(COLOR_PAIR(C_HEADER));
 
-	mvaddstr(12, 29, hiscall);
+	mvaddstr(12, 29, current_qso.call);
 	curposition++;
 	move(12, 29 + curposition);
 	refreshp();
