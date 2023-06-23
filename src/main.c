@@ -483,9 +483,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	case 'v':		// verbose startup
 	    verbose = true;
 	    break;
-    case 'p':       // run in s&p mode
-        cqmode = S_P;
-        break;
+	case 'p':       // run in s&p mode
+	    cqmode = S_P;
+	    break;
 
 	default:
 	    return ARGP_ERR_UNKNOWN;
