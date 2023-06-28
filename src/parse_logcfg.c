@@ -355,19 +355,13 @@ static int cfg_operation_mode(const cfg_arg_t arg) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
 
-    if (strcmp(str, "RUN") == 0) {
+    if (strcmp(str, "CQ") == 0) {
 	    cqmode = CQ;
     } else if (strcmp(str, "S&P") == 0) {
         cqmode = S_P;
-    } else if (strcmp(str, "AUTO") == 0) {
-	    cqmode = AUTO_CQ;
-    } else if (strcmp(str, "KEYBOARD") == 0) {
-        cqmode = KEYBOARD;
-    } else if (strcmp(str, "NONE") == 0) {
-        cqmode = NONE;
     } else {
         g_free(str);
-        error_details = g_strdup("must be RUN, S&P, AUTO, KEYBOARD or NONE");
+        error_details = g_strdup("must be CQ or S&P");
         return PARSE_WRONG_PARAMETER;
     }
 

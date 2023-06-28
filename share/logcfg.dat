@@ -48,8 +48,8 @@ CALL=NOCALL
 #  OPERATING MODE               #
 #                               #
 #################################
-# Can be set to RUN, S&P, AUTO_CQ, KEYBOARD or NONE
-OPERATING_MODE=RUN
+# Can be set to CQ, S&P
+OPERATING_MODE=CQ
 #
 #
 #################################
