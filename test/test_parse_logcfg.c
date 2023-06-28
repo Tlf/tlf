@@ -190,7 +190,7 @@ int setup_default(void **state) {
     exclude_multilist_type = EXCLUDE_NONE;
     rigptt = 0;
     minitest = 0;
-    cqmode = S_P;
+    cqmode = CQ;
 
     setcontest(QSO_MODE);
 
@@ -917,9 +917,9 @@ void test_ssbmode(void **state) {
 }
 
 void test_operation_mode(void **state) {
-    int rc = call_parse_logcfg("OPERATION_MODE\n");
+    int rc = call_parse_logcfg("OPERATING_MODE=CQ\n");
     assert_int_equal(rc, 0);
-    assert_int_equal(cqmode, S_P);
+    assert_int_equal(cqmode, CQ);
 }
 
 // TLFCOLOR1..6
