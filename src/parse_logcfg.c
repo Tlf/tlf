@@ -51,6 +51,7 @@
 #include "startmsg.h"
 #include "tlf_curses.h"
 #include "searchlog.h"
+#include "tlf.h"
 
 bool exist_in_country_list();
 
@@ -347,6 +348,30 @@ static int cfg_contest(const cfg_arg_t arg) {
 	return rc;
     }
     setcontest(contest);
+    return PARSE_OK;
+}
+
+static int cfg_operation_mode(const cfg_arg_t arg) {
+    char *str = g_ascii_strup(parameter, -1);
+    g_strstrip(str);
+
+    if (strcmp(str, "RUN") == 0) {
+	    cqmode = CQ;
+    } else if (strcmp(str, "S&P") == 0) {
+        cqmode = S_P;
+    } else if (strcmp(str, "AUTO") == 0) {
+	    cqmode = AUTO_CQ;
+    } else if (strcmp(str, "KEYBOARD") == 0) {
+        cqmode = KEYBOARD;
+    } else if (strcmp(str, "NONE") == 0) {
+        cqmode = NONE;
+    } else {
+        g_free(str);
+        error_details = g_strdup("must be RUN, S&P, AUTO, KEYBOARD or NONE");
+        return PARSE_WRONG_PARAMETER;
+    }
+
+    g_free(str);
     return PARSE_OK;
 }
 
@@ -1301,6 +1326,7 @@ static config_t logcfg_configs[] = {
     {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
     {"RESEND_CALL",         NEED_PARAM, cfg_resend_call},
     {"GENERIC_MULT",        NEED_PARAM, cfg_generic_mult},
+    {"OPERATING_MODE",      NEED_PARAM, cfg_operation_mode},
 
     {NULL}  // end marker
 };

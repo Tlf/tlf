@@ -45,6 +45,15 @@ CALL=NOCALL
 #
 #################################
 #                               #
+#  OPERATING MODE               #
+#                               #
+#################################
+# Can be set to RUN, S&P, AUTO_CQ, KEYBOARD or NONE
+OPERATING_MODE=RUN
+#
+#
+#################################
+#                               #
 #  Time offset from UTC         #
 #                               #
 #################################

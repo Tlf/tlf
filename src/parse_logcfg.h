@@ -43,7 +43,6 @@ extern char *error_details;
 
 ////////////////////////////////////
 // config parsing definitions
-
 enum {
     NO_PARAM,
     NEED_PARAM,
