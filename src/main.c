@@ -443,7 +443,6 @@ static const struct argp_option options[] = {
     {"sync",        's', "URL", 0,  "Synchronize log with other node" },
     {"debug",       'd', 0, 0,  "Debug mode" },
     {"verbose",     'v', 0, 0,  "Produce verbose output" },
-    {"s&p",         'p', 0, 0,  "Start in Search and Pounce mode" },
     { 0 }
 };
 
@@ -483,10 +482,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	case 'v':		// verbose startup
 	    verbose = true;
 	    break;
-	case 'p':       // run in s&p mode
-	    cqmode = S_P;
-	    break;
-
 	default:
 	    return ARGP_ERR_UNKNOWN;
     }
@@ -698,7 +693,6 @@ static int databases_load() {
 	showmsg("ERROR: No callsign defined in logcfg.dat!\n");
 	return EXIT_FAILURE;
     }
-
 
     if (multlist == 1) {
 	showmsg("Reading multiplier data      ");
