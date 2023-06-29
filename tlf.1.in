@@ -1656,8 +1656,9 @@ The station callsign used in messages; also used to determine the station's
 country, zone and continent.
 .
 .TP
-\fBOPERATION_MODE\fR=\fICQ\fR
-Default operation mode CQ for RUN and S&P for Search and Pounce
+\fBOPERATING_MODE\fR=\fICQ\fR
+Set operating mode for start up. Use \fICQ\fR for "run" and \fIS&P\fR for "search and pounce".
+The default mode is \fICQ\fR.
 .
 .TP
 \fBTIME_OFFSET\fR=\fI0\fR

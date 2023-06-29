@@ -352,7 +352,7 @@ static int cfg_contest(const cfg_arg_t arg) {
     return PARSE_OK;
 }
 
-static int cfg_operation_mode(const cfg_arg_t arg) {
+static int cfg_operating_mode(const cfg_arg_t arg) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
 
@@ -1322,7 +1322,7 @@ static config_t logcfg_configs[] = {
     {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
     {"RESEND_CALL",         NEED_PARAM, cfg_resend_call},
     {"GENERIC_MULT",        NEED_PARAM, cfg_generic_mult},
-    {"OPERATING_MODE",      NEED_PARAM, cfg_operation_mode},
+    {"OPERATING_MODE",      NEED_PARAM, cfg_operating_mode},
 
     {NULL}  // end marker
 };

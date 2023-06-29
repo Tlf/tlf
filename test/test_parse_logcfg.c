@@ -916,10 +916,10 @@ void test_ssbmode(void **state) {
     assert_int_equal(trxmode, SSBMODE);
 }
 
-void test_operation_mode(void **state) {
-    int rc = call_parse_logcfg("OPERATING_MODE=CQ\n");
+void test_operating_mode(void **state) {
+    int rc = call_parse_logcfg("OPERATING_MODE=S&P\n");
     assert_int_equal(rc, 0);
-    assert_int_equal(cqmode, CQ);
+    assert_int_equal(cqmode, S_P);
 }
 
 // TLFCOLOR1..6
