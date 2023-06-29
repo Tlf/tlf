@@ -482,6 +482,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	case 'v':		// verbose startup
 	    verbose = true;
 	    break;
+
 	default:
 	    return ARGP_ERR_UNKNOWN;
     }
@@ -693,6 +694,7 @@ static int databases_load() {
 	showmsg("ERROR: No callsign defined in logcfg.dat!\n");
 	return EXIT_FAILURE;
     }
+
 
     if (multlist == 1) {
 	showmsg("Reading multiplier data      ");
