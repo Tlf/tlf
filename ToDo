@@ -28,7 +28,7 @@ Planned for later versions
     list of most used RST values which will then be used for scrolling,
     e.g. CHANGE_RST=339,479,599 or similar.
 [x] Have a template for cabrillo file header  (suggested by Joop PG4I)
-[ ] Add a keyword to startup TLF in S&P mode (should be an easy one)
+[x] Add a keyword to startup TLF in S&P mode (should be an easy one)
 [ ] switch between ESM and CT mode during contest (Nate N0NB)
 [x] Send Morse via Hamlib for radios that support it.
     Tnx Christoph DF7CB and others.
