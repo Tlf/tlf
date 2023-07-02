@@ -297,10 +297,10 @@ static void handle_trx_bandswitch(const freq_t freq) {
 
     send_bandswitch(freq);
 
+	
+	rmode_t mode = RIG_MODE_NONE;           // default: no change
+	pbwidth_t width = TLF_DEFAULT_PASSBAND; // passband width, in Hz
 	if (follow_mode) {
-		rmode_t mode = RIG_MODE_NONE;           // default: no change
-		pbwidth_t width = TLF_DEFAULT_PASSBAND; // passband width, in Hz
-
 		if (trxmode == SSBMODE) {
 			mode = get_ssb_mode();
 		} else if (trxmode == DIGIMODE) {
@@ -312,10 +312,10 @@ static void handle_trx_bandswitch(const freq_t freq) {
 			mode = RIG_MODE_CW;
 			width = get_cw_bandwidth();
 		}
-	}
-	
-    if (mode == RIG_MODE_NONE) {
-		return;     // no change was requested
+
+		if (mode == RIG_MODE_NONE) {
+			return;     // no change was requested
+		}
 	}
 
 
