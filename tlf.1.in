@@ -1656,11 +1656,6 @@ The station callsign used in messages; also used to determine the station's
 country, zone and continent.
 .
 .TP
-\fBOPERATING_MODE\fR=\fICQ\fR|\fIS&P\fR
-Set operating mode for start up. Use \fICQ\fR for "run" and \fIS&P\fR for "search and pounce".
-The default mode is \fICQ\fR.
-.
-.TP
 \fBTIME_OFFSET\fR=\fI0\fR
 Used to shift the @PACKAGE_NAME@ time with respect to the computer clock.
 .
@@ -2027,6 +2022,10 @@ OMNI 6+).
 Declares that Hamlib CAT PTT capability should be checked at startup and if
 available used to activate the radio's PTT for sending voice messages instead
 of the \fBcwdaemon\fR PTT.
+.
+.TP
+\fBFOLLOW_MODE\fR[=<\fION\fR|\fIOFF\fR>]
+Control if RIG should change modulation when band is changed
 .
 .TP
 \fBCWBANDWIDTH\fR=\fIwidth\fR

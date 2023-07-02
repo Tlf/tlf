@@ -45,15 +45,6 @@ CALL=NOCALL
 #
 #################################
 #                               #
-#  OPERATING MODE               #
-#                               #
-#################################
-# Can be set to CQ, S&P
-OPERATING_MODE=CQ
-#
-#
-#################################
-#                               #
 #  Time offset from UTC         #
 #                               #
 #################################
@@ -135,6 +126,8 @@ CWTONE=800
 #RIGPORT=/dev/ttyS0
 #RIGPORT=/dev/ttyUSB2
 #RIGPTT
+#
+#FOLLOW_MODE
 #
 #SSBMODE
 #
