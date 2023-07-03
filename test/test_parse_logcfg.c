@@ -920,6 +920,7 @@ void test_ssbmode(void **state) {
 void test_follow_mode(void **state) {
     int rc = call_parse_logcfg("FOLLOW_MODE\n");
     assert_int_equal(rc, PARSE_OK);
+    assert_true(follow_mode);
 }
 
 
