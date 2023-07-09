@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #include <ctype.h>
 #include <pthread.h>
 #include <string.h>
@@ -67,7 +66,6 @@ GList *allspots = NULL;
 /** \brief sorted list of filtered spots
  */
 GPtrArray *spots;
-
 
 bm_config_t bm_config = {
     .allband = true,    /* show all bands */
@@ -129,21 +127,23 @@ void bmdata_write_file() {
 void bmdata_read_file() {
     FILE *fp;
     struct timeval tv;
-    int timediff, last_bm_save_time, fc;
-    char line[50], *token;
+    int timediff, last_bm_save_time, fc, read;
+    char *line, *token;
+    size_t line_len = 50;
     static bool bmdata_parsed = false;
 
     if (bmdata_parsed)
-	return;
+	    return;
 
     if ((fp = fopen(".bmdata.dat", "r")) != NULL) {
-	bmdata_parsed = true;
-	if (fgets(line, 50, fp)) {
-	    sscanf(line, "%d", &last_bm_save_time);
-	    gettimeofday(&tv, NULL);
-	    timediff = (int)tv.tv_sec - last_bm_save_time;
-	    if (timediff < 0)
-		timediff = 0;
+        bmdata_parsed = true;
+        line = (char *)calloc(line_len, sizeof(char));
+        if ((read = getline(&line, &line_len, fp)) != -1) {
+            sscanf(line, "%d", &last_bm_save_time);
+            gettimeofday(&tv, NULL);
+            timediff = (int)tv.tv_sec - last_bm_save_time;
+            if (timediff < 0)
+            timediff = 0;
 
 	    while (fgets(line, 50, fp)) {
 		spot *entry = g_new0(spot, 1);
@@ -217,7 +217,6 @@ void bm_init() {
     bm_initialized = true;
 }
 
-
 /** \brief guess mode based on frequency
  *
  * \return CWMODE, DIGIMODE or SSBMODE
@@ -230,8 +229,6 @@ int freq2mode(freq_t freq, int band) {
     else
 	return SSBMODE;
 }
-
-
 
 /** \brief add DX spot message to bandmap
  *
@@ -259,7 +256,6 @@ void bm_add(char *s) {
     bandmap_addspot(call, atof(line + 16) * 1000, node);
     g_free(line);
 }
-
 
 /* compare functions to search in list */
 gint	cmp_call(spot *ldata, char *call) {
@@ -413,10 +409,8 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	free_spot(olddata);
     }
 
-
     pthread_mutex_unlock(&bm_mutex);
 }
-
 
 void bandmap_age() {
     /*
@@ -446,7 +440,6 @@ void bandmap_age() {
     pthread_mutex_unlock(&bm_mutex);
 }
 
-
 /** check if call is new multi
  *
  * \return true if new multi
@@ -463,7 +456,6 @@ bool bm_ismulti(spot *data) {
 
     return general_ismulti(data);
 }
-
 
 /** check if call is a dupe
  *
@@ -498,7 +490,6 @@ bool bm_isdupe(char *call, int band) {
 
     return false;
 }
-
 
 void bm_show_info() {
 
@@ -543,7 +534,6 @@ void bm_show_info() {
 
     move(cury, curx);			/* reset cursor */
 }
-
 
 /* helper function for bandmap display
  * mark entries according to age, source and worked state. Mark new multis
@@ -624,7 +614,6 @@ void show_spot(spot *data) {
     g_free(temp);
 }
 
-
 /* helper function for bandmap display
  * shows spot on actual working frequency
  */
@@ -638,7 +627,6 @@ void show_spot_on_qrg(spot *data) {
     printw("%-12s", temp);
     g_free(temp);
 }
-
 
 /* helper function for bandmap display
  * advance to next spot position
@@ -704,7 +692,6 @@ void filter_spots() {
 	g_ptr_array_free(spots, TRUE);		/* free spot array */
     /* allocate new one */
     spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
-
 
     for (list = allspots; list; list = list->next)	{
 	data = list->data;
@@ -905,7 +892,6 @@ void bandmap_show() {
     refreshp();
 }
 
-
 /** allow control of bandmap features
  */
 void bm_menu() {
@@ -1084,7 +1070,6 @@ char *qtc_format(char *call) {
     }
     return g_strdup(tcall);
 }
-
 
 /** Search filtered bandmap for a spot near the given frequency
  *
