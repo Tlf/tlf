@@ -94,18 +94,20 @@ struct linedata_t *parse_logline(char *buffer) {
  * \return ptr to new qso record (or NULL if eof)
  */
 struct linedata_t *get_next_record(FILE *fp) {
-
-    char buffer[160];
+    char* buffer;
+    size_t buffer_len = 160;
     struct linedata_t *ptr;
+    int read;
 
-    while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
-
-	if (!log_is_comment(buffer)) {
-	    ptr = parse_logline(buffer);
-	    return ptr;
-	}
+    buffer = (char*)calloc(buffer_len, sizeof(char));
+    while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
+        if (!log_is_comment(buffer)) {
+            ptr = parse_logline(buffer);
+            return ptr;
+        }
     }
 
+    free(buffer);
     return NULL;
 }
 
@@ -118,20 +120,21 @@ struct linedata_t *get_next_record(FILE *fp) {
  * \return ptr to new qtc record (or NULL if eof)
  */
 struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
-
-    char buffer[100];
+    char* buffer;
+    size_t buffer_len = 100;
     char *tmp;
     char *sp;
     struct linedata_t *ptr;
-    int pos, shift;
+    int pos, shift, read;
     struct tm date_n_time;
 
     if (fp == NULL) {
-	return NULL;
+	    return NULL;
     }
 
-    if (fgets(buffer, sizeof(buffer), fp) == NULL) {
-	return NULL;
+    buffer = (char*)calloc(buffer_len, sizeof(char));
+    if ((read = getline(&buffer, &buffer_len, fp)) == -1) {
+	    return NULL;
     }
 
     ptr = g_malloc0(sizeof(struct linedata_t));
@@ -142,11 +145,11 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 
     /* tx */
     if (qtcdirection == RECV) {
-	pos = 28;
-	shift = 0;
+        pos = 28;
+        shift = 0;
     } else {
-	pos = 33;
-	shift = 5;
+        pos = 33;
+        shift = 5;
     }
     ptr->tx = (buffer[pos] == ' ') ? 0 : 1;
 
@@ -159,11 +162,11 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 
     /* mode */
     if (strcasestr(tmp, "CW"))
-	ptr->mode = CWMODE;
+	    ptr->mode = CWMODE;
     else if (strcasestr(tmp, "SSB"))
-	ptr->mode = SSBMODE;
+	    ptr->mode = SSBMODE;
     else
-	ptr->mode = DIGIMODE;
+	    ptr->mode = DIGIMODE;
 
     /* qso number */
     ptr->qso_nr = atoi(strtok_r(NULL, " \t", &sp));
@@ -171,7 +174,7 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
     /* in case of SEND direction, the 3rd field is the original number of sent QSO,
        but it doesn't need for QTC line */
     if (qtcdirection & SEND) {
-	tmp = strtok_r(NULL, " \t", &sp);
+	    tmp = strtok_r(NULL, " \t", &sp);
     }
     /* date & time */
     memset(&date_n_time, 0, sizeof(struct tm));
@@ -180,7 +183,6 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
     strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
 
     ptr->qsots = timegm(&date_n_time);
-
     ptr->year = date_n_time.tm_year + 1900;	/* convert to
 							1968..2067 */
     ptr->month = date_n_time.tm_mon + 1;	/* tm_mon = 0..11 */
@@ -190,8 +192,8 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
     ptr->min   = date_n_time.tm_min;
 
     if (ptr->tx == 1) {
-	/* ignore TX if set */
-	strtok_r(NULL, " \t", &sp);
+        /* ignore TX if set */
+        strtok_r(NULL, " \t", &sp);
     }
     /* his call */
     ptr->call = g_strdup(strtok_r(NULL, " \t", &sp));
@@ -207,9 +209,10 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
     /* frequency */
     ptr->freq = atof(buffer + 80 + shift) * 1000.0;
     if (freq2bandindex(ptr->freq) == BANDINDEX_OOB) {
-	ptr->freq = 0.;
+	    ptr->freq = 0.;
     }
 
+    free(buffer);
     return ptr;
 }
 

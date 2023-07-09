@@ -20,7 +20,6 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 */
 
-
 #include <ctype.h>
 #include <fcntl.h>
 #include <hamlib/rig.h>
@@ -110,9 +109,11 @@ static bool isCommentLine(char *buffer) {
 
 int parse_configfile(FILE *fp) {
     int status = PARSE_OK;
-    char buffer[2000];
+    char *buffer = NULL;
+    size_t buffer_len = 0;
+    ssize_t read;
 
-    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+    while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 	g_strchug(buffer);              // remove leading space
 	if (isCommentLine(buffer)) {    // skip comments and empty lines
 	    continue;
@@ -451,7 +452,6 @@ static int cfg_bandoutput(const cfg_arg_t arg) {
 	rc = PARSE_WRONG_PARAMETER;
     }
 
-
     g_free(str);
 
     return rc;
@@ -526,7 +526,6 @@ static int cfg_bandmap(const cfg_arg_t arg) {
 		/* aging called each second */
 		bm_config.lifetime = lifetime;
 	}
-
 
 	g_strfreev(bm_fields);
     }
@@ -660,7 +659,9 @@ static int cfg_dx_n_sections(const cfg_arg_t arg) {
 }
 
 static int cfg_countrylist(const cfg_arg_t arg) {
-    char buffer[2000];
+    char *buffer;
+    size_t buffer_len = 2000;
+    ssize_t read;
     char *country_list_raw = NULL;  // will point somewhere into buffer
     FILE *fp;
 
@@ -671,39 +672,40 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     that line into country_list_raw.
     If the input was not a file name we directly copy it into
     country_list_raw (must not have a preceding contest name). */
-
-    g_strlcpy(buffer, parameter, sizeof(buffer));
+    buffer = (char *)calloc(buffer_len, sizeof(char));
+    g_strlcpy(buffer, parameter, buffer_len);
     g_strchomp(buffer);	/* drop trailing whitespace */
 
     if ((fp = fopen(buffer, "r")) != NULL) {
+        char *prefix = g_strdup_printf("%s:", whichcontest);
 
-	char *prefix = g_strdup_printf("%s:", whichcontest);
+        while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
+            g_strstrip(buffer);   /* no leading/trailing whitespace*/
 
-	while (fgets(buffer, sizeof(buffer), fp) != NULL) {
-
-	    g_strstrip(buffer);   /* no leading/trailing whitespace*/
-
-	    /* accept only a line starting with the contest name
-	     * (CONTEST=) followed by ':' */
-	    if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
-		country_list_raw = buffer + strlen(prefix); // skip prefix
-		break;
+            /* accept only a line starting with the contest name
+            * (CONTEST=) followed by ':' */
+            if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
+            country_list_raw = buffer + strlen(prefix); // skip prefix
+            break;
+            }
 	    }
-	}
 
-	g_free(prefix);
-	fclose(fp);
+        g_free(prefix);
+        fclose(fp);
+
     } else {	/* not a file */
-	char *colon = index(buffer, ':');
-	if (colon != NULL) {
-	    country_list_raw = colon + 1;   // skip optional contest name
-	} else {
-	    country_list_raw = buffer;
-	}
+        if (buffer != NULL) {
+            char *colon = strchr(buffer, ':');
+            if (colon != NULL) {
+            country_list_raw = colon + 1;   // skip optional contest name
+            } else {
+            country_list_raw = buffer;
+            }
+        }
     }
 
     if (country_list_raw == NULL) {
-	return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
+	    return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
     }
 
     /* parse the country_list_raw string into an array
@@ -715,36 +717,39 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     memset(countrylist, 0, sizeof(countrylist));
 
     while (tk_ptr) {
-	char *prefix = g_strdup(tk_ptr);
-	g_strstrip(prefix);
-	if (strlen(prefix) >= sizeof(countrylist[0])) {
-	    error_details = g_strdup_printf("prefix too long (%s)", prefix);
-	    g_free(prefix);
-	    return PARSE_WRONG_PARAMETER;
-	}
+        char *prefix = g_strdup(tk_ptr);
+        g_strstrip(prefix);
+        if (strlen(prefix) >= sizeof(countrylist[0])) {
+            error_details = g_strdup_printf("prefix too long (%s)", prefix);
+            g_free(prefix);
+            return PARSE_WRONG_PARAMETER;
+        }
 
-	strcpy(countrylist[counter], prefix);
-	g_free(prefix);
+        strcpy(countrylist[counter], prefix);
+        g_free(prefix);
 
-	tk_ptr = strtok(NULL, ",");
-	counter++;
+        tk_ptr = strtok(NULL, ",");
+        counter++;
 
-	if (counter == G_N_ELEMENTS(countrylist)) {
-	    error_details = g_strdup("too many prefixes");
-	    return PARSE_WRONG_PARAMETER;
-	}
+        if (counter == G_N_ELEMENTS(countrylist)) {
+            error_details = g_strdup("too many prefixes");
+            return PARSE_WRONG_PARAMETER;
+        }
     }
 
     /* on which multiplier side of the rules we are */
     getpx(my.call);
     mult_side = exist_in_country_list();
     setcontest(whichcontest);
+    free(buffer);
 
     return PARSE_OK;
 }
 
 static int cfg_continentlist(const cfg_arg_t arg) {
-    char buffer[2000];
+    char* buffer;
+    size_t buffer_len = 2000;
+    int read;
     char *cont_multiplier_list = NULL;  // will point somewhere into buffer
     FILE *fp;
 
@@ -760,38 +765,35 @@ static int cfg_continentlist(const cfg_arg_t arg) {
        (continent_multiplier_list) for future use.
     */
 
-    g_strlcpy(buffer, parameter, sizeof(buffer));
+    buffer = (char*)calloc(buffer_len, sizeof(char));
+    g_strlcpy(buffer, parameter, buffer_len);
     g_strchomp(buffer);	/* drop trailing whitespace */
 
     if ((fp = fopen(buffer, "r")) != NULL) {
-
-	char *prefix = g_strdup_printf("%s:", whichcontest);
-
-	while (fgets(buffer, sizeof(buffer), fp) != NULL) {
-
-	    g_strstrip(buffer);   /* no leading/trailing whitespace*/
-
-	    /* accept only a line starting with the contest name
-	     * (CONTEST=) followed by ':' */
-	    if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
-		cont_multiplier_list = buffer + strlen(prefix); // skip prefix
-		break;
+        char *prefix = g_strdup_printf("%s:", whichcontest);
+        while((read = getline(&buffer, &buffer_len, fp)) != -1) {
+            g_strstrip(buffer);   /* no leading/trailing whitespace*/
+            /* accept only a line starting with the contest name
+            * (CONTEST=) followed by ':' */
+            if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
+                cont_multiplier_list = buffer + strlen(prefix); // skip prefix
+                break;
+            }
 	    }
-	}
 
-	g_free(prefix);
-	fclose(fp);
+        g_free(prefix);
+        fclose(fp);
     } else {	/* not a file */
-	char *colon = index(buffer, ':');
-	if (colon != NULL) {
-	    cont_multiplier_list = colon + 1;   // skip optional contest name
-	} else {
-	    cont_multiplier_list = buffer;
-	}
+        char *colon = index(buffer, ':');
+        if (colon != NULL) {
+            cont_multiplier_list = colon + 1;   // skip optional contest name
+        } else {
+            cont_multiplier_list = buffer;
+        }
     }
 
     if (cont_multiplier_list == NULL) {
-	return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
+	    return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
     }
 
     /* parse the cont_multiplier_list string into an array
@@ -803,28 +805,28 @@ static int cfg_continentlist(const cfg_arg_t arg) {
     memset(continent_multiplier_list, 0, sizeof(continent_multiplier_list));
 
     while (tk_ptr) {
-	char *entry = g_strdup(tk_ptr);
-	g_strstrip(entry);
-	if (strlen(entry) >= sizeof(continent_multiplier_list[0])) {
-	    error_details = g_strdup_printf("entry too long (%s)", entry);
-	    g_free(entry);
-	    return PARSE_WRONG_PARAMETER;
-	}
+        char *entry = g_strdup(tk_ptr);
+        g_strstrip(entry);
+        if (strlen(entry) >= sizeof(continent_multiplier_list[0])) {
+            error_details = g_strdup_printf("entry too long (%s)", entry);
+            g_free(entry);
+            return PARSE_WRONG_PARAMETER;
+        }
 
-	strcpy(continent_multiplier_list[counter], entry);
-	g_free(entry);
+        strcpy(continent_multiplier_list[counter], entry);
+        g_free(entry);
 
-	tk_ptr = strtok(NULL, ",");
-	counter++;
+        tk_ptr = strtok(NULL, ",");
+        counter++;
 
-	if (counter == G_N_ELEMENTS(continent_multiplier_list)) {
-	    error_details = g_strdup("too many continents");
-	    return PARSE_WRONG_PARAMETER;
-	}
+        if (counter == G_N_ELEMENTS(continent_multiplier_list)) {
+            error_details = g_strdup("too many continents");
+            return PARSE_WRONG_PARAMETER;
+        }
     }
 
     setcontest(whichcontest);
-
+    free(buffer);
     return PARSE_OK;
 }
 
@@ -1394,7 +1396,6 @@ static config_t logcfg_configs[] = {
     {NULL}  // end marker
 };
 
-
 static int check_match(const config_t *cfg, const char *keyword) {
     gchar *pattern = g_strdup_printf("^%s$", cfg->regex);
     GRegex *regex = g_regex_new(pattern, 0, 0, NULL);
@@ -1474,9 +1475,7 @@ static int apply_config(const char *keyword, const char *param,
 }
 ////////////////////
 
-
 int parse_logcfg(char *inputbuffer) {
-
     /* split the inputline at '=' to max 2 elements
      *
      * leave the components in fields[0] (keyword) and
@@ -1497,12 +1496,12 @@ int parse_logcfg(char *inputbuffer) {
     g_strstrip(fields[0]);
 
     if (*fields[0] == '\0') { 	/* only whitespace found? */
-	g_strfreev(fields);
-	return (PARSE_OK);
+        g_strfreev(fields);
+        return (PARSE_OK);
     }
 
     if (g_strv_length(fields) == 2) {   /* strip leading whitespace */
-	g_strchug(fields[1]);		/* from parameters */
+	    g_strchug(fields[1]);		/* from parameters */
     }
 
     int result = apply_config(fields[0], fields[1], logcfg_configs);
@@ -1510,7 +1509,6 @@ int parse_logcfg(char *inputbuffer) {
     g_strfreev(fields);
     return result;
 }
-
 
 /** Complain about problems in configuration
  *
