@@ -52,12 +52,13 @@
  * \return 0 on success
  */
 int repair_log(char *filename) {
-
     gchar *backupfile;
     gchar *cmd;
-    char buffer[200];
+    char* buffer;
+	size_t buffer_len = 200;
     gchar *fill;
     int rc;
+	int read;
     FILE *infp;
     FILE *outfp;
 
@@ -70,40 +71,40 @@ int repair_log(char *filename) {
     g_free(cmd);
 
     if (rc != 0) {
-	showmsg("Could not backup logfile. Giving up!");
-	return 1;
+		showmsg("Could not backup logfile. Giving up!");
+		return 1;
     }
 
 
     showmsg("Converting file to new format");
     if ((infp = fopen(backupfile, "r")) == NULL) {
-	showmsg("Could not convert logfile. Sorry!");
-	return 1;
+		showmsg("Could not convert logfile. Sorry!");
+		return 1;
     }
 
     if ((outfp = fopen(filename, "w")) == NULL) {
-	fclose(infp);
-	showmsg("Could not convert logfile. Sorry!");
-	return 1;
+		fclose(infp);
+		showmsg("Could not convert logfile. Sorry!");
+		return 1;
     }
 
-    while (fgets(buffer, sizeof(buffer), infp)) {
+	buffer = (char*)calloc(buffer_len, sizeof(char));
+	while((read = getline(&buffer, &buffer_len, infp)) != 1) {
+		/* strip trailing whitespace (and newline) */
+		g_strchomp(buffer);
 
-	/* strip trailing whitespace (and newline) */
-	g_strchomp(buffer);
+		/* append spaces */
+		fill = g_strnfill((LOGLINELEN - 1) - strlen(buffer), ' ');
+		strcat(buffer, fill);
+		g_free(fill);
 
-	/* append spaces */
-	fill = g_strnfill((LOGLINELEN - 1) - strlen(buffer), ' ');
-	strcat(buffer, fill);
-	g_free(fill);
-
-	fputs(buffer, outfp);
-	fputs("\n", outfp);
+		fputs(buffer, outfp);
+		fputs("\n", outfp);
     }
 
     fclose(outfp);
     fclose(infp);
-
+	free(buffer);
     g_free(backupfile);
 
     showmsg("Done");
@@ -115,36 +116,37 @@ int repair_log(char *filename) {
 
 
 int checklogfile_new(char *filename) {
-
     int lineno;
     int tooshort;
-    char buffer[160];
+	int read;
+    char* buffer;
+	size_t buffer_len = 160;
     FILE *fp;
 
     /* check if logfile exist and can be opened for read */
     if ((fp = fopen(filename, "r")) == NULL) {
 
-	if (errno == EACCES) {
-	    showstring("Can not access log file: ", filename);
-	    return 1;
-	}
+		if (errno == EACCES) {
+			showstring("Can not access log file: ", filename);
+			return 1;
+		}
 
-	if (errno == ENOENT) {
-	    /* File not found, create new one */
-	    showmsg("Log file not found, creating new one");
-	    sleep(2);
-	    if ((fp = fopen(filename, "w")) == NULL) {
-		/* cannot create logfile */
-		showmsg("Creating logfile not possible");
+		if (errno == ENOENT) {
+			/* File not found, create new one */
+			showmsg("Log file not found, creating new one");
+			sleep(2);
+			if ((fp = fopen(filename, "w")) == NULL) {
+				/* cannot create logfile */
+				showmsg("Creating logfile not possible");
+				return 1;
+			}
+			/* New logfile created */
+			fclose(fp);
+			return 0;
+		}
+
+		showstring("Can not check log file: ", filename);
 		return 1;
-	    }
-	    /* New logfile created */
-	    fclose(fp);
-	    return 0;
-	}
-
-	showstring("Can not check log file: ", filename);
-	return 1;
     }
 
 
@@ -152,68 +154,70 @@ int checklogfile_new(char *filename) {
     lineno = 0;
     tooshort = 0;
 
-    while (fgets(buffer, sizeof(buffer), fp)) {
-	int band, linelen;
-	int bandok = 0;
+	buffer = (char*)calloc(buffer_len, sizeof(char));
+    while((read = getline(&buffer, &buffer_len, fp)) != -1) {
+		int band, linelen;
+		int bandok = 0;
 
-	lineno++;
+		lineno++;
 
-	/* if no logline -> complain and back */
-	band = atoi(buffer);
+		/* if no logline -> complain and back */
+		band = atoi(buffer);
 
-	if ((band == 160) ||
-		(band == 80) ||
-		(band == 60) ||
-		(band == 40) ||
-		(band == 30) ||
-		(band == 20) ||
-		(band == 17) ||
-		(band == 15) ||
-		(band == 12) ||
-		(band == 10))
-	    bandok = 1;
+		if ((band == 160) ||
+			(band == 80) ||
+			(band == 60) ||
+			(band == 40) ||
+			(band == 30) ||
+			(band == 20) ||
+			(band == 17) ||
+			(band == 15) ||
+			(band == 12) ||
+			(band == 10))
+			bandok = 1;
 
-	if (!((buffer[0] == ';') || bandok)) {
-	    /* msg no valid logline in line #, cannot handle it */
-	    shownr("No valid log line in line ", lineno);
-	    return 1;
-	}
+		if (!((buffer[0] == ';') || bandok)) {
+			/* msg no valid logline in line #, cannot handle it */
+			shownr("No valid log line in line ", lineno);
+			return 1;
+		}
 
-	linelen = strlen(buffer);
+		linelen = strlen(buffer);
 
-	/* if to long -> complain and back */
-	if (linelen > LOGLINELEN) {
-	    /* msg length of line # to long,
-	     * cannot handle that log file format */
-	    shownr("Log line to long in line ", lineno);
-	    showmsg("Can not handle that log format");
-	    return 1;
-	}
+		/* if to long -> complain and back */
+		if (linelen > LOGLINELEN) {
+			/* msg length of line # to long,
+			* cannot handle that log file format */
+			shownr("Log line to long in line ", lineno);
+			showmsg("Can not handle that log format");
+			return 1;
+		}
 
-	/* if to short -> remember */
-	if (linelen < LOGLINELEN) {
-	    tooshort = 1;
-	}
+		/* if to short -> remember */
+		if (linelen < LOGLINELEN) {
+			tooshort = 1;
+		}
     }
 
     fclose(fp);
+	free(buffer);
 
     if (tooshort) {
-	char c;
+		char c;
 
-	/* some lines in logfile are too short, maybe old logfile format */
-	showmsg("Some log lines are too short (maybe an old log format)!");
-	showmsg("Shall I try to repair? Y/(N) ");
-	echo();
-	c = toupper(key_get());
-	noecho();
+		/* some lines in logfile are too short, maybe old logfile format */
+		showmsg("Some log lines are too short (maybe an old log format)!");
+		showmsg("Shall I try to repair? Y/(N) ");
+		echo();
+		c = toupper(key_get());
+		noecho();
 
-	if (c != 'Y') {
-	    return 1;			/* giving up */
-	}
+		if (c != 'Y') {
+			return 1;			/* giving up */
+		}
 
-	/* trying to repair */
-	return repair_log(filename);
+		/* trying to repair */
+		return repair_log(filename);
     }
 
     return 0;
@@ -221,59 +225,62 @@ int checklogfile_new(char *filename) {
 
 
 void checklogfile(void) {
-
     extern char logfile[];
 
     int qsobytes;
+	int read;
     struct stat statbuf;
-    char inputbuffer[800];
+    char* inputbuffer;
+	size_t inputbuffer_len = 800;
+	size_t read_len = 160;
 
     FILE *infile;
     FILE *outfile;
     FILE *fp;
 
     if ((fp = fopen(logfile, "a")) == NULL) {
-	TLF_LOG_WARN("I can not find the logfile ...");
-
+		TLF_LOG_WARN("I can not find the logfile ...");
     } else {
-	fstat(fileno(fp), &statbuf);
-	fclose(fp);
+		fstat(fileno(fp), &statbuf);
+		fclose(fp);
 
-	qsobytes = statbuf.st_size;
+		qsobytes = statbuf.st_size;
 
-	if ((qsobytes % LOGLINELEN) != 0) {
+		if ((qsobytes % LOGLINELEN) != 0) {
 
-	    if ((infile = fopen(logfile, "r")) == NULL) {
-		TLF_LOG_WARN("Unable to open logfile...");
+			if ((infile = fopen(logfile, "r")) == NULL) {
+			TLF_LOG_WARN("Unable to open logfile...");
 
-	    } else {
-		if ((outfile = fopen("./cpyfile", "w")) == NULL) {
-		    fclose(infile);
-		    TLF_LOG_WARN("Unable to open cpyfile...");
+			} else {
+			if ((outfile = fopen("./cpyfile", "w")) == NULL) {
+				fclose(infile);
+				TLF_LOG_WARN("Unable to open cpyfile...");
 
-		} else {
-		    while (fgets(inputbuffer, 160, infile) != NULL) {
+			} else {
+				inputbuffer = (char*)calloc(inputbuffer_len, sizeof(char));
+				while ((read = getline(&inputbuffer, &read_len, infile)) != -1) {
 
-			if (strlen(inputbuffer) != LOGLINELEN) {
-			    /* append spaces */
-			    for (int i = strlen(inputbuffer);
-				    i < LOGLINELEN; i++) {
+				if (strlen(inputbuffer) != LOGLINELEN) {
+					/* append spaces */
+					for (int i = strlen(inputbuffer);
+						i < LOGLINELEN; i++) {
 
-				strcat(inputbuffer, " ");
-			    }
+					strcat(inputbuffer, " ");
+					}
 
-			    inputbuffer[LOGLINELEN - 1] = '\n';
-			    inputbuffer[LOGLINELEN] = '\0';
+					inputbuffer[LOGLINELEN - 1] = '\n';
+					inputbuffer[LOGLINELEN] = '\0';
+				}
+				fputs(inputbuffer, outfile);
+				}
+
+				fclose(infile);
+				fclose(outfile);
+				free(inputbuffer);
 			}
-			fputs(inputbuffer, outfile);
-		    }
-
-		    fclose(infile);
-		    fclose(outfile);
+			rename("./cpyfile", logfile);
+			remove("./cpyfile");
+			}
 		}
-		rename("./cpyfile", logfile);
-		remove("./cpyfile");
-	    }
-	}
     }
 }

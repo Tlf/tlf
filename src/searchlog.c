@@ -1,4 +1,4 @@
-/*
+	/*
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
@@ -747,62 +747,64 @@ int load_callmaster(void) {
 
     FILE *cfp;
     char *callmaster_location;
-    char s_inputbuffer[186] = "";
+    char* s_inputbuffer;
+	size_t s_inputbuffer_len = 186;
+	int read;
 
     init_callmaster();
 
     if (callmaster_filename == NULL)
-	callmaster_filename = g_strdup(CALLMASTER_DEFAULT);
+		callmaster_filename = g_strdup(CALLMASTER_DEFAULT);
 
     callmaster_location = find_available(callmaster_filename);
 
     if ((cfp = fopen(callmaster_location, "r")) == NULL) {
-	g_free(callmaster_location);
-	TLF_LOG_WARN("Error opening callmaster file.");
-	return 0;
+		g_free(callmaster_location);
+		TLF_LOG_WARN("Error opening callmaster file.");
+		return 0;
     }
     g_free(callmaster_location);
 
     GHashTable *callset = g_hash_table_new(g_str_hash, g_str_equal);
 
-    while (fgets(s_inputbuffer, 85, cfp) != NULL) {
+	s_inputbuffer = (char*)calloc(s_inputbuffer_len, sizeof(char));
+	while((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
+		g_strstrip(s_inputbuffer);
 
-	g_strstrip(s_inputbuffer);
+		/* skip comment lines and calls shorter than 3 chars */
+		if (s_inputbuffer[0] == '#' || strlen(s_inputbuffer) < 3) {
+			continue;
+		}
 
-	/* skip comment lines and calls shorter than 3 chars */
-	if (s_inputbuffer[0] == '#' || strlen(s_inputbuffer) < 3) {
-	    continue;
+		/* store version */
+		if (strlen(s_inputbuffer) == 11 && strncmp(s_inputbuffer, "VER", 3) == 0) {
+			strcpy(callmaster_version, s_inputbuffer);      // save it
+		}
+
+		char *call = g_ascii_strup(s_inputbuffer, 11);
+
+		if (CONTEST_IS(ARRL_SS)) {
+			/* keep only NA stations */
+			if (strchr("AKWVCN", call[0]) == NULL) {
+				g_free(call);
+				continue;
+			}
+		}
+
+		if (g_hash_table_contains(callset, call)) { // already have this call
+			g_free(call);
+			continue;
+		}
+
+		g_hash_table_add(callset, call);
+		g_ptr_array_add(callmaster, call);
 	}
 
-	/* store version */
-	if (strlen(s_inputbuffer) == 11 && strncmp(s_inputbuffer, "VER", 3) == 0) {
-	    strcpy(callmaster_version, s_inputbuffer);      // save it
-	}
+	g_hash_table_destroy(callset);
 
-	char *call = g_ascii_strup(s_inputbuffer, 11);
-
-	if (CONTEST_IS(ARRL_SS)) {
-	    /* keep only NA stations */
-	    if (strchr("AKWVCN", call[0]) == NULL) {
-		g_free(call);
-		continue;
-	    }
-	}
-
-	if (g_hash_table_contains(callset, call)) { // already have this call
-	    g_free(call);
-	    continue;
-	}
-
-	g_hash_table_add(callset, call);
-
-	g_ptr_array_add(callmaster, call);
-    }
-
-    g_hash_table_destroy(callset);
-
-    fclose(cfp);
-    return callmaster->len;
+	fclose(cfp);
+	free(s_inputbuffer);
+	return callmaster->len;
 }
 
 

@@ -391,35 +391,33 @@ void show_readcab_msg(int mode, char *msg) {
  */
 
 int readcabrillo(int mode) {
-
     struct cabrillo_desc *cabdesc;
     char input_logfile[24];
     char output_logfile[80], temp_logfile[80];
-    char logline[MAX_CABRILLO_LEN];
+    char* logline;
     char *tempstrp;
 
     char t_qsonrstr[5];
     int t_qsonum;
     int t_bandinx;
+	int read;
 
     FILE *fp1, *fp2, *fpqtc;
 
     if (cabrillo == NULL) {
-	show_readcab_msg(mode, "Missing CABRILLO= keyword (see man page)");
-	sleep(2);
-	return 1;
+		show_readcab_msg(mode, "Missing CABRILLO= keyword (see man page)");
+		sleep(2);
+		return 1;
     }
 
     char *cab_file = find_available("cabrillo.fmt");
-
     cabdesc = read_cabrillo_format(cab_file, cabrillo);
-
     g_free(cab_file);
 
     if (!cabdesc) {
-	show_readcab_msg(mode, "Cabrillo format specification not found!");
-	sleep(2);
-	return 2;
+		show_readcab_msg(mode, "Cabrillo format specification not found!");
+		sleep(2);
+		return 2;
     }
 
     tempstrp = g_strdup_printf("CABRILLO format: %s", cabrillo);
@@ -439,36 +437,36 @@ int readcabrillo(int mode) {
     strcpy(logfile, output_logfile);
 
     if ((fp2 = fopen(output_logfile, "w")) == NULL) {
-	tempstrp = g_strdup_printf("Can't open output logfile: %s.",
+		tempstrp = g_strdup_printf("Can't open output logfile: %s.",
 				   output_logfile);
-	show_readcab_msg(mode, tempstrp);
-	g_free(tempstrp);
-	sleep(2);
-	free_cabfmt(cabdesc);
-	return 1;
+		show_readcab_msg(mode, tempstrp);
+		g_free(tempstrp);
+		sleep(2);
+		free_cabfmt(cabdesc);
+		return 1;
     }
     fclose(fp2);
 
     if ((fp1 = fopen(input_logfile, "r")) == NULL) {
-	tempstrp = g_strdup_printf("Can't open input logfile: %s.",
-				   input_logfile);
-	show_readcab_msg(mode, tempstrp);
-	g_free(tempstrp);
-	sleep(2);
-	free_cabfmt(cabdesc);
-	return 1;
+		tempstrp = g_strdup_printf("Can't open input logfile: %s.",
+					input_logfile);
+		show_readcab_msg(mode, tempstrp);
+		g_free(tempstrp);
+		sleep(2);
+		free_cabfmt(cabdesc);
+		return 1;
     }
 
     if (cabdesc->qtc_item_count > 0) {
-	if (qtcdirection & SEND) {
-	    fpqtc = fopen(qtcsend_logfile_import, "w");
-	    if (fpqtc) fclose(fpqtc);
-	}
+		if (qtcdirection & SEND) {
+			fpqtc = fopen(qtcsend_logfile_import, "w");
+			if (fpqtc) fclose(fpqtc);
+		}
 
-	if (qtcdirection & RECV) {
-	    fpqtc = fopen(qtcrecv_logfile_import, "w");
-	    if (fpqtc) fclose(fpqtc);
-	}
+		if (qtcdirection & RECV) {
+			fpqtc = fopen(qtcrecv_logfile_import, "w");
+			if (fpqtc) fclose(fpqtc);
+		}
     }
 
     strcpy(t_qsonrstr, qsonrstr);
@@ -477,8 +475,9 @@ int readcabrillo(int mode) {
 
     init_qso_array();
 
-    while (fgets(logline, MAX_CABRILLO_LEN, fp1) != NULL) {
-	cab_qso_to_tlf(logline, cabdesc);
+	logline = (char*)calloc(MAX_CABRILLO_LEN, sizeof(char));
+	while((read = getline(&logline, (size_t*)MAX_CABRILLO_LEN, fp1)) != 1) {
+		cab_qso_to_tlf(logline, cabdesc);
     }
 
     strcpy(qsonrstr, t_qsonrstr);
@@ -486,9 +485,8 @@ int readcabrillo(int mode) {
     bandinx = t_bandinx;
 
     fclose(fp1);
-
     free_cabfmt(cabdesc);
-
+	free(logline);
     strcpy(logfile, temp_logfile);
 
     return 0;

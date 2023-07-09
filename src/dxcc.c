@@ -332,11 +332,13 @@ void dxcc_add(char *dxcc_line) {
 /** load cty database from filename */
 int load_ctydata(char *filename) {
     FILE *fd;
-    char buf[181] = "";
+    char* buf;
+    size_t buf_len = 181;
     char *loc;
+    int read;
 
     if ((fd = fopen(filename, "r")) == NULL)
-	return -1;
+	    return -1;
 
     dxcc_init();
     prefix_init();
@@ -344,28 +346,23 @@ int load_ctydata(char *filename) {
     // set default for empty country == country nr 0
     dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
-    while (fgets(buf, sizeof(buf), fd) != NULL) {
+    buf = (char*)calloc(buf_len, sizeof(char));
+    while ((read = getline(&buf, &buf_len, fd)) != -1) {
+        g_strchomp(buf); 	/* drop CR and/or NL and */
+        if (*buf == '\0')	/* ignore empty lines */
+            continue;
 
-	g_strchomp(buf); 	/* drop CR and/or NL and */
-	if (*buf == '\0')	/* ignore empty lines */
-	    continue;
-
-	if (buf[0] != ' ') {	// data line
-
-	    dxcc_add(buf);
-
-	} else {		// prefix line
-	    loc = strtok(buf, " ,;");
-	    while (loc != NULL) {
-
-		prefix_add(loc);
-
-		loc = strtok(NULL, " ,;");
-	    }
-	}
+        if (buf[0] != ' ') {	// data line
+            dxcc_add(buf);
+        } else {		// prefix line
+            loc = strtok(buf, " ,;");
+            while (loc != NULL) {
+                prefix_add(loc);
+                loc = strtok(NULL, " ,;");
+            }
+        }
     }
     fclose(fd);
+    free(buf);
     return 0;
 }
-
-
