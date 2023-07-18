@@ -68,12 +68,13 @@ GList *allspots = NULL;
 GPtrArray *spots;
 
 bm_config_t bm_config = {
-    1,	/* show all bands */
-    1,  /* show all mode */
-    1,  /* show dupes */
-    1,	/* skip dupes during grab */
-    900,/* default lifetime */
-    0  /* DO NOT show ONLY multipliers */
+    .allband = true,    /* show all bands */
+    .allmode = true,    /* show all mode */
+    .showdupes = true,  /* show dupes */
+    .skipdupes = true,	/* skip dupes during grab */
+    .lifetime = 900,    /* default lifetime */
+    .onlymults = false, /* DO NOT show ONLY multipliers */
+    .show_out_of_band = false,  /* do not show out-of-band spots */
 };
 
 static bool bm_initialized = false;
@@ -108,10 +109,10 @@ void bmdata_write_file() {
     fprintf(fp, "%d\n", (int)tv.tv_sec);
     while (found != NULL) {
 	sp = found->data;
-	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s\n",
+	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s;%d\n",
 		sp->call, sp->freq, sp->mode, sp->bandindex,
 		sp->node, sp->timeout, sp->dupe, sp->cqzone,
-		sp->ctynr, g_strchomp(sp->pfx));
+		sp->ctynr, g_strchomp(sp->pfx), sp->mult);
 	found = found->next;
     }
 
@@ -303,9 +304,6 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	return;
 
     bandindex = freq2bandindex(freq);
-    if (bandindex == BANDINDEX_OOB)  /* no ham band */
-	return;
-
     mode = freq2mode(freq, bandindex);
 
     /* acquire bandmap mutex */
@@ -348,6 +346,7 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	entry -> node = node;
 	entry -> timeout = SPOT_NEW;
 	entry -> dupe = 0;	/* Dupe will be determined later. */
+	entry -> mult = false;	/* Mult will be determined later. */
 
 	lastexch = NULL;
 	dxccindex = getctynr(entry->call);
@@ -584,12 +583,13 @@ void show_spot(spot *data) {
     printw("%7.1f%c", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node));
 
-    if (bm_ismulti(data)) {
+    char marker = get_spot_marker(data);
+    if (marker != ' ') {
 	attrset(COLOR_PAIR(CB_NORMAL));
-	printw("M");
+    }
+    addch(marker);
+    if (marker != ' ') {
 	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    } else {
-	printw(" ");
     }
 
     char *temp = format_spot(data);
@@ -605,7 +605,7 @@ void show_spot_on_qrg(spot *data) {
 
     printw("%7.1f%c%c ", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node),
-	   bm_ismulti(data) ? 'M' : ' ');
+	   get_spot_marker(data));
 
     char *temp = format_spot(data);
     printw("%-12s", temp);
@@ -663,7 +663,6 @@ static bool mode_matches(spot *data) {
 void filter_spots() {
     GList *list;
     spot *data;
-    bool dupe, multi;
     /* acquire mutex
      * do not add new spots to allspots during
      * - aging and
@@ -682,21 +681,25 @@ void filter_spots() {
 	data = list->data;
 
 	/* check and mark spot as dupe */
-	dupe = bm_isdupe(data->call, data->bandindex);
-	data -> dupe = dupe;
+	data->dupe = bm_isdupe(data->call, data->bandindex);
 
 	/* ignore spots on WARC bands if in contest mode */
 	if (iscontest && IsWarcIndex(data->bandindex))
 	    continue;
 
 	/* ignore dupes if not forced */
-	if (dupe && !bm_config.showdupes)
+	if (data->dupe && !bm_config.showdupes)
 	    continue;
 
 	/* Ignore non-multis if we want to show only multis */
-	multi = bm_ismulti(data);
-	if (!multi && bm_config.onlymults)
+	data->mult = bm_ismulti(data);
+	if (!data->mult && bm_config.onlymults)
 	    continue;
+
+	/* ignore out-of-band spots if configured so */
+	if (data->bandindex == BANDINDEX_OOB && !bm_config.show_out_of_band) {
+	    continue;
+	}
 
 	/* if spot is allband or allmode is set or band or mode matches
 	 * than add to the filtered 'spot' array
@@ -889,19 +892,19 @@ void bm_menu() {
     c = toupper(key_get());
     switch (c) {
 	case 'B':
-	    bm_config.allband = 1 - bm_config.allband;
+	    bm_config.allband = !bm_config.allband;
 	    break;
 
 	case 'M':
-	    bm_config.allmode = 1 - bm_config.allmode;
+	    bm_config.allmode = !bm_config.allmode;
 	    break;
 
 	case 'D':
-	    bm_config.showdupes = 1 - bm_config.showdupes;
+	    bm_config.showdupes = !bm_config.showdupes;
 	    break;
 
 	case 'O':
-	    bm_config.onlymults = 1 - bm_config.onlymults;
+	    bm_config.onlymults = !bm_config.onlymults;
 	    break;
     }
     bandmap_show();		/* refresh display */
@@ -925,6 +928,7 @@ spot *copy_spot(spot *data) {
     result -> node = data -> node;
     result -> timeout = data -> timeout;
     result -> dupe = data -> dupe;
+    result -> mult = data -> mult;
     result -> cqzone = data -> cqzone;
     result -> ctynr = data -> ctynr;
     result -> pfx = g_strdup(data -> pfx);
@@ -1072,7 +1076,7 @@ void get_spot_on_qrg(char *dest, freq_t freq) {
 	    data = g_ptr_array_index(spots, i);
 
 	    if ((fabs(data->freq - freq) < TOLERANCE) &&
-		    (!bm_config.skipdupes || data->dupe == 0)) {
+		    (!bm_config.skipdupes || !data->dupe)) {
 		strcpy(dest, data->call);
 		break;
 	    }
