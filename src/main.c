@@ -171,6 +171,7 @@ char multsfile[80] = "";	/* name of file with a list of allowed
 char exchange_list[40] = "";
 int timeoffset = 0;
 int trxmode = CWMODE;
+bool follow_mode = false; /* Follow rig mode */
 rmode_t  rigmode = RIG_MODE_NONE;
 
 bool mixedmode = false;

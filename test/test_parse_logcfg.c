@@ -190,6 +190,7 @@ int setup_default(void **state) {
     fixedmult = 0.0;
     exclude_multilist_type = EXCLUDE_NONE;
     rigptt = 0;
+    follow_mode = true;
     minitest = 0;
 
     setcontest(QSO_MODE);
@@ -433,6 +434,7 @@ static bool_true_t bool_trues[] = {
     {"IGNOREDUPE", &ignoredupe},
     {"USE_CONTINENTLIST_ONLY", &continentlist_only},
     {"RADIO_CONTROL", &trx_control},
+    {"FOLLOW_MODE", &follow_mode},
     {"PORTABLE_MULT_2", &portable_x2},
     {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
     {"WYSIWYG_ONCE", &wysiwyg_once},
@@ -915,6 +917,13 @@ void test_ssbmode(void **state) {
     assert_int_equal(rc, 0);
     assert_int_equal(trxmode, SSBMODE);
 }
+
+void test_follow_mode(void **state) {
+    int rc = call_parse_logcfg("FOLLOW_MODE\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_true(follow_mode);
+}
+
 
 // TLFCOLOR1..6
 void test_tlfcolorn(void **state) {
