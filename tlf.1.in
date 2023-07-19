@@ -1739,6 +1739,27 @@ See the relevant Xplanet documentation.
 .IP
 Use azimuthal projection and center the map on your QTH (station location).
 .
+.TP
+\fBBAND_\fINN\fR=\fIbottom,cw_end,ssb_start,top\fR
+Define band edges. \fINN\fR is the band designator (wavelength), allowed values are:
+160, 80, 60, 40, 30, 20, 17, 15, 12, 10.
+.
+.IP
+All 4 comma separated parameters are mandatory and
+shall be specified in integer Hz units with an optional
+\fIk\fR suffix.
+.IP
+Example specification for Region\ 1 40\ m band:
+.IP
+    \fBBAND_40\fR = \fI7000k, 7040k, 7050k, 7200k\fR
+.
+.IP
+Internal default band definitions are based on a superset of all Regions.
+For example, 40\ m ends by default at 7300\ kHz.
+In addition to configuring the legal limits
+\fBBAND_\fINN\fR can also be used to fine tune actual band configurations
+for a specific contest.
+.
 .SS Morse Code Keyer Commands
 .
 .TP
@@ -2085,6 +2106,8 @@ string parsed for:
 .RB ( Ctrl-G )
 .br
 	\(lqO\(rq - show only new multipliers
+.br
+	\(lqX\(rq - show also out-of-band spots when in all-band mode
 .br
 .RI < number >
 lifetime for new spots in seconds (number >=

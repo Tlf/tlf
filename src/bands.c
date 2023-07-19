@@ -28,7 +28,7 @@
 const static int bandnr[NBANDS] =
 { 160, 80, 60, 40, 30, 20, 17, 15, 12, 10, 0 };
 
-const unsigned int bandcorner[NBANDS][2] = {
+unsigned int bandcorner[NBANDS][2] = {
     { 1800000, 2000000 },	// band bottom, band top
     { 3500000, 4000000 },
     { 5250000, 5450000 },       // 5351500-5356500 worldwide
@@ -42,7 +42,7 @@ const unsigned int bandcorner[NBANDS][2] = {
     {        0,        0 }
 };
 
-const unsigned int cwcorner[NBANDS] = {
+unsigned int cwcorner[NBANDS] = {
     1838000,
     3580000,
     5354000,
@@ -56,7 +56,7 @@ const unsigned int cwcorner[NBANDS] = {
     0
 };
 
-const unsigned int ssbcorner[NBANDS] = {
+unsigned int ssbcorner[NBANDS] = {
     1840000,
     3600000,
     5354000,
