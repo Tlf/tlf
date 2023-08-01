@@ -94,12 +94,11 @@ struct linedata_t *parse_logline(char *buffer) {
  * \return ptr to new qso record (or NULL if eof)
  */
 struct linedata_t *get_next_record(FILE *fp) {
-    char* buffer;
+    char* buffer = NULL;
     size_t buffer_len = 160;
     struct linedata_t *ptr;
     int read;
 
-    buffer = (char*)calloc(buffer_len, sizeof(char));
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
         if (!log_is_comment(buffer)) {
             ptr = parse_logline(buffer);
@@ -120,7 +119,7 @@ struct linedata_t *get_next_record(FILE *fp) {
  * \return ptr to new qtc record (or NULL if eof)
  */
 struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
-    char* buffer;
+    char* buffer = NULL;
     size_t buffer_len = 100;
     char *tmp;
     char *sp;
@@ -132,7 +131,6 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 	    return NULL;
     }
 
-    buffer = (char*)calloc(buffer_len, sizeof(char));
     if ((read = getline(&buffer, &buffer_len, fp)) == -1) {
 	    return NULL;
     }

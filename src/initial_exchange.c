@@ -51,7 +51,7 @@ void free_ie_list(struct ie_list *head) {
 struct ie_list *make_ie_list(char *file) {
 
     FILE *fp;
-    char *inputbuffer;
+    char *inputbuffer = NULL;
     size_t inputbuffer_len = 91;
     char *loc;
 
@@ -67,7 +67,6 @@ struct ie_list *make_ie_list(char *file) {
 
     showstring("Using initial exchange file", file);
 
-    inputbuffer = (char *)calloc(inputbuffer_len, sizeof(char));
     while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 		linectr++;
 
@@ -152,7 +151,6 @@ struct ie_list *make_ie_list(char *file) {
     }
 
     fclose(fp);
-	free(inputbuffer);
 
     return ie_listhead;
 }

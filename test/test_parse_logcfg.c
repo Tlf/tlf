@@ -1094,6 +1094,7 @@ void test_countrylist(void **state) {
     strcpy(whichcontest, "abc");
     strcpy(my.call, "GM1ABC");
     int rc = call_parse_logcfg("COUNTRYLIST=G, GM , F\n");
+    printf(">>>> %d", rc);
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(countrylist[0], "G");
     assert_string_equal(countrylist[1], "GM");

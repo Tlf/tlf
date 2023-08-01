@@ -394,7 +394,7 @@ int readcabrillo(int mode) {
     struct cabrillo_desc *cabdesc;
     char input_logfile[24];
     char output_logfile[80], temp_logfile[80];
-    char* logline;
+    char* logline = NULL;
     char *tempstrp;
 
     char t_qsonrstr[5];
@@ -475,7 +475,6 @@ int readcabrillo(int mode) {
 
     init_qso_array();
 
-	logline = (char*)calloc(MAX_CABRILLO_LEN, sizeof(char));
 	while((read = getline(&logline, (size_t*)MAX_CABRILLO_LEN, fp1)) != 1) {
 		cab_qso_to_tlf(logline, cabdesc);
     }
@@ -486,7 +485,6 @@ int readcabrillo(int mode) {
 
     fclose(fp1);
     free_cabfmt(cabdesc);
-	free(logline);
     strcpy(logfile, temp_logfile);
 
     return 0;

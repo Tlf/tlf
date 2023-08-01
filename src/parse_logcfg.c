@@ -659,7 +659,7 @@ static int cfg_dx_n_sections(const cfg_arg_t arg) {
 }
 
 static int cfg_countrylist(const cfg_arg_t arg) {
-    char *buffer;
+    char *buffer = NULL;
     size_t buffer_len = 2000;
     ssize_t read;
     char *country_list_raw = NULL;  // will point somewhere into buffer
@@ -672,9 +672,11 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     that line into country_list_raw.
     If the input was not a file name we directly copy it into
     country_list_raw (must not have a preceding contest name). */
+
     buffer = (char *)calloc(buffer_len, sizeof(char));
     g_strlcpy(buffer, parameter, buffer_len);
     g_strchomp(buffer);	/* drop trailing whitespace */
+
 
     if ((fp = fopen(buffer, "r")) != NULL) {
         char *prefix = g_strdup_printf("%s:", whichcontest);
@@ -697,9 +699,9 @@ static int cfg_countrylist(const cfg_arg_t arg) {
         if (buffer != NULL) {
             char *colon = strchr(buffer, ':');
             if (colon != NULL) {
-            country_list_raw = colon + 1;   // skip optional contest name
+                country_list_raw = colon + 1;   // skip optional contest name
             } else {
-            country_list_raw = buffer;
+                country_list_raw = buffer;
             }
         }
     }
@@ -764,8 +766,7 @@ static int cfg_continentlist(const cfg_arg_t arg) {
        The last step is to parse the multipliers_list into an array
        (continent_multiplier_list) for future use.
     */
-
-    buffer = (char*)calloc(buffer_len, sizeof(char));
+    buffer = (char *)calloc(buffer_len, sizeof(char));
     g_strlcpy(buffer, parameter, buffer_len);
     g_strchomp(buffer);	/* drop trailing whitespace */
 

@@ -54,7 +54,7 @@
 int repair_log(char *filename) {
     gchar *backupfile;
     gchar *cmd;
-    char* buffer;
+    char* buffer = NULL;
 	size_t buffer_len = 200;
     gchar *fill;
     int rc;
@@ -88,7 +88,6 @@ int repair_log(char *filename) {
 		return 1;
     }
 
-	buffer = (char*)calloc(buffer_len, sizeof(char));
 	while((read = getline(&buffer, &buffer_len, infp)) != 1) {
 		/* strip trailing whitespace (and newline) */
 		g_strchomp(buffer);
@@ -104,7 +103,6 @@ int repair_log(char *filename) {
 
     fclose(outfp);
     fclose(infp);
-	free(buffer);
     g_free(backupfile);
 
     showmsg("Done");
@@ -119,7 +117,7 @@ int checklogfile_new(char *filename) {
     int lineno;
     int tooshort;
 	int read;
-    char* buffer;
+    char* buffer = NULL;
 	size_t buffer_len = 160;
     FILE *fp;
 
@@ -154,7 +152,6 @@ int checklogfile_new(char *filename) {
     lineno = 0;
     tooshort = 0;
 
-	buffer = (char*)calloc(buffer_len, sizeof(char));
     while((read = getline(&buffer, &buffer_len, fp)) != -1) {
 		int band, linelen;
 		int bandok = 0;
@@ -200,7 +197,6 @@ int checklogfile_new(char *filename) {
     }
 
     fclose(fp);
-	free(buffer);
 
     if (tooshort) {
 		char c;
@@ -230,8 +226,7 @@ void checklogfile(void) {
     int qsobytes;
 	int read;
     struct stat statbuf;
-    char* inputbuffer;
-	size_t inputbuffer_len = 800;
+    char* inputbuffer = NULL;
 	size_t read_len = 160;
 
     FILE *infile;
@@ -257,7 +252,6 @@ void checklogfile(void) {
 				TLF_LOG_WARN("Unable to open cpyfile...");
 
 			} else {
-				inputbuffer = (char*)calloc(inputbuffer_len, sizeof(char));
 				while ((read = getline(&inputbuffer, &read_len, infile)) != -1) {
 
 				if (strlen(inputbuffer) != LOGLINELEN) {
@@ -276,7 +270,6 @@ void checklogfile(void) {
 
 				fclose(infile);
 				fclose(outfile);
-				free(inputbuffer);
 			}
 			rename("./cpyfile", logfile);
 			remove("./cpyfile");

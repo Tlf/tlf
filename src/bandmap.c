@@ -128,7 +128,8 @@ void bmdata_read_file() {
     FILE *fp;
     struct timeval tv;
     int timediff, last_bm_save_time, fc, read;
-    char *line, *token;
+    char *line = NULL;
+    char *token;
     size_t line_len = 50;
     static bool bmdata_parsed = false;
 
@@ -137,7 +138,6 @@ void bmdata_read_file() {
 
     if ((fp = fopen(".bmdata.dat", "r")) != NULL) {
         bmdata_parsed = true;
-        line = (char *)calloc(line_len, sizeof(char));
         if ((read = getline(&line, &line_len, fp)) != -1) {
             sscanf(line, "%d", &last_bm_save_time);
             gettimeofday(&tv, NULL);
@@ -145,7 +145,7 @@ void bmdata_read_file() {
             if (timediff < 0)
             timediff = 0;
 
-	    while (fgets(line, 50, fp)) {
+	    while ((read = getline(&line, &line_len, fp)) != -1) {
 		spot *entry = g_new0(spot, 1);
 		fc = 0;
 		token = strtok(line, ";");

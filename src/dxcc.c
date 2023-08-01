@@ -332,7 +332,7 @@ void dxcc_add(char *dxcc_line) {
 /** load cty database from filename */
 int load_ctydata(char *filename) {
     FILE *fd;
-    char* buf;
+    char* buf = NULL;
     size_t buf_len = 181;
     char *loc;
     int read;
@@ -346,7 +346,6 @@ int load_ctydata(char *filename) {
     // set default for empty country == country nr 0
     dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
-    buf = (char*)calloc(buf_len, sizeof(char));
     while ((read = getline(&buf, &buf_len, fd)) != -1) {
         g_strchomp(buf); 	/* drop CR and/or NL and */
         if (*buf == '\0')	/* ignore empty lines */
@@ -363,6 +362,5 @@ int load_ctydata(char *filename) {
         }
     }
     fclose(fd);
-    free(buf);
     return 0;
 }
