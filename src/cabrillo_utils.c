@@ -578,12 +578,11 @@ static int process_cabrillo_template_file(const char *file_name) {
         return PARSE_WRONG_PARAMETER;
     }
 
-    char* logline;
+    char* logline = NULL;
     int read;
 
     int result = PARSE_OK;
 
-    logline = (char*)calloc(MAX_CABRILLO_LEN, sizeof(char));
     while ((read = getline(&logline, (size_t*)MAX_CABRILLO_LEN, fp)) != 1) {
         g_strstrip(logline);
         if (skip_template_line(logline)) {
@@ -610,7 +609,6 @@ static int process_cabrillo_template_file(const char *file_name) {
     }
 
     fclose(fp);
-    free(logline);
 
     return result;
 }

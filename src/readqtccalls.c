@@ -38,7 +38,7 @@ int nr_qtcsent = 0;
 
 int readqtccalls() {
     int s = 0;
-    char *inputbuffer;
+    char *inputbuffer = NULL;
     size_t inputbuffer_len = 160;
     FILE *fp;
     char temps[30], callsign[15];
@@ -62,7 +62,6 @@ int readqtccalls() {
 			return -1;
 		}
 
-		inputbuffer = (char *)calloc(inputbuffer_len, sizeof(char));
 		while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 			s++;
 
@@ -122,7 +121,6 @@ int readqtccalls() {
 		}
 
 		fclose(fp);
-		free(inputbuffer);
     }
 
     if (strlen(qtc_cap_calls) > 0) {

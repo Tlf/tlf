@@ -747,7 +747,7 @@ int load_callmaster(void) {
 
     FILE *cfp;
     char *callmaster_location;
-    char* s_inputbuffer;
+    char* s_inputbuffer = NULL;
 	size_t s_inputbuffer_len = 186;
 	int read;
 
@@ -767,7 +767,6 @@ int load_callmaster(void) {
 
     GHashTable *callset = g_hash_table_new(g_str_hash, g_str_equal);
 
-	s_inputbuffer = (char*)calloc(s_inputbuffer_len, sizeof(char));
 	while((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
 		g_strstrip(s_inputbuffer);
 
@@ -803,7 +802,6 @@ int load_callmaster(void) {
 	g_hash_table_destroy(callset);
 
 	fclose(cfp);
-	free(s_inputbuffer);
 	return callmaster->len;
 }
 

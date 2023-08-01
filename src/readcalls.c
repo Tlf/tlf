@@ -120,7 +120,7 @@ static void show_progress(int linenr) {
 }
 
 int readcalls(const char *logfile, bool interactive) {
-    char* inputbuffer;
+    char* inputbuffer = NULL;
 	size_t inputbuffer_len = LOGLINELEN + 1;
     struct qso_t *qso;
     int linenr = 0;
@@ -142,7 +142,6 @@ int readcalls(const char *logfile, bool interactive) {
 
     bool log_changed = false;
 
-	inputbuffer = (char*)calloc(inputbuffer_len, sizeof(char));
     while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 		// drop trailing newline
 		inputbuffer[LOGLINELEN - 1] = '\0';
@@ -191,7 +190,6 @@ int readcalls(const char *logfile, bool interactive) {
 	}
 
     fclose(fp);
-	free(inputbuffer);
 
     if (log_changed) {
 		bool ok = false;

@@ -330,7 +330,7 @@ void add_mult_line(char *line) {
 int init_and_load_multipliers(void) {
 
     FILE *cfp;
-    char *s_inputbuffer;
+    char *s_inputbuffer = NULL;
     size_t s_inputbuffer_len = 2000;
     char *mults_location;
     ssize_t read;
@@ -359,7 +359,6 @@ int init_and_load_multipliers(void) {
 	return 0;       // couldn't open file
     }
 
-    s_inputbuffer = (char *)calloc(s_inputbuffer_len, sizeof(char));
     while ((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
         /* strip leading and trailing whitespace */
         g_strstrip(s_inputbuffer);
@@ -374,7 +373,6 @@ int init_and_load_multipliers(void) {
     }
 
     fclose(cfp);
-    free(s_inputbuffer);
     /* do not rely on the order in the mult file but sort it here */
     g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);
 
