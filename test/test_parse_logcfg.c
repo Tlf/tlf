@@ -191,6 +191,7 @@ int setup_default(void **state) {
     exclude_multilist_type = EXCLUDE_NONE;
     rigptt = 0;
     minitest = 0;
+    cqmode = CQ;
 
     setcontest(QSO_MODE);
 
@@ -914,6 +915,12 @@ void test_ssbmode(void **state) {
     int rc = call_parse_logcfg("SSBMODE\n");
     assert_int_equal(rc, 0);
     assert_int_equal(trxmode, SSBMODE);
+}
+
+void test_operating_mode(void **state) {
+    int rc = call_parse_logcfg("OPERATING_MODE=S&P\n");
+    assert_int_equal(rc, 0);
+    assert_int_equal(cqmode, S_P);
 }
 
 // TLFCOLOR1..6

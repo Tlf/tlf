@@ -182,7 +182,7 @@ int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
 bool clusterlog = false;	/* clusterlog on/off */
 bool searchflg = false;		/* display search  window */
 bool show_time = false;
-cqmode_t cqmode = CQ;
+cqmode_t cqmode;            /* can be CQ or S&P */
 bool demode = false;		/* send DE  before s&p call  */
 
 int announcefilter = FILTER_ANN; /*  filter cluster  announcements */
@@ -636,7 +636,7 @@ static void init_variables() {
     tune_seconds = 6;   /* tune up for 6 s */
     unique_call_multi = MULT_NONE;
     generic_mult = MULT_NONE;
-
+    cqmode = CQ;
     leading_zeros_serial = true;
     ctcomp = false;
     resend_call = RESEND_NOT_SET;
