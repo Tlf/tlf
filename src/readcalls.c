@@ -121,10 +121,10 @@ static void show_progress(int linenr) {
 
 int readcalls(const char *logfile, bool interactive) {
     char* inputbuffer = NULL;
-	size_t inputbuffer_len = LOGLINELEN + 1;
+	size_t inputbuffer_len = 0;
     struct qso_t *qso;
     int linenr = 0;
-	int read;
+	ssize_t read;
 
     FILE *fp;
 
@@ -143,50 +143,53 @@ int readcalls(const char *logfile, bool interactive) {
     bool log_changed = false;
 
     while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
-		// drop trailing newline
-		inputbuffer[LOGLINELEN - 1] = '\0';
+		if (inputbuffer_len > 0) {
+			// drop trailing newline
+			inputbuffer[inputbuffer_len - 1] = '\0';
+			linenr++;
+			
+			if (interactive) {
+				show_progress(linenr);
+			}
 
-		linenr++;
+			qso = parse_qso(inputbuffer);
 
-		if (interactive) {
-			show_progress(linenr);
-		}
+			if (qso->is_comment) {
+				g_ptr_array_add(qso_array, qso);
+				continue;		/* skip further processing for note entry */
+			}
 
-		qso = parse_qso(inputbuffer);
+			/* get the country number, not known at this point */
+			countrynr = getctydata(qso->call);
+			checkexchange(qso, false);
+			if (qso->normalized_comment != NULL && strlen(qso->normalized_comment) > 0) {
+				strcpy(qso->comment, qso->normalized_comment);
+			}
 
-		if (qso->is_comment) {
+			dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
+			addcall(qso);
+			score_qso(qso);
+			char *logline = makelogline(qso);
+
+// Ignore new line character at end of line in qso->logline
+			if (strcmp(logline, strtok(qso->logline, "\n")) != 0) {
+				g_free(qso->logline);
+				qso->logline = g_strdup(logline);
+				log_changed = true;
+			}
+
+			g_free(logline);
+
+			if(inputbuffer != NULL)
+				free(inputbuffer);
+
+			// drop transient fields
+			FREE_DYNAMIC_STRING(qso->callupdate);
+			FREE_DYNAMIC_STRING(qso->normalized_comment);
+			FREE_DYNAMIC_STRING(qso->section);
+
 			g_ptr_array_add(qso_array, qso);
-			continue;		/* skip further processing for note entry */
 		}
-
-		/* get the country number, not known at this point */
-		countrynr = getctydata(qso->call);
-		checkexchange(qso, false);
-		if (qso->normalized_comment != NULL && strlen(qso->normalized_comment) > 0) {
-			strcpy(qso->comment, qso->normalized_comment);
-		}
-		dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
-
-		addcall(qso);
-		score_qso(qso);
-
-		char *logline = makelogline(qso);
-
-		if (strcmp(logline, qso->logline) != 0) {
-			// different: update log line and mark change
-			g_free(qso->logline);
-			qso->logline = g_strdup(logline);
-			log_changed = true;
-		}
-
-		g_free(logline);
-
-		// drop transient fields
-		FREE_DYNAMIC_STRING(qso->callupdate);
-		FREE_DYNAMIC_STRING(qso->normalized_comment);
-		FREE_DYNAMIC_STRING(qso->section);
-
-		g_ptr_array_add(qso_array, qso);
 	}
 
     fclose(fp);

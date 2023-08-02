@@ -89,18 +89,22 @@ int repair_log(char *filename) {
     }
 
 	while((read = getline(&buffer, &buffer_len, infp)) != 1) {
-		/* strip trailing whitespace (and newline) */
-		g_strchomp(buffer);
+		if (buffer_len > 0) {
+			/* strip trailing whitespace (and newline) */
+			g_strchomp(buffer);
 
-		/* append spaces */
-		fill = g_strnfill((LOGLINELEN - 1) - strlen(buffer), ' ');
-		strcat(buffer, fill);
-		g_free(fill);
+			/* append spaces */
+			fill = g_strnfill((LOGLINELEN - 1) - strlen(buffer), ' ');
+			strcat(buffer, fill);
+			g_free(fill);
 
-		fputs(buffer, outfp);
-		fputs("\n", outfp);
+			fputs(buffer, outfp);
+			fputs("\n", outfp);
+		}
     }
 
+	if (buffer != NULL)
+		free(buffer);
     fclose(outfp);
     fclose(infp);
     g_free(backupfile);
@@ -153,49 +157,53 @@ int checklogfile_new(char *filename) {
     tooshort = 0;
 
     while((read = getline(&buffer, &buffer_len, fp)) != -1) {
-		int band, linelen;
-		int bandok = 0;
+		if (buffer_len > 0) {
+			int band, linelen;
+			int bandok = 0;
 
-		lineno++;
+			lineno++;
 
-		/* if no logline -> complain and back */
-		band = atoi(buffer);
+			/* if no logline -> complain and back */
+			band = atoi(buffer);
 
-		if ((band == 160) ||
-			(band == 80) ||
-			(band == 60) ||
-			(band == 40) ||
-			(band == 30) ||
-			(band == 20) ||
-			(band == 17) ||
-			(band == 15) ||
-			(band == 12) ||
-			(band == 10))
-			bandok = 1;
+			if ((band == 160) ||
+				(band == 80) ||
+				(band == 60) ||
+				(band == 40) ||
+				(band == 30) ||
+				(band == 20) ||
+				(band == 17) ||
+				(band == 15) ||
+				(band == 12) ||
+				(band == 10))
+				bandok = 1;
 
-		if (!((buffer[0] == ';') || bandok)) {
-			/* msg no valid logline in line #, cannot handle it */
-			shownr("No valid log line in line ", lineno);
-			return 1;
-		}
+			if (!((buffer[0] == ';') || bandok)) {
+				/* msg no valid logline in line #, cannot handle it */
+				shownr("No valid log line in line ", lineno);
+				return 1;
+			}
 
-		linelen = strlen(buffer);
+			linelen = strlen(buffer);
 
-		/* if to long -> complain and back */
-		if (linelen > LOGLINELEN) {
-			/* msg length of line # to long,
-			* cannot handle that log file format */
-			shownr("Log line to long in line ", lineno);
-			showmsg("Can not handle that log format");
-			return 1;
-		}
+			/* if to long -> complain and back */
+			if (linelen > LOGLINELEN) {
+				/* msg length of line # to long,
+				* cannot handle that log file format */
+				shownr("Log line to long in line ", lineno);
+				showmsg("Can not handle that log format");
+				return 1;
+			}
 
-		/* if to short -> remember */
-		if (linelen < LOGLINELEN) {
-			tooshort = 1;
+			/* if to short -> remember */
+			if (linelen < LOGLINELEN) {
+				tooshort = 1;
+			}
 		}
     }
 
+	if (buffer != NULL)
+		free(buffer);
     fclose(fp);
 
     if (tooshort) {
@@ -253,21 +261,24 @@ void checklogfile(void) {
 
 			} else {
 				while ((read = getline(&inputbuffer, &read_len, infile)) != -1) {
+					if (read_len > 0) {
+						if (strlen(inputbuffer) != LOGLINELEN) {
+							/* append spaces */
+							for (int i = strlen(inputbuffer);
+								i < LOGLINELEN; i++) {
 
-				if (strlen(inputbuffer) != LOGLINELEN) {
-					/* append spaces */
-					for (int i = strlen(inputbuffer);
-						i < LOGLINELEN; i++) {
+							strcat(inputbuffer, " ");
+							}
 
-					strcat(inputbuffer, " ");
+							inputbuffer[LOGLINELEN - 1] = '\n';
+							inputbuffer[LOGLINELEN] = '\0';
+						}
+						fputs(inputbuffer, outfile);
 					}
-
-					inputbuffer[LOGLINELEN - 1] = '\n';
-					inputbuffer[LOGLINELEN] = '\0';
-				}
-				fputs(inputbuffer, outfile);
 				}
 
+				if (inputbuffer != NULL)
+					free(inputbuffer);
 				fclose(infile);
 				fclose(outfile);
 			}

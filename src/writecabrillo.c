@@ -100,13 +100,14 @@ struct linedata_t *get_next_record(FILE *fp) {
     int read;
 
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
-        if (!log_is_comment(buffer)) {
-            ptr = parse_logline(buffer);
-            return ptr;
-        }
+        if (buffer_len > 0) 
+            if (!log_is_comment(buffer)) {
+                ptr = parse_logline(buffer);
+                return ptr;
+            }
     }
-
-    free(buffer);
+    if (buffer != NULL)
+        free(buffer);
     return NULL;
 }
 

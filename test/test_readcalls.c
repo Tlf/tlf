@@ -195,8 +195,7 @@ void test_qso_array_init(void **state) {
 
 void test_readcalls_simple_log(void **state) {
     int lines;
-    gchar *qso_line = g_strndup(QSO1, LOGLINELEN - 1);
-
+    gchar *qso_line = g_strndup(QSO1, 87);
     write_log(LOGFILE);
     lines = readcalls(LOGFILE, true);
     assert_non_null(qso_array);
@@ -211,7 +210,7 @@ void test_readcalls_simple_log(void **state) {
 }
 
 void test_readcalls_note(void **state) {
-    gchar *note = g_strndup(NOTE, LOGLINELEN - 1);
+    gchar *note = g_strndup(NOTE, LOGLINELEN);
 
     write_log(LOGFILE);
     append_log_line(LOGFILE, NOTE);
@@ -233,7 +232,7 @@ void test_add_to_worked(void **state) {
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
-    time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT);
+    time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT); // string starts from date: 12-Jan-18 16:34
     assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_80], ts);
     assert_int_equal(get_nr_of_points(), 3);
     assert_int_equal(get_nr_of_mults(), 2);

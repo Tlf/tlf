@@ -130,7 +130,7 @@ void bmdata_read_file() {
     int timediff, last_bm_save_time, fc, read;
     char *line = NULL;
     char *token;
-    size_t line_len = 50;
+    size_t line_len = 0;
     static bool bmdata_parsed = false;
 
     if (bmdata_parsed)
@@ -145,50 +145,57 @@ void bmdata_read_file() {
             if (timediff < 0)
             timediff = 0;
 
-	    while ((read = getline(&line, &line_len, fp)) != -1) {
-		spot *entry = g_new0(spot, 1);
-		fc = 0;
-		token = strtok(line, ";");
-		while (token != NULL) {
-		    switch (fc) {
-			case 0:		entry -> call = g_strdup(token);
-			    break;
-			case 1:		sscanf(token, "%d", &entry->freq);
-			    break;
-			case 2:		sscanf(token, "%hhd", &entry->mode);
-			    break;
-			case 3:	        // re-evaluate band index
-			    entry->bandindex = freq2bandindex(entry->freq);
-			    break;
-			case 4:		sscanf(token, "%c", &entry->node);
-			    break;
-			case 5:		sscanf(token, "%u", &entry->timeout);
-			    break;
-			case 6:     // dupe is transient, not read back
-                            entry->dupe = false;
-			    break;
-			case 7:		sscanf(token, "%d", &entry->cqzone);
-			    break;
-			case 8:		sscanf(token, "%d", &entry->ctynr);
-			    break;
-			case 9:		entry->pfx = g_strdup(token);
-			    break;
-			case 10:    // mult is transient, not read back
-			    entry->mult = false;
-			    break;
-		    }
-		    fc++;
-		    token = strtok(NULL, ";");
-		}
-		if (entry->timeout > timediff) {
-		    entry->timeout -= timediff;	/* remaining time */
-		    allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
-		} else {
-		    free_spot(entry);
-		}
-	    }
-	}
-	fclose(fp);
+            while ((read = getline(&line, &line_len, fp)) != -1) {
+                if (line_len > 0) {
+                    spot *entry = g_new0(spot, 1);
+                    fc = 0;
+                    token = strtok(line, ";");
+                    while (token != NULL) {
+                        switch (fc) {
+                        case 0:		entry -> call = g_strdup(token);
+                            break;
+                        case 1:		sscanf(token, "%d", &entry->freq);
+                            break;
+                        case 2:		sscanf(token, "%hhd", &entry->mode);
+                            break;
+                        case 3:	        // re-evaluate band index
+                            entry->bandindex = freq2bandindex(entry->freq);
+                            break;
+                        case 4:		sscanf(token, "%c", &entry->node);
+                            break;
+                        case 5:		sscanf(token, "%u", &entry->timeout);
+                            break;
+                        case 6:     // dupe is transient, not read back
+                                        entry->dupe = false;
+                            break;
+                        case 7:		sscanf(token, "%d", &entry->cqzone);
+                            break;
+                        case 8:		sscanf(token, "%d", &entry->ctynr);
+                            break;
+                        case 9:		entry->pfx = g_strdup(token);
+                            break;
+                        case 10:    // mult is transient, not read back
+                            entry->mult = false;
+                            break;
+                        }
+                        fc++;
+                        token = strtok(NULL, ";");
+                    }
+            
+                    if (entry->timeout > timediff) {
+                        entry->timeout -= timediff;	/* remaining time */
+                        allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
+                    } else {
+                        free_spot(entry);
+                    }
+                }
+            }
+        }
+
+        if (line != NULL)
+            free(line);
+
+        fclose(fp);
     }
 }
 

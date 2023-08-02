@@ -347,20 +347,26 @@ int load_ctydata(char *filename) {
     dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
     while ((read = getline(&buf, &buf_len, fd)) != -1) {
-        g_strchomp(buf); 	/* drop CR and/or NL and */
-        if (*buf == '\0')	/* ignore empty lines */
-            continue;
+        if (buf_len > 0) {
+            g_strchomp(buf); 	/* drop CR and/or NL and */
+            if (*buf == '\0')	/* ignore empty lines */
+                continue;
 
-        if (buf[0] != ' ') {	// data line
-            dxcc_add(buf);
-        } else {		// prefix line
-            loc = strtok(buf, " ,;");
-            while (loc != NULL) {
-                prefix_add(loc);
-                loc = strtok(NULL, " ,;");
+            if (buf[0] != ' ') {	// data line
+                dxcc_add(buf);
+            } else {		// prefix line
+                loc = strtok(buf, " ,;");
+                while (loc != NULL) {
+                    prefix_add(loc);
+                    loc = strtok(NULL, " ,;");
+                }
             }
         }
     }
+
+    if (buf != NULL)
+        free(buf);
+
     fclose(fd);
     return 0;
 }
