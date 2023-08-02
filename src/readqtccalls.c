@@ -63,31 +63,36 @@ int readqtccalls() {
 		}
 
 		while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
-			s++;
+			if (inputbuffer_len > 0) {
+				s++;
 
-			/* find maximum sent QTC block serial */
-			g_strlcpy(temps, inputbuffer + 50, 5);  // get serial of QTC block
-			tempi = atoi(temps);
-			if (tempi > nr_qtcsent) {
-			nr_qtcsent = tempi;
+				/* find maximum sent QTC block serial */
+				g_strlcpy(temps, inputbuffer + 50, 5);  // get serial of QTC block
+				tempi = atoi(temps);
+				if (tempi > nr_qtcsent) {
+				nr_qtcsent = tempi;
+				}
+
+				/* mark corresponding qso line as used for QTC */
+				g_strlcpy(temps, inputbuffer + 12, 5);  // qso nr in qso list
+				tempi = atoi(temps) - 1;
+				qsoflags_for_qtc[tempi] = 1;
+
+				/* remember callsign, build number of sent QTCs */
+				parse_qtcline(inputbuffer, callsign, SEND);
+				qtc_inc(callsign, SEND);
+
+				total++;			/* add one point per QTC */
+
+				/* find first unused QSO number for QTCs */
+				if (tempi > last_qtc) {
+				last_qtc = tempi;
+				}
 			}
+		}	
 
-			/* mark corresponding qso line as used for QTC */
-			g_strlcpy(temps, inputbuffer + 12, 5);  // qso nr in qso list
-			tempi = atoi(temps) - 1;
-			qsoflags_for_qtc[tempi] = 1;
-
-			/* remember callsign, build number of sent QTCs */
-			parse_qtcline(inputbuffer, callsign, SEND);
-			qtc_inc(callsign, SEND);
-
-			total++;			/* add one point per QTC */
-
-			/* find first unused QSO number for QTCs */
-			if (tempi > last_qtc) {
-			last_qtc = tempi;
-			}
-		}
+		if (inputbuffer != NULL)
+			free(inputbuffer);
 
 		next_qtc_qso = last_qtc;
 
@@ -113,13 +118,17 @@ int readqtccalls() {
 		}
 
 		while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
-			/* remember callsign, build number of received QTCs */
-			parse_qtcline(inputbuffer, callsign, RECV);
-			qtc_inc(callsign, RECV);
+			if (inputbuffer_len > 0) {
+				/* remember callsign, build number of received QTCs */
+				parse_qtcline(inputbuffer, callsign, RECV);
+				qtc_inc(callsign, RECV);
 
-			total++;			/* add one point per QTC */
+				total++;			/* add one point per QTC */
+			}
 		}
 
+		if (inputbuffer != NULL)
+			free(inputbuffer);
 		fclose(fp);
     }
 
@@ -134,9 +143,12 @@ int readqtccalls() {
 
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    /* remember callsign, mark it as QTC capable, based on eg. last years */
-	    qtc_inc(g_strstrip(inputbuffer), QTC_CAP);
+	    if (inputbuffer_len > 0)
+			qtc_inc(g_strstrip(inputbuffer), QTC_CAP);
 	}
 
+	if (inputbuffer != NULL)
+		free(inputbuffer);
 	fclose(fp);
     }
 
@@ -147,8 +159,12 @@ int readqtccalls() {
     } else {
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    /* remember callsign, set marked QTC states */
-	    parse_qtc_flagline(inputbuffer);
+		if (inputbuffer_len > 0)
+	    	parse_qtc_flagline(inputbuffer);
 	}
+
+	if (inputbuffer != NULL)
+		free(inputbuffer);
 	fclose(fp);
     }
 

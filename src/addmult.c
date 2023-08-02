@@ -331,48 +331,58 @@ int init_and_load_multipliers(void) {
 
     FILE *cfp;
     char *s_inputbuffer = NULL;
-    size_t s_inputbuffer_len = 2000;
+    size_t s_inputbuffer_len = 0;
     char *mults_location;
     ssize_t read;
 
     if (mults_possible) {
-	/* free old array if exists */
-	g_ptr_array_free(mults_possible, TRUE);
+        /* free old array if exists */
+        g_ptr_array_free(mults_possible, TRUE);
     }
     mults_possible = g_ptr_array_new_with_free_func(free_possible_mult);
 
     if (strlen(multsfile) == 0) {
-	return 0;
+	    return 0;
     }
 
     mults_location = find_available(multsfile);
 
     if ((cfp = fopen(mults_location, "r")) == NULL) {
-	mvprintw(9, 0, "Error opening multiplier file %s.\n", multsfile);
-	refreshp();
-	sleep(5);
+        mvprintw(9, 0, "Error opening multiplier file %s.\n", multsfile);
+        refreshp();
+        sleep(5);
     }
 
     g_free(mults_location);
 
     if (cfp == NULL) {
-	return 0;       // couldn't open file
+	    return 0;       // couldn't open file
     }
 
     while ((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
-        /* strip leading and trailing whitespace */
-        g_strstrip(s_inputbuffer);
+        if (read != -1) {
+            if (s_inputbuffer_len > 0) {
+                /* strip leading and trailing whitespace */
+                g_strstrip(s_inputbuffer);
 
-        /* drop comments starting with '#' and empty lines */
-        if (*s_inputbuffer == '#' || *s_inputbuffer == '\0') {
-            continue;
+                /* drop comments starting with '#' and empty lines */
+                if (*s_inputbuffer == '#' || *s_inputbuffer == '\0') {
+                    continue;
+                }
+
+                add_mult_line(s_inputbuffer);
+            }
         }
-
-        add_mult_line(s_inputbuffer);
+        else {
+            printf("RuntimeError: %ld", read);
+            exit(1);
+        }
 
     }
 
     fclose(cfp);
+    if (s_inputbuffer_len > 0)
+        free(s_inputbuffer);
     /* do not rely on the order in the mult file but sort it here */
     g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);
 

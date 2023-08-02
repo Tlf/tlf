@@ -396,6 +396,7 @@ int readcabrillo(int mode) {
     char output_logfile[80], temp_logfile[80];
     char* logline = NULL;
     char *tempstrp;
+	size_t read_len = 0;
 
     char t_qsonrstr[5];
     int t_qsonum;
@@ -475,14 +476,16 @@ int readcabrillo(int mode) {
 
     init_qso_array();
 
-	while((read = getline(&logline, (size_t*)MAX_CABRILLO_LEN, fp1)) != 1) {
-		cab_qso_to_tlf(logline, cabdesc);
+	while((read = getline(&logline, &read_len, fp1)) != 1) {
+		if (read_len > 0) 
+			cab_qso_to_tlf(logline, cabdesc);
     }
 
     strcpy(qsonrstr, t_qsonrstr);
     qsonum = t_qsonum;
     bandinx = t_bandinx;
-
+	if (logline != NULL)
+		free(logline);
     fclose(fp1);
     free_cabfmt(cabdesc);
     strcpy(logfile, temp_logfile);

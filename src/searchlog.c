@@ -768,38 +768,43 @@ int load_callmaster(void) {
     GHashTable *callset = g_hash_table_new(g_str_hash, g_str_equal);
 
 	while((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
-		g_strstrip(s_inputbuffer);
+		if (s_inputbuffer_len > 0) {
+			g_strstrip(s_inputbuffer);
 
-		/* skip comment lines and calls shorter than 3 chars */
-		if (s_inputbuffer[0] == '#' || strlen(s_inputbuffer) < 3) {
-			continue;
-		}
+			/* skip comment lines and calls shorter than 3 chars */
+			if (s_inputbuffer[0] == '#' || strlen(s_inputbuffer) < 3) {
+				continue;
+			}
 
-		/* store version */
-		if (strlen(s_inputbuffer) == 11 && strncmp(s_inputbuffer, "VER", 3) == 0) {
-			strcpy(callmaster_version, s_inputbuffer);      // save it
-		}
+			/* store version */
+			if (strlen(s_inputbuffer) == 11 && strncmp(s_inputbuffer, "VER", 3) == 0) {
+				strcpy(callmaster_version, s_inputbuffer);      // save it
+			}
 
-		char *call = g_ascii_strup(s_inputbuffer, 11);
+			char *call = g_ascii_strup(s_inputbuffer, 11);
 
-		if (CONTEST_IS(ARRL_SS)) {
-			/* keep only NA stations */
-			if (strchr("AKWVCN", call[0]) == NULL) {
+			if (CONTEST_IS(ARRL_SS)) {
+				/* keep only NA stations */
+				if (strchr("AKWVCN", call[0]) == NULL) {
+					g_free(call);
+					continue;
+				}
+			}
+
+			if (g_hash_table_contains(callset, call)) { // already have this call
 				g_free(call);
 				continue;
 			}
-		}
 
-		if (g_hash_table_contains(callset, call)) { // already have this call
-			g_free(call);
-			continue;
+			g_hash_table_add(callset, call);
+			g_ptr_array_add(callmaster, call);
 		}
-
-		g_hash_table_add(callset, call);
-		g_ptr_array_add(callmaster, call);
 	}
 
 	g_hash_table_destroy(callset);
+
+	if (s_inputbuffer != NULL)
+		free(s_inputbuffer);
 
 	fclose(cfp);
 	return callmaster->len;

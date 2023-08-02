@@ -114,17 +114,21 @@ int parse_configfile(FILE *fp) {
     ssize_t read;
 
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
-	g_strchug(buffer);              // remove leading space
-	if (isCommentLine(buffer)) {    // skip comments and empty lines
-	    continue;
-	}
+        if (buffer_len > 0) {
+            g_strchug(buffer);              // remove leading space
+            if (isCommentLine(buffer)) {    // skip comments and empty lines
+                continue;
+            }
 
-	status = parse_logcfg(buffer);
-	if (status != PARSE_OK) {
-	    break;
-	}
-    }
+            status = parse_logcfg(buffer);
+            if (status != PARSE_OK) {
+                break;
+            }
+            }
+        }
 
+    if (buffer != NULL)
+        free(buffer);
     return status;
 }
 
@@ -682,13 +686,15 @@ static int cfg_countrylist(const cfg_arg_t arg) {
         char *prefix = g_strdup_printf("%s:", whichcontest);
 
         while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
-            g_strstrip(buffer);   /* no leading/trailing whitespace*/
+            if (buffer_len > 0) {
+                g_strstrip(buffer);   /* no leading/trailing whitespace*/
 
-            /* accept only a line starting with the contest name
-            * (CONTEST=) followed by ':' */
-            if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
-            country_list_raw = buffer + strlen(prefix); // skip prefix
-            break;
+                /* accept only a line starting with the contest name
+                * (CONTEST=) followed by ':' */
+                if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
+                country_list_raw = buffer + strlen(prefix); // skip prefix
+                break;
+                }
             }
 	    }
 
@@ -773,12 +779,14 @@ static int cfg_continentlist(const cfg_arg_t arg) {
     if ((fp = fopen(buffer, "r")) != NULL) {
         char *prefix = g_strdup_printf("%s:", whichcontest);
         while((read = getline(&buffer, &buffer_len, fp)) != -1) {
-            g_strstrip(buffer);   /* no leading/trailing whitespace*/
-            /* accept only a line starting with the contest name
-            * (CONTEST=) followed by ':' */
-            if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
-                cont_multiplier_list = buffer + strlen(prefix); // skip prefix
-                break;
+            if (buffer_len > 0) {
+                g_strstrip(buffer);   /* no leading/trailing whitespace*/
+                /* accept only a line starting with the contest name
+                * (CONTEST=) followed by ':' */
+                if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
+                    cont_multiplier_list = buffer + strlen(prefix); // skip prefix
+                    break;
+                }
             }
 	    }
 
