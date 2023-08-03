@@ -148,7 +148,11 @@ struct ie_list *make_ie_list(char *file) {
 			/* prepend new entry to existing list */
 			new->next = ie_listhead;
 			ie_listhead = new;
-			}
+		}
+		else {
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
+		}
     }
 
 	if (inputbuffer != NULL)

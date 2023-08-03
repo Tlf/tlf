@@ -124,8 +124,12 @@ int parse_configfile(FILE *fp) {
             if (status != PARSE_OK) {
                 break;
             }
-            }
         }
+        else {
+            perror("RuntimeError: ");
+            exit(EXIT_FAILURE);
+        }
+    }
 
     if (buffer != NULL)
         free(buffer);
@@ -696,6 +700,10 @@ static int cfg_countrylist(const cfg_arg_t arg) {
                 break;
                 }
             }
+            else {
+                perror("RuntimeError: ");
+                exit(EXIT_FAILURE);
+            }
 	    }
 
         g_free(prefix);
@@ -787,6 +795,10 @@ static int cfg_continentlist(const cfg_arg_t arg) {
                     cont_multiplier_list = buffer + strlen(prefix); // skip prefix
                     break;
                 }
+            }
+            else {
+                perror("RuntimeError: ");
+                exit(EXIT_FAILURE);
             }
 	    }
 

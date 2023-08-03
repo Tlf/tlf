@@ -100,11 +100,16 @@ struct linedata_t *get_next_record(FILE *fp) {
     int read;
 
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
-        if (buffer_len > 0) 
+        if (buffer_len > 0) {
             if (!log_is_comment(buffer)) {
                 ptr = parse_logline(buffer);
                 return ptr;
             }
+        }
+        else {
+            perror("RuntimeError: ");
+            exit(EXIT_FAILURE);
+        }
     }
     if (buffer != NULL)
         free(buffer);

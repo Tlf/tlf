@@ -360,7 +360,6 @@ int init_and_load_multipliers(void) {
     }
 
     while ((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
-        if (read != -1) {
             if (s_inputbuffer_len > 0) {
                 /* strip leading and trailing whitespace */
                 g_strstrip(s_inputbuffer);
@@ -372,12 +371,10 @@ int init_and_load_multipliers(void) {
 
                 add_mult_line(s_inputbuffer);
             }
-        }
-        else {
-            printf("RuntimeError: %ld", read);
-            exit(1);
-        }
-
+            else {
+                perror("RuntimeError: ");
+                exit(EXIT_FAILURE);
+            }
     }
 
     fclose(cfp);

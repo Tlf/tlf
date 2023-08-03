@@ -101,6 +101,10 @@ int repair_log(char *filename) {
 			fputs(buffer, outfp);
 			fputs("\n", outfp);
 		}
+		else {
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
+		}
     }
 
 	if (buffer != NULL)
@@ -200,6 +204,10 @@ int checklogfile_new(char *filename) {
 				tooshort = 1;
 			}
 		}
+		else {
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
+		}
     }
 
 	if (buffer != NULL)
@@ -274,6 +282,10 @@ void checklogfile(void) {
 							inputbuffer[LOGLINELEN] = '\0';
 						}
 						fputs(inputbuffer, outfile);
+					}
+					else {
+						perror("RuntimeError: ");
+						exit(EXIT_FAILURE);
 					}
 				}
 

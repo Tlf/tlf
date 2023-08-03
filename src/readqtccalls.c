@@ -89,6 +89,10 @@ int readqtccalls() {
 				last_qtc = tempi;
 				}
 			}
+			else {
+                perror("RuntimeError: ");
+                exit(EXIT_FAILURE);
+            }
 		}	
 
 		if (inputbuffer != NULL)
@@ -125,6 +129,10 @@ int readqtccalls() {
 
 				total++;			/* add one point per QTC */
 			}
+			else {
+                perror("RuntimeError: ");
+                exit(EXIT_FAILURE);
+            }
 		}
 
 		if (inputbuffer != NULL)
@@ -145,6 +153,10 @@ int readqtccalls() {
 	    /* remember callsign, mark it as QTC capable, based on eg. last years */
 	    if (inputbuffer_len > 0)
 			qtc_inc(g_strstrip(inputbuffer), QTC_CAP);
+		else {
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	if (inputbuffer != NULL)
@@ -161,6 +173,10 @@ int readqtccalls() {
 	    /* remember callsign, set marked QTC states */
 		if (inputbuffer_len > 0)
 	    	parse_qtc_flagline(inputbuffer);
+		else {
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	if (inputbuffer != NULL)

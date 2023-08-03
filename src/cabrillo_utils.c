@@ -609,6 +609,10 @@ static int process_cabrillo_template_file(const char *file_name) {
                 break;
             }
         }
+        else {
+            perror("RuntimeError: ");
+            exit(EXIT_FAILURE);
+        }
     }
 
     if (logline != NULL)

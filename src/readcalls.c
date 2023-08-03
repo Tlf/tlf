@@ -190,6 +190,10 @@ int readcalls(const char *logfile, bool interactive) {
 
 			g_ptr_array_add(qso_array, qso);
 		}
+		else {
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
+		}
 	}
 
     fclose(fp);
