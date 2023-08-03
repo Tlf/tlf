@@ -799,6 +799,10 @@ int load_callmaster(void) {
 			g_hash_table_add(callset, call);
 			g_ptr_array_add(callmaster, call);
 		}
+		else {
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	g_hash_table_destroy(callset);

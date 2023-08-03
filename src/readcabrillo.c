@@ -479,6 +479,10 @@ int readcabrillo(int mode) {
 	while((read = getline(&logline, &read_len, fp1)) != 1) {
 		if (read_len > 0) 
 			cab_qso_to_tlf(logline, cabdesc);
+		else {
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
+		}
     }
 
     strcpy(qsonrstr, t_qsonrstr);

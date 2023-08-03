@@ -362,6 +362,10 @@ int load_ctydata(char *filename) {
                 }
             }
         }
+        else {
+            perror("RuntimeError: ");
+            exit(EXIT_FAILURE);
+        }
     }
 
     if (buf != NULL)

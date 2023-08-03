@@ -189,7 +189,15 @@ void bmdata_read_file() {
                         free_spot(entry);
                     }
                 }
+                else {
+                    perror("RuntimeError: ");
+                    exit(EXIT_FAILURE);
+                }
             }
+        }
+        else {
+            perror("RuntimeError: ");
+            exit(EXIT_FAILURE);
         }
 
         if (line != NULL)
