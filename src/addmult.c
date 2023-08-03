@@ -372,13 +372,14 @@ int init_and_load_multipliers(void) {
                 add_mult_line(s_inputbuffer);
             }
             else {
-                perror("RuntimeError: ");
+                fprintf(stderr, "RuntimeError: %s:%ld", __FILE__, __LINE__);
+                perror("RuntimeError: );
                 exit(EXIT_FAILURE);
             }
     }
 
     fclose(cfp);
-    if (s_inputbuffer_len > 0)
+    if (s_inputbuffer > 0)
         free(s_inputbuffer);
     /* do not rely on the order in the mult file but sort it here */
     g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);

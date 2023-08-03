@@ -119,8 +119,6 @@ int repair_log(char *filename) {
     return 0;
 }
 
-
-
 int checklogfile_new(char *filename) {
     int lineno;
     int tooshort;
