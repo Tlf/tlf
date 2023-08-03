@@ -114,7 +114,7 @@ int parse_configfile(FILE *fp) {
     ssize_t read;
 
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
-        if (buffer_len > 0) {
+        if (buffer_len > 0 && errno != ENOMEM) {
             g_strchug(buffer);              // remove leading space
             if (isCommentLine(buffer)) {    // skip comments and empty lines
                 continue;
