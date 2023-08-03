@@ -372,8 +372,8 @@ int init_and_load_multipliers(void) {
                 add_mult_line(s_inputbuffer);
             }
             else {
-                fprintf(stderr, "RuntimeError: %s:%ld", __FILE__, __LINE__);
-                perror("RuntimeError: );
+                fprintf(stderr, "RuntimeError: %s:%d", __FILE__, __LINE__);
+                perror("RuntimeError: ");
                 exit(EXIT_FAILURE);
             }
     }
@@ -431,25 +431,25 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
     pthread_mutex_lock(&mult_mutex);
 
     for (int i = 0; i < nr_multis; i++) {
-	/* already in list? */
-	if (strcmp(multis[i].name, multiplier) == 0) {
-	    found = 1;
+        /* already in list? */
+        if (strcmp(multis[i].name, multiplier) == 0) {
+            found = 1;
 
-	    /* new band? check if mult is per band */
-	    if ((multis[i].band & inxes[band]) == 0) {
+            /* new band? check if mult is per band */
+            if ((multis[i].band & inxes[band]) == 0) {
 
-		if (!check_only) {
-		    // update band even if not strictly needed
-		    multis[i].band |= inxes[band];
-		}
+            if (!check_only) {
+                // update band even if not strictly needed
+                multis[i].band |= inxes[band];
+            }
 
-		if (mult_mode == MULT_BAND) {
-		    index = i;  // new band
-		}
-	    }
+            if (mult_mode == MULT_BAND) {
+                index = i;  // new band
+            }
+            }
 
-	    break;
-	}
+            break;
+        }
     }
 
     // found && index < 0: not new mult
