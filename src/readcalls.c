@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <time.h>
+#include <errno.h>
 
 #include "addcall.h"
 #include "addpfx.h"

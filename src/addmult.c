@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "addmult.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
@@ -34,6 +35,7 @@
 #include "tlf_curses.h"
 #include "utils.h"
 #include "bands.h"
+
 
 GPtrArray *mults_possible;
 

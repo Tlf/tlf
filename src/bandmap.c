@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <math.h>
+#include <errno.h>
 
 #include "bandmap.h"
 #include "qtcutil.h"
