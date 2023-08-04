@@ -39,36 +39,42 @@
 */
 
 void free_ie_list(struct ie_list *head) {
-    struct ie_list *next;
+	struct ie_list *next;
 
-    while (head) {
-	next = head->next;
-	free(head);
-	head = next;
-    }
+	while (head) {
+		next = head->next;
+		free(head);
+		head = next;
+	}
 }
 
 struct ie_list *make_ie_list(char *file) {
 
-    FILE *fp;
-    char *inputbuffer = NULL;
-    size_t inputbuffer_len = 91;
-    char *loc;
+	FILE *fp;
+	char *inputbuffer = NULL;
+	size_t inputbuffer_len = 91;
+	char *loc;
 
-    struct ie_list *ie_listhead = NULL;
-    struct ie_list *new;
-    char *token;
-    int read, linectr = 0;
+	struct ie_list *ie_listhead = NULL;
+	struct ie_list *new;
+	char *token;
+	int read, linectr = 0;
 
-    if ((fp = fopen(file, "r")) == NULL) {
-	showmsg("Cannot find initial exchange file");
-	return NULL;
-    }
+	if ((fp = fopen(file, "r")) == NULL) {
+		showmsg("Cannot find initial exchange file");
+		return NULL;
+	}
 
-    showstring("Using initial exchange file", file);
+	showstring("Using initial exchange file", file);
 
-    while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
-		if (inputbuffer_len > 0) {	
+	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
+		if (inputbuffer_len > 0) {
+			if (errno == ENOMEM) {
+				fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+				perror("RuntimeError: ");
+				exit(EXIT_FAILURE);
+			}
+
 			linectr++;
 
 			g_strstrip(inputbuffer);    // strip leading/trailing whitespace
@@ -127,7 +133,7 @@ struct ie_list *make_ie_list(char *file) {
 				free_ie_list(ie_listhead);
 				fclose(fp);
 				sprintf(msg, "Line %d: 0 or more than one token before comma",
-					linectr);
+						linectr);
 				showmsg(msg);
 				return NULL;
 			}
@@ -149,15 +155,11 @@ struct ie_list *make_ie_list(char *file) {
 			new->next = ie_listhead;
 			ie_listhead = new;
 		}
-		else {
-			perror("RuntimeError: ");
-			exit(EXIT_FAILURE);
-		}
-    }
+	}
 
 	if (inputbuffer != NULL)
 		free(inputbuffer);
-    fclose(fp);
+	fclose(fp);
 
-    return ie_listhead;
+	return ie_listhead;
 }

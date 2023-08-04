@@ -68,13 +68,13 @@ GList *allspots = NULL;
 GPtrArray *spots;
 
 bm_config_t bm_config = {
-    .allband = true,    /* show all bands */
-    .allmode = true,    /* show all mode */
-    .showdupes = true,  /* show dupes */
-    .skipdupes = true,	/* skip dupes during grab */
-    .lifetime = 900,    /* default lifetime */
-    .onlymults = false, /* DO NOT show ONLY multipliers */
-    .show_out_of_band = false,  /* do not show out-of-band spots */
+	.allband = true,    /* show all bands */
+	.allmode = true,    /* show all mode */
+	.showdupes = true,  /* show dupes */
+	.skipdupes = true,	/* skip dupes during grab */
+	.lifetime = 900,    /* default lifetime */
+	.onlymults = false, /* DO NOT show ONLY multipliers */
+	.show_out_of_band = false,  /* do not show out-of-band spots */
 };
 
 static bool bm_initialized = false;
@@ -89,122 +89,123 @@ spot *copy_spot(spot *data);
  */
 void bmdata_write_file() {
 
-    FILE *fp;
-    spot *sp;
-    GList *found;
-    struct timeval tv;
+	FILE *fp;
+	spot *sp;
+	GList *found;
+	struct timeval tv;
 
-    if ((fp = fopen(".bmdata.dat", "w")) == NULL) {
-	attron(modify_attr(COLOR_PAIR(CB_DUPE) | A_BOLD));
-	mvaddstr(13, 29, "can't open bandmap data file!");
-	refreshp();
-	return;
-    }
+	if ((fp = fopen(".bmdata.dat", "w")) == NULL) {
+		attron(modify_attr(COLOR_PAIR(CB_DUPE) | A_BOLD));
+		mvaddstr(13, 29, "can't open bandmap data file!");
+		refreshp();
+		return;
+	}
 
-    gettimeofday(&tv, NULL);
+	gettimeofday(&tv, NULL);
 
-    pthread_mutex_lock(&bm_mutex);
+	pthread_mutex_lock(&bm_mutex);
 
-    found = allspots;
-    fprintf(fp, "%d\n", (int)tv.tv_sec);
-    while (found != NULL) {
-	sp = found->data;
-	fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s;%d\n",
-		sp->call, sp->freq, sp->mode, sp->bandindex,
-		sp->node, sp->timeout, sp->dupe, sp->cqzone,
-		sp->ctynr, g_strchomp(sp->pfx), sp->mult);
-	found = found->next;
-    }
+	found = allspots;
+	fprintf(fp, "%d\n", (int)tv.tv_sec);
+	while (found != NULL) {
+		sp = found->data;
+		fprintf(fp, "%s;%d;%d;%d;%c;%u;%d;%d;%d;%s;%d\n",
+				sp->call, sp->freq, sp->mode, sp->bandindex,
+				sp->node, sp->timeout, sp->dupe, sp->cqzone,
+				sp->ctynr, g_strchomp(sp->pfx), sp->mult);
+		found = found->next;
+	}
 
-    pthread_mutex_unlock(&bm_mutex);
+	pthread_mutex_unlock(&bm_mutex);
 
-    fclose(fp);
+	fclose(fp);
 }
 
 /*
  * read bandmap spots from file, put them to allspots list
  */
 void bmdata_read_file() {
-    FILE *fp;
-    struct timeval tv;
-    int timediff, last_bm_save_time, fc, read;
-    char *line = NULL;
-    char *token;
-    size_t line_len = 0;
-    static bool bmdata_parsed = false;
+	FILE *fp;
+	struct timeval tv;
+	int timediff, last_bm_save_time, fc, read;
+	char *line = NULL;
+	char *token;
+	size_t line_len = 0;
+	static bool bmdata_parsed = false;
 
-    if (bmdata_parsed)
-	    return;
+	if (bmdata_parsed)
+		return;
 
-    if ((fp = fopen(".bmdata.dat", "r")) != NULL) {
-        bmdata_parsed = true;
-        if ((read = getline(&line, &line_len, fp)) != -1) {
-            sscanf(line, "%d", &last_bm_save_time);
-            gettimeofday(&tv, NULL);
-            timediff = (int)tv.tv_sec - last_bm_save_time;
-            if (timediff < 0)
-            timediff = 0;
+	if ((fp = fopen(".bmdata.dat", "r")) != NULL) {
+		bmdata_parsed = true;
+		if ((read = getline(&line, &line_len, fp)) != -1) {
+			sscanf(line, "%d", &last_bm_save_time);
+			gettimeofday(&tv, NULL);
+			timediff = (int)tv.tv_sec - last_bm_save_time;
+			if (timediff < 0)
+				timediff = 0;
 
-            while ((read = getline(&line, &line_len, fp)) != -1) {
-                if (line_len > 0) {
-                    spot *entry = g_new0(spot, 1);
-                    fc = 0;
-                    token = strtok(line, ";");
-                    while (token != NULL) {
-                        switch (fc) {
-                        case 0:		entry -> call = g_strdup(token);
-                            break;
-                        case 1:		sscanf(token, "%d", &entry->freq);
-                            break;
-                        case 2:		sscanf(token, "%hhd", &entry->mode);
-                            break;
-                        case 3:	        // re-evaluate band index
-                            entry->bandindex = freq2bandindex(entry->freq);
-                            break;
-                        case 4:		sscanf(token, "%c", &entry->node);
-                            break;
-                        case 5:		sscanf(token, "%u", &entry->timeout);
-                            break;
-                        case 6:     // dupe is transient, not read back
-                                        entry->dupe = false;
-                            break;
-                        case 7:		sscanf(token, "%d", &entry->cqzone);
-                            break;
-                        case 8:		sscanf(token, "%d", &entry->ctynr);
-                            break;
-                        case 9:		entry->pfx = g_strdup(token);
-                            break;
-                        case 10:    // mult is transient, not read back
-                            entry->mult = false;
-                            break;
-                        }
-                        fc++;
-                        token = strtok(NULL, ";");
-                    }
-            
-                    if (entry->timeout > timediff) {
-                        entry->timeout -= timediff;	/* remaining time */
-                        allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
-                    } else {
-                        free_spot(entry);
-                    }
-                }
-                else {
-                    perror("RuntimeError: ");
-                    exit(EXIT_FAILURE);
-                }
-            }
-        }
-        else {
-            perror("RuntimeError: ");
-            exit(EXIT_FAILURE);
-        }
+			while ((read = getline(&line, &line_len, fp)) != -1) {
+				if (line_len > 0) {
+					if (errno == ENOMEM) {
+						fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+						perror("RuntimeError: ");
+						exit(EXIT_FAILURE);
+					}
 
-        if (line != NULL)
-            free(line);
+					spot *entry = g_new0(spot, 1);
+					fc = 0;
+					token = strtok(line, ";");
+					while (token != NULL) {
+						switch (fc) {
+							case 0:		entry -> call = g_strdup(token);
+								break;
+							case 1:		sscanf(token, "%d", &entry->freq);
+								break;
+							case 2:		sscanf(token, "%hhd", &entry->mode);
+								break;
+							case 3:	        // re-evaluate band index
+								entry->bandindex = freq2bandindex(entry->freq);
+								break;
+							case 4:		sscanf(token, "%c", &entry->node);
+								break;
+							case 5:		sscanf(token, "%u", &entry->timeout);
+								break;
+							case 6:     // dupe is transient, not read back
+								entry->dupe = false;
+								break;
+							case 7:		sscanf(token, "%d", &entry->cqzone);
+								break;
+							case 8:		sscanf(token, "%d", &entry->ctynr);
+								break;
+							case 9:		entry->pfx = g_strdup(token);
+								break;
+							case 10:    // mult is transient, not read back
+								entry->mult = false;
+								break;
+						}
+						fc++;
+						token = strtok(NULL, ";");
+					}
 
-        fclose(fp);
-    }
+					if (entry->timeout > timediff) {
+						entry->timeout -= timediff;	/* remaining time */
+						allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
+					} else {
+						free_spot(entry);
+					}
+				}
+			}
+		} else {
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
+		}
+
+		if (line != NULL)
+			free(line);
+
+		fclose(fp);
+	}
 }
 
 /** \brief initialize bandmap
@@ -213,23 +214,23 @@ void bmdata_read_file() {
  */
 void bm_init() {
 
-    if (bm_initialized)
-	return;
+	if (bm_initialized)
+		return;
 
-    pthread_mutex_lock(&bm_mutex);
+	pthread_mutex_lock(&bm_mutex);
 
-    init_pair(CB_NEW, COLOR_CYAN, COLOR_WHITE);
-    init_pair(CB_NORMAL, COLOR_BLUE, COLOR_WHITE);
-    init_pair(CB_DUPE, COLOR_BLACK, COLOR_WHITE);
-    init_pair(CB_OLD, COLOR_YELLOW, COLOR_WHITE);
+	init_pair(CB_NEW, COLOR_CYAN, COLOR_WHITE);
+	init_pair(CB_NORMAL, COLOR_BLUE, COLOR_WHITE);
+	init_pair(CB_DUPE, COLOR_BLACK, COLOR_WHITE);
+	init_pair(CB_OLD, COLOR_YELLOW, COLOR_WHITE);
 
-    spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
+	spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
 
-    bmdata_read_file();
+	bmdata_read_file();
 
-    pthread_mutex_unlock(&bm_mutex);
+	pthread_mutex_unlock(&bm_mutex);
 
-    bm_initialized = true;
+	bm_initialized = true;
 }
 
 /** \brief guess mode based on frequency
@@ -237,12 +238,12 @@ void bm_init() {
  * \return CWMODE, DIGIMODE or SSBMODE
  */
 int freq2mode(freq_t freq, int band) {
-    if (freq <= cwcorner[band])
-	return CWMODE;
-    else if (freq < ssbcorner[band])
-	return DIGIMODE;
-    else
-	return SSBMODE;
+	if (freq <= cwcorner[band])
+		return CWMODE;
+	else if (freq < ssbcorner[band])
+		return DIGIMODE;
+	else
+		return SSBMODE;
 }
 
 /** \brief add DX spot message to bandmap
@@ -250,48 +251,48 @@ int freq2mode(freq_t freq, int band) {
  * check if cluster message is a dx spot,
  * if so split it into pieces and insert in spot list */
 void bm_add(char *s) {
-    char *line;
-    char *call;
-    char node = ' ';
+	char *line;
+	char *call;
+	char node = ' ';
 
-    line = g_strdup(s);
-    if (strncmp(line, "DX de ", 6) != 0) {
+	line = g_strdup(s);
+	if (strncmp(line, "DX de ", 6) != 0) {
+		g_free(line);
+		return;
+	}
+
+	if ((call = strtok(line + 26, " \t")) == NULL) {
+		g_free(line);
+		return;
+	}
+
+	if (strncmp(line + 6, "TLF-", 4) == 0)
+		node = line[10];		/* get sending node id */
+
+	bandmap_addspot(call, atof(line + 16) * 1000, node);
 	g_free(line);
-	return;
-    }
-
-    if ((call = strtok(line + 26, " \t")) == NULL) {
-	g_free(line);
-	return;
-    }
-
-    if (strncmp(line + 6, "TLF-", 4) == 0)
-	node = line[10];		/* get sending node id */
-
-    bandmap_addspot(call, atof(line + 16) * 1000, node);
-    g_free(line);
 }
 
 /* compare functions to search in list */
 gint	cmp_call(spot *ldata, char *call) {
 
-    return g_strcmp0(ldata->call, call);
+	return g_strcmp0(ldata->call, call);
 }
 
 gint	cmp_freq(spot *a, spot *b) {
-    unsigned int af = a->freq;
-    unsigned int bf = b->freq;
+	unsigned int af = a->freq;
+	unsigned int bf = b->freq;
 
-    if (af < bf)  return -1;
-    if (af > bf)  return  1;
-    return 0;
+	if (af < bf)  return -1;
+	if (af > bf)  return  1;
+	return 0;
 }
 
 /* free an allocated spot */
 void free_spot(spot *data) {
-    g_free(data->call);
-    g_free(data->pfx);
-    g_free(data);
+	g_free(data->call);
+	g_free(data->pfx);
+	g_free(data);
 }
 
 /** add a new spot to bandmap data
@@ -300,159 +301,159 @@ void free_spot(spot *data) {
  * \param node		reporting node
  */
 void bandmap_addspot(char *call, freq_t freq, char node) {
-    /* - if a spot on that band and mode is already in list replace old entry
-     *   with new one and set timeout to SPOT_NEW,
-     *   otherwise add it to the list as new
-     * - if other call on same frequency (with some TOLERANCE) replace it and set
-     *   timeout to SPOT_NEW
-     * - all frequencies from cluster are rounded to 100 Hz,
-     *   remember all other frequencies exactly
-     *   but display only rounded to 100 Hz - sort exact
-     */
-    GList *found;
-    int bandindex;
-    char mode;
-    dxcc_data *dxccdata;
-    int dxccindex;
-    int wi;
-    char *lastexch;
-    struct ie_list *current_ie;
+	/* - if a spot on that band and mode is already in list replace old entry
+	 *   with new one and set timeout to SPOT_NEW,
+	 *   otherwise add it to the list as new
+	 * - if other call on same frequency (with some TOLERANCE) replace it and set
+	 *   timeout to SPOT_NEW
+	 * - all frequencies from cluster are rounded to 100 Hz,
+	 *   remember all other frequencies exactly
+	 *   but display only rounded to 100 Hz - sort exact
+	 */
+	GList *found;
+	int bandindex;
+	char mode;
+	dxcc_data *dxccdata;
+	int dxccindex;
+	int wi;
+	char *lastexch;
+	struct ie_list *current_ie;
 
-    /* add only HF spots */
-    if (freq > 30000000)
-	return;
+	/* add only HF spots */
+	if (freq > 30000000)
+		return;
 
-    bandindex = freq2bandindex(freq);
-    mode = freq2mode(freq, bandindex);
+	bandindex = freq2bandindex(freq);
+	mode = freq2mode(freq, bandindex);
 
-    /* acquire bandmap mutex */
-    pthread_mutex_lock(&bm_mutex);
+	/* acquire bandmap mutex */
+	pthread_mutex_lock(&bm_mutex);
 
-    /* look if call is already on list in that mode and band */
-    /* each call is allowed in every combination of band and mode
-     * but only once */
-    found = g_list_find_custom(allspots, call, (GCompareFunc)cmp_call);
+	/* look if call is already on list in that mode and band */
+	/* each call is allowed in every combination of band and mode
+	 * but only once */
+	found = g_list_find_custom(allspots, call, (GCompareFunc)cmp_call);
 
-    while (found != NULL) {
+	while (found != NULL) {
 
-	/* if same band and mode -> found spot already in list */
-	if (((spot *)found->data)->bandindex == bandindex &&
-		((spot *)found->data)->mode == mode)
-	    break;
-
-	found = g_list_find_custom(found->next, call, (GCompareFunc)cmp_call);
-    }
-
-    /* if already in list on that band and mode
-     * 		-> set timeout to SPOT_NEW, and set new freq and reporting node
-     *   		if freq has changed enough sort list anew by freq
-     */
-    if (found) {
-	((spot *)found->data)->timeout = SPOT_NEW;
-	((spot *)found->data)->node = node;
-	if (DISTANCE(((spot *)found->data)->freq, freq) > TOLERANCE) {
-	    ((spot *)found->data)->freq = freq;
-	    allspots = g_list_sort(allspots, (GCompareFunc)cmp_freq);
-	}
-    } else {
-	/* if not in list already -> prepare new entry and
-	 * insert in list at correct freq */
-	spot *entry = g_new(spot, 1);
-	entry -> call = g_strdup(call);
-	entry -> freq = freq;
-	entry -> mode = mode;
-	entry -> bandindex = bandindex;
-	entry -> node = node;
-	entry -> timeout = SPOT_NEW;
-	entry -> dupe = 0;	/* Dupe will be determined later. */
-	entry -> mult = false;	/* Mult will be determined later. */
-
-	lastexch = NULL;
-	dxccindex = getctynr(entry->call);
-	if (CONTEST_IS(CQWW)) {
-	    // check if the callsign exists in worked list
-	    wi = lookup_worked(call);
-	    if (wi >= 0) {
-		lastexch = g_strdup(worked[wi].exchange);
-	    }
-
-	    if (lastexch == NULL && main_ie_list != NULL) {
-		current_ie = main_ie_list;
-
-		while (current_ie) {
-		    if (strcmp(call, current_ie->call) == 0) {
-			lastexch = g_strdup(current_ie->exchange);
+		/* if same band and mode -> found spot already in list */
+		if (((spot *)found->data)->bandindex == bandindex &&
+				((spot *)found->data)->mode == mode)
 			break;
-		    }
-		    current_ie = current_ie->next;
+
+		found = g_list_find_custom(found->next, call, (GCompareFunc)cmp_call);
+	}
+
+	/* if already in list on that band and mode
+	 * 		-> set timeout to SPOT_NEW, and set new freq and reporting node
+	 *   		if freq has changed enough sort list anew by freq
+	 */
+	if (found) {
+		((spot *)found->data)->timeout = SPOT_NEW;
+		((spot *)found->data)->node = node;
+		if (DISTANCE(((spot *)found->data)->freq, freq) > TOLERANCE) {
+			((spot *)found->data)->freq = freq;
+			allspots = g_list_sort(allspots, (GCompareFunc)cmp_freq);
 		}
-	    }
-	}
-	if (dxccindex > 0) {
-	    dxccdata = dxcc_by_index(dxccindex);
-	    entry -> cqzone = dxccdata->cq;
-	    if (lastexch != NULL) {
-		entry -> cqzone = atoi(lastexch);
-		g_free(lastexch);
-	    }
-	    entry -> ctynr = dxccindex;
-	    entry -> pfx = g_strdup(dxccdata->pfx);
 	} else {
-	    entry -> cqzone = 0;
-	    entry -> ctynr = 0;
-	    entry -> pfx = g_strdup("");
+		/* if not in list already -> prepare new entry and
+		 * insert in list at correct freq */
+		spot *entry = g_new(spot, 1);
+		entry -> call = g_strdup(call);
+		entry -> freq = freq;
+		entry -> mode = mode;
+		entry -> bandindex = bandindex;
+		entry -> node = node;
+		entry -> timeout = SPOT_NEW;
+		entry -> dupe = 0;	/* Dupe will be determined later. */
+		entry -> mult = false;	/* Mult will be determined later. */
+
+		lastexch = NULL;
+		dxccindex = getctynr(entry->call);
+		if (CONTEST_IS(CQWW)) {
+			// check if the callsign exists in worked list
+			wi = lookup_worked(call);
+			if (wi >= 0) {
+				lastexch = g_strdup(worked[wi].exchange);
+			}
+
+			if (lastexch == NULL && main_ie_list != NULL) {
+				current_ie = main_ie_list;
+
+				while (current_ie) {
+					if (strcmp(call, current_ie->call) == 0) {
+						lastexch = g_strdup(current_ie->exchange);
+						break;
+					}
+					current_ie = current_ie->next;
+				}
+			}
+		}
+		if (dxccindex > 0) {
+			dxccdata = dxcc_by_index(dxccindex);
+			entry -> cqzone = dxccdata->cq;
+			if (lastexch != NULL) {
+				entry -> cqzone = atoi(lastexch);
+				g_free(lastexch);
+			}
+			entry -> ctynr = dxccindex;
+			entry -> pfx = g_strdup(dxccdata->pfx);
+		} else {
+			entry -> cqzone = 0;
+			entry -> ctynr = 0;
+			entry -> pfx = g_strdup("");
+		}
+		allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
+		/* lookup where it is */
+		found = g_list_find(allspots, entry);
 	}
-	allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
-	/* lookup where it is */
-	found = g_list_find(allspots, entry);
-    }
 
-    /* check that spot is unique on freq +/- TOLERANCE Hz,
-     * drop other entries if needed */
-    if (found->prev &&
-	    (DISTANCE(((spot *)(found->prev)->data)->freq, freq) < TOLERANCE)) {
-	spot *olddata;
-	olddata = found->prev->data;
-	allspots = g_list_remove_link(allspots, found->prev);
-	free_spot(olddata);
-    }
-    if (found->next &&
-	    (DISTANCE(((spot *)(found->next)->data)->freq, freq) < TOLERANCE)) {
-	spot *olddata;
-	olddata = found->next->data;
-	allspots = g_list_remove_link(allspots, found->next);
-	free_spot(olddata);
-    }
+	/* check that spot is unique on freq +/- TOLERANCE Hz,
+	 * drop other entries if needed */
+	if (found->prev &&
+			(DISTANCE(((spot *)(found->prev)->data)->freq, freq) < TOLERANCE)) {
+		spot *olddata;
+		olddata = found->prev->data;
+		allspots = g_list_remove_link(allspots, found->prev);
+		free_spot(olddata);
+	}
+	if (found->next &&
+			(DISTANCE(((spot *)(found->next)->data)->freq, freq) < TOLERANCE)) {
+		spot *olddata;
+		olddata = found->next->data;
+		allspots = g_list_remove_link(allspots, found->next);
+		free_spot(olddata);
+	}
 
-    pthread_mutex_unlock(&bm_mutex);
+	pthread_mutex_unlock(&bm_mutex);
 }
 
 void bandmap_age() {
-    /*
-     * go through all entries
-     *   + decrement timeout
-     *   + set state to new, normal, aged or dead
-     *   + if dead -> drop it from collection
-     */
+	/*
+	 * go through all entries
+	 *   + decrement timeout
+	 *   + set state to new, normal, aged or dead
+	 *   + if dead -> drop it from collection
+	 */
 
-    pthread_mutex_lock(&bm_mutex);
+	pthread_mutex_lock(&bm_mutex);
 
-    GList *list = allspots;
+	GList *list = allspots;
 
-    while (list) {
-	spot *data = list->data;
-	GList *temp = list;
-	list = list->next;
-	if (data->timeout) {
-	    data->timeout--;
+	while (list) {
+		spot *data = list->data;
+		GList *temp = list;
+		list = list->next;
+		if (data->timeout) {
+			data->timeout--;
+		}
+		if (data->timeout == 0) {
+			allspots = g_list_remove_link(allspots, temp);
+			free_spot(data);
+		}
 	}
-	if (data->timeout == 0) {
-	    allspots = g_list_remove_link(allspots, temp);
-	    free_spot(data);
-	}
-    }
 
-    pthread_mutex_unlock(&bm_mutex);
+	pthread_mutex_unlock(&bm_mutex);
 }
 
 /** check if call is new multi
@@ -461,15 +462,15 @@ void bandmap_age() {
  */
 bool bm_ismulti(spot *data) {
 
-    if (data == NULL || data->cqzone <= 0 || data->ctynr <= 0) {
-	return false;   // no data
-    }
+	if (data == NULL || data->cqzone <= 0 || data->ctynr <= 0) {
+		return false;   // no data
+	}
 
-    if (contest->is_multi) {
-	return contest->is_multi(data);
-    }
+	if (contest->is_multi) {
+		return contest->is_multi(data);
+	}
 
-    return general_ismulti(data);
+	return general_ismulti(data);
 }
 
 /** check if call is a dupe
@@ -480,74 +481,74 @@ bool bm_ismulti(spot *data) {
 
 bool bm_isdupe(char *call, int band) {
 
-    /* spots for warc bands are never dupes */
-    if (IsWarcIndex(band))
-	return false;
+	/* spots for warc bands are never dupes */
+	if (IsWarcIndex(band))
+		return false;
 
-    int found = lookup_worked(call);
+	int found = lookup_worked(call);
 
-    if (found == -1)		/* new call */
-	return false;
+	if (found == -1)		/* new call */
+		return false;
 
-    if (qtcdirection > 0) {
-	struct t_qtc_store_obj *qtc_obj = qtc_get(call);
-	if (qtc_obj->total > 0 && qtc_obj->total < 10) {
-	    return false;
+	if (qtcdirection > 0) {
+		struct t_qtc_store_obj *qtc_obj = qtc_get(call);
+		if (qtc_obj->total > 0 && qtc_obj->total < 10) {
+			return false;
+		}
+		if (qtc_obj->total == 0 && qtc_obj->capable > 0) {
+			return false;
+		}
 	}
-	if (qtc_obj->total == 0 && qtc_obj->capable > 0) {
-	    return false;
+
+	if (worked[found].band & inxes[band]) {
+		return worked_in_current_minitest_period(found);
 	}
-    }
 
-    if (worked[found].band & inxes[band]) {
-	return worked_in_current_minitest_period(found);
-    }
-
-    return false;
+	return false;
 }
 
 void bm_show_info() {
 
-    int curx, cury;
+	int curx, cury;
 
-    getyx(stdscr, cury, curx);		/* remember cursor */
+	getyx(stdscr, cury, curx);		/* remember cursor */
 
-    /* show info field on the right */
-    attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    move(TOPLINE, 66);
-    vline(ACS_VLINE, LINES - TOPLINE - 1);
+	/* show info field on the right */
+	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+	move(TOPLINE, 66);
+	vline(ACS_VLINE, LINES - TOPLINE - 1);
 
-    int middle = (LINES - 1 + TOPLINE) / 2;
-    int arrow = (grab_up ? ACS_DARROW : ACS_UARROW);
-    mvaddch(middle - 1, 66, arrow);
-    mvaddch(middle, 66, arrow);
-    mvaddch(middle + 1, 66, arrow);
+	int middle = (LINES - 1 + TOPLINE) / 2;
+	int arrow = (grab_up ? ACS_DARROW : ACS_UARROW);
+	mvaddch(middle - 1, 66, arrow);
+	mvaddch(middle, 66, arrow);
+	mvaddch(middle + 1, 66, arrow);
 
-    mvprintw(LASTLINE - 5, 67, " bands: %s", bm_config.allband ? "all" : "own");
-    mvprintw(LASTLINE - 4, 67, " modes: %s", bm_config.allmode ? "all" : "own");
-    mvprintw(LASTLINE - 3, 67, " dupes: %s", bm_config.showdupes ? "yes" : "no");
-    mvprintw(LASTLINE - 2, 67, " onl.ml: %s", bm_config.onlymults ? "yes" : "no");
+	mvprintw(LASTLINE - 5, 67, " bands: %s", bm_config.allband ? "all" : "own");
+	mvprintw(LASTLINE - 4, 67, " modes: %s", bm_config.allmode ? "all" : "own");
+	mvprintw(LASTLINE - 3, 67, " dupes: %s", bm_config.showdupes ? "yes" : "no");
+	mvprintw(LASTLINE - 2, 67, " onl.ml: %s", bm_config.onlymults ? "yes" : "no");
 
-    attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
-    mvaddstr(LASTLINE - 1, 67, " NEW");
+	attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
+	mvaddstr(LASTLINE - 1, 67, " NEW");
 
-    attrset(COLOR_PAIR(CB_NORMAL));
-    printw(" SPOT");
+	attrset(COLOR_PAIR(CB_NORMAL));
+	printw(" SPOT");
 
-    attrset(COLOR_PAIR(CB_OLD));
-    printw(" OLD");
+	attrset(COLOR_PAIR(CB_OLD));
+	printw(" OLD");
 
-    attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    mvaddstr(LASTLINE, 67, " dupe");
+	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+	mvaddstr(LASTLINE, 67, " dupe");
 
-    attrset(COLOR_PAIR(CB_NORMAL));
-    printw(" M");
-    attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    printw("-ulti");
+	attrset(COLOR_PAIR(CB_NORMAL));
+	printw(" M");
+	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+	printw("-ulti");
 
-    attroff(A_BOLD | A_STANDOUT);
+	attroff(A_BOLD | A_STANDOUT);
 
-    move(cury, curx);			/* reset cursor */
+	move(cury, curx);			/* reset cursor */
 }
 
 /* helper function for bandmap display
@@ -558,19 +559,19 @@ void bm_show_info() {
  * - worked	small caps */
 void colorize_spot(spot *data) {
 
-    if (data -> timeout > SPOT_NORMAL)
-	attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
+	if (data -> timeout > SPOT_NORMAL)
+		attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
 
-    else if (data -> timeout > SPOT_OLD)
-	attrset(COLOR_PAIR(CB_NORMAL));
+	else if (data -> timeout > SPOT_OLD)
+		attrset(COLOR_PAIR(CB_NORMAL));
 
-    else
-	attrset(COLOR_PAIR(CB_OLD));
+	else
+		attrset(COLOR_PAIR(CB_OLD));
 
-    if (data->dupe && bm_config.showdupes) {
-	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-	attroff(A_STANDOUT);
-    }
+	if (data->dupe && bm_config.showdupes) {
+		attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+		attroff(A_STANDOUT);
+	}
 }
 
 /* helper function for bandmap display
@@ -578,31 +579,31 @@ void colorize_spot(spot *data) {
  * add QTC flags for WAE contest
  */
 char *format_spot(spot *data) {
-    char *temp;
-    char *temp2;
+	char *temp;
+	char *temp2;
 
-    if (qtcdirection > 0) {
-	temp = qtc_format(data->call);
-    } else
-	temp = g_strdup(data->call);
+	if (qtcdirection > 0) {
+		temp = qtc_format(data->call);
+	} else
+		temp = g_strdup(data->call);
 
-    if (data->dupe && bm_config.showdupes) {
-	temp2 = temp;
-	temp = g_ascii_strdown(temp2, -1);
-	g_free(temp2);
-    }
-    return temp;
+	if (data->dupe && bm_config.showdupes) {
+		temp2 = temp;
+		temp = g_ascii_strdown(temp2, -1);
+		g_free(temp2);
+	}
+	return temp;
 }
 
 static char get_spot_marker(spot *data) {
-    if (data->bandindex == BANDINDEX_OOB) {
-	return 'X';
-    }
-    if (data->mult) {
-	return 'M';
-    }
+	if (data->bandindex == BANDINDEX_OOB) {
+		return 'X';
+	}
+	if (data->mult) {
+		return 'M';
+	}
 
-    return ' ';
+	return ' ';
 }
 
 
@@ -610,23 +611,23 @@ static char get_spot_marker(spot *data) {
  * shows formatted spot on actual cursor position
  */
 void show_spot(spot *data) {
-    attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    printw("%7.1f%c", (data->freq / 1000.),
-	   (data->node == thisnode ? '*' : data->node));
-
-    char marker = get_spot_marker(data);
-    if (marker != ' ') {
-	attrset(COLOR_PAIR(CB_NORMAL));
-    }
-    addch(marker);
-    if (marker != ' ') {
 	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-    }
+	printw("%7.1f%c", (data->freq / 1000.),
+		   (data->node == thisnode ? '*' : data->node));
 
-    char *temp = format_spot(data);
-    colorize_spot(data);
-    printw(" %-12s", temp);
-    g_free(temp);
+	char marker = get_spot_marker(data);
+	if (marker != ' ') {
+		attrset(COLOR_PAIR(CB_NORMAL));
+	}
+	addch(marker);
+	if (marker != ' ') {
+		attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+	}
+
+	char *temp = format_spot(data);
+	colorize_spot(data);
+	printw(" %-12s", temp);
+	g_free(temp);
 }
 
 /* helper function for bandmap display
@@ -634,24 +635,24 @@ void show_spot(spot *data) {
  */
 void show_spot_on_qrg(spot *data) {
 
-    printw("%7.1f%c%c ", (data->freq / 1000.),
-	   (data->node == thisnode ? '*' : data->node),
-	   get_spot_marker(data));
+	printw("%7.1f%c%c ", (data->freq / 1000.),
+		   (data->node == thisnode ? '*' : data->node),
+		   get_spot_marker(data));
 
-    char *temp = format_spot(data);
-    printw("%-12s", temp);
-    g_free(temp);
+	char *temp = format_spot(data);
+	printw("%-12s", temp);
+	g_free(temp);
 }
 
 /* helper function for bandmap display
  * advance to next spot position
  */
 void next_spot_position(int *y, int *x) {
-    *y += 1;
-    if (*y == LASTLINE + 1) {
-	*y = TOPLINE;
-	*x += SPOT_COLUMN_WIDTH;
-    }
+	*y += 1;
+	if (*y == LASTLINE + 1) {
+		*y = TOPLINE;
+		*x += SPOT_COLUMN_WIDTH;
+	}
 }
 
 /* helper function for bandmap display
@@ -662,29 +663,29 @@ void next_spot_position(int *y, int *x) {
  * as middle value of the band/mode corners.
  */
 freq_t bm_get_center(int band, int mode) {
-    freq_t centerfrequency;
+	freq_t centerfrequency;
 
-    if (trx_control)
-	return freq;		/* return freq from rig */
+	if (trx_control)
+		return freq;		/* return freq from rig */
 
-    /* calculate center frequency for current band and mode */
-    if (CWMODE == mode) {
-	centerfrequency = (bandcorner[band][0] + cwcorner[band]) / 2.;
-    } else if (SSBMODE == mode) {
-	centerfrequency = (ssbcorner[band] + bandcorner[band][1]) / 2.;
-    } else {
-	centerfrequency = (cwcorner[band] + ssbcorner[band]) / 2.;
-    }
-    return centerfrequency;
+	/* calculate center frequency for current band and mode */
+	if (CWMODE == mode) {
+		centerfrequency = (bandcorner[band][0] + cwcorner[band]) / 2.;
+	} else if (SSBMODE == mode) {
+		centerfrequency = (ssbcorner[band] + bandcorner[band][1]) / 2.;
+	} else {
+		centerfrequency = (cwcorner[band] + ssbcorner[band]) / 2.;
+	}
+	return centerfrequency;
 }
 
 /* small helpers for filter_spots() */
 static bool band_matches(spot *data) {
-    return (data->bandindex == bandinx);
+	return (data->bandindex == bandinx);
 }
 
 static bool mode_matches(spot *data) {
-    return (data->mode == trxmode);
+	return (data->mode == trxmode);
 }
 
 /*
@@ -692,279 +693,279 @@ static bool mode_matches(spot *data) {
  * selected spots
  */
 void filter_spots() {
-    GList *list;
-    spot *data;
-    /* acquire mutex
-     * do not add new spots to allspots during
-     * - aging and
-     * - filtering
-     * furthermore do not allow call lookup as long as
-     * filtered spot array is build anew */
+	GList *list;
+	spot *data;
+	/* acquire mutex
+	 * do not add new spots to allspots during
+	 * - aging and
+	 * - filtering
+	 * furthermore do not allow call lookup as long as
+	 * filtered spot array is build anew */
 
-    pthread_mutex_lock(&bm_mutex);
+	pthread_mutex_lock(&bm_mutex);
 
-    if (spots)
-	g_ptr_array_free(spots, TRUE);		/* free spot array */
-    /* allocate new one */
-    spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
+	if (spots)
+		g_ptr_array_free(spots, TRUE);		/* free spot array */
+	/* allocate new one */
+	spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
 
-    for (list = allspots; list; list = list->next)	{
-	data = list->data;
+	for (list = allspots; list; list = list->next)	{
+		data = list->data;
 
-	/* check and mark spot as dupe */
-	data->dupe = bm_isdupe(data->call, data->bandindex);
+		/* check and mark spot as dupe */
+		data->dupe = bm_isdupe(data->call, data->bandindex);
 
-	/* ignore spots on WARC bands if in contest mode */
-	if (iscontest && IsWarcIndex(data->bandindex))
-	    continue;
+		/* ignore spots on WARC bands if in contest mode */
+		if (iscontest && IsWarcIndex(data->bandindex))
+			continue;
 
-	/* ignore dupes if not forced */
-	if (data->dupe && !bm_config.showdupes)
-	    continue;
+		/* ignore dupes if not forced */
+		if (data->dupe && !bm_config.showdupes)
+			continue;
 
-	/* Ignore non-multis if we want to show only multis */
-	data->mult = bm_ismulti(data);
-	if (!data->mult && bm_config.onlymults)
-	    continue;
+		/* Ignore non-multis if we want to show only multis */
+		data->mult = bm_ismulti(data);
+		if (!data->mult && bm_config.onlymults)
+			continue;
 
-	/* ignore out-of-band spots if configured so */
-	if (data->bandindex == BANDINDEX_OOB && !bm_config.show_out_of_band) {
-	    continue;
+		/* ignore out-of-band spots if configured so */
+		if (data->bandindex == BANDINDEX_OOB && !bm_config.show_out_of_band) {
+			continue;
+		}
+
+		/* if spot is allband or allmode is set or band or mode matches
+		 * than add to the filtered 'spot' array
+		 */
+		if ((bm_config.allband || band_matches(data)) &&
+				(bm_config.allmode || mode_matches(data))) {
+
+			spot *copy = copy_spot(data);
+			g_ptr_array_add(spots, copy);
+		}
 	}
-
-	/* if spot is allband or allmode is set or band or mode matches
-	 * than add to the filtered 'spot' array
-	 */
-	if ((bm_config.allband || band_matches(data)) &&
-		(bm_config.allmode || mode_matches(data))) {
-
-	    spot *copy = copy_spot(data);
-	    g_ptr_array_add(spots, copy);
-	}
-    }
-    pthread_mutex_unlock(&bm_mutex);
+	pthread_mutex_unlock(&bm_mutex);
 }
 
 void bandmap_show() {
-    /*
-     * display depending on filter state
-     * - all bands on/off
-     * - all mode  on/off
-     * - dupes     on/off
-     *
-     * If more entries to show than room in window, show around
-     * current frequency
-     *
-     * mark entries according to age, source and worked state. Mark new multis
-     * - new 	bright blue
-     * - normal	blue
-     * - aged	brown
-     * - worked	small caps
-     * - new multi	mark with blue M between QRG and call
-     * - self announced stations
-     *   		small preceding letter for reporting station
-     *
-     * show own frequency as dashline in green color
-     * - highlight actual spot if near own frequency
-     *
-     * Allow selection of one of the spots (switches to S&P)
-     * - Ctrl-G as known
-     * - '.' and cursor plus 'Enter' \Todo
-     * - Test mouseclick..           \Todo
-     *
-     * '.' goes into map, shows help line above and supports
-     * - cursormovement
-     * - 'ESC' leaves mode
-     * - 'Enter' selects spot
-     * - 'B', 'D', 'M', 'O' switches filtering for band, dupes, mode
-     *   and multiPlier on or off.
-     */
+	/*
+	 * display depending on filter state
+	 * - all bands on/off
+	 * - all mode  on/off
+	 * - dupes     on/off
+	 *
+	 * If more entries to show than room in window, show around
+	 * current frequency
+	 *
+	 * mark entries according to age, source and worked state. Mark new multis
+	 * - new 	bright blue
+	 * - normal	blue
+	 * - aged	brown
+	 * - worked	small caps
+	 * - new multi	mark with blue M between QRG and call
+	 * - self announced stations
+	 *   		small preceding letter for reporting station
+	 *
+	 * show own frequency as dashline in green color
+	 * - highlight actual spot if near own frequency
+	 *
+	 * Allow selection of one of the spots (switches to S&P)
+	 * - Ctrl-G as known
+	 * - '.' and cursor plus 'Enter' \Todo
+	 * - Test mouseclick..           \Todo
+	 *
+	 * '.' goes into map, shows help line above and supports
+	 * - cursormovement
+	 * - 'ESC' leaves mode
+	 * - 'Enter' selects spot
+	 * - 'B', 'D', 'M', 'O' switches filtering for band, dupes, mode
+	 *   and multiPlier on or off.
+	 */
 
-    spot *data;
-    int curx, cury;
-    int bm_x, bm_y;
-    int i, j;
+	spot *data;
+	int curx, cury;
+	int bm_x, bm_y;
+	int i, j;
 
-    bm_init();
-    filter_spots();
+	bm_init();
+	filter_spots();
 
-    /* afterwards display filtered list around own QRG +/- some offset
-     * (offset gets reset if we change frequency */
+	/* afterwards display filtered list around own QRG +/- some offset
+	 * (offset gets reset if we change frequency */
 
-    getyx(stdscr, cury, curx);		/* remember cursor */
+	getyx(stdscr, cury, curx);		/* remember cursor */
 
-    /* start in TOPLINE, column 0 */
-    bm_y = TOPLINE;
-    bm_x = 0;
+	/* start in TOPLINE, column 0 */
+	bm_y = TOPLINE;
+	bm_x = 0;
 
-    /* clear space for bandmap */
-    attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+	/* clear space for bandmap */
+	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
 
-    move(bm_y, 0);			/* do not overwrite # frequency */
-    for (j = 0; j < 67; j++)
-	addch(' ');
+	move(bm_y, 0);			/* do not overwrite # frequency */
+	for (j = 0; j < 67; j++)
+		addch(' ');
 
-    for (i = bm_y + 1; i < LASTLINE + 1; i++) {
-	move(i, 0);
-	for (j = 0; j < 80; j++)
-	    addch(' ');
-    }
-
-    /* show info text */
-    bm_show_info();
-
-    /* split bandmap into two parts below and above current QRG.
-     * Give both both parts equal size.
-     * If there are less spots then reserved in the half
-     * give the remaining room to the other half.
-     *
-     * These results in maximized usage of the bandmap display while
-     * trying to keep the actual frequency in the center.
-     */
-    unsigned int below_qrg = 0;
-    unsigned int on_qrg = 0;
-    unsigned int startindex, stopindex;
-
-    const freq_t centerfrequency = bm_get_center(bandinx, trxmode);
-
-    /* calc number of spots below your current QRG */
-    for (i = 0; i < spots->len; i++) {
-	data = g_ptr_array_index(spots, i);
-
-	if (data->freq <= centerfrequency - TOLERANCE)
-	    below_qrg++;
-	else
-	    break;
-    }
-
-    /* check if current QRG is on a spot */
-    if (below_qrg < spots->len) {
-	data = g_ptr_array_index(spots, below_qrg);
-
-	if (!(data->freq > centerfrequency + TOLERANCE))
-	    on_qrg = 1;
-    }
-
-    /* calc the index into the spot array of the first spot to show */
-    {
-	unsigned int max_below;
-	unsigned int above_qrg = spots->len - below_qrg - on_qrg;
-
-	if (above_qrg < ((NR_SPOTS - 1) / 2)) {
-	    max_below = NR_SPOTS - above_qrg - 1;
-	} else
-	    max_below = NR_SPOTS / 2;
-
-	startindex = (below_qrg < max_below) ? 0 : (below_qrg - max_below);
-    }
-
-    /* calculate the index+1 of the last spot to show */
-    stopindex  = (spots->len < startindex + NR_SPOTS - (1 - on_qrg))
-		 ? spots->len
-		 : (startindex + NR_SPOTS - (1 - on_qrg));
-
-    /* correct calculations if we have no rig frequency to show */
-    if (!trx_control) {
-	if (on_qrg) {
-	    on_qrg = 0;
-	} else {
-	    stopindex += 1;
+	for (i = bm_y + 1; i < LASTLINE + 1; i++) {
+		move(i, 0);
+		for (j = 0; j < 80; j++)
+			addch(' ');
 	}
-	if (spots->len < stopindex)
-	    stopindex = spots->len;
-    }
 
-    /* show spots below QRG */
-    for (i = startindex; i < below_qrg; i++) {
-	move(bm_y, bm_x);
-	show_spot(g_ptr_array_index(spots, i));
-	next_spot_position(&bm_y, &bm_x);
-    }
+	/* show info text */
+	bm_show_info();
 
-    /* show highlighted frequency marker or spot on QRG if rig control
-     * is active */
-    if (trx_control) {
-	move(bm_y, bm_x);
-	attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-	if (!on_qrg) {
-	    printw("%7.1f   %s", centerfrequency / 1000.0,  "============");
-	} else {
-	    show_spot_on_qrg(g_ptr_array_index(spots, below_qrg));
+	/* split bandmap into two parts below and above current QRG.
+	 * Give both both parts equal size.
+	 * If there are less spots then reserved in the half
+	 * give the remaining room to the other half.
+	 *
+	 * These results in maximized usage of the bandmap display while
+	 * trying to keep the actual frequency in the center.
+	 */
+	unsigned int below_qrg = 0;
+	unsigned int on_qrg = 0;
+	unsigned int startindex, stopindex;
+
+	const freq_t centerfrequency = bm_get_center(bandinx, trxmode);
+
+	/* calc number of spots below your current QRG */
+	for (i = 0; i < spots->len; i++) {
+		data = g_ptr_array_index(spots, i);
+
+		if (data->freq <= centerfrequency - TOLERANCE)
+			below_qrg++;
+		else
+			break;
 	}
-	next_spot_position(&bm_y, &bm_x);
-    }
 
-    /* show spots above QRG */
-    for (i = below_qrg + on_qrg; i < stopindex; i++) {
-	move(bm_y, bm_x);
-	show_spot(g_ptr_array_index(spots, i));
-	next_spot_position(&bm_y, &bm_x);
-    }
+	/* check if current QRG is on a spot */
+	if (below_qrg < spots->len) {
+		data = g_ptr_array_index(spots, below_qrg);
 
-    attroff(A_BOLD);
-    move(cury, curx);			/* reset cursor */
+		if (!(data->freq > centerfrequency + TOLERANCE))
+			on_qrg = 1;
+	}
 
-    refreshp();
+	/* calc the index into the spot array of the first spot to show */
+	{
+		unsigned int max_below;
+		unsigned int above_qrg = spots->len - below_qrg - on_qrg;
+
+		if (above_qrg < ((NR_SPOTS - 1) / 2)) {
+			max_below = NR_SPOTS - above_qrg - 1;
+		} else
+			max_below = NR_SPOTS / 2;
+
+		startindex = (below_qrg < max_below) ? 0 : (below_qrg - max_below);
+	}
+
+	/* calculate the index+1 of the last spot to show */
+	stopindex  = (spots->len < startindex + NR_SPOTS - (1 - on_qrg))
+				 ? spots->len
+				 : (startindex + NR_SPOTS - (1 - on_qrg));
+
+	/* correct calculations if we have no rig frequency to show */
+	if (!trx_control) {
+		if (on_qrg) {
+			on_qrg = 0;
+		} else {
+			stopindex += 1;
+		}
+		if (spots->len < stopindex)
+			stopindex = spots->len;
+	}
+
+	/* show spots below QRG */
+	for (i = startindex; i < below_qrg; i++) {
+		move(bm_y, bm_x);
+		show_spot(g_ptr_array_index(spots, i));
+		next_spot_position(&bm_y, &bm_x);
+	}
+
+	/* show highlighted frequency marker or spot on QRG if rig control
+	 * is active */
+	if (trx_control) {
+		move(bm_y, bm_x);
+		attrset(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		if (!on_qrg) {
+			printw("%7.1f   %s", centerfrequency / 1000.0,  "============");
+		} else {
+			show_spot_on_qrg(g_ptr_array_index(spots, below_qrg));
+		}
+		next_spot_position(&bm_y, &bm_x);
+	}
+
+	/* show spots above QRG */
+	for (i = below_qrg + on_qrg; i < stopindex; i++) {
+		move(bm_y, bm_x);
+		show_spot(g_ptr_array_index(spots, i));
+		next_spot_position(&bm_y, &bm_x);
+	}
+
+	attroff(A_BOLD);
+	move(cury, curx);			/* reset cursor */
+
+	refreshp();
 }
 
 /** allow control of bandmap features
  */
 void bm_menu() {
-    int curx, cury;
-    char c = -1;
-    int j;
+	int curx, cury;
+	char c = -1;
+	int j;
 
-    getyx(stdscr, cury, curx);		/* remember cursor */
+	getyx(stdscr, cury, curx);		/* remember cursor */
 
-    attrset(COLOR_PAIR(C_LOG) | A_STANDOUT);
-    mvaddstr(13, 0, "  Toggle <B>and, <M>ode, <D>upes or <O>nly multi filter");
-    printw(" | any other - leave ");
+	attrset(COLOR_PAIR(C_LOG) | A_STANDOUT);
+	mvaddstr(13, 0, "  Toggle <B>and, <M>ode, <D>upes or <O>nly multi filter");
+	printw(" | any other - leave ");
 
-    c = toupper(key_get());
-    switch (c) {
-	case 'B':
-	    bm_config.allband = !bm_config.allband;
-	    break;
+	c = toupper(key_get());
+	switch (c) {
+		case 'B':
+			bm_config.allband = !bm_config.allband;
+			break;
 
-	case 'M':
-	    bm_config.allmode = !bm_config.allmode;
-	    break;
+		case 'M':
+			bm_config.allmode = !bm_config.allmode;
+			break;
 
-	case 'D':
-	    bm_config.showdupes = !bm_config.showdupes;
-	    break;
+		case 'D':
+			bm_config.showdupes = !bm_config.showdupes;
+			break;
 
-	case 'O':
-	    bm_config.onlymults = !bm_config.onlymults;
-	    break;
-    }
-    bandmap_show();		/* refresh display */
+		case 'O':
+			bm_config.onlymults = !bm_config.onlymults;
+			break;
+	}
+	bandmap_show();		/* refresh display */
 
-    move(13, 0);
-    for (j = 0; j < 80; j++)
-	addch(' ');
+	move(13, 0);
+	for (j = 0; j < 80; j++)
+		addch(' ');
 
-    move(cury, curx);
-    refreshp();
+	move(cury, curx);
+	refreshp();
 }
 
 spot *copy_spot(spot *data) {
-    spot *result = NULL;
+	spot *result = NULL;
 
-    result = g_new0(spot, 1);
-    result -> call = g_strdup(data -> call);
-    result -> freq = data -> freq;
-    result -> mode = data -> mode;
-    result -> bandindex = data -> bandindex;
-    result -> node = data -> node;
-    result -> timeout = data -> timeout;
-    result -> dupe = data -> dupe;
-    result -> mult = data -> mult;
-    result -> cqzone = data -> cqzone;
-    result -> ctynr = data -> ctynr;
-    result -> pfx = g_strdup(data -> pfx);
+	result = g_new0(spot, 1);
+	result -> call = g_strdup(data -> call);
+	result -> freq = data -> freq;
+	result -> mode = data -> mode;
+	result -> bandindex = data -> bandindex;
+	result -> node = data -> node;
+	result -> timeout = data -> timeout;
+	result -> dupe = data -> dupe;
+	result -> mult = data -> mult;
+	result -> cqzone = data -> cqzone;
+	result -> ctynr = data -> ctynr;
+	result -> pfx = g_strdup(data -> pfx);
 
-    return result;
+	return result;
 }
 
 /** Search partialcall in filtered bandmap
@@ -978,30 +979,30 @@ spot *copy_spot(spot *data) {
  * 		after use).
  */
 spot *bandmap_lookup(char *partialcall) {
-    spot *result = NULL;
+	spot *result = NULL;
 
-    if ((*partialcall != '\0') && (spots->len > 0)) {
-	int i;
+	if ((*partialcall != '\0') && (spots->len > 0)) {
+		int i;
 
-	pthread_mutex_lock(&bm_mutex);
+		pthread_mutex_lock(&bm_mutex);
 
-	for (i = 0; i < spots->len; i++) {
-	    spot *data;
-	    data = g_ptr_array_index(spots, i);
+		for (i = 0; i < spots->len; i++) {
+			spot *data;
+			data = g_ptr_array_index(spots, i);
 
-	    if (strstr(data->call, partialcall) != NULL) {
+			if (strstr(data->call, partialcall) != NULL) {
 
-		/* copy data into a new Spot structure */
-		result = copy_spot(data);
+				/* copy data into a new Spot structure */
+				result = copy_spot(data);
 
-		break;
-	    }
+				break;
+			}
+		}
+
+		pthread_mutex_unlock(&bm_mutex);
+
 	}
-
-	pthread_mutex_unlock(&bm_mutex);
-
-    }
-    return result;
+	return result;
 }
 
 /** Lookup next call in filtered spotlist
@@ -1022,32 +1023,32 @@ spot *bandmap_lookup(char *partialcall) {
 
 spot *bandmap_next(bool upwards, freq_t freq) {
 
-    if (spots->len == 0) {
-	return NULL;
-    }
-
-    spot *result = NULL;
-
-    pthread_mutex_lock(&bm_mutex);
-
-    freq_t f0 = freq + (upwards ? 1 : -1) * (TOLERANCE / 2);
-
-    for (int i = 0; i < spots->len; i++) {
-	int index = (upwards ? i : spots->len - 1 - i);
-	spot *data = g_ptr_array_index(spots, index);
-	// spot must be above/below f0 depending on direction
-	bool freq_ok = (upwards ? data->freq > f0 : data->freq < f0);
-
-	if (freq_ok && (!bm_config.skipdupes || !data->dupe)) {
-	    /* copy data into a new Spot structure */
-	    result = copy_spot(data);
-	    break;
+	if (spots->len == 0) {
+		return NULL;
 	}
-    }
 
-    pthread_mutex_unlock(&bm_mutex);
+	spot *result = NULL;
 
-    return result;
+	pthread_mutex_lock(&bm_mutex);
+
+	freq_t f0 = freq + (upwards ? 1 : -1) * (TOLERANCE / 2);
+
+	for (int i = 0; i < spots->len; i++) {
+		int index = (upwards ? i : spots->len - 1 - i);
+		spot *data = g_ptr_array_index(spots, index);
+		// spot must be above/below f0 depending on direction
+		bool freq_ok = (upwards ? data->freq > f0 : data->freq < f0);
+
+		if (freq_ok && (!bm_config.skipdupes || !data->dupe)) {
+			/* copy data into a new Spot structure */
+			result = copy_spot(data);
+			break;
+		}
+	}
+
+	pthread_mutex_unlock(&bm_mutex);
+
+	return result;
 }
 
 /*
@@ -1056,12 +1057,12 @@ spot *bandmap_next(bool upwards, freq_t freq) {
  * The buffer has to be at least n+1 chars long.
  */
 void str_truncate(char *buffer, char *string, int n) {
-    if (strlen(string) > n) {
-	g_strlcpy(buffer, string, n - 1);   	/* truncate to n-2 chars */
-	strcat(buffer, "..");
-    } else {
-	g_strlcpy(buffer, string, n + 1); 	/* copy up to n chars */
-    }
+	if (strlen(string) > n) {
+		g_strlcpy(buffer, string, n - 1);   	/* truncate to n-2 chars */
+		strcat(buffer, "..");
+	} else {
+		g_strlcpy(buffer, string, n + 1); 	/* copy up to n chars */
+	}
 }
 
 /*
@@ -1070,20 +1071,20 @@ void str_truncate(char *buffer, char *string, int n) {
  *   (if any)
  */
 char *qtc_format(char *call) {
-    char tcall[15];
-    char qtcflag;
-    struct t_qtc_store_obj *qtc_temp_ptr;
+	char tcall[15];
+	char qtcflag;
+	struct t_qtc_store_obj *qtc_temp_ptr;
 
-    qtc_temp_ptr = qtc_get(call);
-    qtcflag = qtc_get_value(qtc_temp_ptr);
+	qtc_temp_ptr = qtc_get(call);
+	qtcflag = qtc_get_value(qtc_temp_ptr);
 
-    if (qtc_temp_ptr->total <= 0 && qtcflag == '\0') {
-	str_truncate(tcall, call, SPOT_CALL_WIDTH);
-    } else {
-	str_truncate(tcall, call, SPOT_CALL_WIDTH - 2);
-	sprintf(tcall + strlen(tcall), " %c", qtcflag);
-    }
-    return g_strdup(tcall);
+	if (qtc_temp_ptr->total <= 0 && qtcflag == '\0') {
+		str_truncate(tcall, call, SPOT_CALL_WIDTH);
+	} else {
+		str_truncate(tcall, call, SPOT_CALL_WIDTH - 2);
+		sprintf(tcall + strlen(tcall), " %c", qtcflag);
+	}
+	return g_strdup(tcall);
 }
 
 /** Search filtered bandmap for a spot near the given frequency
@@ -1095,25 +1096,25 @@ char *qtc_format(char *call) {
  */
 void get_spot_on_qrg(char *dest, freq_t freq) {
 
-    *dest = '\0';
+	*dest = '\0';
 
-    if (spots->len > 0) {
-	int i;
+	if (spots->len > 0) {
+		int i;
 
-	pthread_mutex_lock(&bm_mutex);
+		pthread_mutex_lock(&bm_mutex);
 
-	for (i = 0; i < spots->len; i++) {
-	    spot *data;
-	    data = g_ptr_array_index(spots, i);
+		for (i = 0; i < spots->len; i++) {
+			spot *data;
+			data = g_ptr_array_index(spots, i);
 
-	    if ((fabs(data->freq - freq) < TOLERANCE) &&
-		    (!bm_config.skipdupes || !data->dupe)) {
-		strcpy(dest, data->call);
-		break;
-	    }
+			if ((fabs(data->freq - freq) < TOLERANCE) &&
+					(!bm_config.skipdupes || !data->dupe)) {
+				strcpy(dest, data->call);
+				break;
+			}
+		}
+
+		pthread_mutex_unlock(&bm_mutex);
+
 	}
-
-	pthread_mutex_unlock(&bm_mutex);
-
-    }
 }

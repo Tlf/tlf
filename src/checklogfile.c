@@ -52,44 +52,49 @@
  * \return 0 on success
  */
 int repair_log(char *filename) {
-    gchar *backupfile;
-    gchar *cmd;
-    char* buffer = NULL;
+	gchar *backupfile;
+	gchar *cmd;
+	char *buffer = NULL;
 	size_t buffer_len = 200;
-    gchar *fill;
-    int rc;
+	gchar *fill;
+	int rc;
 	int read;
-    FILE *infp;
-    FILE *outfp;
+	FILE *infp;
+	FILE *outfp;
 
-    /* make a backup of the original file */
-    backupfile = g_strconcat(filename, ".bak", NULL);
-    showstring("Backing up original file as: ", backupfile);
+	/* make a backup of the original file */
+	backupfile = g_strconcat(filename, ".bak", NULL);
+	showstring("Backing up original file as: ", backupfile);
 
-    cmd = g_strconcat("cp ", filename, " ", backupfile, NULL);
-    rc = system(cmd);
-    g_free(cmd);
+	cmd = g_strconcat("cp ", filename, " ", backupfile, NULL);
+	rc = system(cmd);
+	g_free(cmd);
 
-    if (rc != 0) {
+	if (rc != 0) {
 		showmsg("Could not backup logfile. Giving up!");
 		return 1;
-    }
+	}
 
 
-    showmsg("Converting file to new format");
-    if ((infp = fopen(backupfile, "r")) == NULL) {
+	showmsg("Converting file to new format");
+	if ((infp = fopen(backupfile, "r")) == NULL) {
 		showmsg("Could not convert logfile. Sorry!");
 		return 1;
-    }
+	}
 
-    if ((outfp = fopen(filename, "w")) == NULL) {
+	if ((outfp = fopen(filename, "w")) == NULL) {
 		fclose(infp);
 		showmsg("Could not convert logfile. Sorry!");
 		return 1;
-    }
+	}
 
-	while((read = getline(&buffer, &buffer_len, infp)) != 1) {
+	while ((read = getline(&buffer, &buffer_len, infp)) != 1) {
 		if (buffer_len > 0) {
+			if (errno == ENOMEM) {
+				fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+				perror("RuntimeError: ");
+				exit(EXIT_FAILURE);
+			}
 			/* strip trailing whitespace (and newline) */
 			g_strchomp(buffer);
 
@@ -101,34 +106,30 @@ int repair_log(char *filename) {
 			fputs(buffer, outfp);
 			fputs("\n", outfp);
 		}
-		else {
-			perror("RuntimeError: ");
-			exit(EXIT_FAILURE);
-		}
-    }
+	}
 
 	if (buffer != NULL)
 		free(buffer);
-    fclose(outfp);
-    fclose(infp);
-    g_free(backupfile);
+	fclose(outfp);
+	fclose(infp);
+	g_free(backupfile);
 
-    showmsg("Done");
-    sleep(2);
+	showmsg("Done");
+	sleep(2);
 
-    return 0;
+	return 0;
 }
 
 int checklogfile_new(char *filename) {
-    int lineno;
-    int tooshort;
+	int lineno;
+	int tooshort;
 	int read;
-    char* buffer = NULL;
+	char *buffer = NULL;
 	size_t buffer_len = 160;
-    FILE *fp;
+	FILE *fp;
 
-    /* check if logfile exist and can be opened for read */
-    if ((fp = fopen(filename, "r")) == NULL) {
+	/* check if logfile exist and can be opened for read */
+	if ((fp = fopen(filename, "r")) == NULL) {
 
 		if (errno == EACCES) {
 			showstring("Can not access log file: ", filename);
@@ -151,15 +152,20 @@ int checklogfile_new(char *filename) {
 
 		showstring("Can not check log file: ", filename);
 		return 1;
-    }
+	}
 
 
-    /* check each line of the logfile of correct format */
-    lineno = 0;
-    tooshort = 0;
+	/* check each line of the logfile of correct format */
+	lineno = 0;
+	tooshort = 0;
 
-    while((read = getline(&buffer, &buffer_len, fp)) != -1) {
+	while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 		if (buffer_len > 0) {
+			if (errno == ENOMEM) {
+				fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+				perror("RuntimeError: ");
+				exit(EXIT_FAILURE);
+			}
 			int band, linelen;
 			int bandok = 0;
 
@@ -169,15 +175,15 @@ int checklogfile_new(char *filename) {
 			band = atoi(buffer);
 
 			if ((band == 160) ||
-				(band == 80) ||
-				(band == 60) ||
-				(band == 40) ||
-				(band == 30) ||
-				(band == 20) ||
-				(band == 17) ||
-				(band == 15) ||
-				(band == 12) ||
-				(band == 10))
+					(band == 80) ||
+					(band == 60) ||
+					(band == 40) ||
+					(band == 30) ||
+					(band == 20) ||
+					(band == 17) ||
+					(band == 15) ||
+					(band == 12) ||
+					(band == 10))
 				bandok = 1;
 
 			if (!((buffer[0] == ';') || bandok)) {
@@ -202,17 +208,13 @@ int checklogfile_new(char *filename) {
 				tooshort = 1;
 			}
 		}
-		else {
-			perror("RuntimeError: ");
-			exit(EXIT_FAILURE);
-		}
-    }
+	}
 
 	if (buffer != NULL)
 		free(buffer);
-    fclose(fp);
+	fclose(fp);
 
-    if (tooshort) {
+	if (tooshort) {
 		char c;
 
 		/* some lines in logfile are too short, maybe old logfile format */
@@ -228,28 +230,28 @@ int checklogfile_new(char *filename) {
 
 		/* trying to repair */
 		return repair_log(filename);
-    }
+	}
 
-    return 0;
+	return 0;
 }
 
 
 void checklogfile(void) {
-    extern char logfile[];
+	extern char logfile[];
 
-    int qsobytes;
+	int qsobytes;
 	int read;
-    struct stat statbuf;
-    char* inputbuffer = NULL;
+	struct stat statbuf;
+	char *inputbuffer = NULL;
 	size_t read_len = 160;
 
-    FILE *infile;
-    FILE *outfile;
-    FILE *fp;
+	FILE *infile;
+	FILE *outfile;
+	FILE *fp;
 
-    if ((fp = fopen(logfile, "a")) == NULL) {
+	if ((fp = fopen(logfile, "a")) == NULL) {
 		TLF_LOG_WARN("I can not find the logfile ...");
-    } else {
+	} else {
 		fstat(fileno(fp), &statbuf);
 		fclose(fp);
 
@@ -258,43 +260,44 @@ void checklogfile(void) {
 		if ((qsobytes % LOGLINELEN) != 0) {
 
 			if ((infile = fopen(logfile, "r")) == NULL) {
-			TLF_LOG_WARN("Unable to open logfile...");
+				TLF_LOG_WARN("Unable to open logfile...");
 
 			} else {
-			if ((outfile = fopen("./cpyfile", "w")) == NULL) {
-				fclose(infile);
-				TLF_LOG_WARN("Unable to open cpyfile...");
+				if ((outfile = fopen("./cpyfile", "w")) == NULL) {
+					fclose(infile);
+					TLF_LOG_WARN("Unable to open cpyfile...");
 
-			} else {
-				while ((read = getline(&inputbuffer, &read_len, infile)) != -1) {
-					if (read_len > 0) {
-						if (strlen(inputbuffer) != LOGLINELEN) {
-							/* append spaces */
-							for (int i = strlen(inputbuffer);
-								i < LOGLINELEN; i++) {
-
-							strcat(inputbuffer, " ");
+				} else {
+					while ((read = getline(&inputbuffer, &read_len, infile)) != -1) {
+						if (read_len > 0) {
+							if (errno == ENOMEM) {
+								fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+								perror("RuntimeError: ");
+								exit(EXIT_FAILURE);
 							}
+							if (strlen(inputbuffer) != LOGLINELEN) {
+								/* append spaces */
+								for (int i = strlen(inputbuffer);
+										i < LOGLINELEN; i++) {
 
-							inputbuffer[LOGLINELEN - 1] = '\n';
-							inputbuffer[LOGLINELEN] = '\0';
+									strcat(inputbuffer, " ");
+								}
+
+								inputbuffer[LOGLINELEN - 1] = '\n';
+								inputbuffer[LOGLINELEN] = '\0';
+							}
+							fputs(inputbuffer, outfile);
 						}
-						fputs(inputbuffer, outfile);
 					}
-					else {
-						perror("RuntimeError: ");
-						exit(EXIT_FAILURE);
-					}
-				}
 
-				if (inputbuffer != NULL)
-					free(inputbuffer);
-				fclose(infile);
-				fclose(outfile);
-			}
-			rename("./cpyfile", logfile);
-			remove("./cpyfile");
+					if (inputbuffer != NULL)
+						free(inputbuffer);
+					fclose(infile);
+					fclose(outfile);
+				}
+				rename("./cpyfile", logfile);
+				remove("./cpyfile");
 			}
 		}
-    }
+	}
 }
