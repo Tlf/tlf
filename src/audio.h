@@ -27,11 +27,11 @@
 
 #include <stdbool.h>
 
-extern char *vk_record_cmd;
-extern char *vk_play_cmd;
-extern char *soundlog_record_cmd;
-extern char *soundlog_play_cmd;
-extern char *soundlog_dir;
+extern char* vk_record_cmd;
+extern char* vk_play_cmd;
+extern char* soundlog_record_cmd;
+extern char* soundlog_play_cmd;
+extern char* soundlog_dir;
 
 void sound_setup_default(void);
 void record(void);

@@ -26,8 +26,7 @@ void clearmsg(void);
 void clearmsg_wait(void);
 void showmsg(char *message);	// output text
 void shownr(char *message, int nr); // output text + number
-void showstring(const char *message1,
-		const char *message2);  // output 2 strings
+void showstring(const char *message1, const char *message2);  // output 2 strings
 
 
 #endif /* end of include guard: STARTMSG_H */

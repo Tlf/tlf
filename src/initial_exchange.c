@@ -40,127 +40,127 @@
 */
 
 void free_ie_list(struct ie_list *head) {
-    struct ie_list *next;
+	struct ie_list *next;
 
-    while (head) {
-	next = head->next;
-	free(head);
-	head = next;
-    }
+	while (head) {
+		next = head->next;
+		free(head);
+		head = next;
+	}
 }
 
 struct ie_list *make_ie_list(char *file) {
 
-    FILE *fp;
-    char *inputbuffer = NULL;
-    size_t inputbuffer_len = 91;
-    char *loc;
+	FILE *fp;
+	char *inputbuffer = NULL;
+	size_t inputbuffer_len = 91;
+	char *loc;
 
-    struct ie_list *ie_listhead = NULL;
-    struct ie_list *new;
-    char *token;
-    int read, linectr = 0;
+	struct ie_list *ie_listhead = NULL;
+	struct ie_list *new;
+	char *token;
+	int read, linectr = 0;
 
-    if ((fp = fopen(file, "r")) == NULL) {
-	showmsg("Cannot find initial exchange file");
-	return NULL;
-    }
-
-    showstring("Using initial exchange file", file);
-
-    while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
-	if (inputbuffer_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
-
-	    linectr++;
-
-	    g_strstrip(inputbuffer);    // strip leading/trailing whitespace
-
-	    /* skip empty and comment lines */
-	    if (inputbuffer[0] == '#' || inputbuffer[0] == 0) {
-		continue;
-	    }
-
-	    /* skip control directives like !!Order!!,... */
-	    if (inputbuffer[0] == '!') {
-		continue;
-	    }
-
-	    if (strlen(inputbuffer) > 80) {
-		/* line to long */
-		char msg[80];
-		free_ie_list(ie_listhead);
-		fclose(fp);
-		sprintf(msg, "Line %d: too long", linectr);
-		showmsg(msg);
+	if ((fp = fopen(file, "r")) == NULL) {
+		showmsg("Cannot find initial exchange file");
 		return NULL;
-	    }
+	}
 
-	    loc = strchr(inputbuffer, ',');
+	showstring("Using initial exchange file", file);
 
-	    if (loc == NULL) {
-		/* no comma found */
-		char msg[80];
-		free_ie_list(ie_listhead);
-		fclose(fp);
-		sprintf(msg, "Line %d: no comma found", linectr);
-		showmsg(msg);
-		return NULL;
-	    }
+	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
+		if (inputbuffer_len > 0) {
+			if (errno == ENOMEM) {
+				fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+				perror("RuntimeError: ");
+				exit(EXIT_FAILURE);
+			}
 
-	    // comma found, parse the line
-	    new = malloc(sizeof(struct ie_list));
+			linectr++;
 
-	    if (new == NULL) {
-		free_ie_list(ie_listhead);
-		fclose(fp);
-		showmsg("Out of memory");
-		return NULL;
-	    }
+			g_strstrip(inputbuffer);    // strip leading/trailing whitespace
 
-	    *loc = '\0';	/* split the string into call and exchange */
+			/* skip empty and comment lines */
+			if (inputbuffer[0] == '#' || inputbuffer[0] == 0) {
+				continue;
+			}
 
-	    token = strtok(inputbuffer, " \t"); 	/* callsign is first
+			/* skip control directives like !!Order!!,... */
+			if (inputbuffer[0] == '!') {
+				continue;
+			}
+
+			if (strlen(inputbuffer) > 80) {
+				/* line to long */
+				char msg[80];
+				free_ie_list(ie_listhead);
+				fclose(fp);
+				sprintf(msg, "Line %d: too long", linectr);
+				showmsg(msg);
+				return NULL;
+			}
+
+			loc = strchr(inputbuffer, ',');
+
+			if (loc == NULL) {
+				/* no comma found */
+				char msg[80];
+				free_ie_list(ie_listhead);
+				fclose(fp);
+				sprintf(msg, "Line %d: no comma found", linectr);
+				showmsg(msg);
+				return NULL;
+			}
+
+			// comma found, parse the line
+			new = malloc(sizeof(struct ie_list));
+
+			if (new == NULL) {
+				free_ie_list(ie_listhead);
+				fclose(fp);
+				showmsg("Out of memory");
+				return NULL;
+			}
+
+			*loc = '\0';	/* split the string into call and exchange */
+
+			token = strtok(inputbuffer, " \t"); 	/* callsign is first
 															token delimited by
 															whitespace */
-	    if (token == NULL || strtok(NULL, " \t")) {
-		/* 0 or >1 token before comma */
-		char msg[80];
-		free(new);
-		free_ie_list(ie_listhead);
-		fclose(fp);
-		sprintf(msg, "Line %d: 0 or more than one token before comma",
-			linectr);
-		showmsg(msg);
-		return NULL;
-	    }
+			if (token == NULL || strtok(NULL, " \t")) {
+				/* 0 or >1 token before comma */
+				char msg[80];
+				free(new);
+				free_ie_list(ie_listhead);
+				fclose(fp);
+				sprintf(msg, "Line %d: 0 or more than one token before comma",
+						linectr);
+				showmsg(msg);
+				return NULL;
+			}
 
-	    strncpy(new->call, token, MAX_CALL_LENGTH);
-	    new->call[MAX_CALL_LENGTH] = '\0';		/* proper termination */
+			strncpy(new->call, token, MAX_CALL_LENGTH);
+			new->call[MAX_CALL_LENGTH] = '\0';		/* proper termination */
 
-	    // prepare exchange field
-	    char *xchg = loc + 1;
-	    loc = strchr(xchg, ',');
-	    if (loc != NULL) {
-		*loc = '\0';	/* terminate it at the 2nd comma */
-	    }
-	    g_strstrip(xchg);       // strip leading/trailing whitespace
-	    strncpy(new->exchange, xchg, MAX_IE_LENGTH);
-	    new->exchange[MAX_IE_LENGTH] = '\0';	/* proper termination */
+			// prepare exchange field
+			char *xchg = loc + 1;
+			loc = strchr(xchg, ',');
+			if (loc != NULL) {
+				*loc = '\0';	/* terminate it at the 2nd comma */
+			}
+			g_strstrip(xchg);       // strip leading/trailing whitespace
+			strncpy(new->exchange, xchg, MAX_IE_LENGTH);
+			new->exchange[MAX_IE_LENGTH] = '\0';	/* proper termination */
 
-	    /* prepend new entry to existing list */
-	    new->next = ie_listhead;
-	    ie_listhead = new;
+			/* prepend new entry to existing list */
+			new->next = ie_listhead;
+			ie_listhead = new;
+		}
 	}
-    }
 
-    if (inputbuffer != NULL)
-	free(inputbuffer);
-    fclose(fp);
+	if (inputbuffer != NULL)
+		free(inputbuffer);
+	fclose(fp);
 
-    return ie_listhead;
+	return ie_listhead;
 }

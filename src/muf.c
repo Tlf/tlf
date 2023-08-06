@@ -198,7 +198,8 @@ int t;
 double xn, xs, ls, h, ff, x, yn_, k, lm, u, a;
 
 
-static double power(double man, double ex) {
+static double power(double man, double ex)
+{
     return exp(ex * log(man));
 }
 

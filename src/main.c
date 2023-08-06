@@ -231,27 +231,23 @@ char *digi_message[sizeof(message) / sizeof(message[0])];
 char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   * See description of message[]
 			   */
-{ "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+    { "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 
 char qtc_recv_msgs[12][80] = {
     "QTC?", "QRV", "R", "", "TIME?", "CALL?",
-    "NR?", "AGN", "", "QSL ALL", "", ""
-};	// QTC receive windows Fx messages
+    "NR?", "AGN", "", "QSL ALL", "", ""};	// QTC receive windows Fx messages
 
 char qtc_send_msgs[12][80] = {
     "QRV?", "QTC sr/nr", "", "", "TIME", "CALL",
-    "NR", "", "", "", "", ""
-};		    	// QTC send window Fx messages
+    "NR", "", "", "", "", ""};		    	// QTC send window Fx messages
 
 char qtc_phrecv_message[14][80] = {
     "", "", "", "", "", "",
-    "", "", "", "", "", ""
-};			// voice keyer file names when receives QTCs
+    "", "", "", "", "", "" };			// voice keyer file names when receives QTCs
 
 char qtc_phsend_message[14][80] = {
     "", "", "", "", "", "",
-    "", "", "", "", "", ""
-};			// voice keyer file names when send QTCs
+    "", "", "", "", "", "" };			// voice keyer file names when send QTCs
 
 bool qtcrec_record = false;
 char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
@@ -434,7 +430,7 @@ static const char program_description[] =
 #ifdef HAVE_PYTHON
     " python-plugin"
 #endif
-    ;
+;
 static const struct argp_option options[] = {
     {
 	"config",   'f', "FILE", 0,
@@ -979,7 +975,7 @@ static void tlf_cleanup() {
     if (is_sr_running()) {
 	int c;
 	puts("ATTENTION: Sound recorder is still running!");
-	puts("           Do you want to stop it (y/n)?");
+	puts("           Do you want to stop it (y/n)?" );
 	c = getchar();
 	if (toupper(c) == 'Y') {
 	    sr_stop();

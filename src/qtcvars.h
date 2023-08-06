@@ -80,24 +80,24 @@ typedef struct {
 } t_qtc_ry_line;
 
 extern int next_qtc_qso;		// the next non-sent QSO, which can
-// be send next as QTC
+					// be send next as QTC
 extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs
-// for QTCs;  this is an array of
-// flags, which marks when a QSO
-// sent as QTC
+					// for QTCs;  this is an array of
+					// flags, which marks when a QSO
+					// sent as QTC
 extern int qtcdirection;		// 1: RECV, 2: SEND, 3: BOTH
 extern t_qtclist qtclist;		// the QTC list to send
 extern t_qtcreclist qtcreclist;		// the QTC list which received
 extern int nr_qtcsent;			// number of sent QTC blocks; this used
-// at the QTC header, eg. 23/10 - here the 23
-// is the value of this variable
+					// at the QTC header, eg. 23/10 - here the 23
+					// is the value of this variable
 extern t_qtc_ry_line qtc_ry_lines[QTC_RY_LINE_NR];	// when QTC is set,
-// and mode is RTTY, then the modem
-// lines stored this array
+					// and mode is RTTY, then the modem
+					// lines stored this array
 extern int qtc_ry_currline;		// current line of QTC RTTY modem
 extern int qtc_ry_capture;		// enable or disable QTC RTTY capturing
 extern int qtc_ry_copied;		// stores the number of copied lines i
-// from QTC RTTY terminal to QTC window
+					// from QTC RTTY terminal to QTC window
 
 extern bool qtcrec_record;		// do we record the received QTCs
 extern char qtcrec_record_command[2][50]; 	// command to start recording
@@ -112,6 +112,6 @@ extern char qtc_phsend_message[14][80];
 
 extern char qtc_cap_calls[40];
 extern bool qtc_auto_filltime;		// set QTC auto filltime; when DX sent first
-// QTC line, the first two digits will be copied to others
+					// QTC line, the first two digits will be copied to others
 extern bool qtc_recv_lazy;		// ignore check of received QTC lines
 #endif /* end of include guard: QTCVARS_H */

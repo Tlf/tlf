@@ -3,8 +3,8 @@
 # K&R style formatting/indenting with some tweaks.
 style=attach
 
-# Indent with a width of 4 spaces. Use 8 space tabs if possible
-indent=force-tab-x=8
+# Indent with a width of 4 spaces. Use 4 space tabs if possible
+indent=force-tab-x=4
 indent=force-tab=4
 
 # Pad empty lines around header blocks (e.g. 'if', 'for', 'while'...).
