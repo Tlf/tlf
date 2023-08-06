@@ -25,13 +25,13 @@
 #include <stdbool.h>
 
 #ifdef HAMLIB_FILPATHLEN
-  #define TLFFILPATHLEN HAMLIB_FILPATHLEN
+#define TLFFILPATHLEN HAMLIB_FILPATHLEN
 #else
-  #ifdef FILPATHLEN
-  #define TLFFILPATHLEN FILPATHLEN
-  #else
-  #error "(HAMLIB_)FILPATHLEN macro not found"
-  #endif
+#ifdef FILPATHLEN
+#define TLFFILPATHLEN FILPATHLEN
+#else
+#error "(HAMLIB_)FILPATHLEN macro not found"
+#endif
 #endif
 
 bool rig_has_send_morse();

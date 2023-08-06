@@ -15,28 +15,28 @@ extern char whichcontest[];
 extern contest_config_t *contest;	// contest configuration
 
 extern GPtrArray *qso_array;		// array of parsed QSOs
-					// note that not every log line needs
-					// to be a QSO, it could also be a
-					// comment, starting with a semicolon.
-					// Than is_comment field in qso_t
-					// struct gets set
+// note that not every log line needs
+// to be a QSO, it could also be a
+// comment, starting with a semicolon.
+// Than is_comment field in qso_t
+// struct gets set
 
 extern mults_t multis[MAX_MULTS]; 	// array of multipliers worked so far
 extern int nr_multis;			// number of entries in mults[]
 extern int multscore[NBANDS];		// number of multipliers worked per
-					// band; index is
-					// BANDINDEX_160 ... BANDINDEX_10
-					// note: until 200409111,
-					// index was 0...5 for only
-					// the non-warc bands!
+// band; index is
+// BANDINDEX_160 ... BANDINDEX_10
+// note: until 200409111,
+// index was 0...5 for only
+// the non-warc bands!
 
 extern int nr_worked;			// number of worked station
-					// entries in worked[]
+// entries in worked[]
 extern worked_t worked[MAX_CALLS]; 	// worked stations
 
 extern int countries[MAX_DATALINES];	// for every country, a bitfield
-					// indicating bands on which it has
-					// been worked
+// indicating bands on which it has
+// been worked
 
 extern int bandinx;			// band we're currently working on
 

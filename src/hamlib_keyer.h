@@ -18,6 +18,6 @@
  */
 
 int hamlib_keyer_set_speed(int cwspeed);
-int hamlib_keyer_get_speed( int *cwspeed);
+int hamlib_keyer_get_speed(int *cwspeed);
 int hamlib_keyer_send(char *cwmessage);
 int hamlib_keyer_stop();

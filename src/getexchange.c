@@ -833,8 +833,8 @@ void checkexchange(struct qso_t *qso, bool interactive) {
     qso->mult1_value[0] = 0;
 
     if (plugin_has_check_exchange()) {
-        plugin_check_exchange(qso);
-        return;
+	plugin_check_exchange(qso);
+	return;
     }
 
     // ----------------------------cqww------------------------------

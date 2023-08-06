@@ -67,19 +67,19 @@ static void sr_start(void);
 void sr_stop();
 
 void sound_setup_default(void) {
-    if (vk_record_cmd) g_free (vk_record_cmd);
+    if (vk_record_cmd) g_free(vk_record_cmd);
     vk_record_cmd = g_strdup("rec -r 8000 $1 -q");
 
-    if (vk_play_cmd) g_free (vk_play_cmd);
+    if (vk_play_cmd) g_free(vk_play_cmd);
     vk_play_cmd = g_strdup("play_vk $1");
 
-    if (soundlog_record_cmd) g_free (soundlog_record_cmd);
+    if (soundlog_record_cmd) g_free(soundlog_record_cmd);
     soundlog_record_cmd = g_strdup("soundlog");
 
-    if (soundlog_play_cmd) g_free (soundlog_play_cmd);
+    if (soundlog_play_cmd) g_free(soundlog_play_cmd);
     soundlog_play_cmd = g_strdup("play -q $1 2> /dev/null");
 
-    if (soundlog_dir) g_free (soundlog_dir);
+    if (soundlog_dir) g_free(soundlog_dir);
     soundlog_dir = g_strdup("./soundlogs");
 }
 
@@ -91,7 +91,7 @@ void sound_setup_default(void) {
  */
 bool is_sr_running() {
     char *lockfile = g_strconcat(g_get_home_dir(), G_DIR_SEPARATOR_S,
-		".VRlock", NULL);
+				 ".VRlock", NULL);
     bool exists = (access(lockfile, F_OK) == 0);
     g_free(lockfile);
     return exists;
@@ -110,7 +110,7 @@ static void recordmenue(void) {
     mvaddstr(6, 20, "F1 ... F12, S, C: Record Messages");
 
     mvprintw(9, 20, "1; %s contest recorder",
-	    is_sr_running() ? "Stop" : "Start");
+	     is_sr_running() ? "Stop" : "Start");
 
     mvaddstr(10, 20, "2: List and Play contest file");
     mvaddstr(12, 20, "ESC: Exit sound recorder function");
@@ -273,10 +273,10 @@ static char *expand_directory(const char *dir) {
 }
 
 /* strip audio file suffix */
-static char* strip_suffix(char * filename) {
+static char *strip_suffix(char *filename) {
     GRegex *regex = g_regex_new("\\.au$", 0, 0, NULL);
-    char *stripped_name = g_regex_replace(regex, filename, -1 , 0,
-	    "", 0, NULL);
+    char *stripped_name = g_regex_replace(regex, filename, -1, 0,
+					  "", 0, NULL);
     g_regex_unref(regex);
     return stripped_name;
 }
@@ -312,7 +312,7 @@ static int sr_listfiles() {
 	g_free(printname);
 
 	i += 10;
-    	if (i > 60) {
+	if (i > 60) {
 	    i = 10;
 	    j++;
 	}
@@ -340,8 +340,8 @@ static void sr_start(void) {
     IGNORE(system("echo " " > ~/.VRlock"));
 
     char *command = g_strconcat("mkdir -p ", soundlog_dir, "; ",
-	    "cd ", soundlog_dir, "; ",
-	    soundlog_record_cmd, " >/dev/null 2>/dev/null &", NULL);
+				"cd ", soundlog_dir, "; ",
+				soundlog_record_cmd, " >/dev/null 2>/dev/null &", NULL);
 
     IGNORE(system(command));
     g_free(command);
@@ -360,15 +360,15 @@ void sr_stop() {
 static char *prepare_playback_command(char *filename) {
     char *file = g_strconcat(filename, ".au", NULL);
 
-    GRegex *regex = g_regex_new("\\$1", 0, 0 , NULL);
+    GRegex *regex = g_regex_new("\\$1", 0, 0, NULL);
     char *play_command = g_regex_replace(regex, soundlog_play_cmd, -1, 0,
-	    file, 0, NULL);
-	g_regex_unref(regex);
+					 file, 0, NULL);
+    g_regex_unref(regex);
     g_free(file);
 
     char *full_command = g_strconcat("cd ", soundlog_dir, "; ",
-		play_command, NULL);
-    g_free (play_command);
+				     play_command, NULL);
+    g_free(play_command);
 
     return full_command;
 }
@@ -384,14 +384,14 @@ static void vk_do_record(int message_nr) {
     move(17, 20);
     refreshp();
 
-    GRegex *regex = g_regex_new("\\$1", 0, 0 , NULL);
+    GRegex *regex = g_regex_new("\\$1", 0, 0, NULL);
     char *command = g_regex_replace(regex, vk_record_cmd, -1, 0,
-	    ph_message[message_nr], 0, NULL);
+				    ph_message[message_nr], 0, NULL);
     g_regex_unref(regex);
 
     /* let the command run in background so we can stop recording by
      * <esc> key later */
-    char *reccommand = g_strconcat( command, " &", NULL);
+    char *reccommand = g_strconcat(command, " &", NULL);
 
     IGNORE(system(reccommand));
     g_free(command);
@@ -413,11 +413,11 @@ void *play_thread(void *ptr) {
 
     pthread_detach(pthread_self());
 
-    vk_running=true;
+    vk_running = true;
 
     GRegex *regex = g_regex_new("\\$1", 0, 0, NULL);
     char *playcommand = g_regex_replace(regex, vk_play_cmd, -1, 0,
-	    audiofile, 0, NULL);
+					audiofile, 0, NULL);
     g_regex_unref(regex);
     g_free(ptr);
 
@@ -441,7 +441,7 @@ void *play_thread(void *ptr) {
 	netkeyer(K_PTT, "0");	// ptt off
     }
 
-    vk_running= false;
+    vk_running = false;
 
     return NULL;
 }
@@ -467,8 +467,8 @@ void vk_play_file(char *audiofile) {
 
     /* play sound in separate thread so it can be killed from the main one */
     if (pthread_create(&vk_thread, NULL, play_thread, (void *)file) != 0) {
-	    g_free(file);
-	    TLF_LOG_INFO("could not start sound thread!");
+	g_free(file);
+	TLF_LOG_INFO("could not start sound thread!");
     }
 }
 
@@ -480,7 +480,7 @@ void vk_stop() {
 
 /* check if playing VK message is finished */
 bool is_vk_finished() {
-	return (vk_running == false);
+    return (vk_running == false);
 }
 
 

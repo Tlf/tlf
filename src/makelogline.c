@@ -146,7 +146,7 @@ void prepare_fixed_part(char *logline, struct qso_t *qso) {
 //	    strcat(logline, lastqsonr);
 //	    lastqsonr[0] = '\0';
 //	} else
-	    strcat(logline, buf);
+	strcat(logline, buf);
     }
 
     if (lan_active && cqwwm2) {
@@ -235,7 +235,7 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
     FILL_TO(77);
 
     if (!iscontest) {
-        return;         // not a contest, we are done
+	return;         // not a contest, we are done
     }
 
     logline[68] = '\0'; /* cut back to make room for mults */
