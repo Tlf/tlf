@@ -41,7 +41,7 @@ extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
 
 void handlePartials(void);
-void filterLog(const char * call);
+void filterLog(const char *call);
 int bandstr2line(char *buffer);
 int getZone(void);
 
@@ -367,8 +367,9 @@ void test_displayPartials(void **state) {
     // add a bunch of UA QSOs so that they fill up available space
     for (int i = 0; i <= 'Z' - 'A'; ++i) {
 
-	char *line = g_strdup_printf(" 80CW  12-Jan-18 16:34 0009  UA9%cAA         599  599  17            UA9 17   3         ",
-		'A' + i);
+	char *line =
+	    g_strdup_printf(" 80CW  12-Jan-18 16:34 0009  UA9%cAA         599  599  17            UA9 17   3         ",
+			    'A' + i);
 	add_log(line);
 	g_free(line);
     }

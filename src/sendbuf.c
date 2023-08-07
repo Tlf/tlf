@@ -242,11 +242,11 @@ struct qso_t *get_previous_qso() {
     };
 
     // TODO:lan for networked mode it will be incorrect. Previous qso may not be the last one in the log.
-    for(int i=NR_QSOS-1; i >= 0; i--) {
-        struct qso_t *out_qso = g_ptr_array_index(qso_array, i);
-        if(!out_qso->is_comment) {
-            return out_qso;
-        }
+    for (int i = NR_QSOS - 1; i >= 0; i--) {
+	struct qso_t *out_qso = g_ptr_array_index(qso_array, i);
+	if (!out_qso->is_comment) {
+	    return out_qso;
+	}
     }
     return &empty_qso;
 }

@@ -97,7 +97,7 @@ int teardown_default(void **state) {
     return 0;
 }
 
-void check_score_to_continent(int i, char * cont) {
+void check_score_to_continent(int i, char *cont) {
     strcpy(continent, "abc");
     assert_string_equal(calc_continent(i), cont);
     assert_string_equal(continent, "abc"); /* do not touch 'continent' */
@@ -130,29 +130,29 @@ void test_wpx(void **state) {
     pfxmult = false;
 
     /* same country */
-    check_call_points("DL3ABC",1);
+    check_call_points("DL3ABC", 1);
 
     /* different continents */
     qso.bandindex = BANDINDEX_20;
-    check_call_points("ZS6ABC",3);
+    check_call_points("ZS6ABC", 3);
 
     qso.bandindex = BANDINDEX_40;
-    check_call_points("ZS6ABC",6);
+    check_call_points("ZS6ABC", 6);
 
     /* same continent, not NA */
     qso.bandindex = BANDINDEX_20;
-    check_call_points("HB9ABC",1);
+    check_call_points("HB9ABC", 1);
 
     qso.bandindex = BANDINDEX_40;
-    check_call_points("HB9ABC",2);
+    check_call_points("HB9ABC", 2);
 
     /* same continent, NA */
     strcpy(my.continent, "NA");
     qso.bandindex = BANDINDEX_20;
-    check_call_points("VE3ABC",2);
+    check_call_points("VE3ABC", 2);
 
     qso.bandindex = BANDINDEX_40;
-    check_call_points("VE3ABC",4);
+    check_call_points("VE3ABC", 4);
 
 }
 
@@ -204,11 +204,11 @@ void test_simple_points(void **state) {
 void test_arrldx_usa(void **state) {
     setcontest("arrldx_usa");
 
-    check_call_points("W3ABC",0);
+    check_call_points("W3ABC", 0);
 
-    check_call_points("VE2ABC",0);
+    check_call_points("VE2ABC", 0);
 
-    check_call_points("DL3ABC",3);
+    check_call_points("DL3ABC", 3);
 }
 
 void test_ssbcw(void **state) {

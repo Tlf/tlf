@@ -13,7 +13,7 @@
 
 prefix_data pfx_dummy = { };
 
-prefix_data *getctyinfo(char * call) {
+prefix_data *getctyinfo(char *call) {
     return &pfx_dummy;
 }
 

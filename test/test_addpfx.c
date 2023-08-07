@@ -29,41 +29,41 @@ void test_initPfx(void **state) {
 }
 
 void add_some_prefixes(void) {
-    add_pfx("DL0",BANDINDEX_80);
-    add_pfx("UA3",BANDINDEX_80);
-    add_pfx("UA3",BANDINDEX_20);
-    add_pfx("UA2",BANDINDEX_20);
+    add_pfx("DL0", BANDINDEX_80);
+    add_pfx("UA3", BANDINDEX_80);
+    add_pfx("UA3", BANDINDEX_20);
+    add_pfx("UA2", BANDINDEX_20);
 }
 
 void test_any_pfx_is_new_if_empty(void **state) {
-    assert_int_equal(pfx_is_new("DL1"),1);
-    assert_int_equal(pfx_is_new("UA3"),1);
+    assert_int_equal(pfx_is_new("DL1"), 1);
+    assert_int_equal(pfx_is_new("UA3"), 1);
 }
 
 void test_pfx_is_new(void **state) {
     add_some_prefixes();
-    assert_int_equal(pfx_is_new("DL1"),1);
+    assert_int_equal(pfx_is_new("DL1"), 1);
 }
 
 void test_pfx_is_not_new(void **state) {
     add_some_prefixes();
-    assert_int_equal(!pfx_is_new("DL0"),1);
-    assert_int_equal(!pfx_is_new("UA2"),1);
+    assert_int_equal(!pfx_is_new("DL0"), 1);
+    assert_int_equal(!pfx_is_new("UA2"), 1);
 }
 
 void test_pfx_is_new_on_band(void **state) {
     add_some_prefixes();
-    assert_int_equal(pfx_is_new_on("DL0", BANDINDEX_40),1);
-    assert_int_equal(pfx_is_new_on("UA2", BANDINDEX_40),1);
-    assert_int_equal(pfx_is_new_on("OE4", BANDINDEX_40),1);
+    assert_int_equal(pfx_is_new_on("DL0", BANDINDEX_40), 1);
+    assert_int_equal(pfx_is_new_on("UA2", BANDINDEX_40), 1);
+    assert_int_equal(pfx_is_new_on("OE4", BANDINDEX_40), 1);
 }
 
 void test_pfx_not_new_on_band(void **state) {
     add_some_prefixes();
-    assert_int_equal(!pfx_is_new_on("DL0", BANDINDEX_80),1);
-    assert_int_equal(!pfx_is_new_on("UA2", BANDINDEX_20),1);
-    assert_int_equal(!pfx_is_new_on("UA3", BANDINDEX_80),1);
-    assert_int_equal(!pfx_is_new_on("UA3", BANDINDEX_20),1);
+    assert_int_equal(!pfx_is_new_on("DL0", BANDINDEX_80), 1);
+    assert_int_equal(!pfx_is_new_on("UA2", BANDINDEX_20), 1);
+    assert_int_equal(!pfx_is_new_on("UA3", BANDINDEX_80), 1);
+    assert_int_equal(!pfx_is_new_on("UA3", BANDINDEX_20), 1);
 }
 
 void test_outOfBand(void **state) {

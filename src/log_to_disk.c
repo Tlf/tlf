@@ -83,7 +83,8 @@ void log_to_disk(int from_lan) {
 
 	restart_band_timer();
 
-	struct qso_t *qso = collect_qso_data(); //TODO: move this after store_qso() call below
+	struct qso_t *qso =
+	    collect_qso_data(); //TODO: move this after store_qso() call below
 	addcall(qso);		/* add call to dupe list */
 
 	score_qso(qso);
@@ -91,7 +92,7 @@ void log_to_disk(int from_lan) {
 	qso->logline = logline; /* remember formatted line in qso entry */
 
 	store_qso(logfile, logline);
-        //TODO: create a copy of current_qso
+	//TODO: create a copy of current_qso
 	g_ptr_array_add(qso_array, qso);
 
 	// send qso to other nodes......

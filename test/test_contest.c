@@ -25,7 +25,7 @@ int getctydata(char *checkcall) {
     return 0;
 }
 
-prefix_data *getctyinfo(char * call) {
+prefix_data *getctyinfo(char *call) {
     return NULL;
 }
 
@@ -54,7 +54,7 @@ void test_lookup_contest_ignore_case(void **state) {
     assert_int_equal(contest->id, CQWW);
 }
 
-void test_lookup_contest_not_found(void **state){
+void test_lookup_contest_not_found(void **state) {
     contest = lookup_contest("A23b9");
     assert_int_equal(contest->id, UNKNOWN);
 }

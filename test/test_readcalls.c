@@ -232,7 +232,8 @@ void test_add_to_worked(void **state) {
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
-    time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT); // string starts from date: 12-Jan-18 16:34
+    time_t ts = parse_time(QSO1 + 7,
+			   DATE_TIME_FORMAT); // string starts from date: 12-Jan-18 16:34
     assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_80], ts);
     assert_int_equal(get_nr_of_points(), 3);
     assert_int_equal(get_nr_of_mults(), 2);

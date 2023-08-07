@@ -212,7 +212,8 @@ void gettxinfo(void) {
 	    retval = hamlib_keyer_get_speed(&rig_cwspeed);
 
 	    if (retval == RIG_OK) {
-		if (GetCWSpeed() != rig_cwspeed) { // FIXME: doesn't work if rig speed is between the values from CW_SPEEDS
+		if (GetCWSpeed() !=
+			rig_cwspeed) { // FIXME: doesn't work if rig speed is between the values from CW_SPEEDS
 		    SetCWSpeed(rig_cwspeed);
 
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
