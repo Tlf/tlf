@@ -13,11 +13,14 @@ dnl Clean compilation output makes compiler warnings more visible
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # Checks for programs.
-AC_PROG_CC_C99
+# (autoconf 2.70 obsoletes AC_PROG_CC_C99, it's now done by AC_PROG_CC)
+m4_version_prereq([2.70],[AC_PROG_CC],[AC_PROG_CC_C99])
+if test x"$ac_cv_prog_cc_c99" = x"no"; then
+	AC_MSG_FAILURE([*** C99 support is mandatory])
+fi
 AC_PROG_INSTALL
 
 # Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h \
 	sys/ioctl.h sys/socket.h sys/time.h syslog.h termios.h])
 
