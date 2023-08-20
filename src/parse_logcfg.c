@@ -32,6 +32,7 @@
 
 #include "audio.h"
 #include "bandmap.h"
+#include "bands.h"
 #include "cabrillo_utils.h"
 #include "change_rst.h"
 #include "cw_utils.h"
@@ -51,6 +52,7 @@
 #include "startmsg.h"
 #include "tlf_curses.h"
 #include "searchlog.h"
+#include "tlf.h"
 
 bool exist_in_country_list();
 
@@ -320,6 +322,70 @@ static int cfg_tlfcolor(const cfg_arg_t arg) {
     return rc;
 }
 
+// returns 0 on error
+static unsigned int parse_frequency(char *input) {
+    char *value = g_strdup(input);
+    str_toupper(value);     // normalize to upper case
+    /* must be digits and an optional K suffix */
+    if (!g_regex_match_simple("^\\s*[0-9]+K?\\s*$",
+			      value, (GRegexCompileFlags)0, (GRegexMatchFlags)0)) {
+	g_free(value);
+	return 0;
+    }
+
+    int freq = atoi(value);
+    if (strchr(value, 'K') != NULL) {
+	freq *= 1000;
+    }
+
+    g_free(value);
+    return freq;
+}
+
+static int cfg_band(const cfg_arg_t arg) {
+    gchar *index = g_match_info_fetch(match_info, 1);
+    int band = atoi(index);
+    int bi = bandnr2index(band);     // get band index
+    g_free(index);
+
+    if (bi == BANDINDEX_OOB) {
+	error_details = g_strdup("invalid band");
+	return PARSE_ERROR;
+    }
+
+    int rc = PARSE_OK;
+    char **fields = g_strsplit(parameter, ",", 4);
+    unsigned int values[4];
+    for (int i  = 0; i < 4 && rc == PARSE_OK; ++i) {
+	if (fields[i] == NULL) {
+	    error_details = g_strdup("too few arguments");
+	    rc = PARSE_WRONG_PARAMETER;
+	    break;
+	}
+	values[i] = parse_frequency(fields[i]);
+	if (values[i] == 0) {
+	    error_details = g_strdup_printf("invalid frequency %s", fields[i]);
+	    rc = PARSE_WRONG_PARAMETER;
+	}
+	// values may not be decreasing
+	else if (i > 0 && values[i] < values[i - 1]) {
+	    error_details = g_strdup_printf("wrong frequency %s", fields[i]);
+	    rc = PARSE_WRONG_PARAMETER;
+	}
+    }
+
+    if (rc == PARSE_OK) {
+	bandcorner[bi][0] = values[0];
+	cwcorner[bi] = values[1];
+	ssbcorner[bi] = values[2];
+	bandcorner[bi][1] = values[3];
+    }
+
+    g_strfreev(fields);
+
+    return rc;
+}
+
 static int cfg_call(const cfg_arg_t arg) {
     int rc = cfg_string((cfg_arg_t) {
 	.char_p = my.call, .size = sizeof(my.call),
@@ -347,6 +413,24 @@ static int cfg_contest(const cfg_arg_t arg) {
 	return rc;
     }
     setcontest(contest);
+    return PARSE_OK;
+}
+
+static int cfg_operating_mode(const cfg_arg_t arg) {
+    char *str = g_ascii_strup(parameter, -1);
+    g_strstrip(str);
+
+    if (strcmp(str, "CQ") == 0) {
+	    cqmode = CQ;
+    } else if (strcmp(str, "S&P") == 0) {
+        cqmode = S_P;
+    } else {
+        g_free(str);
+        error_details = g_strdup("must be CQ or S&P");
+        return PARSE_WRONG_PARAMETER;
+    }
+
+    g_free(str);
     return PARSE_OK;
 }
 
@@ -396,12 +480,13 @@ static int cfg_bandmap(const cfg_arg_t arg) {
     cluster = MAP;
 
     /* init bandmap filtering */
-    bm_config.allband = 1;
-    bm_config.allmode = 1;
-    bm_config.showdupes = 1;
-    bm_config.skipdupes = 0;
+    bm_config.allband = true;
+    bm_config.allmode = true;
+    bm_config.showdupes = true;
+    bm_config.skipdupes = false;
     bm_config.lifetime = 900;
-    bm_config.onlymults = 0;
+    bm_config.onlymults = false;
+    bm_config.show_out_of_band = false;
 
     /* Allow configuration of bandmap display if keyword
      * is followed by a '='
@@ -415,15 +500,17 @@ static int cfg_bandmap(const cfg_arg_t arg) {
 	    char *ptr = bm_fields[0];
 	    while (*ptr != '\0') {
 		switch (*ptr++) {
-		    case 'B': bm_config.allband = 0;
+		    case 'B': bm_config.allband = false;
 			break;
-		    case 'M': bm_config.allmode = 0;
+		    case 'M': bm_config.allmode = false;
 			break;
-		    case 'D': bm_config.showdupes = 0;
+		    case 'D': bm_config.showdupes = false;
 			break;
-		    case 'S': bm_config.skipdupes = 1;
+		    case 'S': bm_config.skipdupes = true;
 			break;
-		    case 'O': bm_config.onlymults = 1;
+		    case 'O': bm_config.onlymults = true;
+			break;
+		    case 'X': bm_config.show_out_of_band = true;
 			break;
 		    default:
 			break;
@@ -1208,6 +1295,7 @@ static config_t logcfg_configs[] = {
     {"QS_VKSPM",                CFG_MESSAGE(qtc_phsend_message, SP_TU_MSG) },
 
     {"TLFCOLOR([1-6])",  NEED_PARAM, cfg_tlfcolor},
+    {"BAND_([0-9]+)",  NEED_PARAM, cfg_band},
 
     {"LAN_PORT",        CFG_INT(lan_port, 1000, INT32_MAX)},
     {"TIME_OFFSET",     CFG_INT(timeoffset, -23, 23)},
@@ -1235,7 +1323,6 @@ static config_t logcfg_configs[] = {
     {"CLUSTER",         CFG_INT_CONST(cluster, CLUSTER)},
     {"SSBMODE",         CFG_INT_CONST(trxmode, SSBMODE)},
     {"RIGPTT",          CFG_INT_CONST(rigptt, CAT_PTT_WANTED)},
-    {"FOLLOW_MODE",     CFG_BOOL(follow_mode)},
 
     {"RIGCONF",         CFG_STRING_STATIC(rigconf, 80)},
     {"LOGFILE",         CFG_STRING_STATIC(logfile, 120)},
@@ -1302,6 +1389,7 @@ static config_t logcfg_configs[] = {
     {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
     {"RESEND_CALL",         NEED_PARAM, cfg_resend_call},
     {"GENERIC_MULT",        NEED_PARAM, cfg_generic_mult},
+    {"OPERATING_MODE",      NEED_PARAM, cfg_operating_mode},
 
     {NULL}  // end marker
 };

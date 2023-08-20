@@ -148,12 +148,12 @@ int changepars(void) {
     noecho();
 
     for (k = 0; parameterstring[k]; k++)
-		parameterstring[k] = toupper(parameterstring[k]);
+	parameterstring[k] = toupper(parameterstring[k]);
 
     for (i = 0; i <= maxpar; i++) {
-		if (strncmp(parameterstring, parameters[i], 3) == 0) {
-			break;
-		}
+	if (strncmp(parameterstring, parameters[i], 3) == 0) {
+	    break;
+	}
     }
 
     switch (i) {

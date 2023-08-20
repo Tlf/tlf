@@ -203,9 +203,7 @@ void gettxinfo(void) {
 
 	if (bandinx != oldbandinx) {	// band change on trx
 	    oldbandinx = bandinx;
-		if (follow_mode) {
-			handle_trx_bandswitch((int) freq);
-		}
+	    handle_trx_bandswitch((int) freq);
 	}
 
 	/* read speed from rig */
@@ -299,32 +297,32 @@ static void handle_trx_bandswitch(const freq_t freq) {
 
     send_bandswitch(freq);
 
-	rmode_t mode = RIG_MODE_NONE;           // default: no change
-	pbwidth_t width = TLF_DEFAULT_PASSBAND; // passband width, in Hz
+    rmode_t mode = RIG_MODE_NONE;           // default: no change
+    pbwidth_t width = TLF_DEFAULT_PASSBAND; // passband width, in Hz
 
-	if (trxmode == SSBMODE) {
-		mode = get_ssb_mode();
-	} else if (trxmode == DIGIMODE) {
-		if ((rigmode & (RIG_MODE_LSB | RIG_MODE_USB | RIG_MODE_RTTY | RIG_MODE_RTTYR))
-			!= rigmode) {
-			mode = RIG_MODE_LSB;
-		}
-	} else {
-		mode = RIG_MODE_CW;
-		width = get_cw_bandwidth();
+    if (trxmode == SSBMODE) {
+	mode = get_ssb_mode();
+    } else if (trxmode == DIGIMODE) {
+	if ((rigmode & (RIG_MODE_LSB | RIG_MODE_USB | RIG_MODE_RTTY | RIG_MODE_RTTYR))
+		!= rigmode) {
+	    mode = RIG_MODE_LSB;
 	}
+    } else {
+	mode = RIG_MODE_CW;
+	width = get_cw_bandwidth();
+    }
 
-	if (mode == RIG_MODE_NONE) {
-		return;     // no change was requested
-	}
+    if (mode == RIG_MODE_NONE) {
+	return;     // no change was requested
+    }
 
     pthread_mutex_lock(&rig_lock);
     int retval = rig_set_mode(my_rig, RIG_VFO_CURR, mode, width);
     pthread_mutex_unlock(&rig_lock);
 
     if (retval != RIG_OK) {
-		TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
-	}
+	TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
+    }
 
 }
 

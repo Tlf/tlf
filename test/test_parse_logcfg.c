@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 
 #include "../src/audio.h"
+#include "../src/bands.h"
 #include "../src/parse_logcfg.h"
 #include "../src/lancode.h"
 #include "../src/bandmap.h"
@@ -189,8 +190,8 @@ int setup_default(void **state) {
     fixedmult = 0.0;
     exclude_multilist_type = EXCLUDE_NONE;
     rigptt = 0;
-    follow_mode = true;
     minitest = 0;
+    cqmode = CQ;
 
     setcontest(QSO_MODE);
 
@@ -327,31 +328,31 @@ void test_keyer_device_too_long(void **state) {
 
 void test_vk_play_cmd(void **state) {
     int rc = call_parse_logcfg("VK_PLAY_COMMAND= sox -q $1 -d\n");
-    assert_int_equal(rc,0);
+    assert_int_equal(rc, 0);
     assert_string_equal(vk_play_cmd, "sox -q $1 -d");
 }
 
 void test_vk_record_cmd(void **state) {
     int rc = call_parse_logcfg("VK_RECORD_COMMAND= sox -r 8000 -q -d $1 &\n");
-    assert_int_equal(rc,0);
+    assert_int_equal(rc, 0);
     assert_string_equal(vk_record_cmd, "sox -r 8000 -q -d $1 &");
 }
 
 void test_soundlog_play_cmd(void **state) {
     int rc = call_parse_logcfg("SOUNDLOG_PLAY_COMMAND= sox -q $1 -d\n");
-    assert_int_equal(rc,0);
+    assert_int_equal(rc, 0);
     assert_string_equal(soundlog_play_cmd, "sox -q $1 -d");
 }
 
 void test_soundlog_record_cmd(void **state) {
     int rc = call_parse_logcfg("SOUNDLOG_RECORD_COMMAND= ./soundlog");
-    assert_int_equal(rc,0);
+    assert_int_equal(rc, 0);
     assert_string_equal(soundlog_record_cmd, "./soundlog");
 }
 
 void test_soundlog_directory(void **state) {
     int rc = call_parse_logcfg("SOUNDLOG_DIRECTORY= ~/soundlogs");
-    assert_int_equal(rc,0);
+    assert_int_equal(rc, 0);
     assert_string_equal(soundlog_dir, "~/soundlogs");
 }
 
@@ -397,7 +398,7 @@ void test_usepartials_wrong_arg(void **state) {
     int rc = call_parse_logcfg("USEPARTIALS=abc\n");
     assert_int_equal(rc, PARSE_ERROR);
     assert_string_equal(showmsg_spy,
-                       "Wrong parameter format for keyword 'USEPARTIALS'. See man page.\n");
+			"Wrong parameter format for keyword 'USEPARTIALS'. See man page.\n");
 
 }
 
@@ -433,7 +434,6 @@ static bool_true_t bool_trues[] = {
     {"IGNOREDUPE", &ignoredupe},
     {"USE_CONTINENTLIST_ONLY", &continentlist_only},
     {"RADIO_CONTROL", &trx_control},
-    {"FOLLOW_MODE", &follow_mode},
     {"PORTABLE_MULT_2", &portable_x2},
     {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
     {"WYSIWYG_ONCE", &wysiwyg_once},
@@ -917,12 +917,11 @@ void test_ssbmode(void **state) {
     assert_int_equal(trxmode, SSBMODE);
 }
 
-void test_follow_mode(void **state) {
-    int rc = call_parse_logcfg("FOLLOW_MODE\n");
-    assert_int_equal(rc, PARSE_OK);
-    assert_true(follow_mode);
+void test_operating_mode(void **state) {
+    int rc = call_parse_logcfg("OPERATING_MODE=S&P\n");
+    assert_int_equal(rc, 0);
+    assert_int_equal(cqmode, S_P);
 }
-
 
 // TLFCOLOR1..6
 void test_tlfcolorn(void **state) {
@@ -986,7 +985,7 @@ void test_bandmap(void **state) {
     int rc = call_parse_logcfg("BANDMAP\n");
     assert_int_equal(rc, 0);
     assert_int_equal(cluster, MAP);
-    assert_int_equal(bm_config.showdupes, 1);
+    assert_true(bm_config.showdupes);
     assert_int_equal(bm_config.lifetime, 900);
 }
 
@@ -994,7 +993,7 @@ void test_bandmap_d100(void **state) {
     int rc = call_parse_logcfg("BANDMAP=D,100\n");
     assert_int_equal(rc, 0);
     assert_int_equal(cluster, MAP);
-    assert_int_equal(bm_config.showdupes, 0);
+    assert_false(bm_config.showdupes);
     assert_int_equal(bm_config.lifetime, 100);
 }
 

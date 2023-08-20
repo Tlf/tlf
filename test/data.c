@@ -413,8 +413,6 @@ char lan_logline[256];	    // defined in log_to_disk.c
 int resend_call;
 char sentcall[20] = "";     // storing the call what already sent
 
-bool follow_mode;
-
 #include <curses.h>
 NCURSES_EXPORT_VAR(WINDOW *) stdscr = NULL;
 int wattr_on(WINDOW *win, attr_t attrs, void *opts) {
