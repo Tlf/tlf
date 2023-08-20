@@ -32,6 +32,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "globalvars.h"
 #include "get_time.h"
@@ -94,18 +95,26 @@ struct linedata_t *parse_logline(char *buffer) {
  * \return ptr to new qso record (or NULL if eof)
  */
 struct linedata_t *get_next_record(FILE *fp) {
-
-    char buffer[160];
+    char *buffer;
+    size_t buffer_len;
     struct linedata_t *ptr;
+    int read;
 
-    while ((fgets(buffer, sizeof(buffer), fp)) != NULL) {
-
-	if (!log_is_comment(buffer)) {
-	    ptr = parse_logline(buffer);
-	    return ptr;
+    while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
+	if (buffer_len > 0) {
+	    if (errno == ENOMEM) {
+		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		perror("RuntimeError: ");
+		exit(EXIT_FAILURE);
+	    }
+	    if (!log_is_comment(buffer)) {
+		ptr = parse_logline(buffer);
+		return ptr;
+	    }
 	}
     }
-
+    if (buffer != NULL)
+	free(buffer);
     return NULL;
 }
 
@@ -118,19 +127,19 @@ struct linedata_t *get_next_record(FILE *fp) {
  * \return ptr to new qtc record (or NULL if eof)
  */
 struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
-
-    char buffer[100];
+    char *buffer;
+    size_t buffer_len;
     char *tmp;
     char *sp;
     struct linedata_t *ptr;
-    int pos, shift;
+    int pos, shift, read;
     struct tm date_n_time;
 
     if (fp == NULL) {
 	return NULL;
     }
 
-    if (fgets(buffer, sizeof(buffer), fp) == NULL) {
+    if ((read = getline(&buffer, &buffer_len, fp)) == -1) {
 	return NULL;
     }
 
@@ -180,7 +189,6 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
     strptime(strtok_r(NULL, " \t", &sp), TIME_FORMAT, &date_n_time);
 
     ptr->qsots = timegm(&date_n_time);
-
     ptr->year = date_n_time.tm_year + 1900;	/* convert to
 							1968..2067 */
     ptr->month = date_n_time.tm_mon + 1;	/* tm_mon = 0..11 */
@@ -210,6 +218,8 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
 	ptr->freq = 0.;
     }
 
+    if (buffer != NULL)
+        free(buffer);
     return ptr;
 }
 

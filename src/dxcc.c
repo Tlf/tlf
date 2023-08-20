@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 
 #include <glib.h>
 #include <math.h>
@@ -332,8 +333,10 @@ void dxcc_add(char *dxcc_line) {
 /** load cty database from filename */
 int load_ctydata(char *filename) {
     FILE *fd;
-    char buf[181] = "";
+    char *buf = NULL;
+    size_t buf_len;
     char *loc;
+    int read;
 
     if ((fd = fopen(filename, "r")) == NULL)
 	return -1;
@@ -344,28 +347,32 @@ int load_ctydata(char *filename) {
     // set default for empty country == country nr 0
     dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
-    while (fgets(buf, sizeof(buf), fd) != NULL) {
+    while ((read = getline(&buf, &buf_len, fd)) != -1) {
+	if (buf_len > 0) {
+	    if (errno == ENOMEM) {
+		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		perror("RuntimeError: ");
+		exit(EXIT_FAILURE);
+	    }
+	    g_strchomp(buf); 	/* drop CR and/or NL and */
+	    if (*buf == '\0')	/* ignore empty lines */
+		continue;
 
-	g_strchomp(buf); 	/* drop CR and/or NL and */
-	if (*buf == '\0')	/* ignore empty lines */
-	    continue;
-
-	if (buf[0] != ' ') {	// data line
-
-	    dxcc_add(buf);
-
-	} else {		// prefix line
-	    loc = strtok(buf, " ,;");
-	    while (loc != NULL) {
-
-		prefix_add(loc);
-
-		loc = strtok(NULL, " ,;");
+	    if (buf[0] != ' ') {	// data line
+		dxcc_add(buf);
+	    } else {		// prefix line
+		loc = strtok(buf, " ,;");
+		while (loc != NULL) {
+		    prefix_add(loc);
+		    loc = strtok(NULL, " ,;");
+		}
 	    }
 	}
     }
+
+    if (buf != NULL)
+	free(buf);
+
     fclose(fd);
     return 0;
 }
-
-

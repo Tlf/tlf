@@ -23,11 +23,11 @@
  *
  *--------------------------------------------------------------*/
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "addmult.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
@@ -106,7 +106,8 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 
     /* -------------- unique call multi -------------- */
     else if (unique_call_multi != MULT_NONE) {
-	mult_index = remember_multi(qso->call, qso->bandindex, unique_call_multi, check_only);
+	mult_index = remember_multi(qso->call, qso->bandindex, unique_call_multi,
+				    check_only);
     }
 
     /* ------------ grid mult (per band) ------------- */
@@ -121,7 +122,6 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 				    check_only);
     }
 
-
     free(stripped_comment);
     return mult_index;
 }
@@ -133,8 +133,6 @@ int addmult(struct qso_t *qso) {
 int check_mult(struct qso_t *qso) {
     return addmult_internal(qso, true); // check_only mode
 }
-
-
 
 /* -------------------------------------------------------------------*/
 
@@ -194,7 +192,6 @@ void addmult_lan(void) {
     }
 
 }
-
 
 /* lookup n-th position in list of possible mults and
  * return pointer to data structure */
@@ -269,7 +266,6 @@ gint	cmp_size(char **a, char **b) {
     return g_strcmp0(t1->name, t2->name);
 }
 
-
 /* parse a mult line and add data to database
  *
  * multiline consists of either
@@ -336,15 +332,16 @@ void add_mult_line(char *line) {
 int init_and_load_multipliers(void) {
 
     FILE *cfp;
-    char s_inputbuffer[2000] = "";
+    char *s_inputbuffer = NULL;
+    size_t s_inputbuffer_len;
     char *mults_location;
+    ssize_t read;
 
     if (mults_possible) {
 	/* free old array if exists */
 	g_ptr_array_free(mults_possible, TRUE);
     }
     mults_possible = g_ptr_array_new_with_free_func(free_possible_mult);
-
 
     if (strlen(multsfile) == 0) {
 	return 0;
@@ -364,28 +361,33 @@ int init_and_load_multipliers(void) {
 	return 0;       // couldn't open file
     }
 
-    while (fgets(s_inputbuffer, sizeof(s_inputbuffer), cfp) != NULL) {
+    while ((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
+	if (s_inputbuffer_len > 0) {
+	    if (errno == ENOMEM) {
+		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		perror("RuntimeError: ");
+		exit(EXIT_FAILURE);
+	    }
+	    /* strip leading and trailing whitespace */
+	    g_strstrip(s_inputbuffer);
 
-	/* strip leading and trailing whitespace */
-	g_strstrip(s_inputbuffer);
+	    /* drop comments starting with '#' and empty lines */
+	    if (*s_inputbuffer == '#' || *s_inputbuffer == '\0') {
+		continue;
+	    }
 
-	/* drop comments starting with '#' and empty lines */
-	if (*s_inputbuffer == '#' || *s_inputbuffer == '\0') {
-	    continue;
+	    add_mult_line(s_inputbuffer);
 	}
-
-	add_mult_line(s_inputbuffer);
-
     }
 
     fclose(cfp);
-
+    if (s_inputbuffer != NULL)
+	free(s_inputbuffer);
     /* do not rely on the order in the mult file but sort it here */
     g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);
 
     return get_mult_count();
 }
-
 
 /** initialize mults scoring
  *
