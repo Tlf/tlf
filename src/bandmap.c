@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #include <ctype.h>
 #include <pthread.h>
 #include <string.h>
@@ -25,6 +24,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <math.h>
+#include <errno.h>
 
 #include "bandmap.h"
 #include "qtcutil.h"
@@ -67,7 +67,6 @@ GList *allspots = NULL;
 /** \brief sorted list of filtered spots
  */
 GPtrArray *spots;
-
 
 bm_config_t bm_config = {
     .allband = true,    /* show all bands */
@@ -129,8 +128,10 @@ void bmdata_write_file() {
 void bmdata_read_file() {
     FILE *fp;
     struct timeval tv;
-    int timediff, last_bm_save_time, fc;
-    char line[50], *token;
+    int timediff, last_bm_save_time, fc, read;
+    char *line;
+    char *token;
+    size_t line_len;
     static bool bmdata_parsed = false;
 
     if (bmdata_parsed)
@@ -138,56 +139,72 @@ void bmdata_read_file() {
 
     if ((fp = fopen(".bmdata.dat", "r")) != NULL) {
 	bmdata_parsed = true;
-	if (fgets(line, 50, fp)) {
+	if ((read = getline(&line, &line_len, fp)) != -1) {
 	    sscanf(line, "%d", &last_bm_save_time);
 	    gettimeofday(&tv, NULL);
 	    timediff = (int)tv.tv_sec - last_bm_save_time;
 	    if (timediff < 0)
 		timediff = 0;
 
-	    while (fgets(line, 50, fp)) {
-		spot *entry = g_new0(spot, 1);
-		fc = 0;
-		token = strtok(line, ";");
-		while (token != NULL) {
-		    switch (fc) {
-			case 0:		entry -> call = g_strdup(token);
-			    break;
-			case 1:		sscanf(token, "%d", &entry->freq);
-			    break;
-			case 2:		sscanf(token, "%hhd", &entry->mode);
-			    break;
-			case 3:	        // re-evaluate band index
-			    entry->bandindex = freq2bandindex(entry->freq);
-			    break;
-			case 4:		sscanf(token, "%c", &entry->node);
-			    break;
-			case 5:		sscanf(token, "%u", &entry->timeout);
-			    break;
-			case 6:     // dupe is transient, not read back
-                            entry->dupe = false;
-			    break;
-			case 7:		sscanf(token, "%d", &entry->cqzone);
-			    break;
-			case 8:		sscanf(token, "%d", &entry->ctynr);
-			    break;
-			case 9:		entry->pfx = g_strdup(token);
-			    break;
-			case 10:    // mult is transient, not read back
-			    entry->mult = false;
-			    break;
+	    while ((read = getline(&line, &line_len, fp)) != -1) {
+		if (line_len > 0) {
+		    if (errno == ENOMEM) {
+			fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
 		    }
-		    fc++;
-		    token = strtok(NULL, ";");
-		}
-		if (entry->timeout > timediff) {
-		    entry->timeout -= timediff;	/* remaining time */
-		    allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
-		} else {
-		    free_spot(entry);
+
+		    spot *entry = g_new0(spot, 1);
+		    fc = 0;
+		    token = strtok(line, ";");
+		    while (token != NULL) {
+			switch (fc) {
+			    case 0:		entry -> call = g_strdup(token);
+				break;
+			    case 1:		sscanf(token, "%d", &entry->freq);
+				break;
+			    case 2:		sscanf(token, "%hhd", &entry->mode);
+				break;
+			    case 3:	        // re-evaluate band index
+				entry->bandindex = freq2bandindex(entry->freq);
+				break;
+			    case 4:		sscanf(token, "%c", &entry->node);
+				break;
+			    case 5:		sscanf(token, "%u", &entry->timeout);
+				break;
+			    case 6:     // dupe is transient, not read back
+				entry->dupe = false;
+				break;
+			    case 7:		sscanf(token, "%d", &entry->cqzone);
+				break;
+			    case 8:		sscanf(token, "%d", &entry->ctynr);
+				break;
+			    case 9:		entry->pfx = g_strdup(token);
+				break;
+			    case 10:    // mult is transient, not read back
+				entry->mult = false;
+				break;
+			}
+			fc++;
+			token = strtok(NULL, ";");
+		    }
+
+		    if (entry->timeout > timediff) {
+			entry->timeout -= timediff;	/* remaining time */
+			allspots = g_list_insert_sorted(allspots, entry, (GCompareFunc)cmp_freq);
+		    } else {
+			free_spot(entry);
+		    }
 		}
 	    }
+	} else {
+	    perror("RuntimeError: ");
+	    exit(EXIT_FAILURE);
 	}
+
+	if (line != NULL)
+	    free(line);
+
 	fclose(fp);
     }
 }
@@ -217,7 +234,6 @@ void bm_init() {
     bm_initialized = true;
 }
 
-
 /** \brief guess mode based on frequency
  *
  * \return CWMODE, DIGIMODE or SSBMODE
@@ -230,8 +246,6 @@ int freq2mode(freq_t freq, int band) {
     else
 	return SSBMODE;
 }
-
-
 
 /** \brief add DX spot message to bandmap
  *
@@ -259,7 +273,6 @@ void bm_add(char *s) {
     bandmap_addspot(call, atof(line + 16) * 1000, node);
     g_free(line);
 }
-
 
 /* compare functions to search in list */
 gint	cmp_call(spot *ldata, char *call) {
@@ -413,10 +426,8 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	free_spot(olddata);
     }
 
-
     pthread_mutex_unlock(&bm_mutex);
 }
-
 
 void bandmap_age() {
     /*
@@ -446,7 +457,6 @@ void bandmap_age() {
     pthread_mutex_unlock(&bm_mutex);
 }
 
-
 /** check if call is new multi
  *
  * \return true if new multi
@@ -463,7 +473,6 @@ bool bm_ismulti(spot *data) {
 
     return general_ismulti(data);
 }
-
 
 /** check if call is a dupe
  *
@@ -498,7 +507,6 @@ bool bm_isdupe(char *call, int band) {
 
     return false;
 }
-
 
 void bm_show_info() {
 
@@ -543,7 +551,6 @@ void bm_show_info() {
 
     move(cury, curx);			/* reset cursor */
 }
-
 
 /* helper function for bandmap display
  * mark entries according to age, source and worked state. Mark new multis
@@ -624,7 +631,6 @@ void show_spot(spot *data) {
     g_free(temp);
 }
 
-
 /* helper function for bandmap display
  * shows spot on actual working frequency
  */
@@ -638,7 +644,6 @@ void show_spot_on_qrg(spot *data) {
     printw("%-12s", temp);
     g_free(temp);
 }
-
 
 /* helper function for bandmap display
  * advance to next spot position
@@ -704,7 +709,6 @@ void filter_spots() {
 	g_ptr_array_free(spots, TRUE);		/* free spot array */
     /* allocate new one */
     spots = g_ptr_array_new_full(128, (GDestroyNotify)free_spot);
-
 
     for (list = allspots; list; list = list->next)	{
 	data = list->data;
@@ -905,7 +909,6 @@ void bandmap_show() {
     refreshp();
 }
 
-
 /** allow control of bandmap features
  */
 void bm_menu() {
@@ -1084,7 +1087,6 @@ char *qtc_format(char *call) {
     }
     return g_strdup(tcall);
 }
-
 
 /** Search filtered bandmap for a spot near the given frequency
  *

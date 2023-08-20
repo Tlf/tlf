@@ -29,6 +29,7 @@ static void check_rules(const gchar *dirname, gchar *path) {
     printf("++ %s\n", dirname);
 
     gchar *cmd = g_strdup_printf("cd %s; ../run_tlf.py", path);
+    printf(">>> %s\n", cmd);
     int rc = WEXITSTATUS(system(cmd));
     g_free(cmd);
 

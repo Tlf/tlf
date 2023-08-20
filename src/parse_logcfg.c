@@ -20,7 +20,6 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 */
 
-
 #include <ctype.h>
 #include <fcntl.h>
 #include <hamlib/rig.h>
@@ -110,20 +109,32 @@ static bool isCommentLine(char *buffer) {
 
 int parse_configfile(FILE *fp) {
     int status = PARSE_OK;
-    char buffer[2000];
+    char *buffer;
+    size_t buffer_len;
+    ssize_t read;
 
-    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
-	g_strchug(buffer);              // remove leading space
-	if (isCommentLine(buffer)) {    // skip comments and empty lines
-	    continue;
-	}
+    while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
+	if (buffer_len > 0) {
+	    if (errno == ENOMEM) {
+		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		perror("RuntimeError: ");
+		exit(EXIT_FAILURE);
+	    }
 
-	status = parse_logcfg(buffer);
-	if (status != PARSE_OK) {
-	    break;
+	    g_strchug(buffer);              // remove leading space
+	    if (isCommentLine(buffer)) {    // skip comments and empty lines
+		continue;
+	    }
+
+	    status = parse_logcfg(buffer);
+	    if (status != PARSE_OK) {
+		break;
+	    }
 	}
     }
 
+    if (buffer != NULL)
+	free(buffer);
     return status;
 }
 
@@ -421,13 +432,13 @@ static int cfg_operating_mode(const cfg_arg_t arg) {
     g_strstrip(str);
 
     if (strcmp(str, "CQ") == 0) {
-	    cqmode = CQ;
+	cqmode = CQ;
     } else if (strcmp(str, "S&P") == 0) {
-        cqmode = S_P;
+	cqmode = S_P;
     } else {
-        g_free(str);
-        error_details = g_strdup("must be CQ or S&P");
-        return PARSE_WRONG_PARAMETER;
+	g_free(str);
+	error_details = g_strdup("must be CQ or S&P");
+	return PARSE_WRONG_PARAMETER;
     }
 
     g_free(str);
@@ -450,7 +461,6 @@ static int cfg_bandoutput(const cfg_arg_t arg) {
 	error_details = g_strdup_printf("must be %d digits", NBANDS);
 	rc = PARSE_WRONG_PARAMETER;
     }
-
 
     g_free(str);
 
@@ -526,7 +536,6 @@ static int cfg_bandmap(const cfg_arg_t arg) {
 		/* aging called each second */
 		bm_config.lifetime = lifetime;
 	}
-
 
 	g_strfreev(bm_fields);
     }
@@ -660,7 +669,9 @@ static int cfg_dx_n_sections(const cfg_arg_t arg) {
 }
 
 static int cfg_countrylist(const cfg_arg_t arg) {
-    char buffer[2000];
+    char *buffer;
+    size_t buffer_len = 2000;
+    ssize_t read;
     char *country_list_raw = NULL;  // will point somewhere into buffer
     FILE *fp;
 
@@ -672,34 +683,42 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     If the input was not a file name we directly copy it into
     country_list_raw (must not have a preceding contest name). */
 
-    g_strlcpy(buffer, parameter, sizeof(buffer));
+    buffer = (char *)calloc(buffer_len, sizeof(char));
+    g_strlcpy(buffer, parameter, buffer_len);
     g_strchomp(buffer);	/* drop trailing whitespace */
 
+    printf("%s\n", buffer);
     if ((fp = fopen(buffer, "r")) != NULL) {
-
 	char *prefix = g_strdup_printf("%s:", whichcontest);
 
-	while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+	while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
+	    if (buffer_len > 0) {
+		if (errno == ENOMEM) {
+		    fprintf(stderr, "Error in: %s:%d\n", __FILE__, __LINE__);
+		    perror("RuntimeError: ");
+		    exit(EXIT_FAILURE);
+		}
+		g_strstrip(buffer);   /* no leading/trailing whitespace*/
 
-	    g_strstrip(buffer);   /* no leading/trailing whitespace*/
-
-	    /* accept only a line starting with the contest name
-	     * (CONTEST=) followed by ':' */
-	    if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
-		country_list_raw = buffer + strlen(prefix); // skip prefix
-		break;
+		/* accept only a line starting with the contest name
+		* (CONTEST=) followed by ':' */
+		if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
+		    country_list_raw = buffer + strlen(prefix); // skip prefix
+		    break;
+		}
 	    }
 	}
 
 	g_free(prefix);
 	fclose(fp);
+
     } else {	/* not a file */
-	char *colon = index(buffer, ':');
-	if (colon != NULL) {
-	    country_list_raw = colon + 1;   // skip optional contest name
-	} else {
-	    country_list_raw = buffer;
-	}
+        char *colon = strchr(buffer, ':');
+        if (colon != NULL) {
+            country_list_raw = colon + 1;   // skip optional contest name
+        } else {
+            country_list_raw = buffer;
+        }
     }
 
     if (country_list_raw == NULL) {
@@ -739,12 +758,16 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     getpx(my.call);
     mult_side = exist_in_country_list();
     setcontest(whichcontest);
+    if(buffer != NULL)
+        free(buffer);
 
     return PARSE_OK;
 }
 
 static int cfg_continentlist(const cfg_arg_t arg) {
-    char buffer[2000];
+    char *buffer;
+    size_t buffer_len = 2000;
+    int read;
     char *cont_multiplier_list = NULL;  // will point somewhere into buffer
     FILE *fp;
 
@@ -759,23 +782,26 @@ static int cfg_continentlist(const cfg_arg_t arg) {
        The last step is to parse the multipliers_list into an array
        (continent_multiplier_list) for future use.
     */
-
-    g_strlcpy(buffer, parameter, sizeof(buffer));
+    buffer = (char *)calloc(buffer_len, sizeof(char));
+    g_strlcpy(buffer, parameter, buffer_len);
     g_strchomp(buffer);	/* drop trailing whitespace */
 
     if ((fp = fopen(buffer, "r")) != NULL) {
-
 	char *prefix = g_strdup_printf("%s:", whichcontest);
-
-	while (fgets(buffer, sizeof(buffer), fp) != NULL) {
-
-	    g_strstrip(buffer);   /* no leading/trailing whitespace*/
-
-	    /* accept only a line starting with the contest name
-	     * (CONTEST=) followed by ':' */
-	    if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
-		cont_multiplier_list = buffer + strlen(prefix); // skip prefix
-		break;
+	while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
+	    if (buffer_len > 0) {
+		if (errno == ENOMEM) {
+		    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		    perror("RuntimeError: ");
+		    exit(EXIT_FAILURE);
+		}
+		g_strstrip(buffer);   /* no leading/trailing whitespace*/
+		/* accept only a line starting with the contest name
+		* (CONTEST=) followed by ':' */
+		if (strncasecmp(buffer, prefix, strlen(prefix)) == 0) {
+		    cont_multiplier_list = buffer + strlen(prefix); // skip prefix
+		    break;
+		}
 	    }
 	}
 
@@ -824,7 +850,8 @@ static int cfg_continentlist(const cfg_arg_t arg) {
     }
 
     setcontest(whichcontest);
-
+    if (buffer != NULL)
+        free(buffer);
     return PARSE_OK;
 }
 
@@ -1394,7 +1421,6 @@ static config_t logcfg_configs[] = {
     {NULL}  // end marker
 };
 
-
 static int check_match(const config_t *cfg, const char *keyword) {
     gchar *pattern = g_strdup_printf("^%s$", cfg->regex);
     GRegex *regex = g_regex_new(pattern, 0, 0, NULL);
@@ -1474,9 +1500,7 @@ static int apply_config(const char *keyword, const char *param,
 }
 ////////////////////
 
-
 int parse_logcfg(char *inputbuffer) {
-
     /* split the inputline at '=' to max 2 elements
      *
      * leave the components in fields[0] (keyword) and
@@ -1510,7 +1534,6 @@ int parse_logcfg(char *inputbuffer) {
     g_strfreev(fields);
     return result;
 }
-
 
 /** Complain about problems in configuration
  *

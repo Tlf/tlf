@@ -1,23 +1,23 @@
 /*
- * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
- *               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
- *               2018           Thomas Beierlein - <dl1jbe@darc.de>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
- */
+* Tlf - contest logging program for amateur radio operators
+* Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
+*               2013           Ervin Hegedüs - HA2OS <airween@gmail.com>
+*               2018           Thomas Beierlein - <dl1jbe@darc.de>
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
+*/
 /* ------------------------------------------------------------
  *        Search log for calls / bands  /  countries
  *
@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "dxcc.h"
 #include "err_utils.h"
@@ -747,7 +748,9 @@ int load_callmaster(void) {
 
     FILE *cfp;
     char *callmaster_location;
-    char s_inputbuffer[186] = "";
+    char *s_inputbuffer = NULL;
+    size_t s_inputbuffer_len;
+    int read;
 
     init_callmaster();
 
@@ -765,41 +768,49 @@ int load_callmaster(void) {
 
     GHashTable *callset = g_hash_table_new(g_str_hash, g_str_equal);
 
-    while (fgets(s_inputbuffer, 85, cfp) != NULL) {
+    while ((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
+	if (s_inputbuffer_len > 0) {
+	    if (errno == ENOMEM) {
+		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		perror("RuntimeError: ");
+		exit(EXIT_FAILURE);
+	    }
+	    g_strstrip(s_inputbuffer);
 
-	g_strstrip(s_inputbuffer);
+	    /* skip comment lines and calls shorter than 3 chars */
+	    if (s_inputbuffer[0] == '#' || strlen(s_inputbuffer) < 3) {
+		continue;
+	    }
 
-	/* skip comment lines and calls shorter than 3 chars */
-	if (s_inputbuffer[0] == '#' || strlen(s_inputbuffer) < 3) {
-	    continue;
-	}
+	    /* store version */
+	    if (strlen(s_inputbuffer) == 11 && strncmp(s_inputbuffer, "VER", 3) == 0) {
+		strcpy(callmaster_version, s_inputbuffer);      // save it
+	    }
 
-	/* store version */
-	if (strlen(s_inputbuffer) == 11 && strncmp(s_inputbuffer, "VER", 3) == 0) {
-	    strcpy(callmaster_version, s_inputbuffer);      // save it
-	}
+	    char *call = g_ascii_strup(s_inputbuffer, 11);
 
-	char *call = g_ascii_strup(s_inputbuffer, 11);
+	    if (CONTEST_IS(ARRL_SS)) {
+		/* keep only NA stations */
+		if (strchr("AKWVCN", call[0]) == NULL) {
+		    g_free(call);
+		    continue;
+		}
+	    }
 
-	if (CONTEST_IS(ARRL_SS)) {
-	    /* keep only NA stations */
-	    if (strchr("AKWVCN", call[0]) == NULL) {
+	    if (g_hash_table_contains(callset, call)) { // already have this call
 		g_free(call);
 		continue;
 	    }
+
+	    g_hash_table_add(callset, call);
+	    g_ptr_array_add(callmaster, call);
 	}
-
-	if (g_hash_table_contains(callset, call)) { // already have this call
-	    g_free(call);
-	    continue;
-	}
-
-	g_hash_table_add(callset, call);
-
-	g_ptr_array_add(callmaster, call);
     }
 
     g_hash_table_destroy(callset);
+
+    if (s_inputbuffer != NULL)
+	free(s_inputbuffer);
 
     fclose(cfp);
     return callmaster->len;
