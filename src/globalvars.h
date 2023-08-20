@@ -84,6 +84,7 @@ extern char logline_edit[5][LOGLINELEN + 1];
 
 extern char band[NBANDS][4];
 extern freq_t bandfrequency[NBANDS];
+extern bool follow_mode;
 
 extern struct tm *time_ptr;
 
