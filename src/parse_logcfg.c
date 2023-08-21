@@ -109,7 +109,7 @@ static bool isCommentLine(char *buffer) {
 
 int parse_configfile(FILE *fp) {
     int status = PARSE_OK;
-    char *buffer;
+    char *buffer = NULL;
     size_t buffer_len;
     ssize_t read;
 
@@ -669,7 +669,7 @@ static int cfg_dx_n_sections(const cfg_arg_t arg) {
 }
 
 static int cfg_countrylist(const cfg_arg_t arg) {
-    char *buffer;
+    char *buffer = NULL;
     size_t buffer_len = 2000;
     ssize_t read;
     char *country_list_raw = NULL;  // will point somewhere into buffer
@@ -765,7 +765,7 @@ static int cfg_countrylist(const cfg_arg_t arg) {
 }
 
 static int cfg_continentlist(const cfg_arg_t arg) {
-    char *buffer;
+    char *buffer = NULL;
     size_t buffer_len = 2000;
     int read;
     char *cont_multiplier_list = NULL;  // will point somewhere into buffer
