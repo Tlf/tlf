@@ -60,16 +60,19 @@ WY
 ############
 ## Canada ##
 ############
-MR:NB,NL,NS,PE
-#   Maritimes (NB, NL, NS, PE)
+NB
+NL
+NS
+PE
 QC
 ON
 MB
 SK
 AB
 BC
-NT:NU,YT
-#   Northern Territories (NT, NU, YT)
+NT
+NU
+YT
 ########
 ## DX ##
 ########
