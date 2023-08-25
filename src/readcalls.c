@@ -186,9 +186,6 @@ int readcalls(const char *logfile, bool interactive) {
 
 	    g_free(logline);
 
-	    if (inputbuffer != NULL)
-		free(inputbuffer);
-
 	    // drop transient fields
 	    FREE_DYNAMIC_STRING(qso->callupdate);
 	    FREE_DYNAMIC_STRING(qso->normalized_comment);
@@ -199,6 +196,8 @@ int readcalls(const char *logfile, bool interactive) {
     }
 
     fclose(fp);
+    if (inputbuffer != NULL)
+        free(inputbuffer);
 
     if (log_changed) {
 	bool ok = false;
