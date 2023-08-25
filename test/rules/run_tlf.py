@@ -11,7 +11,6 @@ TLF = "../../../src/tlf"
 # first check if python plugin would be used and skip test if not compiled in
 if glob.glob('rules/*.py'):
     rc = os.system(f"{TLF} -? | grep Features: | grep -q python-plugin")
-    print("CHECK PYTHON PLUGIN. RC: {}".format(rc))
     if rc != 0:
         sys.exit(3)     # skip this one
 
@@ -29,7 +28,6 @@ p = pexpect.spawn(COMMAND)
 if fout:
     p.logfile = fout
 
-print(">>>> {}", format(p))
 i = p.expect(["continue", "save it", pexpect.TIMEOUT], timeout=2);
 if i == 0:
     rc = 0
