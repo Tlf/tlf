@@ -121,7 +121,7 @@ static void show_progress(int linenr) {
 }
 
 int readcalls(const char *logfile, bool interactive) {
-    char *inputbuffer;
+    char *inputbuffer = NULL;
     size_t inputbuffer_len;
     struct qso_t *qso;
     int linenr = 0;
