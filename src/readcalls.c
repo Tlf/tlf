@@ -151,7 +151,7 @@ int readcalls(const char *logfile, bool interactive) {
 		exit(EXIT_FAILURE);
 	    }
 	    // drop trailing newline
-	    inputbuffer[inputbuffer_len - 1] = '\0';
+	    inputbuffer[LOGLINELEN - 1] = '\0';
 	    linenr++;
 
 	    if (interactive) {

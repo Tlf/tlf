@@ -129,7 +129,7 @@ void bmdata_read_file() {
     FILE *fp;
     struct timeval tv;
     int timediff, last_bm_save_time, fc, read;
-    char *line;
+    char *line = NULL;
     char *token;
     size_t line_len;
     static bool bmdata_parsed = false;
