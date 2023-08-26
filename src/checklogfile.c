@@ -54,7 +54,7 @@
 int repair_log(char *filename) {
     gchar *backupfile;
     gchar *cmd;
-    char *buffer;
+    char *buffer = NULL;
     size_t buffer_len;
     gchar *fill;
     int rc;
@@ -124,7 +124,7 @@ int checklogfile_new(char *filename) {
     int lineno;
     int tooshort;
     int read;
-    char *buffer;
+    char *buffer = NULL;
     size_t buffer_len;
     FILE *fp;
 
