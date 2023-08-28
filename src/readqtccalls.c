@@ -39,7 +39,7 @@ int nr_qtcsent = 0;
 
 int readqtccalls() {
     int s = 0;
-    char *inputbuffer;
+    char *inputbuffer = NULL;
     size_t inputbuffer_len;
     FILE *fp;
     char temps[30], callsign[15];

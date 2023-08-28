@@ -95,7 +95,7 @@ struct linedata_t *parse_logline(char *buffer) {
  * \return ptr to new qso record (or NULL if eof)
  */
 struct linedata_t *get_next_record(FILE *fp) {
-    char *buffer;
+    char *buffer = NULL;
     size_t buffer_len;
     struct linedata_t *ptr;
     int read;
@@ -127,7 +127,7 @@ struct linedata_t *get_next_record(FILE *fp) {
  * \return ptr to new qtc record (or NULL if eof)
  */
 struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
-    char *buffer;
+    char *buffer = NULL;
     size_t buffer_len;
     char *tmp;
     char *sp;
