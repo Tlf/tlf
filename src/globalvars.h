@@ -104,7 +104,7 @@ extern int highqsonr;
 
 
 extern RIG *my_rig;
-extern pthread_mutex_t rig_mutex;
+extern pthread_mutex_t tlf_rig_mutex;
 extern cqmode_t cqmode;
 extern int trxmode;
 extern int myrig_model;

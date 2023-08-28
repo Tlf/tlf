@@ -331,7 +331,7 @@ bool bmautograb = false;
 /*-------------------------------------rigctl-------------------------------*/
 int myrig_model = 0;            /* unset */
 RIG *my_rig;			/* handle to rig (instance) */
-pthread_mutex_t rig_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t tlf_rig_mutex = PTHREAD_MUTEX_INITIALIZER;
 rmode_t rmode;			/* radio mode of operation */
 pbwidth_t width;
 vfo_t vfo;			/* vfo selection */

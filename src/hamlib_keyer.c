@@ -28,9 +28,9 @@ int hamlib_keyer_set_speed(int cwspeed) {
     value_t spd;
     spd.i = cwspeed;
 
-    pthread_mutex_lock(&rig_mutex);
+    pthread_mutex_lock(&tlf_rig_mutex);
     int ret = rig_set_level(my_rig, RIG_VFO_CURR, RIG_LEVEL_KEYSPD, spd);
-    pthread_mutex_unlock(&rig_mutex);
+    pthread_mutex_unlock(&tlf_rig_mutex);
 
     return ret;
 }
@@ -40,9 +40,9 @@ int hamlib_keyer_get_speed(int *cwspeed) {
 
     assert(cwspeed != NULL);
 
-    pthread_mutex_lock(&rig_mutex);
+    pthread_mutex_lock(&tlf_rig_mutex);
     int ret = rig_get_level(my_rig, RIG_VFO_CURR, RIG_LEVEL_KEYSPD, &value);
-    pthread_mutex_unlock(&rig_mutex);
+    pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (ret == RIG_OK)
 	*cwspeed = value.i;
@@ -50,9 +50,9 @@ int hamlib_keyer_get_speed(int *cwspeed) {
 }
 
 int hamlib_keyer_send(char *cwmessage) {
-    pthread_mutex_lock(&rig_mutex);
+    pthread_mutex_lock(&tlf_rig_mutex);
     int ret = rig_send_morse(my_rig, RIG_VFO_CURR, cwmessage);
-    pthread_mutex_unlock(&rig_mutex);
+    pthread_mutex_unlock(&tlf_rig_mutex);
 
     return ret;
 }
@@ -60,9 +60,9 @@ int hamlib_keyer_send(char *cwmessage) {
 int hamlib_keyer_stop() {
 #if HAMLIB_VERSION >= 400
     if (rig_has_stop_morse()) {
-	pthread_mutex_lock(&rig_mutex);
+	pthread_mutex_lock(&tlf_rig_mutex);
 	int ret = rig_stop_morse(my_rig, RIG_VFO_CURR);
-	pthread_mutex_unlock(&rig_mutex);
+	pthread_mutex_unlock(&tlf_rig_mutex);
 	return ret;
     }
 #endif
