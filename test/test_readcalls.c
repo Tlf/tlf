@@ -219,7 +219,6 @@ void test_readcalls_note(void **state) {
 
     struct qso_t *qso = g_ptr_array_index(qso_array, 1);
     assert_non_null(qso);
-    printf("\n>> %s == %s\n", qso->logline, note);
     assert_string_equal(qso->logline, note);
     assert_int_equal(qso->is_comment, true);
 
