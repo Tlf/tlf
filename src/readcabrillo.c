@@ -395,7 +395,7 @@ int readcabrillo(int mode) {
     struct cabrillo_desc *cabdesc;
     char input_logfile[24];
     char output_logfile[80], temp_logfile[80];
-    char *logline;
+    char *logline = NULL;
     char *tempstrp;
     size_t read_len;
 

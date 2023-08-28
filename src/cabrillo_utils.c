@@ -579,7 +579,7 @@ static int process_cabrillo_template_file(const char *file_name) {
 	return PARSE_WRONG_PARAMETER;
     }
 
-    char *logline;
+    char *logline = NULL;
     size_t read_len = 0;
     int read;
 
