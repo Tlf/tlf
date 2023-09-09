@@ -21,17 +21,16 @@
  *
  *--------------------------------------------------------------*/
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "startmsg.h"
 #include "tlf_curses.h"
-
 
 int qtcdirection = 0;
 int next_qtc_qso;
@@ -40,12 +39,13 @@ int nr_qtcsent = 0;
 
 int readqtccalls() {
     int s = 0;
-    char inputbuffer[160];
+    char *inputbuffer = NULL;
+    size_t inputbuffer_len;
     FILE *fp;
     char temps[30], callsign[15];
     int tempi;
     int last_qtc = 0;
-    int i;
+    int i, read;
 
     qtc_init();
 
@@ -63,32 +63,43 @@ int readqtccalls() {
 	    return -1;
 	}
 
-	while (fgets(inputbuffer, 100, fp) != NULL) {
-	    s++;
+	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
+	    if (inputbuffer_len > 0) {
+		if (errno == ENOMEM) {
+		    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		    perror("RuntimeError: ");
+		    exit(EXIT_FAILURE);
+		}
 
-	    /* find maximum sent QTC block serial */
-	    g_strlcpy(temps, inputbuffer + 50, 5);  // get serial of QTC block
-	    tempi = atoi(temps);
-	    if (tempi > nr_qtcsent) {
-		nr_qtcsent = tempi;
-	    }
+		s++;
 
-	    /* mark corresponding qso line as used for QTC */
-	    g_strlcpy(temps, inputbuffer + 12, 5);  // qso nr in qso list
-	    tempi = atoi(temps) - 1;
-	    qsoflags_for_qtc[tempi] = 1;
+		/* find maximum sent QTC block serial */
+		g_strlcpy(temps, inputbuffer + 50, 5);  // get serial of QTC block
+		tempi = atoi(temps);
+		if (tempi > nr_qtcsent) {
+		    nr_qtcsent = tempi;
+		}
 
-	    /* remember callsign, build number of sent QTCs */
-	    parse_qtcline(inputbuffer, callsign, SEND);
-	    qtc_inc(callsign, SEND);
+		/* mark corresponding qso line as used for QTC */
+		g_strlcpy(temps, inputbuffer + 12, 5);  // qso nr in qso list
+		tempi = atoi(temps) - 1;
+		qsoflags_for_qtc[tempi] = 1;
 
-	    total++;			/* add one point per QTC */
+		/* remember callsign, build number of sent QTCs */
+		parse_qtcline(inputbuffer, callsign, SEND);
+		qtc_inc(callsign, SEND);
 
-	    /* find first unused QSO number for QTCs */
-	    if (tempi > last_qtc) {
-		last_qtc = tempi;
+		total++;			/* add one point per QTC */
+
+		/* find first unused QSO number for QTCs */
+		if (tempi > last_qtc) {
+		    last_qtc = tempi;
+		}
 	    }
 	}
+
+	if (inputbuffer != NULL)
+	    free(inputbuffer);
 
 	next_qtc_qso = last_qtc;
 
@@ -101,6 +112,7 @@ int readqtccalls() {
 	}
 
 	fclose(fp);
+
     }
 
     if (qtcdirection & RECV) {
@@ -112,15 +124,23 @@ int readqtccalls() {
 	    return -1;
 	}
 
-	while (fgets(inputbuffer, 100, fp) != NULL) {
+	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
+	    if (inputbuffer_len > 0) {
+		if (errno == ENOMEM) {
+		    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		    perror("RuntimeError: ");
+		    exit(EXIT_FAILURE);
+		}
+		/* remember callsign, build number of received QTCs */
+		parse_qtcline(inputbuffer, callsign, RECV);
+		qtc_inc(callsign, RECV);
 
-	    /* remember callsign, build number of received QTCs */
-	    parse_qtcline(inputbuffer, callsign, RECV);
-	    qtc_inc(callsign, RECV);
-
-	    total++;			/* add one point per QTC */
+		total++;			/* add one point per QTC */
+	    }
 	}
 
+	if (inputbuffer != NULL)
+	    free(inputbuffer);
 	fclose(fp);
     }
 
@@ -133,12 +153,21 @@ int readqtccalls() {
 	    return -1;
 	}
 
-	while (fgets(inputbuffer, 100, fp) != NULL) {
-
+	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    /* remember callsign, mark it as QTC capable, based on eg. last years */
-	    qtc_inc(g_strstrip(inputbuffer), QTC_CAP);
+	    if (inputbuffer_len > 0) {
+		if (errno == ENOMEM) {
+		    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		    perror("RuntimeError: ");
+		    exit(EXIT_FAILURE);
+		}
+
+		qtc_inc(g_strstrip(inputbuffer), QTC_CAP);
+	    }
 	}
 
+	if (inputbuffer != NULL)
+	    free(inputbuffer);
 	fclose(fp);
     }
 
@@ -147,10 +176,21 @@ int readqtccalls() {
     if ((fp = fopen(QTC_META_LOG, "r")) == NULL) {
 	showmsg("QTC meta logfile missing, skipping this step.");
     } else {
-	while (fgets(inputbuffer, 100, fp) != NULL) {
+	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    /* remember callsign, set marked QTC states */
-	    parse_qtc_flagline(inputbuffer);
+	    if (inputbuffer_len > 0) {
+		if (errno == ENOMEM) {
+		    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		    perror("RuntimeError: ");
+		    exit(EXIT_FAILURE);
+		}
+
+		parse_qtc_flagline(inputbuffer);
+	    }
 	}
+
+	if (inputbuffer != NULL)
+	    free(inputbuffer);
 	fclose(fp);
     }
 

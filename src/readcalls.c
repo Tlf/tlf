@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <time.h>
+#include <errno.h>
 
 #include "addcall.h"
 #include "addpfx.h"
@@ -55,20 +56,20 @@
 
 /* Backup original logfile and write a new one from internal database */
 void do_backup(const char *logfile, bool interactive) {
-	    // save a backup
-	    char prefix[40];
-	    format_time(prefix, sizeof(prefix), "%Y%m%d_%H%M%S");
-	    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
-	    rename(logfile, backup);
-	    // rewrite log
-	    for (int i = 0 ; i < NR_QSOS; i++) {
-		store_qso(logfile, QSOS(i));
-	    }
-	    if (interactive) {
-		showstring("Log has been backed up as", backup);
-		sleep(1);
-	    }
-	    g_free(backup);
+    // save a backup
+    char prefix[40];
+    format_time(prefix, sizeof(prefix), "%Y%m%d_%H%M%S");
+    char *backup = g_strdup_printf("%s_%s", prefix, logfile);
+    rename(logfile, backup);
+    // rewrite log
+    for (int i = 0 ; i < NR_QSOS; i++) {
+	store_qso(logfile, QSOS(i));
+    }
+    if (interactive) {
+	showstring("Log has been backed up as", backup);
+	sleep(1);
+    }
+    g_free(backup);
 }
 
 void init_scoring(void) {
@@ -104,7 +105,7 @@ void init_scoring(void) {
     }
 
     if (plugin_has_setup()) {
-        plugin_setup();
+	plugin_setup();
     }
 }
 
@@ -120,10 +121,11 @@ static void show_progress(int linenr) {
 }
 
 int readcalls(const char *logfile, bool interactive) {
-
-    char inputbuffer[LOGLINELEN + 1];
+    char *inputbuffer = NULL;
+    size_t inputbuffer_len;
     struct qso_t *qso;
     int linenr = 0;
+    ssize_t read;
 
     FILE *fp;
 
@@ -141,55 +143,61 @@ int readcalls(const char *logfile, bool interactive) {
 
     bool log_changed = false;
 
-    while (fgets(inputbuffer, sizeof(inputbuffer), fp) != NULL) {
+    while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
+	if (inputbuffer_len > 0) {
+	    if (errno == ENOMEM) {
+		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		perror("RuntimeError: ");
+		exit(EXIT_FAILURE);
+	    }
+	    // drop trailing newline
+	    inputbuffer[LOGLINELEN - 1] = '\0';
+	    linenr++;
 
-	// drop trailing newline
-	inputbuffer[LOGLINELEN - 1] = '\0';
+	    if (interactive) {
+		show_progress(linenr);
+	    }
 
-	linenr++;
+	    qso = parse_qso(inputbuffer);
 
-	if (interactive) {
-	    show_progress(linenr);
-	}
+	    if (qso->is_comment) {
+		g_ptr_array_add(qso_array, qso);
+		continue;		/* skip further processing for note entry */
+	    }
 
-	qso = parse_qso(inputbuffer);
+	    /* get the country number, not known at this point */
+	    countrynr = getctydata(qso->call);
+	    checkexchange(qso, false);
+	    if (qso->normalized_comment != NULL && strlen(qso->normalized_comment) > 0) {
+		strcpy(qso->comment, qso->normalized_comment);
+	    }
 
-	if (qso->is_comment) {
+	    dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
+	    addcall(qso);
+	    score_qso(qso);
+	    char *logline = makelogline(qso);
+
+	    // Ignore new line character at end of line in qso->logline
+	    if (strcmp(logline, strtok(qso->logline, "\n")) != 0) {
+		g_free(qso->logline);
+		qso->logline = g_strdup(logline);
+		log_changed = true;
+	    }
+
+	    g_free(logline);
+
+	    // drop transient fields
+	    FREE_DYNAMIC_STRING(qso->callupdate);
+	    FREE_DYNAMIC_STRING(qso->normalized_comment);
+	    FREE_DYNAMIC_STRING(qso->section);
+
 	    g_ptr_array_add(qso_array, qso);
-	    continue;		/* skip further processing for note entry */
 	}
-
-	/* get the country number, not known at this point */
-	countrynr = getctydata(qso->call);
-	checkexchange(qso, false);
-	if (qso->normalized_comment != NULL && strlen(qso->normalized_comment) > 0) {
-	    strcpy(qso->comment, qso->normalized_comment);
-	}
-	dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
-
-	addcall(qso);
-	score_qso(qso);
-
-	char *logline = makelogline(qso);
-
-	if (strcmp(logline, qso->logline) != 0) {
-	    // different: update log line and mark change
-	    g_free(qso->logline);
-	    qso->logline = g_strdup(logline);
-	    log_changed = true;
-	}
-
-	g_free(logline);
-
-	// drop transient fields
-	FREE_DYNAMIC_STRING(qso->callupdate);
-	FREE_DYNAMIC_STRING(qso->normalized_comment);
-	FREE_DYNAMIC_STRING(qso->section);
-
-	g_ptr_array_add(qso_array, qso);
     }
 
     fclose(fp);
+    if (inputbuffer != NULL)
+        free(inputbuffer);
 
     if (log_changed) {
 	bool ok = false;

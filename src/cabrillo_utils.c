@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "cabrillo_utils.h"
 #include "nicebox.h"
@@ -578,35 +579,46 @@ static int process_cabrillo_template_file(const char *file_name) {
 	return PARSE_WRONG_PARAMETER;
     }
 
-    char logline[MAX_CABRILLO_LEN];
+    char *logline = NULL;
+    size_t read_len = 0;
+    int read;
 
     int result = PARSE_OK;
 
-    while (fgets(logline, MAX_CABRILLO_LEN, fp) != NULL) {
-	g_strstrip(logline);
-	if (skip_template_line(logline)) {
-	    continue;   // skip it
-	}
-	char **fields = g_strsplit(logline, ":", 2);
-	g_strstrip(fields[0]);
-	if (g_strv_length(fields) == 2) {
-	    g_strstrip(fields[1]);
-	}
+    while ((read = getline(&logline, &read_len, fp)) != 1) {
+	if (read_len > 0) {
+	    if (errno == ENOMEM) {
+		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		perror("RuntimeError: ");
+		exit(EXIT_FAILURE);
+	    }
+	    g_strstrip(logline);
+	    if (skip_template_line(logline)) {
+		continue;   // skip it
+	    }
+	    char **fields = g_strsplit(logline, ":", 2);
+	    g_strstrip(fields[0]);
+	    if (g_strv_length(fields) == 2) {
+		g_strstrip(fields[1]);
+	    }
 
-	int rc = add_cabrillo_field(fields[0], fields[1]);
+	    int rc = add_cabrillo_field(fields[0], fields[1]);
 
-	if (rc != PARSE_OK) {
-	    error_details = g_strdup_printf("unknown tag '%s'", fields[0]);
-	    result = PARSE_ERROR;
-	}
+	    if (rc != PARSE_OK) {
+		error_details = g_strdup_printf("unknown tag '%s'", fields[0]);
+		result = PARSE_ERROR;
+	    }
 
-	g_strfreev(fields);
+	    g_strfreev(fields);
 
-	if (result != PARSE_OK) {
-	    break;
+	    if (result != PARSE_OK) {
+		break;
+	    }
 	}
     }
 
+    if (logline != NULL)
+	free(logline);
     fclose(fp);
 
     return result;

@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+#include <errno.h>
 
 #include "addcall.h"
 #include "addmult.h"
@@ -391,16 +392,17 @@ void show_readcab_msg(int mode, char *msg) {
  */
 
 int readcabrillo(int mode) {
-
     struct cabrillo_desc *cabdesc;
     char input_logfile[24];
     char output_logfile[80], temp_logfile[80];
-    char logline[MAX_CABRILLO_LEN];
+    char *logline = NULL;
     char *tempstrp;
+    size_t read_len;
 
     char t_qsonrstr[5];
     int t_qsonum;
     int t_bandinx;
+    int read;
 
     FILE *fp1, *fp2, *fpqtc;
 
@@ -411,9 +413,7 @@ int readcabrillo(int mode) {
     }
 
     char *cab_file = find_available("cabrillo.fmt");
-
     cabdesc = read_cabrillo_format(cab_file, cabrillo);
-
     g_free(cab_file);
 
     if (!cabdesc) {
@@ -477,18 +477,24 @@ int readcabrillo(int mode) {
 
     init_qso_array();
 
-    while (fgets(logline, MAX_CABRILLO_LEN, fp1) != NULL) {
-	cab_qso_to_tlf(logline, cabdesc);
+    while ((read = getline(&logline, &read_len, fp1)) != 1) {
+	if (read_len > 0) {
+	    if (errno == ENOMEM) {
+		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		perror("RuntimeError: ");
+		exit(EXIT_FAILURE);
+	    }
+	    cab_qso_to_tlf(logline, cabdesc);
+	}
     }
 
     strcpy(qsonrstr, t_qsonrstr);
     qsonum = t_qsonum;
     bandinx = t_bandinx;
-
+    if (logline != NULL)
+	free(logline);
     fclose(fp1);
-
     free_cabfmt(cabdesc);
-
     strcpy(logfile, temp_logfile);
 
     return 0;
