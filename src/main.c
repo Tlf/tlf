@@ -233,21 +233,29 @@ char ph_message[14][80] = /**< Array of file names for voice keyer messages
 			   */
     { "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 
+// QTC receive window Fx messages
 char qtc_recv_msgs[12][80] = {
     "QTC?", "QRV", "R", "", "TIME?", "CALL?",
-    "NR?", "AGN", "", "QSL ALL", "", ""};	// QTC receive windows Fx messages
+    "NR?", "AGN", "", "QSL ALL", "", ""
+};
 
+// QTC send window Fx messages
 char qtc_send_msgs[12][80] = {
     "QRV?", "QTC sr/nr", "", "", "TIME", "CALL",
-    "NR", "", "", "", "", ""};		    	// QTC send window Fx messages
+    "NR", "", "", "", "", ""
+};
 
+// voice keyer file names for receiving QTCs
 char qtc_phrecv_message[14][80] = {
     "", "", "", "", "", "",
-    "", "", "", "", "", "" };			// voice keyer file names when receives QTCs
+    "", "", "", "", "", ""
+};
 
+// voice keyer file names for sending QTCs
 char qtc_phsend_message[14][80] = {
     "", "", "", "", "", "",
-    "", "", "", "", "", "" };			// voice keyer file names when send QTCs
+    "", "", "", "", "", ""
+};
 
 bool qtcrec_record = false;
 char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
