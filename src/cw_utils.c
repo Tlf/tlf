@@ -23,9 +23,12 @@
 
 #include <glib.h>
 
+// *INDENT-OFF*
+
 #define CW_SPEEDS	"06121416182022242628303234363840424446485060"
 			/*< speed string with 2 chars each (in WPM) */
 
+// *INDENT-ON*
 
 char speedstr[50] = CW_SPEEDS;
 int speed = 10;
