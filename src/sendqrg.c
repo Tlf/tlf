@@ -197,10 +197,10 @@ int init_tlf_rig(void) {
 
 void close_tlf_rig(RIG *my_rig) {
 
-    pthread_mutex_lock(&rig_lock);
+    pthread_mutex_lock(&tlf_rig_mutex);
     rig_close(my_rig);		/* close port */
     rig_cleanup(my_rig);	/* if you care about memory */
-    pthread_mutex_unlock(&rig_lock);
+    pthread_mutex_unlock(&tlf_rig_mutex);
 
     printf("Rig port %s closed\n", rigportname);
 }
@@ -228,11 +228,11 @@ static int parse_rigconf() {
 	    if (rigconf[i] == ',')
 		rigconf[i] = '\0';
 
-	    pthread_mutex_lock(&rig_lock);
+	    pthread_mutex_lock(&tlf_rig_mutex);
 	    retcode =
 		rig_set_conf(my_rig, rig_token_lookup(my_rig, cnfparm),
 			     cnfval);
-	    pthread_mutex_unlock(&rig_lock);
+	    pthread_mutex_unlock(&tlf_rig_mutex);
 
 	    if (retcode != RIG_OK) {
 		showmsg("rig_set_conf: error  ");
@@ -254,9 +254,9 @@ static void debug_tlf_rig() {
 
     sleep(10);
 
-    pthread_mutex_lock(&rig_lock);
+    pthread_mutex_lock(&tlf_rig_mutex);
     retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
-    pthread_mutex_unlock(&rig_lock);
+    pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (retcode != RIG_OK) {
 	TLF_LOG_WARN("Problem with rig get freq: %s", rigerror(retcode));
@@ -267,9 +267,9 @@ static void debug_tlf_rig() {
 
     const freq_t testfreq = 14000000;	// test set frequency
 
-    pthread_mutex_lock(&rig_lock);
+    pthread_mutex_lock(&tlf_rig_mutex);
     retcode = rig_set_freq(my_rig, RIG_VFO_CURR, testfreq);
-    pthread_mutex_unlock(&rig_lock);
+    pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (retcode != RIG_OK) {
 	TLF_LOG_WARN("Problem with rig set freq: %s", rigerror(retcode));
@@ -277,9 +277,9 @@ static void debug_tlf_rig() {
 	showmsg("Rig set freq ok!");
     }
 
-    pthread_mutex_lock(&rig_lock);
+    pthread_mutex_lock(&tlf_rig_mutex);
     retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);	// read qrg
-    pthread_mutex_unlock(&rig_lock);
+    pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (retcode != RIG_OK) {
 	TLF_LOG_WARN("Problem with rig get freq: %s", rigerror(retcode));
