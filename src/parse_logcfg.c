@@ -713,12 +713,12 @@ static int cfg_countrylist(const cfg_arg_t arg) {
 	fclose(fp);
 
     } else {	/* not a file */
-        char *colon = strchr(buffer, ':');
-        if (colon != NULL) {
-            country_list_raw = colon + 1;   // skip optional contest name
-        } else {
-            country_list_raw = buffer;
-        }
+	char *colon = strchr(buffer, ':');
+	if (colon != NULL) {
+	    country_list_raw = colon + 1;   // skip optional contest name
+	} else {
+	    country_list_raw = buffer;
+	}
     }
 
     if (country_list_raw == NULL) {
@@ -758,8 +758,8 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     getpx(my.call);
     mult_side = exist_in_country_list();
     setcontest(whichcontest);
-    if(buffer != NULL)
-        free(buffer);
+    if (buffer != NULL)
+	free(buffer);
 
     return PARSE_OK;
 }
@@ -851,7 +851,7 @@ static int cfg_continentlist(const cfg_arg_t arg) {
 
     setcontest(whichcontest);
     if (buffer != NULL)
-        free(buffer);
+	free(buffer);
     return PARSE_OK;
 }
 

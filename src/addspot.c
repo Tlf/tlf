@@ -102,7 +102,7 @@ void add_local_spot(void) {
 static struct qso_t *find_last_qso() {
     int i = NR_QSOS;
     while (i > 0) {
-	struct qso_t *last_qso = g_ptr_array_index(qso_array, i-1);
+	struct qso_t *last_qso = g_ptr_array_index(qso_array, i - 1);
 	if (!last_qso->is_comment) {
 	    return last_qso;
 	}
@@ -154,7 +154,7 @@ static gchar *prepare_spot(void) {
     freq_t spot_freq;
     if (get_spot_data(&spot_call, &spot_freq)) {
 	spot_line = g_strdup_printf("DX %.1f %s ", spot_freq / 1000.,
-		spot_call);
+				    spot_call);
 	g_free(spot_call);
     } else {
 	beep();
@@ -206,7 +206,7 @@ static bool complete_spot(gchar **line) {
 	wmove(stdscr, LINES - 1, strlen(buffer) + 2);
     }
 
-    g_free (*line);
+    g_free(*line);
     *line = g_strdup(buffer);
 
     return c != ESCAPE;
@@ -225,5 +225,5 @@ void add_cluster_spot(void) {
 	    g_free(line);
 	}
     }
-    g_free (spot_line);
+    g_free(spot_line);
 }
