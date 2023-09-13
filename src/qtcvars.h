@@ -79,6 +79,8 @@ typedef struct {
     int attr;		// meta attr: 0 => not nopied, 1 => copied
 } t_qtc_ry_line;
 
+// *INDENT-OFF*
+
 extern int next_qtc_qso;		// the next non-sent QSO, which can
 					// be send next as QTC
 extern int qsoflags_for_qtc[MAX_QSOS];	// array of flag to log lines of QSOs
@@ -114,4 +116,7 @@ extern char qtc_cap_calls[40];
 extern bool qtc_auto_filltime;		// set QTC auto filltime; when DX sent first
 					// QTC line, the first two digits will be copied to others
 extern bool qtc_recv_lazy;		// ignore check of received QTC lines
+
+// *INDENT-ON*
+
 #endif /* end of include guard: QTCVARS_H */

@@ -10,6 +10,8 @@
 
 extern const char *argp_program_version;
 
+// *INDENT-OFF*
+
 extern mystation_t my;			// all about my station
 extern char whichcontest[];
 extern contest_config_t *contest;	// contest configuration
@@ -39,6 +41,8 @@ extern int countries[MAX_DATALINES];	// for every country, a bitfield
 					// been worked
 
 extern int bandinx;			// band we're currently working on
+
+// *INDENT-ON*
 
 extern struct ie_list *main_ie_list;
 

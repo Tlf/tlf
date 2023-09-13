@@ -52,20 +52,34 @@ typedef struct {
 #define RST_PATTERN     "^\\s*(\\d+|-+)\\s*$"
 
 static field_t fields[] = {
-    {.start = 0,  .end = 5, .tab = true,    // band+mode
-        .pattern = "^[ 1]\\d{2}(CW |SSB|DIG)$"},
-    {.start = 7,  .end = 15,                // date
-        .pattern = "^\\d{2}-[A-Z]{3}-\\d{2}$"},
-    {.start = 17, .end = 21, .tab = true,   // time
-        .pattern = "^\\d{2}:\\d{2}$"},
-    {.start = 23, .end = 26,                // number
-        .pattern = "^\\s*\\d+\\s*$"},
-    {.start = 29, .end = 29 + MAX_CALL_LENGTH - 1, .tab = true,   // call
-        .pattern = "^\\s*\\S+\\s*$"},
-    {.start = 44, .end = 46,                // sent RST
-        .pattern = RST_PATTERN},
-    {.start = 49, .end = 51,                // rcvd RST
-        .pattern = RST_PATTERN},
+    {
+	.start = 0,  .end = 5, .tab = true,    // band+mode
+	.pattern = "^[ 1]\\d{2}(CW |SSB|DIG)$"
+    },
+    {
+	.start = 7,  .end = 15,                // date
+	.pattern = "^\\d{2}-[A-Z]{3}-\\d{2}$"
+    },
+    {
+	.start = 17, .end = 21, .tab = true,   // time
+	.pattern = "^\\d{2}:\\d{2}$"
+    },
+    {
+	.start = 23, .end = 26,                // number
+	.pattern = "^\\s*\\d+\\s*$"
+    },
+    {
+	.start = 29, .end = 29 + MAX_CALL_LENGTH - 1, .tab = true,   // call
+	.pattern = "^\\s*\\S+\\s*$"
+    },
+    {
+	.start = 44, .end = 46,                // sent RST
+	.pattern = RST_PATTERN
+    },
+    {
+	.start = 49, .end = 51,                // rcvd RST
+	.pattern = RST_PATTERN
+    },
     {.start = 54,            .tab = true},  // exchange -- end set at runtime
 };
 
@@ -107,7 +121,7 @@ static void flash_field(int row, int column, char *value) {
     mvaddstr(7 + row, column, value);
     curs_set(0);        // hide cursor
     refreshp();
-    usleep(200*1000);   // 200 ms
+    usleep(200 * 1000); // 200 ms
     curs_set(1);        // show cursor
     // note: line will be re-displayed in the main loop
 }
@@ -146,7 +160,7 @@ static void putback_qso(int nr, char *buffer) {
 
 static bool field_valid() {
     if (!changed || current_field->pattern == NULL) {
-        return true;
+	return true;
     }
 
     // extract current field value
@@ -154,9 +168,10 @@ static bool field_valid() {
     int width = current_field->end - current_field->start + 1;
     g_strlcpy(value, editbuffer + current_field->start, width + 1);
 
-    bool valid = g_regex_match_simple(current_field->pattern, value, G_REGEX_CASELESS, 0);
+    bool valid = g_regex_match_simple(current_field->pattern, value,
+				      G_REGEX_CASELESS, 0);
     if (!valid) {
-        flash_field(editline, current_field->start, value);
+	flash_field(editline, current_field->start, value);
     }
     return valid;
 }
@@ -164,17 +179,17 @@ static bool field_valid() {
 
 static void check_store_and_get_next_line(int direction) {
     if (!field_valid()) {
-        return;     // field is not valid, no action needed
+	return;     // field is not valid, no action needed
     }
     unhighlight_line(editline, editbuffer);
     if (changed) {
-        putback_qso(NR_QSOS - (NR_LINES - editline), editbuffer);
-        needs_rescore = true;
-        changed = false;
+	putback_qso(NR_QSOS - (NR_LINES - editline), editbuffer);
+	needs_rescore = true;
+	changed = false;
     }
     if (direction != 0) {
-        editline += direction;
-        get_qso(NR_QSOS - (NR_LINES - editline), editbuffer);
+	editline += direction;
+	get_qso(NR_QSOS - (NR_LINES - editline), editbuffer);
     }
 }
 
@@ -191,7 +206,8 @@ void edit_last(void) {
     const int topline = (NR_LINES > NR_QSOS ? NR_LINES - NR_QSOS : 0);
 
     // set current end of exchange field
-    fields[FIELD_INDEX_EXCHANGE].end = fields[FIELD_INDEX_EXCHANGE].start + contest->exchange_width - 1;
+    fields[FIELD_INDEX_EXCHANGE].end = fields[FIELD_INDEX_EXCHANGE].start +
+				       contest->exchange_width - 1;
 
     field_index = FIELD_INDEX_CALL;
     current_field = &fields[field_index];
@@ -210,76 +226,75 @@ void edit_last(void) {
 
 	// Ctrl-A (^A) or <Home>, beginning of line.
 	if (j == CTRL_A || j == KEY_HOME) {
-            if (field_valid()) {
-                b = 0;
-            }
-
-        // Ctrl-E (^E) or <End>, end of exchange field.
-	} else if (j == CTRL_E || j == KEY_END) {
-            if (field_valid()) {
-                b = fields[FIELD_INDEX_EXCHANGE].end;
-            }
-
-        // <Tab>, switch to next tab field.
-	} else if (j == TAB) {
-            if (field_valid()) {
-                do {
-                    field_index = (field_index + 1) % G_N_ELEMENTS(fields);
-                }
-                while (!fields[field_index].tab);
-
-                current_field = &fields[field_index];
-                b = current_field->start;
-            }
-
-        // Up arrow, move to previous line.
-	} else if (j == KEY_UP) {
-	    if (editline > topline) {
-                check_store_and_get_next_line(-1);
-	    } else {
-                if (field_valid()) {
-                    logview();
-                    j = ESCAPE;     // signal exit
-                }
+	    if (field_valid()) {
+		b = 0;
 	    }
 
-        // Down arrow, move to next line.
+	    // Ctrl-E (^E) or <End>, end of exchange field.
+	} else if (j == CTRL_E || j == KEY_END) {
+	    if (field_valid()) {
+		b = fields[FIELD_INDEX_EXCHANGE].end;
+	    }
+
+	    // <Tab>, switch to next tab field.
+	} else if (j == TAB) {
+	    if (field_valid()) {
+		do {
+		    field_index = (field_index + 1) % G_N_ELEMENTS(fields);
+		} while (!fields[field_index].tab);
+
+		current_field = &fields[field_index];
+		b = current_field->start;
+	    }
+
+	    // Up arrow, move to previous line.
+	} else if (j == KEY_UP) {
+	    if (editline > topline) {
+		check_store_and_get_next_line(-1);
+	    } else {
+		if (field_valid()) {
+		    logview();
+		    j = ESCAPE;     // signal exit
+		}
+	    }
+
+	    // Down arrow, move to next line.
 	} else if (j == KEY_DOWN) {
 
 	    if (editline < NR_LINES - 1) {
-                check_store_and_get_next_line(+1);
+		check_store_and_get_next_line(+1);
 	    } else {
-                j = ESCAPE;     // signal exit
-            }
+		j = ESCAPE;     // signal exit
+	    }
 
-        // Left arrow, move cursor one position left.
+	    // Left arrow, move cursor one position left.
 	} else if (j == KEY_LEFT) {
 	    if (b > current_field->start) {
 		b--;
-            } else if (field_valid() && field_index > 0) {
-                --field_index;
-                current_field = &fields[field_index];
-                b = current_field->end;
-            }
+	    } else if (field_valid() && field_index > 0) {
+		--field_index;
+		current_field = &fields[field_index];
+		b = current_field->end;
+	    }
 
-        // Right arrow, move cursor one position right.
+	    // Right arrow, move cursor one position right.
 	} else if (j == KEY_RIGHT) {
 	    if (b < current_field->end) {
 		b++;
-            } else if (field_valid() && field_index < G_N_ELEMENTS(fields) - 1) {
-                ++field_index;
-                current_field = &fields[field_index];
-                b = current_field->start;
-            }
+	    } else if (field_valid() && field_index < G_N_ELEMENTS(fields) - 1) {
+		++field_index;
+		current_field = &fields[field_index];
+		b = current_field->start;
+	    }
 
-        // <Insert>, insert a space
+	    // <Insert>, insert a space
 	} else if (j == KEY_IC) {
 	    for (k = current_field->end; k > b; k--)
 		editbuffer[k] = editbuffer[k - 1];
 	    editbuffer[b] = ' ';
 	    changed = true;
 
-        // <Delete>, shift rest left
+	    // <Delete>, shift rest left
 	} else if (j == KEY_DC) {
 	    for (k = b; k < current_field->end; k++)
 		editbuffer[k] = editbuffer[k + 1];
@@ -295,19 +310,19 @@ void edit_last(void) {
 	    // Accept most all printable characters.
 	    if (j >= ' ' && j < 'a') {
 		editbuffer[b] = j;
-                if (b < current_field->end) {
+		if (b < current_field->end) {
 		    b++;
-                }
+		}
 		changed = true;
 	    }
 	}
 
-        // Check exit
-        if (j == ESCAPE || j == '\n' || j == KEY_ENTER) {
-            if (field_valid()) {
-                break;      // exit loop
-            }
-        }
+	// Check exit
+	if (j == ESCAPE || j == '\n' || j == KEY_ENTER) {
+	    if (field_valid()) {
+		break;      // exit loop
+	    }
+	}
     }
 
     check_store_and_get_next_line(0);

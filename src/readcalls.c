@@ -197,7 +197,7 @@ int readcalls(const char *logfile, bool interactive) {
 
     fclose(fp);
     if (inputbuffer != NULL)
-        free(inputbuffer);
+	free(inputbuffer);
 
     if (log_changed) {
 	bool ok = false;
