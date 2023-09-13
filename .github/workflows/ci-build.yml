@@ -22,9 +22,13 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get -qq update
-        sudo apt-get install -y libhamlib-dev libxmlrpc-core-c3-dev libcmocka-dev python3-pexpect python3-dev
+        sudo apt-get install -y libhamlib-dev libxmlrpc-core-c3-dev libcmocka-dev python3-pexpect python3-dev astyle
     - name: Set up datadir
       run: mkdir datadir && ln -s $PWD/share datadir/tlf
+    - name: Check source formatting
+      run: |
+        F=$(astyle --dry-run --formatted --options=tools/astylerc src/*.[ch])
+        if [ ! -z "$F" ] ; then sed -e 's/^F/To be f/' <<< $F; exit 1; fi
     - name: Autoreconf and basic make
       run: |
         autoreconf -i && ./configure --datadir=$PWD/datadir && make -j2
