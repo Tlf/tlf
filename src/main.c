@@ -513,6 +513,8 @@ static void ui_init() {
     /* getting users terminal string and (if RXVT) setting rxvt colours on it */
     /* LZ3NY hack :) */
     char *term = getenv("TERM");
+    if (term == NULL)
+	term = "";
     if (strcasecmp(term, "rxvt") == 0 ||
 	    strcasecmp(term, "rxvt-unicode") == 0) {
 	use_rxvt = true;
