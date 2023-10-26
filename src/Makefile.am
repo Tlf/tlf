@@ -58,7 +58,7 @@ noinst_HEADERS = \
 	keyer.h keystroke_names.h \
 	lancode.h last10.h listmessages.h log_utils.h \
 	log_to_disk.h logit.h logview.h \
-	makelogline.h messagechange.h muf.h \
+	makelogline.h math_utils.h messagechange.h muf.h \
 	nicebox.h note.h netkeyer.h\
 	paccdx.h parse_logcfg.h printcall.h \
 	paccdx.h parse_logcfg.h plugin.h printcall.h \

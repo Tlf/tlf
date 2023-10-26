@@ -22,9 +22,7 @@
 #include <time.h>
 
 #include "get_time.h"
-
-#define RADIAN  (180.0 / M_PI)
-
+#include "math_utils.h"
 
 /** Compute sun up and down at given latitude
  *
