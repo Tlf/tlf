@@ -26,7 +26,7 @@
 #include <math.h>
 #endif
 
-/* provide a fallback for M_PI as C standard does not guarantee the definition
+/* provide a fallback for M_PI_2 as C standard does not guarantee the definition
 of these constant */
 #ifndef M_PI_2
 # define M_PI_2         1.57079632679489661923  /* pi/2 */
