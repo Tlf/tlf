@@ -25,9 +25,6 @@
 *  All functions operate on UTC dates/times.
 ---------------------------------------------------------------------------*/
 
-#ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE
-#endif
 #include <time.h>
 #include <string.h>
 

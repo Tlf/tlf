@@ -19,10 +19,6 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE	// For asprintf()
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
