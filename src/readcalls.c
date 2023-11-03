@@ -23,9 +23,6 @@
  *
  *--------------------------------------------------------------*/
 
-#ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
