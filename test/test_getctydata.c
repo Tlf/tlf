@@ -144,6 +144,7 @@ void test_best_match(void **state) {
     assert_string_equal(best_prefix("EA8XYZ"), "EA8");
     assert_string_equal(best_prefix("W3A"), "W");
     assert_string_equal(best_prefix("KL7ND"), "KL");
+    assert_string_equal(best_prefix("G8AAA"), "G");
 }
 
 void test_location_known(void **state) {

@@ -146,8 +146,16 @@ int find_best_match(const char *call) {
     /* first check if it has a unique 2-char prefix */
     if (strlen(call) >= 2) {
 	int key = prefix_hash_key(call);
-	if (two_char_prefix_index[key] >= 0) {
-	    return two_char_prefix_index[key];
+	w = two_char_prefix_index[key];
+	if (w >= 0) {
+	    bool ok = true;
+	    // for an exact entry require the whole call to match
+	    if (prefix_by_index(w)->exact) {
+		ok = (strcmp(prefix_by_index(w)->pfx, call) == 0);
+	    }
+	    if (ok) {
+		return w;
+	    }
 	}
     }
 
