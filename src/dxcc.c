@@ -149,6 +149,7 @@ int find_best_match(const char *call) {
 	w = two_char_prefix_index[key];
 	if (w >= 0) {
 	    bool ok = true;
+	    // for an exact entry require the whole call to match
 	    if (prefix_by_index(w)->exact) {
 		ok = (strcmp(prefix_by_index(w)->pfx, call) == 0);
 	    }
