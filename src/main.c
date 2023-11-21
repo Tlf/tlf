@@ -780,6 +780,7 @@ static void hamlib_init() {
 	    exit(1);
 	}
 	trx_control = false;
+	no_trx_control = true;
 	showmsg("Disabling rig control!");
 	sleep(1);
     }
@@ -872,6 +873,10 @@ static void keyer_init() {
 
     if (cwkeyer == HAMLIB_KEYER) {
 	showmsg("CW-Keyer is Hamlib");
+	if (no_trx_control) {
+	    showmsg("Radio control disabled - no keying!");
+	    return;
+	}
 	if (!trx_control) {
 	    showmsg("Radio control is not activated!!");
 	    sleep(1);
