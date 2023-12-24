@@ -142,11 +142,6 @@ int readcalls(const char *logfile, bool interactive) {
 
     while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	if (inputbuffer_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
 	    // drop trailing newline
 	    inputbuffer[LOGLINELEN - 1] = '\0';
 	    linenr++;
@@ -191,10 +186,14 @@ int readcalls(const char *logfile, bool interactive) {
 	    g_ptr_array_add(qso_array, qso);
 	}
     }
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
+    }
 
     fclose(fp);
-    if (inputbuffer != NULL)
-	free(inputbuffer);
+    free(inputbuffer);
 
     if (log_changed) {
 	bool ok = false;

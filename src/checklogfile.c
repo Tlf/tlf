@@ -88,13 +88,8 @@ int repair_log(char *filename) {
 	return 1;
     }
 
-    while ((read = getline(&buffer, &buffer_len, infp)) != 1) {
+    while ((read = getline(&buffer, &buffer_len, infp)) != -1) {
 	if (buffer_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
 	    /* strip trailing whitespace (and newline) */
 	    g_strchomp(buffer);
 
@@ -107,9 +102,13 @@ int repair_log(char *filename) {
 	    fputs("\n", outfp);
 	}
     }
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
+    }
 
-    if (buffer != NULL)
-	free(buffer);
+    free(buffer);
     fclose(outfp);
     fclose(infp);
     g_free(backupfile);
@@ -161,11 +160,6 @@ int checklogfile_new(char *filename) {
 
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 	if (buffer_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
 	    int band, linelen;
 	    int bandok = 0;
 
@@ -209,9 +203,13 @@ int checklogfile_new(char *filename) {
 	    }
 	}
     }
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
+    }
 
-    if (buffer != NULL)
-	free(buffer);
+    free(buffer);
     fclose(fp);
 
     if (tooshort) {
@@ -268,11 +266,6 @@ void checklogfile(void) {
 		} else {
 		    while ((read = getline(&inputbuffer, &read_len, infile)) != -1) {
 			if (read_len > 0) {
-			    if (errno == ENOMEM) {
-				fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-				perror("RuntimeError: ");
-				exit(EXIT_FAILURE);
-			    }
 			    if (strlen(inputbuffer) != LOGLINELEN) {
 				/* append spaces */
 				for (int i = strlen(inputbuffer);
@@ -287,8 +280,12 @@ void checklogfile(void) {
 			    fputs(inputbuffer, outfile);
 			}
 		    }
-		    if (inputbuffer != NULL)
-			free(inputbuffer);
+		    if (errno == ENOMEM) {
+			fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+			perror("RuntimeError: ");
+			exit(EXIT_FAILURE);
+		    }
+		    free(inputbuffer);
 		    fclose(infile);
 		    fclose(outfile);
 		}

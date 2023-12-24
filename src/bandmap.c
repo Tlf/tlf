@@ -148,12 +148,6 @@ void bmdata_read_file() {
 
 	    while ((read = getline(&line, &line_len, fp)) != -1) {
 		if (line_len > 0) {
-		    if (errno == ENOMEM) {
-			fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-			perror("RuntimeError: ");
-			exit(EXIT_FAILURE);
-		    }
-
 		    spot *entry = g_new0(spot, 1);
 		    fc = 0;
 		    token = strtok(line, ";");
@@ -197,13 +191,17 @@ void bmdata_read_file() {
 		    }
 		}
 	    }
+	    if (errno == ENOMEM) {
+		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+		perror("RuntimeError: ");
+		exit(EXIT_FAILURE);
+	    }
 	} else {
 	    perror("RuntimeError: ");
 	    exit(EXIT_FAILURE);
 	}
 
-	if (line != NULL)
-	    free(line);
+	free(line);
 
 	fclose(fp);
     }

@@ -115,12 +115,6 @@ int parse_configfile(FILE *fp) {
 
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 	if (buffer_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
-
 	    g_strchug(buffer);              // remove leading space
 	    if (isCommentLine(buffer)) {    // skip comments and empty lines
 		continue;
@@ -132,9 +126,13 @@ int parse_configfile(FILE *fp) {
 	    }
 	}
     }
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
+    }
 
-    if (buffer != NULL)
-	free(buffer);
+    free(buffer);
     return status;
 }
 
@@ -693,11 +691,6 @@ static int cfg_countrylist(const cfg_arg_t arg) {
 
 	while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 	    if (buffer_len > 0) {
-		if (errno == ENOMEM) {
-		    fprintf(stderr, "Error in: %s:%d\n", __FILE__, __LINE__);
-		    perror("RuntimeError: ");
-		    exit(EXIT_FAILURE);
-		}
 		g_strstrip(buffer);   /* no leading/trailing whitespace*/
 
 		/* accept only a line starting with the contest name
@@ -707,6 +700,11 @@ static int cfg_countrylist(const cfg_arg_t arg) {
 		    break;
 		}
 	    }
+	}
+	if (errno == ENOMEM) {
+	    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	    perror("RuntimeError: ");
+	    exit(EXIT_FAILURE);
 	}
 
 	g_free(prefix);
@@ -758,8 +756,7 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     getpx(my.call);
     mult_side = exist_in_country_list();
     setcontest(whichcontest);
-    if (buffer != NULL)
-	free(buffer);
+    free(buffer);
 
     return PARSE_OK;
 }
@@ -790,11 +787,6 @@ static int cfg_continentlist(const cfg_arg_t arg) {
 	char *prefix = g_strdup_printf("%s:", whichcontest);
 	while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 	    if (buffer_len > 0) {
-		if (errno == ENOMEM) {
-		    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		    perror("RuntimeError: ");
-		    exit(EXIT_FAILURE);
-		}
 		g_strstrip(buffer);   /* no leading/trailing whitespace*/
 		/* accept only a line starting with the contest name
 		* (CONTEST=) followed by ':' */
@@ -803,6 +795,11 @@ static int cfg_continentlist(const cfg_arg_t arg) {
 		    break;
 		}
 	    }
+	}
+	if (errno == ENOMEM) {
+	    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	    perror("RuntimeError: ");
+	    exit(EXIT_FAILURE);
 	}
 
 	g_free(prefix);
@@ -850,8 +847,7 @@ static int cfg_continentlist(const cfg_arg_t arg) {
     }
 
     setcontest(whichcontest);
-    if (buffer != NULL)
-	free(buffer);
+    free(buffer);
     return PARSE_OK;
 }
 

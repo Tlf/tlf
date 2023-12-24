@@ -363,11 +363,6 @@ int init_and_load_multipliers(void) {
 
     while ((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
 	if (s_inputbuffer_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
 	    /* strip leading and trailing whitespace */
 	    g_strstrip(s_inputbuffer);
 
@@ -379,10 +374,14 @@ int init_and_load_multipliers(void) {
 	    add_mult_line(s_inputbuffer);
 	}
     }
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
+    }
 
     fclose(cfp);
-    if (s_inputbuffer != NULL)
-	free(s_inputbuffer);
+    free(s_inputbuffer);
     /* do not rely on the order in the mult file but sort it here */
     g_ptr_array_sort(mults_possible, (GCompareFunc)cmp_size);
 

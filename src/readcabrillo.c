@@ -474,22 +474,22 @@ int readcabrillo(int mode) {
 
     init_qso_array();
 
-    while ((read = getline(&logline, &read_len, fp1)) != 1) {
+    while ((read = getline(&logline, &read_len, fp1)) != -1) {
 	if (read_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
 	    cab_qso_to_tlf(logline, cabdesc);
 	}
+    }
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
     }
 
     strcpy(qsonrstr, t_qsonrstr);
     qsonum = t_qsonum;
     bandinx = t_bandinx;
-    if (logline != NULL)
-	free(logline);
+
+    free(logline);
     fclose(fp1);
     free_cabfmt(cabdesc);
     strcpy(logfile, temp_logfile);
