@@ -356,12 +356,7 @@ int load_ctydata(char *filename) {
     dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
     while ((read = getline(&buf, &buf_len, fd)) != -1) {
-	if (buf_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
+	if (read > 0) {
 	    g_strchomp(buf); 	/* drop CR and/or NL and */
 	    if (*buf == '\0')	/* ignore empty lines */
 		continue;
@@ -377,10 +372,13 @@ int load_ctydata(char *filename) {
 	    }
 	}
     }
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
+    }
 
-    if (buf != NULL)
-	free(buf);
-
+    free(buf);
     fclose(fd);
     return 0;
 }

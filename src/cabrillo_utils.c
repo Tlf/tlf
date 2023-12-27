@@ -581,13 +581,8 @@ static int process_cabrillo_template_file(const char *file_name) {
 
     int result = PARSE_OK;
 
-    while ((read = getline(&logline, &read_len, fp)) != 1) {
-	if (read_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
+    while ((read = getline(&logline, &read_len, fp)) != -1) {
+	if (read > 0) {
 	    g_strstrip(logline);
 	    if (skip_template_line(logline)) {
 		continue;   // skip it
@@ -612,9 +607,13 @@ static int process_cabrillo_template_file(const char *file_name) {
 	    }
 	}
     }
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
+    }
 
-    if (logline != NULL)
-	free(logline);
+    free(logline);
     fclose(fp);
 
     return result;

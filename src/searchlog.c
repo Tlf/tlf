@@ -764,12 +764,7 @@ int load_callmaster(void) {
     GHashTable *callset = g_hash_table_new(g_str_hash, g_str_equal);
 
     while ((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
-	if (s_inputbuffer_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
+	if (read > 0) {
 	    g_strstrip(s_inputbuffer);
 
 	    /* skip comment lines and calls shorter than 3 chars */
@@ -801,11 +796,15 @@ int load_callmaster(void) {
 	    g_ptr_array_add(callmaster, call);
 	}
     }
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
+    }
 
     g_hash_table_destroy(callset);
 
-    if (s_inputbuffer != NULL)
-	free(s_inputbuffer);
+    free(s_inputbuffer);
 
     fclose(cfp);
     return callmaster->len;

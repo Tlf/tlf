@@ -97,20 +97,20 @@ struct linedata_t *get_next_record(FILE *fp) {
     int read;
 
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
-	if (buffer_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
+	if (read > 0) {
 	    if (!log_is_comment(buffer)) {
 		ptr = parse_logline(buffer);
 		return ptr;
 	    }
 	}
     }
-    if (buffer != NULL)
-	free(buffer);
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
+    }
+
+    free(buffer);
     return NULL;
 }
 

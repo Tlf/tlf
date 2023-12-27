@@ -69,13 +69,7 @@ struct ie_list *make_ie_list(char *file) {
     showstring("Using initial exchange file", file);
 
     while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
-	if (inputbuffer_len > 0) {
-	    if (errno == ENOMEM) {
-		fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		perror("RuntimeError: ");
-		exit(EXIT_FAILURE);
-	    }
-
+	if (read > 0) {
 	    linectr++;
 
 	    g_strstrip(inputbuffer);    // strip leading/trailing whitespace
@@ -157,9 +151,13 @@ struct ie_list *make_ie_list(char *file) {
 	    ie_listhead = new;
 	}
     }
+    if (errno == ENOMEM) {
+	fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	perror("RuntimeError: ");
+	exit(EXIT_FAILURE);
+    }
 
-    if (inputbuffer != NULL)
-	free(inputbuffer);
+    free(inputbuffer);
     fclose(fp);
 
     return ie_listhead;

@@ -64,13 +64,7 @@ int readqtccalls() {
 	}
 
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
-	    if (inputbuffer_len > 0) {
-		if (errno == ENOMEM) {
-		    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		    perror("RuntimeError: ");
-		    exit(EXIT_FAILURE);
-		}
-
+	    if (read > 0) {
 		s++;
 
 		/* find maximum sent QTC block serial */
@@ -97,9 +91,13 @@ int readqtccalls() {
 		}
 	    }
 	}
+	if (errno == ENOMEM) {
+	    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	    perror("RuntimeError: ");
+	    exit(EXIT_FAILURE);
+	}
 
-	if (inputbuffer != NULL)
-	    free(inputbuffer);
+	free(inputbuffer);
 
 	next_qtc_qso = last_qtc;
 
@@ -125,12 +123,7 @@ int readqtccalls() {
 	}
 
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
-	    if (inputbuffer_len > 0) {
-		if (errno == ENOMEM) {
-		    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		    perror("RuntimeError: ");
-		    exit(EXIT_FAILURE);
-		}
+	    if (read > 0) {
 		/* remember callsign, build number of received QTCs */
 		parse_qtcline(inputbuffer, callsign, RECV);
 		qtc_inc(callsign, RECV);
@@ -138,9 +131,13 @@ int readqtccalls() {
 		total++;			/* add one point per QTC */
 	    }
 	}
+	if (errno == ENOMEM) {
+	    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	    perror("RuntimeError: ");
+	    exit(EXIT_FAILURE);
+	}
 
-	if (inputbuffer != NULL)
-	    free(inputbuffer);
+	free(inputbuffer);
 	fclose(fp);
     }
 
@@ -155,19 +152,17 @@ int readqtccalls() {
 
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    /* remember callsign, mark it as QTC capable, based on eg. last years */
-	    if (inputbuffer_len > 0) {
-		if (errno == ENOMEM) {
-		    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		    perror("RuntimeError: ");
-		    exit(EXIT_FAILURE);
-		}
-
+	    if (read > 0) {
 		qtc_inc(g_strstrip(inputbuffer), QTC_CAP);
 	    }
 	}
+	if (errno == ENOMEM) {
+	    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	    perror("RuntimeError: ");
+	    exit(EXIT_FAILURE);
+	}
 
-	if (inputbuffer != NULL)
-	    free(inputbuffer);
+	free(inputbuffer);
 	fclose(fp);
     }
 
@@ -178,19 +173,17 @@ int readqtccalls() {
     } else {
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    /* remember callsign, set marked QTC states */
-	    if (inputbuffer_len > 0) {
-		if (errno == ENOMEM) {
-		    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
-		    perror("RuntimeError: ");
-		    exit(EXIT_FAILURE);
-		}
-
+	    if (read > 0) {
 		parse_qtc_flagline(inputbuffer);
 	    }
 	}
+	if (errno == ENOMEM) {
+	    fprintf(stderr, "Error in: %s:%d", __FILE__, __LINE__);
+	    perror("RuntimeError: ");
+	    exit(EXIT_FAILURE);
+	}
 
-	if (inputbuffer != NULL)
-	    free(inputbuffer);
+	free(inputbuffer);
 	fclose(fp);
     }
 
