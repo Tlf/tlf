@@ -147,7 +147,7 @@ void bmdata_read_file() {
 		timediff = 0;
 
 	    while ((read = getline(&line, &line_len, fp)) != -1) {
-		if (line_len > 0) {
+		if (read > 0) {
 		    spot *entry = g_new0(spot, 1);
 		    fc = 0;
 		    token = strtok(line, ";");

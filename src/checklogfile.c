@@ -89,7 +89,7 @@ int repair_log(char *filename) {
     }
 
     while ((read = getline(&buffer, &buffer_len, infp)) != -1) {
-	if (buffer_len > 0) {
+	if (read > 0) {
 	    /* strip trailing whitespace (and newline) */
 	    g_strchomp(buffer);
 
@@ -159,7 +159,7 @@ int checklogfile_new(char *filename) {
     tooshort = 0;
 
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
-	if (buffer_len > 0) {
+	if (read > 0) {
 	    int band, linelen;
 	    int bandok = 0;
 
@@ -265,7 +265,7 @@ void checklogfile(void) {
 
 		} else {
 		    while ((read = getline(&inputbuffer, &read_len, infile)) != -1) {
-			if (read_len > 0) {
+			if (read > 0) {
 			    if (strlen(inputbuffer) != LOGLINELEN) {
 				/* append spaces */
 				for (int i = strlen(inputbuffer);

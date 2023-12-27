@@ -356,7 +356,7 @@ int load_ctydata(char *filename) {
     dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
     while ((read = getline(&buf, &buf_len, fd)) != -1) {
-	if (buf_len > 0) {
+	if (read > 0) {
 	    g_strchomp(buf); 	/* drop CR and/or NL and */
 	    if (*buf == '\0')	/* ignore empty lines */
 		continue;

@@ -362,7 +362,7 @@ int init_and_load_multipliers(void) {
     }
 
     while ((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
-	if (s_inputbuffer_len > 0) {
+	if (read > 0) {
 	    /* strip leading and trailing whitespace */
 	    g_strstrip(s_inputbuffer);
 

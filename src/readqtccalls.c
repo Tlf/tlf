@@ -64,7 +64,7 @@ int readqtccalls() {
 	}
 
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
-	    if (inputbuffer_len > 0) {
+	    if (read > 0) {
 		s++;
 
 		/* find maximum sent QTC block serial */
@@ -123,7 +123,7 @@ int readqtccalls() {
 	}
 
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
-	    if (inputbuffer_len > 0) {
+	    if (read > 0) {
 		/* remember callsign, build number of received QTCs */
 		parse_qtcline(inputbuffer, callsign, RECV);
 		qtc_inc(callsign, RECV);
@@ -152,7 +152,7 @@ int readqtccalls() {
 
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    /* remember callsign, mark it as QTC capable, based on eg. last years */
-	    if (inputbuffer_len > 0) {
+	    if (read > 0) {
 		qtc_inc(g_strstrip(inputbuffer), QTC_CAP);
 	    }
 	}
@@ -173,7 +173,7 @@ int readqtccalls() {
     } else {
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    /* remember callsign, set marked QTC states */
-	    if (inputbuffer_len > 0) {
+	    if (read > 0) {
 		parse_qtc_flagline(inputbuffer);
 	    }
 	}

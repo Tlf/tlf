@@ -582,7 +582,7 @@ static int process_cabrillo_template_file(const char *file_name) {
     int result = PARSE_OK;
 
     while ((read = getline(&logline, &read_len, fp)) != -1) {
-	if (read_len > 0) {
+	if (read > 0) {
 	    g_strstrip(logline);
 	    if (skip_template_line(logline)) {
 		continue;   // skip it

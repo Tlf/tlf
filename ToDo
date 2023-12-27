@@ -41,7 +41,7 @@ Planned for later versions
 Internals
 ~~~~~~~~~
 [x] Factor out helper functions to parse parts of logline (band, mode, ...)
-[ ] change internal QSO representation to structs (makes coding much
+[x] change internal QSO representation to structs (makes coding much
     simpler and will enable migration of log file to a different format
     later)
 

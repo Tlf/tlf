@@ -114,7 +114,7 @@ int parse_configfile(FILE *fp) {
     ssize_t read;
 
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
-	if (buffer_len > 0) {
+	if (read > 0) {
 	    g_strchug(buffer);              // remove leading space
 	    if (isCommentLine(buffer)) {    // skip comments and empty lines
 		continue;
@@ -690,7 +690,7 @@ static int cfg_countrylist(const cfg_arg_t arg) {
 	char *prefix = g_strdup_printf("%s:", whichcontest);
 
 	while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
-	    if (buffer_len > 0) {
+	    if (read > 0) {
 		g_strstrip(buffer);   /* no leading/trailing whitespace*/
 
 		/* accept only a line starting with the contest name
@@ -786,7 +786,7 @@ static int cfg_continentlist(const cfg_arg_t arg) {
     if ((fp = fopen(buffer, "r")) != NULL) {
 	char *prefix = g_strdup_printf("%s:", whichcontest);
 	while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
-	    if (buffer_len > 0) {
+	    if (read > 0) {
 		g_strstrip(buffer);   /* no leading/trailing whitespace*/
 		/* accept only a line starting with the contest name
 		* (CONTEST=) followed by ':' */
