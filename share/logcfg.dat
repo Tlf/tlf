@@ -129,6 +129,8 @@ CWTONE=800
 #           for ten tec OMNI VI #
 #################################
 #
+#FOLLOW_MODE
+#
 #RADIO_CONTROL
 #RIGMODEL=351
 #RIGSPEED=2400

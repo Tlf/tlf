@@ -189,6 +189,7 @@ int setup_default(void **state) {
     change_rst = false;
     fixedmult = 0.0;
     exclude_multilist_type = EXCLUDE_NONE;
+    follow_mode = true;
     rigptt = 0;
     minitest = 0;
     cqmode = CQ;
@@ -433,6 +434,7 @@ static bool_true_t bool_trues[] = {
     {"MIXED", &mixedmode},
     {"IGNOREDUPE", &ignoredupe},
     {"USE_CONTINENTLIST_ONLY", &continentlist_only},
+    {"FOLLOW_MODE", &follow_mode},
     {"RADIO_CONTROL", &trx_control},
     {"PORTABLE_MULT_2", &portable_x2},
     {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
@@ -915,6 +917,12 @@ void test_ssbmode(void **state) {
     int rc = call_parse_logcfg("SSBMODE\n");
     assert_int_equal(rc, 0);
     assert_int_equal(trxmode, SSBMODE);
+}
+
+void test_follow_mode(void **state) {
+    int rc = call_parse_logcfg("FOLLOW_MODE\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_true(follow_mode);
 }
 
 void test_operating_mode(void **state) {

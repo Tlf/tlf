@@ -99,7 +99,7 @@ sudo apt install sox xplanet
 
 Once the dependencies are installed, the easiest way to get TLF's source is by
 downloading the latest tarball (version 1.4.1) from
-[here](http://download.savannah.gnu.org/releases/tlf/tlf-1.4.1.tar.gz), then
+[here](https://github.com/Tlf/tlf/releases/download/tlf-1.4.1/tlf-1.4.1.tar.gz), then
 navigating your Terminal to the directory where you unpacked it, and typing:
 
 ```

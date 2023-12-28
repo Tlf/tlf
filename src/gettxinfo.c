@@ -203,7 +203,9 @@ void gettxinfo(void) {
 
 	if (bandinx != oldbandinx) {	// band change on trx
 	    oldbandinx = bandinx;
-	    handle_trx_bandswitch((int) freq);
+	    if (follow_mode) {
+                handle_trx_bandswitch((int) freq);
+            }
 	}
 
 	/* read speed from rig */
