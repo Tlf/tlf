@@ -47,6 +47,7 @@ static struct qso_t *qso_from_spot(spot *data) {
     qso->call = g_strdup(data->call);
     qso->comment = g_strdup("");    // TODO recall exchange if possible
     qso->freq = data->freq;
+    qso->bandindex = data->bandindex;
     qso->band = bandindex2nr(data->bandindex);
     return qso;
 }
