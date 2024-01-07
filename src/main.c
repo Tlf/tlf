@@ -416,7 +416,7 @@ bool itumult = false;		/* to add the ability of ITU zones to be multiplier */
 char itustr[3];
 
 bool nopacket = false;		/* set if tlf is called with '-n' */
-bool no_trx_control = false;	/* set if tlf is called with '-r' */
+bool trx_control_disabled = false;	/* set if tlf is called with '-r' */
 bool convert_cabrillo = false;  /* set if the arg input is a cabrillo */
 
 int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
@@ -468,7 +468,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	    nopacket = true;
 	    break;
 	case 'r':
-	    no_trx_control = true; // disable radio control
+	    trx_control_disabled = true; // disable radio control
 	    break;
 	case 'i':
 	    convert_cabrillo = true;
@@ -758,7 +758,7 @@ static int databases_load() {
 
 static void hamlib_init() {
 
-    if (no_trx_control) {
+    if (trx_control_disabled) {
 	trx_control = false;
     }
 
@@ -780,6 +780,7 @@ static void hamlib_init() {
 	    exit(1);
 	}
 	trx_control = false;
+	trx_control_disabled = true;
 	showmsg("Disabling rig control!");
 	sleep(1);
     }
@@ -872,6 +873,11 @@ static void keyer_init() {
 
     if (cwkeyer == HAMLIB_KEYER) {
 	showmsg("CW-Keyer is Hamlib");
+	if (trx_control_disabled) {
+	    showmsg("Radio control disabled - no keying!");
+	    sleep(2);
+	    return;
+	}
 	if (!trx_control) {
 	    showmsg("Radio control is not activated!!");
 	    sleep(1);
