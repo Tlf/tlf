@@ -875,6 +875,7 @@ static void keyer_init() {
 	showmsg("CW-Keyer is Hamlib");
 	if (trx_control_disabled) {
 	    showmsg("Radio control disabled - no keying!");
+	    sleep(2);
 	    return;
 	}
 	if (!trx_control) {
