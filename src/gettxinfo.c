@@ -225,6 +225,16 @@ void gettxinfo(void) {
     if (reqf == 0) {
 	poll_rig_state();
 
+    } else if (reqf == SETCWMODE) {
+
+	pthread_mutex_lock(&rig_lock);
+	retval = rig_set_mode(my_rig, RIG_VFO_CURR, RIG_MODE_CW, get_cw_bandwidth());
+	pthread_mutex_unlock(&rig_lock);
+
+	if (retval != RIG_OK) {
+	    TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
+	}
+
     } else if (reqf == SETSSBMODE) {
 
 	pthread_mutex_lock(&rig_lock);
