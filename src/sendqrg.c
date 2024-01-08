@@ -24,6 +24,7 @@
 #include <assert.h>
 
 #include "bands.h"
+#include "callinput.h"
 #include "cw_utils.h"
 #include "err_utils.h"
 #include "hamlib_keyer.h"
@@ -52,27 +53,34 @@ void send_bandswitch(freq_t trxqrg);
 static int parse_rigconf();
 static void debug_tlf_rig();
 
-/* check if call input field contains a frequency value and switch to it.
+/* check if call input field contains a valid frequency and switch to it.
+ * only integer kHz values are supported.
+ * if the frequency is out-of-band or there is no rig control then no action
+ * is taken.
  *
+ * return:
+ *  true    - call input field was a number
+ *  false   - call input field was not a number
  */
-int sendqrg(void) {
+bool sendqrg(void) {
 
-    if (!trx_control) {
-	return 0;               /* nothing to do here */
+    if (!plain_number(current_qso.call)) {
+	return false;
     }
 
-    const freq_t trxqrg = atof(current_qso.call) * 1000.0;
+    if (trx_control) {
 
-    int bandinx = freq2bandindex(trxqrg);
+	const freq_t trxqrg = atoi(current_qso.call) * 1000.0;
 
-    if (bandinx == BANDINDEX_OOB) {
-	return 0;   // not a frequency or out of band
+	int bandinx = freq2bandindex(trxqrg);
+
+	if (bandinx != BANDINDEX_OOB) {
+	    set_outfreq(trxqrg);
+	    send_bandswitch(trxqrg);
+	}
     }
 
-    set_outfreq(trxqrg);
-    send_bandswitch(trxqrg);
-
-    return trxqrg;
+    return true;
 }
 
 /**************************************************************************/
