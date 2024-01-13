@@ -1250,11 +1250,10 @@ void handle_bandswitch(int direction) {
     mvaddstr(12, 0, band[bandinx]);
 
     if (trx_control) {
-	freq = bandfrequency[bandinx]; // TODO: is this needed?
 	set_outfreq(bandfrequency[bandinx]);
     }
 
-    send_bandswitch(bandinx);
+    send_bandswitch(bandfrequency[bandinx]);
 }
 
 /** handle TRX memory operation and update screen
