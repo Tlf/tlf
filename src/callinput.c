@@ -1059,10 +1059,14 @@ bool valid_call_char(int ch) {
  * Check if string contains only digits
  * \param str    the string to check
  * \return true  if only digits inside
- *         false at least one none digit
+ *         false contains at least one non-digit or it's an empty string
  */
 bool plain_number(char *str) {
     int i;
+
+    if (strlen(str) == 0) {
+        return false;
+    }
 
     for (i = 0; i < strlen(str); i++) {
 	if (!isdigit(str[i])) {
