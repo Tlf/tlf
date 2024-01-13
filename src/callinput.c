@@ -1065,7 +1065,7 @@ bool plain_number(char *str) {
     int i;
 
     if (strlen(str) == 0) {
-        return false;
+	return false;
     }
 
     for (i = 0; i < strlen(str); i++) {
