@@ -40,6 +40,6 @@ bool rig_has_stop_morse();
 int init_tlf_rig(void);
 void close_tlf_rig(RIG *my_rig);
 
-int sendqrg(void);
+bool sendqrg(void);
 
 #endif /* end of include guard: SENDQRG_H */

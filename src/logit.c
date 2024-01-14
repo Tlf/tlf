@@ -70,7 +70,6 @@ void logit(void) {
 
     int callreturn = 0;
     int cury, curx;
-    int qrg_out = 0;
 
     cleanup();
     clear_display();
@@ -86,122 +85,121 @@ void logit(void) {
 	else
 	    callreturn = callinput();
 
-	qrg_out = sendqrg();
+	if (sendqrg()) {
+	    /* user entered frequency -> clear input field and restart loop */
+	    current_qso.call[0] = '\0';
+	    HideSearchPanel();
+	    continue;
+	}
 
-	if (qrg_out == 0) {		/* no frequency entered? */
+	if ((trxmode == CWMODE || trxmode == DIGIMODE)
+		&& (callreturn == '\n') && ctcomp) {
+	    callreturn = BACKSLASH;
+	    strcpy(current_qso.comment, cqzone);
+	}
 
-	    if ((trxmode == CWMODE || trxmode == DIGIMODE)
-		    && (callreturn == '\n') && ctcomp) {
-		callreturn = BACKSLASH;
-		strcpy(current_qso.comment, cqzone);
+	if ((callreturn == TAB || callreturn == SPACE)) {
+	    callreturn = getexchange();
+	}
+
+	if (callreturn == '\n' && strlen(current_qso.call) >= 3) {
+	    if ((current_qso.comment[0] == '\0') && iscontest
+		    && !ctcomp && !CONTEST_IS(DXPED))
+		defer_store = 0;
+
+	    if ((cqmode == CQ) && iscontest
+		    && (defer_store == 0)) {	/* CQ mode */
+		send_standard_message(2);
+		if (trxmode != CWMODE && trxmode != DIGIMODE) {
+		    if (contest->exchange_serial)
+			mvprintw(13, 29, "Serial number: %d", qsonum);
+		    refreshp();
+		}
+
+		set_simulator_state(FINAL);
+
+		if (CONTEST_IS(CQWW) || wazmult || itumult) {
+
+		    if (recall_exchange() == -1) {
+			if (itumult)
+			    strcpy(current_qso.comment, itustr);	/* fill in the ITUzone */
+			else
+			    strcpy(current_qso.comment, cqzone);	/* fill in the CQzone */
+		    }
+
+		    refresh_comment();
+		}
+
+		if (contest->recall_mult) {
+		    recall_exchange();
+		}
+
+		defer_store = 1;
+		callreturn = 0;
 	    }
 
-	    if ((callreturn == TAB || callreturn == SPACE)) {
-		callreturn = getexchange();
+	    if ((cqmode == S_P) && iscontest
+		    && (defer_store == 0)) {	/* S&P mode */
+
+		if (CONTEST_IS(CQWW)) {
+		    if (strlen(current_qso.comment) == 0 && recall_exchange() == -1)
+			strcpy(current_qso.comment, cqzone);	/* fill in the zone */
+
+		    refresh_comment();
+
+		} else if (contest->recall_mult) {
+		    recall_exchange();
+		}
+
+		if (trxmode == CWMODE || trxmode == DIGIMODE)
+		    sendspcall();
+		else {
+		    vk_play_file(ph_message[5]);
+		    if (contest->exchange_serial)
+			mvprintw(13, 29, "Serial number: %d", qsonum);
+		    refreshp();
+		}
+
+		defer_store = 1;
+		callreturn = 0;
 	    }
 
-	    if (callreturn == '\n' && strlen(current_qso.call) >= 3) {
-		if ((current_qso.comment[0] == '\0') && iscontest
-			&& !ctcomp && !CONTEST_IS(DXPED))
+	    if (defer_store == 1) {
+		defer_store++;
+		callreturn = 0;
+	    } else if (defer_store > 1) {
+		if (cqmode == CQ && iscontest) {
+		    resend_callsign();
+		    send_standard_message(CQ_TU_MSG);	/* send cq return */
+		    set_simulator_state(CALL);
+
 		    defer_store = 0;
 
-		if ((cqmode == CQ) && iscontest
-			&& (defer_store == 0)) {	/* CQ mode */
-		    send_standard_message(2);
-		    if (trxmode != CWMODE && trxmode != DIGIMODE) {
-			if (contest->exchange_serial)
-			    mvprintw(13, 29, "Serial number: %d", qsonum);
-			refreshp();
-		    }
-
-		    set_simulator_state(FINAL);
-
-		    if (CONTEST_IS(CQWW) || wazmult || itumult) {
-
-			if (recall_exchange() == -1) {
-			    if (itumult)
-				strcpy(current_qso.comment, itustr);	/* fill in the ITUzone */
-			    else
-				strcpy(current_qso.comment, cqzone);	/* fill in the CQzone */
-			}
-
-			refresh_comment();
-		    }
-
-		    if (contest->recall_mult) {
-			recall_exchange();
-		    }
-
-		    defer_store = 1;
-		    callreturn = 0;
 		}
 
-		if ((cqmode == S_P) && iscontest
-			&& (defer_store == 0)) {	/* S&P mode */
+		if ((cqmode == S_P) && iscontest) {
+		    send_standard_message(SP_TU_MSG); /* send S&P return */
 
-		    if (CONTEST_IS(CQWW)) {
-			if (strlen(current_qso.comment) == 0 && recall_exchange() == -1)
-			    strcpy(current_qso.comment, cqzone);	/* fill in the zone */
-
-			refresh_comment();
-
-		    } else if (contest->recall_mult) {
-			recall_exchange();
-		    }
-
-		    if (trxmode == CWMODE || trxmode == DIGIMODE)
-			sendspcall();
-		    else {
-			vk_play_file(ph_message[5]);
-			if (contest->exchange_serial)
-			    mvprintw(13, 29, "Serial number: %d", qsonum);
-			refreshp();
-		    }
-
-		    defer_store = 1;
-		    callreturn = 0;
+		    defer_store = 0;
 		}
-
-		if (defer_store == 1) {
-		    defer_store++;
-		    callreturn = 0;
-		} else if (defer_store > 1) {
-		    if (cqmode == CQ && iscontest) {
-			resend_callsign();
-			send_standard_message(CQ_TU_MSG);	/* send cq return */
-			set_simulator_state(CALL);
-
-			defer_store = 0;
-
-		    }
-
-		    if ((cqmode == S_P) && iscontest) {
-			send_standard_message(SP_TU_MSG); /* send S&P return */
-
-			defer_store = 0;
-		    }
-
-		    log_qso();
-		}
-	    }
-
-	    if ((callreturn == BACKSLASH) && (*current_qso.call != '\0')) {
-		defer_store = 0;
 
 		log_qso();
 	    }
-
-	    if (callreturn == CTRL_K || callreturn == 44) {	/*  CTRL K  */
-		getyx(stdscr, cury, curx);
-		move(5, 0);
-		keyer();
-		move(cury, curx);
-	    }
-
-	} else {	/* user entered frequency -> clear input field */
-	    current_qso.call[0] = '\0';
-	    HideSearchPanel();
 	}
+
+	if ((callreturn == BACKSLASH) && (*current_qso.call != '\0')) {
+	    defer_store = 0;
+
+	    log_qso();
+	}
+
+	if (callreturn == CTRL_K || callreturn == 44) {	/*  CTRL K  */
+	    getyx(stdscr, cury, curx);
+	    move(5, 0);
+	    keyer();
+	    move(cury, curx);
+	}
+
     }
 }
 
