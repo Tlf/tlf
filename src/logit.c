@@ -75,7 +75,7 @@ void logit(void) {
     clear_display();
     defer_store = 0;
 
-    start_background_process();	/* start it up */
+    resume_background_process();	/* start it up */
 
     while (1) {
 	printcall();

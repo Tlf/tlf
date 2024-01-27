@@ -43,39 +43,39 @@
 
 static bool go = true;
 // don't start until we know what we are doing
-static bool stop_backgrnd_process = true;
+static bool pause_backgrnd_process = true;
 
-static pthread_mutex_t stop_backgrnd_process_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t start_backgrnd_process_cond = PTHREAD_COND_INITIALIZER;
-static pthread_cond_t backgrnd_process_stopped_cond = PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t pause_backgrnd_process_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t resume_backgrnd_process_cond = PTHREAD_COND_INITIALIZER;
+static pthread_cond_t backgrnd_process_paused_cond = PTHREAD_COND_INITIALIZER;
 
 void terminate_background_process() {
     go = false;
 }
 
-void stop_background_process(void) {
-    pthread_mutex_lock(&stop_backgrnd_process_mutex);
-    assert(!stop_backgrnd_process);
-    stop_backgrnd_process = true;
-    pthread_cond_wait(&backgrnd_process_stopped_cond, &stop_backgrnd_process_mutex);
-    pthread_mutex_unlock(&stop_backgrnd_process_mutex);
+void pause_background_process(void) {
+    pthread_mutex_lock(&pause_backgrnd_process_mutex);
+    assert(!pause_backgrnd_process);
+    pause_backgrnd_process = true;
+    pthread_cond_wait(&backgrnd_process_paused_cond, &pause_backgrnd_process_mutex);
+    pthread_mutex_unlock(&pause_backgrnd_process_mutex);
 }
 
-void start_background_process(void) {
-    pthread_mutex_lock(&stop_backgrnd_process_mutex);
-    assert(stop_backgrnd_process);
-    stop_backgrnd_process = false;
-    pthread_cond_broadcast(&start_backgrnd_process_cond);
-    pthread_mutex_unlock(&stop_backgrnd_process_mutex);
+void resume_background_process(void) {
+    pthread_mutex_lock(&pause_backgrnd_process_mutex);
+    assert(pause_backgrnd_process);
+    pause_backgrnd_process = false;
+    pthread_cond_broadcast(&resume_backgrnd_process_cond);
+    pthread_mutex_unlock(&pause_backgrnd_process_mutex);
 }
 
 static void background_process_wait(void) {
-    pthread_mutex_lock(&stop_backgrnd_process_mutex);
-    if (stop_backgrnd_process) {
-	pthread_cond_broadcast(&backgrnd_process_stopped_cond);
-	pthread_cond_wait(&start_backgrnd_process_cond, &stop_backgrnd_process_mutex);
+    pthread_mutex_lock(&pause_backgrnd_process_mutex);
+    if (pause_backgrnd_process) {
+	pthread_cond_broadcast(&backgrnd_process_paused_cond);
+	pthread_cond_wait(&resume_backgrnd_process_cond, &pause_backgrnd_process_mutex);
     }
-    pthread_mutex_unlock(&stop_backgrnd_process_mutex);
+    pthread_mutex_unlock(&pause_backgrnd_process_mutex);
 }
 
 
@@ -126,7 +126,7 @@ void *background_process(void *ptr) {
 	    fldigi_rpc_cnt = 1 - fldigi_rpc_cnt;
 	}
 
-	if (!stop_backgrnd_process) {
+	if (!pause_backgrnd_process) {
 	    write_keyer();
 	    cqww_simulator();
 	}
@@ -156,7 +156,7 @@ void *background_process(void *ptr) {
 
 	    if ((*lan_message != '\0')
 		    && (lan_message[0] != thisnode)
-		    && !stop_backgrnd_process) {
+		    && !pause_backgrnd_process) {
 
 		switch (lan_message[1]) {
 

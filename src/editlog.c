@@ -72,13 +72,13 @@ void edit(char *filename) {
 
 void logedit(void) {
 
-    stop_background_process();
+    pause_background_process();
     edit(logfile);
     checklogfile();
 
     log_read_n_score();
 
-    start_background_process();
+    resume_background_process();
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
     erase();
