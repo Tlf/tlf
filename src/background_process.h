@@ -23,6 +23,7 @@
 #define BACKGROUND_PROCESS_H
 
 void *background_process(void *);
+void terminate_background_process();
 void stop_background_process(void);
 void start_background_process(void);
 

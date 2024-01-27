@@ -41,12 +41,17 @@
 #include "tlf.h"
 #include "write_keyer.h"
 
+static bool go = true;
 // don't start until we know what we are doing
 static bool stop_backgrnd_process = true;
 
 static pthread_mutex_t stop_backgrnd_process_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t start_backgrnd_process_cond = PTHREAD_COND_INITIALIZER;
 static pthread_cond_t backgrnd_process_stopped_cond = PTHREAD_COND_INITIALIZER;
+
+void terminate_background_process() {
+    go = false;
+}
 
 void stop_background_process(void) {
     pthread_mutex_lock(&stop_backgrnd_process_mutex);
@@ -73,6 +78,7 @@ static void background_process_wait(void) {
     pthread_mutex_unlock(&stop_backgrnd_process_mutex);
 }
 
+
 void *background_process(void *ptr) {
 
     char *prmessage;
@@ -84,7 +90,7 @@ void *background_process(void *ptr) {
     char debugbuffer[160];
     FILE *fp;
 
-    while (1) {
+    while (go) {
 
 	background_process_wait();
 
@@ -250,5 +256,6 @@ void *background_process(void *ptr) {
 
     }
 
+    pthread_exit(NULL);
 }
 
