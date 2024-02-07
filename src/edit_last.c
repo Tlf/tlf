@@ -201,7 +201,7 @@ void edit_last(void) {
     if (NR_QSOS == 0)
 	return;			/* nothing to edit */
 
-    stop_background_process();  // note: this freezes nr_qsos, as network is paused
+    pause_background_process();  // note: this freezes nr_qsos, as network is paused
 
     const int topline = (NR_LINES > NR_QSOS ? NR_LINES - NR_QSOS : 0);
 
@@ -333,5 +333,5 @@ void edit_last(void) {
 
     scroll_log();
 
-    start_background_process();
+    resume_background_process();
 }
