@@ -1,7 +1,7 @@
 # PACC contest for stations inside PA0 #
 ########################################
 CONTEST=pacc_pa
-logfile=pacc.log
+LOGFILE=pacc.log
 CONTEST_MODE
 CABRILLO=UNIVERSAL
 #
