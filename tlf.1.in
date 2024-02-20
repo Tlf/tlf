@@ -606,7 +606,7 @@ shown):
 .
 .P
 .EX
-/usr/bin/pkill \-f rec
+/usr/bin/pkill \-f $(which rec)
 .EE
 .
 .P

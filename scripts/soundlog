@@ -14,10 +14,10 @@ do
 			sleep 10
 		else
 			# Example command for OSS rec
-			# rec -w  -r 8000 $filename > /dev/null 2> /dev/null
+			# $(which rec) -w  -r 8000 $filename > /dev/null 2> /dev/null
 
 			# Example command for SoX rec
-			rec -c 1  -r 8000 -q $filename &
+			$(which rec) -c 1  -r 8000 -q $filename &
 			PID=$!
 			wait $PID
 		fi
