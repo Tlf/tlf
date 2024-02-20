@@ -8,7 +8,7 @@ trap 'kill -s INT $PID' TERM USR1
 while [ -f $HOME/.VRlock ]
 do
 		# store recorded files in actual directory
-		filename=`eval date +%d%H%M`".au"
+		filename=$(eval date +%d%H%M)".au"
 		if test -f $filename
 		then
 			sleep 10
