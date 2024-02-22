@@ -27,7 +27,7 @@ trap 'kill -s KILL $PID' TERM INT
 # mute mic
 #amixer -c 0 set Mic mute -q
 
-# play file on the default sound device in background, so signals can be catch
+# play file on the default sound device in background, so signals can be catched
 # by the 'trap' instruction above
 
 # SoX play utility syntax
