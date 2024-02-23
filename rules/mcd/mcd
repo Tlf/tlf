@@ -1,0 +1,62 @@
+##############################
+# Marconi Club QSO Party Day #
+##############################
+# http://www.ariloano.it/marconiclub/
+#
+# Provided by: Zoltan Csahok HA5CQZ
+#
+
+LOGFILE=mcd.log
+CONTEST_MODE
+
+CABRILLO=UNIVERSAL
+CABRILLO-CONTEST= MCD-QSO-PARTY
+CABRILLO-CATEGORY-BAND= ALL
+CABRILLO-CATEGORY-MODE= CW
+CABRILLO-CATEGORY-TRANSMITTER= ONE
+CABRILLO-CATEGORY-OPERATOR= ONE
+
+CABRILLO-CATEGORY-ASSISTED= -
+CABRILLO-CATEGORY-POWER= -
+CABRILLO-CATEGORY-TIME= -
+CABRILLO-CATEGORY-STATION=-
+CABRILLO-CATEGORY-OVERLAY=-
+CABRILLO-LOCATION=-
+CABRILLO-OFFTIME=-
+CABRILLO-CLUB=-
+CABRILLO-OPERATORS=-
+
+#================================
+# Select one of following blocks:
+#--------------------------------
+#
+# non-members send serial number
+#
+CABRILLO-EXCHANGE=#
+F3=@ ++5NN-- #
+S&P_TU_MSG=TU ++5NN-- #
+#--------------------------------
+#
+# Marconi Club members send membership number
+#
+##CABRILLO-EXCHANGE= MC123
+##F3=@ ++5NN-- MC123
+##S&P_TU_MSG=TU ++5NN-- MC123
+#================================
+
+# Scoring:
+# (handled by mcd.py)
+
+
+# Multipliers:
+# The multiplier total is the sum of worked MC members on each band
+# (handled by mcd.py)
+
+GENERIC_MULT=BAND
+
+
+RECALL_MULTS
+INITIAL_EXCHANGE=rules/mcd.txt
+
+PLUGIN_CONFIG=rules/mcd.txt
+
