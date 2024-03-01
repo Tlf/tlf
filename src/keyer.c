@@ -72,8 +72,7 @@ void keyer(void) {
 	return; /* no keyer present */
     }
 
-    const cqmode_t cqmode_save = cqmode;
-    cqmode = KEYBOARD;
+    keyboard_mode = true;
     show_header_line();
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -277,7 +276,7 @@ void keyer(void) {
     }
     hide_panel(panel);
 
-    cqmode = cqmode_save;
+    keyboard_mode = false;
 
     clear_display();
 }
