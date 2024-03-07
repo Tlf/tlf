@@ -270,6 +270,8 @@ int callinput(void) {
 	    x = KEY_F(1);   // continue as F1
 	}
 
+	x = handle_common_key(x);
+
 	switch (x) {
 	    // Ctrl-V: toggle grab direction
 	    case CTRL_V:
@@ -361,43 +363,6 @@ int callinput(void) {
 		break;
 	    }
 
-	    // Alt-w (M-w), set Morse weight.
-	    case ALT_W: {
-		char weightbuf[5] = "";
-		char *end;
-
-		mvaddstr(12, 29, "Wght: -50..50");
-
-		nicebox(1, 1, 2, 12, "Cw");
-		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-		mvprintw(2, 2, "Speed:   %2u ", GetCWSpeed());
-		mvprintw(3, 2, "Weight: %3d ", weight);
-		refreshp();
-
-		usleep(800000);
-		mvaddstr(3, 10, "   ");
-
-		echo();
-		mvgetnstr(3, 10, weightbuf, 3);
-		noecho();
-
-		g_strchomp(weightbuf);
-
-		int tmp = strtol(weightbuf, &end, 10);
-
-		if ((weightbuf[0] != '\0') && (*end == '\0')) {
-		    /* successful conversion */
-
-		    if (tmp > -51 && tmp < 51) {
-			weight = tmp;
-			netkeyer(K_WEIGHT, weightbuf);
-		    }
-		}
-		clear_display();
-
-		break;
-	    }
-
 	    // Alt-v (M-v), change Morse speed in CW mode, else band down.
 	    case ALT_V: {
 		if (ctcomp) {
@@ -431,47 +396,6 @@ int callinput(void) {
 		}
 		x = -1;
 
-		break;
-	    }
-
-	    // <Page-Up>, change RST if call field not empty, else increase CW speed.
-	    case KEY_PPAGE: {
-		if (change_rst && (strlen(current_qso.call) != 0)) {	// change RST
-
-		    rst_sent_up();
-
-		    if (!no_rst)
-			mvaddstr(12, 44, sent_rst);
-		    mvaddstr(12, 29, current_qso.call);
-
-		} else {	// change cw speed
-		    speedup();
-
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2u", GetCWSpeed());
-		}
-
-		break;
-	    }
-
-
-	    // <Page-Down>, change RST if call field not empty, else decrease CW speed.
-	    case KEY_NPAGE: {
-		if (change_rst && (strlen(current_qso.call) != 0)) {
-
-		    rst_sent_down();
-
-		    if (!no_rst)
-			mvaddstr(12, 44, sent_rst);
-		    mvaddstr(12, 29, current_qso.call);
-
-		} else {
-
-		    speeddown();
-
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2u", GetCWSpeed());
-		}
 		break;
 	    }
 
@@ -577,40 +501,6 @@ int callinput(void) {
 		    send_standard_message_prev_qso(x - 162); // alt-0 to alt-9
 		} else {
 		    send_standard_message(x - 162); /* alt-0 to alt-9 */
-		}
-
-		break;
-	    }
-
-	    // F1, send CQ or S&P call message.
-	    case KEY_F(1): {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-
-		    if (cqmode == S_P) {
-			sendspcall();
-		    } else {
-			send_standard_message(0);	/* CQ */
-		    }
-
-		    set_simulator_state(CALL);
-
-		} else {
-
-		    if (cqmode == S_P)
-			vk_play_file(ph_message[5]);	/* S&P */
-		    else
-			vk_play_file(ph_message[0]);
-		}
-		break;
-	    }
-
-	    // F2-F11, send messages 2 through 11.
-	    case KEY_F(2) ... KEY_F(11): {
-		// F2...F11 - F1 = 1...10
-		if (*current_qso.call == '\0') {
-		    send_standard_message_prev_qso(x - KEY_F(1));
-		} else {
-		    send_standard_message(x - KEY_F(1));
 		}
 
 		break;
@@ -738,21 +628,6 @@ int callinput(void) {
 		break;
 	    }
 
-	    // Alt-t (M-t), tune xcvr via cwdaemon.
-	    case ALT_T: {
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvaddstr(0, 2, "Tune     ");
-		move(12, 29);
-		refreshp();
-
-		tune();
-
-		show_header_line();
-		refreshp();
-
-		break;
-	    }
-
 	    // Alt-z (M-z), show zones worked.
 	    case ALT_Z: {
 		if (CONTEST_IS(CQWW)) {
@@ -821,17 +696,6 @@ int callinput(void) {
 			clear_display();
 		    }
 		    freqstore = 0;
-		}
-
-		break;
-	    }
-
-	    // Underscore, confirm last exchange.
-	    case '_': {
-		if (S_P == cqmode) {
-		    send_standard_message_prev_qso(SP_TU_MSG);
-		} else {
-		    send_standard_message_prev_qso(2);
 		}
 
 		break;
