@@ -159,6 +159,7 @@ int handle_common_key(int key) {
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 	    mvprintw(2, 2, "Speed:   %2u ", GetCWSpeed());
 	    mvprintw(3, 2, "Weight: %3d ", weight);
+	    move(3, 10);
 	    refreshp();
 
 	    usleep(800000);
