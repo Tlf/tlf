@@ -6,7 +6,7 @@
 // OBJECT ../src/addpfx.o
 // OBJECT ../src/bands.o
 
-extern int pfxmultab;
+extern bool pfxmultab;
 
 int find_worked_pfx(char *prefix);
 
