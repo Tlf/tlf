@@ -495,17 +495,6 @@ int callinput(void) {
 		break;
 	    }
 
-	    // Alt-0 to Alt-9 (M-0...M-9), send CW/Digimode messages 15-24.
-	    case 176 ... 185: {
-		if (*current_qso.call == '\0') {
-		    send_standard_message_prev_qso(x - 162); // alt-0 to alt-9
-		} else {
-		    send_standard_message(x - 162); /* alt-0 to alt-9 */
-		}
-
-		break;
-	    }
-
 	    // F12, activate autocq timing and message.
 	    case KEY_F(12): {
 		x = auto_cq();
