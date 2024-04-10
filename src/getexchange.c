@@ -164,6 +164,8 @@ int getexchange(void) {
 	    x = key_poll();
 	}
 
+        x = handle_common_key(x);
+
 	switch (x) {
 
 	    case CTRL_Q: {	// Ctl-q (^Q)--Open QTC panel for receiving or sending QTCs
@@ -293,32 +295,6 @@ int getexchange(void) {
 		break;
 	    }
 
-	    case KEY_F(1): {
-		if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		    sendmessage(my.call);		/* F1 */
-		} else
-		    vk_play_file(ph_message[5]);	// call
-
-		break;
-	    }
-
-	    case KEY_F(2) ... KEY_F(11): {
-		/* F2...F11 - F1 = 1...10 */
-		if (*current_qso.call == '\0') {
-		    send_standard_message_prev_qso(x - KEY_F(1));
-		} else {
-		    send_standard_message(x - KEY_F(1));
-		}
-
-		break;
-	    }
-
-	    case 176 ... 185: {	/* Alt-0 to Alt-9 */
-		send_standard_message(x - 162);	/* Messages 15-24 */
-
-		break;
-	    }
-
 	    /* <Home>--edit exchange field, position cursor to left end of field.
 	     * Fall through to KEY_LEFT stanza if ungetch() is successful.
 	     */
@@ -342,39 +318,6 @@ int getexchange(void) {
 		break;
 	    }
 
-	    case KEY_PPAGE: {	/* Page-Up--change MY RST */
-		if (change_rst) {
-		    rst_recv_up();
-
-		    if (!no_rst)
-			mvaddstr(12, 49, recvd_rst);
-
-		} else {	/* speed up */
-		    speedup();
-
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2u", GetCWSpeed());
-		}
-		break;
-
-	    }
-	    case KEY_NPAGE: {	/* Page-Down--change MY RST */
-		if (change_rst) {
-
-		    rst_recv_down();
-
-		    if (!no_rst)
-			mvaddstr(12, 49, recvd_rst);
-
-		} else {	/* speed down */
-		    speeddown();
-
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2u", GetCWSpeed());
-		}
-		break;
-
-	    }
 	    case ',':		// Keyboard Morse
 	    case CTRL_K: {	// Ctrl-K
 		move(5, 0);
