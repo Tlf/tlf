@@ -31,3 +31,10 @@ test/run_*
 test/*.log
 test/.deps
 test-driver
+
+# temporary internal files
+.bmdata.dat
+.paras
+
+# backed-up log file
+20*_*_*.log
