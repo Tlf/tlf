@@ -164,17 +164,17 @@ int handle_common_key(int key) {
 	    break;
 	}
 
-        // Alt-0 to Alt-9 (M-0...M-9), send CW/Digimode messages 15-24.
-        case 128+'0' ... 128+'9': {
-            int index = key - (128+'0') + CQ_TU_MSG + 1;
-            if (*current_qso.call == '\0') {
-                send_standard_message_prev_qso(index);
-            } else {
-                send_standard_message(index);
-            }
+	// Alt-0 to Alt-9 (M-0...M-9), send CW/Digimode messages 15-24.
+	case 128+'0' ... 128+'9': {
+	    int index = key - (128 + '0') + CQ_TU_MSG + 1;
+	    if (*current_qso.call == '\0') {
+		send_standard_message_prev_qso(index);
+	    } else {
+		send_standard_message(index);
+	    }
 
-            break;
-        }
+	    break;
+	}
 
 	// <Page-Down>, change RST if call field not empty, else decrease CW speed.
 	case KEY_NPAGE: {

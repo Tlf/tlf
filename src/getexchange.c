@@ -164,7 +164,7 @@ int getexchange(void) {
 	    x = key_poll();
 	}
 
-        x = handle_common_key(x);
+	x = handle_common_key(x);
 
 	switch (x) {
 
