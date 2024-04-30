@@ -52,6 +52,7 @@
 #include "gettxinfo.h"
 #include "grabspot.h"
 #include "ignore_unused.h"
+#include "keyer.h"
 #include "keystroke_names.h"
 #include "lancode.h"
 #include "muf.h"
@@ -88,37 +89,6 @@ bool plain_number(char *str);
 void handle_bandswitch(int direction);
 void handle_memory_operation(memory_op_t op);
 
-
-void tune() {
-    int count;
-    int count2;
-    gchar *buff;
-
-    count2 = tune_seconds;
-    while (count2 > 0) {
-	if (count2 >= 10) {
-	    count = 10;
-	} else {
-	    count = count2;
-	}
-	count2 -= count;
-	buff = g_strdup_printf("%d", count);
-	netkeyer(K_TUNE, buff);	// cw on
-	g_free(buff);
-
-	count = count * 4;    // sleeping 1/4 second units between keypress-checks
-	while (count > 0) {
-	    usleep(250000);
-	    if (key_poll() != -1) {	// any key pressed ?
-		count2 = 0;    // destroy outer loop as well
-		break;
-	    }
-	    count--;
-	}
-    }
-
-    netkeyer(K_ABORT, "");	// cw abort
-}
 
 
 /** callsign input loop

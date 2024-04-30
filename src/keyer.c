@@ -20,7 +20,7 @@
 
 /*------------------------------------------------------------------------
 
-    CW keyboard routine
+    CW keyboard and common key handling
 
 ------------------------------------------------------------------------*/
 
@@ -58,9 +58,45 @@
 
 void mfj1278_control(int x);
 
+static void tune() {
+    int count;
+    int count2;
+    gchar *buff;
+
+    count2 = tune_seconds;
+    while (count2 > 0) {
+	if (count2 >= 10) {
+	    count = 10;
+	} else {
+	    count = count2;
+	}
+	count2 -= count;
+	buff = g_strdup_printf("%d", count);
+	netkeyer(K_TUNE, buff);	// cw on
+	g_free(buff);
+
+	count = count * 4;    // sleeping 1/4 second units between keypress-checks
+	while (count > 0) {
+	    usleep(250000);
+	    if (key_poll() != -1) {	// any key pressed ?
+		count2 = 0;    // destroy outer loop as well
+		break;
+	    }
+	    count--;
+	}
+    }
+
+    netkeyer(K_ABORT, "");	// cw abort
+}
+
+
+//
 // handle common keys
 // F1..F11, Alt-0..9, _ (underscore), PgUp, PgDn, Alt-W, Alt-T
-// returns 0 if key was handled
+//
+// returns 0:   if the key was handled
+//         key: if the key was not handled
+//
 int handle_common_key(int key) {
     bool handled = true;
     switch (key) {
@@ -140,7 +176,6 @@ int handle_common_key(int key) {
             break;
         }
 
-
 	// <Page-Down>, change RST if call field not empty, else decrease CW speed.
 	case KEY_NPAGE: {
 	    if (change_rst && (strlen(current_qso.call) != 0)) {
@@ -219,6 +254,7 @@ int handle_common_key(int key) {
 
     return handled ? 0 : key;
 }
+
 
 void keyer(void) {
 
