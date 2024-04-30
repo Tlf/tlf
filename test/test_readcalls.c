@@ -59,6 +59,7 @@ int recall_exchange() { return -1; }
 void refresh_comment() {}
 void time_update() {}
 void show_rtty() {}
+int handle_common_key(int key) { return 0; }
 void keyer() {}
 void send_standard_message(int msg) {}
 void send_standard_message_prev_qso(int msg) {}

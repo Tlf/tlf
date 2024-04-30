@@ -40,6 +40,7 @@ void sendmessage(const char *msg) {}
 void send_standard_message(int msg) {}
 void send_standard_message_prev_qso(int msg) {}
 void add_local_spot(void) {}
+int handle_common_key(int key) { return 0; }
 void keyer(void) {}
 void qtc_main_panel(int direction) {}
 void rst_recv_up() {}
