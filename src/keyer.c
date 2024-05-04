@@ -315,9 +315,14 @@ void keyer(void) {
 	    x = ' ';
 	}
 
-	// Send space instead of newline or return.
+	// Newline or return:
+	//  - in CW mode close keyer window (same as Ctrl-K)
+	//  - else send space instead
 	if (x == '\n' || x == KEY_ENTER) {
 	    x = ' ';
+	    if (trxmode == CWMODE) {
+		x = CTRL_K;
+	    }
 	}
 
 	// <Escape>, Ctrl-K (^K), Alt-k (M-k), ` (Grave Accent)
