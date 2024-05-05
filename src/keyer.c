@@ -325,6 +325,11 @@ void keyer(void) {
 	    }
 	}
 
+	// Cursor down: close keyer window (same as Ctrl-K)
+	if (x == KEY_DOWN) {
+	    x = CTRL_K;
+	}
+
 	// <Escape>, Ctrl-K (^K), Alt-k (M-k), ` (Grave Accent)
 	if (x == ESCAPE || x == CTRL_K || x == ALT_K || x == '`') {
 	    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
