@@ -16,7 +16,7 @@ jobs:
       AM_COLOR_TESTS: always
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Show OS info
       run: cat /etc/os-release
     - name: Install dependencies
