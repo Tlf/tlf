@@ -1073,7 +1073,17 @@ Insert note in log.
 .BR ,\  (comma)
 .TQ
 .B  Ctrl-K
-Activate Morse Keyboard.
+Activate keyboard mode.
+All message and keying control keys work the same way as in log input mode.
+To close the keyer window without stopping the ongoing transmission
+press either
+.BR Ctrl-K ,
+.BR Alt-K ,
+.B `
+(Grave Accent) or
+.BR \[da]\  (Down-Arrow).
+.B Escape
+closes the window and also stops keying.
 .
 .TP
 .BR \(dq\  "(Double quotation)"
@@ -1196,10 +1206,6 @@ direction.
 .
 It can be toggled with
 .BR Ctrl-V .
-.
-.TP
-.B Ctrl-K
-Keyboard (CW and RTTY).
 .
 .TP
 .B Ctrl-L
@@ -1327,7 +1333,8 @@ Show the frequencies of other local station(s).
 .
 .TP
 .B Alt-K
-Keyboard (CW and RTTY).
+Keyboard mode, same as
+.RB Ctrl-K .
 .
 .TP
 .B Alt-M
