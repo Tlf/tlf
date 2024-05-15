@@ -100,21 +100,20 @@ static void tune() {
 int handle_common_key(int key) {
     bool handled = true;
     switch (key) {
-	// F1, send CQ or S&P call message. (???)
+	// F1, send CQ or S&P call message.
 	case KEY_F(1): {
 	    if (trxmode == CWMODE || trxmode == DIGIMODE) {
-		//FIXME when called from getexchange then just send my.call
 		if (cqmode == S_P) {
 		    sendspcall();
 		} else {
-		    send_standard_message(0);	/* CQ */
+		    send_standard_message(0);       /* CQ */
 		}
 
 		set_simulator_state(CALL);
 
 	    } else {
 		if (cqmode == S_P)
-		    vk_play_file(ph_message[5]);	/* S&P */
+		    vk_play_file(ph_message[5]);    /* S&P */
 		else
 		    vk_play_file(ph_message[0]);
 	    }
@@ -240,7 +239,7 @@ int handle_common_key(int key) {
 	    move(12, 29);
 	    refreshp();
 
-	    tune(); //FIXME defined in callinput.c
+	    tune();
 
 	    show_header_line();
 	    refreshp();
