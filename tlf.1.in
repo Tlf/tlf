@@ -1077,11 +1077,14 @@ Activate keyboard mode.
 All message and keying control keys work the same way as in log input mode.
 To close the keyer window without stopping the ongoing transmission
 press either
-.BR Ctrl-K ,
-.BR Alt-K ,
+.BR Ctrl\-K ,
+.BR Alt\-K ,
 .B `
-(Grave Accent) or
-.BR \[da]\  (Down-Arrow).
+(Grave Accent),
+.BR \[da]\  (Down-Arrow)
+or
+.BR Enter
+(in CW mode only).
 .B Escape
 closes the window and also stops keying.
 .
