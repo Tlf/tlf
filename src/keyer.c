@@ -20,7 +20,7 @@
 
 /*------------------------------------------------------------------------
 
-    CW keyboard routine
+    CW keyboard and common key handling
 
 ------------------------------------------------------------------------*/
 
@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #include "clear_display.h"
 #include "globalvars.h"
@@ -41,6 +42,11 @@
 #include "tlf_panel.h"
 #include "ui_utils.h"
 #include "write_keyer.h"
+#include "audio.h"
+#include "change_rst.h"
+#include "cw_utils.h"
+#include "sendspcall.h"
+#include "cqww_simulator.h"
 
 /* size and position of keyer window */
 #define KEYER_LINE_WIDTH 60
@@ -52,16 +58,211 @@
 
 void mfj1278_control(int x);
 
+static void tune() {
+    int count;
+    int count2;
+    gchar *buff;
+
+    count2 = tune_seconds;
+    while (count2 > 0) {
+	if (count2 >= 10) {
+	    count = 10;
+	} else {
+	    count = count2;
+	}
+	count2 -= count;
+	buff = g_strdup_printf("%d", count);
+	netkeyer(K_TUNE, buff);	// cw on
+	g_free(buff);
+
+	count = count * 4;    // sleeping 1/4 second units between keypress-checks
+	while (count > 0) {
+	    usleep(250000);
+	    if (key_poll() != -1) {	// any key pressed ?
+		count2 = 0;    // destroy outer loop as well
+		break;
+	    }
+	    count--;
+	}
+    }
+
+    netkeyer(K_ABORT, "");	// cw abort
+}
+
+
+//
+// handle common keys
+// F1..F11, Alt-0..9, _ (underscore), PgUp, PgDn, Alt-W, Alt-T
+//
+// returns 0:   if the key was handled
+//         key: if the key was not handled
+//
+int handle_common_key(int key) {
+    bool handled = true;
+    switch (key) {
+	// F1, send CQ or S&P call message.
+	case KEY_F(1): {
+	    if (trxmode == CWMODE || trxmode == DIGIMODE) {
+		if (cqmode == S_P) {
+		    sendspcall();
+		} else {
+		    send_standard_message(0);       /* CQ */
+		}
+
+		set_simulator_state(CALL);
+
+	    } else {
+		if (cqmode == S_P)
+		    vk_play_file(ph_message[5]);    /* S&P */
+		else
+		    vk_play_file(ph_message[0]);
+	    }
+	    break;
+	}
+
+	// F2-F11, send messages 2 through 11.
+	case KEY_F(2) ... KEY_F(11): {
+	    // F2...F11 - F1 = 1...10
+	    if (*current_qso.call == '\0') {
+		send_standard_message_prev_qso(key - KEY_F(1));
+	    } else {
+		send_standard_message(key - KEY_F(1));
+	    }
+
+	    break;
+	}
+
+	// Underscore, confirm last exchange.
+	case '_': {
+	    if (S_P == cqmode) {
+		send_standard_message_prev_qso(SP_TU_MSG);
+	    } else {
+		send_standard_message_prev_qso(2);
+	    }
+
+	    break;
+	}
+
+	// <Page-Up>, change RST if call field not empty, else increase CW speed.
+	case KEY_PPAGE: {
+	    if (change_rst && (strlen(current_qso.call) != 0)) {	// change RST
+
+		rst_sent_up();
+
+		if (!no_rst)
+		    mvaddstr(12, 44, sent_rst);
+		mvaddstr(12, 29, current_qso.call);
+
+	    } else {	// change cw speed
+		speedup();
+
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 14, "%2u", GetCWSpeed());
+	    }
+
+	    break;
+	}
+
+	// Alt-0 to Alt-9 (M-0...M-9), send CW/Digimode messages 15-24.
+	case 128+'0' ... 128+'9': {
+	    int index = key - (128 + '0') + CQ_TU_MSG + 1;
+	    if (*current_qso.call == '\0') {
+		send_standard_message_prev_qso(index);
+	    } else {
+		send_standard_message(index);
+	    }
+
+	    break;
+	}
+
+	// <Page-Down>, change RST if call field not empty, else decrease CW speed.
+	case KEY_NPAGE: {
+	    if (change_rst && (strlen(current_qso.call) != 0)) {
+
+		rst_sent_down();
+
+		if (!no_rst)
+		    mvaddstr(12, 44, sent_rst);
+		mvaddstr(12, 29, current_qso.call);
+
+	    } else {
+
+		speeddown();
+
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 14, "%2u", GetCWSpeed());
+	    }
+	    break;
+	}
+
+	// Alt-W (M-W), set Morse weight.
+	case ALT_W: {
+	    char weightbuf[5] = "";
+	    char *end;
+
+	    mvaddstr(12, 29, "Wght: -50..50");
+
+	    nicebox(1, 1, 2, 12, "CW");
+	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
+	    mvprintw(2, 2, "Speed:   %2u ", GetCWSpeed());
+	    mvprintw(3, 2, "Weight: %3d ", weight);
+	    move(3, 10);
+	    refreshp();
+
+	    usleep(800000);
+	    mvaddstr(3, 10, spaces(3));
+
+	    echo();
+	    mvgetnstr(3, 10, weightbuf, 3);
+	    noecho();
+
+	    g_strchomp(weightbuf);
+
+	    int tmp = strtol(weightbuf, &end, 10);
+
+	    if (weightbuf[0] != '\0' && *end == '\0') {
+		/* successful conversion */
+		if (tmp >= -50 && tmp <= 50) {
+		    weight = tmp;
+		    netkeyer(K_WEIGHT, weightbuf);
+		}
+	    }
+	    clear_display();
+
+	    break;
+	}
+
+	// Alt-T (M-T), tune xcvr via cwdaemon.
+	case ALT_T: {
+	    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+	    mvaddstr(0, 2, "Tune     ");
+	    move(12, 29);
+	    refreshp();
+
+	    tune();
+
+	    show_header_line();
+	    refreshp();
+
+	    break;
+	}
+
+	default:
+	    handled = false;
+    }
+
+    return handled ? 0 : key;
+}
+
+
 void keyer(void) {
 
     static WINDOW *win = NULL;
     static PANEL *panel = NULL;
 
     int x = 0, j = 0;
-    int cury, curx;
     char keyerstring[KEYER_LINE_WIDTH + 1] = "";
     int keyerstringpos = 0;
-    char weightbuf[15];
     const char txcontrolstring[2] = { CTRL_T, '\0' };	// ^t
     const char rxcontrolstring[2] = { CTRL_R, '\0' };	// ^r
     const char crcontrolstring[2] = { RETURN, '\0' };	// cr
@@ -72,8 +273,7 @@ void keyer(void) {
 	return; /* no keyer present */
     }
 
-    const cqmode_t cqmode_save = cqmode;
-    cqmode = KEYBOARD;
+    keyboard_mode = true;
     show_header_line();
 
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
@@ -114,13 +314,23 @@ void keyer(void) {
 	    x = ' ';
 	}
 
-	// Send space instead of newline or return.
+	// Newline or return:
+	//  - in CW mode close keyer window (same as Ctrl-K)
+	//  - else send space instead
 	if (x == '\n' || x == KEY_ENTER) {
 	    x = ' ';
+	    if (trxmode == CWMODE) {
+		x = CTRL_K;
+	    }
 	}
 
-	// <Escape>, Ctrl-K (^K), Alt-k (M-k)
-	if (x == ESCAPE || x == CTRL_K || x == ALT_K) {
+	// Cursor down: close keyer window (same as Ctrl-K)
+	if (x == KEY_DOWN) {
+	    x = CTRL_K;
+	}
+
+	// <Escape>, Ctrl-K (^K), Alt-k (M-k), ` (Grave Accent)
+	if (x == ESCAPE || x == CTRL_K || x == ALT_K || x == '`') {
 	    if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 		/* switch back to rx */
 		keyer_append(rxcontrolstring);
@@ -152,6 +362,8 @@ void keyer(void) {
 	    }
 	}
 
+	x = handle_common_key(x);
+
 	x = toupper(x);
 
 	if ((x >= ' ' && x <= 'Z') || x == LINEFEED) { /* ~printable or LF */
@@ -173,7 +385,7 @@ void keyer(void) {
 	    keyerstring[keyerstringpos] = '\0';
 
 	} else {
-
+	    // special keys
 	    switch (x) {
 		case '|': { // new line
 		    if (cwkeyer == MFJ1278_KEYER ||
@@ -204,65 +416,12 @@ void keyer(void) {
 		    }
 		    break;
 		}
+
 		case '\\': {
 		    if (cwkeyer == MFJ1278_KEYER ||
 			    digikeyer == MFJ1278_KEYER) {
 			sendmessage(ctl_c_controlstring);
 		    }
-		    break;
-		}
-
-		case ALT_W: {	// Alt-W, set weight
-		    mvaddstr(1, 0, "Weight=   ");
-		    refreshp();
-		    move(1, 7);
-		    echo();
-		    getnstr(weightbuf, 2);
-		    noecho();
-
-		    weight = atoi(weightbuf);
-		    netkeyer(K_WEIGHT, weightbuf);
-		    break;
-		}
-
-		// <Page-Up>, increase CW speed.
-		case KEY_PPAGE: {
-		    speedup();
-		    show_header_line();
-		    break;
-		}
-
-		// <Page-Down>, decrease CW speed.
-		case KEY_NPAGE: {
-		    speeddown();
-		    show_header_line();
-		    break;
-		}
-
-		case KEY_F(1): {
-		    getyx(stdscr, cury, curx);
-		    move(5, 0);
-		    send_keyer_message(0);	/* F1 */
-		    move(cury, curx);
-		    break;
-		}
-		case KEY_F(2) ... KEY_F(11): {
-		    if (*current_qso.call == '\0') {
-			send_standard_message_prev_qso(x - KEY_F(1));
-		    } else {
-			send_standard_message(x - KEY_F(1));
-		    }
-		    break;
-		}
-
-		// Underscore, confirm last exchange.
-		case '_': {
-		    if (S_P == cqmode) {
-			send_standard_message_prev_qso(SP_TU_MSG);
-		    } else {
-			send_standard_message_prev_qso(2);
-		    }
-
 		    break;
 		}
 
@@ -277,7 +436,7 @@ void keyer(void) {
     }
     hide_panel(panel);
 
-    cqmode = cqmode_save;
+    keyboard_mode = false;
 
     clear_display();
 }

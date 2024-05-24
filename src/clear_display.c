@@ -113,21 +113,22 @@ void add_to_keyer_terminal(char *buffer) {
 
 void show_header_line() {
     char *mode = "";
-    switch (cqmode) {
-	case CQ:
-	    mode = (simulator ? "Sim" : "Log");
-	    break;
-	case S_P:
-	    mode = "S&P";
-	    break;
-	case AUTO_CQ:
-	    mode = "AUTO_CQ";
-	    break;
-	case KEYBOARD:
-	    mode = "Keyboard";
-	    break;
-	default:
-	    ;   // should not happen
+    if (keyboard_mode) {
+	mode = "Keyboard";
+    } else {
+	switch (cqmode) {
+	    case CQ:
+		mode = (simulator ? "Sim" : "Log");
+		break;
+	    case S_P:
+		mode = "S&P";
+		break;
+	    case AUTO_CQ:
+		mode = "AUTO_CQ";
+		break;
+	    default:
+		;   // should not happen
+	}
     }
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);

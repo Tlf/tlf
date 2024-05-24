@@ -395,7 +395,7 @@ int fldigi_send_text(char *line) {
 	}
     }
 
-    if (cqmode != KEYBOARD) {   // normal mode, override flags
+    if (!keyboard_mode) {   // normal mode, override flags
 	start_tx = true;
 	switch_to_rx = true;
 	rc = cancel_tx();

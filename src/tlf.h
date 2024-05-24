@@ -57,10 +57,10 @@ typedef enum {
     CQ,         // Run
     S_P,        // Search and Pounce
     AUTO_CQ,    // temporary, used in autocq.c
-    KEYBOARD,   // temporary, used in keyer.c
     NONE        // used in trx_memory to signal empty memory
 } cqmode_t;
 
+extern bool keyboard_mode;
 
 #define FILTER_ALL 0 	/*  filter announcements */
 #define FILTER_ANN 1
