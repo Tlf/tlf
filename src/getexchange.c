@@ -299,7 +299,7 @@ int getexchange(void) {
 	     * Fall through to KEY_LEFT stanza if ungetch() is successful.
 	     */
 	    case KEY_HOME: {
-		if (ungetch(x) != OK)
+		if (current_qso.comment[0] == '\0' || ungetch(x) != OK)
 		    break;
 	    }
 
