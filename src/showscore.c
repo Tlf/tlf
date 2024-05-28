@@ -52,7 +52,7 @@ static const int bi_normal[6] = {
     BANDINDEX_20,  BANDINDEX_15, BANDINDEX_10
 };
 static const int bi_warc[6] = {
-    BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
+    BANDINDEX_160, BANDINDEX_80, BANDINDEX_60,
     BANDINDEX_30,  BANDINDEX_17, BANDINDEX_12
 };
 
