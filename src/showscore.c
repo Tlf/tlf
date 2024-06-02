@@ -41,18 +41,18 @@
 
 
 /* list of columns to display score for each band */
-static int band_cols[6] =
+static const int band_cols[6] =
 { 50, 55, 60, 65, 70, 75 };
 
 /* list of BANDINDEX entries to show in each column
  * first  - for normal contest bands
  * second - if in warc band */
-static int bi_normal[6] = {
+static const int bi_normal[6] = {
     BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
     BANDINDEX_20,  BANDINDEX_15, BANDINDEX_10
 };
-static int bi_warc[6] = {
-    BANDINDEX_160, BANDINDEX_80, BANDINDEX_40,
+static const int bi_warc[6] = {
+    BANDINDEX_160, BANDINDEX_80, BANDINDEX_60,
     BANDINDEX_30,  BANDINDEX_17, BANDINDEX_12
 };
 
@@ -90,7 +90,7 @@ void show_summary(int points, int multi) {
  *
  * \param bi  list of band indices to use
  */
-void display_header(int *bi) {
+static void display_header(const int *bi) {
     int i;
 
     /* prepare header line */
@@ -232,14 +232,12 @@ void showscore(void) {
     }
 
     /* show header with active band and number of QSOs */
-    if (!IsWarcIndex(bandinx)) {
-
-	display_header(bi_normal);
-
-    } else {
-
-	display_header(bi_warc);
+    const int *bi_array = bi_normal;
+    if (IsWarcIndex(bandinx)) {
+	bi_array = bi_warc;
     }
+
+    display_header(bi_array);
 
     /* show mults per band, if applicable */
     if (wysiwyg_multi
@@ -251,66 +249,66 @@ void showscore(void) {
 
 	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
-	    printfield(3, band_cols[i], multscore[bi_normal[i]]);
+	    printfield(3, band_cols[i], multscore[bi_array[i]]);
 	}
 
     } else if (itumult || wazmult) {
 
 	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
-	    printfield(3, band_cols[i], zonescore[bi_normal[i]]);
+	    printfield(3, band_cols[i], zonescore[bi_array[i]]);
 	}
 
     } else if (pfxmultab) {
 
 	mvaddstr(3, START_COL, "Mult ");
 	for (i = 0; i < 6; i++) {
-	    printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_normal[i]));
+	    printfield(3, band_cols[i], GetNrOfPfx_OnBand(bi_array[i]));
 	}
 
     } else if (dx_arrlsections) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
-	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	    printfield(3, band_cols[i], countryscore[bi_array[i]]);
 	}
 
 	mvaddstr(4, START_COL, "Sect");
 	for (i = 0; i < 6; i++) {
-	    printfield(4, band_cols[i], multscore[bi_normal[i]]);
+	    printfield(4, band_cols[i], multscore[bi_array[i]]);
 	}
 
     } else if (CONTEST_IS(CQWW)) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
-	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	    printfield(3, band_cols[i], countryscore[bi_array[i]]);
 	}
 
 	mvaddstr(4, START_COL, "Zone ");
 	for (i = 0; i < 6; i++) {
-	    printfield(4, band_cols[i], zonescore[bi_normal[i]]);
+	    printfield(4, band_cols[i], zonescore[bi_array[i]]);
 	}
 
     } else if (CONTEST_IS(ARRLDX_USA)) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
-	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	    printfield(3, band_cols[i], countryscore[bi_array[i]]);
 	}
 
     } else if (iscontest && country_mult) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
-	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	    printfield(3, band_cols[i], countryscore[bi_array[i]]);
 	}
 
     } else if (CONTEST_IS(PACC_PA)) {
 
 	mvaddstr(3, START_COL, "Cty  ");
 	for (i = 0; i < 6; i++) {
-	    printfield(3, band_cols[i], countryscore[bi_normal[i]]);
+	    printfield(3, band_cols[i], countryscore[bi_array[i]]);
 	}
     }
 
