@@ -22,6 +22,10 @@
 #ifndef SPEEDUPNDOWN_H
 #define SPEEDUPNDOWN_H
 
+#define CW_SPEED_MIN 6
+#define CW_SPEED_MAX 60
+#define CW_SPEED_STEP 2 /* up/down 2 wpm */
+
 int speedup(void);
 int speeddown(void);
 int setweight(int weight);

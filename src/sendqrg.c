@@ -170,11 +170,12 @@ int init_tlf_rig(void) {
     shownr("Freq =", (int) rigfreq);
 
     if (cwkeyer == HAMLIB_KEYER) {
+
 	retcode = hamlib_keyer_get_speed(&rig_cwspeed); /* read cw speed from rig */
 
 	if (retcode == RIG_OK) {
 	    shownr("CW speed = ", rig_cwspeed);
-	    SetCWSpeed(rig_cwspeed);
+	    speed = rig_cwspeed;
 	} else {
 	    TLF_LOG_WARN("Could not read CW speed from rig: %s", rigerror(retcode));
 	    if (!debugflag)

@@ -24,9 +24,17 @@
 #include "sendqrg.h"
 #include "hamlib_keyer.h"
 
-int hamlib_keyer_set_speed(int cwspeed) {
+int hamlib_keyer_set_speed(int *cwspeed) {
+    gran_t keyspd_gran = my_rig->caps->level_gran[rig_setting2idx(
+			     RIG_LEVEL_KEYSPD)];
     value_t spd;
-    spd.i = cwspeed;
+
+    /* if rig declared min/max speed, honor it. */
+    if (keyspd_gran.min.i > 0 && *cwspeed < keyspd_gran.min.i)
+	*cwspeed = keyspd_gran.min.i;
+    if (keyspd_gran.max.i > 0 && *cwspeed > keyspd_gran.max.i)
+	*cwspeed = keyspd_gran.max.i;
+    spd.i = *cwspeed;
 
     pthread_mutex_lock(&tlf_rig_mutex);
     int ret = rig_set_level(my_rig, RIG_VFO_CURR, RIG_LEVEL_KEYSPD, spd);

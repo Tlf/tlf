@@ -28,7 +28,7 @@ void store_qso(const char *file, char *logline) { }
 void cleanup_qso() { }
 void make_qtc_logline(struct read_qtc_t qtc_line, char *fname) { }
 char *getgrid(char *comment) { return comment; }
-void checkexchange(int x) { }
+void checkexchange(struct qso_t *qso, bool interactive) { }
 void add_to_keyer_terminal(char *buffer) {}
 
 int get_total_score() {
