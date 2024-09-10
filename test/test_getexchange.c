@@ -50,7 +50,6 @@ void speedup() {}
 void speeddown() {}
 void vk_play_file() {}
 int recall_exchange(void) { return 0; }
-int GetCWSpeed(void) { return 0; }
 int send_lan_message(int opcode, char *message) { return 0; }
 void clusterinfo(void) {}
 void clear_display(void) {}

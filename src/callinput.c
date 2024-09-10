@@ -339,7 +339,7 @@ int callinput(void) {
 		    while (x != ESCAPE) {
 			nicebox(1, 1, 2, 12, "Cw");
 			attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-			mvprintw(2, 2, "Speed:   %2u ", GetCWSpeed());
+			mvprintw(2, 2, "Speed:   %2u ", speed);
 			mvprintw(3, 2, "Weight: %3d ", weight);
 			printcall();
 			refreshp();
@@ -349,12 +349,12 @@ int callinput(void) {
 			    speedup();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 
-			    mvprintw(0, 14, "%2u", GetCWSpeed());
+			    mvprintw(0, 14, "%2u", speed);
 
 			} else if (x == KEY_DOWN) {
 			    speeddown();
 			    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-			    mvprintw(0, 14, "%2u", GetCWSpeed());
+			    mvprintw(0, 14, "%2u", speed);
 
 			} else
 			    x = ESCAPE;
@@ -931,10 +931,10 @@ int autosend() {
     strcpy(hiscall_sent, current_qso.call);
 
     char_sent = 0; 			/* no char sent so far */
-    timeout_sent = (1.2 / GetCWSpeed()) * getCWdots(current_qso.call[char_sent]);
+    timeout_sent = (1.2 / speed) * getCWdots(current_qso.call[char_sent]);
 
     timer = g_timer_new();
-    timeout = (1.2 / GetCWSpeed()) * cw_message_length(current_qso.call);
+    timeout = (1.2 / speed) * cw_message_length(current_qso.call);
 
     x = -1;
     while ((x != ESCAPE) && (x != '\n' && x != KEY_ENTER)) {
@@ -949,7 +949,7 @@ int autosend() {
 		/* one char sent - display and set new timeout */
 		char_sent ++;
 		timeout_sent +=
-		    (1.2 / GetCWSpeed()) * getCWdots(current_qso.call[char_sent]);
+		    (1.2 / speed) * getCWdots(current_qso.call[char_sent]);
 
 	    }
 
@@ -994,7 +994,7 @@ int autosend() {
 	    sendmessage(append);
 
 	    /* add char length to timeout */
-	    timeout += (1.2 / GetCWSpeed()) * getCWdots((char) x);
+	    timeout += (1.2 / speed) * getCWdots((char) x);
 
 	    len = strlen(hiscall_sent);
 	    hiscall_sent[len] = x;

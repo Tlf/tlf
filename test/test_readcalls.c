@@ -67,8 +67,7 @@ void stoptx() {}
 void qtc_main_panel(int direction) {}
 void add_local_spot() {}
 void sendmessage(const char *msg) {}
-void printcall(const char *msg) {}
-unsigned int  GetCWSpeed() { return 10; }
+void printcall(void) {}
 int speedup() { return 12; }
 int speeddown() { return 8; }
 void rst_recv_up() {}

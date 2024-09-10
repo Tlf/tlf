@@ -82,10 +82,7 @@ int get_total_score() {
 void ask(char *buffer, char *what) {
 }
 
-static int wpm_spy;
-void SetCWSpeed(unsigned int wpm) {
-    wpm_spy = wpm;
-}
+int speed;
 
 static char rst_init_spy[100];
 void rst_init(char *init_string) {
@@ -1000,7 +997,7 @@ void test_bandmap_d100(void **state) {
 void test_cwspeed(void **state) {
     int rc = call_parse_logcfg("CWSPEED= 18 \n");
     assert_int_equal(rc, 0);
-    assert_int_equal(wpm_spy, 18);
+    assert_int_equal(speed, 18);
 }
 
 void test_cwtone(void **state) {

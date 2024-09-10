@@ -48,6 +48,7 @@
 #include "qtcvars.h"		// Includes globalvars.h
 #include "setcontest.h"
 #include "set_tone.h"
+#include "speedupndown.h"
 #include "startmsg.h"
 #include "tlf_curses.h"
 #include "searchlog.h"
@@ -543,11 +544,11 @@ static int cfg_bandmap(const cfg_arg_t arg) {
 
 static int cfg_cwspeed(const cfg_arg_t arg) {
     int value = 0;	/* avoid warning about uninitialized variables */
-    int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 6, .max = 60});
+    int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = CW_SPEED_MIN, .max = CW_SPEED_MAX});
     if (rc != PARSE_OK) {
 	return rc;
     }
-    SetCWSpeed(value);
+    speed = value;
     return PARSE_OK;
 }
 

@@ -157,7 +157,7 @@ int handle_common_key(int key) {
 		speedup();
 
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 14, "%2u", GetCWSpeed());
+		mvprintw(0, 14, "%2u", speed);
 	    }
 
 	    break;
@@ -190,7 +190,7 @@ int handle_common_key(int key) {
 		speeddown();
 
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvprintw(0, 14, "%2u", GetCWSpeed());
+		mvprintw(0, 14, "%2u", speed);
 	    }
 	    break;
 	}
@@ -204,7 +204,7 @@ int handle_common_key(int key) {
 
 	    nicebox(1, 1, 2, 12, "CW");
 	    attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
-	    mvprintw(2, 2, "Speed:   %2u ", GetCWSpeed());
+	    mvprintw(2, 2, "Speed:   %2u ", speed);
 	    mvprintw(3, 2, "Weight: %3d ", weight);
 	    move(3, 10);
 	    refreshp();

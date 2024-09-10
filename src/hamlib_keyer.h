@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-int hamlib_keyer_set_speed(int cwspeed);
+int hamlib_keyer_set_speed(int *cwspeed);
 int hamlib_keyer_get_speed(int *cwspeed);
 int hamlib_keyer_send(char *cwmessage);
 int hamlib_keyer_stop();

@@ -48,7 +48,7 @@ static int get_autocq_time() {
 	return 0;   // unknown
     }
     const int cw_message_len = cw_message_length(message[11]);
-    return (int)(1200.0 / GetCWSpeed()) * cw_message_len;
+    return (int)(1200.0 / speed) * cw_message_len;
 }
 
 #define NO_KEY -1

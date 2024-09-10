@@ -32,15 +32,18 @@
 #include "hamlib_keyer.h"
 #include "netkeyer.h"
 #include "sendbuf.h"
+#include "speedupndown.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 
 
-void setspeed(void) {
+static int setspeed(int cwspeed) {
 
     int retval = 0;
     char buff[3];
-    int cwspeed = GetCWSpeed();
+
+    if (cwspeed < CW_SPEED_MIN || cwspeed > CW_SPEED_MAX)
+	return speed;
 
     snprintf(buff, 3, "%2u", cwspeed);
 
@@ -48,7 +51,9 @@ void setspeed(void) {
 
 	retval = netkeyer(K_SPEED, buff);
 
-	if (retval < 0) {
+	if (retval >= 0) {
+	    speed = cwspeed;
+	} else {
 	    TLF_LOG_WARN("keyer not active");
 //                      trxmode = SSBMODE;
 	    clear_display();
@@ -57,9 +62,11 @@ void setspeed(void) {
 
     if (cwkeyer == HAMLIB_KEYER) {
 
-	retval = hamlib_keyer_set_speed(cwspeed);
+	retval = hamlib_keyer_set_speed(&cwspeed); /* sets new cwspeed on success */
 
-	if (retval < 0) {
+	if (retval >= 0) {
+	    speed = cwspeed;
+	} else {
 	    TLF_LOG_WARN("Could not set CW speed: %s", rigerror(retval));
 	    clear_display();
 	}
@@ -78,7 +85,11 @@ void setspeed(void) {
 
 	usleep(500000);
 	sendmessage("CONV\015\n");
+
+	speed = cwspeed;
     }
+
+    return speed;
 }
 
 /* ------------------------------------------------------------
@@ -90,14 +101,7 @@ int speedup(void) {
     if (trxmode != CWMODE)
 	return (0);
 
-    if (speed < 20) {
-
-	speed++;
-	setspeed();
-
-    }
-
-    return (speed);
+    return setspeed(speed + CW_SPEED_STEP);
 }
 
 
@@ -110,14 +114,7 @@ int speeddown(void) {
     if (trxmode != CWMODE)	/* bail out, this is an SSB contest */
 	return (0);
 
-    if (speed >= 1) {
-
-	speed--;
-	setspeed();
-
-    }
-
-    return (speed);
+    return setspeed(speed - CW_SPEED_STEP);
 }
 
 

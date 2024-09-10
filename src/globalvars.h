@@ -130,6 +130,7 @@ extern int minitest;    // minitest period length in seconds, 0 if not used
 extern int portnum;
 extern int lan_port;
 extern int txdelay;
+extern int speed; /* CW speed in wpm */
 extern int weight;
 extern int cw_bandwidth;
 extern int cwpoints;

@@ -212,12 +212,11 @@ void gettxinfo(void) {
 	    retval = hamlib_keyer_get_speed(&rig_cwspeed);
 
 	    if (retval == RIG_OK) {
-		if (GetCWSpeed() !=
-			rig_cwspeed) { // FIXME: doesn't work if rig speed is between the values from CW_SPEEDS
-		    SetCWSpeed(rig_cwspeed);
+		if (speed != rig_cwspeed) {
+		    speed = rig_cwspeed;
 
 		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2u", GetCWSpeed());
+		    mvprintw(0, 14, "%2u", speed);
 		}
 	    } else {
 		TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));

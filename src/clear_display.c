@@ -133,7 +133,7 @@ void show_header_line() {
 
     attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
     mvaddstr(0, 0, spaces(29));
-    mvprintw(0, 0, "  %-8s  S=%2i D=%i ", mode, GetCWSpeed(), cqdelay);
+    mvprintw(0, 0, "  %-8s  S=%2i D=%i ", mode, speed, cqdelay);
     mvaddstr(0, 21, fkey_header);
 }
 
