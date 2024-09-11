@@ -618,7 +618,7 @@ static int cfg_thisnode(const cfg_arg_t arg) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
 
-    if (strlen(str) != 1 || str[0] < 'A' || str[0] > 'A' + MAXNODES) {
+    if (strlen(str) != 1 || str[0] < 'A' || str[0] >= 'A' + MAXNODES) {
 	g_free(str);
 	error_details = g_strdup_printf("name is A..%c", 'A' + MAXNODES - 1);
 	return PARSE_WRONG_PARAMETER;

@@ -209,7 +209,7 @@ void *background_process(void *ptr) {
 			break;
 		    case FREQMSG:
 			if ((lan_message[0] >= 'A')
-				&& (lan_message[0] <= 'A' + MAXNODES)) {
+				&& (lan_message[0] < 'A' + MAXNODES)) {
 			    node_frequencies[lan_message[0] - 'A'] =
 				atof(lan_message + 2) * 1000.0;
 			    break;
@@ -229,7 +229,7 @@ void *background_process(void *ptr) {
 
 		    case TIMESYNC:
 			if ((lan_message[0] >= 'A')
-				&& (lan_message[0] <= 'A' + MAXNODES)) {
+				&& (lan_message[0] < 'A' + MAXNODES)) {
 			    time_t lantime = atoi(lan_message + 2);
 
 			    time_t delta = lantime - (get_time() - timecorr);
