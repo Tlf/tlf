@@ -17,7 +17,7 @@ XCHG_PATTERN = re.compile(r"""
     \s*                     # optional space
     (                       # optional island reference
         (AF|AN|AS|EU|NA|OC|SA)  # continent
-        \s*                     # optional space
+        [\s-]*                  # optional spaces or dashes
         ([0-9]+)                # and digits
     )?
     $                       # end of string
@@ -31,7 +31,7 @@ def parse_exchange(xchg):
     seq_number = int(m.group(1))
     if m.group(2):
         ref_index = int(m.group(4))
-        ref = f'{m.group(3)}{ref_index:03}'     # normalize island reference
+        ref = f'{m.group(3)}-{ref_index:03}'    # normalize island reference
     else:
         ref = None
 
@@ -83,6 +83,8 @@ def check_exchange(qso):
             mult += 'c'
         else:
             mult += 's'
+    else:
+        xchg += ' ------'
 
     return {'mult1_value': mult, 'normalized_exchange': xchg}
 
