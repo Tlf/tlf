@@ -21,6 +21,8 @@
 #ifndef QTCUTIL_H
 #define QTCUTIL_H
 
+#include "qtcvars.h"
+
 struct t_qtc_store_obj {
     int total;
     int received;
@@ -29,11 +31,11 @@ struct t_qtc_store_obj {
 };
 
 void qtc_init();
-void qtc_inc(char callsign[15], int direction);
-void qtc_dec(char callsign[15], int direction);
-struct t_qtc_store_obj *qtc_get(char callsign[15]);
+void qtc_inc(char callsign[QTC_CALL_SIZE], int direction);
+void qtc_dec(char callsign[QTC_CALL_SIZE], int direction);
+struct t_qtc_store_obj *qtc_get(char callsign[QTC_CALL_SIZE]);
 
-void parse_qtcline(char *logline, char callsign[15], int direction);
+void parse_qtcline(char *logline, char callsign[QTC_CALL_SIZE], int direction);
 char qtc_get_value(struct t_qtc_store_obj *qtc_obj);
 void parse_qtc_flagline(char *lineptr);
 int parse_qtc_flagstr(char *lineptr, char *callsign, char *flag);

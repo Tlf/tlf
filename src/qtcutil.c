@@ -79,7 +79,7 @@ void qtc_meta_write() {
     g_list_free(qtc_key_list);
 }
 
-void qtc_inc(char callsign[15], int direction) {
+void qtc_inc(char callsign[QTC_CALL_SIZE], int direction) {
     struct t_qtc_store_obj *qtc_obj;
 
     qtc_obj = g_hash_table_lookup(qtc_store, callsign);
@@ -114,7 +114,7 @@ void qtc_inc(char callsign[15], int direction) {
     }
 }
 
-void qtc_dec(char callsign[15], int direction) {
+void qtc_dec(char callsign[QTC_CALL_SIZE], int direction) {
     struct t_qtc_store_obj *qtc_obj;
 
     qtc_obj = g_hash_table_lookup(qtc_store, callsign);
@@ -130,7 +130,7 @@ void qtc_dec(char callsign[15], int direction) {
 
 }
 
-struct t_qtc_store_obj *qtc_get(char callsign[15]) {
+struct t_qtc_store_obj *qtc_get(char callsign[QTC_CALL_SIZE]) {
 
     struct t_qtc_store_obj *qtc_obj;
 
@@ -146,15 +146,15 @@ struct t_qtc_store_obj *qtc_get(char callsign[15]) {
 
 }
 
-void parse_qtcline(char *logline, char callsign[15], int direction) {
+void parse_qtcline(char *logline, char callsign[QTC_CALL_SIZE], int direction) {
 
     int i = 0;
 
     if (direction == RECV) {
-	strncpy(callsign, logline + 30, 15);
+	strncpy(callsign, logline + 30, QTC_CALL_SIZE - 1);
     }
     if (direction == SEND) {
-	strncpy(callsign, logline + 35, 15);
+	strncpy(callsign, logline + 35, QTC_CALL_SIZE - 1);
     }
     while (callsign[i] != ' ') {
 	i++;
@@ -201,7 +201,7 @@ int parse_qtc_flagstr(char *lineptr, char *callsign, char *flag) {
 
 void parse_qtc_flagline(char *lineptr) {
     int rc;
-    char callsign[15], msg[18];
+    char callsign[QTC_CALL_SIZE], msg[18];
     char flag[2] = "";
 
     rc = parse_qtc_flagstr(lineptr, callsign, flag);
