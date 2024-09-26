@@ -150,13 +150,15 @@ void parse_qtcline(char *logline, char callsign[QTC_CALL_SIZE], int direction) {
 
     int i = 0;
 
+    memset(callsign, 0, QTC_CALL_SIZE);
+
     if (direction == RECV) {
 	strncpy(callsign, logline + 30, QTC_CALL_SIZE - 1);
     }
     if (direction == SEND) {
 	strncpy(callsign, logline + 35, QTC_CALL_SIZE - 1);
     }
-    while (callsign[i] != ' ') {
+    while (i < QTC_CALL_SIZE - 1 && callsign[i] != ' ') {
 	i++;
     }
     callsign[i] = '\0';
