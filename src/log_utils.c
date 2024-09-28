@@ -92,6 +92,8 @@ struct qso_t *parse_qso(char *buffer) {
 
     ptr = g_malloc0(sizeof(struct qso_t));
 
+    gchar *tbuffer = g_strdup(buffer);
+
     /* remember whole line */
     ptr->logline = g_strdup(buffer);
     ptr->qsots = 0;
@@ -103,7 +105,7 @@ struct qso_t *parse_qso(char *buffer) {
 
     /* split buffer into parts for linedata_t record and parse
      * them accordingly */
-    tmp = strtok_r(buffer, " \t", &sp);
+    tmp = strtok_r(tbuffer, " \t", &sp);
 
     /* band */
     ptr->band = atoi(tmp);
@@ -144,15 +146,19 @@ struct qso_t *parse_qso(char *buffer) {
     ptr->rst_r = atoi(strtok_r(NULL, " \t", &sp));
 
     /* comment (exchange) */
-    ptr->comment = g_strndup(buffer + 54, contest->exchange_width);
+    ptr->comment = g_strndup(tbuffer + 54, contest->exchange_width);
 
     /* tx */
-    ptr->tx = (buffer[79] == '*') ? 1 : 0;
+    ptr->tx = (tbuffer[79] == '*') ? 1 : 0;
 
     /* frequency (kHz) */
-    ptr->freq = atof(buffer + 80) * 1000.0;
+    ptr->freq = atof(tbuffer + 80) * 1000.0;
     if (freq2bandindex(ptr->freq) == BANDINDEX_OOB) {
 	ptr->freq = 0.;
+    }
+
+    if (tbuffer != NULL) {
+        g_free(tbuffer);
     }
 
     return ptr;
