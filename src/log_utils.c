@@ -158,7 +158,7 @@ struct qso_t *parse_qso(char *buffer) {
     }
 
     if (tbuffer != NULL) {
-        g_free(tbuffer);
+	g_free(tbuffer);
     }
 
     return ptr;
