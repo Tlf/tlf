@@ -122,9 +122,7 @@ void log_to_disk(int from_lan) {
 
 	struct qso_t *qso = parse_qso(tlogline);
 
-	if (tlogline != NULL) {
-	    g_free(tlogline);
-	}
+	g_free(tlogline);
 
 	addcall2();
 
