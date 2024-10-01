@@ -118,7 +118,13 @@ void log_to_disk(int from_lan) {
 
 	total = total + score2(lan_logline);
 
-	struct qso_t *qso = parse_qso(lan_logline);
+	gchar *tlogline = g_strdup(lan_logline);
+
+	struct qso_t *qso = parse_qso(tlogline);
+
+	if (tlogline != NULL) {
+	    g_free(tlogline);
+	}
 
 	addcall2();
 
