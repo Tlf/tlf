@@ -87,8 +87,10 @@ void clusterinfo(void) {
 	    node_frequencies[thisnode - 'A'] = atof(band[bandinx]);
 
 	for (f = 0; f < MAXNODES; f++) {
+	    char node_id = 'A' + f;
 	    if (node_frequencies[f] != 0)
-		mvprintw(15 + f, 4, " Stn %c : %5.0f", 'A' + f,
+		mvprintw(15 + f, 4, "%cStn %c : %5.0f",
+			 (node_id == thisnode ? '*' : ' '), node_id,
 			 node_frequencies[f] / 1000.0);
 	}
 	nicebox(14, 3, 8, 27, "Frequencies");
