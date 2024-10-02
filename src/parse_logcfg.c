@@ -686,7 +686,6 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     g_strlcpy(buffer, parameter, buffer_len);
     g_strchomp(buffer);	/* drop trailing whitespace */
 
-    printf("%s\n", buffer);
     if ((fp = fopen(buffer, "r")) != NULL) {
 	char *prefix = g_strdup_printf("%s:", whichcontest);
 

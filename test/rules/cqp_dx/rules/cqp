@@ -1,0 +1,64 @@
+########################
+# 
+#
+#
+########################
+#
+CONTEST_MODE
+LOGFILE=cqp.log
+CABRILLO=UNIVERSAL
+GENERIC_MULT=BAND
+NO_RST
+PLUGIN_CONFIG=FL
+SSBPOINTS=2
+CWPOINTS=3
+#
+##################################
+#                                #
+#  Messages F1= to F12=          #
+#  Message CQ_TU_MSG=            #
+#  Message S&P_TU_MSG=           #
+#                                #
+#  % = call                      #
+#  @ = hiscall                   #
+#  # = serial                    #
+#  [ = RST                       #
+#  + = increase cw speed         #
+#  - = decrease cw speed         #
+#                                #
+##################################
+#
+F1=cq cqp %
+F2=@ DE %
+F3=# FL
+F4=TU 
+F5=@
+F6=%
+F7=@ SRI QSO B4 GL
+F8=AGN
+F9= ?
+F10= QRZ?
+F11= PSE K
+F12=cq cqp %
+#
+CQ_TU_MSG=TU %
+S&P_TU_MSG=# FL
+#
+#ALT_0=
+#ALT_1=
+#ALT_2=
+#ALT_3=
+#ALT_4=
+#ALT_5=
+#ALT_6=
+#ALT_7=
+#ALT_8=
+#ALT_9=
+#
+#SEND_DE
+#
+CABRILLO-QSO-FORMAT=CQP
+CABRILLO-EXCHANGE=# FL
+CABRILLO-CONTEST=
+####### END #####################
+

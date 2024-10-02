@@ -1,0 +1,44 @@
+########################
+# EU-DX contest        #
+########################
+# https://www.eudx-contest.com/rules/
+#
+# Provided by: HA5CQZ
+#
+CONTEST_MODE
+LOGFILE=eudx.log
+
+CABRILLO=UNIVERSAL
+CABRILLO-CONTEST=EUDXC
+
+#================================
+# Select one of following blocks:
+#--------------------------------
+#
+# non-EU stations send ITU zone
+#
+#CABRILLO-EXCHANGE=00
+#F3=@ ++5NN-- 00
+#S&P_TU_MSG=TU ++5NN-- 00
+#PLUGIN_CONFIG=DX
+#--------------------------------
+#
+# EU stations send region code
+#
+CABRILLO-EXCHANGE=XX00
+F3=@ ++5NN-- XX00
+S&P_TU_MSG=TU ++5NN-- XX00
+PLUGIN_CONFIG=IT
+#================================
+
+MIXED
+
+# Scoring:
+# (handled by eudx.py)
+
+
+# Multipliers:
+# EU regions and DXCC countries per band
+# (handled by eudx.py)
+GENERIC_MULT=BAND
+
