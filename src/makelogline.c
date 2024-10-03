@@ -92,7 +92,7 @@ char *makelogline(struct qso_t *qso) {
     }
     FILL_TO(87);
 
-    assert(strlen(logline) == 87);
+    assert(strlen(logline) == LOGLINELEN - 1);
 
     return logline;
 }
