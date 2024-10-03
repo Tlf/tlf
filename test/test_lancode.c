@@ -36,7 +36,7 @@ void test_send_freq_80(void **state) {
 
     assert_int_equal(sendto_call_count, 1);
     assert_non_null(sendto_last_message);
-    assert_string_equal(sendto_last_message, "A5 3567.9");
+    assert_string_equal(sendto_last_message, "A5 3567.9\n");
 }
 
 void test_send_freq_10(void **state) {
@@ -45,7 +45,7 @@ void test_send_freq_10(void **state) {
 
     assert_int_equal(sendto_call_count, 1);
     assert_non_null(sendto_last_message);
-    assert_string_equal(sendto_last_message, "A528123.5");
+    assert_string_equal(sendto_last_message, "A528123.5\n");
 }
 
 void test_send_freq_80_notrx(void **state) {
@@ -57,7 +57,7 @@ void test_send_freq_80_notrx(void **state) {
 
     assert_int_equal(sendto_call_count, 1);
     assert_non_null(sendto_last_message);
-    assert_string_equal(sendto_last_message, "A5   80.0");
+    assert_string_equal(sendto_last_message, "A5   80.0\n");
 }
 
 void test_send_freq_10_notrx(void **state) {
@@ -69,5 +69,5 @@ void test_send_freq_10_notrx(void **state) {
 
     assert_int_equal(sendto_call_count, 1);
     assert_non_null(sendto_last_message);
-    assert_string_equal(sendto_last_message, "A5   10.0");
+    assert_string_equal(sendto_last_message, "A5   10.0\n");
 }
