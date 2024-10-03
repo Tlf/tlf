@@ -284,8 +284,7 @@ int send_lan_message(int opcode, char *message) {
     }
 
     if (opcode == LOGENTRY) {
-	sendbuffer[82] = '\0';
-
+	strcat(sendbuffer, "\n");
 	lan_send(sendbuffer);
     }
 
@@ -298,7 +297,7 @@ int send_lan_message(int opcode, char *message) {
 	lan_send(sendbuffer);
     }
     if (opcode == FREQMSG) {
-	sendbuffer[10] = '\0';
+	strcat(sendbuffer, "\n");
 	lan_send(sendbuffer);
     }
     if (opcode == INCQSONUM) {
