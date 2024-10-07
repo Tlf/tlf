@@ -305,6 +305,7 @@ int send_lan_message(int opcode, char *message) {
 	lan_send(sendbuffer);
     }
     if (opcode == TIMESYNC) {
+	strcat(sendbuffer, "\n");
 	sendbuffer[14] = '\0';
 	lan_send(sendbuffer);
     }
@@ -375,6 +376,6 @@ void send_time(void) {
 
     time_t now = get_time();    // note: time master send UTC (timecorr=0)
 
-    sprintf(timebuffer, "%ld ", now);
+    sprintf(timebuffer, "%ld", now);
     send_lan_message(TIMESYNC, timebuffer);
 }

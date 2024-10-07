@@ -13,7 +13,7 @@ void handle_logging(enum log_lvl lvl, ...) {
 }
 
 time_t get_time() {
-    return 0;   // TBD
+    return 1728323637;   // ~ 7Oct24 19:19
 }
 void clear_line(int row) {
 }
@@ -70,4 +70,12 @@ void test_send_freq_10_notrx(void **state) {
     assert_int_equal(sendto_call_count, 1);
     assert_non_null(sendto_last_message);
     assert_string_equal(sendto_last_message, "A5   10.0\n");
+}
+
+void test_send_time(void **state) {
+    send_time();
+
+    assert_int_equal(sendto_call_count, 1);
+    assert_non_null(sendto_last_message);
+    assert_string_equal(sendto_last_message, "A71728323637\n");
 }

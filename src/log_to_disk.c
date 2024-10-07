@@ -46,7 +46,7 @@
 
 pthread_mutex_t disk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-char lan_logline[89];
+char lan_logline[LOGLINELEN + 1];
 
 
 /* restart band timer if in wpx and qso on new band */
