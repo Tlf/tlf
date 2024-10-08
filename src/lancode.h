@@ -34,6 +34,8 @@
 #define QTCSENTRY '9'
 #define QTCFLAG ':'
 
+#define NR_LAN_CODES 10
+
 #include <hamlib/rig.h>
 
 extern char bc_hostaddress[MAXNODES][16];
