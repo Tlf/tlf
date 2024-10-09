@@ -68,6 +68,7 @@ void test_lan_send_message_all_codes(void **state) {
 
 void test_lan_send_message_inhibit_cluster(void **state) {
     cl_send_inhibit = true;
+
     send_lan_message(CLUSTERMSG, "DX de ...");
     assert_int_equal(sendto_call_count, 0);
     assert_null(sendto_last_message);
@@ -75,7 +76,6 @@ void test_lan_send_message_inhibit_cluster(void **state) {
     send_lan_message(LOGENTRY, "160....");
     assert_int_equal(sendto_call_count, 1);
     check_line_format(LOGENTRY, "160....");
-
 }
 
 

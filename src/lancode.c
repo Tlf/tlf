@@ -269,62 +269,24 @@ static int lan_send(char *lanbuffer) {
 
 /* ----------------- send lan message ----------*/
 
+#define MAX_MESSAGE_LEN 98
+
 void send_lan_message(int opcode, char *message) {
-    char sendbuffer[102];
+    char sendbuffer[MAX_MESSAGE_LEN + 4];      /* + node + opcode + NL + \0 */
+
+    if (opcode == CLUSTERMSG) {
+	if (cl_send_inhibit) {
+	    return;
+	}
+    }
 
     sendbuffer[0] = thisnode;
     sendbuffer[1] = opcode;
     sendbuffer[2] = '\0';
-    strncat(sendbuffer, message, 98);
-    if (opcode == CLUSTERMSG) {
-	if (!cl_send_inhibit) {
-	    strcat(sendbuffer, "\n");
-	    lan_send(sendbuffer);
-	}
-    }
+    strncat(sendbuffer, message, MAX_MESSAGE_LEN);
 
-    if (opcode == LOGENTRY) {
-	strcat(sendbuffer, "\n");
-	lan_send(sendbuffer);
-    }
-
-    if (opcode == TLFSPOT) {
-	sendbuffer[82] = '\0';
-	strcat(sendbuffer, "\n");
-	lan_send(sendbuffer);
-    }
-    if (opcode == TLFMSG) {
-	sendbuffer[82] = '\0';
-	strcat(sendbuffer, "\n");
-	lan_send(sendbuffer);
-    }
-    if (opcode == FREQMSG) {
-	strcat(sendbuffer, "\n");
-	lan_send(sendbuffer);
-    }
-    if (opcode == INCQSONUM) {
-	strcat(sendbuffer, "\n");
-	lan_send(sendbuffer);
-    }
-    if (opcode == TIMESYNC) {
-	strcat(sendbuffer, "\n");
-	sendbuffer[14] = '\0';
-	lan_send(sendbuffer);
-    }
-    if (opcode == QTCRENTRY) {
-	strcat(sendbuffer, "\n");
-	sendbuffer[94] = '\0';
-	lan_send(sendbuffer);
-    }
-    if (opcode == QTCSENTRY) {
-	strcat(sendbuffer, "\n");
-	sendbuffer[100] = '\0';
-	lan_send(sendbuffer);
-    }
-    if (opcode == QTCFLAG) {
-	strcat(sendbuffer, "\n");
-	lan_send(sendbuffer);
-    }
+    strcat(sendbuffer, "\n");
+    lan_send(sendbuffer);
 
     return;
 }
