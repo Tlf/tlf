@@ -57,7 +57,7 @@ void add_to_spots(char *call, freq_t freq) {
 
     format_time(spottime, sizeof(spottime), "%H%MZ");
     strcpy(spotline + 70, spottime);
-    strcat(spotline, "\n\n");
+    strcat(spotline, "\n");
 
     send_lan_message(TLFSPOT, spotline);
     lanspotflg = true;

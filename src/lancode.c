@@ -45,7 +45,7 @@ char lan_message[256];
 //--------------------------------------
 int bc_socket_descriptor[MAXNODES];
 ssize_t bc_sendto_rc;
-int cl_send_inhibit = 0;
+bool cl_send_inhibit = false;
 struct sockaddr_in bc_address[MAXNODES];
 /* host names and UDP ports to send notifications to */
 char bc_hostaddress[MAXNODES][16];
@@ -167,7 +167,7 @@ int lan_recv(void) {
     errno = 0;			/* clear the error */
 
     if (lan_recv_message[1] == CLUSTERMSG)
-	cl_send_inhibit = 1;	// this node does not send cluster info
+	cl_send_inhibit = true;	// this node does not send cluster info
 
     if (lan_recv_rc > 0)
 	recv_packets++;
@@ -269,62 +269,26 @@ static int lan_send(char *lanbuffer) {
 
 /* ----------------- send lan message ----------*/
 
-int send_lan_message(int opcode, char *message) {
-    char sendbuffer[102];
+#define MAX_MESSAGE_LEN 98
+
+void send_lan_message(int opcode, char *message) {
+    char sendbuffer[MAX_MESSAGE_LEN + 4];      /* + node + opcode + NL + \0 */
+
+    if (opcode == CLUSTERMSG) {
+	if (cl_send_inhibit) {
+	    return;
+	}
+    }
 
     sendbuffer[0] = thisnode;
     sendbuffer[1] = opcode;
     sendbuffer[2] = '\0';
-    strncat(sendbuffer, message, 98);
-    if (opcode == CLUSTERMSG) {
-	if (cl_send_inhibit == 0) {
-	    strcat(sendbuffer, "\n");
-	    lan_send(sendbuffer);
-	}
-    }
+    strncat(sendbuffer, message, MAX_MESSAGE_LEN);
 
-    if (opcode == LOGENTRY) {
-	sendbuffer[82] = '\0';
+    strcat(sendbuffer, "\n");
+    lan_send(sendbuffer);
 
-	lan_send(sendbuffer);
-    }
-
-    if (opcode == TLFSPOT) {
-	sendbuffer[82] = '\0';
-	lan_send(sendbuffer);
-    }
-    if (opcode == TLFMSG) {
-	sendbuffer[82] = '\0';
-	lan_send(sendbuffer);
-    }
-    if (opcode == FREQMSG) {
-	sendbuffer[10] = '\0';
-	lan_send(sendbuffer);
-    }
-    if (opcode == INCQSONUM) {
-	strcat(sendbuffer, "\n");
-	lan_send(sendbuffer);
-    }
-    if (opcode == TIMESYNC) {
-	sendbuffer[14] = '\0';
-	lan_send(sendbuffer);
-    }
-    if (opcode == QTCRENTRY) {
-	strcat(sendbuffer, "\n");
-	sendbuffer[94] = '\0';
-	lan_send(sendbuffer);
-    }
-    if (opcode == QTCSENTRY) {
-	strcat(sendbuffer, "\n");
-	sendbuffer[100] = '\0';
-	lan_send(sendbuffer);
-    }
-    if (opcode == QTCFLAG) {
-	strcat(sendbuffer, "\n");
-	lan_send(sendbuffer);
-    }
-
-    return 0;
+    return;
 }
 
 /* ----------------- send talk message ----------*/
@@ -338,8 +302,6 @@ void talk(void) {
     echo();
     getnstr(talkline, 60);
     noecho();
-
-    strcat(talkline, "\n");
 
     send_lan_message(TLFMSG, talkline);
 
@@ -376,6 +338,6 @@ void send_time(void) {
 
     time_t now = get_time();    // note: time master send UTC (timecorr=0)
 
-    sprintf(timebuffer, "%ld ", now);
+    sprintf(timebuffer, "%ld", now);
     send_lan_message(TIMESYNC, timebuffer);
 }
