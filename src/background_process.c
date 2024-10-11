@@ -135,7 +135,7 @@ void *background_process(void *ptr) {
 	    if (lan_message[0] == '\0') {
 
 		if (lan_recv() >= 0) {
-		    lan_message[strlen(lan_message) - 1] = '\0';
+		    g_strchomp(lan_message);
 		}
 	    }
 
