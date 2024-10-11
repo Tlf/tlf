@@ -45,7 +45,7 @@ char lan_message[256];
 //--------------------------------------
 int bc_socket_descriptor[MAXNODES];
 ssize_t bc_sendto_rc;
-int cl_send_inhibit = 0;
+bool cl_send_inhibit = false;
 struct sockaddr_in bc_address[MAXNODES];
 /* host names and UDP ports to send notifications to */
 char bc_hostaddress[MAXNODES][16];
@@ -167,7 +167,7 @@ int lan_recv(void) {
     errno = 0;			/* clear the error */
 
     if (lan_recv_message[1] == CLUSTERMSG)
-	cl_send_inhibit = 1;	// this node does not send cluster info
+	cl_send_inhibit = true;	// this node does not send cluster info
 
     if (lan_recv_rc > 0)
 	recv_packets++;
@@ -277,7 +277,7 @@ int send_lan_message(int opcode, char *message) {
     sendbuffer[2] = '\0';
     strncat(sendbuffer, message, 98);
     if (opcode == CLUSTERMSG) {
-	if (cl_send_inhibit == 0) {
+	if (!cl_send_inhibit) {
 	    strcat(sendbuffer, "\n");
 	    lan_send(sendbuffer);
 	}
