@@ -23,16 +23,16 @@
 
 #define MAXNODES 8
 
-#define LOGENTRY 49
-#define CLUSTERMSG 50
-#define TLFSPOT 51
-#define TLFMSG 52
-#define FREQMSG 53
-#define INCQSONUM 54
-#define TIMESYNC 55
-#define QTCRENTRY 56
-#define QTCSENTRY 57
-#define QTCFLAG 58
+#define LOGENTRY '1'
+#define CLUSTERMSG '2'
+#define TLFSPOT '3'
+#define TLFMSG '4'
+#define FREQMSG '5'
+#define INCQSONUM '6'
+#define TIMESYNC '7'
+#define QTCRENTRY '8'
+#define QTCSENTRY '9'
+#define QTCFLAG ':'
 
 #include <hamlib/rig.h>
 
@@ -52,7 +52,7 @@ int lan_recv_close(void);
 int lan_recv(void);
 int lan_send_init(void);
 int lan_send_close(void);
-int send_lan_message(int opcode, char *message);
+void send_lan_message(int opcode, char *message);
 void talk(void);
 int send_freq(freq_t freq);
 void send_time(void) ;
