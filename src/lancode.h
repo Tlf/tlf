@@ -47,6 +47,42 @@
  * - a message specific string of characters as body
  */
 
+/* The format of the message specific string is as follows:
+ *
+ * LOGENTRY
+ * 	Standard logline with LOGLINELEN characters (last one is \n)
+ * CLUSTERMSG
+ *	max 78 characters from DX-cluster,
+ *	followed by \n
+ * TLFSPOT
+ *	77 characters self formatted cluster message,
+ *	e.g.
+ * 'DX de TLF-B:        21.435  K3NBD                                     1041Z'
+ *	followed by \n\n
+ * TLFMSG
+ * 	Max 60 characters text (see talk()) followed by \n
+ * FREQMSG
+ *	7 characters actual QRG in kHz with one decimal,
+ *	left padded with spaces if with TRXcontrol
+ *	7 characters band in meters with one decimal if without TRXcontrol
+ *	followed by \n in both cases
+ * INCQSONR
+ *	QSO number with max. 4 digits,
+ *	followed by \n
+ * TIMESYNC
+ * 	actual time_t value as decimal number,
+ * 	followed by one space
+ *  QTCRENTRY
+ *	QTC logline for RECV direction,
+ *	followed by \n\n
+ *  QTCSENTRY
+ *	QTC logline for SEND direction,
+ *	followed by \n\n
+ *  QTCFLAG
+ *	'<callsign>;L' or '<callsign;N,'
+ *	followed by \n\n
+ */
+
 #include <hamlib/rig.h>
 
 extern char bc_hostaddress[MAXNODES][16];
