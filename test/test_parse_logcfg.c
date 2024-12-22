@@ -1262,7 +1262,13 @@ void test_digimodem(void **state) {
 void test_myqra(void **state) {
     int rc = call_parse_logcfg("MYQRA=JN97\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(my.qra, "JN97\n");  // FIXME NL...
+    assert_string_equal(my.qra, "JN97");
+}
+
+void test_myqra2(void **state) {
+    int rc = call_parse_logcfg("MYQRA=JN97LA\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(my.qra, "JN97LA");
 }
 
 void test_powermult(void **state) {

@@ -1009,7 +1009,8 @@ static int cfg_rttymode(const cfg_arg_t arg) {
 }
 
 static int cfg_myqra(const cfg_arg_t arg) {
-    strcpy(my.qra, parameter);
+    g_strlcpy(my.qra, parameter, sizeof(my.qra));
+    g_strchomp(my.qra);
 
     if (check_qra(my.qra) == 0) {
 	return PARSE_WRONG_PARAMETER;
