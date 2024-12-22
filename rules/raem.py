@@ -27,8 +27,8 @@ def score(qso):
     lon = int(m.group(3))
     if m.group(4) == 'O':
         lon = -lon
-    points = points + abs(lat - int(tlf.MY_LAT))
-    diff_long = abs(lon - int(tlf.MY_LONG))
+    points = points + abs(lat - int(round(tlf.MY_LAT)))
+    diff_long = abs(lon - int(round(tlf.MY_LONG)))
     if diff_long > 180:
         diff_long = 360 - diff_long
     points = points + diff_long
