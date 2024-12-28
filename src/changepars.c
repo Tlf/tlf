@@ -70,6 +70,40 @@ void center_fkey_header();
 
 void wipe_display();
 
+static void change_autosend() {
+    mvaddstr(13, 29, "Autosend: (0, 2..5, m)?");
+    refreshp();
+    int x = 1;
+
+    /* wait for correct input or ESC */
+    while ((x != 0) && !((x >= 2) && (x <= 5)) && !(x == 'm' - '0')) {
+	x = key_get();
+	if (x == ESCAPE)
+	    break;
+	x = x - '0';
+    }
+
+    /* remember new setting */
+    if (x != ESCAPE) {
+	if (x == 0 || (x >= 2 && x <= 5))
+	    cwstart = x;
+	else
+	    cwstart = -1;
+    }
+
+    if (cwstart > 0)
+	mvprintw(13, 29, "Autosend now: %1d        ",
+		 cwstart);
+    else {
+	if (cwstart < 0)
+	    mvaddstr(13, 29, "Autosend now: Manual   ");
+	else
+	    mvaddstr(13, 29, "Autosend now: OFF      ");
+    }
+    refreshp();
+}
+
+
 int changepars(void) {
 
     char parameterstring[20] = "";
@@ -589,36 +623,7 @@ int changepars(void) {
 	    break;
 	}
 	case 50: {		/* CHARS */
-	    mvaddstr(13, 29, "Autosend: (0, 2..5, m)?");
-	    refreshp();
-	    x = 1;
-
-	    /* wait for correct input or ESC */
-	    while ((x != 0) && !((x >= 2) && (x <= 5)) && !(x == 'm' - '0')) {
-		x = key_get();
-		if (x == ESCAPE)
-		    break;
-		x = x - '0';
-	    }
-
-	    /* remember new setting */
-	    if (x != ESCAPE) {
-		if (x == 0 || (x >= 2 && x <= 5))
-		    cwstart = x;
-		else
-		    cwstart = -1;
-	    }
-
-	    if (cwstart > 0)
-		mvprintw(13, 29, "Autosend now: %1d        ",
-			 cwstart);
-	    else {
-		if (cwstart < 0)
-		    mvaddstr(13, 29, "Autosend now: Manual   ");
-		else
-		    mvaddstr(13, 29, "Autosend now: OFF      ");
-	    }
-	    refreshp();
+	    change_autosend();
 	    break;
 
 	}
