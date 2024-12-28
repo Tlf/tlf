@@ -73,34 +73,35 @@ void wipe_display();
 static void change_autosend() {
     mvaddstr(13, 29, "Autosend: (0, 2..5, m)?");
     refreshp();
-    int x = 1;
+    int x;
 
-    /* wait for correct input or ESC */
-    while ((x != 0) && !((x >= 2) && (x <= 5)) && !(x == 'm' - '0')) {
+    /* wait for valid input or ESC */
+    do {
 	x = key_get();
 	if (x == ESCAPE)
-	    break;
-	x = x - '0';
-    }
+	    return;
+    } while (!(x == '0' || (x >= '2' && x <= '5') || x == 'm'));
 
     /* remember new setting */
-    if (x != ESCAPE) {
-	if (x == 0 || (x >= 2 && x <= 5))
-	    cwstart = x;
-	else
-	    cwstart = -1;
+    if (x == '0' || (x >= '2' && x <= '5'))
+	cwstart = x - '0';
+    else
+	cwstart = -1;   // manual mode
+
+    char *status;
+    if (cwstart > 0) {
+	status = g_strdup_printf("%d", cwstart);
+    } else if (cwstart < 0) {
+	status = g_strdup("Manual");
+    } else {
+	status = g_strdup("OFF");
     }
 
-    if (cwstart > 0)
-	mvprintw(13, 29, "Autosend now: %1d        ",
-		 cwstart);
-    else {
-	if (cwstart < 0)
-	    mvaddstr(13, 29, "Autosend now: Manual   ");
-	else
-	    mvaddstr(13, 29, "Autosend now: OFF      ");
-    }
+    mvprintw(13, 29, "Autosend now: %-9s", status);
+    g_free(status);
+
     refreshp();
+    sleep(1);
 }
 
 
