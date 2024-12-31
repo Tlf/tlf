@@ -449,8 +449,8 @@ static int cfg_autosend(const cfg_arg_t arg) {
     g_strstrip(str);
 
     // see also change_autosend() for valid values
-    if (g_regex_match_simple("^[02345]$", str, G_REGEX_DEFAULT,
-			     G_REGEX_MATCH_DEFAULT)) {
+    if (g_regex_match_simple("^[02345]$", str,
+			     (GRegexCompileFlags)0, (GRegexMatchFlags)0)) {
 	cwstart = atoi(str);
     } else if (strcmp(str, "OFF") == 0) {
 	cwstart = 0;
