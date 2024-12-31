@@ -920,6 +920,12 @@ void test_operating_mode(void **state) {
     assert_int_equal(cqmode, S_P);
 }
 
+void test_autosend(void **state) {
+    int rc = call_parse_logcfg("AUTOSEND=4\n");
+    assert_int_equal(rc, 0);
+    assert_int_equal(cwstart, 4);
+}
+
 // TLFCOLOR1..6
 void test_tlfcolorn(void **state) {
     char line[80];
