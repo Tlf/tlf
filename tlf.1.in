@@ -2526,6 +2526,15 @@ pass another value (in seconds) after the \(oq=\(cq sign.
 .IP
 There must be an integral number of time sections per hour!
 .
+.TP
+\fBAUTOSEND\fR=<\fI0\fR|\fIOFF\fR|\fI2\fR..\fI5\fR|\fIM\fR|\fIMANUAL\fR>
+Set the number of characters for CW auto-start or ‘M’ for manual start.
+Default value is OFF.
+.
+For details see
+.BR :CHA r
+command.
+.
 .SS CW, Digimode and Voice Keyer Macros
 .
 The following parameters configure the CW, Digimode and voice mode keyer

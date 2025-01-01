@@ -652,6 +652,7 @@ static void init_variables() {
     leading_zeros_serial = true;
     ctcomp = false;
     resend_call = RESEND_NOT_SET;
+    cwstart = 0;    // off
 
     g_free(current_qso.call);
     current_qso.call = g_malloc0(CALL_SIZE);
