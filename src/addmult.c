@@ -43,8 +43,9 @@ GPtrArray *mults_possible;
  * process a space separated list of multipliers from qso->mult1_value.
  * qso->mult1_value is updated with the list of actually applied new multipliers.
  * if none could be applied then it contains an empty string.
+ * returns the index of the first applicable multiplier or -1
  */
-static void remember_generic_mult(struct qso_t *qso, bool check_only) {
+static int remember_generic_mult(struct qso_t *qso, bool check_only) {
     static GRegex *regex = NULL;
     if (regex == NULL) {
 	// words with trailing space(s) or at the end of string
@@ -54,6 +55,7 @@ static void remember_generic_mult(struct qso_t *qso, bool check_only) {
     GMatchInfo *match_info;
     g_regex_match(regex, qso->mult1_value, 0, &match_info);
 
+    int first_mult_index = -1;
     GString *applied_mults = g_string_new(NULL);
 
     while (g_match_info_matches(match_info)) {
@@ -65,6 +67,12 @@ static void remember_generic_mult(struct qso_t *qso, bool check_only) {
 	int mult_index = remember_multi(mult, qso->bandindex, generic_mult, check_only);
 
 	if (mult_index >= 0) {
+	    if (first_mult_index < 0) {
+		first_mult_index = mult_index;
+	    }
+	    if (check_only) {
+		break;  // in check mode stop on first match
+	    }
 	    // aggregate the original value incl. whitespace
 	    g_string_append(applied_mults, word);
 	}
@@ -80,6 +88,7 @@ static void remember_generic_mult(struct qso_t *qso, bool check_only) {
     g_free(qso->mult1_value);
     qso->mult1_value = g_string_free(applied_mults, FALSE);
 
+    return first_mult_index;
 }
 
 /*
@@ -160,7 +169,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 
     // -----------   generic: use mult1   -----------
     else if (generic_mult != MULT_NONE) {
-	remember_generic_mult(qso, check_only);
+	mult_index = remember_generic_mult(qso, check_only);
     }
 
     free(stripped_comment);
