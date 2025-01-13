@@ -444,6 +444,28 @@ static int cfg_operating_mode(const cfg_arg_t arg) {
     return PARSE_OK;
 }
 
+static int cfg_autosend(const cfg_arg_t arg) {
+    char *str = g_ascii_strup(parameter, -1);
+    g_strstrip(str);
+
+    // see also change_autosend() for valid values
+    if (g_regex_match_simple("^[02345]$", str,
+			     (GRegexCompileFlags)0, (GRegexMatchFlags)0)) {
+	cwstart = atoi(str);
+    } else if (strcmp(str, "OFF") == 0) {
+	cwstart = 0;
+    } else if (strcmp(str, "M") == 0 || strcmp(str, "MANUAL") == 0) {
+	cwstart = -1;
+    } else {
+	g_free(str);
+	error_details = g_strdup("must be 0, OFF, 2, 3, 4, 5, M or MANUAL");
+	return PARSE_WRONG_PARAMETER;
+    }
+
+    g_free(str);
+    return PARSE_OK;
+}
+
 static int cfg_bandoutput(const cfg_arg_t arg) {
     char *str = g_strdup(parameter);
     g_strstrip(str);
@@ -1414,6 +1436,7 @@ static config_t logcfg_configs[] = {
     {"RESEND_CALL",         NEED_PARAM, cfg_resend_call},
     {"GENERIC_MULT",        NEED_PARAM, cfg_generic_mult},
     {"OPERATING_MODE",      NEED_PARAM, cfg_operating_mode},
+    {"AUTOSEND",            NEED_PARAM, cfg_autosend},
 
     {NULL}  // end marker
 };
