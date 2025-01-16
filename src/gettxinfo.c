@@ -97,17 +97,96 @@ static pbwidth_t get_cw_bandwidth() {
 }
 
 
+static void poll_rig_state() {
+    static int oldbandinx = -1;
+    static double last_freq_time = 0.0;
+
+    freq_t rigfreq = 0.0;
+
+    double now = get_current_seconds();
+    if (now < last_freq_time + 0.2) {
+        return;   // last read-out was within 200 ms, skip this query
+    }
+    last_freq_time = now;
+
+    pthread_mutex_lock(&tlf_rig_mutex);
+    vfo_t vfo;
+    int retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
+    pthread_mutex_unlock(&tlf_rig_mutex);
+
+    if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL) {
+        pthread_mutex_lock(&tlf_rig_mutex);
+        retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
+        pthread_mutex_unlock(&tlf_rig_mutex);
+
+        if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)
+                && retval == RIG_OK) {
+
+            pthread_mutex_lock(&tlf_rig_mutex);
+            pbwidth_t bwidth;
+            int retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, &rigmode, &bwidth);
+            pthread_mutex_unlock(&tlf_rig_mutex);
+
+            if (retvalmode != RIG_OK) {
+                rigmode = RIG_MODE_NONE;
+            }
+        }
+    }
+
+    if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)) {
+        rigfreq += (freq_t)fldigi_get_carrier();
+        if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {
+            int fldigi_shift_freq = fldigi_get_shift_freq();
+            if (fldigi_shift_freq != 0) {
+                pthread_mutex_lock(&tlf_rig_mutex);
+                retval = rig_set_freq(my_rig, RIG_VFO_CURR,
+                                      ((freq_t)rigfreq + (freq_t)fldigi_shift_freq));
+                pthread_mutex_unlock(&tlf_rig_mutex);
+            }
+        }
+    }
+
+    if (retval != RIG_OK || rigfreq < 0.1) {
+        freq = 0.0;
+        return;
+    }
+
+
+    if (rigfreq >= bandcorner[0][0]) {
+        freq = rigfreq; // Hz
+    }
+
+    bandinx = freq2bandindex((unsigned int)freq);
+
+    bandfrequency[bandinx] = freq;
+
+    if (bandinx != oldbandinx) {	// band change on trx
+        oldbandinx = bandinx;
+        handle_trx_bandswitch((int) freq);
+    }
+
+    /* read speed from rig */
+    if (cwkeyer == HAMLIB_KEYER) {
+        int rig_cwspeed;
+        retval = hamlib_keyer_get_speed(&rig_cwspeed);
+
+        if (retval == RIG_OK) {
+            if (speed != rig_cwspeed) {
+                speed = rig_cwspeed;
+
+                attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+                mvprintw(0, 14, "%2u", speed);
+            }
+        } else {
+            TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
+        }
+    }
+
+}
+
 void gettxinfo(void) {
 
-    freq_t rigfreq;
-    vfo_t vfo;
-    pbwidth_t bwidth;
     int retval;
-    int retvalmode;
-    int fldigi_shift_freq;
-
-    static double last_freq_time = 0.0;
-    static int oldbandinx;
 
     if (!trx_control)
 	return;
@@ -144,84 +223,7 @@ void gettxinfo(void) {
 
     if (reqf == 0) {
 
-	rigfreq = 0.0;
-
-	double now = get_current_seconds();
-	if (now < last_freq_time + 0.2) {
-	    return;   // last read-out was within 200 ms, skip this query
-	}
-	last_freq_time = now;
-
-	pthread_mutex_lock(&tlf_rig_mutex);
-	retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
-	pthread_mutex_unlock(&tlf_rig_mutex);
-
-	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL) {
-	    pthread_mutex_lock(&tlf_rig_mutex);
-	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
-	    pthread_mutex_unlock(&tlf_rig_mutex);
-
-	    if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)
-		    && retval == RIG_OK) {
-
-		pthread_mutex_lock(&tlf_rig_mutex);
-		retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, &rigmode, &bwidth);
-		pthread_mutex_unlock(&tlf_rig_mutex);
-
-		if (retvalmode != RIG_OK) {
-		    rigmode = RIG_MODE_NONE;
-		}
-	    }
-	}
-
-	if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)) {
-	    rigfreq += (freq_t)fldigi_get_carrier();
-	    if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {
-		fldigi_shift_freq = fldigi_get_shift_freq();
-		if (fldigi_shift_freq != 0) {
-		    pthread_mutex_lock(&tlf_rig_mutex);
-		    retval = rig_set_freq(my_rig, RIG_VFO_CURR,
-					  ((freq_t)rigfreq + (freq_t)fldigi_shift_freq));
-		    pthread_mutex_unlock(&tlf_rig_mutex);
-		}
-	    }
-	}
-
-	if (retval != RIG_OK || rigfreq < 0.1) {
-	    freq = 0.0;
-	    return;
-	}
-
-
-	if (rigfreq >= bandcorner[0][0]) {
-	    freq = rigfreq; // Hz
-	}
-
-	bandinx = freq2bandindex((unsigned int)freq);
-
-	bandfrequency[bandinx] = freq;
-
-	if (bandinx != oldbandinx) {	// band change on trx
-	    oldbandinx = bandinx;
-	    handle_trx_bandswitch((int) freq);
-	}
-
-	/* read speed from rig */
-	if (cwkeyer == HAMLIB_KEYER) {
-	    int rig_cwspeed;
-	    retval = hamlib_keyer_get_speed(&rig_cwspeed);
-
-	    if (retval == RIG_OK) {
-		if (speed != rig_cwspeed) {
-		    speed = rig_cwspeed;
-
-		    attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		    mvprintw(0, 14, "%2u", speed);
-		}
-	    } else {
-		TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
-	    }
-	}
+        poll_rig_state();
 
     } else if (reqf == SETCWMODE) {
 

@@ -2060,6 +2060,10 @@ available used to activate the radio's PTT for sending voice messages instead
 of the \fBcwdaemon\fR PTT.
 .
 .TP
+\fBFOLLOW_MODE\fR[=<\fION\fR|\fIOFF\fR>]
+Control if RIG should change modulation when band is changed
+.
+.TP
 \fBCWBANDWIDTH\fR=\fIwidth\fR
 Sets the CW bandwidth of your rig when changing bands.
 .
