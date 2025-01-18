@@ -212,13 +212,10 @@ int init_tlf_rig(void) {
 }
 
 void close_tlf_rig(RIG *my_rig) {
-
     pthread_mutex_lock(&tlf_rig_mutex);
     rig_close(my_rig);		/* close port */
     rig_cleanup(my_rig);	/* if you care about memory */
     pthread_mutex_unlock(&tlf_rig_mutex);
-
-    printf("Rig port %s closed\n", rigportname);
 }
 
 static int parse_rigconf() {
