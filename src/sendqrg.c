@@ -85,6 +85,13 @@ bool sendqrg(void) {
 
 /**************************************************************************/
 
+void show_rigerror(char *message, int errcode) {
+	char *str = g_strdup_printf("%s: %s", message, rigerror2(errcode));
+	showmsg(str);
+	g_free(str);
+}
+
+
 int init_tlf_rig(void) {
     freq_t rigfreq;		/* frequency  */
     vfo_t vfo;
@@ -133,14 +140,14 @@ int init_tlf_rig(void) {
 	    showmsg("Controlling PTT via Hamlib is not supported for that rig!");
 	}
     }
-
+// drop following lines
     if (dcd_type != RIG_DCD_NONE)
 	my_rig->state.dcdport.type.dcd = dcd_type;
     if (ptt_file)
 	strncpy(my_rig->state.pttport.pathname, ptt_file, TLFFILPATHLEN);
     if (dcd_file)
 	strncpy(my_rig->state.dcdport.pathname, dcd_file, TLFFILPATHLEN);
-
+// until here
     my_rig->state.rigport.parm.serial.rate = serial_rate;
 
     // parse RIGCONF parameters
@@ -151,7 +158,7 @@ int init_tlf_rig(void) {
     retcode = rig_open(my_rig);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("rig_open: %s", rigerror(retcode));
+	show_rigerror("rig_open", retcode);
 	return -1;
     }
 
@@ -162,7 +169,7 @@ int init_tlf_rig(void) {
 	retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig link: %s", rigerror(retcode));
+	show_rigerror("Problem with rig link", retcode);
 	if (!debugflag)
 	    return -1;
     }
@@ -177,7 +184,7 @@ int init_tlf_rig(void) {
 	    shownr("CW speed = ", rig_cwspeed);
 	    speed = rig_cwspeed;
 	} else {
-	    TLF_LOG_WARN("Could not read CW speed from rig: %s", rigerror(retcode));
+	    show_rigerror("Could not read CW speed from rig", retcode);
 	    if (!debugflag)
 		return -1;
 	}
@@ -268,7 +275,7 @@ static void debug_tlf_rig() {
     pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig get freq: %s", rigerror(retcode));
+	show_rigerror("Problem with rig get freq", retcode);
     } else {
 	shownr("freq =", (int) rigfreq);
     }
@@ -281,7 +288,7 @@ static void debug_tlf_rig() {
     pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig set freq: %s", rigerror(retcode));
+	show_rigerror("Problem with rig set freq", retcode);
     } else {
 	showmsg("Rig set freq ok!");
     }
@@ -291,7 +298,7 @@ static void debug_tlf_rig() {
     pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig get freq: %s", rigerror(retcode));
+	show_rigerror("Problem with rig get freq", retcode);
     } else {
 	shownr("freq =", (int) rigfreq);
 	if (rigfreq != testfreq) {
