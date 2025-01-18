@@ -97,9 +97,6 @@ int init_tlf_rig(void) {
     vfo_t vfo;
     int retcode;		/* generic return code from functions */
 
-    const char *ptt_file = NULL, *dcd_file = NULL;
-    dcd_type_t dcd_type = RIG_DCD_NONE;
-
     const struct rig_caps *caps;
     int rig_cwspeed;
 
@@ -118,9 +115,11 @@ int init_tlf_rig(void) {
 	return -1;
     }
 
-    rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
+    g_strchomp(rigportname);	// remove trailing '\n'
     strncpy(my_rig->state.rigport.pathname, rigportname,
 	    TLFFILPATHLEN - 1);
+
+    my_rig->state.rigport.parm.serial.rate = serial_rate;
 
     caps = my_rig->caps;
 
@@ -140,15 +139,6 @@ int init_tlf_rig(void) {
 	    showmsg("Controlling PTT via Hamlib is not supported for that rig!");
 	}
     }
-// drop following lines
-    if (dcd_type != RIG_DCD_NONE)
-	my_rig->state.dcdport.type.dcd = dcd_type;
-    if (ptt_file)
-	strncpy(my_rig->state.pttport.pathname, ptt_file, TLFFILPATHLEN);
-    if (dcd_file)
-	strncpy(my_rig->state.dcdport.pathname, dcd_file, TLFFILPATHLEN);
-// until here
-    my_rig->state.rigport.parm.serial.rate = serial_rate;
 
     // parse RIGCONF parameters
     if (parse_rigconf() < 0) {
@@ -212,13 +202,10 @@ int init_tlf_rig(void) {
 }
 
 void close_tlf_rig(RIG *my_rig) {
-
     pthread_mutex_lock(&tlf_rig_mutex);
     rig_close(my_rig);		/* close port */
     rig_cleanup(my_rig);	/* if you care about memory */
     pthread_mutex_unlock(&tlf_rig_mutex);
-
-    printf("Rig port %s closed\n", rigportname);
 }
 
 static int parse_rigconf() {
@@ -306,5 +293,4 @@ static void debug_tlf_rig() {
 	}
     }
     sleep(10);
-
 }
