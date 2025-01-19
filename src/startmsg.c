@@ -57,28 +57,29 @@ static int has_room_for_message() {
 	return 0;
 }
 
-void showmsg(char *message) {
+void show_formatted(char *fmt, ...) {
+    va_list args;
+
     if (!has_room_for_message())
 	clearmsg_wait();
-    mvaddstr(linectr, 0, message);
+
+    va_start(args, fmt);
+    char *str = g_strdup_vprintf(fmt, args);
+    va_end(args);
+    mvaddstr(linectr, 0, str);
+    g_free(str);
     refreshp();
     linectr++;
 }
-//---------------------------------------------------------------
+
+void showmsg(char *message) {
+    show_formatted("%s", message);
+}
 
 void shownr(char *message, int nr) {
-    if (!has_room_for_message())
-	clearmsg_wait();
-    mvprintw(linectr, 0, "%s %d", message, nr);
-    refreshp();
-    linectr++;
+    show_formatted("%s %d", message, nr);
 }
-//----------------------------------------------------------------
 
 void showstring(const char *message1, const char *message2) {
-    if (!has_room_for_message())
-	clearmsg_wait();
-    mvprintw(linectr, 0, "%s %s", message1, message2);
-    refreshp();
-    linectr++;
+    show_formatted("%s %s", message1, message2);
 }
