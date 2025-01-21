@@ -27,12 +27,15 @@
 #include "callinput.h"
 #include "cw_utils.h"
 #include "err_utils.h"
+#include "get_time.h"
 #include "hamlib_keyer.h"
 #include "sendqrg.h"
 #include "startmsg.h"
 #include "gettxinfo.h"
 #include "bands.h"
 #include "globalvars.h"
+
+#define RIG_DEBUG_LOG "rig.dbg"
 
 static bool init_called = false;
 static bool can_send_morse = false;
@@ -51,7 +54,6 @@ bool rig_has_stop_morse() {
 void send_bandswitch(freq_t trxqrg);
 
 static int parse_rigconf();
-static void debug_tlf_rig();
 
 /* check if call input field contains a valid frequency and switch to it.
  * only integer kHz values are supported.
@@ -86,9 +88,31 @@ bool sendqrg(void) {
 /**************************************************************************/
 
 void show_rigerror(char *message, int errcode) {
-	char *str = g_strdup_printf("%s: %s", message, rigerror2(errcode));
-	showmsg(str);
-	g_free(str);
+    char *str = g_strdup_printf("%s: %s", message, rigerror2(errcode));
+    showmsg(str);
+    g_free(str);
+}
+
+
+int rig_debug_cb(enum rig_debug_level_e lvl,
+		 rig_ptr_t user_data,
+		 const char *fmt,
+		 va_list ap) {
+
+    char debugbuffer[160];
+
+    FILE *fp = fopen(RIG_DEBUG_LOG, "a");
+    if (fp == NULL) {	    /* ignore failure to write debug log */
+	return RIG_OK;	    /* to not disturb logging activity */
+    }
+
+    format_time(debugbuffer, sizeof(debugbuffer), "%H:%M:%S ");
+    char *msg = g_strdup_vprintf(fmt, ap);
+    fputs(debugbuffer, fp);
+    fputs(msg, fp);
+    g_free(msg);
+    fclose(fp);
+    return RIG_OK;
 }
 
 
@@ -99,6 +123,24 @@ int init_tlf_rig(void) {
 
     const struct rig_caps *caps;
     int rig_cwspeed;
+    char debugbuffer[160];
+
+    if (debugflag) {
+	/* set hamlib debug level and install callback */
+	rig_set_debug(RIG_DEBUG_WARN);
+	rig_set_debug_callback(rig_debug_cb, (rig_ptr_t)NULL);
+
+	/* write start entry into debug log */
+	FILE *fp = fopen(RIG_DEBUG_LOG, "a");
+	if (fp != NULL) {
+	    format_time(debugbuffer, sizeof(debugbuffer),
+			"\nStarted %d/%m/%Y %H:%M\n");
+	    fputs(debugbuffer, fp);
+	    fclose(fp);
+	} else {
+	    showmsg("Could not intialize rig debug file");
+	}
+    }
 
     /*
      * allocate memory, setup & open port
@@ -122,7 +164,6 @@ int init_tlf_rig(void) {
     my_rig->state.rigport.parm.serial.rate = serial_rate;
 
     caps = my_rig->caps;
-
     can_send_morse = caps->send_morse != NULL;
 #if HAMLIB_VERSION >= 400
     can_stop_morse = caps->stop_morse != NULL;
@@ -140,7 +181,6 @@ int init_tlf_rig(void) {
 	}
     }
 
-    // parse RIGCONF parameters
     if (parse_rigconf() < 0) {
 	return -1;
     }
@@ -160,8 +200,7 @@ int init_tlf_rig(void) {
 
     if (retcode != RIG_OK) {
 	show_rigerror("Problem with rig link", retcode);
-	if (!debugflag)
-	    return -1;
+	return -1;
     }
 
     shownr("Freq =", (int) rigfreq);
@@ -175,13 +214,8 @@ int init_tlf_rig(void) {
 	    speed = rig_cwspeed;
 	} else {
 	    show_rigerror("Could not read CW speed from rig", retcode);
-	    if (!debugflag)
-		return -1;
+	    return -1;
 	}
-    }
-
-    if (debugflag) {	// debug rig control
-	debug_tlf_rig();
     }
 
     switch (trxmode) {
@@ -248,49 +282,4 @@ static int parse_rigconf() {
     }
 
     return 0;
-}
-
-
-static void debug_tlf_rig() {
-    freq_t rigfreq;
-    int retcode;
-
-    sleep(10);
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	show_rigerror("Problem with rig get freq", retcode);
-    } else {
-	shownr("freq =", (int) rigfreq);
-    }
-    sleep(10);
-
-    const freq_t testfreq = 14000000;	// test set frequency
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_set_freq(my_rig, RIG_VFO_CURR, testfreq);
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	show_rigerror("Problem with rig set freq", retcode);
-    } else {
-	showmsg("Rig set freq ok!");
-    }
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);	// read qrg
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	show_rigerror("Problem with rig get freq", retcode);
-    } else {
-	shownr("freq =", (int) rigfreq);
-	if (rigfreq != testfreq) {
-	    showmsg("Failed to set rig freq!");
-	}
-    }
-    sleep(10);
 }
