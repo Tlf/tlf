@@ -38,7 +38,7 @@
 
 #include "err_utils.h"
 #include "ignore_unused.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"

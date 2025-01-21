@@ -30,7 +30,7 @@
 #include "keystroke_names.h"
 #include "stoptx.h"
 #include "tlf_panel.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "splitscreen.h"
 
 

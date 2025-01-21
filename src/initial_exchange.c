@@ -32,7 +32,7 @@
 #include <glib.h>
 
 #include "initial_exchange.h"
-#include "startmsg.h"
+#include "showmsg.h"
 
 /**
 * 	Free linked list of all allocated entries pointed

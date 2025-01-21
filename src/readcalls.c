@@ -46,7 +46,7 @@
 #include "plugin.h"
 #include "score.h"
 #include "searchcallarray.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "store_qso.h"
 #include "ui_utils.h"
 

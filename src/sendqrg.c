@@ -29,7 +29,7 @@
 #include "err_utils.h"
 #include "hamlib_keyer.h"
 #include "sendqrg.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "gettxinfo.h"
 #include "bands.h"
 #include "globalvars.h"

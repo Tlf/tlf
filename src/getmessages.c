@@ -25,7 +25,7 @@
 #include "dxcc.h"
 #include "getctydata.h"
 #include "globalvars.h"
-#include "startmsg.h"
+#include "showmsg.h"
 
 
 /* get countrynumber, QTH, CQ zone and continent for myself */

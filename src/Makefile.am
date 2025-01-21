@@ -31,7 +31,7 @@ tlf_SOURCES = \
 	sendqrg.c sendspcall.c set_tone.c setcontest.c \
 	show_help.c showinfo.c showpxmap.c \
 	showscore.c showzones.c sockserv.c speedupndown.c   \
-	stoptx.c store_qso.c sunup.c splitscreen.c startmsg.c\
+	stoptx.c store_qso.c sunup.c splitscreen.c showmsg.c\
 	trx_memory.c time_update.c ui_utils.c utils.c \
 	write_keyer.c writecabrillo.c \
 	zone_nr.c
@@ -69,7 +69,7 @@ noinst_HEADERS = \
 	sendqrg.h sendspcall.h set_tone.h setcontest.h \
 	show_help.h showinfo.h showpxmap.h showscore.h \
 	showzones.h sockserv.h speedupndown.h  \
-	splitscreen.h startmsg.h stoptx.h store_qso.h sunup.h \
+	splitscreen.h showmsg.h stoptx.h store_qso.h sunup.h \
 	time_update.h tlf.h tlf_curses.h tlf_panel.h trx_memory.h \
 	ui_utils.h utils.h \
 	write_keyer.h writecabrillo.h \

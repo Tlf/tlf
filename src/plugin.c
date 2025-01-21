@@ -12,7 +12,7 @@
 #include "tlf.h"
 #include "globalvars.h"
 #include "log_utils.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "utils.h"
 #include "qrb.h"
 #include "getctydata.h"
