@@ -104,7 +104,7 @@ static void change_autosend() {
     sleep(1);
 }
 
-void set_trxmode(int mode) {
+void set_trxmode_internally(int mode) {
 
     trxmode = mode;
 
@@ -112,13 +112,23 @@ void set_trxmode(int mode) {
 	if (cwkeyer == MFJ1278_KEYER) {
 	    sendmessage("MODE CW\015K\015");
 	}
-	set_outfreq(SETCWMODE);
-    } else if (trxmode == SSBMODE) {
-	set_outfreq(SETSSBMODE);
     } else if (trxmode == DIGIMODE) {
 	if (cwkeyer == MFJ1278_KEYER) {
 	    sendmessage("MODE VB\015K\015");
 	}
+    }
+}
+
+void set_trxmode(int mode) {
+
+    set_trxmode_internally(mode);
+
+    // set mode on rig
+    if (trxmode == CWMODE) {
+	set_outfreq(SETCWMODE);
+    } else if (trxmode == SSBMODE) {
+	set_outfreq(SETSSBMODE);
+    } else if (trxmode == DIGIMODE) {
 	set_outfreq(SETDIGIMODE);
     }
 }

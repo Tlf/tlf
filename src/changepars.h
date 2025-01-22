@@ -22,7 +22,7 @@
 #define CHANGEPARS_H
 
 
-void set_trxmode(int mode);
+void set_trxmode_internally(int mode);
 int changepars(void);
 void networkinfo(void);
 void multiplierinfo(void);

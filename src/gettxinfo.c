@@ -37,7 +37,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "callinput.h"
-#include "bands.h"
+#include "changepars.h"
 
 #include <hamlib/rig.h>
 
@@ -147,10 +147,10 @@ static void poll_rig_state() {
 	}
     } else if (trxmode == CWMODE && (rigmode == RIG_MODE_LSB
 				     || rigmode == RIG_MODE_USB)) {
-	trxmode = SSBMODE;
+	set_trxmode_internally(SSBMODE);
     } else if (trxmode != CWMODE && (rigmode == RIG_MODE_CW
 				     || rigmode == RIG_MODE_CWR)) {
-	trxmode = CWMODE; //FIXME: set_trxmode(...
+	set_trxmode_internally(CWMODE);
     }
 
     if (retval != RIG_OK || rigfreq < 0.1) {
