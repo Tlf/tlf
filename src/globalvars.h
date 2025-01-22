@@ -252,7 +252,7 @@ extern bool qso_once;
 extern bool leading_zeros_serial;
 extern bool ignoredupe;
 extern bool continentlist_only;
-extern bool debugflag;
+extern int debuglevel;
 extern bool trx_control;
 extern bool nopacket;
 extern bool verbose;

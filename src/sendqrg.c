@@ -35,7 +35,7 @@
 #include "bands.h"
 #include "globalvars.h"
 
-#define RIG_DEBUG_LOG "rig.dbg"
+#define RIG_DEBUG_LOG "riglog.txt"
 
 static bool init_called = false;
 static bool can_send_morse = false;
@@ -109,6 +109,17 @@ int rig_debug_cb(enum rig_debug_level_e lvl,
     format_time(debugbuffer, sizeof(debugbuffer), "%H:%M:%S ");
     char *msg = g_strdup_vprintf(fmt, ap);
     fputs(debugbuffer, fp);
+
+    switch (lvl) {
+	case 2: fputs("ERR ", fp);
+		break;
+	case 3: fputs("WRN ", fp);
+		break;
+	case 4: fputs("INF ", fp);
+		break;
+	default: break;
+    }
+
     fputs(msg, fp);
     g_free(msg);
     fclose(fp);
@@ -125,9 +136,10 @@ int init_tlf_rig(void) {
     int rig_cwspeed;
     char debugbuffer[160];
 
-    if (debugflag) {
+    if (debuglevel) {
 	/* set hamlib debug level and install callback */
-	rig_set_debug(RIG_DEBUG_WARN);
+	rig_set_debug(debuglevel + 1);	// RIG_DEBUG_ERROR == 2, .._WARN == 3,
+					// .._VERBOSE=4
 	rig_set_debug_callback(rig_debug_cb, (rig_ptr_t)NULL);
 
 	/* write start entry into debug log */
