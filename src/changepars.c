@@ -104,6 +104,25 @@ static void change_autosend() {
     sleep(1);
 }
 
+void set_trxmode(int mode) {
+
+    trxmode = mode;
+
+    if (trxmode == CWMODE) {
+	if (cwkeyer == MFJ1278_KEYER) {
+	    sendmessage("MODE CW\015K\015");
+	}
+	set_outfreq(SETCWMODE);
+    } else if (trxmode == SSBMODE) {
+	set_outfreq(SETSSBMODE);
+    } else if (trxmode == DIGIMODE) {
+	if (cwkeyer == MFJ1278_KEYER) {
+	    sendmessage("MODE VB\015K\015");
+	}
+	set_outfreq(SETDIGIMODE);
+    }
+}
+
 
 int changepars(void) {
 
@@ -326,11 +345,11 @@ int changepars(void) {
 	}
 	case 23: {		/*  MODE   */
 	    if (trxmode == CWMODE)
-		trxmode = SSBMODE;
+		set_trxmode(SSBMODE);
 	    else if (trxmode == SSBMODE)
-		trxmode = DIGIMODE;
+		set_trxmode(DIGIMODE);
 	    else
-		trxmode = CWMODE;
+		set_trxmode(CWMODE);
 
 	    if (trxmode == CWMODE) {
 		mvaddstr(13, 29, "TRXMODE = CW");
@@ -394,21 +413,15 @@ int changepars(void) {
 	}
 	case 30:			/* CW  */
 	case 49: {
-	    if (cwkeyer == MFJ1278_KEYER) {
-		sendmessage("MODE CW\015K\015");
-	    }
-	    trxmode = CWMODE;
-	    set_outfreq(SETCWMODE);
+	    set_trxmode(CWMODE);
 	    break;
 	}
 	case 31: {		/* SSBMODE  */
-	    trxmode = SSBMODE;
-	    set_outfreq(SETSSBMODE);
+	    set_trxmode(SSBMODE);
 	    break;
 	}
 	case 32: {		/* DIGIMODE  */
-	    trxmode = DIGIMODE;
-	    set_outfreq(SETDIGIMODE);
+	    set_trxmode(DIGIMODE);
 	    break;
 	}
 	case 33: {		/* PACKET  */
@@ -609,8 +622,7 @@ int changepars(void) {
 	    break;
 	}
 	case 47: {		/* RTTY Initialize mode (MFJ1278B controller) */
-	    sendmessage("MODE VB\015K\015");
-	    trxmode = DIGIMODE;
+	    set_trxmode(DIGIMODE);
 
 	    break;
 	}
