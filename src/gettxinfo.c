@@ -119,9 +119,10 @@ static void poll_rig_state() {
 	retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 	pthread_mutex_unlock(&tlf_rig_mutex);
 
-	if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)
-		&& retval == RIG_OK) {
-
+        if (retval == RIG_OK &&
+	    ( (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI))
+             || true /* FIXME: sync_rig_mode */ )
+        ) {
 	    pthread_mutex_lock(&tlf_rig_mutex);
 	    pbwidth_t bwidth;
 	    int retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, &rigmode, &bwidth);
@@ -144,6 +145,10 @@ static void poll_rig_state() {
 		pthread_mutex_unlock(&tlf_rig_mutex);
 	    }
 	}
+    } else if (trxmode == CWMODE && (rigmode == RIG_MODE_LSB || rigmode == RIG_MODE_USB)) {
+        trxmode = SSBMODE;
+    } else if (trxmode != CWMODE && (rigmode == RIG_MODE_CW || rigmode == RIG_MODE_CWR)) {
+        trxmode = CWMODE; //FIXME: set_trxmode(...
     }
 
     if (retval != RIG_OK || rigfreq < 0.1) {
