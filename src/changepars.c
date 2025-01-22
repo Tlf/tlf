@@ -112,7 +112,6 @@ int changepars(void) {
     int i, k, x, nopar = 0;
     int maxpar = 50;
     int volumebuffer;
-    int currentmode = 0;
 
     strcpy(parameters[0], "SPOT");
     strcpy(parameters[1], "MAP");
@@ -475,8 +474,6 @@ int changepars(void) {
 	    networkinfo();
 	    miniterm = currentterm;
 
-	    if (currentmode == DIGIMODE)
-		trxmode = DIGIMODE;
 	    break;
 	}
 	case 36: {		/* CLOFF  */
