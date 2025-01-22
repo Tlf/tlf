@@ -69,6 +69,11 @@ void set_outfreq(freq_t hertz) {
     if (!trx_control) {
 	hertz = 0;      // no rig control, ignore request
     }
+    if (!sync_rig_mode
+	    && (hertz == SETCWMODE || hertz == SETSSBMODE || hertz == SETDIGIMODE)
+       ) {
+	hertz = 0;      // no rig mode setting, ignore request
+    }
     pthread_mutex_lock(&outfreq_mutex);
     outfreq = hertz;
     pthread_mutex_unlock(&outfreq_mutex);
@@ -120,8 +125,11 @@ static void poll_rig_state() {
 	pthread_mutex_unlock(&tlf_rig_mutex);
 
 	if (retval == RIG_OK &&
-		((trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI))
-		 || true /* FIXME: sync_rig_mode */)
+		(
+		    (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI))
+		    ||
+		    sync_rig_mode
+		)
 	   ) {
 	    pthread_mutex_lock(&tlf_rig_mutex);
 	    pbwidth_t bwidth;
@@ -157,7 +165,6 @@ static void poll_rig_state() {
 	freq = 0.0;
 	return;
     }
-
 
     if (rigfreq >= bandcorner[0][0]) {
 	freq = rigfreq; // Hz
@@ -306,6 +313,10 @@ static void handle_trx_bandswitch(const freq_t freq) {
 
     send_bandswitch(freq);
 
+    if (!sync_rig_mode) {
+	return;     // don't touch rig mode
+    }
+
     rmode_t mode = RIG_MODE_NONE;           // default: no change
     pbwidth_t width = TLF_DEFAULT_PASSBAND; // passband width, in Hz
 
@@ -332,6 +343,5 @@ static void handle_trx_bandswitch(const freq_t freq) {
     if (retval != RIG_OK) {
 	TLF_LOG_WARN("Problem with rig link: %s", rigerror(retval));
     }
-
 }
 

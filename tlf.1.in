@@ -2060,8 +2060,13 @@ available used to activate the radio's PTT for sending voice messages instead
 of the \fBcwdaemon\fR PTT.
 .
 .TP
-\fBFOLLOW_MODE\fR[=<\fION\fR|\fIOFF\fR>]
-Control if RIG should change modulation when band is changed
+\fBSYNC_RIG_MODE\fR[=<\fION\fR|\fIOFF\fR>]
+Synchronize TLF and the radio's mode. The synchronization happens in both
+directions, but it mainly affects CW and SSB modes (see also
+.BR DIGI_RIG_MODE ).
+.
+.IP
+If disabled then TLF and radio mode can be set independently. (default: on)
 .
 .TP
 \fBCWBANDWIDTH\fR=\fIwidth\fR
@@ -2391,22 +2396,23 @@ without being counted as a DUPE.
 Start @PACKAGE_NAME@ in SSB mode.
 .
 .IP
-If radio control is active, the radio will be placed in SSB mode, if not in
-SSB mode already.
+If radio control is active and
+.BR SYNC_RIG_MODE
+is on, the radio will be placed in SSB mode, if not in SSB mode already.
 .
 Normally @PACKAGE_NAME@ starts in CW mode and will set the radio to CW mode if
 needed.
 .
 .IP
 .BR Note :
-At this time @PACKAGE_NAME@ does not follow mode changes on the radio.
-.
 When switching modes use the
 .BR :CW ,
 .BR :SSB ,
 or
 .BR :DIG
-commands to set both @PACKAGE_NAME@ and the radio mode.
+commands to set both @PACKAGE_NAME@ and the radio mode
+(but see also
+.BR SYNC_RIG_MODE ).
 .
 .TP
 .B CQWW_M2

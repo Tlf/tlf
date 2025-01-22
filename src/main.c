@@ -171,8 +171,8 @@ char multsfile[80] = "";	/* name of file with a list of allowed
 char exchange_list[40] = "";
 int timeoffset = 0;
 int trxmode = CWMODE;
-rmode_t  rigmode = RIG_MODE_NONE;
-bool follow_mode = false; /* Follow rig mode */
+rmode_t rigmode = RIG_MODE_NONE;
+bool sync_rig_mode;     /* keep TLF and rig mode in sync */
 
 bool mixedmode = false;
 char sent_rst[4] = "599";
@@ -654,6 +654,7 @@ static void init_variables() {
     ctcomp = false;
     resend_call = RESEND_NOT_SET;
     cwstart = 0;    // off
+    sync_rig_mode = true;
 
     g_free(current_qso.call);
     current_qso.call = g_malloc0(CALL_SIZE);
