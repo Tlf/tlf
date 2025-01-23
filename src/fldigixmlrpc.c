@@ -45,7 +45,7 @@
 #include "logit.h"
 #include "printcall.h"
 #include "searchlog.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 

@@ -27,7 +27,7 @@
 #include "globalvars.h"
 #include "parse_logcfg.h"
 #include "setcontest.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "tlf.h"
 #include "utils.h"
 

@@ -62,7 +62,7 @@
 #include "setcontest.h"
 #include "set_tone.h"
 #include "splitscreen.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "tlf_panel.h"
 #include "readcabrillo.h"
 #include "ui_utils.h"

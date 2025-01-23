@@ -30,7 +30,7 @@
 #include <unistd.h>
 
 #include "qtcvars.h"		// Includes globalvars.h
-#include "startmsg.h"
+#include "showmsg.h"
 
 
 int checkqtclogfile() {

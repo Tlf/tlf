@@ -35,7 +35,7 @@
 #include "globalvars.h"
 #include "printcall.h"
 #include "qtcvars.h"		// Includes globalvars.h
-#include "startmsg.h"
+#include "showmsg.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 

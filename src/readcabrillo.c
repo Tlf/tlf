@@ -38,7 +38,7 @@
 #include "readcabrillo.h"
 #include "score.h"
 #include "searchcallarray.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "store_qso.h"
 #include "tlf_curses.h"
 #include "utils.h"

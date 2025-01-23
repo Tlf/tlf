@@ -49,7 +49,7 @@
 #include "setcontest.h"
 #include "set_tone.h"
 #include "speedupndown.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "tlf_curses.h"
 #include "searchlog.h"
 #include "tlf.h"
