@@ -183,6 +183,8 @@ int checklogfile_new(char *filename) {
 	    if (!((buffer[0] == ';') || bandok)) {
 		/* msg no valid logline in line #, cannot handle it */
 		shownr("No valid log line in line ", lineno);
+		free(buffer);
+		fclose(fp);
 		return 1;
 	    }
 
@@ -194,6 +196,8 @@ int checklogfile_new(char *filename) {
 		* cannot handle that log file format */
 		shownr("Log line to long in line ", lineno);
 		showmsg("Can not handle that log format");
+		free(buffer);
+		fclose(fp);
 		return 1;
 	    }
 

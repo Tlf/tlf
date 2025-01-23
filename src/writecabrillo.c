@@ -634,9 +634,9 @@ int write_cabrillo(void) {
 
     fputs("END-OF-LOG:\n", fp2);
     fclose(fp2);
-    if (fpqtcrec != NULL) {
-	fclose(fpqtcrec);
-    }
+
+    if (fpqtcsent != NULL) fclose(fpqtcsent);
+    if (fpqtcrec != NULL) fclose(fpqtcrec);
 
     free_cabfmt(cabdesc);
 

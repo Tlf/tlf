@@ -138,6 +138,7 @@ int readqtccalls() {
 	}
 
 	free(inputbuffer);
+	inputbuffer = NULL;
 	fclose(fp);
     }
 
@@ -163,6 +164,7 @@ int readqtccalls() {
 	}
 
 	free(inputbuffer);
+	inputbuffer = NULL;
 	fclose(fp);
     }
 
