@@ -2060,7 +2060,7 @@ available used to activate the radio's PTT for sending voice messages instead
 of the \fBcwdaemon\fR PTT.
 .
 .TP
-\fBSYNC_RIG_MODE\fR[=<\fION\fR|\fIOFF\fR>]
+\fBRIG_MODE_SYNC\fR[=<\fION\fR|\fIOFF\fR>]
 Synchronize TLF and the radio's mode. The synchronization happens in both
 directions, but it mainly affects CW and SSB modes (see also
 .BR DIGI_RIG_MODE ).
@@ -2397,7 +2397,7 @@ Start @PACKAGE_NAME@ in SSB mode.
 .
 .IP
 If radio control is active and
-.BR SYNC_RIG_MODE
+.BR RIG_MODE_SYNC
 is on, the radio will be placed in SSB mode, if not in SSB mode already.
 .
 Normally @PACKAGE_NAME@ starts in CW mode and will set the radio to CW mode if
@@ -2412,7 +2412,7 @@ or
 .BR :DIG
 commands to set both @PACKAGE_NAME@ and the radio mode
 (but see also
-.BR SYNC_RIG_MODE ).
+.BR RIG_MODE_SYNC ).
 .
 .TP
 .B CQWW_M2

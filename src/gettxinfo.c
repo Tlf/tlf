@@ -69,7 +69,7 @@ void set_outfreq(freq_t hertz) {
     if (!trx_control) {
 	hertz = 0;      // no rig control, ignore request
     }
-    if (!sync_rig_mode
+    if (!rig_mode_sync
 	    && (hertz == SETCWMODE || hertz == SETSSBMODE || hertz == SETDIGIMODE)
        ) {
 	hertz = 0;      // no rig mode setting, ignore request
@@ -128,7 +128,7 @@ static void poll_rig_state() {
 		(
 		    (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI))
 		    ||
-		    sync_rig_mode
+		    rig_mode_sync
 		)
 	   ) {
 	    pthread_mutex_lock(&tlf_rig_mutex);
@@ -313,7 +313,7 @@ static void handle_trx_bandswitch(const freq_t freq) {
 
     send_bandswitch(freq);
 
-    if (!sync_rig_mode) {
+    if (!rig_mode_sync) {
 	return;     // don't touch rig mode
     }
 

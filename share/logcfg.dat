@@ -129,14 +129,13 @@ CWTONE=800
 #           for ten tec OMNI VI #
 #################################
 #
-#SYNC_RIG_MODE
-#
 #RADIO_CONTROL
 #RIGMODEL=351
 #RIGSPEED=2400
 #RIGPORT=/dev/ttyS0
 #RIGPORT=/dev/ttyUSB2
 #RIGPTT
+#RIG_MODE_SYNC=OFF
 #
 #SSBMODE
 #

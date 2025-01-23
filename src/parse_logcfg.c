@@ -1281,7 +1281,7 @@ static config_t logcfg_configs[] = {
     {"SERIAL_EXCHANGE",	    CFG_CONTEST_BOOL(exchange_serial)},
     {"COUNTRY_MULT",	    CFG_BOOL(country_mult)},
     {"CQWW_M2",		    CFG_BOOL(cqwwm2)},
-    {"SYNC_RIG_MODE",       CFG_BOOL(sync_rig_mode)},
+    {"RIG_MODE_SYNC",       CFG_BOOL(rig_mode_sync)},
     {"LAN_DEBUG",	    CFG_BOOL(landebug)},
     {"CALLUPDATE",	    CFG_BOOL(call_update)},
     {"TIME_MASTER",	    CFG_BOOL(time_master)},

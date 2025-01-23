@@ -88,7 +88,7 @@ extern char logline_edit[5][LOGLINELEN + 1];
 
 extern char band[NBANDS][4];
 extern freq_t bandfrequency[NBANDS];
-extern bool sync_rig_mode;
+extern bool rig_mode_sync;
 
 extern struct tm *time_ptr;
 
