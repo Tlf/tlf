@@ -671,11 +671,11 @@ void networkinfo(void) {
     wipe_display();
 
     if (lan_active)
-	mvaddstr(1, 10, "Network status: on");
+	mvprintw(1, 10, "Network status: on   Node: %c", thisnode);
     else
 	mvaddstr(1, 10, "Network status: off");
 
-    mvprintw(3, 28, "Packets rcvd: %d | %d", recv_packets, recv_error);
+    mvprintw(3, 22, "Total packets rcvd: %d | %d", recv_packets, recv_error);
 
     for (int i = 0; i < nodes; i++) {
 	mvaddstr(4 + i, 10, bc_hostaddress[i]);
