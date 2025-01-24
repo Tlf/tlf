@@ -176,7 +176,6 @@ int setup_default(void **state) {
     nodes = 0;
     xplanet = MARKER_NONE;
     dx_arrlsections = false;
-    mult_side = false;
     countrylist_points = -1;
     my_country_points = -1;
     my_cont_points = -1;
@@ -1102,7 +1101,6 @@ void test_countrylist(void **state) {
     assert_string_equal(countrylist[1], "GM");
     assert_string_equal(countrylist[2], "F");
     assert_string_equal(countrylist[3], "");
-    assert_true(mult_side);
     assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
@@ -1120,7 +1118,6 @@ void test_countrylist_long(void **state) {
     assert_string_equal(countrylist[128], "VU");
     assert_string_equal(countrylist[160], "ZS8");
     assert_string_equal(countrylist[161], "");
-    assert_false(mult_side);
     assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
@@ -1132,7 +1129,6 @@ void test_countrylist_from_file(void **state) {
     assert_string_equal(countrylist[0], "EA");
     assert_string_equal(countrylist[1], "CT");
     assert_string_equal(countrylist[2], "");
-    assert_true(mult_side);
     assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
@@ -1152,7 +1148,6 @@ void test_countrylist_from_file_long(void **state) {
     assert_string_equal(countrylist[128], "VU");
     assert_string_equal(countrylist[160], "ZS8");
     assert_string_equal(countrylist[161], "");
-    assert_true(mult_side);
     assert_int_equal(CONTEST_IS(UNKNOWN), 1);
 }
 
@@ -1160,19 +1155,6 @@ void test_countrylist_points(void **state) {
     int rc = call_parse_logcfg("COUNTRY_LIST_POINTS=4\n");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(countrylist_points, 4);
-}
-
-void test_countrylist_only(void **state) {
-    int rc = call_parse_logcfg("USE_COUNTRYLIST_ONLY\n");
-    assert_int_equal(rc, PARSE_OK);
-    assert_true(countrylist_only);
-}
-
-void test_countrylist_only_mult_side(void **state) {
-    mult_side = true;
-    int rc = call_parse_logcfg("USE_COUNTRYLIST_ONLY\n");
-    assert_int_equal(rc, PARSE_OK);
-    assert_false(countrylist_only);
 }
 
 void test_my_country_points(void **state) {
