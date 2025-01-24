@@ -52,14 +52,12 @@ struct linedata_t *parse_logline(char *buffer) {
 
     ptr = g_malloc0(sizeof(struct linedata_t));
 
-    /* remember whole line */
-    ptr->logline = g_strdup(buffer);
     ptr->qtcdirection = 0;
     ptr->qsots = 0;
 
-
     struct qso_t *qso = parse_qso(buffer);
 
+    ptr->logline = qso->logline;
     ptr-> band = qso->band;
     ptr-> mode = qso->mode;
     ptr-> day  = qso->day;
@@ -101,6 +99,7 @@ struct linedata_t *get_next_record(FILE *fp) {
 	if (read > 0) {
 	    if (!log_is_comment(buffer)) {
 		ptr = parse_logline(buffer);
+		free(buffer);
 		return ptr;
 	    }
 	}
