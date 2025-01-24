@@ -412,6 +412,7 @@ char lan_logline[256];	    // defined in log_to_disk.c
 /* resend call option, can be 0 (do not use), 1 (partial), 2 (full) */
 int resend_call;
 char sentcall[20] = "";     // storing the call what already sent
+bool rig_mode_sync;
 
 #include <curses.h>
 NCURSES_EXPORT_VAR(WINDOW *) stdscr = NULL;

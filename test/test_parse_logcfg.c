@@ -186,6 +186,7 @@ int setup_default(void **state) {
     change_rst = false;
     fixedmult = 0.0;
     exclude_multilist_type = EXCLUDE_NONE;
+    rig_mode_sync = true;
     rigptt = 0;
     minitest = 0;
     cqmode = CQ;
@@ -430,6 +431,7 @@ static bool_true_t bool_trues[] = {
     {"MIXED", &mixedmode},
     {"IGNOREDUPE", &ignoredupe},
     {"USE_CONTINENTLIST_ONLY", &continentlist_only},
+    {"RIG_MODE_SYNC", &rig_mode_sync},
     {"RADIO_CONTROL", &trx_control},
     {"PORTABLE_MULT_2", &portable_x2},
     {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
