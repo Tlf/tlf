@@ -88,6 +88,7 @@ int repair_log(char *filename) {
 	return 1;
     }
 
+    errno = 0;
     while ((read = getline(&buffer, &buffer_len, infp)) != -1) {
 	if (read > 0) {
 	    /* strip trailing whitespace (and newline) */
@@ -100,6 +101,7 @@ int repair_log(char *filename) {
 
 	    fputs(buffer, outfp);
 	    fputs("\n", outfp);
+	    errno = 0;	    /* fputs leaves errno undefined */
 	}
     }
     if (errno == ENOMEM) {
@@ -158,6 +160,7 @@ int checklogfile_new(char *filename) {
     lineno = 0;
     tooshort = 0;
 
+    errno = 0;
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 	if (read > 0) {
 	    int band, linelen;
@@ -268,6 +271,7 @@ void checklogfile(void) {
 		    TLF_LOG_WARN("Unable to open cpyfile...");
 
 		} else {
+		    errno = 0;
 		    while ((read = getline(&inputbuffer, &read_len, infile)) != -1) {
 			if (read > 0) {
 			    if (strlen(inputbuffer) != LOGLINELEN) {
@@ -282,6 +286,7 @@ void checklogfile(void) {
 				inputbuffer[LOGLINELEN] = '\0';
 			    }
 			    fputs(inputbuffer, outfile);
+			    errno = 0;	    /* fputs leaves errno undefined */
 			}
 		    }
 		    if (errno == ENOMEM) {

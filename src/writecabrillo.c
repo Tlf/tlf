@@ -96,6 +96,7 @@ struct linedata_t *get_next_record(FILE *fp) {
     struct linedata_t *ptr;
     int read;
 
+    errno = 0;
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 	if (read > 0) {
 	    if (!log_is_comment(buffer)) {
