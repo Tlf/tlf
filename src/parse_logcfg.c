@@ -742,6 +742,7 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     }
 
     if (country_list_raw == NULL) {
+	free(buffer);
 	return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
     }
 
@@ -836,6 +837,7 @@ static int cfg_continentlist(const cfg_arg_t arg) {
     }
 
     if (cont_multiplier_list == NULL) {
+	free(buffer);
 	return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
     }
 
