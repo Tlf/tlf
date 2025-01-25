@@ -86,9 +86,13 @@ bool sendqrg(void) {
 /**************************************************************************/
 
 void show_rigerror(char *message, int errcode) {
-	char *str = g_strdup_printf("%s: %s", message, rigerror2(errcode));
-	showmsg(str);
-	g_free(str);
+#if HAMLIB_VERSION >= 450
+    char *str = g_strdup_printf("%s: %s", message, rigerror2(errcode));
+#else
+    char *str = g_strdup_printf("%s: %s", message, rigerror(errcode));
+#endif
+    showmsg(str);
+    g_free(str);
 }
 
 
@@ -140,7 +144,6 @@ int init_tlf_rig(void) {
 	}
     }
 
-    // parse RIGCONF parameters
     if (parse_rigconf() < 0) {
 	return -1;
     }
