@@ -661,7 +661,7 @@ static void init_variables() {
     thisnode = 'A';
     lan_port = 6788;
     bzero(bc_hostaddress, sizeof(bc_hostaddress));
-    bzero(bc_hostservice, sizeof(bc_hostservice));
+    bzero(bc_hostport, sizeof(bc_hostport));
     time_master = false;
 
     g_free(current_qso.call);

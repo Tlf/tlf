@@ -711,9 +711,10 @@ void networkinfo(void) {
 		column -= 4;
 	    }
 	    g_string_append(info, bc_hostaddress[i]);
-	    if (*bc_hostservice[i]) {
-		g_string_append(info, ":");
-		g_string_append(info, bc_hostservice[i]);
+	    if (bc_hostport[i] > 0) {
+		char *port = g_strdup_printf(":%d", bc_hostport[i]);
+		g_string_append(info, port);
+		g_free(port);
 	    }
 	    char *s = g_string_free(info, FALSE);
 	    mvaddstr(4 + n_nodes, column, s);

@@ -84,7 +84,7 @@
 #include <hamlib/rig.h>
 
 extern char bc_hostaddress[MAXNODES][16];
-extern char bc_hostservice[MAXNODES][16];
+extern int bc_hostport[MAXNODES];
 extern char talkarray[5][62];
 extern char thisnode;
 extern char lan_message[256];

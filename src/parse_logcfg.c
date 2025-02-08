@@ -621,8 +621,7 @@ static void parse_node(int index) {
 	      sizeof(bc_hostaddress[0]));
     if (an_fields[1] != NULL) {
 	/* copy host port, if found */
-	g_strlcpy(bc_hostservice[index], g_strchomp(an_fields[1]),
-		  sizeof(bc_hostservice[0]));
+	bc_hostport[index] = atoi(an_fields[1]);
     }
     g_strfreev(an_fields);
 
