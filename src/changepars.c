@@ -689,38 +689,56 @@ void networkinfo(void) {
 
     wipe_display();
 
-    if (lan_active)
+    int n_nodes = 0;
+
+    if (lan_active) {
 	mvprintw(1, 10, "Network status: on   Node: %c", thisnode);
-    else
+	mvprintw(3, 32, "Total packets rcvd: %d | %d", recv_packets, recv_error);
+
+	for (int i = 0; i < nodes; i++) {
+	    if (*bc_hostaddress[i] == 0) {
+		continue;
+	    }
+	    GString *info = g_string_new(NULL);
+	    int column = 10;
+	    if (using_named_nodes) {
+		char *id = g_strdup_printf("%c%c) ",
+					   (i == thisnode - 'A' ? '*' : ' '),
+					   'A' + i
+					  );
+		g_string_append(info, id);
+		g_free(id);
+		column -= 4;
+	    }
+	    g_string_append(info, bc_hostaddress[i]);
+	    if (*bc_hostservice[i]) {
+		g_string_append(info, ":");
+		g_string_append(info, bc_hostservice[i]);
+	    }
+	    char *s = g_string_free(info, FALSE);
+	    mvaddstr(4 + n_nodes, column, s);
+	    g_free(s);
+
+	    mvprintw(4 + n_nodes, 38, "Packets sent: %d | %d ",
+		     send_packets[i], send_error[i]);
+	    ++n_nodes;
+	}
+    } else {
 	mvaddstr(1, 10, "Network status: off");
-
-    mvprintw(3, 22, "Total packets rcvd: %d | %d", recv_packets, recv_error);
-
-    for (int i = 0; i < nodes; i++) {
-	mvaddstr(4 + i, 10, bc_hostaddress[i]);
-	mvprintw(4 + i, 28, "Packets sent: %d | %d ",
-		 send_packets[i], send_error[i]);
     }
 
-    if (strlen(config_file) > 0)
-	mvprintw(6 + nodes, 10, "Config file: %s", config_file);
-    else
-	mvprintw(6 + nodes, 10,
-		 "Config file: /usr/local/share/tlf/logcfg.dat");//FIXME
-    mvprintw(7 + nodes, 10, "Contest    : %s", whichcontest);
-    mvprintw(8 + nodes, 10, "Logfile    : %s", logfile);
+    mvprintw(6 + n_nodes, 10, "Config file: %s", config_file);
+    mvprintw(7 + n_nodes, 10, "Contest    : %s", whichcontest);
+    mvprintw(8 + n_nodes, 10, "Logfile    : %s", logfile);
 
-    mvprintw(9 + nodes, 10, "Cluster    : %s", pr_hostaddress);
-    mvprintw(10 + nodes, 10, "TNCport    : %s", tncportname);
-    mvprintw(11 + nodes, 10, "RIGport    : %s", rigportname);
-    if (use_bandoutput == 1)
-	mvaddstr(12 + nodes, 10, "Band output: on");
-    else
-	mvaddstr(12 + nodes, 10, "Band output: off");
-
-    mvprintw(13 + nodes, 10, "callmaster : %s",
+    mvprintw(9 + n_nodes, 10, "Cluster    : %s", pr_hostaddress);
+    mvprintw(10 + n_nodes, 10, "TNCport    : %s", tncportname);
+    mvprintw(11 + n_nodes, 10, "RIGport    : %s", rigportname);
+    mvprintw(12 + n_nodes, 10, "Band output: %s",
+	     (use_bandoutput ? "on" : "off"));
+    mvprintw(13 + n_nodes, 10, "callmaster : %s",
 	     (callmaster_version[0] != 0 ? callmaster_version : "n/a"));
-    mvprintw(14 + nodes, 10, "cty.dat    : %s",
+    mvprintw(14 + n_nodes, 10, "cty.dat    : %s",
 	     (cty_dat_version[0] != 0 ? cty_dat_version : "n/a"));
 
     refreshp();

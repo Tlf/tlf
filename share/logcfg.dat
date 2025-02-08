@@ -68,8 +68,8 @@ TIME_MASTER
 #################################
 #  use 'addnode' only for OTHER nodes !!
 #
-#ADDNODE=10.0.0.115
-#ADDNODE=192.168.1.2
+#NODE_B=10.0.0.115
+#NODE_C=192.168.1.2
 #
 THISNODE=A
 #

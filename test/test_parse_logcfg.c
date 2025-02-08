@@ -40,6 +40,7 @@ int nodes = 0;
 struct sockaddr_in bc_address[MAXNODES];
 int lan_port = 6788;
 bool lan_active;
+bool using_named_nodes;
 bool landebug = false;
 char thisnode = 'A';
 bool time_master;
@@ -174,6 +175,8 @@ int setup_default(void **state) {
     use_bandoutput = 0;
     thisnode = 'A';
     nodes = 0;
+    lan_active = false;
+    using_named_nodes = false;
     xplanet = MARKER_NONE;
     dx_arrlsections = false;
     mult_side = false;
@@ -1048,9 +1051,20 @@ void test_addnode(void **state) {
     int rc = call_parse_logcfg("ADDNODE=hostx:1234\n");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(lan_active, true);
+    assert_int_equal(using_named_nodes, false);
     assert_int_equal(nodes, 1);
     assert_string_equal(bc_hostaddress[0], "hostx");
     assert_string_equal(bc_hostservice[0], "1234");
+}
+
+void test_node_x(void **state) {
+    int rc = call_parse_logcfg("NODE_C=hostx:1234\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(lan_active, true);
+    assert_int_equal(using_named_nodes, true);
+    assert_int_equal(nodes, 3);
+    assert_string_equal(bc_hostaddress[2], "hostx");
+    assert_string_equal(bc_hostservice[2], "1234");
 }
 
 void test_thisnode(void **state) {

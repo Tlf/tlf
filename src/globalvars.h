@@ -143,6 +143,7 @@ extern int packetinterface;
 extern int use_bandoutput;
 extern int cluster;
 extern int nodes;
+extern bool using_named_nodes;
 extern int multlist;
 extern int xplanet;
 extern int cwkeyer;

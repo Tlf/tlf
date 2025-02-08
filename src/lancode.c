@@ -53,6 +53,7 @@ char bc_hostservice[MAXNODES][16] = {
     [0 ... MAXNODES - 1] = { [0 ... 15] = 0 }
 };
 int nodes = 0;
+bool using_named_nodes;
 //--------------------------------------
 /* default port to listen for incoming packets and to send packet to */
 char default_lan_service[16] = "6788";
@@ -186,6 +187,12 @@ int lan_send_init(void) {
 	return 0;
 
     for (int node = 0; node < nodes; node++) {
+	if (*bc_hostaddress[node] == 0) {
+	    continue;
+	}
+	if (using_named_nodes && node == thisnode - 'A') {
+	    continue;   // skip ourserlves
+	}
 
 	bc_hostbyname[node] = gethostbyname(bc_hostaddress[node]);
 	if (bc_hostbyname[node] == NULL) {
@@ -246,6 +253,12 @@ static int lan_send(char *lanbuffer) {
     }
 
     for (int node = 0; node < nodes; node++) {
+	if (*bc_hostaddress[node] == 0) {
+	    continue;
+	}
+	if (using_named_nodes && node == thisnode - 'A') {
+	    continue;   // skip ourserlves
+	}
 
 	bc_sendto_rc = sendto(bc_socket_descriptor[node],
 			      lanbuffer, strlen(lanbuffer),

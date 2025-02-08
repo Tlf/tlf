@@ -23,6 +23,8 @@ int setup_default(void **state) {
     trx_control = true;
     nodes = 1;
     lan_active = true;
+    using_named_nodes = false;
+    strcpy(bc_hostaddress[0], "host0");
 
     sendto_call_count = 0;
     FREE_DYNAMIC_STRING(sendto_last_message);

@@ -644,6 +644,7 @@ static void init_variables() {
     portnum = 0;
     packetinterface = 0;
     nodes = 0;
+    using_named_nodes = false;
     shortqsonr = 0;
     tune_seconds = 6;   /* tune up for 6 s */
     unique_call_multi = MULT_NONE;
@@ -655,6 +656,13 @@ static void init_variables() {
     resend_call = RESEND_NOT_SET;
     cwstart = 0;    // off
     rig_mode_sync = true;
+
+    lan_active = false;
+    thisnode = 'A';
+    lan_port = 6788;
+    bzero(bc_hostaddress, sizeof(bc_hostaddress));
+    bzero(bc_hostservice, sizeof(bc_hostservice));
+    time_master = false;
 
     g_free(current_qso.call);
     current_qso.call = g_malloc0(CALL_SIZE);

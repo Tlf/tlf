@@ -1684,10 +1684,9 @@ Range: 0\(en23.
 This node transmits the time over the network (only one master allowed!).
 .
 .TP
-\fBADDNODE\fR=\fINode_address\fR[\fI:Port_number\fR]
+\fBNODE_\fIX\fR=\fINode_address\fR[\fI:Port_number\fR]
 Adds an IP address (and optionally a port number) to which we broadcast stuff.
-.RB ( WARNING :
-Only add addresses of other nodes).
+\fIX\fR is the node designator, possible values are A\(enH.
 .
 .TP
 \fBTHISNODE\fR=\fIA\fR
