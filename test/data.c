@@ -54,7 +54,7 @@ bool debugflag = false;
 char *editor_cmd = NULL;
 char rttyoutput[120];
 int tune_val = 0;
-int use_bandoutput = 0;
+bool use_bandoutput = false;
 bool no_arrows = false;
 int bandindexarray[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 bool cqwwm2 = false;

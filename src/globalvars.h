@@ -140,7 +140,7 @@ extern int continentlist_points;
 extern int dx_cont_points;
 extern int my_cont_points;
 extern int packetinterface;
-extern int use_bandoutput;
+extern bool use_bandoutput;
 extern int cluster;
 extern int nodes;
 extern bool using_named_nodes;

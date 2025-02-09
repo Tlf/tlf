@@ -91,7 +91,7 @@ int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
 bool debugflag = false;
 char *editor_cmd = NULL;
 int tune_val = 0;
-int use_bandoutput = 0;
+bool use_bandoutput = false;
 bool no_arrows = false;
 int bandindexarray[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 bool cqwwm2 = false;
@@ -656,6 +656,7 @@ static void init_variables() {
     resend_call = RESEND_NOT_SET;
     cwstart = 0;    // off
     rig_mode_sync = true;
+    use_bandoutput = false;
 
     lan_active = false;
     thisnode = 'A';

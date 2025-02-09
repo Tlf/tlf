@@ -170,7 +170,7 @@ int setup_default(void **state) {
     ssbpoints = 1;
     cwpoints = 1;
     trxmode = CWMODE;
-    use_bandoutput = 0;
+    use_bandoutput = false;
     thisnode = 'A';
     nodes = 0;
     lan_active = false;
@@ -961,7 +961,7 @@ void test_rules(void **state) {
 void test_bandoutput(void **state) {
     int rc = call_parse_logcfg("BANDOUTPUT=9876543210\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(use_bandoutput, 1);
+    assert_true(use_bandoutput);
     for (int i = 0; i <= 9; ++i) {
 	assert_int_equal(bandindexarray[i], 9 - i);
     }

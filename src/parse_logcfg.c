@@ -474,7 +474,7 @@ static int cfg_bandoutput(const cfg_arg_t arg) {
 
     if (g_regex_match_simple("^\\d{10}$", str, G_REGEX_CASELESS,
 			     (GRegexMatchFlags)0)) {
-	use_bandoutput = 1;
+	use_bandoutput = true;
 	for (int i = 0; i <= 9; i++) {	// 10x
 	    bandindexarray[i] = str[i] - '0';
 	}
