@@ -82,10 +82,13 @@ int lan_recv_init(void) {
     if (!lan_active)
 	return 0;
 
+    int node = thisnode - 'A';
+    int port = (bc_hostport[node] > 0 ? bc_hostport[node] : lan_port);
+
     bzero(&lan_sin, sizeof(lan_sin));
     lan_sin.sin_family = AF_INET;
     lan_sin.sin_addr.s_addr = htonl(INADDR_ANY);
-    lan_sin.sin_port = htons(lan_port);
+    lan_sin.sin_port = htons(port);
 
     lan_socket_descriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (lan_socket_descriptor == -1) {
