@@ -66,7 +66,7 @@ char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
 
 PANEL *search_panel;
 WINDOW *search_win;
-static int initialized = 0;
+static bool initialized = FALSE;
 int nr_bands;
 
 void show_needed_sections(void);
@@ -92,7 +92,7 @@ void InitSearchPanel() {
     search_win = newwin(nr_bands + 2, 39, 1, 41);
     search_panel = new_panel(search_win);
     hide_panel(search_panel);
-    initialized = 1;
+    initialized = TRUE;
 }
 
 void ShowSearchPanel(void) {
