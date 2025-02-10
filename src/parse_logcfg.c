@@ -474,7 +474,7 @@ static int cfg_bandoutput(const cfg_arg_t arg) {
 
     if (g_regex_match_simple("^\\d{10}$", str, G_REGEX_CASELESS,
 			     (GRegexMatchFlags)0)) {
-	use_bandoutput = 1;
+	use_bandoutput = true;
 	for (int i = 0; i <= 9; i++) {	// 10x
 	    bandindexarray[i] = str[i] - '0';
 	}
@@ -612,26 +612,58 @@ static int cfg_tncport(const cfg_arg_t arg) {
     return PARSE_OK;
 }
 
-static int cfg_addnode(const cfg_arg_t arg) {
-    if (nodes >= MAXNODES) {
-	error_details = g_strdup_printf("max %d nodes allowed", MAXNODES);
-	return PARSE_WRONG_PARAMETER;
-    }
+static void parse_node(int index) {
     /* split host name and port number, separated by colon */
     char **an_fields;
     an_fields = g_strsplit(parameter, ":", 2);
     /* copy host name */
-    g_strlcpy(bc_hostaddress[nodes], g_strchomp(an_fields[0]),
+    g_strlcpy(bc_hostaddress[index], g_strchomp(an_fields[0]),
 	      sizeof(bc_hostaddress[0]));
     if (an_fields[1] != NULL) {
 	/* copy host port, if found */
-	g_strlcpy(bc_hostservice[nodes], g_strchomp(an_fields[1]),
-		  sizeof(bc_hostservice[0]));
+	bc_hostport[index] = atoi(an_fields[1]);
     }
     g_strfreev(an_fields);
 
-    nodes++;
     lan_active = true;
+}
+
+static int cfg_addnode(const cfg_arg_t arg) {
+    if (using_named_nodes) {
+	error_details = g_strdup("already using named nodes");
+	return PARSE_WRONG_PARAMETER;
+    }
+    if (nodes >= MAXNODES) {
+	error_details = g_strdup_printf("max %d nodes allowed", MAXNODES);
+	return PARSE_WRONG_PARAMETER;
+    }
+
+    parse_node(nodes);
+    nodes++;
+
+    return PARSE_OK;
+}
+
+static int cfg_node_x(const cfg_arg_t arg) {
+    gchar *x = g_match_info_fetch(match_info, 1);
+    int index = *x - 'A';
+    g_free(x);
+
+    if (index >= MAXNODES) {
+	error_details = g_strdup_printf("name is A..%c", 'A' + MAXNODES - 1);
+	return PARSE_WRONG_PARAMETER;
+    }
+    if (!using_named_nodes && nodes > 0) {
+	error_details = g_strdup("already using unnamed nodes");
+	return PARSE_WRONG_PARAMETER;
+    }
+
+    using_named_nodes = true;
+
+    parse_node(index);
+    if (index + 1 > nodes) {
+	nodes = index + 1;
+    }
 
     return PARSE_OK;
 }
@@ -1411,6 +1443,7 @@ static config_t logcfg_configs[] = {
     {"SFI",             NEED_PARAM, cfg_sfi},
     {"TNCPORT",         NEED_PARAM, cfg_tncport},
     {"ADDNODE",         NEED_PARAM, cfg_addnode},
+    {"NODE_([A-Z])",    NEED_PARAM, cfg_node_x},
     {"THISNODE",        NEED_PARAM, cfg_thisnode},
     {"MULT_LIST",       NEED_PARAM, cfg_mult_list},
     {"MARKER(|DOT|CALL)S",  NEED_PARAM, cfg_markers},

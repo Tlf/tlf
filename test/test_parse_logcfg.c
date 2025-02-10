@@ -40,13 +40,12 @@ int nodes = 0;
 struct sockaddr_in bc_address[MAXNODES];
 int lan_port = 6788;
 bool lan_active;
+bool using_named_nodes;
 bool landebug = false;
 char thisnode = 'A';
 bool time_master;
 char bc_hostaddress[MAXNODES][16];
-char bc_hostservice[MAXNODES][16] = {
-    [0 ... MAXNODES - 1] = { [0 ... 15] = 0 }
-};
+int bc_hostport[MAXNODES];
 
 
 char netkeyer_hostaddress[16] = "127.0.0.1";
@@ -171,9 +170,11 @@ int setup_default(void **state) {
     ssbpoints = 1;
     cwpoints = 1;
     trxmode = CWMODE;
-    use_bandoutput = 0;
+    use_bandoutput = false;
     thisnode = 'A';
     nodes = 0;
+    lan_active = false;
+    using_named_nodes = false;
     xplanet = MARKER_NONE;
     dx_arrlsections = false;
     mult_side = false;
@@ -230,7 +231,7 @@ int setup_default(void **state) {
     }
     for (int i = 0; i < MAXNODES; ++i) {
 	bc_hostaddress[i][0] = 0;
-	bc_hostservice[i][0] = 0;
+	bc_hostport[i] = 0;
     }
     for (int i = 0; i < 255; ++i) {
 	countrylist[i][0] = 0;
@@ -960,7 +961,7 @@ void test_rules(void **state) {
 void test_bandoutput(void **state) {
     int rc = call_parse_logcfg("BANDOUTPUT=9876543210\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(use_bandoutput, 1);
+    assert_true(use_bandoutput);
     for (int i = 0; i <= 9; ++i) {
 	assert_int_equal(bandindexarray[i], 9 - i);
     }
@@ -1048,9 +1049,20 @@ void test_addnode(void **state) {
     int rc = call_parse_logcfg("ADDNODE=hostx:1234\n");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(lan_active, true);
+    assert_int_equal(using_named_nodes, false);
     assert_int_equal(nodes, 1);
     assert_string_equal(bc_hostaddress[0], "hostx");
-    assert_string_equal(bc_hostservice[0], "1234");
+    assert_int_equal(bc_hostport[0], 1234);
+}
+
+void test_node_x(void **state) {
+    int rc = call_parse_logcfg("NODE_C=hostx:1234\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(lan_active, true);
+    assert_int_equal(using_named_nodes, true);
+    assert_int_equal(nodes, 3);
+    assert_string_equal(bc_hostaddress[2], "hostx");
+    assert_int_equal(bc_hostport[2], 1234);
 }
 
 void test_thisnode(void **state) {

@@ -49,15 +49,13 @@ bool cl_send_inhibit = false;
 struct sockaddr_in bc_address[MAXNODES];
 /* host names and UDP ports to send notifications to */
 char bc_hostaddress[MAXNODES][16];
-char bc_hostservice[MAXNODES][16] = {
-    [0 ... MAXNODES - 1] = { [0 ... 15] = 0 }
-};
+int bc_hostport[MAXNODES];
 int nodes = 0;
+bool using_named_nodes;
 //--------------------------------------
 /* default port to listen for incoming packets and to send packet to */
-char default_lan_service[16] = "6788";
-/* lan port parsed from config */
-int lan_port = 6788;
+/* can be changed using LAN_PORT config */
+int lan_port;
 
 bool lan_active = false;
 int send_error[MAXNODES];
@@ -76,21 +74,6 @@ char thisnode = 'A'; 		/*  start with 'A' if not defined in
 
 //---------------------end lan globals --------------
 
-int resolveService(const char *service) {
-    struct servent *service_ent;
-    service_ent = getservbyname(service, "udp");
-    int port = 0;
-    if (service_ent != NULL) {
-	port = ntohs(service_ent->s_port);
-    } else if (strlen(service) > 0) {
-	port = atoi(service);
-    }
-    if (port == 0) {
-	port = atoi(default_lan_service);
-    }
-    return port;
-}
-
 int lan_recv_init(void) {
     int lan_bind_rc;
     long lan_save_file_flags;
@@ -99,11 +82,13 @@ int lan_recv_init(void) {
     if (!lan_active)
 	return 0;
 
-    sprintf(default_lan_service, "%d", lan_port);
+    int node = thisnode - 'A';
+    int port = (bc_hostport[node] > 0 ? bc_hostport[node] : lan_port);
+
     bzero(&lan_sin, sizeof(lan_sin));
     lan_sin.sin_family = AF_INET;
     lan_sin.sin_addr.s_addr = htonl(INADDR_ANY);
-    lan_sin.sin_port = htons(resolveService(default_lan_service));
+    lan_sin.sin_port = htons(port);
 
     lan_socket_descriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (lan_socket_descriptor == -1) {
@@ -186,6 +171,12 @@ int lan_send_init(void) {
 	return 0;
 
     for (int node = 0; node < nodes; node++) {
+	if (*bc_hostaddress[node] == 0) {
+	    continue;
+	}
+	if (using_named_nodes && node == thisnode - 'A') {
+	    continue;   // skip ourserlves
+	}
 
 	bc_hostbyname[node] = gethostbyname(bc_hostaddress[node]);
 	if (bc_hostbyname[node] == NULL) {
@@ -198,7 +189,8 @@ int lan_send_init(void) {
 	memcpy(&bc_address[node].sin_addr.s_addr, bc_hostbyname[node]->h_addr,
 	       sizeof(bc_address[node].sin_addr.s_addr));
 
-	bc_address[node].sin_port = htons(resolveService(bc_hostservice[node]));
+	int port = (bc_hostport[node] > 0 ? bc_hostport[node] : lan_port);
+	bc_address[node].sin_port = htons(port);
 
 	syslog(LOG_INFO, "open socket: to %d.%d.%d.%d:%d\n",
 	       (ntohl(bc_address[node].sin_addr.s_addr) & 0xff000000) >> 24,
@@ -246,6 +238,12 @@ static int lan_send(char *lanbuffer) {
     }
 
     for (int node = 0; node < nodes; node++) {
+	if (*bc_hostaddress[node] == 0) {
+	    continue;
+	}
+	if (using_named_nodes && node == thisnode - 'A') {
+	    continue;   // skip ourserlves
+	}
 
 	bc_sendto_rc = sendto(bc_socket_descriptor[node],
 			      lanbuffer, strlen(lanbuffer),
