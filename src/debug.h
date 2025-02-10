@@ -20,4 +20,22 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+#include "stdarg.h"
+#include "stdbool.h"
+
+#define DEBUG_LOG "debug.txt"
+
+enum debuglevel {
+    TLF_DBG_NONE,
+    TLF_DBG_ERR,
+    TLF_DBG_WARN,
+    TLF_DBG_INFO,
+    TLF_DBG_DEBUG
+};
+
+bool debug_init();
+void debug_log (enum debuglevel lvl,
+	const char *fmt,
+	...);
+
 #endif /* DEBUG_H */

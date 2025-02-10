@@ -35,7 +35,7 @@
 .
 .
 .\" Update the date when this page is committed.
-.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2022-09-18" TLF "Ham radio"
+.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2025-01-23" TLF "Ham radio"
 .
 .
 .SH NAME
@@ -46,10 +46,11 @@
 .SH SYNOPSIS
 .
 .SY @PACKAGE@
-.OP \-?dilnrvV
+.OP \-?ilnrvV
+.OP \-d level
 .OP \-f config_file
 .OP \-s user:password@host/dir/logfilename
-.OP \-\-debug
+.OP \-\-debug=\fIlevel\fP
 .OP \-\-config=\fIconfig_file\fP
 .OP \-\-import
 .OP \-\-list
@@ -150,6 +151,18 @@ Options given to @PACKAGE_NAME@ on the command line.
 .TP
 .BR \-? , \ \-\-help
 Print a summary of options to the screen and exit.
+.
+.TP
+.BI \-d\  debug_level
+.TQ
+.BI \-\-debug=  debug_level
+Activate logging of debug output. Output will be added to
+.I debug.txt
+file in actual directory.
+.
+.IP
+Allowed values with rising verbosity are 0 (Off), 1 (Error) , 2 (Warn), 3
+(Info) or 4 (Debug)
 .
 .TP
 .BI \-f\  config_file

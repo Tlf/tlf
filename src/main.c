@@ -88,7 +88,7 @@ int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
     {COLOR_BLUE, COLOR_YELLOW},
     {COLOR_WHITE, COLOR_BLACK}
 };
-bool debugflag = false;
+int debuglevel = 0;
 char *editor_cmd = NULL;
 int tune_val = 0;
 bool use_bandoutput = false;
@@ -451,7 +451,8 @@ static const struct argp_option options[] = {
     {"no-rig",      'r', 0, 0,  "Start without radio control" },
     {"list",	    'l', 0, 0,  "List built-in contests" },
     {"sync",        's', "URL", 0,  "Synchronize log with other node" },
-    {"debug",       'd', 0, 0,  "Debug mode" },
+    {"debug",       'd', "LEVEL (0..4)", 0,
+	"Debug level (Off, Error, Warn, Info, Debug)" },
     {"verbose",     'v', 0, 0,  "Produce verbose output" },
     { 0 }
 };
@@ -487,7 +488,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	    strcpy(synclogfile, arg);
 	    break;
 	case 'd':		// debug rigctl
-	    debugflag = true;
+	    debuglevel = atoi(arg);
+	    if (debuglevel < 0) debuglevel = 0;
+	    if (debuglevel > 4) debuglevel = 4;
 	    break;
 	case 'v':		// verbose startup
 	    verbose = true;
@@ -1035,6 +1038,10 @@ int main(int argc, char *argv[]) {
     sprintf(welcome, "        Welcome to %s by PA0R!!", argp_program_version);
 
     argp_parse(&argp, argc, argv, 0, 0, NULL);  // parse options
+
+    if (!debug_init()) {
+	showmsg("Could not intialize debug logging");
+    }
 
     ui_init();
 
