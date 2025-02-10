@@ -51,7 +51,6 @@ bool rig_has_stop_morse() {
 void send_bandswitch(freq_t trxqrg);
 
 static int parse_rigconf();
-static void debug_tlf_rig();
 
 /* check if call input field contains a valid frequency and switch to it.
  * only integer kHz values are supported.
@@ -159,8 +158,7 @@ int init_tlf_rig(void) {
 
     if (retcode != RIG_OK) {
 	show_rigerror("Problem with rig link", retcode);
-	if (!debugflag)
-	    return -1;
+	return -1;
     }
 
     shownr("Freq =", (int) rigfreq);
@@ -174,13 +172,8 @@ int init_tlf_rig(void) {
 	    speed = rig_cwspeed;
 	} else {
 	    show_rigerror("Could not read CW speed from rig", retcode);
-	    if (!debugflag)
-		return -1;
+	    return -1;
 	}
-    }
-
-    if (debugflag) {	// debug rig control
-	debug_tlf_rig();
     }
 
     switch (trxmode) {
@@ -249,47 +242,3 @@ static int parse_rigconf() {
     return 0;
 }
 
-
-static void debug_tlf_rig() {
-    freq_t rigfreq;
-    int retcode;
-
-    sleep(10);
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	show_rigerror("Problem with rig get freq", retcode);
-    } else {
-	shownr("freq =", (int) rigfreq);
-    }
-    sleep(10);
-
-    const freq_t testfreq = 14000000;	// test set frequency
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_set_freq(my_rig, RIG_VFO_CURR, testfreq);
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	show_rigerror("Problem with rig set freq", retcode);
-    } else {
-	showmsg("Rig set freq ok!");
-    }
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);	// read qrg
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	show_rigerror("Problem with rig get freq", retcode);
-    } else {
-	shownr("freq =", (int) rigfreq);
-	if (rigfreq != testfreq) {
-	    showmsg("Failed to set rig freq!");
-	}
-    }
-    sleep(10);
-}
