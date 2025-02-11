@@ -112,18 +112,13 @@ xmlrpc_env env;
 xmlrpc_server_info *serverInfoP = NULL;
 #endif
 
-void fldigi_clear_connerr() {
-    pthread_mutex_lock(&xmlrpc_mutex);
-    connerr = false;
-    pthread_mutex_unlock(&xmlrpc_mutex);
-}
-
 bool fldigi_toggle(void) {
     bool ret;
 
     pthread_mutex_lock(&xmlrpc_mutex);
     use_fldigi = !use_fldigi;
     ret = use_fldigi;
+    connerr = false;
     pthread_mutex_unlock(&xmlrpc_mutex);
     return ret;
 }
