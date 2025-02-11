@@ -53,7 +53,7 @@
 
 int fldigi_set_callfield = 0;
 
-typedef struct xmlrpc_res_s {
+typedef struct {
     int			intval;
     const char		*stringval;
     const unsigned char	*byteval;
@@ -131,8 +131,9 @@ bool fldigi_isenabled(void) {
     return ret;
 }
 
-void xmlrpc_res_init(xmlrpc_res *res) {
+static void xmlrpc_res_init(xmlrpc_res *res) {
 #ifdef HAVE_LIBXMLRPC
+    res->intval = 0;
     res->stringval = NULL;
     res->byteval = NULL;
 #endif
@@ -220,8 +221,7 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 	connerrcnt = 0;
     }
 
-    local_result->stringval = NULL;
-    local_result->byteval = NULL;
+    xmlrpc_res_init(local_result);
 
     if (!connerr && use_fldigi) {
 	va_start(argptr, format);
@@ -292,8 +292,6 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 	    pthread_mutex_unlock(&xmlrpc_mutex);
 	    return -1;
 	}
-
-	local_result->intval = 0;
 
 	switch (restype) {
 	    // int
