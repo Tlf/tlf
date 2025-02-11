@@ -654,6 +654,8 @@ int changepars(void) {
 		} else {
 		    mvaddstr(13, 29, "FLDIGI OFF");
 		}
+		refreshp();
+		sleep(1);
 	    }
 	    break;
 	}
