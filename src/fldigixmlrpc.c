@@ -193,7 +193,6 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
     size_t bytesize = 0;
     int ret;
 
-
     pthread_mutex_lock(&xmlrpc_mutex);
 
     if (!initialized) {
@@ -221,9 +220,14 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 	connerrcnt = 0;
     }
 
+    if (!use_fldigi) {
+	pthread_mutex_unlock(&xmlrpc_mutex);
+	return -1;
+    }
+
     xmlrpc_res_init(local_result);
 
-    if (!connerr && use_fldigi) {
+    if (!connerr) {
 	va_start(argptr, format);
 	xmlrpc_env_init(local_env);
 	pcall_array = xmlrpc_array_new(local_env);
@@ -315,10 +319,9 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 	xmlrpc_DECREF(callresult);
 	xmlrpc_DECREF(pcall_array);
     }
-    if (!connerr && use_fldigi)
-	ret = 0;
-    else
-	ret = -1;
+
+    ret = (connerr ? -1 : 0);
+
     pthread_mutex_unlock(&xmlrpc_mutex);
     return ret;
 }
