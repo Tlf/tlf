@@ -198,6 +198,14 @@ void ExpandRst(char rst[4]) {
     replace_all(buffer, BUFSIZE, "[", rst_out);   /* his RST */
 }
 
+static void expand_pipe_char() {
+    if (trxmode == DIGIMODE)
+	replace_all(buffer, BUFSIZE, "|", "\r");    /* CR */
+    else
+	replace_all(buffer, BUFSIZE, "|", "");	    /* drop it */
+}
+
+
 void ExpandMacro_CurrentQso(void) {
 
     replace_all(buffer, BUFSIZE, "%", my.call);   /* mycall */
@@ -229,10 +237,7 @@ void ExpandMacro_CurrentQso(void) {
 
     replace_all(buffer, BUFSIZE, "!", current_qso.comment);
 
-    if (trxmode == DIGIMODE)
-	replace_all(buffer, BUFSIZE, "|", "\r");    /* CR */
-    else
-	replace_all(buffer, BUFSIZE, "|", "");	    /* drop it */
+    expand_pipe_char();
 }
 
 struct qso_t *get_previous_qso() {
@@ -269,6 +274,8 @@ void ExpandMacro_PreviousQso(void) {
 	ExpandQsoNumber(prevnr);
 	g_free(prevnr);
     }
+
+    expand_pipe_char();
 }
 
 
