@@ -108,7 +108,6 @@ modem.set_carrier       i:i  - set carrier of modem
 */
 
 #ifdef HAVE_LIBXMLRPC
-xmlrpc_env env;
 xmlrpc_server_info *serverInfoP = NULL;
 #endif
 
@@ -141,22 +140,28 @@ void xmlrpc_res_init(xmlrpc_res *res) {
 
 
 int fldigi_xmlrpc_init() {
+    int rc = 0;
 #ifdef HAVE_LIBXMLRPC
     pthread_mutex_lock(&xmlrpc_mutex);
+
+    xmlrpc_env env;
+    xmlrpc_env_init(&env);
+
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, PACKAGE_NAME,
 			XMLRPCVERSION, NULL, 0);
     serverInfoP = xmlrpc_server_info_new(&env, fldigi_url);
-    if (env.fault_occurred != 0) {
+    if (env.fault_occurred) {
 	serverInfoP = NULL;
 	initialized = false;
-	pthread_mutex_unlock(&xmlrpc_mutex);
-	return -1;
+    } else {
+	initialized = true;
     }
 
-    initialized = true;
+    xmlrpc_env_clean(&env);
+
     pthread_mutex_unlock(&xmlrpc_mutex);
 #endif
-    return 0;
+    return rc;
 }
 
 int fldigi_xmlrpc_cleanup() {
