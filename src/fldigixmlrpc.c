@@ -138,6 +138,13 @@ void xmlrpc_res_init(xmlrpc_res *res) {
 #endif
 }
 
+static void xmlrpc_release() {
+    if (serverInfoP != NULL) {
+	xmlrpc_server_info_free(serverInfoP);
+	serverInfoP = NULL;
+    }
+    initialized = false;
+}
 
 int fldigi_xmlrpc_init() {
     int rc = 0;
@@ -151,8 +158,7 @@ int fldigi_xmlrpc_init() {
 			XMLRPCVERSION, NULL, 0);
     serverInfoP = xmlrpc_server_info_new(&env, fldigi_url);
     if (env.fault_occurred) {
-	serverInfoP = NULL;
-	initialized = false;
+	xmlrpc_release();
     } else {
 	initialized = true;
     }
@@ -167,11 +173,7 @@ int fldigi_xmlrpc_init() {
 int fldigi_xmlrpc_cleanup() {
 #ifdef HAVE_LIBXMLRPC
     pthread_mutex_lock(&xmlrpc_mutex);
-    if (serverInfoP != NULL) {
-	xmlrpc_server_info_free(serverInfoP);
-	serverInfoP = NULL;
-	initialized = false;
-    }
+    xmlrpc_release();
     pthread_mutex_unlock(&xmlrpc_mutex);
 #endif
     return 0;
