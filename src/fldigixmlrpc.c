@@ -640,39 +640,39 @@ int fldigi_get_log_call() {
     }
 
     if (result.stringval != NULL) {
-        j = 0;
-        // accept only alphanumeric chars and '/' in callsign
-        // in case of QRM, there are many several metachar
-        for (i = 0; i < 20 && result.stringval[i] != '\0'; i++) {
-            if (isalnum(result.stringval[i]) || result.stringval[i] == '/') {
-                tempstr[j++] = result.stringval[i];
-            }
-        }
-        tempstr[j] = '\0';
+	j = 0;
+	// accept only alphanumeric chars and '/' in callsign
+	// in case of QRM, there are many several metachar
+	for (i = 0; i < 20 && result.stringval[i] != '\0'; i++) {
+	    if (isalnum(result.stringval[i]) || result.stringval[i] == '/') {
+		tempstr[j++] = result.stringval[i];
+	    }
+	}
+	tempstr[j] = '\0';
 
-        xmlrpc_res_free(&result);
+	xmlrpc_res_free(&result);
 
-        // check the current call in Tlf; if the previous local callsign isn't empty,
-        // that means the OP clean up the callsign field, so it needs to clean in Fldigi too
-        if (current_qso.call[0] == '\0' && thiscall[0] != '\0') {
-            thiscall[0] = '\0';
-            rc = fldigi_xmlrpc_query(NULL, "log.set_call", "s", "");
-            if (rc != 0) {
-                return -1;
-            }
-        }
-        // otherwise, fill the callsign field in Tlf
-        else {
-            if (strlen(tempstr) >= 3 && current_qso.call[0] == '\0') {
-                strcpy(current_qso.call, tempstr);
-                current_qso.call[strlen(tempstr)] = '\0';
-                strcpy(thiscall, current_qso.call);
-                printcall();
-                getctydata_pfx(current_qso.call);
-                searchlog();
-                fldigi_set_callfield = 1;
-            }
-        }
+	// check the current call in Tlf; if the previous local callsign isn't empty,
+	// that means the OP clean up the callsign field, so it needs to clean in Fldigi too
+	if (current_qso.call[0] == '\0' && thiscall[0] != '\0') {
+	    thiscall[0] = '\0';
+	    rc = fldigi_xmlrpc_query(NULL, "log.set_call", "s", "");
+	    if (rc != 0) {
+		return -1;
+	    }
+	}
+	// otherwise, fill the callsign field in Tlf
+	else {
+	    if (strlen(tempstr) >= 3 && current_qso.call[0] == '\0') {
+		strcpy(current_qso.call, tempstr);
+		current_qso.call[strlen(tempstr)] = '\0';
+		strcpy(thiscall, current_qso.call);
+		printcall();
+		getctydata_pfx(current_qso.call);
+		searchlog();
+		fldigi_set_callfield = 1;
+	    }
+	}
     }
 
     xmlrpc_res_free(&result);
@@ -695,35 +695,35 @@ int fldigi_get_log_serial_number() {
     }
 
     if (result.stringval != NULL) {
-        j = 0;
-        // accept only alphanumeric chars
-        for (i = 0; i < 20 && result.stringval[i] != '\0'; i++) {
-            if (isalnum(result.stringval[i])) {
-                tempstr[j++] = result.stringval[i];
-            }
-        }
-        tempstr[j] = '\0';
+	j = 0;
+	// accept only alphanumeric chars
+	for (i = 0; i < 20 && result.stringval[i] != '\0'; i++) {
+	    if (isalnum(result.stringval[i])) {
+		tempstr[j++] = result.stringval[i];
+	    }
+	}
+	tempstr[j] = '\0';
 
-        xmlrpc_res_free(&result);
+	xmlrpc_res_free(&result);
 
-        // if the previous exchange isn't empty, but the current value is it,
-        // that means the OP cleaned up the field, so we need to clean up it in Fldigi
-        if (current_qso.comment[0] == '\0' && tcomment[0] != '\0') {
-            tcomment[0] = '\0';
-            rc = fldigi_xmlrpc_query(NULL, "log.set_exchange", "s", "");
-            if (rc != 0) {
-                return -1;
-            }
-        }
-        // otherwise we need to fill the Tlf exchange field
-        else {
-            if (strlen(tempstr) > 0 && current_qso.comment[0] == '\0') {
-                strcpy(current_qso.comment, tempstr);
-                current_qso.comment[strlen(tempstr)] = '\0';
-                strcpy(tcomment, current_qso.comment);
-                refresh_comment();
-            }
-        }
+	// if the previous exchange isn't empty, but the current value is it,
+	// that means the OP cleaned up the field, so we need to clean up it in Fldigi
+	if (current_qso.comment[0] == '\0' && tcomment[0] != '\0') {
+	    tcomment[0] = '\0';
+	    rc = fldigi_xmlrpc_query(NULL, "log.set_exchange", "s", "");
+	    if (rc != 0) {
+		return -1;
+	    }
+	}
+	// otherwise we need to fill the Tlf exchange field
+	else {
+	    if (strlen(tempstr) > 0 && current_qso.comment[0] == '\0') {
+		strcpy(current_qso.comment, tempstr);
+		current_qso.comment[strlen(tempstr)] = '\0';
+		strcpy(tcomment, current_qso.comment);
+		refresh_comment();
+	    }
+	}
     }
 
     xmlrpc_res_free(&result);
