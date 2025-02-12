@@ -231,14 +231,13 @@ static xmlrpc_value *build_param_array(xmlrpc_env *local_env,
     return pcall_array;
 }
 
-int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
-			char *methodname, char *format, ...) {
+static int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
+			       char *methodname, char *format, ...) {
 
     static unsigned int connerrcnt = 0;
     xmlrpc_value *callresult;
     int restype;
     size_t bytesize = 0;
-    int ret;
 
     pthread_mutex_lock(&xmlrpc_mutex);
 
@@ -267,79 +266,74 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 	connerrcnt = 0;
     }
 
-    if (!use_fldigi) {
+    if (!use_fldigi || connerr) {
 	pthread_mutex_unlock(&xmlrpc_mutex);
 	return -1;
     }
 
     xmlrpc_res_init(local_result);
 
-    if (!connerr) {
+    xmlrpc_env_init(local_env);
 
-	xmlrpc_env_init(local_env);
+    va_list argptr;
+    va_start(argptr, format);
+    xmlrpc_value *pcall_array = build_param_array(local_env, format, argptr);
+    va_end(argptr);
 
-	va_list argptr;
-	va_start(argptr, format);
-	xmlrpc_value *pcall_array = build_param_array(local_env, format, argptr);
-	va_end(argptr);
+    if (pcall_array == NULL) {
+	connerr = true;
+	xmlrpc_env_clean(local_env);
+	pthread_mutex_unlock(&xmlrpc_mutex);
+	return -1;
+    }
 
-	if (pcall_array == NULL) {
-	    connerr = true;
-	    xmlrpc_env_clean(local_env);
-	    pthread_mutex_unlock(&xmlrpc_mutex);
-	    return -1;
-	}
-
-	callresult = xmlrpc_client_call_server_params(local_env, serverInfoP,
-		     methodname, pcall_array);
-	if (local_env->fault_occurred) {
-	    connerr = true;
-	    if (callresult != NULL) {
-		xmlrpc_DECREF(callresult);
-	    }
-	    xmlrpc_DECREF(pcall_array);
-	    xmlrpc_env_clean(local_env);
-	    pthread_mutex_unlock(&xmlrpc_mutex);
-	    return -1;
-	}
-
-	restype = xmlrpc_value_type(callresult);
-	if (restype == XMLRPC_TYPE_DEAD) {
+    callresult = xmlrpc_client_call_server_params(local_env, serverInfoP,
+		 methodname, pcall_array);
+    if (local_env->fault_occurred) {
+	connerr = true;
+	if (callresult != NULL) {
 	    xmlrpc_DECREF(callresult);
-	    xmlrpc_DECREF(pcall_array);
-	    xmlrpc_env_clean(local_env);
-	    pthread_mutex_unlock(&xmlrpc_mutex);
-	    return -1;
 	}
+	xmlrpc_DECREF(pcall_array);
+	xmlrpc_env_clean(local_env);
+	pthread_mutex_unlock(&xmlrpc_mutex);
+	return -1;
+    }
 
-	switch (restype) {
-	    // int
-	    case XMLRPC_TYPE_INT:
-		xmlrpc_read_int(local_env, callresult,
-				&local_result->intval);
-		break;
-	    // string
-	    case XMLRPC_TYPE_STRING:
-		xmlrpc_read_string(local_env, callresult,
-				   &local_result->stringval);
-		break;
-	    // byte stream
-	    case XMLRPC_TYPE_BASE64:
-		xmlrpc_read_base64(local_env, callresult,
-				   &bytesize, &local_result->byteval);
-		local_result->intval = (int)bytesize;
-		break;
-	}
-
+    restype = xmlrpc_value_type(callresult);
+    if (restype == XMLRPC_TYPE_DEAD) {
 	xmlrpc_DECREF(callresult);
 	xmlrpc_DECREF(pcall_array);
 	xmlrpc_env_clean(local_env);
+	pthread_mutex_unlock(&xmlrpc_mutex);
+	return -1;
     }
 
-    ret = (connerr ? -1 : 0);
+    switch (restype) {
+	// int
+	case XMLRPC_TYPE_INT:
+	    xmlrpc_read_int(local_env, callresult,
+			    &local_result->intval);
+	    break;
+	// string
+	case XMLRPC_TYPE_STRING:
+	    xmlrpc_read_string(local_env, callresult,
+			       &local_result->stringval);
+	    break;
+	// byte stream
+	case XMLRPC_TYPE_BASE64:
+	    xmlrpc_read_base64(local_env, callresult,
+			       &bytesize, &local_result->byteval);
+	    local_result->intval = (int)bytesize;
+	    break;
+    }
+
+    xmlrpc_DECREF(callresult);
+    xmlrpc_DECREF(pcall_array);
+    xmlrpc_env_clean(local_env);
 
     pthread_mutex_unlock(&xmlrpc_mutex);
-    return ret;
+    return 0;
 }
 #endif
 
