@@ -67,7 +67,7 @@ static int setspeed(int cwspeed) {
 	if (retval >= 0) {
 	    speed = cwspeed;
 	} else {
-	    TLF_LOG_WARN("Could not set CW speed: %s", rigerror(retval));
+	    TLF_LOG_WARN("Could not set CW speed: %s", tlf_rigerror(retval));
 	    clear_display();
 	}
     }

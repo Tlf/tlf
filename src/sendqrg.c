@@ -86,11 +86,7 @@ bool sendqrg(void) {
 /**************************************************************************/
 
 void show_rigerror(char *message, int errcode) {
-#if HAMLIB_VERSION >= 450
-    char *str = g_strdup_printf("%s: %s", message, rigerror2(errcode));
-#else
-    char *str = g_strdup_printf("%s: %s", message, rigerror(errcode));
-#endif
+    char *str = g_strdup_printf("%s: %s", message, tlf_rigerror(errcode));
     showmsg(str);
     g_free(str);
 }
