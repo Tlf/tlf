@@ -149,7 +149,6 @@ static void xmlrpc_res_free(xmlrpc_res *res) {
     }
     res->stringval = NULL;
 }
-#endif
 
 static void xmlrpc_release() {
     if (serverInfoP != NULL) {
@@ -158,6 +157,7 @@ static void xmlrpc_release() {
     }
     initialized = false;
 }
+#endif
 
 int fldigi_xmlrpc_init() {
     int rc = 0;
