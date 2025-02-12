@@ -33,6 +33,7 @@ enum debuglevel {
     TLF_DBG_DEBUG
 };
 
+bool debug_is_active();
 bool debug_init();
 void debug_log (enum debuglevel lvl,
 	const char *fmt,

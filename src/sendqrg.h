@@ -39,6 +39,7 @@ bool rig_has_stop_morse();
 
 int init_tlf_rig(void);
 void close_tlf_rig(RIG *my_rig);
+void rig_debug_init();
 
 bool sendqrg(void);
 

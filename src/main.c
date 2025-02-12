@@ -783,6 +783,8 @@ static void hamlib_init() {
 	return;
     }
 
+    rig_debug_init();
+
     shownr("Rig model number is", myrig_model);
     shownr("Rig speed is", serial_rate);
 

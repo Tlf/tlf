@@ -24,7 +24,7 @@
 #include "stdbool.h"
 
 /* check if any debug level is active */
-static int debug_is_active() {
+bool debug_is_active() {
     return (debuglevel > 0);
 }
 
@@ -85,7 +85,7 @@ void debug_log (enum debuglevel lvl,
 	    break;
 	case TLF_DBG_INFO: fputs("INF ", fp);
 	    break;
-	case TLF_DBG_DEBUG: fputs("DBG", fp);
+	case TLF_DBG_DEBUG: fputs("DBG ", fp);
 	    break;
 	default:
 	    break;

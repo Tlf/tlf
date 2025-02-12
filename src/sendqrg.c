@@ -242,3 +242,47 @@ static int parse_rigconf() {
     return 0;
 }
 
+
+/* callback receiving hamlibs debug output */
+int rig_debug_cb(enum rig_debug_level_e lvl,
+		 rig_ptr_t user_data,
+		 const char *fmt,
+		 va_list ap) {
+
+    enum debuglevel level;
+
+    /* convert hamlib debug levels into Tlfs ones */
+    switch (lvl) {
+	case RIG_DEBUG_ERR:
+	    level = TLF_DBG_ERR;
+	    break;
+	case RIG_DEBUG_WARN:
+	    level = TLF_DBG_WARN;
+	    break;
+	case RIG_DEBUG_VERBOSE:
+	    level = TLF_DBG_INFO;
+	    break;
+	case RIG_DEBUG_TRACE:
+	    level = TLF_DBG_DEBUG;
+	    break;
+	default:
+	    level = TLF_DBG_NONE;
+    }
+
+    char *format = g_strdup_printf("Rig: %s", fmt);
+    char *msg = g_strdup_vprintf(format, ap);
+    debug_log(level, msg);
+    g_free(msg);
+    g_free(format);
+    return RIG_OK;
+}
+
+/* set hamlibs debug level and install callback if debug is active */
+void rig_debug_init() {
+    if (debug_is_active()) {
+	/* set hamlib debug level and install callback */
+	rig_set_debug(RIG_DEBUG_TRACE);
+	rig_set_debug_callback(rig_debug_cb, (rig_ptr_t)NULL);
+    }
+}
+
