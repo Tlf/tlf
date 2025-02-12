@@ -27,12 +27,15 @@
 #include "callinput.h"
 #include "cw_utils.h"
 #include "err_utils.h"
+#include "get_time.h"
 #include "hamlib_keyer.h"
 #include "sendqrg.h"
 #include "showmsg.h"
 #include "gettxinfo.h"
 #include "bands.h"
 #include "globalvars.h"
+
+#define RIG_DEBUG_LOG "riglog.txt"
 
 static bool init_called = false;
 static bool can_send_morse = false;
@@ -51,7 +54,6 @@ bool rig_has_stop_morse() {
 void send_bandswitch(freq_t trxqrg);
 
 static int parse_rigconf();
-static void debug_tlf_rig();
 
 /* check if call input field contains a valid frequency and switch to it.
  * only integer kHz values are supported.
@@ -85,16 +87,76 @@ bool sendqrg(void) {
 
 /**************************************************************************/
 
+void show_rigerror(char *message, int errcode) {
+#if HAMLIB_VERSION >= 450
+    char *str = g_strdup_printf("%s: %s", message, rigerror2(errcode));
+#else
+    char *str = g_strdup_printf("%s: %s", message, rigerror(errcode));
+#endif
+    showmsg(str);
+    g_free(str);
+}
+
+
+int rig_debug_cb(enum rig_debug_level_e lvl,
+		 rig_ptr_t user_data,
+		 const char *fmt,
+		 va_list ap) {
+
+    char debugbuffer[160];
+
+    FILE *fp = fopen(RIG_DEBUG_LOG, "a");
+    if (fp == NULL) {	    /* ignore failure to write debug log */
+	return RIG_OK;	    /* to not disturb logging activity */
+    }
+
+    format_time(debugbuffer, sizeof(debugbuffer), "%H:%M:%S ");
+    char *msg = g_strdup_vprintf(fmt, ap);
+    fputs(debugbuffer, fp);
+
+    switch (lvl) {
+	case 2: fputs("ERR ", fp);
+	    break;
+	case 3: fputs("WRN ", fp);
+	    break;
+	case 4: fputs("INF ", fp);
+	    break;
+	default: break;
+    }
+
+    fputs(msg, fp);
+    g_free(msg);
+    fclose(fp);
+    return RIG_OK;
+}
+
+
 int init_tlf_rig(void) {
     freq_t rigfreq;		/* frequency  */
     vfo_t vfo;
     int retcode;		/* generic return code from functions */
 
-    const char *ptt_file = NULL, *dcd_file = NULL;
-    dcd_type_t dcd_type = RIG_DCD_NONE;
-
     const struct rig_caps *caps;
     int rig_cwspeed;
+    char debugbuffer[160];
+
+    if (debuglevel) {
+	/* set hamlib debug level and install callback */
+	rig_set_debug(debuglevel + 1);	/* RIG_DEBUG_ERROR == 2, .._WARN == 3,
+					   .._VERBOSE == 4 */
+	rig_set_debug_callback(rig_debug_cb, (rig_ptr_t)NULL);
+
+	/* write start entry into debug log */
+	FILE *fp = fopen(RIG_DEBUG_LOG, "a");
+	if (fp != NULL) {
+	    format_time(debugbuffer, sizeof(debugbuffer),
+			"\nStarted %d/%m/%Y %H:%M\n");
+	    fputs(debugbuffer, fp);
+	    fclose(fp);
+	} else {
+	    showmsg("Could not intialize rig debug file");
+	}
+    }
 
     /*
      * allocate memory, setup & open port
@@ -111,12 +173,13 @@ int init_tlf_rig(void) {
 	return -1;
     }
 
-    rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
+    g_strchomp(rigportname);	// remove trailing '\n'
     strncpy(my_rig->state.rigport.pathname, rigportname,
 	    TLFFILPATHLEN - 1);
 
-    caps = my_rig->caps;
+    my_rig->state.rigport.parm.serial.rate = serial_rate;
 
+    caps = my_rig->caps;
     can_send_morse = caps->send_morse != NULL;
 #if HAMLIB_VERSION >= 400
     can_stop_morse = caps->stop_morse != NULL;
@@ -134,16 +197,6 @@ int init_tlf_rig(void) {
 	}
     }
 
-    if (dcd_type != RIG_DCD_NONE)
-	my_rig->state.dcdport.type.dcd = dcd_type;
-    if (ptt_file)
-	strncpy(my_rig->state.pttport.pathname, ptt_file, TLFFILPATHLEN);
-    if (dcd_file)
-	strncpy(my_rig->state.dcdport.pathname, dcd_file, TLFFILPATHLEN);
-
-    my_rig->state.rigport.parm.serial.rate = serial_rate;
-
-    // parse RIGCONF parameters
     if (parse_rigconf() < 0) {
 	return -1;
     }
@@ -151,7 +204,7 @@ int init_tlf_rig(void) {
     retcode = rig_open(my_rig);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("rig_open: %s", rigerror(retcode));
+	show_rigerror("rig_open", retcode);
 	return -1;
     }
 
@@ -162,9 +215,8 @@ int init_tlf_rig(void) {
 	retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig link: %s", rigerror(retcode));
-	if (!debugflag)
-	    return -1;
+	show_rigerror("Problem with rig link", retcode);
+	return -1;
     }
 
     shownr("Freq =", (int) rigfreq);
@@ -177,14 +229,9 @@ int init_tlf_rig(void) {
 	    shownr("CW speed = ", rig_cwspeed);
 	    speed = rig_cwspeed;
 	} else {
-	    TLF_LOG_WARN("Could not read CW speed from rig: %s", rigerror(retcode));
-	    if (!debugflag)
-		return -1;
+	    show_rigerror("Could not read CW speed from rig", retcode);
+	    return -1;
 	}
-    }
-
-    if (debugflag) {	// debug rig control
-	debug_tlf_rig();
     }
 
     switch (trxmode) {
@@ -205,13 +252,10 @@ int init_tlf_rig(void) {
 }
 
 void close_tlf_rig(RIG *my_rig) {
-
     pthread_mutex_lock(&tlf_rig_mutex);
     rig_close(my_rig);		/* close port */
     rig_cleanup(my_rig);	/* if you care about memory */
     pthread_mutex_unlock(&tlf_rig_mutex);
-
-    printf("Rig port %s closed\n", rigportname);
 }
 
 static int parse_rigconf() {
@@ -254,50 +298,4 @@ static int parse_rigconf() {
     }
 
     return 0;
-}
-
-
-static void debug_tlf_rig() {
-    freq_t rigfreq;
-    int retcode;
-
-    sleep(10);
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig get freq: %s", rigerror(retcode));
-    } else {
-	shownr("freq =", (int) rigfreq);
-    }
-    sleep(10);
-
-    const freq_t testfreq = 14000000;	// test set frequency
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_set_freq(my_rig, RIG_VFO_CURR, testfreq);
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig set freq: %s", rigerror(retcode));
-    } else {
-	showmsg("Rig set freq ok!");
-    }
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);	// read qrg
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig get freq: %s", rigerror(retcode));
-    } else {
-	shownr("freq =", (int) rigfreq);
-	if (rigfreq != testfreq) {
-	    showmsg("Failed to set rig freq!");
-	}
-    }
-    sleep(10);
-
 }
