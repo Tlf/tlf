@@ -181,14 +181,61 @@ int fldigi_xmlrpc_cleanup() {
 }
 
 #ifdef HAVE_LIBXMLRPC
+
+// build parameter array for xmlrpc_client_call_server_params()
+// returns: the array to be freed by the caller
+//      on error: NULL
+static xmlrpc_value *build_param_array(xmlrpc_env *local_env,
+				       char *format, va_list argptr) {
+
+    xmlrpc_value *pcall_array = xmlrpc_array_new(local_env);
+
+    xmlrpc_value *va_param = NULL;
+
+    while (*format != '\0') {
+	if (*format == 's') {
+	    char *s = va_arg(argptr, char *);
+	    va_param = xmlrpc_string_new(local_env, s);
+	    if (local_env->fault_occurred) {
+		break;
+	    }
+	    xmlrpc_array_append_item(local_env, pcall_array, va_param);
+	} else if (*format == 'd') {
+	    int d = va_arg(argptr, int);
+	    va_param = xmlrpc_int_new(local_env, d);
+	    xmlrpc_array_append_item(local_env, pcall_array, va_param);
+	} else if (*format == 'f') {
+	    double f = va_arg(argptr, double);
+	    va_param = xmlrpc_double_new(local_env, f);
+	    xmlrpc_array_append_item(local_env, pcall_array, va_param);
+	}
+
+	if (local_env->fault_occurred) {
+	    break;
+	}
+
+        xmlrpc_DECREF(va_param);
+	va_param = NULL;
+
+	format++;
+    }
+
+    if (local_env->fault_occurred) {
+	if (va_param != NULL) {
+	    xmlrpc_DECREF(va_param);
+	}
+	xmlrpc_DECREF(pcall_array);
+	return NULL;
+    }
+
+    return pcall_array;
+}
+
 int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 			char *methodname, char *format, ...) {
 
     static unsigned int connerrcnt = 0;
     xmlrpc_value *callresult;
-    xmlrpc_value *pcall_array = NULL;
-    xmlrpc_value *va_param = NULL;
-    va_list argptr;
     int restype;
     size_t bytesize = 0;
     int ret;
@@ -228,60 +275,29 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
     xmlrpc_res_init(local_result);
 
     if (!connerr) {
-	va_start(argptr, format);
-	xmlrpc_env_init(local_env);
-	pcall_array = xmlrpc_array_new(local_env);
-	while (*format != '\0') {
-	    if (*format == 's') {
-		char *s = va_arg(argptr, char *);
-		va_param = xmlrpc_string_new(local_env, s);
-		if (local_env->fault_occurred) {
-		    va_end(argptr);
-		    connerr = true;
-		    pthread_mutex_unlock(&xmlrpc_mutex);
-		    return -1;
-		}
-		xmlrpc_array_append_item(local_env, pcall_array, va_param);
-		if (local_env->fault_occurred) {
-		    va_end(argptr);
-		    connerr = true;
-		    pthread_mutex_unlock(&xmlrpc_mutex);
-		    return -1;
-		}
-		xmlrpc_DECREF(va_param);
-	    } else if (*format == 'd') {
-		int d = va_arg(argptr, int);
-		va_param = xmlrpc_int_new(local_env, d);
-		xmlrpc_array_append_item(local_env, pcall_array, va_param);
-		if (local_env->fault_occurred) {
-		    va_end(argptr);
-		    connerr = true;
-		    pthread_mutex_unlock(&xmlrpc_mutex);
-		    return -1;
-		}
-		xmlrpc_DECREF(va_param);
-	    } else if (*format == 'f') {
-		double f = va_arg(argptr, double);
-		va_param = xmlrpc_double_new(local_env, f);
-		xmlrpc_array_append_item(local_env, pcall_array, va_param);
-		if (local_env->fault_occurred) {
-		    va_end(argptr);
-		    connerr = true;
-		    pthread_mutex_unlock(&xmlrpc_mutex);
-		    return -1;
-		}
-		xmlrpc_DECREF(va_param);
-	    }
-	    format++;
-	}
 
+	xmlrpc_env_init(local_env);
+
+	va_list argptr;
+	va_start(argptr, format);
+	xmlrpc_value *pcall_array = build_param_array(local_env, format, argptr);
 	va_end(argptr);
+
+	if (pcall_array == NULL) {
+	    connerr = true;
+	    xmlrpc_env_clean(local_env);
+	    pthread_mutex_unlock(&xmlrpc_mutex);
+	    return -1;
+	}
 
 	callresult = xmlrpc_client_call_server_params(local_env, serverInfoP,
 		     methodname, pcall_array);
 	if (local_env->fault_occurred) {
 	    // error till xmlrpc_call
 	    connerr = true;
+	    if (callresult != NULL) {
+		xmlrpc_DECREF(callresult);
+	    }
 	    xmlrpc_DECREF(pcall_array);
 	    xmlrpc_env_clean(local_env);
 	    pthread_mutex_unlock(&xmlrpc_mutex);
@@ -318,6 +334,7 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 
 	xmlrpc_DECREF(callresult);
 	xmlrpc_DECREF(pcall_array);
+	xmlrpc_env_clean(local_env);
     }
 
     ret = (connerr ? -1 : 0);
