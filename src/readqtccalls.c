@@ -63,6 +63,7 @@ int readqtccalls() {
 	    return -1;
 	}
 
+	errno = 0;
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    if (read > 0) {
 		s++;
@@ -122,6 +123,7 @@ int readqtccalls() {
 	    return -1;
 	}
 
+	errno = 0;
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    if (read > 0) {
 		/* remember callsign, build number of received QTCs */
@@ -138,6 +140,7 @@ int readqtccalls() {
 	}
 
 	free(inputbuffer);
+	inputbuffer = NULL;
 	fclose(fp);
     }
 
@@ -150,6 +153,7 @@ int readqtccalls() {
 	    return -1;
 	}
 
+	errno = 0;
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    /* remember callsign, mark it as QTC capable, based on eg. last years */
 	    if (read > 0) {
@@ -163,6 +167,7 @@ int readqtccalls() {
 	}
 
 	free(inputbuffer);
+	inputbuffer = NULL;
 	fclose(fp);
     }
 
@@ -171,6 +176,7 @@ int readqtccalls() {
     if ((fp = fopen(QTC_META_LOG, "r")) == NULL) {
 	showmsg("QTC meta logfile missing, skipping this step.");
     } else {
+	errno = 0;
 	while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	    /* remember callsign, set marked QTC states */
 	    if (read > 0) {

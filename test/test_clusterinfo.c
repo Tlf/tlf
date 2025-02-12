@@ -281,7 +281,7 @@ void test_freqwindow(void **state) {
     clusterinfo();
 
     // frequency shown rounded to kHz
-    check_mvprintw_output(0, 15, 4, " Stn A :  7124");
+    check_mvprintw_output(0, 15, 4, "*Stn A :  7124");
 
     assert_string_equal(nicebox_boxname, "Frequencies");
 

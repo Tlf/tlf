@@ -166,13 +166,6 @@ void clear_display(void) {
 
     get_time();
 
-    if (trxmode == CWMODE)
-	mvaddstr(12, 3, "CW");
-    else if (trxmode == SSBMODE)
-	mvaddstr(12, 3, "SSB");
-    else
-	mvaddstr(12, 3, "DIG");
-
     char time_buf[20];
     format_time(time_buf, sizeof(time_buf), DATE_TIME_FORMAT);
     update_line(time_buf);

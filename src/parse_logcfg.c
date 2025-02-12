@@ -742,6 +742,7 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     }
 
     if (country_list_raw == NULL) {
+	free(buffer);
 	return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
     }
 
@@ -836,6 +837,7 @@ static int cfg_continentlist(const cfg_arg_t arg) {
     }
 
     if (cont_multiplier_list == NULL) {
+	free(buffer);
 	return PARSE_WRONG_PARAMETER;   // e.g. in case of no match in file
     }
 
@@ -1281,6 +1283,7 @@ static config_t logcfg_configs[] = {
     {"SERIAL_EXCHANGE",	    CFG_CONTEST_BOOL(exchange_serial)},
     {"COUNTRY_MULT",	    CFG_BOOL(country_mult)},
     {"CQWW_M2",		    CFG_BOOL(cqwwm2)},
+    {"RIG_MODE_SYNC",       CFG_BOOL(rig_mode_sync)},
     {"LAN_DEBUG",	    CFG_BOOL(landebug)},
     {"CALLUPDATE",	    CFG_BOOL(call_update)},
     {"TIME_MASTER",	    CFG_BOOL(time_master)},

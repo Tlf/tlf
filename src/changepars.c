@@ -104,6 +104,35 @@ static void change_autosend() {
     sleep(1);
 }
 
+void set_trxmode_internally(int mode) {
+
+    trxmode = mode;
+
+    if (trxmode == CWMODE) {
+	if (cwkeyer == MFJ1278_KEYER) {
+	    sendmessage("MODE CW\015K\015");
+	}
+    } else if (trxmode == DIGIMODE) {
+	if (cwkeyer == MFJ1278_KEYER) {
+	    sendmessage("MODE VB\015K\015");
+	}
+    }
+}
+
+void set_trxmode(int mode) {
+
+    set_trxmode_internally(mode);
+
+    // set mode on rig
+    if (trxmode == CWMODE) {
+	set_outfreq(SETCWMODE);
+    } else if (trxmode == SSBMODE) {
+	set_outfreq(SETSSBMODE);
+    } else if (trxmode == DIGIMODE) {
+	set_outfreq(SETDIGIMODE);
+    }
+}
+
 
 int changepars(void) {
 
@@ -112,7 +141,6 @@ int changepars(void) {
     int i, k, x, nopar = 0;
     int maxpar = 50;
     int volumebuffer;
-    int currentmode = 0;
 
     strcpy(parameters[0], "SPOT");
     strcpy(parameters[1], "MAP");
@@ -327,11 +355,11 @@ int changepars(void) {
 	}
 	case 23: {		/*  MODE   */
 	    if (trxmode == CWMODE)
-		trxmode = SSBMODE;
+		set_trxmode(SSBMODE);
 	    else if (trxmode == SSBMODE)
-		trxmode = DIGIMODE;
+		set_trxmode(DIGIMODE);
 	    else
-		trxmode = CWMODE;
+		set_trxmode(CWMODE);
 
 	    if (trxmode == CWMODE) {
 		mvaddstr(13, 29, "TRXMODE = CW");
@@ -395,21 +423,15 @@ int changepars(void) {
 	}
 	case 30:			/* CW  */
 	case 49: {
-	    if (cwkeyer == MFJ1278_KEYER) {
-		sendmessage("MODE CW\015K\015");
-	    }
-	    trxmode = CWMODE;
-	    set_outfreq(SETCWMODE);
+	    set_trxmode(CWMODE);
 	    break;
 	}
 	case 31: {		/* SSBMODE  */
-	    trxmode = SSBMODE;
-	    set_outfreq(SETSSBMODE);
+	    set_trxmode(SSBMODE);
 	    break;
 	}
 	case 32: {		/* DIGIMODE  */
-	    trxmode = DIGIMODE;
-	    set_outfreq(SETDIGIMODE);
+	    set_trxmode(DIGIMODE);
 	    break;
 	}
 	case 33: {		/* PACKET  */
@@ -475,8 +497,6 @@ int changepars(void) {
 	    networkinfo();
 	    miniterm = currentterm;
 
-	    if (currentmode == DIGIMODE)
-		trxmode = DIGIMODE;
 	    break;
 	}
 	case 36: {		/* CLOFF  */
@@ -612,8 +632,7 @@ int changepars(void) {
 	    break;
 	}
 	case 47: {		/* RTTY Initialize mode (MFJ1278B controller) */
-	    sendmessage("MODE VB\015K\015");
-	    trxmode = DIGIMODE;
+	    set_trxmode(DIGIMODE);
 
 	    break;
 	}
@@ -671,11 +690,11 @@ void networkinfo(void) {
     wipe_display();
 
     if (lan_active)
-	mvaddstr(1, 10, "Network status: on");
+	mvprintw(1, 10, "Network status: on   Node: %c", thisnode);
     else
 	mvaddstr(1, 10, "Network status: off");
 
-    mvprintw(3, 28, "Packets rcvd: %d | %d", recv_packets, recv_error);
+    mvprintw(3, 22, "Total packets rcvd: %d | %d", recv_packets, recv_error);
 
     for (int i = 0; i < nodes; i++) {
 	mvaddstr(4 + i, 10, bc_hostaddress[i]);

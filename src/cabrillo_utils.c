@@ -581,6 +581,7 @@ static int process_cabrillo_template_file(const char *file_name) {
 
     int result = PARSE_OK;
 
+    errno = 0;
     while ((read = getline(&logline, &read_len, fp)) != -1) {
 	if (read > 0) {
 	    g_strstrip(logline);
