@@ -214,7 +214,7 @@ static xmlrpc_value *build_param_array(xmlrpc_env *local_env,
 	    break;
 	}
 
-        xmlrpc_DECREF(va_param);
+	xmlrpc_DECREF(va_param);
 	va_param = NULL;
 
 	format++;
@@ -293,7 +293,6 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 	callresult = xmlrpc_client_call_server_params(local_env, serverInfoP,
 		     methodname, pcall_array);
 	if (local_env->fault_occurred) {
-	    // error till xmlrpc_call
 	    connerr = true;
 	    if (callresult != NULL) {
 		xmlrpc_DECREF(callresult);
@@ -305,7 +304,7 @@ int fldigi_xmlrpc_query(xmlrpc_res *local_result, xmlrpc_env *local_env,
 	}
 
 	restype = xmlrpc_value_type(callresult);
-	if (restype == 0xDEAD) {
+	if (restype == XMLRPC_TYPE_DEAD) {
 	    xmlrpc_DECREF(callresult);
 	    xmlrpc_DECREF(pcall_array);
 	    xmlrpc_env_clean(local_env);
