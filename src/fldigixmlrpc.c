@@ -172,7 +172,7 @@ int fldigi_xmlrpc_init() {
     serverInfoP = xmlrpc_server_info_new(&env, fldigi_url);
     if (env.fault_occurred) {
 	xmlrpc_release();
-        rc = -1;
+	rc = -1;
     } else {
 	initialized = true;
     }
@@ -245,10 +245,11 @@ static xmlrpc_value *build_param_array(xmlrpc_env *local_env,
 }
 
 // call a remote Fldigi method
-// local_result has to be uninitalized and then freed by the caller
+// result has to be passed uninitalized and then freed by the caller
+// alternatively, a NULL result can be passed for a void method
 // returns: 0
 //      on error: -1
-static int fldigi_xmlrpc_query(xmlrpc_res *local_result, char *methodname,
+static int fldigi_xmlrpc_query(xmlrpc_res *result, char *methodname,
 			       char *format, ...) {
 
     static unsigned int connerrcnt = 0;
@@ -288,7 +289,9 @@ static int fldigi_xmlrpc_query(xmlrpc_res *local_result, char *methodname,
 	return -1;
     }
 
-    xmlrpc_res_init(local_result);
+    if (result != NULL) {
+	xmlrpc_res_init(result);
+    }
 
     xmlrpc_env local_env;
     xmlrpc_env_init(&local_env);
@@ -327,22 +330,26 @@ static int fldigi_xmlrpc_query(xmlrpc_res *local_result, char *methodname,
 	return -1;
     }
 
+    if (result == NULL) {
+	restype = XMLRPC_TYPE_NIL;  // to skip the switch below
+    }
+
     switch (restype) {
 	// int
 	case XMLRPC_TYPE_INT:
 	    xmlrpc_read_int(&local_env, callresult,
-			    &local_result->intval);
+			    &result->intval);
 	    break;
 	// string
 	case XMLRPC_TYPE_STRING:
 	    xmlrpc_read_string(&local_env, callresult,
-			       &local_result->stringval);
+			       &result->stringval);
 	    break;
 	// byte stream
 	case XMLRPC_TYPE_BASE64:
 	    xmlrpc_read_base64(&local_env, callresult,
-			       &bytesize, &local_result->byteval);
-	    local_result->intval = (int)bytesize;
+			       &bytesize, &result->byteval);
+	    result->intval = (int)bytesize;
 	    break;
     }
 
@@ -358,9 +365,8 @@ static int fldigi_xmlrpc_query(xmlrpc_res *local_result, char *methodname,
 /* command fldigi to RX now */
 void fldigi_to_rx() {
 #ifdef HAVE_LIBXMLRPC
-    xmlrpc_res result;
-    fldigi_xmlrpc_query(&result, "main.rx", "");
-    fldigi_xmlrpc_query(&result, "text.clear_tx", "");
+    fldigi_xmlrpc_query(NULL, "main.rx", "");
+    fldigi_xmlrpc_query(NULL, "text.clear_tx", "");
 #endif
 }
 
@@ -377,16 +383,11 @@ static int cancel_tx() {
     // if state is TX, stop it
     // if the RX success, clear the previous message from TX text window
     if (strcmp(result.stringval, "TX") == 0) {
-	free((void *)result.stringval);
-	result.stringval = NULL;
-
 	fldigi_to_rx();
-
 	sleep(2);
     }
-    if (result.stringval != NULL) {
-	free((void *)result.stringval);
-    }
+
+    xmlrpc_res_free(&result);
     return 0;
 }
 #endif
@@ -400,8 +401,6 @@ int fldigi_send_text(char *line) {
     if (len == 0) {
 	return 0;   // nothing to send
     }
-
-    xmlrpc_res result;
 
     char *message = g_malloc0(len + 1 + 2);  // worst case: "^r" added, +2 chars
 
@@ -438,7 +437,7 @@ int fldigi_send_text(char *line) {
     }
 
     // add message to TX window
-    rc = fldigi_xmlrpc_query(&result, "text.add_tx", "s", message);
+    rc = fldigi_xmlrpc_query(NULL, "text.add_tx", "s", message);
     g_free(message);
     if (rc != 0) {
 	return -1;
@@ -446,7 +445,7 @@ int fldigi_send_text(char *line) {
 
     if (start_tx) {
 	/* switch to TX (immediate) */
-	rc = fldigi_xmlrpc_query(&result, "main.tx", "");
+	rc = fldigi_xmlrpc_query(NULL, "main.tx", "");
     }
 #endif
     return rc;
@@ -474,6 +473,8 @@ int fldigi_get_rx_text(char *line, int len) {
     }
 
     textlen = result.intval;
+    xmlrpc_res_free(&result);
+
     if (lastpos == 0) {
 	lastpos = textlen;
     } else {
@@ -496,12 +497,13 @@ int fldigi_get_rx_text(char *line, int len) {
 		line[linelen] = '\0';
 		retval = linelen;
 	    }
-	    if (result.byteval != NULL) {
-		free((void *)result.byteval);
-	    }
+
+	    xmlrpc_res_free(&result);
 	}
     }
+
     lastpos = textlen;
+
     pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
     return retval;
 
@@ -524,6 +526,7 @@ int fldigi_xmlrpc_get_carrier() {
     }
 
     fldigi_var_carrier = (int)result.intval;
+    xmlrpc_res_free(&result);
 
     if (!trx_control || rigmode == RIG_MODE_NONE) {
 	return 0;
@@ -559,7 +562,7 @@ int fldigi_xmlrpc_get_carrier() {
     if (strcmp(result.stringval, "RTTY") == 0) {
 	modeshift = 170 / 2;
     }
-    free((void *)result.stringval);
+    xmlrpc_res_free(&result);
 
     switch (rigmode) {
 	case RIG_MODE_USB:
@@ -597,14 +600,14 @@ int fldigi_xmlrpc_get_carrier() {
     }
 
     /* set the mode in Fldigi */
-    rc = fldigi_xmlrpc_query(&result, "rig.set_mode", "s", fldigi_mode);
+    rc = fldigi_xmlrpc_query(NULL, "rig.set_mode", "s", fldigi_mode);
     if (rc != 0) {
 	return -1;
     }
     fldigi_var_carrier = signum * fldigi_var_carrier + modeshift;
 
     /* also set the freq value in Fldigi FREQ block */
-    rc = fldigi_xmlrpc_query(&result,
+    rc = fldigi_xmlrpc_query(NULL,
 			     "rig.set_frequency", "f",
 			     (xmlrpc_double)(freq - fldigi_var_carrier));
     if (rc != 0) {
@@ -670,10 +673,7 @@ int fldigi_get_log_call() {
 		}
 	    }
 	}
-	free((void *)result.stringval);
-	if (result.byteval != NULL) {
-	    free((void *)result.byteval);
-	}
+	xmlrpc_res_free(&result);
     }
 #endif
     return 0;
@@ -721,10 +721,7 @@ int fldigi_get_log_serial_number() {
 		}
 	    }
 	}
-	free((void *)result.stringval);
-	if (result.stringval != NULL) {
-	    free((void *)result.byteval);
-	}
+	xmlrpc_res_free(&result);
     }
 #endif
     return 0;
