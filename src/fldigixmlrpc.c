@@ -172,6 +172,7 @@ int fldigi_xmlrpc_init() {
     serverInfoP = xmlrpc_server_info_new(&env, fldigi_url);
     if (env.fault_occurred) {
 	xmlrpc_release();
+        rc = -1;
     } else {
 	initialized = true;
     }
