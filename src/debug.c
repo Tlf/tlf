@@ -25,7 +25,7 @@
 
 /* check if any debug level is active */
 bool debug_is_active() {
-    return (debuglevel > 0);
+    return (debuglevel > TLF_DBG_NONE);
 }
 
 bool debug_init() {
@@ -74,7 +74,10 @@ void debug_log(enum debuglevel lvl,
 
     format_time(debugbuffer, sizeof(debugbuffer), "%H:%M:%S ");
     va_start(args, fmt);
+
+    /* drop trailing NL in case caller added one in fmt or varargs */
     char *msg = g_strdup_vprintf(fmt, args);
+    g_strchomp(msg);
     va_end(args);
 
     fputs(debugbuffer, fp);
@@ -91,6 +94,7 @@ void debug_log(enum debuglevel lvl,
 	    break;
     }
     fputs(msg, fp);
+    fputs("\n", fp);
 
     g_free(msg);
     fclose(fp);
