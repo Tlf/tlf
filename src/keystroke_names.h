@@ -26,6 +26,7 @@
 
 #define CTRL_A    1
 #define CTRL_B    2
+#define CTRL_D    4
 #define CTRL_E    5
 #define CTRL_F    6
 #define CTRL_G    7             /* Bell */
