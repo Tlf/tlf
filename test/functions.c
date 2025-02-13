@@ -1,6 +1,7 @@
 #include "test.h"
 
 #include "curses.h"
+#include "../src/debug.h"
 
 int __wrap_key_get() {
     return -1;
@@ -73,5 +74,11 @@ void showstring(char *message1, char *message2) {
 unsigned int __wrap_sleep(unsigned int seconds) {
     // no sleeping in tests
     return 0;
+}
+
+/* for now */
+void debug_log (enum debuglevel lvl,
+	const char *fmt,
+	...) {
 }
 
