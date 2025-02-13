@@ -21,21 +21,35 @@
 #define ERR_UTILS_H
 
 enum log_lvl {
-    L_DEBUG,
-    L_INFO,
+    L_NONE,
+    L_ERR,
     L_WARN,
-    L_ERR
+    L_INFO,
+    L_DEBUG
 };
 
-void handle_logging(enum log_lvl lvl, ...);
+void handle_logging(enum log_lvl lvl, char *fmt, ...);
 
-#define TLF_LOG_DEBUG(...) ( handle_logging(L_DEBUG, __VA_ARGS__) )
-#define TLF_LOG_INFO(...) ( handle_logging(L_INFO, __VA_ARGS__) )
-#define TLF_LOG_WARN(...) ( handle_logging(L_WARN, __VA_ARGS__) )
-#define TLF_LOG_ERR(...)  do { \
-	handle_logging(L_ERR, __VA_ARGS__); \
+
+/* show Error, Warning or similar to user, but write into debuglog if enabled
+ */
+#define TLF_LOG_ERR(fmt, ...)  do { \
+	debug_log(TLF_DBG_ERR, fmt, ##__VA_ARGS__); \
+	handle_logging(L_ERR, fmt, ##__VA_ARGS__); \
 	exit(EXIT_FAILURE); \
     } while(0)
+#define TLF_LOG_WARN(fmt, ...) do {\
+	debug_log(TLF_DBG_WARN, fmt, ##__VA_ARGS__); \
+	handle_logging(L_WARN, fmt, ##__VA_ARGS__); \
+    }while(0)
+#define TLF_LOG_INFO(fmt, ...) do {\
+	debug_log(TLF_DBG_INFO, fmt, ##__VA_ARGS__); \
+	handle_logging(L_INFO, fmt, ##__VA_ARGS__); \
+    }while(0)
+#define TLF_LOG_DEBUG(fmt, ...) do {\
+	debug_log(TLF_DBG_DEBUG, fmt, ##__VA_ARGS__); \
+	handle_logging(L_DEBUG, fmt, ##__VA_ARGS__); \
+    }while(0)
 
 
 #endif /* ERR_UTILS_H */

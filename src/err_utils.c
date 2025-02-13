@@ -26,13 +26,11 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
-void handle_logging(enum log_lvl lvl, ...) {
-    char *fmt;
+void handle_logging(enum log_lvl lvl, char *fmt, ...) {
     char *str;
     va_list args;
 
-    va_start(args, lvl);
-    fmt = va_arg(args, char *);
+    va_start(args, fmt);
     str = g_strdup_vprintf(fmt, args);
     va_end(args);
 
