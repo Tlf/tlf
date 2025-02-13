@@ -192,11 +192,11 @@ int lan_send_init(void) {
 	bc_address[node].sin_port = htons(port);
 
 	TLF_LOG_INFO("LAN: open socket: to %d.%d.%d.%d:%d\n",
-	       (ntohl(bc_address[node].sin_addr.s_addr) & 0xff000000) >> 24,
-	       (ntohl(bc_address[node].sin_addr.s_addr) & 0x00ff0000) >> 16,
-	       (ntohl(bc_address[node].sin_addr.s_addr) & 0x0000ff00) >> 8,
-	       (ntohl(bc_address[node].sin_addr.s_addr) & 0x000000ff) >> 0,
-	       ntohs(bc_address[node].sin_port));
+		     (ntohl(bc_address[node].sin_addr.s_addr) & 0xff000000) >> 24,
+		     (ntohl(bc_address[node].sin_addr.s_addr) & 0x00ff0000) >> 16,
+		     (ntohl(bc_address[node].sin_addr.s_addr) & 0x0000ff00) >> 8,
+		     (ntohl(bc_address[node].sin_addr.s_addr) & 0x000000ff) >> 0,
+		     ntohs(bc_address[node].sin_port));
 
 	bc_socket_descriptor[node] = socket(AF_INET, SOCK_DGRAM, 0);
 

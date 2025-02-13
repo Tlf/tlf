@@ -49,8 +49,8 @@ enum debuglevel {
 
 bool debug_is_active();
 bool debug_init();
-void debug_log (enum debuglevel lvl,
-	const char *fmt,
-	...);
+void debug_log(enum debuglevel lvl,
+	       const char *fmt,
+	       ...);
 
 #endif /* DEBUG_H */

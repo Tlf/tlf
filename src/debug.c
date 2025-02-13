@@ -51,9 +51,9 @@ static bool needs_logging(enum debuglevel lvl) {
     return (lvl <= debuglevel);
 }
 
-void debug_log (enum debuglevel lvl,
-	const char *fmt,
-	...) {
+void debug_log(enum debuglevel lvl,
+	       const char *fmt,
+	       ...) {
 
     static pthread_mutex_t debug_mutex = PTHREAD_MUTEX_INITIALIZER;
     char debugbuffer[160];
@@ -68,8 +68,8 @@ void debug_log (enum debuglevel lvl,
 
     FILE *fp = fopen(DEBUG_LOG, "a");
     if (fp == NULL) {	    /* ignore failure to write debug log */
-	    pthread_mutex_unlock(&debug_mutex);
-	    return;	    /* to not disturb logging activity */
+	pthread_mutex_unlock(&debug_mutex);
+	return;	    /* to not disturb logging activity */
     }
 
     format_time(debugbuffer, sizeof(debugbuffer), "%H:%M:%S ");
