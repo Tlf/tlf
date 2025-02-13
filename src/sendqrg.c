@@ -85,13 +85,17 @@ bool sendqrg(void) {
 
 /**************************************************************************/
 
+void show_rigerror(char *message, int errcode) {
+    char *str = g_strdup_printf("%s: %s", message, tlf_rigerror(errcode));
+    showmsg(str);
+    g_free(str);
+}
+
+
 int init_tlf_rig(void) {
     freq_t rigfreq;		/* frequency  */
     vfo_t vfo;
     int retcode;		/* generic return code from functions */
-
-    const char *ptt_file = NULL, *dcd_file = NULL;
-    dcd_type_t dcd_type = RIG_DCD_NONE;
 
     const struct rig_caps *caps;
     int rig_cwspeed;
@@ -111,9 +115,11 @@ int init_tlf_rig(void) {
 	return -1;
     }
 
-    rigportname[strlen(rigportname) - 1] = '\0';	// remove '\n'
+    g_strchomp(rigportname);	// remove trailing '\n'
     strncpy(my_rig->state.rigport.pathname, rigportname,
 	    TLFFILPATHLEN - 1);
+
+    my_rig->state.rigport.parm.serial.rate = serial_rate;
 
     caps = my_rig->caps;
 
@@ -134,16 +140,6 @@ int init_tlf_rig(void) {
 	}
     }
 
-    if (dcd_type != RIG_DCD_NONE)
-	my_rig->state.dcdport.type.dcd = dcd_type;
-    if (ptt_file)
-	strncpy(my_rig->state.pttport.pathname, ptt_file, TLFFILPATHLEN);
-    if (dcd_file)
-	strncpy(my_rig->state.dcdport.pathname, dcd_file, TLFFILPATHLEN);
-
-    my_rig->state.rigport.parm.serial.rate = serial_rate;
-
-    // parse RIGCONF parameters
     if (parse_rigconf() < 0) {
 	return -1;
     }
@@ -151,7 +147,7 @@ int init_tlf_rig(void) {
     retcode = rig_open(my_rig);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("rig_open: %s", rigerror(retcode));
+	show_rigerror("rig_open", retcode);
 	return -1;
     }
 
@@ -162,7 +158,7 @@ int init_tlf_rig(void) {
 	retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig link: %s", rigerror(retcode));
+	show_rigerror("Problem with rig link", retcode);
 	if (!debugflag)
 	    return -1;
     }
@@ -177,7 +173,7 @@ int init_tlf_rig(void) {
 	    shownr("CW speed = ", rig_cwspeed);
 	    speed = rig_cwspeed;
 	} else {
-	    TLF_LOG_WARN("Could not read CW speed from rig: %s", rigerror(retcode));
+	    show_rigerror("Could not read CW speed from rig", retcode);
 	    if (!debugflag)
 		return -1;
 	}
@@ -205,13 +201,10 @@ int init_tlf_rig(void) {
 }
 
 void close_tlf_rig(RIG *my_rig) {
-
     pthread_mutex_lock(&tlf_rig_mutex);
     rig_close(my_rig);		/* close port */
     rig_cleanup(my_rig);	/* if you care about memory */
     pthread_mutex_unlock(&tlf_rig_mutex);
-
-    printf("Rig port %s closed\n", rigportname);
 }
 
 static int parse_rigconf() {
@@ -268,7 +261,7 @@ static void debug_tlf_rig() {
     pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig get freq: %s", rigerror(retcode));
+	show_rigerror("Problem with rig get freq", retcode);
     } else {
 	shownr("freq =", (int) rigfreq);
     }
@@ -281,7 +274,7 @@ static void debug_tlf_rig() {
     pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig set freq: %s", rigerror(retcode));
+	show_rigerror("Problem with rig set freq", retcode);
     } else {
 	showmsg("Rig set freq ok!");
     }
@@ -291,7 +284,7 @@ static void debug_tlf_rig() {
     pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (retcode != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig get freq: %s", rigerror(retcode));
+	show_rigerror("Problem with rig get freq", retcode);
     } else {
 	shownr("freq =", (int) rigfreq);
 	if (rigfreq != testfreq) {
@@ -299,5 +292,4 @@ static void debug_tlf_rig() {
 	}
     }
     sleep(10);
-
 }

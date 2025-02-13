@@ -107,7 +107,7 @@ void write_keyer(void) {
 
 	int error = hamlib_keyer_send(tosend);
 	if (error != RIG_OK) {
-	    TLF_LOG_WARN("CW send error: %s", rigerror(error));
+	    TLF_LOG_WARN("CW send error: %s", tlf_rigerror(error));
 	}
     } else if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 	if ((bfp = fopen(controllerport, "a")) == NULL) {

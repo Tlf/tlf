@@ -52,7 +52,7 @@ int stoptx(void) {
 
 	    int error = hamlib_keyer_stop();
 	    if (error != RIG_OK) {
-		TLF_LOG_WARN("CW stop error: %s", rigerror(error));
+		TLF_LOG_WARN("CW stop error: %s", tlf_rigerror(error));
 
 	    }
 	}
