@@ -256,6 +256,8 @@ static int parse_call_result(xmlrpc_env *local_env, xmlrpc_value *callresult,
 	return 0;
     }
 
+    size_t bytesize;
+
     switch (restype) {
 	// int
 	case XMLRPC_TYPE_INT:
@@ -269,7 +271,6 @@ static int parse_call_result(xmlrpc_env *local_env, xmlrpc_value *callresult,
 	    break;
 	// byte stream
 	case XMLRPC_TYPE_BASE64:
-	    size_t bytesize;
 	    xmlrpc_read_base64(local_env, callresult,
 			       &bytesize, &result->byteval);
 	    result->intval = (int)bytesize;
