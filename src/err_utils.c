@@ -26,7 +26,7 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
-void handle_logging(enum log_lvl lvl, char *fmt, ...) {
+void handle_logging(enum debuglevel lvl, char *fmt, ...) {
     char *str;
     va_list args;
 
@@ -41,13 +41,13 @@ void handle_logging(enum log_lvl lvl, char *fmt, ...) {
     g_free(str);
 
     switch (lvl) {
-	case L_INFO:
+	case TLF_DBG_INFO:
 	    sleep(1);
 	    break;
-	case L_WARN:
+	case TLF_DBG_WARN:
 	    sleep(3);
 	    break;
-	case L_ERR:
+	case TLF_DBG_ERR:
 	    sleep(3);
 	    break;
 	default:
