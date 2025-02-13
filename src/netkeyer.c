@@ -173,7 +173,7 @@ int netkeyer(int cw_op, char *cwmessage) {
 		       0, (struct sockaddr *) &address,
 		       sizeof(address));
     if (sendto_rc == -1) {
-	TLF_LOG_WARN("Keyer send failed...!");
+	TLF_SHOW_WARN("Keyer send failed...!");
 	return -1;
     }
 

@@ -192,7 +192,7 @@ static void poll_rig_state() {
 		mvprintw(0, 14, "%2u", speed);
 	    }
 	} else {
-	    TLF_LOG_WARN("Problem with rig link: %s", tlf_rigerror(retval));
+	    TLF_SHOW_WARN("Problem with rig link: %s", tlf_rigerror(retval));
 	}
     }
 
@@ -246,7 +246,7 @@ void gettxinfo(void) {
 	pthread_mutex_unlock(&tlf_rig_mutex);
 
 	if (retval != RIG_OK) {
-	    TLF_LOG_WARN("Problem with rig link: %s", tlf_rigerror(retval));
+	    TLF_SHOW_WARN("Problem with rig link: %s", tlf_rigerror(retval));
 	}
 
     } else if (reqf == SETSSBMODE) {
@@ -257,7 +257,7 @@ void gettxinfo(void) {
 	pthread_mutex_unlock(&tlf_rig_mutex);
 
 	if (retval != RIG_OK) {
-	    TLF_LOG_WARN("Problem with rig link: %s", tlf_rigerror(retval));
+	    TLF_SHOW_WARN("Problem with rig link: %s", tlf_rigerror(retval));
 	}
 
     } else if (reqf == SETDIGIMODE) {
@@ -274,7 +274,7 @@ void gettxinfo(void) {
 	pthread_mutex_unlock(&tlf_rig_mutex);
 
 	if (retval != RIG_OK) {
-	    TLF_LOG_WARN("Problem with rig link: %s", tlf_rigerror(retval));
+	    TLF_SHOW_WARN("Problem with rig link: %s", tlf_rigerror(retval));
 	}
 
     } else if (reqf == RESETRIT) {
@@ -283,7 +283,7 @@ void gettxinfo(void) {
 	pthread_mutex_unlock(&tlf_rig_mutex);
 
 	if (retval != RIG_OK) {
-	    TLF_LOG_WARN("Problem with rig link: %s", tlf_rigerror(retval));
+	    TLF_SHOW_WARN("Problem with rig link: %s", tlf_rigerror(retval));
 	}
 
     } else {
@@ -294,7 +294,7 @@ void gettxinfo(void) {
 	pthread_mutex_unlock(&tlf_rig_mutex);
 
 	if (retval != RIG_OK) {
-	    TLF_LOG_WARN("Problem with rig link: set frequency: %s", tlf_rigerror(retval));
+	    TLF_SHOW_WARN("Problem with rig link: set frequency: %s", tlf_rigerror(retval));
 	}
 
     }
@@ -341,7 +341,7 @@ static void handle_trx_bandswitch(const freq_t freq) {
     pthread_mutex_unlock(&tlf_rig_mutex);
 
     if (retval != RIG_OK) {
-	TLF_LOG_WARN("Problem with rig link: %s", tlf_rigerror(retval));
+	TLF_SHOW_WARN("Problem with rig link: %s", tlf_rigerror(retval));
     }
 }
 

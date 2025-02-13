@@ -25,24 +25,21 @@
 void handle_logging(enum debuglevel lvl, char *fmt, ...);
 
 
-/* show Error, Warning or similar to user, but write into debuglog if enabled
+/* show Error, Warning or Info message to user and write it into
+ * debuglog if enabled
  */
-#define TLF_LOG_ERR(fmt, ...)  do { \
+#define TLF_SHOW_ERR(fmt, ...)  do { \
 	debug_log(TLF_DBG_ERR, fmt, ##__VA_ARGS__); \
 	handle_logging(TLF_DBG_ERR, fmt, ##__VA_ARGS__); \
 	exit(EXIT_FAILURE); \
     } while(0)
-#define TLF_LOG_WARN(fmt, ...) do {\
+#define TLF_SHOW_WARN(fmt, ...) do {\
 	debug_log(TLF_DBG_WARN, fmt, ##__VA_ARGS__); \
 	handle_logging(TLF_DBG_WARN, fmt, ##__VA_ARGS__); \
     }while(0)
-#define TLF_LOG_INFO(fmt, ...) do {\
+#define TLF_SHOW_INFO(fmt, ...) do {\
 	debug_log(TLF_DBG_INFO, fmt, ##__VA_ARGS__); \
 	handle_logging(TLF_DBG_INFO, fmt, ##__VA_ARGS__); \
-    }while(0)
-#define TLF_LOG_DEBUG(fmt, ...) do {\
-	debug_log(TLF_DBG_DEBUG, fmt, ##__VA_ARGS__); \
-	handle_logging(TLF_DBG_DEBUG, fmt, ##__VA_ARGS__); \
     }while(0)
 
 

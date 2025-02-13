@@ -146,7 +146,7 @@ void delete_qso(void) {
 
 	if ((lfile = open(logfile, O_RDWR)) < 0) {
 
-	    TLF_LOG_WARN("I can not find the logfile...");
+	    TLF_SHOW_WARN("I can not find the logfile...");
 	} else {
 
 	    fstat(lfile, &statbuf);

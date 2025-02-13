@@ -253,7 +253,7 @@ static int lan_send(char *lanbuffer) {
 
 	if (bc_sendto_rc == -1) {
 	    if (send_error[node] >= (send_error_limit[node] + 10)) {
-		TLF_LOG_INFO("LAN: send problem...!");
+		TLF_SHOW_INFO("LAN: send problem...!");
 		send_error_limit[node] += 10;
 	    } else
 		send_error[node]++;
