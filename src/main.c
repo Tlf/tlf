@@ -451,8 +451,10 @@ static const struct argp_option options[] = {
     {"no-rig",      'r', 0, 0,  "Start without radio control" },
     {"list",	    'l', 0, 0,  "List built-in contests" },
     {"sync",        's', "URL", 0,  "Synchronize log with other node" },
-    {"debug",       'd', "LEVEL (0..4)", 0,
-	"Debug level (Off, Error, Warn, Info, Debug)" },
+    {
+	"debug",       'd', "LEVEL (0..4)", 0,
+	"Debug level (Off, Error, Warn, Info, Debug)"
+    },
     {"verbose",     'v', 0, 0,  "Produce verbose output" },
     { 0 }
 };
