@@ -244,6 +244,41 @@ static xmlrpc_value *build_param_array(xmlrpc_env *local_env,
     return pcall_array;
 }
 
+static int parse_call_result(xmlrpc_env *local_env, xmlrpc_value *callresult,
+			     xmlrpc_res *result) {
+
+    int restype = xmlrpc_value_type(callresult);
+    if (restype == XMLRPC_TYPE_DEAD) {
+	return -1;
+    }
+
+    if (result == NULL) {   // we are not interested in the result...
+	return 0;
+    }
+
+    switch (restype) {
+	// int
+	case XMLRPC_TYPE_INT:
+	    xmlrpc_read_int(local_env, callresult,
+			    &result->intval);
+	    break;
+	// string
+	case XMLRPC_TYPE_STRING:
+	    xmlrpc_read_string(local_env, callresult,
+			       &result->stringval);
+	    break;
+	// byte stream
+	case XMLRPC_TYPE_BASE64:
+	    size_t bytesize;
+	    xmlrpc_read_base64(local_env, callresult,
+			       &bytesize, &result->byteval);
+	    result->intval = (int)bytesize;
+	    break;
+    }
+
+    return 0;
+}
+
 // call a remote Fldigi method
 // result has to be passed uninitalized and then freed by the caller
 // alternatively, a NULL result can be passed for a void method
@@ -254,8 +289,6 @@ static int fldigi_xmlrpc_query(xmlrpc_res *result, char *methodname,
 
     static unsigned int connerrcnt = 0;
     xmlrpc_value *callresult;
-    int restype;
-    size_t bytesize = 0;
 
     pthread_mutex_lock(&xmlrpc_mutex);
 
@@ -310,6 +343,7 @@ static int fldigi_xmlrpc_query(xmlrpc_res *result, char *methodname,
 
     callresult = xmlrpc_client_call_server_params(&local_env, serverInfoP,
 		 methodname, pcall_array);
+
     if (local_env.fault_occurred) {
 	connerr = true;
 	if (callresult != NULL) {
@@ -321,44 +355,14 @@ static int fldigi_xmlrpc_query(xmlrpc_res *result, char *methodname,
 	return -1;
     }
 
-    restype = xmlrpc_value_type(callresult);
-    if (restype == XMLRPC_TYPE_DEAD) {
-	xmlrpc_DECREF(callresult);
-	xmlrpc_DECREF(pcall_array);
-	xmlrpc_env_clean(&local_env);
-	pthread_mutex_unlock(&xmlrpc_mutex);
-	return -1;
-    }
-
-    if (result == NULL) {
-	restype = XMLRPC_TYPE_NIL;  // to skip the switch below
-    }
-
-    switch (restype) {
-	// int
-	case XMLRPC_TYPE_INT:
-	    xmlrpc_read_int(&local_env, callresult,
-			    &result->intval);
-	    break;
-	// string
-	case XMLRPC_TYPE_STRING:
-	    xmlrpc_read_string(&local_env, callresult,
-			       &result->stringval);
-	    break;
-	// byte stream
-	case XMLRPC_TYPE_BASE64:
-	    xmlrpc_read_base64(&local_env, callresult,
-			       &bytesize, &result->byteval);
-	    result->intval = (int)bytesize;
-	    break;
-    }
+    int rc = parse_call_result(&local_env, callresult, result);
 
     xmlrpc_DECREF(callresult);
     xmlrpc_DECREF(pcall_array);
     xmlrpc_env_clean(&local_env);
 
     pthread_mutex_unlock(&xmlrpc_mutex);
-    return 0;
+    return rc;
 }
 #endif
 
