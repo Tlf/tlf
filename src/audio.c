@@ -459,7 +459,7 @@ void vk_play_file(char *audiofile) {
     }
 
     if (access(audiofile, R_OK) != 0) {
-	TLF_LOG_INFO("cannot open sound file %s!", audiofile);
+	TLF_SHOW_INFO("cannot open sound file %s!", audiofile);
 	return;
     }
 
@@ -468,7 +468,7 @@ void vk_play_file(char *audiofile) {
     /* play sound in separate thread so it can be killed from the main one */
     if (pthread_create(&vk_thread, NULL, play_thread, (void *)file) != 0) {
 	g_free(file);
-	TLF_LOG_INFO("could not start sound thread!");
+	TLF_SHOW_INFO("could not start sound thread!");
     }
 }
 

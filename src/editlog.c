@@ -64,7 +64,7 @@ void edit(char *filename) {
     refreshp();
 
     if (WEXITSTATUS(retval) == 127) {
-	TLF_LOG_WARN("Can not start editor, check EDITOR= command");
+	TLF_SHOW_WARN("Can not start editor, check EDITOR= command");
     }
     g_free(cmdstr);
 }

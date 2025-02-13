@@ -136,7 +136,7 @@ void time_update(void) {
     // empty
 }
 
-void handle_logging(enum log_lvl lvl, ...) {
+void handle_logging(enum debuglevel lvl, char *fmt, ...) {
     // empty
 }
 

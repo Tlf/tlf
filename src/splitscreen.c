@@ -110,7 +110,7 @@ void addlog(char *s) {
 
 	if (clusterlog) {
 	    if ((fp = fopen("clusterlog", "a")) == NULL) {
-		TLF_LOG_INFO("Opening clusterlog not possible.");
+		TLF_SHOW_INFO("Opening clusterlog not possible.");
 	    } else {
 		if (strlen(lastmsg) > 20) {
 		    fputs(lastmsg, fp);

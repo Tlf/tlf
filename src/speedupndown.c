@@ -54,7 +54,7 @@ static int setspeed(int cwspeed) {
 	if (retval >= 0) {
 	    speed = cwspeed;
 	} else {
-	    TLF_LOG_WARN("keyer not active");
+	    TLF_SHOW_WARN("keyer not active");
 //                      trxmode = SSBMODE;
 	    clear_display();
 	}
@@ -67,7 +67,7 @@ static int setspeed(int cwspeed) {
 	if (retval >= 0) {
 	    speed = cwspeed;
 	} else {
-	    TLF_LOG_WARN("Could not set CW speed: %s", tlf_rigerror(retval));
+	    TLF_SHOW_WARN("Could not set CW speed: %s", tlf_rigerror(retval));
 	    clear_display();
 	}
     }
@@ -131,7 +131,7 @@ int setweight(int weight) {
 	retval = netkeyer(K_WEIGHT, buff);
 
 	if (retval < 0) {
-	    TLF_LOG_INFO("keyer not active ?");
+	    TLF_SHOW_INFO("keyer not active ?");
 	    clear_display();
 	}
     }
