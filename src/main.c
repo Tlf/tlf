@@ -78,6 +78,7 @@ int portnum = 0;
 
 bool use_rxvt = false;
 bool use_xterm = false;
+bool tlf_initialized = false;   // true: everything has been set up
 
 int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
     {COLOR_GREEN, COLOR_YELLOW},
@@ -1139,6 +1140,9 @@ int main(int argc, char *argv[]) {
 	endwin();
 	exit(EXIT_FAILURE);
     }
+
+    tlf_initialized = true;
+
 
     /* now start logging  !! Does never return */
     logit();

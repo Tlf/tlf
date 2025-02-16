@@ -41,9 +41,12 @@ int key_kPRV3 = 0;
 int key_kNXT5 = 0;
 int key_kPRV5 = 0;
 
-pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static int getkey(int wait);
+static const bool WAIT = true;
+static const bool NO_WAIT = false;
+
+static int getkey(bool wait);
 static int onechar(void);
 void resize_layout(void);
 
@@ -125,14 +128,14 @@ void lookup_keys() {
  *
  */
 int key_get() {
-    return getkey(1);
+    return getkey(WAIT);
 }
 
 /** key_poll return next key from terminal if there is one
  *
  */
 int key_poll() {
-    return getkey(0);
+    return getkey(NO_WAIT);
 }
 
 
@@ -140,17 +143,26 @@ int key_poll() {
  * parameter and then ask for the next character
  * leaves 'nodelay' afterwards always as FALSE (meaning: wait for
  * character
+ * in both ('wait' and 'no-wait') mode terminal resizes are handled,
+ * but no KEY_RESIZE is returned.
  */
-static int getkey(int wait) {
-    int x = 0;
+static int getkey(bool wait) {
 
     nodelay(stdscr, wait ? FALSE : TRUE);
 
-    x = onechar();
+    bool done = !wait;
+    int x;
+    do {
+	x = onechar();
 
-    if (x == KEY_RESIZE) {
-	resize_layout();
-    }
+	if (x == KEY_RESIZE) {
+	    resize_layout();
+	    x = 0;  // do not propagate KEY_RESIZE to caller
+	} else {
+	    done = true;
+	}
+
+    } while (!done);
 
     nodelay(stdscr, FALSE);
 
@@ -337,6 +349,9 @@ static int onechar(void) {
  */
 void resize_layout(void) {
     getmaxyx(stdscr, ymax, xmax);
+    if (!tlf_initialized) {
+	return;     // only update terminal size
+    }
     clear_display();
     clusterinfo();
     refresh_splitlayout();
