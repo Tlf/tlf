@@ -37,6 +37,8 @@ char pr_hostaddress[48] = "111.222.111.222";
 char *config_file = NULL;
 int portnum = 0;
 
+bool tlf_initialized = false;
+
 bool use_rxvt = false;
 int use_xterm = 0;
 int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
