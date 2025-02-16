@@ -49,8 +49,6 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
-#define XMLRPCVERSION "1.0"
-
 int fldigi_set_callfield = 0;
 
 typedef struct {
@@ -108,7 +106,8 @@ modem.set_carrier       i:i  - set carrier of modem
 */
 
 #ifdef HAVE_LIBXMLRPC
-xmlrpc_server_info *serverInfoP = NULL;
+static xmlrpc_server_info *serverInfoP = NULL;
+static xmlrpc_client *clientP = NULL;
 #endif
 
 bool fldigi_toggle(void) {
@@ -151,11 +150,36 @@ static void xmlrpc_res_free(xmlrpc_res *res) {
 }
 
 static void xmlrpc_release() {
+    if (clientP != NULL) {
+	xmlrpc_client_destroy(clientP);
+	clientP = NULL;
+    }
     if (serverInfoP != NULL) {
 	xmlrpc_server_info_free(serverInfoP);
 	serverInfoP = NULL;
     }
     initialized = false;
+}
+
+// set up local xmlrpc client
+// env contains error information
+static void fldigi_xmlrpc_setup(xmlrpc_env *env) {
+    xmlrpc_client_setup_global_const(env);
+    if (env->fault_occurred) {
+	return;
+    }
+
+    clientP = NULL;
+    xmlrpc_client_create(env, XMLRPC_CLIENT_NO_FLAGS,
+			 PACKAGE_NAME, PACKAGE_VERSION, NULL, 0, &clientP);
+    if (env->fault_occurred) {
+	return;
+    }
+
+    serverInfoP = xmlrpc_server_info_new(env, fldigi_url);
+    if (env->fault_occurred) {
+	return;
+    }
 }
 #endif
 
@@ -167,9 +191,7 @@ int fldigi_xmlrpc_init() {
     xmlrpc_env env;
     xmlrpc_env_init(&env);
 
-    xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, PACKAGE_NAME,
-			XMLRPCVERSION, NULL, 0);
-    serverInfoP = xmlrpc_server_info_new(&env, fldigi_url);
+    fldigi_xmlrpc_setup(&env);
     if (env.fault_occurred) {
 	xmlrpc_release();
 	rc = -1;
@@ -289,7 +311,6 @@ static int fldigi_xmlrpc_query(xmlrpc_res *result, char *methodname,
 			       char *format, ...) {
 
     static unsigned int connerrcnt = 0;
-    xmlrpc_value *callresult;
 
     pthread_mutex_lock(&xmlrpc_mutex);
 
@@ -342,8 +363,9 @@ static int fldigi_xmlrpc_query(xmlrpc_res *result, char *methodname,
 	return -1;
     }
 
-    callresult = xmlrpc_client_call_server_params(&local_env, serverInfoP,
-		 methodname, pcall_array);
+    xmlrpc_value *callresult = NULL;
+    xmlrpc_client_call2(&local_env, clientP, serverInfoP,
+			methodname, pcall_array, &callresult);
 
     if (local_env.fault_occurred) {
 	connerr = true;
