@@ -74,8 +74,8 @@ static bool connerr = false;
 char thiscall[20] = "";
 char tcomment[20] = "";
 
-pthread_mutex_t xmlrpc_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t xmlrpc_get_rx_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t xmlrpc_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t xmlrpc_get_rx_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /*
  * Used Fldigi XML-RPC methods
