@@ -78,8 +78,10 @@ pthread_mutex_t xmlrpc_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t xmlrpc_get_rx_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /*
- * Used XML RPC methods, and its formats of arguments
+ * Used Fldigi XML-RPC methods
  * ==================================================
+Method Name 	 Sig (ret:arg) Description
+-----------------------------------------------------
  main.rx                n:n  - RX
  main.tx                n:n  - TX
  main.get_trx_state     s:n  - get RX/TX state, 's' could be "RX" | "TX"
@@ -103,6 +105,16 @@ modem.set_carrier       i:i  - set carrier of modem
  text.get_rx         6:ii - (bytes:int|int) - get part content of RX window
 			    [start:length]
    tx.get_data       6:n  - (bytes:) - get content of TX window since last query
+
+
+ * XML-RPC Format Specifiers (subset used by Fldigi)
+ * =================================================
+    i   32 bit integer
+    d   double precision floating point number
+    s   string
+    6   base64-encoded byte string
+    n   nil
+    A   array
 */
 
 #ifdef HAVE_LIBXMLRPC
@@ -235,11 +247,11 @@ static xmlrpc_value *build_param_array(xmlrpc_env *local_env,
 		break;
 	    }
 	    xmlrpc_array_append_item(local_env, pcall_array, va_param);
-	} else if (*format == 'd') {
+	} else if (*format == 'i') {
 	    int d = va_arg(argptr, int);
 	    va_param = xmlrpc_int_new(local_env, d);
 	    xmlrpc_array_append_item(local_env, pcall_array, va_param);
-	} else if (*format == 'f') {
+	} else if (*format == 'd') {
 	    double f = va_arg(argptr, double);
 	    va_param = xmlrpc_double_new(local_env, f);
 	    xmlrpc_array_append_item(local_env, pcall_array, va_param);
@@ -506,7 +518,7 @@ int fldigi_get_rx_text(char *line, int len) {
 	lastpos = textlen;
     } else {
 	if (lastpos < textlen) {
-	    rc = fldigi_xmlrpc_query(&result, "text.get_rx", "dd",
+	    rc = fldigi_xmlrpc_query(&result, "text.get_rx", "ii",
 				     lastpos,
 				     textlen - lastpos >= len ?
 				     len - 1 : textlen - lastpos);
@@ -568,7 +580,7 @@ int fldigi_xmlrpc_get_carrier() {
 		abs(CENTER_FREQ - fldigi_var_carrier) > MAXSHIFT) {
 	    if (fldigi_var_shift_freq == 0) {
 		rc = fldigi_xmlrpc_query(&result,
-					 "modem.set_carrier", "d",
+					 "modem.set_carrier", "i",
 					 (xmlrpc_int32) CENTER_FREQ);
 		if (rc != 0) {
 		    return -1;
@@ -635,7 +647,7 @@ int fldigi_xmlrpc_get_carrier() {
 
     /* also set the freq value in Fldigi FREQ block */
     rc = fldigi_xmlrpc_query(NULL,
-			     "rig.set_frequency", "f",
+			     "rig.set_frequency", "d",
 			     (xmlrpc_double)(freq - fldigi_var_carrier));
     if (rc != 0) {
 	return -1;
