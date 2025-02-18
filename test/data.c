@@ -306,6 +306,7 @@ bool bmautoadd = false;
 bool bmautograb = false;
 
 /*-------------------------------------rigctl-------------------------------*/
+char rotconf[80];
 #ifdef HAVE_LIBHAMLIB
 int myrig_model = 351;
 RIG *my_rig;			/* handle to rig (instance) */
@@ -325,6 +326,18 @@ int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;
 int rigptt = 0;
+
+/*-------------------------------------rotctl-------------------------------*/
+bool rot_control = false;
+#ifdef HAVE_LIBHAMLIB
+int myrot_model = 603;
+ROT *my_rot;			/* handle to rot (instance) */
+#endif
+int rot_serial_rate = 2400;
+char *rotportname;
+int rotnumber = 0;
+int rot_comm_error = 0;
+int rot_comm_success = 0;
 
 /*----------------------------the parsed log lines-------------------------*/
 // array of qso's
