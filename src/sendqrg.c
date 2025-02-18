@@ -242,16 +242,9 @@ static int parse_rigconf() {
     return 0;
 }
 
-
-/* callback receiving hamlibs debug output */
-int rig_debug_cb(enum rig_debug_level_e lvl,
-		 rig_ptr_t user_data,
-		 const char *fmt,
-		 va_list ap) {
-
+/* convert Hamlib debug levels into Tlfs ones */
+static enum debuglevel rig2tlf_debug(enum rig_debug_level_e lvl) {
     enum debuglevel level;
-
-    /* convert hamlib debug levels into Tlfs ones */
     switch (lvl) {
 	case RIG_DEBUG_ERR:
 	    level = TLF_DBG_ERR;
@@ -268,10 +261,41 @@ int rig_debug_cb(enum rig_debug_level_e lvl,
 	default:
 	    level = TLF_DBG_NONE;
     }
+    return level;
+}
+
+/* convert Tlf debug levels into Hamlib ones */
+static enum rig_debug_level_e tlf2rig_debug(enum debuglevel lvl) {
+    enum debuglevel level;
+    switch (lvl) {
+	case TLF_DBG_ERR:
+	    level = RIG_DEBUG_ERR;
+	    break;
+	case TLF_DBG_WARN:
+	    level = RIG_DEBUG_WARN;
+	    break;
+	case TLF_DBG_INFO:
+	    level = RIG_DEBUG_VERBOSE;
+	    break;
+	case TLF_DBG_DEBUG:
+	    level = RIG_DEBUG_TRACE;
+	    break;
+	default:
+	    level = RIG_DEBUG_NONE;
+    }
+    return level;
+}
+
+
+/* callback receiving hamlibs debug output */
+int rig_debug_cb(enum rig_debug_level_e lvl,
+		 rig_ptr_t user_data,
+		 const char *fmt,
+		 va_list ap) {
 
     char *format = g_strdup_printf("Rig: %s", fmt);
     char *msg = g_strdup_vprintf(format, ap);
-    debug_log(level, msg);
+    debug_log(rig2tlf_debug(lvl), msg);
     g_free(msg);
     g_free(format);
     return RIG_OK;
@@ -281,7 +305,7 @@ int rig_debug_cb(enum rig_debug_level_e lvl,
 void rig_debug_init() {
     if (debug_is_active()) {
 	/* set hamlib debug level and install callback */
-	rig_set_debug(RIG_DEBUG_TRACE);
+	rig_set_debug(tlf2rig_debug(debuglevel));
 	rig_set_debug_callback(rig_debug_cb, (rig_ptr_t)NULL);
     }
 }
