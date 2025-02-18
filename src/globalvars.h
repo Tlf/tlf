@@ -169,6 +169,7 @@ extern bool demode;
 extern bool ctcomp;
 extern bool show_time;
 extern bool use_rxvt;
+extern bool tlf_initialized;
 extern bool time_master;
 extern bool noautocq;
 extern bool no_arrows;
