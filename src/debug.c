@@ -22,11 +22,29 @@
 #include "globalvars.h"
 #include "pthread.h"
 #include "stdbool.h"
+#include "sys/time.h"
 
 /* check if any debug level is active */
 bool debug_is_active() {
     return (debuglevel > TLF_DBG_NONE);
 }
+
+/* returns actual UTC time including milliseconds as string.
+ * format hh:mm:ss.mil
+ *
+ * needs to be released after use
+ */
+char *timestamp_utc() {
+    char timestamp[16];
+    struct timeval current_time;
+
+    gettimeofday(&current_time, NULL);
+    strftime(timestamp, sizeof(timestamp), "%T",
+	     gmtime(&current_time.tv_sec));
+    return g_strdup_printf("%s.%03ld ", timestamp,
+			   current_time.tv_usec / 1000);
+}
+
 
 bool debug_init() {
     char debugbuffer[80];
@@ -39,8 +57,14 @@ bool debug_init() {
 	}
 
 	format_time(debugbuffer, sizeof(debugbuffer),
-		    "\nStarted %d/%m/%Y %H:%M\n");
+		    "\nStarted %Y%m%d");
 	fputs(debugbuffer, fp);
+
+	char *ts = timestamp_utc();
+	fputs(ts, fp);
+	fputs(" UTC\n", fp);
+	g_free(ts);
+
 	fclose(fp);
     }
     return TRUE;
@@ -56,7 +80,6 @@ void debug_log(enum debuglevel lvl,
 	       ...) {
 
     static pthread_mutex_t debug_mutex = PTHREAD_MUTEX_INITIALIZER;
-    char debugbuffer[160];
     va_list args;
 
 
@@ -72,7 +95,6 @@ void debug_log(enum debuglevel lvl,
 	return;	    /* to not disturb logging activity */
     }
 
-    format_time(debugbuffer, sizeof(debugbuffer), "%H:%M:%S ");
     va_start(args, fmt);
 
     /* drop trailing NL in case caller added one in fmt or varargs */
@@ -80,7 +102,10 @@ void debug_log(enum debuglevel lvl,
     g_strchomp(msg);
     va_end(args);
 
-    fputs(debugbuffer, fp);
+    char *ts = timestamp_utc();
+    fputs(ts, fp);
+    g_free(ts);
+
     switch (lvl) {
 	case TLF_DBG_ERR: fputs("ERR ", fp);
 	    break;
