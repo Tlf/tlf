@@ -57,7 +57,7 @@ bool debug_init() {
 	}
 
 	format_time(debugbuffer, sizeof(debugbuffer),
-		    "\nStarted %Y%m%d");
+		    "\nStarted %Y%m%d ");
 	fputs(debugbuffer, fp);
 
 	char *ts = timestamp_utc();
