@@ -41,7 +41,7 @@ char *timestamp_utc() {
     gettimeofday(&current_time, NULL);
     strftime(timestamp, sizeof(timestamp), "%T",
 	     gmtime(&current_time.tv_sec));
-    return g_strdup_printf("%s.%03ld ", timestamp,
+    return g_strdup_printf("%s.%03ld", timestamp,
 			   current_time.tv_usec / 1000);
 }
 
@@ -104,6 +104,7 @@ void debug_log(enum debuglevel lvl,
 
     char *ts = timestamp_utc();
     fputs(ts, fp);
+    fputs(" ", fp);
     g_free(ts);
 
     switch (lvl) {
