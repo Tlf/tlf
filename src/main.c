@@ -484,15 +484,18 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	    break;
 	case 's':
 	    if (strlen(arg) >= 120) {
-		printf("Argument too long for sync\n");
+		fprintf(stderr, "Argument too long for sync\n");
 		exit(EXIT_FAILURE);
 	    }
 	    strcpy(synclogfile, arg);
 	    break;
-	case 'd':		// debug rigctl
-	    debuglevel = atoi(arg);
-	    if (debuglevel < 0) debuglevel = 0;
-	    if (debuglevel > 4) debuglevel = 4;
+	case 'd':		// debug level
+	    debuglevel = arg[0] - '0';
+	    if ((strlen(arg) != 1)  || !isdigit(arg[0]) ||
+		    (debuglevel > 4)) {
+		fprintf(stderr, "Debuglevel should be 0..4\n");
+		exit(EXIT_FAILURE);
+	    }
 	    break;
 	case 'v':		// verbose startup
 	    verbose = true;
