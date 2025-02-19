@@ -31,7 +31,7 @@
 #include "ui_utils.h"
 #include "bands.h"
 
-bool no_multi(spot * s) {
+bool no_multi(spot *s) {
     return false;
 }
 
