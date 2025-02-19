@@ -24,11 +24,11 @@
 #include <stdbool.h>
 #include "tlf.h"
 
-int score_wpx();
-int score_cqww();
-int score_arrlfd();
-int score_arrldx_usa();
-int score_stewperry();
+int score_wpx(struct qso_t * qso);
+int score_cqww(struct qso_t * qso);
+int score_arrlfd(struct qso_t * qso);
+int score_arrldx_usa(struct qso_t * qso);
+int score_stewperry(struct qso_t * qso);
 int score(struct qso_t *qso);
 void score_qso(struct qso_t *qso);
 int score2(char *line);
