@@ -33,5 +33,6 @@ bool general_ismulti(spot *data);
 contest_config_t *lookup_contest(char *name);
 void list_contests();
 void setcontest(char *name);
+bool no_multi(spot *data);
 
 #endif /* SETCONTEST_H */
