@@ -30,10 +30,8 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "bands.h"
+#include "setcontest.h"
 
-bool no_multi() {
-    return false;
-}
 
 struct pos {
     int column;

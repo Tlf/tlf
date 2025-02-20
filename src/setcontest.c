@@ -54,7 +54,7 @@ static struct qso_t *qso_from_spot(spot *data) {
 
 /* No Multiplier mark in bandmap for multis determined from comment field;
  * Code works also for modes with no multiplier at all */
-static bool no_multi(spot *data) {
+bool no_multi(spot *data) {
     return false;
 }
 
