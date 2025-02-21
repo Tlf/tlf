@@ -107,11 +107,11 @@ void write_keyer(void) {
 
 	int error = hamlib_keyer_send(tosend);
 	if (error != RIG_OK) {
-	    TLF_LOG_WARN("CW send error: %s", tlf_rigerror(error));
+	    TLF_SHOW_WARN("CW send error: %s", tlf_rigerror(error));
 	}
     } else if (cwkeyer == MFJ1278_KEYER || digikeyer == MFJ1278_KEYER) {
 	if ((bfp = fopen(controllerport, "a")) == NULL) {
-	    TLF_LOG_WARN("1278 not active. Switching to SSB mode.");
+	    TLF_SHOW_WARN("1278 not active. Switching to SSB mode.");
 	    trxmode = SSBMODE;
 	    clear_display();
 	} else {
@@ -121,7 +121,7 @@ void write_keyer(void) {
 
     } else if (digikeyer == GMFSK) {
 	if (strlen(rttyoutput) < 2) {
-	    TLF_LOG_WARN("No modem file specified!");
+	    TLF_SHOW_WARN("No modem file specified!");
 	}
 	// when GMFSK used (possible Fldigi interface), the trailing \n doesn't need
 	if (tosend[strlen(tosend) - 1] == '\n') {

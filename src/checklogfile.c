@@ -255,7 +255,7 @@ void checklogfile(void) {
     FILE *fp;
 
     if ((fp = fopen(logfile, "a")) == NULL) {
-	TLF_LOG_WARN("I can not find the logfile ...");
+	TLF_SHOW_WARN("I can not find the logfile ...");
     } else {
 	fstat(fileno(fp), &statbuf);
 	fclose(fp);
@@ -264,11 +264,11 @@ void checklogfile(void) {
 
 	if ((qsobytes % LOGLINELEN) != 0) {
 	    if ((infile = fopen(logfile, "r")) == NULL) {
-		TLF_LOG_WARN("Unable to open logfile...");
+		TLF_SHOW_WARN("Unable to open logfile...");
 	    } else {
 		if ((outfile = fopen("./cpyfile", "w")) == NULL) {
 		    fclose(infile);
-		    TLF_LOG_WARN("Unable to open cpyfile...");
+		    TLF_SHOW_WARN("Unable to open cpyfile...");
 
 		} else {
 		    errno = 0;

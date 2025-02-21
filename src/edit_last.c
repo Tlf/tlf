@@ -143,7 +143,7 @@ static void putback_qso(int nr, char *buffer) {
     assert(nr < NR_QSOS);
 
     if ((fp = fopen(logfile, "r+")) == NULL) {
-	TLF_LOG_WARN("Can not open logfile...");
+	TLF_SHOW_WARN("Can not open logfile...");
     } else {
 	fseek(fp, (long)nr * LOGLINELEN, SEEK_SET);
 	fputs(buffer, fp);

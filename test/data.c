@@ -52,7 +52,7 @@ int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
 };
 
 
-bool debugflag = false;
+int debuglevel = 0;
 char *editor_cmd = NULL;
 char rttyoutput[120];
 int tune_val = 0;

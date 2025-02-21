@@ -10,7 +10,7 @@ tlf_SOURCES = \
 	change_rst.c checklogfile.c checkqtclogfile.c \
 	cleanup.c clear_display.c clusterinfo.c \
         cqww_simulator.c cw_utils.c \
-	dxcc.c deleteqso.c \
+	debug.c	dxcc.c deleteqso.c \
 	edit_last.c editlog.c err_utils.c \
 	fldigixmlrpc.c freq_display.c focm.c \
 	genqtclist.c \
@@ -47,7 +47,7 @@ noinst_HEADERS = \
 	change_rst.h checklogfile.h checkqtclogfile.h \
 	cleanup.h clear_display.h clusterinfo.h \
 	cqww_simulator.h cw_utils.h \
-	dxcc.h deleteqso.h \
+	debug.h dxcc.h deleteqso.h \
 	edit_last.h editlog.h  err_utils.h \
 	fldigixmlrpc.h freq_display.h focm.h \
 	genqtclist.h \

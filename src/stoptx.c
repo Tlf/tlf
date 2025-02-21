@@ -43,7 +43,7 @@ int stoptx(void) {
 
 	    if (netkeyer(K_ABORT, NULL) < 0) {
 
-		TLF_LOG_WARN("keyer not active; switching to SSB");
+		TLF_SHOW_WARN("keyer not active; switching to SSB");
 		trxmode = SSBMODE;
 		clear_display();
 
@@ -52,7 +52,7 @@ int stoptx(void) {
 
 	    int error = hamlib_keyer_stop();
 	    if (error != RIG_OK) {
-		TLF_LOG_WARN("CW stop error: %s", tlf_rigerror(error));
+		TLF_SHOW_WARN("CW stop error: %s", tlf_rigerror(error));
 
 	    }
 	}

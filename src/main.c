@@ -89,7 +89,7 @@ int tlfcolors[8][2] = { {COLOR_BLACK, COLOR_WHITE},
     {COLOR_BLUE, COLOR_YELLOW},
     {COLOR_WHITE, COLOR_BLACK}
 };
-bool debugflag = false;
+int debuglevel = 0;
 char *editor_cmd = NULL;
 int tune_val = 0;
 bool use_bandoutput = false;
@@ -452,7 +452,10 @@ static const struct argp_option options[] = {
     {"no-rig",      'r', 0, 0,  "Start without radio control" },
     {"list",	    'l', 0, 0,  "List built-in contests" },
     {"sync",        's', "URL", 0,  "Synchronize log with other node" },
-    {"debug",       'd', 0, 0,  "Debug mode" },
+    {
+	"debug",       'd', "LEVEL (1..4)", 0,
+	"Debug level (Error, Warn, Info, Debug)"
+    },
     {"verbose",     'v', 0, 0,  "Produce verbose output" },
     { 0 }
 };
@@ -482,13 +485,18 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	    break;
 	case 's':
 	    if (strlen(arg) >= 120) {
-		printf("Argument too long for sync\n");
+		fprintf(stderr, "Argument too long for sync\n");
 		exit(EXIT_FAILURE);
 	    }
 	    strcpy(synclogfile, arg);
 	    break;
-	case 'd':		// debug rigctl
-	    debugflag = true;
+	case 'd':		// debug level
+	    debuglevel = arg[0] - '0';
+	    if ((strlen(arg) != 1)  || !isdigit(arg[0]) ||
+		    (debuglevel > 4) || (debuglevel == 0)) {
+		fprintf(stderr, "Debuglevel should be 1..4\n");
+		exit(EXIT_FAILURE);
+	    }
 	    break;
 	case 'v':		// verbose startup
 	    verbose = true;
@@ -781,6 +789,8 @@ static void hamlib_init() {
 	return;
     }
 
+    rig_debug_init();
+
     shownr("Rig model number is", myrig_model);
     shownr("Rig speed is", serial_rate);
 
@@ -1036,6 +1046,10 @@ int main(int argc, char *argv[]) {
     sprintf(welcome, "        Welcome to %s by PA0R!!", argp_program_version);
 
     argp_parse(&argp, argc, argv, 0, 0, NULL);  // parse options
+
+    if (!debug_init()) {
+	showmsg("Could not intialize debug logging");
+    }
 
     ui_init();
 

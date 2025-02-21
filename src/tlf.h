@@ -26,6 +26,7 @@
 
 #include "hamlib/rig.h"
 #include "bandmap.h"
+#include "debug.h"
 #include "dxcc.h"
 
 enum {
