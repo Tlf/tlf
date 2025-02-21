@@ -26,7 +26,7 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
-void handle_logging(enum debuglevel lvl, char *fmt, ...) {
+void handle_logging(enum tlf_debug_level lvl, char *fmt, ...) {
     char *str;
     va_list args;
 

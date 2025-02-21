@@ -25,7 +25,7 @@
 
 #define DEBUG_LOG "debug.txt"
 
-enum debuglevel {
+enum tlf_debug_level {
     TLF_DBG_NONE,
     TLF_DBG_ERR,
     TLF_DBG_WARN,
@@ -49,7 +49,7 @@ enum debuglevel {
 
 bool debug_is_active();
 bool debug_init();
-void debug_log(enum debuglevel lvl,
+void debug_log(enum tlf_debug_level lvl,
 	       const char *fmt,
 	       ...);
 

@@ -243,8 +243,8 @@ static int parse_rigconf() {
 }
 
 /* convert Hamlib debug levels into Tlfs ones */
-static enum debuglevel rig2tlf_debug(enum rig_debug_level_e lvl) {
-    enum debuglevel level;
+static enum tlf_debug_level rig2tlf_debug(enum rig_debug_level_e lvl) {
+    enum tlf_debug_level level;
     switch (lvl) {
 	case RIG_DEBUG_ERR:
 	    level = TLF_DBG_ERR;
@@ -265,8 +265,8 @@ static enum debuglevel rig2tlf_debug(enum rig_debug_level_e lvl) {
 }
 
 /* convert Tlf debug levels into Hamlib ones */
-static enum rig_debug_level_e tlf2rig_debug(enum debuglevel lvl) {
-    enum debuglevel level;
+static enum rig_debug_level_e tlf2rig_debug(enum tlf_debug_level lvl) {
+    enum tlf_debug_level level;
     switch (lvl) {
 	case TLF_DBG_ERR:
 	    level = RIG_DEBUG_ERR;

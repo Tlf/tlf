@@ -71,11 +71,11 @@ bool debug_init() {
 }
 
 /* check if message needs to be logged */
-static bool needs_logging(enum debuglevel lvl) {
+static bool needs_logging(enum tlf_debug_level lvl) {
     return (lvl <= debuglevel);
 }
 
-void debug_log(enum debuglevel lvl,
+void debug_log(enum tlf_debug_level lvl,
 	       const char *fmt,
 	       ...) {
 

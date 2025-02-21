@@ -77,7 +77,7 @@ unsigned int __wrap_sleep(unsigned int seconds) {
 }
 
 /* for now */
-void debug_log (enum debuglevel lvl,
+void debug_log (enum tlf_debug_level lvl,
 	const char *fmt,
 	...) {
 }
