@@ -452,8 +452,8 @@ static const struct argp_option options[] = {
     {"list",	    'l', 0, 0,  "List built-in contests" },
     {"sync",        's', "URL", 0,  "Synchronize log with other node" },
     {
-	"debug",       'd', "LEVEL (0..4)", 0,
-	"Debug level (Off, Error, Warn, Info, Debug)"
+	"debug",       'd', "LEVEL (1..4)", 0,
+	"Debug level (Error, Warn, Info, Debug)"
     },
     {"verbose",     'v', 0, 0,  "Produce verbose output" },
     { 0 }
@@ -492,8 +492,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	case 'd':		// debug level
 	    debuglevel = arg[0] - '0';
 	    if ((strlen(arg) != 1)  || !isdigit(arg[0]) ||
-		    (debuglevel > 4)) {
-		fprintf(stderr, "Debuglevel should be 0..4\n");
+		    (debuglevel > 4) || (debuglevel == 0)) {
+		fprintf(stderr, "Debuglevel should be 1..4\n");
 		exit(EXIT_FAILURE);
 	    }
 	    break;
