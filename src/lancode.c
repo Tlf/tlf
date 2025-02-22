@@ -24,7 +24,6 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
-#include <syslog.h>
 #include <time.h>
 #include <unistd.h>
 #include <arpa/inet.h>
@@ -92,7 +91,7 @@ int lan_recv_init(void) {
 
     lan_socket_descriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (lan_socket_descriptor == -1) {
-	syslog(LOG_ERR, "%s\n", "LAN: socket");
+	TLF_LOG_ERR("%s\n", "LAN: socket");
 	return -1;
     }
 
@@ -100,14 +99,14 @@ int lan_recv_init(void) {
 	bind(lan_socket_descriptor, (struct sockaddr *) &lan_sin,
 	     sizeof(lan_sin));
     if (lan_bind_rc == -1) {
-	syslog(LOG_ERR, "%s\n", "LAN: bind");
+	TLF_LOG_ERR("%s\n", "LAN: bind");
 	return -2;
     }
 
     lan_save_file_flags = fcntl(lan_socket_descriptor, F_GETFL);
     lan_save_file_flags |= O_NONBLOCK;
     if (fcntl(lan_socket_descriptor, F_SETFL, lan_save_file_flags) == -1) {
-	syslog(LOG_ERR, "%s\n", "trying non-blocking");
+	TLF_LOG_ERR("%s\n", "LAN: trying non-blocking");
 	return -3;
     }
     return 0;
@@ -121,7 +120,7 @@ int lan_recv_close(void) {
 
     lan_close_rc = close(lan_socket_descriptor);
     if (lan_close_rc == -1) {
-	syslog(LOG_ERR, "%s\n", "LAN: close call failed");
+	TLF_LOG_ERR("%s\n", "LAN: close call failed");
 	return errno;
     }
 
@@ -180,7 +179,7 @@ int lan_send_init(void) {
 
 	bc_hostbyname[node] = gethostbyname(bc_hostaddress[node]);
 	if (bc_hostbyname[node] == NULL) {
-	    syslog(LOG_ERR, "%s\n", "LAN: gethostbyname failed");
+	    TLF_LOG_ERR("%s\n", "LAN: gethostbyname failed");
 	    return -1;
 	}
 
@@ -192,17 +191,17 @@ int lan_send_init(void) {
 	int port = (bc_hostport[node] > 0 ? bc_hostport[node] : lan_port);
 	bc_address[node].sin_port = htons(port);
 
-	syslog(LOG_INFO, "open socket: to %d.%d.%d.%d:%d\n",
-	       (ntohl(bc_address[node].sin_addr.s_addr) & 0xff000000) >> 24,
-	       (ntohl(bc_address[node].sin_addr.s_addr) & 0x00ff0000) >> 16,
-	       (ntohl(bc_address[node].sin_addr.s_addr) & 0x0000ff00) >> 8,
-	       (ntohl(bc_address[node].sin_addr.s_addr) & 0x000000ff) >> 0,
-	       ntohs(bc_address[node].sin_port));
+	TLF_LOG_INFO("LAN: open socket: to %d.%d.%d.%d:%d\n",
+		     (ntohl(bc_address[node].sin_addr.s_addr) & 0xff000000) >> 24,
+		     (ntohl(bc_address[node].sin_addr.s_addr) & 0x00ff0000) >> 16,
+		     (ntohl(bc_address[node].sin_addr.s_addr) & 0x0000ff00) >> 8,
+		     (ntohl(bc_address[node].sin_addr.s_addr) & 0x000000ff) >> 0,
+		     ntohs(bc_address[node].sin_port));
 
 	bc_socket_descriptor[node] = socket(AF_INET, SOCK_DGRAM, 0);
 
 	if (bc_socket_descriptor[node] == -1) {
-	    syslog(LOG_ERR, "%s\n", "LAN: socket call failed");
+	    TLF_LOG_ERR("%s\n", "LAN: socket call failed");
 	    return -1;
 	}
     }
@@ -220,7 +219,7 @@ int lan_send_close(void) {
 
 	bc_close_rc = close(bc_socket_descriptor[node]);
 	if (bc_close_rc == -1) {
-	    syslog(LOG_ERR, "%s\n", "LAN: close call failed");
+	    TLF_LOG_ERR("%s\n", "LAN: close call failed");
 	    return -1;
 	}
     }
@@ -253,7 +252,7 @@ static int lan_send(char *lanbuffer) {
 
 	if (bc_sendto_rc == -1) {
 	    if (send_error[node] >= (send_error_limit[node] + 10)) {
-		TLF_LOG_INFO("LAN: send problem...!");
+		TLF_SHOW_INFO("LAN: send problem...!");
 		send_error_limit[node] += 10;
 	    } else
 		send_error[node]++;

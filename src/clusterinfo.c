@@ -133,7 +133,7 @@ void clusterinfo(void) {
 		if (spotarray[k] >= 0 && spotarray[k] < MAX_SPOTS)
 		    g_strlcpy(inputbuffer, spot_ptr[spotarray[k]], 79);
 		else {
-		    TLF_LOG_INFO("error in packet table");
+		    TLF_SHOW_INFO("error in packet table");
 		}
 
 		if (strlen(inputbuffer) > 14) {
@@ -171,7 +171,7 @@ void show_xplanet() {
 
     /* prune markerfile by opening it for write */
     if ((fp = fopen(markerfile, "w")) == NULL) {
-	TLF_LOG_INFO("Opening marker file not possible.");
+	TLF_SHOW_INFO("Opening marker file not possible.");
 	nofile = true;		/* remember: no write possible */
 	return;
     }

@@ -51,7 +51,6 @@ bool rig_has_stop_morse() {
 void send_bandswitch(freq_t trxqrg);
 
 static int parse_rigconf();
-static void debug_tlf_rig();
 
 /* check if call input field contains a valid frequency and switch to it.
  * only integer kHz values are supported.
@@ -159,8 +158,7 @@ int init_tlf_rig(void) {
 
     if (retcode != RIG_OK) {
 	show_rigerror("Problem with rig link", retcode);
-	if (!debugflag)
-	    return -1;
+	return -1;
     }
 
     shownr("Freq =", (int) rigfreq);
@@ -174,13 +172,8 @@ int init_tlf_rig(void) {
 	    speed = rig_cwspeed;
 	} else {
 	    show_rigerror("Could not read CW speed from rig", retcode);
-	    if (!debugflag)
-		return -1;
+	    return -1;
 	}
-    }
-
-    if (debugflag) {	// debug rig control
-	debug_tlf_rig();
     }
 
     switch (trxmode) {
@@ -249,47 +242,71 @@ static int parse_rigconf() {
     return 0;
 }
 
-
-static void debug_tlf_rig() {
-    freq_t rigfreq;
-    int retcode;
-
-    sleep(10);
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	show_rigerror("Problem with rig get freq", retcode);
-    } else {
-	shownr("freq =", (int) rigfreq);
+/* convert Hamlib debug levels into Tlfs ones */
+static enum tlf_debug_level rig2tlf_debug(enum rig_debug_level_e lvl) {
+    enum tlf_debug_level level;
+    switch (lvl) {
+	case RIG_DEBUG_ERR:
+	    level = TLF_DBG_ERR;
+	    break;
+	case RIG_DEBUG_WARN:
+	    level = TLF_DBG_WARN;
+	    break;
+	case RIG_DEBUG_VERBOSE:
+	    level = TLF_DBG_INFO;
+	    break;
+	case RIG_DEBUG_TRACE:
+	    level = TLF_DBG_DEBUG;
+	    break;
+	default:
+	    level = TLF_DBG_NONE;
     }
-    sleep(10);
-
-    const freq_t testfreq = 14000000;	// test set frequency
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_set_freq(my_rig, RIG_VFO_CURR, testfreq);
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	show_rigerror("Problem with rig set freq", retcode);
-    } else {
-	showmsg("Rig set freq ok!");
-    }
-
-    pthread_mutex_lock(&tlf_rig_mutex);
-    retcode = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);	// read qrg
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retcode != RIG_OK) {
-	show_rigerror("Problem with rig get freq", retcode);
-    } else {
-	shownr("freq =", (int) rigfreq);
-	if (rigfreq != testfreq) {
-	    showmsg("Failed to set rig freq!");
-	}
-    }
-    sleep(10);
+    return level;
 }
+
+/* convert Tlf debug levels into Hamlib ones */
+static enum rig_debug_level_e tlf2rig_debug(enum tlf_debug_level lvl) {
+    enum tlf_debug_level level;
+    switch (lvl) {
+	case TLF_DBG_ERR:
+	    level = RIG_DEBUG_ERR;
+	    break;
+	case TLF_DBG_WARN:
+	    level = RIG_DEBUG_WARN;
+	    break;
+	case TLF_DBG_INFO:
+	    level = RIG_DEBUG_VERBOSE;
+	    break;
+	case TLF_DBG_DEBUG:
+	    level = RIG_DEBUG_TRACE;
+	    break;
+	default:
+	    level = RIG_DEBUG_NONE;
+    }
+    return level;
+}
+
+
+/* callback receiving hamlibs debug output */
+int rig_debug_cb(enum rig_debug_level_e lvl,
+		 rig_ptr_t user_data,
+		 const char *fmt,
+		 va_list ap) {
+
+    char *format = g_strdup_printf("Rig: %s", fmt);
+    char *msg = g_strdup_vprintf(format, ap);
+    debug_log(rig2tlf_debug(lvl), msg);
+    g_free(msg);
+    g_free(format);
+    return RIG_OK;
+}
+
+/* set hamlibs debug level and install callback if debug is active */
+void rig_debug_init() {
+    if (debug_is_active()) {
+	/* set hamlib debug level and install callback */
+	rig_set_debug(tlf2rig_debug(debuglevel));
+	rig_set_debug_callback(rig_debug_cb, (rig_ptr_t)NULL);
+    }
+}
+

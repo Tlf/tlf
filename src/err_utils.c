@@ -26,13 +26,11 @@
 #include "tlf_curses.h"
 #include "ui_utils.h"
 
-void handle_logging(enum log_lvl lvl, ...) {
-    char *fmt;
+void handle_logging(enum tlf_debug_level lvl, char *fmt, ...) {
     char *str;
     va_list args;
 
-    va_start(args, lvl);
-    fmt = va_arg(args, char *);
+    va_start(args, fmt);
     str = g_strdup_vprintf(fmt, args);
     va_end(args);
 
@@ -43,13 +41,13 @@ void handle_logging(enum log_lvl lvl, ...) {
     g_free(str);
 
     switch (lvl) {
-	case L_INFO:
+	case TLF_DBG_INFO:
 	    sleep(1);
 	    break;
-	case L_WARN:
+	case TLF_DBG_WARN:
 	    sleep(3);
 	    break;
-	case L_ERR:
+	case TLF_DBG_ERR:
 	    sleep(3);
 	    break;
 	default:

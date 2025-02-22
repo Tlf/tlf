@@ -54,7 +54,7 @@ void set_tone(void) {
 void write_tone(void) {
 
     if (netkeyer(K_TONE, tonestr) < 0) {
-	TLF_LOG_INFO("keyer not active; switching to SSB");
+	TLF_SHOW_INFO("keyer not active; switching to SSB");
 	trxmode = SSBMODE;
     }
 

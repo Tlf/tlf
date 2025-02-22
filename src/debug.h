@@ -1,6 +1,6 @@
 /*
  * Tlf - contest logging program for amateur radio operators
- * Copyright (C) 2019 Thomas Beierlein <tb@forth-ev.de>, <dl1jbe@darc.de>
+ * Copyright (C) 2025 Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,30 +17,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef ERR_UTILS_H
-#define ERR_UTILS_H
+#ifndef DEBUG_H
+#define DEBUG_H
 
-#include "debug.h"
+#include "stdarg.h"
+#include "stdbool.h"
 
-void handle_logging(enum tlf_debug_level lvl, char *fmt, ...);
+#define DEBUG_LOG "debug.txt"
 
+enum tlf_debug_level {
+    TLF_DBG_NONE,
+    TLF_DBG_ERR,
+    TLF_DBG_WARN,
+    TLF_DBG_INFO,
+    TLF_DBG_DEBUG
+};
 
-/* show Error, Warning or Info message to user and write it into
- * debuglog if enabled
- */
-#define TLF_SHOW_ERR(fmt, ...)  do { \
+/* Log Error, Warning, Info or Debug message to debuglog file if enabled */
+#define TLF_LOG_ERR(fmt, ...)  do { \
 	debug_log(TLF_DBG_ERR, fmt, ##__VA_ARGS__); \
-	handle_logging(TLF_DBG_ERR, fmt, ##__VA_ARGS__); \
-	exit(EXIT_FAILURE); \
     } while(0)
-#define TLF_SHOW_WARN(fmt, ...) do {\
+#define TLF_LOG_WARN(fmt, ...) do {\
 	debug_log(TLF_DBG_WARN, fmt, ##__VA_ARGS__); \
-	handle_logging(TLF_DBG_WARN, fmt, ##__VA_ARGS__); \
     }while(0)
-#define TLF_SHOW_INFO(fmt, ...) do {\
+#define TLF_LOG_INFO(fmt, ...) do {\
 	debug_log(TLF_DBG_INFO, fmt, ##__VA_ARGS__); \
-	handle_logging(TLF_DBG_INFO, fmt, ##__VA_ARGS__); \
+    }while(0)
+#define TLF_LOG_DEBUG(fmt, ...) do {\
+	debug_log(TLF_DBG_DEBUG, fmt, ##__VA_ARGS__); \
     }while(0)
 
+bool debug_is_active();
+bool debug_init();
+void debug_log(enum tlf_debug_level lvl,
+	       const char *fmt,
+	       ...);
 
-#endif /* ERR_UTILS_H */
+#endif /* DEBUG_H */

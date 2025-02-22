@@ -380,7 +380,7 @@ int changepars(void) {
 
 	    read_logcfg();
 	    read_rules();	/* also reread rules file */
-	    TLF_LOG_INFO("Logcfg.dat loaded, parameters written.");
+	    TLF_SHOW_INFO("Logcfg.dat loaded, parameters written.");
 	    center_fkey_header();
 	    clear_display();
 	    break;
@@ -441,13 +441,13 @@ int changepars(void) {
 	}
 	case 34: {		/* SIMULATOR  */
 	    if (!CONTEST_IS(CQWW)) {
-		TLF_LOG_INFO(
+		TLF_SHOW_INFO(
 		    "Simulator mode is only supported for CQWW contest!");
 		break;
 	    }
 
 	    if (callmaster == NULL) {
-		TLF_LOG_INFO(
+		TLF_SHOW_INFO(
 		    "Simulator mode needs callmaster database");
 		break;
 	    }
@@ -457,7 +457,7 @@ int changepars(void) {
 		simulator = true;
 		cqmode = CQ;
 		if (ctcomp) {
-		    TLF_LOG_INFO(
+		    TLF_SHOW_INFO(
 			"The simulator only works in TRmode. Switching to TRmode");
 		    ctcomp = false;
 		} else {
@@ -469,7 +469,7 @@ int changepars(void) {
 		if (cwkeyer == NET_KEYER) {
 
 		    if (netkeyer(K_WORDMODE, NULL) < 0) {
-			TLF_LOG_INFO("keyer not active; switching to SSB");
+			TLF_SHOW_INFO("keyer not active; switching to SSB");
 			trxmode = SSBMODE;
 			clear_display();
 		    }
@@ -483,7 +483,7 @@ int changepars(void) {
 		if (cwkeyer == NET_KEYER) {
 
 		    if (netkeyer(K_RESET, NULL) < 0) {
-			TLF_LOG_INFO("keyer not active; switching to SSB");
+			TLF_SHOW_INFO("keyer not active; switching to SSB");
 			trxmode = SSBMODE;
 			clear_display();
 		    }

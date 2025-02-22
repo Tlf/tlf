@@ -8,7 +8,7 @@
 
 // OBJECT ../src/lancode.o
 
-void handle_logging(enum log_lvl lvl, ...) {
+void handle_logging(enum tlf_debug_level lvl, char *fmt, ...) {
     // empty
 }
 
