@@ -22,9 +22,14 @@
 #define QRB_H
 
 #include <stdbool.h>
+#include <hamlib/rotator.h>
 
 int get_qrb(double *range, double *bearing);
 
 bool get_qrb_for_locator(const char *locator, double *range, double *bearing);
+
+int init_tlf_rot(void);
+void rotate_to_qrb();
+void close_tlf_rot(ROT *my_rot);
 
 #endif /* end of include guard: QRB_H */
