@@ -30,7 +30,7 @@ static int linectr = 0;
 void clearmsg() {
     clear();
     linectr = 0;
-    refreshp();
+    refresh();
 }
 
 
@@ -41,7 +41,6 @@ void clearmsg_wait(void) {
 	mvaddstr(LINES - 2, 0, "Press any key to continue!");
 	move(LINES - 1, 0);
 	clrtoeol();
-	refreshp();
 	IGNORE(key_get());
     } else {
 	sleep(1);
@@ -50,11 +49,11 @@ void clearmsg_wait(void) {
 }
 
 
-static int has_room_for_message() {
+static bool has_room_for_message() {
     if (linectr < LINES - 3)
-	return 1;
+	return true;
     else
-	return 0;
+	return false;
 }
 
 void show_formatted(char *fmt, ...) {
@@ -68,7 +67,7 @@ void show_formatted(char *fmt, ...) {
     va_end(args);
     mvaddstr(linectr, 0, str);
     g_free(str);
-    refreshp();
+    refresh();
     linectr++;
 }
 

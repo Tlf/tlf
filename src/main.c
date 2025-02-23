@@ -559,9 +559,6 @@ static void ui_init() {
 	exit(EXIT_FAILURE);
     }
 
-    InitSearchPanel();	/* at least one panel has to be defined
-				   for refreshp() to work */
-
     getmaxyx(stdscr, ymax, xmax);
     if ((ymax < 22) || (xmax < 80)) {
 	char c;
