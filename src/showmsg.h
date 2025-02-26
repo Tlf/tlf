@@ -21,6 +21,11 @@
 #ifndef STARTMSG_H
 #define STARTMSG_H
 
+/*
+ * These functions provide progress and error reporting at start-up phase
+ * !!! Do not call them after switching to the main screen !!!
+ * For runtime notifications use TLF_SHOW_* macros instead
+ */
 
 void clearmsg(void);
 void clearmsg_wait(void);
