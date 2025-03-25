@@ -84,6 +84,10 @@ void rst_reset(void) {
 
 /* initialize 'my_rst' and 'his_rst' */
 void rst_set_strings() {
+    if (no_rst) {
+	return;
+    }
+
     memcpy(recvd_rst, g_ptr_array_index(rst_recv.array, rst_recv.index), 2);
     memcpy(sent_rst, g_ptr_array_index(rst_sent.array, rst_sent.index), 2);
     if (trxmode != SSBMODE) {

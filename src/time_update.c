@@ -80,6 +80,19 @@ void update_line(const char *timestr) {
     mvaddstr(12, 7, timestr);
 }
 
+void update_line_rst() {
+
+    attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
+
+    if (no_rst) {
+	mvaddstr(12, 44, "   ");
+	mvaddstr(12, 49, "   ");
+    } else {
+	mvaddstr(12, 44, sent_rst);
+	mvaddstr(12, 49, recvd_rst);
+    }
+}
+
 const char *FREQ_DISPLAY_FORMAT = " %s: %7.1f";
 
 bool force_show_freq = false;
@@ -128,6 +141,7 @@ void time_update(void) {
     if (trxmode != old_trxmode) {
 	old_trxmode = trxmode;
 	update_line(time_buf);
+	update_line_rst();
     }
 
     if (force_show_freq) {
