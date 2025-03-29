@@ -40,6 +40,7 @@
 #include "score.h"
 #include "store_qso.h"
 #include "setcontest.h"
+#include "time_update.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "cleanup.h"
@@ -159,13 +160,7 @@ void log_to_disk(int from_lan) {
 
     mvaddstr(12, 23, qsonrstr);
 
-    if (no_rst) {
-	mvaddstr(12, 44, "   ");
-	mvaddstr(12, 49, "   ");
-    } else {
-	mvaddstr(12, 44, sent_rst);
-	mvaddstr(12, 49, recvd_rst);
-    }
+    update_line_rst();
 
     sync();
 

@@ -34,6 +34,7 @@
 #include "audio.h"
 #include "cqww_simulator.h"
 #include "changepars.h"
+#include "change_rst.h"
 #include "clear_display.h"
 #include "dxcc.h"
 #include "editlog.h"
@@ -107,6 +108,7 @@ static void change_autosend() {
 void set_trxmode_internally(int mode) {
 
     trxmode = mode;
+    rst_set_strings();
 
     if (trxmode == CWMODE) {
 	if (cwkeyer == MFJ1278_KEYER) {
