@@ -22,7 +22,7 @@
 #include "err_utils.h"
 #include "getctydata.h"
 #include "globalvars.h"
-#include "startmsg.h"
+#include "showmsg.h"
 #include "qrb.h"
 
 static int parse_rotconf();
@@ -99,28 +99,63 @@ int init_tlf_rot(void) {
     return 0;
 }
 
+double get_rotator_bearing() {
+    int retcode;
+    azimuth_t azimuth;
+    elevation_t elevation; /* ignored */
+
+    if (! rot_control)
+        return 0.0;
+
+    pthread_mutex_lock(&tlf_rot_mutex);
+    retcode = rot_get_position(my_rot, &azimuth, &elevation);
+    pthread_mutex_unlock(&tlf_rot_mutex);
+
+    if (retcode != RIG_OK) {
+        TLF_LOG_WARN("Rotator get position error: %s", rigerror(retcode));
+    }
+
+    return azimuth;
+}
+
 void rotate_to_qrb() {
     double bearing;
     double range;
     int retcode;		/* generic return code from functions */
     int pfx_index = getctydata_pfx(current_qso.call);
-
     prefix_data *pfx = prefix_by_index(pfx_index);
 
-    if (pfx->dxcc_ctynr > 0) {
+    if (! rot_control)
+        return;
 
-	if (pfx_index != my.countrynr && 0 == get_qrb(&range, &bearing)) {
+    if (pfx->dxcc_ctynr <= 0)
+        return; /* unknown country */
+    if (pfx->dxcc_ctynr == my.countrynr)
+        return; /* rotating to own country does not make much sense */
 
-	    pthread_mutex_lock(&tlf_rot_mutex);
-	    retcode = rot_set_position(my_rot, bearing, 0.0); // azimuth, elevation
-	    pthread_mutex_unlock(&tlf_rot_mutex);
+    if (get_qrb(&range, &bearing) == RIG_OK) {
+        pthread_mutex_lock(&tlf_rot_mutex);
+        retcode = rot_set_position(my_rot, bearing, 0.0); // azimuth, elevation
+        pthread_mutex_unlock(&tlf_rot_mutex);
 
-	    if (retcode != RIG_OK) {
-		TLF_LOG_WARN("Problem with setting rotator position: %s", rigerror(retcode));
-	    } else {
-		showmsg("Rotator set position ok!");
-	    }
-	}
+        if (retcode != RIG_OK) {
+            TLF_LOG_WARN("Problem with setting rotator position: %s", rigerror(retcode));
+        }
+    }
+}
+
+void stop_rotator() {
+    int retcode;
+
+    if (! rot_control)
+        return;
+
+    pthread_mutex_lock(&tlf_rot_mutex);
+    retcode = rot_stop(my_rot);
+    pthread_mutex_unlock(&tlf_rot_mutex);
+
+    if (retcode != RIG_OK) {
+        TLF_LOG_WARN("Rotator stop error: %s", rigerror(retcode));
     }
 }
 

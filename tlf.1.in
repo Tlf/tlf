@@ -1178,6 +1178,10 @@ or abort sending by pressing the
 key.
 .
 .TP
+.B Ctrl-D
+Rotate antenna towards the country of the current call ("direction"), if a rotator is configured.
+.
+.TP
 .B Ctrl-E
 End modem capture for RTTY mode in QTC window (started with
 .BR Ctrl-S ).

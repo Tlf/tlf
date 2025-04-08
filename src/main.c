@@ -357,16 +357,13 @@ int rig_comm_error = 0;
 int rig_comm_success = 0;
 
 /*-------------------------------------rotctl-------------------------------*/
-bool rot_control = false;
-int myrot_model = 0;            /* unset */
+bool rot_control;
+int myrot_model;		/* unset */
 char rotconf[80];
 ROT *my_rot;			/* handle to rotator (instance) */
 pthread_mutex_t tlf_rot_mutex = PTHREAD_MUTEX_INITIALIZER;
-int rot_serial_rate = 2400;
+int rot_serial_rate;
 char *rotportname;
-int rotnumber = 0;
-int rot_comm_error = 0;
-int rot_comm_success = 0;
 
 /*----------------------------------fldigi---------------------------------*/
 char fldigi_url[50] = "http://localhost:7362/RPC2";
@@ -677,6 +674,11 @@ static void init_variables() {
     rig_mode_sync = true;
     use_bandoutput = false;
 
+    /* rotctl */
+    rot_control = false;
+    myrot_model = 0; /* unset */
+    rot_serial_rate = 2400;
+
     lan_active = false;
     thisnode = 'A';
     lan_port = 6788;
@@ -842,8 +844,8 @@ static void hamlib_rot_init() {
 	    endwin();
 	    exit(1);
 	}
-	trx_control = false;
-	trx_control_disabled = true;
+	rot_control = false;
+	rot_control_disabled = true;
 	showmsg("Disabling rotator control!");
 	sleep(1);
     }

@@ -60,7 +60,6 @@
 #include "nicebox.h"		// Includes curses.h
 #include "note.h"
 #include "printcall.h"
-#include "qrb.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "qtcwin.h"
 #include "rtty.h"
@@ -710,13 +709,6 @@ int callinput(void) {
 		if (!nopacket && packetinterface > 0) {
 		    add_cluster_spot();
 		}
-
-		break;
-	    }
-
-	    // Ctrl-D (^D), rotate antenna "d"irection.
-	    case CTRL_D: {
-		rotate_to_qrb();
 
 		break;
 	    }

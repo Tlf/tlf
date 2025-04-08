@@ -35,6 +35,7 @@
 #include "keystroke_names.h"
 #include "netkeyer.h"
 #include "nicebox.h"		// Includes curses.h
+#include "qrb.h"
 #include "sendbuf.h"
 #include "speedupndown.h"
 #include "stoptx.h"
@@ -159,6 +160,13 @@ int handle_common_key(int key) {
 		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
 		mvprintw(0, 14, "%2u", speed);
 	    }
+
+	    break;
+	}
+
+	// Ctrl-D (^D), rotate antenna "d"irection.
+	case CTRL_D: {
+	    rotate_to_qrb();
 
 	    break;
 	}

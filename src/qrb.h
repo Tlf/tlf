@@ -29,7 +29,9 @@ int get_qrb(double *range, double *bearing);
 bool get_qrb_for_locator(const char *locator, double *range, double *bearing);
 
 int init_tlf_rot(void);
+double get_rotator_bearing();
 void rotate_to_qrb();
+void stop_rotator();
 void close_tlf_rot(ROT *my_rot);
 
 #endif /* end of include guard: QRB_H */
