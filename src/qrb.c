@@ -105,14 +105,14 @@ double get_rotator_bearing() {
     elevation_t elevation; /* ignored */
 
     if (! rot_control)
-        return 0.0;
+	return 0.0;
 
     pthread_mutex_lock(&tlf_rot_mutex);
     retcode = rot_get_position(my_rot, &azimuth, &elevation);
     pthread_mutex_unlock(&tlf_rot_mutex);
 
     if (retcode != RIG_OK) {
-        TLF_LOG_WARN("Rotator get position error: %s", rigerror(retcode));
+	TLF_LOG_WARN("Rotator get position error: %s", rigerror(retcode));
     }
 
     return azimuth;
@@ -126,21 +126,21 @@ void rotate_to_qrb() {
     prefix_data *pfx = prefix_by_index(pfx_index);
 
     if (! rot_control)
-        return;
+	return;
 
     if (pfx->dxcc_ctynr <= 0)
-        return; /* unknown country */
+	return; /* unknown country */
     if (pfx->dxcc_ctynr == my.countrynr)
-        return; /* rotating to own country does not make much sense */
+	return; /* rotating to own country does not make much sense */
 
     if (get_qrb(&range, &bearing) == RIG_OK) {
-        pthread_mutex_lock(&tlf_rot_mutex);
-        retcode = rot_set_position(my_rot, bearing, 0.0); // azimuth, elevation
-        pthread_mutex_unlock(&tlf_rot_mutex);
+	pthread_mutex_lock(&tlf_rot_mutex);
+	retcode = rot_set_position(my_rot, bearing, 0.0); // azimuth, elevation
+	pthread_mutex_unlock(&tlf_rot_mutex);
 
-        if (retcode != RIG_OK) {
-            TLF_LOG_WARN("Problem with setting rotator position: %s", rigerror(retcode));
-        }
+	if (retcode != RIG_OK) {
+	    TLF_LOG_WARN("Problem with setting rotator position: %s", rigerror(retcode));
+	}
     }
 }
 
@@ -148,14 +148,14 @@ void stop_rotator() {
     int retcode;
 
     if (! rot_control)
-        return;
+	return;
 
     pthread_mutex_lock(&tlf_rot_mutex);
     retcode = rot_stop(my_rot);
     pthread_mutex_unlock(&tlf_rot_mutex);
 
     if (retcode != RIG_OK) {
-        TLF_LOG_WARN("Rotator stop error: %s", rigerror(retcode));
+	TLF_LOG_WARN("Rotator stop error: %s", rigerror(retcode));
     }
 }
 
