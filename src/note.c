@@ -25,6 +25,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "clear_display.h"
 #include "globalvars.h"		// Includes glib.h and tlf.h
@@ -53,6 +54,14 @@ void include_note(void) {
     echo();
     getnstr(buffer, 78);
     noecho();
+
+    // replace non-printable chars and trim buffer
+    for (char *p = buffer; *p; p++) {
+	if (!isprint(*p)) {
+	    *p = ' ';
+	}
+    }
+    g_strstrip(buffer);
 
     if (lan_active) {
 	sprintf(buffer2, "; Node %c, %d : ", thisnode, atoi(qsonrstr) - 1);
