@@ -51,7 +51,7 @@ typedef struct {
 
 #define RST_PATTERN     "^\\s*(\\d+|-+)\\s*$"
 
-static field_t fields[] = {
+static field_t qso_fields[] = {
     {
 	.start = 0,  .end = 5, .tab = true,    // band+mode
 	.pattern = "^[ 1]\\d{2}(CW |SSB|DIG)$"
@@ -83,15 +83,23 @@ static field_t fields[] = {
     {.start = 54,            .tab = true},  // exchange -- end set at runtime
 };
 
-#define FIELD_INDEX_CALL        4
-#define FIELD_INDEX_EXCHANGE    (G_N_ELEMENTS(fields) - 1)
+#define QSO_FIELD_INDEX_CALL        4
+#define QSO_FIELD_INDEX_EXCHANGE    (G_N_ELEMENTS(qso_fields) - 1)
 
+static field_t comment_fields[] = {
+    {
+	.start = 1, .end = 79, .tab = true      // the whole line except leading semicolon
+    },
+};
 
 static char editbuffer[LOGLINELEN + 1];
 static bool changed, needs_rescore;
 static int editline;
 static int field_index;
+static int n_fields;
+static field_t *fields;         // either qso_fields or comment_fields
 static field_t *current_field;  // points to fields[field_index]
+static int cursor;
 
 /* highlight the edit line and set the cursor */
 static void highlight_line(int row, char *line, int column) {
@@ -126,6 +134,47 @@ static void flash_field(int row, int column, char *value) {
     // note: line will be re-displayed in the main loop
 }
 
+/*
+ align cursor to a valid position in current line
+ updates:
+        - cursor
+        - field_index
+        - current_field
+*/
+static void align_cursor(void) {
+    int new_column = 0;
+    int new_field_index = 0;
+    int min_distance = 999;
+
+    for (int i = 0; i < n_fields; i++) {
+	// good case: column falls within a field
+	if (cursor >= fields[i].start && cursor <= fields[i].end) {
+	    new_column = cursor;
+	    new_field_index = i;
+	    break;
+	}
+
+	// else: find the closest field
+	int c, d;
+	if (fields[i].start > cursor) { // field is to the right
+	    c = fields[i].start;
+	    d = c - cursor;
+	} else {
+	    c = fields[i].end;
+	    d = cursor - c;
+	}
+	if (d < min_distance) {
+	    min_distance = d;
+	    new_column = c;
+	    new_field_index = i;
+	}
+    }
+
+    cursor = new_column;
+    field_index = new_field_index;
+    current_field = &fields[field_index];
+}
+
 
 /* get a copy of selected QSO into the buffer */
 static void get_qso(int nr, char *buffer) {
@@ -133,6 +182,16 @@ static void get_qso(int nr, char *buffer) {
     assert(nr < NR_QSOS);
     strcpy(buffer, QSOS(nr));
     assert(strlen(buffer) == (LOGLINELEN - 1));
+
+    if (log_is_comment(buffer)) {
+	fields = comment_fields;
+	n_fields = G_N_ELEMENTS(comment_fields);
+    } else {
+	fields = qso_fields;
+	n_fields = G_N_ELEMENTS(qso_fields);
+    }
+
+    align_cursor();
 }
 
 /* save editbuffer back to log */
@@ -196,7 +255,7 @@ static void check_store_and_get_next_line(int direction) {
 
 void edit_last(void) {
 
-    int j, b, k;
+    int j, k;
 
     if (NR_QSOS == 0)
 	return;			/* nothing to edit */
@@ -206,45 +265,50 @@ void edit_last(void) {
     const int topline = (NR_LINES > NR_QSOS ? NR_LINES - NR_QSOS : 0);
 
     // set current end of exchange field
-    fields[FIELD_INDEX_EXCHANGE].end = fields[FIELD_INDEX_EXCHANGE].start +
-				       contest->exchange_width - 1;
+    qso_fields[QSO_FIELD_INDEX_EXCHANGE].end =
+	qso_fields[QSO_FIELD_INDEX_EXCHANGE].start +
+	contest->exchange_width - 1;
 
-    field_index = FIELD_INDEX_CALL;
-    current_field = &fields[field_index];
-    b = current_field->start;
-
-    /* start with last QSO */
+    /* start with last QSO or comment (note) */
     editline = NR_LINES - 1;
-    get_qso(NR_QSOS - (NR_LINES - editline), editbuffer);
     changed = false;
     needs_rescore = false;
 
+    // initial position: start of call field
+    cursor = qso_fields[QSO_FIELD_INDEX_CALL].start;
+
+    get_qso(NR_QSOS - (NR_LINES - editline), editbuffer);
+
     while (true) {
-	highlight_line(editline, editbuffer, b);
+	highlight_line(editline, editbuffer, cursor);
 
 	j = key_get();
 
 	// Ctrl-A (^A) or <Home>, beginning of line.
 	if (j == CTRL_A || j == KEY_HOME) {
 	    if (field_valid()) {
-		b = 0;
+		field_index = 0;
+		current_field = &fields[field_index];
+		cursor = current_field->start;
 	    }
 
-	    // Ctrl-E (^E) or <End>, end of exchange field.
+	    // Ctrl-E (^E) or <End>, end of last field.
 	} else if (j == CTRL_E || j == KEY_END) {
 	    if (field_valid()) {
-		b = fields[FIELD_INDEX_EXCHANGE].end;
+		field_index = n_fields - 1;
+		current_field = &fields[field_index];
+		cursor = current_field->end;
 	    }
 
 	    // <Tab>, switch to next tab field.
 	} else if (j == TAB) {
 	    if (field_valid()) {
 		do {
-		    field_index = (field_index + 1) % G_N_ELEMENTS(fields);
+		    field_index = (field_index + 1) % n_fields;
 		} while (!fields[field_index].tab);
 
 		current_field = &fields[field_index];
-		b = current_field->start;
+		cursor = current_field->start;
 	    }
 
 	    // Up arrow, move to previous line.
@@ -260,7 +324,6 @@ void edit_last(void) {
 
 	    // Down arrow, move to next line.
 	} else if (j == KEY_DOWN) {
-
 	    if (editline < NR_LINES - 1) {
 		check_store_and_get_next_line(+1);
 	    } else {
@@ -269,34 +332,34 @@ void edit_last(void) {
 
 	    // Left arrow, move cursor one position left.
 	} else if (j == KEY_LEFT) {
-	    if (b > current_field->start) {
-		b--;
+	    if (cursor > current_field->start) {
+		cursor--;
 	    } else if (field_valid() && field_index > 0) {
 		--field_index;
 		current_field = &fields[field_index];
-		b = current_field->end;
+		cursor = current_field->end;
 	    }
 
 	    // Right arrow, move cursor one position right.
 	} else if (j == KEY_RIGHT) {
-	    if (b < current_field->end) {
-		b++;
-	    } else if (field_valid() && field_index < G_N_ELEMENTS(fields) - 1) {
+	    if (cursor < current_field->end) {
+		cursor++;
+	    } else if (field_valid() && field_index < n_fields - 1) {
 		++field_index;
 		current_field = &fields[field_index];
-		b = current_field->start;
+		cursor = current_field->start;
 	    }
 
 	    // <Insert>, insert a space
 	} else if (j == KEY_IC) {
-	    for (k = current_field->end; k > b; k--)
+	    for (k = current_field->end; k > cursor; k--)
 		editbuffer[k] = editbuffer[k - 1];
-	    editbuffer[b] = ' ';
+	    editbuffer[cursor] = ' ';
 	    changed = true;
 
 	    // <Delete>, shift rest left
 	} else if (j == KEY_DC) {
-	    for (k = b; k < current_field->end; k++)
+	    for (k = cursor; k < current_field->end; k++)
 		editbuffer[k] = editbuffer[k + 1];
 	    editbuffer[current_field->end] = ' ';
 	    changed = true;
@@ -309,9 +372,9 @@ void edit_last(void) {
 
 	    // Accept most all printable characters.
 	    if (j >= ' ' && j < 'a') {
-		editbuffer[b] = j;
-		if (b < current_field->end) {
-		    b++;
+		editbuffer[cursor] = j;
+		if (cursor < current_field->end) {
+		    cursor++;
 		}
 		changed = true;
 	    }
