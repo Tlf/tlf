@@ -38,6 +38,7 @@
 #include "sendbuf.h"
 #include "speedupndown.h"
 #include "stoptx.h"
+#include "time_update.h"
 #include "tlf.h"
 #include "tlf_panel.h"
 #include "ui_utils.h"
@@ -149,9 +150,7 @@ int handle_common_key(int key) {
 
 		rst_sent_up();
 
-		if (!no_rst)
-		    mvaddstr(12, 44, sent_rst);
-		mvaddstr(12, 29, current_qso.call);
+		update_line_rst();
 
 	    } else {	// change cw speed
 		speedup();
@@ -181,9 +180,7 @@ int handle_common_key(int key) {
 
 		rst_sent_down();
 
-		if (!no_rst)
-		    mvaddstr(12, 44, sent_rst);
-		mvaddstr(12, 29, current_qso.call);
+		update_line_rst();
 
 	    } else {
 

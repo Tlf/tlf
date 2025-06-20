@@ -173,14 +173,8 @@ void clear_display(void) {
     qsonr_to_str(qsonrstr, qsonum);
     mvaddstr(12, 23, qsonrstr);
 
-    if (no_rst) {
-	mvaddstr(12, 44, "   ");
-	mvaddstr(12, 49, "   ");
-    } else {
-	rst_set_strings();
-	mvaddstr(12, 44, sent_rst);
-	mvaddstr(12, 49, recvd_rst);
-    }
+    rst_set_strings();
+    update_line_rst();
 
     if (searchflg)
 	searchlog();
