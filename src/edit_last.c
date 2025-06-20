@@ -141,10 +141,26 @@ static void flash_field(int row, int column, char *value) {
         - field_index
         - current_field
 */
-static void align_cursor(void) {
+static void align_cursor(char *buffer) {
     int new_column = 0;
     int new_field_index = 0;
     int min_distance = 999;
+
+    // check if rigth from cursor we have only spaces
+    bool spaces = true;
+    for (int i = cursor + 1; buffer[i]; ++i) {
+	if (buffer[i] != ' ') {
+	    spaces = false;
+	    break;
+	}
+    }
+    if (spaces) {
+	// then move cursor left until next non-empty position
+	// (it is assumed that fields are separated by spaces)
+	while (buffer[cursor] == ' ' && cursor > fields[0].start) {
+	    --cursor;
+	}
+    }
 
     for (int i = 0; i < n_fields; i++) {
 	// good case: column falls within a field
@@ -191,7 +207,7 @@ static void get_qso(int nr, char *buffer) {
 	n_fields = G_N_ELEMENTS(qso_fields);
     }
 
-    align_cursor();
+    align_cursor(buffer);
 }
 
 /* save editbuffer back to log */
