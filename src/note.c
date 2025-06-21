@@ -33,6 +33,7 @@
 #include "nicebox.h"		// Includes curses.h
 #include "scroll_log.h"
 #include "store_qso.h"
+#include "ui_utils.h"
 
 
 void include_note(void) {
@@ -45,9 +46,8 @@ void include_note(void) {
     int i;
 
     attron(A_STANDOUT);
-    mvprintw(15, 1,
-	     "                                                                              ");
-    nicebox(14, 0, 1, 78, "Note");
+    mvaddstr(15, 1, spaces(78));
+    nicebox(14, 0, 1, 78, "Note (leave blank to ignore)");
     attron(A_STANDOUT);
     move(15, 1);
 
@@ -55,7 +55,7 @@ void include_note(void) {
     getnstr(buffer, 78);
     noecho();
 
-    // replace non-printable chars and trim buffer
+    // replace non-printable chars with space and trim buffer
     for (char *p = buffer; *p; p++) {
 	if (!isprint(*p)) {
 	    *p = ' ';
@@ -71,7 +71,7 @@ void include_note(void) {
     if (strlen(buffer) >= 1) {
 	strncat(buffer2, buffer, (LOGLINELEN - 1) - strlen(buffer2));
 	memset(buffer2 + strlen(buffer2), ' ',
-	       (LOGLINELEN - 1) - strlen(buffer2)); /* fill spaces */
+	       (LOGLINELEN - 1) - strlen(buffer2)); /* fill with spaces */
 	buffer2[LOGLINELEN - 1] = '\0';
 
 	store_qso(logfile, buffer2);
@@ -88,5 +88,4 @@ void include_note(void) {
     for (i = 14; i <= 16; i++)
 	clear_line(i);
 
-    return;
 }
