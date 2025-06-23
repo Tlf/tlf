@@ -1079,7 +1079,7 @@ In VOICE mode sends recorded message 5 (F5).
 .
 .TP
 .BR ;\  (Semicolon)
-Insert note in log.
+Insert note in log. Leave the input field blank to skip adding the note.
 .
 .TP
 .BR ,\  (comma)
