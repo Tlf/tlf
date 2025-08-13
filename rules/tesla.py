@@ -1,7 +1,7 @@
 import re
 
 # e.g. 023 KN03
-XCHG_PATTERN = re.compile('\d+\s*(\w{2}\d{2})')
+XCHG_PATTERN = re.compile(r'\d+\s*(\w{2}\d{2})')
 
 def setup():
     return None

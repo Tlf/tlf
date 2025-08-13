@@ -1,7 +1,7 @@
 import re
 
 # e.g. 001 57n85o
-XCHG_PATTERN = re.compile('\d+\s+(\d+)\s*([NS])\s*(\d+)\s*([OW])')
+XCHG_PATTERN = re.compile(r'\d+\s+(\d+)\s*([NS])\s*(\d+)\s*([OW])')
 
 def setup():
     return None

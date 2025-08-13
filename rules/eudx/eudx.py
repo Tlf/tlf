@@ -8,7 +8,7 @@ MY_COUNTRY = None
 MY_PREFIX = None
 MY_CONTINENT = None
 
-EU_REGION_PATTERN = re.compile('([A-Z]{2})\d{2}')  # two letters and two numbers
+EU_REGION_PATTERN = re.compile(r'([A-Z]{2})\d{2}')  # two letters and two numbers
 
 EU_COUNTRIES = ['AT', 'BE', 'BG', 'CZ', 'CY', 'HR', 'DK', 'EE',
                 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV',

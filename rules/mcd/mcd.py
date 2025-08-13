@@ -10,7 +10,7 @@ MEMBERS = {}
 def init(cfg):
     # read initial exchange file
     global MEMBERS
-    comment = re.compile("(^#|^$)") # starts with a hash or empty
+    comment = re.compile(r"(^#|^$)") # starts with a hash or empty
     with open(cfg) as file:
         for line in file:
             line = line.strip()

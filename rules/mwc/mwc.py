@@ -6,7 +6,7 @@ https://memorial-ok1wc.cz/index.php?page=rules2l
 import re
 
 # match trailing call modifier (e.g. /8, /P, /MM, /QRP, etc.)
-MODIFIER_PATTERN = re.compile('/(\d|[A-Z]+)$')
+MODIFIER_PATTERN = re.compile(r'/(\d|[A-Z]+)$')
 
 def check_exchange(qso):
     call = MODIFIER_PATTERN.sub('', qso.call)   # remove modifier
