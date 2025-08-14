@@ -24,7 +24,7 @@ STATES = ['AL', 'AK', 'AZ', 'AR',
 'AB', 'BC', 'MB', 'NB', 'NL', 'NT', 'NS', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT'
 ]
 
-MULT_PATTERN = re.compile('[A-Z\s]+$')  # trailing block of letters and spaces
+MULT_PATTERN = re.compile(r'[A-Z\s]+$')  # trailing block of letters and spaces
 
 def init(cfg):
     global MY_STATE

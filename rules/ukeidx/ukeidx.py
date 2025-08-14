@@ -38,7 +38,7 @@ UKEI_DISTRICTS = {
     'GW': ['CF','LD','LL','NP','SA']
 }
 
-DISTRICT_PATTERN = re.compile('[A-Z]+$')    # last block of alphabetics
+DISTRICT_PATTERN = re.compile(r'[A-Z]+$')    # last block of alphabetics
 
 def get_location(dxcc):
     if dxcc.main_prefix in UKEI_DISTRICTS:
