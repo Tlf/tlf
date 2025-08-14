@@ -150,7 +150,7 @@ int lan_recv(void) {
 
     errno = 0;			/* clear the error */
 
-    if (lan_recv_message[1] == CLUSTERMSG)
+    if (lan_recv_rc >= 2 && lan_recv_message[1] == CLUSTERMSG)
 	cl_send_inhibit = true;	// this node does not send cluster info
 
     if (lan_recv_rc > 0)

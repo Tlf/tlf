@@ -58,7 +58,9 @@ static int remember_generic_mult(struct qso_t *qso, bool check_only) {
     int first_mult_index = -1;
     GString *applied_mults = g_string_new(NULL);
 
-    while (g_match_info_matches(match_info)) {
+    bool go = true;
+
+    while (go && g_match_info_matches(match_info)) {
 	gchar *word = g_match_info_fetch(match_info, 0);
 
 	gchar *mult = g_strdup(word);
@@ -71,10 +73,11 @@ static int remember_generic_mult(struct qso_t *qso, bool check_only) {
 		first_mult_index = mult_index;
 	    }
 	    if (check_only) {
-		break;  // in check mode stop on first match
+		go = false;  // in check mode stop on first match
+	    } else {
+		// aggregate the original value incl. whitespace
+		g_string_append(applied_mults, word);
 	    }
-	    // aggregate the original value incl. whitespace
-	    g_string_append(applied_mults, word);
 	}
 
 	g_free(mult);
