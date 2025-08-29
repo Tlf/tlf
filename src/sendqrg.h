@@ -22,6 +22,7 @@
 #define SENDQRG_H
 
 #include <hamlib/rig.h>
+#include <hamlib/rotator.h>
 #include <stdbool.h>
 
 #ifdef HAMLIB_FILPATHLEN
@@ -42,5 +43,11 @@ void close_tlf_rig(RIG *my_rig);
 void rig_debug_init();
 
 bool sendqrg(void);
+
+int init_tlf_rot(void);
+double get_rotator_bearing();
+void rotate_to_qrb(bool long_path);
+void stop_rotator();
+void close_tlf_rot(ROT *my_rot);
 
 #endif /* end of include guard: SENDQRG_H */
