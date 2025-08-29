@@ -29,12 +29,15 @@
 #include "globalvars.h"
 #include "hamlib_keyer.h"
 #include "netkeyer.h"
+#include "sendqrg.h"
 #include "tlf.h"
 #include "tlf_curses.h"
 
 #include "fldigixmlrpc.h"
 
 int stoptx(void) {
+    /* whenever TX is stopped, stop rotator as well */
+    stop_rotator();
 
     if (digikeyer == FLDIGI && trxmode == DIGIMODE) {
 	fldigi_to_rx();

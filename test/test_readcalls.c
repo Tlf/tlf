@@ -80,7 +80,7 @@ void foc_show_scoring(int start_column) {}
 int foc_total_score() { return 0; }
 
 
-int qrb(double a, double b, double c, double d) {
+int qrb(double,  double,  double,  double,  double *, double *) {
     return 1;
 }
 
