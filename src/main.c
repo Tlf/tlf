@@ -201,32 +201,33 @@ int xplanet = MARKER_NONE;
 int rigptt = 0;
 int tune_seconds;               /* tune up time in seconds for Alt-T */
 
-char message[25][80] = /**< Array of CW messages
- 			*
- 			* message[0]..[11] activated by F1..F12 key
- 			* message[12] - TU message S&P mode
- 			* message[13] - TU message CQ mode
- 			* message[14]..[23] activated by Alt-0..9
-			* message[24] - S&P call message
- 			*
- 			* special use:
-			*
- 			* message[0]  (F1)  - 'cq message' in CQ mode,
-			*                     'de <call>' in S&P
-			* message[2]  (F3)  - send rapport
-			* message[4]  (F5)  - hiscall (used if '?' entered
-			* 		      in call field
-			* message[6]  (F7)  - 'worked before' message
- 			* message[11] (F12) - used for auto-cq
-			*
-			* additional use if in CTCOMP mode
-			* message[1]  (F2)  - insert pressed
- 			*/
+char message[25][80] = /* Array of CW messages */
 {
-    "TEST %", "@ DE %", "@ [", "TU 73", "@", "%",
-    "@ SRI QSO B4 GL", "AGN",
-    "?", "QRZ?", "PSE K", "TEST % %", "@ [", "TU %",
-    "", "", "", "", "", "", "", "", "", "", ""
+    "TEST %",		/* message[0]  (F1) 'cq message' in CQ mode, 'de <call>' in S&P */
+    "@ DE %",		/* message[1]  (F2) additional use if in CTCOMP mode: insert pressed */
+    "@ [",		/* message[2]  (F3) send rapport */
+    "TU 73",		/* message[3]  (F4) */
+    "@",		/* message[4]  (F5) hiscall (used if '?' entered in call field */
+    "%",		/* message[5]  (F6) */
+    "@ SRI QSO B4 GL",	/* message[6]  (F7) 'worked before' message */
+    "AGN",		/* message[7]  (F8) */
+    "?",		/* message[8]  (F9) */
+    "QRZ?",		/* message[9]  (F10) */
+    "PSE K",		/* message[10] (F11) */
+    "TEST % %",		/* message[11] (F12) used for auto-cq */
+    "@ [",		/* message[12] TU message S&P mode */
+    "TU %",		/* message[13] TU message CQ mode */
+    "",			/* message[14] (Alt-0) */
+    "",			/* message[15] (Alt-1) */
+    "",			/* message[16] (Alt-2) */
+    "",			/* message[17] (Alt-3) */
+    "",			/* message[18] (Alt-4) */
+    "",			/* message[19] (Alt-5) */
+    "",			/* message[20] (Alt-6) */
+    "",			/* message[21] (Alt-7) */
+    "",			/* message[22] (Alt-8) */
+    "",			/* message[23] (Alt-9) */
+    "",			/* message[24] S&P call message */
 };
 
 char *digi_message[sizeof(message) / sizeof(message[0])];
