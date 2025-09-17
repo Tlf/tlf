@@ -120,8 +120,8 @@ int init_tlf_rig(void) {
 			   rigportname);
 
     if (retcode != RIG_OK) {
-        showmsg("Pathname not accepted!");
-        return -1;
+	showmsg("Pathname not accepted!");
+	return -1;
     }
 
     snprintf(speed_string, sizeof speed_string, "%d", serial_rate);
@@ -129,7 +129,7 @@ int init_tlf_rig(void) {
 			   speed_string);
 
     if (retcode != RIG_OK) {
-        showmsg("Speed not accepted!");
+	showmsg("Speed not accepted!");
 	return -1;
     }
 
