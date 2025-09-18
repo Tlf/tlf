@@ -24,16 +24,6 @@
 #include <hamlib/rig.h>
 #include <stdbool.h>
 
-#ifdef HAMLIB_FILPATHLEN
-#define TLFFILPATHLEN HAMLIB_FILPATHLEN
-#else
-#ifdef FILPATHLEN
-#define TLFFILPATHLEN FILPATHLEN
-#else
-#error "(HAMLIB_)FILPATHLEN macro not found"
-#endif
-#endif
-
 bool rig_has_send_morse();
 bool rig_has_stop_morse();
 

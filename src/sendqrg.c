@@ -94,6 +94,7 @@ void show_rigerror(char *message, int errcode) {
 int init_tlf_rig(void) {
     freq_t rigfreq;		/* frequency  */
     vfo_t vfo;
+    char speed_string[12];
     int retcode;		/* generic return code from functions */
 
     const struct rig_caps *caps;
@@ -115,10 +116,22 @@ int init_tlf_rig(void) {
     }
 
     g_strchomp(rigportname);	// remove trailing '\n'
-    strncpy(my_rig->state.rigport.pathname, rigportname,
-	    TLFFILPATHLEN - 1);
+    retcode = rig_set_conf(my_rig, rig_token_lookup(my_rig, "rig_pathname"),
+			   rigportname);
 
-    my_rig->state.rigport.parm.serial.rate = serial_rate;
+    if (retcode != RIG_OK) {
+	showmsg("Pathname not accepted!");
+	return -1;
+    }
+
+    snprintf(speed_string, sizeof speed_string, "%d", serial_rate);
+    retcode = rig_set_conf(my_rig, rig_token_lookup(my_rig, "serial_speed"),
+			   speed_string);
+
+    if (retcode != RIG_OK) {
+	showmsg("Speed not accepted!");
+	return -1;
+    }
 
     caps = my_rig->caps;
 
