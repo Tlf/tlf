@@ -124,16 +124,18 @@ int init_tlf_rig(void) {
 	return -1;
     }
 
-    snprintf(speed_string, sizeof speed_string, "%d", serial_rate);
-    retcode = rig_set_conf(my_rig, rig_token_lookup(my_rig, "serial_speed"),
-			   speed_string);
-
-    if (retcode != RIG_OK) {
-	showmsg("Speed not accepted!");
-	return -1;
-    }
-
     caps = my_rig->caps;
+
+    if (caps->port_type == RIG_PORT_SERIAL) {
+	snprintf(speed_string, sizeof speed_string, "%d", serial_rate);
+	retcode = rig_set_conf(my_rig, rig_token_lookup(my_rig, "serial_speed"),
+			       speed_string);
+
+	if (retcode != RIG_OK) {
+	    showmsg("Speed not accepted!");
+	    return -1;
+	}
+    }
 
     can_send_morse = caps->send_morse != NULL;
 #if HAMLIB_VERSION >= 400
