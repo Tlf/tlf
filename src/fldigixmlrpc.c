@@ -26,6 +26,7 @@
 #include <string.h>
 #include <stdarg.h>	// need for va_list...
 #include <unistd.h>
+#include <math.h>       // for round()
 
 #include <config.h>
 
@@ -53,6 +54,7 @@ int fldigi_set_callfield = 0;
 
 typedef struct {
     int			intval;
+    xmlrpc_double       doubleval;
     const char		*stringval;
     const unsigned char	*byteval;
 } xmlrpc_res;
@@ -145,6 +147,7 @@ bool fldigi_isenabled(void) {
 #ifdef HAVE_LIBXMLRPC
 static void xmlrpc_res_init(xmlrpc_res *res) {
     res->intval = 0;
+    res->doubleval = 0.0;
     res->stringval = NULL;
     res->byteval = NULL;
 }
@@ -297,6 +300,11 @@ static int parse_call_result(xmlrpc_env *local_env, xmlrpc_value *callresult,
 	case XMLRPC_TYPE_INT:
 	    xmlrpc_read_int(local_env, callresult,
 			    &result->intval);
+	    break;
+	// double
+	case XMLRPC_TYPE_DOUBLE:
+	    xmlrpc_read_double(local_env, callresult,
+			       &result->doubleval);
 	    break;
 	// string
 	case XMLRPC_TYPE_STRING:
@@ -638,19 +646,40 @@ int fldigi_xmlrpc_get_carrier() {
 	    strcpy(fldigi_mode, "CW");
     }
 
-    /* set the mode in Fldigi */
-    rc = fldigi_xmlrpc_query(NULL, "rig.set_mode", "s", fldigi_mode);
+    /* set the mode in Fldigi if needed */
+    rc = fldigi_xmlrpc_query(&result, "rig.get_mode", "");
     if (rc != 0) {
 	return -1;
     }
-    fldigi_var_carrier = signum * fldigi_var_carrier + modeshift;
 
-    /* also set the freq value in Fldigi FREQ block */
-    rc = fldigi_xmlrpc_query(NULL,
-			     "rig.set_frequency", "d",
-			     (xmlrpc_double)(freq - fldigi_var_carrier));
+    bool mode_is_different = (strcmp(result.stringval, fldigi_mode) != 0);
+    xmlrpc_res_free(&result);
+
+    if (mode_is_different) {
+	rc = fldigi_xmlrpc_query(NULL, "rig.set_mode", "s", fldigi_mode);
+	if (rc != 0) {
+	    return -1;
+	}
+    }
+
+    /* also set the freq value in Fldigi FREQ block if it is different */
+    fldigi_var_carrier = signum * fldigi_var_carrier + modeshift;
+    /* round to Hz precision */
+    xmlrpc_double freq_target = round(freq - fldigi_var_carrier);
+
+    rc = fldigi_xmlrpc_query(&result, "rig.get_frequency", "");
     if (rc != 0) {
 	return -1;
+    }
+
+    xmlrpc_double freq_current = round(result.doubleval);
+    xmlrpc_res_free(&result);
+
+    if (freq_target != freq_current) {
+	rc = fldigi_xmlrpc_query(NULL, "rig.set_frequency", "d", freq_target);
+	if (rc != 0) {
+	    return -1;
+	}
     }
 #endif
     return 0;
