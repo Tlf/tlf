@@ -1,6 +1,7 @@
 
 #include <glib.h>
 #include <hamlib/rig.h>
+#include <hamlib/rotator.h>
 #include <stdbool.h>
 
 #include <config.h>
@@ -109,10 +110,13 @@ extern int highqsonr;
 
 
 extern RIG *my_rig;
+extern ROT *my_rot;
 extern pthread_mutex_t tlf_rig_mutex;
+extern pthread_mutex_t tlf_rot_mutex;
 extern cqmode_t cqmode;
 extern int trxmode;
 extern int myrig_model;
+extern int myrot_model;
 extern rmode_t rigmode;
 extern freq_t freq;
 extern char lastqsonr[];
@@ -187,6 +191,7 @@ extern bool keyer_backspace;
 extern int netkeyer_port;
 extern int cqdelay;
 extern int serial_rate;
+extern int rot_serial_rate;
 extern int tnc_serial_rate;
 extern int countrylist_points;
 extern int my_country_points;
@@ -221,6 +226,7 @@ extern char modem_mode[];
 extern char sc_volume[];
 extern char clusterlogin[];
 extern char rigconf[];
+extern char rotconf[];
 extern char keyer_device[10];
 extern char netkeyer_hostaddress[];
 extern char pr_hostaddress[];
@@ -236,6 +242,7 @@ extern char fldigi_url[50];
 extern char *cabrillo;
 extern char *editor_cmd;
 extern char *rigportname;
+extern char *rotportname;
 extern char *config_file;
 #ifdef HAVE_PYTHON
 extern char *plugin_config;
@@ -257,6 +264,7 @@ extern bool ignoredupe;
 extern bool continentlist_only;
 extern int debuglevel;
 extern bool trx_control;
+extern bool rot_control;
 extern bool nopacket;
 extern bool verbose;
 
