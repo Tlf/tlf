@@ -66,20 +66,21 @@ typedef struct {
 #define MAXSHIFT 20		/* max shift value in Fldigi, when Tlf set
 				   it back to RIG carrier */
 
+
+#ifdef HAVE_LIBXMLRPC
 static bool use_fldigi = false;
 
-int fldigi_var_carrier = 0;
-int fldigi_var_shift_freq = 0;
-#ifdef HAVE_LIBXMLRPC
+static int fldigi_var_carrier = 0;
+static int fldigi_var_shift_freq = 0;
 static bool initialized = false;
-#endif
 static bool connerr = false;
 
-char thiscall[20] = "";
-char tcomment[20] = "";
+static char thiscall[20] = "";
+static char tcomment[20] = "";
 
 static pthread_mutex_t xmlrpc_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t xmlrpc_get_rx_mutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 /*
  * Used Fldigi XML-RPC methods
@@ -127,22 +128,28 @@ static xmlrpc_client *clientP = NULL;
 #endif
 
 bool fldigi_toggle(void) {
-    bool ret;
+    bool ret = false;
 
+#ifdef HAVE_LIBXMLRPC
     pthread_mutex_lock(&xmlrpc_mutex);
     use_fldigi = !use_fldigi;
     ret = use_fldigi;
     connerr = false;
     pthread_mutex_unlock(&xmlrpc_mutex);
+#endif
+
     return ret;
 }
 
 bool fldigi_isenabled(void) {
-    bool ret;
+    bool ret = false;
 
+#ifdef HAVE_LIBXMLRPC
     pthread_mutex_lock(&xmlrpc_mutex);
     ret = use_fldigi;
     pthread_mutex_unlock(&xmlrpc_mutex);
+#endif
+
     return ret;
 }
 
