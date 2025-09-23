@@ -52,12 +52,14 @@
 
 int fldigi_set_callfield = 0;
 
+#ifdef HAVE_LIBXMLRPC
 typedef struct {
     int			intval;
     xmlrpc_double       doubleval;
     const char		*stringval;
     const unsigned char	*byteval;
 } xmlrpc_res;
+#endif
 
 #define CENTER_FREQ 2210	/* low: 2125Hz, high: 2295Hz, shift: 170Hz,
 				    center: 2125+(170/2) = 2210Hz */
