@@ -21,6 +21,10 @@ jobs:
       run: cat /etc/os-release
     - name: Install dependencies
       run: |
+        # first disable man-db update triggers
+        echo "set man-db/auto-update false" | sudo debconf-communicate
+        sudo dpkg-reconfigure man-db
+        #
         sudo apt-get -qq update
         sudo apt-get install -y libhamlib-dev libxmlrpc-core-c3-dev libglib2.0-dev libcmocka-dev python3-pexpect python3-dev astyle
     - name: Set up datadir
