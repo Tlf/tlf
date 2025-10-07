@@ -36,20 +36,14 @@
 # include <xmlrpc-c/client_global.h>
 #endif
 
-#include <hamlib/rig.h>
-
 #include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "globalvars.h"
-#include "getctydata.h"
 #include "keystroke_names.h"
 #include "logit.h"
-#include "printcall.h"
 #include "callinput.h"      // for valid_call_char()
-#include "searchlog.h"
 #include "showmsg.h"
 #include "tlf_curses.h"
-#include "ui_utils.h"
 
 int fldigi_set_callfield = 0;
 
@@ -749,9 +743,6 @@ int fldigi_get_log_call() {
     if (strlen(tempstr) >= 3) {
 	strcpy(current_qso.call, tempstr);
 	strcpy(thiscall, current_qso.call);
-	printcall();
-	getctydata_pfx(current_qso.call);
-	searchlog();
 	fldigi_set_callfield = 1;
     }
 

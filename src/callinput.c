@@ -147,6 +147,8 @@ int callinput(void) {
 		    && current_qso.call[0] != '\0') {
 		freqstore = freq;
 		fldigi_set_callfield = 0;
+		// call has been just set, restart outer loop to update display
+		break;
 	    }
 
 	    /* if BMAUTOADD is active and user has input a call sign
