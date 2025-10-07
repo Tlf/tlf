@@ -45,6 +45,7 @@
 #include "keystroke_names.h"
 #include "logit.h"
 #include "printcall.h"
+#include "callinput.h"      // for valid_call_char()
 #include "searchlog.h"
 #include "showmsg.h"
 #include "tlf_curses.h"
@@ -703,56 +704,58 @@ int fldigi_get_carrier() {
 #endif
 }
 
+static char *clean_input(const char *input, int max_length) {
+    char *result = g_malloc0(max_length + 1);
+    const int input_length = (input != NULL ? strlen(input) : 0);
+    int j = 0;
+    // accept only alphanumeric chars and '/'
+    // (in case of QRM there could be lot of extra garbage)
+    for (int i = 0; i < input_length && j < max_length && input[i] != 0; i++) {
+	char c = g_ascii_toupper(input[i]);
+	if (valid_call_char(c)) {
+	    result[j++] = c;
+	}
+    }
+    return result;
+}
+
 /* read callsign field in Fldigi, and sets the CALL in Tlf */
 int fldigi_get_log_call() {
 #ifdef HAVE_LIBXMLRPC
-    int rc;
     xmlrpc_res result;
-    char tempstr[20];
-    int i, j;
 
-    rc = fldigi_xmlrpc_query(&result, "log.get_call", "");
+    if (current_qso.call[0] != 0) {
+	// call is already filled, not checking further
+	return 0;
+    }
+
+    // if the previous local callsign (thiscall) isn't empty,
+    // that means the OP cleared the callsign field, so clear it in Fldigi too
+    if (thiscall[0] != 0) {
+	thiscall[0] = 0;
+	return fldigi_xmlrpc_query(NULL, "log.set_call", "s", "");
+    }
+
+    // otherwise, fetch the callsign field from Fldigi
+    int rc = fldigi_xmlrpc_query(&result, "log.get_call", "");
     if (rc != 0) {
 	return -1;
     }
 
-    if (result.stringval != NULL) {
-	j = 0;
-	// accept only alphanumeric chars and '/' in callsign
-	// in case of QRM, there are many several metachar
-	for (i = 0; i < 20 && result.stringval[i] != '\0'; i++) {
-	    if (isalnum(result.stringval[i]) || result.stringval[i] == '/') {
-		tempstr[j++] = result.stringval[i];
-	    }
-	}
-	tempstr[j] = '\0';
-
-	xmlrpc_res_free(&result);
-
-	// check the current call in Tlf; if the previous local callsign isn't empty,
-	// that means the OP clean up the callsign field, so it needs to clean in Fldigi too
-	if (current_qso.call[0] == '\0' && thiscall[0] != '\0') {
-	    thiscall[0] = '\0';
-	    rc = fldigi_xmlrpc_query(NULL, "log.set_call", "s", "");
-	    if (rc != 0) {
-		return -1;
-	    }
-	}
-	// otherwise, fill the callsign field in Tlf
-	else {
-	    if (strlen(tempstr) >= 3 && current_qso.call[0] == '\0') {
-		strcpy(current_qso.call, tempstr);
-		current_qso.call[strlen(tempstr)] = '\0';
-		strcpy(thiscall, current_qso.call);
-		printcall();
-		getctydata_pfx(current_qso.call);
-		searchlog();
-		fldigi_set_callfield = 1;
-	    }
-	}
-    }
+    char *tempstr = clean_input(result.stringval, MAX_CALL_LENGTH);
 
     xmlrpc_res_free(&result);
+
+    if (strlen(tempstr) >= 3) {
+	strcpy(current_qso.call, tempstr);
+	strcpy(thiscall, current_qso.call);
+	printcall();
+	getctydata_pfx(current_qso.call);
+	searchlog();
+	fldigi_set_callfield = 1;
+    }
+
+    g_free(tempstr);
 #endif
     return 0;
 }
