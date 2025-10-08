@@ -71,7 +71,7 @@ static bool initialized = false;
 static bool connerr = false;
 
 static bool call_set = false;
-static char tcomment[20] = "";
+static bool comment_set = false;
 
 static pthread_mutex_t xmlrpc_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t xmlrpc_get_rx_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -713,7 +713,7 @@ static char *clean_input(const char *input, int max_length) {
     return result;
 }
 
-/* read callsign field in Fldigi and set the CALL in Tlf */
+/* read callsign field from Fldigi and set the CALL in Tlf */
 int fldigi_get_log_call() {
 #ifdef HAVE_LIBXMLRPC
     xmlrpc_res result;
@@ -751,53 +751,40 @@ int fldigi_get_log_call() {
     return 0;
 }
 
-/* read exchange field in Fldigi, and sets that in Tlf */
+/* read exchange field from Fldigi and set it in Tlf */
 int fldigi_get_log_serial_number() {
 #ifdef HAVE_LIBXMLRPC
-    int rc;
     xmlrpc_res result;
 
-    char tempstr[20];
-    int i, j;
+    if (current_qso.comment[0] != 0) {
+	// comment (exchange) is already filled, not checking further
+	return 0;
+    }
 
-    rc = fldigi_xmlrpc_query(&result, "log.get_exchange", "");
+    // if we set the comment earlier but the OP cleared the comment field
+    // then clear it in Fldigi too
+    if (comment_set) {
+	comment_set = false;
+	return fldigi_xmlrpc_query(NULL, "log.set_exchange", "s", "");
+    }
+
+    // otherwise, fetch the exchange field from Fldigi
+    int rc = fldigi_xmlrpc_query(&result, "log.get_exchange", "");
     if (rc != 0) {
 	return -1;
     }
 
-    if (result.stringval != NULL) {
-	j = 0;
-	// accept only alphanumeric chars
-	for (i = 0; i < 20 && result.stringval[i] != '\0'; i++) {
-	    if (isalnum(result.stringval[i])) {
-		tempstr[j++] = result.stringval[i];
-	    }
-	}
-	tempstr[j] = '\0';
-
-	xmlrpc_res_free(&result);
-
-	// if the previous exchange isn't empty, but the current value is it,
-	// that means the OP cleaned up the field, so we need to clean up it in Fldigi
-	if (current_qso.comment[0] == '\0' && tcomment[0] != '\0') {
-	    tcomment[0] = '\0';
-	    rc = fldigi_xmlrpc_query(NULL, "log.set_exchange", "s", "");
-	    if (rc != 0) {
-		return -1;
-	    }
-	}
-	// otherwise we need to fill the Tlf exchange field
-	else {
-	    if (strlen(tempstr) > 0 && current_qso.comment[0] == '\0') {
-		strcpy(current_qso.comment, tempstr);
-		current_qso.comment[strlen(tempstr)] = '\0';
-		strcpy(tcomment, current_qso.comment);
-		refresh_comment();
-	    }
-	}
-    }
+    char *tempstr = clean_input(result.stringval, contest->exchange_width);
 
     xmlrpc_res_free(&result);
+
+    if (strlen(tempstr) > 0) {
+	strcpy(current_qso.comment, tempstr);
+	comment_set = true;
+	refresh_comment();  // NOTE: UI operation
+    }
+
+    g_free(tempstr);
 #endif
     return 0;
 }
