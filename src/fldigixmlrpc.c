@@ -70,7 +70,7 @@ static int fldigi_var_shift_freq = 0;
 static bool initialized = false;
 static bool connerr = false;
 
-static char thiscall[20] = "";
+static bool call_set = false;
 static char tcomment[20] = "";
 
 static pthread_mutex_t xmlrpc_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -713,7 +713,7 @@ static char *clean_input(const char *input, int max_length) {
     return result;
 }
 
-/* read callsign field in Fldigi, and sets the CALL in Tlf */
+/* read callsign field in Fldigi and set the CALL in Tlf */
 int fldigi_get_log_call() {
 #ifdef HAVE_LIBXMLRPC
     xmlrpc_res result;
@@ -723,10 +723,10 @@ int fldigi_get_log_call() {
 	return 0;
     }
 
-    // if the previous local callsign (thiscall) isn't empty,
-    // that means the OP cleared the callsign field, so clear it in Fldigi too
-    if (thiscall[0] != 0) {
-	thiscall[0] = 0;
+    // if we set the call earlier but the OP cleared the callsign field
+    // then clear it in Fldigi too
+    if (call_set) {
+	call_set = false;
 	return fldigi_xmlrpc_query(NULL, "log.set_call", "s", "");
     }
 
@@ -742,7 +742,7 @@ int fldigi_get_log_call() {
 
     if (strlen(tempstr) >= 3) {
 	strcpy(current_qso.call, tempstr);
-	strcpy(thiscall, current_qso.call);
+	call_set = true;
 	fldigi_set_callfield = 1;
     }
 
