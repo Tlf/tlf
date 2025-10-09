@@ -100,7 +100,6 @@ int readqtccalls() {
 
 	free(inputbuffer);
 	inputbuffer = NULL;
-	inputbuffer_len = 0;
 
 	next_qtc_qso = last_qtc;
 
@@ -143,7 +142,7 @@ int readqtccalls() {
 
 	free(inputbuffer);
 	inputbuffer = NULL;
-	inputbuffer_len = 0;
+
 	fclose(fp);
     }
 
@@ -171,7 +170,7 @@ int readqtccalls() {
 
 	free(inputbuffer);
 	inputbuffer = NULL;
-	inputbuffer_len = 0;
+
 	fclose(fp);
     }
 
@@ -195,7 +194,7 @@ int readqtccalls() {
 
 	free(inputbuffer);
 	inputbuffer = NULL;
-	inputbuffer_len = 0;
+
 	fclose(fp);
     }
 
