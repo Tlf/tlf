@@ -45,7 +45,7 @@
 #include "showmsg.h"
 #include "tlf_curses.h"
 
-int fldigi_set_callfield = 0;
+bool fldigi_set_callfield = false;
 
 #ifdef HAVE_LIBXMLRPC
 typedef struct {
@@ -743,7 +743,7 @@ int fldigi_get_log_call() {
     if (strlen(tempstr) >= 3) {
 	strcpy(current_qso.call, tempstr);
 	call_set = true;
-	fldigi_set_callfield = 1;
+	fldigi_set_callfield = true;
     }
 
     g_free(tempstr);

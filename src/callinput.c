@@ -143,10 +143,10 @@ int callinput(void) {
 		show_rtty();
 	    }
 
-	    if (digikeyer == FLDIGI && fldigi_set_callfield == 1
+	    if (digikeyer == FLDIGI && fldigi_set_callfield
 		    && current_qso.call[0] != '\0') {
 		freqstore = freq;
-		fldigi_set_callfield = 0;
+		fldigi_set_callfield = false;
 		// call has been just set, restart outer loop to update display
 		break;
 	    }

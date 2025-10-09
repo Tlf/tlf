@@ -22,9 +22,9 @@
 #ifndef FLDIGIXMLRPC_H
 #define FLDIGIXMLRPC_H
 
-#include <stdbool.h>
+#include "tlf.h"
 
-extern int fldigi_set_callfield;
+extern bool fldigi_set_callfield;
 
 int fldigi_xmlrpc_init();
 int fldigi_xmlrpc_cleanup();
