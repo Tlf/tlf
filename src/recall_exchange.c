@@ -27,6 +27,8 @@
 #include "tlf_curses.h"
 #include "setcontest.h"
 
+#include "callinput.h"  // for plain_number(), FIXME: move it to utils.c
+
 
 /** \brief Recall former exchange or lookup initial exchange file
  *
@@ -61,6 +63,13 @@ int get_proposed_exchange(void) {
 	    strcpy(proposed_exchange, worked[i].exchange);
 	    break;
 	}
+    }
+
+    if (found == 1 &&
+	    contest->recall_no_serials && plain_number(proposed_exchange)) {
+	// do not recall serial numbers
+	proposed_exchange[0] = 0;
+	found = -1;
     }
 
     if (found == -1) {
