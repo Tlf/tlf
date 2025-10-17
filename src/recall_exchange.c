@@ -26,8 +26,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "setcontest.h"
-
-#include "callinput.h"  // for plain_number(), FIXME: move it to utils.c
+#include "utils.h"
 
 
 /** \brief Recall former exchange or lookup initial exchange file

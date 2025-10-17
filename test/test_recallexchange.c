@@ -8,8 +8,7 @@
 
 // OBJECT ../src/recall_exchange.o
 // OBJECT ../src/initial_exchange.o
-
-bool plain_number(char *str) { return false; } // FIXME: remove
+// OBJECT ../src/utils.o
 
 contest_config_t config_any = {
     .id = 123,

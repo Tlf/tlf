@@ -30,8 +30,6 @@
 // OBJECT ../src/score.o
 // OBJECT ../src/utils.o
 
-bool plain_number(char *str) { return false; } // FIXME: remove
-
 void checkexchange(struct qso_t *qso, bool interactive) {}
 
 char section[8] = "";       // defined in getexchange.c
