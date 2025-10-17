@@ -29,6 +29,7 @@
 
 extern contest_config_t config_qso;
 
+void init_contests();
 bool general_ismulti(spot *data);
 contest_config_t *lookup_contest(char *name);
 void list_contests();

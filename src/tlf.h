@@ -259,7 +259,7 @@ typedef struct {
     contest_type_t	id;
     char		*name;
     bool		recall_mult;
-    bool		recall_no_serials;
+    bool		recall_serials;
     bool		exchange_serial;
     int                 exchange_width;
     struct {

@@ -66,7 +66,7 @@ int get_proposed_exchange(void) {
     }
 
     if (found == 1 &&
-	    contest->recall_no_serials && plain_number(proposed_exchange)) {
+	    !contest->recall_serials && plain_number(proposed_exchange)) {
 	// do not recall serial numbers
 	proposed_exchange[0] = 0;
 	found = -1;
