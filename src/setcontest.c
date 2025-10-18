@@ -302,7 +302,7 @@ contest_config_t *lookup_contest(char *name) {
  */
 void init_contests() {
     for (int i = 0; i < NR_CONTESTS; i++) {
-	contest_configs[i]->recall_serials = true;
+	contest_configs[i]->recall_numeric_exchanges = true;
     }
 }
 
