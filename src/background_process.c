@@ -110,7 +110,6 @@ void *background_process(void *ptr) {
 	 * this function helps to show the correct freq of the RIG: reads
 	 * the carrier value from Fldigi, and stores in a variable; then
 	 * it readable by fldigi_get_carrier()
-	 * only need at every 2nd cycle
 	 * see fldigixmlrpc.[ch]
 	 *
 	 * There are two addition routines
@@ -123,7 +122,7 @@ void *background_process(void *ptr) {
 		fldigi_get_log_call();
 		fldigi_get_log_serial_number();
 	    }
-	    fldigi_rpc_cnt = 1 - fldigi_rpc_cnt;
+	    fldigi_rpc_cnt = (fldigi_rpc_cnt + 1) % 10;
 	}
 
 	if (!pause_backgrnd_process) {

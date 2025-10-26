@@ -451,8 +451,12 @@ Filter cluster info (announce, dx-spots, all).
 Show frequency or band/score information of your other @PACKAGE@ nodes.
 .
 .TP
-.BR :FLDIGI
+.BR :FLD igi
 Toggle Fldigi communication On|Off.
+.
+.TP
+.BR :MIN iterm
+Toggle display of captured text in digital modes.
 .
 .TP
 .BR :HEL p
@@ -1739,7 +1743,11 @@ Start @PACKAGE_NAME@ in RTTY mode (default is CW)
 .
 .TP
 \fBGMFSK\fR=\fI$HOME/gMFSK.log\fR
-Tell \fBminiterm\fR(1) where to get the data.
+Tell
+.BR :MIN iterm
+where to get the data.
+It can also fetch captured text directly from Fldigi.
+The GMFSK option is only required for modems producing text file output.
 .
 .TP
 \fBDIGIMODEM\fR=\fI$HOME/gmfsk_autofile\fR
@@ -2100,7 +2108,7 @@ mode is selected.
 .I mode
 may be one of \(lqUSB\(rq, \(lqLSB\(rq, \(lqRTTY\(rq, or \(lqRTTYR\(rq.
 .
-If this parameter is not set, \(lqUSB\(rq is used if the FLDIGI parameter is
+If this parameter is not set, \(lqUSB\(rq is used if the Fldigi parameter is
 set else \(lqLSB\(rq is used.
 .
 .SS User Interface Commands

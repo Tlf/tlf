@@ -652,12 +652,12 @@ int changepars(void) {
 	case 51: {              /* FLDIGI - turn on/off */
 	    if (digikeyer == FLDIGI) {
 		if (fldigi_toggle()) {
-		    fldigi_clear_connerr();
 		    mvaddstr(13, 29, "FLDIGI ON");
 		} else {
 		    mvaddstr(13, 29, "FLDIGI OFF");
 		}
 		refreshp();
+		sleep(1);
 	    }
 	    break;
 	}
