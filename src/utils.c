@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/time.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 
@@ -233,3 +234,14 @@ void get_partial_callsign(char *call1, char *call2, char *partial) {
     free_call_parts(cp1);
     free_call_parts(cp2);
 }
+
+/* \brief get current time in seconds with up to usec precision
+ *
+ * \returns time value
+ */
+double get_current_seconds() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec + tv.tv_usec / 1e6;
+}
+

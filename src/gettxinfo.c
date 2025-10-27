@@ -24,7 +24,6 @@
 
 
 #include <unistd.h>
-#include <sys/time.h>
 #include <pthread.h>
 
 #include "bands.h"
@@ -38,6 +37,7 @@
 #include "tlf_curses.h"
 #include "callinput.h"
 #include "changepars.h"
+#include "utils.h"
 
 #include <hamlib/rig.h>
 
@@ -62,7 +62,6 @@ static freq_t outfreq = 0;
 
 static pthread_mutex_t outfreq_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static double get_current_seconds();
 static void handle_trx_bandswitch(const freq_t freq);
 
 void set_outfreq(freq_t hertz) {
@@ -299,13 +298,6 @@ void gettxinfo(void) {
 
     }
 
-}
-
-
-static double get_current_seconds() {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec + tv.tv_usec / 1e6;
 }
 
 
