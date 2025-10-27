@@ -105,13 +105,14 @@ static void poll_rig_state() {
 
     freq_t rigfreq = 0.0;
 
+    pthread_mutex_lock(&tlf_rig_mutex);
     double now = get_current_seconds();
     if (now < last_freq_time + 0.2) {
+	pthread_mutex_unlock(&tlf_rig_mutex);
 	return;   // last read-out was within 200 ms, skip this query
     }
     last_freq_time = now;
 
-    pthread_mutex_lock(&tlf_rig_mutex);
     vfo_t vfo;
     int retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
     pthread_mutex_unlock(&tlf_rig_mutex);
