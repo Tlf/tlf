@@ -33,7 +33,6 @@
 #ifdef HAVE_LIBXMLRPC
 # include <xmlrpc-c/base.h>
 # include <xmlrpc-c/client.h>
-# include <xmlrpc-c/client_global.h>
 #endif
 
 #include "err_utils.h"
