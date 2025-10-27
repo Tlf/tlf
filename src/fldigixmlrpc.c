@@ -563,7 +563,7 @@ int fldigi_get_rx_text(char *line, int len) {
     }
 
     lastpos = textlen;
-    // note: we move lastpos even buffer was too small to fetch all new text
+    // note: we move lastpos even if buffer was too small to fetch all new text
 
     pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
     return retval;
