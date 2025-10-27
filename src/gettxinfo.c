@@ -39,8 +39,6 @@
 #include "changepars.h"
 #include "utils.h"
 
-#include <hamlib/rig.h>
-
 #ifdef RIG_PASSBAND_NOCHANGE
 #define TLF_DEFAULT_PASSBAND RIG_PASSBAND_NOCHANGE
 #else
