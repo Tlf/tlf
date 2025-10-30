@@ -24,7 +24,6 @@
 
 
 #include <unistd.h>
-#include <sys/time.h>
 #include <pthread.h>
 
 #include "bands.h"
@@ -38,8 +37,7 @@
 #include "tlf_curses.h"
 #include "callinput.h"
 #include "changepars.h"
-
-#include <hamlib/rig.h>
+#include "utils.h"
 
 #ifdef RIG_PASSBAND_NOCHANGE
 #define TLF_DEFAULT_PASSBAND RIG_PASSBAND_NOCHANGE
@@ -62,7 +60,6 @@ static freq_t outfreq = 0;
 
 static pthread_mutex_t outfreq_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static double get_current_seconds();
 static void handle_trx_bandswitch(const freq_t freq);
 
 void set_outfreq(freq_t hertz) {
@@ -108,13 +105,14 @@ static void poll_rig_state() {
 
     freq_t rigfreq = 0.0;
 
+    pthread_mutex_lock(&tlf_rig_mutex);
     double now = get_current_seconds();
     if (now < last_freq_time + 0.2) {
+	pthread_mutex_unlock(&tlf_rig_mutex);
 	return;   // last read-out was within 200 ms, skip this query
     }
     last_freq_time = now;
 
-    pthread_mutex_lock(&tlf_rig_mutex);
     vfo_t vfo;
     int retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
     pthread_mutex_unlock(&tlf_rig_mutex);
@@ -299,13 +297,6 @@ void gettxinfo(void) {
 
     }
 
-}
-
-
-static double get_current_seconds() {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec + tv.tv_usec / 1e6;
 }
 
 

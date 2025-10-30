@@ -21,6 +21,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/time.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 
@@ -256,5 +257,15 @@ bool plain_number(char *str) {
     }
 
     return true;
+}
+
+/* \brief get current time in seconds with up to usec precision
+ *
+ * \returns time value
+ */
+double get_current_seconds() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec + tv.tv_usec / 1e6;
 }
 

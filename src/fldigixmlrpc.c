@@ -33,7 +33,6 @@
 #ifdef HAVE_LIBXMLRPC
 # include <xmlrpc-c/base.h>
 # include <xmlrpc-c/client.h>
-# include <xmlrpc-c/client_global.h>
 #endif
 
 #include "err_utils.h"
@@ -44,6 +43,7 @@
 #include "callinput.h"      // for valid_call_char()
 #include "showmsg.h"
 #include "tlf_curses.h"
+#include "utils.h"
 
 bool fldigi_set_callfield = false;
 
@@ -512,48 +512,58 @@ int fldigi_get_rx_text(char *line, int len) {
     int rc;
     xmlrpc_res result;
     static int lastpos = 0;
-    int textlen = 0;
+    static double last_poll_time = 0.0;
     int retval = 0;
-    int linelen = 0;
 
     pthread_mutex_lock(&xmlrpc_get_rx_mutex);
+    double now = get_current_seconds();
+    if (now < last_poll_time + 0.1) {
+	pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
+	return 0;   // last poll was within 100 ms, skip this query
+    }
+    last_poll_time = now;
+
     rc = fldigi_xmlrpc_query(&result, "text.get_rx_length", "");
     if (rc != 0) {
 	pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
 	return -1;
     }
 
-    textlen = result.intval;
+    int textlen = result.intval;
     xmlrpc_res_free(&result);
 
     if (lastpos == 0) {
 	lastpos = textlen;
-    } else {
-	if (lastpos < textlen) {
-	    rc = fldigi_xmlrpc_query(&result, "text.get_rx", "ii",
-				     lastpos,
-				     textlen - lastpos >= len ?
-				     len - 1 : textlen - lastpos);
-	    if (rc != 0) {
-		pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
-		return -1;
-	    }
+    }
 
-	    if (result.intval > 0 && result.byteval != NULL) {
-		linelen = result.intval;
-		if (result.intval >= len) {
-		    linelen = len - 1;
-		}
-		memcpy(line, result.byteval, linelen);
-		line[linelen] = '\0';
-		retval = linelen;
-	    }
+    int available = textlen - lastpos;
+    if (available > len - 1) {
+	available = len - 1;
+    }
 
-	    xmlrpc_res_free(&result);
+    if (available > 0) {
+	rc = fldigi_xmlrpc_query(&result, "text.get_rx", "ii",
+				 lastpos, available);
+	if (rc != 0) {
+	    pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
+	    return -1;
 	}
+
+	if (result.intval > 0 && result.byteval != NULL) {
+	    int linelen = result.intval;
+	    if (linelen > len - 1) {    // sanity check, just in case
+		linelen = len - 1;
+	    }
+	    memcpy(line, result.byteval, linelen);
+	    line[linelen] = '\0';
+	    retval = linelen;
+	}
+
+	xmlrpc_res_free(&result);
     }
 
     lastpos = textlen;
+    // note: we move lastpos even if buffer was too small to fetch all new text
 
     pthread_mutex_unlock(&xmlrpc_get_rx_mutex);
     return retval;
