@@ -297,9 +297,19 @@ contest_config_t *lookup_contest(char *name) {
 }
 
 
+/** initalize contests
+ *
+ */
+void init_contests() {
+    for (int i = 0; i < NR_CONTESTS; i++) {
+	contest_configs[i]->recall_numeric_exchanges = true;
+    }
+}
+
+
 /** show a list of supported/hard-coded contests
  *
- * works out of ncurses context for 'tlf -l' i
+ * works out of ncurses context for 'tlf -l'
  */
 void list_contests() {
     puts(

@@ -1304,6 +1304,7 @@ static config_t logcfg_configs[] = {
     {"USEPARTIALS",	    CFG_BOOL(use_part)},
     {"PARTIALS",	    CFG_BOOL(partials)},
     {"RECALL_MULTS",	    CFG_CONTEST_BOOL(recall_mult)},
+    {"RECALL_NUMERIC_EXCHANGES",      CFG_CONTEST_BOOL(recall_numeric_exchanges)},
     {"WYSIWYG_MULTIBAND",   CFG_BOOL(wysiwyg_multi)},
     {"WYSIWYG_ONCE",	    CFG_BOOL(wysiwyg_once)},
     {"RIT_CLEAR",	    CFG_BOOL(rit)},

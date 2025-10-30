@@ -693,6 +693,8 @@ static void init_variables() {
 #ifdef HAVE_PYTHON
     FREE_DYNAMIC_STRING(plugin_config);
 #endif
+
+    init_contests();
 }
 
 /** load all databases

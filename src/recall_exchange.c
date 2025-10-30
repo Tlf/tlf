@@ -26,6 +26,7 @@
 #include "tlf.h"
 #include "tlf_curses.h"
 #include "setcontest.h"
+#include "utils.h"
 
 
 /** \brief Recall former exchange or lookup initial exchange file
@@ -61,6 +62,13 @@ int get_proposed_exchange(void) {
 	    strcpy(proposed_exchange, worked[i].exchange);
 	    break;
 	}
+    }
+
+    if (found == 1 &&
+	    !contest->recall_numeric_exchanges && plain_number(proposed_exchange)) {
+	// do not recall numeric exchanges
+	proposed_exchange[0] = 0;
+	found = -1;
     }
 
     if (found == -1) {
