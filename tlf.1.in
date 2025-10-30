@@ -3083,7 +3083,20 @@ Multiplier is DXCC country or section from multiplier file.
 .B RECALL_MULTS
 Exchange can be recycled, will be filled into exchange field when it is known
 (see also
-.BR INITIAL_EXCHANGE ).
+.BR INITIAL_EXCHANGE
+and
+.BR RECALL_NUMERIC_EXCHANGES ).
+.
+.TP
+\fBRECALL_NUMERIC_EXCHANGES\fR[=<\fION\fR|\fIOFF\fR>]
+Controls whether all-numeric exchanges (like serial or zone number) shall be
+recalled when using
+.BR RECALL_MULTS .
+Default is \fION\fR, meaning that numeric exchanges are also recalled.
+If set to \fIOFF\fR then numeric exchanges are not recalled.
+This setting can be useful in contests where
+a group of stations send fixed non-numeric exchanges
+(county or DOK, for example) and the rest sent serial number.
 .
 .TP
 \fBINITIAL_EXCHANGE\fR=\fIexchanges.txt\fR

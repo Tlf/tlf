@@ -24,7 +24,7 @@
 #include <assert.h>
 
 #include "bands.h"
-#include "callinput.h"
+#include "utils.h"
 #include "cw_utils.h"
 #include "err_utils.h"
 #include "hamlib_keyer.h"

@@ -28,6 +28,5 @@
 int callinput(void);
 void send_bandswitch(freq_t freq);
 bool valid_call_char(int ch);
-bool plain_number(char *str);
 
 #endif /* CALLINPUT_H */
