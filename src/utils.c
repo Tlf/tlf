@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <ctype.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdbool.h>
@@ -233,6 +234,29 @@ void get_partial_callsign(char *call1, char *call2, char *partial) {
 
     free_call_parts(cp1);
     free_call_parts(cp2);
+}
+
+/** check if string is plain number
+ *
+ * Check if string contains only digits
+ * \param str    the string to check
+ * \return true  if only digits inside
+ *         false contains at least one non-digit or it's an empty string
+ */
+bool plain_number(char *str) {
+    int i;
+
+    if (strlen(str) == 0) {
+	return false;
+    }
+
+    for (i = 0; i < strlen(str); i++) {
+	if (!isdigit(str[i])) {
+	    return false;
+	}
+    }
+
+    return true;
 }
 
 /* \brief get current time in seconds with up to usec precision

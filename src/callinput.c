@@ -77,6 +77,7 @@
 #include "time_update.h"
 #include "trx_memory.h"
 #include "ui_utils.h"
+#include "utils.h"
 #include "showzones.h"
 #include "bands.h"
 #include "fldigixmlrpc.h"
@@ -85,7 +86,6 @@ typedef enum { STORE_OR_POP, POP, SWAP } memory_op_t;
 
 void send_bandswitch(freq_t freq);
 int autosend(void);
-bool plain_number(char *str);
 void handle_bandswitch(int direction);
 void handle_memory_operation(memory_op_t op);
 
@@ -878,30 +878,6 @@ bool valid_call_char(int ch) {
 	   || (ch >= '0' && ch <= '9')
 	   || ch == '/';
 }
-
-/** check if string is plain number
- *
- * Check if string contains only digits
- * \param str    the string to check
- * \return true  if only digits inside
- *         false contains at least one non-digit or it's an empty string
- */
-bool plain_number(char *str) {
-    int i;
-
-    if (strlen(str) == 0) {
-	return false;
-    }
-
-    for (i = 0; i < strlen(str); i++) {
-	if (!isdigit(str[i])) {
-	    return false;
-	}
-    }
-
-    return true;
-}
-
 
 /** autosend function
  *
