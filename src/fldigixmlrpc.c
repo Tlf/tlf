@@ -68,26 +68,17 @@ Method Name 	 Sig (ret:arg) Description
  main.rx                n:n  - RX
  main.tx                n:n  - TX
  main.get_trx_state     s:n  - get RX/TX state, 's' could be "RX" | "TX"
-   rx.get_data          6:n (bytes:) - get content of RX window since last query
- text.add_tx            n:s  - add content to TX window
-modem.get_name          s:n  - Returns the name of the current modem
-modem.get_carrier       i:n  - get carrier of modem
-modem.set_carrier       i:i  - set carrier of modem
+ text.add_tx            n:s  - Adds a string to the TX text widget
+ text.clear_tx          n:n  - Clears the TX text widget
+ text.get_rx_length     i:n  - Returns the number of characters in the RX widget
+ text.get_rx            6:ii - Returns a range of characters (start, length) from the RX text widget
   log.get_call          s:n  - Returns the Call field contents
   log.set_call          n:s  - Sets the Call field contents
-  log.get_serial_number s:n  - Returns the serial number field contents
-  rig.set_frequency     d:d  - Sets the RF carrier frequency. Returns the old value
   log.get_exchange      s:n  - Returns the contest exchange field contents
   log.set_exchange      n:s  - Sets the contest exchange field contents
-  rig.set_modes         n:A  - Sets the list of available rig modes
-  rig.set_mode          n:s  - Selects a mode previously added by rig.set_modes
-
-
- // other usable functions
- text.get_rx_length  i:n  - get length of content of RX window
- text.get_rx         6:ii - (bytes:int|int) - get part content of RX window
-			    [start:length]
-   tx.get_data       6:n  - (bytes:) - get content of TX window since last query
+  log.get_frequency     s:n  - Returns the Frequency field contents [value in kHz]
+  rig.get_frequency     d:n  - Returns the RF carrier frequency
+  rig.set_frequency     d:d  - Sets the RF carrier frequency. Returns the old value
 
 
  * XML-RPC Format Specifiers (subset used by Fldigi)
