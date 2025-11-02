@@ -577,6 +577,11 @@ int fldigi_get_log_frequency(freq_t *f) {
     int rc = fldigi_xmlrpc_query(&result, "log.get_frequency", "");
     if (rc == 0) {
 	// convert string result in kHz to Hz
+	// ... but first fix decimal separator
+	char *p = strchr(result.stringval, ',');
+	if (p != NULL) {
+	    *p = '.';
+	}
 	*f = atof(result.stringval) * 1000.0;
 	xmlrpc_res_free(&result);
     }
