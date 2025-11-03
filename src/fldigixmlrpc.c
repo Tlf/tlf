@@ -31,6 +31,7 @@
 #include "globalvars.h"
 #include "keystroke_names.h"
 #include "logit.h"
+#include "gettxinfo.h"
 #include "callinput.h"      // for valid_call_char()
 #include "showmsg.h"
 #include "tlf_curses.h"
@@ -79,6 +80,9 @@ Method Name 	 Sig (ret:arg) Description
   log.get_frequency     s:n  - Returns the Frequency field contents [value in kHz]
   rig.get_frequency     d:n  - Returns the RF carrier frequency
   rig.set_frequency     d:d  - Sets the RF carrier frequency. Returns the old value
+  rig.get_mode          s:n  - Returns the name of the current transceiver mode
+modem.get_carrier       i:n  - Returns the modem carrier frequency
+modem.set_carrier       i:i  - Sets modem carrier. Returns old carrier
 
 
  * XML-RPC Format Specifiers (subset used by Fldigi)
@@ -540,7 +544,52 @@ int fldigi_get_rx_text(char *line, int len) {
 #else
     return 0;
 #endif
+}
 
+int RTTY_SWEET_SPOT = 2210; /* low: 2125Hz, high: 2295Hz, shift: 170Hz,
+				    center: 2125+(170/2) = 2210Hz */
+#define RTTY_MAX_RIT    20  /* max carrier shift still treated as RIT */
+
+// when using hardware RTTY mode and AF carrier is moved away
+// from its nominal value (sweet spot) then move rig frequency
+// to get the carrier back to the sweet spot.
+// same as pressing QSY button on Fldigi UI
+void fldigi_auto_qsy() {
+#ifdef HAVE_LIBXMLRPC
+    xmlrpc_res result;
+
+    int rc = fldigi_xmlrpc_query(&result, "rig.get_mode", "");
+    if (rc != 0) {
+	return;
+    }
+
+    bool is_rtty = (strcmp(result.stringval, "RTTY") == 0);
+    xmlrpc_res_free(&result);
+    if (!is_rtty) {
+	return;
+    }
+
+    rc = fldigi_xmlrpc_query(&result, "modem.get_carrier", "");
+    if (rc != 0) {
+	return;
+    }
+
+    int carrier = (int)result.intval;
+    xmlrpc_res_free(&result);
+    int offset = carrier - RTTY_SWEET_SPOT;
+    if (abs(offset) <= RTTY_MAX_RIT) {
+	return;     // still within RIT range
+    }
+
+    rc = fldigi_xmlrpc_query(NULL, "modem.set_carrier", "i", RTTY_SWEET_SPOT);
+    if (rc != 0) {
+	return;
+    }
+
+    freq_t new_freq = freq - offset;    // using LSB receive
+    set_outfreq(new_freq);
+
+#endif
 }
 
 // set log frequency considering current carrier offset

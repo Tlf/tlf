@@ -41,6 +41,7 @@ int fldigi_get_log_serial_number();
 bool fldigi_toggle(void);
 bool fldigi_isenabled(void);
 
+void fldigi_auto_qsy();
 int fldigi_set_log_frequency(freq_t f);
 int fldigi_get_log_frequency(freq_t *f);
 

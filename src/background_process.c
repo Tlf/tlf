@@ -110,6 +110,7 @@ void *background_process(void *ptr) {
 	 */
 	if (digikeyer == FLDIGI && fldigi_isenabled() && trx_control) {
 	    if (fldigi_rpc_cnt == 0) {
+		fldigi_auto_qsy();
 		fldigi_get_log_call();
 		fldigi_get_log_serial_number();
 	    }
