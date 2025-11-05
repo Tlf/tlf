@@ -272,6 +272,8 @@ void gettxinfo(void) {
 	    TLF_SHOW_WARN("Problem with rig link: %s", tlf_rigerror(retval));
 	}
 
+	rigmode = new_mode;
+
     } else if (reqf == RESETRIT) {
 	pthread_mutex_lock(&tlf_rig_mutex);
 	retval = rig_set_rit(my_rig, RIG_VFO_CURR, 0);
