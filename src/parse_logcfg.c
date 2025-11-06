@@ -1466,6 +1466,7 @@ static config_t logcfg_configs[] = {
     {"QTCREC_RECORD_COMMAND",   NEED_PARAM, cfg_qtcrec_record_command},
     {"EXCLUDE_MULTILIST",   NEED_PARAM, cfg_exclude_multilist},
     {"FLDIGI",              OPTIONAL_PARAM, cfg_fldigi},
+    {"FLDIGI_RTTY_SWEET_SPOT",  CFG_INT(fldigi_rtty_sweet_spot, 0, 9999)},
     {"MINITEST",            OPTIONAL_PARAM, cfg_minitest},
     {"UNIQUE_CALL_MULTI",   NEED_PARAM, cfg_unique_call_multi},
     {"DIGI_RIG_MODE",       NEED_PARAM, cfg_digi_rig_mode},

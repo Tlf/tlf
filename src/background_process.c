@@ -105,20 +105,12 @@ void *background_process(void *ptr) {
 	    rx_rtty();
 
 	/*
-	 * calling Fldigi XMLRPC method, which reads the Fldigi's carrier:
-	 * fldigi_xmlrpc_get_carrier()
-	 * this function helps to show the correct freq of the RIG: reads
-	 * the carrier value from Fldigi, and stores in a variable; then
-	 * it readable by fldigi_get_carrier()
-	 * see fldigixmlrpc.[ch]
-	 *
-	 * There are two addition routines
 	 *   fldigi_get_log_call() reads the callsign, if user clicks to a string in Fldigi's RX window
 	 *   fldigi_get_log_serial_number() reads the exchange
 	 */
 	if (digikeyer == FLDIGI && fldigi_isenabled() && trx_control) {
 	    if (fldigi_rpc_cnt == 0) {
-		fldigi_xmlrpc_get_carrier();
+		fldigi_auto_qsy();
 		fldigi_get_log_call();
 		fldigi_get_log_serial_number();
 	    }

@@ -2539,6 +2539,17 @@ If you run Fldigi's XMLRPC server on an different port use
 \fBFLDIGI\fR=\fIhttp://localhost:port_#/RPC2\fR
 .
 .TP
+\fBFLDIGI_RTTY_SWEET_SPOT\fR=\fIhz\fR
+Sets the preferred RTTY audio center frequency
+used for auto-QSY in FSK RTTY mode.
+.
+.IP
+Default is 2210, which is in the middle
+of the standard mark (2125 Hz) and space (2295 Hz) tones.
+.
+To disable auto-QSY set it to 0.
+.
+.TP
 \fBMINITEST\fR[=\fINNN\fR]
 Use this option when the contest is a minitest like contest.
 .

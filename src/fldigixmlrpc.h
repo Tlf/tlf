@@ -24,7 +24,14 @@
 
 #include "tlf.h"
 
+// center frequency (sweet spot) in audio band
+//  low (mark) frequency: 2125 Hz
+//  high (space) frequency: 2295 Hz
+//  shift: 170 Hz
+#define DEFAULT_FLDIGI_RTTY_SWEET_SPOT  (2125 + 170/2)
+
 extern bool fldigi_set_callfield;
+extern int fldigi_rtty_sweet_spot;
 
 int fldigi_xmlrpc_init();
 int fldigi_xmlrpc_cleanup();
@@ -40,5 +47,9 @@ int fldigi_get_log_call();
 int fldigi_get_log_serial_number();
 bool fldigi_toggle(void);
 bool fldigi_isenabled(void);
+
+void fldigi_auto_qsy();
+int fldigi_set_log_frequency(freq_t f);
+int fldigi_get_log_frequency(freq_t *f);
 
 #endif /* end of include guard: FLDIGIXMLRPC_H */

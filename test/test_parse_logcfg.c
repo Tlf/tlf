@@ -13,6 +13,7 @@
 #include "../src/qtcvars.h"
 #include "../src/tlf.h"
 #include "../src/err_utils.h"
+#include "../src/fldigixmlrpc.h"
 #include "../src/globalvars.h"
 #include "../src/getwwv.h"
 #include "../src/change_rst.h"
@@ -70,8 +71,9 @@ bool fldigi_isenabled(void) {
     return fldigi_on;
 }
 
-void fldigi_toggle() {
+bool fldigi_toggle() {
     fldigi_on = !fldigi_on;
+    return fldigi_on;
 }
 
 int get_total_score() {
@@ -259,6 +261,7 @@ int setup_default(void **state) {
     showmsg_spy = STRING_NOT_SET;
     rst_init_spy[0] = 0;
     fldigi_on = false;
+    fldigi_rtty_sweet_spot = -1;
 
     return 0;
 }
@@ -365,6 +368,12 @@ void test_weight(void **state) {
     int rc = call_parse_logcfg("WEIGHT=12");    // no line ending
     assert_int_equal(rc, 0);
     assert_int_equal(weight, 12);
+}
+
+void test_fldigi_rtty_sweet_spot(void **state) {
+    int rc = call_parse_logcfg("FLDIGI_RTTY_SWEET_SPOT=1378");    // no line ending
+    assert_int_equal(rc, 0);
+    assert_int_equal(fldigi_rtty_sweet_spot, 1378);
 }
 
 void test_partials(void **state) {

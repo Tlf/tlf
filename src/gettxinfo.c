@@ -113,46 +113,37 @@ static void poll_rig_state() {
     }
     last_freq_time = now;
 
-    vfo_t vfo;
-    int retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
-    pthread_mutex_unlock(&tlf_rig_mutex);
-
-    if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL) {
-	pthread_mutex_lock(&tlf_rig_mutex);
-	retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
+    int retval;
+    // NOTE: tlf_rig_mutex is locked at this point
+    if (trxmode == DIGIMODE && digikeyer == FLDIGI) {
+	int rc = fldigi_get_log_frequency(&rigfreq);
+	retval = (rc == 0 ? RIG_OK : -RIG_EINTERNAL);
+	pthread_mutex_unlock(&tlf_rig_mutex);
+    } else {
+	vfo_t vfo;
+	retval = rig_get_vfo(my_rig, &vfo); /* initialize RIG_VFO_CURR */
 	pthread_mutex_unlock(&tlf_rig_mutex);
 
-	if (retval == RIG_OK &&
-		(
-		    (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI))
-		    ||
-		    rig_mode_sync
-		)
-	   ) {
+	if (retval == RIG_OK || retval == -RIG_ENIMPL || retval == -RIG_ENAVAIL) {
 	    pthread_mutex_lock(&tlf_rig_mutex);
-	    pbwidth_t bwidth;
-	    int retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, &rigmode, &bwidth);
+	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 	    pthread_mutex_unlock(&tlf_rig_mutex);
 
-	    if (retvalmode != RIG_OK) {
-		rigmode = RIG_MODE_NONE;
+	    if (retval == RIG_OK && rig_mode_sync) {
+		pthread_mutex_lock(&tlf_rig_mutex);
+		pbwidth_t bwidth;
+		int retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, &rigmode, &bwidth);
+		pthread_mutex_unlock(&tlf_rig_mutex);
+
+		if (retvalmode != RIG_OK) {
+		    rigmode = RIG_MODE_NONE;
+		}
 	    }
 	}
     }
 
-    if (trxmode == DIGIMODE && (digikeyer == GMFSK || digikeyer == FLDIGI)) {
-	rigfreq += (freq_t)fldigi_get_carrier();
-	if (rigmode == RIG_MODE_RTTY || rigmode == RIG_MODE_RTTYR) {
-	    int fldigi_shift_freq = fldigi_get_shift_freq();
-	    if (fldigi_shift_freq != 0) {
-		pthread_mutex_lock(&tlf_rig_mutex);
-		retval = rig_set_freq(my_rig, RIG_VFO_CURR,
-				      ((freq_t)rigfreq + (freq_t)fldigi_shift_freq));
-		pthread_mutex_unlock(&tlf_rig_mutex);
-	    }
-	}
-    } else if (trxmode == CWMODE && (rigmode == RIG_MODE_LSB
-				     || rigmode == RIG_MODE_USB)) {
+    if (trxmode == CWMODE && (rigmode == RIG_MODE_LSB
+			      || rigmode == RIG_MODE_USB)) {
 	set_trxmode_internally(SSBMODE);
     } else if (trxmode != CWMODE && (rigmode == RIG_MODE_CW
 				     || rigmode == RIG_MODE_CWR)) {
@@ -275,6 +266,8 @@ void gettxinfo(void) {
 	    TLF_SHOW_WARN("Problem with rig link: %s", tlf_rigerror(retval));
 	}
 
+	rigmode = new_mode;
+
     } else if (reqf == RESETRIT) {
 	pthread_mutex_lock(&tlf_rig_mutex);
 	retval = rig_set_rit(my_rig, RIG_VFO_CURR, 0);
@@ -286,13 +279,16 @@ void gettxinfo(void) {
 
     } else {
 	// set rig frequency (or carrier) to `reqf'
-	reqf -= fldigi_get_carrier();
-	pthread_mutex_lock(&tlf_rig_mutex);
-	retval = rig_set_freq(my_rig, RIG_VFO_CURR, (freq_t) reqf);
-	pthread_mutex_unlock(&tlf_rig_mutex);
+	if (trxmode == DIGIMODE && digikeyer == FLDIGI) {
+	    fldigi_set_log_frequency((freq_t) reqf);
+	} else {
+	    pthread_mutex_lock(&tlf_rig_mutex);
+	    retval = rig_set_freq(my_rig, RIG_VFO_CURR, (freq_t) reqf);
+	    pthread_mutex_unlock(&tlf_rig_mutex);
 
-	if (retval != RIG_OK) {
-	    TLF_SHOW_WARN("Problem with rig link: set frequency: %s", tlf_rigerror(retval));
+	    if (retval != RIG_OK) {
+		TLF_SHOW_WARN("Problem with rig link: set frequency: %s", tlf_rigerror(retval));
+	    }
 	}
 
     }
