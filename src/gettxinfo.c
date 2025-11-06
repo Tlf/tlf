@@ -129,13 +129,7 @@ static void poll_rig_state() {
 	    retval = rig_get_freq(my_rig, RIG_VFO_CURR, &rigfreq);
 	    pthread_mutex_unlock(&tlf_rig_mutex);
 
-	    if (retval == RIG_OK &&
-		    (
-			(trxmode == DIGIMODE && digikeyer == GMFSK) //FIXME
-			||
-			rig_mode_sync
-		    )
-	       ) {
+	    if (retval == RIG_OK && rig_mode_sync) {
 		pthread_mutex_lock(&tlf_rig_mutex);
 		pbwidth_t bwidth;
 		int retvalmode = rig_get_mode(my_rig, RIG_VFO_CURR, &rigmode, &bwidth);
