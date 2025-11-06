@@ -671,6 +671,7 @@ static void init_variables() {
     bzero(bc_hostaddress, sizeof(bc_hostaddress));
     bzero(bc_hostport, sizeof(bc_hostport));
     time_master = false;
+    fldigi_rtty_sweet_spot = DEFAULT_FLDIGI_RTTY_SWEET_SPOT;
 
     g_free(current_qso.call);
     current_qso.call = g_malloc0(CALL_SIZE);

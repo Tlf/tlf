@@ -160,6 +160,7 @@ char synclogfile[120];
 char markerfile[120] = "";
 int xplanet = MARKER_NONE;
 char fldigi_url[50] = "http://localhost:7362/RPC2";
+int fldigi_rtty_sweet_spot;
 
 char sp_return[80] = " \n";
 char cq_return[80] = " \n";

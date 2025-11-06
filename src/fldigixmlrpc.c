@@ -546,16 +546,20 @@ int fldigi_get_rx_text(char *line, int len) {
 #endif
 }
 
-int RTTY_SWEET_SPOT = 2210; /* low: 2125Hz, high: 2295Hz, shift: 170Hz,
-				    center: 2125+(170/2) = 2210Hz */
+int fldigi_rtty_sweet_spot = DEFAULT_FLDIGI_RTTY_SWEET_SPOT;
+
 #define RTTY_MAX_RIT    20  /* max carrier shift still treated as RIT */
 
-// when using hardware RTTY mode and AF carrier is moved away
-// from its nominal value (sweet spot) then move rig frequency
-// to get the carrier back to the sweet spot.
-// same as pressing QSY button on Fldigi UI
+// when using hardware (FSK) RTTY mode and AF carrier is moved away
+// from its nominal value (sweet spot) on the waterfall
+// then correct rig frequency to get the carrier back to the sweet spot.
+// (same as pressing QSY button on Fldigi UI)
 void fldigi_auto_qsy() {
 #ifdef HAVE_LIBXMLRPC
+    if (fldigi_rtty_sweet_spot == 0) {
+	return; // feature disabled
+    }
+
     xmlrpc_res result;
 
     int rc = fldigi_xmlrpc_query(&result, "rig.get_mode", "");
@@ -576,17 +580,21 @@ void fldigi_auto_qsy() {
 
     int carrier = (int)result.intval;
     xmlrpc_res_free(&result);
-    int offset = carrier - RTTY_SWEET_SPOT;
+
+    int offset = carrier - fldigi_rtty_sweet_spot;
     if (abs(offset) <= RTTY_MAX_RIT) {
 	return;     // still within RIT range
     }
 
-    rc = fldigi_xmlrpc_query(NULL, "modem.set_carrier", "i", RTTY_SWEET_SPOT);
+    // move back audio carrier
+    rc = fldigi_xmlrpc_query(NULL, "modem.set_carrier", "i",
+			     fldigi_rtty_sweet_spot);
     if (rc != 0) {
 	return;
     }
 
-    freq_t new_freq = freq - offset;    // using LSB receive
+    // correct rig frequency accordingly
+    freq_t new_freq = freq - offset;    // assuming LSB receive
     set_outfreq(new_freq);
 
 #endif
