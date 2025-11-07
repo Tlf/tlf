@@ -51,7 +51,10 @@ static int get_autocq_time() {
     return (int)(1200.0 / speed) * cw_message_len;
 }
 
-#define NO_KEY -1
+#define NO_KEY (-1)
+
+// non-keypress events:
+#define EVENT_CALLSIGN_GRAB     (NO_KEY - 1)
 
 static int wait_50ms_for_key() {
 
@@ -105,6 +108,11 @@ static int wait_ms(int ms) {
 
 	key = wait_50ms_for_key();
 
+	// check if callsign grab happened
+	if (key == NO_KEY && current_qso.call[0] != 0) {
+	    key = EVENT_CALLSIGN_GRAB;
+	}
+
 	wait_timer -= 50;
 	update_timer -= 50;
 
@@ -138,7 +146,7 @@ int auto_cq(void) {
 	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
 	// wait till message ends (calculated for CW, playtime for SSB)
-	// or any key press
+	// a key pressed or an event happened
 	if (trxmode == CWMODE || trxmode == DIGIMODE) {
 	    key = wait_ms(message_time);
 	} else {
@@ -168,6 +176,10 @@ int auto_cq(void) {
 
     mvaddstr(12, 29, spaces(13));
     printcall();
+
+    if (key < NO_KEY) {     // map events to NO_KEY
+	key = NO_KEY;
+    }
 
     return toupper(key);
 }
