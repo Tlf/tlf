@@ -30,6 +30,7 @@
 #include "clear_display.h"
 #include "cw_utils.h"
 #include "globalvars.h"
+#include "keyer.h"
 #include "printcall.h"
 #include "sendbuf.h"
 #include "stoptx.h"
@@ -56,13 +57,28 @@ static int get_autocq_time() {
 // non-keypress events:
 #define EVENT_CALLSIGN_GRAB     (NO_KEY - 1)
 
+static int handle_immediate_key(int key) {
+    switch (key) {
+	// keyer speed change
+	case KEY_PPAGE: // <Page-Up>
+	case KEY_NPAGE: // <Page-Down>
+	    key = handle_common_key(key);
+	    if (key == 0) {     // key has been processed
+		key = NO_KEY;   // so pretend there was no keypress at all
+	    }
+	default:
+	    // no action
+    }
+    return key;
+}
+
 static int wait_50ms_for_key() {
 
     usleep(50 * 1000);
 
     const int inchar = key_poll();
     if (inchar > 0 && inchar != KEY_RESIZE) {
-	return inchar;
+	return handle_immediate_key(inchar);
     }
 
     return NO_KEY;
@@ -136,7 +152,7 @@ int auto_cq(void) {
 
     int key = NO_KEY;
 
-    // any key press terminates auto CQ loop
+    // any unhandled key press terminates auto CQ loop
     while (key == NO_KEY) {
 
 	send_standard_message(11);
