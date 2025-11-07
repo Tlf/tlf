@@ -89,7 +89,6 @@ static void serial_up_down(char *exchange, int delta) {
 
 int getexchange(void) {
 
-    int i;
     int x = 0;
     char instring[2];
     char commentbuf[40] = "";
@@ -132,7 +131,6 @@ int getexchange(void) {
 
     commentfield = 1;
 
-    i = strlen(current_qso.comment);
     while (1) {
 
 	refresh_comment();
@@ -193,9 +191,8 @@ int getexchange(void) {
 	    }
 
 	    case KEY_BACKSPACE: {	// Erase (^H or <Backspace>)
-		if (i >= 1) {
+		if (strlen(current_qso.comment) >= 1) {
 		    current_qso.comment[strlen(current_qso.comment) - 1] = '\0';
-		    i -= 1;
 		}
 		break;
 	    }
@@ -219,10 +216,8 @@ int getexchange(void) {
 		/* wipe out or restore exchange field */
 		if (current_qso.comment[0] != '\0') {
 		    cleanup_comment();
-		    i = 0;
 		} else {
 		    restore_comment();
-		    i = strlen(current_qso.comment);
 		}
 		break;
 	    }
@@ -234,7 +229,6 @@ int getexchange(void) {
 		    if (current_qso.comment[0] != '\0') {	/* if comment not empty */
 			/* drop exchange so far */
 			cleanup_comment();
-			i = 0;
 		    } else {
 			/* back to callinput */
 			x = TAB;	// <Tab>
@@ -306,7 +300,6 @@ int getexchange(void) {
 	    case KEY_LEFT: {	/* Left Arrow--edit exchange field */
 		if (current_qso.comment[0] != '\0') {
 		    exchange_edit();
-		    i = strlen(current_qso.comment);
 		}
 		break;
 	    }
@@ -314,7 +307,6 @@ int getexchange(void) {
 	    case KEY_UP:	/* Up/Down--increase/decrease serial number */
 	    case KEY_DOWN: {
 		serial_up_down(current_qso.comment, (x == KEY_UP) ? 1 : -1);
-		i = strlen(current_qso.comment);
 		break;
 	    }
 
@@ -345,12 +337,12 @@ int getexchange(void) {
 	if (x >= 'a' && x <= 'z')
 	    x = x - 32;		// Promote to upper case
 
-	if (i < contest->exchange_width) {  /* normal character -> insert if space left */
+	/* normal character -> insert if space left */
+	if (strlen(current_qso.comment) < contest->exchange_width) {
 	    if (x >= ' ' && x <= 'Z') {
 		instring[0] = x;
 		addch(x);
 		strcat(current_qso.comment, instring);
-		i++;
 		refreshp();
 	    }
 	}
