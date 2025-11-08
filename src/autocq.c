@@ -48,7 +48,7 @@ static int get_autocq_time() {
     if (trxmode != CWMODE) {
 	return 0;   // unknown
     }
-    const int cw_message_len = cw_message_length(message[11]);
+    const int cw_message_len = cw_message_length(message[AUTO_CQ_MSG]);
     return (int)(1200.0 / speed) * cw_message_len;
 }
 
@@ -158,7 +158,7 @@ int auto_cq(void) {
     // any unhandled key press terminates auto CQ loop
     while (key == NO_KEY) {
 
-	send_standard_message(11);
+	send_standard_message(AUTO_CQ_MSG);
 
 	move(12, 29);
 
