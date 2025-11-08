@@ -244,6 +244,34 @@ int handle_common_key(int key) {
 	    break;
 	}
 
+	// Ctrl-<Page-Up>, increase cqdelay by 1/2 second.
+	// Alt-<Page-Up>, same for terminals that consume Ctrl-<Page-Up>.
+	case TERM_KEY_CTRL_PGUP:
+	case TERM_KEY_ALT_PGUP: {
+	    if (cqdelay <= 60) {
+		cqdelay++;
+
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 19, "%-2i", cqdelay);
+	    }
+
+	    break;
+	}
+
+	// Ctrl-<Page-Down>, decrease cqdelay by 1/2 cecond.
+	// Alt-<Page-Down>, same for terminals that consume Ctrl-<Page-Down>.
+	case TERM_KEY_CTRL_PGDN:
+	case TERM_KEY_ALT_PGDN: {
+	    if (cqdelay >= 4) {
+		cqdelay--;
+
+		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
+		mvprintw(0, 19, "%-2i", cqdelay);
+	    }
+
+	    break;
+	}
+
 	default:
 	    handled = false;
     }

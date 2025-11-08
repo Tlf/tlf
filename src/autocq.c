@@ -31,6 +31,7 @@
 #include "cw_utils.h"
 #include "globalvars.h"
 #include "keyer.h"
+#include "keystroke_names.h"
 #include "printcall.h"
 #include "sendbuf.h"
 #include "stoptx.h"
@@ -63,12 +64,20 @@ static int handle_immediate_key(int key) {
 	// keyer speed change
 	case KEY_PPAGE: // <Page-Up>
 	case KEY_NPAGE: // <Page-Down>
+
+	// auto CQ delay change
+	case TERM_KEY_CTRL_PGUP:
+	case TERM_KEY_ALT_PGUP:
+	case TERM_KEY_CTRL_PGDN:
+	case TERM_KEY_ALT_PGDN:
+
 	    getyx(stdscr, cury, curx);  // save cursor
 	    key = handle_common_key(key);
 	    if (key == 0) {         // key has been processed
 		move(cury, curx);   // restore cursor
 		key = NO_KEY;       // pretend there was no key press at all
 	    }
+
 	default:
 	    // no action
     }
@@ -178,6 +187,10 @@ int auto_cq(void) {
 	    refreshp();
 
 	    key = wait_ms(500);
+
+	    if (delayval > cqdelay) {   // in case it was shortened while waiting
+		delayval = cqdelay;
+	    }
 	}
 
 	mvaddstr(12, 29, spaces(13));

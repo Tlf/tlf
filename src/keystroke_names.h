@@ -78,3 +78,10 @@
 #define RETURN    CTRL_M
 
 #define SHIFT_F(n)  (KEY_F(n) + 12)
+
+/* Terminal-specific keystrokes, see lookup_keys()  */
+#define TERM_KEY_ALT_PGUP   10000
+#define TERM_KEY_ALT_PGDN   10001
+#define TERM_KEY_CTRL_PGUP  10002
+#define TERM_KEY_CTRL_PGDN  10003
+
