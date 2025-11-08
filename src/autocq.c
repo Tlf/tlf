@@ -58,13 +58,16 @@ static int get_autocq_time() {
 #define EVENT_CALLSIGN_GRAB     (NO_KEY - 1)
 
 static int handle_immediate_key(int key) {
+    int cury, curx;
     switch (key) {
 	// keyer speed change
 	case KEY_PPAGE: // <Page-Up>
 	case KEY_NPAGE: // <Page-Down>
+	    getyx(stdscr, cury, curx);  // save cursor
 	    key = handle_common_key(key);
-	    if (key == 0) {     // key has been processed
-		key = NO_KEY;   // so pretend there was no keypress at all
+	    if (key == 0) {         // key has been processed
+		move(cury, curx);   // restore cursor
+		key = NO_KEY;       // pretend there was no key press at all
 	    }
 	default:
 	    // no action
@@ -159,8 +162,6 @@ int auto_cq(void) {
 
 	move(12, 29);
 
-	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-
 	// wait till message ends (calculated for CW, playtime for SSB)
 	// a key pressed or an event happened
 	if (trxmode == CWMODE || trxmode == DIGIMODE) {
@@ -172,6 +173,7 @@ int auto_cq(void) {
 	// wait between calls
 	for (int delayval = cqdelay; delayval > 0 && key == NO_KEY; delayval--) {
 
+	    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 	    mvprintw(12, 29, "Auto CQ  %-2d ", delayval);
 	    refreshp();
 
