@@ -78,7 +78,7 @@ static int handle_immediate_key(int key) {
 		key = NO_KEY;       // pretend there was no key press at all
 	    }
 
-            break;
+	    break;
 
 	default:
 	    // no action
