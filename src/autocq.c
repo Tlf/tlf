@@ -162,8 +162,6 @@ int auto_cq(void) {
     cqmode = AUTO_CQ;
     show_header_line();
 
-    const long message_time = get_autocq_time();
-
     int key = NO_KEY;
 
     // any unhandled key press terminates auto CQ loop
@@ -176,7 +174,7 @@ int auto_cq(void) {
 	// wait till message ends (calculated for CW, playtime for SSB)
 	// a key pressed or an event happened
 	if (trxmode == CWMODE || trxmode == DIGIMODE) {
-	    key = wait_ms(message_time);
+	    key = wait_ms(get_autocq_time());
 	} else {
 	    key = vk_wait_finish();
 	}
