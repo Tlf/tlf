@@ -30,6 +30,8 @@
 #include "clear_display.h"
 #include "cw_utils.h"
 #include "globalvars.h"
+#include "keyer.h"
+#include "keystroke_names.h"
 #include "printcall.h"
 #include "sendbuf.h"
 #include "stoptx.h"
@@ -47,11 +49,42 @@ static int get_autocq_time() {
     if (trxmode != CWMODE) {
 	return 0;   // unknown
     }
-    const int cw_message_len = cw_message_length(message[11]);
+    const int cw_message_len = cw_message_length(message[AUTO_CQ_MSG]);
     return (int)(1200.0 / speed) * cw_message_len;
 }
 
-#define NO_KEY -1
+#define NO_KEY (-1)
+
+// non-keypress events:
+#define EVENT_CALLSIGN_GRAB     (NO_KEY - 1)
+
+static int handle_immediate_key(int key) {
+    int cury, curx;
+    switch (key) {
+	// keyer speed change
+	case KEY_PPAGE: // <Page-Up>
+	case KEY_NPAGE: // <Page-Down>
+
+	// auto CQ delay change
+	case TERM_KEY_CTRL_PGUP:
+	case TERM_KEY_ALT_PGUP:
+	case TERM_KEY_CTRL_PGDN:
+	case TERM_KEY_ALT_PGDN:
+
+	    getyx(stdscr, cury, curx);  // save cursor
+	    key = handle_common_key(key);
+	    if (key == 0) {         // key has been processed
+		move(cury, curx);   // restore cursor
+		key = NO_KEY;       // pretend there was no key press at all
+	    }
+
+	    break;
+
+	default:
+	    // no action
+    }
+    return key;
+}
 
 static int wait_50ms_for_key() {
 
@@ -59,7 +92,7 @@ static int wait_50ms_for_key() {
 
     const int inchar = key_poll();
     if (inchar > 0 && inchar != KEY_RESIZE) {
-	return inchar;
+	return handle_immediate_key(inchar);
     }
 
     return NO_KEY;
@@ -105,6 +138,11 @@ static int wait_ms(int ms) {
 
 	key = wait_50ms_for_key();
 
+	// check if callsign grab happened
+	if (key == NO_KEY && current_qso.call[0] != 0) {
+	    key = EVENT_CALLSIGN_GRAB;
+	}
+
 	wait_timer -= 50;
 	update_timer -= 50;
 
@@ -124,23 +162,19 @@ int auto_cq(void) {
     cqmode = AUTO_CQ;
     show_header_line();
 
-    const long message_time = get_autocq_time();
-
     int key = NO_KEY;
 
-    // any key press terminates auto CQ loop
+    // any unhandled key press terminates auto CQ loop
     while (key == NO_KEY) {
 
-	send_standard_message(11);
+	send_standard_message(AUTO_CQ_MSG);
 
 	move(12, 29);
 
-	attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-
 	// wait till message ends (calculated for CW, playtime for SSB)
-	// or any key press
+	// a key pressed or an event happened
 	if (trxmode == CWMODE || trxmode == DIGIMODE) {
-	    key = wait_ms(message_time);
+	    key = wait_ms(get_autocq_time());
 	} else {
 	    key = vk_wait_finish();
 	}
@@ -148,10 +182,15 @@ int auto_cq(void) {
 	// wait between calls
 	for (int delayval = cqdelay; delayval > 0 && key == NO_KEY; delayval--) {
 
+	    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 	    mvprintw(12, 29, "Auto CQ  %-2d ", delayval);
 	    refreshp();
 
 	    key = wait_ms(500);
+
+	    if (delayval > cqdelay) {   // in case it was shortened while waiting
+		delayval = cqdelay;
+	    }
 	}
 
 	mvaddstr(12, 29, spaces(13));
@@ -168,6 +207,10 @@ int auto_cq(void) {
 
     mvaddstr(12, 29, spaces(13));
     printcall();
+
+    if (key < NO_KEY) {     // map events to NO_KEY
+	key = NO_KEY;
+    }
 
     return toupper(key);
 }

@@ -794,40 +794,6 @@ int callinput(void) {
 	}	/* end switch */
 
 
-	// Ctrl-<Page-Up>, increase cqdelay by 1/2 second.
-	// Alt-<Page-Up>, same for terminals that consume Ctrl-<Page-Up>.
-	if ((key_kPRV3 && x == key_kPRV3)
-		|| (key_kPRV5 && x == key_kPRV5)) {
-
-	    if (cqdelay <= 60) {
-		cqdelay++;
-
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvaddstr(0, 19, "  ");
-		mvprintw(0, 19, "%i", cqdelay);
-	    }
-
-	    break;
-	}
-
-
-	// Ctrl-<Page-Down>, decrease cqdelay by 1/2 Second.
-	// Alt-<Page-Down>, same for terminals that consume Ctrl-<Page-Down>.
-	if ((key_kNXT3 && x == key_kNXT3)
-		|| (key_kNXT5 && x == key_kNXT5)) {
-
-	    if (cqdelay >= 4) {
-		cqdelay--;
-
-		attron(COLOR_PAIR(C_HEADER) | A_STANDOUT);
-		mvaddstr(0, 19, "  ");
-		mvprintw(0, 19, "%i", cqdelay);
-	    }
-
-	    break;
-	}
-
-
 	/* Add character to call input field. */
 	if (valid_call_char(x)) {
 	    x = g_ascii_toupper(x);

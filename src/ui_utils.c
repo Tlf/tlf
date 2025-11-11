@@ -33,13 +33,12 @@
 #include "showmsg.h"
 #include "splitscreen.h"
 
-
 extern int ymax, xmax;
 
-int key_kNXT3 = 0;
-int key_kPRV3 = 0;
-int key_kNXT5 = 0;
-int key_kPRV5 = 0;
+static int key_kNXT3 = 0;
+static int key_kPRV3 = 0;
+static int key_kNXT5 = 0;
+static int key_kPRV5 = 0;
 
 static pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -77,7 +76,7 @@ int modify_attr(int attr) {
  * \param capability  - capability name
  * \return              keycode or 0 if no associated key found
  */
-int lookup_key(char *capability) {
+static int lookup_key(char *capability) {
     char *esc_sequence = NULL;
     int keycode = 0;
 
@@ -169,6 +168,29 @@ static int getkey(bool wait) {
     return x;
 }
 
+/* Map terminal-specific keys to our internal code
+ * as Ncurses does not provide predefined values for them
+ */
+static int map_terminal_key(int key) {
+    // Alt-<Page-Down>
+    if (key_kNXT3 && key == key_kNXT3) {
+	return TERM_KEY_ALT_PGDN;
+    }
+    // Alt-<Page-Up>
+    if (key_kPRV3 && key == key_kPRV3) {
+	return TERM_KEY_ALT_PGUP;
+    }
+    // Ctrl-<Page-Down>
+    if (key_kNXT5 && key == key_kNXT5) {
+	return TERM_KEY_CTRL_PGDN;
+    }
+    // Ctrl-<Page-Up>
+    if (key_kPRV5 && key == key_kPRV5) {
+	return TERM_KEY_CTRL_PGUP;
+    }
+
+    return key;
+}
 
 /* New onechar() that takes advantage of Ncurses keypad mode and processes
  * certain escaped keys and assigns them to Ncurses values known by
@@ -194,7 +216,7 @@ static int onechar(void) {
 	if (x == ERR) {
 	    stoptx();
 
-	    return x = ESCAPE;
+	    return ESCAPE;
 
 	} else if (x != 91) {
 
@@ -338,6 +360,8 @@ static int onechar(void) {
 
 	nodelay(stdscr, FALSE);
     }
+
+    x = map_terminal_key(x);
 
     return x;
 }

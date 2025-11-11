@@ -21,14 +21,8 @@
 #ifndef UI_UTILS_H
 #define UI_UTILS_H
 
-extern int key_kNXT3;
-extern int key_kPRV3;
-extern int key_kNXT5;
-extern int key_kPRV5;
-
 void refreshp();
 int modify_attr(int attr);
-int lookup_key(char *capability);
 void lookup_keys();
 
 /** convenience macro to name alt-keys */
