@@ -1033,6 +1033,7 @@ static int cfg_gmfsk(const cfg_arg_t arg) {
 	return rc;
     }
     digikeyer = GMFSK;
+    trxmode = DIGIMODE;
     return PARSE_OK;
 }
 
