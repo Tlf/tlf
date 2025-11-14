@@ -2106,7 +2106,8 @@ mode is selected.
 .
 .IP
 .I mode
-may be one of \(lqUSB\(rq, \(lqLSB\(rq, \(lqRTTY\(rq, or \(lqRTTYR\(rq.
+may be \(lqUSB\(rq, \(lqLSB\(rq, \(lqRTTY\(rq,
+or any radio mode supported by Hamlib.
 .
 If this parameter is not set, \(lqUSB\(rq is used if the Fldigi parameter is
 set else \(lqLSB\(rq is used.

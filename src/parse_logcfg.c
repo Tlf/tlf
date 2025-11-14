@@ -1243,17 +1243,11 @@ static int cfg_digi_rig_mode(const cfg_arg_t arg) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
 
-    if (strcmp(str, "USB") == 0) {
-	digi_mode = RIG_MODE_USB;
-    } else if (strcmp(str, "LSB") == 0) {
-	digi_mode = RIG_MODE_LSB;
-    } else if (strcmp(str, "RTTY") == 0) {
-	digi_mode = RIG_MODE_RTTY;
-    } else if (strcmp(str, "RTTYR") == 0) {
-	digi_mode = RIG_MODE_RTTYR;
-    } else {
+    digi_mode = rig_parse_mode(str);
+
+    if (digi_mode == RIG_MODE_NONE) {
+	error_details = g_strdup_printf("invalid mode %s", str);
 	g_free(str);
-	error_details = g_strdup("must be USB, LSB, RTTY, or RTTYR");
 	return PARSE_WRONG_PARAMETER;
     }
 
