@@ -1243,9 +1243,9 @@ static int cfg_digi_rig_mode(const cfg_arg_t arg) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
 
-    digi_mode = rig_parse_mode(str);
+    digi_rig_mode = rig_parse_mode(str);
 
-    if (digi_mode == RIG_MODE_NONE) {
+    if (digi_rig_mode == RIG_MODE_NONE) {
 	error_details = g_strdup_printf("invalid mode %s", str);
 	g_free(str);
 	return PARSE_WRONG_PARAMETER;

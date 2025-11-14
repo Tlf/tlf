@@ -126,7 +126,7 @@ extern int new_cty;
 extern int new_zone;
 extern bool new_pfx;
 extern bool no_rst;
-extern rmode_t digi_mode;
+extern rmode_t digi_rig_mode;
 extern int minitest;    // minitest period length in seconds, 0 if not used
 extern int portnum;
 extern int lan_port;

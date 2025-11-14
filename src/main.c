@@ -315,7 +315,7 @@ bool keyer_backspace = false;   // disabled
 
 char controllerport[80] = "/dev/ttyS0"; // for GMFSK or MFJ-1278
 char rttyoutput[120];		// where to GMFSK digimode output
-rmode_t digi_mode = RIG_MODE_NONE;
+rmode_t digi_rig_mode = RIG_MODE_NONE;
 
 int txdelay = 0;
 int weight = 0;
