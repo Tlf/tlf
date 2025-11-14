@@ -1183,6 +1183,7 @@ static int cfg_fldigi(const cfg_arg_t arg) {
     if (!fldigi_isenabled()) {
 	fldigi_toggle();
     }
+    trxmode = DIGIMODE;
 #endif
 
     return PARSE_OK;
