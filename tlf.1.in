@@ -2112,6 +2112,15 @@ or any radio mode supported by Hamlib.
 If this parameter is not set, \(lqUSB\(rq is used if the Fldigi parameter is
 set else \(lqLSB\(rq is used.
 .
+.TP
+\fBDIGITAL_MODE\fR=\fImode\fR
+The digital mode (modulation type) to be used as MODE in ADIF export.
+.
+.IP
+If this parameter is not set, then the non-ADIF compliant generic
+\(lqDIGI\(rq is used. The user shall then edit the ADIF file to match
+the actually used mode or modes.
+.
 .SS User Interface Commands
 .
 .TP
