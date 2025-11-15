@@ -1061,7 +1061,7 @@ static int cfg_change_rst(const cfg_arg_t arg) {
 
 static int cfg_rttymode(const cfg_arg_t arg) {
     trxmode = DIGIMODE;
-    strcpy(modem_mode, "RTTY");
+    strcpy(digital_mode, "RTTY");
     return PARSE_OK;
 }
 
@@ -1411,6 +1411,7 @@ static config_t logcfg_configs[] = {
     {"SYNCFILE",        CFG_STRING_STATIC(synclogfile, 120)},
     {"INITIAL_EXCHANGE",       CFG_STRING_STATIC(exchange_list, 40)},
     {"DIGIMODEM",       CFG_STRING_STATIC(rttyoutput, 120)},
+    {"DIGITAL_MODE",    CFG_STRING_STATIC(digital_mode, 8)},
     {"FKEY-HEADER",     CFG_STRING_STATIC(fkey_header, sizeof(fkey_header))},
 
     {"CABRILLO",    CFG_STRING(cabrillo)},

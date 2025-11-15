@@ -325,7 +325,7 @@ int k_pin14 = 0;
 int k_ptt = 0;
 
 int miniterm = 0;		/* is miniterm for digimode active? */
-char modem_mode[8];
+char digital_mode[8];
 int commentfield = 0;		/* 1 if we are in comment/exchange input */
 
 /*-------------------------------------packet-------------------------------*/

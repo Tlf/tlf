@@ -731,8 +731,8 @@ void prepare_adif_line(char *buffer, struct linedata_t *qso) {
 	tmp = "CW";
     else if (qso->mode == SSBMODE)
 	tmp = "SSB";
-    else if (strcmp(modem_mode, "RTTY") == 0)
-	tmp = "RTTY";
+    else if (digital_mode[0])
+	tmp = digital_mode;
     else
 	/* \todo DIGI is no allowed mode */
 	tmp = "DIGI";

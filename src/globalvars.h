@@ -217,7 +217,7 @@ extern char markerfile[];
 extern char countrylist[255][6];
 extern char continent_multiplier_list[7][3];
 extern char controllerport[];           // port for multi-mode controller
-extern char modem_mode[];
+extern char digital_mode[];
 extern char sc_volume[];
 extern char clusterlogin[];
 extern char rigconf[];
