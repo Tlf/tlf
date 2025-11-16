@@ -996,7 +996,7 @@ Restore previous CQ frequency from MEM and send message
 .
 .TP
 .B F2-F11
-Send CW, RTTY or VOICE messages 2 through 11. If the callsign field is empty
+Send CW, digital or voice messages 2 through 11. If the callsign field is empty
 the messages will be sent with the preceding qso data.
 .
 .TP
@@ -1079,7 +1079,7 @@ instead.
 .BR ?\  (Query)
 In CW or DIGIMODE sends the partial call followed by \(lq ?\(rq.
 .
-In VOICE mode sends recorded message 5 (F5).
+In voice mode sends recorded message 5 (F5).
 .
 .TP
 .BR ;\  (Semicolon)
@@ -1135,11 +1135,11 @@ Confirm last exchange.
 .
 .TP
 .BR {\  "(Open brace)"
-In RTTY (DIGIMODE), keyboard mode switch TX on.
+In digital mode, keyboard mode switch TX on.
 .
 .TP
 .BR }\  "(Close brace)"
-In RTTY (DIGIMODE), keyboard mode switch TX off (RX).
+In digital mode, keyboard mode switch TX off (RX).
 .
 .TP
 .BR \e\  (Backslash)
@@ -1739,7 +1739,11 @@ Start @PACKAGE_NAME@ in SSB mode (default is CW).
 .
 .TP
 .B RTTYMODE
-Start @PACKAGE_NAME@ in RTTY mode (default is CW)
+Start @PACKAGE_NAME@ in digital mode (default is CW)
+assuming RTTY modulation (see
+.BR DIGITAL_MODE ).
+.
+The radio mode (\fBDIGI_RIG_MODE\fR) is not affected.
 .
 .TP
 \fBGMFSK\fR=\fI$HOME/gMFSK.log\fR
@@ -2534,7 +2538,7 @@ If you work RTTY (or any other digital modes), you can communicate with Fldigi
 through
 .BR XMLRPC .
 .
-This parameter activates the interface.
+This parameter activates the interface and sets start-up mode to DIGIMODE.
 .
 .IP
 By default @PACKAGE_NAME@ connects to:
