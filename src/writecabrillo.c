@@ -243,10 +243,17 @@ void info(char *s) {
 }
 
 
-const char *to_mode[] = {
-    "CW",
-    "PH",
-    "RY"
+static const char *cabrillo_mode(int mode) {
+    if (mode == CWMODE)
+	return "CW";
+    if (mode == SSBMODE)
+	return "PH";
+
+    // for digimode: either RY for RTTY or else DG for generic digital mode
+    if (strcmp(digital_mode, "RTTY") == 0)
+	return "RY";
+
+    return "DG";
 };
 
 /* add 'src' to 'dst' with max. 'len' chars left padded */
@@ -364,7 +371,7 @@ void prepare_line(struct linedata_t *qso, struct cabrillo_desc *desc,
 		add_lpadded(buf, tmp, item->len);
 		break;
 	    case MODE:
-		sprintf(tmp, "%s", to_mode[qso->mode]);
+		sprintf(tmp, "%s", cabrillo_mode(qso->mode));
 		add_lpadded(buf, tmp, item->len);
 		break;
 	    case DATE:
