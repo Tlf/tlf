@@ -1163,11 +1163,11 @@ Pop MEM frequency: MEM \(-> transceiver VFO frequency and clear MEM.
 Swap transceiver VFO frequency and MEM.
 .
 .TP
-.B ^  (Circumflex, mnemonic: arrow)
+.B ^  \fR(Circumflex, mnemonic: arrow)
 Rotate antenna towards the country of the current call, if a rotator is configured.
 .
 .TP
-.B &  (Ampersand)
+.BR &\  (Ampersand)
 Rotate antenna long-path towards the country of the current call, if a rotator is configured.
 (This is 180° opposite of the short-path direction.)
 .
