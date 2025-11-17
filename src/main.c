@@ -23,6 +23,7 @@
 #include <argp.h>
 #include <ctype.h>
 #include <hamlib/rig.h>
+#include <hamlib/rotator.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -334,13 +335,13 @@ int nr_of_spots;			/* Anzahl Lines in spot_ptr array */
 int packetinterface = 0;
 int fdSertnc = 0;
 char tncportname[40];
-char rigconf[80];
 int tnc_serial_rate = 2400;
 char clusterlogin[80] = "";
 bool bmautoadd = false;
 bool bmautograb = false;
 
 /*-------------------------------------rigctl-------------------------------*/
+char rigconf[80];
 int myrig_model = 0;            /* unset */
 RIG *my_rig;			/* handle to rig (instance) */
 pthread_mutex_t tlf_rig_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -355,6 +356,15 @@ char *rigportname;
 int rignumber = 0;
 int rig_comm_error = 0;
 int rig_comm_success = 0;
+
+/*-------------------------------------rotctl-------------------------------*/
+bool rot_control;
+int myrot_model;		/* unset */
+char rotconf[80];
+ROT *my_rot;			/* handle to rotator (instance) */
+pthread_mutex_t tlf_rot_mutex = PTHREAD_MUTEX_INITIALIZER;
+int rot_serial_rate;
+char *rotportname;
 
 /*----------------------------------fldigi---------------------------------*/
 char fldigi_url[50] = "http://localhost:7362/RPC2";
@@ -421,6 +431,7 @@ char itustr[3];
 
 bool nopacket = false;		/* set if tlf is called with '-n' */
 bool trx_control_disabled = false;	/* set if tlf is called with '-r' */
+bool rot_control_disabled = false;	/* set if tlf is called with '-R' */
 bool convert_cabrillo = false;  /* set if the arg input is a cabrillo */
 
 int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
@@ -451,6 +462,7 @@ static const struct argp_option options[] = {
     {"import",      'i', 0, 0,  "Import Cabrillo file to Tlf format"},
     {"no-cluster",  'n', 0, 0,  "Start without cluster hookup" },
     {"no-rig",      'r', 0, 0,  "Start without radio control" },
+    {"no-rotator",  'R', 0, 0,  "Start without rotator control" },
     {"list",	    'l', 0, 0,  "List built-in contests" },
     {"sync",        's', "URL", 0,  "Synchronize log with other node" },
     {
@@ -476,6 +488,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 	    break;
 	case 'r':
 	    trx_control_disabled = true; // disable radio control
+	    break;
+	case 'R':
+	    rot_control_disabled = true; // disable rotator control
 	    break;
 	case 'i':
 	    convert_cabrillo = true;
@@ -665,6 +680,11 @@ static void init_variables() {
     rig_mode_sync = true;
     use_bandoutput = false;
 
+    /* rotctl */
+    rot_control = false;
+    myrot_model = 0; /* unset */
+    rot_serial_rate = 2400;
+
     lan_active = false;
     thisnode = 'A';
     lan_port = 6788;
@@ -808,6 +828,36 @@ static void hamlib_init() {
 	trx_control = false;
 	trx_control_disabled = true;
 	showmsg("Disabling rig control!");
+	sleep(1);
+    }
+}
+
+static void hamlib_rot_init() {
+
+    if (rot_control_disabled) {
+	rot_control = false;
+    }
+
+    if (!rot_control) {
+	return;
+    }
+
+    shownr("Rotator model number is", myrot_model);
+    shownr("Rotator speed is", rot_serial_rate);
+
+    showmsg("Trying to start rotator control");
+
+    int status = init_tlf_rot();
+
+    if (status != 0) {
+	showmsg("Continue without rotator control Y/(N)?");
+	if (toupper(key_get()) != 'Y') {
+	    endwin();
+	    exit(1);
+	}
+	rot_control = false;
+	rot_control_disabled = true;
+	showmsg("Disabling rotator control!");
 	sleep(1);
     }
 }
@@ -1003,6 +1053,10 @@ static void tlf_cleanup() {
 	close_tlf_rig(my_rig);
     }
 
+    if (my_rot) {
+	close_tlf_rot(my_rot);
+    }
+
 #ifdef HAVE_LIBXMLRPC
     if (digikeyer == FLDIGI) {
 	fldigi_xmlrpc_cleanup();
@@ -1114,6 +1168,7 @@ int main(int argc, char *argv[]) {
 //                      synclog(synclogfile);
 
     hamlib_init();
+    hamlib_rot_init();
     fldigi_init();
     lan_init();
     keyer_init();

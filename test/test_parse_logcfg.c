@@ -247,12 +247,14 @@ int setup_default(void **state) {
     }
 
     rigconf[0] = 0;
+    rotconf[0] = 0;
     pr_hostaddress[0] = 0;
 
     FREE_DYNAMIC_STRING(editor_cmd);
     FREE_DYNAMIC_STRING(cabrillo);
     FREE_DYNAMIC_STRING(callmaster_filename);
     FREE_DYNAMIC_STRING(rigportname);
+    FREE_DYNAMIC_STRING(rotportname);
     FREE_DYNAMIC_STRING(vk_play_cmd);
     FREE_DYNAMIC_STRING(vk_record_cmd);
     FREE_DYNAMIC_STRING(soundlog_play_cmd);
@@ -443,6 +445,7 @@ static bool_true_t bool_trues[] = {
     {"USE_CONTINENTLIST_ONLY", &continentlist_only},
     {"RIG_MODE_SYNC", &rig_mode_sync},
     {"RADIO_CONTROL", &trx_control},
+    {"ROTATOR_CONTROL", &rot_control},
     {"PORTABLE_MULT_2", &portable_x2},
     {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
     {"WYSIWYG_ONCE", &wysiwyg_once},
@@ -583,6 +586,12 @@ void test_rigconf(void **state) {
     int rc = call_parse_logcfg("RIGCONF= ABCD\n");
     assert_int_equal(rc, PARSE_OK);
     assert_string_equal(rigconf, "ABCD");
+}
+
+void test_rotconf(void **state) {
+    int rc = call_parse_logcfg("ROTCONF= ABCD\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(rotconf, "ABCD");
 }
 
 void test_callmaster(void **state) {
@@ -852,6 +861,13 @@ void test_rigport(void **state) {
     assert_string_equal(rigportname, "/dev/rigport \r\n");  // FIXME...
 }
 
+void test_rotport(void **state) {
+    int rc = call_parse_logcfg("ROTPORT = /dev/rotport \r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_non_null(rotportname);
+    assert_string_equal(rotportname, "/dev/rotport");
+}
+
 void test_tncspeed(void **state) {
     int rc = call_parse_logcfg("TNCSPEED = 1200\r\n");
     assert_int_equal(rc, PARSE_OK);
@@ -862,6 +878,12 @@ void test_rigspeed(void **state) {
     int rc = call_parse_logcfg("RIGSPEED = 38400\r\n");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(serial_rate, 38400);
+}
+
+void test_rotspeed(void **state) {
+    int rc = call_parse_logcfg("ROTSPEED = 38400\r\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(rot_serial_rate, 38400);
 }
 
 void test_fifo_interface(void **state) {
@@ -1052,6 +1074,12 @@ void test_rigmodel(void **state) {
     int rc = call_parse_logcfg("RIGMODEL=123\n");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(myrig_model, 123);
+}
+
+void test_rotmodel(void **state) {
+    int rc = call_parse_logcfg("ROTMODEL=123\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(myrot_model, 123);
 }
 
 void test_addnode(void **state) {

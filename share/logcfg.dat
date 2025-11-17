@@ -143,6 +143,19 @@ CWTONE=800
 #
 #################################
 #                               #
+#  ROTATOR CONTROL              #
+# (comment out if not present)  #
+# Rigmodel = Hamlib index, here #
+#           for Yaesu GS-232B   #
+#################################
+#
+#ROTATOR_CONTROL
+#ROTMODEL=603
+#ROTSPEED=9600
+#ROTPORT=/dev/ttyUSB3
+#
+#################################
+#                               #
 #  INFORMATION WINDOWS          #
 #                               #
 #################################

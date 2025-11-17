@@ -27,12 +27,14 @@
 #include "utils.h"
 #include "cw_utils.h"
 #include "err_utils.h"
+#include "getctydata.h"
 #include "hamlib_keyer.h"
 #include "sendqrg.h"
 #include "showmsg.h"
 #include "gettxinfo.h"
 #include "bands.h"
 #include "globalvars.h"
+#include "qrb.h"
 
 static bool init_called = false;
 static bool can_send_morse = false;
@@ -51,6 +53,8 @@ bool rig_has_stop_morse() {
 void send_bandswitch(freq_t trxqrg);
 
 static int parse_rigconf();
+
+static int parse_rotconf();
 
 /* check if call input field contains a valid frequency and switch to it.
  * only integer kHz values are supported.
@@ -325,3 +329,179 @@ void rig_debug_init() {
     }
 }
 
+
+/* Hamlib rotator control */
+
+int init_tlf_rot(void) {
+    char speed_string[12];
+    int retcode;		/* generic return code from functions */
+    const struct rot_caps *caps;
+
+    /*
+     * allocate memory, setup & open port
+     */
+    my_rot = rot_init((rot_model_t) myrot_model);
+
+    if (!my_rot) {
+	shownr("Unknown rotator model", myrot_model);
+	return -1;
+    }
+
+    if (rotportname == NULL || strlen(rotportname) == 0) {
+	showmsg("Missing rot port name!");
+	return -1;
+    }
+
+    g_strchomp(rotportname);	// remove trailing '\n'
+    retcode = rot_set_conf(my_rot, rot_token_lookup(my_rot, "rot_pathname"),
+			   rotportname);
+
+    if (retcode != RIG_OK) {
+	showmsg("Pathname not accepted!");
+	return -1;
+    }
+
+    caps = my_rot->caps;
+
+    if (caps->port_type == RIG_PORT_SERIAL) {
+	snprintf(speed_string, sizeof speed_string, "%d", serial_rate);
+	retcode = rot_set_conf(my_rot, rot_token_lookup(my_rot, "serial_speed"),
+			       speed_string);
+
+	if (retcode != RIG_OK) {
+	    showmsg("Speed not accepted!");
+	    return -1;
+	}
+    }
+
+    // parse ROTCONF parameters
+    if (parse_rotconf() < 0) {
+	return -1;
+    }
+
+    retcode = rot_open(my_rot);
+
+    if (retcode != RIG_OK) {
+	show_rigerror("rot_open", retcode);
+	return -1;
+    }
+
+    return 0;
+}
+
+double get_rotator_bearing() {
+    int retcode;
+    azimuth_t azimuth = 0.0;
+    elevation_t elevation = 0.0; /* ignored */
+
+    if (! rot_control)
+	return 0.0;
+
+    pthread_mutex_lock(&tlf_rot_mutex);
+    retcode = rot_get_position(my_rot, &azimuth, &elevation);
+    pthread_mutex_unlock(&tlf_rot_mutex);
+
+    if (retcode != RIG_OK) {
+	show_rigerror("rot_get_position", retcode);
+    }
+
+    return azimuth;
+}
+
+void rotate_to_qrb(bool long_path) {
+    double bearing;
+    double range;
+    int retcode;		/* generic return code from functions */
+    int pfx_index = getctydata_pfx(current_qso.call);
+    prefix_data *pfx = prefix_by_index(pfx_index);
+
+    if (! rot_control)
+	return;
+
+    if (pfx->dxcc_ctynr <= 0)
+	return; /* unknown country */
+    if (pfx->dxcc_ctynr == my.countrynr)
+	return; /* rotating to own country does not make much sense */
+
+    if (get_qrb(&range, &bearing) == RIG_OK) {
+	if (long_path) {
+	    bearing += 180.0;
+	    if (bearing >= 360.0)
+		bearing -= 360.0;
+	}
+	pthread_mutex_lock(&tlf_rot_mutex);
+	retcode = rot_set_position(my_rot, bearing, 0.0); // azimuth, elevation
+	pthread_mutex_unlock(&tlf_rot_mutex);
+
+	if (retcode != RIG_OK) {
+	    show_rigerror("rot_set_position", retcode);
+	}
+    }
+}
+
+void stop_rotator() {
+    int retcode;
+
+    if (! rot_control)
+	return;
+
+    pthread_mutex_lock(&tlf_rot_mutex);
+    retcode = rot_stop(my_rot);
+    pthread_mutex_unlock(&tlf_rot_mutex);
+
+    if (retcode != RIG_OK) {
+	show_rigerror("rot_stop", retcode);
+    }
+}
+
+void close_tlf_rot(ROT *my_rot) {
+
+    pthread_mutex_lock(&tlf_rot_mutex);
+    rot_close(my_rot);		/* close port */
+    rot_cleanup(my_rot);	/* if you care about memory */
+    pthread_mutex_unlock(&tlf_rot_mutex);
+
+    printf("Rotator port %s closed\n", rotportname);
+}
+
+static int parse_rotconf() {
+    char *cnfparm, *cnfval;
+    const int rotconf_len = strlen(rotconf);
+    int i;
+    int retcode;
+
+    cnfparm = cnfval = rotconf;
+
+    for (i = 0; i < rotconf_len; i++) {
+	/* FIXME: left hand value of = cannot be null */
+	if (rotconf[i] == '=' && cnfval == cnfparm) {
+	    cnfval = rotconf + i + 1;
+	    rotconf[i] = '\0';
+	    continue;
+	}
+	if (rotconf[i] == ',' || i + 1 == rotconf_len) {
+	    if (cnfval <= cnfparm) {
+		showstring("Missing parm value in ROTCONF: ", rotconf);
+		return -1;
+	    }
+	    if (rotconf[i] == ',')
+		rotconf[i] = '\0';
+
+	    pthread_mutex_lock(&tlf_rot_mutex);
+	    retcode =
+		rot_set_conf(my_rot, rot_token_lookup(my_rot, cnfparm),
+			     cnfval);
+	    pthread_mutex_unlock(&tlf_rot_mutex);
+
+	    if (retcode != RIG_OK) {
+		showmsg("rot_set_conf: error  ");
+		return -1;
+	    }
+
+	    cnfparm = cnfval = rotconf + i + 1;
+	    continue;
+	}
+    }
+
+    return 0;
+}
