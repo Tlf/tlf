@@ -36,6 +36,7 @@
 #include "netkeyer.h"
 #include "nicebox.h"		// Includes curses.h
 #include "sendbuf.h"
+#include "sendqrg.h"
 #include "speedupndown.h"
 #include "stoptx.h"
 #include "time_update.h"
@@ -140,6 +141,20 @@ int handle_common_key(int key) {
 	    } else {
 		send_standard_message_prev_qso(2);
 	    }
+
+	    break;
+	}
+
+	// Rotate antenna to short path
+	case '^': {
+	    rotate_to_qrb(false);
+
+	    break;
+	}
+
+	// Rotate antenna to long path
+	case '&': {
+	    rotate_to_qrb(true);
 
 	    break;
 	}

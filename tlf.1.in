@@ -1163,6 +1163,15 @@ Pop MEM frequency: MEM \(-> transceiver VFO frequency and clear MEM.
 Swap transceiver VFO frequency and MEM.
 .
 .TP
+.B ^  (Circumflex, mnemonic: arrow)
+Rotate antenna towards the country of the current call, if a rotator is configured.
+.
+.TP
+.B &  (Ampersand)
+Rotate antenna long-path towards the country of the current call, if a rotator is configured.
+(This is 180° opposite of the short-path direction.)
+.
+.TP
 .BR !\  (Exclamation)
 Get a new shell.
 .
@@ -2124,6 +2133,48 @@ The digital mode (modulation type) to be used as MODE in ADIF export.
 If this parameter is not set, then the non-ADIF compliant generic
 \(lqDIGI\(rq is used. The user shall then edit the ADIF file to match
 the actually used mode or modes.
+.
+.SS Rotator Control Commands
+.
+.TP
+\fBROTATOR_CONTROL\fR[=<\fION\fR|\fIOFF\fR>]
+Switches the Hamlib rotator interface on.
+.
+.TP
+\fBROTMODEL\fR=\fIrot_number\fR
+Look at the Hamlib documentation for the rot_number.
+.IP
+Hint:
+.B rotctl\ \-l
+and its manual page
+.RB ( rotctl (1)).
+.
+.TP
+\fBROTSPEED\fR=\fIserial_rate\fR
+Speed of the serial port for rotator control.
+.
+.TP
+\fBROTPORT\fR=\fIserial_port\fR
+You can use
+.IR /dev/ttyS0 ,
+.IR /dev/ttyUSB1 ,
+etc. anything that looks like a tty.
+.
+.IP
+For
+.BR rotctld (8)
+set
+\fBROTPORT\fR=\fIlocalhost\fR and \fBROTMODEL\fR=\fI2\fR.
+.
+In this case
+.B ROTSPEED
+is ignored.
+.
+.TP
+\fBROTCONF\fR=\fIrot_configuration_parameters\fR
+Send rot configuration parameters to Hamlib.
+.br
+e.g. \fBROTCONF\fR=\fIcivaddr=0x40,retry=3,rot_pathname=/dev/ttyS0\fR
 .
 .SS User Interface Commands
 .

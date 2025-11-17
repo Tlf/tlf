@@ -1295,6 +1295,7 @@ static config_t logcfg_configs[] = {
     {"IGNOREDUPE",          CFG_BOOL(ignoredupe)},
     {"USE_CONTINENTLIST_ONLY",  CFG_BOOL(continentlist_only)},
     {"RADIO_CONTROL",           CFG_BOOL(trx_control)},
+    {"ROTATOR_CONTROL",     CFG_BOOL(rot_control)},
     {"PORTABLE_MULT_2",     CFG_BOOL(portable_x2)},
 
     {"USEPARTIALS",	    CFG_BOOL(use_part)},
@@ -1380,6 +1381,7 @@ static config_t logcfg_configs[] = {
     {"NETKEYERPORT",    CFG_INT(netkeyer_port, 1, INT32_MAX)},
     {"TNCSPEED",        CFG_INT(tnc_serial_rate, 0, INT32_MAX)},
     {"RIGSPEED",        CFG_INT(serial_rate, 0, INT32_MAX)},
+    {"ROTSPEED",        CFG_INT(rot_serial_rate, 0, INT32_MAX)},
     {"CQDELAY",         CFG_INT(cqdelay, 3, 60)},
     {"SSBPOINTS",       CFG_INT(ssbpoints, 0, INT32_MAX)},
     {"CWPOINTS",        CFG_INT(cwpoints, 0, INT32_MAX)},
@@ -1387,6 +1389,7 @@ static config_t logcfg_configs[] = {
     {"TXDELAY",         CFG_INT(txdelay, 0, 50)},
     {"TUNE_SECONDS",    CFG_INT(tune_seconds, 1, 100)},
     {"RIGMODEL",        CFG_INT(myrig_model, 0, 99999)},
+    {"ROTMODEL",        CFG_INT(myrot_model, 0, 99999)},
     {"COUNTRY_LIST_POINTS", CFG_INT(countrylist_points, 0, INT32_MAX)},
     {"MY_COUNTRY_POINTS",   CFG_INT(my_country_points, 0, INT32_MAX)},
     {"MY_CONTINENT_POINTS", CFG_INT(my_cont_points, 0, INT32_MAX)},
@@ -1403,6 +1406,7 @@ static config_t logcfg_configs[] = {
     {"RIGPTT",          CFG_INT_CONST(rigptt, CAT_PTT_WANTED)},
 
     {"RIGCONF",         CFG_STRING_STATIC(rigconf, 80)},
+    {"ROTCONF",         CFG_STRING_STATIC(rotconf, 80)},
     {"LOGFILE",         CFG_STRING_STATIC(logfile, 120)},
     {"KEYER_DEVICE",    CFG_STRING_STATIC(keyer_device, 10)},
     {"NETKEYERHOST",    CFG_STRING_STATIC(netkeyer_hostaddress, 16)},
@@ -1427,6 +1431,7 @@ static config_t logcfg_configs[] = {
 #endif
 
     {"RIGPORT",         CFG_STRING_NOCHOMP(rigportname)},
+    {"ROTPORT",         CFG_STRING(rotportname)},
     {"CLUSTERLOGIN",    CFG_STRING_STATIC_NOCHOMP(clusterlogin, 80)},
 
     {"CALL",            NEED_PARAM, cfg_call},
