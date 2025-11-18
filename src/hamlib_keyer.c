@@ -25,9 +25,13 @@
 #include "hamlib_keyer.h"
 
 int hamlib_keyer_set_speed(int *cwspeed) {
-    gran_t keyspd_gran = my_rig->caps->level_gran[rig_setting2idx(
-			     RIG_LEVEL_KEYSPD)];
+    gran_t keyspd_gran;
     value_t spd;
+
+    if (! trx_control)
+	return RIG_OK;
+
+    keyspd_gran = my_rig->caps->level_gran[rig_setting2idx(RIG_LEVEL_KEYSPD)];
 
     /* if rig declared min/max speed, honor it. */
     if (keyspd_gran.min.i > 0 && *cwspeed < keyspd_gran.min.i)
@@ -46,6 +50,9 @@ int hamlib_keyer_set_speed(int *cwspeed) {
 int hamlib_keyer_get_speed(int *cwspeed) {
     value_t value;
 
+    if (! trx_control)
+	return RIG_OK;
+
     assert(cwspeed != NULL);
 
     pthread_mutex_lock(&tlf_rig_mutex);
@@ -58,6 +65,9 @@ int hamlib_keyer_get_speed(int *cwspeed) {
 }
 
 int hamlib_keyer_send(char *cwmessage) {
+    if (! trx_control)
+	return RIG_OK;
+
     pthread_mutex_lock(&tlf_rig_mutex);
     int ret = rig_send_morse(my_rig, RIG_VFO_CURR, cwmessage);
     pthread_mutex_unlock(&tlf_rig_mutex);
@@ -66,6 +76,9 @@ int hamlib_keyer_send(char *cwmessage) {
 }
 
 int hamlib_keyer_stop() {
+    if (! trx_control)
+	return RIG_OK;
+
 #if HAMLIB_VERSION >= 400
     if (rig_has_stop_morse()) {
 	pthread_mutex_lock(&tlf_rig_mutex);
