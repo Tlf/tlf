@@ -36,17 +36,14 @@
 #include "globalvars.h"
 #include "qrb.h"
 
-static bool init_called = false;
 static bool can_send_morse = false;
 static bool can_stop_morse = false;
 
 bool rig_has_send_morse() {
-    assert(init_called);
     return can_send_morse;
 }
 
 bool rig_has_stop_morse() {
-    assert(init_called);
     return can_stop_morse;
 }
 
@@ -206,8 +203,6 @@ int init_tlf_rig(void) {
 	    set_outfreq(SETCWMODE);
 	    break;
     }
-
-    init_called = true;
 
     return 0;
 }
