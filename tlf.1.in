@@ -996,7 +996,7 @@ Restore previous CQ frequency from MEM and send message
 .
 .TP
 .B F2-F11
-Send CW, RTTY or VOICE messages 2 through 11. If the callsign field is empty
+Send CW, digital or voice messages 2 through 11. If the callsign field is empty
 the messages will be sent with the preceding qso data.
 .
 .TP
@@ -1079,7 +1079,7 @@ instead.
 .BR ?\  (Query)
 In CW or DIGIMODE sends the partial call followed by \(lq ?\(rq.
 .
-In VOICE mode sends recorded message 5 (F5).
+In voice mode sends recorded message 5 (F5).
 .
 .TP
 .BR ;\  (Semicolon)
@@ -1135,11 +1135,11 @@ Confirm last exchange.
 .
 .TP
 .BR {\  "(Open brace)"
-In RTTY (DIGIMODE), keyboard mode switch TX on.
+In digital mode, keyboard mode switch TX on.
 .
 .TP
 .BR }\  "(Close brace)"
-In RTTY (DIGIMODE), keyboard mode switch TX off (RX).
+In digital mode, keyboard mode switch TX off (RX).
 .
 .TP
 .BR \e\  (Backslash)
@@ -1163,11 +1163,11 @@ Pop MEM frequency: MEM \(-> transceiver VFO frequency and clear MEM.
 Swap transceiver VFO frequency and MEM.
 .
 .TP
-.B ^  (Circumflex, mnemonic: arrow)
+.B ^  \fR(Circumflex, mnemonic: arrow)
 Rotate antenna towards the country of the current call, if a rotator is configured.
 .
 .TP
-.B &  (Ampersand)
+.BR &\  (Ampersand)
 Rotate antenna long-path towards the country of the current call, if a rotator is configured.
 (This is 180° opposite of the short-path direction.)
 .
@@ -1748,7 +1748,11 @@ Start @PACKAGE_NAME@ in SSB mode (default is CW).
 .
 .TP
 .B RTTYMODE
-Start @PACKAGE_NAME@ in RTTY mode (default is CW)
+Start @PACKAGE_NAME@ in digital mode (default is CW)
+assuming RTTY modulation (see
+.BR DIGITAL_MODE ).
+.
+The radio mode (\fBDIGI_RIG_MODE\fR) is not affected.
 .
 .TP
 \fBGMFSK\fR=\fI$HOME/gMFSK.log\fR
@@ -2115,10 +2119,20 @@ mode is selected.
 .
 .IP
 .I mode
-may be one of \(lqUSB\(rq, \(lqLSB\(rq, \(lqRTTY\(rq, or \(lqRTTYR\(rq.
+may be \(lqUSB\(rq, \(lqLSB\(rq, \(lqRTTY\(rq,
+or any radio mode supported by Hamlib.
 .
 If this parameter is not set, \(lqUSB\(rq is used if the Fldigi parameter is
 set else \(lqLSB\(rq is used.
+.
+.TP
+\fBDIGITAL_MODE\fR=\fImode\fR
+The digital mode (modulation type) to be used as MODE in ADIF export.
+.
+.IP
+If this parameter is not set, then the non-ADIF compliant generic
+\(lqDIGI\(rq is used. The user shall then edit the ADIF file to match
+the actually used mode or modes.
 .
 .SS Rotator Control Commands
 .
@@ -2575,7 +2589,7 @@ If you work RTTY (or any other digital modes), you can communicate with Fldigi
 through
 .BR XMLRPC .
 .
-This parameter activates the interface.
+This parameter activates the interface and sets start-up mode to DIGIMODE.
 .
 .IP
 By default @PACKAGE_NAME@ connects to:

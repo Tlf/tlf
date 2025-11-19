@@ -250,7 +250,7 @@ void gettxinfo(void) {
 	}
 
     } else if (reqf == SETDIGIMODE) {
-	rmode_t new_mode = digi_mode;
+	rmode_t new_mode = digi_rig_mode;
 	if (new_mode == RIG_MODE_NONE) {
 	    if (digikeyer == FLDIGI)
 		new_mode = RIG_MODE_USB;

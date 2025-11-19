@@ -130,7 +130,7 @@ extern int new_cty;
 extern int new_zone;
 extern bool new_pfx;
 extern bool no_rst;
-extern rmode_t digi_mode;
+extern rmode_t digi_rig_mode;
 extern int minitest;    // minitest period length in seconds, 0 if not used
 extern int portnum;
 extern int lan_port;
@@ -222,7 +222,7 @@ extern char markerfile[];
 extern char countrylist[255][6];
 extern char continent_multiplier_list[7][3];
 extern char controllerport[];           // port for multi-mode controller
-extern char modem_mode[];
+extern char digital_mode[];
 extern char sc_volume[];
 extern char clusterlogin[];
 extern char rigconf[];

@@ -201,7 +201,7 @@ int setup_default(void **state) {
     markerfile[0] = 0;
     synclogfile[0] = 0;
     sc_volume[0] = 0;
-    modem_mode[0] = 0;
+    digital_mode[0] = 0;
     controllerport[0] = 0;
     clusterlogin[0] = 0;
     exchange_list[0] = 0;
@@ -211,7 +211,7 @@ int setup_default(void **state) {
     qtcrec_record_command_shutdown[0] = 0;
     unique_call_multi = MULT_NONE;
     generic_mult = MULT_NONE;
-    digi_mode = -1;
+    digi_rig_mode = -1;
 
     for (int i = 0; i < SP_CALL_MSG; ++i) {
 	message[i][0] = 0;
@@ -1300,6 +1300,7 @@ void test_gmfsk(void **state) {
     int rc = call_parse_logcfg("GMFSK=jkl\n");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(digikeyer, GMFSK);
+    assert_int_equal(trxmode, DIGIMODE);
     assert_string_equal(controllerport, "jkl");
 }
 
@@ -1307,7 +1308,13 @@ void test_rttymode(void **state) {
     int rc = call_parse_logcfg("RTTYMODE\n");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(trxmode, DIGIMODE);
-    assert_string_equal(modem_mode, "RTTY");
+    assert_string_equal(digital_mode, "RTTY");
+}
+
+void test_digital_mode(void **state) {
+    int rc = call_parse_logcfg("DIGITAL_MODE=PSK\n");
+    assert_int_equal(rc, PARSE_OK);
+    assert_string_equal(digital_mode, "PSK");
 }
 
 void test_digimodem(void **state) {
@@ -1521,25 +1528,25 @@ void test_generic_mult_band(void **state) {
 void test_digi_rig_mode_usb(void **state) {
     int rc = call_parse_logcfg("DIGI_RIG_MODE=USB");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(digi_mode, RIG_MODE_USB);
+    assert_int_equal(digi_rig_mode, RIG_MODE_USB);
 }
 
 void test_digi_rig_mode_lsb(void **state) {
     int rc = call_parse_logcfg("DIGI_RIG_MODE=LSB");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(digi_mode, RIG_MODE_LSB);
+    assert_int_equal(digi_rig_mode, RIG_MODE_LSB);
 }
 
 void test_digi_rig_mode_rtty(void **state) {
     int rc = call_parse_logcfg("DIGI_RIG_MODE=RTTY");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(digi_mode, RIG_MODE_RTTY);
+    assert_int_equal(digi_rig_mode, RIG_MODE_RTTY);
 }
 
 void test_digi_rig_mode_rttyr(void **state) {
     int rc = call_parse_logcfg("DIGI_RIG_MODE=RTTYR");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(digi_mode, RIG_MODE_RTTYR);
+    assert_int_equal(digi_rig_mode, RIG_MODE_RTTYR);
 }
 
 void test_band40_ok(void **state) {
