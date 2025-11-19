@@ -725,7 +725,11 @@ static int databases_load() {
     int status;
 
     showmsg("Reading country data");
-    readctydata();		/* read ctydb.dat */
+    status = readctydata();		/* read ctydb.dat */
+    if (status != 0) {
+	showmsg("Error reading cty.dat file!");
+	return EXIT_FAILURE;
+    }
 
     init_variables();
 
@@ -760,7 +764,10 @@ static int databases_load() {
     init_and_load_multipliers();
 
     showmsg("Reading callmaster data");
-    load_callmaster();
+    if (load_callmaster() < 0) {
+	showmsg("Error opening callmaster file, continuing without supercheckpartial data.");
+	sleep(1);
+    }
 
     if (*exchange_list != '\0') {
 	showmsg("Reading initial exchange file");

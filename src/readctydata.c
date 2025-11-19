@@ -31,23 +31,14 @@
 #include <glib.h>
 
 #include "dxcc.h"
-#include "tlf.h"
-#include "tlf_curses.h"
 #include "utils.h"
 
+int readctydata(void) {
+    int res;
+    gchar *filename = find_available("cty.dat");
 
-void readctydata(void) {
-
-    gchar *filename = find_available("cty.dat");;
-
-    if (load_ctydata(filename) == -1) {
-	g_free(filename);
-	mvaddstr(4, 0, "Error opening cty.dat file.\n");
-	refreshp();
-	sleep(5);
-	endwin();
-	exit(1);
-    }
-
+    res = load_ctydata(filename);
     g_free(filename);
+
+    return res;
 }
