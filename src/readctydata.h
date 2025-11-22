@@ -21,6 +21,6 @@
 #ifndef READCTYDATA_H
 #define READCTYDATA_H
 
-void  readctydata(void);
+int  readctydata(void);
 
 #endif /* READCTYDATA_H */
