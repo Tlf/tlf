@@ -35,7 +35,7 @@
 .
 .
 .\" Update the date when this page is committed.
-.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2025-01-23" TLF "Ham radio"
+.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2025-12-02" TLF "Ham radio"
 .
 .
 .SH NAME
@@ -90,7 +90,7 @@ library, and with a
 via telnet or packet radio.
 .
 @PACKAGE_NAME@ can project DX cluster data into the excellent Xplanet program,
-written by Hari Nair.
+written by Hari Nair, and post to contest online scoreboards.
 .
 .P
 Contest operation mimics the popular
@@ -3447,25 +3447,25 @@ just by removing the
 prefix and using \(rq:\(lq as value separator.
 .
 .TP
-.B CABRILLO\-CONTEST
+.B CABRILLO\-CONTEST (*)
 .TQ
-.B CABRILLO\-CATEGORY\-ASSISTED
+.B CABRILLO\-CATEGORY\-ASSISTED (*)
 .TQ
-.B CABRILLO\-CATEGORY\-BAND
+.B CABRILLO\-CATEGORY\-BAND (*)
 .TQ
-.B CABRILLO\-CATEGORY\-MODE
+.B CABRILLO\-CATEGORY\-MODE (*)
 .TQ
-.B CABRILLO\-CATEGORY\-OPERATOR
+.B CABRILLO\-CATEGORY\-OPERATOR (*)
 .TQ
-.B CABRILLO\-CATEGORY\-POWER
+.B CABRILLO\-CATEGORY\-POWER (*)
 .TQ
 .B CABRILLO\-CATEGORY\-STATION
 .TQ
 .B CABRILLO\-CATEGORY\-TIME
 .TQ
-.B CABRILLO\-CATEGORY\-TRANSMITTER
+.B CABRILLO\-CATEGORY\-TRANSMITTER (*)
 .TQ
-.B CABRILLO\-CATEGORY\-OVERLAY
+.B CABRILLO\-CATEGORY\-OVERLAY (*)
 .TQ
 .B CABRILLO\-CERTIFICATE
 .TQ
@@ -3499,7 +3499,7 @@ It can be disabled but not set.)
 .TQ
 .B CABRILLO\-ADDRESS\-COUNTRY
 .TQ
-.B CABRILLO\-OPERATORS
+.B CABRILLO\-OPERATORS (*)
 .TQ
 .B CABRILLO\-OFFTIME
 .TQ
@@ -3509,6 +3509,28 @@ It can be disabled but not set.)
 .B CABRILLO\-SOAPBOX(2)
 .TQ
 .B CABRILLO\-SOAPBOX(3)
+.
+.
+.SS Contest Online Scoreboard Submission
+.
+@PACKAGE_NAME@ can post your current score to online scoreboards, also called live scoring.
+QSO and multiplier counts are submitted \fBevery two minutes\fR as well as at program exit.
+The category data submitted is taken from the Cabrillo configuration, specifically from the fields marked \fB(*)\fR in the \fBHeader Keywords\fR list.
+.
+.TP
+.B ONLINESCORE
+Enable online score submission.
+.TQ
+\fBONLINESCORE_URL\fR=\fIurl\fR
+Post to this URL.
+Default is \fBhttps://contestonlinescore.com/post/\fR.
+.TQ
+\fBONLINESCORE_USER\fR=\fIuser\fR
+Optionally set a user name for the online score server.
+.TQ
+\fBONLINESCORE_PASS\fR=\fIpassword\fR
+Optionally set a password for the online score server.
+If this is unset, but \fBONLINESCORE_USER\fR is set, get the password from the \fB~/.netrc\fR file.
 .
 .SH PYTHON PLUGIN
 .

@@ -49,6 +49,7 @@
 #include "lancode.h"
 #include "logit.h"
 #include "netkeyer.h"
+#include "onlinescore.h"
 #include "parse_logcfg.h"
 #include "plugin.h"
 #include "qtcvars.h"		// Includes globalvars.h
@@ -438,6 +439,7 @@ int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 
 pthread_t background_thread;
+pthread_t onlinescore_thread;
 static struct termios oldt, newt;
 
 /*-------------------------parse program options---------------------------*/
@@ -1044,10 +1046,19 @@ static void mark_GPL_seen() {
  * logit() or background_process()
  */
 static void tlf_cleanup() {
-    if (pthread_self() != background_thread) {
+    if (pthread_self() != background_thread
+	    && pthread_self() != onlinescore_thread) {
 	terminate_background_process();
 	pthread_join(background_thread, NULL);
+
+	// interrupt the main onlinescore loop (also cancels any curl operation
+	// that might be stuck in a timeout)
+	pthread_cancel(onlinescore_thread);
+	pthread_join(onlinescore_thread, NULL);
     }
+
+    // send final online score before quitting
+    send_onlinescore();
 
     cleanup_telnet();
 
@@ -1179,6 +1190,7 @@ int main(int argc, char *argv[]) {
     fldigi_init();
     lan_init();
     keyer_init();
+    onlinescore_init();
 
     show_station_info();
 
@@ -1210,10 +1222,17 @@ int main(int argc, char *argv[]) {
     }
     atexit(tlf_cleanup); 	/* register cleanup function */
 
-    /* Create the background thread */
+    /* Create background threads */
     ret = pthread_create(&background_thread, NULL, background_process, NULL);
     if (ret) {
-	perror("pthread_create: backgound_process");
+	perror("pthread_create: background_process");
+	endwin();
+	exit(EXIT_FAILURE);
+    }
+
+    ret = pthread_create(&onlinescore_thread, NULL, onlinescore_process, NULL);
+    if (ret) {
+	perror("pthread_create: onlinescore_process");
 	endwin();
 	exit(EXIT_FAILURE);
     }

@@ -44,6 +44,7 @@
 #include "ignore_unused.h"
 #include "lancode.h"
 #include "utils.h"
+#include "onlinescore.h"
 #include "parse_logcfg.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "setcontest.h"
@@ -1433,6 +1434,11 @@ static config_t logcfg_configs[] = {
     {"RIGPORT",         CFG_STRING_NOCHOMP(rigportname)},
     {"ROTPORT",         CFG_STRING(rotportname)},
     {"CLUSTERLOGIN",    CFG_STRING_STATIC_NOCHOMP(clusterlogin, 80)},
+
+    {"ONLINESCORE",      CFG_BOOL(onlinescore)},
+    {"ONLINESCORE_URL",  CFG_STRING(onlinescore_url)},
+    {"ONLINESCORE_USER", CFG_STRING(onlinescore_user)},
+    {"ONLINESCORE_PASS", CFG_STRING(onlinescore_pass)},
 
     {"CALL",            NEED_PARAM, cfg_call},
     {"(CONTEST|RULES)", NEED_PARAM, cfg_contest},
