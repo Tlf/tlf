@@ -107,7 +107,7 @@ AC_CHECK_LIB([hamlib], [rig_open], [
         AC_MSG_ERROR([Hamradio control libraries not found!])])
 
 AC_DEFINE_UNQUOTED([HAMLIB_VERSION],
-    [`$PKG_CONFIG --modversion hamlib | awk '{print int($1*100)}'`],
+    [`$PKG_CONFIG --modversion hamlib | awk -F "." '{print ($1*100 + $2*10 + $3)}'`],
         [Hamlib version (times 100)])
 
 LIBS=$tlf_saved_LIBS
