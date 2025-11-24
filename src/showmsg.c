@@ -42,8 +42,6 @@ void clearmsg_wait(void) {
 	move(LINES - 1, 0);
 	clrtoeol();
 	IGNORE(key_get());
-    } else {
-	sleep(1);
     }
     clearmsg();
 }
