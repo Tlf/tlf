@@ -24,6 +24,8 @@
 #include <stdbool.h>
 #include <time.h>
 
+#include <config.h>
+
 #include "hamlib/rig.h"
 #include "bandmap.h"
 #include "debug.h"
