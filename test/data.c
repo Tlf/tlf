@@ -138,7 +138,7 @@ int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
 /* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependency */
 rmode_t rigmode = 0;
-rmode_t digi_mode = 0;
+rmode_t digi_rig_mode = 0;
 bool mixedmode = false;
 char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
@@ -288,7 +288,7 @@ int k_pin14;
 int k_ptt;
 char controllerport[80] = "/dev/ttyS0";
 int miniterm = 0;		/* is miniterm for digimode active? */
-char modem_mode[8];
+char digital_mode[8];
 int commentfield = 0;		/* 1 if we are in comment/exchange input */
 
 /*-------------------------------------packet-------------------------------*/

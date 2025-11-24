@@ -316,7 +316,7 @@ bool keyer_backspace = false;   // disabled
 
 char controllerport[80] = "/dev/ttyS0"; // for GMFSK or MFJ-1278
 char rttyoutput[120];		// where to GMFSK digimode output
-rmode_t digi_mode = RIG_MODE_NONE;
+rmode_t digi_rig_mode = RIG_MODE_NONE;
 
 int txdelay = 0;
 int weight = 0;
@@ -326,7 +326,7 @@ int k_pin14 = 0;
 int k_ptt = 0;
 
 int miniterm = 0;		/* is miniterm for digimode active? */
-char modem_mode[8];
+char digital_mode[8];
 int commentfield = 0;		/* 1 if we are in comment/exchange input */
 
 /*-------------------------------------packet-------------------------------*/
