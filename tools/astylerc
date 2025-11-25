@@ -1,4 +1,6 @@
 # astylerc--custom options for Tlf
+# run with:
+# astyle --formatted --options=tools/astylerc src/*.[ch]
 
 # K&R style formatting/indenting with some tweaks.
 style=attach
