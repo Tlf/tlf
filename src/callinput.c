@@ -312,7 +312,7 @@ int callinput(void) {
 	    // <Home>, enter call edit when call field is not empty.
 	    case KEY_HOME: {
 		if ((*current_qso.call != '\0') && (ungetch(x) == OK)) {
-		    calledit();
+		    x = calledit(); // pass through KEY_ENTER and friends from editing
 		}
 
 		break;
@@ -321,7 +321,7 @@ int callinput(void) {
 	    // Left Arrow, enter call edit when call field is not empty, or band down.
 	    case KEY_LEFT: {
 		if (*current_qso.call != '\0') {
-		    calledit();
+		    x = calledit(); // pass through KEY_ENTER and friends from editing
 		} else {
 		    handle_bandswitch(BAND_DOWN);
 		}
@@ -827,6 +827,8 @@ int callinput(void) {
 	    }
 	}
 
+	/* end call input */
+	/* keep this list of keys in sync with the list in calledit() */
 	if (x == '\n' || x == KEY_ENTER || x == SPACE || x == TAB
 		|| x == CTRL_K || x == ',' || x == BACKSLASH) {
 	    break;
