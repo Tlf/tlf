@@ -694,7 +694,7 @@ void write_adif_header(FILE *fp) {
     fputs
     ("################################################################################\n",
      fp);
-    fputs("#                     ADIF v3.10 data file exported by TLF\n", fp);
+    fputs("#                     ADIF v3.1.0 data file exported by TLF\n", fp);
     fputs("#              according to specifications on http://www.adif.org\n",
 	  fp);
     fputs
@@ -706,7 +706,7 @@ void write_adif_header(FILE *fp) {
 
     /* Write contest name */
     fprintf(fp, "Contest Name: %s\n", whichcontest);
-    fputs("<adif_ver:4>3.10\n", fp);
+    fputs("<adif_ver:4>3.1.0\n", fp);
     fputs("<programid:3>TLF\n", fp);
     fprintf(fp, "<programversion:%zu>%s\n", strlen(VERSION), VERSION);
     fputs("<eoh>\n", fp);
@@ -781,7 +781,7 @@ void prepare_adif_line(char *buffer, struct linedata_t *qso) {
 }
 
 /*
-    The ADIF function has been written according ADIF v3.10 specifications
+    The ADIF function has been written according ADIF v3.1.0 specifications
     as shown on http://www.adif.org
 */
 int write_adif(void) {
