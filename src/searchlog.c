@@ -761,6 +761,7 @@ int load_callmaster(void) {
 
     GHashTable *callset = g_hash_table_new(g_str_hash, g_str_equal);
 
+    errno = 0;
     while ((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
 	if (read > 0) {
 	    g_strstrip(s_inputbuffer);

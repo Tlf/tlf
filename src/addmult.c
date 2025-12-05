@@ -414,6 +414,7 @@ int init_and_load_multipliers(void) {
 	return 0;       // couldn't open file
     }
 
+    errno = 0;
     while ((read = getline(&s_inputbuffer, &s_inputbuffer_len, cfp)) != -1) {
 	if (read > 0) {
 	    /* strip leading and trailing whitespace */
