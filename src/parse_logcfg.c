@@ -114,6 +114,7 @@ int parse_configfile(FILE *fp) {
     size_t buffer_len;
     ssize_t read;
 
+    errno = 0;
     while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 	if (read > 0) {
 	    g_strchug(buffer);              // remove leading space
@@ -743,6 +744,7 @@ static int cfg_countrylist(const cfg_arg_t arg) {
     if ((fp = fopen(buffer, "r")) != NULL) {
 	char *prefix = g_strdup_printf("%s:", whichcontest);
 
+	errno = 0;
 	while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 	    if (read > 0) {
 		g_strstrip(buffer);   /* no leading/trailing whitespace*/
@@ -840,6 +842,8 @@ static int cfg_continentlist(const cfg_arg_t arg) {
 
     if ((fp = fopen(buffer, "r")) != NULL) {
 	char *prefix = g_strdup_printf("%s:", whichcontest);
+
+	errno = 0;
 	while ((read = getline(&buffer, &buffer_len, fp)) != -1) {
 	    if (read > 0) {
 		g_strstrip(buffer);   /* no leading/trailing whitespace*/

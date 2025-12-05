@@ -68,6 +68,7 @@ struct ie_list *make_ie_list(char *file) {
 
     showstring("Using initial exchange file", file);
 
+    errno = 0;
     while ((read = getline(&inputbuffer, &inputbuffer_len, fp)) != -1) {
 	if (read > 0) {
 	    linectr++;
