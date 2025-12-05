@@ -474,7 +474,7 @@ int readcabrillo(int mode) {
 
     init_qso_array();
 
-    errno =0;
+    errno = 0;
     while ((read = getline(&logline, &read_len, fp1)) != -1) {
 	if (read > 0) {
 	    cab_qso_to_tlf(logline, cabdesc);
