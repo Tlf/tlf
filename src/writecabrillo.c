@@ -136,6 +136,7 @@ struct linedata_t *get_next_qtc_record(FILE *fp, int qtcdirection) {
     }
 
     if ((read = getline(&buffer, &buffer_len, fp)) == -1) {
+	free(buffer);
 	return NULL;
     }
 
