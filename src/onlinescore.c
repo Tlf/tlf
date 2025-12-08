@@ -89,7 +89,7 @@ void onlinescore_init() {
 }
 
 void send_onlinescore() {
-    if (! onlinescore || ! curl)
+    if (! onlinescore)
 	return;
 
     /* build the XML document */
