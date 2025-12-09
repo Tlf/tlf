@@ -355,6 +355,7 @@ int load_ctydata(char *filename) {
     // set default for empty country == country nr 0
     dxcc_add("Not Specified        :    --:  --:  --:  -00.00:    00.00:     0.0:     :");
 
+    errno = 0;
     while ((read = getline(&buf, &buf_len, fd)) != -1) {
 	if (read > 0) {
 	    g_strchomp(buf); 	/* drop CR and/or NL and */
