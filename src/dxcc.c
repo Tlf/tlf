@@ -226,7 +226,7 @@ void prefix_add(char *pfxstr) {
     if (loc != NULL) {
 	new_prefix -> lat = atof(loc + 1);
 	*loc = '\0';
-	if ((loc = strchr(loc, '/')) != NULL)
+	if ((loc = strchr(loc + 1, '/')) != NULL)
 	    new_prefix -> lon = atof(loc + 1);
 	else
 	    new_prefix -> lon = INFINITY;
