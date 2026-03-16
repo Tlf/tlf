@@ -970,6 +970,8 @@ spot *copy_spot(spot *data) {
 /** Search partialcall in filtered bandmap
  *
  * Lookup given partial call in the list of filtered bandmap spots.
+ * First search for calls starting with the searchstring and do a second run
+ * to search inside the call. That would prefer calls with the right country.
  * Return a copy of the first entry found (means with the lowest frequency).
  *
  * \param 	partialcall - part of call to look up
@@ -985,16 +987,33 @@ spot *bandmap_lookup(char *partialcall) {
 
 	pthread_mutex_lock(&bm_mutex);
 
+	/* first look for spots starting with partialcall */
 	for (i = 0; i < spots->len; i++) {
 	    spot *data;
 	    data = g_ptr_array_index(spots, i);
 
-	    if (strstr(data->call, partialcall) != NULL) {
+	    if (strncmp(data->call, partialcall, strlen(partialcall)) == 0) {
 
 		/* copy data into a new Spot structure */
 		result = copy_spot(data);
 
 		break;
+	    }
+	}
+
+	if (!result) {
+	    /* if nothing found look for substring match */
+	    for (i = 0; i < spots->len; i++) {
+		spot *data;
+		data = g_ptr_array_index(spots, i);
+
+		if (strstr(data->call, partialcall) != NULL) {
+
+		    /* copy data into a new Spot structure */
+		    result = copy_spot(data);
+
+		    break;
+		}
 	    }
 	}
 
