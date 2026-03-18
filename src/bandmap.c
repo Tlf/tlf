@@ -745,6 +745,12 @@ void filter_spots() {
     pthread_mutex_unlock(&bm_mutex);
 }
 
+
+/* index to first displayed entry from filtered spot array */
+unsigned int startindex;
+/* index to first entry beyond the displayed spots */
+unsigned int stopindex;
+
 void bandmap_show() {
     /*
      * display depending on filter state
@@ -823,7 +829,6 @@ void bandmap_show() {
      */
     unsigned int below_qrg = 0;
     unsigned int on_qrg = 0;
-    unsigned int startindex, stopindex;
 
     const freq_t centerfrequency = bm_get_center(bandinx, trxmode);
 
@@ -985,7 +990,7 @@ spot *bandmap_lookup(char *partialcall) {
 
 	pthread_mutex_lock(&bm_mutex);
 
-	for (i = 0; i < spots->len; i++) {
+	for (i = startindex; i < stopindex; i++) {
 	    spot *data;
 	    data = g_ptr_array_index(spots, i);
 
