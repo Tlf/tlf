@@ -830,31 +830,6 @@ void bandmap_show() {
     bm_init();
     filter_spots();
 
-    /* afterwards display filtered list around own QRG +/- some offset
-     * (offset gets reset if we change frequency */
-
-    getyx(stdscr, cury, curx);		/* remember cursor */
-
-    /* start in TOPLINE, column 0 */
-    bm_y = TOPLINE;
-    bm_x = 0;
-
-    /* clear space for bandmap */
-    attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
-
-    move(bm_y, 0);			/* do not overwrite # frequency */
-    for (j = 0; j < 67; j++)
-	addch(' ');
-
-    for (i = bm_y + 1; i < LASTLINE + 1; i++) {
-	move(i, 0);
-	for (j = 0; j < 80; j++)
-	    addch(' ');
-    }
-
-    /* show info text */
-    bm_show_info();
-
     /* split bandmap into two parts below and above current QRG.
      * Give both both parts equal size.
      * If there are less spots then reserved in the half
@@ -914,6 +889,31 @@ void bandmap_show() {
 	if (spots->len < stopindex)
 	    stopindex = spots->len;
     }
+
+    /* afterwards display filtered list around own QRG +/- some offset
+     * (offset gets reset if we change frequency */
+
+    getyx(stdscr, cury, curx);		/* remember cursor */
+
+    /* start in TOPLINE, column 0 */
+    bm_y = TOPLINE;
+    bm_x = 0;
+
+    /* clear space for bandmap */
+    attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
+
+    move(bm_y, 0);			/* do not overwrite # frequency */
+    for (j = 0; j < 67; j++)
+	addch(' ');
+
+    for (i = bm_y + 1; i < LASTLINE + 1; i++) {
+	move(i, 0);
+	for (j = 0; j < 80; j++)
+	    addch(' ');
+    }
+
+    /* show info text */
+    bm_show_info();
 
     /* show spots below QRG */
     for (i = startindex; i < below_qrg; i++) {
