@@ -80,10 +80,10 @@ bm_config_t bm_config = {
 
 static bool bm_initialized = false;
 
-char *qtc_format(char *call);
-gint cmp_freq(spot *a, spot *b);
+static char *qtc_format(char *call);
+static gint cmp_freq(spot *a, spot *b);
 void free_spot(spot *data);
-spot *copy_spot(spot *data);
+static spot *copy_spot(spot *data);
 
 /*
  * write bandmap spots to a file
@@ -236,7 +236,7 @@ void bm_init() {
  *
  * \return CWMODE, DIGIMODE or SSBMODE
  */
-int freq2mode(freq_t freq, int band) {
+static int freq2mode(freq_t freq, int band) {
     if (freq <= cwcorner[band])
 	return CWMODE;
     else if (freq < ssbcorner[band])
@@ -273,12 +273,12 @@ void bm_add(char *s) {
 }
 
 /* compare functions to search in list */
-gint	cmp_call(spot *ldata, char *call) {
+static gint	cmp_call(spot *ldata, char *call) {
 
     return g_strcmp0(ldata->call, call);
 }
 
-gint	cmp_freq(spot *a, spot *b) {
+static gint	cmp_freq(spot *a, spot *b) {
     unsigned int af = a->freq;
     unsigned int bf = b->freq;
 
@@ -506,7 +506,7 @@ bool bm_isdupe(char *call, int band) {
     return false;
 }
 
-void bm_show_info() {
+static void bm_show_info() {
 
     int curx, cury;
 
@@ -556,7 +556,7 @@ void bm_show_info() {
  * - normal	blue
  * - aged	brown
  * - worked	small caps */
-void colorize_spot(spot *data) {
+static void colorize_spot(spot *data) {
 
     if (data -> timeout > SPOT_NORMAL)
 	attrset(COLOR_PAIR(CB_NEW) | A_BOLD);
@@ -577,7 +577,7 @@ void colorize_spot(spot *data) {
  * convert dupes to lower case
  * add QTC flags for WAE contest
  */
-char *format_spot(spot *data) {
+static char *format_spot(spot *data) {
     char *temp;
     char *temp2;
 
@@ -609,7 +609,7 @@ static char get_spot_marker(spot *data) {
 /* helper function for bandmap display
  * shows formatted spot on actual cursor position
  */
-void show_spot(spot *data) {
+static void show_spot(spot *data) {
     attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
     printw("%7.1f%c", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node));
@@ -632,7 +632,7 @@ void show_spot(spot *data) {
 /* helper function for bandmap display
  * shows spot on actual working frequency
  */
-void show_spot_on_qrg(spot *data) {
+static void show_spot_on_qrg(spot *data) {
 
     printw("%7.1f%c%c ", (data->freq / 1000.),
 	   (data->node == thisnode ? '*' : data->node),
@@ -646,7 +646,7 @@ void show_spot_on_qrg(spot *data) {
 /* helper function for bandmap display
  * advance to next spot position
  */
-void next_spot_position(int *y, int *x) {
+static void next_spot_position(int *y, int *x) {
     *y += 1;
     if (*y == LASTLINE + 1) {
 	*y = TOPLINE;
@@ -661,7 +661,7 @@ void next_spot_position(int *y, int *x) {
  * Otherwise calculate center frequency from band and mode
  * as middle value of the band/mode corners.
  */
-freq_t bm_get_center(int band, int mode) {
+static freq_t bm_get_center(int band, int mode) {
     freq_t centerfrequency;
 
     if (trx_control)
@@ -691,7 +691,7 @@ static bool mode_matches(spot *data) {
  * filter 'allspots' list according to settings and prepare 'spots' array with
  * selected spots
  */
-void filter_spots() {
+static void filter_spots() {
     GList *list;
     spot *data;
     /* acquire mutex
@@ -953,7 +953,7 @@ void bm_menu() {
     refreshp();
 }
 
-spot *copy_spot(spot *data) {
+static spot *copy_spot(spot *data) {
     spot *result = NULL;
 
     result = g_new0(spot, 1);
@@ -1060,7 +1060,7 @@ spot *bandmap_next(bool upwards, freq_t freq) {
  * If truncated show it by replacing last two chars by '..'
  * The buffer has to be at least n+1 chars long.
  */
-void str_truncate(char *buffer, char *string, int n) {
+static void str_truncate(char *buffer, char *string, int n) {
     if (strlen(string) > n) {
 	g_strlcpy(buffer, string, n - 1);   	/* truncate to n-2 chars */
 	strcat(buffer, "..");
@@ -1074,7 +1074,7 @@ void str_truncate(char *buffer, char *string, int n) {
  * - prepare and return a temporary string from call and number of QTCs
  *   (if any)
  */
-char *qtc_format(char *call) {
+static char *qtc_format(char *call) {
     char tcall[15];
     char qtcflag;
     struct t_qtc_store_obj *qtc_temp_ptr;
