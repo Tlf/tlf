@@ -724,18 +724,11 @@ static bool mode_matches(spot *data) {
 /*
  * filter 'allspots' list according to settings and prepare 'spots' array with
  * selected spots
+ * !! should only be used with bm_mutex locked !!
  */
 static void filter_spots() {
     GList *list;
     spot *data;
-    /* acquire mutex
-     * do not add new spots to allspots during
-     * - aging and
-     * - filtering
-     * furthermore do not allow call lookup as long as
-     * filtered spot array is build anew */
-
-    pthread_mutex_lock(&bm_mutex);
 
     if (spots)
 	g_ptr_array_free(spots, TRUE);		/* free spot array */
@@ -776,7 +769,6 @@ static void filter_spots() {
 	    g_ptr_array_add(spots, copy);
 	}
     }
-    pthread_mutex_unlock(&bm_mutex);
 }
 
 
@@ -828,6 +820,15 @@ void bandmap_show() {
     int i, j;
 
     bm_init();
+
+    /* do not add new spots to allspots during
+     * - aging and
+     * - filtering
+     * furthermore do not allow call lookup as long as
+     * filtered spot is build anew and display range is calculated
+     * (spots array and display range needs to stay in sync) */
+    pthread_mutex_lock(&bm_mutex);
+
     filter_spots();
 
     /* split bandmap into two parts below and above current QRG.
@@ -890,9 +891,11 @@ void bandmap_show() {
 	    stopindex = spots->len;
     }
 
-    /* afterwards display filtered list around own QRG +/- some offset
-     * (offset gets reset if we change frequency */
+    pthread_mutex_unlock(&bm_mutex);
 
+
+    /* afterwards display filtered list around own QRG
+     * from start- to stopindex */
     getyx(stdscr, cury, curx);		/* remember cursor */
 
     /* start in TOPLINE, column 0 */
