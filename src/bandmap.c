@@ -60,11 +60,11 @@
 
 pthread_mutex_t bm_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-/** \brief sorted list of all recent DX spots
+/** \brief list sorted by frequency of all recent DX spots
  */
 GList *allspots = NULL;
 
-/** \brief sorted list of filtered spots
+/** \brief sorted list of spots filtered for display
  */
 GPtrArray *spots;
 
@@ -431,7 +431,6 @@ void bandmap_age() {
     /*
      * go through all entries
      *   + decrement timeout
-     *   + set state to new, normal, aged or dead
      *   + if dead -> drop it from collection
      */
 
@@ -555,7 +554,7 @@ static void bm_show_info() {
  * - new 	bright blue
  * - normal	blue
  * - aged	brown
- * - worked	small caps */
+ * - worked	grey, small caps */
 static void colorize_spot(spot *data) {
 
     if (data -> timeout > SPOT_NORMAL)
@@ -574,8 +573,8 @@ static void colorize_spot(spot *data) {
 }
 
 /* helper function for bandmap display
- * convert dupes to lower case
  * add QTC flags for WAE contest
+ * convert dupes to lower case
  */
 static char *format_spot(spot *data) {
     char *temp;
@@ -644,7 +643,7 @@ static void show_spot_on_qrg(spot *data) {
 }
 
 /* helper function for bandmap display
- * advance to next spot position
+ * advance to display position for next spot
  */
 static void next_spot_position(int *y, int *x) {
     *y += 1;
@@ -757,6 +756,7 @@ void bandmap_show() {
      * - all bands on/off
      * - all mode  on/off
      * - dupes     on/off
+     * - only Mults on/off
      *
      * If more entries to show than room in window, show around
      * current frequency
@@ -765,10 +765,11 @@ void bandmap_show() {
      * - new 	bright blue
      * - normal	blue
      * - aged	brown
-     * - worked	small caps
+     * - worked	small capsi, grey
      * - new multi	mark with blue M between QRG and call
      * - self announced stations
      *   		small preceding letter for reporting station
+     *   		star if reported by own station
      *
      * show own frequency as dashline in green color
      * - highlight actual spot if near own frequency

@@ -31,8 +31,8 @@ typedef struct {
     short 	bandindex;
     char	node;
     unsigned int timeout;/* time (in seconds) left in bandmap */
-    bool 	dupe;	/* only used internally in bm_show() */
-    bool 	mult;	/* only used internally in bm_show() */
+    bool 	dupe;	/* only used internally in bandmap_show() */
+    bool 	mult;	/* only used internally in bandmap_show() */
     int 	cqzone;	/* CQ zone */
     int 	ctynr;	/* Country nr */
     char 	*pfx; /* prefix */
@@ -79,10 +79,7 @@ void bm_menu();
 /** add a new spot to bandmap data
  * \param call  	the call to add
  * \param freq	 	on which frequency heard
- * \param reason	- new cluster spot
- * 			- local announcement (Ctrl-A)
- * 			- own cluster announcement (Ctrl-B)
- * 			- just worked in S&P
+ * \param node		reporting node
  */
 void bandmap_addspot(char *call, freq_t freq, char node);
 /*
