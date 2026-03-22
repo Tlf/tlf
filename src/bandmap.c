@@ -78,8 +78,6 @@ bm_config_t bm_config = {
     .show_out_of_band = false,  /* do not show out-of-band spots */
 };
 
-static bool bm_initialized = false;
-
 static char *qtc_format(char *call);
 static gint cmp_freq(spot *a, spot *b);
 void free_spot(spot *data);
@@ -212,6 +210,7 @@ void bmdata_read_file() {
  * initialize colors and data structures for bandmap operation
  */
 void bm_init() {
+    static bool bm_initialized = false;
 
     if (bm_initialized)
 	return;
@@ -570,6 +569,42 @@ static void colorize_spot(spot *data) {
 	attrset(COLOR_PAIR(CB_DUPE) | A_BOLD);
 	attroff(A_STANDOUT);
     }
+}
+
+/*
+ * copy string to buffer but truncate it to n characters
+ * If truncated show it by replacing last two chars by '..'
+ * The buffer has to be at least n+1 chars long.
+ */
+static void str_truncate(char *buffer, char *string, int n) {
+    if (strlen(string) > n) {
+	g_strlcpy(buffer, string, n - 1);   	/* truncate to n-2 chars */
+	strcat(buffer, "..");
+    } else {
+	g_strlcpy(buffer, string, n + 1); 	/* copy up to n chars */
+    }
+}
+
+/*
+ * format bandmap call output for WAE
+ * - prepare and return a temporary string from call and number of QTCs
+ *   (if any)
+ */
+static char *qtc_format(char *call) {
+    char tcall[15];
+    char qtcflag;
+    struct t_qtc_store_obj *qtc_temp_ptr;
+
+    qtc_temp_ptr = qtc_get(call);
+    qtcflag = qtc_get_value(qtc_temp_ptr);
+
+    if (qtc_temp_ptr->total <= 0 && qtcflag == '\0') {
+	str_truncate(tcall, call, SPOT_CALL_WIDTH);
+    } else {
+	str_truncate(tcall, call, SPOT_CALL_WIDTH - 2);
+	sprintf(tcall + strlen(tcall), " %c", qtcflag);
+    }
+    return g_strdup(tcall);
 }
 
 /* helper function for bandmap display
@@ -1054,42 +1089,6 @@ spot *bandmap_next(bool upwards, freq_t freq) {
     pthread_mutex_unlock(&bm_mutex);
 
     return result;
-}
-
-/*
- * copy string to buffer but truncate it to n characters
- * If truncated show it by replacing last two chars by '..'
- * The buffer has to be at least n+1 chars long.
- */
-static void str_truncate(char *buffer, char *string, int n) {
-    if (strlen(string) > n) {
-	g_strlcpy(buffer, string, n - 1);   	/* truncate to n-2 chars */
-	strcat(buffer, "..");
-    } else {
-	g_strlcpy(buffer, string, n + 1); 	/* copy up to n chars */
-    }
-}
-
-/*
- * format bandmap call output for WAE
- * - prepare and return a temporary string from call and number of QTCs
- *   (if any)
- */
-static char *qtc_format(char *call) {
-    char tcall[15];
-    char qtcflag;
-    struct t_qtc_store_obj *qtc_temp_ptr;
-
-    qtc_temp_ptr = qtc_get(call);
-    qtcflag = qtc_get_value(qtc_temp_ptr);
-
-    if (qtc_temp_ptr->total <= 0 && qtcflag == '\0') {
-	str_truncate(tcall, call, SPOT_CALL_WIDTH);
-    } else {
-	str_truncate(tcall, call, SPOT_CALL_WIDTH - 2);
-	sprintf(tcall + strlen(tcall), " %c", qtcflag);
-    }
-    return g_strdup(tcall);
 }
 
 /** Search filtered bandmap for a spot near the given frequency
