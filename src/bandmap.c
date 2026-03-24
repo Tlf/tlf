@@ -792,7 +792,7 @@ void bandmap_show() {
      * - new 	bright blue
      * - normal	blue
      * - aged	brown
-     * - worked	small capsi, grey
+     * - worked	small caps, grey
      * - new multi	mark with blue M between QRG and call
      * - self announced stations
      *   		small preceding letter for reporting station

@@ -43,7 +43,7 @@
 
 /** add call to list of spots
  *
- * format a fake DX spot from call and frequencyi, add it to the spot list
+ * format a fake DX spot from call and frequency, add it to the spot list
  * and send it to other stations in the LAN
  */
 void add_to_spots(char *call, freq_t freq) {
