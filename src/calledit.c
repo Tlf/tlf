@@ -37,11 +37,11 @@
 #include "ui_utils.h"
 
 
-void calledit(void) {
+int calledit(void) {
 
     int i = 0, l, b;
     int j = 0;
-    int x = 0;
+    int x = -1;
     int cnt = 0, insertflg = 0;
     char call1[30], call2[10];
 
@@ -79,7 +79,7 @@ void calledit(void) {
 	// Ctrl-A (^A) or <Home>, move to head of callsign field.
 	if (i == CTRL_A || i == KEY_HOME) {
 	    b = 0;
-	    x = 0;
+	    i = 0;
 	}
 
 	// Ctrl-E (^E) or <End>, move to end of callsign field, exit edit mode.
@@ -140,6 +140,13 @@ void calledit(void) {
 	    else
 		insertflg = 0;
 
+	    // these keys terminate the callinput() loop so they should also
+	    // terminate calledit(); pass them through
+	} else if (i == '\n' || i == KEY_ENTER || i == SPACE || i == TAB
+		   || i == CTRL_K || i == ',' || i == BACKSLASH) {
+	    x = i;
+	    break;
+
 	    // Any character left other than <Escape>.
 	} else if (i != ESCAPE) {
 
@@ -177,7 +184,7 @@ void calledit(void) {
 
 		searchlog();
 
-	    } else if (x != 0)
+	    } else if (i != 0)
 		i = ESCAPE;
 
 	} else
@@ -194,6 +201,8 @@ void calledit(void) {
 
     attron(A_STANDOUT);
     searchlog();
+
+    return x;
 }
 
 int insert_char(int curposition) {

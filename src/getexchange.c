@@ -62,7 +62,7 @@
 #include "getexchange.h"
 
 
-void exchange_edit(void);
+static int exchange_edit(void);
 
 static void serial_up_down(char *exchange, int delta) {
     /* length of serial part in "001" or "001 EU-001" */
@@ -176,7 +176,7 @@ int getexchange(void) {
 		x = KEY_LEFT;
 		continue;
 	    }
-	    case 19: {	// Ctl+s (^S)--Open QTC panel for sending QTCs
+	    case CTRL_S: {	// Ctl+s (^S)--Open QTC panel for sending QTCs
 		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND or QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
@@ -299,7 +299,7 @@ int getexchange(void) {
 
 	    case KEY_LEFT: {	/* Left Arrow--edit exchange field */
 		if (current_qso.comment[0] != '\0') {
-		    exchange_edit();
+		    x = exchange_edit(); // pass through KEY_ENTER and friends from editing
 		}
 		break;
 	    }
@@ -348,6 +348,8 @@ int getexchange(void) {
 	}
 
 	/* <Enter>, <Tab>, Ctl-K, '\' */
+	/* end exchange input */
+	/* keep this list of keys in sync with the list in exchange_edit() */
 	if (x == '\n' || x == KEY_ENTER || x == TAB
 		|| x == CTRL_K || x == BACKSLASH) {
 
@@ -807,10 +809,11 @@ void checkexchange(struct qso_t *qso, bool interactive) {
 /** Edit exchange field
  */
 
-void exchange_edit(void) {
+static int exchange_edit(void) {
 
     int l, b;
     int i = 0, j;
+    int x = -1;
     char comment2[27];
 
     l = strlen(current_qso.comment);
@@ -874,6 +877,13 @@ void exchange_edit(void) {
 		}
 	    }
 
+	    // these keys terminate the getexchange() loop so they should also
+	    // terminate exchange_edit(); pass them through
+	} else if (i == '\n' || i == KEY_ENTER || i == TAB
+		   || i == CTRL_K || i == BACKSLASH) {
+	    x = i;
+	    break;
+
 	    // <Escape> not received.
 	} else if (i != ESCAPE) {
 
@@ -903,4 +913,6 @@ void exchange_edit(void) {
 
     attron(A_STANDOUT);
     refresh_comment();
+
+    return x;
 }
