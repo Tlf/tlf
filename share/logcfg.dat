@@ -252,6 +252,17 @@ CABRILLO-SOAPBOX(3)= -
 #
 #################################
 #                               #
+#  Online Score Submission      #
+#                               #
+#################################
+#
+ONLINESCORE
+#ONLINESCORE_URL=https://contestonlinescore.com/post/
+#ONLINESCORE_USER=
+#ONLINESCORE_PASS=
+#
+#################################
+#                               #
 #  CONDX (info for muf calc.)   #
 #                               #
 #################################

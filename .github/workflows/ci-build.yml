@@ -26,7 +26,7 @@ jobs:
         sudo dpkg-reconfigure man-db
         #
         sudo apt-get -qq update
-        sudo apt-get install -y libhamlib-dev libxmlrpc-core-c3-dev libglib2.0-dev libcmocka-dev python3-pexpect python3-dev astyle
+        sudo apt-get install -y libcurl4-openssl-dev libhamlib-dev libxmlrpc-core-c3-dev libglib2.0-dev libcmocka-dev python3-pexpect python3-dev astyle
     - name: Set up datadir
       run: mkdir datadir && ln -s $PWD/share datadir/tlf
     - name: Check source formatting

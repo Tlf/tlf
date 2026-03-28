@@ -32,6 +32,7 @@
 #include "gettxinfo.h"
 #include "lancode.h"
 #include "log_to_disk.h"
+#include "onlinescore.h"
 #include "qsonr_to_str.h"
 #include "qtc_log.h"
 #include "qtcutil.h"

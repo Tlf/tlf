@@ -23,6 +23,7 @@ tlf_SOURCES = \
 	logit.c logview.c \
 	main.c makelogline.c messagechange.c muf.c \
 	nicebox.c note.c netkeyer.c\
+	onlinescore.c \
 	paccdx.c parse_logcfg.c plugin.c printcall.c \
 	qrb.c qsonr_to_str.c qtc_log.c qtcwin.c qtcutil.c readcabrillo.c \
 	readcalls.c readqtccalls.c readctydata.c recall_exchange.c rules.c \
@@ -38,7 +39,7 @@ tlf_SOURCES = \
 
 tlf_LDADD = @LIBM_LIB@ @PTHREAD_LIBS@ @GLIB_LIBS@ @PANEL_LIBS@ @CURSES_LIBS@ \
 	    @HAMLIB_LIBS@ @LIBXMLRPC_LIB@ @LIBXMLRPC_CLIENT_LIB@ \
-	    @LIBXMLRPC_UTIL_LIB@ @PYTHON_LIBS@
+	    @LIBXMLRPC_UTIL_LIB@ @PYTHON_LIBS@ -lcurl
 
 noinst_HEADERS = \
 	addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \
@@ -60,6 +61,7 @@ noinst_HEADERS = \
 	log_to_disk.h logit.h logview.h \
 	makelogline.h math_utils.h messagechange.h muf.h \
 	nicebox.h note.h netkeyer.h\
+	onlinescore.h \
 	paccdx.h parse_logcfg.h printcall.h \
 	paccdx.h parse_logcfg.h plugin.h printcall.h \
 	qrb.h qsonr_to_str.h qtc_log.h qtcvars.h qtcwin.h qtcutil.h \
