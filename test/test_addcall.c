@@ -59,8 +59,6 @@ int setup_default(void **state) {
     strcpy(countrylist[1], "CE");
     strcpy(countrylist[2], "");
 
-    countrylist_only = false;
-
     strcpy(continent_multiplier_list[0], "EU");
     strcpy(continent_multiplier_list[1], "NA");
     strcpy(continent_multiplier_list[2], "");

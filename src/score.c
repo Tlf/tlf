@@ -2,8 +2,7 @@
  * Tlf - contest logging program for amateur radio operators
  * Copyright (C) 2001-2002-2003 Rein Couperus <pa0rct@amsat.org>
  *               2013           Ervin Hegedus <airween@gmail.com>
- *               2013-2015, 2020
- *               		Thomas Beierlein <tb@forth-ev.de>
+ *               2013-2023	Thomas Beierlein <tb@forth-ev.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,7 +97,7 @@ bool exist_in_country_list() {
 }
 
 
-/* HA2OS - check if continent is in CONTINENT_LIST from logcfg.dat */
+/* check if continent is in CONTINENT_LIST */
 bool is_in_continentlist(char *continent) {
     int i = 0;
 
@@ -112,8 +111,7 @@ bool is_in_continentlist(char *continent) {
 }
 
 
-/* apply bandweight scoring *
- * at the moment only LOWBAND_DOUBLES (<30m) can be active */
+/* apply bandweight scoring */
 int apply_bandweight(int points, int bandindex) {
 
     if (lowband_point_mult && (bandindex < BANDINDEX_30))
@@ -148,53 +146,38 @@ int scoreByMode(struct qso_t *qso) {
     }
 }
 
-/* Overwrite points with x if set */
-#define USE_IF_SET(x) do { \
+
+/* return x points if set */
+#define RETURN_IF_SET(x) do { \
 			if (x >= 0) \
-			    points = x; \
+			    return x; \
 			} while(0);
 
 int scoreByContinentOrCountry(struct qso_t *qso) {
 
-    int points = 0;
     prefix_data *ctyinfo = getctyinfo(qso->call);
     bool inCountryList = is_in_countrylist(ctyinfo->dxcc_ctynr);
 
-    if (countrylist_only) {
-	points = 0;
-	if (inCountryList)
-	    USE_IF_SET(countrylist_points);
-
-	return points;
-    }
-
-    /* HA2OS mods */
-    if (continentlist_only) {
-	points = 0;
-	// only continent list allowed
-	if (is_in_continentlist(ctyinfo->continent)) {
-	    USE_IF_SET(continentlist_points);
-	    // overwrite if own continent and my_cont_points set
-	    if (strcmp(ctyinfo->continent, my.continent) == 0) {
-		USE_IF_SET(my_cont_points);
-	    }
-	}
-	return points;
-    }
-
-    // default
     if (ctyinfo->dxcc_ctynr == my.countrynr) {
-	points = 0;
-	USE_IF_SET(my_cont_points);
-	USE_IF_SET(my_country_points);
-    } else if (inCountryList) {
-	USE_IF_SET(countrylist_points);
-    } else if (strcmp(ctyinfo->continent, my.continent) == 0) {
-	USE_IF_SET(my_cont_points);
-    } else
-	USE_IF_SET(dx_cont_points);
+	RETURN_IF_SET(my_country_points);
+    }
 
-    return points;
+    if (inCountryList) {
+	RETURN_IF_SET(countrylist_points);
+    }
+
+    if (strcmp(ctyinfo->continent, my.continent) == 0) {
+	RETURN_IF_SET(my_cont_points);
+    }
+
+    if (is_in_continentlist(ctyinfo->continent)) {
+	RETURN_IF_SET(continentlist_points);
+    }
+
+    if (strcmp(ctyinfo->continent, my.continent) != 0) {
+	RETURN_IF_SET(dx_cont_points);
+    }
+    return 0;
 }
 
 
