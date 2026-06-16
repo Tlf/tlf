@@ -145,6 +145,10 @@ void test_best_match(void **state) {
     assert_string_equal(best_prefix("W3A"), "W");
     assert_string_equal(best_prefix("KL7ND"), "KL");
     assert_string_equal(best_prefix("G8AAA"), "G");
+    assert_string_equal(best_prefix("IT9X"), "IT9");
+    assert_string_equal(best_prefix("IT1X"), "I");
+    assert_string_equal(best_prefix("FG9X"), "FG");
+    assert_string_equal(best_prefix("F1X"), "F");
 }
 
 void test_location_known(void **state) {
