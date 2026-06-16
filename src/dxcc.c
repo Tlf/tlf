@@ -33,7 +33,7 @@
 GPtrArray *dxcc;
 GPtrArray *prefix;
 GHashTable *hashed_prefix;
-int two_char_prefix_index[36 * 36];
+static int two_char_prefix_index[36 * 36];
 bool have_exact_matches;
 char cty_dat_version[12];   // VERyyyymmdd
 
@@ -259,10 +259,11 @@ void prefix_add(char *pfxstr) {
 			GINT_TO_POINTER(index));
 
     /* build 2-char prefix hash */
-    if (strlen(pfxstr) >= 2) {
+    int pfxlen = strlen(pfxstr);
+    if (pfxlen >= 2) {
 	int key = prefix_hash_key(pfxstr);
-	if (two_char_prefix_index[key] == TCPI_NONE) {
-	    two_char_prefix_index[key] = index;     // first one
+	if (two_char_prefix_index[key] == TCPI_NONE && pfxlen == 2) {
+	    two_char_prefix_index[key] = index;     // unique 2-char prefix
 	} else {
 	    two_char_prefix_index[key] = TCPI_AMB;  // ambiguous
 	}
