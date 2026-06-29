@@ -339,6 +339,41 @@ void dxcc_add(char *dxcc_line) {
     g_ptr_array_add(dxcc, new_dxcc);
 }
 
+static char get_base36_char(int index) {
+    if (index >= 0 && index < 10) {
+	return '0' + index;
+    }
+    if (index >= 10 && index < 36) {
+	return 'A' + index - 10;
+    }
+    return 0;
+}
+
+
+/** try to fill unused slots in two_char_prefix_index[]
+ * this extends the cache with single character prefixes, if possible
+ */
+static void post_fill_two_char_prefixes() {
+    for (int key = 0; key < 36 * 36; key++) {
+	if (two_char_prefix_index[key] != TCPI_NONE) {
+	    continue;
+	}
+
+	char call[5];       //  build a ..0X type call for lookup
+	call[0] = get_base36_char(key % 36);
+	call[1] = get_base36_char(key / 36);
+	call[2] = '0';
+	call[3] = 'X';
+	call[4] = 0;
+
+	int index = find_best_match(call);
+
+	if (index >= 0) {
+	    two_char_prefix_index[key] = index;
+	}
+    }
+}
+
 /** load cty database from filename */
 int load_ctydata(char *filename) {
     FILE *fd;
@@ -382,5 +417,8 @@ int load_ctydata(char *filename) {
 
     free(buf);
     fclose(fd);
+
+    post_fill_two_char_prefixes();
+
     return 0;
 }
