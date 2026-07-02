@@ -260,16 +260,21 @@ void prefix_add(char *pfxstr) {
 
     /* build 2-char prefix hash */
     int pfxlen = strlen(pfxstr);
+    // single char prefixes are ignored for the moment, they are handled
+    // after all prefixes are loaded in post_fill_two_char_prefixes()
     if (pfxlen >= 2) {
 	int key = prefix_hash_key(pfxstr);
 	if (two_char_prefix_index[key] == TCPI_NONE && pfxlen == 2) {
-	    two_char_prefix_index[key] = index;     // unique 2-char prefix
+	    // it's a unique 2-char prefix, store it
+	    // note that it can still be set to ambiguous later on
+	    two_char_prefix_index[key] = index;
 	} else {
-	    two_char_prefix_index[key] = TCPI_AMB;  // ambiguous
+	    // it's a prefix that has been already seen
+	    // or a longer one that makes 2-char lookup ambiguous (e.g. IT9)
+	    two_char_prefix_index[key] = TCPI_AMB;
 	}
     }
 }
-
 
 
 static void dxcc_free(gpointer data) {
@@ -339,37 +344,33 @@ void dxcc_add(char *dxcc_line) {
     g_ptr_array_add(dxcc, new_dxcc);
 }
 
-static char get_base36_char(int index) {
-    if (index >= 0 && index < 10) {
-	return '0' + index;
-    }
-    if (index >= 10 && index < 36) {
-	return 'A' + index - 10;
-    }
-    return 0;
-}
-
-
-/** try to fill unused slots in two_char_prefix_index[]
+/** try to fill single character prefixes in two_char_prefix_index[]
  * this extends the cache with single character prefixes, if possible
  */
 static void post_fill_two_char_prefixes() {
-    for (int key = 0; key < 36 * 36; key++) {
-	if (two_char_prefix_index[key] != TCPI_NONE) {
-	    continue;
-	}
 
-	char call[5];       //  build a ..0X type call for lookup
-	call[0] = get_base36_char(key % 36);
-	call[1] = get_base36_char(key / 36);
-	call[2] = '0';
-	call[3] = 'X';
-	call[4] = 0;
+    // loop over all possible <letter><number> prefix combinations
 
-	int index = find_best_match(call);
+    for (char c1 = 'A'; c1 <= 'Z'; ++c1) {
+	for (char c2 = '0'; c2 <= '9'; ++c2) {
+	    // build a <c1><c2>X type call for lookup (e.g. F0X)
+	    char call[4];
+	    call[0] = c1;
+	    call[1] = c2;
+	    call[2] = 'X';
+	    call[3] = 0;
 
-	if (index >= 0) {
-	    two_char_prefix_index[key] = index;
+	    int key = prefix_hash_key(call);
+	    int w = two_char_prefix_index[key];
+	    if (w != TCPI_NONE) {
+		continue;       // slot is already used, skip it
+	    }
+
+	    int index = find_best_match(call);
+
+	    if (index >= 0) {   // it's a valid prefix, store it
+		two_char_prefix_index[key] = index;
+	    }
 	}
     }
 }
