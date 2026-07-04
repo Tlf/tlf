@@ -260,16 +260,21 @@ void prefix_add(char *pfxstr) {
 
     /* build 2-char prefix hash */
     int pfxlen = strlen(pfxstr);
+    // single char prefixes are ignored for the moment, they are handled
+    // after all prefixes are loaded in post_fill_two_char_prefixes()
     if (pfxlen >= 2) {
 	int key = prefix_hash_key(pfxstr);
 	if (two_char_prefix_index[key] == TCPI_NONE && pfxlen == 2) {
-	    two_char_prefix_index[key] = index;     // unique 2-char prefix
+	    // it's a unique 2-char prefix, store it
+	    // note that it can still be set to ambiguous later on
+	    two_char_prefix_index[key] = index;
 	} else {
-	    two_char_prefix_index[key] = TCPI_AMB;  // ambiguous
+	    // it's a prefix that has been already seen
+	    // or a longer one that makes 2-char lookup ambiguous (e.g. IT9)
+	    two_char_prefix_index[key] = TCPI_AMB;
 	}
     }
 }
-
 
 
 static void dxcc_free(gpointer data) {
@@ -339,6 +344,37 @@ void dxcc_add(char *dxcc_line) {
     g_ptr_array_add(dxcc, new_dxcc);
 }
 
+/** try to fill single character prefixes in two_char_prefix_index[]
+ * this extends the cache with single character prefixes, if possible
+ */
+static void post_fill_two_char_prefixes() {
+
+    // loop over all possible <letter><number> prefix combinations
+
+    for (char c1 = 'A'; c1 <= 'Z'; ++c1) {
+	for (char c2 = '0'; c2 <= '9'; ++c2) {
+	    // build a <c1><c2>X type call for lookup (e.g. F0X)
+	    char call[4];
+	    call[0] = c1;
+	    call[1] = c2;
+	    call[2] = 'X';
+	    call[3] = 0;
+
+	    int key = prefix_hash_key(call);
+	    int w = two_char_prefix_index[key];
+	    if (w != TCPI_NONE) {
+		continue;       // slot is already used, skip it
+	    }
+
+	    int index = find_best_match(call);
+
+	    if (index >= 0) {   // it's a valid prefix, store it
+		two_char_prefix_index[key] = index;
+	    }
+	}
+    }
+}
+
 /** load cty database from filename */
 int load_ctydata(char *filename) {
     FILE *fd;
@@ -382,5 +418,8 @@ int load_ctydata(char *filename) {
 
     free(buf);
     fclose(fd);
+
+    post_fill_two_char_prefixes();
+
     return 0;
 }
