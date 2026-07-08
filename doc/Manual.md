@@ -378,124 +378,101 @@ writing appearing over the top of the display colours. It's actually `sox`
 reporting warnings. You can fix this by adjusting the mic level using the ALSA
 mixer.  
 
-## RTTY 
+## RTTY and Digital Modes
 
-*Pasted from the original README.RTTY file; some information may be out of
-date.* 
+For RTTY or other digital mode contesting,
+the most common and straightforward approach is to use Fldigi
+for digital signal demodulation.
+Fldigi may also be used for digital signal transmission, if desired.
+Alternatively, digital transmission can be handled
+by external keyers such as the MFJ-1278, K3NG Keyer, nanoIO,
+and similar interfaces.
+These devices typically connect to the host system via a serial or USB interface.
+Some models also support digital signal reception in addition to transmission.
 
-2016-2018, Ervin Hegedus, HA2OS 
+This section focuses on using Fldigi with TLF.
 
-This is a guide for TLF, how to use it with Fldigi in RTTY mode, especially in
-FSK, LSB or USB modulations. TLF got a new Fldigi interface, here is what you
-need to know. 
+### Setting up Fldigi
 
-To work in RTTY, you need to solve two problems: read and demodulate RTTY
-signals (RX), and send your messages (TX). To demodulate the signals, we use
-the Fldigi, the most popular software for digital modes. Fldigi also can
-modulate, but there are several solutions, eg. MFJ 1278, or any other modems,
-which can be work through serial port. 
+The first step is to configure Fldigi to work in standalone mode.
 
- Let's see, how works the TX direction with Fldigi. 
+* To activate the capturing of received text, switch to contest mode:
 
-Important: if you set up your Fldigi instance, don't set up your RIG! TLF
-needs to handle the RIG, because it needs to tune the VFO, to use the bandmap.
-After the version 1.3, TLF can control Fldigi, then it can show the QRG
-(frequency of RIG - see later), and mode of RIG (eg: LSB, USB, FSK). 
+Configure -> Contests -> General
+    Contest "Generic contest"
 
-Starting with TLF-1.3 there are two ways to communicate with Fldigi - the old
-GMFSK interface and the actual XMLRPC one. Note, that after version 1.3 the
-GMFSK works as standalone interface, but can't work with Fldigi. 
+* Set up rig control via Hamlib's `rigctld`:
 
-Note: Using the new interface is recommended. The old GMFSK interface  will be
-no longer maintained and will go away soon. 
+Configure -> Rig Control -> Hamlib
+    Rig: "Hamlib NET rigctl"
+    Device "localhost:4532"
 
-### XMLRPC interface 
+**NOTE**: Do not use direct rig connection, as it cannot be shared between Fldigi and TLF.
 
-The only thing to do is to set the following keyword into your  logcfg.dat 
+If `rigctld` runs on a different server than Fldigi,
+then update the configuration accordingly.
 
+* Set up the digital mode to be used,
+including audio levels and rig mode setting.
+
+* Verify that all relevant Fldigi functions (sending, receiving, and rig control)
+are operational.
+
+### Configuring TLF
+
+TLF communicates with Fldigi via its XML-RPC interface.
+If both TLF and Fldigi are running on the same computer, simply add
 ```
 FLDIGI 
 ```
+to the TLF configuration file (either `logcfg.dat` or the corresponding rule file)
+to enable the connection:
 
-That will work as long as your Fldigi is compiled with the XMLRPC  interface
-and you do use the standard port for it. 
-
-If you run fldigis XMLRPC on a different port (or machine) use  
+If Fldigi runs on a diffrenet computer, or if it uses a port other than the default
+7632, specify the full URL:
 
 ```
 FLDIGI=http://*host*:*portnumber*/RPC2 
 ```
 
-That's it. TLF will realizes that you have Fldigi, and will communicate
-through XMLRPC. 
+The Fldigi interface can be toggled at runtime using the command `:FLDigi`.
+This command can also be used to reconnect to Fldigi if the connection is lost.
 
-You can still read of Fldigi RX window (top) in TLF own terminal, just use
-":miniterm" command in callsign field. 
+If a specific rig mode is required for the digital mode,
+it can be configured using the `DIGI_RIG_MODE` setting.
+By default, the rig is set to match typical AFSK digital modes.
 
-There is a new command: ":fldigi", which helps to you to turn on and off
-Fldigi communication. Then you don't need to modify the logcfg.dat to change
-your mode. 
+When exporting the log in Cabrillo format, digital mode QSOs are marked
+with the generic digital mode designator 'DG'.
+marked as having a generic digital mode 'DG'.
+To export RTTY QSOs as 'RY' instead, enable the `RTTYMODE` configuration option.
+Other non-standard modes (such as 'FH' for FeldHell) require
+manual editing of the generated Cabrillo file.
 
-Note: in old versions of TLF, you couldn't use NETKEYER and FLDIGI in same
-time. Now this restriction is gone, you can use them in same time. 
 
-The RX mode is a slightly difficult. I don't want to expose that here, I
-suppose that anybody knows that, if works in RTTY. I had a "big" problem with
-TLF: when I've worked in AFSK, and I moved the Fldigi carrier, I couldn't know
-exactly, what is the correct QRG of my RIG. And it was the problem, because I
-couldn't use the cluster info, moreover the grabbed spots! So, when I grabbed
-a station, TLF stored it to the currently QRG, but it didn't store the Fldigi
-carrier shift! So, now the TLF follows this philosophy below. 
+### Using TLF-Fldigi interworking
 
-The "native" mode is FSK. If you turn on your RIG, and switch to FSK mode,
-tune the VFO to an RTTY station. If you want to see its signals in Fldigi, you
-have to move the Fldigi carrier to 2210Hz. Note, that 2210Hz calculated from
-the space and mark frequency. The space is 2125Hz, the mark is 2295Hz.
-2295-2125 = 170, 170/2 = 85, and 2125+85 = 2210. This value is indicated at
-bottom-middle of Fldigi window. 
+Messages used in digital QSOs are configured in the same way as for CW,
+but the key names are prefixed with `DK`, which stands for "digital keyer".
+For example, the CQ message (`F1`) is defined as `DKF1`.
 
-Note, that you have to switch the Fldigi to reverse mode, so you need to click
-the **Rv** button. 
+By clicking on the Rx pane in Fldigi, QSO fields (callsign and exchange)
+can be selected and transferred to TLF, significantly reducing
+the amount of typing required.
 
-From now on if you find a station on the bandmap, and press the CTRL-G (grab
-the spot), TLF will tune to VFO that frequency, and you can hear the station.
-That's it. Almost :). In FSK mode, it isn't too easy to tune the VFO to the
-correct QRG. But if TLF can detect, that your RIG is in FSK mode (through CAT
-system), then if you move the Fldigi carrier to an another station (which
-exists eg. on 1000Hz), then TLF calculates the new VFO frequency, tune the RIG
-to there, and tune Fldigi's carrier to back, 2210Hz. 
+In FSK RTTY mode -- where the receiving audio shift is fixed -- clicking
+on the waterfall display tunes the rig to the desired carrier frequency.
+The preferred audio frequency for this "auto-QSY" feature is configured via 
+`FLDIGI_RTTY_SWEET_SPOT`.
 
-If you're working in AFSK, then the used modulation is LSB (or USB). In this
-case, you can move the Fldigi's carrier anywhere you want (from 85Hz to
-2915Hz), TLF only catch's the Fldigi carrier's value, and calculates the
-accurate QRG, which indicated on left-middle part in TLF window. If you want
-to grab a spot (with CTRL-G), then leave the Fldigi carrier's as it exists,
-and grab the next spot. TLF will calculate the requested QRG from the
-different of the spot and Fldigi carrier's frequency, and tune the RIG. That's
-it. 
+The keyer window (Ctrl-K) can also be used in digital modes;
+however, switching between transmit and receive must be done explicitly
+using the '[' and ']' keys.
 
-Error handling: if you forgot to start the Fldigi, or you close that till TLF
-runs and wants to communicate with it, TLF tries to connect. After ten (10)
-continuous unsuccessful attempts TLF will show you the error message (at bottom
-left corner): "Fldigi: lost connection", and turns it off. If you want to turn
-on again, just type ":fldigi" command in CALLSIGN field. If Fldigi comes back
-after less than ten attempts, the error counter is cleared. 
+For RTTY, the `:MINiterm` command activates an embedded RX window within TLF,
+which is useful when running Fldigi in headless mode.
 
-More new feature in Fldigi interface: - when TLF sends a message through
-Fldigi, it switches Fldigi to TX mode. - similar to CW mode, if you press ESC
-while Fldigi sends the message,   TLF will stop it. - if the connection
-between TLF and Fldigi breaks (eg. you close   Fldigi, or you start TLF before
-Fldigi), then TLF realizes it, and handles as correctly. You will lose the
-Fldigi functions (no   TX/RX, QRG align), but TLF runs away. If you start
-Fldigi again,   after a few seconds, TLF will work with it again 
-
-New features after 1.3: - Fldigi supports nanoIO software, which is a small
-Arduino project   Homepage: https://github.com/w1hkj/nanoIO   whit this, you
-can work in real FSK mode - Fldigi can catch the different strings as field
-values, eg:   CALLSIGN, EXCHANGE. If you click in RX window to a callsign,
-Fldigi fills its CALL field, and TLF will grab it. EXCHANGE field is similar. 
-
- 73, Ervin HA2OS 
+Grabbing cluster spots works the same way as for non-digital modes.
 
 ## QTC Handling 
 
