@@ -27,7 +27,7 @@ TLF is a contest logger for Linux.
 * [The TLF interface](#the-tlf-interface)
 * [CW operation](#cw)
 * [SSB operation](#ssb)
-* [RTTY operation](#rtty)
+* [RTTY and digital operation](#rtty-and-digital-modes)
 * [QTC handling](#qtc-handling)
 * [QTCs on RTTY](#qtcs-on-rtty)
 * [Cabrillo file handling](#cabrillo-file-handling)
