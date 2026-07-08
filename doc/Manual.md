@@ -469,7 +469,7 @@ The keyer window (Ctrl-K) can also be used in digital modes;
 however, switching between transmit and receive must be done explicitly
 using the '[' and ']' keys.
 
-For RTTY, the `:MINiterm` command activates an embedded RX window within TLF,
+For RTTY, the `:MINiterm` command activates an embedded Rx window within TLF,
 which is useful when running Fldigi in headless mode.
 
 Grabbing cluster spots works the same way as for non-digital modes.
