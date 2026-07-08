@@ -432,7 +432,7 @@ If Fldigi runs on a diffrenet computer, or if it uses a port other than the defa
 7632, specify the full URL:
 
 ```
-FLDIGI=http://*host*:*portnumber*/RPC2 
+FLDIGI=http://<host>:<portnumber>/RPC2
 ```
 
 The Fldigi interface can be toggled at runtime using the command `:FLDigi`.
