@@ -136,7 +136,7 @@ void set_trxmode(int mode) {
 }
 
 
-int changepars(void) {
+void changepars(void) {
 
     char parameterstring[20] = "";
     char parameters[52][19];
@@ -673,16 +673,6 @@ int changepars(void) {
 	    packet();
     }
 
-    refreshp();
-
-    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-
-    mvaddstr(12, 29, "            ");
-    move(12, 29);
-    refreshp();
-    current_qso.call[0] = '\0';
-
-    return (0);
 }
 
 /* -------------------------------------------------------------- */
