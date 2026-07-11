@@ -726,7 +726,8 @@ void networkinfo(void) {
 
     mvprintw(9 + n_nodes, 10, "Cluster    : %s", pr_hostaddress);
     mvprintw(10 + n_nodes, 10, "TNCport    : %s", tncportname);
-    mvprintw(11 + n_nodes, 10, "RIGport    : %s", rigportname);
+    mvprintw(11 + n_nodes, 10, "RIGport    : %s",
+	     (rigportname != NULL ? rigportname : "n/a"));
     mvprintw(12 + n_nodes, 10, "Band output: %s",
 	     (use_bandoutput ? "on" : "off"));
     mvprintw(13 + n_nodes, 10, "callmaster : %s",

@@ -119,7 +119,6 @@ int init_tlf_rig(void) {
 	return -1;
     }
 
-    g_strchomp(rigportname);	// remove trailing '\n'
     retcode = rig_set_conf(my_rig, rig_token_lookup(my_rig, "rig_pathname"),
 			   rigportname);
 
