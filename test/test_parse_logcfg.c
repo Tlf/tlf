@@ -858,7 +858,7 @@ void test_rigport(void **state) {
     int rc = call_parse_logcfg("RIGPORT = /dev/rigport \r\n");
     assert_int_equal(rc, PARSE_OK);
     assert_non_null(rigportname);
-    assert_string_equal(rigportname, "/dev/rigport \r\n");  // FIXME...
+    assert_string_equal(rigportname, "/dev/rigport");
 }
 
 void test_rotport(void **state) {
