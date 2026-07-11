@@ -219,6 +219,12 @@ char qtc_phsend_message[14][80] = {
     "", "", "", "", "", "" };			// voice keyer file names when send QTCs
 
 bool qtcrec_record = false;
+
+bool onlinescore;
+char *onlinescore_url;
+char *onlinescore_user;
+char *onlinescore_pass;
+
 char qtcrec_record_command[2][50] = {"rec -q 8000", "-q &"};
 char qtcrec_record_command_shutdown[50] = "pkill -SIGINT -n rec";
 char qtc_cap_calls[40] = "";

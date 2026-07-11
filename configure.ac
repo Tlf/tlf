@@ -124,6 +124,8 @@ CPPFLAGS=$tlf_saved_CPPFLAGS
 CFLAGS=$tlf_saved_CFLAGS
 
 
+LIBCURL_CHECK_CONFIG([], [7], [wantlibcurl=true], [wantlibcurl=false])
+
 dnl Check if we want to use xmlrpc to read carrier from Fldigi
 AC_MSG_CHECKING([whether to build Fldigi XML RPC support])
 AC_ARG_ENABLE([fldigi-xmlrpc],
@@ -245,6 +247,7 @@ echo \
 
  Package features:
 
+ With CURL		$wantlibcurl
  With XML RPC		$wantfldigixmlrpc
  With Python plugin	$wantpythonplugin
 
