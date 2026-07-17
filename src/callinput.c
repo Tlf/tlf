@@ -416,7 +416,7 @@ int callinput(void) {
 		    // XXX: Before digi_message, SSB mode sent CW here. - W8BSD
 		    send_standard_message(6);	/* as with F7 */
 		    cleanup();
-                    pos = 0;
+		    pos = 0;
 		    clear_display();
 		}
 		break;
@@ -675,7 +675,7 @@ int callinput(void) {
 		    if (!early_started) {
 			/* if CW not started early drop call and start anew */
 			cleanup();
-                        pos = 0;
+			pos = 0;
 			clear_display();
 		    }
 		    freqstore = 0;
