@@ -428,7 +428,7 @@ FLDIGI
 to the TLF configuration file (either `logcfg.dat` or the corresponding rule file)
 to enable the connection:
 
-If Fldigi runs on a diffrenet computer, or if it uses a port other than the default
+If Fldigi runs on a different computer, or if it uses a port other than the default
 7632, specify the full URL:
 
 ```
