@@ -269,3 +269,50 @@ double get_current_seconds() {
     return tv.tv_sec + tv.tv_usec / 1e6;
 }
 
+/*
+ * insert a character into a string at given position
+ * if maximal length would be reached then no action is performed
+ *
+ * \returns the new position
+ */
+int insert_char(char c, char *buf, int pos, int maxlength) {
+    if (pos < 0) {
+	return 0;
+    }
+    int len = strlen(buf);
+    if (pos > len) {
+	return len;
+    }
+    if (len >= maxlength) {     // buffer is full
+	return pos;
+    }
+
+    GString *str = g_string_new_len(buf, maxlength + 1);
+    g_string_insert_c(str, pos, c);
+    char *s = g_string_free(str, FALSE);
+    strcpy(buf, s);
+    g_free(s);
+
+    return pos + 1;
+}
+
+/*
+ * delete the character from a string at given position
+ */
+void delete_char(char *buf, int pos) {
+    if (pos < 0) {
+	return;
+    }
+    int len = strlen(buf);
+    if (pos >= len) {
+	return;
+    }
+
+    GString *str = g_string_new(buf);
+    g_string_erase(str, pos, 1);
+    char *s = g_string_free(str, FALSE);
+    strcpy(buf, s);
+    g_free(s);
+
+}
+
