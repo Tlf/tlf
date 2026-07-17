@@ -22,6 +22,5 @@
 #define CALLEDIT_H
 
 void calledit(void);
-int insert_char(int);
 
 #endif /* CALLEDIT_H */
