@@ -1434,7 +1434,7 @@ static config_t logcfg_configs[] = {
     {"PLUGIN_CONFIG",      CFG_STRING(plugin_config)},
 #endif
 
-    {"RIGPORT",         CFG_STRING_NOCHOMP(rigportname)},
+    {"RIGPORT",         CFG_STRING(rigportname)},
     {"ROTPORT",         CFG_STRING(rotportname)},
     {"CLUSTERLOGIN",    CFG_STRING_STATIC_NOCHOMP(clusterlogin, 80)},
 

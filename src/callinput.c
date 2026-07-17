@@ -419,8 +419,9 @@ int callinput(void) {
 
 	    // Colon, prefix for entering commands or changing parameters.
 	    case ':': {
-		changepars();
 		current_qso.call[0] = '\0';
+		HideSearchPanel();
+		changepars();
 		x = 0;
 		clear_display();
 		attron(COLOR_PAIR(C_LOG) | A_STANDOUT);

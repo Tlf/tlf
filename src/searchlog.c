@@ -104,6 +104,9 @@ void ShowSearchPanel(void) {
 }
 
 void HideSearchPanel(void) {
+    if (!initialized) {
+	return;
+    }
     hide_panel(search_panel);
 }
 

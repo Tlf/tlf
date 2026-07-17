@@ -120,9 +120,5 @@ typedef struct {
         (cfg_arg_t){.char_p=var, .size=bufsize, \
                     .string_type=STATIC}
 
-#define CFG_STRING_NOCHOMP(var) NEED_PARAM, cfg_string, \
-        (cfg_arg_t){.char_pp=&var, \
-                    .string_type=DYNAMIC}
-
 
 #endif // PARSE_LOGCFG_H

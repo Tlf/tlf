@@ -136,7 +136,7 @@ void set_trxmode(int mode) {
 }
 
 
-int changepars(void) {
+void changepars(void) {
 
     char parameterstring[20] = "";
     char parameters[52][19];
@@ -673,16 +673,6 @@ int changepars(void) {
 	    packet();
     }
 
-    refreshp();
-
-    attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
-
-    mvaddstr(12, 29, "            ");
-    move(12, 29);
-    refreshp();
-    current_qso.call[0] = '\0';
-
-    return (0);
 }
 
 /* -------------------------------------------------------------- */
@@ -736,7 +726,8 @@ void networkinfo(void) {
 
     mvprintw(9 + n_nodes, 10, "Cluster    : %s", pr_hostaddress);
     mvprintw(10 + n_nodes, 10, "TNCport    : %s", tncportname);
-    mvprintw(11 + n_nodes, 10, "RIGport    : %s", rigportname);
+    mvprintw(11 + n_nodes, 10, "RIGport    : %s",
+	     (rigportname != NULL ? rigportname : "n/a"));
     mvprintw(12 + n_nodes, 10, "Band output: %s",
 	     (use_bandoutput ? "on" : "off"));
     mvprintw(13 + n_nodes, 10, "callmaster : %s",
