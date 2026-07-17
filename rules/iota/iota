@@ -12,6 +12,7 @@ CONTEST_MODE
 GENERIC_MULT = BAND
 
 # scoring and mults handled by iota.py
+# Island stations shall specify their reference via PLUGIN_CONFIG=CC-NNN
 
 CABRILLO=UNIVERSAL
 CABRILLO-CONTEST=RSGB-IOTA
