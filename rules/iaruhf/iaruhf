@@ -11,7 +11,7 @@
 ##############################
 #
 # The custom multiplier list should be stored in the tlf working directory
-CONTEST=iaru-hf
+CONTEST=iaruhf
 LOGFILE=iaruhf.log
 CONTEST_MODE
 
@@ -36,12 +36,11 @@ RECALL_MULTS
 # HQ stations and IARU officials
 INITIAL_EXCHANGE=iaruhf.txt
 
-# It can get the points incorrect if your neighbour country is in the same ITU zone.
 # Switched from ITUMULT to WYSIWYG_MULTIBAND to get the HQ multipliers correctly.
-# TODO convert scoring to a python plugin
-MY_COUNTRY_POINTS=1
-MY_CONTINENT_POINTS=3
-DX_POINTS=5
+
+# Scoring:
+# (handled by iaruhf.py)
+
 
 WYSIWYG_MULTIBAND
 #ITUMULT
