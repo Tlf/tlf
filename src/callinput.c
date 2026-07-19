@@ -114,18 +114,38 @@ int callinput(void) {
 
     int j, t, x = 0;
     int pos = strlen(current_qso.call);
+    int saved_len;
+    int use_part_pos = 0;   // position after filling callsign by USEPARTIALS
     static int lastwindow;
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    printcall();	/* print call input field */
+    saved_len = strlen(current_qso.call);
     searchlog();
+    if (strlen(current_qso.call) > saved_len) { // check for autofill
+	pos = strlen(current_qso.call);
+	use_part_pos = pos;
+    }
+
+    printcall();	/* print call input field */
 
     while (strlen(current_qso.call) <= MAX_CALL_LENGTH) {
 
+	// block use of partials if we edit a previously autofilled call
+	if (use_part_pos > 0 && pos < use_part_pos) {
+	    block_part = 1;
+	}
+
 	show_zones(bandinx);
 	update_info_line();
+
+	saved_len = strlen(current_qso.call);
 	searchlog();
+	if (strlen(current_qso.call) > saved_len) { // check for autofill
+	    pos = strlen(current_qso.call);
+	    use_part_pos = pos;
+	}
+
 	printcall();    // note: calls refreshp()
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
