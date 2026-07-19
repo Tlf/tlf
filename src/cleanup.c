@@ -67,7 +67,7 @@ void cleanup_hiscall(void) {
 /* restore call */
 void restore_hiscall(void) {
     if (call_backup) {
-	g_strlcpy(current_qso.call, call_backup, sizeof(current_qso.call));
+	g_strlcpy(current_qso.call, call_backup, MAX_CALL_LENGTH + 1);
 	g_free(call_backup);
 	call_backup = NULL;
     }
