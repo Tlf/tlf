@@ -133,7 +133,7 @@ int callinput(void) {
 
 	// block use of partials if we edit a previously autofilled call
 	if (use_part_pos > 0 && pos < use_part_pos) {
-	    block_part = 1;
+	    block_part = true;
 	}
 
 	show_zones(bandinx);
