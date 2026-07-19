@@ -131,6 +131,13 @@ int callinput(void) {
 
     while (strlen(current_qso.call) <= MAX_CALL_LENGTH) {
 
+	// release blocking of partials if call is empty
+	// (e.g. cleared to enter a different call)
+	if (strlen(current_qso.call) == 0) {
+	    use_part_pos = 0;
+	    block_part = false;
+	}
+
 	// block use of partials if we edit a previously autofilled call
 	if (use_part_pos > 0 && pos < use_part_pos) {
 	    block_part = true;
