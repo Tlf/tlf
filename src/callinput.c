@@ -131,6 +131,11 @@ int callinput(void) {
 
     while (strlen(current_qso.call) <= MAX_CALL_LENGTH) {
 
+	// try to keep cursor position, update it only if call got shorter
+	if (pos > strlen(current_qso.call)) {
+	    pos = strlen(current_qso.call);
+	}
+
 	// release blocking of partials if call is empty
 	// (e.g. cleared to enter a different call)
 	if (strlen(current_qso.call) == 0) {
