@@ -48,7 +48,7 @@ void cleanup_comment(void) {
 /* restore comment */
 void restore_comment(void) {
     if (comment_backup) {
-	g_strlcpy(current_qso.comment, comment_backup, sizeof(current_qso.comment));
+	g_strlcpy(current_qso.comment, comment_backup, COMMENT_SIZE);
 	g_free(comment_backup);
 	comment_backup = NULL;
     }
