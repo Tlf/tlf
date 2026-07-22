@@ -635,11 +635,13 @@ int fldigi_get_log_frequency(freq_t *f) {
     if (rc == 0) {
 	// convert string result in kHz to Hz
 	// ... but first fix decimal separator
-	char *p = strchr(result.stringval, ',');
+	char *copy = g_strdup(result.stringval);
+	char *p = strchr(copy, ',');
 	if (p != NULL) {
 	    *p = '.';
 	}
-	*f = atof(result.stringval) * 1000.0;
+	*f = atof(copy) * 1000.0;
+	g_free(copy);
 	xmlrpc_res_free(&result);
     }
     return rc;
