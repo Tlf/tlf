@@ -1157,12 +1157,21 @@ the moment there are at least three different versions:
 Q: The generated ADIF file misses some entries, e.g. the CONTEST_ID which is
 used by my log program during import. Any idea to work around it?
 
-A: You can use 'adifmerg' from OH7BF for it. It allows to post process the
+A: You can use [adifmerg](https://github.com/oh7bf/adifmerg) from OH7BF for it.
+It allows to post process the
 ADIF file. For instance you can add the missing CONTEST_ID with:
 
-```
+```sh
 adifmerg -f qso.adi -A CONTEST_ID=<my contest name> -o > file.adi
 ```
+
+With the [ADIF Multitool](https://github.com/flwyd/adif-multitool) from WT0RJ,
+you can do it (and more!) with:
+
+```sh
+adifmt edit --add 'contest_id=<my contest name>' mylog.adi > file.adi
+```
+
 Have a look at [www.adif.org]() for the already standardized contest IDs.
 
 Q: I am using TLF in an XTerm. How can I configure used colors, fonts and

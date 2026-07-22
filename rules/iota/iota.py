@@ -75,6 +75,8 @@ def check_exchange(qso):
 
     mult = ''
 
+    # As per-mode (CW/SSB) multipliers are not supported yet
+    # it is worked around by appending c/s to the multiplier value.
     xchg = f'{serial:03}'
     if ref:
         xchg += ' ' + ref
