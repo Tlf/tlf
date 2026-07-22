@@ -348,7 +348,6 @@ pthread_mutex_t tlf_rig_mutex = PTHREAD_MUTEX_INITIALIZER;
 rmode_t rmode;			/* radio mode of operation */
 pbwidth_t width;
 vfo_t vfo;			/* vfo selection */
-port_t myport;
 int ssb_bandwidth = 3000;
 int cw_bandwidth = 0;
 int serial_rate = 2400;
