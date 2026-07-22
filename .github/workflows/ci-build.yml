@@ -53,3 +53,9 @@ jobs:
             grep -q FAILED $f && echo -e "\n>>> $f:\n" && cat $f
         done
         exit 1
+    - name: Make and check distribution
+      run: |
+        make dist && make distcheck
+    - name: Check that all rule files are included
+      run: |
+        tools/check_dist_rules
