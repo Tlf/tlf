@@ -27,7 +27,7 @@ tar tzf $TARGZ \
 #
 # see what we have in the repo
 #
-find $DIR -type f \
+find $DIR -type f -o -type l \
     | grep -v Makefile \
     | sort > files_repo
 

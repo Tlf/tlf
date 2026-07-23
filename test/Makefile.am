@@ -27,7 +27,7 @@ DATA_FILES = data/ie_empty_call.txt data/ie_long_line.txt \
              data/continents.txt data/countries.txt \
 	     generate_defs.pl
 
-EXTRA_DIST = $(DATA_FILES)
+EXTRA_DIST = $(DATA_FILES) $(TEST_RULES_FILES)
 
 clean-local:
 	rm -f *test.log
