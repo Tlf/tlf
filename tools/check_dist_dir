@@ -1,0 +1,51 @@
+#!/bin/sh
+
+DIR=$1
+
+#
+# check that a directory is fully contained in the distribution archive
+#
+
+eval "$(grep PACKAGE_VERSION= configure)"
+
+TARGZ=tlf-${PACKAGE_VERSION}.tar.gz
+
+echo
+echo Checking $DIR in distribution archive $TARGZ
+echo
+
+#
+# extract the list of files in the directory, excluding Makefiles
+#
+tar tzf $TARGZ \
+    | grep -v '/$' \
+    | sed -e 's:^tlf[^/]\+/::' \
+    | grep ^$DIR/ \
+    | grep -v Makefile \
+    | sort > files_dist
+
+#
+# see what we have in the repo
+#
+find $DIR -type f -o -type l \
+    | grep -v Makefile \
+    | sort > files_repo
+
+#
+# diff them
+#
+diff -y --suppress-common-lines files_repo files_dist
+
+if [ $? -ne 0 ]; then
+    echo
+    echo "---- Files marked with '<' are missing"
+    echo
+    rc=1
+else
+    echo "---- OK"
+    echo
+    rc=0
+fi
+
+exit $rc
+

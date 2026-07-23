@@ -127,6 +127,21 @@ EOT
     close($C);
 }
 
+#
+# generate TEST_RULES_FILES
+#
+use File::Find;
+
+print $AM "\nTEST_RULES_FILES =";
+
+find(sub {
+  if (-f) {
+    print $AM " \\\n    $File::Find::dir/$_";
+  }
+}, 'rules');
+
+print $AM "\n\n";
+
 close($AM);
 
 
