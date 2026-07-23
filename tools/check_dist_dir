@@ -18,9 +18,9 @@ echo
 # extract the list of files in the directory, excluding Makefiles
 #
 tar tzf $TARGZ \
-    | grep /$DIR/ \
     | grep -v '/$' \
     | sed -e 's:^tlf[^/]\+/::' \
+    | grep ^$DIR/ \
     | grep -v Makefile \
     | sort > files_dist
 
