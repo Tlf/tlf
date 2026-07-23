@@ -56,6 +56,12 @@ jobs:
     - name: Make and check distribution
       run: |
         make dist && make distcheck
-    - name: Check that all rule files are included
+    - name: Check that all non-code files are included in distribution
       run: |
-        tools/check_dist_rules
+        set +e  # disable exit-on-error mode to get all errors
+        rc=0
+        for d in doc macros rules scripts share test/rules test/data; do
+            tools/check_dist_dir $d
+            if [ $? -ne 0 ]; then rc=1; fi
+        done
+        exit $rc
