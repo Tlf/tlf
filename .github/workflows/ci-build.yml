@@ -60,7 +60,7 @@ jobs:
       run: |
         rc=0
         for d in doc macros rules scripts share test/rules test/data; do
-            tools/check_dist_rules $d
+            tools/check_dist_dir $d
             if [ $? -ne 0 ]; then rc=1; fi
         done
         exit $rc
