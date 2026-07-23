@@ -58,6 +58,7 @@ jobs:
         make dist && make distcheck
     - name: Check that all non-code files are included in distribution
       run: |
+        set +e  # disable exit-on-error mode to get all errors
         rc=0
         for d in doc macros rules scripts share test/rules test/data; do
             tools/check_dist_dir $d
