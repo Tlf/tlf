@@ -36,7 +36,6 @@
 #include "audio.h"
 #include "autocq.h"
 #include "bandmap.h"
-#include "calledit.h"
 #include "callinput.h"
 #include "change_rst.h"
 #include "changefreq.h"
@@ -113,21 +112,52 @@ int callinput(void) {
     static struct grab_t grab =  { .state = NONE };
 
 
-    int cury, curx;
     int j, t, x = 0;
-    char instring[2] = { '\0', '\0' };
+    int pos = strlen(current_qso.call);
+    int saved_len;
+    int use_part_pos = 0;   // position after filling callsign by USEPARTIALS
     static int lastwindow;
 
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
-    printcall();	/* print call input field */
+    saved_len = strlen(current_qso.call);
     searchlog();
+    if (strlen(current_qso.call) > saved_len) { // check for autofill
+	pos = strlen(current_qso.call);
+	use_part_pos = pos;
+    }
+
+    printcall();	/* print call input field */
 
     while (strlen(current_qso.call) <= MAX_CALL_LENGTH) {
 
+	// try to keep cursor position, update it only if call got shorter
+	if (pos > strlen(current_qso.call)) {
+	    pos = strlen(current_qso.call);
+	}
+
+	// release blocking of partials if call is empty
+	// (e.g. cleared to enter a different call)
+	if (strlen(current_qso.call) == 0) {
+	    use_part_pos = 0;
+	    block_part = false;
+	}
+
+	// block use of partials if we edit a previously autofilled call
+	if (use_part_pos > 0 && pos < use_part_pos) {
+	    block_part = true;
+	}
+
 	show_zones(bandinx);
 	update_info_line();
+
+	saved_len = strlen(current_qso.call);
 	searchlog();
+	if (strlen(current_qso.call) > saved_len) { // check for autofill
+	    pos = strlen(current_qso.call);
+	    use_part_pos = pos;
+	}
+
 	printcall();    // note: calls refreshp()
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
@@ -147,6 +177,7 @@ int callinput(void) {
 		    && current_qso.call[0] != '\0') {
 		freqstore = freq;
 		fldigi_set_callfield = false;
+		pos = strlen(current_qso.call);
 		// call has been just set, restart outer loop to update display
 		break;
 	    }
@@ -173,6 +204,7 @@ int callinput(void) {
 		get_spot_on_qrg(grab.call, freq);
 		if (strlen(grab.call) >= 3) {
 		    g_strlcpy(current_qso.call, grab.call, CALL_SIZE);
+		    pos = strlen(current_qso.call);
 		    grab.state = REACHED;
 		    grab.spotfreq = freq;
 		    freqstore = 0;
@@ -199,7 +231,7 @@ int callinput(void) {
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
-	    wmove(stdscr, 12, 29 + strlen(current_qso.call));
+	    wmove(stdscr, 12, 29 + pos);
 	    x = key_poll();
 
 	}
@@ -309,19 +341,31 @@ int callinput(void) {
 		continue;
 	    }
 
-	    // <Home>, enter call edit when call field is not empty.
+	    // <Home>, move cursor to the beginning of callsign field.
 	    case KEY_HOME: {
-		if ((*current_qso.call != '\0') && (ungetch(x) == OK)) {
-		    calledit();
-		}
-
+		pos = 0;
 		break;
 	    }
 
-	    // Left Arrow, enter call edit when call field is not empty, or band down.
+	    // Ctrl-E (^E) or <End>, move to the end of callsign field
+	    case CTRL_E:
+	    case KEY_END: {
+		pos = strlen(current_qso.call);
+		break;
+	    }
+
+	    // <Delete>
+	    case KEY_DC: {
+		delete_char(current_qso.call, pos);
+		break;
+	    }
+
+	    // Left Arrow, move cursor left; or band down when call field is empty.
 	    case KEY_LEFT: {
 		if (*current_qso.call != '\0') {
-		    calledit();
+		    if (pos > 0) {
+			--pos;
+		    }
 		} else {
 		    handle_bandswitch(BAND_DOWN);
 		}
@@ -329,9 +373,15 @@ int callinput(void) {
 		break;
 	    }
 
-	    // Right Arrow, band up when call field is empty.
+	    // Right Arrow, move cursor right; or band up when call field is empty.
 	    case KEY_RIGHT: {
-		handle_bandswitch(BAND_UP);
+		if (*current_qso.call != '\0') {
+		    if (pos < strlen(current_qso.call)) {
+			++pos;
+		    }
+		} else {
+		    handle_bandswitch(BAND_UP);
+		}
 		break;
 	    }
 
@@ -399,6 +449,7 @@ int callinput(void) {
 		    // XXX: Before digi_message, SSB mode sent CW here. - W8BSD
 		    send_standard_message(6);	/* as with F7 */
 		    cleanup();
+		    pos = 0;
 		    clear_display();
 		}
 		break;
@@ -487,11 +538,9 @@ int callinput(void) {
 
 	    // <Backspace>, remove character left of cursor, move cursor left one position.
 	    case KEY_BACKSPACE: {
-		if (*current_qso.call != '\0') {
-		    getyx(stdscr, cury, curx);
-		    mvaddstr(cury, curx - 1, " ");
-		    move(cury, curx - 1);
-		    current_qso.call[strlen(current_qso.call) - 1] = '\0';
+		if (pos >= 1) {
+		    --pos;
+		    delete_char(current_qso.call, pos);
 		}
 		break;
 	    }
@@ -636,6 +685,8 @@ int callinput(void) {
 		    restore_comment();
 		}
 
+		pos = strlen(current_qso.call);
+
 		clear_display();
 		break;
 
@@ -647,6 +698,8 @@ int callinput(void) {
 		    restore_hiscall();
 		}
 
+		pos = strlen(current_qso.call);
+
 		break;
 
 	    // <Escape>, clear call input or stop sending.
@@ -655,6 +708,7 @@ int callinput(void) {
 		    if (!early_started) {
 			/* if CW not started early drop call and start anew */
 			cleanup();
+			pos = 0;
 			clear_display();
 		    }
 		    freqstore = 0;
@@ -726,6 +780,7 @@ int callinput(void) {
 	    // Ctrl-G (^G), grab next DX spot from bandmap.
 	    case CTRL_G: {
 		freq_t f = grab_next();
+		pos = strlen(current_qso.call);
 		if (f > 0.0) {
 		    grab.state = IN_PROGRESS;
 		    grab.spotfreq = f;
@@ -739,6 +794,7 @@ int callinput(void) {
 	    // Alt-g (M-g), grab first spot matching call field chars.
 	    case ALT_G: {
 		double f = grabspot();
+		pos = strlen(current_qso.call);
 		if (f > 0.0) {
 		    grab.state = IN_PROGRESS;
 		    grab.spotfreq = f;
@@ -799,19 +855,19 @@ int callinput(void) {
 	if (valid_call_char(x)) {
 	    x = g_ascii_toupper(x);
 
-	    if (strlen(current_qso.call) < MAX_CALL_LENGTH) {
-		instring[0] = x;
-		instring[1] = '\0';
-		addch(x);
-		strcat(current_qso.call, instring);
-		if (cqmode == CQ && cwstart > 0 &&
-			trxmode == CWMODE && iscontest) {
-		    /* early start keying after 'cwstart' characters but only
-		     * if input field contains at least one nondigit */
-		    if (strlen(current_qso.call) == cwstart && !plain_number(current_qso.call)) {
-			x = autosend();
-		    }
-		}
+	    pos = insert_char(x, current_qso.call, pos, MAX_CALL_LENGTH);
+
+	    /* early start keying after 'cwstart' characters, but only if
+	     * - cursor is at the end of the input field
+	     * - input field contains at least one nondigit character
+	     * - we are in CW mode and CQing in a contest
+	     */
+	    if (cwstart > 0 && pos == cwstart
+		    && pos == strlen(current_qso.call)
+		    && !plain_number(current_qso.call)
+		    && trxmode == CWMODE && cqmode == CQ && iscontest) {
+
+		x = autosend();
 	    }
 
 	    freqstore = freq;

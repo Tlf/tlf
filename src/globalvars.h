@@ -198,7 +198,7 @@ extern int my_country_points;
 extern bool lowband_point_mult;
 extern bool landebug;
 extern int dupe;
-extern int block_part;
+extern bool block_part;
 extern int miniterm;
 extern int announcefilter;
 extern int nr_of_spots;

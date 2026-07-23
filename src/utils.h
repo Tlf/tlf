@@ -28,5 +28,7 @@ char *find_available(char *filename);
 void get_partial_callsign(char *call1, char *call2, char *partial);
 bool plain_number(char *str);
 double get_current_seconds();
+int insert_char(char c, char *buf, int pos, int maxlength);
+void delete_char(char *buf, int pos);
 
 #endif /* UTILS_H */

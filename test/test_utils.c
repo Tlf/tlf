@@ -119,3 +119,56 @@ void test_get_partial_callsign(void **state) {
     }
 }
 
+void test_insert_char_append(void **state) {
+    char buffer[20];
+    buffer[0] = 0;
+    int pos = 0;
+
+    pos = insert_char('A', buffer, pos, 3);
+    assert_int_equal(1, pos);
+    assert_string_equal("A", buffer);
+
+    pos = insert_char('B', buffer, pos, 3);
+    assert_int_equal(2, pos);
+    assert_string_equal("AB", buffer);
+
+    pos = insert_char('C', buffer, pos, 3);
+    assert_int_equal(3, pos);
+    assert_string_equal("ABC", buffer);
+
+    pos = insert_char('D', buffer, pos, 3);     // no action is expected
+    assert_int_equal(3, pos);
+    assert_string_equal("ABC", buffer);
+}
+
+void test_insert_char_middle(void **state) {
+    char buffer[20];
+    strcpy(buffer, "AB");
+    int pos = 0;
+
+    pos = insert_char('C', buffer, pos, 5);
+    assert_int_equal(1, pos);
+    assert_string_equal("CAB", buffer);
+
+    pos = 2;    // points to B
+    pos = insert_char('D', buffer, pos, 5);
+    assert_int_equal(3, pos);
+    assert_string_equal("CADB", buffer);
+}
+
+void test_delete_char(void **state) {
+    char buffer[20];
+    strcpy(buffer, "ABCDE");
+
+    delete_char(buffer, 0);
+    assert_string_equal("BCDE", buffer);
+
+    delete_char(buffer, 1);
+    assert_string_equal("BDE", buffer);
+
+    delete_char(buffer, 2);
+    assert_string_equal("BD", buffer);
+
+    delete_char(buffer, 3);     // no change, pos >= length
+    assert_string_equal("BD", buffer);
+}

@@ -319,10 +319,12 @@ void handlePartials(void) {
     nr_suggested = displayPartials(suggested_call);
 
     /* If only one partial call found and USEPARTIALS set,
-    * use that call for auto-completion. Can be blocked by
-    * pressing tab in calledit() function
+    * use that call for auto-completion. It is blocked by
+    * subsequent editing the call. The blocking is released
+    * after logging the QSO or clearing the call field.
     */
     if ((nr_suggested == 1) && use_part && !block_part
+	    && !plain_number(current_qso.call)
 	    && strlen(suggested_call) > strlen(current_qso.call)) {
 
 	strcpy(current_qso.call, suggested_call);

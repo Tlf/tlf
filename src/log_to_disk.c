@@ -168,7 +168,7 @@ void log_to_disk(int from_lan) {
 	set_outfreq(RESETRIT);
     }
 
-    block_part = 0;		/* unblock use partials */
+    block_part = false;		/* unblock use partials */
 
     pthread_mutex_unlock(&disk_mutex);
 }
