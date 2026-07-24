@@ -39,7 +39,7 @@ static void check_rules(const gchar *dirname, gchar *path) {
     }
 }
 
-#define TEST_RULES_DIR  TOP_SRCDIR "/test/rules"
+#define TEST_RULES_DIR  TOP_BUILDDIR "/test/rules"
 
 void test_rules(void **state) {
 

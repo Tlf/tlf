@@ -53,9 +53,9 @@ jobs:
             grep -q FAILED $f && echo -e "\n>>> $f:\n" && cat $f
         done
         exit 1
-    - name: Make and check distribution
+    - name: Build distribution
       run: |
-        make dist #&& make distcheck
+        make dist
     - name: Check that all non-code files are included in distribution
       run: |
         set +e  # disable exit-on-error mode to get all errors
@@ -65,3 +65,6 @@ jobs:
             if [ $? -ne 0 ]; then rc=1; fi
         done
         exit $rc
+    - name: Check distribution
+      run: |
+        make distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-fldigi-xmlrpc --enable-python-plugin"
