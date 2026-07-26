@@ -6,7 +6,7 @@ bin_PROGRAMS = tlf
 tlf_SOURCES = \
 	addcall.c addmult.c addpfx.c addspot.c audio.c autocq.c \
 	background_process.c bandmap.c bands.c \
-	cabrillo_utils.c calledit.c callinput.c changefreq.c changepars.c \
+	cabrillo_utils.c callinput.c changefreq.c changepars.c \
 	change_rst.c checklogfile.c checkqtclogfile.c \
 	cleanup.c clear_display.c clusterinfo.c \
         cqww_simulator.c cw_utils.c \
@@ -43,7 +43,7 @@ tlf_LDADD = @LIBM_LIB@ @PTHREAD_LIBS@ @GLIB_LIBS@ @PANEL_LIBS@ @CURSES_LIBS@ \
 noinst_HEADERS = \
 	addcall.h addmult.h addpfx.h addspot.h audio.h autocq.h \
 	background_process.h bandmap.h bands.h \
-	cabrillo_utils.h calledit.h callinput.h changefreq.h changepars.h \
+	cabrillo_utils.h callinput.h changefreq.h changepars.h \
 	change_rst.h checklogfile.h checkqtclogfile.h \
 	cleanup.h clear_display.h clusterinfo.h \
 	cqww_simulator.h cw_utils.h \
