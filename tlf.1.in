@@ -3643,7 +3643,7 @@ The return value is a string specifying the minimal required
 .TP
 \fBdef setup() -> None:\fR
 .
-Called whenever the QSO list is initialized (e.g. on inital loading of
+Called whenever the QSO list is initialized (e.g. on initial loading of
 the log file or before rescoring it). It shall reset any internal
 structures related to QSOs.
 .
