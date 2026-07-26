@@ -262,8 +262,7 @@ int qsos_per_band[NBANDS];
 int dupe = 0;
 bool partials = false;	/**< show partial calls */
 bool use_part = false;	/**< if 1 use automatically found partial call */
-bool block_part = false;/**< if 1 block the call autocompletion
-			  for these QSO */
+bool block_part = false;/**< true: block call autocompletion for this QSO */
 char para_word[80] =
     "LODNCFS:3C\n";	/* longcw, cluster, search,  DE, contest, filter,  speed,  delay */
 char lastmsg[1000] = "";
