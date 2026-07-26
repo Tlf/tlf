@@ -938,7 +938,10 @@ int autosend() {
     timeout = (1.2 / speed) * cw_message_length(current_qso.call);
 
     x = -1;
-    while ((x != ESCAPE) && (x != '\n' && x != KEY_ENTER)) {
+    while (x != ESCAPE && x != '\n' && x != KEY_ENTER) {
+
+	printcall();
+
 	x = -1;
 	while ((x == -1) && (g_timer_elapsed(timer, NULL) < timeout)) {
 
@@ -974,32 +977,23 @@ int autosend() {
 	    continue;
 	}
 
-
 	int len = strlen(current_qso.call);
-	if (len < 13 && valid_call_char(x)) {
-	    char append[2];
-
+	if (len < MAX_CALL_LENGTH && valid_call_char(x)) {
 	    /* convert to upper case */
 	    x = g_ascii_toupper(x);
 
-	    /* insert into current_qso.call */
-	    current_qso.call[len] = x;
-	    current_qso.call[len + 1] = '\0';
+	    char append[] = {x, 0};
 
-	    /* display it  */
-	    printcall();
+	    /* insert into current_qso.call */
+	    strcat(current_qso.call, append);
 
 	    /* send it to cw */
-	    append[0] = x;
-	    append[1] = '\0';
 	    sendmessage(append);
 
 	    /* add char length to timeout */
 	    timeout += (1.2 / speed) * getCWdots((char) x);
 
-	    len = strlen(hiscall_sent);
-	    hiscall_sent[len] = x;
-	    hiscall_sent[len + 1] = '\0';
+	    strcat(hiscall_sent, append);
 	}
     }
 
