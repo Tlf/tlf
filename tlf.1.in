@@ -962,16 +962,17 @@ Call input field is empty: change to next band lower in frequency or wrap to
 highest band if already on the lowest band.
 .
 .IP
-Characters in the call input field: enter edit mode while moving the cursor
-to the left onto the rightmost character.
+Characters in the call input field: move the cursor to the left.
 .
-In edit mode successive presses will move the cursor left until the first
+Successive presses will move the cursor left until the first
 character is reached.
 .
 .TP
 .BR \(->\  (Right-Arrow)
 Change to next band higher in frequency or wrap to the lowest band if already
 on the highest band when call input field is empty.
+.IP
+Characters in the call input field: move the cursor to the right.
 .
 .TP
 .B F1
@@ -1212,6 +1213,8 @@ See
 .I @prefix@/share/doc/@PACKAGE@/Manual.md
 for more information.
 .
+.IP
+In the call input field: move the cursor after the call.
 .TP
 .B Ctrl-F
 Set frequency.
