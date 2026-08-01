@@ -2837,7 +2837,7 @@ instead.
 Points for countries in country list.
 .
 .TP
-\fUSE_COUNTRYLIST_ONLY\fR
+\fBUSE_COUNTRYLIST_ONLY\fR
 Deprecated. Please do not use any longer.
 .
 .TP
@@ -3776,7 +3776,7 @@ GitHub
 contains some more information.
 .
 .P
-An FAQ and other useful tips are installed
+An FAQ and other useful tips are installed in
 .IR @prefix@/share/doc/@PACKAGE@ .
 .
 .P
