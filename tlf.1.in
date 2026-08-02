@@ -3007,7 +3007,7 @@ Counts once per contest, not per band.
 .
 .TP
 .B USE_CONTINENTLIST_ONLY
-Score zero points for station from continents not in the list.
+Count as multi only if worked stations continent is CONTINENTLIST.
 .
 .TP
 .B BANDWEIGHT_MULTIS
