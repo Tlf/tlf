@@ -2875,6 +2875,23 @@ any other value).
 (Will be deprecated in future! Use BANDWEIGHT_POINTS instead.)
 .
 .TP
+.B BANDWEIGHT_POINTS
+Define a point weighting factor for different bands.
+.
+.IP
+For example, setting:
+.
+.IP
+    \fBBANDWEIGHT_POINTS\fR=\fI160:3,80:2,40:1,20:1,15:1,10:2\fR
+.
+.IP
+for use in the All Asia DX (AADX) contest will multiply all QSO points by 3 on
+160m, by 2 on 80m and 10m and on all other bands only by 1.
+.
+.IP
+Bands not in the list are weighted by 1.
+.
+.TP
 \fBPOWERMULT\fR=\fIpower_multiplier\fR
 Use this value to multiply the final points.
 
@@ -2991,23 +3008,6 @@ Counts once per contest, not per band.
 .TP
 .B USE_CONTINENTLIST_ONLY
 Score zero points for station from continents not in the list.
-.
-.TP
-.B BANDWEIGHT_POINTS
-Define a point weighting factor for different bands.
-.
-.IP
-For example, setting:
-.
-.IP
-    \fBBANDWEIGHT_POINTS\fR=\fI160:3,80:2,40:1,20:1,15:1,10:2\fR
-.
-.IP
-for use in the All Asia DX (AADX) contest will multiply all QSO points by 3 on
-160m, by 2 on 80m and 10m and on all other bands only by 1.
-.
-.IP
-Bands not in the list are weighted by 1.
 .
 .TP
 .B BANDWEIGHT_MULTIS
