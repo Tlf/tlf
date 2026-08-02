@@ -2837,10 +2837,6 @@ instead.
 Points for countries in country list.
 .
 .TP
-\fBUSE_COUNTRYLIST_ONLY\fR
-Deprecated. Please do not use any longer.
-.
-.TP
 \fBCOUNTRYLIST\fR=\fI"comma separated list of prefixes"\fR
 e.g. SM,LA,OZ,OH.
 .
@@ -2853,6 +2849,18 @@ E.g. Scandinavia:SM,LA,OZ,OH.
 .
 .IP
 Not to be confused with so-called "country" files maintained by AD1C.
+.
+.TP
+\fBUSE_COUNTRYLIST_ONLY\fR
+Deprecated and not needed. Please do not use any longer.
+.
+.TP
+\fBCONTINENT_LIST_POINTS\fR=\fId\fR
+Points for stations from continents in CONTINENTLIST
+.
+.TP
+\fBCONTINENTLIST\fR=\fI"comma separated list of continents"\fR
+Valid values are: SA, NA, EU, AF, AS and OC.
 .
 .TP
 \fBPORTABLE_MULT_2\fR[=<\fION\fR|\fIOFF\fR>]
@@ -2979,14 +2987,6 @@ Multiplier is section from multipliers file.
 .
 .IP
 Counts once per contest, not per band.
-.
-.TP
-\fBCONTINENTLIST\fR=\fI"comma separated list of continents"\fR
-Valid values are: SA, NA, EU, AF, AS and OC.
-.
-.TP
-\fBCONTINENT_LIST_POINTS\fR=\fId\fR
-Points for stations from continents in CONTINENTLIST
 .
 .TP
 .B USE_CONTINENTLIST_ONLY
