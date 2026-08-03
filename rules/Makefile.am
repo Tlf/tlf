@@ -12,7 +12,7 @@ RULES_FILES = arrl10m_dx arrl160m_usa arrldx_dx arrldx_usa arrlfd arrlss \
 	      iota/iota iota/iota.py \
 	      ksqp/ksqp ksqp/ksqp.py \
 	      hadx/hadx hadx/hadx.py \
-	      cqp/cqp_ca_mults cqp/cqp_ca \
+	      cqp/cqp cqp/cqp.py \
 	      mcd/mcd.py mcd/mcd mcd/mcd.txt \
 	      mst/mst \
 	      naqp/naqp.py naqp/naqp \

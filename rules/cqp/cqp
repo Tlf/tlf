@@ -1,19 +1,46 @@
 ########################
 # Provided by: Victor Denisov N6DVS
 # Last Verified: 2023-08-23
+# Updated by: Zoltan Csahok HA5CQZ
 ########################
 #
-CONTEST=California_QSO_Party
 CONTEST_MODE
 LOGFILE=cqp.log
+
 CABRILLO=UNIVERSAL
-CWPOINTS=3
-SSBPOINTS=2
-SERIAL+SECTION
-MULT_LIST=cqp_mults
-SECTION_MULT_ONCE
+CABRILLO-QSO-FORMAT=CQP
+CABRILLO-CONTEST=
+
+#================================
+# Select one of following blocks:
+#--------------------------------
+#
+# Stations outside of California -- change FL to your state
+#
+PLUGIN_CONFIG=FL
+CABRILLO-EXCHANGE=# FL
+F3=# FL
+S&P_TU_MSG=# FL
+#--------------------------------
+#
+# California stations -- change TRIN to your 4-letter county abbreviation
+#
+##PLUGIN_CONFIG=CA
+##CABRILLO-EXCHANGE=# TRIN
+##F3=# TRIN
+##S&P_TU_MSG=# TRIN
+#================================
+
 NO_RST
 LEADING_ZEROS_SERIAL=OFF
+
+SSBPOINTS=3
+CWPOINTS=3
+
+# Multipliers:
+# (handled by cqp.py)
+GENERIC_MULT=BAND
+
 #
 ##################################
 #                                #
@@ -32,7 +59,7 @@ LEADING_ZEROS_SERIAL=OFF
 #
 F1=cq cqp %
 F2=@ DE %
-F3=@ # trin
+##F3=# FL
 F4=TU 
 F5=@
 F6=%
@@ -44,13 +71,13 @@ F11= PSE K
 F12=cq cqp %
 #
 CQ_TU_MSG=TU %
-S&P_TU_MSG=TU # trin
+##S&P_TU_MSG=# FL
 #
 #ALT_0=
-ALT_1=NR # #
-ALT_2=QTH TRIN TRIN
-ALT_3=NR?
-ALT_4=QTH?
+#ALT_1=
+#ALT_2=
+#ALT_3=
+#ALT_4=
 #ALT_5=
 #ALT_6=
 #ALT_7=
@@ -59,5 +86,4 @@ ALT_4=QTH?
 #
 #SEND_DE
 #
-CABRILLO-QSO-FORMAT=CQP
 ####### END #####################
