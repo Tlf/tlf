@@ -10,6 +10,11 @@ CONTEST=neqp
 LOGFILE=neqp.log
 CONTEST_MODE
 CABRILLO=UNIVERSAL
+
+# The custom multiplier list should be stored in the tlf working directory.
+# If outside New England, change to neqp_mults_outside.
+MULT_LIST=neqp_mults
+
 #
 ##################################
 #                                #
@@ -64,8 +69,6 @@ S&P_TU_MSG=TU ++5NN-- HMD MA
 MIXED
 # Exchange can be recycled on another band
 RECALL_MULTS
-# The custom multiplier list should be stored in the tlf working directory
-MULT_LIST=neqp_mults
 # Each multiplier counts once only, not once per band
 SECTION_MULT_ONCE
 # Count DXCC countries and the mult list entities as multipliers
