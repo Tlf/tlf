@@ -72,7 +72,7 @@ struct read_qtc_t {
     char logline[120];  // represents the final log, if require
     char band[4];       // band, eg "160"
     char mode[4];       // mode, eg "DIG"
-    int qsonr;          // qso number after the QTC maked
+    int qsonr;          // qso number after the QTC was made
     char date[10];      // date of creation of QTC
     char time[6];       // time of creation of QTC
     char call[15];      // callsign

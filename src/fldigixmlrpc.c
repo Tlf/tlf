@@ -300,7 +300,7 @@ static int parse_call_result(xmlrpc_env *local_env, xmlrpc_value *callresult,
 }
 
 // call a remote Fldigi method
-// result has to be passed uninitalized and then freed by the caller
+// result has to be passed uninitialized and then freed by the caller
 // alternatively, a NULL result can be passed for a void method
 // returns: 0
 //      on error: -1

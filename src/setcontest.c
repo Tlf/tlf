@@ -297,7 +297,7 @@ contest_config_t *lookup_contest(char *name) {
 }
 
 
-/** initalize contests
+/** initialize contests
  *
  */
 void init_contests() {

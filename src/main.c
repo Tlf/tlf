@@ -1106,7 +1106,7 @@ int main(int argc, char *argv[]) {
     argp_parse(&argp, argc, argv, 0, 0, NULL);  // parse options
 
     if (!debug_init()) {
-	showmsg("Could not intialize debug logging");
+	showmsg("Could not initialize debug logging");
     }
 
     ui_init();

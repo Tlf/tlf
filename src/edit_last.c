@@ -146,7 +146,7 @@ static void align_cursor(char *buffer) {
     int new_field_index = 0;
     int min_distance = 999;
 
-    // check if rigth from cursor we have only spaces
+    // check if right from cursor we have only spaces
     bool spaces = true;
     for (int i = cursor + 1; buffer[i]; ++i) {
 	if (buffer[i] != ' ') {

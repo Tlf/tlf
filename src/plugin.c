@@ -301,7 +301,7 @@ static int call_init() {
 	const char *required_version = PyUnicode_AsUTF8(pValue);
 	int rc = compare_versions(VERSION, required_version);
 	if (rc == ERROR_WRONG_VERSION2) {
-	    showstring("Error: Unparseable required version:", required_version);
+	    showstring("Error: Unparsable required version:", required_version);
 	    return PARSE_ERROR;
 	} else if (rc == ERROR_WRONG_VERSION1) {    // should not happen
 	    showmsg("Error: Internal error parsing version: " VERSION);
