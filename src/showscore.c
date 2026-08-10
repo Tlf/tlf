@@ -181,7 +181,9 @@ int get_nr_of_mults() {
 	return nr_multis;
     } else if (wysiwyg_multi
 	       || unique_call_multi == MULT_BAND
+	       || unique_call_multi == MULT_BAND_MODE
 	       || generic_mult == MULT_BAND
+	       || generic_mult == MULT_BAND_MODE
 	       || serial_section_mult
 	       || serial_grid4_mult
 	       || sectn_mult) {
@@ -242,7 +244,9 @@ void showscore(void) {
     /* show mults per band, if applicable */
     if (wysiwyg_multi
 	    || unique_call_multi == MULT_BAND
+	    || unique_call_multi == MULT_BAND_MODE
 	    || generic_mult == MULT_BAND
+	    || generic_mult == MULT_BAND_MODE
 	    || serial_section_mult
 	    || serial_grid4_mult
 	    || sectn_mult) {

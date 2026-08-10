@@ -1506,6 +1506,12 @@ void test_unique_call_multi_band(void **state) {
     assert_int_equal(unique_call_multi, MULT_BAND);
 }
 
+void test_unique_call_multi_band_mode(void **state) {
+    int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=BAND+MODE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(unique_call_multi, MULT_BAND_MODE);
+}
+
 void test_generic_mult_none(void **state) {
     generic_mult = MULT_ALL;
     int rc = call_parse_logcfg("GENERIC_MULT=NONE");
@@ -1523,6 +1529,12 @@ void test_generic_mult_band(void **state) {
     int rc = call_parse_logcfg("GENERIC_MULT=BAND");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(generic_mult, MULT_BAND);
+}
+
+void test_generic_mult_band_mode(void **state) {
+    int rc = call_parse_logcfg("GENERIC_MULT=BAND+MODE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(generic_mult, MULT_BAND_MODE);
 }
 
 void test_digi_rig_mode_usb(void **state) {

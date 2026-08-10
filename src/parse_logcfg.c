@@ -1224,11 +1224,13 @@ static int set_multi_mode(const cfg_arg_t arg, int *config) {
 	*config = MULT_ALL;
     } else if (strcmp(str, "BAND") == 0) {
 	*config = MULT_BAND;
+    } else if (strcmp(str, "BAND+MODE") == 0) {
+	*config = MULT_BAND_MODE;
     } else if (strcmp(str, "NONE") == 0) {
 	*config = MULT_NONE;
     } else {
 	g_free(str);
-	error_details = g_strdup("must be ALL, BAND or NONE");
+	error_details = g_strdup("must be ALL, BAND, BAND+MODE or NONE");
 	return PARSE_WRONG_PARAMETER;
     }
 
