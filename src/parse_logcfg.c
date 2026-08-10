@@ -1270,6 +1270,23 @@ static int cfg_wysiwyg_once(const cfg_arg_t arg) {
     return parse_bool_mult_config(&wysiwyg_mult, MULT_ALL);
 }
 
+static int cfg_section_mult_once(const cfg_arg_t arg) {
+    return parse_bool_mult_config(&sectn_mult, MULT_ALL);
+}
+
+//
+// special handling for backwards compatibility:
+//  - first try to parse it as a boolean (legacy behavior)
+//  - if it fails, then it must be a valid multiplier configuration
+//
+static int cfg_section_mult(const cfg_arg_t arg) {
+    int rc = parse_bool_mult_config(&sectn_mult, MULT_BAND);
+    if (rc == PARSE_OK) {
+	return PARSE_OK;
+    }
+    return set_multi_mode(arg, &sectn_mult);
+}
+
 static int cfg_digi_rig_mode(const cfg_arg_t arg) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
@@ -1349,7 +1366,7 @@ static config_t logcfg_configs[] = {
     {"TIME_MASTER",	    CFG_BOOL(time_master)},
     {"CTCOMPATIBLE",	    CFG_BOOL(ctcomp)},
     {"SERIAL\\+SECTION",    CFG_BOOL(serial_section_mult)},
-    {"SECTION_MULT",	    CFG_BOOL(sectn_mult)},
+    {"SECTION_MULT",	    OPTIONAL_PARAM, cfg_section_mult},
     {"NOB4",		    CFG_BOOL(nob4)},
     {"SHOW_TIME",	    CFG_BOOL(show_time)},
     {"RXVT",		    CFG_BOOL(use_rxvt)},
@@ -1374,7 +1391,7 @@ static config_t logcfg_configs[] = {
     {"BMAUTOADD",       CFG_BOOL(bmautoadd)},
     {"SPRINTMODE",      CFG_BOOL(sprint_mode)},
     {"KEYER_BACKSPACE", CFG_BOOL(keyer_backspace)},
-    {"SECTION_MULT_ONCE",   CFG_BOOL(sectn_mult_once)},
+    {"SECTION_MULT_ONCE",   OPTIONAL_PARAM, cfg_section_mult_once},
     {"ESC_STOPS_TX_ONLY",   CFG_BOOL(stop_tx_only)},
 
     {"F([1-9]|1[0-2])", CFG_MESSAGE(message, -1)},  // index is 1-based

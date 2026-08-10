@@ -118,7 +118,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
     }
 
     // ---------------------------serial + section ---------------------------
-    else if (serial_section_mult || sectn_mult) {
+    else if (serial_section_mult) {
 
 	/* is it a mult? */
 	idx = get_exact_mult_index(qso->mult1_value);
@@ -128,13 +128,14 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 	}
     }
 
-    // --------------------------- section_mult_once--------------------------
-    else if (sectn_mult_once) {
+    // --------------------------- section_mult --------------------------
+    else if (sectn_mult != MULT_NONE) {
 	/* is it a mult? */
 	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    mult_index =
-		remember_multi(get_mult(idx), qso->bandindex, qso->mode, MULT_ALL, check_only);
+		remember_multi(get_mult(idx), qso->bandindex, qso->mode, sectn_mult,
+			       check_only);
 	}
     }
 

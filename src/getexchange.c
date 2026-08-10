@@ -430,7 +430,7 @@ int getexchange(void) {
 		mvaddstr(13, 54, "section?");
 		mvaddstr(12, 54, current_qso.comment);
 		x = 0;
-	    } else if ((serial_section_mult || sectn_mult)
+	    } else if ((serial_section_mult || sectn_mult != MULT_NONE)
 		       && ((x != TAB) && (strlen(current_qso.section) < 1))) {
 		if (!serial_or_section
 			|| (serial_or_section && country_found(current_qso.call))) {
@@ -794,7 +794,7 @@ void checkexchange(struct qso_t *qso, bool interactive) {
     }
 
     // ----------------------section only----------------------------
-    if (sectn_mult || sectn_mult_once || dx_arrlsections) {
+    if (sectn_mult != MULT_NONE || dx_arrlsections) {
 
 	checkexchange_sectn_mult(qso, interactive);
 	return;

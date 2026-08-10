@@ -449,8 +449,6 @@ static bool_true_t bool_trues[] = {
     {"PORTABLE_MULT_2", &portable_x2},
     {"SERIAL+SECTION", &serial_section_mult},
     {"SERIAL_OR_SECTION", &serial_or_section},
-    {"SECTION_MULT", &sectn_mult},
-    {"SECTION_MULT_ONCE", &sectn_mult_once},
     {"SERIAL+GRID4", &serial_grid4_mult},
     {"COUNTRY_MULT", &country_mult},
     {"ITUMULT", &itumult},
@@ -1536,7 +1534,7 @@ void test_generic_mult_band_mode(void **state) {
 }
 
 void test_wysiwyg_mult_none(void **state) {
-    generic_mult = MULT_ALL;
+    wysiwyg_mult = MULT_ALL;
     int rc = call_parse_logcfg("WYSIWYG_MULT=NONE");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(wysiwyg_mult, MULT_NONE);
@@ -1558,6 +1556,25 @@ void test_wysiwyg_once(void **state) {
     int rc = call_parse_logcfg("WYSIWYG_ONCE");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(wysiwyg_mult, MULT_ALL);
+}
+
+void test_section_mult_none(void **state) {
+    sectn_mult = MULT_ALL;
+    int rc = call_parse_logcfg("SECTION_MULT=NONE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(sectn_mult, MULT_NONE);
+}
+
+void test_section_mult_legacy_bool(void **state) {
+    int rc = call_parse_logcfg("SECTION_MULT");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(sectn_mult, MULT_BAND);
+}
+
+void test_section_mult_band_mode(void **state) {
+    int rc = call_parse_logcfg("SECTION_MULT=BAND+MODE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(sectn_mult, MULT_BAND_MODE);
 }
 
 void test_digi_rig_mode_usb(void **state) {

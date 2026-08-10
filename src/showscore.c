@@ -176,7 +176,7 @@ int get_nr_of_mults() {
     } else if (wysiwyg_mult == MULT_ALL
 	       || unique_call_multi == MULT_ALL
 	       || generic_mult == MULT_ALL
-	       || sectn_mult_once) {
+	       || sectn_mult == MULT_ALL) {
 
 	return nr_multis;
     } else if (wysiwyg_mult == MULT_BAND
@@ -187,7 +187,8 @@ int get_nr_of_mults() {
 	       || generic_mult == MULT_BAND_MODE
 	       || serial_section_mult
 	       || serial_grid4_mult
-	       || sectn_mult) {
+	       || sectn_mult == MULT_BAND
+	       || sectn_mult == MULT_BAND_MODE) {
 
 	return totalmults;
     } else if (CONTEST_IS(WPX) || pfxmult) {
