@@ -77,8 +77,7 @@ int setup_default(void **state) {
     bandinx = BANDINDEX_80;
 
     new_mult = -1;
-    wysiwyg_once = false;
-    wysiwyg_multi = false;
+    wysiwyg_mult = MULT_NONE;
     serial_section_mult = false;
     sectn_mult = false;
     serial_grid4_mult = false;
@@ -338,7 +337,7 @@ void test_match_length_match_alias2(void **state) {
 
 /* addmult tests */
 void test_wysiwyg_once(void **state) {
-    wysiwyg_once = true;
+    wysiwyg_mult = MULT_ALL;
     set_this_qso("WAC   ", "");
     new_mult = addmult(this_qso);
     assert_true(new_mult >= 0);
@@ -347,7 +346,7 @@ void test_wysiwyg_once(void **state) {
 }
 
 void test_wysiwyg_multi(void **state) {
-    wysiwyg_multi = true;
+    wysiwyg_mult = MULT_BAND;
     set_this_qso("WAC   ", "");
     new_mult = addmult(this_qso);
     assert_true(new_mult >= 0);
@@ -356,7 +355,7 @@ void test_wysiwyg_multi(void **state) {
 }
 
 void test_wysiwyg_multi_empty(void **state) {
-    wysiwyg_multi = true;
+    wysiwyg_mult = MULT_BAND;
     set_this_qso("   ", "");
     new_mult = addmult(this_qso);
     assert_int_equal(new_mult, -1);
@@ -434,7 +433,7 @@ void test_dx_arrlsections(void **state) {
 
 /* check_mult tests */
 void test_check_wysiwyg_once(void **state) {
-    wysiwyg_once = true;
+    wysiwyg_mult = MULT_ALL;
     set_this_qso("WAC   ", "");
     new_mult = check_mult(this_qso);
     assert_true(new_mult >= 0);
@@ -469,7 +468,7 @@ void test_arrlss_2(void **state) {
 }
 
 void test_wysiwyg_once_2(void **state) {
-    wysiwyg_once = true;
+    wysiwyg_mult = MULT_ALL;
     strcpy(lan_logline, logline_2);
     addmult_lan();
     assert_true(new_mult >= 0);
@@ -479,7 +478,7 @@ void test_wysiwyg_once_2(void **state) {
 
 
 void test_wysiwyg_multi_2(void **state) {
-    wysiwyg_multi = true;
+    wysiwyg_mult = MULT_BAND;
     strcpy(lan_logline, logline_2);
     addmult_lan();
     assert_true(new_mult >= 0);

@@ -1246,6 +1246,30 @@ static int cfg_generic_mult(const cfg_arg_t arg) {
     return set_multi_mode(arg, &generic_mult);
 }
 
+static int cfg_wysiwyg_mult(const cfg_arg_t arg) {
+    return set_multi_mode(arg, &wysiwyg_mult);
+}
+
+static int parse_bool_mult_config(int *var, int true_value) {
+    bool value;
+    int rc = parse_bool(parameter, &value);
+    if (rc != PARSE_OK) {
+	return rc;
+    }
+
+    *var = (value ? true_value : MULT_NONE);
+
+    return PARSE_OK;
+}
+
+static int cfg_wysiwyg_multiband(const cfg_arg_t arg) {
+    return parse_bool_mult_config(&wysiwyg_mult, MULT_BAND);
+}
+
+static int cfg_wysiwyg_once(const cfg_arg_t arg) {
+    return parse_bool_mult_config(&wysiwyg_mult, MULT_ALL);
+}
+
 static int cfg_digi_rig_mode(const cfg_arg_t arg) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
@@ -1308,8 +1332,8 @@ static config_t logcfg_configs[] = {
     {"PARTIALS",	    CFG_BOOL(partials)},
     {"RECALL_MULTS",	    CFG_CONTEST_BOOL(recall_mult)},
     {"RECALL_NUMERIC_EXCHANGES",      CFG_CONTEST_BOOL(recall_numeric_exchanges)},
-    {"WYSIWYG_MULTIBAND",   CFG_BOOL(wysiwyg_multi)},
-    {"WYSIWYG_ONCE",	    CFG_BOOL(wysiwyg_once)},
+    {"WYSIWYG_MULTIBAND",   OPTIONAL_PARAM, cfg_wysiwyg_multiband},
+    {"WYSIWYG_ONCE",	    OPTIONAL_PARAM, cfg_wysiwyg_once},
     {"RIT_CLEAR",	    CFG_BOOL(rit)},
     {"SHORT_SERIAL",	    CFG_INT_ONE(shortqsonr)},
     {"LEADING_ZEROS_SERIAL",	    CFG_BOOL(leading_zeros_serial)},
@@ -1481,6 +1505,7 @@ static config_t logcfg_configs[] = {
     {"CABRILLO-(.+)",       OPTIONAL_PARAM, cfg_cabrillo_field},
     {"RESEND_CALL",         NEED_PARAM, cfg_resend_call},
     {"GENERIC_MULT",        NEED_PARAM, cfg_generic_mult},
+    {"WYSIWYG_MULT",        NEED_PARAM, cfg_wysiwyg_mult},
     {"OPERATING_MODE",      NEED_PARAM, cfg_operating_mode},
     {"AUTOSEND",            NEED_PARAM, cfg_autosend},
 

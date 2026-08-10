@@ -294,7 +294,7 @@ void prepare_specific_part(char *logline, struct qso_t *qso) {
 
 	strncat(logline, qso->mult1_value, 9);
 
-    } else if (wysiwyg_multi
+    } else if (wysiwyg_mult != MULT_NONE
 	       || unique_call_multi != MULT_NONE
 	       || serial_section_mult
 	       || sectn_mult

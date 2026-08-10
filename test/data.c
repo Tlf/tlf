@@ -94,8 +94,7 @@ bool mult_side = false;
 
 bool portable_x2 = false;
 int recall_mult = 0;
-bool wysiwyg_once = false;
-bool wysiwyg_multi = false;
+int wysiwyg_mult = MULT_NONE;
 bool country_mult = false;
 float fixedmult = 0.0;
 bool sectn_mult = false;

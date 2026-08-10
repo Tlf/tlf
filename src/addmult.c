@@ -149,14 +149,9 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
     }
 
     // --------------------wysiwyg----------------
-    else if (wysiwyg_once) {
+    else if (wysiwyg_mult != MULT_NONE) {
 	mult_index = remember_multi(stripped_comment, qso->bandindex, qso->mode,
-				    MULT_ALL, check_only);
-    }
-
-    else if (wysiwyg_multi) {
-	mult_index = remember_multi(stripped_comment, qso->bandindex, qso->mode,
-				    MULT_BAND, check_only);
+				    wysiwyg_mult, check_only);
     }
 
     /* -------------- unique call multi -------------- */
@@ -220,19 +215,11 @@ void addmult_lan(void) {
     }
 
     // --------------------wysiwyg----------------
-    if (wysiwyg_once) {
+    if (wysiwyg_mult != MULT_NONE) {
 	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 
-	new_mult = remember_multi(stripped_comment, bandinx, mode, MULT_ALL,
-				  check_only);
-    }
-
-    if (wysiwyg_multi) {
-	g_strlcpy(stripped_comment, lan_logline + 54, 15);
-	g_strchomp(stripped_comment);
-
-	new_mult = remember_multi(stripped_comment, bandinx, mode, MULT_BAND,
+	new_mult = remember_multi(stripped_comment, bandinx, mode, wysiwyg_mult,
 				  check_only);
     }
 

@@ -447,8 +447,6 @@ static bool_true_t bool_trues[] = {
     {"RADIO_CONTROL", &trx_control},
     {"ROTATOR_CONTROL", &rot_control},
     {"PORTABLE_MULT_2", &portable_x2},
-    {"WYSIWYG_MULTIBAND", &wysiwyg_multi},
-    {"WYSIWYG_ONCE", &wysiwyg_once},
     {"SERIAL+SECTION", &serial_section_mult},
     {"SERIAL_OR_SECTION", &serial_or_section},
     {"SECTION_MULT", &sectn_mult},
@@ -1535,6 +1533,31 @@ void test_generic_mult_band_mode(void **state) {
     int rc = call_parse_logcfg("GENERIC_MULT=BAND+MODE");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(generic_mult, MULT_BAND_MODE);
+}
+
+void test_wysiwyg_mult_none(void **state) {
+    generic_mult = MULT_ALL;
+    int rc = call_parse_logcfg("WYSIWYG_MULT=NONE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(wysiwyg_mult, MULT_NONE);
+}
+
+void test_wysiwyg_mult_all(void **state) {
+    int rc = call_parse_logcfg("WYSIWYG_MULT=ALL");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(wysiwyg_mult, MULT_ALL);
+}
+
+void test_wysiwyg_multiband(void **state) {
+    int rc = call_parse_logcfg("WYSIWYG_MULTIBAND");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(wysiwyg_mult, MULT_BAND);
+}
+
+void test_wysiwyg_once(void **state) {
+    int rc = call_parse_logcfg("WYSIWYG_ONCE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(wysiwyg_mult, MULT_ALL);
 }
 
 void test_digi_rig_mode_usb(void **state) {
