@@ -462,7 +462,7 @@ void init_mults() {
 
 static pthread_mutex_t mult_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-/** register worked multiplier and check if its new
+/** register worked multiplier and check if it's a new one
  *
  * Check if multiplier is already registered. If not make a new entry in
  * multis[] array and increment the total mults count 'nr_multis'.
@@ -488,7 +488,7 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
     for (int i = 0; i < nr_multis; i++) {
 	/* already in list? */
 	if (strcmp(multis[i].name, multiplier) == 0) {
-	    found = 1;
+	    found = true;
 
 	    /* new band? check if mult is per band */
 	    if ((multis[i].band & inxes[band]) == 0) {
