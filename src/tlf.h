@@ -185,7 +185,7 @@ typedef struct {
  * all information about worked multis */
 typedef struct {
     char name[MULT_SIZE];	/**< Multiplier */
-    int band;			/**< bitmap with bands the multi was worked */
+    int band[NMODES];		/**< bitmap of bands per mode the multi was worked */
 } mults_t;
 
 

@@ -444,20 +444,13 @@ int init_and_load_multipliers(void) {
 
 /** initialize mults scoring
  *
- * empties multis[] array, set the number of multis and multscore per band to 0.
+ * empties multis[] array,
+ * sets the number of multis and multscore per band to 0.
  */
 void init_mults() {
-    int n;
-
-    for (n = 0; n < MAX_MULTS; n++) {
-	multis[n].name[0] = '\0';
-	multis[n].band = 0;
-    }
-
+    memset(multis, 0, sizeof(multis));
+    memset(multscore, 0, sizeof(multscore));
     nr_multis = 0;
-
-    for (n = 0; n < NBANDS; n++)
-	multscore[n] = 0;
 }
 
 static pthread_mutex_t mult_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -484,6 +477,7 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
 	return -1;      /* ignore if empty string or disabled */
 
     int bandmask = inxes[band];
+    int effective_mode = CWMODE;
 
     pthread_mutex_lock(&mult_mutex);
 
@@ -493,7 +487,7 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
 	    found = true;
 
 	    /* new band? check if mult is per band */
-	    if ((multis[i].band & bandmask) == 0) {
+	    if ((multis[i].band[effective_mode] & bandmask) == 0) {
 
 		if (mult_mode == MULT_BAND) {
 		    index = i;  // new band
@@ -517,7 +511,7 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
 	    strcpy(multis[index].name, multiplier);
 	    nr_multis++;
 	}
-	multis[index].band |= bandmask;
+	multis[index].band[effective_mode] |= bandmask;
 	multscore[band]++;
     }
 

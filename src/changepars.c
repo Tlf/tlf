@@ -817,7 +817,7 @@ void multiplierinfo(void) {
 		/* lookup if already worked */
 		for (k = 0; k < nr_multis; k++) {
 		    if (strstr(multis[k].name, get_mult(cnt)) != NULL) {
-			worked_at = multis[k].band;
+			worked_at = multis[k].band[trxmode]; // FIXME: check this
 			break;
 		    }
 		}
