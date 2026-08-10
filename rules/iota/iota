@@ -9,7 +9,7 @@ LOGFILE=iota.log
 
 CONTEST_MODE
 
-GENERIC_MULT = BAND
+GENERIC_MULT = BAND+MODE
 
 # scoring and mults handled by iota.py
 # Island stations shall specify their reference via PLUGIN_CONFIG=CC-NNN
