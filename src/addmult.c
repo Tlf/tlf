@@ -66,7 +66,8 @@ static int remember_generic_mult(struct qso_t *qso, bool check_only) {
 	gchar *mult = g_strdup(word);
 	g_strchomp(mult);   // remove trailing whitespace for mult check
 
-	int mult_index = remember_multi(mult, qso->bandindex, generic_mult, check_only);
+	int mult_index = remember_multi(mult, qso->bandindex, qso->mode, generic_mult,
+					check_only);
 
 	if (mult_index >= 0) {
 	    if (first_mult_index < 0) {
@@ -111,7 +112,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 
 	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
-	    remember_multi(get_mult(idx), qso->bandindex, MULT_ALL, check_only);
+	    remember_multi(get_mult(idx), qso->bandindex, qso->mode, MULT_ALL, check_only);
 	    // NOTE: return value not used, new mult is not marked in log
 	}
     }
@@ -123,7 +124,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    mult_index =
-		remember_multi(get_mult(idx), qso->bandindex, MULT_BAND, check_only);
+		remember_multi(get_mult(idx), qso->bandindex, qso->mode, MULT_BAND, check_only);
 	}
     }
 
@@ -133,7 +134,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    mult_index =
-		remember_multi(get_mult(idx), qso->bandindex, MULT_ALL, check_only);
+		remember_multi(get_mult(idx), qso->bandindex, qso->mode, MULT_ALL, check_only);
 	}
     }
 
@@ -143,31 +144,31 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
 	    mult_index =
-		remember_multi(get_mult(idx), qso->bandindex, MULT_BAND, check_only);
+		remember_multi(get_mult(idx), qso->bandindex, qso->mode, MULT_BAND, check_only);
 	}
     }
 
     // --------------------wysiwyg----------------
     else if (wysiwyg_once) {
-	mult_index = remember_multi(stripped_comment, qso->bandindex, MULT_ALL,
-				    check_only);
+	mult_index = remember_multi(stripped_comment, qso->bandindex, qso->mode,
+				    MULT_ALL, check_only);
     }
 
     else if (wysiwyg_multi) {
-	mult_index = remember_multi(stripped_comment, qso->bandindex, MULT_BAND,
-				    check_only);
+	mult_index = remember_multi(stripped_comment, qso->bandindex, qso->mode,
+				    MULT_BAND, check_only);
     }
 
     /* -------------- unique call multi -------------- */
     else if (unique_call_multi != MULT_NONE) {
-	mult_index = remember_multi(qso->call, qso->bandindex, unique_call_multi,
-				    check_only);
+	mult_index = remember_multi(qso->call, qso->bandindex, qso->mode,
+				    unique_call_multi, check_only);
     }
 
     /* ------------ grid mult (per band) ------------- */
     else if (serial_grid4_mult) {
-	mult_index = remember_multi(qso->mult1_value, qso->bandindex, MULT_BAND,
-				    check_only);
+	mult_index = remember_multi(qso->mult1_value, qso->bandindex, qso->mode,
+				    MULT_BAND, check_only);
     }
 
     // -----------   generic: use mult1   -----------
@@ -196,6 +197,7 @@ void addmult_lan(void) {
     char stripped_comment[21];
     char multi_call[20];
     bool check_only = false;//FIXME param
+    int mode = CWMODE;//FIXME use actual mode
 
     new_mult = -1;
 
@@ -213,7 +215,7 @@ void addmult_lan(void) {
 	}
 
 	if (idx >= 0) {
-	    remember_multi(get_mult(idx), bandinx, MULT_ALL, check_only);
+	    remember_multi(get_mult(idx), bandinx, mode, MULT_ALL, check_only);
 	}
     }
 
@@ -222,14 +224,16 @@ void addmult_lan(void) {
 	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 
-	new_mult = remember_multi(stripped_comment, bandinx, MULT_ALL, check_only);
+	new_mult = remember_multi(stripped_comment, bandinx, mode, MULT_ALL,
+				  check_only);
     }
 
     if (wysiwyg_multi) {
 	g_strlcpy(stripped_comment, lan_logline + 54, 15);
 	g_strchomp(stripped_comment);
 
-	new_mult = remember_multi(stripped_comment, bandinx, MULT_BAND, check_only);
+	new_mult = remember_multi(stripped_comment, bandinx, mode, MULT_BAND,
+				  check_only);
     }
 
     /* -------------- unique call multi -------------- */
@@ -237,11 +241,11 @@ void addmult_lan(void) {
     g_strchomp(multi_call);
 
     if (unique_call_multi == MULT_ALL) {
-	new_mult = remember_multi(multi_call, bandinx, MULT_ALL, check_only);
+	new_mult = remember_multi(multi_call, bandinx, mode, MULT_ALL, check_only);
     }
 
     if (unique_call_multi == MULT_BAND) {
-	new_mult = remember_multi(multi_call, bandinx, MULT_BAND, check_only);
+	new_mult = remember_multi(multi_call, bandinx, mode, MULT_BAND, check_only);
     }
 
 }
@@ -464,12 +468,14 @@ static pthread_mutex_t mult_mutex = PTHREAD_MUTEX_INITIALIZER;
  *
  * \param multiplier  - the multiplier as a string
  * \param band	      - the bandindex we are on
+ * \param mode        - the mode used in this QSO
  * \param mult_mode   - MULT_BAND -> check also if new band
  * \param check_only  - do not record mult, only check it
  * \return	      - index into mults[] array if new mult or on new band
  *			(-1 if multiplier is an empty string or not new)
  */
-int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
+int remember_multi(char *multiplier, int band, int mode, int mult_mode,
+		   bool check_only) {
     /* search multbuffer in mults array */
     bool found = false;
     int index = -1;

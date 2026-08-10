@@ -43,7 +43,8 @@ int get_mult_count(void);
 unsigned int get_matching_length(char *str, unsigned int n);
 int get_exact_mult_index(char *str);
 int init_and_load_multipliers(void);
-int remember_multi(char *multiplier, int band, int mult_mode, bool check_only);
+int remember_multi(char *multiplier, int band, int mode, int mult_mode,
+		   bool check_only);
 void init_mults();
 
 #endif /* ADDMULT_H */
