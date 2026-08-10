@@ -463,7 +463,7 @@ static pthread_mutex_t mult_mutex = PTHREAD_MUTEX_INITIALIZER;
  *
  * Check if multiplier is already registered. If not make a new entry in
  * multis[] array and increment the total mults count 'nr_multis'.
- * Mark the mult as worked on the actual band. If it is a new band
+ * Mark the mult as worked on the actual band. If it is a new band or mode
  * increase the bandspecific 'multscore[band]'.
  *
  * \param multiplier  - the multiplier as a string
@@ -471,19 +471,23 @@ static pthread_mutex_t mult_mutex = PTHREAD_MUTEX_INITIALIZER;
  * \param mode        - the mode used in this QSO
  * \param mult_mode   - MULT_BAND -> check also if new band
  * \param check_only  - do not record mult, only check it
- * \return	      - index into mults[] array if new mult or on new band
+ * \return	      - index into mults[] array if new mult or on new band/mode
  *			(-1 if multiplier is an empty string or not new)
  */
 int remember_multi(char *multiplier, int band, int mode, int mult_mode,
 		   bool check_only) {
-    /* search multbuffer in mults array */
+
     bool found = false;
     int index = -1;
     if (multiplier == NULL || *multiplier == '\0' || mult_mode == MULT_NONE)
 	return -1;      /* ignore if empty string or disabled */
 
     int bandmask = inxes[band];
+
     int effective_mode = CWMODE;
+    if (mult_mode == MULT_BAND_MODE) {
+	effective_mode = mode;  // use actual mode for band+mode
+    }
 
     pthread_mutex_lock(&mult_mutex);
 
@@ -492,11 +496,11 @@ int remember_multi(char *multiplier, int band, int mode, int mult_mode,
 	if (strcmp(multis[i].name, multiplier) == 0) {
 	    found = true;
 
-	    /* new band? check if mult is per band */
+	    /* new band or mode? */
 	    if ((multis[i].band[effective_mode] & bandmask) == 0) {
 
-		if (mult_mode == MULT_BAND) {
-		    index = i;  // new band
+		if (mult_mode == MULT_BAND || mult_mode == MULT_BAND_MODE) {
+		    index = i;  // yes, a new one
 		}
 	    }
 
@@ -505,7 +509,7 @@ int remember_multi(char *multiplier, int band, int mode, int mult_mode,
     }
 
     // found && index < 0: not new mult
-    // found && index >= 0: existing mult on a new band
+    // found && index >= 0: existing mult on a new band or mode
     // !found: new mult
 
     if (!found) {

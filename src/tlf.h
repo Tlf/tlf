@@ -133,7 +133,8 @@ enum {
 enum {
     MULT_NONE,      // multiplier not used
     MULT_ALL,       // multiplier counted once on all bands
-    MULT_BAND,      // multiplier counted once per each band
+    MULT_BAND,      // multiplier counted once per each band (regardless of mode)
+    MULT_BAND_MODE, // multiplier counted once per each band and mode
 };
 
 #define EXCLUDE_NONE 0
@@ -187,7 +188,6 @@ typedef struct {
     char name[MULT_SIZE];	/**< Multiplier */
     int band[NMODES];		/**< bitmap of bands per mode the multi was worked */
 } mults_t;
-
 
 #define MAXPFXNUMMULT 30
 #define PFXNUMBERS 10
