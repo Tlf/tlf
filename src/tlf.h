@@ -67,9 +67,12 @@ extern bool keyboard_mode;
 #define FILTER_TALK 2
 #define FILTER_DX 3
 
-#define CWMODE 0
-#define SSBMODE 1
-#define DIGIMODE 2
+enum {
+    CWMODE = 0,
+    SSBMODE,
+    DIGIMODE,
+    NMODES
+};
 
 #define  BAND60 512
 #define  BAND30 256
