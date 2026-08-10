@@ -40,9 +40,6 @@ enum {
     HAMLIB_KEYER,
 };
 
-#define SINGLE 0        /* single op */
-#define MULTI 1         /* multi op / single tx */
-
 #define TELNET_INTERFACE 1
 #define TNC_INTERFACE 2
 #define NETWORK_INTERFACE 3
