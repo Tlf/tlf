@@ -483,6 +483,8 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
     if (multiplier == NULL || *multiplier == '\0' || mult_mode == MULT_NONE)
 	return -1;      /* ignore if empty string or disabled */
 
+    int bandmask = inxes[band];
+
     pthread_mutex_lock(&mult_mutex);
 
     for (int i = 0; i < nr_multis; i++) {
@@ -491,12 +493,7 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
 	    found = true;
 
 	    /* new band? check if mult is per band */
-	    if ((multis[i].band & inxes[band]) == 0) {
-
-		if (!check_only) {
-		    // update band even if not strictly needed
-		    multis[i].band |= inxes[band];
-		}
+	    if ((multis[i].band & bandmask) == 0) {
 
 		if (mult_mode == MULT_BAND) {
 		    index = i;  // new band
@@ -520,7 +517,7 @@ int remember_multi(char *multiplier, int band, int mult_mode, bool check_only) {
 	    strcpy(multis[index].name, multiplier);
 	    nr_multis++;
 	}
-	multis[index].band |= inxes[band];
+	multis[index].band |= bandmask;
 	multscore[band]++;
     }
 

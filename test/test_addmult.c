@@ -156,7 +156,7 @@ void test_remember_mult_same_2x(void **state) {
     assert_int_equal(remember_multi("abc", BANDINDEX_160, MULT_ALL, false), -1);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
-    assert_int_equal(multis[0].band, inxes[BANDINDEX_80] | inxes[BANDINDEX_160]);
+    assert_int_equal(multis[0].band, inxes[BANDINDEX_80]);
     assert_int_equal(multscore[BANDINDEX_80], 1);
     assert_int_equal(multscore[BANDINDEX_160], 0);
 }
