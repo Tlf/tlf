@@ -1,18 +1,25 @@
 #########################################
-# PACC contest for stations outside PA0 #
+# PACC contest for stations outside PA  #
 #        PA0R, 3.10.2003                #
+#                                       #
+# Updated by: Zoltan Csahok HA5CQZ      #
 #########################################
+# https://veron.nl/vereniging/commissies-en-werkgroepen/traffic-bureau/hf-contesten/pacc-home/
+#
 #
 CONTEST=pacc_dx
 LOGFILE=paccdx.log
 CONTEST_MODE
 CABRILLO=UNIVERSAL
+CABRILLO-CONTEST=PACC
 #################################
-MULT_LIST=paccmults
 COUNTRYLIST=PA
 USE_COUNTRYLIST_ONLY
 COUNTRY_LIST_POINTS=1
-SECTION_MULT
+
+SECTION_MULT=BAND+MODE
+MULT_LIST=paccmults
+
 RECALL_MULTS
 SERIAL_EXCHANGE
 SHORT_SERIAL
