@@ -1275,7 +1275,7 @@ static int cfg_section_mult_once(const cfg_arg_t arg) {
 }
 
 //
-// special handling for backwards compatibility:
+// special handling for backward compatibility:
 //  - first try to parse it as a boolean (legacy behavior)
 //  - if it fails, then it must be a valid multiplier configuration
 //
