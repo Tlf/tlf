@@ -84,11 +84,11 @@ S&P_TU_MSG=TU 5NN #
 #-------------------------------
 # Multiplier type:
 #
-#WYSIWYG_MULTIBAND
+#WYSIWYG_MULTI=BAND
 #   (makes its own multiplier list
 #    on the go...)
 #
-#WYSIWYG_ONCE
+#WYSIWYG_MULTI=ALL
 #   (same, but mults do not count
 #    per band..)
 #
@@ -96,9 +96,8 @@ S&P_TU_MSG=TU 5NN #
 #MULT_LIST=arrlsections
 #MULT_LIST=us_canada_states
 
-#SERIAL_SECTIONS
 #DX_&_SECTIONS
-#SECTION_MULT
+#SECTION_MULT=BAND
 
 #POWERMULT_5
 #POWERMULT_2
@@ -118,7 +117,6 @@ S&P_TU_MSG=TU 5NN #
 #THREE_POINTS
 #2EU3DX_POINTS
 #
-#USE_COUNTRYLIST_ONLY
 #COUNTRYLIST=SP,HA
 #COUNTRY_LIST_POINTS=10
 #MY_COUNTRY_POINTS=2
