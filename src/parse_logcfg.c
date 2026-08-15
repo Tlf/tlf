@@ -1220,7 +1220,7 @@ static int set_multi_mode(const cfg_arg_t arg, int *config) {
     char *str = g_ascii_strup(parameter, -1);
     g_strstrip(str);
 
-    if (strcmp(str, "ALL") == 0) {
+    if (strcmp(str, "ALL") == 0 || strcmp(str, "ONCE") == 0) {
 	*config = MULT_ALL;
     } else if (strcmp(str, "BAND") == 0) {
 	*config = MULT_BAND;

@@ -1496,6 +1496,12 @@ void test_unique_call_multi_all(void **state) {
     assert_int_equal(unique_call_multi, MULT_ALL);
 }
 
+void test_unique_call_multi_once(void **state) {
+    int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=ONCE");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(unique_call_multi, MULT_ALL); // ONCE is an alternative for ALL
+}
+
 void test_unique_call_multi_band(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=BAND");
     assert_int_equal(rc, PARSE_OK);
