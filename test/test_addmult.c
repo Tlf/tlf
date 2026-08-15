@@ -128,11 +128,11 @@ void test_init_mults(void **state) {
 
 /* tests for remember_multi */
 void test_remember_mult_empty(void **state) {
-    assert_int_equal(remember_multi("", BANDINDEX_80, CWMODE, MULT_ALL, false), -1);
+    assert_int_equal(remember_multi("", BANDINDEX_80, CWMODE, MULT_ONCE, false), -1);
 }
 
 void test_remember_mult_one(void **state) {
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ALL, false), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ONCE, false), 0);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band[CWMODE], inxes[BANDINDEX_80]);
@@ -140,8 +140,8 @@ void test_remember_mult_one(void **state) {
 }
 
 void test_remember_mult_two(void **state) {
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ALL, false), 0);
-    assert_int_equal(remember_multi("def", BANDINDEX_80, CWMODE, MULT_ALL, false), 1);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ONCE, false), 0);
+    assert_int_equal(remember_multi("def", BANDINDEX_80, CWMODE, MULT_ONCE, false), 1);
     assert_int_equal(nr_multis, 2);
     assert_string_equal(multis[0].name, "abc");
     assert_string_equal(multis[1].name, "def");
@@ -151,8 +151,8 @@ void test_remember_mult_two(void **state) {
 }
 
 void test_remember_mult_same_2x(void **state) {
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ALL, false), 0);
-    assert_int_equal(remember_multi("abc", BANDINDEX_160, CWMODE, MULT_ALL, false), -1);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ONCE, false), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_160, CWMODE, MULT_ONCE, false), -1);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band[CWMODE], inxes[BANDINDEX_80]);
@@ -182,7 +182,7 @@ void test_remember_mult_same_2x_newmode(void **state) {
 
 /* check_only mode */
 void test_remember_check_mult_one(void **state) {
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ALL, true), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ONCE, true), 0);
     assert_int_equal(nr_multis, 0);
     assert_string_equal(multis[0].name, "");
     assert_int_equal(multis[0].band[CWMODE], 0);
@@ -190,21 +190,21 @@ void test_remember_check_mult_one(void **state) {
 }
 
 void test_remember_check_mult_two(void **state) {
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ALL, true), 0);
-    assert_int_equal(remember_multi("def", BANDINDEX_80, CWMODE, MULT_ALL, true), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ONCE, true), 0);
+    assert_int_equal(remember_multi("def", BANDINDEX_80, CWMODE, MULT_ONCE, true), 0);
     assert_int_equal(nr_multis, 0);
     assert_int_equal(multscore[BANDINDEX_80], 0);
 }
 
 void test_remember_check_mult_existing(void **state) {
     // first add "abc"
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ALL, false), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ONCE, false), 0);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band[CWMODE], inxes[BANDINDEX_80]);
     assert_int_equal(multscore[BANDINDEX_80], 1);
     // then check it on another band
-    assert_int_equal(remember_multi("abc", BANDINDEX_160, CWMODE, MULT_ALL, true), -1);
+    assert_int_equal(remember_multi("abc", BANDINDEX_160, CWMODE, MULT_ONCE, true), -1);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band[CWMODE], inxes[BANDINDEX_80]);
@@ -213,7 +213,7 @@ void test_remember_check_mult_existing(void **state) {
 
 void test_remember_check_mult_existing_newband(void **state) {
     // first add "abc"
-    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ALL, false), 0);
+    assert_int_equal(remember_multi("abc", BANDINDEX_80, CWMODE, MULT_ONCE, false), 0);
     assert_int_equal(nr_multis, 1);
     assert_string_equal(multis[0].name, "abc");
     assert_int_equal(multis[0].band[CWMODE], inxes[BANDINDEX_80]);
@@ -337,7 +337,7 @@ void test_match_length_match_alias2(void **state) {
 
 /* addmult tests */
 void test_wysiwyg_once(void **state) {
-    wysiwyg_mult = MULT_ALL;
+    wysiwyg_mult = MULT_ONCE;
     set_this_qso("WAC   ", "");
     new_mult = addmult(this_qso);
     assert_true(new_mult >= 0);
@@ -433,7 +433,7 @@ void test_dx_arrlsections(void **state) {
 
 /* check_mult tests */
 void test_check_wysiwyg_once(void **state) {
-    wysiwyg_mult = MULT_ALL;
+    wysiwyg_mult = MULT_ONCE;
     set_this_qso("WAC   ", "");
     new_mult = check_mult(this_qso);
     assert_true(new_mult >= 0);
@@ -468,7 +468,7 @@ void test_arrlss_2(void **state) {
 }
 
 void test_wysiwyg_once_2(void **state) {
-    wysiwyg_mult = MULT_ALL;
+    wysiwyg_mult = MULT_ONCE;
     strcpy(lan_logline, logline_2);
     addmult_lan();
     assert_true(new_mult >= 0);

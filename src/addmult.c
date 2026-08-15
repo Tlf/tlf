@@ -112,7 +112,7 @@ static int addmult_internal(struct qso_t *qso, bool check_only) {
 
 	idx = get_exact_mult_index(qso->mult1_value);
 	if (idx >= 0) {
-	    remember_multi(get_mult(idx), qso->bandindex, qso->mode, MULT_ALL, check_only);
+	    remember_multi(get_mult(idx), qso->bandindex, qso->mode, MULT_ONCE, check_only);
 	    // NOTE: return value not used, new mult is not marked in log
 	}
     }
@@ -211,7 +211,7 @@ void addmult_lan(void) {
 	}
 
 	if (idx >= 0) {
-	    remember_multi(get_mult(idx), bandinx, mode, MULT_ALL, check_only);
+	    remember_multi(get_mult(idx), bandinx, mode, MULT_ONCE, check_only);
 	}
     }
 
@@ -228,8 +228,8 @@ void addmult_lan(void) {
     g_strlcpy(multi_call, lan_logline + 68, 10);
     g_strchomp(multi_call);
 
-    if (unique_call_multi == MULT_ALL) {
-	new_mult = remember_multi(multi_call, bandinx, mode, MULT_ALL, check_only);
+    if (unique_call_multi == MULT_ONCE) {
+	new_mult = remember_multi(multi_call, bandinx, mode, MULT_ONCE, check_only);
     }
 
     if (unique_call_multi == MULT_BAND) {

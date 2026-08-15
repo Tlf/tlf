@@ -1484,7 +1484,7 @@ void test_tune_seconds(void **state) {
 }
 
 void test_unique_call_multi_none(void **state) {
-    unique_call_multi = MULT_ALL;
+    unique_call_multi = MULT_ONCE;
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=NONE");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(unique_call_multi, MULT_NONE);
@@ -1493,13 +1493,13 @@ void test_unique_call_multi_none(void **state) {
 void test_unique_call_multi_all(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=ALL");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(unique_call_multi, MULT_ALL);
+    assert_int_equal(unique_call_multi, MULT_ONCE); // ALL is an alternative for ONCE
 }
 
 void test_unique_call_multi_once(void **state) {
     int rc = call_parse_logcfg("UNIQUE_CALL_MULTI=ONCE");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(unique_call_multi, MULT_ALL); // ONCE is an alternative for ALL
+    assert_int_equal(unique_call_multi, MULT_ONCE);
 }
 
 void test_unique_call_multi_band(void **state) {
@@ -1515,7 +1515,7 @@ void test_unique_call_multi_band_mode(void **state) {
 }
 
 void test_generic_mult_none(void **state) {
-    generic_mult = MULT_ALL;
+    generic_mult = MULT_ONCE;
     int rc = call_parse_logcfg("GENERIC_MULT=NONE");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(generic_mult, MULT_NONE);
@@ -1524,7 +1524,7 @@ void test_generic_mult_none(void **state) {
 void test_generic_mult_all(void **state) {
     int rc = call_parse_logcfg("GENERIC_MULT=ALL");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(generic_mult, MULT_ALL);
+    assert_int_equal(generic_mult, MULT_ONCE);
 }
 
 void test_generic_mult_band(void **state) {
@@ -1540,7 +1540,7 @@ void test_generic_mult_band_mode(void **state) {
 }
 
 void test_wysiwyg_mult_none(void **state) {
-    wysiwyg_mult = MULT_ALL;
+    wysiwyg_mult = MULT_ONCE;
     int rc = call_parse_logcfg("WYSIWYG_MULT=NONE");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(wysiwyg_mult, MULT_NONE);
@@ -1549,7 +1549,7 @@ void test_wysiwyg_mult_none(void **state) {
 void test_wysiwyg_mult_all(void **state) {
     int rc = call_parse_logcfg("WYSIWYG_MULT=ALL");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(wysiwyg_mult, MULT_ALL);
+    assert_int_equal(wysiwyg_mult, MULT_ONCE);
 }
 
 void test_wysiwyg_multiband(void **state) {
@@ -1561,11 +1561,11 @@ void test_wysiwyg_multiband(void **state) {
 void test_wysiwyg_once(void **state) {
     int rc = call_parse_logcfg("WYSIWYG_ONCE");
     assert_int_equal(rc, PARSE_OK);
-    assert_int_equal(wysiwyg_mult, MULT_ALL);
+    assert_int_equal(wysiwyg_mult, MULT_ONCE);
 }
 
 void test_section_mult_none(void **state) {
-    sectn_mult = MULT_ALL;
+    sectn_mult = MULT_ONCE;
     int rc = call_parse_logcfg("SECTION_MULT=NONE");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(sectn_mult, MULT_NONE);

@@ -1221,7 +1221,7 @@ static int set_multi_mode(const cfg_arg_t arg, int *config) {
     g_strstrip(str);
 
     if (strcmp(str, "ALL") == 0 || strcmp(str, "ONCE") == 0) {
-	*config = MULT_ALL;
+	*config = MULT_ONCE;
     } else if (strcmp(str, "BAND") == 0) {
 	*config = MULT_BAND;
     } else if (strcmp(str, "BAND+MODE") == 0) {
@@ -1267,11 +1267,11 @@ static int cfg_wysiwyg_multiband(const cfg_arg_t arg) {
 }
 
 static int cfg_wysiwyg_once(const cfg_arg_t arg) {
-    return parse_bool_mult_config(&wysiwyg_mult, MULT_ALL);
+    return parse_bool_mult_config(&wysiwyg_mult, MULT_ONCE);
 }
 
 static int cfg_section_mult_once(const cfg_arg_t arg) {
-    return parse_bool_mult_config(&sectn_mult, MULT_ALL);
+    return parse_bool_mult_config(&sectn_mult, MULT_ONCE);
 }
 
 //

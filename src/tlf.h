@@ -132,9 +132,9 @@ enum {
 
 enum {
     MULT_NONE,      // multiplier not used
-    MULT_ALL,       // multiplier counted once on all bands
-    MULT_BAND,      // multiplier counted once per each band (regardless of mode)
-    MULT_BAND_MODE, // multiplier counted once per each band and mode
+    MULT_ONCE,      // multiplier counted once (regadless of band or mode)
+    MULT_BAND,      // multiplier counted per each band (regardless of mode)
+    MULT_BAND_MODE, // multiplier counted per each band and mode
 };
 
 #define EXCLUDE_NONE 0
