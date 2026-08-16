@@ -15,9 +15,6 @@ countries = ['CA', 'AL', 'AK', 'AZ', 'AR', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', '
 'KP5', 'OX', 'PJ5', 'PJ7', 'TG', 'TI', 'TI9', 'V2', 'V3', 'V4', 'VP2E', 'VP2M', 'VP2V',
 'VP5', 'VP9', 'XE', 'XF4', 'YN', 'YS', 'YV0', 'ZF']
 
-def score(qso):
-    return 1
-
 def check_exchange(qso):
     parts = qso.exchange.strip().split()
 
