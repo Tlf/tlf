@@ -70,7 +70,7 @@ MIXED
 # Exchange can be recycled on another band
 RECALL_MULTS
 # Each multiplier counts once only, not once per band
-SECTION_MULT_ONCE
+SECTION_MULT=ONCE
 # Count DXCC countries and the mult list entities as multipliers
 DX_&_SECTIONS
 # Points for SSB and CW QSOs
