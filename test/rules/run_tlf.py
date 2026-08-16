@@ -30,7 +30,10 @@ if fout:
 
 i = p.expect(["continue", "save it", pexpect.TIMEOUT], timeout=2);
 if i == 0:
-    rc = 0
+    if b'deprecated' in p.before:
+        rc = 1  # test is OK, but uses a deprecated configuration keyword
+    else:
+        rc = 0
 elif i == 1:
     rc = 1
     p.send('N') # do not save log
