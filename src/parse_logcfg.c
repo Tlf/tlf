@@ -56,12 +56,13 @@
 
 bool exist_in_country_list();
 
-void Complain(char *msg);
-void KeywordNotSupported(const char *keyword);
-void ParameterNeeded(const char *keyword);
-void ParameterUnexpected(const char *keyword);
-void WrongFormat(const char *keyword);
-void WrongFormat_details(const char *keyword, const char *details);
+static void Complain(char *msg);
+static void KeywordDeprecated(const char *keyword);
+static void KeywordNotSupported(const char *keyword);
+static void ParameterNeeded(const char *keyword);
+static void ParameterUnexpected(const char *keyword);
+static void WrongFormat(const char *keyword);
+static void WrongFormat_details(const char *keyword, const char *details);
 
 char *error_details = NULL;
 
@@ -910,8 +911,7 @@ static int cfg_continentlist(const cfg_arg_t arg) {
 }
 
 static int cfg_country_list_only(const cfg_arg_t arg) {
-    Complain("USE_COUNTRYLIST_ONLY is deprecated, see man page");
-
+    // no operation, deprecated
     return PARSE_OK;
 }
 
@@ -1278,6 +1278,7 @@ static int cfg_section_mult_once(const cfg_arg_t arg) {
 static int cfg_section_mult(const cfg_arg_t arg) {
     int rc = parse_bool_mult_config(&sectn_mult, MULT_BAND);
     if (rc == PARSE_OK) {
+	Complain("Consider using 'SECTION_MULT=BAND'. See man page.");
 	return PARSE_OK;
     }
     return set_multi_mode(arg, &sectn_mult);
@@ -1345,8 +1346,8 @@ static config_t logcfg_configs[] = {
     {"PARTIALS",	    CFG_BOOL(partials)},
     {"RECALL_MULTS",	    CFG_CONTEST_BOOL(recall_mult)},
     {"RECALL_NUMERIC_EXCHANGES",      CFG_CONTEST_BOOL(recall_numeric_exchanges)},
-    {"WYSIWYG_MULTIBAND",   OPTIONAL_PARAM, cfg_wysiwyg_multiband},
-    {"WYSIWYG_ONCE",	    OPTIONAL_PARAM, cfg_wysiwyg_once},
+    {"WYSIWYG_MULTIBAND",   OPTIONAL_PARAM, cfg_wysiwyg_multiband, .deprecated = true},
+    {"WYSIWYG_ONCE",	    OPTIONAL_PARAM, cfg_wysiwyg_once, .deprecated = true},
     {"RIT_CLEAR",	    CFG_BOOL(rit)},
     {"SHORT_SERIAL",	    CFG_INT_ONE(shortqsonr)},
     {"LEADING_ZEROS_SERIAL",	    CFG_BOOL(leading_zeros_serial)},
@@ -1387,7 +1388,7 @@ static config_t logcfg_configs[] = {
     {"BMAUTOADD",       CFG_BOOL(bmautoadd)},
     {"SPRINTMODE",      CFG_BOOL(sprint_mode)},
     {"KEYER_BACKSPACE", CFG_BOOL(keyer_backspace)},
-    {"SECTION_MULT_ONCE",   OPTIONAL_PARAM, cfg_section_mult_once},
+    {"SECTION_MULT_ONCE",   OPTIONAL_PARAM, cfg_section_mult_once, .deprecated = true},
     {"ESC_STOPS_TX_ONLY",   CFG_BOOL(stop_tx_only)},
 
     {"F([1-9]|1[0-2])", CFG_MESSAGE(message, -1)},  // index is 1-based
@@ -1496,7 +1497,7 @@ static config_t logcfg_configs[] = {
     {"DX_&_SECTIONS",   NO_PARAM, cfg_dx_n_sections},
     {"COUNTRYLIST",     NEED_PARAM, cfg_countrylist},
     {"CONTINENTLIST",   NEED_PARAM, cfg_continentlist},
-    {"USE_COUNTRYLIST_ONLY", OPTIONAL_PARAM, cfg_country_list_only},
+    {"USE_COUNTRYLIST_ONLY", OPTIONAL_PARAM, cfg_country_list_only, .deprecated = true},
     {"SIDETONE_VOLUME", NEED_PARAM, cfg_sc_volume},
     {"MFJ1278_KEYER",   NEED_PARAM, cfg_mfj1278_keyer},
     {"CHANGE_RST",      OPTIONAL_PARAM, cfg_change_rst},
@@ -1534,6 +1535,10 @@ static int check_match(const config_t *cfg, const char *keyword) {
 
     g_regex_match(regex, keyword, 0, &match_info);
     if (g_match_info_matches(match_info)) {
+
+	if (cfg->deprecated) {
+	    KeywordDeprecated(keyword);
+	}
 
 	if (cfg->param_kind == NEED_PARAM && parameter == NULL) {
 	    result = PARSE_MISSING_PARAMETER;
@@ -1646,22 +1651,29 @@ int parse_logcfg(char *inputbuffer) {
  *
  * \param msg  The reason for the problem to be shown
  */
-void Complain(char *msg) {
+static void Complain(char *msg) {
     attron(A_STANDOUT);
     showmsg(msg);
     attroff(A_STANDOUT);
     beep();
 }
 
+/** Complain about deprecated keyword */
+static void KeywordDeprecated(const char *keyword) {
+    char msgbuffer[192];
+    sprintf(msgbuffer, "Keyword '%s' is deprecated. See man page.\n", keyword);
+    Complain(msgbuffer);
+}
+
 /** Complain about not supported keyword */
-void KeywordNotSupported(const char *keyword) {
+static void KeywordNotSupported(const char *keyword) {
     char msgbuffer[192];
     sprintf(msgbuffer, "Keyword '%s' not supported. See man page.\n", keyword);
     Complain(msgbuffer);
 }
 
 /** Complain about missing parameter */
-void ParameterNeeded(const char *keyword) {
+static void ParameterNeeded(const char *keyword) {
     char msgbuffer[192];
     sprintf(msgbuffer,
 	    "Keyword '%s' must be followed by a parameter ('=....'). See man page.\n",
@@ -1669,7 +1681,7 @@ void ParameterNeeded(const char *keyword) {
     Complain(msgbuffer);
 }
 
-void ParameterUnexpected(const char *keyword) {
+static void ParameterUnexpected(const char *keyword) {
     char msgbuffer[192];
     sprintf(msgbuffer,
 	    "Keyword '%s' can't have a parameter. See man page.\n",
@@ -1678,7 +1690,7 @@ void ParameterUnexpected(const char *keyword) {
 }
 
 /** Complain about wrong parameter format */
-void WrongFormat(const char *keyword) {
+static void WrongFormat(const char *keyword) {
     char msgbuffer[192];
     sprintf(msgbuffer,
 	    "Wrong parameter format for keyword '%s'. See man page.\n",
@@ -1686,7 +1698,7 @@ void WrongFormat(const char *keyword) {
     Complain(msgbuffer);
 }
 
-void WrongFormat_details(const char *keyword, const char *details) {
+static void WrongFormat_details(const char *keyword, const char *details) {
     char msgbuffer[192];
     sprintf(msgbuffer,
 	    "Wrong parameter for keyword '%s': %s.\n",

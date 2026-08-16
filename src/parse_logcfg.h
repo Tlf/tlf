@@ -83,6 +83,7 @@ typedef struct {
     int param_kind;
     int (*func)(const cfg_arg_t arg);
     cfg_arg_t arg;
+    bool deprecated;
 } config_t;
 
 #define CFG_BOOL(var)           OPTIONAL_PARAM, cfg_bool, \
