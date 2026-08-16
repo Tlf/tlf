@@ -44,7 +44,7 @@ ONE_POINT
 #  MULIPLIER                    #
 #                               #
 #################################
-UNIQUE_CALL_MULTI=ALL
+UNIQUE_CALL_MULTI=ONCE
 RECALL_MULTS
 #################################
 #                               #

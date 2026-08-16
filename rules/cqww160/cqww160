@@ -14,7 +14,7 @@ RECALL_MULTS
 # scoring handled by cqww160.py
 
 # mults handled by cqww160.py
-GENERIC_MULT = ALL
+GENERIC_MULT = ONCE
 
 PLUGIN_CONFIG=cqww160.txt
 

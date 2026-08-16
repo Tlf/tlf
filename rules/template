@@ -84,11 +84,11 @@ S&P_TU_MSG=TU 5NN #
 #-------------------------------
 # Multiplier type:
 #
-#WYSIWYG_MULTI=BAND
+#WYSIWYG_MULT=BAND
 #   (makes its own multiplier list
 #    on the go...)
 #
-#WYSIWYG_MULTI=ALL
+#WYSIWYG_MULT=ONCE
 #   (same, but mults do not count
 #    per band..)
 #
