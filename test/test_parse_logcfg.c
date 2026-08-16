@@ -1538,6 +1538,8 @@ void test_wysiwyg_multiband(void **state) {
     int rc = call_parse_logcfg("WYSIWYG_MULTIBAND");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(wysiwyg_mult, MULT_BAND);
+    assert_string_equal(showmsg_spy,
+			"Keyword 'WYSIWYG_MULTIBAND' is deprecated. See man page.\n");
 }
 
 void test_wysiwyg_once(void **state) {
