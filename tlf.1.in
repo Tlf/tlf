@@ -35,7 +35,7 @@
 .
 .
 .\" Update the date when this page is committed.
-.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2025-01-23" TLF "Ham radio"
+.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2026-08-10" TLF "Ham radio"
 .
 .
 .SH NAME
@@ -2783,7 +2783,22 @@ Auto Exchange call digi message in S&P mode (TR-Log mode)
 .
 .SS Scoring
 .
-The following parameters configure @PACKAGE_NAME@'s scoring calculations.
+The following parameters configure @PACKAGE_NAME@'s scoring calculations for
+points and multipliers.
+.
+.P
+Parameters controlling
+.B Points
+scoring are listed below. Not all can be combined arbitrarily and some are
+simple versions inherited from old @PACKAGE_NAME@ versions.
+.
+.P
+.
+To use them correctly one should be aware of the evaluation order discussed in
+the following section:
+.
+.P
+\(bu test
 .
 .TP
 .B ONE_POINT
@@ -2908,6 +2923,11 @@ rounded by the C library
 .BR floor (3)
 function, which gives the largest integer value that is not greater than
 multiplied score.
+.
+.P
+Scoring of
+.B Multipliers
+gets controlled by the following parameters.
 .
 .TP
 \fBWYSIWYG_MULTIBAND\fR[=<\fION\fR|\fIOFF\fR>]
