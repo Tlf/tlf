@@ -771,6 +771,11 @@ int load_callmaster(void) {
 	if (read > 0) {
 	    g_strstrip(s_inputbuffer);
 
+	    // # Release 2026.05.13
+	    if (strncmp(s_inputbuffer, "# Release ", 10) == 0) {
+		g_strlcpy(callmaster_version, s_inputbuffer + 10, sizeof(callmaster_version));
+	    }
+
 	    /* skip comment lines and calls shorter than 3 chars */
 	    if (s_inputbuffer[0] == '#' || strlen(s_inputbuffer) < 3) {
 		continue;
@@ -778,7 +783,7 @@ int load_callmaster(void) {
 
 	    /* store version */
 	    if (strlen(s_inputbuffer) == 11 && strncmp(s_inputbuffer, "VER", 3) == 0) {
-		strcpy(callmaster_version, s_inputbuffer);      // save it
+		g_strlcpy(callmaster_version, s_inputbuffer, sizeof(callmaster_version));
 	    }
 
 	    char *call = g_ascii_strup(s_inputbuffer, 11);
