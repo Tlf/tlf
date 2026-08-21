@@ -1,7 +1,6 @@
 """
 KSQP contest
-https://ksqsoparty.org/rules/KSQPRules2023.pdf
-https://ksqsoparty.org/rules/KSQPRules2022.pdf
+https://ksqsoparty.org/rules/KSQPRules2026.pdf
 """
 
 states = [
