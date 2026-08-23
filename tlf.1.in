@@ -2798,7 +2798,27 @@ To use them correctly one should be aware of the evaluation order discussed in
 the following section:
 .
 .P
-\(bu test
+\(bu Any contact which is evaluated as \fIdupe\fR gets zero points.
+.
+.P
+\(bu If a python plugin module ist used for the contest (see
+\fBPYTHON PLUGIN\fR) with a defined \fI score() \fR function it will take
+absolute preference. The value returned by the function will be used as
+points. All other point related parameters are ignored.
+.
+.P
+\(bu Otherwise if you are running one of the predefined contests (see output
+from the \fI tlf -l \fR command) the points are hardcoded into @PACKAGE_NAME@
+and cannot be modified by any of the parameters below.
+.
+.P
+\(bu Using one of \fBONE|TWO|THREE_POINT\fR parameters gives exactly that
+point value for any contact without further modification.
+.
+.P
+\(bu If \fBSSBPOINTS\fR and \fBCWPOINTS\fR both are set to a non null value
+they will come to action for any contact. The points given depend on the mode
+used.
 .
 .TP
 .B ONE_POINT
