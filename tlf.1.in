@@ -2837,17 +2837,6 @@ Points for working countries in your own continent.
 Points for working a station in other continents.
 .
 .TP
-.B 2EU3DX_POINTS
-Deprecated.
-.
-.IP
-Use
-.B MY_CONTINENT_POINTS
-and
-.B DX_POINTS
-instead.
-.
-.TP
 \fBCOUNTRY_LIST_POINTS\fR=\fId\fR
 Points for countries in country list.
 .
