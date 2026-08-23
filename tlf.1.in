@@ -2838,11 +2838,15 @@ Points for working a station in other continents.
 .
 .TP
 \fBCOUNTRY_LIST_POINTS\fR=\fId\fR
-Points for countries in country list.
+Points for countries in COUNTRYLIST.
+.
+.TP
+\fBCONTINENT_LIST_POINTS\fR=\fId\fR
+Points for stations from continents in CONTINENTLIST
 .
 .TP
 \fBCOUNTRYLIST\fR=\fI"comma separated list of prefixes"\fR
-e.g. SM,LA,OZ,OH.
+E.g. SM,LA,OZ,OZ 
 .
 .TP
 \fBCOUNTRYLIST\fR=\fIfile_name\fR
@@ -2855,16 +2859,22 @@ E.g. Scandinavia:SM,LA,OZ,OH.
 Not to be confused with so-called "country" files maintained by AD1C.
 .
 .TP
-\fBUSE_COUNTRYLIST_ONLY\fR
-Deprecated and not needed. Please do not use any longer.
-.
-.TP
-\fBCONTINENT_LIST_POINTS\fR=\fId\fR
-Points for stations from continents in CONTINENTLIST
-.
-.TP
 \fBCONTINENTLIST\fR=\fI"comma separated list of continents"\fR
 Valid values are: SA, NA, EU, AF, AS and OC.
+.
+.IP
+.BR Note :
+.B COUNTRYLIST
+and 
+.B CONTINENTLIST
+can be used for point scoring (see above)
+or to exclude some multipliers (see 
+.B EXCLUDE_MULTILIST
+below).
+.
+.TP
+\fBUSE_COUNTRYLIST_ONLY\fR
+Deprecated, has no effect. Please do not use any longer.
 .
 .TP
 \fBPORTABLE_MULT_2\fR[=<\fION\fR|\fIOFF\fR>]
