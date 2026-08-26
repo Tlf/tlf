@@ -2787,15 +2787,10 @@ The following parameters configure @PACKAGE_NAME@'s scoring calculations for
 points and multipliers.
 .
 .P
-Parameters controlling
-.B Points
-scoring are listed below. Not all can be combined arbitrarily and some are
-simple versions inherited from old @PACKAGE_NAME@ versions.
-.
-.P
-.
-To use them correctly one should be aware of the evaluation order discussed in
-the following section:
+.B POINTS
+Parameters controlling point scoring are listed below. Not all can
+be combined arbitrarily.  To use them correctly one should be aware of the
+evaluation order (in falling precedence) discussed in the following section: 
 .
 .P
 \(bu Any contact which is evaluated as \fIdupe\fR gets zero points.
@@ -2804,7 +2799,7 @@ the following section:
 \(bu If a python plugin module ist used for the contest (see
 \fBPYTHON PLUGIN\fR) with a defined \fI score() \fR function it will take
 absolute preference. The value returned by the function will be used as
-points. All other point related parameters are ignored.
+point value. All other point related parameters are ignored.
 .
 .P
 \(bu Otherwise if you are running one of the predefined contests (see output
@@ -2818,7 +2813,33 @@ point value for any contact without further modification.
 .P
 \(bu If \fBSSBPOINTS\fR and \fBCWPOINTS\fR both are set to a non null value
 they will come to action for any contact. The points given depend on the mode
-used.
+used. Further modifications according to band used (see \fBLOWBAND_DOUBLE\fR
+and \fBBANDWEIGHT_POINTS\fR - can be used both) will be applied. Finally
+contacts with portable stations can be honored (see \fBPORTABLE_MULT_2\fR).
+.
+.P
+\(bu Finally the default scoring is done by evaluating the country prefix
+of the other station. It is controlled by the following parameters (in falling order):
+.
+.RS 
+\(bu MY_COUNTRY_POINTS
+.RE
+.RS
+\(bu COUNTRY_LIST_POINTS
+.RE
+.RS
+\(bu MY_CONTINENT_POINTS
+.RE
+.RS
+\(bu CONTINENT_LIST_POINTS
+.RE
+.RS
+\(bu DX_POINTS
+.RE
+.    
+Keywords not set will be ignored.
+Working band and contacts to portable stations may be honored as discussed 
+in the paragraph above.
 .
 .TP
 .B ONE_POINT
@@ -2944,9 +2965,8 @@ function, which gives the largest integer value that is not greater than
 multiplied score.
 .
 .P
-Scoring of
 .B Multipliers
-gets controlled by the following parameters.
+Evaluation of multipliers gets controlled by the following parameters.
 .
 .TP
 \fBWYSIWYG_MULTIBAND\fR[=<\fION\fR|\fIOFF\fR>]
