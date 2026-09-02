@@ -2787,16 +2787,17 @@ The following parameters configure @PACKAGE_NAME@'s scoring calculations for
 points and multipliers.
 .
 .P
-.B POINTS
-Parameters controlling point scoring are listed below. Not all can
-be combined arbitrarily.  To use them correctly one should be aware of the
-evaluation order (in falling precedence) discussed in the following section: 
+.B Points
+.P
+Not all parameters can be combined arbitrarily.
+To use them correctly one should be aware of the
+evaluation order, in order of precedence, discussed below.
 .
 .P
 \(bu Any contact which is evaluated as \fIdupe\fR gets zero points.
 .
 .P
-\(bu If a python plugin module ist used for the contest (see
+\(bu If a python plugin module is used for the contest (see
 \fBPYTHON PLUGIN\fR) with a defined \fI score() \fR function it will take
 absolute preference. The value returned by the function will be used as
 point value. All other point related parameters are ignored.
@@ -2818,8 +2819,9 @@ and \fBBANDWEIGHT_POINTS\fR - can be used both) will be applied. Finally
 contacts with portable stations can be honored (see \fBPORTABLE_MULT_2\fR).
 .
 .P
-\(bu Finally the default scoring is done by evaluating the country prefix
-of the other station. It is controlled by the following parameters (in falling order):
+\(bu Finally the default scoring is performed by evaluating the country prefix
+of the other station. It is controlled by the following parameters, in order
+of precedence:
 .
 .RS 
 \(bu MY_COUNTRY_POINTS
@@ -2887,7 +2889,7 @@ Points for stations from continents in CONTINENTLIST
 .
 .TP
 \fBCOUNTRYLIST\fR=\fI"comma separated list of prefixes"\fR
-E.g. SM,LA,OZ,OZ 
+E.g. SM,LA,OZ,OH 
 .
 .TP
 \fBCOUNTRYLIST\fR=\fIfile_name\fR
@@ -2966,6 +2968,7 @@ multiplied score.
 .
 .P
 .B Multipliers
+.P
 Evaluation of multipliers gets controlled by the following parameters.
 .
 .TP
@@ -3066,7 +3069,7 @@ Counts once per contest, not per band.
 .
 .TP
 .B USE_CONTINENTLIST_ONLY
-Count as multi only if worked stations continent is CONTINENTLIST.
+Count as multiplier only if worked stations continent is in CONTINENTLIST.
 .
 .TP
 .B BANDWEIGHT_MULTIS
