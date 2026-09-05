@@ -884,8 +884,9 @@ int callinput(void) {
 	    }
 	}
 
+	// leave callinput() function
 	if (x == '\n' || x == KEY_ENTER || x == SPACE || x == TAB
-		|| x == CTRL_K || x == ',' || x == BACKSLASH) {
+		|| x == BACKSLASH) {
 	    break;
 	}
 

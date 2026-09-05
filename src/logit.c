@@ -33,7 +33,6 @@
 #include "clear_display.h"
 #include "getexchange.h"
 #include "globalvars.h"
-#include "keyer.h"
 #include "keystroke_names.h"
 #include "log_to_disk.h"
 #include "printcall.h"
@@ -69,7 +68,6 @@ void logit(void) {
     extern int defer_store;
 
     int callreturn = 0;
-    int cury, curx;
 
     cleanup();
     clear_display();
@@ -192,14 +190,6 @@ void logit(void) {
 
 	    log_qso();
 	}
-
-	if (callreturn == CTRL_K || callreturn == 44) {	/*  CTRL K  */
-	    getyx(stdscr, cury, curx);
-	    move(5, 0);
-	    keyer();
-	    move(cury, curx);
-	}
-
     }
 }
 

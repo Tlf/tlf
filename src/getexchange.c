@@ -340,9 +340,9 @@ int getexchange(void) {
 	    }
 	}
 
-	/* <Enter>, <Tab>, Ctl-K, '\' */
+	/* <Enter>, <Tab>, '\' */
 	if (x == '\n' || x == KEY_ENTER || x == TAB
-		|| x == CTRL_K || x == BACKSLASH) {
+		|| x == BACKSLASH) {
 
 	    if ((contest->exchange_serial && current_qso.comment[0] >= '0'
 		    && current_qso.comment[0] <= '9')) {	/* align serial nr. */
