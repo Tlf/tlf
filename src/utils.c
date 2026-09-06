@@ -316,3 +316,17 @@ void delete_char(char *buf, int pos) {
 
 }
 
+/*
+ * convert ASCII lowercase letters to uppercase, independent of locale.
+ * all other input values, including key codes or EOF, remain unchanged.
+ *
+ * Note: using integers for input and output allows for a wider range
+ * of values than 'char', thus supporting extended key code arguments.
+ */
+int ascii_toupper(int in) {
+    if (in < 'a' || in > 'z') {
+	return in;      // not a lower case letter
+    }
+
+    return in + 'A' - 'a';
+}

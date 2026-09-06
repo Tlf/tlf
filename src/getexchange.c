@@ -62,8 +62,6 @@
 #include "getexchange.h"
 
 
-void exchange_edit(void);
-
 static void serial_up_down(char *exchange, int delta) {
     /* length of serial part in "001" or "001 EU-001" */
     int nr_len = strspn(exchange, "0123456789");
@@ -87,13 +85,25 @@ static void serial_up_down(char *exchange, int delta) {
 }
 
 
+static void align_serial_number() {
+    /* length of serial part in "001" or "001 EU-001" */
+    int nr_len = strspn(current_qso.comment, "0123456789");
+    if (nr_len == 0 || nr_len > 2) {
+	return;     // empty or long enough
+    }
+
+    int pad_length = 3 - nr_len;
+
+    /* prepend zeros */
+    for (int i = 0; i < pad_length; ++i) {
+	insert_char('0', current_qso.comment, 0, contest->exchange_width);
+    }
+}
+
+
 int getexchange(void) {
 
     int x = 0;
-    char instring[2];
-    char commentbuf[40] = "";
-
-    instring[1] = '\0';
 
     if (lan_active && contest->exchange_serial) {
 	strncpy(lastqsonr, qsonrstr, 5);
@@ -127,6 +137,8 @@ int getexchange(void) {
 
     current_qso.band = bandindex2nr(bandinx); //FIXME drop global bandinx
 
+    int pos = strlen(current_qso.comment);
+
     /* parse input and modify exchange field accordingly */
 
     commentfield = 1;
@@ -158,10 +170,11 @@ int getexchange(void) {
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
-	    wmove(stdscr, 12, 54 + strlen(current_qso.comment));
+	    wmove(stdscr, 12, 54 + pos);
 	    x = key_poll();
 	}
 
+	x = ascii_toupper(x);
 	x = handle_common_key(x);
 
 	switch (x) {
@@ -176,7 +189,7 @@ int getexchange(void) {
 		x = KEY_LEFT;
 		continue;
 	    }
-	    case 19: {	// Ctl+s (^S)--Open QTC panel for sending QTCs
+	    case CTRL_S: {	// Ctl+s (^S)--Open QTC panel for sending QTCs
 		if (qtcdirection == 2 || qtcdirection == 3) {	// in case of QTC=SEND or QTC=BOTH
 		    qtc_main_panel(SEND);
 		}
@@ -191,8 +204,9 @@ int getexchange(void) {
 	    }
 
 	    case KEY_BACKSPACE: {	// Erase (^H or <Backspace>)
-		if (strlen(current_qso.comment) >= 1) {
-		    current_qso.comment[strlen(current_qso.comment) - 1] = '\0';
+		if (pos >= 1) {
+		    --pos;
+		    delete_char(current_qso.comment, pos);
 		}
 		break;
 	    }
@@ -219,6 +233,9 @@ int getexchange(void) {
 		} else {
 		    restore_comment();
 		}
+
+		pos = strlen(current_qso.comment);
+
 		break;
 	    }
 
@@ -248,21 +265,6 @@ int getexchange(void) {
 		break;
 	    }
 
-	    /* I cannot find any reference for this key combination in my
-	     * CT ver 9 documentation.  As it is, most X window managers
-	     * will trap this combination for the window menu so would
-	     * only be useful on the console.
-	     *
-	     * - N0NB
-	     */
-	    /* case 160: {	// For CT compatibility Meta-<Space> (M- ) */
-	    /*     if (ctcomp != 0) { */
-	    /*         send_standard_message(1);		// F2 */
-
-	    /*     } */
-	    /*     break; */
-	    /* } */
-
 	    /* '+', send TU and log in CT mode */
 	    case '+': {
 		if (ctcomp && (strlen(current_qso.call) > 2)) {
@@ -289,17 +291,35 @@ int getexchange(void) {
 		break;
 	    }
 
-	    /* <Home>--edit exchange field, position cursor to left end of field.
-	     * Fall through to KEY_LEFT stanza if ungetch() is successful.
-	     */
+	    /* <Home>--move cursor to the beginning of exchange field */
 	    case KEY_HOME: {
-		if (current_qso.comment[0] == '\0' || ungetch(x) != OK)
-		    break;
+		pos = 0;
+		break;
 	    }
 
-	    case KEY_LEFT: {	/* Left Arrow--edit exchange field */
-		if (current_qso.comment[0] != '\0') {
-		    exchange_edit();
+	    /* Ctrl-E (^E) or <End>, move to the end of exchange field */
+	    case CTRL_E:
+	    case KEY_END: {
+		pos = strlen(current_qso.comment);
+		break;
+	    }
+
+	    // <Delete>
+	    case KEY_DC: {
+		delete_char(current_qso.comment, pos);
+		break;
+	    }
+
+	    case KEY_LEFT: {	/* Left Arrow--move cursor left */
+		if (pos > 0) {
+		    --pos;
+		}
+		break;
+	    }
+
+	    case KEY_RIGHT: {	/* Right Arrow--move cursor right */
+		if (pos < strlen(current_qso.comment)) {
+		    ++pos;
 		}
 		break;
 	    }
@@ -334,16 +354,10 @@ int getexchange(void) {
 	    }
 	}	// End switch
 
-	if (x >= 'a' && x <= 'z')
-	    x = x - 32;		// Promote to upper case
-
 	/* normal character -> insert if space left */
 	if (strlen(current_qso.comment) < contest->exchange_width) {
 	    if (x >= ' ' && x <= 'Z') {
-		instring[0] = x;
-		addch(x);
-		strcat(current_qso.comment, instring);
-		refreshp();
+		pos = insert_char(x, current_qso.comment, pos, contest->exchange_width);
 	    }
 	}
 
@@ -351,79 +365,23 @@ int getexchange(void) {
 	if (x == '\n' || x == KEY_ENTER || x == TAB
 		|| x == CTRL_K || x == BACKSLASH) {
 
-	    if ((contest->exchange_serial && current_qso.comment[0] >= '0'
-		    && current_qso.comment[0] <= '9')) {	/* align serial nr. */
-		if (strlen(current_qso.comment) == 1) {
-		    strcpy(commentbuf, current_qso.comment);
-		    current_qso.comment[0] = '\0';
-		    strcat(current_qso.comment, "00");
-		    strcat(current_qso.comment, commentbuf);
-		}
+	    if (contest->exchange_serial && current_qso.comment[0] >= '0'
+		    && current_qso.comment[0] <= '9') {	/* align serial nr. */
 
-		if (strlen(current_qso.comment) == 2) {
-		    strcpy(commentbuf, current_qso.comment);
-		    current_qso.comment[0] = '\0';
-		    strcat(current_qso.comment, "0");
-		    strcat(current_qso.comment, commentbuf);
-		}
+		align_serial_number();
 
 	    }
 
 	    if (CONTEST_IS(WPX)) {	/* align serial nr. */
-
-		if ((strlen(current_qso.comment) == 1) || (current_qso.comment[1] == ' ')) {
-		    strcpy(commentbuf, current_qso.comment);
-		    current_qso.comment[0] = '\0';
-		    strcat(current_qso.comment, "00");
-		    strcat(current_qso.comment, commentbuf);
-		}
-
-		if ((strlen(current_qso.comment) == 2) || (current_qso.comment[2] == ' ')) {
-		    strcpy(commentbuf, current_qso.comment);
-		    current_qso.comment[0] = '\0';
-		    strcat(current_qso.comment, "0");
-		    strcat(current_qso.comment, commentbuf);
-		}
-
+		align_serial_number();
 	    }
 
 	    if (CONTEST_IS(SPRINT)) {
-
-		if ((current_qso.comment[1] == ' ') && (current_qso.comment[0] != ' ')) {
-
-		    strcpy(commentbuf, "00");
-		    commentbuf[2] = current_qso.comment[0];
-		    commentbuf[3] = '\0';
-		    strcat(commentbuf, current_qso.comment + 1);
-		    strcpy(current_qso.comment, commentbuf);
-		}
-		if ((current_qso.comment[2] == ' ') && (current_qso.comment[1] != ' ')) {
-
-		    strcpy(commentbuf, "0");
-		    commentbuf[1] = current_qso.comment[0];
-		    commentbuf[2] = current_qso.comment[1];
-		    commentbuf[3] = '\0';
-		    strcat(commentbuf, current_qso.comment + 2);
-		    strcpy(current_qso.comment, commentbuf);
-		}
-
+		align_serial_number();
 	    }
 
 	    if (CONTEST_IS(PACC_PA) && (countrynr != my.countrynr)) {
-		if (strlen(current_qso.comment) == 1) {
-		    strcpy(commentbuf, current_qso.comment);
-		    current_qso.comment[0] = '\0';
-		    strcat(current_qso.comment, "00");
-		    strcat(current_qso.comment, commentbuf);
-		}
-
-		if (strlen(current_qso.comment) == 2) {
-		    strcpy(commentbuf, current_qso.comment);
-		    current_qso.comment[0] = '\0';
-		    strcat(current_qso.comment, "0");
-		    strcat(current_qso.comment, commentbuf);
-		}
-
+		align_serial_number();
 	    }
 
 	    if (CONTEST_IS(ARRL_SS) && (x != TAB) && (strlen(current_qso.section) < 2)) {
@@ -800,107 +758,4 @@ void checkexchange(struct qso_t *qso, bool interactive) {
 	return;
     }
 
-}
-
-
-/* ------------------------------------------------------------------------ */
-/** Edit exchange field
- */
-
-void exchange_edit(void) {
-
-    int l, b;
-    int i = 0, j;
-    char comment2[27];
-
-    l = strlen(current_qso.comment);
-    b = l - 1;
-    while ((i != ESCAPE) && (b <= strlen(current_qso.comment))) {
-	attroff(A_STANDOUT);
-	attron(COLOR_PAIR(C_HEADER));
-
-	mvaddstr(12, 54, spaces(contest->exchange_width));
-	mvaddstr(12, 54, current_qso.comment);
-	move(12, 54 + b);
-
-	i = key_get();
-
-	// Ctrl-A (^A) or <Home>, move to beginning of comment field.
-	if (i == CTRL_A || i == KEY_HOME) {
-
-	    b = 0;
-
-	    // Ctrl-E (^E) or <End>, move to end of comment field, exit edit mode.
-	} else if (i == CTRL_E || i == KEY_END) {
-
-	    b = strlen(current_qso.comment);
-	    break;
-
-	    // Left arrow, move cursor left one position.
-	} else if (i == KEY_LEFT) {
-
-	    if (b > 0)
-		b--;
-
-	    // Right arrow, move cursor right one position.
-	} else if (i == KEY_RIGHT) {
-
-	    if (b < strlen(current_qso.comment) - 1) {
-		b++;
-	    } else
-		break;		/* stop edit */
-
-	    // <Delete>, erase character under the cursor,
-	    // shift all characters to the right of the cursor left one position.
-	} else if (i == KEY_DC) {
-
-	    l = strlen(current_qso.comment);
-
-	    for (j = b; j <= l; j++) {
-		current_qso.comment[j] = current_qso.comment[j + 1];	/* move to left incl.\0 */
-	    }
-
-	    // <Backspace>, erase character to the left of the cursor,
-	    // shift all characters to the right of the cursor left one position.
-	} else if (i == KEY_BACKSPACE) {
-
-	    if (b > 0) {
-		b--;
-
-		l = strlen(current_qso.comment);
-
-		for (j = b; j <= l; j++) {
-		    current_qso.comment[j] = current_qso.comment[j + 1];
-		}
-	    }
-
-	    // <Escape> not received.
-	} else if (i != ESCAPE) {
-
-	    // Promote lower case to upper case.
-	    if ((i >= 'a') && (i <= 'z'))
-		i = i - 32;
-
-	    // Accept printable characters.
-	    if ((i >= ' ') && (i <= 'Z')) {
-
-		if (strlen(current_qso.comment) < contest->exchange_width) {
-		    /* copy including trailing \0 */
-		    strncpy(comment2, current_qso.comment + b,
-			    strlen(current_qso.comment) - (b - 1));
-
-		    current_qso.comment[b] = i;
-		    current_qso.comment[b + 1] = '\0';
-		    strcat(current_qso.comment, comment2);
-
-		    b++;
-		}
-
-	    } else if (i != 0)
-		i = ESCAPE;
-	}
-    }
-
-    attron(A_STANDOUT);
-    refresh_comment();
 }

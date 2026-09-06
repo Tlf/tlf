@@ -172,3 +172,10 @@ void test_delete_char(void **state) {
     delete_char(buffer, 3);     // no change, pos >= length
     assert_string_equal("BD", buffer);
 }
+
+void test_ascii_upper(void **state) {
+    assert_int_equal('H', ascii_toupper('h'));
+    assert_int_equal('H', ascii_toupper('H'));
+    assert_int_equal(360, ascii_toupper(360));
+    assert_int_equal(-1, ascii_toupper(-1));
+}
