@@ -42,7 +42,7 @@ INITIAL_EXCHANGE=iaruhf.txt
 # (handled by iaruhf.py)
 
 
-WYSIWYG_MULTIBAND
+WYSIWYG_MULT=BAND
 #ITUMULT
 MULT_LIST=iaruhf_mults
 
