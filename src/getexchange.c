@@ -310,13 +310,6 @@ int getexchange(void) {
 		break;
 	    }
 
-	    case ',':		// Keyboard Morse
-	    case CTRL_K: {	// Ctrl-K
-		move(5, 0);
-		keyer();
-		x = 0;
-		break;
-	    }
 	    case '\n':
 	    case KEY_ENTER: {
 		/* log QSO immediately if CT compatible

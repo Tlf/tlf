@@ -33,6 +33,7 @@
 #include "clear_display.h"
 #include "globalvars.h"
 #include "keystroke_names.h"
+#include "keyer.h"
 #include "netkeyer.h"
 #include "nicebox.h"		// Includes curses.h
 #include "sendbuf.h"
@@ -284,6 +285,14 @@ int handle_common_key(int key) {
 		mvprintw(0, 19, "%-2i", cqdelay);
 	    }
 
+	    break;
+	}
+
+	// Ctrl-K, ',' activate keyer
+	case ',':		// Keyboard Morse
+	case CTRL_K: {	// Ctrl-K
+	    move(5, 0);
+	    keyer();
 	    break;
 	}
 
