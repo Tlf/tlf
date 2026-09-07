@@ -9,6 +9,7 @@ RULES_FILES = arrl10m_dx arrl160m_usa arrldx_dx arrldx_usa arrlfd arrlss \
 	      ukeidx/ukeidx.py ukeidx/ukeidx \
 	      mwc/mwc mwc/mwc.py \
 	      eakingofspain/eakingofspain eakingofspain/eakingofspain.py \
+		  iaruhf/iaruhf iaruhf/iaruhf_mults iaruhf/iaruhf.py iaruhf/iaruhf.txt \
 	      iota/iota iota/iota.py \
 	      ksqp/ksqp ksqp/ksqp.py \
 	      hadx/hadx hadx/hadx.py \
