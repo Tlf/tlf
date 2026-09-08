@@ -33,6 +33,7 @@
 #include "clear_display.h"
 #include "globalvars.h"
 #include "keystroke_names.h"
+#include "keyer.h"
 #include "netkeyer.h"
 #include "nicebox.h"		// Includes curses.h
 #include "sendbuf.h"
@@ -94,7 +95,7 @@ static void tune() {
 
 //
 // handle common keys
-// F1..F11, Alt-0..9, _ (underscore), PgUp, PgDn, Alt-W, Alt-T
+// F1..F11, Alt-0..9, _ (underscore), PgUp, PgDn, Alt-W, Alt-T, Ctrl-K, ','
 //
 // returns 0:   if the key was handled
 //         key: if the key was not handled
@@ -287,6 +288,14 @@ int handle_common_key(int key) {
 	    break;
 	}
 
+	// Ctrl-K, ',' - activate keyboard keyer
+	case ',':
+	case CTRL_K: {
+	    keyer();
+
+	    break;
+	}
+
 	default:
 	    handled = false;
     }
@@ -319,7 +328,7 @@ void keyer(void) {
     attron(COLOR_PAIR(C_LOG) | A_STANDOUT);
 
     if (panel == NULL) {
-	win = newwin(KEYER_WIN_HEIGHT, KEYER_WIN_WIDTH, KEYER_Y, KEYER_Y);
+	win = newwin(KEYER_WIN_HEIGHT, KEYER_WIN_WIDTH, KEYER_Y, KEYER_X);
 	if (win == NULL)
 	    return;
 	panel = new_panel(win);
@@ -402,7 +411,10 @@ void keyer(void) {
 	    }
 	}
 
-	x = handle_common_key(x);
+	if (x != ',') {
+	    // ',' should be handled as normal character inside keyboard keyer
+	    x = handle_common_key(x);
+	}
 
 	x = toupper(x);
 

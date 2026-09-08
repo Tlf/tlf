@@ -330,13 +330,6 @@ int getexchange(void) {
 		break;
 	    }
 
-	    case ',':		// Keyboard Morse
-	    case CTRL_K: {	// Ctrl-K
-		move(5, 0);
-		keyer();
-		x = 0;
-		break;
-	    }
 	    case '\n':
 	    case KEY_ENTER: {
 		/* log QSO immediately if CT compatible
@@ -361,9 +354,9 @@ int getexchange(void) {
 	    }
 	}
 
-	/* <Enter>, <Tab>, Ctl-K, '\' */
+	/* <Enter>, <Tab>, '\' */
 	if (x == '\n' || x == KEY_ENTER || x == TAB
-		|| x == CTRL_K || x == BACKSLASH) {
+		|| x == BACKSLASH) {
 
 	    if (contest->exchange_serial && current_qso.comment[0] >= '0'
 		    && current_qso.comment[0] <= '9') {	/* align serial nr. */
