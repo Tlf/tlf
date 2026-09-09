@@ -3066,7 +3066,7 @@ You can have more than one line for the same multiplier.
 .IP
 This is useful for state QSO parties as an instate participant where instate
 operators exchange county abbreviations rather than the state but the state
-can only count once (Kansas QSO Party is once such example).
+can only count once (Kansas QSO Party is one such example).
 .
 .TP
 \fBSECTION_MULT\fR=<\fIONCE\fR|\fIALL\fR|\fIBAND\fR|\fIBAND+MODE\fR|\fINONE\fR>
