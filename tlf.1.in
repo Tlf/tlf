@@ -2969,21 +2969,36 @@ multiplied score.
 .P
 .B Multipliers
 .P
-Evaluation of multipliers gets controlled by the following parameters.
+Multiplier evaluation is controlled by the following parameters.
+Only one multiplier configuration can be active at a time.
+.P
+Some keywords require an argument specifying how multipliers are counted:
+.RS 2
+.IP \(bu 2
+\fIONCE\fR or \fIALL\fR: multipliers are counted once per contest, independent of band.
+Either value may be used, but ONCE is preferred.
+.IP \(bu 2
+\fIBAND\fR: multipliers are counted per band.
+.IP \(bu 2
+\fIBAND+MODE\fR: multipliers are counted per band \fIand\fR mode.
+.IP \(bu 2
+\fINONE\fR: multiplier evaluation is disabled.
+.RE
 .
 .TP
-\fBWYSIWYG_MULTIBAND\fR[=<\fION\fR|\fIOFF\fR>]
-Exchange is the multiplier, per band, whatever you enter.
+\fBWYSIWYG_MULT\fR=<\fIONCE\fR|\fIALL\fR|\fIBAND\fR|\fIBAND+MODE\fR|\fINONE\fR>
+The multiplier is the exchange, whatever you enter.
 .
 .IP
 @PACKAGE_NAME@ builds its own list of multipliers as QSOs are logged.
 .
 .TP
-\fBWYSIWYG_ONCE\fR[=<\fION\fR|\fIOFF\fR>]
-Exchange is multiplier, whatever you enter.
+\fBWYSIWYG_MULTIBAND\fR[=<\fION\fR|\fIOFF\fR>]
+\fIDeprecated:\fR use \fBWYSIWYG_MULT=BAND\fR instead.
 .
-.IP
-Counts once per contest, not per band.
+.TP
+\fBWYSIWYG_ONCE\fR[=<\fION\fR|\fIOFF\fR>]
+\fIDeprecated:\fR use \fBWYSIWYG_MULT=ONCE\fR instead.
 .
 .TP
 \fBWAZMULT\fR[=<\fION\fR|\fIOFF\fR>]
@@ -3051,21 +3066,15 @@ You can have more than one line for the same multiplier.
 .IP
 This is useful for state QSO parties as an instate participant where instate
 operators exchange county abbreviations rather than the state but the state
-can only count once (Kansas QSO Party is once such example).
+can only count once (Kansas QSO Party is one such example).
 .
 .TP
-\fBSECTION_MULT\fR[=<\fION\fR|\fIOFF\fR>]
+\fBSECTION_MULT\fR=<\fIONCE\fR|\fIALL\fR|\fIBAND\fR|\fIBAND+MODE\fR|\fINONE\fR>
 Multiplier is section from multipliers file.
-.
-.IP
-Counts per band.
 .
 .TP
 \fBSECTION_MULT_ONCE\fR[=<\fION\fR|\fIOFF\fR>]
-Multiplier is section from multipliers file.
-.
-.IP
-Counts once per contest, not per band.
+\fIDeprecated:\fR use \fBSECTION_MULT=ONCE\fR instead.
 .
 .TP
 .B USE_CONTINENTLIST_ONLY
@@ -3160,20 +3169,11 @@ and all EU countries are multipliers and not those from the SA, NA, AF, OC and
 AS continents, so only the EU stations remain as multipliers.
 .
 .TP
-\fBUNIQUE_CALL_MULTI\fR=\fIALL\fR|\fIBAND\fR
+\fBUNIQUE_CALL_MULTI\fR=<\fIONCE\fR|\fIALL\fR|\fIBAND\fR|\fIBAND+MODE\fR|\fINONE\fR>
 Multiplier is the callsign.
 .
-.IP
-The argument tells @PACKAGE_NAME@, how to score the callsigns as multipliers:
-.br
-.B ALL
-means the callsign is a multiplier once per the contest, independent of band.
-.br
-.B BAND
-means the callsign counts as a multiplier per band.
-.
 .TP
-\fBGENERIC_MULT\fR=\fINONE\fR|\fIALL\fR|\fIBAND\fR
+\fBGENERIC_MULT\fR=<\fIONCE\fR|\fIALL\fR|\fIBAND\fR|\fIBAND+MODE\fR|\fINONE\fR>
 Use generic multiplier determined by the contest plugin.
 .IP
 The argument specifies the multiplier counting rule (see above).
