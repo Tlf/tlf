@@ -1,0 +1,43 @@
+#################################
+# Scandinavian Activity Contest #
+#################################
+# https://www.sactest.net/
+#
+# (For non-Scandinavian stations)
+#
+
+LOGFILE=sac.log
+CONTEST_MODE
+
+CABRILLO=UNIVERSAL
+
+# for CW:
+CABRILLO-CONTEST= SAC-CW
+CABRILLO-CATEGORY-MODE= CW
+# for SSB:
+#CABRILLO-CONTEST= SAC-SSB
+#CABRILLO-CATEGORY-MODE= SSB
+
+CABRILLO-CATEGORY-BAND= (ALL, LOW)
+
+CABRILLO-CATEGORY-STATION=-
+CABRILLO-CATEGORY-OVERLAY=-
+CABRILLO-CATEGORY-TIME=-
+CABRILLO-LOCATION=-
+CABRILLO-OFFTIME=-
+
+#
+# all stations send serial number
+#
+SERIAL_EXCHANGE
+F3=@ ++5NN-- #
+S&P_TU_MSG=TU ++5NN-- #
+
+# Scoring:
+# (handled by sac.py)
+
+# Multipliers:
+# (handled by sac.py)
+
+GENERIC_MULT=BAND
+
