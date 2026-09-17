@@ -18,7 +18,8 @@ RULES_FILES = arrl10m_dx arrl160m_usa arrldx_dx arrldx_usa arrlfd arrlss \
 	      mst/mst \
 	      naqp/naqp.py naqp/naqp \
 	      neqp/neqp_mults neqp/neqp neqp/neqp_mults_outside \
-	      eudx/eudx.py eudx/eudx
+	      eudx/eudx.py eudx/eudx \
+	      sac/sac sac/sac.py
 
 SUBDIRS =
 
