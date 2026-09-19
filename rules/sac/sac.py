@@ -3,7 +3,7 @@ Scandinavian Activity Contest
 https://www.sactest.net/
 """
 
-SAC_PREFIXES = ['JW', 'JX', 'LA', 'OH', 'OH0', 'OJ0', 'OX', 'OY', 'OZ', 'SM']
+SAC_PREFIXES = ['JW', 'JX', 'LA', 'OH', 'OH0', 'OJ0', 'OX', 'OY', 'OZ', 'SM', 'TF']
 
 MY_CONTINENT = None
 
