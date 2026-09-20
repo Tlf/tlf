@@ -14,8 +14,8 @@ def init(cfg):
     dxcc = tlf.get_dxcc(tlf.MY_CALL)
     global MY_CONTINENT
     MY_CONTINENT = dxcc.continent
+    global SCANDINAVIAN_STATION
     SCANDINAVIAN_STATION = dxcc.main_prefix in SCANDINAVIAN_PREFIXES
-
 
 def score(qso):
     dxcc = tlf.get_dxcc(qso.call)
