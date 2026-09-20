@@ -3,7 +3,6 @@
 #################################
 # https://www.sactest.net/
 #
-# (For non-Scandinavian stations)
 #
 
 LOGFILE=sac.log
