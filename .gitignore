@@ -38,3 +38,6 @@ test-driver
 
 # backed-up log file
 20*_*_*.log
+
+# directory for compiled python file
+__pycache__

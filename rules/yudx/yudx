@@ -1,0 +1,51 @@
+##########################
+# YUDX contest           #
+##########################
+# https://yudx.yu1srs.org.rs/rules
+#
+
+LOGFILE=yudx.log
+CONTEST_MODE
+
+CABRILLO=UNIVERSAL
+
+CABRILLO-CONTEST= YUDX
+CABRILLO-CATEGORY-BAND= (ALL, 160M, 80M, 40M, 20M, 15M, 10M)
+CABRILLO-CATEGORY-MODE= (CW, SSB, MIXED)
+
+CABRILLO-CATEGORY-STATION=-
+CABRILLO-CATEGORY-OVERLAY=-
+CABRILLO-CATEGORY-TIME=-
+CABRILLO-LOCATION=-
+CABRILLO-OFFTIME=-
+
+#
+# non-YU stations send serial number
+#
+CABRILLO-EXCHANGE=#
+F3=@ ++5NN-- #
+S&P_TU_MSG=TU ++5NN-- #
+
+INITIAL_EXCHANGE=yudx.txt
+RECALL_MULTS
+
+# Scoring:
+# 10 points per QSO with YU/YT station
+#  1 point per QSO with same country
+#  2 points per QSO with same continent, different country
+#  4 points per QSO with different continent
+#
+COUNTRY_LIST_POINTS=10
+COUNTRYLIST=YU
+
+MY_COUNTRY_POINTS=1
+MY_CONTINENT_POINTS=2
+DX_POINTS=4
+
+# Multipliers:
+# worked DXCC countries and Serbian counties
+# per band, regardless of mode.
+# (handled by yudx.py)
+
+GENERIC_MULT=BAND
+
