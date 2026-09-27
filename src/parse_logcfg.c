@@ -1197,13 +1197,13 @@ static int cfg_minitest(const cfg_arg_t arg) {
     }
 
     int value = 1;	/* avoid warning about divide by zero */
-    int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 60, .max = 1800});
+    int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 60, .max = 3600});
     if (rc != PARSE_OK) {
 	return rc;
     }
 
     if ((3600 % value) != 0) {
-	error_details = g_strdup("must be an integral divider of 3600 seconds");
+	error_details = g_strdup("must be an integer divisor of 3600 seconds");
 	return PARSE_WRONG_PARAMETER;
     }
 
