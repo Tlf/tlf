@@ -58,7 +58,6 @@ int setup_default(void **state) {
     setcontest("qso");
 
     pfxmult = false;
-    dupe = 0;
 
     my_country_points = -1;
     my_cont_points = -1;
