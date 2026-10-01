@@ -60,7 +60,7 @@ char callmaster_version[12];   // VERyyyymmdd
 
 char searchresult[MAX_CALLS][82];
 char result[MAX_CALLS][82];
-int srch_index = 0;
+static int srch_index = 0;
 
 char qtcflags[6] = {' ', ' ', ' ', ' ', ' ', ' '};
 
@@ -206,7 +206,7 @@ static bool show_partial(int *row, int *col, char *call,
     return false;   // assume it's not full yet
 }
 
-int displayPartials(char *suggested_call) {
+int displayPartials(char *suggested_call, bool dupe) {
 
     int row, col, k;
     char *loc;
@@ -243,7 +243,7 @@ int displayPartials(char *suggested_call) {
      * be aware of the problem of marking it dupe only for a complete
      * match.
      */
-    if (dupe == ISDUPE) {
+    if (dupe) {
 	attrset(COLOR_PAIR(C_DUPE));
     } else {
 	attron(modify_attr(COLOR_PAIR(C_BORDER) | A_STANDOUT));
@@ -310,13 +310,13 @@ int displayPartials(char *suggested_call) {
 }
 
 /* Display list of partials and handle USEPARTIALS auto-completion */
-void handlePartials(void) {
+void handlePartials(bool dupe) {
 
     char suggested_call[LOGLINELEN + 1] = "";
     int nr_suggested;
 
     /* print list of partials in upper left region */
-    nr_suggested = displayPartials(suggested_call);
+    nr_suggested = displayPartials(suggested_call, dupe);
 
     /* If only one partial call found and USEPARTIALS set,
     * use that call for auto-completion. It is blocked by
@@ -461,7 +461,10 @@ static bool line_matches_actual_qso(const char *line) {
 }
 
 
-void displaySearchResults(void) {
+//
+// return true if call is a dupe
+//
+static bool displaySearchResults(void) {
 
     int r_index;
     char buffer[LOGLINELEN + 1] = "";
@@ -470,7 +473,7 @@ void displaySearchResults(void) {
     struct t_qtc_store_obj *qtc_temp_ptr;
 
 
-    dupe = NODUPE;
+    bool dupe = false;
 
     /* print resulting call in line according to band in check window */
     for (r_index = 0; r_index < srch_index; r_index++) {
@@ -479,7 +482,7 @@ void displaySearchResults(void) {
 	wattrset(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 	if (!ignoredupe && line_matches_actual_qso(buffer)) {
 	    wattrset(search_win, COLOR_PAIR(C_DUPE));
-	    dupe = ISDUPE;
+	    dupe = true;
 	    beep();
 	}
 
@@ -509,6 +512,8 @@ void displaySearchResults(void) {
 
 	buffer[0] = '\0';
     }
+
+    return dupe;
 }
 
 void displayWorkedZonesCountries(int z) {
@@ -696,7 +701,7 @@ void searchlog() {
 	drawSearchWin();
 
 	filterLog(current_qso.call);
-	displaySearchResults();
+	bool dupe = displaySearchResults();
 
 
 	/* prepare and print lower line of checkwindow */
@@ -710,14 +715,14 @@ void searchlog() {
 
 
 	if (partials) {
-	    handlePartials();
+	    handlePartials(dupe);
 	}
 
 	/* show needed sections for ARRL_Sweep Stake*/
-	if (dupe == NODUPE && CONTEST_IS(ARRL_SS))
+	if (!dupe && CONTEST_IS(ARRL_SS))
 	    show_needed_sections();
 
-	if (dupe == ISDUPE) {
+	if (dupe) {
 	    attrset(COLOR_PAIR(C_DUPE));
 	    mvaddstr(12, 29, current_qso.call);
 	    refreshp();

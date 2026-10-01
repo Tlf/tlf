@@ -442,9 +442,9 @@ int callinput(void) {
 		    break;
 
 		/* check b4 QSO if call is long enough and 'nob4' off */
-		int dupe = is_dupe(current_qso.call, bandinx, trxmode);
+		bool dupe = is_dupe(current_qso.call, bandinx, trxmode);
 
-		if (dupe == ISDUPE) {
+		if (dupe) {
 		    // send "QSO B4" message (F7)
 		    send_standard_message(6);
 		    cleanup();
