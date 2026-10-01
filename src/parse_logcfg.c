@@ -1196,11 +1196,28 @@ static int cfg_minitest(const cfg_arg_t arg) {
 	return PARSE_OK;
     }
 
-    int value = 1;	/* avoid warning about divide by zero */
-    int rc = cfg_integer((cfg_arg_t) {.int_p = &value, .min = 60, .max = 3600});
+    char *str = g_strdup(parameter);
+    str_toupper(str);
+    int len = strlen(str);
+    int factor = 1;
+    int min = 60;
+    int max = 3600;
+
+    if (g_str_has_suffix(str, "MIN")) {
+	str[len - 3] = 0;   // cut suffix
+	factor = 60;
+	min /= factor;
+	max /= factor;
+    }
+
+    int value;
+    int rc = parse_int(str, min, max, &value);
+    g_free(str);
     if (rc != PARSE_OK) {
 	return rc;
     }
+
+    value *= factor;
 
     if ((3600 % value) != 0) {
 	error_details = g_strdup("must be an integer divisor of 3600 seconds");

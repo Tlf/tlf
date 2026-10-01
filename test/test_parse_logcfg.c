@@ -1459,10 +1459,16 @@ void test_minitest(void **state) {
     assert_int_equal(minitest, 1200);
 }
 
-void test_minitest_1hr(void **state) {
+void test_minitest_3600(void **state) {
     int rc = call_parse_logcfg("MINITEST=3600");
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(minitest, 3600);
+}
+
+void test_minitest_10min(void **state) {
+    int rc = call_parse_logcfg("MINITEST= 10 MIN");
+    assert_int_equal(rc, PARSE_OK);
+    assert_int_equal(minitest, 600);
 }
 
 void test_tune_seconds(void **state) {
