@@ -163,6 +163,8 @@ int setup_default(void **state) {
 
     remove_backup_logs();
 
+    ignoredupe = false;
+
     return 0;
 }
 
@@ -262,6 +264,17 @@ void test_add_to_worked_dupe_non_interactive(void **state) {
     assert_int_equal(nr_worked, 1);
     assert_string_equal(showmsg_spy, STRING_NOT_SET);
     assert_int_equal(remove_backup_logs(), 1);
+}
+
+void test_add_to_worked_dupe_non_interactive_ignoredupe(void **state) {
+    write_log(LOGFILE);
+    append_log_line(LOGFILE, QSO1);     // add same line again
+    ignoredupe = true;                  // no dupe checking
+    readcalls(LOGFILE, false);          // non-interactive mode
+    assert_int_equal(nr_worked, 1);
+    assert_int_equal(get_nr_of_points(), 6);    // both QSOs count
+    assert_int_equal(get_nr_of_mults(), 2);
+    assert_string_equal(showmsg_spy, STRING_NOT_SET);
 }
 
 void test_add_to_worked_continentlistonly(void **state) {
