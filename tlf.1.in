@@ -2618,21 +2618,24 @@ of the standard mark (2125 Hz) and space (2295 Hz) tones.
 To disable auto-QSY set it to 0.
 .
 .TP
-\fBMINITEST\fR[=\fINNN\fR]
-Use this option when the contest is a minitest like contest.
+\fBMINITEST\fR[=<\fINNN\fR|\fINN min\fR>]
+Use this option for contests that use the \fIminitest\fR format.
 .
 .IP
-In such contests the full contest interval is divided into shorter sections
-(e.g. 6 * 10 minute sections in an hour).
-.
-Any station can be worked once in each of the time sections without counting
-as a dupe.
-.
-The default length of the sections is 600 seconds (10 minutes), but you can
-pass another value (in seconds) after the \(oq=\(cq sign.
+In a minitest, the contest period is divided into shorter time
+periods (for example, six 10-minute periods per hour).
+A station may be worked once during each such section
+without being counted as a dupe.
 .
 .IP
-There must be an integral number of time sections per hour!
+The default section length is 600 seconds (10 minutes).
+To use a different length, specify a value after the \(oq=\(cq sign,
+either as a number of seconds (\fINNN\fR)
+or as a number of minutes (\fINN min\fR).
+The specified section length must be between 1 minute and 1 hour, inclusive.
+.
+.IP
+Note: there must be an integral number of time sections per hour!
 .
 .TP
 \fBAUTOSEND\fR=<\fI0\fR|\fIOFF\fR|\fI2\fR..\fI5\fR|\fIM\fR|\fIMANUAL\fR>
