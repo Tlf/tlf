@@ -95,6 +95,8 @@ int pacc_pa(void) {
 }
 
 #define QSO1 " 80SSB 12-Jan-18 16:34 0006  PY9BBB         59   59   15            PY   15  3  14025.0\n"
+#define QSO2 " 80SSB 12-Jan-18 16:35 0007  PY9BBB         59   59   15                     3  14025.0\n"
+// note: QSO2 brings no new mults, but it has the same score as QSO1
 
 #define NOTE "; Test note handling in logfile                                                        \n"
 
@@ -244,14 +246,14 @@ void test_add_to_worked(void **state) {
 
 void test_add_to_worked_dupe(void **state) {
     write_log(LOGFILE);
-    append_log_line(LOGFILE, QSO1);     // add same line again
+    append_log_line(LOGFILE, QSO2);     // add dupe
     readcalls(LOGFILE, true);
     assert_int_equal(nr_worked, 1);
     assert_string_equal(worked[0].call, "PY9BBB");
     assert_string_equal(worked[0].exchange, "15");
-    time_t ts = parse_time(QSO1 + 7, DATE_TIME_FORMAT);
+    time_t ts = parse_time(QSO2 + 7, DATE_TIME_FORMAT); // time of the last QSO
     assert_int_equal(worked[0].qsotime[SSBMODE][BANDINDEX_80], ts);
-    assert_int_equal(get_nr_of_points(), 3);
+    assert_int_equal(get_nr_of_points(), 3);    // 2nd QSO scored with zero
     assert_int_equal(get_nr_of_mults(), 2);
     assert_string_equal(showmsg_spy,
 			"Log changed due to rescoring. Do you want to save it? Y/(N)");
@@ -259,7 +261,7 @@ void test_add_to_worked_dupe(void **state) {
 
 void test_add_to_worked_dupe_non_interactive(void **state) {
     write_log(LOGFILE);
-    append_log_line(LOGFILE, QSO1);     // add same line again
+    append_log_line(LOGFILE, QSO2);     // add dupe
     readcalls(LOGFILE, false);          // non-interactive mode
     assert_int_equal(nr_worked, 1);
     assert_string_equal(showmsg_spy, STRING_NOT_SET);
@@ -268,7 +270,7 @@ void test_add_to_worked_dupe_non_interactive(void **state) {
 
 void test_add_to_worked_dupe_non_interactive_ignoredupe(void **state) {
     write_log(LOGFILE);
-    append_log_line(LOGFILE, QSO1);     // add same line again
+    append_log_line(LOGFILE, QSO2);     // add dupe
     ignoredupe = true;                  // no dupe checking
     readcalls(LOGFILE, false);          // non-interactive mode
     assert_int_equal(nr_worked, 1);
