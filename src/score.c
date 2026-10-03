@@ -335,9 +335,8 @@ int score(struct qso_t *qso) {
 
     int points;
 
-    if (dupe == ISDUPE) {
+    if (qso->dupe) {
 	points = 0;
-	dupe = NODUPE;
 	return points;
     }
 

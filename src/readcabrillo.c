@@ -77,7 +77,7 @@ void write_log_fm_cabr(struct qso_t *qso) {
     qso->qso_nr = cablinecnt;
 
     checkexchange(qso, false);
-    dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
+    qso->dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
     addcall(qso);           /* add call to worked list and check it for dupe */
     score_qso(qso);
     char *logline = makelogline(qso);	    /* format logline */

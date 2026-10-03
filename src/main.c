@@ -144,7 +144,6 @@ bool leading_zeros_serial;
 bool ctcomp;
 bool nob4 = false;		// allow auto b4
 bool ignoredupe = false;
-int dupe = 0;
 bool noautocq = false;
 bool verbose = false;
 bool no_rst = false;		/* do not use RS/RST */

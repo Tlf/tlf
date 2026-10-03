@@ -442,12 +442,11 @@ int callinput(void) {
 		    break;
 
 		/* check b4 QSO if call is long enough and 'nob4' off */
+		bool dupe = is_dupe(current_qso.call, bandinx, trxmode);
 
-		dupe = is_dupe(current_qso.call, bandinx, trxmode);
-
-		if (dupe == ISDUPE) {
-		    // XXX: Before digi_message, SSB mode sent CW here. - W8BSD
-		    send_standard_message(6);	/* as with F7 */
+		if (dupe) {
+		    // send "QSO B4" message (F7)
+		    send_standard_message(6);
 		    cleanup();
 		    pos = 0;
 		    clear_display();

@@ -115,8 +115,6 @@ enum {
 };
 
 #define NORMCOLOR C_INPUT
-#define ISDUPE 1
-#define NODUPE 0
 
 #define MAX_CALL_LENGTH 13
 #define MAX_QSOS 20000          /* internal qso array */
@@ -224,6 +222,7 @@ struct qso_t {
     char *callupdate;           // transient field, used in checkexchange
     char *normalized_comment;   // transient field
     char *section;              // transient field
+    bool dupe;                  // transient field
 };
 
 
