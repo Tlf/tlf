@@ -70,7 +70,6 @@ static bool initialized = FALSE;
 int nr_bands;
 
 void show_needed_sections(void);
-static bool is_current_mode(const char *line);
 
 /** Check for all band mode
  *
@@ -418,69 +417,29 @@ void filterLog(const char *call) {
 }
 
 
-/* helper functions to check filtered lines for match with
- * current_qso.call or actual band */
-static bool call_matches(const char *line) {
-    char buffer[20];
-
-    g_strlcpy(buffer,  line + 12, 20);
-    *strchrnul(buffer, ' ') = '\0';
-
-    return (strcmp(buffer, current_qso.call) == 0);
-}
-
 static bool band_matches(const char *line) {
     return log_get_band(line) == bandinx;
 }
 
-//
-// return true if the qso was in the same mode as the current one
-//
-static bool is_current_mode(const char *line) {
 
-    if (!mixedmode) {
-	return true;    // always true if not in mixed mode
-    }
-
-    return log_get_mode(line) == trxmode;
-}
-
-
-static bool line_matches_actual_qso(const char *line) {
-
-    if (call_matches(line)
-	    && (band_matches(line) || qso_once)
-	    && is_current_mode(line)) {
-
-	int found = lookup_worked(current_qso.call);
-	if (worked_in_current_minitest_period(found)) {
-	    return true;
-	}
-    }
-    return false;
-}
-
-
-//
-// return true if call is a dupe
-//
-static bool displaySearchResults(void) {
+static void displaySearchResults(bool dupe) {
 
     int r_index;
-    char buffer[LOGLINELEN + 1] = "";
+    char buffer[LOGLINELEN + 1];
     char qtccall[15];	// temp str for qtc search
     int z, l, j;
     struct t_qtc_store_obj *qtc_temp_ptr;
 
-
-    bool dupe = false;
 
     /* print resulting call in line according to band in check window */
     for (r_index = 0; r_index < srch_index; r_index++) {
 	g_strlcpy(buffer, result[r_index], 38);
 
 	wattrset(search_win, COLOR_PAIR(C_WINDOW) | A_STANDOUT);
-	if (!ignoredupe && line_matches_actual_qso(buffer)) {
+	if (dupe && band_matches(buffer)) {
+	    // current call is a dupe
+	    // and we are showing the match for the current band:
+	    // --> mark as dupe
 	    wattrset(search_win, COLOR_PAIR(C_DUPE));
 	    dupe = true;
 	    beep();
@@ -510,10 +469,8 @@ static bool displaySearchResults(void) {
 	    }
 	}
 
-	buffer[0] = '\0';
     }
 
-    return dupe;
 }
 
 void displayWorkedZonesCountries(int z) {
@@ -701,7 +658,8 @@ void searchlog() {
 	drawSearchWin();
 
 	filterLog(current_qso.call);
-	bool dupe = displaySearchResults();
+	bool dupe = is_dupe(current_qso.call, bandinx, trxmode);
+	displaySearchResults(dupe);
 
 
 	/* prepare and print lower line of checkwindow */
