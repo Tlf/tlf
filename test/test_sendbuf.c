@@ -32,9 +32,9 @@ void replace_all(char *buf, int size, const char *what,
 
 extern char buffer[];
 extern char wkeyerbuffer[400];
-char *SPcall;
 extern int data_ready;
 
+static char *SPcall;
 static char keyer_spy[100];
 
 void keyer_append(const char *string) {
@@ -104,6 +104,7 @@ int setup_default(void **state) {
     *message[SP_CALL_MSG] = '\0';
     digi_message[SP_CALL_MSG] = g_strdup("MY DIGI SPC");
 
+    SPcall = NULL;
     keyer_spy[0] = 0;
 
     return 0;
