@@ -79,9 +79,10 @@ void bm_menu();
 /** add a new spot to bandmap data
  * \param call  	the call to add
  * \param freq	 	on which frequency heard
+ * \param mode	 	mode from the spot line, -1 if not available
  * \param node		reporting node
  */
-void bandmap_addspot(char *call, freq_t freq, char node);
+void bandmap_addspot(char *call, freq_t freq, char mode, char node);
 /*
  * - if call already on that band and mode replace old entry with new one and
  *   set age to 0 otherwise add it to collection
