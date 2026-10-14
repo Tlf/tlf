@@ -88,9 +88,12 @@ void sendspcall(void) {
 
     if (trxmode == CWMODE || trxmode == DIGIMODE) {
 
-	/* if set use SPCALL message */
-	if (*message[SP_CALL_MSG] != '\0') {
-	    sendmessage(message[SP_CALL_MSG]);
+	/* use the SP_CALL_MSG message if it is set */
+	char *sp_call_msg = (trxmode == CWMODE ?
+			     message[SP_CALL_MSG] : digi_message[SP_CALL_MSG]);
+
+	if (*sp_call_msg) {
+	    sendmessage(sp_call_msg);
 	} else { /* otherwise prepare one */
 	    char *SPcall = PrepareSPcall();
 	    sendmessage(SPcall);

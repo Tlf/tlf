@@ -32,10 +32,15 @@ void replace_all(char *buf, int size, const char *what,
 
 extern char buffer[];
 extern char wkeyerbuffer[400];
-char *SPcall;
 extern int data_ready;
 
-void keyer_append(const char *string) { }
+static char *SPcall;
+static char keyer_spy[100];
+
+void keyer_append(const char *string) {
+    g_strlcpy(keyer_spy, string, sizeof(keyer_spy));
+}
+
 int vk_play_file(char *file) { return 0; }
 
 bool simulator;
@@ -97,13 +102,19 @@ int setup_default(void **state) {
     current_qso.comment = g_malloc0(COMMENT_SIZE);
     strcpy(current_qso.comment, "Alex");
     *message[SP_CALL_MSG] = '\0';
+    digi_message[SP_CALL_MSG] = g_strdup("MY DIGI SPC");
+
+    SPcall = NULL;
+    keyer_spy[0] = 0;
 
     return 0;
 }
 
 int teardown_default(void **state) {
-    if (SPcall)
-	g_free(SPcall);
+
+    g_free(SPcall);
+    g_free(digi_message[SP_CALL_MSG]);
+
     return 0;
 }
 
@@ -254,3 +265,28 @@ void test_prepareSPcallMFJDeMode(void **state) {
     assert_string_equal(SPcall = PrepareSPcall(), "{ |lz1ab DE dl1jbe }");
 }
 
+/* Test sendspcall() */
+void test_sendspcall_cw_default(void **state) {
+    sendspcall();
+    assert_string_equal(keyer_spy, "DE dl1jbe");
+}
+
+void test_sendspcall_cw_spc(void **state) {
+    strcpy(message[SP_CALL_MSG], "MY CW SPC");
+    sendspcall();
+    assert_string_equal(keyer_spy, "MY CW SPC");
+}
+
+void test_sendspcall_digi_default(void **state) {
+    trxmode = DIGIMODE;
+    digi_message[SP_CALL_MSG][0] = 0;
+    sendspcall();
+    assert_string_equal(keyer_spy, "\rlz1ab DE dl1jbe ");
+}
+
+void test_sendspcall_digi_spc(void **state) {
+    trxmode = DIGIMODE;
+    strcpy(message[SP_CALL_MSG], "MY CW SPC");
+    sendspcall();
+    assert_string_equal(keyer_spy, "MY DIGI SPC");
+}
