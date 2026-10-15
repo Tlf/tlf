@@ -61,6 +61,7 @@ void cleanup_hiscall(void) {
     call_backup = g_strdup(current_qso.call);
 
     current_qso.call[0] = '\0';	    /* reset current call and comment */
+    current_qso.dupe = false;
     proposed_exchange[0] = '\0';
 }
 

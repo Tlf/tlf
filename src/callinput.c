@@ -49,6 +49,7 @@
 #include "deleteqso.h"
 #include "getctydata.h"
 #include "gettxinfo.h"
+#include "get_time.h"
 #include "grabspot.h"
 #include "ignore_unused.h"
 #include "keyer.h"
@@ -121,8 +122,10 @@ int callinput(void) {
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
     saved_len = strlen(current_qso.call);
+    current_qso.dupe = is_dupe(current_qso.call, bandinx, trxmode);
     searchlog();
     if (strlen(current_qso.call) > saved_len) { // check for autofill
+	// potential dupe status change will be handled in the while() loop below
 	pos = strlen(current_qso.call);
 	use_part_pos = pos;
     }
@@ -152,13 +155,23 @@ int callinput(void) {
 	update_info_line();
 
 	saved_len = strlen(current_qso.call);
+	current_qso.dupe = is_dupe(current_qso.call, bandinx, trxmode);
 	searchlog();
 	if (strlen(current_qso.call) > saved_len) { // check for autofill
+	    // call changed: re-evaluate dupe status
+	    bool dupe = is_dupe(current_qso.call, bandinx, trxmode);
+	    if (dupe != current_qso.dupe) {
+		// dupe status changed: re-display search results
+		current_qso.dupe = dupe;
+		searchlog();
+	    }
 	    pos = strlen(current_qso.call);
 	    use_part_pos = pos;
 	}
 
 	printcall();    // note: calls refreshp()
+
+	long start_period = (minitest ? get_time() / minitest : 0);
 
 	/* wait for next char pressed, but update time, cluster and TRX qrg */
 	/* main loop waiting for input */
@@ -228,6 +241,12 @@ int callinput(void) {
 		break;
 	    }
 
+	    if (minitest && start_period != get_time() / minitest) {
+		// exit key input loop at the start of each minitest period
+		// to force refreshing dupe state
+		x = -1;
+		break;
+	    }
 
 	    /* make sure that the wrefresh() inside getch() shows the cursor
 	     * in the input field */
@@ -235,6 +254,9 @@ int callinput(void) {
 	    x = key_poll();
 
 	}
+
+	// dupe state may change with time, so let's refresh it
+	current_qso.dupe = is_dupe(current_qso.call, bandinx, trxmode);
 
 	/* special handling of some keycodes if call field is empty */
 	if (*current_qso.call == '\0') {
@@ -441,13 +463,9 @@ int callinput(void) {
 		if (strlen(current_qso.call) < 3 || nob4)
 		    break;
 
-		/* check b4 QSO if call is long enough and 'nob4' off */
-
-		dupe = is_dupe(current_qso.call, bandinx, trxmode);
-
-		if (dupe == ISDUPE) {
-		    // XXX: Before digi_message, SSB mode sent CW here. - W8BSD
-		    send_standard_message(6);	/* as with F7 */
+		if (current_qso.dupe) {
+		    // send "QSO B4" message (F7)
+		    send_standard_message(6);
 		    cleanup();
 		    pos = 0;
 		    clear_display();

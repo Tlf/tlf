@@ -40,7 +40,7 @@ extern int nr_bands;
 extern char searchresult[MAX_CALLS][82];
 extern char result[MAX_CALLS][82];
 
-void handlePartials(void);
+void handlePartials(bool);
 void filterLog(const char * call);
 int bandstr2line(char *buffer);
 int getZone(void);
@@ -303,7 +303,7 @@ void test_UsePartialFromLog(void **state) {
     use_part = true;
     strcpy(current_qso.call, "K4DE");
     filterLog(current_qso.call);
-    handlePartials();
+    handlePartials(false);
     assert_string_equal(current_qso.call, "K4DEF");
 }
 
@@ -311,7 +311,7 @@ void test_UsePartialFromLogNotUnique(void **state) {
     use_part = true;
     strcpy(current_qso.call, "UA");
     filterLog(current_qso.call);
-    handlePartials();
+    handlePartials(false);
     assert_string_equal(current_qso.call, "UA");
 }
 
@@ -321,7 +321,7 @@ void test_UsePartialFromCallmaster(void **state) {
     use_part = true;
     strcpy(current_qso.call, "A1");
     filterLog(current_qso.call);
-    handlePartials();
+    handlePartials(false);
     assert_string_equal(current_qso.call, "A1AA");
 }
 
@@ -331,7 +331,7 @@ void test_UsePartialNotUnique(void **state) {
     use_part = true;
     strcpy(current_qso.call, "A3");
     filterLog(current_qso.call);
-    handlePartials();
+    handlePartials(false);
     assert_string_equal(current_qso.call, "A3");
 }
 
@@ -342,7 +342,7 @@ void test_UsePartialNotUnique_only_callmaster(void **state) {
     use_part = true;
     strcpy(current_qso.call, "HG");  // not in log yet
     filterLog(current_qso.call);
-    handlePartials();
+    handlePartials(false);
     assert_string_equal(current_qso.call, "HG");
 }
 
@@ -355,7 +355,7 @@ void test_displayPartials_exact_callmaster(void **state) {
     strcpy(current_qso.call, "UA3JK");   // already in log
 
     filterLog(current_qso.call);
-    handlePartials();
+    handlePartials(false);
 
     check_mvprintw_output(2, 1, 1, "UA3JK");    // first - from log
     check_mvprintw_output(1, 1, 6, " UA3JKA");  // second - from callmaster
@@ -379,7 +379,7 @@ void test_displayPartials(void **state) {
     strcpy(current_qso.call, "UA");
 
     filterLog(current_qso.call);
-    handlePartials();
+    handlePartials(false);
 
     // check selected displayed values only (F2UAA must not be shown)
     // (note the leading space)

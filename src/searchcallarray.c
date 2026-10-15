@@ -109,9 +109,11 @@ bool worked_in_current_minitest_period(int found) {
 
 bool is_dupe(char *call, int bandindex, int mode) {
 
-    int index;
+    if (ignoredupe) {
+	return false;
+    }
 
-    index = lookup_worked(call);
+    int index = lookup_worked(call);
     if (index == -1)	/* new station */
 	return false;
 

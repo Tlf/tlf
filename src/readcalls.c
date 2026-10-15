@@ -165,7 +165,7 @@ int readcalls(const char *logfile, bool interactive) {
 		strcpy(qso->comment, qso->normalized_comment);
 	    }
 
-	    dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
+	    qso->dupe = is_dupe(qso->call, qso->bandindex, qso->mode);
 	    addcall(qso);
 	    score_qso(qso);
 	    char *logline = makelogline(qso);

@@ -54,11 +54,11 @@ int setup_default(void **state) {
     my.countrynr = getctynr("DL");
 
     qso.mode = CWMODE;
+    qso.dupe = false;
 
     setcontest("qso");
 
     pfxmult = false;
-    dupe = 0;
 
     my_country_points = -1;
     my_cont_points = -1;
@@ -80,7 +80,7 @@ int setup_default(void **state) {
 }
 
 void test_dupe(void **state) {
-    dupe = 1;
+    qso.dupe = true;
     check_points(0);
 }
 

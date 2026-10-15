@@ -62,6 +62,7 @@ struct qso_t *collect_qso_data(void) {
     qso->qso_nr = qsonum;
     qso->rst_s = atoi(sent_rst);
     qso->rst_r = atoi(recvd_rst);
+    qso->dupe = current_qso.dupe;
     return qso;
 }
 

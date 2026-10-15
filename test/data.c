@@ -103,7 +103,6 @@ bool serial_grid4_mult = false;
 bool qso_once = false;
 bool leading_zeros_serial;
 bool ctcomp = false;
-int isdupe = 0;			// 0 if nodupe -- for auto qso b4 (LZ3NY)
 bool nob4 = false;			// allow auto b4
 bool ignoredupe = false;
 bool noautocq = false;
@@ -255,7 +254,6 @@ int countrynr;
 int total = 0; 		/**< total number of qso points */
 int qso_points;
 int qsos_per_band[NBANDS];
-int dupe = 0;
 bool partials = false;	/**< show partial calls */
 bool use_part = false;	/**< if 1 use automatically found partial call */
 bool block_part = false;/**< true: block call autocompletion for this QSO */
