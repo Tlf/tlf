@@ -1197,6 +1197,7 @@ static int cfg_minitest(const cfg_arg_t arg) {
     }
 
     char *str = g_strdup(parameter);
+    g_strstrip(str);
     str_toupper(str);
     int len = strlen(str);
     int factor = 1;
