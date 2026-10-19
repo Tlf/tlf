@@ -1466,7 +1466,7 @@ void test_minitest_3600(void **state) {
 }
 
 void test_minitest_10min(void **state) {
-    int rc = call_parse_logcfg("MINITEST= 10 MIN");
+    int rc = call_parse_logcfg("MINITEST= 10 MIN\n");   // with trailing NL
     assert_int_equal(rc, PARSE_OK);
     assert_int_equal(minitest, 600);
 }
