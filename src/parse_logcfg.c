@@ -401,8 +401,10 @@ static int cfg_band(const cfg_arg_t arg) {
 
 static int cfg_call(const cfg_arg_t arg) {
     int rc = cfg_string((cfg_arg_t) {
-	.char_p = my.call, .size = sizeof(my.call),
-	.strip = true, .string_type = STATIC
+	.char_p = my.call,
+	.size = sizeof(my.call),
+	.strip = true,
+	.string_type = STATIC
     });
     if (rc != PARSE_OK) {
 	return rc;
@@ -1172,7 +1174,9 @@ static int cfg_fldigi(const cfg_arg_t arg) {
 #else
     if (parameter != NULL) {
 	int rc = cfg_string((cfg_arg_t) {
-	    .char_p = fldigi_url, .size = sizeof(fldigi_url), .strip = true,
+	    .char_p = fldigi_url,
+	    .size = sizeof(fldigi_url),
+	    .strip = true,
 	    .string_type = STATIC
 	});
 	if (rc != PARSE_OK) {
