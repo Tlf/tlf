@@ -8,7 +8,7 @@ tlf_SOURCES = \
 	background_process.c bandmap.c bands.c \
 	cabrillo_utils.c callinput.c changefreq.c changepars.c \
 	change_rst.c checklogfile.c checkqtclogfile.c \
-	cleanup.c clear_display.c clusterinfo.c \
+	cleanup.c clear_display.c cluster.c clusterinfo.c \
         cqww_simulator.c cw_utils.c \
 	debug.c	dxcc.c deleteqso.c \
 	edit_last.c editlog.c err_utils.c \
@@ -45,7 +45,7 @@ noinst_HEADERS = \
 	background_process.h bandmap.h bands.h \
 	cabrillo_utils.h callinput.h changefreq.h changepars.h \
 	change_rst.h checklogfile.h checkqtclogfile.h \
-	cleanup.h clear_display.h clusterinfo.h \
+	cleanup.h clear_display.h cluster.h clusterinfo.h \
 	cqww_simulator.h cw_utils.h \
 	debug.h dxcc.h deleteqso.h \
 	edit_last.h editlog.h  err_utils.h \
