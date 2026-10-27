@@ -525,7 +525,7 @@ void *cluster_process(void *ptr) {
 
 	int fd = cluster_connect();
 
-        delay = RECONNECT_DELAY_S;  // for an eventual reconnect
+	delay = RECONNECT_DELAY_S;  // for an eventual reconnect
 
 	if (fd < 0) {
 	    continue;
