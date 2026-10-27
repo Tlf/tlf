@@ -26,6 +26,7 @@
 
 #include "background_process.h"
 #include "cqww_simulator.h"
+#include "cluster.h"
 #include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "get_time.h"
@@ -96,8 +97,7 @@ void *background_process(void *ptr) {
 	usleep(10000);
 
 	if (packetinterface != 0) {
-	    //CFIXME receive_packet();
-
+	    receive_packet();
 	}
 
 	if (trxmode == DIGIMODE && digikeyer != NO_KEYER)
