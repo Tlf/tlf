@@ -7,6 +7,8 @@ enum {
     CLUSTER_CONNECTED,
 };
 
+extern pthread_mutex_t spot_ptr_mutex;
+
 extern int cluster_state;   // FIXME use getter function
 
 void cluster_init(void);

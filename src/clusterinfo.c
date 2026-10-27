@@ -33,6 +33,7 @@
 #include "bandmap.h"
 #include "bands.h"
 #include "clear_display.h"
+#include "cluster.h"
 #include "dxcc.h"
 #include "err_utils.h"
 #include "get_time.h"
@@ -108,7 +109,7 @@ void clusterinfo(void) {
 
 
 	/** \todo minimize lock time */
-	//CFIXME pthread_mutex_lock(&spot_ptr_mutex);
+	pthread_mutex_lock(&spot_ptr_mutex);
 
 	k = getclusterinfo();
 
@@ -141,7 +142,7 @@ void clusterinfo(void) {
 	    }
 	}
 
-	//CFIXME pthread_mutex_unlock(&spot_ptr_mutex);
+	pthread_mutex_unlock(&spot_ptr_mutex);
 
 	nicebox(14, 0, LINES - 3 - 14, 78, "Cluster");
 	refreshp();
@@ -191,7 +192,7 @@ void show_xplanet() {
     sysminutes = get_minutes();
     i = 0;
 
-    //CFIXME pthread_mutex_lock(&spot_ptr_mutex);
+    pthread_mutex_lock(&spot_ptr_mutex);
 
     for (j = 0; j < nr_of_spots; j++) {
 	char thisline[83];
@@ -245,7 +246,7 @@ void show_xplanet() {
 	}
     }
 
-    //CFIXME pthread_mutex_unlock(&spot_ptr_mutex);
+    pthread_mutex_unlock(&spot_ptr_mutex);
 
 
     /* show last 8 spots via xplanet */
