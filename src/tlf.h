@@ -42,8 +42,7 @@ enum {
 
 #define TELNET_INTERFACE 1
 #define TNC_INTERFACE 2
-#define NETWORK_INTERFACE 3
-#define FIFO_INTERFACE 4
+#define FIFO_INTERFACE 3
 
 #define NOCLUSTER 0     /*  no cluster info  */
 #define MAP 1           /*  show spots */
