@@ -61,7 +61,6 @@
 #include "set_tone.h"
 #include "show_help.h"
 #include "showpxmap.h"
-#include "splitscreen.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "writecabrillo.h"
@@ -437,11 +436,12 @@ void changepars(void) {
 	    break;
 	}
 	case 33: {		/* PACKET  */
-	    if (!nopacket && packetinterface > 0)
-		packet();
+	    if (!nopacket && packetinterface > 0) {
+		//CFIXME packet();
+	    }
 	    break;
 	}
-	case 34: {		/* SIMULATOR  */
+	case 34: {	//CFIXME  	/* SIMULATOR  */
 	    if (!CONTEST_IS(CQWW)) {
 		TLF_SHOW_INFO(
 		    "Simulator mode is only supported for CQWW contest!");
@@ -508,9 +508,9 @@ void changepars(void) {
 
 	case 37: {		/* RECONNECT  */
 	    if (!nopacket && packetinterface > 0) {
-		cleanup_telnet();
-		init_packet();
-		packet();
+		//CFIXME cleanup_telnet();
+		//CFIXME init_packet();
+		//CFIXME packet();
 	    }
 	    break;
 	}
@@ -669,8 +669,9 @@ void changepars(void) {
     if (nopar != 1) {
 	mvaddstr(12, 29, "OK !        ");
     } else {
-	if (!nopacket && packetinterface > 0)
-	    packet();
+	if (!nopacket && packetinterface > 0) {
+	    //CXFIME packet();
+	}
     }
 
 }

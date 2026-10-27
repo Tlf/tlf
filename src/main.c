@@ -62,7 +62,6 @@
 #include "sendqrg.h"
 #include "setcontest.h"
 #include "set_tone.h"
-#include "splitscreen.h"
 #include "showmsg.h"
 #include "tlf_panel.h"
 #include "readcabrillo.h"
@@ -901,10 +900,10 @@ static void packet_init() {
     refreshp();
 
     if (!nopacket && packetinterface > 0) {
-	if (init_packet() == 0)
-	    packet();
-	else
-	    cleanup_telnet();
+	//CFIXME if (init_packet() == 0)
+	//CFIXME     packet();
+	//CFIXME else
+	//CFIXME     cleanup_telnet();
     }
 }
 
@@ -1042,7 +1041,7 @@ static void tlf_cleanup() {
 	pthread_join(background_thread, NULL);
     }
 
-    cleanup_telnet();
+    //CFIXME cleanup_telnet();
 
     if (trxmode == CWMODE && cwkeyer == NET_KEYER)
 	netkeyer_close();

@@ -31,7 +31,6 @@
 #include "stoptx.h"
 #include "tlf_panel.h"
 #include "showmsg.h"
-#include "splitscreen.h"
 
 extern int ymax, xmax;
 
@@ -378,7 +377,7 @@ void resize_layout(void) {
     }
     clear_display();
     clusterinfo();
-    refresh_splitlayout();
+    //CFIXME refresh_splitlayout();
 }
 
 #define MAX_SPACES  1000

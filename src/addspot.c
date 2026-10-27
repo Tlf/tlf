@@ -37,7 +37,6 @@
 #include "globalvars.h"
 #include "keystroke_names.h"
 #include "lancode.h"
-#include "splitscreen.h"
 #include "ui_utils.h"
 
 
@@ -60,9 +59,9 @@ void add_to_spots(char *call, freq_t freq) {
     strcat(spotline, "\n\n");
 
     send_lan_message(TLFSPOT, spotline);
-    lanspotflg = true;
-    addtext(spotline);
-    lanspotflg = false;
+    //CFIXME lanspotflg = true;
+    //CFIXME addtext(spotline);
+    //CFIXME lanspotflg = false;
 }
 
 /* ask for spot frequency in kHz  and convert it to Hz */
@@ -221,7 +220,7 @@ void add_cluster_spot(void) {
 	ok = complete_spot(&spot_line);
 	if (ok) {
 	    gchar *line = g_strconcat(spot_line, "\n", NULL);
-	    send_to_cluster(line);
+	    //CFIXME send_to_cluster(line);
 	    g_free(line);
 	}
     }

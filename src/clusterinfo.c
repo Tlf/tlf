@@ -41,7 +41,6 @@
 #include "lancode.h"
 #include "nicebox.h"		// Includes curses.h
 #include "printcall.h"
-#include "splitscreen.h"
 #include "setcontest.h"
 #include "ui_utils.h"
 
@@ -109,7 +108,7 @@ void clusterinfo(void) {
 
 
 	/** \todo minimize lock time */
-	pthread_mutex_lock(&spot_ptr_mutex);
+	//CFIXME pthread_mutex_lock(&spot_ptr_mutex);
 
 	k = getclusterinfo();
 
@@ -142,7 +141,7 @@ void clusterinfo(void) {
 	    }
 	}
 
-	pthread_mutex_unlock(&spot_ptr_mutex);
+	//CFIXME pthread_mutex_unlock(&spot_ptr_mutex);
 
 	nicebox(14, 0, LINES - 3 - 14, 78, "Cluster");
 	refreshp();
@@ -192,7 +191,7 @@ void show_xplanet() {
     sysminutes = get_minutes();
     i = 0;
 
-    pthread_mutex_lock(&spot_ptr_mutex);
+    //CFIXME pthread_mutex_lock(&spot_ptr_mutex);
 
     for (j = 0; j < nr_of_spots; j++) {
 	char thisline[83];
@@ -246,7 +245,7 @@ void show_xplanet() {
 	}
     }
 
-    pthread_mutex_unlock(&spot_ptr_mutex);
+    //CFIXME pthread_mutex_unlock(&spot_ptr_mutex);
 
 
     /* show last 8 spots via xplanet */
