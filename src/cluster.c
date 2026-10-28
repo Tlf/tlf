@@ -79,7 +79,7 @@ void cluster_init() {
     g_free(target);
 }
 
-void cleanup_telnet(void) { // fix name: cleanup_packet
+void cluster_cleanup(void) {
     if (!initialized) {
 	return;
     }

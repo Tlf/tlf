@@ -13,8 +13,9 @@ extern int cluster_state;   // FIXME use getter function
 
 void cluster_init(void);
 void *cluster_process(void *);
-void terminate_cluster_process();
-void cluster_disable();
+void terminate_cluster_process(void);
+void cluster_disable(void);
+void cluster_cleanup(void);
 
 void receive_packet(void);
 void send_to_cluster(const char *);

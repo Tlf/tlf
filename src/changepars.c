@@ -441,7 +441,7 @@ void changepars(void) {
 	    }
 	    break;
 	}
-	case 34: {	//CFIXME  	/* SIMULATOR  */
+	case 34: {	  	/* SIMULATOR  */
 	    if (!CONTEST_IS(CQWW)) {
 		TLF_SHOW_INFO(
 		    "Simulator mode is only supported for CQWW contest!");
