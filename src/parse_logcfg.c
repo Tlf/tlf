@@ -1499,7 +1499,7 @@ static config_t logcfg_configs[] = {
 
     {"RIGPORT",         CFG_STRING(rigportname)},
     {"ROTPORT",         CFG_STRING(rotportname)},
-    {"CLUSTERLOGIN",    CFG_STRING_STATIC_NOCHOMP(clusterlogin, 80)},
+    {"CLUSTERLOGIN",    CFG_STRING_STATIC(clusterlogin, 80)},
 
     {"CALL",            NEED_PARAM, cfg_call},
     {"(CONTEST|RULES)", NEED_PARAM, cfg_contest},
