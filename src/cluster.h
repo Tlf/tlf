@@ -17,6 +17,8 @@ void terminate_cluster_process(void);
 void cluster_disable(void);
 void cluster_cleanup(void);
 
+char *get_cluster_target(void);
+
 void receive_packet(void);
 void send_to_cluster(const char *);
 void add_cluster_text(const char *s);

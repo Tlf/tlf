@@ -56,7 +56,7 @@ char *get_cluster_target() {
 	    break;
 
 	default:
-	    target = g_strdup("n/a");   // unknown interface, shall not happen
+	    target = g_strdup("n/a");   // cluster not configured
     }
     return target;
 }
@@ -117,7 +117,7 @@ const char OTHER_TEXT = '-';
 // to other LAN nodes during processing.
 //
 static void add_text(const char *s, char type) {
-    g_async_queue_push(rx_queue, g_strdup_printf("%c%s", type, line_data));
+    g_async_queue_push(rx_queue, g_strdup_printf("%c%s", type, s));
 }
 
 void add_cluster_text(const char *s) {

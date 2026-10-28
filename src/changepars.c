@@ -36,6 +36,7 @@
 #include "changepars.h"
 #include "change_rst.h"
 #include "clear_display.h"
+#include "cluster.h"
 #include "dxcc.h"
 #include "editlog.h"
 #include "err_utils.h"
@@ -507,11 +508,7 @@ void changepars(void) {
 	}
 
 	case 37: {		/* RECONNECT  */
-	    if (!nopacket && packetinterface > 0) {
-		//CFIXME cleanup_telnet();
-		//CFIXME init_packet();
-		//CFIXME packet();
-	    }
+	    // not supported, no action
 	    break;
 	}
 
@@ -677,6 +674,15 @@ void changepars(void) {
 }
 
 /* -------------------------------------------------------------- */
+static char *get_cluster_state_text() {
+    switch (cluster_state) {
+	case CLUSTER_CONNECTED: return "OK";
+	case CLUSTER_CONNECTING: return ">>>";
+	case CLUSTER_SLEEP: return "WAIT";
+	case CLUSTER_DISABLED: return "DIS";
+    }
+    return "?";
+}
 
 void networkinfo(void) {
 
@@ -725,15 +731,18 @@ void networkinfo(void) {
     mvprintw(7 + n_nodes, 10, "Contest    : %s", whichcontest);
     mvprintw(8 + n_nodes, 10, "Logfile    : %s", logfile);
 
-    mvprintw(9 + n_nodes, 10, "Cluster    : %s", pr_hostaddress);
-    mvprintw(10 + n_nodes, 10, "TNCport    : %s", tncportname);
-    mvprintw(11 + n_nodes, 10, "RIGport    : %s",
+    char *target = get_cluster_target();
+    mvprintw(9 + n_nodes, 10, "Cluster    : %s", target);
+    mvprintw(9 + n_nodes, 25 + strlen(target), "[%s]", get_cluster_state_text());
+    g_free(target);
+
+    mvprintw(10 + n_nodes, 10, "RIGport    : %s",
 	     (rigportname != NULL ? rigportname : "n/a"));
-    mvprintw(12 + n_nodes, 10, "Band output: %s",
+    mvprintw(11 + n_nodes, 10, "Band output: %s",
 	     (use_bandoutput ? "on" : "off"));
-    mvprintw(13 + n_nodes, 10, "callmaster : %s",
+    mvprintw(12 + n_nodes, 10, "callmaster : %s",
 	     (callmaster_version[0] != 0 ? callmaster_version : "n/a"));
-    mvprintw(14 + n_nodes, 10, "cty.dat    : %s",
+    mvprintw(13 + n_nodes, 10, "cty.dat    : %s",
 	     (cty_dat_version[0] != 0 ? cty_dat_version : "n/a"));
 
     refreshp();

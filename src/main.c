@@ -898,9 +898,9 @@ static void packet_init() {
 	packetinterface = 0;
     }
 
-    if (packetinterface > 0) {
-	cluster_init();
-    } else {
+    cluster_init();
+
+    if (packetinterface == 0) {
 	cluster_disable();
     }
 }
