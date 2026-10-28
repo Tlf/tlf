@@ -248,7 +248,7 @@ static int freq2mode(freq_t freq, int band) {
  *
  * check if cluster message is a dx spot,
  * if so split it into pieces and insert in spot list */
-void bm_add(char *s) {
+void bm_add(const char *s) {
     char *line;
     char *call;
     char node = ' ';

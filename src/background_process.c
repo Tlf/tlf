@@ -176,14 +176,12 @@ void *background_process(void *ptr) {
 			    TLF_SHOW_INFO(prmessage);
 			}
 
-			//CFIXME addtext(prmessage);
+			add_other_text(prmessage);
 			g_free(prmessage);
 			break;
 		    case TLFSPOT:
 			prmessage = g_strndup(lan_message + 2, 80);
-			//CFIXME lanspotflg = true;
-			//CFIXME addtext(prmessage);
-			//CFIXME lanspotflg = false;
+			add_other_text(prmessage);
 			g_free(prmessage);
 			break;
 		    case TLFMSG:

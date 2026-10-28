@@ -46,7 +46,7 @@ void vk_play_file(char *audiofile) {
 
 bool lan_active = false;
 
-int send_lan_message(int opcode, char *message) {
+int send_lan_message(int opcode, const char *message) {
     return 0;
 }
 

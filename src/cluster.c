@@ -13,6 +13,7 @@
 #include "globalvars.h"
 #include "showmsg.h"
 #include "err_utils.h"
+#include "lancode.h"
 
 pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;
 int cluster_state = CLUSTER_DISCONNECTED;
@@ -94,7 +95,7 @@ void cleanup_telnet(void) { // fix name: cleanup_packet
 }
 
 // CFIXME
-void send_to_cluster(char *line) {
+void send_to_cluster(const char *line) {
 #if 0
     if (packetinterface == TNC_INTERFACE) {
 	line[strlen(line) - 1] = '\r';
@@ -106,11 +107,42 @@ void send_to_cluster(char *line) {
 #endif
 }
 
-// CFIXME
-void addtext(char *s) {
+const char CLUSTER_TEXT = 'C';
+const char OTHER_TEXT = '-';
+
+//
+// add text to cluster RX queue
+//
+// 'type' controls whether the text is propagated
+// to other LAN nodes during processing.
+//
+static void add_text(const char *s, char type) {
+    g_async_queue_push(rx_queue, g_strdup_printf("%c%s", type, line_data));
 }
 
-static void add_cluster_line(char *s) {
+void add_cluster_text(const char *s) {
+    add_text(s, CLUSTER_TEXT);
+}
+
+void add_other_text(const char *s) {
+    add_text(s, OTHER_TEXT);
+}
+
+//
+// process a line from cluster
+// (called from receive_packet() in background thread)
+//
+static void process_cluster_record(const char *record) {
+
+    if (strlen(record) < 1) {   // shall not happen
+	return;
+    }
+
+    const char *s = record + 1;
+
+    if (record[0] == CLUSTER_TEXT && strlen(s) > 20) {
+	send_lan_message(CLUSTERMSG, s);
+    }
 
     pthread_mutex_lock(&spot_ptr_mutex);
 
@@ -149,17 +181,17 @@ static void add_cluster_line(char *s) {
 }
 
 //
-// process all available lines from rx_queue
+// process all available records from rx_queue
 // (called from background thread)
 //
 void receive_packet(void) {
     if (rx_queue == NULL) {
 	return;
     }
-    char *line;
-    while ((line = g_async_queue_try_pop(rx_queue)) != NULL) {
-	add_cluster_line(line);
-	g_free(line);
+    char *record;
+    while ((record = g_async_queue_try_pop(rx_queue)) != NULL) {
+	process_cluster_record(record);
+	g_free(record);
     }
 }
 
@@ -404,7 +436,7 @@ static void process_data(char *data, int size) {
 	    TLF_LOG_DEBUG("rcv: |%s|", line_data);
 	    // enqueue line, unless queue is too long
 	    if (g_async_queue_length(rx_queue) < 1000) {
-		g_async_queue_push(rx_queue, g_strdup(line_data));
+		add_cluster_text(line_data);
 	    }
 
 	    line_data[0] = 0;

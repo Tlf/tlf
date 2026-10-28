@@ -72,7 +72,7 @@ void bmdata_write_file();
 
 void bm_init();
 
-void bm_add(char *s);
+void bm_add(const char *s);
 
 void bm_menu();
 
