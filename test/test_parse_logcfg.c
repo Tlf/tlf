@@ -1062,7 +1062,7 @@ void test_sfi(void **state) {
 void test_tncport(void **state) {
     int rc = call_parse_logcfg("TNCPORT=/dev/ttyUSB1\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(tncportname, "/dev/ttyUSB1\n"); // FIXME NL...
+    assert_string_equal(tncportname, "/dev/ttyUSB1");
 }
 
 void test_rigmodel(void **state) {

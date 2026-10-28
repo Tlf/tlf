@@ -611,7 +611,8 @@ static int cfg_sfi(const cfg_arg_t arg) {
 
 static int cfg_tncport(const cfg_arg_t arg) {
 
-    strncpy(tncportname, parameter, 39);
+    g_strlcpy(tncportname, parameter, sizeof(tncportname));
+    g_strstrip(tncportname);
 
     packetinterface = TNC_INTERFACE;
     return PARSE_OK;
