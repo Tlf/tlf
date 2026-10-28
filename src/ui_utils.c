@@ -377,7 +377,6 @@ void resize_layout(void) {
     }
     clear_display();
     clusterinfo();
-    //CFIXME refresh_splitlayout();
 }
 
 #define MAX_SPACES  1000
