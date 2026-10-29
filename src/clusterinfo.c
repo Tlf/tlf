@@ -47,8 +47,8 @@
 
 #define MAXMINUTES 30
 
-char *bandmap[MAX_SPOTS];
-int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
+static char *bandmap[MAX_SPOTS];
+static int spotarray[MAX_SPOTS];	/* Array of indices into spot_ptr */
 
 int getclusterinfo(void);
 void show_xplanet();
