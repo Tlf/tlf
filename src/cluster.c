@@ -128,6 +128,29 @@ void add_other_text(const char *s) {
     add_text(s, OTHER_TEXT);
 }
 
+
+static void store_spot(const char *s) {
+    pthread_mutex_lock(&spot_ptr_mutex);
+
+    g_strlcpy(spot_ptr[nr_of_spots], s, sizeof(spot_ptr[0]));
+    nr_of_spots++;
+
+    if (nr_of_spots > MAX_SPOTS - 1) {
+	// make some room by moving spots down
+	const int SPOT_MOVE_SIZE = 10;
+	nr_of_spots = MAX_SPOTS - SPOT_MOVE_SIZE;
+	// ... move remaining ones down
+	int move_size = nr_of_spots * sizeof(spot_ptr[0]);
+	memmove(spot_ptr[0], spot_ptr[SPOT_MOVE_SIZE], move_size);
+	// ... and clear the rest
+	for (int i = nr_of_spots; i < MAX_SPOTS; i++) {
+	    spot_ptr[i][0] = 0;
+	}
+    }
+
+    pthread_mutex_unlock(&spot_ptr_mutex);
+}
+
 //
 // process a line from cluster
 // (called from receive_packet() in background thread)
@@ -138,27 +161,15 @@ static void process_cluster_record(const char *record) {
 	return;
     }
 
+    // record[0]: record type
+    // s: actual content
     const char *s = record + 1;
 
     if (record[0] == CLUSTER_TEXT && strlen(s) > 20) {
 	send_lan_message(CLUSTERMSG, s);
     }
 
-    pthread_mutex_lock(&spot_ptr_mutex);
-
-    g_strlcpy(spot_ptr[nr_of_spots], s, sizeof(spot_ptr[0]));
-    nr_of_spots++;
-
-    if (nr_of_spots > MAX_SPOTS - 1) {
-	int idx;
-	for (idx = 10; idx <= MAX_SPOTS - 1; idx++)
-	    memcpy(spot_ptr[idx - 10], spot_ptr[idx], sizeof(spot_ptr[0])); // check this
-	for (idx = MAX_SPOTS - 1; idx >= MAX_SPOTS - 11; idx--)
-	    spot_ptr[idx][0] = '\0';
-	nr_of_spots = MAX_SPOTS - 10;
-    }
-
-    pthread_mutex_unlock(&spot_ptr_mutex);
+    store_spot(s);
 
     if (clusterlog) {
 	FILE *fp;
@@ -434,7 +445,7 @@ static void process_data(char *data, int size) {
 
 	if (flush && len > 0) {
 	    TLF_LOG_DEBUG("rcv: |%s|", line_data);
-	    // enqueue line, unless queue is too long
+	    // enqueue line, unless queue is too full
 	    if (g_async_queue_length(rx_queue) < 1000) {
 		add_cluster_text(line_data);
 	    }
