@@ -218,9 +218,7 @@ void add_cluster_spot(void) {
     if (strlen(spot_line) > 0) {
 	ok = complete_spot(&spot_line);
 	if (ok) {
-	    gchar *line = g_strconcat(spot_line, "\n", NULL);//CFIXME - needed?
-	    send_to_cluster(line);
-	    g_free(line);
+	    send_to_cluster(spot_line);
 	}
     }
     g_free(spot_line);
