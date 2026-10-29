@@ -1,7 +1,7 @@
+#include <stdatomic.h>
 
 enum {
     CLUSTER_DISABLED,
-    CLUSTER_DISCONNECTED,
     CLUSTER_SLEEP,
     CLUSTER_CONNECTING,
     CLUSTER_CONNECTED,
@@ -9,7 +9,7 @@ enum {
 
 extern pthread_mutex_t spot_ptr_mutex;
 
-extern int cluster_state;   // FIXME use getter function
+extern atomic_int cluster_state;
 
 void cluster_init(void);
 void *cluster_process(void *);

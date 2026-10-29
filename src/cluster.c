@@ -16,7 +16,7 @@
 #include "lancode.h"
 
 pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;
-int cluster_state = CLUSTER_DISCONNECTED;
+atomic_int cluster_state = CLUSTER_DISABLED;
 
 static bool initialized = false;
 
@@ -568,7 +568,6 @@ void *cluster_process(void *ptr) {
 	client_loop(fd);
 
 	close(fd);
-	cluster_state = CLUSTER_DISCONNECTED;
     }
 
     pthread_exit(NULL);
