@@ -135,6 +135,20 @@ void set_trxmode(int mode) {
     }
 }
 
+static char *get_announcefilter_name() {
+    switch (announcefilter) {
+	case FILTER_ALL:
+	    return "All";
+	case FILTER_ANN:
+	    return "Anno";
+	case FILTER_TALK:
+	    return "Talk";
+	case FILTER_DX:
+	    return "DX";
+    }
+    return "??";
+}
+
 
 void changepars(void) {
 
@@ -305,9 +319,10 @@ void changepars(void) {
 	}
 	case 16: {		/*  FILTER   */
 	    announcefilter++;
-	    if (announcefilter > 3)
-		announcefilter = 0;
-	    mvprintw(13, 29, "FILTER-mode is %d", announcefilter);
+	    if (announcefilter > FILTER_DX) {
+		announcefilter = FILTER_ALL;
+	    }
+	    mvprintw(13, 29, "FILTER-mode is %s", get_announcefilter_name());
 	    refreshp();
 	    sleep(1);
 
