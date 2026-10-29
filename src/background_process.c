@@ -96,9 +96,7 @@ void *background_process(void *ptr) {
 
 	usleep(10000);
 
-	if (packetinterface != 0) {
-	    receive_packet();
-	}
+	receive_packet();
 
 	if (trxmode == DIGIMODE && digikeyer != NO_KEYER)
 	    rx_rtty();
