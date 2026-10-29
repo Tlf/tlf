@@ -20,6 +20,9 @@ atomic_int cluster_state = CLUSTER_DISABLED;
 
 static bool initialized = false;
 
+//
+// both queues contain dynamic strings that are freed via g_free() after use.
+//
 static GAsyncQueue *rx_queue;
 static GAsyncQueue *tx_queue;
 
@@ -96,15 +99,9 @@ void cluster_cleanup(void) {
 
 // CFIXME
 void send_to_cluster(const char *line) {
-#if 0
-    if (packetinterface == TNC_INTERFACE) {
-	line[strlen(line) - 1] = '\r';
-	line[strlen(line)] = '\0';	/* not needed */
-	IGNORE(write(fdSertnc, line, strlen(line)));;
-
-    } else if ((packetinterface == TELNET_INTERFACE) && (prsock > 0))
-	usputs(prsock, line);
-#endif
+    if (packetinterface == TNC_INTERFACE || packetinterface == TELNET_INTERFACE) {
+	g_async_queue_push(tx_queue, g_strdup(line));
+    }
 }
 
 const char CLUSTER_TEXT = 'C';
@@ -469,7 +466,7 @@ static void client_loop(int fd) {
     line_data[0] = 0;
 
     if (packetinterface == TELNET_INTERFACE && strlen(clusterlogin) != 0) {
-	// NOTE: static string
+	// NOTE: clusterlogin is a static string
 	g_async_queue_push(tx_queue, g_strdup(clusterlogin));
     }
 
@@ -520,7 +517,7 @@ static void client_loop(int fd) {
 	    if (rc < 0) {
 		break;
 	    }
-	    rc = write(fd, "\r", 1);
+	    rc = write(fd, "\r\n", 1);
 	    if (rc < 0) {
 		break;
 	    }
