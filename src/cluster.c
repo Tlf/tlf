@@ -517,7 +517,7 @@ static void client_loop(int fd) {
 	    if (rc < 0) {
 		break;
 	    }
-	    rc = write(fd, "\r\n", 1);
+	    rc = write(fd, "\r\n", 2);
 	    if (rc < 0) {
 		break;
 	    }
