@@ -97,15 +97,15 @@ void cluster_cleanup(void) {
     initialized = false;
 }
 
-// CFIXME
 void send_to_cluster(const char *line) {
     if (packetinterface == TNC_INTERFACE || packetinterface == TELNET_INTERFACE) {
 	g_async_queue_push(tx_queue, g_strdup(line));
     }
+    // NOTE: can't write into a FIFO
 }
 
-const char CLUSTER_TEXT = 'C';
-const char OTHER_TEXT = '-';
+static const char CLUSTER_TEXT = 'C';
+static const char OTHER_TEXT = '-';
 
 //
 // add text to cluster RX queue
@@ -158,11 +158,10 @@ static void process_cluster_record(const char *record) {
 	return;
     }
 
-    // record[0]: record type
-    // s: actual content
-    const char *s = record + 1;
+    const char type = record[0];    // record type
+    const char *s = record + 1;     // the actual content
 
-    if (record[0] == CLUSTER_TEXT && strlen(s) > 20) {
+    if (type == CLUSTER_TEXT && strlen(s) > 20) {
 	send_lan_message(CLUSTERMSG, s);
     }
 
@@ -472,6 +471,7 @@ static void client_loop(int fd) {
 
     while (go) {
 
+	// check for write readiness only when tx_queue is non-empty
 	pfd.events = POLLIN |
 		     (g_async_queue_length(tx_queue) > 0 ? POLLOUT : 0);
 
@@ -512,11 +512,11 @@ static void client_loop(int fd) {
 	    }
 
 	    int rc = write(fd, data, strlen(data));
-	    // send \n ?
 	    g_free(data);
 	    if (rc < 0) {
 		break;
 	    }
+	    // send CR+LF line termination
 	    rc = write(fd, "\r\n", 2);
 	    if (rc < 0) {
 		break;
