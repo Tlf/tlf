@@ -73,7 +73,7 @@ int speeddown() { return 8; }
 void rst_recv_up() {}
 void rst_recv_down() {}
 void vk_play_file(char *audiofile) {}
-int send_lan_message(int opcode, char *message) { return 0; }
+int send_lan_message(int opcode, const char *message) { return 0; }
 
 int last10() { return 0; }
 void foc_show_scoring(int start_column) {}

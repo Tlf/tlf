@@ -33,11 +33,11 @@
 #include <unistd.h>
 
 #include "clear_display.h"
+#include "cluster.h"
 #include "get_time.h"
 #include "globalvars.h"
 #include "keystroke_names.h"
 #include "lancode.h"
-#include "splitscreen.h"
 #include "ui_utils.h"
 
 
@@ -60,9 +60,7 @@ void add_to_spots(char *call, freq_t freq) {
     strcat(spotline, "\n\n");
 
     send_lan_message(TLFSPOT, spotline);
-    lanspotflg = true;
-    addtext(spotline);
-    lanspotflg = false;
+    add_other_text(spotline);
 }
 
 /* ask for spot frequency in kHz  and convert it to Hz */
@@ -220,9 +218,7 @@ void add_cluster_spot(void) {
     if (strlen(spot_line) > 0) {
 	ok = complete_spot(&spot_line);
 	if (ok) {
-	    gchar *line = g_strconcat(spot_line, "\n", NULL);
-	    send_to_cluster(line);
-	    g_free(line);
+	    send_to_cluster(spot_line);
 	}
     }
     g_free(spot_line);

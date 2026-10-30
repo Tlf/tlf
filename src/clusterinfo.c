@@ -33,6 +33,7 @@
 #include "bandmap.h"
 #include "bands.h"
 #include "clear_display.h"
+#include "cluster.h"
 #include "dxcc.h"
 #include "err_utils.h"
 #include "get_time.h"
@@ -41,21 +42,20 @@
 #include "lancode.h"
 #include "nicebox.h"		// Includes curses.h
 #include "printcall.h"
-#include "splitscreen.h"
 #include "setcontest.h"
 #include "ui_utils.h"
 
 #define MAXMINUTES 30
 
-char *bandmap[MAX_SPOTS];
-int spotarray[MAX_SPOTS];		/* Array of indices into spot_ptr */
+static char *bandmap[MAX_SPOTS];
+static int spotarray[MAX_SPOTS];	/* Array of indices into spot_ptr */
 
-int getclusterinfo(void);
-void show_xplanet();
+static int getclusterinfo(void);
+static void show_xplanet();
 
 void clusterinfo(void) {
 
-    int f, j, k;
+    int f, j;
     char inputbuffer[160] = "";
 
 
@@ -101,50 +101,35 @@ void clusterinfo(void) {
 
 	attron(COLOR_PAIR(C_WINDOW) | A_STANDOUT);
 
+	const int row_top = 15;
+	const int row_bottom = LINES - 3;
+	const int display_rows = row_bottom - row_top + 1;
+
 	g_strlcpy(inputbuffer, backgrnd_str, 79);
 
-	for (j = 15; j <= LINES - 3; j++) {
+	for (j = row_top; j <= row_bottom; j++) {
 	    mvaddstr(j, 1, inputbuffer);
 	}
-
 
 	/** \todo minimize lock time */
 	pthread_mutex_lock(&spot_ptr_mutex);
 
-	k = getclusterinfo();
+	const int spot_count = getclusterinfo();
 
-	if (k > (MAX_SPOTS - 1)) {
-	    k = MAX_SPOTS - 1;
+	int k = spot_count - display_rows;
+	if (k < 0) {
+	    k = 0;
 	}
 
-	k -= (LINES - 3 - 14) + 1;
-	if (k < 0)
-	    k = -1;
-
-
-	for (j = 15; j <= LINES - 3; j++) {
+	for (j = row_top; j <= row_bottom && k < spot_count; j++) {
+	    g_strlcpy(inputbuffer, spot_ptr[spotarray[k]], 79);
+	    mvaddstr(j, 1, inputbuffer);
 	    k++;
-	    if (k < (MAX_SPOTS - 1) && spotarray[k] > -1) {
-		if (k > MAX_SPOTS - 1)
-		    k = MAX_SPOTS - 1;
-
-		inputbuffer[0] = '\0';
-
-		if (spotarray[k] >= 0 && spotarray[k] < MAX_SPOTS)
-		    g_strlcpy(inputbuffer, spot_ptr[spotarray[k]], 79);
-		else {
-		    TLF_SHOW_INFO("error in packet table");
-		}
-
-		if (strlen(inputbuffer) > 14) {
-		    mvaddstr(j, 1, inputbuffer);
-		}
-	    }
 	}
 
 	pthread_mutex_unlock(&spot_ptr_mutex);
 
-	nicebox(14, 0, LINES - 3 - 14, 78, "Cluster");
+	nicebox(row_top - 1, 0, display_rows, 78, "Cluster");
 	refreshp();
     }
     printcall();
@@ -314,45 +299,41 @@ void show_xplanet() {
 
 /* ----------------------------------------------------*/
 
+//
+// prepare spotarray[] and return the number of spots found
+//
 int getclusterinfo(void) {
 
     int i;
     int si;
 
-    for (si = 0; si < (MAX_SPOTS - 2); si++)
+    for (si = 0; si < MAX_SPOTS; si++)
 	spotarray[si] = -1;
 
-    i = 0;
     si = 0;
 
-    while (1) {
+    for (i = 0; i < nr_of_spots && si < nr_of_spots; ++i) {
+	bool add_spot = false;
 
 	if (strstr(spot_ptr[i], "DX de") != NULL) {
-	    spotarray[si] = i;
-	    si++;
-
+	    add_spot = true;
 	} else if (strstr(spot_ptr[i], my.call) != NULL) {
-	    if ((announcefilter <= 2)) {
-		spotarray[si] = i;
-		si++;
+	    if (announcefilter <= FILTER_TALK) {
+		add_spot = true;
 	    }
-
 	} else if (strstr(spot_ptr[i], "To ALL") != NULL) {
-	    if ((announcefilter <= 1)) {
-		spotarray[si] = i;
-		si++;
+	    if (announcefilter <= FILTER_ANN) {
+		add_spot = true;
 	    }
+	} else if (announcefilter == FILTER_ALL
+		   && strlen(spot_ptr[i]) > 20) {
+	    add_spot = true;
+	}
 
-	} else if ((announcefilter == 0)
-		   && (strlen(spot_ptr[i]) > 20)) {
+	if (add_spot) {
 	    spotarray[si] = i;
 	    si++;
 	}
-
-	i++;
-
-	if (i > (nr_of_spots - 1))
-	    break;
     }
 
     return si;

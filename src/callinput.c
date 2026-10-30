@@ -72,7 +72,6 @@
 #include "showinfo.h"
 #include "showpxmap.h"
 #include "speedupndown.h"
-#include "splitscreen.h"
 #include "stoptx.h"
 #include "time_update.h"
 #include "trx_memory.h"

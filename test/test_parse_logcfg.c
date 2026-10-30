@@ -1062,7 +1062,7 @@ void test_sfi(void **state) {
 void test_tncport(void **state) {
     int rc = call_parse_logcfg("TNCPORT=/dev/ttyUSB1\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(tncportname, "/dev/ttyUSB1\n"); // FIXME NL...
+    assert_string_equal(tncportname, "/dev/ttyUSB1");
 }
 
 void test_rigmodel(void **state) {
@@ -1245,7 +1245,7 @@ void test_mfj1278_keyer(void **state) {
 void test_clusterlogin(void **state) {
     int rc = call_parse_logcfg("CLUSTERLOGIN = ab1cde\r\n");
     assert_int_equal(rc, PARSE_OK);
-    assert_string_equal(clusterlogin, "ab1cde\r\n");
+    assert_string_equal(clusterlogin, "ab1cde");
 }
 
 void test_initial_exchange(void **state) {

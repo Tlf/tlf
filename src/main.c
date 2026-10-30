@@ -37,6 +37,7 @@
 #include "bandmap.h"
 #include "change_rst.h"
 #include "clear_display.h"
+#include "cluster.h"
 #include "checklogfile.h"
 #include "checkqtclogfile.h"
 #include "cw_utils.h"
@@ -62,7 +63,6 @@
 #include "sendqrg.h"
 #include "setcontest.h"
 #include "set_tone.h"
-#include "splitscreen.h"
 #include "showmsg.h"
 #include "tlf_panel.h"
 #include "readcabrillo.h"
@@ -428,7 +428,9 @@ bool convert_cabrillo = false;  /* set if the arg input is a cabrillo */
 int bandweight_points[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 int bandweight_multis[NBANDS] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 
+pthread_t main_thread;
 pthread_t background_thread;
+pthread_t cluster_thread;
 static struct termios oldt, newt;
 
 /*-------------------------parse program options---------------------------*/
@@ -892,19 +894,14 @@ static void lan_init() {
 
 
 static void packet_init() {
-    if (nopacket)
+    if (nopacket) {
 	packetinterface = 0;
+    }
 
-    set_term(mainscreen);
+    cluster_init();
 
-    // really needed?
-    refreshp();
-
-    if (!nopacket && packetinterface > 0) {
-	if (init_packet() == 0)
-	    packet();
-	else
-	    cleanup_telnet();
+    if (packetinterface == 0) {
+	cluster_disable();
     }
 }
 
@@ -1034,15 +1031,22 @@ static void mark_GPL_seen() {
 /** cleanup function
  *
  * Cleanup initialisations made by tlf. Will be called after exit() from
- * logit() or background_process()
+ * logit().
+ *
  */
 static void tlf_cleanup() {
-    if (pthread_self() != background_thread) {
-	terminate_background_process();
+
+    terminate_background_process();
+    terminate_cluster_process();
+
+    if (pthread_self() == main_thread) {    // normally this is true
 	pthread_join(background_thread, NULL);
+	if (cluster_thread) {
+	    pthread_join(cluster_thread, NULL);
+	}
     }
 
-    cleanup_telnet();
+    cluster_cleanup();
 
     if (trxmode == CWMODE && cwkeyer == NET_KEYER)
 	netkeyer_close();
@@ -1096,6 +1100,7 @@ int main(int argc, char *argv[]) {
     int ret;
     char welcome[80];
 
+    main_thread = pthread_self();  // remember the main thread
     backgrnd_str = spaces(80);
 
     sprintf(welcome, "        Welcome to %s by PA0R!!", argp_program_version);
@@ -1184,9 +1189,9 @@ int main(int argc, char *argv[]) {
 
     scroll_log();		/* show the last 5  log lines and
 				   set the next serial number */
-    clearmsg_wait();
-
     packet_init();
+
+    clearmsg_wait();
 
     center_fkey_header();
     clear_display();		/* tidy up the display */
@@ -1209,6 +1214,16 @@ int main(int argc, char *argv[]) {
 	perror("pthread_create: backgound_process");
 	endwin();
 	exit(EXIT_FAILURE);
+    }
+
+    if (packetinterface > 0) {
+	// cluster_init() was called earlier
+	ret = pthread_create(&cluster_thread, NULL, cluster_process, NULL);
+	if (ret) {
+	    perror("pthread_create: cluster_process");
+	    endwin();
+	    exit(EXIT_FAILURE);
+	}
     }
 
     tlf_initialized = true;

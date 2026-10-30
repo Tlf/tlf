@@ -63,10 +63,6 @@ void clear_line(int row) {
 void clusterinfo() {
 }
 
-// splitscreen.c
-void refresh_splitlayout() {
-}
-
 // dxcc.c
 static dxcc_data dummy_dxcc = {
     "Noland",

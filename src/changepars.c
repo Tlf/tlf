@@ -36,6 +36,7 @@
 #include "changepars.h"
 #include "change_rst.h"
 #include "clear_display.h"
+#include "cluster.h"
 #include "dxcc.h"
 #include "editlog.h"
 #include "err_utils.h"
@@ -61,7 +62,6 @@
 #include "set_tone.h"
 #include "show_help.h"
 #include "showpxmap.h"
-#include "splitscreen.h"
 #include "tlf_curses.h"
 #include "ui_utils.h"
 #include "writecabrillo.h"
@@ -133,6 +133,20 @@ void set_trxmode(int mode) {
     } else if (trxmode == DIGIMODE) {
 	set_outfreq(SETDIGIMODE);
     }
+}
+
+static char *get_announcefilter_name() {
+    switch (announcefilter) {
+	case FILTER_ALL:
+	    return "All";
+	case FILTER_ANN:
+	    return "Anno";
+	case FILTER_TALK:
+	    return "Talk";
+	case FILTER_DX:
+	    return "DX";
+    }
+    return "??";
 }
 
 
@@ -305,9 +319,10 @@ void changepars(void) {
 	}
 	case 16: {		/*  FILTER   */
 	    announcefilter++;
-	    if (announcefilter > 3)
-		announcefilter = 0;
-	    mvprintw(13, 29, "FILTER-mode is %d", announcefilter);
+	    if (announcefilter > FILTER_DX) {
+		announcefilter = FILTER_ALL;
+	    }
+	    mvprintw(13, 29, "FILTER-mode is %s", get_announcefilter_name());
 	    refreshp();
 	    sleep(1);
 
@@ -437,11 +452,12 @@ void changepars(void) {
 	    break;
 	}
 	case 33: {		/* PACKET  */
-	    if (!nopacket && packetinterface > 0)
-		packet();
+	    if (!nopacket && packetinterface > 0) {
+		//CFIXME packet();
+	    }
 	    break;
 	}
-	case 34: {		/* SIMULATOR  */
+	case 34: {	  	/* SIMULATOR  */
 	    if (!CONTEST_IS(CQWW)) {
 		TLF_SHOW_INFO(
 		    "Simulator mode is only supported for CQWW contest!");
@@ -507,11 +523,7 @@ void changepars(void) {
 	}
 
 	case 37: {		/* RECONNECT  */
-	    if (!nopacket && packetinterface > 0) {
-		cleanup_telnet();
-		init_packet();
-		packet();
-	    }
+	    // not supported, no action
 	    break;
 	}
 
@@ -669,13 +681,23 @@ void changepars(void) {
     if (nopar != 1) {
 	mvaddstr(12, 29, "OK !        ");
     } else {
-	if (!nopacket && packetinterface > 0)
-	    packet();
+	if (!nopacket && packetinterface > 0) {
+	    //CXFIME packet();
+	}
     }
 
 }
 
 /* -------------------------------------------------------------- */
+static char *get_cluster_state_text() {
+    switch (cluster_state) {
+	case CLUSTER_CONNECTED: return "OK";
+	case CLUSTER_CONNECTING: return ">>>";
+	case CLUSTER_SLEEP: return "WAIT";
+	case CLUSTER_DISABLED: return "DIS";
+    }
+    return "?";
+}
 
 void networkinfo(void) {
 
@@ -724,15 +746,18 @@ void networkinfo(void) {
     mvprintw(7 + n_nodes, 10, "Contest    : %s", whichcontest);
     mvprintw(8 + n_nodes, 10, "Logfile    : %s", logfile);
 
-    mvprintw(9 + n_nodes, 10, "Cluster    : %s", pr_hostaddress);
-    mvprintw(10 + n_nodes, 10, "TNCport    : %s", tncportname);
-    mvprintw(11 + n_nodes, 10, "RIGport    : %s",
+    char *target = get_cluster_target();
+    mvprintw(9 + n_nodes, 10, "Cluster    : %s", target);
+    mvprintw(9 + n_nodes, 25 + strlen(target), "[%s]", get_cluster_state_text());
+    g_free(target);
+
+    mvprintw(10 + n_nodes, 10, "RIGport    : %s",
 	     (rigportname != NULL ? rigportname : "n/a"));
-    mvprintw(12 + n_nodes, 10, "Band output: %s",
+    mvprintw(11 + n_nodes, 10, "Band output: %s",
 	     (use_bandoutput ? "on" : "off"));
-    mvprintw(13 + n_nodes, 10, "callmaster : %s",
+    mvprintw(12 + n_nodes, 10, "callmaster : %s",
 	     (callmaster_version[0] != 0 ? callmaster_version : "n/a"));
-    mvprintw(14 + n_nodes, 10, "cty.dat    : %s",
+    mvprintw(13 + n_nodes, 10, "cty.dat    : %s",
 	     (cty_dat_version[0] != 0 ? cty_dat_version : "n/a"));
 
     refreshp();
