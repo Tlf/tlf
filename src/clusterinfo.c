@@ -58,7 +58,6 @@ void clusterinfo(void) {
     int f, j;
     char inputbuffer[160] = "";
 
-
     /* cluster and bandmap display */
     attron(modify_attr(COLOR_PAIR(NORMCOLOR)));
 
@@ -78,22 +77,20 @@ void clusterinfo(void) {
     }
 
     if (cluster == FREQWINDOW) {
-	for (f = 0; f < 8; f++)
-	    mvaddstr(15 + f, 4, "                           ");
-
 	if (trx_control)
 	    node_frequencies[thisnode - 'A'] = freq;
 	else
-	    node_frequencies[thisnode - 'A'] = atof(band[bandinx]);
+	    node_frequencies[thisnode - 'A'] = atof(band[bandinx]) * 1000.0;
 
 	for (f = 0; f < MAXNODES; f++) {
+	    mvaddstr(15 + f, 4, "                           ");
 	    char node_id = 'A' + f;
 	    if (node_frequencies[f] != 0)
 		mvprintw(15 + f, 4, "%cStn %c : %5.0f",
 			 (node_id == thisnode ? '*' : ' '), node_id,
 			 node_frequencies[f] / 1000.0);
 	}
-	nicebox(14, 3, 8, 27, "Frequencies");
+	nicebox(14, 3, MAXNODES, 27, "Frequencies");
     }
 
     if (cluster == CLUSTER) {
