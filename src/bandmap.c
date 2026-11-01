@@ -255,7 +255,7 @@ void bm_add(const char *s) {
     char node = ' ';
 
     line = g_strdup(s);
-    if (is_dx_spot(line)) {
+    if (!is_dx_spot(line)) {
 	g_free(line);
 	return;
     }
