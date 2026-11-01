@@ -27,6 +27,7 @@
 #include <errno.h>
 
 #include "bandmap.h"
+#include "clusterinfo.h"
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "searchcallarray.h"
@@ -254,7 +255,7 @@ void bm_add(const char *s) {
     char node = ' ';
 
     line = g_strdup(s);
-    if (strncmp(line, "DX de ", 6) != 0) {
+    if (is_dx_spot(line)) {
 	g_free(line);
 	return;
     }

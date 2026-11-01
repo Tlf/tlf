@@ -34,6 +34,7 @@
 #include "bands.h"
 #include "clear_display.h"
 #include "cluster.h"
+#include "clusterinfo.h"
 #include "dxcc.h"
 #include "err_utils.h"
 #include "get_time.h"
@@ -52,6 +53,10 @@ static int spotarray[MAX_SPOTS];	/* Array of indices into spot_ptr */
 
 static int getclusterinfo(void);
 static void show_xplanet();
+
+bool is_dx_spot(const char *line) {
+    return g_str_has_prefix(line, SPOT_DX_DE);
+}
 
 void clusterinfo(void) {
 
@@ -180,7 +185,7 @@ void show_xplanet() {
 	char spotcall[20];
 
 	g_strlcpy(thisline, spot_ptr[j], sizeof(thisline));
-	if (strncmp(thisline, "DX de ", 6) == 0 && strlen(thisline) >= 74) {
+	if (is_dx_spot(thisline) && strlen(thisline) >= 74) {
 	    int spotminutes;
 	    int timediff;
 
@@ -310,7 +315,7 @@ int getclusterinfo(void) {
     for (i = 0; i < nr_of_spots && si < nr_of_spots; ++i) {
 	bool add_spot = false;
 
-	if (strstr(spot_ptr[i], "DX de") != NULL) {
+	if (is_dx_spot(spot_ptr[i])) {
 	    add_spot = true;
 	} else if (strstr(spot_ptr[i], my.call) != NULL) {
 	    if (announcefilter <= FILTER_TALK) {

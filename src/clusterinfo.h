@@ -22,6 +22,11 @@
 #ifndef CLUSTERINFO_H
 #define CLUSTERINFO_H
 
+#include <stdbool.h>
+
+#define SPOT_DX_DE  "DX de "
+
 void  clusterinfo(void);
+bool  is_dx_spot(const char *);
 
 #endif /* end of include guard: CLUSTERINFO_H */

@@ -34,6 +34,7 @@
 
 #include "clear_display.h"
 #include "cluster.h"
+#include "clusterinfo.h"
 #include "get_time.h"
 #include "globalvars.h"
 #include "keystroke_names.h"
@@ -51,7 +52,7 @@ void add_to_spots(char *call, freq_t freq) {
     char spotline[160];
     char spottime[6];
 
-    sprintf(spotline, "DX de TLF-%c:     %9.3f  %s",
+    sprintf(spotline, SPOT_DX_DE "TLF-%c:     %9.3f  %s",
 	    thisnode, freq / 1000.0, call);
     strcat(spotline, spaces(43));
 
