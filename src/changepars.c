@@ -37,6 +37,7 @@
 #include "change_rst.h"
 #include "clear_display.h"
 #include "cluster.h"
+#include "cluster_terminal.h"
 #include "dxcc.h"
 #include "editlog.h"
 #include "err_utils.h"
@@ -453,7 +454,7 @@ void changepars(void) {
 	}
 	case 33: {		/* PACKET  */
 	    if (!nopacket && packetinterface > 0) {
-		//CFIXME packet();
+		cluster_terminal();
 	    }
 	    break;
 	}
@@ -682,7 +683,7 @@ void changepars(void) {
 	mvaddstr(12, 29, "OK !        ");
     } else {
 	if (!nopacket && packetinterface > 0) {
-	    //CXFIME packet();
+	    cluster_terminal();
 	}
     }
 

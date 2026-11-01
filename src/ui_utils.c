@@ -26,6 +26,7 @@
 
 #include "clear_display.h"
 #include "clusterinfo.h"
+#include "cluster_terminal.h"
 #include "globalvars.h"
 #include "keystroke_names.h"
 #include "stoptx.h"
@@ -377,6 +378,7 @@ void resize_layout(void) {
     }
     clear_display();
     clusterinfo();
+    cluster_terminal_resize();
 }
 
 #define MAX_SPACES  1000

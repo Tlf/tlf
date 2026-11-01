@@ -95,6 +95,9 @@ prefix_data *getctyinfo(char *call) {
 
 contest_config_t config_focm;
 
+// cluster_terminal.c
+void cluster_terminal_resize() {
+}
 
 /*********************/
 #define QSO1 " 40SSB 12-Jan-18 16:34 0006  SP9ABC         599  599  15                     1         "

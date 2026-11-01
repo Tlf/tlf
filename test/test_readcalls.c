@@ -52,7 +52,7 @@ void shownr(char *msg, int x) {}
 
 void clusterinfo(void) {}
 void clear_display(void) {}
-void refresh_splitlayout() {}
+void cluster_terminal_resize() {}
 
 void OnLowerSearchPanel(int x, char *str) {}
 int recall_exchange() { return -1; }

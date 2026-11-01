@@ -53,7 +53,7 @@ int recall_exchange(void) { return 0; }
 int send_lan_message(int opcode, const char *message) { return 0; }
 void clusterinfo(void) {}
 void clear_display(void) {}
-void refresh_splitlayout() {}
+void cluster_terminal_resize() {}
 
 int setup_default(void **state) {
     serial_section_mult = false;
