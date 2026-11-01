@@ -167,16 +167,13 @@ static void process_cluster_record(const char *record) {
 
     store_spot(s);
 
-    if (clusterlog) {
+    if (clusterlog && strlen(s) > 20) {
 	FILE *fp;
 	if ((fp = fopen("clusterlog", "a")) == NULL) {
 	    TLF_LOG_ERR("Opening clusterlog not possible.");
 	} else {
-	    if (strlen(s) > 20) {
-		fputs(s, fp);
-		fputs("\n", fp);
-	    }
-
+	    fputs(s, fp);
+	    fputs("\n", fp);
 	    fclose(fp);
 	}
     }
