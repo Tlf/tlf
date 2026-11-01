@@ -194,6 +194,7 @@ static bool complete_spot(gchar **line) {
 		    pos--;
 		    buffer[pos] = '\0';
 		}
+		break;
 	    default:
 		if (isprint(c) && (pos < MAX_SPOT_LEN)) {
 		    buffer[pos++] = c;
