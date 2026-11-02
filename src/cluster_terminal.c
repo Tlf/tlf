@@ -54,9 +54,6 @@ static char **non_dx_lines;
 static int n_dx_lines;
 static int n_non_dx_lines;
 
-static int input_length;
-static char *input;
-
 static void setup() {
 
     n_dx_lines = ROWS_DX;
@@ -72,10 +69,6 @@ static void setup() {
     for (int i = 0; i < n_non_dx_lines; i++) {
 	non_dx_lines[i] = g_strdup(spaces(LINE_LENGTH));
     }
-
-    input_length = LINE_LENGTH - 2;     // 2 chars are used by the prompt
-
-    input = g_malloc(input_length + 1);
 
     win = newwin(WIN_HEIGHT, WIN_WIDTH, 0, 0);
     panel = new_panel(win);
@@ -110,7 +103,6 @@ static void teardown() {
 
     g_free(dx_lines);
     g_free(non_dx_lines);
-    g_free(input);
 }
 
 void cluster_terminal_resize() {
@@ -182,6 +174,10 @@ void cluster_terminal() {
 
     setup();
 
+    int input_length = LINE_LENGTH - 2;     // 2 chars are used by the prompt
+
+    char *input = g_malloc(input_length + 1);
+
     input[0] = 0;
     int pos = 0;
 
@@ -246,6 +242,8 @@ void cluster_terminal() {
 		}
 	}
     }
+
+    g_free(input);
 
     teardown();
 
