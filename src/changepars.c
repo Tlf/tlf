@@ -253,7 +253,6 @@ void changepars(void) {
 	}
 	case 3: {		/* CLUSTER  */
 	    cluster = CLUSTER;
-	    announcefilter = FILTER_ALL;
 	    break;
 	}
 	case 4: {		/* SHORTNR  */
