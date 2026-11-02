@@ -124,8 +124,10 @@ static void align_up(char **lines, int size, int total_size) {
     if (shift > 0) {
 	for (int i = shift; i < total_size; i++) {
 	    strcpy(lines[i - shift], lines[i]);
-	}
-	for (int i = total_size - shift; i < total_size; i++) {
+        }
+        // indexes 0 to size-1 now contain the data;
+        // fill the remaining slots with spaces.
+	for (int i = size; i < total_size; i++) {
 	    strcpy(lines[i], spaces(LINE_LENGTH));
 	}
     }
