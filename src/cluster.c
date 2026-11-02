@@ -26,7 +26,7 @@ static bool initialized = false;
 static GAsyncQueue *rx_queue;
 static GAsyncQueue *tx_queue;
 
-static bool go = true;
+static atomic_bool go = true;
 static char line_data[100];
 
 #define READ_SIZE               1024
@@ -91,8 +91,6 @@ void cluster_cleanup(void) {
     rx_queue = NULL;
     g_async_queue_unref(tx_queue);
     tx_queue = NULL;
-
-    //... CFIXME
 
     initialized = false;
 }
@@ -281,13 +279,12 @@ static int tcp_connect(char *hostname, int portno) {
     hints.ai_family = AF_UNSPEC;      // either IPv4 or IPv6
     hints.ai_socktype = SOCK_STREAM;
 
-    char portstr[20];
-    sprintf(portstr, "%d", portno); // use g_sprintf?
-
+    char *portstr = g_strdup_printf("%d", portno);
     int rc = getaddrinfo(hostname, portstr, &hints, &result);
+    g_free(portstr);
 
     if (rc != 0) {
-	//fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rc));
+	TLF_LOG_ERR("Telnet address lookup failed: %s", gai_strerror(rc));
 	return -1;
     }
 
@@ -312,9 +309,9 @@ static int tcp_connect(char *hostname, int portno) {
     freeaddrinfo(result);
 
     if (sock >= 0) {
-	TLF_LOG_DEBUG("connect OK");
+	TLF_LOG_DEBUG("Telnet connect OK");
     } else {
-	TLF_LOG_DEBUG("connect failed");
+	TLF_LOG_ERR("Telnet connect failed");
     }
 
     return sock;
@@ -373,7 +370,8 @@ static int fifo_open() {
     // ensure the file is either an existing FIFO or does not exist
     struct stat sb;
     if (stat(FIFO_FILE, &sb) == 0 && !S_ISFIFO(sb.st_mode)) {
-	return -1; // exists, but it's not a FIFO
+	TLF_LOG_DEBUG("File " FIFO_FILE " exists, but it's not a FIFO");
+	return -1;
     }
 
     const mode_t mode = S_IRUSR | S_IWUSR;
@@ -392,7 +390,7 @@ static int fifo_open() {
     if (fd >= 0) {
 	TLF_LOG_DEBUG("FIFO open OK");
     } else {
-	TLF_LOG_DEBUG("FIFO open failed");
+	TLF_LOG_ERR("FIFO open failed");
     }
 
     return fd;
@@ -553,7 +551,7 @@ void *cluster_process(void *ptr) {
     while (go) {
 
 	if (delay != 0) {
-	    TLF_LOG_DEBUG("sleeping %d", delay);
+	    TLF_LOG_DEBUG("Sleeping %d s", delay);
 	    cluster_state = CLUSTER_SLEEP;
 	    interruptible_sleep(delay);
 	}
