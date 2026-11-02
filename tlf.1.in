@@ -444,8 +444,29 @@ but without asking for confirmation).
 .
 .TP
 .BR :FIL ter
-Filter cluster info (announce, dx-spots, all).
+Set the filtering mode for messages displayed in the :CLUster window.
+Executing this command repeatedly cycles through the possible values.
 .
+.RS 7
+.
+.IP \(bu 2
+.BR All :
+Show all cluster messages.
+.
+.IP \(bu 2
+.BR Anno :
+Show only DX spots, talk messages, and "To ALL" announcements.
+This is the default mode.
+.
+.IP \(bu 2
+.BR Talk :
+Show only DX spots and talk messages that contain the user's callsign.
+.
+.IP \(bu 2
+.BR DX :
+Show only DX spots.
+.
+.RE
 .TP
 .BR :FRE q
 Show frequency or band/score information of your other @PACKAGE@ nodes.
