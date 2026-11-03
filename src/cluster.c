@@ -117,7 +117,9 @@ void cluster_cleanup(void) {
 }
 
 void send_to_cluster(const char *line) {
-    if (packetinterface == TNC_INTERFACE || packetinterface == TELNET_INTERFACE) {
+    if (line[0] == 0 // forced reconnect
+	    || packetinterface == TNC_INTERFACE
+	    || packetinterface == TELNET_INTERFACE) {
 	g_async_queue_push(tx_queue, g_strdup(line));
     }
     // NOTE: can't write into a FIFO

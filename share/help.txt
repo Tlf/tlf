@@ -75,6 +75,7 @@ $         Switch to MEM and clear it (pop)
 :MAP      Show live band map
 :SPOts    Same as :MAP
 :FILter   Change the filter used by :CLUster
+:REConnect Re-open the DX cluster connection
 :SYNc     Synchronize log in network
 :EXIt     Exit program
 :QUIt     Exit program

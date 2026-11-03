@@ -523,7 +523,7 @@ void changepars(void) {
 	}
 
 	case 37: {		/* RECONNECT  */
-	    // not supported, no action
+	    send_to_cluster("");    // empty string forces reconnect
 	    break;
 	}
 

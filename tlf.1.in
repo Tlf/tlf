@@ -508,7 +508,10 @@ Switch back to the main logging screen with \(oq:\(cq.
 .
 .TP
 .BR :REC onnect
-Re-opens the connection to the DX cluster in case it was disconnected.
+Re-opens the connection to the DX cluster.
+It could help if the connection gets stuck for some reason
+\-\ for example, if your IP address changes via DHCP
+or a USB serial port is re-enumerated due to RFI.
 .
 .TP
 .BR :RES core
