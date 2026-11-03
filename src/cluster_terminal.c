@@ -60,7 +60,8 @@ LINES = 1(bord) + ROWS_DX + 1(sep) + ROWS_NON_DX + 1(inp) + 1(bord) + 1(stat)
 #define ROWS_NON_DX (LINES - 1 - ROWS_DX - 1 - 1 - 1 -1)
 
 #define DX_TOP_LINE     1
-#define NON_DX_TOP_LINE (1 + ROWS_DX + 1)
+#define SEPARATOR_LINE  (1 + ROWS_DX)
+#define NON_DX_TOP_LINE (SEPARATOR_LINE + 1)
 
 #define WHITE_ON_BLACK  COLOR_PAIR(C_LOG)
 #define BLACK_ON_WHITE  (COLOR_PAIR(C_LOG) | A_STANDOUT)
@@ -106,7 +107,7 @@ static void setup() {
 	     "Cluster Terminal   (press Esc to exit)");
 
     wattrset(win, BLACK_ON_WHITE);
-    mvwhline(win, 1 + ROWS_DX, 1, ACS_HLINE, LINE_LENGTH);  // separator
+    mvwhline(win, SEPARATOR_LINE, 1, ACS_HLINE, LINE_LENGTH);  // separator
 }
 
 static void teardown() {
@@ -178,7 +179,6 @@ static void update_lines() {
     int dxi = n_dx_lines - 1;
     int ndxi = n_non_dx_lines - 1;
     for (int i = nr_of_spots - 1; i >= 0; i--) {
-	//if (g_str_has_prefix(spot_ptr[i], "DX de ")) {
 	if (is_dx_spot(spot_ptr[i])) {
 	    store_line(dx_lines, &dxi, spot_ptr[i]);
 	} else {
