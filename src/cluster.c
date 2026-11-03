@@ -362,7 +362,7 @@ static int serial_open(char *filename) {
     }
 
     int fd;
-    if ((fd = open(tncportname, O_RDWR | O_NONBLOCK | FD_CLOEXEC)) < 0) {
+    if ((fd = open(tncportname, O_RDWR | O_NONBLOCK)) < 0) {
 	return -1;
     }
 
@@ -406,7 +406,7 @@ static int fifo_open() {
     // open in RW mode; this ensures the file descriptor remains valid and
     // avoids EOF (and unnecessary reconnection) after the writer terminates
     // note: do not actually write to it, as it'll be read back
-    int fd = open(FIFO_FILE, O_RDWR | O_NONBLOCK | FD_CLOEXEC);
+    int fd = open(FIFO_FILE, O_RDWR | O_NONBLOCK);
 
     if (fd >= 0) {
 	TLF_LOG_DEBUG("FIFO open OK");
