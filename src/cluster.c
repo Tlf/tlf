@@ -364,11 +364,13 @@ static int serial_open(char *filename) {
     }
 
     int fd;
-    if ((fd = open(tncportname, O_RDWR | O_NONBLOCK)) < 0) {
+    if ((fd = open(filename, O_RDWR | O_NONBLOCK)) < 0) {
 	return -1;
     }
 
     struct termios termattribs;
+    tcgetattr(fd, &termattribs);
+
     termattribs.c_iflag = IGNBRK | IGNPAR | IMAXBEL | IXOFF;
     termattribs.c_oflag = 0;
     termattribs.c_cflag = CS8 | CSTOPB | CREAD | CLOCAL;
