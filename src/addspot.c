@@ -25,13 +25,6 @@
  *
  *--------------------------------------------------------------*/
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-
 #include "clear_display.h"
 #include "cluster.h"
 #include "clusterinfo.h"
@@ -39,6 +32,7 @@
 #include "globalvars.h"
 #include "keystroke_names.h"
 #include "lancode.h"
+#include "utils.h"
 #include "ui_utils.h"
 
 
@@ -197,7 +191,7 @@ static bool complete_spot(gchar **line) {
 		}
 		break;
 	    default:
-		if (isprint(c) && (pos < MAX_SPOT_LEN)) {
+		if (ascii_isprint(c) && (pos < MAX_SPOT_LEN)) {
 		    buffer[pos++] = c;
 		    buffer[pos] = '\0';
 		}

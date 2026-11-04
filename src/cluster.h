@@ -1,3 +1,4 @@
+#include <pthread.h>
 #include <stdatomic.h>
 
 enum {

@@ -22,8 +22,6 @@
    allowing users to monitor and control cluster activity in real time.
 */
 
-#include <ctype.h>
-
 #include "tlf.h"
 #include "cluster.h"
 #include "clusterinfo.h"
@@ -32,6 +30,7 @@
 #include "tlf_panel.h"
 #include "keystroke_names.h"
 #include "nicebox.h"
+#include "utils.h"
 #include "ui_utils.h"
 
 /*
@@ -262,7 +261,7 @@ void cluster_terminal() {
 		}
 		break;
 	    default:
-		if (isprint(c) && pos < input_length) {
+		if (ascii_isprint(c) && pos < input_length) {
 		    input[pos++] = c;
 		    input[pos] = '\0';
 		}

@@ -23,11 +23,6 @@
  *          clusterinfo +  time update
  *--------------------------------------------------------------*/
 
-
-#include <pthread.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include <glib.h>
 
 #include "bandmap.h"
