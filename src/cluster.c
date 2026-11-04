@@ -284,6 +284,18 @@ static int socket_connect_with_timeout(int sock, const struct sockaddr *addr,
 	}
 
 	if (pfd.revents & POLLOUT) {
+	    // the socket is writable; check SO_ERROR to determine
+	    // whether connect() succeeded.
+	    int so_error;
+	    socklen_t len = sizeof(so_error);
+	    rc = getsockopt(sock, SOL_SOCKET, SO_ERROR, &so_error, &len);
+	    if (rc != 0) {
+		break;  // getsockopt failed, unlikely
+	    }
+	    if (so_error != 0) {
+		break;  // connect was unsuccessful
+	    }
+
 	    int fl = fcntl(sock, F_GETFL);
 	    fcntl(sock, F_SETFL, fl & ~O_NONBLOCK); // put back to blocking
 	    return 0;   // success
@@ -321,8 +333,9 @@ static int tcp_connect(char *hostname, int portno) {
 	    continue;
 	}
 
-	if (socket_connect_with_timeout(sock, rp->ai_addr, rp->ai_addrlen) == 0) {
-	    break;
+	rc = socket_connect_with_timeout(sock, rp->ai_addr, rp->ai_addrlen);
+	if (rc == 0) {
+	    break;      // success
 	}
 
 	close(sock);
