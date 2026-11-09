@@ -34,6 +34,7 @@
 #include "globalvars.h"
 #include "showmsg.h"
 #include "err_utils.h"
+#include "utils.h"
 #include "lancode.h"
 
 pthread_mutex_t spot_ptr_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -460,8 +461,10 @@ static void process_data(char *data, int size) {
 	char c = data[i];
 	if (c == '\r' || c == '\n') {
 	    flush = true;
+	} else if (c < ' ') {
+	    // ignore all other control codes
 	} else {
-	    if (!isascii(c)) {
+	    if (!ascii_isprint(c)) {
 		c = '.';
 	    }
 	    line_data[len] = c;      // append character
