@@ -176,7 +176,7 @@ char sent_rst[4] = "599";
 char recvd_rst[4] = "599";
 
 int shortqsonr = LONGCW;	/* 1  =  short  cw char in exchange */
-int cluster = NOCLUSTER;	/* 0 = OFF, 1 = FOLLOW, 2  = spots  3 = all */
+int cluster = NOCLUSTER;	/* NOCLUSTER, MAP, CLUSTER, FREQWINDOW */
 bool clusterlog = false;	/* clusterlog on/off */
 bool searchflg = false;		/* display search  window */
 bool show_time = false;

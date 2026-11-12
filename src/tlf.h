@@ -45,9 +45,9 @@ enum {
 #define FIFO_INTERFACE 3
 
 #define NOCLUSTER 0     /*  no cluster info  */
-#define MAP 1           /*  show spots */
-#define CLUSTER 3 		/*  full cluster info  */
-#define FREQWINDOW 4    /* M/M frequencies */
+#define MAP 1           /*  show spots (bandmap) */
+#define CLUSTER 2 	/*  show filtered cluster messages */
+#define FREQWINDOW 3    /* M/M frequencies */
 
 #define SHORTCW 1       /*  short  cw characters in  exchange  (e.g. 0 = T,  9 = N) */
 #define LONGCW 0
