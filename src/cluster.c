@@ -458,7 +458,7 @@ static void process_data(char *data, int size) {
 
     for (int i = 0; i < size; ++i) {
 	bool flush = false;
-	char c = data[i];
+	unsigned char c = data[i];  // use unsigned for the comparisons below
 	if (c == '\r' || c == '\n') {
 	    flush = true;
 	} else if (c < ' ') {
