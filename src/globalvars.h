@@ -213,7 +213,7 @@ extern int pfxnummultinr;
 extern char message[][80];
 extern char *digi_message[];
 extern char ph_message[14][80];
-extern char tncportname[];
+extern char tncportname[40];
 extern char multsfile[];
 extern char markerfile[];
 extern char countrylist[255][6];

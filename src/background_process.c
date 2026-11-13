@@ -26,6 +26,7 @@
 
 #include "background_process.h"
 #include "cqww_simulator.h"
+#include "cluster.h"
 #include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "get_time.h"
@@ -37,7 +38,6 @@
 #include "qtcutil.h"
 #include "qtcvars.h"
 #include "rtty.h"
-#include "splitscreen.h"
 #include "tlf.h"
 #include "write_keyer.h"
 
@@ -96,10 +96,7 @@ void *background_process(void *ptr) {
 
 	usleep(10000);
 
-	if (packetinterface != 0) {
-	    receive_packet();
-
-	}
+	receive_packet();
 
 	if (trxmode == DIGIMODE && digikeyer != NO_KEYER)
 	    rx_rtty();
@@ -177,14 +174,12 @@ void *background_process(void *ptr) {
 			    TLF_SHOW_INFO(prmessage);
 			}
 
-			addtext(prmessage);
+			add_other_text(prmessage);
 			g_free(prmessage);
 			break;
 		    case TLFSPOT:
 			prmessage = g_strndup(lan_message + 2, 80);
-			lanspotflg = true;
-			addtext(prmessage);
-			lanspotflg = false;
+			add_other_text(prmessage);
 			g_free(prmessage);
 			break;
 		    case TLFMSG:

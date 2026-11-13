@@ -27,6 +27,7 @@
 #include <errno.h>
 
 #include "bandmap.h"
+#include "clusterinfo.h"
 #include "qtcutil.h"
 #include "qtcvars.h"		// Includes globalvars.h
 #include "searchcallarray.h"
@@ -248,13 +249,13 @@ static int freq2mode(freq_t freq, int band) {
  *
  * check if cluster message is a dx spot,
  * if so split it into pieces and insert in spot list */
-void bm_add(char *s) {
+void bm_add(const char *s) {
     char *line;
     char *call;
     char node = ' ';
 
     line = g_strdup(s);
-    if (strncmp(line, "DX de ", 6) != 0) {
+    if (!is_dx_spot(line)) {
 	g_free(line);
 	return;
     }

@@ -35,7 +35,7 @@
 .
 .
 .\" Update the date when this page is committed.
-.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2026-08-10" TLF "Ham radio"
+.TH TLF 1 "@PACKAGE_NAME@ @VERSION@, 2026-11-05" TLF "Ham radio"
 .
 .
 .SH NAME
@@ -230,7 +230,7 @@ will be created.
 .
 .TP
 .BR \-v , \ \-\-verbose
-Verbose startup.
+Verbose startup; wait for a key press before continuing.
 .
 .TP
 .BR \-d , \ \-\-debug
@@ -309,7 +309,7 @@ Normally you start or restart @PACKAGE_NAME@ in fast mode with
 .
 During debugging of a
 .I logcfg.dat
-file you can start in verbose mode, to have a look at the startup messages.
+file you can start in verbose mode (-v), to have a look at the startup messages.
 The config file can also be specified on command line:
 .
 .IP
@@ -318,17 +318,18 @@ The config file can also be specified on command line:
 .EE
 .
 .P
-If you have the packet cluster enabled you will first see the packet screen
-(if you are using telnet and you have provided your callsign in
-.IR logcfg.dat \,
-you will be automatically logged in switched to the main logging screen).
-.
-Log in with your callsign, if needed, and switch to the main logging screen
-with the \(oq:\(cq command.
-.
-You can come back to the packet screen later with the
+If DX cluster support is enabled, you can check its status using the
+.BR :INF o
+or
+.BR :CLU ster
+command.
+If
+.B CLUSTERLOGIN
+is not configured,
 .BR :PAC ket
-command from the call input field of the main logging screen.
+(Cluster Terminal) may also be used to log in.
+Press \(oqEscape\(cq to return from the
+Cluster Terminal to the main logging screen.
 .
 .P
 You can exit and close @PACKAGE_NAME@ with the
@@ -444,8 +445,29 @@ but without asking for confirmation).
 .
 .TP
 .BR :FIL ter
-Filter cluster info (announce, dx-spots, all).
+Set the filtering mode for messages displayed in the :CLUster window.
+Executing this command repeatedly cycles through the possible values.
 .
+.RS 7
+.
+.IP \(bu 2
+.BR All :
+Show all cluster messages.
+.
+.IP \(bu 2
+.BR Anno :
+Show only DX spots, talk messages, and "To ALL" announcements.
+This is the default mode.
+.
+.IP \(bu 2
+.BR Talk :
+Show only DX spots and talk messages that contain the user's callsign.
+.
+.IP \(bu 2
+.BR DX :
+Show only DX spots.
+.
+.RE
 .TP
 .BR :FRE q
 Show frequency or band/score information of your other @PACKAGE@ nodes.
@@ -468,7 +490,7 @@ if no local one exists).
 .
 .TP
 .BR :INF o
-Show network status.
+Show network and general system status.
 .
 .TP
 .BR :MES sage
@@ -481,13 +503,17 @@ Toggle TRX mode
 .
 .TP
 .BR :PAC ket
-Switch to the packet terminal.
-.
-Switch back to the main logging screen with \(oq:\(cq.
+Switch to the split-screen Cluster Terminal.
+.IP
+Press \(oqEsc\(cq or enter a line beginning with \(oq:\(cq
+to return to the main logging screen.
 .
 .TP
 .BR :REC onnect
-Re-opens the connection to the DX cluster in case it was disconnected.
+Re-opens the connection to the DX cluster.
+It could help if the connection gets stuck for some reason
+\-\ for example, if your IP address changes via DHCP
+or a USB serial port is re-enumerated due to RFI.
 .
 .TP
 .BR :RES core

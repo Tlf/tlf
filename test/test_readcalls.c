@@ -52,7 +52,7 @@ void shownr(char *msg, int x) {}
 
 void clusterinfo(void) {}
 void clear_display(void) {}
-void refresh_splitlayout() {}
+void cluster_terminal_resize() {}
 
 void OnLowerSearchPanel(int x, char *str) {}
 int recall_exchange() { return -1; }
@@ -73,7 +73,7 @@ int speeddown() { return 8; }
 void rst_recv_up() {}
 void rst_recv_down() {}
 void vk_play_file(char *audiofile) {}
-int send_lan_message(int opcode, char *message) { return 0; }
+int send_lan_message(int opcode, const char *message) { return 0; }
 
 int last10() { return 0; }
 void foc_show_scoring(int start_column) {}

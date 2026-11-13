@@ -99,7 +99,7 @@ int lan_recv_close(void);
 int lan_recv(void);
 int lan_send_init(void);
 int lan_send_close(void);
-void send_lan_message(int opcode, char *message);
+void send_lan_message(int opcode, const char *message);
 void talk(void);
 int send_freq(freq_t freq);
 void send_time(void) ;

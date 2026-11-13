@@ -69,12 +69,13 @@ $         Switch to MEM and clear it (pop)
 :MESsage  Change CW messages
 :CHEck    Open Check window
 :NOCheck  Close Check window
-:         Telnet window, use : to get back to Tlf
-:PACket   Open Terminal
-:CLUster  Open Terminal
-:SPOts    Only DX spots sorted by time
-:FILter   Filter DX Cluster content
-:MAP      Filter band map content
+:         Open Cluster Terminal window, use Esc to get back to TLF
+:PACket   Open Cluster Terminal window (same as : )
+:CLUster  Show filtered cluster messages
+:MAP      Show live band map
+:SPOts    Same as :MAP
+:FILter   Change the filter used by :CLUster
+:REConnect Re-open the DX cluster connection
 :SYNc     Synchronize log in network
 :EXIt     Exit program
 :QUIt     Exit program
@@ -82,9 +83,9 @@ $         Switch to MEM and clear it (pop)
 :CONtest  Toggle contest mode on/off
 :SCOre    Toggle score window on/off
 :REScore  Rescore
-:FREq     Show frequency
+:FREq     Show node frequencies
 :CLOff    Cluster off
-:INFo     Network status
+:INFo     Network and general status
 :TRXcont  Toggle TRX control on/off
 :CHAR     Autosend: number of chars before starting to send
 :SOUnd    Record sound files
