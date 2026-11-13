@@ -244,6 +244,27 @@ static int freq2mode(freq_t freq, int band) {
 	return SSBMODE;
 }
 
+/** \brief try to determine mode from spot's comment
+ *
+ * \return valid mode, or -1 if unknown
+ */
+static int comment2mode(const char *comment) {
+
+    if (g_str_has_prefix(comment, "CW ")) {
+
+	return CWMODE;
+
+    } else if (g_str_has_prefix(comment, "RTTY ")
+	       || g_str_has_prefix(comment, "FT8 ")
+	       || g_str_has_prefix(comment, "FT4 ")) {
+
+	return DIGIMODE;
+
+    }
+
+    return -1;  // mode unknown; will be determined from the frequency
+}
+
 /** \brief add DX spot message to bandmap
  *
  * check if cluster message is a dx spot,
@@ -264,10 +285,12 @@ void bm_add(char *s) {
 	return;
     }
 
+    char mode = comment2mode(line + 39);
+
     if (strncmp(line + 6, "TLF-", 4) == 0)
 	node = line[10];		/* get sending node id */
 
-    bandmap_addspot(call, atof(line + 16) * 1000, node);
+    bandmap_addspot(call, atof(line + 16) * 1000, mode, node);
     g_free(line);
 }
 
@@ -296,9 +319,10 @@ void free_spot(spot *data) {
 /** add a new spot to bandmap data
  * \param call  	the call to add
  * \param freq 		on which frequency heard
+ * \param mode 		mode from the spot line, -1 if not available
  * \param node		reporting node
  */
-void bandmap_addspot(char *call, freq_t freq, char node) {
+void bandmap_addspot(char *call, freq_t freq, char mode, char node) {
     /* - if a spot on that band and mode is already in list replace old entry
      *   with new one and set timeout to SPOT_NEW,
      *   otherwise add it to the list as new
@@ -310,7 +334,6 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
      */
     GList *found;
     int bandindex;
-    char mode;
     dxcc_data *dxccdata;
     int dxccindex;
     int wi;
@@ -322,7 +345,9 @@ void bandmap_addspot(char *call, freq_t freq, char node) {
 	return;
 
     bandindex = freq2bandindex(freq);
-    mode = freq2mode(freq, bandindex);
+    if (mode < 0) {
+	mode = freq2mode(freq, bandindex);
+    }
 
     /* acquire bandmap mutex */
     pthread_mutex_lock(&bm_mutex);
