@@ -1034,6 +1034,9 @@ CLUSTERLOGIN is not used for serial or FIFO connections.
 The cluster connection runs in the background and reconnects automatically.
 Check its current status with the :info command.
 
+The connection modes described above - Telnet, serial, and FIFO -
+are mutually exclusive. Select and configure only one mode.
+
 ### Using the cluster
 
 The default TLF configuration selects the bandmap view, with spots
