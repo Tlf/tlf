@@ -330,3 +330,13 @@ int ascii_toupper(int in) {
 
     return in + 'A' - 'a';
 }
+
+/*
+ * checks if a key or character is an ASCII printable value.
+ *
+ * Note: using integers for input allows for a wider range
+ * of values than 'char', thus supporting extended key code arguments.
+ */
+bool ascii_isprint(int in) {
+    return in >= ' ' && in <= '~';
+}

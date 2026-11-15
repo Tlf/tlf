@@ -72,7 +72,6 @@
 #include "showinfo.h"
 #include "showpxmap.h"
 #include "speedupndown.h"
-#include "splitscreen.h"
 #include "stoptx.h"
 #include "time_update.h"
 #include "trx_memory.h"
@@ -580,8 +579,7 @@ int callinput(void) {
 	    // Alt-a (M-a), cycle cluster window.
 	    case ALT_A: {
 		if (cluster == NOCLUSTER) {
-		    cluster = CLUSTER;	// alt-A
-		    announcefilter = FILTER_ALL;
+		    cluster = CLUSTER;
 		} else if (cluster == CLUSTER) {
 		    cluster = MAP;
 		} else if (cluster == MAP) {

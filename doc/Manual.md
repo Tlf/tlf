@@ -117,12 +117,11 @@ directory from which you want to run the contest (where you put your local
 tlf
 ```
 
-If you've enabled DX spots, you'll see the output as TLF tries to log into the
-cluster you've chosen. The first time it's started in a new directory (i.e.
-with no log file already there), TLF will then ask you some questions before
+The first time it's started in a new directory (i.e. with no log file
+already there), TLF will then ask you some questions before
 opening the main screen.
 
-As long as the window is set to 80 columns x 25 lines, TLF should launch and
+As long as the window is set to at least 80 columns x 25 lines, TLF should launch and
 look okay in your default terminal window. Here is the main screen on the
 default terminal (GNOME Terminal) in Ubuntu 20.04:
 
@@ -182,7 +181,7 @@ current UTC time, QSO number, call entry field, RST (599 599), and the
 exchange entry field. Under the right-hand end of that line is the current
 frequency the transceiver is tuned to, if rig control is active.
 
-The bottom section of the screen has DXcluster spots, the band map, and
+The bottom section of the screen has DX cluster spots, the band map, and
 related information.
 
 The spacebar moves between fields, the "Enter" key sends the appropriate
@@ -991,30 +990,75 @@ Cabrillo contains lines with begin of "QTC:", then you will have the
 IMPORT_QTC_sent.log and IMPORT_QTC_recv.log. In this case, the original files
 also kept, and you have to archive and rename the files.  
 
-## Alternative packet cluster setup 
+## Using DX cluster
 
-*Pasted from the original doc/README file; some information may be out of
-date.* 
+### Configuration
 
-TLF can also run packet spots in a separate terminal. To link this to the TLF
-program start a telnet session from the working directory with: 
+Connection to the DX cluster network is typically established via Telnet.
+TLF is compatible with all major cluster server software
+(including [AR-Cluster](https://arcluster.org/), CC Cluster, and DX Spider)
+because they share a standardized DX spot format,
+regardless of their individual commands or capabilities.
 
-telnet <network node> | tee -a  clfile 
+To set up a Telnet connection, add the following lines to your configuration
 
-In case your packet program is on your own machine, use 
+TELNETHOST=<cluster_node_hostname>
+TELNETPORT=<cluster_node_port>
 
-telnet localhost | tee -a clfile 
+Commonly used ports include 7373, 7300, and 8000.
 
-Now you have a separate packet terminal where you can e.g. start "call",
-telnet or or "minicom" and connect to your favorite dx cluster, or telnet to a
-cluster on the internet. 
+Most cluster nodes require a login. Set CLUSTERLOGIN to the username
+required by the cluster, which may differ from your callsign:
 
-Activate "FIFOINTERFACE". 
+CLUSTERLOGIN=<username>
 
-Activate the cluster display in TLF with :cluster, :spot, or :map You can
-toggle the announcements filter with :filter 
+TLF uses this information to log in to the cluster node automatically.
 
-## Bandmap
+If the DX cluster is available through a serial connection,
+configure the port and baud rate using TNCPORT and TNCSPEED.
+For example:
+
+TNCPORT=/dev/ttyUSB1
+TNCSPEED=9600
+
+A third option is to receive DX spots through the FIFO file _clfile_
+in the current directory.
+This can be useful when the connection requires an external program.
+To enable this option, add the following line to the configuration:
+
+FIFO_INTERFACE
+
+The FIFO connection is one-way: TLF reads from it but does not write to it.
+CLUSTERLOGIN is not used for serial or FIFO connections.
+
+The cluster connection runs in the background and reconnects automatically.
+Check its current status with the :info command.
+
+The connection modes described above - Telnet, serial, and FIFO -
+are mutually exclusive. Select and configure only one mode.
+
+### Using the cluster
+
+The default TLF configuration selects the bandmap view, with spots
+and their frequencies shown in the lower half of the terminal.
+See below for details.
+
+Use the :cluster command to switch to the cluster message view.
+Messages are filtered according to the current filter setting.
+Use :filter to cycle through the filtering options.
+
+The :cloff command hides all cluster information.
+Use :map to return to the bandmap view, or press Alt-A to cycle through
+the cluster views.
+
+The :packet command opens the split-screen interactive Cluster Terminal.
+Press Esc to get back to logging.
+
+To submit a DX spot for the current callsign and frequency, press Ctrl-B.
+You can edit the spot before sending it. To cancel, press Esc to return
+to logging without sending the spot.
+
+### Bandmap
 
 *Pasted from the original New_Bandmap.txt file; some information may be out of
 date.*

@@ -266,7 +266,7 @@ static int lan_send(char *lanbuffer) {
 
 /* ----------------- send lan message ----------*/
 
-void send_lan_message(int opcode, char *message) {
+void send_lan_message(int opcode, const char *message) {
     char sendbuffer[102];
 
     sendbuffer[0] = thisnode;

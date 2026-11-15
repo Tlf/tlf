@@ -116,10 +116,4 @@ typedef struct {
         (cfg_arg_t){.char_pp=var, .base=i, .size=80, .nl_to_space=true, \
                     .string_type=DYNAMIC}
 
-// FIXME: remove NOCHOMPs
-#define CFG_STRING_STATIC_NOCHOMP(var,bufsize) NEED_PARAM, cfg_string, \
-        (cfg_arg_t){.char_p=var, .size=bufsize, \
-                    .string_type=STATIC}
-
-
 #endif // PARSE_LOGCFG_H

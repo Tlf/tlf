@@ -25,19 +25,14 @@
  *
  *--------------------------------------------------------------*/
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-
 #include "clear_display.h"
+#include "cluster.h"
+#include "clusterinfo.h"
 #include "get_time.h"
 #include "globalvars.h"
 #include "keystroke_names.h"
 #include "lancode.h"
-#include "splitscreen.h"
+#include "utils.h"
 #include "ui_utils.h"
 
 
@@ -51,7 +46,7 @@ void add_to_spots(char *call, freq_t freq) {
     char spotline[160];
     char spottime[6];
 
-    sprintf(spotline, "DX de TLF-%c:     %9.3f  %s",
+    sprintf(spotline, SPOT_DX_DE "TLF-%c:     %9.3f  %s",
 	    thisnode, freq / 1000.0, call);
     strcat(spotline, spaces(43));
 
@@ -60,9 +55,7 @@ void add_to_spots(char *call, freq_t freq) {
     strcat(spotline, "\n\n");
 
     send_lan_message(TLFSPOT, spotline);
-    lanspotflg = true;
-    addtext(spotline);
-    lanspotflg = false;
+    add_other_text(spotline);
 }
 
 /* ask for spot frequency in kHz  and convert it to Hz */
@@ -196,8 +189,9 @@ static bool complete_spot(gchar **line) {
 		    pos--;
 		    buffer[pos] = '\0';
 		}
+		break;
 	    default:
-		if (isprint(c) && (pos < MAX_SPOT_LEN)) {
+		if (ascii_isprint(c) && (pos < MAX_SPOT_LEN)) {
 		    buffer[pos++] = c;
 		    buffer[pos] = '\0';
 		}
@@ -220,9 +214,7 @@ void add_cluster_spot(void) {
     if (strlen(spot_line) > 0) {
 	ok = complete_spot(&spot_line);
 	if (ok) {
-	    gchar *line = g_strconcat(spot_line, "\n", NULL);
-	    send_to_cluster(line);
-	    g_free(line);
+	    send_to_cluster(spot_line);
 	}
     }
     g_free(spot_line);

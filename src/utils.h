@@ -31,5 +31,6 @@ double get_current_seconds();
 int insert_char(char c, char *buf, int pos, int maxlength);
 void delete_char(char *buf, int pos);
 int ascii_toupper(int in);
+bool ascii_isprint(int in);
 
 #endif /* UTILS_H */
