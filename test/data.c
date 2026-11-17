@@ -129,7 +129,6 @@ char multsfile[80] = "";	/* name of file with a list of allowed
 				   multipliers */
 char exchange_list[40] = "";
 int timeoffset = 0;
-int multi = 0;			/* 0 = SO , 1 = MOST, 2 = MM */
 int trxmode = CWMODE;
 /* RIG_MODE_NONE in hamlib/rig.h, but if hamlib not compiled, then no dependency */
 rmode_t rigmode = 0;
