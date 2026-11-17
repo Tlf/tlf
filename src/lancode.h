@@ -103,5 +103,6 @@ void send_lan_message(int opcode, const char *message);
 void talk(void);
 int send_freq(freq_t freq);
 void send_time(void) ;
+void receive_lan(void);
 
 #endif /* LANCODE_H */
