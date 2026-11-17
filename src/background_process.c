@@ -20,9 +20,7 @@
 
 
 #include <assert.h>
-//#include <stdlib.h>
-//#include <string.h>
-//#include <unistd.h>
+#include <stdatomic.h>
 
 #include "background_process.h"
 #include "cqww_simulator.h"
@@ -30,14 +28,13 @@
 #include "err_utils.h"
 #include "fldigixmlrpc.h"
 #include "globalvars.h"
-#include "get_time.h"
 #include "gettxinfo.h"
 #include "lancode.h"
 #include "rtty.h"
 #include "tlf.h"
 #include "write_keyer.h"
 
-static bool go = true;
+static atomic_bool go = true;
 // don't start until we know what we are doing
 static bool pause_backgrnd_process = true;
 
@@ -103,15 +100,13 @@ void *background_process(void *ptr) {
 	    fldigi_rpc_cnt = (fldigi_rpc_cnt + 1) % 10;
 	}
 
-	if (!pause_backgrnd_process) {
-	    write_keyer();
-	    cqww_simulator();
-	}
+	write_keyer();
+
+	cqww_simulator();
 
 	receive_lan();
 
 	gettxinfo();		/* get freq info from TRX */
-
     }
 
     pthread_exit(NULL);
