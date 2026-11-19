@@ -425,104 +425,103 @@ void receive_lan() {
 	save_to_debuglog(lan_message);
     }
 
-    if ((*lan_message != '\0') && (lan_message[0] == thisnode)) {
-	TLF_SHOW_WARN("%s", "Warning: NODE ID CONFLICT ?! You should use another ID! ");
+    char other_node = lan_message[0];
+    char message_type = lan_message[1];
+    char *payload = lan_message + 2;
+
+    if (other_node == thisnode) {
+	TLF_SHOW_WARN("Warning: NODE ID CONFLICT ?! You should use another ID! ");
+	g_free(lan_message);
+	return;
+    }
+    if (other_node < 'A' && other_node >= 'A' + MAXNODES) { // sanity check
+	g_free(lan_message);
+	return;
     }
 
-    if ((*lan_message != '\0')
-	    && (lan_message[0] != thisnode)
-	    //&& !pause_backgrnd_process
-       )  {
+    switch (message_type) {
 
-	switch (lan_message[1]) {
+	case LOGENTRY:
 
-	    case LOGENTRY:
+	    log_to_disk(true);
+	    break;
 
-		log_to_disk(true);
-		break;
+	case QTCRENTRY:
 
-	    case QTCRENTRY:
+	    store_qtc(payload, RECV, QTC_RECV_LOG);
+	    break;
 
-		store_qtc(lan_message + 2, RECV, QTC_RECV_LOG);
-		break;
+	case QTCSENTRY:
 
-	    case QTCSENTRY:
+	    store_qtc(payload, SEND, QTC_SENT_LOG);
+	    break;
 
-		store_qtc(lan_message + 2, SEND, QTC_SENT_LOG);
-		break;
+	case QTCFLAG:
 
-	    case QTCFLAG:
+	    parse_qtc_flagline(payload);
+	    break;
 
-		parse_qtc_flagline(lan_message + 2);
-		break;
+	case CLUSTERMSG:
 
-	    case CLUSTERMSG:
-//LFIXME    if (lan_recv_rc >= 2 && lan_recv_message[1] == CLUSTERMSG)
-//	cl_send_inhibit = true;	// this node does not send cluster info
+	    cl_send_inhibit = true;	// this node does not send cluster info
 
+	    prmessage = g_strndup(payload, 80); //LFIXME: needed?
+	    if (strstr(prmessage, my.call) != NULL) {	// alert for cluster messages
+		TLF_SHOW_INFO(prmessage);
+	    }
 
-		prmessage = g_strndup(lan_message + 2, 80);
-		if (strstr(prmessage, my.call) != NULL) {	// alert for cluster messages
-		    TLF_SHOW_INFO(prmessage);
-		}
+	    add_other_text(prmessage);
+	    g_free(prmessage);
+	    break;
 
-		add_other_text(prmessage);
-		g_free(prmessage);
-		break;
-	    case TLFSPOT:
-		prmessage = g_strndup(lan_message + 2, 80);
-		add_other_text(prmessage);
-		g_free(prmessage);
-		break;
-	    case TLFMSG:
-		for (int t = 0; t < 4; t++)
-		    strcpy(talkarray[t], talkarray[t + 1]);
+	case TLFSPOT:
+	    prmessage = g_strndup(payload, 80); //LFIXME: needed?
+	    add_other_text(prmessage);
+	    g_free(prmessage);
+	    break;
 
-		talkarray[4][0] = lan_message[0];
-		talkarray[4][1] = ':';
-		talkarray[4][2] = '\0';
-		g_strlcat(talkarray[4], lan_message + 2,
-			  sizeof(talkarray[4]));
-		TLF_SHOW_INFO(" MSG from %s", talkarray[4]);
-		break;
-	    case FREQMSG:
-		if ((lan_message[0] >= 'A')
-			&& (lan_message[0] < 'A' + MAXNODES)) {
-		    node_frequencies[lan_message[0] - 'A'] =
-			atof(lan_message + 2) * 1000.0;
-		    break;
-		}
-	    case INCQSONUM:
+	case TLFMSG:
+	    for (int t = 0; t < 4; t++)
+		strcpy(talkarray[t], talkarray[t + 1]);
 
-		n = atoi(lan_message + 2);
+	    talkarray[4][0] = lan_message[0];
+	    talkarray[4][1] = ':';
+	    talkarray[4][2] = '\0';
+	    g_strlcat(talkarray[4], payload, sizeof(talkarray[4]));
+	    TLF_SHOW_INFO(" MSG from %s", talkarray[4]);
+	    break;
 
-		if (highqsonr < n)
-		    highqsonr = n;
+	case FREQMSG:
+	    int index = other_node - 'A';
+	    node_frequencies[index] = atof(payload) * 1000.0;
+	    break;
 
-		if ((qsonum <= n) && (n > 0)) {
-		    qsonum = highqsonr + 1;
-		    qsonr_to_str(qsonrstr, qsonum);
-		}
-		lan_message[0] = '\0';
+	case INCQSONUM:
 
-	    case TIMESYNC:
-		if ((lan_message[0] >= 'A')
-			&& (lan_message[0] < 'A' + MAXNODES)) {
-		    time_t lantime = atoi(lan_message + 2);
+	    n = atoi(payload);
 
-		    time_t delta = lantime - (get_time() - timecorr);
+	    if (highqsonr < n)
+		highqsonr = n;
 
-		    if (lantimesync == 1) {
-			timecorr = (4 * timecorr + delta) / 5;
-		    } else {
-			timecorr = delta;
-			lantimesync = 1;
-		    }
+	    if ((qsonum <= n) && (n > 0)) {
+		qsonum = highqsonr + 1;
+		qsonr_to_str(qsonrstr, qsonum);
+	    }
+	    break;
 
-		    break;
-		}
-	}
+	case TIMESYNC:
+	    time_t lantime = atoi(payload);
 
+	    time_t delta = lantime - (get_time() - timecorr);
+
+	    if (lantimesync == 1) {
+		timecorr = (4 * timecorr + delta) / 5;
+	    } else {
+		timecorr = delta;
+		lantimesync = 1;
+	    }
+
+	    break;
     }
 
     g_free(lan_message);
