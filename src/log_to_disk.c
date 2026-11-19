@@ -108,13 +108,13 @@ void log_to_disk(int from_lan) {
     } else {			/* qso from lan */
 
 	/* LOGENTRY contains max. 89 characters (node,command and logline */
-	g_strlcpy(lan_logline, lan_message + 2, LOGLINELEN);
+//LFIXME	g_strlcpy(lan_logline, lan_message + 2, LOGLINELEN);
 	char *fill = g_strnfill(LOGLINELEN - 1 - strlen(lan_logline), ' ');
 	g_strlcat(lan_logline, fill, LOGLINELEN); /* add spaces if no frequency data */
 
 	if (cqwwm2) {	    /* mark as coming from other station */
-	    if (lan_message[0] != thisnode)
-		lan_logline[79] = '*';
+//LFIXME	    if (lan_message[0] != thisnode)
+//		lan_logline[79] = '*';
 	}
 
 	total = total + score2(lan_logline);

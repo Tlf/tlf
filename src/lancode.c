@@ -46,8 +46,7 @@
 #include "qtcvars.h"
 
 
-int lan_socket_descriptor;
-char lan_message[256];
+static int lan_socket_descriptor;
 //--------------------------------------
 int bc_socket_descriptor[MAXNODES];
 ssize_t bc_sendto_rc;
@@ -134,37 +133,35 @@ int lan_recv_close(void) {
     return 0;
 }
 
-int lan_recv(void) {
+//
+// return: the message, NULL if no message was received; to be g_free()'d by the caller
+//
+static char *lan_recv() {
     ssize_t lan_recv_rc;
     struct sockaddr_in lan_sin;
     unsigned int lan_sin_len = sizeof(lan_sin);
-    char lan_recv_message[256];
+    char buffer[256];
 
     if (!lan_active)
-	return 0;
+	return NULL;
 
-    lan_recv_message[0] = '\0';
-
-    lan_recv_rc =
-	recvfrom(lan_socket_descriptor, lan_recv_message,
-		 sizeof(lan_recv_message), 0, (struct sockaddr *) &lan_sin,
-		 &lan_sin_len);
+    lan_recv_rc = recvfrom(lan_socket_descriptor, buffer, sizeof(buffer),
+			   0, (struct sockaddr *) &lan_sin, &lan_sin_len);
 
     if (lan_recv_rc == -1 && errno != EAGAIN) {
 	recv_error++;
-	return errno;
+	return NULL;
     }
 
     errno = 0;			/* clear the error */
 
-    if (lan_recv_rc >= 2 && lan_recv_message[1] == CLUSTERMSG)
-	cl_send_inhibit = true;	// this node does not send cluster info
+    if (lan_recv_rc < 0) {
+	return NULL;
+    }
 
-    if (lan_recv_rc > 0)
-	recv_packets++;
-    strcpy(lan_message, lan_recv_message);  // FIXME potential non-terminated string
+    recv_packets++;
 
-    return 0;
+    return g_strndup(buffer, lan_recv_rc);
 }
 
 // ----------------send routines --------------------------
@@ -392,14 +389,15 @@ void receive_lan() {
     char debugbuffer[160];
     FILE *fp;
     int n;
+    char *lan_message;
 
     if (lan_active) {
-	if (lan_message[0] == '\0') {
 
-	    if (lan_recv() >= 0) {
-		g_strchomp(lan_message);
-	    }
+	lan_message = lan_recv();
+	if (lan_message == NULL) {
+	    return;
 	}
+	g_strchomp(lan_message);
 
 	if (landebug && strlen(lan_message) > 2) {
 	    if ((fp = fopen("debuglog", "a")) == NULL) {
@@ -444,6 +442,10 @@ void receive_lan() {
 		    break;
 
 		case CLUSTERMSG:
+//LFIXME    if (lan_recv_rc >= 2 && lan_recv_message[1] == CLUSTERMSG)
+//	cl_send_inhibit = true;	// this node does not send cluster info
+
+
 		    prmessage = g_strndup(lan_message + 2, 80);
 		    if (strstr(prmessage, my.call) != NULL) {	// alert for cluster messages
 			TLF_SHOW_INFO(prmessage);
@@ -506,10 +508,8 @@ void receive_lan() {
 		    }
 	    }
 
-	    lan_message[0] = '\0';
-	    lan_message[1] = '\0';
-
 	}
 
+	g_free(lan_message);
     }
 }
