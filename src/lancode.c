@@ -36,11 +36,17 @@
 #include "globalvars.h"
 #include "lancode.h"
 #include "tlf.h"
-#include "tlf_curses.h"
+//#include "tlf_curses.h"
+
+#include "cluster.h"
+#include "log_to_disk.h"
+#include "qsonr_to_str.h"
+#include "qtc_log.h"
+#include "qtcutil.h"
+#include "qtcvars.h"
 
 
-int lan_socket_descriptor;
-char lan_message[256];
+static int lan_socket_descriptor;
 //--------------------------------------
 int bc_socket_descriptor[MAXNODES];
 ssize_t bc_sendto_rc;
@@ -127,38 +133,35 @@ int lan_recv_close(void) {
     return 0;
 }
 
-int lan_recv(void) {
+//
+// return: the message, NULL if no message was received; to be g_free()'d by the caller
+//
+static char *lan_recv() {
     ssize_t lan_recv_rc;
     struct sockaddr_in lan_sin;
     unsigned int lan_sin_len = sizeof(lan_sin);
-    char lan_recv_message[256];
+    char buffer[256];
 
     if (!lan_active)
-	return 0;
+	return NULL;
 
-    lan_recv_message[0] = '\0';
-
-    lan_recv_rc =
-	recvfrom(lan_socket_descriptor, lan_recv_message,
-		 sizeof(lan_recv_message), 0, (struct sockaddr *) &lan_sin,
-		 &lan_sin_len);
+    lan_recv_rc = recvfrom(lan_socket_descriptor, buffer, sizeof(buffer),
+			   0, (struct sockaddr *) &lan_sin, &lan_sin_len);
 
     if (lan_recv_rc == -1 && errno != EAGAIN) {
 	recv_error++;
-	return errno;
+	return NULL;
     }
 
     errno = 0;			/* clear the error */
 
-    if (lan_recv_rc >= 2 && lan_recv_message[1] == CLUSTERMSG)
-	cl_send_inhibit = true;	// this node does not send cluster info
+    if (lan_recv_rc < 0) {
+	return NULL;
+    }
 
-    if (lan_recv_rc > 0)
-	recv_packets++;
+    recv_packets++;
 
-    strcpy(lan_message, lan_recv_message);
-
-    return 0;
+    return g_strndup(buffer, lan_recv_rc);
 }
 
 // ----------------send routines --------------------------
@@ -374,4 +377,152 @@ void send_time(void) {
 
     sprintf(timebuffer, "%ld ", now);
     send_lan_message(TIMESYNC, timebuffer);
+}
+
+
+/* --------- receive and process a message from lan ------*/
+
+static void save_to_debuglog(const char *lan_message) {
+    char debugbuffer[160];
+    FILE *fp;
+
+    if ((fp = fopen("debuglog", "a")) == NULL) {
+	return;
+    }
+
+    format_time(debugbuffer, sizeof(debugbuffer), "%H:%M:%S-");
+    fputs(debugbuffer, fp);
+    fputs(lan_message, fp);
+    fputs("\n", fp);
+
+    fclose(fp);
+}
+
+static int lantimesync = 0;
+
+void receive_lan() {
+    char *prmessage;
+    int n;
+    char *lan_message;
+
+    if (!lan_active) {
+	return;
+    }
+
+    lan_message = lan_recv();
+    if (lan_message == NULL) {
+	return;
+    }
+
+    g_strchomp(lan_message);
+
+    if (strlen(lan_message) <= 2) {     // too short
+	g_free(lan_message);
+	return;
+    }
+
+    if (landebug) {
+	save_to_debuglog(lan_message);
+    }
+
+    char other_node = lan_message[0];
+    char message_type = lan_message[1];
+    char *payload = lan_message + 2;
+
+    if (other_node == thisnode) {
+	TLF_SHOW_WARN("Warning: NODE ID CONFLICT ?! You should use another ID! ");
+	g_free(lan_message);
+	return;
+    }
+    if (other_node < 'A' && other_node >= 'A' + MAXNODES) { // sanity check
+	g_free(lan_message);
+	return;
+    }
+
+    switch (message_type) {
+
+	case LOGENTRY:
+
+	    log_to_disk(true);
+	    break;
+
+	case QTCRENTRY:
+
+	    store_qtc(payload, RECV, QTC_RECV_LOG);
+	    break;
+
+	case QTCSENTRY:
+
+	    store_qtc(payload, SEND, QTC_SENT_LOG);
+	    break;
+
+	case QTCFLAG:
+
+	    parse_qtc_flagline(payload);
+	    break;
+
+	case CLUSTERMSG:
+
+	    cl_send_inhibit = true;	// this node does not send cluster info
+
+	    prmessage = g_strndup(payload, 80); //LFIXME: needed?
+	    if (strstr(prmessage, my.call) != NULL) {	// alert for cluster messages
+		TLF_SHOW_INFO(prmessage);
+	    }
+
+	    add_other_text(prmessage);
+	    g_free(prmessage);
+	    break;
+
+	case TLFSPOT:
+	    prmessage = g_strndup(payload, 80); //LFIXME: needed?
+	    add_other_text(prmessage);
+	    g_free(prmessage);
+	    break;
+
+	case TLFMSG:
+	    for (int t = 0; t < 4; t++)
+		strcpy(talkarray[t], talkarray[t + 1]);
+
+	    talkarray[4][0] = lan_message[0];
+	    talkarray[4][1] = ':';
+	    talkarray[4][2] = '\0';
+	    g_strlcat(talkarray[4], payload, sizeof(talkarray[4]));
+	    TLF_SHOW_INFO(" MSG from %s", talkarray[4]);
+	    break;
+
+	case FREQMSG:
+	    int index = other_node - 'A';
+	    node_frequencies[index] = atof(payload) * 1000.0;
+	    break;
+
+	case INCQSONUM:
+
+	    n = atoi(payload);
+
+	    if (highqsonr < n)
+		highqsonr = n;
+
+	    if ((qsonum <= n) && (n > 0)) {
+		qsonum = highqsonr + 1;
+		qsonr_to_str(qsonrstr, qsonum);
+	    }
+	    break;
+
+	case TIMESYNC:
+	    time_t lantime = atoi(payload);
+
+	    time_t delta = lantime - (get_time() - timecorr);
+
+	    if (lantimesync == 1) {
+		timecorr = (4 * timecorr + delta) / 5;
+	    } else {
+		timecorr = delta;
+		lantimesync = 1;
+	    }
+
+	    break;
+    }
+
+    g_free(lan_message);
 }

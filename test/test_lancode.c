@@ -7,15 +7,34 @@
 #include "../src/globalvars.h"
 
 // OBJECT ../src/lancode.o
+// OBJECT ../src/qsonr_to_str.o
 
 void handle_logging(enum tlf_debug_level lvl, char *fmt, ...) {
     // empty
 }
 
+// from get_time.h
+long timecorr = 0;
 time_t get_time() {
     return 0;   // TBD
 }
+time_t format_time(char *buffer, size_t size, const char *format) {
+    return 0;  // TBD
+}
+
 void clear_line(int row) {
+}
+
+void add_other_text(const char *s) {
+}
+
+void store_qtc(char *loglineptr, int direction, char *filename) {
+}
+
+void log_to_disk(int from_lan) {
+}
+
+void parse_qtc_flagline(char *lineptr) {
 }
 
 int setup_default(void **state) {

@@ -87,7 +87,6 @@ extern char bc_hostaddress[MAXNODES][16];
 extern int bc_hostport[MAXNODES];
 extern char talkarray[5][62];
 extern char thisnode;
-extern char lan_message[256];
 extern int recv_error;
 extern freq_t node_frequencies[MAXNODES];
 extern int recv_packets;
@@ -96,12 +95,12 @@ extern int send_error[MAXNODES];
 
 int lan_recv_init(void);
 int lan_recv_close(void);
-int lan_recv(void);
 int lan_send_init(void);
 int lan_send_close(void);
 void send_lan_message(int opcode, const char *message);
 void talk(void);
 int send_freq(freq_t freq);
 void send_time(void) ;
+void receive_lan(void);
 
 #endif /* LANCODE_H */
